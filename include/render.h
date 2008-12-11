@@ -52,7 +52,7 @@ int ToggleShowOnlyCurSide(void);
 
 // When any render function needs to know what's looking at it, it
 // should access RenderViewerObject members.
-extern fix xRenderZoom;     // the tPlayer's zoom factor
+extern fix xRenderZoom;     // the CPlayerData's zoom factor
 
 // This is used internally to RenderFrame(), but is included here so AI
 // can use it for its own purposes.
@@ -63,7 +63,7 @@ extern short nRenderList [MAX_SEGMENTS_D2X];
 extern int Render_only_bottom;
 #endif
 
-// Set the following to turn on tPlayer head turning
+// Set the following to turn on CPlayerData head turning
 // If the above flag is set, these angles specify the orientation of the head
 extern vmsAngVec Player_head_angles;
 
@@ -77,7 +77,7 @@ void SetRenderView (fix nEyeOffset, short *pnStartSeg, int bOglScale);
 
 void RenderMine (short nStartSeg, fix xExeOffset, int nWindow);
 void RenderShadowQuad (int bWhite);
-int RenderShadowMap (tDynLight *pLight);
+int RenderShadowMap (CDynLight *pLight);
 void UpdateRenderedData (int window_num, CObject *viewer, int rearViewFlag, int user);
 void RenderObjList (int nListPos, int nWindow);
 void RenderMineSegment (int nn);

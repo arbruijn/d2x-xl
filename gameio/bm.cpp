@@ -65,7 +65,7 @@ byte	gameData.objs.types.nType.nId [MAX_OBJTYPE];
 fix	gameData.objs.types.nType.nStrength [MAX_OBJTYPE];
 #endif
 
-//right now there's only one tPlayer ship, but we can have another by
+//right now there's only one CPlayerData ship, but we can have another by
 //adding an array and setting the pointer to the active ship.
 
 //---------------- Variables for CObject textures ----------------
@@ -197,7 +197,7 @@ void BuildTextureIndex (int i, int n)
 	short				*pti = gameData.pig.tex.textureIndex [i].Buffer ();
 	tBitmapIndex	*pbi = gameData.pig.tex.bmIndex [i].Buffer ();
 
-memset (pti, 0xff, sizeof (gameData.pig.tex.textureIndex [i]));
+gameData.pig.tex.textureIndex [i].Clear (0xff);
 for (i = 0; i < n; i++)
 	pti [pbi [i].index] = i;
 //QSortTextureIndex (pti, 0, n - 1);
@@ -284,7 +284,7 @@ ReadBitmapIndices (gameData.pig.tex.objBmIndex, gameData.pig.tex.nObjBitmaps, cf
 for (i = 0; i < gameData.pig.tex.nObjBitmaps; i++)
 	gameData.pig.tex.objBmIndexP [i] = cf.ReadShort ();
 
-/*---*/PrintLog ("      Loading tPlayer ship description\n");
+/*---*/PrintLog ("      Loading CPlayerData ship description\n");
 PlayerShipRead (&gameData.pig.ship.only, cf);
 
 gameData.models.nCockpits = cf.ReadInt ();
@@ -624,7 +624,7 @@ for (i = 0, pr = &gameData.bots.info [1][0]; i < D1_MAX_ROBOT_TYPES; i++, pr++) 
 	//cf.Read (&r, sizeof (r), 1);
 	cf.Seek (
 		sizeof (int) * 3 + 
-		(sizeof (vmsVector) + sizeof (ubyte)) * MAX_GUNS + 
+		(sizeof (CFixVector) + sizeof (ubyte)) * MAX_GUNS + 
 		sizeof (short) * 5 +
 		sizeof (sbyte) * 7 +
 		sizeof (fix) * 4 +
@@ -884,7 +884,7 @@ void BMReadWeaponInfoD1 (CFile& cf)
 	cf.Read (gameData.pig.tex.objBmIndex, sizeof (tBitmapIndex), MAX_OBJ_BITMAPS, cf);
 	cf.Read (gameData.pig.tex.objBmIndexP, sizeof (ushort), MAX_OBJ_BITMAPS, cf);
 
-	cf.Read (&gameData.pig.ship.only, sizeof (tPlayerShip), 1, cf);
+	cf.Read (&gameData.pig.ship.only, sizeof (CPlayerShip), 1, cf);
 
 	cf.Read (&gameData.models.nCockpits, sizeof (int), 1, cf);
 	cf.Read (gameData.pig.tex.cockpitBmIndex, sizeof (tBitmapIndex), N_COCKPIT_BITMAPS, cf);
@@ -900,8 +900,8 @@ void BMReadWeaponInfoD1 (CFile& cf)
 	cf.Read (&gameData.pig.tex.nFirstMultiBitmap, sizeof (int), 1, cf);
 
 	cf.Read (&N_controlcen_guns, sizeof (int), 1, cf);
-	cf.Read (controlcen_gun_points, sizeof (vmsVector), MAX_CONTROLCEN_GUNS, cf);
-	cf.Read (controlcen_gun_dirs, sizeof (vmsVector), MAX_CONTROLCEN_GUNS, cf);
+	cf.Read (controlcen_gun_points, sizeof (CFixVector), MAX_CONTROLCEN_GUNS, cf);
+	cf.Read (controlcen_gun_dirs, sizeof (CFixVector), MAX_CONTROLCEN_GUNS, cf);
 	cf.Read (&gameData.endLevel.exit.nModel, sizeof (int), 1, cf);
 	cf.Read (&gameData.endLevel.exit.nDestroyedModel, sizeof (int), 1, cf);
 #endif
@@ -1026,7 +1026,7 @@ void BMReadAllD1 (CFile& cf)
 		cf.Seek (fp, 2, SEEK_CUR);//gameData.pig.tex.objBmIndexP [i] = cf.ReadShort ();
 
 	//PlayerShipRead (&gameData.pig.ship.only, cf);
-	cf.Seek (fp, sizeof (tPlayerShip), SEEK_CUR);
+	cf.Seek (fp, sizeof (CPlayerShip), SEEK_CUR);
 
 	/*gameData.models.nCockpits = */ cf.ReadInt ();
 	//ReadBitmapIndices (gameData.pig.tex.cockpitBmIndex, D1_MAX_COCKPIT_BITMAPS, cf);
@@ -1587,11 +1587,11 @@ void LoadTextureBrightness (const char *pszLevel, int *brightnessP)
 	int		i, *pb;
 
 if (!brightnessP)
-	brightnessP = gameData.pig.tex.brightness;
+	brightnessP = gameData.pig.tex.brightness.Buffer ();
 CFile::ChangeFilenameExtension (szFile, pszLevel, ".lgt");
 if (cf.Open (szFile, gameFolders.szDataDir, "rb", 0) &&
 	 (cf.Read (brightnessP, sizeof (*brightnessP) * MAX_WALL_TEXTURES, 1) == 1)) {
-	for (i = MAX_WALL_TEXTURES, pb = gameData.pig.tex.brightness; i; i--, pb++)
+	for (i = MAX_WALL_TEXTURES, pb = gameData.pig.tex.brightness.Buffer (); i; i--, pb++)
 		*pb = INTEL_INT (*pb);
 	cf.Close ();
 	}

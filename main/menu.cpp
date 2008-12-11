@@ -1526,7 +1526,7 @@ try_again:
 		return;
 	nNewLevel = atoi (m [1].text);
 	if ((nNewLevel <= 0) || (nNewLevel > nHighestPlayerLevel)) {
-		m [0].text = (char*) (TXT_ENTER_TO_CONT);
+		m [0].text = const_cast<char*> (TXT_ENTER_TO_CONT);
 		ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
 		goto try_again;
 	}
@@ -1981,7 +1981,7 @@ if (gameOpts->app.bExpertMode) {
 	v = m->value;
 	if (gameOpts->render.cockpit.nWindowSize != v) {
 		gameOpts->render.cockpit.nWindowSize = v;
-		m->text = (char*) (szCWS [v]);
+		m->text = const_cast<char*> (szCWS [v]);
 		m->rebuild = 1;
 		}
 
@@ -5068,7 +5068,7 @@ if (m [soundOpts.nRedbook].value != gameStates.sound.bRedbookEnabled) {
 			m [soundOpts.nRedbook].rebuild = 1;
 			}
 		}
-	m [soundOpts.nMusicVol].text = gameStates.sound.bRedbookEnabled ? (char*) (TXT_CD_VOLUME) : (char*) (TXT_MIDI_VOLUME);
+	m [soundOpts.nMusicVol].text = gameStates.sound.bRedbookEnabled ? const_cast<char*> (TXT_CD_VOLUME) : const_cast<char*> (TXT_MIDI_VOLUME);
 	m [soundOpts.nMusicVol].rebuild = 1;
 	}
 
@@ -5573,12 +5573,12 @@ ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INV_ADDRESS);
  char *MENU_PCX_NAME (void)
 {
 if (CFile::Exist (MENU_PCX_FULL, gameFolders.szDataDir, 0))
-	return (char*) (MENU_PCX_FULL);
+	return const_cast<char*> (MENU_PCX_FULL);
 if (CFile::Exist (MENU_PCX_OEM, gameFolders.szDataDir, 0))
-	return (char*) (MENU_PCX_OEM);
+	return const_cast<char*> (MENU_PCX_OEM);
 if (CFile::Exist (MENU_PCX_SHAREWARE, gameFolders.szDataDir, 0))
-	return (char*) (MENU_PCX_SHAREWARE);
-return (char*) (MENU_PCX_MAC_SHARE);
+	return const_cast<char*> (MENU_PCX_SHAREWARE);
+return const_cast<char*> (MENU_PCX_MAC_SHARE);
 }
 //------------------------------------------------------------------------------
 //eof

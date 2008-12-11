@@ -31,7 +31,7 @@ typedef struct tFaceProps {
 #if LIGHTMAPS
 	tUVL			uvl_lMaps [4];
 #endif
-	vmsVector	vNormal;
+	CFixVector	vNormal;
 	ubyte			nVertices;
 	ubyte			widFlags;
 	char			nType;

@@ -42,14 +42,14 @@ int physics_lookahead(CObject *obj, fix t, int fviFlags, fix *hitTime, tFVIData 
 
 // Applies an instantaneous force on an CObject, resulting in an instantaneous
 // change in velocity.
-void PhysApplyForce(CObject *obj, vmsVector *force_vec);
-void PhysApplyRot(CObject *obj, vmsVector *force_vec);
+void PhysApplyForce(CObject *obj, CFixVector *force_vec);
+void PhysApplyRot(CObject *obj, CFixVector *force_vec);
 
 // this routine will set the thrust for an CObject to a value that will
 // (hopefully) maintain the CObject's current velocity
 void SetThrustFromVelocity(CObject *obj);
 
-void PhysicsTurnTowardsVector (vmsVector *vGoal, CObject *objP, fix rate);
+void PhysicsTurnTowardsVector (CFixVector *vGoal, CObject *objP, fix rate);
 
 void UnstickObject (CObject *objP);
 

@@ -38,23 +38,23 @@ extern int nCanvasWidth,nCanvasHeight;	//the actual width & height
 extern fix xCanvW2,xCanvH2;				//fixed-point width,height/2
 extern double fxCanvW2, fxCanvH2;
 
-typedef struct tViewInfo {
-	vmsVector	pos;
-	vmsAngVec	playerHeadAngles;
-	int			bUsePlayerHeadAngles;
-	vmsMatrix	view [2];
-	vmsVector	scale;
-	fVector		scalef;
-	vmsVector	windowScale;		//scaling for window aspect
-	fVector		posf;
-	fMatrix		viewf [2];
-	fix			zoom;
-	float			glZoom;
-	float			glPosf [4];
-	float			glViewf [16];
-} tViewInfo;
+typedef struct CViewInfo {
+	CFixVector		pos;
+	vmsAngVec		playerHeadAngles;
+	int				bUsePlayerHeadAngles;
+	vmsMatrix		view [2];
+	CFixVector		scale;
+	CFloatVector	scalef;
+	CFixVector		windowScale;		//scaling for window aspect
+	CFloatVector	posf;
+	fMatrix			viewf [2];
+	fix				zoom;
+	float				glZoom;
+	float				glPosf [4];
+	float				glViewf [16];
+} CViewInfo;
 
-extern tViewInfo	viewInfo;
+extern CViewInfo	viewInfo;
 
 extern int nFreePoints;
 

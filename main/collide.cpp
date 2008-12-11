@@ -57,13 +57,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define STANDARD_EXPL_DELAY (f1_0/4)
 
-//##void CollideFireballAndWall (CObject *fireball, fix xHitSpeed, short nHitSeg, short nHitWall, vmsVector * vHitPt)	{
+//##void CollideFireballAndWall (CObject *fireball, fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector * vHitPt)	{
 //##	return;
 //##}
 
 //	-------------------------------------------------------------------------------------------------------------
 //	The only reason this routine is called (as of 10/12/94) is so Brain guys can open doors.
-void CollideRobotAndWall (CObject *robotP, fix xHitSpeed, short nHitSeg, short nHitWall, vmsVector * vHitPt)
+void CollideRobotAndWall (CObject *robotP, fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector * vHitPt)
 {
 	tAILocalInfo	*ailp = gameData.ai.localInfo + OBJ_IDX (robotP);
 	tRobotInfo		*botInfoP = &ROBOTINFO (robotP->info.nId);
@@ -90,13 +90,13 @@ else if (botInfoP->companion) {
 	if (!(wallP->flags & WALL_DOOR_LOCKED) || ((wallP->keys != KEY_NONE) && (wallP->keys & LOCALPLAYER.flags)))
 		WallOpenDoor (gameData.segs.segments + nHitSeg, nHitWall);
 	}
-else if (botInfoP->thief) {		//	Thief allowed to go through doors to which tPlayer has key.
+else if (botInfoP->thief) {		//	Thief allowed to go through doors to which CPlayerData has key.
 	if ((wallP->keys != KEY_NONE) && (wallP->keys & LOCALPLAYER.flags))
 		WallOpenDoor (gameData.segs.segments + nHitSeg, nHitWall);
 	}
 }
 
-//##void CollideHostageAndWall (CObject *hostage, fix xHitSpeed, short nHitSeg, short nHitWall, vmsVector * vHitPt)	{
+//##void CollideHostageAndWall (CObject *hostage, fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector * vHitPt)	{
 //##	return;
 //##}
 
@@ -176,10 +176,10 @@ if ((otherObjP->info.nType == OBJ_PLAYER) && gameStates.app.cheats.bMonsterMode)
 
 //	-----------------------------------------------------------------------------
 
-void BumpThisObject (CObject *objP, CObject *otherObjP, vmsVector *vForce, int bDamage)
+void BumpThisObject (CObject *objP, CObject *otherObjP, CFixVector *vForce, int bDamage)
 {
 	fix			xForceMag;
-	vmsVector	vRotForce;
+	CFixVector	vRotForce;
 
 if (!(objP->mType.physInfo.flags & PF_PERSISTENT)) {
 	if (objP->info.nType == OBJ_PLAYER) {
@@ -194,7 +194,7 @@ if (!(objP->mType.physInfo.flags & PF_PERSISTENT)) {
 			//PhysApplyRot (objP, &vRotForce);
 			}
 		else {
-			vmsVector force2;
+			CFixVector force2;
 			force2[X] = (*vForce)[X] / 4;
 			force2[Y] = (*vForce)[Y] / 4;
 			force2[Z] = (*vForce)[Z] / 4;
@@ -262,9 +262,9 @@ if (!(objP->mType.physInfo.flags & PF_PERSISTENT)) {
 //to each robotP.  The flags tells whether the objects should take damage from
 //the collision.
 
-int BumpTwoObjects (CObject *objP0, CObject *objP1, int bDamage, vmsVector *vHitPt)
+int BumpTwoObjects (CObject *objP0, CObject *objP1, int bDamage, CFixVector *vHitPt)
 {
-	vmsVector	vForce, p0, p1, v0, v1, vh, vr, vn0, vn1;
+	CFixVector	vForce, p0, p1, v0, v1, vh, vr, vn0, vn1;
 	fix			mag, dot, m0, m1;
 	CObject		*t;
 
@@ -290,11 +290,11 @@ p0 = objP0->info.position.vPos;
 p1 = objP1->info.position.vPos;
 v0 = objP0->mType.physInfo.velocity;
 v1 = objP1->mType.physInfo.velocity;
-mag = vmsVector::Dot (v0, v1);
+mag = CFixVector::Dot (v0, v1);
 vn0 = v0;
-m0 = vmsVector::Normalize (vn0);
+m0 = CFixVector::Normalize (vn0);
 vn1 = v1;
-m1 = vmsVector::Normalize (vn1);
+m1 = CFixVector::Normalize (vn1);
 if (m0 && m1) {
 	if (m0 > m1) {
 		double d = (double)m1 / (double)m0;
@@ -362,7 +362,7 @@ HUDMessage (0, "%d %d", mag, (objP0->mType.physInfo.mass + objP1->mType.physInfo
 if (EGI_FLAG (bUseHitAngles, 0, 0, 0)) {
 	// exert force in the direction of the hit point to the object's center
 	vh = *vHitPt - objP1->info.position.vPos;
-	if (vmsVector::Normalize (vh) > F1_0 / 16) {
+	if (CFixVector::Normalize (vh) > F1_0 / 16) {
 		vr = vh;
 		vh = -vh;
 		vh *= mag;
@@ -370,11 +370,11 @@ if (EGI_FLAG (bUseHitAngles, 0, 0, 0)) {
 		// compute reflection vector. The vector from the other object's center to the hit point
 		// serves as Normal.
 		v1 = v0;
-		vmsVector::Normalize (v1);
-		dot = vmsVector::Dot (v1, vr);
+		CFixVector::Normalize (v1);
+		dot = CFixVector::Dot (v1, vr);
 		vr *= (2 * dot);
 		//VmVecNegate (VmVecDec (&vr, &v0));
-		vmsVector::Normalize (vr);
+		CFixVector::Normalize (vr);
 		vr *= mag;
 		vr = -vr;
 		BumpThisObject (objP0, objP1, &vr, bDamage);
@@ -389,9 +389,9 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-void BumpOneObject (CObject *objP0, vmsVector *hit_dir, fix damage)
+void BumpOneObject (CObject *objP0, CFixVector *hit_dir, fix damage)
 {
-	vmsVector	hit_vec;
+	CFixVector	hit_vec;
 
 hit_vec = *hit_dir;
 hit_vec *= damage;
@@ -406,22 +406,22 @@ PhysApplyForce (objP0, &hit_vec);
 
 fix force_force = I2X (50);
 
-void CollidePlayerAndWall (CObject *playerObjP, fix xHitSpeed, short nHitSeg, short nHitWall, vmsVector * vHitPt)
+void CollidePlayerAndWall (CObject *playerObjP, fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector * vHitPt)
 {
 	fix damage;
 	char bForceFieldHit = 0;
 	int nBaseTex, nOvlTex;
 
-if (playerObjP->info.nId != gameData.multiplayer.nLocalPlayer) // Execute only for local tPlayer
+if (playerObjP->info.nId != gameData.multiplayer.nLocalPlayer) // Execute only for local CPlayerData
 	return;
 nBaseTex = gameData.segs.segments [nHitSeg].sides [nHitWall].nBaseTex;
 //	If this tWall does damage, don't make *BONK* sound, we'll be making another sound.
 if (gameData.pig.tex.tMapInfoP [nBaseTex].damage > 0)
 	return;
 if (gameData.pig.tex.tMapInfoP [nBaseTex].flags & TMI_FORCE_FIELD) {
-	vmsVector vForce;
+	CFixVector vForce;
 	paletteManager.BumpEffect (0, 0, 60);	//flash blue
-	//knock tPlayer around
+	//knock CPlayerData around
 	vForce[X] = 40 * (d_rand () - 16384);
 	vForce[Y] = 40 * (d_rand () - 16384);
 	vForce[Z] = 40 * (d_rand () - 16384);
@@ -438,7 +438,7 @@ if (gameData.pig.tex.tMapInfoP [nBaseTex].flags & TMI_FORCE_FIELD) {
 	}
 else {
 #ifdef TACTILE
-	vmsVector vForce;
+	CFixVector vForce;
 	if (TactileStick) {
 		vForce[X] = -playerObjP->mType.physInfo.velocity[X];
 		vForce[Y] = -playerObjP->mType.physInfo.velocity[Y];
@@ -451,7 +451,7 @@ else {
 if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [nHitSeg].special == SEGMENT_IS_NODAMAGE))
 	return;
 //	** Damage from hitting tWall **
-//	If the tPlayer has less than 10% shields, don't take damage from bump
+//	If the CPlayerData has less than 10% shields, don't take damage from bump
 // Note: Does quad damage if hit a vForce field - JL
 damage = (xHitSpeed / DAMAGE_SCALE) * (bForceFieldHit * 8 + 1);
 nOvlTex = gameData.segs.segments [nHitSeg].sides [nHitWall].nOvlTex;
@@ -480,13 +480,13 @@ return;
 
 fix	xLastVolatileScrapeSoundTime = 0;
 
-int CollideWeaponAndWall (CObject *weaponP, fix xHitSpeed, short nHitSeg, short nHitWall, vmsVector * vHitPt);
-int CollideDebrisAndWall (CObject *debris, fix xHitSpeed, short nHitSeg, short nHitWall, vmsVector * vHitPt);
+int CollideWeaponAndWall (CObject *weaponP, fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector * vHitPt);
+int CollideDebrisAndWall (CObject *debris, fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector * vHitPt);
 
 //see if tWall is volatile or water
-//if volatile, cause damage to tPlayer
+//if volatile, cause damage to CPlayerData
 //returns 1=lava, 2=water
-int CheckVolatileWall (CObject *objP, int nSegment, int nSide, vmsVector *vHitPt)
+int CheckVolatileWall (CObject *objP, int nSegment, int nSide, CFixVector *vHitPt)
 {
 	fix	d, water;
 	int	nTexture;
@@ -579,14 +579,14 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 //this gets called when an CObject is scraping along the tWall
-void ScrapeObjectOnWall (CObject *objP, short nHitSeg, short hitside, vmsVector * vHitPt)
+void ScrapeObjectOnWall (CObject *objP, short nHitSeg, short hitside, CFixVector * vHitPt)
 {
 switch (objP->info.nType) {
 	case OBJ_PLAYER:
 		if (objP->info.nId == gameData.multiplayer.nLocalPlayer) {
 			int nType = CheckVolatileWall (objP, nHitSeg, hitside, vHitPt);
 			if (nType != 0) {
-				vmsVector	vHit, vRand;
+				CFixVector	vHit, vRand;
 
 				if ((gameData.time.xGame > xLastVolatileScrapeSoundTime + F1_0/4) ||
 						(gameData.time.xGame < xLastVolatileScrapeSoundTime)) {
@@ -597,9 +597,9 @@ switch (objP->info.nType) {
 						MultiSendPlaySound (sound, F1_0);
 					}
 				vHit = gameData.segs.segments [nHitSeg].sides [hitside].normals [0];
-				vRand = vmsVector::Random();
+				vRand = CFixVector::Random();
 				vHit += vRand * (F1_0/8);
-				vmsVector::Normalize (vHit);
+				CFixVector::Normalize (vHit);
 				BumpOneObject (objP, &vHit, F1_0*8);
 				}
 			}
@@ -624,7 +624,7 @@ switch (objP->info.nType) {
 //	-----------------------------------------------------------------------------
 //if an effect is hit, and it can blow up, then blow it up
 //returns true if it blew up
-int CheckEffectBlowup (CSegment *segP, short nSide, vmsVector *pnt, CObject *blower, int bForceBlowup)
+int CheckEffectBlowup (CSegment *segP, short nSide, CFixVector *pnt, CObject *blower, int bForceBlowup)
 {
 	int			tm, tmf, ec, nBitmap = 0;
 	int			nWall, nTrigger;
@@ -636,7 +636,7 @@ int CheckEffectBlowup (CSegment *segP, short nSide, vmsVector *pnt, CObject *blo
 	fix			xDestSize;
 	tEffectClip			*ecP = NULL;
 	CBitmap	*bmP;
-	//	If this tWall has a tTrigger and the blower-upper is not the tPlayer or the buddy, abort!
+	//	If this tWall has a tTrigger and the blower-upper is not the CPlayerData or the buddy, abort!
 
 if (blower->cType.laserInfo.parent.nType == OBJ_ROBOT)
 	if (ROBOTINFO (OBJECTS [blower->cType.laserInfo.parent.nObject].info.nId).companion)
@@ -751,7 +751,7 @@ int nParentSig = weaponP->cType.laserInfo.parent.nSignature;
 int nParentObj = weaponP->cType.laserInfo.parent.nObject;
 if (OBJECTS [nParentObj].info.nSignature != nParentSig)
 	return 1;
-fix dist = vmsVector::Dist (OBJECTS [nParentObj].info.position.vPos, weaponP->info.position.vPos);
+fix dist = CFixVector::Dist (OBJECTS [nParentObj].info.position.vPos, weaponP->info.position.vPos);
 if (dist > MAX_OMEGA_DIST)
 	return 0;
 return 1;
@@ -786,7 +786,7 @@ return 0;
 
 // int Show_segAnd_side = 0;
 
-int CollideWeaponAndWall (CObject *weaponP, fix xHitSpeed, short nHitSeg, short nHitWall, vmsVector * vHitPt)
+int CollideWeaponAndWall (CObject *weaponP, fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector * vHitPt)
 {
 	CSegment		*segP = gameData.segs.segments + nHitSeg;
 	tSide			*sideP = segP->sides + nHitWall;
@@ -802,7 +802,7 @@ if (weaponP->info.nId == OMEGA_ID)
 
 //	If this is a guided missile and it strikes fairly directly, clear bounce flag.
 if (weaponP->info.nId == GUIDEDMSL_ID) {
-	fix dot = vmsVector::Dot (weaponP->info.position.mOrient[FVEC], sideP->normals[0]);
+	fix dot = CFixVector::Dot (weaponP->info.position.mOrient[FVEC], sideP->normals[0]);
 #if TRACE
 	con_printf (CONDBG, "Guided missile dot = %7.3f \n", X2F (dot));
 #endif
@@ -813,9 +813,9 @@ if (weaponP->info.nId == GUIDEDMSL_ID) {
 		weaponP->mType.physInfo.flags &= ~PF_BOUNCE;
 		}
 	else {
-		vmsVector	vReflect;
+		CFixVector	vReflect;
 		vmsAngVec	va;
-		vReflect = vmsVector::Reflect(weaponP->info.position.mOrient[FVEC], sideP->normals[0]);
+		vReflect = CFixVector::Reflect(weaponP->info.position.mOrient[FVEC], sideP->normals[0]);
 		va = vReflect.ToAnglesVec();
 		weaponP->info.position.mOrient = vmsMatrix::Create(va);
 		}
@@ -862,17 +862,17 @@ if ((weaponP->cType.laserInfo.parent.nType == OBJ_ROBOT) && ROBOTINFO (wObjP->in
 		Int3 ();  // Get Jason!
 	   return 1;
 	   }
-	nPlayer = gameData.multiplayer.nLocalPlayer;		//if single tPlayer, he's the tPlayer's buddy
+	nPlayer = gameData.multiplayer.nLocalPlayer;		//if single CPlayerData, he's the CPlayerData's buddy
 	}
 else {
 	bEscort = 0;
 	nPlayer = (wObjP->info.nType == OBJ_PLAYER) ? wObjP->info.nId : -1;
 	}
 if (bBlewUp) {		//could be a tWall switch
-	//for tWall triggers, always say that the tPlayer shot it out.  This is
+	//for tWall triggers, always say that the CPlayerData shot it out.  This is
 	//because robots can shoot out tWall triggers, and so the tTrigger better
 	//take effect
-	//	NO -- Changed by MK, 10/18/95.  We don't want robots blowing puzzles.  Only tPlayer or buddy can open!
+	//	NO -- Changed by MK, 10/18/95.  We don't want robots blowing puzzles.  Only CPlayerData or buddy can open!
 	CheckTrigger (segP, nHitWall, weaponP->cType.laserInfo.parent.nObject, 1);
 	}
 if (weaponP->info.nId == EARTHSHAKER_ID)
@@ -927,7 +927,7 @@ else if ((gameData.pig.tex.tMapInfoP [sideP->nBaseTex].flags & TMI_WATER) ||
 	}
 else {
 	if (!bBounce) {
-		//if it's not the tPlayer's weaponP, or it is the tPlayer's and there
+		//if it's not the CPlayerData's weaponP, or it is the CPlayerData's and there
 		//is no tWall, and no blowing up monitor, then play sound
 		if ((weaponP->cType.laserInfo.parent.nType != OBJ_PLAYER) ||
 			 ((!IS_WALL (WallNumS (sideP)) || wallType == WHP_NOT_SPECIAL) && !bBlewUp))
@@ -941,11 +941,11 @@ else {
 			}
 		}
 	}
-//	If weaponP fired by tPlayer or companion...
+//	If weaponP fired by CPlayerData or companion...
 if ((weaponP->cType.laserInfo.parent.nType == OBJ_PLAYER) || bEscort) {
 	if (!(weaponP->info.nFlags & OF_SILENT) &&
 		 (weaponP->cType.laserInfo.parent.nObject == LOCALPLAYER.nObject))
-		CreateAwarenessEvent (weaponP, PA_WEAPON_WALL_COLLISION);			// CObject "weaponP" can attract attention to tPlayer
+		CreateAwarenessEvent (weaponP, PA_WEAPON_WALL_COLLISION);			// CObject "weaponP" can attract attention to CPlayerData
 
 //		if (weaponP->info.nId != FLARE_ID) {
 //	We now allow flares to open doors.
@@ -993,20 +993,20 @@ return 1;
 }
 
 //	-----------------------------------------------------------------------------
-//##void CollideCameraAndWall (CObject *camera, fix xHitSpeed, short nHitSeg, short nHitWall, vmsVector * vHitPt)	{
+//##void CollideCameraAndWall (CObject *camera, fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector * vHitPt)	{
 //##	return;
 //##}
 
-//##void CollidePowerupAndWall (CObject *powerup, fix xHitSpeed, short nHitSeg, short nHitWall, vmsVector * vHitPt)	{
+//##void CollidePowerupAndWall (CObject *powerup, fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector * vHitPt)	{
 //##	return;
 //##}
 
-int CollideDebrisAndWall (CObject *debris, fix xHitSpeed, short nHitSeg, short nHitWall, vmsVector * vHitPt)
+int CollideDebrisAndWall (CObject *debris, fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector * vHitPt)
 {
 if (gameOpts->render.nDebrisLife) {
-	vmsVector	vDir = debris->mType.physInfo.velocity,
+	CFixVector	vDir = debris->mType.physInfo.velocity,
 					vNormal = gameData.segs.segments [nHitSeg].sides [nHitWall].normals [0];
-	debris->mType.physInfo.velocity = vmsVector::Reflect(vDir, vNormal);
+	debris->mType.physInfo.velocity = CFixVector::Reflect(vDir, vNormal);
 	DigiLinkSoundToPos (SOUND_PLAYER_HIT_WALL, nHitSeg, 0, vHitPt, 0, F1_0 / 3);
 	}
 else
@@ -1014,42 +1014,42 @@ else
 return 1;
 }
 
-//##void CollideFireballAndFireball (CObject *fireball1, CObject *fireball2, vmsVector *vHitPt) {
+//##void CollideFireballAndFireball (CObject *fireball1, CObject *fireball2, CFixVector *vHitPt) {
 //##	return;
 //##}
 
-//##void CollideFireballAndRobot (CObject *fireball, CObject *robotP, vmsVector *vHitPt) {
+//##void CollideFireballAndRobot (CObject *fireball, CObject *robotP, CFixVector *vHitPt) {
 //##	return;
 //##}
 
-//##void CollideFireballAndHostage (CObject *fireball, CObject *hostage, vmsVector *vHitPt) {
+//##void CollideFireballAndHostage (CObject *fireball, CObject *hostage, CFixVector *vHitPt) {
 //##	return;
 //##}
 
-//##void CollideFireballAndPlayer (CObject *fireball, CObject *tPlayer, vmsVector *vHitPt) {
+//##void CollideFireballAndPlayer (CObject *fireball, CObject *CPlayerData, CFixVector *vHitPt) {
 //##	return;
 //##}
 
-//##void CollideFireballAndWeapon (CObject *fireball, CObject *weaponP, vmsVector *vHitPt) {
+//##void CollideFireballAndWeapon (CObject *fireball, CObject *weaponP, CFixVector *vHitPt) {
 //##	//KillObject (weaponP);
 //##	return;
 //##}
 
-//##void CollideFireballAndCamera (CObject *fireball, CObject *camera, vmsVector *vHitPt) {
+//##void CollideFireballAndCamera (CObject *fireball, CObject *camera, CFixVector *vHitPt) {
 //##	return;
 //##}
 
-//##void CollideFireballAndPowerup (CObject *fireball, CObject *powerup, vmsVector *vHitPt) {
+//##void CollideFireballAndPowerup (CObject *fireball, CObject *powerup, CFixVector *vHitPt) {
 //##	return;
 //##}
 
-//##void CollideFireballAndDebris (CObject *fireball, CObject *debris, vmsVector *vHitPt) {
+//##void CollideFireballAndDebris (CObject *fireball, CObject *debris, CFixVector *vHitPt) {
 //##	return;
 //##}
 
 //	-------------------------------------------------------------------------------------------------------------------
 
-int CollideRobotAndRobot (CObject *robotP1, CObject *robotP2, vmsVector *vHitPt)
+int CollideRobotAndRobot (CObject *robotP1, CObject *robotP2, CFixVector *vHitPt)
 {
 //		robot1-OBJECTS, X2I (robot1->info.position.vPos.x), X2I (robot1->info.position.vPos.y), X2I (robot1->info.position.vPos.z),
 //		robot2-OBJECTS, X2I (robot2->info.position.vPos.x), X2I (robot2->info.position.vPos.y), X2I (robot2->info.position.vPos.z),
@@ -1061,23 +1061,23 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CollideRobotAndReactor (CObject *objP1, CObject *obj2, vmsVector *vHitPt)
+int CollideRobotAndReactor (CObject *objP1, CObject *obj2, CFixVector *vHitPt)
 {
 if (objP1->info.nType == OBJ_ROBOT) {
-	vmsVector vHit= obj2->info.position.vPos - objP1->info.position.vPos;
-	vmsVector::Normalize (vHit);
+	CFixVector vHit= obj2->info.position.vPos - objP1->info.position.vPos;
+	CFixVector::Normalize (vHit);
 	BumpOneObject (objP1, &vHit, 0);
 	}
 else {
-	vmsVector vHit = objP1->info.position.vPos - obj2->info.position.vPos;
-	vmsVector::Normalize (vHit);
+	CFixVector vHit = objP1->info.position.vPos - obj2->info.position.vPos;
+	CFixVector::Normalize (vHit);
 	BumpOneObject (obj2, &vHit, 0);
 	}
 return 1;
 }
 
 //	-----------------------------------------------------------------------------
-//##void CollideRobotAndHostage (CObject *robotP, CObject *hostage, vmsVector *vHitPt) {
+//##void CollideRobotAndHostage (CObject *robotP, CObject *hostage, CFixVector *vHitPt) {
 //##	return;
 //##}
 
@@ -1085,7 +1085,7 @@ return 1;
 
 fix xLastThiefHitTime;
 
-int  CollideRobotAndPlayer (CObject *robotP, CObject *playerObjP, vmsVector *vHitPt)
+int  CollideRobotAndPlayer (CObject *robotP, CObject *playerObjP, CFixVector *vHitPt)
 {
 	int	bTheftAttempt = 0;
 	short	nCollisionSeg;
@@ -1110,12 +1110,12 @@ if (playerObjP->info.nId == gameData.multiplayer.nLocalPlayer) {
 			bTheftAttempt = 1;
 			}
 		else if (gameData.time.xGame - xLastThiefHitTime < F1_0*2)
-			return 1;	//	ZOUNDS! BRILLIANT! Thief not Collide with tPlayer if not stealing!
-							// NO! VERY DUMB! makes thief look very stupid if tPlayer hits him while cloaked!-AP
+			return 1;	//	ZOUNDS! BRILLIANT! Thief not Collide with CPlayerData if not stealing!
+							// NO! VERY DUMB! makes thief look very stupid if CPlayerData hits him while cloaked!-AP
 		else
 			xLastThiefHitTime = gameData.time.xGame;
 		}
-	CreateAwarenessEvent (playerObjP, PA_PLAYER_COLLISION);			// CObject robotP can attract attention to tPlayer
+	CreateAwarenessEvent (playerObjP, PA_PLAYER_COLLISION);			// CObject robotP can attract attention to CPlayerData
 	if (USE_D1_AI) {
 		DoD1AIRobotHitAttack (robotP, playerObjP, vHitPt);
 		DoD1AIRobotHit (robotP, WEAPON_ROBOT_COLLISION);
@@ -1162,7 +1162,7 @@ void ApplyDamageToReactor (CObject *reactorP, fix xDamage, short nAttacker)
 {
 	int	whotype, i;
 
-	//	Only allow a tPlayer to xDamage the control center.
+	//	Only allow a CPlayerData to xDamage the control center.
 
 if ((nAttacker < 0) || (nAttacker > gameData.objs.nLastObject [0]))
 	return;
@@ -1207,14 +1207,14 @@ if ((reactorP->info.xShields < 0) && !(reactorP->info.nFlags & (OF_EXPLODING | O
 
 //	-----------------------------------------------------------------------------
 
-int CollidePlayerAndReactor (CObject *reactorP, CObject *playerObjP, vmsVector *vHitPt)
+int CollidePlayerAndReactor (CObject *reactorP, CObject *playerObjP, CFixVector *vHitPt)
 {
 	int	i;
 
 if (playerObjP->info.nId == gameData.multiplayer.nLocalPlayer) {
 	if (0 >= (i = FindReactor (reactorP)))
 		gameData.reactor.states [i].bHit = 1;
-	AIDoCloakStuff ();				//	In case tPlayer cloaked, make control center know where he is.
+	AIDoCloakStuff ();				//	In case CPlayerData cloaked, make control center know where he is.
 	}
 if (BumpTwoObjects (reactorP, playerObjP, 1, vHitPt))
 	DigiLinkSoundToPos (SOUND_ROBOT_HIT_PLAYER, playerObjP->info.nSegment, 0, vHitPt, 0, F1_0);
@@ -1223,7 +1223,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CollidePlayerAndMarker (CObject *markerP, CObject *playerObjP, vmsVector *vHitPt)
+int CollidePlayerAndMarker (CObject *markerP, CObject *playerObjP, CFixVector *vHitPt)
 {
 #if TRACE
 con_printf (CONDBG, "Collided with markerP %d! \n", markerP->info.nId);
@@ -1273,7 +1273,7 @@ else {
 
 //	-----------------------------------------------------------------------------
 
-int CollideWeaponAndReactor (CObject *weaponP, CObject *reactorP, vmsVector *vHitPt)
+int CollideWeaponAndReactor (CObject *weaponP, CObject *reactorP, CFixVector *vHitPt)
 {
 	int	i;
 
@@ -1303,7 +1303,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CollideWeaponAndClutter (CObject *weaponP, CObject *clutterP, vmsVector *vHitPt)
+int CollideWeaponAndClutter (CObject *weaponP, CObject *clutterP, CFixVector *vHitPt)
 {
 ubyte exp_vclip = VCLIP_SMALL_EXPLOSION;
 if (clutterP->info.xShields >= 0)
@@ -1316,7 +1316,7 @@ MaybeKillWeapon (weaponP, clutterP);
 return 1;
 }
 
-//--mk, 121094 -- extern void spinRobot (CObject *robotP, vmsVector *vHitPt);
+//--mk, 121094 -- extern void spinRobot (CObject *robotP, CFixVector *vHitPt);
 
 fix	nFinalBossCountdownTime = 0;
 
@@ -1343,7 +1343,7 @@ StartEndLevelSequence (0);		//pretend we hit the exit tTrigger
 void DoFinalBossHacks (void)
 {
 if (gameStates.app.bPlayerIsDead) {
-	Int3 ();		//	Uh-oh, tPlayer is dead.  Try to rescue him.
+	Int3 ();		//	Uh-oh, CPlayerData is dead.  Try to rescue him.
 	gameStates.app.bPlayerIsDead = 0;
 	}
 if (LOCALPLAYER.shields <= 0)
@@ -1352,7 +1352,7 @@ if (LOCALPLAYER.shields <= 0)
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)) {
 	LOCALPLAYER.invulnerableTime = gameData.time.xGame;
 	LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
-	SetSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
+	SetupSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
 	}
 if (!(gameData.app.nGameMode & GM_MULTI))
 	BuddyMessage ("Nice job, %s!", LOCALPLAYER.callsign);
@@ -1399,7 +1399,7 @@ if (ROBOTINFO (robotP->info.nId).companion) {
 	}
 robotP->SetTimeLastHit (gameStates.app.nSDLTicks);
 robotP->info.xShields -= damage;
-//	Do unspeakable hacks to make sure tPlayer doesn't die after killing boss.  Or before, sort of.
+//	Do unspeakable hacks to make sure CPlayerData doesn't die after killing boss.  Or before, sort of.
 if (bIsBoss) {
 	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) &&
 		 (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) &&
@@ -1463,7 +1463,7 @@ int	nBuddyGaveHintCount = 5;
 fix	xLastTimeBuddyGameHint = 0;
 
 //	Return true if damage done to boss, else return false.
-int DoBossWeaponCollision (CObject *robotP, CObject *weaponP, vmsVector *vHitPt)
+int DoBossWeaponCollision (CObject *robotP, CObject *weaponP, CFixVector *vHitPt)
 {
 	int	d2BossIndex;
 	int	bDamage = 1;
@@ -1488,12 +1488,12 @@ if (weaponP->cType.laserInfo.parent.nType == OBJ_PLAYER) {
 
 if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 	fix			dot;
-	vmsVector	tvec1;
+	CFixVector	tvec1;
 
 	//	Boss only vulnerable in back.  See if hit there.
 	tvec1 = *vHitPt - robotP->info.position.vPos;
-	vmsVector::Normalize (tvec1);	//	Note, if BOSS_INVULNERABLE_DOT is close to F1_0 (in magnitude), then should probably use non-quick version.
-	dot = vmsVector::Dot (tvec1, robotP->info.position.mOrient[FVEC]);
+	CFixVector::Normalize (tvec1);	//	Note, if BOSS_INVULNERABLE_DOT is close to F1_0 (in magnitude), then should probably use non-quick version.
+	dot = CFixVector::Dot (tvec1, robotP->info.position.mOrient[FVEC]);
 #if TRACE
 	con_printf (CONDBG, "Boss hit vec dot = %7.3f \n", X2F (dot));
 #endif
@@ -1548,10 +1548,10 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 				cloneP->mType.physInfo.thrust.SetZero();
 				cloneP->mType.physInfo.mass = WI_mass (weaponP->info.nType);
 				cloneP->mType.physInfo.drag = WI_drag (weaponP->info.nType);
-				vmsVector vImpulse = *vHitPt - robotP->info.position.vPos;
-				vmsVector::Normalize (vImpulse);
-				vmsVector vWeapon = weaponP->mType.physInfo.velocity;
-				fix speed = vmsVector::Normalize (vWeapon);
+				CFixVector vImpulse = *vHitPt - robotP->info.position.vPos;
+				CFixVector::Normalize (vImpulse);
+				CFixVector vWeapon = weaponP->mType.physInfo.velocity;
+				fix speed = CFixVector::Normalize (vWeapon);
 				vImpulse += vWeapon * (-F1_0 * 2);
 				vImpulse *= (speed / 4);
 				cloneP->mType.physInfo.velocity = vImpulse;
@@ -1608,7 +1608,7 @@ return 1;
 
 //	------------------------------------------------------------------------------------------------------
 
-int CollideRobotAndWeapon (CObject *robotP, CObject *weaponP, vmsVector *vHitPt)
+int CollideRobotAndWeapon (CObject *robotP, CObject *weaponP, CFixVector *vHitPt)
 {
 	int			bDamage = 1;
 	int			bInvulBoss = 0;
@@ -1656,7 +1656,7 @@ if (weaponP->mType.physInfo.flags & PF_PERSISTENT) {
 if (weaponP->cType.laserInfo.parent.nSignature == robotP->info.nSignature)
 	return 1;
 //	Changed, 10/04/95, put out blobs based on skill level and power of weaponP doing damage.
-//	Also, only a weaponP hit from a tPlayer weaponP causes smart blobs.
+//	Also, only a weaponP hit from a CPlayerData weaponP causes smart blobs.
 if ((weaponP->cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
 	if ((robotP->info.xShields > 0) && bIsEnergyWeapon [weaponP->info.nId]) {
 		fix xProb = (gameStates.app.nDifficultyLevel+2) * min (weaponP->info.xShields, robotP->info.xShields);
@@ -1691,7 +1691,7 @@ if ((weaponP->cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlo
 		 !(robotP->info.nFlags & OF_EXPLODING)) {
 		CObject *explObjP = NULL;
 		if (weaponP->cType.laserInfo.parent.nObject == LOCALPLAYER.nObject) {
-			CreateAwarenessEvent (weaponP, WEAPON_ROBOT_COLLISION);			// object "weaponP" can attract attention to tPlayer
+			CreateAwarenessEvent (weaponP, WEAPON_ROBOT_COLLISION);			// object "weaponP" can attract attention to CPlayerData
 			if (USE_D1_AI)
 				DoD1AIRobotHit (robotP, WEAPON_ROBOT_COLLISION);
 			else
@@ -1741,28 +1741,28 @@ MaybeKillWeapon (weaponP, robotP);
 return 1;
 }
 
-//##void CollideRobotAndCamera (CObject *robotP, CObject *camera, vmsVector *vHitPt) {
+//##void CollideRobotAndCamera (CObject *robotP, CObject *camera, CFixVector *vHitPt) {
 //##	return;
 //##}
 
-//##void CollideRobotAndPowerup (CObject *robotP, CObject *powerup, vmsVector *vHitPt) {
+//##void CollideRobotAndPowerup (CObject *robotP, CObject *powerup, CFixVector *vHitPt) {
 //##	return;
 //##}
 
-//##void CollideRobotAndDebris (CObject *robotP, CObject *debris, vmsVector *vHitPt) {
+//##void CollideRobotAndDebris (CObject *robotP, CObject *debris, CFixVector *vHitPt) {
 //##	return;
 //##}
 
-//##void CollideHostageAndHostage (CObject *hostage1, CObject *hostage2, vmsVector *vHitPt) {
+//##void CollideHostageAndHostage (CObject *hostage1, CObject *hostage2, CFixVector *vHitPt) {
 //##	return;
 //##}
 
 //	-----------------------------------------------------------------------------
 
-int CollideHostageAndPlayer (CObject *hostage, CObject *tPlayer, vmsVector *vHitPt)
+int CollideHostageAndPlayer (CObject *hostage, CObject *CPlayerData, CFixVector *vHitPt)
 {
-	// Give tPlayer points, etc.
-if (tPlayer == gameData.objs.consoleP) {
+	// Give CPlayerData points, etc.
+if (CPlayerData == gameData.objs.consoleP) {
 	DetectEscortGoalAccomplished (OBJ_IDX (hostage));
 	AddPointsToScore (HOSTAGE_SCORE);
 	// Do effect
@@ -1775,13 +1775,13 @@ if (tPlayer == gameData.objs.consoleP) {
 return 1;
 }
 
-//--unused-- void CollideHostageAndWeapon (CObject *hostage, CObject *weaponP, vmsVector *vHitPt)
+//--unused-- void CollideHostageAndWeapon (CObject *hostage, CObject *weaponP, CFixVector *vHitPt)
 //--unused-- {
 //--unused-- 	//	Cannot kill hostages, as per Matt's edict!
 //--unused-- 	//	 (A fine edict, but in contradiction to the milestone: "Robots attack hostages.")
 //--unused-- 	hostage->info.xShields -= weaponP->info.xShields/2;
 //--unused--
-//--unused-- 	CreateAwarenessEvent (weaponP, WEAPON_ROBOT_COLLISION);			// CObject "weapon" can attract attention to tPlayer
+//--unused-- 	CreateAwarenessEvent (weaponP, WEAPON_ROBOT_COLLISION);			// CObject "weapon" can attract attention to CPlayerData
 //--unused--
 //--unused-- 	//PLAY_SOUND_3D (SOUND_HOSTAGE_KILLED, vHitPt, hostage->info.nSegment);
 //--unused-- 	DigiLinkSoundToPos (SOUND_HOSTAGE_KILLED, hostage->info.nSegment , 0, vHitPt, 0, F1_0);
@@ -1799,21 +1799,21 @@ return 1;
 //--unused--
 //--unused-- }
 
-//##void CollideHostageAndCamera (CObject *hostage, CObject *camera, vmsVector *vHitPt) {
+//##void CollideHostageAndCamera (CObject *hostage, CObject *camera, CFixVector *vHitPt) {
 //##	return;
 //##}
 
-//##void CollideHostageAndPowerup (CObject *hostage, CObject *powerup, vmsVector *vHitPt) {
+//##void CollideHostageAndPowerup (CObject *hostage, CObject *powerup, CFixVector *vHitPt) {
 //##	return;
 //##}
 
-//##void CollideHostageAndDebris (CObject *hostage, CObject *debris, vmsVector *vHitPt) {
+//##void CollideHostageAndDebris (CObject *hostage, CObject *debris, CFixVector *vHitPt) {
 //##	return;
 //##}
 
 //	-----------------------------------------------------------------------------
 
-int CollidePlayerAndPlayer (CObject *player1, CObject *player2, vmsVector *vHitPt)
+int CollidePlayerAndPlayer (CObject *player1, CObject *player2, CFixVector *vHitPt)
 {
 if (gameStates.app.bD2XLevel &&
 	 (gameData.segs.segment2s [player1->info.nSegment].special == SEGMENT_IS_NODAMAGE))
@@ -1859,8 +1859,8 @@ return 1;
 
 void ApplyDamageToPlayer (CObject *playerObjP, CObject *killerObjP, fix damage)
 {
-tPlayer *playerP = gameData.multiplayer.players + playerObjP->info.nId;
-tPlayer *killerP = (killerObjP && (killerObjP->info.nType == OBJ_PLAYER)) ? gameData.multiplayer.players + killerObjP->info.nId : NULL;
+CPlayerData *playerP = gameData.multiplayer.players + playerObjP->info.nId;
+CPlayerData *killerP = (killerObjP && (killerObjP->info.nType == OBJ_PLAYER)) ? gameData.multiplayer.players + killerObjP->info.nId : NULL;
 if (gameStates.app.bPlayerIsDead)
 	return;
 
@@ -1887,12 +1887,12 @@ if (gameStates.app.bEndLevelSequence)
 	return;
 
 gameData.multiplayer.bWasHit [playerObjP->info.nId] = -1;
-//for the tPlayer, the 'real' shields are maintained in the gameData.multiplayer.players []
-//array.  The shields value in the tPlayer's CObject are, I think, not
+//for the CPlayerData, the 'real' shields are maintained in the gameData.multiplayer.players []
+//array.  The shields value in the CPlayerData's CObject are, I think, not
 //used anywhere.  This routine, however, sets the OBJECTS shields to
 //be a mirror of the value in the Player structure.
 
-if (playerObjP->info.nId == gameData.multiplayer.nLocalPlayer) {		//is this the local tPlayer?
+if (playerObjP->info.nId == gameData.multiplayer.nLocalPlayer) {		//is this the local CPlayerData?
 	if ((gameData.app.nGameMode & GM_ENTROPY) && extraGameInfo [1].entropy.bPlayerHandicap && killerP) {
 		double h = (double) playerP->netKillsTotal / (double) (killerP->netKillsTotal + 1);
 		if (h < 0.5)
@@ -1918,12 +1918,12 @@ if (playerObjP->info.nId == gameData.multiplayer.nLocalPlayer) {		//is this the 
 
 //	-----------------------------------------------------------------------------
 
-int CollidePlayerAndWeapon (CObject *playerObjP, CObject *weaponP, vmsVector *vHitPt)
+int CollidePlayerAndWeapon (CObject *playerObjP, CObject *weaponP, CFixVector *vHitPt)
 {
 	fix		damage = weaponP->info.xShields;
 	CObject *killer = NULL;
 
-	//	In multiplayer games, only do damage to another tPlayer if in first frame.
+	//	In multiplayer games, only do damage to another CPlayerData if in first frame.
 	//	This is necessary because in multiplayer, due to varying framerates, omega blobs actually
 	//	have a bit of a lifetime.  But they start out with a lifetime of ONE_FRAME_TIME, and this
 	//	gets bashed to 1/4 second in laser_doWeapon_sequence.  This bashing occurs for visual purposes only.
@@ -1937,7 +1937,7 @@ if (weaponP->info.nId == OMEGA_ID)
 //	Don't Collide own smart mines unless direct hit.
 if ((weaponP->info.nId == SMARTMINE_ID) &&
 	 (OBJ_IDX (playerObjP) == weaponP->cType.laserInfo.parent.nObject) &&
-	 (vmsVector::Dist (*vHitPt, playerObjP->info.position.vPos) > playerObjP->info.xSize))
+	 (CFixVector::Dist (*vHitPt, playerObjP->info.position.vPos) > playerObjP->info.xSize))
 	return 1;
 gameData.multiplayer.bWasHit [playerObjP->info.nId] = -1;
 CreateWeaponEffects (weaponP, 1);
@@ -1982,7 +1982,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 //	Nasty robots are the ones that attack you by running into you and doing lots of damage.
-int CollidePlayerAndNastyRobot (CObject *playerObjP, CObject *robotP, vmsVector *vHitPt)
+int CollidePlayerAndNastyRobot (CObject *playerObjP, CObject *robotP, CFixVector *vHitPt)
 {
 //	if (!(ROBOTINFO (objP->info.nId).energyDrain && gameData.multiplayer.players [playerObjP->info.nId].energy))
 ObjectCreateExplosion (playerObjP->info.nSegment, vHitPt, I2X (10) / 2, VCLIP_PLAYER_HIT);
@@ -1998,7 +1998,7 @@ return 1;
 int CollidePlayerAndMatCen (CObject *objP)
 {
 	short	tSide;
-	vmsVector	exit_dir;
+	CFixVector	exit_dir;
 	CSegment	*segp = gameData.segs.segments + objP->info.nSegment;
 
 DigiLinkSoundToPos (SOUND_PLAYER_GOT_HIT, objP->info.nSegment, 0, &objP->info.position.vPos, 0, F1_0);
@@ -2008,20 +2008,20 @@ if (objP->info.nId != gameData.multiplayer.nLocalPlayer)
 	return 1;
 for (tSide = 0; tSide < MAX_SIDES_PER_SEGMENT; tSide++)
 	if (WALL_IS_DOORWAY (segp, tSide, objP) & WID_FLY_FLAG) {
-		vmsVector	exit_point, rand_vec;
+		CFixVector	exit_point, rand_vec;
 
 		COMPUTE_SIDE_CENTER (&exit_point, segp, tSide);
 		exit_dir = exit_point - objP->info.position.vPos;
-		vmsVector::Normalize (exit_dir);
-		rand_vec = vmsVector::Random();
+		CFixVector::Normalize (exit_dir);
+		rand_vec = CFixVector::Random();
 		rand_vec[X] /= 4;
 		rand_vec[Y] /= 4;
 		rand_vec[Z] /= 4;
 		exit_dir += rand_vec;
-		vmsVector::Normalize (exit_dir);
+		CFixVector::Normalize (exit_dir);
 		}
 BumpOneObject (objP, &exit_dir, 64*F1_0);
-ApplyDamageToPlayer (objP, objP, 4*F1_0);	//	Changed, MK, 2/19/96, make killer the tPlayer, so if you die in matcen, will say you killed yourself
+ApplyDamageToPlayer (objP, objP, 4*F1_0);	//	Changed, MK, 2/19/96, make killer the CPlayerData, so if you die in matcen, will say you killed yourself
 return 1;
 }
 
@@ -2030,7 +2030,7 @@ return 1;
 int CollideRobotAndMatCen (CObject *objP)
 {
 	short	tSide;
-	vmsVector	exit_dir;
+	CFixVector	exit_dir;
 	CSegment *segp=gameData.segs.segments + objP->info.nSegment;
 
 DigiLinkSoundToPos (SOUND_ROBOT_HIT, objP->info.nSegment, 0, &objP->info.position.vPos, 0, F1_0);
@@ -2040,24 +2040,24 @@ if (ROBOTINFO (objP->info.nId).nExp1VClip > -1)
 	ObjectCreateExplosion ((short) objP->info.nSegment, &objP->info.position.vPos, (objP->info.xSize/2*3)/4, (ubyte) ROBOTINFO (objP->info.nId).nExp1VClip);
 for (tSide=0; tSide<MAX_SIDES_PER_SEGMENT; tSide++)
 	if (WALL_IS_DOORWAY (segp, tSide, NULL) & WID_FLY_FLAG) {
-		vmsVector	exit_point;
+		CFixVector	exit_point;
 
 		COMPUTE_SIDE_CENTER (&exit_point, segp, tSide);
 		exit_dir = exit_point - objP->info.position.vPos;
-		vmsVector::Normalize (exit_dir);
+		CFixVector::Normalize (exit_dir);
 	}
 BumpOneObject (objP, &exit_dir, 8*F1_0);
 ApplyDamageToRobot (objP, F1_0, -1);
 return 1;
 }
 
-//##void CollidePlayerAndCamera (CObject *playerObjP, CObject *camera, vmsVector *vHitPt) {
+//##void CollidePlayerAndCamera (CObject *playerObjP, CObject *camera, CFixVector *vHitPt) {
 //##	return;
 //##}
 
 //	-----------------------------------------------------------------------------
 
-int CollidePlayerAndPowerup (CObject *playerObjP, CObject *powerupP, vmsVector *vHitPt)
+int CollidePlayerAndPowerup (CObject *playerObjP, CObject *powerupP, CFixVector *vHitPt)
 {
 if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead &&
 	(playerObjP->info.nId == gameData.multiplayer.nLocalPlayer)) {
@@ -2089,7 +2089,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CollidePlayerAndMonsterball (CObject *playerObjP, CObject *monsterball, vmsVector *vHitPt)
+int CollidePlayerAndMonsterball (CObject *playerObjP, CObject *monsterball, CFixVector *vHitPt)
 {
 if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead &&
 	(playerObjP->info.nId == gameData.multiplayer.nLocalPlayer)) {
@@ -2100,11 +2100,11 @@ return 1;
 }
 
 //	-----------------------------------------------------------------------------
-//##void CollidePlayerAndDebris (CObject *playerObjP, CObject *debris, vmsVector *vHitPt) {
+//##void CollidePlayerAndDebris (CObject *playerObjP, CObject *debris, CFixVector *vHitPt) {
 //##	return;
 //##}
 
-int CollideActorAndClutter (CObject *actor, CObject *clutter, vmsVector *vHitPt)
+int CollideActorAndClutter (CObject *actor, CObject *clutter, CFixVector *vHitPt)
 {
 if (gameStates.app.bD2XLevel &&
 	 (gameData.segs.segment2s [actor->info.nSegment].special == SEGMENT_IS_NODAMAGE))
@@ -2117,14 +2117,14 @@ return 1;
 //	-----------------------------------------------------------------------------
 //	See if weapon1 creates a badass explosion.  If so, create the explosion
 //	Return true if weapon does proximity (as opposed to only contact) damage when it explodes.
-int MaybeDetonateWeapon (CObject *weapon1, CObject *weapon2, vmsVector *vHitPt)
+int MaybeDetonateWeapon (CObject *weapon1, CObject *weapon2, CFixVector *vHitPt)
 {
 	fix	dist;
 
 if (!gameData.weapons.info [weapon1->info.nId].damage_radius)
 	return 0;
 
-dist = vmsVector::Dist (weapon1->info.position.vPos, weapon2->info.position.vPos);
+dist = CFixVector::Dist (weapon1->info.position.vPos, weapon2->info.position.vPos);
 if (dist >= F1_0*5)
 	weapon1->info.xLifeLeft = min (dist/64, F1_0);
 else {
@@ -2159,7 +2159,7 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 
-int CollideWeaponAndWeapon (CObject *weapon1, CObject *weapon2, vmsVector *vHitPt)
+int CollideWeaponAndWeapon (CObject *weapon1, CObject *weapon2, CFixVector *vHitPt)
 {
 	int	id1 = weapon1->info.nId;
 	int	id2 = weapon2->info.nId;
@@ -2190,7 +2190,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CollideWeaponAndMonsterball (CObject *weaponP, CObject *powerup, vmsVector *vHitPt)
+int CollideWeaponAndMonsterball (CObject *weaponP, CObject *powerup, CFixVector *vHitPt)
 {
 if (weaponP->cType.laserInfo.parent.nType == OBJ_PLAYER) {
 	DigiLinkSoundToPos (SOUND_ROBOT_HIT, weaponP->info.nSegment , 0, vHitPt, 0, F1_0);
@@ -2210,15 +2210,15 @@ return 1;
 }
 
 //	-----------------------------------------------------------------------------
-//##void CollideWeaponAndCamera (CObject *weaponP, CObject *camera, vmsVector *vHitPt) {
+//##void CollideWeaponAndCamera (CObject *weaponP, CObject *camera, CFixVector *vHitPt) {
 //##	return;
 //##}
 
 //	-----------------------------------------------------------------------------
 
-int CollideWeaponAndDebris (CObject *weaponP, CObject *debris, vmsVector *vHitPt)
+int CollideWeaponAndDebris (CObject *weaponP, CObject *debris, CFixVector *vHitPt)
 {
-//	Hack! Prevent debris from causing bombs spewed at tPlayer death to detonate!
+//	Hack! Prevent debris from causing bombs spewed at CPlayerData death to detonate!
 if (WeaponIsMine (weaponP->info.nId)) {
 	if (weaponP->cType.laserInfo.xCreationTime + F1_0/2 > gameData.time.xGame)
 		return 1;
@@ -2234,27 +2234,27 @@ if ((weaponP->cType.laserInfo.parent.nType==OBJ_PLAYER) && !(debris->info.nFlags
 return 1;
 }
 
-//##void CollideCameraAndCamera (CObject *camera1, CObject *camera2, vmsVector *vHitPt) {
+//##void CollideCameraAndCamera (CObject *camera1, CObject *camera2, CFixVector *vHitPt) {
 //##	return;
 //##}
 
-//##void CollideCameraAndPowerup (CObject *camera, CObject *powerup, vmsVector *vHitPt) {
+//##void CollideCameraAndPowerup (CObject *camera, CObject *powerup, CFixVector *vHitPt) {
 //##	return;
 //##}
 
-//##void CollideCameraAndDebris (CObject *camera, CObject *debris, vmsVector *vHitPt) {
+//##void CollideCameraAndDebris (CObject *camera, CObject *debris, CFixVector *vHitPt) {
 //##	return;
 //##}
 
-//##void CollidePowerupAndPowerup (CObject *powerup1, CObject *powerup2, vmsVector *vHitPt) {
+//##void CollidePowerupAndPowerup (CObject *powerup1, CObject *powerup2, CFixVector *vHitPt) {
 //##	return;
 //##}
 
-//##void CollidePowerupAndDebris (CObject *powerup, CObject *debris, vmsVector *vHitPt) {
+//##void CollidePowerupAndDebris (CObject *powerup, CObject *debris, CFixVector *vHitPt) {
 //##	return;
 //##}
 
-//##void CollideDebrisAndDebris (CObject *debris1, CObject *debris2, vmsVector *vHitPt) {
+//##void CollideDebrisAndDebris (CObject *debris1, CObject *debris2, CFixVector *vHitPt) {
 //##	return;
 //##}
 
@@ -2285,7 +2285,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CollideTwoObjects (CObject *A, CObject *B, vmsVector *vHitPt)
+int CollideTwoObjects (CObject *A, CObject *B, CFixVector *vHitPt)
 {
 	int collisionType = COLLISION_OF (A->info.nType, B->info.nType);
 
@@ -2433,7 +2433,7 @@ DISABLE_COLLISION  (OBJ_ROBOT, OBJ_EFFECT);
 
 //	-----------------------------------------------------------------------------
 
-int CollideObjectWithWall (CObject *objP, fix xHitSpeed, short nHitSeg, short nHitWall, vmsVector * vHitPt)
+int CollideObjectWithWall (CObject *objP, fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector * vHitPt)
 {
 switch (objP->info.nType)	{
 	case OBJ_NONE:

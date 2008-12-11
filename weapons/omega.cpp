@@ -77,15 +77,15 @@ FORALL_WEAPON_OBJS (objP, i)
 
 // ---------------------------------------------------------------------------------
 
-void CreateOmegaBlobs (short nFiringSeg, vmsVector *vMuzzle, vmsVector *vTargetPos, CObject *parentObjP, CObject *targetObjP)
+void CreateOmegaBlobs (short nFiringSeg, CFixVector *vMuzzle, CFixVector *vTargetPos, CObject *parentObjP, CObject *targetObjP)
 {
 	short			nLastSeg, nLastCreatedObj = -1;
-	vmsVector	vGoal;
+	CFixVector	vGoal;
 	fix			xGoalDist;
 	int			nOmegaBlobs;
 	fix			xOmegaBlobDist;
-	vmsVector	vOmegaDelta;
-	vmsVector	vBlobPos, vPerturb;
+	CFixVector	vOmegaDelta;
+	CFixVector	vBlobPos, vPerturb;
 	fix			xPerturbArray [MAX_OMEGA_BLOBS];
 	int			i;
 
@@ -94,7 +94,7 @@ if (IsMultiGame)
 //if (parentObjP->info.nId == gameData.multiplayer.nLocalPlayer)
 	omegaLightnings.Create (vTargetPos, parentObjP, targetObjP);
 vGoal = *vTargetPos - *vMuzzle;
-xGoalDist = vmsVector::Normalize(vGoal);
+xGoalDist = CFixVector::Normalize(vGoal);
 if (xGoalDist < MIN_OMEGA_BLOBS * MIN_OMEGA_DIST) {
 	xOmegaBlobDist = MIN_OMEGA_DIST;
 	nOmegaBlobs = xGoalDist / xOmegaBlobDist;
@@ -132,11 +132,11 @@ else {
 		}
 	}
 
-//	Create Random perturbation vector, but favor _not_ going up in tPlayer's reference.
-vPerturb = vmsVector::Random();
+//	Create Random perturbation vector, but favor _not_ going up in CPlayerData's reference.
+vPerturb = CFixVector::Random();
 vPerturb += parentObjP->info.position.mOrient[UVEC] * (-F1_0/2);
 for (i = 0; i < nOmegaBlobs; i++) {
-	vmsVector	vTempPos;
+	CFixVector	vTempPos;
 	short			nBlobObj, nSegment;
 
 	//	This will put the last blob right at the destination CObject, causing damage.
@@ -144,9 +144,9 @@ for (i = 0; i < nOmegaBlobs; i++) {
 		vBlobPos += vOmegaDelta * (15*F1_0/32);	//	Move last blob another (almost) half section
 	//	Every so often, re-perturb blobs
 	if ((i % 4) == 3) {
-		vmsVector	vTemp;
+		CFixVector	vTemp;
 
-		vTemp = vmsVector::Random();
+		vTemp = CFixVector::Random();
 		vPerturb += vTemp * (F1_0/4);
 		}
 	vTempPos = vBlobPos + vPerturb * xPerturbArray[i];
@@ -226,10 +226,10 @@ if (LOCALPLAYER.energy) {
 
 // ---------------------------------------------------------------------------------
 
-void DoOmegaStuff (CObject *parentObjP, vmsVector *vMuzzle, CObject *weaponObjP)
+void DoOmegaStuff (CObject *parentObjP, CFixVector *vMuzzle, CObject *weaponObjP)
 {
 	short			nTargetObj, nFiringSeg, nParentSeg;
-	vmsVector	vTargetPos;
+	CFixVector	vTargetPos;
 	int			nPlayer = (parentObjP->info.nType == OBJ_PLAYER) ? parentObjP->info.nId : -1;
 	int			bSpectate = SPECTATOR (parentObjP);
 	static		int nDelay = 0;
@@ -294,9 +294,9 @@ else {	//	If couldn't lock on anything, fire straight ahead.
 	tFVIQuery	fq;
 	tFVIData		hit_data;
 	int			fate;
-	vmsVector	vPerturb, perturbed_fvec;
+	CFixVector	vPerturb, perturbed_fvec;
 
-	vPerturb = vmsVector::Random();
+	vPerturb = CFixVector::Random();
 	perturbed_fvec = bSpectate ? gameStates.app.playerPos.mOrient[FVEC] : parentObjP->info.position.mOrient[FVEC]
 	               + vPerturb * (F1_0/16);
 	vTargetPos = *vMuzzle + perturbed_fvec * MAX_OMEGA_DIST;

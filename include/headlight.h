@@ -35,11 +35,11 @@ int LightingMethod (void);
 //  point - the 3d coords of the point
 //  face_light - a scale factor derived from the surface normal of the face
 // If no surface normal effect is wanted, pass F1_0 for face_light
-fix ComputeHeadlight (vmsVector *point, fix xFaceLight);
+fix ComputeHeadlight (CFixVector *point, fix xFaceLight);
 fix ComputeHeadlightLightOnObject (CObject *objP);
 void ToggleHeadlight (void);
 void InitHeadlightShaders (int nLights);
-void SetupHeadlight (tDynLight *pl, tShaderLight *psl);
+void SetupHeadlight (CDynLight *pl, CShaderLight *psl);
 void TransformHeadlights (void);
 int AddOglHeadlight (CObject *objP);
 void RemoveOglHeadlight (CObject *objP);

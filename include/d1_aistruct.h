@@ -88,7 +88,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //	short			mode;							// 
 //	short			counter;						// kind of a hack, frame countdown until switch modes
 //	opath			paths[2];
-//	vmsVector	movement_vector;			// movement vector for one second
+//	CFixVector	movement_vector;			// movement vector for one second
 //} oD1_AI_state;
 
 //	Constants defining meaning of flags in D1_AI_state
@@ -112,6 +112,6 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //	These are the information for a robot describing the location of the player last time he wasn't cloaked,
 //	and the time at which he was uncloaked.  We should store this for each robot, but that's memory expensive.
 //extern	fix			Last_uncloaked_time;
-//extern	vmsVector	Last_uncloaked_position;
+//extern	CFixVector	Last_uncloaked_position;
 
 #endif

@@ -34,7 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SOUND_BADASS_EXPLOSION                  11  // need something different for this if possible
 
 #define SOUND_ROBOT_HIT_PLAYER                  17
-#define SOUND_ROBOT_SUCKED_PLAYER               SOUND_ROBOT_HIT_PLAYER // Robot sucked energy from tPlayer.
+#define SOUND_ROBOT_SUCKED_PLAYER               SOUND_ROBOT_HIT_PLAYER // Robot sucked energy from CPlayerData.
 
 #define SOUND_ROBOT_HIT                         20
 #define SOUND_ROBOT_DESTROYED                   21

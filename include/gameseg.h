@@ -22,7 +22,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define PLANE_DIST_TOLERANCE	250
 
 //figure out what seg the given point is in, tracing through segments
-int get_new_seg(vmsVector *p0,int startseg);
+int get_new_seg(CFixVector *p0,int startseg);
 
 typedef struct tSegMasks {
    short faceMask;     //which faces sphere pokes through (12 bits)
@@ -32,9 +32,9 @@ typedef struct tSegMasks {
 } tSegMasks;
 
 
-void ComputeSideCenter (vmsVector *vp,CSegment *sp,int tSide);
+void ComputeSideCenter (CFixVector *vp,CSegment *sp,int tSide);
 void ComputeSideRads (short nSegment, short tSide, fix *prMin, fix *prMax);
-void ComputeSegmentCenter (vmsVector *vp,CSegment *sp);
+void ComputeSegmentCenter (CFixVector *vp,CSegment *sp);
 int FindConnectedSide (CSegment *base_seg, CSegment *con_seg);
 
 #define	SEGMENT_CENTER_I(_nSeg)	(gameData.segs.segCenters [0] + (_nSeg))
@@ -62,9 +62,9 @@ int FindConnectedSide (CSegment *base_seg, CSegment *con_seg);
 
 // Fill in array with four absolute point numbers for a given tSide
 void GetSideVertIndex (short *vertIndex, int nSegment, int nSide);
-void GetSideVerts (vmsVector *vertices, int nSegment, int nSide);
-ubyte GetSideDists (const vmsVector& checkp, int nSegment, fix *xSideDists, int bBehind);
-ubyte GetSideDistsAll (const vmsVector& checkp, int nSegment, fix *xSideDists);
+void GetSideVerts (CFixVector *vertices, int nSegment, int nSide);
+ubyte GetSideDists (const CFixVector& checkp, int nSegment, fix *xSideDists, int bBehind);
+ubyte GetSideDistsAll (const CFixVector& checkp, int nSegment, fix *xSideDists);
 
 //      Create all vertex lists (1 or 2) for faces on a tSide.
 //      Sets:
@@ -94,9 +94,9 @@ extern int GetNumFaces(tSide *sidep);
 
 //returns 3 different bitmasks with info telling if this sphere is in
 //this CSegment.  See tSegMasks structure for info on fields
-tSegMasks GetSideMasks (vmsVector *checkP, int nSegment, int nSide, fix xRad);
+tSegMasks GetSideMasks (CFixVector *checkP, int nSegment, int nSide, fix xRad);
 
-tSegMasks GetSegMasks(const vmsVector& checkp,int nSegment,fix rad);
+tSegMasks GetSegMasks(const CFixVector& checkp,int nSegment,fix rad);
 
 //this macro returns true if the nSegment for an CObject is correct
 #define check_obj_seg(obj) (GetSegMasks(&(obj)->pos,(obj)->nSegment,0).centermask == 0)
@@ -106,8 +106,8 @@ tSegMasks GetSegMasks(const vmsVector& checkp,int nSegment,fix rad);
 // 2. Recursively trace through attached segments
 // 3. Check all the segmentns
 //Returns nSegment if found, or -1
-int FindSegByPos(const vmsVector& vPos, int nSegment, int bExhaustive, int bSkyBox, int nThread = 0);
-short FindClosestSeg (vmsVector& vPos);
+int FindSegByPos(const CFixVector& vPos, int nSegment, int bExhaustive, int bSkyBox, int nThread = 0);
+short FindClosestSeg (CFixVector& vPos);
 
 //--repair-- // Create data specific to segments which does not need to get written to disk.
 //--repair-- extern void create_local_segment_data(void);
@@ -122,7 +122,7 @@ int check_lsegments_validity(void);
 //      set to WID_FLY_FLAG to see if a robot could fly from one to the other.
 //      Search up to a maximum depth of max_depth.
 //      Return the distance.
-fix FindConnectedDistance(vmsVector *p0, short seg0, vmsVector *p1, short seg1, int max_depth, int widFlag, int bUseCache);
+fix FindConnectedDistance(CFixVector *p0, short seg0, CFixVector *p1, short seg1, int max_depth, int widFlag, int bUseCache);
 
 //create a matrix that describes the orientation of the given CSegment
 void ExtractOrientFromSegment(vmsMatrix *m,CSegment *seg);
@@ -138,21 +138,21 @@ void ValidateSegmentAll(void);
 //      Extract the forward vector from CSegment *sp, return in *vp.
 //      The forward vector is defined to be the vector from the the center of the front face of the CSegment
 // to the center of the back face of the CSegment.
-void extract_forward_vector_from_segment(CSegment *sp,vmsVector *vp);
+void extract_forward_vector_from_segment(CSegment *sp,CFixVector *vp);
 
 //      Extract the right vector from CSegment *sp, return in *vp.
 //      The forward vector is defined to be the vector from the the center of the left face of the CSegment
 // to the center of the right face of the CSegment.
-void extract_right_vector_from_segment(CSegment *sp,vmsVector *vp);
+void extract_right_vector_from_segment(CSegment *sp,CFixVector *vp);
 
 //      Extract the up vector from CSegment *sp, return in *vp.
 //      The forward vector is defined to be the vector from the the center of the bottom face of the CSegment
 // to the center of the top face of the CSegment.
-void extract_up_vector_from_segment(CSegment *sp,vmsVector *vp);
+void extract_up_vector_from_segment(CSegment *sp,CFixVector *vp);
 
 void CreateWallsOnSide(CSegment *sp, int nSide);
 
-void PickRandomPointInSeg(vmsVector *new_pos, int nSegment);
+void PickRandomPointInSeg(CFixVector *new_pos, int nSegment);
 
 int GetVertsForNormal (int v0, int v1, int v2, int v3, int *pv0, int *pv1, int *pv2, int *pv3);
 int GetVertsForNormalTri (int v0, int v1, int v2, int *pv0, int *pv1, int *pv2);

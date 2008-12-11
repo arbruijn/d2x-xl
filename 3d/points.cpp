@@ -72,22 +72,22 @@ p->p3_flags |= PF_PROJECTED;
 
 // -----------------------------------------------------------------------------------
 //from a 2d point, compute the vector through that point
-void G3Point2Vec (vmsVector *v,short sx,short sy)
+void G3Point2Vec (CFixVector *v,short sx,short sy)
 {
-	vmsVector tempv;
+	CFixVector tempv;
 	vmsMatrix tempm;
 
 tempv [X] =  FixMulDiv (FixDiv ((sx<<16) - xCanvW2,xCanvW2),viewInfo.scale [Z], viewInfo.scale [X]);
 tempv [Y] = -FixMulDiv (FixDiv ((sy<<16) - xCanvH2,xCanvH2),viewInfo.scale [Z], viewInfo.scale [Y]);
 tempv [Z] = f1_0;
-vmsVector::Normalize(tempv);
+CFixVector::Normalize(tempv);
 tempm = viewInfo.view [1].Transpose();
 *v = tempm * tempv;
 }
 
 // -----------------------------------------------------------------------------------
 //delta rotation functions
-vmsVector *G3RotateDeltaX (vmsVector *dest,fix dx)
+CFixVector *G3RotateDeltaX (CFixVector *dest,fix dx)
 {
 	(*dest) [X] = FixMul (viewInfo.view [0] [RVEC] [X], dx);
 	(*dest) [Y] = FixMul (viewInfo.view [0] [UVEC] [X], dx);
@@ -98,7 +98,7 @@ vmsVector *G3RotateDeltaX (vmsVector *dest,fix dx)
 
 // -----------------------------------------------------------------------------------
 
-vmsVector *G3RotateDeltaY (vmsVector *dest,fix dy)
+CFixVector *G3RotateDeltaY (CFixVector *dest,fix dy)
 {
 	(*dest) [X] = FixMul (viewInfo.view [0] [RVEC] [Y],dy);
 	(*dest) [Y] = FixMul (viewInfo.view [0] [UVEC] [Y],dy);
@@ -109,7 +109,7 @@ vmsVector *G3RotateDeltaY (vmsVector *dest,fix dy)
 
 // -----------------------------------------------------------------------------------
 
-vmsVector *G3RotateDeltaZ (vmsVector *dest,fix dz)
+CFixVector *G3RotateDeltaZ (CFixVector *dest,fix dz)
 {
 	(*dest) [X] = FixMul (viewInfo.view [0] [RVEC] [Z],dz);
 	(*dest) [Y] = FixMul (viewInfo.view [0] [UVEC] [Z],dz);
@@ -120,14 +120,14 @@ vmsVector *G3RotateDeltaZ (vmsVector *dest,fix dz)
 
 // -----------------------------------------------------------------------------------
 
-const vmsVector& G3RotateDeltaVec (vmsVector& dest, const vmsVector& src) {
+const CFixVector& G3RotateDeltaVec (CFixVector& dest, const CFixVector& src) {
 	dest = viewInfo.view [0] * src;
 	return dest;
 }
 
 // -----------------------------------------------------------------------------------
 
-ubyte G3AddDeltaVec (g3sPoint *dest, g3sPoint *src, vmsVector *vDelta)
+ubyte G3AddDeltaVec (g3sPoint *dest, g3sPoint *src, CFixVector *vDelta)
 {
 dest->p3_vec = src->p3_vec + *vDelta;
 dest->p3_flags = 0;		//not projected
@@ -136,7 +136,7 @@ return G3EncodePoint (dest);
 
 // -----------------------------------------------------------------------------------
 //calculate the depth of a point - returns the z coord of the rotated point
-fix G3CalcPointDepth(const vmsVector& pnt)
+fix G3CalcPointDepth(const CFixVector& pnt)
 {
 #ifdef _WIN32
 	QLONG q = mul64 (pnt [X] - viewInfo.pos [X], viewInfo.view [0] [FVEC] [X]);

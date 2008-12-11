@@ -296,7 +296,7 @@ int SelectNextWindowFunction(int nWindow)
 			}
 			//if no ecort, fall through
 		case CV_ESCORT:
-			gameStates.render.cockpit.nCoopPlayerView [nWindow] = -1;		//force first tPlayer
+			gameStates.render.cockpit.nCoopPlayerView [nWindow] = -1;		//force first CPlayerData
 			//fall through
 		case CV_COOP:
 			gameData.marker.viewers [nWindow] = -1;
@@ -358,7 +358,7 @@ void SpeedtestInit(void)
 
 void SpeedtestFrame(void)
 {
-	vmsVector	view_dir, center_point;
+	CFixVector	view_dir, center_point;
 
 	gameData.speedtest.nSide=gameData.speedtest.nSegment % MAX_SIDES_PER_SEGMENT;
 
@@ -369,7 +369,7 @@ void SpeedtestFrame(void)
 
 	gameData.objs.viewerP->RelinkToSeg (gameData.speedtest.nSegment);
 	COMPUTE_SIDE_CENTER(&center_point, &gameData.segs.segments[gameData.speedtest.nSegment], gameData.speedtest.nSide);
-	vmsVector::NormalizedDir(view_dir, center_point, gameData.objs.viewerP->info.position.vPos);
+	CFixVector::NormalizedDir(view_dir, center_point, gameData.objs.viewerP->info.position.vPos);
 	/*
 	gameData.objs.viewerP->info.position.mOrient = vmsMatrix::Create(view_dir, NULL, NULL);
 	*/

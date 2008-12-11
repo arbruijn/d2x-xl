@@ -27,65 +27,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define deg(a) ((int) (a) * 32768 / 180)
 
-#if 0
-//test data for one robot
-tJointPos test_joints [MAX_ROBOT_JOINTS] = {
-
-//gun 0
-	{2,vmsAngVec::Create(deg(-30),0,0)},         //rest (2 joints)
-	{3,vmsAngVec::Create(deg(-40),0,0)},
-
-	{2,vmsAngVec::Create(deg(0),0,0)},           //alert
-	{3,vmsAngVec::Create(deg(0),0,0)},
-
-	{2,vmsAngVec::Create(deg(0),0,0)},           //fire
-	{3,vmsAngVec::Create(deg(0),0,0)},
-
-	{2,vmsAngVec::Create(deg(50),0,0)},          //recoil
-	{3,vmsAngVec::Create(deg(-50),0,0)},
-
-	{2,vmsAngVec::Create(deg(10),0,deg(70))},    //flinch
-	{3,vmsAngVec::Create(deg(0),deg(20),0)},
-
-//gun 1
-	{4,vmsAngVec::Create(deg(-30),0,0)},         //rest (2 joints)
-	{5,vmsAngVec::Create(deg(-40),0,0)},
-
-	{4,vmsAngVec::Create(deg(0),0,0)},           //alert
-	{5,vmsAngVec::Create(deg(0),0,0)},
-
-	{4,vmsAngVec::Create(deg(0),0,0)},           //fire
-	{5,vmsAngVec::Create(deg(0),0,0)},
-
-	{4,vmsAngVec::Create(deg(50),0,0)},          //recoil
-	{5,vmsAngVec::Create(deg(-50),0,0)},
-
-	{4,vmsAngVec::Create(deg(20),0,deg(-50))},   //flinch
-	{5,vmsAngVec::Create(deg(0),0,deg(20))},
-
-//rest of body (the head)
-
-	{1,vmsAngVec::Create(deg(70),0,0)},          //rest (1 joint, head)
-
-	{1,vmsAngVec::Create(deg(0),0,0)},           //alert
-
-	{1,vmsAngVec::Create(deg(0),0,0)},           //fire
-
-	{1,vmsAngVec::Create(deg(0),0,0)},           //recoil
-
-	{1,vmsAngVec::Create(deg(-20),deg(15),0)},   //flinch
-
-};
-#endif
-
 //	-----------------------------------------------------------------------------------------------------------
 //given an CObject and a gun number, return position in 3-space of gun
 //fills in gun_point
-int CalcGunPoint (vmsVector *vGunPoint, CObject *objP, int nGun)
+int CalcGunPoint (CFixVector *vGunPoint, CObject *objP, int nGun)
 {
 	tPolyModel	*pm = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
 	tRobotInfo	*botInfoP;
-	vmsVector	*vGunPoints, vGunPos, vRot;
+	CFixVector	*vGunPoints, vGunPos, vRot;
 	vmsMatrix	m;
 	int			nSubModel;				//submodel number
 
@@ -125,7 +74,7 @@ return ROBOTINFO (robotType).animStates[nGun][state].n_joints;
 
 //	-----------------------------------------------------------------------------------------------------------
 //for test, set a robot to a specific state
-void setRobotState(CObject *objP,int state)
+void setRobotState (CObject *objP, int state)
 {
 	int g,j,jo;
 	tRobotInfo *ri;
@@ -155,7 +104,7 @@ void setRobotState(CObject *objP,int state)
 //	-----------------------------------------------------------------------------------------------------------
 //set the animation angles for this robot.  Gun fields of robot info must
 //be filled in.
-void robot_set_angles(tRobotInfo *r,tPolyModel *pm,vmsAngVec angs[N_ANIM_STATES][MAX_SUBMODELS])
+void SetRobotAngles (tRobotInfo *r, tPolyModel *pm, vmsAngVec angs [N_ANIM_STATES][MAX_SUBMODELS])
 {
 	int m,g,state;
 	int nGunCounts [MAX_SUBMODELS];			//which gun each submodel is part of
@@ -252,15 +201,15 @@ if (gameData.bots.nCamBotId >= 0) {
 /*
  * reads n jointlist structs from a CFile
  */
-static int JointListReadN(jointlist *jl, int n, CFile& cf)
+static int ReadJointLists (jointlist *jl, int n, CFile& cf)
 {
 	int i;
 
-	for (i = 0; i < n; i++) {
-		jl[i].n_joints = cf.ReadShort ();
-		jl[i].offset = cf.ReadShort ();
+for (i = 0; i < n; i++) {
+	jl [i].n_joints = cf.ReadShort ();
+	jl [i].offset = cf.ReadShort ();
 	}
-	return i;
+return i;
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -333,7 +282,7 @@ for (i = 0; i < n; i++) {
 	pri [h].behavior = cf.ReadByte ();
 	pri [h].aim = cf.ReadByte ();
 	for (j = 0; j < MAX_GUNS + 1; j++)
-		JointListReadN (pri [h].animStates[j], N_ANIM_STATES, cf);
+		ReadJointLists (pri [h].animStates[j], N_ANIM_STATES, cf);
 	pri [h].always_0xabcd = cf.ReadInt ();
 	}
 return i;

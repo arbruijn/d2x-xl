@@ -1260,10 +1260,10 @@ PROF_START
 	tRgbaColorf				black = {0,0,0,0};
 #endif
 	tRgbaColorf				specular = {0.5f,0.5f,0.5f,0.5f};
-	//fVector					vPos = fVector::Create(0,0,0,1);
+	//CFloatVector					vPos = CFloatVector::Create(0,0,0,1);
 	GLenum					hLight;
 	tActiveShaderLight	*activeLightsP;
-	tShaderLight			*psl;
+	CShaderLight			*psl;
 	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][0];
 
 #if DBG

@@ -285,7 +285,7 @@ static void gs_write_byte(byte b,FILE *file)
 
 }
 
-static void gr_write_vector(vmsVector *v,FILE *file)
+static void gr_write_vector(CFixVector *v,FILE *file)
 {
 	gs_write_fix(v->x,file);
 	gs_write_fix(v->y,file);
@@ -406,7 +406,7 @@ switch (objP->info.controlType) {
 	case CT_DEBRIS:
 		break;
 
-	case CT_SLEW:		//the tPlayer is generally saved as slew
+	case CT_SLEW:		//the CPlayerData is generally saved as slew
 		break;
 
 	case CT_CNTRLCEN:
@@ -627,7 +627,7 @@ void writeObject(CObject *objP,FILE *f)
 		case CT_DEBRIS:
 			break;
 
-		case CT_SLEW:		//the tPlayer is generally saved as slew
+		case CT_SLEW:		//the CPlayerData is generally saved as slew
 			break;
 
 		case CT_CNTRLCEN:
@@ -781,7 +781,7 @@ static void InitGameFileInfo (void)
 {
 gameFileInfo.level				=	-1;
 gameFileInfo.player.offset		=	-1;
-gameFileInfo.player.size		=	sizeof(tPlayer);
+gameFileInfo.player.size		=	sizeof(CPlayerData);
 gameFileInfo.objects.offset	=	-1;
 gameFileInfo.objects.count		=	0;
 gameFileInfo.objects.size		=	sizeof(CObject);  
@@ -1031,7 +1031,7 @@ if (gameFileInfo.triggers.offset > -1) {
 		Error ("Error seeking to trigger data\n(file damaged or invalid)");
 		return -1;
 		}
-	for (i = 0, trigP = gameData.trigs.triggers; i < gameFileInfo.triggers.count; i++, trigP++) {
+	for (i = 0, trigP = gameData.trigs.triggers.Buffer (); i < gameFileInfo.triggers.count; i++, trigP++) {
 		if (gameTopFileInfo.fileinfoVersion >= 31) 
 			TriggerRead (trigP, cf, 0);
 		else {
@@ -1124,7 +1124,7 @@ if (gameFileInfo.triggers.offset > -1) {
 				gameData.trigs.firstObjTrigger [i] = cf.ReadShort ();
 			}
 		else {
-			memset (gameData.trigs.firstObjTrigger, 0xff, sizeof (gameData.trigs.firstObjTrigger));
+			gameData.trigs.firstObjTrigger.Clear (0xff);
 			for (i = cf.ReadShort (); i; i--) {
 				j = cf.ReadShort ();
 				gameData.trigs.firstObjTrigger [j] = cf.ReadShort ();
@@ -1133,9 +1133,9 @@ if (gameFileInfo.triggers.offset > -1) {
 		}
 	else {
 		gameData.trigs.nObjTriggers = 0;
-		memset (gameData.trigs.objTriggers, 0, sizeof (tTrigger) * MAX_OBJ_TRIGGERS);
-		memset (gameData.trigs.objTriggerRefs, 0xff, sizeof (tObjTriggerRef) * MAX_OBJ_TRIGGERS);
-		memset (gameData.trigs.firstObjTrigger, 0xff, sizeof (gameData.trigs.firstObjTrigger));
+		gameData.trigs.objTriggers.Clear ();
+		gameData.trigs.objTriggerRefs.Clear (0xff);
+		gameData.trigs.firstObjTrigger.Clear (0xff);
 		}
 	}
 return 0;
@@ -1787,7 +1787,7 @@ int SaveGameData(FILE * SaveFile)
 	gameFileInfo.level					=  gameData.missions.nCurrentLevel;
 	gameFileInfo.fileinfo_sizeof		=	sizeof(gameFileInfo);
 	gameFileInfo.player.offset		=	-1;
-	gameFileInfo.player.size		=	sizeof(tPlayer);
+	gameFileInfo.player.size		=	sizeof(CPlayerData);
 	gameFileInfo.objects.offset		=	-1;
 	gameFileInfo.objects.count		=	gameData.objs.nLastObject [0]+1;
 	gameFileInfo.objects.size		=	sizeof(CObject);
@@ -1827,7 +1827,7 @@ int SaveGameData(FILE * SaveFile)
 	//==================== SAVE PLAYER INFO ===========================
 
 	player.offset = ftell(SaveFile);
-	fwrite(&LOCALPLAYER, sizeof(tPlayer), 1, SaveFile);
+	fwrite(&LOCALPLAYER, sizeof(CPlayerData), 1, SaveFile);
 
 	//==================== SAVE OBJECT INFO ===========================
 
@@ -1959,7 +1959,7 @@ int saveLevel_sub(char * filename, int compiledVersion)
 
 	compressObjects();		//after this, gameData.objs.nLastObject [0] == num OBJECTS
 
-	//make sure tPlayer is in a CSegment
+	//make sure CPlayerData is in a CSegment
 	if (!UpdateObjectSeg(OBJECTS + gameData.multiplayer.players [0].nObject)) {
 		if (gameData.objs.consoleP->info.nSegment > gameData.segs.nLastSegment)
 			gameData.objs.consoleP->info.nSegment = 0;

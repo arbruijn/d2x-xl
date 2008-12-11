@@ -1806,7 +1806,7 @@ void DrawWeaponInfoSub (int info_index, tGaugeBox *box, int pic_x, int pic_y, co
 	if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)
 		return;
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-	if ((p = (char*) (strchr (pszName, '\n')))) {
+	if ((p = const_cast<char*> (strchr (pszName, '\n')))) {
 		memcpy (szName, pszName, l = p - pszName);
 		szName [l + 1] = '\0';
 		nIdWeapon [0] = HUDPrintF (&nIdWeapon [0], text_x, text_y, szName);
@@ -2400,7 +2400,7 @@ int CanSeeObject (int nObject, int bCheckObjs)
 	int nHitType;
 	tFVIData hit_data;
 
-	//see if we can see this tPlayer
+	//see if we can see this CPlayerData
 
 fq.p0 = &gameData.objs.viewerP->info.position.vPos;
 fq.p1 = &OBJECTS [nObject].info.position.vPos;
@@ -2449,7 +2449,7 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 	if (gameData.demo.nState != ND_STATE_PLAYBACK)
 		nObject = gameData.multiplayer.players [p].nObject;
 	else {
-		//if this is a demo, the nObject in the tPlayer struct is wrong,
+		//if this is a demo, the nObject in the CPlayerData struct is wrong,
 		//so we search the CObject list for the nObject
 		CObject *objP;
 		FORALL_PLAYER_OBJS (objP, nObject)
@@ -2461,7 +2461,7 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 
 	if ((bShowName || bHasFlag) && CanSeeObject (nObject, 1)) {
 		g3sPoint		vPlayerPos;
-		vmsVector	vPos;
+		CFixVector	vPos;
 
 		vPos = OBJECTS [nObject].info.position.vPos;
 		vPos[Y] += 2 * F1_0;
@@ -2627,7 +2627,7 @@ if (gameStates.render.bRearView && gameStates.render.cockpit.nMode!=CM_REAR_VIEW
 
 //	-----------------------------------------------------------------------------
 
-//print out some tPlayer statistics
+//print out some CPlayerData statistics
 void RenderGauges (void)
 {
 	static int old_display_mode = 0;
@@ -2835,7 +2835,7 @@ else {
 CCanvas::SetCurrent (&windowCanv);
 G3PushMatrix ();
 nZoomSave = gameStates.render.nZoomFactor;
-gameStates.render.nZoomFactor = F1_0 * (gameOpts->render.cockpit.nWindowZoom + 1);					//the tPlayer's zoom factor
+gameStates.render.nZoomFactor = F1_0 * (gameOpts->render.cockpit.nWindowZoom + 1);					//the CPlayerData's zoom factor
 if ((nUser == WBU_RADAR_TOPDOWN) || (nUser == WBU_RADAR_HEADSUP)) {
 	gameStates.render.bTopDownRadar = (nUser == WBU_RADAR_TOPDOWN);
 	if (!IsMultiGame || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))

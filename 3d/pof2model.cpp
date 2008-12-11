@@ -42,13 +42,13 @@ for (;;) {
 		case OP_DEFPOINTS: {
 			int n = WORDVAL (p+2);
 			(*pnVerts) += n;
-			p += n * sizeof (vmsVector) + 4;
+			p += n * sizeof (CFixVector) + 4;
 			break;
 			}
 
 		case OP_DEFP_START: {
 			int n = WORDVAL (p+2);
-			p += n * sizeof (vmsVector) + 8;
+			p += n * sizeof (CFixVector) + 8;
 			(*pnVerts) += n;
 			break;
 			}
@@ -105,7 +105,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-tG3ModelFace *G3AddModelFace (tG3Model *pm, tG3SubModel *psm, tG3ModelFace *pmf, vmsVector *pn, ubyte *p,
+tG3ModelFace *G3AddModelFace (tG3Model *pm, tG3SubModel *psm, tG3ModelFace *pmf, CFixVector *pn, ubyte *p,
 										CBitmap **modelBitmaps, tRgbaColorf *objColorP)
 {
 	short				nVerts = WORDVAL (p+2);
@@ -209,12 +209,12 @@ for (;;) {
 		case OP_DEFPOINTS: {
 			int i, n = WORDVAL (p+2);
 			fVector3 *pfv = pm->verts.Buffer ();
-			vmsVector *pv = VECPTR (p+4);
+			CFixVector *pv = VECPTR (p+4);
 			for (i = n; i; i--) {
 				*pfv = pv->ToFloat3();
 				pfv++; pv++;
 			}
-			p += n * sizeof (vmsVector) + 4;
+			p += n * sizeof (CFixVector) + 4;
 			break;
 			}
 
@@ -222,12 +222,12 @@ for (;;) {
 			int i, n = WORDVAL (p+2);
 			int s = WORDVAL (p+4);
 			fVector3 *pfv = pm->verts + s;
-			vmsVector *pv = VECPTR (p+8);
+			CFixVector *pv = VECPTR (p+8);
 			for (i = n; i; i--) {
 				*pfv = pv->ToFloat3();
 				pfv++; pv++;
 			}
-			p += n * sizeof (vmsVector) + 8;
+			p += n * sizeof (CFixVector) + 8;
 			break;
 			}
 

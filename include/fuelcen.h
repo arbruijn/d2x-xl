@@ -57,7 +57,7 @@ void FuelCenDelete( CSegment * segp );
 void FuelCenReplenishAll();
 
 // Create a matcen robot
-CObject *CreateMorphRobot (CSegment *segp, vmsVector *object_pos, ubyte object_id);
+CObject *CreateMorphRobot (CSegment *segp, CFixVector *object_pos, ubyte object_id);
 
 // Returns the amount of fuel this CSegment can give up.
 // Can be from 0 to 100.
@@ -100,7 +100,7 @@ typedef struct tFuelCenInfo {
 	fix     xDisableTime;   // Time until center disabled.
 	//CObject  *last_created_obj;
 	//int     last_created_sig;
-	vmsVector vCenter;
+	CFixVector vCenter;
 } tFuelCenInfo;
 
 // The max number of robot centers per mine.
@@ -125,7 +125,7 @@ extern tMatCenInfo RobotCenters [MAX_ROBOT_CENTERS];
 
 //--repair-- extern CObject *RepairObj;  // which CObject getting repaired, or NULL
 
-// Called when a materialization center gets triggered by the tPlayer
+// Called when a materialization center gets triggered by the CPlayerData
 // flying through some tTrigger!
 int MatCenTrigger (short nSegment);
 void DisableMatCens (void);

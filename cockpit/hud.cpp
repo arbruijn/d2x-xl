@@ -63,7 +63,7 @@ szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage][0] = 0;
 void HUDClearMessages ()
 {
 	int i, j;
-	tHUDMessage	*pMsgs;
+	CHUDMessage	*pMsgs;
 
 for (j = 2, pMsgs = gameData.hud.msgs; j; j--, pMsgs++) {
 	pMsgs->nMessages = 0;
@@ -96,7 +96,7 @@ void HUDRenderMessages (ubyte nType)
 {
 	int			h, i, n, w, y, aw, yStart, nMsg;
 	char			*pszMsg;
-	tHUDMessage *pMsgs = gameData.hud.msgs + nType;
+	CHUDMessage *pMsgs = gameData.hud.msgs + nType;
 
 if ((pMsgs->nMessages < 0) || (pMsgs->nMessages > HUD_MAX_MSGS))
 	return; // Get Rob!
@@ -230,7 +230,7 @@ if (gameOpts->render.cockpit.bSplitHUDMsgs)
 // (pszMsg might not be drawn if previous pszMsg was same)
 int HUDInitMessageVA (ubyte nType, const char * format, va_list args)
 {
-	tHUDMessage *pMsgs = gameData.hud.msgs + (gameOpts->render.cockpit.bSplitHUDMsgs ? nType : 0);
+	CHUDMessage *pMsgs = gameData.hud.msgs + (gameOpts->render.cockpit.bSplitHUDMsgs ? nType : 0);
 	int			temp;
 	char			*pszMsg = NULL, 
 					*pszLastMsg = NULL;
@@ -324,7 +324,7 @@ return ret;
 void PlayerDeadMessage (void)
 {
 if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
-	tHUDMessage	*pMsgs = gameData.hud.msgs;
+	CHUDMessage	*pMsgs = gameData.hud.msgs;
 
    if (LOCALPLAYER.lives < 2) {
       int x, y, w, h, aw;

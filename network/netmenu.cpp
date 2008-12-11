@@ -304,7 +304,7 @@ for (i = 0; i < nitems; i++) {
 	}
 if (nm > gameData.multiplayer.nMaxPlayers) {
 	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, "%s %d %s", TXT_SORRY_ONLY, gameData.multiplayer.nMaxPlayers, TXT_NETPLAYERS_IN);
-	// Turn off the last tPlayer highlighted
+	// Turn off the last CPlayerData highlighted
 	for (i = gameData.multiplayer.nPlayers; i > 0; i--)
 		if (menus [i].value == 1) {
 			menus [i].value = 0;
@@ -830,31 +830,31 @@ do {
 
 #define SetTextOpt(_text) \
 	m [opt].nType = NM_TYPE_TEXT; \
-	m [opt++].text = (char*) (_text)
+	m [opt++].text = const_cast<char*> (_text)
 
 #define SetInputOpt(_label, _text, Value, _len) \
 	SetTextOpt (_label); \
 	m [opt].nType = NM_TYPE_INPUT; \
 	sprintf (_text, "%d", Value); \
-	m [opt].text = (char*) (_text); \
+	m [opt].text = const_cast<char*> (_text); \
 	m [opt].value = Value; \
 	m [opt].text_len = _len; \
-	m [opt].szHelp = (char*) (HTX_ONLINE_MANUAL)
+	m [opt].szHelp = const_cast<char*> (HTX_ONLINE_MANUAL)
 
 #define SetRadioOpt(_text, _group, _key) \
 	m [opt].nType = NM_TYPE_RADIO; \
-	m [opt].text = (char*) (_text); \
+	m [opt].text = const_cast<char*> (_text); \
 	m [opt].value = 0; \
 	m [opt].group = _group; \
 	m [opt++].key = _key; \
-	m [opt].szHelp = (char*) (HTX_ONLINE_MANUAL)
+	m [opt].szHelp = const_cast<char*> (HTX_ONLINE_MANUAL)
 
 #define SetCheckOpt(_text, Value, _key) \
 	m [opt].nType = NM_TYPE_CHECK; \
-	m [opt].text = (char*) (_text); \
+	m [opt].text = const_cast<char*> (_text); \
 	m [opt].value = Value; \
 	m [opt].key = _key; \
-	m [opt].szHelp = (char*) (HTX_ONLINE_MANUAL)
+	m [opt].szHelp = const_cast<char*> (HTX_ONLINE_MANUAL)
 
 //------------------------------------------------------------------------------
 
@@ -959,11 +959,11 @@ optShieldDmg = opt++;
 SetTextOpt ("");
 optTogglesMenu = opt;
 m [opt].nType = NM_TYPE_MENU;  
-m [opt].text = (char*) (TXT_ENT_TGLMENU); 
+m [opt].text = const_cast<char*> (TXT_ENT_TGLMENU); 
 m [opt++].key = KEY_E;
 optTextureMenu = opt;
 m [opt].nType = NM_TYPE_MENU;  
-m [opt].text = (char*) (TXT_ENT_TEXMENU); 
+m [opt].text = const_cast<char*> (TXT_ENT_TEXMENU); 
 m [opt++].key = KEY_T;
 Assert (sizeofa (m) >= (size_t) opt);
 
@@ -1376,7 +1376,7 @@ if (m [optMissionName].rebuild) {
 	strncpy (netGame.szMissionName, 
 				(nNewMission < 0) ? "" : gameData.missions.list [nNewMission].filename, 
 				sizeof (netGame.szMissionName) - 1);
-	m [optMissionName].text = (nNewMission < 0) ? (char*) (TXT_NONE_SELECTED) : (char*) (gameData.missions.list [nNewMission].szMissionName);
+	m [optMissionName].text = (nNewMission < 0) ? const_cast<char*> (TXT_NONE_SELECTED) : const_cast<char*> (gameData.missions.list [nNewMission].szMissionName);
 	if ((nNewMission >= 0) && (gameData.missions.nLastLevel > 1)) {
 		sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, gameData.missions.nLastLevel);
 		Assert (strlen (szLevelText) < 32);
@@ -1621,7 +1621,7 @@ doMenu:
 	m [opt].text = reinterpret_cast<char*> (""); 
 	opt++;
 	m [opt].nType = NM_TYPE_MENU; 
-	m [opt].text = (char*) (TXT_ACCEPT); 
+	m [opt].text = const_cast<char*> (TXT_ACCEPT); 
 	m [opt].key = KEY_A;
 	opt++;
 
@@ -1849,7 +1849,7 @@ else
 pszDest [nSize - 1] = '\0';
 if ((psz = strchr (pszDest, '\t')))
 	*psz = '\0';
-CCanvas::Current ()->SetFont (SMALL_FONT);
+fontManager.SetCurrent (SMALL_FONT);
 FONT->StringSize ("... ", lDots, ty, ta);
 FONT->StringSize (pszDest, tx, ty, ta);
 l = (int) strlen (pszDest);
@@ -1862,7 +1862,7 @@ if (tx > lMax) {
 	} while (tx > lMax);
 	strcat (pszDest, "...");
 	}
-CCanvas::Current ()->SetFont (curFont); 
+fontManager.SetCurrent (curFont); 
 return pszDest;
 }
 

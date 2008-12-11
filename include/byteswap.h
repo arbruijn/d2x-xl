@@ -154,7 +154,7 @@ return SWAPSHORT (i);
 
 // ----------------------------------------------------------------------------
 
-static inline vmsVector& SwapVector (vmsVector& v, int bEndian)
+static inline CFixVector& SwapVector (CFixVector& v, int bEndian)
 {
 if (gameStates.app.bLittleEndian != bEndian) 
 	{

@@ -125,7 +125,7 @@ if (stricmp (pszNetCallSign, pszLocalCallSign))
 	return 1;
 #if 0
 // if restoring a multiplayer game that had been played via UDP/IP,
-// tPlayer network addresses may have changed, so we have to rely on the callsigns
+// CPlayerData network addresses may have changed, so we have to rely on the callsigns
 // This will cause problems if several players with identical callsigns participate
 if (gameStates.multi.nGameType == UDP_GAME)
 	return 0;
@@ -211,7 +211,7 @@ int NetworkObjnumIsPast (int nObject, tNetworkSyncData *syncP)
 	int nObjMode = !((gameData.multigame.nObjOwner [nObject] == -1) || (gameData.multigame.nObjOwner [nObject] == nPlayer));
 
 if (!syncP->nState)
-	return 0; // We're not sending OBJECTS to a new tPlayer
+	return 0; // We're not sending OBJECTS to a new CPlayerData
 if (nObjMode > syncP->objs.nMode)
 	return 0;
 else if (nObjMode < syncP->objs.nMode)
@@ -278,18 +278,18 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
-// Find the proper initial spawn location for tPlayer i from team t
+// Find the proper initial spawn location for CPlayerData i from team t
 
 int TeamSpawnPos (int i)
 {
 	int	h, j, t = GetTeam (i);
 
-// first find out how many players before tPlayer i are in the same team
+// first find out how many players before CPlayerData i are in the same team
 // result stored in h
 for (h = j = 0; j < i; j++)
 	if (GetTeam (j) == t)
 		h++;
-// assign the spawn location # (h+1) to tPlayer i
+// assign the spawn location # (h+1) to CPlayerData i
 for (j = 0; j < gameData.multiplayer.nPlayerPositions; j++) {
 	switch (gameData.multiplayer.playerInit [j].nSegType) {
 		case SEGMENT_IS_GOAL_BLUE:

@@ -17,7 +17,7 @@
 
 //------------------------------------------------------------------------------
 
-void FreeTextData (tTextData *msgP)
+void FreeTextData (CTextData *msgP)
 {
 D2_FREE (msgP->textBuffer);
 D2_FREE (msgP->index);
@@ -57,7 +57,7 @@ if (left < r)
 
 //------------------------------------------------------------------------------
 
-void LoadTextData (const char *pszLevelName, const char *pszExt, tTextData *msgP)
+void LoadTextData (const char *pszLevelName, const char *pszExt, CTextData *msgP)
 {
 	char			szFilename [SHORT_FILENAME_LEN];
 	CFile			cf;
@@ -133,7 +133,7 @@ QSortTextData (msgP->index, 0, msgP->nMessages - 1);
 
 //------------------------------------------------------------------------------
 
-tTextIndex *FindTextData (tTextData *msgP, int nId)
+tTextIndex *FindTextData (CTextData *msgP, int nId)
 {
 	int	h, m, l = 0, r = msgP->nMessages - 1;
 
@@ -152,7 +152,7 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-int ShowGameMessage (tTextData *msgP, int nId, int nDuration)
+int ShowGameMessage (CTextData *msgP, int nId, int nDuration)
 {
 	tTextIndex	*indexP;
 	short			w, h, x, y;
@@ -185,7 +185,7 @@ if (msgP->nEndTime < 0) {
 	}
 else if (!gameStates.render.nWindow) {
 	if (!msgP->bmP) {
-		CCanvas::Current ()->SetFont (NORMAL_FONT);
+		fontManager.SetCurrent (NORMAL_FONT);
 		fontManager.SetColorRGBi (GOLD_RGBA, 1, 0, 0);
 		}
 	if (msgP->bmP || (msgP->bmP = CreateStringBitmap (indexP->pszText, 0, 0, NULL, 0, 0, -1))) {

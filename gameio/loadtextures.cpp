@@ -896,7 +896,7 @@ PrintLog ("   loading texture colors\n");
 CFile::ChangeFilenameExtension (szFilename, pszLevelName, ".clr");
 if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 	if (!colorP)
-		colorP = gameData.render.color.textures;
+		colorP = gameData.render.color.textures.Buffer ();
 	for (i = MAX_WALL_TEXTURES; i; i--, colorP++) {
 		ReadColor (cf, colorP, 0, 0);
 		colorP->index = 0;

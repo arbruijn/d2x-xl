@@ -159,7 +159,7 @@ if (m_list.info.Buffer ()) {
 
 //------------------------------------------------------------------------------
 
-inline void CLightmapManager::ComputePixelPos (vmsVector *vPos, vmsVector v1, vmsVector v2, double fOffset)
+inline void CLightmapManager::ComputePixelPos (CFixVector *vPos, CFixVector v1, CFixVector v2, double fOffset)
 {
 (*vPos) [X] = (fix) (fOffset * (v2 [X] - v1 [X])); 
 (*vPos) [Y] = (fix) (fOffset * (v2 [Y] - v1 [Y])); 
@@ -170,7 +170,7 @@ inline void CLightmapManager::ComputePixelPos (vmsVector *vPos, vmsVector v1, vm
 
 void CLightmapManager::RestoreLights (int bVariable)
 {
-	tDynLight	*pl;
+	CDynLight	*pl;
 	int			i;
 
 for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++)
@@ -182,7 +182,7 @@ for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dyna
 
 int CLightmapManager::CountLights (int bVariable)
 {
-	tDynLight		*pl;
+	CDynLight		*pl;
 	int				i, nLights = 0;
 
 if (!gameStates.render.bPerPixelLighting)
@@ -201,7 +201,7 @@ double CLightmapManager::SideRad (int nSegment, int nSide)
 	double		h, xMin, xMax, yMin, yMax, zMin, zMax;
 	double		dx, dy, dz;
 	short			sideVerts [4];
-	vmsVector	*v;
+	CFixVector	*v;
 
 GetSideVertIndex (sideVerts, nSegment, nSide); 
 xMin = yMin = zMin = 1e300;
@@ -234,7 +234,7 @@ return sqrt (dx * dx + dy * dy + dz * dz) / (2 * (double) F1_0);
 
 int CLightmapManager::Init (int bVariable)
 {
-	tDynLight		*pl;
+	CDynLight		*pl;
 	tFace			*faceP = NULL;
 	int				bIsLight, nIndex, i; 
 	short				t; 
@@ -272,8 +272,8 @@ for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dyna
 	lmiP->vPos = SIDE_CENTER_V (faceP->nSegment, faceP->nSide);
 	lmiP->nIndex = nIndex; 
 	//find light direction, currently based on first 3 points of tSide, not always right.
-	vmsVector *normalP = SEGMENTS [faceP->nSegment].sides [faceP->nSide].normals;
-	lmiP->vDir = vmsVector::Avg(normalP[0], normalP[1]);
+	CFixVector *normalP = SEGMENTS [faceP->nSegment].sides [faceP->nSide].normals;
+	lmiP->vDir = CFixVector::Avg(normalP[0], normalP[1]);
 	lmiP++; 
 	}
 return m_list.nLights = (int) (lmiP - m_list.info.Buffer ()); 
@@ -336,13 +336,13 @@ Copy (texColorP, nLightmap);
 
 void CLightmapManager::Build (int nThread)
 {
-	vmsVector		*pixelPosP, offsetU, offsetV;
+	CFixVector		*pixelPosP, offsetU, offsetV;
 	tRgbColorb		*texColorP;
 	fVector3			color;
 	int				x, y, xMin, xMax;
 	int				v0, v1, v2, v3; 
 	bool				bBlack, bWhite;
-	tVertColorData	vcd = m_data.vcd;
+	CVertColorData	vcd = m_data.vcd;
 
 if (nThread < 0) {
 	xMin = 0;
@@ -457,7 +457,7 @@ void CLightmapManager::BuildAll (int nFace, int nThread)
 for (i = 0; i < LM_W; i++)
 	m_data.fOffset [i] = (double) i / (double) (LM_W - 1);
 InitVertColorData (m_data.vcd);
-m_data.vcd.pVertPos = &m_data.vcd.vertPos;
+m_data.vcd.vertPosP = &m_data.vcd.vertPos;
 m_data.vcd.fMatShininess = 4;
 
 #if 0
@@ -482,7 +482,7 @@ for (m_data.faceP = FACES + nFace; nFace < nLastFace; nFace++, m_data.faceP++) {
 	sideP = SEGMENTS [m_data.faceP->nSegment].sides + m_data.faceP->nSide;
 	memcpy (m_data.sideVerts, m_data.faceP->index, sizeof (m_data.sideVerts));
 	m_data.nType = (sideP->nType == SIDE_IS_QUAD) || (sideP->nType == SIDE_IS_TRI_02);
-	m_data.vNormal = vmsVector::Avg (sideP->normals [0], sideP->normals [1]);
+	m_data.vNormal = CFixVector::Avg (sideP->normals [0], sideP->normals [1]);
 	m_data.vcd.vertNorm = m_data.vNormal.ToFloat3();
 	m_data.nColor = 0;
 	memset (m_data.texColor, 0, LM_W * LM_H * sizeof (tRgbColorb));

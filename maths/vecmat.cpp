@@ -39,32 +39,32 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // ------------------------------------------------------------------------
 // static const initializations
 
-const fVector  fVector::ZERO  = fVector::Create(0,0,0,1);
-const fVector  fVector::ZERO4 = fVector::Create(0,0,0,0);
-const fVector  fVector::XVEC  = fVector::Create(1,0,0,1);
-const fVector  fVector::YVEC  = fVector::Create(0,1,0,1);
-const fVector  fVector::ZVEC  = fVector::Create(0,0,1,1);
+const CFloatVector  CFloatVector::ZERO  = CFloatVector::Create(0,0,0,1);
+const CFloatVector  CFloatVector::ZERO4 = CFloatVector::Create(0,0,0,0);
+const CFloatVector  CFloatVector::XVEC  = CFloatVector::Create(1,0,0,1);
+const CFloatVector  CFloatVector::YVEC  = CFloatVector::Create(0,1,0,1);
+const CFloatVector  CFloatVector::ZVEC  = CFloatVector::Create(0,0,1,1);
 
 const fVector3 fVector3::ZERO = fVector3::Create(0,0,0);
 const fVector3 fVector3::XVEC = fVector3::Create(1,0,0);
 const fVector3 fVector3::YVEC = fVector3::Create(0,1,0);
 const fVector3 fVector3::ZVEC = fVector3::Create(0,0,1);
 
-const vmsVector vmsVector::ZERO = vmsVector::Create(0,0,0);
-const vmsVector vmsVector::XVEC = vmsVector::Create(f1_0,0,0);
-const vmsVector vmsVector::YVEC = vmsVector::Create(0,f1_0,0);
-const vmsVector vmsVector::ZVEC = vmsVector::Create(0,0,f1_0);
+const CFixVector CFixVector::ZERO = CFixVector::Create(0,0,0);
+const CFixVector CFixVector::XVEC = CFixVector::Create(f1_0,0,0);
+const CFixVector CFixVector::YVEC = CFixVector::Create(0,f1_0,0);
+const CFixVector CFixVector::ZVEC = CFixVector::Create(0,0,f1_0);
 
 const vmsAngVec vmsAngVec::ZERO = vmsAngVec::Create(0,0,0);
 
-const vmsMatrix vmsMatrix::IDENTITY = vmsMatrix::Create(vmsVector::XVEC,
-                                                        vmsVector::YVEC,
-                                                        vmsVector::ZVEC);
+const vmsMatrix vmsMatrix::IDENTITY = vmsMatrix::Create(CFixVector::XVEC,
+                                                        CFixVector::YVEC,
+                                                        CFixVector::ZVEC);
 
-const fMatrix fMatrix::IDENTITY = fMatrix::Create(fVector::Create(1.0f, 0, 0, 0),
-		                                          fVector::Create(0, 1.0f, 0, 0),
-		                                          fVector::Create(0, 0, 1.0f, 0),
-		                                          fVector::Create(0, 0, 0, 1.0f));
+const fMatrix fMatrix::IDENTITY = fMatrix::Create(CFloatVector::Create(1.0f, 0, 0, 0),
+		                                          CFloatVector::Create(0, 1.0f, 0, 0),
+		                                          CFloatVector::Create(0, 0, 1.0f, 0),
+		                                          CFloatVector::Create(0, 0, 0, 1.0f));
 
 // ------------------------------------------------------------------------
 
@@ -77,14 +77,14 @@ const fMatrix fMatrix::IDENTITY = fMatrix::Create(fVector::Create(1.0f, 0, 0, 0)
 //computes a matrix from the forward vector, a bank of
 //zero is assumed.
 //returns matrix.
-const vmsMatrix vmsMatrix::CreateF(const vmsVector& fVec) {
+const vmsMatrix vmsMatrix::CreateF(const CFixVector& fVec) {
 	vmsMatrix m;
-	vmsVector& xvec = m [RVEC];
-	vmsVector& yvec = m [UVEC];
-	vmsVector& zvec = m [FVEC];
+	CFixVector& xvec = m [RVEC];
+	CFixVector& yvec = m [UVEC];
+	CFixVector& zvec = m [FVEC];
 
 	zvec = fVec;
-	vmsVector::Normalize(zvec);
+	CFixVector::Normalize(zvec);
 	assert(zvec.Mag() != 0);
 
 	//just forward vec
@@ -97,8 +97,8 @@ const vmsMatrix vmsMatrix::CreateF(const vmsVector& fVec) {
 		xvec [X] = zvec [Z];
 		xvec [Y] = 0;
 		xvec [Z] = -zvec [X];
-		vmsVector::Normalize(xvec);
-		yvec = vmsVector::Cross(zvec, xvec);
+		CFixVector::Normalize(xvec);
+		yvec = CFixVector::Cross(zvec, xvec);
 	}
 	return m;
 }
@@ -106,18 +106,18 @@ const vmsMatrix vmsMatrix::CreateF(const vmsVector& fVec) {
 
 //computes a matrix from the forward and the up vector.
 //returns matrix.
-const vmsMatrix vmsMatrix::CreateFU(const vmsVector& fVec, const vmsVector& uVec) {
+const vmsMatrix vmsMatrix::CreateFU(const CFixVector& fVec, const CFixVector& uVec) {
 	vmsMatrix m;
-	vmsVector& xvec = m [RVEC];
-	vmsVector& yvec = m [UVEC];
-	vmsVector& zvec = m [FVEC];
+	CFixVector& xvec = m [RVEC];
+	CFixVector& yvec = m [UVEC];
+	CFixVector& zvec = m [FVEC];
 
 	zvec = fVec;
-	vmsVector::Normalize(zvec);
+	CFixVector::Normalize(zvec);
 	assert(zvec.Mag() != 0);
 
 	yvec = uVec;
-	if (vmsVector::Normalize(yvec) == 0) {
+	if (CFixVector::Normalize(yvec) == 0) {
 		if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
 			m [RVEC][X] = F1_0;
 			m [UVEC][Z] = (zvec [Y] < 0) ? F1_0 : -F1_0;
@@ -127,14 +127,14 @@ const vmsMatrix vmsMatrix::CreateFU(const vmsVector& fVec, const vmsVector& uVec
 			xvec [X] = zvec [Z];
 			xvec [Y] = 0;
 			xvec [Z] = -zvec [X];
-			vmsVector::Normalize(xvec);
-			yvec = vmsVector::Cross(zvec, xvec);
+			CFixVector::Normalize(xvec);
+			yvec = CFixVector::Cross(zvec, xvec);
 		}
 	}
 
-	xvec = vmsVector::Cross(yvec, zvec);
+	xvec = CFixVector::Cross(yvec, zvec);
 	//Normalize new perpendicular vector
-	if (vmsVector::Normalize(xvec) == 0) {
+	if (CFixVector::Normalize(xvec) == 0) {
 		if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
 			m [RVEC][X] = F1_0;
 			m [UVEC][Z] = (zvec [Y] < 0) ? F1_0 : -F1_0;
@@ -144,13 +144,13 @@ const vmsMatrix vmsMatrix::CreateFU(const vmsVector& fVec, const vmsVector& uVec
 			xvec [X] = zvec [Z];
 			xvec [Y] = 0;
 			xvec [Z] = -zvec [X];
-			vmsVector::Normalize(xvec);
-			yvec = vmsVector::Cross(zvec, xvec);
+			CFixVector::Normalize(xvec);
+			yvec = CFixVector::Cross(zvec, xvec);
 		}
 	}
 
 	//now recompute up vector, in case it wasn't entirely perpendiclar
-	yvec = vmsVector::Cross(zvec, xvec);
+	yvec = CFixVector::Cross(zvec, xvec);
 
 	return m;
 }
@@ -158,19 +158,19 @@ const vmsMatrix vmsMatrix::CreateFU(const vmsVector& fVec, const vmsVector& uVec
 
 //computes a matrix from the forward and the right vector.
 //returns matrix.
-const vmsMatrix vmsMatrix::CreateFR(const vmsVector& fVec, const vmsVector& rVec) {
+const vmsMatrix vmsMatrix::CreateFR(const CFixVector& fVec, const CFixVector& rVec) {
 	vmsMatrix m;
-	vmsVector& xvec = m [RVEC];
-	vmsVector& yvec = m [UVEC];
-	vmsVector& zvec = m [FVEC];
+	CFixVector& xvec = m [RVEC];
+	CFixVector& yvec = m [UVEC];
+	CFixVector& zvec = m [FVEC];
 
 	zvec = fVec;
-	vmsVector::Normalize(zvec);
+	CFixVector::Normalize(zvec);
 	assert(zvec.Mag() != 0);
 
 	//use right vec
 	xvec = rVec;
-	if (vmsVector::Normalize(xvec) == 0) {
+	if (CFixVector::Normalize(xvec) == 0) {
 		if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
 			m [RVEC][X] = F1_0;
 			m [UVEC][Z] = (zvec [Y] < 0) ? F1_0 : -F1_0;
@@ -180,14 +180,14 @@ const vmsMatrix vmsMatrix::CreateFR(const vmsVector& fVec, const vmsVector& rVec
 			xvec [X] = zvec [Z];
 			xvec [Y] = 0;
 			xvec [Z] = -zvec [X];
-			vmsVector::Normalize(xvec);
-			yvec = vmsVector::Cross(zvec, xvec);
+			CFixVector::Normalize(xvec);
+			yvec = CFixVector::Cross(zvec, xvec);
 		}
 	}
 
-	yvec = vmsVector::Cross(zvec, xvec);
+	yvec = CFixVector::Cross(zvec, xvec);
 	//Normalize new perpendicular vector
-	if (vmsVector::Normalize(yvec) == 0) {
+	if (CFixVector::Normalize(yvec) == 0) {
 		if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
 			m [RVEC][X] = F1_0;
 			m [UVEC][Z] = (zvec [Y] < 0) ? F1_0 : -F1_0;
@@ -197,31 +197,31 @@ const vmsMatrix vmsMatrix::CreateFR(const vmsVector& fVec, const vmsVector& rVec
 			xvec [X] = zvec [Z];
 			xvec [Y] = 0;
 			xvec [Z] = -zvec [X];
-			vmsVector::Normalize(xvec);
-			yvec = vmsVector::Cross(zvec, xvec);
+			CFixVector::Normalize(xvec);
+			yvec = CFixVector::Cross(zvec, xvec);
 		}
 	}
 
 	//now recompute right vector, in case it wasn't entirely perpendiclar
-	xvec = vmsVector::Cross(yvec, zvec);
+	xvec = CFixVector::Cross(yvec, zvec);
 
 	return m;
 }
 
 
 
-inline int VmBehindPlane(const vmsVector& n, const vmsVector& p1, const vmsVector& p2, const vmsVector& i) {
-	vmsVector	t;
+inline int VmBehindPlane(const CFixVector& n, const CFixVector& p1, const CFixVector& p2, const CFixVector& i) {
+	CFixVector	t;
 #if DBG
 	fix			d;
 #endif
 
 	t = p1 - p2;
 #if DBG
-	d = vmsVector::Dot(p1, t);
-	return vmsVector::Dot(i, t) < d;
+	d = CFixVector::Dot(p1, t);
+	return CFixVector::Dot(i, t) < d;
 #else
-	return vmsVector::Dot(i, t) - vmsVector::Dot(p1, t) < 0;
+	return CFixVector::Dot(i, t) - CFixVector::Dot(p1, t) < 0;
 #endif
 }
 
@@ -230,10 +230,10 @@ inline int VmBehindPlane(const vmsVector& n, const vmsVector& p1, const vmsVecto
 // If intersection is not between p1 and p2 and vPos is given, return
 // further away point of p1 and p2 to vPos. Otherwise return intersection.
 // returns 1 if intersection outside of p1,p2, otherwise 0.
-const int VmPointLineIntersection (vmsVector& hitP, const vmsVector& p1, const vmsVector& p2, const vmsVector& p3,
+const int VmPointLineIntersection (CFixVector& hitP, const CFixVector& p1, const CFixVector& p2, const CFixVector& p3,
 									  int bClampToFarthest)
 {
-	vmsVector	d31, d21;
+	CFixVector	d31, d21;
 	float			m, u;
 	int			bClamped = 0;
 
@@ -268,10 +268,10 @@ const int VmPointLineIntersection (vmsVector& hitP, const vmsVector& p1, const v
 }
 
 /*
-int VmPointLineIntersection(vmsVector& hitP, const vmsVector& p1, const vmsVector& p2, const vmsVector& p3, const vmsVector& vPos,
+int VmPointLineIntersection(CFixVector& hitP, const CFixVector& p1, const CFixVector& p2, const CFixVector& p3, const CFixVector& vPos,
 									  int bClampToFarthest)
 {
-	vmsVector	d31, d21;
+	CFixVector	d31, d21;
 	double		m, u;
 	int			bClamped = 0;
 
@@ -305,9 +305,9 @@ return bClamped;
 // ------------------------------------------------------------------------
 
 // Version with vPos
-const int VmPointLineIntersection (fVector& hitP, const fVector& p1, const fVector& p2, const fVector& p3, const fVector& vPos, int bClamp) 
+const int VmPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, const CFloatVector& vPos, int bClamp) 
 {
-	fVector	d31, d21;
+	CFloatVector	d31, d21;
 	float		m, u;
 	int		bClamped = 0;
 
@@ -318,7 +318,7 @@ if(!m) {
 	return 0;
 	}
 d31 = p3 - p1;
-u = fVector::Dot(d31, d21);
+u = CFloatVector::Dot(d31, d21);
 u /= m;
 if (u < 0)
 	bClamped = 2;
@@ -328,7 +328,7 @@ else
 	bClamped = 0;
 // limit the intersection to [p1,p2]
 if (bClamp && bClamped) {
-	bClamped = (fVector::Dist(vPos, p1) < fVector::Dist(vPos, p2)) ? 2 : 1;
+	bClamped = (CFloatVector::Dist(vPos, p1) < CFloatVector::Dist(vPos, p2)) ? 2 : 1;
 	hitP = (bClamped == 1) ? p1 : p2;
 	}
 else
@@ -338,9 +338,9 @@ return bClamped;
 
 
 // Version without vPos
-const int VmPointLineIntersection(fVector& hitP, const fVector& p1, const fVector& p2, const fVector& p3, int bClamp) 
+const int VmPointLineIntersection(CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, int bClamp) 
 {
-	fVector	d31, d21;
+	CFloatVector	d31, d21;
 	float		m, u;
 	int		bClamped = 0;
 
@@ -351,7 +351,7 @@ if(!m) {
 	return 0;
 	}
 d31 = p3 - p1;
-u = fVector::Dot(d31, d21);
+u = CFloatVector::Dot(d31, d21);
 u /= m;
 if (u < 0)
 	bClamped = 2;
@@ -412,21 +412,21 @@ const int VmPointLineIntersection(fVector3& hitP, const fVector3& p1, const fVec
 
 // ------------------------------------------------------------------------
 
-const fix VmLinePointDist(const vmsVector& a, const vmsVector& b, const vmsVector& p) {
-	vmsVector	h;
+const fix VmLinePointDist(const CFixVector& a, const CFixVector& b, const CFixVector& p) {
+	CFixVector	h;
 
 	VmPointLineIntersection (h, a, b, p, 0);
-	return vmsVector::Dist(h, p);
+	return CFixVector::Dist(h, p);
 }
 
 // ------------------------------------------------------------------------
 
-const float VmLinePointDist(const fVector& a, const fVector& b, const fVector& p, int bClamp)
+const float VmLinePointDist(const CFloatVector& a, const CFloatVector& b, const CFloatVector& p, int bClamp)
 {
-	fVector	h;
+	CFloatVector	h;
 
 	VmPointLineIntersection(h, a, b, p, bClamp);
-	return fVector::Dist(h, p);
+	return CFloatVector::Dist(h, p);
 }
 
 // ------------------------------------------------------------------------
@@ -482,8 +482,8 @@ return fVector3::Dist(va, vb);
 
 // --------------------------------------------------------------------------------------------------------------------
 
-const float VmLineLineIntersection(const fVector& v1, const fVector& v2, const fVector& v3, const fVector& v4, fVector& va, fVector& vb) {
-   fVector	v13, v43, v21;
+const float VmLineLineIntersection(const CFloatVector& v1, const CFloatVector& v2, const CFloatVector& v3, const CFloatVector& v4, CFloatVector& va, CFloatVector& vb) {
+   CFloatVector	v13, v43, v21;
    float		d1343, d4321, d1321, d4343, d2121;
    float		num, den, mua, mub;
 
@@ -498,16 +498,16 @@ if (v43.Mag() < 0.00001f)  {
 	va = vb = v2;
 	return 0;
 	}
-d1343 = fVector::Dot(v13, v43);
-d4321 = fVector::Dot(v43, v21);
-d1321 = fVector::Dot(v13, v21);
-d4343 = fVector::Dot(v43, v43);
-d2121 = fVector::Dot(v21, v21);
+d1343 = CFloatVector::Dot(v13, v43);
+d4321 = CFloatVector::Dot(v43, v21);
+d1321 = CFloatVector::Dot(v13, v21);
+d4343 = CFloatVector::Dot(v43, v43);
+d2121 = CFloatVector::Dot(v21, v21);
 den = d2121 * d4343 - d4321 * d4321;
 if (fabs (den) < 0.00001f) {
-	va = fVector::Avg(v1, v2);
-	vb = fVector::Avg(v3, v4);
-	va = fVector::Avg(va, vb);
+	va = CFloatVector::Avg(v1, v2);
+	vb = CFloatVector::Avg(v3, v4);
+	va = CFloatVector::Avg(va, vb);
 	vb = va;
 	return 0;
 	}
@@ -525,7 +525,7 @@ vb->z() = v3->z() + mub * v43 [Z];
 va = v1 + mua * v21;
 vb = v3 + mub * v43;
 
-return fVector::Dist(va, vb);
+return CFloatVector::Dist(va, vb);
 }
 
 // ------------------------------------------------------------------------
@@ -534,20 +534,20 @@ return fVector::Dist(va, vb);
 // side. Divide by 2 * 20 * 20 (20 is the default side length which is
 // interpreted as distance unit "1").
 
-float TriangleSize (const vmsVector& p0, const vmsVector& p1, const vmsVector& p2) 
+float TriangleSize (const CFixVector& p0, const CFixVector& p1, const CFixVector& p2) 
 {
 #if 1
-	return X2F (vmsVector::Cross (p1 - p0, p2 - p0).Mag ()) / 800.0f;
+	return X2F (CFixVector::Cross (p1 - p0, p2 - p0).Mag ()) / 800.0f;
 #else
 	fix			lMax, l, i = 0;
 
-lMax = vmsVector::Dist (p0, p1);
-l = vmsVector::Dist (p1, p2);
+lMax = CFixVector::Dist (p0, p1);
+l = CFixVector::Dist (p1, p2);
 if (lMax < l) {
 	lMax = l;
 	i = 1;
 	}
-l = vmsVector::Dist (p2, p0);
+l = CFixVector::Dist (p2, p0);
 if (lMax < l) {
 	lMax = l;
 	i = 2;

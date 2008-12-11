@@ -56,7 +56,7 @@ if (gameData.multiplayer.nPlayers < gameData.multiplayer.nMaxPlayers)
 	return (gameData.multiplayer.nPlayers);
 else {
 	// Slots are full but game is open, see if anyone is
-	// disconnected and replace the oldest tPlayer with this new one
+	// disconnected and replace the oldest CPlayerData with this new one
 	int oldestPlayer = -1;
 	fix oldestTime = gameStates.app.nSDLTicks;
 
@@ -75,7 +75,7 @@ else {
 
 int CanJoinNetgame (tNetgameInfo *game, tAllNetPlayersInfo *people)
 {
-	// Can this tPlayer rejoin a netgame in progress?
+	// Can this CPlayerData rejoin a netgame in progress?
 
 	int i, nNumPlayers;
 
@@ -105,7 +105,7 @@ if (game->versionMajor>0 && D2X_MAJOR == 0) {
 nNumPlayers = game->nNumPlayers;
 
 if (!(game->gameFlags & NETGAME_FLAG_CLOSED)) {
-	// Look for tPlayer that is not connected
+	// Look for CPlayerData that is not connected
 	if (game->nConnected == game->nMaxPlayers)
 		 return 2;
 	if (game->bRefusePlayers)
@@ -152,7 +152,7 @@ for (short i = 0; i < networkData.nJoining; i++)
 
 void NetworkDisconnectPlayer (int nPlayer)
 {
-	// A tPlayer has disconnected from the net game, take whatever steps are
+	// A CPlayerData has disconnected from the net game, take whatever steps are
 	// necessary 
 
 if (nPlayer == gameData.multiplayer.nLocalPlayer) {
@@ -284,12 +284,12 @@ if (netGame.gameFlags & NETGAME_FLAG_CLOSED)	{
 	return -1;
 	}
 if (gameData.multiplayer.nPlayers < gameData.multiplayer.nMaxPlayers) {
-	// Add tPlayer in an open slot, game not full yet
+	// Add CPlayerData in an open slot, game not full yet
 	networkData.bPlayerAdded = 1;
 	return gameData.multiplayer.nPlayers;
 	}
 // Slots are full but game is open, see if anyone is
-// disconnected and replace the oldest tPlayer with this new one
+// disconnected and replace the oldest CPlayerData with this new one
 int oldestPlayer = -1;
 fix oldestTime = TimerGetApproxSeconds ();
 Assert (gameData.multiplayer.nPlayers == gameData.multiplayer.nMaxPlayers);
@@ -348,7 +348,7 @@ static tNetworkSyncData *AcceptJoinRequest (tSequencePacket *player)
 // ignore since they'll request again later
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 #if 1      
-	con_printf (CONDBG, "Ignored request from new tPlayer to join during endgame.\n");
+	con_printf (CONDBG, "Ignored request from new CPlayerData to join during endgame.\n");
 #endif
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
@@ -360,7 +360,7 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 
 if (player->player.connected != gameData.missions.nCurrentLevel) {
 #if 1      
-	con_printf (CONDBG, "Dumping tPlayer due to old level number.\n");
+	con_printf (CONDBG, "Dumping CPlayerData due to old level number.\n");
 #endif
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
@@ -388,7 +388,7 @@ return syncP;
 }
 
 //------------------------------------------------------------------------------
-// Add a tPlayer to a game already in progress
+// Add a CPlayerData to a game already in progress
 
 void NetworkWelcomePlayer (tSequencePacket *player)
 {
@@ -453,7 +453,7 @@ if (IsTeamGame)
 	ChoseTeam (nPlayer);
 gameData.multiplayer.players [nPlayer].nKillGoalCount = 0;
 gameData.multiplayer.players [nPlayer].connected = 0;
-// Send updated OBJECTS data to the new/returning tPlayer
+// Send updated OBJECTS data to the new/returning CPlayerData
 syncP->player [0] = *player;
 syncP->player [1] = *player;
 syncP->player [1].player.connected = nPlayer;
@@ -624,7 +624,7 @@ else {
 
 void NetworkDumpPlayer (ubyte * server, ubyte *node, int nReason)
 {
-	// Inform tPlayer that he was not chosen for the netgame
+	// Inform CPlayerData that he was not chosen for the netgame
 	tSequencePacket temp;
 
 temp.nType = PID_DUMP;

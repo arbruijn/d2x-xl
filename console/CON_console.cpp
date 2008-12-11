@@ -306,7 +306,7 @@ void CON_UpdateConsole(ConsoleInformation *console) {
 
 	orig_color = FG_COLOR;
 	orig_font = CCanvas::Current ()->Font ();
-	CCanvas::Current ()->SetFont (SMALL_FONT);
+	fontManager.SetCurrent (SMALL_FONT);
 	fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
 	//now draw text from last but second line to top
 	for(loop = 0; loop < Screenlines-1 && loop < console->LineBuffer - console->ConsoleScrollBack; loop++) {
@@ -324,7 +324,7 @@ void CON_UpdateConsole(ConsoleInformation *console) {
 						 console->ConsoleLines[console->ConsoleScrollBack + loop], NULL);
 		}
 	}
-	CCanvas::Current ()->SetFont (orig_font);
+	fontManager.SetCurrent (orig_font);
 	FG_COLOR = orig_color;
 	if(!gameOpts->menus.nStyle)
 		CCanvas::SetCurrent(canv_save);
@@ -684,7 +684,7 @@ void DrawCommandLine() {
 	//now add the text
 	orig_color = FG_COLOR;
 	orig_font = CCanvas::Current ()->Font ();
-	CCanvas::Current ()->SetFont (SMALL_FONT);
+	fontManager.SetCurrent (SMALL_FONT);
 	fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
 	GrString(CON_CHAR_BORDER, Topmost->ConsoleSurface->Bitmap ().Height () - Topmost->ConsoleSurface->Font ()->Height (), Topmost->VCommand, NULL);
 
@@ -718,7 +718,7 @@ void DrawCommandLine() {
 		else
 			GrString(x, Topmost->ConsoleSurface->Bitmap ().Height () - Topmost->ConsoleSurface->Font ()->Height (), CON_OVR_CURSOR, NULL);
 	}
-	CCanvas::Current ()->SetFont (orig_font);
+	fontManager.SetCurrent (orig_font);
 	FG_COLOR = orig_color;
 
 	if (!gameOpts->menus.nStyle)

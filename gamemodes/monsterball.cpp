@@ -54,7 +54,7 @@ else {
 	}
 #endif
 if (nDropSeg >= 0) {
-	nObject = DropPowerup (OBJ_POWERUP, POW_MONSTERBALL, -1, 1, vmsVector::ZERO, gameData.hoard.vMonsterballPos, nDropSeg);
+	nObject = DropPowerup (OBJ_POWERUP, POW_MONSTERBALL, -1, 1, CFixVector::ZERO, gameData.hoard.vMonsterballPos, nDropSeg);
 	if (nObject >= 0) {
 		gameData.hoard.monsterballP = OBJECTS + nObject;
 		gameData.hoard.monsterballP->SetType (OBJ_MONSTERBALL);

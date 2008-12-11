@@ -838,6 +838,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\main\gameargs.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\include\gamecntl.h"
 						>
 					</File>
@@ -1170,6 +1174,10 @@
 						</FileConfiguration>
 					</File>
 					<File
+						RelativePath="..\..\main\gameargs.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\main\gamecntl.cpp"
 						>
 						<FileConfiguration
@@ -1190,6 +1198,18 @@
 						</FileConfiguration>
 					</File>
 					<File
+						RelativePath="..\..\main\gamedata.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\main\gamefolders.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\main\gameoptions.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\main\gameseg.cpp"
 						>
 						<FileConfiguration
@@ -1208,6 +1228,10 @@
 								ObjectFile="$(IntDir)/$(InputName)1.obj"
 							/>
 						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\main\gamestates.cpp"
+						>
 					</File>
 					<File
 						RelativePath="..\..\main\highscores.cpp"
@@ -2483,6 +2507,10 @@
 					</File>
 					<File
 						RelativePath="..\..\include\objeffects.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\objrender.h"
 						>
 					</File>
 					<File
@@ -4589,11 +4617,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File
@@ -4650,6 +4678,10 @@
 			</File>
 			<File
 				RelativePath="..\..\include\glext.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\globvars.h"
 				>
 			</File>
 			<File

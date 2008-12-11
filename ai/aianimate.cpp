@@ -46,18 +46,18 @@ if (OBJ_IDX (objP) == nDbgObj)
 if (gameOpts->gameplay.bIdleAnims) {
 		int			h, i, j;
 		CSegment		*segP = gameData.segs.segments + objP->info.nSegment;
-		vmsVector	*vVertex, vVecToGoal, vGoal = gameData.objs.vRobotGoals [OBJ_IDX (objP)];
+		CFixVector	*vVertex, vVecToGoal, vGoal = gameData.objs.vRobotGoals [OBJ_IDX (objP)];
 
 	for (i = 0; i < 8; i++) {
 		vVertex = gameData.segs.vertices + segP->verts [i];
 		if ((vGoal[X] == (*vVertex)[X]) && (vGoal[Y] == (*vVertex)[Y]) && (vGoal[Z] == (*vVertex)[Z]))
 			break;
 		}
-	vVecToGoal = vGoal - objP->info.position.vPos; vmsVector::Normalize(vVecToGoal);
+	vVecToGoal = vGoal - objP->info.position.vPos; CFixVector::Normalize(vVecToGoal);
 	if (i == 8)
 		h = 1;
 	else if (AITurnTowardsVector (&vVecToGoal, objP, ROBOTINFO (objP->info.nId).turnTime [2]) < F1_0 - F1_0 / 5) {
-		if (vmsVector::Dot(vVecToGoal, objP->info.position.mOrient[FVEC]) > F1_0 - F1_0 / 5)
+		if (CFixVector::Dot(vVecToGoal, objP->info.position.mOrient[FVEC]) > F1_0 - F1_0 / 5)
 			h = rand () % 2 == 0;
 		else
 			h = 0;

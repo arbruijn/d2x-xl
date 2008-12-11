@@ -561,7 +561,7 @@ else
 
 void MovePlayerToSegment (CSegment *segP,int tSide)
 {
-	vmsVector vp;
+	CFixVector vp;
 
 COMPUTE_SEGMENT_CENTER (&gameData.objs.consoleP->info.position.vPos,segP);
 COMPUTE_SIDE_CENTER (&vp,segP,tSide);
@@ -1122,7 +1122,7 @@ for (;;) {
 		if (c == KEY_ALTED + KEY_CTRLED + KEY_ESC)
 			gameStates.app.bSingleStep = 0;
 		}
-	//if the tPlayer is taking damage, give up guided missile control
+	//if the CPlayerData is taking damage, give up guided missile control
 	if (LOCALPLAYER.shields != playerShields)
 		ReleaseGuidedMissile (gameData.multiplayer.nLocalPlayer);
 	//see if redbook song needs to be restarted
@@ -1278,17 +1278,15 @@ lightmapManager.Destroy ();
 PrintLog ("unloading particle data\n");
 particleManager.Shutdown ();
 PrintLog ("unloading shield sphere data\n");
-DestroySphere (&gameData.render.shield);
-DestroySphere (&gameData.render.monsterball);
+gameData.render.shield.Destroy ();
+gameData.render.monsterball.Destroy ();
 PrintLog ("unloading HUD icons\n");
 FreeInventoryIcons ();
 FreeObjTallyIcons ();
 PrintLog ("unloading extra texture data\n");
 FreeExtraImages ();
-PrintLog ("unloading shield data\n");
-FreeSphereCoord ();
 PrintLog ("unloading palettes\n");
-FreeSkyBoxSegList ();
+gameData.segs.skybox.Destroy ();
 CloseDynLighting ();
 if (gameStates.render.vr.buffers.offscreen) {
 	gameStates.render.vr.buffers.offscreen->Destroy ();
@@ -1514,7 +1512,7 @@ if (gameData.fusion.xAutoFireTime) {
 		}
 	else {
 		fix			xBump;
-		vmsVector	vRand;
+		CFixVector	vRand;
 
 		static time_t t0 = 0;
 		time_t t = gameStates.app.nSDLTicks;
@@ -1524,7 +1522,7 @@ if (gameData.fusion.xAutoFireTime) {
 		gameData.laser.nGlobalFiringCount = 0;
 		gameData.objs.consoleP->mType.physInfo.rotVel[X] += (d_rand () - 16384)/8;
 		gameData.objs.consoleP->mType.physInfo.rotVel[Z] += (d_rand () - 16384)/8;
-		vRand = vmsVector::Random();
+		vRand = CFixVector::Random();
 		xBump = F1_0*4;
 		if (gameData.fusion.xCharge > F1_0*2)
 			xBump = gameData.fusion.xCharge*4;
@@ -1809,7 +1807,7 @@ if (gameStates.render.bDoAppearanceEffect) {
 		LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
 		LOCALPLAYER.invulnerableTime = gameData.time.xGame-I2X (27);
 		bFakingInvul = 1;
-		SetSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
+		SetupSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
 		}
 	}
 //PrintLog ("DoSlowMotionFrame\n");
@@ -1971,30 +1969,30 @@ if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringC
 
 
 //	-------------------------------------------------------------------------------------------------------
-//	If tPlayer is close enough to nObject, which ought to be a powerup, pick it up!
+//	If CPlayerData is close enough to nObject, which ought to be a powerup, pick it up!
 //	This could easily be made difficulty level dependent.
 void PowerupGrabCheat (CObject *playerP, int nObject)
 {
 	CObject		*powerupP = OBJECTS + nObject;
 	tTransformation	*posP = OBJPOS (playerP);
-	vmsVector	vCollision;
+	CFixVector	vCollision;
 
 Assert (powerupP->info.nType == OBJ_POWERUP);
 if (powerupP->info.nFlags & OF_SHOULD_BE_DEAD)
 	return;
-if (vmsVector::Dist (powerupP->info.position.vPos, posP->vPos) >=
+if (CFixVector::Dist (powerupP->info.position.vPos, posP->vPos) >=
 	 2 * (playerP->info.xSize + powerupP->info.xSize) / (gameStates.app.bHaveExtraGameInfo [IsMultiGame] + 1))
 	return;
-vCollision = vmsVector::Avg (powerupP->info.position.vPos, posP->vPos);
+vCollision = CFixVector::Avg (powerupP->info.position.vPos, posP->vPos);
 CollidePlayerAndPowerup (playerP, powerupP, &vCollision);
 }
 
 //	-------------------------------------------------------------------------------------------------------
 //	Make it easier to pick up powerups.
 //	For all powerups in this CSegment, pick them up at up to twice pickuppable distance based on dot product
-//	from tPlayer to powerup and tPlayer's forward vector.
+//	from CPlayerData to powerup and CPlayerData's forward vector.
 //	This has the effect of picking them up more easily left/right and up/down, but not making them disappear
-//	way before the tPlayer gets there.
+//	way before the CPlayerData gets there.
 void PowerupGrabCheatAll (void)
 {
 if (gameStates.app.tick40fps.bTick) {
@@ -2012,7 +2010,7 @@ int	nLastLevelPathCreated = -1;
 #ifdef SHOW_EXIT_PATH
 
 //	------------------------------------------------------------------------------------------------------------------
-//	Create path for tPlayer from current CSegment to goal CSegment.
+//	Create path for CPlayerData from current CSegment to goal CSegment.
 //	Return true if path created, else return false.
 int MarkPlayerPathToSegment (int nSegment)
 {
@@ -2041,7 +2039,7 @@ if ((int) (gameData.ai.freePointSegs - gameData.ai.pointSegs) + MAX_PATH_LENGTH*
 	}
 for (i = 1; i < player_path_length; i++) {
 	short			nSegment, nObject;
-	vmsVector	vSegCenter;
+	CFixVector	vSegCenter;
 	CObject		*objP;
 
 	nSegment = gameData.ai.pointSegs [player_hide_index + i].nSegment;

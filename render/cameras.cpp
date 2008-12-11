@@ -156,7 +156,7 @@ int CCamera::Create (short nId, short srcSeg, short srcSide, short tgtSeg, short
 	int			h, i;
 #if 0
 	short			sideVerts [4];
-	vmsVector	*pv;
+	CFixVector	*pv;
 #endif
 
 Init ();
@@ -204,7 +204,7 @@ if (objP) {
 else {
 	m_info.objP = &m_info.obj;
 	if (bTeleport) {
-		vmsVector n = *gameData.segs.segments [srcSeg].sides [srcSide].normals;
+		CFixVector n = *gameData.segs.segments [srcSeg].sides [srcSide].normals;
 		/*
 		n[X] = -n[X];
 		n[Y] = -n[Y];
@@ -340,8 +340,8 @@ else
 		if (!bFitToWall && RENDERPATH) {
 			aImage = (float) CCanvas::Current ()->Bitmap ().Height () / (float) CCanvas::Current ()->Width ();
 			if (vertexP)
-				aFace = fVector::Dist(*reinterpret_cast<fVector*> (vertexP), *reinterpret_cast<fVector*> (vertexP + 1)) / 
-				        fVector::Dist(*reinterpret_cast<fVector*> (vertexP + 1), *reinterpret_cast<fVector*> (vertexP + i2));
+				aFace = CFloatVector::Dist(*reinterpret_cast<CFloatVector*> (vertexP), *reinterpret_cast<CFloatVector*> (vertexP + 1)) / 
+				        CFloatVector::Dist(*reinterpret_cast<CFloatVector*> (vertexP + 1), *reinterpret_cast<CFloatVector*> (vertexP + i2));
 			else
 				aFace = dvFace / duFace;
 			dv = (aImage - aFace) / (float) nScale;

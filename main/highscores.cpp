@@ -62,7 +62,7 @@ void ScoreTableDrawItem (int  i, int *sorted)
 
 	y = LHY (50+i*9) + yOffs;
 
-	// Print tPlayer name.
+	// Print CPlayerData name.
 
 GrPrintF (NULL, LHX (CENTERING_OFFSET (gameData.multiplayer.nPlayers)) + xOffs, y, "%s", gameData.multiplayer.players [sorted [i]].callsign);
   if (! ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIAL)))
@@ -107,7 +107,7 @@ void ScoreTableDrawCoopItem (int  i, int *sorted)
 {
 	int  x, y = LHY (50+i*9) + yOffs;
 
-// Print tPlayer name.
+// Print CPlayerData name.
 GrPrintF (NULL, LHX (CENTERING_OFFSET (gameData.multiplayer.nPlayers)) + xOffs, y, "%s", gameData.multiplayer.players [sorted [i]].callsign);
 GrPrintF (NULL, LHX (CENTERING_OFFSET (gameData.multiplayer.nPlayers)-15) + xOffs,y,"%c",szConditionLetters [gameData.multiplayer.players [sorted [i]].connected]);
 x = CENTERSCREEN + xOffs;
@@ -257,7 +257,7 @@ void ScoreTableReactor (const char *message)
 
 if ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIAL))
 	return;
-CCanvas::Current ()->SetFont (SMALL_FONT);
+fontManager.SetCurrent (SMALL_FONT);
 if (oldmessage [0]!=0) {
 	fontManager.SetColorRGBi (RGBA_PAL2 (0, 1, 0), 1, 0, 0);
 	FONT->StringSize (oldmessage, sw, sh, aw);
@@ -283,7 +283,7 @@ if (gameData.score.nPhallicMan==-1)
 	strcpy (message,TXT_NO_RECORD);
 else
 	sprintf (message, TXT_BEST_RECORD, gameData.multiplayer.players [gameData.score.nPhallicMan].callsign,gameData.score.nPhallicLimit);
-CCanvas::Current ()->SetFont (SMALL_FONT);
+fontManager.SetCurrent (SMALL_FONT);
 fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
 FONT->StringSize (message, sw, sh, aw);
 GrPrintF (NULL, CENTERSCREEN- (sw/2), LHY (55+72+3), message);
@@ -308,9 +308,9 @@ if (gameData.app.nGameMode & GM_MULTI_COOP) {
 	return;
 	}
 MultiSortKillList ();
-CCanvas::Current ()->SetFont (MEDIUM3_FONT);
+fontManager.SetCurrent (MEDIUM3_FONT);
 GrString (0x8000, LHY (10), TXT_KILL_MATRIX_TITLE, NULL);
-CCanvas::Current ()->SetFont (SMALL_FONT);
+fontManager.SetCurrent (SMALL_FONT);
 MultiGetKillList (sorted);
 ScoreTableDrawNames (sorted);
 for (i=0; i<gameData.multiplayer.nPlayers; i++) {
@@ -337,9 +337,9 @@ void ScoreTableDrawCoop ()
 	int sorted [MAX_NUM_NET_PLAYERS];
 
 MultiSortKillList ();
-CCanvas::Current ()->SetFont (MEDIUM3_FONT);
+fontManager.SetCurrent (MEDIUM3_FONT);
 GrString (0x8000, LHY (10), "COOPERATIVE SUMMARY", NULL);
-CCanvas::Current ()->SetFont (SMALL_FONT);
+fontManager.SetCurrent (SMALL_FONT);
 MultiGetKillList (sorted);
 ScoreTableDrawCoopNames (sorted);
 for (i=0; i<gameData.multiplayer.nPlayers; i++) {
@@ -504,7 +504,7 @@ while (!done) {
 			// Check timeout for idle players
 			if (SDL_GetTicks () > (uint) networkData.nLastPacketTime [i] + ENDLEVEL_IDLE_TIME) {
 	#if TRACE
-				con_printf (CONDBG, "idle timeout for tPlayer %d.\n", i);
+				con_printf (CONDBG, "idle timeout for CPlayerData %d.\n", i);
 	#endif
 				gameData.multiplayer.players [i].connected = 0;
 				NetworkSendEndLevelSub (i);

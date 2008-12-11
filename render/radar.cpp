@@ -40,7 +40,7 @@ static float		yRadar = 20;
 
 void RenderRadarBlip (CObject *objP, float r, float g, float b, float a)
 {
-	vmsVector	n, v [2];
+	CFixVector	n, v [2];
 	fix			m;
 	float			h, s;
 

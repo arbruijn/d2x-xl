@@ -26,7 +26,7 @@ int MaybeDropNetPowerup (short nObject, int powerupType, int nDropState);
 void RespawnDestroyedWeapon (short nObject);
 void MaybeReplacePowerupWithEnergy (CObject *del_obj);
 void DropPowerups ();
-int DropPowerup (ubyte nType, ubyte id, short owner, int num, const vmsVector& init_vel, const vmsVector& pos, short nSegment);
+int DropPowerup (ubyte nType, ubyte id, short owner, int num, const CFixVector& init_vel, const CFixVector& pos, short nSegment);
 // creates afterburner blobs behind the specified CObject
 void DropAfterburnerBlobs (CObject *obj, int count, fix size_scale, fix lifetime, CObject *pParent, int bThruster);
 int MaybeDropPrimaryWeaponEgg (CObject *playerObjP, int weapon_index);

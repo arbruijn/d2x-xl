@@ -248,7 +248,7 @@ void MaybeAddPlayerScore (int abortFlag)
 		if (position==0)	{
 			strcpy (text1,  "");
 			m [0].nType = NM_TYPE_TEXT; 
-			m [0].text = (char*) (TXT_COOL_SAYING);
+			m [0].text = const_cast<char*> (TXT_COOL_SAYING);
 			m [1].nType = NM_TYPE_INPUT; 
 			m [1].text = text1; 
 			m [1].text_len = COOL_MESSAGE_LEN - 5;
@@ -375,10 +375,10 @@ ReshowScores:
 	while (!done)	{
 		if (!bRedraw || gameOpts->menus.nStyle) {
 			NMDrawBackground (&bg,xOffs, yOffs, xOffs + 640, xOffs + 480, bRedraw);
-			CCanvas::Current ()->SetFont (MEDIUM3_FONT);
+			fontManager.SetCurrent (MEDIUM3_FONT);
 
 			GrString (0x8000, yOffs + LHY (15), TXT_HIGH_SCORES, NULL);
-			CCanvas::Current ()->SetFont (SMALL_FONT);
+			fontManager.SetCurrent (SMALL_FONT);
 			fontManager.SetColorRGBi (RGBA_PAL (31,26,5), 1, 0, 0);
 			GrString ( xOffs + LHX (31+33+XX), yOffs + LHY (46+7+YY), TXT_NAME, NULL);
 			GrString ( xOffs + LHX (82+33+XX), yOffs + LHY (46+7+YY), TXT_SCORE, NULL);

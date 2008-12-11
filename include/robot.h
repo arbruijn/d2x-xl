@@ -59,7 +59,7 @@ typedef struct jointlist {
 //  Robot information
 typedef struct tRobotInfo {
 	int     nModel;                  // which polygon model?
-	vmsVector  gunPoints[MAX_GUNS];   // where each gun model is
+	CFixVector  gunPoints[MAX_GUNS];   // where each gun model is
 	ubyte   gunSubModels[MAX_GUNS];    // which submodel is each gun in?
 
 	short   nExp1VClip;
@@ -81,22 +81,22 @@ typedef struct tRobotInfo {
 	fix     strength;       // Initial shields of robot
 	fix     mass;           // how heavy is this thing?
 	fix     drag;           // how much drag does it have?
-	fix     fieldOfView[NDL]; // compare this value with forward_vector.dot.vector_to_player, if fieldOfView <, then robot can see tPlayer
+	fix     fieldOfView[NDL]; // compare this value with forward_vector.dot.vector_to_player, if fieldOfView <, then robot can see CPlayerData
 	fix     primaryFiringWait[NDL];   //  time in seconds between shots
 	fix     secondaryFiringWait[NDL];  //  time in seconds between shots
 	fix     turnTime[NDL];     // time in seconds to rotate 360 degrees in a dimension
 // -- unused, mk, 05/25/95  fix fire_power[NDL];    //  damage done by a hit from this robot
 // -- unused, mk, 05/25/95  fix shield[NDL];        //  shield strength of this robot
 	fix     xMaxSpeed[NDL];         //  maximum speed attainable by this robot
-	fix     circleDistance[NDL];   //  distance at which robot circles tPlayer
+	fix     circleDistance[NDL];   //  distance at which robot circles CPlayerData
 
 	sbyte   nRapidFireCount[NDL];   //  number of shots fired rapidly
 	sbyte   evadeSpeed[NDL];       //  rate at which robot can evade shots, 0=none, 4=very fast
 	sbyte   cloakType;     //  0=never, 1=always, 2=except-when-firing
 	sbyte   attackType;    //  0=firing, 1=charge (like green guy)
 
-	ubyte   seeSound;      //  sound robot makes when it first sees the tPlayer
-	ubyte   attackSound;   //  sound robot makes when it attacks the tPlayer
+	ubyte   seeSound;      //  sound robot makes when it first sees the CPlayerData
+	ubyte   attackSound;   //  sound robot makes when it attacks the CPlayerData
 	ubyte   clawSound;     //  sound robot makes as it claws you (attackType should be 1)
 	ubyte   tauntSound;    //  sound robot makes after you die
 
@@ -106,7 +106,7 @@ typedef struct tRobotInfo {
 	sbyte   energyBlobs;   //  how many smart blobs are emitted when this guy gets hit by energy weapon!
 
 	sbyte   thief;          //  !0 means this guy can steal when he collides with you!
-	sbyte   pursuit;        //  !0 means pursues tPlayer after he goes around a corner.  4 = 4/2 pursue up to 4/2 seconds after becoming invisible if up to 4 segments away
+	sbyte   pursuit;        //  !0 means pursues CPlayerData after he goes around a corner.  4 = 4/2 pursue up to 4/2 seconds after becoming invisible if up to 4 segments away
 	sbyte   lightcast;      //  Amount of light cast. 1 is default.  10 is very large.
 	sbyte   bDeathRoll;     //  0 = dies without death roll. !0 means does death roll, larger = faster and louder
 
@@ -129,7 +129,7 @@ typedef struct tRobotInfo {
 typedef struct D1Robot_info {
 	int			nModel;							// which polygon model?
 	int			nGuns;								// how many different gun positions
-	vmsVector	gunPoints[MAX_GUNS];			// where each gun model is
+	CFixVector	gunPoints[MAX_GUNS];			// where each gun model is
 	ubyte			gunSubModels[MAX_GUNS];		// which submodel is each gun in?
 	short 		exp1_vclip_num;
 	short			exp1Sound_num;
@@ -147,21 +147,21 @@ typedef struct D1Robot_info {
 	fix		mass;										// how heavy is this thing?
 	fix		drag;										// how much drag does it have?
 
-	fix		fieldOfView[NDL];					// compare this value with forward_vector.dot.vector_to_player, if fieldOfView <, then robot can see tPlayer
+	fix		fieldOfView[NDL];					// compare this value with forward_vector.dot.vector_to_player, if fieldOfView <, then robot can see CPlayerData
 	fix		primaryFiringWait[NDL];						//	time in seconds between shots
 	fix		turnTime[NDL];						// time in seconds to rotate 360 degrees in a dimension
 	fix		fire_power[NDL];						//	damage done by a hit from this robot
 	fix		shield[NDL];							//	shield strength of this robot
 	fix		xMaxSpeed[NDL];						//	maximum speed attainable by this robot
-	fix		circleDistance[NDL];				//	distance at which robot circles tPlayer
+	fix		circleDistance[NDL];				//	distance at which robot circles CPlayerData
 
 	sbyte		nRapidFireCount[NDL];				//	number of shots fired rapidly
 	sbyte		evadeSpeed[NDL];						//	rate at which robot can evade shots, 0=none, 4=very fast
 	sbyte		cloakType;								//	0=never, 1=always, 2=except-when-firing
 	sbyte		attackType;							//	0=firing, 1=charge (like green guy)
 	sbyte		bossFlag;								//	0 = not boss, 1 = boss.  Is that surprising?
-	ubyte		seeSound;								//	sound robot makes when it first sees the tPlayer
-	ubyte		attackSound;							//	sound robot makes when it attacks the tPlayer
+	ubyte		seeSound;								//	sound robot makes when it first sees the CPlayerData
+	ubyte		attackSound;							//	sound robot makes when it attacks the CPlayerData
 	ubyte		clawSound;								//	sound robot makes as it claws you (attackType should be 1)
 
 	//animation info
@@ -201,8 +201,8 @@ void InitCamBots (int bReset);
 void UnloadCamBot (void);
 //given an CObject and a gun number, return position in 3-space of gun
 //fills in gun_point
-int CalcGunPoint(vmsVector *gun_point,CObject *obj,int gun_num);
-//void CalcGunPoint(vmsVector *gun_point,int nObject,int gun_num);
+int CalcGunPoint(CFixVector *gun_point,CObject *obj,int gun_num);
+//void CalcGunPoint(CFixVector *gun_point,int nObject,int gun_num);
 
 //  Tells joint positions for a gun to be in a specified state.
 //  A gun can have associated with it any number of joints.  In order to tell whether a gun is a certain

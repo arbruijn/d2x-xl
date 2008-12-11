@@ -1483,11 +1483,11 @@ RetrySelection:
 memset (m, 0, sizeof (m));
 for (i = 0; i < mct; i++ )	{
 	m [i].nType = NM_TYPE_MENU;
-	m [i].text = (char*) (CONTROL_TEXT(i));
+	m [i].text = const_cast<char*> (CONTROL_TEXT(i));
 	m [i].key = -1;
 	}
 nitems = i;
-m [0].text = (char*) (TXT_CONTROL_KEYBOARD);
+m [0].text = const_cast<char*> (TXT_CONTROL_KEYBOARD);
 choice = gameConfig.nControlType;				// Assume keyboard
 #ifndef APPLE_DEMO
 i = ExecMenu1( NULL, TXT_CHOOSE_INPUT, i, m, NULL, &choice );
@@ -2020,7 +2020,7 @@ for (i = 0; i < 2; i++) {
 
 ubyte dosControlType,winControlType;
 
-//read in the tPlayer's saved games.  returns errno (0 == no error)
+//read in the CPlayerData's saved games.  returns errno (0 == no error)
 int ReadPlayerFile (int bOnlyWindowSizes)
 {
 	CFile		cf;
@@ -2235,7 +2235,7 @@ return i;
 }
 
 //------------------------------------------------------------------------------
-//set a new highest level for tPlayer for this mission
+//set a new highest level for CPlayerData for this mission
 void SetHighestLevel (ubyte nLevel)
 {
 	int ret, i;
@@ -2250,7 +2250,7 @@ WritePlayerFile ();
 }
 
 //------------------------------------------------------------------------------
-//gets the tPlayer's highest level from the file for this mission
+//gets the CPlayerData's highest level from the file for this mission
 int GetHighestLevel(void)
 {
 	int i;
@@ -2560,7 +2560,7 @@ for (i = 0; i < 2; i++) {
 #endif
 //------------------------------------------------------------------------------
 
-//write out tPlayer's saved games.  returns errno (0 == no error)
+//write out CPlayerData's saved games.  returns errno (0 == no error)
 int WritePlayerFile (void)
 {
 	CFile	cf;
@@ -2583,7 +2583,7 @@ if (cf.file && isatty(fileno ()) {
 if (!cf.File ())
 	return errno;
 funcRes = EZERO;
-//Write out tPlayer's info
+//Write out CPlayerData's info
 cf.WriteInt (SAVE_FILE_ID);
 cf.WriteShort (PLAYER_FILE_VERSION);
 cf.WriteShort ((short) gameData.render.window.w);
@@ -2659,7 +2659,7 @@ return funcRes;
 }
 
 //------------------------------------------------------------------------------
-//update the tPlayer's highest level.  returns errno (0 == no error)
+//update the CPlayerData's highest level.  returns errno (0 == no error)
 int UpdatePlayerFile()
 {
 	int ret = ReadPlayerFile(0);
@@ -2723,7 +2723,7 @@ if (cf.Exist (filename,gameFolders.szProfDir, 0)) {
 	goto try_again;
 	}
 if (!NewPlayerConfig ())
-	goto try_again;			// They hit Esc during New tPlayer config
+	goto try_again;			// They hit Esc during New CPlayerData config
 strncpy (LOCALPLAYER.callsign, text, CALLSIGN_LEN);
 WritePlayerFile ();
 return 1;
@@ -2731,7 +2731,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-//Inputs the tPlayer's name, without putting up the background screen
+//Inputs the CPlayerData's name, without putting up the background screen
 int SelectPlayer (void)
 {
 	static int bStartup = 1;
@@ -2758,7 +2758,7 @@ if (LOCALPLAYER.callsign [0] == 0)	{
 	KCSetControls (0);
 	//----------------------------------------------------------------
 
-	// Read the last tPlayer's name from config file, not lastplr.txt
+	// Read the last CPlayerData's name from config file, not lastplr.txt
 	strncpy (LOCALPLAYER.callsign, gameConfig.szLastPlayer, CALLSIGN_LEN);
 	if (gameConfig.szLastPlayer [0] == 0)
 		bAllowAbort = 0;

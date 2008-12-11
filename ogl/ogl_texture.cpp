@@ -151,6 +151,12 @@ m_info.internalFormat = 4;
 m_info.format = gameStates.ogl.nRGBAFormat;
 m_info.w =
 m_info.h = 0;
+m_info.tw =
+m_info.th = 0;
+m_info.lw = 0;
+m_info.bMipMaps = 0;
+m_info.u = 
+m_info.v = 0;
 m_info.bRenderBuffer = 0;
 m_info.bmP = NULL;
 }
@@ -300,7 +306,7 @@ for (y = 0; y < m_info.th; y++) {
 			c = rawData [i++];
 		else
 			c = TRANSPARENCY_COLOR;	//fill the pad space with transparancy
-		if (nTransp && ((int) c == TRANSPARENCY_COLOR)) {
+		if (nTransp && (c == TRANSPARENCY_COLOR)) {
 			//bmP->Flags () |= BM_FLAG_TRANSPARENT;
 			switch (m_info.format) {
 				case GL_LUMINANCE:
@@ -319,7 +325,7 @@ for (y = 0; y < m_info.th; y++) {
 					break;
 
 				case GL_RGBA:
-					*reinterpret_cast<GLuint*> ( bufP) = (nTransp ? 0 : 0xffffffff);
+					*reinterpret_cast<GLuint*> (bufP) = (nTransp ? 0 : 0xffffffff);
 					bufP += 4;
 					break;
 				
@@ -671,6 +677,7 @@ void CTexture::Destroy (void)
 {
 if (m_info.handle && (m_info.handle != (GLuint) -1)) {
 	OglDeleteTextures (1, reinterpret_cast<GLuint*> (&m_info.handle));
+	m_info.handle = 0;
 	Unlink ();
 	Init ();
 	}
@@ -783,7 +790,12 @@ if (!m_info.handle) {
 	return 1;
 	}
 Bind ();
+int i;
+//GLclampf prio = 1;
+//glPrioritizeTextures (1, (GLuint *) &m_info.handle, &prio);
+i = glGetError ();
 glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+i = glGetError ();
 if (m_info.bMipMaps) {
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gameStates.ogl.texMagFilter);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gameStates.ogl.texMinFilter);
@@ -792,6 +804,7 @@ else {
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
+i = glGetError ();
 #if TEXTURE_COMPRESSION
 if (bCompressed) {
 	glCompressedTexImage2D (
@@ -805,10 +818,11 @@ else
 		gluBuild2DMipmaps (GL_TEXTURE_2D, m_info.internalFormat, m_info.tw, m_info.th, m_info.format, GL_UNSIGNED_BYTE, buffer);
 	else
 		glTexImage2D (GL_TEXTURE_2D, 0, m_info.internalFormat, m_info.tw, m_info.th, 0, m_info.format, GL_UNSIGNED_BYTE, buffer);
+i = glGetError ();
 #if TEXTURE_COMPRESSION
 	Compress ();
 #endif
-	SetSize ();
+	//SetSize ();
 	}
 return 0;
 }

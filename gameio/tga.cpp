@@ -356,7 +356,7 @@ if (!pszFolder)
 if (ReadS3TC (bmP, pszFolder, pszFile))
 	return 1;
 #endif
-if (!cf.Open (pszFile, pszFolder, "rb", 0) && !(psz = (char*) (strstr (pszFile, ".tga")))) {
+if (!cf.Open (pszFile, pszFolder, "rb", 0) && !(psz = const_cast<char*> (strstr (pszFile, ".tga")))) {
 	strcpy (fn, pszFile);
 	if ((psz = strchr (fn, '.')))
 		*psz = '\0';

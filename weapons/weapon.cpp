@@ -109,7 +109,7 @@ ubyte nDefaultWeaponOrder [2][11]= {{9,8,7,6,5,4,3,2,1,0,255},{9,8,4,3,1,5,0,255
 
 ubyte bCycling = 0;
 
-//allow tPlayer to reorder menus?
+//allow CPlayerData to reorder menus?
 
 //char	*Primary_weapon_names [MAX_PRIMARY_WEAPONS] = {
 //	"Laser Cannon",
@@ -275,7 +275,7 @@ int PlayerHasWeapon (int nWeapon, int bSecondary, int nPlayer, int bAll)
 {
 	int		returnValue = 0;
 	int		nWeaponIndex;
-	tPlayer	*playerP = gameData.multiplayer.players + ((nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer);
+	CPlayerData	*playerP = gameData.multiplayer.players + ((nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer);
 
 //	Hack! If energy goes negative, you can't fire a weapon that doesn't require energy.
 //	But energy should not go negative (but it does), so find out why it does!
@@ -322,7 +322,7 @@ if (!bSecondary) {
 	else
 		if (WI_ammo_usage (nWeaponIndex) <= playerP->primaryAmmo [nWeapon])
 			returnValue |= HAS_AMMO_FLAG;
-	if (nWeapon == OMEGA_INDEX) {	// Hack: Make sure tPlayer has energy to omega
+	if (nWeapon == OMEGA_INDEX) {	// Hack: Make sure CPlayerData has energy to omega
 		if (playerP->energy || gameData.omega.xCharge)
 			returnValue |= HAS_ENERGY_FLAG;
 		}
@@ -575,7 +575,7 @@ return SUPER_LASER_INDEX;
 
 void SetLastSuperWeaponStates (void)
 {
-	tPlayer	*playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
+	CPlayerData	*playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
 	int		i, j;
 
 for (i = 0, j = 1 << 5; i < 5; i++, j <<= 1) {
@@ -701,7 +701,7 @@ else {
 #if DBG
 
 //	----------------------------------------------------------------------------------------
-//	Show tPlayer which weapons he has, how much ammo...
+//	Show CPlayerData which weapons he has, how much ammo...
 //	Looks like a debug screen now because it writes to mono screen, but that will change...
 void ShowWeaponStatus (void)
 {
@@ -742,7 +742,7 @@ void ProcessSmartMinesFrame (void)
 	int			nParentObj;
 	fix			dist;
 	CObject		*bombP, *actorP;
-	vmsVector	*vBombPos;
+	CFixVector	*vBombPos;
 
 	//	If we don't know of there being any super mines in the level, just
 	//	check every 8th CObject each frame.
@@ -761,7 +761,7 @@ FORALL_WEAPON_OBJS (bombP, i) {
 		j = OBJ_IDX (actorP);
 		if (j == nParentObj) 
 			continue;
-		dist = vmsVector::Dist (*vBombPos, actorP->info.position.vPos);
+		dist = CFixVector::Dist (*vBombPos, actorP->info.position.vPos);
 		if (dist - actorP->info.xSize >= F1_0*20)
 			continue;
 		if (bombP->info.nSegment == actorP->info.nSegment)
@@ -800,7 +800,7 @@ int ArmedBomb (void)
 
 	//use the last one selected, unless there aren't any, in which case use
 	//the other if there are any
-   // If hoard game, only let the tPlayer drop smart mines
+   // If hoard game, only let the CPlayerData drop smart mines
 if (gameData.app.nGameMode & GM_ENTROPY)
    return PROXMINE_INDEX; //allow for dropping orbs
 if (gameData.app.nGameMode & GM_HOARD)

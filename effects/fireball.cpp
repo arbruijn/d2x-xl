@@ -108,13 +108,13 @@ return objP;
 
 //------------------------------------------------------------------------------
 
-CObject *ObjectCreateExplosionSub (CObject *objP, short nSegment, vmsVector *vPos, fix xSize,
+CObject *ObjectCreateExplosionSub (CObject *objP, short nSegment, CFixVector *vPos, fix xSize,
 											  ubyte nVClip, fix xMaxDamage, fix xMaxDistance, fix xMaxForce, short nParent)
 {
 	short			nObject;
 	CObject		*explObjP, *obj0P;
 	fix			dist, force, damage;
-	vmsVector	pos_hit, vForce;
+	CFixVector	pos_hit, vForce;
 	int			i, t, id;
 
 nObject = CreateFireball (nVClip, nSegment, *vPos, xSize, RT_FIREBALL);
@@ -158,7 +158,7 @@ FORALL_OBJS (obj0P, i) {
 		}
 	else if ((t != OBJ_REACTOR) && (t != OBJ_PLAYER))
 		continue;
-	dist = vmsVector::Dist (obj0P->info.position.vPos, explObjP->info.position.vPos);
+	dist = CFixVector::Dist (obj0P->info.position.vPos, explObjP->info.position.vPos);
 	// Make damage be from 'xMaxDamage' to 0.0, where 0.0 is 'xMaxDistance' away;
 	if (dist >= xMaxDistance)
 		continue;
@@ -167,7 +167,7 @@ FORALL_OBJS (obj0P, i) {
 	damage = xMaxDamage - FixMulDiv (dist, xMaxDamage, xMaxDistance);
 	force = xMaxForce - FixMulDiv (dist, xMaxForce, xMaxDistance);
 	// Find the force vector on the CObject
-	vmsVector::NormalizedDir(vForce, obj0P->info.position.vPos, explObjP->info.position.vPos);
+	CFixVector::NormalizedDir(vForce, obj0P->info.position.vPos, explObjP->info.position.vPos);
 	vForce *= force;
 	// Find where the point of impact is... (pos_hit)
 	pos_hit = explObjP->info.position.vPos - obj0P->info.position.vPos;
@@ -180,7 +180,7 @@ FORALL_OBJS (obj0P, i) {
 			}
 		}
 	else if (t == OBJ_ROBOT) {
-		vmsVector	vNegForce;
+		CFixVector	vNegForce;
 		fix			xScale = -2 * (7 - gameStates.app.nDifficultyLevel) / 8;
 
 		PhysApplyForce (obj0P, &vForce);
@@ -235,7 +235,7 @@ FORALL_OBJS (obj0P, i) {
 		}
 	else if (t == OBJ_PLAYER) {
 		CObject		*killerP = NULL;
-		vmsVector	vForce2;
+		CFixVector	vForce2;
 
 		//	Hack!Warning!Test code!
 		if (objP && gameData.weapons.info [objP->info.nId].flash && obj0P->info.nId==gameData.multiplayer.nLocalPlayer) {
@@ -278,7 +278,7 @@ return explObjP;
 
 //------------------------------------------------------------------------------
 
-CObject *ObjectCreateBadassExplosion (CObject *objP, short nSegment, vmsVector *position, fix size, ubyte nVClip,
+CObject *ObjectCreateBadassExplosion (CObject *objP, short nSegment, CFixVector *position, fix size, ubyte nVClip,
 												  fix maxDamage, fix maxDistance, fix maxForce, short parent)
 {
 	CObject	*explObjP = ObjectCreateExplosionSub (objP, nSegment, position, size, nVClip, maxDamage, maxDistance, maxForce, parent);
@@ -291,7 +291,7 @@ return explObjP;
 //------------------------------------------------------------------------------
 //blows up a xBadAss weapon, creating the xBadAss explosion
 //return the explosion CObject
-CObject *ExplodeBadassWeapon (CObject *objP, vmsVector *vPos)
+CObject *ExplodeBadassWeapon (CObject *objP, CFixVector *vPos)
 {
 	tWeaponInfo *wi = &gameData.weapons.info [objP->info.nId];
 
@@ -299,10 +299,10 @@ Assert (wi->damage_radius);
 if ((objP->info.nId == EARTHSHAKER_ID) || (objP->info.nId == ROBOT_EARTHSHAKER_ID))
 	ShakerRockStuff ();
 DigiLinkSoundToObject (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F1_0, SOUNDCLASS_EXPLOSION);
-vmsVector v;
+CFixVector v;
 if (gameStates.render.bPerPixelLighting == 2) { //make sure explosion center is not behind some wall
 	v = objP->info.vLastPos - objP->info.position.vPos;
-	vmsVector::Normalize(v);
+	CFixVector::Normalize(v);
 //VmVecScale (&v, F1_0 * 10);
 	v += *vPos;
 	}
@@ -331,7 +331,7 @@ return explObjP;
 }
 
 //------------------------------------------------------------------------------
-//blows up the tPlayer with a xBadAss explosion
+//blows up the CPlayerData with a xBadAss explosion
 //return the explosion CObject
 CObject *ExplodeBadassPlayer (CObject *objP)
 {
@@ -340,7 +340,7 @@ return ExplodeBadassObject (objP, F1_0*50, F1_0*40, F1_0*150);
 
 //------------------------------------------------------------------------------
 
-inline double VectorVolume (const vmsVector& vMin, const vmsVector& vMax)
+inline double VectorVolume (const CFixVector& vMin, const CFixVector& vMax)
 {
 return fabs (X2F (vMax[X] - vMin[X])) *
 		 fabs (X2F (vMax[Y] - vMin[Y])) *
@@ -408,14 +408,14 @@ debrisP->mType.physInfo.velocity[X] = RAND_MAX/2 - d_rand ();
 debrisP->mType.physInfo.velocity[Y] = RAND_MAX/2 - d_rand ();
 debrisP->mType.physInfo.velocity[Z] = RAND_MAX/2 - d_rand ();
 debrisP->mType.physInfo.velocity *= (F1_0 * 10);
-vmsVector::Normalize (debrisP->mType.physInfo.velocity);
+CFixVector::Normalize (debrisP->mType.physInfo.velocity);
 debrisP->mType.physInfo.velocity *= (I2X (10 + (30 * d_rand () / RAND_MAX)));
 debrisP->mType.physInfo.velocity += parentObjP->mType.physInfo.velocity;
 // -- used to be: Notice, not random!VmVecMake (&debrisP->mType.physInfo.rotVel, 10*0x2000/3, 10*0x4000/3, 10*0x7000/3);
 #if 0//def _DEBUG
 VmVecZero (&debrisP->mType.physInfo.rotVel);
 #else
-debrisP->mType.physInfo.rotVel = vmsVector::Create(d_rand () + 0x1000, d_rand ()*2 + 0x4000, d_rand ()*3 + 0x2000);
+debrisP->mType.physInfo.rotVel = CFixVector::Create(d_rand () + 0x1000, d_rand ()*2 + 0x4000, d_rand ()*3 + 0x2000);
 #endif
 debrisP->mType.physInfo.rotThrust.SetZero();
 debrisP->info.xLifeLeft = nDebrisLife [gameOpts->render.nDebrisLife] * F1_0 + 3*DEBRIS_LIFE/4 + FixMul (d_rand (), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
@@ -579,7 +579,7 @@ if (objP->info.renderType == RT_SHRAPNELS) {
 if ((objP->info.xLifeLeft <= objP->cType.explInfo.nSpawnTime) && (objP->cType.explInfo.nDeleteObj >= 0)) {
 	CObject		*explObjP, *delObjP;
 	ubyte			nVClip;
-	vmsVector	*vSpawnPos;
+	CFixVector	*vSpawnPos;
 	fix			xBadAss;
 
 	if ((objP->cType.explInfo.nDeleteObj < 0) ||
@@ -614,7 +614,7 @@ if ((objP->info.xLifeLeft <= objP->cType.explInfo.nSpawnTime) && (objP->cType.ex
 	else
 		explObjP = ObjectCreateExplosion (delObjP->info.nSegment, vSpawnPos, FixMul (delObjP->info.xSize, EXPLOSION_SCALE), nVClip);
 	if ((delObjP->info.contains.nCount > 0) && !IsMultiGame) { // Multiplayer handled outside of this code!!
-		//	If dropping a weapon that the tPlayer has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
+		//	If dropping a weapon that the CPlayerData has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
 		if (delObjP->info.contains.nType == OBJ_POWERUP)
 			MaybeReplacePowerupWithEnergy (delObjP);
 		if ((delObjP->info.contains.nType != OBJ_ROBOT) || !(delObjP->info.nFlags & OF_ARMAGEDDON))
@@ -692,7 +692,7 @@ for (i = 0; i < MAX_EXPLODING_WALLS; i++)
 void ExplodeWall (short nSegment, short nSide)
 {
 	int i;
-	vmsVector pos;
+	CFixVector pos;
 
 	//find a D2_FREE slot
 
@@ -748,8 +748,8 @@ for (i = 0; i < MAX_EXPLODING_WALLS; i++) {
 		//now create all the next explosions
 		for (e = oldCount; e < newCount; e++) {
 			short			vertnum_list [4];
-			vmsVector	*v0, *v1, *v2;
-			vmsVector	vv0, vv1, pos;
+			CFixVector	*v0, *v1, *v2;
+			CFixVector	vv0, vv1, pos;
 			fix			size;
 
 			//calc expl position

@@ -43,7 +43,7 @@ int GetPolyModelMinMax (void *modelP, tHitbox *phb, int nSubModels)
 {
 	ubyte			*p = reinterpret_cast<ubyte*> (modelP);
 	int			i, n, nVerts;
-	vmsVector	*v, hv;
+	CFixVector	*v, hv;
 	tHitbox		hb = *phb;
 
 G3CheckAndSwap (modelP);
@@ -69,7 +69,7 @@ for (;;)
 				else if (hb.vMax[Z] < hv[Z])
 					hb.vMax[Z] = hv[Z];
 				}
-			p += n * sizeof (vmsVector) + 4;
+			p += n * sizeof (CFixVector) + 4;
 			break;
 
 		case OP_DEFP_START:
@@ -90,7 +90,7 @@ for (;;)
 				else if (hb.vMax[Z] < hv[Z])
 					hb.vMax[Z] = hv[Z];
 				}
-			p += n * sizeof (vmsVector) + 8;
+			p += n * sizeof (CFixVector) + 8;
 			break;
 
 		case OP_FLATPOLY:
@@ -150,7 +150,7 @@ return nSubModels;
 //------------------------------------------------------------------------------
 
 #if 0
-	static		fVector hitBoxOffsets [8] = {
+	static		CFloatVector hitBoxOffsets [8] = {
 		{-1.0f, +0.95f, -0.8f},
 		{+1.0f, +0.95f, -0.8f},
 		{+1.0f, -1.05f, -0.8f},
@@ -160,15 +160,15 @@ return nSubModels;
 		{+1.0f, -1.05f, +1.2f},
 		{-1.0f, -1.05f, +1.2f}
 #else
-	vmsVector hitBoxOffsets [8] = {
-		vmsVector::Create(1, 0, 1),
-		vmsVector::Create(0, 0, 1),
-		vmsVector::Create(0, 1, 1),
-		vmsVector::Create(1, 1, 1),
-		vmsVector::Create(1, 0, 0),
-		vmsVector::Create(0, 0, 0),
-		vmsVector::Create(0, 1, 0),
-		vmsVector::Create(1, 1, 0)
+	CFixVector hitBoxOffsets [8] = {
+		CFixVector::Create(1, 0, 1),
+		CFixVector::Create(0, 0, 1),
+		CFixVector::Create(0, 1, 1),
+		CFixVector::Create(1, 1, 1),
+		CFixVector::Create(1, 0, 0),
+		CFixVector::Create(0, 0, 0),
+		CFixVector::Create(0, 1, 0),
+		CFixVector::Create(1, 1, 0)
 #endif
 		};
 
@@ -184,10 +184,10 @@ int hitboxFaceVerts [6][4] = {
 void ComputeHitbox (int nModel, int iHitbox)
 {
 	tHitbox			*phb = gameData.models.hitboxes [nModel].hitboxes + iHitbox;
-	vmsVector		vMin = phb->vMin;
-	vmsVector		vMax = phb->vMax;
-	vmsVector		vOffset = phb->vOffset;
-	vmsVector		*pv = phb->box.vertices;
+	CFixVector		vMin = phb->vMin;
+	CFixVector		vMax = phb->vMax;
+	CFixVector		vOffset = phb->vOffset;
+	CFixVector		*pv = phb->box.vertices;
 	tQuad				*pf;
 	int				i;
 
@@ -197,7 +197,7 @@ for (i = 0; i < 8; i++) {
 	pv [i][Z] = (hitBoxOffsets [i][Z] ? vMin[Z] : vMax[Z]) + vOffset[Z];
 	}
 for (i = 0, pf = phb->box.faces; i < 6; i++, pf++) {
-	*pf->n = vmsVector::Normal(pv[hitboxFaceVerts [i][0]], pv[hitboxFaceVerts [i][1]], pv[hitboxFaceVerts [i][2]]);
+	*pf->n = CFixVector::Normal(pv[hitboxFaceVerts [i][0]], pv[hitboxFaceVerts [i][1]], pv[hitboxFaceVerts [i][2]]);
 	}
 }
 
@@ -205,11 +205,11 @@ for (i = 0, pf = phb->box.faces; i < 6; i++, pf++) {
 
 #if 0
 
-void TransformHitbox (CObject *objP, vmsVector *vPos, int iSubObj)
+void TransformHitbox (CObject *objP, CFixVector *vPos, int iSubObj)
 {
 	tHitbox			*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes + iSubObj;
 	tQuad				*pf = phb->faces;
-	vmsVector		rotVerts [8];
+	CFixVector		rotVerts [8];
 	vmsMatrix		*viewP = ObjectView (objP);
 	int				i, j;
 
@@ -235,11 +235,11 @@ for (i = 0; i < 6; i++, pf++) {
 
 #if G3_HITBOX_TRANSFORM
 
-void TransformHitboxes (CObject *objP, vmsVector *vPos, tBox *phb)
+void TransformHitboxes (CObject *objP, CFixVector *vPos, tBox *phb)
 {
 	tHitbox		*pmhb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
 	tQuad			*pf;
-	vmsVector	rotVerts [8];
+	CFixVector	rotVerts [8];
 	int			i, j, iModel, nModels;
 
 if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
@@ -265,11 +265,11 @@ G3DoneInstance ();
 
 #else //G3_HITBOX_TRANSFORM
 
-void TransformHitboxes (CObject *objP, vmsVector *vPos, tBox *phb)
+void TransformHitboxes (CObject *objP, CFixVector *vPos, tBox *phb)
 {
 	tHitbox		*pmhb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
 	tQuad			*pf;
-	vmsVector	rotVerts [8];
+	CFixVector	rotVerts [8];
 	vmsMatrix	*viewP = ObjectView (objP);
 	int			i, j, iBox, nBoxes;
 
@@ -291,7 +291,7 @@ for (phb += iBox, pmhb += iBox; iBox <= nBoxes; iBox++, phb++, pmhb++) {
 	for (i = 0, pf = phb->faces; i < 6; i++, pf++) {
 		for (j = 0; j < 4; j++)
 			pf->v [j] = rotVerts [hitboxFaceVerts [i][j]];
-		pf->n[1] = vmsVector::Normal(pf->v[0], pf->v[1], pf->v[2]);
+		pf->n[1] = CFixVector::Normal(pf->v[0], pf->v[1], pf->v[2]);
 		}
 	}
 }
@@ -305,7 +305,7 @@ fix G3PolyModelSize (tPolyModel *pm, int nModel)
 	int			nSubModels = 1;
 	int			i;
 	tHitbox		*phb = gameData.models.hitboxes [nModel].hitboxes;
-	vmsVector	hv;
+	CFixVector	hv;
 	double		dx, dy, dz;
 
 for (i = 0; i <= MAX_HITBOXES; i++) {

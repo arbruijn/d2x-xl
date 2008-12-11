@@ -185,7 +185,7 @@ void PagingTouchObject (CObject *objP)
 
 switch (objP->info.renderType) {
 	case RT_NONE:
-		break;		//doesn't render, like the tPlayer
+		break;		//doesn't render, like the CPlayerData
 
 	case RT_POLYOBJ:
 		if (objP->rType.polyObjInfo.nTexOverride == -1)

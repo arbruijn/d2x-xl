@@ -291,7 +291,7 @@ if (color->alpha < 0)
 	color->alpha = (float) gameStates.render.grAlpha / (float) FADE_LEVELS;
 #if 1
 if (gameOpts->render.bDepthSort > 0) {
-	fVector	vertices [8];
+	CFloatVector	vertices [8];
 
 	for (i = 0; i < nVertices; i++)
 		vertices [i] = gameData.render.vertP [pointList [i]->p3_index];
@@ -352,7 +352,7 @@ int G3DrawTexPolyFlat (
 	CBitmap	*bmBot,
 	CBitmap	*bmTop,
 	tLightmap	*lightmap,
-	vmsVector	*pvNormal,
+	CFixVector	*pvNormal,
 	int			orient,
 	int			bBlend,
 	short			nSegment)
@@ -406,7 +406,7 @@ int G3DrawTexPolyMulti (
 	CBitmap	*bmBot,
 	CBitmap	*bmTop,
 	tLightmap	*lightmap,
-	vmsVector	*pvNormal,
+	CFixVector	*pvNormal,
 	int			orient,
 	int			bBlend,
 	short			nSegment)
@@ -423,7 +423,7 @@ int G3DrawTexPolyMulti (
 	CBitmap	*bmP = NULL, *mask = NULL;
 	g3sPoint		*pl, **ppl;
 #if USE_VERTNORMS
-	fVector		vNormal, vVertPos;
+	CFloatVector		vNormal, vVertPos;
 #endif
 #if G3_DRAW_ARRAYS
 	int			bVertexArrays = gameData.render.vertP != NULL;
@@ -540,7 +540,7 @@ if (!bDepthSort) {
 
 gameStates.ogl.fAlpha = gameStates.render.grAlpha / (float) FADE_LEVELS;
 if (bVertexArrays || bDepthSort) {
-		fVector		vertices [8];
+		CFloatVector		vertices [8];
 		tFaceColor	vertColors [8];
 		tTexCoord2f	texCoord [2][8];
 		int			vertIndex [8];
@@ -578,7 +578,7 @@ if (bVertexArrays) {
 		bVertexArrays = 0;
 		goto retry;
 		}
-	glVertexPointer (3, GL_FLOAT, sizeof (fVector), vertices);
+	glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vertices);
 //	glIndexPointer (GL_INT, 0, colorIndex);
 	glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), texCoord [0]);
 	if (bLight)
@@ -589,7 +589,7 @@ if (bVertexArrays) {
 			bVertexArrays = 0;
 			goto retry;
 			}
-		glVertexPointer (3, GL_FLOAT, sizeof (fVector), vertices);
+		glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vertices);
 		if (bLight)
 			glColorPointer (4, GL_FLOAT, sizeof (tFaceColor), vertColors);
 //		glIndexPointer (GL_INT, 0, colorIndex);
@@ -737,7 +737,7 @@ int G3DrawTexPolyLightmap (
 	CBitmap	*bmBot,
 	CBitmap	*bmTop,
 	tLightmap	*lightmap,
-	vmsVector	*pvNormal,
+	CFixVector	*pvNormal,
 	int			orient,
 	int			bBlend,
 	short			nSegment)
@@ -830,7 +830,7 @@ int G3DrawTexPolySimple (
 	g3sPoint		**pointList,
 	tUVL			*uvlList,
 	CBitmap	*bmP,
-	vmsVector	*pvNormal,
+	CFixVector	*pvNormal,
 	int			bBlend)
 {
 	int			i;
@@ -838,7 +838,7 @@ int G3DrawTexPolySimple (
 					bDynLight = gameStates.render.bApplyDynLight && !gameStates.app.bEndLevelSequence;
 	g3sPoint		*pl, **ppl;
 #if USE_VERTNORMS
-	fVector		vNormal, vVertPos;
+	CFloatVector		vNormal, vVertPos;
 #endif
 
 if (gameStates.render.nShadowBlurPass == 1) {
@@ -935,7 +935,7 @@ return 0;
 //------------------------------------------------------------------------------
 
 int G3DrawSprite (
-	const vmsVector&	vPos,
+	const CFixVector&	vPos,
 	fix			xWidth,
 	fix			xHeight,
 	CBitmap	*bmP,
@@ -944,7 +944,7 @@ int G3DrawSprite (
 	int			bAdditive,
 	float			fSoftRad)
 {
-	vmsVector	pv, v1;
+	CFixVector	pv, v1;
 	GLdouble		h, w, u, v, x, y, z;
 
 if ((gameOpts->render.bDepthSort > 0) /*|| (gameOpts->render.effects.bSoftParticles & 1)*/) { //&& ((colorP && (colorP->alpha < 0)) || (alpha < 0))) {
@@ -1018,7 +1018,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OglRenderArrays (CBitmap *bmP, int nFrame, fVector *vertexP, int nVertices, tTexCoord2f *texCoordP,
+int OglRenderArrays (CBitmap *bmP, int nFrame, CFloatVector *vertexP, int nVertices, tTexCoord2f *texCoordP,
 							tRgbaColorf *colorP, int nColors, int nPrimitive, int nWrap)
 {
 	int	bVertexArrays = G3EnableClientStates (bmP && texCoordP, colorP && (nColors == nVertices), 0, GL_TEXTURE0);
@@ -1044,7 +1044,7 @@ if (bVertexArrays) {
 		else
 			glColor4fv (reinterpret_cast<GLfloat*> (colorP));
 		}
-	glVertexPointer (3, GL_FLOAT, sizeof (fVector), vertexP);
+	glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vertexP);
 	glDrawArrays (nPrimitive, 0, nVertices);
 	glDisableClientState (GL_VERTEX_ARRAY);
 	if (texCoordP)

@@ -42,7 +42,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define	PATH_VALIDATION	1
 #endif
 
-void AIPathSetOrientAndVel (CObject *objP, vmsVector* vGoalPoint, int nPlayerVisibility, vmsVector *vec_to_player);
+void AIPathSetOrientAndVel (CObject *objP, CFixVector* vGoalPoint, int nPlayerVisibility, CFixVector *vec_to_player);
 void MaybeAIPathGarbageCollect (void);
 void AIPathGarbageCollect (void);
 #if PATH_VALIDATION
@@ -72,7 +72,7 @@ for (i = 0; i<MAX_SIDES_PER_SEGMENT; i++) {
 
 tPointSeg *InsertTransitPoint (tPointSeg *curSegP, tPointSeg *predSegP, tPointSeg *succSegP, ubyte nConnSide)
 {
-	vmsVector	vCenter, vPoint;
+	CFixVector	vCenter, vPoint;
 	short			nSegment;
 
 COMPUTE_SIDE_CENTER (&vCenter, gameData.segs.segments + predSegP->nSegment, nConnSide);
@@ -98,7 +98,7 @@ return curSegP;
 int OptimizePath (tPointSeg *pointSegP, int nSegs)
 {
 	int			i, j;
-	vmsVector	temp1, temp2;
+	CFixVector	temp1, temp2;
 	fix			dot, mag1, mag2 = 0;
 
 for (i = 1; i < nSegs - 1; i += 2) {
@@ -112,7 +112,7 @@ for (i = 1; i < nSegs - 1; i += 2) {
 		}
 	temp2 = pointSegP [i + 1].point - pointSegP [i].point;
 	mag2 = temp1.Mag();
-	dot = vmsVector::Dot(temp1, temp2);
+	dot = CFixVector::Dot(temp1, temp2);
 	if (dot * 9/8 > FixMul (mag1, mag2))
 		pointSegP [i].nSegment = -1;
 	}
@@ -154,8 +154,8 @@ void MoveTowardsOutside (tPointSeg *ptSegs, int *nPoints, CObject *objP, int bRa
 	int			nNewSeg;
 	fix			xSegSize;
 	int			nSegment;
-	vmsVector	a, b, c, d, e;
-	vmsVector	vGoalPos;
+	CFixVector	a, b, c, d, e;
+	CFixVector	vGoalPos;
 	int			count;
 	int			nTempSeg;
 	tFVIQuery	fq;
@@ -174,20 +174,20 @@ for (i = 1, --j; i < j; i++) {
 
 	if (i == 1) {
 		a = ptSegs [i].point - ptSegs [i-1].point;
-		vmsVector::Normalize(a);
+		CFixVector::Normalize(a);
 		}
 	else
 		a = b;
 	b = ptSegs [i + 1].point - ptSegs [i].point;
 	c = ptSegs [i + 1].point - ptSegs [i-1].point;
-	vmsVector::Normalize(b);
-	if (abs (vmsVector::Dot(a, b)) > 3*F1_0/4) {
+	CFixVector::Normalize(b);
+	if (abs (CFixVector::Dot(a, b)) > 3*F1_0/4) {
 		if (abs (a[Z]) < F1_0/2) {
 			if (bRandom) {
 				e[X] = (d_rand ()- 16384) / 2;
 				e[Y] = (d_rand ()- 16384) / 2;
 				e[Z] = abs (e[X]) + abs (e[Y]) + 1;
-				vmsVector::Normalize(e);
+				CFixVector::Normalize(e);
 				}
 			else {
 				e[X] =
@@ -200,7 +200,7 @@ for (i = 1, --j; i < j; i++) {
 				e[Y] = (d_rand ()-16384)/2;
 				e[Z] = (d_rand ()-16384)/2;
 				e[X] = abs (e[Y]) + abs (e[Z]) + 1;
-				vmsVector::Normalize(e);
+				CFixVector::Normalize(e);
 				}
 			else {
 				e[X] = F1_0;
@@ -210,15 +210,15 @@ for (i = 1, --j; i < j; i++) {
 			}
 		}
 	else {
-		d = vmsVector::Cross(a, b);
-		e = vmsVector::Cross(c, d);
-		vmsVector::Normalize(e);
+		d = CFixVector::Cross(a, b);
+		e = CFixVector::Cross(c, d);
+		CFixVector::Normalize(e);
 		}
 #if DBG
 	if (e.Mag () < F1_0/2)
 		Int3 ();
 #endif
-	xSegSize = vmsVector::Dist (gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]], 
+	xSegSize = CFixVector::Dist (gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]], 
 										 gameData.segs.vertices [gameData.segs.segments [nSegment].verts [6]]);
 	if (xSegSize > F1_0*40)
 		xSegSize = F1_0*40;
@@ -288,7 +288,7 @@ int CreatePathPoints (CObject *objP, int nStartSeg, int nEndSeg, tPointSeg *poin
 	tPointSeg		*origPointSegs = pointSegP;
 	int				lNumPoints;
 	CSegment			*segP;
-	vmsVector		vCenter;
+	CFixVector		vCenter;
 	int				nParentSeg, nDestSeg;
 	tFVIQuery		fq;
 	tFVIData			hitData;
@@ -663,7 +663,7 @@ if (nEndSeg != -1) {
 	// -- UNUSED!aiP->SUBMODE = AISM_GOHIDE;		//	This forces immediate movement.
 	ailP->mode = AIM_FOLLOW_PATH;
 	if (ailP->playerAwarenessType < PA_RETURN_FIRE)
-		ailP->playerAwarenessType = 0;		//	If robot too aware of tPlayer, will set mode to chase
+		ailP->playerAwarenessType = 0;		//	If robot too aware of CPlayerData, will set mode to chase
 	}
 MaybeAIPathGarbageCollect ();
 }
@@ -694,7 +694,7 @@ if (nEndSeg != -1) {
 	aiP->PATH_DIR = 1;		//	Initialize to moving forward.
 	// -- UNUSED!aiP->SUBMODE = AISM_GOHIDE;		//	This forces immediate movement.
 	if (ailP->playerAwarenessType < PA_RETURN_FIRE)
-		ailP->playerAwarenessType = 0;		//	If robot too aware of tPlayer, will set mode to chase
+		ailP->playerAwarenessType = 0;		//	If robot too aware of CPlayerData, will set mode to chase
 	}
 MaybeAIPathGarbageCollect ();
 }
@@ -790,7 +790,7 @@ CreateNSegmentPath (objP, nPathLength, nAvoidSeg);
 
 //	----------------------------------------------------------------------------------------------------
 
-void MoveObjectToGoal (CObject *objP, vmsVector *vGoalPoint, short nGoalSeg)
+void MoveObjectToGoal (CObject *objP, CFixVector *vGoalPoint, short nGoalSeg)
 {
 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
 	int			nSegment;
@@ -880,11 +880,11 @@ else
 
 //	----------------------------------------------------------------------------------------------------------
 //	Optimization: If current velocity will take robot near goal, don't change velocity
-void AIFollowPath (CObject *objP, int nPlayerVisibility, int nPrevVisibility, vmsVector *vec_to_player)
+void AIFollowPath (CObject *objP, int nPlayerVisibility, int nPrevVisibility, CFixVector *vec_to_player)
 {
 	tAIStaticInfo		*aiP = &objP->cType.aiInfo;
 
-	vmsVector	vGoalPoint, new_vGoalPoint;
+	CFixVector	vGoalPoint, new_vGoalPoint;
 	fix			xDistToGoal;
 	tRobotInfo	*botInfoP = &ROBOTINFO (objP->info.nId);
 	int			forced_break, original_dir, original_index;
@@ -918,7 +918,7 @@ if ((aiP->nHideIndex + aiP->nPathLength > gameData.ai.freePointSegs - gameData.a
 if (aiP->nPathLength < 2) {
 	if ((aiP->behavior == AIB_SNIPE) || (ailP->mode == AIM_RUN_FROM_OBJECT)) {
 		if (gameData.objs.consoleP->info.nSegment == objP->info.nSegment) {
-			CreateNSegmentPath (objP, AVOID_SEG_LENGTH, -1);			//	Can't avoid CSegment tPlayer is in, robot is already in it!(That's what the -1 is for)
+			CreateNSegmentPath (objP, AVOID_SEG_LENGTH, -1);			//	Can't avoid CSegment CPlayerData is in, robot is already in it!(That's what the -1 is for)
 			//--Int3_if ((aiP->nPathLength != 0);
 			}
 		else {
@@ -944,12 +944,12 @@ if (aiP->nPathLength < 2) {
 
 vGoalPoint = gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex].point;
 nGoalSeg = gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex].nSegment;
-xDistToGoal = vmsVector::Dist(vGoalPoint, objP->info.position.vPos);
+xDistToGoal = CFixVector::Dist(vGoalPoint, objP->info.position.vPos);
 if (gameStates.app.bPlayerIsDead)
-	xDistToPlayer = vmsVector::Dist(objP->info.position.vPos, gameData.objs.viewerP->info.position.vPos);
+	xDistToPlayer = CFixVector::Dist(objP->info.position.vPos, gameData.objs.viewerP->info.position.vPos);
 else
-	xDistToPlayer = vmsVector::Dist(objP->info.position.vPos, OBJPOS (gameData.objs.consoleP)->vPos);
-	//	Efficiency hack: If far away from tPlayer, move in big quantized jumps.
+	xDistToPlayer = CFixVector::Dist(objP->info.position.vPos, OBJPOS (gameData.objs.consoleP)->vPos);
+	//	Efficiency hack: If far away from CPlayerData, move in big quantized jumps.
 if (!(nPlayerVisibility || nPrevVisibility) && (xDistToPlayer > F1_0*200) && !IsMultiGame) {
 	if (xDistToGoal < F1_0*2) {
 		MoveObjectToGoal (objP, &vGoalPoint, nGoalSeg);
@@ -970,7 +970,7 @@ if (!(nPlayerVisibility || nPrevVisibility) && (xDistToPlayer > F1_0*200) && !Is
 			}
 		}
 	}
-//	If running from tPlayer, only run until can't be seen.
+//	If running from CPlayerData, only run until can't be seen.
 if (ailP->mode == AIM_RUN_FROM_OBJECT) {
 	if ((nPlayerVisibility == 0) && (ailP->playerAwarenessType == 0)) {
 		fix xVelScale = F1_0 - gameData.time.xFrame/2;
@@ -980,7 +980,7 @@ if (ailP->mode == AIM_RUN_FROM_OBJECT) {
 		return;
 		}
 	else if (!(gameData.app.nFrameCount ^ ((OBJ_IDX (objP)) & 0x07))) {		//	Done 1/8 frames.
-		//	If tPlayer on path (beyond point robot is now at), then create a new path.
+		//	If CPlayerData on path (beyond point robot is now at), then create a new path.
 		tPointSeg	*curPSP = &gameData.ai.pointSegs [aiP->nHideIndex];
 		short			nPlayerSeg = gameData.objs.consoleP->info.nSegment;
 		int			i;
@@ -1030,8 +1030,8 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 		// --		return;		// Stay here until bonked or hit by player.
 		// --	} else
 
-		//	Buddy bot.  If he's in mode to get away from tPlayer and at end of line,
-		//	if tPlayer visible, then make a new path, else just return.
+		//	Buddy bot.  If he's in mode to get away from CPlayerData and at end of line,
+		//	if CPlayerData visible, then make a new path, else just return.
 		if (botInfoP->companion) {
 			if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM) {
 				if (nPlayerVisibility) {
@@ -1094,7 +1094,7 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 			//	Reached end of the line.p.  First see if opposite end point is reachable, and if so, go there.p.
 			//	If not, turn around.
 			int			nOppositeEndIndex;
-			vmsVector	*vOppositeEndPoint;
+			CFixVector	*vOppositeEndPoint;
 			tFVIData		hitData;
 			int			fate;
 			tFVIQuery	fq;
@@ -1135,7 +1135,7 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 	else {
 		new_vGoalPoint = gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex].point;
 		vGoalPoint = new_vGoalPoint;
-		xDistToGoal = vmsVector::Dist(vGoalPoint, objP->info.position.vPos);
+		xDistToGoal = CFixVector::Dist(vGoalPoint, objP->info.position.vPos);
 		//--Int3_if (( (aiP->nCurPathIndex >= 0) && (aiP->nCurPathIndex < aiP->nPathLength));
 		}
 	//	If went all the way around to original point, in same direction, then get out of here!
@@ -1169,29 +1169,29 @@ return 0;
 
 //	----------------------------------------------------------------------------------------------------------
 //	Set orientation matrix and velocity for objP based on its desire to get to a point.
-void AIPathSetOrientAndVel (CObject *objP, vmsVector *vGoalPoint, int nPlayerVisibility, vmsVector *vec_to_player)
+void AIPathSetOrientAndVel (CObject *objP, CFixVector *vGoalPoint, int nPlayerVisibility, CFixVector *vec_to_player)
 {
-	vmsVector	vCurVel = objP->mType.physInfo.velocity;
-	vmsVector	vNormCurVel;
-	vmsVector	vNormToGoal;
-	vmsVector	vCurPos = objP->info.position.vPos;
-	vmsVector	vNormFwd;
+	CFixVector	vCurVel = objP->mType.physInfo.velocity;
+	CFixVector	vNormCurVel;
+	CFixVector	vNormToGoal;
+	CFixVector	vCurPos = objP->info.position.vPos;
+	CFixVector	vNormFwd;
 	fix			xSpeedScale;
 	fix			dot;
 	tRobotInfo	*botInfoP = &ROBOTINFO (objP->info.nId);
 	fix			xMaxSpeed;
 
-//	If evading tPlayer, use highest difficulty level speed, plus something based on diff level
+//	If evading CPlayerData, use highest difficulty level speed, plus something based on diff level
 xMaxSpeed = botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel];
 if ((gameData.ai.localInfo [OBJ_IDX (objP)].mode == AIM_RUN_FROM_OBJECT) || (objP->cType.aiInfo.behavior == AIB_SNIPE))
 	xMaxSpeed = xMaxSpeed*3/2;
 vNormToGoal = *vGoalPoint - vCurPos;
-vmsVector::Normalize(vNormToGoal);
+CFixVector::Normalize(vNormToGoal);
 vNormCurVel = vCurVel;
-vmsVector::Normalize(vNormCurVel);
+CFixVector::Normalize(vNormCurVel);
 vNormFwd = objP->info.position.mOrient[FVEC];
-vmsVector::Normalize(vNormFwd);
-dot = vmsVector::Dot(vNormToGoal, vNormFwd);
+CFixVector::Normalize(vNormFwd);
+dot = CFixVector::Dot(vNormToGoal, vNormFwd);
 //	If very close to facing opposite desired vector, perturb vector
 if (dot < -15*F1_0/16) {
 	vNormCurVel = vNormToGoal;
@@ -1201,7 +1201,7 @@ else {
 	vNormCurVel[Y] += vNormToGoal[Y]/2;
 	vNormCurVel[Z] += vNormToGoal[Z]/2;
 	}
-vmsVector::Normalize(vNormCurVel);
+CFixVector::Normalize(vNormCurVel);
 //	Set speed based on this robot nType's maximum allowed speed and how hard it is turning.
 //	How hard it is turning is based on the dot product of (vector to goal) and (current velocity vector)
 //	Note that since 3*F1_0/4 is added to dot product, it is possible for the robot to back up.
@@ -1509,13 +1509,13 @@ int	Player_following_pathFlag=0;
 
 //	------------------------------------------------------------------------------------------------------------------
 //	Set orientation matrix and velocity for objP based on its desire to get to a point.
-void player_path_set_orient_and_vel (CObject *objP, vmsVector *vGoalPoint)
+void player_path_set_orient_and_vel (CObject *objP, CFixVector *vGoalPoint)
 {
-	vmsVector	vCurVel = objP->mType.physInfo.velocity;
-	vmsVector	vNormCurVel;
-	vmsVector	vNormToGoal;
-	vmsVector	vCurPos = objP->info.position.vPos;
-	vmsVector	vNormFwd;
+	CFixVector	vCurVel = objP->mType.physInfo.velocity;
+	CFixVector	vNormCurVel;
+	CFixVector	vNormToGoal;
+	CFixVector	vCurPos = objP->info.position.vPos;
+	CFixVector	vNormFwd;
 	fix			xSpeedScale;
 	fix			dot;
 	fix			xMaxSpeed;
@@ -1523,15 +1523,15 @@ void player_path_set_orient_and_vel (CObject *objP, vmsVector *vGoalPoint)
 	xMaxSpeed = ROBOTINFO (objP->info.nId).xMaxSpeed [gameStates.app.nDifficultyLevel];
 
 	VmVecSub (&vNormToGoal, vGoalPoint, &vCurPos);
-	vmsVector::Normalize(vNormToGoal);
+	CFixVector::Normalize(vNormToGoal);
 
 	vNormCurVel = vCurVel;
-	vmsVector::Normalize(vNormCurVel);
+	CFixVector::Normalize(vNormCurVel);
 
 	vNormFwd = objP->info.position.mOrient[FVEC];
-	vmsVector::Normalize(vNormFwd);
+	CFixVector::Normalize(vNormFwd);
 
-	dot = vmsVector::Dot(vNormToGoal, &vNormFwd);
+	dot = CFixVector::Dot(vNormToGoal, &vNormFwd);
 	if (gameData.ai.localInfo [OBJ_IDX (objP)].mode == AIM_SNIPE_RETREAT_BACKWARDS) {
 		dot = -dot;
 	}
@@ -1545,7 +1545,7 @@ void player_path_set_orient_and_vel (CObject *objP, vmsVector *vGoalPoint)
 		vNormCurVel[Z] += vNormToGoal[Z]/2;
 	}
 
-	vmsVector::Normalize(vNormCurVel);
+	CFixVector::Normalize(vNormCurVel);
 
 	//	Set speed based on this robot nType's maximum allowed speed and how hard it is turning.
 	//	How hard it is turning is based on the dot product of (vector to goal) and (current velocity vector)
@@ -1566,7 +1566,7 @@ void player_path_set_orient_and_vel (CObject *objP, vmsVector *vGoalPoint)
 //	Optimization: If current velocity will take robot near goal, don't change velocity
 void player_follow_path (CObject *objP)
 {
-	vmsVector	vGoalPoint;
+	CFixVector	vGoalPoint;
 	fix			xDistToGoal;
 	int			count, forced_break, original_index;
 	int			nGoalSeg;
@@ -1584,7 +1584,7 @@ void player_follow_path (CObject *objP)
 	vGoalPoint = gameData.ai.pointSegs [Player_hide_index + Player_cur_path_index].point;
 	nGoalSeg = gameData.ai.pointSegs [Player_hide_index + Player_cur_path_index].nSegment;
 	Assert ((nGoalSeg >= 0) && (nGoalSeg <= gameData.segs.nLastSegment);
-	xDistToGoal = vmsVector::Dist(vGoalPoint, &objP->info.position.vPos);
+	xDistToGoal = CFixVector::Dist(vGoalPoint, &objP->info.position.vPos);
 
 	if (Player_cur_path_index < 0)
 		Player_cur_path_index = 0;
@@ -1623,14 +1623,14 @@ void player_follow_path (CObject *objP)
 		//	If went all the way around to original point, in same direction, then get out of here!
 		if (Player_cur_path_index == original_index) {
 #if TRACE
-			con_printf (CONDBG, "Forcing break because tPlayer path wrapped, count = %i.\n", count);
+			con_printf (CONDBG, "Forcing break because CPlayerData path wrapped, count = %i.\n", count);
 #endif
 			Player_following_pathFlag = 0;
 			forced_break = 1;
 		}
 
 		vGoalPoint = gameData.ai.pointSegs [Player_hide_index + Player_cur_path_index].point;
-		xDistToGoal = vmsVector::Dist(vGoalPoint, &objP->info.position.vPos);
+		xDistToGoal = CFixVector::Dist(vGoalPoint, &objP->info.position.vPos);
 
 	}	//	end while
 
@@ -1641,7 +1641,7 @@ void player_follow_path (CObject *objP)
 
 
 //	------------------------------------------------------------------------------------------------------------------
-//	Create path for tPlayer from current CSegment to goal CSegment.
+//	Create path for CPlayerData from current CSegment to goal CSegment.
 void create_player_path_to_segment (int nSegment)
 {
 	CObject		*objP = gameData.objs.consoleP;

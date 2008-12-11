@@ -194,7 +194,7 @@ networkData.nStatus = NETSTAT_STARTING;
 IpxInitNetGameAuxData (netGame.AuxData);
 NetworkSetGameMode (netGame.gameMode);
 d_srand (TimerGetFixedSeconds ());
-netGame.nSecurity = d_rand ();  // For syncing Netgames with tPlayer packets
+netGame.nSecurity = d_rand ();  // For syncing Netgames with CPlayerData packets
 if (NetworkSelectPlayers (bAutoRun)) {
 	StartNewLevel (netGame.nLevel, 0);
 	ResetAllPlayerTimeouts ();
@@ -273,7 +273,7 @@ while (IpxGetPacketData (packet) > 0)
 
 void NetworkTimeoutPlayer (int nPlayer)
 {
-	// Remove a tPlayer from the game if we haven't heard from them in 
+	// Remove a CPlayerData from the game if we haven't heard from them in 
 	// a long time.
 	int i, n = 0;
 
@@ -465,7 +465,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 
 	if ((networkData.xLastTimeoutCheck > F1_0) && !gameData.reactor.bDestroyed) {
 		fix t = (fix) SDL_GetTicks ();
-	// Check for tPlayer timeouts
+	// Check for CPlayerData timeouts
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if ((i != gameData.multiplayer.nLocalPlayer) && 
 				((gameData.multiplayer.players [i].connected == 1) || bDownloading [i])) {

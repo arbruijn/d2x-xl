@@ -618,7 +618,7 @@ return ssMinVolP [0] ? ssMinVolP [0] : ssMinVolP [1];
 // Volume 0-F1_0
 int DigiStartSound (short nSound, fix xVolume, int xPan, int bLooping, 
 						  int nLoopStart, int nLoopEnd, int nSoundObj, int nSpeed, 
-						  const char *pszWAV, vmsVector *vPos, int nSoundClass)
+						  const char *pszWAV, CFixVector *vPos, int nSoundClass)
 {
 	tSoundSlot	*ssP;
 	tDigiSound	*dsP = NULL;
@@ -648,7 +648,7 @@ if (ssP->bPlaying) {
 	}
 #if USE_OPENAL
 if (ssP->source == 0xFFFFFFFF) {
-	fVector	fPos;
+	CFloatVector	fPos;
 
 	DigiALError ();
 	alGenSources (1, &ssP->source);

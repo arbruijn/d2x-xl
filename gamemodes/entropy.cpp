@@ -171,7 +171,7 @@ if (gameStates.entropy.bConquerWarning) {
 
 int CheckConquerRoom (xsegment *segP)
 {
-	tPlayer	*playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
+	CPlayerData	*playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
 	int		team = GetTeam (gameData.multiplayer.nLocalPlayer) + 1;
 	time_t	t;
 

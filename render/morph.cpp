@@ -46,10 +46,10 @@ return NULL;
 
 //-------------------------------------------------------------
 //takes pmP, fills in min& max
-void MorphFindModelBounds (tPolyModel *pmP, int nSubModel, vmsVector& minv, vmsVector& maxv)
+void MorphFindModelBounds (tPolyModel *pmP, int nSubModel, CFixVector& minv, CFixVector& maxv)
 {
 	ushort nVerts;
-	vmsVector *vp;
+	CFixVector *vp;
 	ushort *data, nType;
 
 	data = reinterpret_cast<ushort*> (pmP->modelData + pmP->subModels.ptrs [nSubModel]);
@@ -58,7 +58,7 @@ void MorphFindModelBounds (tPolyModel *pmP, int nSubModel, vmsVector& minv, vmsV
 	nVerts = *data++;
 	if (nType==7)
 		data+=2;		//skip start & pad
-	vp = reinterpret_cast<vmsVector*> (data);
+	vp = reinterpret_cast<CFixVector*> (data);
 	minv = maxv = *vp++;
 	nVerts--;
 	while (nVerts--) {
@@ -80,10 +80,10 @@ void MorphFindModelBounds (tPolyModel *pmP, int nSubModel, vmsVector& minv, vmsV
 
 //-------------------------------------------------------------
 
-int MorphInitPoints (tPolyModel *pmP, vmsVector *vBoxSize, int nSubModel, tMorphInfo *mdP)
+int MorphInitPoints (tPolyModel *pmP, CFixVector *vBoxSize, int nSubModel, tMorphInfo *mdP)
 {
 	ushort		nVerts;
-	vmsVector	*vp, v;
+	CFixVector	*vp, v;
 	ushort		*data, nType;
 	int			i;
 
@@ -105,7 +105,7 @@ else
 	i = 0;				//start at zero
 Assert (i+nVerts < MAX_VECS);
 mdP->submodelStartPoints [nSubModel] = i;
-vp = reinterpret_cast<vmsVector*> (data);
+vp = reinterpret_cast<CFixVector*> (data);
 v = *vp;
 while (nVerts--) {
 	fix k, dist;
@@ -125,7 +125,7 @@ while (nVerts--) {
 	else
 		k = 0;
 	mdP->vecs[i] = *vp * k;
-	dist = vmsVector::NormalizedDir(mdP->deltas[i], *vp, mdP->vecs[i]);
+	dist = CFixVector::NormalizedDir(mdP->deltas[i], *vp, mdP->vecs[i]);
 	mdP->times [i] = FixDiv (dist, gameData.render.morph.xRate);
 	if (mdP->times [i] != 0)
 		mdP->nMorphingPoints [nSubModel]++;
@@ -142,7 +142,7 @@ return 1;
 int MorphUpdatePoints (tPolyModel *pmP, int nSubModel, tMorphInfo *mdP)
 {
 	ushort nVerts;
-	vmsVector *vp;
+	CFixVector *vp;
 	ushort *data, nType;
 	int i;
 
@@ -161,7 +161,7 @@ if (nType == 7) {
 	}
 else
 	i = 0;				//start at zero
-vp = reinterpret_cast<vmsVector*> (data);
+vp = reinterpret_cast<CFixVector*> (data);
 while (nVerts--) {
 	if (mdP->times [i]) {		//not done yet
 		if ((mdP->times [i] -= gameData.time.xFrame) <= 0) {
@@ -219,7 +219,7 @@ if (!mdP->nSubmodelsActive) {			//done morphing!
 
 //-------------------------------------------------------------
 
-vmsVector morph_rotvel = vmsVector::Create(0x4000, 0x2000, 0x1000);
+CFixVector morph_rotvel = CFixVector::Create(0x4000, 0x2000, 0x1000);
 
 void MorphInit ()
 {
@@ -235,8 +235,8 @@ for (i = 0; i < MAX_MORPH_OBJECTS; i++)
 void MorphStart (CObject *objP)
 {
 	tPolyModel *pmP;
-	vmsVector pmmin, pmmax;
-	vmsVector vBoxSize;
+	CFixVector pmmin, pmmax;
+	CFixVector vBoxSize;
 	int i;
 	tMorphInfo *mdP = gameData.render.morph.objects;
 

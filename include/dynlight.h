@@ -18,7 +18,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void RegisterLight (tFaceColor *pc, short nSegment, short nSide);
 int AddDynLight (tFace *faceP, tRgbaColorf *pc, fix xBrightness, 
-					  short nSegment, short nSide, short nOwner, short nTexture, vmsVector *vPos);
+					  short nSegment, short nSide, short nOwner, short nTexture, CFixVector *vPos);
 int RemoveDynLight (short nSegment, short nSide, short nObject);
 void AddDynGeometryLights (void);
 void DeleteDynLight (short nLight);
@@ -32,16 +32,16 @@ void TransformDynLights (int bStatic, int bVariable);
 short FindDynLight (short nSegment, short nSide, short nObject);
 int ToggleDynLight (short nSegment, short nSide, short nObject, int bState);
 void SetDynLightMaterial (short nSegment, short nSide, short nObject);
-void SetNearestVertexLights (int nFace, int nVertex, vmsVector *vNormalP, ubyte nType, int bStatic, int bVariable, int nThread);
+void SetNearestVertexLights (int nFace, int nVertex, CFixVector *vNormalP, ubyte nType, int bStatic, int bVariable, int nThread);
 int SetNearestFaceLights (tFace *faceP, int bTextured);
-short SetNearestPixelLights (short nSegment, short nSide, vmsVector *vNormal, vmsVector *vPixelPos, float fLightRad, int nThread);
+short SetNearestPixelLights (short nSegment, short nSide, CFixVector *vNormal, CFixVector *vPixelPos, float fLightRad, int nThread);
 void SetNearestStaticLights (int nSegment, int bStatic, ubyte nType, int nThread);
 void ResetNearestStaticLights (int nSegment, int nThread);
 void ResetNearestVertexLights (int nVertex, int nThread);
 short SetNearestSegmentLights (int nSegment, int nFace, int bVariable, int nType, int nThread);
 void ComputeStaticVertexLights (int nVertex, int nMax, int nThread);
 void ComputeStaticDynLighting (int nLevel);
-tShaderLight *GetActiveShaderLight (tActiveShaderLight *activeLightsP, int nThread);
+CShaderLight *GetActiveShaderLight (tActiveShaderLight *activeLightsP, int nThread);
 int CreatePerPixelLightingShader (int nType, int nLights);
 void InitPerPixelLightingShaders (void);
 void ResetPerPixelLightingShaders (void);
@@ -50,10 +50,10 @@ void InitLightmapShaders (void);
 void ResetLightmapShaders (void);
 void InitHeadlightShaders (int nLights);
 char *BuildLightingShader (const char *pszTemplate, int nLights);
-tFaceColor *AvgSgmColor (int nSegment, vmsVector *vPos);
+tFaceColor *AvgSgmColor (int nSegment, CFixVector *vPos);
 void ResetSegmentLights (void);
 int IsLight (int tMapNum);
-void ResetUsedLight (tShaderLight *psl, int nThread);
+void ResetUsedLight (CShaderLight *psl, int nThread);
 void ResetUsedLights (int bVariable, int nThread);
 void ResetActiveLights (int nThread, int nActive);
 

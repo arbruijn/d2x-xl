@@ -505,10 +505,10 @@ if (gameData.pig.tex.nHamFileVersion >= 3) {
 	}
 if (gameStates.app.bFixModels)
 	gameStates.app.bFixModels = gameStates.app.bDemoData ? 0 : LoadRobotReplacements ("d2x-xl", 0, 1) > 0;
-LoadTextureBrightness ("descent2", gameData.pig.tex.defaultBrightness [0]);
-LoadTextureBrightness ("descent", gameData.pig.tex.defaultBrightness [1]);
-LoadTextureColors ("descent2", gameData.render.color.defaultTextures [0]);
-LoadTextureColors ("descent", gameData.render.color.defaultTextures [1]);
+LoadTextureBrightness ("descent2", gameData.pig.tex.defaultBrightness [0].Buffer ());
+LoadTextureBrightness ("descent", gameData.pig.tex.defaultBrightness [1].Buffer ());
+LoadTextureColors ("descent2", gameData.render.color.defaultTextures [0].Buffer ());
+LoadTextureColors ("descent", gameData.render.color.defaultTextures [1].Buffer ());
 atexit (PiggyClose);
 return (bHamOk && bSoundOk);               //read ok
 }

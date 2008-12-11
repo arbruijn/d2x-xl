@@ -98,7 +98,7 @@ extern int bGameDoubleBuffer;      // double buffering?
 #define SUSP_ROBOTS     1           // Robot AI doesn't move
 #define SUSP_WEAPONS    2           // Lasers, etc. don't move
 
-extern int Game_suspended;          // if non-zero, nothing moves but tPlayer
+extern int Game_suspended;          // if non-zero, nothing moves but CPlayerData
 
 // from game.c
 void InitGame(void);
@@ -146,7 +146,7 @@ extern CCanvas * GetCurrentGameScreen();
 #define CM_LETTERBOX        4   // half-height window (for cutscenes)
 
 extern int Cockpit_mode;        // what sort of cockpit or window is up?
-extern int Game_window_w,       // width and height of tPlayer's game window
+extern int Game_window_w,       // width and height of CPlayerData's game window
            Game_window_h;
 
 extern int RearView;           // if true, looking back.

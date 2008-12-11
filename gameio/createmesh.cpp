@@ -183,7 +183,7 @@ else {
 edgeP->tris [0] = nTri;
 edgeP->verts [0] = nVert1;
 edgeP->verts [1] = nVert2;
-edgeP->fLength = fVector::Dist(gameData.segs.fVertices [nVert1], gameData.segs.fVertices [nVert2]);
+edgeP->fLength = CFloatVector::Dist(gameData.segs.fVertices [nVert1], gameData.segs.fVertices [nVert2]);
 return m_edges.Index (edgeP);
 }
 
@@ -406,7 +406,7 @@ for (i = 0; i < 3; i++) {
 	if ((h != nVert1) && (h != nVert2))
 		break;
 	}
-return fVector::Dist(gameData.segs.fVertices [h], gameData.segs.fVertices [gameData.segs.nVertices]);
+return CFloatVector::Dist(gameData.segs.fVertices [h], gameData.segs.fVertices [gameData.segs.nVertices]);
 }
 
 //------------------------------------------------------------------------------
@@ -418,7 +418,7 @@ int CTriMeshBuilder::SplitEdge (tEdge *edgeP, short nPass)
 
 memcpy (tris, edgeP->tris, sizeof (tris));
 memcpy (verts, edgeP->verts, sizeof (verts));
-gameData.segs.fVertices [gameData.segs.nVertices] = fVector::Avg(
+gameData.segs.fVertices [gameData.segs.nVertices] = CFloatVector::Avg(
 			 gameData.segs.fVertices [verts [0]],
 			 gameData.segs.fVertices [verts [1]]);
 gameData.segs.vertices [gameData.segs.nVertices] = gameData.segs.fVertices [gameData.segs.nVertices].ToFix();
@@ -561,8 +561,8 @@ int CTriMeshBuilder::InsertTriangles (void)
 {
 	tTriangle	*triP = &m_triangles [0];
 	grsTriangle	*grsTriP = TRIANGLES.Buffer ();
-	tFace		*m_faceP = NULL;
-	vmsVector	vNormal;
+	tFace			*m_faceP = NULL;
+	CFixVector	vNormal;
 	int			h, i, nFace = -1;
 	GLuint		nIndex = 0;
 
@@ -851,7 +851,7 @@ return 1;
 int CQuadMeshBuilder::IsBigFace (short *m_sideVerts)
 {
 for (int i = 0; i < 4; i++)
-	if (fVector::Dist(gameData.segs.fVertices [m_sideVerts [i]], gameData.segs.fVertices [m_sideVerts [(i + 1) % 4]]) > MAX_EDGE_LEN)
+	if (CFloatVector::Dist(gameData.segs.fVertices [m_sideVerts [i]], gameData.segs.fVertices [m_sideVerts [(i + 1) % 4]]) > MAX_EDGE_LEN)
 		return 1;
 return 0;
 }
@@ -860,9 +860,9 @@ return 0;
 
 fVector3 *CQuadMeshBuilder::SetTriNormals (grsTriangle *triP, fVector3 *m_normalP)
 {
-	fVector	vNormalf;
+	CFloatVector	vNormalf;
 
-vNormalf = fVector::Normal(gameData.segs.fVertices [triP->index [0]],
+vNormalf = CFloatVector::Normal(gameData.segs.fVertices [triP->index [0]],
 				 gameData.segs.fVertices [triP->index [1]], gameData.segs.fVertices [triP->index [2]]);
 *m_normalP++ = *vNormalf.V3();
 *m_normalP++ = *vNormalf.V3();
@@ -965,7 +965,7 @@ texCoordP [3].v.v = (y + 1) / (float) LIGHTMAP_ROWSIZE - 1.0f / (float) (LIGHTMA
 void CQuadMeshBuilder::SetupFace (void)
 {
 	int			i, j;
-	vmsVector	vNormal;
+	CFixVector	vNormal;
 	fVector3		vNormalf;
 
 vNormal = m_sideP->normals [0] + m_sideP->normals [1];
@@ -1077,7 +1077,7 @@ void CQuadMeshBuilder::SplitIn4Tris (void)
 {
 	static short	n4TriVerts [4][3] = {{0,1,4},{1,2,4},{2,3,4},{3,0,4}};
 
-	fVector		vSide [4];
+	CFloatVector		vSide [4];
 	tRgbaColorf	color;
 	tTexCoord2f	texCoord;
 	short			*triVertP;
@@ -1096,10 +1096,10 @@ for (i = 0; i < 4; i++) {
 	color.blue += (gameData.render.color.ambient [h].color.blue + gameData.render.color.ambient [k].color.blue) / 8;
 	color.alpha += (gameData.render.color.ambient [h].color.alpha + gameData.render.color.ambient [k].color.alpha) / 8;
 	}
-vSide [0] = fVector::Avg (gameData.segs.fVertices [m_sideVerts [0]], gameData.segs.fVertices [m_sideVerts [1]]);
-vSide [2] = fVector::Avg (gameData.segs.fVertices [m_sideVerts [2]], gameData.segs.fVertices [m_sideVerts [3]]);
-vSide [1] = fVector::Avg (gameData.segs.fVertices [m_sideVerts [1]], gameData.segs.fVertices [m_sideVerts [2]]);
-vSide [3] = fVector::Avg (gameData.segs.fVertices [m_sideVerts [3]], gameData.segs.fVertices [m_sideVerts [0]]);
+vSide [0] = CFloatVector::Avg (gameData.segs.fVertices [m_sideVerts [0]], gameData.segs.fVertices [m_sideVerts [1]]);
+vSide [2] = CFloatVector::Avg (gameData.segs.fVertices [m_sideVerts [2]], gameData.segs.fVertices [m_sideVerts [3]]);
+vSide [1] = CFloatVector::Avg (gameData.segs.fVertices [m_sideVerts [1]], gameData.segs.fVertices [m_sideVerts [2]]);
+vSide [3] = CFloatVector::Avg (gameData.segs.fVertices [m_sideVerts [3]], gameData.segs.fVertices [m_sideVerts [0]]);
 
 VmLineLineIntersection (vSide [0], vSide [2], vSide [1], vSide [3],
 								gameData.segs.fVertices [gameData.segs.nVertices],

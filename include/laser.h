@@ -114,13 +114,13 @@ int LaserPlayerFireSpreadDelay (CObject *objP, ubyte laserType, int gun_num, fix
 										  fix spreadu, fix delayTime, int makeSound, int harmless, short nLightObj);
 int LocalPlayerFireLaser(void);
 void DoMissileFiring(int do_autoselect);
-void NetMissileFiring(int tPlayer, int weapon, int flags);
+void NetMissileFiring(int CPlayerData, int weapon, int flags);
 
-int CreateNewWeapon(vmsVector * direction, vmsVector * position, short nSegment, short parent, ubyte nType, int makeSound);
+int CreateNewWeapon(CFixVector * direction, CFixVector * position, short nSegment, short parent, ubyte nType, int makeSound);
 
 // Fires a laser-nType weapon (a Primary weapon)
 // Fires from CObject nObject, weapon nType weapon_id.
-// Assumes that it is firing from a tPlayer CObject, so it knows which
+// Assumes that it is firing from a CPlayerData CObject, so it knows which
 // gun to fire from.
 // Returns the number of shots actually fired, which will typically be
 // 1, but could be higher for low frame rates when rapidfire weapons,
@@ -136,16 +136,16 @@ extern int LaserFireObject(short nObject, ubyte weapon_id, int level, int flags,
 // laser.
 short CreateClusterLight (CObject *objP);
 
-int CreateNewLaserEasy(vmsVector * direction, vmsVector * position, short parent, ubyte weaponType, int makeSound);
+int CreateNewLaserEasy(CFixVector * direction, CFixVector * position, short parent, ubyte weaponType, int makeSound);
 
 // creates a weapon CObject
-int CreateWeaponObject (ubyte weaponType, short nSegment,vmsVector *position, short nParent);
+int CreateWeaponObject (ubyte weaponType, short nSegment,CFixVector *position, short nParent);
 
 // give up control of the guided missile
 void ReleaseGuidedMissile(int player_num);
 
 void CreateSmartChildren(CObject *objp, int count);
-int FindHomingObject (vmsVector *curpos, CObject *tracker);
+int FindHomingObject (CFixVector *curpos, CObject *tracker);
 int UpdateOmegaLightnings (CObject *parentObjP, CObject *targetObjP);
 void StopPrimaryFire (void);
 void StopSecondaryFire (void);
@@ -154,13 +154,13 @@ float MissileSpeedScale (CObject *objP);
 int GetPlayerGun (int nPlayer, int *bFiring);
 
 void GetPlayerMslLock (void);
-vmsVector *GetGunPoints (CObject *objP, int nGun);
-vmsVector *TransformGunPoint (CObject *objP, vmsVector *vGunPoints, int nGun, 
-										fix xDelay, ubyte nLaserType, vmsVector *vMuzzle, vmsMatrix *mP);
+CFixVector *GetGunPoints (CObject *objP, int nGun);
+CFixVector *TransformGunPoint (CObject *objP, CFixVector *vGunPoints, int nGun, 
+										fix xDelay, ubyte nLaserType, CFixVector *vMuzzle, vmsMatrix *mP);
 typedef struct tMuzzleInfo {
 	fix         createTime;
 	short       nSegment;
-	vmsVector  pos;
+	CFixVector  pos;
 } tMuzzleInfo;
 
 // Omega cannon stuff.

@@ -29,10 +29,10 @@ typedef struct tParticle {
 	tPartPos		m_glPos;
 #endif
 	vmsMatrix	m_mOrient;
-	vmsVector	m_vPos;				//position
-	vmsVector	m_vTransPos;		//transformed position
-	vmsVector	m_vDir;				//movement direction
-	vmsVector	m_vDrift;
+	CFixVector	m_vPos;				//position
+	CFixVector	m_vTransPos;		//transformed position
+	CFixVector	m_vDir;				//movement direction
+	CFixVector	m_vDrift;
 	int			m_nTTL;				//time to live
 	int			m_nLife;			//remaining life time
 	int			m_nDelay;			//time between creation and appearance
@@ -58,10 +58,10 @@ typedef struct tParticle {
 
 class CParticle : public tParticle {
 	public:
-		int Create (vmsVector *vPos, vmsVector *vDir, vmsMatrix *mOrient,
+		int Create (CFixVector *vPos, CFixVector *vDir, vmsMatrix *mOrient,
 					   short nSegment, int nLife, int nSpeed, char nParticleSystemType, char nClass,
 				      float fScale, tRgbaColorf *colorP, int nCurTime, int bBlowUp,
-					   float fBrightness, vmsVector *vEmittingFace);
+					   float fBrightness, CFixVector *vEmittingFace);
 		int Render (float brightness);
 		int Update (int nCurTime);
 		inline bool IsVisible (void);
@@ -101,10 +101,10 @@ typedef struct tParticleEmitter {
 	short				m_nObjType;
 	short				m_nObjId;
 	vmsMatrix		m_mOrient;
-	vmsVector		m_vDir;
-	vmsVector		m_vPos;				//initial particle position
-	vmsVector		m_vPrevPos;			//initial particle position
-	vmsVector		m_vEmittingFace [4];
+	CFixVector		m_vDir;
+	CFixVector		m_vPos;				//initial particle position
+	CFixVector		m_vPrevPos;			//initial particle position
+	CFixVector		m_vEmittingFace [4];
 	ubyte				m_bHaveDir;			//movement direction given?
 	ubyte				m_bHavePrevPos;	//valid previous position set?
 	CParticle*		m_particles;		//list of active particles
@@ -118,15 +118,15 @@ class CParticleEmitter : public tParticleEmitter {
 	public:
 		CParticleEmitter () { m_particles = NULL; };
 		~CParticleEmitter () { Destroy (); };
-		int Create (vmsVector *vPos, vmsVector *vDir, vmsMatrix *mOrient,
+		int Create (CFixVector *vPos, CFixVector *vDir, vmsMatrix *mOrient,
 						short nSegment, int nObject, int nMaxParts, float fScale,
 						int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType,
-						tRgbaColorf *colorP, int nCurTime, int bBlowUpParts, vmsVector *vEmittingFace);
+						tRgbaColorf *colorP, int nCurTime, int bBlowUpParts, CFixVector *vEmittingFace);
 		int Destroy (void);
 		int Update (int nCurTime, int nThread);
 		int Render (int nThread);
-		void SetPos (vmsVector *vPos, vmsMatrix *mOrient, short nSegment);
-		inline void SetDir (vmsVector *vDir);
+		void SetPos (CFixVector *vPos, vmsMatrix *mOrient, short nSegment);
+		inline void SetDir (CFixVector *vDir);
 		inline void SetLife (int nLife);
 		inline void SetBrightness (int nBrightness);
 		inline void SetSpeed (int nSpeed);
@@ -167,7 +167,7 @@ class CParticleSystem : public tParticleSystem {
 		CParticleSystem () { m_emitters = NULL; };
 		~CParticleSystem () { Destroy (); };
 		void Init (int nId, int nNext);
-		int Create (vmsVector *pPos, vmsVector *pDir, vmsMatrix *pOrient,
+		int Create (CFixVector *pPos, CFixVector *pDir, vmsMatrix *pOrient,
 					   short nSegment, int nMaxEmitters, int nMaxParts, 
 						float fScale, int nDensity, int nPartsPerPos, 
 						int nLife, int nSpeed, char nType, int nObject,
@@ -178,8 +178,8 @@ class CParticleSystem : public tParticleSystem {
 		int RemoveEmitter (int i);
 		void SetDensity (int nMaxParts, int nDensity);
 		void SetPartScale (float fScale);
-		void SetPos (vmsVector *vPos, vmsMatrix *mOrient, short nSegment);
-		void SetDir (vmsVector *vDir);
+		void SetPos (CFixVector *vPos, vmsMatrix *mOrient, short nSegment);
+		void SetDir (CFixVector *vDir);
 		void SetLife (int nLife);
 		void SetScale (float fScale);
 		void SetType (int nType);
@@ -200,6 +200,10 @@ class CParticleManager {
 	private:
 		CParticleSystem	m_systems [MAX_PARTICLE_SYSTEMS];
 		CArray<short>		m_objectSystems;
+		CArray<time_t>		m_objExplTime;
+		int					m_nLastType;
+		int					m_bAnimate;
+		int					m_bStencil;
 		int					m_nFree;
 		int					m_nUsed;
 
@@ -207,11 +211,13 @@ class CParticleManager {
 		CParticleManager () {}
 		~CParticleManager ();
 		void Init (void);
-		inline void InitObjects (void)
-			{ m_objectSystems.Clear (0xff); }
+		inline void InitObjects (void) { 
+			m_objectSystems.Clear (0xff); 
+			m_objExplTime.Clear (0xff);
+			}
 		int Update (void);
 		void Render (void);
-		int Create (vmsVector *vPos, vmsVector *vDir, vmsMatrix *mOrient,
+		int Create (CFixVector *vPos, CFixVector *vDir, vmsMatrix *mOrient,
 						short nSegment, int nMaxEmitters, int nMaxParts,
 						float fScale, int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType,
 						int nObject, tRgbaColorf *colorP, int bBlowUpParts, char nSide);
@@ -228,6 +234,13 @@ class CParticleManager {
 
 		void AdjustBrightness (CBitmap *bmP);
 
+		inline time_t* ObjExplTime (int i = 0) { return m_objExplTime + i; }
+		inline int LastType (void) { return m_nLastType; }
+		inline void SetLastType (int nLastType) { m_nLastType = nLastType; }
+		inline int Animate (void) { return m_bAnimate; }
+		inline void SetAnimate (int bAnimate) { m_bAnimate = bAnimate; }
+		inline int Stencil (void) { return m_bStencil; }
+		inline void SetStencil (int bStencil) { m_bStencil = bStencil; }
 		inline int GetFree (void) { return m_nFree; }
 		inline void SetFree (int i) { m_nFree = i; }
 		inline int GetUsed (void) { return m_nUsed; }
@@ -238,7 +251,7 @@ class CParticleManager {
 		inline CParticleEmitter* GetEmitter (int i, int j)
 			{ return (0 <= IsUsed (i)) ? GetSystem (i).GetEmitter (j) : NULL; }
 
-		inline void SetPos (int i, vmsVector *vPos, vmsMatrix *mOrient, short nSegment) { 
+		inline void SetPos (int i, CFixVector *vPos, vmsMatrix *mOrient, short nSegment) { 
 			if (0 <= IsUsed (i)) 
 				GetSystem (i).SetPos (vPos, mOrient, nSegment); 
 			}
@@ -275,7 +288,7 @@ class CParticleManager {
 				GetSystem (i).SetSpeed (nSpeed);
 			}
 
-		inline void SetDir (int i, vmsVector *vDir) {
+		inline void SetDir (int i, CFixVector *vDir) {
 			if (0 <= IsUsed (i))
 				GetSystem (i).SetDir (vDir);
 			}

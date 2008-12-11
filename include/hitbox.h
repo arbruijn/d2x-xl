@@ -8,7 +8,7 @@
 #include "3d.h"
 
 void ComputeHitbox (int nModel, int iSubObj);
-void TransformHitboxes (CObject *objP, vmsVector *vPos, tBox *phb);
+void TransformHitboxes (CObject *objP, CFixVector *vPos, tBox *phb);
 
 #endif //_HITBOX_H
 

@@ -43,7 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_OBJECT_VEL I2X (100)
 
-#define BUMP_HACK	1	//if defined, bump tPlayer when he gets stuck
+#define BUMP_HACK	1	//if defined, bump CPlayerData when he gets stuck
 
 int bFloorLeveling = 0;
 
@@ -70,27 +70,27 @@ return 0;
 
 void DoPhysicsAlignObject (CObject * objP)
 {
-	vmsVector	desiredUpVec;
+	CFixVector	desiredUpVec;
 	fixang		delta_ang, roll_ang;
-	//vmsVector forvec = {0, 0, f1_0};
+	//CFixVector forvec = {0, 0, f1_0};
 	vmsMatrix	temp_matrix;
 	fix			d, largest_d=-f1_0;
 	int			i, best_side;
 
 best_side = 0;
-// bank tPlayer according to CSegment orientation
-//find tSide of CSegment that tPlayer is most aligned with
+// bank CPlayerData according to CSegment orientation
+//find tSide of CSegment that CPlayerData is most aligned with
 for (i = 0; i < 6; i++) {
-	d = vmsVector::Dot(gameData.segs.segments [objP->info.nSegment].sides [i].normals[0], objP->info.position.mOrient[UVEC]);
+	d = CFixVector::Dot(gameData.segs.segments [objP->info.nSegment].sides [i].normals[0], objP->info.position.mOrient[UVEC]);
 	if (d > largest_d) {largest_d = d; best_side=i;}
 	}
-if (gameOpts->gameplay.nAutoLeveling == 1) {	 // new tPlayer leveling code: use Normal of tSide closest to our up vec
+if (gameOpts->gameplay.nAutoLeveling == 1) {	 // new CPlayerData leveling code: use Normal of tSide closest to our up vec
 	if (GetNumFaces (&gameData.segs.segments [objP->info.nSegment].sides [best_side])==2) {
 		tSide *s = &gameData.segs.segments [objP->info.nSegment].sides [best_side];
 		desiredUpVec[X] = (s->normals[0][X] + s->normals[1][X]) / 2;
 		desiredUpVec[Y] = (s->normals[0][Y] + s->normals[1][Y]) / 2;
 		desiredUpVec[Z] = (s->normals[0][Z] + s->normals[1][Z]) / 2;
-		vmsVector::Normalize(desiredUpVec);
+		CFixVector::Normalize(desiredUpVec);
 		}
 	else
 		desiredUpVec = gameData.segs.segments [objP->info.nSegment].sides [best_side].normals [0];
@@ -101,14 +101,14 @@ else if (gameOpts->gameplay.nAutoLeveling == 3)	// mine's up vector
 	desiredUpVec = (*PlayerSpawnOrient(gameData.multiplayer.nLocalPlayer))[UVEC];
 else
 	return;
-if (labs (vmsVector::Dot(desiredUpVec, objP->info.position.mOrient[FVEC])) < f1_0/2) {
+if (labs (CFixVector::Dot(desiredUpVec, objP->info.position.mOrient[FVEC])) < f1_0/2) {
 	fixang save_delta_ang;
 	vmsAngVec turnAngles;
 
 	temp_matrix = vmsMatrix::CreateFU(objP->info.position.mOrient[FVEC], desiredUpVec);
 //	temp_matrix = vmsMatrix::CreateFU(objP->info.position.mOrient[FVEC], &desiredUpVec, NULL);
 	save_delta_ang =
-	delta_ang = vmsVector::DeltaAngle(objP->info.position.mOrient[UVEC], temp_matrix[UVEC], &objP->info.position.mOrient[FVEC]);
+	delta_ang = CFixVector::DeltaAngle(objP->info.position.mOrient[UVEC], temp_matrix[UVEC], &objP->info.position.mOrient[FVEC]);
 	delta_ang += objP->mType.physInfo.turnRoll;
 	if (abs (delta_ang) > DAMP_ANG) {
 		vmsMatrix mRotate, new_pm;
@@ -192,7 +192,7 @@ if (!(pi->rotVel [X] || pi->rotVel [Y] || pi->rotVel [Z] ||
 		pi->rotThrust[X] || pi->rotThrust[Y] || pi->rotThrust[Z]))
 	return;
 if (objP->mType.physInfo.drag) {
-	vmsVector	accel;
+	CFixVector	accel;
 	int			nTries = gameData.physics.xTime / FT;
 	fix			r = gameData.physics.xTime % FT;
 	fix			k = FixDiv (r, FT);
@@ -267,15 +267,15 @@ objP->info.position.mOrient.CheckAndFix();
 
 void DoBumpHack (CObject *objP)
 {
-	vmsVector vCenter, vBump;
+	CFixVector vCenter, vBump;
 #if DBG
 HUDMessage (0, "BUMP HACK");
 #endif
-//bump tPlayer a little towards vCenter of CSegment to unstick
+//bump CPlayerData a little towards vCenter of CSegment to unstick
 COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->info.nSegment);
 //HUDMessage (0, "BUMP! %d %d", d1, d2);
-//don't bump tPlayer towards center of reactor CSegment
-vmsVector::NormalizedDir(vBump, vCenter, objP->info.position.vPos);
+//don't bump CPlayerData towards center of reactor CSegment
+CFixVector::NormalizedDir(vBump, vCenter, objP->info.position.vPos);
 if (SEGMENT2S [objP->info.nSegment].special == SEGMENT_IS_CONTROLCEN)
 	vBump.Neg();
 objP->info.position.vPos += vBump * (objP->info.xSize / 5);
@@ -426,20 +426,20 @@ void DoPhysicsSim (CObject *objP)
 	int					iSeg, i;
 	int					bRetry;
 	int					fviResult = 0;
-	vmsVector			vFrame;				//movement in this frame
-	vmsVector			vNewPos, iPos;		//position after this frame
+	CFixVector			vFrame;				//movement in this frame
+	CFixVector			vNewPos, iPos;		//position after this frame
 	int					nTries = 0;
 	short					nObject = OBJ_IDX (objP);
 	short					nWallHitSeg, nWallHitSide;
 	tFVIData				hi;
 	tFVIQuery			fq;
-	vmsVector			vSavePos;
+	CFixVector			vSavePos;
 	int					nSaveSeg;
 	fix					xSimTime, xOldSimTime, xTimeScale;
-	vmsVector			vStartPos;
+	CFixVector			vStartPos;
 	int					bGetPhysSegs, bObjStopped = 0;
 	fix					xMovedTime;			//how long objected moved before hit something
-	vmsVector			vSaveP0, vSaveP1;
+	CFixVector			vSaveP0, vSaveP1;
 	tPhysicsInfo		*pi;
 	short					nOrigSegment = objP->info.nSegment;
 	int					nBadSeg = 0, bBounced = 0;
@@ -477,7 +477,7 @@ Assert (objP->mType.physInfo.brakes == 0);		//brakes not used anymore?
 Assert (!(objP->mType.physInfo.flags & PF_USES_THRUST) || objP->mType.physInfo.drag);
 //do thrust & xDrag
 if (objP->mType.physInfo.drag) {
-	vmsVector accel, &vel = objP->mType.physInfo.velocity;
+	CFixVector accel, &vel = objP->mType.physInfo.velocity;
 	int		nTries = xSimTime / FT;
 	fix		xDrag = objP->mType.physInfo.drag;
 	fix		r = xSimTime % FT;
@@ -552,9 +552,9 @@ do {
 						MissileSpeedScale (objP) : 1;
 	bRetry = 0;
 	if (fScale < 1) {
-		vmsVector vStartVel = objP->StartVel ();
-		vmsVector::Normalize (vStartVel);
-		fix xDot = vmsVector::Dot (objP->info.position.mOrient[FVEC], vStartVel);
+		CFixVector vStartVel = objP->StartVel ();
+		CFixVector::Normalize (vStartVel);
+		fix xDot = CFixVector::Dot (objP->info.position.mOrient[FVEC], vStartVel);
 		vFrame = objP->mType.physInfo.velocity + objP->StartVel ();
 		vFrame *= F2X (fScale * fScale);
 		vFrame += objP->StartVel () * ((xDot > 0) ? -xDot : xDot);
@@ -670,7 +670,7 @@ retryMove:
 				fviResult = HIT_NONE;
 				}
 			else if (CheckTransWall (&hi.hit.vPoint, SEGMENTS + hi.hit.nSideSegment, hi.hit.nSide, hi.hit.nFace)) {
-				short nNewSeg = FindSegByPos (vNewPos, gameData.segs.skybox.segments [0], 1, 1);
+				short nNewSeg = FindSegByPos (vNewPos, gameData.segs.skybox [0], 1, 1);
 				if ((nNewSeg >= 0) && (SEGMENT2S [nNewSeg].special == SEGMENT_IS_SKYBOX)) {
 					hi.hit.nSegment = nNewSeg;
 					fviResult = HIT_NONE;
@@ -738,11 +738,11 @@ retryMove:
 				OBJECTS [nObject].RelinkToSeg (objP->info.nSegment);
 				}
 			else {
-				vmsVector vCenter;
+				CFixVector vCenter;
 				COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->info.nSegment);
 				vCenter -= objP->info.position.vPos;
 				if (vCenter.Mag() > F1_0) {
-					vmsVector::Normalize(vCenter);
+					CFixVector::Normalize(vCenter);
 					vCenter /= 10;
 					}
 				objP->info.position.vPos -= vCenter;
@@ -757,13 +757,13 @@ retryMove:
 
 	//calulate new sim time
 	{
-		//vmsVector vMoved;
-		vmsVector vMoveNormal;
+		//CFixVector vMoved;
+		CFixVector vMoveNormal;
 		fix attemptedDist, actualDist;
 
 		xOldSimTime = xSimTime;
-		actualDist = vmsVector::NormalizedDir (vMoveNormal, objP->info.position.vPos, vSavePos);
-		if ((fviResult == HIT_WALL) && (vmsVector::Dot (vMoveNormal, vFrame) < 0)) {		//moved backwards
+		actualDist = CFixVector::NormalizedDir (vMoveNormal, objP->info.position.vPos, vSavePos);
+		if ((fviResult == HIT_WALL) && (CFixVector::Dot (vMoveNormal, vFrame) < 0)) {		//moved backwards
 			//don't change position or xSimTime
 			objP->info.position.vPos = vSavePos;
 			//iSeg = objP->info.nSegment;		//don't change CSegment
@@ -789,7 +789,7 @@ retryMove:
 		}
 
 	if (fviResult == HIT_WALL) {
-		vmsVector	vMoved;
+		CFixVector	vMoved;
 		fix			xHitSpeed, xWallPart;
 		// Find hit speed
 
@@ -799,7 +799,7 @@ retryMove:
 		fviResult = FindVectorIntersection (&fq, &hi);
 #endif
 		vMoved = objP->info.position.vPos - vSavePos;
-		xWallPart = vmsVector::Dot(vMoved, hi.hit.vNormal) / gameData.collisions.hitData.nNormals;
+		xWallPart = CFixVector::Dot(vMoved, hi.hit.vNormal) / gameData.collisions.hitData.nNormals;
 		if (xWallPart && (xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, xMovedTime)) > 0)) {
 			CollideObjectWithWall (objP, xHitSpeed, nWallHitSeg, nWallHitSide, &hi.hit.vPoint);
 #if 0//def _DEBUG
@@ -842,13 +842,13 @@ retryMove:
 
 				// TODO: fix this with new dot product method, without bouncing off walls
 				// THIS IS DELICATE!!
-				xWallPart = vmsVector::Dot(hi.hit.vNormal, objP->mType.physInfo.velocity);
+				xWallPart = CFixVector::Dot(hi.hit.vNormal, objP->mType.physInfo.velocity);
 				if (bForceFieldBounce || (objP->mType.physInfo.flags & PF_BOUNCE)) {		//bounce off tWall
 					xWallPart *= 2;	//Subtract out wall part twice to achieve bounce
 					if (bForceFieldBounce) {
 						bCheckVel = 1;				//check for max velocity
 						if (objP->info.nType == OBJ_PLAYER)
-							xWallPart *= 2;		//tPlayer bounce twice as much
+							xWallPart *= 2;		//CPlayerData bounce twice as much
 						}
 					if ((objP->mType.physInfo.flags & (PF_BOUNCE | PF_BOUNCES_TWICE)) == (PF_BOUNCE | PF_BOUNCES_TWICE)) {
 						//Assert (objP->mType.physInfo.flags & PF_BOUNCE);
@@ -873,8 +873,8 @@ retryMove:
 			}
 		}
 	else if (fviResult == HIT_OBJECT) {
-		vmsVector	vOldVel;
-		vmsVector	*ppos0, *ppos1, vHitPos;
+		CFixVector	vOldVel;
+		CFixVector	*ppos0, *ppos1, vHitPos;
 		fix			size0, size1;
 		// Mark the hit CObject so that on a retry the fvi code
 		// ignores this CObject.
@@ -959,7 +959,7 @@ if (objP->info.controlType == CT_AI) {
 	// avoid that the ship gets driven into the obstacle (most likely a wall, as that doesn't give in ;)
 	if (((fviResult == HIT_WALL) || (fviResult == HIT_BAD_P0)) &&
 		 !(sbd.bBoosted || bObjStopped || bBounced))	{	//Set velocity from actual movement
-		vmsVector vMoved;
+		CFixVector vMoved;
 		fix s = FixMulDiv (FixDiv (F1_0, gameData.physics.xTime), xTimeScale, 100);
 
 		vMoved = objP->info.position.vPos - vStartPos;
@@ -980,7 +980,7 @@ if (objP->info.controlType == CT_AI) {
 
 	if (objP->mType.physInfo.flags & PF_LEVELLING)
 		DoPhysicsAlignObject (objP);
-	//hack to keep tPlayer from going through closed doors
+	//hack to keep CPlayerData from going through closed doors
 	if (((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT)) && (objP->info.nSegment != nOrigSegment) &&
 		 (gameStates.app.cheats.bPhysics != 0xBADA55)) {
 		int nSide = FindConnectedSide (gameData.segs.segments + objP->info.nSegment, gameData.segs.segments + nOrigSegment);
@@ -1038,7 +1038,7 @@ UnstickObject (objP);
 //Applies an instantaneous force on an CObject, resulting in an instantaneous
 //change in velocity.
 
-void PhysApplyForce (CObject *objP, vmsVector *vForce)
+void PhysApplyForce (CObject *objP, CFixVector *vForce)
 {
 #if DBG
 	fix mag;
@@ -1089,11 +1089,11 @@ else {
 //	------------------------------------------------------------------------------------------------------
 //	Note: This is the old AITurnTowardsVector code.
 //	PhysApplyRot used to call AITurnTowardsVector until I fixed it, which broke PhysApplyRot.
-void PhysicsTurnTowardsVector (vmsVector *vGoal, CObject *objP, fix rate)
+void PhysicsTurnTowardsVector (CFixVector *vGoal, CObject *objP, fix rate)
 {
 	vmsAngVec	dest_angles, cur_angles;
 	fix			delta_p, delta_h;
-	vmsVector&	pvRotVel = objP->mType.physInfo.rotVel;
+	CFixVector&	pvRotVel = objP->mType.physInfo.rotVel;
 
 // Make this CObject turn towards the vGoal.  Changes orientation, doesn't change direction of movement.
 // If no one moves, will be facing vGoal in 1 second.
@@ -1138,7 +1138,7 @@ pvRotVel [Z] = 0;
 //	-----------------------------------------------------------------------------
 //	Applies an instantaneous whack on an CObject, resulting in an instantaneous
 //	change in orientation.
-void PhysApplyRot (CObject *objP, vmsVector *vForce)
+void PhysApplyRot (CObject *objP, CFixVector *vForce)
 {
 	fix	xRate, xMag;
 

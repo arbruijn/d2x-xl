@@ -66,6 +66,7 @@ class CFont {
 		~CFont () { Destroy (); }
 		void Init (void) { memset (&m_info, 0, sizeof (m_info)); }
 		void Destroy (void);
+		ubyte* Remap (const char *fontname, ubyte* fontData);
 		ubyte* Load (const char *fontname, ubyte* fontData = NULL);
 		void Read (CFile& cf);
 		void StringSize (const char *s, int& stringWidth, int& stringHeight, int& averageWidth);
@@ -144,7 +145,7 @@ class CFontManager {
 		void Unload (CFont* font);
 		inline CFont* Current (void) { return m_current; }
 		inline CFont* GameFont (int i) { return ((i >= 0) && (i < MAX_FONTS)) ? m_gameFonts [i] : NULL; }
-		inline void SetCurrent (CFont* fontP) { m_current = fontP; }
+		inline void SetCurrent (CFont* fontP);
 		void SetColor (int fgColor, int bgColor);
 		void SetColorRGB (tRgbaColorb *fgColor, tRgbaColorb *bgColor);
 		void SetColorRGBi (uint fgColor, int bSetFG, uint bgColor, int bSetBG);

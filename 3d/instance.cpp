@@ -28,7 +28,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_INSTANCE_DEPTH	10
 
-struct tViewInfo instanceStack [MAX_INSTANCE_DEPTH];
+struct CViewInfo instanceStack [MAX_INSTANCE_DEPTH];
 
 int nInstanceDepth = 0;
 
@@ -48,7 +48,7 @@ glMultMatrixf (pm);
 
 //------------------------------------------------------------------------------
 
-void VmsMove(const vmsVector& pv)
+void VmsMove(const CFixVector& pv)
 {
 glVectorf p;
 OglMove (OOF_VecVms2Gl (p, pv));
@@ -109,16 +109,16 @@ return 1;
 //------------------------------------------------------------------------------
 //instance at specified point with specified orientation
 //if matrix==NULL, don't modify matrix.  This will be like doing an offset
-void G3StartInstanceMatrix(const vmsVector& vPos, const vmsMatrix& mOrient)
+void G3StartInstanceMatrix(const CFixVector& vPos, const vmsMatrix& mOrient)
 {
-	vmsVector	vOffs;
+	CFixVector	vOffs;
 	vmsMatrix	mTrans, mRot;
 
 //Assert (nInstanceDepth < MAX_INSTANCE_DEPTH);
 if (!G3PushMatrix ())
 	return;
 if (gameStates.ogl.bUseTransform) {
-	vmsVector	h;
+	CFixVector	h;
 
 	if (nInstanceDepth > 1) {
 		glScalef (-1.0f, -1.0f, -1.0f);
@@ -135,7 +135,7 @@ if (gameStates.ogl.bUseTransform) {
 		VmsMove (h);
 		VmsRot (mOrient);
 		if (!gameData.models.vScale.IsZero ()) {
-			fVector fScale = gameData.models.vScale.ToFloat ();
+			CFloatVector fScale = gameData.models.vScale.ToFloat ();
 			glScalef (fScale [X], fScale [Y], fScale [Z]);
 			}
 		}
@@ -161,7 +161,7 @@ viewInfo.posf = viewInfo.pos.ToFloat();
 //------------------------------------------------------------------------------
 //instance at specified point with specified orientation
 //if angles==NULL, don't modify matrix.  This will be like doing an offset
-void G3StartInstanceAngles (const vmsVector& pos, const vmsAngVec& angles) 
+void G3StartInstanceAngles (const CFixVector& pos, const vmsAngVec& angles) 
 {
 G3StartInstanceMatrix(pos, vmsMatrix::Create(angles));
 }

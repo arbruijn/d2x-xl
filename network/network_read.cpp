@@ -153,7 +153,7 @@ if (netGame.nSegmentCheckSum != networkData.nSegmentCheckSum) {
 		return;
 #endif
 	}
-// Discover my tPlayer number
+// Discover my CPlayerData number
 memcpy (szLocalCallSign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
 gameData.multiplayer.nLocalPlayer = -1;
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
@@ -297,7 +297,7 @@ if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL
 	}
 if ((sbyte)pd->nLevel != gameData.missions.nCurrentLevel) {
 #if 1
-	con_printf (CONDBG, "Got frame packet from tPlayer %d wrong level %d!\n", pd->nPlayer, pd->nLevel);
+	con_printf (CONDBG, "Got frame packet from CPlayerData %d wrong level %d!\n", pd->nPlayer, pd->nLevel);
 #endif
 	return;
 	}
@@ -314,20 +314,20 @@ if  (pd->nPackets != gameData.multiplayer.players [nTheirPlayer].nPacketsGot) {
 #if 1
 	if (networkData.nMissedPackets > 0)
 		con_printf (0,
-			"Missed %d packets from tPlayer #%d (%d total)\n",
+			"Missed %d packets from CPlayerData #%d (%d total)\n",
 			pd->nPackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot,
 			nTheirPlayer,
 			networkData.nMissedPackets);
 	else
 		con_printf (CONDBG,
-			"Got %d late packets from tPlayer #%d (%d total)\n",
+			"Got %d late packets from CPlayerData #%d (%d total)\n",
 			gameData.multiplayer.players [nTheirPlayer].nPacketsGot-pd->nPackets,
 			nTheirPlayer,
 			networkData.nMissedPackets);
 #endif
 	gameData.multiplayer.players [nTheirPlayer].nPacketsGot = pd->nPackets;
 	}
-//------------ Read the tPlayer's ship's CObject info ----------------------
+//------------ Read the CPlayerData's ship's CObject info ----------------------
 theirObjP->info.position.vPos = pd->objPos;
 theirObjP->info.position.mOrient = pd->objOrient;
 theirObjP->mType.physInfo.velocity = pd->physVelocity;
@@ -439,7 +439,7 @@ if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL
 	}
 if ((sbyte)new_pd.nLevel != gameData.missions.nCurrentLevel) {
 #if 1
-	con_printf (CONDBG, "Got frame packet from tPlayer %d wrong level %d!\n", new_pd.nPlayer, new_pd.nLevel);
+	con_printf (CONDBG, "Got frame packet from CPlayerData %d wrong level %d!\n", new_pd.nPlayer, new_pd.nLevel);
 #endif
 	return;
 	}
@@ -455,20 +455,20 @@ if  (new_pd.nPackets != gameData.multiplayer.players [nTheirPlayer].nPacketsGot)
 #if 1
 	if (networkData.nMissedPackets > 0)
 		con_printf (CONDBG,
-			"Missed %d packets from tPlayer #%d (%d total)\n",
+			"Missed %d packets from CPlayerData #%d (%d total)\n",
 			new_pd.nPackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot,
 			nTheirPlayer,
 			networkData.nMissedPackets);
 	else
 		con_printf (CONDBG,
-			"Got %d late packets from tPlayer #%d (%d total)\n",
+			"Got %d late packets from CPlayerData #%d (%d total)\n",
 			gameData.multiplayer.players [nTheirPlayer].nPacketsGot-new_pd.nPackets,
 			nTheirPlayer,
 			networkData.nMissedPackets);
 #endif
 		gameData.multiplayer.players [nTheirPlayer].nPacketsGot = new_pd.nPackets;
 	}
-//------------ Read the tPlayer's ship's CObject info ----------------------
+//------------ Read the CPlayerData's ship's CObject info ----------------------
 ExtractShortPos (theirObjP, &new_pd.objPos, 0);
 if ((theirObjP->info.renderType != new_pd.objRenderType) && (new_pd.objRenderType == RT_POLYOBJ))
 	MultiMakeGhostPlayer (nTheirPlayer);
@@ -512,7 +512,7 @@ int NetworkVerifyPlayers (void)
 	int		i, j, t, bCoop = IsCoopGame;
 	int		nPlayers, nPlayerObjs [MAX_PLAYERS], bHaveReactor = !bCoop;
 	CObject	*objP;
-	tPlayer	*playerP;
+	CPlayerData	*playerP;
 
 for (j = 0, playerP = gameData.multiplayer.players; j < MAX_PLAYERS; j++, playerP++)
 	nPlayerObjs [j] = playerP->connected ? playerP->nObject : -1;
@@ -596,7 +596,7 @@ void NetworkReadObjectPacket (ubyte *dataP)
 	static int		nMode = 0;
 	static short	objectCount = 0;
 
-	// Object from another net tPlayer we need to sync with
+	// Object from another net CPlayerData we need to sync with
 	CObject	*objP;
 	short		nObject, nRemoteObj;
 	sbyte		nObjOwner;

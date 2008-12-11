@@ -34,7 +34,7 @@ void CShrapnel::Create (CObject* objP)
 {
 	static tRgbaColorf color = {1,1,1,0.5};
 
-m_info.vDir = vmsVector::Random ();
+m_info.vDir = CFixVector::Random ();
 m_info.vPos = objP->info.position.vPos + m_info.vDir * (objP->info.xSize / 4 + rand () % (objP->info.xSize / 2));
 m_info.nTurn = 1;
 m_info.xSpeed = 3 * (F1_0 / 20 + rand () % (F1_0 / 20)) / 4;
@@ -64,7 +64,7 @@ m_info.xTTL = -1;
 void CShrapnel::Move (void)
 {
 	fix			xSpeed = FixDiv (m_info.xSpeed, 25 * F1_0 / 1000);
-	vmsVector	vOffs;
+	CFixVector	vOffs;
 	time_t		nTicks;
 
 if ((nTicks = gameStates.app.nSDLTicks - m_info.tUpdate) < 25)
@@ -79,7 +79,7 @@ for (; nTicks >= 25; nTicks -= 25) {
 		vOffs [X] = FixMul (vOffs [X], 2 * d_rand ());
 		vOffs [Y] = FixMul (vOffs [Y], 2 * d_rand ());
 		vOffs [Z] = FixMul (vOffs [Z], 2 * d_rand ());
-		vmsVector::Normalize (vOffs);
+		CFixVector::Normalize (vOffs);
 		m_info.vOffs = vOffs;
 		}
 	vOffs *= xSpeed;

@@ -352,12 +352,12 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void G3SubModelSize (CObject *objP, int nModel, int nSubModel, vmsVector *vOffset, int bHires)
+void G3SubModelSize (CObject *objP, int nModel, int nSubModel, CFixVector *vOffset, int bHires)
 {
 	tG3Model		*pm = gameData.models.g3Models [bHires] + nModel;
 	tG3SubModel	*psm = pm->subModels + nSubModel;
 	tHitbox		*phb = (psm->nHitbox < 0) ? NULL : gameData.models.hitboxes [nModel].hitboxes + psm->nHitbox;
-	vmsVector	vMin, vMax, vOffs;
+	CFixVector	vMin, vMax, vOffs;
 	int			i, j;
 
 if (vOffset)
@@ -372,12 +372,12 @@ vMin[Z] = F2X (psm->vMin[Z]);
 vMax[X] = F2X (psm->vMax[X]);
 vMax[Y] = F2X (psm->vMax[Y]);
 vMax[Z] = F2X (psm->vMax[Z]);
-psm->vCenter = vmsVector::Avg(vMin, vMax);
+psm->vCenter = CFixVector::Avg(vMin, vMax);
 if (psm->bBullets) {
 	pm->bBullets = 1;
 	pm->vBullets = psm->vCenter;
 	}
-psm->nRad = vmsVector::Dist(vMin, vMax) / 2;
+psm->nRad = CFixVector::Dist(vMin, vMax) / 2;
 for (i = 0, j = pm->nSubModels, psm = pm->subModels.Buffer (); i < j; i++, psm++)
 	if (psm->nParent == nSubModel)
 		G3SubModelSize (objP, nModel, i, &vOffs, bHires);
@@ -538,7 +538,7 @@ fix G3ModelSize (CObject *objP, tG3Model *pm, int nModel, int bHires)
 	tG3SubModel	*psm;
 	int			i, j;
 	tHitbox		*phb = gameData.models.hitboxes [nModel].hitboxes;
-	vmsVector	hv;
+	CFixVector	hv;
 	fVector3		vOffset;
 	double		dx, dy, dz, r;
 
@@ -646,11 +646,11 @@ return G3ModelRad (objP, nModel, bHires);
 
 //------------------------------------------------------------------------------
 
-int NearestGunPoint (vmsVector *vGunPoints, vmsVector *vGunPoint, int nGuns, int *nUsedGuns)
+int NearestGunPoint (CFixVector *vGunPoints, CFixVector *vGunPoint, int nGuns, int *nUsedGuns)
 {
 	fix			xDist, xMinDist = 0x7fffffff;
 	int			h = 0, i;
-	vmsVector	vi, v0 = *vGunPoint;
+	CFixVector	vi, v0 = *vGunPoint;
 
 v0[Z] = 0;
 for (i = 0; i < nGuns; i++) {
@@ -658,7 +658,7 @@ for (i = 0; i < nGuns; i++) {
 		continue;
 	vi = vGunPoints [i];
 	vi[Z] = 0;
-	xDist = vmsVector::Dist(vi, v0);
+	xDist = CFixVector::Dist(vi, v0);
 	if (xMinDist > xDist) {
 		xMinDist = xDist;
 		h = i;
@@ -719,7 +719,7 @@ for (i = 0, pp = po->gunPoints.pPoints; i < j; i++, pp++) {
 
 void G3SetGunPoints (CObject *objP, tG3Model *pm, int nModel, int bASE)
 {
-	vmsVector		*vGunPoints;
+	CFixVector		*vGunPoints;
 	int				nParent, h, i, j;
 
 if (bASE) {

@@ -189,8 +189,8 @@ if (bVerbose)
 
 //	--------------------------------------------------------------------------
 //	Detonate reactor.
-//	Award tPlayer all powerups in mine.
-//	Place tPlayer just outside exit.
+//	Award CPlayerData all powerups in mine.
+//	Place CPlayerData just outside exit.
 //	Kill all bots in mine.
 //	Yippee!!
 void KillEverything (int bVerbose)
@@ -546,7 +546,7 @@ bInvul = (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) != 0;
 if (bVerbose)
 	HUDInitMessage ("%s %s!", TXT_INVULNERABILITY, bInvul ? TXT_ON : TXT_OFF);
 LOCALPLAYER.invulnerableTime = bInvul ? 0x7fffffff : 0; //gameData.time.xGame + I2X (1000);
-SetSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
+SetupSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
 }
 
 //------------------------------------------------------------------------------
@@ -681,7 +681,7 @@ else
 
 void TriFusionCheat (int bVerbose)
 {
-	tPlayer	*playerP = &LOCALPLAYER;
+	CPlayerData	*playerP = &LOCALPLAYER;
 
 if (gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bTripleFusion)
 	return;
@@ -812,7 +812,7 @@ else {
 	LOCALPLAYER.primaryWeaponFlags |= 1 << FUSION_INDEX;
 	gameData.weapons.bTripleFusion = 1;
 	gameStates.gameplay.bMineMineCheat = 1;
-	SetSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
+	SetupSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
 	}
 }
 

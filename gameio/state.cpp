@@ -666,26 +666,26 @@ for (i = 0; i < MAX_PLAYERS + 4; i++) {
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::SavePlayer (tPlayer *playerP)
+void CSaveGameHandler::SavePlayer (CPlayerData *playerP)
 {
 	int	i;
 
-m_cf.Write (playerP->callsign, 1, CALLSIGN_LEN + 1); // The callsign of this tPlayer, for net purposes.
+m_cf.Write (playerP->callsign, 1, CALLSIGN_LEN + 1); // The callsign of this CPlayerData, for net purposes.
 m_cf.Write (playerP->netAddress, 1, 6);					// The network address of the player.
-m_cf.WriteByte (playerP->connected);            // Is the tPlayer connected or not?
-m_cf.WriteInt (playerP->nObject);                // What CObject number this tPlayer is. (made an int by mk because it's very often referenced)
+m_cf.WriteByte (playerP->connected);            // Is the CPlayerData connected or not?
+m_cf.WriteInt (playerP->nObject);                // What CObject number this CPlayerData is. (made an int by mk because it's very often referenced)
 m_cf.WriteInt (playerP->nPacketsGot);         // How many packets we got from them
 m_cf.WriteInt (playerP->nPacketsSent);        // How many packets we sent to them
 m_cf.WriteInt ((int) playerP->flags);           // Powerup flags, see below...
 m_cf.WriteFix (playerP->energy);                // Amount of energy remaining.
 m_cf.WriteFix (playerP->shields);               // shields remaining (protection)
 m_cf.WriteByte (playerP->lives);                // Lives remaining, 0 = game over.
-m_cf.WriteByte (playerP->level);                // Current level tPlayer is playing. (must be signed for secret levels)
+m_cf.WriteByte (playerP->level);                // Current level CPlayerData is playing. (must be signed for secret levels)
 m_cf.WriteByte ((sbyte) playerP->laserLevel);  // Current level of the laser.
-m_cf.WriteByte (playerP->startingLevel);       // What level the tPlayer started on.
+m_cf.WriteByte (playerP->startingLevel);       // What level the CPlayerData started on.
 m_cf.WriteShort (playerP->nKillerObj);       // Who killed me.... (-1 if no one)
-m_cf.WriteShort ((short) playerP->primaryWeaponFlags);   // bit set indicates the tPlayer has this weapon.
-m_cf.WriteShort ((short) playerP->secondaryWeaponFlags); // bit set indicates the tPlayer has this weapon.
+m_cf.WriteShort ((short) playerP->primaryWeaponFlags);   // bit set indicates the CPlayerData has this weapon.
+m_cf.WriteShort ((short) playerP->secondaryWeaponFlags); // bit set indicates the CPlayerData has this weapon.
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
 	m_cf.WriteShort ((short) playerP->primaryAmmo [i]); // How much ammo of each nType.
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
@@ -1016,7 +1016,7 @@ if (IsCoopGame) {
 		SavePlayer (gameData.multiplayer.players + i);
 	DBG (fPos = m_cf.Tell ());
 	}
-//Save tPlayer info
+//Save CPlayerData info
 SavePlayer (gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer);
 // Save the current weapon info
 m_cf.WriteByte (gameData.weapons.nPrimary);
@@ -1427,7 +1427,7 @@ else {
 	strcpy (pszOrgCallSign, gameData.multiplayer.players [0].callsign);
 	gameData.multiplayer.nPlayers = 1;
 	if (!m_bSecret) {
-		InitMultiPlayerObject ();	//make sure tPlayer's CObject set up
+		InitMultiPlayerObject ();	//make sure CPlayerData's CObject set up
 		InitPlayerStatsGame ();		//clear all stats
 		}
 	}
@@ -1436,7 +1436,7 @@ else {
 //------------------------------------------------------------------------------
 
 int CSaveGameHandler::SetServerPlayer (
-	tPlayer *restoredPlayers, int nPlayers, const char *pszServerCallSign, int *pnOtherObjNum, int *pnServerObjNum)
+	CPlayerData *restoredPlayers, int nPlayers, const char *pszServerCallSign, int *pnOtherObjNum, int *pnServerObjNum)
 {
 	int	i,
 			nServerPlayer = -1,
@@ -1463,7 +1463,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 		netPlayers.players [nServerPlayer] = h;
 		}
 		{
-		tPlayer h = restoredPlayers [0];
+		CPlayerData h = restoredPlayers [0];
 		restoredPlayers [0] = restoredPlayers [nServerPlayer];
 		restoredPlayers [nServerPlayer] = h;
 		}
@@ -1486,7 +1486,7 @@ return nServerPlayer;
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::GetConnectedPlayers (tPlayer *restoredPlayers, int nPlayers)
+void CSaveGameHandler::GetConnectedPlayers (CPlayerData *restoredPlayers, int nPlayers)
 {
 	int	i, j;
 
@@ -1512,7 +1512,7 @@ for (i = 0; i < MAX_PLAYERS; i++) {
 		memset (netPlayers.players [i].network.ipx.node, 0xFF, sizeof (netPlayers.players [i].network.ipx.node));
 		}
 	}
-memcpy (gameData.multiplayer.players, restoredPlayers, sizeof (tPlayer) * nPlayers);
+memcpy (gameData.multiplayer.players, restoredPlayers, sizeof (CPlayerData) * nPlayers);
 gameData.multiplayer.nPlayers = nPlayers;
 if (NetworkIAmMaster ()) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
@@ -1576,16 +1576,16 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 		if (xShieldSave > 0 && (xShieldSave <= objP->info.xShields))
 			objP->info.xShields = xShieldSave;
 		else
-			objP->info.xShields /= 2;  //give tPlayer a break
+			objP->info.xShields /= 2;  //give CPlayerData a break
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::AwardReturningPlayer (tPlayer *retPlayerP, fix xOldGameTime)
+void CSaveGameHandler::AwardReturningPlayer (CPlayerData *retPlayerP, fix xOldGameTime)
 {
-tPlayer *playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
+CPlayerData *playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
 playerP->level = retPlayerP->level;
 playerP->lastScore = retPlayerP->lastScore;
 playerP->timeLevel = retPlayerP->timeLevel;
@@ -1713,26 +1713,26 @@ for (i = 0; i < MAX_PLAYERS + 4; i++) {
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::LoadPlayer (tPlayer *playerP)
+void CSaveGameHandler::LoadPlayer (CPlayerData *playerP)
 {
 	int	i;
 
-m_cf.Read (playerP->callsign, 1, CALLSIGN_LEN + 1); // The callsign of this tPlayer, for net purposes.
+m_cf.Read (playerP->callsign, 1, CALLSIGN_LEN + 1); // The callsign of this CPlayerData, for net purposes.
 m_cf.Read (playerP->netAddress, 1, 6);					// The network address of the player.
-playerP->connected = m_cf.ReadByte ();            // Is the tPlayer connected or not?
-playerP->nObject = m_cf.ReadInt ();                // What CObject number this tPlayer is. (made an int by mk because it's very often referenced)
+playerP->connected = m_cf.ReadByte ();            // Is the CPlayerData connected or not?
+playerP->nObject = m_cf.ReadInt ();                // What CObject number this CPlayerData is. (made an int by mk because it's very often referenced)
 playerP->nPacketsGot = m_cf.ReadInt ();         // How many packets we got from them
 playerP->nPacketsSent = m_cf.ReadInt ();        // How many packets we sent to them
 playerP->flags = (uint) m_cf.ReadInt ();           // Powerup flags, see below...
 playerP->energy = m_cf.ReadFix ();                // Amount of energy remaining.
 playerP->shields = m_cf.ReadFix ();               // shields remaining (protection)
 playerP->lives = m_cf.ReadByte ();                // Lives remaining, 0 = game over.
-playerP->level = m_cf.ReadByte ();                // Current level tPlayer is playing. (must be signed for secret levels)
+playerP->level = m_cf.ReadByte ();                // Current level CPlayerData is playing. (must be signed for secret levels)
 playerP->laserLevel = (ubyte) m_cf.ReadByte ();  // Current level of the laser.
-playerP->startingLevel = m_cf.ReadByte ();       // What level the tPlayer started on.
+playerP->startingLevel = m_cf.ReadByte ();       // What level the CPlayerData started on.
 playerP->nKillerObj = m_cf.ReadShort ();       // Who killed me.... (-1 if no one)
-playerP->primaryWeaponFlags = (ushort) m_cf.ReadShort ();   // bit set indicates the tPlayer has this weapon.
-playerP->secondaryWeaponFlags = (ushort) m_cf.ReadShort (); // bit set indicates the tPlayer has this weapon.
+playerP->primaryWeaponFlags = (ushort) m_cf.ReadShort ();   // bit set indicates the CPlayerData has this weapon.
+playerP->secondaryWeaponFlags = (ushort) m_cf.ReadShort (); // bit set indicates the CPlayerData has this weapon.
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
 	playerP->primaryAmmo [i] = (ushort) m_cf.ReadShort (); // How much ammo of each nType.
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
@@ -2047,7 +2047,7 @@ return (gameData.multiplayer.playerInit [i].nSegment >= 0) &&
 
 int CSaveGameHandler::LoadUniFormat (int bMulti, fix xOldGameTime, int *nLevel)
 {
-	tPlayer	restoredPlayers [MAX_PLAYERS];
+	CPlayerData	restoredPlayers [MAX_PLAYERS];
 	int		nPlayers, nServerPlayer = -1;
 	int		nOtherObjNum = -1, nServerObjNum = -1, nLocalObjNum = -1, nSavedLocalPlayer = -1;
 	int		nCurrentLevel, nNextLevel;
@@ -2092,20 +2092,20 @@ if (IsMultiGame) {
 		restoredPlayers [i].connected = 0;
 		}
 	DBG (fPos = m_cf.Tell ());
-	// make sure the current game host is in tPlayer slot #0
+	// make sure the current game host is in CPlayerData slot #0
 	nServerPlayer = SetServerPlayer (restoredPlayers, nPlayers, szServerCallSign, &nOtherObjNum, &nServerObjNum);
 	GetConnectedPlayers (restoredPlayers, nPlayers);
 	}
-//Read tPlayer info
+//Read CPlayerData info
 if (!StartNewLevelSub (nCurrentLevel, 1, m_bSecret, 1)) {
 	m_cf.Close ();
 	return 0;
 	}
 nLocalObjNum = LOCALPLAYER.nObject;
-if (m_bSecret != 1)	//either no secret restore, or tPlayer died in scret level
+if (m_bSecret != 1)	//either no secret restore, or CPlayerData died in scret level
 	CSaveGameHandler::LoadPlayer (gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer);
 else {
-	tPlayer	retPlayer;
+	CPlayerData	retPlayer;
 	CSaveGameHandler::LoadPlayer (&retPlayer);
 	AwardReturningPlayer (&retPlayer, xOldGameTime);
 	}
@@ -2213,7 +2213,7 @@ if (!m_bBetweenLevels)	{
 				gameData.trigs.firstObjTrigger [i] = m_cf.ReadShort ();
 			}
 		else {
-			memset (gameData.trigs.firstObjTrigger, 0xff, sizeof (short) * MAX_OBJECTS_D2X);
+			gameData.trigs.firstObjTrigger.Clear (0xff);
 			for (i = m_cf.ReadShort (); i; i--) {
 				j = m_cf.ReadShort ();
 				gameData.trigs.firstObjTrigger [j] = m_cf.ReadShort ();
@@ -2366,7 +2366,7 @@ return 1;
 
 int CSaveGameHandler::LoadBinFormat (int bMulti, fix xOldGameTime, int *nLevel)
 {
-	tPlayer	restoredPlayers [MAX_PLAYERS];
+	CPlayerData	restoredPlayers [MAX_PLAYERS];
 	int		nPlayers, nServerPlayer = -1;
 	int		nOtherObjNum = -1, nServerObjNum = -1, nLocalObjNum = -1, nSavedLocalPlayer = -1;
 	int		nCurrentLevel, nNextLevel;
@@ -2398,22 +2398,22 @@ if (gameData.app.nGameMode & GM_MULTI) {
 	m_cf.Read (&gameData.multiplayer.nLocalPlayer, sizeof (gameData.multiplayer.nLocalPlayer), 1);
 	nSavedLocalPlayer = gameData.multiplayer.nLocalPlayer;
 	for (i = 0; i < nPlayers; i++)
-		m_cf.Read (restoredPlayers + i, sizeof (tPlayer), 1);
+		m_cf.Read (restoredPlayers + i, sizeof (CPlayerData), 1);
 	nServerPlayer = SetServerPlayer (restoredPlayers, nPlayers, szServerCallSign, &nOtherObjNum, &nServerObjNum);
 	GetConnectedPlayers (restoredPlayers, nPlayers);
 	}
 
-//Read tPlayer info
+//Read CPlayerData info
 if (!StartNewLevelSub (nCurrentLevel, 1, m_bSecret, 1)) {
 	m_cf.Close ();
 	return 0;
 	}
 nLocalObjNum = LOCALPLAYER.nObject;
-if (m_bSecret != 1)	//either no secret restore, or tPlayer died in scret level
-	m_cf.Read (gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer, sizeof (tPlayer), 1);
+if (m_bSecret != 1)	//either no secret restore, or CPlayerData died in scret level
+	m_cf.Read (gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer, sizeof (CPlayerData), 1);
 else {
-	tPlayer	retPlayer;
-	m_cf.Read (&retPlayer, sizeof (tPlayer), 1);
+	CPlayerData	retPlayer;
+	m_cf.Read (&retPlayer, sizeof (CPlayerData), 1);
 	AwardReturningPlayer (&retPlayer, xOldGameTime);
 	}
 LOCALPLAYER.nObject = nLocalObjNum;
@@ -2477,15 +2477,15 @@ if (!m_bBetweenLevels)	{
 	//Restore tTrigger info
 	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nTriggers))
 		return 0;
-	m_cf.Read (gameData.trigs.triggers, sizeof (tTrigger), gameData.trigs.nTriggers);
+	m_cf.Read (gameData.trigs.triggers.Buffer (), sizeof (tTrigger), gameData.trigs.nTriggers);
 	if (m_nVersion >= 26) {
 		//Restore CObject tTrigger info
 
 		m_cf.Read (&gameData.trigs.nObjTriggers, sizeof (gameData.trigs.nObjTriggers), 1);
 		if (gameData.trigs.nObjTriggers > 0) {
-			m_cf.Read (gameData.trigs.objTriggers, sizeof (tTrigger), gameData.trigs.nObjTriggers);
-			m_cf.Read (gameData.trigs.objTriggerRefs, sizeof (tObjTriggerRef), gameData.trigs.nObjTriggers);
-			m_cf.Read (gameData.trigs.firstObjTrigger, sizeof (short), 700);
+			m_cf.Read (gameData.trigs.objTriggers.Buffer (), sizeof (tTrigger), gameData.trigs.nObjTriggers);
+			m_cf.Read (gameData.trigs.objTriggerRefs.Buffer (), sizeof (tObjTriggerRef), gameData.trigs.nObjTriggers);
+			m_cf.Read (gameData.trigs.firstObjTrigger.Buffer (), sizeof (short), 700);
 			}
 		else
 			m_cf.Seek ((m_nVersion < 35) ? 700 : MAX_OBJECTS_D2X * sizeof (short), SEEK_CUR);
@@ -2564,7 +2564,7 @@ else {
 	// skip dummy info
 	m_cf.Read (&num, sizeof (int), 1);       //was NumOfMarkers
 	m_cf.Read (&dummy, sizeof (int), 1);     //was CurMarker
-	m_cf.Seek (num * (sizeof (vmsVector) + 40), SEEK_CUR);
+	m_cf.Seek (num * (sizeof (CFixVector) + 40), SEEK_CUR);
 	for (num = 0; num < NUM_MARKERS; num++)
 		gameData.marker.objects [num] = -1;
 }

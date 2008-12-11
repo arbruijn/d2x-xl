@@ -300,8 +300,8 @@ if (!(bRedraw && gameOpts->menus.nStyle && bgP && bmP)) {
 	else if (!pszCurBg)
 		pszCurBg = filename;
 	if (!filename)
-		filename = gameStates.app.bDemoData ? (char*) (MENU_PCX_SHAREWARE) : (char*) (MENU_PCX_FULL);
-	if (!(filename && strcmp (filename, (char*) (MENU_PCX_FULL)) && strcmp (filename, (char*) (MENU_PCX_SHAREWARE)))) {
+		filename = gameStates.app.bDemoData ? const_cast<char*> (MENU_PCX_SHAREWARE) : const_cast<char*> (MENU_PCX_FULL);
+	if (!(filename && strcmp (filename, const_cast<char*> (MENU_PCX_FULL)) && strcmp (filename, const_cast<char*> (MENU_PCX_SHAREWARE)))) {
 		NMLoadAltBg ();
 		if (gameOpts->menus.altBg.bHave > 0) {
 			bmP = pAltBg;
@@ -545,9 +545,9 @@ if (bTiny) {
 	}
 else {
 	if (bIsCurrent)
-		CCanvas::Current ()->SetFont (SELECTED_FONT);
+		fontManager.SetCurrent (SELECTED_FONT);
 	else
-		CCanvas::Current ()->SetFont (NORMAL_FONT);
+		fontManager.SetCurrent (NORMAL_FONT);
 	}
 return CCanvas::Current ()->FontColor (0).index;
 }
@@ -1161,7 +1161,7 @@ int NMDrawTitle (const char *pszTitle, CFont *font, uint color, int ty)
 if (pszTitle && *pszTitle)	{
 		int w, h, aw;
 
-	CCanvas::Current ()->SetFont (font);
+	fontManager.SetCurrent (font);
 	fontManager.SetColorRGBi (color, 1, 0, 0);
 	FONT->StringSize (pszTitle, w, h, aw);
 	GrPrintF (NULL, 0x8000, ty, pszTitle);
@@ -1177,7 +1177,7 @@ void NMGetTitleSize (const char *pszTitle, CFont *font, int *tw, int *th)
 if (pszTitle && *pszTitle)	{
 		int nStringWidth, nStringHeight, nAverageWidth;
 
-	CCanvas::Current ()->SetFont (font);
+	fontManager.SetCurrent (font);
 	FONT->StringSize (pszTitle, nStringWidth, nStringHeight, nAverageWidth);
 	if (nStringWidth > *tw)
 		*tw = nStringWidth;
@@ -1339,7 +1339,7 @@ if ((ctrlP->scWidth != screen.Width ()) || (ctrlP->scHeight != screen.Height ())
 	haveTitle = ((pszTitle && *pszTitle) || (pszSubTitle && *pszSubTitle));
 	gap = haveTitle ? (int) LHY (8) : 0;
 	ctrl.th += gap;		//put some space between pszTitles & body
-	CCanvas::Current ()->SetFont (ctrl.bTinyMode ? SMALL_FONT : NORMAL_FONT);
+	fontManager.SetCurrent (ctrl.bTinyMode ? SMALL_FONT : NORMAL_FONT);
 
 	ctrl.h = ctrl.th;
 	ctrl.nMenus = ctrl.nOthers = 0;
@@ -1444,7 +1444,7 @@ else {
 	}
 bg->menu_canvas->Destroy ();
 CCanvas::SetCurrent (NULL);		
-CCanvas::Current ()->SetFont (saveFont);
+fontManager.SetCurrent (saveFont);
 CCanvas::SetCurrent (save_canvas);
 memset (bg, 0, sizeof (*bg));
 GrabMouse (1, 0);
@@ -1671,7 +1671,7 @@ while (!done) {
 		NMDrawTitle (pszSubTitle, SUBTITLE_FONT, RGBA_PAL (21, 21, 21), t);
 		if (!bRedraw)
 			ctrl.ty = t;
-		CCanvas::Current ()->SetFont (bTinyMode ? SMALL_FONT : NORMAL_FONT);
+		fontManager.SetCurrent (bTinyMode ? SMALL_FONT : NORMAL_FONT);
 		}
 	if (!time_stopped){
 		// Save current menu box
@@ -2314,7 +2314,7 @@ launchOption:
 			bRedrawAll = 0;
 			}
 		CCanvas::SetCurrent (bg.menu_canvas);
-		CCanvas::Current ()->SetFont (ctrl.bTinyMode ? SMALL_FONT : NORMAL_FONT);
+		fontManager.SetCurrent (ctrl.bTinyMode ? SMALL_FONT : NORMAL_FONT);
      	for (i = 0; i < ctrl.nMaxDisplayable + ctrl.nScrollOffset - ctrl.nMaxNoScroll; i++) {
 			if ((i >= ctrl.nMaxNoScroll) && (i < ctrl.nScrollOffset))
 				continue;
@@ -2342,10 +2342,10 @@ launchOption:
 			}
 #endif
       if (ctrl.bIsScrollBox) {
-      	//CCanvas::Current ()->SetFont (NORMAL_FONT);
+      	//fontManager.SetCurrent (NORMAL_FONT);
         	if (bRedraw || (nLastScrollCheck != ctrl.nScrollOffset)) {
           	nLastScrollCheck=ctrl.nScrollOffset;
-          	CCanvas::Current ()->SetFont (SELECTED_FONT);
+          	fontManager.SetCurrent (SELECTED_FONT);
           	sy=itemP [ctrl.nScrollOffset].y - ((ctrl.nStringHeight+1)*(ctrl.nScrollOffset - ctrl.nMaxNoScroll));
           	sx=itemP [ctrl.nScrollOffset].x - (gameStates.menus.bHires?24:12);
           	if (ctrl.nScrollOffset > ctrl.nMaxNoScroll)
@@ -2630,7 +2630,7 @@ if (!bInitialized) {
 //		SetScreenMode (SCREEN_MENU);
 	SetPopupScreenMode ();
 	CCanvas::SetCurrent (NULL);
-	CCanvas::Current ()->SetFont (SUBTITLE_FONT);
+	fontManager.SetCurrent (SUBTITLE_FONT);
 	w_w = 0;
 	w_h = 0;
 
@@ -2942,7 +2942,7 @@ while (!done)	{
 		if (!gameOpts->menus.nStyle) 
 			SDL_ShowCursor (0);
 		NMDrawBackground (&bg, w_x, w_y, w_x+w_w-1, w_y+w_h-1,1);
-		CCanvas::Current ()->SetFont (NORMAL_FONT);
+		fontManager.SetCurrent (NORMAL_FONT);
 		GrString (0x8000, w_y+10, pszTitle, NULL);
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 		for (i = nFirstItem; i < nFirstItem + nFilesDisplayed; i++) {
@@ -2961,7 +2961,7 @@ while (!done)	{
 				GrRect (box_x, y - 1, box_x + box_w - 1, y + CCanvas::Current ()->Font ()->Height () + 1);
 				} 
 			else {
-				CCanvas::Current ()->SetFont ((i == nItem) ? SELECTED_FONT : NORMAL_FONT);
+				fontManager.SetCurrent ((i == nItem) ? SELECTED_FONT : NORMAL_FONT);
 				FONT->StringSize (&filenames [i* (FILENAME_LEN+1)], w, h, aw);
 				CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (5, 5, 5));
 				GrRect (box_x + box_w, y - 1, box_x + box_w, y + h + 1);
@@ -2983,9 +2983,9 @@ while (!done)	{
 		if ((i >= 0) && (i < nFileCount))	{
 			y = (i-nFirstItem)* (CCanvas::Current ()->Font ()->Height ()+2)+box_y;
 			if (i == nItem)
-				CCanvas::Current ()->SetFont (SELECTED_FONT);
+				fontManager.SetCurrent (SELECTED_FONT);
 			else
-				CCanvas::Current ()->SetFont (NORMAL_FONT);
+				fontManager.SetCurrent (NORMAL_FONT);
 			FONT->StringSize (&filenames [i* (FILENAME_LEN+1)], w, h, aw);
 			GrRect (box_x, y-1, box_x + box_w - 1, y + h + 1);
 			GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((bPlayerMode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0), NULL);
@@ -2994,9 +2994,9 @@ while (!done)	{
 		if ((i>=0) &&(i<nFileCount))	{
 			y = (i-nFirstItem)* (CCanvas::Current ()->Font ()->Height ()+2)+box_y;
 			if (i == nItem)
-				CCanvas::Current ()->SetFont (SELECTED_FONT);
+				fontManager.SetCurrent (SELECTED_FONT);
 			else
-				CCanvas::Current ()->SetFont (NORMAL_FONT);
+				fontManager.SetCurrent (NORMAL_FONT);
 			FONT->StringSize (&filenames [i* (FILENAME_LEN+1)], w, h, aw);
 			GrRect (box_x, y-1, box_x + box_w - 1, y + h + 1);
 			GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((bPlayerMode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0), NULL);
@@ -3093,7 +3093,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 	memset (&bg, 0, sizeof (bg));
 	bg.bIgnoreBg = 1;
 	CCanvas::SetCurrent (NULL);
-	CCanvas::Current ()->SetFont (SUBTITLE_FONT);
+	fontManager.SetCurrent (SUBTITLE_FONT);
 
 	width = 0;
 	for (i=0; i<nItems; i++)	{
@@ -3352,7 +3352,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 			else
 				SDL_ShowCursor (0);
 			if (gameOpts->menus.nStyle) {
-				CCanvas::Current ()->SetFont (NORMAL_FONT);
+				fontManager.SetCurrent (NORMAL_FONT);
 				GrString (0x8000, wy - nTitleHeight, pszTitle, NULL);
 				}
 
@@ -3365,9 +3365,9 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 					GrRect (wx, y-1, wx+width-1, y+CCanvas::Current ()->Font ()->Height () + 1);
 				} else {
 					if (i == nItem)
-						CCanvas::Current ()->SetFont (SELECTED_FONT);
+						fontManager.SetCurrent (SELECTED_FONT);
 					else
-						CCanvas::Current ()->SetFont (NORMAL_FONT);
+						fontManager.SetCurrent (NORMAL_FONT);
 					FONT->StringSize (itemP [i], w, h, aw);
 					GrRect (wx, y-1, wx+width-1, y+h+1);
 					GrString (wx+5, y, itemP [i], NULL);
@@ -3388,9 +3388,9 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 			if ((i>=0) &&(i<nItems))	{
 				y = (i-nFirstItem)* (CCanvas::Current ()->Font ()->Height ()+2)+wy;
 				if (i == nItem)
-					CCanvas::Current ()->SetFont (SELECTED_FONT);
+					fontManager.SetCurrent (SELECTED_FONT);
 				else
-					CCanvas::Current ()->SetFont (NORMAL_FONT);
+					fontManager.SetCurrent (NORMAL_FONT);
 				FONT->StringSize (itemP [i], w, h, aw);
 				GrRect (wx, y-1, wx+width-1, y+h+1);
 				GrString (wx+5, y, itemP [i], NULL);
@@ -3400,9 +3400,9 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 			if ((i>=0) &&(i<nItems))	{
 				y = (i-nFirstItem)* (CCanvas::Current ()->Font ()->Height ()+2)+wy;
 				if (i == nItem)
-					CCanvas::Current ()->SetFont (SELECTED_FONT);
+					fontManager.SetCurrent (SELECTED_FONT);
 				else
-					CCanvas::Current ()->SetFont (NORMAL_FONT);
+					fontManager.SetCurrent (NORMAL_FONT);
 				FONT->StringSize (itemP [i], w, h, aw);
 				GrRect (wx, y-1, wx+width-1, y+h);
 				GrString (wx+5, y, itemP [i], NULL);

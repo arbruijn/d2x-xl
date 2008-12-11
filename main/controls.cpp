@@ -91,7 +91,7 @@ void ReadFlyingControls (CObject *objP)
 	}
 
 	if ((objP->info.nType != OBJ_PLAYER) || (objP->info.nId != gameData.multiplayer.nLocalPlayer))
-		return;	//references to tPlayerShip require that this obj be the tPlayer
+		return;	//references to CPlayerShip require that this obj be the CPlayerData
 
    tGuidedMissileInfo *gmiP = gameData.objs.guidedMissile + gameData.multiplayer.nLocalPlayer;
 	gmObjP = gmiP->objP;
@@ -101,7 +101,7 @@ void ReadFlyingControls (CObject *objP)
 		fix speed;
 
 		//this is a horrible hack.  guided missile stuff should not be
-		//handled in the middle of a routine that is dealing with the tPlayer
+		//handled in the middle of a routine that is dealing with the CPlayerData
 		objP->mType.physInfo.rotThrust.SetZero();
 		rotangs[PA] = Controls [0].pitchTime / 2 + gameStates.gameplay.seismic.nMagnitude/64;
 		rotangs[BA] = Controls [0].bankTime / 2 + gameStates.gameplay.seismic.nMagnitude/16;
@@ -119,13 +119,13 @@ void ReadFlyingControls (CObject *objP)
 		if (Controls [0].headingTime)
 			Controls [0].headingTime = Controls [0].headingTime;
 #endif
-		objP->mType.physInfo.rotThrust = vmsVector::Create(Controls[0].pitchTime,
+		objP->mType.physInfo.rotThrust = CFixVector::Create(Controls[0].pitchTime,
 		                                                   Controls[0].headingTime, //Controls [0].headingTime ? f1_0 / 4 : 0; //Controls [0].headingTime;
 		                                                   Controls[0].bankTime);
 		}
 	forwardThrustTime = Controls [0].forwardThrustTime;
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)	{
-		if (Controls [0].afterburnerState) {			//tPlayer has key down
+		if (Controls [0].afterburnerState) {			//CPlayerData has key down
 			//if (forwardThrustTime >= 0) { 		//..ccAnd isn't moving backward
 			{
 				fix afterburner_scale;

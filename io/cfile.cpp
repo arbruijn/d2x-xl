@@ -235,7 +235,7 @@ int CFile::Exist (const char *filename, const char *folder, int bUseD1Hog)
 {
 	int	length, bNoHOG = 0;
 	FILE	*fp;
-	char	*pfn = (char*) (filename);
+	char	*pfn = const_cast<char*> (filename);
 
 if (*pfn == '\x01') 
 	pfn++;
@@ -332,7 +332,7 @@ m_cf.file = fp;
 m_cf.rawPosition = 0;
 m_cf.size = (length < 0) ? ffilelength (fp) : length;
 m_cf.libOffset = (length < 0) ? 0 : ftell (fp);
-m_cf.filename = (char*) (filename);
+m_cf.filename = const_cast<char*> (filename);
 return 1;
 }
 
@@ -595,7 +595,7 @@ return (fixang) INTEL_SHORT ((int) f);
 
 // ----------------------------------------------------------------------------
 
-void CFile::ReadVector (vmsVector& v) 
+void CFile::ReadVector (CFixVector& v) 
 {
 v [X] = ReadFix ();
 v [Y] = ReadFix ();
@@ -695,7 +695,7 @@ return Write (&a, sizeof (a), 1);
 
 // ----------------------------------------------------------------------------
 
-void CFile::WriteVector (const vmsVector& v)
+void CFile::WriteVector (const CFixVector& v)
 {
 WriteFix (v [X]);
 WriteFix (v [Y]);

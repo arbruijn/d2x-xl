@@ -15,27 +15,27 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define _COLLIDE_H
 
 void CollideInit ();
-int CollideTwoObjects (CObject *objP0, CObject *objP1, vmsVector *vCollision);
-int CollideObjectWithWall (CObject *objP, fix xHitSpeed, short nHitSeg, short nHitWall, vmsVector *vHit);
+int CollideTwoObjects (CObject *objP0, CObject *objP1, CFixVector *vCollision);
+int CollideObjectWithWall (CObject *objP, fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector *vHit);
 void ApplyDamageToPlayer (CObject *playerP, CObject *killerP, fix cDamage);
 
 // Returns 1 if robot died, else 0.
 int ApplyDamageToRobot (CObject *robotP, fix xDamage, int nKillerObj);
 
-int CollidePlayerAndWeapon (CObject *nPlayer, CObject *weaponP, vmsVector *vCollision);
+int CollidePlayerAndWeapon (CObject *nPlayer, CObject *weaponP, CFixVector *vCollision);
 int CollidePlayerAndMatCen (CObject *objP);
 int CollideRobotAndMatCen (CObject *objP);
 
-void ScrapeObjectOnWall (CObject *objP, short nHitSeg, short nHitWall, vmsVector *vHit);
-int MaybeDetonateWeapon (CObject *obj0p, CObject *obj1P, vmsVector *vPos);
+void ScrapeObjectOnWall (CObject *objP, short nHitSeg, short nHitWall, CFixVector *vHit);
+int MaybeDetonateWeapon (CObject *obj0p, CObject *obj1P, CFixVector *vPos);
 
-int CollidePlayerAndNastyRobot (CObject * nPlayer, CObject * robot, vmsVector *vCollision);
+int CollidePlayerAndNastyRobot (CObject * nPlayer, CObject * robot, CFixVector *vCollision);
 
 int NetDestroyReactor (CObject *reactorP);
-int CollidePlayerAndPowerup (CObject * nPlayer, CObject * powerup, vmsVector *vCollision);
-int CheckEffectBlowup (CSegment *segP, short nSide, vmsVector *vPos, CObject *blowerP, int bForceBlowup);
+int CollidePlayerAndPowerup (CObject * nPlayer, CObject * powerup, CFixVector *vCollision);
+int CheckEffectBlowup (CSegment *segP, short nSide, CFixVector *vPos, CObject *blowerP, int bForceBlowup);
 void ApplyDamageToReactor (CObject *reactorP, fix xDamage, short nAttacker);
-void BumpOneObject (CObject *objP, vmsVector *vHitDir, fix xDamage);
+void BumpOneObject (CObject *objP, CFixVector *vHitDir, fix xDamage);
 void SetDebrisCollisions (void);
 
 extern int Immaterial;

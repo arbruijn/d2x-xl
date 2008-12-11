@@ -221,7 +221,7 @@ return gameStates.render.bAmbientColor;
 //	Return true if we think vertex nVertex is visible from CSegment nSegment.
 //	If some amount of time has gone by, then recompute, else use cached value.
 
-int LightingCacheVisible (int nVertex, int nSegment, int nObject, vmsVector *vObjPos, int nObjSeg, vmsVector *vVertPos)
+int LightingCacheVisible (int nVertex, int nSegment, int nObject, CFixVector *vObjPos, int nObjSeg, CFixVector *vVertPos)
 {
 	int	cache_val = lightingCache [((nSegment << LIGHTING_CACHE_SHIFT) ^ nVertex) & (LIGHTING_CACHE_SIZE-1)];
 	int	cache_frame = cache_val >> 1;
@@ -257,7 +257,7 @@ if ((cache_frame == 0) || (cache_frame + nLightingFrameDelta <= gameData.app.nFr
 	if (hitType == HIT_NONE)
 		bApplyLight = 1;
 	else if (hitType == HIT_WALL) {
-		fix distDist = vmsVector::Dist(hit_data.hit.vPoint, *vObjPos);
+		fix distDist = CFixVector::Dist(hit_data.hit.vPoint, *vObjPos);
 		if (distDist < F1_0/4) {
 			bApplyLight = 1;
 			// -- Int3 ();	//	Curious, did fvi detect intersection with tWall containing vertex?
@@ -331,7 +331,7 @@ return false;
 
 // ----------------------------------------------------------------------------------------------
 
-void ApplyLight (fix xObjIntensity, int nObjSeg, vmsVector *vObjPos, int nRenderVertices,
+void ApplyLight (fix xObjIntensity, int nObjSeg, CFixVector *vObjPos, int nRenderVertices,
 					  CArray<short>& renderVertices,	int nObject, tRgbaColorf *color)
 {
 	int			iVertex, bUseColor, bForceColor;
@@ -339,10 +339,10 @@ void ApplyLight (fix xObjIntensity, int nObjSeg, vmsVector *vObjPos, int nRender
 	int			bApplyLight;
 	short			nLightObj;
 	ubyte			nObjType;
-	vmsVector	*vVertPos;
+	CFixVector	*vVertPos;
 	fix			dist, xOrigIntensity = xObjIntensity;
 	CObject		*lightObjP, *objP = (nObject < 0) ? NULL : OBJECTS + nObject;
-	tPlayer		*playerP = objP ? gameData.multiplayer.players + objP->info.nId : NULL;
+	CPlayerData		*playerP = objP ? gameData.multiplayer.players + objP->info.nId : NULL;
 
 nObjType = objP ? objP->info.nType : OBJ_NONE;
 if (objP && SHOW_DYN_LIGHT) {
@@ -406,7 +406,7 @@ if (xObjIntensity) {
 #endif
 			{
 				vVertPos = gameData.segs.vertices + nVertex;
-				dist = vmsVector::Dist (*vObjPos, *vVertPos) / 4;
+				dist = CFixVector::Dist (*vObjPos, *vVertPos) / 4;
 				dist = FixMul (dist, dist);
 				if (dist < abs (obji_64)) {
 					if (dist < MIN_LIGHT_DIST)
@@ -429,7 +429,7 @@ if (xObjIntensity) {
 					color->red = color->green = color->blue = 1.0;
 					}
 				if (objP->info.nId != gameData.multiplayer.nLocalPlayer) {
-					vmsVector	tvec;
+					CFixVector	tvec;
 					tFVIQuery	fq;
 					tFVIData		hit_data;
 					int			fate;
@@ -461,7 +461,7 @@ if (xObjIntensity) {
 #endif
 			{
 				vVertPos = gameData.segs.vertices + nVertex;
-				dist = vmsVector::Dist (*vObjPos, *vVertPos);
+				dist = CFixVector::Dist (*vObjPos, *vVertPos);
 				bApplyLight = 0;
 				if ((dist >> headlightShift) < abs (obji_64)) {
 					if (dist < MIN_LIGHT_DIST)
@@ -478,10 +478,10 @@ if (xObjIntensity) {
 						else {
 							fix			dot, maxDot;
 							int			spotSize = gameData.render.vertColor.bDarkness ? 2 << (3 - extraGameInfo [1].nSpotSize) : 1;
-							vmsVector	vecToPoint;
+							CFixVector	vecToPoint;
 							vecToPoint = *vVertPos - *vObjPos;
-							vmsVector::Normalize(vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
-							dot = vmsVector::Dot(vecToPoint, objP->info.position.mOrient[FVEC]);
+							CFixVector::Normalize(vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
+							dot = CFixVector::Dot(vecToPoint, objP->info.position.mOrient[FVEC]);
 							if (gameData.render.vertColor.bDarkness)
 								maxDot = F1_0 / spotSize;
 							else
@@ -555,7 +555,7 @@ switch (nObjType) {
 			}
 		 else if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) && gameData.multiplayer.players [objP->info.nId].secondaryAmmo [PROXMINE_INDEX]) {
 
-		// If hoard game and tPlayer, add extra light based on how many orbs you have
+		// If hoard game and CPlayerData, add extra light based on how many orbs you have
 		// Pulse as well.
 		  	hoardlight = I2X (gameData.multiplayer.players [objP->info.nId].secondaryAmmo [PROXMINE_INDEX])/2; //I2X (12);
 			hoardlight++;
@@ -706,7 +706,7 @@ void SetDynamicLight (void)
 	int			iRenderSeg, v;
 	char			bGotColor, bKeepDynColoring = 0;
 	CObject		*objP;
-	vmsVector	*objPos;
+	CFixVector	*objPos;
 	fix			xObjIntensity;
 	tRgbaColorf	color;
 	
@@ -787,7 +787,7 @@ FORALL_OBJS (objP, nObject) {
 //	Now, process all lights from last frame which haven't been processed this frame.
 FORALL_OBJS (objP, nObject) {
 	nObject = OBJ_IDX (objP);
-	//	In multiplayer games, process even unprocessed OBJECTS every 4th frame, else don't know about tPlayer sneaking up.
+	//	In multiplayer games, process even unprocessed OBJECTS every 4th frame, else don't know about CPlayerData sneaking up.
 	if ((gameData.render.lights.objects [nObject]) ||
 		 (IsMultiGame && (((nObject ^ gameData.app.nFrameCount) & 3) == 0))) {
 		if (gameData.render.lights.newObjects [nObject])
@@ -848,7 +848,7 @@ oldViewer = viewer;
 //compute the lighting for an CObject.  Takes a pointer to the CObject,
 //and possibly a rotated 3d point.  If the point isn't specified, the
 //object's center point is rotated.
-fix ComputeObjectLight (CObject *objP, vmsVector *vRotated)
+fix ComputeObjectLight (CObject *objP, CFixVector *vRotated)
 {
 #if DBG
    if (!objP)
@@ -908,7 +908,7 @@ if (objP->info.movementType == MT_PHYSICS) {
 		xEngineGlowValue [0] += (FixDiv (speed, MAX_VELOCITY) * 3) / 5;
 		}
 	}
-//set value for tPlayer headlight
+//set value for CPlayerData headlight
 if (objP->info.nType == OBJ_PLAYER) {
 	if (PlayerHasHeadlight (objP->info.nId) &&  !gameStates.app.bEndLevelSequence)
 		xEngineGlowValue [1] = HeadlightIsOn (objP->info.nId) ? -2 : -1;
@@ -1036,9 +1036,9 @@ return gameData.pig.tex.brightness [tMapNum];
 short changedSegs [MAX_CHANGED_SEGS];
 int nChangedSegs;
 
-void ApplyLightToSegment (CSegment *segP, vmsVector *vSegCenter, fix xBrightness, int nCallDepth)
+void ApplyLightToSegment (CSegment *segP, CFixVector *vSegCenter, fix xBrightness, int nCallDepth)
 {
-	vmsVector	rSegmentCenter;
+	CFixVector	rSegmentCenter;
 	fix			xDistToRSeg;
 	int 			i;
 	short			nSide,
@@ -1049,7 +1049,7 @@ for (i = 0; i <nChangedSegs; i++)
 		break;
 if (i == nChangedSegs) {
 	COMPUTE_SEGMENT_CENTER (&rSegmentCenter, segP);
-	xDistToRSeg = vmsVector::Dist(rSegmentCenter, *vSegCenter);
+	xDistToRSeg = CFixVector::Dist(rSegmentCenter, *vSegCenter);
 
 	if (xDistToRSeg <= LIGHT_DISTANCE_THRESHOLD) {
 		fix	xLightAtPoint = (xDistToRSeg > F1_0) ?
@@ -1094,7 +1094,7 @@ if (WALL_IS_DOORWAY (segP, nSide, NULL) & WID_RENDER_FLAG) {
 	xBrightness *= dir;
 	nChangedSegs = 0;
 	if (xBrightness) {
-		vmsVector	vSegCenter;
+		CFixVector	vSegCenter;
 		COMPUTE_SEGMENT_CENTER (&vSegCenter, segP);
 		ApplyLightToSegment (segP, &vSegCenter, xBrightness, 0);
 		}

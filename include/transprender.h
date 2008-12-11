@@ -26,7 +26,7 @@ typedef struct tTranspPoly {
 	tFace				*faceP;
 	grsTriangle			*triP;
 	CBitmap				*bmP;
-	fVector				vertices [4];
+	CFloatVector				vertices [4];
 	tTexCoord2f			texCoord [4];
 	tRgbaColorf			color [4];
 	short					sideLength [4];
@@ -45,7 +45,7 @@ typedef struct tTranspObject {
 
 typedef struct tTranspSprite {
 	CBitmap				*bmP;
-	fVector				position;
+	CFloatVector				position;
 	tRgbaColorf			color;
 	int					nWidth;
 	int					nHeight;
@@ -57,7 +57,7 @@ typedef struct tTranspSprite {
 } tTranspSprite;
 
 typedef struct tTranspSpark {
-	fVector				position;
+	CFloatVector				position;
 	int					nSize;
 	char					nFrame;
 	char					nType;
@@ -86,7 +86,7 @@ typedef struct tTranspLightning {
 
 typedef struct tTranspLightTrail {
 	CBitmap					*bmP;
-	fVector					vertices [7];
+	CFloatVector					vertices [7];
 	tTexCoord2f				texCoord [7];
 	tRgbaColorf				color;
 	char						bTrail;
@@ -155,17 +155,17 @@ void InitTranspItemBuffer (int zMin, int zMax);
 int AddTranspItem (tTranspItemType nType, void *itemData, int itemSize, int nDepth, int nIndex);
 int TIAddFace (tFace *faceP);
 int TIAddPoly (tFace *faceP, grsTriangle *triP, CBitmap *bmP,
-					fVector *vertices, char nVertices, tTexCoord2f *texCoord, tRgbaColorf *color,
+					CFloatVector *vertices, char nVertices, tTexCoord2f *texCoord, tRgbaColorf *color,
 					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive,
 					short nSegment);
 int TIAddObject (CObject *objP);
-int TIAddSprite (CBitmap *bmP, const vmsVector& position, tRgbaColorf *color,
+int TIAddSprite (CBitmap *bmP, const CFixVector& position, tRgbaColorf *color,
 					  int nWidth, int nHeight, char nFrame, char bAdditive, float fSoftRad);
-int TIAddSpark (const vmsVector& position, char nType, int nSize, char nFrame);
+int TIAddSpark (const CFixVector& position, char nType, int nSize, char nFrame);
 int TIAddSphere (tTranspSphereType nType, float red, float green, float blue, float alpha, CObject *objP);
 int TIAddParticle (CParticle *particle, float fBrightness, int nThread);
 int TIAddLightning (CLightning *lightningP, short nDepth);
-int TIAddLightTrail (CBitmap *bmP, fVector *vThruster, tTexCoord2f *tcThruster, fVector *vFlame, tTexCoord2f *tcFlame, tRgbaColorf *colorP);
+int TIAddLightTrail (CBitmap *bmP, CFloatVector *vThruster, tTexCoord2f *tcThruster, CFloatVector *vFlame, tTexCoord2f *tcFlame, tRgbaColorf *colorP);
 void RenderTranspItems (void);
 void StartRenderThreads (void);
 void EndRenderThreads (void);

@@ -70,7 +70,7 @@ extern int bZPass;
 
 void G3DynLightModel (CObject *objP, tG3Model *pm, short iVerts, short nVerts, short iFaceVerts, short nFaceVerts)
 {
-	fVector			vPos, vVertex;
+	CFloatVector			vPos, vVertex;
 	fVector3			*pv, *pn;
 	tG3ModelVertex	*pmv;
 	tFaceColor		*pc;
@@ -83,7 +83,7 @@ if (!gameStates.render.bBrightObject) {
 		  i < nVerts;
 		  i++, pv++, pn++, pc++) {
 		pc->index = 0;
-		vVertex = vPos + *reinterpret_cast<fVector*> (pv);
+		vVertex = vPos + *reinterpret_cast<CFloatVector*> (pv);
 		G3VertexColor (reinterpret_cast<fVector3*> (pn), vVertex.V3(), i, pc, NULL, 1, 0, 0);
 		}
 	}
@@ -148,7 +148,7 @@ else {
 		else if (bEmissive)
 			l = F1_0;
 		else {
-			l = -vmsVector::Dot(viewInfo.view [0][FVEC], pmf->vNormal);
+			l = -CFixVector::Dot(viewInfo.view [0][FVEC], pmf->vNormal);
 			l = 3 * f1_0 / 4 + l / 4;
 			l = FixMul (l, xModelLight);
 			}
@@ -193,7 +193,7 @@ else {
 void G3ScaleModel (int nModel, int bHires)
 {
 	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
-	fVector			fScale;
+	CFloatVector			fScale;
 	int				i;
 	fVector3			*pv;
 	tG3ModelVertex	*pmv;
@@ -219,8 +219,8 @@ pm->fScale *= fScale;
 
 //------------------------------------------------------------------------------
 
-void G3GetThrusterPos (CObject *objP, short nModel, tG3ModelFace *pmf, vmsVector *vOffsetP,
-							  vmsVector *vNormal, int nRad, int bHires)
+void G3GetThrusterPos (CObject *objP, short nModel, tG3ModelFace *pmf, CFixVector *vOffsetP,
+							  CFixVector *vNormal, int nRad, int bHires)
 {
 	tG3Model				*pm = gameData.models.g3Models [bHires] + nModel;
 	tG3ModelVertex		*pmv = NULL;
@@ -295,7 +295,7 @@ if (psm->nGunPoint >= 0)
 if (psm->bBullets)
 	return 1;
 if (psm->bWeapon) {
-	tPlayer	*playerP = gameData.multiplayer.players + nId;
+	CPlayerData	*playerP = gameData.multiplayer.players + nId;
 	int		bLasers = (nGunId == LASER_INDEX) || (nGunId == SUPER_LASER_INDEX);
 	int		bSuperLasers = playerP->laserLevel > MAX_LASER_LEVEL;
 	int		bQuadLasers = gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bQuadLasers;
@@ -412,7 +412,7 @@ return 1;
 //------------------------------------------------------------------------------
 
 void G3DrawSubModel (CObject *objP, short nModel, short nSubModel, short nExclusive, CBitmap **modelBitmaps,
-						   vmsAngVec *pAnimAngles, vmsVector *vOffsetP, int bHires, int bUseVBO, int nPass, int bTransparency,
+						   vmsAngVec *pAnimAngles, CFixVector *vOffsetP, int bHires, int bUseVBO, int nPass, int bTransparency,
 							int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
 	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
@@ -420,7 +420,7 @@ void G3DrawSubModel (CObject *objP, short nModel, short nSubModel, short nExclus
 	tG3ModelFace	*pmf;
 	CBitmap		*bmP = NULL;
 	vmsAngVec		va = pAnimAngles ? pAnimAngles [psm->nAngles] : vmsAngVec::ZERO;
-	vmsVector		vo;
+	CFixVector		vo;
 	int				h, i, j, bTransparent, bAnimate, bTextured = !(gameStates.render.bCloaked /*|| nPass*/),
 						bGetThruster = !nPass && ObjectHasThruster (objP);
 	short				nId, nFaceVerts, nVerts, nIndex, nBitmap = -1, nTeamColor;
@@ -553,20 +553,20 @@ if ((nExclusive < 0) /*|| (nSubModel == nExclusive)*/)
 //------------------------------------------------------------------------------
 
 void G3DrawModel (CObject *objP, short nModel, short nSubModel, CBitmap **modelBitmaps,
-						vmsAngVec *pAnimAngles, vmsVector *vOffsetP, int bHires, int bUseVBO, int bTransparency,
+						vmsAngVec *pAnimAngles, CFixVector *vOffsetP, int bHires, int bUseVBO, int bTransparency,
 						int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
 	tG3Model					*pm;
 	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][0];
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + sliP->nFirst;
-	tShaderLight			*psl;
+	CShaderLight			*psl;
 	int						nPass, iLight, nLights, nLightRange;
 	int						bBright = objP && (objP->info.nType == OBJ_MARKER);
 	int						bEmissive = objP && (objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId];
 	int						bLighting = SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && !(gameStates.render.bQueryCoronas || gameStates.render.bCloaked || bEmissive || bBright);
 	GLenum					hLight;
 	float						fBrightness, fLightScale = gameData.models.nLightScale ? X2F (gameData.models.nLightScale) : 1.0f;
-	fVector					color;
+	CFloatVector					color;
 	tTransformation		*posP = OBJPOS (objP);
 
 OglSetupTransform (1);
@@ -626,7 +626,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 				glEnable (hLight);
 	//			sprintf (szLightSources + strlen (szLightSources), "%d ", (psl->nObject >= 0) ? -psl->nObject : psl->nSegment);
 				fBrightness = psl->info.fBrightness * fLightScale;
-				color = *(reinterpret_cast<fVector*> (&psl->info.color));
+				color = *(reinterpret_cast<CFloatVector*> (&psl->info.color));
 				color[R] *= fLightScale;
 				color[G] *= fLightScale;
 				color[B] *= fLightScale;
@@ -689,13 +689,13 @@ OglResetTransform (1);
 //------------------------------------------------------------------------------
 
 void G3RenderDamageLightnings (CObject *objP, short nModel, short nSubModel,
-										 vmsAngVec *pAnimAngles, vmsVector *vOffsetP, int bHires)
+										 vmsAngVec *pAnimAngles, CFixVector *vOffsetP, int bHires)
 {
 	tG3Model			*pm;
 	tG3SubModel		*psm;
 	tG3ModelFace	*pmf;
 	const vmsAngVec	*va;
-	vmsVector		vo;
+	CFixVector		vo;
 	int				i, j;
 
 pm = gameData.models.g3Models [bHires] + nModel;
@@ -734,7 +734,7 @@ if (vOffsetP)
 //------------------------------------------------------------------------------
 
 int G3RenderModel (CObject *objP, short nModel, short nSubModel, tPolyModel *pp, CBitmap **modelBitmaps,
-						 vmsAngVec *pAnimAngles, vmsVector *vOffsetP, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor)
+						 vmsAngVec *pAnimAngles, CFixVector *vOffsetP, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor)
 {
 	tG3Model	*pm = gameData.models.g3Models [1] + nModel;
 	int		i, bHires = 1, bUseVBO = gameStates.ogl.bHaveVBOs && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bObjLighting),

@@ -85,7 +85,7 @@ typedef struct tSide {
 	short   nWall;
 	short   nTexture [2];
 	tUVL     uvls [4];
-	//vmsVector normals[2]; // 2 normals, if quadrilateral, both the same.
+	//CFixVector normals[2]; // 2 normals, if quadrilateral, both the same.
 } tSide;
 #else
 typedef struct tSide {
@@ -101,7 +101,7 @@ typedef struct tSide {
 	ushort		nOvlTex : 14;
 #endif
 	tUVL     	uvls [4];
-	vmsVector	normals [2];  // 2 normals, if quadrilateral, both the same.
+	CFixVector	normals [2];  // 2 normals, if quadrilateral, both the same.
 } tSide;
 #endif
 
@@ -149,7 +149,7 @@ typedef struct xsegment {
 #define S2F_AMBIENT_LAVA    0x02
 
 typedef struct tSide2 {
-	vmsVector	rotNorms [2];
+	CFixVector	rotNorms [2];
 } tSide2;
 
 
@@ -185,8 +185,8 @@ inline int operator- (tSegment2* s, CArray<tSegment2>& a) { return a.Index (s); 
 #define MAX_CENTER_TYPES			17
 
 #ifdef COMPACT_SEGS
-extern void GetSideNormal(tSegment *sp, int nSide, int normal_num, vmsVector * vm );
-extern void GetSideNormals(tSegment *sp, int nSide, vmsVector * vm1, vmsVector *vm2 );
+extern void GetSideNormal(tSegment *sp, int nSide, int normal_num, CFixVector * vm );
+extern void GetSideNormals(tSegment *sp, int nSide, CFixVector * vm1, CFixVector *vm2 );
 #endif
 
 // Local tSegment data.
@@ -315,7 +315,6 @@ void ReadlightDelta(tLightDelta *dl, CFile& cf);
 void ReadlightDeltaIndex(tLightDeltaIndex *di, CFile& cf);
 #endif
 
-int CountSkyBoxSegments (void);
 void FreeSkyBoxSegList (void);
 int BuildSkyBoxSegList (void);
 

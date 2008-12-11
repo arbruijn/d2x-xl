@@ -549,7 +549,7 @@ switch (key) {
 		if (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0))
 #endif		
 			gameStates.render.bExternalView = !gameStates.render.bExternalView;
-		ResetFlightPath (&externalView, -1, -1);
+		externalView.Reset (-1, -1);
 		break;
 
 	case KEY_SHIFTED + KEY_F9:
@@ -1048,8 +1048,8 @@ void HandleTestKey(int key)
 
 		case KEYDBGGED +KEY_F4: {
 			//tFVIData hit_data;
-			//vmsVector p0 = {-0x1d99a7, -0x1b20000, 0x186ab7f};
-			//vmsVector p1 = {-0x217865, -0x1b20000, 0x187de3e};
+			//CFixVector p0 = {-0x1d99a7, -0x1b20000, 0x186ab7f};
+			//CFixVector p1 = {-0x217865, -0x1b20000, 0x187de3e};
 			//FindVectorIntersection(&hit_data, &p0, 0x1b9, &p1, 0x40000, 0x0, NULL, -1);
 			break;
 		}
@@ -1098,7 +1098,7 @@ void HandleTestKey(int key)
 				FlyInit(gameData.objs.consoleP);
 				gameStates.app.bGameSuspended &= ~SUSP_ROBOTS;	//robots move
 			} else {
-				slew_init(gameData.objs.consoleP);			//start tPlayer slewing
+				slew_init(gameData.objs.consoleP);			//start CPlayerData slewing
 				gameStates.app.bGameSuspended |= SUSP_ROBOTS;	//robots don't move
 			}
 			break;
@@ -1193,7 +1193,7 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
 	}
 if (gameStates.app.bPlayerExploded) { //gameStates.app.bPlayerIsDead && (gameData.objs.consoleP->flags & OF_EXPLODING) ) {
 	if (!explodingFlag)  {
-		explodingFlag = 1;			// When tPlayer starts exploding, clear all input devices...
+		explodingFlag = 1;			// When CPlayerData starts exploding, clear all input devices...
 		GameFlushInputs();
 		}
 	else {

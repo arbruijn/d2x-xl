@@ -521,7 +521,7 @@ return 1;
 void CloseSubTitles (void)
 {
 if (subTitles.rawDataP)
-	D2_FREE (subTitles.rawDataP);
+	delete[] subTitles.rawDataP;
 subTitles.rawDataP = NULL;
 subTitles.nCaptions = 0;
 }

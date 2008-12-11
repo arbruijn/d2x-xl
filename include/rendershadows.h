@@ -8,7 +8,7 @@ void RenderFaceShadow (tFaceProps *propsP);
 void RenderShadowQuad (int bWhite);
 void CreateShadowTexture (void);
 void RenderShadowTexture (void);
-int RenderShadowMap (tDynLight *pLight);
+int RenderShadowMap (CDynLight *pLight);
 void RenderObjectShadows (void);
 void DestroyShadowMaps (void);
 void ApplyShadowMaps (short nStartSeg, fix nEyeOffset, int nWindow);

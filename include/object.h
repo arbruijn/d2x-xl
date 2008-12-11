@@ -40,7 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define OBJ_FIREBALL    1   // a fireball, part of an explosion
 #define OBJ_ROBOT       2   // an evil enemy
 #define OBJ_HOSTAGE     3   // a hostage you need to rescue
-#define OBJ_PLAYER      4   // the tPlayer on the console
+#define OBJ_PLAYER      4   // the CPlayerData on the console
 #define OBJ_WEAPON      5   // a laser, missile, etc
 #define OBJ_CAMERA      6   // a camera to slew around with
 #define OBJ_POWERUP     7   // a powerup you can pick up
@@ -48,9 +48,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define OBJ_REACTOR     9   // the control center
 #define OBJ_FLARE       10  // a flare
 #define OBJ_CLUTTER     11  // misc objects
-#define OBJ_GHOST       12  // what the tPlayer turns into when dead
+#define OBJ_GHOST       12  // what the CPlayerData turns into when dead
 #define OBJ_LIGHT       13  // a light source, & not much else
-#define OBJ_COOP        14  // a cooperative tPlayer CObject.
+#define OBJ_COOP        14  // a cooperative CPlayerData CObject.
 #define OBJ_MARKER      15  // a map marker
 #define OBJ_CAMBOT		16	 // a camera
 #define OBJ_MONSTERBALL	17	 // a monsterball
@@ -70,7 +70,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define CT_NONE         0   // doesn't move (or change movement)
 #define CT_AI           1   // driven by AI
 #define CT_EXPLOSION    2   // explosion sequencer
-#define CT_FLYING       4   // the tPlayer is flying
+#define CT_FLYING       4   // the CPlayerData is flying
 #define CT_SLEW         5   // slewing
 #define CT_FLYTHROUGH   6   // the flythrough system
 #define CT_WEAPON       9   // laser, etc.
@@ -79,7 +79,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define CT_DEBRIS       12  // this is a piece of debris
 #define CT_POWERUP      13  // animating powerup blob
 #define CT_LIGHT        14  // doesn't actually do anything
-#define CT_REMOTE       15  // controlled by another net tPlayer
+#define CT_REMOTE       15  // controlled by another net CPlayerData
 #define CT_CNTRLCEN     16  // the control center/main reactor
 #define CT_CAMERA			17
 
@@ -117,7 +117,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define OF_SILENT           8   // this makes no sound when it hits a tWall.  Added by MK for weapons, if you extend it to other types, do it completely!
 #define OF_ATTACHED         16  // this CObject is a fireball attached to another CObject
 #define OF_HARMLESS         32  // this CObject does no damage.  Added to make quad lasers do 1.5 damage as normal lasers.
-#define OF_PLAYER_DROPPED   64  // this CObject was dropped by the tPlayer...
+#define OF_PLAYER_DROPPED   64  // this CObject was dropped by the CPlayerData...
 #define OF_ARMAGEDDON		 128 // destroyed by cheat
 
 // Different Weapon ID types...
@@ -145,7 +145,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_VELOCITY I2X(50)
 
-#define PF_SPAT_BY_PLAYER   1 //this powerup was spat by the tPlayer
+#define PF_SPAT_BY_PLAYER   1 //this powerup was spat by the CPlayerData
 
 extern char szObjectTypeNames [MAX_OBJECT_TYPES][10];
 
@@ -206,13 +206,13 @@ class RenderLightningInfo : public RenderInfo { };
 
 // information for physics sim for an CObject
 typedef struct tPhysicsInfo {
-	vmsVector	velocity;   // velocity vector of this CObject
-	vmsVector	thrust;     // constant force applied to this CObject
+	CFixVector	velocity;   // velocity vector of this CObject
+	CFixVector	thrust;     // constant force applied to this CObject
 	fix         mass;       // the mass of this CObject
 	fix         drag;       // how fast this slows down
 	fix         brakes;     // how much brakes applied
-	vmsVector	rotVel;     // rotational velecity (angles)
-	vmsVector	rotThrust;  // rotational acceleration
+	CFixVector	rotVel;     // rotational velecity (angles)
+	CFixVector	rotThrust;  // rotational acceleration
 	fixang      turnRoll;   // rotation caused by turn banking
 	ushort      flags;      // misc physics flags
 } tPhysicsInfo;
@@ -222,19 +222,19 @@ class CPhysicsInfo {
 		tPhysicsInfo	m_info;
 	public:
 		inline tPhysicsInfo* GetInfo (void) { return &m_info; };
-		inline vmsVector GetVelocity (void) { return m_info.velocity; }
-		inline vmsVector GetThrust (void) { return m_info.thrust; }
-		inline vmsVector GetRotVel (void) { return m_info.rotVel; }
-		inline vmsVector GetRotThrust (void) { return m_info.rotThrust; }
+		inline CFixVector GetVelocity (void) { return m_info.velocity; }
+		inline CFixVector GetThrust (void) { return m_info.thrust; }
+		inline CFixVector GetRotVel (void) { return m_info.rotVel; }
+		inline CFixVector GetRotThrust (void) { return m_info.rotThrust; }
 		inline fix GetMass (void) { return m_info.mass; }
 		inline fix GetDrag (void) { return m_info.drag; }
 		inline fix GetBrakes (void) { return m_info.brakes; }
 		inline fixang GetTurnRoll (void) { return m_info.turnRoll; }
 		inline ushort GetFlags (void) { return m_info.flags; }
-		inline void SetVelocity (vmsVector* velocity) { m_info.velocity = *velocity; }
-		inline void SetThrust (vmsVector* thrust) { m_info.thrust = *thrust; }
-		inline void SetRotVel (vmsVector* rotVel) { m_info.rotVel = *rotVel; }
-		inline void SetRotThrust (vmsVector* rotThrust) { m_info.rotThrust = *rotThrust; }
+		inline void SetVelocity (CFixVector* velocity) { m_info.velocity = *velocity; }
+		inline void SetThrust (CFixVector* thrust) { m_info.thrust = *thrust; }
+		inline void SetRotVel (CFixVector* rotVel) { m_info.rotVel = *rotVel; }
+		inline void SetRotThrust (CFixVector* rotThrust) { m_info.rotThrust = *rotThrust; }
 		inline void SetMass (fix mass) { m_info.mass = mass; }
 		inline void SetDrag (fix drag) { m_info.drag = drag; }
 		inline void SetBrakes (fix brakes) { m_info.brakes = brakes; }
@@ -342,7 +342,7 @@ class CObjLightInfo {
 typedef struct tPowerupInfo {
 	int     nCount;          // how many/much we pick up (vulcan cannon only?)
 	fix     xCreationTime;  // Absolute time of creation.
-	int     nFlags;          // spat by tPlayer?
+	int     nFlags;          // spat by CPlayerData?
 }  tPowerupInfo;
 
 class CPowerupInfo {
@@ -488,7 +488,7 @@ class CPolyObjInfo {
 };
 
 typedef struct tTransformation {
-	vmsVector	vPos;				// absolute x,y,z coordinate of center of object
+	CFixVector	vPos;				// absolute x,y,z coordinate of center of object
 	vmsMatrix	mOrient;			// orientation of object in world
 	} tTransformation;
 
@@ -496,9 +496,9 @@ class CTransformation {
 private:
 	tTransformation	m_t;
 public:
-	inline vmsVector* GetPos (void) { return &m_t.vPos; }
+	inline CFixVector* GetPos (void) { return &m_t.vPos; }
 	inline vmsMatrix* GetOrient (void) { return &m_t.mOrient; }
-	inline void SetPos (const vmsVector* vPos) { m_t.vPos = *vPos; }
+	inline void SetPos (const CFixVector* vPos) { m_t.vPos = *vPos; }
 	inline void SetOrient (const vmsMatrix* mOrient) { m_t.mOrient = *mOrient ; }
 };
 
@@ -539,7 +539,7 @@ typedef struct tObjectInfo {
 	tTransformation	position;
 	fix     				xSize;         // 3d size of CObject - for collision detection
 	fix     				xShields;      // Starts at maximum, when <0, CObject dies..
-	vmsVector 			vLastPos;		// where CObject was last frame
+	CFixVector 			vLastPos;		// where CObject was last frame
 	tObjContainerInfo	contains;
 	sbyte   				nCreator; // Materialization center that created this CObject, high bit set if matcen-created
 	fix     				xLifeLeft;      // how long until goes away, or 7fff if immortal
@@ -551,7 +551,7 @@ typedef struct tBaseObject {
 	// movement info, determined by MOVEMENT_TYPE
 	union {
 		tPhysicsInfo	physInfo; // a physics CObject
-		vmsVector   	spinRate; // for spinning objects
+		CFixVector   	spinRate; // for spinning objects
 		} mType;
 	// control info, determined by CONTROL_TYPE
 	union {
@@ -601,7 +601,7 @@ class CObjectInfo : public CTransformation, public CObjContainerInfo, public tBa
 		inline ubyte MovementType () { return info.movementType; }
 		inline ubyte RenderType () { return info.renderType; }
 		inline ubyte Flags () { return info.nFlags; }
-		inline vmsVector LastPos () { return info.vLastPos; }
+		inline CFixVector LastPos () { return info.vLastPos; }
 
 		inline void SetSignature (int nSignature) { info.nSignature = nSignature; }
 		inline void SetId (ubyte nId) { info.nId = nId; }
@@ -618,7 +618,7 @@ class CObjectInfo : public CTransformation, public CObjContainerInfo, public tBa
 		inline void SetMovementType (ubyte movementType) { info.movementType = movementType; }
 		inline void SetRenderType (ubyte renderType) { info.renderType = renderType; }
 		inline void SetFlags (ubyte nFlags) { info.nFlags = nFlags; }
-		inline void SetLastPos (const vmsVector *vLastPos) { info.vLastPos = *vLastPos; }
+		inline void SetLastPos (const CFixVector *vLastPos) { info.vLastPos = *vLastPos; }
 };
 
 struct tObject;
@@ -639,7 +639,7 @@ typedef struct tObject : public tBaseObject {
 	fix				xCreationTime;
 	fix				xTimeLastHit;
 	tShotInfo		shots;
-	vmsVector		vStartVel;
+	CFixVector		vStartVel;
 } tObject;
 
 class CObject;
@@ -664,14 +664,14 @@ class CObject : public CObjectInfo {
 		fix				m_xCreationTime;
 		fix				m_xTimeLastHit;
 		tShotInfo		m_shots;
-		vmsVector		m_vStartVel;
+		CFixVector		m_vStartVel;
 
 	public:
 		CObject ();
 		~CObject ();
 		// initialize a new CObject.  adds to the list for the given CSegment
 		// returns the CObject number
-		int Create (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos,
+		int Create (ubyte nType, ubyte nId, short nCreator, short nSegment, const CFixVector& vPos,
 						const vmsMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType);
 
 		inline void Kill (void) { SetFlags (Flags () | OF_SHOULD_BE_DEAD); }
@@ -690,7 +690,7 @@ class CObject : public CObjectInfo {
 		void UnlinkFromSeg (void);
 		void RelinkToSeg (int nNewSeg);
 		bool IsLinkedToSeg (short nSegment);
-		void Initialize (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos,
+		void Initialize (ubyte nType, ubyte nId, short nCreator, short nSegment, const CFixVector& vPos,
 							  const vmsMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType);
 		void ToBaseObject (tBaseObject *objP);
 
@@ -703,7 +703,7 @@ class CObject : public CObjectInfo {
 		inline fix CreationTime (void) { return m_xCreationTime; }
 		inline fix TimeLastHit (void) { return m_xTimeLastHit; }
 		inline tShotInfo& Shots (void) { return m_shots; }
-		inline vmsVector StartVel (void) { return m_vStartVel; }
+		inline CFixVector StartVel (void) { return m_vStartVel; }
 
 		inline void SetId (short nId) { m_nId = nId; }
 		inline void SetPrev (CObject* prev) { m_prev = prev; }
@@ -712,7 +712,7 @@ class CObject : public CObjectInfo {
 		inline void SetTracers (ubyte nTracers) { m_nTracers = nTracers; }
 		inline void SetCreationTime (fix xCreationTime) { m_xCreationTime = xCreationTime; }
 		inline void SetTimeLastHit (fix xTimeLastHit) { m_xTimeLastHit = xTimeLastHit; }
-		inline void SetStartVel (vmsVector* vStartVel) { m_vStartVel = *vStartVel; }
+		inline void SetStartVel (CFixVector* vStartVel) { m_vStartVel = *vStartVel; }
 
 		inline void InitLinks (void) { memset (m_links, 0, sizeof (m_links)); }
 
@@ -857,16 +857,16 @@ extern CObject Follow;
 // do whatever setup needs to be done
 void InitObjects();
 
-int CreateObject (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos, const vmsMatrix& mOrient,
+int CreateObject (ubyte nType, ubyte nId, short nCreator, short nSegment, const CFixVector& vPos, const vmsMatrix& mOrient,
 					   fix xSize, ubyte cType, ubyte mType, ubyte rType);
 int CloneObject (CObject *objP);
-int CreateRobot (ubyte nId, short nSegment, const vmsVector& vPos);
-int CreatePowerup (ubyte nId, short nCreator, short nSegment, const vmsVector& vPos, int bIgnoreLimits);
-int CreateWeapon (ubyte nId, short nCreator, short nSegment, const vmsVector& vPos, fix xSize, ubyte rType);
-int CreateFireball (ubyte nId, short nSegment, const vmsVector& vPos, fix xSize, ubyte rType);
+int CreateRobot (ubyte nId, short nSegment, const CFixVector& vPos);
+int CreatePowerup (ubyte nId, short nCreator, short nSegment, const CFixVector& vPos, int bIgnoreLimits);
+int CreateWeapon (ubyte nId, short nCreator, short nSegment, const CFixVector& vPos, fix xSize, ubyte rType);
+int CreateFireball (ubyte nId, short nSegment, const CFixVector& vPos, fix xSize, ubyte rType);
 int CreateDebris (CObject *parentP, short nSubModel);
 int CreateCamera (CObject *parentP);
-int CreateLight (ubyte nId, short nSegment, const vmsVector& vPos);
+int CreateLight (ubyte nId, short nSegment, const CFixVector& vPos);
 // returns CSegment number CObject is in.  Searches out from CObject's current
 // seg, so this shouldn't be called if the CObject has "jumped" to a new seg
 // -- unused --
@@ -894,11 +894,11 @@ void UnlinkObjFromSeg (CObject *objP);
 
 // initialize a new CObject.  adds to the list for the given CSegment
 // returns the CObject number
-//int CObject::Create(ubyte nType, char id, short owner, short nSegment, const vmsVector& pos,
+//int CObject::Create(ubyte nType, char id, short owner, short nSegment, const CFixVector& pos,
 //               const vmsMatrix& orient, fix size, ubyte ctype, ubyte mtype, ubyte rtype, int bIgnoreLimits);
 
 // make a copy of an CObject. returs num of new CObject
-int ObjectCreateCopy(int nObject, vmsVector *new_pos, int newsegnum);
+int ObjectCreateCopy(int nObject, CFixVector *new_pos, int newsegnum);
 
 // remove CObject from the world
 void ReleaseObject(short nObject);
@@ -931,7 +931,7 @@ void object_render_targets(void);
 // move an CObject for the current frame
 int UpdateObject(CObject * obj);
 
-// make object0 the tPlayer, setting all relevant fields
+// make object0 the CPlayerData, setting all relevant fields
 void InitPlayerObject();
 
 // check if CObject is in CObject->nSegment.  if not, check the adjacent
@@ -998,7 +998,7 @@ void AttachObject(CObject *parent, CObject *sub);
 extern void CreateSmallFireballOnObject(CObject *objp, fix size_scale, int soundFlag);
 
 // returns CObject number
-int DropMarkerObject(vmsVector *pos, short nSegment, vmsMatrix *orient, ubyte marker_num);
+int DropMarkerObject(CFixVector *pos, short nSegment, vmsMatrix *orient, ubyte marker_num);
 
 extern void WakeupRenderedObjects(CObject *gmissp, int window_num);
 
@@ -1041,7 +1041,7 @@ void FixObjectSizes (void);
 void DoSlowMotionFrame (void);
 vmsMatrix *ObjectView (CObject *objP);
 
-vmsVector *PlayerSpawnPos (int nPlayer);
+CFixVector *PlayerSpawnPos (int nPlayer);
 vmsMatrix *PlayerSpawnOrient (int nPlayer);
 void GetPlayerSpawn (int nPlayer, CObject *objP);
 void RecreateThief(CObject *objP);

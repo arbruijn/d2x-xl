@@ -82,8 +82,8 @@ void CreateSegmentSparks (short nSegment)
 	int				bFuel = (seg2P->special == SEGMENT_IS_FUELCEN);
 	tSegmentSparks	*segP = gameData.matCens.sparks [bFuel] + nMatCen;
 	tEnergySpark	*sparkP = segP->sparks;
-	vmsVector		vOffs;
-	fVector			vMaxf, vMax2f;
+	CFixVector		vOffs;
+	CFloatVector			vMaxf, vMax2f;
 	int				i;
 
 vMaxf = gameData.segs.extent [nSegment].vMax.ToFloat ();
@@ -115,7 +115,7 @@ for (i = segP->nMaxSparks; i; i--, sparkP++) {
 				sparkP->vDir [X] = (F1_0 / 4) - d_rand ();
 				sparkP->vDir [Y] = (F1_0 / 4) - d_rand ();
 				sparkP->vDir [Z] = (F1_0 / 4) - d_rand ();
-				vmsVector::Normalize (sparkP->vDir);
+				CFixVector::Normalize (sparkP->vDir);
 				sparkP->vDir *= ((F1_0 / (16 + d_rand () % 16)));
 				}
 			else

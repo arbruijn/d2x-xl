@@ -86,7 +86,7 @@ for (i = 0; i < MAX_PRIMARY_WEAPONS + 1; i++) {
 	if (primaryOrder [i] == 255)
 		m [i].text = reinterpret_cast<char*> ("\x88\x88\x88\x88\x88\x88\x88 Never autoselect \x88\x88\x88\x88\x88\x88\x88");
 	else
-		m [i].text = (char*) (PRIMARY_WEAPON_NAMES (primaryOrder [i]));
+		m [i].text = const_cast<char*> (PRIMARY_WEAPON_NAMES (primaryOrder [i]));
 	m [i].value = primaryOrder [i];
 }
 gameStates.menus.bReordering = 1;
@@ -112,7 +112,7 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS + 1; i++)
 	if (secondaryOrder [i] == 255)
 		m[i].text = reinterpret_cast<char*> ("\x88\x88\x88\x88\x88\x88\x88 Never autoselect \x88\x88\x88\x88\x88\x88\x88");
 	else
-		m[i].text = (char*) (SECONDARY_WEAPON_NAMES (secondaryOrder [i]));
+		m[i].text = const_cast<char*> (SECONDARY_WEAPON_NAMES (secondaryOrder [i]));
 	m[i].value = secondaryOrder [i];
 }
 gameStates.menus.bReordering = 1;

@@ -87,7 +87,7 @@ static int		bRevertFormat = -1;
 #define ND_EVENT_PALETTE_EFFECT     16  // Followed by short r, g, b
 #define ND_EVENT_PLAYER_ENERGY      17  // followed by byte energy
 #define ND_EVENT_PLAYER_SHIELD      18  // followed by byte shields
-#define ND_EVENT_PLAYER_FLAGS       19  // followed by tPlayer flags
+#define ND_EVENT_PLAYER_FLAGS       19  // followed by CPlayerData flags
 #define ND_EVENT_PLAYER_WEAPON      20  // followed by weapon nType and weapon number
 #define ND_EVENT_EFFECT_BLOWUP      21  // followed by CSegment, nSide, and pnt
 #define ND_EVENT_HOMING_DISTANCE    22  // followed by homing distance
@@ -97,14 +97,14 @@ static int		bRevertFormat = -1;
 #define ND_EVENT_WALL_SET_TMAP_NUM1 26  // Wall changed
 #define ND_EVENT_WALL_SET_TMAP_NUM2 27  // Wall changed
 #define ND_EVENT_NEW_LEVEL          28  // followed by level number
-#define ND_EVENT_MULTI_CLOAK        29  // followed by tPlayer num
-#define ND_EVENT_MULTI_DECLOAK      30  // followed by tPlayer num
+#define ND_EVENT_MULTI_CLOAK        29  // followed by CPlayerData num
+#define ND_EVENT_MULTI_DECLOAK      30  // followed by CPlayerData num
 #define ND_EVENT_RESTORE_REARVIEW   31  // restore cockpit after rearview mode
-#define ND_EVENT_MULTI_DEATH        32  // with tPlayer number
-#define ND_EVENT_MULTI_KILL         33  // with tPlayer number
-#define ND_EVENT_MULTI_CONNECT      34  // with tPlayer number
-#define ND_EVENT_MULTI_RECONNECT    35  // with tPlayer number
-#define ND_EVENT_MULTI_DISCONNECT   36  // with tPlayer number
+#define ND_EVENT_MULTI_DEATH        32  // with CPlayerData number
+#define ND_EVENT_MULTI_KILL         33  // with CPlayerData number
+#define ND_EVENT_MULTI_CONNECT      34  // with CPlayerData number
+#define ND_EVENT_MULTI_RECONNECT    35  // with CPlayerData number
+#define ND_EVENT_MULTI_DISCONNECT   36  // with CPlayerData number
 #define ND_EVENT_MULTI_SCORE        37  // playernum / score
 #define ND_EVENT_PLAYER_SCORE       38  // followed by score
 #define ND_EVENT_PRIMARY_AMMO       39  // with old/new ammo count
@@ -205,7 +205,7 @@ objP->info.position.mOrient [UVEC][Z] = *sp++ << MATRIX_PRECISION;
 objP->info.position.mOrient [FVEC][Z] = *sp++ << MATRIX_PRECISION;
 nSegment = spp->nSegment;
 objP->info.nSegment = nSegment;
-const vmsVector& v = gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]];
+const CFixVector& v = gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]];
 objP->info.position.vPos [X] = (spp->pos [X] << RELPOS_PRECISION) + v [X];
 objP->info.position.vPos [Y] = (spp->pos [Y] << RELPOS_PRECISION) + v [Y];
 objP->info.position.vPos [Z] = (spp->pos [Z] << RELPOS_PRECISION) + v [Z];
@@ -331,7 +331,7 @@ ndOutFile.WriteFixAng (f);
 
 //	-----------------------------------------------------------------------------
 
-static inline void NDWriteVector(const vmsVector& v)
+static inline void NDWriteVector(const CFixVector& v)
 {
 gameData.demo.nFrameBytesWritten += sizeof (v);
 gameData.demo.nWritten += sizeof (v);
@@ -478,7 +478,7 @@ return ndInFile.ReadFixAng ();
 
 //	-----------------------------------------------------------------------------
 
-static inline void NDReadVector(vmsVector& v)
+static inline void NDReadVector(CFixVector& v)
 {
 ndInFile.ReadVector(v);
 if (bRevertFormat > 0)
@@ -883,7 +883,7 @@ switch (o.info.controlType) {
 	case CT_FLYING:
 	case CT_DEBRIS:
 	case CT_POWERUP:
-	case CT_SLEW:       //the tPlayer is generally saved as slew
+	case CT_SLEW:       //the CPlayerData is generally saved as slew
 	case CT_CNTRLCEN:
 	case CT_REMOTE:
 	case CT_MORPH:
@@ -1296,7 +1296,7 @@ StartTime (0);
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordEffectBlowup (short CSegment, int nSide, vmsVector *pnt)
+void NDRecordEffectBlowup (short CSegment, int nSide, CFixVector *pnt)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_EFFECT_BLOWUP);
@@ -1847,15 +1847,15 @@ while (!bDone) {
 					break;
 				objP->LinkToSeg (nSegment);
 				if ((objP->info.nType == OBJ_PLAYER) && IsMultiGame) {
-					int tPlayer = IsTeamGame ? GetTeam (objP->info.nId) : objP->info.nId;
-					if (tPlayer == 0)
+					int CPlayerData = IsTeamGame ? GetTeam (objP->info.nId) : objP->info.nId;
+					if (CPlayerData == 0)
 						break;
-					tPlayer--;
+					CPlayerData--;
 					for (i = 0; i < N_PLAYER_SHIP_TEXTURES; i++)
-						mpTextureIndex [tPlayer] [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nFirstTexture+i]];
-					mpTextureIndex [tPlayer] [4] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap+ (tPlayer)*2]];
-					mpTextureIndex [tPlayer] [5] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap+ (tPlayer)*2+1]];
-					objP->rType.polyObjInfo.nAltTextures = tPlayer+1;
+						mpTextureIndex [CPlayerData] [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nFirstTexture+i]];
+					mpTextureIndex [CPlayerData] [4] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap+ (CPlayerData)*2]];
+					mpTextureIndex [CPlayerData] [5] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap+ (CPlayerData)*2+1]];
+					objP->rType.polyObjInfo.nAltTextures = CPlayerData+1;
 					}
 				}
 			break;
@@ -1919,16 +1919,16 @@ while (!bDone) {
 			break;
 
 		case ND_EVENT_WALL_HIT_PROCESS: {
-				int tPlayer, nSegment;
+				int CPlayerData, nSegment;
 				fix damage;
 
 			nSegment = NDReadInt ();
 			nSide = NDReadInt ();
 			damage = NDReadFix ();
-			tPlayer = NDReadInt ();
+			CPlayerData = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED)
-				WallHitProcess (&gameData.segs.segments [nSegment], (short) nSide, damage, tPlayer, &(OBJECTS [0]));
+				WallHitProcess (&gameData.segs.segments [nSegment], (short) nSide, damage, CPlayerData, &(OBJECTS [0]));
 			break;
 		}
 
@@ -2161,12 +2161,12 @@ while (!bDone) {
 		case ND_EVENT_EFFECT_BLOWUP: {
 			short nSegment;
 			sbyte nSide;
-			vmsVector pnt;
+			CFixVector pnt;
 			CObject dummy;
 
 			//create a dummy CObject which will be the weapon that hits
 			//the monitor. the blowup code wants to know who the parent of the
-			//laser is, so create a laser whose parent is the tPlayer
+			//laser is, so create a laser whose parent is the CPlayerData
 			dummy.cType.laserInfo.parent.nType = OBJ_PLAYER;
 			nSegment = NDReadShort ();
 			nSide = NDReadByte ();
@@ -2771,7 +2771,7 @@ void NDInterpolateFrame (fix d_play, fix d_recorded)
 {
 	int			nCurObjs;
 	fix			factor;
-	vmsVector  fvec1, fvec2, rvec1, rvec2;
+	CFixVector  fvec1, fvec2, rvec1, rvec2;
 	fix         mag1;
 	fix			delta_x, delta_y, delta_z;
 	ubyte			renderType;
@@ -2815,14 +2815,14 @@ for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 				fvec2 = objP->info.position.mOrient[FVEC];
 				fvec2 *= factor;
 				fvec1 += fvec2;
-				mag1 = vmsVector::Normalize(fvec1);
+				mag1 = CFixVector::Normalize(fvec1);
 				if (mag1 > F1_0/256) {
 					rvec1 = curObjP->info.position.mOrient[RVEC];
 					rvec1 *= (F1_0-factor);
 					rvec2 = objP->info.position.mOrient[RVEC];
 					rvec2 *= factor;
 					rvec1 += rvec2;
-					vmsVector::Normalize(rvec1); // Note: Doesn't matter if this is null, if null, VmVector2Matrix will just use fvec1
+					CFixVector::Normalize(rvec1); // Note: Doesn't matter if this is null, if null, VmVector2Matrix will just use fvec1
 					curObjP->info.position.mOrient = vmsMatrix::CreateFR(fvec1, rvec1);
 					//curObjP->info.position.mOrient = vmsMatrix::CreateFR(fvec1, NULL, &rvec1);
 					}
@@ -3163,7 +3163,7 @@ if (!gameData.demo.bNoSpace) {
 	}
 else if (gameData.demo.bNoSpace == 1) {
 	m [0].nType = NM_TYPE_TEXT; 
-	m [0].text = (char*) (TXT_DEMO_SAVE_BAD);
+	m [0].text = const_cast<char*> (TXT_DEMO_SAVE_BAD);
 	m [1].nType = NM_TYPE_INPUT;
 	m [1].text_len = 8; 
 	m [1].text = filename;
@@ -3171,7 +3171,7 @@ else if (gameData.demo.bNoSpace == 1) {
 	} 
 else if (gameData.demo.bNoSpace == 2) {
 	m [0].nType = NM_TYPE_TEXT; 
-	m [0].text = (char*) (TXT_DEMO_SAVE_NOSPACE);
+	m [0].text = const_cast<char*> (TXT_DEMO_SAVE_NOSPACE);
 	m [1].nType = NM_TYPE_INPUT;
 	m [1].text_len = 8; 
 	m [1].text = filename;
@@ -3308,7 +3308,7 @@ else
 bNDBadRead = 0;
 ChangePlayerNumTo (0);                 // force playernum to 0
 strncpy (gameData.demo.callSignSave, LOCALPLAYER.callsign, CALLSIGN_LEN);
-gameData.objs.viewerP = gameData.objs.consoleP = OBJECTS.Buffer ();   // play properly as if console tPlayer
+gameData.objs.viewerP = gameData.objs.consoleP = OBJECTS.Buffer ();   // play properly as if console CPlayerData
 if (NDReadDemoStart (bRandom)) {
 	ndInFile.Close ();
 	ndOutFile.Close ();

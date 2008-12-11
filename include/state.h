@@ -73,21 +73,21 @@ class CSaveGameHandler {
 		void SaveExplWall (tExplWall *wallP);
 		void SaveWall (tWall *wallP);
 		void SaveObject (CObject *objP);
-		void SavePlayer (tPlayer *playerP);
+		void SavePlayer (CPlayerData *playerP);
 		void SaveNetPlayers (void);
 		void SaveNetGame (void);
 
 		int ReadBoundedInt (int nMax, int *nVal);
 		void LoadMulti (char *pszOrgCallSign, int bMulti);
 		int LoadMission (void);
-		int SetServerPlayer (tPlayer *restoredPlayers, int nPlayers, const char *pszServerCallSign, int *pnOtherObjNum, int *pnServerObjNum);
-		void GetConnectedPlayers (tPlayer *restoredPlayers, int nPlayers);
+		int SetServerPlayer (CPlayerData *restoredPlayers, int nPlayers, const char *pszServerCallSign, int *pnOtherObjNum, int *pnServerObjNum);
+		void GetConnectedPlayers (CPlayerData *restoredPlayers, int nPlayers);
 		void FixNetworkObjects (int nServerPlayer, int nOtherObjNum, int nServerObjNum);
 		void FixObjects (void);
-		void AwardReturningPlayer (tPlayer *retPlayerP, fix xOldGameTime);;
+		void AwardReturningPlayer (CPlayerData *retPlayerP, fix xOldGameTime);;
 		void LoadNetGame (void);
 		void LoadNetPlayers (void);
-		void LoadPlayer (tPlayer *playerP);
+		void LoadPlayer (CPlayerData *playerP);
 		void LoadObject (CObject *objP);
 		void LoadWall (tWall *wallP);
 		void LoadExplWall (tExplWall *wallP);

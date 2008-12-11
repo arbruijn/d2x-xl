@@ -462,7 +462,7 @@ int GetBossId (void)
 
 //	-----------------------------------------------------------------------------
 //	Return CObject index if CObject of objtype, objid exists in mine, else return -1
-//	"special" is used to find OBJECTS spewed by tPlayer which is hacked into flags field of powerup.
+//	"special" is used to find OBJECTS spewed by CPlayerData which is hacked into flags field of powerup.
 int ExistsInMine2 (int nSegment, int objtype, int objid, int special)
 {
 	int nObject = SEGMENTS [nSegment].objects;
@@ -781,7 +781,7 @@ else {
 }
 
 //	-----------------------------------------------------------------------------
-//	Escort robot chooses goal CObject based on tPlayer's keys, location.
+//	Escort robot chooses goal CObject based on CPlayerData's keys, location.
 //	Returns goal CObject.
 int EscortSetGoalObject (void)
 {
@@ -816,8 +816,8 @@ fix	xBuddyLastSeenPlayer = 0, Buddy_last_player_path_created;
 
 int TimeToVisitPlayer (CObject *objP, tAILocalInfo *ailp, tAIStaticInfo *aip)
 {
-	//	Note: This one has highest priority because, even if already going towards tPlayer,
-	//	might be necessary to create a new path, as tPlayer can move.
+	//	Note: This one has highest priority because, even if already going towards CPlayerData,
+	//	might be necessary to create a new path, as CPlayerData can move.
 if (gameData.time.xGame - xBuddyLastSeenPlayer > MAX_ESCORT_TIME_AWAY)
 	if (gameData.time.xGame - Buddy_last_player_path_created > F1_0)
 		return 1;
@@ -852,14 +852,14 @@ int MaybeBuddyFireMega (short nObject)
 	CObject		*objP = OBJECTS + nObject;
 	CObject		*buddyObjP = OBJECTS + gameData.escort.nObjNum;
 	fix			dist, dot;
-	vmsVector	vVecToRobot;
+	CFixVector	vVecToRobot;
 	int			nWeaponObj;
 
 vVecToRobot = buddyObjP->info.position.vPos - objP->info.position.vPos;
-dist = vmsVector::Normalize(vVecToRobot);
+dist = CFixVector::Normalize(vVecToRobot);
 if (dist > F1_0*100)
 	return 0;
-dot = vmsVector::Dot(vVecToRobot, buddyObjP->info.position.mOrient[FVEC]);
+dot = CFixVector::Dot(vVecToRobot, buddyObjP->info.position.mOrient[FVEC]);
 if (dot < F1_0/2)
 	return 0;
 if (!ObjectToObjectVisibility (buddyObjP, objP, FQ_TRANSWALL))
@@ -890,7 +890,7 @@ int MaybeBuddyFireSmart (short nObject)
 	fix		dist;
 	short		nWeaponObj;
 
-dist = vmsVector::Dist(buddyObjP->info.position.vPos, objP->info.position.vPos);
+dist = CFixVector::Dist(buddyObjP->info.position.vPos, objP->info.position.vPos);
 if (dist > F1_0*80)
 	return 0;
 if (!ObjectToObjectVisibility (buddyObjP, objP, FQ_TRANSWALL))
@@ -968,7 +968,7 @@ if (!gameData.escort.bMayTalk)
 		aip->SKIP_AI_COUNT = (sbyte) ((F1_0 / 4) / (gameData.time.xFrame ? gameData.time.xFrame : 1));
 //	AIM_WANDER has been co-opted for buddy behavior (didn't want to modify aistruct.h)
 //	It means the CObject has been told to get lost and has come to the end of its path.
-//	If the tPlayer is now visible, then create a path.
+//	If the CPlayerData is now visible, then create a path.
 if (ailp->mode == AIM_WANDER)
 	if (player_visibility) {
 		CreateNSegmentPath (objP, 16 + d_rand () * 16, -1);
@@ -1073,7 +1073,7 @@ sprintf (szGoal, TXT_GOAL_NEXT, pszGoal);
 sprintf (szMsgs, TXT_GOAL_MESSAGES, tstr);
 memset (m, 0, sizeof (m));
 for (nItems = 1; nItems < 10; nItems++) {
-	m [nItems].text = (char*) (GT (343 + nItems));
+	m [nItems].text = const_cast<char*> (GT (343 + nItems));
 	m [nItems].nType = *m [nItems].text ? NM_TYPE_MENU : NM_TYPE_TEXT;
 	m [nItems].key = -1;
 	}
@@ -1217,7 +1217,7 @@ if (!IS_OBJECT (objP, i)) {
 void CreateBuddyBot (void)
 {
 	ubyte	buddy_id;
-	vmsVector	vObjPos;
+	CFixVector	vObjPos;
 
 for (buddy_id = 0; buddy_id < gameData.bots.nTypes [0]; buddy_id++)
 	if (gameData.bots.info [0][buddy_id].companion)

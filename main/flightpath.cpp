@@ -9,80 +9,94 @@
 #define	PP_DELTAZ	-I2X(30)
 #define	PP_DELTAY	I2X(10)
 
-tFlightPath	externalView;
+CFlightPath	externalView;
 
 //------------------------------------------------------------------------------
 
-void ResetFlightPath (tFlightPath *pPath, int nSize, int nFPS)
+void CFlightPath::Reset (int nSize, int nFPS)
 {
-pPath->nSize = (nSize < 0) ? MAX_PATH_POINTS : nSize;
-pPath->tRefresh = (time_t) (1000 / ((nFPS < 0) ? 40 : nFPS));
-pPath->nStart =
-pPath->nEnd = 0;
-pPath->pPos = NULL;
-pPath->tUpdate = -1;
+m_nSize = (nSize < 0) ? MAX_PATH_POINTS : nSize;
+m_tRefresh = (time_t) (1000 / ((nFPS < 0) ? 40 : nFPS));
+m_nStart =
+m_nEnd = 0;
+m_posP = NULL;
+m_tUpdate = -1;
 }
 
 //------------------------------------------------------------------------------
 
-void SetPathPoint (tFlightPath *pPath, CObject *objP)
+void CFlightPath::SetPoint (CObject *objP)
 {
-	time_t	t = SDL_GetTicks () - pPath->tUpdate;
+	time_t	t = SDL_GetTicks () - m_tUpdate;
 
-if (pPath->nSize && ((pPath->tUpdate < 0) || (t >= pPath->tRefresh))) {
-	pPath->tUpdate = t;
-//	h = pPath->nEnd;
-	pPath->nEnd = (pPath->nEnd + 1) % pPath->nSize;
-	pPath->path[pPath->nEnd].vOrgPos = objP->info.position.vPos;
-	pPath->path[pPath->nEnd].vPos = objP->info.position.vPos;
-	pPath->path[pPath->nEnd].mOrient = objP->info.position.mOrient;
+if (m_nSize && ((m_tUpdate < 0) || (t >= m_tRefresh))) {
+	m_tUpdate = t;
+//	h = m_nEnd;
+	m_nEnd = (m_nEnd + 1) % m_nSize;
+	m_path [m_nEnd].vOrgPos = objP->info.position.vPos;
+	m_path [m_nEnd].vPos = objP->info.position.vPos;
+	m_path [m_nEnd].mOrient = objP->info.position.mOrient;
 	// TODO: WTF??
-	pPath->path[pPath->nEnd].vPos += objP->info.position.mOrient[FVEC] * 0;
-	pPath->path[pPath->nEnd].vPos += objP->info.position.mOrient[UVEC] * 0;
-//	if (!memcmp (pPath->path + h, pPath->path + pPath->nEnd, sizeof (tMovementPath)))
-//		pPath->nEnd = h;
+	m_path [m_nEnd].vPos += objP->info.position.mOrient[FVEC] * 0;
+	m_path [m_nEnd].vPos += objP->info.position.mOrient[UVEC] * 0;
+//	if (!memcmp (m_path + h, m_path + m_nEnd, sizeof (tMovementPath)))
+//		m_nEnd = h;
 //	else
-	if (pPath->nEnd == pPath->nStart)
-		pPath->nStart = (pPath->nStart + 1) % pPath->nSize;
+	if (m_nEnd == m_nStart)
+		m_nStart = (m_nStart + 1) % m_nSize;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-tPathPoint *GetPathPoint (tFlightPath *pPath)
+tPathPoint* CFlightPath::GetPoint (void)
 {
-	vmsVector		*p = &pPath->path [pPath->nEnd].vPos;
+	CFixVector		*p = &m_path [m_nEnd].vPos;
 	int				i;
 
-if (pPath->nStart == pPath->nEnd) {
-	pPath->pPos = NULL;
+if (m_nStart == m_nEnd) {
+	m_posP = NULL;
 	return NULL;
 	}
-i = pPath->nEnd;
+i = m_nEnd;
 do {
 	if (!i)
-		i = pPath->nSize;
+		i = m_nSize;
 	i--;
-	if (vmsVector::Dist(pPath->path [i].vPos, *p) >= I2X (15))
+	if (CFixVector::Dist(m_path [i].vPos, *p) >= I2X (15))
 		break;
 	}
-while (i != pPath->nStart);
-return pPath->pPos = pPath->path + i;
+while (i != m_nStart);
+return m_posP = m_path + i;
 }
 
 //------------------------------------------------------------------------------
 
-void GetViewPoint (void)
+void CFlightPath::GetViewPoint (void)
 {
-	tPathPoint		*p = GetPathPoint (&externalView);
+	tPathPoint		*p = GetPoint ();
 
 if (!p)
-	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient[FVEC] * PP_DELTAZ;
+	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient [FVEC] * PP_DELTAZ;
 else {
 	gameData.render.mine.viewerEye = p->vPos;
-	gameData.render.mine.viewerEye += p->mOrient[FVEC] * (PP_DELTAZ * 2 / 3);
-	gameData.render.mine.viewerEye += p->mOrient[UVEC] * (PP_DELTAY * 2 / 3);
+	gameData.render.mine.viewerEye += p->mOrient [FVEC] * (PP_DELTAZ * 2 / 3);
+	gameData.render.mine.viewerEye += p->mOrient [UVEC] * (PP_DELTAY * 2 / 3);
 	}
+}
+
+//------------------------------------------------------------------------------
+
+CFlightPath::CFlightPath ()
+{
+if (m_path.Create (MAX_PATH_POINTS))
+	m_path.Clear (0);
+m_posP = NULL;
+m_nSize = 0;
+m_nStart = 0;
+m_nEnd = 0;
+m_tRefresh = 0;
+m_tUpdate = 0;
 }
 
 //------------------------------------------------------------------------------

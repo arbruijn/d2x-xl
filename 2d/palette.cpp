@@ -414,6 +414,7 @@ return m_data.nGamma;
 void CPaletteManager::Init (void)
 {
 memset (&m_data, 0, sizeof (m_data));
+SetGamma (-1);
 }
 
 //------------------------------------------------------------------------------
@@ -489,7 +490,7 @@ if (nUsedForLevel && stricmp (paletteManager.LastPig (), pszPaletteName) != 0) {
 	if (gameStates.app.bD1Mission)
 		strcpy (szPigName, "groupa.pig");
 	else {
-		_splitpath ((char*) (pszPaletteName), NULL, NULL, szPigName, NULL);
+		_splitpath (const_cast<char*> (pszPaletteName), NULL, NULL, szPigName, NULL);
 		strcat (szPigName, ".pig");
 		PiggyInitPigFile (szPigName);
 		}

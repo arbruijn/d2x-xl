@@ -65,16 +65,11 @@ typedef struct tAltBmInfo {
 
 //-----------------------------------------------------------------------------
 
-class CByteArray : public CArray< ubyte > {};
-
-//-----------------------------------------------------------------------------
-
 typedef struct tBitmap {
 	char				szName [20];
 	tBmProps			props;
 	ubyte				flags;		
 	CPalette			*palette;
-	CByteArray		buffer;
 	//ubyte				*buffer;			// ptr to texture data...
 											//   Linear = *parent+(rowSize*y+x)
 											//   ModeX = *parent+(rowSize*y+x/4)
@@ -116,13 +111,12 @@ typedef struct tBitmap {
 
 //-----------------------------------------------------------------------------
 
-class CBitmap {
+class CBitmap : public CArray< ubyte > {
 	private:
 		tBitmap	m_info;
 	public:
 		CBitmap () { Init (); };
 		~CBitmap () { Destroy (); };
-		inline ubyte& operator[] (const uint i) { return m_info.buffer [i]; }
 		static CBitmap* Create (ubyte mode, int w, int h, int bpp, const char* pszName = NULL);
 		ubyte* CreateBuffer (void);
 		bool Setup (ubyte mode, int w, int h, int bpp, const char* pszName, ubyte* buffer = NULL);
@@ -226,12 +220,11 @@ class CBitmap {
 		inline CTexture *Texture (void) { return m_info.texture; }
 		inline int *TransparentFrames (int i = 0) { return m_info.transparentFrames + i; }
 		inline int *SuperTranspFrames (int i = 0) { return m_info.supertranspFrames + i; }
-		inline ubyte* Buffer (uint i = 0) { return m_info.buffer.Buffer () + i; }
 		inline char* Name (void) { return m_info.szName; }
 #if TEXTURE_COMPRESSION
-		inline int BufSize (void) { return m_info.buffer ? m_info.bCompressed ? m_info.nBufSize : (int) m_info.props.h * (int) m_info.props.rowSize : 0; }
+		inline int BufSize (void) { return Buffer () ? m_info.bCompressed ? Size () : (int) m_info.props.h * (int) m_info.props.rowSize : 0; }
 #else
-		inline int BufSize (void) { return m_info.buffer.Buffer () ? (int) m_info.props.h * (int) m_info.props.rowSize : 0; }
+		inline int BufSize (void) { return Buffer () ? (int) m_info.props.h * (int) m_info.props.rowSize : 0; }
 #endif
 		inline void SetId (ushort nId) { m_info.nId = nId; }
 		inline void SetName (const char* pszName) { if (pszName) strncpy (m_info.szName, pszName, sizeof (m_info.szName)); }
@@ -252,10 +245,6 @@ class CBitmap {
 		inline void SetTeam (ubyte nTeam) { m_info.nTeam = nTeam; }
 		inline void SetAvgColorIndex (ubyte nIndex) { m_info.avgColorIndex = nIndex; }
 		inline void SetAvgColor (tRgbColorb& color) { m_info.avgColor = color; }
-		inline ubyte* SetBuffer (ubyte *buffer, bool bChild = false) { 
-			m_info.buffer.SetBuffer (buffer, bChild); 
-			return buffer;
-			}
 		inline void SetTexture (CTexture *texture) { m_info.texture = texture; }
 		inline CPalette* Palette (void) { return m_info.palette ? m_info.palette : paletteManager.Default (); }
 
@@ -272,7 +261,7 @@ class CBitmap {
 		int PrepareTexture (int bMipMap, int nTransp, int bMask, tPixelBuffer *renderBuffer = NULL);
 #endif
 		int Bind (int bMipMaps, int nTransp);
-		inline bool Prepared (void) { return Texture () && (Texture ()->Handle () >= 0); }
+		inline bool Prepared (void) { return Texture () && (Texture ()->Handle () > 0); }
 
 #if TEXTURE_COMPRESSION
 		inline ubyte Compressed (void) { return m_info.bCompressed; }
@@ -285,6 +274,12 @@ class CBitmap {
 #endif
 		void UnlinkTexture (void);
 		void Unlink (int bAddon);
+
+		inline CBitmap& operator= (CBitmap& source) { 
+			memcpy (&m_info, &source.m_info, sizeof (tBitmap)); 
+			source.ShareBuffer (*this);
+			return *this;
+			}
 	};
 
 inline int operator- (CBitmap* o, CArray<CBitmap>& a) { return a.Index (o); }

@@ -54,10 +54,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 typedef struct tExitFlightData {
 	CObject		*objP;
 	vmsAngVec	angles;			//orientation in angles
-	vmsVector	step;				//how far in a second
-	vmsVector	angstep;			//rotation per second
+	CFixVector	step;				//how far in a second
+	CFixVector	angstep;			//rotation per second
 	fix			speed;			//how fast CObject is moving
-	vmsVector 	headvec;			//where we want to be pointing
+	CFixVector 	headvec;			//where we want to be pointing
 	int			firstTime;		//flag for if first time through
 	fix			offset_frac;	//how far off-center as portion of way
 	fix			offsetDist;	//how far currently off-center
@@ -411,12 +411,12 @@ PlayerFinishedLevel (0);
 
 #define VCLIP_BIG_PLAYER_EXPLOSION	58
 
-//--unused-- vmsVector upvec = {0, f1_0, 0};
+//--unused-- CFixVector upvec = {0, f1_0, 0};
 
-//find the angle between the tPlayer's heading & the station
-inline void GetAnglesToObject (vmsAngVec *av, vmsVector *targ_pos, vmsVector *cur_pos)
+//find the angle between the CPlayerData's heading & the station
+inline void GetAnglesToObject (vmsAngVec *av, CFixVector *targ_pos, CFixVector *cur_pos)
 {
-	vmsVector tv = *targ_pos - *cur_pos;
+	CFixVector tv = *targ_pos - *cur_pos;
 	*av = tv.ToAnglesVec();
 }
 
@@ -426,7 +426,7 @@ void DoEndLevelFrame (void)
 {
 	static fix timer;
 	static fix bank_rate;
-	vmsVector vLastPosSave;
+	CFixVector vLastPosSave;
 	static fix explosion_wait1=0;
 	static fix explosion_wait2=0;
 	static fix ext_expl_halflife;
@@ -459,10 +459,10 @@ if (gameData.endLevel.xCurFlightSpeed != gameData.endLevel.xDesiredFlightSpeed) 
 //do big explosions
 if (!gameStates.render.bOutsideMine) {
 	if (gameStates.app.bEndLevelSequence == EL_OUTSIDE) {
-		vmsVector tvec;
+		CFixVector tvec;
 
 		tvec = gameData.objs.consoleP->info.position.vPos - gameData.endLevel.exit.vSideExit;
-		if (vmsVector::Dot (tvec, gameData.endLevel.exit.mOrient [FVEC]) > 0) {
+		if (CFixVector::Dot (tvec, gameData.endLevel.exit.mOrient [FVEC]) > 0) {
 			CObject *objP;
 			gameStates.render.bOutsideMine = 1;
 			objP = ObjectCreateExplosion (gameData.endLevel.exit.nSegNum, &gameData.endLevel.exit.vSideExit, I2X (50), VCLIP_BIG_PLAYER_EXPLOSION);
@@ -477,9 +477,9 @@ if (!gameStates.render.bOutsideMine) {
 			}
 		}
 
-	//do explosions chasing tPlayer
+	//do explosions chasing CPlayerData
 	if ((explosion_wait1 -= gameData.time.xFrame) < 0) {
-		vmsVector	tpnt;
+		CFixVector	tpnt;
 		short			nSegment;
 		CObject		*expl;
 		static int	soundCount;
@@ -502,7 +502,7 @@ if (!gameStates.render.bOutsideMine) {
 //do little explosions on walls
 if ((gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH) && (gameStates.app.bEndLevelSequence < EL_OUTSIDE))
 	if ((explosion_wait2 -= gameData.time.xFrame) < 0) {
-		vmsVector tpnt;
+		CFixVector tpnt;
 		tFVIQuery fq;
 		tFVIData hit_data;
 		//create little explosion on tWall
@@ -657,7 +657,7 @@ switch (gameStates.app.bEndLevelSequence) {
 		mask = ChaseAngles (&vCurrentCameraAngles, &vDesiredCameraAngles);
 		VmAngles2Matrix (&gameData.objs.endLevelCamera->info.position.mOrient, &vCurrentCameraAngles);
 		if ((mask & 5) == 5) {
-			vmsVector tvec;
+			CFixVector tvec;
 			gameStates.app.bEndLevelSequence = EL_CHASING;
 			VmVecNormalizedDir (&tvec, &gameData.endLevel.station.vPos, &gameData.objs.consoleP->info.position.vPos);
 			VmVector2Matrix (&gameData.objs.consoleP->info.position.mOrient, &tvec, &mSurfaceOrient [UVEC], NULL);
@@ -705,20 +705,20 @@ switch (gameStates.app.bEndLevelSequence) {
 //find which tSide to fly out of
 int FindExitSide (CObject *objP)
 {
-	vmsVector	vPreferred, vSegCenter, vSide;
+	CFixVector	vPreferred, vSegCenter, vSide;
 	fix			d, xBestVal = -f2_0;
 	int			nBestSide, i;
 	CSegment		*segP = gameData.segs.segments + objP->info.nSegment;
 
 //find exit tSide
-vmsVector::NormalizedDir (vPreferred, objP->info.position.vPos, objP->info.vLastPos);
+CFixVector::NormalizedDir (vPreferred, objP->info.position.vPos, objP->info.vLastPos);
 COMPUTE_SEGMENT_CENTER (&vSegCenter, segP);
 nBestSide = -1;
 for (i = MAX_SIDES_PER_SEGMENT; --i >= 0;) {
 	if (segP->children [i] != -1) {
 		COMPUTE_SIDE_CENTER (&vSide, segP, i);
-		vmsVector::NormalizedDir (vSide, vSide, vSegCenter);
-		d = vmsVector::Dot (vSide, vPreferred);
+		CFixVector::NormalizedDir (vSide, vSide, vSegCenter);
+		d = CFixVector::Dot (vSide, vPreferred);
 		if (labs (d) < MIN_D)
 			d = 0;
 		if (d > xBestVal) {
@@ -735,7 +735,7 @@ return nBestSide;
 
 void DrawExitModel (void)
 {
-	vmsVector	vModelPos;
+	CFixVector	vModelPos;
 	int			f = 15, u = 0;	//21;
 
 vModelPos = gameData.endLevel.exit.vMineExit + gameData.endLevel.exit.mOrient [FVEC] * (I2X (f));
@@ -759,7 +759,7 @@ fix xSatelliteSize = I2X (400);
 
 void RenderExternalScene (fix xEyeOffset)
 {
-	vmsVector vDelta;
+	CFixVector vDelta;
 	g3sPoint p, pTop;
 
 gameData.render.mine.viewerEye = gameData.objs.viewerP->info.position.vPos;
@@ -767,7 +767,7 @@ if (xEyeOffset)
 	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient [RVEC] * (xEyeOffset);
 G3SetViewMatrix (gameData.objs.viewerP->info.position.vPos, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, 1);
 CCanvas::Current ()->Clear (BLACK_RGBA);
-G3StartInstanceMatrix (vmsVector::ZERO, mSurfaceOrient);
+G3StartInstanceMatrix (CFixVector::ZERO, mSurfaceOrient);
 DrawStars ();
 G3DoneInstance ();
 //draw satellite
@@ -799,7 +799,7 @@ gameStates.render.nLighting = 1;
 
 #define MAX_STARS 500
 
-vmsVector stars [MAX_STARS];
+CFixVector stars [MAX_STARS];
 
 void GenerateStarfield (void)
 {
@@ -908,7 +908,7 @@ SongsPlaySong (SONG_INTER, 0);
 
 //------------------------------------------------------------------------------
 
-static vmsAngVec *angvec_add2_scale (vmsAngVec *dest, vmsVector *src, fix s)
+static vmsAngVec *angvec_add2_scale (vmsAngVec *dest, CFixVector *src, fix s)
 {
 (*dest) [PA] += (fixang) FixMul ((*src) [X], s);
 (*dest) [BA] += (fixang) FixMul ((*src) [Z], s);
@@ -932,21 +932,21 @@ exitFlightDataP = exitFlightObjects + n;
 objP = exitFlightDataP->objP;
 nOldPlayerSeg = objP->info.nSegment;
 
-//move the tPlayer for this frame
+//move the CPlayerData for this frame
 
 if (!exitFlightDataP->firstTime) {
 	objP->info.position.vPos += exitFlightDataP->step * gameData.time.xFrame;
 	angvec_add2_scale (&exitFlightDataP->angles, &exitFlightDataP->angstep, gameData.time.xFrame);
 	objP->info.position.mOrient = vmsMatrix::Create (exitFlightDataP->angles);
 	}
-//check new tPlayer seg
+//check new CPlayerData seg
 if (UpdateObjectSeg (objP, false)) {
 	segP = gameData.segs.segments + objP->info.nSegment;
 	if (exitFlightDataP->firstTime || (objP->info.nSegment != nOldPlayerSeg)) {		//moved into new seg
-		vmsVector curcenter, nextcenter;
+		CFixVector curcenter, nextcenter;
 		fix xStepSize, xSegTime;
 		short nEntrySide, nExitSide = -1;//what sides we entry and leave through
-		vmsVector vDest;		//where we are heading (center of nExitSide)
+		CFixVector vDest;		//where we are heading (center of nExitSide)
 		vmsAngVec aDest;		//where we want to be pointing
 		vmsMatrix mDest;
 		int nUpSide = 0;
@@ -965,7 +965,7 @@ if (UpdateObjectSeg (objP, false)) {
 			nExitSide = FindExitSide (objP);
 		fix d, dLargest = -f1_0;
 		for (int i = 0; i < 6; i++) {
-			d = vmsVector::Dot (segP->sides [i].normals [0], exitFlightDataP->objP->info.position.mOrient [UVEC]);
+			d = CFixVector::Dot (segP->sides [i].normals [0], exitFlightDataP->objP->info.position.mOrient [UVEC]);
 			if (d > dLargest) {
 				dLargest = d; 
 				nUpSide = i;
@@ -977,7 +977,7 @@ if (UpdateObjectSeg (objP, false)) {
 		//offset CObject sideways
 		if (exitFlightDataP->offset_frac) {
 			int s0=-1, s1=0, i;
-			vmsVector s0p, s1p;
+			CFixVector s0p, s1p;
 			fix dist;
 
 			for (i = 0; i < 6; i++)
@@ -989,14 +989,14 @@ if (UpdateObjectSeg (objP, false)) {
 					}
 			COMPUTE_SIDE_CENTER (&s0p, segP, s0);
 			COMPUTE_SIDE_CENTER (&s1p, segP, s1);
-			dist = FixMul (vmsVector::Dist (s0p, s1p), exitFlightDataP->offset_frac);
+			dist = FixMul (CFixVector::Dist (s0p, s1p), exitFlightDataP->offset_frac);
 			if (dist-exitFlightDataP->offsetDist > MAX_SLIDE_PER_SEGMENT)
 				dist = exitFlightDataP->offsetDist + MAX_SLIDE_PER_SEGMENT;
 			exitFlightDataP->offsetDist = dist;
 			vDest += objP->info.position.mOrient [RVEC] * dist;
 			}
 		exitFlightDataP->step = vDest - objP->info.position.vPos;
-		xStepSize = vmsVector::Normalize (exitFlightDataP->step);
+		xStepSize = CFixVector::Normalize (exitFlightDataP->step);
 		exitFlightDataP->step *= exitFlightDataP->speed;
 		COMPUTE_SEGMENT_CENTER (&curcenter, segP);
 		COMPUTE_SEGMENT_CENTER_I (&nextcenter, segP->children [nExitSide]);
@@ -1026,7 +1026,7 @@ exitFlightDataP->firstTime = 0;
 int DoSlewMovement (CObject *objP, int check_keys, int check_joy)
 {
 	int moved = 0;
-	vmsVector svel, movement;				//scaled velocity (per this frame)
+	CFixVector svel, movement;				//scaled velocity (per this frame)
 	vmsMatrix rotmat, new_pm;
 	int joy_x, joy_y, btns;
 	int joyx_moved, joyy_moved;
@@ -1278,7 +1278,7 @@ COMPUTE_SIDE_CENTER_I (&gameData.endLevel.exit.vSideExit, gameData.endLevel.exit
 gameData.endLevel.exit.vGroundExit = gameData.endLevel.exit.vMineExit + gameData.endLevel.exit.mOrient [UVEC] * (-I2X (20));
 //compute orientation of surface
 {
-	vmsVector tv;
+	CFixVector tv;
 	vmsMatrix exit_orient, tm;
 
 	exit_orient = vmsMatrix::Create (vExitAngles);

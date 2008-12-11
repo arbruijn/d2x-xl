@@ -253,7 +253,7 @@ void WallCloseDoor(CSegment *segP, short nSide);
 int AnimFrameCount (tWallClip *anim);
 
 // Determines what happens when a tWall is shot
-//obj is the CObject that hit...either a weapon or the tPlayer himself
+//obj is the CObject that hit...either a weapon or the CPlayerData himself
 extern int WallHitProcess(CSegment *segP, short nSide, fix damage, int playernum, CObject *obj );
 
 // Opens/destroys specified door.

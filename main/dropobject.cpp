@@ -82,7 +82,7 @@ return NULL;
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Return true if there is a door here and it is openable
-//	It is assumed that the tPlayer has all keys.
+//	It is assumed that the CPlayerData has all keys.
 int PlayerCanOpenDoor (CSegment *segP, short nSide)
 {
 	short	nWall, wallType;
@@ -167,7 +167,7 @@ int ChooseDropSegment (CObject *objP, int *pbFixedPos, int nDropState)
 	int			nDepth, nDropDepth;
 	int			special, count;
 	short			nPlayerSeg;
-	vmsVector	tempv, *vPlayerPos;
+	CFixVector	tempv, *vPlayerPos;
 	fix			nDist = 0;
 	int			bUseInitSgm =
 						objP &&
@@ -341,7 +341,7 @@ int MaybeDropNetPowerup (short nObject, int nPowerupType, int nDropState)
 if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	short			nSegment;
 	int			h, bFixedPos = 0;
-	vmsVector	vNewPos;
+	CFixVector	vNewPos;
 
 	MultiSendWeapons (1);
 #if 0
@@ -483,7 +483,7 @@ switch (delObjP->info.contains.nId) {
 		break;
 	}
 
-//	Don't drop vulcan ammo if tPlayer maxed out.
+//	Don't drop vulcan ammo if CPlayerData maxed out.
 if (( (nWeapon == VULCAN_INDEX) || (delObjP->info.contains.nId == POW_VULCAN_AMMO)) && (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
 	delObjP->info.contains.nCount = 0;
 else if (( (nWeapon == GAUSS_INDEX) || (delObjP->info.contains.nId == POW_VULCAN_AMMO)) && (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
@@ -537,11 +537,11 @@ if ((gameData.app.nGameMode & GM_MULTI) && (delObjP->info.contains.nId == POW_EX
 
 //------------------------------------------------------------------------------
 
-int DropPowerup (ubyte nType, ubyte id, short owner, int num, const vmsVector& init_vel, const vmsVector& pos, short nSegment)
+int DropPowerup (ubyte nType, ubyte id, short owner, int num, const CFixVector& init_vel, const CFixVector& pos, short nSegment)
 {
 	short			nObject=-1;
 	CObject		*objP;
-	vmsVector	new_velocity, vNewPos;
+	CFixVector	new_velocity, vNewPos;
 	fix			old_mag;
    int			count;
 
@@ -615,13 +615,13 @@ switch (nType) {
 			int	rand_scale;
 			new_velocity = init_vel;
 			old_mag = init_vel.Mag();
-			vmsVector::Normalize(new_velocity);
+			CFixVector::Normalize(new_velocity);
 			//	We want powerups to move more in network mode.
 			rand_scale = 2;
 			new_velocity[X] += (d_rand ()-16384)*2;
 			new_velocity[Y] += (d_rand ()-16384)*2;
 			new_velocity[Z] += (d_rand ()-16384)*2;
-			vmsVector::Normalize(new_velocity);
+			CFixVector::Normalize(new_velocity);
 			new_velocity *= ((F1_0*32 + old_mag) * rand_scale);
 			vNewPos = pos;
 			//	This is dangerous, could be outside mine.
@@ -671,7 +671,7 @@ return nObject;
 
 // ----------------------------------------------------------------------------
 // Returns created CObject number.
-// If CObject dropped by tPlayer, set flag.
+// If CObject dropped by CPlayerData, set flag.
 int ObjectCreateEgg (CObject *objP)
 {
 	int	nObject;
@@ -821,7 +821,7 @@ if (gameData.multiplayer.players [playerObjP->info.nId].secondaryWeaponFlags & n
 
 //	-----------------------------------------------------------------------------
 
-void MaybeDropDeviceEgg (tPlayer *playerP, CObject *playerObjP, int nDeviceFlag, int nPowerupId)
+void MaybeDropDeviceEgg (CPlayerData *playerP, CObject *playerObjP, int nDeviceFlag, int nPowerupId)
 {
 if ((gameData.multiplayer.players [playerObjP->info.nId].flags & nDeviceFlag) &&
 	 !(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nDevices & nDeviceFlag)))
@@ -858,8 +858,8 @@ if ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHO
 	int			nPlayerId = playerObjP->info.nId;
 	short			nObject, plrObjNum = OBJ_IDX (playerObjP);
 	int			nVulcanAmmo=0;
-	vmsVector	vRandom;
-	tPlayer		*playerP = gameData.multiplayer.players + nPlayerId;
+	CFixVector	vRandom;
+	CPlayerData		*playerP = gameData.multiplayer.players + nPlayerId;
 
 	// -- Items_destroyed = 0;
 
@@ -870,13 +870,13 @@ if ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHO
 		d_srand (5483L);
 	}
 
-	//	If the tPlayer had smart mines, maybe arm one of them.
+	//	If the CPlayerData had smart mines, maybe arm one of them.
 	rthresh = 30000;
 	while ((playerP->secondaryAmmo [SMARTMINE_INDEX] % 4 == 1) && (d_rand () < rthresh)) {
 		short			nNewSeg;
-		vmsVector	tvec;
+		CFixVector	tvec;
 
-		vRandom = vmsVector::Random();
+		vRandom = CFixVector::Random();
 		rthresh /= 2;
 		tvec = playerObjP->info.position.vPos + vRandom;
 		nNewSeg = FindSegByPos (tvec, playerObjP->info.nSegment, 1, 0);
@@ -884,14 +884,14 @@ if ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHO
 			CreateNewWeapon (&vRandom, &tvec, nNewSeg, plrObjNum, SMARTMINE_ID, 0);
 	  	}
 
-		//	If the tPlayer had proximity bombs, maybe arm one of them.
+		//	If the CPlayerData had proximity bombs, maybe arm one of them.
 		if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
 			rthresh = 30000;
 			while ((playerP->secondaryAmmo [PROXMINE_INDEX] % 4 == 1) && (d_rand () < rthresh)) {
 				short			nNewSeg;
-				vmsVector	tvec;
+				CFixVector	tvec;
 
-				vRandom = vmsVector::Random();
+				vRandom = CFixVector::Random();
 				rthresh /= 2;
 				tvec = playerObjP->info.position.vPos + vRandom;
 				nNewSeg = FindSegByPos (tvec, playerObjP->info.nSegment, 1, 0);
@@ -900,7 +900,7 @@ if ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHO
 			}
 		}
 
-		//	If the tPlayer dies and he has powerful lasers, create the powerups here.
+		//	If the CPlayerData dies and he has powerful lasers, create the powerups here.
 
 		if (playerP->laserLevel > MAX_LASER_LEVEL) {
 			if (!(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && 
@@ -995,13 +995,13 @@ if ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHO
 		if (!(gameData.app.nGameMode & GM_ENTROPY))
 			MaybeDropSecondaryWeaponEgg (playerObjP, SMARTMINE_INDEX, (playerP->secondaryAmmo [SMARTMINE_INDEX])/4);
 		MaybeDropSecondaryWeaponEgg (playerObjP, EARTHSHAKER_INDEX, playerP->secondaryAmmo [EARTHSHAKER_INDEX]);
-		//	Drop the tPlayer's missiles in packs of 1 and/or 4
+		//	Drop the CPlayerData's missiles in packs of 1 and/or 4
 		DropMissile1or4 (playerObjP, HOMING_INDEX);
 		DropMissile1or4 (playerObjP, GUIDED_INDEX);
 		DropMissile1or4 (playerObjP, CONCUSSION_INDEX);
 		DropMissile1or4 (playerObjP, FLASHMSL_INDEX);
 		DropMissile1or4 (playerObjP, MERCURY_INDEX);
-		//	If tPlayer has vulcan ammo, but no vulcan cannon, drop the ammo.
+		//	If CPlayerData has vulcan ammo, but no vulcan cannon, drop the ammo.
 		if (!(playerP->primaryWeaponFlags & HAS_VULCAN_FLAG)) {
 			int	amount = playerP->primaryAmmo [VULCAN_INDEX];
 			if (amount > 200) {

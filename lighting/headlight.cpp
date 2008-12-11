@@ -68,13 +68,13 @@ if ((objP->info.nType != OBJ_ROBOT) && (objP->info.nType	!= OBJ_PLAYER))
 light = 0;
 for (i = 0; i < nHeadlights; i++) {
 	fix			dot, dist;
-	vmsVector	vecToObj;
+	CFixVector	vecToObj;
 	CObject		*lightObjP;
 	lightObjP = Headlights [i];
 	vecToObj = objP->info.position.vPos - lightObjP->info.position.vPos;
-	dist = vmsVector::Normalize(vecToObj);
+	dist = CFixVector::Normalize(vecToObj);
 	if (dist > 0) {
-		dot = vmsVector::Dot(lightObjP->info.position.mOrient[FVEC], vecToObj);
+		dot = CFixVector::Dot(lightObjP->info.position.mOrient[FVEC], vecToObj);
 		if (dot < F1_0/2)
 			light += FixDiv (HEADLIGHT_SCALE, FixMul (HEADLIGHT_SCALE, dist));	//	Do the Normal thing, but darken around headlight.
 		else
@@ -94,8 +94,8 @@ void TransformHeadlights (void)
 if (!gameData.render.lights.dynamic.headlights.nLights || gameStates.render.automap.bDisplay)
 	return;
 
-	tDynLight		*pl;
-	tShaderLight	*psl;
+	CDynLight		*pl;
+	CShaderLight	*psl;
 	int				i;
 	bool				bHWHeadlight = (gameStates.render.bPerPixelLighting == 2) || (gameStates.ogl.bHeadlight && gameOpts->ogl.bHeadlight);
 
@@ -122,7 +122,7 @@ for (i = 0; i < gameData.render.lights.dynamic.headlights.nLights; i++) {
 // To achive that, the direction is added to the original position and transformed,
 // and the transformed headlight position is subtracted from that.
 
-void SetupHeadlight (tDynLight *pl, tShaderLight *psl)
+void SetupHeadlight (CDynLight *pl, CShaderLight *psl)
 {
 gameData.render.lights.dynamic.headlights.pl [gameData.render.lights.dynamic.headlights.nLights] = pl;
 gameData.render.lights.dynamic.headlights.psl [gameData.render.lights.dynamic.headlights.nLights] = psl;
@@ -140,7 +140,7 @@ int AddOglHeadlight (CObject *objP)
 
 if (gameOpts->render.nLightingMethod && (gameData.render.lights.dynamic.nHeadlights [objP->info.nId] < 0)) {
 		tRgbaColorf	c = {1.0f, 1.0f, 1.0f, 1.0f};
-		tDynLight	*pl;
+		CDynLight	*pl;
 		int			nLight;
 
 	nLight = AddDynLight (NULL, &c, F1_0 * 200, -1, -1, -1, -1, NULL);
@@ -174,7 +174,7 @@ if (gameOpts->render.nLightingMethod && (gameData.render.lights.dynamic.nHeadlig
 
 void UpdateOglHeadlight (void)
 {
-	tDynLight	*pl;
+	CDynLight	*pl;
 	CObject		*objP;
 	short			nPlayer;
 
@@ -799,7 +799,7 @@ if ((gameStates.ogl.bHeadlight = (gameStates.ogl.bShadersOk && RENDERPATH))) {
 				DeleteShaderProg (&headlightShaderProgs [i][j]);
 #if 1//ndef _DEBUG
 			if (nLights == 1)
-				pszFS = (char*) (headlightFS [i][h = j]);
+				pszFS = const_cast<char*> (headlightFS [i][h = j]);
 			else
 #endif
 				pszFS = BuildLightingShader (headlightFS [i][h = j + 4], nLights);

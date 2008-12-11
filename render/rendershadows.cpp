@@ -212,7 +212,7 @@ glPopMatrix ();
 
 //------------------------------------------------------------------------------
 
-int RenderShadowMap (tDynLight *pLight)
+int RenderShadowMap (CDynLight *pLight)
 {
 	CCamera	*cameraP;
 
@@ -233,7 +233,7 @@ return 1;
 //------------------------------------------------------------------------------
 //The following code is an attempt to find all objects that cast a shadow visible
 //to the player. To accomplish that, for each robot the line of sight to each
-//CSegment visible to the tPlayer is computed. If there is a los to any of these 
+//CSegment visible to the CPlayerData is computed. If there is a los to any of these 
 //segments, the CObject's shadow is rendered. Far from perfect solution though. :P
 
 void RenderObjectShadows (void)
@@ -339,9 +339,9 @@ int GatherShadowLightSources (void)
 	CObject			*objP;
 	int				h, i, j, k, n, m = gameOpts->render.shadows.nLights;
 	short				*pnl;
-//	tDynLight		*pl;
-	tShaderLight	*psl;
-	vmsVector		vLightDir;
+//	CDynLight		*pl;
+	CShaderLight	*psl;
+	CFixVector		vLightDir;
 
 psl = gameData.render.lights.dynamic.shader.lights;
 for (h = 0, i = gameData.render.lights.dynamic.nLights; i; i--, psl++)
@@ -359,10 +359,10 @@ FORALL_OBJS (objP, h) {
 		if (!CanSeePoint (objP, &objP->info.position.vPos, &psl->info.vPos, objP->info.nSegment))
 			continue;
 		vLightDir = objP->info.position.vPos - psl->info.vPos;
-		vmsVector::Normalize(vLightDir);
+		CFixVector::Normalize(vLightDir);
 		if (n) {
 			for (j = 0; j < n; j++)
-				if (abs (vmsVector::Dot(vLightDir, gameData.render.shadows.vLightDir[j])) > 2 * F1_0 / 3) // 60 deg
+				if (abs (CFixVector::Dot(vLightDir, gameData.render.shadows.vLightDir[j])) > 2 * F1_0 / 3) // 60 deg
 					break;
 			if (j < n)
 				continue;
@@ -410,10 +410,10 @@ if (!bShadowTest)
 #else	
 		if (gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
 #endif			 
-			G3SetViewMatrix(gameData.render.mine.viewerEye, externalView.pPos ? externalView.pPos->mOrient : 
+			G3SetViewMatrix (gameData.render.mine.viewerEye, externalView.Pos () ? externalView.Pos ()->mOrient : 
 								  gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, 1);
 		else
-			G3SetViewMatrix(gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient, 
+			G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient, 
 								  FixDiv (gameStates.render.xZoom, gameStates.render.nZoomFactor), 1);
 		ApplyShadowMaps (nStartSeg, nEyeOffset, nWindow);
 		}
@@ -428,7 +428,7 @@ if (!bShadowTest)
 void RenderNeatShadows (fix nEyeOffset, int nWindow, short nStartSeg)
 {
 	short				i;
-	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights;
+	CShaderLight	*psl = gameData.render.lights.dynamic.shader.lights;
 
 gameData.render.shadows.nLights = GatherShadowLightSources ();
 for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, psl++) {

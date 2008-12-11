@@ -315,15 +315,15 @@ get_line:;
 			if (s[0] == '!') 
 				s++;
 			else if (s[0] == '$') {
-				CCanvas::Current ()->SetFont (header_font);
+				fontManager.SetCurrent (header_font);
 				s++;
 				} 
 			else if (s[0] == '*') {
-				CCanvas::Current ()->SetFont (title_font);
+				fontManager.SetCurrent (title_font);
 				s++;
 				} 
 			else
-				CCanvas::Current ()->SetFont (names_font);
+				fontManager.SetCurrent (names_font);
 			grBitBltFadeTable = (gameStates.menus.bHires ? fadeValues_hires : fadeValues);
 			pszTemp = strchr (s, '\t');
 			if (pszTemp) {	//	Wacky Credits thing

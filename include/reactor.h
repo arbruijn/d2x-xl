@@ -34,15 +34,15 @@ typedef struct tReactorTriggers {
 typedef struct tReactorProps {
 	int nModel;
 	int nGuns;
-	vmsVector gunPoints [MAX_CONTROLCEN_GUNS];
-	vmsVector gun_dirs [MAX_CONTROLCEN_GUNS];
+	CFixVector gunPoints [MAX_CONTROLCEN_GUNS];
+	CFixVector gun_dirs [MAX_CONTROLCEN_GUNS];
 } tReactorProps;
 
 #define MAX_REACTORS 7
 
-//@@extern vmsVector controlcen_gun_points[MAX_CONTROLCEN_GUNS];
-//@@extern vmsVector controlcen_gun_dirs[MAX_CONTROLCEN_GUNS];
-extern vmsVector Gun_pos[MAX_CONTROLCEN_GUNS];
+//@@extern CFixVector controlcen_gun_points[MAX_CONTROLCEN_GUNS];
+//@@extern CFixVector controlcen_gun_dirs[MAX_CONTROLCEN_GUNS];
+extern CFixVector Gun_pos[MAX_CONTROLCEN_GUNS];
 
 // do whatever this thing does in a frame
 void DoReactorFrame(CObject *obj);

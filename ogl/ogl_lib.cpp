@@ -170,9 +170,9 @@ return h;
 
 //------------------------------------------------------------------------------
 
-void G3Normal (g3sPoint **pointList, vmsVector *pvNormal)
+void G3Normal (g3sPoint **pointList, CFixVector *pvNormal)
 {
-vmsVector	vNormal;
+CFixVector	vNormal;
 
 #if 1
 if (pvNormal) {
@@ -199,14 +199,14 @@ else
 	v [1] = pointList [1]->p3_index;
 	v [2] = pointList [2]->p3_index;
 	if ((v [0] < 0) || (v [1] < 0) || (v [2] < 0)) {
-		vNormal = vmsVector::Normal(pointList [0]->p3_vec,
+		vNormal = CFixVector::Normal(pointList [0]->p3_vec,
 						 pointList [1]->p3_vec,
 						 pointList [2]->p3_vec);
 		glNormal3f ((GLfloat) X2F (vNormal[X]), (GLfloat) X2F (vNormal[Y]), (GLfloat) X2F (vNormal[Z]));
 		}
 	else {
 		int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, v, v + 1, v + 2, v + 3);
-		vNormal = vmsVector::Normal(gameData.segs.vertices[v [0]],
+		vNormal = CFixVector::Normal(gameData.segs.vertices[v [0]],
 							gameData.segs.vertices[v [1]],
 							gameData.segs.vertices[v [2]]);
 		if (bFlip)
@@ -223,22 +223,22 @@ else
 
 //------------------------------------------------------------------------------
 
-void G3CalcNormal (g3sPoint **pointList, fVector *pvNormal)
+void G3CalcNormal (g3sPoint **pointList, CFloatVector *pvNormal)
 {
-	vmsVector	vNormal;
+	CFixVector	vNormal;
 	int	v [4];
 
 v [0] = pointList [0]->p3_index;
 v [1] = pointList [1]->p3_index;
 v [2] = pointList [2]->p3_index;
 if ((v [0] < 0) || (v [1] < 0) || (v [2] < 0)) {
-	vNormal = vmsVector::Normal(pointList [0]->p3_vec,
+	vNormal = CFixVector::Normal(pointList [0]->p3_vec,
 					 pointList [1]->p3_vec,
 					 pointList [2]->p3_vec);
 	}
 else {
 	int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, v, v + 1, v + 2, v + 3);
-	vNormal = vmsVector::Normal(gameData.segs.vertices[v[0]],
+	vNormal = CFixVector::Normal(gameData.segs.vertices[v[0]],
 					 gameData.segs.vertices[v[1]],
 					 gameData.segs.vertices[v[2]]);
 	if (bFlip)
@@ -249,10 +249,10 @@ else {
 
 //------------------------------------------------------------------------------
 
-fVector *G3Reflect (fVector *vReflect, fVector *vLight, fVector *vNormal)
+CFloatVector *G3Reflect (CFloatVector *vReflect, CFloatVector *vLight, CFloatVector *vNormal)
 {
 //2 * n * (l dot n) - l
-	float		LdotN = 2 * fVector::Dot(*vLight, *vNormal);
+	float		LdotN = 2 * CFloatVector::Dot(*vLight, *vNormal);
 
 #if 0
 VmVecScale (vReflect, vNormal, LdotN);

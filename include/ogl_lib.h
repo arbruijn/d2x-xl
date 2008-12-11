@@ -47,9 +47,9 @@ void SetRenderQuality (void);
 void OglDeleteLists (GLuint *lp, int n);
 void OglComputeSinCos (int nSides, tSinCosf *sinCosP);
 int CircleListInit (int nSides, int nType, int mode);
-void G3Normal (g3sPoint **pointList, vmsVector *pvNormal);
-void G3CalcNormal (g3sPoint **pointList, fVector *pvNormal);
-fVector *G3Reflect (fVector *vReflect, fVector *vLight, fVector *vNormal);
+void G3Normal (g3sPoint **pointList, CFixVector *pvNormal);
+void G3CalcNormal (g3sPoint **pointList, CFloatVector *pvNormal);
+CFloatVector *G3Reflect (CFloatVector *vReflect, CFloatVector *vLight, CFloatVector *vNormal);
 int G3EnableClientState (GLuint nState, int nTMU);
 int G3DisableClientState (GLuint nState, int nTMU);
 void G3DisableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU);
@@ -100,7 +100,7 @@ return gameStates.ogl.bRender2TextureOk && gameData.render.ogl.drawBuffer.Handle
 
 //------------------------------------------------------------------------------
 
-static inline fVector3* G3GetNormal (g3sPoint *pPoint, fVector *pvNormal)
+static inline fVector3* G3GetNormal (g3sPoint *pPoint, CFloatVector *pvNormal)
 {
 return pPoint->p3_normal.nFaces ? pPoint->p3_normal.vNormal.V3() : pvNormal->V3();
 }

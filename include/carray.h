@@ -5,8 +5,7 @@
 
 //-----------------------------------------------------------------------------
 
-template < class _T > 
-class CArray {
+template < class _T > class CArray {
 
 	template < class _T > class CArrayData {
 		public:
@@ -61,6 +60,7 @@ class CArray {
 		
 		inline void Init (void) { 
 			m_data.buffer = reinterpret_cast<_T *> (NULL); 
+			m_data.length = 0;
 			m_data.bExternal = m_data.bChild = false;
 			memset (&m_data.null, 0, sizeof (_T));
 			}
@@ -114,7 +114,7 @@ class CArray {
 			return m_data.buffer;
 			}
 			
-		inline _T* Buffer (void) { return m_data.buffer; }
+		inline _T* Buffer (uint i = 0) { return m_data.buffer + i; }
 		
 		inline void SetBuffer (_T *buffer, bool bChild = false, uint length = 0xffffffff) {
 			if (m_data.buffer != buffer) {
@@ -143,7 +143,11 @@ class CArray {
 
 		inline size_t Size (void) { return m_data.length * sizeof (_T); }
 #if DBG
-		inline _T& operator[] (uint i) { return (i < m_data.length) ? m_data.buffer [i] : m_data.null; }
+		inline _T& operator[] (uint i) { 
+			if (i < m_data.length) 
+				return m_data.buffer [i];
+			return m_data.null; 
+			}
 #else
 		inline _T& operator[] (uint i) { return m_data.buffer [i]; }
 #endif
@@ -157,7 +161,7 @@ class CArray {
 			}
 
 		inline _T& Copy (CArray<_T>& source, uint offset = 0) { 
-			if (source.m_data.buffer) {
+			if (source.m_data.buffer && (static_cast<int> (source.m_data.length) > 0)) {
 				if (!m_data.buffer)
 					Create (source.m_data.length);
 				memcpy (m_data.buffer + offset, source.m_data.buffer, ((m_data.length < source.m_data.length) ? m_data.length : source.m_data.length) * sizeof (_T)); 
@@ -194,10 +198,10 @@ class CArray {
 
 		inline _T* operator- (uint i) { return m_data.buffer ? m_data.buffer - i : NULL; }
 
-		CArray<_T>& Clone (CArray<_T>& clone) {
-			clone.m_data = m_data;
-			clone.m_data.bChild = true;
-			return clone;
+		CArray<_T>& ShareBuffer (CArray<_T>& child) {
+			child.m_data = m_data;
+			child.m_data.bChild = true;
+			return child;
 			}
 
 		inline bool operator! () { return m_data.buffer == NULL; }
@@ -209,6 +213,14 @@ inline int operator- (short* v, CArray<short>& a) { return a.Index (v); }
 inline int operator- (ushort* v, CArray<ushort>& a) { return a.Index (v); }
 inline int operator- (int* v, CArray<int>& a) { return a.Index (v); }
 inline int operator- (uint* v, CArray<uint>& a) { return a.Index (v); }
+
+class CCharArray : public CArray<char> {};
+class CByteArray : public CArray<ubyte> {};
+class CShortArray : public CArray<short> {};
+class CUShortArray : public CArray<ushort> {};
+class CIntArray : public CArray<int> {};
+class CUIntArray : public CArray<uint> {};
+class CFloatArray : public CArray<float> {};
 
 //-----------------------------------------------------------------------------
 

@@ -56,7 +56,7 @@ for (i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 			gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + d_rand()/2;
 			}
 		if (deltaTime < ESHAKER_SHAKE_TIME) {
-			//	Control center destroyed, rock the tPlayer's ship.
+			//	Control center destroyed, rock the CPlayerData's ship.
 			int	fc, rx, rz;
 			fix	h;
 			// -- fc = abs(deltaTime - ESHAKER_SHAKE_TIME/2);

@@ -359,7 +359,7 @@ int G3DrawTexPolyMulti (
 	tBitmap	*bmBot, 
 	tBitmap	*bmTop, 
 	tLightmap	*lightmap, 
-	vmsVector	*pvNormal,
+	CFixVector	*pvNormal,
 	int			orient, 
 	int			bBlend);
 
@@ -371,7 +371,7 @@ int G3DrawTexPolyLightmap (
 	tBitmap	*bmBot, 
 	tBitmap	*bmTop, 
 	tLightmap	*lightmap, 
-	vmsVector	*pvNormal,
+	CFixVector	*pvNormal,
 	int			orient, 
 	int			bBlend);
 
@@ -383,7 +383,7 @@ int G3DrawTexPolyFlat (
 	tBitmap	*bmBot, 
 	tBitmap	*bmTop, 
 	tLightmap	*lightmap, 
-	vmsVector	*pvNormal,
+	CFixVector	*pvNormal,
 	int			orient, 
 	int			bBlend);
 
@@ -428,7 +428,7 @@ void OglBlendFunc (GLenum nSrcBlend, GLenum nDestBlend);
 int G3EnableClientState (GLuint nState, int nTMU);
 int G3EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU);
 void G3DisableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU);
-int OglRenderArrays (CBitmap *bmP, int nFrame, fVector *vertexP, int nVertices, tTexCoord3f *texCoordP, 
+int OglRenderArrays (CBitmap *bmP, int nFrame, CFloatVector *vertexP, int nVertices, tTexCoord3f *texCoordP, 
 							tRgbaColorf *colorP, int nColors, int nPrimitive, int nWrap);
 
 //------------------------------------------------------------------------------
@@ -463,7 +463,7 @@ typedef struct tSinCosf {
 
 void OglComputeSinCos (int nSides, tSinCosf *sinCosP);
 void OglColor4sf (float r, float g, float b, float s);
-void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceColor *pVertColor, 
+void G3VertexColor (CFloatVector *pvVertNorm, CFloatVector *pVertPos, int nVertex, tFaceColor *pVertColor, 
 						  tFaceColor *pBaseColor, float fScale, int bSetColor, int nThread);
 void OglDrawEllipse (int nSides, int nType, double xsc, double xo, double ysc, double yo, tSinCosf *sinCosP);
 void OglDrawCircle (int nSides, int nType);
@@ -507,7 +507,7 @@ else if (!handle || (boundHandles [nTMU] != handle)) {
 
 extern GLhandleARB	genShaderProg;
 
-typedef	int tTexPolyMultiDrawer (int, g3sPoint **, tUVL *, tUVL *, CBitmap *, CBitmap *, CTexture *, vmsVector *, int, int);
+typedef	int tTexPolyMultiDrawer (int, g3sPoint **, tUVL *, tUVL *, CBitmap *, CBitmap *, CTexture *, CFixVector *, int, int);
 extern tTexPolyMultiDrawer	*fpDrawTexPolyMulti;
 
 int G3DrawTexPolySimple (
@@ -515,13 +515,13 @@ int G3DrawTexPolySimple (
 	g3sPoint		**pointList, 
 	tUVL			*uvlList, 
 	tBitmap	*bmBot, 
-	vmsVector	*pvNormal,
+	CFixVector	*pvNormal,
 	int			bBlend);
 
 //------------------------------------------------------------------------------
 
 static inline int G3DrawTexPoly (int nVerts, g3sPoint **pointList, tUVL *uvlList,
-											CBitmap *bmP, vmsVector *pvNormal, int bBlend)
+											CBitmap *bmP, CFixVector *pvNormal, int bBlend)
 {
 return fpDrawTexPolyMulti (nVerts, pointList, uvlList, NULL, bmP, NULL, NULL, pvNormal, 0, bBlend);
 }

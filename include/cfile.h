@@ -68,7 +68,7 @@ class CFile {
 		sbyte ReadByte (void);
 		fix ReadFix (void);
 		fixang ReadFixAng (void);
-		void ReadVector (vmsVector& v);
+		void ReadVector (CFixVector& v);
 		void ReadAngVec (vmsAngVec& v);
 		void ReadMatrix (vmsMatrix& v);
 		float ReadFloat (void);
@@ -84,7 +84,7 @@ class CFile {
 		int WriteFloat (float f);
 		int WriteDouble (double d);
 		void WriteAngVec (const vmsAngVec& v);
-		void WriteVector (const vmsVector& v);
+		void WriteVector (const CFixVector& v);
 		void WriteMatrix (const vmsMatrix& m);
 		int WriteString (const char *buf);
 

@@ -282,7 +282,7 @@ return i * i;
 
 #if CHECK_LIGHT_VERT
 
-static inline int IsLightVert (int nVertex, tShaderLight *psl)
+static inline int IsLightVert (int nVertex, CShaderLight *psl)
 {
 if ((nVertex >= 0) && psl->info.faceP) {
 	ushort *pv = gameStates.render.bTriangleMesh ? psl->info.faceP->triIndex : psl->info.faceP->index;
@@ -303,7 +303,7 @@ float fLightRanges [5] = {0.5f, 0.7071f, 1.0f, 1.4142f, 2.0f};
 
 #if 1//def _DEBUG
 
-int G3AccumVertColor (int nVertex, fVector3 *pColorSum, tVertColorData *vcdP, int nThread)
+int G3AccumVertColor (int nVertex, fVector3 *pColorSum, CVertColorData *vcdP, int nThread)
 {
 	int						i, j, nLights, nType, bInRad,
 								bSkipHeadlight = gameOpts->ogl.bHeadlight && !gameStates.render.nState,
@@ -313,10 +313,10 @@ int G3AccumVertColor (int nVertex, fVector3 *pColorSum, tVertColorData *vcdP, in
 	float						fLightDist, fAttenuation, spotEffect, NdotL, RdotE, nMinDot;
 	fVector3					spotDir, lightDir, lightPos, vertPos, vReflect;
 	fVector3					lightColor, colorSum, vertColor = fVector3::Create(0.0f, 0.0f, 0.0f);
-	tShaderLight			*psl;
+	CShaderLight			*psl;
 	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread] + sliP->nFirst;
-	tVertColorData			vcd = *vcdP;
+	CVertColorData			vcd = *vcdP;
 
 #if DBG
 if (nThread == 0)
@@ -325,7 +325,7 @@ if (nThread == 1)
 	nThread = nThread;
 #endif
 colorSum = *pColorSum;
-vertPos = *vcd.pVertPos - *(reinterpret_cast<fVector3*> (&viewInfo.glPosf));
+vertPos = *vcd.vertPosP - *(reinterpret_cast<fVector3*> (&viewInfo.glPosf));
 vertPos.Neg();
 fVector3::Normalize(vertPos);
 nLights = sliP->nActive;
@@ -363,7 +363,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		continue;
 	lightColor = *(reinterpret_cast<fVector3*> (&psl->info.color));
 	lightPos = *psl->vPosf [bTransform].V3();
-	lightDir = lightPos - *vcd.pVertPos;
+	lightDir = lightPos - *vcd.vertPosP;
 	bInRad = 0;
 	fLightDist = lightDir.Mag() * gameStates.ogl.fLightRange;
 	fVector3::Normalize(lightDir);
@@ -499,7 +499,7 @@ return j;
 
 #else //RELEASE
 
-int G3AccumVertColor (int nVertex, fVector3 *pColorSum, tVertColorData *vcdP, int nThread)
+int G3AccumVertColor (int nVertex, fVector3 *pColorSum, CVertColorData *vcdP, int nThread)
 {
 	int						i, j, nLights, nType, bInRad,
 								bSkipHeadlight = gameOpts->ogl.bHeadlight && !gameStates.render.nState,
@@ -508,14 +508,14 @@ int G3AccumVertColor (int nVertex, fVector3 *pColorSum, tVertColorData *vcdP, in
 	float						fLightDist, fAttenuation, spotEffect, fMag, NdotL, RdotE;
 	fVector3					spotDir, lightDir, lightPos, vertPos, vReflect;
 	fVector3					lightColor, colorSum, vertColor = {{0.0f, 0.0f, 0.0f}};
-	tShaderLight			*psl;
+	CShaderLight			*psl;
 	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread] + sliP->nFirst;
-	tVertColorData			vcd = *vcdP;
+	CVertColorData			vcd = *vcdP;
 
 colorSum = *pColorSum;
-VmVecSub (&vertPos, vcd.pVertPos, reinterpret_cast<fVector3*> (&viewInfo.glPosf));
-vmsVector::Normalize(vertPos, VmVecNegate (&vertPos));
+VmVecSub (&vertPos, vcd.vertPosP, reinterpret_cast<fVector3*> (&viewInfo.glPosf));
+CFixVector::Normalize(vertPos, VmVecNegate (&vertPos));
 nLights = sliP->nActive;
 if (nLights > gameData.render.lights.dynamic.nLights)
 	nLights = gameData.render.lights.dynamic.nLights;
@@ -536,17 +536,17 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	lightColor = *(reinterpret_cast<fVector3*> (&psl->info.color));
 	lightPos = psl->vPosf [gameStates.render.nState && !gameStates.ogl.bUseTransform].V3;
 #if VECMAT_CALLS
-	VmVecSub (&lightDir, &lightPos, vcd.pVertPos);
+	VmVecSub (&lightDir, &lightPos, vcd.vertPosP);
 #else
-	lightDir[X] = lightPos[X] - vcd.pVertPos->x();
-	lightDir[Y] = lightPos[Y] - vcd.pVertPos->y();
-	lightDir[Z] = lightPos[Z] - vcd.pVertPos->z();
+	lightDir[X] = lightPos[X] - vcd.vertPosP->x();
+	lightDir[Y] = lightPos[Y] - vcd.vertPosP->y();
+	lightDir[Z] = lightPos[Z] - vcd.vertPosP->z();
 #endif
 	//scaled quadratic attenuation depending on brightness
 	bInRad = 0;
 	NdotL = 1;
 #if VECMAT_CALLS
-	vmsVector::Normalize(lightDir, &lightDir);
+	CFixVector::Normalize(lightDir, &lightDir);
 #else
 	if ((fMag = VmVecMag (&lightDir))) {
 		lightDir[X] /= fMag;
@@ -590,7 +590,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			else
 #endif
 				fAttenuation = (1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist);
-			NdotL = vmsVector::Dot(vcd.vertNorm, &lightDir);
+			NdotL = CFixVector::Dot(vcd.vertNorm, &lightDir);
 #if 0
 			NdotL = 1 - ((1 - NdotL) * 0.9f);
 #endif
@@ -603,7 +603,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		if (NdotL <= 0)
 			continue;
 #if VECMAT_CALLS
-		fVector::Normalize(&spotDir, &psl->vDirf);
+		CFloatVector::Normalize(&spotDir, &psl->vDirf);
 #else
 		fMag = VmVecMag (&psl->info.vDirf);
 		spotDir.p.x = psl->info.vDirf.p.x / fMag;
@@ -657,7 +657,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			}
 		G3_REFLECT (vReflect, lightDir, vcd.vertNorm);
 #if VECMAT_CALLS
-		fVector::Normalize(&vReflect, &vReflect);
+		CFloatVector::Normalize(&vReflect, &vReflect);
 #else
 		if ((fMag = VmVecMag (&vReflect))) {
 			vReflect[X] /= fMag;
@@ -736,9 +736,9 @@ return j;
 
 //------------------------------------------------------------------------------
 
-void InitVertColorData (tVertColorData& vcd)
+void InitVertColorData (CVertColorData& vcd)
 {
-	static fVector matSpecular = fVector::Create(1.0f, 1.0f, 1.0f, 1.0f);
+	static CFloatVector matSpecular = CFloatVector::Create(1.0f, 1.0f, 1.0f, 1.0f);
 
 vcd.bExclusive = !FAST_SHADOWS && (gameStates.render.nShadowPass == 3),
 vcd.fMatShininess = 0;
@@ -787,7 +787,7 @@ PROF_START
 	fVector3			vertPos;
 	tFaceColor		*pc = NULL;
 	int				bVertexLights;
-	tVertColorData	vcd;
+	CVertColorData	vcd;
 
 InitVertColorData (vcd);
 #if DBG
@@ -834,7 +834,7 @@ if (gameStates.ogl.bUseTransform)
 #if 1
 	vcd.vertNorm = *pvVertNorm;
 #else
-	fVector::Normalize(&vcd.vertNorm, pvVertNorm);
+	CFloatVector::Normalize(&vcd.vertNorm, pvVertNorm);
 #endif
 else {
 	if (!gameStates.render.nState) {
@@ -848,7 +848,7 @@ if ((bVertexLights = !(gameStates.render.nState || pVertColor))) {
 	pVertPos = &vertPos;
 	SetNearestVertexLights (-1, nVertex, NULL, 1, 0, 1, nThread);
 	}
-vcd.pVertPos = pVertPos;
+vcd.vertPosP = pVertPos;
 //VmVecNegate (&vertNorm);
 //if (nLights)
 #if MULTI_THREADED_LIGHTS

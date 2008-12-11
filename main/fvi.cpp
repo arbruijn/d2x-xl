@@ -32,15 +32,15 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network.h"
 #include "fvi_a.h"
 
-int CheckSphereToFace (vmsVector *pnt, fix rad, vmsVector *vertList, vmsVector *vNormal, int nVerts);
+int CheckSphereToFace (CFixVector *pnt, fix rad, CFixVector *vertList, CFixVector *vNormal, int nVerts);
 
 //#define _DEBUG
 
 //	-----------------------------------------------------------------------------
 
-inline fix RegisterHit (vmsVector *vBestHit, vmsVector *vCurHit, vmsVector *vPos, fix dMax)
+inline fix RegisterHit (CFixVector *vBestHit, CFixVector *vCurHit, CFixVector *vPos, fix dMax)
 {
-   fix d = vmsVector::Dist(*vPos, *vCurHit);
+   fix d = CFixVector::Dist(*vPos, *vCurHit);
 
 if (dMax < d) {
 	dMax = d;
@@ -52,9 +52,9 @@ return dMax;
 //	-----------------------------------------------------------------------------
 // Find intersection of perpendicular on p1,p2 through p3 with p1,p2.
 
-int FindPointLineIntersectionf (vmsVector *pv1, vmsVector *pv2, vmsVector *pv3)
+int FindPointLineIntersectionf (CFixVector *pv1, CFixVector *pv2, CFixVector *pv3)
 {
-	fVector	p1, p2, p3, d31, d21, h, v [2];
+	CFloatVector	p1, p2, p3, d31, d21, h, v [2];
 	float		m, u;
 
 p1 = pv1->ToFloat();
@@ -64,7 +64,7 @@ d21 = p2 - p1;
 if (!(m = d21[X] * d21[X] + d21[Y] * d21[Y] + d21[Z] * d21[Z]))
 	return 0;
 d31 = p3 - p1;
-u = fVector::Dot(d31, d21);
+u = CFloatVector::Dot(d31, d21);
 u /= m;
 /*
 h[X] = p1[X] + u * d21[X];
@@ -76,7 +76,7 @@ h = p1 + u * d21;
 // limit the intersection to [p1,p2]
 v[0] = p1 - h;
 v[1] = p2 - h;
-m = fVector::Dot(v[0], v[1]);
+m = CFloatVector::Dot(v[0], v[1]);
 if (m >= 1)
 	return 1;
 return 0;
@@ -88,23 +88,23 @@ return 0;
 //new_pnt is the found point on the plane
 //vPlanePoint & vPlaneNorm describe the plane
 //p0 & p1 are the ends of the line
-int FindPlaneLineIntersection (vmsVector *hitP, vmsVector *vPlanePoint, vmsVector *vPlaneNorm,
-										 vmsVector *p0, vmsVector *p1, fix rad)
+int FindPlaneLineIntersection (CFixVector *hitP, CFixVector *vPlanePoint, CFixVector *vPlaneNorm,
+										 CFixVector *p0, CFixVector *p1, fix rad)
 {
-	vmsVector	d, w;
+	CFixVector	d, w;
 	fix			num, den;
 
 w = *p0 - *vPlanePoint;
 d = *p1 - *p0;
-num = vmsVector::Dot(*vPlaneNorm, w) - rad;
-den = -vmsVector::Dot(*vPlaneNorm, d);
+num = CFixVector::Dot(*vPlaneNorm, w) - rad;
+den = -CFixVector::Dot(*vPlaneNorm, d);
 if (!den) {
-	fVector	nf, df;
+	CFloatVector	nf, df;
 	float denf;
 	nf = vPlaneNorm->ToFloat();
 	df = d.ToFloat();
-	denf = -fVector::Dot(nf, df);
-	denf = -fVector::Dot(nf, df);
+	denf = -CFloatVector::Dot(nf, df);
+	denf = -CFloatVector::Dot(nf, df);
 	return 0;
 	}
 if (den > 0) {
@@ -129,16 +129,16 @@ return 1;
 //new_pnt is the found point on the plane
 //vPlanePoint & vPlaneNorm describe the plane
 //p0 & p1 are the ends of the line
-int FindLineQuadIntersectionSub (vmsVector *hitP, vmsVector *vPlanePoint, vmsVector *vPlaneNorm,
-										   vmsVector *p0, vmsVector *p1, fix rad)
+int FindLineQuadIntersectionSub (CFixVector *hitP, CFixVector *vPlanePoint, CFixVector *vPlaneNorm,
+										   CFixVector *p0, CFixVector *p1, fix rad)
 {
-	vmsVector	d, w;
+	CFixVector	d, w;
 	fix			num, den;
 
 w = *vPlanePoint - *p0;
 d = *p1 - *p0;
-num = vmsVector::Dot(*vPlaneNorm, w);
-den = vmsVector::Dot(*vPlaneNorm, d);
+num = CFixVector::Dot(*vPlaneNorm, w);
+den = CFixVector::Dot(*vPlaneNorm, d);
 if (!den)
 	return 0;
 if (labs (num) > labs (den))
@@ -156,7 +156,7 @@ return 1;
 // of the quad must hit each edge between the edge's end points (provided hitP
 // is in the quad's plane).
 
-int CheckLineHitsQuad (vmsVector *hitP, vmsVector *planeP)
+int CheckLineHitsQuad (CFixVector *hitP, CFixVector *planeP)
 {
 	int	i;
 
@@ -168,15 +168,15 @@ return 1;	//hits
 
 //	-----------------------------------------------------------------------------
 
-int FindLineQuadIntersection (vmsVector *hitP, vmsVector *planeP, vmsVector *planeNormP, vmsVector *p0, vmsVector *p1)
+int FindLineQuadIntersection (CFixVector *hitP, CFixVector *planeP, CFixVector *planeNormP, CFixVector *p0, CFixVector *p1)
 {
-	vmsVector	vHit, d [2];
+	CFixVector	vHit, d [2];
 
 if (!FindLineQuadIntersectionSub (&vHit, planeP, planeNormP, p0, p1, 0))
 	return 0;
 d[0] = vHit - *p0;
 d[1] = vHit - *p1;
-if (vmsVector::Dot(d[0], d[1]) >= 0)
+if (CFixVector::Dot(d[0], d[1]) >= 0)
 	return 0;
 if (!CheckSphereToFace (&vHit, 0, planeP, planeNormP, 4))
 	return 0;
@@ -188,11 +188,11 @@ return 1;
 // Simple intersection check by checking whether any of the edges of plane p1
 // penetrate p2. Returns average of all penetration points.
 
-int FindQuadQuadIntersectionSub (vmsVector *hitP, vmsVector *p1, vmsVector *vn1, vmsVector *p2, vmsVector *vn2, vmsVector *vPos)
+int FindQuadQuadIntersectionSub (CFixVector *hitP, CFixVector *p1, CFixVector *vn1, CFixVector *p2, CFixVector *vn2, CFixVector *vPos)
 {
 	int			i, nHits = 0;
 	fix			dMax = 0;
-	vmsVector	vHit;
+	CFixVector	vHit;
 
 for (i = 0; i < 4; i++)
 	if (FindLineQuadIntersection (&vHit, p2, vn2, p1 + i, p1 + ((i + 1) % 4))) {
@@ -204,9 +204,9 @@ return nHits;
 
 //	-----------------------------------------------------------------------------
 
-int FindQuadQuadIntersection (vmsVector *hitP, vmsVector *p1, vmsVector *vn1, vmsVector *p2, vmsVector *vn2, vmsVector *vPos)
+int FindQuadQuadIntersection (CFixVector *hitP, CFixVector *p1, CFixVector *vn1, CFixVector *p2, CFixVector *vn2, CFixVector *vPos)
 {
-	vmsVector	vHit;
+	CFixVector	vHit;
 	int			nHits = 0;
 	fix			dMax = 0;
 
@@ -225,11 +225,11 @@ return nHits;
 
 //	-----------------------------------------------------------------------------
 
-int FindLineHitboxIntersection (vmsVector *hitP, tBox *phb, vmsVector *p0, vmsVector *p1, vmsVector *vPos)
+int FindLineHitboxIntersection (CFixVector *hitP, tBox *phb, CFixVector *p0, CFixVector *p1, CFixVector *vPos)
 {
 	int			i, nHits = 0;
 	fix			dMax = 0;
-	vmsVector	vHit;
+	CFixVector	vHit;
 	tQuad			*pf;
 
 // create all faces of hitbox 2 and their normals before testing because they will
@@ -244,11 +244,11 @@ return nHits;
 
 //	-----------------------------------------------------------------------------
 
-int FindHitboxIntersection (vmsVector *hitP, tBox *phb1, tBox *phb2, vmsVector *vPos)
+int FindHitboxIntersection (CFixVector *hitP, tBox *phb1, tBox *phb2, CFixVector *vPos)
 {
 	int			i, j, nHits = 0;
 	fix			dMax = 0;
-	vmsVector	vHit;
+	CFixVector	vHit;
 	tQuad			*pf1, *pf2;
 
 // create all faces of hitbox 2 and their normals before testing because they will
@@ -256,7 +256,7 @@ int FindHitboxIntersection (vmsVector *hitP, tBox *phb1, tBox *phb2, vmsVector *
 for (i = 0, pf1 = phb1->faces; i < 6; i++, pf1++) {
 	for (j = 0, pf2 = phb2->faces; j < 6; j++, pf2++) {
 #if 1
-		if (vmsVector::Dot(pf1->n[1], pf2->n[1]) >= 0)
+		if (CFixVector::Dot(pf1->n[1], pf2->n[1]) >= 0)
 			continue;
 #endif
 		if (FindQuadQuadIntersection (&vHit, pf1->v, pf1->n + 1, pf2->v, pf2->n + 1, vPos)) {
@@ -293,15 +293,15 @@ int ijTable [3][2] = {
 
 //	-----------------------------------------------------------------------------
 //see if a point is inside a face by projecting into 2d
-uint CheckPointToFace (vmsVector *checkP, vmsVector *vertList, vmsVector *vNormal, int nVerts)
+uint CheckPointToFace (CFixVector *checkP, CFixVector *vertList, CFixVector *vNormal, int nVerts)
 {
-//	vmsVector	vNormal;
-	vmsVector	t;
+//	CFixVector	vNormal;
+	CFixVector	t;
 	int			biggest;
 	int 			i, j, nEdge;
 	uint 			nEdgeMask;
 	fix 			check_i, check_j;
-	vmsVector	*v0, *v1;
+	CFixVector	*v0, *v1;
 	vec2d 		vEdge, vCheck;
 	fix 			d;
 
@@ -347,13 +347,13 @@ return nEdgeMask;
 
 //	-----------------------------------------------------------------------------
 //check if a sphere intersects a face
-int CheckSphereToFace (vmsVector *pnt, fix rad, vmsVector *vertList, vmsVector *vNormal, int nVerts)
+int CheckSphereToFace (CFixVector *pnt, fix rad, CFixVector *vertList, CFixVector *vNormal, int nVerts)
 {
-	vmsVector	checkP = *pnt;
-	vmsVector	vEdge, vCheck;            //this time, real 3d vectors
-	vmsVector	vClosestPoint;
+	CFixVector	checkP = *pnt;
+	CFixVector	vEdge, vCheck;            //this time, real 3d vectors
+	CFixVector	vClosestPoint;
 	fix			xEdgeLen, d, dist;
-	vmsVector	*v0, *v1;
+	CFixVector	*v0, *v1;
 	int			iType;
 	int			nEdge;
 	uint			nEdgeMask;
@@ -368,9 +368,9 @@ v0 = vertList + nEdge;
 v1 = vertList + ((nEdge + 1) % nVerts);
 //check if we are touching an edge or point
 vCheck = checkP - *v0;
-xEdgeLen = vmsVector::NormalizedDir(vEdge, *v1, *v0);
+xEdgeLen = CFixVector::NormalizedDir(vEdge, *v1, *v0);
 //find point dist from planes of ends of edge
-d = vmsVector::Dot(vEdge, vCheck);
+d = CFixVector::Dot(vEdge, vCheck);
 if (d + rad < 0)
 	return IT_NONE;                  //too far behind start point
 if (d - rad > xEdgeLen)
@@ -385,7 +385,7 @@ else {
 	iType = IT_EDGE;
 	vClosestPoint = *v0 + vEdge * d;
 	}
-dist = vmsVector::Dist(checkP, vClosestPoint);
+dist = CFixVector::Dist(checkP, vClosestPoint);
 if (dist <= rad)
 	return (iType == IT_POINT) ? IT_NONE : iType;
 return IT_NONE;
@@ -396,10 +396,10 @@ return IT_NONE;
 //point on plane, whether or not line intersects tSide
 //iFace determines which of four possible faces we have
 //note: the seg parm is temporary, until the face itself has a point field
-int CheckLineToFace (vmsVector *intP, vmsVector *p0, vmsVector *p1,
-							vmsVector *vertList, vmsVector *vNormal, int nVerts, fix rad)
+int CheckLineToFace (CFixVector *intP, CFixVector *p0, CFixVector *p1,
+							CFixVector *vertList, CFixVector *vNormal, int nVerts, fix rad)
 {
-	vmsVector	hitP, v1;
+	CFixVector	hitP, v1;
 	int			pli, bCheckRad = 0;
 
 //use lowest point number
@@ -423,7 +423,7 @@ if ((pli = CheckSphereToFace (&hitP, rad, vertList, vNormal, nVerts)))
 #if 1
 if (bCheckRad) {
 	int			i, d;
-	vmsVector	*a, *b;
+	CFixVector	*a, *b;
 
 	b = vertList;
 	for (i = 1; i <= nVerts; i++) {
@@ -440,17 +440,17 @@ return IT_NONE;
 
 //	-----------------------------------------------------------------------------
 //see if a point is inside a face by projecting into 2d
-uint CheckPointToSegFace (vmsVector *checkP, short nSegment, short nSide, short iFace,
+uint CheckPointToSegFace (CFixVector *checkP, short nSegment, short nSide, short iFace,
 								  int nv, int *vertList)
 {
-	vmsVector vNormal;
-	vmsVector t;
+	CFixVector vNormal;
+	CFixVector t;
 	int biggest;
 ///
 	int 			i, j, nEdge;
 	uint 			nEdgeMask;
 	fix 			check_i, check_j;
-	vmsVector	*v0, *v1;
+	CFixVector	*v0, *v1;
 	vec2d 		vEdge, vCheck;
 	fix 			d;
 
@@ -505,14 +505,14 @@ return nEdgeMask;
 
 //	-----------------------------------------------------------------------------
 //check if a sphere intersects a face
-int CheckSphereToSegFace (vmsVector *pnt, short nSegment, short nSide, short iFace, int nv,
+int CheckSphereToSegFace (CFixVector *pnt, short nSegment, short nSide, short iFace, int nv,
 								  fix rad, int *vertList)
 {
-	vmsVector	checkP = *pnt;
-	vmsVector	vEdge, vCheck;            //this time, real 3d vectors
-	vmsVector	vClosestPoint;
+	CFixVector	checkP = *pnt;
+	CFixVector	vEdge, vCheck;            //this time, real 3d vectors
+	CFixVector	vClosestPoint;
 	fix			xEdgeLen, d, dist;
-	vmsVector	*v0, *v1;
+	CFixVector	*v0, *v1;
 	int			iType;
 	int			nEdge;
 	uint			nEdgeMask;
@@ -535,9 +535,9 @@ else {
 	}
 //check if we are touching an edge or point
 vCheck = checkP - *v0;
-xEdgeLen = vmsVector::NormalizedDir(vEdge, *v1, *v0);
+xEdgeLen = CFixVector::NormalizedDir(vEdge, *v1, *v0);
 //find point dist from planes of ends of edge
-d = vmsVector::Dot(vEdge, vCheck);
+d = CFixVector::Dot(vEdge, vCheck);
 if (d + rad < 0)
 	return IT_NONE;                  //too far behind start point
 if (d - rad > xEdgeLen)
@@ -552,7 +552,7 @@ else {
 	iType = IT_EDGE;
 	vClosestPoint = *v0 + vEdge * d;
 	}
-dist = vmsVector::Dist(checkP, vClosestPoint);
+dist = CFixVector::Dist(checkP, vClosestPoint);
 if (dist <= rad)
 	return (iType == IT_POINT) ? IT_NONE : iType;
 return IT_NONE;
@@ -563,10 +563,10 @@ return IT_NONE;
 //point on plane, whether or not line intersects tSide
 //iFace determines which of four possible faces we have
 //note: the seg parm is temporary, until the face itself has a point field
-int CheckLineToSegFace (vmsVector *newP, vmsVector *p0, vmsVector *p1,
+int CheckLineToSegFace (CFixVector *newP, CFixVector *p0, CFixVector *p1,
 								short nSegment, short nSide, short iFace, int nv, fix rad)
 {
-	vmsVector	checkP, vNormal, v1;
+	CFixVector	checkP, vNormal, v1;
 	int			vertexList [6];
 	int			pli, nFaces, nVertex, bCheckRad = 0;
 
@@ -623,7 +623,7 @@ if ((pli = CheckSphereToSegFace (&checkP, nSegment, nSide, iFace, nv, rad, verte
 	return pli;
 if (bCheckRad) {
 	int			i, d;
-	vmsVector	*a, *b;
+	CFixVector	*a, *b;
 
 	b = gameData.segs.vertices + vertexList [0];
 	for (i = 1; i <= 4; i++) {
@@ -640,7 +640,7 @@ return IT_NONE;
 //	-----------------------------------------------------------------------------
 //computes the parameters of closest approach of two lines
 //fill in two parameters, t0 & t1.  returns 0 if lines are parallel, else 1
-int CheckLineToLine (fix *t1, fix *t2, vmsVector *p1, vmsVector *v1, vmsVector *p2, vmsVector *v2)
+int CheckLineToLine (fix *t1, fix *t2, CFixVector *p1, CFixVector *v1, CFixVector *p2, CFixVector *v2)
 {
 	vmsMatrix det;
 	fix d, cross_mag2;		//mag squared Cross product
@@ -648,9 +648,9 @@ int CheckLineToLine (fix *t1, fix *t2, vmsVector *p1, vmsVector *v1, vmsVector *
 //PrintLog ("         VmVecSub\n");
 det[RVEC] = *p2 - *p1;
 //PrintLog ("         VmVecCrossProd\n");
-det[FVEC] = vmsVector::Cross(*v1, *v2);
-//PrintLog ("         fVector::Dot\n");
-cross_mag2 = vmsVector::Dot(det[FVEC], det[FVEC]);
+det[FVEC] = CFixVector::Cross(*v1, *v2);
+//PrintLog ("         CFloatVector::Dot\n");
+cross_mag2 = CFixVector::Dot(det[FVEC], det[FVEC]);
 if (!cross_mag2)
 	return 0;			//lines are parallel
 det[UVEC] = *v2;
@@ -679,18 +679,18 @@ int bSimpleFVI = 0;
 //this version is for when the start and end positions both poke through
 //the plane of a tSide.  In this case, we must do checks against the edge
 //of faces
-int SpecialCheckLineToSegFace (vmsVector *newP, vmsVector *p0, vmsVector *p1, short nSegment,
+int SpecialCheckLineToSegFace (CFixVector *newP, CFixVector *p0, CFixVector *p1, short nSegment,
 									    short nSide, int iFace, int nv, fix rad)
 {
-	vmsVector	move_vec;
+	CFixVector	move_vec;
 	fix			edge_t, move_t, edge_t2, move_t2, closestDist;
 	fix			edge_len, move_len;
 	int			vertList [6];
 	int			h, nFaces, nEdge;
 	uint			nEdgeMask;
-	vmsVector	*edge_v0, *edge_v1, edge_vec;
+	CFixVector	*edge_v0, *edge_v1, edge_vec;
 	CSegment		*segP = gameData.segs.segments + nSegment;
-	vmsVector	closest_point_edge, closest_point_move;
+	CFixVector	closest_point_edge, closest_point_move;
 
 if (bSimpleFVI) {
 	//PrintLog ("      CheckLineToSegFace ...");
@@ -722,9 +722,9 @@ edge_vec = *edge_v1 - *edge_v0;
 //is the start point already touching the edge?
 //first, find point of closest approach of vec & edge
 //PrintLog ("      getting edge length...\n");
-edge_len = vmsVector::Normalize(edge_vec);
+edge_len = CFixVector::Normalize(edge_vec);
 //PrintLog ("      getting move length...\n");
-move_len = vmsVector::Normalize(move_vec);
+move_len = CFixVector::Normalize(move_vec);
 //PrintLog ("      CheckLineToLine...");
 CheckLineToLine (&edge_t, &move_t, edge_v0, &edge_vec, p0, &move_vec);
 //PrintLog ("done\n");
@@ -746,7 +746,7 @@ closest_point_edge = *edge_v0 + edge_vec * edge_t2;
 closest_point_move = *p0 + move_vec * move_t2;
 //find dist between closest points
 //PrintLog ("      computing closest dist.p...\n");
-closestDist = vmsVector::Dist(closest_point_edge, closest_point_move);
+closestDist = CFixVector::Dist(closest_point_edge, closest_point_move);
 //could we hit with this dist?
 //note massive tolerance here
 if (closestDist < (rad * 9) / 10) {		//we hit.  figure out where
@@ -764,29 +764,29 @@ return IT_NONE;			//no hit
 //vector defined by p0, p1
 //returns dist if intersects, and fills in intP
 //else returns 0
-int CheckVectorToSphere1 (vmsVector *intP, vmsVector *p0, vmsVector *p1, vmsVector *vSpherePos,
+int CheckVectorToSphere1 (CFixVector *intP, CFixVector *p0, CFixVector *p1, CFixVector *vSpherePos,
 								  fix xSphereRad)
 {
-	vmsVector	d, dn, w, vClosestPoint;
+	CFixVector	d, dn, w, vClosestPoint;
 	fix			mag_d, dist, wDist, intDist;
 
 //this routine could be optimized if it's taking too much time!
 
 d = *p1 - *p0;
 w = *vSpherePos - *p0;
-dn = d; mag_d = vmsVector::Normalize(dn);
+dn = d; mag_d = CFixVector::Normalize(dn);
 if (mag_d == 0) {
 	intDist = w.Mag();
 	*intP = *p0;
 	return ((xSphereRad < 0) || (intDist < xSphereRad)) ? intDist : 0;
 	}
-wDist = vmsVector::Dot(dn, w);
+wDist = CFixVector::Dot(dn, w);
 if (wDist < 0)
 	return 0;	//moving away from CObject
 if (wDist > mag_d + xSphereRad)
 	return 0;	//cannot hit
 vClosestPoint = *p0 + dn * wDist;
-dist = vmsVector::Dist(vClosestPoint, *vSpherePos);
+dist = CFixVector::Dist(vClosestPoint, *vSpherePos);
 if  (dist < xSphereRad) {
 	fix	dist2, radius2, nShorten;
 
@@ -807,9 +807,9 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 
-fix CheckHitboxToHitbox (vmsVector *intP, CObject *objP1, CObject *objP2, vmsVector *p0, vmsVector *p1)
+fix CheckHitboxToHitbox (CFixVector *intP, CObject *objP1, CObject *objP2, CFixVector *p0, CFixVector *p1)
 {
-	vmsVector		vHit, vPos = objP2->info.position.vPos;
+	CFixVector		vHit, vPos = objP2->info.position.vPos;
 	int				iModel1, nModels1, iModel2, nModels2, nHits = 0;
 	tModelHitboxes	*pmhb1 = gameData.models.hitboxes + objP1->rType.polyObjInfo.nModel;
 	tModelHitboxes	*pmhb2 = gameData.models.hitboxes + objP2->rType.polyObjInfo.nModel;
@@ -862,10 +862,10 @@ return nHits ? dMax ? dMax : 1 : 0;
 
 //	-----------------------------------------------------------------------------
 
-fix CheckVectorToHitbox (vmsVector *intP, vmsVector *p0, vmsVector *p1, vmsVector *pn, vmsVector *vPos, CObject *objP, fix rad)
+fix CheckVectorToHitbox (CFixVector *intP, CFixVector *p0, CFixVector *p1, CFixVector *pn, CFixVector *vPos, CObject *objP, fix rad)
 {
 	tQuad				*pf;
-	vmsVector		hitP, v;
+	CFixVector		hitP, v;
 	int				i, iModel, nModels;
 	fix				h, d, xDist = 0x7fffffff;
 	tModelHitboxes	*pmhb = gameData.models.hitboxes + objP->rType.polyObjInfo.nModel;
@@ -883,7 +883,7 @@ TransformHitboxes (objP, vPos, hb);
 for (; iModel <= nModels; iModel++) {
 	for (i = 0, pf = hb [iModel].faces; i < 6; i++, pf++) {
 #if 0
-		dot = vmsVector::Dot(pf->n + 1, pn);
+		dot = CFixVector::Dot(pf->n + 1, pn);
 		if (dot >= 0)
 			continue;	//shield face facing away from vector
 #endif
@@ -891,9 +891,9 @@ for (; iModel <= nModels; iModel++) {
 		if (h) {
 		h = CheckLineToFace (&hitP, p0, p1, pf->v, pf->n + 1, 4, rad);
 			v = hitP - *p0;
-			d = vmsVector::Normalize(v);
+			d = CFixVector::Normalize(v);
 #if 0
-			dot = vmsVector::Dot(pf->n + 1, pn);
+			dot = CFixVector::Dot(pf->n + 1, pn);
 			if (dot > 0)
 				continue;	//behind shield face
 			if (d > rad)
@@ -930,11 +930,11 @@ return (nType == OBJ_MONSTERBALL) || (nType == OBJ_HOSTAGE) || (nType == OBJ_POW
 //	-----------------------------------------------------------------------------
 //determine if a vector intersects with an CObject
 //if no intersects, returns 0, else fills in intP and returns dist
-fix CheckVectorToObject (vmsVector *intP, vmsVector *p0, vmsVector *p1, fix rad,
+fix CheckVectorToObject (CFixVector *intP, CFixVector *p0, CFixVector *p1, fix rad,
 								 CObject *thisObjP, CObject *otherObjP)
 {
 	fix			size, dist;
-	vmsVector	hitP, v0, v1, vn, vPos;
+	CFixVector	hitP, v0, v1, vn, vPos;
 	int			bThisPoly, bOtherPoly;
 
 if (rad < 0)
@@ -943,7 +943,7 @@ else {
 	size = thisObjP->info.xSize;
 	if ((thisObjP->info.nType == OBJ_ROBOT) && ROBOTINFO (thisObjP->info.nId).attackType)
 		size = 3 * size / 4;
-	//if obj is tPlayer, and bumping into other tPlayer or a weapon of another coop tPlayer, reduce radius
+	//if obj is CPlayerData, and bumping into other CPlayerData or a weapon of another coop CPlayerData, reduce radius
 	if ((thisObjP->info.nType == OBJ_PLAYER) &&
 		 ((otherObjP->info.nType == OBJ_PLAYER) ||
  		 (IsCoopGame && (otherObjP->info.nType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parent.nType == OBJ_PLAYER))))
@@ -962,13 +962,13 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 	 !(UseSphere (thisObjP) || UseSphere (otherObjP)) &&
 	 (bThisPoly || bOtherPoly)) {
 	VmPointLineIntersection (hitP, *p0, *p1, vPos, 0);
-	dist = vmsVector::Dist (hitP, vPos);
+	dist = CFixVector::Dist (hitP, vPos);
 	if (dist > 2 * (thisObjP->info.xSize + otherObjP->info.xSize))
 		return 0;
 	// check hitbox collisions for all polygonal objects
 	if (bThisPoly && bOtherPoly) {
 		if (!(dist = CheckHitboxToHitbox (&hitP, otherObjP, thisObjP, p0, p1))) {
-			if (!vmsVector::Dist(*p0, *p1))
+			if (!CFixVector::Dist(*p0, *p1))
 				return 0;
 			dist = CheckVectorToHitbox (&hitP, p0, p1, &vn, NULL, thisObjP, 0);
 			if ((dist == 0x7fffffff) || (dist > otherObjP->info.xSize))
@@ -983,7 +983,7 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 		// *thisObjP (stationary) has hitboxes, *otherObjP (moving) a hit sphere. To detect whether the sphere
 		// intersects with the hitbox, check whether the radius line of *thisObjP intersects any of the hitboxes.
 			vn = *p1-*p0;
-			vmsVector::Normalize (vn);
+			CFixVector::Normalize (vn);
 			if (0x7fffffff == (dist = CheckVectorToHitbox (&hitP, p0, p1, &vn, NULL, thisObjP, otherObjP->info.xSize)))
 				return 0;
 //			VmPointLineIntersection (hitP, *p0, *p1, hitP, &otherObjP->info.position.vPos, 1);
@@ -994,7 +994,7 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 		// intersects with the hitbox, check whether the radius line of *thisObjP intersects any of the hitboxes.
 			v0 = thisObjP->info.position.vPos;
 			vn = otherObjP->info.position.vPos - v0;
-			vmsVector::Normalize(vn);
+			CFixVector::Normalize(vn);
 			v1 = v0 + vn * thisObjP->info.xSize;
 			if (0x7fffffff == (dist = CheckVectorToHitbox (&hitP, &v0, &v0, &vn, p1, otherObjP, thisObjP->info.xSize)))
 				return 0;
@@ -1027,9 +1027,9 @@ return (t == nObject);
 
 #define FVI_NEWCODE 2
 
-int CheckTransWall (vmsVector *vPoint, CSegment *segP, short nSide, short iFace);
+int CheckTransWall (CFixVector *vPoint, CSegment *segP, short nSide, short iFace);
 
-int FVICompute (vmsVector *vIntP, short *intS, vmsVector *p0, short nStartSeg, vmsVector *p1,
+int FVICompute (CFixVector *vIntP, short *intS, CFixVector *p0, short nStartSeg, CFixVector *p1,
 					 fix radP0, fix radP1, short nThisObject, short *ignoreObjList, int flags, short *segList,
 					 short *nSegments, int nEntrySeg)
 {
@@ -1037,7 +1037,7 @@ int FVICompute (vmsVector *vIntP, short *intS, vmsVector *p0, short nStartSeg, v
 	int			startMask, endMask, centerMask;	//mask of faces
 	short			nObject, nFirstObj, nSegment, nSegObjs;
 	tSegMasks	masks;
-	vmsVector	vHitPoint, vClosestHitPoint; 	//where we hit
+	CFixVector	vHitPoint, vClosestHitPoint; 	//where we hit
 	fix			d, dMin = 0x7fffffff;					//distance to hit point
 	int			nObjSegList [7], nObjSegs, iObjSeg, i;
 	int			nHitType = HIT_NONE;							//what sort of hit
@@ -1135,7 +1135,7 @@ restart:
 				if (ROBOTINFO (thisObjP->info.nId).attackType)
 					nFudgedRad = (radP1 * 3) / 4;
 				}
-			//if obj is tPlayer, and bumping into other tPlayer or a weapon of another coop tPlayer, reduce radius
+			//if obj is CPlayerData, and bumping into other CPlayerData or a weapon of another coop CPlayerData, reduce radius
 			if ((nThisType == OBJ_PLAYER) &&
 				 ((nOtherType == OBJ_PLAYER) ||
 				 (IsCoopGame && (nOtherType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parent.nType == OBJ_PLAYER))))
@@ -1216,7 +1216,7 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 
 				int			i, nNewSeg, subHitType;
 				short			subHitSeg, nSaveHitObj = gameData.collisions.hitData.nObject;
-				vmsVector	subHitPoint, vSaveWallNorm = gameData.collisions.hitData.vNormal;
+				CFixVector	subHitPoint, vSaveWallNorm = gameData.collisions.hitData.vNormal;
 
 				//do the check recursively on the next CSegment.p.
 				nNewSeg = segP->children [nSide];
@@ -1232,7 +1232,7 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 													 p1, radP0, radP1, nThisObject, ignoreObjList, flags,
 													 tempSegList, &nTempSegs, nStartSeg);
 					if (subHitType != HIT_NONE) {
-						d = vmsVector::Dist(subHitPoint, *p0);
+						d = CFixVector::Dist(subHitPoint, *p0);
 						if (d < dMin) {
 							dMin = d;
 							vClosestHitPoint = subHitPoint;
@@ -1298,7 +1298,7 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 					else
 #endif
 					//is this the closest hit?
-					d = vmsVector::Dist(vHitPoint, *p0);
+					d = CFixVector::Dist(vHitPoint, *p0);
 					if (d < dMin) {
 						dMin = d;
 						vClosestHitPoint = vHitPoint;
@@ -1385,7 +1385,7 @@ int FindVectorIntersection (tFVIQuery *fq, tFVIData *hitData)
 {
 	int			nHitType, nNewHitType;
 	short			nHitSegment, nHitSegment2;
-	vmsVector	vHitPoint;
+	CFixVector	vHitPoint;
 	int			i;
 	tSegMasks	masks;
 
@@ -1434,7 +1434,7 @@ if ((nHitType == HIT_WALL) && (nHitSegment == -1))
 if (nHitSegment == -1) {
 	//int nNewHitType;
 	short nNewHitSeg2=-1;
-	vmsVector vNewHitPoint;
+	CFixVector vNewHitPoint;
 
 	//because of code that deal with CObject with non-zero radius has
 	//problems, try using zero radius and see if we hit a tWall
@@ -1470,10 +1470,10 @@ return nHitType;
 //	-----------------------------------------------------------------------------
 //finds the uv coords of the given point on the given seg & side
 //fills in u & v. if l is non-NULL fills it in also
-void FindHitPointUV (fix *u, fix *v, fix *l, vmsVector *pnt, CSegment *segP, int nSide, int iFace)
+void FindHitPointUV (fix *u, fix *v, fix *l, CFixVector *pnt, CSegment *segP, int nSide, int iFace)
 {
-	vmsVector	*vPoints;
-	vmsVector	vNormals;
+	CFixVector	*vPoints;
+	CFixVector	vNormals;
 	int			nSegment = SEG_IDX (segP);
 	int			nFaces;
 	int			biggest, ii, jj;
@@ -1506,7 +1506,7 @@ if (iFace >= nFaces) {
 CreateAllVertNumLists (&nFaces, vertNumList, nSegment, nSide);
 //now the hard work.
 //1. find what plane to project this tWall onto to make it a 2d case
-memcpy (&vNormals, sideP->normals + iFace, sizeof (vmsVector));
+memcpy (&vNormals, sideP->normals + iFace, sizeof (CFixVector));
 biggest = 0;
 if (abs (vNormals[1]) > abs (vNormals[biggest]))
 	biggest = 1;
@@ -1517,21 +1517,21 @@ jj = (biggest == 2) ? 1 : 2;
 //2. compute u, v of intersection point
 //vec from 1 -> 0
 h = iFace * 3;
-vPoints = reinterpret_cast<vmsVector*> (gameData.segs.vertices + vertList [h+1]);
+vPoints = reinterpret_cast<CFixVector*> (gameData.segs.vertices + vertList [h+1]);
 p1.i = (*vPoints)[ii];
 p1.j = (*vPoints)[jj];
 
-vPoints = reinterpret_cast<vmsVector*> (gameData.segs.vertices + vertList [h]);
+vPoints = reinterpret_cast<CFixVector*> (gameData.segs.vertices + vertList [h]);
 vec0.i = (*vPoints)[ii] - p1.i;
 vec0.j = (*vPoints)[jj] - p1.j;
 
 //vec from 1 -> 2
-vPoints = reinterpret_cast<vmsVector*> (gameData.segs.vertices + vertList [h+2]);
+vPoints = reinterpret_cast<CFixVector*> (gameData.segs.vertices + vertList [h+2]);
 vec1.i = (*vPoints)[ii] - p1.i;
 vec1.j = (*vPoints)[jj] - p1.j;
 
 //vec from 1 -> checkPoint
-//vPoints = reinterpret_cast<vmsVector*> (pnt);
+//vPoints = reinterpret_cast<CFixVector*> (pnt);
 checkP.i = (*pnt)[ii];
 checkP.j = (*pnt)[jj];
 
@@ -1627,7 +1627,7 @@ return 0;
 //	-----------------------------------------------------------------------------
 //check if a particular point on a tWall is a transparent pixel
 //returns 1 if can pass though the tWall, else 0
-int CheckTransWall (vmsVector *pnt, CSegment *segP, short nSide, short iFace)
+int CheckTransWall (CFixVector *pnt, CSegment *segP, short nSide, short iFace)
 {
 	tSide *sideP = segP->sides + nSide;
 	fix	u, v;
@@ -1655,7 +1655,7 @@ return nTranspType;
 //	-----------------------------------------------------------------------------
 //new function for Mike
 //note: gameData.collisions.nSegsVisited must be set to zero before this is called
-int SphereIntersectsWall (vmsVector *vPoint, short nSegment, fix rad)
+int SphereIntersectsWall (CFixVector *vPoint, short nSegment, fix rad)
 {
 	int		faceMask;
 	CSegment *segP;
@@ -1710,13 +1710,13 @@ return SphereIntersectsWall (&objP->info.position.vPos, objP->info.nSegment, obj
 
 //------------------------------------------------------------------------------
 
-int CanSeePoint (CObject *objP, vmsVector *vSource, vmsVector *vDest, short nSegment)
+int CanSeePoint (CObject *objP, CFixVector *vSource, CFixVector *vDest, short nSegment)
 {
 	tFVIQuery	fq;
 	int			nHitType;
 	tFVIData		hit_data;
 
-	//see if we can see this tPlayer
+	//see if we can see this CPlayerData
 
 fq.p0 = vSource;
 fq.p1 = vDest;

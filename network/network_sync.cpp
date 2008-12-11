@@ -48,7 +48,7 @@ for (short i = 0; i < networkData.nJoining; )
 	if (!CmpNetPlayers (networkData.sync [i].player [1].player.callsign, their->player.callsign, 
 							  &networkData.sync [i].player [1].player.network, &their->player.network)) {
 #if 1      
-		con_printf (CONDBG, "Aborting resync for tPlayer %s.\n", their->player.callsign);
+		con_printf (CONDBG, "Aborting resync for CPlayerData %s.\n", their->player.callsign);
 #endif
 		DeleteSyncData (i);
 		}
@@ -100,7 +100,7 @@ void NetworkSyncObjects (tNetworkSyncData *syncP)
 	int		nObjFrames = 0;
 	int		nPlayer = syncP->player [1].player.connected;
 
-// Send clear OBJECTS array tTrigger and send tPlayer num
+// Send clear OBJECTS array tTrigger and send CPlayerData num
 objFilter [OBJ_MARKER] = !gameStates.app.bHaveExtraGameInfo [1];
 for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try to speed it up without
 																// over-stressing the receiver.
@@ -201,7 +201,7 @@ if (gameStates.multi.nGameType >= IPX_GAME)
 	IPXSendInternetPacketData (objBuf, 8, 
 										syncP->player [1].player.network.ipx.server, 
 										syncP->player [1].player.network.ipx.node);
-// Send sync packet which tells the tPlayer who he is and to start!
+// Send sync packet which tells the CPlayerData who he is and to start!
 NetworkSendRejoinSync (nPlayer, syncP);
 
 // Turn off send CObject mode
@@ -422,7 +422,7 @@ memset (m, 0, sizeof (m));
 m [0].nType = NM_TYPE_TEXT; 
 m [0].text = text;
 m [1].nType = NM_TYPE_TEXT; 
-m [1].text = (char*) (TXT_NET_LEAVE);
+m [1].text = const_cast<char*> (TXT_NET_LEAVE);
 networkData.nJoinState = 0;
 i = NetworkSendRequest ();
 if (i < 0) {
@@ -704,7 +704,7 @@ void NetworkWaitForRequests (void)
 networkData.nStatus = NETSTAT_WAITING;
 memset (m, 0, sizeof (m));
 m [0].nType= NM_TYPE_TEXT; 
-m [0].text = (char*) (TXT_NET_LEAVE);
+m [0].text = const_cast<char*> (TXT_NET_LEAVE);
 NetworkFlush ();
 LOCALPLAYER.connected = 1;
 

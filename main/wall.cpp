@@ -549,7 +549,7 @@ else
 	doorP->nPartCount = 1;
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	// NOTE THE LINK TO ABOVE!!!!
-	vmsVector cp;
+	CFixVector cp;
 	COMPUTE_SIDE_CENTER (&cp, segP, nSide);
 	if (gameData.walls.animP [wallP->nClip].openSound > -1)
 		DigiLinkSoundToPos (gameData.walls.animP [wallP->nClip].openSound, SEG_IDX (segP), nSide, &cp, 0, F1_0);
@@ -615,7 +615,7 @@ cloakWallP->nBackWall = nConnWall;
 Assert(SEG_IDX (segP) != -1);
 //Assert(!IS_WALL (wallP->nLinkedWall));
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-	vmsVector cp;
+	CFixVector cp;
 	COMPUTE_SIDE_CENTER (&cp, segP, nSide);
 	DigiLinkSoundToPos (SOUND_WALL_CLOAK_ON, SEG_IDX (segP), nSide, &cp, 0, F1_0);
 	}
@@ -683,7 +683,7 @@ cloakWallP->nBackWall = WallNumP (connSegP, nConnSide);
 Assert(SEG_IDX (segP) != -1);
 Assert(!IS_WALL (wallP->nLinkedWall));
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-	vmsVector cp;
+	CFixVector cp;
 	COMPUTE_SIDE_CENTER(&cp, segP, nSide);
 	DigiLinkSoundToPos(SOUND_WALL_CLOAK_OFF, SEG_IDX (segP), nSide, &cp, 0, F1_0);
 	}
@@ -833,7 +833,7 @@ else
 	doorP->nPartCount = 1;
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	// NOTE THE LINK TO ABOVE!!!!
-	vmsVector cp;
+	CFixVector cp;
 	COMPUTE_SIDE_CENTER (&cp, segP, nSide);
 	if (gameData.walls.animP [wallP->nClip].openSound > -1)
 		DigiLinkSoundToPos (gameData.walls.animP [wallP->nClip].openSound, SEG_IDX (segP), nSide, &cp, 0, F1_0);
@@ -1149,8 +1149,8 @@ for (i = 0, wallP = gameData.walls.walls.Buffer (); i < gameData.walls.nWalls; w
 //-----------------------------------------------------------------
 // Determines what happens when a tWall is shot
 //returns info about tWall.  see wall[HA] for codes
-//obj is the CObject that hit...either a weapon or the tPlayer himself
-//nPlayer is the number the tPlayer who hit the tWall or fired the weapon,
+//obj is the CObject that hit...either a weapon or the CPlayerData himself
+//nPlayer is the number the CPlayerData who hit the tWall or fired the weapon,
 //or -1 if a robot fired the weapon
 int WallHitProcess (CSegment *segP, short nSide, fix damage, int nPlayer, CObject *objP)
 {
@@ -1181,10 +1181,10 @@ if (nPlayer != gameData.multiplayer.nLocalPlayer)	//return if was robot fire
 
 Assert(nPlayer > -1);
 
-//	Determine whether tPlayer is moving forward.  If not, don't say negative
+//	Determine whether CPlayerData is moving forward.  If not, don't say negative
 //	messages because he probably didn't intentionally hit the door.
 if (objP->info.nType == OBJ_PLAYER)
-	bShowMessage = (vmsVector::Dot(objP->info.position.mOrient[FVEC], objP->mType.physInfo.velocity) > 0);
+	bShowMessage = (CFixVector::Dot(objP->info.position.mOrient[FVEC], objP->mType.physInfo.velocity) > 0);
 else if (objP->info.nType == OBJ_ROBOT)
 	bShowMessage = 0;
 else if ((objP->info.nType == OBJ_WEAPON) && (objP->cType.laserInfo.parent.nType == OBJ_ROBOT))
@@ -1610,7 +1610,7 @@ void BngProcessSegment(CObject *objP, fix damage, CSegment *segp, int depth, sby
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		int			tm;
 		fix			dist;
-		vmsVector	pnt;
+		CFixVector	pnt;
 
 		//	Process only walls which have glass.
 		if ((tm = segp->sides [nSide].nOvlTex)) {
@@ -1624,7 +1624,7 @@ void BngProcessSegment(CObject *objP, fix damage, CSegment *segp, int depth, sby
 			if (((ec != -1) && (db != -1) && !(ecP->flags & EF_ONE_SHOT)) ||
 			 	 ((ec == -1) && (gameData.pig.tex.tMapInfoP [tm].destroyed != -1))) {
 				COMPUTE_SIDE_CENTER(&pnt, segp, nSide);
-				dist = vmsVector::Dist(pnt, objP->info.position.vPos);
+				dist = CFixVector::Dist(pnt, objP->info.position.vPos);
 				if (dist < damage/2) {
 					dist = FindConnectedDistance(&pnt, SEG_IDX (segp), &objP->info.position.vPos, objP->info.nSegment, MAX_BLAST_GLASS_DEPTH, WID_RENDPAST_FLAG, 0);
 					if ((dist > 0) && (dist < damage/2))
@@ -1655,7 +1655,7 @@ bool WallIsTriggerTarget (short nWall)
 tWall	*wallP = WALLS + nWall;
 short nSegment = wallP->nSegment;
 short nSide = wallP->nSide;
-tTrigger *triggerP = gameData.trigs.triggers;
+tTrigger *triggerP = gameData.trigs.triggers.Buffer ();
 for (int i = gameData.trigs.nTriggers; i; i--, triggerP++) {
 	short *nSegP = triggerP->nSegment;
 	short *nSideP = triggerP->nSide;

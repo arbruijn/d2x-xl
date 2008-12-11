@@ -127,18 +127,18 @@ if (gameData.render.terrain.nMineTilesDrawn == 0xf) {
 
 //-----------------------------------------------------------------------------
 
-vmsVector yCache [256];
+CFixVector yCache [256];
 ubyte ycFlags [256];
 
 extern vmsMatrix mSurfaceOrient;
 
-vmsVector *get_dy_vec (int h)
+CFixVector *get_dy_vec (int h)
 {
-	vmsVector *dyp;
+	CFixVector *dyp;
 
 dyp = yCache + h;
 if (!ycFlags [h]) {
-	vmsVector tv = mSurfaceOrient[UVEC] * (h * TERRAIN_HEIGHT_SCALE);
+	CFixVector tv = mSurfaceOrient[UVEC] * (h * TERRAIN_HEIGHT_SCALE);
 	G3RotateDeltaVec (*dyp, tv);
 	ycFlags [h] = 1;
 	}
@@ -149,9 +149,9 @@ return dyp;
 
 int im=1;
 
-void RenderTerrain (vmsVector *vOrgPoint, int org_2dx, int org_2dy)
+void RenderTerrain (CFixVector *vOrgPoint, int org_2dx, int org_2dy)
 {
-	vmsVector	tv, delta_i, delta_j;		//delta_y;
+	CFixVector	tv, delta_i, delta_j;		//delta_y;
 	g3sPoint		p, p2, pLast, p2Last, pLowSave, pHighSave;
 	int			i, j, iLow, iHigh, jLow, jHigh, iViewer, jViewer;
 
@@ -179,10 +179,10 @@ gameData.render.terrain.vStartPoint = *vOrgPoint + mSurfaceOrient[RVEC] *
 gameData.render.terrain.vStartPoint += mSurfaceOrient[FVEC] *
 					(-(gameData.render.terrain.orgJ - jLow) * TERRAIN_GRID_SCALE);
 tv = gameData.objs.viewerP->info.position.vPos - gameData.render.terrain.vStartPoint;
-iViewer = vmsVector::Dot (tv, mSurfaceOrient[RVEC]) / TERRAIN_GRID_SCALE;
+iViewer = CFixVector::Dot (tv, mSurfaceOrient[RVEC]) / TERRAIN_GRID_SCALE;
 if (iViewer > iHigh)
 	iViewer = iHigh;
-jViewer = vmsVector::Dot (tv, mSurfaceOrient[FVEC]) / TERRAIN_GRID_SCALE;
+jViewer = CFixVector::Dot (tv, mSurfaceOrient[FVEC]) / TERRAIN_GRID_SCALE;
 if (jViewer > jHigh)
 	jViewer = jHigh;
 G3TransformAndEncodePoint (&pLast, gameData.render.terrain.vStartPoint);
@@ -339,7 +339,7 @@ BuildTerrainLightmap ();
 
 //-----------------------------------------------------------------------------
 
-static void GetTerrainPoint (vmsVector *p, int i, int j)
+static void GetTerrainPoint (CFixVector *p, int i, int j)
 {
 if (!gameData.render.terrain.heightmap) {
 	PrintLog ("no heightmap available\n");
@@ -356,19 +356,19 @@ if (j < 0)
 
 //-----------------------------------------------------------------------------
 
-static fix GetTerrainFaceLight (vmsVector *p0, vmsVector *p1, vmsVector *p2)
+static fix GetTerrainFaceLight (CFixVector *p0, CFixVector *p1, CFixVector *p2)
 {
-	static vmsVector vLightDir = vmsVector::Create(0x2e14, 0xe8f5, 0x5eb8);
-	vmsVector vNormal = vmsVector::Normal (*p0, *p1, *p2);
+	static CFixVector vLightDir = CFixVector::Create(0x2e14, 0xe8f5, 0x5eb8);
+	CFixVector vNormal = CFixVector::Normal (*p0, *p1, *p2);
 
-return -vmsVector::Dot (vNormal, vLightDir);
+return -CFixVector::Dot (vNormal, vLightDir);
 }
 
 //-----------------------------------------------------------------------------
 
 fix GetAvgTerrainLight (int i, int j)
 {
-	vmsVector	pp, p [6];
+	CFixVector	pp, p [6];
 	fix			light, totalLight;
 	int			n;
 
@@ -402,7 +402,7 @@ if (gameData.render.terrain.lightmap) {
 void ComputeTerrainPoints (void)
 {
 	int			i, j;
-	vmsVector	*p = gameData.render.terrain.points;
+	CFixVector	*p = gameData.render.terrain.points;
 
 for (i = 0; i < gameData.render.terrain.nGridW; i++) {
 	for (j = 0; j < gameData.render.terrain.nGridH; j++) {
@@ -427,7 +427,7 @@ if (gameData.render.terrain.lightmap)
 else
 	atexit (FreeTerrainLightmap);		//first time
 
-gameData.render.terrain.points = reinterpret_cast<vmsVector*> (D2_ALLOC (GRID_SIZE * sizeof (vmsVector)));
+gameData.render.terrain.points = reinterpret_cast<CFixVector*> (D2_ALLOC (GRID_SIZE * sizeof (CFixVector)));
 gameData.render.terrain.lightmap = reinterpret_cast<fix*> (D2_ALLOC (GRID_SIZE * sizeof (fix)));
 ComputeTerrainPoints ();
 for (i = 0; i < gameData.render.terrain.nGridW; i++) {

@@ -264,7 +264,7 @@ for (i = 0; i < nSoundNum; i++) {
 		}
 	PiggyRegisterSound (&sound, szSoundName, 1);
 	}
-if (!(gameData.pig.sound.data [gameStates.app.bD1Data] = new ubyte [sbytes + 16])) {
+if (!(gameData.pig.sound.data [gameStates.app.bD1Data].Create (sbytes + 16))) {
 	Error ("Not enough memory to load sounds\n");
 	return 0;
 	}

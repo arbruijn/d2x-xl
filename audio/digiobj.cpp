@@ -58,7 +58,7 @@ typedef struct tSoundObject {
 		struct {
 			short			nSegment;				// Used if SOF_LINK_TO_POS field is used
 			short			nSide;
-			vmsVector	position;
+			CFixVector	position;
 		} pos;
 		struct {
 			short			nObject;				// Used if SOF_LINK_TO_OBJ field is used
@@ -106,10 +106,10 @@ return 0;
 //------------------------------------------------------------------------------
 
 void DigiGetSoundLoc (
-	vmsMatrix *mListener, vmsVector *vListenerPos, short nListenerSeg, vmsVector *vSoundPos,
+	vmsMatrix *mListener, CFixVector *vListenerPos, short nListenerSeg, CFixVector *vSoundPos,
 	short nSoundSeg, fix maxVolume, int *volume, int *pan, fix maxDistance, int nDecay)
 {
-	vmsVector	vecToSound;
+	CFixVector	vecToSound;
 	fix 			angleFromEar, cosang, sinang;
 	fix			distance, pathDistance;
 	float			fDecay;
@@ -120,7 +120,7 @@ if (nDecay)
 	maxDistance *= 2;
 else
 	maxDistance = (5 * maxDistance) / 4;	// Make all sounds travel 1.25 times as far.
-distance = vmsVector::NormalizedDir (vecToSound, *vSoundPos, *vListenerPos);
+distance = CFixVector::NormalizedDir (vecToSound, *vSoundPos, *vListenerPos);
 if (distance < maxDistance) {
 	int nSearchSegs = X2I (maxDistance / 10);
 	if (nSearchSegs < 1)
@@ -141,7 +141,7 @@ if (distance < maxDistance) {
 		if (*volume <= 0)
 			*volume = 0;
 		else {
-			angleFromEar = vmsVector::DeltaAngleNorm((*mListener)[RVEC], vecToSound, &(*mListener)[UVEC]);
+			angleFromEar = CFixVector::DeltaAngleNorm((*mListener)[RVEC], vecToSound, &(*mListener)[UVEC]);
 			FixSinCos (angleFromEar, &sinang, &cosang);
 			if (gameConfig.bReverseChannels || gameOpts->sound.bHires)
 				cosang = -cosang;
@@ -193,7 +193,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void DigiPlaySample3D (short nSound, int angle, int volume, int no_dups, vmsVector *vPos, const char *pszSound)
+void DigiPlaySample3D (short nSound, int angle, int volume, int no_dups, CFixVector *vPos, const char *pszSound)
 {
 
 	no_dups = 1;
@@ -445,7 +445,7 @@ return DigiLinkSoundToObject2 (nSound, nObject, bForever, maxVolume, 256 * F1_0,
 //------------------------------------------------------------------------------
 
 int DigiLinkSoundToPos2 (
-	short nOrgSound, short nSegment, short nSide, vmsVector * pos, int bForever,
+	short nOrgSound, short nSegment, short nSide, CFixVector * pos, int bForever,
 	fix maxVolume, fix maxDistance, const char *pszSound)
 {
 
@@ -519,7 +519,7 @@ return soP->nSignature;
 //------------------------------------------------------------------------------
 
 int DigiLinkSoundToPos (
-	short nSound, short nSegment, short nSide, vmsVector * pos, int bForever, fix maxVolume)
+	short nSound, short nSegment, short nSide, CFixVector * pos, int bForever, fix maxVolume)
 {
 return DigiLinkSoundToPos2 (nSound, nSegment, nSide, pos, bForever, maxVolume, F1_0 * 256, NULL);
 }

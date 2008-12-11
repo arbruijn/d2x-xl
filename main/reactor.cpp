@@ -29,14 +29,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "switch.h"
 #include "cheats.h"
 
-//@@vmsVector controlcen_gun_points[MAX_CONTROLCEN_GUNS];
-//@@vmsVector controlcen_gun_dirs[MAX_CONTROLCEN_GUNS];
+//@@CFixVector controlcen_gun_points[MAX_CONTROLCEN_GUNS];
+//@@CFixVector controlcen_gun_dirs[MAX_CONTROLCEN_GUNS];
 
 void DoCountdownFrame ();
 
 //	-----------------------------------------------------------------------------
 //return the position & orientation of a gun on the control center CObject
-void CalcReactorGunPoint (vmsVector *vGunPoint, vmsVector *vGunDir, CObject *objP, int nGun)
+void CalcReactorGunPoint (CFixVector *vGunPoint, CFixVector *vGunDir, CObject *objP, int nGun)
 {
 	tReactorProps	*props;
 	vmsMatrix		*viewP = ObjectView (objP);
@@ -52,9 +52,9 @@ props = &gameData.reactor.props [objP->info.nId];
 
 //	-----------------------------------------------------------------------------
 //	Look at control center guns, find best one to fire at *objP.
-//	Return best gun number (one whose direction dotted with vector to tPlayer is largest).
+//	Return best gun number (one whose direction dotted with vector to CPlayerData is largest).
 //	If best gun has negative dot, return -1, meaning no gun is good.
-int CalcBestReactorGun (int nGunCount, vmsVector *vGunPos, vmsVector *vGunDir, vmsVector *vObjPos)
+int CalcBestReactorGun (int nGunCount, CFixVector *vGunPos, CFixVector *vGunDir, CFixVector *vObjPos)
 {
 	int	i;
 	fix	xBestDot;
@@ -65,11 +65,11 @@ nBestGun = -1;
 
 for (i = 0; i < nGunCount; i++) {
 	fix			dot;
-	vmsVector	vGun;
+	CFixVector	vGun;
 
 	vGun = *vObjPos - vGunPos[i];
-	vmsVector::Normalize(vGun);
-	dot = vmsVector::Dot(vGunDir[i], vGun);
+	CFixVector::Normalize(vGun);
+	dot = CFixVector::Dot(vGunDir[i], vGun);
 	if (dot > xBestDot) {
 		xBestDot = dot;
 		nBestGun = i;
@@ -133,7 +133,7 @@ if (!IS_D2_OEM && !IS_MAC_SHARE && !IS_SHAREWARE) {  // get countdown in OEM and
 		}
 	}
 
-//	Control center destroyed, rock the tPlayer's ship.
+//	Control center destroyed, rock the CPlayerData's ship.
 fc = gameData.reactor.countdown.nSecsLeft;
 if (fc > 16)
 	fc = 16;
@@ -286,14 +286,14 @@ if (!gameStates.app.cheats.bRobotsFiring)
 
 if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 	if (gameStates.app.tick40fps.bTick) {		//	Do ever so often...
-		vmsVector	vecToPlayer;
+		CFixVector	vecToPlayer;
 		fix			xDistToPlayer;
 		int			i;
 		CSegment		*segP = gameData.segs.segments + objP->info.nSegment;
 
 		// This is a hack.  Since the control center is not processed by
 		// ai_do_frame, it doesn't know how to deal with cloaked dudes.  It
-		// seems to work in single-tPlayer mode because it is actually using
+		// seems to work in single-CPlayerData mode because it is actually using
 		// the value of Believed_player_position that was set by the last
 		// person to go through ai_do_frame.  But since a no-robots game
 		// never goes through ai_do_frame, I'm making it so the control
@@ -311,7 +311,7 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 			return;
 
 		vecToPlayer = OBJPOS (gameData.objs.consoleP)->vPos - objP->info.position.vPos;
-		xDistToPlayer = vmsVector::Normalize(vecToPlayer);
+		xDistToPlayer = CFixVector::Normalize(vecToPlayer);
 		if (xDistToPlayer < F1_0 * 200) {
 			rStatP->bSeenPlayer = ObjectCanSeePlayer (objP, &objP->info.position.vPos, 0, &vecToPlayer);
 			rStatP->nNextFireTime = 0;
@@ -320,15 +320,15 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 	return;
 	}
 
-//	Periodically, make the reactor fall asleep if tPlayer not visible.
+//	Periodically, make the reactor fall asleep if CPlayerData not visible.
 if (rStatP->bHit || rStatP->bSeenPlayer) {
 	if ((rStatP->xLastVisCheckTime + F1_0 * 5 < gameData.time.xGame) || 
 		 (rStatP->xLastVisCheckTime > gameData.time.xGame)) {
-		vmsVector	vecToPlayer;
+		CFixVector	vecToPlayer;
 		fix			xDistToPlayer;
 
 		vecToPlayer = gameData.objs.consoleP->info.position.vPos - objP->info.position.vPos;
-		xDistToPlayer = vmsVector::Normalize (vecToPlayer);
+		xDistToPlayer = CFixVector::Normalize (vecToPlayer);
 		rStatP->xLastVisCheckTime = gameData.time.xGame;
 		if (xDistToPlayer < F1_0 * 120) {
 			rStatP->bSeenPlayer = ObjectCanSeePlayer (objP, &objP->info.position.vPos, 0, &vecToPlayer);
@@ -344,17 +344,17 @@ if ((rStatP->nNextFireTime < 0) &&
 											 (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) ? &gameData.ai.vBelievedPlayerPos : &gameData.objs.consoleP->info.position.vPos);
 	if (nBestGun != -1) {
 		int			nRandProb, count;
-		vmsVector	vecToGoal;
+		CFixVector	vecToGoal;
 		fix			xDistToPlayer;
 		fix			xDeltaFireTime;
 
 		if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 			vecToGoal = gameData.ai.vBelievedPlayerPos - rStatP->vGunPos[nBestGun];
-			xDistToPlayer = vmsVector::Normalize(vecToGoal);
+			xDistToPlayer = CFixVector::Normalize(vecToGoal);
 			} 
 		else {
 			vecToGoal = gameData.objs.consoleP->info.position.vPos - rStatP->vGunPos [nBestGun];
-			xDistToPlayer = vmsVector::Normalize(vecToGoal);
+			xDistToPlayer = CFixVector::Normalize(vecToGoal);
 			}
 		if (xDistToPlayer > F1_0 * 300) {
 			rStatP->bHit = 0;
@@ -364,15 +364,15 @@ if ((rStatP->nNextFireTime < 0) &&
 		if (gameData.app.nGameMode & GM_MULTI)
 			MultiSendCtrlcenFire (&vecToGoal, nBestGun, OBJ_IDX (objP));
 		CreateNewLaserEasy (&vecToGoal, &rStatP->vGunPos [nBestGun], OBJ_IDX (objP), CONTROLCEN_WEAPON_NUM, 1);
-		//	some of time, based on level, fire another thing, not directly at tPlayer, so it might hit him if he's constantly moving.
+		//	some of time, based on level, fire another thing, not directly at CPlayerData, so it might hit him if he's constantly moving.
 		nRandProb = F1_0 / (abs (gameData.missions.nCurrentLevel) / 4 + 2);
 		count = 0;
 		while ((d_rand () > nRandProb) && (count < 4)) {
-			vmsVector	vRand;
+			CFixVector	vRand;
 
-			vRand = vmsVector::Random();
+			vRand = CFixVector::Random();
 			vecToGoal += vRand * (F1_0/6);
-			vmsVector::Normalize(vecToGoal);
+			CFixVector::Normalize(vecToGoal);
 			if (IsMultiGame)
 				MultiSendCtrlcenFire (&vecToGoal, nBestGun, OBJ_IDX (objP));
 			CreateNewLaserEasy (&vecToGoal, &rStatP->vGunPos [nBestGun], OBJ_IDX (objP), CONTROLCEN_WEAPON_NUM, 0);

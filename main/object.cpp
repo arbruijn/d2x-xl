@@ -317,11 +317,11 @@ FORALL_OBJS (objP, i)
 void CreateSmallFireballOnObject (CObject *objP, fix size_scale, int bSound)
 {
 	fix			size;
-	vmsVector	pos, rand_vec;
+	CFixVector	pos, rand_vec;
 	short			nSegment;
 
 pos = objP->info.position.vPos;
-rand_vec = vmsVector::Random();
+rand_vec = CFixVector::Random();
 rand_vec *= (objP->info.xSize / 2);
 pos += rand_vec;
 size = FixMul (size_scale, F1_0 / 2 + d_rand () * 4 / 2);
@@ -346,11 +346,11 @@ if (nSegment != -1) {
 void CreateVClipOnObject (CObject *objP, fix size_scale, ubyte vclip_num)
 {
 	fix			size;
-	vmsVector	pos, rand_vec;
+	CFixVector	pos, rand_vec;
 	short			nSegment;
 
 pos = objP->info.position.vPos;
-rand_vec = vmsVector::Random();
+rand_vec = CFixVector::Random();
 rand_vec *= (objP->info.xSize / 2);
 pos += rand_vec;
 size = FixMul (size_scale, F1_0 + d_rand ()*4);
@@ -394,14 +394,14 @@ gameData.objs.consoleP->info.nFlags = 0;
 }
 
 //------------------------------------------------------------------------------
-//make object0 the tPlayer, setting all relevant fields
+//make object0 the CPlayerData, setting all relevant fields
 void InitPlayerObject ()
 {
 gameData.objs.consoleP->SetType (OBJ_PLAYER);
-gameData.objs.consoleP->info.nId = 0;					//no sub-types for tPlayer
-gameData.objs.consoleP->info.nSignature = 0;			//tPlayer has zero, others start at 1
+gameData.objs.consoleP->info.nId = 0;					//no sub-types for CPlayerData
+gameData.objs.consoleP->info.nSignature = 0;			//CPlayerData has zero, others start at 1
 gameData.objs.consoleP->info.xSize = gameData.models.polyModels [gameData.pig.ship.player->nModel].rad;
-gameData.objs.consoleP->info.controlType = CT_SLEW;			//default is tPlayer slewing
+gameData.objs.consoleP->info.controlType = CT_SLEW;			//default is CPlayerData slewing
 gameData.objs.consoleP->info.movementType = MT_PHYSICS;		//change this sometime
 gameData.objs.consoleP->info.xLifeLeft = IMMORTAL_TIME;
 gameData.objs.consoleP->info.nAttachedObj = -1;
@@ -438,7 +438,7 @@ m_vStartVel.SetZero ();
 }
 
 //------------------------------------------------------------------------------
-//sets up the D2_FREE list & init tPlayer & whatever else
+//sets up the D2_FREE list & init CPlayerData & whatever else
 void InitObjects (void)
 {
 	CObject	*objP;
@@ -454,7 +454,7 @@ gameData.objs.consoleP =
 gameData.objs.viewerP = OBJECTS.Buffer ();
 InitPlayerObject ();
 gameData.objs.consoleP->LinkToSeg (0);	//put in the world in segment 0
-gameData.objs.nObjects = 1;						//just the tPlayer
+gameData.objs.nObjects = 1;						//just the CPlayerData
 gameData.objs.nLastObject [0] = 0;
 InitIdToOOF ();
 }
@@ -1216,7 +1216,7 @@ if (info.nNextInSeg != -1)
 
 //------------------------------------------------------------------------------
 
-void CObject::Initialize (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos,
+void CObject::Initialize (ubyte nType, ubyte nId, short nCreator, short nSegment, const CFixVector& vPos,
 								  const vmsMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType)
 {
 SetSignature (gameData.objs.nNextSignature++);
@@ -1242,7 +1242,7 @@ LinkToSeg (nSegment);
 //-----------------------------------------------------------------------------
 
 int CObject::Create (ubyte nType, ubyte nId, short nCreator, short nSegment, 
-							const vmsVector& vPos, const vmsMatrix& mOrient,
+							const CFixVector& vPos, const vmsMatrix& mOrient,
 							fix xSize, ubyte cType, ubyte mType, ubyte rType)
 {
 #if DBG
@@ -1339,7 +1339,7 @@ return m_nId;
 //searches for the correct CSegment
 //returns the CObject number
 
-int CreateObject (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos, const vmsMatrix& mOrient,
+int CreateObject (ubyte nType, ubyte nId, short nCreator, short nSegment, const CFixVector& vPos, const vmsMatrix& mOrient,
 						fix xSize, ubyte cType, ubyte mType, ubyte rType)
 {
 	short		nObject;
@@ -1413,7 +1413,7 @@ if (objP->info.controlType == CT_POWERUP)
 
 // Init physics info for this CObject
 if (objP->info.movementType == MT_PHYSICS)
-	objP->SetStartVel ((vmsVector*) &vmsVector::ZERO);
+	objP->SetStartVel ((CFixVector*) &CFixVector::ZERO);
 if (objP->info.renderType == RT_POLYOBJ)
 	objP->rType.polyObjInfo.nTexOverride = -1;
 objP->SetCreationTime (gameData.time.xGame);
@@ -1469,7 +1469,7 @@ return nObject;
 
 //------------------------------------------------------------------------------
 
-int CreateRobot (ubyte nId, short nSegment, const vmsVector& vPos)
+int CreateRobot (ubyte nId, short nSegment, const CFixVector& vPos)
 {
 return CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, vmsMatrix::IDENTITY, gameData.models.polyModels [ROBOTINFO (nId).nModel].rad, 
 							CT_AI, MT_PHYSICS, RT_POLYOBJ);
@@ -1477,7 +1477,7 @@ return CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, vmsMatrix::IDENTITY, ga
 
 //------------------------------------------------------------------------------
 
-int CreatePowerup (ubyte nId, short nCreator, short nSegment, const vmsVector& vPos, int bIgnoreLimits)
+int CreatePowerup (ubyte nId, short nCreator, short nSegment, const CFixVector& vPos, int bIgnoreLimits)
 {
 if (!bIgnoreLimits && TooManyPowerups ((int) nId)) {
 #if 0//def _DEBUG
@@ -1498,7 +1498,7 @@ return nObject;
 
 //------------------------------------------------------------------------------
 
-int CreateWeapon (ubyte nId, short nCreator, short nSegment, const vmsVector& vPos, fix xSize, ubyte rType)
+int CreateWeapon (ubyte nId, short nCreator, short nSegment, const CFixVector& vPos, fix xSize, ubyte rType)
 {
 if (rType == 255) {
 	switch (gameData.weapons.info [nId].renderType)	{
@@ -1528,7 +1528,7 @@ return CreateObject (OBJ_WEAPON, nId, nCreator, nSegment, vPos, vmsMatrix::IDENT
 
 //------------------------------------------------------------------------------
 
-int CreateFireball (ubyte nId, short nSegment, const vmsVector& vPos, fix xSize, ubyte rType)
+int CreateFireball (ubyte nId, short nSegment, const CFixVector& vPos, fix xSize, ubyte rType)
 {
 return CreateObject (OBJ_FIREBALL, nId, -1, nSegment, vPos, vmsMatrix::IDENTITY, xSize, CT_EXPLOSION, MT_NONE, rType);
 }
@@ -1552,7 +1552,7 @@ return CreateObject (OBJ_CAMERA, 0, -1, parentP->info.nSegment, parentP->info.po
 
 //------------------------------------------------------------------------------
 
-int CreateLight (ubyte nId, short nSegment, const vmsVector& vPos)
+int CreateLight (ubyte nId, short nSegment, const CFixVector& vPos)
 {
 return CreateObject (OBJ_LIGHT, nId, -1, nSegment, vPos, vmsMatrix::IDENTITY, 0, CT_LIGHT, MT_NONE, RT_NONE);
 }
@@ -1561,7 +1561,7 @@ return CreateObject (OBJ_LIGHT, nId, -1, nSegment, vPos, vmsMatrix::IDENTITY, 0,
 
 #ifdef EDITOR
 //create a copy of an CObject. returns new CObject number
-int ObjectCreateCopy (int nObject, vmsVector *new_pos, int nNewSegnum)
+int ObjectCreateCopy (int nObject, CFixVector *new_pos, int nNewSegnum)
 {
 	CObject *objP;
 	int newObjNum = AllocObject ();
@@ -1605,7 +1605,7 @@ if (objP->info.nType == OBJ_WEAPON) {
 		}
 	}
 if (objP == gameData.objs.viewerP)		//deleting the viewerP?
-	gameData.objs.viewerP = gameData.objs.consoleP;						//..make the tPlayer the viewerP
+	gameData.objs.viewerP = gameData.objs.consoleP;						//..make the CPlayerData the viewerP
 if (objP->info.nFlags & OF_ATTACHED)		//detach this from CObject
 	DetachFromParent (objP);
 if (objP->info.nAttachedObj != -1)		//detach all OBJECTS from this
@@ -1660,20 +1660,20 @@ gameStates.app.bPlayerEggsDropped = 0;
 
 //------------------------------------------------------------------------------
 
-//	Camera is less than size of tPlayer away from
-void SetCameraPos (vmsVector *vCameraPos, CObject *objP)
+//	Camera is less than size of CPlayerData away from
+void SetCameraPos (CFixVector *vCameraPos, CObject *objP)
 {
-	vmsVector	vPlayerCameraOffs = *vCameraPos - objP->info.position.vPos;
+	CFixVector	vPlayerCameraOffs = *vCameraPos - objP->info.position.vPos;
 	int			count = 0;
 	fix			xCameraPlayerDist;
 	fix			xFarScale;
 
 xCameraPlayerDist = vPlayerCameraOffs.Mag();
 if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->info.xSize) {
-	//	Camera is too close to tPlayer CObject, so move it away.
+	//	Camera is too close to CPlayerData CObject, so move it away.
 	tFVIQuery	fq;
 	tFVIData		hit_data;
-	vmsVector	local_p1;
+	CFixVector	local_p1;
 
 	if (vPlayerCameraOffs.IsZero())
 		vPlayerCameraOffs[X] += F1_0/16;
@@ -1682,8 +1682,8 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->info.xSize) {
 	xFarScale = F1_0;
 
 	while ((hit_data.hit.nType != HIT_NONE) && (count++ < 6)) {
-		vmsVector	closer_p1;
-		vmsVector::Normalize(vPlayerCameraOffs);
+		CFixVector	closer_p1;
+		CFixVector::Normalize(vPlayerCameraOffs);
 		vPlayerCameraOffs *= xCameraToPlayerDistGoal;
 
 		fq.p0 = &objP->info.position.vPos;
@@ -1703,7 +1703,7 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->info.xSize) {
 		if (hit_data.hit.nType == HIT_NONE)
 			*vCameraPos = closer_p1;
 		else {
-			vPlayerCameraOffs = vmsVector::Random();
+			vPlayerCameraOffs = CFixVector::Random();
 			xFarScale = 3*F1_0 / 2;
 			}
 		}
@@ -1717,7 +1717,7 @@ extern int nProximityDropped, nSmartminesDropped;
 void DeadPlayerFrame (void)
 {
 	fix			xTimeDead, h;
-	vmsVector	fVec;
+	CFixVector	fVec;
 
 if (gameStates.app.bPlayerIsDead) {
 	xTimeDead = gameData.time.xGame - gameStates.app.nPlayerTimeOfDeath;
@@ -1733,7 +1733,7 @@ if (gameStates.app.bPlayerIsDead) {
 		}
 	h = DEATH_SEQUENCE_EXPLODE_TIME - xTimeDead;
 	h = max (0, h);
-	gameData.objs.consoleP->mType.physInfo.rotVel = vmsVector::Create(h / 4, h / 2, h / 3);
+	gameData.objs.consoleP->mType.physInfo.rotVel = CFixVector::Create(h / 4, h / 2, h / 3);
 	xCameraToPlayerDistGoal = min (xTimeDead * 8, F1_0 * 20) + gameData.objs.consoleP->info.xSize;
 	SetCameraPos (&gameData.objs.deadPlayerCamera->info.position.vPos, gameData.objs.consoleP);
 	fVec = gameData.objs.consoleP->info.position.vPos - gameData.objs.deadPlayerCamera->info.position.vPos;
@@ -1768,7 +1768,7 @@ if (gameStates.app.bPlayerIsDead) {
 			ExplodeBadassPlayer (gameData.objs.consoleP);
 			//is this next line needed, given the badass call above?
 			ExplodeObject (gameData.objs.consoleP, 0);
-			gameData.objs.consoleP->info.nFlags &= ~OF_SHOULD_BE_DEAD;		//don't really kill tPlayer
+			gameData.objs.consoleP->info.nFlags &= ~OF_SHOULD_BE_DEAD;		//don't really kill CPlayerData
 			gameData.objs.consoleP->info.renderType = RT_NONE;				//..just make him disappear
 			gameData.objs.consoleP->SetType (OBJ_GHOST);						//..and kill intersections
 			LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
@@ -1968,9 +1968,9 @@ objP->info.position.mOrient.CheckAndFix();
 extern void MultiSendDropBlobs (char);
 extern void FuelCenCheckForGoal (CSegment *);
 
-//see if tWall is volatile, and if so, cause damage to tPlayer
-//returns true if tPlayer is in lava
-int CheckVolatileWall (CObject *objP, int nSegment, int nSide, vmsVector *hitpt);
+//see if tWall is volatile, and if so, cause damage to CPlayerData
+//returns true if CPlayerData is in lava
+int CheckVolatileWall (CObject *objP, int nSegment, int nSide, CFixVector *hitpt);
 int CheckVolatileSegment (CObject *objP, int nSegment);
 
 //	Time at which this CObject last created afterburner blobs.
@@ -2086,7 +2086,7 @@ void HandleSpecialSegments (CObject *objP)
 	fix fuel, shields;
 	CSegment *segP = gameData.segs.segments + objP->info.nSegment;
 	xsegment *xsegP = gameData.segs.xSegments + objP->info.nSegment;
-	tPlayer *playerPP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
+	CPlayerData *playerPP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
 
 if ((objP->info.nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == objP->info.nId)) {
    if (gameData.app.nGameMode & GM_CAPTURE)
@@ -2714,8 +2714,8 @@ if (0 > (nNewSeg = FindObjectSeg (objP))) {
 	if (!bMove)
 		return 0;
 	nNewSeg = FindClosestSeg (objP->info.position.vPos);
-	vmsVector vOffset = objP->info.position.vPos - *SEGMENT_CENTER_I (nNewSeg);
-	vmsVector::Normalize (vOffset);
+	CFixVector vOffset = objP->info.position.vPos - *SEGMENT_CENTER_I (nNewSeg);
+	CFixVector::Normalize (vOffset);
 	objP->info.position.vPos = *SEGMENT_CENTER_I (nNewSeg) + vOffset * MinSegRad (nNewSeg);
 	}
 if (nNewSeg != objP->info.nSegment)
@@ -2739,10 +2739,10 @@ FORALL_OBJS (objP, i) {
 	if (xScale < 0)
 		COMPUTE_SEGMENT_CENTER_I (&objP->info.position.vPos, objP->info.nSegment);
 	else {
-		vmsVector	vCenter, vOffset;
+		CFixVector	vCenter, vOffset;
 		COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->info.nSegment);
 		vOffset = objP->info.position.vPos - vCenter;
-		vmsVector::Normalize(vOffset);
+		CFixVector::Normalize(vOffset);
 		objP->info.position.vPos = vCenter + vOffset * xScale;
 		}
 	}
@@ -2848,7 +2848,7 @@ while (parent->info.nAttachedObj != -1)
 
 //------------------------------------------------------------------------------
 //creates a marker CObject in the world.  returns the CObject number
-int DropMarkerObject (vmsVector *pos, short nSegment, vmsMatrix *orient, ubyte nMarker)
+int DropMarkerObject (CFixVector *pos, short nSegment, vmsMatrix *orient, ubyte nMarker)
 {
 	short nObject;
 
@@ -2891,7 +2891,7 @@ for (i = windowRenderedData [nWindow].nObjects; i; ) {
 	if ((nObject & 3) == frameFilter) {
 		objP = OBJECTS + nObject;
 		if (objP->info.nType == OBJ_ROBOT) {
-			if (vmsVector::Dist (viewerP->info.position.vPos, objP->info.position.vPos) < F1_0*100) {
+			if (CFixVector::Dist (viewerP->info.position.vPos, objP->info.position.vPos) < F1_0*100) {
 				ailP = gameData.ai.localInfo + nObject;
 				if (ailP->playerAwarenessType == 0) {
 					objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_CAMERA_AWAKE;
@@ -3072,7 +3072,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-vmsVector *PlayerSpawnPos (int nPlayer)
+CFixVector *PlayerSpawnPos (int nPlayer)
 {
 	CObject	*markerP = SpawnMarkerObject (nPlayer);
 

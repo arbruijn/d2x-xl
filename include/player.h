@@ -22,7 +22,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_COOP_PLAYERS 3
 #define MAX_MULTI_PLAYERS (MAX_PLAYERS + MAX_COOP_PLAYERS)
 
-// Initial tPlayer stat values
+// Initial CPlayerData stat values
 #define INITIAL_ENERGY  I2X(100)    // 100% energy to start
 #define INITIAL_SHIELDS I2X(100)    // 100% shields to start
 
@@ -55,11 +55,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define AFTERBURNER_MAX_TIME    (F1_0*5)    // Max time afterburner can be on.
 #define CALLSIGN_LEN                8       // so can use as filename (was: 12)
 
-// Amount of time tPlayer is cloaked.
+// Amount of time CPlayerData is cloaked.
 #define CLOAK_TIME_MAX          (F1_0*30)
 #define INVULNERABLE_TIME_MAX   (F1_0*30)
 
-#define PLAYER_STRUCT_VERSION   17  // increment this every time tPlayer struct changes
+#define PLAYER_STRUCT_VERSION   17  // increment this every time CPlayerData struct changes
 
 // defines for teams
 #define TEAM_BLUE   0
@@ -73,59 +73,62 @@ typedef struct tPlayerHostages {
 } tPlayerHostages;
 // When this structure changes, increment the constant
 // SAVE_FILE_VERSION in playsave.c
-typedef struct tPlayer {
-	// Who am I data
-	char    callsign[CALLSIGN_LEN+1];   // The callsign of this tPlayer, for net purposes.
-	ubyte   netAddress[6];         // The network address of the tPlayer.
-	sbyte   connected;              // Is the tPlayer connected or not?
-	int     nObject;                 // What CObject number this tPlayer is. (made an int by mk because it's very often referenced)
-	int     nPacketsGot;          // How many packets we got from them
-	int     nPacketsSent;         // How many packets we sent to them
+class CPlayerData {
+	public:
+		// Who am I data
+		char    callsign[CALLSIGN_LEN+1];   // The callsign of this CPlayerData, for net purposes.
+		ubyte   netAddress[6];					// The network address of the CPlayerData.
+		sbyte   connected;						// Is the CPlayerData connected or not?
+		int     nObject;						   // What CObject number this CPlayerData is. (made an int by mk because it's very often referenced)
+		int     nPacketsGot;					   // How many packets we got from them
+		int     nPacketsSent;					// How many packets we sent to them
 
-	//  -- make sure you're 4 byte aligned now!
+		//  -- make sure you're 4 byte aligned now!
 
-	// Game data
-	uint    flags;                  // Powerup flags, see below...
-	fix     energy;                 // Amount of energy remaining.
-	fix     shields;                // shields remaining (protection)
-	ubyte   lives;                  // Lives remaining, 0 = game over.
-	sbyte   level;                  // Current level tPlayer is playing. (must be signed for secret levels)
-	ubyte   laserLevel;            // Current level of the laser.
-	sbyte   startingLevel;         // What level the tPlayer started on.
-	short   nKillerObj;          // Who killed me.... (-1 if no one)
-	ushort  primaryWeaponFlags;   // bit set indicates the tPlayer has this weapon.
-	ushort  secondaryWeaponFlags; // bit set indicates the tPlayer has this weapon.
-	ushort  primaryAmmo[MAX_PRIMARY_WEAPONS]; // How much ammo of each nType.
-	ushort  secondaryAmmo[MAX_SECONDARY_WEAPONS]; // How much ammo of each nType.
-#if 1 //for inventory system
-	ubyte	  nInvuls;
-	ubyte   nCloaks;
-#else
-	ushort  pad; // Pad because increased weaponFlags from byte to short -YW 3/22/95
-#endif
-	//  -- make sure you're 4 byte aligned now
+		// Game data
+		uint    flags;							// Powerup flags, see below...
+		fix     energy;						// Amount of energy remaining.
+		fix     shields;						// shields remaining (protection)
+		ubyte   lives;							// Lives remaining, 0 = game over.
+		sbyte   level;							// Current level CPlayerData is playing. (must be signed for secret levels)
+		ubyte   laserLevel;					// Current level of the laser.
+		sbyte   startingLevel;				// What level the CPlayerData started on.
+		short   nKillerObj;					// Who killed me.... (-1 if no one)
+		ushort  primaryWeaponFlags;		// bit set indicates the CPlayerData has this weapon.
+		ushort  secondaryWeaponFlags;		// bit set indicates the CPlayerData has this weapon.
+		ushort  primaryAmmo[MAX_PRIMARY_WEAPONS]; // How much ammo of each nType.
+		ushort  secondaryAmmo[MAX_SECONDARY_WEAPONS]; // How much ammo of each nType.
+	#if 1 //for inventory system
+		ubyte	  nInvuls;
+		ubyte   nCloaks;
+	#else
+		ushort  pad; // Pad because increased weaponFlags from byte to short -YW 3/22/95
+	#endif
+		//  -- make sure you're 4 byte aligned now
 
-	// Statistics...
-	int     lastScore;             // Score at beginning of current level.
-	int     score;                  // Current score.
-	fix     timeLevel;             // Level time played
-	fix     timeTotal;             // Game time played (high word = seconds)
+		// Statistics...
+		int     lastScore;            // Score at beginning of current level.
+		int     score;                // Current score.
+		fix     timeLevel;            // Level time played
+		fix     timeTotal;            // Game time played (high word = seconds)
 
-	fix     cloakTime;             // Time cloaked
-	fix     invulnerableTime;      // Time invulnerable
+		fix     cloakTime;            // Time cloaked
+		fix     invulnerableTime;     // Time invulnerable
 
-	short   nKillGoalCount;          // Num of players killed this level
-	short   netKilledTotal;       // Number of times killed total
-	short   netKillsTotal;        // Number of net kills total
-	short   numKillsLevel;        // Number of kills this level
-	short   numKillsTotal;        // Number of kills total
-	short   numRobotsLevel;       // Number of initial robots this level
-	short   numRobotsTotal;       // Number of robots total
-	tPlayerHostages	hostages;
-	fix     homingObjectDist;     // Distance of nearest homing CObject.
-	sbyte   hoursLevel;            // Hours played (since timeTotal can only go up to 9 hours)
-	sbyte   hoursTotal;            // Hours played (since timeTotal can only go up to 9 hours)
-} __pack__ tPlayer;
+		short   nKillGoalCount;       // Num of players killed this level
+		short   netKilledTotal;			// Number of times killed total
+		short   netKillsTotal;        // Number of net kills total
+		short   numKillsLevel;        // Number of kills this level
+		short   numKillsTotal;        // Number of kills total
+		short   numRobotsLevel;       // Number of initial robots this level
+		short   numRobotsTotal;       // Number of robots total
+		tPlayerHostages	hostages;
+		fix     homingObjectDist;     // Distance of nearest homing CObject.
+		sbyte   hoursLevel;           // Hours played (since timeTotal can only go up to 9 hours)
+		sbyte   hoursTotal;           // Hours played (since timeTotal can only go up to 9 hours)
+	public:
+		CPlayerData () { memset (this, 0, sizeof (*this)); }
+};
 
 
 //version 16 structure
@@ -135,10 +138,10 @@ typedef struct tPlayer {
 
 typedef struct player16 {
 	// Who am I data
-	char    callsign[CALLSIGN_LEN+1]; // The callsign of this tPlayer, for net purposes.
-	ubyte   netAddress[6];         // The network address of the tPlayer.
-	sbyte   connected;              // Is the tPlayer connected or not?
-	int     nObject;                 // What CObject number this tPlayer is. (made an int by mk because it's very often referenced)
+	char    callsign[CALLSIGN_LEN+1]; // The callsign of this CPlayerData, for net purposes.
+	ubyte   netAddress[6];         // The network address of the CPlayerData.
+	sbyte   connected;              // Is the CPlayerData connected or not?
+	int     nObject;                 // What CObject number this CPlayerData is. (made an int by mk because it's very often referenced)
 	int     nPacketsGot;          // How many packets we got from them
 	int     nPacketsSent;         // How many packets we sent to them
 
@@ -149,12 +152,12 @@ typedef struct player16 {
 	fix     energy;                 // Amount of energy remaining.
 	fix     shields;                // shields remaining (protection)
 	ubyte   lives;                  // Lives remaining, 0 = game over.
-	sbyte   level;                  // Current level tPlayer is playing. (must be signed for secret levels)
+	sbyte   level;                  // Current level CPlayerData is playing. (must be signed for secret levels)
 	ubyte   laserLevel;            // Current level of the laser.
-	sbyte   startingLevel;         // What level the tPlayer started on.
+	sbyte   startingLevel;         // What level the CPlayerData started on.
 	short   nKillerObj;          // Who killed me.... (-1 if no one)
-	ubyte   primaryWeaponFlags;   // bit set indicates the tPlayer has this weapon.
-	ubyte   secondaryWeaponFlags; // bit set indicates the tPlayer has this weapon.
+	ubyte   primaryWeaponFlags;   // bit set indicates the CPlayerData has this weapon.
+	ubyte   secondaryWeaponFlags; // bit set indicates the CPlayerData has this weapon.
 	ushort  primaryAmmo[MAX_PRIMARY_WEAPONS16];    // How much ammo of each nType.
 	ushort  secondaryAmmo[MAX_SECONDARY_WEAPONS16];// How much ammo of each nType.
 
@@ -185,23 +188,27 @@ typedef struct player16 {
 
 #define N_PLAYER_GUNS 8
 
-typedef struct tPlayerShip {
-	int					nModel;
-	int					nExplVClip;
-	fix					mass;
-	fix					drag;
-	fix					maxThrust;
-	fix					reverseThrust;
-	fix					brakes;
-	fix					wiggle;
-	fix					maxRotThrust;
-	vmsVector			gunPoints [N_PLAYER_GUNS];
-} tPlayerShip;
+class CPlayerShip {
+	public:
+		int			nModel;
+		int			nExplVClip;
+		fix			mass;
+		fix			drag;
+		fix			maxThrust;
+		fix			reverseThrust;
+		fix			brakes;
+		fix			wiggle;
+		fix			maxRotThrust;
+		CFixVector	gunPoints [N_PLAYER_GUNS];
+
+	public:
+		CPlayerShip () { memset (this, 0, sizeof (*this)); }
+};
 
 /*
- * reads a tPlayerShip structure from a CFILE
+ * reads a CPlayerShip structure from a CFILE
  */
-void PlayerShipRead(tPlayerShip *ps, CFile& cf);
+void PlayerShipRead(CPlayerShip *ps, CFile& cf);
 int EquippedPlayerGun (CObject *objP);
 int EquippedPlayerBomb (CObject *objP);
 int EquippedPlayerMissile (CObject *objP, int *nMissiles);

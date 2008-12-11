@@ -24,7 +24,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int MultiCanRemoveRobot(int nObject, int agitation);
 void MultiSendRobotPosition(int nObject, int fired);
-void MultiSendRobotFire(int nObject, int gun_num, vmsVector *fire);
+void MultiSendRobotFire(int nObject, int gun_num, CFixVector *fire);
 void MultiSendClaimRobot(int nObject);
 void MultiSendRobotExplode(int,int,char);
 void MultiSendCreateRobot(int robotcen, int nObject, int nType);

@@ -78,7 +78,7 @@ slewObjP->info.position.mOrient[FVEC][Y] = 0;
 int do_slew_movement(CObject *objP, int check_keys, int check_joy )
 {
 	int moved = 0;
-	vmsVector svel, movement;				//scaled velocity (per this frame)
+	CFixVector svel, movement;				//scaled velocity (per this frame)
 	vmsMatrix rotmat,new_pm;
 	int joy_x,joy_y,btns;
 	int joyx_moved,joyy_moved;

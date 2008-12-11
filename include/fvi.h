@@ -34,8 +34,8 @@ typedef struct tFVIHitInfo {
 	short			nFace;
 	short 		nSideSegment;				//what CSegment the hit tSide is in
 	short 		nObject;						//if CObject hit, which CObject
-	vmsVector	vPoint;						//where we hit
-	vmsVector 	vNormal;						//if hit tWall, ptr to its surface normal
+	CFixVector	vPoint;						//where we hit
+	CFixVector 	vNormal;						//if hit tWall, ptr to its surface normal
 	int			nNormals;
 	int			nNestCount;
 } tFVIHitInfo;
@@ -58,7 +58,7 @@ typedef struct tFVIData {
 
 //this data contains the parms to fvi()
 typedef struct tFVIQuery {
-	vmsVector	*p0, *p1;
+	CFixVector	*p0, *p1;
 	short			startSeg;
 	fix			radP0, radP1;
 	short			thisObjNum;
@@ -80,21 +80,21 @@ int FindVectorIntersection(tFVIQuery *fq,tFVIData *hit_data);
 
 //finds the uv coords of the given point on the given seg & tSide
 //fills in u & v. if l is non-NULL fills it in also
-void FindHitPointUV(fix *u,fix *v,fix *l, vmsVector *pnt,CSegment *seg,int nSide,int facenum);
+void FindHitPointUV(fix *u,fix *v,fix *l, CFixVector *pnt,CSegment *seg,int nSide,int facenum);
 
 //Returns true if the CObject is through any walls
 int ObjectIntersectsWall (CObject *objP);
 
 int PixelTranspType (short nTexture, short nOrient, short nFrame, fix u, fix v);	//-1: supertransp., 0: opaque, 1: transparent
 
-int CheckLineToSegFace (vmsVector *newP, vmsVector *p0, vmsVector *p1, 
+int CheckLineToSegFace (CFixVector *newP, CFixVector *p0, CFixVector *p1, 
 							short nSegment, short nSide, short iFace, int nv, fix rad);
 
-int CanSeePoint (CObject *objP, vmsVector *vSource, vmsVector *vDest, short nSegment);
+int CanSeePoint (CObject *objP, CFixVector *vSource, CFixVector *vDest, short nSegment);
 
 int ObjectToObjectVisibility (CObject *objP1, CObject *objP2, int transType);
 
-int CheckTransWall (vmsVector *vPoint, CSegment *segP, short nSide, short iFace);
+int CheckTransWall (CFixVector *vPoint, CSegment *segP, short nSide, short iFace);
 
 #endif
 

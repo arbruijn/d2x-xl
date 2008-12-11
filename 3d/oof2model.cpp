@@ -109,7 +109,7 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->subModels.Buffer (); 
 			pmv->texCoord.v.u = pfv->fu;
 			pmv->texCoord.v.v = pfv->fv;
 			pmv->normal = vNormal;
-			*reinterpret_cast<fVector*> (pm->verts + h) = *reinterpret_cast<fVector*> (pso->verts + h) * fScale;
+			*reinterpret_cast<CFloatVector*> (pm->verts + h) = *reinterpret_cast<CFloatVector*> (pso->verts + h) * fScale;
 			pmv->vertex = pm->verts [h];
 			G3SetSubModelMinMax (psm, &pmv->vertex);
 			*pvn = vNormal;

@@ -290,7 +290,7 @@ int MatCenTrigger (short nSegment)
 {
 	// -- CSegment		*segP = &gameData.segs.segments [nSegment];
 	tSegment2		*seg2P = &gameData.segs.segment2s [nSegment];
-	vmsVector		pos, delta;
+	CFixVector		pos, delta;
 	tFuelCenInfo	*matCenP;
 	int				nObject;
 
@@ -405,7 +405,7 @@ for (i = 0; i < gameData.matCens.nFuelCenters; i++) {
 
 //	----------------------------------------------------------------------------------------------------------
 
-CObject *CreateMorphRobot (CSegment *segP, vmsVector *vObjPosP, ubyte nObjId)
+CObject *CreateMorphRobot (CSegment *segP, CFixVector *vObjPosP, ubyte nObjId)
 {
 	short			nObject;
 	CObject		*objP;
@@ -449,7 +449,7 @@ int	FrameCount_last_msg = 0;
 
 void CreateMatCenEffect (tFuelCenInfo *matCenP, ubyte nVideoClip)
 {
-	vmsVector	vPos;
+	CFixVector	vPos;
 	CObject		*objP;
 
 COMPUTE_SEGMENT_CENTER_I (&vPos, matCenP->nSegment);
@@ -497,7 +497,7 @@ void EquipGenHandler (tFuelCenInfo * matCenP)
 {
 	int			nObject, nMatCen, nType;
 	CObject		*objP;
-	vmsVector	vPos;
+	CFixVector	vPos;
 	fix			topTime;
 
 if (!matCenP->bEnabled)
@@ -561,7 +561,7 @@ void VirusGenHandler (tFuelCenInfo * matCenP)
 {
 	int			nObject, nMatCen;
 	CObject		*objP;
-	vmsVector	vPos;
+	CFixVector	vPos;
 	fix			topTime;
 
 if (gameStates.entropy.bExitSequence || (gameData.segs.xSegments [matCenP->nSegment].owner <= 0))
@@ -626,7 +626,7 @@ return miP->objFlags [2] = gameData.objs.nVertigoBotFlags;
 void BotGenHandler (tFuelCenInfo * matCenP)
 {
 	fix			xDistToPlayer;
-	vmsVector	vPos, vDir;
+	CFixVector	vPos, vDir;
 	int			nMatCen, nSegment, nObject;
 	CObject		*objP;
 	fix			topTime;
@@ -683,7 +683,7 @@ if (!matCenP->bFlag) {
 	if (IsMultiGame)
 		topTime = ROBOT_GEN_TIME;
 	else {
-		xDistToPlayer = vmsVector::Dist(gameData.objs.consoleP->info.position.vPos, matCenP->vCenter);
+		xDistToPlayer = CFixVector::Dist(gameData.objs.consoleP->info.position.vPos, matCenP->vCenter);
 		topTime = xDistToPlayer / 64 + d_rand () * 2 + F1_0*2;
 		if (topTime > ROBOT_GEN_TIME)
 			topTime = ROBOT_GEN_TIME + d_rand ();
@@ -706,7 +706,7 @@ if (!matCenP->bFlag) {
 		matCenP->xTimer /= 2;
 		return;
 		}
-		//	Whack on any robot or tPlayer in the matcen CSegment.
+		//	Whack on any robot or CPlayerData in the matcen CSegment.
 	nCount = 0;
 	nSegment = matCenP->nSegment;
 	for (nObject = SEGMENTS [nSegment].objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
@@ -1024,14 +1024,14 @@ return amount;
 
 //	----------------------------------------------------------------------------------------------------------
 //--unused-- vmsAngVec start_angles, deltaAngles, goalAngles;
-//--unused-- vmsVector start_pos, delta_pos, goal_pos;
+//--unused-- CFixVector start_pos, delta_pos, goal_pos;
 //--unused-- int FuelStationSeg;
 //--unused-- fix currentTime,deltaTime;
 //--unused-- int next_side, side_index;
 //--unused-- int * sidelist;
 
 //--repair-- int Repairing;
-//--repair-- vmsVector repair_save_uvec;		//the tPlayer's upvec when enter repaircen
+//--repair-- CFixVector repair_save_uvec;		//the CPlayerData's upvec when enter repaircen
 //--repair-- CObject *RepairObj=NULL;		//which CObject getting repaired
 //--repair-- int disable_repair_center=0;
 //--repair-- fix repair_rate;
@@ -1051,7 +1051,7 @@ return amount;
 //--repair-- //	----------------------------------------------------------------------------------------------------------
 //--repair-- void refuel_calc_deltas (CObject *objP, int next_side, int repair_seg)
 //--repair-- {
-//--repair-- 	vmsVector nextcenter, headfvec, *headuvec;
+//--repair-- 	CFixVector nextcenter, headfvec, *headuvec;
 //--repair-- 	vmsMatrix goal_orient;
 //--repair--
 //--repair-- 	// Find time for this movement
@@ -1223,7 +1223,7 @@ return amount;
 //--repair-- 		RepairObj = NULL;
 //--repair--
 //--repair--
-//--repair-- 		//the two lines below will spit the tPlayer out of the rapair center,
+//--repair-- 		//the two lines below will spit the CPlayerData out of the rapair center,
 //--repair-- 		//but what happen is that the ship just bangs into the door
 //--repair-- 		//if (objP->info.movementType == MT_PHYSICS)
 //--repair-- 		//	VmVecCopyScale (&objP->mType.physInfo.velocity,&objP->info.position.mOrient.fVec,I2X (200);

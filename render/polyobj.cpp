@@ -53,28 +53,35 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define	MODEL_BUF_SIZE	32768
 
-#define POF_CFSeek(_buf, _len, Type) _POF_CFSeek ((_len), (Type))
-#define POF_ReadIntNew(i, f) pof_read (& (i), sizeof (i), 1, (f))
+#define POF_CFSeek(_buf, _len, Type) POF_Seek ((_len), (Type))
+#define POF_ReadIntNew(i, f) POF_Read (& (i), sizeof (i), 1, (f))
 
 int	Pof_file_end;
 int	Pof_addr;
 
-void _POF_CFSeek (int len, int nType)
-{
-	switch (nType) {
-		case SEEK_SET:	Pof_addr = len;	break;
-		case SEEK_CUR:	Pof_addr += len;	break;
-		case SEEK_END:
-			Assert (len <= 0);	//	seeking from end, better be moving back.
-			Pof_addr = Pof_file_end + len;
-			break;
-	}
+//------------------------------------------------------------------------------
 
-	if (Pof_addr > MODEL_BUF_SIZE)
-		return;
+void POF_Seek (int len, int nType)
+{
+switch (nType) {
+	case SEEK_SET:	
+		Pof_addr = len;	
+		break;
+	case SEEK_CUR:	
+		Pof_addr += len;	
+		break;
+	case SEEK_END:
+		Assert (len <= 0);	//	seeking from end, better be moving back.
+		Pof_addr = Pof_file_end + len;
+		break;
+	}
+if (Pof_addr > MODEL_BUF_SIZE)
+	return;
 }
 
-int pof_read_int (ubyte *bufp)
+//------------------------------------------------------------------------------
+
+int POF_ReadInt (ubyte *bufp)
 {
 	int i;
 
@@ -88,7 +95,9 @@ int pof_read_int (ubyte *bufp)
 //	return i;
 }
 
-size_t pof_read (void *dst, size_t elsize, size_t nelem, ubyte *bufp)
+//------------------------------------------------------------------------------
+
+size_t POF_Read (void *dst, size_t elsize, size_t nelem, ubyte *bufp)
 {
 if (nelem*elsize + (size_t) Pof_addr > (size_t) Pof_file_end)
 	return 0;
@@ -99,7 +108,9 @@ if (Pof_addr > MODEL_BUF_SIZE)
 return nelem;
 }
 
-short pof_read_short (ubyte *bufp)
+//------------------------------------------------------------------------------
+
+short POF_ReadShort (ubyte *bufp)
 {
 	short s;
 
@@ -112,7 +123,9 @@ short pof_read_short (ubyte *bufp)
 //	return s;
 }
 
-void pof_read_string (char *buf, int max_char, ubyte *bufp)
+//------------------------------------------------------------------------------
+
+void POF_ReadString (char *buf, int max_char, ubyte *bufp)
 {
 	int	i;
 
@@ -125,9 +138,11 @@ void pof_read_string (char *buf, int max_char, ubyte *bufp)
 
 }
 
-void pof_read_vecs (vmsVector *vecs, int n, ubyte *bufp)
+//------------------------------------------------------------------------------
+
+void POF_ReadVecs (CFixVector *vecs, int n, ubyte *bufp)
 {
-//	cf.Read (vecs, sizeof (vmsVector), n, f);
+//	cf.Read (vecs, sizeof (CFixVector), n, f);
 
 memcpy (vecs, &bufp [Pof_addr], n*sizeof (*vecs));
 Pof_addr += n*sizeof (*vecs);
@@ -137,7 +152,9 @@ while (n > 0)
 #endif
 }
 
-void pof_read_angs (vmsAngVec *angs, int n, ubyte *bufp)
+//------------------------------------------------------------------------------
+
+void POF_ReadAngs (vmsAngVec *angs, int n, ubyte *bufp)
 {
 memcpy (angs, &bufp [Pof_addr], n*sizeof (*angs));
 Pof_addr += n*sizeof (*angs);
@@ -150,11 +167,11 @@ while (n > 0)
 #ifdef DRIVE
 #define tRobotInfo void
 #else
-vmsAngVec anim_angs [N_ANIM_STATES][MAX_SUBMODELS];
+vmsAngVec animAngles [N_ANIM_STATES][MAX_SUBMODELS];
 
 //set the animation angles for this robot.  Gun fields of robot info must
 //be filled in.
-void robot_set_angles (tRobotInfo *r, tPolyModel *pm, vmsAngVec angs [N_ANIM_STATES][MAX_SUBMODELS]);
+void SetRobotAngles (tRobotInfo *r, tPolyModel *pm, vmsAngVec angs [N_ANIM_STATES][MAX_SUBMODELS]);
 #endif
 
 #ifdef WORDS_NEED_ALIGNMENT
@@ -265,29 +282,29 @@ Assert (cf.Length () <= MODEL_BUF_SIZE);
 Pof_addr = 0;
 Pof_file_end = (int) cf.Read (modelBuf, 1, cf.Length ());
 cf.Close ();
-id = pof_read_int (modelBuf);
+id = POF_ReadInt (modelBuf);
 if (id!=0x4f505350) /* 'OPSP' */
 	Error ("Bad ID in model file <%s>", filename);
-version = pof_read_short (modelBuf);
+version = POF_ReadShort (modelBuf);
 if (version < PM_COMPATIBLE_VERSION || version > PM_OBJFILE_VERSION)
 	Error ("Bad version (%d) in model file <%s>", version, filename);
 //if (FindArg ("-bspgen"))
 //printf ("bspgen -c1");
 while (POF_ReadIntNew (id, modelBuf) == 1) {
 	id = INTEL_INT (id);
-	//id  = pof_read_int (modelBuf);
-	len = pof_read_int (modelBuf);
+	//id  = POF_ReadInt (modelBuf);
+	len = POF_ReadInt (modelBuf);
 	next_chunk = Pof_addr + len;
 	switch (id) {
 		case ID_OHDR: {		//Object header
-			vmsVector pmmin, pmmax;
-			pm->nModels = pof_read_int (modelBuf);
-			pm->rad = pof_read_int (modelBuf);
+			CFixVector pmmin, pmmax;
+			pm->nModels = POF_ReadInt (modelBuf);
+			pm->rad = POF_ReadInt (modelBuf);
 			Assert (pm->nModels <= MAX_SUBMODELS);
-			pof_read_vecs (&pmmin, 1, modelBuf);
-			pof_read_vecs (&pmmax, 1, modelBuf);
+			POF_ReadVecs (&pmmin, 1, modelBuf);
+			POF_ReadVecs (&pmmax, 1, modelBuf);
 			if (FindArg ("-bspgen")) {
-				vmsVector v = pmmax - pmmin;
+				CFixVector v = pmmax - pmmin;
 				fix l = v[X];
 				if (v[Y] > l)
 					l = v[Y];
@@ -299,15 +316,15 @@ while (POF_ReadIntNew (id, modelBuf) == 1) {
 			}
 
 		case ID_SOBJ: {		//Subobject header
-			int n = pof_read_short (modelBuf);
+			int n = POF_ReadShort (modelBuf);
 			Assert (n < MAX_SUBMODELS);
 			animFlag++;
-			pm->subModels.parents [n] = (char) pof_read_short (modelBuf);
-			pof_read_vecs (&pm->subModels.norms [n], 1, modelBuf);
-			pof_read_vecs (&pm->subModels.pnts [n], 1, modelBuf);
-			pof_read_vecs (&pm->subModels.offsets [n], 1, modelBuf);
-			pm->subModels.rads [n] = pof_read_int (modelBuf);		//radius
-			pm->subModels.ptrs [n] = pof_read_int (modelBuf);	//offset
+			pm->subModels.parents [n] = (char) POF_ReadShort (modelBuf);
+			POF_ReadVecs (&pm->subModels.norms [n], 1, modelBuf);
+			POF_ReadVecs (&pm->subModels.pnts [n], 1, modelBuf);
+			POF_ReadVecs (&pm->subModels.offsets [n], 1, modelBuf);
+			pm->subModels.rads [n] = POF_ReadInt (modelBuf);		//radius
+			pm->subModels.ptrs [n] = POF_ReadInt (modelBuf);	//offset
 			break;
 			}
 
@@ -315,24 +332,24 @@ while (POF_ReadIntNew (id, modelBuf) == 1) {
 		case ID_GUNS: {		//List of guns on this CObject
 			if (r) {
 				int i;
-				vmsVector gun_dir;
+				CFixVector gun_dir;
 				ubyte gun_used [MAX_GUNS];
-				r->nGuns = pof_read_int (modelBuf);
+				r->nGuns = POF_ReadInt (modelBuf);
 				if (r->nGuns)
 					animFlag++;
 				Assert (r->nGuns <= MAX_GUNS);
 				for (i = 0; i < r->nGuns; i++)
 					gun_used [i] = 0;
 				for (i = 0; i < r->nGuns; i++) {
-					int id = pof_read_short (modelBuf);
+					int id = POF_ReadShort (modelBuf);
 					Assert (id < r->nGuns);
 					Assert (gun_used [id] == 0);
 					gun_used [id] = 1;
-					r->gunSubModels [id] = (char) pof_read_short (modelBuf);
+					r->gunSubModels [id] = (char) POF_ReadShort (modelBuf);
 					Assert (r->gunSubModels [id] != 0xff);
-					pof_read_vecs (&r->gunPoints [id], 1, modelBuf);
+					POF_ReadVecs (&r->gunPoints [id], 1, modelBuf);
 					if (version >= 7)
-						pof_read_vecs (&gun_dir, 1, modelBuf);
+						POF_ReadVecs (&gun_dir, 1, modelBuf);
 					}
 				}
 			else
@@ -343,12 +360,12 @@ while (POF_ReadIntNew (id, modelBuf) == 1) {
 		case ID_ANIM:		//Animation data
 			animFlag++;
 			if (r) {
-				int f, m, n_frames = pof_read_short (modelBuf);
+				int f, m, n_frames = POF_ReadShort (modelBuf);
 				Assert (n_frames == N_ANIM_STATES);
 				for (m = 0; m <pm->nModels; m++)
 					for (f = 0; f < n_frames; f++)
-						pof_read_angs (&anim_angs [f][m], 1, modelBuf);
-							robot_set_angles (r, pm, anim_angs);
+						POF_ReadAngs (&animAngles [f][m], 1, modelBuf);
+							SetRobotAngles (r, pm, animAngles);
 				}
 			else
 				POF_CFSeek (modelBuf, len, SEEK_CUR);
@@ -357,9 +374,9 @@ while (POF_ReadIntNew (id, modelBuf) == 1) {
 
 		case ID_TXTR: {		//Texture filename list
 			char name_buf [128];
-			int n = pof_read_short (modelBuf);
+			int n = POF_ReadShort (modelBuf);
 			while (n--)
-				pof_read_string (name_buf, 128, modelBuf);
+				POF_ReadString (name_buf, 128, modelBuf);
 			break;
 			}
 
@@ -367,7 +384,7 @@ while (POF_ReadIntNew (id, modelBuf) == 1) {
 			if (!pm->modelData.Create (len))
 				Error ("Not enough memory for game models.");
 			pm->nDataSize = len;
-			pof_read (pm->modelData.Buffer (), 1, len, modelBuf);
+			POF_Read (pm->modelData.Buffer (), 1, len, modelBuf);
 			break;
 
 		default:
@@ -392,7 +409,7 @@ return pm;
 //------------------------------------------------------------------------------
 //reads the gun information for a model
 //fills in arrays gunPoints & gun_dirs, returns the number of guns read
-int ReadModelGuns (const char *filename, vmsVector *gunPoints, vmsVector *gun_dirs, int *gunSubModels)
+int ReadModelGuns (const char *filename, CFixVector *gunPoints, CFixVector *gun_dirs, int *gunSubModels)
 {
 	CFile cf;
 	short version;
@@ -406,29 +423,29 @@ Assert (cf.Length () <= MODEL_BUF_SIZE);
 Pof_addr = 0;
 Pof_file_end = (int) cf.Read (modelBuf, 1, cf.Length ());
 cf.Close ();
-id = pof_read_int (modelBuf);
+id = POF_ReadInt (modelBuf);
 if (id!=0x4f505350) /* 'OPSP' */
 	Error ("Bad ID in model file <%s>", filename);
-version = pof_read_short (modelBuf);
+version = POF_ReadShort (modelBuf);
 Assert (version >= 7);		//must be 7 or higher for this data
 if (version < PM_COMPATIBLE_VERSION || version > PM_OBJFILE_VERSION)
 	Error ("Bad version (%d) in model file <%s>", version, filename);
 while (POF_ReadIntNew (id, modelBuf) == 1) {
 	id = INTEL_INT (id);
-	//id  = pof_read_int (modelBuf);
-	len = pof_read_int (modelBuf);
+	//id  = POF_ReadInt (modelBuf);
+	len = POF_ReadInt (modelBuf);
 	if (id == ID_GUNS) {		//List of guns on this CObject
-		nGuns = pof_read_int (modelBuf);
+		nGuns = POF_ReadInt (modelBuf);
 		for (int i = 0; i < nGuns; i++) {
-			int id = pof_read_short (modelBuf);
-			int sm = pof_read_short (modelBuf);
+			int id = POF_ReadShort (modelBuf);
+			int sm = POF_ReadShort (modelBuf);
 			if (gunSubModels)
 				gunSubModels [id] = sm;
 			else if (sm!=0)
 				Error ("Invalid gun submodel in file <%s>", filename);
-			pof_read_vecs (&gunPoints [id], 1, modelBuf);
+			POF_ReadVecs (&gunPoints [id], 1, modelBuf);
 
-			pof_read_vecs (&gun_dirs [id], 1, modelBuf);
+			POF_ReadVecs (&gun_dirs [id], 1, modelBuf);
 			}
 		}
 		else
@@ -481,7 +498,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-tPolyModel *GetPolyModel (CObject *objP, vmsVector *pos, int nModel, int flags)
+tPolyModel *GetPolyModel (CObject *objP, CFixVector *pos, int nModel, int flags)
 {
 	tPolyModel	*po = NULL;
 	int			bHaveAltModel, bIsDefModel;
@@ -580,7 +597,7 @@ return nTextures;
 //draw a polygon model
 int DrawPolygonModel (
 	CObject			*objP,
-	vmsVector		*pos,
+	CFixVector		*pos,
 	vmsMatrix		*orient,
 	vmsAngVec		*animAngles,
 	int				nModel,
@@ -644,12 +661,12 @@ else {
 	//G3StartInstanceMatrix (pos, orient);
 	for (i = 0; flags > 0; flags >>= 1, i++)
 		if (flags & 1) {
-			vmsVector vOffset;
+			CFixVector vOffset;
 
 			//Assert (i < po->nModels);
 			if (i < po->nModels) {
 			//if submodel, rotate around its center point, not pivot point
-				vOffset = vmsVector::Avg(po->subModels.mins[i], po->subModels.maxs[i]);
+				vOffset = CFixVector::Avg(po->subModels.mins[i], po->subModels.maxs[i]);
 				vOffset.Neg();
 				if (!G3RenderModel (objP, nModel, i, po, gameData.models.textures, animAngles, &vOffset, light, glowValues, colorP)) {
 					if (bHires)
@@ -694,25 +711,25 @@ return 1;
 void PolyObjFindMinMax (tPolyModel *pm)
 {
 	ushort nverts;
-	vmsVector *vp;
+	CFixVector *vp;
 	ushort *data, nType;
 	int m;
 
-	vmsVector& big_mn = pm->mins;
-	vmsVector& big_mx = pm->maxs;
+	CFixVector& big_mn = pm->mins;
+	CFixVector& big_mx = pm->maxs;
 
 	for (m = 0; m < pm->nModels; m++) {
 
-		vmsVector& mn = pm->subModels.mins[m];
-		vmsVector& mx = pm->subModels.maxs[m];
-		vmsVector& ofs= pm->subModels.offsets[m];
+		CFixVector& mn = pm->subModels.mins[m];
+		CFixVector& mx = pm->subModels.maxs[m];
+		CFixVector& ofs= pm->subModels.offsets[m];
 		data = reinterpret_cast<ushort*> (pm->modelData + pm->subModels.ptrs [m]);
 		nType = *data++;
 		Assert (nType == 7 || nType == 1);
 		nverts = *data++;
 		if (nType==7)
 			data+=2;		//skip start & pad
-		vp = reinterpret_cast<vmsVector*> (data);
+		vp = reinterpret_cast<CFixVector*> (data);
 		mn = mx = *vp++;
 		nverts--;
 		if (m == 0)
@@ -811,7 +828,7 @@ atexit (FreePolygonModels);
 
 void DrawModelPicture (int nModel, vmsAngVec *orientAngles)
 {
-	vmsVector	p = vmsVector::ZERO;
+	CFixVector	p = CFixVector::ZERO;
 	vmsMatrix	o = vmsMatrix::IDENTITY;
 
 Assert ((nModel >= 0) && (nModel < gameData.models.nPolyModels));

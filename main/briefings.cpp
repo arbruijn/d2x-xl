@@ -454,7 +454,7 @@ briefingTextY = gameStates.app.bD1Mission ? bsP->text_uly : bsP->text_uly - (8 *
 void ShowBitmapFrame (int bRedraw)
 {
 	CCanvas *curCanvSave, *bitmapCanv=0;
-	vmsVector p = vmsVector::ZERO;
+	CFixVector p = CFixVector::ZERO;
 
 	CBitmap *bmP;
 	int x = RescaleX (138);

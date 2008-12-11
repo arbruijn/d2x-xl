@@ -18,11 +18,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define EL_OFF				0		//not in endlevel
 #define EL_FLYTHROUGH	1		//auto-flythrough in tunnel
-#define EL_LOOKBACK		2		//looking back at tPlayer
+#define EL_LOOKBACK		2		//looking back at CPlayerData
 #define EL_OUTSIDE		3		//flying outside for a while
 #define EL_STOPPED		4		//stopped, watching explosion
-#define EL_PANNING		5		//panning around, watching tPlayer
-#define EL_CHASING		6		//chasing tPlayer to station
+#define EL_PANNING		5		//panning around, watching CPlayerData
+#define EL_CHASING		6		//chasing CPlayerData to station
 
 extern int Endlevel_sequence;
 void DoEndLevelFrame();
@@ -34,7 +34,7 @@ void render_external_scene();
 void DrawExitModel();
 void InitEndLevel();
 
-//@@extern vmsVector mine_exit_point;
+//@@extern CFixVector mine_exit_point;
 //@@extern CObject external_explosion;
 //@@extern int ext_expl_playing;
 

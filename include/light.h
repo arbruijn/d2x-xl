@@ -31,7 +31,7 @@ fix ComputeSegDynamicLight (int nSegment);
 // compute the lighting for an CObject.  Takes a pointer to the CObject,
 // and possibly a rotated 3d point.  If the point isn't specified, the
 // CObject's center point is rotated.
-fix ComputeObjectLight(CObject *obj,vmsVector *rotated_pnt);
+fix ComputeObjectLight(CObject *obj,CFixVector *rotated_pnt);
 
 void ComputeEngineGlow (CObject *obj, fix *engine_glowValue);
 

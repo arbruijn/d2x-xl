@@ -70,7 +70,7 @@ COmegaLightnings	omegaLightnings;
 
 typedef struct tPlasmaBuffer {
 	tTexCoord2f	texCoord [4 * MAX_LIGHTNING_SEGMENTS];
-	fVector		vertices [4 * MAX_LIGHTNING_SEGMENTS];
+	CFloatVector		vertices [4 * MAX_LIGHTNING_SEGMENTS];
 } tPlasmaBuffer;
 
 static tPlasmaBuffer plasmaBuffers [2][2];
@@ -112,16 +112,16 @@ return (double) rand () / (double) RAND_MAX;
 
 //------------------------------------------------------------------------------
 
-vmsVector *VmRandomVector (vmsVector *vRand)
+CFixVector *VmRandomVector (CFixVector *vRand)
 {
-	vmsVector	vr;
+	CFixVector	vr;
 
 do {
 	vr [X] = F1_0 / 4 - d_rand ();
 	vr [Y] = F1_0 / 4 - d_rand ();
 	vr [Z] = F1_0 / 4 - d_rand ();
 } while (!(vr [X] && vr [Y] && vr [Z]));
-vmsVector::Normalize(vr);
+CFixVector::Normalize(vr);
 *vRand = vr;
 return vRand;
 }
@@ -134,19 +134,19 @@ return vRand;
 
 //------------------------------------------------------------------------------
 
-vmsVector *DirectedRandomVector (vmsVector *vRand, vmsVector *vDir, int nMinDot, int nMaxDot)
+CFixVector *DirectedRandomVector (CFixVector *vRand, CFixVector *vDir, int nMinDot, int nMaxDot)
 {
-	vmsVector	vr, vd = *vDir, vSign;
+	CFixVector	vr, vd = *vDir, vSign;
 	int			nDot, nSign, i = 0;
 
-vmsVector::Normalize(vd);
+CFixVector::Normalize(vd);
 vSign [X] = vd [X] ? vd [X] / abs(vd [X]) : 0;
 vSign [Y] = vd [Y] ? vd [Y] / abs(vd [Y]) : 0;
 vSign [Z] = vd [Z] ? vd [Z] / abs(vd [Z]) : 0;
 nSign = VECSIGN (vd);
 do {
 	VmRandomVector (&vr);
-	nDot = vmsVector::Dot(vr, vd);
+	nDot = CFixVector::Dot(vr, vd);
 	if (++i == 100)
 		i = 0;
 	} while ((nDot > nMaxDot) || (nDot < nMinDot));
@@ -156,7 +156,7 @@ return vRand;
 
 //------------------------------------------------------------------------------
 
-bool CLightningNode::CreateChild (vmsVector *vEnd, vmsVector *vDelta,
+bool CLightningNode::CreateChild (CFixVector *vEnd, CFixVector *vDelta,
 											 int nLife, int nLength, int nAmplitude,
 											 char nAngle, short nNodes, short nChildren, char nDepth, short nSteps,
 											 short nSmoothe, char bClamp, char bPlasma, char bLight,
@@ -172,7 +172,7 @@ return m_child->Create (nDepth - 1);
 
 //------------------------------------------------------------------------------
 
-void CLightningNode::Setup (bool bInit, vmsVector *vPos, vmsVector *vDelta)
+void CLightningNode::Setup (bool bInit, CFixVector *vPos, CFixVector *vDelta)
 {
 m_vBase =
 m_vPos = *vPos;
@@ -225,9 +225,9 @@ m_vOffs *= (F1_0 / nSteps);
 
 //------------------------------------------------------------------------------
 
-int CLightningNode::Clamp (vmsVector *vPos, vmsVector *vBase, int nAmplitude)
+int CLightningNode::Clamp (CFixVector *vPos, CFixVector *vBase, int nAmplitude)
 {
-	vmsVector	vRoot;
+	CFixVector	vRoot;
 	int			nDist = VmPointLineIntersection (vRoot, vBase [0], vBase [1], *vPos, 0);
 
 if (nDist < nAmplitude)
@@ -240,7 +240,7 @@ return nAmplitude;
 
 //------------------------------------------------------------------------------
 
-int CLightningNode::ComputeAttractor (vmsVector *vAttract, vmsVector *vDest, vmsVector *vPos, int nMinDist, int i)
+int CLightningNode::ComputeAttractor (CFixVector *vAttract, CFixVector *vDest, CFixVector *vPos, int nMinDist, int i)
 {
 	int nDist;
 
@@ -258,21 +258,21 @@ return nDist;
 
 //------------------------------------------------------------------------------
 
-vmsVector *CLightningNode::Create (vmsVector *vOffs, vmsVector *vAttract, int nDist)
+CFixVector *CLightningNode::Create (CFixVector *vOffs, CFixVector *vAttract, int nDist)
 {
-	vmsVector	va = *vAttract;
+	CFixVector	va = *vAttract;
 	int			nDot, i = 0;
 
 if (nDist < F1_0 / 16)
 	return VmRandomVector (vOffs);
-vmsVector::Normalize(va);
+CFixVector::Normalize(va);
 if (!(va [X] && va [Y] && va [Z]))
 	i = 0;
 do {
 	VmRandomVector (vOffs);
 	// TODO: Use new vector dot prod method
 	// right now it hangs/crashes
-	nDot = vmsVector::Dot(va, *vOffs);
+	nDot = CFixVector::Dot(va, *vOffs);
 	if (++i > 100)
 		i = 0;
 	} while (abs (nDot) < F1_0 / 32);
@@ -283,7 +283,7 @@ return vOffs;
 
 //------------------------------------------------------------------------------
 
-vmsVector *CLightningNode::Smoothe (vmsVector *vOffs, vmsVector *vPrevOffs, int nDist, int nSmoothe)
+CFixVector *CLightningNode::Smoothe (CFixVector *vOffs, CFixVector *vPrevOffs, int nDist, int nSmoothe)
 {
 if (nSmoothe) {
 		int nMag = vOffs->Mag ();
@@ -303,7 +303,7 @@ return vOffs;
 
 //------------------------------------------------------------------------------
 
-vmsVector *CLightningNode::Attract (vmsVector *vOffs, vmsVector *vAttract, vmsVector *vPos, int nDist, int i, int bJoinPaths)
+CFixVector *CLightningNode::Attract (CFixVector *vOffs, CFixVector *vAttract, CFixVector *vPos, int nDist, int i, int bJoinPaths)
 {
 	int nMag = vOffs->Mag ();
 // attract offset vector by scaling it with distance from attracting node
@@ -317,10 +317,10 @@ return vPos;
 
 //------------------------------------------------------------------------------
 
-vmsVector CLightningNode::CreateJaggy (vmsVector *vPos, vmsVector *vDest, vmsVector *vBase, vmsVector *vPrevOffs,
+CFixVector CLightningNode::CreateJaggy (CFixVector *vPos, CFixVector *vDest, CFixVector *vBase, CFixVector *vPrevOffs,
 												   int nSteps, int nAmplitude, int nMinDist, int i, int nSmoothe, int bClamp)
 {
-	vmsVector	vAttract, vOffs;
+	CFixVector	vAttract, vOffs;
 	int			nDist = ComputeAttractor (&vAttract, vDest, vPos, nMinDist, i);
 
 Create (&vOffs, &vAttract, nDist);
@@ -342,7 +342,7 @@ return vOffs;
 
 //------------------------------------------------------------------------------
 
-vmsVector CLightningNode::CreateErratic (vmsVector *vPos, vmsVector *vBase, int nSteps, int nAmplitude,
+CFixVector CLightningNode::CreateErratic (CFixVector *vPos, CFixVector *vBase, int nSteps, int nAmplitude,
 													  int bInPlane, int bFromEnd, int bRandom, int i, int nNodes, int nSmoothe, int bClamp)
 {
 	int	h, j, nDelta;
@@ -381,7 +381,7 @@ return m_vOffs;
 
 //------------------------------------------------------------------------------
 
-vmsVector CLightningNode::CreatePerlin (int nSteps, int nAmplitude, int *nSeed, double phi, double i)
+CFixVector CLightningNode::CreatePerlin (int nSteps, int nAmplitude, int *nSeed, double phi, double i)
 {
 double dx = PerlinNoise1D (i, 0.25, 6, nSeed [0]);
 double dy = PerlinNoise1D (i, 0.25, 6, nSeed [1]);
@@ -398,7 +398,7 @@ return m_vOffs;
 
 //------------------------------------------------------------------------------
 
-void CLightningNode::Move (vmsVector& vDelta, short nSegment)
+void CLightningNode::Move (CFixVector& vDelta, short nSegment)
 {
 m_vNewPos += vDelta;
 m_vBase += vDelta;
@@ -421,7 +421,7 @@ return true;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-int CLightning::ComputeChildEnd (vmsVector *vPos, vmsVector *vEnd, vmsVector *vDir, vmsVector *vParentDir, int nLength)
+int CLightning::ComputeChildEnd (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDir, CFixVector *vParentDir, int nLength)
 {
 nLength = 3 * nLength / 4 + (int) (dbl_rand () * nLength / 4);
 DirectedRandomVector (vDir, vParentDir, 3 * F1_0 / 4, 9 * F1_0 / 10);
@@ -433,7 +433,7 @@ return nLength;
 
 void CLightning::Setup (bool bInit)
 {
-	vmsVector		vPos, vDir, vRefDir, vDelta [2], v;
+	CFixVector		vPos, vDir, vRefDir, vDelta [2], v;
 	int				i = 0, l;
 
 m_vPos = m_vBase;
@@ -443,17 +443,17 @@ if (m_bRandom) {
 	else {
 		int nMinDot = F1_0 - m_nAngle * F1_0 / 90;
 		vRefDir = m_vRefEnd - m_vPos;
-		vmsVector::Normalize(vRefDir);
+		CFixVector::Normalize(vRefDir);
 		do {
 			VmRandomVector (&vDir);
 		}
-		while (vmsVector::Dot(vRefDir, vDir) < nMinDot);
+		while (CFixVector::Dot(vRefDir, vDir) < nMinDot);
 	}
 	m_vEnd = m_vPos + vDir * m_nLength;
 }
 else {
 	vDir = m_vEnd - m_vPos;
-	vmsVector::Normalize(vDir);
+	CFixVector::Normalize(vDir);
 	}
 m_vDir = vDir;
 if (m_nOffset) {
@@ -469,10 +469,10 @@ if (m_bInPlane) {
 else {
 	do {
 		VmRandomVector(&vDelta [0]);
-	} while (abs (vmsVector::Dot (vDir, vDelta [0])) > 9 * F1_0 / 10);
-	vDelta [1] = vmsVector::Normal (vPos, m_vEnd, *vDelta);
+	} while (abs (CFixVector::Dot (vDir, vDelta [0])) > 9 * F1_0 / 10);
+	vDelta [1] = CFixVector::Normal (vPos, m_vEnd, *vDelta);
 	v = vPos + vDelta [1];
-	vDelta [0] = vmsVector::Normal (vPos, m_vEnd, v);
+	vDelta [0] = CFixVector::Normal (vPos, m_vEnd, v);
 	}
 vDir *= FixDiv (m_nLength, (m_nNodes - 1) * F1_0);
 m_nNodes = abs (m_nNodes);
@@ -492,7 +492,7 @@ m_nSteps = -abs (m_nSteps);
 
 //------------------------------------------------------------------------------
 
-void CLightning::Init (vmsVector *vPos, vmsVector *vEnd, vmsVector *vDelta,
+void CLightning::Init (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 							  short nObject, int nLife, int nDelay, int nLength, int nAmplitude,
 							  char nAngle, int nOffset, short nNodes, short nChildren, short nSteps,
 							  short nSmoothe, char bClamp, char bPlasma, char bLight,
@@ -629,14 +629,14 @@ void CLightning::Bump (void)
 {
 	CLightningNode	*nodeP;
 	int			h, i, nSteps, nDist, nAmplitude, nMaxDist = 0;
-	vmsVector	vBase [2];
+	CFixVector	vBase [2];
 
 nSteps = m_nSteps;
 nAmplitude = m_nAmplitude;
 vBase [0] = m_vPos;
 vBase [1] = m_nodes [m_nNodes - 1].m_vPos;
 for (i = m_nNodes - 1 - !m_bRandom, nodeP = m_nodes + 1; i > 0; i--, nodeP++) {
-	nDist = vmsVector::Dist (nodeP->m_vNewPos, nodeP->m_vPos);
+	nDist = CFixVector::Dist (nodeP->m_vNewPos, nodeP->m_vPos);
 	if (nMaxDist < nDist) {
 		nMaxDist = nDist;
 		h = i;
@@ -657,7 +657,7 @@ void CLightning::CreatePath (int bSeed, int nDepth)
 {
 	CLightningNode	*plh, *nodeP [2];
 	int			h, i, j, nSteps, nStyle, nSmoothe, bClamp, bInPlane, nMinDist, nAmplitude, bPrevOffs [2] = {0,0};
-	vmsVector	vPos [2], vBase [2], vPrevOffs [2];
+	CFixVector	vPos [2], vBase [2], vPrevOffs [2];
 	double		phi;
 
 	static int	nSeed [2];
@@ -829,13 +829,13 @@ return SetLife ();
 
 //------------------------------------------------------------------------------
 
-void CLightning::Move (vmsVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd)
+void CLightning::Move (CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd)
 {
 if (nSegment < 0)
 	return;
 
 	CLightningNode	*nodeP;
-	vmsVector		vDelta, vOffs;
+	CFixVector		vDelta, vOffs;
 	int				h, j;
 	double			fStep;
 
@@ -905,17 +905,17 @@ static tTexCoord2f plasmaTexCoord [3][4] = {
 
 //------------------------------------------------------------------------------
 
-void CLightning::ComputePlasmaSegment (fVector *vPosf, int bScale, short nSegment, char bStart, char bEnd, int nDepth, int nThread)
+void CLightning::ComputePlasmaSegment (CFloatVector *vPosf, int bScale, short nSegment, char bStart, char bEnd, int nDepth, int nThread)
 {
-	fVector			*vPlasma = plasmaBuffers [nThread][bScale].vertices + 4 * nSegment;
-	fVector			vn [2], vd;
+	CFloatVector			*vPlasma = plasmaBuffers [nThread][bScale].vertices + 4 * nSegment;
+	CFloatVector			vn [2], vd;
 
-	static fVector vEye = fVector::ZERO;
-	static fVector vNormal [3] = {fVector::ZERO,fVector::ZERO,fVector::ZERO};
+	static CFloatVector vEye = CFloatVector::ZERO;
+	static CFloatVector vNormal [3] = {CFloatVector::ZERO,CFloatVector::ZERO,CFloatVector::ZERO};
 
-memcpy (vNormal, vNormal + 1, 2 * sizeof (fVector));
+memcpy (vNormal, vNormal + 1, 2 * sizeof (CFloatVector));
 if (bStart) {
-	vNormal [1] = fVector::Normal(vPosf [0], vPosf [1], vEye);
+	vNormal [1] = CFloatVector::Normal(vPosf [0], vPosf [1], vEye);
 	vn [0] = vNormal [1];
 	}
 else {
@@ -930,8 +930,8 @@ if (bEnd) {
 	vPosf [1] += vd;
 	}
 else {
-	vNormal [2] = fVector::Normal (vPosf [1], vPosf [2], vEye);
-	if (fVector::Dot (vNormal [1], vNormal [2]) < 0)
+	vNormal [2] = CFloatVector::Normal (vPosf [1], vPosf [2], vEye);
+	if (CFloatVector::Dot (vNormal [1], vNormal [2]) < 0)
 		vNormal [2].Neg ();
 	vn [1] = vNormal [1] + vNormal [2];
 	vn [1] = vn [1] * 0.5f;
@@ -948,7 +948,7 @@ if (bStart) {
 	vPlasma [0] = vPosf [0] + vn [0];
 	vPlasma [1] = vPosf [0] - vn [0];
 	vd = vPosf [0] - vPosf [1];
-	fVector::Normalize(vd);
+	CFloatVector::Normalize(vd);
 	if (bScale)
 		vd = vd * 0.5f;
 	vPlasma [0] += vd;
@@ -969,7 +969,7 @@ memcpy (plasmaBuffers [nThread][bScale].texCoord + 4 * nSegment,
 void CLightning::ComputePlasma (int nDepth, int nThread)
 {
 	CLightningNode	*nodeP;
-	fVector			vPosf [3] = {fVector::ZERO,fVector::ZERO,fVector::ZERO};
+	CFloatVector			vPosf [3] = {CFloatVector::ZERO,CFloatVector::ZERO,CFloatVector::ZERO};
 	int				bScale, i, j;
 
 for (bScale = 0; bScale < 2; bScale++) {
@@ -978,7 +978,7 @@ for (bScale = 0; bScale < 2; bScale++) {
 	if (!gameStates.ogl.bUseTransform)
 		G3TransformPoint (vPosf [2], vPosf [2], 0);
 	for (i = m_nNodes - 2, j = 0, nodeP = m_nodes; j <= i; j++) {
-		memcpy (vPosf, vPosf + 1, 2 * sizeof (fVector));
+		memcpy (vPosf, vPosf + 1, 2 * sizeof (CFloatVector));
 		vPosf [2] = (++nodeP)->m_vPos.ToFloat ();
 		if (!gameStates.ogl.bUseTransform)
 			G3TransformPoint (vPosf [2], vPosf [2], 0);
@@ -994,7 +994,7 @@ void CLightning::RenderPlasma (tRgbaColorf *colorP, int nThread)
 	int				bScale;
 #if RENDER_LIGHTNING_OUTLINE
 	tTexCoord2f		*texCoordP;
-	fVector			*vertexP;
+	CFloatVector			*vertexP;
 	int				i, j;
 #endif
 
@@ -1007,7 +1007,7 @@ for (bScale = 0; bScale < 2; bScale++) {
 	else
 		glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
 	glTexCoordPointer (2, GL_FLOAT, 0, plasmaBuffers [nThread][bScale].texCoord);
-	glVertexPointer (3, GL_FLOAT, sizeof (fVector), plasmaBuffers [nThread][bScale].vertices);
+	glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), plasmaBuffers [nThread][bScale].vertices);
 	glDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
 #if RENDER_LIGHTNING_OUTLINE
 	glDisable (GL_TEXTURE_2D);
@@ -1189,7 +1189,7 @@ return nLights;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-bool CLightningSystem::Create (int nId, int nLightnings, vmsVector *vPos, vmsVector *vEnd, vmsVector *vDelta,
+bool CLightningSystem::Create (int nId, int nLightnings, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 										 short nObject, int nLife, int nDelay, int nLength, int nAmplitude,
 										 char nAngle, int nOffset, short nNodes, short nChildren, char nDepth, short nSteps,
 										 short nSmoothe, char bClamp, char bPlasma, char bSound, char bLight,
@@ -1341,7 +1341,7 @@ m_bSound = -1;
 
 //------------------------------------------------------------------------------
 
-void CLightningSystem::Move (vmsVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd)
+void CLightningSystem::Move (CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd)
 {
 if (nSegment < 0)
 	return;
@@ -1415,13 +1415,13 @@ if (!m_objects)
 #if USE_NEW
 	m_objects = new short [MAX_OBJECTS];
 #else
-	GETMEM (short, m_objects, MAX_OBJECTS, (char) 0xff);
+	CREATE (short, m_objects, MAX_OBJECTS, (char) 0xff);
 #endif
 if (!m_lights)
 #if USE_NEW
 	m_lights = new tLightningLight [2*MAX_SEGMENTS];
 #else
-	GETMEM (tLightningLight, m_lights, MAX_SEGMENTS, (char) 0xff);
+	CREATE (tLightningLight, m_lights, MAX_SEGMENTS, (char) 0xff);
 #endif
 for (i = 0, j = 1; j < MAX_LIGHTNINGS; i++, j++)
 	m_systems [i].SetNext (j);
@@ -1434,7 +1434,7 @@ memset (m_objects, 0xff, MAX_OBJECTS * sizeof (*m_objects));
 
 //------------------------------------------------------------------------------
 
-int CLightningManager::Create (int nLightnings, vmsVector *vPos, vmsVector *vEnd, vmsVector *vDelta,
+int CLightningManager::Create (int nLightnings, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 										 short nObject, int nLife, int nDelay, int nLength, int nAmplitude,
 										 char nAngle, int nOffset, short nNodes, short nChildren, char nDepth, short nSteps,
 										 short nSmoothe, char bClamp, char bPlasma, char bSound, char bLight,
@@ -1546,7 +1546,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void CLightningManager::Move (int i, vmsVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd)
+void CLightningManager::Move (int i, CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd)
 {
 if (nSegment < 0)
 	return;
@@ -1734,7 +1734,7 @@ if (SHOW_LIGHTNINGS) {
 
 //------------------------------------------------------------------------------
 
-vmsVector *CLightningManager::FindTargetPos (CObject *emitterP, short nTarget)
+CFixVector *CLightningManager::FindTargetPos (CObject *emitterP, short nTarget)
 {
 	int				i;
 	CObject			*objP;
@@ -1754,7 +1754,7 @@ void CLightningManager::StaticFrame (void)
 {
 	int				h, i;
 	CObject			*objP;
-	vmsVector		*vEnd, *vDelta, v;
+	CFixVector		*vEnd, *vDelta, v;
 	tLightningInfo	*pli;
 	tRgbaColorf		color;
 
@@ -1774,7 +1774,7 @@ FORALL_EFFECT_OBJS (objP, i) {
 	if (pli->bRandom && !pli->nAngle)
 		vEnd = NULL;
 	else if ((vEnd = FindTargetPos (objP, pli->nTarget)))
-		pli->nLength = vmsVector::Dist (objP->info.position.vPos, *vEnd) / F1_0;
+		pli->nLength = CFixVector::Dist (objP->info.position.vPos, *vEnd) / F1_0;
 	else {
 		v = objP->info.position.vPos + objP->info.position.mOrient [FVEC] * F1_0 * pli->nLength;
 		vEnd = &v;
@@ -1809,7 +1809,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-void CLightningManager::SetSegmentLight (short nSegment, vmsVector *vPosP, tRgbaColorf *colorP)
+void CLightningManager::SetSegmentLight (short nSegment, CFixVector *vPosP, tRgbaColorf *colorP)
 {
 if ((nSegment < 0) || (nSegment >= gameData.segs.nSegments))
 	return;
@@ -2065,8 +2065,8 @@ typedef union tPolyKey {
 void CLightningManager::RenderForDamage (CObject *objP, g3sPoint **pointList, tG3ModelVertex *pVerts, int nVertices)
 {
 	CLightningSystem	*systemP;
-	fVector				v, vPosf, vEndf, vNormf, vDeltaf;
-	vmsVector			vPos, vEnd, vNorm, vDelta;
+	CFloatVector				v, vPosf, vEndf, vNormf, vDeltaf;
+	CFixVector			vPos, vEnd, vNorm, vDelta;
 	int					h, i, j, bUpdate = 0;
 	short					nObject;
 	tPolyKey				key;
@@ -2111,21 +2111,21 @@ if (i < 0) {
 	if (pointList) {
 		vPos = pointList [0]->p3_src;
 		vEnd = pointList [1 + d_rand () % (nVertices - 1)]->p3_vec;
-		vNorm = vmsVector::Normal(vPos, pointList [1]->p3_vec, vEnd);
+		vNorm = CFixVector::Normal(vPos, pointList [1]->p3_vec, vEnd);
 		vPos += vNorm * (F1_0 / 64);
 		vEnd += vNorm * (F1_0 / 64);
-		vDelta = vmsVector::Normal (vNorm, vPos, vEnd);
-		h = vmsVector::Dist (vPos, vEnd);
+		vDelta = CFixVector::Normal (vNorm, vPos, vEnd);
+		h = CFixVector::Dist (vPos, vEnd);
 		}
 	else {
 		memcpy (&vPosf, &pVerts->vertex, sizeof (fVector3));
 		memcpy (&vEndf, &pVerts [1 + d_rand () % (nVertices - 1)].vertex, sizeof (fVector3));
 		memcpy (&v, &pVerts [1].vertex, sizeof (fVector3));
-		vNormf = fVector::Normal (vPosf, v, vEndf);
+		vNormf = CFloatVector::Normal (vPosf, v, vEndf);
 		vPosf += vNormf * (1.0f / 64.0f);
 		vEndf += vNormf * (1.0f / 64.0f);
-		vDeltaf = fVector::Normal (vNormf, vPosf, vEndf);
-		h = F2X (fVector::Dist (vPosf, vEndf));
+		vDeltaf = CFloatVector::Normal (vNormf, vPosf, vEndf);
+		h = F2X (CFloatVector::Dist (vPosf, vEndf));
 		vPos = vPosf.ToFix ();
 		vEnd = vEndf.ToFix ();
 		}
@@ -2191,9 +2191,9 @@ else {
 
 // ---------------------------------------------------------------------------------
 
-vmsVector *COmegaLightnings::GetGunPoint (CObject *objP, vmsVector *vMuzzle)
+CFixVector *COmegaLightnings::GetGunPoint (CObject *objP, CFixVector *vMuzzle)
 {
-	vmsVector			*vGunPoints;
+	CFixVector			*vGunPoints;
 	int					bSpectate;
 	tTransformation	*posP;
 
@@ -2216,9 +2216,9 @@ return vMuzzle;
 
 int COmegaLightnings::Update (CObject *parentObjP, CObject *targetObjP)
 {
-	vmsVector					vMuzzle;
+	CFixVector					vMuzzle;
 	tOmegaLightningHandles	*handleP;
-	tWeaponState				*wsP;
+	CWeaponState				*wsP;
 	int							i, j, nHandle, nLightning;
 
 if (!(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bOmega))
@@ -2266,7 +2266,7 @@ return 1;
 
 #define OMEGA_PLASMA 0
 
-int COmegaLightnings::Create (vmsVector *vTargetPos, CObject *parentObjP, CObject *targetObjP)
+int COmegaLightnings::Create (CFixVector *vTargetPos, CObject *parentObjP, CObject *targetObjP)
 {
 	tOmegaLightningHandles	*handleP;
 	int							nObject;
@@ -2282,7 +2282,7 @@ if (Update (parentObjP, targetObjP)) {
 	}
 else {
 	static tRgbaColorf	color = {0.9f, 0.6f, 0.6f, 0.3f};
-	vmsVector	vMuzzle, *vTarget;
+	CFixVector	vMuzzle, *vTarget;
 
 	Destroy (nObject);
 	GetGunPoint (parentObjP, &vMuzzle);
@@ -2295,7 +2295,7 @@ else {
 #endif
 	handleP->nLightning = 
 		lightningManager.Create (10, &vMuzzle, vTarget, NULL, -OBJSEG (parentObjP) - 1,
-										 -5000, 0, vmsVector::Dist(vMuzzle, *vTarget), F1_0 * 3, 0, 0, 100, 10, 1, 3, 1, 1,
+										 -5000, 0, CFixVector::Dist(vMuzzle, *vTarget), F1_0 * 3, 0, 0, 100, 10, 1, 3, 1, 1,
 #if OMEGA_PLASMA
 										 (parentObjP != gameData.objs.viewerP) || gameStates.app.bFreeCam || gameStates.render.bExternalView,
 #else

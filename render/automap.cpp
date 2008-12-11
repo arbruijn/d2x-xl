@@ -150,14 +150,14 @@ typedef struct tAutomapData {
 	fix			nViewDist;
 	fix			nMaxDist;
 	fix			nZoom;
-	vmsVector	viewPos;
-	vmsVector	viewTarget;
+	CFixVector	viewPos;
+	CFixVector	viewTarget;
 	vmsMatrix	viewMatrix;
 } tAutomapData;
 
 // Rendering variables
-//static tAutomapData	amData = {0, 1, 0, F1_0 * 20 * 100, 0x9000, vmsVector::ZERO, vmsVector::ZERO, {vmsVector::ZERO,vmsVector::ZERO,vmsVector::ZERO}};
-static tAutomapData	amData; // = {0, 1, 0, F1_0 * 20 * 100, 0x9000, vmsVector::ZERO, vmsVector::ZERO, vmsMatrix::IDENTITY};
+//static tAutomapData	amData = {0, 1, 0, F1_0 * 20 * 100, 0x9000, CFixVector::ZERO, CFixVector::ZERO, {CFixVector::ZERO,CFixVector::ZERO,CFixVector::ZERO}};
+static tAutomapData	amData; // = {0, 1, 0, F1_0 * 20 * 100, 0x9000, CFixVector::ZERO, CFixVector::ZERO, vmsMatrix::IDENTITY};
 
 //	Function Prototypes
 void AdjustSegmentLimit (int nSegmentLimit, ushort *pVisited);
@@ -232,7 +232,7 @@ int G3DrawCircle3D (g3sPoint *p0, int nSides, int rad)
 {
 	g3sPoint		p = *p0;
 	int			i, j;
-	fVector		v;
+	CFloatVector		v;
 	float			x, y, r;
 	float			ang;
 
@@ -260,7 +260,7 @@ return 1;
 
 void DrawPlayer (CObject * objP)
 {
-	vmsVector	vArrowPos, vHeadPos;
+	CFixVector	vArrowPos, vHeadPos;
 	g3sPoint		spherePoint, arrowPoint, headPoint;
 	int			size = objP->info.xSize * (gameStates.render.automap.bRadar ? 2 : 1);
 	int			bUseTransform = gameStates.ogl.bUseTransform;
@@ -269,7 +269,7 @@ void DrawPlayer (CObject * objP)
 headPoint.p3_index =
 arrowPoint.p3_index =
 spherePoint.p3_index = -1;
-// Draw Console tPlayer -- shaped like a ellipse with an arrow.
+// Draw Console CPlayerData -- shaped like a ellipse with an arrow.
 spherePoint.p3_vec.SetZero();
 G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
 //G3RotatePoint (&spherePoint.p3_vec, &objP->info.position.vPos, 0);
@@ -294,7 +294,7 @@ vHeadPos += objP->info.position.mOrient[RVEC] * (size* (-1));
 G3TransformAndEncodePoint(&headPoint, vHeadPos);
 G3DrawLine (&arrowPoint, &headPoint);
 
-// Draw tPlayer's up vector
+// Draw CPlayerData's up vector
 vArrowPos = objP->info.position.vPos + objP->info.position.mOrient[UVEC] * (size*2);
 G3TransformAndEncodePoint(&arrowPoint, vArrowPos);
 G3DrawLine (&spherePoint, &arrowPoint);
@@ -392,7 +392,7 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 			ModexPrintF (5,20,msg,SMALL_FONT, automapColors.nDkGray);
 			}
 		}			
-	// Draw tPlayer (s)...
+	// Draw CPlayerData (s)...
 	if (AM_SHOW_PLAYERS) {
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if ((i != gameData.multiplayer.nLocalPlayer) && AM_SHOW_PLAYER (i)) {
@@ -974,7 +974,7 @@ void DrawAllEdges (void)
 	int			i, j, nbright = 0;
 	ubyte			nfacing, nnfacing;
 	tEdgeInfo	*e;
-	vmsVector	*tv1;
+	CFixVector	*tv1;
 	fix			distance;
 	fix			minDistance = 0x7fffffff;
 	g3sPoint		*p1, *p2;
@@ -1409,7 +1409,7 @@ else {
 		for (e1 = 0; e1 < e->num_faces; e1++) {
 			for (e2 = 1; e2 < e->num_faces; e2++) {
 				if ((e1 != e2) && (e->nSegment [e1] != e->nSegment [e2]))	{
-					if (vmsVector::Dot(gameData.segs.segments [e->nSegment [e1]].sides [e->sides [e1]].normals [0], gameData.segs.segments [e->nSegment [e2]].sides [e->sides [e2]].normals [0]) > (F1_0- (F1_0/10)) )	{
+					if (CFixVector::Dot(gameData.segs.segments [e->nSegment [e1]].sides [e->sides [e1]].normals [0], gameData.segs.segments [e->nSegment [e2]].sides [e->sides [e2]].normals [0]) > (F1_0- (F1_0/10)) )	{
 						e->flags &= (~EF_DEFINING);
 						break;
 					}

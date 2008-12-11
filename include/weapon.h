@@ -59,7 +59,7 @@ typedef struct tWeaponInfo {
 	fix fire_wait;              // Time until this weapon can be fired again.
 
 	/* not present in shareware datafiles */
-	fix multi_damage_scale;     // Scale damage by this amount when applying to tPlayer in multiplayer.  F1_0 means no change.
+	fix multi_damage_scale;     // Scale damage by this amount when applying to CPlayerData in multiplayer.  F1_0 means no change.
 
 	tBitmapIndex bitmap;        // Pointer to bitmap if rendertype==0 or 1.
 
@@ -194,7 +194,7 @@ typedef struct D2D1_weapon_info {
 //given a weapon index, return the flag value
 #define  HAS_FLAG(index)  (1<<(index))
 
-// Weapon flags, if tPlayer->weaponFlags & WEAPON_FLAG is set, then the tPlayer has this weapon
+// Weapon flags, if CPlayerData->weaponFlags & WEAPON_FLAG is set, then the CPlayerData has this weapon
 #define HAS_LASER_FLAG      HAS_FLAG(LASER_INDEX)
 #define HAS_VULCAN_FLAG     HAS_FLAG(VULCAN_INDEX)
 #define HAS_SPREADFIRE_FLAG HAS_FLAG(SPREADFIRE_INDEX)
@@ -302,7 +302,7 @@ int PickupVulcanAmmo (CObject *objP, int nPlayer);
 
 int AttemptToStealItem (CObject *objp, int player_num);
 
-//this function is for when the tPlayer intentionally drops a powerup
+//this function is for when the CPlayerData intentionally drops a powerup
 extern int SpitPowerup (CObject *spitter, ubyte id, int seed);
 
 #define SMEGA_ID    40

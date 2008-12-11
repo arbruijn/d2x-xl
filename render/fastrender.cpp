@@ -63,7 +63,7 @@ GLhandleARB hVertLightFS = 0;
 void ResetFaceList (int nThread)
 {
 PROF_START
-	tFaceListIndex *flxP = gameData.render.faceIndex + nThread;
+	CFaceListIndex *flxP = gameData.render.faceIndex + nThread;
 #if SORT_FACES == 2
 #	if 0//def _DEBUG
 memset (flxP->roots, 0xff, sizeof (flxP->roots));
@@ -77,8 +77,8 @@ for (int i = 0, h = flxP->nUsedKeys; i < h; i++)
 #	if 0//def _DEBUG
 memset (flxP->tails, 0xff, sizeof (flxP->tails));
 #	else
-short *tails = flxP->tails,
-		*usedKeys = flxP->usedKeys;
+short *tails = flxP->tails.Buffer (),
+		*usedKeys = flxP->usedKeys.Buffer ();
 for (int i = 0, h = flxP->nUsedKeys; i < h; i++) 
 	tails [usedKeys [i]] = -1;
 #	endif
@@ -108,7 +108,7 @@ if (nKey < 0)
 	return 0;
 
 PROF_START
-tFaceListIndex	*flxP = gameData.render.faceIndex + nThread;
+CFaceListIndex	*flxP = gameData.render.faceIndex + nThread;
 
 if (faceP->nOvlTex)
 	nKey += MAX_WALL_TEXTURES + faceP->nOvlTex;
@@ -653,7 +653,7 @@ if (gameStates.render.bHaveSkyBox) {
 	gameStates.render.nType = 4;
 	gameStates.render.bFullBright = 1;
 	bVertexArrays = BeginRenderFaces (4, 0);
-	for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments.Buffer (); i; i--, segP++) {
+	for (i = gameData.segs.skybox.ToS (), segP = gameData.segs.skybox.Buffer (); i; i--, segP++) {
 		nSegment = *segP;
 		segFaceP = SEGFACES + nSegment;
 		for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
@@ -691,9 +691,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-short RenderFaceList (tFaceListIndex *flxP, int nType, int bDepthOnly, int bHeadlight)
+short RenderFaceList (CFaceListIndex *flxP, int nType, int bDepthOnly, int bHeadlight)
 {
-	tFaceListIndex	flx = *flxP;
+	CFaceListIndex	flx = *flxP;
 	tFaceListItem	*fliP;
 	tFace			*faceP;
 	short				i, j, nFaces = 0, nSegment = -1;
@@ -726,9 +726,9 @@ return nFaces;
 
 //------------------------------------------------------------------------------
 
-void RenderCoronaFaceList (tFaceListIndex *flxP, int nPass)
+void RenderCoronaFaceList (CFaceListIndex *flxP, int nPass)
 {
-	tFaceListIndex	flx = *flxP;
+	CFaceListIndex	flx = *flxP;
 	tFaceListItem	*fliP;
 	tFace			*faceP;
 	short				i, j, nSegment;
@@ -1093,8 +1093,8 @@ typedef struct tVertLightIndex {
 typedef struct tVertLightData {
 	short					nVertices;
 	short					nLights;
-	fVector				buffers [VERTLIGHT_BUFFERS][VLBUF_SIZE];
-	fVector				colors [VLBUF_SIZE];
+	CFloatVector				buffers [VERTLIGHT_BUFFERS][VLBUF_SIZE];
+	CFloatVector				colors [VLBUF_SIZE];
 	tVertLightIndex	index [VLBUF_SIZE];
 } tVertLightData;
 
@@ -1151,15 +1151,15 @@ return hBuffer;
 
 void ComputeFragLight (float lightRange)
 {
-	fVector	*vertPos, *vertNorm, *lightPos, lightColor, lightDir;
-	fVector	vReflect, vertColor = fVector::ZERO;
+	CFloatVector	*vertPos, *vertNorm, *lightPos, lightColor, lightDir;
+	CFloatVector	vReflect, vertColor = CFloatVector::ZERO;
 	float		nType, radius, brightness, specular;
 	float		attenuation, lightDist, NdotL, RdotE;
 	int		i;
 
-	static fVector matAmbient = fVector::Create(0.01f, 0.01f, 0.01f, 1.0f);
-	//static fVector matDiffuse = {{1.0f, 1.0f, 1.0f, 1.0f}};
-	//static fVector matSpecular = {{1.0f, 1.0f, 1.0f, 1.0f}};
+	static CFloatVector matAmbient = CFloatVector::Create(0.01f, 0.01f, 0.01f, 1.0f);
+	//static CFloatVector matDiffuse = {{1.0f, 1.0f, 1.0f, 1.0f}};
+	//static CFloatVector matSpecular = {{1.0f, 1.0f, 1.0f, 1.0f}};
 	static float shininess = 96.0;
 
 for (i = 0; i < vld.nLights; i++) {
@@ -1172,7 +1172,7 @@ for (i = 0; i < vld.nLights; i++) {
 	brightness = lightColor[W];
 	lightDir = *lightPos - *vertPos;
 	lightDist = lightDir.Mag() / lightRange;
-	fVector::Normalize(lightDir);
+	CFloatVector::Normalize(lightDir);
 	if (nType)
 		lightDist -= radius;
 	if (lightDist < 1.0f) {
@@ -1183,7 +1183,7 @@ for (i = 0; i < vld.nLights; i++) {
 		lightDist *= lightDist;
 		if (nType)
 			lightDist *= 2.0f;
-		NdotL = fVector::Dot(*vertNorm, lightDir);
+		NdotL = CFloatVector::Dot(*vertNorm, lightDir);
 		if (NdotL < 0.0f)
 			NdotL = 0.0f;
 		}	
@@ -1192,11 +1192,11 @@ for (i = 0; i < vld.nLights; i++) {
 	vertColor[G] = (matAmbient[G] + NdotL) * lightColor[G];
 	vertColor[B] = (matAmbient[B] + NdotL) * lightColor[B];
 	if (NdotL > 0.0f) {
-		vReflect = fVector::Reflect(lightDir.Neg(), *vertNorm);
-		fVector::Normalize(vReflect);
+		vReflect = CFloatVector::Reflect(lightDir.Neg(), *vertNorm);
+		CFloatVector::Normalize(vReflect);
 		lightPos->Neg();
-		fVector::Normalize(*lightPos);
-		RdotE = fVector::Dot(vReflect, *lightPos);
+		CFloatVector::Normalize(*lightPos);
+		RdotE = CFloatVector::Dot(vReflect, *lightPos);
 		if (RdotE < 0.0f)
 			RdotE = 0.0f;
 		specular = (float) pow (RdotE, shininess);
@@ -1216,7 +1216,7 @@ int RenderVertLightBuffers (void)
 {
 	tFaceColor	*vertColorP;
 	tRgbaColorf	vertColor;
-	fVector		*pc;
+	CFloatVector		*pc;
 	int			i, j;
 	short			nVertex, nLights;
 	GLuint		hBuffer [VERTLIGHT_BUFFERS] = {0,0,0,0};
@@ -1377,9 +1377,9 @@ if (nState == 0) {
 	glDepthMask (0);
 	}
 else if (nState == 1) {
-	tShaderLight	*psl;
+	CShaderLight	*psl;
 	int				bSkipHeadlight = gameStates.ogl.bHeadlight && (gameData.render.lights.dynamic.headlights.nLights > 0) && !gameStates.render.nState;
-	fVector			vPos = gameData.segs.fVertices [nVertex],
+	CFloatVector			vPos = gameData.segs.fVertices [nVertex],
 						vNormal = gameData.segs.points [nVertex].p3_normal.vNormal;
 		
 	SetNearestVertexLights (-1, nVertex, NULL, 1, 0, 1, 0);
@@ -1402,7 +1402,7 @@ else if (nState == 1) {
 		vld.buffers [0][i] = vPos;
 		vld.buffers [1][i] = vNormal;
 		vld.buffers [2][i] = psl->vPosf [0];
-		vld.buffers [3][i] = *(reinterpret_cast<fVector*> (&psl->info.color));
+		vld.buffers [3][i] = *(reinterpret_cast<CFloatVector*> (&psl->info.color));
 		vld.buffers [0][i][W] = 1.0f;
 		vld.buffers [1][i][W] = (psl->info.nType < 2) ? 1.0f : 0.0f;
 		vld.buffers [2][i][W] = psl->info.fRad;

@@ -33,7 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //returns true if actually picked up
 int PickupPrimary (int nWeaponIndex, int nPlayer)
 {
-	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
+	CPlayerData	*playerP = gameData.multiplayer.players + nPlayer;
 	//ushort oldFlags = LOCALPLAYER.primaryWeaponFlags;
 	ushort flag = 1 << nWeaponIndex;
 	int nCutPoint;
@@ -78,7 +78,7 @@ int PickupSecondary (CObject *objP, int nWeaponIndex, int nAmount, int nPlayer)
 	int		nMaxAmount;
 	int		nPickedUp;
 	int		nCutPoint, bEmpty = 0, bSmokeGrens;
-	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
+	CPlayerData	*playerP = gameData.multiplayer.players + nPlayer;
 
 if ((nWeaponIndex == PROXMINE_INDEX) && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0)) {
 	bSmokeGrens = 1;
@@ -154,7 +154,7 @@ int PickupAmmo (int classFlag, int nWeaponIndex, int ammoCount, const char *pszM
 {
 	int		nMaxAmmo, nCutPoint, nSupposedWeapon = gameData.weapons.nPrimary;
 	int		nOldAmmo = classFlag;		//kill warning
-	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
+	CPlayerData	*playerP = gameData.multiplayer.players + nPlayer;
 
 Assert(classFlag==CLASS_PRIMARY && nWeaponIndex==VULCAN_INDEX);
 
@@ -213,7 +213,7 @@ return bUsed;
 
 int PickupLaser (CObject *objP, int nId, int nPlayer)
 {
-	tPlayer *playerP = gameData.multiplayer.players + nPlayer;
+	CPlayerData *playerP = gameData.multiplayer.players + nPlayer;
 
 if (playerP->laserLevel < MAX_LASER_LEVEL) {
 	if (gameData.demo.nState == ND_STATE_RECORDING)
@@ -235,7 +235,7 @@ return PickupEnergyBoost (objP, nPlayer);
 
 int PickupSuperLaser (CObject *objP, int nId, int nPlayer)
 {
-	tPlayer *playerP = gameData.multiplayer.players + nPlayer;
+	CPlayerData *playerP = gameData.multiplayer.players + nPlayer;
 
 if (playerP->laserLevel < MAX_SUPER_LASER_LEVEL) {
 	ubyte nOldLevel = playerP->laserLevel;
@@ -266,7 +266,7 @@ return PickupEnergyBoost (objP, nPlayer);
 
 int PickupQuadLaser (CObject *objP, int nId, int nPlayer)
 {
-	tPlayer *playerP = gameData.multiplayer.players + nPlayer;
+	CPlayerData *playerP = gameData.multiplayer.players + nPlayer;
 
 if (!(playerP->flags & PLAYER_FLAGS_QUAD_LASERS)) {
 	playerP->flags |= PLAYER_FLAGS_QUAD_LASERS;
@@ -303,8 +303,8 @@ int PickupGatlingGun (CObject *objP, int nId, int nPlayer)
 	int bUsed = PickupPrimary (nId, nPlayer);
 
 //didn't get the weapon (because we already have it), but
-//maybe snag some of the nAmmo.  if single-tPlayer, grab all the nAmmo
-//and remove the powerup.  If multi-tPlayer take nAmmo in excess of
+//maybe snag some of the nAmmo.  if single-CPlayerData, grab all the nAmmo
+//and remove the powerup.  If multi-CPlayerData take nAmmo in excess of
 //the amount in a powerup, and leave the rest.
 if (!bUsed)
 	if (IsMultiGame)

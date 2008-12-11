@@ -44,9 +44,9 @@ int	nRobotSoundVolume = DEFAULT_ROBOT_SOUND_VOLUME;
 //		0		Player is not visible from CObject, obstruction or something.
 //		1		Player is visible, but not in field of view.
 //		2		Player is visible and in field of view.
-//	Note: Uses gameData.ai.vBelievedPlayerPos as tPlayer's position for cloak effect.
+//	Note: Uses gameData.ai.vBelievedPlayerPos as CPlayerData's position for cloak effect.
 //	NOTE: Will destructively modify *pos if *pos is outside the mine.
-int ObjectCanSeePlayer (CObject *objP, vmsVector *pos, fix fieldOfView, vmsVector *vVecToPlayer)
+int ObjectCanSeePlayer (CObject *objP, CFixVector *pos, fix fieldOfView, CFixVector *vVecToPlayer)
 {
 	fix			dot;
 	tFVIQuery	fq;
@@ -85,13 +85,13 @@ gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
 gameData.ai.nHitSeg = gameData.ai.hitData.hit.nSegment;
 if (gameData.ai.nHitType != HIT_NONE)
 	return 0;
-dot = vmsVector::Dot(*vVecToPlayer, objP->info.position.mOrient[FVEC]);
+dot = CFixVector::Dot(*vVecToPlayer, objP->info.position.mOrient[FVEC]);
 return (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) ? 2 : 1;
 }
 
 // ------------------------------------------------------------------------------------------------------------------
 
-int AICanFireAtPlayer (CObject *objP, vmsVector *vGun, vmsVector *vPlayer)
+int AICanFireAtPlayer (CObject *objP, CFixVector *vGun, CFixVector *vPlayer)
 {
 	tFVIQuery	fq;
 	fix			nSize, h;
@@ -115,8 +115,8 @@ else {
 		objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_GUNSEG;
 	fq.startSeg = nSegment;
 	}
-h = vmsVector::Dist (*vGun, objP->info.position.vPos);
-h = vmsVector::Dist (*vGun, *vPlayer);
+h = CFixVector::Dist (*vGun, objP->info.position.vPos);
+h = CFixVector::Dist (*vGun, *vPlayer);
 nModel = objP->rType.polyObjInfo.nModel;
 nSize = objP->info.xSize;
 objP->rType.polyObjInfo.nModel = -1;	//make sure sphere/hitbox and not hitbox/hitbox collisions get tested
@@ -153,15 +153,15 @@ if ((xMaxVisibleDist > 0) && (gameData.ai.xDistToPlayer > xMaxVisibleDist) && (a
 // --------------------------------------------------------------------------------------------------------------------
 //	Note: This function could be optimized.  Surely ObjectCanSeePlayer would benefit from the
 //	information of a normalized gameData.ai.vVecToPlayer.
-//	Return tPlayer visibility:
+//	Return CPlayerData visibility:
 //		0		not visible
-//		1		visible, but robot not looking at tPlayer (ie, on an unobstructed vector)
+//		1		visible, but robot not looking at CPlayerData (ie, on an unobstructed vector)
 //		2		visible and in robot's field of view
-//		-1		tPlayer is cloaked
-//	If the tPlayer is cloaked, set gameData.ai.vVecToPlayer based on time tPlayer cloaked and last uncloaked position.
-//	Updates ailP->nPrevVisibility if tPlayer is not cloaked, in which case the previous visibility is left unchanged
+//		-1		CPlayerData is cloaked
+//	If the CPlayerData is cloaked, set gameData.ai.vVecToPlayer based on time CPlayerData cloaked and last uncloaked position.
+//	Updates ailP->nPrevVisibility if CPlayerData is not cloaked, in which case the previous visibility is left unchanged
 //	and is copied to gameData.ai.nPlayerVisibility
-void ComputeVisAndVec (CObject *objP, vmsVector *pos, tAILocalInfo *ailP, tRobotInfo *botInfoP, int *flag,
+void ComputeVisAndVec (CObject *objP, CFixVector *pos, tAILocalInfo *ailP, tRobotInfo *botInfoP, int *flag,
 							  fix xMaxVisibleDist)
 {
 if (*flag) {
@@ -174,13 +174,13 @@ else {
 
 		deltaTime = gameData.time.xGame - gameData.ai.cloakInfo [cloak_index].lastTime;
 		if (deltaTime > F1_0*2) {
-			vmsVector	vRand;
+			CFixVector	vRand;
 
 			gameData.ai.cloakInfo [cloak_index].lastTime = gameData.time.xGame;
-			vRand = vmsVector::Random();
+			vRand = CFixVector::Random();
 			gameData.ai.cloakInfo [cloak_index].vLastPos += vRand * (8*deltaTime);
 			}
-		dist = vmsVector::NormalizedDir(gameData.ai.vVecToPlayer, gameData.ai.cloakInfo [cloak_index].vLastPos, *pos);
+		dist = CFixVector::NormalizedDir(gameData.ai.vVecToPlayer, gameData.ai.cloakInfo [cloak_index].vLastPos, *pos);
 		gameData.ai.nPlayerVisibility = ObjectCanSeePlayer (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.vVecToPlayer);
 		LimitPlayerVisibility (xMaxVisibleDist, ailP);
 #if DBG
@@ -194,7 +194,7 @@ else {
 		}
 	else {
 		//	Compute expensive stuff -- gameData.ai.vVecToPlayer and gameData.ai.nPlayerVisibility
-		vmsVector::NormalizedDir(gameData.ai.vVecToPlayer, gameData.ai.vBelievedPlayerPos, *pos);
+		CFixVector::NormalizedDir(gameData.ai.vVecToPlayer, gameData.ai.vBelievedPlayerPos, *pos);
 		if (gameData.ai.vVecToPlayer.IsZero()) {
 			gameData.ai.vVecToPlayer[X] = F1_0;
 			}
@@ -247,7 +247,7 @@ else {
 
 	*flag = 1;
 
-	//	@mk, 09/21/95: If tPlayer view is not obstructed and awareness is at least as high as a nearby collision,
+	//	@mk, 09/21/95: If CPlayerData view is not obstructed and awareness is at least as high as a nearby collision,
 	//	act is if robot is looking at player.
 	if (ailP->playerAwarenessType >= PA_NEARBY_ROBOT_FIRED)
 		if (gameData.ai.nPlayerVisibility == 1)
@@ -306,9 +306,9 @@ if ((objP == NULL) || (ROBOTINFO (objP->info.nId).companion == 1)) {
 	if (wallP->nType != WALL_DOOR) /*&& (wallP->nType != WALL_CLOSED))*/
 		return 1;
 
-	//	If Buddy is returning to tPlayer, don't let him think he can get through triggered doors.
-	//	It's only valid to think that if the tPlayer is going to get him through.  But if he's
-	//	going to the tPlayer, the tPlayer is probably on the opposite tSide.
+	//	If Buddy is returning to CPlayerData, don't let him think he can get through triggered doors.
+	//	It's only valid to think that if the CPlayerData is going to get him through.  But if he's
+	//	going to the CPlayerData, the CPlayerData is probably on the opposite tSide.
 	if (objP)
 		ailp_mode = gameData.ai.localInfo [OBJ_IDX (objP)].mode;
 	else if (gameData.escort.nObjNum >= 0)
@@ -368,7 +368,7 @@ else if ((objP->info.nId == ROBOT_BRAIN) || (objP->cType.aiInfo.behavior == AIB_
 	if (IS_WALL (nWall)) {
 		if ((wallP->nType == WALL_DOOR) && (wallP->keys == KEY_NONE) && !(wallP->flags & WALL_DOOR_LOCKED))
 			return 1;
-		else if (wallP->keys != KEY_NONE) {	//	Allow bots to open doors to which tPlayer has keys.
+		else if (wallP->keys != KEY_NONE) {	//	Allow bots to open doors to which CPlayerData has keys.
 			if (wallP->keys & LOCALPLAYER.flags)
 				return 1;
 			}
@@ -404,7 +404,7 @@ int OpenableDoorsInSegment (short nSegment)
 }
 
 // -- // --------------------------------------------------------------------------------------------------------------------
-// -- //	Return true if a special CObject (tPlayer or control center) is in this CSegment.
+// -- //	Return true if a special CObject (CPlayerData or control center) is in this CSegment.
 // -- int specialObject_in_seg (int nSegment)
 // -- {
 // -- 	int	nObject;
@@ -439,8 +439,8 @@ int OpenableDoorsInSegment (short nSegment)
 // -- }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Return true if placing an CObject of size size at pos *pos intersects a (tPlayer or robot or control center) in CSegment *segP.
-int CheckObjectObjectIntersection (vmsVector *pos, fix size, CSegment *segP)
+//	Return true if placing an CObject of size size at pos *pos intersects a (CPlayerData or robot or control center) in CSegment *segP.
+int CheckObjectObjectIntersection (CFixVector *pos, fix size, CSegment *segP)
 {
 //	If this would intersect with another CObject (only check those in this CSegment), then try to move.
 short nObject = segP->objects;
@@ -448,7 +448,7 @@ CObject *objP;
 while (nObject != -1) {
 	objP = OBJECTS + nObject;
 	if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR)) {
-		if (vmsVector::Dist (*pos, objP->info.position.vPos) < size + objP->info.xSize)
+		if (CFixVector::Dist (*pos, objP->info.position.vPos) < size + objP->info.xSize)
 			return 1;
 		}
 	nObject = objP->info.nNextInSeg;
@@ -458,14 +458,14 @@ return 0;
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Called for an AI CObject if it is fairly aware of the player.
-//	awarenessLevel is in 0..100.  Larger numbers indicate greater awareness (eg, 99 if firing at tPlayer).
+//	awarenessLevel is in 0..100.  Larger numbers indicate greater awareness (eg, 99 if firing at CPlayerData).
 //	In a given frame, might not get called for an CObject, or might be called more than once.
 //	The fact that this routine is not called for a given CObject does not mean that CObject is not interested in the player.
 //	OBJECTS are moved by physics, so they can move even if not interested in a player.  However, if their velocity or
 //	orientation is changing, this routine will be called.
 //	Return value:
-//		0	this tPlayer IS NOT allowed to move this robot.
-//		1	this tPlayer IS allowed to move this robot.
+//		0	this CPlayerData IS NOT allowed to move this robot.
+//		1	this CPlayerData IS allowed to move this robot.
 
 int AIMultiplayerAwareness (CObject *objP, int awarenessLevel)
 {

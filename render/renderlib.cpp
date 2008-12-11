@@ -60,11 +60,11 @@ int FaceIsVisible (short nSegment, short nSide)
 #if SW_CULLING
 CSegment *segP = SEGMENTS + nSegment;
 tSide *sideP = segP->sides + nSide;
-vmsVector v;
+CFixVector v;
 v = gameData.render.mine.viewerEye - *SIDE_CENTER_I(nSegment, nSide); //gameData.segs.vertices + segP->verts [sideToVerts [nSide][0]]);
 return (sideP->nType == SIDE_IS_QUAD) ?
-		 vmsVector::Dot(sideP->normals[0], v) >= 0 :
-		 (vmsVector::Dot(sideP->normals[0], v) >= 0) || (vmsVector::Dot(sideP->normals[1], v) >= 0);
+		 CFixVector::Dot(sideP->normals[0], v) >= 0 :
+		 (CFixVector::Dot(sideP->normals[0], v) >= 0) || (CFixVector::Dot(sideP->normals[1], v) >= 0);
 #else
 return 1;
 #endif
@@ -319,8 +319,8 @@ void DrawOutline (int nVertices, g3sPoint **pointList)
 	int i;
 	GLint depthFunc;
 	g3sPoint center, Normal;
-	vmsVector n;
-	fVector *nf;
+	CFixVector n;
+	CFloatVector *nf;
 
 #if 1 //!DBG
 if (gameStates.render.bQueryOcclusion) {
@@ -937,7 +937,7 @@ for (i = 0, j = 1; nRadius; nRadius--) {
 	for (h = i, i = j; h < i; h++) {
 		nSegment = gameData.render.mine.nSegRenderList [h];
 		if ((gameData.render.mine.bVisible [nSegment] == gameData.render.mine.nVisible) &&
-			 (!nMaxDist || (vmsVector::Dist(*SEGMENT_CENTER_I (nStartSeg), *SEGMENT_CENTER_I (nSegment)) <= nMaxDist)))
+			 (!nMaxDist || (CFixVector::Dist(*SEGMENT_CENTER_I (nStartSeg), *SEGMENT_CENTER_I (nSegment)) <= nMaxDist)))
 			return 1;
 		segP = SEGMENTS + nSegment;
 		for (nChild = 0; nChild < 6; nChild++) {

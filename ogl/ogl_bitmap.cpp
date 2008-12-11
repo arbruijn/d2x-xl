@@ -44,7 +44,7 @@
 //------------------------------------------------------------------------------
 
 int G3DrawBitmap (
-	const vmsVector&	vPos, 
+	const CFixVector&	vPos, 
 	fix					width, 
 	fix					height, 
 	CBitmap				*bmP, 
@@ -52,7 +52,7 @@ int G3DrawBitmap (
 	float					alpha, 
 	int					transp)
 {
-	fVector		fPos;
+	CFloatVector		fPos;
 	GLfloat		h, w, u, v;
 
 r_bitmapc++;
@@ -167,13 +167,13 @@ xf = dx + (dw + x) / ((float) gameStates.ogl.nLastW * h);
 yo = 1.0f - dy - y / ((float) gameStates.ogl.nLastH * h);
 yf = 1.0f - dy - (dh + y) / ((float) gameStates.ogl.nLastH * h);
 
-OglActiveTexture (GL_TEXTURE0, 0);
+glActiveTexture (GL_TEXTURE0);
+glEnable (GL_TEXTURE_2D);
 if (bmP->Bind (0, 3))
 	return 1;
 texP = bmP->Texture ();
 texP->Wrap (GL_CLAMP);
 
-glEnable (GL_TEXTURE_2D);
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 glDepthFunc (GL_ALWAYS);
 if (!(bBlend = glIsEnabled (GL_BLEND)))
@@ -239,8 +239,6 @@ int OglUBitBltI (
 	int nTransp = (src->Flags () & BM_FLAG_TGA) ? -1 : src->HasTransparency () ? 2 : 0;
 
 //	ubyte *oldpal;
-r_ubitbltc++;
-
 u1 = v1 = 0;
 dx += dest->Left ();
 dy += dest->Top ();

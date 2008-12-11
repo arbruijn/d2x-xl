@@ -13,9 +13,9 @@
 #include "network.h"
 
 //-------------------------------------------------------------------------
-// reads a tPlayerShip structure from a CFile
+// reads a CPlayerShip structure from a CFile
  
-void PlayerShipRead (tPlayerShip *ps, CFile& cf)
+void PlayerShipRead (CPlayerShip *ps, CFile& cf)
 {
 	int i;
 
@@ -95,7 +95,7 @@ return 1000 * WI_fire_wait (nWeapon) / F1_0;
 
 void UpdateFiringSounds (void)
 {
-	tWeaponState	*wsP = gameData.multiplayer.weaponStates;
+	CWeaponState	*wsP = gameData.multiplayer.weaponStates;
 	tFiringData		*fP;
 	int				bGatling, bGatlingSound, i;
 
@@ -162,7 +162,7 @@ else if (gameData.weapons.firing [1].nDuration) {
 void UpdatePlayerWeaponInfo (void)
 {
 	int				i, bUpdate = 0;
-	tWeaponState	*wsP = gameData.multiplayer.weaponStates + gameData.multiplayer.nLocalPlayer;
+	CWeaponState	*wsP = gameData.multiplayer.weaponStates + gameData.multiplayer.nLocalPlayer;
 	tFiringData		*fP;
 
 if (gameStates.app.bPlayerIsDead)

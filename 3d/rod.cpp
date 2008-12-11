@@ -39,7 +39,7 @@ tUVL rodUvlList [4] = {
 //compute the corners of a rod.  fills in vertbuf.
 int CalcRodCorners (g3sPoint *btmPoint, fix xBtmWidth, g3sPoint *topPoint, fix xTopWidth)
 {
-	vmsVector	vDelta, vTop, vTemp, vRodNorm;
+	CFixVector	vDelta, vTop, vTemp, vRodNorm;
 	ubyte			andCodes;
 	int			i;
 
@@ -54,11 +54,11 @@ vDelta.p.y = FixDiv (vDelta.p.y, viewInfo.scale.p.y);
 //calc Perp vector
 //do lots of normalizing to prevent overflowing.  When this code works,
 //it should be optimized
-vmsVector::Normalize(vDelta);
+CFixVector::Normalize(vDelta);
 vTop = topPoint->p3_vec;
-vmsVector::Normalize(vTop);
-vRodNorm = vmsVector::Cross(vDelta, vTop);
-vmsVector::Normalize(vRodNorm);
+CFixVector::Normalize(vTop);
+vRodNorm = CFixVector::Cross(vDelta, vTop);
+CFixVector::Normalize(vRodNorm);
 //scale for aspect
 #if RESCALE_ROD
 vRodNorm.p.x = FixMul (vRodNorm.p.x, viewInfo.scale.p.x);

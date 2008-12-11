@@ -53,7 +53,7 @@ void NDRecordPlayerEnergy(int, int);
 void NDRecordPlayerShields(int, int);
 void NDRecordPlayerFlags(uint, uint);
 void NDRecordPlayerWeapon(int, int);
-void NDRecordEffectBlowup(short, int, vmsVector *);
+void NDRecordEffectBlowup(short, int, CFixVector *);
 void NDRecordHomingDistance(fix);
 void NDRecordLetterbox(void);
 void NDRecordRearView(void);

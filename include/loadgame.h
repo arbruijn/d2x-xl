@@ -34,7 +34,7 @@ extern tObjPosition Player_init[MAX_PLAYERS];
 extern int bPlayerIsTyping [MAX_PLAYERS];
 extern int nTypingTimeout;
 #endif
-// This is the highest level the tPlayer has ever reached
+// This is the highest level the CPlayerData has ever reached
 extern int Player_highestLevel;
 
 //
@@ -51,18 +51,18 @@ void StartLevel(int randomFlag);
 // Actually does the work to start new level
 int StartNewLevelSub(int nLevel, int bPageInTextures, int bSecret, int bRestore);
 
-void InitMultiPlayerObject (void);            //make sure tPlayer's CObject set up
+void InitMultiPlayerObject (void);            //make sure CPlayerData's CObject set up
 void InitPlayerStatsGame (void);      //clear all stats
 void GameStartInitNetworkPlayers (void);
 
 // starts a resumed game loaded from disk
 void ResumeSavedGame(int startLevel);
 
-// called when the tPlayer has finished a level
+// called when the CPlayerData has finished a level
 // if secret flag is true, advance to secret level, else next normal level
 void PlayerFinishedLevel(int secretFlag);
 
-// called when the tPlayer has died
+// called when the CPlayerData has died
 void DoPlayerDead (void);
 
 void SetPosFromReturnSegment (int bRelink);
@@ -80,7 +80,7 @@ extern void UpdatePlayerStats();
 
 void show_high_scores(int place);
 void draw_high_scores(int place);
-int add_player_to_high_scores(tPlayer *playerP);
+int add_player_to_high_scores(CPlayerData *playerP);
 void input_name (int place);
 int reset_high_scores();
 void InitPlayerStatsLevel(int secretFlag);

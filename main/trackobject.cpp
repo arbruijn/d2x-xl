@@ -20,7 +20,7 @@ fix	xMinTrackableDot = MIN_TRACKABLE_DOT;
 //	and it must not be obstructed by a tWall.
 int ObjectIsTrackeable (int nHomingTarget, CObject *trackerP, fix *xDot)
 {
-	vmsVector	vGoal;
+	CFixVector	vGoal;
 	CObject		*objP;
 
 if (nHomingTarget == -1)
@@ -28,7 +28,7 @@ if (nHomingTarget == -1)
 if (IsCoopGame)
 	return 0;
 objP = OBJECTS + nHomingTarget;
-//	Don't track tPlayer if he's cloaked.
+//	Don't track CPlayerData if he's cloaked.
 if ((nHomingTarget == LOCALPLAYER.nObject) && (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
 	return 0;
 //	Can't track AI CObject if he's cloaked.
@@ -41,11 +41,11 @@ if (objP->info.nType == OBJ_ROBOT) {
 		return 0;
 	}
 vGoal = objP->info.position.vPos - trackerP->info.position.vPos;
-vmsVector::Normalize(vGoal);
-*xDot = vmsVector::Dot(vGoal, trackerP->info.position.mOrient[FVEC]);
+CFixVector::Normalize(vGoal);
+*xDot = CFixVector::Dot(vGoal, trackerP->info.position.mOrient[FVEC]);
 if ((*xDot < xMinTrackableDot) && (*xDot > 9 * F1_0 / 10)) {
-	vmsVector::Normalize(vGoal);
-	*xDot = vmsVector::Dot(vGoal, trackerP->info.position.mOrient[FVEC]);
+	CFixVector::Normalize(vGoal);
+	*xDot = CFixVector::Dot(vGoal, trackerP->info.position.mOrient[FVEC]);
 	}
 
 if ((*xDot >= xMinTrackableDot) || 
@@ -58,12 +58,12 @@ return 0;
 
 //	--------------------------------------------------------------------------------------------
 
-int CallFindHomingObjectComplete (CObject *trackerP, vmsVector *vCurPos)
+int CallFindHomingObjectComplete (CObject *trackerP, CFixVector *vCurPos)
 {
 if (!IsMultiGame)
 	return FindHomingObjectComplete (vCurPos, trackerP, OBJ_ROBOT, -1);
 if ((trackerP->info.nType == OBJ_PLAYER) || (trackerP->cType.laserInfo.parent.nType == OBJ_PLAYER)) {
-	//	It's fired by a tPlayer, so if robots present, track robot, else track player.
+	//	It's fired by a CPlayerData, so if robots present, track robot, else track player.
 	return IsCoopGame ? 
 			 FindHomingObjectComplete (vCurPos, trackerP, OBJ_ROBOT, -1) :
 			 FindHomingObjectComplete (vCurPos, trackerP, OBJ_PLAYER, OBJ_ROBOT);
@@ -78,7 +78,7 @@ return FindHomingObjectComplete (vCurPos, trackerP, OBJ_PLAYER, gameStates.app.c
 //	--------------------------------------------------------------------------------------------
 //	Find CObject to home in on.
 //	Scan list of OBJECTS rendered last frame, find one that satisfies function of nearness to center and distance.
-int FindHomingObject (vmsVector *vTrackerPos, CObject *trackerP)
+int FindHomingObject (CFixVector *vTrackerPos, CObject *trackerP)
 {
 	int	i, bOmega, bGuidedMslView;
 	fix	maxDot = -F1_0*2;
@@ -105,7 +105,7 @@ curMinTrackableDot = MIN_TRACKABLE_DOT;
 if (bOmega)
 	curMinTrackableDot = OMEGA_MIN_TRACKABLE_DOT;
 
-//	Not in network mode.  If not fired by tPlayer, then track player.
+//	Not in network mode.  If not fired by CPlayerData, then track player.
 if ((trackerP->info.nType != OBJ_PLAYER) && (trackerP->cType.laserInfo.parent.nObject != LOCALPLAYER.nObject)) {
 	if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
 		nBestObj = OBJ_IDX (gameData.objs.consoleP);
@@ -136,7 +136,7 @@ else {
 	//	Not in network mode and fired by player.
 	for (i = windowRenderedData [nWindow].nObjects - 1; i >= 0; i--) {
 		fix			dot; //, dist;
-		vmsVector	vecToCurObj;
+		CFixVector	vecToCurObj;
 		int			nObject = windowRenderedData [nWindow].renderedObjects [i];
 		CObject		*curObjP = OBJECTS + nObject;
 
@@ -159,9 +159,9 @@ else {
 		else if ((curObjP->info.nType != OBJ_PLAYER) && (curObjP->info.nType != OBJ_REACTOR))
 			continue;
 		vecToCurObj = curObjP->info.position.vPos - *vTrackerPos;
-		dist = vmsVector::Normalize(vecToCurObj);
+		dist = CFixVector::Normalize(vecToCurObj);
 		if (dist < maxTrackableDist) {
-			dot = vmsVector::Dot(vecToCurObj, bSpectate ? gameStates.app.playerPos.mOrient[FVEC] : trackerP->info.position.mOrient[FVEC]);
+			dot = CFixVector::Dot(vecToCurObj, bSpectate ? gameStates.app.playerPos.mOrient[FVEC] : trackerP->info.position.mOrient[FVEC]);
 
 			//	Note: This uses the constant, not-scaled-by-frametime value, because it is only used
 			//	to determine if an CObject is initially trackable.  FindHomingObject is called on subsequent
@@ -175,8 +175,8 @@ else {
 					}
 				} 
 			else if (dot > F1_0 - (F1_0 - curMinTrackableDot) * 2) {
-				vmsVector::Normalize(vecToCurObj);
-				dot = vmsVector::Dot(vecToCurObj, trackerP->info.position.mOrient[FVEC]);
+				CFixVector::Normalize(vecToCurObj);
+				dot = CFixVector::Dot(vecToCurObj, trackerP->info.position.mOrient[FVEC]);
 				if (dot > curMinTrackableDot) {
 					if (dot > maxDot) {
 						if (ObjectToObjectVisibility (trackerP, OBJECTS + nObject, FQ_TRANSWALL)) {
@@ -198,7 +198,7 @@ return nBestObj;
 //	Can track two kinds of OBJECTS.  If you are only interested in one nType, set trackObjType2 to NULL
 //	Always track proximity bombs.  --MK, 06/14/95
 //	Make homing OBJECTS not track parent's prox bombs.
-int FindHomingObjectComplete (vmsVector *vCurPos, CObject *trackerP, int trackObjType1, int trackObjType2)
+int FindHomingObjectComplete (CFixVector *vCurPos, CObject *trackerP, int trackObjType1, int trackObjType2)
 {
 	fix		maxDot = -F1_0*2;
 	int		nBestObj = -1;
@@ -229,7 +229,7 @@ if ((trackerP->info.nType == OBJ_WEAPON) && (trackerP->info.nId == OMEGA_ID)) {
 FORALL_ACTOR_OBJS (curObjP, nObject) {
 	int			bIsProximity = 0;
 	fix			dot, dist;
-	vmsVector	vecToCurObj;
+	CFixVector	vecToCurObj;
 
 	if ((curObjP->info.nType != trackObjType1) && (curObjP->info.nType != trackObjType2)) {
 		if (curObjP->info.nType != OBJ_WEAPON) 
@@ -267,8 +267,8 @@ FORALL_ACTOR_OBJS (curObjP, nObject) {
 
 	if (dist >= maxTrackableDist)
 		continue;
-	vmsVector::Normalize(vecToCurObj);
-	dot = vmsVector::Dot(vecToCurObj, trackerP->info.position.mOrient[FVEC]);
+	CFixVector::Normalize(vecToCurObj);
+	dot = CFixVector::Dot(vecToCurObj, trackerP->info.position.mOrient[FVEC]);
 	if (bIsProximity)
 		dot = ((dot << 3) + dot) >> 3;		//	I suspect Watcom would be too stupid to figure out the obvious...
 
@@ -308,15 +308,15 @@ if (ObjectIsTrackeable (nHomingTarget, trackerP, dot)) {
 	}
 
 if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
-	//	If tPlayer fired missile, then search for an CObject, if not, then give up.
+	//	If CPlayerData fired missile, then search for an CObject, if not, then give up.
 	if (OBJECTS [trackerP->cType.laserInfo.parent.nObject].info.nType == OBJ_PLAYER) {
 		if (nHomingTarget == -1) {
 			if (IsMultiGame) {
 				if (IsCoopGame)
 					rVal = FindHomingObjectComplete (&trackerP->info.position.vPos, trackerP, OBJ_ROBOT, -1);
-				else if (gameData.app.nGameMode & GM_MULTI_ROBOTS)		//	Not cooperative, if robots, track either robot or tPlayer
+				else if (gameData.app.nGameMode & GM_MULTI_ROBOTS)		//	Not cooperative, if robots, track either robot or CPlayerData
 					rVal = FindHomingObjectComplete (&trackerP->info.position.vPos, trackerP, OBJ_PLAYER, OBJ_ROBOT);
-				else		//	Not cooperative and no robots, track only a tPlayer
+				else		//	Not cooperative and no robots, track only a CPlayerData
 					rVal = FindHomingObjectComplete (&trackerP->info.position.vPos, trackerP, OBJ_PLAYER, -1);
 				}
 			else

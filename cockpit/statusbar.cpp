@@ -377,7 +377,7 @@ else if ((tInvul > F1_0 * 4) || (gameData.time.xGame & 0x8000)) {
 
 //	-----------------------------------------------------------------------------
 
-//print out some tPlayer statistics
+//print out some CPlayerData statistics
 void SBRenderGauges (void)
 {
 	int nEnergy = X2IR (LOCALPLAYER.energy);

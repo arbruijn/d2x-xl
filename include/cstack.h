@@ -30,6 +30,8 @@ template < class _T > class CStack : public CArray<_T> {
 	
 		inline _T* Top (void) { return m_data.buffer ? m_data.buffer + m_tos : NULL; }
 
+		inline uint ToS (void) { return m_tos; }
+
 		inline _T Pop (void) {
 			if (m_tos)
 				m_tos--;

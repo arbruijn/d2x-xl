@@ -20,7 +20,7 @@ hmp_file *hmp_open(const char *filename, int bUseD1Hog)
 	int num_tracks, midi_div;
 	ubyte *p;
 
-	if (!cf.Open ((char*) (filename), gameFolders.szDataDir, "rb", bUseD1Hog))
+	if (!cf.Open (const_cast<char*> (filename), gameFolders.szDataDir, "rb", bUseD1Hog))
 		return NULL;
 	hmp = reinterpret_cast<hmp_file*> (D2_ALLOC(sizeof(hmp_file)));
 	if (!hmp) {

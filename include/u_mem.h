@@ -63,8 +63,8 @@ char *MemStrDup (const char * str);
 
 extern uint nCurAllocd, nMaxAllocd;
 
-#define GETMEM(_t,_p,_s,_f)	if ((_p).Create (_s)) (_p).Clear (_f)
-#define FREEMEM(_t,_p,_s)		(_p).Destroy ()
+#define CREATE(_p,_s,_f)	if ((_p).Create (_s)) (_p).Clear (_f)
+#define DESTROY(_p)			(_p).Destroy ()
 
 void *GetMem (size_t size, char filler);
 

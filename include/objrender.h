@@ -29,13 +29,13 @@ void DrawObjectBlob (CObject *obj, int bmi0, int bmi, int iFrame, tRgbaColorf *c
 // draw an CObject that is a texture-mapped rod
 void DrawObjectRodTexPoly (CObject *obj, tBitmapIndex bitmap, int bLit, int iFrame);
 int DrawPolygonObject (CObject *objP, int bDepthSort, int bForce);
-void CalcShipThrusterPos (CObject *objP, vmsVector *vPos);
+void CalcShipThrusterPos (CObject *objP, CFixVector *vPos);
 int InitAddonPowerup (CObject *objP);
 void ConvertWeaponToPowerup (CObject *objP);
 int ConvertPowerupToWeapon (CObject *objP);
 void ConvertAllPowerupsToWeapons (void);
 int RenderObject(CObject *objP, int nWindowNum, int bForce);
-void TransformHitboxf (CObject *objP, fVector *vertList, int iSubObj);
+void TransformHitboxf (CObject *objP, CFloatVector *vertList, int iSubObj);
 int GetCloakInfo (CObject *objP, fix xCloakStartTime, fix xCloakEndTime, tCloakInfo *ciP);
 
 //------------------------------------------------------------------------------

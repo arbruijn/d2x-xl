@@ -302,8 +302,8 @@ int OOF_ReadFile (char *pszFile, tOOFObject *po, short nModel, short nType, int 
 int OOF_FreeObject (tOOFObject *po);
 int OOF_Render (CObject *objP, tOOFObject *po, float *fLight, int bCloaked);
 float *OOF_MatVms2Gl (float *pDest, const vmsMatrix& src);
-float *OOF_VecVms2Gl (float *pDest, const vmsVector& src);
-float *OOF_VecVms2Oof (tOOF_vector *pDest, const vmsVector& src);
+float *OOF_VecVms2Gl (float *pDest, const CFixVector& src);
+float *OOF_VecVms2Oof (tOOF_vector *pDest, const CFixVector& src);
 float *OOF_MatVms2Oof (tOOF_matrix *pDest, const vmsMatrix& src);
 tOOF_vector *OOF_VecNormalize (tOOF_vector *pv);
 tOOF_vector *OOF_VecAdd (tOOF_vector *pvDest, tOOF_vector *pvSrc, tOOF_vector *pvAdd);

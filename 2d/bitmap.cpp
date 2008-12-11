@@ -35,12 +35,12 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 ubyte* CBitmap::CreateBuffer (void)
 {
 if (m_info.props.rowSize * m_info.props.h) {
-	m_info.buffer.Create ((m_info.nBPP > 1) ? m_info.props.h * m_info.props.rowSize : MAX_BMP_SIZE (m_info.props.w, m_info.props.h));
+	CArray<ubyte>::Create ((m_info.nBPP > 1) ? m_info.props.h * m_info.props.rowSize : MAX_BMP_SIZE (m_info.props.w, m_info.props.h));
 #if DBG
-	m_info.buffer.Clear ();
+	Clear ();
 #endif
 	}
-return m_info.buffer.Buffer ();
+return Buffer ();
 }
 
 //------------------------------------------------------------------------------
@@ -70,9 +70,9 @@ return Buffer () != NULL;
 void CBitmap::DestroyBuffer (void)
 {
 if ((m_info.nType != BM_TYPE_ALT) && m_info.info.std.parent)
-	m_info.buffer.SetBuffer (NULL, 0);
-else if (m_info.buffer.Buffer ())
-	m_info.buffer.Destroy ();
+	SetBuffer (NULL, 0);
+else if (Buffer ())
+	CArray<ubyte>::Destroy ();
 FreeTexture ();
 }
 
@@ -158,7 +158,7 @@ m_info.props.y += y;
 m_info.props.w = w;
 m_info.props.h = h;
 SetParent (parent ? parent : this);
-m_info.buffer.SetBuffer (parent->Buffer () + (uint) ((m_info.props.y * m_info.props.rowSize) + m_info.props.x * m_info.nBPP), true);
+SetBuffer (parent->Buffer () + (uint) ((m_info.props.y * m_info.props.rowSize) + m_info.props.x * m_info.nBPP), true);
 }
 
 //------------------------------------------------------------------------------
@@ -220,10 +220,10 @@ if (!palette)
 if (!palette)
 	return;
 if (m_info.props.w == m_info.props.rowSize)
-	CountColors (m_info.buffer.Buffer (), m_info.props.w * m_info.props.h, freq);
+	CountColors (Buffer (), m_info.props.w * m_info.props.h, freq);
 else {
 	int y;
-	ubyte *p = m_info.buffer.Buffer ();
+	ubyte *p = Buffer ();
 	for (y = m_info.props.h; y; y--, p += m_info.props.rowSize)
 		CountColors (p, m_info.props.w, freq);
 	}
@@ -234,7 +234,7 @@ SetPalette (palette, transparentColor, supertranspColor, freq);
 
 void CBitmap::CheckTransparency (void)
 {
-	ubyte *data = m_info.buffer.Buffer ();
+	ubyte *data = Buffer ();
 
 for (int i = m_info.props.w * m_info.props.h; i; i--, data++)
 	if  (*data++ == TRANSPARENCY_COLOR)	{
@@ -317,7 +317,7 @@ int CBitmap::AvgColor (tRgbColorf* colorP)
 	CPalette		*palette;
 	ubyte			*bufP;
 	
-if (!(bufP = m_info.buffer.Buffer ()))
+if (!(bufP = Buffer ()))
 	return -1;
 h = (int) (this - gameData.pig.tex.bitmapP);
 if ((h < 0) || (h >= MAX_BITMAP_FILES)) {
@@ -325,7 +325,7 @@ if ((h < 0) || (h >= MAX_BITMAP_FILES)) {
 	if ((h < 0) || (h >= MAX_BITMAP_FILES)) {
 		h = (int) (this - gameData.pig.tex.bitmaps [0]);
 		if ((h < 0) || (h >= MAX_BITMAP_FILES))
-			return NULL;
+			return -1;
 		}
 	}
 color = gameData.pig.tex.bitmapColors + h;
@@ -370,7 +370,7 @@ return h;
 
 int CBitmap::AvgColorIndex (void)
 {
-	ubyte *p = m_info.buffer.Buffer ();
+	ubyte *p = Buffer ();
 
 if (!p)
 	return 0;
@@ -398,7 +398,7 @@ void CBitmap::Swap_0_255 (void)
 	int	i;
 	ubyte	*p;
 
-for (i = m_info.props.h * m_info.props.w, p = m_info.buffer.Buffer (); i; i--, p++) {
+for (i = m_info.props.h * m_info.props.w, p = Buffer (); i; i--, p++) {
 	if (!*p)
 		*p = 255;
 	else if (*p == 255)

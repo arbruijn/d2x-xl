@@ -22,6 +22,4 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define DESC_ID_CHKSUM_TAG  "alone in a dark wood."
 #define DESC_DEAD_TIME_TAG  "from the straight road and woke to find myself"
 
-extern char desc_id_exit_num;
-
 #endif /* _DESC_ID_H */

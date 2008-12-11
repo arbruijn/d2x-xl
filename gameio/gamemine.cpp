@@ -443,13 +443,13 @@ int load_mine_data (CFile& cf)
 	mine_fileinfo.editor_size       =   sizeof (mine_editor);
 	mine_fileinfo.vertex_offset     =   -1;
 	mine_fileinfo.vertex_howmany    =   0;
-	mine_fileinfo.vertex_sizeof     =   sizeof (vmsVector);
+	mine_fileinfo.vertex_sizeof     =   sizeof (CFixVector);
 	mine_fileinfo.segment_offset    =   -1;
 	mine_fileinfo.segment_howmany   =   0;
 	mine_fileinfo.segment_sizeof    =   sizeof (CSegment);
 	mine_fileinfo.newseg_verts_offset     =   -1;
 	mine_fileinfo.newseg_verts_howmany    =   0;
-	mine_fileinfo.newseg_verts_sizeof     =   sizeof (vmsVector);
+	mine_fileinfo.newseg_verts_sizeof     =   sizeof (CFixVector);
 	mine_fileinfo.group_offset		  =	-1;
 	mine_fileinfo.group_howmany	  =	0;
 	mine_fileinfo.group_sizeof		  =	sizeof (group);
@@ -768,7 +768,7 @@ int load_mine_data (CFile& cf)
 	#ifdef EDITOR
 
 	{		// Default CSegment created.
-		vmsVector	sizevec;
+		CFixVector	sizevec;
 		med_create_new_segment (VmVecMake (&sizevec, DEFAULT_X_SIZE, DEFAULT_Y_SIZE, DEFAULT_Z_SIZE);		// New_segment = gameData.segs.segments [0];
 		//memset ( &New_segment, 0, sizeof (CSegment) );
 	}
@@ -833,7 +833,7 @@ int load_mine_data (CFile& cf)
 	gameData.segs.nLastVertex = gameData.segs.nVertices-1;
 	gameData.segs.nLastSegment = gameData.segs.nSegments-1;
 
-	ResetObjects (1);		//one CObject, the tPlayer
+	ResetObjects (1);		//one CObject, the CPlayerData
 
 	#ifdef EDITOR
 	gameData.segs.nLastVertex = MAX_SEGMENT_VERTICES-1;
@@ -1155,7 +1155,7 @@ return bColored;
 void InitTexColors (void)
 {
 	int			i;
-	tFaceColor	*pf = gameData.render.color.textures;
+	tFaceColor	*pf = gameData.render.color.textures.Buffer ();
 	int			bBW = gameStates.app.bNostalgia || !gameOpts->render.color.bAmbientLight;
 
 for (i = 0; i < MAX_WALL_TEXTURES; i++, pf++) {
@@ -1230,7 +1230,7 @@ void ComputeSegSideCenters (int nSegment)
 #if CALC_SEGRADS
 	fix			xSideDists [6], xMinDist, xMaxDist, xDist;
 	short			k;
-	vmsVector	v, vMin, vMax;
+	CFixVector	v, vMin, vMax;
 #endif
 
 INIT_PROGRESS_LOOP (nSegment, j, gameData.segs.nSegments);
@@ -1403,11 +1403,11 @@ int LoadMineSegmentsCompiled (CFile& cf)
 	ubyte			nCompiledVersion;
 	char			*psz;
 
-gameData.segs.vMin = vmsVector::Create(0x7fffffff,0x7fffffff,0x7fffffff);
+gameData.segs.vMin = CFixVector::Create(0x7fffffff,0x7fffffff,0x7fffffff);
 /*	[X] =
 gameData.segs.vMin[Y] =
 gameData.segs.vMin[Y] = 0x7fffffff;*/
-gameData.segs.vMax = vmsVector::Create(-0x7fffffff,-0x7fffffff,-0x7fffffff);
+gameData.segs.vMax = CFixVector::Create(-0x7fffffff,-0x7fffffff,-0x7fffffff);
 /*[X] =
 gameData.segs.vMax[X] =
 gameData.segs.vMax[Y] =
@@ -1483,7 +1483,7 @@ else {
 	LoadTexColorsCompiled (-1, cf);
 	ComputeSegSideCenters (-1);
 	}
-gameData.segs.fRad = X2F (vmsVector::Dist(gameData.segs.vMax, gameData.segs.vMin));
+gameData.segs.fRad = X2F (CFixVector::Dist(gameData.segs.vMax, gameData.segs.vMin));
 ResetObjects (1);		//one CObject, the player
 return 0;
 }

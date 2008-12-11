@@ -114,7 +114,7 @@ void Draw3DReticle (fix nEyeOffset)
 	tUVL			tUVL [4];
 	g3sPoint		*pointList [4];
 	int 			i;
-	vmsVector	v1, v2;
+	CFixVector	v1, v2;
 	int			saved_interp_method;
 
 //	if (!viewInfo.bUsePlayerHeadAngles) return;
@@ -329,7 +329,7 @@ else
 #	endif
 #endif
 
-gameData.render.vertexList = gameData.segs.fVertices;
+gameData.render.vertexList = gameData.segs.fVertices.Buffer ();
 Assert(props.nVertices <= 4);
 for (i = 0, pp = pointList; i < props.nVertices; i++, pp++)
 	*pp = gameData.segs.points + props.vp [i];
@@ -476,7 +476,7 @@ fpDrawTexPolyMulti (
 	}
 gameStates.render.grAlpha = FADE_LEVELS;
 gameStates.ogl.fAlpha = 1;
-	// render the CSegment the tPlayer is in with a transparent color if it is a water or lava CSegment
+	// render the CSegment the CPlayerData is in with a transparent color if it is a water or lava CSegment
 	//if (nSegment == OBJECTS->nSegment)
 #if DBG
 if (bOutLineMode)
@@ -680,7 +680,7 @@ if (!(nWindow || gameStates.render.cameras.bActive) && (gameStates.render.nShado
 #endif
 if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 	if ((nDemoDoingLeft == 6 || nDemoDoingRight == 6) && objP->info.nType == OBJ_PLAYER) {
-		// A nice fat hack: keeps the tPlayer ship from showing up in the
+		// A nice fat hack: keeps the CPlayerData ship from showing up in the
 		// small extra view when guiding a missile in the big tPortal
   		return;
 		}
@@ -931,8 +931,8 @@ return (side0 == oppSide) ? side1 : side0;
 //the sides of those segments the abut.
 
 typedef struct tSideNormData {
-	vmsVector	n [2];
-	vmsVector	*p;
+	CFixVector	n [2];
+	CFixVector	*p;
 	short			t;
 } tSideNormData;
 
@@ -958,8 +958,8 @@ otherSide0 = FindOtherSideOnEdge (seg0, edgeVerts, oppSide0);
 otherSide1 = FindOtherSideOnEdge (seg1, edgeVerts, oppSide1);
 side0 = seg0->sides + otherSide0;
 side1 = seg1->sides + otherSide1;
-memcpy (s [0].n, side0->normals, 2 * sizeof (vmsVector));
-memcpy (s [1].n, side1->normals, 2 * sizeof (vmsVector));
+memcpy (s [0].n, side0->normals, 2 * sizeof (CFixVector));
+memcpy (s [1].n, side1->normals, 2 * sizeof (CFixVector));
 s [0].p = gameData.segs.vertices + seg0->verts [sideToVerts [otherSide0] [(s [0].t = side0->nType) == 3]];
 s [1].p = gameData.segs.vertices + seg1->verts [sideToVerts [otherSide1] [(s [1].t = side1->nType) == 3]];
 return 1;
@@ -973,7 +973,7 @@ return 1;
 static int CompareChildren (CSegment *segP, short c0, short c1)
 {
 	tSideNormData	s [2];
-	vmsVector		temp;
+	CFixVector		temp;
 	fix				d0, d1;
 
 if (sideOpposite [c0] == c1)
@@ -981,13 +981,13 @@ if (sideOpposite [c0] == c1)
 //find normals of adjoining sides
 FindAdjacentSideNorms (segP, c0, c1, s);
 temp = gameData.render.mine.viewerEye - *s [0].p;
-d0 = vmsVector::Dot(s [0].n [0], temp);
+d0 = CFixVector::Dot(s [0].n [0], temp);
 if (s [0].t != 1)	// triangularized face -> 2 different normals
-	d0 |= vmsVector::Dot(s [0].n [1], temp);	// we only need the sign, so a bitwise or does the trick
+	d0 |= CFixVector::Dot(s [0].n [1], temp);	// we only need the sign, so a bitwise or does the trick
 temp = gameData.render.mine.viewerEye - *s [1].p;
-d1 = vmsVector::Dot(s [1].n [0], temp);
+d1 = CFixVector::Dot(s [1].n [0], temp);
 if (s [1].t != 1)
-	d1 |= vmsVector::Dot(s [1].n [1], temp);
+	d1 |= CFixVector::Dot(s [1].n [1], temp);
 if ((d0 & d1) < 0)	// only < 0 if both negative due to bitwise and
 	return 0;
 if (d0 < 0)
@@ -1118,7 +1118,7 @@ if (gameStates.app.nFunctionMode == FMODE_EDITOR)
 	gameData.render.mine.viewerEye = gameData.objs.viewerP->info.position.vPos;
 #endif
 
-externalView.pPos = NULL;
+externalView.SetPos (NULL);
 if (gameStates.render.cameras.bActive) {
 	nStartSeg = gameData.objs.viewerP->info.nSegment;
 	G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, bOglScale);
@@ -1129,7 +1129,7 @@ else {
 	else {
 		nStartSeg = FindSegByPos (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.nSegment, 1, 0);
 		if (!gameStates.render.nWindow && (gameData.objs.viewerP == gameData.objs.consoleP)) {
-			SetPathPoint (&externalView, gameData.objs.viewerP);
+			externalView.SetPoint (gameData.objs.viewerP);
 			if (nStartSeg == -1)
 				nStartSeg = gameData.objs.viewerP->info.nSegment;
 			}
@@ -1139,7 +1139,7 @@ else {
 		mHead = vmsMatrix::Create(viewInfo.playerHeadAngles);
 		// TODO MM
 		mView = gameData.objs.viewerP->info.position.mOrient * mHead;
-		G3SetViewMatrix(gameData.render.mine.viewerEye, mView, gameStates.render.xZoom, bOglScale);
+		G3SetViewMatrix (gameData.render.mine.viewerEye, mView, gameStates.render.xZoom, bOglScale);
 		}
 	else if (gameStates.render.bRearView && (gameData.objs.viewerP == gameData.objs.consoleP)) {
 #if 1
@@ -1202,17 +1202,17 @@ else {
 #else
 			 gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0))) {
 #endif
-			GetViewPoint ();
-			G3SetViewMatrix(gameData.render.mine.viewerEye,
-								  externalView.pPos ? externalView.pPos->mOrient : gameData.objs.viewerP->info.position.mOrient,
+			externalView.GetViewPoint ();
+			G3SetViewMatrix (gameData.render.mine.viewerEye,
+								  externalView.GetPos () ? externalView.GetPos ()->mOrient : gameData.objs.viewerP->info.position.mOrient,
 								  gameStates.render.xZoom, bOglScale);
 			}
 		else
-			G3SetViewMatrix(gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient,
+			G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient,
 								  FixDiv (gameStates.render.xZoom, gameStates.render.nZoomFactor), bOglScale);
 		}
 	else
-		G3SetViewMatrix(gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient,
+		G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient,
 							  gameStates.render.xZoom, bOglScale);
 	}
 if (pnStartSeg)
@@ -1413,7 +1413,7 @@ if (nObject == nDbgObj)
 pi->nNextItem = gameData.render.mine.renderObjs.ref [nSegment];
 gameData.render.mine.renderObjs.ref [nSegment] = gameData.render.mine.renderObjs.nUsed++;
 pi->nObject = nObject;
-pi->xDist = vmsVector::Dist (OBJECTS [nObject].info.position.vPos, gameData.render.mine.viewerEye);
+pi->xDist = CFixVector::Dist (OBJECTS [nObject].info.position.vPos, gameData.render.mine.viewerEye);
 }
 
 //------------------------------------------------------------------------------
@@ -1516,7 +1516,7 @@ if (left < r)
 void InitSegZRef (int i, int j, int nThread)
 {
 	tSegZRef		*ps = segZRef [0] + i;
-	vmsVector	v;
+	CFixVector	v;
 	int			zMax = -0x7fffffff;
 	short			nSegment;
 
@@ -1574,13 +1574,13 @@ if (!RENDERPATH) {
 
 void CalcRenderDepth (void)
 {
-vmsVector vCenter;
+CFixVector vCenter;
 G3TransformPoint(vCenter, *SEGMENT_CENTER_I(gameData.objs.viewerP->info.nSegment), 0);
-vmsVector v;
+CFixVector v;
 G3TransformPoint(v, gameData.segs.vMin, 0);
-fix d1 = vmsVector::Dist(v, vCenter);
+fix d1 = CFixVector::Dist(v, vCenter);
 G3TransformPoint(v, gameData.segs.vMax, 0);
-fix d2 = vmsVector::Dist(v, vCenter);
+fix d2 = CFixVector::Dist(v, vCenter);
 
 if (d1 < d2)
 	d1 = d2;
@@ -2062,7 +2062,7 @@ void RenderSkyBoxObjects (void)
 	short		*segP;
 
 gameStates.render.nType = 1;
-for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments.Buffer (); i; i--, segP++)
+for (i = gameData.segs.skybox.ToS (), segP = gameData.segs.skybox.Buffer (); i; i--, segP++)
 	for (nObject = SEGMENTS [*segP].objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg)
 		DoRenderObject (nObject, gameStates.render.nWindow);
 }
@@ -2082,7 +2082,7 @@ if (gameStates.render.bHaveSkyBox && (!gameStates.render.automap.bDisplay || gam
 
 		gameStates.render.nType = 4;
 		gameStates.render.bFullBright = 1;
-		for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments.Buffer (); i; i--, segP++)
+		for (i = gameData.segs.skybox.ToS (), segP = gameData.segs.skybox.Buffer (); i; i--, segP++)
 			RenderSegmentFaces (*segP, nWindow);
 		gameStates.render.bFullBright = bFullBright;
 		}

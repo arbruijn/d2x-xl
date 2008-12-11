@@ -56,7 +56,7 @@ extern tRgbaColorf shadowColor [2], modelColor [2];
 static tOOF_vector	vLightPosf,
 							//vViewerPos,
 							vCenterf;
-static vmsVector vLightPos;
+static CFixVector vLightPos;
 
 //#define N_OPCODES (sizeof (opcode_table) / sizeof (*opcode_table))
 //this is a table of mappings from RGB15 to palette colors
@@ -112,7 +112,7 @@ return reinterpret_cast<tOOF_vector*> (OOF_VecVms2Oof (&pf->vNormf, G3RotatePoin
 
 inline tOOF_vector *G3TransformFaceCenter (tPOF_face *pf)
 {
-	vmsVector	v;
+	CFixVector	v;
 
 return reinterpret_cast<tOOF_vector*> (OOF_VecVms2Oof (&pf->vCenterf, G3TransformPoint (v, pf->vCenter, 0)));
 }
@@ -153,13 +153,13 @@ for (;;)
 		case OP_DEFPOINTS: {
 			int n = WORDVAL (p+2);
 			(*pnVerts) += n;
-			p += n * sizeof (vmsVector) + 4;
+			p += n * sizeof (CFixVector) + 4;
 			break;
 			}
 
 		case OP_DEFP_START: {
 			int n = WORDVAL (p+2);
-			p += n * sizeof (vmsVector) + 8;
+			p += n * sizeof (CFixVector) + 8;
 			(*pnVerts) += n;
 			break;
 			}
@@ -213,7 +213,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-short G3FindPolyModelVert (vmsVector *pVerts, vmsVector *pv, int nVerts)
+short G3FindPolyModelVert (CFixVector *pVerts, CFixVector *pv, int nVerts)
 {
 	int	i;
 
@@ -228,10 +228,10 @@ return nVerts;
 void G3CalcFaceNormal (tPOFObject *po, tPOF_face *pf)
 {
 if (bTriangularize) {
-	vmsVector	*pv = po->verts.Buffer ();
+	CFixVector	*pv = po->verts.Buffer ();
 	short			*pfv = pf->verts;
 
-	pf->vNorm = vmsVector::Normal (pv [pfv [0]], pv [pfv [1]], pv [pfv [2]]);
+	pf->vNorm = CFixVector::Normal (pv [pfv [0]], pv [pfv [1]], pv [pfv [2]]);
 	}
 else
 	OOF_VecVms2Oof (&pf->vNormf, pf->vNorm);
@@ -255,10 +255,10 @@ return &c;
 
 //------------------------------------------------------------------------------
 
-vmsVector *G3CalcFaceCenter (tPOFObject *po, tPOF_face *pf)
+CFixVector *G3CalcFaceCenter (tPOFObject *po, tPOF_face *pf)
 {
 	tOOF_vector	cf;
-	static vmsVector c;
+	static CFixVector c;
 
 cf = *G3CalcFaceCenterf (po, pf);
 c[X] = (fix) (cf.x * F1_0);
@@ -345,10 +345,10 @@ return 0;
 //------------------------------------------------------------------------------
 
 tPOF_face *POFAddPolyModelFace (tPOFObject *po, tPOFSubObject *pso, tPOF_face *pf,
-										  vmsVector *pn, ubyte *p, int bShadowData)
+										  CFixVector *pn, ubyte *p, int bShadowData)
 {
 	short			nVerts = WORDVAL (p+2);
-	vmsVector	*pv = po->verts.Buffer (), v;
+	CFixVector	*pv = po->verts.Buffer (), v;
 	short			*pfv;
 	short			i, v0;
 
@@ -369,7 +369,7 @@ if (bShadowData) {
 			}
 		else if (nVerts == 4) {
 			v = pv[pfv [3]] - pv[pfv [1]];
-			if (vmsVector::Dot(*pn, v) < 0) {
+			if (CFixVector::Dot(*pn, v) < 0) {
 				G3AddPolyModelTri (po, pf, pfv [0], pfv [1], pfv [3]);
 				po->iFaceVert += 3;
 				pf->bGlow = (nGlow >= 0);
@@ -416,10 +416,10 @@ if (bShadowData) {
 		pf->bGlow = (nGlow >= 0);
 		G3CalcFaceNormal (po, pf);
 #if 0
-		if (memcmp (&pf->vCenter, po->verts + *pv, sizeof (vmsVector))) //make sure we have a vertex from the face
+		if (memcmp (&pf->vCenter, po->verts + *pv, sizeof (CFixVector))) //make sure we have a vertex from the face
 			pf->vCenter = po->verts [*pv];
 		VmVecNormal (&n, po->verts + pv [0], po->verts + pv [1], po->verts + pv [2]); //check the precomputed Normal
-		if (memcmp (&pf->vNorm, &n, sizeof (vmsVector)))
+		if (memcmp (&pf->vNorm, &n, sizeof (CFixVector)))
 			pf->vNorm = n;
 #endif
 #if 0
@@ -459,7 +459,7 @@ if (bShadowData) {
 #endif
 	}
 else {
-	fVector		nf;
+	CFloatVector		nf;
 	g3sNormal	*pvn;
 
 	pfv = WORDPTR (p+30);
@@ -491,7 +491,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.faces.Buffer (); i; i--, pf++) {
 tOOF_vector *G3PolyModelVerts2Float (tPOFObject *po)
 {
 	int			i;
-	vmsVector	*pv;
+	CFixVector	*pv;
 	tOOF_vector	*pvf;
 
 for (i = po->nVerts, pv = po->verts.Buffer (), pvf = po->vertsf.Buffer (); i; i--, pv++, pvf++) {
@@ -597,7 +597,7 @@ for (i = po->subObjs.nSubObjs; i; i--, pso++)
 
 //------------------------------------------------------------------------------
 
-int POFGetPolyModelItems (void *modelP, vmsAngVec *pAnimAngles, tPOFObject *po,
+int POFGetPolyModelItems (void *modelP, vmsAngVec *animAngleP, tPOFObject *po,
 								  int bInitModel, int bShadowData, int nThis, int nParent)
 {
 	ubyte				*p = reinterpret_cast<ubyte*> (modelP);
@@ -618,11 +618,11 @@ for (;;)
 		case OP_DEFPOINTS: {
 			int n = WORDVAL (p+2);
 			if (bInitModel)
-				memcpy (po->verts.Buffer (), VECPTR (p+4), n * sizeof (vmsVector));
+				memcpy (po->verts.Buffer (), VECPTR (p+4), n * sizeof (CFixVector));
 			else
 				RotatePointListToVec (po->verts.Buffer (), VECPTR (p+4), n);
 			//po->nVerts += n;
-			p += n * sizeof (vmsVector) + 4;
+			p += n * sizeof (CFixVector) + 4;
 			break;
 			}
 
@@ -630,10 +630,10 @@ for (;;)
 			int n = WORDVAL (p+2);
 			int s = WORDVAL (p+4);
 			if (bInitModel)
-				memcpy (po->verts + s, VECPTR (p+8), n * sizeof (vmsVector));
+				memcpy (po->verts + s, VECPTR (p+8), n * sizeof (CFixVector));
 			else
 				RotatePointListToVec (po->verts + s, VECPTR (p+8), n);
-			p += n * sizeof (vmsVector) + 8;
+			p += n * sizeof (CFixVector) + 8;
 			break;
 			}
 
@@ -656,10 +656,10 @@ for (;;)
 			}
 
 		case OP_SORTNORM:
-			POFGetPolyModelItems (p + WORDVAL (p+28), pAnimAngles, po, bInitModel, bShadowData, nThis, nParent);
+			POFGetPolyModelItems (p + WORDVAL (p+28), animAngleP, po, bInitModel, bShadowData, nThis, nParent);
 			if (bInitModel)
 				pf = po->faces.faces + po->iFace;
-			POFGetPolyModelItems (p + WORDVAL (p+30), pAnimAngles, po, bInitModel, bShadowData, nThis, nParent);
+			POFGetPolyModelItems (p + WORDVAL (p+30), animAngleP, po, bInitModel, bShadowData, nThis, nParent);
 			if (bInitModel)
 				pf = po->faces.faces + po->iFace;
 			p += 32;
@@ -673,15 +673,15 @@ for (;;)
 		case OP_SUBCALL: {
 			vmsAngVec *a;
 
-			if (pAnimAngles)
-				a = &pAnimAngles [WORDVAL (p+2)];
+			if (animAngleP)
+				a = &animAngleP [WORDVAL (p+2)];
 			else
 				a = const_cast<vmsAngVec*> (&vmsAngVec::ZERO);
 			nChild = ++po->iSubObj;
 			po->subObjs.subObjs [nChild].vPos = *VECPTR (p+4);
 			po->subObjs.subObjs [nChild].vAngles = *a;
 			G3StartInstanceAngles (*VECPTR (p+4), *a);
-			POFGetPolyModelItems (p + WORDVAL (p+16), pAnimAngles, po, bInitModel, bShadowData, nChild, nThis);
+			POFGetPolyModelItems (p + WORDVAL (p+16), animAngleP, po, bInitModel, bShadowData, nChild, nThis);
 			G3DoneInstance ();
 			if (bInitModel)
 				pf = po->faces.faces + po->iFace;
@@ -927,7 +927,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int LineHitsFace (vmsVector *pHit, vmsVector *p0, vmsVector *p1, short nSegment, short nSide)
+int LineHitsFace (CFixVector *pHit, CFixVector *p0, CFixVector *p1, short nSegment, short nSide)
 {
 	short			i, nFaces, nVerts;
 	CSegment		*segP = gameData.segs.segments + nSegment;
@@ -942,12 +942,12 @@ return -1;
 
 //	-----------------------------------------------------------------------------
 
-float NearestShadowedWallDist (short nObject, short nSegment, vmsVector *vPos, float fScale)
+float NearestShadowedWallDist (short nObject, short nSegment, CFixVector *vPos, float fScale)
 {
 	static float fClip [4] = {1.1f, 1.5f, 2.0f, 3.0f};
 
 #if 1
-	vmsVector	vHit, v, vh;
+	CFixVector	vHit, v, vh;
 	CSegment		*segP;
 	int			nSide, nHitSide, nParent, nChild, nWID, bHit = 0;
 	float			fDist;
@@ -960,13 +960,13 @@ float NearestShadowedWallDist (short nObject, short nSegment, vmsVector *vPos, f
 if (0 > (nSegment = FindSegByPos (*vPos, nSegment, 1, 0)))
 	return G3_INFINITY;
 v = *vPos - vLightPos;
-vmsVector::Normalize(v);
+CFixVector::Normalize(v);
 v *= ((fix) F1_0 * (fix) G3_INFINITY);
 if (!nVisited++)
 	memset (bVisited, 0, gameData.segs.nSegments * sizeof (uint));
 #if DBG
 if (bPrintLine) {
-	fVector	vf;
+	CFloatVector	vf;
 	glLineWidth (3);
 	if (!bShadowTest) {
 		glColorMask (1,1,1,1);
@@ -1011,7 +1011,7 @@ for (;;) {
 				continue;
 			if (0 <= LineHitsFace (&vHit, vPos, &v, nSegment, nSide)) {
 				vh = vHit - *vPos;
-				if (vmsVector::Dot(vh, v) > 0) {
+				if (CFixVector::Dot(vh, v) > 0) {
 					nHitSide = nSide;
 					break;
 					}
@@ -1020,7 +1020,7 @@ for (;;) {
 		}
 	if (nHitSide < 0)
 		break;
-	fDist = X2F (vmsVector::Dist(*vPos, vHit));
+	fDist = X2F (CFixVector::Dist(*vPos, vHit));
 	if (nChild < 0) {
 		bHit = 1;
 		break;
@@ -1044,7 +1044,7 @@ return G3_INFINITY;
 
 	tFVIQuery	fq;
 	tFVIData		fi;
-	vmsVector	v;
+	CFixVector	v;
 
 if (!gameOpts->render.shadows.nClip)
 	return G3_INFINITY;
@@ -1052,7 +1052,7 @@ if (0 > (nSegment = FindSegByPos (vPos, nSegment, 1, 0)))
 	return G3_INFINITY;
 fq.p0				  = vPos;
 VmVecSub (&v, fq.p0, &vLightPos);
-vmsVector::Normalize(v);
+CFixVector::Normalize(v);
 VmVecScale (&v, (fix) F1_0 * (fix) G3_INFINITY);
 fq.startSeg		  = nSegment;
 fq.p1				  = &v;
@@ -1071,7 +1071,7 @@ return //fScale ? X2F (VmVecDist (fq.p0, &fi.hit.vPoint)) * fScale :
 
 inline float G3FaceClipDist (CObject *objP, tPOF_face *pf)
 {
-	vmsVector	vCenter = vmsVector::Create((fix) (pf->vCenterf.x * 65536.0f),
+	CFixVector	vCenter = CFixVector::Create((fix) (pf->vCenterf.x * 65536.0f),
 	                                        (fix) (pf->vCenterf.y * 65536.0f),
 	                                        (fix) (pf->vCenterf.z * 65536.0f));
 return NearestShadowedWallDist (OBJ_IDX (objP), objP->info.nSegment, &vCenter, 0.0f);
@@ -1105,7 +1105,7 @@ float G3ClipDistByFaceVerts (CObject *objP, tPOFObject *po, tPOFSubObject *pso,
 									  float fMaxDist, int i, int incr)
 {
 	tOOF_vector	*pv;
-	vmsVector	v;
+	CFixVector	v;
 	float			*pfc;
 	tPOF_face	*pf, **ppf;
 	short			*pfv, h, j, m, n;
@@ -1144,7 +1144,7 @@ return fMaxDist;
 float G3ClipDistByLitVerts (CObject *objP, tPOFObject *po, float fMaxDist, int i, int incr)
 {
 	tOOF_vector	*pv;
-	vmsVector	v;
+	CFixVector	v;
 	float			*pfc;
 	short			j;
 	ubyte			*pvf;
@@ -1409,19 +1409,19 @@ return h;
 
 //------------------------------------------------------------------------------
 
-int POFGatherPolyModelItems (CObject *objP, void *modelP, vmsAngVec *pAnimAngles, tPOFObject *po, int bShadowData)
+int POFGatherPolyModelItems (CObject *objP, void *modelP, vmsAngVec *animAngleP, tPOFObject *po, int bShadowData)
 {
 	int			j;
-	vmsVector	*pv;
+	CFixVector	*pv;
 	tOOF_vector	*pvf;
 
 if (!(po->nState || POFAllocPolyModelItems (modelP, po, bShadowData)))
 	return 0;
 if (po->nState == 1) {
 	G3StartInstanceMatrix (objP->info.position.vPos, objP->info.position.mOrient);
-	POFGetPolyModelItems (modelP, pAnimAngles, po, 1, bShadowData, 0, -1);
+	POFGetPolyModelItems (modelP, animAngleP, po, 1, bShadowData, 0, -1);
 	if (bShadowData) {
-		vmsVector vCenter;
+		CFixVector vCenter;
 		vCenter.SetZero ();
 		for (j = po->nVerts, pv = po->verts.Buffer (), pvf = po->vertsf.Buffer (); j; j--, pv++, pvf++) 
 			vCenter += *pv;
@@ -1440,7 +1440,7 @@ if (po->nState == 1) {
 if (bShadowData) {
 	po->iSubObj = 0;
 	G3StartInstanceMatrix (objP->info.position.vPos, objP->info.position.mOrient);
-	POFGetPolyModelItems (modelP, pAnimAngles, po, 0, 1, 0, -1);
+	POFGetPolyModelItems (modelP, animAngleP, po, 0, 1, 0, -1);
 	G3DoneInstance ();
 	}
 return 1;
@@ -1448,17 +1448,17 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int G3DrawPolyModelShadow (CObject *objP, void *modelP, vmsAngVec *pAnimAngles, int nModel)
+int G3DrawPolyModelShadow (CObject *objP, void *modelDataP, vmsAngVec *animAngleP, int nModel)
 {
 #if SHADOWS
-	vmsVector		v, vLightDir;
+	CFixVector		v, vLightDir;
 	short				*pnl;
 	int				h, i, j;
 	tPOFObject		*po = gameData.models.pofData [gameStates.app.bD1Mission][1] + nModel;
 
 Assert (objP->info.nId < MAX_ROBOT_TYPES);
 if (!gameStates.render.bShadowMaps) {
-	if (!POFGatherPolyModelItems (objP, modelP, pAnimAngles, po, 1))
+	if (!POFGatherPolyModelItems (objP, modelDataP, animAngleP, po, 1))
 		return 0;
 	}
 OglActiveTexture (GL_TEXTURE0, 0);
@@ -1474,10 +1474,10 @@ if (FAST_SHADOWS) {
 		if (!CanSeePoint (objP, &objP->info.position.vPos, &gameData.render.shadows.lights->info.vPos, objP->info.nSegment))
 			continue;
 		vLightDir = objP->info.position.vPos - gameData.render.shadows.lights->info.vPos;
-		vmsVector::Normalize(vLightDir);
+		CFixVector::Normalize(vLightDir);
 		if (gameData.render.shadows.nLight) {
 			for (j = 0; j < gameData.render.shadows.nLight; j++)
-				if (abs (vmsVector::Dot(vLightDir, gameData.render.shadows.vLightDir[j])) > 2 * F1_0 / 3) // 60 deg
+				if (abs (CFixVector::Dot(vLightDir, gameData.render.shadows.vLightDir[j])) > 2 * F1_0 / 3) // 60 deg
 					break;
 			if (j < gameData.render.shadows.nLight)
 				continue;

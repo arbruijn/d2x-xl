@@ -85,7 +85,7 @@ ushort BECalcSegmentCheckSum (void)
 	tSegment			*segP;
 	tSide				*sideP;
 	tUVL				*uvlP;
-	vmsVector		*normP;
+	CFixVector		*normP;
 
 sum1 = sum2 = 0;
 for (i = 0, segP = gameData.segs.segments.Buffer (); i < gameData.segs.nSegments; i++, segP++) {

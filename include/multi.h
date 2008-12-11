@@ -75,8 +75,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MULTI_SAVE_GAME					33
 #define MULTI_RESTORE_GAME				34
 
-#define MULTI_REQ_PLAYER				35  // Someone requests my tPlayer structure
-#define MULTI_SEND_PLAYER				36  // Sending someone my tPlayer structure
+#define MULTI_REQ_PLAYER				35  // Someone requests my CPlayerData structure
+#define MULTI_SEND_PLAYER				36  // Sending someone my CPlayerData structure
 #define MULTI_MARKER						37
 #define MULTI_DROP_WEAPON				38
 #define MULTI_GUIDED						39
@@ -162,12 +162,12 @@ void MultiSendRemObj (int nObject);
 void MultiSendQuit (int why);
 void MultiSendDoorOpen (int nSegment, int tSide,ubyte flag);
 void MultiSendCreateExplosion (int nPlayer);
-void MultiSendCtrlcenFire (vmsVector *to_target, int nGun, int nObject);
+void MultiSendCtrlcenFire (CFixVector *to_target, int nGun, int nObject);
 void MultiSendInvul (void);
 void MultiSendDeInvul (void);
 void MultiSendCloak (void);
 void MultiSendDeCloak (void);
-void MultiSendCreatePowerup (int powerupType, int nSegment, int nObject, vmsVector *pos);
+void MultiSendCreatePowerup (int powerupType, int nSegment, int nObject, CFixVector *pos);
 void MultiSendPlaySound (int nSound, fix volume);
 void MultiSendAudioTaunt (int taunt_num);
 void MultiSendScore (void);
@@ -176,7 +176,7 @@ void MultiSendObjTrigger (int tTrigger);
 void MultiSendHostageDoorStatus (int wallnum);
 void MultiSendNetPlayerStatsRequest (ubyte nPlayer);
 void MultiSendDropWeapon (int nObject,int seed);
-void MultiSendDropMarker (int nPlayer,vmsVector position,char messagenum,char text[]);
+void MultiSendDropMarker (int nPlayer,CFixVector position,char messagenum,char text[]);
 void MultiSendGuidedInfo (CObject *miss,char);
 void MultiSendReturnFlagHome (short nObject);
 void MultiSendCaptureBonus (char pnum);

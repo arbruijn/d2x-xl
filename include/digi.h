@@ -88,14 +88,14 @@ void _CDECL_ DigiClose (void);
 int DigiPlaySampleSpeed (short soundno, fix maxVolume, int nSpeed, int nLoops, const char *pszWAV, int nSoundClass);
 void DigiPlaySampleOnce (short nSound, fix maxVolume);
 int DigiLinkSoundToObject (short nSound, short nObject, int forever, fix maxVolume, int nSoundClass);
-int DigiLinkSoundToPos (short nSound, short nSegment, short nSide, vmsVector *pos, int forever, fix maxVolume);
+int DigiLinkSoundToPos (short nSound, short nSegment, short nSide, CFixVector *pos, int forever, fix maxVolume);
 // Same as above, but you pass the max distance sound can be heard.  The old way uses f1_0*256 for maxDistance.
 int DigiLinkSoundToObject2 (short nSound, short nObject, int forever, fix maxVolume, fix  maxDistance, int nSoundClass);
-int DigiLinkSoundToPos2 (short nSound, short nSegment, short nSide, vmsVector * pos, int forever, fix maxVolume, fix maxDistance, const char *pszSound);
+int DigiLinkSoundToPos2 (short nSound, short nSegment, short nSide, CFixVector * pos, int forever, fix maxVolume, fix maxDistance, const char *pszSound);
 int DigiLinkSoundToObject3 (short orgSoundnum, short nObject, int forever, fix maxVolume, fix maxDistance, 
 									 int nLoopStart, int nLoopEnd, const char *pszSound, int nDecay, int nSoundClass);
 int DigiPlayMidiSong (char * filename, char * melodic_bank, char * drum_bank, int loop, int bD1Song);
-void DigiPlaySample3D (short nSound, int angle, int volume, int no_dups, vmsVector *vPos, const char *pszSound); // Volume from 0-0x7fff
+void DigiPlaySample3D (short nSound, int angle, int volume, int no_dups, CFixVector *vPos, const char *pszSound); // Volume from 0-0x7fff
 void DigiInitSounds();
 void DigiSyncSounds();
 int DigiKillSoundLinkedToSegment (short nSegment, short nSide, short nSound);
@@ -131,7 +131,7 @@ extern int DigiFindChannel(short nSound);
 // Volume 0-F1_0
 extern int DigiStartSound (short nSound, fix xVolume, int xPan, int bLooping, 
 								   int nLoopStart, int nLoopEnd, int nSoundObj, int nSpeed, 
-								   const char *pszWAV, vmsVector *vPos, int nSoundClass);
+								   const char *pszWAV, CFixVector *vPos, int nSoundClass);
 
 // Stops all sounds that are playing
 void DigiStopAllChannels();

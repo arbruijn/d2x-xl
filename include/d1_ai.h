@@ -45,7 +45,7 @@ void reset_ai_states(CObject *objP);
 void create_all_paths(void);
 void create_path_to_station(CObject *objP, int max_length);
 void ai_follow_path(CObject *objP, int player_visibility);
-void ai_turn_towards_vector(vmsVector *vec_to_player, CObject *obj, fix rate);
+void ai_turn_towards_vector(CFixVector *vec_to_player, CObject *obj, fix rate);
 void ai_turn_towards_vel_vec(CObject *objP, fix rate);
 void init_ai_objects(void);
 void do_ai_robot_hit(CObject *robot, int type);
@@ -61,10 +61,10 @@ void create_path_to_player(CObject *objP, int max_length, int safety_flag);
 void attempt_to_resume_path(CObject *objP);
 
 //	When a robot and a player collide, some robots attack!
-void do_ai_robot_hit_attack(CObject *robot, CObject *player, vmsVector *collision_point);
+void do_ai_robot_hit_attack(CObject *robot, CObject *player, CFixVector *collision_point);
 void ai_open_doors_in_segment(CObject *robot);
 int ai_door_is_openable(CObject *objP, CSegment *segp, int sidenum);
-int player_is_visible_from_object(CObject *objP, vmsVector *pos, fix field_of_view, vmsVector *vec_to_player);
+int player_is_visible_from_object(CObject *objP, CFixVector *pos, fix field_of_view, CFixVector *vec_to_player);
 void ai_reset_all_paths(void);	//	Reset all paths.  Call at the start of a level.
 int ai_multiplayer_awareness(CObject *objP, int awareness_level);
 

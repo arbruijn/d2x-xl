@@ -113,7 +113,7 @@ void DrawVClipObject (CObject *objP, fix timeToLive, int bLit, int nVClip, tRgba
 if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION)) {
 	if (bThruster) {
 		alpha = THRUSTER_ALPHA;
-		//if (objP->mType.physInfo.flags & PF_WIGGLE)	//tPlayer ship
+		//if (objP->mType.physInfo.flags & PF_WIGGLE)	//CPlayerData ship
 			iFrame = nFrames - iFrame - 1;	//render the other way round
 		}
 	else
@@ -149,14 +149,14 @@ void DrawExplBlast (CObject *objP)
 {
 	float			fLife, fAlpha;
 	fix			xSize;
-	vmsVector	vPos, vDir;
+	CFixVector	vPos, vDir;
 #if BLAST_TYPE == 1
 	int			i;
 	fix			xSize2;
 #elif BLAST_TYPE == 2
 	float			r;
 	int			i;
-	tSphereData	sd;
+	CSphereData	sd;
 	tOOF_vector	p = {0,0,0};
 #endif
 	tRgbaColorf	color;
@@ -176,7 +176,7 @@ xSize = (fix) (objP->info.xSize * fLife * BLAST_SCALE);
 vPos = objP->info.position.vPos;
 #if MOVE_BLAST
 vDir = gameData.objs.consoleP->info.position.vPos - vPos;
-vmsVector::Normalize (vDir);
+CFixVector::Normalize (vDir);
 vDir *= (xSize - objP->info.xSize);
 vPos += vDir;
 #endif

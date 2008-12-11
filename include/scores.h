@@ -35,8 +35,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void ScoresView (int citem);
 
-// If tPlayer has a high score, adds you to file and returns.
-// If abortFlag set, only show if tPlayer has gotten a high score.
+// If CPlayerData has a high score, adds you to file and returns.
+// If abortFlag set, only show if CPlayerData has gotten a high score.
 void MaybeAddPlayerScore (int abortFlag);
 
 #endif /* _SCORES_H */

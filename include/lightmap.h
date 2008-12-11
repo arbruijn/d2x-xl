@@ -20,8 +20,8 @@
 //------------------------------------------------------------------------------
 
 typedef struct tLightmapInfo {
-	vmsVector	vPos;
-	vmsVector	vDir;  //currently based on face normals
+	CFixVector	vPos;
+	CFixVector	vDir;  //currently based on face normals
 	GLfloat		color [3];
 	//float		bright;
 	double		range;
@@ -48,11 +48,11 @@ typedef struct tLightmapList {
 typedef struct tLightmapData {
 	int					nType;
 	int					nColor;
-	vmsVector			vNormal;
+	CFixVector			vNormal;
 	ushort				sideVerts [4]; 
-	tVertColorData		vcd;
+	CVertColorData		vcd;
 	tRgbColorb			texColor [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH];
-	vmsVector			pixelPos [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH]; 
+	CFixVector			pixelPos [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH]; 
 	double				fOffset [MAX_LIGHTMAP_WIDTH];
 	tFace				*faceP;
 	} tLightmapData;
@@ -80,7 +80,7 @@ class CLightmapManager {
 
 	private:
 		int Init (int bVariable);
-		inline void ComputePixelPos (vmsVector *vPos, vmsVector v1, vmsVector v2, double fOffset);
+		inline void ComputePixelPos (CFixVector *vPos, CFixVector v1, CFixVector v2, double fOffset);
 		double SideRad (int nSegment, int nSide);
 		int CountLights (int bVariable);
 		void Copy (tRgbColorb *texColorP, ushort nLightmap);

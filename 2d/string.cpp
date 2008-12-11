@@ -522,6 +522,7 @@ while (nextRowP != NULL) {
 		}
 	}
 font.parentBitmap.SetBuffer (NULL);	//beware of the destructor!
+memset (&font, 0, sizeof (font));
 return 0;
 }
 
@@ -563,7 +564,7 @@ if (!bmP->Buffer ()) {
 	return NULL;
 	}
 bmP->SetName ("String Bitmap");
-memset (bmP->Buffer (), 0, w * h * bmP->BPP ());
+bmP->Clear ();
 bmP->AddFlags (BM_FLAG_TRANSPARENT);
 nextRowP = s;
 y = 0;
@@ -660,6 +661,10 @@ while (nextRowP) {
 						pc->blue = colorP->blue * 4;
 						pc->alpha = 255;
 						}
+#if DBG
+					else
+						c = c;
+#endif
 				}
 			}
 		else {

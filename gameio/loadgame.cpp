@@ -225,7 +225,7 @@ void GameStartInitNetworkPlayers (void)
 				nPlayers, nMaxPlayers = bCoop ? MAX_COOP_PLAYERS : MAX_PLAYERS;
 	CObject	*objP, *nextObjP;
 
-	// Initialize network tPlayer start locations and CObject numbers
+	// Initialize network CPlayerData start locations and CObject numbers
 
 memset (gameStates.multi.bPlayerIsTyping, 0, sizeof (gameStates.multi.bPlayerIsTyping));
 //VerifyConsoleObject ();
@@ -254,8 +254,8 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 // the following code takes care of team players being assigned the proper start locations
 // in enhanced CTF
 for (i = 0; i < nPlayers; i++) {
-// find a tPlayer CObject that resides in a CSegment of proper nType for the current
-// tPlayer start info
+// find a CPlayerData CObject that resides in a CSegment of proper nType for the current
+// CPlayerData start info
 	for (j = 0; j < nPlayers; j++) {
 		segNum = startSegs [j];
 		if (segNum < 0)
@@ -341,7 +341,7 @@ else {		// Note link to above if!!!
 
 //------------------------------------------------------------------------------
 
-// Setup tPlayer for new game
+// Setup CPlayerData for new game
 void InitPlayerStatsGame (void)
 {
 LOCALPLAYER.score = 0;
@@ -391,7 +391,7 @@ if (LOCALPLAYER.secondaryAmmo [0] < 2 + NDL - gameStates.app.nDifficultyLevel)
 
 //------------------------------------------------------------------------------
 
-// Setup tPlayer for new level (After completion of previous level)
+// Setup CPlayerData for new level (After completion of previous level)
 void InitPlayerStatsLevel (int bSecret)
 {
 LOCALPLAYER.lastScore = LOCALPLAYER.score;
@@ -471,7 +471,7 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame])
 
 //------------------------------------------------------------------------------
 
-// Setup tPlayer for a brand-new ship
+// Setup CPlayerData for a brand-new ship
 void InitPlayerStatsNewShip (void)
 {
 	int	i;
@@ -518,7 +518,7 @@ LOCALPLAYER.flags &= ~
 AddPlayerLoadout ();
 LOCALPLAYER.cloakTime = 0;
 LOCALPLAYER.invulnerableTime = 0;
-gameStates.app.bPlayerIsDead = 0;		//tPlayer no longer dead
+gameStates.app.bPlayerIsDead = 0;		//CPlayerData no longer dead
 LOCALPLAYER.homingObjectDist = -F1_0; // Added by RH
 Controls [0].afterburnerState = 0;
 gameStates.gameplay.bLastAfterburnerState = 0;
@@ -573,7 +573,7 @@ void editor_reset_stuff_onLevel ()
 
 //------------------------------------------------------------------------------
 
-//do whatever needs to be done when a tPlayer dies in multiplayer
+//do whatever needs to be done when a CPlayerData dies in multiplayer
 void DoGameOver (void)
 {
 //	ExecMessageBox (TXT_GAME_OVER, 1, TXT_OK, "");
@@ -587,7 +587,7 @@ longjmp (gameExitPoint, 0);		// Exit out of game loop
 
 //------------------------------------------------------------------------------
 
-//update various information about the tPlayer
+//update various information about the CPlayerData
 void UpdatePlayerStats (void)
 {
 LOCALPLAYER.timeLevel += gameData.time.xFrame;	//the never-ending march of time...
@@ -610,7 +610,7 @@ void SetSoundSources (void)
 	short			nSegment, nSide, nConnSeg, nConnSide, nSound;
 	CSegment		*segP, *connSegP;
 	CObject		*objP;
-	vmsVector	v;
+	CFixVector	v;
 	int			i, nOvlTex, nEffect;
 
 gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires;
@@ -706,7 +706,7 @@ int LoadLevel (int nLevel, int bPageInTextures, int bRestore)
 {
 	char		*pszLevelName;
 	char		szHogName [FILENAME_LEN];
-	tPlayer	save_player;
+	CPlayerData	save_player;
 	int		nRooms, bRetry = 0, nLoadRes, nCurrentLevel = gameData.missions.nCurrentLevel;
 
 /*---*/PrintLog ("Loading level...\n");
@@ -747,10 +747,10 @@ memset (gameData.multiplayer.nLastHitTime, 0, sizeof (gameData.multiplayer.nLast
 memset (gameData.weapons.firing, 0, sizeof (gameData.weapons.firing));
 gameData.objs.objects.Clear ();
 gameData.objs.lightObjs.Clear (0xff);
-memset (gameData.render.faceIndex [0].roots, 0xff, sizeof (gameData.render.faceIndex [0].roots));
-memset (gameData.render.faceIndex [1].roots, 0xff, sizeof (gameData.render.faceIndex [1].roots));
-memset (gameData.render.faceIndex [0].tails, 0xff, sizeof (gameData.render.faceIndex [0].tails));
-memset (gameData.render.faceIndex [1].tails, 0xff, sizeof (gameData.render.faceIndex [1].tails));
+gameData.render.faceIndex [0].roots.Clear (0xff);
+gameData.render.faceIndex [1].roots.Clear (0xff);
+gameData.render.faceIndex [0].tails.Clear (0xff);
+gameData.render.faceIndex [1].tails.Clear (0xff);
 memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
 memset (gameData.objs.bWantEffect, 0, sizeof (gameData.objs.bWantEffect));
 memset (gameData.objs.guidedMissile, 0, sizeof (gameData.objs.guidedMissile));
@@ -874,13 +874,11 @@ gameData.segs.xSegments.Clear (0xff);
 /*---*/PrintLog ("   loading texture brightness info\n");
 SetDataVersion (-1);
 
-memcpy (gameData.pig.tex.brightness,
-		  gameData.pig.tex.defaultBrightness + gameStates.app.bD1Mission,
+memcpy (gameData.pig.tex.brightness.Buffer (),
+		  gameData.pig.tex.defaultBrightness [gameStates.app.bD1Mission].Buffer (),
 		  sizeof (gameData.pig.tex.brightness));
 LoadTextureBrightness (pszLevelName, NULL);
-memcpy (gameData.render.color.textures,
-		  gameData.render.color.defaultTextures [gameStates.app.bD1Mission],
-		  sizeof (gameData.render.color.textures));
+gameData.render.color.textures = gameData.render.color.defaultTextures [gameStates.app.bD1Mission];
 LoadTextureColors (pszLevelName, NULL);
 InitTexColors ();
 if (gameStates.app.bD1Mission)
@@ -943,7 +941,7 @@ InitCamBots (0);
 networkData.nSegmentCheckSum = NetMiscCalcCheckSum (gameData.segs.segments.Buffer (), sizeof (CSegment) * gameData.segs.nSegments);
 ResetNetworkObjects ();
 ResetChildObjects ();
-ResetFlightPath (&externalView, -1, -1);
+externalView.Reset (-1, -1);
 ResetPlayerPaths ();
 FixObjectSizes ();
 /*---*/PrintLog ("   counting entropy rooms\n");
@@ -1054,7 +1052,7 @@ int StartNewGame (int nStartLevel)
 gameData.app.nGameMode = GM_NORMAL;
 SetFunctionMode (FMODE_GAME);
 gameData.missions.nNextLevel = 0;
-InitMultiPlayerObject ();				//make sure tPlayer's CObject set up
+InitMultiPlayerObject ();				//make sure CPlayerData's CObject set up
 InitPlayerStatsGame ();		//clear all stats
 gameData.multiplayer.nPlayers = 1;
 gameData.objs.nLastObject [0] = 0;
@@ -1078,7 +1076,7 @@ extern int NetworkEndLevelPoll2 (int nitems, tMenuItem * menus, int * key, int n
 #endif
 
 //	Does the bonus scoring.
-//	Call with deadFlag = 1 if tPlayer died, but deserves some portion of bonus (only skill points), anyway.
+//	Call with deadFlag = 1 if CPlayerData died, but deserves some portion of bonus (only skill points), anyway.
 void DoEndLevelScoreGlitz (int network)
 {
 	#define N_GLITZITEMS 11
@@ -1103,7 +1101,7 @@ if (TactileStick)
 	ClearForces ();
 #endif
 
-	//	Compute level tPlayer is on, deal with secret levels (negative numbers)
+	//	Compute level CPlayerData is on, deal with secret levels (negative numbers)
 nMineLevel = LOCALPLAYER.level;
 if (nMineLevel < 0)
 	nMineLevel *= - (gameData.missions.nLastLevel / gameData.missions.nSecretLevels);
@@ -1135,7 +1133,7 @@ if (!gameStates.app.cheats.bEnabled) {
 		nAllHostagePoints = LOCALPLAYER.hostages.nOnBoard * 1000 * (gameStates.app.nDifficultyLevel+1);
 		sprintf (szAllHostages, "%s%i", TXT_FULL_RESCUE_BONUS, nAllHostagePoints);
 		}
-	if (!IsMultiGame && LOCALPLAYER.lives && (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)) {		//tPlayer has finished the game!
+	if (!IsMultiGame && LOCALPLAYER.lives && (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)) {		//CPlayerData has finished the game!
 		nEndGamePoints = LOCALPLAYER.lives * 10000;
 		sprintf (szEndGame, "%s%i  ", TXT_SHIP_BONUS, nEndGamePoints);
 		bIsLastLevel = 1;
@@ -1179,14 +1177,14 @@ ExecMenu2 (NULL, szTitle, c, m, NULL, 0, reinterpret_cast<char*> (STARS_BACKGROU
 
 //	-----------------------------------------------------------------------------------------------------
 
-//give the tPlayer the opportunity to save his game
+//give the CPlayerData the opportunity to save his game
 void DoEndlevelMenu ()
 {
 //No between level saves......!!!	StateSaveAll (1);
 }
 
 //	-----------------------------------------------------------------------------------------------------
-//called when the tPlayer is starting a level (new game or new ship)
+//called when the CPlayerData is starting a level (new game or new ship)
 void StartSecretLevel (void)
 {
 Assert (!gameStates.app.bPlayerIsDead);
@@ -1257,7 +1255,7 @@ paletteManager.ResetEffect ();
 }
 
 //	-----------------------------------------------------------------------------------------------------
-// called when the tPlayer is starting a new level for Normal game mode and restore state
+// called when the CPlayerData is starting a new level for Normal game mode and restore state
 //	Need to deal with whether this is the first time coming to this level or not.  If not the
 //	first time, instead of initializing various things, need to do a game restore for all the
 //	robots, powerups, walls, doors, etc.
@@ -1347,7 +1345,7 @@ if (gameStates.app.bFirstSecretVisit)
 	CopyDefaultsToRobotsAll ();
 TurnCheatsOff ();
 InitReactorForLevel (0);
-//	Say tPlayer can use FLASH cheat to mark path to exit.
+//	Say CPlayerData can use FLASH cheat to mark path to exit.
 nLastLevelPathCreated = -1;
 gameStates.app.bFirstSecretVisit = 0;
 return 1;
@@ -1355,7 +1353,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-//	Called from switch.c when tPlayer is on a secret level and hits exit to return to base level.
+//	Called from switch.c when CPlayerData is on a secret level and hits exit to return to base level.
 void ExitSecretLevel (void)
 {
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
@@ -1387,7 +1385,7 @@ else {
 }
 
 //------------------------------------------------------------------------------
-//	Set invulnerableTime and cloakTime in tPlayer struct to preserve amount of time left to
+//	Set invulnerableTime and cloakTime in CPlayerData struct to preserve amount of time left to
 //	be invulnerable or cloaked.
 void DoCloakInvulSecretStuff (fix xOldGameTime)
 {
@@ -1407,7 +1405,7 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 }
 
 //------------------------------------------------------------------------------
-//	Called from switch.c when tPlayer passes through secret exit.  That means he was on a non-secret level and he
+//	Called from switch.c when CPlayerData passes through secret exit.  That means he was on a non-secret level and he
 //	is passing to the secret level.
 //	Do a savegame.
 void EnterSecretLevel (void)
@@ -1439,12 +1437,12 @@ StartNewLevelSecret (gameData.missions.nNextLevel, 1);
 }
 
 //------------------------------------------------------------------------------
-//called when the tPlayer has finished a level
+//called when the CPlayerData has finished a level
 void PlayerFinishedLevel (int bSecret)
 {
 	Assert (!bSecret);
 
-	//credit the tPlayer for hostages
+	//credit the CPlayerData for hostages
 LOCALPLAYER.hostages.nRescued += LOCALPLAYER.hostages.nOnBoard;
 if (gameData.app.nGameMode & GM_NETWORK)
 	LOCALPLAYER.connected = 2; // Finished but did not die
@@ -1483,7 +1481,7 @@ PlayLevelMovie (".mvx", nLevel);
 
 #define MOVIE_REQUIRED 1
 
-//called when the tPlayer has finished the last level
+//called when the CPlayerData has finished the last level
 void DoEndGame (void)
 {
 SetFunctionMode (FMODE_MENU);
@@ -1581,13 +1579,13 @@ if (gameData.missions.nCurrentLevel == 0)
 if (IsMultiGame) {
 	if ((result = MultiEndLevel (&bSecret))) { // Wait for other players to reach this point
 		gameStates.app.bBetweenLevels = 0;
-		if (gameData.missions.nCurrentLevel != gameData.missions.nLastLevel)		//tPlayer has finished the game!
+		if (gameData.missions.nCurrentLevel != gameData.missions.nLastLevel)		//CPlayerData has finished the game!
 			return;
 		longjmp (gameExitPoint, 0);		// Exit out of game loop
 		}
 	}
 if ((gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) &&
-	!extraGameInfo [IsMultiGame].bRotateLevels) //tPlayer has finished the game!
+	!extraGameInfo [IsMultiGame].bRotateLevels) //CPlayerData has finished the game!
 	DoEndGame ();
 else {
 	gameData.missions.nNextLevel = gameData.missions.nCurrentLevel + 1;		//assume go to next Normal level
@@ -1615,7 +1613,7 @@ NMLoadBackground (reinterpret_cast<char*> (STARS_BACKGROUND), bg, bRedraw);
 
 void DiedInMineMessage (void)
 {
-	// Tell the tPlayer he died in the mine, explain why
+	// Tell the CPlayerData he died in the mine, explain why
 	int old_fmode;
 
 if (gameData.app.nGameMode & GM_MULTI)
@@ -1630,7 +1628,7 @@ SetFunctionMode (old_fmode);
 }
 
 //------------------------------------------------------------------------------
-//	Called when tPlayer dies on secret level.
+//	Called when CPlayerData dies on secret level.
 void ReturningToLevelMessage (void)
 {
 	char	msg [128];
@@ -1655,7 +1653,7 @@ StartTime (0);
 }
 
 //------------------------------------------------------------------------------
-//	Called when tPlayer dies on secret level.
+//	Called when CPlayerData dies on secret level.
 void AdvancingToLevelMessage (void)
 {
 	char	msg [128];
@@ -1677,7 +1675,7 @@ SetFunctionMode (old_fmode);
 }
 
 //	-----------------------------------------------------------------------------------
-//	Set the tPlayer's position from the globals gameData.segs.secret.nReturnSegment and gameData.segs.secret.returnOrient.
+//	Set the CPlayerData's position from the globals gameData.segs.secret.nReturnSegment and gameData.segs.secret.returnOrient.
 void SetPosFromReturnSegment (int bRelink)
 {
 	int	nPlayerObj = LOCALPLAYER.nObject;
@@ -1761,7 +1759,7 @@ DigiSyncSounds ();
 
 //------------------------------------------------------------------------------
 
-//called when the tPlayer is starting a new level for Normal game mode and restore state
+//called when the CPlayerData is starting a new level for Normal game mode and restore state
 //	bSecret set if came from a secret level
 int StartNewLevelSub (int nLevel, int bPageInTextures, int bSecret, int bRestore)
 {
@@ -1872,7 +1870,7 @@ BuildObjectModels ();
 LOCALPLAYER.nInvuls =
 LOCALPLAYER.nCloaks = 0;
 #endif
-//	Say tPlayer can use FLASH cheat to mark path to exit.
+//	Say CPlayerData can use FLASH cheat to mark path to exit.
 nLastLevelPathCreated = -1;
 return 1;
 }
@@ -2001,7 +1999,7 @@ if (!IsMultiGame) {
 
 //	---------------------------------------------------------------------------
 //	If starting a level which appears in the gameData.missions.secretLevelTable, then set gameStates.app.bFirstSecretVisit.
-//	Reason: On this level, if tPlayer goes to a secret level, he will be going to a different
+//	Reason: On this level, if CPlayerData goes to a secret level, he will be going to a different
 //	secret level than he's ever been to before.
 //	Sets the global gameStates.app.bFirstSecretVisit if necessary.  Otherwise leaves it unchanged.
 void MaybeSetFirstSecretVisit (int nLevel)
@@ -2016,7 +2014,7 @@ for (i = 0; i < gameData.missions.nSecretLevels; i++) {
 }
 
 //------------------------------------------------------------------------------
-//called when the tPlayer is starting a new level for Normal game model
+//called when the CPlayerData is starting a new level for Normal game model
 //	bSecret if came from a secret level
 int StartNewLevel (int nLevel, int bSecret)
 {
@@ -2129,7 +2127,7 @@ return nSpawnPos;
 }
 
 //------------------------------------------------------------------------------
-//initialize the tPlayer CObject position & orientation (at start of game, or new ship)
+//initialize the CPlayerData CObject position & orientation (at start of game, or new ship)
 void InitPlayerPosition (int bRandom)
 {
 	int nSpawnPos = 0;
@@ -2221,7 +2219,7 @@ FORALL_ROBOT_OBJS (objP, i)
 extern void ClearStuckObjects (void);
 
 //------------------------------------------------------------------------------
-//called when the tPlayer is starting a level (new game or new ship)
+//called when the CPlayerData is starting a level (new game or new ship)
 void StartLevel (int bRandom)
 {
 Assert (!gameStates.app.bPlayerIsDead);
@@ -2247,7 +2245,7 @@ AIInitBossForShip ();
 ClearStuckObjects ();
 #ifdef EDITOR
 //	Note, this is only done if editor builtin.  Calling this from here
-//	will cause it to be called after the tPlayer dies, resetting the
+//	will cause it to be called after the CPlayerData dies, resetting the
 //	hits for the buddy and thief.  This is ok, since it will work ok
 //	in a shipped version.
 InitAIObjects ();

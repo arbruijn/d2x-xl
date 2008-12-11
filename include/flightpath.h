@@ -16,11 +16,34 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "inferno.h"
 
-extern tFlightPath externalView;
+#define MAX_PATH_POINTS		20
 
-void ResetFlightPath (tFlightPath *pPath, int nSize, int nFPS);
-void SetPathPoint (tFlightPath *pPath, CObject *objP);
-tPathPoint *GetPathPoint (tFlightPath *pPath);
-void GetViewPoint (void);
+typedef struct tPathPoint {
+	CFixVector			vPos;
+	CFixVector			vOrgPos;
+	vmsMatrix			mOrient;
+} tPathPoint;
+
+class CFlightPath {
+	public:
+		CArray<tPathPoint>	m_path; // [MAX_PATH_POINTS];
+		tPathPoint*				m_posP;
+		int						m_nSize;
+		int						m_nStart;
+		int						m_nEnd;
+		time_t					m_tRefresh;
+		time_t					m_tUpdate;
+	public:
+		CFlightPath ();
+		void SetPoint (CObject *objP);
+		tPathPoint *GetPoint (void);
+		void GetViewPoint (void);
+		void Reset (int nSize, int nFPS);
+		tPathPoint* GetPos (void) { return m_posP; }
+		inline tPathPoint* Pos (void) { return m_posP; }
+		inline void SetPos (tPathPoint *posP) { m_posP = posP; }
+};
+
+extern CFlightPath externalView;
 
 #endif /* _FLIGHTPATH_H */

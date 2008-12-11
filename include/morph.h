@@ -28,8 +28,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 typedef struct tMorphInfo {
 	CObject			*objP;                                // CObject which is morphing
-	vmsVector		vecs [MAX_VECS];
-	vmsVector		deltas [MAX_VECS];
+	CFixVector		vecs [MAX_VECS];
+	CFixVector		deltas [MAX_VECS];
 	fix				times [MAX_VECS];
 	int				submodelActive [MAX_SUBMODELS];         // which submodels are active
 	int				nMorphingPoints [MAX_SUBMODELS];       // how many active points in each part

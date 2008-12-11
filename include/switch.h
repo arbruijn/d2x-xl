@@ -120,6 +120,9 @@ typedef struct tTrigger {
 	short   nSide [MAX_TRIGGER_TARGETS];
 } __pack__ tTrigger;
 
+inline int operator- (tTrigger* t, CArray<tTrigger>& a) { return a.Index (t); }
+
+
 typedef struct tObjTriggerRef {
 	short		prev;
 	short		next;
@@ -157,7 +160,7 @@ void TriggerRead(tTrigger *t, CFile& cf, int bObjTrigger);
 void SetSpeedBoostVelocity (short nObject, fix speed, 
 									 short srcSegnum, short srcSidenum,
 									 short destSegnum, short destSidenum,
-									 vmsVector *pSrcPt, vmsVector *pDestPt,
+									 CFixVector *pSrcPt, CFixVector *pDestPt,
 									 int bSetOrient);
 
 void TriggerSetOrient (tTransformation *posP, short nSegment, short nSide, int bSetPos, int nStep);
@@ -168,6 +171,6 @@ int FindTriggerTarget (short nSegment, short nSide);
 tTrigger *FindObjTrigger (short nObject, short nType, short nTrigger);
 int OpenExits (void);
 
-extern vmsVector	speedBoostSrc, speedBoostDest;
+extern CFixVector	speedBoostSrc, speedBoostDest;
 
 #endif

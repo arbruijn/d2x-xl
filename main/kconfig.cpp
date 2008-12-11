@@ -397,7 +397,7 @@ static int xOffs = 0, yOffs = 0;
 
 static int startAxis [JOY_MAX_AXES];
 
-vmsVector ExtForceVec;
+CFixVector ExtForceVec;
 vmsMatrix ExtApplyForceMatrix;
 
 int ExtJoltInfo [3]={0,0,0};
@@ -671,7 +671,7 @@ if (p) {
 	szTitle [l] = '\0';
 	p = szTitle;
 	}
-CCanvas::Current ()->SetFont (MEDIUM3_FONT);
+fontManager.SetCurrent (MEDIUM3_FONT);
 GrString (0x8000, KC_LHY (8), p, NULL);
 }
 
@@ -679,7 +679,7 @@ GrString (0x8000, KC_LHY (8), p, NULL);
 
 void KCDrawHeader (kcItem *items)
 {
-CCanvas::Current ()->SetFont (GAME_FONT);
+fontManager.SetCurrent (GAME_FONT);
 fontManager.SetColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
 
 GrString (0x8000, KC_LHY (20), TXT_KCONFIG_STRING_1, NULL);
@@ -1764,12 +1764,12 @@ void KCInitExternalControls (int intno, int address)
 		if (kc_externalVersion > 1) {
 			// Write ship pos and angles to external controls...
 			ubyte *temp_ptr = reinterpret_cast<ubyte*> (kc_external_control);
-			vmsVector *ship_pos;
+			CFixVector *ship_pos;
 			vmsMatrix *ship_orient;
-			memset (kc_external_control, 0, sizeof (tControlInfo)+sizeof (vmsAngVec) + 64 + sizeof (vmsVector)+sizeof (vmsMatrix);
+			memset (kc_external_control, 0, sizeof (tControlInfo)+sizeof (vmsAngVec) + 64 + sizeof (CFixVector)+sizeof (vmsMatrix);
 			temp_ptr += sizeof (tControlInfo)+sizeof (vmsAngVec) + 64;
-			ship_pos = reinterpret_cast<vmsVector*> (temp_ptr);
-			temp_ptr += sizeof (vmsVector);
+			ship_pos = reinterpret_cast<CFixVector*> (temp_ptr);
+			temp_ptr += sizeof (CFixVector);
 			ship_orient = reinterpret_cast<vmsMatrix*> (temp_ptr);
 			// Fill in ship postion...
 			*ship_pos = OBJECTS [LOCALPLAYER.nObject].info.position.vPos;
@@ -1846,17 +1846,17 @@ void KCReadExternalControls ()
       else if (kc_externalVersion>0)     
 			memset (kc_external_control, 0, sizeof (ext_control_info)+sizeof (vmsAngVec) + 64);
 		else if (kc_externalVersion>2)
-			memset (kc_external_control, 0, sizeof (ext_control_info)+sizeof (vmsAngVec) + 64 + sizeof (vmsVector) + sizeof (vmsMatrix) +4);
+			memset (kc_external_control, 0, sizeof (ext_control_info)+sizeof (vmsAngVec) + 64 + sizeof (CFixVector) + sizeof (vmsMatrix) +4);
 
 		if (kc_externalVersion > 1) {
 			// Write ship pos and angles to external controls...
 			ubyte *temp_ptr = reinterpret_cast<ubyte*> (kc_external_control);
-			vmsVector *ship_pos;
+			CFixVector *ship_pos;
 			vmsMatrix *ship_orient;
-			memset (kc_external_control, 0, sizeof (ext_control_info)+sizeof (vmsAngVec) + 64 + sizeof (vmsVector)+sizeof (vmsMatrix));
+			memset (kc_external_control, 0, sizeof (ext_control_info)+sizeof (vmsAngVec) + 64 + sizeof (CFixVector)+sizeof (vmsMatrix));
 			temp_ptr += sizeof (ext_control_info) + sizeof (vmsAngVec) + 64;
-			ship_pos = reinterpret_cast<vmsVector*> (temp_ptr);
-			temp_ptr += sizeof (vmsVector);
+			ship_pos = reinterpret_cast<CFixVector*> (temp_ptr);
+			temp_ptr += sizeof (CFixVector);
 			ship_orient = reinterpret_cast<vmsMatrix*> (temp_ptr);
 			// Fill in ship postion...
 			*ship_pos = OBJECTS [LOCALPLAYER.nObject].info.position.vPos;
@@ -1882,7 +1882,7 @@ void KCReadExternalControls ()
 		temp_ptr->x_vibrate_clear=ExtXVibrateClear;
  	   temp_ptr->gameStatus=gameStates.app.nExtGameStatus;
    
-      memset (&ExtForceVec, 0, sizeof (vmsVector));
+      memset (&ExtForceVec, 0, sizeof (CFixVector));
       memset (&ExtApplyForceMatrix, 0, sizeof (vmsMatrix));
       
       for (i=0;i<3;i++)
@@ -1946,7 +1946,7 @@ void KCReadExternalControls ()
    if (kc_externalVersion>=3)
 	 {
 		ubyte *temp_ptr = reinterpret_cast<ubyte*> (kc_external_control);
-		temp_ptr += (sizeof (ext_control_info) + sizeof (vmsAngVec) + 64 + sizeof (vmsVector) + sizeof (vmsMatrix));
+		temp_ptr += (sizeof (ext_control_info) + sizeof (vmsAngVec) + 64 + sizeof (CFixVector) + sizeof (vmsMatrix));
   
 	   if (* (temp_ptr))
 		 Controls [0].cyclePrimaryCount= (* (temp_ptr));

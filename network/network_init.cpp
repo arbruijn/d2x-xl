@@ -62,7 +62,7 @@ networkData.nSecurityNum = 0;
 NetworkResetSyncStates ();
 networkData.nJoinState = 0;					// Did WE rejoin this game?
 networkData.bNewGame = 0;					// Is this the first level of a new game?
-networkData.bPlayerAdded = 0;				// Is this a new tPlayer or a returning tPlayer?
+networkData.bPlayerAdded = 0;				// Is this a new CPlayerData or a returning CPlayerData?
 networkData.bPacketUrgent = 0;
 networkData.nGameType = 0;
 networkData.nTotalMissedPackets = 0;
@@ -231,7 +231,7 @@ forceP [22].nWeaponId = EARTHSHAKER_ID;
 forceP [22].nForce = 200;
 forceP [23].nWeaponId = EARTHSHAKER_MEGA_ID; 
 forceP [23].nForce = 150;
-// tPlayer ships
+// CPlayerData ships
 forceP [24].nWeaponId = 255;
 forceP [24].nForce = 4;
 monsterballP->nBonus = 1;

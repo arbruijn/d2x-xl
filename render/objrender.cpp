@@ -224,7 +224,7 @@ FORALL_OBJS (objP, i)
 
 // -----------------------------------------------------------------------------
 //this routine checks to see if an robot rendered near the middle of
-//the screen, and if so and the tPlayer had fired, "warns" the robot
+//the screen, and if so and the CPlayerData had fired, "warns" the robot
 void SetRobotLocationInfo (CObject *objP)
 {
 if (gameStates.app.bPlayerFiredLaserThisFrame != -1) {
@@ -421,7 +421,7 @@ void DrawObjectRodTexPoly (CObject *objP, tBitmapIndex bmi, int bLit, int iFrame
 {
 	CBitmap *bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
 	fix light;
-	vmsVector delta, top_v, bot_v;
+	CFixVector delta, top_v, bot_v;
 	g3sPoint top_p, bot_p;
 
 PIGGY_PAGE_IN (bmi.index, 0);
@@ -743,7 +743,7 @@ else {
 				}
 			if (bBlendPolys) {
 #if 0
-				fix xDistToEye = vmsVector::Dist(gameData.objs.viewerP->info.position.vPos, objP->info.position.vPos);
+				fix xDistToEye = CFixVector::Dist(gameData.objs.viewerP->info.position.vPos, objP->info.position.vPos);
 				if (xDistToEye < gameData.models.nSimpleModelThresholdScale * F1_0 * 2)
 #endif
 					bOk = DrawPolygonModel (
@@ -887,7 +887,7 @@ switch (objP->info.renderType) {
 		if (gameStates.render.nType != 1)
 			return 0;
 		//RenderTracers (objP);
-		break;		//doesn't render, like the tPlayer
+		break;		//doesn't render, like the CPlayerData
 
 	case RT_POLYOBJ:
 		if (objP->info.nType == OBJ_EFFECT) {

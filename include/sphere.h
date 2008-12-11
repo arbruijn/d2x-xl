@@ -9,24 +9,55 @@
 
 void InitSpheres (void);
 
-int CreateSphere (tSphereData *sdP);
+#define RINGED_SPHERE	1
+
+class CSphereData {
+public:
+		int						m_nRings;
+		int						m_nTiles;
+		CPulseData				m_pulse;
+		CPulseData*				m_pulseP;
+
+	public:
+		CSphereData () { Init (); };
+		void Init (void);
+};
+
+class CSphere : private CSphereData {
+	private:
+
+		typedef struct tSphereVertex {
+			CFloatVector	vPos;
+			tTexCoord2f		uv;
+			} tSphereVertex;
+
+		CArray<tSphereVertex>	m_vertices;
+		int							m_nVertices;
+
+	public:
+		CSphere () {}
+		~CSphere () {}
+		void Init () { CSphereData::Init (); }
+		void Destroy ();
+		int Create (int nRings = 32, int nTiles = 1);
+		int Render (tOOF_vector *pPos, float xScale, float yScale, float zScale,
+						float red, float green, float blue, float alpha, CBitmap *bmP, int nTiles, int bAdditive);
+		inline CPulseData* Pulse (void) { return m_pulseP; }
+		void SetPulse (CPulseData* pulseP);
+		void SetupPulse (float fSpeed, float fMin);
+
+	private:
+		int InitSurface (float red, float green, float blue, float alpha, CBitmap *bmP, float *pfScale);
+		void RenderRing (CFloatVector *vertexP, tTexCoord2f *texCoordP, int nItems, int bTextured, int nPrimitive);
+		void RenderRing (int nOffset, int nItems, int bTextured, int nPrimitive);
+		void RenderRings (float fRadius, int nRings, float red, float green, float blue, float alpha, int bTextured, int nTiles);
+};
+
+void SetupSpherePulse (CPulseData *pulseP, float fSpeed, float fMin);
 
 int CreateShieldSphere (void);
-
-int RenderSphere (tSphereData *sdP, tOOF_vector *pPos, float xScale, float yScale, float zScale,
-					   float red, float green, float blue, float alpha, CBitmap *bmP, int nTiles, int bAdditive);
-
 void DrawShieldSphere (CObject *objP, float red, float green, float blue, float alpha);
-
 void DrawMonsterball (CObject *objP, float red, float green, float blue, float alpha);
-
-void DestroySphere (tSphereData *sdP);
-
-void SetSpherePulse (tPulseData *pulseP, float fSpeed, float fMin);
-
-void UseSpherePulse (tSphereData *sdP, tPulseData *pulseP);
-
-void FreeSphereCoord (void);
 
 #endif //__SPHERE_H
 

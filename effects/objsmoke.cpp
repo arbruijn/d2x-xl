@@ -64,7 +64,6 @@ for (i = 0; i < MAX_PLAYERS; i++)
 void InitObjectSmoke (void)
 {
 particleManager.InitObjects ();
-gameData.particles.objExplTime.Clear (0xff);
 }
 
 //------------------------------------------------------------------------------
@@ -92,8 +91,8 @@ return (int) ((double) rand () * (double) n / (double) RAND_MAX);
 void CreateDamageExplosion (int h, int i)
 {
 if (EGI_FLAG (bDamageExplosions, 1, 0, 0) &&
-	 (gameStates.app.nSDLTicks - gameData.particles.objExplTime [i] > 100)) {
-	gameData.particles.objExplTime [i] = gameStates.app.nSDLTicks;
+	 (gameStates.app.nSDLTicks - *particleManager.ObjExplTime (i) > 100)) {
+	*particleManager.ObjExplTime (i) = gameStates.app.nSDLTicks;
 	if (!RandN (11 - h))
 		CreateSmallFireballOnObject (OBJECTS + i, F1_0, 1);
 	}
@@ -105,7 +104,7 @@ void CreateThrusterFlames (CObject *objP)
 {
 	static int nThrusters = -1;
 
-	vmsVector	pos, dir = objP->info.position.mOrient[FVEC];
+	CFixVector	pos, dir = objP->info.position.mOrient[FVEC];
 	int			d, j;
 	tParticleEmitter		*emitterP;
 
@@ -179,7 +178,7 @@ if (RENDERPATH && gameOpts->render.ship.bBullets) {
 			if (bDoEffect) {
 					int			bSpectate = SPECTATOR (objP);
 					tTransformation	*posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
-					vmsVector	vEmitter, vDir;
+					CFixVector	vEmitter, vDir;
 					vmsMatrix	m, *viewP;
 
 				if (bSpectate) {
@@ -236,7 +235,7 @@ if (bHires >= 0) {
 		if (bDoEffect) {
 				int			bSpectate = SPECTATOR (objP);
 				tTransformation	*posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
-				vmsVector	*vGunPoints, vEmitter, vDir;
+				CFixVector	*vGunPoints, vEmitter, vDir;
 				vmsMatrix	m, *viewP;
 
 			if (!(vGunPoints = GetGunPoints (objP, nGun)))
@@ -278,7 +277,7 @@ void DoPlayerSmoke (CObject *objP, int i)
 	int					h, j, d, nParts, nType;
 	float					nScale;
 	CParticleEmitter	*emitterP;
-	vmsVector			fn, mn, vDir, *vDirP;
+	CFixVector			fn, mn, vDir, *vDirP;
 	tThrusterInfo		ti;
 
 	static int	bForward = 1;
@@ -294,9 +293,9 @@ j = OBJ_IDX (objP);
 if (gameOpts->render.particles.bDecreaseLag && (i == gameData.multiplayer.nLocalPlayer)) {
 	fn = objP->info.position.mOrient [FVEC];
 	mn = objP->info.position.vPos - objP->info.vLastPos;
-	vmsVector::Normalize (fn);
-	vmsVector::Normalize (mn);
-	d = vmsVector::Dot(fn, mn);
+	CFixVector::Normalize (fn);
+	CFixVector::Normalize (mn);
+	d = CFixVector::Dot(fn, mn);
 	if (d >= -F1_0 / 2)
 		bForward = 1;
 	else {
@@ -363,7 +362,7 @@ else {
 			vDirP = &vDir;
 			}
 		if (0 > (h = particleManager.GetObjectSystem (j))) {
-			//PrintLog ("creating tPlayer smoke\n");
+			//PrintLog ("creating CPlayerData smoke\n");
 			h = particleManager.SetObjectSystem (j,
 					particleManager.Create (&objP->info.position.vPos, vDirP, NULL, objP->info.nSegment, 2, nParts, nScale,
 									 gameOpts->render.particles.nSize [1],
@@ -397,7 +396,7 @@ void DoRobotSmoke (CObject *objP)
 {
 	int			h = -1, i, nShields = 0, nParts;
 	float			nScale;
-	vmsVector	pos;
+	CFixVector	pos;
 
 i = OBJ_IDX (objP);
 if (!(SHOW_SMOKE && gameOpts->render.particles.bRobots)) {
@@ -452,7 +451,7 @@ else
 void DoReactorSmoke (CObject *objP)
 {
 	int			h = -1, i, nShields = 0, nParts;
-	vmsVector	vDir, vPos;
+	CFixVector	vDir, vPos;
 
 i = OBJ_IDX (objP);
 if (!(SHOW_SMOKE && gameOpts->render.particles.bRobots)) {
@@ -482,7 +481,7 @@ if (nParts > 0) {
 		vDir[X] = d_rand () - F1_0 / 4;
 		vDir[Y] = d_rand () - F1_0 / 4;
 		vDir[Z] = d_rand () - F1_0 / 4;
-		vmsVector::Normalize(vDir);
+		CFixVector::Normalize(vDir);
 		vPos = objP->info.position.vPos + vDir * (-objP->info.xSize / 2);
 		particleManager.SetPos (particleManager.GetObjectSystem (i), &vPos, NULL, objP->info.nSegment);
 		}
@@ -546,7 +545,7 @@ void DoDebrisSmoke (CObject *objP)
 {
 	int			nParts, i;
 	float			nScale = 2;
-	vmsVector	pos;
+	CFixVector	pos;
 
 i = OBJ_IDX (objP);
 if (!(SHOW_SMOKE && gameOpts->render.particles.bDebris)) {
@@ -580,7 +579,7 @@ else
 void DoStaticParticles (CObject *objP)
 {
 	int			i, j, bBubbles = objP->rType.particleInfo.nType == SMOKE_TYPE_BUBBLES;
-	vmsVector	pos, offs, dir;
+	CFixVector	pos, offs, dir;
 
 	static tRgbaColorf defaultColors [2] = {{0.5f, 0.5f, 0.5f, 0.0f}, {0.8f, 0.9f, 1.0f, 1.0f}};
 
@@ -632,7 +631,7 @@ if (objP->rType.particleInfo.nSide <= 0) {	//don't vary emitter position for smo
 void DoBombSmoke (CObject *objP)
 {
 	int			nParts, i;
-	vmsVector	pos, offs;
+	CFixVector	pos, offs;
 
 if (gameStates.app.bNostalgia || !gameStates.app.bHaveExtraGameInfo [IsMultiGame])
 	return;
@@ -662,7 +661,7 @@ void DoParticleTrail (CObject *objP)
 {
 	int			nParts, i, id = objP->info.nId, bGatling = (id == VULCAN_ID) || (id == GAUSS_ID);
 	float			nScale;
-	vmsVector	pos;
+	CFixVector	pos;
 	tRgbaColorf	c;
 
 if (!(SHOW_OBJ_FX && (bGatling ? EGI_FLAG (bGatlingTrails, 1, 1, 0) : EGI_FLAG (bLightTrails, 1, 1, 0))))

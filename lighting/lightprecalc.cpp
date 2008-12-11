@@ -116,9 +116,9 @@ return 0;
 int ComputeNearestSegmentLights (int i)
 {
 	CSegment				*segP;
-	tDynLight			*pl;
+	CDynLight			*pl;
 	int					h, j, k, l, m, n, nMaxLights;
-	vmsVector			center;
+	CFixVector			center;
 	struct tLightDist	*pDists;
 
 PrintLog ("computing nearest segment lights (%d)\n", i);
@@ -141,7 +141,7 @@ for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
 		m = (pl->info.nSegment < 0) ? OBJECTS [pl->info.nObject].info.nSegment : pl->info.nSegment;
 		if (!SEGVIS (m, i))
 			continue;
-		h = (int) (vmsVector::Dist (center, pl->info.vPos) - F2X (pl->info.fRad) / 10.0f);
+		h = (int) (CFixVector::Dist (center, pl->info.vPos) - F2X (pl->info.fRad) / 10.0f);
 		if (h > MAX_LIGHT_RANGE * pl->info.fRange)
 			continue;
 		pDists [n].nDist = h;
@@ -168,11 +168,11 @@ extern int nDbgVertex;
 
 int ComputeNearestVertexLights (int nVertex)
 {
-	vmsVector			*vertP;
-	tDynLight			*pl;
+	CFixVector			*vertP;
+	CDynLight			*pl;
 	tSide					*sideP;
 	int					h, j, k, l, n, nMaxLights;
-	vmsVector			vLightToVert;
+	CFixVector			vLightToVert;
 	struct tLightDist	*pDists;
 
 PrintLog ("computing nearest vertex lights (%d)\n", nVertex);
@@ -210,13 +210,13 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 			if (!VERTVIS (h, nVertex))
 				continue;
 			vLightToVert = *vertP - pl->info.vPos;
-			h = vmsVector::Normalize(vLightToVert) - (int) (pl->info.fRad * 6553.6f);
+			h = CFixVector::Normalize(vLightToVert) - (int) (pl->info.fRad * 6553.6f);
 			if (h > MAX_LIGHT_RANGE * pl->info.fRange)
 				continue;
 			if ((pl->info.nSegment >= 0) && (pl->info.nSide >= 0)) {
 				sideP = SEGMENTS [pl->info.nSegment].sides + pl->info.nSide;
-				if ((vmsVector::Dot(sideP->normals[0], vLightToVert) < -F1_0 / 6) &&
-					 ((sideP->nType == SIDE_IS_QUAD) || (vmsVector::Dot(sideP->normals[1], vLightToVert) < -F1_0 / 6)))
+				if ((CFixVector::Dot(sideP->normals[0], vLightToVert) < -F1_0 / 6) &&
+					 ((sideP->nType == SIDE_IS_QUAD) || (CFixVector::Dot(sideP->normals[1], vLightToVert) < -F1_0 / 6)))
 					continue;
 				}
 			}
@@ -324,7 +324,7 @@ void ComputeSingleSegmentVisibility (short nStartSeg)
 	CSegment		*segP, *childP;
 	tSide			*sideP;
 	short			nSegment, nSide, nChildSeg, nChildSide, i;
-	vmsVector	vNormal;
+	CFixVector	vNormal;
 	vmsAngVec	vAngles;
 	CObject		viewer;
 

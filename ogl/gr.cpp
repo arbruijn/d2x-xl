@@ -146,6 +146,7 @@ screen.Bitmap ().SetPalette (paletteManager.Default ()); //just need some valid 
 //screen.Bitmap ().props.rowSize = screen->pitch;
 //screen.Bitmap ().Buffer () = reinterpret_cast<ubyte*> (screen->pixels);
 CCanvas::SetCurrent (NULL);
+CCanvas::Current ()->SetFont (fontManager.Current ());
 /***/PrintLog ("   initializing OpenGL window\n");
 if (!OglInitWindow (w, h, 0))	//platform specific code
 	return 0;
@@ -427,7 +428,7 @@ if (nCurrentVGAMode != nMenuMode) {
 	if (GrSetMode (nMenuMode))
 		Error ("Cannot set screen mode for menu");
 	if (!gameStates.render.bPaletteFadedOut)
-		paletteManager.LoadEffect  ();
+		paletteManager.LoadEffect ();
 	gameStates.menus.bInitBG = 1;
 	RebuildRenderContext (gameStates.app.bGameRunning);
 	}
@@ -561,7 +562,7 @@ if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.rende
 		Error ("Invalid screen mode %d",sm);
 	}
 gameStates.render.vr.nCurrentPage = 0;
-CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages[gameStates.render.vr.nCurrentPage]);
+CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
 OglSetScreenMode ();
 return 1;
 }

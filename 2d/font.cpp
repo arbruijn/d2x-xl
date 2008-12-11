@@ -48,6 +48,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_defs.h"
 #include "ogl_bitmap.h"
 #include "args.h"
+#include "canvas.h"
 
 //------------------------------------------------------------------------------
 
@@ -223,25 +224,38 @@ if (smallr <= 0)
 
 //------------------------------------------------------------------------------
 
+ubyte* CFont::Remap (const char *fontname, ubyte* fontData)
+{
+if (!m_info.parentBitmap.Buffer ())
+	return Load (fontname, fontData);
+if (m_info.parentBitmap.Texture ())
+	m_info.parentBitmap.Texture ()->Destroy ();
+m_info.parentBitmap.PrepareTexture (0, 2, 0, NULL);
+return fontData;
+}
+
+//------------------------------------------------------------------------------
+
 void CFont::Create (const char *fontname)
 {
 	ubyte		*fp;
 	CPalette *palette;
 	int		nChars = Range ();
-	int		i, w, h, tw, th, x, y, curx = 0, cury = 0;
-	int		white;
+	int		i, j, w, h, tw, th, x, y, curx = 0, cury = 0;
+	ubyte		white;
 	int		gap = 0; //having a gap just wastes ram, since we don't filter text textures at all.
 
 ChooseSize (gap, tw, th);
 palette = m_info.parentBitmap.Palette ();
 m_info.parentBitmap.Setup (BM_LINEAR, tw, th, 1, fontname, NULL);
+m_info.parentBitmap.Clear (TRANSPARENCY_COLOR);
+m_info.parentBitmap.AddFlags (BM_FLAG_TRANSPARENT);
 m_info.parentBitmap.SetPalette (palette);
 if (!(m_info.flags & FT_COLOR))
 	m_info.parentBitmap.SetTexture (textureManager.Get (&m_info.parentBitmap));
 m_info.bitmaps = new CBitmap [nChars]; 
-memset (m_info.bitmaps, 0, nChars * sizeof (CBitmap));
+//memset (m_info.bitmaps, 0, nChars * sizeof (CBitmap));
 h = m_info.height;
-
 white = palette->ClosestColor (63, 63, 63);
 
 for (i = 0; i < nChars; i++) {
@@ -259,12 +273,12 @@ for (i = 0; i < nChars; i++) {
 		Error (TXT_FONT_SIZE, i, nChars);
 	if (m_info.flags & FT_COLOR) {
 		if (m_info.flags & FT_PROPORTIONAL)
-			fp = m_info.chars[i];
+			fp = m_info.chars [i];
 		else
-			fp = m_info.data + i * w*h;
+			fp = m_info.data + i * w * h;
 		for (y = 0; y < h; y++)
 #if 1
-			memcpy (m_info.parentBitmap.Buffer () + curx + (cury + y) * tw, fp + y * w, w);
+			memcpy (m_info.parentBitmap + curx + (cury + y) * tw, fp + y * w, w);
 #else
 			for (x = 0; x < w; x++)
 				m_info.parentBitmap [curx + x + (cury + y) * tw] = fp [x + y * w];
@@ -280,12 +294,13 @@ for (i = 0; i < nChars; i++) {
 			fp = m_info.data + i * BITS_TO_BYTES (w) * h;
 		for (y = 0; y < h; y++) {
 			mask = 0;
+			j = curx + (cury + y) * tw;
 			for (x = 0; x < w; x++) {
 				if (mask == 0) {
 					bits = *fp++;
 					mask = 0x80;
 					}
-				m_info.parentBitmap [curx + x + (cury + y) * tw] = (bits & mask) ? white : 255;
+				m_info.parentBitmap [j++] = (ubyte) ((bits & mask) ? white : TRANSPARENCY_COLOR);
 				mask >>= 1;
 				}
 			}
@@ -293,22 +308,8 @@ for (i = 0; i < nChars; i++) {
 	m_info.bitmaps [i].InitChild (&m_info.parentBitmap, curx, cury, w, h);
 	curx += w + gap;
 	}
-if (!(m_info.flags & FT_COLOR)) {
+if (!(m_info.flags & FT_COLOR))
 	m_info.parentBitmap.PrepareTexture (0, 2, 0, NULL);
-	//use GL_INTENSITY instead of GL_RGB
-	if (gameStates.ogl.bIntensity4) {
-		m_info.parentBitmap.Texture ()->SetInternalFormat (1);
-		m_info.parentBitmap.Texture ()->SetFormat (GL_LUMINANCE);
-		}
-	else if (gameStates.ogl.bLuminance4Alpha4){
-		m_info.parentBitmap.Texture ()->SetInternalFormat (1);
-		m_info.parentBitmap.Texture ()->SetFormat (GL_LUMINANCE_ALPHA);
-		}
-	else {
-		m_info.parentBitmap.Texture ()->SetInternalFormat (gameStates.ogl.bpp / 8);
-		m_info.parentBitmap.Texture ()->SetFormat (gameStates.ogl.nRGBAFormat);
-		}
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -355,13 +356,11 @@ else  {
 	}
 if (m_info.flags & FT_KERNED)
 	m_info.kernData = reinterpret_cast<ubyte*> (fontData + (size_t) m_info.kernDataOffs - GRS_FONT_SIZE);
-m_info.parentBitmap.Destroy ();
+
 if (m_info.flags & FT_COLOR) {		//remap palette
 #ifdef SWAP_0_255			// swap the first and last palette entries (black and white)
 	palette.SwapTransparency ();
-
-//  we also need to swap the data entries as well.  black is white and white is black
-
+	// we also need to swap the data entries. black is white and white is black
 	for (i = 0; i < ptr-m_info.data; i++) {
 		if (m_info.data [i] == 0)
 			m_info.data [i] = 255;
@@ -603,7 +602,7 @@ if (i >= MAX_OPEN_FONTS)
 	return NULL;
 strncpy (m_fonts [i].filename, fontname, SHORT_FILENAME_LEN);
 m_fonts [i].data = m_fonts [i].font.Load (fontname);
-CCanvas::Current ()->SetFont (&m_fonts [i].font);
+fontManager.SetCurrent (&m_fonts [i].font);
 FG_COLOR.index = 0;
 BG_COLOR.index = 0;
 return &m_fonts [i].font;
@@ -680,7 +679,7 @@ void CFontManager::RemapMono (void)
 {
 for (int i = 0; i < MAX_OPEN_FONTS; i++)
 	if (m_fonts [i].data && !(m_fonts [i].font.Flags () & FT_COLOR))
-		m_fonts [i].font.Load (m_fonts [i].filename, m_fonts [i].data);
+		m_fonts [i].font.Remap (m_fonts [i].filename, m_fonts [i].data);
 }
 
 //------------------------------------------------------------------------------
@@ -692,5 +691,12 @@ for (int i = 0; i < MAX_OPEN_FONTS; i++)
 		m_fonts [i].font.Load (m_fonts [i].filename, m_fonts [i].data);
 }
 
-//------------------------------------------------------------------------------
+ //------------------------------------------------------------------------------
+
+inline void CFontManager::SetCurrent (CFont* fontP)
+{
+CCanvas::Current ()->SetFont (m_current = fontP); 
+}
+ 
+ //------------------------------------------------------------------------------
 //eof
