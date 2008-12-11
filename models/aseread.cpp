@@ -200,7 +200,7 @@ while ((pszToken = ASE_ReadLine (cf))) {
 		if (!ReadModelTGA (strlwr (fn), bmP, nType, bCustom))
 			return ASE_Error ("texture not found");
 		l = (int) strlen (fn) + 1;
-		if (!(pm->textures.m_names [nBitmap] = reinterpret_cast<char*> (D2_ALLOC (l))))
+		if (!(pm->textures.m_names [nBitmap] = new char [l]))
 			return ASE_Error ("out of memory");
 		memcpy (pm->textures.m_names [nBitmap], fn, l);
 		if ((ps = strstr (fn, "color")))
@@ -522,7 +522,7 @@ static int ASE_ReadSubModel (CFile& cf, tASEModel *pm)
 
 if (CharTok (" \t") != '{')
 	return ASE_Error ("syntax error");
-if (!(pml = reinterpret_cast<tASESubModelList*> (D2_ALLOC (sizeof (tASESubModelList)))))
+if (!(pml = new tASESubModelList))
 	return ASE_Error ("out of memory");
 memset (pml, 0, sizeof (*pml));
 pml->pNextModel = pm->subModels;

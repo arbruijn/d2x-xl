@@ -16,8 +16,7 @@
 typedef char tBanListEntry [CALLSIGN_LEN + 1];
 typedef tBanListEntry *pBanListEntry;
 
-pBanListEntry	pBanList;
-int nBanListSize = 0;
+CStack<tBanListEntry>	banList;
 
 //-----------------------------------------------------------------------------
 
@@ -25,19 +24,15 @@ int AddPlayerToBanList (char *szPlayer)
 {
 if (!*szPlayer)
 	return 1;
-if (!pBanList) {
-	pBanList = (pBanListEntry) D2_ALLOC (100 * sizeof (tBanListEntry));
-	if (!pBanList)
+if (!banList) {
+	if (!banList.Create (100 * sizeof (tBanListEntry)))
 		return 0;
-	nBanListSize = 1;
 	}
 else if (!(++nBanListSize % 100))
-	pBanList = (pBanListEntry) D2_REALLOC (pBanList, nBanListSize + 100 * sizeof (tBanListEntry));
-if (!pBanList) {
-	nBanListSize = 0;
+	banList.Resize (banList.Length () + 100);
+if (!banList) 
 	return 0;
-	}
-memcpy (pBanList [nBanListSize - 1], szPlayer, sizeof (tBanListEntry));
+banList.Push (szPlayer);
 return 1;
 }
 
@@ -68,14 +63,14 @@ return 1;
 
 int SaveBanList (void)
 {
-if (pBanList && nBanListSize) {
+if (banList.Buffer () && banList.ToS ()) {
 	CFile	cf;
 	int i;
 
 	if (!cf.Open ("banlist.txt", gameFolders.szDataDir, "wt", 0))
 		return 0;
-	for (i = 0; i < nBanListSize; i++)
-		fputs (reinterpret_cast<const char*> (pBanList [i]), cf.File ());
+	for (i = 0; i < banList.ToS (); i++)
+		fputs (reinterpret_cast<const char*> (banList [i]), cf.File ());
 	cf.Close ();
 	}
 return 1;
@@ -86,8 +81,8 @@ int FindPlayerInBanList (char *szPlayer)
 {
 	int	i;
 
-for (i = 0; i < nBanListSize; i++)
-	if (!strnicmp (reinterpret_cast<char*> (pBanList [i]), szPlayer, sizeof (tBanListEntry)))
+for (i = 0; i < banList.ToS (); i++)
+	if (!strnicmp (reinterpret_cast<char*> (banList [i]), szPlayer, sizeof (tBanListEntry)))
 		return 1;
 return 0;
 }
@@ -96,11 +91,7 @@ return 0;
 
 void FreeBanList (void)
 {
-if (pBanList) {
-	D2_FREE (pBanList);
-	pBanList = NULL;
-	nBanListSize = 0;
-	}
+banList.Destroy ();
 }
 
 //-----------------------------------------------------------------------------

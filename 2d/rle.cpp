@@ -724,9 +724,7 @@ else
 	pSrc = Buffer () + 4 + m_info.props.h;
 i = 2 * (bBigRLE + 1) * m_info.props.h * m_info.props.rowSize;
 if (!gameData.pig.tex.rleBuffer || (rleBufSize < i)) {
-	rleBufSize = i;
-	gameData.pig.tex.rleBuffer.Destroy ();
-	gameData.pig.tex.rleBuffer = reinterpret_cast<ubyte*> (D2_ALLOC (i));
+	gameData.pig.tex.rleBuffer.Resize (rleBufSize = i);
 	}
 if (!gameData.pig.tex.rleBuffer) {
 	return -1;

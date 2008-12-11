@@ -1055,7 +1055,7 @@ tKCItemPos *GetItemPos (kcItem *items, int nItems)
 	tKCItemPos	*pos;
 	int			i;
 
-if (!(pos = reinterpret_cast<tKCItemPos*> (D2_ALLOC (nItems * sizeof (tKCItemPos)))))
+if (!(pos = new tKCItemPos [nItems]))
 	return NULL;
 for (i = 0; i < nItems; i++) {
 	pos [i].l = items [i].x + items [i].w1;
@@ -1074,7 +1074,7 @@ int *GetItemRef (kcItem *items, int nItems, tKCItemPos *pos)
 	int	*ref;
 	int	i;
 
-if (!(ref = reinterpret_cast<int*> (D2_ALLOC (nItems * sizeof (int)))))
+if (!(ref = new int [nItems]))
 	return NULL;
 for (i = 0; i < nItems; i++)
 	ref [pos [i].i] = i;

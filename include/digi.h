@@ -50,10 +50,10 @@ typedef SAMPLE
 ;
 #else
 typedef struct tDigiSound {
-	ubyte		bHires;
-	ubyte		bDTX;
-	int		nLength [2];
-	ubyte		*data [2];
+	ubyte			bHires;
+	ubyte			bDTX;
+	int			nLength [2];
+	CByteArray	data [2];
 #if USE_OPENAL
 	ALuint	buffer;
 #endif

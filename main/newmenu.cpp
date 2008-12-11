@@ -2547,7 +2547,7 @@ int ExecMenuFileSelector (const char *pszTitle, const char *filespec, char *file
 
 w_x = w_y = w_w = w_h = nTitleHeight = 0;
 box_x = box_y = box_w = box_h = 0;
-if (! (filenames = reinterpret_cast<char*> (D2_ALLOC (MAX_FILES * (FILENAME_LEN + 1)))))
+if (!(filenames = new char [MAX_FILES * (FILENAME_LEN + 1)]))
 	return 0;
 memset (&bg, 0, sizeof (bg));
 bg.bIgnoreBg = 1;
@@ -3507,7 +3507,7 @@ void NMWrapText (char *dbuf, char *sbuf, int line_length)
 	char *wordptr;
 	char *tbuf;
 
-	tbuf = reinterpret_cast<char*> (D2_ALLOC ((int) strlen (sbuf)+1));
+	tbuf = new char [strlen (sbuf)+1];
 	strcpy (tbuf, sbuf);
 
 	wordptr = strtok (tbuf, " ");

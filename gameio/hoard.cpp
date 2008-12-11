@@ -251,7 +251,7 @@ if (!gameData.hoard.bInitialized) {
 			len = cf.ReadInt ();    //get 22k len
 			}
 		gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].nLength [0] = len;
-		gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].data [0] = reinterpret_cast<ubyte*> (D2_ALLOC (len));
+		gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].data [0].Create (len);
 		cf.Read (gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].data [0], 1, len);
 		if (gameOpts->sound.digiSampleRate == SAMPLE_RATE_11K) {
 			len = cf.ReadInt ();    //get 22k len

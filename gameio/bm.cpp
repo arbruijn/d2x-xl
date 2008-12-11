@@ -871,8 +871,8 @@ void BMReadWeaponInfoD1 (CFile& cf)
 	cf.Read (gameData.models.polyModels, sizeof (tPolyModel), gameData.models.nPolyModels, cf);
 
 	for (i=0;i<gameData.models.nPolyModels;i++)	{
-		gameData.models.polyModels [i].modelData = D2_ALLOC (gameData.models.polyModels [i].nDataSize);
-		Assert (gameData.models.polyModels [i].modelData != NULL);
+		gameData.models.polyModels [i].modelData.Create (gameData.models.polyModels [i].nDataSize);
+		Assert (gameData.models.polyModels [i].modelData.Buffer () != NULL);
 		cf.Read (gameData.models.polyModels [i].modelData, sizeof (ubyte), gameData.models.polyModels [i].nDataSize, cf);
 	}
 

@@ -45,28 +45,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //	Mallocs gameData.bots.nTypes tRobotInfo structs into global gameData.bots.infoP.
 void InitAISystem (void)
 {
-#if 0
-	int	i;
-
-#if TRACE
-	con_printf (CONDBG, "Trying to D2_ALLOC %i bytes for gameData.bots.infoP.\n",
-					gameData.bots.nTypes * sizeof (*gameData.bots.infoP));
-#endif
-	gameData.bots.infoP = reinterpret_cast<tRobotInfo*> (D2_ALLOC (gameData.bots.nTypes * sizeof (*gameData.bots.infoP)));
-#if TRACE
-	con_printf (CONDBG, "gameData.bots.infoP = %i\n", gameData.bots.infoP);
-#endif
-	for (i = 0; i < gameData.bots.nTypes; i++) {
-		gameData.bots.infoP [i].fieldOfView = F1_0/2;
-		gameData.bots.infoP [i].primaryFiringWait = F1_0;
-		gameData.bots.infoP [i].turnTime = F1_0*2;
-		// -- gameData.bots.infoP [i].fire_power = F1_0;
-		// -- gameData.bots.infoP [i].shield = F1_0/2;
-		gameData.bots.infoP [i].xMaxSpeed = F1_0*10;
-		gameData.bots.infoP [i].always_0xabcd = 0xabcd;
-	}
-#endif
-
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -49,7 +49,7 @@ char *splitword (char *s, char splitchar)
 l = (int) strlen (s);
 p = strchr (s, splitchar);
 lw = p ? (int) (p - s) : l;
-buf = reinterpret_cast<char*> (D2_ALLOC (lw + 1));
+buf = new char [lw + 1];
 memcpy (buf, s, lw + 1);
 buf [lw] = '\0';
 if (p)

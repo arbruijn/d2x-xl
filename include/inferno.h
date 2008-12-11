@@ -1534,17 +1534,17 @@ class COglData {
 
 class CTerrainRenderData {
 	public:
-		ubyte			*heightmap;
-		fix			*lightmap;
-		CFixVector	*points;
-		CBitmap		*bmP;
-		g3sPoint		saveRow [TERRAIN_GRID_MAX_SIZE];
-		CFixVector	vStartPoint;
-		tUVL			uvlList [2][3];
-		int			bOutline;
-		int			nGridW, nGridH;
-		int			orgI, orgJ;
-		int			nMineTilesDrawn;    //flags to tell if all 4 tiles under mine have drawn
+		CArray<ubyte>			heightmap;
+		CArray<fix>				lightmap;
+		CArray<CFixVector>	points;
+		CBitmap					*bmP;
+		g3sPoint					saveRow [TERRAIN_GRID_MAX_SIZE];
+		CFixVector				vStartPoint;
+		tUVL						uvlList [2][3];
+		int						bOutline;
+		int						nGridW, nGridH;
+		int						orgI, orgJ;
+		int						nMineTilesDrawn;    //flags to tell if all 4 tiles under mine have drawn
 	public:
 		CTerrainRenderData ();
 };

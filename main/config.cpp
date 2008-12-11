@@ -55,12 +55,15 @@ void InitCustomDetails(void);
 
 tGameConfig gameConfig;
 
-typedef struct tHashList {
-	int	nHashs;
-	uint	*hashs;
-} tHashList;
+class CHashList {
+	public:
+		int				nHashs;
+		CArray<uint>	hashs;
+	public:
+	CHasList () { nHashs = 0; }
+};
 
-tHashList hashList = {0, NULL};
+CHashList hashList;
 
 static uint nDefaultHash = 0xba61cc0b;
 
@@ -127,7 +130,7 @@ if (hashList.nHashs)
 	return hashList.nHashs;
 if (!CfgCountHashs (pszFilter, pszFolder))
 	return 0;
-hashList.hashs = reinterpret_cast<uint*> (D2_ALLOC (hashList.nHashs * sizeof (int)));
+hashList.hashs.Create (hashList.nHashs);
 
 	FFS	ffs;
 	char	szTag [FILENAME_LEN];

@@ -202,7 +202,7 @@ int seq_init()
 	else
 #endif
 	{
-		voices = D2_ALLOC(sizeof(Voice_info)*card_info.nr_voices);
+		voices = new Voice_info [card_info.nr_voices];
 		for (i=0;i<card_info.nr_voices;i++)
 		{
 			voices[i].note = -1;
@@ -534,7 +534,7 @@ void send_ipc(char *message)
 	{
 		ipc_queue_id=msgget ((key_t) ('l'<<24) | ('d'<<16) | ('e'<<8) | 's', 
 				     IPC_CREAT | 0660);
-		snd=D2_ALLOC(sizeof(long) + 32);
+		snd= reinterpret_cast<struct msgbuf*> (new ubyte [sizeof(long) + 32]);
 		snd->mType=1;
 		player_thread=SDL_CreateThread(play_hmi, NULL);
 //		player_pid = play_hmi();
@@ -637,7 +637,7 @@ void play_hmi (void * arg)
 	}*/
 
 //	signal(SIGTERM, my_quit);
-	rcv=D2_ALLOC(sizeof(long) + 16);
+	rcv = reinterpret_cast<struct msgbuf*> (new ubyte [sizeof(long) + 16]);
 
 	rcv->mType=1;
 	rcv->mtext[0]='0';
@@ -663,7 +663,7 @@ void play_hmi (void * arg)
 
 	n_chunks=data[0x30];
 
-	t_info = D2_ALLOC(sizeof(Track_info)*n_chunks);
+	t_info = new Track_info [n_chunks];
 
 	while(1)
 	{

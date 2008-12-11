@@ -329,8 +329,8 @@ gameData.render.terrain.bmP = gameData.endLevel.terrain.bmP;
 gameData.render.terrain.bmP->props.rowSize *= 4;
 gameData.render.terrain.bmP->props.flags |= BM_FLAG_TGA;
 D2_FREE (gameData.render.terrain.bmP->Buffer ());
-gameData.render.terrain.bmP->Buffer () = D2_ALLOC (gameData.render.terrain.bmP->Height () * gameData.render.terrain.bmP->props.rowSize);
-memset (gameData.render.terrain.bmP->Buffer (), 0xFF, gameData.render.terrain.bmP->Height () * gameData.render.terrain.bmP->props.rowSize);
+gameData.render.terrain.bmP->Create (gameData.render.terrain.bmP->Height () * gameData.render.terrain.bmP->props.rowSize);
+gameData.render.terrain.bmP->Clear (0xFF);
 #endif
 PrintLog ("            building terrain light map\n");
 BuildTerrainLightmap ();
@@ -427,8 +427,8 @@ if (gameData.render.terrain.lightmap)
 else
 	atexit (FreeTerrainLightmap);		//first time
 
-gameData.render.terrain.points = reinterpret_cast<CFixVector*> (D2_ALLOC (GRID_SIZE * sizeof (CFixVector)));
-gameData.render.terrain.lightmap = reinterpret_cast<fix*> (D2_ALLOC (GRID_SIZE * sizeof (fix)));
+gameData.render.terrain.points.Create (GRID_SIZE);
+gameData.render.terrain.lightmap.Create (GRID_SIZE);
 ComputeTerrainPoints ();
 for (i = 0; i < gameData.render.terrain.nGridW; i++) {
 	for (j = 0; j < gameData.render.terrain.nGridH; j++) {

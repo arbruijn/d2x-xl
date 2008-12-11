@@ -121,14 +121,14 @@ tMovieLib *FindMovieLib (const char *pszTargetMovie);
 
 void *MPlayAlloc (unsigned size)
 {
-return D2_ALLOC (size);
+return reinterpret_cast<void*> new ubyte [size];
 }
 
 // ----------------------------------------------------------------------
 
 void MPlayFree (void *p)
 {
-D2_FREE (p);
+delete[] p;
 }
 
 
@@ -594,9 +594,8 @@ if (nFiles > 255) {
 	gameStates.app.bLittleEndian = 0;
 	nFiles = SWAPINT (nFiles);
 	}
-//table = D2_ALLOC (sizeof (*table) + sizeof (ml_entry)*nFiles);
-MALLOC (table, tMovieLib, 1);
-MALLOC (table->movies, ml_entry, nFiles);
+table = new tMovieLib;
+table->movies = new ml_entry [nFiles];
 strcpy (table->name, filename);
 table->bLittleEndian = gameStates.app.bLittleEndian;
 table->n_movies = nFiles;
@@ -627,7 +626,7 @@ tMovieLib *InitOldMovieLib (const char *filename, CFile& cf)
 	nFiles = 0;
 
 	//allocate big table
-table = reinterpret_cast<tMovieLib*> (D2_ALLOC (sizeof (*table) + sizeof (ml_entry) * MAX_MOVIES_PER_LIB));
+table = reinterpret_cast<tMovieLib*> (new ubyte [sizeof (*table) + sizeof (ml_entry) * MAX_MOVIES_PER_LIB]);
 while (1) {
 	i = (int) cf.Read (table->movies [nFiles].name, 13, 1);
 	if (i != 1)
@@ -644,7 +643,7 @@ while (1) {
 	}
 	//allocate correct-sized table
 size = sizeof (*table) + sizeof (ml_entry) * nFiles;
-table2 = reinterpret_cast<tMovieLib*> (D2_ALLOC (size));
+table2 = new tMovieLib [size];
 memcpy (table2, table, size);
 D2_FREE (table);
 table = table2;

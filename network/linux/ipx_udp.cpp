@@ -404,7 +404,7 @@ static int ChkDestListSize (void)
 if (destAddrNum < destListSize)
 	return 1;
 destListSize = destListSize ? destListSize * 2 : 8;
-if (!(b = reinterpret_cast<tDestListEntry*> (D2_ALLOC (sizeof (*destList) * destListSize))))
+if (!(b =new tDestListEntry [destListSize]))
 	 return -1;
 if (destList) {
 	memcpy (b, destList, sizeof (*destList) * destListSize / 2);
@@ -515,7 +515,7 @@ for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
 	j++;
 	}
 broadsize = j;
-chk (broads = reinterpret_cast<sockaddr_in*> (D2_ALLOC (j * sizeof (*broads))));
+chk (broads = new sockaddr_in [j];
 // Second loop to copy the addresses
 j = 0;
 for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
@@ -566,7 +566,7 @@ else
 	cnt = cnt * 2 + 2;
 #	endif
 ifconf.ifc_len = cnt * sizeof (struct ifreq);
-chk (ifconf.ifc_req = reinterpret_cast<ifreq*> (D2_ALLOC (ifconf.ifc_len)));
+chk (ifconf.ifc_req = new ifreq [ifconf.ifc_len]);
 #	if DBG
 memset (ifconf.ifc_req, 0, ifconf.ifc_len);
 ioRes = ioctl (sock, SIOCGIFCONF, &ifconf);
@@ -582,7 +582,7 @@ if (ifconf.ifc_len % sizeof (struct ifreq)) {
 	FAIL ("ioctl (SIOCGIFCONF)\nIP interface detection failed:\n%m");
 	}
 cnt = ifconf.ifc_len / sizeof (struct ifreq);
-chk (broads = reinterpret_cast<sockaddr_in*> (D2_ALLOC (cnt * sizeof (*broads))));
+chk (broads = mew sockaddr_in [cnt]);
 broadsize = cnt;
 for (i = j = 0; i < cnt; i++) {
 	if (!_IOCTL (sock, SIOCGIFFLAGS, ifconf.ifc_req + i)) {
@@ -809,7 +809,7 @@ else {
 			break;
 		for (s2=s;*s2 && *s2!=',';s2++)
 			;
-		chk (ns = reinterpret_cast<char*> (D2_ALLOC (s2-s+1)));
+		chk (ns = new char [s2-s+1]);
 		memcpy (ns,s,s2-s);
 		ns [s2-s]='\0';
 		if (!queryhost (ns)) 

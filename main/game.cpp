@@ -1420,7 +1420,7 @@ void toggle_movie_saving ()
 
 
 		if (!movieFrameBuffer) {
-			movieFrameBuffer = reinterpret_cast<ubyte*> (D2_ALLOC (MAX_MOVIE_BUFFER_FRAMES * MOVIE_FRAME_SIZE));
+			movieFrameBuffer = new ubyte [MAX_MOVIE_BUFFER_FRAMES * MOVIE_FRAME_SIZE];
 			if (!movieFrameBuffer) {
 				Int3 ();
 				bSavingMovieFrames=0;

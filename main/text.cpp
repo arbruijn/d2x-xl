@@ -2541,10 +2541,10 @@ char **InitTexts (char *szTextFile, int bInitHotKeys)
 #endif
 
 j = N_BASE_TEXTS + GameTextCount ();
-if (!(pszTexts = reinterpret_cast<char **> (D2_ALLOC ((j + 1) * sizeof (char *)))))
+if (!(pszTexts = new char * [j + 1]))
 	return NULL;
 h = GameTextSize ();
-if (!(*pszTexts = reinterpret_cast<char*> (D2_ALLOC (h)))) {
+if (!(*pszTexts = new char [h])) {
 	D2_FREE (pszTexts);
 	return NULL;
 	}

@@ -451,7 +451,7 @@ for (h = j = 0; j < i; j++)
 		h += GetNumMovies (j);
 if (!h)
 	return;
-if (!(m = reinterpret_cast<char **> (D2_ALLOC (h * sizeof (char **)))))
+if (!(m = new char * [h]))
 	return;
 for (i = j = 0; i < h; i++)
 	if ((ps = CycleThroughMovies (i == 0, 0))) {

@@ -372,11 +372,11 @@ return newstr;
 
 void *GetMem (size_t size, char filler)
 {
-	void	*p = D2_ALLOC ((uint) size);
+	void	*p = new ubyte [size];
 
 if (p) {
 	memset (p, filler, size);
-	return p;
+	return reinterpret_cast<void*> p;
 	}
 Error (TXT_OUT_OF_MEMORY);
 exit (1);

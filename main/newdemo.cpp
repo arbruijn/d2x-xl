@@ -3343,7 +3343,7 @@ void NDStopPlayback ()
 {
 if (bRevertFormat > 0) {
 	int h = ndInFile.Length () - ndInFile.Tell ();
-	char *p = reinterpret_cast<char*> (D2_ALLOC (h));
+	char *p = new char [h];
 	if (p) {
 		bRevertFormat = 0;
 		NDRead (p, h, 1);
@@ -3387,7 +3387,7 @@ if (!ndOutFile.Open (outname, "", "wb", 0)) {
 	NDStopPlayback ();
 	return;
 	}
-if (!(buf = reinterpret_cast<char*> (D2_ALLOC (BUF_SIZE)))) {
+if (!(buf = new char [BUF_SIZE])) {
 	NDErrorMsg ("Mot enough memory for output buffer", NULL, NULL);
 	ndOutFile.Close ();
 	NDStopPlayback ();

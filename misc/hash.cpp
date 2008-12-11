@@ -41,12 +41,12 @@ size = ht->size;
 ht->and_mask = ht->size - 1;
 if (ht->size==0)
 	Error( "Hashtable has size of 0" );
-if (!(ht->key = reinterpret_cast<const char **> (D2_ALLOC (size * sizeof (char *)))))
+if (!(ht->key = new const char * [size]))
 	Error( "Not enough memory to create a hash table of size %d", size );
 for (i = 0; i < size; i++ )
 	ht->key [i] = NULL;
 // Use calloc cause we want zero'd array.
-ht->value = reinterpret_cast<int*> (D2_ALLOC (size * sizeof (int)));
+ht->value = new int [size];
 if (ht->value==NULL)	{
 	D2_FREE(ht->key);
 	Error( "Not enough memory to create a hash table of size %d\n", size );

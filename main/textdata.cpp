@@ -72,7 +72,7 @@ CFile::ChangeFilenameExtension (szFilename, pszLevelName, pszExt);
 bufSize = cf.Size (szFilename, gameFolders.szDataDir, 0);
 if (bufSize <= 0)
 	return;
-if (!(msgP->textBuffer = reinterpret_cast<char*> (D2_ALLOC (bufSize + 2))))
+if (!(msgP->textBuffer = new char [bufSize + 2]))
 	return;
 if (!cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 	FreeTextData (msgP);
@@ -86,7 +86,7 @@ for (p = msgP->textBuffer + 1, nLines = 1; *p; p++) {
 	if (*p == '\n')
 		nLines++;
 	}
-if (!(msgP->index = reinterpret_cast<tTextIndex*> (D2_ALLOC (nLines * sizeof (tTextIndex))))) {
+if (!(msgP->index = ne wtTextIndex [nLines])) {
 	FreeTextData (msgP);
 	return;
 	}

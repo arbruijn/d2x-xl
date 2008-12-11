@@ -310,8 +310,8 @@ if (bLowMemory)
 // until memory could be allocated, and then once more to leave enough memory
 // for other parts of the program
 for (;;) {
-	if ((bitmapBits [0] = reinterpret_cast<ubyte*> (D2_ALLOC (bitmapCacheSize)))) {
-		D2_FREE (bitmapBits [0]);
+	if ((bitmapBits [0] = new ubyte (bitmapCacheSize))) {
+		delete[] bitmapBits [0];
 		break;
 		}
 	bitmapCacheSize = (bitmapCacheSize / 10) * PIGGY_MEM_QUOTA;

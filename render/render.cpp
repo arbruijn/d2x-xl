@@ -151,7 +151,7 @@ G3TransformAndEncodePoint(&reticlePoints [3], v2);
 if ( reticleCanvas == NULL)	{
 	reticleCanvas = CCanvas::Create (64, 64);
 	if ( !reticleCanvas)
-		Error( "Couldn't D2_ALLOC reticleCanvas");
+		Error ("Couldn't allocate reticleCanvas");
 	//reticleCanvas->Bitmap ().nId = 0;
 	reticleCanvas->Bitmap ().SetFlags (BM_FLAG_TRANSPARENT);
 	}

@@ -4669,7 +4669,7 @@ void MultiQuickSoundHack (int nSound)
 
 nSound = DigiXlatSound ((short) nSound);
 l = dsP->nLength [dsP->bDTX];
-ReversedSound.data [0] = reinterpret_cast<ubyte*> (D2_ALLOC (l));
+ReversedSound.data [0] = new ubyte [l];
 ReversedSound.nLength [0] = l;
 dataP = dsP->data [dsP->bDTX] + l;
 for (i = 0, j = l; i < l; i++)

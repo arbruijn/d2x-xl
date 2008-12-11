@@ -488,7 +488,7 @@ if (FindArg ("-hoarddata")) {
 		cf = fopen (sounds[i], "rb");
 		Assert (cf != NULL);
 		size = ffilelength (cf);
-		buf = D2_ALLOC (size);
+		buf = new ubyte [size];
 		fread (buf, 1, size, cf);
 		fwrite (&size, sizeof (size), 1, ofile);
 		fwrite (buf, 1, size, ofile);

@@ -160,11 +160,11 @@ void gr_ibitblt_find_hole_size(CBitmap *mask_bmp, int *minx, int *miny, int *max
 	*maxy = 0;
 
 	if (scanline == NULL)
-		scanline = reinterpret_cast<double*> (D2_ALLOC(sizeof(double) * (MAX_WIDTH / sizeof(double))));
+		scanline = new double [MAX_WIDTH / sizeof(double)];
 
 	for (y = 0; y < mask_bmp->Height (); y++) {
 		for (x = 0; x < mask_bmp->Width (); x++) {
-			c = mask_bmp->Buffer ()[mask_bmp->RowSize ()*y+x];
+			c = mask_bmp [mask_bmp->RowSize ()*y+x];
 			if (c == TRANSPARENCY_COLOR) { // don't look for transparancy color here.
 				count++;
 				if (x < *minx) *minx = x;

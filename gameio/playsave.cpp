@@ -167,7 +167,7 @@ int RegisterParam (void *valP, const char *pszIdent, int i, int j, ubyte nSize)
 	tParam	*pp;
 
 l = (int) strlen (MakeTag (szTag, pszIdent, i, j));
-pp = reinterpret_cast<tParam*> (D2_ALLOC (sizeof (tParam) + l));
+pp = reinterpret_cast<tParam*> (new ubyte [sizeof (tParam) + l]);
 if (!pp)
 	return 0;
 memcpy (pp->szTag, szTag, l + 1);
