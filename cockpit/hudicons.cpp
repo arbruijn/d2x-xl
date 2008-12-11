@@ -117,7 +117,7 @@ if (!IsMultiGame || IsCoopGame) {
 	if (gameOpts->render.cockpit.bPlayerStats)
 		y += 2 * nHUDLineSpacing;
 
-	x0 = CCanvas::Current ()->Bitmap ().Width ();
+	x0 = CCanvas::Current ()->Width ();
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	t = gameStates.app.nSDLTicks;
 	if (t - t0 > 333) {	//update 3 times per second
@@ -143,7 +143,7 @@ if (!IsMultiGame || IsCoopGame) {
 		for (i = 0; i < 2; i++) {
 			sprintf (szInfo, "%s: %5d", i ? "Powerups" : "Robots", objCounts [i]);
 			FONT->StringSize (szInfo, w, h, aw);
-			nIdTally [i] = GrPrintF (nIdTally + i, CCanvas::Current ()->Bitmap ().Width () - w - HUD_LHX (2), y, szInfo);
+			nIdTally [i] = GrPrintF (nIdTally + i, CCanvas::Current ()->Width () - w - HUD_LHX (2), y, szInfo);
 			y += nHUDLineSpacing;
 			}
 		}
@@ -196,7 +196,7 @@ else {
 	sprintf (szStats, "%s%1.1f%c %1.1f%c %1.1f%c", h ? "T:" : "", p [0], '%', p [1], '%', p [2], '%');
 	}
 FONT->StringSize (szStats, w, h, aw);
-nIdStats = GrString (CCanvas::Current ()->Bitmap ().Width () - w - HUD_LHX (2), y, szStats, &nIdStats);
+nIdStats = GrString (CCanvas::Current ()->Width () - w - HUD_LHX (2), y, szStats, &nIdStats);
 }
 
 //	-----------------------------------------------------------------------------
@@ -253,7 +253,7 @@ if (nWeaponIcons < 3) {
 #if 0
 	if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT) {
 #endif
-		dy = (screen.Height () - CCanvas::Current ()->Bitmap ().Height ());
+		dy = (screen.Height () - CCanvas::Current ()->Height ());
 		y = nIconPos ? screen.Height () - dy - oy : oy + hIcon + 12;
 #if 0
 		}
@@ -279,7 +279,7 @@ for (i = 0; i < 2; i++) {
 			h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [gameStates.render.cockpit.nMode + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0)].index].Height ();
 #endif
 			}
-		y = (CCanvas::Current ()->Bitmap ().Height () - h - n * (hIcon + oy)) / 2 + hIcon;
+		y = (CCanvas::Current ()->Height () - h - n * (hIcon + oy)) / 2 + hIcon;
 		x = i ? screen.Width () - wIcon - ox : ox;
 		}
 	else {
@@ -530,7 +530,7 @@ void HUDShowInventoryIcons (void)
 	static int nEnergyType [NUM_INV_ITEMS] = {F1_0, 100 * F1_0, 0, F1_0, 0, F1_0, 0, 0, F1_0, F1_0};
 	static int nIdItems [NUM_INV_ITEMS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-dy = (screen.Height () - CCanvas::Current ()->Bitmap ().Height ());
+dy = (screen.Height () - CCanvas::Current ()->Height ());
 if (gameStates.render.cockpit.nMode != CM_STATUS_BAR) //(!SHOW_COCKPIT)
 	y = nIconPos ? screen.Height () - dy - oy : oy + hIcon + 12;
 else

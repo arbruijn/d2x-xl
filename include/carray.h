@@ -61,6 +61,7 @@ template < class _T > class CArray {
 		inline void Init (void) { 
 			m_data.buffer = reinterpret_cast<_T *> (NULL); 
 			m_data.length = 0;
+			m_data.pos = 0;
 			m_data.bExternal = m_data.bChild = false;
 			memset (&m_data.null, 0, sizeof (_T));
 			}
@@ -214,7 +215,17 @@ inline int operator- (ushort* v, CArray<ushort>& a) { return a.Index (v); }
 inline int operator- (int* v, CArray<int>& a) { return a.Index (v); }
 inline int operator- (uint* v, CArray<uint>& a) { return a.Index (v); }
 
-class CCharArray : public CArray<char> {};
+class CCharArray : public CArray<char> {
+	public:
+		inline char* operator= (const char* source) { 
+			uint l = strlen (source) + 1;
+			if ((l > m_data.length) && !Resize (m_data.length + l))
+				return NULL;
+			memcpy (m_data.buffer, source, l);
+			return m_data.buffer;
+		}
+};
+
 class CByteArray : public CArray<ubyte> {};
 class CShortArray : public CArray<short> {};
 class CUShortArray : public CArray<ushort> {};

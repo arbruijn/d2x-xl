@@ -94,6 +94,7 @@ psm->texCoord.Destroy ();
 
 void ASE_FreeModel (tASEModel *pm)
 {
+#if 1
 	tASESubModelList	*pml, *h;
 
 for (pml = pm->subModels; pml; ) {
@@ -104,6 +105,7 @@ for (pml = pm->subModels; pml; ) {
 	}
 ASE_FreeTextures (pm);
 memset (pm, 0, sizeof (*pm));
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -200,9 +202,9 @@ while ((pszToken = ASE_ReadLine (cf))) {
 		if (!ReadModelTGA (strlwr (fn), bmP, nType, bCustom))
 			return ASE_Error ("texture not found");
 		l = (int) strlen (fn) + 1;
-		if (!(pm->textures.m_names [nBitmap] = new char [l]))
+		if (!pm->textures.m_names [nBitmap].Create (l))
 			return ASE_Error ("out of memory");
-		memcpy (pm->textures.m_names [nBitmap], fn, l);
+		memcpy (pm->textures.m_names [nBitmap].Buffer (), fn, l);
 		if ((ps = strstr (fn, "color")))
 			pm->textures.m_nTeam [nBitmap] = atoi (ps + 5) + 1;
 		else

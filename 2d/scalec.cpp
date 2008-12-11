@@ -400,7 +400,7 @@ void scale_bitmap_c_rle(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, 
 // Scales bitmap, bp, into vertbuf[0] to vertbuf[1]
 void ScaleBitmap(CBitmap *bmP, grsPoint *vertbuf, int orientation )
 {
-	CBitmap * dbp = &CCanvas::Current ()->Bitmap ();
+	CBitmap* dbp = CCanvas::Current ();
 	fix x0, y0, x1, y1;
 	fix u0, v0, u1, v1;
 	fix clipped_x0, clipped_y0, clipped_x1, clipped_y1;

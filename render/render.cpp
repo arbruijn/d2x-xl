@@ -153,7 +153,7 @@ if ( reticleCanvas == NULL)	{
 	if ( !reticleCanvas)
 		Error ("Couldn't allocate reticleCanvas");
 	//reticleCanvas->Bitmap ().nId = 0;
-	reticleCanvas->Bitmap ().SetFlags (BM_FLAG_TRANSPARENT);
+	reticleCanvas->SetFlags (BM_FLAG_TRANSPARENT);
 	}
 
 CCanvas::Push ();
@@ -164,7 +164,7 @@ CCanvas::Pop ();
 
 saved_interp_method = gameStates.render.nInterpolationMethod;
 gameStates.render.nInterpolationMethod	= 3;		// The best, albiet slowest.
-G3DrawTexPoly (4, pointList, tUVL, &reticleCanvas->Bitmap (), NULL, 1, -1);
+G3DrawTexPoly (4, pointList, tUVL, reticleCanvas, NULL, 1, -1);
 gameStates.render.nInterpolationMethod	= saved_interp_method;
 }
 
@@ -823,7 +823,7 @@ t=top;
 r=right;
 b=bot;
 
-if ( r<0 || b<0 || l>=CCanvas::Current ()->Width () || (t >= CCanvas::Current ()->Bitmap ().Height () && b >= CCanvas::Current ()->Bitmap ().Height ()))
+if ( r<0 || b<0 || l>=CCanvas::Current ()->Width () || (t >= CCanvas::Current ()->Height () && b >= CCanvas::Current ()->Height ()))
 	return;
 
 if (l<0)
@@ -831,7 +831,7 @@ if (l<0)
 if (t<0)
 	t=0;
 if (r>=CCanvas::Current ()->Width ()) r=CCanvas::Current ()->Width ()-1;
-if (b>=CCanvas::Current ()->Bitmap ().Height ()) b=CCanvas::Current ()->Bitmap ().Height ()-1;
+if (b>=CCanvas::Current ()->Height ()) b=CCanvas::Current ()->Height ()-1;
 
 GrLine(I2X(l), I2X(t), I2X(r), I2X(t));
 GrLine(I2X(r), I2X(t), I2X(r), I2X(b));
@@ -1299,7 +1299,7 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) && (nEyeOffset >= 0)) {
 StartLightingFrame (gameData.objs.viewerP);		//this is for ugly light-smoothing hack
 gameStates.ogl.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
 if (!nWindow)
-	gameData.render.dAspect = (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Bitmap ().Height ();
+	gameData.render.dAspect = (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Height ();
 //PrintLog ("G3StartFrame\n");
 G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive));
 //PrintLog ("SetRenderView\n");
@@ -1328,7 +1328,7 @@ if (SHOW_SHADOWS &&
 #endif
 		OglStartFrame (0, 0);
 #if SOFT_SHADOWS
-		OglViewport (CCanvas::Current ()->Bitmap ().props.x, CCanvas::Current ()->Bitmap ().props.y, 128, 128);
+		OglViewport (CCanvas::Current ()->props.x, CCanvas::Current ()->props.y, 128, 128);
 #endif
 		RenderMine (nStartSeg, nEyeOffset, nWindow);
 #if 1//!DBG
@@ -1651,7 +1651,7 @@ if (bPreDrawSegs)
 renderPortals [0].left =
 renderPortals [0].top = 0;
 renderPortals [0].right = CCanvas::Current ()->Width () - 1;
-renderPortals [0].bot = CCanvas::Current ()->Bitmap ().Height () - 1;
+renderPortals [0].bot = CCanvas::Current ()->Height () - 1;
 
 //breadth-first renderer
 
@@ -2283,7 +2283,7 @@ void CheckFace(int nSegment, int nSide, int facenum, int nVertices, short *vp, i
 		G3DrawTexPoly (nVertices, pointList, reinterpret_cast<tUVL*> (uvlCopy), bm, 1, -1);
  gameStates.render.nLighting = save_lighting;
 
-		if (gr_ugpixel(&CCanvas::Current ()->Bitmap (), _search_x, _search_y) == 1) {
+		if (gr_ugpixel(CCanvas::Current (), _search_x, _search_y) == 1) {
 			found_seg = nSegment;
 			found_side = nSide;
 			found_face = facenum;
@@ -2304,13 +2304,13 @@ void RenderObjectSearch(CObject *objP)
 	CCanvas::Current ()->SetColor(0);
 	gr_pixel(_search_x, _search_y);	//set our search pixel to color zero
 	RenderObject (objP, 0, 0);
-	if (gr_ugpixel(&CCanvas::Current ()->Bitmap (), _search_x, _search_y) != 0)
+	if (gr_ugpixel(CCanvas::Current (), _search_x, _search_y) != 0)
 		changed=1;
 
 	CCanvas::Current ()->SetColor(1);
 	gr_pixel(_search_x, _search_y);	//set our search pixel to color zero
 	RenderObject (objP, 0, 0);
-	if (gr_ugpixel(&CCanvas::Current ()->Bitmap (), _search_x, _search_y) != 1)
+	if (gr_ugpixel(CCanvas::Current (), _search_x, _search_y) != 1)
 		changed=1;
 
 	if (changed) {

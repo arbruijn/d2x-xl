@@ -298,7 +298,7 @@ void ScoreTableRedraw ()
 	int sorted [MAX_NUM_NET_PLAYERS];
 
 xOffs = (CCanvas::Current ()->Width () - 640) / 2;
-yOffs = (CCanvas::Current ()->Bitmap ().Height () - 480) / 2;
+yOffs = (CCanvas::Current ()->Height () - 480) / 2;
 if (xOffs < 0)
 	xOffs = 0;
 if (yOffs < 0)

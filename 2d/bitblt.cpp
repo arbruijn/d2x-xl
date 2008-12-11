@@ -181,8 +181,8 @@ void gr_ubitmap00(int x, int y, CBitmap *bmP)
 	ubyte * dest;
 	ubyte * src;
 
-	dest_rowSize=CCanvas::Current ()->Bitmap ().RowSize () << gr_bitblt_dest_step_shift;
-	dest = &(CCanvas::Current ()->Bitmap ().Buffer ()[ dest_rowSize*y+x ]);
+	dest_rowSize=CCanvas::Current ()->RowSize () << gr_bitblt_dest_step_shift;
+	dest = &(CCanvas::Current ()->Buffer ()[ dest_rowSize*y+x ]);
 
 	src = bmP->Buffer ();
 
@@ -206,8 +206,8 @@ void gr_ubitmap00m(int x, int y, CBitmap *bmP)
 	ubyte * dest;
 	ubyte * src;
 
-	dest_rowSize=CCanvas::Current ()->Bitmap ().RowSize () << gr_bitblt_dest_step_shift;
-	dest = &(CCanvas::Current ()->Bitmap ().Buffer ()[ dest_rowSize*y+x ]);
+	dest_rowSize=CCanvas::Current ()->RowSize () << gr_bitblt_dest_step_shift;
+	dest = &(CCanvas::Current ()->Buffer ()[ dest_rowSize*y+x ]);
 
 	src = bmP->Buffer ();
 
@@ -220,7 +220,7 @@ void gr_ubitmap00m(int x, int y, CBitmap *bmP)
 	} else {
 		for (y1=0; y1 < bmP->Height (); y1++)    {
 			gr_linear_rep_movsdm_faded (src, dest, bmP->Width (), grBitBltFadeTable[y1+y], 
-												 bmP->Palette (), CCanvas::Current ()->Bitmap ().Palette ());
+												 bmP->Palette (), CCanvas::Current ()->Palette ());
 			src += bmP->RowSize ();
 			dest+= (int)(dest_rowSize);
 		}
@@ -366,7 +366,7 @@ extern void gr_lbitblt(CBitmap * source, CBitmap * dest, int height, int width);
 
 void GrBitmap (int x, int y, CBitmap *bmP)
 {
-	CBitmap * const scr = &CCanvas::Current ()->Bitmap ();
+	CBitmap * const scr = CCanvas::Current ();
 	int dx1=x, dx2=x+bmP->Width ()-1;
 	int dy1=y, dy2=y+bmP->Height ()-1;
 	int sx=0, sy=0;
@@ -389,7 +389,7 @@ if (dy2 >= scr->Height ())
 	dy2 = scr->Height ()-1;
 
 // Draw bitmap bmP[x,y] into (dx1,dy1)-(dx2,dy2)
-GrBmUBitBlt (dx2 - dx1 + 1, dy2 - dy1 + 1, dx1, dy1, sx, sy, bmP, &CCanvas::Current ()->Bitmap (), 0);
+GrBmUBitBlt (dx2 - dx1 + 1, dy2 - dy1 + 1, dx1, dy1, sx, sy, bmP, CCanvas::Current (), 0);
 }
 
 //------------------------------------------------------------------------------
@@ -618,7 +618,7 @@ void gr_ubitmap(int x, int y, CBitmap *bmP)
 		{
 		case BM_LINEAR:
 			if (bmP->Flags () & BM_FLAG_RLE)
-				gr_bm_ubitblt00_rle(bmP->Width (), bmP->Height (), x, y, 0, 0, bmP, &CCanvas::Current ()->Bitmap ());
+				gr_bm_ubitblt00_rle(bmP->Width (), bmP->Height (), x, y, 0, 0, bmP, CCanvas::Current ());
 			else
 				gr_ubitmap00(x, y, bmP);
 			return;
@@ -643,15 +643,15 @@ void GrUBitmapM(int x, int y, CBitmap *bmP)
 	source = bmP->Mode ();
 	dest = MODE;
 
-	Assert(x+bmP->Width () <= CCanvas::Current ()->Bitmap ().Width ());
-	Assert(y+bmP->Height () <= CCanvas::Current ()->Bitmap ().Height ());
+	Assert(x+bmP->Width () <= CCanvas::Current ()->Width ());
+	Assert(y+bmP->Height () <= CCanvas::Current ()->Height ());
 
 	if (source==BM_LINEAR) {
 		switch(dest)
 		{
 		case BM_LINEAR:
 			if (bmP->Flags () & BM_FLAG_RLE)
-				gr_bm_ubitblt00m_rle(bmP->Width (), bmP->Height (), x, y, 0, 0, bmP, &CCanvas::Current ()->Bitmap ());
+				gr_bm_ubitblt00m_rle(bmP->Width (), bmP->Height (), x, y, 0, 0, bmP, CCanvas::Current ());
 			else
 				gr_ubitmap00m(x, y, bmP);
 			return;
@@ -677,7 +677,7 @@ void GrBitmapM (int x, int y, CBitmap *bmP, int bTransp)
 
 if ((dx1 >= CCanvas::Current ()->Width ()) || (dx2 < 0)) 
 	return;
-if ((dy1 >= CCanvas::Current ()->Bitmap ().Height ()) || (dy2 < 0)) 
+if ((dy1 >= CCanvas::Current ()->Height ()) || (dy2 < 0)) 
 	return;
 if (dx1 < 0) { 
 	sx = -dx1; 
@@ -689,18 +689,18 @@ if (dy1 < 0) {
 	}
 if (dx2 >= CCanvas::Current ()->Width ())
 	dx2 = CCanvas::Current ()->Width ()-1;
-if (dy2 >= CCanvas::Current ()->Bitmap ().Height ())
-	dy2 = CCanvas::Current ()->Bitmap ().Height ()-1; 
+if (dy2 >= CCanvas::Current ()->Height ())
+	dy2 = CCanvas::Current ()->Height ()-1; 
 // Draw bitmap bmP[x,y] into (dx1,dy1)-(dx2,dy2)
 
-if ((bmP->Mode () == BM_LINEAR) && (CCanvas::Current ()->Bitmap ().Mode () == BM_LINEAR)) {
+if ((bmP->Mode () == BM_LINEAR) && (CCanvas::Current ()->Mode () == BM_LINEAR)) {
 	if (bmP->Flags () & BM_FLAG_RLE)
-		gr_bm_ubitblt00m_rle (dx2 - dx1 + 1, dy2 - dy1 + 1, dx1, dy1, sx, sy, bmP, &CCanvas::Current ()->Bitmap ());
+		gr_bm_ubitblt00m_rle (dx2 - dx1 + 1, dy2 - dy1 + 1, dx1, dy1, sx, sy, bmP, CCanvas::Current ());
 	else
-		gr_bm_ubitblt00m (dx2 - dx1 + 1, dy2 - dy1 + 1, dx1, dy1, sx, sy, bmP, &CCanvas::Current ()->Bitmap ());
+		gr_bm_ubitblt00m (dx2 - dx1 + 1, dy2 - dy1 + 1, dx1, dy1, sx, sy, bmP, CCanvas::Current ());
 	return;
 	}
-GrBmUBitBltM (dx2 - dx1 + 1, dy2 - dy1 + 1, dx1, dy1, sx, sy, bmP, &CCanvas::Current ()->Bitmap (), bTransp);
+GrBmUBitBltM (dx2 - dx1 + 1, dy2 - dy1 + 1, dx1, dy1, sx, sy, bmP, CCanvas::Current (), bTransp);
 }
 
 //------------------------------------------------------------------------------
@@ -778,7 +778,7 @@ void GrBitmapScaleTo(CBitmap *src, CBitmap *dst)
 
 void ShowFullscreenImage (CBitmap *src)
 {
-	CBitmap * const dest = &CCanvas::Current ()->Bitmap ();
+	CBitmap * const dest = CCanvas::Current ();
 
 if ((src->Mode () == BM_LINEAR) && (dest->Mode () == BM_OGL)) {
 	if (!gameStates.render.bBlendBackground)

@@ -463,7 +463,7 @@ int OglInternalString (int x, int y, const char *s)
 FONT->GetInfo (font);
 nextRowP = s;
 yy = y;
-if (screen.Bitmap ().Mode () != BM_OGL)
+if (screen.Canvas ()->Mode () != BM_OGL)
 	Error ("carp.\n");
 while (nextRowP != NULL) {
 	text_ptr1 = nextRowP;
@@ -732,9 +732,9 @@ if (x == 0x8000)	{
 	// width.
 	if (w > CCanvas::Current ()->Width ())
 		clipped |= 1;
-	if (y > CCanvas::Current ()->Bitmap ().Height ())
+	if (y > CCanvas::Current ()->Height ())
 		clipped |= 3;
-	else if ((y+h) > CCanvas::Current ()->Bitmap ().Height ())
+	else if ((y+h) > CCanvas::Current ()->Height ())
 		clipped |= 1;
 	else if ((y+h) < 0)
 		clipped |= 2;
@@ -749,9 +749,9 @@ else {
 		clipped |= 1;
 	else if ((x + w) < 0)
 		clipped |= 2;
-	if (y > CCanvas::Current ()->Bitmap ().Height ())
+	if (y > CCanvas::Current ()->Height ())
 		clipped |= 3;
-	else if ((y + h) > CCanvas::Current ()->Bitmap ().Height ())
+	else if ((y + h) > CCanvas::Current ()->Height ())
 		clipped |= 1;
 	else if ((y + h) < 0)
 		clipped |= 2;

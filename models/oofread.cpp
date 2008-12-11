@@ -1204,10 +1204,12 @@ for (i = 0; i < o.textures.m_nBitmaps; i++) {
 #if OOF_TEST_CUBE
 if (!i)	//cube.oof only contains one texture
 #endif
-	if (!(o.textures.m_names [i] = OOF_ReadString (cf, szId, "\001"))) {
+	if (!OOF_ReadString (cf, szId, "\001")) {
 		nIndent -= 2;
 		return OOF_FreeTextures (&o);
 		}
+	o.textures.m_names [i].Create (strlen (szId) + 1);
+	o.textures.m_names [i] = szId;
 #if OOF_TEST_CUBE
 if (!i) {
 	delete[] o.textures.m_names [i];
@@ -1216,7 +1218,7 @@ if (!i) {
 o.textures.m_names [i] = new char [20];
 sprintf (o.textures.m_names [i], "%d.tga", i + 1);
 #endif
-	if (!ReadModelTGA (o.textures.m_names [i], o.textures.m_bitmaps + i, nType, bCustom)) {
+	if (!ReadModelTGA (o.textures.m_names [i].Buffer (), o.textures.m_bitmaps + i, nType, bCustom)) {
 #if DBG
 		bOk = 0;
 #else

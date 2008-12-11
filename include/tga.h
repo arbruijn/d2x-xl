@@ -24,10 +24,10 @@ typedef struct {
 
 class CModelTextures {
 	public:
-		int					m_nBitmaps;
-		CArray<char*>		m_names;
-		CArray<CBitmap>	m_bitmaps;
-		CArray<ubyte>		m_nTeam;
+		int						m_nBitmaps;
+		CArray<CCharArray>	m_names;
+		CArray<CBitmap>		m_bitmaps;
+		CArray<ubyte>			m_nTeam;
 
 	public:
 		CModelTextures () { m_nBitmaps = 0; }

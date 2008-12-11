@@ -194,18 +194,18 @@ if (gameOpts->menus.nStyle) {
 if (gameOpts->movies.bFullScreen) {
 	double r = (double) bufh / (double) bufw;
 	int dh = (int) (CCanvas::Current ()->Width () * r);
-	int yOffs = (CCanvas::Current ()->Bitmap ().Height () - dh) / 2;
+	int yOffs = (CCanvas::Current ()->Height () - dh) / 2;
 
 	glDisable (GL_BLEND);
 	OglUBitBltI (CCanvas::Current ()->Width (), dh, 0, yOffs, 
 					 bufw, bufh, sx, sy, 
-					 &bmFrame, &CCanvas::Current ()->Bitmap (), 
+					 &bmFrame, CCanvas::Current (), 
 					 gameOpts->movies.nQuality, 1, 1.0f);
 	glEnable (GL_BLEND);
 	}
 else {
 	int xOffs = (CCanvas::Current ()->Width () - 640) / 2;
-	int yOffs = (CCanvas::Current ()->Bitmap ().Height () - 480) / 2;
+	int yOffs = (CCanvas::Current ()->Height () - 480) / 2;
 
 	if (xOffs < 0)
 		xOffs = 0;
@@ -213,11 +213,11 @@ else {
 		yOffs = 0;
 	dstx += xOffs;
 	dsty += yOffs;
-	if ((CCanvas::Current ()->Width () > 640) || (CCanvas::Current ()->Bitmap ().Height () > 480)) {
+	if ((CCanvas::Current ()->Width () > 640) || (CCanvas::Current ()->Height () > 480)) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
 		GrUBox (dstx-1, dsty, dstx+w, dsty+h+1);
 		}
-	GrBmUBitBlt (bufw, bufh, dstx, dsty, sx, sy, &bmFrame, &CCanvas::Current ()->Bitmap (), 1);
+	GrBmUBitBlt (bufw, bufh, dstx, dsty, sx, sy, &bmFrame, CCanvas::Current (), 1);
 	}
 TRANSPARENCY_COLOR = DEFAULT_TRANSPARENCY_COLOR;
 }
@@ -272,7 +272,7 @@ movie_bg.y=y;
 movie_bg.w=w; 
 movie_bg.h=h;
 movie_bg.bmp = GrCreateBitmap (w+BOX_BORDER, h+BOX_BORDER, 1);
-GrBmUBitBlt (w+BOX_BORDER, h+BOX_BORDER, 0, 0, x-BOX_BORDER/2, y-BOX_BORDER/2, & (CCanvas::Current ()->Bitmap ()), movie_bg.bmp);
+GrBmUBitBlt (w+BOX_BORDER, h+BOX_BORDER, 0, 0, x-BOX_BORDER/2, y-BOX_BORDER/2, & (CCanvas::Current ()), movie_bg.bmp);
 #endif
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 GrRect (x-BOX_BORDER/2, y-BOX_BORDER/2, x+w+BOX_BORDER/2-1, y+h+BOX_BORDER/2-1);
@@ -564,12 +564,12 @@ while (nNextSubTitle < subTitles.nCaptions && nFrame >= subTitles.captions [nNex
 	}
 
 //find y coordinate for first line of subtitles
-y = CCanvas::Current ()->Bitmap ().Height () - ((nLineSpacing+1)*MAX_ACTIVE_SUBTITLES+2);
+y = CCanvas::Current ()->Height () - ((nLineSpacing+1)*MAX_ACTIVE_SUBTITLES+2);
 
 //erase old subtitles if necessary
 if (bMustErase) {
 	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-	GrRect (0, y, CCanvas::Current ()->Width ()-1, CCanvas::Current ()->Bitmap ().Height ()-1);
+	GrRect (0, y, CCanvas::Current ()->Width ()-1, CCanvas::Current ()->Height ()-1);
 	}
 //now draw the current subtitles
 for (t=0;t<nActiveSubTitles;t++)

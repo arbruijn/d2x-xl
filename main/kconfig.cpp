@@ -1216,7 +1216,7 @@ font = CCanvas::Current ()->Font ();
 FlushInput ();
 NMDrawBackground (&bg, xOffs, yOffs, 
 	xOffs + 639 /*CCanvas::Current ()->Width () - 1*/, 
-	yOffs + 479 /*CCanvas::Current ()->Bitmap ().Height () - 1*/, 0);
+	yOffs + 479 /*CCanvas::Current ()->Height () - 1*/, 0);
 paletteManager.LoadEffect  ();
 
 nCurItem = 0;
@@ -1598,7 +1598,7 @@ void KConfig (int n, const char *pszTitle)
 	int		i, j, b = gameOpts->legacy.bInput;
 
 	xOffs = (CCanvas::Current ()->Width () - 640) / 2;
-	yOffs = (CCanvas::Current ()->Bitmap ().Height () - 480) / 2;
+	yOffs = (CCanvas::Current ()->Height () - 480) / 2;
 	if (xOffs < 0)
 		xOffs = 0;
 	if (yOffs < 0)
@@ -1611,11 +1611,11 @@ void KConfig (int n, const char *pszTitle)
 	if (gameOpts->menus.bFastMenus)
 		bmSave = NULL;
 	else {
-		bmSave = CBitmap::Create (0, CCanvas::Current ()->Width (), CCanvas::Current ()->Bitmap ().Height (), 1);
+		bmSave = CBitmap::Create (0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height (), 1);
 		Assert (bmSave != NULL);
 		bmSave->SetPalette (paletteManager.Texture ());
 		GrBmBitBlt (CCanvas::Current ()->Width (), CCanvas::Current ()->Width (), 
-						 0, 0, 0, 0, &CCanvas::Current ()->Bitmap (), bmSave);
+						 0, 0, 0, 0, CCanvas::Current (), bmSave);
 		}
 	if (n == 0)
 		KConfigSub (kcKeyboard, NUM_KEY_CONTROLS, pszTitle);

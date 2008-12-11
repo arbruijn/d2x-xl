@@ -146,7 +146,7 @@ if (dw < 0)
 else if (dw == 0)
 	dw = bmP->Width ();
 if (dh < 0)
-	dh = CCanvas::Current ()->Bitmap ().Height ();
+	dh = CCanvas::Current ()->Height ();
 else if (dh == 0)
 	dh = bmP->Height ();
 if (orient & 1) {

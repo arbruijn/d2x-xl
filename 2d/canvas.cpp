@@ -54,7 +54,7 @@ m_save.Create (10);
 void CCanvas::Setup (int w, int h)
 {
 Init ();
-Bitmap ().Setup (BM_LINEAR, w, h, 1, "Canvas");
+CBitmap::Setup (BM_LINEAR, w, h, 1, "Canvas");
 }
 
 //	-----------------------------------------------------------------------------
@@ -74,7 +74,7 @@ return paneP;
 void CCanvas::Init (int nType, int w, int h, ubyte *data)
 {
 Init ();
-m_info.bm.Init (nType, 0, 0, w, h, 1, data);
+CBitmap::Init (nType, 0, 0, w, h, 1, data);
 }
 
 //	-----------------------------------------------------------------------------
@@ -86,7 +86,7 @@ paneP->SetDrawMode (m_info.nDrawMode);
 paneP->SetFont (m_info.font);
 paneP->SetFontColor (m_info.fontColors [0], 0);
 paneP->SetFontColor (m_info.fontColors [1], 1);
-paneP->Bitmap ().InitChild (&m_info.bm, x, y, w, h);
+paneP->CBitmap::InitChild (this, x, y, w, h);
 }
 
 //	-----------------------------------------------------------------------------
@@ -112,7 +112,7 @@ if (MODE == BM_OGL)
 	SetColorRGBi (color);
 else 
 	if (color)
-		SetColor (CCanvas::Current ()->Bitmap ().Palette ()->ClosestColor (RGBA_RED (color), RGBA_GREEN (color), RGBA_BLUE (color)));
+		SetColor (CCanvas::Current ()->Palette ()->ClosestColor (RGBA_RED (color), RGBA_GREEN (color), RGBA_BLUE (color)));
 	else
 		SetColor (TRANSPARENCY_COLOR);
 GrRect (0, 0, GWIDTH-1, GHEIGHT-1);

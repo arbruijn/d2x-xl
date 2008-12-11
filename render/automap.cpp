@@ -509,7 +509,7 @@ OglSwapBuffers (0, 0);
 //------------------------------------------------------------------------------
 
 //print to canvas & float height
-CCanvas *PrintToCanvas (char *s, CFont *font, uint fc, uint bc, int doubleFlag)
+CCanvas* PrintToCanvas (char *s, CFont *font, uint fc, uint bc, int doubleFlag)
 {
 	int		y;
 	ubyte		*data;
@@ -523,7 +523,7 @@ FONT->StringSize (s, w, h, aw);		//now get the string size
 
 //canvP = GrCreateCanvas (font->width*strlen (s),font->height*2);
 canvP = CCanvas::Create (w, font->Height () * 2);
-canvP->Bitmap ().SetPalette (paletteManager.Game ());
+canvP->SetPalette (paletteManager.Game ());
 CCanvas::SetCurrent (canvP);
 fontManager.SetCurrent (font);
 canvP->Clear (0);						//trans color
@@ -531,10 +531,10 @@ fontManager.SetColorRGBi (fc, 1, bc, 1);
 GrPrintF (NULL, 0, 0, s);
 //now float it, since we're drawing to 400-line modex screen
 if (doubleFlag) {
-	data = canvP->Bitmap ().Buffer ();
-	rs = canvP->Bitmap ().RowSize ();
+	data = canvP->Buffer ();
+	rs = canvP->RowSize ();
 
-	for (y=canvP->Bitmap ().Height () / 2;y--;) {
+	for (y=canvP->Height () / 2;y--;) {
 		memcpy (data + rs * y * 2, data+ rs * y, canvP->Width ());
 		memcpy (data + rs * (y * 2 + 1), data + rs *y, canvP->Width ());
 		}
@@ -547,10 +547,9 @@ return canvP;
 //print to buffer, float heights, and blit bitmap to screen
 void ModexPrintF (int x,int y,char *s,CFont *font, uint color)
 {
-	CCanvas *canvP;
+	CCanvas *canvP = PrintToCanvas (s, font, color, 0, !amData.bHires);
 
-canvP = PrintToCanvas (s, font, color, 0, !amData.bHires);
-GrBitmapM (x,y,&canvP->Bitmap (), 2);
+GrBitmapM (x, y, canvP, 2);
 canvP->Destroy ();
 }
 
@@ -629,12 +628,12 @@ nMaxEdges = MAX_EDGES; //min (MAX_EDGES_FROM_VERTS (gameData.segs.nVertices), MA
 if (gameStates.render.automap.bRadar || (gameStates.video.nDisplayMode > 1)) {
 	//GrSetMode (gameStates.video.nLastScreenMode);
 	if (gameStates.render.automap.bRadar) {
-		automap_width = CCanvas::Current ()->Bitmap ().Width ();
-		automap_height = CCanvas::Current ()->Bitmap ().Height ();
+		automap_width = CCanvas::Current ()->Width ();
+		automap_height = CCanvas::Current ()->Height ();
 		}
 	else {
-		automap_width = screen.Canvas ()->Bitmap ().Width ();
-		automap_height = screen.Canvas ()->Bitmap ().Height ();
+		automap_width = screen.Canvas ()->Width ();
+		automap_height = screen.Canvas ()->Height ();
 		}
 	amData.bHires = 1;
 	 }

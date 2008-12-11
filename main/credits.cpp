@@ -193,7 +193,7 @@ if (!cf.Open (filename, gameFolders.szDataDir, "rb", 0)) {
 	}
 SetScreenMode(SCREEN_MENU);
 xOffs = (CCanvas::Current ()->Width () - 640) / 2;
-yOffs = (CCanvas::Current ()->Bitmap ().Height () - 480) / 2;
+yOffs = (CCanvas::Current ()->Height () - 480) / 2;
 if (xOffs < 0)
 	xOffs = 0;
 if (yOffs < 0)
@@ -207,7 +207,7 @@ bmBackdrop.SetBuffer (NULL);
 bmBackdrop.SetPalette (NULL);
 
 //MWA  Made bmBackdrop bitmap linear since it should always be.  the current canvas may not
-//MWA  be linear, so we can't rely on CCanvas::Current ()->Bitmap ()->props.nMode.
+//MWA  be linear, so we can't rely on CCanvas::Current ()->props.nMode.
 
 nPcxError = PCXReadBitmap (reinterpret_cast<char*> (CREDITS_BACKGROUND_FILENAME), &bmBackdrop, BM_LINEAR, 0);
 if (nPcxError != PCX_ERROR_NONE) {
@@ -220,7 +220,7 @@ bmBackdrop.Remap (NULL, -1, -1);
 if (!gameOpts->menus.nStyle) {
 	CCanvas::SetCurrent(NULL);
 	GrBitmap(xOffs,yOffs,&bmBackdrop);
-	if ((CCanvas::Current ()->Width () > 640) || (CCanvas::Current ()->Bitmap ().Height () > 480)) {
+	if ((CCanvas::Current ()->Width () > 640) || (CCanvas::Current ()->Height () > 480)) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0,0,32));
 		GrUBox(xOffs,yOffs,xOffs+bmBackdrop.Width ()+1,yOffs+bmBackdrop.Height ()+1);
 		}
@@ -240,7 +240,7 @@ else
 	creditsOffscreenBuf = CCanvas::Create(320,200);
 if (!creditsOffscreenBuf)
 	Error("Not enough memory to allocate Credits Buffer.");
-creditsOffscreenBuf->Bitmap ().SetPalette (CCanvas::Current ()->Bitmap ().Palette ());
+creditsOffscreenBuf->Bitmap ().SetPalette (CCanvas::Current ()->Palette ());
 if (gameOpts->menus.nStyle)
 	creditsOffscreenBuf->Bitmap ().AddFlags (BM_FLAG_TRANSPARENT);
 KeyFlush ();
@@ -295,7 +295,7 @@ get_line:;
 			ShowFullscreenImage (&bmBackdrop);
 	//			GrUpdate (0);
 	#if 0
-			if ((CCanvas::Current ()->Width () > 640) || (CCanvas::Current ()->Bitmap ().Height () > 480)) {
+			if ((CCanvas::Current ()->Width () > 640) || (CCanvas::Current ()->Height () > 480)) {
 				CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0,0,32));
 				GrUBox (xOffs, yOffs, xOffs + bmBackdrop. Width () + 1, yOffs + bmBackdrop.Height () + 1);
 				}

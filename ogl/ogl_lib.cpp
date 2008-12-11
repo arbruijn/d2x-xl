@@ -366,7 +366,7 @@ glLoadIdentity ();//clear matrix
 if (gameStates.render.bRearView)
 	glScalef (-1.0f, 1.0f, 1.0f);
 gluPerspective (gameStates.render.glFOV * ((double) viewInfo.zoom / 65536.0),
-					 (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Bitmap ().Height (), ZNEAR, ZFAR);
+					 (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Height (), ZNEAR, ZFAR);
 gameData.render.ogl.depthScale [X] = (float) (ZFAR / (ZFAR - ZNEAR));
 gameData.render.ogl.depthScale [Y] = (float) (ZNEAR * ZFAR / (ZNEAR - ZFAR));
 gameData.render.ogl.depthScale [Z] = (float) (ZFAR - ZNEAR);
@@ -389,7 +389,7 @@ if (!gameOpts->render.cameras.bHires) {
 if ((x != gameStates.ogl.nLastX) || (y != gameStates.ogl.nLastY) || (w != gameStates.ogl.nLastW) || (h != gameStates.ogl.nLastH)) {
 #if !USE_IRRLICHT
 	glViewport ((GLint) x, 
-					(GLint) (screen.Bitmap ().Height () >> gameStates.render.cameras.bActive) - y - h, 
+					(GLint) (screen.Canvas ()->Height () >> gameStates.render.cameras.bActive) - y - h, 
 					(GLsizei) w, (GLsizei) h);
 #endif
 	gameStates.ogl.nLastX = x;
@@ -565,7 +565,7 @@ else
 	if (gameStates.ogl.bEnableScissor) {
 		glScissor (
 			CCanvas::Current ()->Left (),
-			screen.Bitmap ().Height () - CCanvas::Current ()->Top () - nCanvasHeight,
+			screen.Canvas ()->Height () - CCanvas::Current ()->Top () - nCanvasHeight,
 			nCanvasWidth,
 			nCanvasHeight);
 		glEnable (GL_SCISSOR_TEST);

@@ -47,7 +47,7 @@ CCanvas *PrintToCanvas (char *s,CFont *font, uint fc, uint bc, int doubleFlag);
 void ClearBackgroundMessages (void)
 {
 if (((gameStates.render.cockpit.nMode == CM_STATUS_BAR) || (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)) && 
-	  (nLastMsgYCrd != -1) && (gameStates.render.vr.buffers.subRender [0].Bitmap ().Top () >= 6)) {
+	  (nLastMsgYCrd != -1) && (gameStates.render.vr.buffers.subRender [0].Top () >= 6)) {
 	CCanvas	*canv_save = CCanvas::Current ();
 
 CCanvas::SetCurrent (GetCurrentGameScreen ());
@@ -86,7 +86,7 @@ for (j = 2, pMsgs = gameData.hud.msgs; j; j--, pMsgs++) {
 void HUDModexMessage (int x, int y, char *s, CFont *font, uint color)
 {
 CCanvas *tempCanv = PrintToCanvas (s, font, color, 0, 1);
-GrBitmapM (x, y, &tempCanv->Bitmap (), 2);
+GrBitmapM (x, y, tempCanv, 2);
 tempCanv->Destroy ();
 }
 
@@ -125,7 +125,7 @@ if (pMsgs->nMessages > 0) {
 		pMsgs->nColor = GREEN_RGBA;
 
 	if ((gameStates.render.vr.nRenderMode == VR_NONE) && ((gameStates.render.cockpit.nMode == CM_STATUS_BAR) || 
-		 (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)) && (gameStates.render.vr.buffers.subRender [0].Bitmap ().Top () >= (gameData.render.window.hMax/8))) {
+		 (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)) && (gameStates.render.vr.buffers.subRender [0].Top () >= (gameData.render.window.hMax/8))) {
 		// Only display the most recent pszMsg in this mode
 		nMsg = (pMsgs->nFirst + pMsgs->nMessages-1) % HUD_MAX_MSGS;
 		pszMsg = pMsgs->szMsgs [nMsg];
@@ -140,7 +140,7 @@ if (pMsgs->nMessages > 0) {
 			fontManager.SetCurrent (SMALL_FONT);
 			FONT->StringSize (pszMsg, w, h, aw);
 			ClearBackgroundMessages ();
-			if (CCanvas::Current ()->Bitmap ().Mode () == BM_MODEX) {
+			if (CCanvas::Current ()->Mode () == BM_MODEX) {
 				ycrd -= h;
 				h *= 2;
 				HUDModexMessage ((CCanvas::Current ()->Width ()-w)/2, ycrd, pszMsg, SMALL_FONT, pMsgs->nColor);
@@ -205,7 +205,7 @@ if (pMsgs->nMessages > 0) {
 			}
 		}
 	}
-else if (GetCurrentGameScreen ()->Bitmap ().Mode () == BM_MODEX) {
+else if (GetCurrentGameScreen ()->Mode () == BM_MODEX) {
 	if (nModexHUDMsgs) {
 		int temp = nLastMsgYCrd;
 		nModexHUDMsgs--;
@@ -332,13 +332,13 @@ if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
       FONT->StringSize (TXT_GAME_OVER, w, h, aw);
       w += 20;
       h += 8;
-      x = (CCanvas::Current ()->Bitmap ().Width () - w) / 2;
-      y = (CCanvas::Current ()->Bitmap ().Height () - h) / 2;
+      x = (CCanvas::Current ()->Width () - w) / 2;
+      y = (CCanvas::Current ()->Height () - h) / 2;
       gameStates.render.grAlpha = 2 * 7;
       CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
       GrRect (x, y, x+w, y+h);
       gameStates.render.grAlpha = FADE_LEVELS;
-      GrString (0x8000, (CCanvas::Current ()->Bitmap ().Height () - CCanvas::Current ()->Font ()->Height ())/2 + h/8, TXT_GAME_OVER, NULL);
+      GrString (0x8000, (CCanvas::Current ()->Height () - CCanvas::Current ()->Font ()->Height ())/2 + h/8, TXT_GAME_OVER, NULL);
 #if 0
       // Automatically exit death after 10 secs
       if (gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath + F1_0*10) {
@@ -352,7 +352,7 @@ if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
    if (pMsgs->nColor == (uint) -1)
       pMsgs->nColor = RGBA_PAL2 (0, 28, 0);
 	fontManager.SetColorRGBi (pMsgs->nColor, 1, 0, 0);
-   GrString (0x8000, CCanvas::Current ()->Bitmap ().Height ()- (CCanvas::Current ()->Font ()->Height () + 3), TXT_PRESS_ANY_KEY, NULL);
+   GrString (0x8000, CCanvas::Current ()->Height ()- (CCanvas::Current ()->Font ()->Height () + 3), TXT_PRESS_ANY_KEY, NULL);
 	}
 }
 

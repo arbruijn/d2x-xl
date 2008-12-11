@@ -103,7 +103,7 @@ if (gameData.marker.nDefiningMsg) {
 	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
    sprintf (temp_string, TXT_DEF_MARKER, gameData.marker.szInput);
-	DrawCenteredText (CCanvas::Current ()->Bitmap ().Height ()/2-16, temp_string);
+	DrawCenteredText (CCanvas::Current ()->Height ()/2-16, temp_string);
    }
 }
 
@@ -117,13 +117,13 @@ if ((gameData.app.nGameMode&GM_MULTI) && (gameData.multigame.msg.bSending))	{
 	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	sprintf (temp_string, "%s: %s_", TXT_MESSAGE, gameData.multigame.msg.szMsg);
-	DrawCenteredText (CCanvas::Current ()->Bitmap ().Height ()/2-16, temp_string);
+	DrawCenteredText (CCanvas::Current ()->Height ()/2-16, temp_string);
 	}
 if ((gameData.app.nGameMode&GM_MULTI) && (gameData.multigame.msg.bDefining))	{
 	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	sprintf (temp_string, "%s #%d: %s_", TXT_MACRO, gameData.multigame.msg.bDefining, gameData.multigame.msg.szMsg);
-	DrawCenteredText (CCanvas::Current ()->Bitmap ().Height ()/2-16, temp_string);
+	DrawCenteredText (CCanvas::Current ()->Height ()/2-16, temp_string);
 	}
 }
 
@@ -270,7 +270,7 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_S
 	fontManager.SetColorRGBi (RGBA_PAL2 (27, 0, 0), 1, 0, 0);
 	FONT->StringSize (message, w, h, aw);
 	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
-		if (CCanvas::Current ()->Bitmap ().Height () > 240)
+		if (CCanvas::Current ()->Height () > 240)
 			h += 40;
 		else
 			h += 15;
@@ -278,7 +278,7 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_S
 	else if (gameStates.render.cockpit.nMode == CM_LETTERBOX)
 		h += 7;
 	if (gameStates.render.cockpit.nMode != CM_REAR_VIEW && !bSavingMovieFrames)
-		GrPrintF (NULL, (CCanvas::Current ()->Width ()-w)/2, CCanvas::Current ()->Bitmap ().Height () - h - 2, message);
+		GrPrintF (NULL, (CCanvas::Current ()->Width ()-w)/2, CCanvas::Current ()->Height () - h - 2, message);
 	}
 if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {
 	RenderCountdownGauge ();
@@ -286,7 +286,7 @@ if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || (gameStates.re
 		 (gameData.objs.viewerP->info.nType == OBJ_PLAYER) &&
 		 (gameData.objs.viewerP->info.nId == gameData.multiplayer.nLocalPlayer))	{
 		int	x = 3;
-		int	y = CCanvas::Current ()->Bitmap ().Height ();
+		int	y = CCanvas::Current ()->Height ();
 
 		fontManager.SetCurrent (GAME_FONT);
 		fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
@@ -418,7 +418,7 @@ void game_render_frame_stereo ()
 	screen.Aspect () * = 2;	//Muck with aspect ratio
 
 	sw = dw = gameStates.render.vr.buffers.render [0].Width ();
-	sh = dh = gameStates.render.vr.buffers.render [0].Bitmap ().Height ();
+	sh = dh = gameStates.render.vr.buffers.render [0].Height ();
 
 	if (gameStates.render.vr.nLowRes & 1)	{
 		sh /= 2;
@@ -491,18 +491,18 @@ void game_render_frame_stereo ()
 	if (actual_eye_offset > 0) {
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 		GrRect (CCanvas::Current ()->Width ()-labs (actual_eye_offset)*2, 0,
-               CCanvas::Current ()->Width ()-1, CCanvas::Current ()->Bitmap ().Height ());
+               CCanvas::Current ()->Width ()-1, CCanvas::Current ()->Height ());
 	} else if (actual_eye_offset < 0) {
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-		GrRect (0, 0, labs (actual_eye_offset)*2-1, CCanvas::Current ()->Bitmap ().Height ());
+		GrRect (0, 0, labs (actual_eye_offset)*2-1, CCanvas::Current ()->Height ());
 	}
 
 	if (gameStates.render.vr.bShowHUD && !bNoDrawHUD)	{
 		CCanvas tmp;
 		if (actual_eye_offset < 0) {
-			GrInitSubCanvas (&tmp, CCanvas::Current (), labs (actual_eye_offset*2), 0, CCanvas::Current ()->Width ()- (labs (actual_eye_offset)*2), CCanvas::Current ()->Bitmap ().Height ());
+			GrInitSubCanvas (&tmp, CCanvas::Current (), labs (actual_eye_offset*2), 0, CCanvas::Current ()->Width ()- (labs (actual_eye_offset)*2), CCanvas::Current ()->Height ());
 		} else {
-			GrInitSubCanvas (&tmp, CCanvas::Current (), 0, 0, CCanvas::Current ()->Width ()- (labs (actual_eye_offset)*2), CCanvas::Current ()->Bitmap ().Height ());
+			GrInitSubCanvas (&tmp, CCanvas::Current (), 0, 0, CCanvas::Current ()->Width ()- (labs (actual_eye_offset)*2), CCanvas::Current ()->Height ());
 		}
 		CCanvas::SetCurrent (&tmp);
 		GameDrawHUDStuff ();
@@ -539,20 +539,20 @@ void game_render_frame_stereo ()
 //NEWVR
 	if (actual_eye_offset>0) {
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-		GrRect (0, 0, labs (actual_eye_offset)*2-1, CCanvas::Current ()->Bitmap ().Height ());
+		GrRect (0, 0, labs (actual_eye_offset)*2-1, CCanvas::Current ()->Height ());
 	} else if (actual_eye_offset < 0)	{
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 		GrRect (CCanvas::Current ()->Width ()-labs (actual_eye_offset)*2, 0,
-               CCanvas::Current ()->Width ()-1, CCanvas::Current ()->Bitmap ().Height ());
+               CCanvas::Current ()->Width ()-1, CCanvas::Current ()->Height ());
 	}
 
 //NEWVR (Add the next 2 lines)
 	if (gameStates.render.vr.bShowHUD && !bNoDrawHUD)	{
 		CCanvas tmp;
 		if (actual_eye_offset > 0) {
-			GrInitSubCanvas (&tmp, CCanvas::Current (), labs (actual_eye_offset*2), 0, CCanvas::Current ()->Width ()- (labs (actual_eye_offset)*2), CCanvas::Current ()->Bitmap ().Height ());
+			GrInitSubCanvas (&tmp, CCanvas::Current (), labs (actual_eye_offset*2), 0, CCanvas::Current ()->Width ()- (labs (actual_eye_offset)*2), CCanvas::Current ()->Height ());
 		} else {
-			GrInitSubCanvas (&tmp, CCanvas::Current (), 0, 0, CCanvas::Current ()->Width ()- (labs (actual_eye_offset)*2), CCanvas::Current ()->Bitmap ().Height ());
+			GrInitSubCanvas (&tmp, CCanvas::Current (), 0, 0, CCanvas::Current ()->Width ()- (labs (actual_eye_offset)*2), CCanvas::Current ()->Height ());
 		}
 		CCanvas::SetCurrent (&tmp);
 		GameDrawHUDStuff ();
@@ -605,7 +605,7 @@ void game_render_frame_stereo ()
 	}
 
 	sw = dw = gameStates.render.vr.buffers.render [0].Width ();
-	sh = dh = gameStates.render.vr.buffers.render [0].Bitmap ().Height ();
+	sh = dh = gameStates.render.vr.buffers.render [0].Height ();
 
 	// Copy left eye, then right eye
 	gr_bitblt_dest_step_shift = 1;		// Skip every other scanline.
@@ -836,10 +836,10 @@ void GameRenderFrameMono (void)
 
 gameStates.render.vr.buffers.screenPages [0].SetupPane (
 	&Screen_3d_window,
-	gameStates.render.vr.buffers.subRender [0].Bitmap ().Left (),
-	gameStates.render.vr.buffers.subRender [0].Bitmap ().Top (),
-	gameStates.render.vr.buffers.subRender [0].Bitmap ().Width (),
-	gameStates.render.vr.buffers.subRender [0].Bitmap ().Height ());
+	gameStates.render.vr.buffers.subRender [0].Left (),
+	gameStates.render.vr.buffers.subRender [0].Top (),
+	gameStates.render.vr.buffers.subRender [0].Width (),
+	gameStates.render.vr.buffers.subRender [0].Height ());
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
 
 lightningManager.SetLights ();
@@ -891,13 +891,13 @@ if (!bGameCockpitCopyCode)	{
 	if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING)	{
 		gameStates.render.vr.nCurrentPage = !gameStates.render.vr.nCurrentPage;
 		CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
-		GrBmUBitBlt (gameStates.render.vr.buffers.subRender [0].Bitmap ().Width (),
-						 gameStates.render.vr.buffers.subRender [0].Bitmap ().Height (),
-						 gameStates.render.vr.buffers.subRender [0].Bitmap ().Left (),
-						 gameStates.render.vr.buffers.subRender [0].Bitmap ().Top (),
+		GrBmUBitBlt (gameStates.render.vr.buffers.subRender [0].Width (),
+						 gameStates.render.vr.buffers.subRender [0].Height (),
+						 gameStates.render.vr.buffers.subRender [0].Left (),
+						 gameStates.render.vr.buffers.subRender [0].Top (),
 						 0, 0,
-						 &gameStates.render.vr.buffers.subRender [0].Bitmap (),
-						 &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].Bitmap (), 1);
+						 &gameStates.render.vr.buffers.subRender [0],
+						 &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage], 1);
 		}
 	}
 
@@ -1007,7 +1007,7 @@ void CopyBackgroundRect (int left, int top, int right, int bot)
 		for (x=tile_left;x<=tile_right;x++) {
 			//w = (right < dest_x+bm->Width ())? (right-dest_x+1): (bm->Width ()-ofs_x);
 			w = min(right-dest_x+1, bm->Width ()-ofs_x);
-			GrBmUBitBlt (w, h, dest_x, dest_y, ofs_x, ofs_y, &bmBackground, &CCanvas::Current ()->Bitmap (), 1);
+			GrBmUBitBlt (w, h, dest_x, dest_y, ofs_x, ofs_y, &bmBackground, CCanvas::Current (), 1);
 			ofs_x = 0;
 			dest_x += w;
 			}
@@ -1033,7 +1033,7 @@ void FillBackground ()
 
 	CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
 	CopyBackgroundRect (x-dx, y-dy, x-1, y+h+dy-1);
-	CopyBackgroundRect (x+w, y-dy, CCanvas::Current ()->Bitmap ().Width ()-1, y+h+dy-1);
+	CopyBackgroundRect (x+w, y-dy, CCanvas::Current ()->Width ()-1, y+h+dy-1);
 	CopyBackgroundRect (x, y-dy, x+w-1, y-1);
 	CopyBackgroundRect (x, y+h, x+w-1, y+h+dy-1);
 
@@ -1128,7 +1128,7 @@ if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL
    CCanvas::SetCurrent (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
 	c.index = 255;
 	c.rgb = 0;
-	OglUBitMapMC (0, y, -1, CCanvas::Current ()->Bitmap ().Height () - y, bmP, &c, F1_0, 0);
+	OglUBitMapMC (0, y, -1, CCanvas::Current ()->Height () - y, bmP, &c, F1_0, 0);
 	}
 }
 
@@ -1177,7 +1177,7 @@ switch (gameStates.render.cockpit.nMode)	{
 		CCanvas::SetCurrent (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
 		CCanvas::Current ()->Clear (BLACK_RGBA);
 		// In a modex mode, clear the other buffer.
-		if (CCanvas::Current ()->Bitmap ().Mode () == BM_MODEX) {
+		if (CCanvas::Current ()->Mode () == BM_MODEX) {
 			CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage^1]);
 			CCanvas::Current ()->Clear (BLACK_RGBA);
 			CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
@@ -1215,14 +1215,14 @@ void DrawGuidedCrosshair (void)
 
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 31, 0));
 
-	w = CCanvas::Current ()->Bitmap ().Width ()>>5;
+	w = CCanvas::Current ()->Width ()>>5;
 	if (w < 5)
 		w = 5;
 
 	h = I2X (w) / screen.Aspect ();
 
-	x = CCanvas::Current ()->Bitmap ().Width () / 2;
-	y = CCanvas::Current ()->Bitmap ().Height () / 2;
+	x = CCanvas::Current ()->Width () / 2;
+	y = CCanvas::Current ()->Height () / 2;
 
 //	GrScanLine (x-w/2, x+w/2, y);
 #if 1
@@ -1268,7 +1268,7 @@ bg.w = w;
 bg.h = h;
 if (!gameOpts->menus.nStyle) {
 	bg.bmP = CBitmap::Create (0, w + BOX_BORDER, h + BOX_BORDER, 1);
-	GrBmUBitBlt (w + BOX_BORDER, h + BOX_BORDER, 0, 0, x - BOX_BORDER / 2, y - BOX_BORDER / 2, &(CCanvas::Current ()->Bitmap ()), bg.bmP, 1);
+	GrBmUBitBlt (w + BOX_BORDER, h + BOX_BORDER, 0, 0, x - BOX_BORDER / 2, y - BOX_BORDER / 2, CCanvas::Current (), bg.bmP, 1);
 	}
 NMDrawBackground (&bg, x - BOX_BORDER / 2, y - BOX_BORDER / 2, x+w + BOX_BORDER / 2-1, y+h + BOX_BORDER / 2-1, 0);
 fontManager.SetColorRGBi (DKGRAY_RGBA, 1, 0, 0);

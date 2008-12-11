@@ -23,8 +23,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //-----------------------------------------------------------------------------
 
-#define GWIDTH  screen.Current ()->Bitmap ().Width ()
-#define GHEIGHT screen.Current ()->Bitmap ().Height ()
+#define GWIDTH  screen.Current ()->Width ()
+#define GHEIGHT screen.Current ()->Height ()
 #define SWIDTH  screen.Width ()
 #define SHEIGHT screen.Height ()
 
@@ -52,14 +52,13 @@ typedef struct tCanvasColor {
 } tCanvasColor;
 
 typedef struct tCanvas {
-	CBitmap			bm;					// the bitmap for this canvas
 	tCanvasColor	color;
 	CFont				*font;				// the currently selected font
 	tCanvasColor	fontColors [2];   // current font background color (-1==Invisible)
 	short				nDrawMode;			// fill, XOR, etc.
 } tCanvas;
 
-class CCanvas {
+class CCanvas : public CBitmap {
 	private:
 		tCanvas	m_info;
 
@@ -80,13 +79,11 @@ class CCanvas {
 		void DestroyPane (void);
 		void Clear (void);
 
-		inline CBitmap& Bitmap (void) { return m_info.bm; }
 		inline tCanvasColor& Color (void) { return m_info.color; }
 		inline tCanvasColor& FontColor (int i) { return m_info.fontColors [i]; }
 		inline CFont* Font (void) { return m_info.font; }
 		inline short DrawMode (void) { return m_info.nDrawMode; }
 
-		inline void SetBitmap (CBitmap& bm) { m_info.bm = bm; }
 		inline void SetColor (tCanvasColor& color) { m_info.color = color; }
 		inline void SetFontColor (tCanvasColor& color, int i) { m_info.fontColors [i] = color; }
 		inline void SetFont (CFont *font) { m_info.font = font; }
@@ -107,14 +104,6 @@ class CCanvas {
 		inline void SetColorRGBi (int i) { SetColorRGB (RGBA_RED (i), RGBA_GREEN (i), RGBA_BLUE (i), 255); }
 
 		void FadeColorRGB (double dFade);
-
-		inline short Width (void) { return m_info.bm.Width (); }
-		inline short Height (void) { return m_info.bm.Height (); }
-		inline short Left (void) { return m_info.bm.Left (); }
-		inline short Top (void) { return m_info.bm.Top (); }
-		inline short RowSize (void) { return m_info.bm.RowSize (); }
-		inline short Mode (void) { return m_info.bm.Mode (); }
-		inline ubyte* Buffer (void) { return m_info.bm.Buffer (); }
 };
 
 //===========================================================================
@@ -138,7 +127,7 @@ class CScreen {
 		~CScreen () { Destroy (); }
 
 		void Init (void) { memset (&m_info, 0, sizeof (m_info)); }
-		void Destroy (void) { m_info.canvas.Bitmap ().Destroy (); };
+		void Destroy (void) { Canvas ()->CBitmap::Destroy (); };
 
 		inline CCanvas* Canvas (void) { return &m_info.canvas; }
 		inline u_int32_t Mode (void) { return m_info.mode; }
@@ -152,8 +141,6 @@ class CScreen {
 		inline void SetHeight (short height) { m_info.height = height; }
 		inline void SetAspect (fix aspect) { m_info.aspect = aspect; }
 
-		inline CBitmap& Bitmap (void) { return Canvas ()->Bitmap (); }
-		
 		static CScreen* Current (void) { return m_current; }
 };
 

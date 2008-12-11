@@ -140,11 +140,11 @@ screen.SetWidth (w);
 screen.SetHeight (h);
 //screen.Aspect () = FixDiv(screen.Width ()*3,screen.Height ()*4);
 screen.SetAspect (FixDiv (screen.Width (), (fix) (screen.Height () * ((double) w / (double) h))));
-screen.Bitmap ().Init (BM_OGL, 0, 0, w, h, 1, NULL);
-screen.Bitmap ().CreateBuffer ();
-screen.Bitmap ().SetPalette (paletteManager.Default ()); //just need some valid palette here
-//screen.Bitmap ().props.rowSize = screen->pitch;
-//screen.Bitmap ().Buffer () = reinterpret_cast<ubyte*> (screen->pixels);
+screen.Canvas ()->CBitmap::Init (BM_OGL, 0, 0, w, h, 1, NULL);
+screen.Canvas ()->CreateBuffer ();
+screen.Canvas ()->SetPalette (paletteManager.Default ()); //just need some valid palette here
+//screen.Canvas ()->props.rowSize = screen->pitch;
+//screen.Canvas ()->Buffer () = reinterpret_cast<ubyte*> (screen->pixels);
 CCanvas::SetCurrent (NULL);
 CCanvas::Current ()->SetFont (fontManager.Current ());
 /***/PrintLog ("   initializing OpenGL window\n");
@@ -240,7 +240,7 @@ if ((t=FindArg ("-gl_reticle")))
 /***/PrintLog ("   initializing internal texture list\n");
 textureManager.Init ();
 /***/PrintLog ("   allocating screen buffer\n");
-screen.Bitmap ().SetBuffer (NULL);
+screen.Canvas ()->SetBuffer (NULL);
 
 // Set the mode.
 for (t = 0; scrSizes [t].x && scrSizes [t].y; t++)

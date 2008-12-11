@@ -106,7 +106,7 @@ void init_interface_vars_to_assembler(void)
 {
 	CBitmap	*bmP;
 
-	bmP = &CCanvas::Current ()->Bitmap ();
+	bmP = CCanvas::Current ();
 
 	Assert(bmP!=NULL);
 	Assert(bmP->Buffer ()!=NULL);

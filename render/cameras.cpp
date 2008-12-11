@@ -166,7 +166,7 @@ h = CCanvas::Current ()->Width () / (2 - gameOpts->render.cameras.bHires);
 for (i = 1; i < h; i <<= 1)
 	;
 m_info.buffer.SetWidth (i);
-h = CCanvas::Current ()->Bitmap ().Height () / (2 - gameOpts->render.cameras.bHires);
+h = CCanvas::Current ()->Height () / (2 - gameOpts->render.cameras.bHires);
 for (i = 1; i < h; i <<= 1)
 	;
 m_info.buffer.SetHeight (i);
@@ -182,7 +182,7 @@ if (!CreateBuffer ())
 	if (gameOpts->render.cameras.bFitToWall || m_info.bTeleport)
 		m_info.screenBuf = m_info.buffer.Buffer ();
 	else {
-		m_info.screenBuf = new ubyte [CCanvas::Current ()->Width () * CCanvas::Current ()->Bitmap ().Height () * 4];
+		m_info.screenBuf = new ubyte [CCanvas::Current ()->Width () * CCanvas::Current ()->Height () * 4];
 		if (!m_info.screenBuf) {
 			gameOpts->render.cameras.bFitToWall = 1;
 			m_info.screenBuf = m_info.buffer.Buffer ();
@@ -336,9 +336,9 @@ else
 	du = dv = 0;
 	if (bHaveBuffer) {
 		duImage = (float) CCanvas::Current ()->Width () / (float) m_info.buffer.Width () / nScale;
-		dvImage = (float) CCanvas::Current ()->Bitmap ().Height () / (float) m_info.buffer.Height () / nScale;
+		dvImage = (float) CCanvas::Current ()->Height () / (float) m_info.buffer.Height () / nScale;
 		if (!bFitToWall && RENDERPATH) {
-			aImage = (float) CCanvas::Current ()->Bitmap ().Height () / (float) CCanvas::Current ()->Width ();
+			aImage = (float) CCanvas::Current ()->Height () / (float) CCanvas::Current ()->Width ();
 			if (vertexP)
 				aFace = CFloatVector::Dist(*reinterpret_cast<CFloatVector*> (vertexP), *reinterpret_cast<CFloatVector*> (vertexP + 1)) / 
 				        CFloatVector::Dist(*reinterpret_cast<CFloatVector*> (vertexP + 1), *reinterpret_cast<CFloatVector*> (vertexP + i2));
@@ -486,12 +486,12 @@ if (m_info.buffer.Buffer ())
 		m_info.buffer.PrepareTexture (0, -1, 0, NULL);
 		glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 
 			(CCanvas::Current ()->Width () - m_info.buffer.Width ()) / 2, 
-			(CCanvas::Current ()->Bitmap ().Height () - m_info.buffer.Height ()) / 2, 
+			(CCanvas::Current ()->Height () - m_info.buffer.Height ()) / 2, 
 			m_info.buffer.Width (), m_info.buffer.Height (), 0);
 #else
 		glReadPixels (
 			(CCanvas::Current ()->Width () - m_info.buffer.Width ()) / 2, 
-			(CCanvas::Current ()->Bitmap ().Height () - m_info.buffer.Height ()) / 2, 
+			(CCanvas::Current ()->Height () - m_info.buffer.Height ()) / 2, 
 			m_info.buffer.Width (), m_info.buffer.Height (), 
 			GL_RGBA, GL_UNSIGNED_BYTE, m_info.buffer.Buffer ());
 		PrepareTexture (&m_info.buffer, 0, -1, NULL);
@@ -502,32 +502,32 @@ if (m_info.buffer.Buffer ())
 			m_info.buffer.PrepareTexture (0, -1, 0, NULL);
 			glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 
 				-(m_info.buffer.Width () - CCanvas::Current ()->Width ()) / 2,
-				-(m_info.buffer.Height () - CCanvas::Current ()->Bitmap ().Height ()) / 2, 
+				-(m_info.buffer.Height () - CCanvas::Current ()->Height ()) / 2, 
 				m_info.buffer.Width (), m_info.buffer.Height (), 0);
 #else
 		char	*pSrc, *pDest;
 		int	dxBuf = (m_info.buffer.Width () - CCanvas::Current ()->Width ()) / 2;
-		int	dyBuf = (m_info.buffer.Height () - CCanvas::Current ()->Bitmap ().Height ()) / 2;
+		int	dyBuf = (m_info.buffer.Height () - CCanvas::Current ()->Height ()) / 2;
 		int	wSrc = CCanvas::Current ()->Width () * 4;
 		int	wDest = m_info.buffer.Width () * 4;
 
 		if (CCanvas::Current ()->Width () == m_info.buffer.Width ()) {
 			glReadPixels (
-				0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Bitmap ().Height (),
+				0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height (),
 				GL_RGBA, GL_UNSIGNED_BYTE, m_info.buffer.Buffer () + dyBuf * m_info.buffer.Width () * 4);
 			}
 		else {
 			glReadPixels (
-				0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Bitmap ().Height (),
+				0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height (),
 				GL_RGBA, GL_UNSIGNED_BYTE, m_info.screenBuf);
 			pSrc = m_info.screenBuf;
 			pDest = m_info.buffer.Buffer () + (dyBuf - 1) * wDest + dxBuf * 4;
 #	ifndef _WIN32
-			for (dyBuf = CCanvas::Current ()->Bitmap ().Height (); dyBuf; dyBuf--, pSrc += wSrc, pDest += wDest)
+			for (dyBuf = CCanvas::Current ()->Height (); dyBuf; dyBuf--, pSrc += wSrc, pDest += wDest)
 				memcpy (pDest, pSrc, wSrc);
 #	else
 			dxBuf = m_info.buffer.Width () - CCanvas::Current ()->Width ();
-			dyBuf = CCanvas::Current ()->Bitmap ().Height ();
+			dyBuf = CCanvas::Current ()->Height ();
 			wSrc /= 4;
 			__asm {
 				push	edi

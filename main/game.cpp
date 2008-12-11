@@ -1450,7 +1450,7 @@ void toggle_movie_saving ()
 
 void save_movie_frame ()
 {
-memcpy (movieFrameBuffer + nMovieFrames * MOVIE_FRAME_SIZE, screen.Bitmap ().Buffer (), MOVIE_FRAME_SIZE);
+memcpy (movieFrameBuffer + nMovieFrames * MOVIE_FRAME_SIZE, screen.Canvas ()->Buffer (), MOVIE_FRAME_SIZE);
 nMovieFrames++;
 if (nMovieFrames == MAX_MOVIE_BUFFER_FRAMES)
 	flush_movie_buffer ();

@@ -428,7 +428,7 @@ int ShrinkTGA (CBitmap *bmP, int xFactor, int yFactor, int bRealloc)
 {
 	int		bpp = bmP->BPP ();
 	int		xSrc, ySrc, xMax, yMax, xDest, yDest, x, y, w, h, i, nFactor2, nSuperTransp, bSuperTransp;
-	ubyte		*pData, *pSrc, *pDest;
+	ubyte		*dataP, *pSrc, *pDest;
 	int		cSum [4];
 
 	static ubyte superTranspKeys [3] = {120,88,128};
@@ -445,12 +445,12 @@ xMax = w / xFactor;
 yMax = h / yFactor;
 nFactor2 = xFactor * yFactor;
 if (!bRealloc)
-	pDest = pData = bmP->Buffer ();
+	pDest = dataP = bmP->Buffer ();
 else {
-	if (!(pData = new ubyte [xMax * yMax * bpp]))
+	if (!(dataP = new ubyte [xMax * yMax * bpp]))
 		return 0;
 	UseBitmapCache (bmP, (int) -bmP->Height () * (int) bmP->RowSize ());
-	pDest = pData;
+	pDest = dataP;
 	}
 if (bpp == 3) {
 	for (yDest = 0; yDest < yMax; yDest++) {
@@ -517,7 +517,7 @@ else {
 	}
 if (bRealloc) {
 	bmP->DestroyBuffer ();
-	bmP->SetBuffer (pData);
+	bmP->SetBuffer (dataP);
 	}
 bmP->SetWidth (xMax);
 bmP->SetHeight (yMax);
@@ -535,19 +535,19 @@ if (!bmP)
 	return 0;
 else {
 		int		bAlpha = bmP->BPP () == 4, i, j;
-		ubyte		*pData;
+		ubyte		*dataP;
 		double	pixelBright, totalBright, nPixels, alpha;
 
-	if (!(pData = bmP->Buffer ()))
+	if (!(dataP = bmP->Buffer ()))
 		return 0;
 	totalBright = 0;
 	nPixels = 0;
 	for (i = bmP->Width () * bmP->Height (); i; i--) {
 		for (pixelBright = 0, j = 0; j < 3; j++)
-			pixelBright += ((double) (*pData++)) / 255.0;
+			pixelBright += ((double) (*dataP++)) / 255.0;
 		pixelBright /= 3;
 		if (bAlpha) {
-			alpha = ((double) (*pData++)) / 255.0;
+			alpha = ((double) (*dataP++)) / 255.0;
 			pixelBright *= alpha;
 			nPixels += alpha;
 			}
@@ -563,59 +563,59 @@ void TGAChangeBrightness (CBitmap *bmP, double dScale, int bInverse, int nOffset
 {
 if (bmP) {
 		int		bpp = bmP->BPP (), h, i, j, c, bAlpha = (bpp == 4);
-		ubyte		*pData;
+		ubyte		*dataP;
 
-	if ((pData = bmP->Buffer ())) {
+	if ((dataP = bmP->Buffer ())) {
 	if (!bAlpha)
 		bSkipAlpha = 1;
 	else if (bSkipAlpha)
 		bpp = 3;
 		if (nOffset) {
 			for (i = bmP->Width () * bmP->Height (); i; i--) {
-				for (h = 0, j = 3; j; j--, pData++) {
-					c = (int) *pData + nOffset;
+				for (h = 0, j = 3; j; j--, dataP++) {
+					c = (int) *dataP + nOffset;
 					h += c;
-					*pData = (ubyte) ((c < 0) ? 0 : (c > 255) ? 255 : c);
+					*dataP = (ubyte) ((c < 0) ? 0 : (c > 255) ? 255 : c);
 					}
 				if (bSkipAlpha)
-					pData++;
+					dataP++;
 				else if (bAlpha) {
-					if ((c = *pData)) {
+					if ((c = *dataP)) {
 						c += nOffset;
-						*pData = (ubyte) ((c < 0) ? 0 : (c > 255) ? 255 : c);
+						*dataP = (ubyte) ((c < 0) ? 0 : (c > 255) ? 255 : c);
 						}
-					pData++;
+					dataP++;
 					}
 				}
 			}
 		else if (dScale && (dScale != 1.0)) {
 			if (dScale < 0) {
 				for (i = bmP->Width () * bmP->Height (); i; i--) {
-					for (j = bpp; j; j--, pData++)
-						*pData = (ubyte) (*pData * dScale);
+					for (j = bpp; j; j--, dataP++)
+						*dataP = (ubyte) (*dataP * dScale);
 					if (bSkipAlpha)
-						pData++;
+						dataP++;
 					}
 				}
 			else if (bInverse) {
 				dScale = 1.0 / dScale;
 				for (i = bmP->Width () * bmP->Height (); i; i--) {
-					for (j = bpp; j; j--, pData++)
-						if ((c = 255 - *pData))
-							*pData = 255 - (ubyte) (c * dScale);
+					for (j = bpp; j; j--, dataP++)
+						if ((c = 255 - *dataP))
+							*dataP = 255 - (ubyte) (c * dScale);
 					if (bSkipAlpha)
-						pData++;
+						dataP++;
 					}
 				}
 			else {
 				for (i = bmP->Width () * bmP->Height (); i; i--) {
-					for (j = bpp; j; j--, pData++)
-						if ((c = 255 - *pData)) {
-							c = (int) (*pData * dScale);
-							*pData = (ubyte) ((c > 255) ? 255 : c);
+					for (j = bpp; j; j--, dataP++)
+						if ((c = 255 - *dataP)) {
+							c = (int) (*dataP * dScale);
+							*dataP = (ubyte) ((c > 255) ? 255 : c);
 							}
 					if (bSkipAlpha)
-						pData++;
+						dataP++;
 					}
 				}
 			}
@@ -755,7 +755,7 @@ int CModelTextures::Read (int nType, int bCustom)
 	int		i;
 
 for (i = 0; i < m_nBitmaps; i++) {
-	if (!ReadModelTGA (m_names [i], bmP = m_bitmaps + i, nType, bCustom))
+	if (!ReadModelTGA (m_names [i].Buffer (), bmP = m_bitmaps + i, nType, bCustom))
 		return 0;
 	bmP = bmP->Override (-1);
 	if (bmP->Frames ())
@@ -789,11 +789,11 @@ void CModelTextures::Destroy (void)
 	int	i;
 
 if (m_names.Buffer ()) {
-	for (i = 0; i < m_nBitmaps; i++) {
-		delete[] m_names [i];
-		if (m_bitmaps.Buffer ())
-			m_bitmaps [i].Destroy ();
-		}
+	for (i = 0; i < m_nBitmaps; i++) 
+		m_names [i].Destroy ();
+if (m_bitmaps.Buffer ())
+	for (i = 0; i < m_nBitmaps; i++)
+		m_bitmaps [i].Destroy ();
 	m_nTeam.Destroy ();
 	m_names.Destroy ();
 	m_bitmaps.Destroy ();
