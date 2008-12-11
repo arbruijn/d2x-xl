@@ -197,8 +197,10 @@ strcpy (m_info.szLabel, TXT_EMPTY);
 
 void CSaveGameInfo::Destroy (void)
 {
-if (m_info.image)
-	D2_FREE (m_info.image);
+if (m_info.image) {
+	delete m_info.image;
+	m_info.image = NULL;
+	}
 }
 
 //------------------------------------------------------------------------------

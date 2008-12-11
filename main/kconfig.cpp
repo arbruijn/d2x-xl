@@ -1096,9 +1096,9 @@ if (pos) {
 			kcKeyboard [i].l = FindNextItemLeft (kcKeyboard, j, i, pos, ref);
 			kcKeyboard [i].r = FindNextItemRight (kcKeyboard, j, i, pos, ref);
 			}
-		D2_FREE (ref);
+		delete[] ref;
 		}
-	D2_FREE (pos);
+	delete[] pos;
 	}
 }
 
@@ -1117,9 +1117,9 @@ if (pos) {
 			kcJoystick [i].l = FindNextItemLeft (kcJoystick, j, i, pos, ref);
 			kcJoystick [i].r = FindNextItemRight (kcJoystick, j, i, pos, ref);
 			}
-		D2_FREE (ref);
+		delete[] ref;
 		}
-	D2_FREE (pos);
+	delete[] pos;
 	}
 }
 
@@ -1138,9 +1138,9 @@ if (pos) {
 			kcMouse [i].l = FindNextItemLeft (kcMouse, j, i, pos, ref);
 			kcMouse [i].r = FindNextItemRight (kcMouse, j, i, pos, ref);
 			}
-		D2_FREE (ref);
+		delete[] ref;
 		}
-	D2_FREE (pos);
+	delete[] pos;
 	}
 }
 
@@ -1159,9 +1159,9 @@ if (pos) {
 			kcHotkeys [i].l = FindNextItemLeft (kcHotkeys, j, i, pos, ref);
 			kcHotkeys [i].r = FindNextItemRight (kcHotkeys, j, i, pos, ref);
 			}
-		D2_FREE (ref);
+		delete[] ref;
 		}
-	D2_FREE (pos);
+	delete[] pos;
 	}
 }
 
@@ -1594,8 +1594,8 @@ if (bRedraw && gameOpts->menus.nStyle)
 
 void KConfig (int n, const char *pszTitle)
 {
-	CBitmap	*bmSave;
-	int			i, j, b = gameOpts->legacy.bInput;
+	CBitmap*	bmSave;
+	int		i, j, b = gameOpts->legacy.bInput;
 
 	xOffs = (CCanvas::Current ()->Width () - 640) / 2;
 	yOffs = (CCanvas::Current ()->Bitmap ().Height () - 480) / 2;
@@ -1641,7 +1641,7 @@ void KConfig (int n, const char *pszTitle)
 	//restore screen
 	if (bmSave) {
 		GrBitmap (xOffs, yOffs, bmSave);
-		D2_FREE (bmSave);
+		delete bmSave;
 		}
 	ResetCockpit ();		//force cockpit redraw next time
 	// Update save values...

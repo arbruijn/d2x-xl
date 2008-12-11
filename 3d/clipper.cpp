@@ -186,8 +186,6 @@ int clip_plane(int planeFlag,g3sPoint **src,g3sPoint **dest,int *nv,g3sCodes *cc
 				dest++;
 			}
 
-			//see if must D2_FREE discarded point
-
 			if (src[i]->p3_flags & PF_TEMP_POINT)
 				free_temp_point(src[i]);
 		}

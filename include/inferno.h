@@ -2331,9 +2331,9 @@ typedef struct tOpenALData {
 class CSoundData {
 	public:
 		CArray<ubyte>			data [2];
-		CArray<tDigiSound>	sounds [2]; //[MAX_SOUND_FILES];
+		CArray<CDigiSound>	sounds [2]; //[MAX_SOUND_FILES];
 		int						nSoundFiles [2];
-		CArray<tDigiSound>	soundP;
+		CArray<CDigiSound>	soundP;
 #if USE_OPENAL
 		tOpenALData				openAL;
 #endif
@@ -3047,7 +3047,7 @@ typedef struct tUserMusicData {
 	int					nLevelSongs;
 	int					nCurrentSong;
 	int					bMP3;
-	char					**pszLevelSongs;
+	CArray<char*>		pszLevelSongs;
 	char					szIntroSong [FILENAME_LEN];
 	char					szBriefingSong [FILENAME_LEN];
 	char					szCreditsSong [FILENAME_LEN];
@@ -3436,7 +3436,7 @@ class CTextData {
 		int			nMessages;
 		int			nStartTime;
 		int			nEndTime;
-		CBitmap		*bmP;
+		CBitmap*		bmP;
 };
 
 //------------------------------------------------------------------------------

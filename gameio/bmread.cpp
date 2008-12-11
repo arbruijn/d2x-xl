@@ -232,7 +232,7 @@ tBitmapIndex bm_load_sub( char * filename )
 		return bitmap_num;
 	}
 
-	MALLOC( newBmP, CBitmap, 1 );
+	newBmP = new CBitmap;
 	iff_error = iff_read_bitmap(filename,newBmP,BM_LINEAR,newpal);
 	newBmP->nId=0;
 	if (iff_error != IFF_NO_ERROR)		{
@@ -250,7 +250,7 @@ tBitmapIndex bm_load_sub( char * filename )
 	newBmP->avgColor = ComputeAvgPixel(newBmP);
 
 	bitmap_num = PiggyRegisterBitmap( newBmP, fname, 0 );
-	D2_FREE( newBmP );
+	delete newBmP;
 	return bitmap_num;
 }
 
@@ -306,7 +306,8 @@ void ab_load( char * filename, tBitmapIndex bmp[], int *nframes )
 		bm[i]->avgColor = ComputeAvgPixel(bm[i]);
 
 		new_bmp = PiggyRegisterBitmap( bm[i], tempname, 0 );
-		D2_FREE( bm[i] );
+		delete bm[i];
+		bm[i] = NULL;
 		bmp[i] = new_bmp;
 #if TRACE
 		if (!i)

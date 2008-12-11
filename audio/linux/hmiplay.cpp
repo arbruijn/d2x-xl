@@ -218,7 +218,8 @@ void seq_close()
 	SEQ_DUMPBUF();
 	ioctl(seqfd,SNDCTL_SEQ_SYNC);
 	close(seqfd);
-	D2_FREE(voices);
+	delete[] voices;
+	voices = NULL;
 }
 
 void set_program(int channel, int pgm)
@@ -551,7 +552,8 @@ void kill_ipc()
 //	send_ipc("q");
 //	kill(player_pid,SIGTERM);
 	msgctl( ipc_queue_id, IPC_RMID, 0);
-	D2_FREE(snd);
+	delete[] snd;
+	snd = NULL;
 	ipc_queue_id = -1;
 //	player_pid = 0;
 }
@@ -761,9 +763,12 @@ void play_hmi (void * arg)
 		}
 		pos=0x308;
 	}
-	D2_FREE(data);
-	D2_FREE(t_info);
-	D2_FREE(rcv);
+	delete[] data;
+	delete[] t_info;
+	delete[] rcv;
+	data = NULL;
+	t_info = NULL;
+	rcv = NULL;
 
 }
 

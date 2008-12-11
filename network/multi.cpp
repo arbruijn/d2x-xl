@@ -4131,8 +4131,8 @@ MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);
 
 //-----------------------------------------------------------------------------
 
-int SoundHacked = 0;
-tDigiSound ReversedSound;
+int bSoundHacked = 0;
+CDigiSound reversedSound;
 
 void MultiSendGotOrb (char nPlayer)
 {
@@ -4664,17 +4664,18 @@ pingStats [0].launchTime = 0;
 void MultiQuickSoundHack (int nSound)
 {
 	int			l, i, j;
-	tDigiSound	*dsP = gameData.pig.sound.sounds [gameStates.sound.bD1Sound] + nSound;
+	CDigiSound	*dsP = gameData.pig.sound.sounds [gameStates.sound.bD1Sound] + nSound;
 	ubyte			*dataP;
 
 nSound = DigiXlatSound ((short) nSound);
 l = dsP->nLength [dsP->bDTX];
-ReversedSound.data [0] = new ubyte [l];
-ReversedSound.nLength [0] = l;
-dataP = dsP->data [dsP->bDTX] + l;
-for (i = 0, j = l; i < l; i++)
-	ReversedSound.data [0][i] = *(--dataP);
-SoundHacked = 1;
+if (reversedSound.data [0].Create (l)) {
+	reversedSound.nLength [0] = l;
+	dataP = dsP->data [dsP->bDTX] + l;
+	for (i = 0, j = l; i < l; i++)
+		reversedSound.data [0][i] = *(--dataP);
+	bSoundHacked = 1;
+	}
 }
 
 //-----------------------------------------------------------------------------

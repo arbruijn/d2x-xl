@@ -341,33 +341,6 @@ return newbuffer;
 
 #endif
 
-//------------------------------------------------------------------------------
-
-#if !DBG_MALLOC
-
-char *MemStrDup (const char *str)
-{
-uint l = (uint) strlen (str) + 1;
-char *newstr = reinterpret_cast<char*> (MemAlloc (l));
-if (newstr)
-	memcpy (newstr, str, l);
-return newstr;
-}
-
-#else
-
-char *MemStrDup (const char *str, const char *var, const char *pszFile, int nLine)
-{
-	char *newstr;
-	int l = (int) strlen (str) + 1;
-
-if ((newstr = MemAlloc (l, var, pszFile, nLine, 0)))
-	memcpy (newstr, str, l);
-return newstr;
-}
-
-#endif
-
 // ----------------------------------------------------------------------------
 
 void *GetMem (size_t size, char filler)

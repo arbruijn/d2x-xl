@@ -766,7 +766,7 @@ void LoadBitmapReplacements (const char *pszLevelName)
 	int		i, j;
 	CBitmap	bm;
 
-	//first, D2_FREE up data allocated for old bitmaps
+//first, free up data allocated for old bitmaps
 PrintLog ("   loading replacement textures\n");
 CFile::ChangeFilenameExtension (szFilename, pszLevelName, ".pog");
 if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
@@ -891,7 +891,7 @@ void LoadTextureColors (const char *pszLevelName, tFaceColor *colorP)
 	CFile			cf;
 	int			i;
 
-	//first, D2_FREE up data allocated for old bitmaps
+//first, free up data allocated for old bitmaps
 PrintLog ("   loading texture colors\n");
 CFile::ChangeFilenameExtension (szFilename, pszLevelName, ".clr");
 if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {

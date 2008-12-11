@@ -700,7 +700,7 @@ for (i = 0; (i < MAX_EXPLODING_WALLS) && (gameData.walls.explWalls [i].nSegment 
 	;
 if (i==MAX_EXPLODING_WALLS) {		//didn't find slot.
 #if TRACE
-	con_printf (CONDBG, "Couldn't find D2_FREE slot for exploding wall!\n");
+	con_printf (CONDBG, "Couldn't find a free slot for exploding wall!\n");
 #endif
 	Int3 ();
 	return;
@@ -778,7 +778,7 @@ for (i = 0; i < MAX_EXPLODING_WALLS; i++) {
 				);
 			}
 		if (gameData.walls.explWalls [i].time >= EXPL_WALL_TIME)
-			gameData.walls.explWalls [i].nSegment = -1;	//flag this slot as D2_FREE
+			gameData.walls.explWalls [i].nSegment = -1;	//flag this slot as free
 		}
 	}
 }

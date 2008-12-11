@@ -8,6 +8,7 @@
 template < class _T > class CStack : public CArray<_T> {
 	protected:
 		uint	m_tos;
+		uint	m_growth;
 
 	public:
 		CStack () { Init (); }
@@ -20,8 +21,8 @@ template < class _T > class CStack : public CArray<_T> {
 			CArray<_T>::Init ();
 			}
 
-		inline bool Push (_T elem) { 
-			if (m_tos <= m_data.length) 
+		inline bool Push (const _T elem) { 
+			if ((m_tos >= m_data.length) && (!(m_growth && Resize (m_data.length + m_growth))))
 				return false;
 			m_data.buffer [m_tos++] = elem;
 			return true;
@@ -32,7 +33,7 @@ template < class _T > class CStack : public CArray<_T> {
 
 		inline uint ToS (void) { return m_tos; }
 
-		inline _T Pop (void) {
+		inline _T& Pop (void) {
 			if (m_tos)
 				m_tos--;
 			return m_data.buffer [m_tos];
@@ -53,6 +54,10 @@ template < class _T > class CStack : public CArray<_T> {
 			Destroy ();
 			return CArray<_T>::Create (length);
 			}
+
+		inline uint Growth (void) { return m_growth; }
+
+		inline void SetGrowth (uint growth) { m_growth = growth; }
 	};
 
 //-----------------------------------------------------------------------------

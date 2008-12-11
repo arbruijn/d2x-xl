@@ -284,7 +284,7 @@ kick_player:;
 
 		HUDInitMessage (TXT_DUMPING, gameData.multiplayer.players [i].callsign);
 		if (bBan)
-			AddPlayerToBanList (gameData.multiplayer.players [i].callsign);
+			banList.Add (gameData.multiplayer.players [i].callsign);
 		MultiSendMsgQuit ();
 		return 1;
 		}

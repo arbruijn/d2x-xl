@@ -246,7 +246,7 @@ for (i=0;i<MAX_MORPH_OBJECTS;i++, mdP++)
 			mdP->objP->info.nSignature!=mdP->nSignature)
 		break;
 
-if (i==MAX_MORPH_OBJECTS)		//no D2_FREE slots
+if (i==MAX_MORPH_OBJECTS)		//no free slots
 	return;
 
 Assert (objP->info.renderType == RT_POLYOBJ);

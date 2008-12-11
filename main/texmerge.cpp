@@ -30,11 +30,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //static CBitmap * cache_bitmaps [MAX_NUM_CACHE_BITMAPS];                     
 
 typedef struct	{
-	CBitmap * bitmap;
-	CBitmap * bmBot;
-	CBitmap * bmTop;
-	int 		nOrient;
-	int		last_frame_used;
+	CBitmap*		bitmap;
+	CBitmap* 	bmBot;
+	CBitmap* 	bmTop;
+	int 			nOrient;
+	int			last_frame_used;
 } TEXTURE_CACHE;
 
 static TEXTURE_CACHE texCache [MAX_NUM_CACHE_BITMAPS];
@@ -89,8 +89,10 @@ void _CDECL_ TexMergeClose (void)
 
 PrintLog ("shutting down merged textures cache\n");
 for (i = 0; i < nCacheEntries; i++) {
-	if (texCache [i].bitmap)
-		D2_FREE (texCache [i].bitmap);
+	if (texCache [i].bitmap) {
+		delete texCache [i].bitmap;
+		texCache [i].bitmap = NULL;
+		}
 	}
 nCacheEntries = 0;
 }
@@ -158,7 +160,6 @@ if (!bmP ||
 	(bmP->Height () != bmBot->Height ())) {
 	if (bmP)
 		delete bmP;
-	cacheP->bitmap =
 	bmP = CBitmap::Create (0, bmBot->Width (), bmBot->Height (), 4);
 	if (!bmP)
 		return NULL;
@@ -182,6 +183,7 @@ if (!(gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk)) {
 		bmP->SetAvgColorIndex (bmBot->AvgColorIndex ());
 		}
 	}
+cacheP->bitmap = bmP;
 cacheP->bmTop = bmTop;
 cacheP->bmBot = bmBot;
 cacheP->last_frame_used = gameData.app.nFrameCount;

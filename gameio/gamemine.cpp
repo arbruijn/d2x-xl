@@ -579,7 +579,7 @@ int load_mine_data (CFile& cf)
 	Assert (gameData.pig.tex.nTextures < MAX_TEXTURES);
 
 	{
-		tHashTable ht;
+		CHashTable ht;
 
 		HashTableInit ( &ht, gameData.pig.tex.nTextures );
 

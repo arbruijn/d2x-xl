@@ -11,34 +11,36 @@
 #include "cfile.h"
 #include "banlist.h"
 
-//-----------------------------------------------------------------------------
-
-typedef char tBanListEntry [CALLSIGN_LEN + 1];
-typedef tBanListEntry *pBanListEntry;
-
-CStack<tBanListEntry>	banList;
+CBanList banList;
 
 //-----------------------------------------------------------------------------
 
-int AddPlayerToBanList (char *szPlayer)
+bool CBanList::Add (const char* szPlayer)
 {
-if (!*szPlayer)
+if (!szPlayer [0])
 	return 1;
-if (!banList) {
-	if (!banList.Create (100 * sizeof (tBanListEntry)))
-		return 0;
+if (!Buffer ()) {
+	Create ();
 	}
-else if (!(++nBanListSize % 100))
-	banList.Resize (banList.Length () + 100);
-if (!banList) 
-	return 0;
-banList.Push (szPlayer);
-return 1;
+CBanListEntry e;
+return Push (e = szPlayer);
 }
 
 //-----------------------------------------------------------------------------
 
-int LoadBanList (void)
+int CBanList::Find (const char* szPlayer)
+{
+	uint	i;
+
+for (i = 0; i < ToS (); i++)
+	if ((*this) [i] == szPlayer)
+		return 1;
+return 0;
+}
+
+//-----------------------------------------------------------------------------
+
+int CBanList::Load (void)
 {
 	CFile	cf;
 	tBanListEntry	szPlayer;
@@ -52,7 +54,7 @@ while (!feof (cf.File ())) {
 		if (szPlayer [i] == '\n')
 			szPlayer [i] = '\0';
 	szPlayer [CALLSIGN_LEN] = '\0';
-	if (!AddPlayerToBanList (szPlayer))
+	if (!Add (szPlayer))
 		break;
 	}
 cf.Close ();
@@ -61,37 +63,29 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-int SaveBanList (void)
+int CBanList::Save (void)
 {
-if (banList.Buffer () && banList.ToS ()) {
+if (Buffer () && ToS ()) {
 	CFile	cf;
-	int i;
+	uint i;
 
 	if (!cf.Open ("banlist.txt", gameFolders.szDataDir, "wt", 0))
 		return 0;
-	for (i = 0; i < banList.ToS (); i++)
-		fputs (reinterpret_cast<const char*> (banList [i]), cf.File ());
+	for (i = 0; i < ToS (); i++)
+		fputs (const_cast<char*> (m_data.buffer [i].m_entry), cf.File ());
 	cf.Close ();
 	}
 return 1;
 }
 //-----------------------------------------------------------------------------
 
-int FindPlayerInBanList (char *szPlayer)
+bool CBanList::Create (void)
 {
-	int	i;
 
-for (i = 0; i < banList.ToS (); i++)
-	if (!strnicmp (reinterpret_cast<char*> (banList [i]), szPlayer, sizeof (tBanListEntry)))
-		return 1;
-return 0;
-}
-
-//-----------------------------------------------------------------------------
-
-void FreeBanList (void)
-{
-banList.Destroy ();
+if (!CStack<CBanListEntry>::Create (100))
+	return false;
+SetGrowth (100);
+return true;
 }
 
 //-----------------------------------------------------------------------------

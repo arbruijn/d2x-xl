@@ -3,7 +3,7 @@
  *  Code Cleanup and heavily extended by: Clemens Wacha <reflex-2000@gmx.net>
  *  Ported to use native Descent interfaces by: Bradley Bell <btb@icculus.ccOrg>
  *
- *  This is D2_FREE, just be sure to give us credit when using it
+ *  This is free, just be sure to give us credit when using it
  *  in any of your programs.
  */
 
@@ -565,7 +565,7 @@ void CON_Free(ConsoleInformation *console) {
 		delete console->InputBackground;
 	console->InputBackground = NULL;
 
-	D2_FREE(console);
+	delete console;
 }
 
 //------------------------------------------------------------------------------
@@ -740,7 +740,7 @@ void DrawCommandLine() {
 /* Outputs text to the console (in game), up to CON_CHARS_PER_LINE chars can be entered */
 void _CDECL_ CON_Out(ConsoleInformation *console, const char *str, ...) {
 	va_list marker;
-	//keep some space D2_FREE for stuff like CON_Out(console, "blablabla %s", console->Command);
+	//keep some space free for stuff like CON_Out(console, "blablabla %s", console->Command);
 	char temp[CON_CHARS_PER_LINE + 128];
 	char* ptemp;
 
@@ -806,9 +806,10 @@ int CON_Background(ConsoleInformation *console, CBitmap *image)
 
 	/* Free the background from the console */
 	if (image == NULL) {
-		if (console->BackgroundImage)
-			D2_FREE (console->BackgroundImage);
-		console->BackgroundImage = NULL;
+		if (console->BackgroundImage) {
+			delete console->BackgroundImage;
+			console->BackgroundImage = NULL;
+			}
 #if 0
 		SDL_FillRect(console->InputBackground, NULL, SDL_MapRGBA(console->ConsoleSurface->format, 0, 0, 0, SDL_ALPHA_OPAQUE);
 #endif
@@ -817,7 +818,7 @@ int CON_Background(ConsoleInformation *console, CBitmap *image)
 
 	/* Load a new background */
 	if (console->BackgroundImage)
-		D2_FREE (console->BackgroundImage);
+		delete console->BackgroundImage;
 	console->BackgroundImage = CBitmap::Create (0, console->ConsoleSurface->Bitmap ().Width (), console->ConsoleSurface->Bitmap ().Height (), 1);
 	GrBitmapScaleTo(image, console->BackgroundImage);
 
@@ -888,7 +889,7 @@ int CON_Resize(ConsoleInformation *console, int x, int y, int w, int h)
 	console->ConsoleSurface->Bitmap ().Create (BM_LINEAR, w, h, 1);
 
 	/* Load the dirty rectangle for user input */
-	D2_FREE (console->InputBackground);
+	delete console->InputBackground;
 	console->InputBackground = CBitmap::Create (0, w, console->ConsoleSurface->Font ()->Height (), 1);
 
 	/* Now reset some stuff dependent on the previous size */

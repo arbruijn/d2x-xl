@@ -360,7 +360,7 @@ if (i == nMaxDrop) {		//no free slot
 		return;
 		}
 	}
-//got a D2_FREE slot.  start inputting marker message
+//got a free slot. start inputting marker message
 gameData.marker.szInput [0] = '\0';
 gameData.marker.nIndex = 0;
 gameData.marker.nDefiningMsg = 1;

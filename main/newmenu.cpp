@@ -1431,8 +1431,10 @@ else {
 	if (!filename) {
 		// Save the background under the menu...
 		GrBitmap (0, 0, bg->saved); 
-		D2_FREE (bg->saved);
-		D2_FREE (bg->background);
+		delete bg->saved;
+		bg->saved = NULL;
+		delete bg->background;
+		bg->background = NULL;
 		} 
 	else {
 		if (!bDontRestore) {	//info passed back from menuCallback
@@ -3023,40 +3025,20 @@ if (bInitialized) {
 	else {
 		if (gameData.demo.nState != ND_STATE_PLAYBACK)	//horrible hack to prevent restore when screen has been cleared
 			GrBmBitBlt (w_w, w_h, w_x, w_y, 0, 0, bg.background, &CCanvas::Current ()->Bitmap ());
-		if (bg.background != &gameStates.render.vr.buffers.offscreen->Bitmap ())
-			D2_FREE (bg.background);
+		if (bg.background != &gameStates.render.vr.buffers.offscreen->Bitmap ()) {
+			delete bg.background;
+			bg.background = NULL;
+			}
 		GrUpdate (0);
 		}
 	}
 
 if (filenames)
-	D2_FREE (filenames);
+	delete[] filenames;
 
 SDL_EnableKeyRepeat(0, 0);
 return exitValue;
 }
-
-//------------------------------------------------------------------------------
-// Example listbox callback function...
-// int lb_callback (int * nItem, int *nItems, char *itemP [], int *keypress)
-// {
-// 	int i;
-// 
-// 	if (*keypress = KEY_CTRLED+KEY_D)	{
-// 		if (*nItems > 1)	{
-// 			CFile::Delete (itemP [*nItem]);    // Delete the file
-// 			for (i=*nItem; i<*nItems-1; i++)	{
-// 				itemP [i] = itemP [i+1];
-// 			}
-// 			*nItems = *nItems - 1;
-// 			D2_FREE (itemP [*nItems]);
-// 			itemP [*nItems] = NULL;
-// 			return 1;	// redraw;
-// 		}
-//			*keypress = 0;
-// 	}		
-// 	return 0;
-// }
 
 //------------------------------------------------------------------------------
 
@@ -3427,8 +3409,10 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 	else {
 		SDL_ShowCursor (0);
 		GrBmBitBlt (total_width, total_height, wx-border_size, wy-nTitleHeight-border_size, 0, 0, bg.background, &CCanvas::Current ()->Bitmap ());
-		if (bg.background != &gameStates.render.vr.buffers.offscreen->Bitmap ())
-			D2_FREE (bg.background);
+		if (bg.background != &gameStates.render.vr.buffers.offscreen->Bitmap ()) {
+			delete bg.background;
+			bg.background = NULL;
+			}
 		GrUpdate (0);
 		}
 SDL_EnableKeyRepeat(0, 0);
@@ -3515,20 +3499,18 @@ void NMWrapText (char *dbuf, char *sbuf, int line_length)
 	col = 0;
 	dbuf [0] = 0;
 
-	while (wordptr)
-	{
-		col = col + (int) strlen (wordptr)+1;
-		if (col >=line_length) {
-			col = 0;
-			sprintf (dbuf, "%s\n%s ", dbuf, wordptr);
+while (wordptr) {
+	col = col + (int) strlen (wordptr)+1;
+	if (col >=line_length) {
+		col = 0;
+		sprintf (dbuf, "%s\n%s ", dbuf, wordptr);
 		}
-		else {
-			sprintf (dbuf, "%s%s ", dbuf, wordptr);
+	else {
+		sprintf (dbuf, "%s%s ", dbuf, wordptr);
 		}
-		wordptr = strtok (NULL, " ");
+	wordptr = strtok (NULL, " ");
 	}
-
-	D2_FREE (tbuf);
+delete[] tbuf;
 }
 
 //------------------------------------------------------------------------------

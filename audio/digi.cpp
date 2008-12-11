@@ -389,11 +389,11 @@ gameData.weapons.firing [0].bSound = 0;
 //------------------------------------------------------------------------------
 // resample to 16 bit stereo
 
-int DigiResampleSound (tDigiSound *dsP, tSoundSlot *ssP, int bD1Sound, int bMP3)
+int DigiResampleSound (CDigiSound *dsP, tSoundSlot *ssP, int bD1Sound, int bMP3)
 {
 	int		h = 0, i, k, l;
 	ushort	*ps, *ph;
-	ubyte		*dataP = dsP->data [dsP->bDTX];
+	ubyte		*dataP = dsP->data [dsP->bDTX].Buffer ();
 
 i = dsP->nLength [dsP->bDTX];
 #if SDL_MIXER_CHANNELS == 2
@@ -514,7 +514,7 @@ return l > 0;
 
 //------------------------------------------------------------------------------
 
-int DigiSpeedupSound (tDigiSound *dsP, tSoundSlot *ssP, int speed)
+int DigiSpeedupSound (CDigiSound *dsP, tSoundSlot *ssP, int speed)
 {
 	int	h, i, j, l;
 	ubyte	*pDest, *pSrc;
@@ -522,7 +522,7 @@ int DigiSpeedupSound (tDigiSound *dsP, tSoundSlot *ssP, int speed)
 l = FixMulDiv (ssP->bResampled ? ssP->nLength : dsP->nLength [dsP->bDTX], speed, F1_0);
 if (!(pDest = new ubyte [l]))
 	return -1;
-pSrc = ssP->bResampled ? ssP->sample.Buffer () : dsP->data [dsP->bDTX];
+pSrc = ssP->bResampled ? ssP->sample.Buffer () : dsP->data [dsP->bDTX].Buffer ();
 for (h = i = j = 0; i < l; i++) {
 	pDest [j] = pSrc [i];
 	h += speed;
@@ -620,7 +620,7 @@ int DigiStartSound (short nSound, fix xVolume, int xPan, int bLooping,
 						  const char *pszWAV, CFixVector *vPos, int nSoundClass)
 {
 	tSoundSlot	*ssP;
-	tDigiSound	*dsP = NULL;
+	CDigiSound	*dsP = NULL;
 	int			i, bPersistent = (nSoundObj > -1) || bLooping || (xVolume > F1_0);
 
 if (!gameStates.app.bUseSound)
@@ -697,7 +697,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 		int l;
 		if (dsP->bHires) {
 			l = dsP->nLength [0];
-			ssP->sample.SetBuffer (dsP->data [0]);
+			ssP->sample.SetBuffer (dsP->data [0].Buffer (), true);
 			}
 		else {
 			if (gameOpts->sound.bHires)
@@ -726,7 +726,7 @@ if (pszWAV && *pszWAV)
 		ssP->nLength = l;
 		}
 	else {
-		ssP->sample.SetBuffer (dsP->data [dsP->bDTX], false, ssP->nLength = dsP->nLength [dsP->bDTX]);
+		ssP->sample.SetBuffer (dsP->data [dsP->bDTX].Buffer (), false, ssP->nLength = dsP->nLength [dsP->bDTX]);
 		}
 	if (nSpeed < F1_0)
 		DigiSpeedupSound (dsP, ssP, nSpeed);

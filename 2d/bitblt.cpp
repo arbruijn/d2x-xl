@@ -790,9 +790,9 @@ if ((src->Mode () == BM_LINEAR) && (dest->Mode () == BM_OGL)) {
 	}
 if (dest->Mode () != BM_LINEAR) {
 	CBitmap *tmp = CBitmap::Create (0, dest->Width (), dest->Height (), 1);
-	GrBitmapScaleTo(src, tmp);
-	GrBitmap(0, 0, tmp);
-	D2_FREE (tmp);
+	GrBitmapScaleTo (src, tmp);
+	GrBitmap (0, 0, tmp);
+	delete tmp;
 	return;
 	}
 GrBitmapScaleTo (src, dest);

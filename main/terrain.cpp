@@ -273,9 +273,9 @@ for (i = iHigh - 1; i >= iViewer; i--) {
 
 void _CDECL_ FreeTerrainHeightmap (void)
 {
-if (gameData.render.terrain.heightmap) {
+if (gameData.render.terrain.heightmap.Buffer ()) {
 	PrintLog ("unloading terrain height map\n");
-	D2_FREE (gameData.render.terrain.heightmap);
+	gameData.render.terrain.heightmap.Destroy ();
 	}
 }
 
@@ -298,8 +298,8 @@ if (iff_error != IFF_NO_ERROR) {
 #endif
 	Error ("File %s - IFF error: %s", filename, iff.ErrorMsg (iff_error));
 }
-if (gameData.render.terrain.heightmap)
-	D2_FREE (gameData.render.terrain.heightmap)
+if (gameData.render.terrain.heightmap.Buffer ())
+	gameData.render.terrain.heightmap.Destroy ();
 else
 	atexit (FreeTerrainHeightmap);		//first time
 gameData.render.terrain.nGridW = bmHeight.Width ();
@@ -323,13 +323,12 @@ for (i = 0; i < gameData.render.terrain.nGridW; i++) {
 		HEIGHT (i, j) -= hMin;
 		}
 	}
-//	D2_FREE (bmHeight.Buffer ());
 gameData.render.terrain.bmP = gameData.endLevel.terrain.bmP;
 #if 0 //the following code turns the (palettized) terrain texture into a white TGA texture for testing
 gameData.render.terrain.bmP->props.rowSize *= 4;
 gameData.render.terrain.bmP->props.flags |= BM_FLAG_TGA;
-D2_FREE (gameData.render.terrain.bmP->Buffer ());
-gameData.render.terrain.bmP->Create (gameData.render.terrain.bmP->Height () * gameData.render.terrain.bmP->props.rowSize);
+gameData.render.terrain.bmP->DestroyBuffer ();
+gameData.render.terrain.bmP->CreateBuffer (gameData.render.terrain.bmP->Height () * gameData.render.terrain.bmP->props.rowSize);
 gameData.render.terrain.bmP->Clear (0xFF);
 #endif
 PrintLog ("            building terrain light map\n");
@@ -391,9 +390,9 @@ return totalLight / 6;
 
 void _CDECL_ FreeTerrainLightmap ()
 {
-if (gameData.render.terrain.lightmap) {
+if (gameData.render.terrain.lightmap.Buffer ()) {
 	PrintLog ("unloading terrain light map\n");
-	D2_FREE (gameData.render.terrain.lightmap);
+	gameData.render.terrain.lightmap.Destroy ();
 	}
 }
 
@@ -402,7 +401,7 @@ if (gameData.render.terrain.lightmap) {
 void ComputeTerrainPoints (void)
 {
 	int			i, j;
-	CFixVector	*p = gameData.render.terrain.points;
+	CFixVector	*p = gameData.render.terrain.points.Buffer ();
 
 for (i = 0; i < gameData.render.terrain.nGridW; i++) {
 	for (j = 0; j < gameData.render.terrain.nGridH; j++) {
@@ -422,8 +421,8 @@ void BuildTerrainLightmap ()
 	fix l, l2, lMin = 0x7fffffff, lMax = 0;
 
 
-if (gameData.render.terrain.lightmap)
-	D2_FREE (gameData.render.terrain.lightmap)
+if (gameData.render.terrain.lightmap.Buffer ())
+	gameData.render.terrain.lightmap.Destroy ();
 else
 	atexit (FreeTerrainLightmap);		//first time
 
@@ -454,7 +453,7 @@ for (i = 0; i < gameData.render.terrain.nGridW; i++) {
 			}
 		}
 	}
-D2_FREE (gameData.render.terrain.points);
+gameData.render.terrain.points.Destroy ();
 }
 
 //-----------------------------------------------------------------------------

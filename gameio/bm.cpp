@@ -941,7 +941,7 @@ if (d2_Textures_backup) {
 	int i;
 	for (i = 0;i < D1_LAST_STATIC_TMAP_NUM;i++)
 		gameData.pig.tex.bmIndex [0][i].index = d2_Textures_backup [i];
-	D2_FREE (d2_Textures_backup);
+	delete[] d2_Textures_backup;
 	d2_Textures_backup = NULL;
 	}
 }
@@ -961,7 +961,7 @@ void BMReadAllD1 (CFile& cf)
 	//for (i = 0;i < D1_MAX_TEXTURES;i++)
 	//	gameData.pig.tex.bmIndex [0][i].index = cf.ReadShort () + 600;
 	//cf.Seek (fp, D1_MAX_TEXTURES * sizeof (short), SEEK_CUR);
-	MALLOC (d2_Textures_backup, short, D1_LAST_STATIC_TMAP_NUM);
+	d2_Textures_backup = new short [D1_LAST_STATIC_TMAP_NUM];
 	for (i = 0;i < D1_LAST_STATIC_TMAP_NUM;i++) {
 		d2_Textures_backup [i] = gameData.pig.tex.bmIndex [0][i].index;
 		gameData.pig.tex.bmIndex [0][i].index = cf.ReadShort () + 521;
@@ -1426,10 +1426,10 @@ CBitmap *BMLoadExtraBitmap (const char *name)
 
 *bip = ReadExtraBitmapIFF (name);
 if (!bip->index) {
-	char *name2 = D2_STRDUP (name);
+	char *name2 = StrDup (name);
 	*strrchr (name2, '.') = '\0';
 	*bip = ReadExtraBitmapD1Pig (name2);
-	D2_FREE (name2);
+	delete[] name2;
 	}
 if (!(i = bip->index))
 	return NULL;

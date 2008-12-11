@@ -85,7 +85,7 @@ char pszMovieLibs [][FILENAME_LEN] = {
 	"extra5-l.mvl"};
 
 #define MLF_ON_CD						1
-#define MAX_MOVIES_PER_LIB			50    //determines size of D2_ALLOC
+#define MAX_MOVIES_PER_LIB			50    //determines size of alloc
 
 #define	FIRST_EXTRA_MOVIE_LIB	4
 #define N_EXTRA_MOVIE_LIBS			5
@@ -480,12 +480,12 @@ if (!cf.Open (filename, gameFolders.szDataDir, "rb", 0)) { // first try text ver
 	}
 
 size = cf.Length ();
-MALLOC (subTitles.rawDataP, ubyte, size+1);
+subTitles.rawDataP = new ubyte [size+1];
 readCount = (int) cf.Read (subTitles.rawDataP, 1, size);
 cf.Close ();
 subTitles.rawDataP [size] = 0;
 if (readCount != size) {
-	D2_FREE (subTitles.rawDataP);
+	delete[] subTitles.rawDataP;
 	return 0;
 	}
 p = subTitles.rawDataP;
@@ -645,7 +645,7 @@ while (1) {
 size = sizeof (*table) + sizeof (ml_entry) * nFiles;
 table2 = new tMovieLib [size];
 memcpy (table2, table, size);
-D2_FREE (table);
+delete[] table;
 table = table2;
 strcpy (table->name, filename);
 table->n_movies = nFiles;
@@ -801,8 +801,8 @@ strcpy (filename, pszFilename);
 void close_movie (int i)
 {
 if (movies.libs [i]) {
-	D2_FREE (movies.libs [i]->movies);
-	D2_FREE (movies.libs [i]);
+	delete[] movies.libs [i]->movies;
+	delete movies.libs [i];
 	}
 }
 

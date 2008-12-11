@@ -52,7 +52,7 @@ return (ailP->nextPrimaryFire <= 0) || ((botInfoP->nSecWeaponType != -1) && (ail
 // ----------------------------------------------------------------------------------
 void SetNextFireTime (CObject *objP, tAILocalInfo *ailP, tRobotInfo *botInfoP, int nGun)
 {
-	//	For guys in snipe mode, they have a 50% shot of getting this shot in D2_FREE.
+	//	For guys in snipe mode, they have a 50% shot of getting this shot free.
 if ((nGun != 0) || (botInfoP->nSecWeaponType == -1))
 	if ((objP->cType.aiInfo.behavior != AIB_SNIPE) || (d_rand () > 16384))
 		ailP->nRapidFireCount++;

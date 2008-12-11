@@ -481,18 +481,15 @@ if (FindArg ("-hoarddata")) {
 		fwrite (icon.buffer, 1, icon.Width ()*icon.Height (), ofile);
 		}
 
-	for (i=0;i<sizeof (sounds)/sizeof (*sounds);i++) {
-		FILE *cf;
-		int size;
-		ubyte *buf;
-		cf = fopen (sounds[i], "rb");
+	for (i = 0; i < sizeof (sounds)/sizeof (*sounds);i++) {
+		FILE *cf = fopen (sounds[i], "rb");
 		Assert (cf != NULL);
-		size = ffilelength (cf);
-		buf = new ubyte [size];
+		int size = ffilelength (cf);
+		ubyte* buf = new ubyte [size];
 		fread (buf, 1, size, cf);
 		fwrite (&size, sizeof (size), 1, ofile);
 		fwrite (buf, 1, size, ofile);
-		D2_FREE (buf);
+		delete[] buf;
 		fclose (cf);
 		}
 	fclose (ofile);
@@ -742,7 +739,7 @@ switch (loadOp) {
 		break;
 	case 1:
 		/*---*/PrintLog ("Loading ban list\n");
-		LoadBanList ();
+		banList.Load ();
 		break;
 	case 2:
 		/*---*/PrintLog ("Initializing control types\n");

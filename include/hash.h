@@ -14,18 +14,25 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _HASH_H
 #define _HASH_H
 
-typedef struct tHashTable {
-	int 				bitsize;
-	int				and_mask;
-	int				size;
-	int				nitems;
-	const char		**key;
-	int				*value;
-} tHashTable;
+class CHashTable {
+	public:
+		int 						m_bitSize;
+		int						m_andMask;
+		int						m_size;
+		int						m_nItems;
+		CArray<const char*>	m_key;
+		CArray<int>				m_value;
 
-int HashTableInit (tHashTable *ht, int size);
-void HashTableFree (tHashTable *ht);
-int HashTableSearch (tHashTable *ht, const char *key);
-void HashTableInsert (tHashTable *ht, const char *key, int value);
+	public:
+		CHashTable ();
+		int Create (int size);
+		void Destroy ();
+		int Search (const char *key);
+		void Insert (const char *key, int value);
+
+	private:
+		int GetKey (const char *key);
+
+};
 
 #endif

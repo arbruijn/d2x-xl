@@ -60,7 +60,7 @@ class CHashList {
 		int				nHashs;
 		CArray<uint>	hashs;
 	public:
-	CHasList () { nHashs = 0; }
+		CHashList () { nHashs = 0; }
 };
 
 CHashList hashList;

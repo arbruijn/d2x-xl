@@ -252,7 +252,7 @@ if (!gameData.hoard.bInitialized) {
 			}
 		gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].nLength [0] = len;
 		gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].data [0].Create (len);
-		cf.Read (gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].data [0], 1, len);
+		cf.Read (gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].data [0].Buffer (), 1, len);
 		if (gameOpts->sound.digiSampleRate == SAMPLE_RATE_11K) {
 			len = cf.ReadInt ();    //get 22k len
 			cf.Seek (len, SEEK_CUR);     //skip over 22k sample
@@ -306,7 +306,7 @@ memset (&gameData.hoard.orb.bm, 0, sizeof (CBitmap));
 for (i = 0; i < 2; i++)
 	gameData.hoard.icon [i].bm.DestroyBuffer ();
 for (i = 1; i <= 4; i++) {
-	D2_FREE (gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] - i].data [0]);
+	gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] - i].data [0].Destroy ();
 	}
 }
 //-----------------------------------------------------------------------------

@@ -3350,7 +3350,7 @@ if (bRevertFormat > 0) {
 		//PrintLog ("%4d %4d %d\n", gameData.demo.nFrameCount, gameData.demo.nFrameBytesWritten - 1, CFTell (&ndOutFile);
 		NDWriteShort ((short) (gameData.demo.nFrameBytesWritten - 1));
 		NDWrite (p + 3, h - 3, 1);
-		D2_FREE (p);
+		delete[] p;
 		}
 	ndOutFile.Close ();
 	bRevertFormat = -1;

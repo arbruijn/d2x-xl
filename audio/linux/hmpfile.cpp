@@ -97,10 +97,10 @@ void hmp_close(hmp_file *hmp)
 #ifdef _WIN32
 	hmp_stop(hmp);
 #endif
-	for (i = 0; i < hmp->num_trks; i++)
-		if (hmp->trks [i].data)
-			D2_FREE(hmp->trks [i].data);
-	D2_FREE(hmp);
+for (i = 0; i < hmp->num_trks; i++)
+	if (hmp->trks [i].data)
+		delete[] hmp->trks [i].data;
+delete hmp;
 }
 
 //------------------------------------------------------------------------------
@@ -123,7 +123,8 @@ void hmp_stop(hmp_file *hmp)
 	while ((mhdr = hmp->evbuf)) {
 		midiOutUnprepareHeader((HMIDIOUT)hmp->hmidi, mhdr, sizeof(MIDIHDR));
 		hmp->evbuf = mhdr->lpNext;
-		D2_FREE(mhdr);
+		delete[] mhdr;
+		mhdr = NULL;
 	}
 
 	if (hmp->hmidi) {

@@ -69,7 +69,7 @@ int ReadSoundFile ();
 
 extern char CDROM_dir [];
 
-tHashTable soundNames [2];
+CHashTable soundNames [2];
 int soundOffset [2][MAX_SOUND_FILES];
 static tSoundFile sounds [2][MAX_SOUND_FILES];
 static int nSoundFilesNew = 0;
@@ -95,19 +95,16 @@ memset (gameData.pig.sound.sounds, 0, sizeof (gameData.pig.sound.sounds));
 
 //------------------------------------------------------------------------------
 
-int PiggyRegisterSound (tDigiSound *soundP, char *szFileName, int nInFile)
+int PiggyRegisterSound (CDigiSound *soundP, char *szFileName, int nInFile)
 {
-	int i;
+	int i = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data];
 
-Assert (gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data] < MAX_SOUND_FILES);
-strncpy (sounds [gameStates.app.bD1Data][gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]].name, szFileName, 12);
-HashTableInsert (&soundNames [gameStates.app.bD1Data], 
-						sounds [gameStates.app.bD1Data][gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]].name, 
-						gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]);
-gameData.pig.sound.soundP [gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]] = *soundP;
+Assert (i < MAX_SOUND_FILES);
+strncpy (sounds [gameStates.app.bD1Data][i].name, szFileName, 12);
+soundNames [gameStates.app.bD1Data].Insert (sounds [gameStates.app.bD1Data][i].name, i);
+gameData.pig.sound.soundP [i] = *soundP;
 if (!nInFile)
-	soundOffset [gameStates.app.bD1Data][gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]] = 0;
-i = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data];
+	soundOffset [gameStates.app.bD1Data][i] = 0;
 if (!nInFile)
 	nSoundFilesNew++;
 gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]++;
@@ -120,7 +117,7 @@ int PiggyFindSound (const char * name)
 {
 	int i;
 
-i = HashTableSearch (&soundNames [gameStates.app.bD1Data], name);
+i = soundNames [gameStates.app.bD1Data].Search (name);
 if (i < 0)
 	return 255;
 return i;
@@ -130,14 +127,14 @@ return i;
 
 void FreeSoundReplacements (void)
 {
-	tDigiSound	*dsP;
+	CDigiSound	*dsP;
 	int			i, j;
 
 PrintLog ("unloading custom sounds\n");
 for (i = 0; i < 2; i++)
 	for (j = 0, dsP = gameData.pig.sound.sounds [i].Buffer (); j < MAX_SOUND_FILES; j++, dsP++)
 		if (dsP->bDTX) {
-			delete[] dsP->data [1];
+			dsP->data [1].Destroy ();
 			dsP->bDTX = 0;
 			}
 }
@@ -153,13 +150,13 @@ int LoadSoundReplacements (const char *pszFilename)
 	int					b11K = (gameOpts->sound.digiSampleRate == SAMPLE_RATE_11K);
 	ubyte					j;
 	tPIGSoundHeader	dsh;
-	tDigiSound			*dsP;
+	CDigiSound			*dsP;
 	size_t				nHeaderOffs, nDataOffs;
 	char					szFilename [SHORT_FILENAME_LEN];
 
 if (gameOpts->sound.bHires)
 	return -1;
-//first, D2_FREE up data allocated for old bitmaps
+//first, free up data allocated for old bitmaps
 PrintLog ("   loading replacement sounds\n");
 FreeSoundReplacements ();
 CFile::ChangeFilenameExtension (szFilename, pszFilename, ".dtx");
@@ -186,12 +183,12 @@ for (i = b11K ? 0 : nSounds / 2; i < nSounds; i++) {
 		continue;
 	dsP = gameData.pig.sound.sounds [gameStates.app.bD1Mission] + j;
 	l = dsh.length;
-	if (!(dsP->data [1] = new ubyte [l]))
+	if (!dsP->data [1].Create (l))
 		continue;
 	cf.Seek ((long) (nDataOffs + dsh.offset), SEEK_SET);
-	if (cf.Read (dsP->data [1], 1, l) != (uint) l) {
+	if (cf.Read (dsP->data [1].Buffer (), 1, l) != (uint) l) {
 		cf.Close ();
-		delete[] dsP->data [1];
+		dsP->data [1].Destroy ();
 		return -1;
 		}
 	dsP->bDTX = 1;
@@ -203,7 +200,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int LoadHiresSound (tDigiSound *soundP, char *pszSoundName)
+int LoadHiresSound (CDigiSound *soundP, char *pszSoundName)
 {
 	CFile			cf;
 	char			szSoundFile [FILENAME_LEN];
@@ -217,11 +214,11 @@ if (0 >= (soundP->nLength [0] = cf.Length ())) {
 	cf.Close ();
 	return 0;
 	}
-if (!(soundP->data [0] = new ubyte [soundP->nLength [0]])) {
+if (!soundP->data [0].Create (soundP->nLength [0])) {
 	cf.Close ();
 	return 0;
 	}
-if (cf.Read (soundP->data [0], soundP->nLength [0], 1) != 1) {
+if (cf.Read (soundP->data [0].Buffer (), soundP->nLength [0], 1) != 1) {
 	cf.Close ();
 	return 0;
 	}
@@ -235,7 +232,7 @@ return 1;
 int LoadSounds (CFile& cf, int nSoundNum, int nSoundStart)
 {
 	tPIGSoundHeader	sndh;
-	tDigiSound			sound;
+	CDigiSound			sound;
 	int					i;
 	int					sbytes = 0;
 	int 					nHeaderSize = nSoundNum * sizeof (tPIGSoundHeader);
@@ -258,7 +255,7 @@ for (i = 0; i < nSoundNum; i++) {
 	else {
 		sound.bHires = 0;
 		sound.nLength [0] = sndh.length;
-		sound.data [0] = reinterpret_cast<ubyte*> ((size_t) (sndh.offset + nHeaderSize + nSoundStart));
+		sound.data [0].Create (sndh.offset + nHeaderSize + nSoundStart);
 		soundOffset [gameStates.app.bD1Data][gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]] = sndh.offset + nHeaderSize + nSoundStart;
 		sbytes += sndh.length;
 		}
@@ -325,7 +322,7 @@ return 0;
 
 #if USE_OPENAL
 
-int PiggyBufferSound (tDigiSound *soundP)
+int PiggyBufferSound (CDigiSound *soundP)
 {
 if (!gameOpts->sound.bUseOpenAL)
 	return 0;
@@ -356,7 +353,7 @@ void PiggyReadSounds (void)
 	CFile			cf;
 	ubyte			*ptr;
 	int			i, j, sbytes;
-	tDigiSound	*soundP = gameData.pig.sound.soundP.Buffer ();
+	CDigiSound*	soundP = gameData.pig.sound.soundP.Buffer ();
 
 ptr = gameData.pig.sound.data [gameStates.app.bD1Data].Buffer ();
 sbytes = 0;
@@ -367,18 +364,16 @@ for (i = 0, j = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]; i < j; 
 	if (soundOffset [gameStates.app.bD1Data][i] > 0) {
 		if (PiggySoundIsNeeded (i)) {
 			cf.Seek (soundOffset [gameStates.app.bD1Data][i], SEEK_SET);
-
-			// Read in the sound data!!!
-			soundP->data [0] = ptr;
+			soundP->data [0].SetBuffer (ptr, true, soundP->nLength [0]);
 			ptr += soundP->nLength [0];
 			sbytes += soundP->nLength [0];
-			cf.Read (soundP->data [0], soundP->nLength [0], 1);
+			cf.Read (soundP->data [0].Buffer (), soundP->nLength [0], 1);
 #if USE_OPENAL
 			PiggyBufferSound (soundP);
 #endif
 			}
 		else
-			soundP->data [0] = reinterpret_cast<ubyte*> (-1);
+			soundP->data [0].SetBuffer (reinterpret_cast<ubyte*> (-1), true);
 		}
 	}
 cf.Close ();

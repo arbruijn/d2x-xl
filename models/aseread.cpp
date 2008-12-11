@@ -100,7 +100,7 @@ for (pml = pm->subModels; pml; ) {
 	ASE_FreeSubModel (&pml->sm);
 	h = pml;
 	pml = pml->pNextModel;
-	D2_FREE (h);
+	delete h;
 	}
 ASE_FreeTextures (pm);
 memset (pm, 0, sizeof (*pm));

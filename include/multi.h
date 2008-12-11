@@ -440,10 +440,6 @@ void ChangeSegmentTexture (int nSegment, int oldOwner);
 #define MISSILE_ADJUST  100
 #define FLARE_ADJUST    127
 
-int FindPlayerInBanList (char *szPlayer);
-int LoadBanList (void);
-int SaveBanList (void);
-void FreeBanList (void);
 int PingPlayer (int n);
 int MultiProtectGame (void);
 void SwitchTeam (int nPlayer, int bForce);

@@ -389,7 +389,6 @@ ubyte* CFont::Load (const char *fontname, ubyte* fontData)
 	char 		fileId [4];
 	int 		dataSize;	//size up to (but not including) palette
 
-	//find D2_FREE font slot
 if (!cf.Open (fontname, gameFolders.szDataDir, "rb", 0)) {
 #if TRACE
 	con_printf (CON_VERBOSE, "Can't open font file %s\n", fontname);
@@ -430,7 +429,7 @@ if (m_info.chars) {
 	m_info.chars = NULL;
 	}
 if (m_info.bitmaps) {
-	delete[] m_info.bitmaps; //D2_FREE (m_info.bitmaps);
+	delete[] m_info.bitmaps; 
 	m_info.bitmaps = NULL;
 	}
 m_info.parentBitmap.Destroy ();

@@ -767,9 +767,9 @@ for (nObject = segP->objects; nObject != -1; nObject = OBJECTS [nObject].info.nN
 	if ((t == OBJ_WEAPON) || (t == OBJ_FIREBALL) || (t == OBJ_EXPLOSION) || (t == OBJ_EFFECT))
 		continue;
 	if (CheckPoke (nObject, SEG_IDX (segP), nSide) || CheckPoke (nObject, SEG_IDX (connSegP), nConnSide))
-		return 1;	//not D2_FREE
+		return 1;	//not free
 		}
-return 0; 	//doorway is D2_FREE!
+return 0; 	//doorway is free!
 }
 
 //-----------------------------------------------------------------

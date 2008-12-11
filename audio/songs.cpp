@@ -438,7 +438,7 @@ for (bRead = 0; bRead < 2; bRead++) {
 				CFile::SplitPath (szSong, szSongFolder, NULL, NULL);
 				if (!*szSongFolder)
 					l += (int) strlen (szListFolder);
-				if (!(pszSong =new char [l])) {
+				if (!(pszSong = new char [l])) {
 					cf.Close ();
 					return nSongs = nSongs;
 					}
@@ -453,7 +453,7 @@ for (bRead = 0; bRead < 2; bRead++) {
 		}
 	cf.Close ();
 	if (!bRead) {
-		if (!(gameData.songs.user.pszLevelSongs = reinterpret_cast<char **> (D2_ALLOC (nSongs * sizeof (char **)))))
+		if (!gameData.songs.user.pszLevelSongs.Create (nSongs))
 			return 0;
 		}
 	}
@@ -467,8 +467,9 @@ void FreeUserSongs (void)
 	int	i;
 
 for (i = 0; i < gameData.songs.user.nLevelSongs; i++)
-	D2_FREE (gameData.songs.user.pszLevelSongs [i]);
-D2_FREE (gameData.songs.user.pszLevelSongs);
+	delete[] gameData.songs.user.pszLevelSongs [i];
+gameData.songs.user.pszLevelSongs.Destroy ();
+gameData.songs.user.pszLevelSongs = NULL;
 gameData.songs.user.nLevelSongs = 0;
 }
 

@@ -169,7 +169,7 @@ void PiggyInitPigFile (char *filename);
 void _CDECL_ PiggyClose(void);
 void PiggyDumpAll (void);
 tBitmapIndex PiggyRegisterBitmap( CBitmap * bmp, const char * name, int in_file );
-int PiggyRegisterSound( tDigiSound * snd, char * name, int in_file );
+int PiggyRegisterSound( CDigiSound * snd, char * name, int in_file );
 tBitmapIndex PiggyFindBitmap (const char * name, int bD1Data );
 int PiggyFindSound (const char * name);
 int LoadSoundReplacements (const char *pszFileName);
@@ -179,7 +179,7 @@ int LoadModelData (void);
 int SaveModelData (void);
 
 void piggy_read_bitmap_data (CBitmap * bmp);
-void piggy_readSound_data (tDigiSound *snd);
+void piggy_readSound_data (CDigiSound *snd);
 
 void PiggyLoadLevelData ();
 
@@ -258,7 +258,7 @@ extern size_t bitmapCacheUsed;
 extern size_t bitmapCacheSize;
 extern const char *szAddonTextures [MAX_ADDON_BITMAP_FILES];
 
-extern tHashTable soundNames [2];
+extern CHashTable soundNames [2];
 extern int soundOffset [2][MAX_SOUND_FILES];
 
 #if USE_SDL_MIXER

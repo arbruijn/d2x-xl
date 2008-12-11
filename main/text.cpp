@@ -48,16 +48,16 @@ void _CDECL_ free_text(void)
 	PrintLog ("unloading game texts\n");
 	if (pszGameTexts && pszGameTexts [0]) {
 		p = pszGameTexts [0] - 1;
-		D2_FREE (text);
-		D2_FREE (p);
-		D2_FREE (pszGameTexts);
+		delete[] text;
+		delete[] p;
+		delete[] pszGameTexts;
 		pszGameTexts = NULL;
 	}
 	if (pszHelpTexts && pszHelpTexts [0]) {
 		p = pszHelpTexts [0] - 1;
-		D2_FREE (text);
-		D2_FREE (p);
-		D2_FREE (pszHelpTexts);
+		delete[] text;
+		delete[] p;
+		delete[] pszHelpTexts;
 		pszHelpTexts = NULL;
 	}
 }
@@ -2545,7 +2545,7 @@ if (!(pszTexts = new char * [j + 1]))
 	return NULL;
 h = GameTextSize ();
 if (!(*pszTexts = new char [h])) {
-	D2_FREE (pszTexts);
+	delete[] pszTexts;
 	return NULL;
 	}
 for (i = 0; i < j; i++) {
@@ -2712,7 +2712,7 @@ if (!tFile.Open (filename, gameFolders.szDataDir, "rt", 0)) {
 	}
 	bBinary = 1;
 	len = iFile.Length ();
-	MALLOC (text, char, len);
+	text = new char [len];
 	atexit (free_text);
 	iFile.Read (text, 1, len);
 	iFile.Close ();
@@ -2722,7 +2722,7 @@ else {
 	char *pi, *pj;
 
 	len = tFile.Length ();
-	MALLOC (text, char, len);
+	text = new char [len];
 	atexit (free_text);
 #if 1
 	tFile.Read (text, 1, len);

@@ -22,6 +22,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "pstypes.h"
 #include "vecmat.h"
+#include "carray.h"
 
 #define USE_OPENAL	0
 
@@ -49,15 +50,22 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 typedef SAMPLE 
 ;
 #else
-typedef struct tDigiSound {
-	ubyte			bHires;
-	ubyte			bDTX;
-	int			nLength [2];
-	CByteArray	data [2];
+class CDigiSound {
+	public:
+		ubyte			bHires;
+		ubyte			bDTX;
+		int			nLength [2];
+		CByteArray	data [2];
 #if USE_OPENAL
-	ALuint	buffer;
+		ALuint		buffer;
 #endif
-} tDigiSound;
+
+	public:
+		CDigiSound () { 
+			bHires = bDTX = 0; 
+			nLength [0] = nLength [1] = 0; 
+		}
+	};
 #endif
 
 #define SOUND_MAX_VOLUME (F1_0 / 2)

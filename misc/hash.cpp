@@ -25,94 +25,109 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "hash.h"
 
-int HashTableInit( tHashTable *ht, int size )
+//------------------------------------------------------------------------------
+
+void CHashTable::Init (void)
+{
+m_bitSize = 0;
+m_andMask = 0;
+m_size = 0;
+m_nItems = 0;
+}
+
+//------------------------------------------------------------------------------
+
+int CHashTable::Create (int size)
 {
 	int i;
 
-ht->size=0;
-for (i=1; i<13; i++ )	{
-	if ( (1<<i) >= size )	{
-		ht->bitsize = i;
-		ht->size = 1<<i;
+m_size = 0;
+for (i = 1; i < 13; i++) {
+	if ( (1 << i) >= size) {
+		m_bitsize = i;
+		m_size = 1<<i;
 		break;
 		}
 	}
-size = ht->size;
-ht->and_mask = ht->size - 1;
-if (ht->size==0)
-	Error( "Hashtable has size of 0" );
-if (!(ht->key = new const char * [size]))
-	Error( "Not enough memory to create a hash table of size %d", size );
-for (i = 0; i < size; i++ )
-	ht->key [i] = NULL;
+size = m_size;
+m_andMask = m_size - 1;
+if (m_size == 0)
+	Error ("Hashtable has size of 0");
+if (!m_key.Create (size))
+	Error ("Not enough memory to create a hash table of size %d", size);
+for (i = 0; i < size; i++)
+	m_key [i] = NULL;
 // Use calloc cause we want zero'd array.
-ht->value = new int [size];
-if (ht->value==NULL)	{
-	D2_FREE(ht->key);
-	Error( "Not enough memory to create a hash table of size %d\n", size );
+if (!m_value.Create (size)) {
+	m_key.Destroy ();
+	Error ("Not enough memory to create a hash table of size %d\n", size);
 	}
-ht->nitems = 0;
+m_nitems = 0;
 return 0;
 }
 
+//------------------------------------------------------------------------------
 
-void HashTableFree( tHashTable *ht )
+void CHashTable::Destroy (void)
 {
-if (ht->key != NULL)
-	D2_FREE( ht->key);
-if (ht->value != NULL)
-	D2_FREE( ht->value);
-ht->size = 0;
+m_key.Destroy ();
+m_value.Destroy ();
+m_size = 0;
 }
 
+//------------------------------------------------------------------------------
 
-int HashTableGetKey( const char *key )
+int CHashTable::GetKey (const char *key)
 {
-	int k = 0, i=0;
+	int k = 0, i = 0;
 	char c;
 
-while ((c = *key++)) {
-	k ^= ((int)(tolower (c))) << i;
+while ( (c = *key++)) {
+	k ^= ( (int) (tolower (c))) << i;
 	i++;
 	}
 return k;
 }
 
+//------------------------------------------------------------------------------
 
-int HashTableSearch( tHashTable *ht, const char *key )
+int CHashTable::Search (const char *key)
 {
-	int i,j,k;
+	int i, j, k;
 
-k = HashTableGetKey( key );
+k = GetKey (key);
 i = 0;
-while(i < ht->size )	{
-	j = (k+(i++)) & ht->and_mask;
-	if ( ht->key[j] == NULL )
+while (i < m_size)	{
+	j = (k+ (i++)) & m_andMask;
+	if (m_key [j] == NULL)
 		return -1;
-	if (!stricmp(ht->key[j], key ))
-		return ht->value[j];
+	if (!stricmp (m_key [j], key))
+		return m_value [j];
 	}
 return -1;
 }
 
+//------------------------------------------------------------------------------
 
-void HashTableInsert( tHashTable *ht, const char *key, int value )
+void CHashTable::Insert (const char *key, int value)
 {
 	int i,j,k;
 
-k = HashTableGetKey(key);
+k = GetKey (key);
 i = 0;
-while(i < ht->size) {
-	j = (k+(i++)) & ht->and_mask;
-	if (ht->key [j] == NULL) {
-		ht->nitems++;
-		ht->key [j] = key;
-		ht->value [j] = value;
+while (i < m_size) {
+	j = (k+ (i++)) & m_andMask;
+	if (m_key [j] == NULL) {
+		m_nitems++;
+		m_key [j] = key;
+		m_value [j] = value;
 		return;
 		} 
-	else if (!stricmp (key, ht->key[j])) {
+	else if (!stricmp (key, m_key [j])) {
 		return;
 		}
 	}
-Error( "Out of hash slots\n" );
+Error ("Out of hash slots\n");
 }
+
+//------------------------------------------------------------------------------

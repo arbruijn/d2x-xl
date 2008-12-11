@@ -133,7 +133,7 @@ void FreeParams (void)
 while (paramList) {
 	pp = paramList;
 	paramList = paramList->next;
-	D2_FREE (pp);
+	delete pp;
 	}
 }
 

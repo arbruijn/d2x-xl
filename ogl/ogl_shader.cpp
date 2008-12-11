@@ -252,8 +252,8 @@ glShaderSource (vs, 1, reinterpret_cast<const GLcharARB **> (&vsName), NULL);
 glShaderSource (fs, 1, reinterpret_cast<const GLcharARB **> (&fsName), NULL); 
 #if DBG_SHADERS
 if (bFromFile) {
-	D2_FREE (vsName); 
-	D2_FREE (fsName); 
+	delete[] vsName; 
+	delete[] fsName; 
 	}
 #endif
 glCompileShader (vs); 

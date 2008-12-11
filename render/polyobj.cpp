@@ -455,7 +455,7 @@ return nGuns;
 }
 
 //------------------------------------------------------------------------------
-//D2_FREE up a model, getting rid of all its memory
+//free up a model, getting rid of all its memory
 void FreeModel (tPolyModel *po)
 {
 po->modelData.Destroy ();

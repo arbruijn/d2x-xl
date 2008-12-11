@@ -33,6 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "objsmoke.h"
 #include "newdemo.h"
 #include "text.h"
+#include "banlist.h"
 
 //------------------------------------------------------------------------------
 
@@ -536,7 +537,7 @@ for (i = 0; i < MAX_PLAYERS; i++)
 		NetworkWelcomePlayer (their);
 		return;
 		}
-if (FindPlayerInBanList (their->player.callsign))
+if (banList.Find (const_cast<char*>(their->player.callsign)))
 	return;
 if (!networkData.refuse.bWaitForAnswer) {
 	DigiPlaySample (SOUND_HUD_JOIN_REQUEST, F1_0*2);           

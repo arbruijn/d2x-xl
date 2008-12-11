@@ -438,7 +438,7 @@ m_vStartVel.SetZero ();
 }
 
 //------------------------------------------------------------------------------
-//sets up the D2_FREE list & init CPlayerData & whatever else
+//sets up the free list & init CPlayerData & whatever else
 void InitObjects (void)
 {
 	CObject	*objP;
@@ -786,7 +786,7 @@ int nUnusedObjectsSlots;
 //returns the number of a free object, updating gameData.objs.nLastObject [0].
 //Generally, CObject::Create() should be called to get an CObject, since it
 //fills in important fields and does the linking.
-//returns -1 if no D2_FREE OBJECTS
+//returns -1 if no free objects
 int AllocObject (void)
 {
 	CObject *objP;
@@ -1163,7 +1163,7 @@ nToFree = MAX_OBJECTS - nRequested - nAlreadyFree;
 nOrgNumToFree = nToFree;
 if (nToFree > nCandidates) {
 #if TRACE
-	con_printf (1, "Warning: Asked to D2_FREE %i OBJECTS, but can only D2_FREE %i.\n", nToFree, nCandidates);
+	con_printf (1, "Warning: Asked to free %i objects when there's only %i available.\n", nToFree, nCandidates);
 #endif
 	nToFree = nCandidates;
 	}
@@ -2665,8 +2665,8 @@ FORALL_EFFECT_OBJS (objP, i)
 }
 
 //------------------------------------------------------------------------------
-//called after load.  Takes number of OBJECTS,  and OBJECTS should be
-//compressed.  resets D2_FREE list, marks unused OBJECTS as unused
+//called after load. Takes number of objects, and objects should be
+//compressed.  resets free list, marks unused objects as unused
 void ResetObjects (int nObjects)
 {
 	int 		i;

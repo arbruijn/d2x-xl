@@ -29,6 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "netmisc.h"
 #include "autodl.h"
 #include "tracker.h"
+#include "banlist.h"
 
 //------------------------------------------------------------------------------
 
@@ -143,7 +144,7 @@ return 1;
 
 int GameListHandler (ubyte *dataP, int nLength)
 {
-if (FindPlayerInBanList (THEIR->player.callsign))
+if (banList.Find (THEIR->player.callsign))
 	return 0;
 if (!NetworkIAmMaster ())
 	return 0;
@@ -175,7 +176,7 @@ return 1;
 
 int RequestHandler (ubyte *dataP, int nLength)
 {
-if (FindPlayerInBanList (THEIR->player.callsign))
+if (banList.Find (THEIR->player.callsign))
 	return 0;
 if (networkData.nStatus == NETSTAT_STARTING) // Someone wants to join our game!
 	NetworkAddPlayer (THEIR);	

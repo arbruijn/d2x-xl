@@ -44,9 +44,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define INV_ITEM_SLOWMOTION	8
 #define INV_ITEM_BULLETTIME	9
 
-CBitmap	*bmpInventory = NULL;
+CBitmap*	bmpInventory = NULL;
 CBitmap	bmInvItems [NUM_INV_ITEMS];
-CBitmap	*bmObjTally [2];
+CBitmap*	bmObjTally [2];
 
 int bHaveInvBms = -1;
 int bHaveObjTallyBms = -1;
@@ -64,8 +64,11 @@ if (bHaveObjTallyBms > -1)
 memset (bmObjTally, 0, sizeof (bmObjTally));
 for (i = 0; i < 2; i++)
 	if (!ReadTGA (pszObjTallyIcons [i], gameFolders.szDataDir, bmObjTally [i], -1, 1.0, 0, 0)) {
-		while (i)
-			D2_FREE (bmObjTally [--i]);
+		while (i) {
+			i--;
+			delete bmObjTally [i];
+			bmObjTally [i] = NULL;
+			}
 		return bHaveObjTallyBms = 0;
 		}
 return bHaveObjTallyBms = 1;
@@ -79,7 +82,7 @@ void FreeObjTallyIcons (void)
 
 if (bHaveObjTallyBms > 0) {
 	for (i = 0; i < 2; i++)
-		D2_FREE (bmObjTally [i]);
+		delete bmObjTally [i];
 	memset (bmObjTally, 0, sizeof (bmObjTally));
 	bHaveObjTallyBms = -1;
 	}
@@ -459,7 +462,8 @@ return bHaveInvBms = 1;
 void FreeInventoryIcons (void)
 {
 if (bmpInventory) {
-	D2_FREE (bmpInventory);
+	delete bmpInventory;
+	bmpInventory = NULL;
 	bHaveInvBms = -1;
 	}
 }

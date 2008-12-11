@@ -250,9 +250,10 @@ if (gameStates.video.nScreenMode == SCREEN_EDITOR)
 CCanvas::SetCurrent (NULL);
 fontManager.SetCurrent (GAME_FONT);
 
-if (bGameCockpitCopyCode)
-	D2_FREE (bGameCockpitCopyCode);
-bGameCockpitCopyCode  = NULL;
+if (bGameCockpitCopyCode) {
+	delete[] bGameCockpitCopyCode;
+	bGameCockpitCopyCode  = NULL;
+	}
 switch (gameStates.render.cockpit.nMode) {
 	case CM_FULL_COCKPIT:
 	case CM_REAR_VIEW:
@@ -1297,7 +1298,7 @@ CloseGaugeCanvases ();
 PrintLog ("restoring effect bitmaps\n");
 RestoreEffectBitmapIcons ();
 if (bGameCockpitCopyCode) {
-	D2_FREE (bGameCockpitCopyCode);
+	delete[] bGameCockpitCopyCode;
 	bGameCockpitCopyCode = NULL;
 }
 if (bmBackground.Buffer ()) {
@@ -1307,8 +1308,8 @@ if (bmBackground.Buffer ()) {
 ClearWarnFunc (ShowInGameWarning);     //don't use this func anymore
 PrintLog ("unloading custom background data\n");
 NMFreeAltBg (1);
-SaveBanList ();
-FreeBanList ();
+banList.Save ();
+banList.Destroy ();
 PrintLog ("peak memory consumption: %ld bytes\n", nMaxAllocd);
 SDL_Quit ();
 #if 0

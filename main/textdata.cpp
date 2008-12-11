@@ -19,10 +19,12 @@
 
 void FreeTextData (CTextData *msgP)
 {
-D2_FREE (msgP->textBuffer);
-D2_FREE (msgP->index);
+delete[] msgP->textBuffer;
+msgP->textBuffer = NULL;
+delete[] msgP->index;
+msgP->index = NULL;
 if (msgP->bmP)
-	D2_FREE (msgP->bmP);
+	delete msgP->bmP;
 msgP->nMessages = 0;
 }
 
@@ -65,7 +67,7 @@ void LoadTextData (const char *pszLevelName, const char *pszExt, CTextData *msgP
 	char			*p, *q;
 	tTextIndex	*pi;
 
-	//first, D2_FREE up data allocated for old bitmaps
+//first, free up data allocated for old bitmaps
 PrintLog ("   loading mission messages\n");
 FreeTextData (msgP);
 CFile::ChangeFilenameExtension (szFilename, pszLevelName, pszExt);
@@ -86,7 +88,7 @@ for (p = msgP->textBuffer + 1, nLines = 1; *p; p++) {
 	if (*p == '\n')
 		nLines++;
 	}
-if (!(msgP->index = ne wtTextIndex [nLines])) {
+if (!(msgP->index = new tTextIndex [nLines])) {
 	FreeTextData (msgP);
 	return;
 	}
@@ -172,8 +174,10 @@ else {
 	msgP->currentMsg = indexP;
 	msgP->nStartTime = gameStates.app.nSDLTicks;
 	msgP->nEndTime = (nDuration < 0) ? -1 : gameStates.app.nSDLTicks + 1000 * nDuration;
-	if (msgP->bmP)
-		D2_FREE (msgP->bmP);
+	if (msgP->bmP) {
+		delete msgP->bmP;
+		msgP->bmP = NULL;
+		}
 	}
 if (msgP->nEndTime < 0) {
 	if (nId < 0)

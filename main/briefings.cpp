@@ -198,7 +198,7 @@ tBriefingScreen briefingScreens [] = {
 
 int	briefingTextX, briefingTextY;
 
-CCanvas	*robotCanvP = NULL;
+CCanvas*		robotCanvP = NULL;
 vmsAngVec	vRobotAngles;
 
 char    szBitmapName [32] = "";
@@ -552,7 +552,8 @@ if (*szBitmapName) {
 		GrUpdate (0);
 	paletteManager.LoadEffect  ();
 	CCanvas::SetCurrent (curCanvSave);
-	D2_FREE (bitmapCanv);
+	delete bitmapCanv;´
+	bitmapCanv = NULL;
 	if (!(bRedraw || nDoorDivCount)) {
 #if 1
 	nDoorDivCount = DOOR_DIV_INIT;
@@ -892,8 +893,10 @@ int _B (tBriefingInfo& bi)
 	int         iff_error;
 
 if (bi.message > bi.pj) {
-	if (robotCanvP != NULL)
-		D2_FREE (robotCanvP);
+	if (robotCanvP != NULL) {
+		delete robotCanvP;
+		robotCanvP = NULL;
+		}
 	}
 GetMessageName (&bi.message, szBitmap);
 strcat (szBitmap, ".bbm");
@@ -946,8 +949,10 @@ return 1;
 int _N (tBriefingInfo& bi)
 {
 if (bi.message > bi.pj) {
-	if (robotCanvP != NULL)
-		D2_FREE (robotCanvP);
+	if (robotCanvP != NULL) {
+		delete robotCanvP;
+		robotCanvP = NULL;
+		}
 	StopBriefingSound (&bi.nBotChannel);
 	GetMessageName (&bi.message, szBitmapName);
 	strcat (szBitmapName, "#0");
@@ -962,8 +967,10 @@ return 1;
 int _O (tBriefingInfo& bi)
 {
 if (bi.message > bi.pj) {
-	if (robotCanvP != NULL)
-		D2_FREE (robotCanvP);
+	if (robotCanvP != NULL) {
+		delete robotCanvP;
+		robotCanvP = NULL;
+		}
 	GetMessageName (&bi.message, szBitmapName);
 	strcat (szBitmapName, "#0");
 	nAnimatingBitmapType = 1;
@@ -994,7 +1001,10 @@ return 1;
 int _R (tBriefingInfo& bi)
 {
 if (bi.message > bi.pj) {
-	D2_FREE (robotCanvP);
+	if (robotCanvP != NULL) {
+		delete robotCanvP;
+		robotCanvP = NULL;
+		}
 	if (bRobotPlaying) {
 		DeInitRobotMovie ();
 		bRobotPlaying = 0;
@@ -1400,8 +1410,10 @@ if (bRobotPlaying) {
 	DeInitRobotMovie ();
 	bRobotPlaying = 0;
 	}
-if (robotCanvP)
-	D2_FREE (robotCanvP);
+if (robotCanvP != NULL) {
+	delete robotCanvP;
+	robotCanvP = NULL;
+	}
 if (!gameData.songs.bPlaying)
 	StopBriefingSound (&bi.nHumChannel);
 StopBriefingSound (&bi.nPrintingChannel);
@@ -1455,7 +1467,7 @@ if (!cf.Open (filename, gameFolders.szDataDir, bHaveBinary ? reinterpret_cast<ch
 	}
 if (bHaveBinary) {
 	len = cf.Length ();
-	MALLOC (bufP, char, len);
+	(bufP = new char [len];
 	*buf = bufP;
 	for (i = 0; i < len; i++, bufP++) {
 		cf.Read (bufP, 1, 1);
@@ -1469,7 +1481,7 @@ if (bHaveBinary) {
 	}
 else {
 	len = cf.Length ();
-	MALLOC (bufP, char, len+500);
+	bufP = new char [len + 500];
 	*buf = bufP;
 	for (i = 0; i < len; i++, bufP++) {
 		cf.Read (bufP, 1, 1);
@@ -1659,7 +1671,7 @@ if (gameStates.app.bD1Mission) {
 else
 	ShowBriefingScreen (nLevel, 0, (short) nLevel);
 gameStates.render.bBriefing = 0;
-D2_FREE (szBriefingText);
+delete[] szBriefingText;
 szBriefingText = NULL;
 KeyFlush ();
 return;

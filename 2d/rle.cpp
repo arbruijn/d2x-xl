@@ -309,9 +309,9 @@ int CBitmap::RLECompress (void)
 		doffset = 4 + (2 * m_info.props.h);		// each row of rle'd bitmap has short instead of byte offset now
 
 	for (y=0; y<m_info.props.h; y++)	{
-		d1= gr_rle_getsize (m_info.props.w, &Buffer ()[m_info.props.w*y]);
+		d1 = gr_rle_getsize (m_info.props.w, &Buffer ()[m_info.props.w*y]);
 		if (( (doffset+d1) > m_info.props.w*m_info.props.h) || (d1 > (large_rle?32767:255))) {
-			D2_FREE (rle_data);
+			delete[] rle_data;
 			return 0;
 		}
 		d = gr_rle_encode (m_info.props.w, &Buffer ()[m_info.props.w*y], &rle_data[doffset]);
@@ -356,8 +356,10 @@ if (rle_cache_initialized)	{
 	int i;
 	PrintLog ("deleting RLE cache\n");
 	rle_cache_initialized = 0;
-	for (i=0; i<MAX_CACHE_BITMAPS; i++)
-		D2_FREE (rle_cache [i].expanded_bitmap);
+	for (i=0; i<MAX_CACHE_BITMAPS; i++) {
+		delete rle_cache [i].expanded_bitmap;
+		rle_cache [i].expanded_bitmap = NULL;
+		}
 	}
 gameData.pig.tex.rleBuffer.Destroy ();
 }
@@ -700,7 +702,7 @@ len = (int) (pDest - remapBuf);
 Assert (len <= m_info.props.w * m_info.props.rowSize);
 *reinterpret_cast<int*> (remapBuf) = len;           // set total size
 memcpy (Buffer (), remapBuf, len);
-D2_FREE (remapBuf);
+delete[] remapBuf;
 return len;
 }
 

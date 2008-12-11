@@ -469,7 +469,7 @@ if (i > -1) {
 	PlayMovie (m [i], 1, 1, gameOpts->movies.bResize);
 	SDL_ShowCursor (1);
 	}
-D2_FREE (m);
+delete[] m;
 SongsPlayCurrentSong (1);
 }
 

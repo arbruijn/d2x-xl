@@ -907,7 +907,7 @@ if ((aiP->nHideIndex == -1) || (aiP->nPathLength == 0)) {
 	}
 
 if ((aiP->nHideIndex + aiP->nPathLength > gameData.ai.freePointSegs - gameData.ai.pointSegs) && (aiP->nPathLength>0)) {
-	Int3 ();	//	Contact Mike: Bad.  Path goes into what is believed to be D2_FREE space.p.
+	Int3 ();	//	Contact Mike: Bad.  Path goes into what is believed to be free space.
 	//	This is debugging code.p.  Figure out why garbage collection
 	//	didn't compress this CObject's path information.
 	AIPathGarbageCollect ();
@@ -1274,7 +1274,6 @@ for (nObjIdx=0; nObjIdx < nPathObjects; nObjIdx++) {
 	}
 gameData.ai.freePointSegs = gameData.ai.pointSegs + nFreePathIdx;
 
-////printf ("After garbage collection, D2_FREE index = %i\n", gameData.ai.freePointSegs - gameData.ai.pointSegs);
 #if DBG
 force_dump_aiObjects_all ("***** Finish AIPathGarbageCollect *****");
 FORALL_ROBOT_OBJS (objP, i)

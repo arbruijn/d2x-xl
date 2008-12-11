@@ -664,7 +664,7 @@ if (!(gameData.matCens.botGens [nMatCen].objFlags [0] ||
 		VertigoObjFlags (gameData.matCens.botGens + nMatCen)))
 	return;
 
-// Wait until we have a D2_FREE slot for this puppy...
+// Wait until we have a free slot for this puppy...
 if ((LOCALPLAYER.numRobotsLevel -
 	  LOCALPLAYER.numKillsLevel) >=
 	 (nGameSaveOrgRobots + Num_extryRobots)) {

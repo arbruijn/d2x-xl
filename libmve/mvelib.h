@@ -17,11 +17,11 @@ extern mve_cb_SetPalette mve_setpalette;
  */
 typedef struct MVEFILE
 {
-    void          *stream;
+    void    *stream;
     ubyte	*cur_chunk;
-    int           buf_size;
-    int           cur_fill;
-    int           next_segment;
+    int     buf_size;
+    int     cur_fill;
+    int     next_segment;
 } MVEFILE;
 
 /*
@@ -110,5 +110,8 @@ void mve_set_handler_context(MVESTREAM *movie, void *context);
  * play next chunk
  */
 int mve_play_next_chunk(MVESTREAM *movie);
+
+void* MVE_Alloc (uint size);
+void MVE_Free(void* ptr);
 
 #endif /* INCLUDED_MVELIB_H */

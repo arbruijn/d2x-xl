@@ -331,11 +331,12 @@ typedef struct tDestListEntry {
 
 static tDestListEntry *destList = NULL;
 
-static struct sockaddr_in *broads, broadmasks [MAX_BRDINTERFACES];
+static struct sockaddr_in* broadmasks [MAX_BRDINTERFACES];
 static int	destAddrNum = 0,
 				masksNum = 0,
 				destListSize = 0;
-static int broadnum,masksnum,broadsize;
+static int broadCount,masksnum,broadSize;
+CArray<struct sockaddr_in> broads;
 
 int ReportSafeMode (tDestListEntry *pdl);
 #if 0
@@ -385,13 +386,16 @@ dumpraddr (qhbuf);
  * full and so needs expanding.
  */
 
-static void chkbroadsize (void)
+static void chkbroadSize (void)
 {
-if (broadnum < broadsize)
+if (broadCount < broadSize)
 	return;
-broadsize = broadsize ? broadsize * 2 : 8;
-chk (broads = reinterpret_cast<sockaddr_in*> (D2_REALLOC (broads, sizeof (*broads) * broadsize)));
-}
+if (!broadSize)
+	broads.Create (broadSize = 8);
+else
+	broads.Resize (broadSize = broadSize * 2);
+chk (broads.Buffer ());
+3}
 
 //------------------------------------------------------------------------------
 // We'll check whether the "destList" array of destination addresses is now
@@ -408,7 +412,8 @@ if (!(b =new tDestListEntry [destListSize]))
 	 return -1;
 if (destList) {
 	memcpy (b, destList, sizeof (*destList) * destListSize / 2);
-	D2_FREE (destList);
+	delete[] destList;
+	destList = NULL;
 	}
 destList = b;
 return 1;
@@ -473,7 +478,7 @@ return i;
 void FreeDestList (void)
 {
 if (destList) {
-	D2_FREE (destList);
+	delete[] destList;
 	destList = NULL;
 	}
 destAddrNum =
@@ -496,7 +501,7 @@ static int addiflist (void)
 	unsigned 				j;
 	struct sockaddr_in	*sinp, *sinmp;
 
-D2_FREE (broads);
+broads.Destroy ();
 /* This code is for Mac OS X, whose BSD layer does bizarre things with variable-length
 * structures when calling ioctl using SIOCGIFCOUNT. Or any other architecture that
 * has this call, for that matter, since it's much simpler than the other code below.
@@ -514,8 +519,8 @@ for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
 		continue;
 	j++;
 	}
-broadsize = j;
-chk (broads = new sockaddr_in [j];
+broadSize = j;
+chk (broads.Create (j));
 // Second loop to copy the addresses
 j = 0;
 for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
@@ -533,7 +538,7 @@ for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
 	j++;
 	}
 freeifaddrs (ifap);
-broadnum = j;
+broadCount = j;
 masksnum = j;
 return 0;
 }
@@ -555,7 +560,7 @@ static int addiflist (void)
 	unsigned 				j;
 	struct sockaddr_in	*sinp, *sinmp;
 
-D2_FREE (broads);
+broads.Destroy ();
 sock = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 if (sock < 0)
 	FAIL ("Creating IP socket failed:\n%m");
@@ -582,8 +587,8 @@ if (ifconf.ifc_len % sizeof (struct ifreq)) {
 	FAIL ("ioctl (SIOCGIFCONF)\nIP interface detection failed:\n%m");
 	}
 cnt = ifconf.ifc_len / sizeof (struct ifreq);
-chk (broads = mew sockaddr_in [cnt]);
-broadsize = cnt;
+chk (broads.Create (cnt));
+broadSize = cnt;
 for (i = j = 0; i < cnt; i++) {
 	if (!_IOCTL (sock, SIOCGIFFLAGS, ifconf.ifc_req + i)) {
 		close (sock);
@@ -610,7 +615,7 @@ for (i = j = 0; i < cnt; i++) {
 	broadmasks [j] = *sinmp;
 	j++;
 	}
-broadnum = j;
+broadCount = j;
 masksnum = j;
 return 0;
 }
@@ -627,14 +632,14 @@ static void unifyiflist (void)
 {
 	int d = 0, s, i;
 
-for (s = 0; s < broadnum; s++) {
+for (s = 0; s < broadCount; s++) {
 	for (i = 0; i < s; i++)
 		if (addreq (broads + s, broads + i)) 
 			break;
 	if (i >= s) 
 		broads [d++] = broads [s];
 	}
-broadnum = d;
+broadCount = d;
 }
 
 //------------------------------------------------------------------------------
@@ -814,9 +819,9 @@ else {
 		ns [s2-s]='\0';
 		if (!queryhost (ns)) 
 			//msg ("Ignored IP interface-destination \"%s\" as being invalid",ns);
-		D2_FREE (ns);
-		chkbroadsize ();
-		sin=broads + broadnum++;
+		delete[] ns;
+		chkbroadSize ();
+		sin=broads + broadCount++;
 		sin->sin_family=AF_INET;
 		memcpy (&sin->sin_addr,qhbuf+0,4);
 		sin->sin_port=htons (((short)ntohs (* reinterpret_cast<ushort*> (qhbuf+4)))+UDP_BASEPORT);

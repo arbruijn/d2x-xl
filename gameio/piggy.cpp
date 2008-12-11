@@ -72,7 +72,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 short *d1_tmap_nums = NULL;
 
 CBitmap bogusBitmap;
-tDigiSound bogusSound;
+CDigiSound bogusSound;
 
 #define RLE_REMAP_MAX_INCREASE 132 /* is enough for d1 pc registered */
 
@@ -80,7 +80,7 @@ static int bLowMemory = 0;
 static int bMustWriteHamFile = 0;
 static int nBitmapFilesNew = 0;
 
-static tHashTable bitmapNames [2];
+static CHashTable bitmapNames [2];
 size_t bitmapCacheUsed = 0;
 size_t bitmapCacheSize = 0;
 int bitmapCacheNext [2] = {0, 0};
@@ -171,15 +171,14 @@ if (!bInFile) {
 #endif
 	nBitmapFilesNew++;
 	}
-strncpy (gameData.pig.tex.bitmapFileP [gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]].name, name, 12);
-HashTableInsert (bitmapNames + gameStates.app.bD1Mission, 
-					  gameData.pig.tex.bitmapFileP [gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]].name, 
-					  gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]);
-gameData.pig.tex.bitmapP [gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = *bmP;
+int i = gameData.pig.tex.nBitmaps [gameStates.app.bD1Data];
+strncpy (gameData.pig.tex.bitmapFileP [i].name, name, 12);
+bitmapNames [gameStates.app.bD1Mission].Insert (gameData.pig.tex.bitmapFileP [i].name, i);
+gameData.pig.tex.bitmapP [i] = *bmP;
 bmP->SetBuffer (NULL);	//avoid automatic destruction trying to delete the same buffer twice
 if (!bInFile) {
-	bitmapOffsets [gameStates.app.bD1Data][gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = 0;
-	gameData.pig.tex.bitmapFlags [gameStates.app.bD1Data][gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = bmP->Flags ();
+	bitmapOffsets [gameStates.app.bD1Data][i] = 0;
+	gameData.pig.tex.bitmapFlags [gameStates.app.bD1Data][i] = bmP->Flags ();
 	}
 gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]++;
 return bmi;
@@ -210,7 +209,7 @@ for (i = 0; i < gameData.pig.tex.nAliases; i++)
 			pszName = gameData.pig.tex.aliases [i].filename; 
 		break;
 		}
-i = HashTableSearch (bitmapNames + bD1Data, pszName);
+i = bitmapNames [bD1Data].Search (pszName);
 Assert (i != 0);
 bi.index = i;
 return bi;
@@ -442,17 +441,13 @@ int PiggyInit (void)
 	int i;
 
 /*---*/PrintLog ("   Initializing hash tables\n");
-HashTableInit (bitmapNames, MAX_BITMAP_FILES);
-HashTableInit (bitmapNames + 1, D1_MAX_BITMAP_FILES);
-HashTableInit (soundNames, MAX_SOUND_FILES);
-HashTableInit (soundNames + 1, MAX_SOUND_FILES);
+for (i = 0; i < 2; i++) {
+	bitmapNames [i].Create (MAX_BITMAP_FILES);
+	soundNames [i].Create (MAX_SOUND_FILES);
+	}
 
 /*---*/PrintLog ("   Initializing sound data (%d sounds)\n", MAX_SOUND_FILES);
-for (i=0; i<MAX_SOUND_FILES; i++)	{
-	gameData.pig.sound.sounds [0][i].nLength [0] =
-	gameData.pig.sound.sounds [0][i].nLength [1] = 0;
-	gameData.pig.sound.sounds [0][i].data [0] =
-	gameData.pig.sound.sounds [0][i].data [1] = NULL;
+for (i=0; i < MAX_SOUND_FILES; i++)	{
 	soundOffset [0][i] = 0;
 }
 /*---*/PrintLog ("   Initializing bitmap index (%d indices)\n", MAX_BITMAP_FILES);
@@ -476,7 +471,7 @@ if (!bogusBitmap.BufSize ()) {
 		}
 	PiggyRegisterBitmap (&bogusBitmap, "bogus", 1);
 	bogusSound.nLength [0] = 1024*1024;
-	bogusSound.data [0] = bogusBitmap.Buffer ();
+	bogusSound.data [0].ShareBuffer (bogusBitmap);
 	bitmapOffsets [0][0] =
 	bitmapOffsets [1][0] = 0;
 }
@@ -627,7 +622,7 @@ void _CDECL_ FreeD1TMapNums (void)
 {
 if (d1_tmap_nums) {
 	PrintLog ("unloading D1 texture ids\n");
-	D2_FREE (d1_tmap_nums);
+	delete[] d1_tmap_nums;
 	d1_tmap_nums = NULL;
 	}
 }
@@ -640,7 +635,7 @@ void BMReadD1TMapNums (CFile& cf)
 
 	FreeD1TMapNums ();
 	cf.Seek (8, SEEK_SET);
-	MALLOC (d1_tmap_nums, short, D1_MAX_TMAP_NUM);
+	d1_tmap_nums = new short [D1_MAX_TMAP_NUM];
 	for (i = 0; i < D1_MAX_TMAP_NUM; i++)
 		d1_tmap_nums [i] = -1;
 	for (i = 0; i < D1_MAX_TEXTURES; i++) {
@@ -923,7 +918,7 @@ return bmP;
 void _CDECL_ PiggyClose (void)
 {
 	int			i, j;
-	tDigiSound	*dsP;
+	CDigiSound	*dsP;
 
 PrintLog ("unloading textures\n");
 PiggyCloseFile ();
@@ -931,18 +926,16 @@ PrintLog ("unloading sounds\n");
 for (i = 0; i < 2; i++) {
 	for (j = 0, dsP = gameData.pig.sound.sounds [i].Buffer (); j < MAX_SOUND_FILES; j++, dsP++)
 		if (dsP->bHires) {
-			delete[] dsP->data [0];
-			dsP->data [0] = NULL;
+			dsP->data [0].Destroy ();
 			dsP->bHires = 0;
 			}
 		else if (dsP->bDTX) {
-			delete[] dsP->data [1];
-			dsP->data [1] = NULL;
+			dsP->data [1].Destroy ();
 			dsP->bDTX = 0;
 			}
 	gameData.pig.sound.data [i].Destroy ();
-	HashTableFree (bitmapNames + i);
-	HashTableFree (soundNames + i);
+	bitmapNames [i].Destroy ();
+	soundNames [i].Destroy ();
 	}
 }
 

@@ -276,9 +276,9 @@ while (mve_audio_bufhead != mve_audio_buftail                                   
 	total += length;
 	stream += length;                                                               /* advance output */
 	len -= length;                                                                  /* decrement avail ospace */
-	mve_free (mve_audio_buffers[mve_audio_bufhead]);                                 /* D2_FREE the buffer */
-	mve_audio_buffers[mve_audio_bufhead]=NULL;                                      /* D2_FREE the buffer */
-	mve_audio_buflens[mve_audio_bufhead]=0;                                         /* D2_FREE the buffer */
+	mve_free (mve_audio_buffers[mve_audio_bufhead]);                                 /* free the buffer */
+	mve_audio_buffers[mve_audio_bufhead]=NULL;                                      /* free the buffer */
+	mve_audio_buflens[mve_audio_bufhead]=0;                                         /* free the buffer */
 	if (++mve_audio_bufhead == TOTAL_AUDIO_BUFFERS)                                 /* next buffer */
 		mve_audio_bufhead = 0;
 	mve_audio_curbuf_curpos = 0;
@@ -578,8 +578,8 @@ mve_read = io_read;
 
 void MVE_memCallbacks (mve_cb_Alloc mem_alloc, mve_cb_Free MemFree)
 {
-mve_alloc = mem_alloc;
-mve_free = MemFree;
+mve_alloc = MVE_Alloc;
+mve_free = MVE_Free;
 }
 
 //-----------------------------------------------------------------------

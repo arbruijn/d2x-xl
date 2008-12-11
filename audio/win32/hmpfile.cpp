@@ -97,7 +97,8 @@ if (!hmp->stop) {
 while ((mhdr = hmp->evbuf)) {
 	midiOutUnprepareHeader (reinterpret_cast<HMIDIOUT> (hmp->hmidi), mhdr, sizeof (MIDIHDR));
 	hmp->evbuf = mhdr->lpNext;
-	D2_FREE(mhdr);
+	delete[] mhdr;
+	mhdr = NULL;
 	}
 
 if (hmp->hmidi) {
@@ -278,7 +279,7 @@ static int setup_buffers(hmp_file *hmp)
 
 	lastbuf = NULL;
 	for (i = 0; i < HMP_BUFFERS; i++) {
-		if (!(buf = reinterpret_cast<MIDIHDR*> (new [HMP_BUFSIZE + sizeof(MIDIHDR)])))
+		if (!(buf = reinterpret_cast<MIDIHDR*> (new ubyte [HMP_BUFSIZE + sizeof(MIDIHDR)])))
 			return HMP_OUT_OF_MEM;
 		memset (buf, 0, sizeof (MIDIHDR));
 		buf->lpData = reinterpret_cast<char*> (buf + 1);
