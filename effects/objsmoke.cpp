@@ -18,6 +18,7 @@
 #include "objeffects.h"
 #include "objrender.h"
 #include "objsmoke.h"
+#include "shrapnel.h"
 #include "automap.h"
 
 static tRgbaColorf smokeColors [3] = {

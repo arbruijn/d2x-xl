@@ -39,6 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "fireball.h"
 #include "objrender.h"
 #include "objeffects.h"
+#include "shrapnel.h"
 #include "ogl_lib.h"
 #include "ogl_render.h"
 #include "marker.h"

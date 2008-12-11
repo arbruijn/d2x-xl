@@ -698,7 +698,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 		int l;
 		if (dsP->bHires) {
 			l = dsP->nLength [0];
-			ssP->sample.SetBuffer (dsP->data [0].Buffer (), true);
+			ssP->sample.SetBuffer (dsP->data [0].Buffer (), true, l);
 			}
 		else {
 			if (gameOpts->sound.bHires)
@@ -727,7 +727,7 @@ if (pszWAV && *pszWAV)
 		ssP->nLength = l;
 		}
 	else {
-		ssP->sample.SetBuffer (dsP->data [dsP->bDTX].Buffer (), false, ssP->nLength = dsP->nLength [dsP->bDTX]);
+		ssP->sample.SetBuffer (dsP->data [dsP->bDTX].Buffer (), true, ssP->nLength = dsP->nLength [dsP->bDTX]);
 		}
 	if (nSpeed < F1_0)
 		DigiSpeedupSound (dsP, ssP, nSpeed);
