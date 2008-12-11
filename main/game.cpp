@@ -78,6 +78,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 #include "renderthreads.h"
 #include "fvi.h"
+#include "banlist.h"
 
 u_int32_t nCurrentVGAMode;
 

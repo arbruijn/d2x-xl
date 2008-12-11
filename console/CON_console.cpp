@@ -953,7 +953,7 @@ void CON_SetPrompt(ConsoleInformation *console, char* newprompt) {
 
 	//check length so we can still see at least 1 char :-)
 	if(strlen(newprompt) < (size_t) console->VChars)
-		console->Prompt = D2_STRDUP(newprompt);
+		console->Prompt = StrDup(newprompt);
 	else
 		CON_Out(console, "prompt too long. (max. %i chars)", console->VChars - 1);
 }
@@ -1004,7 +1004,7 @@ void CON_TabCompletion(ConsoleInformation *console) {
 	if(!console)
 		return;
 
-	command = D2_STRDUP(console->LCommand);
+	command = StrDup(console->LCommand);
 	command = console->TabFunction(command);
 
 	if(!command)

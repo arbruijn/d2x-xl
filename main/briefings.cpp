@@ -552,7 +552,7 @@ if (*szBitmapName) {
 		GrUpdate (0);
 	paletteManager.LoadEffect  ();
 	CCanvas::SetCurrent (curCanvSave);
-	delete bitmapCanv;´
+	delete bitmapCanv;
 	bitmapCanv = NULL;
 	if (!(bRedraw || nDoorDivCount)) {
 #if 1
@@ -1467,7 +1467,7 @@ if (!cf.Open (filename, gameFolders.szDataDir, bHaveBinary ? reinterpret_cast<ch
 	}
 if (bHaveBinary) {
 	len = cf.Length ();
-	(bufP = new char [len];
+	bufP = new char [len];
 	*buf = bufP;
 	for (i = 0; i < len; i++, bufP++) {
 		cf.Read (bufP, 1, 1);

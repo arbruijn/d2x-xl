@@ -73,10 +73,10 @@ int bOutOfMemory = 0;
 //------------------------------------------------------------------------------
 
 typedef struct tMemBlock {
-	void	*p;
-	char	*pszFile;
-	int	nLine;
-	uint nId;
+	void			*p;
+	const char	*pszFile;
+	int			nLine;
+	uint			nId;
 } tMemBlock;
 
 #define MAX_MEM_BLOCKS	100000
@@ -101,7 +101,7 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-void RegisterMemBlock (void *p, char *pszFile, int nLine)
+void RegisterMemBlock (void *p, const char *pszFile, int nLine)
 {
 if (nMemBlocks < MAX_MEM_BLOCKS) {
 	tMemBlock *pm = memBlocks + nMemBlocks++;
@@ -259,7 +259,7 @@ if (!size)
 if (nMemBlockId == nDbgMemBlockId)
 	nDbgMemBlockId = nDbgMemBlockId;
 #if LONG_MEM_ID
-ptr = malloc (size + CHECKSIZE + sizeof (int) + 256);
+ptr = reinterpret_cast<uint*> (malloc (size + CHECKSIZE + sizeof (int) + 256));
 #else
 ptr = malloc (size + CHECKSIZE + sizeof (int));
 #endif
@@ -271,8 +271,8 @@ if (!ptr) {
 	}
 
 #if LONG_MEM_ID
-sprintf (reinterpret_cast<char*> (ptr, "%s:%d", pszFile, nLine);
-ptr = reinterpret_cast<int*> (reinterpret_cast<char*> (ptr) + 256);
+sprintf (reinterpret_cast<char*> (ptr), "%s:%d", pszFile, nLine);
+ptr = reinterpret_cast<uint*> (reinterpret_cast<char*> (ptr) + 256);
 #endif
 *ptr++ = size;
 nBytesMalloced += size;
@@ -349,7 +349,7 @@ void *GetMem (size_t size, char filler)
 
 if (p) {
 	memset (p, filler, size);
-	return reinterpret_cast<void*> p;
+	return reinterpret_cast<void*> (p);
 	}
 Error (TXT_OUT_OF_MEMORY);
 exit (1);

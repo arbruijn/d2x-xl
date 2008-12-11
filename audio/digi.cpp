@@ -413,6 +413,7 @@ if (bMP3)
 else if (bD1Sound)
 	l = 2 * i;
 else {
+	ssP->sample.Destroy ();
 	ssP->sample.SetBuffer (dataP);
 	return i;
 	}

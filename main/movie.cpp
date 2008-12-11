@@ -121,14 +121,14 @@ tMovieLib *FindMovieLib (const char *pszTargetMovie);
 
 void *MPlayAlloc (unsigned size)
 {
-return reinterpret_cast<void*> new ubyte [size];
+return reinterpret_cast<void*> (new ubyte [size]);
 }
 
 // ----------------------------------------------------------------------
 
 void MPlayFree (void *p)
 {
-delete[] p;
+delete[] reinterpret_cast<ubyte*> (p);
 }
 
 

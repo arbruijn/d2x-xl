@@ -44,7 +44,7 @@ int CHashTable::Create (int size)
 m_size = 0;
 for (i = 1; i < 13; i++) {
 	if ( (1 << i) >= size) {
-		m_bitsize = i;
+		m_bitSize = i;
 		m_size = 1<<i;
 		break;
 		}
@@ -62,7 +62,7 @@ if (!m_value.Create (size)) {
 	m_key.Destroy ();
 	Error ("Not enough memory to create a hash table of size %d\n", size);
 	}
-m_nitems = 0;
+m_nItems = 0;
 return 0;
 }
 
@@ -118,7 +118,7 @@ i = 0;
 while (i < m_size) {
 	j = (k+ (i++)) & m_andMask;
 	if (m_key [j] == NULL) {
-		m_nitems++;
+		m_nItems++;
 		m_key [j] = key;
 		m_value [j] = value;
 		return;

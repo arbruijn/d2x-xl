@@ -13,7 +13,7 @@ class CBanListEntry {
 		inline const bool operator== (const char* other) { return !strnicmp (m_entry, other, sizeof (m_entry)); }
 	};
 
-class CBanList : private CStack<CBanListEntry> {
+class CBanList : public CStack<CBanListEntry> {
 	public:
 		CBanList () { Create (); }
 		bool Add (const char* szPlayer);

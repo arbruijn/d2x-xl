@@ -80,6 +80,7 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "hiresmodels.h"
 #include "soundthreads.h"
 #include "automap.h"
+#include "banlist.h"
 
 #include "../texmap/scanline.h" //for select_tmap -MM
 

@@ -24,7 +24,8 @@ class CHashTable {
 		CArray<int>				m_value;
 
 	public:
-		CHashTable ();
+		CHashTable () { Init (); }
+		void Init (void);
 		int Create (int size);
 		void Destroy ();
 		int Search (const char *key);

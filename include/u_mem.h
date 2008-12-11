@@ -53,7 +53,7 @@ char *MemStrDup (const char * str);
 #define D2_CALLOC(n, _size)	MemAlloc (n * _size)
 #define D2_REALLOC(_p,_size)	MemRealloc (_p,_size)
 #define D2_FREE(_p)				{MemFree ((void *) (_p)); (_p) = NULL;}
-#define D2_STRDUP(_s)			MemStrDup (_s)
+#define StrDup(_s)			MemStrDup (_s)
 
 #define MALLOC(_v,_t,_c)		(_v) = new _t [_c]
 #define FREE(_v)					delete[] (_v)
