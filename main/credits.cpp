@@ -166,8 +166,8 @@ void ShowCredits(char *credits_filename)
 	int				xOffs, yOffs;
 	box				dirtyBox [NUM_LINES_HIRES];
 	CCanvas			*creditsOffscreenBuf = NULL;
-	CCanvas			*saveCanv = CCanvas::Current ();
 
+CCanvas::Push ();
 	// Clear out all tex buffer lines.
 memset (buffer, 0, sizeof (buffer));
 memset (dirtyBox, 0, sizeof (dirtyBox));
@@ -188,7 +188,7 @@ if (!cf.Open (filename, gameFolders.szDataDir, "rb", 0)) {
 		*pszTemp = '\0';
 	sprintf (nfile, "%s.txb", filename);
 	if (!cf.Open (nfile, gameFolders.szDataDir, "rb", 0))
-		Error("Missing CREDITS.TEX and CREDITS.TXB &cf\n");
+		Error ("Missing CREDITS.TEX and CREDITS.TXB &cf\n");
 	bBinary = 1;
 	}
 SetScreenMode(SCREEN_MENU);
@@ -232,7 +232,7 @@ paletteManager.FadeIn ();
 //MWA  for size to determine if we can use that buffer.  If the game size
 //MWA  matches what we need, then lets save memory.
 
-if (gameStates.menus.bHires && !gameOpts->menus.nStyle && gameStates.render.vr.buffers.offscreen->Bitmap ().Width () == 640)
+if (gameStates.menus.bHires && !gameOpts->menus.nStyle && gameStates.render.vr.buffers.offscreen->Width () == 640)
 	creditsOffscreenBuf = gameStates.render.vr.buffers.offscreen;
 else if (gameStates.menus.bHires)
 	creditsOffscreenBuf = CCanvas::Create(640,480);
@@ -240,9 +240,9 @@ else
 	creditsOffscreenBuf = CCanvas::Create(320,200);
 if (!creditsOffscreenBuf)
 	Error("Not enough memory to allocate Credits Buffer.");
-creditsOffscreenBuf->Bitmap ().SetPalette (CCanvas::Current ()->Palette ());
+creditsOffscreenBuf->SetPalette (CCanvas::Current ()->Palette ());
 if (gameOpts->menus.nStyle)
-	creditsOffscreenBuf->Bitmap ().AddFlags (BM_FLAG_TRANSPARENT);
+	creditsOffscreenBuf->AddFlags (BM_FLAG_TRANSPARENT);
 KeyFlush ();
 
 bDone = 0;
@@ -368,12 +368,12 @@ get_line:;
 
 		for (j = 0; j < NUM_LINES; j++) {
 			newBox = dirtyBox + j;
-			tempBmP = &creditsOffscreenBuf->Bitmap ();
+			tempBmP = creditsOffscreenBuf;
 
 			GrBmBitBlt (newBox->width + 1, newBox->height +4,
 							newBox->left + xOffs, newBox->top + yOffs, 
 							newBox->left, newBox->top,
-							tempBmP, &screen.Canvas ()->Bitmap ());
+							tempBmP, screen.Canvas ());
 			}
 		}
 	GrUpdate (0);
@@ -416,7 +416,7 @@ get_line:;
 		paletteManager.Load (D2_DEFAULT_PALETTE, NULL);
 		bmBackdrop.DestroyBuffer ();
 		cf.Close ();
-		CCanvas::SetCurrent (saveCanv);
+		CCanvas::Pop ();
 		SongsPlaySong (SONG_TITLE, 1);
 
 		if (creditsOffscreenBuf != gameStates.render.vr.buffers.offscreen)
@@ -435,4 +435,5 @@ get_line:;
 			}
 		}
 	}
+CCanvas::Pop ();
 }

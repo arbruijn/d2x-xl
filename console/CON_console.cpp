@@ -279,7 +279,7 @@ void CON_UpdateConsole(ConsoleInformation *console) {
 	if(!CON_isVisible(console))
 		return;
 
-	Screenlines = console->ConsoleSurface->Bitmap ().Height () / (CON_LINE_SPACE + console->ConsoleSurface->Font ()->Height ());
+	Screenlines = console->ConsoleSurface->Height () / (CON_LINE_SPACE + console->ConsoleSurface->Font ()->Height ());
 
 	if(!gameOpts->menus.nStyle) {
 		canv_save = CCanvas::Current ();
@@ -351,8 +351,8 @@ void CON_UpdateOffset(ConsoleInformation* console) {
 		break;
 	case CON_OPENING:
 		console->RaiseOffset += CON_OPENCLOSE_SPEED;
-		if(console->RaiseOffset >= console->ConsoleSurface->Bitmap ().Height ()) {
-			console->RaiseOffset = console->ConsoleSurface->Bitmap ().Height ();
+		if(console->RaiseOffset >= console->ConsoleSurface->Height ()) {
+			console->RaiseOffset = console->ConsoleSurface->Height ();
 			console->Visible = CON_OPEN;
 		}
 		break;
@@ -389,13 +389,13 @@ void CON_DrawConsole(ConsoleInformation *console) {
 #endif
 
 	if (gameOpts->menus.nStyle)
-		NMBlueBox (0, 0, console->ConsoleSurface->Bitmap ().Width (), console->RaiseOffset, 1, 1.0f, 0);
+		NMBlueBox (0, 0, console->ConsoleSurface->Width (), console->RaiseOffset, 1, 1.0f, 0);
 	else {
 		CCanvas::Push ();
 		CCanvas::SetCurrent(console->OutputScreen->Canvas ());
-		clip = console->ConsoleSurface->Bitmap ().CreateChild (
-			0, console->ConsoleSurface->Bitmap ().Height () - console->RaiseOffset, 
-			console->ConsoleSurface->Bitmap ().Width (), console->RaiseOffset);
+		clip = console->ConsoleSurface->CreateChild (
+			0, console->ConsoleSurface->Height () - console->RaiseOffset, 
+			console->ConsoleSurface->Width (), console->RaiseOffset);
 		GrBitmap(console->DispX, console->DispY, clip);
 		clip->Destroy ();
 #if 0
@@ -679,14 +679,14 @@ void DrawCommandLine() {
 	if (!gameOpts->menus.nStyle) {
 		canv_save = CCanvas::Current ();
 		CCanvas::SetCurrent(Topmost->ConsoleSurface);
-		GrBitmap(0, Topmost->ConsoleSurface->Bitmap ().Height () - Topmost->ConsoleSurface->Font ()->Height (), Topmost->InputBackground);
+		GrBitmap(0, Topmost->ConsoleSurface->Height () - Topmost->ConsoleSurface->Font ()->Height (), Topmost->InputBackground);
 		}
 	//now add the text
 	orig_color = FG_COLOR;
 	orig_font = CCanvas::Current ()->Font ();
 	fontManager.SetCurrent (SMALL_FONT);
 	fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
-	GrString(CON_CHAR_BORDER, Topmost->ConsoleSurface->Bitmap ().Height () - Topmost->ConsoleSurface->Font ()->Height (), Topmost->VCommand, NULL);
+	GrString(CON_CHAR_BORDER, Topmost->ConsoleSurface->Height () - Topmost->ConsoleSurface->Font ()->Height (), Topmost->VCommand, NULL);
 
 	//at last add the cursor
 	//check if the blink period is over
@@ -714,9 +714,9 @@ void DrawCommandLine() {
 		x = CON_CHAR_BORDER + Topmost->ConsoleSurface->Font ()->Width () * (Topmost->CursorPos - Topmost->Offset + (int) strlen(Topmost->Prompt));
 #endif
 		if(Topmost->InsMode)
-			GrString(x, Topmost->ConsoleSurface->Bitmap ().Height () - Topmost->ConsoleSurface->Font ()->Height (), CON_INS_CURSOR, NULL);
+			GrString(x, Topmost->ConsoleSurface->Height () - Topmost->ConsoleSurface->Font ()->Height (), CON_INS_CURSOR, NULL);
 		else
-			GrString(x, Topmost->ConsoleSurface->Bitmap ().Height () - Topmost->ConsoleSurface->Font ()->Height (), CON_OVR_CURSOR, NULL);
+			GrString(x, Topmost->ConsoleSurface->Height () - Topmost->ConsoleSurface->Font ()->Height (), CON_OVR_CURSOR, NULL);
 	}
 	fontManager.SetCurrent (orig_font);
 	FG_COLOR = orig_color;
@@ -819,14 +819,14 @@ int CON_Background(ConsoleInformation *console, CBitmap *image)
 	/* Load a new background */
 	if (console->BackgroundImage)
 		delete console->BackgroundImage;
-	console->BackgroundImage = CBitmap::Create (0, console->ConsoleSurface->Bitmap ().Width (), console->ConsoleSurface->Bitmap ().Height (), 1);
+	console->BackgroundImage = CBitmap::Create (0, console->ConsoleSurface->Width (), console->ConsoleSurface->Height (), 1);
 	GrBitmapScaleTo(image, console->BackgroundImage);
 
 #if 0
 	SDL_FillRect(console->InputBackground, NULL, SDL_MapRGBA(console->ConsoleSurface->format, 0, 0, 0, SDL_ALPHA_OPAQUE);
 #endif
 	GrBmBitBlt (console->BackgroundImage->Width (), console->InputBackground->Height (), 0, 0, 0, 
-					console->ConsoleSurface->Bitmap ().Height () - console->ConsoleSurface->Font ()->Height (), console->BackgroundImage, console->InputBackground);
+					console->ConsoleSurface->Height () - console->ConsoleSurface->Font ()->Height (), console->BackgroundImage, console->InputBackground);
 
 	return 0;
 }
@@ -850,12 +850,12 @@ void CON_Position(ConsoleInformation *console, int x, int y) {
 	if(!console)
 		return;
 
-	if(x < 0 || x > console->OutputScreen->Width () - console->ConsoleSurface->Bitmap ().Width ())
+	if(x < 0 || x > console->OutputScreen->Width () - console->ConsoleSurface->Width ())
 		console->DispX = 0;
 	else
 		console->DispX = x;
 
-	if(y < 0 || y > console->OutputScreen->Height () - console->ConsoleSurface->Bitmap ().Height ())
+	if(y < 0 || y > console->OutputScreen->Height () - console->ConsoleSurface->Height ())
 		console->DispY = 0;
 	else
 		console->DispY = y;
@@ -885,8 +885,8 @@ int CON_Resize(ConsoleInformation *console, int x, int y, int w, int h)
 		console->DispY = y;
 
 	/* resize console surface */
-	console->ConsoleSurface->Bitmap ().Destroy ();
-	console->ConsoleSurface->Bitmap ().Create (BM_LINEAR, w, h, 1);
+	console->ConsoleSurface->Destroy ();
+	console->ConsoleSurface->CBitmap::Create (BM_LINEAR, w, h, 1);
 
 	/* Load the dirty rectangle for user input */
 	delete console->InputBackground;
@@ -900,7 +900,7 @@ int CON_Resize(ConsoleInformation *console, int x, int y, int w, int h)
 #if 0
 		SDL_FillRect(console->InputBackground, NULL, SDL_MapRGBA(console->ConsoleSurface->format, 0, 0, 0, SDL_ALPHA_OPAQUE);
 #endif
-		GrBmBitBlt(console->BackgroundImage->Width (), console->InputBackground->Height (), 0, 0, 0, console->ConsoleSurface->Bitmap ().Height () - console->ConsoleSurface->Font ()->Height (), console->BackgroundImage, console->InputBackground);
+		GrBmBitBlt(console->BackgroundImage->Width (), console->InputBackground->Height (), 0, 0, 0, console->ConsoleSurface->Height () - console->ConsoleSurface->Font ()->Height (), console->BackgroundImage, console->InputBackground);
 	}
 
 #if 0
@@ -935,9 +935,9 @@ void CON_Topmost(ConsoleInformation *console) {
 		canv_save = CCanvas::Current ();
 		CCanvas::SetCurrent(Topmost->ConsoleSurface);
 
-		GrBitmap(0, Topmost->ConsoleSurface->Bitmap ().Height () - Topmost->ConsoleSurface->Font ()->Height (), Topmost->InputBackground);
+		GrBitmap(0, Topmost->ConsoleSurface->Height () - Topmost->ConsoleSurface->Font ()->Height (), Topmost->InputBackground);
 		orig_color = FG_COLOR.index;
-		GrString(CON_CHAR_BORDER, Topmost->ConsoleSurface->Bitmap ().Height () - Topmost->ConsoleSurface->Font ()->Height (), Topmost->VCommand, NULL);
+		GrString(CON_CHAR_BORDER, Topmost->ConsoleSurface->Height () - Topmost->ConsoleSurface->Font ()->Height (), Topmost->VCommand, NULL);
 		FG_COLOR.index = orig_color;
 
 		CCanvas::SetCurrent(canv_save);
