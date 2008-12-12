@@ -71,7 +71,7 @@ public:
 		void SkipChunk (int len);
 		int ConvertToPBM (tIFFBitmapHeader *bmheader);
 		int ConvertRgb15 (CBitmap *bmP, tIFFBitmapHeader *bmheader);
-		void CopyIffToGrs (CBitmap *bmP, tIFFBitmapHeader *bmheader);
+		void CopyIffToBitmap (CBitmap *bmP, tIFFBitmapHeader *bmheader);
 
 		int WriteBitmap (const char *cfname, CBitmap *bmP, ubyte *palette);
 		int WriteHeader (FILE *fp, tIFFBitmapHeader *bitmap_header);

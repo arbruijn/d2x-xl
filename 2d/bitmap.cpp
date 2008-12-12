@@ -35,7 +35,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 ubyte* CBitmap::CreateBuffer (void)
 {
 if (m_info.props.rowSize * m_info.props.h) {
-	CArray<ubyte>::Create ((m_info.nBPP > 1) ? m_info.props.h * m_info.props.rowSize : MAX_BMP_SIZE (m_info.props.w, m_info.props.h));
+	CArray<ubyte>::Resize ((m_info.nBPP > 1) ? m_info.props.h * m_info.props.rowSize : MAX_BMP_SIZE (m_info.props.w, m_info.props.h));
 #if DBG
 	Clear ();
 #endif

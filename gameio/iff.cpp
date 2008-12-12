@@ -550,7 +550,7 @@ SetLen (0);
 
 //------------------------------------------------------------------------------
 //copy an iff header structure to a CBitmap structure
-void CIFF::CopyIffToGrs (CBitmap *bmP, tIFFBitmapHeader *bmHeader)
+void CIFF::CopyIffToBitmap (CBitmap *bmP, tIFFBitmapHeader *bmHeader)
 {
 bmP->DestroyBuffer ();
 bmP->SetFlags (0);
@@ -594,7 +594,7 @@ if (bmHeader.nType == TYPE_ILBM) {
 		return ret;
 	}
 //Copy data from tIFFBitmapHeader structure into CBitmap structure
-CopyIffToGrs (bmP, &bmHeader);
+CopyIffToBitmap (bmP, &bmHeader);
 bmP->SetPalette (paletteManager.Add (reinterpret_cast<ubyte*> (&bmHeader.palette)));
 //Now do post-process if required
 if (bitmapType == BM_RGB15)
