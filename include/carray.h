@@ -110,7 +110,8 @@ template < class _T > class CArray {
 		inline _T *Create (uint length) {
 			if (m_data.length != length) {
 				Destroy ();
-				m_data.length = (m_data.buffer = new _T [length]) ? length : 0;
+				if ((m_data.buffer = new _T [length]))
+					m_data.length = length;
 				}
 			return m_data.buffer;
 			}
