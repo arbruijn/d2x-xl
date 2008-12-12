@@ -346,6 +346,7 @@ void CLightmapManager::Build (int nThread)
 if (nThread < 0) {
 	xMin = 0;
 	xMax = LM_W;
+	nThread = 0;
 	}
 else if (nThread > 0) {
 	xMin = LM_W / 2;

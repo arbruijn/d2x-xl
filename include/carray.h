@@ -136,6 +136,7 @@ template < class _T > class CArray {
 			if (!p)
 				return m_data.buffer;
 			memcpy (p, m_data.buffer, ((length > m_data.length) ? m_data.length : length) * sizeof (_T)); 
+			m_data.length = length;
 			delete[] m_data.buffer;
 			return m_data.buffer = p;
 			}

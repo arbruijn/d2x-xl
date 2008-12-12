@@ -659,21 +659,21 @@ delete[] temp;
 int CBitmap::RLERemap (ubyte *colorMap, int maxLen)
 {
 	int				h, i, j, len, bBigRLE;
-	ubyte	*pSrc, *pDest, *remapBuf, *start;
+	ubyte	*pSrc, *destP, *remapBuf, *start;
 	ushort nLineSize;
 
 bBigRLE = m_info.props.flags & BM_FLAG_RLE_BIG;
 remapBuf = new ubyte [MAX_BMP_SIZE (m_info.props.w, m_info.props.h) + 30000];
 if (bBigRLE) {                  // set ptrs to first lines
 	pSrc = Buffer () + 4 + 2 * m_info.props.h;
-	pDest = remapBuf + 4 + 2 * m_info.props.h;
+	destP = remapBuf + 4 + 2 * m_info.props.h;
 	}
 else {
 	pSrc = Buffer () + 4 + m_info.props.h;
-	pDest = remapBuf + 4 + m_info.props.h;
+	destP = remapBuf + 4 + m_info.props.h;
 	}
 for (i = 0; i < m_info.props.h; i++) {
-	start = pDest;
+	start = destP;
 	if (bBigRLE)
 		nLineSize = INTEL_SHORT (*reinterpret_cast<ushort*> (Buffer (4 + 2 * i)));
 	else
@@ -682,23 +682,23 @@ for (i = 0; i < m_info.props.h; i++) {
 		h = pSrc [j];
 		if (!IS_RLE_CODE (h)) {
 			if (IS_RLE_CODE (colorMap [h])) 
-				*pDest++ = RLE_CODE | 1; // add "escape sequence"
-			*pDest++ = colorMap [h]; // translate
+				*destP++ = RLE_CODE | 1; // add "escape sequence"
+			*destP++ = colorMap [h]; // translate
 			}
 		else {
-			*pDest++ = h; // just copy current rle code
+			*destP++ = h; // just copy current rle code
 			if ((h & NOT_RLE_CODE) == 0)
 				break;
-			*pDest++ = colorMap [pSrc [++j]]; // translate
+			*destP++ = colorMap [pSrc [++j]]; // translate
 			}
 		}
 	if (bBigRLE)                // set line size
-		*(reinterpret_cast<ushort*> (remapBuf + 4 + 2 * i)) = INTEL_SHORT ((short) (pDest - start));
+		*(reinterpret_cast<ushort*> (remapBuf + 4 + 2 * i)) = INTEL_SHORT ((short) (destP - start));
 	else
-		remapBuf [4 + i] = (ubyte) (pDest - start);
+		remapBuf [4 + i] = (ubyte) (destP - start);
 	pSrc += nLineSize;           // go to next line
 	}
-len = (int) (pDest - remapBuf);
+len = (int) (destP - remapBuf);
 Assert (len <= m_info.props.w * m_info.props.rowSize);
 *reinterpret_cast<int*> (remapBuf) = len;           // set total size
 memcpy (Buffer (), remapBuf, len);
@@ -710,7 +710,7 @@ return len;
 
 int CBitmap::RLEExpand (ubyte *colorMap, int bSwap0255)
 {
-	ubyte		*pSrc, *pDest;
+	ubyte		*pSrc, *destP;
 	ubyte		c, h;
 	int		i, j, l, bBigRLE;
 	ushort	nLineSize;
@@ -731,7 +731,7 @@ if (!gameData.pig.tex.rleBuffer || (rleBufSize < i)) {
 if (!gameData.pig.tex.rleBuffer) {
 	return -1;
 	}
-pDest = gameData.pig.tex.rleBuffer.Buffer ();
+destP = gameData.pig.tex.rleBuffer.Buffer ();
 for (i = 0; i < m_info.props.h; i++, pSrc += nLineSize) {
 	if (bBigRLE)
 		nLineSize = INTEL_SHORT (*(reinterpret_cast<ushort*> (Buffer () + 4 + 2 * i)));
@@ -747,11 +747,11 @@ for (i = 0; i < m_info.props.h; i++, pSrc += nLineSize) {
 				else if (c == 255)
 					c = 0;
 				}
-			if (pDest - gameData.pig.tex.rleBuffer > m_info.props.h * m_info.props.rowSize) {
+			if (destP - gameData.pig.tex.rleBuffer > m_info.props.h * m_info.props.rowSize) {
 				gameData.pig.tex.rleBuffer.Destroy ();
 				return -1;
 				}
-			*pDest++ = c;
+			*destP++ = c;
 			}
 		else if ((l = (h & NOT_RLE_CODE))) {
 			c = pSrc [++j];
@@ -763,19 +763,20 @@ for (i = 0; i < m_info.props.h; i++, pSrc += nLineSize) {
 				else if (c == 255)
 					c = 0;
 				}
-			if (pDest - gameData.pig.tex.rleBuffer + l > m_info.props.h * m_info.props.rowSize) {
+			if (destP - gameData.pig.tex.rleBuffer + l > m_info.props.h * m_info.props.rowSize) {
 				gameData.pig.tex.rleBuffer.Destroy ();
 				return -1;
 				}
-			memset (pDest, c, l);
-			pDest += l;
+			memset (destP, c, l);
+			destP += l;
 			}
 		}
 	}
-l = (int) (pDest - gameData.pig.tex.rleBuffer);
-Assert (l <= m_info.props.h * m_info.props.rowSize);
-if (l > m_info.props.h * m_info.props.rowSize)
-	l = m_info.props.h * m_info.props.rowSize;
+l = (int) (destP - gameData.pig.tex.rleBuffer);
+if (l < 0)
+	return -1;
+if ((l > m_info.props.h * m_info.props.rowSize) && !Resize (l))
+	return -1;
 memcpy (Buffer (), gameData.pig.tex.rleBuffer.Buffer (), l);
 m_info.props.flags &= ~(BM_FLAG_RLE | BM_FLAG_RLE_BIG);
 return l;
