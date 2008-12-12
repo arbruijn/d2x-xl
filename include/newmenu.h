@@ -55,10 +55,10 @@ typedef struct tMenuItem {
 
 typedef struct bkg {
 	short			x, y, w, h;			// The location of the menu.
-	CCanvas	*menu_canvas;
-	CBitmap		*saved;			// The background under the menu.
-	CBitmap		*background;
-	CBitmap		*bmP;
+	CCanvas*		menu_canvas;
+	CBitmap*		saved;			// The background under the menu.
+	CBitmap*		background;
+	CBitmap*		bmP;
 	char			bIgnoreBg;
 	char			bIgnoreCanv;
 	char			*pszPrevBg;

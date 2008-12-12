@@ -296,8 +296,8 @@ switch (gameStates.render.cockpit.nMode) {
 	case CM_LETTERBOX: {
 		int x = 0;
 		int w = gameStates.render.vr.buffers.render[0].Width ();		//VR_render_width;
-		int h = (int) ((gameStates.render.vr.buffers.render[0].Bitmap ().Height () * 7) / 10 / ((double) screen.Height () / (double) screen.Width () / 0.75));
-		int y = (gameStates.render.vr.buffers.render[0].Bitmap ().Height () - h) / 2;
+		int h = (int) ((gameStates.render.vr.buffers.render [0].Height () * 7) / 10 / ((double) screen.Height () / (double) screen.Width () / 0.75));
+		int y = (gameStates.render.vr.buffers.render [0].Height () - h) / 2;
 		GameInitRenderSubBuffers (x, y, w, h);
 		break;
 		}
@@ -383,7 +383,7 @@ else {
 	else {
 		gameStates.render.vr.buffers.offscreen = CCanvas::Create (render_w, render_h);
       }
-	gameStates.render.vr.buffers.offscreen->Bitmap ().SetMode (BM_OGL);
+	gameStates.render.vr.buffers.offscreen->SetMode (BM_OGL);
 	gameStates.render.vr.buffers.offscreen->SetupPane (&gameStates.render.vr.buffers.render[0], 0, 0, render_w, render_h);
 	gameStates.render.vr.buffers.offscreen->SetupPane (&gameStates.render.vr.buffers.render[1], 0, 0, render_w, render_h);
 	}
@@ -607,7 +607,7 @@ canvP = CCanvas::Create (w,h);
 CCanvas::SetCurrent (canvP);
 CCanvas::Current ()->Clear (BLACK_RGBA);
 CCanvas::Pop ();
-GrBitmapM (x,y, &canvP->Bitmap (), 0);
+GrBitmapM (x,y, canvP, 0);
 canvP->Destroy ();
 
 }

@@ -396,9 +396,9 @@ else {
 	y2 = y1 + h - 1;
 	glDisable (GL_BLEND);
 	if (bNoDarkening)
-		GrBmBitBlt (w, h, x1, y1, LHX (10), LHY (10), &nmBackground, &(CCanvas::Current ()));
+		GrBmBitBlt (w, h, x1, y1, LHX (10), LHY (10), &nmBackground, CCanvas::Current ());
 	else
-		GrBmBitBlt (w, h, x1, y1, 0, 0, &nmBackground, &(CCanvas::Current ()));
+		GrBmBitBlt (w, h, x1, y1, 0, 0, &nmBackground, CCanvas::Current ());
 	PrintVersionInfo ();
 	glEnable (GL_BLEND);
 	if (!bNoDarkening) {
@@ -518,7 +518,7 @@ void NMRestoreBackground (int sx, int sy, int dx, int dy, int w, int h)
 
 	w = x2 - x1 + 1;
 	h = y2 - y1 + 1;
-	GrBmBitBlt (w, h, dx, dy, x1, y1, &nmBackground, &(CCanvas::Current ()));
+	GrBmBitBlt (w, h, dx, dy, x1, y1, &nmBackground, CCanvas::Current ());
 }
 
 //------------------------------------------------------------------------------
@@ -704,8 +704,8 @@ if (w1 > 0)
 FONT->StringSize (s2, w, h, aw);
 // CHANGED
 if (gameStates.ogl.nDrawBuffer != GL_BACK)
-	GrBmBitBlt (bgP->background->Width ()-15, h+2, 5, y-1, 5, y-1, bgP->background, &(CCanvas::Current ()));
-//GrBmBitBlt (w, h, x, y, x, y, bgP->background, &(CCanvas::Current ()));
+	GrBmBitBlt (bgP->background->Width ()-15, h+2, 5, y-1, 5, y-1, bgP->background, CCanvas::Current ());
+//GrBmBitBlt (w, h, x, y, x, y, bgP->background, CCanvas::Current ());
 
 if (0 && gameStates.multi.bSurfingNet) {
 	for (i=0;i<l;i++) {
@@ -756,8 +756,8 @@ void NMStringSlider (tMenuItem *itemP, bkg * bgP, int bIsCurrent, int bTiny)
 	// CHANGED
 
 		if (gameStates.ogl.nDrawBuffer != GL_BACK)
-			GrBmBitBlt (bgP->background->Width ()-15, h, 5, y, 5, y, bgP->background, &(CCanvas::Current ()));
-		//GrBmBitBlt (w, h, x, y, x, y, bgP->background, &(CCanvas::Current ()));
+			GrBmBitBlt (bgP->background->Width ()-15, h, 5, y, 5, y, bgP->background, CCanvas::Current ());
+		//GrBmBitBlt (w, h, x, y, x, y, bgP->background, CCanvas::Current ());
 
 		itemP->text = s;
 		NMHotKeyString (itemP, bIsCurrent, bTiny, 1, 0);
@@ -769,8 +769,8 @@ void NMStringSlider (tMenuItem *itemP, bkg * bgP, int bIsCurrent, int bTiny)
 
 			// CHANGED
 			if (gameStates.ogl.nDrawBuffer != GL_BACK) {
-				GrBmBitBlt (w, 1, x+w1-w, y, x+w1-w, y, bgP->background, &(CCanvas::Current ()));
-				GrBmBitBlt (w, 1, x+w1-w, y+h-1, x+w1-w, y, bgP->background, &(CCanvas::Current ()));
+				GrBmBitBlt (w, 1, x+w1-w, y, x+w1-w, y, bgP->background, CCanvas::Current ());
+				GrBmBitBlt (w, 1, x+w1-w, y+h-1, x+w1-w, y, bgP->background, CCanvas::Current ());
 				}
 			GrString (x+w1-w, y, s1, NULL);
 
@@ -815,7 +815,7 @@ x -= 3;
 if (w1 == 0) 
 	w1 = w;
 if (gameStates.ogl.nDrawBuffer != GL_BACK)
-	GrBmBitBlt (w1, h, x-w1, y, x-w1, y, bgP->background, &(CCanvas::Current ()));
+	GrBmBitBlt (w1, h, x-w1, y, x-w1, y, bgP->background, CCanvas::Current ());
 hs = itemP->text;
 itemP->text = s;
 h = itemP->x;
@@ -836,7 +836,7 @@ x -= 3;
 if (w1 == 0) 
 	w1 = w;
 if (gameStates.ogl.nDrawBuffer != GL_BACK)
-	GrBmBitBlt (w1, h, x-w1, y, x-w1, y, bgP->background, &(CCanvas::Current ()));
+	GrBmBitBlt (w1, h, x-w1, y, x-w1, y, bgP->background, CCanvas::Current ());
 GrString (x-w, y, s, NULL);
 }
 
@@ -2680,9 +2680,9 @@ if (!bInitialized) {
 
 	bg.saved = NULL;
 	if (!gameOpts->menus.nStyle) {
-		if ((gameStates.render.vr.buffers.offscreen->Bitmap ().Width () >= w_w) &&
-			 (gameStates.render.vr.buffers.offscreen->Bitmap ().Height () >= w_h)) 
-			bg.background = &gameStates.render.vr.buffers.offscreen->Bitmap ();
+		if ((gameStates.render.vr.buffers.offscreen->Width () >= w_w) &&
+			 (gameStates.render.vr.buffers.offscreen->Height () >= w_h)) 
+			bg.background = gameStates.render.vr.buffers.offscreen;
 		else
 			bg.background = CBitmap::Create (0, w_w, w_h, 1);
 		Assert (bg.background != NULL);
@@ -3025,7 +3025,7 @@ if (bInitialized) {
 	else {
 		if (gameData.demo.nState != ND_STATE_PLAYBACK)	//horrible hack to prevent restore when screen has been cleared
 			GrBmBitBlt (w_w, w_h, w_x, w_y, 0, 0, bg.background, CCanvas::Current ());
-		if (bg.background != &gameStates.render.vr.buffers.offscreen->Bitmap ()) {
+		if (bg.background != gameStates.render.vr.buffers.offscreen) {
 			delete bg.background;
 			bg.background = NULL;
 			}
@@ -3113,8 +3113,8 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 
 	if (!gameOpts->menus.nStyle) {
 #if 0
-		if ((gameStates.render.vr.buffers.offscreen->Bitmap ().Width () >= total_width) &&
-			 (gameStates.render.vr.buffers.offscreen->Bitmap ().Height () >= total_height))
+		if ((gameStates.render.vr.buffers.offscreen->Width () >= total_width) &&
+			 (gameStates.render.vr.buffers.offscreen->Height () >= total_height))
 			bg.background = &gameStates.render.vr.buffers.offscreen->Bitmap ();
 		else
 #endif
@@ -3409,7 +3409,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 	else {
 		SDL_ShowCursor (0);
 		GrBmBitBlt (total_width, total_height, wx-border_size, wy-nTitleHeight-border_size, 0, 0, bg.background, CCanvas::Current ());
-		if (bg.background != &gameStates.render.vr.buffers.offscreen->Bitmap ()) {
+		if (bg.background != gameStates.render.vr.buffers.offscreen) {
 			delete bg.background;
 			bg.background = NULL;
 			}

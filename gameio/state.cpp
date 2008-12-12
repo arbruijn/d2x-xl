@@ -1227,11 +1227,11 @@ if (thumbCanv) {
 		i = y * THUMBNAIL_LW * 3;
 		k = (THUMBNAIL_LH - y - 1) * THUMBNAIL_LW;
 		for (x = 0; x < THUMBNAIL_LW; x++, k++, i += 3)
-			thumbCanv->Bitmap ().Buffer () [k] = paletteManager.Game ()->ClosestColor (buffer [i] / 4, buffer [i+1] / 4, buffer [i+2] / 4);
+			thumbCanv->Buffer () [k] = paletteManager.Game ()->ClosestColor (buffer [i] / 4, buffer [i+1] / 4, buffer [i+2] / 4);
 			}
 	paletteManager.LoadEffect  ();
 	bm.DestroyBuffer ();
-	m_cf.Write (thumbCanv->Bitmap ().Buffer (), THUMBNAIL_LW * THUMBNAIL_LH, 1);
+	m_cf.Write (thumbCanv->Buffer (), THUMBNAIL_LW * THUMBNAIL_LH, 1);
 	CCanvas::Pop ();
 	thumbCanv->Destroy ();
 	m_cf.Write (paletteManager.Game (), 3, 256);
