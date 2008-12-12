@@ -136,9 +136,9 @@ template < class _T > class CArray {
 			_T* p = new _T [length];
 			if (!p)
 				return m_data.buffer;
-			m_data.length = length;
 			if (bCopy)
 				memcpy (p, m_data.buffer, ((length > m_data.length) ? m_data.length : length) * sizeof (_T)); 
+			m_data.length = length;
 			delete[] m_data.buffer;
 			return m_data.buffer = p;
 			}
@@ -165,7 +165,7 @@ template < class _T > class CArray {
 			}
 
 		inline _T& Copy (CArray<_T>& source, uint offset = 0) { 
-			if (((static_cast<int> (m_data.length)) > 0) && (static_cast<int> (source.m_data.length) > 0)) {
+			if (((static_cast<int> (m_data.length)) >= 0) && (static_cast<int> (source.m_data.length) > 0)) {
 				if ((m_data.buffer && (m_data.length >= source.m_data.length)) || Resize (source.m_data.length, false)) {
 					memcpy (m_data.buffer + offset, source.m_data.buffer, ((m_data.length < source.m_data.length) ? m_data.length : source.m_data.length) * sizeof (_T)); 
 					}
@@ -203,7 +203,7 @@ template < class _T > class CArray {
 		inline _T* operator- (uint i) { return m_data.buffer ? m_data.buffer - i : NULL; }
 
 		CArray<_T>& ShareBuffer (CArray<_T>& child) {
-			child.m_data = m_data;
+			memcpy (&child.m_data, &m_data, sizeof (m_data));
 			child.m_data.bChild = true;
 			return child;
 			}
