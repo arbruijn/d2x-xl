@@ -284,13 +284,12 @@ if (gameData.render.terrain.heightmap.Buffer ()) {
 void LoadTerrain (char *filename)
 {
 	CBitmap	bmHeight;
-	int			iff_error;
-	int			i, j;
-	ubyte			h, hMin, hMax;
-	CIFF			iff;
+	int		iff_error;
+	int		i, j;
+	ubyte		h, hMin, hMax;
+	CIFF		iff;
 
 PrintLog ("            loading terrain height map\n");
-memset (&bmHeight, 0, sizeof (bmHeight));
 iff_error = iff.ReadBitmap (filename, &bmHeight, BM_LINEAR);
 if (iff_error != IFF_NO_ERROR) {
 #if TRACE
@@ -307,7 +306,8 @@ gameData.render.terrain.nGridH = bmHeight.Height ();
 Assert (gameData.render.terrain.nGridW <= TERRAIN_GRID_MAX_SIZE);
 Assert (gameData.render.terrain.nGridH <= TERRAIN_GRID_MAX_SIZE);
 PrintLog ("heightmap loaded, size=%dx%d\n", gameData.render.terrain.nGridW, gameData.render.terrain.nGridH);
-gameData.render.terrain.heightmap = bmHeight.Buffer ();
+bmHeight.Clone (gameData.render.terrain.heightmap);
+bmHeight.SetBuffer (NULL);
 hMax = 0;
 hMin = 255;
 for (i = 0; i < gameData.render.terrain.nGridW; i++)

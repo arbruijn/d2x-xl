@@ -130,14 +130,15 @@ template < class _T > class CArray {
 				}
 			}
 			
-		inline _T* Resize (unsigned int length) {
+		inline _T* Resize (unsigned int length, bool bCopy = true) {
 			if (!m_data.buffer)
 				return Create (length);
 			_T* p = new _T [length];
 			if (!p)
 				return m_data.buffer;
-			memcpy (p, m_data.buffer, ((length > m_data.length) ? m_data.length : length) * sizeof (_T)); 
 			m_data.length = length;
+			if (bCopy)
+				memcpy (p, m_data.buffer, ((length > m_data.length) ? m_data.length : length) * sizeof (_T)); 
 			delete[] m_data.buffer;
 			return m_data.buffer = p;
 			}
@@ -158,16 +159,16 @@ template < class _T > class CArray {
 		inline _T& operator= (CArray<_T>& source) { return Copy (source); }
 
 		inline _T& operator= (_T* source) { 
-			if (m_data.buffer)
+			if (m_data.buffer) 
 				memcpy (m_data.buffer, source, m_data.length * sizeof (_T)); 
 			return m_data.buffer [0];
 			}
 
 		inline _T& Copy (CArray<_T>& source, uint offset = 0) { 
-			if (source.m_data.buffer && (static_cast<int> (source.m_data.length) > 0)) {
-				if (!m_data.buffer)
-					Create (source.m_data.length);
-				memcpy (m_data.buffer + offset, source.m_data.buffer, ((m_data.length < source.m_data.length) ? m_data.length : source.m_data.length) * sizeof (_T)); 
+			if (((static_cast<int> (m_data.length)) > 0) && (static_cast<int> (source.m_data.length) > 0)) {
+				if ((m_data.buffer && (m_data.length >= source.m_data.length)) || Resize (source.m_data.length, false)) {
+					memcpy (m_data.buffer + offset, source.m_data.buffer, ((m_data.length < source.m_data.length) ? m_data.length : source.m_data.length) * sizeof (_T)); 
+					}
 				}
 			return m_data.buffer [0];
 			}
