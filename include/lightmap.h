@@ -54,7 +54,7 @@ typedef struct tLightmapData {
 	tRgbColorb			texColor [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH];
 	CFixVector			pixelPos [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH]; 
 	double				fOffset [MAX_LIGHTMAP_WIDTH];
-	tFace				*faceP;
+	tFace					*faceP;
 	} tLightmapData;
 
 class CLightmapManager {
@@ -73,8 +73,7 @@ class CLightmapManager {
 		void Release (void);
 		int Create (int nLevel);
 		void Build (int nThread);
-		void BuildAll (int nFace, int nThread);
-		int _CDECL_ Thread (void *pThreadId);
+		void BuildAll (int nFace);
 		inline tLightmapBuffer* Buffer (uint i = 0) { return &m_list.buffers [i]; }
 		inline int HaveLightmaps (void) { return !gameStates.app.bNostalgia && (m_list.buffers.Buffer () != NULL); }
 

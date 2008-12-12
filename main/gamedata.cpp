@@ -372,9 +372,9 @@ CREATE (vertIndex, MAX_TRIANGLES * 3, 0);
 CREATE (faceVerts, MAX_FACES * 16, 0);
 CREATE (normals, MAX_TRIANGLES * 3 * 2, 0);
 CREATE (color, MAX_TRIANGLES * 3, 0);
-CREATE (texCoord, MAX_TRIANGLES * 2 * 3, 0);
+CREATE (texCoord, MAX_TRIANGLES * 2 * 2, 0);
+CREATE (ovlTexCoord, MAX_TRIANGLES * 2, 0);
 CREATE (lMapTexCoord, MAX_FACES * 2, 0);
-ovlTexCoord = texCoord + MAX_FACES * 4;
 }
 
 //------------------------------------------------------------------------------

@@ -128,7 +128,7 @@ class CBitmap : public CArray< ubyte > {
 		void Init (int mode, int x, int y, int w, int h, int bpp = 1, ubyte *buffer = NULL);
 		void InitChild (CBitmap *parent, int x, int y, int w, int h);
 		CBitmap* CreateChild (int x, int y, int w, int h);
-		CBitmap *FreeTexture (CBitmap *bmP);
+		CBitmap* FreeTexture (CBitmap *bmP);
 		void FreeTexture (void);
 
 		inline CBitmap *NextFrame (void) {

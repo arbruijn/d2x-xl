@@ -770,15 +770,13 @@ return 1;
 
 void CModelTextures::Release (void)
 {
-	CBitmap	*bmP;
 	int		i;
 
-if ((bmP = m_bitmaps.Buffer ())) {
-	for (i = m_nBitmaps; i; i--, bmP++) {
-		UseBitmapCache (bmP, (int) -bmP->Width () * (int) bmP->RowSize ());
-		delete bmP;
+if ((m_bitmaps.Buffer ())) {
+	for (i = 0; i < m_nBitmaps; i++) {
+		UseBitmapCache (&m_bitmaps [i], -static_cast<int> (m_bitmaps [i].Size ()));
+		m_bitmaps [i].FreeTexture ();
 		}
-	m_bitmaps.Clear ();
 	}
 }
 

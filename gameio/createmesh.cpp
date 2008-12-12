@@ -735,17 +735,17 @@ if (bOk)
 			(mdh.nFaces == gameData.segs.nFaces);
 if (bOk)
 	nSize =
-		(gameData.segs.vertices.Size () + 
-		 gameData.segs.fVertices.Size ()) * mdh.nVertices +
-		gameData.segs.faces.faces.Size () * mdh.nFaces +
-		gameData.segs.faces.tris.Size () * mdh.nTris +
-		(gameData.segs.faces.vertices.Size () +
-		 gameData.segs.faces.normals.Size () +
-		 gameData.segs.faces.texCoord.Size () +
-		 gameData.segs.faces.ovlTexCoord.Size () +
-		 gameData.segs.faces.color.Size ()) * mdh.nTris * 3 +
-		 gameData.segs.faces.lMapTexCoord.Size () * mdh.nFaces * 2 +
-		 gameData.segs.faces.faceVerts.Size () * mdh.nFaceVerts;
+		(sizeof (gameData.segs.vertices [0]) + 
+		 sizeof (gameData.segs.fVertices [0])) * mdh.nVertices +
+		 sizeof (gameData.segs.faces.faces [0]) * mdh.nFaces +
+		 sizeof (gameData.segs.faces.tris [0]) * mdh.nTris +
+		(sizeof (gameData.segs.faces.vertices [0]) +
+		 sizeof (gameData.segs.faces.normals [0]) +
+		 sizeof (gameData.segs.faces.texCoord [0]) +
+		 sizeof (gameData.segs.faces.ovlTexCoord [0]) +
+		 sizeof (gameData.segs.faces.color [0])) * mdh.nTris * 3 +
+		 sizeof (gameData.segs.faces.lMapTexCoord [0]) * mdh.nFaces * 2 +
+		 sizeof (gameData.segs.faces.faceVerts [0]) * mdh.nFaceVerts;
 if (bOk)
 	bOk = ((ioBuffer = new char [nSize]) != NULL);
 if (bOk)
@@ -977,7 +977,7 @@ for (i = 0; i < 4; i++) {
 	*m_normalP++ = vNormalf;
 	m_texCoordP->v.u = X2F (m_sideP->uvls [i].u);
 	m_texCoordP->v.v = X2F (m_sideP->uvls [i].v);
-	RotateTexCoord2f (m_ovlTexCoordP, m_texCoordP, (ubyte) m_sideP->nOvlOrient);
+	RotateTexCoord2f (*m_ovlTexCoordP, *m_texCoordP, (ubyte) m_sideP->nOvlOrient);
 	m_texCoordP++;
 	m_ovlTexCoordP++;
 	if (!gameStates.app.bNostalgia)
@@ -1019,7 +1019,7 @@ for (i = 0; i < 2; i++, m_triP++) {
 		*m_vertexP++ = *gameData.segs.fVertices [v].V3();
 		m_texCoordP->v.u = X2F (m_sideP->uvls [k].u);
 		m_texCoordP->v.v = X2F (m_sideP->uvls [k].v);
-		RotateTexCoord2f (m_ovlTexCoordP, m_texCoordP, (ubyte) m_sideP->nOvlOrient);
+		RotateTexCoord2f (*m_ovlTexCoordP, *m_texCoordP, (ubyte) m_sideP->nOvlOrient);
 		*m_lMapTexCoordP = lMapTexCoord [k];
 		m_texCoordP++;
 		m_ovlTexCoordP++;
@@ -1077,11 +1077,11 @@ void CQuadMeshBuilder::SplitIn4Tris (void)
 {
 	static short	n4TriVerts [4][3] = {{0,1,4},{1,2,4},{2,3,4},{3,0,4}};
 
-	CFloatVector		vSide [4];
-	tRgbaColorf	color;
-	tTexCoord2f	texCoord;
-	short			*triVertP;
-	int			h, i, j, k, v;
+	CFloatVector	vSide [4];
+	tRgbaColorf		color;
+	tTexCoord2f		texCoord;
+	short				*triVertP;
+	int				h, i, j, k, v;
 
 texCoord.v.u = texCoord.v.v = 0;
 color.red = color.green = color.blue = color.alpha = 0;
@@ -1128,7 +1128,7 @@ for (i = 0; i < 4; i++, m_triP++) {
 			m_colorP = gameData.render.color.ambient + v;
 			m_faceColorP [j] = m_colorP->color;
 			}
-		RotateTexCoord2f (m_ovlTexCoordP, m_texCoordP + j, (ubyte) m_sideP->nOvlOrient);
+		RotateTexCoord2f (*m_ovlTexCoordP, m_texCoordP [j], (ubyte) m_sideP->nOvlOrient);
 		m_ovlTexCoordP++;
 		}
 	m_normalP = SetTriNormals (m_triP, m_normalP);

@@ -72,23 +72,23 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void RotateTexCoord2f (tTexCoord2f *pDest, tTexCoord2f *pSrc, ubyte nOrient)
+void RotateTexCoord2f (tTexCoord2f& dest, tTexCoord2f& src, ubyte nOrient)
 {
 if (nOrient == 1) {
-	pDest->v.u = 1.0f - pSrc->v.v;
-	pDest->v.v = pSrc->v.u;
+	dest.v.u = 1.0f - src.v.v;
+	dest.v.v = src.v.u;
 	}
 else if (nOrient == 2) {
-	pDest->v.u = 1.0f - pSrc->v.u;
-	pDest->v.v = 1.0f - pSrc->v.v;
+	dest.v.u = 1.0f - src.v.u;
+	dest.v.v = 1.0f - src.v.v;
 	}
 else if (nOrient == 3) {
-	pDest->v.u = pSrc->v.v;
-	pDest->v.v = 1.0f - pSrc->v.u;
+	dest.v.u = src.v.v;
+	dest.v.v = 1.0f - src.v.u;
 	}
 else {
-	pDest->v.u = pSrc->v.u;
-	pDest->v.v = pSrc->v.v;
+	dest.v.u = src.v.u;
+	dest.v.v = src.v.v;
 	}
 }
 

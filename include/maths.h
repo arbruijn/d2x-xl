@@ -28,7 +28,7 @@ typedef struct tQuadInt {// integer 64 bit, previously called "quad"
 } tQuadInt;
 
 //Convert an int to a fix
-#define I2X(i) (((fix) (i)) * 65536)
+#define I2X(i) ((static_cast<fix> (i)) * 65536)
 
 //Get the int part of a fix
 #define X2I(_f) ((_f) / 65536)
@@ -37,10 +37,9 @@ typedef struct tQuadInt {// integer 64 bit, previously called "quad"
 #define X2IR(_f) (((_f) + f0_5) / 65536)
 
 //Convert fix to double and double to fix
-#define X2F(_f) (((float) (_f)) / (float) 65536)
-#define X2D(_f) (((double) (_f)) / (double) 65536)
-//#define F2FX(_f) ((_f) * 65536)
-#define F2X(_f) ((fix) ((_f) * 65536))
+#define X2F(_f) ((static_cast<float> (_f)) / 65536.0f)
+#define X2D(_f) ((static_cast<double> (_f)) / (double) 65536.0)
+#define F2X(_f) (static_cast<fix> ((_f) * 65536))
 
 //Some handy constants
 #define f0_0	0
@@ -68,9 +67,9 @@ typedef struct tQuadInt {// integer 64 bit, previously called "quad"
 #endif
 
 
-#define FixMul(_a, _b)	((fix) ((((QLONG) (_a)) * ((QLONG) (_b))) / 65536))
-#define FixDiv(_a, _b)	((fix) ((_b) ? ((((QLONG) (_a)) * 65536) / ((QLONG) (_b))) : 1))
-#define FixMulDiv(_a, _b, _c) ((fix) ((_c) ? ((((QLONG) (_a)) * ((QLONG) (_b))) / ((QLONG) (_c))) : 1))
+#define FixMul(_a, _b)	(static_cast<fix> (((static_cast<QLONG> (_a)) * (static_cast<QLONG> (_b))) / 65536))
+#define FixDiv(_a, _b)	(static_cast<fix> ((_b) ? (((static_cast<QLONG> (_a)) * 65536) / (static_cast<QLONG> (_b))) : 1))
+#define FixMulDiv(_a, _b, _c) ((fix) ((_c) ? (((static_cast<QLONG> (_a)) * (static_cast<QLONG> (_b))) / (static_cast<QLONG> (_c))) : 1))
 
 //divide a tQuadInt by a long
 int32_t FixDivQuadLong (u_int32_t qlow, u_int32_t qhigh, u_int32_t d);
@@ -84,7 +83,7 @@ extern int nDefMathFormat;
 
 uint sqrt64 (unsigned QLONG a);
 
-#define mul64(_a,_b)	((QLONG) (_a) * (QLONG) (_b))
+#define mul64(_a,_b)	(static_cast<QLONG> (_a) * static_cast<QLONG> (_b))
 
 //multiply two fixes, and add 64-bit product to a tQuadInt
 void FixMulAccum (tQuadInt * q, fix a, fix b);
@@ -116,8 +115,6 @@ fixang FixAtan2 (fix cos, fix sin);
 //for passed value a, returns 1/sqrt(a)
 fix FixISqrt (fix a);
 
-//#define fabsf(_f)	(float) fabs (_f)
-
 //-----------------------------------------------------------------------------
 
 static inline void d_srand (uint seed)
@@ -136,7 +133,7 @@ return rand() & 0x7fff;
 
 static inline float f_rand (void)
 {
-return (float) d_rand() / (float) 0x7fff;
+return static_cast<float> (d_rand()) / static_cast<float> (0x7fff);
 }
 
 //-----------------------------------------------------------------------------

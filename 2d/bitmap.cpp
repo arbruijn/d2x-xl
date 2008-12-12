@@ -268,8 +268,8 @@ return 0;
 
 CBitmap *CBitmap::FreeTexture (CBitmap *bmP)
 {
-while ((bmP->Type () != BM_TYPE_ALT) && BM_PARENT (bmP) && (bmP != BM_PARENT (bmP)))
-	bmP = BM_PARENT (bmP);
+while ((bmP->Type () != BM_TYPE_ALT) && bmP->Parent () && (bmP != bmP->Parent ()))
+	bmP = bmP->Parent ();
 bmP->FreeTexture ();
 return bmP;
 }

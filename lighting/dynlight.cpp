@@ -399,7 +399,11 @@ if (gameData.render.lights.dynamic.nLights >= MAX_OGL_LIGHTS) {
 	return -1;	//too many lights
 	}
 #endif
+#if DBG
 i = gameData.render.lights.dynamic.nLights; //LastEnabledDynLight () + 1;
+if (!faceP)
+	i = i;
+#endif
 pl = gameData.render.lights.dynamic.lights + i;
 #if USE_OGL_LIGHTS
 pl->info.handle = GetDynLightHandle ();
@@ -623,9 +627,9 @@ void QSortStaticLights (int left, int right)
 			CDynLight m = gameData.render.lights.dynamic.lights [(l + r) / 2];
 
 do {
-	while (QCmpStaticLights (gameData.render.lights.dynamic.lights + l, &m) < 0)
+	while (gameData.render.lights.dynamic.lights [l] < m)
 		l++;
-	while (QCmpStaticLights (gameData.render.lights.dynamic.lights + r, &m) > 0)
+	while (gameData.render.lights.dynamic.lights [r] > m)
 		r--;
 	if (l <= r) {
 		if (l < r) {
@@ -702,7 +706,7 @@ for (nFace = gameData.segs.nFaces, faceP = gameData.segs.faces.faces.Buffer (); 
 		return;
 		}
 	}
-QSortStaticLights (0, gameData.render.lights.dynamic.nLights);
+QSortStaticLights (0, gameData.render.lights.dynamic.nLights - 1);
 }
 
 //------------------------------------------------------------------------------

@@ -51,7 +51,6 @@ CLightmapManager lightmapManager;
 
 #define LMAP_REND2TEX		0
 #define TEXTURE_CHECK		1
-#define LIGHTMAP_THREADS	0
 
 #define LIGHTMAP_DATA_VERSION 12
 
@@ -447,7 +446,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void CLightmapManager::BuildAll (int nFace, int nThread)
+void CLightmapManager::BuildAll (int nFace)
 {
 	tSide			*sideP; 
 	int			nLastFace; 
@@ -509,58 +508,13 @@ for (m_data.faceP = FACES + nFace; nFace < nLastFace; nFace++, m_data.faceP++) {
 
 //------------------------------------------------------------------------------
 
-static tThreadInfo	ti [2];
-
-int _CDECL_ CLightmapManager::Thread (void *pThreadId)
-{
-	int		nId = *(reinterpret_cast<int*> (pThreadId));
-
-gameData.render.lights.dynamic.shader.index [0][nId].nFirst = MAX_SHADER_LIGHTS;
-gameData.render.lights.dynamic.shader.index [0][nId].nLast = 0;
-BuildAll (nId ? gameData.segs.nFaces / 2 : 0, nId);
-SDL_SemPost (ti [nId].done);
-ti [nId].bDone = 1;
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-#if LIGHTMAP_THREADS
-
-static void StartLightmapThreads (pThreadFunc pFunc)
-{
-	int	i;
-
-for (i = 0; i < 2; i++) {
-	ti [i].bDone = 0;
-	ti [i].done = SDL_CreateSemaphore (0);
-	ti [i].nId = i;
-	ti [i].pThread = SDL_CreateThread (pFunc, &ti [i].nId);
-	}
-#if 1
-SDL_SemWait (ti [0].done);
-SDL_SemWait (ti [1].done);
-#else
-while (!(ti [0].bDone && ti [1].bDone))
-	G3_SLEEP (0);
-#endif
-for (i = 0; i < 2; i++) {
-	SDL_WaitThread (ti [i].pThread, NULL);
-	SDL_DestroySemaphore (ti [i].done);
-	}
-}
-
-#endif
-
-//------------------------------------------------------------------------------
-
 static int nFace = 0;
 
 static int _CDECL_ CreatePoll (int nItems, tMenuItem *m, int *key, int nCurItem)
 {
 paletteManager.LoadEffect ();
 if (nFace < gameData.segs.nFaces) {
-	lightmapManager.BuildAll (nFace, 0);
+	lightmapManager.BuildAll (nFace);
 	nFace += PROGRESS_INCR;
 	}
 else {
@@ -705,23 +659,16 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 	int nSaturation = gameOpts->render.color.nSaturation;
 	gameOpts->render.color.nSaturation = 1;
 	gameStates.render.bLightmaps = 1;
-#if LIGHTMAP_THREADS
-	if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 8))
-		StartLightmapThreads (LightmapThread);
-	else 
-#endif
-		{
-		gameData.render.fAttScale = 2.0f;
-		gameData.render.lights.dynamic.shader.index [0][0].nFirst = MAX_SHADER_LIGHTS;
-		gameData.render.lights.dynamic.shader.index [0][0].nLast = 0;
-		if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
-			nFace = 0;
-			NMProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (gameData.segs.nFaces), CreatePoll);
-			}
-		else
-			BuildAll (-1, 0);
-		gameData.render.fAttScale = (gameStates.render.bPerPixelLighting == 2) ? 1.0f : 2.0f;
+	gameData.render.fAttScale = 2.0f;
+	gameData.render.lights.dynamic.shader.index [0][0].nFirst = MAX_SHADER_LIGHTS;
+	gameData.render.lights.dynamic.shader.index [0][0].nLast = 0;
+	if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
+		nFace = 0;
+		NMProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (gameData.segs.nFaces), CreatePoll);
 		}
+	else
+		BuildAll (-1);
+	gameData.render.fAttScale = (gameStates.render.bPerPixelLighting == 2) ? 1.0f : 2.0f;
 	gameStates.render.bLightmaps = 0;
 	gameStates.render.nState = 0;
 	gameOpts->render.color.nSaturation = nSaturation;

@@ -1069,14 +1069,14 @@ for (faceP = gameData.segs.faces.slidingFaces; faceP; faceP = faceP->nextSliding
 			k = nTriVerts [nOffset][h];
 			texCoordP [h].v.u = X2F (uvlP [k].u);
 			texCoordP [h].v.v = X2F (uvlP [k].v);
-			RotateTexCoord2f (ovlTexCoordP + h, texCoordP + h, faceP->nOvlOrient);
+			RotateTexCoord2f (ovlTexCoordP [h], texCoordP [h], faceP->nOvlOrient);
 			}
 		}
 	else {
 		for (h = 0; h < 4; h++) {
 			texCoordP [h].v.u = X2F (uvlP [(h + nOffset) % 4].u);
 			texCoordP [h].v.v = X2F (uvlP [(h + nOffset) % 4].v);
-			RotateTexCoord2f (ovlTexCoordP + h, texCoordP + h, faceP->nOvlOrient);
+			RotateTexCoord2f (ovlTexCoordP [h], texCoordP [h], faceP->nOvlOrient);
 			}
 		}
 	}

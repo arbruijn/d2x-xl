@@ -1189,6 +1189,45 @@ extern tGameOptions	*gameOpts;
 // data
 //------------------------------------------------------------------------------
 
+class CBase {
+	private:
+		CBase*	m_prev;
+		CBase*	m_next;
+		CBase*	m_parent;
+		CBase*	m_child;
+		uint		m_refCount;
+	public:
+		CBase () { Init (); } 
+		virtual ~CBase () { Destroy (); }
+		virtual void Init (void) { 
+			Link (this, this);
+			m_parent = m_child = NULL;
+			m_refCount = 0;
+			}
+		virtual bool Create (void) { return true; }
+		virtual void Destroy (void) {
+			Unlink ();
+			Init ();
+			}
+		virtual void Link (CBase* prev, CBase *next) {
+			m_prev = prev;
+			m_next = next;
+			m_prev->SetNext (this);
+			m_next->SetPrev (this);
+			}
+		virtual void Unlink (void) {
+			if (m_prev)
+				m_prev->SetNext (m_next);
+			if (m_next)
+				m_next->SetPrev (m_prev);
+			Link (this, this);
+			}
+		inline virtual CBase* Prev (void) { return m_prev; }
+		inline virtual CBase* Next (void) { return m_next; }
+		inline virtual void SetPrev (CBase *prev) { m_prev = prev; }
+		inline virtual void SetNext (CBase *next) { m_next = next; }
+	};
+
 
 //------------------------------------------------------------------------------
 
@@ -1301,6 +1340,10 @@ class CDynLight {
 	public:
 		CDynLight ();
 		void Init (void);
+		inline bool operator< (CDynLight& other)
+			{ return !info.bVariable && other.info.bVariable; }
+		inline bool operator> (CDynLight& other)
+			{ return info.bVariable && !other.info.bVariable; }
 };
 
 //------------------------------------------------------------------------------
