@@ -542,8 +542,10 @@ return ret;
 
 void CIFF::Close (void)
 {
-if (Data ())
+if (Data ()) {
 	delete[] Data ();
+	Data () = NULL;
+	}
 SetPos (0);
 SetLen (0);
 }
@@ -555,6 +557,7 @@ void CIFF::CopyIffToBitmap (CBitmap *bmP, tIFFBitmapHeader *bmHeader)
 bmP->DestroyBuffer ();
 bmP->SetFlags (0);
 bmP->Init (bmHeader->nType, 0, 0, bmHeader->w, bmHeader->h, 1, bmHeader->raw_data);
+bmHeader->raw_data = NULL;
 }
 
 //------------------------------------------------------------------------------

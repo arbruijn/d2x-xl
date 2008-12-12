@@ -131,7 +131,7 @@ m_info.nBPP = bpp ? bpp : 1;
 m_info.props.rowSize = w * bpp;
 if (bpp > 2)
 	m_info.props.flags = (char) BM_FLAG_TGA;
-SetBuffer (buffer);
+SetBuffer (buffer, false, FrameSize ());
 }
 
 //------------------------------------------------------------------------------
