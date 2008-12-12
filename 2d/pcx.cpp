@@ -53,36 +53,38 @@ typedef struct {
 
 //------------------------------------------------------------------------------
 
-#if 0//def FAST_FILE_IO /*disabled for a reason!*/
-#define PCXHeaderReadN (ph, n, cf) cf.Read (ph, sizeof (PCXHeader), n, cf)
-#else
+void ReadPCXHeader (PCXHeader& ph, CFile& cf)
+{
+ph.Manufacturer = cf.ReadByte ();
+ph.Version = cf.ReadByte ();
+ph.Encoding = cf.ReadByte ();
+ph.BitsPerPixel = cf.ReadByte ();
+ph.Xmin = cf.ReadShort ();
+ph.Ymin = cf.ReadShort ();
+ph.Xmax = cf.ReadShort ();
+ph.Ymax = cf.ReadShort ();
+ph.Hdpi = cf.ReadShort ();
+ph.Vdpi = cf.ReadShort ();
+cf.Read (&ph.ColorMap, 16*3, 1);
+ph.Reserved = cf.ReadByte ();
+ph.Nplanes = cf.ReadByte ();
+ph.BytesPerLine = cf.ReadShort ();
+cf.Read (&ph.filler, 60, 1);
+}
+
+//------------------------------------------------------------------------------
+
 /*
  * reads n PCXHeader structs from a CFile
  */
-int PCXHeaderReadN (PCXHeader *ph, int n, CFile& cf)
+int ReadPCXHeaders (PCXHeader *ph, int n, CFile& cf)
 {
 	int i;
 
-	for (i = 0; i < n; i++) {
-		ph->Manufacturer = cf.ReadByte ();
-		ph->Version = cf.ReadByte ();
-		ph->Encoding = cf.ReadByte ();
-		ph->BitsPerPixel = cf.ReadByte ();
-		ph->Xmin = cf.ReadShort ();
-		ph->Ymin = cf.ReadShort ();
-		ph->Xmax = cf.ReadShort ();
-		ph->Ymax = cf.ReadShort ();
-		ph->Hdpi = cf.ReadShort ();
-		ph->Vdpi = cf.ReadShort ();
-		cf.Read (&ph->ColorMap, 16*3, 1);
-		ph->Reserved = cf.ReadByte ();
-		ph->Nplanes = cf.ReadByte ();
-		ph->BytesPerLine = cf.ReadShort ();
-		cf.Read (&ph->filler, 60, 1);
-	}
-	return i;
+for (i = 0; i < n; i++)
+	ReadPCXHeader (ph [i], cf);
+return i;
 }
-#endif
 
 //------------------------------------------------------------------------------
 
@@ -94,7 +96,7 @@ int PCXGetDimensions (const char *filename, int *width, int *height)
 if (!cf.Open (filename, gameFolders.szDataDir, "rb", 0))
 	return PCX_ERROR_OPENING;
 
-	if (PCXHeaderReadN (&header, 1, cf) != 1) {
+	if (ReadPCXHeaders (&header, 1, cf) != 1) {
 		cf.Close ();
 		return PCX_ERROR_NO_HEADER;
 	}
@@ -120,7 +122,7 @@ if (!cf.Open (filename, gameFolders.szDataDir, "rb", bD1Mission))
 	return PCX_ERROR_OPENING;
 
 // read 128 char PCX header
-if (PCXHeaderReadN (&header, 1,  cf)!=1) {
+if (ReadPCXHeaders (&header, 1,  cf)!=1) {
 	cf.Close ();
 	return PCX_ERROR_NO_HEADER;
 	}

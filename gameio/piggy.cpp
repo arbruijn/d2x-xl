@@ -174,7 +174,7 @@ if (!bInFile) {
 int i = gameData.pig.tex.nBitmaps [gameStates.app.bD1Data];
 strncpy (gameData.pig.tex.bitmapFileP [i].name, name, 12);
 bitmapNames [gameStates.app.bD1Mission].Insert (gameData.pig.tex.bitmapFileP [i].name, i);
-gameData.pig.tex.bitmapP [i] = *bmP;
+bmP->Clone (gameData.pig.tex.bitmapP [i]);
 bmP->SetBuffer (NULL);	//avoid automatic destruction trying to delete the same buffer twice
 if (!bInFile) {
 	bitmapOffsets [gameStates.app.bD1Data][i] = 0;

@@ -399,11 +399,7 @@ if (gameData.render.lights.dynamic.nLights >= MAX_OGL_LIGHTS) {
 	return -1;	//too many lights
 	}
 #endif
-#if DBG
 i = gameData.render.lights.dynamic.nLights; //LastEnabledDynLight () + 1;
-if (!faceP)
-	i = i;
-#endif
 pl = gameData.render.lights.dynamic.lights + i;
 #if USE_OGL_LIGHTS
 pl->info.handle = GetDynLightHandle ();

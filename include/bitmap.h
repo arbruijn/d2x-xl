@@ -275,8 +275,13 @@ class CBitmap : public CArray< ubyte > {
 		void UnlinkTexture (void);
 		void Unlink (int bAddon);
 
+		inline CBitmap& Clone (CBitmap& clone) { 
+			memcpy (&clone, this, sizeof (CBitmap)); 
+			return clone;
+			}
+
 		inline CBitmap& operator= (CBitmap& source) { 
-			memcpy (&m_info, &source.m_info, sizeof (tBitmap)); 
+			source.Clone (*this); 
 			source.ShareBuffer (*this);
 			return *this;
 			}

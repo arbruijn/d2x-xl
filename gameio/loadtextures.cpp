@@ -729,6 +729,10 @@ if (bLowMemory) {
 	bmiSave = bmi;
 	bmi = gameData.pig.tex.bitmapXlat [bmi];          // Xlat for low-memory settings!
 	}
+#if DBG
+if (bmi == 188)
+	bmi = bmi;
+#endif
 bmP = gameData.pig.tex.bitmaps [bD1][bmi].Override (-1);
 while (0 > (i = PageInBitmap (bmP, gameData.pig.tex.bitmapFiles [bD1][bmi].name, bmi, bD1)))
 	G3_SLEEP (0);
