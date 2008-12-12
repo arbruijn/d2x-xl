@@ -161,8 +161,10 @@ tBitmapIndex PiggyRegisterBitmap (CBitmap *bmP, const char *name, int bInFile)
 	tBitmapIndex bmi;
 	Assert (gameData.pig.tex.nBitmaps [gameStates.app.bD1Data] < MAX_BITMAP_FILES);
 
+#if DBG
 if (strstr (name, "door13"))
 	name = name;
+#endif
 bmi.index = gameData.pig.tex.nBitmaps [gameStates.app.bD1Data];
 if (!bInFile) {
 #ifdef EDITOR
@@ -454,7 +456,7 @@ for (i=0; i < MAX_SOUND_FILES; i++)	{
 for (i = 0; i < MAX_BITMAP_FILES; i++)     
 	gameData.pig.tex.bitmapXlat [i] = i;
 
-if (!bogusBitmap.BufSize ()) {
+if (!bogusBitmap.FrameSize ()) {
 	int i;
 	ubyte c;
 /*---*/PrintLog ("   Initializing placeholder bitmap\n");
@@ -591,7 +593,7 @@ if (pNextBmP) {
 	}
 else {
 	if (bmP->CreateBuffer ())
-		UseBitmapCache (bmP, (int) bmP->BufSize ());
+		UseBitmapCache (bmP, (int) bmP->FrameSize ());
 	else
 		return;
 	}
@@ -769,7 +771,7 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && !gameStates.app.b
 		bmTemp.SetAvgColorIndex (bmh.avgColor);
 		bmTemp.SetBuffer (NULL); 
 		bmTemp.SetBPP (1);
-		bitmapCacheUsed += bmTemp.BufSize ();
+		bitmapCacheUsed += bmTemp.FrameSize ();
 		gameData.pig.tex.bitmapFlags [1][i+1] = bmh.flags & BM_FLAGS_TO_COPY;
 		bitmapOffsets [1][i+1] = bmh.offset + nBmDataOffs;
 		Assert ((i+1) == gameData.pig.tex.nBitmaps [1]);

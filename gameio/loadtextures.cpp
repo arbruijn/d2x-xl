@@ -481,7 +481,7 @@ return nShrinkFactor / 2;
 
 int PageInBitmap (CBitmap *bmP, const char *bmName, int nIndex, int bD1)
 {
-	CBitmap		*altBmP = NULL;
+	CBitmap			*altBmP = NULL;
 	int				temp, nSize, nOffset, nFrames, nShrinkFactor, nBestShrinkFactor,
 						bRedone = 0, bTGA, bDefault = 0;
 	time_t			tBase, tShrunk;
@@ -496,7 +496,7 @@ if (!bmName)
 if (!bmP->Buffer ()) {
 	StopTime ();
 	nShrinkFactor = 8 >> min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality);
-	nSize = (int) bmP->Width () * (int) bmP->RowSize ();
+	nSize = (int) bmP->FrameSize ();
 	if (nIndex >= 0)
 		GetFlagData (bmName, nIndex);
 #if DBG

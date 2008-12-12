@@ -221,11 +221,7 @@ class CBitmap : public CArray< ubyte > {
 		inline int *TransparentFrames (int i = 0) { return m_info.transparentFrames + i; }
 		inline int *SuperTranspFrames (int i = 0) { return m_info.supertranspFrames + i; }
 		inline char* Name (void) { return m_info.szName; }
-#if TEXTURE_COMPRESSION
-		inline int BufSize (void) { return Buffer () ? m_info.bCompressed ? Size () : (int) m_info.props.h * (int) m_info.props.rowSize : 0; }
-#else
-		inline int BufSize (void) { return Buffer () ? (int) m_info.props.h * (int) m_info.props.rowSize : 0; }
-#endif
+		inline int FrameSize (void) { return static_cast<int> (m_info.props.h) * static_cast<int> (m_info.props.rowSize); }
 		inline void SetId (ushort nId) { m_info.nId = nId; }
 		inline void SetName (const char* pszName) { if (pszName) strncpy (m_info.szName, pszName, sizeof (m_info.szName)); }
 		inline void SetWidth (short w) { m_info.props.w = w; m_info.props.rowSize = w * m_info.nBPP; }

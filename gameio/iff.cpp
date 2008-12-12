@@ -504,7 +504,7 @@ int CIFF::ConvertRgb15 (CBitmap *bmP, tIFFBitmapHeader *bmHeader)
 	tPalEntry *palptr;
 
 palptr = bmHeader->palette;
-new_data = new ushort [bmP->BufSize () * 2];
+new_data = new ushort [bmP->FrameSize () * 2];
 if (new_data == NULL)
 	return IFF_NO_MEM;
 for (y=0; y < bmP->Height (); y++) {
