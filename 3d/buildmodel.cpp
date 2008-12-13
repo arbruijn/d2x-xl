@@ -179,23 +179,23 @@ POFFreeAllPolyModelItems ();
 
 //------------------------------------------------------------------------------
 
-inline const bool CFace::operator< (CFace& other)
+int _CDECL_ CFace::Compare (CFace* pf, CFace* pm)
 {
-if (m_textureP && (m_nBitmap >= 0) && (other.m_nBitmap >= 0)) {
-	if (m_textureP->BPP () < m_textureP->BPP ())
-		return true;
-	if (m_textureP->BPP () > m_textureP->BPP ())
-		return false;
+if (pf->m_textureP && (pf->m_nBitmap >= 0) && (pm->m_nBitmap >= 0)) {
+	if (pf->m_textureP->BPP () < pf->m_textureP->BPP ())
+		return -1;
+	if (pf->m_textureP->BPP () > pf->m_textureP->BPP ())
+		return -1;
 	}
-if (m_nBitmap < other.m_nBitmap)
-	return true;
-if (m_nBitmap > other.m_nBitmap)
-	return false;
-if (m_nVerts < other.m_nVerts)
-	return true;
-if (m_nVerts > other.m_nVerts)
-	return false;
-return false;
+if (pf->m_nBitmap < pm->m_nBitmap)
+	return -1;
+if (pf->m_nBitmap > pm->m_nBitmap)
+	return 1;
+if (pf->m_nVerts < pm->m_nVerts)
+	return -1;
+if (pf->m_nVerts > pm->m_nVerts)
+	return 1;
+return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -216,27 +216,6 @@ if (m_nVerts < other.m_nVerts)
 	return true;
 if (m_nVerts > other.m_nVerts)
 	return true;
-return false;
-}
-
-//------------------------------------------------------------------------------
-
-inline const bool CFace::operator> (CFace& other)
-{
-if (m_textureP && (m_nBitmap >= 0) && (other.m_nBitmap >= 0)) {
-	if (m_textureP->BPP () > m_textureP->BPP ())
-		return true;
-	if (m_textureP->BPP () < m_textureP->BPP ())
-		return false;
-	}
-if (m_nBitmap > other.m_nBitmap)
-	return true;
-if (m_nBitmap < other.m_nBitmap)
-	return false;
-if (m_nVerts > other.m_nVerts)
-	return true;
-if (m_nVerts < other.m_nVerts)
-	return false;
 return false;
 }
 
@@ -299,7 +278,7 @@ void CSubModel::SortFaces (CBitmap* textureP)
 
 for (int i = 0; i < m_nFaces; i++)
 	m_faces [i].SetTexture (textureP);
-qs.SortAscending (m_faces, 0, m_nFaces - 1);
+qs.SortAscending (m_faces, 0, m_nFaces - 1, &RenderModel::CFace::Compare);
 }
 
 //------------------------------------------------------------------------------

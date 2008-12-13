@@ -67,11 +67,14 @@ class CFace {
 		ubyte						m_bThruster :1;
 
 	public:
-		inline const bool CFace::operator< (CFace& other);
-		inline const bool CFace::operator> (CFace& other);
-		inline const bool CFace::operator!= (CFace& other);
 		void SetTexture (CBitmap* textureP);
 		int GatherVertices (CVertex* source, CVertex* dest, int nIndex);
+		
+		static int _CDECL_ CFace::Compare (CFace* pf, CFace* pm);
+
+		inline const bool operator< (CFace& other) { return m_nSubModel < other.m_nSubModel; }
+		inline const bool operator> (CFace& other) { return m_nSubModel > other.m_nSubModel; }
+		inline const bool CFace::operator!= (CFace& other);
 	};
 
 inline int operator- (RenderModel::CFace* f, CArray<RenderModel::CFace>& a) { return a.Index (f); }
