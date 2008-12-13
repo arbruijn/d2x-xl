@@ -19,4 +19,6 @@ class CQuickSort {
 
 //-----------------------------------------------------------------------------
 
+#include "cquicksort.cpp"
+
 #endif //_CQUICKSORT_H

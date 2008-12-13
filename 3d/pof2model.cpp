@@ -166,7 +166,7 @@ for (i = nVerts, pfv = WORDPTR (p+30); i; i--, pfv++, uvl++, pmv++, pvn++) {
 	pmv->m_bTextured = bTextured;
 	pmv->m_nIndex = j;
 	pmv->m_normal = *pvn = n;
-	G3SetSubModelMinMax (psm, &pmv->m_vertex);
+	psm->SetMinMax (&pmv->m_vertex);
 	}
 pm->m_iFaceVert += nVerts;
 pm->m_iFace++;
@@ -188,7 +188,7 @@ int G3GetPOFModelItems (void *modelP, vmsAngVec *pAnimAngles, RenderModel::CMode
 G3CheckAndSwap (modelP);
 nGlow = -1;
 if (bSubObject) {
-	G3InitSubModelMinMax (psm);
+	psm->InitMinMax ();
 	psm->m_nIndex = -1;
 	psm->m_nParent = nParent;
 	psm->m_nBomb = -1;
@@ -263,7 +263,7 @@ for (;;) {
 			nChild = ++pm->m_iSubModel;
 			pm->m_subModels [nChild].m_vOffset = *VECPTR (p+4);
 			pm->m_subModels [nChild].m_nAngles = WORDVAL (p+2);
-			G3InitSubModelMinMax (pm->m_subModels + nChild);
+			pm->m_subModels [nChild].InitMinMax ();
 			if (!G3GetPOFModelItems (p + WORDVAL (p+16), pAnimAngles, pm, nChild, nThis, 1, modelBitmaps, objColorP))
 				return 0;
 			pmf = pm->m_faces + pm->m_iFace;
@@ -319,7 +319,7 @@ if (!G3CountPOFModelItems (pp->modelData.Buffer (), &pm->m_nSubModels, &pm->m_nV
 	return 0;
 if (!G3AllocModel (pm))
 	return 0;
-G3InitSubModelMinMax (pm->m_subModels.Buffer ());
+pm->m_subModels [0].InitMinMax ();
 #if TRACE_TAGS
 PrintLog ("building model for object type %d, id %d\n", objP->info.nType, objP->info.nId);
 #endif
@@ -329,8 +329,8 @@ pm->m_faces.SortAscending ();
 G3AssignModelFaces (pm);
 memset (pm->m_teamTextures, 0xFF, sizeof (pm->m_teamTextures));
 pm->m_nType = pp->nType;
-gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 0);
-G3SetupModel (pm, 0, 1);
+gameData.models.polyModels [nModel].rad = pm->Size (objP, 0);
+pm->Setup (0, 1);
 pm->m_iSubModel = 0;
 return -1;
 }

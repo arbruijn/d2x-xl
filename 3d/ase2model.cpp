@@ -75,7 +75,7 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 	psm->m_tFrame = 0;
 	psm->m_nFrames = psa->m_bBarrel ? 32 : 0;
 	psm->m_vOffset = psa->m_vOffset.ToFix();
-	G3InitSubModelMinMax (psm);
+	psm->InitMinMax ();
 	for (pfa = psa->m_faces.Buffer (), iFace = 0; iFace < nFaces; iFace++, pfa++, pmf++) {
 		pmf->m_nIndex = nIndex;
 #if 1
@@ -107,7 +107,7 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 			pm->m_verts [h] = pmv->m_vertex;
 			pm->m_vertNorms [h] = pmv->m_normal;
 			pmv->m_nIndex = h;
-			G3SetSubModelMinMax (psm, &pmv->m_vertex);
+			psm->SetMinMax (&pmv->m_vertex);
 			nIndex++;
 			}
 		}

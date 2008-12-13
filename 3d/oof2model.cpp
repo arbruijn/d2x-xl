@@ -82,7 +82,7 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->m_subModels.Buffer ()
 	psm->m_nIndex = nIndex;
 	psm->m_nFaces = j;
 	psm->m_faces = pmf;
-	G3InitSubModelMinMax (psm);
+	psm->InitMinMax ();
 	for (pof = pso->faces.faces; j; j--, pof++, pmf++) {
 		pmf->m_nIndex = nIndex;
 		pmf->m_bThruster = 0;
@@ -111,7 +111,7 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->m_subModels.Buffer ()
 			pmv->m_normal = vNormal;
 			*reinterpret_cast<CFloatVector*> (pm->m_verts + h) = *reinterpret_cast<CFloatVector*> (pso->verts + h) * fScale;
 			pmv->m_vertex = pm->m_verts [h];
-			G3SetSubModelMinMax (psm, &pmv->m_vertex);
+			psm->SetMinMax (&pmv->m_vertex);
 			*pvn = vNormal;
 			if ((pmv->m_bTextured = pof->bTextured))
 				pmv->m_baseColor.red =
@@ -154,10 +154,10 @@ G3GetOOFModelItems (nModel, po, pm, /*((nModel == 108) || (nModel == 110)) ? 0.8
 pm->m_textures = po->textures.m_bitmaps;
 memset (pm->m_teamTextures, 0xFF, sizeof (pm->m_teamTextures));
 pm->m_nType = -1;
-gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 1);
-G3SetupModel (pm, 1, 1);
+gameData.models.polyModels [nModel].rad = pm->Size (objP, 1);
+pm->Setup (1, 1);
 #if 1
-G3SetGunPoints (objP, pm, nModel, 0);
+pm->SetGunPoints (objP, 0);
 #endif
 return -1;
 }

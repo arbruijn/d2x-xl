@@ -40,6 +40,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "renderthreads.h"
 #include "hiresmodels.h"
 #include "buildmodel.h"
+#include "cquicksort.h"
 
 using namespace RenderModel;
 
@@ -278,7 +279,7 @@ void CSubModel::SortFaces (CBitmap* textureP)
 
 for (int i = 0; i < m_nFaces; i++)
 	m_faces [i].SetTexture (textureP);
-qs.SortAscending (m_faces, 0, m_nFaces - 1, &RenderModel::CFace::Compare);
+qs.SortAscending (m_faces, 0, static_cast<uint> (m_nFaces - 1), &RenderModel::CFace::Compare);
 }
 
 //------------------------------------------------------------------------------

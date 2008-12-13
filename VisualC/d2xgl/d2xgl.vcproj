@@ -665,7 +665,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\misc\cquicksort.cpp"
+						RelativePath="..\..\include\cquicksort.cpp"
 						>
 					</File>
 					<File
