@@ -54,14 +54,19 @@ inline int operator- (RenderModel::CVertex* f, CArray<RenderModel::CVertex>& a) 
 
 class CFace {
 	public:
-		CFixVector				vNormal;
-		short						nVerts;
-		short						nBitmap;
-		short						nIndex;
-		short						nId;
-		ubyte						nSubModel;
-		ubyte						bGlow :1;
-		ubyte						bThruster :1;
+		CFixVector				m_vNormal;
+		short						m_nVerts;
+		short						m_nBitmap;
+		CBitmap*					m_textureP;
+		short						m_nIndex;
+		short						m_nId;
+		ubyte						m_nSubModel;
+		ubyte						m_bGlow :1;
+		ubyte						m_bThruster :1;
+
+	public:
+		inline const bool CFace::operator< (CFace& other);
+		inline const bool CFace::operator> (CFace& other);
 	};
 
 inline int operator- (RenderModel::CFace* f, CArray<RenderModel::CFace>& a) { return a.Index (f); }
@@ -112,42 +117,48 @@ class CModel {
 	public:
 
 	public:
-		CArray<CBitmap>						textures;
-		int										teamTextures [8];
-		CArray<fVector3>						verts;
-		CArray<fVector3>						vertNorms;
-		CArray<tFaceColor>					color;
-		CArray<RenderModel::CVertex>		faceVerts;
-		CArray<RenderModel::CVertex>		sortedVerts;
-		CArray<ubyte>							vbData;
-		CArray<tTexCoord2f>					vbTexCoord;
-		CArray<tRgbaColorf>					vbColor;
-		CArray<fVector3>						vbVerts;
-		CArray<fVector3>						vbNormals;
-		CArray<RenderModel::CSubModel>	subModels;
-		CArray<RenderModel::CFace>			faces;
-		CArray<RenderModel::CVertex>		vertBuf [2];
-		CArray<short>							index [2];
-		short										nGunSubModels [MAX_GUNS];
-		float										fScale;
-		short										nType; //-1: custom mode, 0: default model, 1: alternative model, 2: hires model
-		short										nFaces;
-		short										iFace;
-		short										nVerts;
-		short										nFaceVerts;
-		short										iFaceVert;
-		short										nSubModels;
-		short										nTextures;
-		short										iSubModel;
-		short										bHasTransparency;
-		short										bValid;
-		short										bRendered;
-		short										bBullets;
-		CFixVector								vBullets;
-		GLuint									vboDataHandle;
-		GLuint									vboIndexHandle;
+		CArray<CBitmap>						m_textures;
+		int										m_teamTextures [8];
+		CArray<fVector3>						m_verts;
+		CArray<fVector3>						m_vertNorms;
+		CArray<tFaceColor>					m_color;
+		CArray<RenderModel::CVertex>		m_faceVerts;
+		CArray<RenderModel::CVertex>		m_sortedVerts;
+		CArray<ubyte>							m_vbData;
+		CArray<tTexCoord2f>					m_vbTexCoord;
+		CArray<tRgbaColorf>					m_vbColor;
+		CArray<fVector3>						m_vbVerts;
+		CArray<fVector3>						m_vbNormals;
+		CArray<RenderModel::CSubModel>	m_subModels;
+		CArray<RenderModel::CFace>			m_faces;
+		CArray<RenderModel::CVertex>		m_vertBuf [2];
+		CArray<short>							m_index [2];
+		short										m_nGunSubModels [MAX_GUNS];
+		float										m_fScale;
+		short										m_nType; //-1: custom mode, 0: default model, 1: alternative model, 2: hires model
+		short										m_nFaces;
+		short										m_iFace;
+		short										m_nVerts;
+		short										m_nFaceVerts;
+		short										m_iFaceVert;
+		short										m_nSubModels;
+		short										m_nTextures;
+		short										m_iSubModel;
+		short										m_bHasTransparency;
+		short										m_bValid;
+		short										m_bRendered;
+		short										m_bBullets;
+		CFixVector								m_vBullets;
+		GLuint									m_vboDataHandle;
+		GLuint									m_vboIndexHandle;
 
 	public:
+		CModel () { Init (); }
+		~CModel () { Destroy (); }
+		void Init (void);
+		void Setup (int bHires, int bSort);
+		bool Create (void);
+		void Destroy (void);
 	};	
 
 //	-----------------------------------------------------------------------------------------------------------

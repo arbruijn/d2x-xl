@@ -74,7 +74,7 @@ typedef struct tPlasmaBuffer {
 } tPlasmaBuffer;
 
 static tPlasmaBuffer plasmaBuffers [2][2];
-static fVector3 coreBuffer [2][MAX_LIGHTNING_SEGMENTS];
+static CFixVector3 coreBuffer [2][MAX_LIGHTNING_SEGMENTS];
 
 //------------------------------------------------------------------------------
 
@@ -1031,7 +1031,7 @@ G3DisableClientStates (1, 0, 0, GL_TEXTURE0);
 
 void CLightning::RenderCore (tRgbaColorf *colorP, int nDepth, int nThread)
 {
-	fVector3		*vPosf = coreBuffer [nThread];
+	CFixVector3		*vPosf = coreBuffer [nThread];
 	int			i;
 
 glBlendFunc (GL_ONE, GL_ONE);
@@ -2062,7 +2062,7 @@ typedef union tPolyKey {
 	short	s [4];
 } tPolyKey;
 
-void CLightningManager::RenderForDamage (CObject *objP, g3sPoint **pointList, CRenderModelVertex *pVerts, int nVertices)
+void CLightningManager::RenderForDamage (CObject *objP, g3sPoint **pointList, RenderModel::CVertex *vertP, int nVertices)
 {
 	CLightningSystem	*systemP;
 	CFloatVector				v, vPosf, vEndf, vNormf, vDeltaf;
@@ -2093,7 +2093,7 @@ if (pointList) {
 	}
 else {
 	for (i = 0; i < j; i++)
-		key.s [i] = pVerts [i].nIndex;
+		key.s [i] = vertP [i].nIndex;
 	for (; i < 4; i++)
 		key.s [i] = 0;
 	}
@@ -2118,9 +2118,9 @@ if (i < 0) {
 		h = CFixVector::Dist (vPos, vEnd);
 		}
 	else {
-		memcpy (&vPosf, &pVerts->vertex, sizeof (fVector3));
-		memcpy (&vEndf, &pVerts [1 + d_rand () % (nVertices - 1)].vertex, sizeof (fVector3));
-		memcpy (&v, &pVerts [1].vertex, sizeof (fVector3));
+		memcpy (&vPosf, &vertP->vertex, sizeof (CFixVector3));
+		memcpy (&vEndf, &vertP [1 + d_rand () % (nVertices - 1)].vertex, sizeof (CFixVector3));
+		memcpy (&v, &vertP [1].vertex, sizeof (CFixVector3));
 		vNormf = CFloatVector::Normal (vPosf, v, vEndf);
 		vPosf += vNormf * (1.0f / 64.0f);
 		vEndf += vNormf * (1.0f / 64.0f);

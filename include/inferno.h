@@ -1423,7 +1423,7 @@ class CHeadlightData {
 		CDynLight*			pl [MAX_PLAYERS];
 		CShaderLight*		psl [MAX_PLAYERS];
 		CFloatVector		pos [MAX_PLAYERS];
-		fVector3				dir [MAX_PLAYERS];
+		CFixVector3				dir [MAX_PLAYERS];
 		float					brightness [MAX_PLAYERS];
 		int					nLights;
 	public:
@@ -1556,7 +1556,7 @@ class COglData {
 		GLenum			nDestBlend;
 		float				zNear;
 		float				zFar;
-		fVector3			depthScale;
+		CFixVector3			depthScale;
 		tScreenScale	screenScale;
 		CFBO				drawBuffer;
 		CFBO				glowBuffer;
@@ -1679,9 +1679,9 @@ class CVertColorData {
 		CFloatVector	matDiffuse;
 		CFloatVector	matSpecular;
 		CFloatVector	colorSum;
-		fVector3			vertNorm;
-		fVector3			vertPos;
-		fVector3*		vertPosP;
+		CFixVector3			vertNorm;
+		CFixVector3			vertPos;
+		CFixVector3*		vertPosP;
 		float				fMatShininess;
 	public:
 		CVertColorData () { memset (this, 0, sizeof (*this)); }
@@ -1775,8 +1775,8 @@ typedef struct tSlideSegs {
 //------------------------------------------------------------------------------
 
 typedef struct tFaceRenderVertex {
-	fVector3				vertex;
-	fVector3				normal;
+	CFixVector3				vertex;
+	CFixVector3				normal;
 	tRgbaColorf			color;
 	tTexCoord2f			texCoord;
 	tTexCoord2f			ovlTexCoord;
@@ -1787,8 +1787,8 @@ class CFaceData {
 	public:
 		CArray<tFace>			faces;
 		CArray<grsTriangle>	tris;
-		CArray<fVector3>		vertices;
-		CArray<fVector3>		normals;
+		CArray<CFixVector3>		vertices;
+		CArray<CFixVector3>		normals;
 		CArray<tTexCoord2f>	texCoord;
 		CArray<tTexCoord2f>	ovlTexCoord;
 		CArray<tTexCoord2f>	lMapTexCoord;
@@ -1815,7 +1815,7 @@ class CFaceData {
 };
 
 inline int operator- (grsTriangle* o, CArray<grsTriangle>& a) { return a.Index (o); }
-inline int operator- (fVector3* o, CArray<fVector3>& a) { return a.Index (o); }
+inline int operator- (CFixVector3* o, CArray<CFixVector3>& a) { return a.Index (o); }
 inline int operator- (tTexCoord2f* o, CArray<tTexCoord2f>& a) { return a.Index (o); }
 
 typedef struct tSegList {
@@ -2172,23 +2172,23 @@ typedef struct tPOFObject {
 #define G3_BUFFER_OFFSET(_i)	(GLvoid *) ((char *) NULL + (_i))
 
 typedef struct CRenderRenderVertex {
-	fVector3					vertex;
-	fVector3					normal;
+	CFixVector3					vertex;
+	CFixVector3					normal;
 	tRgbaColorf				color;
 	tTexCoord2f				texCoord;
 	} CRenderRenderVertex;
 
-typedef struct CRenderModelVertex {
+typedef struct RenderModel::CVertex {
 	tTexCoord2f				texCoord;
 	tRgbaColorf				renderColor;
-	fVector3					vertex;
-	fVector3					normal;
+	CFixVector3					vertex;
+	CFixVector3					normal;
 	tRgbaColorf				baseColor;
 	short						nIndex;
 	char						bTextured;
-} CRenderModelVertex;
+} RenderModel::CVertex;
 
-inline int operator- (CRenderModelVertex* f, CArray<CRenderModelVertex>& a) { return a.Index (f); }
+inline int operator- (RenderModel::CVertex* f, CArray<RenderModel::CVertex>& a) { return a.Index (f); }
 
 typedef struct CRenderModelFace {
 	CFixVector				vNormal;
@@ -2210,8 +2210,8 @@ class CSubModel {
 #endif
 		CFixVector				vOffset;
 		CFixVector				vCenter;
-		fVector3					vMin;
-		fVector3					vMax;
+		CFixVector3					vMin;
+		CFixVector3					vMax;
 		CRenderModel::CFace*	faces;
 		short						nParent;
 		short						nFaces;
@@ -2240,7 +2240,7 @@ inline int operator- (CRenderModel::CSubModel* f, CArray<CRenderModel::CSubModel
 
 class CVertNorm {
 	public:
-		fVector3	vNormal;
+		CFixVector3	vNormal;
 		ubyte		nVerts;
 	};
 
@@ -2251,16 +2251,16 @@ class CRenderModel {
 	public:
 		CArray<CBitmap>						textures;
 		int										teamTextures [8];
-		CArray<fVector3>						verts;
-		CArray<fVector3>						vertNorms;
+		CArray<CFixVector3>						verts;
+		CArray<CFixVector3>						vertNorms;
 		CArray<tFaceColor>					color;
 		CArray<CRenderModel::CVertex>		faceVerts;
 		CArray<CRenderModel::CVertex>		sortedVerts;
 		CArray<ubyte>							vbData;
 		CArray<tTexCoord2f>					vbTexCoord;
 		CArray<tRgbaColorf>					vbColor;
-		CArray<fVector3>						vbVerts;
-		CArray<fVector3>						vbNormals;
+		CArray<CFixVector3>						vbVerts;
+		CArray<CFixVector3>						vbNormals;
 		CArray<CRenderModel::CSubModel>	subModels;
 		CArray<CRenderModel::CFace>		faces;
 		CArray<CRenderModel::CVertex>		vertBuf [2];

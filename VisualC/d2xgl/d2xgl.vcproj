@@ -609,6 +609,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\include\cquicksort.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\include\crypt.h"
 						>
 					</File>
@@ -655,6 +659,10 @@
 								ObjectFile="$(IntDir)/$(InputName)1.obj"
 							/>
 						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\misc\cquicksort.cpp"
+						>
 					</File>
 					<File
 						RelativePath="..\..\main\crypt.cpp"
@@ -4617,11 +4625,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

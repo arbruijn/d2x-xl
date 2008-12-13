@@ -71,11 +71,11 @@ extern int bZPass;
 void G3DynLightModel (CObject *objP, CRenderModel *pm, short iVerts, short nVerts, short iFaceVerts, short nFaceVerts)
 {
 	CFloatVector			vPos, vVertex;
-	fVector3			*pv, *pn;
-	CRenderModelVertex	*pmv;
-	tFaceColor		*pc;
-	float				fAlpha = GrAlpha ();
-	int				h, i, bEmissive = (objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId];
+	CFixVector3				*pv, *pn;
+	RenderModel::CVertex	*pmv;
+	tFaceColor				*pc;
+	float						fAlpha = GrAlpha ();
+	int						h, i, bEmissive = (objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId];
 
 if (!gameStates.render.bBrightObject) {
 	vPos = objP->info.position.vPos.ToFloat();
@@ -84,7 +84,7 @@ if (!gameStates.render.bBrightObject) {
 		  i++, pv++, pn++, pc++) {
 		pc->index = 0;
 		vVertex = vPos + *reinterpret_cast<CFloatVector*> (pv);
-		G3VertexColor (reinterpret_cast<fVector3*> (pn), vVertex.V3(), i, pc, NULL, 1, 0, 0);
+		G3VertexColor (reinterpret_cast<CFixVector3*> (pn), vVertex.V3(), i, pc, NULL, 1, 0, 0);
 		}
 	}
 for (i = iFaceVerts, h = iFaceVerts, pmv = pm->faceVerts + iFaceVerts; i < nFaceVerts; i++, h++, pmv++) {
@@ -109,7 +109,7 @@ for (i = iFaceVerts, h = iFaceVerts, pmv = pm->faceVerts + iFaceVerts; i < nFace
 void G3LightModel (CObject *objP, int nModel, fix xModelLight, fix *xGlowValues, int bHires)
 {
 	CRenderModel			*pm = gameData.models.g3Models [bHires] + nModel;
-	CRenderModelVertex	*pmv;
+	RenderModel::CVertex	*pmv;
 	CRenderModelFace	*pmf;
 	tRgbaColorf		baseColor, *colorP;
 	float				fLight, fAlpha = (float) gameStates.render.grAlpha / (float) FADE_LEVELS;
@@ -195,8 +195,8 @@ void G3ScaleModel (int nModel, int bHires)
 	CRenderModel			*pm = gameData.models.g3Models [bHires] + nModel;
 	CFloatVector			fScale;
 	int				i;
-	fVector3			*pv;
-	CRenderModelVertex	*pmv;
+	CFixVector3			*pv;
+	RenderModel::CVertex	*pmv;
 
 if (gameData.models.vScale.IsZero ())
 	fScale.Create (1,1,1);
@@ -223,8 +223,8 @@ void G3GetThrusterPos (CObject *objP, short nModel, CRenderModelFace *pmf, CFixV
 							  CFixVector *vNormal, int nRad, int bHires)
 {
 	CRenderModel				*pm = gameData.models.g3Models [bHires] + nModel;
-	CRenderModelVertex		*pmv = NULL;
-	fVector3				v = fVector3::ZERO, vn, vo, vForward = fVector3::Create(0,0,1);
+	RenderModel::CVertex		*pmv = NULL;
+	CFixVector3				v = CFixVector3::ZERO, vn, vo, vForward = CFixVector3::Create(0,0,1);
 	tModelThrusters	*mtP = gameData.models.thrusters + nModel;
 	int					i, j = 0;
 	float					h, nSize;
@@ -236,7 +236,7 @@ if (!pm->bRendered || !gameData.models.vScale.IsZero ())
 else if (mtP->nCount >= (((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT)) ? 2 : 1))
 	return;
 vn = (pmf ? pmf->vNormal.ToFloat3() : vNormal->ToFloat3());
-if (fVector3::Dot(vn, vForward) > -1.0f / 3.0f)
+if (CFixVector3::Dot(vn, vForward) > -1.0f / 3.0f)
 	return;
 if (pmf) {
 	for (i = 0, j = pmf->nVerts, pmv = pm->faceVerts + pmf->nIndex; i < j; i++)
@@ -272,7 +272,7 @@ if (!mtP->nCount) {
 		mtP->fSize = X2F (nRad);
 	else {
 		for (i = 0, nSize = 1000000000; i < j; i++)
-			if (nSize > (h = fVector3::Dist(v, pmv [i].vertex)))
+			if (nSize > (h = CFixVector3::Dist(v, pmv [i].vertex)))
 				nSize = h;
 		mtP->fSize = nSize;// * 1.25f;
 		}
@@ -609,7 +609,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 #endif
 			if (nLights < 0) {
 				tFaceColor *psc = AvgSgmColor (objP->info.nSegment, NULL);
-				fVector3 vPos;
+				CFixVector3 vPos;
 				hLight = GL_LIGHT0 + iLight++;
 				glEnable (hLight);
 				vPos = objP->info.position.vPos.ToFloat3();
@@ -804,7 +804,7 @@ if (bUseVBO) {
 		}
 	}
 else {
-	pm->vbVerts = reinterpret_cast<fVector3*> (pm->vertBuf [0].Buffer ());
+	pm->vbVerts = reinterpret_cast<CFixVector3*> (pm->vertBuf [0].Buffer ());
 	pm->vbNormals = pm->vbVerts + pm->nFaceVerts;
 	pm->vbColor = reinterpret_cast<tRgbaColorf*> (pm->vbNormals + pm->nFaceVerts);
 	pm->vbTexCoord = reinterpret_cast<tTexCoord2f*> (pm->vbColor + pm->nFaceVerts);
@@ -821,9 +821,9 @@ if (!(gameOpts->ogl.bObjLighting || gameStates.render.bQueryCoronas || gameState
 	G3LightModel (objP, nModel, xModelLight, xGlowValues, bHires);
 if (bUseVBO) {
 	if (!gameStates.render.bCloaked) {
-		glNormalPointer (GL_FLOAT, 0, G3_BUFFER_OFFSET (pm->nFaceVerts * sizeof (fVector3)));
-		glColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (pm->nFaceVerts * 2 * sizeof (fVector3)));
-		glTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (pm->nFaceVerts * ((2 * sizeof (fVector3) + sizeof (tRgbaColorf)))));
+		glNormalPointer (GL_FLOAT, 0, G3_BUFFER_OFFSET (pm->nFaceVerts * sizeof (CFixVector3)));
+		glColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (pm->nFaceVerts * 2 * sizeof (CFixVector3)));
+		glTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (pm->nFaceVerts * ((2 * sizeof (CFixVector3) + sizeof (tRgbaColorf)))));
 		}
 	glVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (0));
 	if (pm->vboIndexHandle)

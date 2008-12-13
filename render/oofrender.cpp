@@ -417,7 +417,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.faces; i; i--, pf++) {
 			phv = pv + (h = pfv->nIndex);
 			if (bDynLighting) {
 				if (pvc [h].index != gameStates.render.nFrameFlipFlop + 1)
-					G3VertexColor (reinterpret_cast<fVector3*> (pvn + h), reinterpret_cast<fVector3*> (phv), -1, pvc + h, NULL, 1, 0, 0);
+					G3VertexColor (reinterpret_cast<CFixVector3*> (pvn + h), reinterpret_cast<CFixVector3*> (phv), -1, pvc + h, NULL, 1, 0, 0);
 				vc.color.red = (float) sqrt (pvc [h].color.red);
 				vc.color.green = (float) sqrt (pvc [h].color.green);
 				vc.color.blue = (float) sqrt (pvc [h].color.blue);

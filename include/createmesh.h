@@ -70,8 +70,8 @@ class CQuadMeshBuilder {
 	private:
 		tFace			*m_faceP;
 		grsTriangle		*m_triP;
-		fVector3			*m_vertexP;
-		fVector3			*m_normalP;
+		CFixVector3			*m_vertexP;
+		CFixVector3			*m_normalP;
 		tTexCoord2f		*m_texCoordP;
 		tTexCoord2f		*m_ovlTexCoordP;
 		tTexCoord2f		*m_lMapTexCoordP;
@@ -99,7 +99,7 @@ class CQuadMeshBuilder {
 		void SplitIn4Tris (void);
 		void BuildSlidingFaceList (void);
 		int IsBigFace (short *m_sideVerts);
-		fVector3 *SetTriNormals (grsTriangle *triP, fVector3 *m_normalP);
+		CFixVector3 *SetTriNormals (grsTriangle *triP, CFixVector3 *m_normalP);
 
 	public:
 		CQuadMeshBuilder (void) {};

@@ -57,8 +57,8 @@ int G3GetOOFModelItems (int nModel, tOOFObject *po, CRenderModel *pm, float fSca
 	tOOF_face		*pof;
 	tOOF_faceVert	*pfv;
 	CRenderSubModel		*psm;
-	fVector3			*pvn = pm->vertNorms.Buffer (), vNormal;
-	CRenderModelVertex	*pmv = pm->faceVerts.Buffer ();
+	CFixVector3			*pvn = pm->vertNorms.Buffer (), vNormal;
+	RenderModel::CVertex	*pmv = pm->faceVerts.Buffer ();
 	CRenderModelFace	*pmf = pm->faces.Buffer ();
 	int				h, i, j, n, nIndex = 0;
 
@@ -96,13 +96,13 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->subModels.Buffer (); 
 		pfv = pof->verts;
 		h = pfv->nIndex;
 		if (nModel > 200) {
-			vNormal = fVector3::Normal(
-							*reinterpret_cast<fVector3*> (pso->verts + pfv [0].nIndex),
-							*reinterpret_cast<fVector3*> (pso->verts + pfv [1].nIndex),
-							*reinterpret_cast<fVector3*> (pso->verts + pfv [2].nIndex));
+			vNormal = CFixVector3::Normal(
+							*reinterpret_cast<CFixVector3*> (pso->verts + pfv [0].nIndex),
+							*reinterpret_cast<CFixVector3*> (pso->verts + pfv [1].nIndex),
+							*reinterpret_cast<CFixVector3*> (pso->verts + pfv [2].nIndex));
 			}
 		else
-			memcpy (&vNormal, &pof->vNormal, sizeof (fVector3));
+			memcpy (&vNormal, &pof->vNormal, sizeof (CFixVector3));
 		for (; n; n--, pfv++, pmv++, pvn++) {
 			h = pfv->nIndex;
 			pmv->nIndex = h;

@@ -109,12 +109,12 @@ CRenderModelFace *G3AddModelFace (CRenderModel *pm, CRenderSubModel *psm, CRende
 										CBitmap **modelBitmaps, tRgbaColorf *objColorP)
 {
 	short				nVerts = WORDVAL (p+2);
-	CRenderModelVertex	*pmv;
+	RenderModel::CVertex	*pmv;
 	short				*pfv;
 	tUVL				*uvl;
 	CBitmap			*bmP;
 	tRgbaColorf		baseColor;
-	fVector3			n, *pvn;
+	CFixVector3			n, *pvn;
 	short				i, j;
 	ushort			c;
 	char				bTextured;
@@ -208,7 +208,7 @@ for (;;) {
 
 		case OP_DEFPOINTS: {
 			int i, n = WORDVAL (p+2);
-			fVector3 *pfv = pm->verts.Buffer ();
+			CFixVector3 *pfv = pm->verts.Buffer ();
 			CFixVector *pv = VECPTR (p+4);
 			for (i = n; i; i--) {
 				*pfv = pv->ToFloat3();
@@ -221,7 +221,7 @@ for (;;) {
 		case OP_DEFP_START: {
 			int i, n = WORDVAL (p+2);
 			int s = WORDVAL (p+4);
-			fVector3 *pfv = pm->verts + s;
+			CFixVector3 *pfv = pm->verts + s;
 			CFixVector *pv = VECPTR (p+8);
 			for (i = n; i; i--) {
 				*pfv = pv->ToFloat3();

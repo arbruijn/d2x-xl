@@ -1342,7 +1342,7 @@ else if (gameStates.render.bPerPixelLighting) {
 			}
 		vcd.vertPosP = &vcd.vertPos;
 		vcd.fMatShininess = 4;
-		G3AccumVertColor (-1, reinterpret_cast<fVector3*> (psc), &vcd, 0);
+		G3AccumVertColor (-1, reinterpret_cast<CFixVector3*> (psc), &vcd, 0);
 		}
 #if DBG
 	if (psc->color.red + psc->color.green + psc->color.blue == 0)

@@ -2,12 +2,12 @@
 #define _ASE_H
 
 typedef struct tASEVertex {
-	fVector3					vertex;
-	fVector3					normal;
+	CFixVector3					vertex;
+	CFixVector3					normal;
 } tASEVertex;
 
 typedef struct tASEFace {
-	fVector3					vNormal;
+	CFixVector3					vNormal;
 	short						nVerts [3];	// indices of vertices 
 	short						nTexCoord [3];
 	short						nBitmap;
@@ -35,7 +35,7 @@ typedef struct tASESubModel {
 	char						nGunPoint;
 	char						nBullets;
 	char						bBarrel;
-	fVector3					vOffset;
+	CFixVector3					vOffset;
 	CArray<tASEFace>		faces;
 	CArray<tASEVertex>	verts;
 	CArray<tTexCoord2f>	texCoord;

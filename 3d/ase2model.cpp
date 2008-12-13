@@ -45,7 +45,7 @@ void G3GetASEModelItems (int nModel, tASEModel *pa, CRenderModel *pm, float fSca
 	tASEFace				*pfa;
 	CRenderSubModel			*psm;
 	CRenderModelFace		*pmf = pm->faces.Buffer ();
-	CRenderModelVertex		*pmv = pm->faceVerts.Buffer ();
+	RenderModel::CVertex		*pmv = pm->faceVerts.Buffer ();
 	CBitmap				*bmP;
 	int					h, i, nFaces, iFace, nVerts = 0, nIndex = 0;
 	int					bTextured;

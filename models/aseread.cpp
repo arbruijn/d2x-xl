@@ -150,13 +150,13 @@ return pszToken ? pszToken : reinterpret_cast<char*> ("");
 
 //------------------------------------------------------------------------------
 
-void ASE_ReadVector (CFile& cf, fVector3 *pv)
+void ASE_ReadVector (CFile& cf, CFixVector3 *pv)
 {
 #if ASE_ROTATE_MODEL
 	float x = FloatTok (" \t");
 	float z = -FloatTok (" \t");
 	float y = FloatTok (" \t");
-	*pv = fVector3::Create(x, y, z);
+	*pv = CFixVector3::Create(x, y, z);
 #else	// need to rotate model for Descent
 	int	i;
 

@@ -100,7 +100,7 @@ return gameStates.ogl.bRender2TextureOk && gameData.render.ogl.drawBuffer.Handle
 
 //------------------------------------------------------------------------------
 
-static inline fVector3* G3GetNormal (g3sPoint *pPoint, CFloatVector *pvNormal)
+static inline CFixVector3* G3GetNormal (g3sPoint *pPoint, CFloatVector *pvNormal)
 {
 return pPoint->p3_normal.nFaces ? pPoint->p3_normal.vNormal.V3() : pvNormal->V3();
 }
