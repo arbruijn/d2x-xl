@@ -15,6 +15,7 @@ template < class _T > class CArray {
 			uint	pos;
 			bool	bExternal;
 			bool	bChild;
+			bool	bWrap;
 			};
 
 	protected:
@@ -62,7 +63,7 @@ template < class _T > class CArray {
 			m_data.buffer = reinterpret_cast<_T *> (NULL); 
 			m_data.length = 0;
 			m_data.pos = 0;
-			m_data.bExternal = m_data.bChild = false;
+			m_data.bExternal = m_data.bChild = m_data.bWrap = false;
 			memset (&m_data.null, 0, sizeof (_T));
 			}
 
@@ -139,11 +140,14 @@ template < class _T > class CArray {
 			if (bCopy)
 				memcpy (p, m_data.buffer, ((length > m_data.length) ? m_data.length : length) * sizeof (_T)); 
 			m_data.length = length;
+			m_data.pos %= length;
 			delete[] m_data.buffer;
 			return m_data.buffer = p;
 			}
 
 		inline uint Length (void) { return m_data.length; }
+
+		inline _T* Current (void) { return m_data.buffer ? m_data.buffer + m_data.pos : NULL; }
 
 		inline size_t Size (void) { return m_data.length * sizeof (_T); }
 #if DBG
@@ -166,8 +170,8 @@ template < class _T > class CArray {
 
 		inline _T& Copy (CArray<_T>& source, uint offset = 0) { 
 			if (((static_cast<int> (m_data.length)) >= 0) && (static_cast<int> (source.m_data.length) > 0)) {
-				if ((m_data.buffer && (m_data.length >= source.m_data.length)) || Resize (source.m_data.length, false)) {
-					memcpy (m_data.buffer + offset, source.m_data.buffer, ((m_data.length < source.m_data.length) ? m_data.length : source.m_data.length) * sizeof (_T)); 
+				if ((m_data.buffer && (m_data.length >= source.m_data.length + offset)) || Resize (source.m_data.length + offset, false)) {
+					memcpy (m_data.buffer + offset, source.m_data.buffer, ((m_data.length - offset < source.m_data.length) ? m_data.length - offset : source.m_data.length) * sizeof (_T)); 
 					}
 				}
 			return m_data.buffer [0];
@@ -184,8 +188,6 @@ template < class _T > class CArray {
 			return (m_data.length == other.m_data.length) && !(m_data.length && memcmp (m_data.buffer, other.m_data.buffer)); 
 			}
 
-		//inline operator bool() const { return m_data.buffer != 0; }
-
 		inline bool operator!= (CArray<_T>& other) { 
 			return (m_data.length != other.m_data.length) || (m_data.length && memcmp (m_data.buffer, other.m_data.buffer)); 
 			}
@@ -194,9 +196,29 @@ template < class _T > class CArray {
 
 		inline _T* End (void) { return (m_data.buffer && m_data.length) ? m_data.buffer + m_data.length - 1 : NULL; }
 
-		inline _T* operator++ (void) { return (m_buffer && (m_pos < m_size - 1)) ? m_buffer + ++m_pos : NULL; }
+		inline _T* operator++ (void) { 
+			if (!m_data.buffer)
+				return NULL;
+			if (m_data.pos < m_data.length - 1)
+				m_data.pos++;
+			else if (m_data.bWrap) 
+				m_data.pos = 0;
+			else
+				return NULL;
+			return m_data.buffer + m_data.pos;
+			}
 
-		inline _T* operator-- (void) { return (m_buffer && (m_pos > 0)) ? m_buffer + --m_pos : NULL; }
+		inline _T* operator-- (void) { 
+			if (!m_data.buffer)
+				return NULL;
+			if (m_pos > 0)
+				m_data.pos--;
+			else if (bWrap)
+				m_pos = m_data.length - 1;
+			else
+				return NULL;
+			return m_data.buffer + m_data.pos;
+			}
 
 		inline _T* operator+ (uint i) { return m_data.buffer ? m_data.buffer + i : NULL; }
 
@@ -209,6 +231,12 @@ template < class _T > class CArray {
 			}
 
 		inline bool operator! () { return m_data.buffer == NULL; }
+
+		inline uint Pos (void) { return m_data.pos; }
+
+		inline void Pos (uint pos) { m_data.pos = pos % m_data.length; }
+
+		inline void SetWrap (bool bWrap) { m_data.bWrap = bWrap; }
 	};
 
 inline int operator- (char* v, CArray<char>& a) { return a.Index (v); }

@@ -906,8 +906,12 @@ return bmP;
 //stores OpenGL textured id in *texid and u/v values required to get only the real data in *u/*v
 int CBitmap::LoadTexture (int dxo, int dyo, int nTransp, int superTransp)
 {
-	ubyte			*data = Buffer ();
-	GLubyte		*bufP;
+	ubyte*		data = Buffer ();
+
+if (!data)
+	return 1;
+
+	GLubyte*		bufP = NULL;
 	CTexture		texture, *texP;
 	bool			bLocal;
 	int			funcRes = 1;
@@ -1005,7 +1009,7 @@ return 0;
 
 int CBitmap::SetupFrames (int bDoMipMap, int nTransp, int bLoad)
 {
-	int	nFrames = (m_info.nType == BM_TYPE_ALT) ? m_info.info.alt.nFrameCount : 0;
+	int	nFrames = (m_info.nType == BM_TYPE_ALT) ? m_info.frames.Count () : 0;
 	ubyte	nFlags;
 
 if (nFrames < 2)
@@ -1015,8 +1019,8 @@ else {
 	int		i, w = m_info.props.w;
 
 	memset (bmfP, 0, nFrames * sizeof (CBitmap));
-	m_info.info.alt.frames = 
-	m_info.info.alt.curFrame = bmfP;
+	m_info.frames = 
+	m_info.frames.Current () = bmfP;
 	for (i = 0; i < nFrames; i++, bmfP++) {
 		bmfP->InitChild (this, 0, i * w, w, w);
 		bmfP->SetType (BM_TYPE_FRAME);
@@ -1083,7 +1087,7 @@ int CBitmap::CreateMasks (void)
 
 if (!gameStates.render.textures.bHaveMaskShader)
 	return 0;
-if ((m_info.nType != BM_TYPE_ALT) || !m_info.info.alt.frames) {
+if ((m_info.nType != BM_TYPE_ALT) || !m_info.frames) {
 	if (m_info.props.flags & BM_FLAG_SUPER_TRANSPARENT)
 		return CreateMask () != NULL;
 	return 0;
@@ -1091,7 +1095,7 @@ if ((m_info.nType != BM_TYPE_ALT) || !m_info.info.alt.frames) {
 nFrames = FrameCount ();
 for (nMasks = i = 0; i < nFrames; i++)
 	if (m_info.supertranspFrames [i / 32] & (1 << (i % 32)))
-		if (m_info.info.alt.frames [i].CreateMask ())
+		if (m_info.frames [i].CreateMask ())
 			nMasks++;
 return nMasks;
 }
@@ -1135,7 +1139,7 @@ CBitmap *CBitmap::SetupTexture (int bDoMipMap, int nTransp, int bLoad)
 	CBitmap *bmP;
 
 if ((bmP = HasOverride ()))
-	bmP->PrepareTexture (bDoMipMap, nTransp, bLoad);
+	return bmP->PrepareTexture (bDoMipMap, nTransp, bLoad);
 
 int	i, h, w, nFrames;
 

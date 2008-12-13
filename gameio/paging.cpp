@@ -344,7 +344,7 @@ if (wallP->nClip > -1)	{
 
 //------------------------------------------------------------------------------
 
-void PagingTouchWalls ()
+void PagingTouchWalls (void)
 {
 	int i;
 
@@ -406,7 +406,7 @@ for (i = 0; i < MAX_ADDON_BITMAP_FILES; i++)
 
 //------------------------------------------------------------------------------
 
-void PagingTouchAllSub ()
+void PagingTouchAllSub (void)
 {
 	int 			bBlackScreen;
 

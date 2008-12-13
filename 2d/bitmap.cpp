@@ -69,7 +69,7 @@ return Buffer () != NULL;
 
 void CBitmap::DestroyBuffer (void)
 {
-if ((m_info.nType != BM_TYPE_ALT) && m_info.info.std.parent)
+if ((m_info.nType != BM_TYPE_ALT) && m_info.parentP)
 	SetBuffer (NULL, 0);
 else if (Buffer ())
 	CArray<ubyte>::Destroy ();
@@ -90,10 +90,11 @@ DestroyMask ();
 
 void CBitmap::DestroyFrames (void)
 {
-if (m_info.info.alt.frames) {
-	delete[] m_info.info.alt.frames;
-	m_info.info.alt.curFrame = NULL;
-	m_info.info.alt.nFrameCount = 0;
+if (m_info.frames.bmP) {
+	delete[] m_info.frames.bmP;
+	m_info.frames.bmP =
+	m_info.frames.currentP = NULL;
+	m_info.frames.nCount = 0;
 	}
 }
 
@@ -101,8 +102,8 @@ if (m_info.info.alt.frames) {
 
 void CBitmap::DestroyMask (void)
 {
-delete m_info.info.std.mask;
-m_info.info.std.mask = NULL;
+delete m_info.maskP;
+m_info.maskP = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -151,7 +152,10 @@ return child;
 void CBitmap::InitChild (CBitmap *parent, int x, int y, int w, int h)
 {
 *this = *parent;
-memset (&m_info.info, 0, sizeof (m_info.info));
+m_info.parentP =
+m_info.overrideP =
+m_info.maskP = NULL;
+memset (&m_info.frames, 0, sizeof (m_info.frames));
 m_info.bChild = 1;
 m_info.props.x += x;
 m_info.props.y += y;

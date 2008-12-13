@@ -16,6 +16,29 @@
 #define BM_SVGA15   4
 #define BM_OGL      5
 
+#define BM_TYPE_STD		0
+#define BM_TYPE_ALT		1
+#define BM_TYPE_FRAME	2
+#define BM_TYPE_MASK		4
+
+#define BM_FLAG_TRANSPARENT         1
+#define BM_FLAG_SUPER_TRANSPARENT   2
+#define BM_FLAG_NO_LIGHTING         4
+#define BM_FLAG_RLE                 8   // A run-length encoded bitmap.
+#define BM_FLAG_PAGED_OUT           16  // This bitmap's data is paged out.
+#define BM_FLAG_RLE_BIG             32  // for bitmaps that RLE to > 255 per row (i.e. cockpits)
+#define BM_FLAG_SEE_THRU				64  // door or other texture containing see-through areas
+#define BM_FLAG_TGA						128
+
+#define BM_FRAMECOUNT(_bmP)	((_bmP)->m_info.frames.nCount)
+#define BM_FRAMES(_bmP)			((_bmP)->m_info.frames)
+#define BM_CURFRAME(_bmP)		((_bmP)->m_info.frames.currentP)
+#define BM_OVERRIDE(_bmP)		((_bmP)->m_info.overrideP)
+#define BM_MASK(_bmP)			((_bmP)->m_info.override.maskP)
+#define BM_PARENT(_bmP)			((_bmP)->m_info.override.parentP)
+
+#define MAX_BMP_SIZE(width, height) (4 + ((width) + 2) * (height))
+
 //-----------------------------------------------------------------------------
 
 typedef struct grsPoint {
@@ -27,93 +50,61 @@ typedef struct grsPoint {
 class CBitmap;
 class CTexture;
 
-#define BM_FLAG_TRANSPARENT         1
-#define BM_FLAG_SUPER_TRANSPARENT   2
-#define BM_FLAG_NO_LIGHTING         4
-#define BM_FLAG_RLE                 8   // A run-length encoded bitmap.
-#define BM_FLAG_PAGED_OUT           16  // This bitmap's data is paged out.
-#define BM_FLAG_RLE_BIG             32  // for bitmaps that RLE to > 255 per row (i.e. cockpits)
-#define BM_FLAG_SEE_THRU				64  // door or other texture containing see-through areas
-#define BM_FLAG_TGA						128
-
 //-----------------------------------------------------------------------------
 
 typedef struct tBmProps {
-	short   x, y;		// Offset from parent's origin
+	short   x, y;		// Offset from parentP's origin
 	short   w, h;		// width, height
 	short   rowSize;	// ubyte offset to next row
 	sbyte	  nMode;		// 0=Linear, 1=ModeX, 2=SVGA
 	ubyte	  flags;		
 } tBmProps;
 
-typedef struct tStdBmInfo {
-	CBitmap	*override;
-	CBitmap	*mask;	//intended for supertransparency masks 
-	CBitmap	*parent;
-} tStdBmInfo;
-
-typedef struct tAltBmInfo {
-	ubyte			nFrameCount;
-	CBitmap		*frames;
-	CBitmap		*curFrame;
-} tAltBmInfo;
-
-#define BM_TYPE_STD		0
-#define BM_TYPE_ALT		1
-#define BM_TYPE_FRAME	2
-#define BM_TYPE_MASK		4
+class CFrameInfo {
+	public:
+		CBitmap*	bmP;
+		CBitmap*	currentP;
+		uint		nCount;
+	};
 
 //-----------------------------------------------------------------------------
 
-typedef struct tBitmap {
-	char				szName [20];
-	tBmProps			props;
-	ubyte				flags;		
-	CPalette			*palette;
-	//ubyte				*buffer;			// ptr to texture data...
-											//   Linear = *parent+(rowSize*y+x)
-											//   ModeX = *parent+(rowSize*y+x/4)
-											//   SVGA = *parent+(rowSize*y+x)
-	ushort			nId;				//for application.  initialized to 0
-	tRgbColorb		avgColor;		//Average color of all pixels in texture map.
-	ubyte				avgColorIndex;	//palette index of palettized color closest to average RGB color
-	ubyte				nBPP;
-	ubyte				nType;
-	ubyte				bWallAnim;
-	ubyte				bFromPog;
-	ubyte				bChild;
-	ubyte				bFlat;		//no texture, just a colored area
-	ubyte				nTeam;
+class CBitmapInfo {
+	public:
+		char					szName [20];
+		tBmProps				props;
+		ubyte					flags;		
+		ushort				nId;		
+		tRgbColorb			avgColor;		
+		ubyte					avgColorIndex;	
+		ubyte					nBPP;
+		ubyte					nType;
+		ubyte					bWallAnim;
+		ubyte					bFromPog;
+		ubyte					bChild;
+		ubyte					bFlat;		//no texture, just a colored area
+		ubyte					nTeam;
 #if TEXTURE_COMPRESSION
-	ubyte				bCompressed;
-	int				nFormat;
-	int				nBufSize;
+		ubyte					bCompressed;
+		int					nFormat;
+		int					nBufSize;
 #endif
-	int				transparentFrames [4];
-	int				supertranspFrames [4];
-
-	CTexture			*texture;
-	struct {
-		tStdBmInfo	std;
-		tAltBmInfo	alt;
-		} info;
-} tBitmap;
-
-
-#define BM_FRAMECOUNT(_bmP)	((_bmP)->m_info.info.alt.nFrameCount)
-#define BM_FRAMES(_bmP)			((_bmP)->m_info.info.alt.frames)
-#define BM_CURFRAME(_bmP)		((_bmP)->m_info.info.alt.curFrame)
-#define BM_OVERRIDE(_bmP)		((_bmP)->m_info.info.std.override)
-#define BM_MASK(_bmP)			((_bmP)->m_info.info.std.mask)
-#define BM_PARENT(_bmP)			((_bmP)->m_info.info.std.parent)
-
-#define MAX_BMP_SIZE(width, height) (4 + ((width) + 2) * (height))
+		int					transparentFrames [4];
+		int					supertranspFrames [4];
+		CBitmap*				parentP;
+		CBitmap*				overrideP;
+		CBitmap*				maskP;
+		CFrameInfo			frames;
+		CPalette*			palette;
+		CTexture*			texture;
+};
 
 //-----------------------------------------------------------------------------
 
 class CBitmap : public CArray< ubyte > {
 	private:
-		tBitmap	m_info;
+		CBitmapInfo	m_info;
+
 	public:
 		CBitmap () { Init (); };
 		~CBitmap () { Destroy (); };
@@ -126,37 +117,37 @@ class CBitmap : public CArray< ubyte > {
 		void DestroyBuffer (void);
 		void Init (void);
 		void Init (int mode, int x, int y, int w, int h, int bpp = 1, ubyte *buffer = NULL);
-		void InitChild (CBitmap *parent, int x, int y, int w, int h);
+		void InitChild (CBitmap *parentP, int x, int y, int w, int h);
 		CBitmap* CreateChild (int x, int y, int w, int h);
 		CBitmap* FreeTexture (CBitmap *bmP);
 		void FreeTexture (void);
 
 		inline CBitmap *NextFrame (void) {
-			m_info.info.alt.curFrame++;
-			if (++m_info.info.alt.curFrame >= m_info.info.alt.frames + m_info.info.alt.nFrameCount)
-				m_info.info.alt.curFrame = m_info.info.alt.frames;
-			return m_info.info.alt.curFrame;
+			m_info.frames.currentP++;
+			if (++m_info.frames.currentP >= m_info.frames.bmP + m_info.frames.nCount)
+				m_info.frames.currentP = m_info.frames.bmP;
+			return m_info.frames.currentP;
 			}
 
 		inline CBitmap *CurFrame (int iFrame) {
 			if (m_info.nType != BM_TYPE_ALT)
 				return this;
 			if (iFrame < 0)
-				return m_info.info.alt.curFrame ? m_info.info.alt.curFrame : this;
-			return m_info.info.alt.curFrame = (m_info.info.alt.frames ? m_info.info.alt.frames + iFrame % m_info.info.alt.nFrameCount : this);
+				return m_info.frames.currentP ? m_info.frames.currentP : this;
+			return m_info.frames.currentP = (m_info.frames.bmP ? m_info.frames.bmP + iFrame % m_info.frames.nCount : this);
 			}
 
 		inline CBitmap* HasParent (void)
-			{ return (m_info.nType == BM_TYPE_STD) ? m_info.info.std.parent :  NULL; } 
+			{ return (m_info.nType == BM_TYPE_STD) ? m_info.parentP :  NULL; } 
 		inline CBitmap* HasOverride (void)
-			{ return (m_info.nType == BM_TYPE_STD) ? m_info.info.std.override :  m_info.info.alt.curFrame; } 
+			{ return (m_info.nType == BM_TYPE_STD) ? m_info.overrideP :  m_info.frames.currentP; } 
 
 		inline CBitmap *Override (int iFrame) {
 			CBitmap *bmP = this;
 			if (m_info.nType == BM_TYPE_STD) {
-				if (!m_info.info.std.override)
+				if (!m_info.overrideP)
 					return this;
-				bmP = m_info.info.std.override;
+				bmP = m_info.overrideP;
 				}
 			return bmP->CurFrame (iFrame);
 			}
@@ -185,22 +176,22 @@ class CBitmap : public CArray< ubyte > {
 		int RLECompress (void);
 		void ExpandTo (CBitmap *destP);
 	
-		inline ubyte FrameCount (void) { return ((Type () != BM_TYPE_ALT) && Parent ()) ? Parent ()->FrameCount () : m_info.info.alt.nFrameCount; }
-		inline CBitmap *Frames (void) { return (m_info.nType == BM_TYPE_ALT) ? m_info.info.alt.frames : NULL; }
-		inline CBitmap *CurFrame (void) { return m_info.info.alt.curFrame; }
-		inline CBitmap *Override (void) { return m_info.info.std.override; }
-		inline CBitmap *Mask (void) { return m_info.info.std.mask; }
-		inline CBitmap *Parent (void) { return m_info.info.std.parent; }
+		inline ubyte FrameCount (void) { return ((Type () != BM_TYPE_ALT) && Parent ()) ? Parent ()->FrameCount () : m_info.frames.nCount; }
+		inline CBitmap *Frames (void) { return (m_info.nType == BM_TYPE_ALT) ? m_info.frames.bmP : NULL; }
+		inline CBitmap *CurFrame (void) { return m_info.frames.currentP; }
+		inline CBitmap *Override (void) { return m_info.overrideP; }
+		inline CBitmap *Mask (void) { return m_info.maskP; }
+		inline CBitmap *Parent (void) { return m_info.parentP; }
 
 		inline tBmProps* Props (void) { return &m_info.props; }
 		inline ushort Id (void) { return m_info.nId; }
-		inline void SetFrameCount (ubyte nFrameCount) { m_info.info.alt.nFrameCount = nFrameCount; }
-		inline void SetFrameCount (void) {  m_info.info.alt.nFrameCount = m_info.props.h / m_info.props.w; }
-		void SetParent (CBitmap *parent) { m_info.info.std.parent = parent; }
-		void SetMask (CBitmap *mask) { m_info.info.std.mask = mask; }
-		void SetOverride (CBitmap *override) { m_info.info.std.override = override; }
-		void SetCurFrame (CBitmap *frame) { m_info.info.alt.curFrame = frame; }
-		void SetCurFrame (int nFrame) { m_info.info.alt.curFrame = m_info.info.alt.frames + nFrame; }
+		inline void SetFrameCount (ubyte nFrameCount) { m_info.frames.nCount = nFrameCount; }
+		inline void SetFrameCount (void) {  m_info.frames.nCount = m_info.props.h / m_info.props.w; }
+		void SetParent (CBitmap *parentP) { m_info.parentP = parentP; }
+		void SetMask (CBitmap *maskP) { m_info.maskP = maskP; }
+		void SetOverride (CBitmap *override) { m_info.overrideP = override; }
+		void SetCurFrame (CBitmap *frame) { m_info.frames.currentP = frame; }
+		void SetCurFrame (int nFrame) { m_info.frames.currentP = m_info.frames.bmP + nFrame; }
 
 		inline short Width (void) { return m_info.props.w; }
 		inline short Height (void) { return m_info.props.h; }
