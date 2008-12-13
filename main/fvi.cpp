@@ -642,7 +642,7 @@ return IT_NONE;
 //fill in two parameters, t0 & t1.  returns 0 if lines are parallel, else 1
 int CheckLineToLine (fix *t1, fix *t2, CFixVector *p1, CFixVector *v1, CFixVector *p2, CFixVector *v2)
 {
-	vmsMatrix det;
+	CFixMatrix det;
 	fix d, cross_mag2;		//mag squared Cross product
 
 //PrintLog ("         VmVecSub\n");

@@ -146,7 +146,7 @@ return 1;
 
 int ConvertPowerupToWeapon (CObject *objP)
 {
-	vmsAngVec	a;
+	CAngleVector	a;
 	short			nModel, nId;
 	int			bHasModel = 0;
 
@@ -176,7 +176,7 @@ if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	a[PA] = (rand () % F1_0) - F1_0 / 2;
 	a[BA] = (rand () % F1_0) - F1_0 / 2;
 	a[HA] = (rand () % F1_0) - F1_0 / 2;
-	objP->info.position.mOrient = vmsMatrix::Create(a);
+	objP->info.position.mOrient = CFixMatrix::Create(a);
 	}
 objP->mType.physInfo.mass = F1_0;
 objP->mType.physInfo.drag = 512;
@@ -573,7 +573,7 @@ if (ci.bFading < 0) {
 	glow [0] = FixMul (glow [0], ci.xLightScale);
 	gameData.models.nLightScale = ci.xLightScale;
 	bOk = DrawPolygonModel (objP, &posP->vPos, &posP->mOrient,
-									reinterpret_cast<vmsAngVec*> (&objP->rType.polyObjInfo.animAngles),
+									reinterpret_cast<CAngleVector*> (&objP->rType.polyObjInfo.animAngles),
 									objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags,
 									xNewLight, glow, altTextures, NULL);
 	gameData.models.nLightScale = 0;
@@ -585,7 +585,7 @@ else {
 	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);	//set to black (matters for s3)
 	G3SetSpecialRender (DrawTexPolyFlat, NULL, NULL);		//use special flat drawer
 	bOk = DrawPolygonModel (objP, &posP->vPos, &posP->mOrient,
-									reinterpret_cast<vmsAngVec*> (&objP->rType.polyObjInfo.animAngles),
+									reinterpret_cast<CAngleVector*> (&objP->rType.polyObjInfo.animAngles),
 									objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags,
 									light, glow, NULL, NULL);
 	G3SetSpecialRender (NULL, NULL, NULL);
@@ -615,7 +615,7 @@ int DrawHiresObject (CObject *objP, fix xLight, fix *xEngineGlow)
 {
 	float			fLight [3];
 	short			nModel = 0;
-	tOOFObject	*po;
+	OOFModel::CModel	*po;
 
 if (gameStates.render.bLoResShadows && (gameStates.render.nShadowPass == 2))
 	return 0;
@@ -706,7 +706,7 @@ if (objP->rType.polyObjInfo.nTexOverride != -1) {
 		bmiP [i] = bm;
 	bOk = DrawPolygonModel (objP, &objP->info.position.vPos,
 									&objP->info.position.mOrient,
-									reinterpret_cast<vmsAngVec*> ( &objP->rType.polyObjInfo.animAngles),
+									reinterpret_cast<CAngleVector*> ( &objP->rType.polyObjInfo.animAngles),
 									objP->rType.polyObjInfo.nModel,
 									objP->rType.polyObjInfo.nSubObjFlags,
 									xLight,
@@ -749,7 +749,7 @@ else {
 #endif
 					bOk = DrawPolygonModel (
 						objP, &objP->info.position.vPos, &objP->info.position.mOrient,
-						reinterpret_cast<vmsAngVec*> ( &objP->rType.polyObjInfo.animAngles),
+						reinterpret_cast<CAngleVector*> ( &objP->rType.polyObjInfo.animAngles),
 						gameData.weapons.info [id].nInnerModel,
 						objP->rType.polyObjInfo.nSubObjFlags,
 						bBrightPolys ? F1_0 : xLight,

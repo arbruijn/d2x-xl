@@ -21,7 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 typedef struct tPathPoint {
 	CFixVector			vPos;
 	CFixVector			vOrgPos;
-	vmsMatrix			mOrient;
+	CFixMatrix			mOrient;
 } tPathPoint;
 
 class CFlightPath {

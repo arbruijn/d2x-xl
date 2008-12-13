@@ -55,13 +55,13 @@ const CFixVector CFixVector::XVEC = CFixVector::Create(f1_0,0,0);
 const CFixVector CFixVector::YVEC = CFixVector::Create(0,f1_0,0);
 const CFixVector CFixVector::ZVEC = CFixVector::Create(0,0,f1_0);
 
-const vmsAngVec vmsAngVec::ZERO = vmsAngVec::Create(0,0,0);
+const CAngleVector CAngleVector::ZERO = CAngleVector::Create(0,0,0);
 
-const vmsMatrix vmsMatrix::IDENTITY = vmsMatrix::Create(CFixVector::XVEC,
+const CFixMatrix CFixMatrix::IDENTITY = CFixMatrix::Create(CFixVector::XVEC,
                                                         CFixVector::YVEC,
                                                         CFixVector::ZVEC);
 
-const fMatrix fMatrix::IDENTITY = fMatrix::Create(CFloatVector::Create(1.0f, 0, 0, 0),
+const CFloatMatrix CFloatMatrix::IDENTITY = CFloatMatrix::Create(CFloatVector::Create(1.0f, 0, 0, 0),
 		                                          CFloatVector::Create(0, 1.0f, 0, 0),
 		                                          CFloatVector::Create(0, 0, 1.0f, 0),
 		                                          CFloatVector::Create(0, 0, 0, 1.0f));
@@ -77,8 +77,8 @@ const fMatrix fMatrix::IDENTITY = fMatrix::Create(CFloatVector::Create(1.0f, 0, 
 //computes a matrix from the forward vector, a bank of
 //zero is assumed.
 //returns matrix.
-const vmsMatrix vmsMatrix::CreateF(const CFixVector& fVec) {
-	vmsMatrix m;
+const CFixMatrix CFixMatrix::CreateF(const CFixVector& fVec) {
+	CFixMatrix m;
 	CFixVector& xvec = m [RVEC];
 	CFixVector& yvec = m [UVEC];
 	CFixVector& zvec = m [FVEC];
@@ -106,8 +106,8 @@ const vmsMatrix vmsMatrix::CreateF(const CFixVector& fVec) {
 
 //computes a matrix from the forward and the up vector.
 //returns matrix.
-const vmsMatrix vmsMatrix::CreateFU(const CFixVector& fVec, const CFixVector& uVec) {
-	vmsMatrix m;
+const CFixMatrix CFixMatrix::CreateFU(const CFixVector& fVec, const CFixVector& uVec) {
+	CFixMatrix m;
 	CFixVector& xvec = m [RVEC];
 	CFixVector& yvec = m [UVEC];
 	CFixVector& zvec = m [FVEC];
@@ -158,8 +158,8 @@ const vmsMatrix vmsMatrix::CreateFU(const CFixVector& fVec, const CFixVector& uV
 
 //computes a matrix from the forward and the right vector.
 //returns matrix.
-const vmsMatrix vmsMatrix::CreateFR(const CFixVector& fVec, const CFixVector& rVec) {
-	vmsMatrix m;
+const CFixMatrix CFixMatrix::CreateFR(const CFixVector& fVec, const CFixVector& rVec) {
+	CFixMatrix m;
 	CFixVector& xvec = m [RVEC];
 	CFixVector& yvec = m [UVEC];
 	CFixVector& zvec = m [FVEC];
@@ -305,7 +305,8 @@ return bClamped;
 // ------------------------------------------------------------------------
 
 // Version with vPos
-const int VmPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, const CFloatVector& vPos, int bClamp) 
+const int VmPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, 
+											  const CFloatVector& vPos, int bClamp) 
 {
 	CFloatVector	d31, d21;
 	float		m, u;

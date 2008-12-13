@@ -176,7 +176,7 @@ return ++pmf;
 
 //------------------------------------------------------------------------------
 
-int G3GetPOFModelItems (void *modelP, vmsAngVec *pAnimAngles, RenderModel::CModel *pm, int nThis, int nParent,
+int G3GetPOFModelItems (void *modelP, CAngleVector *pAnimAngles, RenderModel::CModel *pm, int nThis, int nParent,
 								int bSubObject, CBitmap **modelBitmaps, tRgbaColorf *objColorP)
 {
 	ubyte*						p = reinterpret_cast<ubyte*> (modelP);

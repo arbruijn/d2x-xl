@@ -35,14 +35,14 @@ void RenderFaceShadow (tFaceProps *propsP)
 {
 	int			i, nVertices = propsP->nVertices;
 	g3sPoint		*p;
-	tOOF_vector	v [9];
+	CFloatVector	v [9];
 
 for (i = 0; i < nVertices; i++) {
 	p = gameData.segs.points + propsP->vp [i];
 	if (p->p3_index < 0)
 		OOF_VecVms2Oof (v + i, p->p3_vec);
 	else
-		memcpy (v + i, gameData.render.vertP + p->p3_index, sizeof (tOOF_vector));
+		memcpy (v + i, gameData.render.vertP + p->p3_index, sizeof (CFloatVector));
 	}
 v [nVertices] = v [0];
 glEnableClientState (GL_VERTEX_ARRAY);
@@ -439,7 +439,7 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, psl++) {
 #if 1
 	gameStates.render.nShadowPass = 2;
 	OglStartFrame (0, 0);
-	memcpy (&gameData.render.shadows.vLightPos, psl->vPosf + 1, sizeof (tOOF_vector));
+	memcpy (&gameData.render.shadows.vLightPos, psl->vPosf + 1, sizeof (CFloatVector));
 	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
 	RenderMine (nStartSeg, nEyeOffset, nWindow);
 #endif

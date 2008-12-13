@@ -134,7 +134,7 @@ struct mfi_v19 {
 	short   level_shake_frequency;  // Shakes every level_shake_frequency seconds
 	short   level_shake_duration;   // for level_shake_duration seconds (on average, Random).  In 16ths second.
 	int     secret_return_segment;
-	vmsMatrix  secret_return_orient;
+	CFixMatrix  secret_return_orient;
 	tGameItemInfo	lightDeltaIndices;
 	tGameItemInfo	lightDeltas;
 };
@@ -421,7 +421,7 @@ int load_mine_data (CFile& cf)
 	int	mine_start = CFTell ();
 	bD1PigPresent = CFile::Exist (D1_PIGFILE);
 
-	oldsizeadjust= (sizeof (int)*2)+sizeof (vmsMatrix);
+	oldsizeadjust= (sizeof (int)*2)+sizeof (CFixMatrix);
 	FuelCenReset ();
 
 	for (i=0; i<MAX_TEXTURES; i++ )

@@ -130,7 +130,7 @@ if (gameData.render.terrain.nMineTilesDrawn == 0xf) {
 CFixVector yCache [256];
 ubyte ycFlags [256];
 
-extern vmsMatrix mSurfaceOrient;
+extern CFixMatrix mSurfaceOrient;
 
 CFixVector *get_dy_vec (int h)
 {

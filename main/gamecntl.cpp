@@ -371,10 +371,10 @@ void SpeedtestFrame(void)
 	COMPUTE_SIDE_CENTER(&center_point, &gameData.segs.segments[gameData.speedtest.nSegment], gameData.speedtest.nSide);
 	CFixVector::NormalizedDir(view_dir, center_point, gameData.objs.viewerP->info.position.vPos);
 	/*
-	gameData.objs.viewerP->info.position.mOrient = vmsMatrix::Create(view_dir, NULL, NULL);
+	gameData.objs.viewerP->info.position.mOrient = CFixMatrix::Create(view_dir, NULL, NULL);
 	*/
 	// TODO: MatrixCreateFCheck
-	gameData.objs.viewerP->info.position.mOrient = vmsMatrix::CreateF(view_dir);
+	gameData.objs.viewerP->info.position.mOrient = CFixMatrix::CreateF(view_dir);
 	if (((gameData.app.nFrameCount - gameData.speedtest.nFrameStart) % 10) == 0) {
 #if TRACE
 		con_printf (CONDBG, ".");

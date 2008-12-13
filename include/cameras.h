@@ -34,7 +34,7 @@ typedef struct tCamera {
 	CFBO				fbo;
 	CTexture			glTex;
 #endif
-	vmsMatrix		orient;
+	CFixMatrix		orient;
 	fixang			curAngle;
 	fixang			curDelta;
 	time_t			t0;
@@ -61,7 +61,7 @@ class CCamera {
 		inline char GetVisible (void) { return m_info.bVisible; }
 		inline char GetTeleport (void) { return m_info.bTeleport; }
 		inline char Valid (void) { return m_info.bValid; }
-		inline vmsMatrix& Orient (void) { return m_info.orient; }
+		inline CFixMatrix& Orient (void) { return m_info.orient; }
 		inline CBitmap& Texture (void) { return m_info.buffer; }
 		inline tTexCoord2f* TexCoord (void) { return m_info.texCoord; }
 		inline CObject* GetObject (void) { return m_info.objP; }

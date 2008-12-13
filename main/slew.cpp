@@ -79,10 +79,10 @@ int do_slew_movement(CObject *objP, int check_keys, int check_joy )
 {
 	int moved = 0;
 	CFixVector svel, movement;				//scaled velocity (per this frame)
-	vmsMatrix rotmat,new_pm;
+	CFixMatrix rotmat,new_pm;
 	int joy_x,joy_y,btns;
 	int joyx_moved,joyy_moved;
-	vmsAngVec rotang;
+	CAngleVector rotang;
 
 	if (!slewObjP || slewObjP->info.controlType!=CT_SLEW) return 0;
 
@@ -144,11 +144,11 @@ int do_slew_movement(CObject *objP, int check_keys, int check_joy )
 
 	moved = rotang[PA] | rotang[BA] | rotang[HA];
 
-	rotmat = vmsMatrix::Create(rotang);
+	rotmat = CFixMatrix::Create(rotang);
 	// TODO MM
 	new_pm = objP->info.position.mOrient * rotmat;
 	objP->info.position.mOrient = new_pm;
-	vmsMatrix::Transpose(new_pm);		//make those columns rows
+	CFixMatrix::Transpose(new_pm);		//make those columns rows
 
 	moved |= objP->mType.physInfo.velocity[X] | objP->mType.physInfo.velocity[Y] | objP->mType.physInfo.velocity[Z];
 

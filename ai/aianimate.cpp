@@ -122,8 +122,8 @@ int DoSillyAnimation (CObject *objP)
 		for (nJoint = 0; nJoint < nJointPositions; nJoint++) {
 			fix			delta_angle, delta_2;
 			int			jointnum = jp_list [nJoint].jointnum;
-			vmsAngVec	*jp = &jp_list [nJoint].angles;
-			vmsAngVec	*pObjP = &polyObjInfo->animAngles [jointnum];
+			CAngleVector	*jp = &jp_list [nJoint].angles;
+			CAngleVector	*pObjP = &polyObjInfo->animAngles [jointnum];
 
 			if (jointnum >= gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nModels) {
 				Int3 ();		// Contact Mike: incompatible data, illegal jointnum, problem in pof file?
@@ -226,9 +226,9 @@ void AIFrameAnimation (CObject *objP)
 	for (nJoint=1; nJoint<nJoints; nJoint++) {
 		fix			delta_to_goal;
 		fix			scaled_delta_angle;
-		vmsAngVec	*curangp = &objP->rType.polyObjInfo.animAngles [nJoint];
-		vmsAngVec	*goalangp = &gameData.ai.localInfo [nObject].goalAngles [nJoint];
-		vmsAngVec	*deltaangp = &gameData.ai.localInfo [nObject].deltaAngles [nJoint];
+		CAngleVector	*curangp = &objP->rType.polyObjInfo.animAngles [nJoint];
+		CAngleVector	*goalangp = &gameData.ai.localInfo [nObject].goalAngles [nJoint];
+		CAngleVector	*deltaangp = &gameData.ai.localInfo [nObject].deltaAngles [nJoint];
 
 		Assert (nObject >= 0);
 		delta_to_goal = (*goalangp)[PA] - (*curangp)[PA];

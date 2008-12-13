@@ -53,7 +53,7 @@ float fInf;
 
 extern tRgbaColorf shadowColor [2], modelColor [2];
 
-static tOOF_vector	vLightPosf,
+static CFloatVector	vLightPosf,
 							//vViewerPos,
 							vCenterf;
 static CFixVector vLightPos;
@@ -80,41 +80,41 @@ static int bTexPolys = 1;
 
 //------------------------------------------------------------------------------
 
-inline int G3CheckPointFacing (tOOF_vector *pv, tOOF_vector *pNorm, tOOF_vector *pDir)
+inline int G3CheckPointFacing (CFloatVector *pv, CFloatVector *pNorm, CFloatVector *pDir)
 {
-	tOOF_vector	h;
+	CFloatVector	h = *pDir - *pv;
 
-return OOF_VecMul (OOF_VecSub (&h, pDir, pv), pNorm) > 0;
+return (h * pNorm) > 0;
 }
 
 //------------------------------------------------------------------------------
 
-inline int G3CheckLightFacing (tOOF_vector *pv, tOOF_vector *pNorm)
+inline int G3CheckLightFacing (CFloatVector *pv, CFloatVector *pNorm)
 {
 return G3CheckPointFacing (pv, pNorm, &vLightPosf);
 }
 
 //------------------------------------------------------------------------------
 
-inline int G3CheckViewerFacing (tOOF_vector *pv, tOOF_vector *pNorm)
+inline int G3CheckViewerFacing (CFloatVector *pv, CFloatVector *pNorm)
 {
-return OOF_VecMul (pv, pNorm) >= 0;
+return CFloatVector::Dot (pv, pNorm) >= 0;
 }
 
 //------------------------------------------------------------------------------
 
-inline tOOF_vector *G3RotateFaceNormal (tPOF_face *pf)
+inline CFloatVector *G3RotateFaceNormal (tPOF_face *pf)
 {
-return reinterpret_cast<tOOF_vector*> (OOF_VecVms2Oof (&pf->vNormf, G3RotatePoint (pf->vRotNorm, pf->vNorm, 0)));
+return reinterpret_cast<CFloatVector*> (OOF_VecVms2Oof (&pf->vNormf, G3RotatePoint (pf->vRotNorm, pf->vNorm, 0)));
 }
 
 //------------------------------------------------------------------------------
 
-inline tOOF_vector *G3TransformFaceCenter (tPOF_face *pf)
+inline CFloatVector *G3TransformFaceCenter (tPOF_face *pf)
 {
 	CFixVector	v;
 
-return reinterpret_cast<tOOF_vector*> (OOF_VecVms2Oof (&pf->vCenterf, G3TransformPoint (v, pf->vCenter, 0)));
+return reinterpret_cast<CFloatVector*> (OOF_VecVms2Oof (&pf->vCenterf, G3TransformPoint (v, pf->vCenter, 0)));
 }
 
 //------------------------------------------------------------------------------
@@ -133,7 +133,7 @@ return pf->bFrontFace = G3CheckViewerFacing (&pf->vCenterf, &pf->vNormf);
 
 //------------------------------------------------------------------------------
 
-int G3GetFaceWinding (tOOF_vector *v0, tOOF_vector *v1, tOOF_vector *v2)
+int G3GetFaceWinding (CFloatVector *v0, CFloatVector *v1, CFloatVector *v2)
 {
 return ((v1->x - v0->x) * (v2->y - v1->y) < 0) ? GL_CW : GL_CCW;
 }
@@ -239,17 +239,18 @@ else
 
 //------------------------------------------------------------------------------
 
-tOOF_vector *G3CalcFaceCenterf (tPOFObject *po, tPOF_face *pf)
+CFloatVector *G3CalcFaceCenterf (tPOFObject *po, tPOF_face *pf)
 {
-	tOOF_vector	*pv = po->vertsf.Buffer ();
-	short			*pfv = pf->verts;
-	int			i;
-	static tOOF_vector	c;
+	CFloatVector	*pv = po->vertsf.Buffer ();
+	short				*pfv = pf->verts;
+	int				i;
 
-c.x = c.y = c.z = 0.0f;
+	CFloatVector	c;
+
+c.SetZero ();
 for (i = pf->nVerts; i; i--, pfv++)
-	OOF_VecInc (&c, pv + *pfv);
-OOF_VecScale (&c, 1.0f / pf->nVerts);
+	c += pv [*pfv];
+c /= static_cast<float> (pf->nVerts);
 return &c;
 }
 
@@ -257,7 +258,7 @@ return &c;
 
 CFixVector *G3CalcFaceCenter (tPOFObject *po, tPOF_face *pf)
 {
-	tOOF_vector	cf;
+	CFloatVector	cf;
 	static CFixVector c;
 
 cf = *G3CalcFaceCenterf (po, pf);
@@ -488,11 +489,11 @@ for (i = pso->faces.nFaces, pf = pso->faces.faces.Buffer (); i; i--, pf++) {
 
 //------------------------------------------------------------------------------
 
-tOOF_vector *G3PolyModelVerts2Float (tPOFObject *po)
+CFloatVector *G3PolyModelVerts2Float (tPOFObject *po)
 {
 	int			i;
 	CFixVector	*pv;
-	tOOF_vector	*pvf;
+	CFloatVector	*pvf;
 
 for (i = po->nVerts, pv = po->verts.Buffer (), pvf = po->vertsf.Buffer (); i; i--, pv++, pvf++) {
 	pvf->x = X2F ((*pv)[X]);
@@ -597,7 +598,7 @@ for (i = po->subObjs.nSubObjs; i; i--, pso++)
 
 //------------------------------------------------------------------------------
 
-int POFGetPolyModelItems (void *modelP, vmsAngVec *animAngleP, tPOFObject *po,
+int POFGetPolyModelItems (void *modelP, CAngleVector *animAngleP, tPOFObject *po,
 								  int bInitModel, int bShadowData, int nThis, int nParent)
 {
 	ubyte				*p = reinterpret_cast<ubyte*> (modelP);
@@ -671,12 +672,12 @@ for (;;)
 			break;
 
 		case OP_SUBCALL: {
-			vmsAngVec *a;
+			CAngleVector *a;
 
 			if (animAngleP)
 				a = &animAngleP [WORDVAL (p+2)];
 			else
-				a = const_cast<vmsAngVec*> (&vmsAngVec::ZERO);
+				a = const_cast<CAngleVector*> (&CAngleVector::ZERO);
 			nChild = ++po->iSubObj;
 			po->subObjs.subObjs [nChild].vPos = *VECPTR (p+4);
 			po->subObjs.subObjs [nChild].vAngles = *a;
@@ -782,22 +783,22 @@ else {
 
 //------------------------------------------------------------------------------
 
-void G3RenderShadowVolumeFace (tOOF_vector *pv)
+void G3RenderShadowVolumeFace (CFloatVector *pv)
 {
-	tOOF_vector	v [4];
+	CFloatVector	v [4];
 
-memcpy (v, pv, 2 * sizeof (tOOF_vector));
-OOF_VecSub (v+3, v, &gameData.render.shadows.vLightPos);
-OOF_VecSub (v+2, v+1, &gameData.render.shadows.vLightPos);
+memcpy (v, pv, 2 * sizeof (CFloatVector));
+v [3] = v - gameData.render.shadows.vLightPos;
+v [2] = v [1] - gameData.render.shadows.vLightPos;
 #if NORM_INF
-OOF_VecScale (v+3, fInf / OOF_VecMag (v+3));
-OOF_VecScale (v+2, fInf / OOF_VecMag (v+2));
+v [3] *= fInf / v [3].Mag ();
+v [2] *= fInf / v [2].Mag ();
 #else
-OOF_VecScale (v+3, fInf);
-OOF_VecScale (v+2, fInf);
+v [3] /= fInf;
+v [2] /= fInf;
 #endif
-OOF_VecInc (v+2, v+1);
-OOF_VecInc (v+3, v);
+v [2] += v [1];
+v [3] += v;
 glVertexPointer (3, GL_FLOAT, 0, v);
 #if DBG_SHADOWS
 if (bShadowTest)
@@ -809,9 +810,9 @@ glDrawArrays (GL_QUADS, 0, 4);
 
 //------------------------------------------------------------------------------
 
-void G3RenderFarShadowCapFace (tOOF_vector *pv, int nVerts)
+void G3RenderFarShadowCapFace (CFloatVector *pv, int nVerts)
 {
-	tOOF_vector	v0, v1;
+	CFloatVector	v0, v1;
 
 #if DBG_SHADOWS
 if (bShadowTest == 1)
@@ -827,13 +828,13 @@ else
 glBegin (GL_TRIANGLE_FAN);
 for (pv += nVerts; nVerts; nVerts--) {
 	v0 = *(--pv);
-	OOF_VecSub (&v1, &v0, &vLightPosf);
+	v1 = v0 - vLightPosf;
 #if NORM_INF
-	OOF_VecScale (&v1, fInf / OOF_VecMag (&v1));
+	v1 *= fInf / v1.Mag ();
 #else
-	OOF_VecScale (&v1, fInf);
+	v1 *= fInf;
 #endif
-	OOF_VecInc (&v0, &v1);
+	v0 += v1;
 	glVertex3fv (reinterpret_cast<GLfloat*> (&v0));
 	}
 glEnd ();
@@ -843,7 +844,7 @@ glEnd ();
 
 int G3RenderSubModelShadowVolume (tPOFObject *po, tPOFSubObject *pso, int bCullFront)
 {
-	tOOF_vector	*pvf, v [4];
+	CFloatVector	*pvf, v [4];
 	tPOF_face	*pf, **ppf;
 	short			*pfv, *paf;
 	short			h, i, j, n;
@@ -889,17 +890,17 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.faces; i; i--, ppf++) {
 			if (bShadowTest < 3) {
 				glColor4fv (reinterpret_cast<GLfloat*> (shadowColor + bCullFront));
 #endif
-				OOF_VecSub (v+3, v, &vLightPosf);
-				OOF_VecSub (v+2, v+1, &vLightPosf);
+				v [3] = v - vLightPosf;
+				v [2] = v [1] - vLightPosf;
 #if NORM_INF
-				OOF_VecScale (v+3, fClipDist / OOF_VecMag (v+3));
-				OOF_VecScale (v+2, fClipDist / OOF_VecMag (v+2));
+				v [3] *= fClipDist / v [3].Mag ();
+				v [2] *= fClipDist / v [2].Mag ();
 #else
-				OOF_VecScale (v+3, fClipDist);
-				OOF_VecScale (v+2, fClipDist);
+				v [3] *= fClipDist;
+				v [2] *= fClipDist;
 #endif
-				OOF_VecInc (v+2, v+1);
-				OOF_VecInc (v+3, v);
+				v [2] += v [1];
+				v [3] += v;
 #if 1//!DBG
 				glDrawArrays (GL_QUADS, 0, 4);
 #else
@@ -1104,7 +1105,7 @@ return fMaxDist;
 float G3ClipDistByFaceVerts (CObject *objP, tPOFObject *po, tPOFSubObject *pso,
 									  float fMaxDist, int i, int incr)
 {
-	tOOF_vector	*pv;
+	CFloatVector	*pv;
 	CFixVector	v;
 	float			*pfc;
 	tPOF_face	*pf, **ppf;
@@ -1143,7 +1144,7 @@ return fMaxDist;
 
 float G3ClipDistByLitVerts (CObject *objP, tPOFObject *po, float fMaxDist, int i, int incr)
 {
-	tOOF_vector	*pv;
+	CFloatVector	*pv;
 	CFixVector	v;
 	float			*pfc;
 	short			j;
@@ -1267,7 +1268,7 @@ return pso->fClipDist = (fMaxDist ? fMaxDist : (fInf < G3_INFINITY) ? fInf : G3_
 
 int G3RenderSubModelShadowCaps (CObject *objP, tPOFObject *po, tPOFSubObject *pso, int bCullFront)
 {
-	tOOF_vector	*pvf, v0, v1;
+	CFloatVector	*pvf, v0, v1;
 	tPOF_face	*pf, **ppf;
 	short			*pfv, i, j;
 	float			fClipDist;
@@ -1294,7 +1295,7 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.faces; i; i--, ppf++) {
 		v1 = v0 = pf->vCenterf;
 		glBegin (GL_LINES);
 		glVertex3fv (reinterpret_cast<GLfloat*> (&v0));
-		OOF_VecInc (&v0, &pf->vNormf);
+		v0 += pf->vNormf;
 		glVertex3fv (reinterpret_cast<GLfloat*> (&v0));
 		glEnd ();
 		glColor4d (0,0,1,1);
@@ -1314,7 +1315,7 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.faces; i; i--, ppf++) {
 	for (j = pf->nVerts, pfv = pf->verts + j; j; j--) {
 		v0 = pvf [*--pfv];
 #if 1
-		OOF_VecSub (&v1, &v0, &vLightPosf);
+		v1 = v0 - vLightPosf;
 #if DBG_SHADOWS
 		if (bShadowTest < 4)
 #endif
@@ -1322,14 +1323,14 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.faces; i; i--, ppf++) {
 #if NORM_INF
 #	if DBG_SHADOWS
 			if (bShadowTest == 2)
-				OOF_VecScale (&v1, 5.0f / OOF_VecMag (&v1));
+				v1 *= 5.0f / v1.Mag ();
 			else
 #	endif
-				OOF_VecScale (&v1, fClipDist / OOF_VecMag (&v1));
+				v1 *= fClipDist / v1.Mag ();
 #else
-			OOF_VecScale (&v1, fClipDist);
+			v1 *= fClipDist;
 #endif
-			OOF_VecInc (&v0, &v1);
+			v0 += v1;
 #endif
 			}
 		glVertex3fv (reinterpret_cast<GLfloat*> (&v0));
@@ -1349,7 +1350,7 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.faces; i; i--, ppf++) {
 		v1 = v0 = pf->vCenterf;
 		glBegin (GL_LINES);
 		glVertex3fv (reinterpret_cast<GLfloat*> (&v0));
-		OOF_VecInc (&v0, &pf->vNormf);
+		v0 += pf->vNormf;
 		glVertex3fv (reinterpret_cast<GLfloat*> (&v0));
 		glEnd ();
 		glColor4d (1,0,0,1);
@@ -1409,11 +1410,11 @@ return h;
 
 //------------------------------------------------------------------------------
 
-int POFGatherPolyModelItems (CObject *objP, void *modelP, vmsAngVec *animAngleP, tPOFObject *po, int bShadowData)
+int POFGatherPolyModelItems (CObject *objP, void *modelP, CAngleVector *animAngleP, tPOFObject *po, int bShadowData)
 {
 	int			j;
 	CFixVector	*pv;
-	tOOF_vector	*pvf;
+	CFloatVector	*pvf;
 
 if (!(po->nState || POFAllocPolyModelItems (modelP, po, bShadowData)))
 	return 0;
@@ -1448,7 +1449,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int G3DrawPolyModelShadow (CObject *objP, void *modelDataP, vmsAngVec *animAngleP, int nModel)
+int G3DrawPolyModelShadow (CObject *objP, void *modelDataP, CAngleVector *animAngleP, int nModel)
 {
 #if SHADOWS
 	CFixVector		v, vLightDir;

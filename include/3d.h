@@ -77,7 +77,7 @@ typedef struct g3sPoint {
 //An CObject, such as a robot
 typedef struct g3sObject {
 	CFixVector o3_pos;       //location of this CObject
-	vmsAngVec o3_orient;    //orientation of this CObject
+	CAngleVector o3_orient;    //orientation of this CObject
 	int o3_nverts;          //number of points in the CObject
 	int o3_nfaces;          //number of faces in the CObject
 
@@ -109,10 +109,10 @@ void _CDECL_ g3_close (void);
 void G3StartFrame (int bFlat, int bResetColorBuf);
 
 //set view from x,y,z & p,b,h, zoom.  Must call one of g3_setView_* ()
-void G3SetViewAngles (const CFixVector& view_pos, const vmsAngVec& view_orient,fix zoom);
+void G3SetViewAngles (const CFixVector& view_pos, const CAngleVector& view_orient,fix zoom);
 
 //set view from x,y,z, viewer matrix, and zoom.  Must call one of g3_setView_* ()
-void G3SetViewMatrix (const CFixVector& view_pos, const vmsMatrix& view_matrix,fix zoom, int bOglScale);
+void G3SetViewMatrix (const CFixVector& view_pos, const CFixMatrix& view_matrix,fix zoom, int bOglScale);
 
 //end the frame
 void G3EndFrame (void);
@@ -128,11 +128,11 @@ int g3_compute_sky_polygon (fix *points_2d,CFixVector *vecs);
 //instance at specified point with specified orientation
 //void G3StartInstanceMatrix (const CFixVector& pos);
 void G3StartInstanceMatrix (const CFixVector& pos,
-                           const vmsMatrix& orient=vmsMatrix::IDENTITY);
+                           const CFixMatrix& orient=CFixMatrix::IDENTITY);
 
 //instance at specified point with specified orientation
 void G3StartInstanceAngles (const CFixVector& pos,
-                           const vmsAngVec& angles = vmsAngVec::ZERO);
+                           const CAngleVector& angles = CAngleVector::ZERO);
 
 //pops the old context
 void G3DoneInstance ();

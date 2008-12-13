@@ -125,7 +125,7 @@ int check_lsegments_validity(void);
 fix FindConnectedDistance(CFixVector *p0, short seg0, CFixVector *p1, short seg1, int max_depth, int widFlag, int bUseCache);
 
 //create a matrix that describes the orientation of the given CSegment
-void ExtractOrientFromSegment(vmsMatrix *m,CSegment *seg);
+void ExtractOrientFromSegment(CFixMatrix *m,CSegment *seg);
 
 //      In CSegment.c
 //      Make a just-modified CSegment valid.

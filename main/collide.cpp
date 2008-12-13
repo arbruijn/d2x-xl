@@ -814,10 +814,10 @@ if (weaponP->info.nId == GUIDEDMSL_ID) {
 		}
 	else {
 		CFixVector	vReflect;
-		vmsAngVec	va;
+		CAngleVector	va;
 		vReflect = CFixVector::Reflect(weaponP->info.position.mOrient[FVEC], sideP->normals[0]);
 		va = vReflect.ToAnglesVec();
-		weaponP->info.position.mOrient = vmsMatrix::Create(va);
+		weaponP->info.position.mOrient = CFixMatrix::Create(va);
 		}
 	}
 

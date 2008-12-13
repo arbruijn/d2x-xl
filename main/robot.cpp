@@ -35,7 +35,7 @@ int CalcGunPoint (CFixVector *vGunPoint, CObject *objP, int nGun)
 	tPolyModel	*pm = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
 	tRobotInfo	*botInfoP;
 	CFixVector	*vGunPoints, vGunPos, vRot;
-	vmsMatrix	m;
+	CFixMatrix	m;
 	int			nSubModel;				//submodel number
 
 Assert(objP->info.renderType == RT_POLYOBJ || objP->info.renderType == RT_MORPH);
@@ -48,8 +48,8 @@ vGunPos = vGunPoints [nGun];
 nSubModel = botInfoP->gunSubModels [nGun];
 //instance up the tree for this gun
 while (nSubModel != 0) {
-	m = vmsMatrix::Create(objP->rType.polyObjInfo.animAngles [nSubModel]);
-	vmsMatrix::Transpose(m);
+	m = CFixMatrix::Create(objP->rType.polyObjInfo.animAngles [nSubModel]);
+	CFixMatrix::Transpose(m);
 	vRot = m * vGunPos;
 	vGunPos = vRot + pm->subModels.offsets[nSubModel];
 	nSubModel = pm->subModels.parents [nSubModel];
@@ -104,7 +104,7 @@ void setRobotState (CObject *objP, int state)
 //	-----------------------------------------------------------------------------------------------------------
 //set the animation angles for this robot.  Gun fields of robot info must
 //be filled in.
-void SetRobotAngles (tRobotInfo *r, tPolyModel *pm, vmsAngVec angs [N_ANIM_STATES][MAX_SUBMODELS])
+void SetRobotAngles (tRobotInfo *r, tPolyModel *pm, CAngleVector angs [N_ANIM_STATES][MAX_SUBMODELS])
 {
 	int m,g,state;
 	int nGunCounts [MAX_SUBMODELS];			//which gun each submodel is part of

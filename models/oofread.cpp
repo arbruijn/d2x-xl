@@ -18,6 +18,8 @@
 #include "render.h"
 #include "strutil.h"
 
+#define MAXGAP	0.01f
+
 //------------------------------------------------------------------------------
 
 #define OOF_MEM_OPT	1
@@ -37,7 +39,7 @@ static int nIndent = 0;
 static int bLogOOF = 0;
 extern  FILE *fErr;
 
-void _CDECL_ OOF_PrintLog (const char *fmt, ...)
+static void _CDECL_ OOF_PrintLog (const char *fmt, ...)
 {
 if (bLogOOF) {
 	va_list arglist;
@@ -53,7 +55,7 @@ if (bLogOOF) {
 
 //------------------------------------------------------------------------------
 
-sbyte OOF_ReadByte (CFile& cf, const char *pszIdent)
+static sbyte OOF_ReadByte (CFile& cf, const char *pszIdent)
 {
 sbyte b = cf.ReadByte ();
 OOF_PrintLog ("      %s = %d\n", pszIdent, b);
@@ -62,7 +64,7 @@ return b;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadInt (CFile& cf, const char *pszIdent)
+static int OOF_ReadInt (CFile& cf, const char *pszIdent)
 {
 int i = cf.ReadInt ();
 OOF_PrintLog ("      %s = %d\n", pszIdent, i);
@@ -71,7 +73,7 @@ return i;
 
 //------------------------------------------------------------------------------
 
-float OOF_ReadFloat (CFile& cf, const char *pszIdent)
+static float OOF_ReadFloat (CFile& cf, const char *pszIdent)
 {
 float f = cf.ReadFloat ();
 OOF_PrintLog ("      %s = %1.4f\n", pszIdent, f);
@@ -80,17 +82,17 @@ return f;
 
 //------------------------------------------------------------------------------
 
-void OOF_ReadVector (CFile& cf, tOOF_vector *pv, const char *pszIdent)
+static void OOF_ReadVector (CFile& cf, CFloatVector *pv, const char *pszIdent)
 {
-pv->x = cf.ReadFloat ();
-pv->y = cf.ReadFloat ();
-pv->z = cf.ReadFloat ();
-OOF_PrintLog ("      %s = %1.4f,%1.4f,%1.4f\n", pszIdent, pv->x, pv->y, pv->z);
+pv->m_x = cf.ReadFloat ();
+pv->m_y = cf.ReadFloat ();
+pv->m_z = cf.ReadFloat ();
+OOF_PrintLog ("      %s = %1.4f,%1.4f,%1.4f\n", pszIdent, pv->m_x, pv->m_y, pv->m_z);
 }
 
 //------------------------------------------------------------------------------
 
-char *OOF_ReadString (CFile& cf, const char *pszIdent, const char *pszPrefix)
+static char *OOF_ReadString (CFile& cf, const char *pszIdent, const char *pszPrefix)
 {
 	char	*psz;
 	int	l, lPrefix = pszPrefix ? (int) strlen (pszPrefix) : 0;
@@ -111,7 +113,28 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-int ListType (char *pListId)
+static int OOF_ReadIntList (CFile& cf, CArray<int>& list)
+{
+	int	i;
+	char	szId [20] = "";
+
+if (!(i = OOF_ReadInt (cf, "nList"))) {
+	*ppList = NULL;
+	return 0;
+	}
+if (!list.Create (i))
+	return -1;
+for (i = 0; i < list.Length (); i++) {
+	if (bLogOOF)
+		sprintf (szId, "list [%d]", i);
+	list [i] = OOF_ReadInt (cf, szId);
+	}
+return list.Length ();
+}
+
+//------------------------------------------------------------------------------
+
+static int ListType (char *pListId)
 {
 if (!strncmp (pListId, "TXTR", 4))
 	return 0;
@@ -140,41 +163,800 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-void OOF_InitMinMax (tOOF_vector *pvMin, tOOF_vector *pvMax)
+static void OOF_InitMinMax (CFloatVector *pvMin, CFloatVector *pvMax)
 {
 if (pvMin && pvMax) {
-	pvMin->x =
-	pvMin->y =
-	pvMin->z = 1000000;
-	pvMax->x =
-	pvMax->y =
-	pvMax->z = -1000000;
+	pvMin->m_x =
+	pvMin->m_y =
+	pvMin->m_z = 1000000;
+	pvMax->m_x =
+	pvMax->m_y =
+	pvMax->m_z = -1000000;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void OOF_GetMinMax (tOOF_vector *pv, tOOF_vector *pvMin, tOOF_vector *pvMax)
+static void OOF_GetMinMax (CFloatVector *pv, CFloatVector *pvMin, CFloatVector *pvMax)
 {
 if (pvMin && pvMax) {
-	if (pvMin->x > pv->x)
-		pvMin->x = pv->x;
-	if (pvMax->x < pv->x)
-		pvMax->x = pv->x;
-	if (pvMin->y > pv->y)
-		pvMin->y = pv->y;
-	if (pvMax->y < pv->y)
-		pvMax->y = pv->y;
-	if (pvMin->z > pv->z)
-		pvMin->z = pv->z;
-	if (pvMax->z < pv->z)
-		pvMax->z = pv->z;
+	if (pvMin->m_x > pv->m_x)
+		pvMin->m_x = pv->m_x;
+	if (pvMax->m_x < pv->m_x)
+		pvMax->m_x = pv->m_x;
+	if (pvMin->m_y > pv->m_y)
+		pvMin->m_y = pv->m_y;
+	if (pvMax->m_y < pv->m_y)
+		pvMax->m_y = pv->m_y;
+	if (pvMin->m_z > pv->m_z)
+		pvMin->m_z = pv->m_z;
+	if (pvMax->m_z < pv->m_z)
+		pvMax->m_z = pv->m_z;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void OOF_SetModelProps (tOOF_subObject *pso,char *pszProps)
+static bool OOF_ReadVertList (CFile& cf, CArray<CFloatVector>& list, int nVerts, CFloatVector *pvMin, CFloatVector *pvMax)
+{
+	CFloatVector	*pv;
+	char			szId [20] = "";
+
+OOF_InitMinMax (pvMin, pvMax);
+if (!list.Create (nVerts))
+	return false;
+
+for (int i = 0; i < nVerts; i++) {
+	if (bLogOOF)
+		sprintf (szId, "vertList [%d]", i);
+	OOF_ReadVector (cf, list + i, szId);
+#if OOF_TEST_CUBE
+	pv [i].x -= 10;
+	pv [i].y += 15;
+	//pv [i].z += 5;
+	pv [i].x /= 2;
+	pv [i].y /= 2;
+	pv [i].z /= 2;
+#endif
+	OOF_GetMinMax (list + i, pvMin, pvMax);
+	}
+return true;
+}
+
+//------------------------------------------------------------------------------
+
+void CFrameInfo::Init (void)
+{
+m_nFrames = 0;
+m_nFirstFrame = 0;
+m_nLastFrame = 0;
+}
+
+//------------------------------------------------------------------------------
+
+int CFrameInfo::Read (CFile& cf, CModel* po, int bTimed)
+{
+nIndent += 2;
+OOF_PrintLog ("reading frame info\n");
+if (bTimed) {
+	m_nFrames = OOF_ReadInt (cf, "nFrames");
+	m_nFirstFrame = OOF_ReadInt (cf, "nFirstFrame");
+	m_nLastFrame = OOF_ReadInt (cf, "nLastFrame");
+	if (po->m_nFirstFrame > m_nFirstFrame)
+		po->m_nFirstFrame = m_nFirstFrame;
+	if (po->m_nLastFrame < m_nLastFrame)
+		po->m_nLastFrame = m_nLastFrame;
+	}
+else
+	m_nFrames = po->m_nFrames;
+nIndent -= 2;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CRotFrame::Read (CFile& cf, int bTimed)
+{
+	float	fMag;
+
+nIndent += 2;
+OOF_PrintLog ("reading rot frame\n");
+if (bTimed)
+	m_nStartTime = OOF_ReadInt (cf, "nStartTime");
+OOF_ReadVector (cf, &m_vAxis, "vAxis");
+if (0 < (fMag = m_vAxis.Mag ()))
+	m_vAxis /= fMag;
+m_nAngle = OOF_ReadInt (cf, "nAngle");
+nIndent -= 2;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+void CAnim::Init (void)
+{
+m_nTicks = 0;
+}
+
+//------------------------------------------------------------------------------
+
+void CAnim::Destroy (void)
+{
+m_remapTickets.Destroy ();
+Init ();
+}
+
+//------------------------------------------------------------------------------
+
+void CRotAnim::Init (void)
+{
+CAnim::Init ();
+}
+
+//------------------------------------------------------------------------------
+
+void CRotAnim::Destroy (void)
+{
+m_frames.Destroy ();
+CAnim::Destroy ();
+}
+
+//------------------------------------------------------------------------------
+
+int CRotAnim::Read (CFile& cf, CModel* po, int bTimed)
+{
+if (!CFrameInfo::Read (cf, po, bTimed))
+	return 0;
+if (!m_frames.Create (m_nFrames]))
+	return 0;
+Clear (0);
+if (bTimed &&
+	 (m_nTicks = abs (m_nLastFrame - m_nFirstFrame) + 1) &&
+	 !m_remapTicks.Create (m_nTicks)) {
+	 Destroy ();
+	return 0;
+	}
+if (m_nTicks)
+	for (int i = 0; i < m_nFrames; i++)
+		if (!m_frames [i].Read (cf, bTimed)) {
+			Destroy ();
+			return 0;
+			}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void CRotAnim::BuildAngleMatrix (CFloatMatrix *pm, int a, CFloatVector *pAxis)
+{
+float x = pAxis->m_x;
+float y = pAxis->m_y;
+float z = pAxis->m_z;
+float s = (float) sin ((float) a);
+float c = (float) cos ((float) a);
+float t = 1.0f - c;
+float i = t * x;
+float j = s * z;
+//pm->m_r.x = t * x * x + c;
+pm->m_r.x = i * x + c;
+i *= y;
+//pm->m_r.y = t * x * y + s * z;
+//pm->m_u.x = t * x * y - s * z;
+pm->m_r.y = i + j;
+pm->m_u.x = i - j;
+i = t * z;
+//pm->m_f.z = t * z * z + c;
+pm->m_f.z = i * z + c;
+i *= x;
+j = s * y;
+//pm->m_r.z = t * x * z - s * y;
+//pm->m_f.x = t * x * z + s * y;
+pm->m_r.z = i - j;
+pm->m_f.x = i + j;
+i = t * y;
+//pm->m_u.y = t * y * y + c;
+pm->m_u.y = i * y + c;
+i *= z;
+j = s * x;
+//pm->m_u.z = t * y * z + s * x;	
+//pm->m_f.y = t * y * z - s * x;
+pm->m_u.z = i + j;
+pm->m_f.y = i - j;
+}
+
+//------------------------------------------------------------------------------
+
+void CRotAnim::BuildMatrices (void)
+{
+	CFloatMatrix	mBase, mTemp;
+	CRotFrame*		pf;
+	int				a;
+
+mBase = CFloatMatrix::IDENTITY;
+for (int i = m_frames.Length (), pf = m_frames.Buffer (); i; i--, pf++) {
+	BuildAngleMatrix (&mTemp, pf->m_nAngle, &pf->m_vAxis);
+	pf->m_mMat = = mTemp * mBase;
+	mBase = pf->m_mMat;
+	}
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+int CPosFrame::Read (CFile& cf, int bTimed)
+{
+nIndent += 2;
+OOF_PrintLog ("reading pos frame\n");
+if (bTimed)
+	m_nStartTime = OOF_ReadInt (cf, "nStartTime");
+OOF_ReadVector (cf, &m_vPos, "vPos");
+nIndent -= 2;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void CPosAnim::Destroy (void)
+{
+m_frames.Destroy ();
+CAnim::Destroy ();
+}
+
+//------------------------------------------------------------------------------
+
+int CPosAnim::Read (CFile& cf, CModel* po, int bTimed)
+{
+if (!CFrameInfo::Read (cf, po, bTimed))
+	return 0;
+if (bTimed &&
+	 (m_nTicks = m_nLastFrame - m_nFirstFrame) &&
+	 !m_pRemapTicks.Create (m_nTicks)) {
+	 Destroy ();
+	 return 0;
+	}
+if (!m_frames.Create (m_nFrames)) {
+	Destroy ();
+	return 0;
+	}
+m_frames.Clear (0);
+for (int i = 0; i < m_nFrames; i++)
+	if (!m_frames [i].Read (cf, bTimed)) {	
+		Destroy ();
+		return 0;
+		}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CSpecialPoint::Init (void)
+{
+memset (this, 0, sizeof (*this));
+}
+
+//------------------------------------------------------------------------------
+
+int CSpecialPoint::Destroy (void)
+{
+delete[] pVert->m_pszName;
+pVert->m_pszName = NULL;
+delete[] pVert->m_pszProps;
+pVert->m_pszProps = NULL;
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int CSpecialPoint::Read (CFile& cf)
+{
+Init ();
+nIndent += 2;
+OOF_PrintLog ("reading special point\n");
+if (!(m_pszName = OOF_ReadString (cf, "pszName", NULL))) {
+	nIndent -= 2;
+	return 0;
+	}
+if (!(m_pszProps = OOF_ReadString (cf, "pszProps", NULL))) {
+	nIndent -= 2;
+	return 0;
+	}
+OOF_ReadVector (cf, &m_vPos, "vPos");
+m_fRadius = OOF_ReadFloat (cf, "fRadius");
+nIndent -= 2;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CSpecialList::Read (CFile& cf)
+{
+	int	i;
+
+i = OOF_ReadInt (cf, "nVerts");
+if (!i)
+	return 1;
+if (!Create (i))
+	return 0;
+for (i = 0; i < Length (); i++)
+	(*this) [i].Read (cf);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CPoint::Read (CFile& cf, int bParent)
+{
+nIndent += 2;
+OOF_PrintLog ("reading point\n");
+m_nParent = bParent ? OOF_ReadInt (cf, "nParent") : 0;
+OOF_ReadVector (cf, &m_vPos, "vPos");
+OOF_ReadVector (cf, &m_vDir, "vDir");
+nIndent -= 2;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CPointList::Read (CFile& cf, int bParent, int nSize)
+{
+	int	i;
+
+nIndent += 2;
+OOF_PrintLog ("reading point list\n");
+i = OOF_ReadInt (cf, "nPoints");
+if (nSize < i)
+	nSize = i;
+if (!Create (i)) {
+	nIndent -= 2;
+	return 0;
+	}
+for (i = 0; i < Length (); i++)
+	if (!(*this) [i].Read (cf, bParent)) {
+		Destroy ();
+		nIndent -= 2;
+		return 0;
+		}
+nIndent -= 2;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CAttachList::Read (CFile& cf)
+{
+	int	i;
+
+nIndent += 2;
+OOF_PrintLog ("reading attach list\n");
+i = OOF_ReadInt (cf, "nPoints");
+if (!Create (i)) {
+	nIndent -= 2;
+	return 0;
+	}
+for (i = 0; i < Length (); i++)
+	if (!(*this) [i].CPoint::Read (cf, 1)) {
+		Destroy ();
+		nIndent -= 2;
+		return 0;
+		}
+nIndent -= 2;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CAttachPoint::Read (CFile& cf)
+{
+OOF_ReadVector (cf, &pp->m_vu, "vu");	//actually ignored
+OOF_ReadVector (cf, &pp->m_vu, "vu");
+pList->m_pPoints->m_bu = 1;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CAttachList::ReadNormals (CFile& cf)
+{
+	int	i;
+
+nIndent += 2;
+OOF_PrintLog ("reading attach normals\n");
+i = OOF_ReadInt (cf, "nPoints");
+if (i != Length ()) {
+	nIndent -= 2;
+	return 0;
+	}
+for (i = 0; i < Length (); i++)
+	(*this).Read (cf);
+nIndent -= 2;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+int CBattery::Destroy (void)
+{
+m_vertIndex.Destroy ();
+m_turretIndex.Destroy ();
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int CBattery::Read (CFile& cf)
+{
+nIndent += 2;
+OOF_PrintLog ("reading battery\n");
+if (0 > (m_nVerts = OOF_ReadIntList (cf, m_vertIndex))) {
+	nIndent -= 2;
+	Destroy ();
+	return 0;
+	}
+if (0 > (m_nTurrets = OOF_ReadIntList (cf, m_turretIndex)))) {
+	nIndent -= 2;
+	Destroy ();
+	return 0;
+	}
+nIndent -= 2;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+int CArmament::Read (CFile& cf)
+{
+	int	i;
+
+nIndent += 2;
+OOF_PrintLog ("reading armament\n");
+if (!(i = OOF_ReadInt (cf, "nBatts"))) {
+	nIndent -= 2;
+	return 1;
+	}
+if (!Create (i)) {
+	Destroy ();
+	nIndent -= 2;
+	return 0;
+	}
+for (i = 0; i < Length (); i++)
+	if (!(*this).Read (cf)) {
+		Destroy ();
+		nIndent -= 2;
+		return 0;
+		}
+nIndent -= 2;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+int CFaceVert::Read (CFile& cf, int bFlipV)
+{
+nIndent += 2;
+OOF_PrintLog ("reading face vertex\n");
+m_nIndex = OOF_ReadInt (cf, "nIndex");
+m_fu = OOF_ReadFloat (cf, "fu");
+m_fv = OOF_ReadFloat (cf, "fv");
+if (bFlipV)
+	m_fv = -m_fv;
+#if OOF_TEST_CUBE
+/*!!!*/if (m_fu == 0.5) m_fu = 1.0;
+/*!!!*/if (m_fv == 0.5) m_fv = 1.0;
+/*!!!*/if (m_fu == -0.5) m_fu = 1.0;
+/*!!!*/if (m_fv == -0.5) m_fv = 1.0;
+#endif
+nIndent -= 2;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+inline CFloatVector* CFace::CalcCenter (CSubModel *pso)
+{
+	CFaceVert		*pfv = m_verts;
+	CFloatVector	vc, *pv = pso->m_verts;
+	int				i;
+
+m_vCenter.SetZero ();
+for (i = m_nVerts; i; i--, pfv++)
+	m_vCenter += pv [pfv->m_nIndex];
+m_vCenter /= (float) m_nVerts;
+return &m_vCenter;
+}
+
+//------------------------------------------------------------------------------
+
+inline CFloatVector *CFace::CalcNormal (CSubModel *pso)
+{
+	CFloatVector	*pv = pso->m_rotVerts;
+	CFaceVert		*pfv = m_verts;
+
+m_vRotNormal = CFloatVector::Normal (pv [pfv [0].nIndex], pv [pfv [1].nIndex], pv [pfv [2].nIndex]);
+return &pf->m_vRotNormal;
+}
+
+//------------------------------------------------------------------------------
+
+#if OOF_TEST_CUBE
+/*!!!*/static int nTexId = 0;
+#endif
+
+int CFace::Read (CFile& cf, CSubModel *pso, CFaceVert *pfv, int bFlipV)
+{
+	int	i, v0 = 0;
+	CEdge	e;
+
+nIndent += 2;
+OOF_PrintLog ("reading face\n");
+memset (&f, 0, sizeof (f));
+OOF_ReadVector (cf, &m_vNormal, "vNormal");
+#if 0
+m_vNormal.x = -m_vNormal.x;
+m_vNormal.y = -m_vNormal.y;
+m_vNormal.z = -m_vNormal.z;
+#endif
+m_nVerts = OOF_ReadInt (cf, "nVerts");
+m_bTextured = OOF_ReadInt (cf, "bTextured");
+if (m_bTextured) {
+	m_texProps.nTexId = OOF_ReadInt (cf, "texProps.nTexId");
+#if OOF_TEST_CUBE
+/*!!!*/	m_texProps.nTexId = nTexId % 6;
+/*!!!*/	nTexId++;
+#endif
+	}
+else {
+	m_texProps.color.r = OOF_ReadByte (cf, "texProps.color.r");
+	m_texProps.color.g = OOF_ReadByte (cf, "texProps.color.g");
+	m_texProps.color.b = OOF_ReadByte (cf, "texProps.color.b");
+	}
+#if OOF_MEM_OPT
+if (pfv) {
+	m_verts = pfv;
+#else
+	if (!(m_verts= new CFaceVert [m_nVerts])) {
+		nIndent -= 2;
+		return OOF_FreeFace (&f);
+		}
+#endif
+	OOF_InitMinMax (&m_vMin, &m_vMax);
+	e.v1 [0] = -1;
+	for (i = 0; i < m_nVerts; i++)
+		if (!m_verts [i].Read (cf, bFlipV)) {
+			nIndent -= 2;
+			return 0;
+			}
+		else {
+			e.v0 [0] = e.v1 [0];
+			e.v1 [0] = m_verts [i].nIndex;
+			OOF_GetMinMax (pso->m_verts + e.v1 [0], &m_vMin, &m_vMax);
+			if (i)
+				pso->AddEdge (pf, e.v0 [0], e.v1 [0]);
+			else
+				v0 = e.v1 [0];
+			}
+	pso->AddEdge (pf, e.v1 [0], v0);
+	//OOF_CalcFaceNormal (pso, &f);
+	CalcCenter ();
+#if OOF_MEM_OPT
+	}
+else
+	cm_Seek (m_nVerts * sizeof (CFaceVert), SEEK_CUR);
+#endif
+m_fBoundingLength = OOF_ReadFloat (cf, "fBoundingLength");
+m_fBoundingWidth = OOF_ReadFloat (cf, "fBoundingWidth");
+nIndent -= 2;
+return m_nVerts;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+void CFaceList::Init (void)
+{
+m_nFaces = 0;
+}
+
+//------------------------------------------------------------------------------
+
+void CFaceList::Destroy (void)
+{
+m_list.Destroy ();
+m_verts.Destroy ();
+Init ();
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+void CEdgeList::Init (void)
+{
+m_nEdges = m_nContourEdges = 0;
+}
+
+//------------------------------------------------------------------------------
+
+void CEdgeList::Destroy (void)
+{
+m_list.Destroy ();
+Init ();
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+void CSubModel::Init (void)
+{
+m_nIndex = 0;
+m_nParent = 0;
+m_nFlags = 0;
+m_nTreeOffset = 0;
+m_nDataOffset = 0;
+m_nMovementType = 0;
+m_nMovementAxis = 0;
+m_nFSLists = 0;
+m_nVerts = 0;
+m_nChildren = 0;
+m_fd = 0;
+m_fRadius = 0;
+m_fFOV = 0;
+m_fRPS = 0;
+m_fUpdate = 0;
+memset (m_children, 0, sizeof (m_children));
+m_pszName = NULL;
+m_pszProps = NULL;
+m_faces.Init ();
+m_edges.Init ();
+m_glowInfo.Init ();
+m_vNormal.SetZero ();
+m_vPlaneVert.SetZero ();
+m_vOffset.SetZero ();
+m_vCenter.SetZero ();
+m_vMin.SetZero ();
+m_vMax.SetZero ();
+m_vMod.SetZero ();
+m_aMod.SetZero ();
+m_mMod = CFloatMatrix::IDENTITY;	
+}
+
+//------------------------------------------------------------------------------
+
+int CSubModel::Destroy (void)
+{
+#if !OOF_MEM_OPT
+	int	i;
+#endif
+
+delete[] pso->m_pszName;
+pso->m_pszName = NULL;
+delete[] pso->m_pszProps;
+pso->m_pszProps = NULL;
+pso->m_verts.Destroy ();
+pso->m_rotVerts.Destroy ();
+pso->m_vertColors.Destroy ();
+pso->m_normals.Destroy ();
+pso->m_pfAlpha.Destroy ();
+m_posAnim.Destroy ();
+m_rotAnim.Destroy ();
+m_faces.Destroy ();
+m_edges.Destroy ();
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int CSubModel::FindVertex (int i)
+{
+	CFloatVector	v, *pv;
+	int				j;
+
+pv = m_verts.Buffer ();
+v = pv [i];
+for (j = 0; j < i; j++, pv++)
+	if ((v.x == pv->m_x) && (v.y == pv->m_y) && (v.z == pv->m_z))
+		return j;
+return i;
+}
+
+//------------------------------------------------------------------------------
+
+int CSubModel::FindEdge (int i0, int i1)
+{
+	int			i;
+	CEdge	h;
+	CFloatVector	v0, v1, hv0, hv1;
+
+#if DBG
+i0 = FindVertex (i0);
+i1 = FindVertex (i1);
+#endif
+for (i = 0; i < m_edges.nEdges; i++) {
+	h = m_edges.m_list [i];
+	if (((h.v0 [0] == i0) && (h.v1 [0] == i1)) || ((h.v0 [0] == i1) && (h.v1 [0] == i0)))
+		return i;
+	}
+v0 = m_verts [i0]; 
+v1 = m_verts [i1]; 
+for (i = 0; i < m_edges.nEdges; i++) {
+	h = m_edges.m_list [i];
+	hv0 = m_verts [h.v0 [0]]; 
+	hv1 = m_verts [h.v1 [0]]; 
+	if ((hv0.x == v0.x) && (hv0.y == v0.y) && (hv0.z == v0.z) &&
+		 (hv1.x == v1.x) && (hv1.y == v1.y) && (hv1.z == v1.z))
+		return i;
+	if ((hv1.x == v0.x) && (hv1.y == v0.y) && (hv1.z == v0.z) &&
+		 (hv0.x == v1.x) && (hv0.y == v1.y) && (hv0.z == v1.z))
+		return i;
+	}
+for (i = 0; i < m_edges.nEdges; i++) {
+	h = m_edges.m_list [i];
+	hv0 = m_verts [h.v0 [0]] - v0;
+	hv1 = m_verts [h.v1 [0]] - v1;
+	if ((hv0.Mag () < MAXGAP) && (hv1.Mag () < MAXGAP))
+		return i;
+	hv0 = m_verts [h.v0 [0]] - v1;
+	hv1 = m_verts [h.v1 [0]] - &v0;
+	if (hv0.Mag () < MAXGAP) && (hv1.Mag () < MAXGAP))
+		return i;
+	}
+return -1;
+}
+
+//------------------------------------------------------------------------------
+
+int CSubModel::AddEdge (CFace *pf, int v0, int v1)
+{
+	int	i = FindEdge (v0, v1);
+	CEdge	*pe;
+
+if (m_nFlags & (OOF_SOF_GLOW | OOF_SOF_THRUSTER))
+	return -1;
+if (i < 0)
+	i = m_edges.nEdges++;
+pe = m_edges.m_list + i;
+if (i < 0) {
+	}
+if (pe->m_pf [0]) {
+	pe->m_pf [1] = pf;
+	if (pf->m_bReverse) {
+		pe->m_v0 [1] = v1;
+		pe->m_v1 [1] = v0;
+		}
+	else {
+		pe->m_v0 [1] = v0;
+		pe->m_v1 [1] = v1;
+		}
+	}
+else {
+	pe->m_pf [0] = pf;
+	if (pf->m_bReverse) {
+		pe->m_v0 [0] = v1;
+		pe->m_v1 [0] = v0;
+		}
+	else {
+		pe->m_v0 [0] = v0;
+		pe->m_v1 [0] = v1;
+		}
+	}
+return i;
+}
+
+//------------------------------------------------------------------------------
+
+void CSubModel::SetProps (char *pszProps)
 {
 	// first, extract the command
 
@@ -198,28 +980,28 @@ if (!stricmp (command,"$rotate=")) { // constant rotation for a subobject
 	float spinrate = (float) atof( data);
 	if ((spinrate <= 0) || (spinrate > 20))
 		return;		// bad data
-	pso->nFlags |= OOF_SOF_ROTATE;
-	pso->fRPS = 1.0f / spinrate;
+	m_nFlags |= OOF_SOF_ROTATE;
+	m_fRPS = 1.0f / spinrate;
 	return;
 	}
 
 if (!strnicmp (command,"$jitter",7)) {	// this subobject is a jittery CObject
-	pso->nFlags |= OOF_SOF_JITTER;
+	m_nFlags |= OOF_SOF_JITTER;
 	return;
 	}
 
 if (!strnicmp (command,"$shell",6)) { // this subobject is a door shell
-	pso->nFlags |= OOF_SOF_SHELL;
+	m_nFlags |= OOF_SOF_SHELL;
 	return;
 	}
 
 if (!strnicmp (command,"$facing",7)) { // this subobject always faces you
-	pso->nFlags |= OOF_SOF_FACING;
+	m_nFlags |= OOF_SOF_FACING;
 	return;
 	}
 
 if (!strnicmp (command,"$frontface",10)) { // this subobject is a door front
-	pso->nFlags |= OOF_SOF_FRONTFACE;
+	m_nFlags |= OOF_SOF_FRONTFACE;
 	return;
 	}
 
@@ -228,15 +1010,15 @@ if (!stricmp (command,"$glow=")) {
 	float size;
 	int nValues;
 
-	Assert (!(pso->nFlags & (OOF_SOF_GLOW | OOF_SOF_THRUSTER)));
+	Assert (!(m_nFlags & (OOF_SOF_GLOW | OOF_SOF_THRUSTER)));
 	nValues = sscanf (data, " %f, %f, %f, %f", &r,&g,&b,&size);
 	Assert (nValues == 4);
-	pso->nFlags |= OOF_SOF_GLOW;
-	//pso->glowInfo = new tOOF_glowInfo;
-	pso->glowInfo.color.r = r;
-	pso->glowInfo.color.g = g;
-	pso->glowInfo.color.b = b;
-	pso->glowInfo.fSize = size;
+	m_nFlags |= OOF_SOF_GLOW;
+	//m_glowInfo = new CGlowInfo;
+	m_glowInfo.color.r = r;
+	m_glowInfo.color.g = g;
+	m_glowInfo.color.b = b;
+	m_glowInfo.fSize = size;
 	return;
 	}
 
@@ -245,15 +1027,15 @@ if (!stricmp (command,"$thruster=")) {
 	float size;
 	int nValues;
 
-	Assert (!(pso->nFlags & (OOF_SOF_GLOW | OOF_SOF_THRUSTER)));
+	Assert (!(m_nFlags & (OOF_SOF_GLOW | OOF_SOF_THRUSTER)));
 	nValues = sscanf(data, " %f, %f, %f, %f", &r,&g,&b,&size);
 	Assert(nValues == 4);
-	pso->nFlags |= OOF_SOF_THRUSTER;
-	//pso->glowInfo = new tOOF_glowInfo;
-	pso->glowInfo.color.r = r;
-	pso->glowInfo.color.g = g;
-	pso->glowInfo.color.b = b;
-	pso->glowInfo.fSize = size;
+	m_nFlags |= OOF_SOF_THRUSTER;
+	//m_glowInfo = new CGlowInfo;
+	m_glowInfo.color.r = r;
+	m_glowInfo.color.g = g;
+	m_glowInfo.color.b = b;
+	m_glowInfo.fSize = size;
 	return;
 	}
 
@@ -279,753 +1061,74 @@ if (!stricmp (command,"$fov=")) {
 		Assert(0);
 		reactionTime = 10.0;
 		}
-	pso->nFlags |= OOF_SOF_TURRET;
-	pso->fFOV = fov_angle/720.0f; // 720 = 360 * 2 and we want to make fov the amount we can move in either direction
+	m_nFlags |= OOF_SOF_TURRET;
+	m_fFOV = fov_angle/720.0f; // 720 = 360 * 2 and we want to make fov the amount we can move in either direction
 	                             // it has a minimum value of (0.0) to [0.5]
-	pso->fRPS = 1.0f / turret_spr;  // convert spr to rps (rotations per second)
-	pso->fUpdate = reactionTime;
+	m_fRPS = 1.0f / turret_spr;  // convert spr to rps (rotations per second)
+	m_fUpdate = reactionTime;
 	return;
 	}
 
 if (!stricmp (command,"$monitor01")) { // this subobject is a monitor
-	pso->nFlags |= OOF_SOF_MONITOR1;
+	m_nFlags |= OOF_SOF_MONITOR1;
 	return;
 	}
 
 if (!stricmp (command,"$monitor02")) { // this subobject is a 2nd monitor
-	pso->nFlags |= OOF_SOF_MONITOR2;
+	m_nFlags |= OOF_SOF_MONITOR2;
 	return;
 	}
 
 if (!stricmp (command,"$monitor03")) { // this subobject is a 3rd monitor
-	pso->nFlags |= OOF_SOF_MONITOR3;
+	m_nFlags |= OOF_SOF_MONITOR3;
 	return;
 	}
 
 if (!stricmp (command,"$monitor04")) { // this subobject is a 4th monitor
-	pso->nFlags |= OOF_SOF_MONITOR4;
+	m_nFlags |= OOF_SOF_MONITOR4;
 	return;
 	}
 
 if (!stricmp (command,"$monitor05")) { // this subobject is a 4th monitor
-	pso->nFlags |= OOF_SOF_MONITOR5;
+	m_nFlags |= OOF_SOF_MONITOR5;
 	return;
 	}
 
 if (!stricmp (command,"$monitor06")) { // this subobject is a 4th monitor
-	pso->nFlags |= OOF_SOF_MONITOR6;
+	m_nFlags |= OOF_SOF_MONITOR6;
 	return;
 	}
 
 if (!stricmp (command,"$monitor07")) { // this subobject is a 4th monitor
-	pso->nFlags |= OOF_SOF_MONITOR7;
+	m_nFlags |= OOF_SOF_MONITOR7;
 	return;
 	}
 
 if (!stricmp (command,"$monitor08")) { // this subobject is a 4th monitor
-	pso->nFlags |= OOF_SOF_MONITOR8;
+	m_nFlags |= OOF_SOF_MONITOR8;
 	return;
 	}
 
 if (!stricmp (command,"$viewer")) { // this subobject is a viewer
-	pso->nFlags |= OOF_SOF_VIEWER;
+	m_nFlags |= OOF_SOF_VIEWER;
 	return;
 	}
 
 if (!stricmp (command,"$layer")) { // this subobject is a layer to be drawn after original CObject.
-	pso->nFlags |= OOF_SOF_LAYER;
+	m_nFlags |= OOF_SOF_LAYER;
 	return;
 	}
 
 if (!stricmp (command,"$custom")) { // this subobject has custom textures/colors
-	pso->nFlags |= OOF_SOF_CUSTOM;
+	m_nFlags |= OOF_SOF_CUSTOM;
 	return;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-static tOOF_vector *OOF_ReadVertList (CFile& cf, int nVerts, tOOF_vector *pvMin, tOOF_vector *pvMax)
+int CSubModel::Read (CFile& cf, CModel& po, int bFlipV)
 {
-	tOOF_vector	*pv;
-	char			szId [20] = "";
-
-OOF_InitMinMax (pvMin, pvMax);
-if ((pv = new tOOF_vector [nVerts])) {
-	int	i;
-
-	for (i = 0; i < nVerts; i++) {
-		if (bLogOOF)
-			sprintf (szId, "pv [%d]", i);
-		OOF_ReadVector (cf, pv + i, szId);
-#if OOF_TEST_CUBE
-		pv [i].x -= 10;
-		pv [i].y += 15;
-		//pv [i].z += 5;
-		pv [i].x /= 2;
-		pv [i].y /= 2;
-		pv [i].z /= 2;
-#endif
-		OOF_GetMinMax (pv + i, pvMin, pvMax);
-		}
-	}
-return pv;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_ReadFrameInfo (CFile& cf, tOOFObject *po, tOOF_frameInfo *pfi, int bTimed)
-{
-nIndent += 2;
-OOF_PrintLog ("reading frame info\n");
-if (bTimed) {
-	pfi->nFrames = OOF_ReadInt (cf, "nFrames");
-	pfi->nFirstFrame = OOF_ReadInt (cf, "nFirstFrame");
-	pfi->nLastFrame = OOF_ReadInt (cf, "nLastFrame");
-	if (po->frameInfo.nFirstFrame > pfi->nFirstFrame)
-		po->frameInfo.nFirstFrame = pfi->nFirstFrame;
-	if (po->frameInfo.nLastFrame < pfi->nLastFrame)
-		po->frameInfo.nLastFrame = pfi->nLastFrame;
-	}
-else
-	pfi->nFrames = po->frameInfo.nFrames;
-nIndent -= 2;
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_ReadRotFrame (CFile& cf, tOOF_rotFrame *pf, int bTimed)
-{
-	float	fMag;
-
-nIndent += 2;
-OOF_PrintLog ("reading rot frame\n");
-if (bTimed)
-	pf->nStartTime = OOF_ReadInt (cf, "nStartTime");
-OOF_ReadVector (cf, &pf->vAxis, "vAxis");
-if (0 < (fMag = OOF_VecMag (&pf->vAxis)))
-	OOF_VecScale (&pf->vAxis, 1.0f / fMag);
-pf->nAngle = OOF_ReadInt (cf, "nAngle");
-nIndent -= 2;
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_FreeRotAnim (tOOF_rotAnim *pa)
-{
-delete[] pa->pFrames;
-pa->pFrames = NULL;
-delete[] pa->pRemapTicks;
-pa->pRemapTicks = NULL;
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_ReadRotAnim (CFile& cf, tOOFObject *po, tOOF_rotAnim *pa, int bTimed)
-{
-	tOOF_rotAnim a;
-	int	i;
-
-memset (&a, 0, sizeof (a));
-OOF_ReadFrameInfo (cf, po, &a.frameInfo, bTimed);
-if (!(a.pFrames= new tOOF_rotFrame [a.frameInfo.nFrames]))
-	return 0;
-memset (a.pFrames, 0, a.frameInfo.nFrames * sizeof (tOOF_rotFrame));
-if (bTimed &&
-	 (a.nTicks = abs (a.frameInfo.nLastFrame - a.frameInfo.nFirstFrame) + 1) &&
-	 !(a.pRemapTicks = new ubyte [a.nTicks]))
-	return OOF_FreeRotAnim (&a);
-if (a.nTicks)
-	for (i = 0; i < a.frameInfo.nFrames; i++)
-		if (!OOF_ReadRotFrame (cf, a.pFrames + i, bTimed))
-			return OOF_FreeRotAnim (&a);
-*pa = a;
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_ReadPosFrame (CFile& cf, tOOF_posFrame *pf, int bTimed)
-{
-nIndent += 2;
-OOF_PrintLog ("reading pos frame\n");
-if (bTimed)
-	pf->nStartTime = OOF_ReadInt (cf, "nStartTime");
-OOF_ReadVector (cf, &pf->vPos, "vPos");
-nIndent -= 2;
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_FreePosAnim (tOOF_posAnim *pa)
-{
-delete[] pa->pFrames;
-pa->pFrames = NULL;
-delete[] pa->pRemapTicks;
-pa->pRemapTicks = NULL;
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_ReadPosAnim (CFile& cf, tOOFObject *po, tOOF_posAnim *pa, int bTimed)
-{
-	tOOF_posAnim a;
-	int	i;
-
-memset (&a, 0, sizeof (a));
-OOF_ReadFrameInfo (cf, po, &a.frameInfo, bTimed);
-if (bTimed &&
-	 (a.nTicks = a.frameInfo.nLastFrame - a.frameInfo.nFirstFrame) &&
-	 !(a.pRemapTicks =new ubyte [a.nTicks]))
-	return OOF_FreePosAnim (&a);
-if (!(a.pFrames= new tOOF_posFrame [a.frameInfo.nFrames]))
-	return OOF_FreePosAnim (pa);
-memset (a.pFrames, 0, a.frameInfo.nFrames * sizeof (tOOF_posFrame));
-for (i = 0; i < a.frameInfo.nFrames; i++)
-	if (!OOF_ReadPosFrame (cf, a.pFrames + i, bTimed))
-		return OOF_FreePosAnim (pa);
-*pa = a;
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_FreeSpecialPoint (tOOF_specialPoint *pVert)
-{
-delete[] pVert->pszName;
-pVert->pszName = NULL;
-delete[] pVert->pszProps;
-pVert->pszProps = NULL;
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_ReadSpecialPoint (CFile& cf, tOOF_specialPoint *pVert)
-{
-	memset (pVert, 0, sizeof (tOOF_specialPoint));
-
-nIndent += 2;
-OOF_PrintLog ("reading special point\n");
-if (!(pVert->pszName = OOF_ReadString (cf, "pszName", NULL))) {
-	nIndent -= 2;
-	return 0;
-	}
-if (!(pVert->pszProps = OOF_ReadString (cf, "pszProps", NULL))) {
-	nIndent -= 2;
-	return 0;
-	}
-OOF_ReadVector (cf, &pVert->vPos, "vPos");
-pVert->fRadius = OOF_ReadFloat (cf, "fRadius");
-nIndent -= 2;
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_FreeSpecialList (tOOF_specialList *pList)
-{
-	int	i;
-
-if (pList->verts) {
-	for (i = 0; i < pList->nVerts; i++)
-		OOF_FreeSpecialPoint (pList->verts + i);
-	delete[] pList->verts;
-	pList->verts = NULL;
-	}
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_ReadSpecialList (CFile& cf, tOOF_specialList *pList)
-{
-	int	i;
-
-pList->nVerts = OOF_ReadInt (cf, "nVerts");
-if (!pList->nVerts)
-	return 1;
-if (!(pList->verts= new tOOF_specialPoint [pList->nVerts]))
-	return 0;
-for (i = 0; i < pList->nVerts; i++)
-	OOF_ReadSpecialPoint (cf, pList->verts + i);
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_ReadPoint (CFile& cf, tOOF_point *pPoint, int bParent)
-{
-nIndent += 2;
-OOF_PrintLog ("reading point\n");
-pPoint->nParent = bParent ? OOF_ReadInt (cf, "nParent") : 0;
-OOF_ReadVector (cf, &pPoint->vPos, "vPos");
-OOF_ReadVector (cf, &pPoint->vDir, "vDir");
-nIndent -= 2;
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_FreePointList (tOOF_pointList *pList)
-{
-delete[] pList->pPoints;
-pList->pPoints = NULL;
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_ReadPointList (CFile& cf, tOOF_pointList *pList, int bParent, int nSize)
-{
-	int	i;
-
-nIndent += 2;
-OOF_PrintLog ("reading point list\n");
-pList->nPoints = OOF_ReadInt (cf, "nPoints");
-if (nSize < pList->nPoints)
-	nSize = pList->nPoints;
-if (!(pList->pPoints= new tOOF_point [nSize])) {
-	nIndent -= 2;
-	return OOF_FreePointList (pList);
-	}
-for (i = 0; i < pList->nPoints; i++)
-	if (!OOF_ReadPoint (cf, pList->pPoints + i, bParent)) {
-		nIndent -= 2;
-		return 0;
-		}
-nIndent -= 2;
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_FreeAttachList (tOOF_attachList *pList)
-{
-delete[] pList->pPoints;
-pList->pPoints = NULL;
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_ReadAttachList (CFile& cf, tOOF_attachList *pList)
-{
-	int	i;
-
-nIndent += 2;
-OOF_PrintLog ("reading attach list\n");
-pList->nPoints = OOF_ReadInt (cf, "nPoints");
-if (!(pList->pPoints= new tOOF_attachPoint [pList->nPoints])) {
-	nIndent -= 2;
-	return OOF_FreeAttachList (pList);
-	}
-for (i = 0; i < pList->nPoints; i++)
-	if (!OOF_ReadPoint (cf, &pList->pPoints [i].point, 1)) {
-		nIndent -= 2;
-		return OOF_FreeAttachList (pList);
-		}
-nIndent -= 2;
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_ReadAttachNormals (CFile& cf, tOOF_attachList *pList)
-{
-	int	i;
-	tOOF_attachPoint *pp = pList->pPoints;
-
-nIndent += 2;
-OOF_PrintLog ("reading attach normals\n");
-i = OOF_ReadInt (cf, "nPoints");
-if (i != pList->nPoints) {
-	nIndent -= 2;
-	return 0;
-	}
-for (i = 0; i < pList->nPoints; i++) {
-	OOF_ReadVector (cf, &pp->vu, "vu");	//actually ignored
-	OOF_ReadVector (cf, &pp->vu, "vu");
-	pList->pPoints->bu = 1;
-	}
-nIndent -= 2;
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-static int OOF_ReadIntList (CFile& cf, int **ppList)
-{
-	int	*pList, nList, i;
-	char	szId [20] = "";
-
-if (!(nList = OOF_ReadInt (cf, "nList"))) {
-	*ppList = NULL;
-	return 0;
-	}
-if (!(pList = new int [nList]))
-	return -1;
-for (i = 0; i < nList; i++) {
-	if (bLogOOF)
-		sprintf (szId, "pList [%d]", i);
-	pList [i] = OOF_ReadInt (cf, szId);
-	}
-*ppList = pList;
-return nList;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_FreeBattery (tOOF_battery *pBatt)
-{
-delete[] pBatt->pVertIndex;
-pBatt->pVertIndex = NULL;
-delete[] pBatt->pTurretIndex;
-pBatt->pTurretIndex = NULL;
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_ReadBattery (CFile& cf, tOOF_battery *pBatt)
-{
-nIndent += 2;
-OOF_PrintLog ("reading battery\n");
-if (0 > (pBatt->nVerts = OOF_ReadIntList (cf, &pBatt->pVertIndex))) {
-	nIndent -= 2;
-	return OOF_FreeBattery (pBatt);
-	}
-if (0 > (pBatt->nTurrets = OOF_ReadIntList (cf, &pBatt->pTurretIndex))) {
-	nIndent -= 2;
-	return OOF_FreeBattery (pBatt);
-	}
-nIndent -= 2;
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_FreeArmament (tOOF_armament *pa)
-{
-if (pa->pBatts) {
-	int	i;
-
-	for (i = 0; i < pa->nBatts; i++)
-		OOF_FreeBattery (pa->pBatts + i);
-	delete[] pa->pBatts;
-	pa->pBatts = NULL;
-	}
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_ReadArmament (CFile& cf, tOOF_armament *pa)
-{
-	int	i;
-
-nIndent += 2;
-OOF_PrintLog ("reading armament\n");
-if (!(pa->nBatts = OOF_ReadInt (cf, "nBatts"))) {
-	nIndent -= 2;
-	return 1;
-	}
-if (!(pa->pBatts = new tOOF_battery [pa->nBatts ])) {
-	nIndent -= 2;
-	return OOF_FreeArmament (pa);
-	}
-for (i = 0; i < pa->nBatts; i++)
-	if (!OOF_ReadBattery (cf, pa->pBatts + i)) {
-		nIndent -= 2;
-		return OOF_FreeArmament (pa);
-		}
-nIndent -= 2;
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_ReadFaceVert (CFile& cf, tOOF_faceVert *pfv, int bFlipV)
-{
-nIndent += 2;
-OOF_PrintLog ("reading face vertex\n");
-pfv->nIndex = OOF_ReadInt (cf, "nIndex");
-pfv->fu = OOF_ReadFloat (cf, "fu");
-pfv->fv = OOF_ReadFloat (cf, "fv");
-if (bFlipV)
-	pfv->fv = -pfv->fv;
-#if OOF_TEST_CUBE
-/*!!!*/if (pfv->fu == 0.5) pfv->fu = 1.0;
-/*!!!*/if (pfv->fv == 0.5) pfv->fv = 1.0;
-/*!!!*/if (pfv->fu == -0.5) pfv->fu = 1.0;
-/*!!!*/if (pfv->fv == -0.5) pfv->fv = 1.0;
-#endif
-nIndent -= 2;
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_FreeFace (tOOF_face *pf)
-{
-#if !OOF_MEM_OPT
-delete[] pf->verts;
-pf->verts = NULL;
-#endif
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_FindVertex (tOOF_subObject *pso, int i)
-{
-	tOOF_vector	v, *pv;
-	int			j;
-
-pv = pso->verts;
-v = pv [i];
-for (j = 0; i < i; j++, pv++)
-	if ((v.x == pv->x) && (v.y == pv->y) && (v.z == pv->z))
-		return j;
-return i;
-}
-
-//------------------------------------------------------------------------------
-
-#define MAXGAP	0.01f
-
-int OOF_FindEdge (tOOF_subObject *pso, int i0, int i1)
-{
-	int			i;
-	tOOF_edge	h;
-	tOOF_vector	v0, v1, hv0, hv1;
-
-#if DBG
-i0 = OOF_FindVertex (pso, i0);
-i1 = OOF_FindVertex (pso, i1);
-#endif
-for (i = 0; i < pso->edges.nEdges; i++) {
-	h = pso->edges.pEdges [i];
-	if (((h.v0 [0] == i0) && (h.v1 [0] == i1)) || ((h.v0 [0] == i1) && (h.v1 [0] == i0)))
-		return i;
-	}
-v0 = pso->verts [i0]; 
-v1 = pso->verts [i1]; 
-for (i = 0; i < pso->edges.nEdges; i++) {
-	h = pso->edges.pEdges [i];
-	hv0 = pso->verts [h.v0 [0]]; 
-	hv1 = pso->verts [h.v1 [0]]; 
-	if ((hv0.x == v0.x) && (hv0.y == v0.y) && (hv0.z == v0.z) &&
-		 (hv1.x == v1.x) && (hv1.y == v1.y) && (hv1.z == v1.z))
-		return i;
-	if ((hv1.x == v0.x) && (hv1.y == v0.y) && (hv1.z == v0.z) &&
-		 (hv0.x == v1.x) && (hv0.y == v1.y) && (hv0.z == v1.z))
-		return i;
-	}
-for (i = 0; i < pso->edges.nEdges; i++) {
-	h = pso->edges.pEdges [i];
-	OOF_VecSub (&hv0, pso->verts + h.v0 [0], &v0);
-	OOF_VecSub (&hv1, pso->verts + h.v1 [0], &v1);
-	if ((OOF_VecMag (&hv0) < MAXGAP) && (OOF_VecMag (&hv1) < MAXGAP))
-		return i;
-	OOF_VecSub (&hv0, pso->verts + h.v0 [0], &v1);
-	OOF_VecSub (&hv1, pso->verts + h.v1 [0], &v0);
-	if ((OOF_VecMag (&hv0) < MAXGAP) && (OOF_VecMag (&hv1) < MAXGAP))
-		return i;
-	}
-return -1;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_AddEdge (tOOF_subObject *pso, tOOF_face *pf, int v0, int v1)
-{
-	int			i = OOF_FindEdge (pso, v0, v1);
-	tOOF_edge	*pe;
-
-if (pso->nFlags & (OOF_SOF_GLOW | OOF_SOF_THRUSTER))
-	return -1;
-if (i < 0)
-	i = pso->edges.nEdges++;
-pe = pso->edges.pEdges + i;
-if (i < 0) {
-	}
-if (pe->pf [0]) {
-	pe->pf [1] = pf;
-	if (pf->bReverse) {
-		pe->v0 [1] = v1;
-		pe->v1 [1] = v0;
-		}
-	else {
-		pe->v0 [1] = v0;
-		pe->v1 [1] = v1;
-		}
-	}
-else {
-	pe->pf [0] = pf;
-	if (pf->bReverse) {
-		pe->v0 [0] = v1;
-		pe->v1 [0] = v0;
-		}
-	else {
-		pe->v0 [0] = v0;
-		pe->v1 [0] = v1;
-		}
-	}
-return i;
-}
-
-//------------------------------------------------------------------------------
-
-inline tOOF_vector *OOF_CalcFaceCenter (tOOF_subObject *pso, tOOF_face *pf)
-{
-	tOOF_faceVert	*pfv = pf->verts;
-	tOOF_vector		vc, *pv = pso->verts;
-	int				i;
-
-vc.x = vc.y = vc.z = 0.0f;
-for (i = pf->nVerts; i; i--, pfv++)
-	OOF_VecInc (&vc, pv + pfv->nIndex);
-OOF_VecScale (&vc, 1.0f / (float) pf->nVerts);
-pf->vCenter = vc;
-return &pf->vCenter;
-}
-
-//------------------------------------------------------------------------------
-
-inline tOOF_vector *OOF_CalcFaceNormal (tOOF_subObject *pso, tOOF_face *pf)
-{
-	tOOF_vector		*pv = pso->rotVerts;
-	tOOF_faceVert	*pfv = pf->verts;
-
-return OOF_VecNormal (&pf->vRotNormal, pv + pfv [0].nIndex, pv + pfv [1].nIndex, pv + pfv [2].nIndex);
-}
-
-//------------------------------------------------------------------------------
-
-#if OOF_TEST_CUBE
-/*!!!*/static int nTexId = 0;
-#endif
-
-int OOF_ReadFace (CFile& cf, tOOF_subObject *pso, tOOF_face *pf, tOOF_faceVert *pfv, int bFlipV)
-{
-	tOOF_face	f;
-	int			i, v0 = 0;
-	tOOF_edge	e;
-
-nIndent += 2;
-OOF_PrintLog ("reading face\n");
-memset (&f, 0, sizeof (f));
-OOF_ReadVector (cf, &f.vNormal, "vNormal");
-#if 0
-f.vNormal.x = -f.vNormal.x;
-f.vNormal.y = -f.vNormal.y;
-f.vNormal.z = -f.vNormal.z;
-#endif
-f.nVerts = OOF_ReadInt (cf, "nVerts");
-f.bTextured = OOF_ReadInt (cf, "bTextured");
-if (f.bTextured) {
-	f.texProps.nTexId = OOF_ReadInt (cf, "texProps.nTexId");
-#if OOF_TEST_CUBE
-/*!!!*/	f.texProps.nTexId = nTexId % 6;
-/*!!!*/	nTexId++;
-#endif
-	}
-else {
-	f.texProps.color.r = OOF_ReadByte (cf, "texProps.color.r");
-	f.texProps.color.g = OOF_ReadByte (cf, "texProps.color.g");
-	f.texProps.color.b = OOF_ReadByte (cf, "texProps.color.b");
-	}
-#if OOF_MEM_OPT
-if (pfv) {
-	f.verts = pfv;
-#else
-	if (!(f.verts= new tOOF_faceVert [f.nVerts])) {
-		nIndent -= 2;
-		return OOF_FreeFace (&f);
-		}
-#endif
-	OOF_InitMinMax (&f.vMin, &f.vMax);
-	e.v1 [0] = -1;
-	for (i = 0; i < f.nVerts; i++)
-		if (!OOF_ReadFaceVert (cf, f.verts + i, bFlipV)) {
-			nIndent -= 2;
-			return OOF_FreeFace (&f);
-			}
-		else {
-			e.v0 [0] = e.v1 [0];
-			e.v1 [0] = f.verts [i].nIndex;
-			OOF_GetMinMax (pso->verts + e.v1 [0], &f.vMin, &f.vMax);
-			if (i)
-				OOF_AddEdge (pso, pf, e.v0 [0], e.v1 [0]);
-			else
-				v0 = e.v1 [0];
-			}
-	OOF_AddEdge (pso, pf, e.v1 [0], v0);
-	//OOF_CalcFaceNormal (pso, &f);
-	OOF_CalcFaceCenter (pso, &f);
-#if OOF_MEM_OPT
-	}
-else
-	cf.Seek (f.nVerts * sizeof (tOOF_faceVert), SEEK_CUR);
-#endif
-f.fBoundingLength = OOF_ReadFloat (cf, "fBoundingLength");
-f.fBoundingWidth = OOF_ReadFloat (cf, "fBoundingWidth");
-*pf = f;
-nIndent -= 2;
-return f.nVerts;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_FreeSubObject (tOOF_subObject *pso)
-{
-#if !OOF_MEM_OPT
-	int	i;
-#endif
-
-delete[] pso->pszName;
-pso->pszName = NULL;
-delete[] pso->pszProps;
-pso->pszProps = NULL;
-delete[] pso->verts;
-pso->verts = NULL;
-delete[] pso->rotVerts;
-pso->rotVerts = NULL;
-delete[] pso->vertColors;
-pso->vertColors = NULL;
-delete[] pso->normals;
-pso->normals = NULL;
-delete[] pso->pfAlpha;
-pso->pfAlpha = NULL;
-OOF_FreePosAnim (&pso->posAnim);
-OOF_FreeRotAnim (&pso->rotAnim);
-if (pso->faces.faces) {
-#if OOF_MEM_OPT
-	delete[] pso->faces.faceVerts;
-	pso->faces.faceVerts = NULL;
-#else
-	for (i = 0; i < pso->faces.nFaces; i++)
-		OOF_FreeFace (pso->faces.faces + i);
-#endif
-	delete[] pso->faces.faces;
-	pso->faces.faces = NULL;
-	}
-delete[] pso->edges.pEdges;
-pso->edges.pEdges = NULL;
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_ReadSubObject (CFile& cf, tOOFObject *po, int bFlipV)
-{
-	tOOF_subObject	so;
 	int				h, i;
 #if OOF_MEM_OPT
 	int				bReadData, nPos, nFaceVerts = 0;
@@ -1033,155 +1136,212 @@ int OOF_ReadSubObject (CFile& cf, tOOFObject *po, int bFlipV)
 	char				szId [20] = "";
 
 nIndent += 2;
-OOF_PrintLog ("reading sub CObject\n");
-memset (&so, 0, sizeof (so));
-so.nIndex = OOF_ReadInt (cf, "nIndex");
-if (so.nIndex >= OOF_MAX_SUBOBJECTS) {
+OOF_PrintLog ("reading submodel\n");
+Init ();
+m_nIndex = OOF_ReadInt (cf, "nIndex");
+if (m_nIndex >= OOF_MAX_SUBOBJECTS) {
 	nIndent -= 2;
 	return 0;
 	}
-so.nParent = OOF_ReadInt (cf, "nParent");
-OOF_ReadVector (cf, &so.vNormal, "vNormal");
-so.fd = OOF_ReadFloat (cf, "fd");
-OOF_ReadVector (cf, &so.vPlaneVert, "vPlaneVert");
-OOF_ReadVector (cf, &so.vOffset, "vOffset");
-so.fRadius = OOF_ReadFloat (cf, "fRadius");
-so.nTreeOffset = OOF_ReadInt (cf, "nTreeOffset");
-so.nDataOffset = OOF_ReadInt (cf, "nDataOffset");
-if (po->nVersion > 1805)
-	OOF_ReadVector (cf, &so.vCenter, "vCenter");
-if (!(so.pszName = OOF_ReadString (cf, "pszName", NULL)))
-	return OOF_FreeSubObject (&so);
-if (!(so.pszProps = OOF_ReadString (cf, "pszProps", NULL)))
-	return OOF_FreeSubObject (&so);
-OOF_SetModelProps (&so, so.pszProps);
-so.nMovementType = OOF_ReadInt (cf, "nMovementType");
-so.nMovementAxis = OOF_ReadInt (cf, "nMovementAxis");
-so.pFSList = NULL;
-if ((so.nFSLists = OOF_ReadInt (cf, "nFSLists")))
-	cf.Seek (so.nFSLists * sizeof (int), SEEK_CUR);
-so.nVerts = OOF_ReadInt (cf, "nVerts");
-if (so.nVerts) {
-	if (!(so.verts = OOF_ReadVertList (cf, so.nVerts, &so.vMin, &so.vMax))) {
+m_nParent = OOF_ReadInt (cf, "nParent");
+OOF_ReadVector (cf, &m_vNormal, "vNormal");
+m_fd = OOF_ReadFloat (cf, "fd");
+OOF_ReadVector (cf, &m_vPlaneVert, "vPlaneVert");
+OOF_ReadVector (cf, &m_vOffset, "vOffset");
+m_fRadius = OOF_ReadFloat (cf, "fRadius");
+m_nTreeOffset = OOF_ReadInt (cf, "nTreeOffset");
+m_nDataOffset = OOF_ReadInt (cf, "nDataOffset");
+if (po->m_nVersion > 1805)
+	OOF_ReadVector (cf, &m_vCenter, "vCenter");
+if (!(m_pszName = OOF_ReadString (cf, "pszName", NULL))) {
+	Destroy ();
+	return 0;
+	}
+if (!(m_pszProps = OOF_ReadString (cf, "pszProps", NULL))) {
+	Destroy ();
+	return 0;
+	}
+SetProps (m_pszProps);
+m_nMovementType = OOF_ReadInt (cf, "nMovementType");
+m_nMovementAxis = OOF_ReadInt (cf, "nMovementAxis");
+m_pFSList = NULL;
+if ((m_nFSLists = OOF_ReadInt (cf, "nFSLists")))
+	cf.Seek (m_nFSLists * sizeof (int), SEEK_CUR);
+m_nVerts = OOF_ReadInt (cf, "nVerts");
+if (m_nVerts) {
+	if (!OOF_ReadVertList (cf, m_verts, m_nVerts, &m_vMin, &m_vMax))) {
+		Destroy ();
 		nIndent -= 2;
-		return OOF_FreeSubObject (&so);
-		OOF_VecAdd (&so.vCenter, &so.vMin, &so.vMax);
-		OOF_VecScale (&so.vCenter, 0.5f);
+		return 0;
 		}
-	if (!(so.rotVerts = new tOOF_vector [so.nVerts])) {
+	m_vCenter = (m_vMin + m_vMax) / 2.0f;
+	if (!m_rotVerts.Create (m_nVerts)) {
+		Destroy ();
 		nIndent -= 2;
-		return OOF_FreeSubObject (&so);
+		return 0;
 		}
-	if (!(so.vertColors = new tFaceColor [so.nVerts])) {
+	if (!m_vertColors.Create (m_nVerts)) {
+		Destroy ();
 		nIndent -= 2;
-		return OOF_FreeSubObject (&so);
+		return 0;
 		}
-	memset (so.vertColors, 0, so.nVerts * sizeof (tFaceColor));
-	if (!(so.normals = OOF_ReadVertList (cf, so.nVerts, NULL, NULL))) {
+	memset (m_vertColors, 0, m_nVerts * sizeof (tFaceColor));
+	if (!(OOF_ReadVertList (cf, m_normals, m_nVerts, NULL, NULL))) {
 		nIndent -= 2;
-		return OOF_FreeSubObject (&so);
+		Destroy ();
+		return 0;
 		}
-	if (!(so.pfAlpha = new float [so.nVerts])) {
+	if (!m_pfAlpha.Create (m_nVerts)) {
+		Destroy ();
 		nIndent -= 2;
-		return OOF_FreeSubObject (&so);
+		return 0;
 		}
-	for (i = 0; i < so.nVerts; i++)
-		if (po->nVersion < 2300) 
-			so.pfAlpha [i] = 1.0f;
+	for (i = 0; i < m_nVerts; i++)
+		if (po->m_nVersion < 2300) 
+			m_pfAlpha [i] = 1.0f;
 		else {
 			if (bLogOOF)
 				sprintf (szId, "pfAlpha [%d]", i);
-			so.pfAlpha [i] = OOF_ReadFloat (cf, szId);
-			if	(so.pfAlpha [i] < 0.99)
-				po->nFlags |= OOF_PMF_ALPHA;
+			m_pfAlpha [i] = OOF_ReadFloat (cf, szId);
+			if	(m_pfAlpha [i] < 0.99)
+				po->m_nFlags |= OOF_PMF_ALPHA;
 			}
 	}
-so.faces.nFaces = OOF_ReadInt (cf, "nFaces");
-if (!(so.faces.faces = new tOOF_face [so.faces.nFaces])) {
+m_faces.nFaces = OOF_ReadInt (cf, "nFaces");
+if (!(m_faces.faces = new CFace [m_faces.nFaces])) {
+	Destroy ();
 	nIndent -= 2;
-	return OOF_FreeSubObject (&so);
+	return 0;
 	}
 #if OOF_MEM_OPT
 nPos = cf.Tell ();
-so.edges.nEdges = 0;
+m_edges.nEdges = 0;
 for (bReadData = 0; bReadData < 2; bReadData++) {
 	cf.Seek (nPos, SEEK_SET);
 	if (bReadData) {
-		if (!(so.faces.faceVerts= new tOOF_faceVert [nFaceVerts])) {
+		if (!(m_faces.faceVerts= new CFaceVert [nFaceVerts])) {
+			Destroy ();
 			nIndent -= 2;
-			return OOF_FreeSubObject (&so);
+			return 0;
 			}
-		if (!(so.edges.pEdges = new tOOF_edge [nFaceVerts])) {
+		if (!(m_edges.pEdges = new CEdge [nFaceVerts])) {
+			Destroy ();
 			nIndent -= 2;
-			return OOF_FreeSubObject (&so);
+			return 0;
 			}
-		memset (so.edges.pEdges, 0, nFaceVerts * sizeof (tOOF_edge));
-		so.edges.nEdges = 0;
+		memset (m_edges.pEdges, 0, nFaceVerts * sizeof (CEdge));
+		m_edges.nEdges = 0;
 		}
-	for (i = 0, nFaceVerts = 0; i < so.faces.nFaces; i++) {
-		if (!(h = OOF_ReadFace (cf, &so, so.faces.faces + i, bReadData ? so.faces.faceVerts + nFaceVerts : NULL, bFlipV))) {
+	for (i = 0, nFaceVerts = 0; i < m_faces.nFaces; i++) {
+		if (!(h = OOF_ReadFace (cf, &so, m_faces.faces + i, bReadData ? m_faces.faceVerts + nFaceVerts : NULL, bFlipV))) {
+			Destroy ();
 			nIndent -= 2;
-			return OOF_FreeSubObject (&so);
+			return 0;
 			}
 		nFaceVerts += h;
 		}
 	}
 #else
-for (i = 0; i < so.faces.nFaces; i++)
-	if (!OOF_ReadFace (cf, &so, so.faces.faces + i, NULL, bFlipV)) {
+for (i = 0; i < m_faces.nFaces; i++)
+	if (!OOF_ReadFace (cf, &so, m_faces.faces + i, NULL, bFlipV)) {
 		nIndent -= 2;
-		return OOF_FreeSubObject (&so);
+		Destroy ();
+		return 0;
 		}
 #endif
-po->pSubObjects [so.nIndex] = so;
 nIndent -= 2;
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int OOF_ReleaseTextures (void)
+void CSubModel::BuildModelAngleMatrix (CFloatMatrix *pm, int a, CFloatVector *pAxis)
 {
-	tOOFObject	*po;
-	int			bCustom, i;
+float x = pAxis->m_x;
+float y = pAxis->m_y;
+float z = pAxis->m_z;
+float s = (float) sin ((float) a);
+float c = (float) cos ((float) a);
+float t = 1.0f - c;
+float i = t * x;
+float j = s * z;
+//pm->m_r.x = t * x * x + c;
+pm->m_r.x = i * x + c;
+i *= y;
+//pm->m_r.y = t * x * y + s * z;
+//pm->m_u.x = t * x * y - s * z;
+pm->m_r.y = i + j;
+pm->m_u.x = i - j;
+i = t * z;
+//pm->m_f.z = t * z * z + c;
+pm->m_f.z = i * z + c;
+i *= x;
+j = s * y;
+//pm->m_r.z = t * x * z - s * y;
+//pm->m_f.x = t * x * z + s * y;
+pm->m_r.z = i - j;
+pm->m_f.x = i + j;
+i = t * y;
+//pm->m_u.y = t * y * y + c;
+pm->m_u.y = i * y + c;
+i *= z;
+j = s * x;
+//pm->m_u.z = t * y * z + s * x;	
+//pm->m_f.y = t * y * z - s * x;
+pm->m_u.z = i + j;
+pm->m_f.y = i - j;
+}
 
-PrintLog ("releasing OOF model textures\n");
-for (bCustom = 0; bCustom < 2; bCustom++)
-	for (i = gameData.models.nHiresModels, po = gameData.models.oofModels [bCustom]; i; i--, po++)
-		po->textures.Release ();
+//------------------------------------------------------------------------------
+
+void CSubModel::BuildAnimMatrices (void)
+{
+	CFloatMatrix	mBase, mDest, mTemp;
+	CRotFrame		*pf;
+	int				a;
+
+mBase = CFloatMatrix::IDENTITY;
+for (int i = pso->m_rotAnim.m_nFrames, pf = pso->m_rotAnim.frames.Buffer (); i; i--, pf++) {
+	a = pf->m_nAngle;
+	BuildModelAngleMatrix (&mTemp, a, &pf->m_vAxis);
+	mDest = mTemp * mBase;
+	mBase = mDest;
+	pf->m_mMat = mBase;
+	}
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+int CModel::ReleaseTextures (void)
+{
+m_textures.Release ();
 return 0;
 }
 
 //------------------------------------------------------------------------------
 
-int OOF_ReloadTextures (void)
+int CModel::ReloadTextures (int bCustom)
 {
-	tOOFObject *po;
-	int			bCustom, i;
-
-PrintLog ("reloading OOF model textures\n");
-for (bCustom = 0; bCustom < 2; bCustom++)
-	for (i = gameData.models.nHiresModels, po = gameData.models.oofModels [bCustom]; i; i--, po++)
-		if (!po->textures.Read (po->nType, bCustom)) {
-			OOF_FreeObject (po);
-			return 0;
-			}
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int OOF_FreeTextures (tOOFObject *po)
-{
-po->textures.Destroy ();
+if (m_textures.Read (m_nType, bCustom)) 
+	return 1;
+Destroy ();
 return 0;
 }
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadTextures (CFile& cf, tOOFObject *po, short nType, int bCustom)
+int CModel::FreeTextures (void)
 {
-	tOOFObject	o = *po;
+m_textures.Destroy ();
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int CModel::ReadTextures (CFile& cf, short nType, int bCustom)
+{
 	int			i;
 	char			szId [30];
 #if DBG
@@ -1192,13 +1352,14 @@ nIndent += 2;
 OOF_PrintLog ("reading textures\n");
 int nBitmaps = OOF_ReadInt (cf, "nBitmaps");
 #if OOF_TEST_CUBE
-/*!!!*/o.textures.nBitmaps = 6;
+/*!!!*/m_textures.nBitmaps = 6;
 #endif
-if (!(o.textures.Create (nBitmaps))) {
+if (!(m_textures.Create (nBitmaps))) {
 	nIndent -= 2;
-	return OOF_FreeTextures (&o);
+	FreeTextures ();
+	return 0;
 	}
-for (i = 0; i < o.textures.m_nBitmaps; i++) {
+for (i = 0; i < m_textures.m_nBitmaps; i++) {
 	if (bLogOOF)
 		sprintf (szId, "textures.pszId [%d]", i);
 #if OOF_TEST_CUBE
@@ -1206,196 +1367,156 @@ if (!i)	//cube.oof only contains one texture
 #endif
 	if (!OOF_ReadString (cf, szId, "\001")) {
 		nIndent -= 2;
-		return OOF_FreeTextures (&o);
+		FreeTextures ();
+		return 0;
 		}
-	o.textures.m_names [i].Create (strlen (szId) + 1);
-	o.textures.m_names [i] = szId;
+	m_textures.m_names [i].Create (strlen (szId) + 1);
+	m_textures.m_names [i] = szId;
 #if OOF_TEST_CUBE
 if (!i) {
-	delete[] o.textures.m_names [i];
-	o.textures.m_names [i] = NULL;
+	delete[] m_textures.m_names [i];
+	m_textures.m_names [i] = NULL;
 	}
-o.textures.m_names [i] = new char [20];
-sprintf (o.textures.m_names [i], "%d.tga", i + 1);
+m_textures.m_names [i] = new char [20];
+sprintf (m_textures.m_names [i], "%d.tga", i + 1);
 #endif
-	if (!ReadModelTGA (o.textures.m_names [i].Buffer (), o.textures.m_bitmaps + i, nType, bCustom)) {
+	if (!ReadModelTGA (m_textures.m_names [i].Buffer (), m_textures.m_bitmaps + i, nType, bCustom)) {
 #if DBG
 		bOk = 0;
 #else
 		nIndent -= 2;
-		return OOF_FreeTextures (&o);
+		FreeTextures ();
+		return 0;
 #endif
 		}
 	}
 #if DBG
 if (!bOk) {
 	nIndent -= 2;
-	return OOF_FreeTextures (&o);
+	FreeTextures ();
+	return 0;
 	}
 #endif
-*po = o;
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int OOF_FreeObject (tOOFObject *po)
+void CModel::Init (void)
+{
+m_nModel = 0;
+m_nType = 0;
+m_nVersion = 0;
+m_nFlags = 0;
+m_nDetailLevels = 0;
+m_nSubModels = 0;
+m_bCloaked = 0;
+m_nCloakPulse = 0;
+m_nCloakChangedTime = 0;
+m_fMaxRadius = 0;
+m_fAlpha = 0;
+m_vMin.SetZero ();
+m_vMax.SetZero ();
+m_textures.Init ();
+m_frameInfo.Init ();
+}
+
+//------------------------------------------------------------------------------
+
+void CModel::Destroy (void)
 {
 	int	i;
 
-OOF_FreeTextures (po);
-if (po->pSubObjects) {
-	for (i = 0; i < po->nSubObjects; i++)
-		OOF_FreeSubObject (po->pSubObjects + i);
-	delete[] po->pSubObjects;
-	po->pSubObjects = NULL;
-	}
-OOF_FreePointList (&po->gunPoints);
-OOF_FreeAttachList (&po->attachPoints);
-OOF_FreeSpecialList (&po->specialPoints);
-if (po->armament.pBatts) {
-	for (i = 0; i < po->armament.nBatts; i++)
-		OOF_FreeBattery (po->armament.pBatts + i);
-	delete[] po->armament.pBatts;
-	po->armament.pBatts = NULL;
-	}
+FreeTextures ();
+m_subObjects.Destroy ();
+m_gunPoints.Destroy ();
+m_attachPoints.Destroy ();
+m_specialPoints.Destroy ();
+m_armament.Destroy ();
 return 0;
 }
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadObject (CFile& cf, tOOFObject *po)
+int CModel::ReadInfo (CFile& cf)
 {
-	tOOFObject	o = *po;
-
 nIndent += 2;
-OOF_PrintLog ("reading CObject\n");
-o.nVersion = po->nVersion;
-o.nSubObjects = OOF_ReadInt (cf, "nSubObjects");
-if (o.nSubObjects >= OOF_MAX_SUBOBJECTS) {
+OOF_PrintLog ("reading OOF model\n");
+m_nSubModels = OOF_ReadInt (cf, "nSubModels");
+if (m_nSubModels >= OOF_MAX_SUBOBJECTS) {
 	nIndent -= 2;
 	return 0;
 	}
-o.fMaxRadius = OOF_ReadFloat (cf, "fMaxRadius");
-OOF_ReadVector (cf, &o.vMin, "vMin");
-OOF_ReadVector (cf, &o.vMax, "vMax");
-o.nDetailLevels = OOF_ReadInt (cf, "nDetailLevels");
+m_fMaxRadius = OOF_ReadFloat (cf, "fMaxRadius");
+OOF_ReadVector (cf, &m_vMin, "vMin");
+OOF_ReadVector (cf, &m_vMax, "vMax");
+m_nDetailLevels = OOF_ReadInt (cf, "nDetailLevels");
 nIndent -= 2;
-cf.Seek (o.nDetailLevels * sizeof (int), SEEK_CUR);
-if (!(o.pSubObjects= new tOOF_subObject [o.nSubObjects]))
+cf.Seek (m_nDetailLevels * sizeof (int), SEEK_CUR);
+if (!m_subObjects.Create (m_nSubModels))
 	return 0;
-*po = o;
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-void BuildModelAngleMatrix (tOOF_matrix *pm, int a, tOOF_vector *pAxis)
+void CModel::BuildAnimMatrices (void)
 {
-float x = pAxis->x;
-float y = pAxis->y;
-float z = pAxis->z;
-float s = (float) sin ((float) a);
-float c = (float) cos ((float) a);
-float t = 1.0f - c;
-float i = t * x;
-float j = s * z;
-//pm->r.x = t * x * x + c;
-pm->r.x = i * x + c;
-i *= y;
-//pm->r.y = t * x * y + s * z;
-//pm->u.x = t * x * y - s * z;
-pm->r.y = i + j;
-pm->u.x = i - j;
-i = t * z;
-//pm->f.z = t * z * z + c;
-pm->f.z = i * z + c;
-i *= x;
-j = s * y;
-//pm->r.z = t * x * z - s * y;
-//pm->f.x = t * x * z + s * y;
-pm->r.z = i - j;
-pm->f.x = i + j;
-i = t * y;
-//pm->u.y = t * y * y + c;
-pm->u.y = i * y + c;
-i *= z;
-j = s * x;
-//pm->u.z = t * y * z + s * x;	
-//pm->f.y = t * y * z - s * x;
-pm->u.z = i + j;
-pm->f.y = i - j;
+	CSubModel*		pso;
+	CFloatMatrix	mBase, mDest, mTemp;
+	int						i, j, a;
+
+for (int i = 0; i < m_nSubModels; i++)
+	m_subModels [i].m_rotAnim.BuildMatrices ();
 }
 
 //------------------------------------------------------------------------------
 
-void BuildAnimMatrices (tOOFObject *po)
+void CModel::AssignChildren (void)
 {
-	tOOF_subObject *pso;
-	tOOF_matrix		mBase, mDest, mTemp;
-	tOOF_rotFrame	*pf;
-	int				i, j, a;
+	CSubModel *pso, *pParent;
+	int					i;
 
-for (i = po->nSubObjects, pso = po->pSubObjects; i; i--, pso++) {
-	OOF_MatIdentity (&mBase);
-	for (j = pso->rotAnim.frameInfo.nFrames, pf = pso->rotAnim.pFrames; j; j--, pf++) {
-		a = pf->nAngle;
-		BuildModelAngleMatrix (&mTemp, a, &pf->vAxis);
-		OOF_MatIdentity (&mDest);
-		OOF_MatMul (&mDest, &mTemp, &mBase);
-		mBase = mDest;
-		pf->mMat = mBase;
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void AssignChildren (tOOFObject *po)
-{
-	tOOF_subObject *pso, *pParent;
-	int				i;
-
-for (i = 0, pso = po->pSubObjects; i < po->nSubObjects; i++, pso++) {
-	int nParent = pso->nParent;
+for (i = 0, pso = po->m_subObjects.Buffer (); i < po->m_nSubModels; i++, pso++) {
+	int nParent = pso->m_nParent;
 	if (nParent == i)
-		pso->nParent = -1;
+		pso->m_nParent = -1;
 	else if (nParent != -1) {
-		pParent = po->pSubObjects + nParent;
-		pParent->children [pParent->nChildren++] = i;
+		pParent = po->m_subObjects + nParent;
+		pParent->m_children [pParent->m_nChildren++] = i;
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
 
-inline void RecursiveAssignBatt (tOOFObject *po, int iObject, int iBatt)
+inline void CModel::LinkSubModelBatteries (int iObject, int iBatt)
 {
-	tOOF_subObject	*pso = po->pSubObjects + iObject;
-	int				i, nFlags = iBatt << OOF_WB_INDEX_SHIFT;
+	CSubModel	*pso = m_subObjects + iObject;
+	int			i, nFlags = iBatt << OOF_WB_INDEX_SHIFT;
 
-pso->nFlags |= nFlags | OOF_SOF_WB;	
-for (i = 0; i < pso->nChildren; i++)
-	RecursiveAssignBatt (po, pso->children [i], iBatt);
+pso->m_nFlags |= nFlags | OOF_SOF_WB;	
+for (i = 0; i < pso->m_nChildren; i++)
+	LinkSubModelBatteries (po, pso->m_children [i], iBatt);
 }
 
 //------------------------------------------------------------------------------
 
-void AssignBatteries (tOOFObject *po)
+void CModel::LinkBatteries (CModel* po)
 {
-	tOOF_subObject	*pso;
-	tOOF_battery	*pb;
-	int				*pti;
-	int				i, j, k;
+	CSubModel*	pso;
+	CBattery*	pb;
+	int*			pti;
+	int			i, j, k;
 
-for (i = 0, pso = po->pSubObjects; i < po->nSubObjects; i++, pso++) {
-	if (!(pso->nFlags & OOF_SOF_TURRET))
+for (i = 0, pso = m_subObjects; i < m_nSubModels; i++, pso++) {
+	if (!(pso->m_nFlags & OOF_SOF_TURRET))
 		continue;
-	for (j = 0, pb = po->armament.pBatts; j < po->armament.nBatts; j++, pb++)
-		for (k = pb->nTurrets, pti = pb->pTurretIndex; k; k--, pti++)
+	for (j = 0, pb = m_armament.Buffer (); j < m_armament.Length (); j++, pb++)
+		for (k = pb->m_nTurrets, pti = pb->m_turretIndex.Buffer (); k; k--, pti++)
 			if (*pti == i) {
-				RecursiveAssignBatt (po, i, j);
-				j = po->armament.nBatts;
+				LinkSubModelBatteries (po, i, j);
+				j = m_armament.Length ();
 				break;
 				}
 	}
@@ -1403,18 +1524,18 @@ for (i = 0, pso = po->pSubObjects; i < po->nSubObjects; i++, pso++) {
 
 //------------------------------------------------------------------------------
 
-void BuildPosTickRemapList (tOOFObject *po)
+void CModel::BuildPosTickRemapList (void)
 {
-	int				i, j, k, t, nTicks;
-	tOOF_subObject	*pso;
+	int			i, j, k, t, nTicks;
+	CSubModel	*pso;
 
-for (i = po->nSubObjects, pso = po->pSubObjects; i; i--, pso++) {
-	nTicks = pso->posAnim.frameInfo.nLastFrame - pso->posAnim.frameInfo.nFirstFrame;
-	for (j = 0, t = pso->posAnim.frameInfo.nFirstFrame; j < nTicks; j++, t++)
-		if ((k = pso->posAnim.frameInfo.nFrames - 1))
+for (i = m_nSubModels, pso = m_subObjects; i; i--, pso++) {
+	nTicks = pso->m_posAnim.m_nLastFrame - pso->m_posAnim.m_nFirstFrame;
+	for (j = 0, t = pso->m_posAnim.m_nFirstFrame; j < nTicks; j++, t++)
+		if ((k = pso->m_posAnim.m_nFrames - 1))
 			for (; k >= 0; k--)
-				if (t >= pso->posAnim.pFrames [k].nStartTime) {
-					pso->posAnim.pRemapTicks [j] = k;
+				if (t >= pso->m_posAnim.m_frames [k].m_nStartTime) {
+					pso->m_posAnim.m_remapTicks [j] = k;
 					break;
 					}
 	}
@@ -1422,18 +1543,18 @@ for (i = po->nSubObjects, pso = po->pSubObjects; i; i--, pso++) {
 
 //------------------------------------------------------------------------------
 
-void BuildRotTickRemapList (tOOFObject *po)
+void CModel::BuildRotTickRemapList (void)
 {
 	int				i, j, k, t, nTicks;
-	tOOF_subObject	*pso;
+	CSubModel	*pso;
 
-for (i = po->nSubObjects, pso = po->pSubObjects; i; i--, pso++) {
-	nTicks = pso->rotAnim.frameInfo.nLastFrame - pso->rotAnim.frameInfo.nFirstFrame;
-	for (j = 0, t = pso->rotAnim.frameInfo.nFirstFrame; j < nTicks; j++, t++)
-		if ((k = pso->rotAnim.frameInfo.nFrames - 1))
+for (i = m_nSubModels, pso = m_subObjects; i; i--, pso++) {
+	nTicks = pso->m_rotAnim.m_nLastFrame - pso->m_rotAnim.m_nFirstFrame;
+	for (j = 0, t = pso->m_rotAnim.m_nFirstFrame; j < nTicks; j++, t++)
+		if ((k = pso->m_rotAnim.m_nFrames - 1))
 			for (; k >= 0; k--)
-				if (t >= pso->rotAnim.pFrames [k].nStartTime) {
-					pso->rotAnim.pRemapTicks [j] = k;
+				if (t >= pso->m_rotAnim.m_frames [k].m_nStartTime) {
+					pso->m_rotAnim.m_remapTicks [j] = k;
 					break;
 					}
 	}
@@ -1441,88 +1562,88 @@ for (i = po->nSubObjects, pso = po->pSubObjects; i; i--, pso++) {
 
 //------------------------------------------------------------------------------
 
-void ConfigureSubObjects (tOOFObject *po)
+void CModel::ConfigureSubModels (void)
 {
-	int				i, j;
-	tOOF_subObject	*pso;
+	int			i, j;
+	CSubModel	*pso;
 
-for (i = po->nSubObjects, pso = po->pSubObjects; i; i--, pso++) {
-	if (!pso->rotAnim.frameInfo.nFrames)
-		pso->nFlags &= ~(OOF_SOF_ROTATE | OOF_SOF_TURRET);
+for (i = m_nSubModels, pso = m_subObjects.Buffer (); i; i--, pso++) {
+	if (!pso->m_rotAnim.m_nFrames)
+		pso->m_nFlags &= ~(OOF_SOF_ROTATE | OOF_SOF_TURRET);
 
-	if (pso->nFlags & OOF_SOF_FACING) {
-		tOOF_vector v [30], avg;
-		tOOF_face	*pf = pso->faces.faces;
+	if (pso->m_nFlags & OOF_SOF_FACING) {
+		CFloatVector v [30], avg;
+		CFace	*pf = pso->m_faces.faces.Buffer ();
 
-		for (j = 0; j < pf->nVerts; j++)
-			v [j] = pso->verts [pf->verts [j].nIndex];
+		for (j = 0; j < pf->m_nVerts; j++)
+			v [j] = pso->m_verts [pf->m_verts [j].nIndex];
 	
-		pso->fRadius = (float) (sqrt (OOF_Centroid (&avg, v, pf->nVerts)) / 2);
-		po->nFlags |= OOF_PMF_FACING;
+		pso->m_fRadius = (float) (sqrt (OOF_Centroid (&avg, v, pf->m_nVerts)) / 2);
+		m_nFlags |= OOF_PMF_FACING;
 
 		}
 
-	if (pso->nFlags & (OOF_SOF_GLOW | OOF_SOF_THRUSTER)) {
-		tOOF_vector v [30];
-		tOOF_face	*pf = pso->faces.faces;
+	if (pso->m_nFlags & (OOF_SOF_GLOW | OOF_SOF_THRUSTER)) {
+		CFloatVector v [30];
+		CFace	*pf = pso->m_faces.faces.Buffer ();
 
-		for (j = 0; j < pf->nVerts; j++)
-			v [j] = pso->verts [pf->verts [j].nIndex];
-		OOF_VecNormal (&pso->glowInfo.vNormal, v, v + 1, v + 2);
-		po->nFlags |= OOF_PMF_FACING;	// Set this so we know when to draw
+		for (j = 0; j < pf->m_nVerts; j++)
+			v [j] = pso->m_verts [pf->m_verts [j].nIndex];
+		pso->m_glowInfo.vNormal = CFloatVector::Normal (v [0], v [1], v [2]);
+		m_nFlags |= OOF_PMF_FACING;	// Set this so we know when to draw
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void GetSubObjectBounds (tOOFObject *po, tOOF_subObject *pso, tOOF_vector vo)
+void CModel::GetSubModelBounds (CSubModel *pso, CFloatVector vo)
 {
 	int	i;
 	float	h;
 
-vo.x += pso->vOffset.x;
-vo.y += pso->vOffset.y;
-vo.z += pso->vOffset.z;
-if (po->vMax.x < (h = pso->vMax.x + vo.x))
-	 po->vMax.x = h;
-if (po->vMax.y < (h = pso->vMax.y + vo.y))
-	 po->vMax.y = h;
-if (po->vMax.z < (h = pso->vMax.z + vo.z))
-	 po->vMax.z = h;
-if (po->vMin.x > (h = pso->vMin.x + vo.x))
-	 po->vMin.x = h;
-if (po->vMin.y > (h = pso->vMin.y + vo.y))
-	 po->vMin.y = h;
-if (po->vMin.z > (h = pso->vMin.z + vo.z))
-	 po->vMin.z = h;
-for (i = 0; i < pso->nChildren; i++)
-	GetSubObjectBounds (po, po->pSubObjects + pso->children [i], vo);
+vo.x += pso->m_vOffset.x;
+vo.y += pso->m_vOffset.y;
+vo.z += pso->m_vOffset.z;
+if (m_vMax.x < (h = pso->m_vMax.x + vo.x))
+	 m_vMax.x = h;
+if (m_vMax.y < (h = pso->m_vMax.y + vo.y))
+	 m_vMax.y = h;
+if (m_vMax.z < (h = pso->m_vMax.z + vo.z))
+	 m_vMax.z = h;
+if (m_vMin.x > (h = pso->m_vMin.x + vo.x))
+	 m_vMin.x = h;
+if (m_vMin.y > (h = pso->m_vMin.y + vo.y))
+	 m_vMin.y = h;
+if (m_vMin.z > (h = pso->m_vMin.z + vo.z))
+	 m_vMin.z = h;
+for (i = 0; i < pso->m_nChildren; i++)
+	GetSubModelBounds (po, m_subObjects + pso->m_children [i], vo);
 }
 
 //------------------------------------------------------------------------------
 
-void GetObjectBounds (tOOFObject *po)
+void CModel::GetBounds (void)
 {
-	tOOF_subObject	*pso;
-	tOOF_vector		vo;
+	CSubModel*		pso;
+	CFloatVector	vo;
 	int				i;
 
-vo.x = vo.y = vo.z = 0.0f;
-OOF_InitMinMax (&po->vMin, &po->vMax);
-for (i = 0, pso = po->pSubObjects; i < po->nSubObjects; i++, pso++)
-	if (pso->nParent == -1)
-		GetSubObjectBounds (po, pso, vo);
+vo.SetZero ();
+OOF_InitMinMax (&m_vMin, &m_vMax);
+for (i = 0, pso = m_subObjects.Buffer (); i < m_nSubModels; i++, pso++)
+	if (pso->m_nParent == -1)
+		GetSubModelBounds (po, pso, vo);
 }
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadFile (char *pszFile, tOOFObject *po, short nModel, short nType, int bFlipV, int bCustom)
+int CModel::Read (char *filename, short nModel, short nType, int bFlipV, int bCustom)
 {
-	CFile				cf;
-	char				fileId [4];
-	tOOFObject		o;
-	int				i, nLength, nFrames, bTimed = 0;
+	CFile			cf;
+	char			fileId [4];
+	CModel		o;
+	int			i, nLength, nFrames, bTimed = 0;
 
 bLogOOF = (fErr != NULL) && FindArg ("-printoof");
 nIndent = 0;
@@ -1542,18 +1663,18 @@ if (strncmp (fileId, "PSPO", 4)) {
 	cf.Close ();
 	return 0;
 	}
-memset (&o, 0, sizeof (o));
-o.nVersion = OOF_ReadInt (cf, "nVersion");
-if (o.nVersion >= 2100)
-	o.nFlags |= OOF_PMF_LIGHTMAP_RES;
-if (o.nVersion >= 22) {
+Init ();
+m_nVersion = OOF_ReadInt (cf, "nVersion");
+if (m_nVersion >= 2100)
+	m_nFlags |= OOF_PMF_LIGHTMAP_RES;
+if (m_nVersion >= 22) {
 	bTimed = 1;
-	o.nFlags |= OOF_PMF_TIMED;
-	o.frameInfo.nFirstFrame = 0;
-	o.frameInfo.nLastFrame = 0;
+	m_nFlags |= OOF_PMF_TIMED;
+	m_nFirstFrame = 0;
+	m_nLastFrame = 0;
 	}
-o.nModel = nModel;
-o.nType = nType;
+m_nModel = nModel;
+m_nType = nType;
 
 while (!cf.EoF ()) {
 	char chunkId [4];
@@ -1566,66 +1687,87 @@ while (!cf.EoF ()) {
 	nLength = OOF_ReadInt (cf, "nLength");
 	switch (ListType (chunkId)) {
 		case 0:
-			if (!OOF_ReadTextures (cf, &o, nType, bCustom))
-				return OOF_FreeObject (&o);
+			if (!ReadTextures (cf, &o, nType, bCustom)) {
+				Destroy ();
+				return 0;
+				}
 			break;
 
 		case 1:
-			if (!OOF_ReadObject (cf, &o))
-				return OOF_FreeObject (&o);
+			if (!ReadInfo (cf)) {
+				Destroy ();
+				return 0;
+				}
 			break;
 
 		case 2:
-			if (!OOF_ReadSubObject (cf, &o, bFlipV))
-				return OOF_FreeObject (&o);
+			if (!m_subObjects [m_nSubModels].Read (cf, &o, bFlipV)) {
+				Destroy ();
+				return 0;
+				}
+			m_nSubOjects++;
 			break;
 
 		case 3:
-			if (!OOF_ReadPointList (cf, &o.gunPoints, o.nVersion >= 1908, MAX_GUNS))
-				return OOF_FreeObject (&o);
+			if (!m_gunPoints.Read (cf, m_nVersion >= 1908, MAX_GUNS)) {
+				Destroy ();
+				return 0;
+				}
 			break;
 
 		case 4:
-			if (!OOF_ReadSpecialList (cf, &o.specialPoints))
-				return OOF_FreeObject (&o);
+			if (!m_specialPoints.Read (cf)) {
+				Destroy ();
+				return 0;
+				}
 			break;
 
 		case 5:
-			if (!OOF_ReadAttachList (cf, &o.attachPoints))
-				return OOF_FreeObject (&o);
+			if (!m_attachPoints.Read (cf)) {
+				Destroy ();
+				return 0;
+				}
 			break;
 
 		case 6:
-			nFrames = o.frameInfo.nFrames;
+			nFrames = m_nFrames;
 			if (!bTimed)
-				o.frameInfo.nFrames = OOF_ReadInt (cf, "nFrames");
-			for (i = 0; i < o.nSubObjects; i++)
-				if (!OOF_ReadPosAnim (cf, &o, &o.pSubObjects [i].posAnim, bTimed))
-				return OOF_FreeObject (&o);
-			if (o.frameInfo.nFrames < nFrames)
-				o.frameInfo.nFrames = nFrames;
+				m_nFrames = OOF_ReadInt (cf, "nFrames");
+			for (i = 0; i < m_nSubModels; i++)
+				if (!m_subObjects [i].m_posAnim.Read (cf, this, bTimed)) {
+					Destroy ();
+					return 0;
+					}
+			if (m_nFrames < nFrames)
+				m_nFrames = nFrames;
 			break;
 
 		case 7:
 		case 8:
-			nFrames = o.frameInfo.nFrames;
+			nFrames = m_nFrames;
 			if (!bTimed)
-				o.frameInfo.nFrames = OOF_ReadInt (cf, "nFrames");
-			for (i = 0; i < o.nSubObjects; i++)
-				if (!OOF_ReadRotAnim (cf, &o, &o.pSubObjects [i].rotAnim, bTimed))
-					return OOF_FreeObject (&o);
-			if (o.frameInfo.nFrames < nFrames)
-				o.frameInfo.nFrames = nFrames;
+				m_nFrames = OOF_ReadInt (cf, "nFrames");
+			for (i = 0; i < m_nSubModels; i++)
+				if (!m_subObjects [i].m_rotAnim.Read (cf, this, bTimed)) {
+					Destroy ();
+					return 0;
+					}
+			if (m_nFrames < nFrames)
+				m_nFrames = nFrames;
 			break;
 
 		case 9:
-			if (!OOF_ReadArmament (cf, &o.armament))
-				return OOF_FreeObject (&o);
+			if (!m_armament.Read (cf)) {
+				Destroy ();
+				return 0;
+				}
 			break;
 
 		case 10:
-			if (!OOF_ReadAttachNormals (cf, &o.attachPoints))
-				return OOF_FreeObject (&o);
+			if (!m_attachPoints.ReadNormals (cf)) {
+				Destroy ();
+				return 0;
+				}
 			break;
 
 		default:
@@ -1634,15 +1776,51 @@ while (!cf.EoF ()) {
 		}
 	}
 cf.Close ();
-ConfigureSubObjects (&o);
+ConfigureSubModels (&o);
 BuildAnimMatrices (&o);
 AssignChildren (&o);
-AssignBatteries (&o);
+LinkBatteries (&o);
 BuildPosTickRemapList (po);
 BuildRotTickRemapList (po);
-*po = o;
-gameData.models.bHaveHiresModel [po - gameData.models.oofModels [bCustom]] = 1;
+gameData.models.bHaveHiresModel [this - gameData.models.oofModels [bCustom]] = 1;
 return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int OOF_ReleaseTextures (void)
+{
+	CModel	*po;
+	int			bCustom, i;
+
+PrintLog ("releasing OOF model textures\n");
+for (bCustom = 0; bCustom < 2; bCustom++)
+	for (i = gameData.models.nHiresModels, po = gameData.models.oofModels [bCustom]; i; i--, po++)
+		po->ReleaseTextures ();
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int OOF_ReloadTextures (void)
+{
+	CModel* po;
+	int			bCustom, i;
+
+PrintLog ("reloading OOF model textures\n");
+for (bCustom = 0; bCustom < 2; bCustom++)
+	for (i = gameData.models.nHiresModels, po = gameData.models.oofModels [bCustom]; i; i--, po++)
+		if (!po->ReloadTextures (bCustom))
+			return 0;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int OOF_FreeTextures (CModel* po)
+{
+po->FreeTextures ();
+return 0;
 }
 
 //------------------------------------------------------------------------------

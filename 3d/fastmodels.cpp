@@ -417,14 +417,14 @@ return 1;
 //------------------------------------------------------------------------------
 
 void G3DrawSubModel (CObject *objP, short nModel, short nSubModel, short nExclusive, CBitmap **modelBitmaps,
-						   vmsAngVec *pAnimAngles, CFixVector *vOffsetP, int bHires, int bUseVBO, int nPass, int bTransparency,
+						   CAngleVector *pAnimAngles, CFixVector *vOffsetP, int bHires, int bUseVBO, int nPass, int bTransparency,
 							int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
 	RenderModel::CModel			*pm = gameData.models.renderModels [bHires] + nModel;
 	RenderModel::CSubModel		*psm = pm->m_subModels + nSubModel;
 	RenderModel::CFace	*pmf;
 	CBitmap		*bmP = NULL;
-	vmsAngVec		va = pAnimAngles ? pAnimAngles [psm->m_nAngles] : vmsAngVec::ZERO;
+	CAngleVector		va = pAnimAngles ? pAnimAngles [psm->m_nAngles] : CAngleVector::ZERO;
 	CFixVector		vo;
 	int				h, i, j, bTransparent, bAnimate, bTextured = !(gameStates.render.bCloaked /*|| nPass*/),
 						bGetThruster = !nPass && ObjectHasThruster (objP);
@@ -558,7 +558,7 @@ if ((nExclusive < 0) /*|| (nSubModel == nExclusive)*/)
 //------------------------------------------------------------------------------
 
 void G3DrawModel (CObject *objP, short nModel, short nSubModel, CBitmap **modelBitmaps,
-						vmsAngVec *pAnimAngles, CFixVector *vOffsetP, int bHires, int bUseVBO, int bTransparency,
+						CAngleVector *pAnimAngles, CFixVector *vOffsetP, int bHires, int bUseVBO, int bTransparency,
 						int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
 	RenderModel::CModel					*pm;
@@ -694,12 +694,12 @@ OglResetTransform (1);
 //------------------------------------------------------------------------------
 
 void G3RenderDamageLightnings (CObject *objP, short nModel, short nSubModel,
-										 vmsAngVec *pAnimAngles, CFixVector *vOffsetP, int bHires)
+										 CAngleVector *pAnimAngles, CFixVector *vOffsetP, int bHires)
 {
 	RenderModel::CModel			*pm;
 	RenderModel::CSubModel		*psm;
 	RenderModel::CFace	*pmf;
-	const vmsAngVec	*va;
+	const CAngleVector	*va;
 	CFixVector		vo;
 	int				i, j;
 
@@ -712,7 +712,7 @@ if (pm->m_bValid < 1) {
 		return;
 	}
 psm = pm->m_subModels + nSubModel;
-va = pAnimAngles ? pAnimAngles + psm->m_nAngles : &vmsAngVec::ZERO;
+va = pAnimAngles ? pAnimAngles + psm->m_nAngles : &CAngleVector::ZERO;
 if (!(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage))
 	return;
 if (!objP || (ObjectDamage (objP) > 0.5f))
@@ -739,7 +739,7 @@ if (vOffsetP)
 //------------------------------------------------------------------------------
 
 int G3RenderModel (CObject *objP, short nModel, short nSubModel, tPolyModel *pp, CBitmap **modelBitmaps,
-						 vmsAngVec *pAnimAngles, CFixVector *vOffsetP, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor)
+						 CAngleVector *pAnimAngles, CFixVector *vOffsetP, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor)
 {
 	RenderModel::CModel	*pm = gameData.models.renderModels [1] + nModel;
 	int		i, bHires = 1, bUseVBO = gameStates.ogl.bHaveVBOs && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bObjLighting),

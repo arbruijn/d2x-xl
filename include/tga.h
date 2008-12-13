@@ -30,7 +30,8 @@ class CModelTextures {
 		CArray<ubyte>			m_nTeam;
 
 	public:
-		CModelTextures () { m_nBitmaps = 0; }
+		CModelTextures () { Init (); } 
+		void Init (void) { m_nBitmaps = 0; }
 		void Release (void);
 		int Read (int nType, int bCustom);
 		bool Create (int nBitmaps);

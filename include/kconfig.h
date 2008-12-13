@@ -41,7 +41,7 @@ typedef struct control_info {
 	ubyte automapDownCount;
 	ubyte automapState;
 
-	//vmsAngVec heading;
+	//CAngleVector heading;
 	//char oem_message[64];
 
 	ubyte afterburnerState;
@@ -78,11 +78,11 @@ typedef struct ext_control_info {
 	ubyte automapDownCount;
 	ubyte automapState;
 
-	//vmsAngVec heading;   	    // for version >=1.0
+	//CAngleVector heading;   	    // for version >=1.0
 	//char oem_message[64];     	// for version >=1.0
 
 	//CFixVector ship_pos           // for version >=2.0
-	//vmsMatrix ship_orient        // for version >=2.0
+	//CFixMatrix ship_orient        // for version >=2.0
 
 	//ubyte cyclePrimaryCount     // for version >=3.0
 	//ubyte cycleSecondaryCount   // for version >=3.0
@@ -99,7 +99,7 @@ typedef struct ext_control_info {
 	//ubyte Secondary_weapon_selected
 
 	//CFixVector force_vector
-	//vmsMatrix force_matrix
+	//CFixMatrix force_matrix
 	//int joltinfo[3]
 	//int x_vibrate_info[2]
 	//int y_vibrate_info[2]
@@ -140,13 +140,13 @@ typedef struct advanced_ext_control_info {
 
 	// everything below this line is for version >=1.0
 
-	vmsAngVec heading;
+	CAngleVector heading;
 	char oem_message[64];
 
 	// everything below this line is for version >=2.0
 
 	CFixVector ship_pos;
-	vmsMatrix ship_orient;
+	CFixMatrix ship_orient;
 
 	// everything below this line is for version >=3.0
 
@@ -163,7 +163,7 @@ typedef struct advanced_ext_control_info {
 	ubyte currentSecondary_weapon;
 
 	CFixVector force_vector;
-	vmsMatrix force_matrix;
+	CFixMatrix force_matrix;
 	int joltinfo[3];
 	int x_vibrate_info[2];
 	int y_vibrate_info[2];

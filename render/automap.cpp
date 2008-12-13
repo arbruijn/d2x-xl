@@ -152,12 +152,12 @@ typedef struct tAutomapData {
 	fix			nZoom;
 	CFixVector	viewPos;
 	CFixVector	viewTarget;
-	vmsMatrix	viewMatrix;
+	CFixMatrix	viewMatrix;
 } tAutomapData;
 
 // Rendering variables
 //static tAutomapData	amData = {0, 1, 0, F1_0 * 20 * 100, 0x9000, CFixVector::ZERO, CFixVector::ZERO, {CFixVector::ZERO,CFixVector::ZERO,CFixVector::ZERO}};
-static tAutomapData	amData; // = {0, 1, 0, F1_0 * 20 * 100, 0x9000, CFixVector::ZERO, CFixVector::ZERO, vmsMatrix::IDENTITY};
+static tAutomapData	amData; // = {0, 1, 0, F1_0 * 20 * 100, 0x9000, CFixVector::ZERO, CFixVector::ZERO, CFixMatrix::IDENTITY};
 
 //	Function Prototypes
 void AdjustSegmentLimit (int nSegmentLimit, ushort *pVisited);
@@ -175,7 +175,7 @@ amData.nMaxDist = F1_0 * 2000;
 amData.nZoom = 0x9000;
 amData.viewPos.SetZero ();
 amData.viewTarget.SetZero ();
-amData.viewMatrix = vmsMatrix::IDENTITY;
+amData.viewMatrix = CFixMatrix::IDENTITY;
 }
 
 //------------------------------------------------------------------------------
@@ -322,11 +322,11 @@ PROF_START
 										 (gameStates.render.cockpit.nMode != CM_LETTERBOX);
 	CObject		*objP;
 	g3sPoint		spherePoint;
-	vmsMatrix	vmRadar;
+	CFixMatrix	vmRadar;
 
 gameStates.render.automap.bFull = (LOCALPLAYER.flags & (PLAYER_FLAGS_FULLMAP_CHEAT | PLAYER_FLAGS_FULLMAP)) != 0;
 if (gameStates.render.automap.bRadar && gameStates.render.bTopDownRadar) {
-	vmsMatrix& po = gameData.multiplayer.playerInit [gameData.multiplayer.nLocalPlayer].position.mOrient;
+	CFixMatrix& po = gameData.multiplayer.playerInit [gameData.multiplayer.nLocalPlayer].position.mOrient;
 #if 1
 	vmRadar[RVEC] = po[RVEC];
 	vmRadar[FVEC] = po[UVEC];
@@ -606,7 +606,7 @@ char	*pszMapBackgroundFilename [2] = {"MAP.PCX", "MAPB.PCX"};
 #endif
 
 
-int InitAutomap (int bPauseGame, fix *pxEntryTime, vmsAngVec& pvTAngles)
+int InitAutomap (int bPauseGame, fix *pxEntryTime, CAngleVector& pvTAngles)
 {
 		int		i, nPCXError;
 		fix		t1, t2;
@@ -692,10 +692,10 @@ return bPauseGame;
 
 //------------------------------------------------------------------------------
 
-int UpdateAutomap (vmsAngVec& pvTAngles)
+int UpdateAutomap (CAngleVector& pvTAngles)
 {
 	CObject		*playerP = OBJECTS + LOCALPLAYER.nObject;
-	vmsMatrix	m;
+	CFixMatrix	m;
 
 if (Controls [0].firePrimaryDownCount)	{
 	// Reset orientation
@@ -711,7 +711,7 @@ pvTAngles[PA] += (fixang) FixDiv (Controls [0].pitchTime, ROT_SPEED_DIVISOR);
 pvTAngles[HA] += (fixang) FixDiv (Controls [0].headingTime, ROT_SPEED_DIVISOR);
 pvTAngles[BA] += (fixang) FixDiv (Controls [0].bankTime, ROT_SPEED_DIVISOR*2);
 
-m = vmsMatrix::Create(pvTAngles);
+m = CFixMatrix::Create(pvTAngles);
 if (Controls [0].verticalThrustTime || Controls [0].sidewaysThrustTime)	{
 	// TODO MM
 	amData.viewMatrix = playerP->info.position.mOrient * m;
@@ -890,7 +890,7 @@ return bDone;
 void DoAutomap (int nKeyCode, int bRadar)
 {
 	int			bDone = 0;
-	vmsAngVec	vTAngles;
+	CAngleVector	vTAngles;
 	int			nLeaveMode = 0;
 	int			bFirstTime = 1;
 	fix			xEntryTime;

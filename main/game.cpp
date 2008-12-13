@@ -569,10 +569,10 @@ COMPUTE_SEGMENT_CENTER (&gameData.objs.consoleP->info.position.vPos,segP);
 COMPUTE_SIDE_CENTER (&vp,segP,tSide);
 vp -= gameData.objs.consoleP->info.position.vPos;
 /*
-gameData.objs.consoleP->info.position.mOrient = vmsMatrix::Create(vp, NULL, NULL);
+gameData.objs.consoleP->info.position.mOrient = CFixMatrix::Create(vp, NULL, NULL);
 */
 // TODO: MatrixCreateFCheck
-gameData.objs.consoleP->info.position.mOrient = vmsMatrix::CreateF(vp);
+gameData.objs.consoleP->info.position.mOrient = CFixMatrix::CreateF(vp);
 gameData.objs.consoleP->RelinkToSeg (SEG_IDX (segP));
 }
 

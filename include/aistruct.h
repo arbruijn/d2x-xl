@@ -186,8 +186,8 @@ typedef struct tAILocalInfo {
 	fix     timePlayerSoundAttacked;			// absolute time in seconds at which CPlayerData was last seen with visibility of 2.
 	fix     nextMiscSoundTime;					// absolute time in seconds at which this robot last made an angry or lurking sound.
 	fix     timeSinceProcessed;				// time since this robot last processed in DoAIFrame
-	vmsAngVec goalAngles [MAX_SUBMODELS];  // angles for each subobject
-	vmsAngVec deltaAngles [MAX_SUBMODELS]; // angles for each subobject
+	CAngleVector goalAngles [MAX_SUBMODELS];  // angles for each subobject
+	CAngleVector deltaAngles [MAX_SUBMODELS]; // angles for each subobject
 	sbyte   goalState [MAX_SUBMODELS];     // Goal state for this sub-CObject
 	sbyte   achievedState [MAX_SUBMODELS]; // Last achieved state
 } tAILocalInfo;

@@ -34,7 +34,7 @@ return NULL;
 
 // ----------------------------------------------------------------------------
 
-static inline tOOFObject* GetOOFModel (int nModel)
+static inline OOFModel::CModel* GetOOFModel (int nModel)
 {
 if (gameData.models.modelToOOF [1][nModel])
 	return gameData.models.modelToOOF [1][nModel];

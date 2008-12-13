@@ -199,7 +199,7 @@ tBriefingScreen briefingScreens [] = {
 int	briefingTextX, briefingTextY;
 
 CCanvas*		robotCanvP = NULL;
-vmsAngVec	vRobotAngles;
+CAngleVector	vRobotAngles;
 
 char    szBitmapName [32] = "";
 #define EXIT_DOOR_MAX   14
@@ -541,7 +541,7 @@ if (*szBitmapName) {
 
 	GLint	depthFunc;
 	G3StartFrame (1, 0);
-	G3SetViewMatrix (p, vmsMatrix::IDENTITY, gameStates.render.xZoom, 1);
+	G3SetViewMatrix (p, CFixMatrix::IDENTITY, gameStates.render.xZoom, 1);
 	p[Z] = 2 * w * F1_0;
 	glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 	glDepthFunc (GL_ALWAYS);

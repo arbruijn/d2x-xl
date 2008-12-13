@@ -710,12 +710,12 @@ return m_nSubModels;
 
 //------------------------------------------------------------------------------
 
-void CModel::SetShipGunPoints (tOOFObject *po)
+void CModel::SetShipGunPoints (OOFModel::CModel *po)
 {
 	static short nGunSubModels [] = {6, 7, 5, 4, 9, 10, 3, 3};
 
 	CSubModel*	psm;
-	tOOF_point	*pp;
+	OOFModel::CPoint	*pp;
 	int			i;
 
 for (i = 0, pp = po->gunPoints.pPoints; i < (po->gunPoints.nPoints = N_PLAYER_GUNS); i++, pp++) {
@@ -740,10 +740,10 @@ for (i = 0, pp = po->gunPoints.pPoints; i < (po->gunPoints.nPoints = N_PLAYER_GU
 
 //------------------------------------------------------------------------------
 
-void CModel::SetRobotGunPoints (tOOFObject *po)
+void CModel::SetRobotGunPoints (OOFModel::CModel *po)
 {
 	CSubModel*	psm;
-	tOOF_point*	pp;
+	OOFModel::CPoint*	pp;
 	int			i, j = po->gunPoints.nPoints;
 
 for (i = 0, pp = po->gunPoints.pPoints; i < j; i++, pp++) {
@@ -799,14 +799,14 @@ return gameData.models.renderModels [bHires][m_nModel].Size (objP, bHires);
 
 //------------------------------------------------------------------------------
 
-void G3SetShipGunPoints (tOOFObject *po, CModel* pm)
+void G3SetShipGunPoints (OOFModel::CModel *po, CModel* pm)
 {
 pm->SetShipGunPoints (po);
 }
 
 //------------------------------------------------------------------------------
 
-void G3SetRobotGunPoints (tOOFObject *po, CModel* pm)
+void G3SetRobotGunPoints (OOFModel::CModel *po, CModel* pm)
 {
 pm->SetRobotGunPoints (po);
 }
@@ -833,9 +833,9 @@ if (bASE) {
 	gameData.models.gunInfo [m_nModel].nGuns = j;
 	}
 else {
-		tOOF_point		*pp;
-		tOOF_subObject	*pso;
-		tOOFObject		*po = gameData.models.modelToOOF [1][m_nModel];
+		OOFModel::CPoint		*pp;
+		OOFModel::CSubModel	*pso;
+		OOFModel::CModel		*po = gameData.models.modelToOOF [1][m_nModel];
 
 	if (!po)
 		po = gameData.models.modelToOOF [0][m_nModel];

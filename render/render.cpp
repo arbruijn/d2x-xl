@@ -1135,21 +1135,21 @@ else {
 			}
 		}
 	if ((gameData.objs.viewerP == gameData.objs.consoleP) && viewInfo.bUsePlayerHeadAngles) {
-		vmsMatrix mHead, mView;
-		mHead = vmsMatrix::Create(viewInfo.playerHeadAngles);
+		CFixMatrix mHead, mView;
+		mHead = CFixMatrix::Create(viewInfo.playerHeadAngles);
 		// TODO MM
 		mView = gameData.objs.viewerP->info.position.mOrient * mHead;
 		G3SetViewMatrix (gameData.render.mine.viewerEye, mView, gameStates.render.xZoom, bOglScale);
 		}
 	else if (gameStates.render.bRearView && (gameData.objs.viewerP == gameData.objs.consoleP)) {
 #if 1
-		vmsMatrix mView;
+		CFixMatrix mView;
 
 		mView = gameData.objs.viewerP->info.position.mOrient;
 		mView [FVEC].Neg();
 		mView [RVEC].Neg();
 #else
-		vmsMatrix mHead, mView;
+		CFixMatrix mHead, mView;
 
 		viewInfo.playerHeadAngles [PA] = 0;
 		viewInfo.playerHeadAngles [BA] = 0x7fff;

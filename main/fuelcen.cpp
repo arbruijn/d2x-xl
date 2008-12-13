@@ -756,8 +756,8 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 	objP->info.nCreator = (FUELCEN_IDX (matCenP)) | 0x80;
 	// Make object face player...
 	vDir = gameData.objs.consoleP->info.position.vPos - objP->info.position.vPos;
-	objP->info.position.mOrient = vmsMatrix::CreateFU(vDir, objP->info.position.mOrient[UVEC]);
-	//objP->info.position.mOrient = vmsMatrix::CreateFU(vDir, &objP->info.position.mOrient[UVEC], NULL);
+	objP->info.position.mOrient = CFixMatrix::CreateFU(vDir, objP->info.position.mOrient[UVEC]);
+	//objP->info.position.mOrient = CFixMatrix::CreateFU(vDir, &objP->info.position.mOrient[UVEC], NULL);
 	MorphStart (objP);
 	}
 else {
@@ -1023,7 +1023,7 @@ return amount;
 //--unused-- }
 
 //	----------------------------------------------------------------------------------------------------------
-//--unused-- vmsAngVec start_angles, deltaAngles, goalAngles;
+//--unused-- CAngleVector start_angles, deltaAngles, goalAngles;
 //--unused-- CFixVector start_pos, delta_pos, goal_pos;
 //--unused-- int FuelStationSeg;
 //--unused-- fix currentTime,deltaTime;
@@ -1052,7 +1052,7 @@ return amount;
 //--repair-- void refuel_calc_deltas (CObject *objP, int next_side, int repair_seg)
 //--repair-- {
 //--repair-- 	CFixVector nextcenter, headfvec, *headuvec;
-//--repair-- 	vmsMatrix goal_orient;
+//--repair-- 	CFixMatrix goal_orient;
 //--repair--
 //--repair-- 	// Find time for this movement
 //--repair-- 	deltaTime = F1_0;		// one second...
@@ -1146,7 +1146,7 @@ return amount;
 //--repair-- 	currentTime += gameData.time.xFrame;
 //--repair--
 //--repair-- 	if (currentTime >= deltaTime)	{
-//--repair-- 		vmsAngVec av;
+//--repair-- 		CAngleVector av;
 //--repair-- 		objP->info.position.vPos = goal_pos;
 //--repair-- 		av	= goalAngles;
 //--repair-- 		VmAngles2Matrix (&objP->info.position.mOrient,&av);
@@ -1183,7 +1183,7 @@ return amount;
 //--repair--
 //--repair-- 	} else {
 //--repair-- 		fix factor, p,b,h;
-//--repair-- 		vmsAngVec av;
+//--repair-- 		CAngleVector av;
 //--repair--
 //--repair-- 		factor = FixDiv (currentTime,deltaTime);
 //--repair--

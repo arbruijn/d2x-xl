@@ -34,8 +34,8 @@ int radarRanges [] = {100, 150, 200};
 #define RADAR_SLICES	40
 #define BLIP_SLICES	40
 
-static vmsAngVec	aRadar = vmsAngVec::Create(F1_0 / 4, 0, 0);
-static vmsMatrix	mRadar;
+static CAngleVector	aRadar = CAngleVector::Create(F1_0 / 4, 0, 0);
+static CFixMatrix	mRadar;
 static float		yRadar = 20;
 
 void RenderRadarBlip (CObject *objP, float r, float g, float b, float a)
@@ -157,7 +157,7 @@ if (!(i = EGI_FLAG (nRadar, 0, 1, 0)))
 bStencil = StencilOff ();
 InitShipColors ();
 yRadar = (i == 1) ? 20.0f : -20.0f;
-mRadar = vmsMatrix::Create (aRadar);
+mRadar = CFixMatrix::Create (aRadar);
 glDisable (GL_CULL_FACE);
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 glDepthFunc (GL_ALWAYS);

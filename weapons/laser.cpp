@@ -345,8 +345,8 @@ weaponInfoP = gameData.weapons.info + nWeaponType;
 if (nWeaponType == OMEGA_ID) {
 	// Create orientation matrix for tracking purposes.
 	int bSpectator = SPECTATOR (parentP);
-	objP->info.position.mOrient = vmsMatrix::CreateFU(*vDirection, bSpectator ? gameStates.app.playerPos.mOrient[UVEC] : parentP->info.position.mOrient[UVEC]);
-//	objP->info.position.mOrient = vmsMatrix::CreateFU(*vDirection, bSpectator ? &gameStates.app.playerPos.mOrient[UVEC] : &parentP->info.position.mOrient[UVEC], NULL);
+	objP->info.position.mOrient = CFixMatrix::CreateFU(*vDirection, bSpectator ? gameStates.app.playerPos.mOrient[UVEC] : parentP->info.position.mOrient[UVEC]);
+//	objP->info.position.mOrient = CFixMatrix::CreateFU(*vDirection, bSpectator ? &gameStates.app.playerPos.mOrient[UVEC] : &parentP->info.position.mOrient[UVEC], NULL);
 	if (((nParent != nViewer) || bSpectator) && (parentP->info.nType != OBJ_WEAPON)) {
 		// Muzzle flash
 		if (weaponInfoP->nFlashVClip > -1)
@@ -427,8 +427,8 @@ if (parentP->info.nType == OBJ_WEAPON) {
 // Create orientation matrix so we can look from this pov
 //	Homing missiles also need an orientation matrix so they know if they can make a turn.
 //if ((objP->info.renderType == RT_POLYOBJ) || (WI_homingFlag (objP->info.nId)))
-	objP->info.position.mOrient = vmsMatrix::CreateFU (*vDirection, parentP->info.position.mOrient[UVEC]);
-//	objP->info.position.mOrient = vmsMatrix::CreateFU (*vDirection, &parentP->info.position.mOrient[UVEC], NULL);
+	objP->info.position.mOrient = CFixMatrix::CreateFU (*vDirection, parentP->info.position.mOrient[UVEC]);
+//	objP->info.position.mOrient = CFixMatrix::CreateFU (*vDirection, &parentP->info.position.mOrient[UVEC], NULL);
 if (((nParent != nViewer) || SPECTATOR (parentP)) && (parentP->info.nType != OBJ_WEAPON)) {
 	// Muzzle flash
 	if (weaponInfoP->nFlashVClip > -1)
@@ -589,11 +589,11 @@ return vGunPoints;
 //-------------- Initializes a laser after Fire is pressed -----------------
 
 CFixVector *TransformGunPoint (CObject *objP, CFixVector *vGunPoints, int nGun,
-										fix xDelay, ubyte nLaserType, CFixVector *vMuzzle, vmsMatrix *mP)
+										fix xDelay, ubyte nLaserType, CFixVector *vMuzzle, CFixMatrix *mP)
 {
 	int			bSpectate = SPECTATOR (objP);
 	tTransformation	*posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
-	vmsMatrix	m, *viewP;
+	CFixMatrix	m, *viewP;
 	CFixVector	v [2];
 #if FULL_COCKPIT_OFFS
 	int			bLaserOffs = ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) &&
@@ -621,7 +621,7 @@ if (bSpectate) {
 else
    viewP = ObjectView (objP);
 v[1] = *viewP * v[0];
-memcpy (mP, &posP->mOrient, sizeof (vmsMatrix));
+memcpy (mP, &posP->mOrient, sizeof (CFixMatrix));
 if (nGun < 0)
 	v[1] += (*mP)[UVEC] * (-2 * v->Mag());
 (*vMuzzle) = posP->vPos + v[1];
@@ -657,7 +657,7 @@ int LaserPlayerFireSpreadDelay (
 #else
 	int bLaserOffs = 0;
 #endif
-	vmsMatrix			m;
+	CFixMatrix			m;
 	int					bSpectate = SPECTATOR (objP);
 	tTransformation	*posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
 
@@ -684,7 +684,7 @@ if (bSpectate)
 else
    viewP = ObjectView (objP);
 VmVecRotate (&vGunPoint, &v, viewP);
-memcpy (&m, &posP->mOrient, sizeof (vmsMatrix));
+memcpy (&m, &posP->mOrient, sizeof (CFixMatrix));
 if (nGun < 0)
 	VmVecScaleInc (&vGunPoint, &m[UVEC], -2 * VmVecMag (&v));
 VmVecAdd (&vLaserPos, &posP->vPos, &vGunPoint);
@@ -827,10 +827,10 @@ vNewDir *= ((fix) (frameTime * 16 / gameStates.gameplay.slowmo [0].fSpeed));
 vNewDir += objP->info.position.mOrient[FVEC];
 CFixVector::Normalize(vNewDir);
 /*
-objP->info.position.mOrient = vmsMatrix::Create(vNewDir, NULL, NULL);
+objP->info.position.mOrient = CFixMatrix::Create(vNewDir, NULL, NULL);
 */
 // TODO: MatrixCreateFCheck
-objP->info.position.mOrient = vmsMatrix::CreateF(vNewDir);
+objP->info.position.mOrient = CFixMatrix::CreateF(vNewDir);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1114,7 +1114,7 @@ return rVal;
 // -- 	CFixVector	point_pos, delta_pos;
 // -- 	int			nObject;
 // -- 	CFixVector	*gun_pos;
-// -- 	vmsMatrix	m;
+// -- 	CFixMatrix	m;
 // -- 	CFixVector	gun_pos2;
 // --
 // -- 	if (LOCALPLAYER.energy > F1_0)
@@ -1696,7 +1696,7 @@ if (gameStates.app.bPlayerIsDead)
 
 	int			nWeapon, nObject, nGun, h, i, j;
 	CFixVector	*vGunPoints, vGunPos;
-	vmsMatrix	*viewP;
+	CFixMatrix	*viewP;
 	CObject		*objP;
 
 gameData.objs.trackGoals [0] =

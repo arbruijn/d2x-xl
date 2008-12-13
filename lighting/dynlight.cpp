@@ -275,7 +275,7 @@ void RegisterLight (tFaceColor *pc, short nSegment, short nSide)
 if (!pc || pc->index) {
 	tLightInfo	*pli = gameData.render.shadows.lightInfo + gameData.render.shadows.nLights++;
 #if DBG
-	vmsAngVec	a;
+	CAngleVector	a;
 #endif
 	pli->nIndex = (int) nSegment * 6 + nSide;
 	COMPUTE_SIDE_CENTER_I (&pli->pos, nSegment, nSide);

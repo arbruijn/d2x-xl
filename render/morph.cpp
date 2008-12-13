@@ -278,7 +278,7 @@ MorphInitPoints (pmP, &vBoxSize, 0, mdP);
 
 //-------------------------------------------------------------
 
-void MorphDrawModel (tPolyModel *pmP, int nSubModel, vmsAngVec *animAngles, fix light, tMorphInfo *mdP, int nModel)
+void MorphDrawModel (tPolyModel *pmP, int nSubModel, CAngleVector *animAngles, fix light, tMorphInfo *mdP, int nModel)
 {
 	int i, mn;
 	int facing;
@@ -334,8 +334,8 @@ for (i = 0; i < sort_n; i++) {
 			mdP->vecs + mdP->submodelStartPoints [nSubModel], nModel);
 		}
 	else {
-		vmsMatrix orient;
-		orient = vmsMatrix::Create(animAngles[mn]);
+		CFixMatrix orient;
+		orient = CFixMatrix::Create(animAngles[mn]);
 		G3StartInstanceMatrix(pmP->subModels.offsets[mn], orient);
 		MorphDrawModel (pmP, mn, animAngles, light, mdP, nModel);
 		G3DoneInstance ();

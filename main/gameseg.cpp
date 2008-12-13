@@ -1541,7 +1541,7 @@ sbyte convert_to_byte (fix f)
 void CreateShortPos (tShortPos *spp, CObject *objP, int swap_bytes)
 {
 	// int	nSegment;
-	vmsMatrix orient = objP->info.position.mOrient;
+	CFixMatrix orient = objP->info.position.mOrient;
 	sbyte   *segP = spp->orient;
 	CFixVector *pv;
 
@@ -1663,7 +1663,7 @@ void extract_vector_from_segment (CSegment *segP, CFixVector *vp, int start, int
 
 // -------------------------------------------------------------------------------
 //create a matrix that describes the orientation of the given CSegment
-void ExtractOrientFromSegment (vmsMatrix *m, CSegment *seg)
+void ExtractOrientFromSegment (CFixMatrix *m, CSegment *seg)
 {
 	CFixVector fVec, uVec;
 
@@ -1671,8 +1671,8 @@ void ExtractOrientFromSegment (vmsMatrix *m, CSegment *seg)
 	extract_vector_from_segment (seg, &uVec, WBOTTOM, WTOP);
 
 	//vector to matrix does normalizations and orthogonalizations
-	*m = vmsMatrix::CreateFU(fVec, uVec);
-//	*m = vmsMatrix::CreateFU(fVec, &uVec, NULL);
+	*m = CFixMatrix::CreateFU(fVec, uVec);
+//	*m = CFixMatrix::CreateFU(fVec, &uVec, NULL);
 }
 
 #ifdef EDITOR

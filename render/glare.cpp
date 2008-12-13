@@ -97,7 +97,7 @@ return gameStates.ogl.hDepthBuffer;
 
 // -----------------------------------------------------------------------------------
 
-void CalcSpriteCoords (CFloatVector *vSprite, CFloatVector *vCenter, CFloatVector *vEye, float dx, float dy, fMatrix *r)
+void CalcSpriteCoords (CFloatVector *vSprite, CFloatVector *vCenter, CFloatVector *vEye, float dx, float dy, CFloatMatrix *r)
 {
 	CFloatVector	v, h, vdx, vdy;
 	float		d = vCenter->SqrMag ();

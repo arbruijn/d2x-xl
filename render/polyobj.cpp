@@ -154,7 +154,7 @@ while (n > 0)
 
 //------------------------------------------------------------------------------
 
-void POF_ReadAngs (vmsAngVec *angs, int n, ubyte *bufp)
+void POF_ReadAngs (CAngleVector *angs, int n, ubyte *bufp)
 {
 memcpy (angs, &bufp [Pof_addr], n*sizeof (*angs));
 Pof_addr += n*sizeof (*angs);
@@ -167,11 +167,11 @@ while (n > 0)
 #ifdef DRIVE
 #define tRobotInfo void
 #else
-vmsAngVec animAngles [N_ANIM_STATES][MAX_SUBMODELS];
+CAngleVector animAngles [N_ANIM_STATES][MAX_SUBMODELS];
 
 //set the animation angles for this robot.  Gun fields of robot info must
 //be filled in.
-void SetRobotAngles (tRobotInfo *r, tPolyModel *pm, vmsAngVec angs [N_ANIM_STATES][MAX_SUBMODELS]);
+void SetRobotAngles (tRobotInfo *r, tPolyModel *pm, CAngleVector angs [N_ANIM_STATES][MAX_SUBMODELS]);
 #endif
 
 #ifdef WORDS_NEED_ALIGNMENT
@@ -598,8 +598,8 @@ return nTextures;
 int DrawPolygonModel (
 	CObject			*objP,
 	CFixVector		*pos,
-	vmsMatrix		*orient,
-	vmsAngVec		*animAngles,
+	CFixMatrix		*orient,
+	CAngleVector		*animAngles,
 	int				nModel,
 	int				flags,
 	fix				light,
@@ -826,10 +826,10 @@ atexit (FreePolygonModels);
 //into an off-screen canvas that it creates, then copies to the current
 //canvas.
 
-void DrawModelPicture (int nModel, vmsAngVec *orientAngles)
+void DrawModelPicture (int nModel, CAngleVector *orientAngles)
 {
 	CFixVector	p = CFixVector::ZERO;
-	vmsMatrix	o = vmsMatrix::IDENTITY;
+	CFixMatrix	o = CFixMatrix::IDENTITY;
 
 Assert ((nModel >= 0) && (nModel < gameData.models.nPolyModels));
 G3StartFrame (0, 0);
@@ -839,7 +839,7 @@ if (gameData.models.polyModels [nModel].rad != 0)
 	p [Z] = FixMulDiv (DEFAULT_VIEW_DIST, gameData.models.polyModels [nModel].rad, BASE_MODEL_SIZE);
 else
 	p [Z] = DEFAULT_VIEW_DIST;
-o = vmsMatrix::Create (*orientAngles);
+o = CFixMatrix::Create (*orientAngles);
 DrawPolygonModel (NULL, &p, &o, NULL, nModel, 0, f1_0, NULL, NULL, NULL);
 G3EndFrame ();
 if (gameStates.ogl.nDrawBuffer != GL_BACK)

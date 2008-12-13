@@ -56,7 +56,7 @@ OglMove (OOF_VecVms2Gl (p, pv));
 
 //------------------------------------------------------------------------------
 
-inline void VmsRot(const vmsMatrix& pm)
+inline void VmsRot(const CFixMatrix& pm)
 {
 glMatrixf m;
 
@@ -109,10 +109,10 @@ return 1;
 //------------------------------------------------------------------------------
 //instance at specified point with specified orientation
 //if matrix==NULL, don't modify matrix.  This will be like doing an offset
-void G3StartInstanceMatrix(const CFixVector& vPos, const vmsMatrix& mOrient)
+void G3StartInstanceMatrix(const CFixVector& vPos, const CFixMatrix& mOrient)
 {
 	CFixVector	vOffs;
-	vmsMatrix	mTrans, mRot;
+	CFixMatrix	mTrans, mRot;
 
 //Assert (nInstanceDepth < MAX_INSTANCE_DEPTH);
 if (!G3PushMatrix ())
@@ -161,9 +161,9 @@ viewInfo.posf = viewInfo.pos.ToFloat();
 //------------------------------------------------------------------------------
 //instance at specified point with specified orientation
 //if angles==NULL, don't modify matrix.  This will be like doing an offset
-void G3StartInstanceAngles (const CFixVector& pos, const vmsAngVec& angles) 
+void G3StartInstanceAngles (const CFixVector& pos, const CAngleVector& angles) 
 {
-G3StartInstanceMatrix(pos, vmsMatrix::Create(angles));
+G3StartInstanceMatrix(pos, CFixMatrix::Create(angles));
 }
 
 //------------------------------------------------------------------------------

@@ -28,10 +28,10 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-int G3CountOOFModelItems (tOOFObject *po, RenderModel::CModel *pm)
+int G3CountOOFModelItems (OOFModel::CModel *po, RenderModel::CModel *pm)
 {
-	tOOF_subObject	*pso;
-	tOOF_face		*pf;
+	OOFModel::CSubModel	*pso;
+	OOFModel::CFace		*pf;
 	int				i, j;
 
 i = po->nSubObjects;
@@ -51,11 +51,11 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int G3GetOOFModelItems (int nModel, tOOFObject *po, RenderModel::CModel *pm, float fScale)
+int G3GetOOFModelItems (int nModel, OOFModel::CModel *po, RenderModel::CModel *pm, float fScale)
 {
-	tOOF_subObject*			pso;
-	tOOF_face*					pof;
-	tOOF_faceVert*				pfv;
+	OOFModel::CSubModel*			pso;
+	OOFModel::CFace*					pof;
+	OOFModel::CFaceVert*				pfv;
 	RenderModel::CSubModel*	psm;
 	CFloatVector3*				pvn = pm->m_vertNorms.Buffer (), vNormal;
 	RenderModel::CVertex*	pmv = pm->m_faceVerts.Buffer ();
@@ -134,7 +134,7 @@ return 1;
 
 int G3BuildModelFromOOF (CObject *objP, int nModel)
 {
-	tOOFObject	*po = gameData.models.modelToOOF [1][nModel];
+	OOFModel::CModel	*po = gameData.models.modelToOOF [1][nModel];
 	RenderModel::CModel		*pm;
 
 if (!po) {

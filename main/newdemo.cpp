@@ -341,7 +341,7 @@ ndOutFile.WriteVector (v);
 
 //	-----------------------------------------------------------------------------
 
-static inline void NDWriteAngVec (const vmsAngVec& v)
+static inline void NDWriteAngVec (const CAngleVector& v)
 {
 gameData.demo.nFrameBytesWritten += sizeof (v);
 gameData.demo.nWritten += sizeof (v);
@@ -351,7 +351,7 @@ ndOutFile.WriteAngVec (v);
 
 //	-----------------------------------------------------------------------------
 
-static inline void NDWriteMatrix (const vmsMatrix& m)
+static inline void NDWriteMatrix (const CFixMatrix& m)
 {
 gameData.demo.nFrameBytesWritten += sizeof (m);
 gameData.demo.nWritten += sizeof (m);
@@ -487,7 +487,7 @@ if (bRevertFormat > 0)
 
 //	-----------------------------------------------------------------------------
 
-static inline void NDReadAngVec (vmsAngVec& v)
+static inline void NDReadAngVec (CAngleVector& v)
 {
 ndInFile.ReadAngVec (v);
 if (bRevertFormat > 0)
@@ -496,7 +496,7 @@ if (bRevertFormat > 0)
 
 //	-----------------------------------------------------------------------------
 
-static inline void NDReadMatrix(vmsMatrix& m)
+static inline void NDReadMatrix(CFixMatrix& m)
 {
 ndInFile.ReadMatrix(m);
 if (bRevertFormat > 0)
@@ -2801,7 +2801,7 @@ for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 		if (curObjP->info.nSignature == objP->info.nSignature) {
 			renderType = curObjP->info.renderType;
 			//fix delta_p, delta_h, delta_b;
-			//vmsAngVec cur_angles, dest_angles;
+			//CAngleVector cur_angles, dest_angles;
 			//  Extract the angles from the CObject orientation matrix.
 			//  Some of this code taken from AITurnTowardsVector
 			//  Don't do the interpolation on certain render types which don't use an orientation matrix
@@ -2823,8 +2823,8 @@ for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 					rvec2 *= factor;
 					rvec1 += rvec2;
 					CFixVector::Normalize(rvec1); // Note: Doesn't matter if this is null, if null, VmVector2Matrix will just use fvec1
-					curObjP->info.position.mOrient = vmsMatrix::CreateFR(fvec1, rvec1);
-					//curObjP->info.position.mOrient = vmsMatrix::CreateFR(fvec1, NULL, &rvec1);
+					curObjP->info.position.mOrient = CFixMatrix::CreateFR(fvec1, rvec1);
+					//curObjP->info.position.mOrient = CFixMatrix::CreateFR(fvec1, NULL, &rvec1);
 					}
 				}
 			// Interpolate the CObject position.  This is just straight linear

@@ -186,7 +186,7 @@ return vPos;
 
 #define RANDOM_FADE	(0.95f + (float) rand () / (float) RAND_MAX / 20.0f)
 
-int CParticle::Create (CFixVector *vPos, CFixVector *vDir, vmsMatrix *mOrient,
+int CParticle::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 							  short nSegment, int nLife, int nSpeed, char nParticleSystemType, char nClass,
 						     float nScale, tRgbaColorf *colorP, int nCurTime, int bBlowUp,
 							  float fBrightness, CFixVector *vEmittingFace)
@@ -262,13 +262,13 @@ else {
 //nSpeed = (int) (sqrt (nSpeed) * (float) F1_0);
 nSpeed *= F1_0;
 if (vDir) {
-	vmsAngVec	a;
-	vmsMatrix	m;
+	CAngleVector	a;
+	CFixMatrix	m;
 	float			d;
 	a [PA] = randN (F1_0 / 4) - F1_0 / 8;
 	a [BA] = randN (F1_0 / 4) - F1_0 / 8;
 	a [HA] = randN (F1_0 / 4) - F1_0 / 8;
-	m = vmsMatrix::Create (a);
+	m = CFixMatrix::Create (a);
 	vDrift = m * (*vDir);
 	CFixVector::Normalize (vDrift);
 	d = (float) CFixVector::DeltaAngle (vDrift, *vDir, NULL);
@@ -315,13 +315,13 @@ else {
 #endif
 	}
 if ((nType != BUBBLE_PARTICLES) && mOrient) {
-		vmsAngVec	vRot;
-		vmsMatrix	mRot;
+		CAngleVector	vRot;
+		CFixMatrix	mRot;
 
 	vRot [BA] = 0;
 	vRot [PA] = 2048 - ((d_rand () % 9) * 512);
 	vRot [HA] = 2048 - ((d_rand () % 9) * 512);
-	mRot = vmsMatrix::Create (vRot);
+	mRot = CFixMatrix::Create (vRot);
 	//TODO: MM
 	m_mOrient = *mOrient * mRot;
 	//m_mOrient = *mOrient;
@@ -604,7 +604,7 @@ int CParticle::Render (float brightness)
 	static float		deltaUV = 1.0f;
 	static tSinCosf	sinCosPart [PARTICLE_POSITIONS];
 	static int			bInitSinCos = 1;
-	static fMatrix		mRot;
+	static CFloatMatrix		mRot;
 
 if (m_nDelay > 0)
 	return 0;
@@ -1076,7 +1076,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CParticleEmitter::Create (CFixVector *vPos, CFixVector *vDir, vmsMatrix *mOrient,
+int CParticleEmitter::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 										short nSegment, int nObject, int nMaxParts, float fScale,
 										int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType,
 										tRgbaColorf *colorP, int nCurTime, int bBlowUpParts, CFixVector *vEmittingFace)
@@ -1096,7 +1096,7 @@ m_vPos = *vPos;
 if (mOrient)
 	m_mOrient = *mOrient;
 else
-	m_mOrient = vmsMatrix::IDENTITY;
+	m_mOrient = CFixMatrix::IDENTITY;
 m_bHavePrevPos = 1;
 m_bBlowUpParts = bBlowUpParts;
 m_nParts = 0;
@@ -1167,7 +1167,7 @@ else
 		int			t, h, i, j;
 		float			fDist;
 		float			fBrightness = Brightness ();
-		vmsMatrix	mOrient = m_mOrient;
+		CFixMatrix	mOrient = m_mOrient;
 		CFixVector	vDelta, vPos, *vDir = (m_bHaveDir ? &m_vDir : NULL),
 						*vEmittingFace = m_bEmittingFace ? m_vEmittingFace : NULL;
 		CFloatVector		vDeltaf, vPosf;
@@ -1278,7 +1278,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void CParticleEmitter::SetPos (CFixVector *vPos, vmsMatrix *mOrient, short nSegment)
+void CParticleEmitter::SetPos (CFixVector *vPos, CFixMatrix *mOrient, short nSegment)
 {
 if ((nSegment < 0) && gameOpts->render.particles.bCollisions)
 	nSegment = FindSegByPos (*vPos, m_nSegment, 1, 0, 1);
@@ -1373,7 +1373,7 @@ m_fScale = fScale;
 
 //------------------------------------------------------------------------------
 
-int CParticleSystem::Create (CFixVector *vPos, CFixVector *vDir, vmsMatrix *mOrient,
+int CParticleSystem::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 									  short nSegment, int nMaxEmitters, int nMaxParts,
 									  float fScale, int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType,
 									  int nObject, tRgbaColorf *colorP, int bBlowUpParts, char nSide)
@@ -1471,7 +1471,7 @@ return h;
 
 //------------------------------------------------------------------------------
 
-void CParticleSystem::SetPos (CFixVector *vPos, vmsMatrix *mOrient, short nSegment)
+void CParticleSystem::SetPos (CFixVector *vPos, CFixMatrix *mOrient, short nSegment)
 {
 if (m_emitters)
 	for (int i = 0; i < m_nEmitters; i++)
@@ -1692,7 +1692,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CParticleManager::Create (CFixVector *vPos, CFixVector *vDir, vmsMatrix *mOrient,
+int CParticleManager::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 										short nSegment, int nMaxEmitters, int nMaxParts,
 										float fScale, int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType,
 										int nObject, tRgbaColorf *colorP, int bBlowUpParts, char nSide)

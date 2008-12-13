@@ -108,7 +108,7 @@ typedef struct tFrameInfo {
 	ubyte       pad[3];                 // Pad out length of tFrameInfo packet
 	int         nPackets;
 	CFixVector	objPos;
-	vmsMatrix	objOrient;
+	CFixMatrix	objOrient;
 	CFixVector	physVelocity;
 	CFixVector	physRotVel;
 	short       nObjSeg;

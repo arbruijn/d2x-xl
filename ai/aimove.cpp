@@ -79,7 +79,7 @@ if (gameStates.gameplay.seismic.nMagnitude) {
 	scale = FixDiv (2*gameStates.gameplay.seismic.nMagnitude, ROBOTINFO (objP->info.nId).mass);
 	new_fvec += rand_vec * scale;
 	}
-objP->info.position.mOrient = vmsMatrix::CreateFR(new_fvec, objP->info.position.mOrient[RVEC]);
+objP->info.position.mOrient = CFixMatrix::CreateFR(new_fvec, objP->info.position.mOrient[RVEC]);
 return dot;
 }
 

@@ -75,7 +75,7 @@ p->p3_flags |= PF_PROJECTED;
 void G3Point2Vec (CFixVector *v,short sx,short sy)
 {
 	CFixVector tempv;
-	vmsMatrix tempm;
+	CFixMatrix tempm;
 
 tempv [X] =  FixMulDiv (FixDiv ((sx<<16) - xCanvW2,xCanvW2),viewInfo.scale [Z], viewInfo.scale [X]);
 tempv [Y] = -FixMulDiv (FixDiv ((sy<<16) - xCanvH2,xCanvH2),viewInfo.scale [Z], viewInfo.scale [Y]);

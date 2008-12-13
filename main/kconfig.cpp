@@ -398,7 +398,7 @@ static int xOffs = 0, yOffs = 0;
 static int startAxis [JOY_MAX_AXES];
 
 CFixVector ExtForceVec;
-vmsMatrix ExtApplyForceMatrix;
+CFixMatrix ExtApplyForceMatrix;
 
 int ExtJoltInfo [3]={0,0,0};
 int ExtXVibrateInfo [2]={0,0};
@@ -1760,17 +1760,17 @@ void KCInitExternalControls (int intno, int address)
 	if (kc_externalVersion == 0) 
 		memset (kc_external_control, 0, sizeof (tControlInfo);
 	else if (kc_externalVersion > 0) 	{
-		memset (kc_external_control, 0, sizeof (tControlInfo)+sizeof (vmsAngVec) + 64);
+		memset (kc_external_control, 0, sizeof (tControlInfo)+sizeof (CAngleVector) + 64);
 		if (kc_externalVersion > 1) {
 			// Write ship pos and angles to external controls...
 			ubyte *temp_ptr = reinterpret_cast<ubyte*> (kc_external_control);
 			CFixVector *ship_pos;
-			vmsMatrix *ship_orient;
-			memset (kc_external_control, 0, sizeof (tControlInfo)+sizeof (vmsAngVec) + 64 + sizeof (CFixVector)+sizeof (vmsMatrix);
-			temp_ptr += sizeof (tControlInfo)+sizeof (vmsAngVec) + 64;
+			CFixMatrix *ship_orient;
+			memset (kc_external_control, 0, sizeof (tControlInfo)+sizeof (CAngleVector) + 64 + sizeof (CFixVector)+sizeof (CFixMatrix);
+			temp_ptr += sizeof (tControlInfo)+sizeof (CAngleVector) + 64;
 			ship_pos = reinterpret_cast<CFixVector*> (temp_ptr);
 			temp_ptr += sizeof (CFixVector);
-			ship_orient = reinterpret_cast<vmsMatrix*> (temp_ptr);
+			ship_orient = reinterpret_cast<CFixMatrix*> (temp_ptr);
 			// Fill in ship postion...
 			*ship_pos = OBJECTS [LOCALPLAYER.nObject].info.position.vPos;
 			// Fill in ship orientation...
@@ -1793,18 +1793,18 @@ void KCInitExternalControls (int intno, int address)
 		gameOpts->gameplay.nAutoLeveling = 0;
 
 		if (kc_externalVersion > 0) {	
-			vmsMatrix tempm, ViewMatrix;
-			vmsAngVec * Kconfig_abs_movement;
+			CFixMatrix tempm, ViewMatrix;
+			CAngleVector * Kconfig_abs_movement;
 			char * oem_message;
 
-			Kconfig_abs_movement = reinterpret_cast<vmsAngVec*> ((uint)kc_external_control) + sizeof (tControlInfo);
+			Kconfig_abs_movement = reinterpret_cast<CAngleVector*> ((uint)kc_external_control) + sizeof (tControlInfo);
 
 			if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h)	{
 				VmAngles2Matrix (&tempm,Kconfig_abs_movement);
 				VmMatMul (&ViewMatrix,&OBJECTS [LOCALPLAYER.nObject].info.position.mOrient,&tempm);
 				OBJECTS [LOCALPLAYER.nObject].info.position.mOrient = ViewMatrix;	
 			}
-			oem_message = reinterpret_cast<char*> ((uint)Kconfig_abs_movement) + sizeof (vmsAngVec);
+			oem_message = reinterpret_cast<char*> ((uint)Kconfig_abs_movement) + sizeof (CAngleVector);
 			if (oem_message [0] != '\0')
 				HUDInitMessage (oem_message);
 		}
@@ -1844,20 +1844,20 @@ void KCReadExternalControls ()
 		if (kc_externalVersion>=4)
 			memset (kc_external_control, 0, sizeof (advanced_ext_control_info));
       else if (kc_externalVersion>0)     
-			memset (kc_external_control, 0, sizeof (ext_control_info)+sizeof (vmsAngVec) + 64);
+			memset (kc_external_control, 0, sizeof (ext_control_info)+sizeof (CAngleVector) + 64);
 		else if (kc_externalVersion>2)
-			memset (kc_external_control, 0, sizeof (ext_control_info)+sizeof (vmsAngVec) + 64 + sizeof (CFixVector) + sizeof (vmsMatrix) +4);
+			memset (kc_external_control, 0, sizeof (ext_control_info)+sizeof (CAngleVector) + 64 + sizeof (CFixVector) + sizeof (CFixMatrix) +4);
 
 		if (kc_externalVersion > 1) {
 			// Write ship pos and angles to external controls...
 			ubyte *temp_ptr = reinterpret_cast<ubyte*> (kc_external_control);
 			CFixVector *ship_pos;
-			vmsMatrix *ship_orient;
-			memset (kc_external_control, 0, sizeof (ext_control_info)+sizeof (vmsAngVec) + 64 + sizeof (CFixVector)+sizeof (vmsMatrix));
-			temp_ptr += sizeof (ext_control_info) + sizeof (vmsAngVec) + 64;
+			CFixMatrix *ship_orient;
+			memset (kc_external_control, 0, sizeof (ext_control_info)+sizeof (CAngleVector) + 64 + sizeof (CFixVector)+sizeof (CFixMatrix));
+			temp_ptr += sizeof (ext_control_info) + sizeof (CAngleVector) + 64;
 			ship_pos = reinterpret_cast<CFixVector*> (temp_ptr);
 			temp_ptr += sizeof (CFixVector);
-			ship_orient = reinterpret_cast<vmsMatrix*> (temp_ptr);
+			ship_orient = reinterpret_cast<CFixMatrix*> (temp_ptr);
 			// Fill in ship postion...
 			*ship_pos = OBJECTS [LOCALPLAYER.nObject].info.position.vPos;
 			// Fill in ship orientation...
@@ -1883,7 +1883,7 @@ void KCReadExternalControls ()
  	   temp_ptr->gameStatus=gameStates.app.nExtGameStatus;
    
       memset (&ExtForceVec, 0, sizeof (CFixVector));
-      memset (&ExtApplyForceMatrix, 0, sizeof (vmsMatrix));
+      memset (&ExtApplyForceMatrix, 0, sizeof (CFixMatrix));
       
       for (i=0;i<3;i++)
 		 ExtJoltInfo [i]=0;
@@ -1909,18 +1909,18 @@ void KCReadExternalControls ()
 		gameOpts->gameplay.nAutoLeveling = 0;
 
 		if (kc_externalVersion > 0) {	
-			vmsMatrix tempm, ViewMatrix;
-			vmsAngVec * Kconfig_abs_movement;
+			CFixMatrix tempm, ViewMatrix;
+			CAngleVector * Kconfig_abs_movement;
 			char * oem_message;
 
-			Kconfig_abs_movement = reinterpret_cast<vmsAngVec*> ((size_t) kc_external_control + sizeof (ext_control_info));
+			Kconfig_abs_movement = reinterpret_cast<CAngleVector*> ((size_t) kc_external_control + sizeof (ext_control_info));
 
 			if (!Kconfig_abs_movement->IsZero())	{
-				tempm = vmsMatrix::Create(*Kconfig_abs_movement);
+				tempm = CFixMatrix::Create(*Kconfig_abs_movement);
 				ViewMatrix = OBJECTS [LOCALPLAYER.nObject].info.position.mOrient * tempm;
 				OBJECTS [LOCALPLAYER.nObject].info.position.mOrient = ViewMatrix;	
 			}
-			oem_message = reinterpret_cast<char*> ((size_t) Kconfig_abs_movement + sizeof (vmsAngVec));
+			oem_message = reinterpret_cast<char*> ((size_t) Kconfig_abs_movement + sizeof (CAngleVector));
 			if (oem_message [0] != '\0')
 				HUDInitMessage (oem_message);
 		}
@@ -1946,7 +1946,7 @@ void KCReadExternalControls ()
    if (kc_externalVersion>=3)
 	 {
 		ubyte *temp_ptr = reinterpret_cast<ubyte*> (kc_external_control);
-		temp_ptr += (sizeof (ext_control_info) + sizeof (vmsAngVec) + 64 + sizeof (CFixVector) + sizeof (vmsMatrix));
+		temp_ptr += (sizeof (ext_control_info) + sizeof (CAngleVector) + 64 + sizeof (CFixVector) + sizeof (CFixMatrix));
   
 	   if (* (temp_ptr))
 		 Controls [0].cyclePrimaryCount= (* (temp_ptr));

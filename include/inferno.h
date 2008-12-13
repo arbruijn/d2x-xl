@@ -1239,7 +1239,7 @@ class CShadowLightInfo {
 		short				nMap;
 		ubyte				nFrame;	//set per frame when scene as seen from a light source has been rendered
 #if DBG
-		vmsMatrix	orient;
+		CFixMatrix	orient;
 #endif
 	public:
 		CShadowLightInfo () { Init (); }
@@ -1519,7 +1519,7 @@ class CShadowData {
 		short						nShadowMaps;
 		CCamera					shadowMaps [MAX_SHADOW_MAPS];
 		CObject					lightSource;
-		tOOF_vector				vLightPos;
+		CFloatVector				vLightPos;
 		CFixVector				vLightDir [MAX_SHADOW_LIGHTS];
 		CArray<short>			objLights;
 		ubyte						nFrame;	//flipflop for testing whether a light source's view has been rendered the current frame
@@ -1751,7 +1751,7 @@ class CRenderData {
 class CSecretData {
 	public:
 		int			nReturnSegment;
-		vmsMatrix	returnOrient;
+		CFixMatrix	returnOrient;
 	public:
 		CSecretData () { memset (this, 0, sizeof (*this)); }
 };
@@ -1967,7 +1967,7 @@ typedef struct tHitbox {
 	CFixVector			vSize;
 	CFixVector			vOffset;
 	tBox					box;
-	vmsAngVec			angles;			//rotation angles
+	CAngleVector			angles;			//rotation angles
 	short					nParent;			//parent hitbox
 } tHitbox;
 
@@ -1976,7 +1976,7 @@ typedef struct tHitbox {
 #define MAX_WEAPONS	100
 
 typedef struct tObjectViewData {
-	vmsMatrix			mView;
+	CFixMatrix			mView;
 	int					nFrame;
 } tObjectViewData;
 
@@ -2101,8 +2101,8 @@ typedef struct tPOF_face {
 	CFixVector			vCenter;
 	CFixVector			vNorm;
 	CFixVector			vRotNorm;
-	tOOF_vector			vNormf;
-	tOOF_vector			vCenterf;
+	CFloatVector			vNormf;
+	CFloatVector			vCenterf;
 	float					fClipDist;
 	ubyte					bFacingLight :1;
 	ubyte					bFrontFace :1;
@@ -2128,7 +2128,7 @@ typedef struct tPOFSubObject {
 	tPOF_faceList		faces;
 	tPOF_faceRef		litFaces;	//submodel faces facing the current light source
 	CFixVector			vPos;
-	vmsAngVec			vAngles;
+	CAngleVector			vAngles;
 	float					fClipDist;
 	short					nParent;
 	CArray<short>		adjFaces;
@@ -2147,7 +2147,7 @@ typedef struct tPOFObject {
 	tPOF_subObjList		subObjs;
 	short						nVerts;
 	CArray<CFixVector>		verts;
-	CArray<tOOF_vector>	vertsf;
+	CArray<CFloatVector>	vertsf;
 	CArray<float>			fClipDist;
 	CArray<ubyte>			vertFlags;
 	CArray<g3sNormal>		vertNorms;
@@ -2403,13 +2403,13 @@ class CModelData {
 		int						nLoresModels;
 		int						nHiresModels;
 		ASEModel::CModel				aseModels [2][MAX_POLYGON_MODELS];
-		tOOFObject				oofModels [2][MAX_POLYGON_MODELS];
+		OOFModel::CModel				oofModels [2][MAX_POLYGON_MODELS];
 		tPOFObject				pofData [2][2][MAX_POLYGON_MODELS];
 		ubyte						bHaveHiresModel [MAX_POLYGON_MODELS];
 		tPolyModel				polyModels [MAX_POLYGON_MODELS];
 		tPolyModel				defPolyModels [MAX_POLYGON_MODELS];
 		tPolyModel				altPolyModels [MAX_POLYGON_MODELS];
-		tOOFObject*				modelToOOF [2][MAX_POLYGON_MODELS];
+		OOFModel::CModel*				modelToOOF [2][MAX_POLYGON_MODELS];
 		ASEModel::CModel*				modelToASE [2][MAX_POLYGON_MODELS];
 		tPolyModel*				modelToPOL [MAX_POLYGON_MODELS];
 		int						nPolyModels;
@@ -2904,7 +2904,7 @@ typedef struct tExitData {
 	CFixVector			vMineExit;
 	CFixVector			vGroundExit;
 	CFixVector			vSideExit;
-	vmsMatrix			mOrient;
+	CFixMatrix			mOrient;
 	short					nSegNum;
 	short					nTransitSegNum;
 } tExitData;

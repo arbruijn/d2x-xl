@@ -156,7 +156,7 @@ int GetPlayerGun (int nPlayer, int *bFiring);
 void GetPlayerMslLock (void);
 CFixVector *GetGunPoints (CObject *objP, int nGun);
 CFixVector *TransformGunPoint (CObject *objP, CFixVector *vGunPoints, int nGun, 
-										fix xDelay, ubyte nLaserType, CFixVector *vMuzzle, vmsMatrix *mP);
+										fix xDelay, ubyte nLaserType, CFixVector *vMuzzle, CFixMatrix *mP);
 typedef struct tMuzzleInfo {
 	fix         createTime;
 	short       nSegment;

@@ -167,7 +167,7 @@ return v;
 
 // ----------------------------------------------------------------------------
 
-static inline vmsAngVec& SwapAngVec (vmsAngVec& v, int bEndian)
+static inline CAngleVector& SwapAngVec (CAngleVector& v, int bEndian)
 {
 if (gameStates.app.bLittleEndian != bEndian) 
 	{
@@ -180,7 +180,7 @@ return v;
 
 // ----------------------------------------------------------------------------
 
-static inline vmsMatrix& SwapMatrix (vmsMatrix& m, int bEndian)
+static inline CFixMatrix& SwapMatrix (CFixMatrix& m, int bEndian)
 {
 if (gameStates.app.bLittleEndian != bEndian) {
 	SwapVector (m[RVEC], bEndian);

@@ -533,7 +533,7 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 
 void TriggerSetOrient (tTransformation *posP, short nSegment, short nSide, int bSetPos, int nStep)
 {
-	vmsAngVec	an;
+	CAngleVector	an;
 	CFixVector	n;
 
 if (nStep <= 0) {
@@ -555,7 +555,7 @@ else
 an = n.ToAnglesVec();
 // create new orientation matrix
 if (!nStep)
-	posP->mOrient = vmsMatrix::Create(an);
+	posP->mOrient = CFixMatrix::Create(an);
 if (bSetPos)
 	COMPUTE_SEGMENT_CENTER_I (&posP->vPos, nSegment); 
 // rotate the ships vel vector accordingly
@@ -566,9 +566,9 @@ if (bSetPos)
 
 void TriggerSetObjOrient (short nObject, short nSegment, short nSide, int bSetPos, int nStep)
 {
-	vmsAngVec	ad, an, av;
+	CAngleVector	ad, an, av;
 	CFixVector	vel, n;
-	vmsMatrix	rm;
+	CFixMatrix	rm;
 	CObject		*objP = OBJECTS + nObject;
 
 TriggerSetOrient (&objP->info.position, nSegment, nSide, bSetPos, nStep);
@@ -599,12 +599,12 @@ if (nStep) {
 		ad[PA] += (an[PA] - ad[PA]) / nStep;
 		ad[BA] += (an[BA] - ad[BA]) / nStep;
 		ad[HA] += (an[HA] - ad[HA]) / nStep;
-		objP->info.position.mOrient = vmsMatrix::Create(ad);
+		objP->info.position.mOrient = CFixMatrix::Create(ad);
 		}
 	else
-		objP->info.position.mOrient = vmsMatrix::Create(an);
+		objP->info.position.mOrient = CFixMatrix::Create(an);
 	}
-rm = vmsMatrix::Create(av);
+rm = CFixMatrix::Create(av);
 vel = rm * objP->mType.physInfo.velocity;
 objP->mType.physInfo.velocity = vel;
 //StopPlayerMovement ();

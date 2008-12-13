@@ -464,7 +464,7 @@ class CLightningInfo {
 typedef struct tPolyObjInfo {
 public:
 	int     		nModel;          // which polygon model
-	vmsAngVec 	animAngles [MAX_SUBMODELS]; // angles for each subobject
+	CAngleVector 	animAngles [MAX_SUBMODELS]; // angles for each subobject
 	int     		nSubObjFlags;       // specify which subobjs to draw
 	int     		nTexOverride;      // if this is not -1, map all face to this
 	int     		nAltTextures;       // if not -1, use these textures instead
@@ -476,12 +476,12 @@ class CPolyObjInfo {
 	public:
 		inline tPolyObjInfo* GetInfo (void) { return &m_info; };
 		inline int GetModel (void) { return m_info.nModel; }
-		inline vmsAngVec* GetAnimAngles (int i) { return m_info.animAngles + i; }
+		inline CAngleVector* GetAnimAngles (int i) { return m_info.animAngles + i; }
 		inline int GetSubObjFlags (void) { return m_info.nSubObjFlags; }
 		inline int GetTexOverride (void) { return m_info.nTexOverride; }
 		inline int GetAltTextures (void) { return m_info.nAltTextures; }
 		inline void SetModel (int nModel) { m_info.nModel = nModel; }
-		inline void SetAnimAngles (const vmsAngVec *vAngles, int i) { m_info.animAngles [i] = *vAngles; }
+		inline void SetAnimAngles (const CAngleVector *vAngles, int i) { m_info.animAngles [i] = *vAngles; }
 		inline void SetSubObjFlags (int nSubObjFlags) { m_info.nSubObjFlags = nSubObjFlags; }
 		inline void SetTexOverride (int nTexOverride) { m_info.nTexOverride = nTexOverride; }
 		inline void SetAltTextures (int nAltTextures) { m_info.nAltTextures = nAltTextures; }
@@ -489,7 +489,7 @@ class CPolyObjInfo {
 
 typedef struct tTransformation {
 	CFixVector	vPos;				// absolute x,y,z coordinate of center of object
-	vmsMatrix	mOrient;			// orientation of object in world
+	CFixMatrix	mOrient;			// orientation of object in world
 	} tTransformation;
 
 class CTransformation {
@@ -497,9 +497,9 @@ private:
 	tTransformation	m_t;
 public:
 	inline CFixVector* GetPos (void) { return &m_t.vPos; }
-	inline vmsMatrix* GetOrient (void) { return &m_t.mOrient; }
+	inline CFixMatrix* GetOrient (void) { return &m_t.mOrient; }
 	inline void SetPos (const CFixVector* vPos) { m_t.vPos = *vPos; }
-	inline void SetOrient (const vmsMatrix* mOrient) { m_t.mOrient = *mOrient ; }
+	inline void SetOrient (const CFixMatrix* mOrient) { m_t.mOrient = *mOrient ; }
 };
 
 typedef struct tObjContainerInfo {
@@ -672,7 +672,7 @@ class CObject : public CObjectInfo {
 		// initialize a new CObject.  adds to the list for the given CSegment
 		// returns the CObject number
 		int Create (ubyte nType, ubyte nId, short nCreator, short nSegment, const CFixVector& vPos,
-						const vmsMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType);
+						const CFixMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType);
 
 		inline void Kill (void) { SetFlags (Flags () | OF_SHOULD_BE_DEAD); }
 		inline bool Exists (void) { return !(Flags () & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)); }
@@ -691,7 +691,7 @@ class CObject : public CObjectInfo {
 		void RelinkToSeg (int nNewSeg);
 		bool IsLinkedToSeg (short nSegment);
 		void Initialize (ubyte nType, ubyte nId, short nCreator, short nSegment, const CFixVector& vPos,
-							  const vmsMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType);
+							  const CFixMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType);
 		void ToBaseObject (tBaseObject *objP);
 
 		inline short Id (void) { return m_nId; }
@@ -857,7 +857,7 @@ extern CObject Follow;
 // do whatever setup needs to be done
 void InitObjects();
 
-int CreateObject (ubyte nType, ubyte nId, short nCreator, short nSegment, const CFixVector& vPos, const vmsMatrix& mOrient,
+int CreateObject (ubyte nType, ubyte nId, short nCreator, short nSegment, const CFixVector& vPos, const CFixMatrix& mOrient,
 					   fix xSize, ubyte cType, ubyte mType, ubyte rType);
 int CloneObject (CObject *objP);
 int CreateRobot (ubyte nId, short nSegment, const CFixVector& vPos);
@@ -895,7 +895,7 @@ void UnlinkObjFromSeg (CObject *objP);
 // initialize a new CObject.  adds to the list for the given CSegment
 // returns the CObject number
 //int CObject::Create(ubyte nType, char id, short owner, short nSegment, const CFixVector& pos,
-//               const vmsMatrix& orient, fix size, ubyte ctype, ubyte mtype, ubyte rtype, int bIgnoreLimits);
+//               const CFixMatrix& orient, fix size, ubyte ctype, ubyte mtype, ubyte rtype, int bIgnoreLimits);
 
 // make a copy of an CObject. returs num of new CObject
 int ObjectCreateCopy(int nObject, CFixVector *new_pos, int newsegnum);
@@ -998,7 +998,7 @@ void AttachObject(CObject *parent, CObject *sub);
 extern void CreateSmallFireballOnObject(CObject *objp, fix size_scale, int soundFlag);
 
 // returns CObject number
-int DropMarkerObject(CFixVector *pos, short nSegment, vmsMatrix *orient, ubyte marker_num);
+int DropMarkerObject(CFixVector *pos, short nSegment, CFixMatrix *orient, ubyte marker_num);
 
 extern void WakeupRenderedObjects(CObject *gmissp, int window_num);
 
@@ -1039,10 +1039,10 @@ void InitGateIntervals (void);
 int CountPlayerObjects (int nPlayer, int nType, int nId);
 void FixObjectSizes (void);
 void DoSlowMotionFrame (void);
-vmsMatrix *ObjectView (CObject *objP);
+CFixMatrix *ObjectView (CObject *objP);
 
 CFixVector *PlayerSpawnPos (int nPlayer);
-vmsMatrix *PlayerSpawnOrient (int nPlayer);
+CFixMatrix *PlayerSpawnOrient (int nPlayer);
 void GetPlayerSpawn (int nPlayer, CObject *objP);
 void RecreateThief(CObject *objP);
 void DeadPlayerFrame (void);

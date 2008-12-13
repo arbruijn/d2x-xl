@@ -152,7 +152,7 @@ memset (&m_info, 0, sizeof (m_info));
 int CCamera::Create (short nId, short srcSeg, short srcSide, short tgtSeg, short tgtSide, 
 							CObject *objP, int bShadowMap, int bTeleport)
 {
-	vmsAngVec	a;
+	CAngleVector	a;
 	int			h, i;
 #if 0
 	short			sideVerts [4];
@@ -214,7 +214,7 @@ else {
 		}
 	else
 		a = gameData.segs.segments [srcSeg].sides [srcSide].normals [0].ToAnglesVec();
-	m_info.obj.info.position.mOrient = vmsMatrix::Create(a);
+	m_info.obj.info.position.mOrient = CFixMatrix::Create(a);
 #if 1
 	if (bTeleport)
 		COMPUTE_SEGMENT_CENTER_I (&m_info.obj.info.position.vPos, srcSeg);
@@ -583,8 +583,8 @@ if (!m_info.objP)
 if ((t0 < 0) || (t - t0 >= 1000 / 90))
 #endif
 	if (m_info.objP->cType.aiInfo.behavior == AIB_NORMAL) {
-		vmsAngVec	a;
-		vmsMatrix	r;
+		CAngleVector	a;
+		CFixMatrix	r;
 
 		int	h = abs (curDelta);
 		int	d = DEG1 / (gameOpts->render.cameras.nSpeed / 1000);
@@ -604,7 +604,7 @@ if ((t0 < 0) || (t - t0 >= 1000 / 90))
 	curAngle += curDelta;
 	a [HA] = curAngle;
 	a [BA] = a [PA] = 0;
-	r = vmsMatrix::Create (a);
+	r = CFixMatrix::Create (a);
 	// TODO MM
 	m_info.objP->info.position.mOrient = m_info.orient * r;
 	m_info.curAngle = curAngle;

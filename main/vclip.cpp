@@ -157,7 +157,7 @@ void DrawExplBlast (CObject *objP)
 	float			r;
 	int			i;
 	CSphereData	sd;
-	tOOF_vector	p = {0,0,0};
+	CFloatVector	p = {0,0,0};
 #endif
 	tRgbaColorf	color;
 #if 0
@@ -200,7 +200,7 @@ r = X2F (xSize);
 sd.pulseP = 0;
 G3StartInstanceMatrix(objP->info.position.vPos, &objP->info.position.mOrient);
 for (i = 0; i < 3; i++) {
-	RenderSphere (&sd, reinterpret_cast<tOOF_vector*> (OOF_VecVms2Oof (&p, &objP->info.position.vPos)),
+	RenderSphere (&sd, reinterpret_cast<CFloatVector*> (OOF_VecVms2Oof (&p, &objP->info.position.vPos)),
 					  r, r, r, 1, 1, 1, fAlpha, NULL, 1);
 	r *= i ? 0.5f : 0.8f;
 	}
@@ -242,7 +242,7 @@ objP->info.movementType = MT_PHYSICS;
 
 int ConvertVClipToPolymodel (CObject *objP)
 {
-	vmsAngVec	a;
+	CAngleVector	a;
 	short			nModel;
 
 if (gameStates.app.bNostalgia || !gameOpts->render.powerups.b3D)
@@ -255,7 +255,7 @@ if (!(nModel && HaveReplacementModel (nModel)))
 a[PA] = (rand () % F1_0) - F1_0 / 2;
 a[BA] = (rand () % F1_0) - F1_0 / 2;
 a[HA] = (rand () % F1_0) - F1_0 / 2;
-objP->info.position.mOrient = vmsMatrix::Create(a);
+objP->info.position.mOrient = CFixMatrix::Create(a);
 #if 0
 objP->mType.physInfo.mass = F1_0;
 objP->mType.physInfo.drag = 512;

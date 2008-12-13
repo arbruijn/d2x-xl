@@ -1386,18 +1386,18 @@ void CybermouseAdjust ()
 		gameOpts->gameplay.nAutoLeveling = 0;
 
 		if (kc_externalVersion > 0) {	
-			vmsMatrix tempm, ViewMatrix;
-			vmsAngVec * Kconfig_abs_movement;
+			CFixMatrix tempm, ViewMatrix;
+			CAngleVector * Kconfig_abs_movement;
 			char * oem_message;
 
-			Kconfig_abs_movement = reinterpret_cast<vmsAngVec*> (((uint)kc_external_control + sizeof (tControlInfo));
+			Kconfig_abs_movement = reinterpret_cast<CAngleVector*> (((uint)kc_external_control + sizeof (tControlInfo));
 
 			if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h)	{
 				VmAngles2Matrix (&tempm,Kconfig_abs_movement);
 				VmMatMul (&ViewMatrix,&OBJECTS [LOCALPLAYER.nObject].info.position.mOrient,&tempm);
 				OBJECTS [LOCALPLAYER.nObject].info.position.mOrient = ViewMatrix;	
 			}
-			oem_message = reinterpret_cast<char*> (((uint)Kconfig_abs_movement + sizeof (vmsAngVec));
+			oem_message = reinterpret_cast<char*> (((uint)Kconfig_abs_movement + sizeof (CAngleVector));
 			if (oem_message [0] != '\0')
 				HUDInitMessage (oem_message);
 		}

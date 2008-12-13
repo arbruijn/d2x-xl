@@ -604,7 +604,7 @@ v [Z] = ReadFix ();
 
 // ----------------------------------------------------------------------------
 
-void CFile::ReadAngVec (vmsAngVec& v)
+void CFile::ReadAngVec (CAngleVector& v)
 {
 v [PA] = ReadFixAng ();
 v [BA] = ReadFixAng ();
@@ -613,7 +613,7 @@ v [HA] = ReadFixAng ();
 
 // ----------------------------------------------------------------------------
 
-void CFile::ReadMatrix (vmsMatrix& m)
+void CFile::ReadMatrix (CFixMatrix& m)
 {
 ReadVector (m [RVEC]);
 ReadVector (m [UVEC]);
@@ -704,7 +704,7 @@ WriteFix (v [Z]);
 
 // ----------------------------------------------------------------------------
 
-void CFile::WriteAngVec (const vmsAngVec& v)
+void CFile::WriteAngVec (const CAngleVector& v)
 {
 WriteFixAng (v [PA]);
 WriteFixAng (v [BA]);
@@ -713,7 +713,7 @@ WriteFixAng (v [HA]);
 
 // ----------------------------------------------------------------------------
 
-void CFile::WriteMatrix (const vmsMatrix& m)
+void CFile::WriteMatrix (const CFixMatrix& m)
 {
 WriteVector (m [RVEC]);
 WriteVector (m [UVEC]);

@@ -75,7 +75,7 @@ int LoadPolygonModel(const char *filename,int n_textures,CBitmap ***textures);
 #endif
 
 // draw a polygon model
-int DrawPolygonModel (CObject *objP, CFixVector *pos,vmsMatrix *orient,vmsAngVec *animAngles, int nModel, int flags, fix light, 
+int DrawPolygonModel (CObject *objP, CFixVector *pos,CFixMatrix *orient,CAngleVector *animAngles, int nModel, int flags, fix light, 
 							 fix *glowValues, tBitmapIndex nAltTextures[], tRgbaColorf *obj_color);
 
 // fills in arrays gunPoints & gun_dirs, returns the number of guns read
@@ -85,7 +85,7 @@ int ReadModelGuns (const char *filename,CFixVector *gunPoints, CFixVector *gun_d
 // more-or-less fill the canvas.  Note that this routine actually renders
 // into an off-screen canvas that it creates, then copies to the current
 // canvas.
-void DrawModelPicture (int mn,vmsAngVec *orient_angles);
+void DrawModelPicture (int mn,CAngleVector *orient_angles);
 
 // free up a model, getting rid of all its memory
 void FreeModel (tPolyModel *po);

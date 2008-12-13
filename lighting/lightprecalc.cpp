@@ -325,7 +325,7 @@ void ComputeSingleSegmentVisibility (short nStartSeg)
 	tSide			*sideP;
 	short			nSegment, nSide, nChildSeg, nChildSide, i;
 	CFixVector	vNormal;
-	vmsAngVec	vAngles;
+	CAngleVector	vAngles;
 	CObject		viewer;
 
 //PrintLog ("computing visibility of segment %d\n", nStartSeg);
@@ -356,7 +356,7 @@ for (sideP = segP->sides, nSide = 0; nSide < 6; nSide++, sideP++) {
 	vNormal = sideP->normals[0] + sideP->normals[1];
 	vNormal *= (-F1_0 / 2);
 	vAngles = vNormal.ToAnglesVec();
-	viewer.info.position.mOrient = vmsMatrix::Create(vAngles);
+	viewer.info.position.mOrient = CFixMatrix::Create(vAngles);
 	G3StartFrame(0, 0);
 	RenderStartFrame();
 	G3SetViewMatrix (viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, 1);

@@ -106,7 +106,7 @@ return 0;
 //------------------------------------------------------------------------------
 
 void DigiGetSoundLoc (
-	vmsMatrix *mListener, CFixVector *vListenerPos, short nListenerSeg, CFixVector *vSoundPos,
+	CFixMatrix *mListener, CFixVector *vListenerPos, short nListenerSeg, CFixVector *vSoundPos,
 	short nSoundSeg, fix maxVolume, int *volume, int *pan, fix maxDistance, int nDecay)
 {
 	CFixVector	vecToSound;

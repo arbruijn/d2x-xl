@@ -437,7 +437,7 @@ gameData.boss [i].nLastTeleportTime = gameData.time.xGame;
 //	make boss point right at CPlayerData
 objP->info.position.vPos = vNewPos;
 vBossDir = OBJECTS [LOCALPLAYER.nObject].info.position.vPos - vNewPos;
-objP->info.position.mOrient = vmsMatrix::CreateF(vBossDir);
+objP->info.position.mOrient = CFixMatrix::CreateF(vBossDir);
 DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nRandSeg, 0, &objP->info.position.vPos, 0 , F1_0);
 DigiKillSoundLinkedToObject (nObject);
 DigiLinkSoundToObject2 (ROBOTINFO (objP->info.nId).seeSound, OBJ_IDX (objP), 1, F1_0, F1_0*512, SOUNDCLASS_ROBOT);	//	F1_0*512 means play twice as loud

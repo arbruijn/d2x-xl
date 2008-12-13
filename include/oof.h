@@ -12,6 +12,11 @@
 #endif
 
 //------------------------------------------------------------------------------
+
+typedef float glVectorf [4];
+typedef float glMatrixf [4*4];
+
+//------------------------------------------------------------------------------
 // Subobject flags
 
 #define OOF_PMF_LIGHTMAP_RES	1
@@ -56,287 +61,371 @@
 
 #define OOF_PAGENAME_LEN	35
 
-typedef ushort tOOF_angle;	//make sure this matches up with fix.h
+typedef char tChunkType [4];
 
-typedef char tOOF_chunkType [4];
+namespace OOFModel {
 
-typedef struct tOOF_angVec {
-	tOOF_angle p,h,b;
-} tOOF_angVec;
+class CTriangle {
+	public:
+		CFloatVector	p [3];
+		CFloatVector	c;
+	}CTriangle;
 
-typedef struct tOOF_vector {
-	float		x, y, z;
-} tOOF_vector;
+class CQuad {
+	public:
+		CFloatVector	p [4];
+		CFloatVector c;
+	};
 
-typedef struct tOOF_matrix {
-	tOOF_vector	r, u, f;
-} tOOF_matrix;
+class CChunkHeader {
+	public:
+		tChunkType		m_nType;
+		int				m_nLength;
+	};
 
-typedef struct tOOF_triangle {
-	tOOF_vector	p [3];
-	tOOF_vector c;
-} tOOF_triangle;
+class CFaceVert {
+	public:
+		int		m_nIndex;
+		float		m_fu;
+		float		m_fv;
 
-typedef struct tOOF_quad {
-	tOOF_vector	p [4];
-	tOOF_vector c;
-} tOOF_quad;
+	public:
+		int Read (CFile& cf, int bFlipV);
+	};
 
-typedef struct tOOF_rgb {
-	ubyte		r, g, b;
-} tOOF_rgb;
+class CFace {
+	public:
+		CFloatVector		m_vNormal;
+		CFloatVector		m_vRotNormal;
+		CFloatVector		m_vCenter;
+		CFloatVector		m_vRotCenter;
+		int					m_nVerts;
+		int					m_bTextured;
+		union {
+			int				nTexId;
+			tRgbColorb		color;
+			} m_texProps;
+		CFaceVert*			m_verts;
+		float					m_fBoundingLength;
+		float					m_fBoundingWidth;
+		CFloatVector		m_vMin;
+		CFloatVector		m_vMax;
+		ubyte					m_bFacingLight : 1;
+		ubyte					m_bFacingViewer : 1;
+		ubyte					m_bReverse : 1;
 
-typedef struct tOOF_frgb {
-	float		r, g, b;
-} tOOF_frgb;
+	public:
+		int Read (CFile& cf, CSubModel *pso, CFaceVert *pfv, int bFlipV);
+		inline CFloatVector* CalcCenter (CSubModel *pso);
+		inline CFloatVector *CalcNormal (CSubModel *pso);
+};
 
-typedef struct tOOF_chunkHeader {
-	tOOF_chunkType		nType;
-	int					nLength;
-} tOOF_chunkHeader;
+class CFaceList {
+	public:
+		int					m_nFaces;
+		CArray<CFace>		m_list;
+		CArray<CFaceVert>	m_verts;
 
-typedef struct tOOF_faceVert {
-	int					nIndex;
-	float					fu;
-	float					fv;
-} tOOF_faceVert;
+	public:
+		CFaceList () { Init (); }
+		~CFaceList () { Destroy (); }
+		void Init (void);
+		void Destroy (void);
+};
 
-typedef struct tOOF_face {
-	tOOF_vector			vNormal;
-	tOOF_vector			vRotNormal;
-	tOOF_vector			vCenter;
-	tOOF_vector			vRotCenter;
-	int					nVerts;
-	int					bTextured;
-	union {
-		int				nTexId;
-		tOOF_rgb			color;
-		} texProps;
-	tOOF_faceVert		*verts;
-	float					fBoundingLength;
-	float					fBoundingWidth;
-	tOOF_vector			vMin;
-	tOOF_vector			vMax;
-	ubyte					bFacingLight : 1;
-	ubyte					bFacingViewer : 1;
-	ubyte					bReverse : 1;
-} tOOF_face;
+class CGlowInfo {
+	public:
+		tRgbColorf		m_color;
+		float				m_fSize;
+		float				m_fLength;
+		CFloatVector	m_vCenter;
+		CFloatVector	m_vNormal;
 
-typedef struct tOOF_faceList {
-	int					nFaces;
-	tOOF_face			*faces;
-	tOOF_faceVert		*faceVerts;
-} tOOF_faceList;
+	public:
+		void Init (void) { memset (this, 0, sizeof (*this)); }
+};
 
-typedef struct tOOF_glowInfo {
-	tOOF_frgb			color;
-	float					fSize;
-	float					fLength;
-	tOOF_vector			vCenter;
-	tOOF_vector			vNormal;
-} tOOF_glowInfo;
+class CSpecialPoint {
+	public:
+		char*				m_pszName;
+		char*				m_pszProps;
+		CFloatVector	m_vPos;
+		float				m_fRadius;
 
-typedef struct tOOF_specialPoint {
-	char					*pszName;
-	char					*pszProps;
-	tOOF_vector			vPos;
-	float					fRadius;
-} tOOF_specialPoint;
+	public:
+		CSpecialPoint () { Init (); }
+		~CSpecialPoint () { Destroy (); }
+		void Init (void);
+		void Destroy (void);
+		int Read (CFile& cf);
 
-typedef struct tOOF_specialList {
-	int					nVerts;
-	tOOF_specialPoint	*verts;
-} tOOF_specialList;
+};
 
-typedef struct tOOF_point {
-   int					nParent;
-   tOOF_vector			vPos;
-   tOOF_vector			vDir;
-} tOOF_point;
+class CSpecialList : public CArray<CSpecialPoint> {
+	public:
+		int Read (CFile& cf);
+	};
 
-typedef struct tOOF_pointList {
-   int					nPoints;        
-   tOOF_point			*pPoints;
-} tOOF_pointList;
+class CPoint {
+	public:
+		int				m_nParent;
+	   CFloatVector	m_vPos;
+		CFloatVector	m_vDir;
 
-typedef struct tOOF_attachPoint {
-	tOOF_point			point;
-	tOOF_vector			vu;
-	char					bu;
-} tOOF_attachPoint;
+	public:
+		int Read (CFile& cf, int bParent);
+	};
 
-typedef struct tOOF_attachList {
-   int					nPoints;        
-   tOOF_attachPoint	*pPoints;
-} tOOF_attachList;
+class CPointList : public CArray<CPoint> {
+	public:
+		int Read (CFile& cf);
+	};
 
-typedef struct tOOF_battery {
-	int					nVerts;
-	int					*pVertIndex;
-	int					nTurrets;
-	int					*pTurretIndex;
-} tOOF_battery;
+class CAttachPoint : public CPoint {
+	public:
+		CFloatVector	m_vu;
+		char				m_bu;
 
-typedef struct tOOF_armament {
-	int					nBatts;
-	tOOF_battery		*pBatts;
-} tOOF_armament;
+	public:
+		int Read (CFile& cf);
+};
 
-typedef struct tOOF_frameInfo {
-	int					nFrames;
-	int					nFirstFrame;
-	int					nLastFrame;
-} tOOF_frameInfo;
+class CAttachList : public CArray<CAttachPoint> {
+	public:
+		int Read (CFile& cf);
+		int ReadNormals (CFile& cf);
+	};
 
-typedef struct tOOF_posFrame {
-	int					iKeyFrame;
-	tOOF_vector			vPos;
-	int					nStartTime;
-} tOOF_posFrame;
+class CBattery {
+	public:
+		int				m_nVerts;
+		CArray<int>		m_vertIndex;
+		int				m_nTurrets;
+		CArray<int>		m_turretIndex;
 
-typedef struct tOOF_posAnim {
-	tOOF_frameInfo		frameInfo;
-	tOOF_posFrame		*pFrames;
-	int					nTicks;
-	ubyte					*pRemapTicks;
-} tOOF_posAnim;
+	public:
+		CBattery () { Init (); }
+		void Init (void);
+		int Read (CFile& cf);
+};
 
-typedef struct tOOF_rotFrame {
-	int					iKeyFrame;
-	tOOF_vector			vAxis;
-	int					nAngle;
-	tOOF_matrix			mMat;
-	int					nStartTime;
-} tOOF_rotFrame;
+class CArmament : public CArray<CBattery> {
+	public:
+		int Read (CFile& cf);
+	};
 
-typedef struct tOOF_rotAnim {
-	tOOF_frameInfo		frameInfo;
-	tOOF_rotFrame		*pFrames;
-	int					nTicks;
-	ubyte					*pRemapTicks;
-} tOOF_rotAnim;
+class CFrameInfo {
+	public:
+		int		m_nFrames;
+		int		m_nFirstFrame;
+		int		m_nLastFrame;
 
-typedef struct tOOF_edge {
-	int					v0 [2];
-	int					v1 [2];
-	tOOF_face			*pf [2];
-	char					bContour;
-} tOOF_edge;
+	public:
+		CFrameInfo () { Init (); }
+		void Init (void);
+		int Read (CFile& cf, CModel* po);
+};
 
-typedef struct tOOF_edgeList {
-	int					nEdges;
-	int					nContourEdges;
-	tOOF_edge			*pEdges;
-} tOOF_edgeList;
+class CPosFrame {
+	public:
+		int				m_iKeyFrame;
+		CFloatVector	m_vPos;
+		int				m_nStartTime;
 
-typedef struct tOOF_subObject {
-	int					nIndex;
-	int					nParent;
-	int					nFlags;
-	tOOF_vector			vNormal;
-	float					fd;
-	tOOF_vector			vPlaneVert;
-	tOOF_vector			vOffset;
-	float					fRadius;
-	int					nTreeOffset;
-	int					nDataOffset;
-	tOOF_vector			vCenter;
-	char					*pszName;
-	char					*pszProps;
-	int					nMovementType;
-	int					nMovementAxis;
-	int					nFSLists;
-	int					*pFSList;
-	int					nVerts;
-	tOOF_vector			*verts;
-	tOOF_vector			*rotVerts;
-	tOOF_vector			*normals;
-	tFaceColor			*vertColors;
-	float					*pfAlpha;	// only present if version >= 2300
-	tOOF_faceList		faces;
-	tOOF_edgeList		edges;
-	tOOF_posAnim		posAnim;
-	tOOF_rotAnim		rotAnim;
-	tOOF_vector			vMin;
-	tOOF_vector			vMax;
-	tOOF_glowInfo		glowInfo;
-	float					fFOV;
-	float					fRPS;
-	float					fUpdate;
-	int					nChildren;
-	int					children [OOF_MAX_SUBOBJECTS];
-	tOOF_angVec			aMod;
-	tOOF_matrix			mMod;				// The angles from parent.  Stuffed by model_set_instance
-	tOOF_vector			vMod;
-} tOOF_subObject;
+	public:
+		int Read (CFile& cf);
 
-typedef struct tOOFObject {
-	short					nModel;
-	short					nType;
-	int					nVersion;
-	int					nFlags;
-	float					fMaxRadius;
-	tOOF_vector			vMin;
-	tOOF_vector			vMax;
-	int					nDetailLevels;
-	int					nSubObjects;
-	tOOF_subObject		*pSubObjects;
-	tOOF_pointList		gunPoints;
-	tOOF_attachList	attachPoints;
-	tOOF_specialList	specialPoints;
-	tOOF_armament		armament;
-	CModelTextures		textures;
-	tOOF_frameInfo		frameInfo;
-	int					bCloaked;
-	int					nCloakPulse;
-	int					nCloakChangedTime;
-	float					fAlpha;
-} tOOFObject;
+};
 
-typedef float glVectorf [4];
-typedef float glMatrixf [4*4];
+class CAnim : public CFrameInfo {
+	public:
+		int				m_nTicks;
+		CArray<ubyte>	m_remapTicks;
+
+	public:
+		CAnim () { Init (); }
+		void Init (void);
+		void Destroy (void);
+	};
+
+class CPosAnim : public CAnim {
+	public:
+		CArray<CPosFrame>	m_frames;
+
+	public:
+		void Destroy (void);
+};
+
+class CRotFrame {
+	public:
+		int					m_iKeyFrame;
+		CFloatVector		m_vAxis;
+		int					m_nAngle;
+		CFloatMatrix		m_mMat;
+		int					m_nStartTime;
+
+	public:
+		int Read (CFile& cf, int bTimed);
+	};
+
+class CRotAnim : public CAnim {
+	public:
+		CArray<CRotFrame>	m_frames;
+
+	public:
+		CRotAnim () { Init (); }
+		void Init (void);
+		void Destroy (void);
+		int Read (CFile& cf, CModel* po, int bTimed);
+		void BuildMatrices (void);
+
+	private:
+		void BuildAngleMatrix (CFloatMatrix *pm, int a, CFloatVector *pAxis);
+	};
+
+class CEdge {
+	public:
+		int		m_v0 [2];
+		int		m_v1 [2];
+		CFace*	m_faces [2];
+		char		m_bContour;
+	};
+
+class CEdgeList {
+	public:
+		int				m_nEdges;
+		int				m_nContourEdges;
+		CArray<CEdge>	m_list;
+
+	public:
+		CEdgeList () { Init (); }
+		~CEdgeList () { Destroy (); }
+		void Init (void);
+		void Destroy (void);
+	};
+
+class CSubModel {
+	public:
+		int							m_nIndex;
+		int							m_nParent;
+		int							m_nFlags;
+		CFloatVector				m_vNormal;
+		float							m_fd;
+		CFloatVector				m_vPlaneVert;
+		CFloatVector				m_vOffset;
+		float							m_fRadius;
+		int							m_nTreeOffset;
+		int							m_nDataOffset;
+		CFloatVector				m_vCenter;
+		char*							m_pszName;
+		char*							m_pszProps;
+		int							m_nMovementType;
+		int							m_nMovementAxis;
+		int							m_nFSLists;
+		CArray<int>					m_fsLists;
+		int							m_nVerts;
+		CArray<CFloatVector>		m_verts;
+		CArray<CFloatVector>		m_rotVerts;
+		CArray<CFloatVector>		m_normals;
+		CArray<tFaceColor>		m_vertColors;
+		CArray<float>				m_pfAlpha;	// only present if version >= 2300
+		CFaceList					m_faces;
+		CEdgeList					m_edges;
+		CPosAnim						m_posAnim;
+		CRotAnim						m_rotAnim;
+		CFloatVector				m_vMin;
+		CFloatVector				m_vMax;
+		CGlowInfo					m_glowInfo;
+		float							m_fFOV;
+		float							m_fRPS;
+		float							m_fUpdate;
+		int							m_nChildren;
+		int							m_children [OOF_MAX_SUBOBJECTS];
+		CAngleVector				m_aMod;
+		CFloatMatrix				m_mMod;				// The angles from parent.  Stuffed by model_set_instance
+		CFloatVector				m_vMod;
+
+	public:
+		CSubModel () { Init (); }
+		~CSubModel () { Destroy (); }
+		void Init (void);
+		void Destroy (void);
+		int Read (CFile& cf, CModel& po, int bFlipV);
+
+	private:
+		int FindVertex (int i);
+		int FindEdge (int i0, int i1);
+		int FindEdge (int i0, int i1);
+		void SetProps (char *pszProps);
+	};	
+
+class CModel {
+	public:
+		short					m_nModel;
+		short					m_nType;
+		int					m_nVersion;
+		int					m_nFlags;
+		float					m_fMaxRadius;
+		CFloatVector		m_vMin;
+		CFloatVector		m_vMax;
+		int					m_nDetailLevels;
+		int					m_nSubModels;
+		CArray<CSubModel>	m_subModels;
+		CPointList			m_gunPoints;
+		CAttachList			m_attachPoints;
+		CSpecialList		m_specialPoints;
+		CArmament			m_armament;
+		CModelTextures		m_textures;
+		CFrameInfo			m_frameInfo;
+		int					m_bCloaked;
+		int					m_nCloakPulse;
+		int					m_nCloakChangedTime;
+		float					m_fAlpha;
+
+	public:
+		CModel () { Init (); }
+		~CModel () { Destroy (); }
+		void Init (void);
+		bool Create (void);
+		void Destroy (void);
+		int Read (const char *filename, short nModel, short nType, int bFlipV, int bCustom);
+		int Render (CObject *objP, float *fLight, int bCloaked);
+		int ReleaseTextures (void);
+		int ReloadTextures (int bCustom);
+		int FreeTextures (void);
+
+	private:
+		int ReadInfo (void);
+		void BuildAnimMatrices (void);
+		void AssignChildren (void);
+		inline void LinkSubModelBatteries (int iObject, int iBatt)
+		void LinkBatteries (CModel* po);
+		void BuildPosTickRemapList (void);
+		void BuildRotTickRemapList (void);
+		void ConfigureSubObjects (void);
+		void GetSubModelBounds (CSubModel *pso, CFloatVector vo);
+		void GetBounds (void);
+
+	};
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadFile (char *pszFile, tOOFObject *po, short nModel, short nType, int bFlipV, int bCustom);
-int OOF_FreeObject (tOOFObject *po);
-int OOF_Render (CObject *objP, tOOFObject *po, float *fLight, int bCloaked);
-float *OOF_MatVms2Gl (float *pDest, const vmsMatrix& src);
+int OOF_ReadFile (char *pszFile, CModel *po, short nModel, short nType, int bFlipV, int bCustom);
+int OOF_FreeObject (CModel *po);
+int OOF_Render (CObject *objP, CModel *po, float *fLight, int bCloaked);
+float *OOF_MatVms2Gl (float *pDest, const CFixMatrix& src);
 float *OOF_VecVms2Gl (float *pDest, const CFixVector& src);
-float *OOF_VecVms2Oof (tOOF_vector *pDest, const CFixVector& src);
-float *OOF_MatVms2Oof (tOOF_matrix *pDest, const vmsMatrix& src);
-tOOF_vector *OOF_VecNormalize (tOOF_vector *pv);
-tOOF_vector *OOF_VecAdd (tOOF_vector *pvDest, tOOF_vector *pvSrc, tOOF_vector *pvAdd);
-tOOF_vector *OOF_VecSub (tOOF_vector *pvDest, tOOF_vector *pvMin, tOOF_vector *pvSub);
-tOOF_vector *OOF_VecInc (tOOF_vector *pvDest, tOOF_vector *pvSrc);
-tOOF_vector *OOF_VecDec (tOOF_vector *pvDest, tOOF_vector *pvSrc);
-float OOF_VecMul (tOOF_vector *pvSrc, tOOF_vector *pvMul);
-tOOF_vector *OOF_VecScale (tOOF_vector *pv, float fScale);
-float OOF_VecMag (tOOF_vector *pv);
-void OOF_MatIdentity (tOOF_matrix *pm);
-void OOF_MatMul (tOOF_matrix *pd, tOOF_matrix *ps0, tOOF_matrix *ps1);
-float OOF_Centroid (tOOF_vector *pvCentroid, tOOF_vector *pvSrc, int nv);
-tOOF_vector *OOF_VecRot (tOOF_vector *pDest, tOOF_vector *pSrc, tOOF_matrix *pRot);
-tOOF_vector *OOF_VecPerp (tOOF_vector *pvPerp, tOOF_vector *pv0, tOOF_vector *pv1, tOOF_vector *pv2);
-tOOF_vector *OOF_VecNormal (tOOF_vector *pvNormal, tOOF_vector *pv0, tOOF_vector *pv1, tOOF_vector *pv2);
+float *OOF_VecVms2Oof (CFloatVector *pDest, const CFixVector& src);
+float *OOF_MatVms2Oof (CFloatMatrix *pDest, const CFixMatrix& src);
+float OOF_VecMul (CFloatVector *pvSrc, CFloatVector *pvMul);
+void OOF_MatIdentity (CFloatMatrix *pm);
+float OOF_Centroid (CFloatVector *pvCentroid, CFloatVector *pvSrc, int nv);
 float *OOF_GlIdent (float *pm);
 float *OOF_GlTranspose (float *pDest, float *pSrc);
 int OOF_ReleaseTextures (void);
 int OOF_ReloadTextures (void);
 
-//------------------------------------------------------------------------------
-
-static inline float OOF_VecDot3 (float x, float y, float z, tOOF_vector *pv)
-{
-return (x * pv->x) + (y * pv->y) + (z * pv->z);
-}
-
-//------------------------------------------------------------------------------
-
-static inline float OOF_VecDot (tOOF_vector *pv0, tOOF_vector *pv1)
-{
-return (pv0->x * pv1->x) + (pv0->y * pv1->y) + (pv0->z * pv1->z);
-}
+} //OOFModel
 
 //------------------------------------------------------------------------------
 

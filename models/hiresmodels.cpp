@@ -254,7 +254,7 @@ return i;
 
 // ----------------------------------------------------------------------------
 
-short LoadOOFModel (tOOFObject *po, short i, int bCustom)
+short LoadOOFModel (OOFModel::CModel *po, short i, int bCustom)
 {
 	short	j = sizeofa (replacementModels);
 	char	szModel [2][FILENAME_LEN];

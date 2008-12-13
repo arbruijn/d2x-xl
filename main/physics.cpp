@@ -73,7 +73,7 @@ void DoPhysicsAlignObject (CObject * objP)
 	CFixVector	desiredUpVec;
 	fixang		delta_ang, roll_ang;
 	//CFixVector forvec = {0, 0, f1_0};
-	vmsMatrix	temp_matrix;
+	CFixMatrix	temp_matrix;
 	fix			d, largest_d=-f1_0;
 	int			i, best_side;
 
@@ -103,15 +103,15 @@ else
 	return;
 if (labs (CFixVector::Dot(desiredUpVec, objP->info.position.mOrient[FVEC])) < f1_0/2) {
 	fixang save_delta_ang;
-	vmsAngVec turnAngles;
+	CAngleVector turnAngles;
 
-	temp_matrix = vmsMatrix::CreateFU(objP->info.position.mOrient[FVEC], desiredUpVec);
-//	temp_matrix = vmsMatrix::CreateFU(objP->info.position.mOrient[FVEC], &desiredUpVec, NULL);
+	temp_matrix = CFixMatrix::CreateFU(objP->info.position.mOrient[FVEC], desiredUpVec);
+//	temp_matrix = CFixMatrix::CreateFU(objP->info.position.mOrient[FVEC], &desiredUpVec, NULL);
 	save_delta_ang =
 	delta_ang = CFixVector::DeltaAngle(objP->info.position.mOrient[UVEC], temp_matrix[UVEC], &objP->info.position.mOrient[FVEC]);
 	delta_ang += objP->mType.physInfo.turnRoll;
 	if (abs (delta_ang) > DAMP_ANG) {
-		vmsMatrix mRotate, new_pm;
+		CFixMatrix mRotate, new_pm;
 
 		roll_ang = (fixang) FixMul (gameData.physics.xTime, ROLL_RATE);
 		if (abs (delta_ang) < roll_ang)
@@ -120,7 +120,7 @@ if (labs (CFixVector::Dot(desiredUpVec, objP->info.position.mOrient[FVEC])) < f1
 			roll_ang = -roll_ang;
 		turnAngles[PA] = turnAngles[HA] = 0;
 		turnAngles[BA] = roll_ang;
-		mRotate = vmsMatrix::Create(turnAngles);
+		mRotate = CFixMatrix::Create(turnAngles);
 		// TODO MM
 		new_pm = objP->info.position.mOrient * mRotate;
 		objP->info.position.mOrient = new_pm;
@@ -176,8 +176,8 @@ extern int bSimpleFVI;
 // add rotational velocity & acceleration
 void DoPhysicsSimRot (CObject *objP)
 {
-	vmsAngVec	turnAngles;
-	vmsMatrix	mRotate, mNewOrient;
+	CAngleVector	turnAngles;
+	CFixMatrix	mRotate, mNewOrient;
 	//fix			rotdrag_scale;
 	tPhysicsInfo *pi;
 
@@ -224,11 +224,11 @@ if (objP->mType.physInfo.drag) {
 //now rotate CObject
 //unrotate CObject for bank caused by turn
 if (objP->mType.physInfo.turnRoll) {
-	vmsMatrix mOrient;
+	CFixMatrix mOrient;
 
 	turnAngles[PA] = turnAngles[HA] = 0;
 	turnAngles[BA] = -objP->mType.physInfo.turnRoll;
-	mRotate = vmsMatrix::Create(turnAngles);
+	mRotate = CFixMatrix::Create(turnAngles);
 	mOrient = objP->info.position.mOrient * mRotate;
 	objP->info.position.mOrient = mOrient;
 }
@@ -243,7 +243,7 @@ if (!IsMultiGame) {
 		turnAngles[BA] = (fixang) (turnAngles[BA] / gameStates.gameplay.slowmo [i].fSpeed);
 		}
 	}
-mRotate = vmsMatrix::Create(turnAngles);
+mRotate = CFixMatrix::Create(turnAngles);
 // TODO MM
 mNewOrient = objP->info.position.mOrient * mRotate;
 objP->info.position.mOrient = mNewOrient;
@@ -251,11 +251,11 @@ if (objP->mType.physInfo.flags & PF_TURNROLL)
 	SetObjectTurnRoll (objP);
 //re-rotate object for bank caused by turn
 if (objP->mType.physInfo.turnRoll) {
-	vmsMatrix m;
+	CFixMatrix m;
 
 	turnAngles[PA] = turnAngles[HA] = 0;
 	turnAngles[BA] = objP->mType.physInfo.turnRoll;
-	mRotate = vmsMatrix::Create(turnAngles);
+	mRotate = CFixMatrix::Create(turnAngles);
 	// TODO MM
 	m = objP->info.position.mOrient * mRotate;
 	objP->info.position.mOrient = m;
@@ -866,8 +866,8 @@ retryMove:
 						objP->mType.physInfo.velocity *= (FixDiv (MAX_OBJECT_VEL, vel));
 					}
 				if (bBounced && (objP->info.nType == OBJ_WEAPON))
-					objP->info.position.mOrient = vmsMatrix::CreateFU(objP->mType.physInfo.velocity, objP->info.position.mOrient[UVEC]);
-					//objP->info.position.mOrient = vmsMatrix::CreateFU(objP->mType.physInfo.velocity, &objP->info.position.mOrient[UVEC], NULL);
+					objP->info.position.mOrient = CFixMatrix::CreateFU(objP->mType.physInfo.velocity, objP->info.position.mOrient[UVEC]);
+					//objP->info.position.mOrient = CFixMatrix::CreateFU(objP->mType.physInfo.velocity, &objP->info.position.mOrient[UVEC], NULL);
 				bRetry = 1;
 				}
 			}
@@ -1091,7 +1091,7 @@ else {
 //	PhysApplyRot used to call AITurnTowardsVector until I fixed it, which broke PhysApplyRot.
 void PhysicsTurnTowardsVector (CFixVector *vGoal, CObject *objP, fix rate)
 {
-	vmsAngVec	dest_angles, cur_angles;
+	CAngleVector	dest_angles, cur_angles;
 	fix			delta_p, delta_h;
 	CFixVector&	pvRotVel = objP->mType.physInfo.rotVel;
 

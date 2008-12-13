@@ -426,7 +426,7 @@ void ai_turn_towards_vector(CFixVector *vGoal, CObject *objP, fix rate)
 			new_fVec = *vGoal;		//	if degenerate vector, go right to goal
 		}
 	}
-objP->info.position.mOrient = vmsMatrix::CreateFR(new_fVec, objP->info.position.mOrient[RVEC]);
+objP->info.position.mOrient = CFixMatrix::CreateFR(new_fVec, objP->info.position.mOrient[RVEC]);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -626,8 +626,8 @@ int do_silly_animation(CObject *objP)
 		for (joint=0; joint<nJointPositions; joint++) {
 			fix			delta_angle, delta_2;
 			int			nJoint = jp_list[joint].jointnum;
-			vmsAngVec	*jp = &jp_list[joint].angles;
-			vmsAngVec	*pobjp = &polyObjInfo->animAngles[nJoint];
+			CAngleVector	*jp = &jp_list[joint].angles;
+			CAngleVector	*pobjp = &polyObjInfo->animAngles[nJoint];
 
 			if (nJoint >= gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nModels) {
 				Int3();		// Contact Mike: incompatible data, illegal nJoint, problem in pof file?
@@ -732,9 +732,9 @@ void ai_frame_animation(CObject *objP)
 	for (joint=1; joint<num_joints; joint++) {
 		fix			delta_to_goal;
 		fix			scaled_delta_angle;
-		vmsAngVec	*curangp = &objP->rType.polyObjInfo.animAngles[joint];
-		vmsAngVec	*goalangp = &gameData.ai.localInfo [nObject].goalAngles[joint];
-		vmsAngVec	*deltaangp = &gameData.ai.localInfo [nObject].deltaAngles[joint];
+		CAngleVector	*curangp = &objP->rType.polyObjInfo.animAngles[joint];
+		CAngleVector	*goalangp = &gameData.ai.localInfo [nObject].goalAngles[joint];
+		CAngleVector	*deltaangp = &gameData.ai.localInfo [nObject].deltaAngles[joint];
 
 		delta_to_goal = (*goalangp)[PA] - (*curangp)[PA];
 		if (delta_to_goal > 32767)

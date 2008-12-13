@@ -180,7 +180,7 @@ if (RENDERPATH && gameOpts->render.ship.bBullets) {
 					int			bSpectate = SPECTATOR (objP);
 					tTransformation	*posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
 					CFixVector	vEmitter, vDir;
-					vmsMatrix	m, *viewP;
+					CFixMatrix	m, *viewP;
 
 				if (bSpectate) {
 					viewP = &m;
@@ -237,7 +237,7 @@ if (bHires >= 0) {
 				int			bSpectate = SPECTATOR (objP);
 				tTransformation	*posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
 				CFixVector	*vGunPoints, vEmitter, vDir;
-				vmsMatrix	m, *viewP;
+				CFixMatrix	m, *viewP;
 
 			if (!(vGunPoints = GetGunPoints (objP, nGun)))
 				return;

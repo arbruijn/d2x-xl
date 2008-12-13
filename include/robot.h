@@ -43,7 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //describes the position of a certain joint
 typedef struct tJointPos {
 	short jointnum;
-	vmsAngVec angles;
+	CAngleVector angles;
 } __pack__ tJointPos;
 
 //describes a list of joint positions

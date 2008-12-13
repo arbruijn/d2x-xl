@@ -96,8 +96,8 @@ void ReadFlyingControls (CObject *objP)
    tGuidedMissileInfo *gmiP = gameData.objs.guidedMissile + gameData.multiplayer.nLocalPlayer;
 	gmObjP = gmiP->objP;
 	if (gmObjP && (gmObjP->info.nSignature == gmiP->nSignature)) {
-		vmsAngVec rotangs;
-		vmsMatrix rotmat,tempm;
+		CAngleVector rotangs;
+		CFixMatrix rotmat,tempm;
 		fix speed;
 
 		//this is a horrible hack.  guided missile stuff should not be
@@ -106,7 +106,7 @@ void ReadFlyingControls (CObject *objP)
 		rotangs[PA] = Controls [0].pitchTime / 2 + gameStates.gameplay.seismic.nMagnitude/64;
 		rotangs[BA] = Controls [0].bankTime / 2 + gameStates.gameplay.seismic.nMagnitude/16;
 		rotangs[HA] = Controls [0].headingTime / 2 + gameStates.gameplay.seismic.nMagnitude/64;
-		rotmat = vmsMatrix::Create(rotangs);
+		rotmat = CFixMatrix::Create(rotangs);
 		tempm = gmObjP->info.position.mOrient * rotmat;
 		gmObjP->info.position.mOrient = tempm;
 		speed = WI_speed (gmObjP->info.nId, gameStates.app.nDifficultyLevel);

@@ -1217,7 +1217,7 @@ if (info.nNextInSeg != -1)
 //------------------------------------------------------------------------------
 
 void CObject::Initialize (ubyte nType, ubyte nId, short nCreator, short nSegment, const CFixVector& vPos,
-								  const vmsMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType)
+								  const CFixMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType)
 {
 SetSignature (gameData.objs.nNextSignature++);
 SetType (nType);
@@ -1242,7 +1242,7 @@ LinkToSeg (nSegment);
 //-----------------------------------------------------------------------------
 
 int CObject::Create (ubyte nType, ubyte nId, short nCreator, short nSegment, 
-							const CFixVector& vPos, const vmsMatrix& mOrient,
+							const CFixVector& vPos, const CFixMatrix& mOrient,
 							fix xSize, ubyte cType, ubyte mType, ubyte rType)
 {
 #if DBG
@@ -1339,7 +1339,7 @@ return m_nId;
 //searches for the correct CSegment
 //returns the CObject number
 
-int CreateObject (ubyte nType, ubyte nId, short nCreator, short nSegment, const CFixVector& vPos, const vmsMatrix& mOrient,
+int CreateObject (ubyte nType, ubyte nId, short nCreator, short nSegment, const CFixVector& vPos, const CFixMatrix& mOrient,
 						fix xSize, ubyte cType, ubyte mType, ubyte rType)
 {
 	short		nObject;
@@ -1471,7 +1471,7 @@ return nObject;
 
 int CreateRobot (ubyte nId, short nSegment, const CFixVector& vPos)
 {
-return CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, vmsMatrix::IDENTITY, gameData.models.polyModels [ROBOTINFO (nId).nModel].rad, 
+return CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, gameData.models.polyModels [ROBOTINFO (nId).nModel].rad, 
 							CT_AI, MT_PHYSICS, RT_POLYOBJ);
 }
 
@@ -1486,7 +1486,7 @@ if (!bIgnoreLimits && TooManyPowerups ((int) nId)) {
 #endif
 	return -2;
 	}
-short nObject = CreateObject (OBJ_POWERUP, nId, nCreator, nSegment, vPos, vmsMatrix::IDENTITY, gameData.objs.pwrUp.info [nId].size, 
+short nObject = CreateObject (OBJ_POWERUP, nId, nCreator, nSegment, vPos, CFixMatrix::IDENTITY, gameData.objs.pwrUp.info [nId].size, 
 										CT_POWERUP, MT_PHYSICS, RT_POWERUP);
 if ((nObject >= 0) && IsMultiGame && PowerupClass (nId)) {
 	gameData.multiplayer.powerupsInMine [(int) nId]++;
@@ -1523,14 +1523,14 @@ if (rType == 255) {
 			return -1;
 		}
 	}
-return CreateObject (OBJ_WEAPON, nId, nCreator, nSegment, vPos, vmsMatrix::IDENTITY, xSize, CT_WEAPON, MT_PHYSICS, rType); 
+return CreateObject (OBJ_WEAPON, nId, nCreator, nSegment, vPos, CFixMatrix::IDENTITY, xSize, CT_WEAPON, MT_PHYSICS, rType); 
 }
 
 //------------------------------------------------------------------------------
 
 int CreateFireball (ubyte nId, short nSegment, const CFixVector& vPos, fix xSize, ubyte rType)
 {
-return CreateObject (OBJ_FIREBALL, nId, -1, nSegment, vPos, vmsMatrix::IDENTITY, xSize, CT_EXPLOSION, MT_NONE, rType);
+return CreateObject (OBJ_FIREBALL, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, xSize, CT_EXPLOSION, MT_NONE, rType);
 }
 
 //------------------------------------------------------------------------------
@@ -1554,7 +1554,7 @@ return CreateObject (OBJ_CAMERA, 0, -1, parentP->info.nSegment, parentP->info.po
 
 int CreateLight (ubyte nId, short nSegment, const CFixVector& vPos)
 {
-return CreateObject (OBJ_LIGHT, nId, -1, nSegment, vPos, vmsMatrix::IDENTITY, 0, CT_LIGHT, MT_NONE, RT_NONE);
+return CreateObject (OBJ_LIGHT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, 0, CT_LIGHT, MT_NONE, RT_NONE);
 }
 
 //------------------------------------------------------------------------------
@@ -1738,10 +1738,10 @@ if (gameStates.app.bPlayerIsDead) {
 	SetCameraPos (&gameData.objs.deadPlayerCamera->info.position.vPos, gameData.objs.consoleP);
 	fVec = gameData.objs.consoleP->info.position.vPos - gameData.objs.deadPlayerCamera->info.position.vPos;
 /*
-	gameData.objs.deadPlayerCamera->position.mOrient = vmsMatrix::Create(fVec, NULL, NULL);
+	gameData.objs.deadPlayerCamera->position.mOrient = CFixMatrix::Create(fVec, NULL, NULL);
 */
 	// TODO: MatrixCreateFCheck
-	gameData.objs.deadPlayerCamera->info.position.mOrient = vmsMatrix::CreateF(fVec);
+	gameData.objs.deadPlayerCamera->info.position.mOrient = CFixMatrix::CreateF(fVec);
 
 	if (xTimeDead > DEATH_SEQUENCE_EXPLODE_TIME) {
 		if (!gameStates.app.bPlayerExploded) {
@@ -1951,14 +1951,14 @@ if (GetSegMasks (info.position.vPos, info.nSegment, 0).centerMask)
 //process a continuously-spinning CObject
 void SpinObject (CObject *objP)
 {
-	vmsAngVec rotangs;
-	vmsMatrix rotmat, new_pm;
+	CAngleVector rotangs;
+	CFixMatrix rotmat, new_pm;
 
 Assert (objP->info.movementType == MT_SPINNING);
-rotangs = vmsAngVec::Create((fixang) FixMul (objP->mType.spinRate[X], gameData.time.xFrame),
+rotangs = CAngleVector::Create((fixang) FixMul (objP->mType.spinRate[X], gameData.time.xFrame),
                             (fixang) FixMul (objP->mType.spinRate[Y], gameData.time.xFrame),
                             (fixang) FixMul (objP->mType.spinRate[Z], gameData.time.xFrame));
-rotmat = vmsMatrix::Create(rotangs);
+rotmat = CFixMatrix::Create(rotangs);
 // TODO MM
 new_pm = objP->info.position.mOrient * rotmat;
 objP->info.position.mOrient = new_pm;
@@ -2022,9 +2022,9 @@ if (EGI_FLAG (bRotateMarkers, 0, 1, 0) && gameStates.app.tick40fps.bTick) {
 	time_t t = (gameStates.app.nSDLTicks - t0) % 1000;
 	t0 = gameStates.app.nSDLTicks;
 	if (t) {
-		vmsAngVec a = vmsAngVec::Create(0, 0, (fixang) ((float) (F1_0 / 512) * t / 25.0f));
-		vmsMatrix mRotate = vmsMatrix::Create(a);
-		vmsMatrix mOrient = mRotate * objP->info.position.mOrient;
+		CAngleVector a = CAngleVector::Create(0, 0, (fixang) ((float) (F1_0 / 512) * t / 25.0f));
+		CFixMatrix mRotate = CFixMatrix::Create(a);
+		CFixMatrix mOrient = mRotate * objP->info.position.mOrient;
 		objP->info.position.mOrient = mOrient;
 		}
 	}
@@ -2848,7 +2848,7 @@ while (parent->info.nAttachedObj != -1)
 
 //------------------------------------------------------------------------------
 //creates a marker CObject in the world.  returns the CObject number
-int DropMarkerObject (CFixVector *pos, short nSegment, vmsMatrix *orient, ubyte nMarker)
+int DropMarkerObject (CFixVector *pos, short nSegment, CFixMatrix *orient, ubyte nMarker)
 {
 	short nObject;
 
@@ -3081,7 +3081,7 @@ return markerP ? &markerP->info.position.vPos : &gameData.multiplayer.playerInit
 
 //------------------------------------------------------------------------------
 
-vmsMatrix *PlayerSpawnOrient (int nPlayer)
+CFixMatrix *PlayerSpawnOrient (int nPlayer)
 {
 	CObject	*markerP = SpawnMarkerObject (nPlayer);
 
@@ -3090,7 +3090,7 @@ return markerP ? &markerP->info.position.mOrient : &gameData.multiplayer.playerI
 
 //------------------------------------------------------------------------------
 
-vmsMatrix *ObjectView (CObject *objP)
+CFixMatrix *ObjectView (CObject *objP)
 {
 	tObjectViewData	*viewP = gameData.objs.viewData + OBJ_IDX (objP);
 

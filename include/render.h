@@ -65,7 +65,7 @@ extern int Render_only_bottom;
 
 // Set the following to turn on CPlayerData head turning
 // If the above flag is set, these angles specify the orientation of the head
-extern vmsAngVec Player_head_angles;
+extern CAngleVector Player_head_angles;
 
 //
 // Routines for conditionally rotating & projecting points

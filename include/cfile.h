@@ -69,8 +69,8 @@ class CFile {
 		fix ReadFix (void);
 		fixang ReadFixAng (void);
 		void ReadVector (CFixVector& v);
-		void ReadAngVec (vmsAngVec& v);
-		void ReadMatrix (vmsMatrix& v);
+		void ReadAngVec (CAngleVector& v);
+		void ReadMatrix (CFixMatrix& v);
 		float ReadFloat (void);
 		double ReadDouble (void);
 		void ReadString (char *buf, int n);
@@ -83,9 +83,9 @@ class CFile {
 		int WriteFixAng (fixang a);
 		int WriteFloat (float f);
 		int WriteDouble (double d);
-		void WriteAngVec (const vmsAngVec& v);
+		void WriteAngVec (const CAngleVector& v);
 		void WriteVector (const CFixVector& v);
-		void WriteMatrix (const vmsMatrix& m);
+		void WriteMatrix (const CFixMatrix& m);
 		int WriteString (const char *buf);
 
 		int Copy (const char *pszSrc, const char *pszDest);

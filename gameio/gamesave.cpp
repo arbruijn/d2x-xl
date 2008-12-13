@@ -292,14 +292,14 @@ static void gr_write_vector(CFixVector *v,FILE *file)
 	gs_write_fix(v->z,file);
 }
 
-static void gs_write_matrix(vmsMatrix *m,FILE *file)
+static void gs_write_matrix(CFixMatrix *m,FILE *file)
 {
 	gr_write_vector(&m->rVec,file);
 	gr_write_vector(&m->uVec,file);
 	gr_write_vector(&m->fVec,file);
 }
 
-static void gs_write_angvec(vmsAngVec *v,FILE *file)
+static void gs_write_angvec(CAngleVector *v,FILE *file)
 {
 	gs_write_fixang(v->p,file);
 	gs_write_fixang(v->b,file);

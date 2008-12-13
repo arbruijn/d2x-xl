@@ -181,7 +181,7 @@ glColor4f (red, green, blue, alpha / 2);
 G3StartInstanceMatrix(objP->info.position.vPos, objP->info.position.mOrient);
 for (; iBox <= nBoxes; iBox++) {
 	if (iBox)
-		G3StartInstanceAngles(pmhb [iBox].vOffset, &vmsAngVec::ZERO);
+		G3StartInstanceAngles(pmhb [iBox].vOffset, &CAngleVector::ZERO);
 	TransformHitboxf (objP, vertList, iBox);
 	glBegin (GL_QUADS);
 	for (i = 0; i < 6; i++) {
@@ -484,7 +484,7 @@ glDisable (GL_TEXTURE_2D);
 glColor4fv (reinterpret_cast<GLfloat*> (trackGoalColor + bMarker));
 if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
 	CFloatVector	rotVerts [3];
-	fMatrix	mRot;
+	CFloatMatrix	mRot;
 	int		h, i, j;
 
 	if (bInitSinCos) {
@@ -922,7 +922,7 @@ else if (bAfterburnerBlob || (bMissile && !nThrusters)) {
 else if ((objP->info.nType == OBJ_PLAYER) ||
 			((objP->info.nType == OBJ_ROBOT) && !objP->cType.aiInfo.CLOAKED) ||
 			bMissile) {
-	vmsMatrix	m, *viewP;
+	CFixMatrix	m, *viewP;
 	if (!bSpectate && (objP->info.nType == OBJ_PLAYER)) {
 		pt = gameData.render.thrusters + objP->info.nId;
 		ti.pp = pt->path.GetPoint ();
@@ -1448,7 +1448,7 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
-//extern vmsAngVec vmsAngVec::ZERO;
+//extern CAngleVector CAngleVector::ZERO;
 
 void RenderShockwave (CObject *objP)
 {

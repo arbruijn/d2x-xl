@@ -437,7 +437,7 @@ int G3DrawPolyModel (
 	CObject		*objP,
 	void			*modelDataP,
 	CBitmap		**modelBitmaps,
-	vmsAngVec	*pAnimAngles,
+	CAngleVector	*pAnimAngles,
 	CFixVector	*vOffset,
 	fix			xModelLight,
 	fix			*xGlowValues,
@@ -591,10 +591,10 @@ for (;;) {
 		p += 36;
 		}
 	else if (nTag == OP_SUBCALL) {
-		vmsAngVec	va;
+		CAngleVector	va;
 		CFixVector	vo;
 
-		va = pAnimAngles ? pAnimAngles [WORDVAL (p+2)] : vmsAngVec::ZERO;
+		va = pAnimAngles ? pAnimAngles [WORDVAL (p+2)] : CAngleVector::ZERO;
 		vo = *VECPTR (p+4);
 		if (!gameData.models.vScale.IsZero ())
 			vo *= gameData.models.vScale;
@@ -630,7 +630,7 @@ int nestCount;
 
 //------------------------------------------------------------------------------
 //alternate interpreter for morphing CObject
-int G3DrawMorphingModel (void *modelP, CBitmap **modelBitmaps, vmsAngVec *pAnimAngles, CFixVector *vOffset,
+int G3DrawMorphingModel (void *modelP, CBitmap **modelBitmaps, CAngleVector *pAnimAngles, CFixVector *vOffset,
 								  fix xModelLight, CFixVector *new_points, int nModel)
 {
 	ubyte *p = reinterpret_cast<ubyte*> (modelP);
@@ -736,7 +736,7 @@ for (;;) {
 			}
 
 		case OP_SUBCALL: {
-			const vmsAngVec	*va = pAnimAngles ? &pAnimAngles [WORDVAL (p+2)] : &vmsAngVec::ZERO;
+			const CAngleVector	*va = pAnimAngles ? &pAnimAngles [WORDVAL (p+2)] : &CAngleVector::ZERO;
 			CFixVector	vo = *VECPTR (p+4);
 			if (!gameData.models.vScale.IsZero ())
 				vo *= gameData.models.vScale;

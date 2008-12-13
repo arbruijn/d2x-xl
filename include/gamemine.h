@@ -65,7 +65,7 @@ struct mfi {
 	// Shakes every level_shake_frequency seconds
 	// for level_shake_duration seconds (on average, Random).  In 16ths second.
 	int     secret_return_segment;
-	vmsMatrix secret_return_orient;
+	CFixMatrix secret_return_orient;
 
 	int     dl_indices_offset;
 	int     dl_indices_howmany;
@@ -121,7 +121,7 @@ void InitTexColors (void);
 extern short tmap_xlate_table[];
 extern fix Level_shake_frequency, Level_shake_duration;
 extern int Secret_return_segment;
-extern vmsMatrix Secret_return_orient;
+extern CFixMatrix Secret_return_orient;
 
 /* stuff for loading descent.pig of descent 1 */
 extern short ConvertD1Texture(short d1_tmap_num, int bForce);
