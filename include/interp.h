@@ -101,7 +101,7 @@ void G3SwapPolyModelData (ubyte *data);
 int G3RenderModel (CObject *objP, short nModel, short nSubModel, tPolyModel *pp, CBitmap **modelBitmaps,
 						 vmsAngVec *pAnimAngles, CFixVector *pOffs, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor);
 
-void G3DynLightModel (CObject *objP, tG3Model *pm, short iVerts, short nVerts, short iFaceVerts, short nFaceVerts);
+void G3DynLightModel (CObject *objP, CRenderModel *pm, short iVerts, short nVerts, short iFaceVerts, short nFaceVerts);
 
 int G3ModelMinMax (int nModel, tHitbox *phb);
 

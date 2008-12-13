@@ -43,18 +43,12 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-#define	G3_ALLOC(_buf,_count,_type,_fill) \
-			if ((_buf).Create (_count)) \
-				(_buf).Clear (_fill); \
-			else \
-				return G3FreeModelItems (pm);
-
-//------------------------------------------------------------------------------
-
-int G3AllocModel (tG3Model *pm)
+int G3AllocModel (CRenderModel *pm)
 {
-G3_ALLOC (pm->verts, pm->nVerts, fVector3, 0);
-G3_ALLOC (pm->color, pm->nVerts, tFaceColor, 0xff);
+pm->verts.Create (pm->nVerts);
+pm->color.Clear (0);
+pm->color.Create pm->nVerts);
+pm->color.Clear (0xff);
 if (gameStates.ogl.bHaveVBOs) {
 	int i;
 	glGenBuffersARB (1, &pm->vboDataHandle);
@@ -76,8 +70,8 @@ if (gameStates.ogl.bHaveVBOs) {
 		gameStates.ogl.bHaveVBOs = 0;
 		return G3FreeModelItems (pm);
 		}
-	glBufferDataARB (GL_ARRAY_BUFFER, pm->nFaceVerts * sizeof (tG3RenderVertex), NULL, GL_STATIC_DRAW_ARB);
-	pm->vertBuf [1].SetBuffer (reinterpret_cast<tG3RenderVertex*> (glMapBufferARB (GL_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB)));
+	glBufferDataARB (GL_ARRAY_BUFFER, pm->nFaceVerts * sizeof (CRenderRenderVertex), NULL, GL_STATIC_DRAW_ARB);
+	pm->vertBuf [1].SetBuffer (reinterpret_cast<CRenderRenderVertex*> (glMapBufferARB (GL_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB)));
 	pm->vboIndexHandle = 0;
 	glGenBuffersARB (1, &pm->vboIndexHandle);
 	if (pm->vboIndexHandle) {
@@ -86,36 +80,41 @@ if (gameStates.ogl.bHaveVBOs) {
 		pm->index [1].SetBuffer (reinterpret_cast<short*> (glMapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB)));
 		}
 	}
-G3_ALLOC (pm->vertBuf [0], pm->nFaceVerts, tG3RenderVertex, 0);
-G3_ALLOC (pm->faceVerts, pm->nFaceVerts, tG3ModelVertex, 0);
-G3_ALLOC (pm->vertNorms, pm->nFaceVerts, fVector3, 0);
-G3_ALLOC (pm->subModels, pm->nSubModels, tG3SubModel, 0);
-G3_ALLOC (pm->faces, pm->nFaces, tG3ModelFace, 0);
-G3_ALLOC (pm->index [0], pm->nFaceVerts, short, 0);
-G3_ALLOC (pm->sortedVerts, pm->nFaceVerts, tG3ModelVertex, 0);
+pm->vertBuf [0].Create (pm->nFaceVerts);
+pm->vertBuf [0].Clear (0);
+pm->faceVerts.Create (pm->nFaceVerts);
+pm->faceVerts.Clear (0);
+pm->vertNorms.Create (pm->nFaceVerts);
+pm->vertNorms.Clear (0);
+pm->subModels.Create (pm->nSubModels);
+pm->subModels.Clear (0);
+pm->faces.Create (pm->nFaces);
+pm->faces.Clear (0);
+pm->index [0].Create (pm->nFaceVerts);
+pm->index [0].Clear (0);
+pm->sortedVerts.Create (pm->nFaceVerts);
+pm->sortedVerts [0].Clear (0);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-#define G3_FREE(_p)	{ (_p).Destroy (); }
-
-int G3FreeModelItems (tG3Model *pm)
+int G3FreeModelItems (CRenderModel *pm)
 {
-G3_FREE (pm->faces);
-G3_FREE (pm->subModels);
+pm->faces.Destroy ();
+pm->subModels.Destroy ();
 if (gameStates.ogl.bHaveVBOs && pm->vboDataHandle)
 	glDeleteBuffersARB (1, &pm->vboDataHandle);
-G3_FREE (pm->vertBuf [0]);
+pm->vertBuf [0].Destroy ();
 pm->vertBuf [1].SetBuffer (0);	//avoid trying to delete memory allocated by the graphics driver
-G3_FREE (pm->faceVerts);
-G3_FREE (pm->color);
-G3_FREE (pm->vertNorms);
-G3_FREE (pm->verts);
-G3_FREE (pm->sortedVerts);
+pm->faceVerts.Destroy ();
+pm->color.Destroy ();
+pm->vertNorms.Destroy ();
+pm->verts.Destroy ();
+pm->sortedVerts.Destroy ();
 if (gameStates.ogl.bHaveVBOs && pm->vboIndexHandle)
 	glDeleteBuffersARB (1, &pm->vboIndexHandle);
-G3_FREE (pm->index [0]);
+pm->index [0]);
 memset (pm, 0, sizeof (*pm));
 return 0;
 }
@@ -135,7 +134,7 @@ POFFreeAllPolyModelItems ();
 
 //------------------------------------------------------------------------------
 
-void G3InitSubModelMinMax (tG3SubModel *psm)
+void G3InitSubModelMinMax (CRenderSubModel *psm)
 {
 psm->vMin = fVector3::Create((float) 1e30, (float) 1e30, (float) 1e30);
 psm->vMax = fVector3::Create((float) -1e30, (float) -1e30, (float) -1e30);
@@ -143,7 +142,7 @@ psm->vMax = fVector3::Create((float) -1e30, (float) -1e30, (float) -1e30);
 
 //------------------------------------------------------------------------------
 
-void G3SetSubModelMinMax (tG3SubModel *psm, fVector3 *vertexP)
+void G3SetSubModelMinMax (CRenderSubModel *psm, fVector3 *vertexP)
 {
 	fVector3	v = *vertexP;
 
@@ -168,7 +167,7 @@ if (psm->vMax[Z] < v[Z])
 
 //------------------------------------------------------------------------------
 
-inline int G3CmpFaces (tG3ModelFace *pmf, tG3ModelFace *pm, CBitmap *textureP)
+inline int G3CmpFaces (CRenderModelFace *pmf, CRenderModelFace *pm, CBitmap *textureP)
 {
 if (textureP && (pmf->nBitmap >= 0) && (pm->nBitmap >= 0)) {
 	if (textureP [pmf->nBitmap].BPP () < textureP [pm->nBitmap].BPP ())
@@ -189,11 +188,11 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void G3SortFaces (tG3SubModel *psm, int left, int right, CBitmap *textureP)
+void G3SortFaces (CRenderSubModel *psm, int left, int right, CBitmap *textureP)
 {
 	int				l = left,
 						r = right;
-	tG3ModelFace	m = psm->faces [(l + r) / 2];
+	CRenderModelFace	m = psm->faces [(l + r) / 2];
 
 do {
 	while (G3CmpFaces (psm->faces + l, &m, textureP) < 0)
@@ -202,7 +201,7 @@ do {
 		r--;
 	if (l <= r) {
 		if (l < r) {
-			tG3ModelFace h = psm->faces [l];
+			CRenderModelFace h = psm->faces [l];
 			psm->faces [l] = psm->faces [r];
 			psm->faces [r] = h;
 			}
@@ -218,10 +217,10 @@ if (left < r)
 
 //------------------------------------------------------------------------------
 
-void G3SortFaceVerts (tG3Model *pm, tG3SubModel *psm, tG3ModelVertex *psv)
+void G3SortFaceVerts (CRenderModel *pm, CRenderSubModel *psm, CRenderModelVertex *psv)
 {
-	tG3ModelFace	*pmf;
-	tG3ModelVertex	*pmv = pm->faceVerts.Buffer ();
+	CRenderModelFace	*pmf;
+	CRenderModelVertex	*pmv = pm->faceVerts.Buffer ();
 	int				i, j, nIndex = psm->nIndex;
 
 psv += nIndex;
@@ -229,7 +228,7 @@ for (i = psm->nFaces, pmf = psm->faces; i; i--, pmf++, psv += j) {
 	j = pmf->nVerts;
 	if (nIndex + j > pm->nFaceVerts)
 		break;
-	memcpy (psv, pmv + pmf->nIndex, j * sizeof (tG3ModelVertex));
+	memcpy (psv, pmv + pmf->nIndex, j * sizeof (CRenderModelVertex));
 	pmf->nIndex = nIndex;
 	nIndex += j;
 	}
@@ -237,11 +236,11 @@ for (i = psm->nFaces, pmf = psm->faces; i; i--, pmf++, psv += j) {
 
 //------------------------------------------------------------------------------
 
-void G3SetupModel (tG3Model *pm, int bHires, int bSort)
+void G3SetupModel (CRenderModel *pm, int bHires, int bSort)
 {
-	tG3SubModel		*psm;
-	tG3ModelFace	*pfi, *pfj;
-	tG3ModelVertex	*pmv, *sortedVerts;
+	CRenderSubModel		*psm;
+	CRenderModelFace	*pfi, *pfj;
+	CRenderModelVertex	*pmv, *sortedVerts;
 	fVector3			*pv, *pn;
 	tTexCoord2f		*pt;
 	tRgbaColorf		*pc;
@@ -293,7 +292,7 @@ if (pm->index [1].Buffer ())
 if (bSort)
 	pm->faceVerts = sortedVerts;
 else
-	memcpy (sortedVerts, pm->faceVerts.Buffer (), pm->nFaceVerts * sizeof (tG3ModelVertex));
+	memcpy (sortedVerts, pm->faceVerts.Buffer (), pm->nFaceVerts * sizeof (CRenderModelVertex));
 pm->bValid = 1;
 if (gameStates.ogl.bHaveVBOs) {
 	glUnmapBufferARB (GL_ARRAY_BUFFER_ARB);
@@ -301,7 +300,7 @@ if (gameStates.ogl.bHaveVBOs) {
 	glUnmapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB);
 	glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 	}
-G3_FREE (pm->sortedVerts);
+pm->sortedVerts.Destroy ();
 }
 
 //------------------------------------------------------------------------------
@@ -311,11 +310,11 @@ int G3ShiftModel (CObject *objP, int nModel, int bHires, fVector3 *vOffsetfP)
 #if 1
 return 0;
 #else
-	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
-	tG3SubModel		*psm;
+	CRenderModel			*pm = gameData.models.g3Models [bHires] + nModel;
+	CRenderSubModel		*psm;
 	int				i;
 	fVector3			vOffsetf;
-	tG3ModelVertex	*pmv;
+	CRenderModelVertex	*pmv;
 
 if (objP->info.nType == OBJ_PLAYER) {
 	if (IsMultiGame && !IsCoopGame)
@@ -354,8 +353,8 @@ return 1;
 
 void G3SubModelSize (CObject *objP, int nModel, int nSubModel, CFixVector *vOffset, int bHires)
 {
-	tG3Model		*pm = gameData.models.g3Models [bHires] + nModel;
-	tG3SubModel	*psm = pm->subModels + nSubModel;
+	CRenderModel		*pm = gameData.models.g3Models [bHires] + nModel;
+	CRenderSubModel	*psm = pm->subModels + nSubModel;
 	tHitbox		*phb = (psm->nHitbox < 0) ? NULL : gameData.models.hitboxes [nModel].hitboxes + psm->nHitbox;
 	CFixVector	vMin, vMax, vOffs;
 	int			i, j;
@@ -441,10 +440,10 @@ return (short) (pi - vertices) + 1;
 
 fix G3ModelRad (CObject *objP, int nModel, int bHires)
 {
-	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
-	tG3SubModel		*psm;
-	tG3ModelFace	*pmf;
-	tG3ModelVertex	*pmv;
+	CRenderModel			*pm = gameData.models.g3Models [bHires] + nModel;
+	CRenderSubModel		*psm;
+	CRenderModelFace	*pmf;
+	CRenderModelVertex	*pmv;
 	fVector3			*vertices, vCenter, vOffset, v, vMin, vMax;
 	float				fRad = 0, r;
 	short				h, i, j, k;
@@ -532,10 +531,10 @@ return F2X (fRad);
 
 //------------------------------------------------------------------------------
 
-fix G3ModelSize (CObject *objP, tG3Model *pm, int nModel, int bHires)
+fix G3ModelSize (CObject *objP, CRenderModel *pm, int nModel, int bHires)
 {
 	int			nSubModels = pm->nSubModels;
-	tG3SubModel	*psm;
+	CRenderSubModel	*psm;
 	int			i, j;
 	tHitbox		*phb = gameData.models.hitboxes [nModel].hitboxes;
 	CFixVector	hv;
@@ -670,11 +669,11 @@ return h;
 
 //------------------------------------------------------------------------------
 
-void SetShipGunPoints (tOOFObject *po, tG3Model *pm)
+void SetShipGunPoints (tOOFObject *po, CRenderModel *pm)
 {
 	static short nGunSubModels [] = {6, 7, 5, 4, 9, 10, 3, 3};
 
-	tG3SubModel		*psm;
+	CRenderSubModel		*psm;
 	tOOF_point		*pp;
 	int				i;
 
@@ -700,9 +699,9 @@ for (i = 0, pp = po->gunPoints.pPoints; i < (po->gunPoints.nPoints = N_PLAYER_GU
 
 //------------------------------------------------------------------------------
 
-void SetRobotGunPoints (tOOFObject *po, tG3Model *pm)
+void SetRobotGunPoints (tOOFObject *po, CRenderModel *pm)
 {
-	tG3SubModel		*psm;
+	CRenderSubModel		*psm;
 	tOOF_point		*pp;
 	int				i, j = po->gunPoints.nPoints;
 
@@ -717,13 +716,13 @@ for (i = 0, pp = po->gunPoints.pPoints; i < j; i++, pp++) {
 
 //------------------------------------------------------------------------------
 
-void G3SetGunPoints (CObject *objP, tG3Model *pm, int nModel, int bASE)
+void G3SetGunPoints (CObject *objP, CRenderModel *pm, int nModel, int bASE)
 {
 	CFixVector		*vGunPoints;
 	int				nParent, h, i, j;
 
 if (bASE) {
-	tG3SubModel	*psm = pm->subModels.Buffer ();
+	CRenderSubModel	*psm = pm->subModels.Buffer ();
 
 	vGunPoints = gameData.models.gunInfo [nModel].vGunPoints;
 	for (i = 0, j = 0; i < pm->nSubModels; i++, psm++) {
@@ -774,7 +773,7 @@ else {
 
 int G3BuildModel (CObject *objP, int nModel, tPolyModel *pp, CBitmap **modelBitmaps, tRgbaColorf *pObjColor, int bHires)
 {
-	tG3Model	*pm = gameData.models.g3Models [bHires] + nModel;
+	CRenderModel	*pm = gameData.models.g3Models [bHires] + nModel;
 
 if (pm->bValid > 0)
 	return 1;
@@ -797,8 +796,8 @@ return bHires ?
 
 int G3ModelMinMax (int nModel, tHitbox *phb)
 {
-	tG3Model		*pm;
-	tG3SubModel	*psm;
+	CRenderModel		*pm;
+	CRenderSubModel	*psm;
 	int			i;
 
 if (!((pm = gameData.models.g3Models [1] + nModel) ||

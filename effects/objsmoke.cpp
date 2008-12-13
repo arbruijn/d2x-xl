@@ -167,7 +167,7 @@ if (RENDERPATH && gameOpts->render.ship.bBullets) {
 		int	bHires = G3HaveModel (nModel) - 1;
 
 	if (bHires >= 0) {
-			tG3Model	*pm = gameData.models.g3Models [bHires] + nModel;
+			CRenderModel	*pm = gameData.models.g3Models [bHires] + nModel;
 
 		if (pm->bBullets) {
 				int			nPlayer = objP->info.nId;
@@ -224,7 +224,7 @@ void DoGatlingSmoke (CObject *objP)
 	int	bHires = G3HaveModel (nModel) - 1;
 
 if (bHires >= 0) {
-		tG3Model	*pm = gameData.models.g3Models [bHires] + nModel;
+		CRenderModel	*pm = gameData.models.g3Models [bHires] + nModel;
 
 	if (pm->bBullets) {
 			int			nPlayer = objP->info.nId;

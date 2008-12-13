@@ -27,7 +27,7 @@ typedef struct tRenderThreadInfo {
 	tLightning			*pl;
 	int					nLightnings;
 	CObject				*objP;
-	tG3Model				*pm;
+	CRenderModel				*pm;
 	tParticleEmitter	*particleEmitters [2];
 	int					nCurTime [2];
 	tThreadInfo			ti [2];

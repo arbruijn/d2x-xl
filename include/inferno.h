@@ -2171,14 +2171,14 @@ typedef struct tPOFObject {
 
 #define G3_BUFFER_OFFSET(_i)	(GLvoid *) ((char *) NULL + (_i))
 
-typedef struct tG3RenderVertex {
+typedef struct CRenderRenderVertex {
 	fVector3					vertex;
 	fVector3					normal;
 	tRgbaColorf				color;
 	tTexCoord2f				texCoord;
-	} tG3RenderVertex;
+	} CRenderRenderVertex;
 
-typedef struct tG3ModelVertex {
+typedef struct CRenderModelVertex {
 	tTexCoord2f				texCoord;
 	tRgbaColorf				renderColor;
 	fVector3					vertex;
@@ -2186,11 +2186,11 @@ typedef struct tG3ModelVertex {
 	tRgbaColorf				baseColor;
 	short						nIndex;
 	char						bTextured;
-} tG3ModelVertex;
+} CRenderModelVertex;
 
-inline int operator- (tG3ModelVertex* f, CArray<tG3ModelVertex>& a) { return a.Index (f); }
+inline int operator- (CRenderModelVertex* f, CArray<CRenderModelVertex>& a) { return a.Index (f); }
 
-typedef struct tG3ModelFace {
+typedef struct CRenderModelFace {
 	CFixVector				vNormal;
 	short						nVerts;
 	short						nBitmap;
@@ -2199,86 +2199,91 @@ typedef struct tG3ModelFace {
 	ubyte						nSubModel;
 	ubyte						bGlow :1;
 	ubyte						bThruster :1;
-} tG3ModelFace;
+} CRenderModelFace;
 
-inline int operator- (tG3ModelFace* f, CArray<tG3ModelFace>& a) { return a.Index (f); }
+inline int operator- (CRenderModelFace* f, CArray<CRenderModelFace>& a) { return a.Index (f); }
 
-typedef struct tG3SubModel {
+class CSubModel {
+	public:
 #if DBG
-	char						szName [256];
+		char						szName [256];
 #endif
-	CFixVector				vOffset;
-	CFixVector				vCenter;
-	fVector3					vMin;
-	fVector3					vMax;
-	tG3ModelFace*			faces;
-	short						nParent;
-	short						nFaces;
-	short						nIndex;
-	short						nBitmap;
-	short						nHitbox;
-	int						nRad;
-	ushort					nAngles;
-	ubyte						bRender :1;
-	ubyte						bGlow :1;
-	ubyte						bThruster :1;
-	ubyte						bWeapon :1;
-	ubyte						bBullets :1;
-	ubyte						nType :2;
-	char						nGunPoint;
-	char						nGun;
-	char						nBomb;
-	char						nMissile;
-	char						nWeaponPos;
-	ubyte						nFrames;
-	ubyte						iFrame;
-	time_t					tFrame;
-} tG3SubModel;
+		CFixVector				vOffset;
+		CFixVector				vCenter;
+		fVector3					vMin;
+		fVector3					vMax;
+		CRenderModel::CFace*	faces;
+		short						nParent;
+		short						nFaces;
+		short						nIndex;
+		short						nBitmap;
+		short						nHitbox;
+		int						nRad;
+		ushort					nAngles;
+		ubyte						bRender :1;
+		ubyte						bGlow :1;
+		ubyte						bThruster :1;
+		ubyte						bWeapon :1;
+		ubyte						bBullets :1;
+		ubyte						nType :2;
+		char						nGunPoint;
+		char						nGun;
+		char						nBomb;
+		char						nMissile;
+		char						nWeaponPos;
+		ubyte						nFrames;
+		ubyte						iFrame;
+		time_t					tFrame;
+};
 
-inline int operator- (tG3SubModel* f, CArray<tG3SubModel>& a) { return a.Index (f); }
+inline int operator- (CRenderModel::CSubModel* f, CArray<CRenderModel::CSubModel>& a) { return a.Index (f); }
+
+class CVertNorm {
+	public:
+		fVector3	vNormal;
+		ubyte		nVerts;
+	};
 
 
-typedef struct tG3VertNorm {
-	fVector3					vNormal;
-	ubyte						nVerts;
-} tG3VertNorm;
+class CRenderModel {
+	public:
 
-typedef struct tG3Model {
-	CArray<CBitmap>			textures;
-	int							teamTextures [8];
-	CArray<fVector3>			verts;
-	CArray<fVector3>			vertNorms;
-	CArray<tFaceColor>		color;
-	CArray<tG3ModelVertex>	faceVerts;
-	CArray<tG3ModelVertex>	sortedVerts;
-	CArray<ubyte>				vbData;
-	CArray<tTexCoord2f>		vbTexCoord;
-	CArray<tRgbaColorf>		vbColor;
-	CArray<fVector3>			vbVerts;
-	CArray<fVector3>			vbNormals;
-	CArray<tG3SubModel>		subModels;
-	CArray<tG3ModelFace>		faces;
-	CArray<tG3RenderVertex>	vertBuf [2];
-	CArray<short>				index [2];
-	short							nGunSubModels [MAX_GUNS];
-	float							fScale;
-	short							nType; //-1: custom mode, 0: default model, 1: alternative model, 2: hires model
-	short							nFaces;
-	short							iFace;
-	short							nVerts;
-	short							nFaceVerts;
-	short							iFaceVert;
-	short							nSubModels;
-	short							nTextures;
-	short							iSubModel;
-	short							bHasTransparency;
-	short							bValid;
-	short							bRendered;
-	short							bBullets;
-	CFixVector					vBullets;
-	GLuint						vboDataHandle;
-	GLuint						vboIndexHandle;
-} tG3Model;
+	public:
+		CArray<CBitmap>						textures;
+		int										teamTextures [8];
+		CArray<fVector3>						verts;
+		CArray<fVector3>						vertNorms;
+		CArray<tFaceColor>					color;
+		CArray<CRenderModel::CVertex>		faceVerts;
+		CArray<CRenderModel::CVertex>		sortedVerts;
+		CArray<ubyte>							vbData;
+		CArray<tTexCoord2f>					vbTexCoord;
+		CArray<tRgbaColorf>					vbColor;
+		CArray<fVector3>						vbVerts;
+		CArray<fVector3>						vbNormals;
+		CArray<CRenderModel::CSubModel>	subModels;
+		CArray<CRenderModel::CFace>		faces;
+		CArray<CRenderModel::CVertex>		vertBuf [2];
+		CArray<short>							index [2];
+		short										nGunSubModels [MAX_GUNS];
+		float										fScale;
+		short										nType; //-1: custom mode, 0: default model, 1: alternative model, 2: hires model
+		short										nFaces;
+		short										iFace;
+		short										nVerts;
+		short										nFaceVerts;
+		short										iFaceVert;
+		short										nSubModels;
+		short										nTextures;
+		short										iSubModel;
+		short										bHasTransparency;
+		short										bValid;
+		short										bRendered;
+		short										bBullets;
+		CFixVector								vBullets;
+		GLuint									vboDataHandle;
+		GLuint									vboIndexHandle;
+} CRenderModel;	
 
 //------------------------------------------------------------------------------
 
@@ -2536,7 +2541,7 @@ class CModelData {
 		int					nDeadModels [MAX_POLYGON_MODELS];
 		tModelHitboxes		hitboxes [MAX_POLYGON_MODELS];
 		tModelThrusters	thrusters [MAX_POLYGON_MODELS];
-		tG3Model				g3Models [2][MAX_POLYGON_MODELS];
+		CRenderModel				g3Models [2][MAX_POLYGON_MODELS];
 		CFixVector			offsets [MAX_POLYGON_MODELS];
 		tGunInfo				gunInfo [MAX_POLYGON_MODELS];
 		tModelSphere		spheres [MAX_POLYGON_MODELS];

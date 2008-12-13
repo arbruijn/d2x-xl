@@ -28,7 +28,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-int G3CountOOFModelItems (tOOFObject *po, tG3Model *pm)
+int G3CountOOFModelItems (tOOFObject *po, CRenderModel *pm)
 {
 	tOOF_subObject	*pso;
 	tOOF_face		*pf;
@@ -51,15 +51,15 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int G3GetOOFModelItems (int nModel, tOOFObject *po, tG3Model *pm, float fScale)
+int G3GetOOFModelItems (int nModel, tOOFObject *po, CRenderModel *pm, float fScale)
 {
 	tOOF_subObject	*pso;
 	tOOF_face		*pof;
 	tOOF_faceVert	*pfv;
-	tG3SubModel		*psm;
+	CRenderSubModel		*psm;
 	fVector3			*pvn = pm->vertNorms.Buffer (), vNormal;
-	tG3ModelVertex	*pmv = pm->faceVerts.Buffer ();
-	tG3ModelFace	*pmf = pm->faces.Buffer ();
+	CRenderModelVertex	*pmv = pm->faceVerts.Buffer ();
+	CRenderModelFace	*pmf = pm->faces.Buffer ();
 	int				h, i, j, n, nIndex = 0;
 
 for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->subModels.Buffer (); i; i--, pso++, psm++) {
@@ -135,7 +135,7 @@ return 1;
 int G3BuildModelFromOOF (CObject *objP, int nModel)
 {
 	tOOFObject	*po = gameData.models.modelToOOF [1][nModel];
-	tG3Model		*pm;
+	CRenderModel		*pm;
 
 if (!po) {
 	po = gameData.models.modelToOOF [0][nModel];

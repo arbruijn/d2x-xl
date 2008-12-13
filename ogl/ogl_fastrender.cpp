@@ -44,7 +44,7 @@
 #include "transprender.h"
 #include "gameseg.h"
 
-tG3FaceDrawerP g3FaceDrawer = G3DrawFaceArrays;
+CRenderFaceDrawerP g3FaceDrawer = G3DrawFaceArrays;
 
 //------------------------------------------------------------------------------
 

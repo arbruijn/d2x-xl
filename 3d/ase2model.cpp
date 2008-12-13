@@ -28,7 +28,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-void G3CountASEModelItems (tASEModel *pa, tG3Model *pm)
+void G3CountASEModelItems (tASEModel *pa, CRenderModel *pm)
 {
 pm->nFaces = pa->nFaces;
 pm->nSubModels = pa->nSubModels;
@@ -38,14 +38,14 @@ pm->nFaceVerts = pa->nFaces * 3;
 
 //------------------------------------------------------------------------------
 
-void G3GetASEModelItems (int nModel, tASEModel *pa, tG3Model *pm, float fScale)
+void G3GetASEModelItems (int nModel, tASEModel *pa, CRenderModel *pm, float fScale)
 {
 	tASESubModelList	*pml = pa->subModels;
 	tASESubModel		*psa;
 	tASEFace				*pfa;
-	tG3SubModel			*psm;
-	tG3ModelFace		*pmf = pm->faces.Buffer ();
-	tG3ModelVertex		*pmv = pm->faceVerts.Buffer ();
+	CRenderSubModel			*psm;
+	CRenderModelFace		*pmf = pm->faces.Buffer ();
+	CRenderModelVertex		*pmv = pm->faceVerts.Buffer ();
 	CBitmap				*bmP;
 	int					h, i, nFaces, iFace, nVerts = 0, nIndex = 0;
 	int					bTextured;
@@ -120,7 +120,7 @@ for (pml = pa->subModels; pml; pml = pml->pNextModel) {
 int G3BuildModelFromASE (CObject *objP, int nModel)
 {
 	tASEModel	*pa = gameData.models.modelToASE [1][nModel];
-	tG3Model		*pm;
+	CRenderModel		*pm;
 	int			i, j;
 
 if (!pa) {

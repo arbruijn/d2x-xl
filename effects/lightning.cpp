@@ -2062,7 +2062,7 @@ typedef union tPolyKey {
 	short	s [4];
 } tPolyKey;
 
-void CLightningManager::RenderForDamage (CObject *objP, g3sPoint **pointList, tG3ModelVertex *pVerts, int nVertices)
+void CLightningManager::RenderForDamage (CObject *objP, g3sPoint **pointList, CRenderModelVertex *pVerts, int nVertices)
 {
 	CLightningSystem	*systemP;
 	CFloatVector				v, vPosf, vEndf, vNormf, vDeltaf;

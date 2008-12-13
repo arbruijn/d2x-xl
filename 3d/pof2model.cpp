@@ -105,11 +105,11 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-tG3ModelFace *G3AddModelFace (tG3Model *pm, tG3SubModel *psm, tG3ModelFace *pmf, CFixVector *pn, ubyte *p,
+CRenderModelFace *G3AddModelFace (CRenderModel *pm, CRenderSubModel *psm, CRenderModelFace *pmf, CFixVector *pn, ubyte *p,
 										CBitmap **modelBitmaps, tRgbaColorf *objColorP)
 {
 	short				nVerts = WORDVAL (p+2);
-	tG3ModelVertex	*pmv;
+	CRenderModelVertex	*pmv;
 	short				*pfv;
 	tUVL				*uvl;
 	CBitmap			*bmP;
@@ -176,12 +176,12 @@ return ++pmf;
 
 //------------------------------------------------------------------------------
 
-int G3GetPOFModelItems (void *modelP, vmsAngVec *pAnimAngles, tG3Model *pm, int nThis, int nParent,
+int G3GetPOFModelItems (void *modelP, vmsAngVec *pAnimAngles, CRenderModel *pm, int nThis, int nParent,
 								int bSubObject, CBitmap **modelBitmaps, tRgbaColorf *objColorP)
 {
 	ubyte				*p = reinterpret_cast<ubyte*> (modelP);
-	tG3SubModel		*psm = pm->subModels + nThis;
-	tG3ModelFace	*pmf = pm->faces + pm->iFace;
+	CRenderSubModel		*psm = pm->subModels + nThis;
+	CRenderModelFace	*pmf = pm->faces + pm->iFace;
 	int				nChild;
 	short				nTag;
 
@@ -285,7 +285,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void G3SortModelFaces (tG3ModelFace *pmf, int left, int right)
+void G3SortModelFaces (CRenderModelFace *pmf, int left, int right)
 {
 	int	l = left,
 			r = right;
@@ -298,7 +298,7 @@ do {
 		r--;
 	if (l <= r) {
 		if (l < r) {
-			tG3ModelFace h = pmf [l];
+			CRenderModelFace h = pmf [l];
 			pmf [l] = pmf [r];
 			pmf [r] = h;
 			}
@@ -314,11 +314,11 @@ if (left < r)
 
 //------------------------------------------------------------------------------
 
-void G3AssignModelFaces (tG3Model *pm)
+void G3AssignModelFaces (CRenderModel *pm)
 {
 	int				i;
 	ubyte				nSubModel = 255;
-	tG3ModelFace	*pmf;
+	CRenderModelFace	*pmf;
 
 for (pmf = pm->faces.Buffer (), i = pm->nFaces; i; i--, pmf++)
 	if (pmf->nSubModel != nSubModel) {
@@ -333,7 +333,7 @@ for (pmf = pm->faces.Buffer (), i = pm->nFaces; i; i--, pmf++)
 
 int G3BuildModelFromPOF (CObject *objP, int nModel, tPolyModel *pp, CBitmap **modelBitmaps, tRgbaColorf *objColorP)
 {
-	tG3Model	*pm = gameData.models.g3Models [0] + nModel;
+	CRenderModel	*pm = gameData.models.g3Models [0] + nModel;
 
 if (!pp->modelData)
 	return 0;

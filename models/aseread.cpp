@@ -31,7 +31,7 @@ static int bErrMsg = 0;
 
 //------------------------------------------------------------------------------
 
-int ASE_Error(const char *pszMsg)
+int ASE_Error (const char *pszMsg)
 {
 if (!bErrMsg) {
 	if (pszMsg)
@@ -287,7 +287,7 @@ while ((pszToken = ASE_ReadLine (cf))) {
 		return 1;
 	if (!strcmp (pszToken, "*TM_POS")) {
 		for (i = 0; i < 3; i++)
-			psm->vOffset[i] = 0; //FloatTok (" \t");
+			psm->vOffset [i] = 0; //FloatTok (" \t");
 		}
 	}
 return ASE_Error ("unexpected end of file");

@@ -68,11 +68,11 @@ extern int bZPass;
 
 //------------------------------------------------------------------------------
 
-void G3DynLightModel (CObject *objP, tG3Model *pm, short iVerts, short nVerts, short iFaceVerts, short nFaceVerts)
+void G3DynLightModel (CObject *objP, CRenderModel *pm, short iVerts, short nVerts, short iFaceVerts, short nFaceVerts)
 {
 	CFloatVector			vPos, vVertex;
 	fVector3			*pv, *pn;
-	tG3ModelVertex	*pmv;
+	CRenderModelVertex	*pmv;
 	tFaceColor		*pc;
 	float				fAlpha = GrAlpha ();
 	int				h, i, bEmissive = (objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId];
@@ -108,9 +108,9 @@ for (i = iFaceVerts, h = iFaceVerts, pmv = pm->faceVerts + iFaceVerts; i < nFace
 
 void G3LightModel (CObject *objP, int nModel, fix xModelLight, fix *xGlowValues, int bHires)
 {
-	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
-	tG3ModelVertex	*pmv;
-	tG3ModelFace	*pmf;
+	CRenderModel			*pm = gameData.models.g3Models [bHires] + nModel;
+	CRenderModelVertex	*pmv;
+	CRenderModelFace	*pmf;
 	tRgbaColorf		baseColor, *colorP;
 	float				fLight, fAlpha = (float) gameStates.render.grAlpha / (float) FADE_LEVELS;
 	int				h, i, j, l;
@@ -192,11 +192,11 @@ else {
 
 void G3ScaleModel (int nModel, int bHires)
 {
-	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
+	CRenderModel			*pm = gameData.models.g3Models [bHires] + nModel;
 	CFloatVector			fScale;
 	int				i;
 	fVector3			*pv;
-	tG3ModelVertex	*pmv;
+	CRenderModelVertex	*pmv;
 
 if (gameData.models.vScale.IsZero ())
 	fScale.Create (1,1,1);
@@ -219,11 +219,11 @@ pm->fScale *= fScale;
 
 //------------------------------------------------------------------------------
 
-void G3GetThrusterPos (CObject *objP, short nModel, tG3ModelFace *pmf, CFixVector *vOffsetP,
+void G3GetThrusterPos (CObject *objP, short nModel, CRenderModelFace *pmf, CFixVector *vOffsetP,
 							  CFixVector *vNormal, int nRad, int bHires)
 {
-	tG3Model				*pm = gameData.models.g3Models [bHires] + nModel;
-	tG3ModelVertex		*pmv = NULL;
+	CRenderModel				*pm = gameData.models.g3Models [bHires] + nModel;
+	CRenderModelVertex		*pmv = NULL;
 	fVector3				v = fVector3::ZERO, vn, vo, vForward = fVector3::Create(0,0,1);
 	tModelThrusters	*mtP = gameData.models.thrusters + nModel;
 	int					i, j = 0;
@@ -284,7 +284,7 @@ mtP->nCount++;
 
 static int bCenterGuns [] = {0, 1, 1, 0, 0, 0, 1, 1, 0, 1};
 
-int G3FilterSubModel (CObject *objP, tG3SubModel *psm, int nGunId, int nBombId, int nMissileId, int nMissiles)
+int G3FilterSubModel (CObject *objP, CRenderSubModel *psm, int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
 	int nId = objP->info.nId;
 
@@ -372,7 +372,7 @@ return (objP->info.nType == OBJ_PLAYER) ||
 
 //------------------------------------------------------------------------------
 
-int G3AnimateSubModel (CObject *objP, tG3SubModel *psm, short nModel)
+int G3AnimateSubModel (CObject *objP, CRenderSubModel *psm, short nModel)
 {
 	tFiringData	*fP;
 	float			nTimeout, y;
@@ -415,9 +415,9 @@ void G3DrawSubModel (CObject *objP, short nModel, short nSubModel, short nExclus
 						   vmsAngVec *pAnimAngles, CFixVector *vOffsetP, int bHires, int bUseVBO, int nPass, int bTransparency,
 							int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
-	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
-	tG3SubModel		*psm = pm->subModels + nSubModel;
-	tG3ModelFace	*pmf;
+	CRenderModel			*pm = gameData.models.g3Models [bHires] + nModel;
+	CRenderSubModel		*psm = pm->subModels + nSubModel;
+	CRenderModelFace	*pmf;
 	CBitmap		*bmP = NULL;
 	vmsAngVec		va = pAnimAngles ? pAnimAngles [psm->nAngles] : vmsAngVec::ZERO;
 	CFixVector		vo;
@@ -556,7 +556,7 @@ void G3DrawModel (CObject *objP, short nModel, short nSubModel, CBitmap **modelB
 						vmsAngVec *pAnimAngles, CFixVector *vOffsetP, int bHires, int bUseVBO, int bTransparency,
 						int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
-	tG3Model					*pm;
+	CRenderModel					*pm;
 	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][0];
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + sliP->nFirst;
 	CShaderLight			*psl;
@@ -691,9 +691,9 @@ OglResetTransform (1);
 void G3RenderDamageLightnings (CObject *objP, short nModel, short nSubModel,
 										 vmsAngVec *pAnimAngles, CFixVector *vOffsetP, int bHires)
 {
-	tG3Model			*pm;
-	tG3SubModel		*psm;
-	tG3ModelFace	*pmf;
+	CRenderModel			*pm;
+	CRenderSubModel		*psm;
+	CRenderModelFace	*pmf;
 	const vmsAngVec	*va;
 	CFixVector		vo;
 	int				i, j;
@@ -736,7 +736,7 @@ if (vOffsetP)
 int G3RenderModel (CObject *objP, short nModel, short nSubModel, tPolyModel *pp, CBitmap **modelBitmaps,
 						 vmsAngVec *pAnimAngles, CFixVector *vOffsetP, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor)
 {
-	tG3Model	*pm = gameData.models.g3Models [1] + nModel;
+	CRenderModel	*pm = gameData.models.g3Models [1] + nModel;
 	int		i, bHires = 1, bUseVBO = gameStates.ogl.bHaveVBOs && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bObjLighting),
 				nGunId, nBombId, nMissileId, nMissiles;
 

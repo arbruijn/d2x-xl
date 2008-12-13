@@ -28,9 +28,9 @@ int G3SetupGrayScaleShader (int nType, tRgbaColorf *colorP);
 int G3SetupShader (tFace *faceP, int bDepthOnly, int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP);
 void InitGrayScaleShader (void);
 
-typedef int (*tG3FaceDrawerP) (tFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
+typedef int (*CRenderFaceDrawerP) (tFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
 
-extern tG3FaceDrawerP g3FaceDrawer;
+extern CRenderFaceDrawerP g3FaceDrawer;
 
 //------------------------------------------------------------------------------
 
