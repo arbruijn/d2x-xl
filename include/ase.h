@@ -95,10 +95,10 @@ class CModel {
 		int ReadSubModel (CFile& cf);
 	};
 
+} //ASEModel
+
 int ASE_ReloadTextures (void);
 int ASE_ReleaseTextures (void);
-
-} //ASEModel
 
 #endif //_ASE_H
 

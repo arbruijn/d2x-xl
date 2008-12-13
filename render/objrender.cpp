@@ -633,7 +633,7 @@ else
 	nModel = objP->rType.polyObjInfo.nModel;
 if (!(po = GetOOFModel (nModel)))
 	return 0;
-if (gameData.models.renderModels [1][nModel].bValid >= 0)
+if (gameData.models.renderModels [1][nModel].m_bValid >= 0)
 	return 0;
 //G3RenderModel (objP, nModel, NULL, NULL, NULL, xLight, NULL, color);
 fLight [0] = xLight / 65536.0f;
@@ -948,7 +948,7 @@ switch (objP->info.renderType) {
 					return 0;
 				if (gameData.objs.bIsMissile [objP->info.nId]) {	//make missiles smaller during launch
 					if ((objP->cType.laserInfo.parent.nType == OBJ_PLAYER) &&
-						 (gameData.models.renderModels [1][108].bValid > 0)) {	//hires player ship
+						 (gameData.models.renderModels [1][108].m_bValid > 0)) {	//hires player ship
 						float dt = X2F (gameData.time.xGame - objP->CreationTime ());
 
 						if (dt < 1) {

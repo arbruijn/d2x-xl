@@ -2093,7 +2093,7 @@ if (pointList) {
 	}
 else {
 	for (i = 0; i < j; i++)
-		key.s [i] = vertP [i].nIndex;
+		key.s [i] = vertP [i].m_nIndex;
 	for (; i < 4; i++)
 		key.s [i] = 0;
 	}
@@ -2118,9 +2118,9 @@ if (i < 0) {
 		h = CFixVector::Dist (vPos, vEnd);
 		}
 	else {
-		memcpy (&vPosf, &vertP->vertex, sizeof (CFloatVector3));
-		memcpy (&vEndf, &vertP [1 + d_rand () % (nVertices - 1)].vertex, sizeof (CFloatVector3));
-		memcpy (&v, &vertP [1].vertex, sizeof (CFloatVector3));
+		memcpy (&vPosf, &vertP->m_vertex, sizeof (CFloatVector3));
+		memcpy (&vEndf, &vertP [1 + d_rand () % (nVertices - 1)].m_vertex, sizeof (CFloatVector3));
+		memcpy (&v, &vertP [1].m_vertex, sizeof (CFloatVector3));
 		vNormf = CFloatVector::Normal (vPosf, v, vEndf);
 		vPosf += vNormf * (1.0f / 64.0f);
 		vEndf += vNormf * (1.0f / 64.0f);
