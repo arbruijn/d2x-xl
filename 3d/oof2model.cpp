@@ -28,71 +28,71 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-int G3CountOOFModelItems (tOOFObject *po, CRenderModel *pm)
+int G3CountOOFModelItems (tOOFObject *po, RenderModel::CModel *pm)
 {
 	tOOF_subObject	*pso;
 	tOOF_face		*pf;
 	int				i, j;
 
 i = po->nSubObjects;
-pm->nSubModels = i;
-pm->nFaces = 0;
-pm->nVerts = 0;
-pm->nFaceVerts = 0;
+pm->m_nSubModels = i;
+pm->m_nFaces = 0;
+pm->m_nVerts = 0;
+pm->m_nFaceVerts = 0;
 for (pso = po->pSubObjects; i; i--, pso++) {
 	j = pso->faces.nFaces;
-	pm->nFaces += j;
-	pm->nVerts += pso->nVerts;
+	pm->m_nFaces += j;
+	pm->m_nVerts += pso->nVerts;
 	for (pf = pso->faces.faces; j; j--, pf++)
-		pm->nFaceVerts += pf->nVerts;
+		pm->m_nFaceVerts += pf->nVerts;
 	}
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int G3GetOOFModelItems (int nModel, tOOFObject *po, CRenderModel *pm, float fScale)
+int G3GetOOFModelItems (int nModel, tOOFObject *po, RenderModel::CModel *pm, float fScale)
 {
-	tOOF_subObject	*pso;
-	tOOF_face		*pof;
-	tOOF_faceVert	*pfv;
-	CRenderSubModel		*psm;
-	CFloatVector3			*pvn = pm->vertNorms.Buffer (), vNormal;
-	RenderModel::CVertex	*pmv = pm->faceVerts.Buffer ();
-	CRenderModelFace	*pmf = pm->faces.Buffer ();
-	int				h, i, j, n, nIndex = 0;
+	tOOF_subObject*			pso;
+	tOOF_face*					pof;
+	tOOF_faceVert*				pfv;
+	RenderModel::CSubModel*	psm;
+	CFloatVector3*				pvn = pm->m_vertNorms.Buffer (), vNormal;
+	RenderModel::CVertex*	pmv = pm->m_faceVerts.Buffer ();
+	RenderModel::CFace*		pmf = pm->m_faces.Buffer ();
+	int							h, i, j, n, nIndex = 0;
 
-for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->subModels.Buffer (); i; i--, pso++, psm++) {
-	psm->nParent = pso->nParent;
-	if (psm->nParent < 0)
-		pm->iSubModel = (short) (psm - pm->subModels);
-	psm->vOffset[X] = F2X (pso->vOffset.x * fScale);
-	psm->vOffset[Y] = F2X (pso->vOffset.y * fScale);
-	psm->vOffset[Z] = F2X (pso->vOffset.z * fScale);
-	psm->nAngles = 0;
-	psm->nBomb = -1;
-	psm->nMissile = -1;
-	psm->nGun = -1;
-	psm->nGunPoint = -1;
-	psm->bBullets = 0;
-	psm->bThruster = 0;
-	psm->bGlow = 0;
-	psm->bRender = 1;
+for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->m_subModels.Buffer (); i; i--, pso++, psm++) {
+	psm->m_nParent = pso->nParent;
+	if (psm->m_nParent < 0)
+		pm->m_iSubModel = (short) (psm - pm->m_subModels);
+	psm->m_vOffset [X] = F2X (pso->vOffset.x * fScale);
+	psm->m_vOffset [Y] = F2X (pso->vOffset.y * fScale);
+	psm->m_vOffset [Z] = F2X (pso->vOffset.z * fScale);
+	psm->m_nAngles = 0;
+	psm->m_nBomb = -1;
+	psm->m_nMissile = -1;
+	psm->m_nGun = -1;
+	psm->m_nGunPoint = -1;
+	psm->m_bBullets = 0;
+	psm->m_bThruster = 0;
+	psm->m_bGlow = 0;
+	psm->m_bRender = 1;
 	j = pso->faces.nFaces;
-	psm->nIndex = nIndex;
-	psm->nFaces = j;
-	psm->faces = pmf;
+	psm->m_nIndex = nIndex;
+	psm->m_nFaces = j;
+	psm->m_faces = pmf;
 	G3InitSubModelMinMax (psm);
 	for (pof = pso->faces.faces; j; j--, pof++, pmf++) {
-		pmf->nIndex = nIndex;
-		pmf->bThruster = 0;
-		pmf->bGlow = 0;
+		pmf->m_nIndex = nIndex;
+		pmf->m_bThruster = 0;
+		pmf->m_bGlow = 0;
 		n = pof->nVerts;
-		pmf->nVerts = n;
+		pmf->m_nVerts = n;
 		if (pof->bTextured)
-			pmf->nBitmap = pof->texProps.nTexId;
+			pmf->m_nBitmap = pof->texProps.nTexId;
 		else
-			pmf->nBitmap = -1;
+			pmf->m_nBitmap = -1;
 		pfv = pof->verts;
 		h = pfv->nIndex;
 		if (nModel > 200) {
@@ -105,24 +105,24 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->subModels.Buffer (); 
 			memcpy (&vNormal, &pof->vNormal, sizeof (CFloatVector3));
 		for (; n; n--, pfv++, pmv++, pvn++) {
 			h = pfv->nIndex;
-			pmv->nIndex = h;
-			pmv->texCoord.v.u = pfv->fu;
-			pmv->texCoord.v.v = pfv->fv;
-			pmv->normal = vNormal;
-			*reinterpret_cast<CFloatVector*> (pm->verts + h) = *reinterpret_cast<CFloatVector*> (pso->verts + h) * fScale;
-			pmv->vertex = pm->verts [h];
-			G3SetSubModelMinMax (psm, &pmv->vertex);
+			pmv->m_nIndex = h;
+			pmv->m_texCoord.v.u = pfv->fu;
+			pmv->m_texCoord.v.v = pfv->fv;
+			pmv->m_normal = vNormal;
+			*reinterpret_cast<CFloatVector*> (pm->m_verts + h) = *reinterpret_cast<CFloatVector*> (pso->verts + h) * fScale;
+			pmv->m_vertex = pm->m_verts [h];
+			G3SetSubModelMinMax (psm, &pmv->m_vertex);
 			*pvn = vNormal;
-			if ((pmv->bTextured = pof->bTextured))
-				pmv->baseColor.red =
-				pmv->baseColor.green =
-				pmv->baseColor.blue = 1.0f;
+			if ((pmv->m_bTextured = pof->bTextured))
+				pmv->m_baseColor.red =
+				pmv->m_baseColor.green =
+				pmv->m_baseColor.blue = 1.0f;
 			else {
-				pmv->baseColor.red = (float) pof->texProps.color.r / 255.0f;
-				pmv->baseColor.green = (float) pof->texProps.color.g / 255.0f;
-				pmv->baseColor.blue = (float) pof->texProps.color.b / 255.0f;
+				pmv->m_baseColor.red = (float) pof->texProps.color.r / 255.0f;
+				pmv->m_baseColor.green = (float) pof->texProps.color.g / 255.0f;
+				pmv->m_baseColor.blue = (float) pof->texProps.color.b / 255.0f;
 				}
-			pmv->baseColor.alpha = 1.0f;
+			pmv->m_baseColor.alpha = 1.0f;
 			nIndex++;
 			}
 		}
@@ -135,7 +135,7 @@ return 1;
 int G3BuildModelFromOOF (CObject *objP, int nModel)
 {
 	tOOFObject	*po = gameData.models.modelToOOF [1][nModel];
-	CRenderModel		*pm;
+	RenderModel::CModel		*pm;
 
 if (!po) {
 	po = gameData.models.modelToOOF [0][nModel];
@@ -151,9 +151,9 @@ G3CountOOFModelItems (po, pm);
 if (!G3AllocModel (pm))
 	return 0;
 G3GetOOFModelItems (nModel, po, pm, /*((nModel == 108) || (nModel == 110)) ? 0.805f :*/ 1.0f);
-pm->textures = po->textures.m_bitmaps;
-memset (pm->teamTextures, 0xFF, sizeof (pm->teamTextures));
-pm->nType = -1;
+pm->m_textures = po->textures.m_bitmaps;
+memset (pm->m_teamTextures, 0xFF, sizeof (pm->m_teamTextures));
+pm->m_nType = -1;
 gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 1);
 G3SetupModel (pm, 1, 1);
 #if 1

@@ -83,7 +83,7 @@ class CSubModel {
 	public:
 		short						m_nSubModel;
 #if DBG
-		char						szName [256];
+		char						m_szName [256];
 #endif
 		CFixVector				m_vOffset;
 		CFixVector				m_vCenter;

@@ -29,91 +29,89 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-void G3CountASEModelItems (ASEModel::CModel *pa, CRenderModel *pm)
+void G3CountASEModelItems (ASEModel::CModel *pa, RenderModel::CModel *pm)
 {
-pm->m_nFaces = pa->nFaces;
-pm->m_nSubModels = pa->nSubModels;
-pm->m_nVerts = pa->nVerts;
-pm->m_nFaceVerts = pa->nFaces * 3;
+pm->m_nFaces = pa->m_nFaces;
+pm->m_nSubModels = pa->m_nSubModels;
+pm->m_nVerts = pa->m_nVerts;
+pm->m_nFaceVerts = pa->m_nFaces * 3;
 }
 
 //------------------------------------------------------------------------------
 
-void G3GetASEModelItems (int nModel, ASEModel::CModel *pa, CRenderModel *pm, float fScale)
+void G3GetASEModelItems (int nModel, ASEModel::CModel *pa, RenderModel::CModel *pm, float fScale)
 {
-	tASESubModelList		*pml = pa->subModels;
-	ASEModel::CSubModel			*psa;
-	ASEModel::CFace					*pfa;
-	CRenderSubModel		*psm;
-	CRenderModelFace		*pmf = pm->m_faces.Buffer ();
-	RenderModel::CVertex	*pmv = pm->m_faceVerts.Buffer ();
-	CBitmap					*bmP;
-	int						h, i, nFaces, iFace, nVerts = 0, nIndex = 0;
-	int						bTextured;
+	ASEModel::CSubModel*		psa;
+	ASEModel::CFace*			pfa;
+	RenderModel::CSubModel*	psm;
+	RenderModel::CFace*		pmf = pm->m_faces.Buffer ();
+	RenderModel::CVertex*	pmv = pm->m_faceVerts.Buffer ();
+	CBitmap*						bmP;
+	int							h, i, nFaces, iFace, nVerts = 0, nIndex = 0;
+	int							bTextured;
 
-for (pml = pa->subModels; pml; pml = pml->pNextModel) {
-	psa = &pml->sm;
-	psm = pm->m_subModels + psa->nSubModel;
+for (psa = pa->m_subModels; psa; psa = psa->m_next) {
+	psm = pm->m_subModels + psa->m_nSubModel;
 #if DBG
-	strcpy (psm->m_szName, psa->szName);
+	strcpy (psm->m_szName, psa->m_szName);
 #endif
-	psm->m_m_nSubModel = ps->nSubModel;
-	psm->m_nParent = psa->nParent;
+	psm->m_nSubModel = psa->m_nSubModel;
+	psm->m_nParent = psa->m_nParent;
 	psm->m_faces = pmf;
-	psm->m_nFaces = nFaces = psa->nFaces;
-	psm->m_bGlow = psa->bGlow;
-	psm->m_bRender = psa->bRender;
-	psm->m_bThruster = psa->bThruster;
-	psm->m_bWeapon = psa->bWeapon;
-	psm->m_nGun = psa->nGun;
-	psm->m_nBomb = psa->nBomb;
-	psm->m_nMissile = psa->nMissile;
-	psm->m_nType = psa->nType;
-	psm->m_nWeaponPos = psa->nWeaponPos;
-	psm->m_nGunPoint = psa->nGunPoint;
-	psm->m_bBullets = (psa->nBullets > 0);
+	psm->m_nFaces = nFaces = psa->m_nFaces;
+	psm->m_bGlow = psa->m_bGlow;
+	psm->m_bRender = psa->m_bRender;
+	psm->m_bThruster = psa->m_bThruster;
+	psm->m_bWeapon = psa->m_bWeapon;
+	psm->m_nGun = psa->m_nGun;
+	psm->m_nBomb = psa->m_nBomb;
+	psm->m_nMissile = psa->m_nMissile;
+	psm->m_nType = psa->m_nType;
+	psm->m_nWeaponPos = psa->m_nWeaponPos;
+	psm->m_nGunPoint = psa->m_nGunPoint;
+	psm->m_bBullets = (psa->m_nBullets > 0);
 	psm->m_nIndex = nIndex;
 	psm->m_iFrame = 0;
 	psm->m_tFrame = 0;
-	psm->m_nFrames = psa->bBarrel ? 32 : 0;
-	psm->m_vOffset = psa->vOffset.ToFix();
+	psm->m_nFrames = psa->m_bBarrel ? 32 : 0;
+	psm->m_vOffset = psa->m_vOffset.ToFix();
 	G3InitSubModelMinMax (psm);
-	for (pfa = psa->faces.Buffer (), iFace = 0; iFace < nFaces; iFace++, pfa++, pmf++) {
-		pmf->nIndex = nIndex;
+	for (pfa = psa->m_faces.Buffer (), iFace = 0; iFace < nFaces; iFace++, pfa++, pmf++) {
+		pmf->m_nIndex = nIndex;
 #if 1
-		i = psa->nBitmap;
+		i = psa->m_nBitmap;
 #else
-		i = pfa->nBitmap;
+		i = pfa->m_nBitmap;
 #endif
-		bmP = pa->textures.m_bitmaps + i;
+		bmP = pa->m_textures.m_bitmaps + i;
 		bTextured = !bmP->Flat ();
-		pmf->nBitmap = bTextured ? i : -1;
-		pmf->nVerts = 3;
-		pmf->nId = iFace;
-		pmf->vNormal = pfa->vNormal.ToFix();
+		pmf->m_nBitmap = bTextured ? i : -1;
+		pmf->m_nVerts = 3;
+		pmf->m_nId = iFace;
+		pmf->m_vNormal = pfa->m_vNormal.ToFix();
 		for (i = 0; i < 3; i++, pmv++) {
-			h = pfa->nVerts [i];
-			if ((pmv->bTextured = bTextured))
-				pmv->baseColor.red =
-				pmv->baseColor.green =
-				pmv->baseColor.blue = 1;
+			h = pfa->m_nVerts [i];
+			if ((pmv->m_bTextured = bTextured))
+				pmv->m_baseColor.red =
+				pmv->m_baseColor.green =
+				pmv->m_baseColor.blue = 1;
 			else 
-				bmP->GetAvgColor (&pmv->baseColor);
-			pmv->baseColor.alpha = 1;
-			pmv->renderColor = pmv->baseColor;
-			pmv->normal = psa->verts [h].normal;
-			pmv->vertex = psa->verts [h].vertex * fScale;
-			if (psa->texCoord.Buffer ())
-				pmv->texCoord = psa->texCoord [pfa->nTexCoord [i]];
+				bmP->GetAvgColor (&pmv->m_baseColor);
+			pmv->m_baseColor.alpha = 1;
+			pmv->m_renderColor = pmv->m_baseColor;
+			pmv->m_normal = psa->m_verts [h].m_normal;
+			pmv->m_vertex = psa->m_verts [h].m_vertex * fScale;
+			if (psa->m_texCoord.Buffer ())
+				pmv->m_texCoord = psa->m_texCoord [pfa->m_nTexCoord [i]];
 			h += nVerts;
-			pm->m_verts [h] = pmv->vertex;
-			pm->m_vertNorms [h] = pmv->normal;
-			pmv->nIndex = h;
-			G3SetSubModelMinMax (psm, &pmv->vertex);
+			pm->m_verts [h] = pmv->m_vertex;
+			pm->m_vertNorms [h] = pmv->m_normal;
+			pmv->m_nIndex = h;
+			G3SetSubModelMinMax (psm, &pmv->m_vertex);
 			nIndex++;
 			}
 		}
-	nVerts += psa->nVerts;
+	nVerts += psa->m_nVerts;
 	}
 }
 
@@ -136,21 +134,21 @@ HUDMessage (0, "optimizing model");
 PrintLog ("         optimizing ASE model %d\n", nModel);
 pm = gameData.models.renderModels [1] + nModel;
 G3CountASEModelItems (pa, pm);
-if (!pm->m_Create ())
+if (!pm->Create ())
 	return 0;
 G3GetASEModelItems (nModel, pa, pm, 1.0f); //(nModel == 108) || (nModel == 110)) ? 1.145f : 1.0f);
-pm->m_m_nModel = nModel;
-pm->m_m_textures = pa->textures.m_bitmaps;
-pm->m_m_nTextures = pa->textures.m_nBitmaps;
-memset (pm->m_m_teamTextures, 0xFF, sizeof (pm->m_m_teamTextures));
-for (i = 0; i < pm->m_m_nTextures; i++)
-	if ((j = (int) pm->m_m_textures [i].Team ()))
-		pm->m_m_teamTextures [j - 1] = i;
-pm->m_m_nType = 2;
-gameData.models.polyModels [nModel].rad = pm->m_Size (objP, 1);
-pm->m_Setup (pm, 1, 1);
+pm->m_nModel = nModel;
+pm->m_textures = pa->m_textures.m_bitmaps;
+pm->m_nTextures = pa->m_textures.m_nBitmaps;
+memset (pm->m_teamTextures, 0xFF, sizeof (pm->m_teamTextures));
+for (i = 0; i < pm->m_nTextures; i++)
+	if ((j = (int) pm->m_textures [i].Team ()))
+		pm->m_teamTextures [j - 1] = i;
+pm->m_nType = 2;
+gameData.models.polyModels [nModel].rad = pm->Size (objP, 1);
+pm->Setup (1, 1);
 #if 1
-pm->m_SetGunPoints (objP, pm, nModel, 1);
+pm->SetGunPoints (objP, 1);
 #endif
 return -1;
 }

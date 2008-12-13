@@ -294,7 +294,7 @@ void G3AssignModelFaces (RenderModel::CModel *pm)
 for (pmf = pm->m_faces.Buffer (), i = pm->m_nFaces; i; i--, pmf++)
 	if (pmf->m_nSubModel != nSubModel) {
 		nSubModel = pmf->m_nSubModel;
-		pm->m_subModels [nSubModel].faces = pmf;
+		pm->m_subModels [nSubModel].m_faces = pmf;
 		if (nSubModel == pm->m_nSubModels - 1)
 			break;
 		}
