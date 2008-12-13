@@ -291,8 +291,8 @@ else
 while (!ASE_ReadFile (szModel [1] + !bCustom, pa, replacementModels [i].nType, bCustom))
 	;
 #endif
-if (!(ASE_ReadFile (szModel [1] + !bCustom, pa, replacementModels [i].nModel, replacementModels [i].nType, bCustom) || 
-	   ASE_ReadFile (szModel [0] + !bCustom, pa, replacementModels [i].nModel, replacementModels [i].nType, bCustom)))
+if (!(pa->Read (szModel [1] + !bCustom, replacementModels [i].nModel, replacementModels [i].nType, bCustom) || 
+	   pa->Read (szModel [0] + !bCustom, replacementModels [i].nModel, replacementModels [i].nType, bCustom)))
 	return 0;
 do {
 	CBP (!replacementModels [i].nModel);
@@ -420,10 +420,10 @@ for (i = 0; i < gameData.models.nHiresModels; i++)
 			gameData.models.modelToOOF [j][h] = NULL;
 			OOF_FreeObject (gameData.models.oofModels [j] + i);
 			}
-		h = gameData.models.aseModels [j][i].nModel;
+		h = gameData.models.aseModels [j][i].m_nModel;
 		if (gameData.models.modelToASE [j][h]) {
 			gameData.models.modelToASE [j][h] = NULL;
-			ASE_FreeModel (gameData.models.aseModels [j] + i);
+			gameData.models.aseModels [j][i].Destroy ();
 			}
 		}
 }
