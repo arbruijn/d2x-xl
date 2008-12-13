@@ -45,10 +45,10 @@ const CFloatVector  CFloatVector::XVEC  = CFloatVector::Create(1,0,0,1);
 const CFloatVector  CFloatVector::YVEC  = CFloatVector::Create(0,1,0,1);
 const CFloatVector  CFloatVector::ZVEC  = CFloatVector::Create(0,0,1,1);
 
-const CFixVector3 CFixVector3::ZERO = CFixVector3::Create(0,0,0);
-const CFixVector3 CFixVector3::XVEC = CFixVector3::Create(1,0,0);
-const CFixVector3 CFixVector3::YVEC = CFixVector3::Create(0,1,0);
-const CFixVector3 CFixVector3::ZVEC = CFixVector3::Create(0,0,1);
+const CFloatVector3 CFloatVector3::ZERO = CFloatVector3::Create(0,0,0);
+const CFloatVector3 CFloatVector3::XVEC = CFloatVector3::Create(1,0,0);
+const CFloatVector3 CFloatVector3::YVEC = CFloatVector3::Create(0,1,0);
+const CFloatVector3 CFloatVector3::ZVEC = CFloatVector3::Create(0,0,1);
 
 const CFixVector CFixVector::ZERO = CFixVector::Create(0,0,0);
 const CFixVector CFixVector::XVEC = CFixVector::Create(f1_0,0,0);
@@ -369,9 +369,9 @@ return bClamped;
 
 // ------------------------------------------------------------------------
 
-const int VmPointLineIntersection(CFixVector3& hitP, const CFixVector3& p1, const CFixVector3& p2, const CFixVector3& p3, CFixVector3 *vPos, int bClamp) 
+const int VmPointLineIntersection(CFloatVector3& hitP, const CFloatVector3& p1, const CFloatVector3& p2, const CFloatVector3& p3, CFloatVector3 *vPos, int bClamp) 
 {
-	CFixVector3	d31, d21;
+	CFloatVector3	d31, d21;
 	float		m, u;
 	int		bClamped = 0;
 
@@ -383,7 +383,7 @@ const int VmPointLineIntersection(CFixVector3& hitP, const CFixVector3& p1, cons
 		return 0;
 		}
 	d31 = p3 - p1;
-	u = CFixVector3::Dot(d31, d21);
+	u = CFloatVector3::Dot(d31, d21);
 	u /= m;
 	if (u < 0)
 		bClamped = 2;
@@ -395,7 +395,7 @@ const int VmPointLineIntersection(CFixVector3& hitP, const CFixVector3& p1, cons
 	//if (hitP) {
 	if (bClamp && bClamped) {
 		if (vPos)
-			bClamped = (CFixVector3::Dist(*vPos, p1) < CFixVector3::Dist(*vPos, p2)) ? 2 : 1;
+			bClamped = (CFloatVector3::Dist(*vPos, p1) < CFloatVector3::Dist(*vPos, p2)) ? 2 : 1;
 		hitP = (bClamped == 1) ? p1 : p2;
 	}
 	else {
@@ -431,18 +431,18 @@ const float VmLinePointDist(const CFloatVector& a, const CFloatVector& b, const 
 
 // ------------------------------------------------------------------------
 
-const float VmLinePointDist(const CFixVector3& a, const CFixVector3& b, const CFixVector3& p, int bClamp)
+const float VmLinePointDist(const CFloatVector3& a, const CFloatVector3& b, const CFloatVector3& p, int bClamp)
 {
-	CFixVector3	h;
+	CFloatVector3	h;
 
 	VmPointLineIntersection (h, a, b, p, NULL, bClamp);
-	return CFixVector3::Dist(h, p);
+	return CFloatVector3::Dist(h, p);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-const float VmLineLineIntersection(const CFixVector3& v1, const CFixVector3& v2, const CFixVector3& v3, const CFixVector3& v4, CFixVector3& va, CFixVector3& vb) {
-   CFixVector3	v13, v43, v21;
+const float VmLineLineIntersection(const CFloatVector3& v1, const CFloatVector3& v2, const CFloatVector3& v3, const CFloatVector3& v4, CFloatVector3& va, CFloatVector3& vb) {
+   CFloatVector3	v13, v43, v21;
    float		d1343, d4321, d1321, d4343, d2121;
    float		num, den, mua, mub;
 
@@ -457,16 +457,16 @@ if (v43.Mag() < 0.00001f)  {
 	va = vb = v2;
 	return 0;
 	}
-d1343 = CFixVector3::Dot(v13, v43);
-d4321 = CFixVector3::Dot(v43, v21);
-d1321 = CFixVector3::Dot(v13, v21);
-d4343 = CFixVector3::Dot(v43, v43);
-d2121 = CFixVector3::Dot(v21, v21);
+d1343 = CFloatVector3::Dot(v13, v43);
+d4321 = CFloatVector3::Dot(v43, v21);
+d1321 = CFloatVector3::Dot(v13, v21);
+d4343 = CFloatVector3::Dot(v43, v43);
+d2121 = CFloatVector3::Dot(v21, v21);
 den = d2121 * d4343 - d4321 * d4321;
 if (fabs (den) < 0.00001f) {
-	va = CFixVector3::Avg(v1, v2);
-	vb = CFixVector3::Avg(v3, v4);
-	va = CFixVector3::Avg(va, vb);
+	va = CFloatVector3::Avg(v1, v2);
+	vb = CFloatVector3::Avg(v3, v4);
+	va = CFloatVector3::Avg(va, vb);
 	vb = va;
 	return 0;
 	}
@@ -477,7 +477,7 @@ mub = (d1343 + d4321 * mua) / d4343;
 va = v1 + mua * v21;
 vb = v3 + mub * v43;
 
-return CFixVector3::Dist(va, vb);
+return CFloatVector3::Dist(va, vb);
 }
 
 // --------------------------------------------------------------------------------------------------------------------

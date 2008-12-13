@@ -219,7 +219,7 @@ static inline CFloatVector& G3RotatePoint (CFloatVector& dest, const CFloatVecto
 return dest = viewInfo.viewf [bUnscaled] * src;
 }
 
-static inline CFixVector3& G3RotatePoint (CFixVector3& dest, const CFixVector3& src, int bUnscaled) 
+static inline CFloatVector3& G3RotatePoint (CFloatVector3& dest, const CFloatVector3& src, int bUnscaled) 
 {
 return dest = viewInfo.viewf [bUnscaled] * src;
 }

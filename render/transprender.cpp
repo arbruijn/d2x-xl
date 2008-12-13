@@ -1156,7 +1156,7 @@ if (LoadTranspItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1,
 //------------------------------------------------------------------------------
 
 typedef struct tSparkVertex {
-	CFixVector3		vPos;
+	CFloatVector3		vPos;
 	tTexCoord2f	texCoord;
 } tSparkVertex;
 

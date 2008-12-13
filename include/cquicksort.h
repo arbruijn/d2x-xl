@@ -14,6 +14,7 @@ class CQuickSort {
 		void SortDescending (_T* buffer, uint left, uint right);
 		void SortAscending (_T* buffer, uint left, uint right, comparator compare);
 		void SortDescending (_T* buffer, uint left, uint right, comparator compare);
+		inline void Swap (_T* left, _T* right);
 	};
 
 //-----------------------------------------------------------------------------

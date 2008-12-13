@@ -222,7 +222,7 @@ newFaceP = segFaceP->pFaces + segFaceP->nFaces++;
 newFaceP->nIndex = (newFaceP - 1)->nIndex + (newFaceP - 1)->nTris * 3;
 memcpy (newFaceP->index, faceP->index, sizeof (faceP->index));
 int nVerts = newFaceP->nTris * 3;
-memcpy (gameData.segs.faces.vertices + newFaceP->nIndex, gameData.segs.faces.vertices + faceP->nIndex, nVerts * sizeof (CFixVector3));
+memcpy (gameData.segs.faces.vertices + newFaceP->nIndex, gameData.segs.faces.vertices + faceP->nIndex, nVerts * sizeof (CFloatVector3));
 memcpy (gameData.segs.faces.texCoord + newFaceP->nIndex, gameData.segs.faces.ovlTexCoord + faceP->nIndex, nVerts * sizeof (tTexCoord2f));
 memcpy (gameData.segs.faces.color + newFaceP->nIndex, gameData.segs.faces.color + faceP->nIndex, nVerts * sizeof (tRgbaColorf));
 newFaceP->nBaseTex = faceP->nOvlTex;
@@ -248,8 +248,8 @@ if (((faceP->nType = segP->sides [faceP->nSide].nType) == SIDE_IS_TRI_13)) {	//r
 	faceP->index [3] = h;
 	}
 	{
-	CFixVector3 h = gameData.segs.faces.vertices [faceP->nIndex];
-	memcpy (gameData.segs.faces.vertices + faceP->nIndex, gameData.segs.faces.vertices + faceP->nIndex + 1, 3 * sizeof (CFixVector3));
+	CFloatVector3 h = gameData.segs.faces.vertices [faceP->nIndex];
+	memcpy (gameData.segs.faces.vertices + faceP->nIndex, gameData.segs.faces.vertices + faceP->nIndex + 1, 3 * sizeof (CFloatVector3));
 	gameData.segs.faces.vertices [faceP->nIndex + 3] = h;
 	}
 	{
@@ -1323,7 +1323,7 @@ static int ComputeVertexLight (short nVertex, int nState, tFaceColor *colorP)
 	static float		texCoord [4][2] = {{0, 0}, {0, 1}, {1, 1}, {1, 0}};
 	static const char	*szTexNames [VERTLIGHT_BUFFERS] = {"vertPosTex", "vertNormTex", "lightPosTex", "lightColorTex"};
 #if 0
-	static CFixVector3	matSpecular = {{1.0f, 1.0f, 1.0f}};
+	static CFloatVector3	matSpecular = {{1.0f, 1.0f, 1.0f}};
 #endif
 
 if (!gameStates.ogl.bVertexLighting)

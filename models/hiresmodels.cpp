@@ -277,7 +277,7 @@ return i;
 
 // ----------------------------------------------------------------------------
 
-short LoadASEModel (tASEModel *pa, short i, int bCustom)
+short LoadASEModel (ASEModel::CModel *pa, short i, int bCustom)
 {
 	short	j = sizeofa (replacementModels);
 	char	szModel [2][FILENAME_LEN];

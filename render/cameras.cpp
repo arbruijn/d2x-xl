@@ -263,7 +263,7 @@ if (gameStates.ogl.bRender2TextureOk)
 
 //------------------------------------------------------------------------------
 
-void CCamera::GetUVL (tFace *faceP, tUVL *uvlP, tTexCoord2f *texCoordP, CFixVector3 *vertexP)
+void CCamera::GetUVL (tFace *faceP, tUVL *uvlP, tTexCoord2f *texCoordP, CFloatVector3 *vertexP)
 {
 	int i2, i3, nType = 0, nScale = 2 - gameOpts->render.cameras.bHires;
 

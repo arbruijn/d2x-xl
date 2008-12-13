@@ -272,6 +272,10 @@
 						RelativePath="..\..\include\interp.h"
 						>
 					</File>
+					<File
+						RelativePath="..\..\include\rendermodel.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="Source Files"

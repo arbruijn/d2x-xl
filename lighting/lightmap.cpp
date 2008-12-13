@@ -337,7 +337,7 @@ void CLightmapManager::Build (int nThread)
 {
 	CFixVector		*pixelPosP, offsetU, offsetV;
 	tRgbColorb		*texColorP;
-	CFixVector3			color;
+	CFloatVector3			color;
 	int				x, y, xMin, xMax;
 	int				v0, v1, v2, v3; 
 	bool				bBlack, bWhite;

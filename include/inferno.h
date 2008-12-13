@@ -1423,7 +1423,7 @@ class CHeadlightData {
 		CDynLight*			pl [MAX_PLAYERS];
 		CShaderLight*		psl [MAX_PLAYERS];
 		CFloatVector		pos [MAX_PLAYERS];
-		CFixVector3				dir [MAX_PLAYERS];
+		CFloatVector3				dir [MAX_PLAYERS];
 		float					brightness [MAX_PLAYERS];
 		int					nLights;
 	public:
@@ -1556,7 +1556,7 @@ class COglData {
 		GLenum			nDestBlend;
 		float				zNear;
 		float				zFar;
-		CFixVector3			depthScale;
+		CFloatVector3			depthScale;
 		tScreenScale	screenScale;
 		CFBO				drawBuffer;
 		CFBO				glowBuffer;
@@ -1679,9 +1679,9 @@ class CVertColorData {
 		CFloatVector	matDiffuse;
 		CFloatVector	matSpecular;
 		CFloatVector	colorSum;
-		CFixVector3			vertNorm;
-		CFixVector3			vertPos;
-		CFixVector3*		vertPosP;
+		CFloatVector3			vertNorm;
+		CFloatVector3			vertPos;
+		CFloatVector3*		vertPosP;
 		float				fMatShininess;
 	public:
 		CVertColorData () { memset (this, 0, sizeof (*this)); }
@@ -1775,8 +1775,8 @@ typedef struct tSlideSegs {
 //------------------------------------------------------------------------------
 
 typedef struct tFaceRenderVertex {
-	CFixVector3				vertex;
-	CFixVector3				normal;
+	CFloatVector3				vertex;
+	CFloatVector3				normal;
 	tRgbaColorf			color;
 	tTexCoord2f			texCoord;
 	tTexCoord2f			ovlTexCoord;
@@ -1787,8 +1787,8 @@ class CFaceData {
 	public:
 		CArray<tFace>			faces;
 		CArray<grsTriangle>	tris;
-		CArray<CFixVector3>		vertices;
-		CArray<CFixVector3>		normals;
+		CArray<CFloatVector3>		vertices;
+		CArray<CFloatVector3>		normals;
 		CArray<tTexCoord2f>	texCoord;
 		CArray<tTexCoord2f>	ovlTexCoord;
 		CArray<tTexCoord2f>	lMapTexCoord;
@@ -1815,7 +1815,7 @@ class CFaceData {
 };
 
 inline int operator- (grsTriangle* o, CArray<grsTriangle>& a) { return a.Index (o); }
-inline int operator- (CFixVector3* o, CArray<CFixVector3>& a) { return a.Index (o); }
+inline int operator- (CFloatVector3* o, CArray<CFloatVector3>& a) { return a.Index (o); }
 inline int operator- (tTexCoord2f* o, CArray<tTexCoord2f>& a) { return a.Index (o); }
 
 typedef struct tSegList {
@@ -2167,124 +2167,6 @@ typedef struct tPOFObject {
 	ubyte						nVertFlag;
 } tPOFObject;
 
-//	-----------------------------------------------------------------------------
-
-#define G3_BUFFER_OFFSET(_i)	(GLvoid *) ((char *) NULL + (_i))
-
-typedef struct CRenderRenderVertex {
-	CFixVector3					vertex;
-	CFixVector3					normal;
-	tRgbaColorf				color;
-	tTexCoord2f				texCoord;
-	} CRenderRenderVertex;
-
-typedef struct RenderModel::CVertex {
-	tTexCoord2f				texCoord;
-	tRgbaColorf				renderColor;
-	CFixVector3					vertex;
-	CFixVector3					normal;
-	tRgbaColorf				baseColor;
-	short						nIndex;
-	char						bTextured;
-} RenderModel::CVertex;
-
-inline int operator- (RenderModel::CVertex* f, CArray<RenderModel::CVertex>& a) { return a.Index (f); }
-
-typedef struct CRenderModelFace {
-	CFixVector				vNormal;
-	short						nVerts;
-	short						nBitmap;
-	short						nIndex;
-	short						nId;
-	ubyte						nSubModel;
-	ubyte						bGlow :1;
-	ubyte						bThruster :1;
-} CRenderModelFace;
-
-inline int operator- (CRenderModelFace* f, CArray<CRenderModelFace>& a) { return a.Index (f); }
-
-class CSubModel {
-	public:
-#if DBG
-		char						szName [256];
-#endif
-		CFixVector				vOffset;
-		CFixVector				vCenter;
-		CFixVector3					vMin;
-		CFixVector3					vMax;
-		CRenderModel::CFace*	faces;
-		short						nParent;
-		short						nFaces;
-		short						nIndex;
-		short						nBitmap;
-		short						nHitbox;
-		int						nRad;
-		ushort					nAngles;
-		ubyte						bRender :1;
-		ubyte						bGlow :1;
-		ubyte						bThruster :1;
-		ubyte						bWeapon :1;
-		ubyte						bBullets :1;
-		ubyte						nType :2;
-		char						nGunPoint;
-		char						nGun;
-		char						nBomb;
-		char						nMissile;
-		char						nWeaponPos;
-		ubyte						nFrames;
-		ubyte						iFrame;
-		time_t					tFrame;
-};
-
-inline int operator- (CRenderModel::CSubModel* f, CArray<CRenderModel::CSubModel>& a) { return a.Index (f); }
-
-class CVertNorm {
-	public:
-		CFixVector3	vNormal;
-		ubyte		nVerts;
-	};
-
-
-class CRenderModel {
-	public:
-
-	public:
-		CArray<CBitmap>						textures;
-		int										teamTextures [8];
-		CArray<CFixVector3>						verts;
-		CArray<CFixVector3>						vertNorms;
-		CArray<tFaceColor>					color;
-		CArray<CRenderModel::CVertex>		faceVerts;
-		CArray<CRenderModel::CVertex>		sortedVerts;
-		CArray<ubyte>							vbData;
-		CArray<tTexCoord2f>					vbTexCoord;
-		CArray<tRgbaColorf>					vbColor;
-		CArray<CFixVector3>						vbVerts;
-		CArray<CFixVector3>						vbNormals;
-		CArray<CRenderModel::CSubModel>	subModels;
-		CArray<CRenderModel::CFace>		faces;
-		CArray<CRenderModel::CVertex>		vertBuf [2];
-		CArray<short>							index [2];
-		short										nGunSubModels [MAX_GUNS];
-		float										fScale;
-		short										nType; //-1: custom mode, 0: default model, 1: alternative model, 2: hires model
-		short										nFaces;
-		short										iFace;
-		short										nVerts;
-		short										nFaceVerts;
-		short										iFaceVert;
-		short										nSubModels;
-		short										nTextures;
-		short										iSubModel;
-		short										bHasTransparency;
-		short										bValid;
-		short										bRendered;
-		short										bBullets;
-		CFixVector								vBullets;
-		GLuint									vboDataHandle;
-		GLuint									vboIndexHandle;
-} CRenderModel;	
-
 //------------------------------------------------------------------------------
 
 #define MAX_POLYGON_VERTS 1000
@@ -2514,39 +2396,41 @@ typedef struct tModelSphere {
 	CFixVector			vOffsets [3];
 } tModelSphere;
 
+#include "rendermodel.h"
+
 class CModelData {
 	public:
-		int					nLoresModels;
-		int					nHiresModels;
-		tASEModel			aseModels [2][MAX_POLYGON_MODELS];
-		tOOFObject			oofModels [2][MAX_POLYGON_MODELS];
-		tPOFObject			pofData [2][2][MAX_POLYGON_MODELS];
-		ubyte					bHaveHiresModel [MAX_POLYGON_MODELS];
-		tPolyModel			polyModels [MAX_POLYGON_MODELS];
-		tPolyModel			defPolyModels [MAX_POLYGON_MODELS];
-		tPolyModel			altPolyModels [MAX_POLYGON_MODELS];
-		tOOFObject*			modelToOOF [2][MAX_POLYGON_MODELS];
-		tASEModel*			modelToASE [2][MAX_POLYGON_MODELS];
-		tPolyModel*			modelToPOL [MAX_POLYGON_MODELS];
-		int					nPolyModels;
-		int					nDefPolyModels;
-		g3sPoint				polyModelPoints [MAX_POLYGON_VERTS];
-		CFloatVector		fPolyModelVerts [MAX_POLYGON_VERTS];
-		CBitmap*				textures [MAX_POLYOBJ_TEXTURES];
-		tBitmapIndex		textureIndex [MAX_POLYOBJ_TEXTURES];
-		int					nSimpleModelThresholdScale;
-		int					nMarkerModel;
-		int					nCockpits;
-		int					nDyingModels [MAX_POLYGON_MODELS];
-		int					nDeadModels [MAX_POLYGON_MODELS];
-		tModelHitboxes		hitboxes [MAX_POLYGON_MODELS];
-		tModelThrusters	thrusters [MAX_POLYGON_MODELS];
-		CRenderModel				g3Models [2][MAX_POLYGON_MODELS];
-		CFixVector			offsets [MAX_POLYGON_MODELS];
-		tGunInfo				gunInfo [MAX_POLYGON_MODELS];
-		tModelSphere		spheres [MAX_POLYGON_MODELS];
-		CFixVector			vScale;
-		int					nLightScale;
+		int						nLoresModels;
+		int						nHiresModels;
+		ASEModel::CModel				aseModels [2][MAX_POLYGON_MODELS];
+		tOOFObject				oofModels [2][MAX_POLYGON_MODELS];
+		tPOFObject				pofData [2][2][MAX_POLYGON_MODELS];
+		ubyte						bHaveHiresModel [MAX_POLYGON_MODELS];
+		tPolyModel				polyModels [MAX_POLYGON_MODELS];
+		tPolyModel				defPolyModels [MAX_POLYGON_MODELS];
+		tPolyModel				altPolyModels [MAX_POLYGON_MODELS];
+		tOOFObject*				modelToOOF [2][MAX_POLYGON_MODELS];
+		ASEModel::CModel*				modelToASE [2][MAX_POLYGON_MODELS];
+		tPolyModel*				modelToPOL [MAX_POLYGON_MODELS];
+		int						nPolyModels;
+		int						nDefPolyModels;
+		g3sPoint					polyModelPoints [MAX_POLYGON_VERTS];
+		CFloatVector			fPolyModelVerts [MAX_POLYGON_VERTS];
+		CBitmap*					textures [MAX_POLYOBJ_TEXTURES];
+		tBitmapIndex			textureIndex [MAX_POLYOBJ_TEXTURES];
+		int						nSimpleModelThresholdScale;
+		int						nMarkerModel;
+		int						nCockpits;
+		int						nDyingModels [MAX_POLYGON_MODELS];
+		int						nDeadModels [MAX_POLYGON_MODELS];
+		tModelHitboxes			hitboxes [MAX_POLYGON_MODELS];
+		tModelThrusters		thrusters [MAX_POLYGON_MODELS];
+		RenderModel::CModel	renderModels [2][MAX_POLYGON_MODELS];
+		CFixVector				offsets [MAX_POLYGON_MODELS];
+		tGunInfo					gunInfo [MAX_POLYGON_MODELS];
+		tModelSphere			spheres [MAX_POLYGON_MODELS];
+		CFixVector				vScale;
+		int						nLightScale;
 	public:
 		CModelData ();
 };

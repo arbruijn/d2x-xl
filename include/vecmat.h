@@ -39,32 +39,32 @@ const size_t HVEC = 3;
 
 // forward-declarations for ToFloat () and ToFix ();
 class CFixVector;
-class CFixVector3;
+class CFloatVector3;
 class CFloatVector;
 
 class vmsMatrix;
 class fMatrix;
 
 /**
- * \class CFixVector3
+ * \class CFloatVector3
  * A 3 element floating point vector class
  */
-class CFixVector3 {
+class CFloatVector3 {
 	public:
-		static const CFixVector3 ZERO;
-		static const CFixVector3 XVEC;
-		static const CFixVector3 YVEC;
-		static const CFixVector3 ZVEC;
+		static const CFloatVector3 ZERO;
+		static const CFloatVector3 XVEC;
+		static const CFloatVector3 YVEC;
+		static const CFloatVector3 ZVEC;
 
-		static const CFixVector3 Create (float f0, float f1, float f2);
-		static const CFixVector3 Avg (const CFixVector3& src0, const CFixVector3& src1);
-		static const CFixVector3 Cross (const CFixVector3& v0, const CFixVector3& v1);
-		static const float Dist (const CFixVector3& v0, const CFixVector3& v1);
-		static const float Dot (const CFixVector3& v0, const CFixVector3& v1);
-		static const float Normalize (CFixVector3& vec);
-		static const CFixVector3 Perp (const CFixVector3& p0, const CFixVector3& p1, const CFixVector3& p2);
-		static const CFixVector3 Normal (const CFixVector3& p0, const CFixVector3& p1, const CFixVector3& p2);
-		static const CFixVector3 Reflect (const CFixVector3& d, const CFixVector3& n);
+		static const CFloatVector3 Create (float f0, float f1, float f2);
+		static const CFloatVector3 Avg (const CFloatVector3& src0, const CFloatVector3& src1);
+		static const CFloatVector3 Cross (const CFloatVector3& v0, const CFloatVector3& v1);
+		static const float Dist (const CFloatVector3& v0, const CFloatVector3& v1);
+		static const float Dot (const CFloatVector3& v0, const CFloatVector3& v1);
+		static const float Normalize (CFloatVector3& vec);
+		static const CFloatVector3 Perp (const CFloatVector3& p0, const CFloatVector3& p1, const CFloatVector3& p2);
+		static const CFloatVector3 Normal (const CFloatVector3& p0, const CFloatVector3& p1, const CFloatVector3& p2);
+		static const CFloatVector3 Reflect (const CFloatVector3& d, const CFloatVector3& n);
 
 		// access op for assignment
 		float& operator[] (size_t idx);
@@ -76,19 +76,19 @@ class CFixVector3 {
 		void Set (const float f0, const float f1, const float f2);
 		void Set (const float *vec);
 
-		CFixVector3& Neg ();
+		CFloatVector3& Neg ();
 		const float Mag () const;
 		const float SqrMag () const;
 
-		const CFixVector3 operator- () const;
-		const bool operator== (const CFixVector3& vec);
-		const bool operator!= (const CFixVector3& vec);
-		const CFixVector3& operator+= (const CFixVector3& vec);
-		const CFixVector3& operator-= (const CFixVector3& vec);
-		const CFixVector3& operator*= (const float s);
-		const CFixVector3& operator/= (const float s);
-		const CFixVector3 operator+ (const CFixVector3& vec) const;
-		const CFixVector3 operator- (const CFixVector3& vec) const;
+		const CFloatVector3 operator- () const;
+		const bool operator== (const CFloatVector3& vec);
+		const bool operator!= (const CFloatVector3& vec);
+		const CFloatVector3& operator+= (const CFloatVector3& vec);
+		const CFloatVector3& operator-= (const CFloatVector3& vec);
+		const CFloatVector3& operator*= (const float s);
+		const CFloatVector3& operator/= (const float s);
+		const CFloatVector3 operator+ (const CFloatVector3& vec) const;
+		const CFloatVector3 operator- (const CFloatVector3& vec) const;
 
 		const CFixVector ToFix () const;
 
@@ -96,146 +96,146 @@ class CFixVector3 {
 		float v [3];
 };
 
-const CFixVector3 operator* (const CFixVector3& v, float s);
-const CFixVector3 operator* (float s, const CFixVector3& v);
-const CFixVector3 operator/ (const CFixVector3& v, float s);
+const CFloatVector3 operator* (const CFloatVector3& v, float s);
+const CFloatVector3 operator* (float s, const CFloatVector3& v);
+const CFloatVector3 operator/ (const CFloatVector3& v, float s);
 
 
 
 // -----------------------------------------------------------------------------
-// CFixVector3 static inlines
+// CFloatVector3 static inlines
 
-inline const CFixVector3 CFixVector3::Create (float f0, float f1, float f2) {
-	CFixVector3 vec;
+inline const CFloatVector3 CFloatVector3::Create (float f0, float f1, float f2) {
+	CFloatVector3 vec;
 	vec.Set (f0, f1, f2);
 	return vec;
 }
 
-inline const CFixVector3 CFixVector3::Avg (const CFixVector3& src0, const CFixVector3& src1) {
+inline const CFloatVector3 CFloatVector3::Avg (const CFloatVector3& src0, const CFloatVector3& src1) {
 	return Create ( (src0 [X] + src1 [X]) / 2,
 	              (src0 [Y] + src1 [Y]) / 2,
 	              (src0 [Z] + src1 [Z]) / 2);
 }
 
-inline const CFixVector3 CFixVector3::Cross (const CFixVector3& v0, const CFixVector3& v1) {
+inline const CFloatVector3 CFloatVector3::Cross (const CFloatVector3& v0, const CFloatVector3& v1) {
 	return Create (v0 [Y]*v1 [Z] - v0 [Z]*v1 [Y],
 	              v0 [Z]*v1 [X] - v0 [X]*v1 [Z],
 	              v0 [X]*v1 [Y] - v0 [Y]*v1 [X]);
 }
 
-inline const float CFixVector3::Dist (const CFixVector3& v0, const CFixVector3& v1) {
+inline const float CFloatVector3::Dist (const CFloatVector3& v0, const CFloatVector3& v1) {
 	return (v0-v1).Mag ();
 }
 
-inline const float CFixVector3::Dot (const CFixVector3& v0, const CFixVector3& v1) {
+inline const float CFloatVector3::Dot (const CFloatVector3& v0, const CFloatVector3& v1) {
 	return v0 [X]*v1 [X] + v0 [Y]*v1 [Y] + v0 [Z]*v1 [Z];
 }
 
-inline const float CFixVector3::Normalize (CFixVector3& vec) {
+inline const float CFloatVector3::Normalize (CFloatVector3& vec) {
 	float m = vec.Mag ();
 	if (m)
 		vec /= m;
 	return m;
 }
 
-inline const CFixVector3 CFixVector3::Perp (const CFixVector3& p0, const CFixVector3& p1, const CFixVector3& p2) {
+inline const CFloatVector3 CFloatVector3::Perp (const CFloatVector3& p0, const CFloatVector3& p1, const CFloatVector3& p2) {
 	return Cross (p1 - p0, p2 - p1);
 }
 
-inline const CFixVector3 CFixVector3::Normal (const CFixVector3& p0, const CFixVector3& p1, const CFixVector3& p2) {
-	CFixVector3 v = 2.0f*Perp (p0, p1, p2);
+inline const CFloatVector3 CFloatVector3::Normal (const CFloatVector3& p0, const CFloatVector3& p1, const CFloatVector3& p2) {
+	CFloatVector3 v = 2.0f*Perp (p0, p1, p2);
 	Normalize (v);
 	return v;
 }
 
-inline const CFixVector3 CFixVector3::Reflect (const CFixVector3& d, const CFixVector3& n) {
+inline const CFloatVector3 CFloatVector3::Reflect (const CFloatVector3& d, const CFloatVector3& n) {
 	return -2.0f * Dot (d, n) * n + d;
 }
 
 
 // -----------------------------------------------------------------------------
-// CFixVector3 member inlines
+// CFloatVector3 member inlines
 
-inline float& CFixVector3::operator[] (size_t idx) { return v [idx]; }
+inline float& CFloatVector3::operator[] (size_t idx) { return v [idx]; }
 
-inline const float CFixVector3::operator[] (size_t idx) const { return v [idx]; }
+inline const float CFloatVector3::operator[] (size_t idx) const { return v [idx]; }
 
-inline bool CFixVector3::IsZero () const { return ! (v [0] || v [1] || v [2]); }
+inline bool CFloatVector3::IsZero () const { return ! (v [0] || v [1] || v [2]); }
 
-inline void CFixVector3::SetZero () { memset (v, 0, 3*sizeof (float)); }
+inline void CFloatVector3::SetZero () { memset (v, 0, 3*sizeof (float)); }
 
-inline void CFixVector3::Set (const float f0, const float f1, const float f2) {
+inline void CFloatVector3::Set (const float f0, const float f1, const float f2) {
 	v [X] = f0; v [Y] = f1; v [Z] = f2;
 }
 
-inline void CFixVector3::Set (const float *vec) {
+inline void CFloatVector3::Set (const float *vec) {
 	v [X] = vec [0]; v [Y] = vec [1]; v [Z] = vec [2];
 }
 
-inline CFixVector3& CFixVector3::Neg () { v [0] = -v [0], v [1] = -v [1], v [2] = -v [2]; return *this; }
+inline CFloatVector3& CFloatVector3::Neg () { v [0] = -v [0], v [1] = -v [1], v [2] = -v [2]; return *this; }
 
-inline const float CFixVector3::SqrMag () const {
+inline const float CFloatVector3::SqrMag () const {
 	return v [X]*v [X] + v [Y]*v [Y] + v [Z]*v [Z];
 }
 
-inline const float CFixVector3::Mag () const {
+inline const float CFloatVector3::Mag () const {
 	return (const float) sqrt (SqrMag ());
 }
 
-inline const bool CFixVector3::operator== (const CFixVector3& vec) {
+inline const bool CFloatVector3::operator== (const CFloatVector3& vec) {
 	return v [0] == vec [0] && v [1] == vec [1] && v [2] == vec [2];
 }
 
-inline const bool CFixVector3::operator!= (const CFixVector3& vec) {
+inline const bool CFloatVector3::operator!= (const CFloatVector3& vec) {
 	return v [0] != vec [0] || v [1] != vec [1] || v [2] != vec [2];
 }
 
-inline const CFixVector3 CFixVector3::operator- () const {
+inline const CFloatVector3 CFloatVector3::operator- () const {
 	return Create (-v [X], -v [Y], -v [Z]);
 }
 
-inline const CFixVector3& CFixVector3::operator+= (const CFixVector3& vec) {
+inline const CFloatVector3& CFloatVector3::operator+= (const CFloatVector3& vec) {
 	v [0] += vec [0]; v [1] += vec [1]; v [2] += vec [2];
 	return *this;
 }
 
-inline const CFixVector3& CFixVector3::operator-= (const CFixVector3& vec) {
+inline const CFloatVector3& CFloatVector3::operator-= (const CFloatVector3& vec) {
 	v [0] -= vec [0]; v [1] -= vec [1]; v [2] -= vec [2];
 	return *this;
 }
 
-inline const CFixVector3& CFixVector3::operator*= (const float s) {
+inline const CFloatVector3& CFloatVector3::operator*= (const float s) {
 	v [0] *= s; v [1] *= s; v [2] *= s;
 	return *this;
 }
 
-inline const CFixVector3& CFixVector3::operator/= (const float s) {
+inline const CFloatVector3& CFloatVector3::operator/= (const float s) {
 	v [0] /= s; v [1] /= s; v [2] /= s;
 	return *this;
 }
 
-inline const CFixVector3 CFixVector3::operator+ (const CFixVector3& vec) const {
+inline const CFloatVector3 CFloatVector3::operator+ (const CFloatVector3& vec) const {
 	return Create (v [0]+vec [0], v [1]+vec [1], v [2]+vec [2]);
 }
 
-inline const CFixVector3 CFixVector3::operator- (const CFixVector3& vec) const {
+inline const CFloatVector3 CFloatVector3::operator- (const CFloatVector3& vec) const {
 	return Create (v [0]-vec [0], v [1]-vec [1], v [2]-vec [2]);
 }
 
 
 // -----------------------------------------------------------------------------
-// CFixVector3-related non-member ops
+// CFloatVector3-related non-member ops
 
-inline const CFixVector3 operator* (const CFixVector3& v, float s) {
-	return CFixVector3::Create (v [X]*s, v [Y]*s, v [Z]*s);
+inline const CFloatVector3 operator* (const CFloatVector3& v, float s) {
+	return CFloatVector3::Create (v [X]*s, v [Y]*s, v [Z]*s);
 }
 
-inline const CFixVector3 operator* (float s, const CFixVector3& v) {
-	return CFixVector3::Create (v [X]*s, v [Y]*s, v [Z]*s);
+inline const CFloatVector3 operator* (float s, const CFloatVector3& v) {
+	return CFloatVector3::Create (v [X]*s, v [Y]*s, v [Z]*s);
 }
 
-inline const CFixVector3 operator/ (const CFixVector3& v, float s) {
-	return CFixVector3::Create (v [X]/s, v [Y]/s, v [Z]/s);
+inline const CFloatVector3 operator/ (const CFloatVector3& v, float s) {
+	return CFloatVector3::Create (v [X]/s, v [Y]/s, v [Z]/s);
 }
 
 
@@ -277,7 +277,7 @@ class CFloatVector {
 		const float SqrMag () const;
 		const float Mag () const;
 		CFloatVector& Neg ();
-		CFixVector3* V3 ();
+		CFloatVector3* V3 ();
 
 		const CFloatVector operator- () const;
 		const bool operator== (const CFloatVector& vec);
@@ -382,7 +382,7 @@ inline const float CFloatVector::Mag () const {
 
 inline CFloatVector& CFloatVector::Neg () { v [0] = -v [0], v [1] = -v [1], v [2] = -v [2]; return *this; }
 
-inline CFixVector3* CFloatVector::V3 () { return reinterpret_cast<CFixVector3*> (v); }
+inline CFloatVector3* CFloatVector::V3 () { return reinterpret_cast<CFloatVector3*> (v); }
 
 inline const CFloatVector CFloatVector::operator- () const {
 	return Create (-v [X], -v [Y], -v [Z]);
@@ -546,7 +546,7 @@ class CFixVector {
 		//extract heading and pitch from a vector, assuming bank==0
 		const vmsAngVec ToAnglesVec () const;
 		const CFloatVector ToFloat () const;
-		const CFixVector3 ToFloat3 () const;
+		const CFloatVector3 ToFloat3 () const;
 
 	private:
 		fix v [3];
@@ -1122,7 +1122,7 @@ class fMatrix {
 		CFloatVector& operator[] (size_t idx);
 
 		const CFloatVector operator* (const CFloatVector& v) const;
-		const CFixVector3 operator* (const CFixVector3& v);
+		const CFloatVector3 operator* (const CFloatVector3& v);
 
 		const float det () const;
 		const fMatrix inverse () const;
@@ -1197,10 +1197,10 @@ inline const CFloatVector fMatrix::operator* (const CFloatVector& v) const {
 			CFloatVector::Dot (v, vec [FVEC]));
 }
 
-inline const CFixVector3 fMatrix::operator* (const CFixVector3& v) {
-	return CFixVector3::Create (CFixVector3::Dot (v, *vec [RVEC].V3 ()),
-			CFixVector3::Dot (v, *vec [UVEC].V3 ()),
-			CFixVector3::Dot (v, *vec [FVEC].V3 ()));
+inline const CFloatVector3 fMatrix::operator* (const CFloatVector3& v) {
+	return CFloatVector3::Create (CFloatVector3::Dot (v, *vec [RVEC].V3 ()),
+			CFloatVector3::Dot (v, *vec [UVEC].V3 ()),
+			CFloatVector3::Dot (v, *vec [FVEC].V3 ()));
 }
 
 inline const float fMatrix::det () const {
@@ -1251,8 +1251,8 @@ inline const CFloatVector CFixVector::ToFloat () const {
 	d [X] = X2F (v [X]); d [Y] = X2F (v [Y]); d [Z] = X2F (v [Z]); d [W] = 1; return d;
 }
 
-inline const CFixVector3 CFixVector::ToFloat3 () const {
-	CFixVector3 d;
+inline const CFloatVector3 CFixVector::ToFloat3 () const {
+	CFloatVector3 d;
 	d [X] = X2F (v [X]); d [Y] = X2F (v [Y]); d [Z] = X2F (v [Z]); return d;
 }
 
@@ -1261,7 +1261,7 @@ inline const CFixVector CFloatVector::ToFix () const {
 	d [X] = F2X (v [X]); d [Y] = F2X (v [Y]); d [Z] = F2X (v [Z]); return d;
 }
 
-inline const CFixVector CFixVector3::ToFix () const {
+inline const CFixVector CFloatVector3::ToFix () const {
 	CFixVector d;
 	d [X] = F2X (v [X]); d [Y] = F2X (v [Y]); d [Z] = F2X (v [Z]); return d;
 }
@@ -1284,10 +1284,10 @@ const int VmPointLineIntersection (CFixVector& hitP, const CFixVector& p1, const
 const fix VmLinePointDist (const CFixVector& a, const CFixVector& b, const CFixVector& p);
 const int VmPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, const CFloatVector& vPos, int bClamp);
 const int VmPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, int bClamp);
-const int VmPointLineIntersection (CFixVector3& hitP, const CFixVector3& p1, const CFixVector3& p2, const CFixVector3& p3, CFixVector3 *vPos, int bClamp);
+const int VmPointLineIntersection (CFloatVector3& hitP, const CFloatVector3& p1, const CFloatVector3& p2, const CFloatVector3& p3, CFloatVector3 *vPos, int bClamp);
 const float VmLinePointDist (const CFloatVector& a, const CFloatVector& b, const CFloatVector& p, int bClamp);
-const float VmLinePointDist (const CFixVector3& a, const CFixVector3& b, const CFixVector3& p, int bClamp);
-const float VmLineLineIntersection (const CFixVector3& v1, const CFixVector3& v2, const CFixVector3& V3, const CFixVector3& v4, CFixVector3& va, CFixVector3& vb);
+const float VmLinePointDist (const CFloatVector3& a, const CFloatVector3& b, const CFloatVector3& p, int bClamp);
+const float VmLineLineIntersection (const CFloatVector3& v1, const CFloatVector3& v2, const CFloatVector3& V3, const CFloatVector3& v4, CFloatVector3& va, CFloatVector3& vb);
 const float VmLineLineIntersection (const CFloatVector& v1, const CFloatVector& v2, const CFloatVector& V3, const CFloatVector& v4, CFloatVector& va, CFloatVector& vb);
 
 float TriangleSize (const CFixVector& p0, const CFixVector& p1, const CFixVector& p2);

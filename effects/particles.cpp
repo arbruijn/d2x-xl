@@ -101,7 +101,7 @@ static float alphaScale [5] = {5.0f / 5.0f, 5.0f / 5.0f, 3.0f / 5.0f, 2.0f / 5.0
 typedef struct tParticleVertex {
 	tTexCoord2f	texCoord;
 	tRgbaColorf	color;
-	CFixVector3		vertex;
+	CFloatVector3		vertex;
 	} tParticleVertex;
 
 static tParticleVertex particleBuffer [VERT_BUF_SIZE];

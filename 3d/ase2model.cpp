@@ -25,56 +25,58 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "u_mem.h"
 #include "hiresmodels.h"
 #include "buildmodel.h"
+#include "rendermodel.h"
 
 //------------------------------------------------------------------------------
 
-void G3CountASEModelItems (tASEModel *pa, CRenderModel *pm)
+void G3CountASEModelItems (ASEModel::CModel *pa, CRenderModel *pm)
 {
-pm->nFaces = pa->nFaces;
-pm->nSubModels = pa->nSubModels;
-pm->nVerts = pa->nVerts;
-pm->nFaceVerts = pa->nFaces * 3;
+pm->m_nFaces = pa->nFaces;
+pm->m_nSubModels = pa->nSubModels;
+pm->m_nVerts = pa->nVerts;
+pm->m_nFaceVerts = pa->nFaces * 3;
 }
 
 //------------------------------------------------------------------------------
 
-void G3GetASEModelItems (int nModel, tASEModel *pa, CRenderModel *pm, float fScale)
+void G3GetASEModelItems (int nModel, ASEModel::CModel *pa, CRenderModel *pm, float fScale)
 {
-	tASESubModelList	*pml = pa->subModels;
-	tASESubModel		*psa;
-	tASEFace				*pfa;
-	CRenderSubModel			*psm;
-	CRenderModelFace		*pmf = pm->faces.Buffer ();
-	RenderModel::CVertex		*pmv = pm->faceVerts.Buffer ();
-	CBitmap				*bmP;
-	int					h, i, nFaces, iFace, nVerts = 0, nIndex = 0;
-	int					bTextured;
+	tASESubModelList		*pml = pa->subModels;
+	ASEModel::CSubModel			*psa;
+	ASEModel::CFace					*pfa;
+	CRenderSubModel		*psm;
+	CRenderModelFace		*pmf = pm->m_faces.Buffer ();
+	RenderModel::CVertex	*pmv = pm->m_faceVerts.Buffer ();
+	CBitmap					*bmP;
+	int						h, i, nFaces, iFace, nVerts = 0, nIndex = 0;
+	int						bTextured;
 
 for (pml = pa->subModels; pml; pml = pml->pNextModel) {
 	psa = &pml->sm;
-	psm = pm->subModels + psa->nId;
+	psm = pm->m_subModels + psa->nSubModel;
 #if DBG
-	strcpy (psm->szName, psa->szName);
+	strcpy (psm->m_szName, psa->szName);
 #endif
-	psm->nParent = psa->nParent;
-	psm->faces = pmf;
-	psm->nFaces = nFaces = psa->nFaces;
-	psm->bGlow = psa->bGlow;
-	psm->bRender = psa->bRender;
-	psm->bThruster = psa->bThruster;
-	psm->bWeapon = psa->bWeapon;
-	psm->nGun = psa->nGun;
-	psm->nBomb = psa->nBomb;
-	psm->nMissile = psa->nMissile;
-	psm->nType = psa->nType;
-	psm->nWeaponPos = psa->nWeaponPos;
-	psm->nGunPoint = psa->nGunPoint;
-	psm->bBullets = (psa->nBullets > 0);
-	psm->nIndex = nIndex;
-	psm->iFrame = 0;
-	psm->tFrame = 0;
-	psm->nFrames = psa->bBarrel ? 32 : 0;
-	psm->vOffset = psa->vOffset.ToFix();
+	psm->m_m_nSubModel = ps->nSubModel;
+	psm->m_nParent = psa->nParent;
+	psm->m_faces = pmf;
+	psm->m_nFaces = nFaces = psa->nFaces;
+	psm->m_bGlow = psa->bGlow;
+	psm->m_bRender = psa->bRender;
+	psm->m_bThruster = psa->bThruster;
+	psm->m_bWeapon = psa->bWeapon;
+	psm->m_nGun = psa->nGun;
+	psm->m_nBomb = psa->nBomb;
+	psm->m_nMissile = psa->nMissile;
+	psm->m_nType = psa->nType;
+	psm->m_nWeaponPos = psa->nWeaponPos;
+	psm->m_nGunPoint = psa->nGunPoint;
+	psm->m_bBullets = (psa->nBullets > 0);
+	psm->m_nIndex = nIndex;
+	psm->m_iFrame = 0;
+	psm->m_tFrame = 0;
+	psm->m_nFrames = psa->bBarrel ? 32 : 0;
+	psm->m_vOffset = psa->vOffset.ToFix();
 	G3InitSubModelMinMax (psm);
 	for (pfa = psa->faces.Buffer (), iFace = 0; iFace < nFaces; iFace++, pfa++, pmf++) {
 		pmf->nIndex = nIndex;
@@ -104,8 +106,8 @@ for (pml = pa->subModels; pml; pml = pml->pNextModel) {
 			if (psa->texCoord.Buffer ())
 				pmv->texCoord = psa->texCoord [pfa->nTexCoord [i]];
 			h += nVerts;
-			pm->verts [h] = pmv->vertex;
-			pm->vertNorms [h] = pmv->normal;
+			pm->m_verts [h] = pmv->vertex;
+			pm->m_vertNorms [h] = pmv->normal;
 			pmv->nIndex = h;
 			G3SetSubModelMinMax (psm, &pmv->vertex);
 			nIndex++;
@@ -119,9 +121,9 @@ for (pml = pa->subModels; pml; pml = pml->pNextModel) {
 
 int G3BuildModelFromASE (CObject *objP, int nModel)
 {
-	tASEModel	*pa = gameData.models.modelToASE [1][nModel];
-	CRenderModel		*pm;
-	int			i, j;
+	ASEModel::CModel*				pa = gameData.models.modelToASE [1][nModel];
+	RenderModel::CModel*	pm;
+	int						i, j;
 
 if (!pa) {
 	pa = gameData.models.modelToASE [0][nModel];
@@ -132,22 +134,23 @@ if (!pa) {
 HUDMessage (0, "optimizing model");
 #endif
 PrintLog ("         optimizing ASE model %d\n", nModel);
-pm = gameData.models.g3Models [1] + nModel;
+pm = gameData.models.renderModels [1] + nModel;
 G3CountASEModelItems (pa, pm);
-if (!G3AllocModel (pm))
+if (!pm->m_Create ())
 	return 0;
 G3GetASEModelItems (nModel, pa, pm, 1.0f); //(nModel == 108) || (nModel == 110)) ? 1.145f : 1.0f);
-pm->textures = pa->textures.m_bitmaps;
-pm->nTextures = pa->textures.m_nBitmaps;
-memset (pm->teamTextures, 0xFF, sizeof (pm->teamTextures));
-for (i = 0; i < pm->nTextures; i++)
-	if ((j = (int) pm->textures [i].Team ()))
-		pm->teamTextures [j - 1] = i;
-pm->nType = 2;
-gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 1);
-G3SetupModel (pm, 1, 1);
+pm->m_m_nModel = nModel;
+pm->m_m_textures = pa->textures.m_bitmaps;
+pm->m_m_nTextures = pa->textures.m_nBitmaps;
+memset (pm->m_m_teamTextures, 0xFF, sizeof (pm->m_m_teamTextures));
+for (i = 0; i < pm->m_m_nTextures; i++)
+	if ((j = (int) pm->m_m_textures [i].Team ()))
+		pm->m_m_teamTextures [j - 1] = i;
+pm->m_m_nType = 2;
+gameData.models.polyModels [nModel].rad = pm->m_Size (objP, 1);
+pm->m_Setup (pm, 1, 1);
 #if 1
-G3SetGunPoints (objP, pm, nModel, 1);
+pm->m_SetGunPoints (objP, pm, nModel, 1);
 #endif
 return -1;
 }

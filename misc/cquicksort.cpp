@@ -3,6 +3,16 @@
 //-----------------------------------------------------------------------------
 
 template <typename _T>
+inline void CQuickSort< _T >::Swap (_T* left, _T* right)
+{
+_T h = *left;
+*left = *right;
+*right = h;
+}
+
+//-----------------------------------------------------------------------------
+
+template <typename _T>
 void CQuickSort< _T >::SortAscending (_T* buffer, uint left, uint right) 
 {
 	uint	l = left,
@@ -15,11 +25,8 @@ do {
 	while (buffer [r] > m)
 		r--;
 	if (l <= r) {
-		if (l < r) {
-			_T h = buffer [l];
-			buffer [l] = buffer [r];
-			buffer [r] = h;
-			}
+		if (l < r)
+			Swap (buffer + l, buffer + r);
 		l++;
 		r--;
 		}
@@ -45,11 +52,8 @@ do {
 	while (buffer [r] < m)
 		r--;
 	if (l <= r) {
-		if (l < r) {
-			_T h = buffer [l];
-			buffer [l] = buffer [r];
-			buffer [r] = h;
-			}
+		if (l < r)
+			Swap (buffer + l, buffer + r);
 		l++;
 		r--;
 		}
@@ -75,11 +79,8 @@ do {
 	while (compare (buffer + r, &m) > 0)
 		r--;
 	if (l <= r) {
-		if (l < r) {
-			_T h = buffer [l];
-			buffer [l] = buffer [r];
-			buffer [r] = h;
-			}
+		if (l < r)
+			Swap (buffer + l, buffer + r);
 		l++;
 		r--;
 		}
@@ -105,11 +106,8 @@ do {
 	while (compare (buffer + r, &m) < 0)
 		r--;
 	if (l <= r) {
-		if (l < r) {
-			_T h = buffer [l];
-			buffer [l] = buffer [r];
-			buffer [r] = h;
-			}
+		if (l < r)
+			Swap (buffer + l, buffer + r);
 		l++;
 		r--;
 		}

@@ -21,7 +21,7 @@ int ReplacementModelCount (void);
 
 // ----------------------------------------------------------------------------
 
-static inline tASEModel *ASEModel (int nModel)
+static inline ASEModel::CModel *ASEModel (int nModel)
 {
 if (gameData.models.modelToASE [1][nModel])
 	return gameData.models.modelToASE [1][nModel];

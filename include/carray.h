@@ -2,10 +2,11 @@
 #define _CARRAY_H
 
 #include "pstypes.h"
+#include "cquicksort.h"
 
 //-----------------------------------------------------------------------------
 
-template < class _T > class CArray {
+template < class _T > class CArray : public CQuickSort < _T > {
 
 	template < class _T > class CArrayData {
 		public:
@@ -237,6 +238,26 @@ template < class _T > class CArray {
 		inline void Pos (uint pos) { m_data.pos = pos % m_data.length; }
 
 		inline void SetWrap (bool bWrap) { m_data.bWrap = bWrap; }
+
+		inline void SortAscending (void) { 
+			if (m_data.buffer) 
+				CQuickSort<_T>::SortAscending (m_data.buffer, 0, m_data.length - 1); 
+				}
+
+		inline void SortDescending (void) {
+			if (m_data.buffer) 
+				CQuickSort<_T>::SortDescending (m_data.buffer, 0, m_data.length - 1); 
+			}
+
+		inline void SortAscending (comparator compare) {
+			if (m_data.buffer) 
+				CQuickSort<_T>::SortAscending (m_data.buffer, 0, m_data.length - 1, compare); 
+			}
+
+		inline void SortDescending (comparator compare) {
+			if (m_data.buffer) 
+				CQuickSort<_T>::SortDescending (m_data.buffer, 0, m_data.length - 1, compare); 
+			}
 	};
 
 inline int operator- (char* v, CArray<char>& a) { return a.Index (v); }

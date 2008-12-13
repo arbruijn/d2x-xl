@@ -27,27 +27,29 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 namespace RenderModel {
 
+class CModel;
+
 //	-----------------------------------------------------------------------------
 
 #define G3_BUFFER_OFFSET(_i)	(GLvoid *) ((char *) NULL + (_i))
 
 class CRenderVertex {
 	public:
-		fVector3					vertex;
-		fVector3					normal;
-		tRgbaColorf				color;
-		tTexCoord2f				texCoord;
+		CFloatVector3			m_vertex;
+		CFloatVector3			m_normal;
+		tRgbaColorf				m_color;
+		tTexCoord2f				m_texCoord;
 		};
 
 class CVertex {
 	public:
-		tTexCoord2f				texCoord;
-		tRgbaColorf				renderColor;
-		fVector3					vertex;
-		fVector3					normal;
-		tRgbaColorf				baseColor;
-		short						nIndex;
-		char						bTextured;
+		tTexCoord2f				m_texCoord;
+		tRgbaColorf				m_renderColor;
+		CFloatVector3			m_vertex;
+		CFloatVector3			m_normal;
+		tRgbaColorf				m_baseColor;
+		short						m_nIndex;
+		char						m_bTextured;
 	};
 
 inline int operator- (RenderModel::CVertex* f, CArray<RenderModel::CVertex>& a) { return a.Index (f); }
@@ -67,48 +69,64 @@ class CFace {
 	public:
 		inline const bool CFace::operator< (CFace& other);
 		inline const bool CFace::operator> (CFace& other);
+		inline const bool CFace::operator!= (CFace& other);
+		void SetTexture (CBitmap* textureP);
+		int GatherVertices (CVertex* source, CVertex* dest, int nIndex);
 	};
 
 inline int operator- (RenderModel::CFace* f, CArray<RenderModel::CFace>& a) { return a.Index (f); }
 
 class CSubModel {
 	public:
+		short						m_nSubModel;
 #if DBG
 		char						szName [256];
 #endif
-		CFixVector				vOffset;
-		CFixVector				vCenter;
-		fVector3					vMin;
-		fVector3					vMax;
-		RenderModel::CFace*	faces;
-		short						nParent;
-		short						nFaces;
-		short						nIndex;
-		short						nBitmap;
-		short						nHitbox;
-		int						nRad;
-		ushort					nAngles;
-		ubyte						bRender :1;
-		ubyte						bGlow :1;
-		ubyte						bThruster :1;
-		ubyte						bWeapon :1;
-		ubyte						bBullets :1;
-		ubyte						nType :2;
-		char						nGunPoint;
-		char						nGun;
-		char						nBomb;
-		char						nMissile;
-		char						nWeaponPos;
-		ubyte						nFrames;
-		ubyte						iFrame;
-		time_t					tFrame;
-};
+		CFixVector				m_vOffset;
+		CFixVector				m_vCenter;
+		CFloatVector3			m_vMin;
+		CFloatVector3			m_vMax;
+		CFace*					m_faces;
+		short						m_nParent;
+		short						m_nFaces;
+		short						m_nIndex;
+		short						m_nBitmap;
+		short						m_nHitbox;
+		int						m_nRad;
+		ushort					m_nAngles;
+		ubyte						m_bRender :1;
+		ubyte						m_bGlow :1;
+		ubyte						m_bThruster :1;
+		ubyte						m_bWeapon :1;
+		ubyte						m_bBullets :1;
+		ubyte						m_nType :2;
+		char						m_nGunPoint;
+		char						m_nGun;
+		char						m_nBomb;
+		char						m_nMissile;
+		char						m_nWeaponPos;
+		ubyte						m_nFrames;
+		ubyte						m_iFrame;
+		time_t					m_tFrame;
+
+	public:
+		CSubModel () { Init (); }
+		~CSubModel () { Destroy (); }
+		void Init (void) { memset (this, 0, sizeof (*this)); }
+		bool Create (void);
+		void Destroy (void) { Init (); }
+		void InitMinMax (void);
+		void SetMinMax (CFloatVector3 *vertexP);
+		void SortFaces (CBitmap* textureP);
+		void GatherVertices (CVertex* source, CVertex* dest);
+		void Size (CModel* pm, CObject* objP, CFixVector* vOffset);
+	};
 
 inline int operator- (RenderModel::CSubModel* f, CArray<RenderModel::CSubModel>& a) { return a.Index (f); }
 
 class CVertNorm {
 	public:
-		fVector3	vNormal;
+		CFloatVector3	vNormal;
 		ubyte		nVerts;
 	};
 
@@ -117,21 +135,22 @@ class CModel {
 	public:
 
 	public:
+		short										m_nModel;
 		CArray<CBitmap>						m_textures;
 		int										m_teamTextures [8];
-		CArray<fVector3>						m_verts;
-		CArray<fVector3>						m_vertNorms;
+		CArray<CFloatVector3>				m_verts;
+		CArray<CFloatVector3>				m_vertNorms;
 		CArray<tFaceColor>					m_color;
-		CArray<RenderModel::CVertex>		m_faceVerts;
-		CArray<RenderModel::CVertex>		m_sortedVerts;
+		CArray<CVertex>						m_faceVerts;
+		CArray<CVertex>						m_sortedVerts;
 		CArray<ubyte>							m_vbData;
 		CArray<tTexCoord2f>					m_vbTexCoord;
 		CArray<tRgbaColorf>					m_vbColor;
-		CArray<fVector3>						m_vbVerts;
-		CArray<fVector3>						m_vbNormals;
-		CArray<RenderModel::CSubModel>	m_subModels;
-		CArray<RenderModel::CFace>			m_faces;
-		CArray<RenderModel::CVertex>		m_vertBuf [2];
+		CArray<CFloatVector3>				m_vbVerts;
+		CArray<CFloatVector3>				m_vbNormals;
+		CArray<CSubModel>						m_subModels;
+		CArray<CFace>							m_faces;
+		CArray<CRenderVertex>				m_vertBuf [2];
 		CArray<short>							m_index [2];
 		short										m_nGunSubModels [MAX_GUNS];
 		float										m_fScale;
@@ -159,6 +178,16 @@ class CModel {
 		void Setup (int bHires, int bSort);
 		bool Create (void);
 		void Destroy (void);
+		short FilterVertices (CArray<CFloatVector3>& vertices, short nVertices);
+		fix Radius (CObject* objP);
+		fix Size (CObject *objP, int bHires);
+		int Shift (CObject *objP, int bHires, CFloatVector3 *vOffsetfP);
+		int MinMax (tHitbox *phb);
+		void SetGunPoints (CObject *objP, int bASE);
+		void SetShipGunPoints (tOOFObject *po);
+		void SetRobotGunPoints (tOOFObject *po);
+
+		static int _CDECL_ CmpVerts (CFloatVector3* pv, CFloatVector3* pm);
 	};	
 
 //	-----------------------------------------------------------------------------------------------------------

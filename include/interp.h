@@ -101,7 +101,7 @@ void G3SwapPolyModelData (ubyte *data);
 int G3RenderModel (CObject *objP, short nModel, short nSubModel, tPolyModel *pp, CBitmap **modelBitmaps,
 						 vmsAngVec *pAnimAngles, CFixVector *pOffs, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor);
 
-void G3DynLightModel (CObject *objP, CRenderModel *pm, short iVerts, short nVerts, short iFaceVerts, short nFaceVerts);
+void G3DynLightModel (CObject *objP, RenderModel::CModel* pm, short iVerts, short nVerts, short iFaceVerts, short nFaceVerts);
 
 int G3ModelMinMax (int nModel, tHitbox *phb);
 
@@ -128,9 +128,9 @@ static inline void RotatePointListToVec (CFixVector *dest, CFixVector *src, int 
 
 static inline int G3HaveModel (int nModel)
 {
-if (gameData.models.g3Models [0][nModel].bValid)
+if (gameData.models.renderModels [0][nModel].m_bValid)
 	return 1;
-if (gameData.models.g3Models [1][nModel].bValid)
+if (gameData.models.renderModels [1][nModel].m_bValid)
 	return 2;
 return 0;
 }

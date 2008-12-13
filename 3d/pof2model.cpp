@@ -114,7 +114,7 @@ CRenderModelFace *G3AddModelFace (CRenderModel *pm, CRenderSubModel *psm, CRende
 	tUVL				*uvl;
 	CBitmap			*bmP;
 	tRgbaColorf		baseColor;
-	CFixVector3			n, *pvn;
+	CFloatVector3			n, *pvn;
 	short				i, j;
 	ushort			c;
 	char				bTextured;
@@ -208,7 +208,7 @@ for (;;) {
 
 		case OP_DEFPOINTS: {
 			int i, n = WORDVAL (p+2);
-			CFixVector3 *pfv = pm->verts.Buffer ();
+			CFloatVector3 *pfv = pm->verts.Buffer ();
 			CFixVector *pv = VECPTR (p+4);
 			for (i = n; i; i--) {
 				*pfv = pv->ToFloat3();
@@ -221,7 +221,7 @@ for (;;) {
 		case OP_DEFP_START: {
 			int i, n = WORDVAL (p+2);
 			int s = WORDVAL (p+4);
-			CFixVector3 *pfv = pm->verts + s;
+			CFloatVector3 *pfv = pm->verts + s;
 			CFixVector *pv = VECPTR (p+8);
 			for (i = n; i; i--) {
 				*pfv = pv->ToFloat3();
@@ -333,7 +333,7 @@ for (pmf = pm->faces.Buffer (), i = pm->nFaces; i; i--, pmf++)
 
 int G3BuildModelFromPOF (CObject *objP, int nModel, tPolyModel *pp, CBitmap **modelBitmaps, tRgbaColorf *objColorP)
 {
-	CRenderModel	*pm = gameData.models.g3Models [0] + nModel;
+	CRenderModel	*pm = gameData.models.renderModels [0] + nModel;
 
 if (!pp->modelData)
 	return 0;

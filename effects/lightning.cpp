@@ -74,7 +74,7 @@ typedef struct tPlasmaBuffer {
 } tPlasmaBuffer;
 
 static tPlasmaBuffer plasmaBuffers [2][2];
-static CFixVector3 coreBuffer [2][MAX_LIGHTNING_SEGMENTS];
+static CFloatVector3 coreBuffer [2][MAX_LIGHTNING_SEGMENTS];
 
 //------------------------------------------------------------------------------
 
@@ -1031,7 +1031,7 @@ G3DisableClientStates (1, 0, 0, GL_TEXTURE0);
 
 void CLightning::RenderCore (tRgbaColorf *colorP, int nDepth, int nThread)
 {
-	CFixVector3		*vPosf = coreBuffer [nThread];
+	CFloatVector3		*vPosf = coreBuffer [nThread];
 	int			i;
 
 glBlendFunc (GL_ONE, GL_ONE);
@@ -2118,9 +2118,9 @@ if (i < 0) {
 		h = CFixVector::Dist (vPos, vEnd);
 		}
 	else {
-		memcpy (&vPosf, &vertP->vertex, sizeof (CFixVector3));
-		memcpy (&vEndf, &vertP [1 + d_rand () % (nVertices - 1)].vertex, sizeof (CFixVector3));
-		memcpy (&v, &vertP [1].vertex, sizeof (CFixVector3));
+		memcpy (&vPosf, &vertP->vertex, sizeof (CFloatVector3));
+		memcpy (&vEndf, &vertP [1 + d_rand () % (nVertices - 1)].vertex, sizeof (CFloatVector3));
+		memcpy (&v, &vertP [1].vertex, sizeof (CFloatVector3));
 		vNormf = CFloatVector::Normal (vPosf, v, vEndf);
 		vPosf += vNormf * (1.0f / 64.0f);
 		vEndf += vNormf * (1.0f / 64.0f);
