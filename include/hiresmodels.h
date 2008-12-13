@@ -1,6 +1,8 @@
 #ifndef _HIRESMODELS_H
 #define _HIRESMODELS_H
 
+#include "ase.h"
+
 typedef struct tReplacementModel {
 	const char	*pszHires;
 	const char	*pszLores;
@@ -21,7 +23,7 @@ int ReplacementModelCount (void);
 
 // ----------------------------------------------------------------------------
 
-static inline ASEModel::CModel *ASEModel (int nModel)
+static inline ASEModel::CModel* GetASEModel (int nModel)
 {
 if (gameData.models.modelToASE [1][nModel])
 	return gameData.models.modelToASE [1][nModel];
@@ -32,7 +34,7 @@ return NULL;
 
 // ----------------------------------------------------------------------------
 
-static inline tOOFObject *OOFModel (int nModel)
+static inline tOOFObject* GetOOFModel (int nModel)
 {
 if (gameData.models.modelToOOF [1][nModel])
 	return gameData.models.modelToOOF [1][nModel];
@@ -43,7 +45,7 @@ return NULL;
 
 // ----------------------------------------------------------------------------
 
-static inline tPolyModel *POLModel (int nModel)
+static inline tPolyModel* GetPOLModel (int nModel)
 {
 if (gameData.models.modelToPOL [nModel])
 	return gameData.models.modelToPOL [nModel];
@@ -54,14 +56,14 @@ return NULL;
 
 static inline int HaveHiresModel (int nModel)
 {
-return (ASEModel (nModel) != NULL) || (OOFModel (nModel) != NULL);
+return (GetASEModel (nModel) != NULL) || (GetOOFModel (nModel) != NULL);
 }
 
 // ----------------------------------------------------------------------------
 
 static inline int HaveReplacementModel (int nModel)
 {
-return HaveHiresModel (nModel) || (POLModel (nModel) != NULL);
+return HaveHiresModel (nModel) || (GetPOLModel (nModel) != NULL);
 }
 
 // ----------------------------------------------------------------------------

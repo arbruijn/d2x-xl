@@ -631,7 +631,7 @@ else if ((objP->info.nType == OBJ_POWERUP) || (objP->info.nType == OBJ_WEAPON)) 
 	}
 else
 	nModel = objP->rType.polyObjInfo.nModel;
-if (!(po = OOFModel (nModel)))
+if (!(po = GetOOFModel (nModel)))
 	return 0;
 if (gameData.models.renderModels [1][nModel].bValid >= 0)
 	return 0;

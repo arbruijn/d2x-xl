@@ -887,7 +887,7 @@ ti = *tiP;
 ti.pp = NULL;
 ti.mtP = gameData.models.thrusters + objP->rType.polyObjInfo.nModel;
 nThrusters = ti.mtP->nCount;
-if (gameOpts->render.bHiresModels && (objP->info.nType == OBJ_PLAYER) && !ASEModel (objP->rType.polyObjInfo.nModel)) {
+if (gameOpts->render.bHiresModels && (objP->info.nType == OBJ_PLAYER) && !GetASEModel (objP->rType.polyObjInfo.nModel)) {
 	if (!bSpectate) {
 		pt = gameData.render.thrusters + objP->info.nId;
 		ti.pp = pt->path.GetPoint ();
