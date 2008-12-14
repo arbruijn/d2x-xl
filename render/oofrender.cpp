@@ -337,7 +337,7 @@ return OOF_DrawShadowVolume (po, pso, 0) &&
 
 //------------------------------------------------------------------------------
 
-int OOF_DrawSubObject (CObject *objP, OOFModel::CModel *po, OOFModel::CSubModel *pso, float *fLight)
+int OOF_DrawSubModel (CObject *objP, OOFModel::CModel *po, OOFModel::CSubModel *pso, float *fLight)
 {
 	OOFModel::CFace		*pf;
 	OOFModel::CFaceVert	*pfv;
@@ -526,8 +526,8 @@ for (i = pso->faces.nFaces, pf = pso->faces.faces; i; i--, pf++) {
 
 //------------------------------------------------------------------------------
 
-int OOF_RenderSubObject (CObject *objP, OOFModel::CModel *po, OOFModel::CSubModel *pso, CFloatVector vo, 
-								 int nIndex, float *fLight)
+int OOF_RenderSubModel (CObject *objP, OOFModel::CModel *po, OOFModel::CSubModel *pso, CFloatVector vo, 
+							   int nIndex, float *fLight)
 {
 	OOFModel::CSubModel	*psc;
 	int				i, j;
@@ -538,10 +538,10 @@ OOF_RotModelVerts (pso, vo);
 //	return 1;
 #if 1
 for (i = 0; i < pso->nChildren; i++) {
-	psc = po->pSubObjects + (j = pso->children [i]);
-	Assert (j >= 0 && j < po->nSubObjects);
+	psc = po->pSubModels + (j = pso->children [i]);
+	Assert (j >= 0 && j < po->nSubModels);
 	if (psc->nParent == nIndex)
-		if (!OOF_RenderSubObject (objP, po, psc, vo, j, fLight))
+		if (!OOF_RenderSubModel (objP, po, psc, vo, j, fLight))
 			return 0;
 	}
 #endif
@@ -550,7 +550,7 @@ if (gameStates.render.nShadowPass == 2)
 	OOF_DrawShadow (po, pso);
 else 
 #endif
-	OOF_DrawSubObject (objP, po, pso, fLight);
+	OOF_DrawSubModel (objP, po, pso, fLight);
 return 1;
 }
 
@@ -570,9 +570,9 @@ if (IsMultiGame && netGame.BrightPlayers)
 	*fLight = 1.0f;
 OglActiveTexture (GL_TEXTURE0, 0);
 glEnable (GL_TEXTURE_2D);
-for (i = 0, pso = po->pSubObjects; i < po->nSubObjects; i++, pso++)
+for (i = 0, pso = po->pSubModels; i < po->nSubModels; i++, pso++)
 	if (pso->nParent == -1) {
-		if (!OOF_RenderSubObject (objP, po, pso, vo, i, fLight)) {
+		if (!OOF_RenderSubModel (objP, po, pso, vo, i, fLight)) {
 			r = 0;
 			break;
 			}

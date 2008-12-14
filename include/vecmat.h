@@ -1239,6 +1239,7 @@ class CFloatMatrix {
 
 		const CFloatVector operator* (const CFloatVector& v) const;
 		const CFloatVector3 operator* (const CFloatVector3& v);
+		const CFloatMatrix operator* (const CFloatMatrix& m) const;
 
 		const float Det () const;
 		const CFloatMatrix Inverse () const;
@@ -1361,6 +1362,30 @@ inline const CFloatMatrix CFloatMatrix::Transpose () const {
 	return dest;
 }
 
+
+inline const CFloatMatrix CFloatMatrix::operator* (const CFloatMatrix& m) const {
+	CFloatVector v;
+	CFloatMatrix r;
+	v [X] = mat [RVEC][X];
+	v [Y] = mat [UVEC][X];
+	v [Z] = mat [FVEC][X];
+	r [RVEC][X] = CFloatVector::Dot (v, m [RVEC]);
+	r [UVEC][X] = CFloatVector::Dot (v, m [UVEC]);
+	r [FVEC][X] = CFloatVector::Dot (v, m [FVEC]);
+	v [X] = mat [RVEC][Y];
+	v [Y] = mat [UVEC][Y];
+	v [Z] = mat [FVEC][Y];
+	r [RVEC][Y] = CFloatVector::Dot (v, m [RVEC]);
+	r [UVEC][Y] = CFloatVector::Dot (v, m [UVEC]);
+	r [FVEC][Y] = CFloatVector::Dot (v, m [FVEC]);
+	v [X] = mat [RVEC][Z];
+	v [Y] = mat [UVEC][Z];
+	v [Z] = mat [FVEC][Z];
+	r [RVEC][Z] = CFloatVector::Dot (v, m [RVEC]);
+	r [UVEC][Z] = CFloatVector::Dot (v, m [UVEC]);
+	r [FVEC][Z] = CFloatVector::Dot (v, m [FVEC]);
+	return r;
+}
 
 // -----------------------------------------------------------------------------
 // misc conversion member ops

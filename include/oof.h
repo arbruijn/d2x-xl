@@ -65,6 +65,9 @@ typedef char tChunkType [4];
 
 namespace OOFModel {
 
+class CSubModel;
+class CModel;
+
 class CTriangle {
 	public:
 		CFloatVector	p [3];
@@ -178,7 +181,7 @@ class CPoint {
 
 class CPointList : public CArray<CPoint> {
 	public:
-		int Read (CFile& cf);
+		int Read (CFile& cf, int bParent, int nSize);
 	};
 
 class CAttachPoint : public CPoint {
@@ -206,6 +209,7 @@ class CBattery {
 	public:
 		CBattery () { Init (); }
 		void Init (void);
+		void Destroy (void);
 		int Read (CFile& cf);
 };
 
@@ -223,7 +227,7 @@ class CFrameInfo {
 	public:
 		CFrameInfo () { Init (); }
 		void Init (void);
-		int Read (CFile& cf, CModel* po);
+		int Read (CFile& cf, CModel* po, int bTimed);
 };
 
 class CPosFrame {
@@ -233,7 +237,7 @@ class CPosFrame {
 		int				m_nStartTime;
 
 	public:
-		int Read (CFile& cf);
+		int Read (CFile& cf, int bTimed);
 
 };
 
@@ -254,7 +258,8 @@ class CPosAnim : public CAnim {
 
 	public:
 		void Destroy (void);
-};
+		int Read (CFile& cf, CModel* po, int bTimed);
+	};
 
 class CRotFrame {
 	public:
@@ -355,7 +360,7 @@ class CSubModel {
 	private:
 		int FindVertex (int i);
 		int FindEdge (int i0, int i1);
-		int FindEdge (int i0, int i1);
+		int AddEdge (CFace *pf, int i0, int i1);
 		void SetProps (char *pszProps);
 	};	
 
@@ -398,7 +403,7 @@ class CModel {
 		int ReadInfo (void);
 		void BuildAnimMatrices (void);
 		void AssignChildren (void);
-		inline void LinkSubModelBatteries (int iObject, int iBatt)
+		inline void LinkSubModelBatteries (int iObject, int iBatt);
 		void LinkBatteries (CModel* po);
 		void BuildPosTickRemapList (void);
 		void BuildRotTickRemapList (void);

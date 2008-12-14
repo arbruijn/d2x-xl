@@ -20,6 +20,8 @@
 
 #define MAXGAP	0.01f
 
+using namespace OOFModel;
+
 //------------------------------------------------------------------------------
 
 #define OOF_MEM_OPT	1
@@ -84,10 +86,10 @@ return f;
 
 static void OOF_ReadVector (CFile& cf, CFloatVector *pv, const char *pszIdent)
 {
-pv->m_x = cf.ReadFloat ();
-pv->m_y = cf.ReadFloat ();
-pv->m_z = cf.ReadFloat ();
-OOF_PrintLog ("      %s = %1.4f,%1.4f,%1.4f\n", pszIdent, pv->m_x, pv->m_y, pv->m_z);
+(*pv) [X] = cf.ReadFloat ();
+(*pv) [Y] = cf.ReadFloat ();
+(*pv) [Z] = cf.ReadFloat ();
+OOF_PrintLog ("      %s = %1.4f,%1.4f,%1.4f\n", pszIdent, (*pv) [X], (*pv) [Y], (*pv) [Z]);
 }
 
 //------------------------------------------------------------------------------
@@ -115,13 +117,12 @@ return NULL;
 
 static int OOF_ReadIntList (CFile& cf, CArray<int>& list)
 {
-	int	i;
+	uint	i;
 	char	szId [20] = "";
 
-if (!(i = OOF_ReadInt (cf, "nList"))) {
-	*ppList = NULL;
+list.Destroy ();
+if (!(i = OOF_ReadInt (cf, "nList"))) 
 	return 0;
-	}
 if (!list.Create (i))
 	return -1;
 for (i = 0; i < list.Length (); i++) {
@@ -166,12 +167,12 @@ return -1;
 static void OOF_InitMinMax (CFloatVector *pvMin, CFloatVector *pvMax)
 {
 if (pvMin && pvMax) {
-	pvMin->m_x =
-	pvMin->m_y =
-	pvMin->m_z = 1000000;
-	pvMax->m_x =
-	pvMax->m_y =
-	pvMax->m_z = -1000000;
+	(*pvMin) [X] =
+	(*pvMin) [Y] =
+	(*pvMin) [Z] = 1000000;
+	(*pvMax) [X] =
+	(*pvMax) [Y] =
+	(*pvMax) [Z] = -1000000;
 	}
 }
 
@@ -180,18 +181,18 @@ if (pvMin && pvMax) {
 static void OOF_GetMinMax (CFloatVector *pv, CFloatVector *pvMin, CFloatVector *pvMax)
 {
 if (pvMin && pvMax) {
-	if (pvMin->m_x > pv->m_x)
-		pvMin->m_x = pv->m_x;
-	if (pvMax->m_x < pv->m_x)
-		pvMax->m_x = pv->m_x;
-	if (pvMin->m_y > pv->m_y)
-		pvMin->m_y = pv->m_y;
-	if (pvMax->m_y < pv->m_y)
-		pvMax->m_y = pv->m_y;
-	if (pvMin->m_z > pv->m_z)
-		pvMin->m_z = pv->m_z;
-	if (pvMax->m_z < pv->m_z)
-		pvMax->m_z = pv->m_z;
+	if ((*pvMin) [X] > (*pv) [X])
+		(*pvMin) [X] = (*pv) [X];
+	if ((*pvMax) [X] < (*pv) [X])
+		(*pvMax) [X] = (*pv) [X];
+	if ((*pvMin) [Y] > (*pv) [Y])
+		(*pvMin) [Y] = (*pv) [Y];
+	if ((*pvMax) [Y] < (*pv) [Y])
+		(*pvMax) [Y] = (*pv) [Y];
+	if ((*pvMin) [Z] > (*pv) [Z])
+		(*pvMin) [Z] = (*pv) [Z];
+	if ((*pvMax) [Z] < (*pv) [Z])
+		(*pvMax) [Z] = (*pv) [Z];
 	}
 }
 
@@ -199,8 +200,7 @@ if (pvMin && pvMax) {
 
 static bool OOF_ReadVertList (CFile& cf, CArray<CFloatVector>& list, int nVerts, CFloatVector *pvMin, CFloatVector *pvMax)
 {
-	CFloatVector	*pv;
-	char			szId [20] = "";
+	char	szId [20] = "";
 
 OOF_InitMinMax (pvMin, pvMax);
 if (!list.Create (nVerts))
@@ -225,7 +225,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-void CFrameInfo::Init (void)
+void OOFModel::CFrameInfo::Init (void)
 {
 m_nFrames = 0;
 m_nFirstFrame = 0;
@@ -234,7 +234,7 @@ m_nLastFrame = 0;
 
 //------------------------------------------------------------------------------
 
-int CFrameInfo::Read (CFile& cf, CModel* po, int bTimed)
+int OOFModel::CFrameInfo::Read (CFile& cf, CModel* po, int bTimed)
 {
 nIndent += 2;
 OOF_PrintLog ("reading frame info\n");
@@ -242,13 +242,13 @@ if (bTimed) {
 	m_nFrames = OOF_ReadInt (cf, "nFrames");
 	m_nFirstFrame = OOF_ReadInt (cf, "nFirstFrame");
 	m_nLastFrame = OOF_ReadInt (cf, "nLastFrame");
-	if (po->m_nFirstFrame > m_nFirstFrame)
-		po->m_nFirstFrame = m_nFirstFrame;
-	if (po->m_nLastFrame < m_nLastFrame)
-		po->m_nLastFrame = m_nLastFrame;
+	if (po->m_frameInfo.m_nFirstFrame > m_nFirstFrame)
+		po->m_frameInfo.m_nFirstFrame = m_nFirstFrame;
+	if (po->m_frameInfo.m_nLastFrame < m_nLastFrame)
+		po->m_frameInfo.m_nLastFrame = m_nLastFrame;
 	}
 else
-	m_nFrames = po->m_nFrames;
+	m_nFrames = po->m_frameInfo.m_nFrames;
 nIndent -= 2;
 return 1;
 }
@@ -284,7 +284,7 @@ m_nTicks = 0;
 
 void CAnim::Destroy (void)
 {
-m_remapTickets.Destroy ();
+m_remapTicks.Destroy ();
 Init ();
 }
 
@@ -307,11 +307,11 @@ CAnim::Destroy ();
 
 int CRotAnim::Read (CFile& cf, CModel* po, int bTimed)
 {
-if (!CFrameInfo::Read (cf, po, bTimed))
+if (!OOFModel::CFrameInfo::Read (cf, po, bTimed))
 	return 0;
-if (!m_frames.Create (m_nFrames]))
+if (!m_frames.Create (m_nFrames))
 	return 0;
-Clear (0);
+m_frames.Clear (0);
 if (bTimed &&
 	 (m_nTicks = abs (m_nLastFrame - m_nFirstFrame) + 1) &&
 	 !m_remapTicks.Create (m_nTicks)) {
@@ -331,39 +331,39 @@ return 1;
 
 void CRotAnim::BuildAngleMatrix (CFloatMatrix *pm, int a, CFloatVector *pAxis)
 {
-float x = pAxis->m_x;
-float y = pAxis->m_y;
-float z = pAxis->m_z;
+float x = (*pAxis) [X];
+float y = (*pAxis) [Y];
+float z = (*pAxis) [Z];
 float s = (float) sin ((float) a);
 float c = (float) cos ((float) a);
 float t = 1.0f - c;
 float i = t * x;
 float j = s * z;
 //pm->m_r.x = t * x * x + c;
-pm->m_r.x = i * x + c;
+(*pm) [RVEC][X] = i * x + c;
 i *= y;
-//pm->m_r.y = t * x * y + s * z;
-//pm->m_u.x = t * x * y - s * z;
-pm->m_r.y = i + j;
-pm->m_u.x = i - j;
+//(*pm) [RVEC][Y] = t * x * y + s * z;
+//(*pm) [UVEC][X] = t * x * y - s * z;
+(*pm) [RVEC][Y] = i + j;
+(*pm) [UVEC][X] = i - j;
 i = t * z;
-//pm->m_f.z = t * z * z + c;
-pm->m_f.z = i * z + c;
+//(*pm) [FVEC][Z] = t * z * z + c;
+(*pm) [FVEC][Z] = i * z + c;
 i *= x;
 j = s * y;
-//pm->m_r.z = t * x * z - s * y;
-//pm->m_f.x = t * x * z + s * y;
-pm->m_r.z = i - j;
-pm->m_f.x = i + j;
+//(*pm) [RVEC][Z] = t * x * z - s * y;
+//(*pm) [FVEC][X] = t * x * z + s * y;
+(*pm) [RVEC][Z] = i - j;
+(*pm) [FVEC][X] = i + j;
 i = t * y;
-//pm->m_u.y = t * y * y + c;
-pm->m_u.y = i * y + c;
+//(*pm) [UVEC][Y] = t * y * y + c;
+(*pm) [UVEC][Y] = i * y + c;
 i *= z;
 j = s * x;
-//pm->m_u.z = t * y * z + s * x;	
-//pm->m_f.y = t * y * z - s * x;
-pm->m_u.z = i + j;
-pm->m_f.y = i - j;
+//(*pm) [UVEC][Z] = t * y * z + s * x;	
+//(*pm) [FVEC][Y] = t * y * z - s * x;
+(*pm) [UVEC][Z] = i + j;
+(*pm) [FVEC][Y] = i - j;
 }
 
 //------------------------------------------------------------------------------
@@ -372,12 +372,12 @@ void CRotAnim::BuildMatrices (void)
 {
 	CFloatMatrix	mBase, mTemp;
 	CRotFrame*		pf;
-	int				a;
+	int				i;
 
 mBase = CFloatMatrix::IDENTITY;
-for (int i = m_frames.Length (), pf = m_frames.Buffer (); i; i--, pf++) {
+for (i = m_frames.Length (), pf = m_frames.Buffer (); i; i--, pf++) {
 	BuildAngleMatrix (&mTemp, pf->m_nAngle, &pf->m_vAxis);
-	pf->m_mMat = = mTemp * mBase;
+	pf->m_mMat = mTemp * mBase;
 	mBase = pf->m_mMat;
 	}
 }
@@ -409,11 +409,11 @@ CAnim::Destroy ();
 
 int CPosAnim::Read (CFile& cf, CModel* po, int bTimed)
 {
-if (!CFrameInfo::Read (cf, po, bTimed))
+if (!OOFModel::CFrameInfo::Read (cf, po, bTimed))
 	return 0;
 if (bTimed &&
 	 (m_nTicks = m_nLastFrame - m_nFirstFrame) &&
-	 !m_pRemapTicks.Create (m_nTicks)) {
+	 !m_remapTicks.Create (m_nTicks)) {
 	 Destroy ();
 	 return 0;
 	}
@@ -432,20 +432,19 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CSpecialPoint::Init (void)
+void CSpecialPoint::Init (void)
 {
 memset (this, 0, sizeof (*this));
 }
 
 //------------------------------------------------------------------------------
 
-int CSpecialPoint::Destroy (void)
+void CSpecialPoint::Destroy (void)
 {
-delete[] pVert->m_pszName;
-pVert->m_pszName = NULL;
-delete[] pVert->m_pszProps;
-pVert->m_pszProps = NULL;
-return 0;
+delete[] m_pszName;
+m_pszName = NULL;
+delete[] m_pszProps;
+m_pszProps = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -473,7 +472,7 @@ return 1;
 
 int CSpecialList::Read (CFile& cf)
 {
-	int	i;
+	uint	i;
 
 i = OOF_ReadInt (cf, "nVerts");
 if (!i)
@@ -513,7 +512,7 @@ if (!Create (i)) {
 	nIndent -= 2;
 	return 0;
 	}
-for (i = 0; i < Length (); i++)
+for (i = 0; i < static_cast<int> (Length ()); i++)
 	if (!(*this) [i].Read (cf, bParent)) {
 		Destroy ();
 		nIndent -= 2;
@@ -536,7 +535,7 @@ if (!Create (i)) {
 	nIndent -= 2;
 	return 0;
 	}
-for (i = 0; i < Length (); i++)
+for (i = 0; i < static_cast<int> (Length ()); i++)
 	if (!(*this) [i].CPoint::Read (cf, 1)) {
 		Destroy ();
 		nIndent -= 2;
@@ -550,9 +549,9 @@ return 1;
 
 int CAttachPoint::Read (CFile& cf)
 {
-OOF_ReadVector (cf, &pp->m_vu, "vu");	//actually ignored
-OOF_ReadVector (cf, &pp->m_vu, "vu");
-pList->m_pPoints->m_bu = 1;
+OOF_ReadVector (cf, &m_vu, "vu");	//actually ignored
+OOF_ReadVector (cf, &m_vu, "vu");
+m_bu = 1;
 return 1;
 }
 
@@ -560,7 +559,7 @@ return 1;
 
 int CAttachList::ReadNormals (CFile& cf)
 {
-	int	i;
+	uint	i;
 
 nIndent += 2;
 OOF_PrintLog ("reading attach normals\n");
@@ -579,11 +578,10 @@ return 1;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-int CBattery::Destroy (void)
+void CBattery::Destroy (void)
 {
 m_vertIndex.Destroy ();
 m_turretIndex.Destroy ();
-return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -625,7 +623,7 @@ if (!Create (i)) {
 	nIndent -= 2;
 	return 0;
 	}
-for (i = 0; i < Length (); i++)
+for (i = 0; i < static_cast<int> (Length ()); i++)
 	if (!(*this).Read (cf)) {
 		Destroy ();
 		nIndent -= 2;
@@ -665,7 +663,7 @@ return 1;
 inline CFloatVector* CFace::CalcCenter (CSubModel *pso)
 {
 	CFaceVert		*pfv = m_verts;
-	CFloatVector	vc, *pv = pso->m_verts;
+	CFloatVector	vc, *pv = pso->m_verts.Buffer ();
 	int				i;
 
 m_vCenter.SetZero ();
@@ -677,13 +675,13 @@ return &m_vCenter;
 
 //------------------------------------------------------------------------------
 
-inline CFloatVector *CFace::CalcNormal (CSubModel *pso)
+inline CFloatVector* CFace::CalcNormal (CSubModel *pso)
 {
 	CFloatVector	*pv = pso->m_rotVerts;
 	CFaceVert		*pfv = m_verts;
 
-m_vRotNormal = CFloatVector::Normal (pv [pfv [0].nIndex], pv [pfv [1].nIndex], pv [pfv [2].nIndex]);
-return &pf->m_vRotNormal;
+m_vRotNormal = CFloatVector::Normal (pv [pfv [0].m_nIndex], pv [pfv [1].m_nIndex], pv [pfv [2].m_nIndex]);
+return &m_vRotNormal;
 }
 
 //------------------------------------------------------------------------------
@@ -699,7 +697,6 @@ int CFace::Read (CFile& cf, CSubModel *pso, CFaceVert *pfv, int bFlipV)
 
 nIndent += 2;
 OOF_PrintLog ("reading face\n");
-memset (&f, 0, sizeof (f));
 OOF_ReadVector (cf, &m_vNormal, "vNormal");
 #if 0
 m_vNormal.x = -m_vNormal.x;
@@ -716,9 +713,9 @@ if (m_bTextured) {
 #endif
 	}
 else {
-	m_texProps.color.r = OOF_ReadByte (cf, "texProps.color.r");
-	m_texProps.color.g = OOF_ReadByte (cf, "texProps.color.g");
-	m_texProps.color.b = OOF_ReadByte (cf, "texProps.color.b");
+	m_texProps.color.red = OOF_ReadByte (cf, "texProps.color.red");
+	m_texProps.color.green = OOF_ReadByte (cf, "texProps.color.green");
+	m_texProps.color.blue = OOF_ReadByte (cf, "texProps.color.blue");
 	}
 #if OOF_MEM_OPT
 if (pfv) {
@@ -730,28 +727,27 @@ if (pfv) {
 		}
 #endif
 	OOF_InitMinMax (&m_vMin, &m_vMax);
-	e.v1 [0] = -1;
+	e.m_v1 [0] = -1;
 	for (i = 0; i < m_nVerts; i++)
 		if (!m_verts [i].Read (cf, bFlipV)) {
 			nIndent -= 2;
 			return 0;
 			}
 		else {
-			e.v0 [0] = e.v1 [0];
-			e.v1 [0] = m_verts [i].nIndex;
-			OOF_GetMinMax (pso->m_verts + e.v1 [0], &m_vMin, &m_vMax);
+			e.m_v0 [0] = e.m_v1 [0];
+			e.m_v1 [0] = m_verts [i].m_nIndex;
+			OOF_GetMinMax (pso->m_verts + e.m_v1 [0], &m_vMin, &m_vMax);
 			if (i)
-				pso->AddEdge (pf, e.v0 [0], e.v1 [0]);
+				pso->AddEdge (this, e.m_v0 [0], e.m_v1 [0]);
 			else
-				v0 = e.v1 [0];
+				v0 = e.m_v1 [0];
 			}
-	pso->AddEdge (pf, e.v1 [0], v0);
-	//OOF_CalcFaceNormal (pso, &f);
+	pso->AddEdge (this, e.m_v1 [0], v0);
 	CalcCenter ();
 #if OOF_MEM_OPT
 	}
 else
-	cm_Seek (m_nVerts * sizeof (CFaceVert), SEEK_CUR);
+	cf.Seek (m_nVerts * sizeof (CFaceVert), SEEK_CUR);
 #endif
 m_fBoundingLength = OOF_ReadFloat (cf, "fBoundingLength");
 m_fBoundingWidth = OOF_ReadFloat (cf, "fBoundingWidth");
@@ -834,21 +830,21 @@ m_mMod = CFloatMatrix::IDENTITY;
 
 //------------------------------------------------------------------------------
 
-int CSubModel::Destroy (void)
+void CSubModel::Destroy (void)
 {
 #if !OOF_MEM_OPT
 	int	i;
 #endif
 
-delete[] pso->m_pszName;
-pso->m_pszName = NULL;
-delete[] pso->m_pszProps;
-pso->m_pszProps = NULL;
-pso->m_verts.Destroy ();
-pso->m_rotVerts.Destroy ();
-pso->m_vertColors.Destroy ();
-pso->m_normals.Destroy ();
-pso->m_pfAlpha.Destroy ();
+delete[] m_pszName;
+m_pszName = NULL;
+delete[] m_pszProps;
+m_pszProps = NULL;
+m_verts.Destroy ();
+m_rotVerts.Destroy ();
+m_vertColors.Destroy ();
+m_normals.Destroy ();
+m_pfAlpha.Destroy ();
 m_posAnim.Destroy ();
 m_rotAnim.Destroy ();
 m_faces.Destroy ();
@@ -866,7 +862,7 @@ int CSubModel::FindVertex (int i)
 pv = m_verts.Buffer ();
 v = pv [i];
 for (j = 0; j < i; j++, pv++)
-	if ((v.x == pv->m_x) && (v.y == pv->m_y) && (v.z == pv->m_z))
+	if ((v.x == (*pv) [X]) && (v.y == (*pv) [Y]) && (v.z == (*pv) [Z]))
 		return j;
 return i;
 }
@@ -875,40 +871,40 @@ return i;
 
 int CSubModel::FindEdge (int i0, int i1)
 {
-	int			i;
-	CEdge	h;
+	int				i;
+	CEdge				h;
 	CFloatVector	v0, v1, hv0, hv1;
 
 #if DBG
 i0 = FindVertex (i0);
 i1 = FindVertex (i1);
 #endif
-for (i = 0; i < m_edges.nEdges; i++) {
+for (i = 0; i < m_edges.m_nEdges; i++) {
 	h = m_edges.m_list [i];
-	if (((h.v0 [0] == i0) && (h.v1 [0] == i1)) || ((h.v0 [0] == i1) && (h.v1 [0] == i0)))
+	if (((h.m_v0 [0] == i0) && (h.m_v1 [0] == i1)) || ((h.m_v0 [0] == i1) && (h.m_v1 [0] == i0)))
 		return i;
 	}
 v0 = m_verts [i0]; 
 v1 = m_verts [i1]; 
-for (i = 0; i < m_edges.nEdges; i++) {
+for (i = 0; i < m_edges.m_nEdges; i++) {
 	h = m_edges.m_list [i];
-	hv0 = m_verts [h.v0 [0]]; 
-	hv1 = m_verts [h.v1 [0]]; 
-	if ((hv0.x == v0.x) && (hv0.y == v0.y) && (hv0.z == v0.z) &&
-		 (hv1.x == v1.x) && (hv1.y == v1.y) && (hv1.z == v1.z))
+	hv0 = verts [h.m_v0 [0]]; 
+	hv1 = verts [h.m_v1 [0]]; 
+	if ((hv0 [X] == v0 [X]) && (hv0 [Y] == v0 [Y]) && (hv0 [Z] == v0 [Z]) &&
+		 (hv1 [X] == v1 [X]) && (hv1 [Y] == v1 [Y]) && (hv1 [Z] == v1 [Z]))
 		return i;
-	if ((hv1.x == v0.x) && (hv1.y == v0.y) && (hv1.z == v0.z) &&
-		 (hv0.x == v1.x) && (hv0.y == v1.y) && (hv0.z == v1.z))
+	if ((hv1 [X] == v0 [X]) && (hv1 [Y] == v0 [Y]) && (hv1 [Z] == v0 [Z]) &&
+		 (hv0 [X] == v1 [X]) && (hv0 [Y] == v1 [Y]) && (hv0 [Z] == v1 [Z]))
 		return i;
 	}
-for (i = 0; i < m_edges.nEdges; i++) {
+for (i = 0; i < m_edges.m_nEdges; i++) {
 	h = m_edges.m_list [i];
-	hv0 = m_verts [h.v0 [0]] - v0;
-	hv1 = m_verts [h.v1 [0]] - v1;
+	hv0 = m_verts [h.m_v0 [0]] - v0;
+	hv1 = m_verts [h.m_v1 [0]] - v1;
 	if ((hv0.Mag () < MAXGAP) && (hv1.Mag () < MAXGAP))
 		return i;
-	hv0 = m_verts [h.v0 [0]] - v1;
-	hv1 = m_verts [h.v1 [0]] - &v0;
+	hv0 = m_verts [h.m_v0 [0]] - v1;
+	hv1 = m_verts [h.m_v1 [0]] - v0;
 	if (hv0.Mag () < MAXGAP) && (hv1.Mag () < MAXGAP))
 		return i;
 	}
@@ -1011,14 +1007,14 @@ if (!stricmp (command,"$glow=")) {
 	int nValues;
 
 	Assert (!(m_nFlags & (OOF_SOF_GLOW | OOF_SOF_THRUSTER)));
-	nValues = sscanf (data, " %f, %f, %f, %f", &r,&g,&b,&size);
+	nValues = sscanf (data, " %f, %f, %f, %f", &r, &g, &b, &size);
 	Assert (nValues == 4);
 	m_nFlags |= OOF_SOF_GLOW;
 	//m_glowInfo = new CGlowInfo;
-	m_glowInfo.color.r = r;
-	m_glowInfo.color.g = g;
-	m_glowInfo.color.b = b;
-	m_glowInfo.fSize = size;
+	m_glowInfo.m_color.red = r;
+	m_glowInfo.m_color.green = g;
+	m_glowInfo.m_color.blue = b;
+	m_glowInfo.m_fSize = size;
 	return;
 	}
 
@@ -1032,10 +1028,10 @@ if (!stricmp (command,"$thruster=")) {
 	Assert(nValues == 4);
 	m_nFlags |= OOF_SOF_THRUSTER;
 	//m_glowInfo = new CGlowInfo;
-	m_glowInfo.color.r = r;
-	m_glowInfo.color.g = g;
-	m_glowInfo.color.b = b;
-	m_glowInfo.fSize = size;
+	m_glowInfo.m_color.red = r;
+	m_glowInfo.m_color.green = g;
+	m_glowInfo.m_color.blue = b;
+	m_glowInfo.m_fSize = size;
 	return;
 	}
 
@@ -1257,57 +1253,39 @@ return 1;
 
 void CSubModel::BuildModelAngleMatrix (CFloatMatrix *pm, int a, CFloatVector *pAxis)
 {
-float x = pAxis->m_x;
-float y = pAxis->m_y;
-float z = pAxis->m_z;
+float x = pAxis) [X];
+float y = pAxis) [Y];
+float z = pAxis) [Z];
 float s = (float) sin ((float) a);
 float c = (float) cos ((float) a);
 float t = 1.0f - c;
 float i = t * x;
 float j = s * z;
-//pm->m_r.x = t * x * x + c;
-pm->m_r.x = i * x + c;
+//(*pm) [RVEC][X] = t * x * x + c;
+(*pm) [RVEC][X] = i * x + c;
 i *= y;
-//pm->m_r.y = t * x * y + s * z;
-//pm->m_u.x = t * x * y - s * z;
-pm->m_r.y = i + j;
-pm->m_u.x = i - j;
+//(*pm) [RVEC][Y] = t * x * y + s * z;
+//(*pm) [UVEC][X] = t * x * y - s * z;
+(*pm) [RVEC][Y] = i + j;
+(*pm) [UVEC][X] = i - j;
 i = t * z;
-//pm->m_f.z = t * z * z + c;
-pm->m_f.z = i * z + c;
+//(*pm) [FVEC][Z] = t * z * z + c;
+(*pm) [FVEC][Z] = i * z + c;
 i *= x;
 j = s * y;
-//pm->m_r.z = t * x * z - s * y;
-//pm->m_f.x = t * x * z + s * y;
-pm->m_r.z = i - j;
-pm->m_f.x = i + j;
+//(*pm) [RVEC][Z] = t * x * z - s * y;
+//(*pm) [FVEC][X] = t * x * z + s * y;
+(*pm) [RVEC][Z] = i - j;
+(*pm) [FVEC][X] = i + j;
 i = t * y;
-//pm->m_u.y = t * y * y + c;
-pm->m_u.y = i * y + c;
+//(*pm) [UVEC][Y] = t * y * y + c;
+(*pm) [UVEC][Y] = i * y + c;
 i *= z;
 j = s * x;
-//pm->m_u.z = t * y * z + s * x;	
-//pm->m_f.y = t * y * z - s * x;
-pm->m_u.z = i + j;
-pm->m_f.y = i - j;
-}
-
-//------------------------------------------------------------------------------
-
-void CSubModel::BuildAnimMatrices (void)
-{
-	CFloatMatrix	mBase, mDest, mTemp;
-	CRotFrame		*pf;
-	int				a;
-
-mBase = CFloatMatrix::IDENTITY;
-for (int i = pso->m_rotAnim.m_nFrames, pf = pso->m_rotAnim.frames.Buffer (); i; i--, pf++) {
-	a = pf->m_nAngle;
-	BuildModelAngleMatrix (&mTemp, a, &pf->m_vAxis);
-	mDest = mTemp * mBase;
-	mBase = mDest;
-	pf->m_mMat = mBase;
-	}
+//(*pm) [UVEC][Z] = t * y * z + s * x;	
+//(*pm) [FVEC][Y] = t * y * z - s * x;
+(*pm) [UVEC][Z] = i + j;
+(*pm) [FVEC][Y] = i - j;
 }
 
 //------------------------------------------------------------------------------
