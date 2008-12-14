@@ -1005,8 +1005,8 @@ class CFixMatrix {
 
 		static CFixMatrix& Invert (CFixMatrix& m);
 		static CFixMatrix& Transpose (CFixMatrix& m);
-		static CFixMatrix& Transpose (CFixMatrix& dest, const CFixMatrix& source);
-		static CFloatMatrix& Transpose (CFloatMatrix& dest, const CFixMatrix& src);
+		static CFixMatrix& Transpose (CFixMatrix& dest, CFixMatrix& source);
+		static CFloatMatrix& Transpose (CFloatMatrix& dest, CFixMatrix& src);
 
 		fix& operator[] (size_t idx);
 		const fix operator[] (size_t idx) const;
@@ -1015,8 +1015,8 @@ class CFixMatrix {
 		CFixMatrix operator* (const CFixMatrix& m);
 
 		const fix Det ();
-		const CFixMatrix Inverse () const;
-		const CFixMatrix Transpose () const;
+		const CFixMatrix Inverse ();
+		const CFixMatrix Transpose ();
 
 		//make sure m_data.matrix is orthogonal
 		void CheckAndFix ();
@@ -1120,7 +1120,7 @@ inline CFixMatrix& CFixMatrix::Transpose (CFixMatrix& m) {
 
 //------------------------------------------------------------------------------
 
-CFixMatrix& CFixMatrix::Transpose (CFixMatrix& dest, const CFixMatrix& src)
+CFixMatrix& CFixMatrix::Transpose (CFixMatrix& dest, CFixMatrix& src)
 {
 dest.m_data.vec [0] = src.m_data.vec [0];
 dest.m_data.vec [3] = src.m_data.vec [1];
@@ -1153,7 +1153,7 @@ inline CFixVector CFixMatrix::operator* (const CFixVector& v) {
 }
 
 inline CFixMatrix CFixMatrix::operator* (const CFixMatrix& m) {
-	CFixVector v, t;
+	CFixVector v;
 	v [X] = RVec()[X];
 	v [Y] = UVec()[X];
 	v [Z] = FVec()[X];
@@ -1172,10 +1172,10 @@ inline CFixMatrix CFixMatrix::operator* (const CFixMatrix& m) {
 	RVec()[Z] = CFixVector::Dot (v, m.RVec());
 	UVec()[Z] = CFixVector::Dot (v, m.UVec());
 	FVec()[Z] = CFixVector::Dot (v, m.FVec());
-	return r;
+	return *this;
 }
 
-inline const fix CFixMatrix::Det () const {
+inline const fix CFixMatrix::Det () {
 	fix	xDet;
 	//PrintLog ("            CalcDetValue (R: %d, %d, %d; F: %d, %d, %d; U: %d, %d, %d)\n", m->rVec [X], m->rVec [Y], m->rVec [Z], m->fVec [X], m->fVec [Y], m->fVec [Z], m->uVec [X], m->uVec [Y], m->uVec [Z]);
 	//PrintLog ("               xDet = FixMul (m->rVec [X], FixMul (m->uVec [Y], m->fVec [Z]))\n");
@@ -1194,7 +1194,7 @@ inline const fix CFixMatrix::Det () const {
 	//PrintLog ("             m = %d\n", xDet);
 }
 
-inline const CFixMatrix CFixMatrix::Inverse () const {
+inline const CFixMatrix CFixMatrix::Inverse () {
 	fix	xDet = Det ();
 	CFixMatrix m;
 
@@ -1210,7 +1210,7 @@ inline const CFixMatrix CFixMatrix::Inverse () const {
 	return m;
 }
 
-inline const CFixMatrix CFixMatrix::Transpose () const {
+inline const CFixMatrix CFixMatrix::Transpose ()  {
 	CFixMatrix dest;
 	Transpose (dest, *this);
 	return dest;
@@ -1284,11 +1284,11 @@ class CFloatMatrix {
 
 		const CFloatVector operator* (const CFloatVector& v);
 		const CFloatVector3 operator* (const CFloatVector3& v);
-		const CFloatMatrix operator* (const CFloatMatrix& m);
+		const CFloatMatrix operator* (CFloatMatrix& m);
 
-		const float Det () const;
-		const CFloatMatrix Inverse () const;
-		const CFloatMatrix Transpose () const;
+		const float Det ();
+		const CFloatMatrix Inverse ();
+		const CFloatMatrix Transpose ();
 
 		const CFloatMatrix& Copy (CFixMatrix& other);
 		const CFloatMatrix& Copy (CFloatMatrix& other);
@@ -1402,7 +1402,7 @@ inline const CFloatMatrix CFloatMatrix::Inverse () {
 	return m;
 }
 
-inline const CFloatMatrix CFloatMatrix::Transpose () const {
+inline const CFloatMatrix CFloatMatrix::Transpose () {
 	CFloatMatrix dest;
 	Transpose (dest, *this);
 	return dest;
@@ -1497,7 +1497,7 @@ inline const CFixMatrix& CFixMatrix::Copy (CFloatMatrix& other) {
 
 // -----------------------------------------------------------------------------
 
-CFloatMatrix& CFixMatrix::Transpose (CFloatMatrix& dest, const CFixMatrix& src)
+CFloatMatrix& CFixMatrix::Transpose (CFloatMatrix& dest, CFixMatrix& src)
 {
 dest [0] = X2F (src [0]);
 dest [4] = X2F (src [1]);
@@ -1515,7 +1515,7 @@ return dest;
 
 //------------------------------------------------------------------------------
 
-CFloatMatrix& CFloatMatrix::Transpose (CFloatMatrix& dest, const CFloatMatrix& src)
+CFloatMatrix& CFloatMatrix::Transpose (CFloatMatrix& dest, CFloatMatrix& src)
 {
 dest [0] = src [0];
 dest [4] = src [1];
