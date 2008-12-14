@@ -355,12 +355,12 @@ class CSubModel {
 		~CSubModel () { Destroy (); }
 		void Init (void);
 		void Destroy (void);
-		int Read (CFile& cf, CModel& po, int bFlipV);
+		int Read (CFile& cf, CModel* po, int bFlipV);
+		int AddEdge (CFace *pf, int i0, int i1);
 
 	private:
 		int FindVertex (int i);
 		int FindEdge (int i0, int i1);
-		int AddEdge (CFace *pf, int i0, int i1);
 		void SetProps (char *pszProps);
 	};	
 
@@ -393,23 +393,25 @@ class CModel {
 		void Init (void);
 		bool Create (void);
 		void Destroy (void);
-		int Read (const char *filename, short nModel, short nType, int bFlipV, int bCustom);
+		int Read (char *filename, short nModel, short nType, int bFlipV, int bCustom);
 		int Render (CObject *objP, float *fLight, int bCloaked);
 		int ReleaseTextures (void);
 		int ReloadTextures (int bCustom);
 		int FreeTextures (void);
 
 	private:
-		int ReadInfo (void);
+		int ReadInfo (CFile& cf);
+		int ReadTextures (CFile& cf, short nType, int bCustom);
 		void BuildAnimMatrices (void);
 		void AssignChildren (void);
 		inline void LinkSubModelBatteries (int iObject, int iBatt);
-		void LinkBatteries (CModel* po);
+		void LinkBatteries (void);
 		void BuildPosTickRemapList (void);
 		void BuildRotTickRemapList (void);
 		void ConfigureSubObjects (void);
 		void GetSubModelBounds (CSubModel *pso, CFloatVector vo);
 		void GetBounds (void);
+		void ConfigureSubModels (void);
 
 	};
 

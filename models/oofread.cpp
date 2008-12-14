@@ -595,7 +595,7 @@ if (0 > (m_nVerts = OOF_ReadIntList (cf, m_vertIndex))) {
 	Destroy ();
 	return 0;
 	}
-if (0 > (m_nTurrets = OOF_ReadIntList (cf, m_turretIndex)))) {
+if (0 > (m_nTurrets = OOF_ReadIntList (cf, m_turretIndex))) {
 	nIndent -= 2;
 	Destroy ();
 	return 0;
@@ -663,7 +663,7 @@ return 1;
 inline CFloatVector* CFace::CalcCenter (CSubModel *pso)
 {
 	CFaceVert		*pfv = m_verts;
-	CFloatVector	vc, *pv = pso->m_verts.Buffer ();
+	CFloatVector	*pv = pso->m_verts.Buffer ();
 	int				i;
 
 m_vCenter.SetZero ();
@@ -677,7 +677,7 @@ return &m_vCenter;
 
 inline CFloatVector* CFace::CalcNormal (CSubModel *pso)
 {
-	CFloatVector	*pv = pso->m_rotVerts;
+	CFloatVector	*pv = pso->m_rotVerts.Buffer ();
 	CFaceVert		*pfv = m_verts;
 
 m_vRotNormal = CFloatVector::Normal (pv [pfv [0].m_nIndex], pv [pfv [1].m_nIndex], pv [pfv [2].m_nIndex]);
@@ -743,7 +743,7 @@ if (pfv) {
 				v0 = e.m_v1 [0];
 			}
 	pso->AddEdge (this, e.m_v1 [0], v0);
-	CalcCenter ();
+	CalcCenter (pso);
 #if OOF_MEM_OPT
 	}
 else
@@ -849,7 +849,6 @@ m_posAnim.Destroy ();
 m_rotAnim.Destroy ();
 m_faces.Destroy ();
 m_edges.Destroy ();
-return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -862,7 +861,7 @@ int CSubModel::FindVertex (int i)
 pv = m_verts.Buffer ();
 v = pv [i];
 for (j = 0; j < i; j++, pv++)
-	if ((v.x == (*pv) [X]) && (v.y == (*pv) [Y]) && (v.z == (*pv) [Z]))
+	if ((v [X] == (*pv) [X]) && (v [Y] == (*pv) [Y]) && (v [Z] == (*pv) [Z]))
 		return j;
 return i;
 }
@@ -888,8 +887,8 @@ v0 = m_verts [i0];
 v1 = m_verts [i1]; 
 for (i = 0; i < m_edges.m_nEdges; i++) {
 	h = m_edges.m_list [i];
-	hv0 = verts [h.m_v0 [0]]; 
-	hv1 = verts [h.m_v1 [0]]; 
+	hv0 = m_verts [h.m_v0 [0]]; 
+	hv1 = m_verts [h.m_v1 [0]]; 
 	if ((hv0 [X] == v0 [X]) && (hv0 [Y] == v0 [Y]) && (hv0 [Z] == v0 [Z]) &&
 		 (hv1 [X] == v1 [X]) && (hv1 [Y] == v1 [Y]) && (hv1 [Z] == v1 [Z]))
 		return i;
@@ -905,7 +904,7 @@ for (i = 0; i < m_edges.m_nEdges; i++) {
 		return i;
 	hv0 = m_verts [h.m_v0 [0]] - v1;
 	hv1 = m_verts [h.m_v1 [0]] - v0;
-	if (hv0.Mag () < MAXGAP) && (hv1.Mag () < MAXGAP))
+	if ((hv0.Mag () < MAXGAP) && (hv1.Mag () < MAXGAP))
 		return i;
 	}
 return -1;
@@ -921,12 +920,12 @@ int CSubModel::AddEdge (CFace *pf, int v0, int v1)
 if (m_nFlags & (OOF_SOF_GLOW | OOF_SOF_THRUSTER))
 	return -1;
 if (i < 0)
-	i = m_edges.nEdges++;
+	i = m_edges.m_nEdges++;
 pe = m_edges.m_list + i;
 if (i < 0) {
 	}
-if (pe->m_pf [0]) {
-	pe->m_pf [1] = pf;
+if (pe->m_faces [0]) {
+	pe->m_faces [1] = pf;
 	if (pf->m_bReverse) {
 		pe->m_v0 [1] = v1;
 		pe->m_v1 [1] = v0;
@@ -937,7 +936,7 @@ if (pe->m_pf [0]) {
 		}
 	}
 else {
-	pe->m_pf [0] = pf;
+	pe->m_faces [0] = pf;
 	if (pf->m_bReverse) {
 		pe->m_v0 [0] = v1;
 		pe->m_v1 [0] = v0;
@@ -1123,7 +1122,7 @@ if (!stricmp (command,"$custom")) { // this subobject has custom textures/colors
 
 //------------------------------------------------------------------------------
 
-int CSubModel::Read (CFile& cf, CModel& po, int bFlipV)
+int CSubModel::Read (CFile& cf, CModel* po, int bFlipV)
 {
 	int				h, i;
 #if OOF_MEM_OPT
@@ -1160,12 +1159,12 @@ if (!(m_pszProps = OOF_ReadString (cf, "pszProps", NULL))) {
 SetProps (m_pszProps);
 m_nMovementType = OOF_ReadInt (cf, "nMovementType");
 m_nMovementAxis = OOF_ReadInt (cf, "nMovementAxis");
-m_pFSList = NULL;
+m_fsLists = NULL;
 if ((m_nFSLists = OOF_ReadInt (cf, "nFSLists")))
 	cf.Seek (m_nFSLists * sizeof (int), SEEK_CUR);
 m_nVerts = OOF_ReadInt (cf, "nVerts");
 if (m_nVerts) {
-	if (!OOF_ReadVertList (cf, m_verts, m_nVerts, &m_vMin, &m_vMax))) {
+	if (!OOF_ReadVertList (cf, m_verts, m_nVerts, &m_vMin, &m_vMax)) {
 		Destroy ();
 		nIndent -= 2;
 		return 0;
@@ -1181,7 +1180,7 @@ if (m_nVerts) {
 		nIndent -= 2;
 		return 0;
 		}
-	memset (m_vertColors, 0, m_nVerts * sizeof (tFaceColor));
+	m_vertColors.Clear (0);
 	if (!(OOF_ReadVertList (cf, m_normals, m_nVerts, NULL, NULL))) {
 		nIndent -= 2;
 		Destroy ();
@@ -1203,33 +1202,33 @@ if (m_nVerts) {
 				po->m_nFlags |= OOF_PMF_ALPHA;
 			}
 	}
-m_faces.nFaces = OOF_ReadInt (cf, "nFaces");
-if (!(m_faces.faces = new CFace [m_faces.nFaces])) {
+m_faces.m_nFaces = OOF_ReadInt (cf, "nFaces");
+if (!m_faces.m_list.Create (m_faces.m_nFaces)) {
 	Destroy ();
 	nIndent -= 2;
 	return 0;
 	}
 #if OOF_MEM_OPT
 nPos = cf.Tell ();
-m_edges.nEdges = 0;
+m_edges.m_nEdges = 0;
 for (bReadData = 0; bReadData < 2; bReadData++) {
 	cf.Seek (nPos, SEEK_SET);
 	if (bReadData) {
-		if (!(m_faces.faceVerts= new CFaceVert [nFaceVerts])) {
+		if (!m_faces.m_verts.Create (nFaceVerts)) {
 			Destroy ();
 			nIndent -= 2;
 			return 0;
 			}
-		if (!(m_edges.pEdges = new CEdge [nFaceVerts])) {
+		if (!m_edges.m_list.Create (nFaceVerts)) {
 			Destroy ();
 			nIndent -= 2;
 			return 0;
 			}
-		memset (m_edges.pEdges, 0, nFaceVerts * sizeof (CEdge));
-		m_edges.nEdges = 0;
+		m_edges.m_list.Clear ();
+		m_edges.m_nEdges = 0;
 		}
-	for (i = 0, nFaceVerts = 0; i < m_faces.nFaces; i++) {
-		if (!(h = OOF_ReadFace (cf, &so, m_faces.faces + i, bReadData ? m_faces.faceVerts + nFaceVerts : NULL, bFlipV))) {
+	for (i = 0, nFaceVerts = 0; i < m_faces.m_nFaces; i++) {
+		if (!(h = m_faces.m_list [i].Read (cf, this, bReadData ? m_faces.m_verts + nFaceVerts : NULL, bFlipV))) {
 			Destroy ();
 			nIndent -= 2;
 			return 0;
@@ -1238,7 +1237,7 @@ for (bReadData = 0; bReadData < 2; bReadData++) {
 		}
 	}
 #else
-for (i = 0; i < m_faces.nFaces; i++)
+for (i = 0; i < m_faces.m_nFaces; i++)
 	if (!OOF_ReadFace (cf, &so, m_faces.faces + i, NULL, bFlipV)) {
 		nIndent -= 2;
 		Destroy ();
@@ -1247,45 +1246,6 @@ for (i = 0; i < m_faces.nFaces; i++)
 #endif
 nIndent -= 2;
 return 1;
-}
-
-//------------------------------------------------------------------------------
-
-void CSubModel::BuildModelAngleMatrix (CFloatMatrix *pm, int a, CFloatVector *pAxis)
-{
-float x = pAxis) [X];
-float y = pAxis) [Y];
-float z = pAxis) [Z];
-float s = (float) sin ((float) a);
-float c = (float) cos ((float) a);
-float t = 1.0f - c;
-float i = t * x;
-float j = s * z;
-//(*pm) [RVEC][X] = t * x * x + c;
-(*pm) [RVEC][X] = i * x + c;
-i *= y;
-//(*pm) [RVEC][Y] = t * x * y + s * z;
-//(*pm) [UVEC][X] = t * x * y - s * z;
-(*pm) [RVEC][Y] = i + j;
-(*pm) [UVEC][X] = i - j;
-i = t * z;
-//(*pm) [FVEC][Z] = t * z * z + c;
-(*pm) [FVEC][Z] = i * z + c;
-i *= x;
-j = s * y;
-//(*pm) [RVEC][Z] = t * x * z - s * y;
-//(*pm) [FVEC][X] = t * x * z + s * y;
-(*pm) [RVEC][Z] = i - j;
-(*pm) [FVEC][X] = i + j;
-i = t * y;
-//(*pm) [UVEC][Y] = t * y * y + c;
-(*pm) [UVEC][Y] = i * y + c;
-i *= z;
-j = s * x;
-//(*pm) [UVEC][Z] = t * y * z + s * x;	
-//(*pm) [FVEC][Y] = t * y * z - s * x;
-(*pm) [UVEC][Z] = i + j;
-(*pm) [FVEC][Y] = i - j;
 }
 
 //------------------------------------------------------------------------------
@@ -1403,15 +1363,12 @@ m_frameInfo.Init ();
 
 void CModel::Destroy (void)
 {
-	int	i;
-
 FreeTextures ();
-m_subObjects.Destroy ();
+m_subModels.Destroy ();
 m_gunPoints.Destroy ();
 m_attachPoints.Destroy ();
 m_specialPoints.Destroy ();
 m_armament.Destroy ();
-return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1431,7 +1388,7 @@ OOF_ReadVector (cf, &m_vMax, "vMax");
 m_nDetailLevels = OOF_ReadInt (cf, "nDetailLevels");
 nIndent -= 2;
 cf.Seek (m_nDetailLevels * sizeof (int), SEEK_CUR);
-if (!m_subObjects.Create (m_nSubModels))
+if (!m_subModels.Create (m_nSubModels))
 	return 0;
 return 1;
 }
@@ -1440,10 +1397,6 @@ return 1;
 
 void CModel::BuildAnimMatrices (void)
 {
-	CSubModel*		pso;
-	CFloatMatrix	mBase, mDest, mTemp;
-	int						i, j, a;
-
 for (int i = 0; i < m_nSubModels; i++)
 	m_subModels [i].m_rotAnim.BuildMatrices ();
 }
@@ -1455,12 +1408,12 @@ void CModel::AssignChildren (void)
 	CSubModel *pso, *pParent;
 	int					i;
 
-for (i = 0, pso = po->m_subObjects.Buffer (); i < po->m_nSubModels; i++, pso++) {
+for (i = 0, pso = m_subModels.Buffer (); i < m_nSubModels; i++, pso++) {
 	int nParent = pso->m_nParent;
 	if (nParent == i)
 		pso->m_nParent = -1;
 	else if (nParent != -1) {
-		pParent = po->m_subObjects + nParent;
+		pParent = m_subModels + nParent;
 		pParent->m_children [pParent->m_nChildren++] = i;
 		}
 	}
@@ -1470,30 +1423,30 @@ for (i = 0, pso = po->m_subObjects.Buffer (); i < po->m_nSubModels; i++, pso++) 
 
 inline void CModel::LinkSubModelBatteries (int iObject, int iBatt)
 {
-	CSubModel	*pso = m_subObjects + iObject;
+	CSubModel	*pso = m_subModels + iObject;
 	int			i, nFlags = iBatt << OOF_WB_INDEX_SHIFT;
 
 pso->m_nFlags |= nFlags | OOF_SOF_WB;	
 for (i = 0; i < pso->m_nChildren; i++)
-	LinkSubModelBatteries (po, pso->m_children [i], iBatt);
+	LinkSubModelBatteries (pso->m_children [i], iBatt);
 }
 
 //------------------------------------------------------------------------------
 
-void CModel::LinkBatteries (CModel* po)
+void CModel::LinkBatteries (void)
 {
 	CSubModel*	pso;
 	CBattery*	pb;
 	int*			pti;
 	int			i, j, k;
 
-for (i = 0, pso = m_subObjects; i < m_nSubModels; i++, pso++) {
+for (i = 0, pso = m_subModels.Buffer (); i < m_nSubModels; i++, pso++) {
 	if (!(pso->m_nFlags & OOF_SOF_TURRET))
 		continue;
-	for (j = 0, pb = m_armament.Buffer (); j < m_armament.Length (); j++, pb++)
+	for (j = 0, pb = m_armament.Buffer (); j < static_cast<int> (m_armament.Length ()); j++, pb++)
 		for (k = pb->m_nTurrets, pti = pb->m_turretIndex.Buffer (); k; k--, pti++)
 			if (*pti == i) {
-				LinkSubModelBatteries (po, i, j);
+				LinkSubModelBatteries (i, j);
 				j = m_armament.Length ();
 				break;
 				}
@@ -1507,7 +1460,7 @@ void CModel::BuildPosTickRemapList (void)
 	int			i, j, k, t, nTicks;
 	CSubModel	*pso;
 
-for (i = m_nSubModels, pso = m_subObjects; i; i--, pso++) {
+for (i = m_nSubModels, pso = m_subModels.Buffer (); i; i--, pso++) {
 	nTicks = pso->m_posAnim.m_nLastFrame - pso->m_posAnim.m_nFirstFrame;
 	for (j = 0, t = pso->m_posAnim.m_nFirstFrame; j < nTicks; j++, t++)
 		if ((k = pso->m_posAnim.m_nFrames - 1))
@@ -1526,7 +1479,7 @@ void CModel::BuildRotTickRemapList (void)
 	int				i, j, k, t, nTicks;
 	CSubModel	*pso;
 
-for (i = m_nSubModels, pso = m_subObjects; i; i--, pso++) {
+for (i = m_nSubModels, pso = m_subModels.Buffer (); i; i--, pso++) {
 	nTicks = pso->m_rotAnim.m_nLastFrame - pso->m_rotAnim.m_nFirstFrame;
 	for (j = 0, t = pso->m_rotAnim.m_nFirstFrame; j < nTicks; j++, t++)
 		if ((k = pso->m_rotAnim.m_nFrames - 1))
@@ -1545,16 +1498,16 @@ void CModel::ConfigureSubModels (void)
 	int			i, j;
 	CSubModel	*pso;
 
-for (i = m_nSubModels, pso = m_subObjects.Buffer (); i; i--, pso++) {
+for (i = m_nSubModels, pso = m_subModels.Buffer (); i; i--, pso++) {
 	if (!pso->m_rotAnim.m_nFrames)
 		pso->m_nFlags &= ~(OOF_SOF_ROTATE | OOF_SOF_TURRET);
 
 	if (pso->m_nFlags & OOF_SOF_FACING) {
 		CFloatVector v [30], avg;
-		CFace	*pf = pso->m_faces.faces.Buffer ();
+		CFace	*pf = pso->m_faces.m_list.Buffer ();
 
 		for (j = 0; j < pf->m_nVerts; j++)
-			v [j] = pso->m_verts [pf->m_verts [j].nIndex];
+			v [j] = pso->m_verts [pf->m_verts [j].m_nIndex];
 	
 		pso->m_fRadius = (float) (sqrt (OOF_Centroid (&avg, v, pf->m_nVerts)) / 2);
 		m_nFlags |= OOF_PMF_FACING;
@@ -1563,11 +1516,11 @@ for (i = m_nSubModels, pso = m_subObjects.Buffer (); i; i--, pso++) {
 
 	if (pso->m_nFlags & (OOF_SOF_GLOW | OOF_SOF_THRUSTER)) {
 		CFloatVector v [30];
-		CFace	*pf = pso->m_faces.faces.Buffer ();
+		CFace	*pf = pso->m_faces.m_list.Buffer ();
 
 		for (j = 0; j < pf->m_nVerts; j++)
-			v [j] = pso->m_verts [pf->m_verts [j].nIndex];
-		pso->m_glowInfo.vNormal = CFloatVector::Normal (v [0], v [1], v [2]);
+			v [j] = pso->m_verts [pf->m_verts [j].m_nIndex];
+		pso->m_glowInfo.m_vNormal = CFloatVector::Normal (v [0], v [1], v [2]);
 		m_nFlags |= OOF_PMF_FACING;	// Set this so we know when to draw
 		}
 	}
@@ -1580,23 +1533,21 @@ void CModel::GetSubModelBounds (CSubModel *pso, CFloatVector vo)
 	int	i;
 	float	h;
 
-vo.x += pso->m_vOffset.x;
-vo.y += pso->m_vOffset.y;
-vo.z += pso->m_vOffset.z;
-if (m_vMax.x < (h = pso->m_vMax.x + vo.x))
-	 m_vMax.x = h;
-if (m_vMax.y < (h = pso->m_vMax.y + vo.y))
-	 m_vMax.y = h;
-if (m_vMax.z < (h = pso->m_vMax.z + vo.z))
-	 m_vMax.z = h;
-if (m_vMin.x > (h = pso->m_vMin.x + vo.x))
-	 m_vMin.x = h;
-if (m_vMin.y > (h = pso->m_vMin.y + vo.y))
-	 m_vMin.y = h;
-if (m_vMin.z > (h = pso->m_vMin.z + vo.z))
-	 m_vMin.z = h;
+vo += pso->m_vOffset;
+if (m_vMax [X] < (h = pso->m_vMax [X] + vo [X]))
+	 m_vMax [X] = h;
+if (m_vMax [Y] < (h = pso->m_vMax [Y] + vo [Y]))
+	 m_vMax [Y] = h;
+if (m_vMax [Z] < (h = pso->m_vMax [Z] + vo [Z]))
+	 m_vMax [Z] = h;
+if (m_vMin [X] > (h = pso->m_vMin [X] + vo [X]))
+	 m_vMin [X] = h;
+if (m_vMin [Y] > (h = pso->m_vMin [Y] + vo [Y]))
+	 m_vMin [Y] = h;
+if (m_vMin [Z] > (h = pso->m_vMin [Z] + vo [Z]))
+	 m_vMin [Z] = h;
 for (i = 0; i < pso->m_nChildren; i++)
-	GetSubModelBounds (po, m_subObjects + pso->m_children [i], vo);
+	GetSubModelBounds (m_subModels + pso->m_children [i], vo);
 }
 
 //------------------------------------------------------------------------------
@@ -1609,9 +1560,9 @@ void CModel::GetBounds (void)
 
 vo.SetZero ();
 OOF_InitMinMax (&m_vMin, &m_vMax);
-for (i = 0, pso = m_subObjects.Buffer (); i < m_nSubModels; i++, pso++)
+for (i = 0, pso = m_subModels.Buffer (); i < m_nSubModels; i++, pso++)
 	if (pso->m_nParent == -1)
-		GetSubModelBounds (po, pso, vo);
+		GetSubModelBounds (pso, vo);
 }
 
 //------------------------------------------------------------------------------
@@ -1625,8 +1576,8 @@ int CModel::Read (char *filename, short nModel, short nType, int bFlipV, int bCu
 
 bLogOOF = (fErr != NULL) && FindArg ("-printoof");
 nIndent = 0;
-OOF_PrintLog ("\nreading %s/%s\n", gameFolders.szModelDir [nType], pszFile);
-if (!cf.Open (pszFile, gameFolders.szModelDir [nType], "rb", 0)) {
+OOF_PrintLog ("\nreading %s/%s\n", gameFolders.szModelDir [nType], filename);
+if (!cf.Open (filename, gameFolders.szModelDir [nType], "rb", 0)) {
 	OOF_PrintLog ("  file not found");
 	return 0;
 	}
@@ -1648,8 +1599,8 @@ if (m_nVersion >= 2100)
 if (m_nVersion >= 22) {
 	bTimed = 1;
 	m_nFlags |= OOF_PMF_TIMED;
-	m_nFirstFrame = 0;
-	m_nLastFrame = 0;
+	m_frameInfo.m_nFirstFrame = 0;
+	m_frameInfo.m_nLastFrame = 0;
 	}
 m_nModel = nModel;
 m_nType = nType;
@@ -1665,7 +1616,7 @@ while (!cf.EoF ()) {
 	nLength = OOF_ReadInt (cf, "nLength");
 	switch (ListType (chunkId)) {
 		case 0:
-			if (!ReadTextures (cf, &o, nType, bCustom)) {
+			if (!ReadTextures (cf, nType, bCustom)) {
 				Destroy ();
 				return 0;
 				}
@@ -1679,11 +1630,11 @@ while (!cf.EoF ()) {
 			break;
 
 		case 2:
-			if (!m_subObjects [m_nSubModels].Read (cf, &o, bFlipV)) {
+			if (!m_subModels [m_nSubModels].Read (cf, &o, bFlipV)) {
 				Destroy ();
 				return 0;
 				}
-			m_nSubOjects++;
+			m_nSubModels++;
 			break;
 
 		case 3:
@@ -1708,30 +1659,30 @@ while (!cf.EoF ()) {
 			break;
 
 		case 6:
-			nFrames = m_nFrames;
+			nFrames = m_frameInfo.m_nFrames;
 			if (!bTimed)
-				m_nFrames = OOF_ReadInt (cf, "nFrames");
+				m_frameInfo.m_nFrames = OOF_ReadInt (cf, "nFrames");
 			for (i = 0; i < m_nSubModels; i++)
-				if (!m_subObjects [i].m_posAnim.Read (cf, this, bTimed)) {
+				if (!m_subModels [i].m_posAnim.Read (cf, this, bTimed)) {
 					Destroy ();
 					return 0;
 					}
-			if (m_nFrames < nFrames)
-				m_nFrames = nFrames;
+			if (m_frameInfo.m_nFrames < nFrames)
+				m_frameInfo.m_nFrames = nFrames;
 			break;
 
 		case 7:
 		case 8:
-			nFrames = m_nFrames;
+			nFrames = m_frameInfo.m_nFrames;
 			if (!bTimed)
-				m_nFrames = OOF_ReadInt (cf, "nFrames");
+				m_frameInfo.m_nFrames = OOF_ReadInt (cf, "nFrames");
 			for (i = 0; i < m_nSubModels; i++)
-				if (!m_subObjects [i].m_rotAnim.Read (cf, this, bTimed)) {
+				if (!m_subModels [i].m_rotAnim.Read (cf, this, bTimed)) {
 					Destroy ();
 					return 0;
 					}
-			if (m_nFrames < nFrames)
-				m_nFrames = nFrames;
+			if (m_frameInfo.m_nFrames < nFrames)
+				m_frameInfo.m_nFrames = nFrames;
 			break;
 
 		case 9:
@@ -1754,12 +1705,12 @@ while (!cf.EoF ()) {
 		}
 	}
 cf.Close ();
-ConfigureSubModels (&o);
-BuildAnimMatrices (&o);
-AssignChildren (&o);
-LinkBatteries (&o);
-BuildPosTickRemapList (po);
-BuildRotTickRemapList (po);
+ConfigureSubModels ();
+BuildAnimMatrices ();
+AssignChildren ();
+LinkBatteries ();
+BuildPosTickRemapList ();
+BuildRotTickRemapList ();
 gameData.models.bHaveHiresModel [this - gameData.models.oofModels [bCustom]] = 1;
 return 1;
 }
