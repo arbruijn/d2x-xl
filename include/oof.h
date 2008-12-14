@@ -357,12 +357,17 @@ class CSubModel {
 		void Destroy (void);
 		int Read (CFile& cf, CModel* po, int bFlipV);
 		int AddEdge (CFace *pf, int i0, int i1);
+		int Render (CObject *objP, CModel *po, CFloatVector vo, int nIndex, float *fLight);
 
 	private:
 		int FindVertex (int i);
 		int FindEdge (int i0, int i1);
 		void SetProps (char *pszProps);
-	};	
+
+		void Transform (CFloatVector vo);
+		inline void TransformVertex (CFloatVector *prv, CFloatVector *pv, CFloatVector *vo);
+		int Draw (CObject *objP, CModel *po, float *fLight);
+};	
 
 class CModel {
 	public:
@@ -394,10 +399,11 @@ class CModel {
 		bool Create (void);
 		void Destroy (void);
 		int Read (char *filename, short nModel, short nType, int bFlipV, int bCustom);
-		int Render (CObject *objP, float *fLight, int bCloaked);
 		int ReleaseTextures (void);
 		int ReloadTextures (int bCustom);
 		int FreeTextures (void);
+		int Render (CObject *objP, float *fLight, int bCloaked);
+		int RenderShadow (CObject *objP, float *fLight);
 
 	private:
 		int ReadInfo (CFile& cf);
@@ -412,25 +418,18 @@ class CModel {
 		void GetSubModelBounds (CSubModel *pso, CFloatVector vo);
 		void GetBounds (void);
 		void ConfigureSubModels (void);
+		int Draw (CObject *objP, float *fLight);
 
 	};
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadFile (char *pszFile, CModel *po, short nModel, short nType, int bFlipV, int bCustom);
-int OOF_FreeObject (CModel *po);
-int OOF_Render (CObject *objP, CModel *po, float *fLight, int bCloaked);
-float *OOF_MatVms2Gl (float *pDest, const CFixMatrix& src);
-float *OOF_VecVms2Gl (float *pDest, const CFixVector& src);
-float *OOF_VecVms2Oof (CFloatVector *pDest, const CFixVector& src);
-float *OOF_MatVms2Oof (CFloatMatrix *pDest, const CFixMatrix& src);
-float OOF_VecMul (CFloatVector *pvSrc, CFloatVector *pvMul);
-void OOF_MatIdentity (CFloatMatrix *pm);
 float OOF_Centroid (CFloatVector *pvCentroid, CFloatVector *pvSrc, int nv);
 float *OOF_GlIdent (float *pm);
 float *OOF_GlTranspose (float *pDest, float *pSrc);
 int OOF_ReleaseTextures (void);
 int OOF_ReloadTextures (void);
+int OOF_FreeTextures (void);
 
 } //OOFModel
 

@@ -35,9 +35,7 @@ float OOF_Centroid (CFloatVector *pvCentroid, CFloatVector *pvSrc, int nv)
 	float			fArea, fTotalArea;
 	int			i;
 
-pvCentroid->x =
-pvCentroid->y =
-pvCentroid->z = 0.0f;
+pvCentroid->SetZero ();
 
 // First figure out the total area of this polygon
 fTotalArea = CFloatVector::Perp (vNormal, pvSrc [0], pvSrc [1], pvSrc [2]).Mag () / 2;
@@ -49,24 +47,14 @@ for (i = 2; i < nv - 1; i++) {
 fArea = CFloatVector::Perp (vNormal, pvSrc [0], pvSrc [1], pvSrc [2]).Mag () / 2;
 // Get the center of the first polygon
 vCenter = pvSrc [0] + pvSrc [1] + pvSrc [2];
-pvCentroid += vCenter / (3.0f * (fTotalArea / fArea));
+*pvCentroid += vCenter / (3.0f * (fTotalArea / fArea));
 // Now do the same for the rest
 for (i = 2; i < nv - 1; i++) {
 	fArea = CFloatVector::Perp (vNormal, pvSrc [0], pvSrc [i], pvSrc [i + 1]).Mag () / 2;
 	vCenter = pvSrc [0] + pvSrc [i] + pvSrc [i + 1];
-	pvCentroid +=  vCenter / (3.0f * (fTotalArea / fArea));
+	*pvCentroid +=  vCenter / (3.0f * (fTotalArea / fArea));
 	}
 return fTotalArea;
-}
-
-//------------------------------------------------------------------------------
-
-void OOF_MatIdentity (CFloatMatrix *pm)
-{
-memset (pm, 0, sizeof (*pm));
-pm->r.x =
-pm->u.y =
-pm->f.z = 1.0f;
 }
 
 //------------------------------------------------------------------------------
@@ -107,16 +95,6 @@ pDest [2] = X2F (pSrc [FVEC][X]);
 pDest [6] = X2F (pSrc [FVEC][Y]);
 pDest [10] = X2F (pSrc [FVEC][Z]);
 return pDest;
-}
-
-//------------------------------------------------------------------------------
-
-float *OOF_MatVms2Oof (CFloatMatrix *pDest, const CFixMatrix& pSrc)
-{
-OOF_VecVms2Oof (&pDest->f, pSrc[FVEC]);
-OOF_VecVms2Oof (&pDest->u, pSrc[UVEC]);
-OOF_VecVms2Oof (&pDest->r, pSrc[RVEC]);
-return reinterpret_cast<float*> (pDest);
 }
 
 //------------------------------------------------------------------------------
