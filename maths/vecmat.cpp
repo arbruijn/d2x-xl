@@ -57,9 +57,9 @@ const CFixVector CFixVector::ZVEC = CFixVector::Create(0,0,f1_0);
 
 const CAngleVector CAngleVector::ZERO = CAngleVector::Create(0,0,0);
 
-const CFixMatrix CFixMatrix::IDENTITY = CFixMatrix::Create(CFixVector::XVEC,
-                                                        CFixVector::YVEC,
-                                                        CFixVector::ZVEC);
+const CFixMatrix CFixMatrix::IDENTITY = CFixMatrix::Create (CFixVector::XVEC,
+																				CFixVector::YVEC,
+																				CFixVector::ZVEC);
 
 const CFloatMatrix CFloatMatrix::IDENTITY = CFloatMatrix::Create(CFloatVector::Create(1.0f, 0, 0, 0),
 		                                          CFloatVector::Create(0, 1.0f, 0, 0),
