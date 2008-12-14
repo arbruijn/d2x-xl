@@ -394,9 +394,9 @@ for (i = m_faces.m_nFaces, pf = m_faces.m_list.Buffer (); i; i--, pf++) {
 			return 0;
 		bmP->Texture ()->Wrap (GL_REPEAT);
 		if (m_nFlags & (bDynLighting ? OOF_SOF_THRUSTER : (OOF_SOF_GLOW | OOF_SOF_THRUSTER))) {
-			glColor4f (fl * m_glowInfo.color.red, 
-						  fl * m_glowInfo.color.green, 
-						  fl * m_glowInfo.color.blue, 
+			glColor4f (fl * m_glowInfo.m_color.red, 
+						  fl * m_glowInfo.m_color.green, 
+						  fl * m_glowInfo.m_color.blue, 
 						  m_pfAlpha [pfv->m_nIndex] * fAlpha);
 			}
 		else if (!bDynLighting) {
@@ -448,9 +448,7 @@ for (i = m_faces.m_nFaces, pf = m_faces.m_list.Buffer (); i; i--, pf++) {
 			glBegin (GL_LINES);
 			fv0 = pf->m_vRotCenter;
 			glVertex3fv (reinterpret_cast<GLfloat*> (&fv0));
-			fv0.x += pf->m_vRotNormal.x * 1;
-			fv0.y += pf->m_vRotNormal.y * 1;
-			fv0.z += pf->m_vRotNormal.z * 1;
+			fv0 += pf->m_vRotNormal;
 			glVertex3fv (reinterpret_cast<GLfloat*> (&fv0));
 			glEnd ();
 			glColor4f (0.0f, 1.0f, 0.5f, 1.0f);
@@ -466,9 +464,9 @@ for (i = m_faces.m_nFaces, pf = m_faces.m_list.Buffer (); i; i--, pf++) {
 		}
 	else {
 		fl = fLight [1];
-		r = fl * (float) pf->m_texProps.color.r / 255.0f;
-		g = fl * (float) pf->m_texProps.color.g / 255.0f;
-		b = fl * (float) pf->m_texProps.color.b / 255.0f;
+		r = fl * (float) pf->m_texProps.color.red / 255.0f;
+		g = fl * (float) pf->m_texProps.color.green / 255.0f;
+		b = fl * (float) pf->m_texProps.color.blue / 255.0f;
 		glColor4f (r, g, b, m_pfAlpha [pfv->m_nIndex] * fAlpha);
 		glBegin (GL_TRIANGLE_FAN);
 		for (j = pf->m_nVerts, pfv = pf->m_verts; j; j--, pfv++) {
@@ -558,19 +556,20 @@ int CModel::Draw (CObject *objP, float *fLight)
 {
 	CSubModel		*pso;
 	int				r = 1, i;
-	CFloatVector	vo = {0.0f,0.0f,0.0f};
+	CFloatVector	vo;
 
+vo.SetZero ();
 G3StartInstanceMatrix (objP->info.position.vPos, objP->info.position.mOrient);
 if (!gameStates.ogl.bUseTransform)
-	OOF_MatVms2Oof (&mView, viewInfo.view[0]);
-vPos = viewInfo.pos;
+	mView.Copy (viewInfo.view [0]);
+vPos.Copy (viewInfo.pos);
 if (IsMultiGame && netGame.BrightPlayers)
 	*fLight = 1.0f;
 OglActiveTexture (GL_TEXTURE0, 0);
 glEnable (GL_TEXTURE_2D);
-for (i = 0, pso = m_pSubModels; i < m_nSubModels; i++, pso++)
+for (i = 0, pso = m_subModels.Buffer (); i < m_nSubModels; i++, pso++)
 	if (pso->m_nParent == -1) {
-		if (!pso->m_Render (objP, this, vo, i, fLight)) {
+		if (!pso->Render (objP, this, vo, i, fLight)) {
 			r = 0;
 			break;
 			}
@@ -584,16 +583,16 @@ return r;
 
 int CModel::RenderShadow (CObject *objP, float *fLight)
 {
-	short		i, *pnl = gameData.render.lights.dynamic.nearestSegLights + gameData.objs.consoleP->m_info.nSegment * MAX_NEAREST_LIGHTS;
+	short		i, *pnl = gameData.render.lights.dynamic.nearestSegLights + gameData.objs.consoleP->info.nSegment * MAX_NEAREST_LIGHTS;
 
 gameData.render.shadows.nLight = 0; 
-for (i = 0; (gameData.render.shadows.nLight < gameOpts->m_render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {
+for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {
 	gameData.render.shadows.lights = gameData.render.lights.dynamic.shader.lights + *pnl;
 	if (!gameData.render.shadows.lights [0].info.bState)
 		continue;
 	gameData.render.shadows.nLight++;
 	memcpy (&vrLightPos, gameData.render.shadows.lights [0].vPosf + 1, sizeof (CFloatVector));
-	if (!Draw (objP, this, fLight))
+	if (!Draw (objP, fLight))
 		return 0;
 	if (FAST_SHADOWS)
 		RenderShadowQuad (0);
