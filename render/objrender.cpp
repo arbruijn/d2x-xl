@@ -639,7 +639,7 @@ if (gameData.models.renderModels [1][nModel].m_bValid >= 0)
 fLight [0] = xLight / 65536.0f;
 fLight [1] = (float) xEngineGlow [0] / 65536.0f;
 fLight [2] = (float) xEngineGlow [1] / 65536.0f;
-OOF_Render (objP, po, fLight, ObjectIsCloaked (objP));
+po->Render (objP, fLight, ObjectIsCloaked (objP));
 return 1;
 }
 

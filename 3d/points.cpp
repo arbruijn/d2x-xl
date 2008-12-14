@@ -89,9 +89,9 @@ tempm = viewInfo.view [1].Transpose();
 //delta rotation functions
 CFixVector *G3RotateDeltaX (CFixVector *dest,fix dx)
 {
-	(*dest) [X] = FixMul (viewInfo.view [0] [RVEC] [X], dx);
-	(*dest) [Y] = FixMul (viewInfo.view [0] [UVEC] [X], dx);
-	(*dest) [Z] = FixMul (viewInfo.view [0] [FVEC] [X], dx);
+	(*dest) [X] = FixMul (viewInfo.view [0].RVec() [X], dx);
+	(*dest) [Y] = FixMul (viewInfo.view [0].UVec() [X], dx);
+	(*dest) [Z] = FixMul (viewInfo.view [0].FVec() [X], dx);
 
 	return dest;
 }
@@ -100,9 +100,9 @@ CFixVector *G3RotateDeltaX (CFixVector *dest,fix dx)
 
 CFixVector *G3RotateDeltaY (CFixVector *dest,fix dy)
 {
-	(*dest) [X] = FixMul (viewInfo.view [0] [RVEC] [Y],dy);
-	(*dest) [Y] = FixMul (viewInfo.view [0] [UVEC] [Y],dy);
-	(*dest) [Z] = FixMul (viewInfo.view [0] [FVEC] [Y],dy);
+	(*dest) [X] = FixMul (viewInfo.view [0].RVec() [Y],dy);
+	(*dest) [Y] = FixMul (viewInfo.view [0].UVec() [Y],dy);
+	(*dest) [Z] = FixMul (viewInfo.view [0].FVec() [Y],dy);
 
 	return dest;
 }
@@ -111,9 +111,9 @@ CFixVector *G3RotateDeltaY (CFixVector *dest,fix dy)
 
 CFixVector *G3RotateDeltaZ (CFixVector *dest,fix dz)
 {
-	(*dest) [X] = FixMul (viewInfo.view [0] [RVEC] [Z],dz);
-	(*dest) [Y] = FixMul (viewInfo.view [0] [UVEC] [Z],dz);
-	(*dest) [Z] = FixMul (viewInfo.view [0] [FVEC] [Z],dz);
+	(*dest) [X] = FixMul (viewInfo.view [0].RVec() [Z],dz);
+	(*dest) [Y] = FixMul (viewInfo.view [0].UVec() [Z],dz);
+	(*dest) [Z] = FixMul (viewInfo.view [0].FVec() [Z],dz);
 
 	return dest;
 }
@@ -139,17 +139,17 @@ return G3EncodePoint (dest);
 fix G3CalcPointDepth(const CFixVector& pnt)
 {
 #ifdef _WIN32
-	QLONG q = mul64 (pnt [X] - viewInfo.pos [X], viewInfo.view [0] [FVEC] [X]);
-	q += mul64 (pnt [Y] - viewInfo.pos [Y], viewInfo.view [0] [FVEC] [Y]);
-	q += mul64 (pnt [Z] - viewInfo.pos [Z], viewInfo.view [0] [FVEC] [Z]);
+	QLONG q = mul64 (pnt [X] - viewInfo.pos [X], viewInfo.view [0].FVec() [X]);
+	q += mul64 (pnt [Y] - viewInfo.pos [Y], viewInfo.view [0].FVec() [Y]);
+	q += mul64 (pnt [Z] - viewInfo.pos [Z], viewInfo.view [0].FVec() [Z]);
 	return (fix) (q >> 16);
 #else
 	tQuadInt q;
 
 	q.low=q.high=0;
-	FixMulAccum (&q, (pnt [X] - viewInfo.pos [X]),viewInfo.view [0] [FVEC] [X]);
-	FixMulAccum (&q, (pnt [Y] - viewInfo.pos [Y]),viewInfo.view [0] [FVEC] [Y]);
-	FixMulAccum (&q, (pnt [Z] - viewInfo.pos [Z]),viewInfo.view [0] [FVEC] [Z]);
+	FixMulAccum (&q, (pnt [X] - viewInfo.pos [X]),viewInfo.view [0].FVec() [X]);
+	FixMulAccum (&q, (pnt [Y] - viewInfo.pos [Y]),viewInfo.view [0].FVec() [Y]);
+	FixMulAccum (&q, (pnt [Z] - viewInfo.pos [Z]),viewInfo.view [0].FVec() [Z]);
 	return FixQuadAdjust (&q);
 #endif
 }

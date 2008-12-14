@@ -133,19 +133,19 @@ tUVL [2].u =
 tUVL [2].v =
 tUVL [3].v = F1_0;
 
-v1 = gameData.objs.viewerP->info.position.vPos + gameData.objs.viewerP->info.position.mOrient [FVEC] * (F1_0*4);
-v1 += gameData.objs.viewerP->info.position.mOrient [RVEC] * nEyeOffset;
-v2 = v1 + gameData.objs.viewerP->info.position.mOrient [RVEC] * (-F1_0*1);
-v2 += gameData.objs.viewerP->info.position.mOrient [UVEC] * (F1_0*1);
+v1 = gameData.objs.viewerP->info.position.vPos + gameData.objs.viewerP->info.position.mOrient.FVec() * (F1_0*4);
+v1 += gameData.objs.viewerP->info.position.mOrient.RVec() * nEyeOffset;
+v2 = v1 + gameData.objs.viewerP->info.position.mOrient.RVec() * (-F1_0*1);
+v2 += gameData.objs.viewerP->info.position.mOrient.UVec() * (F1_0*1);
 G3TransformAndEncodePoint(&reticlePoints [0], v2);
-v2 = v1 + gameData.objs.viewerP->info.position.mOrient [RVEC] * (+F1_0*1);
-v2 += gameData.objs.viewerP->info.position.mOrient [UVEC] * (F1_0*1);
+v2 = v1 + gameData.objs.viewerP->info.position.mOrient.RVec() * (+F1_0*1);
+v2 += gameData.objs.viewerP->info.position.mOrient.UVec() * (F1_0*1);
 G3TransformAndEncodePoint(&reticlePoints [1], v2);
-v2 = v1 + gameData.objs.viewerP->info.position.mOrient [RVEC] * (+F1_0*1);
-v2 += gameData.objs.viewerP->info.position.mOrient [UVEC] * (-F1_0*1);
+v2 = v1 + gameData.objs.viewerP->info.position.mOrient.RVec() * (+F1_0*1);
+v2 += gameData.objs.viewerP->info.position.mOrient.UVec() * (-F1_0*1);
 G3TransformAndEncodePoint(&reticlePoints [2], v2);
-v2 = v1 + gameData.objs.viewerP->info.position.mOrient [RVEC] * (-F1_0*1);
-v2 += gameData.objs.viewerP->info.position.mOrient [UVEC] * (-F1_0*1);
+v2 = v1 + gameData.objs.viewerP->info.position.mOrient.RVec() * (-F1_0*1);
+v2 += gameData.objs.viewerP->info.position.mOrient.UVec() * (-F1_0*1);
 G3TransformAndEncodePoint(&reticlePoints [3], v2);
 
 if ( reticleCanvas == NULL)	{
@@ -1111,7 +1111,7 @@ void SetRenderView (fix nEyeOffset, short *pnStartSeg, int bOglScale)
 
 gameData.render.mine.viewerEye = gameData.objs.viewerP->info.position.vPos;
 if (nEyeOffset) {
-	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient [RVEC] * nEyeOffset;
+	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient.RVec() * nEyeOffset;
 	}
 #ifdef EDITOR
 if (gameStates.app.nFunctionMode == FMODE_EDITOR)
@@ -1146,8 +1146,8 @@ else {
 		CFixMatrix mView;
 
 		mView = gameData.objs.viewerP->info.position.mOrient;
-		mView [FVEC].Neg();
-		mView [RVEC].Neg();
+		mView.FVec().Neg();
+		mView.RVec().Neg();
 #else
 		CFixMatrix mHead, mView;
 

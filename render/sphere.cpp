@@ -18,6 +18,7 @@
 #include "objeffects.h"
 #include "objrender.h"
 #include "transprender.h"
+#include "oof.h"
 
 #define ADDITIVE_SPHERE_BLENDING 1
 #define MAX_SPHERE_RINGS 256

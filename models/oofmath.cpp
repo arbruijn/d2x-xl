@@ -85,15 +85,15 @@ return pDest;
 float *OOF_MatVms2Gl (float *pDest, const CFixMatrix& pSrc)
 {
 OOF_GlIdent (pDest);
-pDest [0] = X2F (pSrc [RVEC][X]);
-pDest [4] = X2F (pSrc [RVEC][Y]);
-pDest [8] = X2F (pSrc [RVEC][Z]);
-pDest [1] = X2F (pSrc [UVEC][X]);
-pDest [5] = X2F (pSrc [UVEC][Y]);
-pDest [9] = X2F (pSrc [UVEC][Z]);
-pDest [2] = X2F (pSrc [FVEC][X]);
-pDest [6] = X2F (pSrc [FVEC][Y]);
-pDest [10] = X2F (pSrc [FVEC][Z]);
+pDest [0] = X2F (pSrc.RVec()[X]);
+pDest [4] = X2F (pSrc.RVec()[Y]);
+pDest [8] = X2F (pSrc.RVec()[Z]);
+pDest [1] = X2F (pSrc.UVec()[X]);
+pDest [5] = X2F (pSrc.UVec()[Y]);
+pDest [9] = X2F (pSrc.UVec()[Z]);
+pDest [2] = X2F (pSrc.FVec()[X]);
+pDest [6] = X2F (pSrc.FVec()[Y]);
+pDest [10] = X2F (pSrc.FVec()[Z]);
 return pDest;
 }
 

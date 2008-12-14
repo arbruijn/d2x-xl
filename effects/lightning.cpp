@@ -1776,14 +1776,14 @@ FORALL_EFFECT_OBJS (objP, i) {
 	else if ((vEnd = FindTargetPos (objP, pli->nTarget)))
 		pli->nLength = CFixVector::Dist (objP->info.position.vPos, *vEnd) / F1_0;
 	else {
-		v = objP->info.position.vPos + objP->info.position.mOrient [FVEC] * F1_0 * pli->nLength;
+		v = objP->info.position.vPos + objP->info.position.mOrient.FVec() * F1_0 * pli->nLength;
 		vEnd = &v;
 		}
 	color.red = (float) pli->color.red / 255.0f;
 	color.green = (float) pli->color.green / 255.0f;
 	color.blue = (float) pli->color.blue / 255.0f;
 	color.alpha = (float) pli->color.alpha / 255.0f;
-	vDelta = pli->bInPlane ? &objP->info.position.mOrient [RVEC] : NULL;
+	vDelta = pli->bInPlane ? &objP->info.position.mOrient.RVec() : NULL;
 	h = Create (pli->nLightnings, &objP->info.position.vPos, vEnd, vDelta, i, -abs (pli->nLife), pli->nDelay, pli->nLength * F1_0,
 				   pli->nAmplitude * F1_0, pli->nAngle, pli->nOffset * F1_0, pli->nNodes, pli->nChildren, pli->nChildren > 0, pli->nSteps,
 				   pli->nSmoothe, pli->bClamp, pli->bPlasma, pli->bSound, 1, pli->nStyle, &color);
@@ -2206,8 +2206,8 @@ if ((bSpectate || (objP->info.nId != gameData.multiplayer.nLocalPlayer)) &&
 	TransformGunPoint (objP, vGunPoints, 6, 0, 0, vMuzzle, NULL);
 	}
 else {
-	*vMuzzle = posP->vPos - posP->mOrient [UVEC];
-	*vMuzzle += posP->mOrient [FVEC] * (objP->info.xSize / 3);
+	*vMuzzle = posP->vPos - posP->mOrient.UVec();
+	*vMuzzle += posP->mOrient.FVec() * (objP->info.xSize / 3);
 	}
 return vMuzzle;
 }

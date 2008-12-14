@@ -33,14 +33,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void RenderFaceShadow (tFaceProps *propsP)
 {
-	int			i, nVertices = propsP->nVertices;
-	g3sPoint		*p;
+	int				i, nVertices = propsP->nVertices;
+	g3sPoint			*p;
 	CFloatVector	v [9];
 
 for (i = 0; i < nVertices; i++) {
 	p = gameData.segs.points + propsP->vp [i];
 	if (p->p3_index < 0)
-		OOF_VecVms2Oof (v + i, p->p3_vec);
+		v [i].Copy (p->p3_vec);
 	else
 		memcpy (v + i, gameData.render.vertP + p->p3_index, sizeof (CFloatVector));
 	}
@@ -313,7 +313,7 @@ for (i = 0, cameraP = gameData.render.shadows.shadowMaps; i < 1/*gameData.render
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);
 	glLoadMatrixf (mTexBiasf);
 	glMultMatrixf (mProjectionf);
-	glMultMatrixf (OOF_MatVms2Gl (mModelViewf, cameraP->GetObject ()->info.position.mOrient));
+	glMultMatrixf (CFixMatrix::ToOpenGL (mModelViewf, cameraP->GetObject ()->info.position.mOrient));
 	}
 glMatrixMode (GL_MODELVIEW);
 #endif

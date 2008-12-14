@@ -491,15 +491,15 @@ if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
 		OglComputeSinCos (sizeofa (sinCosInd), sinCosInd);
 		bInitSinCos = 0;
 		}
-	mRot [RVEC][X] =
-	mRot [UVEC][Y] = sinCosInd [nMslLockIndPos [bMarker]].fCos;
-	mRot [UVEC][X] = sinCosInd [nMslLockIndPos [bMarker]].fSin;
-	mRot [RVEC][Y] = -mRot [UVEC][X];
-	mRot [RVEC][Z] =
-	mRot [UVEC][Z] =
-	mRot [FVEC][X] =
-	mRot [FVEC][Y] = 0;
-	mRot [FVEC][Z] = 1;
+	mRot.RVec()[X] =
+	mRot.UVec()[Y] = sinCosInd [nMslLockIndPos [bMarker]].fCos;
+	mRot.UVec()[X] = sinCosInd [nMslLockIndPos [bMarker]].fSin;
+	mRot.RVec()[Y] = -mRot.UVec()[X];
+	mRot.RVec()[Z] =
+	mRot.UVec()[Z] =
+	mRot.FVec()[X] =
+	mRot.FVec()[Y] = 0;
+	mRot.FVec()[Z] = 1;
 
 	fVerts [0][Z] =
 	fVerts [1][Z] =
@@ -534,10 +534,10 @@ if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
 		if (bMarker)
 			glLineWidth (1);
 		if (!j) {	//now rotate by 90 degrees
-			mRot [RVEC][X] =
-			mRot [UVEC][Y] = 0;
-			mRot [UVEC][X] = 1;
-			mRot [RVEC][Y] = -1;
+			mRot.RVec()[X] =
+			mRot.UVec()[Y] = 0;
+			mRot.UVec()[X] = 1;
+			mRot.RVec()[Y] = -1;
 			}
 		}
 	}
@@ -754,7 +754,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 			return;
 		bmP = bmP->CurFrame (-1);
 		bmP->Texture ()->Wrap (GL_REPEAT);
-		vPos += objP->info.position.mOrient [FVEC] * (-objP->info.xSize);
+		vPos += objP->info.position.mOrient.FVec() * (-objP->info.xSize);
 		r = X2F (objP->info.xSize);
 		G3StartInstanceMatrix (vPos, pp->mOrient);
 		glBegin (GL_QUADS);
@@ -857,19 +857,19 @@ void CalcShipThrusterPos (CObject *objP, CFixVector *vPos)
 	tTransformation	*pPos = OBJPOS (objP);
 
 if (gameOpts->render.bHiresModels) {
-	vPos [0] = pPos->vPos + pPos->mOrient [FVEC] * (-objP->info.xSize);
-	vPos [0] += pPos->mOrient [RVEC] * (-(8 * objP->info.xSize / 44));
-	vPos [1] = vPos [0] + pPos->mOrient [RVEC] * (8 * objP->info.xSize / 22);
+	vPos [0] = pPos->vPos + pPos->mOrient.FVec() * (-objP->info.xSize);
+	vPos [0] += pPos->mOrient.RVec() * (-(8 * objP->info.xSize / 44));
+	vPos [1] = vPos [0] + pPos->mOrient.RVec() * (8 * objP->info.xSize / 22);
 	}
 else {
-	vPos [0] = pPos->vPos + pPos->mOrient [FVEC] * (-objP->info.xSize / 10 * 9);
+	vPos [0] = pPos->vPos + pPos->mOrient.FVec() * (-objP->info.xSize / 10 * 9);
 	if (gameStates.app.bFixModels)
-		vPos [0] += pPos->mOrient [UVEC] * (objP->info.xSize / 40);
+		vPos [0] += pPos->mOrient.UVec() * (objP->info.xSize / 40);
 	else
-		vPos [0] += pPos->mOrient [UVEC] * (-objP->info.xSize / 20);
+		vPos [0] += pPos->mOrient.UVec() * (-objP->info.xSize / 20);
 	vPos [1] = vPos [0];
-	vPos [0] += pPos->mOrient [RVEC] * (-8 * objP->info.xSize / 49);
-	vPos [1] += pPos->mOrient [RVEC] * (8 * objP->info.xSize / 49);
+	vPos [0] += pPos->mOrient.RVec() * (-8 * objP->info.xSize / 49);
+	vPos [1] += pPos->mOrient.RVec() * (8 * objP->info.xSize / 49);
 	}
 }
 
@@ -916,7 +916,7 @@ else if (bAfterburnerBlob || (bMissile && !nThrusters)) {
 		ti.fLength /= 2;
 	if (!gameData.models.vScale.IsZero ())
 		ti.vPos [0] *= gameData.models.vScale;
-	*ti.vPos = objP->info.position.vPos + objP->info.position.mOrient [FVEC] * (-nObjRad);
+	*ti.vPos = objP->info.position.vPos + objP->info.position.mOrient.FVec() * (-nObjRad);
 	ti.mtP = NULL;
 	}
 else if ((objP->info.nType == OBJ_PLAYER) ||
@@ -1121,7 +1121,7 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 	ti.fSize *= ((objP->info.nType == OBJ_PLAYER) && HaveHiresModel (objP->rType.polyObjInfo.nModel)) ? 1.2f : 1.5f;
 #if 1
 	if (!ti.mtP)
-		fVecf = ti.pp ? ti.pp->mOrient [FVEC].ToFloat() : objP->info.position.mOrient [FVEC].ToFloat();
+		fVecf = ti.pp ? ti.pp->mOrient.FVec().ToFloat() : objP->info.position.mOrient.FVec().ToFloat();
 #endif
 	for (h = 0; h < nThrusters; h++)
 		CreateLightTrail (ti.vPos [h], ti.vDir [h], ti.fSize, ti.fLength, bmpThruster [nStyle], &tcColor);
@@ -1229,7 +1229,7 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 
 	bmP = bAdditive ? bmpGlare : bmpCorona;
 	colorP->alpha = alpha;
-	vDir = objP->info.position.mOrient [FVEC].ToFloat();
+	vDir = objP->info.position.mOrient.FVec().ToFloat();
 	vPos = objP->info.position.vPos.ToFloat();
 	vCorona [0] = vPos + vDir * (fScale * fLength);
 	vh [4] = vCorona [0];
@@ -1376,7 +1376,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 			vPos += o * xOffset;
 			}
 		else
-			vPos += objP->info.position.mOrient [FVEC] * xOffset;
+			vPos += objP->info.position.mOrient.FVec() * xOffset;
 		}
 	if (xSize < F1_0)
 		xSize = F1_0;
@@ -1463,7 +1463,7 @@ if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]
 		CFixVector	vPos;
 		int			bStencil;
 
-	vPos = objP->info.position.vPos + objP->info.position.mOrient [FVEC] * (objP->info.xSize / 2);
+	vPos = objP->info.position.vPos + objP->info.position.mOrient.FVec() * (objP->info.xSize / 2);
 	bStencil = StencilOff ();
 	if (EGI_FLAG (bShockwaves, 1, 1, 0) &&
 		 (objP->mType.physInfo.velocity [X] || objP->mType.physInfo.velocity [Y] || objP->mType.physInfo.velocity [Z])) {
@@ -1620,7 +1620,7 @@ void Laser_draw_one (int nObject, CBitmap * bmp)
 	fix Laser_width = Laser_length / 8;
 
 	start_pos = objP->info.position.vPos;
-	VmVecScaleAdd (&vEndPos,&start_pos,&objP->info.position.mOrient [FVEC],-Laser_length);
+	VmVecScaleAdd (&vEndPos,&start_pos,&objP->info.position.mOrient.FVec(),-Laser_length);
 
 	G3TransformAndEncodePoint (&p1,&start_pos);
 	G3TransformAndEncodePoint (&p2,&vEndPos);
@@ -1719,7 +1719,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 			trailColor.green *= fScale;
 			trailColor.blue *= fScale;
 			}
-		vOffsf = objP->info.position.mOrient [FVEC].ToFloat();
+		vOffsf = objP->info.position.mOrient.FVec().ToFloat();
 		vTrailVerts [0] = objP->info.position.vPos.ToFloat();
 		vTrailVerts [0] += vOffsf * l;
 		vTrailVerts [2] = vTrailVerts [0] - vOffsf * 100;
@@ -1829,7 +1829,7 @@ void CreatePlayerAppearanceEffect (CObject *playerObjP)
 	CObject		*effectObjP;
 
 if (playerObjP == gameData.objs.viewerP)
-	pos = playerObjP->info.position.vPos + playerObjP->info.position.mOrient [FVEC] * FixMul(playerObjP->info.xSize,flashDist);
+	pos = playerObjP->info.position.vPos + playerObjP->info.position.mOrient.FVec() * FixMul(playerObjP->info.xSize,flashDist);
 else
 	pos = playerObjP->info.position.vPos;
 effectObjP = ObjectCreateExplosion (playerObjP->info.nSegment, &pos, playerObjP->info.xSize, VCLIP_PLAYER_APPEARANCE);

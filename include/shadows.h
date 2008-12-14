@@ -12,9 +12,9 @@
 #include "oof.h"
 
 void G3SetCullAndStencil (int bCullFront, int bZPass);
-void G3RenderShadowVolumeFace (tOOF_vector *pv);
-void G3RenderFarShadowCapFace (tOOF_vector *pv, int nVertices);
-int POFGatherPolyModelItems (CObject *objP, void *modelP, vmsAngVec *pAnimAngles, tPOFObject *po, int bShadowData);
+void G3RenderShadowVolumeFace (CFloatVector *pv);
+void G3RenderFarShadowCapFace (CFloatVector *pv, int nVertices);
+int POFGatherPolyModelItems (CObject *objP, void *modelP, CAngleVector *pAnimAngles, tPOFObject *po, int bShadowData);
 int POFFreePolyModelItems (tPOFObject *po);
 void POFFreeAllPolyModelItems (void);
 

@@ -305,8 +305,8 @@ else if (nType != BUBBLE_PARTICLES)
 else {
 	//m_vPos = *vPos + vDrift * (F1_0 / 32);
 	nSpeed = vDrift.Mag () / 16;
-	vDrift = CFixVector::Avg ((*mOrient) [RVEC] * (nSpeed - randN (2 * nSpeed)), (*mOrient) [UVEC] * (nSpeed - randN (2 * nSpeed)));
-	m_vPos = *vPos + vDrift + (*mOrient) [FVEC] * (F1_0 / 2 - randN (F1_0));
+	vDrift = CFixVector::Avg ((*mOrient).RVec() * (nSpeed - randN (2 * nSpeed)), (*mOrient).UVec() * (nSpeed - randN (2 * nSpeed)));
+	m_vPos = *vPos + vDrift + (*mOrient).FVec() * (F1_0 / 2 - randN (F1_0));
 #if 1
 	m_vDrift.SetZero ();
 #else
@@ -778,17 +778,17 @@ if (gameStates.render.bVertexArrays) {
 		if (bInitSinCos) {
 			OglComputeSinCos (sizeofa (sinCosPart), sinCosPart);
 			bInitSinCos = 0;
-			mRot [RVEC][Z] =
-			mRot [UVEC][Z] =
-			mRot [FVEC][X] =
-			mRot [FVEC][Y] = 0;
-			mRot [FVEC][Z] = 1;
+			mRot.RVec()[Z] =
+			mRot.UVec()[Z] =
+			mRot.FVec()[X] =
+			mRot.FVec()[Y] = 0;
+			mRot.FVec()[Z] = 1;
 			}
 		nFrame = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
-		mRot [RVEC][X] =
-		mRot [UVEC][Y] = sinCosPart [nFrame].fCos;
-		mRot [UVEC][X] = sinCosPart [nFrame].fSin;
-		mRot [RVEC][Y] = -mRot [UVEC][X];
+		mRot.RVec()[X] =
+		mRot.UVec()[Y] = sinCosPart [nFrame].fCos;
+		mRot.UVec()[X] = sinCosPart [nFrame].fSin;
+		mRot.RVec()[Y] = -mRot.UVec()[X];
 		vOffset = mRot * vOffset;
 		pb [0].vertex [X] = vCenter [X] - vOffset [X];
 		pb [0].vertex [Y] = vCenter [Y] + vOffset [Y];

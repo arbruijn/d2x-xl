@@ -79,9 +79,9 @@ const CFloatMatrix CFloatMatrix::IDENTITY = CFloatMatrix::Create(CFloatVector::C
 //returns matrix.
 const CFixMatrix CFixMatrix::CreateF(const CFixVector& fVec) {
 	CFixMatrix m;
-	CFixVector& xvec = m [RVEC];
-	CFixVector& yvec = m [UVEC];
-	CFixVector& zvec = m [FVEC];
+	CFixVector& xvec = m.RVec();
+	CFixVector& yvec = m.UVec();
+	CFixVector& zvec = m.FVec();
 
 	zvec = fVec;
 	CFixVector::Normalize(zvec);
@@ -89,9 +89,9 @@ const CFixMatrix CFixMatrix::CreateF(const CFixVector& fVec) {
 
 	//just forward vec
 	if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
-		m [RVEC][X] = F1_0;
-		m [UVEC][Z] = (zvec [Y] < 0) ? F1_0 : -F1_0;
-		m [RVEC][Y] = m [RVEC][Z] = m [UVEC][X] = m [UVEC][Y] = 0;
+		m.RVec()[X] = F1_0;
+		m.UVec()[Z] = (zvec [Y] < 0) ? F1_0 : -F1_0;
+		m.RVec()[Y] = m.RVec()[Z] = m.UVec()[X] = m.UVec()[Y] = 0;
 	}
 	else { 		//not straight up or down
 		xvec [X] = zvec [Z];
@@ -108,9 +108,9 @@ const CFixMatrix CFixMatrix::CreateF(const CFixVector& fVec) {
 //returns matrix.
 const CFixMatrix CFixMatrix::CreateFU(const CFixVector& fVec, const CFixVector& uVec) {
 	CFixMatrix m;
-	CFixVector& xvec = m [RVEC];
-	CFixVector& yvec = m [UVEC];
-	CFixVector& zvec = m [FVEC];
+	CFixVector& xvec = m.RVec();
+	CFixVector& yvec = m.UVec();
+	CFixVector& zvec = m.FVec();
 
 	zvec = fVec;
 	CFixVector::Normalize(zvec);
@@ -119,9 +119,9 @@ const CFixMatrix CFixMatrix::CreateFU(const CFixVector& fVec, const CFixVector& 
 	yvec = uVec;
 	if (CFixVector::Normalize(yvec) == 0) {
 		if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
-			m [RVEC][X] = F1_0;
-			m [UVEC][Z] = (zvec [Y] < 0) ? F1_0 : -F1_0;
-			m [RVEC][Y] = m [RVEC][Z] = m [UVEC][X] = m [UVEC][Y] = 0;
+			m.RVec()[X] = F1_0;
+			m.UVec()[Z] = (zvec [Y] < 0) ? F1_0 : -F1_0;
+			m.RVec()[Y] = m.RVec()[Z] = m.UVec()[X] = m.UVec()[Y] = 0;
 		}
 		else { 		//not straight up or down
 			xvec [X] = zvec [Z];
@@ -136,9 +136,9 @@ const CFixMatrix CFixMatrix::CreateFU(const CFixVector& fVec, const CFixVector& 
 	//Normalize new perpendicular vector
 	if (CFixVector::Normalize(xvec) == 0) {
 		if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
-			m [RVEC][X] = F1_0;
-			m [UVEC][Z] = (zvec [Y] < 0) ? F1_0 : -F1_0;
-			m [RVEC][Y] = m [RVEC][Z] = m [UVEC][X] = m [UVEC][Y] = 0;
+			m.RVec()[X] = F1_0;
+			m.UVec()[Z] = (zvec [Y] < 0) ? F1_0 : -F1_0;
+			m.RVec()[Y] = m.RVec()[Z] = m.UVec()[X] = m.UVec()[Y] = 0;
 		}
 		else { 		//not straight up or down
 			xvec [X] = zvec [Z];
@@ -160,9 +160,9 @@ const CFixMatrix CFixMatrix::CreateFU(const CFixVector& fVec, const CFixVector& 
 //returns matrix.
 const CFixMatrix CFixMatrix::CreateFR(const CFixVector& fVec, const CFixVector& rVec) {
 	CFixMatrix m;
-	CFixVector& xvec = m [RVEC];
-	CFixVector& yvec = m [UVEC];
-	CFixVector& zvec = m [FVEC];
+	CFixVector& xvec = m.RVec();
+	CFixVector& yvec = m.UVec();
+	CFixVector& zvec = m.FVec();
 
 	zvec = fVec;
 	CFixVector::Normalize(zvec);
@@ -172,9 +172,9 @@ const CFixMatrix CFixMatrix::CreateFR(const CFixVector& fVec, const CFixVector& 
 	xvec = rVec;
 	if (CFixVector::Normalize(xvec) == 0) {
 		if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
-			m [RVEC][X] = F1_0;
-			m [UVEC][Z] = (zvec [Y] < 0) ? F1_0 : -F1_0;
-			m [RVEC][Y] = m [RVEC][Z] = m [UVEC][X] = m [UVEC][Y] = 0;
+			m.RVec()[X] = F1_0;
+			m.UVec()[Z] = (zvec [Y] < 0) ? F1_0 : -F1_0;
+			m.RVec()[Y] = m.RVec()[Z] = m.UVec()[X] = m.UVec()[Y] = 0;
 		}
 		else { 		//not straight up or down
 			xvec [X] = zvec [Z];
@@ -189,9 +189,9 @@ const CFixMatrix CFixMatrix::CreateFR(const CFixVector& fVec, const CFixVector& 
 	//Normalize new perpendicular vector
 	if (CFixVector::Normalize(yvec) == 0) {
 		if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
-			m [RVEC][X] = F1_0;
-			m [UVEC][Z] = (zvec [Y] < 0) ? F1_0 : -F1_0;
-			m [RVEC][Y] = m [RVEC][Z] = m [UVEC][X] = m [UVEC][Y] = 0;
+			m.RVec()[X] = F1_0;
+			m.UVec()[Z] = (zvec [Y] < 0) ? F1_0 : -F1_0;
+			m.RVec()[Y] = m.RVec()[Z] = m.UVec()[X] = m.UVec()[Y] = 0;
 		}
 		else { 		//not straight up or down
 			xvec [X] = zvec [Z];

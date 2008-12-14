@@ -1589,15 +1589,15 @@ void ExtractShortPos (CObject *objP, tShortPos *spp, int swap_bytes)
 
 	segP = spp->orient;
 
-	objP->info.position.mOrient [RVEC][X] = *segP++ << MATRIX_PRECISION;
-	objP->info.position.mOrient [UVEC][X] = *segP++ << MATRIX_PRECISION;
-	objP->info.position.mOrient [FVEC][X] = *segP++ << MATRIX_PRECISION;
-	objP->info.position.mOrient [RVEC][Y] = *segP++ << MATRIX_PRECISION;
-	objP->info.position.mOrient [UVEC][Y] = *segP++ << MATRIX_PRECISION;
-	objP->info.position.mOrient [FVEC][Y] = *segP++ << MATRIX_PRECISION;
-	objP->info.position.mOrient [RVEC][Z] = *segP++ << MATRIX_PRECISION;
-	objP->info.position.mOrient [UVEC][Z] = *segP++ << MATRIX_PRECISION;
-	objP->info.position.mOrient [FVEC][Z] = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient.RVec()[X] = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient.UVec()[X] = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient.FVec()[X] = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient.RVec()[Y] = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient.UVec()[Y] = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient.FVec()[Y] = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient.RVec()[Z] = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient.UVec()[Z] = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient.FVec()[Z] = *segP++ << MATRIX_PRECISION;
 
 	if (swap_bytes) {
 		spp->pos [X] = INTEL_SHORT (spp->pos [X]);

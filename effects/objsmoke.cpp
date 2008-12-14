@@ -292,7 +292,7 @@ if ((gameData.multiplayer.players [i].flags & PLAYER_FLAGS_CLOAKED) ||
 	}
 j = OBJ_IDX (objP);
 if (gameOpts->render.particles.bDecreaseLag && (i == gameData.multiplayer.nLocalPlayer)) {
-	fn = objP->info.position.mOrient [FVEC];
+	fn = objP->info.position.mOrient.FVec();
 	mn = objP->info.position.vPos - objP->info.vLastPos;
 	CFixVector::Normalize (fn);
 	CFixVector::Normalize (mn);
@@ -358,7 +358,7 @@ else {
 		else {	// if the ship is standing still, let the thruster smoke move away from it
 			nParts /= 2;
 			nScale /= 2;
-			vDir = OBJPOS (objP)->mOrient [FVEC] * (F1_0 / 8);
+			vDir = OBJPOS (objP)->mOrient.FVec() * (F1_0 / 8);
 			vDir = -vDir;
 			vDirP = &vDir;
 			}
@@ -599,7 +599,7 @@ if (particleManager.GetObjectSystem (i) < 0) {
 	color.blue = (float) objP->rType.particleInfo.color.blue / 255.0f;
 	if ((bColor = (color.red + color.green + color.blue > 0)))
 		color.alpha = (float) -objP->rType.particleInfo.color.alpha / 255.0f;
-	dir = objP->info.position.mOrient [FVEC] * (objP->rType.particleInfo.nSpeed * 2 * F1_0 / 55);
+	dir = objP->info.position.mOrient.FVec() * (objP->rType.particleInfo.nSpeed * 2 * F1_0 / 55);
 	particleManager.SetObjectSystem (i, 
 		particleManager.Create (&objP->info.position.vPos, &dir, &objP->info.position.mOrient,
 									   objP->info.nSegment, 1, -objP->rType.particleInfo.nParts,

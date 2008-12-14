@@ -194,15 +194,15 @@ void my_extract_shortpos (CObject *objP, tShortPos *spp)
 	sbyte *sp;
 
 sp = spp->orient;
-objP->info.position.mOrient [RVEC][X] = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient [UVEC][X] = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient [FVEC][X] = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient [RVEC][Y] = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient [UVEC][Y] = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient [FVEC][Y] = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient [RVEC][Z] = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient [UVEC][Z] = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient [FVEC][Z] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.RVec()[X] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.UVec()[X] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.FVec()[X] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.RVec()[Y] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.UVec()[Y] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.FVec()[Y] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.RVec()[Z] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.UVec()[Z] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.FVec()[Z] = *sp++ << MATRIX_PRECISION;
 nSegment = spp->nSegment;
 objP->info.nSegment = nSegment;
 const CFixVector& v = gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]];

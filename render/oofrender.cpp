@@ -378,7 +378,7 @@ for (i = m_faces.m_nFaces, pf = m_faces.m_list.Buffer (); i; i--, pf++) {
 #endif
 	if (pf->m_bTextured) {
 #if DBG
-		fl = pf->m_vNormal * mView [FVEC];
+		fl = pf->m_vNormal * mView.FVec();
 		fl = 0.75f + 0.25f * fl;
 		fl = fl * *fLight;
 #else
