@@ -39,7 +39,6 @@ const size_t UVEC = 1;
 const size_t FVEC = 2;
 const size_t HVEC = 3;
 
-// forward-declarations for ToFloat () and ToFix ();
 class CFixVector;
 class CFloatVector;
 class CFloatVector3;
@@ -83,7 +82,7 @@ class CFixVector {
 		static const CFixVector Perp (const CFixVector& p0, const CFixVector& p1, const CFixVector& p2);
 		static CFixVector& Perp (CFixVector& dest, const CFixVector& p0, const CFixVector& p1, const CFixVector& p2);
 		static const CFixVector Normal (const CFixVector& p0, const CFixVector& p1, const CFixVector& p2);
-		static const CFixVector Random ();
+		static const CFixVector Random (void);
 		static const CFixVector Reflect (const CFixVector& d, const CFixVector& n);
 		//return the normalized direction vector between two points
 		//dest = normalized (end - start).  Returns Mag of direction vector
@@ -100,14 +99,14 @@ class CFixVector {
 		const CFixVector& Set (fix x, fix y, fix z);
 		void Set (const fix *vec);
 
-		bool IsZero () const;
-		void SetZero ();
-		const int Sign () const;
+		bool IsZero (void) const;
+		void SetZero (void);
+		const int Sign (void) const;
 
-		fix SqrMag () const;
-		fix Mag () const;
-		CFixVector& Neg ();
-		const CFixVector operator- () const;
+		fix SqrMag (void) const;
+		fix Mag (void) const;
+		CFixVector& Neg (void);
+		const CFixVector operator- (void) const;
 		const bool operator== (const CFixVector& vec);
 		const bool operator!= (const CFixVector& vec);
 		const CFixVector& operator+= (const CFixVector& vec);
@@ -130,11 +129,9 @@ class CFixVector {
 		//distance is signed, so Negative Dist is on the back of the plane
 		const fix DistToPlane (const CFixVector& n, const CFixVector& p) const;
 		//extract heading and pitch from a vector, assuming bank==0
-		const CAngleVector ToAnglesVecNorm () const;
+		const CAngleVector ToAnglesVecNorm (void) const;
 		//extract heading and pitch from a vector, assuming bank==0
-		const CAngleVector ToAnglesVec () const;
-		const CFloatVector ToFloat () const;
-		const CFloatVector3 ToFloat3 () const;
+		const CAngleVector ToAnglesVec (void) const;
 
 	private:
 		fix v [3];
@@ -179,17 +176,17 @@ class CFloatVector {
 		// read-only access op
 		const float operator[] (size_t idx) const;
 
-		bool IsZero () const;
+		bool IsZero (void) const;
 
-		void SetZero ();
+		void SetZero (void);
 		void Set (const float f0, const float f1, const float f2, const float f3=1.0f);
 		void Set (const float *vec);
-		const float SqrMag () const;
-		const float Mag () const;
-		CFloatVector& Neg ();
-		CFloatVector3* V3 ();
+		const float SqrMag (void) const;
+		const float Mag (void) const;
+		CFloatVector& Neg (void);
+		CFloatVector3* V3 (void);
 
-		const CFloatVector operator- () const;
+		const CFloatVector operator- (void) const;
 		const bool operator== (const CFloatVector& other);
 		const bool operator!= (const CFloatVector& other);
 		const CFloatVector& operator+= (const CFloatVector& other);
@@ -201,8 +198,6 @@ class CFloatVector {
 		CFloatVector& Copy (const CFloatVector3& other);
 		CFloatVector& Copy (const CFloatVector& other);
 		CFloatVector& Copy (const CFixVector& other);
-
-		const CFixVector ToFix () const;
 
 	private:
 		float v [4];
@@ -249,16 +244,16 @@ class CFloatVector3 {
 		// read-only access op
 		const float operator[] (size_t idx) const;
 
-		bool IsZero () const;
-		void SetZero ();
+		bool IsZero (void) const;
+		void SetZero (void);
 		void Set (const float f0, const float f1, const float f2);
 		void Set (const float *vec);
 
-		CFloatVector3& Neg ();
-		const float Mag () const;
-		const float SqrMag () const;
+		CFloatVector3& Neg (void);
+		const float Mag (void) const;
+		const float SqrMag (void) const;
 
-		const CFloatVector3 operator- () const;
+		const CFloatVector3 operator- (void) const;
 		const bool operator== (const CFloatVector3& other);
 		const bool operator!= (const CFloatVector3& other);
 		const CFloatVector3& operator+= (const CFloatVector3& other);
@@ -270,8 +265,6 @@ class CFloatVector3 {
 		CFloatVector3& Copy (const CFloatVector3& other);
 		CFloatVector3& Copy (const CFloatVector& other);
 		CFloatVector3& Copy (const CFixVector& other);
-
-		const CFixVector ToFix () const;
 };
 
 const float operator* (const CFloatVector3& v0, const CFloatVector3& v1);
@@ -298,8 +291,8 @@ public:
 	// read-only access op
 	const fixang operator[] (size_t idx) const { return a [idx]; }
 
-	bool IsZero () const { return ! (a [PA] || a [HA] || a [BA]); }
-	void SetZero () { memset (a, 0, 3*sizeof (fixang)); }
+	bool IsZero (void) const { return ! (a [PA] || a [HA] || a [BA]); }
+	void SetZero (void) { memset (a, 0, 3*sizeof (fixang)); }
 
 private:
     fixang a [3];
@@ -376,9 +369,9 @@ inline float& CFloatVector::operator[] (size_t idx) { return v [idx]; }
 
 inline const float CFloatVector::operator[] (size_t idx) const { return v [idx]; }
 
-inline bool CFloatVector::IsZero () const { return ! (v [X] || v [Y] || v [Z] || v [W]); }
+inline bool CFloatVector::IsZero (void) const { return ! (v [X] || v [Y] || v [Z] || v [W]); }
 
-inline void CFloatVector::SetZero () { memset (v, 0, 4*sizeof (float)); }
+inline void CFloatVector::SetZero (void) { memset (v, 0, sizeof (v)); }
 
 inline void CFloatVector::Set (const float f0, const float f1, const float f2, const float f3) {
 	v [X] = f0; v [Y] = f1; v [Z] = f2; v [W] = f3;
@@ -388,34 +381,34 @@ inline void CFloatVector::Set (const float *vec) {
 	v [X] = vec [0]; v [Y] = vec [1]; v [Z] = vec [2]; v [W] = 1.0f;
 }
 
-inline const float CFloatVector::SqrMag () const {
+inline const float CFloatVector::SqrMag (void) const {
 	return v [X]*v [X] + v [Y]*v [Y] + v [Z]*v [Z];
 }
 
-inline const float CFloatVector::Mag () const {
+inline const float CFloatVector::Mag (void) const {
 	return (const float) sqrt (SqrMag ());
 }
 
-inline CFloatVector& CFloatVector::Neg () { v [0] = -v [0], v [1] = -v [1], v [2] = -v [2]; return *this; }
+inline CFloatVector& CFloatVector::Neg (void) { v [0] = -v [0], v [1] = -v [1], v [2] = -v [2]; return *this; }
 
-inline CFloatVector3* CFloatVector::V3 () { return reinterpret_cast<CFloatVector3*> (v); }
+inline CFloatVector3* CFloatVector::V3 (void) { return reinterpret_cast<CFloatVector3*> (v); }
 
-inline const CFloatVector CFloatVector::operator- () const {
+inline const CFloatVector CFloatVector::operator- (void) const {
 	return Create (-v [X], -v [Y], -v [Z]);
 }
 
 inline CFloatVector& CFloatVector::Copy (const CFloatVector3& other) {
-	v [0] = other [0], v [1] = other [1], v [2] = other [2];
+	v [0] = other [0], v [1] = other [1], v [2] = other [2]; v [3] = 1;
 	return *this;
 }
 
 inline CFloatVector& CFloatVector::Copy (const CFloatVector& other) {
-	v [0] = other [0], v [1] = other [1], v [2] = other [2];
+	v [0] = other [0], v [1] = other [1], v [2] = other [2]; v [3] = other [3];
 	return *this;
 }
 
 inline CFloatVector& CFloatVector::Copy (const CFixVector& other) {
-	v [0] = X2F (other [0]), v [1] = X2F (other [1]), v [2] = X2F (other [2]);
+	v [0] = X2F (other [0]), v [1] = X2F (other [1]), v [2] = X2F (other [2]); v [3] = 1;
 	return *this;
 }
 
@@ -546,9 +539,9 @@ inline float& CFloatVector3::operator[] (size_t idx) { return v [idx]; }
 
 inline const float CFloatVector3::operator[] (size_t idx) const { return v [idx]; }
 
-inline bool CFloatVector3::IsZero () const { return ! (v [0] || v [1] || v [2]); }
+inline bool CFloatVector3::IsZero (void) const { return ! (v [0] || v [1] || v [2]); }
 
-inline void CFloatVector3::SetZero () { memset (v, 0, 3*sizeof (float)); }
+inline void CFloatVector3::SetZero (void) { memset (v, 0, 3*sizeof (float)); }
 
 inline void CFloatVector3::Set (const float f0, const float f1, const float f2) {
 	v [X] = f0; v [Y] = f1; v [Z] = f2;
@@ -558,13 +551,13 @@ inline void CFloatVector3::Set (const float *vec) {
 	v [X] = vec [0]; v [Y] = vec [1]; v [Z] = vec [2];
 }
 
-inline CFloatVector3& CFloatVector3::Neg () { v [0] = -v [0], v [1] = -v [1], v [2] = -v [2]; return *this; }
+inline CFloatVector3& CFloatVector3::Neg (void) { v [0] = -v [0], v [1] = -v [1], v [2] = -v [2]; return *this; }
 
-inline const float CFloatVector3::SqrMag () const {
+inline const float CFloatVector3::SqrMag (void) const {
 	return v [X]*v [X] + v [Y]*v [Y] + v [Z]*v [Z];
 }
 
-inline const float CFloatVector3::Mag () const {
+inline const float CFloatVector3::Mag (void) const {
 	return (const float) sqrt (SqrMag ());
 }
 
@@ -591,7 +584,7 @@ inline const bool CFloatVector3::operator!= (const CFloatVector3& other) {
 	return v [0] != other [0] || v [1] != other [1] || v [2] != other [2];
 }
 
-inline const CFloatVector3 CFloatVector3::operator- () const {
+inline const CFloatVector3 CFloatVector3::operator- (void) const {
 	return Create (-v [X], -v [Y], -v [Z]);
 }
 
@@ -779,7 +772,7 @@ inline const CFixVector CFixVector::Normal (const CFixVector& p0, const CFixVect
 	return v;
 }
 
-inline const CFixVector CFixVector::Random () {
+inline const CFixVector CFixVector::Random (void) {
 	CFixVector v;
 	int i = d_rand () % 3;
 
@@ -845,29 +838,32 @@ inline bool CFixVector::operator== (const CFixVector& rhs) const {
 	return v [X] == rhs [X], v [Y] == rhs [Y], v [Z] == rhs [Z];
 }
 
-inline const CFixVector& CFixVector::Set (fix x, fix y, fix z) { v [0] = x; v [1] = y; v [2] = z; return *this; }
+inline const CFixVector& CFixVector::Set (fix x, fix y, fix z) { 
+	v [0] = x; v [1] = y; v [2] = z; return 
+	*this; 
+	}
 
 inline void CFixVector::Set (const fix *vec) {
 	v [X] = vec [0]; v [Y] = vec [1]; v [Z] = vec [2];
 }
 
-inline bool CFixVector::IsZero () const { return ! (v [X] || v [Y] || v [Z]); }
+inline bool CFixVector::IsZero (void) const { return ! (v [X] || v [Y] || v [Z]); }
 
-inline void CFixVector::SetZero () { memset (v, 0, 3*sizeof (fix)); }
+inline void CFixVector::SetZero (void) { memset (v, 0, 3*sizeof (fix)); }
 
-inline const int CFixVector::Sign () const { return (v [X] * v [Y] * v [Z] < 0) ? -1 : 1; }
+inline const int CFixVector::Sign (void) const { return (v [X] * v [Y] * v [Z] < 0) ? -1 : 1; }
 
-inline fix CFixVector::SqrMag () const {
+inline fix CFixVector::SqrMag (void) const {
 	return FixMul (v [X], v [X]) + FixMul (v [Y], v [Y]) + FixMul (v [Z], v [Z]);
 }
 
-inline fix CFixVector::Mag () const {
+inline fix CFixVector::Mag (void) const {
 	return F2X (sqrt (X2F (v [X])*X2F (v [X]) + X2F (v [Y])*X2F (v [Y]) + X2F (v [Z])*X2F (v [Z])));
 }
 
-inline CFixVector& CFixVector::Neg () { v [0] = -v [0], v [1] = -v [1], v [2] = -v [2]; return *this; }
+inline CFixVector& CFixVector::Neg (void) { v [0] = -v [0], v [1] = -v [1], v [2] = -v [2]; return *this; }
 
-inline const CFixVector CFixVector::operator- () const {
+inline const CFixVector CFixVector::operator- (void) const {
 	return Create (-v [X], -v [Y], -v [Z]);
 }
 
@@ -934,7 +930,7 @@ inline const fix CFixVector::DistToPlane (const CFixVector& n, const CFixVector&
 }
 
 //extract heading and pitch from a vector, assuming bank==0
-inline const CAngleVector CFixVector::ToAnglesVecNorm () const {
+inline const CAngleVector CFixVector::ToAnglesVecNorm (void) const {
 	CAngleVector a;
 	a [BA] = 0;		//always zero bank
 	a [PA] = FixASin (-v [Y]);
@@ -943,7 +939,7 @@ inline const CAngleVector CFixVector::ToAnglesVecNorm () const {
 }
 
 //extract heading and pitch from a vector, assuming bank==0
-inline const CAngleVector CFixVector::ToAnglesVec () const	{
+inline const CAngleVector CFixVector::ToAnglesVec (void) const	{
 	CFixVector t = *this;
 
 //			if (CFixVector::Normalize (t))
@@ -968,7 +964,7 @@ inline const CFixVector operator* (const fix s, const CFixVector& v) {
 }
 
 inline const CFixVector operator/ (const CFixVector& v, const fix d) {
-	return CFixVector::Create (FixDiv (v [0], d), FixMul (v [1], d), FixMul (v [2], d));
+	return CFixVector::Create (FixDiv (v [0], d), FixDiv (v [1], d), FixDiv (v [2], d));
 }
 
 // -----------------------------------------------------------------------------
@@ -1013,20 +1009,19 @@ class CFixMatrix {
 		fix& operator[] (size_t idx);
 		const fix operator[] (size_t idx) const;
 
+		CFixMatrix Mul (const CFixMatrix& m);
 		CFixVector operator* (const CFixVector& v);
 		CFixMatrix operator* (const CFixMatrix& m);
 
-		const fix Det ();
-		const CFixMatrix Inverse ();
-		const CFixMatrix Transpose ();
+		const fix Det (void);
+		const CFixMatrix Inverse (void);
+		const CFixMatrix Transpose (void);
 
 		//make sure m_data.matrix is orthogonal
-		void CheckAndFix ();
+		void CheckAndFix (void);
 
 		//extract angles from a m_data.matrix
-		const CAngleVector ExtractAnglesVec () const;
-
-		const CFloatMatrix ToFloat () const;
+		const CAngleVector ExtractAnglesVec (void) const;
 
 		const CFixMatrix& Copy (CFixMatrix& other);
 		const CFixMatrix& Copy (CFloatMatrix& other);
@@ -1042,6 +1037,13 @@ class CFixMatrix {
 		inline CFixVector& CFixMatrix::RVec (void) { return m_data.mat [RVEC]; }
 		inline CFixVector& CFixMatrix::UVec (void) { return m_data.mat [UVEC]; }
 		inline CFixVector& CFixMatrix::FVec (void) { return m_data.mat [FVEC]; }
+
+	private:
+		static inline void Swap (fix& l, fix& r) {
+			fix t = l;
+			l = r;
+			r = t;
+			}
 };
 
 
@@ -1102,23 +1104,12 @@ inline CFixMatrix& CFixMatrix::Invert (CFixMatrix& m) {
 	return m;
 }
 
-#if 1
 inline CFixMatrix& CFixMatrix::Transpose (CFixMatrix& m) {
-	fix t;
-	t = m [1];  m [1] = m [4];  m [4] = t;
-	t = m [2];  m [2] = m [8];  m [8] = t;
-	t = m [5];  m [5] = m [9];  m [9] = t;
+	Swap (m [1], m [3]);
+	Swap (m [2], m [6]);
+	Swap (m [5], m [7]);
 	return m;
 }
-#else
-inline CFixMatrix& CFixMatrix::Transpose (CFixMatrix& m) {
-	fix t;
-	t = m.m_data.mat [UVEC][X];  m.m_data.mat [UVEC][X] = m.m_data.mat [RVEC][Y];  m.m_data.mat [RVEC][Y] = t;
-	t = m.m_data.mat [FVEC][X];  m.m_data.mat [FVEC][X] = m.m_data.mat [RVEC][Z];  m.m_data.mat [RVEC][Z] = t;
-	t = m.m_data.mat [FVEC][Y];  m.m_data.mat [FVEC][Y] = m.m_data.mat [UVEC][Z];  m.m_data.mat [UVEC][Z] = t;
-	return m;
-}
-#endif
 
 //------------------------------------------------------------------------------
 
@@ -1153,77 +1144,21 @@ inline CFixVector CFixMatrix::operator* (const CFixVector& v) {
 										CFixVector::Dot (v, m_data.mat [FVEC]));
 }
 
-inline CFixMatrix CFixMatrix::operator* (const CFixMatrix& m) {
-	CFixVector v;
-	v [X] = m_data.mat [RVEC][X];
-	v [Y] = m_data.mat [UVEC][X];
-	v [Z] = m_data.mat [FVEC][X];
-	m_data.mat [RVEC][X] = CFixVector::Dot (v, m.m_data.mat [RVEC]);
-	m_data.mat [UVEC][X] = CFixVector::Dot (v, m.m_data.mat [UVEC]);
-	m_data.mat [FVEC][X] = CFixVector::Dot (v, m.m_data.mat [FVEC]);
-	v [X] = m_data.mat [RVEC][Y];
-	v [Y] = m_data.mat [UVEC][Y];
-	v [Z] = m_data.mat [FVEC][Y];
-	m_data.mat [RVEC][Y] = CFixVector::Dot (v, m.m_data.mat [RVEC]);
-	m_data.mat [UVEC][Y] = CFixVector::Dot (v, m.m_data.mat [UVEC]);
-	m_data.mat [FVEC][Y] = CFixVector::Dot (v, m.m_data.mat [FVEC]);
-	v [X] = m_data.mat [RVEC][Z];
-	v [Y] = m_data.mat [UVEC][Z];
-	v [Z] = m_data.mat [FVEC][Z];
-	m_data.mat [RVEC][Z] = CFixVector::Dot (v, m.m_data.mat [RVEC]);
-	m_data.mat [UVEC][Z] = CFixVector::Dot (v, m.m_data.mat [UVEC]);
-	m_data.mat [FVEC][Z] = CFixVector::Dot (v, m.m_data.mat [FVEC]);
-	return *this;
-}
+inline CFixMatrix CFixMatrix::operator* (const CFixMatrix& other) { return Mul (other); }
 
-inline const fix CFixMatrix::Det () {
-	fix	xDet;
-	//PrintLog ("            CalcDetValue (R: %d, %d, %d; F: %d, %d, %d; U: %d, %d, %d)\n", m->rVec [X], m->rVec [Y], m->rVec [Z], m->fVec [X], m->fVec [Y], m->fVec [Z], m->uVec [X], m->uVec [Y], m->uVec [Z]);
-	//PrintLog ("               xDet = FixMul (m->rVec [X], FixMul (m->uVec [Y], m->fVec [Z]))\n");
-	xDet = FixMul (m_data.mat [RVEC][X], FixMul (m_data.mat [UVEC][Y], m_data.mat [FVEC][Z]));
-	//PrintLog ("               xDet -= FixMul (m->rVec [X], FixMul (m->uVec [Z], m->fVec [Y]))\n");
-	xDet -= FixMul (m_data.mat [RVEC][X], FixMul (m_data.mat [UVEC][Z], m_data.mat [FVEC][Y]));
-	//PrintLog ("               xDet -= FixMul (m->rVec [Y], FixMul (m->uVec [X], m->fVec [Z]))\n");
-	xDet -= FixMul (m_data.mat [RVEC][Y], FixMul (m_data.mat [UVEC][X], m_data.mat [FVEC][Z]));
-	//PrintLog ("               xDet += FixMul (m->rVec [Y], FixMul (m->uVec [Z], m->fVec [X]))\n");
-	xDet += FixMul (m_data.mat [RVEC][Y], FixMul (m_data.mat [UVEC][Z], m_data.mat [FVEC][X]));
-	//PrintLog ("               xDet += FixMul (m->rVec [Z], FixMul (m->uVec [X], m->fVec [Y]))\n");
-	xDet += FixMul (m_data.mat [RVEC][Z], FixMul (m_data.mat [UVEC][X], m_data.mat [FVEC][Y]));
-	//PrintLog ("               xDet -= FixMul (m->rVec [Z], FixMul (m->uVec [Y], m->fVec [X]))\n");
-	xDet -= FixMul (m_data.mat [RVEC][Z], FixMul (m_data.mat [UVEC][Y], m_data.mat [FVEC][X]));
-	return xDet;
-	//PrintLog ("             m = %d\n", xDet);
-}
-
-inline const CFixMatrix CFixMatrix::Inverse () {
-	fix	xDet = Det ();
-	CFixMatrix m;
-
-	m.m_data.mat [RVEC][X] = FixDiv (FixMul (m_data.mat [UVEC][Y], m_data.mat [FVEC][Z]) - FixMul (m_data.mat [UVEC][Z], m_data.mat [FVEC][Y]), xDet);
-	m.m_data.mat [RVEC][Y] = FixDiv (FixMul (m_data.mat [RVEC][Z], m_data.mat [FVEC][Y]) - FixMul (m_data.mat [RVEC][Y], m_data.mat [FVEC][Z]), xDet);
-	m.m_data.mat [RVEC][Z] = FixDiv (FixMul (m_data.mat [RVEC][Y], m_data.mat [UVEC][Z]) - FixMul (m_data.mat [RVEC][Z], m_data.mat [UVEC][Y]), xDet);
-	m.m_data.mat [UVEC][X] = FixDiv (FixMul (m_data.mat [UVEC][Z], m_data.mat [FVEC][X]) - FixMul (m_data.mat [UVEC][X], m_data.mat [FVEC][Z]), xDet);
-	m.m_data.mat [UVEC][Y] = FixDiv (FixMul (m_data.mat [RVEC][X], m_data.mat [FVEC][Z]) - FixMul (m_data.mat [RVEC][Z], m_data.mat [FVEC][X]), xDet);
-	m.m_data.mat [UVEC][Z] = FixDiv (FixMul (m_data.mat [RVEC][Z], m_data.mat [UVEC][X]) - FixMul (m_data.mat [RVEC][X], m_data.mat [UVEC][Z]), xDet);
-	m.m_data.mat [FVEC][X] = FixDiv (FixMul (m_data.mat [UVEC][X], m_data.mat [FVEC][Y]) - FixMul (m_data.mat [UVEC][Y], m_data.mat [FVEC][X]), xDet);
-	m.m_data.mat [FVEC][Y] = FixDiv (FixMul (m_data.mat [RVEC][Y], m_data.mat [FVEC][X]) - FixMul (m_data.mat [RVEC][X], m_data.mat [FVEC][Y]), xDet);
-	m.m_data.mat [FVEC][Z] = FixDiv (FixMul (m_data.mat [RVEC][X], m_data.mat [UVEC][Y]) - FixMul (m_data.mat [RVEC][Y], m_data.mat [UVEC][X]), xDet);
-	return m;
-}
-
-inline const CFixMatrix CFixMatrix::Transpose ()  {
+inline const CFixMatrix CFixMatrix::Transpose (void)  {
 	CFixMatrix dest;
 	Transpose (dest, *this);
 	return dest;
 }
 
 //make sure this m_data.matrix is orthogonal
-inline void CFixMatrix::CheckAndFix () {
+inline void CFixMatrix::CheckAndFix (void) {
 	*this = CreateFU (m_data.mat [FVEC], m_data.mat [UVEC]);
 }
 
 //extract angles from a m_data.matrix
-inline const CAngleVector CFixMatrix::ExtractAnglesVec () const {
+inline const CAngleVector CFixMatrix::ExtractAnglesVec (void) const {
 	CAngleVector a;
 	fix sinh, cosh, cosp;
 
@@ -1289,9 +1224,10 @@ class CFloatMatrix {
 		const CFloatVector3 operator* (const CFloatVector3& v);
 		const CFloatMatrix operator* (CFloatMatrix& m);
 
-		const float Det ();
-		const CFloatMatrix Inverse ();
-		const CFloatMatrix Transpose ();
+		const CFloatMatrix Mul (CFloatMatrix& m);
+		const float Det (void);
+		const CFloatMatrix Inverse (void);
+		const CFloatMatrix Transpose (void);
 
 		const CFloatMatrix& Copy (CFixMatrix& other);
 		const CFloatMatrix& Copy (CFloatMatrix& other);
@@ -1308,13 +1244,19 @@ class CFloatMatrix {
 		inline CFloatVector& FVec (void) { return m_data.mat [FVEC]; }
 		inline CFloatVector& HVec (void) { return m_data.mat [HVEC]; }
 
+	private:
+		static inline void Swap (float& l, float& r) {
+			float t = l;
+			l = r;
+			r = t;
+			}
 };
 
 
 // -----------------------------------------------------------------------------
 // CFloatMatrix static inlines
 
-inline const CFloatMatrix CFloatMatrix::Create (const CFloatVector& r, const CFloatVector& u, const CFloatVector& f, const CFloatVector& w) {
+const CFloatMatrix CFloatMatrix::Create (const CFloatVector& r, const CFloatVector& u, const CFloatVector& f, const CFloatVector& w) {
 	CFloatMatrix m;
 	m.m_data.mat [RVEC] = r;
 	m.m_data.mat [UVEC] = u;
@@ -1323,7 +1265,7 @@ inline const CFloatMatrix CFloatMatrix::Create (const CFloatVector& r, const CFl
 	return m;
 }
 
-inline const CFloatMatrix CFloatMatrix::Create (float sinp, float cosp, float sinb, float cosb, float sinh, float cosh) {
+const CFloatMatrix CFloatMatrix::Create (float sinp, float cosp, float sinb, float cosb, float sinh, float cosh) {
 	CFloatMatrix m;
 	float sbsh, cbch, cbsh, sbch;
 
@@ -1348,23 +1290,12 @@ inline CFloatMatrix& CFloatMatrix::Invert (CFloatMatrix& m) {
 	return m;
 }
 
-#if 1
-inline CFloatMatrix& CFloatMatrix::Transpose (CFloatMatrix& m) {
-	float t;
-	t = m [1];  m [1] = m [4];  m [4] = t;
-	t = m [2];  m [2] = m [8];  m [8] = t;
-	t = m [5];  m [5] = m [9];  m [9] = t;
+CFloatMatrix& CFloatMatrix::Transpose (CFloatMatrix& m) {
+	Swap (m [1], m [3]);
+	Swap (m [2], m [6]);
+	Swap (m [5], m [7]);
 	return m;
 }
-#else
-inline CFloatMatrix& CFloatMatrix::Transpose (CFloatMatrix& m) {
-	float t;
-	t = m.m_data.mat [UVEC][X];  m.m_data.mat [UVEC][X] = m.m_data.mat [RVEC][Y];  m.m_data.mat [RVEC][Y] = t;
-	t = m.m_data.mat [FVEC][X];  m.m_data.mat [FVEC][X] = m.m_data.mat [RVEC][Z];  m.m_data.mat [RVEC][Z] = t;
-	t = m.m_data.mat [FVEC][Y];  m.m_data.mat [FVEC][Y] = m.m_data.mat [UVEC][Z];  m.m_data.mat [UVEC][Z] = t;
-	return m;
-}
-#endif
 
 // -----------------------------------------------------------------------------
 // CFloatMatrix member ops
@@ -1385,84 +1316,16 @@ inline const CFloatVector3 CFloatMatrix::operator* (const CFloatVector3& v) {
 											CFloatVector3::Dot (v, *m_data.mat [FVEC].V3 ()));
 }
 
-inline const float CFloatMatrix::Det () {
-	return m_data.mat [RVEC][X] * m_data.mat [UVEC][Y] * m_data.mat [FVEC][Z] -
-			 m_data.mat [RVEC][X] * m_data.mat [UVEC][Z] * m_data.mat [FVEC][Y] -
-			 m_data.mat [RVEC][Y] * m_data.mat [UVEC][X] * m_data.mat [FVEC][Z] +
-			 m_data.mat [RVEC][Y] * m_data.mat [UVEC][Z] * m_data.mat [FVEC][X] +
-			 m_data.mat [RVEC][Z] * m_data.mat [UVEC][X] * m_data.mat [FVEC][Y] -
-			 m_data.mat [RVEC][Z] * m_data.mat [UVEC][Y] * m_data.mat [FVEC][X];
-}
-
-inline const CFloatMatrix CFloatMatrix::Inverse () {
-	float fDet = Det ();
-	CFloatMatrix	m = *this;
-
-	m.m_data.mat [RVEC][X] = (m_data.mat [UVEC][Y] * m_data.mat [FVEC][Z] - m_data.mat [UVEC][Z] * m_data.mat [FVEC][Y]) / fDet;
-	m.m_data.mat [RVEC][Y] = (m_data.mat [RVEC][Z] * m_data.mat [FVEC][Y] - m_data.mat [RVEC][Y] * m_data.mat [FVEC][Z]) / fDet;
-	m.m_data.mat [RVEC][Z] = (m_data.mat [RVEC][Y] * m_data.mat [UVEC][Z] - m_data.mat [RVEC][Z] * m_data.mat [UVEC][Y]) / fDet;
-	m.m_data.mat [UVEC][X] = (m_data.mat [UVEC][Z] * m_data.mat [FVEC][X] - m_data.mat [UVEC][X] * m_data.mat [FVEC][Z]) / fDet;
-	m.m_data.mat [UVEC][Y] = (m_data.mat [RVEC][X] * m_data.mat [FVEC][Z] - m_data.mat [RVEC][Z] * m_data.mat [FVEC][X]) / fDet;
-	m.m_data.mat [UVEC][Z] = (m_data.mat [RVEC][Z] * m_data.mat [UVEC][X] - m_data.mat [RVEC][X] * m_data.mat [UVEC][Z]) / fDet;
-	m.m_data.mat [FVEC][X] = (m_data.mat [UVEC][X] * m_data.mat [FVEC][Y] - m_data.mat [UVEC][Y] * m_data.mat [FVEC][X]) / fDet;
-	m.m_data.mat [FVEC][Y] = (m_data.mat [RVEC][Y] * m_data.mat [FVEC][X] - m_data.mat [RVEC][X] * m_data.mat [FVEC][Y]) / fDet;
-	m.m_data.mat [FVEC][Z] = (m_data.mat [RVEC][X] * m_data.mat [UVEC][Y] - m_data.mat [RVEC][Y] * m_data.mat [UVEC][X]) / fDet;
-	return m;
-}
-
-inline const CFloatMatrix CFloatMatrix::Transpose () {
+inline const CFloatMatrix CFloatMatrix::Transpose (void) {
 	CFloatMatrix dest;
 	Transpose (dest, *this);
 	return dest;
 }
 
-
-inline const CFloatMatrix CFloatMatrix::operator* (CFloatMatrix& m) {
-	CFloatVector v;
-	CFloatMatrix r;
-	v [X] = m_data.mat [RVEC][X];
-	v [Y] = m_data.mat [UVEC][X];
-	v [Z] = m_data.mat [FVEC][X];
-	r.m_data.mat [RVEC][X] = CFloatVector::Dot (v, m.m_data.mat [RVEC]);
-	r.m_data.mat [UVEC][X] = CFloatVector::Dot (v, m.m_data.mat [UVEC]);
-	r.m_data.mat [FVEC][X] = CFloatVector::Dot (v, m.m_data.mat [FVEC]);
-	v [X] = m_data.mat [RVEC][Y];
-	v [Y] = m_data.mat [UVEC][Y];
-	v [Z] = m_data.mat [FVEC][Y];
-	r.m_data.mat [RVEC][Y] = CFloatVector::Dot (v, m.m_data.mat [RVEC]);
-	r.m_data.mat [UVEC][Y] = CFloatVector::Dot (v, m.m_data.mat [UVEC]);
-	r.m_data.mat [FVEC][Y] = CFloatVector::Dot (v, m.m_data.mat [FVEC]);
-	v [X] = m_data.mat [RVEC][Z];
-	v [Y] = m_data.mat [UVEC][Z];
-	v [Z] = m_data.mat [FVEC][Z];
-	r.m_data.mat [RVEC][Z] = CFloatVector::Dot (v, m.m_data.mat [RVEC]);
-	r.m_data.mat [UVEC][Z] = CFloatVector::Dot (v, m.m_data.mat [UVEC]);
-	r.m_data.mat [FVEC][Z] = CFloatVector::Dot (v, m.m_data.mat [FVEC]);
-	return r;
-}
+inline const CFloatMatrix CFloatMatrix::operator* (CFloatMatrix& other) { return Mul (other); }
 
 // -----------------------------------------------------------------------------
 // misc conversion member ops
-
-inline const CFloatVector CFixVector::ToFloat () const {
-	CFloatVector d;
-	d [X] = X2F (v [X]); d [Y] = X2F (v [Y]); d [Z] = X2F (v [Z]); d [W] = 1; return d;
-}
-
-inline const CFloatVector3 CFixVector::ToFloat3 () const {
-	CFloatVector3 d;
-	d [X] = X2F (v [X]); d [Y] = X2F (v [Y]); d [Z] = X2F (v [Z]); return d;
-}
-
-inline const CFixVector CFloatVector::ToFix () const {
-	CFixVector d;
-	d [X] = F2X (v [X]); d [Y] = F2X (v [Y]); d [Z] = F2X (v [Z]); return d;
-}
-
-inline const CFixVector CFloatVector3::ToFix () const {
-	CFixVector d;
-	d [X] = F2X (v [X]); d [Y] = F2X (v [Y]); d [Z] = F2X (v [Z]); return d;
-}
 
 inline const CFloatMatrix& CFloatMatrix::Copy (CFloatMatrix& other) { 
 	*this = other;
@@ -1473,7 +1336,7 @@ inline const CFloatMatrix& CFloatMatrix::Copy (CFixMatrix& other) {
 	m_data.mat [RVEC].Copy (other.m_data.mat [RVEC]); 
 	m_data.mat [UVEC].Copy (other.m_data.mat [UVEC]); 
 	m_data.mat [FVEC].Copy (other.m_data.mat [FVEC]); 
-	m_data.mat [HVEC].Set (1, 1, 1);
+	m_data.mat [HVEC].Set (1, 1, 1, 1);
 	return *this;
 	}
 
@@ -1490,42 +1353,6 @@ inline const CFixMatrix& CFixMatrix::Copy (CFloatMatrix& other) {
 	m_data.mat [FVEC].Copy (other.m_data.mat [FVEC]); 
 	return *this;
 	}
-
-// -----------------------------------------------------------------------------
-
-CFloatMatrix& CFixMatrix::Transpose (CFloatMatrix& dest, CFixMatrix& src)
-{
-dest [0] = X2F (src [0]);
-dest [4] = X2F (src [1]);
-dest [8] = X2F (src [2]);
-dest [1] = X2F (src [3]);
-dest [5] = X2F (src [4]);
-dest [9] = X2F (src [5]);
-dest [2] = X2F (src [6]);
-dest [6] = X2F (src [7]);
-dest [10] = X2F (src [8]);
-dest [11] = dest [12] = dest [13] = dest [14] = 0;
-dest [15] = 1.0f;
-return dest;
-}
-
-//------------------------------------------------------------------------------
-
-CFloatMatrix& CFloatMatrix::Transpose (CFloatMatrix& dest, CFloatMatrix& src)
-{
-dest [0] = src [0];
-dest [4] = src [1];
-dest [8] = src [2];
-dest [1] = src [4];
-dest [5] = src [5];
-dest [9] = src [6];
-dest [2] = src [8];
-dest [6] = src [9];
-dest [10] = src [10];
-dest [11] = dest [12] = dest [13] = dest [14] = 0;
-dest [15] = 1.0f;
-return dest;
-}
 
 //} // VecMat
 
