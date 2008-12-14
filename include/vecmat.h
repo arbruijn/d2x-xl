@@ -988,6 +988,8 @@ typedef union tFixMatrixData {
 
 
 class CFixMatrix {
+	friend class CFloatMatrix;
+
 	private:
 		tFixMatrixData	m_data;
 
@@ -1032,14 +1034,14 @@ class CFixMatrix {
 		static float* ToOpenGL (float* dest, const CFixMatrix& src);
 
 		inline const CFixVector CFixMatrix::Mat (size_t idx) const { return m_data.mat [idx]; }
-		inline const CFixVector CFixMatrix::RVec (void) const { return Mat (RVEC); }
-		inline const CFixVector CFixMatrix::UVec (void) const { return Mat (UVEC); }
-		inline const CFixVector CFixMatrix::FVec (void) const { return Mat (FVEC); }
+		inline const CFixVector CFixMatrix::RVec (void) const { return m_data.mat [RVEC]; }
+		inline const CFixVector CFixMatrix::UVec (void) const { return m_data.mat [UVEC]; }
+		inline const CFixVector CFixMatrix::FVec (void) const { return m_data.mat [FVEC]; }
 
 		inline CFixVector& CFixMatrix::Mat (size_t idx) { return m_data.mat [idx]; }
-		inline CFixVector& CFixMatrix::RVec (void) { return Mat (RVEC); }
-		inline CFixVector& CFixMatrix::UVec (void) { return Mat (UVEC); }
-		inline CFixVector& CFixMatrix::FVec (void) { return Mat (FVEC); }
+		inline CFixVector& CFixMatrix::RVec (void) { return m_data.mat [RVEC]; }
+		inline CFixVector& CFixMatrix::UVec (void) { return m_data.mat [UVEC]; }
+		inline CFixVector& CFixMatrix::FVec (void) { return m_data.mat [FVEC]; }
 };
 
 
@@ -1049,9 +1051,9 @@ class CFixMatrix {
 
 inline const CFixMatrix CFixMatrix::Create (const CFixVector& r, const CFixVector& u, const CFixVector& f) {
 	CFixMatrix m;
-	m.RVec() = r;
-	m.UVec() = u;
-	m.FVec() = f;
+	m.m_data.mat [RVEC] = r;
+	m.m_data.mat [UVEC] = u;
+	m.m_data.mat [FVEC] = f;
 	return m;
 }
 
@@ -1063,15 +1065,15 @@ inline const CFixMatrix CFixMatrix::Create (fix sinp, fix cosp, fix sinb, fix co
 	cbch = FixMul (cosb, cosh);
 	cbsh = FixMul (cosb, sinh);
 	sbch = FixMul (sinb, cosh);
-	m.RVec()[X] = cbch + FixMul (sinp, sbsh);		//m1
-	m.UVec()[Z] = sbsh + FixMul (sinp, cbch);		//m8
-	m.UVec()[X] = FixMul (sinp, cbsh) - sbch;		//m2
-	m.RVec()[Z] = FixMul (sinp, sbch) - cbsh;		//m7
-	m.FVec()[X] = FixMul (sinh, cosp);			//m3
-	m.RVec()[Y] = FixMul (sinb, cosp);			//m4
-	m.UVec()[Y] = FixMul (cosb, cosp);			//m5
-	m.FVec()[Z] = FixMul (cosh, cosp);			//m9
-	m.FVec()[Y] = -sinp;							//m6
+	m.m_data.mat [RVEC][X] = cbch + FixMul (sinp, sbsh);		//m1
+	m.m_data.mat [UVEC][Z] = sbsh + FixMul (sinp, cbch);		//m8
+	m.m_data.mat [UVEC][X] = FixMul (sinp, cbsh) - sbch;		//m2
+	m.m_data.mat [RVEC][Z] = FixMul (sinp, sbch) - cbsh;		//m7
+	m.m_data.mat [FVEC][X] = FixMul (sinh, cosp);			//m3
+	m.m_data.mat [RVEC][Y] = FixMul (sinb, cosp);			//m4
+	m.m_data.mat [UVEC][Y] = FixMul (cosb, cosp);			//m5
+	m.m_data.mat [FVEC][Z] = FixMul (cosh, cosp);			//m9
+	m.m_data.mat [FVEC][Y] = -sinp;							//m6
 	return m;
 }
 
@@ -1111,9 +1113,9 @@ inline CFixMatrix& CFixMatrix::Transpose (CFixMatrix& m) {
 #else
 inline CFixMatrix& CFixMatrix::Transpose (CFixMatrix& m) {
 	fix t;
-	t = m.UVec()[X];  m.UVec()[X] = m.RVec()[Y];  m.RVec()[Y] = t;
-	t = m.FVec()[X];  m.FVec()[X] = m.RVec()[Z];  m.RVec()[Z] = t;
-	t = m.FVec()[Y];  m.FVec()[Y] = m.UVec()[Z];  m.UVec()[Z] = t;
+	t = m.m_data.mat [UVEC][X];  m.m_data.mat [UVEC][X] = m.m_data.mat [RVEC][Y];  m.m_data.mat [RVEC][Y] = t;
+	t = m.m_data.mat [FVEC][X];  m.m_data.mat [FVEC][X] = m.m_data.mat [RVEC][Z];  m.m_data.mat [RVEC][Z] = t;
+	t = m.m_data.mat [FVEC][Y];  m.m_data.mat [FVEC][Y] = m.m_data.mat [UVEC][Z];  m.m_data.mat [UVEC][Z] = t;
 	return m;
 }
 #endif
@@ -1146,32 +1148,31 @@ inline const fix CFixMatrix::operator[] (size_t idx) const {
 }
 
 inline CFixVector CFixMatrix::operator* (const CFixVector& v) {
-	CFixVector t = RVec ();
-	return CFixVector::Create (CFixVector::Dot (v, RVec()),
-										CFixVector::Dot (v, UVec()),
-										CFixVector::Dot (v, FVec()));
+	return CFixVector::Create (CFixVector::Dot (v, m_data.mat [RVEC]),
+										CFixVector::Dot (v, m_data.mat [UVEC]),
+										CFixVector::Dot (v, m_data.mat [FVEC]));
 }
 
 inline CFixMatrix CFixMatrix::operator* (const CFixMatrix& m) {
 	CFixVector v;
-	v [X] = RVec()[X];
-	v [Y] = UVec()[X];
-	v [Z] = FVec()[X];
-	RVec()[X] = CFixVector::Dot (v, m.RVec());
-	UVec()[X] = CFixVector::Dot (v, m.UVec());
-	FVec()[X] = CFixVector::Dot (v, m.FVec());
-	v [X] = RVec()[Y];
-	v [Y] = UVec()[Y];
-	v [Z] = FVec()[Y];
-	RVec()[Y] = CFixVector::Dot (v, m.RVec());
-	UVec()[Y] = CFixVector::Dot (v, m.UVec());
-	FVec()[Y] = CFixVector::Dot (v, m.FVec());
-	v [X] = RVec()[Z];
-	v [Y] = UVec()[Z];
-	v [Z] = FVec()[Z];
-	RVec()[Z] = CFixVector::Dot (v, m.RVec());
-	UVec()[Z] = CFixVector::Dot (v, m.UVec());
-	FVec()[Z] = CFixVector::Dot (v, m.FVec());
+	v [X] = m_data.mat [RVEC][X];
+	v [Y] = m_data.mat [UVEC][X];
+	v [Z] = m_data.mat [FVEC][X];
+	m_data.mat [RVEC][X] = CFixVector::Dot (v, m.m_data.mat [RVEC]);
+	m_data.mat [UVEC][X] = CFixVector::Dot (v, m.m_data.mat [UVEC]);
+	m_data.mat [FVEC][X] = CFixVector::Dot (v, m.m_data.mat [FVEC]);
+	v [X] = m_data.mat [RVEC][Y];
+	v [Y] = m_data.mat [UVEC][Y];
+	v [Z] = m_data.mat [FVEC][Y];
+	m_data.mat [RVEC][Y] = CFixVector::Dot (v, m.m_data.mat [RVEC]);
+	m_data.mat [UVEC][Y] = CFixVector::Dot (v, m.m_data.mat [UVEC]);
+	m_data.mat [FVEC][Y] = CFixVector::Dot (v, m.m_data.mat [FVEC]);
+	v [X] = m_data.mat [RVEC][Z];
+	v [Y] = m_data.mat [UVEC][Z];
+	v [Z] = m_data.mat [FVEC][Z];
+	m_data.mat [RVEC][Z] = CFixVector::Dot (v, m.m_data.mat [RVEC]);
+	m_data.mat [UVEC][Z] = CFixVector::Dot (v, m.m_data.mat [UVEC]);
+	m_data.mat [FVEC][Z] = CFixVector::Dot (v, m.m_data.mat [FVEC]);
 	return *this;
 }
 
@@ -1179,17 +1180,17 @@ inline const fix CFixMatrix::Det () {
 	fix	xDet;
 	//PrintLog ("            CalcDetValue (R: %d, %d, %d; F: %d, %d, %d; U: %d, %d, %d)\n", m->rVec [X], m->rVec [Y], m->rVec [Z], m->fVec [X], m->fVec [Y], m->fVec [Z], m->uVec [X], m->uVec [Y], m->uVec [Z]);
 	//PrintLog ("               xDet = FixMul (m->rVec [X], FixMul (m->uVec [Y], m->fVec [Z]))\n");
-	xDet = FixMul (RVec()[X], FixMul (UVec()[Y], FVec()[Z]));
+	xDet = FixMul (m_data.mat [RVEC][X], FixMul (m_data.mat [UVEC][Y], m_data.mat [FVEC][Z]));
 	//PrintLog ("               xDet -= FixMul (m->rVec [X], FixMul (m->uVec [Z], m->fVec [Y]))\n");
-	xDet -= FixMul (RVec()[X], FixMul (UVec()[Z], FVec()[Y]));
+	xDet -= FixMul (m_data.mat [RVEC][X], FixMul (m_data.mat [UVEC][Z], m_data.mat [FVEC][Y]));
 	//PrintLog ("               xDet -= FixMul (m->rVec [Y], FixMul (m->uVec [X], m->fVec [Z]))\n");
-	xDet -= FixMul (RVec()[Y], FixMul (UVec()[X], FVec()[Z]));
+	xDet -= FixMul (m_data.mat [RVEC][Y], FixMul (m_data.mat [UVEC][X], m_data.mat [FVEC][Z]));
 	//PrintLog ("               xDet += FixMul (m->rVec [Y], FixMul (m->uVec [Z], m->fVec [X]))\n");
-	xDet += FixMul (RVec()[Y], FixMul (UVec()[Z], FVec()[X]));
+	xDet += FixMul (m_data.mat [RVEC][Y], FixMul (m_data.mat [UVEC][Z], m_data.mat [FVEC][X]));
 	//PrintLog ("               xDet += FixMul (m->rVec [Z], FixMul (m->uVec [X], m->fVec [Y]))\n");
-	xDet += FixMul (RVec()[Z], FixMul (UVec()[X], FVec()[Y]));
+	xDet += FixMul (m_data.mat [RVEC][Z], FixMul (m_data.mat [UVEC][X], m_data.mat [FVEC][Y]));
 	//PrintLog ("               xDet -= FixMul (m->rVec [Z], FixMul (m->uVec [Y], m->fVec [X]))\n");
-	xDet -= FixMul (RVec()[Z], FixMul (UVec()[Y], FVec()[X]));
+	xDet -= FixMul (m_data.mat [RVEC][Z], FixMul (m_data.mat [UVEC][Y], m_data.mat [FVEC][X]));
 	return xDet;
 	//PrintLog ("             m = %d\n", xDet);
 }
@@ -1198,15 +1199,15 @@ inline const CFixMatrix CFixMatrix::Inverse () {
 	fix	xDet = Det ();
 	CFixMatrix m;
 
-	m.RVec()[X] = FixDiv (FixMul (UVec()[Y], FVec()[Z]) - FixMul (UVec()[Z], FVec()[Y]), xDet);
-	m.RVec()[Y] = FixDiv (FixMul (RVec()[Z], FVec()[Y]) - FixMul (RVec()[Y], FVec()[Z]), xDet);
-	m.RVec()[Z] = FixDiv (FixMul (RVec()[Y], UVec()[Z]) - FixMul (RVec()[Z], UVec()[Y]), xDet);
-	m.UVec()[X] = FixDiv (FixMul (UVec()[Z], FVec()[X]) - FixMul (UVec()[X], FVec()[Z]), xDet);
-	m.UVec()[Y] = FixDiv (FixMul (RVec()[X], FVec()[Z]) - FixMul (RVec()[Z], FVec()[X]), xDet);
-	m.UVec()[Z] = FixDiv (FixMul (RVec()[Z], UVec()[X]) - FixMul (RVec()[X], UVec()[Z]), xDet);
-	m.FVec()[X] = FixDiv (FixMul (UVec()[X], FVec()[Y]) - FixMul (UVec()[Y], FVec()[X]), xDet);
-	m.FVec()[Y] = FixDiv (FixMul (RVec()[Y], FVec()[X]) - FixMul (RVec()[X], FVec()[Y]), xDet);
-	m.FVec()[Z] = FixDiv (FixMul (RVec()[X], UVec()[Y]) - FixMul (RVec()[Y], UVec()[X]), xDet);
+	m.m_data.mat [RVEC][X] = FixDiv (FixMul (m_data.mat [UVEC][Y], m_data.mat [FVEC][Z]) - FixMul (m_data.mat [UVEC][Z], m_data.mat [FVEC][Y]), xDet);
+	m.m_data.mat [RVEC][Y] = FixDiv (FixMul (m_data.mat [RVEC][Z], m_data.mat [FVEC][Y]) - FixMul (m_data.mat [RVEC][Y], m_data.mat [FVEC][Z]), xDet);
+	m.m_data.mat [RVEC][Z] = FixDiv (FixMul (m_data.mat [RVEC][Y], m_data.mat [UVEC][Z]) - FixMul (m_data.mat [RVEC][Z], m_data.mat [UVEC][Y]), xDet);
+	m.m_data.mat [UVEC][X] = FixDiv (FixMul (m_data.mat [UVEC][Z], m_data.mat [FVEC][X]) - FixMul (m_data.mat [UVEC][X], m_data.mat [FVEC][Z]), xDet);
+	m.m_data.mat [UVEC][Y] = FixDiv (FixMul (m_data.mat [RVEC][X], m_data.mat [FVEC][Z]) - FixMul (m_data.mat [RVEC][Z], m_data.mat [FVEC][X]), xDet);
+	m.m_data.mat [UVEC][Z] = FixDiv (FixMul (m_data.mat [RVEC][Z], m_data.mat [UVEC][X]) - FixMul (m_data.mat [RVEC][X], m_data.mat [UVEC][Z]), xDet);
+	m.m_data.mat [FVEC][X] = FixDiv (FixMul (m_data.mat [UVEC][X], m_data.mat [FVEC][Y]) - FixMul (m_data.mat [UVEC][Y], m_data.mat [FVEC][X]), xDet);
+	m.m_data.mat [FVEC][Y] = FixDiv (FixMul (m_data.mat [RVEC][Y], m_data.mat [FVEC][X]) - FixMul (m_data.mat [RVEC][X], m_data.mat [FVEC][Y]), xDet);
+	m.m_data.mat [FVEC][Z] = FixDiv (FixMul (m_data.mat [RVEC][X], m_data.mat [UVEC][Y]) - FixMul (m_data.mat [RVEC][Y], m_data.mat [UVEC][X]), xDet);
 	return m;
 }
 
@@ -1218,7 +1219,7 @@ inline const CFixMatrix CFixMatrix::Transpose ()  {
 
 //make sure this m_data.matrix is orthogonal
 inline void CFixMatrix::CheckAndFix () {
-	*this = CreateFU (FVec(), UVec());
+	*this = CreateFU (m_data.mat [FVEC], m_data.mat [UVEC]);
 }
 
 //extract angles from a m_data.matrix
@@ -1226,26 +1227,26 @@ inline const CAngleVector CFixMatrix::ExtractAnglesVec () const {
 	CAngleVector a;
 	fix sinh, cosh, cosp;
 
-	if (FVec()[X]==0, FVec()[Z]==0)		//zero head
+	if (m_data.mat [FVEC][X]==0, m_data.mat [FVEC][Z]==0)		//zero head
 		a [HA] = 0;
 	else
-		a [HA] = FixAtan2 (FVec()[Z], FVec()[X]);
+		a [HA] = FixAtan2 (m_data.mat [FVEC][Z], m_data.mat [FVEC][X]);
 	FixSinCos (a [HA], &sinh, &cosh);
 	if (abs (sinh) > abs (cosh))				//sine is larger, so use it
-		cosp = FixDiv (FVec()[X], sinh);
+		cosp = FixDiv (m_data.mat [FVEC][X], sinh);
 	else											//cosine is larger, so use it
-		cosp = FixDiv (FVec()[Z], cosh);
-	if (cosp==0, FVec()[Y]==0)
+		cosp = FixDiv (m_data.mat [FVEC][Z], cosh);
+	if (cosp==0, m_data.mat [FVEC][Y]==0)
 		a [PA] = 0;
 	else
-		a [PA] = FixAtan2 (cosp, -FVec()[Y]);
+		a [PA] = FixAtan2 (cosp, -m_data.mat [FVEC][Y]);
 	if (cosp == 0)	//the cosine of pitch is zero.  we're pitched straight up. say no bank
 		a [BA] = 0;
 	else {
 		fix sinb, cosb;
 
-		sinb = FixDiv (RVec()[Y], cosp);
-		cosb = FixDiv (UVec()[Y], cosp);
+		sinb = FixDiv (m_data.mat [RVEC][Y], cosp);
+		cosb = FixDiv (m_data.mat [UVEC][Y], cosp);
 		if (sinb==0, cosb==0)
 			a [BA] = 0;
 		else
@@ -1268,6 +1269,8 @@ typedef union tFloatMatrixData {
 } tFloatMatrixData;
 
 class CFloatMatrix {
+	friend class CFixMatrix;
+
 	private:
 		tFloatMatrixData	m_data;
 
@@ -1295,10 +1298,15 @@ class CFloatMatrix {
 
 		static float* Transpose (float* dest, const CFloatMatrix& src);
 
-		inline CFloatVector& RVec() { return m_data.mat [RVEC]; }
-		inline CFloatVector& UVec() { return m_data.mat [UVEC]; }
-		inline CFloatVector& FVec() { return m_data.mat [FVEC]; }
-		inline CFloatVector& HVec() { return m_data.mat [HVEC]; }
+		inline const CFloatVector CFloatMatrix::Mat (size_t idx) const { return m_data.mat [idx]; }
+		inline const CFloatVector CFloatMatrix::RVec (void) const { return m_data.mat [RVEC]; }
+		inline const CFloatVector CFloatMatrix::UVec (void) const { return m_data.mat [UVEC]; }
+		inline const CFloatVector CFloatMatrix::FVec (void) const { return m_data.mat [FVEC]; }
+
+		inline CFloatVector& RVec (void) { return m_data.mat [RVEC]; }
+		inline CFloatVector& UVec (void) { return m_data.mat [UVEC]; }
+		inline CFloatVector& FVec (void) { return m_data.mat [FVEC]; }
+		inline CFloatVector& HVec (void) { return m_data.mat [HVEC]; }
 
 };
 
@@ -1308,10 +1316,10 @@ class CFloatMatrix {
 
 inline const CFloatMatrix CFloatMatrix::Create (const CFloatVector& r, const CFloatVector& u, const CFloatVector& f, const CFloatVector& w) {
 	CFloatMatrix m;
-	m.RVec() = r;
-	m.UVec() = u;
-	m.FVec() = f;
-	m.HVec() = w;
+	m.m_data.mat [RVEC] = r;
+	m.m_data.mat [UVEC] = u;
+	m.m_data.mat [FVEC] = f;
+	m.m_data.mat [HVEC] = w;
 	return m;
 }
 
@@ -1323,15 +1331,15 @@ inline const CFloatMatrix CFloatMatrix::Create (float sinp, float cosp, float si
 	cbch = cosb * cosh;
 	cbsh = cosb * sinh;
 	sbch = sinb * cosh;
-	m.RVec()[X] = cbch + sinp * sbsh;	//m1
-	m.UVec()[Z] = sbsh + sinp * cbch;	//m8
-	m.UVec()[X] = sinp * cbsh - sbch;	//m2
-	m.RVec()[Z] = sinp * sbch - cbsh;	//m7
-	m.FVec()[X] = sinh * cosp;		//m3
-	m.RVec()[Y] = sinb * cosp;		//m4
-	m.UVec()[Y] = cosb * cosp;		//m5
-	m.FVec()[Z] = cosh * cosp;		//m9
-	m.FVec()[Y] = -sinp;				//m6
+	m.m_data.mat [RVEC][X] = cbch + sinp * sbsh;	//m1
+	m.m_data.mat [UVEC][Z] = sbsh + sinp * cbch;	//m8
+	m.m_data.mat [UVEC][X] = sinp * cbsh - sbch;	//m2
+	m.m_data.mat [RVEC][Z] = sinp * sbch - cbsh;	//m7
+	m.m_data.mat [FVEC][X] = sinh * cosp;		//m3
+	m.m_data.mat [RVEC][Y] = sinb * cosp;		//m4
+	m.m_data.mat [UVEC][Y] = cosb * cosp;		//m5
+	m.m_data.mat [FVEC][Z] = cosh * cosp;		//m9
+	m.m_data.mat [FVEC][Y] = -sinp;				//m6
 	return m;
 }
 
@@ -1351,9 +1359,9 @@ inline CFloatMatrix& CFloatMatrix::Transpose (CFloatMatrix& m) {
 #else
 inline CFloatMatrix& CFloatMatrix::Transpose (CFloatMatrix& m) {
 	float t;
-	t = m.UVec()[X];  m.UVec()[X] = m.RVec()[Y];  m.RVec()[Y] = t;
-	t = m.FVec()[X];  m.FVec()[X] = m.RVec()[Z];  m.RVec()[Z] = t;
-	t = m.FVec()[Y];  m.FVec()[Y] = m.UVec()[Z];  m.UVec()[Z] = t;
+	t = m.m_data.mat [UVEC][X];  m.m_data.mat [UVEC][X] = m.m_data.mat [RVEC][Y];  m.m_data.mat [RVEC][Y] = t;
+	t = m.m_data.mat [FVEC][X];  m.m_data.mat [FVEC][X] = m.m_data.mat [RVEC][Z];  m.m_data.mat [RVEC][Z] = t;
+	t = m.m_data.mat [FVEC][Y];  m.m_data.mat [FVEC][Y] = m.m_data.mat [UVEC][Z];  m.m_data.mat [UVEC][Z] = t;
 	return m;
 }
 #endif
@@ -1366,39 +1374,39 @@ inline float& CFloatMatrix::operator[] (size_t idx) {
 }
 
 inline const CFloatVector CFloatMatrix::operator* (const CFloatVector& v) {
-	return CFloatVector::Create (CFloatVector::Dot (v, RVec()),
-										  CFloatVector::Dot (v, UVec()),
-										  CFloatVector::Dot (v, FVec()));
+	return CFloatVector::Create (CFloatVector::Dot (v, m_data.mat [RVEC]),
+										  CFloatVector::Dot (v, m_data.mat [UVEC]),
+										  CFloatVector::Dot (v, m_data.mat [FVEC]));
 }
 
 inline const CFloatVector3 CFloatMatrix::operator* (const CFloatVector3& v) {
-	return CFloatVector3::Create (CFloatVector3::Dot (v, *RVec().V3 ()),
-											CFloatVector3::Dot (v, *UVec().V3 ()),
-											CFloatVector3::Dot (v, *FVec().V3 ()));
+	return CFloatVector3::Create (CFloatVector3::Dot (v, *m_data.mat [RVEC].V3 ()),
+											CFloatVector3::Dot (v, *m_data.mat [UVEC].V3 ()),
+											CFloatVector3::Dot (v, *m_data.mat [FVEC].V3 ()));
 }
 
 inline const float CFloatMatrix::Det () {
-	return RVec()[X] * UVec()[Y] * FVec()[Z] -
-			 RVec()[X] * UVec()[Z] * FVec()[Y] -
-			 RVec()[Y] * UVec()[X] * FVec()[Z] +
-			 RVec()[Y] * UVec()[Z] * FVec()[X] +
-			 RVec()[Z] * UVec()[X] * FVec()[Y] -
-			 RVec()[Z] * UVec()[Y] * FVec()[X];
+	return m_data.mat [RVEC][X] * m_data.mat [UVEC][Y] * m_data.mat [FVEC][Z] -
+			 m_data.mat [RVEC][X] * m_data.mat [UVEC][Z] * m_data.mat [FVEC][Y] -
+			 m_data.mat [RVEC][Y] * m_data.mat [UVEC][X] * m_data.mat [FVEC][Z] +
+			 m_data.mat [RVEC][Y] * m_data.mat [UVEC][Z] * m_data.mat [FVEC][X] +
+			 m_data.mat [RVEC][Z] * m_data.mat [UVEC][X] * m_data.mat [FVEC][Y] -
+			 m_data.mat [RVEC][Z] * m_data.mat [UVEC][Y] * m_data.mat [FVEC][X];
 }
 
 inline const CFloatMatrix CFloatMatrix::Inverse () {
 	float fDet = Det ();
 	CFloatMatrix	m = *this;
 
-	m.RVec()[X] = (UVec()[Y] * FVec()[Z] - UVec()[Z] * FVec()[Y]) / fDet;
-	m.RVec()[Y] = (RVec()[Z] * FVec()[Y] - RVec()[Y] * FVec()[Z]) / fDet;
-	m.RVec()[Z] = (RVec()[Y] * UVec()[Z] - RVec()[Z] * UVec()[Y]) / fDet;
-	m.UVec()[X] = (UVec()[Z] * FVec()[X] - UVec()[X] * FVec()[Z]) / fDet;
-	m.UVec()[Y] = (RVec()[X] * FVec()[Z] - RVec()[Z] * FVec()[X]) / fDet;
-	m.UVec()[Z] = (RVec()[Z] * UVec()[X] - RVec()[X] * UVec()[Z]) / fDet;
-	m.FVec()[X] = (UVec()[X] * FVec()[Y] - UVec()[Y] * FVec()[X]) / fDet;
-	m.FVec()[Y] = (RVec()[Y] * FVec()[X] - RVec()[X] * FVec()[Y]) / fDet;
-	m.FVec()[Z] = (RVec()[X] * UVec()[Y] - RVec()[Y] * UVec()[X]) / fDet;
+	m.m_data.mat [RVEC][X] = (m_data.mat [UVEC][Y] * m_data.mat [FVEC][Z] - m_data.mat [UVEC][Z] * m_data.mat [FVEC][Y]) / fDet;
+	m.m_data.mat [RVEC][Y] = (m_data.mat [RVEC][Z] * m_data.mat [FVEC][Y] - m_data.mat [RVEC][Y] * m_data.mat [FVEC][Z]) / fDet;
+	m.m_data.mat [RVEC][Z] = (m_data.mat [RVEC][Y] * m_data.mat [UVEC][Z] - m_data.mat [RVEC][Z] * m_data.mat [UVEC][Y]) / fDet;
+	m.m_data.mat [UVEC][X] = (m_data.mat [UVEC][Z] * m_data.mat [FVEC][X] - m_data.mat [UVEC][X] * m_data.mat [FVEC][Z]) / fDet;
+	m.m_data.mat [UVEC][Y] = (m_data.mat [RVEC][X] * m_data.mat [FVEC][Z] - m_data.mat [RVEC][Z] * m_data.mat [FVEC][X]) / fDet;
+	m.m_data.mat [UVEC][Z] = (m_data.mat [RVEC][Z] * m_data.mat [UVEC][X] - m_data.mat [RVEC][X] * m_data.mat [UVEC][Z]) / fDet;
+	m.m_data.mat [FVEC][X] = (m_data.mat [UVEC][X] * m_data.mat [FVEC][Y] - m_data.mat [UVEC][Y] * m_data.mat [FVEC][X]) / fDet;
+	m.m_data.mat [FVEC][Y] = (m_data.mat [RVEC][Y] * m_data.mat [FVEC][X] - m_data.mat [RVEC][X] * m_data.mat [FVEC][Y]) / fDet;
+	m.m_data.mat [FVEC][Z] = (m_data.mat [RVEC][X] * m_data.mat [UVEC][Y] - m_data.mat [RVEC][Y] * m_data.mat [UVEC][X]) / fDet;
 	return m;
 }
 
@@ -1412,24 +1420,24 @@ inline const CFloatMatrix CFloatMatrix::Transpose () {
 inline const CFloatMatrix CFloatMatrix::operator* (CFloatMatrix& m) {
 	CFloatVector v;
 	CFloatMatrix r;
-	v [X] = RVec()[X];
-	v [Y] = UVec()[X];
-	v [Z] = FVec()[X];
-	r.RVec()[X] = CFloatVector::Dot (v, m.RVec());
-	r.UVec()[X] = CFloatVector::Dot (v, m.UVec());
-	r.FVec()[X] = CFloatVector::Dot (v, m.FVec());
-	v [X] = RVec()[Y];
-	v [Y] = UVec()[Y];
-	v [Z] = FVec()[Y];
-	r.RVec()[Y] = CFloatVector::Dot (v, m.RVec());
-	r.UVec()[Y] = CFloatVector::Dot (v, m.UVec());
-	r.FVec()[Y] = CFloatVector::Dot (v, m.FVec());
-	v [X] = RVec()[Z];
-	v [Y] = UVec()[Z];
-	v [Z] = FVec()[Z];
-	r.RVec()[Z] = CFloatVector::Dot (v, m.RVec());
-	r.UVec()[Z] = CFloatVector::Dot (v, m.UVec());
-	r.FVec()[Z] = CFloatVector::Dot (v, m.FVec());
+	v [X] = m_data.mat [RVEC][X];
+	v [Y] = m_data.mat [UVEC][X];
+	v [Z] = m_data.mat [FVEC][X];
+	r.m_data.mat [RVEC][X] = CFloatVector::Dot (v, m.m_data.mat [RVEC]);
+	r.m_data.mat [UVEC][X] = CFloatVector::Dot (v, m.m_data.mat [UVEC]);
+	r.m_data.mat [FVEC][X] = CFloatVector::Dot (v, m.m_data.mat [FVEC]);
+	v [X] = m_data.mat [RVEC][Y];
+	v [Y] = m_data.mat [UVEC][Y];
+	v [Z] = m_data.mat [FVEC][Y];
+	r.m_data.mat [RVEC][Y] = CFloatVector::Dot (v, m.m_data.mat [RVEC]);
+	r.m_data.mat [UVEC][Y] = CFloatVector::Dot (v, m.m_data.mat [UVEC]);
+	r.m_data.mat [FVEC][Y] = CFloatVector::Dot (v, m.m_data.mat [FVEC]);
+	v [X] = m_data.mat [RVEC][Z];
+	v [Y] = m_data.mat [UVEC][Z];
+	v [Z] = m_data.mat [FVEC][Z];
+	r.m_data.mat [RVEC][Z] = CFloatVector::Dot (v, m.m_data.mat [RVEC]);
+	r.m_data.mat [UVEC][Z] = CFloatVector::Dot (v, m.m_data.mat [UVEC]);
+	r.m_data.mat [FVEC][Z] = CFloatVector::Dot (v, m.m_data.mat [FVEC]);
 	return r;
 }
 
@@ -1456,42 +1464,30 @@ inline const CFixVector CFloatVector3::ToFix () const {
 	d [X] = F2X (v [X]); d [Y] = F2X (v [Y]); d [Z] = F2X (v [Z]); return d;
 }
 
-inline const CFloatMatrix CFixMatrix::ToFloat () const {
-	CFloatMatrix m;
-	m.RVec().Copy (RVec());
-	m.UVec().Copy (UVec());
-	m.FVec().Copy (FVec());
-	m.HVec() = CFloatVector::ZERO;
-	return m;
-}
-
 inline const CFloatMatrix& CFloatMatrix::Copy (CFloatMatrix& other) { 
-	RVec() = other.RVec(); 
-	UVec() = other.UVec(); 
-	FVec() = other.FVec(); 
-	HVec() = other.HVec(); 
+	*this = other;
 	return *this;
 	}
 
 inline const CFloatMatrix& CFloatMatrix::Copy (CFixMatrix& other) { 
-	RVec().Copy (other.RVec()); 
-	UVec().Copy (other.UVec()); 
-	FVec().Copy (other.FVec()); 
-	HVec().Set (1, 1, 1);
+	m_data.mat [RVEC].Copy (other.m_data.mat [RVEC]); 
+	m_data.mat [UVEC].Copy (other.m_data.mat [UVEC]); 
+	m_data.mat [FVEC].Copy (other.m_data.mat [FVEC]); 
+	m_data.mat [HVEC].Set (1, 1, 1);
 	return *this;
 	}
 
 inline const CFixMatrix& CFixMatrix::Copy (CFixMatrix& other) { 
-	RVec() = other.RVec(); 
-	UVec() = other.UVec(); 
-	FVec() = other.FVec(); 
+	m_data.mat [RVEC] = other.m_data.mat [RVEC]; 
+	m_data.mat [UVEC] = other.m_data.mat [UVEC]; 
+	m_data.mat [FVEC] = other.m_data.mat [FVEC]; 
 	return *this;
 	}
 
 inline const CFixMatrix& CFixMatrix::Copy (CFloatMatrix& other) { 
-	RVec().Copy (other.RVec()); 
-	UVec().Copy (other.UVec()); 
-	FVec().Copy (other.FVec()); 
+	m_data.mat [RVEC].Copy (other.m_data.mat [RVEC]); 
+	m_data.mat [UVEC].Copy (other.m_data.mat [UVEC]); 
+	m_data.mat [FVEC].Copy (other.m_data.mat [FVEC]); 
 	return *this;
 	}
 
