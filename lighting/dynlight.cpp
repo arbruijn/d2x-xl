@@ -476,7 +476,7 @@ else if (nSegment >= 0) {
 		tSide			*sideP = SEGMENTS [nSegment].sides + nSide;
 		CFixVector	vOffs;
 		vOffs = sideP->normals[0] + sideP->normals[1];
-		pl->info.vDirf = vOffs.ToFloat();
+		pl->info.vDirf.Assign (vOffs);
 		pl->info.vDirf *= 0.5f;
 		if (gameStates.render.bPerPixelLighting) {
 			vOffs *= FixDiv(1, 4);
@@ -726,7 +726,7 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
 	if (psl->info.bSpot)
 		psl = psl;
 #endif
-	*psl->vPosf = psl->info.vPos.ToFloat();
+	*psl->vPosf.Assign (psl->info.vPos);
 	if (gameStates.ogl.bUseTransform)
 		psl->vPosf [1] = psl->vPosf [0];
 	else {
@@ -1335,10 +1335,10 @@ else if (gameStates.render.bPerPixelLighting) {
 		vcd.vertNorm[Z] = 0;
 		vcd.vertNorm.SetZero();
 		if (vPosP)
-			vcd.vertPos = vPosP->ToFloat3();
+			vcd.vertPos.Assign (vPosP);
 		else {
 			COMPUTE_SEGMENT_CENTER_I (&vCenter, nSegment);
-			vcd.vertPos = vCenter.ToFloat3();
+			vcd.vertPos.Assign (vCenter);
 			}
 		vcd.vertPosP = &vcd.vertPos;
 		vcd.fMatShininess = 4;
@@ -1394,7 +1394,7 @@ else {
 		float				fLightDist, fAttenuation;
 		CFloatVector			vPosf;
 		if (vPosP)
-			VmVecFixToFloat (&vPosf, vPosP);
+			vPosf.Assign (vPosP);
 		for (i = 0; i < gameData.render.lights.dynamic.shader.nActiveLights; i++) {
 			psl = gameData.render.lights.dynamic.shader.activeLights [i];
 #if 1
@@ -1453,7 +1453,7 @@ for (; nVertex < nMax; nVertex++, pf++) {
 	if (nVertex == nDbgVertex)
 		nVertex = nVertex;
 #endif
-	vVertex = gameData.segs.vertices[nVertex].ToFloat();
+	vVertex.Assign (gameData.segs.vertices[nVertex]);
 	ResetActiveLights (nThread, 0);
 	ResetUsedLights (0, nThread);
 	SetNearestVertexLights (-1, nVertex, NULL, 1, 1, bColorize, nThread);

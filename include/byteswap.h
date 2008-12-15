@@ -183,9 +183,9 @@ return v;
 static inline CFixMatrix& SwapMatrix (CFixMatrix& m, int bEndian)
 {
 if (gameStates.app.bLittleEndian != bEndian) {
-	SwapVector (m[RVEC], bEndian);
-	SwapVector (m[UVEC], bEndian);
-	SwapVector (m[FVEC], bEndian);
+	SwapVector (m.RVec (), bEndian);
+	SwapVector (m.UVec (), bEndian);
+	SwapVector (m.FVec (), bEndian);
 	}
 return m;
 }

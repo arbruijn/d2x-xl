@@ -345,8 +345,8 @@ weaponInfoP = gameData.weapons.info + nWeaponType;
 if (nWeaponType == OMEGA_ID) {
 	// Create orientation matrix for tracking purposes.
 	int bSpectator = SPECTATOR (parentP);
-	objP->info.position.mOrient = CFixMatrix::CreateFU(*vDirection, bSpectator ? gameStates.app.playerPos.mOrient[UVEC] : parentP->info.position.mOrient[UVEC]);
-//	objP->info.position.mOrient = CFixMatrix::CreateFU(*vDirection, bSpectator ? &gameStates.app.playerPos.mOrient[UVEC] : &parentP->info.position.mOrient[UVEC], NULL);
+	objP->info.position.mOrient = CFixMatrix::CreateFU(*vDirection, bSpectator ? gameStates.app.playerPos.mOrient.UVec () : parentP->info.position.mOrient.UVec ());
+//	objP->info.position.mOrient = CFixMatrix::CreateFU(*vDirection, bSpectator ? &gameStates.app.playerPos.mOrient.UVec () : &parentP->info.position.mOrient.UVec (), NULL);
 	if (((nParent != nViewer) || bSpectator) && (parentP->info.nType != OBJ_WEAPON)) {
 		// Muzzle flash
 		if (weaponInfoP->nFlashVClip > -1)
@@ -427,8 +427,8 @@ if (parentP->info.nType == OBJ_WEAPON) {
 // Create orientation matrix so we can look from this pov
 //	Homing missiles also need an orientation matrix so they know if they can make a turn.
 //if ((objP->info.renderType == RT_POLYOBJ) || (WI_homingFlag (objP->info.nId)))
-	objP->info.position.mOrient = CFixMatrix::CreateFU (*vDirection, parentP->info.position.mOrient[UVEC]);
-//	objP->info.position.mOrient = CFixMatrix::CreateFU (*vDirection, &parentP->info.position.mOrient[UVEC], NULL);
+	objP->info.position.mOrient = CFixMatrix::CreateFU (*vDirection, parentP->info.position.mOrient.UVec ());
+//	objP->info.position.mOrient = CFixMatrix::CreateFU (*vDirection, &parentP->info.position.mOrient.UVec (), NULL);
 if (((nParent != nViewer) || SPECTATOR (parentP)) && (parentP->info.nType != OBJ_WEAPON)) {
 	// Muzzle flash
 	if (weaponInfoP->nFlashVClip > -1)
@@ -491,7 +491,7 @@ if (!WeaponIsMine (nWeaponType))
 else {
 	xParentSpeed = parentP->mType.physInfo.velocity.Mag();
 	if (CFixVector::Dot(parentP->mType.physInfo.velocity,
-						parentP->info.position.mOrient[FVEC]) < 0)
+						parentP->info.position.mOrient.FVec ()) < 0)
 		xParentSpeed = -xParentSpeed;
 	}
 
@@ -610,7 +610,7 @@ if (nGun < 0) {	// use center between gunPoints nGun and nGun + 1
 else {
 	v [0] = vGunPoints [nGun];
 	if (bLaserOffs)
-		v[0] += posP->mOrient[UVEC] * LASER_OFFS;
+		v[0] += posP->mOrient.UVec () * LASER_OFFS;
 	}
 if (!mP)
 	mP = &m;
@@ -623,11 +623,11 @@ else
 v[1] = *viewP * v[0];
 memcpy (mP, &posP->mOrient, sizeof (CFixMatrix));
 if (nGun < 0)
-	v[1] += (*mP)[UVEC] * (-2 * v->Mag());
+	v[1] += (*mP).UVec () * (-2 * v->Mag());
 (*vMuzzle) = posP->vPos + v[1];
 //	If supposed to fire at a delayed time (xDelay), then move this point backwards.
 if (xDelay)
-	*vMuzzle += (*mP)[FVEC]* (-FixMul (xDelay, WI_speed (nLaserType, gameStates.app.nDifficultyLevel)));
+	*vMuzzle += (*mP).FVec ()* (-FixMul (xDelay, WI_speed (nLaserType, gameStates.app.nDifficultyLevel)));
 return vMuzzle;
 }
 
@@ -677,7 +677,7 @@ if (nGun < 0)	// use center between gunPoints nGun and nGun + 1
 else {
 	v = vGunPoints [nGun];
 	if (bLaserOffs)
-		VmVecScaleInc (&v, &posP->mOrient[UVEC], LASER_OFFS);
+		VmVecScaleInc (&v, &posP->mOrient.UVec (), LASER_OFFS);
 	}
 if (bSpectate)
    VmCopyTransposeMatrix (viewP = &m, &posP->mOrient);
@@ -686,11 +686,11 @@ else
 VmVecRotate (&vGunPoint, &v, viewP);
 memcpy (&m, &posP->mOrient, sizeof (CFixMatrix));
 if (nGun < 0)
-	VmVecScaleInc (&vGunPoint, &m[UVEC], -2 * VmVecMag (&v));
+	VmVecScaleInc (&vGunPoint, &m.UVec (), -2 * VmVecMag (&v));
 VmVecAdd (&vLaserPos, &posP->vPos, &vGunPoint);
 //	If supposed to fire at a delayed time (xDelay), then move this point backwards.
 if (xDelay)
-	VmVecScaleInc (&vLaserPos, &m[FVEC], -FixMul (xDelay, WI_speed (nLaserType, gameStates.app.nDifficultyLevel)));
+	VmVecScaleInc (&vLaserPos, &m.FVec (), -FixMul (xDelay, WI_speed (nLaserType, gameStates.app.nDifficultyLevel)));
 #endif
 
 //	DoMuzzleStuff (objP, &Pos);
@@ -727,13 +727,13 @@ if (nFate == HIT_OBJECT) {
 	}
 #endif
 //	Now, make laser spread out.
-vLaserDir = m[FVEC];
+vLaserDir = m.FVec ();
 if (xSpreadR || xSpreadU) {
-	vLaserDir += m[RVEC] * xSpreadR;
-	vLaserDir += m[UVEC] * xSpreadU;
+	vLaserDir += m.RVec () * xSpreadR;
+	vLaserDir += m.UVec () * xSpreadU;
 	}
 if (bLaserOffs)
-	vLaserDir += m[UVEC] * LASER_OFFS;
+	vLaserDir += m.UVec () * LASER_OFFS;
 nObject = CreateNewWeapon (&vLaserDir, &vLaserPos, nLaserSeg, OBJ_IDX (objP), nLaserType, bMakeSound);
 //	Omega cannon is a hack, not surprisingly.  Don't want to do the rest of this stuff.
 if (nLaserType == OMEGA_ID)
@@ -824,7 +824,7 @@ void HomingMissileTurnTowardsVelocity (CObject *objP, CFixVector *vNormVel)
 frameTime = gameStates.limitFPS.bHomers ? SECS2X (gameStates.app.tick40fps.nTime) : gameData.time.xFrame;
 vNewDir = *vNormVel;
 vNewDir *= ((fix) (frameTime * 16 / gameStates.gameplay.slowmo [0].fSpeed));
-vNewDir += objP->info.position.mOrient[FVEC];
+vNewDir += objP->info.position.mOrient.FVec ();
 CFixVector::Normalize(vNewDir);
 /*
 objP->info.position.mOrient = CFixMatrix::Create(vNewDir, NULL, NULL);
@@ -1201,7 +1201,7 @@ return rVal;
 // -- {
 // -- 	if ((gameData.time.xGame - Lightning_startTime < LIGHTNING_TIME) && (gameData.time.xGame - Lightning_startTime > 0)) {
 // -- 		if (gameData.time.xGame - Lightning_lastTime > LIGHTNING_DELAY) {
-// -- 			create_lightning_blobs (&gameData.objs.consoleP->info.position.mOrient[FVEC], &gameData.objs.consoleP->info.position.vPos, gameData.objs.consoleP->info.nSegment, OBJ_IDX (gameData.objs.consoleP));
+// -- 			create_lightning_blobs (&gameData.objs.consoleP->info.position.mOrient.FVec (), &gameData.objs.consoleP->info.position.vPos, gameData.objs.consoleP->info.nSegment, OBJ_IDX (gameData.objs.consoleP));
 // -- 			Lightning_lastTime = gameData.time.xGame;
 // -- 		}
 // -- 	}
@@ -1317,9 +1317,9 @@ if (EGI_FLAG (bTripleFusion, 0, 0, 0) && gameData.multiplayer.weaponStates [objP
 #endif
 nFlags = (sbyte) (gameData.fusion.xCharge >> 12);
 gameData.fusion.xCharge = 0;
-vForce[X] = -(objP->info.position.mOrient[FVEC][X] << 7);
-vForce[Y] = -(objP->info.position.mOrient[FVEC][Y] << 7);
-vForce[Z] = -(objP->info.position.mOrient[FVEC][Z] << 7);
+vForce[X] = -(objP->info.position.mOrient.FVec ()[X] << 7);
+vForce[Y] = -(objP->info.position.mOrient.FVec ()[Y] << 7);
+vForce[Z] = -(objP->info.position.mOrient.FVec ()[Z] << 7);
 PhysApplyForce (objP, &vForce);
 vForce[X] = (vForce[X] >> 4) + d_rand () - 16384;
 vForce[Y] = (vForce[Y] >> 4) + d_rand () - 16384;
@@ -1665,9 +1665,9 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 	else if ((gameData.weapons.nSecondary == MEGA_INDEX) || (gameData.weapons.nSecondary == EARTHSHAKER_INDEX)) {
 		CFixVector vForce;
 
-	vForce[X] = - (gameData.objs.consoleP->info.position.mOrient[FVEC][X] << 7);
-	vForce[Y] = - (gameData.objs.consoleP->info.position.mOrient[FVEC][Y] << 7);
-	vForce[Z] = - (gameData.objs.consoleP->info.position.mOrient[FVEC][Z] << 7);
+	vForce[X] = - (gameData.objs.consoleP->info.position.mOrient.FVec ()[X] << 7);
+	vForce[Y] = - (gameData.objs.consoleP->info.position.mOrient.FVec ()[Y] << 7);
+	vForce[Z] = - (gameData.objs.consoleP->info.position.mOrient.FVec ()[Z] << 7);
 	PhysApplyForce (gameData.objs.consoleP, &vForce);
 	vForce[X] = (vForce[X] >> 4) + d_rand () - 16384;
 	vForce[Y] = (vForce[Y] >> 4) + d_rand () - 16384;

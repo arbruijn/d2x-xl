@@ -221,8 +221,8 @@ for (i = 0; i < gameData.trigs.nTriggers; i++) {
 				short nSegment = gameData.walls.walls [j].nSegment;
 				COMPUTE_SEGMENT_CENTER_I (&gameData.objs.consoleP->info.position.vPos, nSegment);
 				gameData.objs.consoleP->RelinkToSeg (nSegment);
-				gameData.objs.consoleP->info.position.mOrient[FVEC] = gameData.segs.segments [nSegment].sides [gameData.walls.walls [j].nSide].normals [0];
-				gameData.objs.consoleP->info.position.mOrient[FVEC].Neg();
+				gameData.objs.consoleP->info.position.mOrient.FVec () = gameData.segs.segments [nSegment].sides [gameData.walls.walls [j].nSide].normals [0];
+				gameData.objs.consoleP->info.position.mOrient.FVec ().Neg();
 				return;
 				}
 			}

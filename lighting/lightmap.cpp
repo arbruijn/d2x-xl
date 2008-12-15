@@ -412,7 +412,7 @@ for (x = xMin; x < xMax; x++) {
 #endif
 		if (0 < SetNearestPixelLights (m_data.faceP->nSegment, m_data.faceP->nSide, &m_data.vNormal, 
 												 pixelPosP, m_data.faceP->fRads [1] / 10.0f, nThread)) {
-			vcd.vertPos = pixelPosP->ToFloat3();
+			vcd.vertPos.Assign (pixelPosP);
 			color.SetZero ();
 			G3AccumVertColor (-1, &color, &vcd, nThread);
 			if ((color [R] > 0.001f) || (color [G] > 0.001f) || (color [B] > 0.001f)) {
@@ -483,7 +483,7 @@ for (m_data.faceP = FACES + nFace; nFace < nLastFace; nFace++, m_data.faceP++) {
 	memcpy (m_data.sideVerts, m_data.faceP->index, sizeof (m_data.sideVerts));
 	m_data.nType = (sideP->nType == SIDE_IS_QUAD) || (sideP->nType == SIDE_IS_TRI_02);
 	m_data.vNormal = CFixVector::Avg (sideP->normals [0], sideP->normals [1]);
-	m_data.vcd.vertNorm = m_data.vNormal.ToFloat3();
+	m_data.vcd.vertNorm.Assign (m_data.vNormal);
 	m_data.nColor = 0;
 	memset (m_data.texColor, 0, LM_W * LM_H * sizeof (tRgbColorb));
 	if (!RunRenderThreads (rtLightmap))

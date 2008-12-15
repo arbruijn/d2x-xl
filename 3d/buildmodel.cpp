@@ -391,7 +391,7 @@ else if ((objP->info.nType != OBJ_ROBOT) && (objP->info.nType != OBJ_HOSTAGE) &&
 if (vOffsetfP)
 	vOffsetf = *vOffsetfP;
 else
-	VmVecFixToFloat (&vOffsetf, gameData.models.offsets + m_nModel);
+	vOffsetf.Assign (gameData.models.offsets [m_nModel]);
 if (!(vOffsetf [X] || vOffsetf [Y] || vOffsetf [Z]))
 	return 0;
 if (vOffsetfP) {
@@ -509,7 +509,7 @@ if (vertices.Create (m_nFaceVerts)) {
 
 	for (i = 0, h = m_nSubModels, psm = m_subModels.Buffer (), pv = vertices.Buffer (); i < h; i++, psm++) {
 		if (psm->m_nHitbox > 0) {
-			vOffset = gameData.models.hitboxes [m_nModel].hitboxes [psm->m_nHitbox].vOffset.ToFloat3();
+			vOffset.Assign (gameData.models.hitboxes [m_nModel].hitboxes [psm->m_nHitbox].vOffset);
 			for (j = psm->m_nFaces, pmf = psm->m_faces; j; j--, pmf++) {
 				for (k = pmf->m_nVerts, pmv = m_faceVerts + pmf->m_nIndex; k; k--, pmv++, pv++)
 					*pv = pmv->m_vertex + vOffset;
@@ -530,7 +530,7 @@ if (vertices.Create (m_nFaceVerts)) {
 	fRad /= 2;
 	// then move the tentatively computed model center around so that all vertices are enclosed in the sphere
 	// around the center with the radius computed above
-	vCenter = gameData.models.offsets [m_nModel].ToFloat3();
+	vCenter.Assign (gameData.models.offsets [m_nModel]);
 	for (i = h, pv = vertices.Buffer (); i; i--, pv++) {
 		v = *pv - vCenter;
 		r = v.Mag();
@@ -544,7 +544,7 @@ if (vertices.Create (m_nFaceVerts)) {
 
 	vertices.Destroy ();
 
-	gameData.models.offsets [m_nModel] = vCenter.ToFix();
+	gameData.models.offsets [m_nModel].Assign (vCenter);
 	if (m_nType >= 0) {
 		sP->nSubModels = m_nSubModels;
 		sP->nFaces = m_nFaces;
@@ -556,10 +556,10 @@ if (vertices.Create (m_nFaceVerts)) {
 else {
 	// then move the tentatively computed model center around so that all vertices are enclosed in the sphere
 	// around the center with the radius computed above
-	vCenter = gameData.models.offsets [m_nModel].ToFloat3();
+	vCenter.Assign (gameData.models.offsets [m_nModel]);
 	for (i = 0, h = m_nSubModels, psm = m_subModels.Buffer (); i < h; i++, psm++) {
 		if (psm->m_nHitbox > 0) {
-			vOffset = gameData.models.hitboxes [m_nModel].hitboxes [psm->m_nHitbox].vOffset.ToFloat3();
+			vOffset.Assign (gameData.models.hitboxes [m_nModel].hitboxes [psm->m_nHitbox].vOffset);
 			for (j = psm->m_nFaces, pmf = psm->m_faces; j; j--, pmf++) {
 				for (k = pmf->m_nVerts, pmv = m_faceVerts + pmf->m_nIndex; k; k--, pmv++) {
 					v = pmv->m_vertex + vOffset;
@@ -569,7 +569,7 @@ else {
 				}
 			}
 		}
-	gameData.models.offsets [m_nModel] = vCenter.ToFix();
+	gameData.models.offsets [m_nModel].Assign (vCenter);
 	}
 return F2X (fRad);
 }
@@ -662,7 +662,7 @@ do {
 
 psm = m_subModels.Buffer ();
 vOffset = psm->m_vMin - vOffset;
-gameData.models.offsets [m_nModel] = vOffset.ToFix();
+gameData.models.offsets [m_nModel].Assign (vOffset);
 #if DBG
 if (m_nModel == nDbgModel)
 	nDbgModel = nDbgModel;

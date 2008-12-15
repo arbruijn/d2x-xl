@@ -402,7 +402,7 @@ for (h = faceP->nTris; h; h--, triP++) {
 		if (gameStates.render.automap.bDisplay)
 			G3TransformPoint (vertices + i, gameData.segs.fVertices + triP->index [i], 0);
 		else
-			VmVecFixToFloat (vertices + i, &gameData.segs.points [triP->index [i]].p3_vec);
+			vertices [i].Assign (gameData.segs.points [triP->index [i]].p3_vec);
 #endif
 		}
 	if (!TIAddPoly (faceP, triP, bmP, vertices, 3, gameData.segs.faces.texCoord + triP->nIndex,
@@ -438,7 +438,7 @@ for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
 	if (gameStates.render.automap.bDisplay)
 		G3TransformPoint(vertices [i], gameData.segs.fVertices [faceP->index [i]], 0);
 	else
-		vertices [i] = gameData.segs.points [faceP->index [i]].p3_vec.ToFloat();
+		vertices [i].Assign (gameData.segs.points [faceP->index [i]].p3_vec);
 #endif
 	}
 return TIAddPoly (faceP, NULL, bmP,
@@ -465,7 +465,7 @@ item.nFrame = nFrame;
 item.bAdditive = bAdditive;
 item.fSoftRad = fSoftRad;
 G3TransformPoint (vPos, position, 0);
-item.position = vPos.ToFloat();
+item.position.Assign (vPos);
 return AddTranspItem (tiSprite, &item, sizeof (item), vPos [Z], vPos [Z]);
 }
 
@@ -480,7 +480,7 @@ item.nSize = nSize;
 item.nFrame = nFrame;
 item.nType = nType;
 G3TransformPoint (vPos, position, 0);
-item.position = vPos.ToFloat();
+item.position.Assign (vPos);
 return AddTranspItem (tiSpark, &item, sizeof (item), vPos [Z], vPos [Z]);
 }
 

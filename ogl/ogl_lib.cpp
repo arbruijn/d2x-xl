@@ -244,7 +244,7 @@ else {
 	if (bFlip)
 		vNormal.Neg();
 	}
-*pvNormal = vNormal.ToFloat();
+pvNormal->Copy (vNormal);
 }
 
 //------------------------------------------------------------------------------

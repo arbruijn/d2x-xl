@@ -844,7 +844,7 @@ else {
 		G3RotatePoint(vcd.vertNorm, *pvVertNorm, 0);
 }
 if ((bVertexLights = !(gameStates.render.nState || pVertColor))) {
-	vertPos = gameData.segs.vertices[nVertex].ToFloat3();
+	vertPos.Assign (gameData.segs.vertices[nVertex]);
 	pVertPos = &vertPos;
 	SetNearestVertexLights (-1, nVertex, NULL, 1, 0, 1, nThread);
 	}

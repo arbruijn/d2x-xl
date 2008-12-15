@@ -802,7 +802,7 @@ if (weaponP->info.nId == OMEGA_ID)
 
 //	If this is a guided missile and it strikes fairly directly, clear bounce flag.
 if (weaponP->info.nId == GUIDEDMSL_ID) {
-	fix dot = CFixVector::Dot (weaponP->info.position.mOrient[FVEC], sideP->normals[0]);
+	fix dot = CFixVector::Dot (weaponP->info.position.mOrient.FVec (), sideP->normals[0]);
 #if TRACE
 	con_printf (CONDBG, "Guided missile dot = %7.3f \n", X2F (dot));
 #endif
@@ -815,7 +815,7 @@ if (weaponP->info.nId == GUIDEDMSL_ID) {
 	else {
 		CFixVector	vReflect;
 		CAngleVector	va;
-		vReflect = CFixVector::Reflect(weaponP->info.position.mOrient[FVEC], sideP->normals[0]);
+		vReflect = CFixVector::Reflect(weaponP->info.position.mOrient.FVec (), sideP->normals[0]);
 		va = vReflect.ToAnglesVec();
 		weaponP->info.position.mOrient = CFixMatrix::Create(va);
 		}
@@ -1493,7 +1493,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 	//	Boss only vulnerable in back.  See if hit there.
 	tvec1 = *vHitPt - robotP->info.position.vPos;
 	CFixVector::Normalize (tvec1);	//	Note, if BOSS_INVULNERABLE_DOT is close to F1_0 (in magnitude), then should probably use non-quick version.
-	dot = CFixVector::Dot (tvec1, robotP->info.position.mOrient[FVEC]);
+	dot = CFixVector::Dot (tvec1, robotP->info.position.mOrient.FVec ());
 #if TRACE
 	con_printf (CONDBG, "Boss hit vec dot = %7.3f \n", X2F (dot));
 #endif

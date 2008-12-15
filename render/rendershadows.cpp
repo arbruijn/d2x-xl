@@ -40,7 +40,7 @@ void RenderFaceShadow (tFaceProps *propsP)
 for (i = 0; i < nVertices; i++) {
 	p = gameData.segs.points + propsP->vp [i];
 	if (p->p3_index < 0)
-		v [i].Copy (p->p3_vec);
+		v [i].Assign (p->p3_vec);
 	else
 		memcpy (v + i, gameData.render.vertP + p->p3_index, sizeof (CFloatVector));
 	}

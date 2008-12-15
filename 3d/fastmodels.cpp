@@ -81,7 +81,7 @@ void G3DynLightModel (CObject *objP, RenderModel::CModel *pm, short iVerts, shor
 													!gameData.objs.bIsMissile [objP->info.nId];
 
 if (!gameStates.render.bBrightObject) {
-	vPos = objP->info.position.vPos.ToFloat();
+	vPos.Assign (objP->info.position.vPos);
 	for (i = iVerts, pv = pm->m_verts + iVerts, pn = pm->m_vertNorms + iVerts, pc = pm->m_color + iVerts;
 		  i < nVerts;
 		  i++, pv++, pn++, pc++) {
@@ -153,7 +153,7 @@ else {
 		else if (bEmissive)
 			l = F1_0;
 		else {
-			l = -CFixVector::Dot(viewInfo.view [0][FVEC], pmf->m_vNormal);
+			l = -CFixVector::Dot(viewInfo.view [0].FVec (), pmf->m_vNormal);
 			l = 3 * f1_0 / 4 + l / 4;
 			l = FixMul (l, xModelLight);
 			}
@@ -206,7 +206,7 @@ void G3ScaleModel (int nModel, int bHires)
 if (gameData.models.vScale.IsZero ())
 	fScale.Create (1,1,1);
 else
-	fScale = gameData.models.vScale.ToFloat ();
+	fScale.Assign (gameData.models.vScale);
 if (pm->m_fScale == fScale)
 	return;
 fScale /= pm->m_fScale;
@@ -240,7 +240,7 @@ if (!pm->m_bRendered || !gameData.models.vScale.IsZero ())
 	mtP->nCount = 0;
 else if (mtP->nCount >= (((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT)) ? 2 : 1))
 	return;
-vn = (pmf ? pmf->m_vNormal.ToFloat3() : vNormal->ToFloat3());
+vn.Assign (pmf ? pmf->m_vNormal : *vNormal);
 if (CFloatVector3::Dot(vn, vForward) > -1.0f / 3.0f)
 	return;
 if (pmf) {
@@ -258,7 +258,7 @@ G3TransformPoint (&v, &v, 0);
 #else
 #	if 1
 if (vOffsetP) {
-	vo = vOffsetP->ToFloat3();
+	vo.Assign (*vOffsetP);
 	v += vo;
 	}
 #	endif
@@ -617,7 +617,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 				CFloatVector3 vPos;
 				hLight = GL_LIGHT0 + iLight++;
 				glEnable (hLight);
-				vPos = objP->info.position.vPos.ToFloat3();
+				vPos.Assign (objP->info.position.vPos);
 				glLightfv (hLight, GL_POSITION, reinterpret_cast<GLfloat*> (&vPos));
 				glLightfv (hLight, GL_DIFFUSE, reinterpret_cast<GLfloat*> (&psc->color));
 				glLightfv (hLight, GL_SPECULAR, reinterpret_cast<GLfloat*> (&psc->color));

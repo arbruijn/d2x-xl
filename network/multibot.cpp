@@ -782,8 +782,8 @@ if (! (objP = CreateMorphRobot (gameData.segs.segments + robotcen->nSegment, &cu
 objP->info.nCreator = ((short) (robotcen - gameData.matCens.fuelCenters)) | 0x80;
 //	ExtractOrientFromSegment (&objP->info.position.mOrient, &gameData.segs.segments [robotcen->nSegment]);
 direction = gameData.objs.consoleP->info.position.vPos - objP->info.position.vPos;
-objP->info.position.mOrient = CFixMatrix::CreateFU(direction, objP->info.position.mOrient[UVEC]);
-//objP->info.position.mOrient = CFixMatrix::CreateFU(direction, &objP->info.position.mOrient[UVEC], NULL);
+objP->info.position.mOrient = CFixMatrix::CreateFU(direction, objP->info.position.mOrient.UVec ());
+//objP->info.position.mOrient = CFixMatrix::CreateFU(direction, &objP->info.position.mOrient.UVec (), NULL);
 MorphStart (objP);
 MapObjnumLocalToRemote (OBJ_IDX (objP), nObject, nPlayer);
 Assert (objP->cType.aiInfo.REMOTE_OWNER == -1);

@@ -169,12 +169,12 @@ xProjectedTime = FixDiv (xDistToPlayer, xMaxWeaponSpeed);
 (*vFire)[Y] = ComputeLeadComponent ((*vBelievedPlayerPos)[Y], (*vFirePoint)[Y], gameData.objs.consoleP->mType.physInfo.velocity[Y], xProjectedTime);
 (*vFire)[Z] = ComputeLeadComponent ((*vBelievedPlayerPos)[Z], (*vFirePoint)[Z], gameData.objs.consoleP->mType.physInfo.velocity[Z], xProjectedTime);
 CFixVector::Normalize(*vFire);
-Assert (CFixVector::Dot(*vFire, objP->info.position.mOrient[FVEC]) < 3*F1_0/2);
+Assert (CFixVector::Dot(*vFire, objP->info.position.mOrient.FVec ()) < 3*F1_0/2);
 //	Make sure not firing at especially strange angle.  If so, try to correct.  If still bad, give up after one try.
-if (CFixVector::Dot(*vFire, objP->info.position.mOrient[FVEC]) < F1_0/2) {
+if (CFixVector::Dot(*vFire, objP->info.position.mOrient.FVec ()) < F1_0/2) {
 	*vFire += vVecToPlayer;
 	*vFire *= F1_0/2;
-	if (CFixVector::Dot(*vFire, objP->info.position.mOrient[FVEC]) < F1_0/2) {
+	if (CFixVector::Dot(*vFire, objP->info.position.mOrient.FVec ()) < F1_0/2) {
 		return 0;
 		}
 	}
@@ -339,7 +339,7 @@ while ((count < 4) && (dot < F1_0/4)) {
 	bpp_diff[Y] = (*vBelievedPlayerPos)[Y] + FixMul ((d_rand ()-16384) * i, aim);
 	bpp_diff[Z] = (*vBelievedPlayerPos)[Z] + FixMul ((d_rand ()-16384) * i, aim);
 	CFixVector::NormalizedDir(vFire, bpp_diff, *vFirePoint);
-	dot = CFixVector::Dot(objP->info.position.mOrient[FVEC], vFire);
+	dot = CFixVector::Dot(objP->info.position.mOrient.FVec (), vFire);
 	count++;
 	}
 
@@ -380,7 +380,7 @@ void DoFiringStuff (CObject *objP, int nPlayerVisibility, CFixVector *vVecToPlay
 if ((gameData.ai.nDistToLastPlayerPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD) ||
 	 (gameData.ai.nPlayerVisibility >= 1)) {
 	//	Now, if in robot's field of view, lock onto CPlayerData
-	fix dot = CFixVector::Dot(objP->info.position.mOrient[FVEC], gameData.ai.vVecToPlayer);
+	fix dot = CFixVector::Dot(objP->info.position.mOrient.FVec (), gameData.ai.vVecToPlayer);
 	if ((dot >= 7 * F1_0 / 8) || (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
 		tAIStaticInfo	*aiP = &objP->cType.aiInfo;
 		tAILocalInfo	*ailP = gameData.ai.localInfo + OBJ_IDX (objP);
@@ -476,7 +476,7 @@ if ((gameData.ai.nPlayerVisibility == 2) ||
 	//	Changed by mk, 01/04/95, onearm would take about 9 seconds until he can fire at you.
 	//	Above comment corrected.  Date changed from 1994, to 1995.  Should fix some very subtle bugs, as well as not cause me to wonder, in the future, why I was writing AI code for onearm ten months before he existed.
 	if (!gameData.ai.bObjAnimates || ReadyToFire (botInfoP, ailP)) {
-		dot = CFixVector::Dot(objP->info.position.mOrient[FVEC], gameData.ai.vVecToPlayer);
+		dot = CFixVector::Dot(objP->info.position.mOrient.FVec (), gameData.ai.vVecToPlayer);
 		if ((dot >= 7 * F1_0 / 8) || ((dot > F1_0 / 4) && botInfoP->bossFlag)) {
 			if (nGun < botInfoP->nGuns) {
 				if (botInfoP->attackType == 1) {
@@ -566,7 +566,7 @@ else {	//	---------------------------------------------------------------
 		if ((!gameData.ai.bObjAnimates || ReadyToFire (botInfoP, ailP)) &&
 			 (gameData.ai.nDistToLastPlayerPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD)) {
 			CFixVector::NormalizedDir(vLastPos, gameData.ai.vBelievedPlayerPos, objP->info.position.vPos);
-			dot = CFixVector::Dot(objP->info.position.mOrient[FVEC], vLastPos);
+			dot = CFixVector::Dot(objP->info.position.mOrient.FVec (), vLastPos);
 			if (dot >= 7 * F1_0 / 8) {
 				if (aiP->CURRENT_GUN < botInfoP->nGuns) {
 					if (botInfoP->attackType == 1) {

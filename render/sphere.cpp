@@ -23,6 +23,10 @@
 #define ADDITIVE_SPHERE_BLENDING 1
 #define MAX_SPHERE_RINGS 256
 
+#if !RINGED_SPHERE
+
+// Todo: Create a c-tor for the two tables
+
 OOFModel::CTriangle baseSphereOcta [8] = {
 	{{{-1,0,1},{1,0,1},{0,1,0}},{0,0,0}},
 	{{{1,0,1},{1,0,-1},{0,1,0}},{0,0,0}},
@@ -42,6 +46,8 @@ OOFModel::CQuad baseSphereCube [6] = {
 	{{{-1,1,1},{1,1,1},{1,1,-1},{-1,1,-1}},{0,0,0}},
 	{{{-1,-1,-1},{1,-1,-1},{1,-1,1},{-1,-1,1}},{0,0,0}}
 };
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -610,7 +616,7 @@ else
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 #if RINGED_SPHERE
-glTranslatef (vPosP->x, vPosP->y, vPosP->z);
+glTranslatef ((*vPosP) [X], (*vPosP) [Y], (*vPosP) [Z]);
 RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 #else
 RenderTesselated (vPosP, xScale, yScale, zScale, red, green, blue, alpha, bmP);
@@ -688,7 +694,6 @@ if (gameData.render.shield.nFaces > 0)
 	if ((gameOpts->render.bDepthSort > 0) || (RENDERPATH && !gameOpts->render.bDepthSort))
 		TIAddSphere (riSphereShield, red, green, blue, alpha, objP);
 	else {
-		CFloatVector	p = {0, 0, 0};
 		fix nSize = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
 		float	fScale, r = X2F (nSize) /** 1.05f*/;
 		tTransformation *posP = OBJPOS (objP);
@@ -696,6 +701,7 @@ if (gameData.render.shield.nFaces > 0)
 		//gameStates.ogl.bUseTransform = 1;
 		glBlendFunc (GL_ONE, GL_ONE);
 		G3StartInstanceMatrix (*PolyObjPos (objP, &vPos), posP->mOrient);
+		CFloatVector p;
 		gameData.render.shield.Render (&p, r, r, r, red, green, blue, alpha, bmpShield, 1, 1);
 		G3DoneInstance ();
 		gameStates.ogl.bUseTransform = 0;
@@ -723,11 +729,11 @@ if (gameData.render.monsterball.nFaces > 0)
 	if ((gameOpts->render.bDepthSort > 0) || (RENDERPATH && !gameOpts->render.bDepthSort))
 		TIAddSphere (riMonsterball, red, green, blue, alpha, objP);
 	else {
-		static CFloatVector p = {0,0,0};
 		float r = X2F (objP->info.xSize);
 		gameStates.ogl.bUseTransform = 1;
 		OglSetupTransform (0);
 		G3StartInstanceMatrix (objP->info.position.vPos, objP->info.position.mOrient);
+		CFloatVector p;
 		gameData.render.monsterball.Render (&p, r, r, r, red, green, blue, gameData.hoard.monsterball.bm.Buffer () ? 1.0f : alpha,
 														&gameData.hoard.monsterball.bm, 4, 0);
 		G3DoneInstance ();

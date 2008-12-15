@@ -1545,15 +1545,15 @@ void CreateShortPos (tShortPos *spp, CObject *objP, int swap_bytes)
 	sbyte   *segP = spp->orient;
 	CFixVector *pv;
 
-	*segP++ = convert_to_byte(orient[RVEC][X]);
-	*segP++ = convert_to_byte(orient[UVEC][X]);
-	*segP++ = convert_to_byte(orient[FVEC][X]);
-	*segP++ = convert_to_byte(orient[RVEC][Y]);
-	*segP++ = convert_to_byte(orient[UVEC][Y]);
-	*segP++ = convert_to_byte(orient[FVEC][Y]);
-	*segP++ = convert_to_byte(orient[RVEC][Z]);
-	*segP++ = convert_to_byte(orient[UVEC][Z]);
-	*segP++ = convert_to_byte(orient[FVEC][Z]);
+	*segP++ = convert_to_byte(orient.RVec ()[X]);
+	*segP++ = convert_to_byte(orient.UVec ()[X]);
+	*segP++ = convert_to_byte(orient.FVec ()[X]);
+	*segP++ = convert_to_byte(orient.RVec ()[Y]);
+	*segP++ = convert_to_byte(orient.UVec ()[Y]);
+	*segP++ = convert_to_byte(orient.FVec ()[Y]);
+	*segP++ = convert_to_byte(orient.RVec ()[Z]);
+	*segP++ = convert_to_byte(orient.UVec ()[Z]);
+	*segP++ = convert_to_byte(orient.FVec ()[Z]);
 
 	pv = gameData.segs.vertices + gameData.segs.segments [objP->info.nSegment].verts [0];
 	spp->pos [X] = (short) ((objP->info.position.vPos[X] - (*pv)[X]) >> RELPOS_PRECISION);

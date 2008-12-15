@@ -374,7 +374,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	bStencil = StencilOff ();
 	pc = ObjectFrameColor (objP, pc);
 	PolyObjPos (objP, &vPos);
-	fPos = vPos.ToFloat();
+	fPos.Assign (vPos);
 	G3TransformPoint (fPos, fPos, 0);
 	r = X2F (objP->info.xSize);
 	r2 = r / 10;
@@ -469,7 +469,7 @@ if (gameStates.app.nSDLTicks - t0 [bMarker] > tDelay [bMarker]) {
 	nMslLockIndPos [bMarker] = (nMslLockIndPos [bMarker] + 1) % INDICATOR_POSITIONS;
 	}
 PolyObjPos (objP, &vPos);
-fPos = vPos.ToFloat();
+fPos.Assign (vPos);
 G3TransformPoint (fPos, fPos, 0);
 r = X2F (objP->info.xSize);
 if (bMarker)
@@ -629,7 +629,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 			!gameOpts->render.cockpit.bRotateMslLockInd && (extraGameInfo [IsMultiGame].bTargetIndicators != 1)) ?
 		  reinterpret_cast<tRgbColorf*> (&trackGoalColor [0]) : ObjectFrameColor (objP, pc);
 	PolyObjPos (objP, &vPos);
-	fPos = vPos.ToFloat();
+	fPos.Assign (vPos);
 	G3TransformPoint (fPos, fPos, 0);
 	r = X2F (objP->info.xSize);
 	glColor3fv (reinterpret_cast<GLfloat*> (pc));
@@ -976,8 +976,8 @@ void CreateLightTrail (CFixVector& vPos, CFixVector &vDir, float fSize, float fL
 	float		c = 1/*0.7f + 0.03f * fPulse*/, dotTrail, dotCorona;
 	int		i;
 
-fVecf = vDir.ToFloat();
-vPosf = vPos.ToFloat();
+fVecf.Assign (vDir);
+vPosf.Assign (vPos);
 vTrail [2] = vPosf - fVecf * fLength;
 G3TransformPoint (vTrail [2], vTrail [2], 0);
 G3TransformPoint (vPosf, vPosf, 0);
@@ -1024,9 +1024,9 @@ else {
 void RenderThrusterFlames (CObject *objP)
 {
 	int					h, i, j, k, l, nStyle, nThrusters, bStencil, bSpectate, bTextured;
-	tRgbaColorf			c [2];
+	tRgbaColorf			color [2];
 	tThrusterInfo		ti;
-	CFloatVector				v;
+	CFloatVector		v;
 	float					fSpeed, fPulse, fFade [4];
 	CThrusterData		*pt = NULL;
 
@@ -1120,8 +1120,8 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 	ti.fLength *= 4 * ti.fSize;
 	ti.fSize *= ((objP->info.nType == OBJ_PLAYER) && HaveHiresModel (objP->rType.polyObjInfo.nModel)) ? 1.2f : 1.5f;
 #if 1
-	if (!ti.mtP)
-		fVecf = ti.pp ? ti.pp->mOrient.FVec().ToFloat() : objP->info.position.mOrient.FVec().ToFloat();
+	if (!ti.mtP) 
+		fVecf.Assign (ti.pp ? ti.pp->mOrient.FVec() : objP->info.position.mOrient.FVec());
 #endif
 	for (h = 0; h < nThrusters; h++)
 		CreateLightTrail (ti.vPos [h], ti.vDir [h], ti.fSize, ti.fLength, bmpThruster [nStyle], &tcColor);
@@ -1139,21 +1139,20 @@ else {
 			float c = 1; //0.8f + 0.02f * fPulse;
 			glColor3f (c, c, c); //, 0.9f);
 			}
-		else
-			{
-			c [1].red = 0.5f + 0.05f * fPulse;
-			c [1].green = 0.45f + 0.045f * fPulse;
-			c [1].blue = 0.0f;
-			c [1].alpha = 0.9f;
+		else {
+			color [1].red = 0.5f + 0.05f * fPulse;
+			color [1].green = 0.45f + 0.045f * fPulse;
+			color [1].blue = 0.0f;
+			color [1].alpha = 0.9f;
 			}
 		G3StartInstanceMatrix (ti.vPos [h], (ti.pp && !bSpectate) ? ti.pp->mOrient : objP->info.position.mOrient);
 		for (i = 0; i < THRUSTER_SEGS - 1; i++) {
 #if 1
 			if (!bTextured) {
-				c [0] = c [1];
-				c [1].red *= 0.975f;
-				c [1].green *= 0.8f;
-				c [1].alpha *= fFade [i / 4];
+				color [0] = color [1];
+				color [1].red *= 0.975f;
+				color [1].green *= 0.8f;
+				color [1].alpha *= fFade [i / 4];
 				}
 			glBegin (GL_QUAD_STRIP);
 			for (j = 0; j < RING_SIZE + 1; j++) {
@@ -1164,13 +1163,13 @@ else {
 					v [X] *= ti.fSize;
 					v [Y] *= ti.fSize;
 					v [Z] *= ti.fLength;
-					G3TransformPoint(v, v, 0);
+					G3TransformPoint (v, v, 0);
 					if (bTextured) {
 						tTexCoord2fl.v.v = 0.25f + tTexCoord2flStep.v.v * (i + l);
 						glTexCoord2fv (reinterpret_cast<GLfloat*> (&tTexCoord2fl));
 						}
 					else
-						glColor4fv (reinterpret_cast<GLfloat*> (c + l)); // (c [l].red, c [l].green, c [l].blue, c [l].alpha);
+						glColor4fv (reinterpret_cast<GLfloat*> (color + l)); // (c [l].red, c [l].green, c [l].blue, c [l].alpha);
 					glVertex3fv (reinterpret_cast<GLfloat*> (&v));
 					}
 				}
@@ -1229,8 +1228,8 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 
 	bmP = bAdditive ? bmpGlare : bmpCorona;
 	colorP->alpha = alpha;
-	vDir = objP->info.position.mOrient.FVec().ToFloat();
-	vPos = objP->info.position.vPos.ToFloat();
+	vDir.Assign (objP->info.position.mOrient.FVec());
+	vPos.Assign (objP->info.position.vPos);
 	vCorona [0] = vPos + vDir * (fScale * fLength);
 	vh [4] = vCorona [0];
 	vCorona [3] = vPos + vDir * (-fScale * fLength);
@@ -1561,14 +1560,14 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 		int				bStencil;
 //		static short	patterns [] = {0x0603, 0x0203, 0x0103, 0x0202};
 
-	vPosf [0] = objP->info.position.vPos.ToFloat();
-	vPosf [1] = objP->info.vLastPos.ToFloat();
+	vPosf [0].Assign (objP->info.position.vPos);
+	vPosf [1].Assign (objP->info.vLastPos);
 	G3TransformPoint (vPosf [0], vPosf [0], 0);
 	G3TransformPoint (vPosf [1], vPosf [1], 0);
 	vDirf = vPosf [0] - vPosf [1];
 	if (vDirf.IsZero()) {
 		//return;
-		vPosf [1] = OBJECTS [objP->cType.laserInfo.parent.nObject].info.position.vPos.ToFloat();
+		vPosf [1].Assign (OBJECTS [objP->cType.laserInfo.parent.nObject].info.position.vPos);
 		G3TransformPoint(vPosf [1], vPosf [1], 0);
 		vDirf = vPosf [0] - vPosf [1];
 		if(vDirf.IsZero())
@@ -1719,8 +1718,8 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 			trailColor.green *= fScale;
 			trailColor.blue *= fScale;
 			}
-		vOffsf = objP->info.position.mOrient.FVec().ToFloat();
-		vTrailVerts [0] = objP->info.position.vPos.ToFloat();
+		vOffsf.Assign (objP->info.position.mOrient.FVec());
+		vTrailVerts [0].Assign (objP->info.position.vPos);
 		vTrailVerts [0] += vOffsf * l;
 		vTrailVerts [2] = vTrailVerts [0] - vOffsf * 100;
 		G3TransformPoint (vTrailVerts [0], vTrailVerts [0], 0);

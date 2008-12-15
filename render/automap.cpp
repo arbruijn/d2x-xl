@@ -278,24 +278,24 @@ G3DrawSphere (&spherePoint, gameStates.render.automap.bRadar ? objP->info.xSize 
 if (gameStates.render.automap.bRadar && (OBJ_IDX (objP) != LOCALPLAYER.nObject))
 	return;
 // Draw shaft of arrow
-vArrowPos = objP->info.position.vPos + objP->info.position.mOrient[FVEC] * (size*3);
+vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (size*3);
 G3TransformAndEncodePoint(&arrowPoint, vArrowPos);
 G3DrawLine (&spherePoint, &arrowPoint);
 
 // Draw right head of arrow
-vHeadPos = objP->info.position.vPos + objP->info.position.mOrient[FVEC] * (size*2);
-vHeadPos += objP->info.position.mOrient[RVEC] * (size*1);
+vHeadPos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (size*2);
+vHeadPos += objP->info.position.mOrient.RVec () * (size*1);
 G3TransformAndEncodePoint(&headPoint, vHeadPos);
 G3DrawLine (&arrowPoint, &headPoint);
 
 // Draw left head of arrow
-vHeadPos = objP->info.position.vPos + objP->info.position.mOrient[FVEC] * (size*2);
-vHeadPos += objP->info.position.mOrient[RVEC] * (size* (-1));
+vHeadPos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (size*2);
+vHeadPos += objP->info.position.mOrient.RVec () * (size* (-1));
 G3TransformAndEncodePoint(&headPoint, vHeadPos);
 G3DrawLine (&arrowPoint, &headPoint);
 
 // Draw CPlayerData's up vector
-vArrowPos = objP->info.position.vPos + objP->info.position.mOrient[UVEC] * (size*2);
+vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.UVec () * (size*2);
 G3TransformAndEncodePoint(&arrowPoint, vArrowPos);
 G3DrawLine (&spherePoint, &arrowPoint);
 gameStates.ogl.bUseTransform = bUseTransform;
@@ -328,10 +328,10 @@ gameStates.render.automap.bFull = (LOCALPLAYER.flags & (PLAYER_FLAGS_FULLMAP_CHE
 if (gameStates.render.automap.bRadar && gameStates.render.bTopDownRadar) {
 	CFixMatrix& po = gameData.multiplayer.playerInit [gameData.multiplayer.nLocalPlayer].position.mOrient;
 #if 1
-	vmRadar[RVEC] = po[RVEC];
-	vmRadar[FVEC] = po[UVEC];
-	vmRadar[FVEC][Y] = -vmRadar[FVEC][Y];
-	vmRadar[UVEC] = po[FVEC];
+	vmRadar.RVec () = po.RVec ();
+	vmRadar.FVec () = po.UVec ();
+	vmRadar.FVec ()[Y] = -vmRadar.FVec ()[Y];
+	vmRadar.UVec () = po.FVec ();
 #else
 	vmRadar.rVec.p.x = po->rVec.p.x;
 	vmRadar.rVec.p.y = po->rVec.p.y;
@@ -362,11 +362,11 @@ if (bAutomapFrame)
 	OglViewport (RESCALE_X (27), RESCALE_Y (80), RESCALE_X (582), RESCALE_Y (334));
 RenderStartFrame ();
 if (gameStates.render.automap.bRadar && gameStates.render.bTopDownRadar) {
-	amData.viewPos = amData.viewTarget + vmRadar[FVEC] * (-amData.nViewDist);
+	amData.viewPos = amData.viewTarget + vmRadar.FVec () * (-amData.nViewDist);
 	G3SetViewMatrix(amData.viewPos, vmRadar, amData.nZoom * 2, 1);
 	}
 else {
-	amData.viewPos = amData.viewTarget + amData.viewMatrix[FVEC] * (gameStates.render.automap.bRadar ? -amData.nViewDist : -amData.nViewDist);
+	amData.viewPos = amData.viewTarget + amData.viewMatrix.FVec () * (gameStates.render.automap.bRadar ? -amData.nViewDist : -amData.nViewDist);
 	G3SetViewMatrix(amData.viewPos, amData.viewMatrix, gameStates.render.automap.bRadar ? (amData.nZoom * 3) / 2 : amData.nZoom, 1);
 	}
 if (!gameStates.render.automap.bRadar && gameOpts->render.automap.bTextured) {
@@ -706,7 +706,7 @@ if (Controls [0].firePrimaryDownCount)	{
 	amData.viewTarget = playerP->info.position.vPos;
 	}
 if (Controls [0].forwardThrustTime)
-	amData.viewTarget += amData.viewMatrix[FVEC] * (Controls [0].forwardThrustTime * ZOOM_SPEED_FACTOR); 
+	amData.viewTarget += amData.viewMatrix.FVec () * (Controls [0].forwardThrustTime * ZOOM_SPEED_FACTOR); 
 pvTAngles[PA] += (fixang) FixDiv (Controls [0].pitchTime, ROT_SPEED_DIVISOR);
 pvTAngles[HA] += (fixang) FixDiv (Controls [0].headingTime, ROT_SPEED_DIVISOR);
 pvTAngles[BA] += (fixang) FixDiv (Controls [0].bankTime, ROT_SPEED_DIVISOR*2);
@@ -715,8 +715,8 @@ m = CFixMatrix::Create(pvTAngles);
 if (Controls [0].verticalThrustTime || Controls [0].sidewaysThrustTime)	{
 	// TODO MM
 	amData.viewMatrix = playerP->info.position.mOrient * m;
-	amData.viewTarget += amData.viewMatrix[UVEC] * (Controls [0].verticalThrustTime * SLIDE_SPEED);
-	amData.viewTarget += amData.viewMatrix[RVEC] * (Controls [0].sidewaysThrustTime * SLIDE_SPEED);
+	amData.viewTarget += amData.viewMatrix.UVec () * (Controls [0].verticalThrustTime * SLIDE_SPEED);
+	amData.viewTarget += amData.viewMatrix.RVec () * (Controls [0].sidewaysThrustTime * SLIDE_SPEED);
 	}
 // TODO MM
 amData.viewMatrix = playerP->info.position.mOrient * m;

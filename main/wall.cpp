@@ -1184,7 +1184,7 @@ Assert(nPlayer > -1);
 //	Determine whether CPlayerData is moving forward.  If not, don't say negative
 //	messages because he probably didn't intentionally hit the door.
 if (objP->info.nType == OBJ_PLAYER)
-	bShowMessage = (CFixVector::Dot(objP->info.position.mOrient[FVEC], objP->mType.physInfo.velocity) > 0);
+	bShowMessage = (CFixVector::Dot(objP->info.position.mOrient.FVec (), objP->mType.physInfo.velocity) > 0);
 else if (objP->info.nType == OBJ_ROBOT)
 	bShowMessage = 0;
 else if ((objP->info.nType == OBJ_WEAPON) && (objP->cType.laserInfo.parent.nType == OBJ_ROBOT))

@@ -384,7 +384,7 @@ if ((siP->ailP->nextPrimaryFire <= 0) && (gameData.ai.nPlayerVisibility)) {
 
 	if (!AIMultiplayerAwareness (objP, 75))
 		return 1;
-	fire_vec = objP->info.position.mOrient[FVEC];
+	fire_vec = objP->info.position.mOrient.FVec ();
 	fire_vec = -fire_vec;
 	fire_pos = objP->info.position.vPos + fire_vec;
 	CreateNewLaserEasy (&fire_vec, &fire_pos, OBJ_IDX (objP), (aiP->SUB_FLAGS & SUB_FLAGS_SPROX) ? ROBOT_SMARTMINE_ID : PROXMINE_ID, 1);
@@ -490,15 +490,15 @@ if (gameData.ai.nPlayerVisibility == 2) {
 	CFixVector  goal_point, vGoal, vec_to_goal, vRand;
 	fix         dot;
 
-	dot = CFixVector::Dot(OBJPOS (gameData.objs.consoleP)->mOrient[FVEC], gameData.ai.vVecToPlayer);
+	dot = CFixVector::Dot(OBJPOS (gameData.objs.consoleP)->mOrient.FVec (), gameData.ai.vVecToPlayer);
 	if (dot > 0) {          // Remember, we're interested in the rear vector dot being < 0.
-		vGoal = OBJPOS (gameData.objs.consoleP)->mOrient[FVEC];
+		vGoal = OBJPOS (gameData.objs.consoleP)->mOrient.FVec ();
 		vGoal = -vGoal;
 		}
 	else {
 		fix dot;
-		dot = CFixVector::Dot(OBJPOS (gameData.objs.consoleP)->mOrient[RVEC], gameData.ai.vVecToPlayer);
-		vGoal = OBJPOS (gameData.objs.consoleP)->mOrient[RVEC];
+		dot = CFixVector::Dot(OBJPOS (gameData.objs.consoleP)->mOrient.RVec (), gameData.ai.vVecToPlayer);
+		vGoal = OBJPOS (gameData.objs.consoleP)->mOrient.RVec ();
 		if (dot > 0) {
 			vGoal = -vGoal;
 			}
@@ -632,7 +632,7 @@ int AISNoneHandler1 (CObject *objP, tAIStateInfo *siP)
 	fix	dot;
 
 ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_WAKEUP_DIST);
-dot = CFixVector::Dot(objP->info.position.mOrient[FVEC], gameData.ai.vVecToPlayer);
+dot = CFixVector::Dot(objP->info.position.mOrient.FVec (), gameData.ai.vVecToPlayer);
 if ((dot >= F1_0/2) && (siP->aiP->GOAL_STATE == AIS_REST))
 	siP->aiP->GOAL_STATE = AIS_SEARCH;
 return 0;
@@ -856,8 +856,8 @@ if (siP->botInfoP->companion) {
 		else
 			;
 
-		if (bDoStuff && (CFixVector::Dot(objP->info.position.mOrient[FVEC], gameData.ai.vVecToPlayer) < F1_0 / 2)) {
-			CreateNewLaserEasy (&objP->info.position.mOrient[FVEC], &objP->info.position.vPos, OBJ_IDX (objP), FLARE_ID, 1);
+		if (bDoStuff && (CFixVector::Dot(objP->info.position.mOrient.FVec (), gameData.ai.vVecToPlayer) < F1_0 / 2)) {
+			CreateNewLaserEasy (&objP->info.position.mOrient.FVec (), &objP->info.position.vPos, OBJ_IDX (objP), FLARE_ID, 1);
 			siP->ailP->nextPrimaryFire = F1_0/2;
 			if (!gameData.escort.bMayTalk) // If buddy not talking, make him fire flares less often.
 				siP->ailP->nextPrimaryFire += d_rand ()*4;
@@ -886,7 +886,7 @@ if (siP->botInfoP->thief) {
 			bDoStuff = 1;
 		if (bDoStuff) {
 			// @mk, 05/08/95: Firing flare from center of CObject, this is dumb...
-			CreateNewLaserEasy (&objP->info.position.mOrient[FVEC], &objP->info.position.vPos, OBJ_IDX (objP), FLARE_ID, 1);
+			CreateNewLaserEasy (&objP->info.position.mOrient.FVec (), &objP->info.position.vPos, OBJ_IDX (objP), FLARE_ID, 1);
 			siP->ailP->nextPrimaryFire = F1_0 / 2;
 			if (gameData.thief.nStolenItem == 0)     // If never stolen an item, fire flares less often (bad: gameData.thief.nStolenItem wraps, but big deal)
 				siP->ailP->nextPrimaryFire += d_rand ()*4;

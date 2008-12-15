@@ -74,7 +74,7 @@ for (i = 0; i < nHeadlights; i++) {
 	vecToObj = objP->info.position.vPos - lightObjP->info.position.vPos;
 	dist = CFixVector::Normalize(vecToObj);
 	if (dist > 0) {
-		dot = CFixVector::Dot(lightObjP->info.position.mOrient[FVEC], vecToObj);
+		dot = CFixVector::Dot(lightObjP->info.position.mOrient.FVec (), vecToObj);
 		if (dot < F1_0/2)
 			light += FixDiv (HEADLIGHT_SCALE, FixMul (HEADLIGHT_SCALE, dist));	//	Do the Normal thing, but darken around headlight.
 		else
@@ -106,7 +106,7 @@ for (i = 0; i < gameData.render.lights.dynamic.headlights.nLights; i++) {
 	psl->info.bSpot = 1;
 	psl->info.fSpotAngle = pl->info.fSpotAngle;
 	psl->info.fSpotExponent = pl->info.fSpotExponent;
-	psl->info.vDirf = pl->vDir.ToFloat();
+	psl->info.vDirf.Assign (pl->vDir);
 	if (bHWHeadlight) {
 		gameData.render.lights.dynamic.headlights.pos[i] = psl->vPosf[0];
 		gameData.render.lights.dynamic.headlights.dir[i] = *psl->info.vDirf.V3();
@@ -184,7 +184,7 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 	pl = gameData.render.lights.dynamic.lights + gameData.render.lights.dynamic.nHeadlights [nPlayer];
 	objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
 	pl->info.vPos = OBJPOS (objP)->vPos;
-	pl->vDir = OBJPOS (objP)->mOrient[FVEC];
+	pl->vDir = OBJPOS (objP)->mOrient.FVec ();
 	//TODO ScaleFrac check
 	pl->info.vPos += pl->vDir * (objP->info.xSize / 4);
 	}

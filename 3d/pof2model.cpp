@@ -154,7 +154,7 @@ pmf->m_nVerts = nVerts;
 if ((pmf->m_bGlow = (nGlow >= 0)))
 	nGlow = -1;
 uvl = reinterpret_cast<tUVL*> (p + 30 + (nVerts | 1) * 2);
-n = pn->ToFloat3();
+n.Assign (*pn);
 for (i = nVerts, pfv = WORDPTR (p+30); i; i--, pfv++, uvl++, pmv++, pvn++) {
 	j = *pfv;
 	Assert (pmv - pm->m_faceVerts < pm->m_nFaceVerts);
@@ -211,7 +211,7 @@ for (;;) {
 			CFloatVector3 *pfv = pm->m_verts.Buffer ();
 			CFixVector *pv = VECPTR (p+4);
 			for (i = n; i; i--) {
-				*pfv = pv->ToFloat3();
+				pfv->Copy (*pv);
 				pfv++; pv++;
 			}
 			p += n * sizeof (CFixVector) + 4;
@@ -224,7 +224,7 @@ for (;;) {
 			CFloatVector3 *pfv = pm->m_verts + s;
 			CFixVector *pv = VECPTR (p+8);
 			for (i = n; i; i--) {
-				*pfv = pv->ToFloat3();
+				pfv->Copy (*pv);
 				pfv++; pv++;
 			}
 			p += n * sizeof (CFixVector) + 8;

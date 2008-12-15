@@ -430,7 +430,7 @@ if ((bmP->Type () == BM_TYPE_STD) && bmP->Override ()) {
 	bmP->SetupTexture (1, -1, gameOpts->render.bDepthSort <= 0);
 	bmP = bmP->Override (iFrame);
 	}
-delta = objP->info.position.mOrient[UVEC] * objP->info.xSize;
+delta = objP->info.position.mOrient.UVec () * objP->info.xSize;
 top_v = objP->info.position.vPos + delta;
 bot_v = objP->info.position.vPos - delta;
 G3TransformAndEncodePoint (&top_p, top_v);

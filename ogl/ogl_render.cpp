@@ -386,13 +386,13 @@ return 0;
 
 #define	G3VERTPOS(_dest,_src) \
 			if ((_src)->p3_index < 0) \
-				(_dest) = ((_src)->p3_vec).ToFloat(); \
+				(_dest).Assign ((_src)->p3_vec); \
 			else \
 				_dest = gameData.render.vertP [(_src)->p3_index];
 
 #define	G3VERTPOS3(_dest,_src) \
 			if ((_src)->p3_index < 0) \
-				(_dest) = ((_src)->p3_vec).ToFloat3(); \
+				(_dest).Assign ((_src)->p3_vec); \
 			else \
 				_dest = gameData.render.vertP [(_src)->p3_index];
 
@@ -420,10 +420,10 @@ int G3DrawTexPolyMulti (
 					bResetColor = 0,
 					bOverlay = 0;
 	tFaceColor	*pc;
-	CBitmap	*bmP = NULL, *mask = NULL;
+	CBitmap		*bmP = NULL, *mask = NULL;
 	g3sPoint		*pl, **ppl;
 #if USE_VERTNORMS
-	CFloatVector		vNormal, vVertPos;
+	CFloatVector	vNormal, vVertPos;
 #endif
 #if G3_DRAW_ARRAYS
 	int			bVertexArrays = gameData.render.vertP != NULL;
@@ -516,7 +516,7 @@ if (!bDepthSort) {
 	if (SHOW_DYN_LIGHT) {
 #if USE_VERTNORMS
 		if (pvNormal) {
-			vNormal = pvNormal->ToFloat();
+			vNormal.Assign (*pvNormal);
 			G3RotatePoint(vNormal, vNormal, 0);
 			}
 	else
@@ -551,7 +551,7 @@ if (bVertexArrays || bDepthSort) {
 		vertIndex [i] = pl->p3_index;
 		//colorIndex [i] = i;
 		if (pl->p3_index < 0)
-			vertices[i] = pl->p3_vec.ToFloat();
+			vertices[i].Assign (pl->p3_vec);
 		else
 			vertices [i] = gameData.render.vertP [pl->p3_index];
 		texCoord [0][i].v.u = X2F (uvlList [i].u);
@@ -683,7 +683,7 @@ if (bOverlay > 0) {
 	glBegin (GL_TRIANGLE_FAN);
 	if (bDynLight) {
 		for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
-			*vVertPos.V3() = ((*ppl)->p3_vec).ToFloat3();
+			vVertPos.Assign ((*ppl)->p3_vec);
 			G3VertexColor (G3GetNormal (*ppl, &vNormal), vVertPos.V3(), (*ppl)->p3_index, NULL, NULL, 1, 1, 0);
 			SetTexCoord (uvlList + i, orient, 0, NULL, mask != NULL);
 			OglVertex3f (*ppl);
@@ -880,7 +880,7 @@ else
 if (SHOW_DYN_LIGHT) {
 #if USE_VERTNORMS
 	if (pvNormal)
-		vNormal = pvNormal->ToFloat();
+		vNormal.Assign (*pvNormal);
 else
 		G3CalcNormal (pointList, &vNormal);
 #else

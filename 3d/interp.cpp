@@ -123,7 +123,8 @@ while (n--) {
 	if (gameData.models.vScale.IsZero ())
 		fScale.Create (1 / 65536.0f, 1 / 65536.0f, 1 / 65536.0f);
 	else
-		fScale = gameData.models.vScale.ToFloat () / 65536.0f;
+		fScale.Assign (gameData.models.vScale);
+		fScale /= 65536.0f;
 	if (gameStates.ogl.bUseTransform) {
 		(*pfv)[X] = (*src)[X] * fScale [X];
 		(*pfv)[Y] = (*src)[Y] * fScale [Y];
@@ -528,7 +529,7 @@ for (;;) {
 
 			//calculate light from surface Normal
 			if (nGlow < 0) {			//no glow
-				l = -CFixVector::Dot(viewInfo.view[0][FVEC], *VECPTR(p+16));
+				l = -CFixVector::Dot(viewInfo.view[0].FVec (), *VECPTR(p+16));
 				l = f1_0 / 4 + (l * 3) / 4;
 				l = FixMul (l, xModelLight);
 				}
@@ -681,7 +682,7 @@ for (;;) {
 			fix light;
 			//calculate light from surface Normal
 			if (nGlow < 0) {			//no glow
-				light = -CFixVector::Dot(viewInfo.view [0][FVEC], *VECPTR (p+16));
+				light = -CFixVector::Dot(viewInfo.view [0].FVec (), *VECPTR (p+16));
 				light = f1_0/4 + (light*3)/4;
 				light = FixMul (light, xModelLight);
 				}

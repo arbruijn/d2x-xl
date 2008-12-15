@@ -81,7 +81,7 @@ best_side = 0;
 // bank CPlayerData according to CSegment orientation
 //find tSide of CSegment that CPlayerData is most aligned with
 for (i = 0; i < 6; i++) {
-	d = CFixVector::Dot(gameData.segs.segments [objP->info.nSegment].sides [i].normals[0], objP->info.position.mOrient[UVEC]);
+	d = CFixVector::Dot(gameData.segs.segments [objP->info.nSegment].sides [i].normals[0], objP->info.position.mOrient.UVec ());
 	if (d > largest_d) {largest_d = d; best_side=i;}
 	}
 if (gameOpts->gameplay.nAutoLeveling == 1) {	 // new CPlayerData leveling code: use Normal of tSide closest to our up vec
@@ -98,17 +98,17 @@ if (gameOpts->gameplay.nAutoLeveling == 1) {	 // new CPlayerData leveling code: 
 else if (gameOpts->gameplay.nAutoLeveling == 2)	// old way: used floor's Normal as upvec
 	desiredUpVec = gameData.segs.segments [objP->info.nSegment].sides [3].normals [0];
 else if (gameOpts->gameplay.nAutoLeveling == 3)	// mine's up vector
-	desiredUpVec = (*PlayerSpawnOrient(gameData.multiplayer.nLocalPlayer))[UVEC];
+	desiredUpVec = (*PlayerSpawnOrient(gameData.multiplayer.nLocalPlayer)).UVec ();
 else
 	return;
-if (labs (CFixVector::Dot(desiredUpVec, objP->info.position.mOrient[FVEC])) < f1_0/2) {
+if (labs (CFixVector::Dot(desiredUpVec, objP->info.position.mOrient.FVec ())) < f1_0/2) {
 	fixang save_delta_ang;
 	CAngleVector turnAngles;
 
-	temp_matrix = CFixMatrix::CreateFU(objP->info.position.mOrient[FVEC], desiredUpVec);
-//	temp_matrix = CFixMatrix::CreateFU(objP->info.position.mOrient[FVEC], &desiredUpVec, NULL);
+	temp_matrix = CFixMatrix::CreateFU(objP->info.position.mOrient.FVec (), desiredUpVec);
+//	temp_matrix = CFixMatrix::CreateFU(objP->info.position.mOrient.FVec (), &desiredUpVec, NULL);
 	save_delta_ang =
-	delta_ang = CFixVector::DeltaAngle(objP->info.position.mOrient[UVEC], temp_matrix[UVEC], &objP->info.position.mOrient[FVEC]);
+	delta_ang = CFixVector::DeltaAngle(objP->info.position.mOrient.UVec (), temp_matrix.UVec (), &objP->info.position.mOrient.FVec ());
 	delta_ang += objP->mType.physInfo.turnRoll;
 	if (abs (delta_ang) > DAMP_ANG) {
 		CFixMatrix mRotate, new_pm;
@@ -554,7 +554,7 @@ do {
 	if (fScale < 1) {
 		CFixVector vStartVel = objP->StartVel ();
 		CFixVector::Normalize (vStartVel);
-		fix xDot = CFixVector::Dot (objP->info.position.mOrient[FVEC], vStartVel);
+		fix xDot = CFixVector::Dot (objP->info.position.mOrient.FVec (), vStartVel);
 		vFrame = objP->mType.physInfo.velocity + objP->StartVel ();
 		vFrame *= F2X (fScale * fScale);
 		vFrame += objP->StartVel () * ((xDot > 0) ? -xDot : xDot);
@@ -866,8 +866,8 @@ retryMove:
 						objP->mType.physInfo.velocity *= (FixDiv (MAX_OBJECT_VEL, vel));
 					}
 				if (bBounced && (objP->info.nType == OBJ_WEAPON))
-					objP->info.position.mOrient = CFixMatrix::CreateFU(objP->mType.physInfo.velocity, objP->info.position.mOrient[UVEC]);
-					//objP->info.position.mOrient = CFixMatrix::CreateFU(objP->mType.physInfo.velocity, &objP->info.position.mOrient[UVEC], NULL);
+					objP->info.position.mOrient = CFixMatrix::CreateFU(objP->mType.physInfo.velocity, objP->info.position.mOrient.UVec ());
+					//objP->info.position.mOrient = CFixMatrix::CreateFU(objP->mType.physInfo.velocity, &objP->info.position.mOrient.UVec (), NULL);
 				bRetry = 1;
 				}
 			}
@@ -1108,7 +1108,7 @@ if (objP->info.controlType == CT_MORPH)
 	rate *= 2;
 
 dest_angles = vGoal->ToAnglesVec();
-cur_angles = objP->info.position.mOrient[FVEC].ToAnglesVec();
+cur_angles = objP->info.position.mOrient.FVec ().ToAnglesVec();
 delta_p = (dest_angles[PA] - cur_angles[PA]);
 delta_h = (dest_angles[HA] - cur_angles[HA]);
 if (delta_p > F1_0/2)

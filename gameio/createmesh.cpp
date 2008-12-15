@@ -421,7 +421,7 @@ memcpy (verts, edgeP->verts, sizeof (verts));
 gameData.segs.fVertices [gameData.segs.nVertices] = CFloatVector::Avg(
 			 gameData.segs.fVertices [verts [0]],
 			 gameData.segs.fVertices [verts [1]]);
-gameData.segs.vertices [gameData.segs.nVertices] = gameData.segs.fVertices [gameData.segs.nVertices].ToFix();
+gameData.segs.vertices [gameData.segs.nVertices].Assign (gameData.segs.fVertices [gameData.segs.nVertices]);
 #if 0
 if (tris [1] >= 0) {
 	if (NewEdgeLen (tris [0], verts [0], verts [1]) + NewEdgeLen (tris [1], verts [0], verts [1]) < MAX_EDGE_LEN)
@@ -603,7 +603,7 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 	if (gameData.segs.faces.normals [nIndex].Mag() == 0)
 		m_faceP = m_faceP;
 #endif
-	vNormal = gameData.segs.faces.normals [nIndex].ToFix();
+	vNormal.Assign (gameData.segs.faces.normals [nIndex]);
 	for (i = 1; i < 3; i++)
 		gameData.segs.faces.normals [nIndex + i] = gameData.segs.faces.normals [nIndex];
 	memcpy (gameData.segs.faces.texCoord + nIndex, triP->texCoord, sizeof (triP->texCoord));
@@ -964,13 +964,13 @@ texCoordP [3].v.v = (y + 1) / (float) LIGHTMAP_ROWSIZE - 1.0f / (float) (LIGHTMA
 
 void CQuadMeshBuilder::SetupFace (void)
 {
-	int			i, j;
-	CFixVector	vNormal;
-	CFloatVector3		vNormalf;
+	int				i, j;
+	CFixVector		vNormal;
+	CFloatVector3	vNormalf;
 
 vNormal = m_sideP->normals [0] + m_sideP->normals [1];
 vNormal *= F1_0 / 2;
-vNormalf = vNormal.ToFloat3();
+vNormalf.Assign (vNormal);
 for (i = 0; i < 4; i++) {
 	j = m_sideVerts [i];
 	*m_vertexP++ = *gameData.segs.fVertices [j].V3();
@@ -1104,7 +1104,7 @@ vSide [3] = CFloatVector::Avg (gameData.segs.fVertices [m_sideVerts [3]], gameDa
 VmLineLineIntersection (vSide [0], vSide [2], vSide [1], vSide [3],
 								gameData.segs.fVertices [gameData.segs.nVertices],
 								gameData.segs.fVertices [gameData.segs.nVertices]);
-gameData.segs.vertices [gameData.segs.nVertices] = gameData.segs.fVertices [gameData.segs.nVertices].ToFix();
+gameData.segs.vertices [gameData.segs.nVertices].Assign (gameData.segs.fVertices [gameData.segs.nVertices]);
 m_sideVerts [4] = gameData.segs.nVertices++;
 m_faceP->nVerts++;
 for (i = 0; i < 4; i++, m_triP++) {

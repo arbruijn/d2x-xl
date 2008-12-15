@@ -105,7 +105,7 @@ void CreateThrusterFlames (CObject *objP)
 {
 	static int nThrusters = -1;
 
-	CFixVector	pos, dir = objP->info.position.mOrient[FVEC];
+	CFixVector	pos, dir = objP->info.position.mOrient.FVec ();
 	int			d, j;
 	tParticleEmitter		*emitterP;
 
@@ -122,9 +122,9 @@ else
 d = 8 * objP->info.xSize / 40;
 for (j = 0; j < 2; j++)
 	if (emitterP = GetParticleEmitter (nThrusters, j)) {
-		VmVecScaleAdd (&pos, &objP->info.position.vPos, &objP->info.position.mOrient[FVEC], -objP->info.xSize);
-		VmVecScaleInc (&pos, &objP->info.position.mOrient[RVEC], j ? d : -d);
-		VmVecScaleInc (&pos, &objP->info.position.mOrient[UVEC],  -objP->info.xSize / 25);
+		VmVecScaleAdd (&pos, &objP->info.position.vPos, &objP->info.position.mOrient.FVec (), -objP->info.xSize);
+		VmVecScaleInc (&pos, &objP->info.position.mOrient.RVec (), j ? d : -d);
+		VmVecScaleInc (&pos, &objP->info.position.mOrient.UVec (),  -objP->info.xSize / 25);
 		SetParticleEmitterPos (emitterP, &pos, NULL, objP->info.nSegment);
 		}
 }
@@ -190,7 +190,7 @@ if (RENDERPATH && gameOpts->render.ship.bBullets) {
 					viewP = ObjectView (objP);
 				vEmitter = *viewP * pm->m_vBullets;
 				vEmitter += posP->vPos;
-				vDir = posP->mOrient[UVEC];
+				vDir = posP->mOrient.UVec ();
 				vDir.Neg();
 				if (i < 0) {
 					gameData.multiplayer.bulletEmitters [nPlayer] =
@@ -250,8 +250,8 @@ if (bHires >= 0) {
 				viewP = ObjectView (objP);
 			vEmitter = *viewP * vGunPoints[nGun];
 			vEmitter += posP->vPos;
-			//vDir = posP->mOrient[FVEC];
-			vDir = posP->mOrient[FVEC] * (F1_0 / 8);
+			//vDir = posP->mOrient.FVec ();
+			vDir = posP->mOrient.FVec () * (F1_0 / 8);
 			if (i < 0) {
 				gameData.multiplayer.gatlingSmoke [nPlayer] =
 					particleManager.Create (&vEmitter, &vDir, &posP->mOrient, objP->info.nSegment, 1, GATLING_MAX_PARTS, F1_0 / 2, 1,
@@ -440,7 +440,7 @@ if (nParts > 0) {
 		particleManager.SetSpeed (h, !objP->mType.physInfo.velocity.IsZero() ?
 							BOT_PART_SPEED : BOT_PART_SPEED * 2 / 3);
 		}
-	pos = objP->info.position.vPos + objP->info.position.mOrient[FVEC] * (-objP->info.xSize / 2);
+	pos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (-objP->info.xSize / 2);
 	particleManager.SetPos (particleManager.GetObjectSystem (i), &pos, NULL, objP->info.nSegment);
 	}
 else
@@ -568,7 +568,7 @@ if (nParts) {
 		particleManager.SetObjectSystem (i, particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts / 2,
 												  nScale, -1, 1, DEBRIS_PART_LIFE, DEBRIS_PART_SPEED, SMOKE_PARTICLES, i, smokeColors, 0, -1));
 		}
-	pos = objP->info.position.vPos + objP->info.position.mOrient[FVEC] * (-objP->info.xSize);
+	pos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (-objP->info.xSize);
 	particleManager.SetPos (particleManager.GetObjectSystem (i), &pos, NULL, objP->info.nSegment);
 	}
 else
@@ -717,7 +717,7 @@ if (particleManager.GetObjectSystem (i) < 0) {
 											   1, ((gameOpts->render.particles.nLife [3] + 1) * LASER_PART_LIFE) << bGatling, LASER_PART_SPEED, 
 											   bGatling ? GATLING_PARTICLES : LIGHT_PARTICLES, i, &c, 0, -1));
 	}
-pos = objP->info.position.vPos + objP->info.position.mOrient[FVEC] * (-objP->info.xSize / 2);
+pos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (-objP->info.xSize / 2);
 particleManager.SetPos (particleManager.GetObjectSystem (i), &pos, NULL, objP->info.nSegment);
 }
 

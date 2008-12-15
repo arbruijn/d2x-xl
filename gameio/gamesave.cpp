@@ -1589,27 +1589,27 @@ else
 
 if (gameData.segs.nLevelVersion < 6) {
 	gameData.segs.secret.nReturnSegment = 0;
-	gameData.segs.secret.returnOrient[RVEC][Y] =
-	gameData.segs.secret.returnOrient[RVEC][Z] = 
-	gameData.segs.secret.returnOrient[FVEC][X] =
-	gameData.segs.secret.returnOrient[FVEC][Z] =
-	gameData.segs.secret.returnOrient[UVEC][X] =
-	gameData.segs.secret.returnOrient[UVEC][Y] = 0;
-	gameData.segs.secret.returnOrient[RVEC][X] =
-	gameData.segs.secret.returnOrient[FVEC][Y] =
-	gameData.segs.secret.returnOrient[UVEC][Z] = F1_0;
+	gameData.segs.secret.returnOrient.RVec ()[Y] =
+	gameData.segs.secret.returnOrient.RVec ()[Z] = 
+	gameData.segs.secret.returnOrient.FVec ()[X] =
+	gameData.segs.secret.returnOrient.FVec ()[Z] =
+	gameData.segs.secret.returnOrient.UVec ()[X] =
+	gameData.segs.secret.returnOrient.UVec ()[Y] = 0;
+	gameData.segs.secret.returnOrient.RVec ()[X] =
+	gameData.segs.secret.returnOrient.FVec ()[Y] =
+	gameData.segs.secret.returnOrient.UVec ()[Z] = F1_0;
 	}
 else {
 	gameData.segs.secret.nReturnSegment = cf.ReadInt ();
-	gameData.segs.secret.returnOrient[RVEC][X] = cf.ReadInt ();
-	gameData.segs.secret.returnOrient[RVEC][Y] = cf.ReadInt ();
-	gameData.segs.secret.returnOrient[RVEC][Z] = cf.ReadInt ();
-	gameData.segs.secret.returnOrient[FVEC][X] = cf.ReadInt ();
-	gameData.segs.secret.returnOrient[FVEC][Y] = cf.ReadInt ();
-	gameData.segs.secret.returnOrient[FVEC][Z] = cf.ReadInt ();
-	gameData.segs.secret.returnOrient[UVEC][X] = cf.ReadInt ();
-	gameData.segs.secret.returnOrient[UVEC][Y] = cf.ReadInt ();
-	gameData.segs.secret.returnOrient[UVEC][Z] = cf.ReadInt ();
+	gameData.segs.secret.returnOrient.RVec ()[X] = cf.ReadInt ();
+	gameData.segs.secret.returnOrient.RVec ()[Y] = cf.ReadInt ();
+	gameData.segs.secret.returnOrient.RVec ()[Z] = cf.ReadInt ();
+	gameData.segs.secret.returnOrient.FVec ()[X] = cf.ReadInt ();
+	gameData.segs.secret.returnOrient.FVec ()[Y] = cf.ReadInt ();
+	gameData.segs.secret.returnOrient.FVec ()[Z] = cf.ReadInt ();
+	gameData.segs.secret.returnOrient.UVec ()[X] = cf.ReadInt ();
+	gameData.segs.secret.returnOrient.UVec ()[Y] = cf.ReadInt ();
+	gameData.segs.secret.returnOrient.UVec ()[Z] = cf.ReadInt ();
 	}
 
 //NOTE LINK TO ABOVE!!
@@ -1993,15 +1993,15 @@ int saveLevel_sub(char * filename, int compiledVersion)
 	fwrite(gameData.render.lights.flicker.lights,sizeof(*gameData.render.lights.flicker.lights),gameData.render.lights.flicker.nLights,SaveFile);
 
 	gs_write_int(gameData.segs.secret.nReturnSegment, SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient[RVEC][X], SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient[RVEC][Y], SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient[RVEC][Z], SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient[FVEC][X], SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient[FVEC][Y], SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient[FVEC][Z], SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient[UVEC][X], SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient[UVEC][Y], SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient[UVEC][Z], SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.RVec ()[X], SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.RVec ()[Y], SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.RVec ()[Z], SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.FVec ()[X], SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.FVec ()[Y], SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.FVec ()[Z], SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.UVec ()[X], SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.UVec ()[Y], SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.UVec ()[Z], SaveFile);
 
 	nMineDataOffset = ftell(SaveFile);
 	if (!compiledVersion)

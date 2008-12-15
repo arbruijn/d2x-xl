@@ -57,9 +57,9 @@ int FindPointLineIntersectionf (CFixVector *pv1, CFixVector *pv2, CFixVector *pv
 	CFloatVector	p1, p2, p3, d31, d21, h, v [2];
 	float		m, u;
 
-p1 = pv1->ToFloat();
-p2 = pv2->ToFloat();
-p3 = pv3->ToFloat();
+p1.Assign (*pv1);
+p2.Assign (*pv2);
+p3.Assign (*pv3);
 d21 = p2 - p1;
 if (!(m = d21[X] * d21[X] + d21[Y] * d21[Y] + d21[Z] * d21[Z]))
 	return 0;
@@ -101,8 +101,8 @@ den = -CFixVector::Dot(*vPlaneNorm, d);
 if (!den) {
 	CFloatVector	nf, df;
 	float denf;
-	nf = vPlaneNorm->ToFloat();
-	df = d.ToFloat();
+	nf.Assign (*vPlaneNorm);
+	df.Assign (d);
 	denf = -CFloatVector::Dot(nf, df);
 	denf = -CFloatVector::Dot(nf, df);
 	return 0;
@@ -646,20 +646,20 @@ int CheckLineToLine (fix *t1, fix *t2, CFixVector *p1, CFixVector *v1, CFixVecto
 	fix d, cross_mag2;		//mag squared Cross product
 
 //PrintLog ("         VmVecSub\n");
-det[RVEC] = *p2 - *p1;
+det.RVec () = *p2 - *p1;
 //PrintLog ("         VmVecCrossProd\n");
-det[FVEC] = CFixVector::Cross(*v1, *v2);
+det.FVec () = CFixVector::Cross(*v1, *v2);
 //PrintLog ("         CFloatVector::Dot\n");
-cross_mag2 = CFixVector::Dot(det[FVEC], det[FVEC]);
+cross_mag2 = CFixVector::Dot(det.FVec (), det.FVec ());
 if (!cross_mag2)
 	return 0;			//lines are parallel
-det[UVEC] = *v2;
+det.UVec () = *v2;
 d = det.Det();
 if (oflow_check (d, cross_mag2))
 	return 0;
 //PrintLog ("         FixDiv (%d)\n", cross_mag2);
 *t1 = FixDiv (d, cross_mag2);
-det[UVEC] = *v1;
+det.UVec () = *v1;
 //PrintLog ("         CalcDetValue\n");
 d = det.Det();
 if (oflow_check (d, cross_mag2))

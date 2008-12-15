@@ -74,7 +74,7 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 	psm->m_iFrame = 0;
 	psm->m_tFrame = 0;
 	psm->m_nFrames = psa->m_bBarrel ? 32 : 0;
-	psm->m_vOffset = psa->m_vOffset.ToFix();
+	psm->m_vOffset.Assign (psa->m_vOffset);
 	psm->InitMinMax ();
 	for (pfa = psa->m_faces.Buffer (), iFace = 0; iFace < nFaces; iFace++, pfa++, pmf++) {
 		pmf->m_nIndex = nIndex;
@@ -88,7 +88,7 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 		pmf->m_nBitmap = bTextured ? i : -1;
 		pmf->m_nVerts = 3;
 		pmf->m_nId = iFace;
-		pmf->m_vNormal = pfa->m_vNormal.ToFix();
+		pmf->m_vNormal.Assign (pfa->m_vNormal);
 		for (i = 0; i < 3; i++, pmv++) {
 			h = pfa->m_nVerts [i];
 			if ((pmv->m_bTextured = bTextured))

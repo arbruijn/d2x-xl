@@ -1189,7 +1189,7 @@ vNormToGoal = *vGoalPoint - vCurPos;
 CFixVector::Normalize(vNormToGoal);
 vNormCurVel = vCurVel;
 CFixVector::Normalize(vNormCurVel);
-vNormFwd = objP->info.position.mOrient[FVEC];
+vNormFwd = objP->info.position.mOrient.FVec ();
 CFixVector::Normalize(vNormFwd);
 dot = CFixVector::Dot(vNormToGoal, vNormFwd);
 //	If very close to facing opposite desired vector, perturb vector
@@ -1527,7 +1527,7 @@ void player_path_set_orient_and_vel (CObject *objP, CFixVector *vGoalPoint)
 	vNormCurVel = vCurVel;
 	CFixVector::Normalize(vNormCurVel);
 
-	vNormFwd = objP->info.position.mOrient[FVEC];
+	vNormFwd = objP->info.position.mOrient.FVec ();
 	CFixVector::Normalize(vNormFwd);
 
 	dot = CFixVector::Dot(vNormToGoal, &vNormFwd);

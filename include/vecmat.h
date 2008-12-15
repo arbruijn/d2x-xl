@@ -116,9 +116,9 @@ class CFixVector {
 		const CFixVector& operator/= (const fix s);
 		const CFixVector operator+ (const CFixVector& vec) const;
 		const CFixVector operator- (const CFixVector& vec) const;
-		CFixVector& Copy (const CFloatVector3& other);
-		CFixVector& Copy (const CFloatVector& other);
-		CFixVector& Copy (const CFixVector& other);
+		CFixVector& Assign (const CFloatVector3& other);
+		CFixVector& Assign (const CFloatVector& other);
+		CFixVector& Assign (const CFixVector& other);
 
 		// compute intersection of a line through a point a, with the line being orthogonal relative
 		// to the plane given by the Normal n and a point p lieing in the plane, and store it in i.
@@ -195,9 +195,9 @@ class CFloatVector {
 		const CFloatVector& operator/= (const float s);
 		const CFloatVector  operator+ (const CFloatVector& other) const;
 		const CFloatVector  operator- (const CFloatVector& other) const;
-		CFloatVector& Copy (const CFloatVector3& other);
-		CFloatVector& Copy (const CFloatVector& other);
-		CFloatVector& Copy (const CFixVector& other);
+		CFloatVector& Assign (const CFloatVector3& other);
+		CFloatVector& Assign (const CFloatVector& other);
+		CFloatVector& Assign (const CFixVector& other);
 
 	private:
 		float v [4];
@@ -262,9 +262,9 @@ class CFloatVector3 {
 		const CFloatVector3& operator/= (const float s);
 		const CFloatVector3 operator+ (const CFloatVector3& other) const;
 		const CFloatVector3 operator- (const CFloatVector3& other) const;
-		CFloatVector3& Copy (const CFloatVector3& other);
-		CFloatVector3& Copy (const CFloatVector& other);
-		CFloatVector3& Copy (const CFixVector& other);
+		CFloatVector3& Assign (const CFloatVector3& other);
+		CFloatVector3& Assign (const CFloatVector& other);
+		CFloatVector3& Assign (const CFixVector& other);
 };
 
 const float operator* (const CFloatVector3& v0, const CFloatVector3& v1);
@@ -397,17 +397,17 @@ inline const CFloatVector CFloatVector::operator- (void) const {
 	return Create (-v [X], -v [Y], -v [Z]);
 }
 
-inline CFloatVector& CFloatVector::Copy (const CFloatVector3& other) {
+inline CFloatVector& CFloatVector::Assign (const CFloatVector3& other) {
 	v [0] = other [0], v [1] = other [1], v [2] = other [2]; v [3] = 1;
 	return *this;
 }
 
-inline CFloatVector& CFloatVector::Copy (const CFloatVector& other) {
+inline CFloatVector& CFloatVector::Assign (const CFloatVector& other) {
 	v [0] = other [0], v [1] = other [1], v [2] = other [2]; v [3] = other [3];
 	return *this;
 }
 
-inline CFloatVector& CFloatVector::Copy (const CFixVector& other) {
+inline CFloatVector& CFloatVector::Assign (const CFixVector& other) {
 	v [0] = X2F (other [0]), v [1] = X2F (other [1]), v [2] = X2F (other [2]); v [3] = 1;
 	return *this;
 }
@@ -561,17 +561,17 @@ inline const float CFloatVector3::Mag (void) const {
 	return (const float) sqrt (SqrMag ());
 }
 
-inline CFloatVector3& CFloatVector3::Copy (const CFloatVector3& other) {
+inline CFloatVector3& CFloatVector3::Assign (const CFloatVector3& other) {
 	v [0] = other [0], v [1] = other [1], v [2] = other [2];
 	return *this;
 }
 
-inline CFloatVector3& CFloatVector3::Copy (const CFloatVector& other) {
+inline CFloatVector3& CFloatVector3::Assign (const CFloatVector& other) {
 	v [0] = other [0], v [1] = other [1], v [2] = other [2];
 	return *this;
 }
 
-inline CFloatVector3& CFloatVector3::Copy (const CFixVector& other) {
+inline CFloatVector3& CFloatVector3::Assign (const CFixVector& other) {
 	v [0] = X2F (other [0]), v [1] = X2F (other [1]), v [2] = X2F (other [2]);
 	return *this;
 }
@@ -707,8 +707,8 @@ inline const fix CFixVector::SSEDot (CFixVector *v0, CFixVector *v1) {
 	if (gameStates.render.bEnableSSE) {
 			CFloatVector	v0h, v1h;
 
-		VmVecFixToFloat (&v0h, v0);
-		VmVecFixToFloat (&v1h, v1);
+		v0h.Assign (v0);
+		v1h.Assign (v1);
 	#if defined (_WIN32)
 		_asm {
 			movups	xmm0,v0h
@@ -819,17 +819,17 @@ inline fix& CFixVector::operator[] (size_t idx) { return v [idx]; }
 
 inline const fix CFixVector::operator[] (size_t idx) const { return v [idx]; }
 
-inline CFixVector& CFixVector::Copy (const CFloatVector3& other) {
+inline CFixVector& CFixVector::Assign (const CFloatVector3& other) {
 	v [0] = F2X (other [0]), v [1] = F2X (other [1]), v [2] = F2X (other [2]);
 	return *this;
 }
 
-inline CFixVector& CFixVector::Copy (const CFloatVector& other) {
+inline CFixVector& CFixVector::Assign (const CFloatVector& other) {
 	v [0] = F2X (other [0]), v [1] = F2X (other [1]), v [2] = F2X (other [2]);
 	return *this;
 }
 
-inline CFixVector& CFixVector::Copy (const CFixVector& other) {
+inline CFixVector& CFixVector::Assign (const CFixVector& other) {
 	v [0] = other [0], v [1] = other [1], v [2] = other [2];
 	return *this;
 }
@@ -1023,8 +1023,8 @@ class CFixMatrix {
 		//extract angles from a m_data.matrix
 		const CAngleVector ExtractAnglesVec (void) const;
 
-		const CFixMatrix& Copy (CFixMatrix& other);
-		const CFixMatrix& Copy (CFloatMatrix& other);
+		const CFixMatrix& Assign (CFixMatrix& other);
+		const CFixMatrix& Assign (CFloatMatrix& other);
 
 		static float* ToOpenGL (float* dest, const CFixMatrix& src);
 
@@ -1229,8 +1229,8 @@ class CFloatMatrix {
 		const CFloatMatrix Inverse (void);
 		const CFloatMatrix Transpose (void);
 
-		const CFloatMatrix& Copy (CFixMatrix& other);
-		const CFloatMatrix& Copy (CFloatMatrix& other);
+		const CFloatMatrix& Assign (CFixMatrix& other);
+		const CFloatMatrix& Assign (CFloatMatrix& other);
 
 		static float* Transpose (float* dest, const CFloatMatrix& src);
 
@@ -1327,30 +1327,30 @@ inline const CFloatMatrix CFloatMatrix::operator* (CFloatMatrix& other) { return
 // -----------------------------------------------------------------------------
 // misc conversion member ops
 
-inline const CFloatMatrix& CFloatMatrix::Copy (CFloatMatrix& other) { 
+inline const CFloatMatrix& CFloatMatrix::Assign (CFloatMatrix& other) { 
 	*this = other;
 	return *this;
 	}
 
-inline const CFloatMatrix& CFloatMatrix::Copy (CFixMatrix& other) { 
-	m_data.mat [RVEC].Copy (other.m_data.mat [RVEC]); 
-	m_data.mat [UVEC].Copy (other.m_data.mat [UVEC]); 
-	m_data.mat [FVEC].Copy (other.m_data.mat [FVEC]); 
+inline const CFloatMatrix& CFloatMatrix::Assign (CFixMatrix& other) { 
+	m_data.mat [RVEC].Assign (other.m_data.mat [RVEC]); 
+	m_data.mat [UVEC].Assign (other.m_data.mat [UVEC]); 
+	m_data.mat [FVEC].Assign (other.m_data.mat [FVEC]); 
 	m_data.mat [HVEC].Set (1, 1, 1, 1);
 	return *this;
 	}
 
-inline const CFixMatrix& CFixMatrix::Copy (CFixMatrix& other) { 
+inline const CFixMatrix& CFixMatrix::Assign (CFixMatrix& other) { 
 	m_data.mat [RVEC] = other.m_data.mat [RVEC]; 
 	m_data.mat [UVEC] = other.m_data.mat [UVEC]; 
 	m_data.mat [FVEC] = other.m_data.mat [FVEC]; 
 	return *this;
 	}
 
-inline const CFixMatrix& CFixMatrix::Copy (CFloatMatrix& other) { 
-	m_data.mat [RVEC].Copy (other.m_data.mat [RVEC]); 
-	m_data.mat [UVEC].Copy (other.m_data.mat [UVEC]); 
-	m_data.mat [FVEC].Copy (other.m_data.mat [FVEC]); 
+inline const CFixMatrix& CFixMatrix::Assign (CFloatMatrix& other) { 
+	m_data.mat [RVEC].Assign (other.m_data.mat [RVEC]); 
+	m_data.mat [UVEC].Assign (other.m_data.mat [UVEC]); 
+	m_data.mat [FVEC].Assign (other.m_data.mat [FVEC]); 
 	return *this;
 	}
 

@@ -61,15 +61,15 @@ inline void VmsRot(const CFixMatrix& pm)
 glMatrixf m;
 
 memset (m, 0, sizeof (m));
-m [0] = X2F (pm[RVEC][X]);
-m [1] = X2F (pm[RVEC][Y]);
-m [2] = X2F (pm[RVEC][Z]);
-m [4] = X2F (pm[UVEC][X]);
-m [5] = X2F (pm[UVEC][Y]);
-m [6] = X2F (pm[UVEC][Z]);
-m [8] = X2F (pm[FVEC][X]);
-m [9] = X2F (pm[FVEC][Y]);
-m [10] = X2F (pm[FVEC][Z]);
+m [0] = X2F (pm.RVec ()[X]);
+m [1] = X2F (pm.RVec ()[Y]);
+m [2] = X2F (pm.RVec ()[Z]);
+m [4] = X2F (pm.UVec ()[X]);
+m [5] = X2F (pm.UVec ()[Y]);
+m [6] = X2F (pm.UVec ()[Z]);
+m [8] = X2F (pm.FVec ()[X]);
+m [9] = X2F (pm.FVec ()[Y]);
+m [10] = X2F (pm.FVec ()[Z]);
 m [15] = 1;
 OglRot (m);
 }
@@ -135,7 +135,8 @@ if (gameStates.ogl.bUseTransform) {
 		VmsMove (h);
 		VmsRot (mOrient);
 		if (!gameData.models.vScale.IsZero ()) {
-			CFloatVector fScale = gameData.models.vScale.ToFloat ();
+			CFloatVector fScale;
+			fScale.Assign (gameData.models.vScale);
 			glScalef (fScale [X], fScale [Y], fScale [Z]);
 			}
 		}
@@ -152,10 +153,10 @@ vOffs = viewInfo.pos - vPos;
 	for (i = 0; i < 2; i++) {
 		mRot = mTrans * viewInfo.view [i];
 		viewInfo.view [i] = mRot;
-		viewInfo.viewf [i] = viewInfo.view [i].ToFloat ();
+		viewInfo.viewf [i].Assign (viewInfo.view [i]);
 		}
 
-viewInfo.posf = viewInfo.pos.ToFloat();
+viewInfo.posf.Assign (viewInfo.pos);
 }
 
 //------------------------------------------------------------------------------
@@ -177,8 +178,8 @@ if (gameStates.ogl.bUseTransform) {
 	glMatrixMode (GL_MODELVIEW);
 	glPopMatrix ();
 	}
-VmVecFixToFloat (&viewInfo.posf, &viewInfo.pos);
-VmsMatToFloat (viewInfo.viewf, viewInfo.view);
+viewInfo.posf.Assign (viewInfo.pos);
+viewInfo.viewf.Assign (viewInfo.view);
 #endif
 }
 

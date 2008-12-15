@@ -756,8 +756,8 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 	objP->info.nCreator = (FUELCEN_IDX (matCenP)) | 0x80;
 	// Make object face player...
 	vDir = gameData.objs.consoleP->info.position.vPos - objP->info.position.vPos;
-	objP->info.position.mOrient = CFixMatrix::CreateFU(vDir, objP->info.position.mOrient[UVEC]);
-	//objP->info.position.mOrient = CFixMatrix::CreateFU(vDir, &objP->info.position.mOrient[UVEC], NULL);
+	objP->info.position.mOrient = CFixMatrix::CreateFU(vDir, objP->info.position.mOrient.UVec ());
+	//objP->info.position.mOrient = CFixMatrix::CreateFU(vDir, &objP->info.position.mOrient.UVec (), NULL);
 	MorphStart (objP);
 	}
 else {
@@ -1065,7 +1065,7 @@ return amount;
 //--repair-- 	VmVecSub (&delta_pos,&goal_pos,&start_pos);
 //--repair--
 //--repair-- 	// Find start angles
-//--repair-- 	//angles_from_vector (&start_angles,&objP->info.position.mOrient[FVEC]);
+//--repair-- 	//angles_from_vector (&start_angles,&objP->info.position.mOrient.FVec ());
 //--repair-- 	VmExtractAnglesMatrix (&start_angles,&objP->info.position.mOrient);
 //--repair--
 //--repair-- 	// Find delta angles to get to goal orientation
@@ -1243,7 +1243,7 @@ return amount;
 //--repair-- 			//have just entered repair center
 //--repair--
 //--repair-- 			RepairObj = obj;
-//--repair-- 			repair_save_uvec = objP->info.position.mOrient[UVEC];
+//--repair-- 			repair_save_uvec = objP->info.position.mOrient.UVec ();
 //--repair--
 //--repair-- 			repair_rate = FixMulDiv (FULL_REPAIR_RATE, (MAX_SHIELDS - LOCALPLAYER.shields),MAX_SHIELDS);
 //--repair--

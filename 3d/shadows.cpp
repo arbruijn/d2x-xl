@@ -464,7 +464,7 @@ else {
 	g3sNormal	*pvn;
 
 	pfv = WORDPTR (p+30);
-	nf = pn->ToFloat();
+	nf.Assign (*pn);
 	for (i = 0; i < nVerts; i++) {
 		pvn = po->vertNorms + pfv [i];
 		pvn->vNormal += nf;
@@ -975,9 +975,9 @@ if (bPrintLine) {
 		}
 	glColor4d (1,0.8,0,1);
 	glBegin (GL_LINES);
-	vf = vPos->ToFloat ();
+	vf.Assign (*vPos);
 	glVertex3fv (reinterpret_cast<GLfloat*> (&vf));
-	vf = vPos->ToFloat ();
+	vf.Assign (*vPos);
 	glVertex3fv (reinterpret_cast<GLfloat*> (&vf));
 	glEnd ();
 	if (!bShadowTest) {

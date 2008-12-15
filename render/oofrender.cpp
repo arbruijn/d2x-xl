@@ -561,8 +561,8 @@ int CModel::Draw (CObject *objP, float *fLight)
 vo.SetZero ();
 G3StartInstanceMatrix (objP->info.position.vPos, objP->info.position.mOrient);
 if (!gameStates.ogl.bUseTransform)
-	mView.Copy (viewInfo.view [0]);
-vPos.Copy (viewInfo.pos);
+	mView.Assign (viewInfo.view [0]);
+vPos.Assign (viewInfo.pos);
 if (IsMultiGame && netGame.BrightPlayers)
 	*fLight = 1.0f;
 OglActiveTexture (GL_TEXTURE0, 0);

@@ -974,12 +974,14 @@ void CLightning::ComputePlasma (int nDepth, int nThread)
 
 for (bScale = 0; bScale < 2; bScale++) {
 	nodeP = m_nodes;
-	vPosf [2] = (nodeP++)->m_vPos.ToFloat();
+	vPosf [2].Assign (nodeP->m_vPos);
+	nodeP++;
 	if (!gameStates.ogl.bUseTransform)
 		G3TransformPoint (vPosf [2], vPosf [2], 0);
 	for (i = m_nNodes - 2, j = 0, nodeP = m_nodes; j <= i; j++) {
 		memcpy (vPosf, vPosf + 1, 2 * sizeof (CFloatVector));
-		vPosf [2] = (++nodeP)->m_vPos.ToFloat ();
+		nodeP++;
+		vPosf [2].Assign (nodeP->m_vPos);
 		if (!gameStates.ogl.bUseTransform)
 			G3TransformPoint (vPosf [2], vPosf [2], 0);
 		ComputePlasmaSegment (vPosf, bScale, j, j == 1, j == i, nDepth, nThread);
@@ -1039,7 +1041,7 @@ glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
 glLineWidth ((GLfloat) (nDepth ? 2 : 4));
 glEnable (GL_LINE_SMOOTH);
 for (i = 0; i < m_nNodes; i++)
-	vPosf [i] = m_nodes [i].m_vPos.ToFloat3 ();
+	vPosf [i].Assign (m_nodes [i].m_vPos);
 if (!gameStates.ogl.bUseTransform)
 	OglSetupTransform (1);
 #if 1
@@ -2126,8 +2128,8 @@ if (i < 0) {
 		vEndf += vNormf * (1.0f / 64.0f);
 		vDeltaf = CFloatVector::Normal (vNormf, vPosf, vEndf);
 		h = F2X (CFloatVector::Dist (vPosf, vEndf));
-		vPos = vPosf.ToFix ();
-		vEnd = vEndf.ToFix ();
+		vPos.Assign (vPosf);
+		vEnd.Assign (vEndf);
 		}
 	i = Create (1, &vPos, &vEnd, NULL /*&vDelta*/, nObject, 1000 + d_rand () % 2000, 0,
 					h, h / 4 + d_rand () % 2, 0, 0, 20, 2, 1, 5, 0, 1, 0, 0, 0, 1, &color);

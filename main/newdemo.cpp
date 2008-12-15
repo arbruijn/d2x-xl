@@ -2810,16 +2810,16 @@ for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 					(renderType != RT_THRUSTER) && 
 					(renderType != RT_POWERUP)) {
 
-				fvec1 = curObjP->info.position.mOrient[FVEC];
+				fvec1 = curObjP->info.position.mOrient.FVec ();
 				fvec1 *= (F1_0-factor);
-				fvec2 = objP->info.position.mOrient[FVEC];
+				fvec2 = objP->info.position.mOrient.FVec ();
 				fvec2 *= factor;
 				fvec1 += fvec2;
 				mag1 = CFixVector::Normalize(fvec1);
 				if (mag1 > F1_0/256) {
-					rvec1 = curObjP->info.position.mOrient[RVEC];
+					rvec1 = curObjP->info.position.mOrient.RVec ();
 					rvec1 *= (F1_0-factor);
-					rvec2 = objP->info.position.mOrient[RVEC];
+					rvec2 = objP->info.position.mOrient.RVec ();
 					rvec2 *= factor;
 					rvec1 += rvec2;
 					CFixVector::Normalize(rvec1); // Note: Doesn't matter if this is null, if null, VmVector2Matrix will just use fvec1

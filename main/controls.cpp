@@ -110,7 +110,7 @@ void ReadFlyingControls (CObject *objP)
 		tempm = gmObjP->info.position.mOrient * rotmat;
 		gmObjP->info.position.mOrient = tempm;
 		speed = WI_speed (gmObjP->info.nId, gameStates.app.nDifficultyLevel);
-		gmObjP->mType.physInfo.velocity = gmObjP->info.position.mOrient[FVEC] * speed;
+		gmObjP->mType.physInfo.velocity = gmObjP->info.position.mOrient.FVec () * speed;
 		if(IsMultiGame)
 			MultiSendGuidedInfo (gmObjP, 0);
 		}
@@ -158,11 +158,11 @@ void ReadFlyingControls (CObject *objP)
 		}
 	}
 	// Set CObject's thrust vector for forward/backward
-	objP->mType.physInfo.thrust = objP->info.position.mOrient[FVEC] * forwardThrustTime;
+	objP->mType.physInfo.thrust = objP->info.position.mOrient.FVec () * forwardThrustTime;
 	// slide left/right
-	objP->mType.physInfo.thrust += objP->info.position.mOrient[RVEC] * Controls [0].sidewaysThrustTime;
+	objP->mType.physInfo.thrust += objP->info.position.mOrient.RVec () * Controls [0].sidewaysThrustTime;
 	// slide up/down
-	objP->mType.physInfo.thrust += objP->info.position.mOrient[UVEC] * Controls [0].verticalThrustTime;
+	objP->mType.physInfo.thrust += objP->info.position.mOrient.UVec () * Controls [0].verticalThrustTime;
 	if (!gameStates.input.bSkipControls)
 		memcpy (&gameData.physics.playerThrust, &objP->mType.physInfo.thrust, sizeof (gameData.physics.playerThrust));
 	bMulti = IsMultiGame;

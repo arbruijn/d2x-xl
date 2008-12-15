@@ -715,7 +715,7 @@ if (nType == SMOKE_PARTICLES) {
 	pc.green *= brightness;
 	pc.blue *= brightness;
 	}
-vCenter = hp.ToFloat ();
+vCenter.Assign (hp);
 i = m_nOrient;
 if (bEmissive) { //scale light trail particle color to reduce saturation
 	pc.red /= 50.0f;
@@ -1201,8 +1201,8 @@ else
 			if (h <= 0)
 				goto funcExit;
 			if (m_bHavePrevPos && (fDist > 0)) {
-				vPosf = m_vPrevPos.ToFloat ();
-				vDeltaf = vDelta.ToFloat ();
+				vPosf.Assign (m_vPrevPos);
+				vDeltaf.Assign (vDelta);
 				vDeltaf [X] /= (float) h;
 				vDeltaf [Y] /= (float) h;
 				vDeltaf [Z] /= (float) h;
@@ -1211,13 +1211,13 @@ else
 				goto funcExit;
 			else {
 #if 1
-				vPosf = m_vPrevPos.ToFloat();
-				vDeltaf = vDelta.ToFloat();
+				vPosf.Assign (m_vPrevPos);
+				vDeltaf.Assign (vDelta);
 				vDeltaf [X] /= (float) h;
 				vDeltaf [Y] /= (float) h;
 				vDeltaf [Z] /= (float) h;
 #else
-				VmVecFixToFloat (&vPosf, &m_vPos);
+				vPosf.Assign (m_vPos);
 				vDeltaf [X] =
 				vDeltaf [Y] =
 				vDeltaf [Z] = 0.0f;
@@ -1227,7 +1227,7 @@ else
 			m_nParts += h;
 			for (; h; h--, j = (j + 1) % m_nPartLimit) {
 				vPosf += vDeltaf;
-				vPos = vPosf.ToFix();
+				vPos.Assign (vPosf);
 /*
 				vPos[Y] = (fix) (vPosf [Y] * 65536.0f);
 				vPos[Z] = (fix) (vPosf [Z] * 65536.0f);

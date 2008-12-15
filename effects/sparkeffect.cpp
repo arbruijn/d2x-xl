@@ -86,7 +86,7 @@ void CreateSegmentSparks (short nSegment)
 	CFloatVector			vMaxf, vMax2f;
 	int				i;
 
-vMaxf = gameData.segs.extent [nSegment].vMax.ToFloat ();
+vMaxf.Assign (gameData.segs.extent [nSegment].vMax);
 vMax2f = vMaxf * 2;
 for (i = segP->nMaxSparks; i; i--, sparkP++) {
 	if (sparkP->tRender)

@@ -343,7 +343,7 @@ for (i = 0; i < nVertices; i++) {
 	n[Y] = (fix) (nf->y() * 65536.0f);
 	n[Z] = (fix) (nf->z() * 65536.0f);
 */
-	n = nf->ToFix();
+	n.Assign (*nf);
 	G3RotatePoint(n, n, 0);
 	Normal.p3_vec = pointList[i]->p3_vec + n * (F1_0 * 10);
 	G3DrawLine (pointList [i], &Normal);

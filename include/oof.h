@@ -72,7 +72,7 @@ class CTriangle {
 	public:
 		CFloatVector	p [3];
 		CFloatVector	c;
-	}CTriangle;
+	};
 
 class CQuad {
 	public:

@@ -433,7 +433,7 @@ if (xObjIntensity) {
 					tFVIQuery	fq;
 					tFVIData		hit_data;
 					int			fate;
-					tvec = *vObjPos + objP->info.position.mOrient[FVEC] * F1_0*200;
+					tvec = *vObjPos + objP->info.position.mOrient.FVec () * F1_0*200;
 					fq.startSeg			= objP->info.nSegment;
 					fq.p0					= vObjPos;
 					fq.p1					= &tvec;
@@ -481,7 +481,7 @@ if (xObjIntensity) {
 							CFixVector	vecToPoint;
 							vecToPoint = *vVertPos - *vObjPos;
 							CFixVector::Normalize(vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
-							dot = CFixVector::Dot(vecToPoint, objP->info.position.mOrient[FVEC]);
+							dot = CFixVector::Dot(vecToPoint, objP->info.position.mOrient.FVec ());
 							if (gameData.render.vertColor.bDarkness)
 								maxDot = F1_0 / spotSize;
 							else
