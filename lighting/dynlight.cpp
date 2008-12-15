@@ -1335,7 +1335,7 @@ else if (gameStates.render.bPerPixelLighting) {
 		vcd.vertNorm[Z] = 0;
 		vcd.vertNorm.SetZero();
 		if (vPosP)
-			vcd.vertPos.Assign (vPosP);
+			vcd.vertPos.Assign (*vPosP);
 		else {
 			COMPUTE_SEGMENT_CENTER_I (&vCenter, nSegment);
 			vcd.vertPos.Assign (vCenter);

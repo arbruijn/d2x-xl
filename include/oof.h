@@ -422,6 +422,8 @@ class CModel {
 
 	};
 
+} //OOFModel
+
 //------------------------------------------------------------------------------
 
 float OOF_Centroid (CFloatVector *pvCentroid, CFloatVector *pvSrc, int nv);
@@ -430,8 +432,6 @@ float *OOF_GlTranspose (float *pDest, float *pSrc);
 int OOF_ReleaseTextures (void);
 int OOF_ReloadTextures (void);
 int OOF_FreeTextures (void);
-
-} //OOFModel
 
 //------------------------------------------------------------------------------
 
