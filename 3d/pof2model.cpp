@@ -211,7 +211,7 @@ for (;;) {
 			CFloatVector3 *pfv = pm->m_verts.Buffer ();
 			CFixVector *pv = VECPTR (p+4);
 			for (i = n; i; i--) {
-				pfv->Copy (*pv);
+				pfv->Assign (*pv);
 				pfv++; pv++;
 			}
 			p += n * sizeof (CFixVector) + 4;
@@ -224,7 +224,7 @@ for (;;) {
 			CFloatVector3 *pfv = pm->m_verts + s;
 			CFixVector *pv = VECPTR (p+8);
 			for (i = n; i; i--) {
-				pfv->Copy (*pv);
+				pfv->Assign (*pv);
 				pfv++; pv++;
 			}
 			p += n * sizeof (CFixVector) + 8;

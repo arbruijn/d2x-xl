@@ -211,7 +211,7 @@ return dest = viewInfo.view [bUnscaled] * vTrans;
 
 static inline CFloatVector& G3TranslatePoint (CFloatVector& dest, const CFloatVector& src) 
 {
-return dest = src - viewInfo.posf;
+return dest = src - viewInfo.posf [0];
 }
 
 static inline CFloatVector& G3RotatePoint (CFloatVector& dest, const CFloatVector& src, int bUnscaled) 
@@ -226,7 +226,7 @@ return dest = viewInfo.viewf [bUnscaled] * src;
 
 static inline CFloatVector& G3TransformPoint (CFloatVector& dest, const CFloatVector& src, int bUnscaled) 
 {
-CFloatVector vTrans = src - viewInfo.posf;
+CFloatVector vTrans = src - viewInfo.posf [0];
 return dest = viewInfo.viewf [bUnscaled] * vTrans;
 }
 

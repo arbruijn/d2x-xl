@@ -764,10 +764,9 @@ if (!nOglTransformCalls && (gameStates.ogl.bUseTransform || bForce)) {
 	glMatrixMode (GL_MODELVIEW);
 	glPushMatrix ();
 	glLoadIdentity ();
-	//glScalef (X2F (viewInfo.scale[X]), X2F (viewInfo.scale[Y]), -X2F (viewInfo.scale[Z]));
 	glScalef (1, 1, -1);
-	glMultMatrixf (viewInfo.glViewf);
-	glTranslatef (-viewInfo.glPosf [0], -viewInfo.glPosf [1], -viewInfo.glPosf [2]);
+	glMultMatrixf (reinterpret_cast<GLfloat*> (viewInfo.viewf [2].Vec ()));
+	glTranslatef (-viewInfo.posf [1][0], -viewInfo.posf [1][1], -viewInfo.posf [1][2]);
 	}
 ++nOglTransformCalls;
 }

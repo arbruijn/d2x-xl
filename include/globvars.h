@@ -40,18 +40,16 @@ extern double fxCanvW2, fxCanvH2;
 
 typedef struct CViewInfo {
 	CFixVector		pos;
-	CAngleVector		playerHeadAngles;
+	CAngleVector	playerHeadAngles;
 	int				bUsePlayerHeadAngles;
 	CFixMatrix		view [2];
 	CFixVector		scale;
 	CFloatVector	scalef;
 	CFixVector		windowScale;		//scaling for window aspect
-	CFloatVector	posf;
-	CFloatMatrix			viewf [2];
+	CFloatVector	posf [2];
+	CFloatMatrix	viewf [3];
 	fix				zoom;
 	float				glZoom;
-	float				glPosf [4];
-	float				glViewf [16];
 } CViewInfo;
 
 extern CViewInfo	viewInfo;

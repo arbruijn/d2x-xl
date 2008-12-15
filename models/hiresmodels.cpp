@@ -264,8 +264,8 @@ if (replacementModels [i].pszHires)
 	sprintf (szModel [1], "\001%s.oof", replacementModels [i].pszHires);
 else
 	szModel [1][!bCustom] = '\0';
-if (!(OOF_ReadFile (szModel [1] + !bCustom, po, replacementModels [i].nModel, replacementModels [i].nType, replacementModels [i].bFlipV, bCustom) || 
-	   OOF_ReadFile (szModel [0] + !bCustom, po, replacementModels [i].nModel, replacementModels [i].nType, replacementModels [i].bFlipV, bCustom)))
+if (!(po->Read (szModel [1] + !bCustom, replacementModels [i].nModel, replacementModels [i].nType, replacementModels [i].bFlipV, bCustom) || 
+	   po->Read (szModel [0] + !bCustom, replacementModels [i].nModel, replacementModels [i].nType, replacementModels [i].bFlipV, bCustom)))
 	return 0;
 do {
 	CBP (!replacementModels [i].nModel);
@@ -415,10 +415,10 @@ void FreeHiresModels (int bCustom)
 
 for (i = 0; i < gameData.models.nHiresModels; i++)
 	for (j = bCustom; j < 2; j++) {
-		h = gameData.models.oofModels [j][i].nModel;
+		h = gameData.models.oofModels [j][i].m_nModel;
 		if (gameData.models.modelToOOF [j][h]) {
 			gameData.models.modelToOOF [j][h] = NULL;
-			OOF_FreeObject (gameData.models.oofModels [j] + i);
+			gameData.models.oofModels [j][i].Destroy ();
 			}
 		h = gameData.models.aseModels [j][i].m_nModel;
 		if (gameData.models.modelToASE [j][h]) {

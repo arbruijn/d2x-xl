@@ -1679,9 +1679,9 @@ class CVertColorData {
 		CFloatVector	matDiffuse;
 		CFloatVector	matSpecular;
 		CFloatVector	colorSum;
-		CFloatVector3			vertNorm;
-		CFloatVector3			vertPos;
-		CFloatVector3*		vertPosP;
+		CFloatVector3	vertNorm;
+		CFloatVector3	vertPos;
+		CFloatVector3*	vertPosP;
 		float				fMatShininess;
 	public:
 		CVertColorData () { memset (this, 0, sizeof (*this)); }

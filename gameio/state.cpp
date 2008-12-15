@@ -490,7 +490,7 @@ if ((nSaveSlot != -1) && !(m_bSecret || IsMultiGame)) {
 		Assert (rval == 0);	//	Oops, error deleting file in tempname.
 		}
 	if (m_cf.Exist (SECRETC_FILENAME, gameFolders.szSaveDir, 0)) {
-		rval = m_cf.Assign (SECRETC_FILENAME, tempname);
+		rval = m_cf.Copy (SECRETC_FILENAME, tempname);
 		Assert (rval == 0);	//	Oops, error copying tempname to secret.sgc!
 		}
 	}
@@ -1314,7 +1314,7 @@ if ((nSaveSlot != -1) && !(m_bSecret || IsMultiGame)) {
 		fc = '0' + nSaveSlot;
 	sprintf (tempname, "%csecret.sgc", fc);
 	if (m_cf.Exist (tempname, gameFolders.szSaveDir, 0)) {
-		rval = m_cf.Assign (tempname, SECRETC_FILENAME);
+		rval = m_cf.Copy (tempname, SECRETC_FILENAME);
 		Assert (rval == 0);	//	Oops, error copying tempname to secret.sgc!
 		}
 	else

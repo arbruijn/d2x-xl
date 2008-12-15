@@ -31,7 +31,7 @@ void G3SetViewAngles (CFixVector *vPos, CAngleVector *mOrient, fix xZoom)
 viewInfo.zoom = xZoom;
 viewInfo.pos = *vPos;
 viewInfo.view[0] = CFixMatrix::Create (*mOrient);
-viewInfo.posf..Assign (viewInfo.pos);
+viewInfo.posf.Assign (viewInfo.pos);
 viewInfo.viewf [0].Assign (viewInfo.view [0]);
 ScaleMatrix (1);
 }
@@ -44,10 +44,10 @@ viewInfo.zoom = xZoom;
 viewInfo.glZoom = (float) xZoom / 65536.0f;
 viewInfo.pos = vPos;
 viewInfo.posf.Assign (viewInfo.pos);
-OOF_VecVms2Gl (viewInfo.glPosf, viewInfo.pos);
+viewInfo.glPosf [1].Assign (viewInfo.pos);
 viewInfo.view [0] = mOrient;
 viewInfo.viewf [0].Assign (viewInfo.view [0]);
-OOF_MatVms2Gl (OOF_GlIdent (viewInfo.glViewf), viewInfo.view [0]);
+CFloatMatrix.Transpose (viewInfo.view [2], viewInfo.view [0]);
 ScaleMatrix (bOglScale);
 OglSetFOV ();
 }

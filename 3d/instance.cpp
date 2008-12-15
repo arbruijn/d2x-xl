@@ -34,44 +34,36 @@ int nInstanceDepth = 0;
 
 //------------------------------------------------------------------------------
 
-inline void OglMove (float *pv)
+inline void OglMove (CFloatVector& v)
 {
-glTranslatef (-pv [0], -pv [1], -pv [2]);
+glTranslatef (-v [X], -v [Y], -v [Z]);
 }
 
 //------------------------------------------------------------------------------
 
-inline void OglRot (float *pm)
+inline void OglRot (CFloatMatrix& m)
 {
-glMultMatrixf (pm);
+glMultMatrixf (m.Vec ());
 }
 
 //------------------------------------------------------------------------------
 
-void VmsMove(const CFixVector& pv)
+void VmsMove (const CFixVector& v)
 {
-glVectorf p;
-OglMove (OOF_VecVms2Gl (p, pv));
+	CFloatVector vf;
+
+vf.Assign (v);
+OglMove (vf);
 }
 
 //------------------------------------------------------------------------------
 
-inline void VmsRot(const CFixMatrix& pm)
+inline void VmsRot (const CFixMatrix& m)
 {
-glMatrixf m;
+	glMatrixf mf;
 
-memset (m, 0, sizeof (m));
-m [0] = X2F (pm.RVec ()[X]);
-m [1] = X2F (pm.RVec ()[Y]);
-m [2] = X2F (pm.RVec ()[Z]);
-m [4] = X2F (pm.UVec ()[X]);
-m [5] = X2F (pm.UVec ()[Y]);
-m [6] = X2F (pm.UVec ()[Z]);
-m [8] = X2F (pm.FVec ()[X]);
-m [9] = X2F (pm.FVec ()[Y]);
-m [10] = X2F (pm.FVec ()[Z]);
-m [15] = 1;
-OglRot (m);
+mf.Assign (m);
+OglRot (mf);
 }
 
 //------------------------------------------------------------------------------
@@ -130,7 +122,7 @@ if (gameStates.ogl.bUseTransform) {
 		glLoadIdentity ();
 		//glScalef (X2F (viewInfo.scale.p.x), X2F (viewInfo.scale.p.y), -X2F (viewInfo.scale.p.z));
 		glScalef (1, 1, -1);
-		OglRot (viewInfo.glViewf);
+		OglRot (viewInfo.viewf [2]);
 		h = viewInfo.pos - vPos;
 		VmsMove (h);
 		VmsRot (mOrient);

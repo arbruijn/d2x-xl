@@ -1028,15 +1028,16 @@ class CFixMatrix {
 
 		static float* ToOpenGL (float* dest, const CFixMatrix& src);
 
-		inline const CFixVector CFixMatrix::Mat (size_t idx) const { return m_data.mat [idx]; }
-		inline const CFixVector CFixMatrix::RVec (void) const { return m_data.mat [RVEC]; }
-		inline const CFixVector CFixMatrix::UVec (void) const { return m_data.mat [UVEC]; }
-		inline const CFixVector CFixMatrix::FVec (void) const { return m_data.mat [FVEC]; }
+		inline const CFixVector Mat (size_t idx) const { return m_data.mat [idx]; }
+		inline const CFixVector RVec (void) const { return m_data.mat [RVEC]; }
+		inline const CFixVector UVec (void) const { return m_data.mat [UVEC]; }
+		inline const CFixVector FVec (void) const { return m_data.mat [FVEC]; }
 
-		inline CFixVector& CFixMatrix::Mat (size_t idx) { return m_data.mat [idx]; }
-		inline CFixVector& CFixMatrix::RVec (void) { return m_data.mat [RVEC]; }
-		inline CFixVector& CFixMatrix::UVec (void) { return m_data.mat [UVEC]; }
-		inline CFixVector& CFixMatrix::FVec (void) { return m_data.mat [FVEC]; }
+		inline CFixVector& Mat (size_t idx) { return m_data.mat [idx]; }
+		inline fix* Vec (void) { return m_data.vec; }
+		inline CFixVector& RVec (void) { return m_data.mat [RVEC]; }
+		inline CFixVector& UVec (void) { return m_data.mat [UVEC]; }
+		inline CFixVector& FVec (void) { return m_data.mat [FVEC]; }
 
 	private:
 		static inline void Swap (fix& l, fix& r) {
@@ -1234,11 +1235,12 @@ class CFloatMatrix {
 
 		static float* Transpose (float* dest, const CFloatMatrix& src);
 
-		inline const CFloatVector CFloatMatrix::Mat (size_t idx) const { return m_data.mat [idx]; }
-		inline const CFloatVector CFloatMatrix::RVec (void) const { return m_data.mat [RVEC]; }
-		inline const CFloatVector CFloatMatrix::UVec (void) const { return m_data.mat [UVEC]; }
-		inline const CFloatVector CFloatMatrix::FVec (void) const { return m_data.mat [FVEC]; }
+		inline const CFloatVector Mat (size_t idx) const { return m_data.mat [idx]; }
+		inline const CFloatVector RVec (void) const { return m_data.mat [RVEC]; }
+		inline const CFloatVector UVec (void) const { return m_data.mat [UVEC]; }
+		inline const CFloatVector FVec (void) const { return m_data.mat [FVEC]; }
 
+		inline float* Vec (void) { return m_data.vec; }
 		inline CFloatVector& RVec (void) { return m_data.mat [RVEC]; }
 		inline CFloatVector& UVec (void) { return m_data.mat [UVEC]; }
 		inline CFloatVector& FVec (void) { return m_data.mat [FVEC]; }

@@ -311,8 +311,8 @@ int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcd
 								nSaturation = gameOpts->render.color.nSaturation;
 	int						nBrightness, nMaxBrightness = 0;
 	float						fLightDist, fAttenuation, spotEffect, NdotL, RdotE, nMinDot;
-	CFloatVector3					spotDir, lightDir, lightPos, vertPos, vReflect;
-	CFloatVector3					lightColor, colorSum, vertColor = CFloatVector3::Create(0.0f, 0.0f, 0.0f);
+	CFloatVector3			spotDir, lightDir, lightPos, vertPos, vReflect;
+	CFloatVector3			lightColor, colorSum, vertColor = CFloatVector3::Create(0.0f, 0.0f, 0.0f);
 	CShaderLight			*psl;
 	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread] + sliP->nFirst;
@@ -325,7 +325,7 @@ if (nThread == 1)
 	nThread = nThread;
 #endif
 colorSum = *pColorSum;
-vertPos = *vcd.vertPosP - *(reinterpret_cast<CFloatVector3*> (&viewInfo.glPosf));
+vertPos = *vcd.vertPosP - *viewInfo.posf [1].V3 ();
 vertPos.Neg();
 CFloatVector3::Normalize(vertPos);
 nLights = sliP->nActive;

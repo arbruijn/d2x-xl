@@ -84,7 +84,7 @@ inline int G3CheckPointFacing (CFloatVector *pv, CFloatVector *pNorm, CFloatVect
 {
 	CFloatVector	h = *pDir - *pv;
 
-return (h * pNorm) > 0;
+return (h * *pNorm) > 0;
 }
 
 //------------------------------------------------------------------------------
@@ -98,14 +98,15 @@ return G3CheckPointFacing (pv, pNorm, &vLightPosf);
 
 inline int G3CheckViewerFacing (CFloatVector *pv, CFloatVector *pNorm)
 {
-return CFloatVector::Dot (pv, pNorm) >= 0;
+return CFloatVector::Dot (*pv, *pNorm) >= 0;
 }
 
 //------------------------------------------------------------------------------
 
 inline CFloatVector *G3RotateFaceNormal (tPOF_face *pf)
 {
-return reinterpret_cast<CFloatVector*> (OOF_VecVms2Oof (&pf->vNormf, G3RotatePoint (pf->vRotNorm, pf->vNorm, 0)));
+pf->vNormf.Assign (G3RotatePoint (pf->vRotNorm, pf->vNorm, 0));
+return &pf->vNormf;
 }
 
 //------------------------------------------------------------------------------
@@ -114,7 +115,8 @@ inline CFloatVector *G3TransformFaceCenter (tPOF_face *pf)
 {
 	CFixVector	v;
 
-return reinterpret_cast<CFloatVector*> (OOF_VecVms2Oof (&pf->vCenterf, G3TransformPoint (v, pf->vCenter, 0)));
+pf->vCenterf.Assign (G3TransformPoint (v, pf->vCenter, 0));
+return &pf->vCenterf;
 }
 
 //------------------------------------------------------------------------------
@@ -135,7 +137,7 @@ return pf->bFrontFace = G3CheckViewerFacing (&pf->vCenterf, &pf->vNormf);
 
 int G3GetFaceWinding (CFloatVector *v0, CFloatVector *v1, CFloatVector *v2)
 {
-return ((v1->x - v0->x) * (v2->y - v1->y) < 0) ? GL_CW : GL_CCW;
+return (((*v1) [X] - (*v0) [X]) * ((*v2) [Y] - (*v1) [Y]) < 0) ? GL_CW : GL_CCW;
 }
 
 //------------------------------------------------------------------------------
@@ -234,12 +236,12 @@ if (bTriangularize) {
 	pf->vNorm = CFixVector::Normal (pv [pfv [0]], pv [pfv [1]], pv [pfv [2]]);
 	}
 else
-	OOF_VecVms2Oof (&pf->vNormf, pf->vNorm);
+	pf->vNormf.Assign (pf->vNorm);
 }
 
 //------------------------------------------------------------------------------
 
-CFloatVector *G3CalcFaceCenterf (tPOFObject *po, tPOF_face *pf)
+CFloatVector G3CalcFaceCenterf (tPOFObject *po, tPOF_face *pf)
 {
 	CFloatVector	*pv = po->vertsf.Buffer ();
 	short				*pfv = pf->verts;
@@ -251,20 +253,20 @@ c.SetZero ();
 for (i = pf->nVerts; i; i--, pfv++)
 	c += pv [*pfv];
 c /= static_cast<float> (pf->nVerts);
-return &c;
+return c;
 }
 
 //------------------------------------------------------------------------------
 
 CFixVector *G3CalcFaceCenter (tPOFObject *po, tPOF_face *pf)
 {
-	CFloatVector	cf;
+	CFloatVector		cf;
 	static CFixVector c;
 
-cf = *G3CalcFaceCenterf (po, pf);
-c[X] = (fix) (cf.x * F1_0);
-c[Y] = (fix) (cf.y * F1_0);
-c[Z] = (fix) (cf.z * F1_0);
+cf = G3CalcFaceCenterf (po, pf);
+c [X] = (fix) (cf [X] * F1_0);
+c [Y] = (fix) (cf [Y] * F1_0);
+c [Z] = (fix) (cf [Z] * F1_0);
 return &c;
 }
 
@@ -491,15 +493,12 @@ for (i = pso->faces.nFaces, pf = pso->faces.faces.Buffer (); i; i--, pf++) {
 
 CFloatVector *G3PolyModelVerts2Float (tPOFObject *po)
 {
-	int			i;
-	CFixVector	*pv;
+	int				i;
+	CFixVector		*pv;
 	CFloatVector	*pvf;
 
-for (i = po->nVerts, pv = po->verts.Buffer (), pvf = po->vertsf.Buffer (); i; i--, pv++, pvf++) {
-	pvf->x = X2F ((*pv)[X]);
-	pvf->y = X2F ((*pv)[Y]);
-	pvf->z = X2F ((*pv)[Z]);
-	}
+for (i = po->nVerts, pv = po->verts.Buffer (), pvf = po->vertsf.Buffer (); i; i--, pv++, pvf++)
+	pvf->Assign (*pv);
 return po->vertsf.Buffer ();
 }
 
@@ -788,7 +787,7 @@ void G3RenderShadowVolumeFace (CFloatVector *pv)
 	CFloatVector	v [4];
 
 memcpy (v, pv, 2 * sizeof (CFloatVector));
-v [3] = v - gameData.render.shadows.vLightPos;
+v [3] = v [0] - gameData.render.shadows.vLightPos;
 v [2] = v [1] - gameData.render.shadows.vLightPos;
 #if NORM_INF
 v [3] *= fInf / v [3].Mag ();
@@ -798,7 +797,7 @@ v [3] /= fInf;
 v [2] /= fInf;
 #endif
 v [2] += v [1];
-v [3] += v;
+v [3] += v [0];
 glVertexPointer (3, GL_FLOAT, 0, v);
 #if DBG_SHADOWS
 if (bShadowTest)
@@ -890,7 +889,7 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.faces; i; i--, ppf++) {
 			if (bShadowTest < 3) {
 				glColor4fv (reinterpret_cast<GLfloat*> (shadowColor + bCullFront));
 #endif
-				v [3] = v - vLightPosf;
+				v [3] = v [0] - vLightPosf;
 				v [2] = v [1] - vLightPosf;
 #if NORM_INF
 				v [3] *= fClipDist / v [3].Mag ();
@@ -900,7 +899,7 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.faces; i; i--, ppf++) {
 				v [2] *= fClipDist;
 #endif
 				v [2] += v [1];
-				v [3] += v;
+				v [3] += v [0];
 #if 1//!DBG
 				glDrawArrays (GL_QUADS, 0, 4);
 #else
@@ -1072,9 +1071,9 @@ return //fScale ? X2F (VmVecDist (fq.p0, &fi.hit.vPoint)) * fScale :
 
 inline float G3FaceClipDist (CObject *objP, tPOF_face *pf)
 {
-	CFixVector	vCenter = CFixVector::Create((fix) (pf->vCenterf.x * 65536.0f),
-	                                        (fix) (pf->vCenterf.y * 65536.0f),
-	                                        (fix) (pf->vCenterf.z * 65536.0f));
+	CFixVector	vCenter;
+	
+vCenter.Assign (pf->vCenterf);
 return NearestShadowedWallDist (OBJ_IDX (objP), objP->info.nSegment, &vCenter, 0.0f);
 }
 
@@ -1121,9 +1120,7 @@ for (m = pso->litFaces.nFaces, ppf = pso->litFaces.faces + i; i < m; i += incr, 
 	for (j = 0, n = pf->nVerts, pfv = pf->verts; j < n; j++, pfv++) {
 		h = *pfv;
 		if (!(fClipDist = pfc [h])) {
-			v[X] = (fix) (pv [h].x * 65536.0f);
-			v[Y] = (fix) (pv [h].y * 65536.0f);
-			v[Z] = (fix) (pv [h].z * 65536.0f);
+			v.Assign (pv [h]);
 			nPointSeg = FindSegByPos (v, nSegment, 1, 0);
 			if (nPointSeg < 0)
 				continue;
@@ -1161,9 +1158,7 @@ for (j = po->nVerts; i < j; i += incr, pvf += incr) {
 	if (*pvf != nVertFlag)
 		continue;
 	if (!(fClipDist = pfc [i])) {
-		v[X] = (fix) (pv [i].x * 65536.0f);
-		v[Y] = (fix) (pv [i].y * 65536.0f);
-		v[Z] = (fix) (pv [i].z * 65536.0f);
+		v.Assign (pv [i]);
 		nPointSeg = FindSegByPos (v, nSegment, 1, 0);
 		if (nPointSeg < 0)
 			continue;
@@ -1427,9 +1422,8 @@ if (po->nState == 1) {
 		for (j = po->nVerts, pv = po->verts.Buffer (), pvf = po->vertsf.Buffer (); j; j--, pv++, pvf++) 
 			vCenter += *pv;
 		float fScale = (static_cast<float>(po->nVerts) * 65536.0f);
-		vCenterf.x = static_cast<float>(vCenter [X]) / fScale;
-		vCenterf.y = static_cast<float>(vCenter [Y]) / fScale;
-		vCenterf.z = static_cast<float>(vCenter [Z]) / fScale;
+		vCenterf.Assign (vCenter);
+		vCenterf /= fScale;
 		po->vCenter += vCenter;
 
 		G3GetAdjFaces (po);
@@ -1489,7 +1483,7 @@ if (FAST_SHADOWS) {
 		else {
 			gameStates.render.bRendering = 1;
 			G3TransformPoint (vLightPos, gameData.render.shadows.lights->info.vPos, 0);
-			OOF_VecVms2Oof (&vLightPosf, vLightPos);
+			vLightPosf.Assign (vLightPos);
 			if (gameOpts->render.shadows.nClip) {
 				// get a default clipping distance using the model position as fall back
 				G3TransformPoint (v, objP->info.position.vPos, 0);
