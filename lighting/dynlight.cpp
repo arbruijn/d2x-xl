@@ -726,7 +726,7 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
 	if (psl->info.bSpot)
 		psl = psl;
 #endif
-	*psl->vPosf.Assign (psl->info.vPos);
+	psl->vPosf [0].Assign (psl->info.vPos);
 	if (gameStates.ogl.bUseTransform)
 		psl->vPosf [1] = psl->vPosf [0];
 	else {

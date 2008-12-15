@@ -412,7 +412,7 @@ for (x = xMin; x < xMax; x++) {
 #endif
 		if (0 < SetNearestPixelLights (m_data.faceP->nSegment, m_data.faceP->nSide, &m_data.vNormal, 
 												 pixelPosP, m_data.faceP->fRads [1] / 10.0f, nThread)) {
-			vcd.vertPos.Assign (pixelPosP);
+			vcd.vertPos.Assign (*pixelPosP);
 			color.SetZero ();
 			G3AccumVertColor (-1, &color, &vcd, nThread);
 			if ((color [R] > 0.001f) || (color [G] > 0.001f) || (color [B] > 0.001f)) {

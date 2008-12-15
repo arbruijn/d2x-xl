@@ -244,7 +244,7 @@ else {
 	if (bFlip)
 		vNormal.Neg();
 	}
-pvNormal->Copy (vNormal);
+pvNormal->Assign (vNormal);
 }
 
 //------------------------------------------------------------------------------
