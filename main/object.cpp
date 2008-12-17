@@ -1208,7 +1208,7 @@ if (SEGMENTS [nSegment].objects == nObject)
 	return;
 #endif
 SetNextInSeg (SEGMENTS [nSegment].objects);
-SetPrevInSeg (NULL);
+SetPrevInSeg (-1);
 SEGMENTS [nSegment].objects = OBJ_IDX (this);
 if (info.nNextInSeg != -1)
 	OBJECTS [info.nNextInSeg].info.nPrevInSeg = OBJ_IDX (this);
