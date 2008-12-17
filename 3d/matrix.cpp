@@ -28,11 +28,11 @@ void ScaleMatrix (int bOglScale);
 //set view from x,y,z & p,b,h, xZoom.  Must call one of g3_setView_*()
 void G3SetViewAngles (CFixVector *vPos, CAngleVector *mOrient, fix xZoom)
 {
-viewInfo.zoom = xZoom;
-viewInfo.pos = *vPos;
-viewInfo.view[0] = CFixMatrix::Create (*mOrient);
-viewInfo.posf.Assign (viewInfo.pos);
-viewInfo.viewf [0].Assign (viewInfo.view [0]);
+transformation.m_info.zoom = xZoom;
+transformation.m_info.pos = *vPos;
+transformation.m_info.view [0] = CFixMatrix::Create (*mOrient);
+transformation.m_info.posf [0].Assign (transformation.m_info.pos);
+transformation.m_info.viewf [0].Assign (transformation.m_info.view [0]);
 ScaleMatrix (1);
 }
 
@@ -40,14 +40,14 @@ ScaleMatrix (1);
 //set view from x,y,z, viewer matrix, and xZoom.  Must call one of g3_setView_*()
 void G3SetViewMatrix (const CFixVector& vPos, const CFixMatrix& mOrient, fix xZoom, int bOglScale)
 {
-viewInfo.zoom = xZoom;
-viewInfo.glZoom = (float) xZoom / 65536.0f;
-viewInfo.pos = vPos;
-viewInfo.posf.Assign (viewInfo.pos);
-viewInfo.glPosf [1].Assign (viewInfo.pos);
-viewInfo.view [0] = mOrient;
-viewInfo.viewf [0].Assign (viewInfo.view [0]);
-CFloatMatrix.Transpose (viewInfo.view [2], viewInfo.view [0]);
+transformation.m_info.zoom = xZoom;
+transformation.m_info.zoomf = (float) xZoom / 65536.0f;
+transformation.m_info.pos = vPos;
+transformation.m_info.posf [0].Assign (transformation.m_info.pos);
+transformation.m_info.posf [1].Assign (transformation.m_info.pos);
+transformation.m_info.view [0] = mOrient;
+transformation.m_info.viewf [0].Assign (transformation.m_info.view [0]);
+CFixMatrix::Transpose (transformation.m_info.viewf [2], transformation.m_info.view [0]);
 ScaleMatrix (bOglScale);
 OglSetFOV ();
 }
@@ -56,33 +56,33 @@ OglSetFOV ();
 //performs aspect scaling on global view matrix
 void ScaleMatrix (int bOglScale)
 {
-	viewInfo.view [1] = viewInfo.view [0];		//so we can use unscaled if we want
-	viewInfo.viewf [1] = viewInfo.viewf [0];		//so we can use unscaled if we want
+	transformation.m_info.view [1] = transformation.m_info.view [0];		//so we can use unscaled if we want
+	transformation.m_info.viewf [1] = transformation.m_info.viewf [0];		//so we can use unscaled if we want
 
-viewInfo.scale = viewInfo.windowScale;
-if (viewInfo.zoom <= f1_0) 		//xZoom in by scaling z
-	viewInfo.scale[Z] = FixMul (viewInfo.scale[Z], viewInfo.zoom);
+transformation.m_info.scale = transformation.m_info.aspect;
+if (transformation.m_info.zoom <= f1_0) 		//xZoom in by scaling z
+	transformation.m_info.scale [Z] = FixMul (transformation.m_info.scale [Z], transformation.m_info.zoom);
 else {			//xZoom out by scaling x&y
-	fix s = FixDiv (f1_0, viewInfo.zoom);
+	fix s = FixDiv (f1_0, transformation.m_info.zoom);
 
-	viewInfo.scale[X] = FixMul (viewInfo.scale[X], s);
-	viewInfo.scale[Y] = FixMul (viewInfo.scale[Y], s);
+	transformation.m_info.scale [X] = FixMul (transformation.m_info.scale [X], s);
+	transformation.m_info.scale [Y] = FixMul (transformation.m_info.scale [Y], s);
 	}
-viewInfo.scalef.Assign (viewInfo.scale);
-//viewInfo.scale[X] = viewInfo.scale[Y] = viewInfo.scale[Z] = F1_0;
+transformation.m_info.scalef.Assign (transformation.m_info.scale);
+//transformation.m_info.scale [X] = transformation.m_info.scale [Y] = transformation.m_info.scale [Z] = F1_0;
 //now scale matrix elements
 if (bOglScale) {
-	//glScalef (X2F (viewInfo.scale[X]), X2F (viewInfo.scale[Y]), -X2F (viewInfo.scale[Z]));
+	//glScalef (X2F (transformation.m_info.scale [X]), X2F (transformation.m_info.scale [Y]), -X2F (transformation.m_info.scale [Z]));
 	glScalef (1, 1, -1);
 	}
 else {
-	//VmVecScale (&viewInfo.view [0].rVec, viewInfo.scale[X]);
-	//VmVecScale (&viewInfo.view [0].uVec, viewInfo.scale[Y]);
-	//viewInfo.scale[X] = viewInfo.scale[Y] = viewInfo.scale[Z] = F1_0;
-	viewInfo.view [0].FVec () *= (-viewInfo.scale[Z]);
+	//VmVecScale (&transformation.m_info.view [0].rVec, transformation.m_info.scale [X]);
+	//VmVecScale (&transformation.m_info.view [0].uVec, transformation.m_info.scale [Y]);
+	//transformation.m_info.scale [X] = transformation.m_info.scale [Y] = transformation.m_info.scale [Z] = F1_0;
+	transformation.m_info.view [0].FVec () *= (-transformation.m_info.scale [Z]);
+	transformation.m_info.viewf [0].Assign (transformation.m_info.view [0]);
 	glScalef (1, 1, 1);
 	}
-viewInfo.viewf [0].Assign (viewInfo.view [0]);
 }
 
 //------------------------------------------------------------------------------

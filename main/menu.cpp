@@ -5525,18 +5525,18 @@ if (!FindArg ("-nonetwork")) {
 #if 1 //TRACE
 	switch (nIpxError) {
 		case IPX_NOT_INSTALLED: 
-			con_printf (CON_VERBOSE, "%s\n", TXT_NO_NETWORK); 
+			console.printf (CON_VERBOSE, "%s\n", TXT_NO_NETWORK); 
 			break;
 		case IPX_SOCKET_TABLE_FULL: 
-			con_printf (CON_VERBOSE, "%s 0x%x.\n", TXT_SOCKET_ERROR, IPX_DEFAULT_SOCKET + socket); 
+			console.printf (CON_VERBOSE, "%s 0x%x.\n", TXT_SOCKET_ERROR, IPX_DEFAULT_SOCKET + socket); 
 			break;
 		case IPX_NO_LOW_DOS_MEM: 
-			con_printf (CON_VERBOSE, "%s\n", TXT_MEMORY_IPX); 
+			console.printf (CON_VERBOSE, "%s\n", TXT_MEMORY_IPX); 
 			break;
 		default: 
-			con_printf (CON_VERBOSE, "%s %d", TXT_ERROR_IPX, nIpxError);
+			console.printf (CON_VERBOSE, "%s %d", TXT_ERROR_IPX, nIpxError);
 		}
-		con_printf (CON_VERBOSE, "%s\n", TXT_NETWORK_DISABLED);
+		console.printf (CON_VERBOSE, "%s\n", TXT_NETWORK_DISABLED);
 #endif
 		networkData.bActive = 0;		// Assume no network
 	}
@@ -5545,7 +5545,7 @@ if (!FindArg ("-nonetwork")) {
 	} 
 else {
 #if 1 //TRACE
-	con_printf (CON_VERBOSE, "%s\n", TXT_NETWORK_DISABLED);
+	console.printf (CON_VERBOSE, "%s\n", TXT_NETWORK_DISABLED);
 #endif
 	networkData.bActive = 0;		// Assume no network
 	}

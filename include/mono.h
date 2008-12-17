@@ -33,11 +33,11 @@ void _CDECL_ _do_mprintf(int n, char *fmt, ...)
 	vsprintf (buffer, fmt, arglist);
 	va_end (arglist);
 
-	con_printf (CONDBG, buffer);
+	console.printf (CON_DBG, buffer);
 }
 
 #ifdef _WIN32
-#	define mprintf	con_printf
+#	define mprintf	console.printf
 #else
 #	define mprintf(args) _do_mprintf (args)
 #endif

@@ -804,11 +804,11 @@ if (weaponP->info.nId == OMEGA_ID)
 if (weaponP->info.nId == GUIDEDMSL_ID) {
 	fix dot = CFixVector::Dot (weaponP->info.position.mOrient.FVec (), sideP->normals[0]);
 #if TRACE
-	con_printf (CONDBG, "Guided missile dot = %7.3f \n", X2F (dot));
+	console.printf (CON_DBG, "Guided missile dot = %7.3f \n", X2F (dot));
 #endif
 	if (dot < -F1_0/6) {
 #if TRACE
-		con_printf (CONDBG, "Guided missile loses bounciness. \n");
+		console.printf (CON_DBG, "Guided missile loses bounciness. \n");
 #endif
 		weaponP->mType.physInfo.flags &= ~PF_BOUNCE;
 		}
@@ -840,7 +840,7 @@ if (gameStates.input.keys.pressed [KEY_LAPOSTRO])
 	if (weaponP->cType.laserInfo.parent.nObject == LOCALPLAYER.nObject) {
 		//	MK: Real pain when you need to know a segP:tSide and you've got quad lasers.
 #if TRACE
-		con_printf (CONDBG, "Your laser hit at CSegment = %i, tSide = %i \n", nHitSeg, nHitWall);
+		console.printf (CON_DBG, "Your laser hit at CSegment = %i, tSide = %i \n", nHitSeg, nHitWall);
 #endif
 		//HUDInitMessage ("Hit at segment = %i, side = %i", nHitSeg, nHitWall);
 		if (weaponP->info.nId < 4)
@@ -1169,7 +1169,7 @@ if ((nAttacker < 0) || (nAttacker > gameData.objs.nLastObject [0]))
 whotype = OBJECTS [nAttacker].info.nType;
 if (whotype != OBJ_PLAYER) {
 #if TRACE
-	con_printf (CONDBG, "Damage to control center by CObject of nType %i prevented by MK! \n", whotype);
+	console.printf (CON_DBG, "Damage to control center by CObject of nType %i prevented by MK! \n", whotype);
 #endif
 	return;
 	}
@@ -1226,7 +1226,7 @@ return 1;
 int CollidePlayerAndMarker (CObject *markerP, CObject *playerObjP, CFixVector *vHitPt)
 {
 #if TRACE
-con_printf (CONDBG, "Collided with markerP %d! \n", markerP->info.nId);
+console.printf (CON_DBG, "Collided with markerP %d! \n", markerP->info.nId);
 #endif
 if (playerObjP->info.nId==gameData.multiplayer.nLocalPlayer) {
 	int drawn;
@@ -1495,7 +1495,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 	CFixVector::Normalize (tvec1);	//	Note, if BOSS_INVULNERABLE_DOT is close to F1_0 (in magnitude), then should probably use non-quick version.
 	dot = CFixVector::Dot (tvec1, robotP->info.position.mOrient.FVec ());
 #if TRACE
-	con_printf (CONDBG, "Boss hit vec dot = %7.3f \n", X2F (dot));
+	console.printf (CON_DBG, "Boss hit vec dot = %7.3f \n", X2F (dot));
 #endif
 	if (dot > gameData.physics.xBossInvulDot) {
 		short	nSegment;

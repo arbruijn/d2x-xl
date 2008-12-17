@@ -132,7 +132,7 @@ if (!IsMultiGame || IsCoopGame) {
 			x = x0 - bmW - HUD_LHX (2);
 			OglUBitMapMC (x, y, bmW, bmH, bmObjTally [i], NULL, F1_0, 0);
 			sprintf (szInfo, "%d", objCounts [i]);
-			FONT->StringSize (szInfo, w, h, aw);
+			fontManager.Current ()->StringSize (szInfo, w, h, aw);
 			x -= w + HUD_LHY (2);
 			nIdTally [i] = GrPrintF (nIdTally + i, x, y + (bmH - h) / 2, szInfo);
 			y += bmH;
@@ -142,7 +142,7 @@ if (!IsMultiGame || IsCoopGame) {
 		y = 6 + 3 * nHUDLineSpacing;
 		for (i = 0; i < 2; i++) {
 			sprintf (szInfo, "%s: %5d", i ? "Powerups" : "Robots", objCounts [i]);
-			FONT->StringSize (szInfo, w, h, aw);
+			fontManager.Current ()->StringSize (szInfo, w, h, aw);
 			nIdTally [i] = GrPrintF (nIdTally + i, CCanvas::Current ()->Width () - w - HUD_LHX (2), y, szInfo);
 			y += nHUDLineSpacing;
 			}
@@ -195,7 +195,7 @@ else {
 	p [2] = s [2] ? ((gameData.stats.player [h].nHits [0] + gameData.stats.player [h].nHits [1]) / s [2]) * 100 : 0;
 	sprintf (szStats, "%s%1.1f%c %1.1f%c %1.1f%c", h ? "T:" : "", p [0], '%', p [1], '%', p [2], '%');
 	}
-FONT->StringSize (szStats, w, h, aw);
+fontManager.Current ()->StringSize (szStats, w, h, aw);
 nIdStats = GrString (CCanvas::Current ()->Width () - w - HUD_LHX (2), y, szStats, &nIdStats);
 }
 
@@ -360,7 +360,7 @@ for (i = 0; i < 2; i++) {
 						}
 					else
 						sprintf (szAmmo, "%d", nAmmo);
-					FONT->StringSize (szAmmo, fw, fh, faw);
+					fontManager.Current ()->StringSize (szAmmo, fw, fh, faw);
 					}
 				}
 			}
@@ -368,11 +368,11 @@ for (i = 0; i < 2; i++) {
 			bLoaded = (LOCALPLAYER.energy > gameData.weapons.info [l].energy_usage);
 			if (l == 0) {//Lasers
 				sprintf (szAmmo, "%d", (ll > MAX_LASER_LEVEL) ? MAX_LASER_LEVEL + 1 : ll + 1);
-				FONT->StringSize (szAmmo, fw, fh, faw);
+				fontManager.Current ()->StringSize (szAmmo, fw, fh, faw);
 				}
 			else if ((l == 5) && (ll > MAX_LASER_LEVEL)) {
 				sprintf (szAmmo, "%d", ll - MAX_LASER_LEVEL);
-				FONT->StringSize (szAmmo, fw, fh, faw);
+				fontManager.Current ()->StringSize (szAmmo, fw, fh, faw);
 				}
 			}
 		if (i && !bLoaded)
@@ -588,7 +588,7 @@ for (j = firstItem; j < n; j++) {
 		CCanvas::Current ()->SetColorRGB (64, 64, 64, 255);
 	GrUBox (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
 	if (*szCount) {
-		FONT->StringSize (szCount, fw, fh, faw);
+		fontManager.Current ()->StringSize (szCount, fw, fh, faw);
 		nIdItems [j] = GrString (x + wIcon + 2 - fw, y - fh, szCount, nIdItems + j);
 		}
 	gameStates.render.grAlpha = FADE_LEVELS;

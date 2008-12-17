@@ -576,7 +576,7 @@ while (!FormatSupported ()) {
 
 		default:
 #if TRACE
-			con_printf (CONDBG,"...no texP format to fall back on\n");
+			console.printf (CON_DBG,"...no texP format to fall back on\n");
 #endif
 			return 1;
 		}

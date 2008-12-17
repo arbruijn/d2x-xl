@@ -418,7 +418,7 @@ if (gameStates.render.bPaletteFadedOut)	{
 	}
 //	ShowBoxedMessage (TXT_LOADING);
 #if TRACE			
-con_printf (CON_VERBOSE, "Loading all textures in mine...");
+console.printf (CON_VERBOSE, "Loading all textures in mine...");
 #endif
 PagingTouchSegments ();
 PagingTouchWalls ();
@@ -431,7 +431,7 @@ PagingTouchVClip (&gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE], 0);
 PagingTouchAddonTextures ();
 
 #if TRACE			
-	con_printf (CON_VERBOSE, "... loading all textures in mine done\n");
+	console.printf (CON_VERBOSE, "... loading all textures in mine done\n");
 #endif
 //@@	ClearBoxedMessage ();
 

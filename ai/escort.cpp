@@ -866,13 +866,13 @@ if (!ObjectToObjectVisibility (buddyObjP, objP, FQ_TRANSWALL))
 	return 0;
 if (gameData.weapons.info [MEGAMSL_ID].renderType == 0) {
 #if TRACE
-	con_printf (CON_VERBOSE, "Buddy can't fire mega (shareware)\n");
+	console.printf (CON_VERBOSE, "Buddy can't fire mega (shareware)\n");
 #endif
 	BuddyMessage (TXT_BUDDY_CLICK);
 	return 0;
 	}
 #if TRACE
-con_printf (CONDBG, "Buddy firing mega in frame %i\n", gameData.app.nFrameCount);
+console.printf (CON_DBG, "Buddy firing mega in frame %i\n", gameData.app.nFrameCount);
 #endif
 BuddyMessage (TXT_BUDDY_GAHOOGA);
 nWeaponObj = CreateNewLaserEasy (&buddyObjP->info.position.mOrient.FVec (), &buddyObjP->info.position.vPos, nObject, MEGAMSL_ID, 1);
@@ -896,7 +896,7 @@ if (dist > F1_0*80)
 if (!ObjectToObjectVisibility (buddyObjP, objP, FQ_TRANSWALL))
 	return 0;
 #if TRACE
-con_printf (CONDBG, "Buddy firing smart missile in frame %i\n", gameData.app.nFrameCount);
+console.printf (CON_DBG, "Buddy firing smart missile in frame %i\n", gameData.app.nFrameCount);
 #endif
 BuddyMessage (TXT_BUDDY_WHAMMO);
 nWeaponObj = CreateNewLaserEasy (&buddyObjP->info.position.mOrient.FVec (), &buddyObjP->info.position.vPos, nObject, SMARTMSL_ID, 1);
@@ -978,7 +978,7 @@ if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM) {
 	if (player_visibility)
 		if (gameData.escort.xLastPathCreated + F1_0*3 < gameData.time.xGame) {
 #if TRACE
-			con_printf (CONDBG, "Frame %i: Buddy creating new scram path.\n", gameData.app.nFrameCount);
+			console.printf (CON_DBG, "Frame %i: Buddy creating new scram path.\n", gameData.app.nFrameCount);
 #endif
 			CreateNSegmentPath (objP, 10 + d_rand () * 16, gameData.objs.consoleP->info.nSegment);
 			gameData.escort.xLastPathCreated = gameData.time.xGame;
@@ -1225,7 +1225,7 @@ for (buddy_id = 0; buddy_id < gameData.bots.nTypes [0]; buddy_id++)
 
 	if (buddy_id == gameData.bots.nTypes [0]) {
 #if TRACE
-		con_printf (CONDBG, "Can't create Buddy.  No 'companion' bot found in gameData.bots.infoP!\n");
+		console.printf (CON_DBG, "Can't create Buddy.  No 'companion' bot found in gameData.bots.infoP!\n");
 #endif
 		return;
 	}
@@ -1247,7 +1247,7 @@ void ShowEscortMenu (char *msg)
 
 	CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [0]);
 	fontManager.SetCurrent ( GAME_FONT );
-	FONT->StringSize (msg,&w,&h,&aw);
+	fontManager.Current ()->StringSize (msg,&w,&h,&aw);
 	x = (screen.Width ()-w)/2;
 	y = (screen.Height ()-h)/4;
 	fontManager.SetColorRGBi (RGBA (0, PAL2RGBA (28), 0, 255), 1, 0, 0);

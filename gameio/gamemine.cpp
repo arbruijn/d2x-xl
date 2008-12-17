@@ -511,7 +511,7 @@ int load_mine_data (CFile& cf)
 
 	if (mine_top_fileinfo.fileinfoVersion < 18) {
 #if TRACE
-		con_printf (1, "Old version, setting shake intensity to 0.\n");
+		console.printf (1, "Old version, setting shake intensity to 0.\n");
 #endif
 		gameStates.gameplay.seismic.nShakeFrequency = 0;
 		gameStates.gameplay.seismic.nShakeDuration = 0;
@@ -614,7 +614,7 @@ int load_mine_data (CFile& cf)
 				if (tmapTimes_used [i])
 					count++;
 #if TRACE
-			con_printf (CONDBG, "This mine has %d unique textures in it (~%d KB)\n", count, (count*4096) /1024 );
+			console.printf (CON_DBG, "This mine has %d unique textures in it (~%d KB)\n", count, (count*4096) /1024 );
 #endif
 		}
 
@@ -627,7 +627,7 @@ int load_mine_data (CFile& cf)
 	if ( mine_fileinfo.vertex_howmany > MAX_VERTICES )
 		{
 #if TRACE
-		con_printf (CONDBG, "Num vertices exceeds maximum.  Loading MAX %d vertices\n", MAX_VERTICES);
+		console.printf (CON_DBG, "Num vertices exceeds maximum.  Loading MAX %d vertices\n", MAX_VERTICES);
 #endif
 		mine_fileinfo.vertex_howmany = MAX_VERTICES;
 		}
@@ -654,7 +654,7 @@ int load_mine_data (CFile& cf)
 	// New check added to make sure we don't read in too many segments.
 	if ( mine_fileinfo.segment_howmany > MAX_SEGMENTS ) {
 #if TRACE
-		con_printf (CONDBG, "Num segments exceeds maximum.  Loading MAX %d segments\n", MAX_SEGMENTS);
+		console.printf (CON_DBG, "Num segments exceeds maximum.  Loading MAX %d segments\n", MAX_SEGMENTS);
 #endif
 		mine_fileinfo.segment_howmany = MAX_SEGMENTS;
 		mine_fileinfo.segment2_howmany = MAX_SEGMENTS;
@@ -733,7 +733,7 @@ int load_mine_data (CFile& cf)
 					if ((WALL_IS_DOORWAY (gameData.segs.segments + i, j, NULL) & WID_RENDER_FLAG))
 						if (gameData.segs.segments [i].sides [j].nBaseTex < 0)	{
 #if TRACE
-							con_printf (CONDBG, "Couldn't find texture '%s' for Segment %d, tSide %d\n", old_tmap_list [tmap_xlate], i, j);
+							console.printf (CON_DBG, "Couldn't find texture '%s' for Segment %d, tSide %d\n", old_tmap_list [tmap_xlate], i, j);
 #endif
 							Int3 ();
 							gameData.segs.segments [i].sides [j].nBaseTex = gameData.pig.tex.nTextures-1;
@@ -745,7 +745,7 @@ int load_mine_data (CFile& cf)
 						if ((WALL_IS_DOORWAY (gameData.segs.segments + i, j, NULL) & WID_RENDER_FLAG))
 							if (xlated_tmap <= 0)	{
 #if TRACE
-								con_printf (CONDBG, "Couldn't find texture '%s' for Segment %d, tSide %d\n", old_tmap_list [tmap_xlate], i, j);
+								console.printf (CON_DBG, "Couldn't find texture '%s' for Segment %d, tSide %d\n", old_tmap_list [tmap_xlate], i, j);
 #endif
 								Int3 ();
 								gameData.segs.segments [i].sides [j].nOvlTex = gameData.pig.tex.nTextures - 1;
@@ -1430,13 +1430,13 @@ nCompiledVersion = cf.ReadByte ();
 //Assert ( nCompiledVersion==COMPILED_MINE_VERSION );
 #if TRACE
 if (nCompiledVersion != COMPILED_MINE_VERSION)
-	con_printf (CONDBG, "compiled mine version=%i\n", nCompiledVersion); //many levels have "wrong" versions.  Theres no point in aborting because of it, I think.
-con_printf (CONDBG, "   compiled mine version = %d\n", nCompiledVersion);
+	console.printf (CON_DBG, "compiled mine version=%i\n", nCompiledVersion); //many levels have "wrong" versions.  Theres no point in aborting because of it, I think.
+console.printf (CON_DBG, "   compiled mine version = %d\n", nCompiledVersion);
 #endif
 gameData.segs.nVertices = bNewFileFormat ? cf.ReadShort () : cf.ReadInt ();
 Assert (gameData.segs.nVertices <= MAX_VERTICES);
 #if TRACE
-con_printf (CONDBG, "   %d vertices\n", gameData.segs.nVertices);
+console.printf (CON_DBG, "   %d vertices\n", gameData.segs.nVertices);
 #endif
 gameData.segs.nSegments = bNewFileFormat ? cf.ReadShort () : cf.ReadInt ();
 if (gameData.segs.nSegments >= MAX_SEGMENTS) {
@@ -1444,7 +1444,7 @@ if (gameData.segs.nSegments >= MAX_SEGMENTS) {
 	return -1;
 	}
 #if TRACE
-con_printf (CONDBG, "   %d segments\n", gameData.segs.nSegments);
+console.printf (CON_DBG, "   %d segments\n", gameData.segs.nSegments);
 #endif
 for (i = 0; i < gameData.segs.nVertices; i++) {
 	cf.ReadVector (gameData.segs.vertices[i]);
@@ -1468,7 +1468,7 @@ if (gameData.segs.vMax[Z] < gameData.segs.vertices [i][Z])
 	gameData.segs.vMax[Z] = gameData.segs.vertices [i][Z];
 gameData.segs.segments.Clear ();
 #if TRACE
-con_printf (CONDBG, "   loading segments ...\n");
+console.printf (CON_DBG, "   loading segments ...\n");
 #endif
 gameData.segs.nLastVertex = gameData.segs.nVertices - 1;
 gameData.segs.nLastSegment = gameData.segs.nSegments - 1;

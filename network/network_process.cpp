@@ -82,7 +82,7 @@ Assert (tmpPlayersInfo != NULL);
 i = FindActiveNetGame (newGame->szGameName, newGame->nSecurity);
 if (i == MAX_ACTIVE_NETGAMES) {
 #if 1
-	con_printf (CONDBG, "Too many netgames.\n");
+	console.printf (CON_DBG, "Too many netgames.\n");
 #endif	
 	return;
 	}
@@ -243,7 +243,7 @@ void NetworkProcessNakedPData (char *dataP, int len)
 
 if (nPlayer < 0) {
 #if 1			
-   con_printf (CONDBG, "Naked packet is bad!\n");
+   console.printf (CON_DBG, "Naked packet is bad!\n");
 #endif
 	Int3 (); // This packet is bogus!!
 	return;
@@ -276,8 +276,8 @@ void NetworkProcessNamesReturn (char *dataP)
    
 if (networkData.nNamesInfoSecurity != *reinterpret_cast<int*> (dataP + 1)) {
 #if 1			
-  con_printf (CONDBG, "Bad security on names return!\n");
-  con_printf (CONDBG, "NIS=%d dataP=%d\n", networkData.nNamesInfoSecurity, *reinterpret_cast<int*> (dataP + 1));
+  console.printf (CON_DBG, "Bad security on names return!\n");
+  console.printf (CON_DBG, "NIS=%d dataP=%d\n", networkData.nNamesInfoSecurity, *reinterpret_cast<int*> (dataP + 1));
 #endif
 	return;
 	}

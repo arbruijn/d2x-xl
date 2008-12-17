@@ -555,7 +555,7 @@ return ci.bFading;
 //do special cloaked render
 int DrawCloakedObject (CObject *objP, fix light, fix *glow, fix xCloakStartTime, fix xCloakEndTime)
 {
-	tTransformation	*posP = OBJPOS (objP);
+	tObjTransformation	*posP = OBJPOS (objP);
 	tCloakInfo	ci;
 	int			bOk = 0;
 
@@ -615,7 +615,7 @@ int DrawHiresObject (CObject *objP, fix xLight, fix *xEngineGlow)
 {
 	float			fLight [3];
 	short			nModel = 0;
-	OOFModel::CModel	*po;
+	OOF::CModel	*po;
 
 if (gameStates.render.bLoResShadows && (gameStates.render.nShadowPass == 2))
 	return 0;
@@ -796,7 +796,7 @@ PROF_START
 	short			nObject = OBJ_IDX (objP);
 	int			mldSave, bSpectate = 0, bDepthSort = RENDERPATH || (gameOpts->render.bDepthSort > 0);
 	int			bEmissive = (objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId];
-	tTransformation	savePos;
+	tObjTransformation	savePos;
 #if 0
 	float			fLight [3];
 	fix			nGlow [2];
@@ -856,7 +856,7 @@ else if ((gameData.objs.viewerP == gameData.objs.consoleP) && !gameStates.render
 	}
 if ((objP->info.nType == OBJ_NONE)/* || (objP->info.nType==OBJ_CAMBOT)*/){
 #if TRACE
-	con_printf (1, "ERROR!!!Bogus obj %d in seg %d is rendering!\n", nObject, objP->info.nSegment);
+	console.printf (1, "ERROR!!!Bogus obj %d in seg %d is rendering!\n", nObject, objP->info.nSegment);
 #endif
 	PROF_END(ptRenderObjects)
 	return 0;

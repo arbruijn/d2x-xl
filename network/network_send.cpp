@@ -187,7 +187,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	else {
 		int	i;
 
-		con_printf (0, "looking for netgames\n");
+		console.printf (0, "looking for netgames\n");
 		if (gameStates.multi.bUseTracker) {
 			if (!RequestServerListFromTracker ())
 				return 0;
@@ -588,14 +588,14 @@ if ((networkData.syncPack.dataSize + len) > networkData.nMaxXDataSize) {
 	NetworkDoFrame (1, 0);
 	if (networkData.syncPack.dataSize != 0) {
 #if 1			
-	con_printf (CONDBG, "%d bytes were added to data by NetworkDoFrame!\n", networkData.syncPack.dataSize);
+	console.printf (CON_DBG, "%d bytes were added to data by NetworkDoFrame!\n", networkData.syncPack.dataSize);
 #endif
 	Int3 ();
 	}
 //              Int3 ();         // Trying to send too much!
 //              return;
 #if 1			
-	con_printf (CONDBG, "Packet overflow, sending additional packet, nType %d len %d.\n", ptr [0], len);
+	console.printf (CON_DBG, "Packet overflow, sending additional packet, nType %d len %d.\n", ptr [0], len);
 #endif
 	Assert (bCheck == ptr [0]);
 	}
@@ -690,7 +690,7 @@ void NetworkSendPlayerNames (tSequencePacket *their)
 
 if (!their) {
 #if 1			
-	con_printf (CONDBG, "Got a CPlayerData name without a return address! Get Jason\n");
+	console.printf (CON_DBG, "Got a CPlayerData name without a return address! Get Jason\n");
 #endif
 	return;
 	}

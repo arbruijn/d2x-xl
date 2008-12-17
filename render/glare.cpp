@@ -345,12 +345,12 @@ GetSideVertIndex (sideVerts, nSegment, nSide);
 for (i = 0; i < 4; i++) {
 	fLight += X2F (sideP->uvls [i].l);
 	if (RENDERPATH)
-		G3TransformPoint (sprite [i], gameData.segs.fVertices [sideVerts [i]], 0);
+		transformation.Transform (sprite [i], gameData.segs.fVertices [sideVerts [i]], 0);
 	else
 		sprite [i] = gameData.segs.fVertices [sideVerts [i]];	//already transformed
 	}
 v.Assign (*SIDE_CENTER_I (nSegment, nSide));
-G3TransformPoint (*vCenter, v, 0);
+transformation.Transform (*vCenter, v, 0);
 #if 0
 if (gameStates.render.bQueryCoronas) {
 	for (i = 0; i < 4; i++) {

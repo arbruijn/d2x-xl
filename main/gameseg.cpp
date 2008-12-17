@@ -87,7 +87,7 @@ if (!normCache.bInitialized)
 #ifdef CACHEDBG
 #if TRACE
 	if (( (++normCache.nCounter % 5000) == 1) && (normCache.nHits+normCache.nMisses > 0))
-		con_printf (0, "NCACHE %d%% missed, H:%d, M:%d\n", (normCache.nMisses*100)/ (normCache.nHits+normCache.nMisses), normCache.nHits, normCache.nMisses);
+		console.printf (0, "NCACHE %d%% missed, H:%d, M:%d\n", (normCache.nMisses*100)/ (normCache.nHits+normCache.nMisses), normCache.nHits, normCache.nMisses);
 #endif
 #endif
 
@@ -999,7 +999,7 @@ int CheckNorms (int nSegment, int nSide, int facenum, int csegnum, int csidenum,
 
 	if (n0[X] != -n1[X]  ||  n0[Y] != -n1[Y]  ||  n0[Z] != -n1[Z]) {
 #if TRACE
-		con_printf (CONDBG, "Seg %x, tSide %d, norm %d doesn't match seg %x, tSide %d, norm %d:\n"
+		console.printf (CON_DBG, "Seg %x, tSide %d, norm %d doesn't match seg %x, tSide %d, norm %d:\n"
 				"   %8x %8x %8x\n"
 				"   %8x %8x %8x (negated)\n",
 				nSegment, nSide, facenum, csegnum, csidenum, cfacenum,
@@ -1040,7 +1040,7 @@ int CheckSegmentConnections (void)
 
 				if (csidenum == -1) {
 #if TRACE
-					con_printf (CONDBG, "Could not find connected tSide for seg %x back to seg %x, tSide %d\n", csegnum, nSegment, nSide);
+					console.printf (CON_DBG, "Could not find connected tSide for seg %x back to seg %x, tSide %d\n", csegnum, nSegment, nSide);
 #endif
 					errors = 1;
 					continue;
@@ -1052,7 +1052,7 @@ int CheckSegmentConnections (void)
 
 				if (con_num_faces != nFaces) {
 #if TRACE
-					con_printf (CONDBG, "Seg %x, tSide %d: nFaces (%d) mismatch with seg %x, tSide %d (%d)\n", nSegment, nSide, nFaces, csegnum, csidenum, con_num_faces);
+					console.printf (CON_DBG, "Seg %x, tSide %d: nFaces (%d) mismatch with seg %x, tSide %d (%d)\n", nSegment, nSide, nFaces, csegnum, csidenum, con_num_faces);
 #endif
 					errors = 1;
 				}
@@ -1068,7 +1068,7 @@ int CheckSegmentConnections (void)
 							 vertexList [2] != con_vertex_list [ (t+2)%4] ||
 							 vertexList [3] != con_vertex_list [ (t+1)%4]) {
 #if TRACE
-							con_printf (CONDBG, "Seg %x, tSide %d: vertex list mismatch with seg %x, tSide %d\n"
+							console.printf (CON_DBG, "Seg %x, tSide %d: vertex list mismatch with seg %x, tSide %d\n"
 									"  %x %x %x %x\n"
 									"  %x %x %x %x\n",
 									nSegment, nSide, csegnum, csidenum,
@@ -1091,14 +1091,14 @@ int CheckSegmentConnections (void)
 								 vertexList [3] != con_vertex_list [5] ||
 								 vertexList [5] != con_vertex_list [3]) {
 #if TRACE
-								con_printf (CONDBG,
+								console.printf (CON_DBG,
 									"Seg %x, tSide %d: vertex list mismatch with seg %x, tSide %d\n"
 									"  %x %x %x  %x %x %x\n"
 									"  %x %x %x  %x %x %x\n",
 									nSegment, nSide, csegnum, csidenum,
 									vertexList [0], vertexList [1], vertexList [2], vertexList [3], vertexList [4], vertexList [5],
 									con_vertex_list [0], con_vertex_list [1], con_vertex_list [2], con_vertex_list [3], con_vertex_list [4], con_vertex_list [5]);
-								con_printf (CONDBG,
+								console.printf (CON_DBG,
 									"Changing seg:tSide %4i:%i from %i to %i\n",
 									csegnum, csidenum, gameData.segs.segments [csegnum].sides [csidenum].nType, 5-gameData.segs.segments [csegnum].sides [csidenum].nType);
 #endif
@@ -1117,14 +1117,14 @@ int CheckSegmentConnections (void)
 								 vertexList [2] != con_vertex_list [3] ||
 								 vertexList [3] != con_vertex_list [2]) {
 #if TRACE
-								con_printf (CONDBG,
+								console.printf (CON_DBG,
 									"Seg %x, tSide %d: vertex list mismatch with seg %x, tSide %d\n"
 									"  %x %x %x  %x %x %x\n"
 									"  %x %x %x  %x %x %x\n",
 									nSegment, nSide, csegnum, csidenum,
 									vertexList [0], vertexList [1], vertexList [2], vertexList [3], vertexList [4], vertexList [5],
 									con_vertex_list [0], con_vertex_list [1], con_vertex_list [2], con_vertex_list [3], con_vertex_list [4], vertexList [5]);
-								con_printf (CONDBG,
+								console.printf (CON_DBG,
 									"Changing seg:tSide %4i:%i from %i to %i\n",
 									csegnum, csidenum, gameData.segs.segments [csegnum].sides [csidenum].nType, 5-gameData.segs.segments [csegnum].sides [csidenum].nType);
 #endif
@@ -1223,7 +1223,7 @@ if (bDoingLightingHack || !bExhaustive) {
 	}
 ++nExhaustiveCount;
 #if 0 //TRACE
-con_printf (1, "Warning: doing exhaustive search to find point CSegment (%i times)\n", nExhaustiveCount);
+console.printf (1, "Warning: doing exhaustive search to find point CSegment (%i times)\n", nExhaustiveCount);
 #endif
 if (bSkyBox) {
 	for (i = gameData.segs.skybox.ToS (), segP = gameData.segs.skybox.Buffer (); i; i--, segP++)
@@ -1238,7 +1238,7 @@ else {
 nNewSeg = -1;
 ++nExhaustiveFailedCount;
 #if TRACE
-con_printf (1, "Warning: could not find point CSegment (%i times)\n", nExhaustiveFailedCount);
+console.printf (1, "Warning: could not find point CSegment (%i times)\n", nExhaustiveFailedCount);
 #endif
 
 funcExit:
@@ -1402,7 +1402,7 @@ fix FindConnectedDistance (CFixVector *p0, short seg0, CFixVector *p1, short seg
 	//	If > this, will overrun pointSegs buffer
 if (nMaxDepth > MAX_LOC_POINT_SEGS-2) {
 #if TRACE
-	con_printf (1, "Warning: In FindConnectedDistance, nMaxDepth = %i, limited to %i\n", nMaxDepth, MAX_LOC_POINT_SEGS-2);
+	console.printf (1, "Warning: In FindConnectedDistance, nMaxDepth = %i, limited to %i\n", nMaxDepth, MAX_LOC_POINT_SEGS-2);
 #endif
 	nMaxDepth = MAX_LOC_POINT_SEGS - 2;
 	}
@@ -2085,7 +2085,7 @@ for (s = 0; s <= gameData.segs.nLastSegment; s++)
 		if (gameData.segs.segments [s].nSegment != -1) {
 			if (!said) {
 #if TRACE
-				con_printf (CONDBG, "Segment %i has invalid nSegment.  Bashing to -1.  Silently bashing all others...", s);
+				console.printf (CON_DBG, "Segment %i has invalid nSegment.  Bashing to -1.  Silently bashing all others...", s);
 #endif
 				}
 			said++;
@@ -2093,7 +2093,7 @@ for (s = 0; s <= gameData.segs.nLastSegment; s++)
 			}
 	if (said) {
 #if TRACE
-		con_printf (CONDBG, "%i fixed.\n", said);
+		console.printf (CON_DBG, "%i fixed.\n", said);
 #endif
 		}
 	}

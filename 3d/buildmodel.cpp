@@ -101,22 +101,22 @@ if (gameStates.ogl.bHaveVBOs) {
 		return false;
 		}
 	glBufferDataARB (GL_ARRAY_BUFFER, m_nFaceVerts * sizeof (CRenderVertex), NULL, GL_STATIC_DRAW_ARB);
-	m_vertBuf [1].SetBuffer (reinterpret_cast<CRenderVertex*> (glMapBufferARB (GL_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB)));
+	m_vertBuf [1].SetBuffer (reinterpret_cast<CRenderVertex*> (glMapBufferARB (GL_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB)), true, m_nFaceVerts);
 	m_vboIndexHandle = 0;
 	glGenBuffersARB (1, &m_vboIndexHandle);
 	if (m_vboIndexHandle) {
 		glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, m_vboIndexHandle);
 		glBufferDataARB (GL_ELEMENT_ARRAY_BUFFER_ARB, m_nFaceVerts * sizeof (short), NULL, GL_STATIC_DRAW_ARB);
-		m_index [1].SetBuffer (reinterpret_cast<short*> (glMapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB)));
+		m_index [1].SetBuffer (reinterpret_cast<short*> (glMapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB)), true, m_nFaceVerts);
 		}
 	}
 m_vertBuf [0].Create (m_nFaceVerts);
-m_vertBuf [0].Clear (0);
 m_faceVerts.Create (m_nFaceVerts);
-m_faceVerts.Clear (0);
 m_vertNorms.Create (m_nFaceVerts);
-m_vertNorms.Clear (0);
 m_subModels.Create (m_nSubModels);
+m_vertBuf [0].Clear (0);
+m_faceVerts.Clear (0);
+m_vertNorms.Clear (0);
 m_subModels.Clear (0);
 for (short i = 0; i < m_nSubModels; i++)
 	m_subModels [i].m_nSubModel = i;
@@ -182,10 +182,12 @@ POFFreeAllPolyModelItems ();
 
 int _CDECL_ CFace::Compare (CFace* pf, CFace* pm)
 {
+if (pf == pm)
+	return 0;
 if (pf->m_textureP && (pf->m_nBitmap >= 0) && (pm->m_nBitmap >= 0)) {
-	if (pf->m_textureP->BPP () < pf->m_textureP->BPP ())
+	if (pf->m_textureP->BPP () < pm->m_textureP->BPP ())
 		return -1;
-	if (pf->m_textureP->BPP () > pf->m_textureP->BPP ())
+	if (pf->m_textureP->BPP () > pm->m_textureP->BPP ())
 		return -1;
 	}
 if (pf->m_nBitmap < pm->m_nBitmap)
@@ -337,10 +339,10 @@ for (i = 0; i < m_nSubModels; i++) {
 		}
 	pfi->m_nId = nId;
 	}
-m_vbVerts = reinterpret_cast<CFloatVector3*> (m_vertBuf [0].Buffer ());
-m_vbNormals = m_vbVerts + m_nFaceVerts;
-m_vbColor = reinterpret_cast<tRgbaColorf*> (m_vbNormals + m_nFaceVerts);
-m_vbTexCoord = reinterpret_cast<tTexCoord2f*> (m_vbColor + m_nFaceVerts);
+m_vbVerts.SetBuffer (reinterpret_cast<CFloatVector3*> (m_vertBuf [0].Buffer ()), true, m_vertBuf [0].Length ());
+m_vbNormals.SetBuffer (m_vbVerts + m_nFaceVerts, true, m_vertBuf [0].Length ());
+m_vbColor.SetBuffer (reinterpret_cast<tRgbaColorf*> (m_vbNormals + m_nFaceVerts), true, m_vertBuf [0].Length ());
+m_vbTexCoord.SetBuffer (reinterpret_cast<tTexCoord2f*> (m_vbColor + m_nFaceVerts), true, m_vertBuf [0].Length ());
 pv = m_vbVerts.Buffer ();
 pn = m_vbNormals.Buffer ();
 pt = m_vbTexCoord.Buffer ();
@@ -353,9 +355,9 @@ for (i = 0, j = m_nFaceVerts; i < j; i++, pmv++) {
 	pt [i] = pmv->m_texCoord;
 	}
 if (m_vertBuf [1].Buffer ())
-	m_vertBuf [1] = m_vertBuf [0];
+	m_vertBuf [1].SetBuffer (m_vertBuf [0].Buffer (), true, m_vertBuf [0].Length ());
 if (m_index [1].Buffer ())
-	m_index [1] = m_index [0];
+	m_index [1].SetBuffer (m_index [0].Buffer (), true, m_index [0].Length ());
 if (bSort)
 	m_faceVerts = sortedVerts;
 else
@@ -516,7 +518,7 @@ if (vertices.Create (m_nFaceVerts)) {
 				}
 			}
 		}
-	h = (short) (pv - vertices) - 1;
+	h = (short) (pv - vertices.Buffer ()) - 1;
 	vertices.SortAscending (&RenderModel::CModel::CmpVerts);
 	//G3SortModelVerts (vertices, 0, h);
 	h = FilterVertices (vertices, h);
@@ -710,48 +712,49 @@ return m_nSubModels;
 
 //------------------------------------------------------------------------------
 
-void CModel::SetShipGunPoints (OOFModel::CModel *po)
+void CModel::SetShipGunPoints (OOF::CModel *po)
 {
 	static short nGunSubModels [] = {6, 7, 5, 4, 9, 10, 3, 3};
 
 	CSubModel*	psm;
-	OOFModel::CPoint	*pp;
+	OOF::CPoint	*pp;
 	int			i;
 
-for (i = 0, pp = po->gunPoints.pPoints; i < (po->gunPoints.nPoints = N_PLAYER_GUNS); i++, pp++) {
+po->m_gunPoints.Resize (N_PLAYER_GUNS);
+for (i = 0, pp = po->m_gunPoints.Buffer (); i < po->m_gunPoints.Length (); i++, pp++) {
 	if (nGunSubModels [i] >= m_nSubModels)
 		continue;
 	m_nGunSubModels [i] = nGunSubModels [i];
 	psm = m_subModels + nGunSubModels [i];
-	pp->vPos.x = (psm->m_vMax [X] + psm->m_vMin [X]) / 2;
-	if (3 == (pp->nParent = nGunSubModels [i])) {
-		pp->vPos.y = (psm->m_vMax [Z] + 3 * psm->m_vMin [Y]) / 4;
-		pp->vPos.z = 7 * (psm->m_vMax [Z] + psm->m_vMin [Z]) / 8;
+	pp->m_vPos [X] = (psm->m_vMax [X] + psm->m_vMin [X]) / 2;
+	if (3 == (pp->m_nParent = nGunSubModels [i])) {
+		pp->m_vPos [X] = (psm->m_vMax [Z] + 3 * psm->m_vMin [Y]) / 4;
+		pp->m_vPos [X] = 7 * (psm->m_vMax [Z] + psm->m_vMin [Z]) / 8;
 		}
 	else {
-		pp->vPos.y = (psm->m_vMax [Y] + psm->m_vMin [Y]) / 2;
+		pp->m_vPos [Y] = (psm->m_vMax [Y] + psm->m_vMin [Y]) / 2;
 		if (i < 4)
-      	pp->vPos.z = psm->m_vMax [Z];
+      	pp->m_vPos [Z] = psm->m_vMax [Z];
 		else
-			pp->vPos.z = (psm->m_vMax [Z] + psm->m_vMin [Z]) / 2;
+			pp->m_vPos [Z] = (psm->m_vMax [Z] + psm->m_vMin [Z]) / 2;
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void CModel::SetRobotGunPoints (OOFModel::CModel *po)
+void CModel::SetRobotGunPoints (OOF::CModel *po)
 {
 	CSubModel*	psm;
-	OOFModel::CPoint*	pp;
-	int			i, j = po->gunPoints.nPoints;
+	OOF::CPoint*	pp;
+	int			i, j = po->m_gunPoints.Length ();
 
-for (i = 0, pp = po->gunPoints.pPoints; i < j; i++, pp++) {
-	m_nGunSubModels [i] = pp->nParent;
-	psm = m_subModels + pp->nParent;
-	pp->vPos.x = (psm->m_vMax [X] + psm->m_vMin [X]) / 2;
-	pp->vPos.y = (psm->m_vMax [Y] + psm->m_vMin [Y]) / 2;
-  	pp->vPos.z = psm->m_vMax [Z];
+for (i = 0, pp = po->m_gunPoints.Buffer (); i < j; i++, pp++) {
+	m_nGunSubModels [i] = pp->m_nParent;
+	psm = m_subModels + pp->m_nParent;
+	pp->m_vPos [X] = (psm->m_vMax [X] + psm->m_vMin [X]) / 2;
+	pp->m_vPos [Y] = (psm->m_vMax [Y] + psm->m_vMin [Y]) / 2;
+  	pp->m_vPos [Z] = psm->m_vMax [Z];
 	}
 }
 
@@ -799,14 +802,14 @@ return gameData.models.renderModels [bHires][m_nModel].Size (objP, bHires);
 
 //------------------------------------------------------------------------------
 
-void G3SetShipGunPoints (OOFModel::CModel *po, CModel* pm)
+void G3SetShipGunPoints (OOF::CModel *po, CModel* pm)
 {
 pm->SetShipGunPoints (po);
 }
 
 //------------------------------------------------------------------------------
 
-void G3SetRobotGunPoints (OOFModel::CModel *po, CModel* pm)
+void G3SetRobotGunPoints (OOF::CModel *po, CModel* pm)
 {
 pm->SetRobotGunPoints (po);
 }
@@ -833,13 +836,13 @@ if (bASE) {
 	gameData.models.gunInfo [m_nModel].nGuns = j;
 	}
 else {
-		OOFModel::CPoint		*pp;
-		OOFModel::CSubModel	*pso;
-		OOFModel::CModel		*po = gameData.models.modelToOOF [1][m_nModel];
+		OOF::CPoint		*pp;
+		OOF::CSubModel	*pso;
+		OOF::CModel		*po = gameData.models.modelToOOF [1][m_nModel];
 
 	if (!po)
 		po = gameData.models.modelToOOF [0][m_nModel];
-	pp = po->gunPoints.pPoints;
+	pp = po->m_gunPoints.Buffer ();
 	if (objP->info.nType == OBJ_PLAYER)
 		SetShipGunPoints (po);
 	else if (objP->info.nType == OBJ_ROBOT)
@@ -848,17 +851,17 @@ else {
 		gameData.models.gunInfo [m_nModel].nGuns = 0;
 		return;
 		}
-	if ((j = po->gunPoints.nPoints)) {
+	if ((j = po->m_gunPoints.Length ())) {
 		if (j > MAX_GUNS)
 			j = MAX_GUNS;
 		gameData.models.gunInfo [m_nModel].nGuns = j;
 		vGunPoints = gameData.models.gunInfo [m_nModel].vGunPoints;
 		for (i = 0; i < j; i++, pp++, vGunPoints++) {
-			(*vGunPoints) [X] = F2X (pp->vPos.x);
-			(*vGunPoints) [Y] = F2X (pp->vPos.y);
-			(*vGunPoints) [Z] = F2X (pp->vPos.z);
-			for (nParent = pp->nParent; nParent >= 0; nParent = pso->nParent) {
-				pso = po->pSubObjects + nParent;
+			(*vGunPoints) [X] = F2X (pp->m_vPos [X]);
+			(*vGunPoints) [Y] = F2X (pp->m_vPos [Y]);
+			(*vGunPoints) [Z] = F2X (pp->m_vPos [Z]);
+			for (nParent = pp->m_nParent; nParent >= 0; nParent = pso->m_nParent) {
+				pso = po->m_subModels + nParent;
 				(*vGunPoints) += m_subModels [nParent].m_vOffset;
 				}
 			}

@@ -10,10 +10,10 @@ class CQuickSort {
 	public:
 		typedef int (*comparator) (_T*, _T*);
 
-		void SortAscending (_T* buffer, uint left, uint right);
-		void SortDescending (_T* buffer, uint left, uint right);
-		void SortAscending (_T* buffer, uint left, uint right, comparator compare);
-		void SortDescending (_T* buffer, uint left, uint right, comparator compare);
+		void SortAscending (_T* buffer, int left, int right);
+		void SortDescending (_T* buffer, int left, int right);
+		void SortAscending (_T* buffer, int left, int right, comparator compare);
+		void SortDescending (_T* buffer, int left, int right, comparator compare);
 		inline void Swap (_T* left, _T* right);
 	};
 

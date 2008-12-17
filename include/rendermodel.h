@@ -187,8 +187,8 @@ class CModel {
 		int Shift (CObject *objP, int bHires, CFloatVector3 *vOffsetfP);
 		int MinMax (tHitbox *phb);
 		void SetGunPoints (CObject *objP, int bASE);
-		void SetShipGunPoints (OOFModel::CModel *po);
-		void SetRobotGunPoints (OOFModel::CModel *po);
+		void SetShipGunPoints (OOF::CModel *po);
+		void SetRobotGunPoints (OOF::CModel *po);
 
 		static int _CDECL_ CmpVerts (CFloatVector3* pv, CFloatVector3* pm);
 	};	

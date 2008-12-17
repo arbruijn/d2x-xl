@@ -23,11 +23,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //-----------------------------------------------------------------------------
 
-#define GWIDTH  screen.Current ()->Width ()
-#define GHEIGHT screen.Current ()->Height ()
-#define SWIDTH  screen.Width ()
-#define SHEIGHT screen.Height ()
-
 //these are control characters that have special meaning in the font code
 
 #define CC_COLOR        1   //next char is new foreground color
@@ -91,7 +86,10 @@ class CCanvas : public CBitmap {
 
 		static CCanvas* Current (void) { return m_current; }
 		static void SetCurrent (CCanvas* canvP = NULL);
-		static void Push (void) { m_save.Push (m_current); }
+		static void Push (void) { 
+			m_save.Push (m_current); 
+			fontManager.Push ();
+			}
 		static void Pop (void) { 
 			m_current = m_save.Pop (); 
 			fontManager.Pop ();
@@ -126,7 +124,15 @@ class CScreen {
 		CScreen () { Init (); }
 		~CScreen () { Destroy (); }
 
-		void Init (void) { memset (&m_info, 0, sizeof (m_info)); }
+		void Init (void) { 
+			m_info.mode = 0; 
+			m_info.width = 0;
+			m_info.height = 0;
+			m_info.aspect = 0;
+			if (!m_current)
+				m_current = this;
+			CCanvas::SetCurrent ();
+			}
 		void Destroy (void) { Canvas ()->CBitmap::Destroy (); };
 
 		inline CCanvas* Canvas (void) { return &m_info.canvas; }

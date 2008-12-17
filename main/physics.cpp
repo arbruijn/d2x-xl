@@ -933,7 +933,7 @@ retryMove:
 	else if (fviResult == HIT_BAD_P0) {
 		Int3 ();		// Unexpected collision nType: start point not in specified CSegment.
 #if TRACE
-		con_printf (CONDBG, "Warning: Bad p0 in physics!!!\n");
+		console.printf (CON_DBG, "Warning: Bad p0 in physics!!!\n");
 #endif
 		}
 	else {

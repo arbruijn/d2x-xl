@@ -71,7 +71,7 @@ void WriteScreenShot (char *szSaveName, int w, int h, ubyte *buf, int nFormat)
 	FILE *f = fopen (szSaveName, "wb");
 if (!f) {
 #if TRACE
-	con_printf (CONDBG,"screenshot error, couldn't open %s (err %i)\n",szSaveName,errno);
+	console.printf (CON_DBG,"screenshot error, couldn't open %s (err %i)\n",szSaveName,errno);
 #endif
 	}
 else {
@@ -109,7 +109,7 @@ else {
 	r = (int) fwrite (outBuf, w * h * 3, 1, f);
 #if TRACE
 	if (r <= 0)
-		con_printf (CONDBG,"screenshot error, couldn't write to %s (err %i)\n",szSaveName,errno);
+		console.printf (CON_DBG,"screenshot error, couldn't write to %s (err %i)\n",szSaveName,errno);
 #endif
 	fclose (f);
 	}

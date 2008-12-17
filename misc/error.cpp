@@ -53,7 +53,7 @@ extern void ShowInGameWarning(const char *s);
 void warn_printf(const char *s)
 {
 #if TRACE
-	con_printf(CON_URGENT, "%s\n",s);
+	console.printf(CON_URGENT, "%s\n",s);
 #endif
 }
 
@@ -119,7 +119,7 @@ if (*szExitMsg) {
 		}
 	else {
 #if TRACE
-		con_printf(CON_CRITICAL, "%s\n",szExitMsg);
+		console.printf(CON_CRITICAL, "%s\n",szExitMsg);
 #endif
 		}
 	}
@@ -242,6 +242,7 @@ short nDbgModel = -1;
 int nDbgVertex = -1;
 int nDbgBaseTex = -1;
 int nDbgOvlTex = -1;
+int nDbgTexture = -1;
 
 #endif
 

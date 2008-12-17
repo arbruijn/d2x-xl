@@ -84,7 +84,7 @@ curSegP->point = vCenter - vPoint;
 nSegment = FindSegByPos (curSegP->point, succSegP->nSegment, 1, 0);
 if (nSegment == -1) {
 #if TRACE
-	con_printf (1, "Warning: point not in ANY CSegment in aipath.c/InsertCenterPoints().\n");
+	console.printf (1, "Warning: point not in ANY CSegment in aipath.c/InsertCenterPoints().\n");
 #endif
 	curSegP->point = vCenter;
 	FindSegByPos (curSegP->point, succSegP->nSegment, 1, 0);
@@ -403,7 +403,7 @@ for (i = qTail; i >= 0; ) {
 if (bSafeMode && ((pointSegP - gameData.ai.pointSegs) + 2 * lNumPoints + 1 >= MAX_POINT_SEGS)) {
 	//	Ouch! Cannot insert center points in path.  So return unsafe path.
 #if TRACE
-	con_printf (CONDBG, "Resetting all paths because of bSafeMode.p.\n");
+	console.printf (CON_DBG, "Resetting all paths because of bSafeMode.p.\n");
 #endif
 	AIResetAllPaths ();
 	*numPoints = lNumPoints;
@@ -526,14 +526,14 @@ int ValidatePath (int debugFlag, tPointSeg *pointSegP, int numPoints)
 nCurSeg = pointSegP->nSegment;
 if ((nCurSeg < 0) || (nCurSeg > gameData.segs.nLastSegment)) {
 #if TRACE
-	con_printf (CONDBG, "Path beginning at index %i, length=%i is bogus!\n", pointSegP-gameData.ai.pointSegs, numPoints);
+	console.printf (CON_DBG, "Path beginning at index %i, length=%i is bogus!\n", pointSegP-gameData.ai.pointSegs, numPoints);
 #endif
 	Int3 ();		//	Contact Mike: Debug trap for elusive, nasty bug.
 	return 0;
 	}
 #if TRACE
 if (debugFlag == 999)
-	con_printf (CONDBG, "That's curious...\n");
+	console.printf (CON_DBG, "That's curious...\n");
 #endif
 if (numPoints == 0)
 	return 1;
@@ -541,7 +541,7 @@ for (i = 1; i < numPoints; i++) {
 	nNextSeg = pointSegP [i].nSegment;
 	if ((nNextSeg < 0) || (nNextSeg > gameData.segs.nLastSegment)) {
 #if TRACE
-		con_printf (CONDBG, "Path beginning at index %i, length=%i is bogus!\n", pointSegP-gameData.ai.pointSegs, numPoints);
+		console.printf (CON_DBG, "Path beginning at index %i, length=%i is bogus!\n", pointSegP-gameData.ai.pointSegs, numPoints);
 #endif
 		Int3 ();		//	Contact Mike: Debug trap for elusive, nasty bug.
 		return 0;
@@ -552,7 +552,7 @@ for (i = 1; i < numPoints; i++) {
 				break;
 		if (nSide == MAX_SIDES_PER_SEGMENT) {
 #if TRACE
-			con_printf (CONDBG, "Path beginning at index %i, length=%i is bogus!\n", pointSegP-gameData.ai.pointSegs, numPoints);
+			console.printf (CON_DBG, "Path beginning at index %i, length=%i is bogus!\n", pointSegP-gameData.ai.pointSegs, numPoints);
 #endif
 			Int3 ();
 			return 0;
@@ -604,7 +604,7 @@ FORALL_ROBOT_OBJS (objP, i) {
 // -- 		CreateNSegmentPath (objP, 3, -1);
 // --
 // -- 	if (nEndSeg == -1) {
-// -- 		; //con_printf (CONDBG, "Object %i, nHideSegment = -1, not creating path.\n", OBJ_IDX (objP));
+// -- 		; //console.printf (CON_DBG, "Object %i, nHideSegment = -1, not creating path.\n", OBJ_IDX (objP));
 // -- 	} else {
 // -- 		CreatePathPoints (objP, nStartSeg, nEndSeg, gameData.ai.freePointSegs, &aiP->nPathLength, -1, 0, 0, -1);
 // -- 		aiP->nHideIndex = gameData.ai.freePointSegs - gameData.ai.pointSegs;
@@ -804,7 +804,7 @@ if (objP->info.nSegment != nGoalSeg)
 		fix dist = FindConnectedDistance (&objP->info.position.vPos, objP->info.nSegment, vGoalPoint, nGoalSeg, 30, WID_FLY_FLAG, 0);
 #	if TRACE
 		if (gameData.fcd.nConnSegDist > 2)	//	This global is set in FindConnectedDistance
-			con_printf (1, "Warning: Object %i hopped across %i segments, a distance of %7.3f.\n", OBJ_IDX (objP), gameData.fcd.nConnSegDist, X2F (dist));
+			console.printf (1, "Warning: Object %i hopped across %i segments, a distance of %7.3f.\n", OBJ_IDX (objP), gameData.fcd.nConnSegDist, X2F (dist));
 #	endif
 		}
 #endif
@@ -836,7 +836,7 @@ objP->info.position.vPos = *vGoalPoint;
 nSegment = FindObjectSeg (objP);
 #if TRACE
 if (nSegment != nGoalSeg)
-	con_printf (1, "Object #%i goal supposed to be in CSegment #%i, but in CSegment #%i\n", OBJ_IDX (objP), nGoalSeg, nSegment);
+	console.printf (1, "Object #%i goal supposed to be in CSegment #%i, but in CSegment #%i\n", OBJ_IDX (objP), nGoalSeg, nSegment);
 #endif
 if (nSegment == -1) {
 	Int3 ();	//	Oops, CObject is not in any CSegment.
@@ -1298,17 +1298,17 @@ if (gameData.ai.freePointSegs - gameData.ai.pointSegs > MAX_POINT_SEGS - MAX_PAT
 		//	Just destroy all paths.  Too bad for the robots.  They are memory wasteful.
 		AIResetAllPaths ();
 #if TRACE
-		con_printf (1, "Warning: Resetting all paths.  gameData.ai.pointSegs buffer nearly exhausted.\n");
+		console.printf (1, "Warning: Resetting all paths.  gameData.ai.pointSegs buffer nearly exhausted.\n");
 #endif
 		}
 	else {
 			//	We are really close to full, but didn't just garbage collect, so maybe this is recoverable.p.
 #if TRACE
-		con_printf (1, "Warning: Almost full garbage collection being performed: ");
+		console.printf (1, "Warning: Almost full garbage collection being performed: ");
 #endif
 		AIPathGarbageCollect ();
 #if TRACE
-		con_printf (1, "Free records = %i/%i\n", MAX_POINT_SEGS - (gameData.ai.freePointSegs - gameData.ai.pointSegs), MAX_POINT_SEGS);
+		console.printf (1, "Free records = %i/%i\n", MAX_POINT_SEGS - (gameData.ai.freePointSegs - gameData.ai.pointSegs), MAX_POINT_SEGS);
 #endif
 		}
 	}
@@ -1358,7 +1358,7 @@ if ((aiP->behavior == AIB_STATION) && (ROBOTINFO (objP->info.nId).companion != 1
 //Int3 ();
 		ailP->mode = AIM_IDLING;
 #if TRACE
-		con_printf (1, "Note: Bashing hide CSegment of robot %i to current CSegment because he's lost.\n", OBJ_IDX (objP));
+		console.printf (1, "Note: Bashing hide CSegment of robot %i to current CSegment because he's lost.\n", OBJ_IDX (objP));
 #endif
 		}
 
@@ -1605,7 +1605,7 @@ void player_follow_path (CObject *objP)
 		//	----- Debug stuff -----
 		if (count++ > 20) {
 #if TRACE
-			con_printf (1, "Problem following path for player.  Aborting.\n");
+			console.printf (1, "Problem following path for player.  Aborting.\n");
 #endif
 			break;
 		}
@@ -1622,7 +1622,7 @@ void player_follow_path (CObject *objP)
 		//	If went all the way around to original point, in same direction, then get out of here!
 		if (Player_cur_path_index == original_index) {
 #if TRACE
-			con_printf (CONDBG, "Forcing break because CPlayerData path wrapped, count = %i.\n", count);
+			console.printf (CON_DBG, "Forcing break because CPlayerData path wrapped, count = %i.\n", count);
 #endif
 			Player_following_pathFlag = 0;
 			forced_break = 1;
@@ -1652,7 +1652,7 @@ void create_player_path_to_segment (int nSegment)
 
 	if (CreatePathPoints (objP, objP->info.nSegment, nSegment, gameData.ai.freePointSegs, &Player_path_length, 100, 0, 0, -1) == -1) {
 #if TRACE
-		con_printf (CONDBG, "Unable to form path of length %i for myself\n", 100);
+		console.printf (CON_DBG, "Unable to form path of length %i for myself\n", 100);
 #endif
 		}
 

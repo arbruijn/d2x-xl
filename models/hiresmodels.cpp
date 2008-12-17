@@ -254,7 +254,7 @@ return i;
 
 // ----------------------------------------------------------------------------
 
-short LoadOOFModel (OOFModel::CModel *po, short i, int bCustom)
+short LoadOOFModel (OOF::CModel *po, short i, int bCustom)
 {
 	short	j = sizeofa (replacementModels);
 	char	szModel [2][FILENAME_LEN];
@@ -277,7 +277,7 @@ return i;
 
 // ----------------------------------------------------------------------------
 
-short LoadASEModel (ASEModel::CModel *pa, short i, int bCustom)
+short LoadASEModel (ASE::CModel *pa, short i, int bCustom)
 {
 	short	j = sizeofa (replacementModels);
 	char	szModel [2][FILENAME_LEN];

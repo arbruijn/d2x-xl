@@ -39,7 +39,7 @@ int SpitPowerup (CObject *spitterP, ubyte id, int seed)
 	short			nObject;
 	CObject		*objP;
 	CFixVector	newVelocity, newPos;
-	tTransformation	*posP = OBJPOS (spitterP);
+	tObjTransformation	*posP = OBJPOS (spitterP);
 
 #if 0
 if ((gameData.app.nGameMode & GM_NETWORK) &&

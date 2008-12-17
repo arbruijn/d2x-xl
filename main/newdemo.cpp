@@ -3294,7 +3294,7 @@ strcpy (filename2, filename);
 bRevertFormat = gameOpts->demo.bRevertFormat ? 1 : -1;
 if (!ndInFile.Open (filename2, gameFolders.szDemoDir, "rb", 0)) {
 #if TRACE			
-	con_printf (CONDBG, "Error reading '%s'\n", filename);
+	console.printf (CON_DBG, "Error reading '%s'\n", filename);
 #endif
 	return;
 	}

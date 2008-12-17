@@ -81,7 +81,7 @@ while (nSegment == -1) {
 if (nSegment >= 0)
 	return nSegment;
 #if TRACE
-con_printf (1, "Warning: Unable to find a connected CSegment for thief recreation.\n");
+console.printf (1, "Warning: Unable to find a connected CSegment for thief recreation.\n");
 #endif
 return (d_rand() * gameData.segs.nLastSegment) >> 15;
 }
@@ -224,7 +224,7 @@ void DoThiefFrame(CObject *objP)
 
 		default:
 #if TRACE
-			con_printf (CONDBG,"Thief mode (broken) = %d\n",ailp->mode);
+			console.printf (CON_DBG,"Thief mode (broken) = %d\n",ailp->mode);
 #endif
 			// -- Int3();	//	Oops, illegal mode for thief behavior.
 			ailp->mode = AIM_THIEF_ATTACK;
@@ -484,7 +484,7 @@ void DropStolenItems(CObject *objP)
 {
 	int	i;
 #if TRACE
-        con_printf (CONDBG,"Dropping thief items!\n");
+        console.printf (CON_DBG,"Dropping thief items!\n");
 #endif
 	// -- compress_stolen_items();
 

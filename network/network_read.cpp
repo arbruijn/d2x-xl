@@ -136,7 +136,7 @@ networkData.nStatus = sp->gameStatus;
 //Assert (gameStates.app.nFunctionMode != FMODE_GAME);
 // New code, 11/27
 #if 1
-con_printf (1, "netGame.checksum = %d, calculated checksum = %d.\n",
+console.printf (1, "netGame.checksum = %d, calculated checksum = %d.\n",
 			   netGame.nSegmentCheckSum, networkData.nSegmentCheckSum);
 #endif
 if (netGame.nSegmentCheckSum != networkData.nSegmentCheckSum) {
@@ -164,7 +164,7 @@ for (i = 0, playerP = tmpPlayersInfo->players; i < gameData.multiplayer.nPlayers
 		if (gameData.multiplayer.nLocalPlayer != -1) {
 			Int3 (); // Hey, we've found ourselves twice
 			ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_DUPLICATE_PLAYERS);
-			con_printf (CONDBG, TXT_FOUND_TWICE);
+			console.printf (CON_DBG, TXT_FOUND_TWICE);
 			networkData.nStatus = NETSTAT_MENU;
 			return;
 			}
@@ -297,7 +297,7 @@ if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL
 	}
 if ((sbyte)pd->nLevel != gameData.missions.nCurrentLevel) {
 #if 1
-	con_printf (CONDBG, "Got frame packet from CPlayerData %d wrong level %d!\n", pd->nPlayer, pd->nLevel);
+	console.printf (CON_DBG, "Got frame packet from CPlayerData %d wrong level %d!\n", pd->nPlayer, pd->nLevel);
 #endif
 	return;
 	}
@@ -313,13 +313,13 @@ if  (pd->nPackets != gameData.multiplayer.players [nTheirPlayer].nPacketsGot) {
 		networkData.nTotalMissedPackets += pd->nPackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot;
 #if 1
 	if (networkData.nMissedPackets > 0)
-		con_printf (0,
+		console.printf (0,
 			"Missed %d packets from CPlayerData #%d (%d total)\n",
 			pd->nPackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot,
 			nTheirPlayer,
 			networkData.nMissedPackets);
 	else
-		con_printf (CONDBG,
+		console.printf (CON_DBG,
 			"Got %d late packets from CPlayerData #%d (%d total)\n",
 			gameData.multiplayer.players [nTheirPlayer].nPacketsGot-pd->nPackets,
 			nTheirPlayer,
@@ -439,7 +439,7 @@ if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL
 	}
 if ((sbyte)new_pd.nLevel != gameData.missions.nCurrentLevel) {
 #if 1
-	con_printf (CONDBG, "Got frame packet from CPlayerData %d wrong level %d!\n", new_pd.nPlayer, new_pd.nLevel);
+	console.printf (CON_DBG, "Got frame packet from CPlayerData %d wrong level %d!\n", new_pd.nPlayer, new_pd.nLevel);
 #endif
 	return;
 	}
@@ -454,13 +454,13 @@ if  (new_pd.nPackets != gameData.multiplayer.players [nTheirPlayer].nPacketsGot)
 		networkData.nTotalMissedPackets += new_pd.nPackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot;
 #if 1
 	if (networkData.nMissedPackets > 0)
-		con_printf (CONDBG,
+		console.printf (CON_DBG,
 			"Missed %d packets from CPlayerData #%d (%d total)\n",
 			new_pd.nPackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot,
 			nTheirPlayer,
 			networkData.nMissedPackets);
 	else
-		con_printf (CONDBG,
+		console.printf (CON_DBG,
 			"Got %d late packets from CPlayerData #%d (%d total)\n",
 			gameData.multiplayer.players [nTheirPlayer].nPacketsGot-new_pd.nPackets,
 			nTheirPlayer,
@@ -664,7 +664,7 @@ else if (i < 0)
 		}
 	else if (networkData.nJoinState & 1) {
 #if 1
-		con_printf (CONDBG, "Got a type 3 object packet!\n");
+		console.printf (CON_DBG, "Got a type 3 object packet!\n");
 #endif
 		objectCount++;
 		nObject = nRemoteObj;

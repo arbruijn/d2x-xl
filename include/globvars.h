@@ -15,17 +15,6 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * 
  * Private (internal) header for 3d library
  * 
- * Old Log:
- *
- * Revision 1.2  1995/09/13  11:31:19  allender
- * added fxCanvW2 and vxCanvH2 for PPC implementation
- *
- * Revision 1.1  1995/05/05  08:51:02  allender
- * Initial revision
- *
- * Revision 1.1  1995/04/17  04:07:58  matt
- * Initial revision
- * 
  * 
  */
 
@@ -37,22 +26,6 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 extern int nCanvasWidth,nCanvasHeight;	//the actual width & height
 extern fix xCanvW2,xCanvH2;				//fixed-point width,height/2
 extern double fxCanvW2, fxCanvH2;
-
-typedef struct CViewInfo {
-	CFixVector		pos;
-	CAngleVector	playerHeadAngles;
-	int				bUsePlayerHeadAngles;
-	CFixMatrix		view [2];
-	CFixVector		scale;
-	CFloatVector	scalef;
-	CFixVector		windowScale;		//scaling for window aspect
-	CFloatVector	posf [2];
-	CFloatMatrix	viewf [3];
-	fix				zoom;
-	float				glZoom;
-} CViewInfo;
-
-extern CViewInfo	viewInfo;
 
 extern int nFreePoints;
 

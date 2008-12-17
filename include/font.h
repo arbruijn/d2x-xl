@@ -28,10 +28,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define FT_PROPORTIONAL 2
 #define FT_KERNED       4
 
-#define FONT			fontManager.Current ()
-#define FG_COLOR		CCanvas::Current ()->FontColor (0)
-#define BG_COLOR		CCanvas::Current ()->FontColor (1)
-
 #define BITS_TO_BYTES(x) (((x)+7)>>3)
 
 //-----------------------------------------------------------------------------

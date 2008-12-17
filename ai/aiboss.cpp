@@ -305,7 +305,7 @@ Assert ((nBossIndex >= 0) && (nBossIndex < NUM_D2_BOSSES));
 nSegment = pos ? FindSegByPos (*pos, objP->info.nSegment, 1, 0) : objP->info.nSegment;
 if (nSegment == -1) {
 #if TRACE
-	con_printf (CONDBG, "Tried to spew a bot outside the mine! Aborting!\n");
+	console.printf (CON_DBG, "Tried to spew a bot outside the mine! Aborting!\n");
 #endif
 	return -1;
 	}
@@ -498,7 +498,7 @@ nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
 #if DBG
 if (objP->info.xShields != gameData.boss [i].xPrevShields) {
 #if TRACE
-	con_printf (CONDBG, "Boss shields = %7.3f, CObject %i\n", X2F (objP->info.xShields), OBJ_IDX (objP));
+	console.printf (CON_DBG, "Boss shields = %7.3f, CObject %i\n", X2F (objP->info.xShields), OBJ_IDX (objP));
 #endif
 	gameData.boss [i].xPrevShields = objP->info.xShields;
 	}

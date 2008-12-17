@@ -121,7 +121,7 @@ int JoyInit()
 
 	if (SDL_Init(SDL_INIT_JOYSTICK) < 0) {
 #if TRACE
-		con_printf(CON_VERBOSE, "sdl-joystick: initialisation failed: %s.",SDL_GetError());
+		console.printf(CON_VERBOSE, "sdl-joystick: initialisation failed: %s.",SDL_GetError());
 #endif
 		return 0;
 	}
@@ -129,11 +129,11 @@ int JoyInit()
 	n = SDL_NumJoysticks();
 
 #if TRACE
-	con_printf(CON_VERBOSE, "sdl-joystick: found %d joysticks\n", n);
+	console.printf(CON_VERBOSE, "sdl-joystick: found %d joysticks\n", n);
 #endif
 	for (i = 0; (i < n) && (gameStates.input.nJoysticks < MAX_JOYSTICKS); i++) {
 #if TRACE
-		con_printf(CON_VERBOSE, "sdl-joystick %d: %s\n", i, SDL_JoystickName (i));
+		console.printf(CON_VERBOSE, "sdl-joystick %d: %s\n", i, SDL_JoystickName (i));
 #endif
 		joyP->handle = SDL_JoystickOpen (i);
 		if (joyP->handle) {
@@ -152,9 +152,9 @@ int JoyInit()
 				joyP->nHats = MAX_HATS_PER_JOYSTICK;
 				}
 #if TRACE
-			con_printf(CON_VERBOSE, "sdl-joystick: %d axes\n", joyP->nAxes);
-			con_printf(CON_VERBOSE, "sdl-joystick: %d buttons\n", joyP->nButtons);
-			con_printf(CON_VERBOSE, "sdl-joystick: %d hats\n", joyP->nHats);
+			console.printf(CON_VERBOSE, "sdl-joystick: %d axes\n", joyP->nAxes);
+			console.printf(CON_VERBOSE, "sdl-joystick: %d buttons\n", joyP->nButtons);
+			console.printf(CON_VERBOSE, "sdl-joystick: %d hats\n", joyP->nHats);
 #endif
 			memset (&joyInfo, 0, sizeof (joyInfo));
 			for (j = 0; j < joyP->nAxes; j++)
@@ -174,12 +174,12 @@ int JoyInit()
 			}
 		else {
 #if TRACE
-			con_printf(CON_VERBOSE, "sdl-joystick: initialization failed!\n");
+			console.printf(CON_VERBOSE, "sdl-joystick: initialization failed!\n");
 #endif		
 		}
 #if TRACE
-		con_printf(CON_VERBOSE, "sdl-joystick: %d axes (total)\n", joyInfo.nAxes);
-		con_printf(CON_VERBOSE, "sdl-joystick: %d buttons (total)\n", joyInfo.nButtons);
+		console.printf(CON_VERBOSE, "sdl-joystick: %d axes (total)\n", joyInfo.nAxes);
+		console.printf(CON_VERBOSE, "sdl-joystick: %d buttons (total)\n", joyInfo.nButtons);
 #endif
 	}
 return bJoyPresent;

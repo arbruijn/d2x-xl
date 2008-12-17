@@ -758,7 +758,7 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 				}
 #endif
 #if TRACE
-				//con_printf (CONDBG, " --- You have been DE-INVULNERABLEIZED! ---\n");
+				//console.printf (CON_DBG, " --- You have been DE-INVULNERABLEIZED! ---\n");
 #endif
 			}
 		bFakingInvul=0;
@@ -1029,11 +1029,11 @@ SetScreenMode (SCREEN_GAME);
 paletteManager.ResetEffect ();
 SetWarnFunc (ShowInGameWarning);
 #if TRACE
-//con_printf (CONDBG, "   InitCockpit d:\temp\dm_test.\n");
+//console.printf (CON_DBG, "   InitCockpit d:\temp\dm_test.\n");
 #endif
 InitCockpit ();
 #if TRACE
-//con_printf (CONDBG, "   InitGauges d:\temp\dm_test.\n");
+//console.printf (CON_DBG, "   InitGauges d:\temp\dm_test.\n");
 #endif
 InitGauges ();
 //DigiInitSounds ();
@@ -1048,7 +1048,7 @@ gameStates.input.keys.bRepeat = 1;                // Do allow repeat in game
 #endif
 gameData.objs.viewerP = gameData.objs.consoleP;
 #if TRACE
-//con_printf (CONDBG, "   FlyInit d:\temp\dm_test.\n");
+//console.printf (CON_DBG, "   FlyInit d:\temp\dm_test.\n");
 #endif
 FlyInit (gameData.objs.consoleP);
 gameStates.app.bGameSuspended = 0;
@@ -1061,7 +1061,7 @@ if (gameData.missions.nCurrentLevel == 0) {			//not a real level
 }
 #endif
 #if TRACE
-//con_printf (CONDBG, "   FixObjectSegs d:\temp\dm_test.\n");
+//console.printf (CON_DBG, "   FixObjectSegs d:\temp\dm_test.\n");
 #endif
 GameFlushInputs ();
 }
@@ -1108,7 +1108,7 @@ for (;;) {
 	gameStates.app.bConfigMenu = 0;
 	if (gameData.objs.consoleP != OBJECTS + LOCALPLAYER.nObject) {
 #if TRACE
-	    //con_printf (CONDBG,"gameData.multiplayer.nLocalPlayer=%d nObject=%d",gameData.multiplayer.nLocalPlayer,LOCALPLAYER.nObject);
+	    //console.printf (CON_DBG,"gameData.multiplayer.nLocalPlayer=%d nObject=%d",gameData.multiplayer.nLocalPlayer,LOCALPLAYER.nObject);
 #endif
 	    //Assert (gameData.objs.consoleP == &OBJECTS[LOCALPLAYER.nObject]);
 		}
@@ -1378,7 +1378,7 @@ void flush_movie_buffer ()
 
 StopTime ();
 #if TRACE
-	//con_printf (CONDBG,"Flushing movie bufferd:\temp\dm_test.");
+	//console.printf (CON_DBG,"Flushing movie bufferd:\temp\dm_test.");
 #endif
 bmMovie.SetBuffer (movieFrameBuffer);
 for (f = 0;f < nMovieFrames; f++) {
@@ -1976,7 +1976,7 @@ if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringC
 void PowerupGrabCheat (CObject *playerP, int nObject)
 {
 	CObject		*powerupP = OBJECTS + nObject;
-	tTransformation	*posP = OBJPOS (playerP);
+	tObjTransformation	*posP = OBJPOS (playerP);
 	CFixVector	vCollision;
 
 Assert (powerupP->info.nType == OBJ_POWERUP);
@@ -2026,7 +2026,7 @@ if (nLastLevelPathCreated == gameData.missions.nCurrentLevel)
 nLastLevelPathCreated = gameData.missions.nCurrentLevel;
 if (CreatePathPoints (objP, objP->info.nSegment, nSegment, gameData.ai.freePointSegs, &player_path_length, 100, 0, 0, -1) == -1) {
 #if TRACE
-	//con_printf (CONDBG, "Unable to form path of length %i for myself\n", 100);
+	//console.printf (CON_DBG, "Unable to form path of length %i for myself\n", 100);
 #endif
 	return 0;
 	}
@@ -2034,7 +2034,7 @@ player_hide_index = (int) (gameData.ai.freePointSegs - gameData.ai.pointSegs);
 gameData.ai.freePointSegs += player_path_length;
 if ((int) (gameData.ai.freePointSegs - gameData.ai.pointSegs) + MAX_PATH_LENGTH*2 > MAX_POINT_SEGS) {
 #if TRACE
-	//con_printf (1, "Can't create path.  Not enough tPointSegs.\n");
+	//console.printf (1, "Can't create path.  Not enough tPointSegs.\n");
 #endif
 	AIResetAllPaths ();
 	return 0;
@@ -2046,7 +2046,7 @@ for (i = 1; i < player_path_length; i++) {
 
 	nSegment = gameData.ai.pointSegs [player_hide_index + i].nSegment;
 #if TRACE
-	//con_printf (CONDBG, "%3i ", nSegment);
+	//console.printf (CON_DBG, "%3i ", nSegment);
 #endif
 	vSegCenter = gameData.ai.pointSegs[player_hide_index+i].point;
 	nObject = CreatePowerup (POW_ENERGY, -1, nSegment, vSegCenter, 1);
@@ -2093,22 +2093,22 @@ void show_freeObjects (void)
 		int		count = 0;
 
 #if TRACE
-		//con_printf (CONDBG, "gameData.objs.nLastObject [0] = %3i, MAX_OBJECTS = %3i, now used = ", gameData.objs.nLastObject [0], MAX_OBJECTS);
+		//console.printf (CON_DBG, "gameData.objs.nLastObject [0] = %3i, MAX_OBJECTS = %3i, now used = ", gameData.objs.nLastObject [0], MAX_OBJECTS);
 #endif
 		FORALL_OBJS (objP, i)
 			if (objP->info.nType != OBJ_NONE)
 				count++;
 #if TRACE
-		//con_printf (CONDBG, "%3i", count);
+		//console.printf (CON_DBG, "%3i", count);
 #endif
 		if (count > Max_objCount_mike) {
 			Max_objCount_mike = count;
 #if TRACE
-			//con_printf (CONDBG, " ***");
+			//console.printf (CON_DBG, " ***");
 #endif
 		}
 #if TRACE
-		//con_printf (CONDBG, "\n");
+		//console.printf (CON_DBG, "\n");
 #endif
 	}
 

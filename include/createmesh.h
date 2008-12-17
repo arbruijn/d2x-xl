@@ -3,7 +3,7 @@
 
 #include "carray.h"
 
-namespace mesh {
+namespace Mesh {
 
 	typedef struct tEdge {
 		int			nNext;
@@ -112,6 +112,6 @@ class CQuadMeshBuilder {
 
 }
 
-extern mesh::CQuadMeshBuilder meshBuilder;
+extern Mesh::CQuadMeshBuilder meshBuilder;
 
 #endif //_CREATEMESH_H

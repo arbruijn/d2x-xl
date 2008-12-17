@@ -487,20 +487,21 @@ class CPolyObjInfo {
 		inline void SetAltTextures (int nAltTextures) { m_info.nAltTextures = nAltTextures; }
 };
 
-typedef struct tTransformation {
+typedef struct tObjTransformation {
 	CFixVector	vPos;				// absolute x,y,z coordinate of center of object
 	CFixMatrix	mOrient;			// orientation of object in world
-	} tTransformation;
+	} tObjTransformation;
 
-class CTransformation {
-private:
-	tTransformation	m_t;
-public:
-	inline CFixVector* GetPos (void) { return &m_t.vPos; }
-	inline CFixMatrix* GetOrient (void) { return &m_t.mOrient; }
-	inline void SetPos (const CFixVector* vPos) { m_t.vPos = *vPos; }
-	inline void SetOrient (const CFixMatrix* mOrient) { m_t.mOrient = *mOrient ; }
-};
+class CObjTransformation {
+	private:
+		tObjTransformation	m_t;
+
+	public:
+		inline CFixVector* GetPos (void) { return &m_t.vPos; }
+		inline CFixMatrix* GetOrient (void) { return &m_t.mOrient; }
+		inline void SetPos (const CFixVector* vPos) { m_t.vPos = *vPos; }
+		inline void SetOrient (const CFixMatrix* mOrient) { m_t.mOrient = *mOrient ; }
+	};
 
 typedef struct tObjContainerInfo {
 	sbyte			nType;
@@ -536,7 +537,7 @@ typedef struct tObjectInfo {
 	ubyte   				nFlags;        // misc flags
 	short					nSegment;
 	short   				nAttachedObj;  // number of attached fireball CObject
-	tTransformation	position;
+	tObjTransformation	position;
 	fix     				xSize;         // 3d size of CObject - for collision detection
 	fix     				xShields;      // Starts at maximum, when <0, CObject dies..
 	CFixVector 			vLastPos;		// where CObject was last frame
@@ -573,7 +574,7 @@ typedef struct tBaseObject {
 #endif
 } tBaseObject;
 
-class CObjectInfo : public CTransformation, public CObjContainerInfo, public tBaseObject {
+class CObjectInfo : public CObjTransformation, public CObjContainerInfo, public tBaseObject {
 	public:
 		CObjectInfo () { memset (&info, 0, sizeof (info)); }
 #if 0
@@ -716,6 +717,7 @@ class CObject : public CObjectInfo {
 
 		inline void InitLinks (void) { memset (m_links, 0, sizeof (m_links)); }
 
+		void Read (CFile& cf);
 		//inline short Index (void) { return gameData.objs.objects.Index (this); }
 };
 
@@ -775,12 +777,12 @@ class CParticleObject : public CObject, public CSmokeInfo {
 
 
 typedef struct tObjPosition {
-	tTransformation	position;
-	short					nSegment;     // CSegment number containing CObject
-	short					nSegType;		// nType of CSegment
+	tObjTransformation	position;
+	short						nSegment;     // CSegment number containing CObject
+	short						nSegType;		// nType of CSegment
 } tObjPosition;
 
-class CObjPosition : public CTransformation {
+class CObjPosition : public CObjTransformation {
 	private:
 		short		m_nSegment;
 		short		m_nSegType;

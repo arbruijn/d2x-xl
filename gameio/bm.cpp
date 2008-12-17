@@ -352,7 +352,7 @@ while (CFGetS (szInput, LINEBUF_SIZE, &infoFile)) {
 		for (t=szInput;*t && *t!='\n';t++)
 			if (!(*t==' ' || *t=='\t')) {
 #if TRACE
-				con_printf (1,"Suspicious: line %d of BITMAPS.TBL starts with whitespace\n",linenum);
+				console.printf (1,"Suspicious: line %d of BITMAPS.TBL starts with whitespace\n",linenum);
 #endif
 				break;
 			}
@@ -1399,7 +1399,7 @@ bmi.index = 0;
 iff_error = iff.ReadBitmap (filename, bmP, BM_LINEAR);
 if (iff_error != IFF_NO_ERROR)		{
 #if TRACE
-	con_printf (CONDBG, 
+	console.printf (CON_DBG, 
 		"Error loading exit model bitmap <%s> - IFF error: %s\n", 
 		filename, iff.ErrorMsg (iff_error));
 #endif		
@@ -1466,7 +1466,7 @@ int LoadExitModels (void)
 		if (!BMLoadExtraBitmap (szExitBm [i]))
 		{
 #if TRACE
-		con_printf (CON_NORMAL, "Can't load exit models!\n");
+		console.printf (CON_NORMAL, "Can't load exit models!\n");
 #endif
 		return 0;
 		}
@@ -1513,7 +1513,7 @@ int LoadExitModels (void)
 		case D1_MAC_PIGSIZE:
 		case D1_MAC_SHARE_PIGSIZE:
 #if TRACE
-			con_printf (CON_NORMAL, "Can't load exit models!\n");
+			console.printf (CON_NORMAL, "Can't load exit models!\n");
 #endif
 			return 0;
 		}
@@ -1534,7 +1534,7 @@ int LoadExitModels (void)
 		cf.Close ();
 	} else {
 #if TRACE
-		con_printf (CON_NORMAL, "Can't load exit models!\n");
+		console.printf (CON_NORMAL, "Can't load exit models!\n");
 #endif
 		return 0;
 	}

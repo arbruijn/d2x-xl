@@ -62,7 +62,7 @@ if (((*pos)[X] != objP->info.position.vPos [X]) ||
 		fq.startSeg = objP->info.nSegment;
 		*pos = objP->info.position.vPos;
 #if TRACE
-		con_printf (1, "Object %i, gun is outside mine, moving towards center.\n", OBJ_IDX (objP));
+		console.printf (1, "Object %i, gun is outside mine, moving towards center.\n", OBJ_IDX (objP));
 #endif
 		MoveTowardsSegmentCenter (objP);
 		}

@@ -526,7 +526,7 @@ if ((IsMultiGame && !IsCoopGame))
 	sprintf (szScore + 18, "   %s: %5d", TXT_KILLS, LOCALPLAYER.netKillsTotal);
 else
 	sprintf (szScore + 18, "   %s: %5d", TXT_SCORE, LOCALPLAYER.score);
-FONT->StringSize (szScore, w, h, aw);
+fontManager.Current ()->StringSize (szScore, w, h, aw);
 fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 GrPrintF (NULL, CCanvas::Current ()->Width ()-w-HUD_LHX (2), 3, szScore);
 }
@@ -551,7 +551,7 @@ if ((gameData.app.nGameMode & GM_NETWORK) && netGame.xPlayTimeAllowed) {
 	i = X2I (timevar-gameStates.app.xThisLevelTime);
 	i++;
 	sprintf (szScore, "T - %5d", i);
-	FONT->StringSize (szScore, w, h, aw);
+	fontManager.Current ()->StringSize (szScore, w, h, aw);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	if ((i >= 0) && !gameData.reactor.bDestroyed)
 		nIdTimer = GrPrintF (&nIdTimer, CCanvas::Current ()->Width ()-w-HUD_LHX (10), HUD_LHX (11), szScore);
@@ -588,7 +588,7 @@ if (scoreTime > 0) {
 		sprintf (szScore, "%s", TXT_CHEATER);
 	else
 		sprintf (szScore, "%5d", scoreDisplay [0]);
-	FONT->StringSize (szScore, w, h, aw);
+	fontManager.Current ()->StringSize (szScore, w, h, aw);
 	fontManager.SetColorRGBi (RGBA_PAL2 (0, color, 0), 1, 0, 0);
 	nIdTotalScore = GrPrintF (&nIdTotalScore, CCanvas::Current ()->Width ()-w-HUD_LHX (2+10), nHUDLineSpacing+4, szScore);
 	}
@@ -760,7 +760,7 @@ if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
 
 			if (t < 0)
 				t = 0;
-			FONT->StringSize (szInfo, w, h, aw);
+			fontManager.Current ()->StringSize (szInfo, w, h, aw);
 			x += w;
 			fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 			sprintf (szInfo, " %d.%d", t / 1000, (t % 1000) / 100);
@@ -1061,7 +1061,7 @@ switch (gameData.weapons.nPrimary) {
 		break;
 	}
 
-FONT->StringSize (szWeapon, w, h, aw);
+fontManager.Current ()->StringSize (szWeapon, w, h, aw);
 nIdWeapons [0] = GrPrintF (nIdWeapons + 0, CCanvas::Current ()->Width () - 5 - w, y-2*nHUDLineSpacing, szWeapon);
 
 if (gameData.weapons.nPrimary == VULCAN_INDEX) {
@@ -1082,7 +1082,7 @@ if (gameData.weapons.nPrimary == OMEGA_INDEX) {
 
 pszWeapon = SECONDARY_WEAPON_NAMES_VERY_SHORT (gameData.weapons.nSecondary);
 sprintf (szWeapon, "%s %d", pszWeapon, LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
-FONT->StringSize (szWeapon, w, h, aw);
+fontManager.Current ()->StringSize (szWeapon, w, h, aw);
 nIdWeapons [1] = GrPrintF (nIdWeapons + 1, CCanvas::Current ()->Width ()-5-w, y-nHUDLineSpacing, szWeapon);
 
 if (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != oldAmmoCount [1][gameStates.render.vr.nCurrentPage]) {
@@ -2312,7 +2312,7 @@ for (i = 0; i < n_players; i++) {
 #else
 			strcpy (name, netGame.szTeamName [i]);
 #endif
-			FONT->StringSize (teamInd, indent, sh, aw);
+			fontManager.Current ()->StringSize (teamInd, indent, sh, aw);
 			}
 		}
 	else
@@ -2332,7 +2332,7 @@ for (i = 0; i < n_players; i++) {
 	x1 += HUD_LHX (100);
 #endif
 	for (l = (int) strlen (name); l;) {
-		FONT->StringSize (name, sw, sh, aw);
+		fontManager.Current ()->StringSize (name, sw, sh, aw);
 		if (sw <= x1 - x0 - HUD_LHX (2))
 			break;
 		name [--l] = '\0';
@@ -2487,7 +2487,7 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 						}
 
 					sprintf (s, "%s", gameStates.multi.bPlayerIsTyping [p] ? TXT_TYPING : gameData.multiplayer.players [p].callsign);
-					FONT->StringSize (s, w, h, aw);
+					fontManager.Current ()->StringSize (s, w, h, aw);
 					fontManager.SetColorRGBi (RGBA_PAL2 (colorP->r, colorP->g, colorP->b), 1, 0, 0);
 					x1 = x - w / 2;
 					y1 = y - h / 2;
@@ -2502,7 +2502,7 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 
 				if (bHasFlag && (gameStates.app.bNostalgia || !(EGI_FLAG (bTargetIndicators, 0, 1, 0) || EGI_FLAG (bTowFlags, 0, 1, 0)))) {// Draw box on HUD
 					fix dy = -FixMulDiv (OBJECTS [nObject].info.xSize, I2X (CCanvas::Current ()->Height ())/2, vPlayerPos.p3_vec[Z]);
-//					fix dy = -FixMulDiv (FixMul (OBJECTS [nObject].size, viewInfo.scale.y), I2X (CCanvas::Current ()->Height ())/2, vPlayerPos.p3_z);
+//					fix dy = -FixMulDiv (FixMul (OBJECTS [nObject].size, transformation.m_info.scale.y), I2X (CCanvas::Current ()->Height ())/2, vPlayerPos.p3_z);
 					fix dx = FixMul (dy, screen.Aspect ());
 					fix w = dx/4;
 					fix h = dy/4;
@@ -2595,7 +2595,7 @@ if (!gameStates.render.bRearView && (gameStates.render.cockpit.nMode != CM_REAR_
 	if (!(IsMultiGame && gameData.multigame.kills.bShowList) && !bSavingMovieFrames)
 		ShowTime ();
 #endif
-	if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead && !viewInfo.bUsePlayerHeadAngles)
+	if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead && !transformation.m_info.bUsePlayerHeadAngles)
 		ShowReticle (0);
 
 	ShowHUDNames ();
@@ -2833,7 +2833,7 @@ else {
 	}
 
 CCanvas::SetCurrent (&windowCanv);
-G3PushMatrix ();
+transformation.Push ();
 nZoomSave = gameStates.render.nZoomFactor;
 gameStates.render.nZoomFactor = F1_0 * (gameOpts->render.cockpit.nWindowZoom + 1);					//the CPlayerData's zoom factor
 if ((nUser == WBU_RADAR_TOPDOWN) || (nUser == WBU_RADAR_HEADSUP)) {
@@ -2846,7 +2846,7 @@ if ((nUser == WBU_RADAR_TOPDOWN) || (nUser == WBU_RADAR_HEADSUP)) {
 else
 	RenderFrame (0, nWindow+1);
 gameStates.render.nZoomFactor = nZoomSave;
-G3PopMatrix ();
+transformation.Pop ();
 //	HACK!If guided missile, wake up robots as necessary.
 if (viewerP->info.nType == OBJ_WEAPON) {
 	// -- Used to require to be GUIDED -- if (viewerP->id == GUIDEDMSL_ID)

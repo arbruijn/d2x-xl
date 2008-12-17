@@ -1488,7 +1488,7 @@ void FindHitPointUV (fix *u, fix *v, fix *l, CFixVector *pnt, CSegment *segP, in
 //when do I return 0 & 1 for non-transparent walls?
 if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment)) {
 #if TRACE
-	con_printf (CONDBG, "Bad nSegment (%d) in FindHitPointUV()\n", nSegment);
+	console.printf (CON_DBG, "Bad nSegment (%d) in FindHitPointUV()\n", nSegment);
 #endif
 	*u = *v = 0;
 	return;

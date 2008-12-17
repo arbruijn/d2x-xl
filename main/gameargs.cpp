@@ -559,11 +559,11 @@ if ((t = FindArg ("-auto_mission"))) {
 		strcat (szAutoMission, ".rl2");
 	}
 if (FindArg ("-debug"))
-	con_threshold.value = 2.0;
+	CCvar::Register ("con_threshold", "2.0");
 else if (FindArg ("-verbose"))
-	con_threshold.value = 1.0;
+	CCvar::Register ("con_threshold", "1.0");
 else
-	con_threshold.value = -1.0;
+	CCvar::Register ("con_threshold", "-1.0");
 if ((t = FindArg ("-autodemo"))) {
 	gameData.demo.bAuto = 1;
 	strncpy (gameData.demo.fnAuto, *pszArgList [t+1] ? pszArgList [t+1] : "descent.dem", sizeof (gameData.demo.fnAuto));

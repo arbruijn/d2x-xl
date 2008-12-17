@@ -93,7 +93,7 @@ if (oldScore [gameStates.render.vr.nCurrentPage] == bRedrawScore) {
 	}
 fontManager.SetCurrent (GAME_FONT);
 sprintf (szScore, "%5d", (IsMultiGame && !IsCoopGame) ? LOCALPLAYER.netKillsTotal : LOCALPLAYER.score);
-FONT->StringSize (szScore, w, h, aw);
+fontManager.Current ()->StringSize (szScore, w, h, aw);
 x = SB_SCORE_RIGHT-w-HUD_LHX (2);
 y = SB_SCORE_Y;
 //erase old score
@@ -136,7 +136,7 @@ if (scoreTime > 0) {
 		sprintf (szScore, "%s", TXT_CHEATER);
 	else
 		sprintf (szScore, "%5d", scoreDisplay [gameStates.render.vr.nCurrentPage]);
-	FONT->StringSize (szScore, w, h, aw);
+	fontManager.Current ()->StringSize (szScore, w, h, aw);
 	x = SB_SCORE_ADDED_RIGHT-w-HUD_LHX (2);
 	fontManager.SetColorRGBi (RGBA_PAL2 (0, color, 0), 1, 0, 0);
 	nIdTotalScore = GrPrintF (&nIdTotalScore, x, SB_SCORE_ADDED_Y, szScore);
@@ -202,7 +202,7 @@ if (IsMultiGame) {
 	int x;
 
 		sprintf (szKilled, "%5d", LOCALPLAYER.netKilledTotal);
-		FONT->StringSize (szKilled, w, h, aw);
+		fontManager.Current ()->StringSize (szKilled, w, h, aw);
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
 		HUDRect (lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCurrentPage], 
 					y + 1, SB_SCORE_RIGHT, y + GAME_FONT->Height ());
@@ -261,7 +261,7 @@ void SBDrawEnergyBar (int nEnergy)
 CCanvas::SetCurrent (GetCurrentGameScreen ());
 //draw numbers
 sprintf (energy_str, "%d", nEnergy);
-FONT->StringSize (energy_str, w, h, aw);
+fontManager.Current ()->StringSize (energy_str, w, h, aw);
 fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
 nIdEnergyBar = HUDPrintF (&nIdEnergyBar, 
 								  SB_ENERGY_GAUGE_X + ((SB_ENERGY_GAUGE_W - w)/2), 
@@ -306,7 +306,7 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)
 else 
 	fontManager.SetColorRGBi (RGBA_PAL2 (12, 12, 12), 1, 0, 0);
 
-FONT->StringSize (ab_str, w, h, aw);
+fontManager.Current ()->StringSize (ab_str, w, h, aw);
 nIdAfterBurner = HUDPrintF (&nIdAfterBurner, 
 									 SB_AFTERBURNER_GAUGE_X + ((SB_AFTERBURNER_GAUGE_W - w)/2), 
 									 SB_AFTERBURNER_GAUGE_Y+SB_AFTERBURNER_GAUGE_H-GAME_FONT->Height () - (GAME_FONT->Height () / 4), 

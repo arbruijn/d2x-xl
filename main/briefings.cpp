@@ -320,14 +320,14 @@ extern int NMCheckButtonPress ();
 // added by Jan Bobrowski for variable-size menu screen
 static int RescaleX (int x)
 {
-	return x * GWIDTH / 320;
+	return x * CCanvas::Current ()->Width () / 320;
 }
 
 //-----------------------------------------------------------------------------
 
 static inline int RescaleY (int y)
 {
-return y * GHEIGHT / 200;
+return y * CCanvas::Current ()->Height () / 200;
 }
 
 //-----------------------------------------------------------------------------
@@ -412,7 +412,7 @@ filename = new_filename;
 title_bm.SetBuffer (NULL);
 if ((pcxResult = LoadBriefImg (filename, &title_bm, 0)) != PCX_ERROR_NONE) {
 #if TRACE
-	con_printf (CONDBG, "File '%s', PCX load error: %s (%i)\n  (No big deal, just no title screen.)\n", filename, pcx_errormsg (pcxResult), pcxResult);
+	console.printf (CON_DBG, "File '%s', PCX load error: %s (%i)\n  (No big deal, just no title screen.)\n", filename, pcx_errormsg (pcxResult), pcxResult);
 #endif
 	Error ("Error loading briefing screen <%s>, PCX load error: %s (%i)\n", filename, pcx_errormsg (pcxResult), pcxResult);
 }
@@ -595,25 +595,26 @@ bitmapCanv->Destroy ();
 
 void ShowSpinningRobotFrame (int nRobot)
 {
-	CCanvas	*curCanvSave;
-
 if (nRobot != -1) {
 	vRobotAngles [HA] += 150;
 
-	curCanvSave = CCanvas::Current ();
+	CCanvas::Push ();
 	CCanvas::SetCurrent (robotCanvP);
 	Assert (ROBOTINFO (nRobot).nModel != -1);
 	if (bInitRobot) {
 		paletteManager.Load ("", "", 0, 0, 1);
 		OglCachePolyModelTextures (ROBOTINFO (nRobot).nModel);
-		paletteManager.LoadEffect  ();
+		paletteManager.LoadEffect ();
 		bInitRobot = 0;
 		}
 	gameStates.render.bFullBright	= 1;
+
 	CCanvas::Current ()->Clear (0);
+	gameStates.ogl.bEnableScissor = 1;
 	DrawModelPicture (ROBOTINFO (nRobot).nModel, &vRobotAngles);
+	gameStates.ogl.bEnableScissor = 0;
 	gameStates.render.bFullBright = 0;
-	CCanvas::SetCurrent (curCanvSave);
+	CCanvas::Pop ();
 	}
 }
 
@@ -639,6 +640,8 @@ int x = RescaleX (138);
 int y = RescaleY (55);
 int w = RescaleX (163);
 int h = RescaleY (136);
+if (robotCanvP)
+	delete robotCanvP;
 robotCanvP = CCanvas::Current ()->CreatePane (x, y, w, h);
 bInitRobot = 1;
 	// 138, 55, 166, 138
@@ -663,7 +666,7 @@ if ((nRobot < 0) && !*szBitmapName)
 else if (!tImage)
 	tImage = SDL_GetTicks ();
 
-FONT->StringSize (message, w, h, aw);
+fontManager.Current ()->StringSize (message, w, h, aw);
 Assert ((nCurrentColor >= 0) && (nCurrentColor < MAX_BRIEFING_COLORS));
 
 //	Draw cursor if there is some delay and caller says to draw cursor
@@ -743,7 +746,7 @@ int LoadNewBriefingScreen (char *szBriefScreen, int bRedraw)
 	int pcxResult;
 
 #if TRACE
-con_printf (CONDBG, "Loading new briefing <%s>\n", szBriefScreen);
+console.printf (CON_DBG, "Loading new briefing <%s>\n", szBriefScreen);
 #endif
 strcpy (curBriefScreenName, szBriefScreen);
 if (paletteManager.FadeOut ())
@@ -1559,7 +1562,7 @@ int ShowBriefingScreen (int nScreen, int bAllowKeys, short nLevel)
 {
 brief_palette_254_bash = 0;
 if (gameOpts->gameplay.bSkipBriefingScreens) {
-	con_printf (CONDBG, "Skipping briefing screen [%s]\n", &briefingScreens [nScreen % MAX_BRIEFING_SCREENS].bs_name);
+	console.printf (CON_DBG, "Skipping briefing screen [%s]\n", &briefingScreens [nScreen % MAX_BRIEFING_SCREENS].bs_name);
 	return 0;
 	}
 if (gameStates.app.bD1Mission) {
@@ -1572,7 +1575,7 @@ if (gameStates.app.bD1Mission) {
 #else
 	if ((pcxResult = PcxReadFullScrImage (briefingScreens [nScreen % MAX_BRIEFING_SCREENS].bs_name, 1)) != PCX_ERROR_NONE) {
 #endif
-		con_printf (CONDBG, "File '%s', PCX load error: %s (%i)\n  (It's a briefing screen.  Does this cause you pain?)\n", 
+		console.printf (CON_DBG, "File '%s', PCX load error: %s (%i)\n  (It's a briefing screen.  Does this cause you pain?)\n", 
 						briefingScreens [nScreen % MAX_BRIEFING_SCREENS].bs_name, pcx_errormsg (pcxResult), pcxResult);
 		Int3 ();
 		return 0;
@@ -1607,12 +1610,12 @@ RebuildRenderContext (1);
 if (gameStates.app.bNostalgia)
 	OglSetDrawBuffer (gameStates.ogl.nDrawBuffer = GL_FRONT, 0);
 if (gameOpts->gameplay.bSkipBriefingScreens) {
-	con_printf (CONDBG, "Skipping all briefing screens.\n");
+	console.printf (CON_DBG, "Skipping all briefing screens.\n");
 	gameStates.render.bBriefing = 0;
 	return;
 	}
 strcpy (fnBriefing, *gameData.missions.szBriefingFilename ? gameData.missions.szBriefingFilename : filename);
-con_printf (CONDBG, "Trying briefing screen <%s>\n", fnBriefing);
+console.printf (CON_DBG, "Trying briefing screen <%s>\n", fnBriefing);
 PrintLog ("Looking for briefing screen '%s'\n", fnBriefing);
 if (!*fnBriefing) {
 	gameStates.render.bBriefing = 0;
@@ -1646,7 +1649,7 @@ SongsPlaySong (SONG_BRIEFING, 1);
 SetScreenMode (SCREEN_MENU);
 CCanvas::SetCurrent (NULL);
 gameStates.render.nShadowPass = 0;
-con_printf (CONDBG, "Playing briefing screen <%s>, level %d\n", fnBriefing, nLevel);
+console.printf (CON_DBG, "Playing briefing screen <%s>, level %d\n", fnBriefing, nLevel);
 KeyFlush ();
 if (gameStates.app.bD1Mission) {
 	paletteManager.SetGame (paletteManager.Load (NULL, NULL, 1, 1, 1));

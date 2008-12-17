@@ -146,7 +146,7 @@ while (nTail != nHead) {
 		}
 	}
 #if TRACE
-con_printf (CONDBG, "...failed at depth %i, returning -1\n", nCurDepth);
+console.printf (CON_DBG, "...failed at depth %i, returning -1\n", nCurDepth);
 #endif
 while ((nTail > 0) && (bVisited [segQueue [nTail]] == nCurDepth))
 	nTail--;
@@ -175,7 +175,7 @@ int ChooseDropSegment (CObject *objP, int *pbFixedPos, int nDropState)
 						 (EGI_FLAG (bEnhancedCTF, 0, 0, 0) &&
 						 (objP->info.nType == OBJ_POWERUP) && ((objP->info.nId == POW_BLUEFLAG) || (objP->info.nId == POW_REDFLAG))));
 #if TRACE
-con_printf (CONDBG, "ChooseDropSegment:");
+console.printf (CON_DBG, "ChooseDropSegment:");
 #endif
 if (bUseInitSgm) {
 	CObject *initObjP = FindInitObject (objP);
@@ -212,7 +212,7 @@ while (nSegment == -1) {
 	if (nDropDepth < BASE_NET_DROP_DEPTH / 2)
 		return -1;
 #if TRACE
-	con_printf (CONDBG, " %d", nSegment);
+	console.printf (CON_DBG, " %d", nSegment);
 #endif
 	if (nSegment == -1) {
 		nDepth--;
@@ -247,11 +247,11 @@ while (nSegment == -1) {
 	}
 #if TRACE
 if (nSegment != -1)
-	con_printf (CONDBG, " dist=%x\n", nDist);
+	console.printf (CON_DBG, " dist=%x\n", nDist);
 #endif
 if (nSegment == -1) {
 #if TRACE
-	con_printf (1, "Warning: Unable to find a connected CSegment.  Picking a random one.\n");
+	console.printf (1, "Warning: Unable to find a connected CSegment.  Picking a random one.\n");
 #endif
 	return (d_rand () * gameData.segs.nLastSegment) >> 15;
 	}
@@ -450,7 +450,7 @@ if (delObjP->info.contains.nType != OBJ_POWERUP)
 if (delObjP->info.contains.nId == POW_CLOAK) {
 	if (WeaponNearby (delObjP, delObjP->info.contains.nId)) {
 #if TRACE
-		con_printf (CONDBG, "Bashing cloak into nothing because there's one nearby.\n");
+		console.printf (CON_DBG, "Bashing cloak into nothing because there's one nearby.\n");
 #endif
 		delObjP->info.contains.nCount = 0;
 	}
@@ -525,7 +525,7 @@ else if (delObjP->info.contains.nId == POW_QUADLASER)
 //	else the room gets full of energy.
 if ((delObjP->info.nCreator == BOSS_GATE_MATCEN_NUM) && (delObjP->info.contains.nId == POW_ENERGY) && (delObjP->info.contains.nType == OBJ_POWERUP)) {
 #if TRACE
-	con_printf (CONDBG, "Converting energy powerup to nothing because robot %i gated in by boss.\n", OBJ_IDX (delObjP));
+	console.printf (CON_DBG, "Converting energy powerup to nothing because robot %i gated in by boss.\n", OBJ_IDX (delObjP));
 #endif
 	delObjP->info.contains.nCount = 0;
 	}
@@ -631,7 +631,7 @@ switch (nType) {
 			nObject = CreateRobot (id, nSegment, vNewPos);
 			if (nObject < 0) {
 #if TRACE
-				con_printf (1, "Can't create CObject in ObjectCreateEgg, robots.  Aborting.\n");
+				console.printf (1, "Can't create CObject in ObjectCreateEgg, robots.  Aborting.\n");
 #endif
 				Int3 ();
 				return nObject;
@@ -682,7 +682,7 @@ if (!IsMultiGame & (objP->info.nType != OBJ_PLAYER)) {
 			if (LOCALPLAYER.shields >= I2X (100)) {
 				if (d_rand () > 16384) {
 #if TRACE
-					con_printf (CONDBG, "Not dropping shield!\n");
+					console.printf (CON_DBG, "Not dropping shield!\n");
 #endif
 					return -1;
 					}
@@ -690,7 +690,7 @@ if (!IsMultiGame & (objP->info.nType != OBJ_PLAYER)) {
 			else  if (LOCALPLAYER.shields >= I2X (150)) {
 				if (d_rand () > 8192) {
 #if TRACE
-					con_printf (CONDBG, "Not dropping shield!\n");
+					console.printf (CON_DBG, "Not dropping shield!\n");
 #endif
 					return -1;
 					}
@@ -700,7 +700,7 @@ if (!IsMultiGame & (objP->info.nType != OBJ_PLAYER)) {
 			if (LOCALPLAYER.energy >= I2X (100)) {
 				if (d_rand () > 16384) {
 #if TRACE
-					con_printf (CONDBG, "Not dropping energy!\n");
+					console.printf (CON_DBG, "Not dropping energy!\n");
 #endif
 					return -1;
 					}
@@ -708,7 +708,7 @@ if (!IsMultiGame & (objP->info.nType != OBJ_PLAYER)) {
 			else if (LOCALPLAYER.energy >= I2X (150)) {
 				if (d_rand () > 8192) {
 #if TRACE
-					con_printf (CONDBG, "Not dropping energy!\n");
+					console.printf (CON_DBG, "Not dropping energy!\n");
 #endif
 					return -1;
 					}
@@ -948,7 +948,7 @@ if ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHO
 
 			int maxCount, i;
 #if TRACE
-			con_printf (CONDBG, "HOARD MODE: Dropping %d orbs \n", playerP->secondaryAmmo [PROXMINE_INDEX]);
+			console.printf (CON_DBG, "HOARD MODE: Dropping %d orbs \n", playerP->secondaryAmmo [PROXMINE_INDEX]);
 #endif
 			maxCount = playerP->secondaryAmmo [PROXMINE_INDEX];
 			if ((gameData.app.nGameMode & GM_HOARD) && (maxCount > 12))
@@ -1006,7 +1006,7 @@ if ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHO
 			int	amount = playerP->primaryAmmo [VULCAN_INDEX];
 			if (amount > 200) {
 #if TRACE
-				con_printf (CONDBG, "Surprising amount of vulcan ammo: %i bullets. \n", amount);
+				console.printf (CON_DBG, "Surprising amount of vulcan ammo: %i bullets. \n", amount);
 #endif
 				amount = 200;
 			}

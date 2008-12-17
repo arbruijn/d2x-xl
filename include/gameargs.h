@@ -7,34 +7,19 @@ IN USING, DISPLAYING,  AND CREATING DERIVATIVE WORKS THEREOF, SO LONG AS
 SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
 FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
 CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
-AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.  
-COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
+AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
+COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
+
+#ifndef _GAMEARGS_H
+#define _GAMEARGS_H
 
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
 
-#include "3d.h"
-#include "globvars.h"
+void EvalArgs (void);
 
-CTransformation	transformation;
+#endif //_GAMEARGS_H
 
-int			nCanvasWidth;		//the actual width
-int			nCanvasHeight;		//the actual height
-
-fix			xCanvW2;				//fixed-point width/2
-fix			xCanvH2;				//fixed-point height/2
-
-double		fxCanvW2;
-double		fxCanvH2;
-
-//vertex buffers for polygon drawing and clipping
-g3sPoint * Vbuf0[MAX_POINTS_IN_POLY];
-g3sPoint *Vbuf1[MAX_POINTS_IN_POLY];
-
-//list of 2d coords
-fix polyVertList [MAX_POINTS_IN_POLY*2];
-
-
-
+//eof

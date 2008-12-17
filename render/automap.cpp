@@ -272,7 +272,7 @@ spherePoint.p3_index = -1;
 // Draw Console CPlayerData -- shaped like a ellipse with an arrow.
 spherePoint.p3_vec.SetZero();
 G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
-//G3RotatePoint (&spherePoint.p3_vec, &objP->info.position.vPos, 0);
+//transformation.Rotate (&spherePoint.p3_vec, &objP->info.position.vPos, 0);
 G3DrawSphere (&spherePoint, gameStates.render.automap.bRadar ? objP->info.xSize * 2 : objP->info.xSize, !gameStates.render.automap.bRadar);
 
 if (gameStates.render.automap.bRadar && (OBJ_IDX (objP) != LOCALPLAYER.nObject))
@@ -440,9 +440,9 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 						else
 							CCanvas::Current ()->SetColorRGB (78, 0, 96, 255); //gr_getcolor (47, 1, 47)); 
 					G3TransformAndEncodePoint(&spherePoint, objP->info.position.vPos);
-					//G3StartInstanceMatrix (&objP->info.position.vPos, &objP->info.position.mOrient);
+					//transformation.Begin (&objP->info.position.vPos, &objP->info.position.mOrient);
 					G3DrawSphere (&spherePoint, (size * 3) / 2, !gameStates.render.automap.bRadar);
-					//G3DoneInstance ();
+					//transformation.End ();
 					}
 				break;
 
@@ -489,7 +489,7 @@ if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) {
 	fontManager.SetCurrent (SMALL_FONT);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	GrPrintF (NULL, offs, offs, amLevelNum);
-	FONT->StringSize (amLevelName, w, h, aw);
+	fontManager.Current ()->StringSize (amLevelName, w, h, aw);
 	GrPrintF (NULL, CCanvas::Current ()->Width () - offs - w, offs, amLevelName);
 	fontManager.SetCurrent (curFont);
 #else
@@ -519,7 +519,7 @@ CCanvas* PrintToCanvas (char *s, CFont *font, uint fc, uint bc, int doubleFlag)
 
 CCanvas::Push ();
 fontManager.SetCurrent (font);					//set the font we're going to use
-FONT->StringSize (s, w, h, aw);		//now get the string size
+fontManager.Current ()->StringSize (s, w, h, aw);		//now get the string size
 
 //canvP = GrCreateCanvas (font->width*strlen (s),font->height*2);
 canvP = CCanvas::Create (w, font->Height () * 2);

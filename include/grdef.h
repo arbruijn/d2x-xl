@@ -41,8 +41,8 @@ extern uint Table8to32[256];
 
 #define MINX    0
 #define MINY    0
-#define MAXX    (GWIDTH-1)
-#define MAXY    (GHEIGHT-1)
+#define MAXX    (CCanvas::Current ()->Width ()-1)
+#define MAXY    (CCanvas::Current ()->Height ()-1)
 #define MODE    CCanvas::Current ()->Mode ()
 #define XOFFSET CCanvas::Current ()->Left ()
 #define YOFFSET CCanvas::Current ()->Top ()

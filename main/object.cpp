@@ -550,7 +550,7 @@ for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
 		#if DBG
 		if (count > MAX_OBJECTS)	{
 #if TRACE
-			con_printf (1, "Object list in CSegment %d is circular.\n", nSegment);
+			console.printf (1, "Object list in CSegment %d is circular.\n", nSegment);
 #endif
 			Int3 ();
 		}
@@ -558,7 +558,7 @@ for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
 		if (OBJECTS [nObject].info.nSegment != nSegment)	{
 			#if DBG
 #if TRACE
-			con_printf (CONDBG, "Removing CObject %d from CSegment %d.\n", nObject, nSegment);
+			console.printf (CON_DBG, "Removing CObject %d from CSegment %d.\n", nObject, nSegment);
 #endif
 			Int3 ();
 			#endif
@@ -593,7 +593,7 @@ FORALL_OBJS (objP, i) {
 		if (count > 1)	{
 #if DBG
 #	if TRACE
-			con_printf (1, "Object %d is in %d segments!\n", OBJ_IDX (objP), count);
+			console.printf (1, "Object %d is in %d segments!\n", OBJ_IDX (objP), count);
 #	endif
 			Int3 ();
 #endif
@@ -1163,7 +1163,7 @@ nToFree = MAX_OBJECTS - nRequested - nAlreadyFree;
 nOrgNumToFree = nToFree;
 if (nToFree > nCandidates) {
 #if TRACE
-	con_printf (1, "Warning: Asked to free %i objects when there's only %i available.\n", nToFree, nCandidates);
+	console.printf (1, "Warning: Asked to free %i objects when there's only %i available.\n", nToFree, nCandidates);
 #endif
 	nToFree = nCandidates;
 	}
@@ -1942,7 +1942,7 @@ LinkToSeg (nNewSeg);
 #if DBG
 #if TRACE
 if (GetSegMasks (info.position.vPos, info.nSegment, 0).centerMask)
-	con_printf (1, "CObject::RelinkToSeg violates seg masks.\n");
+	console.printf (1, "CObject::RelinkToSeg violates seg masks.\n");
 #endif
 #endif
 }
@@ -2779,7 +2779,7 @@ for (objP = gameData.objs.lists.weapons.head; objP; objP = nextObjP) {
 #if DBG
 #	if TRACE
 		if (objP->info.xLifeLeft > I2X (2))
-			con_printf (CONDBG, "Note: Clearing CObject %d (nType=%d, id=%d) with lifeleft=%x\n",
+			console.printf (CON_DBG, "Note: Clearing CObject %d (nType=%d, id=%d) with lifeleft=%x\n",
 							OBJ_IDX (objP), objP->info.nType, objP->info.nId, objP->info.xLifeLeft);
 #	endif
 #endif
@@ -2788,7 +2788,7 @@ for (objP = gameData.objs.lists.weapons.head; objP; objP = nextObjP) {
 	#if DBG
 #	if TRACE
 		else if ((objP->info.nType != OBJ_NONE) && (objP->info.xLifeLeft < I2X (2)))
-		con_printf (CONDBG, "Note: NOT clearing CObject %d (nType=%d, id=%d) with lifeleft=%x\n",
+		console.printf (CON_DBG, "Note: NOT clearing CObject %d (nType=%d, id=%d) with lifeleft=%x\n",
 						OBJ_IDX (objP), objP->info.nType, objP->info.nId,	objP->info.xLifeLeft);
 #	endif
 #endif
@@ -2876,7 +2876,7 @@ void WakeupRenderedObjects (CObject *viewerP, int nWindow)
 	//	Make sure that we are processing current data.
 if (gameData.app.nFrameCount != windowRenderedData [nWindow].nFrame) {
 #if TRACE
-		con_printf (1, "Warning: Called WakeupRenderedObjects with a bogus window.\n");
+		console.printf (1, "Warning: Called WakeupRenderedObjects with a bogus window.\n");
 #endif
 	return;
 	}

@@ -53,7 +53,7 @@ if (!(qhbuf = queryhost(buf)))
   if(sock==-1)
   {
 #if TRACE
-    con_printf (1,"IPX: could not open socket in GetMyAddress\n");
+    console.printf (1,"IPX: could not open socket in GetMyAddress\n");
 #endif
     return(-1);
   }
@@ -70,7 +70,7 @@ if (!(qhbuf = queryhost(buf)))
   if (bind (sock, reinterpret_cast<struct sockaddr*> (&ipxs), sizeof (ipxs)) == -1)
   {
 #if TRACE
-    con_printf (1,"IPX: could bind to network 0 in GetMyAddress\n");
+    console.printf (1,"IPX: could bind to network 0 in GetMyAddress\n");
 #endif
     closesocket( sock );
     return(-1);
@@ -79,7 +79,7 @@ if (!(qhbuf = queryhost(buf)))
   len = sizeof(ipxs2);
   if (getsockname(sock, reinterpret_cast<struct sockaddr*> (&ipxs2), &len) < 0) {
 #if TRACE
-    con_printf (1,"IPX: could not get socket name in GetMyAddress\n");
+    console.printf (1,"IPX: could not get socket name in GetMyAddress\n");
 #endif
     closesocket( sock );
     return(-1);
@@ -111,7 +111,7 @@ static int ipx_win_OpenSocket(ipx_socket_t *sk, int port)
   /* need to convert dynamic socket open into a real socket number */
 /*  if (port == 0) {
 #if TRACE
-    con_printf (1,"IPX: using socket %x\n", nextDynamicSocket);
+    console.printf (1,"IPX: using socket %x\n", nextDynamicSocket);
 #endif
     port = nextDynamicSocket++;
   }
@@ -122,7 +122,7 @@ static int ipx_win_OpenSocket(ipx_socket_t *sk, int port)
   sock = (int) socket(AF_IPX, SOCK_DGRAM, NSPROTO_IPX);//why NSPROTO_IPX?  I looked in the quake source and thats what they used. :) -MPM  (on w2k 0 and PF_IPX don't work)
   if (sock == -1) {
 #if TRACE
-    con_printf (1,"IPX: could not open IPX socket.\n");
+    console.printf (1,"IPX: could not open IPX socket.\n");
 #endif
     return -1;
   }
@@ -133,7 +133,7 @@ static int ipx_win_OpenSocket(ipx_socket_t *sk, int port)
   if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST,
 		 reinterpret_cast<const char*> (&opt), sizeof(opt)) == -1) {
 #if TRACE
-    con_printf (1,"IPX: could not set socket option for broadcast.\n");
+    console.printf (1,"IPX: could not set socket option for broadcast.\n");
 #endif
     return -1;
   }
@@ -148,7 +148,7 @@ static int ipx_win_OpenSocket(ipx_socket_t *sk, int port)
   /* now bind to this port */
   if (bind(sock,  reinterpret_cast<struct sockaddr*> (&ipxs), sizeof(ipxs)) == -1) {
 #if TRACE
-    con_printf (1,"IPX: could not bind socket to address\n");
+    console.printf (1,"IPX: could not bind socket to address\n");
 #endif
     closesocket( sock );
     return -1;
@@ -165,7 +165,7 @@ static int ipx_win_OpenSocket(ipx_socket_t *sk, int port)
   len = sizeof(ipxs2);
   if (getsockname(sock, reinterpret_cast<struct sockaddr*> (&ipxs2), &len) < 0) {
 #if TRACE
-    con_printf (1,"IPX: could not get socket name in IPXOpenSocket\n");
+    console.printf (1,"IPX: could not get socket name in IPXOpenSocket\n");
 #endif
     closesocket( sock );
     return -1;
@@ -173,7 +173,7 @@ static int ipx_win_OpenSocket(ipx_socket_t *sk, int port)
   if (port == 0) {
     port = htons(ipxs2.sa_socket);
 #if TRACE
-    con_printf (1,"IPX: opened dynamic socket %04x\n", port);
+    console.printf (1,"IPX: opened dynamic socket %04x\n", port);
 #endif
   }
 
@@ -190,7 +190,7 @@ static int ipx_win_OpenSocket(ipx_socket_t *sk, int port)
 static void ipx_win_CloseSocket(ipx_socket_t *mysock) {
   /* now close the file descriptor for the socket, and D2_FREE it */
 #if TRACE
-  con_printf (1,"IPX: closing file descriptor on socket %x\n", mysock->socket);
+  console.printf (1,"IPX: closing file descriptor on socket %x\n", mysock->socket);
 #endif
   closesocket(mysock->fd);
 }

@@ -325,7 +325,7 @@ if (nThread == 1)
 	nThread = nThread;
 #endif
 colorSum = *pColorSum;
-vertPos = *vcd.vertPosP - *viewInfo.posf [1].V3 ();
+vertPos = *vcd.vertPosP - *transformation.m_info.posf [1].V3 ();
 vertPos.Neg();
 CFloatVector3::Normalize(vertPos);
 nLights = sliP->nActive;
@@ -514,7 +514,7 @@ int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcd
 	CVertColorData			vcd = *vcdP;
 
 colorSum = *pColorSum;
-VmVecSub (&vertPos, vcd.vertPosP, reinterpret_cast<CFloatVector3*> (&viewInfo.glPosf));
+VmVecSub (&vertPos, vcd.vertPosP, reinterpret_cast<CFloatVector3*> (&transformation.m_info.glPosf));
 CFixVector::Normalize(vertPos, VmVecNegate (&vertPos));
 nLights = sliP->nActive;
 if (nLights > gameData.render.lights.dynamic.nLights)
@@ -841,7 +841,7 @@ else {
 		vcd.vertNorm = *pvVertNorm; CFloatVector3::Normalize(vcd.vertNorm);
 	}
 	else
-		G3RotatePoint(vcd.vertNorm, *pvVertNorm, 0);
+		transformation.Rotate(vcd.vertNorm, *pvVertNorm, 0);
 }
 if ((bVertexLights = !(gameStates.render.nState || pVertColor))) {
 	vertPos.Assign (gameData.segs.vertices[nVertex]);

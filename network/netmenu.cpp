@@ -1790,7 +1790,7 @@ for (i = gameData.multiplayer.nPlayers; i < MAX_NUM_NET_PLAYERS; i++) {
 	netPlayers.players [i].rank = 0;
 	}
 #if 1			
-con_printf (CONDBG, "Select teams: Game mode is %d\n", netGame.gameMode);
+console.printf (CON_DBG, "Select teams: Game mode is %d\n", netGame.gameMode);
 #endif
 if (netGame.gameMode == NETGAME_TEAM_ANARCHY ||
 	 netGame.gameMode == NETGAME_CAPTURE_FLAG ||
@@ -1850,15 +1850,15 @@ pszDest [nSize - 1] = '\0';
 if ((psz = strchr (pszDest, '\t')))
 	*psz = '\0';
 fontManager.SetCurrent (SMALL_FONT);
-FONT->StringSize ("... ", lDots, ty, ta);
-FONT->StringSize (pszDest, tx, ty, ta);
+fontManager.Current ()->StringSize ("... ", lDots, ty, ta);
+fontManager.Current ()->StringSize (pszDest, tx, ty, ta);
 l = (int) strlen (pszDest);
 lMax = LHX (nTabs [nPos]) - LHX (nTabs [nPos - 1]);
 if (tx > lMax) {
 	lMax -= lDots;
 	do {
 		pszDest [--l] = '\0';
-		FONT->StringSize (pszDest, tx, ty, ta);
+		fontManager.Current ()->StringSize (pszDest, tx, ty, ta);
 	} while (tx > lMax);
 	strcat (pszDest, "...");
 	}
@@ -1924,7 +1924,7 @@ if ((gameStates.multi.nGameType >= IPX_GAME) && networkData.bAllowSocketChanges)
 					 networkData.nSocket);
 		menus [0].rebuild = 1;
 #if 1			
-		con_printf (0, TXT_CHANGE_SOCK, networkData.nSocket);
+		console.printf (0, TXT_CHANGE_SOCK, networkData.nSocket);
 #endif
 		NetworkListen ();
 		IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nSocket));
@@ -1950,7 +1950,7 @@ if (networkData.bGamesChanged || (networkData.nActiveGames != networkData.nLastA
 	networkData.bGamesChanged = 0;
 	networkData.nLastActiveGames = networkData.nActiveGames;
 #if 1			
-	con_printf (CONDBG, "Found %d netgames.\n", networkData.nActiveGames);
+	console.printf (CON_DBG, "Found %d netgames.\n", networkData.nActiveGames);
 #endif
 	// Copy the active games data into the menu options
 	for (i = 0; i < networkData.nActiveGames; i++, h++) {
@@ -2147,7 +2147,7 @@ if (gameStates.multi.bUseTracker) {
 	GetServerFromList (choice);
 	}
 // Check for valid mission name
-con_printf (CONDBG, TXT_LOADING_MSN, AGI.szMissionName);
+console.printf (CON_DBG, TXT_LOADING_MSN, AGI.szMissionName);
 if (!(LoadMissionByName (AGI.szMissionName, -1) ||
 		(DownloadMission (AGI.szMissionName) &&
 		 LoadMissionByName (AGI.szMissionName, -1)))) {

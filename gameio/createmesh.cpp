@@ -69,7 +69,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "renderlib.h"
 #include "createmesh.h"
 
-using namespace mesh;
+using namespace Mesh;
 
 //------------------------------------------------------------------------------
 

@@ -2633,7 +2633,7 @@ cf.WriteInt(networkData.nNetLifeKills);
 cf.WriteInt(networkData.nNetLifeKilled);
 i = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
 #if TRACE
-con_printf (CONDBG,"Writing: Lifetime checksum is %d\n",i);
+console.printf (CON_DBG,"Writing: Lifetime checksum is %d\n",i);
 #endif
 cf.WriteInt (i);
 //write guidebot name

@@ -13,9 +13,9 @@ _T h = *left;
 //-----------------------------------------------------------------------------
 
 template <typename _T>
-void CQuickSort< _T >::SortAscending (_T* buffer, uint left, uint right) 
+void CQuickSort< _T >::SortAscending (_T* buffer, int left, int right) 
 {
-	uint	l = left,
+	int	l = left,
 			r = right;
 	_T		m = buffer [(l + r) / 2];
 
@@ -40,9 +40,9 @@ if (left < r)
 //-----------------------------------------------------------------------------
 
 template <typename _T>
-void CQuickSort< _T >::SortDescending (_T* buffer, uint left, uint right) 
+void CQuickSort< _T >::SortDescending (_T* buffer, int left, int right) 
 {
-	uint	l = left,
+	int	l = left,
 			r = right;
 	_T		m = buffer [(l + r) / 2];
 
@@ -67,16 +67,16 @@ if (left < r)
 //-----------------------------------------------------------------------------
 
 template <typename _T>
-void CQuickSort< _T >::SortAscending (_T* buffer, uint left, uint right, comparator compare) 
+void CQuickSort< _T >::SortAscending (_T* buffer, int left, int right, comparator compare) 
 {
-	uint	l = left,
+	int	l = left,
 			r = right;
-	_T		m = buffer [(l + r) / 2];
+	_T		median = buffer [(l + r) / 2];
 
 do {
-	while (compare (buffer + l, &m) < 0)
+	while (compare (buffer + l, &median) < 0)
 		l++;
-	while (compare (buffer + r, &m) > 0)
+	while (compare (buffer + r, &median) > 0)
 		r--;
 	if (l <= r) {
 		if (l < r)
@@ -94,9 +94,9 @@ if (left < r)
 //-----------------------------------------------------------------------------
 
 template <typename _T>
-void CQuickSort< _T >::SortDescending (_T* buffer, uint left, uint right, comparator compare) 
+void CQuickSort< _T >::SortDescending (_T* buffer, int left, int right, comparator compare) 
 {
-	uint	l = left,
+	int	l = left,
 			r = right;
 	_T		m = buffer [(l + r) / 2];
 

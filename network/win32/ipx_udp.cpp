@@ -540,11 +540,11 @@ static void dumpraddr(ubyte *a)
 short port;
 
 PrintLog ("[%u.%u.%u.%u]", a[0],a[1],a[2],a[3]);
-con_printf (0, "[%u.%u.%u.%u]", a[0],a[1],a[2],a[3]);
+console.printf (0, "[%u.%u.%u.%u]", a[0],a[1],a[2],a[3]);
 port=(signed short)ntohs (*reinterpret_cast<ushort*> (a+4));
 if (port) {
 	PrintLog (":%+d",port);
-	con_printf (0, ":%+d",port);
+	console.printf (0, ":%+d",port);
 	}
 PrintLog ("\n");
 }
@@ -1071,7 +1071,7 @@ if (!(bTracker
 				}
 			}
 #	if DBG
-		con_printf (0, "%s: %d bytes, packet id: %d, safe modes: %d,%d", 
+		console.printf (0, "%s: %d bytes, packet id: %d, safe modes: %d,%d", 
 						iptos (szIP, reinterpret_cast<char*> (&fromAddr), dataLen, packetId, pdl->bSafeMode, pdl->bOurSafeMode);
 #	endif
 #endif //UDP_SAFEMODE
@@ -1095,7 +1095,7 @@ memcpy (rd->src_node + 4, &fromAddr.sin_port, 2);
 rd->pktType = 0;
 #if 0//def UDPDEBUG
 //printf(MSGHDR "ReceivePacket: dataLen=%d,from=",dataLen);
-con_printf (0, "received %d bytes from %u.%u.%u.%u:%u\n", 
+console.printf (0, "received %d bytes from %u.%u.%u.%u:%u\n", 
 				dataLen, rd->src_node [0], rd->src_node [1], rd->src_node [2], rd->src_node [3],
 				(signed short)ntohs (*reinterpret_cast<ushort*> (rd->src_node + 4)));
 //dumpraddr (rd->src_node);

@@ -198,13 +198,13 @@ CreateSphere (&sd);
 fAlpha = (float) sqrt (X2F (objP->info.xLifeLeft) * 3);
 r = X2F (xSize);
 sd.pulseP = 0;
-G3StartInstanceMatrix(objP->info.position.vPos, &objP->info.position.mOrient);
+transformation.Begin(objP->info.position.vPos, &objP->info.position.mOrient);
 for (i = 0; i < 3; i++) {
 	RenderSphere (&sd, reinterpret_cast<CFloatVector*> (OOF_VecVms2Oof (&p, &objP->info.position.vPos)),
 					  r, r, r, 1, 1, 1, fAlpha, NULL, 1);
 	r *= i ? 0.5f : 0.8f;
 	}
-G3DoneInstance ();
+transformation.End ();
 #endif
 glDepthMask (1);
 }

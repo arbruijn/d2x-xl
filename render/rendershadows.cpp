@@ -285,8 +285,8 @@ void ApplyShadowMaps (short nStartSeg, fix nEyeOffset, int nWindow)
 
 	static GLenum nTexCoord [] = {GL_S, GL_T, GL_R, GL_Q};
 
-	float mProjectionf [16];
-	float mModelViewf [16];
+	CFloatMatrix mProjection;
+	CFloatMatrix mModelView;
 
 	int			i;
 	CCamera		*cameraP;
@@ -305,15 +305,16 @@ for (i = 0; i < 4; i++)
 for (i = 0; i < 4; i++)
 	glTexGenfv (nTexCoord [i], GL_EYE_PLANE, mPlanef + 4 * i);
 
-glGetFloatv (GL_PROJECTION_MATRIX, mProjectionf);
+glGetFloatv (GL_PROJECTION_MATRIX, mProjection.Vec ());
 glMatrixMode (GL_TEXTURE);
 for (i = 0, cameraP = gameData.render.shadows.shadowMaps; i < 1/*gameData.render.shadows.nShadowMaps*/; i++) {
 	glBindTexture (GL_TEXTURE_2D, cameraP->FrameBuffer ().RenderBuffer ());
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);
 	glLoadMatrixf (mTexBiasf);
-	glMultMatrixf (mProjectionf);
-	glMultMatrixf (CFixMatrix::ToOpenGL (mModelViewf, cameraP->GetObject ()->info.position.mOrient));
+	glMultMatrixf (mProjection.Vec ());
+	CFixMatrix::Transpose (mModelView, cameraP->GetObject ()->info.position.mOrient);
+	glMultMatrixf (mModelView.Vec ());
 	}
 glMatrixMode (GL_MODELVIEW);
 #endif

@@ -299,9 +299,9 @@ switch (key) {
 		gameData.demo.bInterpolate = !gameData.demo.bInterpolate;
 #if TRACE
 		if (gameData.demo.bInterpolate)
-			con_printf (CONDBG, "demo playback interpolation now on\n");
+			console.printf (CON_DBG, "demo playback interpolation now on\n");
 		else
-			con_printf (CONDBG, "demo playback interpolation now off\n");
+			console.printf (CON_DBG, "demo playback interpolation now off\n");
 #endif
 		break;
 	case KEYDBGGED + KEY_K: {
@@ -399,7 +399,7 @@ switch (key) {
 
 #if 1
 	case KEY_SHIFTED + KEY_ESC:
-		con_show();
+		console.Show ();
 		break;
 
 #else
@@ -953,11 +953,11 @@ void HandleTestKey(int key)
 					AIDoCloakStuff();
 					LOCALPLAYER.cloakTime = gameData.time.xGame;
 #if TRACE
-					con_printf (CONDBG, "You are cloaked!\n");
+					console.printf (CON_DBG, "You are cloaked!\n");
 #endif
 				} else
 #if TRACE
-					con_printf (CONDBG, "You are DE-cloaked!\n");
+					console.printf (CON_DBG, "You are DE-cloaked!\n");
 #endif
 //				}
 			break;
@@ -1032,7 +1032,7 @@ void HandleTestKey(int key)
 		case KEYDBGGED+KEY_T:
 			*Toggle_var = !*Toggle_var;
 #if TRACE
-			con_printf (CONDBG, "Variable at %08x set to %i\n", Toggle_var, *Toggle_var);
+			console.printf (CON_DBG, "Variable at %08x set to %i\n", Toggle_var, *Toggle_var);
 #endif
 			break;
 		case KEYDBGGED + KEY_L:
@@ -1151,7 +1151,7 @@ void HandleTestKey(int key)
 		case KEYDBGGED+KEY_ALTED+KEY_F5:
 			gameData.time.xGame = I2X(0x7fff - 840);		//will overflow in 14 minutes
 #if TRACE
-			con_printf (CONDBG, "gameData.time.xGame bashed to %d secs\n", X2I(gameData.time.xGame));
+			console.printf (CON_DBG, "gameData.time.xGame bashed to %d secs\n", X2I(gameData.time.xGame));
 #endif
 			break;
 
@@ -1229,7 +1229,7 @@ if ((key&KEYDBGGED) && IsMultiGame) {
 	}
 #endif
 #ifdef CONSOLE
-if(!con_events(key))
+if(!console.Events (key))
 	continue;
 #endif
 if (gameStates.app.bPlayerIsDead)

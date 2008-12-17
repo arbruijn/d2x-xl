@@ -987,7 +987,7 @@ int AddVariableLight (int nSegment, int nSide, fix delay, uint mask)
 	int l;
 	tVariableLight *flP;
 #if TRACE
-	//con_printf (CONDBG,"AddVariableLight: %d:%d %x %x\n",nSegment,nSide,delay,mask);
+	//console.printf (CON_DBG,"AddVariableLight: %d:%d %x %x\n",nSegment,nSide,delay,mask);
 #endif
 	//see if there's already an entry for this seg/tSide
 	flP = gameData.render.lights.flicker.lights;

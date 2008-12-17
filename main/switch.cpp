@@ -531,7 +531,7 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 
 //------------------------------------------------------------------------------
 
-void TriggerSetOrient (tTransformation *posP, short nSegment, short nSide, int bSetPos, int nStep)
+void TriggerSetOrient (tObjTransformation *posP, short nSegment, short nSide, int bSetPos, int nStep)
 {
 	CAngleVector	an;
 	CFixVector	n;

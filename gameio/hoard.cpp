@@ -36,7 +36,8 @@
 ///
 void InitHoardBitmap (CBitmap *bmP, int w, int h, int flags, ubyte *data)
 {
-bmP->Init (BM_LINEAR, 0, 0, w, h, 1, data);
+bmP->Init (BM_LINEAR, 0, 0, w, h, 1, NULL);
+bmP->SetBuffer (data, true, w * h);
 bmP->SetFlags (flags);
 bmP->SetAvgColorIndex (0);
 }
@@ -145,7 +146,7 @@ if (!gameData.hoard.bInitialized) {
 	vcP->nSound = -1;
 	vcP->lightValue = F1_0;
 	bmDataP = new ubyte [gameData.hoard.orb.nSize];
-	gameData.hoard.orb.bm.SetBuffer (bmDataP);
+	gameData.hoard.orb.bm.SetBuffer (bmDataP, false, gameData.hoard.orb.nSize);
 	for (i = 0; i < gameData.hoard.orb.nFrames; i++, nBitmap++) {
 		Assert (nBitmap < MAX_BITMAP_FILES);
 		vcP->frames [i].index = nBitmap;
@@ -178,7 +179,7 @@ if (!gameData.hoard.bInitialized) {
 	gameData.pig.tex.nTextures [0]++;
 	Assert (gameData.pig.tex.nTextures [0] < MAX_TEXTURES);
 	bmDataP = new ubyte [gameData.hoard.goal.nSize];
-	gameData.hoard.goal.bm.SetBuffer (bmDataP);
+	gameData.hoard.goal.bm.SetBuffer (bmDataP, false, gameData.hoard.goal.nSize);
 	for (i = 0; i < gameData.hoard.goal.nFrames; i++, nBitmap++) {
 		Assert (nBitmap < MAX_BITMAP_FILES);
 		ecP->vc.frames [i].index = nBitmap;
@@ -198,11 +199,12 @@ else {
 
 //Load and remap bitmap data for orb
 paletteManager.Game ();
+palette.Read (cf);
 gameData.hoard.orb.palette = paletteManager.Add (palette);
 vcP = &gameData.eff.vClips [0][gameData.hoard.orb.nClip];
 bmDataP = gameData.hoard.orb.bm.Buffer ();
 for (i = 0; i < gameData.hoard.orb.nFrames; i++) {
-	CBitmap *bmP = &gameData.pig.tex.bitmaps [0][vcP->frames [i].index];
+	CBitmap* bmP = &gameData.pig.tex.bitmaps [0][vcP->frames [i].index];
 	InitHoardBitmap (bmP, gameData.hoard.goal.nWidth, gameData.hoard.goal.nHeight, 0, bmDataP);
 	bmDataP += gameData.hoard.goal.nFrameSize;
 	cf.Read (bmP->Buffer (), 1, gameData.hoard.orb.nFrameSize);
@@ -212,10 +214,11 @@ for (i = 0; i < gameData.hoard.orb.nFrames; i++) {
 //Load and remap bitmap data for goal texture
 cf.ReadShort ();        //skip frame count
 paletteManager.Game ();
+palette.Read (cf);
 gameData.hoard.goal.palette = paletteManager.Add (palette);
 bmDataP = gameData.hoard.goal.bm.Buffer ();
 for (i = 0; i < gameData.hoard.goal.nFrames; i++) {
-	CBitmap *bmP = gameData.pig.tex.bitmaps [0] + ecP->vc.frames [i].index;
+	CBitmap* bmP = gameData.pig.tex.bitmaps [0] + ecP->vc.frames [i].index;
 	InitHoardBitmap (bmP, gameData.hoard.goal.nWidth, gameData.hoard.goal.nHeight, 0, bmDataP);
 	bmDataP += gameData.hoard.goal.nFrameSize;
 	cf.Read (bmP->Buffer (), 1, gameData.hoard.goal.nFrameSize);

@@ -258,7 +258,7 @@ void ShowPauseMessage (const char *msg)
 
 CCanvas::SetCurrent (NULL);
 fontManager.SetCurrent (SMALL_FONT);
-FONT->StringSize (msg, w, h, aw);
+fontManager.Current ()->StringSize (msg, w, h, aw);
 x = (screen.Width () - w) / 2;
 y = (screen.Height () - h) / 2;
 #if 0
@@ -310,7 +310,7 @@ result = 1;
 if (!(cf.Open (filename, gameFolders.szDataDir, "rb", 0) || OpenMovieFile (cf, filename, bRequired))) {
 	if (bRequired) {
 #if TRACE
-		con_printf (CON_NORMAL, "movie: RunMovie: Cannot open movie <%s>\n", filename);
+		console.printf (CON_NORMAL, "movie: RunMovie: Cannot open movie <%s>\n", filename);
 #endif
 		}
 	return MOVIE_NOT_PLAYED;
@@ -411,7 +411,7 @@ if (gameOpts->movies.nLevel < 1)
 	return 0;
 
 #if TRACE
-con_printf (DEBUG_LEVEL, "movies.robot.cf=%s\n", filename);
+console.printf (DEBUG_LEVEL, "movies.robot.cf=%s\n", filename);
 #endif
 MVE_sndInit (-1);        //tell movies to play no sound for robots
 if (!OpenMovieFile (movies.robot.cf, filename, 1)) {
@@ -435,7 +435,7 @@ if (MVE_rmPrepMovie (reinterpret_cast<void*> (&movies.robot.cf),
 	}
 movies.robot.nFilePos = movies.robot.cf.Seek (0L, SEEK_CUR);
 #if TRACE
-con_printf (DEBUG_LEVEL, "movies.robot.nFilePos=%d!\n", movies.robot.nFilePos);
+console.printf (DEBUG_LEVEL, "movies.robot.nFilePos=%d!\n", movies.robot.nFilePos);
 #endif
 return 1;
 }
@@ -723,7 +723,7 @@ int RequestCD (void)
 	return ret;
 #else
 #if TRACE
-	con_printf (DEBUG_LEVEL, "STUB: movie: RequestCD\n");
+	console.printf (DEBUG_LEVEL, "STUB: movie: RequestCD\n");
 #endif
 	return 0;
 #endif

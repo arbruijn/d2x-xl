@@ -117,7 +117,7 @@ for (i = 0; i < 8; i++) {
 	hv [X] = X2F (hitBoxOffsets [i][X] ? vMin [X] : vMax [X]);
 	hv [Y] = X2F (hitBoxOffsets [i][Y] ? vMin [Y] : vMax [Y]);
 	hv [Z] = X2F (hitBoxOffsets [i][Z] ? vMin [Z] : vMax [Z]);
-	G3TransformPoint (vertList [i], hv, 0);
+	transformation.Transform (vertList [i], hv, 0);
 	}
 }
 
@@ -178,10 +178,10 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDisable (GL_TEXTURE_2D);
 glDepthMask (0);
 glColor4f (red, green, blue, alpha / 2);
-G3StartInstanceMatrix(objP->info.position.vPos, objP->info.position.mOrient);
+transformation.Begin(objP->info.position.vPos, objP->info.position.mOrient);
 for (; iBox <= nBoxes; iBox++) {
 	if (iBox)
-		G3StartInstanceAngles(pmhb [iBox].vOffset, &CAngleVector::ZERO);
+		transformation.Begin(pmhb [iBox].vOffset, &CAngleVector::ZERO);
 	TransformHitboxf (objP, vertList, iBox);
 	glBegin (GL_QUADS);
 	for (i = 0; i < 6; i++) {
@@ -201,9 +201,9 @@ for (; iBox <= nBoxes; iBox++) {
 		}
 	glLineWidth (1);
 	if (iBox)
-		G3DoneInstance ();
+		transformation.End ();
 	}
-G3DoneInstance ();
+transformation.End ();
 float r = X2F (VmVecDist (&pmhb->vMin, &pmhb->vMax) / 2);
 #if 0//def _DEBUG	//display collision point
 if (gameStates.app.nSDLTicks - gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].tHit < 500) {
@@ -375,7 +375,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	pc = ObjectFrameColor (objP, pc);
 	PolyObjPos (objP, &vPos);
 	fPos.Assign (vPos);
-	G3TransformPoint (fPos, fPos, 0);
+	transformation.Transform (fPos, fPos, 0);
 	r = X2F (objP->info.xSize);
 	r2 = r / 10;
 	r = r2 * 9;
@@ -470,7 +470,7 @@ if (gameStates.app.nSDLTicks - t0 [bMarker] > tDelay [bMarker]) {
 	}
 PolyObjPos (objP, &vPos);
 fPos.Assign (vPos);
-G3TransformPoint (fPos, fPos, 0);
+transformation.Transform (fPos, fPos, 0);
 r = X2F (objP->info.xSize);
 if (bMarker)
 	r = 17 * r / 12;
@@ -630,7 +630,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 		  reinterpret_cast<tRgbColorf*> (&trackGoalColor [0]) : ObjectFrameColor (objP, pc);
 	PolyObjPos (objP, &vPos);
 	fPos.Assign (vPos);
-	G3TransformPoint (fPos, fPos, 0);
+	transformation.Transform (fPos, fPos, 0);
 	r = X2F (objP->info.xSize);
 	glColor3fv (reinterpret_cast<GLfloat*> (pc));
 	fVerts [0][W] = fVerts [1][W] = fVerts [2][W] = fVerts [3][W] = 1;
@@ -756,14 +756,14 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 		bmP->Texture ()->Wrap (GL_REPEAT);
 		vPos += objP->info.position.mOrient.FVec() * (-objP->info.xSize);
 		r = X2F (objP->info.xSize);
-		G3StartInstanceMatrix (vPos, pp->mOrient);
+		transformation.Begin (vPos, pp->mOrient);
 		glBegin (GL_QUADS);
 		glColor3f (1.0f, 1.0f, 1.0f);
 		for (i = 0; i < 4; i++) {
 			vPosf [X] = 0;
 			vPosf [Y] = fVerts [i][Y] * r;
 			vPosf [Z] = fVerts [i][Z] * r;
-			G3TransformPoint (vPosf, vPosf, 0);
+			transformation.Transform (vPosf, vPosf, 0);
 			glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoordList + i));
 			glVertex3fv (reinterpret_cast<GLfloat*> (&vPosf));
 			}
@@ -771,12 +771,12 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 			vPosf [X] = 0;
 			vPosf [Y] = fVerts [i][Y] * r;
 			vPosf [Z] = fVerts [i][Z] * r;
-			G3TransformPoint (vPosf, vPosf, 0);
+			transformation.Transform (vPosf, vPosf, 0);
 			glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoordList + i));
 			glVertex3fv (reinterpret_cast<GLfloat*> (&vPosf));
 			}
 		glEnd ();
-		G3DoneInstance ();
+		transformation.End ();
 		OGL_BINDTEX (0);
 		StencilOn (bStencil);
 		}
@@ -854,7 +854,7 @@ if (!bHaveFlame) {
 
 void CalcShipThrusterPos (CObject *objP, CFixVector *vPos)
 {
-	tTransformation	*pPos = OBJPOS (objP);
+	tObjTransformation	*pPos = OBJPOS (objP);
 
 if (gameOpts->render.bHiresModels) {
 	vPos [0] = pPos->vPos + pPos->mOrient.FVec() * (-objP->info.xSize);
@@ -939,7 +939,7 @@ else if ((objP->info.nType == OBJ_PLAYER) ||
 		CalcShipThrusterPos (objP, ti.vPos);
 		}
 	else {
-		tTransformation *posP = OBJPOS (objP);
+		tObjTransformation *posP = OBJPOS (objP);
 		if (SPECTATOR (objP)) {
 			viewP = &m;
 			m = posP->mOrient.Transpose();
@@ -979,8 +979,8 @@ void CreateLightTrail (CFixVector& vPos, CFixVector &vDir, float fSize, float fL
 fVecf.Assign (vDir);
 vPosf.Assign (vPos);
 vTrail [2] = vPosf - fVecf * fLength;
-G3TransformPoint (vTrail [2], vTrail [2], 0);
-G3TransformPoint (vPosf, vPosf, 0);
+transformation.Transform (vTrail [2], vTrail [2], 0);
+transformation.Transform (vPosf, vPosf, 0);
 vNormf = CFloatVector::Normal (vTrail [2], vPosf, vEye);
 vTrail [0] = vPosf + vNormf * fSize;
 vTrail [1] = vPosf - vNormf * fSize;
@@ -1093,7 +1093,7 @@ else if (gameOpts->render.bDepthSort <= 0) {
 if (nThrusters > 1) {
 	CFixVector vRot [2];
 	for (i = 0; i < 2; i++)
-		G3RotatePoint (vRot [i], ti.vPos [i], 0);
+		transformation.Rotate (vRot [i], ti.vPos [i], 0);
 	if (vRot [0][Z] < vRot [1][Z]) {
 		CFixVector v = ti.vPos [0];
 		ti.vPos [0] = ti.vPos [1];
@@ -1145,7 +1145,7 @@ else {
 			color [1].blue = 0.0f;
 			color [1].alpha = 0.9f;
 			}
-		G3StartInstanceMatrix (ti.vPos [h], (ti.pp && !bSpectate) ? ti.pp->mOrient : objP->info.position.mOrient);
+		transformation.Begin (ti.vPos [h], (ti.pp && !bSpectate) ? ti.pp->mOrient : objP->info.position.mOrient);
 		for (i = 0; i < THRUSTER_SEGS - 1; i++) {
 #if 1
 			if (!bTextured) {
@@ -1163,7 +1163,7 @@ else {
 					v [X] *= ti.fSize;
 					v [Y] *= ti.fSize;
 					v [Z] *= ti.fLength;
-					G3TransformPoint (v, v, 0);
+					transformation.Transform (v, v, 0);
 					if (bTextured) {
 						tTexCoord2fl.v.v = 0.25f + tTexCoord2flStep.v.v * (i + l);
 						glTexCoord2fv (reinterpret_cast<GLfloat*> (&tTexCoord2fl));
@@ -1178,7 +1178,7 @@ else {
 			glBegin (GL_LINE_LOOP);
 			glColor4f (c [1].red, c [1].green, c [1].blue, c [1].alpha);
 			for (j = 0; j < RING_SIZE; j++) {
-				G3TransformPoint (&v, vFlame [i] + j);
+				transformation.Transform (&v, vFlame [i] + j);
 				glVertex3fv (reinterpret_cast<GLfloat*> (&v));
 				}
 			glEnd ();
@@ -1186,11 +1186,11 @@ else {
 			}
 		glBegin (GL_TRIANGLE_STRIP);
 		for (j = 0; j < RING_SIZE; j++) {
-			G3TransformPoint(v, vFlame [0][nStripIdx [j]], 0);
+			transformation.Transform(v, vFlame [0][nStripIdx [j]], 0);
 			glVertex3fv (reinterpret_cast<GLfloat*> (&v));
 			}
 		glEnd ();
-		G3DoneInstance ();
+		transformation.End ();
 		}
 	glLineWidth (1);
 	OglCullFace (0);
@@ -1233,9 +1233,9 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 	vCorona [0] = vPos + vDir * (fScale * fLength);
 	vh [4] = vCorona [0];
 	vCorona [3] = vPos + vDir * (-fScale * fLength);
-	G3TransformPoint (vPos, vPos, 0);
-	G3TransformPoint (vCorona [0], vCorona [0], 0);
-	G3TransformPoint (vCorona [3], vCorona [3], 0);
+	transformation.Transform (vPos, vPos, 0);
+	transformation.Transform (vCorona [0], vCorona [0], 0);
+	transformation.Transform (vCorona [3], vCorona [3], 0);
 	vNorm = CFloatVector::Normal(vPos, vCorona [0], vEye);
 	fScale *= fRad;
 	vCorona [0] += vNorm * fScale;
@@ -1409,7 +1409,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 		if (bmpCorona->Bind (1, -1))
 			return 0;
 		bmpCorona->Texture ()->Wrap (GL_CLAMP);
-		G3StartInstanceMatrix (vPos, objP->info.position.mOrient);
+		transformation.Begin (vPos, objP->info.position.mOrient);
 		TransformHitboxf (objP, verts, 0);
 		for (i = 0; i < 6; i++) {
 			vCenter.SetZero();
@@ -1433,7 +1433,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 				}
 			glEnd ();
 			}
-		G3DoneInstance ();
+		transformation.End ();
 		glDepthFunc (GL_LESS);
 		glDisable (GL_TEXTURE_2D);
 		glEnable (GL_CULL_FACE);
@@ -1471,7 +1471,7 @@ if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]
 			float				r [4], l [4], alpha;
 			tRgbaColorf		*pc = gameData.weapons.color + objP->info.nId;
 
-		G3StartInstanceMatrix (vPos, objP->info.position.mOrient);
+		transformation.Begin (vPos, objP->info.position.mOrient);
 		glDepthMask (0);
 		glDisable (GL_TEXTURE_2D);
 		//OglCullFace (1);
@@ -1502,7 +1502,7 @@ if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]
 					vPosf [X] *= r [n];
 					vPosf [Y] *= r [n];
 					vPosf [Z] = -l [n];
-					G3TransformPoint(vPosf, vPosf, 0);
+					transformation.Transform(vPosf, vPosf, 0);
 					glVertex3fv (reinterpret_cast<GLfloat*> (&vPosf));
 					}
 				}
@@ -1518,14 +1518,14 @@ if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]
 				vPosf [X] *= r [h];
 				vPosf [Y] *= r [h];
 				vPosf [Z] = -l [h];
-				G3TransformPoint(vPosf, vPosf, 0);
+				transformation.Transform(vPosf, vPosf, 0);
 				glVertex3fv (reinterpret_cast<GLfloat*> (&vPosf));
 				}
 			glEnd ();
 			}
 		glDepthMask (1);
 		OglCullFace (0);
-		G3DoneInstance ();
+		transformation.End ();
 		}
 	StencilOn (bStencil);
 	}
@@ -1562,13 +1562,13 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 
 	vPosf [0].Assign (objP->info.position.vPos);
 	vPosf [1].Assign (objP->info.vLastPos);
-	G3TransformPoint (vPosf [0], vPosf [0], 0);
-	G3TransformPoint (vPosf [1], vPosf [1], 0);
+	transformation.Transform (vPosf [0], vPosf [0], 0);
+	transformation.Transform (vPosf [1], vPosf [1], 0);
 	vDirf = vPosf [0] - vPosf [1];
 	if (vDirf.IsZero()) {
 		//return;
 		vPosf [1].Assign (OBJECTS [objP->cType.laserInfo.parent.nObject].info.position.vPos);
-		G3TransformPoint(vPosf [1], vPosf [1], 0);
+		transformation.Transform(vPosf [1], vPosf [1], 0);
 		vDirf = vPosf [0] - vPosf [1];
 		if(vDirf.IsZero())
 			return;
@@ -1722,8 +1722,8 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 		vTrailVerts [0].Assign (objP->info.position.vPos);
 		vTrailVerts [0] += vOffsf * l;
 		vTrailVerts [2] = vTrailVerts [0] - vOffsf * 100;
-		G3TransformPoint (vTrailVerts [0], vTrailVerts [0], 0);
-		G3TransformPoint (vTrailVerts [2], vTrailVerts [2], 0);
+		transformation.Transform (vTrailVerts [0], vTrailVerts [0], 0);
+		transformation.Transform (vTrailVerts [2], vTrailVerts [2], 0);
 		vOffsf = vTrailVerts [2] - vTrailVerts [0];
 		vOffsf = vOffsf * (r * 0.04f);
 		vNormf = CFloatVector::Normal (vTrailVerts [0], vTrailVerts [2], vEye);

@@ -159,7 +159,7 @@ else if (m_nVersion >= 21) {
 	// -- gameData.boss.gateSegs [0] = 0;
 	// Note: Maybe better to leave alone...will probably be ok.
 #if TRACE
-	con_printf (1, "Warning: If you fight the boss, he might teleport to CSegment #0!\n");
+	console.printf (1, "Warning: If you fight the boss, he might teleport to CSegment #0!\n");
 #endif
 	}
 return 1;
@@ -408,7 +408,7 @@ else
 
 if (m_nVersion < 21) {
 	#if TRACE
-	con_printf (1, "Warning: If you fight the boss, he might teleport to CSegment #0!\n");
+	console.printf (1, "Warning: If you fight the boss, he might teleport to CSegment #0!\n");
 	#endif
 	}
 else {

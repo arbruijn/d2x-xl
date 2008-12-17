@@ -83,7 +83,7 @@ int NetworkBadPacketSize (int nLength, int nExpectedLength, const char *pszId)
 {
 if (!nExpectedLength || (nLength == nExpectedLength))
 	return 0;
-con_printf (CONDBG, "WARNING! Received invalid size for %s\n", pszId);
+console.printf (CON_DBG, "WARNING! Received invalid size for %s\n", pszId);
 PrintLog ("Networking: Bad size for %s\n", pszId);
 #if DBG
 HUDMessage (0, "invalid %s", pszId);
@@ -101,7 +101,7 @@ int NetworkBadSecurity (int nSecurity, const char *pszId)
 if (nSecurity == netGame.nSecurity)
 #endif
 	return 0;
-con_printf (CONDBG, "Bad security for %s\n", pszId);
+console.printf (CON_DBG, "Bad security for %s\n", pszId);
 PrintLog ("Networking: Bad security for %s\n", pszId);
 return 1;
 }
@@ -453,7 +453,7 @@ if (!piP->packetHandler)
 else if (!(piP->nStatusFilter & (1 << networkData.nStatus)))
 	PrintLog ("invalid status %d for packet id %d\n", networkData.nStatus, pId);
 else if (!NetworkBadPacketSize (nLength, piP->nLength, piP->pszInfo)) {
-	con_printf (0, "received %s\n", piP->pszInfo);
+	console.printf (0, "received %s\n", piP->pszInfo);
 	if (!addressFilter [pId])
 		memcpy (&THEIR->player.network.ipx.server, &ipx_udpSrc.src_network, 10);
 	return piP->packetHandler (dataP, nLength);

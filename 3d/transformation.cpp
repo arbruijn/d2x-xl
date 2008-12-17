@@ -28,10 +28,6 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_INSTANCE_DEPTH	10
 
-struct CTransformation instanceStack [MAX_INSTANCE_DEPTH];
-
-int nInstanceDepth = 0;
-
 //------------------------------------------------------------------------------
 
 void CTransformation::Init (void)
@@ -51,16 +47,16 @@ m_info.viewf [1] =
 m_info.viewf [2] = CFloatMatrix::IDENTITY;
 m_info.zoom = 0;
 m_info.zoomf = 0;
-m_info.save.Create (MAX_INSTANCE_DEPTH);
+m_save.Create (MAX_INSTANCE_DEPTH);
 }
 
 //------------------------------------------------------------------------------
 
 bool CTransformation::Push (void)
 {
-if (m_save.Length () >= MAX_INSTANCE_DEPTH)
+if (m_save.ToS () >= MAX_INSTANCE_DEPTH)
 	return false;
-m_save.push (m_info);
+m_save.Push (m_info);
 glMatrixMode (GL_MODELVIEW);
 glPushMatrix ();
 return true;
@@ -72,10 +68,10 @@ bool CTransformation::Pop (void)
 {
 if (m_save.ToS () <= 0)
 	return false;
-m_save.Pop (m_info);
+m_info = m_save.Pop ();
 glMatrixMode (GL_MODELVIEW);
 glPopMatrix ();
-return this;
+return true;
 }
 
 //------------------------------------------------------------------------------
@@ -87,25 +83,25 @@ void CTransformation::Begin (const CFixVector& vPos, CFixMatrix& mOrient)
 	CFixMatrix	mTrans, mRot;
 
 //Assert (nInstanceDepth < MAX_INSTANCE_DEPTH);
-if (!G3PushMatrix ())
+if (!Push ())
 	return;
 if (gameStates.ogl.bUseTransform) {
 	CFixVector	h;
 
-	if (nInstanceDepth > 1) {
+	if (m_save.ToS () > 1) {
 		glScalef (-1.0f, -1.0f, -1.0f);
-		transformation.Move (vPos);
+		Move (vPos);
 		glScalef (-1.0f, -1.0f, -1.0f);
-		transformation.Rotate (mOrient);
+		Rotate (mOrient);
 	}
 	else {
 		glLoadIdentity ();
-		//glScalef (X2F (transformation.m_info.scale.p.x), X2F (transformation.m_info.scale.p.y), -X2F (transformation.m_info.scale.p.z));
+		//glScalef (X2F (m_info.scale.p.x), X2F (m_info.scale.p.y), -X2F (m_info.scale.p.z));
 		glScalef (1, 1, -1);
-		transformation.Rotate (transformation.m_info.viewf [2]);
-		h = transformation.m_info.pos - vPos;
-		transformation.Move (h);
-		transformation.Rotate (mOrient);
+		Rotate (m_info.viewf [2]);
+		h = m_info.pos - vPos;
+		Move (h);
+		Rotate (mOrient);
 		if (!gameData.models.vScale.IsZero ()) {
 			CFloatVector fScale;
 			fScale.Assign (gameData.models.vScale);
@@ -115,27 +111,77 @@ if (gameStates.ogl.bUseTransform) {
 	}
 
 //step 1: subtract object position from view position
-vOffs = transformation.m_info.pos - vPos;
+vOffs = m_info.pos - vPos;
 
 	int i;
 	//step 2: rotate view vector through CObject matrix
-	transformation.m_info.pos = mOrient * vOffs;
+	m_info.pos = mOrient * vOffs;
 	//step 3: rotate CObject matrix through view_matrix (vm = ob * vm)
 	mTrans = mOrient.Transpose ();
 	for (i = 0; i < 2; i++) {
-		mRot = mTrans * transformation.m_info.view [i];
-		transformation.m_info.view [i] = mRot;
-		transformation.m_info.viewf [i].Assign (transformation.m_info.view [i]);
+		mRot = mTrans * m_info.view [i];
+		m_info.view [i] = mRot;
+		m_info.viewf [i].Assign (m_info.view [i]);
 		}
 
-transformation.m_info.posf [0].Assign (transformation.m_info.pos);
+m_info.posf [0].Assign (m_info.pos);
+}
+
+// -----------------------------------------------------------------------------------
+//delta rotation functions
+CFixVector CTransformation::RotateScaledX (CFixVector& dest, fix scale)
+{
+dest [X] = m_info.view [0].RVec() [X];
+dest [Y] = m_info.view [0].UVec() [X];
+dest [Z] = m_info.view [0].FVec() [X];
+dest *= scale;
+return dest;
+}
+
+// -----------------------------------------------------------------------------------
+
+CFixVector CTransformation::RotateScaledY (CFixVector& dest, fix scale)
+{
+dest [X] = m_info.view [0].RVec() [Y];
+dest [Y] = m_info.view [0].UVec() [Y];
+dest [Z] = m_info.view [0].FVec() [Y];
+dest *= scale;
+return dest;
+}
+
+// -----------------------------------------------------------------------------------
+
+CFixVector CTransformation::RotateScaledZ (CFixVector& dest, fix scale)
+{
+dest [X] = m_info.view [0].RVec() [Z];
+dest [Y] = m_info.view [0].UVec() [Z];
+dest [Z] = m_info.view [0].FVec() [Z];
+dest *= scale;
+return dest;
+}
+
+// -----------------------------------------------------------------------------------
+
+const CFixVector& CTransformation::RotateScaled (CFixVector& dest, const CFixVector& src) 
+{
+dest = m_info.view [0] * src;
+return dest;
 }
 
 //------------------------------------------------------------------------------
-//pops the old context
-void CTransformation::End (void)
+//compute aspect ratio for this canvas
+void CTransformation::ComputeAspect (void)
 {
-Pop ();
+fix s = FixMulDiv (screen.Aspect (), nCanvasHeight, nCanvasWidth);
+if (s <= f1_0) {	   //scale x
+	m_info.aspect [X] = s;
+	m_info.aspect [Y] = f1_0;
+	}
+else {
+	m_info.aspect [Y] = FixDiv (f1_0, s);
+	m_info.aspect [X] = f1_0;
+	}
+m_info.aspect [Z] = f1_0;		//always 1
 }
 
 //------------------------------------------------------------------------------

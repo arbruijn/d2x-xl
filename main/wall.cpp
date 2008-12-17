@@ -278,7 +278,7 @@ void WallReset (CSegment *segP, short nSide)
 
 if (!IS_WALL (i)) {
 #if TRACE
-	con_printf (CONDBG, "Resetting Illegal Wall\n");
+	console.printf (CON_DBG, "Resetting Illegal Wall\n");
 #endif
 	return;
 	}
@@ -419,7 +419,7 @@ void WallDamage (CSegment *segP, short nSide, fix damage)
 
 if (!IS_WALL (nWall)) {
 #if TRACE
-	con_printf (CONDBG, "Damaging illegal tWall\n");
+	console.printf (CON_DBG, "Damaging illegal tWall\n");
 #endif
 	return;
 	}
@@ -1039,7 +1039,7 @@ else {
 nWall = WallNumP (segP, nSide);
 if (!IS_WALL (nWall)) {
 #if TRACE
-	con_printf (CONDBG, "Trying to shut off non existant illusion\n");
+	console.printf (CON_DBG, "Trying to shut off non existant illusion\n");
 #endif
 	return;
 	}
@@ -1077,7 +1077,7 @@ else {
 nWall = WallNumP (segP, nSide);
 if (!IS_WALL (nWall)) {
 #if TRACE
-	con_printf (CONDBG, "Trying to turn on illusion illegal tWall\n");
+	console.printf (CON_DBG, "Trying to turn on illusion illegal tWall\n");
 #endif
 	return;
 	}
@@ -1247,7 +1247,7 @@ if (SEG_IDX (segP) > gameData.segs.nLastSegment) {
 nWall = WallNumP (segP, nSide);
 if (!IS_WALL (nWall)) {
 #if TRACE
- 	con_printf (CONDBG, "Illegal WallToggle\n");
+ 	console.printf (CON_DBG, "Illegal WallToggle\n");
 #endif
 	return;
 	}
@@ -1269,7 +1269,7 @@ void ResetWalls()
 
 if (gameData.walls.nWalls < 0) {
 #if TRACE
-	con_printf (CONDBG, "Illegal gameData.walls.nWalls\n");
+	console.printf (CON_DBG, "Illegal gameData.walls.nWalls\n");
 #endif
 	return;
 	}
@@ -1499,7 +1499,7 @@ if (IS_WALL (nWall)) {
 	}
 #if TRACE
 	if (i == MAX_STUCK_OBJECTS)
-		con_printf (1,
+		console.printf (1,
 			"Warning: Unable to add CObject %i which got stuck in tWall %i to stuckObjects\n",
 			OBJ_IDX (objP), nWall);
 #endif
@@ -1550,7 +1550,7 @@ for (i = 0, stuckObjP = stuckObjects; i < MAX_STUCK_OBJECTS; i++, stuckObjP++)
 			objP->info.xLifeLeft = F1_0/8;
 		else {
 #if TRACE
-			con_printf (1,
+			console.printf (1,
 				"Warning: Stuck CObject of nType %i, expected to be of nType %i, see tWall.c\n",
 				objP->info.nType, OBJ_WEAPON);
 #endif

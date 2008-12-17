@@ -48,8 +48,8 @@ int CalcRodCorners (g3sPoint *btmPoint, fix xBtmWidth, g3sPoint *topPoint, fix x
 vDelta = btmPoint->p3_vec - topPoint->p3_vec;
 //unscale for aspect
 #if RESCALE_ROD
-vDelta.p.x = FixDiv (vDelta.p.x, viewInfo.scale.p.x);
-vDelta.p.y = FixDiv (vDelta.p.y, viewInfo.scale.p.y);
+vDelta.p.x = FixDiv (vDelta.p.x, transformation.m_info.scale.p.x);
+vDelta.p.y = FixDiv (vDelta.p.y, transformation.m_info.scale.p.y);
 #endif
 //calc Perp vector
 //do lots of normalizing to prevent overflowing.  When this code works,
@@ -61,8 +61,8 @@ vRodNorm = CFixVector::Cross(vDelta, vTop);
 CFixVector::Normalize(vRodNorm);
 //scale for aspect
 #if RESCALE_ROD
-vRodNorm.p.x = FixMul (vRodNorm.p.x, viewInfo.scale.p.x);
-vRodNorm.p.y = FixMul (vRodNorm.p.y, viewInfo.scale.p.y);
+vRodNorm.p.x = FixMul (vRodNorm.p.x, transformation.m_info.scale.p.x);
+vRodNorm.p.y = FixMul (vRodNorm.p.y, transformation.m_info.scale.p.y);
 #endif
 //now we have the usable edge.  generate four points
 //vTop points

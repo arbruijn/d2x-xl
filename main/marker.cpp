@@ -144,7 +144,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-int MoveSpawnMarker (tTransformation *posP, short nSegment)
+int MoveSpawnMarker (tObjTransformation *posP, short nSegment)
 {
 	CObject	*markerP;
 

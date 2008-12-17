@@ -182,7 +182,7 @@ if (pvNormal) {
 						(GLfloat) X2F ((*pvNormal)[Z]));
 		//VmVecAdd (&vNormal, pvNormal, &pointList [0]->p3_vec);
 	else {
-		G3RotatePoint (vNormal, *pvNormal, 0);
+		transformation.Rotate (vNormal, *pvNormal, 0);
 		glNormal3f ((GLfloat) X2F (vNormal[X]),
 						(GLfloat) X2F (vNormal[Y]),
 						(GLfloat) X2F (vNormal[Z]));
@@ -212,7 +212,7 @@ else
 		if (bFlip)
 			vNormal = -vNormal;
 		if (!gameStates.ogl.bUseTransform)
-			G3RotatePoint (vNormal, vNormal, 0);
+			transformation.Rotate (vNormal, vNormal, 0);
 		//VmVecInc (&vNormal, &pointList [0]->p3_vec);
 		glNormal3f ((GLfloat) X2F (vNormal[X]),
 						(GLfloat) X2F (vNormal[Y]),
@@ -365,7 +365,7 @@ glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix
 if (gameStates.render.bRearView)
 	glScalef (-1.0f, 1.0f, 1.0f);
-gluPerspective (gameStates.render.glFOV * ((double) viewInfo.zoom / 65536.0),
+gluPerspective (gameStates.render.glFOV * ((double) transformation.m_info.zoom / 65536.0),
 					 (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Height (), ZNEAR, ZFAR);
 gameData.render.ogl.depthScale [X] = (float) (ZFAR / (ZFAR - ZNEAR));
 gameData.render.ogl.depthScale [Y] = (float) (ZNEAR * ZFAR / (ZNEAR - ZFAR));
@@ -388,9 +388,10 @@ if (!gameOpts->render.cameras.bHires) {
 	}
 if ((x != gameStates.ogl.nLastX) || (y != gameStates.ogl.nLastY) || (w != gameStates.ogl.nLastW) || (h != gameStates.ogl.nLastH)) {
 #if !USE_IRRLICHT
-	glViewport ((GLint) x, 
-					(GLint) (screen.Canvas ()->Height () >> gameStates.render.cameras.bActive) - y - h, 
-					(GLsizei) w, (GLsizei) h);
+	int t = screen.Canvas ()->Height ();
+	if (!gameOpts->render.cameras.bHires)
+		t >>= gameStates.render.cameras.bActive;
+	glViewport ((GLint) x, (GLint) (t - y - h), (GLsizei) w, (GLsizei) h);
 #endif
 	gameStates.ogl.nLastX = x;
 	gameStates.ogl.nLastY = y;
@@ -556,12 +557,9 @@ else
 	r_ubitbltc =
 	r_upixelc = 0;
 
-	//if (gameStates.render.nShadowBlurPass < 2)
-		{
-		glMatrixMode (GL_MODELVIEW);
-		glLoadIdentity ();
-		OglViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), nCanvasWidth, nCanvasHeight);
-		}
+	glMatrixMode (GL_MODELVIEW);
+	glLoadIdentity ();
+	OglViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), nCanvasWidth, nCanvasHeight);
 	if (gameStates.ogl.bEnableScissor) {
 		glScissor (
 			CCanvas::Current ()->Left (),
@@ -714,7 +712,7 @@ void OglSwapBuffers (int bForce, int bClear)
 {
 if (!gameStates.menus.nInMenu || bForce) {
 #	if PROFILING
-	if (gameStates.render.bShowProfiler && gameStates.app.bGameRunning && !gameStates.menus.nInMenu && FONT && SMALL_FONT) {
+	if (gameStates.render.bShowProfiler && gameStates.app.bGameRunning && !gameStates.menus.nInMenu && fontManager.Current () && SMALL_FONT) {
 		static time_t t0 = -1000;
 		time_t t1 = clock ();
 		static tProfilerData p;
@@ -765,8 +763,8 @@ if (!nOglTransformCalls && (gameStates.ogl.bUseTransform || bForce)) {
 	glPushMatrix ();
 	glLoadIdentity ();
 	glScalef (1, 1, -1);
-	glMultMatrixf (reinterpret_cast<GLfloat*> (viewInfo.viewf [2].Vec ()));
-	glTranslatef (-viewInfo.posf [1][0], -viewInfo.posf [1][1], -viewInfo.posf [1][2]);
+	glMultMatrixf (reinterpret_cast<GLfloat*> (transformation.m_info.viewf [2].Vec ()));
+	glTranslatef (-transformation.m_info.posf [1][0], -transformation.m_info.posf [1][1], -transformation.m_info.posf [1][2]);
 	}
 ++nOglTransformCalls;
 }

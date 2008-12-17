@@ -488,7 +488,7 @@ if (gameStates.render.vr.nRenderMode != VR_NONE) {
 	else
 		gameStates.render.fonts.bHires = 0;
 	}
-con_resize ();
+console.Resize (0, 0, screen.Width (), screen.Height () / 2);
 return 1;
 }
 

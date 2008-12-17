@@ -592,7 +592,7 @@ CFixVector *TransformGunPoint (CObject *objP, CFixVector *vGunPoints, int nGun,
 										fix xDelay, ubyte nLaserType, CFixVector *vMuzzle, CFixMatrix *mP)
 {
 	int			bSpectate = SPECTATOR (objP);
-	tTransformation	*posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
+	tObjTransformation	*posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
 	CFixMatrix	m, *viewP;
 	CFixVector	v [2];
 #if FULL_COCKPIT_OFFS
@@ -659,7 +659,7 @@ int LaserPlayerFireSpreadDelay (
 #endif
 	CFixMatrix			m;
 	int					bSpectate = SPECTATOR (objP);
-	tTransformation	*posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
+	tObjTransformation	*posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
 
 #if DBG
 if (nLaserType == SMARTMINE_BLOB_ID)

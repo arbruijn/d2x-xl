@@ -48,7 +48,7 @@ for (short i = 0; i < networkData.nJoining; )
 	if (!CmpNetPlayers (networkData.sync [i].player [1].player.callsign, their->player.callsign, 
 							  &networkData.sync [i].player [1].player.network, &their->player.network)) {
 #if 1      
-		con_printf (CONDBG, "Aborting resync for CPlayerData %s.\n", their->player.callsign);
+		console.printf (CON_DBG, "Aborting resync for CPlayerData %s.\n", their->player.callsign);
 #endif
 		DeleteSyncData (i);
 		}
@@ -219,7 +219,7 @@ void NetworkSyncExtras (tNetworkSyncData *syncP)
 Assert (syncP->nExtrasPlayer > -1);
 if (!NetworkIAmMaster ()) {
 #if 1			
-  con_printf (CONDBG, "Hey! I'm not the master and I was gonna send info!\n");
+  console.printf (CON_DBG, "Hey! I'm not the master and I was gonna send info!\n");
 #endif
 	}
 if (syncP->nExtras == 1)
@@ -396,7 +396,7 @@ if (nPackets || (networkData.nStatus == NETSTAT_PLAYING)) {
 #endif
 if ((time_t) SDL_GetTicks () > networkData.toSyncPoll) {	// Poll time expired, re-send request
 #if 1			
-	con_printf (CONDBG, "Re-sending join request.\n");
+	console.printf (CON_DBG, "Re-sending join request.\n");
 #endif
 #if DBG
 	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0 / 2);
@@ -442,7 +442,7 @@ else if (networkData.nStatus == NETSTAT_AUTODL)
 	if (DownloadMission (netGame.szMissionName))
 		return 1;
 #if 1			
-con_printf (CONDBG, "Aborting join.\n");
+console.printf (CON_DBG, "Aborting join.\n");
 #endif
 me.nType = PID_QUIT_JOINING;
 memcpy (me.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
@@ -537,7 +537,7 @@ if (gameStates.multi.nGameType >= IPX_GAME)
 		return 0;
 #if 1			
 if (!(gameData.app.nGameMode & GM_NETWORK) && (gameStates.app.nFunctionMode == FMODE_GAME))
-	con_printf (CONDBG, "Calling NetworkWaitForPlayerInfo () when not in net game.\n");
+	console.printf (CON_DBG, "Calling NetworkWaitForPlayerInfo () when not in net game.\n");
 #endif	
 if (networkData.nStatus == NETSTAT_PLAYING) {
 	Int3 (); //MY GOD! Get Jason...this is the source of many problems
@@ -628,7 +628,7 @@ while (0 < (size = IpxGetPacketData (packet))) {
 				networkData.nSecurityNum = tempNetInfo.nSecurity;
 				if (NetworkWaitForPlayerInfo ()) {
 #if 1			
-					con_printf (CONDBG, "HUH? Game=%d Player=%d\n", 
+					console.printf (CON_DBG, "HUH? Game=%d Player=%d\n", 
 									networkData.nSecurityNum, tmpPlayersInfo->nSecurity);
 #endif
 					memcpy (activeNetGames + choice, reinterpret_cast<ubyte*> (&tempNetInfo), sizeof (tNetgameInfo));

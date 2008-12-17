@@ -27,7 +27,7 @@
 
 // Todo: Create a c-tor for the two tables
 
-OOFModel::CTriangle baseSphereOcta [8] = {
+OOF::CTriangle baseSphereOcta [8] = {
 	{{{-1,0,1},{1,0,1},{0,1,0}},{0,0,0}},
 	{{{1,0,1},{1,0,-1},{0,1,0}},{0,0,0}},
 	{{{1,0,-1},{-1,0,-1},{0,1,0}},{0,0,0}},
@@ -38,7 +38,7 @@ OOFModel::CTriangle baseSphereOcta [8] = {
 	{{{-1,0,1},{-1,0,-1},{0,-1,0}},{0,0,0}}
 };
 
-OOFModel::CQuad baseSphereCube [6] = {
+OOF::CQuad baseSphereCube [6] = {
 	{{{-1,-1,1},{1,-1,1},{1,1,1},{-1,1,1}},{0,0,0}},
 	{{{1,-1,1},{1,-1,-1},{1,1,-1},{1,1,1}},{0,0,0}},
 	{{{1,-1,-1},{-1,-1,-1},{-1,1,-1},{1,1,-1}},{0,0,0}},
@@ -65,7 +65,7 @@ m_pulseP = NULL;
 
 #if !RINGED_SPHERE
 
-CFloatVector *OOF_TriangleCenter (OOFModel::CTriangle *pt)
+CFloatVector *OOF_TriangleCenter (OOF::CTriangle *pt)
 {
 pt->c = (pt->p [0] + pt->p [1] + pt->p [2]) / 3.0f;
 return &pt->c;
@@ -73,7 +73,7 @@ return &pt->c;
 
 //------------------------------------------------------------------------------
 
-static int SplitTriangle (OOFModel::CTriangle *pDest, OOFModel::CTriangle *pSrc)
+static int SplitTriangle (OOF::CTriangle *pDest, OOF::CTriangle *pSrc)
 {
 	int	i, j;
 	CFloatVector	c = pSrc->c;
@@ -96,7 +96,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-static int TesselateSphereTri (OOFModel::CTriangle *pDest, OOFModel::CTriangle *pSrc, int nFaces)
+static int TesselateSphereTri (OOF::CTriangle *pDest, OOF::CTriangle *pSrc, int nFaces)
 {
 	int	i;
 
@@ -107,7 +107,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-static int BuildSphereTri (OOFModel::CTriangle **buf, int *pnFaces, int nTessDepth)
+static int BuildSphereTri (OOF::CTriangle **buf, int *pnFaces, int nTessDepth)
 {
     int		i, j, nFaces = 0;
 	 float	l;
@@ -130,7 +130,7 @@ return !j;
 
 //------------------------------------------------------------------------------
 
-static CFloatVector *OOF_QuadCenter (OOFModel::CQuad *pt)
+static CFloatVector *OOF_QuadCenter (OOF::CQuad *pt)
 {
 pt->c = (pt->p [0] + pt->p [1] + pt->p [2] + pt->p [3]) / 4.0f;
 return &pt->c;
@@ -138,7 +138,7 @@ return &pt->c;
 
 //------------------------------------------------------------------------------
 
-static int SplitQuad (OOFModel::CQuad *pDest, OOFModel::CQuad *pSrc)
+static int SplitQuad (OOF::CQuad *pDest, OOF::CQuad *pSrc)
 {
 	int	i, j;
 	CFloatVector	c = pSrc->c;
@@ -162,7 +162,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-static int TesselateSphereQuad (OOFModel::CQuad *pDest, OOFModel::CQuad *pSrc, int nFaces)
+static int TesselateSphereQuad (OOF::CQuad *pDest, OOF::CQuad *pSrc, int nFaces)
 {
 	int	i;
 
@@ -173,7 +173,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-static int BuildSphereQuad (OOFModel::CQuad **buf, int *pnFaces, int nTessDepth)
+static int BuildSphereQuad (OOF::CQuad **buf, int *pnFaces, int nTessDepth)
 {
     int		i, j, nFaces;
 	 float	l;
@@ -220,8 +220,8 @@ for (i = 0; i < 2; i++) {
 		}
 	}
 j = (m_nFaceNodes == 3) ?
-	 BuildSphereTri (reinterpret_cast<OOFModel::CTriangle **> (buf), &nFaces, m_nTessDepth) :
-	 BuildSphereQuad (reinterpret_cast<OOFModel::CQuad **> (buf), &nFaces, m_nTessDepth);
+	 BuildSphereTri (reinterpret_cast<OOF::CTriangle **> (buf), &nFaces, m_nTessDepth) :
+	 BuildSphereQuad (reinterpret_cast<OOF::CQuad **> (buf), &nFaces, m_nTessDepth);
 delete[] buf [!j];
 if (!m_texCoord.Create (nFaces * m_nFaceNodes)) {
 	delete[] buf [j];
@@ -233,7 +233,7 @@ return nFaces;
 
 //------------------------------------------------------------------------------
 
-OOFModel::CTriangle *RotateSphere (CFloatVector *rotSphereP, CFloatVector *vPosP, float xScale, float yScale, float zScale)
+OOF::CTriangle *RotateSphere (CFloatVector *rotSphereP, CFloatVector *vPosP, float xScale, float yScale, float zScale)
 {
 	CFloatMatrix	m;
 	CFloatVector	h, v, p,
@@ -241,8 +241,8 @@ OOFModel::CTriangle *RotateSphere (CFloatVector *rotSphereP, CFloatVector *vPosP
 					*s = rotSphereP;
 	int			nFaces;
 
-OOF_MatVms2Oof (&m, viewInfo.view[0]);
-OOF_VecVms2Oof (&p, viewInfo.pos);
+OOF_MatVms2Oof (&m, transformation.m_info.view[0]);
+OOF_VecVms2Oof (&p, transformation.m_info.pos);
 for (nFaces = m_nFaces * (m_nFaceNodes + 1); nFaces; nFaces--, vertP++, rotSphereP++) {
 	v = *vertP;
 	v.x *= xScale;
@@ -250,12 +250,12 @@ for (nFaces = m_nFaces * (m_nFaceNodes + 1); nFaces; nFaces--, vertP++, rotSpher
 	v.z *= zScale;
 	rotSphereP = m * (h = v - p);
 	}
-return (OOFModel::CTriangle *) s;
+return (OOF::CTriangle *) s;
 }
 
 //------------------------------------------------------------------------------
 
-OOFModel::CTriangle *SortSphere (OOFModel::CTriangle *sphereP, int left, int right)
+OOF::CTriangle *SortSphere (OOF::CTriangle *sphereP, int left, int right)
 {
 	int	l = left,
 			r = right;
@@ -268,7 +268,7 @@ do {
 		r--;
 	if (l <= r) {
 		if (l < r) {
-			OOFModel::CTriangle h = sphereP [l];
+			OOF::CTriangle h = sphereP [l];
 			sphereP [l] = sphereP [r];
 			sphereP [r] = h;
 			}
@@ -503,7 +503,7 @@ else {
 		for (j = 0; j < h; j++) {
 			for (i = 0; i < nQuads; i++, svP [0]++) {
 				p [i] = svP [0]->vPos * fRadius;
-				G3TransformPoint (p[i], p[i], 0);
+				transformation.Transform (p[i], p[i], 0);
 				if (bTextured)
 					tc [i] = svP [0]->uv;
 				}
@@ -513,7 +513,7 @@ else {
 				for (i = 0; i < nQuads; i++, svP [1]++) {
 					p [i] = svP [1]->vPos;
 					VmVecScale (p + i, p + i, fRadius);
-					G3TransformPoint (p + i, p + i, 0);
+					transformation.Transform (p + i, p + i, 0);
 					if (bTextured) {
 						tc [i].v.u = svP [1]->uv.v.u * nTiles;
 						tc [i].v.v = svP [1]->uv.v.v * nTiles;
@@ -696,20 +696,20 @@ if (gameData.render.shield.nFaces > 0)
 	else {
 		fix nSize = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
 		float	fScale, r = X2F (nSize) /** 1.05f*/;
-		tTransformation *posP = OBJPOS (objP);
+		tObjTransformation *posP = OBJPOS (objP);
 		CFixVector vPos;
 		//gameStates.ogl.bUseTransform = 1;
 		glBlendFunc (GL_ONE, GL_ONE);
-		G3StartInstanceMatrix (*PolyObjPos (objP, &vPos), posP->mOrient);
+		transformation.Begin (*PolyObjPos (objP, &vPos), posP->mOrient);
 		CFloatVector p;
 		gameData.render.shield.Render (&p, r, r, r, red, green, blue, alpha, bmpShield, 1, 1);
-		G3DoneInstance ();
+		transformation.End ();
 		gameStates.ogl.bUseTransform = 0;
 		fScale = gameData.render.shield.Pulse ()->fScale;
-		G3StartInstanceMatrix (vPos, posP->mOrient);
+		transformation.Begin (vPos, posP->mOrient);
 		vPos.SetZero();
 		RenderObjectHalo (&vPos, 3 * nSize / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
-		G3DoneInstance ();
+		transformation.End ();
 		}
 	}
 }
@@ -732,11 +732,11 @@ if (gameData.render.monsterball.nFaces > 0)
 		float r = X2F (objP->info.xSize);
 		gameStates.ogl.bUseTransform = 1;
 		OglSetupTransform (0);
-		G3StartInstanceMatrix (objP->info.position.vPos, objP->info.position.mOrient);
+		transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
 		CFloatVector p;
 		gameData.render.monsterball.Render (&p, r, r, r, red, green, blue, gameData.hoard.monsterball.bm.Buffer () ? 1.0f : alpha,
 														&gameData.hoard.monsterball.bm, 4, 0);
-		G3DoneInstance ();
+		transformation.End ();
 		OglResetTransform (1);
 		gameStates.ogl.bUseTransform = 0;
 		}

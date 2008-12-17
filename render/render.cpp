@@ -117,7 +117,7 @@ void Draw3DReticle (fix nEyeOffset)
 	CFixVector	v1, v2;
 	int			saved_interp_method;
 
-//	if (!viewInfo.bUsePlayerHeadAngles) return;
+//	if (!transformation.m_info.bUsePlayerHeadAngles) return;
 
 for (i = 0; i < 4; i++) {
 	reticlePoints [i].p3_index = -1;
@@ -738,7 +738,7 @@ if (gameStates.app.nFunctionMode == FMODE_EDITOR && nObject == CurObject_index)
 void RenderStartFrame (void)
 {
 if (!++gameStates.render.nFrameCount) {		//wrap!
-	memset(gameData.render.mine.nRotatedLast, 0, sizeof (gameData.render.mine.nRotatedLast));		//clear all to zero
+	memset (gameData.render.mine.nRotatedLast, 0, sizeof (gameData.render.mine.nRotatedLast));		//clear all to zero
 	gameStates.render.nFrameCount = 1;											//and set this frame to 1
 	}
 }
@@ -1134,9 +1134,9 @@ else {
 				nStartSeg = gameData.objs.viewerP->info.nSegment;
 			}
 		}
-	if ((gameData.objs.viewerP == gameData.objs.consoleP) && viewInfo.bUsePlayerHeadAngles) {
+	if ((gameData.objs.viewerP == gameData.objs.consoleP) && transformation.m_info.bUsePlayerHeadAngles) {
 		CFixMatrix mHead, mView;
-		mHead = CFixMatrix::Create(viewInfo.playerHeadAngles);
+		mHead = CFixMatrix::Create(transformation.m_info.playerHeadAngles);
 		// TODO MM
 		mView = gameData.objs.viewerP->info.position.mOrient * mHead;
 		G3SetViewMatrix (gameData.render.mine.viewerEye, mView, gameStates.render.xZoom, bOglScale);
@@ -1151,10 +1151,10 @@ else {
 #else
 		CFixMatrix mHead, mView;
 
-		viewInfo.playerHeadAngles [PA] = 0;
-		viewInfo.playerHeadAngles [BA] = 0x7fff;
-		viewInfo.playerHeadAngles [HA] = 0x7fff;
-		VmAngles2Matrix (&mHead, &viewInfo.playerHeadAngles);
+		transformation.m_info.playerHeadAngles [PA] = 0;
+		transformation.m_info.playerHeadAngles [BA] = 0x7fff;
+		transformation.m_info.playerHeadAngles [HA] = 0x7fff;
+		VmAngles2Matrix (&mHead, &transformation.m_info.playerHeadAngles);
 		VmMatMul (&mView, &gameData.objs.viewerP->info.position.mOrient, &mHead);
 #endif
 		G3SetViewMatrix(gameData.render.mine.viewerEye, mView,  //gameStates.render.xZoom, bOglScale);
@@ -1378,7 +1378,7 @@ if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSe
 	//PrintLog ("RenderRadar\n");
 	RenderRadar ();
 	}
-if (viewInfo.bUsePlayerHeadAngles)
+if (transformation.m_info.bUsePlayerHeadAngles)
 	Draw3DReticle (nEyeOffset);
 gameStates.render.nShadowPass = 0;
 //PrintLog ("G3EndFrame\n");
@@ -1421,8 +1421,8 @@ pi->xDist = CFixVector::Dist (OBJECTS [nObject].info.position.vPos, gameData.ren
 void BuildRenderObjLists (int nSegCount)
 {
 PROF_START
-	CObject		*objP;
-	CSegment		*segP;
+	CObject*		objP;
+	CSegment*	segP;
 	tSegMasks	mask;
 	short			nSegment, nNewSeg, nChild, nSide, sideFlag;
 	int			nListPos;
@@ -1455,7 +1455,7 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 				for (nSide = 0, sideFlag = 1; nSide < 6; nSide++, sideFlag <<= 1) {
 					if (!(mask.sideMask & sideFlag))
 						continue;
-					segP = gameData.segs.segments + nNewSeg;
+					segP = SEGMENTS + nNewSeg;
 					if (WALL_IS_DOORWAY (segP, nSide, NULL) & WID_FLY_FLAG) {	//can explosion migrate through
 						nChild = segP->children [nSide];
 						if (gameData.render.mine.bVisible [nChild] == gameData.render.mine.nVisible)
@@ -1523,7 +1523,7 @@ void InitSegZRef (int i, int j, int nThread)
 for (; i < j; i++, ps++) {
 	nSegment = gameData.render.mine.nSegRenderList [i];
 	COMPUTE_SEGMENT_CENTER_I (&v, nSegment);
-	G3TransformPoint(v, v, 0);
+	transformation.Transform(v, v, 0);
 	v [Z] += gameData.segs.segRads [1] [nSegment];
 	if (zMax < v [Z])
 		zMax = v [Z];
@@ -1575,11 +1575,11 @@ if (!RENDERPATH) {
 void CalcRenderDepth (void)
 {
 CFixVector vCenter;
-G3TransformPoint(vCenter, *SEGMENT_CENTER_I(gameData.objs.viewerP->info.nSegment), 0);
+transformation.Transform(vCenter, *SEGMENT_CENTER_I(gameData.objs.viewerP->info.nSegment), 0);
 CFixVector v;
-G3TransformPoint(v, gameData.segs.vMin, 0);
+transformation.Transform(v, gameData.segs.vMin, 0);
 fix d1 = CFixVector::Dist(v, vCenter);
-G3TransformPoint(v, gameData.segs.vMax, 0);
+transformation.Transform(v, gameData.segs.vMax, 0);
 fix d2 = CFixVector::Dist(v, vCenter);
 
 if (d1 < d2)

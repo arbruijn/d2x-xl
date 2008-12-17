@@ -709,25 +709,25 @@ void ShowWeaponStatus (void)
 #if TRACE
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 	if (LOCALPLAYER.primaryWeaponFlags & (1 << i))
-		con_printf (CONDBG, "HAVE");
+		console.printf (CON_DBG, "HAVE");
 	else
-		con_printf (CONDBG, "    ");
-	con_printf (CONDBG, 
+		console.printf (CON_DBG, "    ");
+	console.printf (CON_DBG, 
 		"  Weapon: %20s, charges: %4i\n", 
 		PRIMARY_WEAPON_NAMES(i), LOCALPLAYER.primaryAmmo [i]);
 	}
-	con_printf (CONDBG, "\n");
+	console.printf (CON_DBG, "\n");
 	for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
 		if (LOCALPLAYER.secondaryWeaponFlags & (1 << i))
-			con_printf (CONDBG, "HAVE");
+			console.printf (CON_DBG, "HAVE");
 		else
-			con_printf (CONDBG, "    ");
-		con_printf (CONDBG, 
+			console.printf (CON_DBG, "    ");
+		console.printf (CON_DBG, 
 			"  Weapon: %20s, charges: %4i\n", 
 			SECONDARY_WEAPON_NAMES(i), LOCALPLAYER.secondaryAmmo [i]);
 	}
-con_printf (CONDBG, "\n");
-con_printf (CONDBG, "\n");
+console.printf (CON_DBG, "\n");
+console.printf (CON_DBG, "\n");
 #endif
 }
 

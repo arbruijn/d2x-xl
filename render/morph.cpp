@@ -336,9 +336,9 @@ for (i = 0; i < sort_n; i++) {
 	else {
 		CFixMatrix orient;
 		orient = CFixMatrix::Create(animAngles[mn]);
-		G3StartInstanceMatrix(pmP->subModels.offsets[mn], orient);
+		transformation.Begin(pmP->subModels.offsets[mn], orient);
 		MorphDrawModel (pmP, mn, animAngles, light, mdP, nModel);
-		G3DoneInstance ();
+		transformation.End ();
 		}
 	}
 }
@@ -357,12 +357,12 @@ Assert (mdP != NULL);
 Assert (objP->rType.polyObjInfo.nModel < gameData.models.nPolyModels);
 pmP = gameData.models.polyModels+objP->rType.polyObjInfo.nModel;
 light = ComputeObjectLight (objP, NULL);
-G3StartInstanceMatrix(objP->info.position.vPos, objP->info.position.mOrient);
+transformation.Begin(objP->info.position.vPos, objP->info.position.mOrient);
 G3SetModelPoints (gameData.models.polyModelPoints);
 gameData.render.vertP = gameData.models.fPolyModelVerts;
 MorphDrawModel (pmP, 0, objP->rType.polyObjInfo.animAngles, light, mdP, objP->rType.polyObjInfo.nModel);
 gameData.render.vertP = NULL;
-G3DoneInstance ();
+transformation.End ();
 
 #ifdef NEWDEMO
 if (gameData.demo.nState == ND_STATE_RECORDING)

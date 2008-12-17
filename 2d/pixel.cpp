@@ -56,7 +56,7 @@ void gr_upixel( int x, int y )
 
 void gr_pixel( int x, int y )
 {
-	if ((x<0) || (y<0) || (x>=GWIDTH) || (y>=GHEIGHT)) return;
+	if ((x<0) || (y<0) || (x>=CCanvas::Current ()->Width ()) || (y>=CCanvas::Current ()->Height ())) return;
 	gr_upixel (x, y);
 }
 

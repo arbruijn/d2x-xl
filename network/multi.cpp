@@ -4957,7 +4957,7 @@ if (nType > MULTI_MAX_TYPE) {
 	fprintf (ReceiveLogFile, "Packet nType: %d Len:%d TT = %d\n", nType, len, TTRecv [nType]);
 	fflush (RecieveLogFile);
 #endif
-con_printf (CON_VERBOSE, "multi data %d\n", nType);
+console.printf (CON_VERBOSE, "multi data %d\n", nType);
 #if !DBG
 if (nType <= MULTI_MAX_TYPE) {
 	tMultiHandlerInfo	*pmh = multiHandlers + nType;

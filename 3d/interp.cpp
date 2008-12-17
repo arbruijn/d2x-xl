@@ -100,6 +100,10 @@ void RotatePointList (g3sPoint *dest, CFixVector *src, g3sNormal *norms, int n, 
 PROF_START
 	CFloatVector	*pfv = gameData.models.fPolyModelVerts + o;
 	CFloatVector	fScale;
+	bool				bScale;
+
+if (bScale = !gameData.models.vScale.IsZero ())
+	fScale.Assign (gameData.models.vScale);
 
 dest += o;
 if (norms)
@@ -113,43 +117,36 @@ while (n--) {
 			norms->vNormal[Y] /= norms->nFaces;
 			norms->vNormal[Z] /= norms->nFaces;
 			norms->nFaces = 1;
-			CFloatVector::Normalize(norms->vNormal);
+			CFloatVector::Normalize (norms->vNormal);
 			}
 		dest->p3_normal = *norms++;
 		}
 	else
 #endif
 		dest->p3_normal.nFaces = 0;
-	if (gameData.models.vScale.IsZero ())
-		fScale.Create (1 / 65536.0f, 1 / 65536.0f, 1 / 65536.0f);
-	else
-		fScale.Assign (gameData.models.vScale);
-		fScale /= 65536.0f;
 	if (gameStates.ogl.bUseTransform) {
-		(*pfv)[X] = (*src)[X] * fScale [X];
-		(*pfv)[Y] = (*src)[Y] * fScale [Y];
-		(*pfv)[Z] = (*src)[Z] * fScale [Z];
+		pfv->Assign (*src);
+		if (bScale)
+			pfv->Scale (fScale);
 		}
 	else {
 		if (!gameData.models.vScale.IsZero ()) {
 			CFixVector v = *src;
 			v *= gameData.models.vScale;
 #if 1
-			G3TransformPoint(dest->p3_vec, v, 0);
+			transformation.Transform (dest->p3_vec, v, 0);
 #else
 			G3TransformAndEncodePoint (dest, &v);
 #endif
 			}
 		else {
 #if 1
-			G3TransformPoint(dest->p3_vec, *src, 0);
+			transformation.Transform (dest->p3_vec, *src, 0);
 #else
 			G3TransformAndEncodePoint (dest, src);
 #endif
 			}
-		(*pfv)[X] = (float) dest->p3_vec[X] / 65536.0f;
-		(*pfv)[Y] = (float) dest->p3_vec[Y] / 65536.0f;
-		(*pfv)[Z] = (float) dest->p3_vec[Z] / 65536.0f;
+		pfv->Assign (dest->p3_vec);
 		}
 	dest->p3_index = o++;
 	dest->p3_src = *src++;
@@ -435,16 +432,16 @@ if (!mtP->nCount++) {
 #define CHECK_NORMAL_FACING	0
 
 int G3DrawPolyModel (
-	CObject		*objP,
-	void			*modelDataP,
-	CBitmap		**modelBitmaps,
-	CAngleVector	*pAnimAngles,
-	CFixVector	*vOffset,
-	fix			xModelLight,
-	fix			*xGlowValues,
-	tRgbaColorf	*colorP,
-	tPOFObject  *po,
-	int			nModel)
+	CObject*			objP,
+	void*				modelDataP,
+	CBitmap**		modelBitmaps,
+	CAngleVector*	pAnimAngles,
+	CFixVector*		vOffset,
+	fix				xModelLight,
+	fix*				xGlowValues,
+	tRgbaColorf*	colorP,
+	POF::CModel*	po,
+	int				nModel)
 {
 	ubyte *p = reinterpret_cast<ubyte*> (modelDataP);
 	short	nTag;
@@ -477,7 +474,7 @@ for (;;) {
 		break;
 	else if (nTag == OP_DEFPOINTS) {
 		int n = WORDVAL (p+2);
-		RotatePointList (modelPointList, VECPTR (p+4), po ? po->vertNorms.Buffer () : NULL, n, 0);
+		RotatePointList (modelPointList, VECPTR (p+4), po ? po->m_vertNorms.Buffer () : NULL, n, 0);
 		p += n * sizeof (CFixVector) + 4;
 		break;
 		}
@@ -485,7 +482,7 @@ for (;;) {
 		int n = WORDVAL (p+2);
 		int s = WORDVAL (p+4);
 
-		RotatePointList (modelPointList, VECPTR (p+8), po ? po->vertNorms.Buffer () : NULL, n, s);
+		RotatePointList (modelPointList, VECPTR (p+8), po ? po->m_vertNorms.Buffer () : NULL, n, s);
 		p += n * sizeof (CFixVector) + 8;
 		}
 	else if (nTag == OP_FLATPOLY) {
@@ -529,7 +526,7 @@ for (;;) {
 
 			//calculate light from surface Normal
 			if (nGlow < 0) {			//no glow
-				l = -CFixVector::Dot(viewInfo.view[0].FVec (), *VECPTR(p+16));
+				l = -CFixVector::Dot(transformation.m_info.view[0].FVec (), *VECPTR(p+16));
 				l = f1_0 / 4 + (l * 3) / 4;
 				l = FixMul (l, xModelLight);
 				}
@@ -586,8 +583,8 @@ for (;;) {
 		}
 	else if (nTag == OP_RODBM) {
 		g3sPoint rodBotP, rodTopP;
-		G3TransformAndEncodePoint(&rodBotP, *VECPTR (p+20));
-		G3TransformAndEncodePoint(&rodTopP, *VECPTR (p+4));
+		G3TransformAndEncodePoint (&rodBotP, *VECPTR (p+20));
+		G3TransformAndEncodePoint (&rodTopP, *VECPTR (p+4));
 		G3DrawRodTexPoly (modelBitmaps [WORDVAL (p+2)], &rodBotP, WORDVAL (p+16), &rodTopP, WORDVAL (p+32), f1_0, NULL);
 		p += 36;
 		}
@@ -599,14 +596,14 @@ for (;;) {
 		vo = *VECPTR (p+4);
 		if (!gameData.models.vScale.IsZero ())
 			vo *= gameData.models.vScale;
-		G3StartInstanceAngles (vo, va);
+		transformation.Begin (vo, va);
 		if (vOffset)
 			vo += *vOffset;
 		if (!G3DrawPolyModel (objP, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, &vo, xModelLight, xGlowValues, colorP, po, nModel)) {
-			G3DoneInstance ();
+			transformation.End ();
 			return 0;
 			}
-		G3DoneInstance ();
+		transformation.End ();
 		p += 20;
 		}
 	else if (nTag == OP_GLOW) {
@@ -682,7 +679,7 @@ for (;;) {
 			fix light;
 			//calculate light from surface Normal
 			if (nGlow < 0) {			//no glow
-				light = -CFixVector::Dot(viewInfo.view [0].FVec (), *VECPTR (p+16));
+				light = -CFixVector::Dot(transformation.m_info.view [0].FVec (), *VECPTR (p+16));
 				light = f1_0/4 + (light*3)/4;
 				light = FixMul (light, xModelLight);
 				}
@@ -729,8 +726,8 @@ for (;;) {
 
 		case OP_RODBM: {
 			g3sPoint rodBotP, rodTopP;
-			G3TransformAndEncodePoint(&rodBotP, *VECPTR (p+20));
-			G3TransformAndEncodePoint(&rodTopP, *VECPTR (p+4));
+			G3TransformAndEncodePoint (&rodBotP, *VECPTR (p+20));
+			G3TransformAndEncodePoint (&rodTopP, *VECPTR (p+4));
 			G3DrawRodTexPoly (modelBitmaps [WORDVAL (p+2)], &rodBotP, WORDVAL (p+16), &rodTopP, WORDVAL (p+32), f1_0, NULL);
 			p += 36;
 			break;
@@ -741,11 +738,11 @@ for (;;) {
 			CFixVector	vo = *VECPTR (p+4);
 			if (!gameData.models.vScale.IsZero ())
 				vo *= gameData.models.vScale;
-			G3StartInstanceAngles(vo, *va);
+			transformation.Begin(vo, *va);
 			if (vOffset)
 				vo += *vOffset;
 			G3DrawPolyModel (NULL, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, &vo, xModelLight, xGlowValues, NULL, NULL, nModel);
-			G3DoneInstance ();
+			transformation.End ();
 			p += 20;
 			break;
 			}

@@ -29,7 +29,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-void G3CountASEModelItems (ASEModel::CModel *pa, RenderModel::CModel *pm)
+void G3CountASEModelItems (ASE::CModel *pa, RenderModel::CModel *pm)
 {
 pm->m_nFaces = pa->m_nFaces;
 pm->m_nSubModels = pa->m_nSubModels;
@@ -39,10 +39,10 @@ pm->m_nFaceVerts = pa->m_nFaces * 3;
 
 //------------------------------------------------------------------------------
 
-void G3GetASEModelItems (int nModel, ASEModel::CModel *pa, RenderModel::CModel *pm, float fScale)
+void G3GetASEModelItems (int nModel, ASE::CModel *pa, RenderModel::CModel *pm, float fScale)
 {
-	ASEModel::CSubModel*		psa;
-	ASEModel::CFace*			pfa;
+	ASE::CSubModel*		psa;
+	ASE::CFace*			pfa;
 	RenderModel::CSubModel*	psm;
 	RenderModel::CFace*		pmf = pm->m_faces.Buffer ();
 	RenderModel::CVertex*	pmv = pm->m_faceVerts.Buffer ();
@@ -119,7 +119,7 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 
 int G3BuildModelFromASE (CObject *objP, int nModel)
 {
-	ASEModel::CModel*				pa = gameData.models.modelToASE [1][nModel];
+	ASE::CModel*				pa = gameData.models.modelToASE [1][nModel];
 	RenderModel::CModel*	pm;
 	int						i, j;
 

@@ -29,7 +29,7 @@ static int bErrMsg = 0;
 #define ASE_ROTATE_MODEL	1
 #define ASE_FLIP_TEXCOORD	1
 
-using namespace ASEModel;
+using namespace ASE;
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

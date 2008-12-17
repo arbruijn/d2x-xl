@@ -433,7 +433,7 @@ FORALL_ACTOR_OBJS (objP, i) {
 	if (objP->info.nType == OBJ_REACTOR) {
 		if (gameStates.gameplay.nReactorCount && !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)) {
 #if TRACE
-			con_printf (1, "Warning: Two or more control centers including %i and %i\n", 
+			console.printf (1, "Warning: Two or more control centers including %i and %i\n", 
 							gameData.reactor.states [0].nObject, i);
 #endif
 			}			
@@ -473,7 +473,7 @@ FORALL_ACTOR_OBJS (objP, i) {
 		//InitBossData (extraGameInfo [0].nBossCount - 1, OBJ_IDX (objP));
 		if (BOSS_COUNT > 1) {
 #if TRACE
-			con_printf (1, "Warning: Two or more bosses including %i and %i\n", OBJ_IDX (objP), nBossObj);
+			console.printf (1, "Warning: Two or more bosses including %i and %i\n", OBJ_IDX (objP), nBossObj);
 #endif
 			}			
 		else
@@ -484,7 +484,7 @@ FORALL_ACTOR_OBJS (objP, i) {
 #if DBG
 if ((BOSS_COUNT <= 0) && !gameStates.gameplay.nReactorCount) {
 #if TRACE
-	con_printf (1, "Warning: No control center.\n");
+	console.printf (1, "Warning: No control center.\n");
 #endif
 	return;
 	}
@@ -510,7 +510,7 @@ else if (BOSS_COUNT > 0) {
 void SpecialReactorStuff (void)
 {
 #if TRACE
-con_printf (CONDBG, "Mucking with reactor countdown time.\n");
+console.printf (CON_DBG, "Mucking with reactor countdown time.\n");
 #endif
 if (gameData.reactor.bDestroyed) {
 	gameData.reactor.countdown.nTimer += 

@@ -178,7 +178,7 @@ if (RENDERPATH && gameOpts->render.ship.bBullets) {
 
 			if (bDoEffect) {
 					int			bSpectate = SPECTATOR (objP);
-					tTransformation	*posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
+					tObjTransformation	*posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
 					CFixVector	vEmitter, vDir;
 					CFixMatrix	m, *viewP;
 
@@ -235,7 +235,7 @@ if (bHires >= 0) {
 
 		if (bDoEffect) {
 				int			bSpectate = SPECTATOR (objP);
-				tTransformation	*posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
+				tObjTransformation	*posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
 				CFixVector	*vGunPoints, vEmitter, vDir;
 				CFixMatrix	m, *viewP;
 

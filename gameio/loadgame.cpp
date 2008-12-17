@@ -296,7 +296,7 @@ gameData.multiplayer.nPlayerPositions = nPlayers;
 #if DBG
 if (gameData.multiplayer.nPlayerPositions != (bCoop ? 4 : 8)) {
 #if TRACE
-	//con_printf (CON_VERBOSE, "--NOT ENOUGH MULTIPLAYER POSITIONS IN THIS MINE!--\n");
+	//console.printf (CON_VERBOSE, "--NOT ENOUGH MULTIPLAYER POSITIONS IN THIS MINE!--\n");
 #endif
 	//Int3 (); // Not enough positions!!
 }

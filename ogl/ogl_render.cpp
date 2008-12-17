@@ -329,7 +329,7 @@ return 0;
 void gr_upoly_tmap (int nverts, int *vert )
 {
 #if TRACE
-con_printf (CONDBG, "gr_upoly_tmap: unhandled\n");//should never get called
+console.printf (CON_DBG, "gr_upoly_tmap: unhandled\n");//should never get called
 #endif
 }
 
@@ -338,7 +338,7 @@ con_printf (CONDBG, "gr_upoly_tmap: unhandled\n");//should never get called
 void DrawTexPolyFlat (CBitmap *bmP, int nVertices, g3sPoint **vertlist)
 {
 #if TRACE
-con_printf (CONDBG, "DrawTexPolyFlat: unhandled\n");//should never get called
+console.printf (CON_DBG, "DrawTexPolyFlat: unhandled\n");//should never get called
 #endif
 }
 
@@ -517,7 +517,7 @@ if (!bDepthSort) {
 #if USE_VERTNORMS
 		if (pvNormal) {
 			vNormal.Assign (*pvNormal);
-			G3RotatePoint(vNormal, vNormal, 0);
+			transformation.Rotate(vNormal, vNormal, 0);
 			}
 	else
 			G3CalcNormal (pointList, &vNormal);
@@ -960,8 +960,8 @@ if ((gameOpts->render.bDepthSort > 0) /*|| (gameOpts->render.effects.bSoftPartic
 	}
 else {
 	OglActiveTexture (GL_TEXTURE0, 0);
-	v1 = vPos - viewInfo.pos;
-	pv = viewInfo.view [0] * v1;
+	v1 = vPos - transformation.m_info.pos;
+	pv = transformation.m_info.view [0] * v1;
 	x = (double) X2F (pv[X]);
 	y = (double) X2F (pv[Y]);
 	z = (double) X2F (pv[Z]);

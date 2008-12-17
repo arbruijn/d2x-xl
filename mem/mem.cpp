@@ -319,7 +319,7 @@ else if (!buffer)
 	newbuffer = MemAlloc (size, var, pszFile, nLine, 0);
 else if (!(newbuffer = realloc (buffer, size))) {
 #if TRACE
-	con_printf (CON_MALLOC, "reallocating %d bytes in %s:%d failed.\n", size, pszFile, nLine);
+	console.printf (CON_MALLOC, "reallocating %d bytes in %s:%d failed.\n", size, pszFile, nLine);
 #endif
 	}
 #else

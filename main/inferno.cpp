@@ -124,7 +124,6 @@ tGameOptions *gameOpts = gameOptions;
 
 void EvalArgs (void);
 void GetAppFolders (void);
-void PrintCmdLineHelp (void);
 void InitGameStates (void);
 
 //--------------------------------------------------------------------------
@@ -233,7 +232,7 @@ else
 gameStates.menus.bDrawCopyright = 0;
 CCanvas::SetCurrent (NULL);
 fontManager.SetCurrent (GAME_FONT);
-FONT->StringSize ("V2.2", w, h, aw);
+fontManager.Current ()->StringSize ("V2.2", w, h, aw);
 fontManager.SetColorRGBi (RGBA_PAL (63, 47, 0), 1, 0, 0);
 GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - GAME_FONT->Height () - 2, "visit www.descent2.de");
 fontManager.SetColorRGBi (RGBA_PAL (23, 23, 23), 1, 0, 0);
@@ -244,16 +243,16 @@ if (bVertigo < 0)
 	bVertigo = CFile::Exist ("d2x.hog", gameFolders.szMissionDir, 0);
 if (bVertigo) {
 	fontManager.SetCurrent (MEDIUM2_FONT);
-	FONT->StringSize (TXT_VERTIGO, w, h, aw);
+	fontManager.Current ()->StringSize (TXT_VERTIGO, w, h, aw);
 	GrPrintF (NULL, CCanvas::Current ()->Width () - w - SUBVER_XOFFS, 
 				 y + (gameOpts->menus.altBg.bHave ? h + 2 : 0), TXT_VERTIGO);
 	}
 fontManager.SetCurrent (MEDIUM2_FONT);
-FONT->StringSize (D2X_NAME, w, h, aw);
+fontManager.Current ()->StringSize (D2X_NAME, w, h, aw);
 GrPrintF (NULL, CCanvas::Current ()->Width () - w - SUBVER_XOFFS, 
 			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0), D2X_NAME);
 fontManager.SetCurrent (SMALL_FONT);
-FONT->StringSize (VERSION, ws, hs, aw);
+fontManager.Current ()->StringSize (VERSION, ws, hs, aw);
 fontManager.SetColorRGBi (D2BLUE_RGBA, 1, 0, 0);
 GrPrintF (NULL, CCanvas::Current ()->Width () - ws - 1, 
 			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0) + (h - hs) / 2, VERSION);
@@ -341,24 +340,17 @@ exit (0);
 void PrintBanner (void)
 {
 #if (defined (_WIN32) || defined (__unix__))
-con_printf(CON_NORMAL, "\nDESCENT 2 %s v%d.%d.%d\n", VERSION_TYPE, D2X_MAJOR, D2X_MINOR, D2X_MICRO);
+console.printf(CON_NORMAL, "\nDESCENT 2 %s v%d.%d.%d\n", VERSION_TYPE, D2X_MAJOR, D2X_MINOR, D2X_MICRO);
 #elif defined(__macosx__)
-con_printf(CON_NORMAL, "\nDESCENT 2 %s -- %s\n", VERSION_TYPE, DESCENT_VERSION);
+console.printf(CON_NORMAL, "\nDESCENT 2 %s -- %s\n", VERSION_TYPE, DESCENT_VERSION);
 #endif
 if (hogFileManager.D2XFiles ().bInitialized)
-	con_printf ((int) CON_NORMAL, "  Vertigo Enhanced\n");
-con_printf(CON_NORMAL, "\nBuilt: %s %s\n", __DATE__, __TIME__);
+	console.printf ((int) CON_NORMAL, "  Vertigo Enhanced\n");
+console.printf(CON_NORMAL, "\nBuilt: %s %s\n", __DATE__, __TIME__);
 #ifdef __VERSION__
-con_printf(CON_NORMAL, "Compiler: %s\n", __VERSION__);
+console.printf(CON_NORMAL, "Compiler: %s\n", __VERSION__);
 #endif
-con_printf(CON_NORMAL, "\n");
-if (FindArg ("-?") || FindArg ("-help") || FindArg ("?") || FindArg ("-h")) {
-	PrintCmdLineHelp ();
-   set_exit_message ("");
-#ifdef __MINGW32__
-	exit (0);  /* mingw hangs on this return.  dunno why */
-#endif
-	}
+console.printf(CON_NORMAL, "\n");
 }
 
 // ----------------------------------------------------------------------------
@@ -406,7 +398,7 @@ else {
 		char filename [14];
 
 #if TRACE	
-	con_printf(CONDBG, "\nShowing loading screen...\n"); fflush (fErr);
+	console.printf(CON_DBG, "\nShowing loading screen...\n"); fflush (fErr);
 #endif
 	strcpy (filename, gameStates.menus.bHires ? "descentb.pcx" : "descent.pcx");
 	if (!CFile::Exist (filename, gameFolders.szDataDir, 0))
@@ -873,7 +865,6 @@ if (FindArg ("-debug-printlog") || FindArg ("-printlog")) {
 #endif
 	}
 PrintLog ("%s\n", DESCENT_VERSION);
-con_init ();  // Initialise the console
 #ifdef D2X_MEM_HANDLER
 MemInit ();
 #endif
@@ -900,6 +891,7 @@ if (*szAutoHogFile && *szAutoMission) {
 ReadConfigFile ();
 if (!InitGraphics ())
 	return 1;
+console.Setup (SMALL_FONT, &screen, CON_NUM_LINES, 0, 0, screen.Width (), screen.Height () / 2);
 if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 	InitializeGauge ();
 else {

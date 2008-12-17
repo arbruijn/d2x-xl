@@ -54,7 +54,7 @@ if (bInitSinCos) {
 	bInitSinCos = 0;
 	}
 n = objP->info.position.vPos;
-G3TransformPoint (n, n, 0);
+transformation.Transform (n, n, 0);
 if ((m = n.Mag()) > RADAR_RANGE * F1_0)
 	return;
 if (m) {

@@ -311,7 +311,7 @@ if (gameStates.multi.nGameType >= IPX_GAME)
 		return -1;
 #if 1			
 if (!(gameData.app.nGameMode & GM_NETWORK) && (gameStates.app.nFunctionMode == FMODE_GAME))
-	con_printf (CONDBG, "Calling NetworkListen () when not in net game.\n");
+	console.printf (CON_DBG, "Calling NetworkListen () when not in net game.\n");
 #endif
 networkData.bWaitingForPlayerInfo = 1;
 networkData.nSecurityFlag = NETSECURITY_OFF;
@@ -536,7 +536,7 @@ void NetworkHandlePingReturn (ubyte nPlayer)
 {
 if ((nPlayer >= gameData.multiplayer.nPlayers) || !pingStats [nPlayer].launchTime) {
 #if 1			
-	 con_printf (CONDBG, "Got invalid PING RETURN from %s!\n", gameData.multiplayer.players [nPlayer].callsign);
+	 console.printf (CON_DBG, "Got invalid PING RETURN from %s!\n", gameData.multiplayer.players [nPlayer].callsign);
 #endif
    return;
 	}
@@ -603,7 +603,7 @@ else if (rank > 8)
 	rank = 8;
 
 #if 1			
-con_printf (CONDBG, "Rank is %d (%s)\n", rank+1, pszRankStrings [rank+1]);
+console.printf (CON_DBG, "Rank is %d (%s)\n", rank+1, pszRankStrings [rank+1]);
 #endif
 return (rank+1);
  }

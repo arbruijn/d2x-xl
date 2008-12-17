@@ -647,7 +647,7 @@ else {
 			break;
 		}
 	}
-FONT->StringSize (szText, w, h, aw);
+fontManager.Current ()->StringSize (szText, w, h, aw);
 return h;
 }
 
@@ -806,7 +806,7 @@ void KCDrawQuestion (kcItem *item)
 	int x, w, h, aw;
 
 
-	FONT->StringSize ("?", w, h, aw);
+	fontManager.Current ()->StringSize ("?", w, h, aw);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21*fades [looper]/31, 0, 24*fades [looper]/31));
 	if (++looper>63) 
 		looper=0;
@@ -932,7 +932,7 @@ MouseGetDeltaZ (&dx, &dy, &dz);
 #else
 MouseGetDelta (&dx, &dy);
 #endif
-con_printf (CON_VERBOSE, "mouse: %3d %3d\n", dx, dy);
+console.printf (CON_VERBOSE, "mouse: %3d %3d\n", dx, dy);
 dx = abs (dx);
 dy = abs (dy);
 if (max (dx, dy) > 20) {
@@ -1387,7 +1387,7 @@ for (;;) {
 		case KEYDBGGED+KEY_F12:	{
 			FILE *fp;
 #if TRACE	
-			con_printf (CONDBG, "start table creation\n");
+			console.printf (CON_DBG, "start table creation\n");
 #endif
 			LinkTableEntries (1 | 2 | 4 | 8);
 			fp = fopen ("KConfig.cod", "wt");
@@ -1435,7 +1435,7 @@ for (;;) {
 			fprintf (fp, "};");
 			fclose (fp);
 #if TRACE	
-			con_printf (CONDBG, "end table creation\n");
+			console.printf (CON_DBG, "end table creation\n");
 #endif
 			}
 		break;
@@ -1574,7 +1574,7 @@ if (bRedraw && gameOpts->menus.nStyle)
 		}
 	}
 	if (item->w1) {
-		FONT->StringSize (szText, w, h, aw);
+		fontManager.Current ()->StringSize (szText, w, h, aw);
 
 		if (is_current)
 			CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 0, 24));
@@ -1697,7 +1697,7 @@ read_head_tracker ()
 		return;
 	}
 
-	viewInfo.bUsePlayerHeadAngles = 0;
+	transformation.m_info.bUsePlayerHeadAngles = 0;
 	if (Last_angles_read)	{
 		fix yaw1 = yaw;
 	

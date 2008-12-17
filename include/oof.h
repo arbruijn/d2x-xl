@@ -58,7 +58,7 @@
 
 typedef char tChunkType [4];
 
-namespace OOFModel {
+namespace OOF {
 
 class CSubModel;
 class CModel;

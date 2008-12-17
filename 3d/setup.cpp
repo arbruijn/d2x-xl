@@ -42,24 +42,12 @@ void _CDECL_ g3_close(void) {}
 //start the frame
 void G3StartFrame (int bFlat, int bResetColorBuf)
 {
-	fix s;
-
 //set int w,h & fixed-point w,h/2
 xCanvW2 = (nCanvasWidth = CCanvas::Current ()->Width ()) << 15;
 xCanvH2 = (nCanvasHeight = CCanvas::Current ()->Height ()) << 15;
 fxCanvW2 = X2F (xCanvW2);
 fxCanvH2 = X2F (xCanvH2);
-//compute aspect ratio for this canvas
-s = FixMulDiv (screen.Aspect (), nCanvasHeight, nCanvasWidth);
-if (s <= f1_0) {	   //scale x
-	viewInfo.windowScale [X] = s;
-	viewInfo.windowScale [Y] = f1_0;
-	}
-else {
-	viewInfo.windowScale [Y] = FixDiv (f1_0, s);
-	viewInfo.windowScale [X] = f1_0;
-	}
-viewInfo.windowScale [Z] = f1_0;		//always 1
+transformation.ComputeAspect ();
 InitFreePoints ();
 OglStartFrame (bFlat, bResetColorBuf);
 gameStates.render.bHeadlightOn = 1;

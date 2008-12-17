@@ -543,7 +543,7 @@ switch (gameStates.app.bEndLevelSequence) {
 				int nObject = CreateCamera (gameData.objs.consoleP);
 				if (nObject == -1) { //can't get CObject, so abort
 #if TRACE
-					con_printf (1, "Can't get CObject for endlevel sequence.  Aborting endlevel sequence.\n");
+					console.printf (1, "Can't get CObject for endlevel sequence.  Aborting endlevel sequence.\n");
 #endif
 					StopEndLevelSequence ();
 					return;
@@ -767,12 +767,12 @@ if (xEyeOffset)
 	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient.RVec() * (xEyeOffset);
 G3SetViewMatrix (gameData.objs.viewerP->info.position.vPos, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, 1);
 CCanvas::Current ()->Clear (BLACK_RGBA);
-G3StartInstanceMatrix (CFixVector::ZERO, mSurfaceOrient);
+transformation.Begin (CFixVector::ZERO, mSurfaceOrient);
 DrawStars ();
-G3DoneInstance ();
+transformation.End ();
 //draw satellite
 G3TransformAndEncodePoint (&p, gameData.endLevel.satellite.vPos);
-G3RotateDeltaVec (vDelta, gameData.endLevel.satellite.vUp);
+transformation.RotateScaled (vDelta, gameData.endLevel.satellite.vUp);
 G3AddDeltaVec (&pTop, &p, &vDelta);
 if (!(p.p3_codes & CC_BEHIND)&& !(p.p3_flags & PF_OVERFLOW)) {
 	int imSave = gameStates.render.nInterpolationMethod;
@@ -825,7 +825,7 @@ for (i = 0; i < MAX_STARS; i++) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (intensity, intensity, intensity));
 		intensity-=3;
 		}
-	G3RotateDeltaVec (p.p3_vec, stars [i]);
+	transformation.RotateScaled (p.p3_vec, stars [i]);
 	G3EncodePoint (&p);
 	if (p.p3_codes == 0) {
 		p.p3_flags &= ~PF_PROJECTED;
@@ -1131,7 +1131,7 @@ if (!cf.Open (filename, gameFolders.szDataDir, "rb", gameStates.app.bD1Mission))
 	if (!cf.Open (filename, gameFolders.szDataDir, "rb", gameStates.app.bD1Mission)) {
 		if (nLevel == 1) {
 #if TRACE
-			con_printf (CONDBG, "Cannot load file text\nof binary version of\n'<%s>'\n", filename);
+			console.printf (CON_DBG, "Cannot load file text\nof binary version of\n'<%s>'\n", filename);
 #endif
 			gameStates.app.bEndLevelDataLoaded = 0; // won't be able to play endlevel sequence
 			return;

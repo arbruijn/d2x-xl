@@ -878,8 +878,8 @@ if (bGetSlideBank == 2) {
 	else {
 		SDL_GetMouseState (&mouseData.x, &mouseData.y);
 		if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick) {
-			int dx = mouseData.x - SWIDTH / 2;
-			int dz = CalcDeadzone (mouseData.y - SHEIGHT / 2, gameOpts->input.mouse.nDeadzone);
+			int dx = mouseData.x - screen.Width () / 2;
+			int dz = CalcDeadzone (mouseData.y - screen.Height () / 2, gameOpts->input.mouse.nDeadzone);
 			if (dx < 0) {
 				if (dx > -dz)
 					dx = 0;
@@ -893,7 +893,7 @@ if (bGetSlideBank == 2) {
 				else
 					dx -= dz;
 				}
-			dx = 640 * dx / (SWIDTH / gameOpts->input.mouse.sensitivity [0]);
+			dx = 640 * dx / (screen.Width () / gameOpts->input.mouse.sensitivity [0]);
 			Controls [3].headingTime += dx; // * gameOpts->input.mouse.sensitivity [0]); // nMouseSensMod;
 			}
 		else {
@@ -914,8 +914,8 @@ if (bGetSlideBank == 2) {
 			}
 		else {
 			if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick) {
-				int	dy = mouseData.y - SHEIGHT / 2;
-				int	dz = CalcDeadzone (mouseData.x - SWIDTH / 2, gameOpts->input.mouse.nDeadzone);
+				int	dy = mouseData.y - screen.Height () / 2;
+				int	dz = CalcDeadzone (mouseData.x - screen.Width () / 2, gameOpts->input.mouse.nDeadzone);
 				if (kcMouse [14].value)
 					dy = -dy;
 				if (dy < 0) {
@@ -930,7 +930,7 @@ if (bGetSlideBank == 2) {
 					else
 						dy -= dz;
 					}
-				dy = 480 * dy / (SHEIGHT / gameOpts->input.mouse.sensitivity [1]);
+				dy = 480 * dy / (screen.Height () / gameOpts->input.mouse.sensitivity [1]);
 				Controls [3].pitchTime += dy; // * gameOpts->input.mouse.sensitivity [1]); // nMouseSensMod;
 				}
 			else {
@@ -983,7 +983,7 @@ if (gameStates.input.nMouseType == CONTROL_CYBERMAN)	{
 
 int ControlsReadTrackIR (void)
 {
-viewInfo.bUsePlayerHeadAngles = 0;
+transformation.m_info.bUsePlayerHeadAngles = 0;
 if (!(gameStates.input.bHaveTrackIR && gameOpts->input.trackIR.bUse))
 	return 0;
 if (!pfnTIRQuery (&tirInfo)) {
@@ -1002,8 +1002,8 @@ return 1;
 
 void ControlsDoTrackIR (void)
 {
-	int	dx = (int) ((float) tirInfo.fvRot.z * (float) SWIDTH / 16384.0f),
-			dy = (int) ((float) tirInfo.fvRot.y * (float) SHEIGHT / 16384.0f),
+	int	dx = (int) ((float) tirInfo.fvRot.z * (float) screen.Width () / 16384.0f),
+			dy = (int) ((float) tirInfo.fvRot.y * (float) screen.Height () / 16384.0f),
 			dz;
 	int	x, y;
 	float	fDeadzone, fScale;
@@ -1041,8 +1041,8 @@ if (gameOpts->input.trackIR.nMode == 0) {
 		Controls [0].bankTime += (int) (tirInfo.fvRot.x * gameStates.input.kcPollTime / 131072.0f * (gameOpts->input.trackIR.sensitivity [2] + 1));
 	}
 else if (gameOpts->input.trackIR.nMode == 1) {
-	dx = (int) ((float) tirInfo.fvRot.z * (float) SWIDTH / 16384.0f);
-	dy = (int) ((float) tirInfo.fvRot.y * (float) SHEIGHT / 16384.0f);
+	dx = (int) ((float) tirInfo.fvRot.z * (float) screen.Width () / 16384.0f);
+	dy = (int) ((float) tirInfo.fvRot.y * (float) screen.Height () / 16384.0f);
 	dz = 0; //CalcDeadzone (dy, gameOpts->input.trackIR.nDeadzone);
 	if (dx < 0) {
 		if (dx > -dz)
@@ -1072,8 +1072,8 @@ else if (gameOpts->input.trackIR.nMode == 1) {
 #if 0//def _DEBUG
 	HUDMessage (0, "%d %d", dx, dy);
 #endif
-	dx = 640 * dx / (SWIDTH / (gameOpts->input.trackIR.sensitivity [0] + 1));
-	dy = 480 * dy / (SHEIGHT / (gameOpts->input.trackIR.sensitivity [1] + 1));
+	dx = 640 * dx / (screen.Width () / (gameOpts->input.trackIR.sensitivity [0] + 1));
+	dy = 480 * dy / (screen.Height () / (gameOpts->input.trackIR.sensitivity [1] + 1));
 	if (gameOpts->input.trackIR.bMove [0]) {
 		Controls [0].headingTime -= dx;
 		Controls [0].pitchTime += dy;
@@ -1082,18 +1082,18 @@ else if (gameOpts->input.trackIR.nMode == 1) {
 		Controls [0].bankTime += (int) (tirInfo.fvRot.x * gameStates.input.kcPollTime / 131072.0f * (gameOpts->input.trackIR.sensitivity [2] + 1));
 	}
 else {
-	viewInfo.bUsePlayerHeadAngles = 1;
+	transformation.m_info.bUsePlayerHeadAngles = 1;
 	if (gameOpts->input.trackIR.bMove [0]) {
-		viewInfo.playerHeadAngles[HA] = (fixang) -tirInfo.fvRot.z / 4 * (gameOpts->input.trackIR.sensitivity [0] + 1);
-		viewInfo.playerHeadAngles[PA] = (fixang) tirInfo.fvRot.y / 4 * (gameOpts->input.trackIR.sensitivity [1] + 1);
+		transformation.m_info.playerHeadAngles[HA] = (fixang) -tirInfo.fvRot.z / 4 * (gameOpts->input.trackIR.sensitivity [0] + 1);
+		transformation.m_info.playerHeadAngles[PA] = (fixang) tirInfo.fvRot.y / 4 * (gameOpts->input.trackIR.sensitivity [1] + 1);
 		}
 	else
-		viewInfo.playerHeadAngles[HA] = 
-		viewInfo.playerHeadAngles[PA] = 0;
+		transformation.m_info.playerHeadAngles[HA] = 
+		transformation.m_info.playerHeadAngles[PA] = 0;
 	if (gameOpts->input.trackIR.bMove [1])
-		viewInfo.playerHeadAngles[BA] = (fixang) tirInfo.fvRot.x / 4 * (gameOpts->input.trackIR.sensitivity [2] + 1);
+		transformation.m_info.playerHeadAngles[BA] = (fixang) tirInfo.fvRot.x / 4 * (gameOpts->input.trackIR.sensitivity [2] + 1);
 	else
-		viewInfo.playerHeadAngles[BA] = 0;
+		transformation.m_info.playerHeadAngles[BA] = 0;
 	}
 fDeadzone = 256.0f * gameOpts->input.trackIR.nDeadzone;
 fScale = 16384.0f / (16384.0f - fDeadzone);
@@ -1316,7 +1316,7 @@ if (nBankSensMod > 2) {
 //----------- Clamp values between -gameStates.input.kcPollTime and gameStates.input.kcPollTime
 if (gameStates.input.kcPollTime > F1_0) {
 #if TRACE
-	con_printf (1, "Bogus frame time of %.2f seconds\n", X2F (gameStates.input.kcPollTime));
+	console.printf (1, "Bogus frame time of %.2f seconds\n", X2F (gameStates.input.kcPollTime));
 #endif
 	gameStates.input.kcPollTime = F1_0;
 	}
@@ -1426,7 +1426,7 @@ void CybermouseAdjust ()
 char GetKeyValue (char key)
   {
 #if TRACE
-	con_printf (CONDBG,"Returning %c!\n",kcKeyboard [ (int)key].value);
+	console.printf (CON_DBG,"Returning %c!\n",kcKeyboard [ (int)key].value);
 #endif
 	return (kcKeyboard [ (int)key].value);
   }

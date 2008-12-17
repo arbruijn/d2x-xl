@@ -113,7 +113,7 @@ for (i = 0; i < gameData.render.lights.dynamic.headlights.nLights; i++) {
 		gameData.render.lights.dynamic.headlights.brightness[i] = 100.0f;
 		}
 	else if (pl->bTransform && !gameStates.ogl.bUseTransform)
-		G3RotatePoint(psl->info.vDirf, psl->info.vDirf, 0);
+		transformation.Rotate(psl->info.vDirf, psl->info.vDirf, 0);
 	}
 }
 

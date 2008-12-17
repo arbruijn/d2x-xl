@@ -654,7 +654,7 @@ else if (gameOpts->render.particles.bSort) {
 		}
 	}
 else
-	G3TransformPoint(hp, m_vPos, 0);
+	transformation.Transform(hp, m_vPos, 0);
 if (m_bBright)
 	brightness = (float) sqrt (brightness);
 if (nType == SMOKE_PARTICLES) {

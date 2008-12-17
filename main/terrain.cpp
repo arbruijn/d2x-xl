@@ -139,7 +139,7 @@ CFixVector *get_dy_vec (int h)
 dyp = yCache + h;
 if (!ycFlags [h]) {
 	CFixVector tv = mSurfaceOrient.UVec () * (h * TERRAIN_HEIGHT_SCALE);
-	G3RotateDeltaVec (*dyp, tv);
+	transformation.RotateScaled (*dyp, tv);
 	ycFlags [h] = 1;
 	}
 return dyp;
@@ -171,9 +171,9 @@ jHigh = gameData.render.terrain.nGridH - 1;
 memset (ycFlags, 0, sizeof (ycFlags));
 gameStates.render.nInterpolationMethod = im;
 tv = mSurfaceOrient.RVec () * TERRAIN_GRID_SCALE;
-G3RotateDeltaVec (delta_i, tv);
+transformation.RotateScaled (delta_i, tv);
 tv = mSurfaceOrient.FVec () * TERRAIN_GRID_SCALE;
-G3RotateDeltaVec (delta_j, tv);
+transformation.RotateScaled (delta_j, tv);
 gameData.render.terrain.vStartPoint = *vOrgPoint + mSurfaceOrient.RVec () *
 					(-(gameData.render.terrain.orgI - iLow) * TERRAIN_GRID_SCALE);
 gameData.render.terrain.vStartPoint += mSurfaceOrient.FVec () *
@@ -294,7 +294,7 @@ memset (&bmHeight, 0, sizeof (bmHeight));
 iff_error = iff.ReadBitmap (filename, &bmHeight, BM_LINEAR);
 if (iff_error != IFF_NO_ERROR) {
 #if TRACE
-	con_printf (1, "File %s - IFF error: %s", filename, iff.ErrorMsg (iff_error));
+	console.printf (1, "File %s - IFF error: %s", filename, iff.ErrorMsg (iff_error));
 #endif
 	Error ("File %s - IFF error: %s", filename, iff.ErrorMsg (iff_error));
 }

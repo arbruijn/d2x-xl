@@ -308,7 +308,7 @@ else
 if (StartTime + xRollDuration - xSoundDuration < gameData.time.xGame) {
 	if (!*bDyingSoundPlaying) {
 #if TRACE
-		con_printf (CONDBG, "Starting death sound!\n");
+		console.printf (CON_DBG, "Starting death sound!\n");
 #endif
 		*bDyingSoundPlaying = 1;
 		DigiLinkSoundToObject2 (deathSound, OBJ_IDX (objP), 0, xSoundScale, xSoundScale * 256, SOUNDCLASS_ROBOT);	//	F1_0*512 means play twice as loud

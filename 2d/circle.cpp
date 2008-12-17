@@ -35,9 +35,9 @@ int gr_circle(fix xc1,fix yc1,fix r1)
 
 	// Big clip
 	if ( (xc+r) < 0 ) return 1;
-	if ( (xc-r) > GWIDTH ) return 1;
+	if ( (xc-r) > CCanvas::Current ()->Width () ) return 1;
 	if ( (yc+r) < 0 ) return 1;
-	if ( (yc-r) > GHEIGHT ) return 1;
+	if ( (yc-r) > CCanvas::Current ()->Height () ) return 1;
 
 	while(x<y)
 	{

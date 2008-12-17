@@ -1,7 +1,7 @@
 #ifndef _ASE_H
 #define _ASE_H
 
-namespace ASEModel {
+namespace ASE {
 
 class CVertex {
 	public:

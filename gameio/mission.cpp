@@ -549,7 +549,7 @@ void AddMissionsToList
 				strcpy (gameData.missions.list [c].filename, TXT_MSN_OVERFLOW);
 
 	#if TRACE
-				con_printf (CONDBG, "Warning: more missions than D2X-XL can handle\n");
+				console.printf (CON_DBG, "Warning: more missions than D2X-XL can handle\n");
 	#endif		
 			}
 		}
@@ -890,7 +890,7 @@ if (nMission == gameData.missions.nBuiltinMission) {
 	}
 gameData.missions.nCurrentMission = nMission;
 #if TRACE
-con_printf (CON_VERBOSE, "Loading mission %d\n", nMission);
+console.printf (CON_VERBOSE, "Loading mission %d\n", nMission);
 #endif
 	//read mission from file
 switch (gameData.missions.list [nMission].location) {

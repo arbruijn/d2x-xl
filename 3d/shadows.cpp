@@ -38,6 +38,8 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 extern tFaceColor tMapColor;
 extern int bPrintLine;
 
+using namespace POF;
+
 //------------------------------------------------------------------------------
 
 //shadow clipping
@@ -89,48 +91,48 @@ return (h * *pNorm) > 0;
 
 //------------------------------------------------------------------------------
 
-inline int G3CheckLightFacing (CFloatVector *pv, CFloatVector *pNorm)
+inline int CFace::IsFacingLight (void)
 {
-return G3CheckPointFacing (pv, pNorm, &vLightPosf);
+return G3CheckPointFacing (&m_vCenterf, &m_vNormf, &vLightPosf);
 }
 
 //------------------------------------------------------------------------------
 
-inline int G3CheckViewerFacing (CFloatVector *pv, CFloatVector *pNorm)
+inline int CFace::IsFacingViewer (void)
 {
-return CFloatVector::Dot (*pv, *pNorm) >= 0;
+return CFloatVector::Dot (m_vCenterf, m_vNormf) >= 0;
 }
 
 //------------------------------------------------------------------------------
 
-inline CFloatVector *G3RotateFaceNormal (tPOF_face *pf)
+inline CFloatVector* CFace::RotateNormal (void)
 {
-pf->vNormf.Assign (G3RotatePoint (pf->vRotNorm, pf->vNorm, 0));
-return &pf->vNormf;
+m_vNormf.Assign (transformation.Rotate (m_vRotNorm, m_vNorm));
+return &m_vNormf;
 }
 
 //------------------------------------------------------------------------------
 
-inline CFloatVector *G3TransformFaceCenter (tPOF_face *pf)
+inline CFloatVector *CFace::TransformCenter (void)
 {
 	CFixVector	v;
 
-pf->vCenterf.Assign (G3TransformPoint (v, pf->vCenter, 0));
-return &pf->vCenterf;
+m_vCenterf.Assign (transformation.Transform (v, m_vCenter, 0));
+return &m_vCenterf;
 }
 
 //------------------------------------------------------------------------------
 
-inline int G3FaceIsLit (tPOFObject *po, tPOF_face *pf)
+inline int CFace::IsLit (void)
 {
-return pf->bFacingLight = G3CheckLightFacing (&pf->vCenterf, &pf->vNormf);
+return m_bFacingLight = IsFacingLight ();
 }
 
 //------------------------------------------------------------------------------
 
-inline int G3FaceIsFront (tPOFObject *po, tPOF_face *pf)
+inline int CFace::IsFront (void)
 {
-return pf->bFrontFace = G3CheckViewerFacing (&pf->vCenterf, &pf->vNormf);
+return m_bFrontFace = IsFacingViewer ();
 }
 
 //------------------------------------------------------------------------------
@@ -142,11 +144,11 @@ return (((*v1) [X] - (*v0) [X]) * ((*v2) [Y] - (*v1) [Y]) < 0) ? GL_CW : GL_CCW;
 
 //------------------------------------------------------------------------------
 
-int POFCountPolyModelItems (void *modelP, short *pnSubObjs, short *pnVerts, short *pnFaces, short *pnFaceVerts, short *pnAdjFaces)
+int CModel::CountItems (void *modelDataP)
 {
-	ubyte *p = reinterpret_cast<ubyte*> (modelP);
+	ubyte *p = reinterpret_cast<ubyte*> (modelDataP);
 
-G3CheckAndSwap (modelP);
+G3CheckAndSwap (modelDataP);
 for (;;)
 	switch (WORDVAL (p)) {
 		case OP_EOF:
@@ -154,7 +156,7 @@ for (;;)
 
 		case OP_DEFPOINTS: {
 			int n = WORDVAL (p+2);
-			(*pnVerts) += n;
+			m_nVerts += n;
 			p += n * sizeof (CFixVector) + 4;
 			break;
 			}
@@ -162,31 +164,31 @@ for (;;)
 		case OP_DEFP_START: {
 			int n = WORDVAL (p+2);
 			p += n * sizeof (CFixVector) + 8;
-			(*pnVerts) += n;
+			m_nVerts += n;
 			break;
 			}
 
 		case OP_FLATPOLY: {
 			int nVerts = WORDVAL (p+2);
-			*pnAdjFaces += nVerts;
-			(*pnFaces)++;
-			(*pnFaceVerts) += nVerts;
+			m_nAdjFaces += nVerts;
+			m_nFaces++;
+			m_nFaceVerts += nVerts;
 			p += 30 + ((nVerts & ~ 1) + 1) * 2;
 			break;
 			}
 
 		case OP_TMAPPOLY: {
 			int nVerts = WORDVAL (p + 2);
-			*pnAdjFaces += nVerts;
-			(*pnFaces) += nVerts - 2;
-			(*pnFaceVerts) += (nVerts - 2) * 3;
+			m_nAdjFaces += nVerts;
+			m_nFaces += nVerts - 2;
+			m_nFaceVerts += (nVerts - 2) * 3;
 			p += 30 + ((nVerts&~1)+1)*2 + nVerts*12;
 			break;
 			}
 
 		case OP_SORTNORM:
-			POFCountPolyModelItems (p + WORDVAL (p+28), pnSubObjs, pnVerts, pnFaces, pnFaceVerts, pnAdjFaces);
-			POFCountPolyModelItems (p + WORDVAL (p+30), pnSubObjs, pnVerts, pnFaces, pnFaceVerts, pnAdjFaces);
+			CountItems (p + WORDVAL (p+28));
+			CountItems (p + WORDVAL (p+30));
 			p += 32;
 			break;
 
@@ -197,8 +199,8 @@ for (;;)
 			}
 
 		case OP_SUBCALL: {
-			(*pnSubObjs)++;
-			POFCountPolyModelItems (p + WORDVAL (p+16), pnSubObjs, pnVerts, pnFaces, pnFaceVerts, pnAdjFaces);
+			m_nSubModels++;
+			CountItems (p + WORDVAL (p+16));
 			p += 20;
 			break;
 			}
@@ -215,89 +217,75 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-short G3FindPolyModelVert (CFixVector *pVerts, CFixVector *pv, int nVerts)
-{
-	int	i;
-
-for (i = 0; i < nVerts; i++, pVerts++)
-	if (((*pVerts)[X] == (*pv)[X]) && ((*pVerts)[Y] == (*pv)[Y]) && ((*pVerts)[Z] == (*pv)[Z]))
-		return i;
-return nVerts;
-}
-
-//------------------------------------------------------------------------------
-
-void G3CalcFaceNormal (tPOFObject *po, tPOF_face *pf)
+void CFace::CalcNormal (CModel* po)
 {
 if (bTriangularize) {
-	CFixVector	*pv = po->verts.Buffer ();
-	short			*pfv = pf->verts;
+	CFixVector	*pv = po->m_verts.Buffer ();
+	short			*pfv = m_verts;
 
-	pf->vNorm = CFixVector::Normal (pv [pfv [0]], pv [pfv [1]], pv [pfv [2]]);
+	m_vNorm = CFixVector::Normal (pv [pfv [0]], pv [pfv [1]], pv [pfv [2]]);
 	}
 else
-	pf->vNormf.Assign (pf->vNorm);
+	m_vNormf.Assign (m_vNorm);
 }
 
 //------------------------------------------------------------------------------
 
-CFloatVector G3CalcFaceCenterf (tPOFObject *po, tPOF_face *pf)
+CFloatVector CFace::CalcCenterf (CModel* po)
 {
-	CFloatVector	*pv = po->vertsf.Buffer ();
-	short				*pfv = pf->verts;
+	CFloatVector	*pv = po->m_vertsf.Buffer ();
+	short				*pfv = m_verts;
 	int				i;
 
 	CFloatVector	c;
 
 c.SetZero ();
-for (i = pf->nVerts; i; i--, pfv++)
+for (i = m_nVerts; i; i--, pfv++)
 	c += pv [*pfv];
-c /= static_cast<float> (pf->nVerts);
+c /= static_cast<float> (m_nVerts);
 return c;
 }
 
 //------------------------------------------------------------------------------
 
-CFixVector *G3CalcFaceCenter (tPOFObject *po, tPOF_face *pf)
+CFixVector CFace::CalcCenter (CModel* po)
 {
-	CFloatVector		cf;
-	static CFixVector c;
+	CFloatVector	cf;
+	CFixVector		c;
 
-cf = G3CalcFaceCenterf (po, pf);
-c [X] = (fix) (cf [X] * F1_0);
-c [Y] = (fix) (cf [Y] * F1_0);
-c [Z] = (fix) (cf [Z] * F1_0);
-return &c;
+cf = CalcCenterf (po);
+c.Assign (cf);
+return c;
 }
 
 //------------------------------------------------------------------------------
 
-inline void G3AddPolyModelTri (tPOFObject *po, tPOF_face *pf, short v0, short v1, short v2)
+inline void CModel::AddTriangle (CFace* pf, short v0, short v1, short v2)
 {
-	short	*pfv = po->faceVerts + po->iFaceVert;
+	short	*pfv = m_faceVerts + m_iFaceVert;
 
-pf->verts = pfv;
-pf->nVerts = 3;
+pf->m_verts = pfv;
+pf->m_nVerts = 3;
 pfv [0] = v0;
 pfv [1] = v1;
 pfv [2] = v2;
-G3CalcFaceNormal (po, pf);
+pf->CalcNormal (this);
 }
 
 //------------------------------------------------------------------------------
 
 #if 0
 
-short G3FindPolyModelFace (tPOFObject *po, tPOF_face *pf)
+short G3FindPolyModelFace (CModel* po, CFace* pf)
 {
 	int			h, i, j, k, l;
-	tPOF_face	*pfh;
+	CFace	*pfh;
 
-for (h = pf->nVerts, i = po->iFace, pfh = po->faces.faces; i; i--, pfh++)
+for (h = pf->m_nVerts, i = po->m_iFace, pfh = po->m_faces; i; i--, pfh++)
 	if (pfh->nVerts == h) {
 		for (k = h, j = 0; j < h; j++)
 			for (l = 0; l < h; l++)
-				if (pf->verts [j] == pfh->verts [l]) {
+				if (pf->m_verts [j] == pfh->verts [l]) {
 					k--;
 					break;
 					}
@@ -310,16 +298,16 @@ return -1;
 #else
 //------------------------------------------------------------------------------
 
-int G3FindPolyModelFace (tPOFObject *po, short *p, int nVerts)
+int CModel::FindFace (short *p, int nVerts)
 {
-	tPOF_face	*pf;
-	int			h, i, j, k;
-	short			*pfv;
+	CFace*	pf;
+	short*	pfv;
+	int		h, i, j, k;
 
-for (i = po->iFace, pf = po->faces.faces.Buffer (); i; i--, pf++) {
-	if (pf->nVerts != nVerts)
+for (i = m_iFace, pf = m_faces.Buffer (); i; i--, pf++) {
+	if (pf->m_nVerts != nVerts)
 		continue;
-	pfv = pf->verts;
+	pfv = pf->m_verts;
 	for (j = 0, h = *p; j < nVerts; j++) {
 		if (h == pfv [j]) {
 			h = j;
@@ -347,128 +335,127 @@ return 0;
 #endif
 //------------------------------------------------------------------------------
 
-tPOF_face *POFAddPolyModelFace (tPOFObject *po, tPOFSubObject *pso, tPOF_face *pf,
-										  CFixVector *pn, ubyte *p, int bShadowData)
+CFace* CModel::AddFace (CSubModel* pso, CFace* pf, CFixVector *pn, ubyte *p, int bShadowData)
 {
 	short			nVerts = WORDVAL (p+2);
-	CFixVector	*pv = po->verts.Buffer (), v;
+	CFixVector	*pv = m_verts.Buffer (), v;
 	short			*pfv;
 	short			i, v0;
 
 //if (G3FindPolyModelFace (po, WORDPTR (p+30), nVerts))
 //	return pf;
 if (bShadowData) {
-	pf->vNorm = *pn;
+	pf->m_vNorm = *pn;
 	if (bTriangularize) {
 		pfv = WORDPTR (p+30);
 		v0 = *pfv;
 		if (nVerts == 3) {
-			G3AddPolyModelTri (po, pf, pfv [0], pfv [1], pfv [2]);
-			po->iFaceVert += 3;
-			pf->bGlow = (nGlow >= 0);
+			AddTriangle (pf, pfv [0], pfv [1], pfv [2]);
+			m_iFaceVert += 3;
+			pf->m_bGlow = (nGlow >= 0);
 			pf++;
-			po->iFace++;
-			pso->faces.nFaces++;
+			m_iFace++;
+			pso->m_nFaces++;
 			}
 		else if (nVerts == 4) {
-			v = pv[pfv [3]] - pv[pfv [1]];
-			if (CFixVector::Dot(*pn, v) < 0) {
-				G3AddPolyModelTri (po, pf, pfv [0], pfv [1], pfv [3]);
-				po->iFaceVert += 3;
-				pf->bGlow = (nGlow >= 0);
+			v = pv [pfv [3]] - pv [pfv [1]];
+			if (CFixVector::Dot (*pn, v) < 0) {
+				AddTriangle (pf, pfv [0], pfv [1], pfv [3]);
+				m_iFaceVert += 3;
+				pf->m_bGlow = (nGlow >= 0);
 				pf++;
-				po->iFace++;
-				pso->faces.nFaces++;
-				G3AddPolyModelTri (po, pf, pfv [1], pfv [2], pfv [3]);
-				po->iFaceVert += 3;
-				pf->bGlow = (nGlow >= 0);
+				m_iFace++;
+				pso->m_nFaces++;
+				AddTriangle (pf, pfv [1], pfv [2], pfv [3]);
+				m_iFaceVert += 3;
+				pf->m_bGlow = (nGlow >= 0);
 				pf++;
-				po->iFace++;
-				pso->faces.nFaces++;
+				m_iFace++;
+				pso->m_nFaces++;
 				}
 			else {
-				G3AddPolyModelTri (po, pf, pfv [0], pfv [1], pfv [2]);
-				po->iFaceVert += 3;
-				pf->bGlow = (nGlow >= 0);
+				AddTriangle (pf, pfv [0], pfv [1], pfv [2]);
+				m_iFaceVert += 3;
+				pf->m_bGlow = (nGlow >= 0);
 				pf++;
-				po->iFace++;
-				pso->faces.nFaces++;
-				G3AddPolyModelTri (po, pf, pfv [0], pfv [2], pfv [3]);
-				po->iFaceVert += 3;
-				pf->bGlow = (nGlow >= 0);
+				m_iFace++;
+				pso->m_nFaces++;
+				AddTriangle (pf, pfv [0], pfv [2], pfv [3]);
+				m_iFaceVert += 3;
+				pf->m_bGlow = (nGlow >= 0);
 				pf++;
-				po->iFace++;
-				pso->faces.nFaces++;
+				m_iFace++;
+				pso->m_nFaces++;
 				}
 			}
 		else {
 			for (i = 1; i < nVerts - 1; i++) {
-				G3AddPolyModelTri (po, pf, v0, pfv [i], pfv [i + 1]);
-				po->iFaceVert += 3;
-				pf->bGlow = (nGlow >= 0);
+				AddTriangle (pf, v0, pfv [i], pfv [i + 1]);
+				m_iFaceVert += 3;
+				pf->m_bGlow = (nGlow >= 0);
 				pf++;
-				po->iFace++;
-				pso->faces.nFaces++;
+				m_iFace++;
+				pso->m_nFaces++;
 				}
 			}
 		}
 	else { //if (nVerts < 5) {
-		pfv = pf->verts = po->faceVerts + po->iFaceVert;
-		pf->nVerts = nVerts;
+		pfv = pf->m_verts = m_faceVerts + m_iFaceVert;
+		pf->m_nVerts = nVerts;
 		memcpy (pfv, WORDPTR (p+30), nVerts * sizeof (short));
-		pf->bGlow = (nGlow >= 0);
-		G3CalcFaceNormal (po, pf);
+		pf->m_bGlow = (nGlow >= 0);
+		pf->CalcNormal (this);
 #if 0
-		if (memcmp (&pf->vCenter, po->verts + *pv, sizeof (CFixVector))) //make sure we have a vertex from the face
-			pf->vCenter = po->verts [*pv];
-		VmVecNormal (&n, po->verts + pv [0], po->verts + pv [1], po->verts + pv [2]); //check the precomputed Normal
-		if (memcmp (&pf->vNorm, &n, sizeof (CFixVector)))
-			pf->vNorm = n;
+		if (memcmp (&pf->m_vCenter, m_verts + *pv, sizeof (CFixVector))) //make sure we have a vertex from the face
+			pf->m_vCenter = m_verts [*pv];
+		VmVecNormal (&n, m_verts + pv [0], m_verts + pv [1], m_verts + pv [2]); //check the precomputed Normal
+		if (memcmp (&pf->m_vNorm, &n, sizeof (CFixVector)))
+			pf->m_vNorm = n;
 #endif
 #if 0
 		if (G3FindPolyModelFace (po, pf) < 0) //check for duplicate faces
 #endif
 			{
-			po->iFaceVert += nVerts;
+			m_iFaceVert += nVerts;
 			pf++;
-			po->iFace++;
-			pso->faces.nFaces++;
+			m_iFace++;
+			pso->m_nFaces++;
 			}
 		}
 #if 0
 	else {
 		short h = (nVerts + 1) / 2;
-		pfv = pf->verts = po->faceVerts + po->iFaceVert;
-		pf->nVerts = h;
+		pfv = pf->m_verts = m_faceVerts + m_iFaceVert;
+		pf->m_nVerts = h;
 		memcpy (pfv, WORDPTR (p+30), h * sizeof (short));
-		pf->bGlow = (nGlow >= 0);
+		pf->m_bGlow = (nGlow >= 0);
 		G3CalcFaceNormal (po, pf);
-		po->iFaceVert += h;
-		pf->bTest = 1;
+		m_iFaceVert += h;
+		pf->m_bTest = 1;
 		pf++;
-		po->iFace++;
-		pso->faces.nFaces++;
-		pfv = pf->verts = po->faceVerts + po->iFaceVert;
-		pf->nVerts = h;
+		m_iFace++;
+		pso->m_nFaces++;
+		pfv = pf->m_verts = m_faceVerts + m_iFaceVert;
+		pf->m_nVerts = h;
 		memcpy (pfv, WORDPTR (p + 30) + nVerts / 2, h * sizeof (short));
-		pf->bGlow = (nGlow >= 0);
+		pf->m_bGlow = (nGlow >= 0);
 		G3CalcFaceNormal (po, pf);
-		pf->bTest = 1;
-		po->iFaceVert += h;
+		pf->m_bTest = 1;
+		m_iFaceVert += h;
 		pf++;
-		po->iFace++;
-		pso->faces.nFaces++;
+		m_iFace++;
+		pso->m_nFaces++;
 		}
 #endif
 	}
 else {
-	CFloatVector		nf;
-	g3sNormal	*pvn;
+	CFloatVector	nf;
+	g3sNormal		*pvn;
 
 	pfv = WORDPTR (p+30);
 	nf.Assign (*pn);
 	for (i = 0; i < nVerts; i++) {
-		pvn = po->vertNorms + pfv [i];
+		pvn = m_vertNorms + pfv [i];
 		pvn->vNormal += nf;
 		pvn->nFaces++;
 		}
@@ -478,46 +465,45 @@ return pf;
 
 //------------------------------------------------------------------------------
 
-void G3RotatePolyModelNormals (tPOFObject *po, tPOFSubObject *pso)
+void CSubModel::RotateNormals (void)
 {
-	tPOF_face	*pf;
-	int			i;
+	CFace*	pf;
+	int		i;
 
-for (i = pso->faces.nFaces, pf = pso->faces.faces.Buffer (); i; i--, pf++) {
-	G3RotateFaceNormal (pf);
-	G3TransformFaceCenter (pf);
+for (i = m_nFaces, pf = m_faces; i; i--, pf++) {
+	pf->RotateNormal ();
+	pf->TransformCenter ();
 	}
 }
 
 //------------------------------------------------------------------------------
 
-CFloatVector *G3PolyModelVerts2Float (tPOFObject *po)
+CFloatVector* CModel::VertsToFloat (void)
 {
-	int				i;
-	CFixVector		*pv;
-	CFloatVector	*pvf;
+	CFixVector*		pv = m_verts.Buffer ();
+	CFloatVector*	pvf = m_vertsf.Buffer ();
 
-for (i = po->nVerts, pv = po->verts.Buffer (), pvf = po->vertsf.Buffer (); i; i--, pv++, pvf++)
-	pvf->Assign (*pv);
-return po->vertsf.Buffer ();
+for (int i = 0; i < m_nVerts; i++)
+	m_vertsf [i].Assign (m_verts [i]);
+return m_vertsf.Buffer ();
 }
 
 //------------------------------------------------------------------------------
 
 #define MAXGAP	0.01f;
 
-int G3FindPolyModelEdge (tPOFSubObject *pso, tPOF_face *pf0, int v0, int v1)
+int CSubModel::FindEdge (CFace* pf0, int v0, int v1)
 {
-	int			h, i, j, n;
-	tPOF_face	*pf1;
-	short			*pfv;
+	int		h, i, j, n;
+	CFace*	pf1;
+	short*	pfv;
 
-for (i = pso->faces.nFaces, pf1 = pso->faces.faces.Buffer (); i; i--, pf1++) {
+for (i = m_nFaces, pf1 = m_faces; i; i--, pf1++) {
 	if (pf1 != pf0) {
-		for (j = 0, n = pf1->nVerts, pfv = pf1->verts; j < n; j++) {
+		for (j = 0, n = pf1->m_nVerts, pfv = pf1->m_verts; j < n; j++) {
 			h = (j + 1) % n;
 			if (((pfv [j] == v0) && (pfv [h] == v1)) || ((pfv [j] == v1) && (pfv [h] == v0)))
-				return (int) (pf1 - pso->faces.faces);
+				return (int) (pf1 - m_faces);
 			}
 		}
 	}
@@ -526,21 +512,21 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-int G3GetAdjFaces (tPOFObject *po)
+int CModel::GatherAdjFaces (void)
 {
-	short				h, i, j, n;
-	tPOFSubObject	*pso = po->subObjs.subObjs.Buffer ();
-	tPOF_face		*pf;
-	short				*pfv;
+	short			h, i, j, n;
+	CSubModel*	pso = m_subModels.Buffer ();
+	CFace*		pf;
+	short*		pfv;
 
-po->nAdjFaces = 0;
-G3PolyModelVerts2Float (po);
-for (i = po->subObjs.nSubObjs; i; i--, pso++) {
-	pso->adjFaces = po->adjFaces + po->nAdjFaces;
-	for (j = pso->faces.nFaces, pf = pso->faces.faces.Buffer (); j; j--, pf++) {
-		pf->nAdjFaces = po->nAdjFaces;
-		for (h = 0, n = pf->nVerts, pfv = pf->verts; h < n; h++)
-			po->adjFaces [po->nAdjFaces++] = G3FindPolyModelEdge (pso, pf, pfv [h], pfv [(h + 1) % n]);
+m_nAdjFaces = 0;
+VertsToFloat ();
+for (i = m_nSubModels; i; i--, pso++) {
+	pso->m_adjFaces = m_adjFaces + m_nAdjFaces;
+	for (j = pso->m_nFaces, pf = pso->m_faces; j; j--, pf++) {
+		pf->m_nAdjFaces = m_nAdjFaces;
+		for (h = 0, n = pf->m_nVerts, pfv = pf->m_verts; h < n; h++)
+			m_adjFaces [m_nAdjFaces++] = pso->FindEdge (pf, pfv [h], pfv [(h + 1) % n]);
 		}
 	}
 return 1;
@@ -548,35 +534,33 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int G3CalcModelFacing (tPOFObject *po, tPOFSubObject *pso)
+int CSubModel::CalcFacing (CModel* po)
 {
-	short				i;
-	tPOF_face		*pf;
+	short		i;
 
-G3RotatePolyModelNormals (po, pso);
-for (i = pso->faces.nFaces, pf = pso->faces.faces.Buffer (); i; i--, pf++) {
-	G3FaceIsLit (po, pf);
+RotateNormals ();
+for (i = 0; i < m_nFaces; i++) {
+	m_faces [i].IsLit ();
 #if 0
-	G3FaceIsFront (po, pf);
+	pf->IsFront ();
 #endif
 	}
-return pso->faces.nFaces;
+return m_nFaces;
 }
 
 //------------------------------------------------------------------------------
 
-int G3GetLitFaces (tPOFObject *po, tPOFSubObject *pso)
+int CSubModel::GatherLitFaces (CModel* po)
 {
-	short				i;
-	tPOF_face		*pf;
+	short		i;
+	CFace		*pf;
 
-G3CalcModelFacing (po, pso);
-pso->litFaces.nFaces = 0;
-pso->litFaces.faces = po->litFaces.Top ();
-for (i = pso->faces.nFaces, pf = pso->faces.faces.Buffer (); i; i--, pf++) {
-	if (pf->bFacingLight) {
-		po->litFaces.Push (pf);
-		pso->litFaces.nFaces++;
+CalcFacing (po);
+m_nLitFaces = 0;
+m_litFaces = po->m_litFaces + po->m_litFaces.ToS ();
+for (i = m_nFaces, pf = m_faces; i; i--, pf++) {
+	if (pf->m_bFacingLight) {
+		po->m_litFaces.Push (pf);
 		}
 	}
 return 1;
@@ -584,32 +568,31 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void G3GetPolyModelCenters (tPOFObject *po)
+void CModel::CalcCenters (void)
 {
-	short				i, j;
-	tPOFSubObject	*pso = po->subObjs.subObjs.Buffer ();
-	tPOF_face		*pf;
+	short			i, j;
+	CSubModel*	pso = m_subModels.Buffer ();
+	CFace*		pf;
 
-for (i = po->subObjs.nSubObjs; i; i--, pso++)
-	for (j = pso->faces.nFaces, pf = pso->faces.faces.Buffer (); j; j--, pf++)
-		pf->vCenter = *G3CalcFaceCenter (po, pf);
+for (i = m_nSubModels; i; i--, pso++)
+	for (j = pso->m_nFaces, pf = pso->m_faces; j; j--, pf++)
+		pf->m_vCenterf = pf->CalcCenterf (this);
 }
 
 //------------------------------------------------------------------------------
 
-int POFGetPolyModelItems (void *modelP, CAngleVector *animAngleP, tPOFObject *po,
-								  int bInitModel, int bShadowData, int nThis, int nParent)
+int CModel::GatherItems (void *modelDataP, CAngleVector *animAngleP, int bInitModel, int bShadowData, int nThis, int nParent)
 {
-	ubyte				*p = reinterpret_cast<ubyte*> (modelP);
-	tPOFSubObject	*pso = po->subObjs.subObjs + nThis;
-	tPOF_face		*pf = po->faces.faces + po->iFace;
-	int				nChild;
+	ubyte*		p = reinterpret_cast<ubyte*> (modelDataP);
+	CSubModel*	pso = m_subModels + nThis;
+	CFace*		pf = m_faces + m_iFace;
+	int			nChild;
 
-G3CheckAndSwap (modelP);
+G3CheckAndSwap (modelDataP);
 nGlow = -1;
-if (bInitModel && !pso->faces.faces) {
-	pso->faces.faces = pf;
-	pso->nParent = nParent;
+if (bInitModel && !pso->m_faces) {
+	pso->m_faces = pf;
+	pso->m_nParent = nParent;
 	}
 for (;;)
 	switch (WORDVAL (p)) {
@@ -618,10 +601,10 @@ for (;;)
 		case OP_DEFPOINTS: {
 			int n = WORDVAL (p+2);
 			if (bInitModel)
-				memcpy (po->verts.Buffer (), VECPTR (p+4), n * sizeof (CFixVector));
+				memcpy (m_verts.Buffer (), VECPTR (p+4), n * sizeof (CFixVector));
 			else
-				RotatePointListToVec (po->verts.Buffer (), VECPTR (p+4), n);
-			//po->nVerts += n;
+				RotatePointListToVec (m_verts.Buffer (), VECPTR (p+4), n);
+			//m_nVerts += n;
 			p += n * sizeof (CFixVector) + 4;
 			break;
 			}
@@ -630,9 +613,9 @@ for (;;)
 			int n = WORDVAL (p+2);
 			int s = WORDVAL (p+4);
 			if (bInitModel)
-				memcpy (po->verts + s, VECPTR (p+8), n * sizeof (CFixVector));
+				memcpy (m_verts + s, VECPTR (p+8), n * sizeof (CFixVector));
 			else
-				RotatePointListToVec (po->verts + s, VECPTR (p+8), n);
+				RotatePointListToVec (m_verts + s, VECPTR (p+8), n);
 			p += n * sizeof (CFixVector) + 8;
 			break;
 			}
@@ -640,7 +623,7 @@ for (;;)
 		case OP_FLATPOLY: {
 			int nVerts = WORDVAL (p+2);
 			if (bInitModel && bFlatPolys) {
-				pf = POFAddPolyModelFace (po, pso, pf, VECPTR (p+16), p, bShadowData);
+				pf = AddFace (pso, pf, VECPTR (p+16), p, bShadowData);
 				}
 			p += 30 + (nVerts | 1) * 2;
 			break;
@@ -649,19 +632,19 @@ for (;;)
 		case OP_TMAPPOLY: {
 			int nVerts = WORDVAL (p + 2);
 			if (bInitModel && bTexPolys) {
-				pf = POFAddPolyModelFace (po, pso, pf, VECPTR (p+16), p, bShadowData);
+				pf = AddFace (pso, pf, VECPTR (p+16), p, bShadowData);
 				}
 			p += 30 + (nVerts | 1) * 2 + nVerts * 12;
 			break;
 			}
 
 		case OP_SORTNORM:
-			POFGetPolyModelItems (p + WORDVAL (p+28), animAngleP, po, bInitModel, bShadowData, nThis, nParent);
+			GatherItems (p + WORDVAL (p+28), animAngleP, bInitModel, bShadowData, nThis, nParent);
 			if (bInitModel)
-				pf = po->faces.faces + po->iFace;
-			POFGetPolyModelItems (p + WORDVAL (p+30), animAngleP, po, bInitModel, bShadowData, nThis, nParent);
+				pf = m_faces + m_iFace;
+			GatherItems (p + WORDVAL (p+30), animAngleP, bInitModel, bShadowData, nThis, nParent);
 			if (bInitModel)
-				pf = po->faces.faces + po->iFace;
+				pf = m_faces + m_iFace;
 			p += 32;
 			break;
 
@@ -677,14 +660,14 @@ for (;;)
 				a = &animAngleP [WORDVAL (p+2)];
 			else
 				a = const_cast<CAngleVector*> (&CAngleVector::ZERO);
-			nChild = ++po->iSubObj;
-			po->subObjs.subObjs [nChild].vPos = *VECPTR (p+4);
-			po->subObjs.subObjs [nChild].vAngles = *a;
-			G3StartInstanceAngles (*VECPTR (p+4), *a);
-			POFGetPolyModelItems (p + WORDVAL (p+16), animAngleP, po, bInitModel, bShadowData, nChild, nThis);
-			G3DoneInstance ();
+			nChild = ++m_iSubObj;
+			m_subModels [nChild].m_vPos = *VECPTR (p+4);
+			m_subModels [nChild].m_vAngles = *a;
+			transformation.Begin (*VECPTR (p+4), *a);
+			GatherItems (p + WORDVAL (p+16), animAngleP, bInitModel, bShadowData, nChild, nThis);
+			transformation.End ();
 			if (bInitModel)
-				pf = po->faces.faces + po->iFace;
+				pf = m_faces + m_iFace;
 			p += 20;
 			break;
 			}
@@ -702,61 +685,57 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-#define pof_free(_p)	{if (_p) delete[] (_p), (_p) = NULL;}
-
-int POFFreePolyModelItems (tPOFObject *po)
-{
-po->subObjs.subObjs.Destroy ();
-po->verts.Destroy ();
-po->vertsf.Destroy ();
-po->fClipDist.Destroy ();
-po->vertFlags.Destroy ();
-po->vertNorms.Destroy ();
-po->faces.faces.Destroy ();
-po->litFaces.Destroy ();
-po->adjFaces.Destroy ();
-po->faceVerts.Destroy ();
-memset (po, 0, sizeof (po));
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-int POFAllocPolyModelItems (void *modelP, tPOFObject *po, int bShadowData)
+int CModel::Create (void *modelDataP, int bShadowData)
 {
 	short	nFaceVerts = 0;
 	int	h;
 
-//memset (po, 0, sizeof (po));
-po->subObjs.nSubObjs = 1;
-POFCountPolyModelItems (modelP, &po->subObjs.nSubObjs, &po->nVerts, &po->faces.nFaces, &nFaceVerts, &po->nAdjFaces);
-h = po->subObjs.nSubObjs * sizeof (tPOFSubObject);
-if (!(po->subObjs.subObjs.Create (h)))
-	return POFFreePolyModelItems (po);
-po->subObjs.subObjs.Clear ();
-h = po->nVerts;
-if (!(po->verts.Create (h)))
-	return POFFreePolyModelItems (po);
-if (!(po->fClipDist.Create (h)))
+Init ();
+m_nSubModels = 1;
+CountItems (modelDataP);
+h = m_nSubModels * sizeof (CSubModel);
+if (!(m_subModels.Create (h))) {
+	Destroy ();
+	return 0;
+	}
+m_subModels.Clear ();
+h = m_nVerts;
+if (!(m_verts.Create (h))) {
+	Destroy ();
+	return 0;
+	}
+if (!(m_fClipDist.Create (h)))
 	gameOpts->render.shadows.nClip = 1;
-if (!(po->vertFlags.Create (h)))
+if (!(m_vertFlags.Create (h)))
 	gameOpts->render.shadows.nClip = 1;
 if (bShadowData) {
-	if (!(po->faces.faces.Create (po->faces.nFaces)))
-		return POFFreePolyModelItems (po);
-	if (!(po->litFaces.Create (po->faces.nFaces)))
-		return POFFreePolyModelItems (po);
-	if (!(po->adjFaces.Create (po->nAdjFaces)))
-		return POFFreePolyModelItems (po);
-	if (!(po->vertsf.Create (po->nVerts)))
-		return POFFreePolyModelItems (po);
-	if (!(po->faceVerts.Create (nFaceVerts)))
-		return POFFreePolyModelItems (po);
+	if (!(m_faces.Create (m_nFaces))) {
+		Destroy ();
+		return 0;
+		}
+	if (!(m_litFaces.Create (m_nFaces))) {
+		Destroy ();
+		return 0;
+		}
+	if (!(m_adjFaces.Create (m_nAdjFaces))) {
+		Destroy ();
+		return 0;
+		}
+	if (!(m_vertsf.Create (m_nVerts))) {
+		Destroy ();
+		return 0;
+		}
+	if (!(m_faceVerts.Create (nFaceVerts))) {
+		Destroy ();
+		return 0;
+		}	
 	}
-if (!(po->vertNorms.Create (h)))
-	return POFFreePolyModelItems (po);
-po->vertNorms.Clear ();
-return po->nState = 1;
+if (!(m_vertNorms.Create (h))) {
+	Destroy ();
+	return 0;
+	}
+m_vertNorms.Clear ();
+return m_nState = 1;
 }
 
 //------------------------------------------------------------------------------
@@ -841,14 +820,14 @@ glEnd ();
 
 //------------------------------------------------------------------------------
 
-int G3RenderSubModelShadowVolume (tPOFObject *po, tPOFSubObject *pso, int bCullFront)
+int CSubModel::RenderShadowVolume (CModel* po, int bCullFront)
 {
-	CFloatVector	*pvf, v [4];
-	tPOF_face	*pf, **ppf;
-	short			*pfv, *paf;
-	short			h, i, j, n;
-	float			fClipDist;
-	int			nClip;
+	CFloatVector*	pvf, v [4];
+	CFace*			pf, ** ppf;
+	short*			pfv, * paf;
+	short				h, i, j, n;
+	float				fClipDist;
+	int				nClip;
 
 #if DBG_SHADOWS
 if (!bShadowVolume)
@@ -863,7 +842,7 @@ else if (bShadowTest > 1)
 	glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
 #endif
 G3SetCullAndStencil (bCullFront, bZPass);
-pvf = po->vertsf.Buffer ();
+pvf = po->m_vertsf.Buffer ();
 #if DBG_SHADOWS
 if (bShadowTest < 2)
 	;
@@ -874,15 +853,15 @@ else {
 	glBegin (GL_LINES);
 	}
 #endif
-nClip = gameOpts->render.shadows.nClip ? po->fClipDist.Buffer () ? gameOpts->render.shadows.nClip : 1 : 0;
-fClipDist = (nClip >= 2) ? pso->fClipDist : fInf;
+nClip = gameOpts->render.shadows.nClip ? po->m_fClipDist.Buffer () ? gameOpts->render.shadows.nClip : 1 : 0;
+fClipDist = (nClip >= 2) ? m_fClipDist : fInf;
 glVertexPointer (3, GL_FLOAT, 0, v);
-for (i = pso->litFaces.nFaces, ppf = pso->litFaces.faces; i; i--, ppf++) {
+for (i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
 	pf = *ppf;
-	paf = po->adjFaces + pf->nAdjFaces;
-	for (j = 0, n = pf->nVerts, pfv = pf->verts; j < n; j++) {
+	paf = po->m_adjFaces + pf->m_nAdjFaces;
+	for (j = 0, n = pf->m_nVerts, pfv = pf->m_verts; j < n; j++) {
 		h = *paf++;
-		if ((h < 0) || !pso->faces.faces [h].bFacingLight) {
+		if ((h < 0) || !m_faces [h].m_bFacingLight) {
 			v [1] = pvf [pfv [j]];
 			v [0] = pvf [pfv [(j + 1) % n]];
 #if DBG_SHADOWS
@@ -1069,29 +1048,29 @@ return //fScale ? X2F (VmVecDist (fq.p0, &fi.hit.vPoint)) * fScale :
 
 //------------------------------------------------------------------------------
 
-inline float G3FaceClipDist (CObject *objP, tPOF_face *pf)
+inline float CFace::ClipDist (CObject *objP)
 {
 	CFixVector	vCenter;
 	
-vCenter.Assign (pf->vCenterf);
+vCenter.Assign (m_vCenterf);
 return NearestShadowedWallDist (OBJ_IDX (objP), objP->info.nSegment, &vCenter, 0.0f);
 }
 
 //------------------------------------------------------------------------------
 // use face centers to determine clipping distance
 
-float G3ClipDistByFaceCenters (CObject *objP, tPOFObject *po, tPOFSubObject *pso, int i, int incr)
+float CSubModel::ClipDistByFaceCenters (CObject *objP, CModel* po, int i, int incr)
 {
-	tPOF_face	*pf, **ppf;
-	short			h;
-	float			fClipDist, fMaxDist = 0;
+	CFace*	pf, ** ppf;
+	short		h;
+	float		fClipDist, fMaxDist = 0;
 
-for (h = pso->litFaces.nFaces, ppf = pso->litFaces.faces + i; i < h; i += incr, ppf += incr) {
+for (h = m_nLitFaces, ppf = m_litFaces + i; i < h; i += incr, ppf += incr) {
 	pf = *ppf;
-	fClipDist = G3FaceClipDist (objP, pf);
+	fClipDist = pf->ClipDist (objP);
 #if DBG
 	if (fClipDist == G3_INFINITY)
-		fClipDist = G3FaceClipDist (objP, pf);
+		fClipDist = pf->ClipDist (objP);
 #endif
 	if (fMaxDist < fClipDist)
 		fMaxDist = fClipDist;
@@ -1101,23 +1080,22 @@ return fMaxDist;
 
 //------------------------------------------------------------------------------
 
-float G3ClipDistByFaceVerts (CObject *objP, tPOFObject *po, tPOFSubObject *pso,
-									  float fMaxDist, int i, int incr)
+float CSubModel::ClipDistByFaceVerts (CObject *objP, CModel* po, float fMaxDist, int i, int incr)
 {
-	CFloatVector	*pv;
-	CFixVector	v;
-	float			*pfc;
-	tPOF_face	*pf, **ppf;
-	short			*pfv, h, j, m, n;
-	short			nObject = OBJ_IDX (objP);
-	short			nPointSeg, nSegment = objP->info.nSegment;
-	float			fClipDist;
+	CFloatVector*	pv;
+	CFixVector		v;
+	float*			pfc;
+	CFace*			pf, ** ppf;
+	short*			pfv, h, j, m, n;
+	short				nObject = OBJ_IDX (objP);
+	short				nPointSeg, nSegment = objP->info.nSegment;
+	float				fClipDist;
 
-pv = po->vertsf.Buffer ();
-pfc = po->fClipDist.Buffer ();
-for (m = pso->litFaces.nFaces, ppf = pso->litFaces.faces + i; i < m; i += incr, ppf += incr) {
+pv = po->m_vertsf.Buffer ();
+pfc = po->m_fClipDist.Buffer ();
+for (m = m_nLitFaces, ppf = m_litFaces + i; i < m; i += incr, ppf += incr) {
 	pf = *ppf;
-	for (j = 0, n = pf->nVerts, pfv = pf->verts; j < n; j++, pfv++) {
+	for (j = 0, n = pf->m_nVerts, pfv = pf->m_verts; j < n; j++, pfv++) {
 		h = *pfv;
 		if (!(fClipDist = pfc [h])) {
 			v.Assign (pv [h]);
@@ -1139,7 +1117,7 @@ return fMaxDist;
 
 //------------------------------------------------------------------------------
 
-float G3ClipDistByLitVerts (CObject *objP, tPOFObject *po, float fMaxDist, int i, int incr)
+float G3ClipDistByLitVerts (CObject *objP, CModel* po, float fMaxDist, int i, int incr)
 {
 	CFloatVector	*pv;
 	CFixVector	v;
@@ -1149,12 +1127,12 @@ float G3ClipDistByLitVerts (CObject *objP, tPOFObject *po, float fMaxDist, int i
 	short			nObject = OBJ_IDX (objP);
 	short			nPointSeg, nSegment = objP->info.nSegment;
 	float			fClipDist;
-	ubyte			nVertFlag = po->nVertFlag;
+	ubyte			nVertFlag = po->m_nVertFlag;
 
-pv = po->vertsf.Buffer ();
-pfc = po->fClipDist.Buffer ();
-pvf = po->vertFlags + i;
-for (j = po->nVerts; i < j; i += incr, pvf += incr) {
+pv = po->m_vertsf.Buffer ();
+pfc = po->m_fClipDist.Buffer ();
+pvf = po->m_vertFlags + i;
+for (j = po->m_nVerts; i < j; i += incr, pvf += incr) {
 	if (*pvf != nVertFlag)
 		continue;
 	if (!(fClipDist = pfc [i])) {
@@ -1204,20 +1182,20 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void G3GetLitVertices (tPOFObject *po, tPOFSubObject *pso)
+void G3GetLitVertices (CModel* po, CSubModel* pso)
 {
-	tPOF_face	*pf, **ppf;
+	CFace	*pf, **ppf;
 	short			*pfv, i, j;
 	ubyte			*pvf;
-	ubyte			nVertFlag = po->nVertFlag++;
+	ubyte			nVertFlag = po->m_nVertFlag++;
 
 if (!nVertFlag)
-	po->vertFlags.Clear ();
+	po->m_vertFlags.Clear ();
 nVertFlag++;
-pvf = po->vertFlags.Buffer ();
-for (i = pso->litFaces.nFaces, ppf = pso->litFaces.faces; i; i--, ppf++) {
+pvf = po->m_vertFlags.Buffer ();
+for (i = pso->m_nLitFaces, ppf = pso->m_litFaces; i; i--, ppf++) {
 	pf = *ppf;
-	for (j = pf->nVerts, pfv = pf->verts; j; j--, pfv++)
+	for (j = pf->m_nVerts, pfv = pf->m_verts; j; j--, pfv++)
 		pvf [*pfv] = nVertFlag;
 	}
 }
@@ -1225,16 +1203,16 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.faces; i; i--, ppf++) {
 //------------------------------------------------------------------------------
 // use face centers and vertices to determine clipping distance
 
-float G3SubModelClipDist (CObject *objP, tPOFObject *po, tPOFSubObject *pso)
+float CSubModel::ClipDist (CObject *objP, CModel* po)
 {
 	float	fMaxDist = 0;
 
 if (gameOpts->render.shadows.nClip < 2)
 	return fInf;
 #if 0
-if (!pso->bCalcClipDist)
-	return pso->fClipDist;	//only recompute every 2nd frame
-pso->bCalcClipDist = 0;
+if (!m_bCalcClipDist)
+	return m_fClipDist;	//only recompute every 2nd frame
+m_bCalcClipDist = 0;
 #endif
 #if MULTI_THREADED_SHADOWS
 	if (gameStates.app.bMultiThreaded) {
@@ -1252,22 +1230,22 @@ pso->bCalcClipDist = 0;
 else
 #endif
 	{
-	fMaxDist = G3ClipDistByFaceCenters (objP, po, pso, 0, 1);
+	fMaxDist = ClipDistByFaceCenters (objP, po, 0, 1);
 	if (gameOpts->render.shadows.nClip == 3)
-		fMaxDist = G3ClipDistByFaceVerts (objP, po, pso, fMaxDist, 0, 1);
+		fMaxDist = ClipDistByFaceVerts (objP, po, fMaxDist, 0, 1);
 	}
-return pso->fClipDist = (fMaxDist ? fMaxDist : (fInf < G3_INFINITY) ? fInf : G3_INFINITY);
+return m_fClipDist = (fMaxDist ? fMaxDist : (fInf < G3_INFINITY) ? fInf : G3_INFINITY);
 }
 
 //------------------------------------------------------------------------------
 
-int G3RenderSubModelShadowCaps (CObject *objP, tPOFObject *po, tPOFSubObject *pso, int bCullFront)
+int CSubModel::RenderShadowCaps (CObject *objP, CModel* po, int bCullFront)
 {
-	CFloatVector	*pvf, v0, v1;
-	tPOF_face	*pf, **ppf;
-	short			*pfv, i, j;
-	float			fClipDist;
-	int			nClip;
+	CFloatVector*	pvf, v0, v1;
+	CFace*			pf, ** ppf;
+	short*			pfv, i, j;
+	float				fClipDist;
+	int				nClip;
 
 #if DBG_SHADOWS
 if (bShadowTest) {
@@ -1276,21 +1254,21 @@ if (bShadowTest) {
 	}
 #endif
 G3SetCullAndStencil (bCullFront, bZPass);
-pvf = po->vertsf.Buffer ();
+pvf = po->m_vertsf.Buffer ();
 #if DBG_SHADOWS
 if (bRearCap)
 #endif
-nClip = gameOpts->render.shadows.nClip ? po->fClipDist.Buffer () ? gameOpts->render.shadows.nClip : 1 : 0;
-fClipDist = (nClip >= 2) ? pso->fClipDist : fInf;
-for (i = pso->litFaces.nFaces, ppf = pso->litFaces.faces; i; i--, ppf++) {
+nClip = gameOpts->render.shadows.nClip ? po->m_fClipDist.Buffer () ? gameOpts->render.shadows.nClip : 1 : 0;
+fClipDist = (nClip >= 2) ? m_fClipDist : fInf;
+for (i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
 	pf = *ppf;
 #if DBG
-	if (pf->bFacingLight && (bShadowTest > 3)) {
+	if (pf->m_bFacingLight && (bShadowTest > 3)) {
 		glColor4f (0.20f, 0.8f, 1.0f, 1.0f);
-		v1 = v0 = pf->vCenterf;
+		v1 = v0 = pf->m_vCenterf;
 		glBegin (GL_LINES);
 		glVertex3fv (reinterpret_cast<GLfloat*> (&v0));
-		v0 += pf->vNormf;
+		v0 += pf->m_vNormf;
 		glVertex3fv (reinterpret_cast<GLfloat*> (&v0));
 		glEnd ();
 		glColor4d (0,0,1,1);
@@ -1307,7 +1285,7 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.faces; i; i--, ppf++) {
 	else
 #endif
 		glBegin (GL_TRIANGLE_FAN);
-	for (j = pf->nVerts, pfv = pf->verts + j; j; j--) {
+	for (j = pf->m_nVerts, pfv = pf->m_verts + j; j; j--) {
 		v0 = pvf [*--pfv];
 #if 1
 		v1 = v0 - vLightPosf;
@@ -1335,17 +1313,17 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.faces; i; i--, ppf++) {
 #if DBG_SHADOWS
 if (bFrontCap)
 #endif
-for (i = pso->litFaces.nFaces, ppf = pso->litFaces.faces; i; i--, ppf++) {
+for (i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
 	pf = *ppf;
-	if (!pf->bFacingLight)
+	if (!pf->m_bFacingLight)
 		continue;
 #if DBG_SHADOWS
-	if (pf->bFacingLight && (bShadowTest > 3)) {
+	if (pf->m_bFacingLight && (bShadowTest > 3)) {
 		glColor4f (1.0f, 0.8f, 0.2f, 1.0f);
-		v1 = v0 = pf->vCenterf;
+		v1 = v0 = pf->m_vCenterf;
 		glBegin (GL_LINES);
 		glVertex3fv (reinterpret_cast<GLfloat*> (&v0));
-		v0 += pf->vNormf;
+		v0 += pf->m_vNormf;
 		glVertex3fv (reinterpret_cast<GLfloat*> (&v0));
 		glEnd ();
 		glColor4d (1,0,0,1);
@@ -1362,7 +1340,7 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.faces; i; i--, ppf++) {
 	else
 #endif
 		glBegin (GL_TRIANGLE_FAN);
-	for (j = pf->nVerts, pfv = pf->verts; j; j--) {
+	for (j = pf->m_nVerts, pfv = pf->m_verts; j; j--) {
 		v0 = pvf [*pfv++];
 		glVertex3fv (reinterpret_cast<GLfloat*> (&v0));
 		}
@@ -1373,70 +1351,70 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int G3DrawSubModelShadow (CObject *objP, tPOFObject *po, tPOFSubObject *pso)
+int CSubModel::RenderShadow (CObject *objP, CModel* po)
 {
 	int			h = 1, i;
 
-if (pso->nParent >= 0)
-	G3StartInstanceAngles (pso->vPos, pso->vAngles);
-h = (int) (pso - po->subObjs.subObjs);
-for (i = 0; i < po->subObjs.nSubObjs; i++)
-	if (po->subObjs.subObjs [i].nParent == h)
-		G3DrawSubModelShadow (objP, po, po->subObjs.subObjs + i);
+if (m_nParent >= 0)
+	transformation.Begin (m_vPos, m_vAngles);
+h = (int) (this - po->m_subModels);
+for (i = 0; i < po->m_nSubModels; i++)
+	if (po->m_subModels [i].m_nParent == h)
+		po->m_subModels [i].RenderShadow (objP, po);
 #if DBG
 #	if 0
-if (pso - po->subObjs.subObjs == 8)
+if (pso - po->m_subModels == 8)
 #	endif
 #endif
 {
-G3GetLitFaces (po, pso);
-if ((pso->nRenderFlipFlop = !pso->nRenderFlipFlop))
-	pso->fClipDist = G3SubModelClipDist (objP, po, pso);
-h = G3RenderSubModelShadowCaps (objP, po, pso, 0) &&
-	 G3RenderSubModelShadowCaps (objP, po, pso, 1) &&
-	 G3RenderSubModelShadowVolume (po, pso, 0) &&
-	 G3RenderSubModelShadowVolume (po, pso, 1);
+GatherLitFaces (po);
+if ((m_nRenderFlipFlop = !m_nRenderFlipFlop))
+	m_fClipDist = ClipDist (objP, po);
+h = RenderShadowCaps (objP, po, 0) &&
+	 RenderShadowCaps (objP, po, 1) &&
+	 RenderShadowVolume (po, 0) &&
+	 RenderShadowVolume (po, 1);
 ;
 }
-if (pso->nParent >= 0)
-	G3DoneInstance ();
+if (m_nParent >= 0)
+	transformation.End ();
 return h;
 }
 
 //------------------------------------------------------------------------------
 
-int POFGatherPolyModelItems (CObject *objP, void *modelP, CAngleVector *animAngleP, tPOFObject *po, int bShadowData)
+int POFGatherPolyModelItems (CObject *objP, void *modelDataP, CAngleVector *animAngleP, CModel* po, int bShadowData)
 {
-	int			j;
-	CFixVector	*pv;
-	CFloatVector	*pvf;
+	int				j;
+	CFixVector*		pv;
+	CFloatVector*	pvf;
 
-if (!(po->nState || POFAllocPolyModelItems (modelP, po, bShadowData)))
+if (!(po->m_nState || po->Create (modelDataP, bShadowData)))
 	return 0;
-if (po->nState == 1) {
-	G3StartInstanceMatrix (objP->info.position.vPos, objP->info.position.mOrient);
-	POFGetPolyModelItems (modelP, animAngleP, po, 1, bShadowData, 0, -1);
+if (po->m_nState == 1) {
+	transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
+	po->GatherItems (modelDataP, animAngleP, 1, bShadowData, 0, -1);
 	if (bShadowData) {
 		CFixVector vCenter;
 		vCenter.SetZero ();
-		for (j = po->nVerts, pv = po->verts.Buffer (), pvf = po->vertsf.Buffer (); j; j--, pv++, pvf++) 
+		for (j = po->m_nVerts, pv = po->m_verts.Buffer (), pvf = po->m_vertsf.Buffer (); j; j--, pv++, pvf++) 
 			vCenter += *pv;
-		float fScale = (static_cast<float>(po->nVerts) * 65536.0f);
+		float fScale = (static_cast<float>(po->m_nVerts) * 65536.0f);
 		vCenterf.Assign (vCenter);
 		vCenterf /= fScale;
-		po->vCenter += vCenter;
+		po->m_vCenter += vCenter;
 
-		G3GetAdjFaces (po);
-		G3GetPolyModelCenters (po);
+		po->GatherAdjFaces ();
+		po->CalcCenters ();
 		}
-	po->nState = 2;
-	G3DoneInstance ();
+	po->m_nState = 2;
+	transformation.End ();
 	}
 if (bShadowData) {
-	po->iSubObj = 0;
-	G3StartInstanceMatrix (objP->info.position.vPos, objP->info.position.mOrient);
-	POFGetPolyModelItems (modelP, animAngleP, po, 0, 1, 0, -1);
-	G3DoneInstance ();
+	po->m_iSubObj = 0;
+	transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
+	po->GatherItems (modelDataP, animAngleP, 0, 1, 0, -1);
+	transformation.End ();
 	}
 return 1;
 }
@@ -1449,7 +1427,7 @@ int G3DrawPolyModelShadow (CObject *objP, void *modelDataP, CAngleVector *animAn
 	CFixVector		v, vLightDir;
 	short				*pnl;
 	int				h, i, j;
-	tPOFObject		*po = gameData.models.pofData [gameStates.app.bD1Mission][1] + nModel;
+	CModel		*po = gameData.models.pofData [gameStates.app.bD1Mission][1] + nModel;
 
 Assert (objP->info.nId < MAX_ROBOT_TYPES);
 if (!gameStates.render.bShadowMaps) {
@@ -1472,7 +1450,7 @@ if (FAST_SHADOWS) {
 		CFixVector::Normalize(vLightDir);
 		if (gameData.render.shadows.nLight) {
 			for (j = 0; j < gameData.render.shadows.nLight; j++)
-				if (abs (CFixVector::Dot(vLightDir, gameData.render.shadows.vLightDir[j])) > 2 * F1_0 / 3) // 60 deg
+				if (abs (CFixVector::Dot (vLightDir, gameData.render.shadows.vLightDir[j])) > 2 * F1_0 / 3) // 60 deg
 					break;
 			if (j < gameData.render.shadows.nLight)
 				continue;
@@ -1482,22 +1460,22 @@ if (FAST_SHADOWS) {
 			RenderShadowMap (gameData.render.lights.dynamic.lights + (gameData.render.shadows.lights - gameData.render.lights.dynamic.shader.lights));
 		else {
 			gameStates.render.bRendering = 1;
-			G3TransformPoint (vLightPos, gameData.render.shadows.lights->info.vPos, 0);
+			transformation.Transform (vLightPos, gameData.render.shadows.lights->info.vPos, 0);
 			vLightPosf.Assign (vLightPos);
 			if (gameOpts->render.shadows.nClip) {
 				// get a default clipping distance using the model position as fall back
-				G3TransformPoint (v, objP->info.position.vPos, 0);
+				transformation.Transform (v, objP->info.position.vPos, 0);
 				fInf = NearestShadowedWallDist (OBJ_IDX (objP), objP->info.nSegment, &v, 0);
 				}
 			else
 				fInf = G3_INFINITY;
-			G3PolyModelVerts2Float (po);
-			G3StartInstanceMatrix (objP->info.position.vPos, objP->info.position.mOrient);
-			po->litFaces.Reset ();
+			po->VertsToFloat ();
+			transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
+			po->m_litFaces.Reset ();
 			if (gameOpts->render.shadows.nClip >= 2)
-				po->fClipDist.Clear ();
-			G3DrawSubModelShadow (objP, po, po->subObjs.subObjs.Buffer ());
-			G3DoneInstance ();
+				po->m_fClipDist.Clear ();
+			po->m_subModels [0].RenderShadow (objP, po);
+			transformation.End ();
 			gameStates.render.bRendering = 0;
 			}
 		}
@@ -1511,11 +1489,11 @@ else {
 			break;
 		if (*pnl == j) {
 			vLightPosf = gameData.render.shadows.vLightPos;
-			G3PolyModelVerts2Float (po);
-			G3StartInstanceMatrix (objP->info.position.vPos, objP->info.position.mOrient);
-			po->litFaces.Reset ();
-			G3DrawSubModelShadow (objP, po, po->subObjs.subObjs.Buffer ());
-			G3DoneInstance ();
+			po->VertsToFloat ();
+			transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
+			po->m_litFaces.Reset ();
+			po->m_subModels [0].RenderShadow (objP, po);
+			transformation.End ();
 			}
 		}
 	}
@@ -1533,7 +1511,7 @@ void POFFreeAllPolyModelItems (void)
 for (h = 0; h < 2; h++)
 	for (i = 0; i < 2; i++)
 		for (j = 0; j < MAX_POLYGON_MODELS; j++)
-			POFFreePolyModelItems (gameData.models.pofData [h][i] + j);
+			gameData.models.pofData [h][i][j].Destroy ();
 memset (gameData.models.pofData, 0, sizeof (gameData.models.pofData));
 }
 

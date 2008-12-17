@@ -250,17 +250,17 @@ else {
 	iModel = 1;
 	nModels = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].nSubModels;
 	}
-G3StartInstanceMatrix (vPos ? vPos : &objP->info.position.vPos, &objP->info.position.mOrient);
+transformation.Begin (vPos ? vPos : &objP->info.position.vPos, &objP->info.position.mOrient);
 for (; iModel <= nModels; iModel++, phb++, pmhb++) {
 	for (i = 0; i < 8; i++)
-		G3TransformPoint (rotVerts + i, pmhb->box.vertices + i, 0);
+		transformation.Transform (rotVerts + i, pmhb->box.vertices + i, 0);
 	for (i = 0, pf = phb->faces; i < 6; i++, pf++) {
 		for (j = 0; j < 4; j++)
 			pf->v [j] = rotVerts [hitboxFaceVerts [i][j]];
 		VmVecNormal (pf->n + 1, pf->v, pf->v + 1, pf->v + 2);
 		}
 	}
-G3DoneInstance ();
+transformation.End ();
 }
 
 #else //G3_HITBOX_TRANSFORM

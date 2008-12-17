@@ -977,13 +977,13 @@ for (bScale = 0; bScale < 2; bScale++) {
 	vPosf [2].Assign (nodeP->m_vPos);
 	nodeP++;
 	if (!gameStates.ogl.bUseTransform)
-		G3TransformPoint (vPosf [2], vPosf [2], 0);
+		transformation.Transform (vPosf [2], vPosf [2], 0);
 	for (i = m_nNodes - 2, j = 0, nodeP = m_nodes; j <= i; j++) {
 		memcpy (vPosf, vPosf + 1, 2 * sizeof (CFloatVector));
 		nodeP++;
 		vPosf [2].Assign (nodeP->m_vPos);
 		if (!gameStates.ogl.bUseTransform)
-			G3TransformPoint (vPosf [2], vPosf [2], 0);
+			transformation.Transform (vPosf [2], vPosf [2], 0);
 		ComputePlasmaSegment (vPosf, bScale, j, j == 1, j == i, nDepth, nThread);
 		}
 	}
@@ -2197,7 +2197,7 @@ CFixVector *COmegaLightnings::GetGunPoint (CObject *objP, CFixVector *vMuzzle)
 {
 	CFixVector			*vGunPoints;
 	int					bSpectate;
-	tTransformation	*posP;
+	tObjTransformation	*posP;
 
 if (!objP)
 	return NULL;

@@ -292,7 +292,7 @@ int TIAddObject (CObject *objP)
 if (objP->info.nType == 255)
 	return 0;
 item.objP = objP;
-G3TransformPoint(vPos, OBJPOS (objP)->vPos, 0);
+transformation.Transform(vPos, OBJPOS (objP)->vPos, 0);
 return AddTranspItem (tiObject, &item, sizeof (item), vPos [Z], vPos [Z]);
 }
 
@@ -397,10 +397,10 @@ triP = gameData.segs.faces.tris + faceP->nTriIndex;
 for (h = faceP->nTris; h; h--, triP++) {
 	for (i = 0, j = triP->nIndex; i < 3; i++, j++) {
 #if 1
-		G3TransformPoint (vertices [i], *(reinterpret_cast<CFloatVector*> (gameData.segs.faces.vertices + j)), 0);
+		transformation.Transform (vertices [i], *(reinterpret_cast<CFloatVector*> (gameData.segs.faces.vertices + j)), 0);
 #else
 		if (gameStates.render.automap.bDisplay)
-			G3TransformPoint (vertices + i, gameData.segs.fVertices + triP->index [i], 0);
+			transformation.Transform (vertices + i, gameData.segs.fVertices + triP->index [i], 0);
 		else
 			vertices [i].Assign (gameData.segs.points [triP->index [i]].p3_vec);
 #endif
@@ -433,10 +433,10 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 #endif
 for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
 #if 1
-	G3TransformPoint (vertices [i], *(reinterpret_cast<CFloatVector*> (gameData.segs.faces.vertices + j)), 0);
+	transformation.Transform (vertices [i], *(reinterpret_cast<CFloatVector*> (gameData.segs.faces.vertices + j)), 0);
 #else
 	if (gameStates.render.automap.bDisplay)
-		G3TransformPoint(vertices [i], gameData.segs.fVertices [faceP->index [i]], 0);
+		transformation.Transform(vertices [i], gameData.segs.fVertices [faceP->index [i]], 0);
 	else
 		vertices [i].Assign (gameData.segs.points [faceP->index [i]].p3_vec);
 #endif
@@ -464,7 +464,7 @@ item.nHeight = nHeight;
 item.nFrame = nFrame;
 item.bAdditive = bAdditive;
 item.fSoftRad = fSoftRad;
-G3TransformPoint (vPos, position, 0);
+transformation.Transform (vPos, position, 0);
 item.position.Assign (vPos);
 return AddTranspItem (tiSprite, &item, sizeof (item), vPos [Z], vPos [Z]);
 }
@@ -479,7 +479,7 @@ int TIAddSpark (const CFixVector& position, char nType, int nSize, char nFrame)
 item.nSize = nSize;
 item.nFrame = nFrame;
 item.nType = nType;
-G3TransformPoint (vPos, position, 0);
+transformation.Transform (vPos, position, 0);
 item.position.Assign (vPos);
 return AddTranspItem (tiSpark, &item, sizeof (item), vPos [Z], vPos [Z]);
 }
@@ -497,7 +497,7 @@ item.color.green = green;
 item.color.blue = blue;
 item.color.alpha = alpha;
 item.objP = objP;
-G3TransformPoint(vPos, objP->info.position.vPos, 0);
+transformation.Transform(vPos, objP->info.position.vPos, 0);
 return AddTranspItem (tiSphere, &item, sizeof (item), vPos [Z], vPos [Z]);
 }
 
@@ -527,9 +527,9 @@ int TIAddLightning (CLightning *lightningP, short nDepth)
 
 item.lightning = lightningP;
 item.nDepth = nDepth;
-G3TransformPoint (vPos, lightningP->m_vPos, 0);
+transformation.Transform (vPos, lightningP->m_vPos, 0);
 z = vPos [Z];
-G3TransformPoint (vPos, lightningP->m_vEnd, 0);
+transformation.Transform (vPos, lightningP->m_vEnd, 0);
 if (z < vPos [Z])
 	z = vPos [Z];
 if (!AddTranspItem (tiLightning, &item, sizeof (item), z, z))

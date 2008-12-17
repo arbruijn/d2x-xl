@@ -391,7 +391,7 @@ ubyte* CFont::Load (const char *fontname, ubyte* fontData)
 
 if (!cf.Open (fontname, gameFolders.szDataDir, "rb", 0)) {
 #if TRACE
-	con_printf (CON_VERBOSE, "Can't open font file %s\n", fontname);
+	console.printf (CON_VERBOSE, "Can't open font file %s\n", fontname);
 #endif
 	return NULL;
 	}
@@ -399,7 +399,7 @@ if (!cf.Open (fontname, gameFolders.szDataDir, "rb", 0)) {
 cf.Read (fileId, 4, 1);
 if (!strncmp (fileId, "NFSP", 4)) {
 #if TRACE
-	con_printf (CON_NORMAL, "File %s is not a font file\n", fontname);
+	console.printf (CON_NORMAL, "File %s is not a font file\n", fontname);
 #endif
 	return NULL;
 	}
@@ -517,7 +517,7 @@ do {
 	pj = strchr (pi, '\t');
 	if (pj)
 		*pj = '\0';
-	FONT->StringSize (pi, w, stringHeight, averageWidth);
+	fontManager.Current ()->StringSize (pi, w, stringHeight, averageWidth);
 	if (nTab && nTabs) {
 		stringWidth = LHX (nTabs [nTab - 1]);
 		if (gameStates.multi.bSurfingNet)
@@ -602,8 +602,8 @@ if (i >= MAX_OPEN_FONTS)
 strncpy (m_fonts [i].filename, fontname, SHORT_FILENAME_LEN);
 m_fonts [i].data = m_fonts [i].font.Load (fontname);
 fontManager.SetCurrent (&m_fonts [i].font);
-FG_COLOR.index = 0;
-BG_COLOR.index = 0;
+CCanvas::Current ()->FontColor (0).index = 0;
+CCanvas::Current ()->FontColor (1).index = 0;
 return &m_fonts [i].font;
 }
 
@@ -631,11 +631,11 @@ m_fonts [i].font.Destroy ();
 void CFontManager::SetColor (int fg, int bg)
 {
 if (fg >= 0)
-	FG_COLOR.index = fg;
-FG_COLOR.rgb = 0;
+	CCanvas::Current ()->FontColor (0).index = fg;
+CCanvas::Current ()->FontColor (0).rgb = 0;
 if (bg >= 0)
-	BG_COLOR.index = bg;
-BG_COLOR.rgb = 0;
+	CCanvas::Current ()->FontColor (1).index = bg;
+CCanvas::Current ()->FontColor (1).rgb = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -643,12 +643,12 @@ BG_COLOR.rgb = 0;
 void CFontManager::SetColorRGB (tRgbaColorb *fg, tRgbaColorb *bg)
 {
 if (fg) {
-	FG_COLOR.rgb = 1;
-	FG_COLOR.color = *fg;
+	CCanvas::Current ()->FontColor (0).rgb = 1;
+	CCanvas::Current ()->FontColor (0).color = *fg;
 	}
 if (bg) {
-	BG_COLOR.rgb = 1;
-	BG_COLOR.color = *fg;
+	CCanvas::Current ()->FontColor (1).rgb = 1;
+	CCanvas::Current ()->FontColor (1).color = *fg;
 	}
 }
 
@@ -657,18 +657,18 @@ if (bg) {
 void CFontManager::SetColorRGBi (uint fg, int bSetFG, uint bg, int bSetBG)
 {
 if (bSetFG) {
-	FG_COLOR.rgb = 1;
-	FG_COLOR.color.red = RGBA_RED (fg);
-	FG_COLOR.color.green = RGBA_GREEN (fg);
-	FG_COLOR.color.blue = RGBA_BLUE (fg);
-	FG_COLOR.color.alpha = RGBA_ALPHA (fg);
+	CCanvas::Current ()->FontColor (0).rgb = 1;
+	CCanvas::Current ()->FontColor (0).color.red = RGBA_RED (fg);
+	CCanvas::Current ()->FontColor (0).color.green = RGBA_GREEN (fg);
+	CCanvas::Current ()->FontColor (0).color.blue = RGBA_BLUE (fg);
+	CCanvas::Current ()->FontColor (0).color.alpha = RGBA_ALPHA (fg);
 	}
 if (bSetBG) {
-	BG_COLOR.rgb = 1;
-	BG_COLOR.color.red = RGBA_RED (bg);
-	BG_COLOR.color.green = RGBA_GREEN (bg);
-	BG_COLOR.color.blue = RGBA_BLUE (bg);
-	BG_COLOR.color.alpha = RGBA_ALPHA (bg);
+	CCanvas::Current ()->FontColor (1).rgb = 1;
+	CCanvas::Current ()->FontColor (1).color.red = RGBA_RED (bg);
+	CCanvas::Current ()->FontColor (1).color.green = RGBA_GREEN (bg);
+	CCanvas::Current ()->FontColor (1).color.blue = RGBA_BLUE (bg);
+	CCanvas::Current ()->FontColor (1).color.alpha = RGBA_ALPHA (bg);
 	}
 }
 

@@ -107,7 +107,7 @@ if (!nInFile)
 	soundOffset [gameStates.app.bD1Data][i] = 0;
 if (!nInFile)
 	nSoundFilesNew++;
-gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]++;
+(gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data])++;
 return i;
 }
 
@@ -266,7 +266,7 @@ if (!(gameData.pig.sound.data [gameStates.app.bD1Data].Create (sbytes + 16))) {
 	return 0;
 	}
 #if TRACE			
-con_printf (CON_VERBOSE, "\nBitmapNum: %d KB   Sounds [gameStates.app.bD1Data]: %d KB\n", 
+console.printf (CON_VERBOSE, "\nBitmapNum: %d KB   Sounds [gameStates.app.bD1Data]: %d KB\n", 
 				bitmapCacheSize / 1024, sbytes / 1024);
 #endif
 return 1;
@@ -378,7 +378,7 @@ for (i = 0, j = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]; i < j; 
 	}
 cf.Close ();
 #if TRACE			
-	con_printf (CON_VERBOSE, "\nActual Sound usage: %d KB\n", sbytes/1024);
+	console.printf (CON_VERBOSE, "\nActual Sound usage: %d KB\n", sbytes/1024);
 #endif
 }
 

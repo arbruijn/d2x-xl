@@ -295,7 +295,7 @@ int MatCenTrigger (short nSegment)
 	int				nObject;
 
 #if TRACE
-con_printf (CONDBG, "Trigger matcen, CSegment %i\n", nSegment);
+console.printf (CON_DBG, "Trigger matcen, CSegment %i\n", nSegment);
 #endif
 if (seg2P->special == SEGMENT_IS_EQUIPMAKER) {
 	matCenP = gameData.matCens.fuelCenters + gameData.matCens.equipGens [seg2P->nMatCen].nFuelCen;
@@ -330,7 +330,7 @@ if (nObject != -1) {
 	}
 else {
 #if TRACE
-	con_printf (1, "Can't create invisible flare for matcen.\n");
+	console.printf (1, "Can't create invisible flare for matcen.\n");
 #endif
 	Int3 ();
 	}
@@ -417,7 +417,7 @@ LOCALPLAYER.numRobotsTotal++;
 nObject = CreateRobot (nObjId, SEG_IDX (segP), *vObjPosP);
 if (nObject < 0) {
 #if TRACE
-	con_printf (1, "Can't create morph robot.  Aborting morph.\n");
+	console.printf (1, "Can't create morph robot.  Aborting morph.\n");
 #endif
 	Int3 ();
 	return NULL;
@@ -505,7 +505,7 @@ if (!matCenP->bEnabled)
 nMatCen = gameData.segs.segment2s [matCenP->nSegment].nMatCen;
 if (nMatCen == -1) {
 #if TRACE
-	con_printf (CONDBG, "Dysfunctional robot generator at %d\n", matCenP->nSegment);
+	console.printf (CON_DBG, "Dysfunctional robot generator at %d\n", matCenP->nSegment);
 #endif
 	return;
 	}
@@ -569,7 +569,7 @@ if (gameStates.entropy.bExitSequence || (gameData.segs.xSegments [matCenP->nSegm
 nMatCen = gameData.segs.segment2s [matCenP->nSegment].nMatCen;
 if (nMatCen == -1) {
 #if TRACE
-	con_printf (CONDBG, "Dysfunctional robot generator at %d\n", matCenP->nSegment);
+	console.printf (CON_DBG, "Dysfunctional robot generator at %d\n", matCenP->nSegment);
 #endif
 	return;
 	}
@@ -640,7 +640,7 @@ if (matCenP->xDisableTime > 0) {
 	matCenP->xDisableTime -= gameData.time.xFrame;
 	if (matCenP->xDisableTime <= 0) {
 #if TRACE
-		con_printf (CONDBG, "Robot center #%i gets disabled due to time running out.\n",
+		console.printf (CON_DBG, "Robot center #%i gets disabled due to time running out.\n",
 						FUELCEN_IDX (matCenP));
 #endif
 		matCenP->bEnabled = 0;
@@ -655,7 +655,7 @@ if (matCenP->xCapacity <= 0)
 nMatCen = gameData.segs.segment2s [matCenP->nSegment].nMatCen;
 if (nMatCen == -1) {
 #if TRACE
-	con_printf (CONDBG, "Dysfunctional robot generator at %d\n", matCenP->nSegment);
+	console.printf (CON_DBG, "Dysfunctional robot generator at %d\n", matCenP->nSegment);
 #endif
 	return;
 	}
@@ -671,7 +671,7 @@ if ((LOCALPLAYER.numRobotsLevel -
 #if DBG
 	if (gameData.app.nFrameCount > FrameCount_last_msg + 20) {
 #if TRACE
-		con_printf (CONDBG, "Cannot morph until you kill one!\n");
+		console.printf (CON_DBG, "Cannot morph until you kill one!\n");
 #endif
 		FrameCount_last_msg = gameData.app.nFrameCount;
 		}
@@ -701,7 +701,7 @@ if (!matCenP->bFlag) {
 			nCount++;
 	if (nCount > gameStates.app.nDifficultyLevel + 3) {
 #if TRACE
-		con_printf (CONDBG, "Cannot morph: center %i has already put out %i robots.\n", nMyStation, nCount);
+		console.printf (CON_DBG, "Cannot morph: center %i has already put out %i robots.\n", nMyStation, nCount);
 #endif
 		matCenP->xTimer /= 2;
 		return;
@@ -713,7 +713,7 @@ if (!matCenP->bFlag) {
 		nCount++;
 		if (nCount > MAX_OBJECTS) {
 #if TRACE
-			con_printf (CONDBG, "Object list in CSegment %d is circular.", nSegment);
+			console.printf (CON_DBG, "Object list in CSegment %d is circular.", nSegment);
 #endif
 			Int3 ();
 			return;
@@ -743,11 +743,11 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 	if (nType < 0)
 		return;
 #if TRACE
-	con_printf (CONDBG, "Morph: (nType = %i) (seg = %i) (capacity = %08x)\n", nType, matCenP->nSegment, matCenP->xCapacity);
+	console.printf (CON_DBG, "Morph: (nType = %i) (seg = %i) (capacity = %08x)\n", nType, matCenP->nSegment, matCenP->xCapacity);
 #endif
 	if (!(objP = CreateMorphRobot (gameData.segs.segments + matCenP->nSegment, &vPos, nType))) {
 #if TRACE
-		con_printf (CONDBG, "Warning: CreateMorphRobot returned NULL (no OBJECTS left?)\n");
+		console.printf (CON_DBG, "Warning: CreateMorphRobot returned NULL (no OBJECTS left?)\n");
 #endif
 		return;
 		}
@@ -1468,7 +1468,7 @@ if ((seg2P->special != SEGMENT_IS_GOAL_BLUE) && (seg2P->special != SEGMENT_IS_GO
 if (!LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX])
 	return;
 #if TRACE
-con_printf (CONDBG,"In orb goal!\n");
+console.printf (CON_DBG,"In orb goal!\n");
 #endif
 MultiSendOrbBonus ((char) gameData.multiplayer.nLocalPlayer);
 LOCALPLAYER.flags &= (~(PLAYER_FLAGS_FLAG));

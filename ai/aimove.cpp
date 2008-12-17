@@ -67,7 +67,7 @@ if (dot < (F1_0 - gameData.time.xFrame/2)) {
 	mag = CFixVector::Normalize(new_fvec);
 	if (mag < F1_0/256) {
 #if TRACE
-		con_printf (1, "Degenerate vector in AITurnTowardsVector (mag = %7.3f)\n", X2F (mag));
+		console.printf (1, "Degenerate vector in AITurnTowardsVector (mag = %7.3f)\n", X2F (mag));
 #endif
 		new_fvec = *vGoal;		//	if degenerate vector, go right to goal
 		}
@@ -493,7 +493,7 @@ if (ROBOTINFO (objP->info.nId).bossFlag) {
 	}
 	else {
 #if TRACE
-		con_printf (CONDBG, "Note: Killing robot #%i because he's badly stuck outside the mine.\n", OBJ_IDX (objP));
+		console.printf (CON_DBG, "Note: Killing robot #%i because he's badly stuck outside the mine.\n", OBJ_IDX (objP));
 #endif
 		ApplyDamageToRobot (objP, objP->info.xShields*2, OBJ_IDX (objP));
 	}

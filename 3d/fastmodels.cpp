@@ -153,7 +153,7 @@ else {
 		else if (bEmissive)
 			l = F1_0;
 		else {
-			l = -CFixVector::Dot(viewInfo.view [0].FVec (), pmf->m_vNormal);
+			l = -CFixVector::Dot(transformation.m_info.view [0].FVec (), pmf->m_vNormal);
 			l = 3 * f1_0 / 4 + l / 4;
 			l = FixMul (l, xModelLight);
 			}
@@ -254,7 +254,7 @@ else
 	v.SetZero();
 v[Z] -= 1.0f / 16.0f;
 #if 0
-G3TransformPoint (&v, &v, 0);
+transformation.Transform (&v, &v, 0);
 #else
 #	if 1
 if (vOffsetP) {
@@ -450,7 +450,7 @@ if (!gameData.models.vScale.IsZero ())
 	vo *= gameData.models.vScale;
 #if 1
 if (vOffsetP && (nExclusive < 0)) {
-	G3StartInstanceAngles (vo, va);
+	transformation.Begin (vo, va);
 	vo += *vOffsetP;
 	}
 #endif
@@ -466,7 +466,7 @@ for (i = 0, j = pm->m_nSubModels, psm = pm->m_subModels.Buffer (); i < j; i++, p
 if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 #if 0
 	if (vOffsetP && (nSubModel == nExclusive))
-		G3StartInstanceMatrix (vOffsetP, NULL);
+		transformation.Begin (vOffsetP, NULL);
 #endif
 	glDisable (GL_TEXTURE_2D);
 	if (gameStates.render.bCloaked)
@@ -551,7 +551,7 @@ if (bAnimate)
 	glPopMatrix ();
 #if 1
 if ((nExclusive < 0) /*|| (nSubModel == nExclusive)*/)
-	G3DoneInstance ();
+	transformation.End ();
 #endif
 }
 
@@ -572,7 +572,7 @@ void G3DrawModel (CObject *objP, short nModel, short nSubModel, CBitmap **modelB
 	GLenum					hLight;
 	float						fBrightness, fLightScale = gameData.models.nLightScale ? X2F (gameData.models.nLightScale) : 1.0f;
 	CFloatVector					color;
-	tTransformation		*posP = OBJPOS (objP);
+	tObjTransformation		*posP = OBJPOS (objP);
 
 OglSetupTransform (1);
 if (bLighting) {
@@ -662,7 +662,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 			glDisable (GL_LIGHT0 + iLight);
 		}
 	//if (nSubModel < 0)
-		G3StartInstanceMatrix(posP->vPos, posP->mOrient);
+		transformation.Begin(posP->vPos, posP->mOrient);
 	pm = gameData.models.renderModels [bHires] + nModel;
 	if (bHires) {
 		for (int i = 0; i < pm->m_nSubModels; i++)
@@ -674,7 +674,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 		G3DrawSubModel (objP, nModel, 0, nSubModel, modelBitmaps, pAnimAngles, (nSubModel < 0) ? &pm->m_subModels [0].m_vOffset : vOffsetP,
 							 bHires, bUseVBO, nPass, bTransparency, nGunId, nBombId, nMissileId, nMissiles);
 	//if (nSubModel < 0)
-		G3DoneInstance ();
+		transformation.End ();
 	if (!bLighting)
 		break;
 	}
@@ -722,7 +722,7 @@ vo = psm->m_vOffset;
 if (!gameData.models.vScale.IsZero ())
 	vo *= gameData.models.vScale;
 if (vOffsetP) {
-	G3StartInstanceAngles(vo, *va);
+	transformation.Begin(vo, *va);
 	vo += *vOffsetP;
 	}
 // render any dependent submodels
@@ -733,7 +733,7 @@ for (i = 0, j = pm->m_nSubModels, psm = pm->m_subModels.Buffer (); i < j; i++, p
 for (psm = pm->m_subModels + nSubModel, i = psm->m_nFaces, pmf = psm->m_faces; i; i--, pmf++)
 	lightningManager.RenderForDamage (objP, NULL, pm->m_faceVerts + pmf->m_nIndex, pmf->m_nVerts);
 if (vOffsetP)
-	G3DoneInstance ();
+	transformation.End ();
 }
 
 //------------------------------------------------------------------------------
@@ -867,9 +867,9 @@ if (gameStates.render.bCloaked)
 else
 	G3DisableClientStates (1, 1, gameOpts->ogl.bObjLighting, -1);
 if (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR))) {
-	G3StartInstanceMatrix (objP->info.position.vPos, objP->info.position.mOrient);
+	transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
 	G3RenderDamageLightnings (objP, nModel, 0, pAnimAngles, NULL, bHires);
-	G3DoneInstance ();
+	transformation.End ();
 	}
 pm->m_bRendered = 1;
 OglClearError (0);

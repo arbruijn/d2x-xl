@@ -44,7 +44,7 @@ void Int3();
 #if 1//def _DEBUG
 
 extern short nDbgSeg, nDbgSide, nDbgFace, nDbgObj, nDbgObjType, nDbgObjId, nDbgModel;
-extern int nDbgVertex, nDbgBaseTex, nDbgOvlTex;
+extern int nDbgVertex, nDbgBaseTex, nDbgOvlTex, nDbgTexture;
 
 #endif
 

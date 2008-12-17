@@ -812,7 +812,7 @@ for (i = 0; i < nBitmapNum; i++) {
 	}
 if (i >= nBitmapNum) {
 #if TRACE			
-	con_printf (CONDBG, "could not find bitmap %s\n", name);
+	console.printf (CON_DBG, "could not find bitmap %s\n", name);
 #endif
 	return bmi;
 	}

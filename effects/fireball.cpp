@@ -121,7 +121,7 @@ nObject = CreateFireball (nVClip, nSegment, *vPos, xSize, RT_FIREBALL);
 
 if (nObject < 0) {
 #if TRACE
-	con_printf (1, "Can't create CObject in ObjectCreateExplosionSub.\n");
+	console.printf (1, "Can't create CObject in ObjectCreateExplosionSub.\n");
 #endif
 	return NULL;
 	}
@@ -248,7 +248,7 @@ FORALL_OBJS (obj0P, i) {
 				paletteManager.SetEffectDuration (fe);
 				paletteManager.BumpEffect (PK1 + X2I (PK2*force), PK1 + X2I (PK2*force), PK1 + X2I (PK2*force));
 #if TRACE
-				con_printf (CONDBG, "force = %7.3f, adding %i\n", X2F (force), PK1 + X2I (PK2*force));
+				console.printf (CON_DBG, "force = %7.3f, adding %i\n", X2F (force), PK1 + X2I (PK2*force));
 #endif
 				}
 			}
@@ -389,7 +389,7 @@ Assert ((parentObjP->info.nType == OBJ_ROBOT) || (parentObjP->info.nType == OBJ_
 nObject = CreateDebris (parentObjP, nSubObj);
 if ((nObject < 0) && (gameData.objs.nLastObject [0] >= MAX_OBJECTS - 1)) {
 #if TRACE
-	con_printf (1, "Can't create CObject in ObjectCreateDebris.\n");
+	console.printf (1, "Can't create CObject in ObjectCreateDebris.\n");
 #endif
 	Int3 ();
 	return NULL;
@@ -503,7 +503,7 @@ if (delayTime) {		//wait a little while before creating explosion
 	if (nObject < 0) {
 		MaybeDeleteObject (hitObjP);		//no explosion, die instantly
 #if TRACE
-		con_printf (1, "Couldn't start explosion, deleting object now\n");
+		console.printf (1, "Couldn't start explosion, deleting object now\n");
 #endif
 		Int3 ();
 		return;
@@ -528,7 +528,7 @@ else {
 	if (!explObjP) {
 		MaybeDeleteObject (hitObjP);		//no explosion, die instantly
 #if TRACE
-		con_printf (CONDBG, "Couldn't start explosion, deleting CObject now\n");
+		console.printf (CON_DBG, "Couldn't start explosion, deleting CObject now\n");
 #endif
 		return;
 		}
@@ -585,7 +585,7 @@ if ((objP->info.xLifeLeft <= objP->cType.explInfo.nSpawnTime) && (objP->cType.ex
 	if ((objP->cType.explInfo.nDeleteObj < 0) ||
 		 (objP->cType.explInfo.nDeleteObj > gameData.objs.nLastObject [0])) {
 #if TRACE
-		con_printf (CONDBG, "Illegal value for nDeleteObj in fireball.c\n");
+		console.printf (CON_DBG, "Illegal value for nDeleteObj in fireball.c\n");
 #endif
 		Int3 (); // get Rob, please... thanks
 		return;
@@ -661,7 +661,7 @@ if ((objP->info.xLifeLeft <= objP->cType.explInfo.nSpawnTime) && (objP->cType.ex
 	else {
 		MaybeDeleteObject (delObjP);
 #if TRACE
-		con_printf (CONDBG, "Couldn't create secondary explosion, deleting CObject now\n");
+		console.printf (CON_DBG, "Couldn't create secondary explosion, deleting CObject now\n");
 #endif
 		}
 	}
@@ -700,7 +700,7 @@ for (i = 0; (i < MAX_EXPLODING_WALLS) && (gameData.walls.explWalls [i].nSegment 
 	;
 if (i==MAX_EXPLODING_WALLS) {		//didn't find slot.
 #if TRACE
-	con_printf (CONDBG, "Couldn't find a free slot for exploding wall!\n");
+	console.printf (CON_DBG, "Couldn't find a free slot for exploding wall!\n");
 #endif
 	Int3 ();
 	return;

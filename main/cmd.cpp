@@ -56,12 +56,11 @@ void cmd_parse(char *input)
 
 	/* Otherwise */
 	//printf("n_tokens = %d\n", num_tokens);
-	if (num_tokens>1) {
-		//printf("setting %s %s\n",tokens[0], tokens[1]);
-  	  cvar_set(tokens[0], tokens[1]);
-	} else {
+	if (num_tokens>1)
+		CCvar::Set (tokens[0], tokens[1]);
+	else {
 #if TRACE
-          con_printf(CON_NORMAL, "%s: %f\n", tokens[0], cvar(tokens[0]));
+		console.printf(CON_NORMAL, "%s: %f\n", tokens[0], CCvar::Value (tokens[0]));
 #endif
 	}
 }

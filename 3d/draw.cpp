@@ -59,7 +59,7 @@ else
 //Normal of the plane, and a point on it.  The Normal need not be normalized
 int G3CheckNormalFacing(const CFixVector& pv, const CFixVector& pnorm)
 {
-CFixVector v = viewInfo.pos - pv;
+CFixVector v = transformation.m_info.pos - pv;
 return (CFixVector::Dot(v, pnorm) > 0);
 }
 

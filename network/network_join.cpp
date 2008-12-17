@@ -84,21 +84,21 @@ if (game->gameStatus == NETSTAT_STARTING)
    return 1;
 if (game->gameStatus != NETSTAT_PLAYING) {
 #if 1      
-	con_printf (CONDBG, "Error: Can't join because gameStatus !=NETSTAT_PLAYING\n");
+	console.printf (CON_DBG, "Error: Can't join because gameStatus !=NETSTAT_PLAYING\n");
 #endif
 	return 0;
     }
 
 if (game->versionMajor == 0 && D2X_MAJOR>0) {
 #if 1      
-	con_printf (CONDBG, "Error:Can't join because version majors don't match!\n");
+	console.printf (CON_DBG, "Error:Can't join because version majors don't match!\n");
 #endif
 	return 0;
 	}
 
 if (game->versionMajor>0 && D2X_MAJOR == 0) {
 #if 1      
-	con_printf (CONDBG, "Error:Can't join because version majors2 don't match!\n");
+	console.printf (CON_DBG, "Error:Can't join because version majors2 don't match!\n");
 #endif
 	return 0;
 	}
@@ -117,7 +117,7 @@ if (!(game->gameFlags & NETGAME_FLAG_CLOSED)) {
 		return 1;
 	}
 if (!people) {
-	con_printf (CONDBG, "Error! Can't join because people == NULL!\n");
+	console.printf (CON_DBG, "Error! Can't join because people == NULL!\n");
 	return 0;
    }
 // Search to see if we were already in this closed netgame in progress
@@ -128,7 +128,7 @@ for (i = 0; i < nNumPlayers; i++)
 							  &people->players [i].network))
 		return 1;
 #if 1      
-con_printf (CONDBG, "Error: Can't join because at end of list!\n");
+console.printf (CON_DBG, "Error: Can't join because at end of list!\n");
 #endif
 return 0;
 }
@@ -349,7 +349,7 @@ static tNetworkSyncData *AcceptJoinRequest (tSequencePacket *player)
 // ignore since they'll request again later
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 #if 1      
-	con_printf (CONDBG, "Ignored request from new CPlayerData to join during endgame.\n");
+	console.printf (CON_DBG, "Ignored request from new CPlayerData to join during endgame.\n");
 #endif
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
@@ -361,7 +361,7 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 
 if (player->player.connected != gameData.missions.nCurrentLevel) {
 #if 1      
-	con_printf (CONDBG, "Dumping CPlayerData due to old level number.\n");
+	console.printf (CON_DBG, "Dumping CPlayerData due to old level number.\n");
 #endif
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (

@@ -439,8 +439,8 @@ int WriteConfigFile (void)
 	tJoyAxisCal cal [JOY_MAX_AXES];
 	ubyte gamma = paletteManager.GetGamma ();
 
-con_printf (CON_VERBOSE, "writing config file ...\n");
-con_printf (CON_VERBOSE, "   getting joystick calibration values ...\n");
+console.printf (CON_VERBOSE, "writing config file ...\n");
+console.printf (CON_VERBOSE, "   getting joystick calibration values ...\n");
 JoyGetCalVals(cal, sizeofa (cal));
 
 if (!cf.Open ("descent.cfg", gameFolders.szConfigDir, "wt", 0))

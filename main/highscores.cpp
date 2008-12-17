@@ -176,21 +176,21 @@ x = LHX (35) + xOffs;
          
 	   			
 fontManager.SetColorRGBi (RGBA_PAL2 (63,20,0), 1, 0, 0);
-FONT->StringSize ("P-Playing E-Escaped D-Died", sw, sh, aw);
+fontManager.Current ()->StringSize ("P-Playing E-Escaped D-Died", sw, sh, aw);
 if (! ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIAL)))
 	GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"P-Playing E-Escaped D-Died");
 y+= (sh+5);
-FONT->StringSize ("V-Viewing scores W-Waiting", sw, sh, aw);
+fontManager.Current ()->StringSize ("V-Viewing scores W-Waiting", sw, sh, aw);
 if (! ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIAL)))
 	GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"V-Viewing scores W-Waiting");
 y+=LHY (20);
 fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
 if (LOCALPLAYER.connected==7) {
-   FONT->StringSize ("Waiting for other players...",sw, sh, aw);
+   fontManager.Current ()->StringSize ("Waiting for other players...",sw, sh, aw);
    GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"Waiting for other players...");
    }
 else {
-   FONT->StringSize (TXT_PRESS_ANY_KEY2, sw, sh, aw);
+   fontManager.Current ()->StringSize (TXT_PRESS_ANY_KEY2, sw, sh, aw);
    GrPrintF (NULL, CENTERSCREEN- (sw/2), y, TXT_PRESS_ANY_KEY2);
    }
 if (gameData.reactor.countdown.nSecsLeft <=0)
@@ -223,21 +223,21 @@ for (j=0; j<gameData.multiplayer.nPlayers; j++) {
 y = LHY (55 + 72 + 35) + yOffs;
 x = LHX (35) + xOffs;
 fontManager.SetColorRGBi (RGBA_PAL2 (63,20,0), 1, 0, 0);
-FONT->StringSize ("P-Playing E-Escaped D-Died", sw, sh, aw);
+fontManager.Current ()->StringSize ("P-Playing E-Escaped D-Died", sw, sh, aw);
 if (! ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIAL)))
 	GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"P-Playing E-Escaped D-Died");
 y += (sh+5);
-FONT->StringSize ("V-Viewing scores W-Waiting", sw, sh, aw);
+fontManager.Current ()->StringSize ("V-Viewing scores W-Waiting", sw, sh, aw);
 if (! ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIAL)))
    GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"V-Viewing scores W-Waiting");
 y+=LHY (20);
 fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
 if (LOCALPLAYER.connected==7) {
-	FONT->StringSize ("Waiting for other players...",sw, sh, aw);
+	fontManager.Current ()->StringSize ("Waiting for other players...",sw, sh, aw);
 	GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"Waiting for other players...");
 	}
 else {
-	FONT->StringSize (TXT_PRESS_ANY_KEY2, sw, sh, aw);
+	fontManager.Current ()->StringSize (TXT_PRESS_ANY_KEY2, sw, sh, aw);
 	GrPrintF (NULL, CENTERSCREEN- (sw/2), y, TXT_PRESS_ANY_KEY2);
 	}
 if (gameData.reactor.countdown.nSecsLeft <=0)
@@ -260,10 +260,10 @@ if ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIAL))
 fontManager.SetCurrent (SMALL_FONT);
 if (oldmessage [0]!=0) {
 	fontManager.SetColorRGBi (RGBA_PAL2 (0, 1, 0), 1, 0, 0);
-	FONT->StringSize (oldmessage, sw, sh, aw);
+	fontManager.Current ()->StringSize (oldmessage, sw, sh, aw);
 	}
 fontManager.SetColorRGBi (RGBA_PAL2 (0, 32, 63), 1, 0, 0);
-FONT->StringSize (message, sw, sh, aw);
+fontManager.Current ()->StringSize (message, sw, sh, aw);
 GrPrintF (NULL, CENTERSCREEN- (sw/2), LHY (55+72+12), message);
 strcpy (reinterpret_cast<char*> (&oldmessage), message);
 }
@@ -285,7 +285,7 @@ else
 	sprintf (message, TXT_BEST_RECORD, gameData.multiplayer.players [gameData.score.nPhallicMan].callsign,gameData.score.nPhallicLimit);
 fontManager.SetCurrent (SMALL_FONT);
 fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
-FONT->StringSize (message, sw, sh, aw);
+fontManager.Current ()->StringSize (message, sw, sh, aw);
 GrPrintF (NULL, CENTERSCREEN- (sw/2), LHY (55+72+3), message);
 }
 
@@ -504,7 +504,7 @@ while (!done) {
 			// Check timeout for idle players
 			if (SDL_GetTicks () > (uint) networkData.nLastPacketTime [i] + ENDLEVEL_IDLE_TIME) {
 	#if TRACE
-				con_printf (CONDBG, "idle timeout for CPlayerData %d.\n", i);
+				console.printf (CON_DBG, "idle timeout for CPlayerData %d.\n", i);
 	#endif
 				gameData.multiplayer.players [i].connected = 0;
 				NetworkSendEndLevelSub (i);

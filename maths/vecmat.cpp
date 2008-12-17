@@ -70,9 +70,42 @@ const CFloatMatrix CFloatMatrix::IDENTITY = CFloatMatrix::Create (CFloatVector::
 
 #include <cmath>
 
+#endif
+
 // ------------------------------------------------------------------------
 
-#endif
+const CFloatMatrix CFloatMatrix::Create (const CFloatVector& r, const CFloatVector& u, const CFloatVector& f, const CFloatVector& w) {
+	CFloatMatrix m;
+	m.m_data.mat [RVEC] = r;
+	m.m_data.mat [UVEC] = u;
+	m.m_data.mat [FVEC] = f;
+	m.m_data.mat [HVEC] = w;
+	return m;
+}
+
+// ------------------------------------------------------------------------
+
+const CFloatMatrix CFloatMatrix::Create (float sinp, float cosp, float sinb, float cosb, float sinh, float cosh) {
+	CFloatMatrix m;
+	float sbsh, cbch, cbsh, sbch;
+
+	sbsh = sinb * sinh;
+	cbch = cosb * cosh;
+	cbsh = cosb * sinh;
+	sbch = sinb * cosh;
+	m.m_data.mat [RVEC][X] = cbch + sinp * sbsh;	//m1
+	m.m_data.mat [UVEC][Z] = sbsh + sinp * cbch;	//m8
+	m.m_data.mat [UVEC][X] = sinp * cbsh - sbch;	//m2
+	m.m_data.mat [RVEC][Z] = sinp * sbch - cbsh;	//m7
+	m.m_data.mat [FVEC][X] = sinh * cosp;		//m3
+	m.m_data.mat [RVEC][Y] = sinb * cosp;		//m4
+	m.m_data.mat [UVEC][Y] = cosb * cosp;		//m5
+	m.m_data.mat [FVEC][Z] = cosh * cosp;		//m9
+	m.m_data.mat [FVEC][Y] = -sinp;				//m6
+	return m;
+}
+
+// ------------------------------------------------------------------------
 
 const float CFloatMatrix::Det (void) 
 {
@@ -204,6 +237,22 @@ m.m_data.mat [FVEC][X] = FixDiv (FixMul (m_data.mat [UVEC][X], m_data.mat [FVEC]
 m.m_data.mat [FVEC][Y] = FixDiv (FixMul (m_data.mat [RVEC][Y], m_data.mat [FVEC][X]) - FixMul (m_data.mat [RVEC][X], m_data.mat [FVEC][Y]), xDet);
 m.m_data.mat [FVEC][Z] = FixDiv (FixMul (m_data.mat [RVEC][X], m_data.mat [UVEC][Y]) - FixMul (m_data.mat [RVEC][Y], m_data.mat [UVEC][X]), xDet);
 return m;
+}
+
+//------------------------------------------------------------------------------
+
+CFixMatrix& CFixMatrix::Transpose (CFixMatrix& dest, CFixMatrix& src)
+{
+dest.m_data.vec [0] = src.m_data.vec [0];
+dest.m_data.vec [3] = src.m_data.vec [1];
+dest.m_data.vec [6] = src.m_data.vec [2];
+dest.m_data.vec [1] = src.m_data.vec [3];
+dest.m_data.vec [4] = src.m_data.vec [4];
+dest.m_data.vec [7] = src.m_data.vec [5];
+dest.m_data.vec [2] = src.m_data.vec [6];
+dest.m_data.vec [5] = src.m_data.vec [7];
+dest.m_data.vec [8] = src.m_data.vec [8];
+return dest;
 }
 
 // -----------------------------------------------------------------------------

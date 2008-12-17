@@ -350,7 +350,7 @@ void SpeedtestInit(void)
 	gameData.speedtest.nSide = 0;
 	gameData.speedtest.nFrameStart = gameData.app.nFrameCount;
 #if TRACE
-	con_printf (CONDBG, "Starting speedtest.  Will be %i frames.  Each . = 10 frames.\n", gameData.segs.nLastSegment+1);
+	console.printf (CON_DBG, "Starting speedtest.  Will be %i frames.  Each . = 10 frames.\n", gameData.segs.nLastSegment+1);
 #endif
 }
 
@@ -377,7 +377,7 @@ void SpeedtestFrame(void)
 	gameData.objs.viewerP->info.position.mOrient = CFixMatrix::CreateF(view_dir);
 	if (((gameData.app.nFrameCount - gameData.speedtest.nFrameStart) % 10) == 0) {
 #if TRACE
-		con_printf (CONDBG, ".");
+		console.printf (CON_DBG, ".");
 #endif
 		}
 	gameData.speedtest.nSegment++;
@@ -390,7 +390,7 @@ void SpeedtestFrame(void)
 			X2F(TimerGetFixedSeconds() - gameData.speedtest.nStartTime), 
 			(double) (gameData.app.nFrameCount-gameData.speedtest.nFrameStart) / X2F(TimerGetFixedSeconds() - gameData.speedtest.nStartTime));
 #if TRACE
-		con_printf (CONDBG, "%s", msg);
+		console.printf (CON_DBG, "%s", msg);
 #endif
 		HUDInitMessage(msg);
 

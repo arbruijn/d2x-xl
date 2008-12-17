@@ -19,7 +19,7 @@
 #include "render.h"
 #include "strutil.h"
 
-using namespace OOFModel;
+using namespace OOF;
 
 //------------------------------------------------------------------------------
 
@@ -559,10 +559,10 @@ int CModel::Draw (CObject *objP, float *fLight)
 	CFloatVector	vo;
 
 vo.SetZero ();
-G3StartInstanceMatrix (objP->info.position.vPos, objP->info.position.mOrient);
+transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
 if (!gameStates.ogl.bUseTransform)
-	mView.Assign (viewInfo.view [0]);
-vPos.Assign (viewInfo.pos);
+	mView.Assign (transformation.m_info.view [0]);
+vPos.Assign (transformation.m_info.pos);
 if (IsMultiGame && netGame.BrightPlayers)
 	*fLight = 1.0f;
 OglActiveTexture (GL_TEXTURE0, 0);
@@ -574,7 +574,7 @@ for (i = 0, pso = m_subModels.Buffer (); i < m_nSubModels; i++, pso++)
 			break;
 			}
 		}
-G3DoneInstance ();
+transformation.End ();
 glDisable (GL_TEXTURE_2D);
 return r;
 }

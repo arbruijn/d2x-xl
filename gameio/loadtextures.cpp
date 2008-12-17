@@ -366,12 +366,12 @@ return 1;
 
 void PiggyFreeHiresAnimations (void)
 {
-	int		i, bD1;
-	CBitmap	*bmP;
-
-for (bD1 = 0, bmP = gameData.pig.tex.bitmaps [bD1].Buffer (); bD1 < 2; bD1++)
-	for (i = gameData.pig.tex.nBitmaps [bD1]; i; i--, bmP++)
+for (int bD1 = 0; bD1 < 2; bD1++) {
+	CBitmap*	bmP = gameData.pig.tex.bitmaps [bD1].Buffer ();
+	for (int i = gameData.pig.tex.nBitmaps [bD1]; i; i--, bmP++) {
 		PiggyFreeHiresAnimation (bmP, bD1);
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -396,11 +396,11 @@ PiggyFreeBitmapData (bmP);
 
 void PiggyBitmapPageOutAll (int bAll)
 {
-	int			i, bD1;
+	int		i, bD1;
 	CBitmap	*bmP;
 
 #if TRACE			
-con_printf (CON_VERBOSE, "Flushing piggy bitmap cache\n");
+console.printf (CON_VERBOSE, "Flushing piggy bitmap cache\n");
 #endif
 gameData.pig.tex.bPageFlushed++;
 TexMergeFlush ();
@@ -410,8 +410,6 @@ for (bD1 = 0; bD1 < 2; bD1++) {
 	for (i = 0, bmP = gameData.pig.tex.bitmaps [bD1].Buffer (); 
 		  i < gameData.pig.tex.nBitmaps [bD1]; 
 		  i++, bmP++) {
-			  if (i == 393) 
-				  i = i;
 		if (bmP->Buffer () && (bitmapOffsets [bD1][i] > 0)) { // only page out bitmaps read from disk
 			bmP->AddFlags (BM_FLAG_PAGED_OUT);
 			PiggyFreeBitmap (bmP, i, bD1);
@@ -731,9 +729,9 @@ if (bLowMemory) {
 	bmiSave = bmi;
 	bmi = gameData.pig.tex.bitmapXlat [bmi];          // Xlat for low-memory settings!
 	}
-#if DBG
-if (bmi == 393)
-	bmi = bmi;
+#if DBG 
+if (bmi == nDbgTexture)
+	nDbgTexture = nDbgTexture;
 #endif
 bmP = gameData.pig.tex.bitmaps [bD1][bmi].Override (-1);
 while (0 > (i = PageInBitmap (bmP, gameData.pig.tex.bitmapFiles [bD1][bmi].name, bmi, bD1)))

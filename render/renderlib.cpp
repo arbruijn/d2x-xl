@@ -344,7 +344,7 @@ for (i = 0; i < nVertices; i++) {
 	n[Z] = (fix) (nf->z() * 65536.0f);
 */
 	n.Assign (*nf);
-	G3RotatePoint(n, n, 0);
+	transformation.Rotate(n, n, 0);
 	Normal.p3_vec = pointList[i]->p3_vec + n * (F1_0 * 10);
 	G3DrawLine (pointList [i], &Normal);
 	}
@@ -870,8 +870,8 @@ void RotateSideNorms (void)
 
 for (i = gameData.segs.nSegments; i; i--, segP++, seg2P++)
 	for (j = 6, sideP = segP->sides, side2P = seg2P->sides; j; j--, sideP++, side2P++) {
-		G3RotatePoint(side2P->rotNorms[0], sideP->normals[0], 0);
-		G3RotatePoint(side2P->rotNorms[1], sideP->normals[1], 0);
+		transformation.Rotate(side2P->rotNorms[0], sideP->normals[0], 0);
+		transformation.Rotate(side2P->rotNorms[1], sideP->normals[1], 0);
 		}
 }
 
@@ -884,7 +884,7 @@ void TransformSideCenters (void)
 	int	i;
 
 for (i = 0; i < gameData.segs.nSegments; i++)
-	G3TransformPoint (gameData.segs.segCenters [1] + i, gameData.segs.segCenters [0] + i, 0);
+	transformation.Transform (gameData.segs.segCenters [1] + i, gameData.segs.segCenters [0] + i, 0);
 }
 
 #endif

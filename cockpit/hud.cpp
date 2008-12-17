@@ -48,11 +48,11 @@ void ClearBackgroundMessages (void)
 {
 if (((gameStates.render.cockpit.nMode == CM_STATUS_BAR) || (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)) && 
 	  (nLastMsgYCrd != -1) && (gameStates.render.vr.buffers.subRender [0].Top () >= 6)) {
-	CCanvas	*canv_save = CCanvas::Current ();
+	CCanvas::Push ();
 
-CCanvas::SetCurrent (GetCurrentGameScreen ());
-CopyBackgroundRect (0, nLastMsgYCrd, CCanvas::Current ()->Width (), nLastMsgYCrd+nLastMsgHeight-1);
-CCanvas::SetCurrent (canv_save);
+	CCanvas::SetCurrent (GetCurrentGameScreen ());
+	CopyBackgroundRect (0, nLastMsgYCrd, CCanvas::Current ()->Width (), nLastMsgYCrd+nLastMsgHeight-1);
+	CCanvas::Pop ();
 	nLastMsgYCrd = -1;
 	}
 szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage][0] = 0;
@@ -131,14 +131,14 @@ if (pMsgs->nMessages > 0) {
 		pszMsg = pMsgs->szMsgs [nMsg];
 
 		if (strcmp (szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage], pszMsg)) {
-				CCanvas	*canv_save = CCanvas::Current ();
-				int			ycrd = CCanvas::Current ()->Top () - (SMALL_FONT->Height ()+2);
+				CCanvas::Push ();
+				int ycrd = CCanvas::Current ()->Top () - (SMALL_FONT->Height ()+2);
 
 			if (ycrd < 0)
 				ycrd = 0;
 			CCanvas::SetCurrent (GetCurrentGameScreen ());
 			fontManager.SetCurrent (SMALL_FONT);
-			FONT->StringSize (pszMsg, w, h, aw);
+			fontManager.Current ()->StringSize (pszMsg, w, h, aw);
 			ClearBackgroundMessages ();
 			if (CCanvas::Current ()->Mode () == BM_MODEX) {
 				ycrd -= h;
@@ -158,7 +158,7 @@ if (pMsgs->nMessages > 0) {
 				pMsgs->nMsgIds [nMsg] = GrPrintF (pMsgs->nMsgIds + nMsg, (CCanvas::Current ()->Width ()-w) / 2, ycrd, pszMsg);
 				strcpy (szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage], pszMsg);
 				}
-				CCanvas::SetCurrent (canv_save);
+				CCanvas::Pop ();
 			nLastMsgYCrd = ycrd;
 			nLastMsgHeight = h;
 			}
@@ -190,7 +190,7 @@ if (pMsgs->nMessages > 0) {
 				return; // Get Rob!!
 			if (!strcmp (pMsgs->szMsgs [n], "This is a bug."))
 				return; // Get Rob!!
-			FONT->StringSize (pMsgs->szMsgs [n], w, h, aw);
+			fontManager.Current ()->StringSize (pMsgs->szMsgs [n], w, h, aw);
 			fontManager.SetColorRGBi (pMsgs->nColor, 1, 0, 0);
 			y = yStart + i * (h + 1);
 			if (nType)
@@ -263,7 +263,7 @@ else {
 con_message [4] = '\0';
 strcat (con_message, pszMsg);
 #if TRACE	
-con_printf (CON_NORMAL, "%s\n", con_message);
+console.printf (CON_NORMAL, "%s\n", con_message);
 #endif
 // Added by Leighton
 if (IsMultiGame) {
@@ -329,7 +329,7 @@ if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
    if (LOCALPLAYER.lives < 2) {
       int x, y, w, h, aw;
       fontManager.SetCurrent (HUGE_FONT);
-      FONT->StringSize (TXT_GAME_OVER, w, h, aw);
+      fontManager.Current ()->StringSize (TXT_GAME_OVER, w, h, aw);
       w += 20;
       h += 8;
       x = (CCanvas::Current ()->Width () - w) / 2;

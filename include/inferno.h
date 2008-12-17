@@ -1144,7 +1144,7 @@ typedef struct tApplicationStates {
 	fix nPlayerTimeOfDeath;
 	char *szCurrentMission;
 	char *szCurrentMissionFile;
-	tTransformation playerPos;
+	tObjTransformation playerPos;
 	short nPlayerSegment;
 	tCheatStates cheats;
 } tApplicationStates;
@@ -2095,79 +2095,7 @@ class CPhysicsData {
 
 //------------------------------------------------------------------------------
 
-typedef struct tPOF_face {
-	short					nVerts;
-	short*				verts;
-	CFixVector			vCenter;
-	CFixVector			vNorm;
-	CFixVector			vRotNorm;
-	CFloatVector			vNormf;
-	CFloatVector			vCenterf;
-	float					fClipDist;
-	ubyte					bFacingLight :1;
-	ubyte					bFrontFace :1;
-	ubyte					bGlow :1;
-	ubyte					bTest :1;
-	ubyte					bIgnore :1;
-	short					nAdjFaces;
-} tPOF_face;
-
-inline int operator- (tPOF_face* f, CArray<tPOF_face>& a) { return a.Index (f); }
-
-typedef struct tPOF_faceList {
-	short					nFaces;
-	CArray<tPOF_face>	faces;
-} tPOF_faceList;
-
-typedef struct tPOF_faceRef {
-	short			nFaces;
-	tPOF_face*	*faces;
-} tPOF_faceRef;
-
-typedef struct tPOFSubObject {
-	tPOF_faceList		faces;
-	tPOF_faceRef		litFaces;	//submodel faces facing the current light source
-	CFixVector			vPos;
-	CAngleVector			vAngles;
-	float					fClipDist;
-	short					nParent;
-	CArray<short>		adjFaces;
-	short					nRenderFlipFlop;
-	short					bCalcClipDist;
-} tPOFSubObject;
-
-inline int operator- (tPOFSubObject* o, CArray<tPOFSubObject>& a) { return a.Index (o); }
-
-typedef struct tPOF_subObjList {
-	short							nSubObjs;
-	CArray<tPOFSubObject>	subObjs;
-} tPOF_subObjList;
-
-typedef struct tPOFObject {
-	tPOF_subObjList		subObjs;
-	short						nVerts;
-	CArray<CFixVector>		verts;
-	CArray<CFloatVector>	vertsf;
-	CArray<float>			fClipDist;
-	CArray<ubyte>			vertFlags;
-	CArray<g3sNormal>		vertNorms;
-	CFixVector				vCenter;
-	CArray<CFixVector>		rotVerts;
-	tPOF_faceList			faces;
-	CStack<tPOF_face*>	litFaces;
-	short						nAdjFaces;
-	CArray<short>			adjFaces;
-	CArray<short>			faceVerts;
-	CArray<short>			vertMap;
-	short						iSubObj;
-	short						iVert;
-	short						iFace;
-	short						iFaceVert;
-	char						nState;
-	ubyte						nVertFlag;
-} tPOFObject;
-
-//------------------------------------------------------------------------------
+#include "pof.h"
 
 #define MAX_POLYGON_VERTS 1000
 
@@ -2186,7 +2114,7 @@ class CRobotData {
 		int						nDefaultTypes;
 		int						bReplacementsLoaded;
 		CArray<tRobotInfo>	infoP;
-		CArray<tPOFObject>	pofData;
+		CArray<POF::CModel>	pofData;
 	public:
 		CRobotData ();
 		~CRobotData () {}
@@ -2402,15 +2330,15 @@ class CModelData {
 	public:
 		int						nLoresModels;
 		int						nHiresModels;
-		ASEModel::CModel				aseModels [2][MAX_POLYGON_MODELS];
-		OOFModel::CModel				oofModels [2][MAX_POLYGON_MODELS];
-		tPOFObject				pofData [2][2][MAX_POLYGON_MODELS];
+		ASE::CModel				aseModels [2][MAX_POLYGON_MODELS];
+		OOF::CModel				oofModels [2][MAX_POLYGON_MODELS];
+		POF::CModel				pofData [2][2][MAX_POLYGON_MODELS];
 		ubyte						bHaveHiresModel [MAX_POLYGON_MODELS];
 		tPolyModel				polyModels [MAX_POLYGON_MODELS];
 		tPolyModel				defPolyModels [MAX_POLYGON_MODELS];
 		tPolyModel				altPolyModels [MAX_POLYGON_MODELS];
-		OOFModel::CModel*				modelToOOF [2][MAX_POLYGON_MODELS];
-		ASEModel::CModel*				modelToASE [2][MAX_POLYGON_MODELS];
+		OOF::CModel*				modelToOOF [2][MAX_POLYGON_MODELS];
+		ASE::CModel*				modelToASE [2][MAX_POLYGON_MODELS];
 		tPolyModel*				modelToPOL [MAX_POLYGON_MODELS];
 		int						nPolyModels;
 		int						nDefPolyModels;
@@ -3179,10 +3107,10 @@ typedef struct tVertColorThreadData {
 	} tVertColorThreadData;
 
 typedef struct tClipDistData {
-	CObject			*objP;
-	tPOFObject		*po;
-	tPOFSubObject	*pso;
-	float				fClipDist [2];
+	CObject*				objP;
+	POF::CModel*		po;
+	POF::CSubModel*	pso;
+	float					fClipDist [2];
 	} tClipDistData;
 
 typedef struct tClipDistThreadData {

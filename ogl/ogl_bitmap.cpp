@@ -61,13 +61,13 @@ glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if 1
 fPos.Assign (vPos);
-G3TransformPoint (fPos, fPos, 0);
+transformation.Transform (fPos, fPos, 0);
 #else
-v1 = vPos[0] - viewInfo.vPos;
-VmVecRotate (&pv, &v1, &viewInfo.view [0]);
+v1 = vPos[0] - transformation.m_info.vPos;
+VmVecRotate (&pv, &v1, &transformation.m_info.view [0]);
 #endif
-w = (GLfloat) X2F (width); //FixMul (width, viewInfo.scale.x));
-h = (GLfloat) X2F (height); //FixMul (height, viewInfo.scale.y));
+w = (GLfloat) X2F (width); //FixMul (width, transformation.m_info.scale.x));
+h = (GLfloat) X2F (height); //FixMul (height, transformation.m_info.scale.y));
 if (gameStates.render.nShadowBlurPass == 1) {
 	glDisable (GL_TEXTURE_2D);
 	glColor4d (1,1,1,1);

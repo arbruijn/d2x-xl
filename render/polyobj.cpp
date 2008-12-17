@@ -650,15 +650,15 @@ if (!flags)	{	//draw entire CObject
 		gameStates.ogl.bUseTransform = 
 			(gameStates.app.bEndLevelSequence < EL_OUTSIDE) && 
 			!(SHOW_DYN_LIGHT && ((RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects));
-		G3StartInstanceMatrix (*pos, *orient);
+		transformation.Begin (*pos, *orient);
 		G3DrawPolyModel (objP, po->modelData.Buffer (), gameData.models.textures, animAngles, NULL, light, glowValues, colorP, NULL, nModel);
-		G3DoneInstance ();
+		transformation.End ();
 		}
 	}
 else {
 	int i;
 
-	//G3StartInstanceMatrix (pos, orient);
+	//transformation.Begin (pos, orient);
 	for (i = 0; flags > 0; flags >>= 1, i++)
 		if (flags & 1) {
 			CFixVector vOffset;
@@ -674,14 +674,14 @@ else {
 #if DBG
 					G3RenderModel (objP, nModel, i, po, gameData.models.textures, animAngles, &vOffset, light, glowValues, colorP);
 #endif
-					G3StartInstanceMatrix(vOffset);
+					transformation.Begin (vOffset);
 					G3DrawPolyModel (objP, po->modelData + po->subModels.ptrs [i], gameData.models.textures,
 										  animAngles, NULL, light, glowValues, colorP, NULL, nModel);
-					G3DoneInstance ();
+					transformation.End ();
 					}
 				}
 			}
-	//G3DoneInstance ();
+	//transformation.End ();
 	}
 gameStates.ogl.bUseTransform = 0;
 gameData.render.vertP = NULL;
@@ -689,9 +689,9 @@ gameData.render.vertP = NULL;
 {
 	g3sPoint p0, p1;
 
-G3TransformPoint (&p0.p3_vec, &objP->info.position.vPos);
+transformation.Transform (&p0.p3_vec, &objP->info.position.vPos);
 VmVecSub (&p1.p3_vec, &objP->info.position.vPos, &objP->mType.physInfo.velocity);
-G3TransformPoint (&p1.p3_vec, &p1.p3_vec);
+transformation.Transform (&p1.p3_vec, &p1.p3_vec);
 glLineWidth (20);
 glDisable (GL_TEXTURE_2D);
 glBegin (GL_LINES);
@@ -780,7 +780,7 @@ int LoadPolygonModel (const char *filename, int nTextures, CBitmap ***textures)
 	//	MK was real tired of those useless, slow mprintfs...
 #if TRACE
 	if (gameData.models.nPolyModels > MAX_POLYGON_MODELS - 10)
-		con_printf (CON_VERBOSE, "Used %d/%d polygon model slots\n", gameData.models.nPolyModels+1, MAX_POLYGON_MODELS);
+		console.printf (CON_VERBOSE, "Used %d/%d polygon model slots\n", gameData.models.nPolyModels+1, MAX_POLYGON_MODELS);
 #endif
 	Assert (strlen (filename) <= 12);
 	strcpy (Pof_names [gameData.models.nPolyModels], filename);

@@ -180,9 +180,9 @@ if (objP->info.nType == OBJ_POWERUP) {
 			gameData.multiplayer.powerupsInMine [objP->info.nId]++;
 			gameData.multiplayer.maxPowerupsAllowed [objP->info.nId]++;
 #if TRACE
-			con_printf (CONDBG, "PowerupLimiter: ID=%d\n", objP->info.nId);
+			console.printf (CON_DBG, "PowerupLimiter: ID=%d\n", objP->info.nId);
 			if (objP->info.nId > MAX_POWERUP_TYPES)
-				con_printf (1,"POWERUP: Overwriting array bounds!\n");
+				console.printf (1,"POWERUP: Overwriting array bounds!\n");
 #endif
 			}
 		}
@@ -312,41 +312,41 @@ static void gs_write_angvec(CAngleVector *v,FILE *file)
 
 int MultiPowerupIs4Pack(int);
 //reads one CObject of the given version from the given file
-void ReadObject (CObject *objP, CFile& cf, int version)
+void CObject::Read (CFile& cf)
 {
 	int	i;
 
-objP->info.nType = cf.ReadByte ();
-objP->info.nId = cf.ReadByte ();
-objP->info.controlType = cf.ReadByte ();
-objP->info.movementType = cf.ReadByte ();
-objP->info.renderType = cf.ReadByte ();
-objP->info.nFlags = cf.ReadByte ();
-objP->info.nSegment = cf.ReadShort ();
-objP->info.nAttachedObj = -1;
-cf.ReadVector (objP->info.position.vPos);
-cf.ReadMatrix (objP->info.position.mOrient);
-objP->info.xSize = cf.ReadFix ();
-objP->info.xShields = cf.ReadFix ();
-cf.ReadVector (objP->info.vLastPos);
-objP->info.contains.nType = cf.ReadByte ();
-objP->info.contains.nId = cf.ReadByte ();
-objP->info.contains.nCount = cf.ReadByte ();
-switch (objP->info.movementType) {
+info.nType = cf.ReadByte ();
+info.nId = cf.ReadByte ();
+info.controlType = cf.ReadByte ();
+info.movementType = cf.ReadByte ();
+info.renderType = cf.ReadByte ();
+info.nFlags = cf.ReadByte ();
+info.nSegment = cf.ReadShort ();
+info.nAttachedObj = -1;
+cf.ReadVector (info.position.vPos);
+cf.ReadMatrix (info.position.mOrient);
+info.xSize = cf.ReadFix ();
+info.xShields = cf.ReadFix ();
+cf.ReadVector (info.vLastPos);
+info.contains.nType = cf.ReadByte ();
+info.contains.nId = cf.ReadByte ();
+info.contains.nCount = cf.ReadByte ();
+switch (info.movementType) {
 	case MT_PHYSICS:
-		cf.ReadVector (objP->mType.physInfo.velocity);
-		cf.ReadVector (objP->mType.physInfo.thrust);
-		objP->mType.physInfo.mass = cf.ReadFix ();
-		objP->mType.physInfo.drag = cf.ReadFix ();
-		objP->mType.physInfo.brakes = cf.ReadFix ();
-		cf.ReadVector (objP->mType.physInfo.rotVel);
-		cf.ReadVector (objP->mType.physInfo.rotThrust);
-		objP->mType.physInfo.turnRoll	= cf.ReadFixAng ();
-		objP->mType.physInfo.flags	= cf.ReadShort ();
+		cf.ReadVector (mType.physInfo.velocity);
+		cf.ReadVector (mType.physInfo.thrust);
+		mType.physInfo.mass = cf.ReadFix ();
+		mType.physInfo.drag = cf.ReadFix ();
+		mType.physInfo.brakes = cf.ReadFix ();
+		cf.ReadVector (mType.physInfo.rotVel);
+		cf.ReadVector (mType.physInfo.rotThrust);
+		mType.physInfo.turnRoll	= cf.ReadFixAng ();
+		mType.physInfo.flags	= cf.ReadShort ();
 		break;
 
 	case MT_SPINNING:
-		cf.ReadVector (objP->mType.spinRate);
+		cf.ReadVector (mType.spinRate);
 		break;
 
 	case MT_NONE:
@@ -356,49 +356,49 @@ switch (objP->info.movementType) {
 		Int3();
 	}
 
-switch (objP->info.controlType) {
+switch (info.controlType) {
 	case CT_AI: 
-		objP->cType.aiInfo.behavior = cf.ReadByte ();
+		cType.aiInfo.behavior = cf.ReadByte ();
 		for (i=0;i<MAX_AI_FLAGS;i++)
-			objP->cType.aiInfo.flags [i] = cf.ReadByte ();
-		objP->cType.aiInfo.nHideSegment = cf.ReadShort ();
-		objP->cType.aiInfo.nHideIndex = cf.ReadShort ();
-		objP->cType.aiInfo.nPathLength = cf.ReadShort ();
-		objP->cType.aiInfo.nCurPathIndex = (char) cf.ReadShort ();
-		if (version <= 25) {
-			cf.ReadShort ();	//				objP->cType.aiInfo.follow_path_start_seg	= 
-			cf.ReadShort ();	//				objP->cType.aiInfo.follow_path_end_seg		= 
+			cType.aiInfo.flags [i] = cf.ReadByte ();
+		cType.aiInfo.nHideSegment = cf.ReadShort ();
+		cType.aiInfo.nHideIndex = cf.ReadShort ();
+		cType.aiInfo.nPathLength = cf.ReadShort ();
+		cType.aiInfo.nCurPathIndex = (char) cf.ReadShort ();
+		if (gameTopFileInfo.fileinfoVersion <= 25) {
+			cf.ReadShort ();	//				cType.aiInfo.follow_path_start_seg	= 
+			cf.ReadShort ();	//				cType.aiInfo.follow_path_end_seg		= 
 			}
 		break;
 
 	case CT_EXPLOSION:
-		objP->cType.explInfo.nSpawnTime = cf.ReadFix ();
-		objP->cType.explInfo.nDeleteTime	= cf.ReadFix ();
-		objP->cType.explInfo.nDeleteObj = cf.ReadShort ();
-		objP->cType.explInfo.attached.nNext = objP->cType.explInfo.attached.nPrev = objP->cType.explInfo.attached.nParent = -1;
+		cType.explInfo.nSpawnTime = cf.ReadFix ();
+		cType.explInfo.nDeleteTime	= cf.ReadFix ();
+		cType.explInfo.nDeleteObj = cf.ReadShort ();
+		cType.explInfo.attached.nNext = cType.explInfo.attached.nPrev = cType.explInfo.attached.nParent = -1;
 		break;
 
 	case CT_WEAPON: //do I really need to read these?  Are they even saved to disk?
-		objP->cType.laserInfo.parent.nType = cf.ReadShort ();
-		objP->cType.laserInfo.parent.nObject = cf.ReadShort ();
-		objP->cType.laserInfo.parent.nSignature = cf.ReadInt ();
+		cType.laserInfo.parent.nType = cf.ReadShort ();
+		cType.laserInfo.parent.nObject = cf.ReadShort ();
+		cType.laserInfo.parent.nSignature = cf.ReadInt ();
 		break;
 
 	case CT_LIGHT:
-		objP->cType.lightInfo.intensity = cf.ReadFix ();
+		cType.lightInfo.intensity = cf.ReadFix ();
 		break;
 
 	case CT_POWERUP:
-		if (version >= 25)
-			objP->cType.powerupInfo.nCount = cf.ReadInt ();
+		if (gameTopFileInfo.fileinfoVersion >= 25)
+			cType.powerupInfo.nCount = cf.ReadInt ();
 		else
-			objP->cType.powerupInfo.nCount = 1;
-		if (objP->info.nId == POW_VULCAN)
-			objP->cType.powerupInfo.nCount = VULCAN_WEAPON_AMMO_AMOUNT;
-		else if (objP->info.nId == POW_GAUSS)
-			objP->cType.powerupInfo.nCount = VULCAN_WEAPON_AMMO_AMOUNT;
-		else if (objP->info.nId == POW_OMEGA)
-			objP->cType.powerupInfo.nCount = MAX_OMEGA_CHARGE;
+			cType.powerupInfo.nCount = 1;
+		if (info.nId == POW_VULCAN)
+			cType.powerupInfo.nCount = VULCAN_WEAPON_AMMO_AMOUNT;
+		else if (info.nId == POW_GAUSS)
+			cType.powerupInfo.nCount = VULCAN_WEAPON_AMMO_AMOUNT;
+		else if (info.nId == POW_OMEGA)
+			cType.powerupInfo.nCount = MAX_OMEGA_CHARGE;
 		break;
 
 	case CT_NONE:
@@ -419,36 +419,36 @@ switch (objP->info.controlType) {
 		Int3();
 	}
 
-switch (objP->info.renderType) {
+switch (info.renderType) {
 	case RT_NONE:
 		break;
 
 	case RT_MORPH:
 	case RT_POLYOBJ: {
 		int i,tmo;
-		objP->rType.polyObjInfo.nModel = cf.ReadInt ();
+		rType.polyObjInfo.nModel = cf.ReadInt ();
 		for (i=0;i<MAX_SUBMODELS;i++)
-			cf.ReadAngVec(objP->rType.polyObjInfo.animAngles [i]);
-		objP->rType.polyObjInfo.nSubObjFlags = cf.ReadInt ();
+			cf.ReadAngVec(rType.polyObjInfo.animAngles [i]);
+		rType.polyObjInfo.nSubObjFlags = cf.ReadInt ();
 		tmo = cf.ReadInt ();
 #ifndef EDITOR
-		objP->rType.polyObjInfo.nTexOverride = tmo;
+		rType.polyObjInfo.nTexOverride = tmo;
 #else
 		if (tmo==-1)
-			objP->rType.polyObjInfo.nTexOverride = -1;
+			rType.polyObjInfo.nTexOverride = -1;
 		else {
 			int xlated_tmo = tmap_xlate_table [tmo];
 			if (xlated_tmo < 0)	{
 #if TRACE
-				con_printf (CONDBG, "Couldn't find texture for demo CObject, nModel = %d\n", objP->rType.polyObjInfo.nModel);
+				console.printf (CON_DBG, "Couldn't find texture for demo CObject, nModel = %d\n", rType.polyObjInfo.nModel);
 #endif
 				Int3();
 				xlated_tmo = 0;
 				}
-			objP->rType.polyObjInfo.nTexOverride	= xlated_tmo;
+			rType.polyObjInfo.nTexOverride	= xlated_tmo;
 			}
 #endif
-		objP->rType.polyObjInfo.nAltTextures = 0;
+		rType.polyObjInfo.nAltTextures = 0;
 		break;
 		}
 
@@ -456,9 +456,9 @@ switch (objP->info.renderType) {
 	case RT_HOSTAGE:
 	case RT_POWERUP:
 	case RT_FIREBALL:
-		objP->rType.vClipInfo.nClipIndex	= cf.ReadInt ();
-		objP->rType.vClipInfo.xFrameTime	= cf.ReadFix ();
-		objP->rType.vClipInfo.nCurFrame	= cf.ReadByte ();
+		rType.vClipInfo.nClipIndex	= cf.ReadInt ();
+		rType.vClipInfo.xFrameTime	= cf.ReadFix ();
+		rType.vClipInfo.nCurFrame	= cf.ReadByte ();
 		break;
 
 	case RT_THRUSTER:
@@ -466,47 +466,47 @@ switch (objP->info.renderType) {
 		break;
 
 	case RT_SMOKE:
-		objP->rType.particleInfo.nLife = cf.ReadInt ();
-		objP->rType.particleInfo.nSize [0] = cf.ReadInt ();
-		objP->rType.particleInfo.nParts = cf.ReadInt ();
-		objP->rType.particleInfo.nSpeed = cf.ReadInt ();
-		objP->rType.particleInfo.nDrift = cf.ReadInt ();
-		objP->rType.particleInfo.nBrightness = cf.ReadInt ();
-		objP->rType.particleInfo.color.red = cf.ReadByte ();
-		objP->rType.particleInfo.color.green = cf.ReadByte ();
-		objP->rType.particleInfo.color.blue = cf.ReadByte ();
-		objP->rType.particleInfo.color.alpha = cf.ReadByte ();
-		objP->rType.particleInfo.nSide = cf.ReadByte ();
+		rType.particleInfo.nLife = cf.ReadInt ();
+		rType.particleInfo.nSize [0] = cf.ReadInt ();
+		rType.particleInfo.nParts = cf.ReadInt ();
+		rType.particleInfo.nSpeed = cf.ReadInt ();
+		rType.particleInfo.nDrift = cf.ReadInt ();
+		rType.particleInfo.nBrightness = cf.ReadInt ();
+		rType.particleInfo.color.red = cf.ReadByte ();
+		rType.particleInfo.color.green = cf.ReadByte ();
+		rType.particleInfo.color.blue = cf.ReadByte ();
+		rType.particleInfo.color.alpha = cf.ReadByte ();
+		rType.particleInfo.nSide = cf.ReadByte ();
 		if (gameData.segs.nLevelVersion < 18)
-			objP->rType.particleInfo.nType = 0;
+			rType.particleInfo.nType = 0;
 		else
-			objP->rType.particleInfo.nType = cf.ReadByte ();
+			rType.particleInfo.nType = cf.ReadByte ();
 		break;
 
 	case RT_LIGHTNING:
-		objP->rType.lightningInfo.nLife = cf.ReadInt ();
-		objP->rType.lightningInfo.nDelay = cf.ReadInt ();
-		objP->rType.lightningInfo.nLength = cf.ReadInt ();
-		objP->rType.lightningInfo.nAmplitude = cf.ReadInt ();
-		objP->rType.lightningInfo.nOffset = cf.ReadInt ();
-		objP->rType.lightningInfo.nLightnings = cf.ReadShort ();
-		objP->rType.lightningInfo.nId = cf.ReadShort ();
-		objP->rType.lightningInfo.nTarget = cf.ReadShort ();
-		objP->rType.lightningInfo.nNodes = cf.ReadShort ();
-		objP->rType.lightningInfo.nChildren = cf.ReadShort ();
-		objP->rType.lightningInfo.nSteps = cf.ReadShort ();
-		objP->rType.lightningInfo.nAngle = cf.ReadByte ();
-		objP->rType.lightningInfo.nStyle = cf.ReadByte ();
-		objP->rType.lightningInfo.nSmoothe = cf.ReadByte ();
-		objP->rType.lightningInfo.bClamp = cf.ReadByte ();
-		objP->rType.lightningInfo.bPlasma = cf.ReadByte ();
-		objP->rType.lightningInfo.bSound = cf.ReadByte ();
-		objP->rType.lightningInfo.bRandom = cf.ReadByte ();
-		objP->rType.lightningInfo.bInPlane = cf.ReadByte ();
-		objP->rType.lightningInfo.color.red = cf.ReadByte ();
-		objP->rType.lightningInfo.color.green = cf.ReadByte ();
-		objP->rType.lightningInfo.color.blue = cf.ReadByte ();
-		objP->rType.lightningInfo.color.alpha = cf.ReadByte ();
+		rType.lightningInfo.nLife = cf.ReadInt ();
+		rType.lightningInfo.nDelay = cf.ReadInt ();
+		rType.lightningInfo.nLength = cf.ReadInt ();
+		rType.lightningInfo.nAmplitude = cf.ReadInt ();
+		rType.lightningInfo.nOffset = cf.ReadInt ();
+		rType.lightningInfo.nLightnings = cf.ReadShort ();
+		rType.lightningInfo.nId = cf.ReadShort ();
+		rType.lightningInfo.nTarget = cf.ReadShort ();
+		rType.lightningInfo.nNodes = cf.ReadShort ();
+		rType.lightningInfo.nChildren = cf.ReadShort ();
+		rType.lightningInfo.nSteps = cf.ReadShort ();
+		rType.lightningInfo.nAngle = cf.ReadByte ();
+		rType.lightningInfo.nStyle = cf.ReadByte ();
+		rType.lightningInfo.nSmoothe = cf.ReadByte ();
+		rType.lightningInfo.bClamp = cf.ReadByte ();
+		rType.lightningInfo.bPlasma = cf.ReadByte ();
+		rType.lightningInfo.bSound = cf.ReadByte ();
+		rType.lightningInfo.bRandom = cf.ReadByte ();
+		rType.lightningInfo.bInPlane = cf.ReadByte ();
+		rType.lightningInfo.color.red = cf.ReadByte ();
+		rType.lightningInfo.color.green = cf.ReadByte ();
+		rType.lightningInfo.color.blue = cf.ReadByte ();
+		rType.lightningInfo.color.alpha = cf.ReadByte ();
 		break;
 
 	default:
@@ -918,7 +918,7 @@ if (gameFileInfo.objects.offset > -1) {
 		}
 	OBJECTS.Clear (0, gameFileInfo.objects.count);
 	for (i = 0; i < gameFileInfo.objects.count; i++, objP++) {
-		ReadObject (objP, cf, gameTopFileInfo.fileinfoVersion);
+		objP->Read (cf);
 		objP->info.nSignature = gameData.objs.nNextSignature++;
 #if DBG
 		if (i == nDbgObj) {
@@ -1025,7 +1025,7 @@ static int ReadTriggerInfo (CFile& cf)
 
 if (gameFileInfo.triggers.offset > -1) {
 #if TRACE
-	con_printf(CONDBG, "   loading tTrigger data ...\n");
+	console.printf(CON_DBG, "   loading tTrigger data ...\n");
 #endif
 	if (cf.Seek (gameFileInfo.triggers.offset, SEEK_SET)) {
 		Error ("Error seeking to trigger data\n(file damaged or invalid)");
@@ -1147,7 +1147,7 @@ static int ReadReactorInfo (CFile& cf)
 {
 if (gameFileInfo.control.offset > -1) {
 #if TRACE
-	con_printf(CONDBG, "   loading reactor data ...\n");
+	console.printf(CON_DBG, "   loading reactor data ...\n");
 #endif
 	if (cf.Seek (gameFileInfo.control.offset, SEEK_SET)) {
 		Error ("Error seeking to reactor data\n(file damaged or invalid)");
@@ -1234,7 +1234,7 @@ if (gameFileInfo.lightDeltaIndices.offset > -1) {
 	gameData.render.lights.nStatic = gameFileInfo.lightDeltaIndices.count;
 	if (gameTopFileInfo.fileinfoVersion < 29) {
 #if TRACE
-		con_printf (CONDBG, "Warning: Old mine version.  Not reading gameData.render.lights.deltaIndices info.\n");
+		console.printf (CON_DBG, "Warning: Old mine version.  Not reading gameData.render.lights.deltaIndices info.\n");
 #endif
 		Int3();	//shouldn't be here!!!
 		return 0;
@@ -1258,7 +1258,7 @@ if (gameFileInfo.lightDeltas.offset > -1) {
 	int	i;
 
 #if TRACE
-	con_printf(CONDBG, "   loading light data ...\n");
+	console.printf(CON_DBG, "   loading light data ...\n");
 #endif
 	if (cf.Seek (gameFileInfo.lightDeltas.offset, SEEK_SET)) {
 		Error ("Error seeking to light delta data\n(file damaged or invalid)");
@@ -1269,7 +1269,7 @@ if (gameFileInfo.lightDeltas.offset > -1) {
 			ReadlightDelta (gameData.render.lights.deltas + i, cf);
 		else {
 #if TRACE
-			con_printf (CONDBG, "Warning: Old mine version.  Not reading delta light info.\n");
+			console.printf (CON_DBG, "Warning: Old mine version.  Not reading delta light info.\n");
 #endif
 			}
 		}
@@ -1333,7 +1333,7 @@ static void CheckAndFixWalls (void)
 for (i = 0; i < gameData.walls.nWalls; i++)
 	if (gameData.walls.walls [i].nTrigger >= gameData.trigs.nTriggers) {
 #if TRACE
-		con_printf (CONDBG,"Removing reference to invalid tTrigger %d from tWall %d\n",gameData.walls.walls [i].nTrigger,i);
+		console.printf (CON_DBG,"Removing reference to invalid tTrigger %d from tWall %d\n",gameData.walls.walls [i].nTrigger,i);
 #endif
 		gameData.walls.walls [i].nTrigger = NO_TRIGGER;	//kill tTrigger
 		}
@@ -1373,7 +1373,7 @@ for (i = 0; i < gameData.trigs.nTriggers; ) {
 #ifdef EDITOR
 	if (j == gameData.walls.nWalls) {
 #if TRACE
-		con_printf (CONDBG,"Removing unreferenced tTrigger %d\n",i);
+		console.printf (CON_DBG,"Removing unreferenced tTrigger %d\n",i);
 #endif
 		RemoveTriggerNum (i);
 		}
@@ -1540,7 +1540,7 @@ sig = cf.ReadInt ();
 gameData.segs.nLevelVersion = cf.ReadInt ();
 gameStates.app.bD2XLevel = (gameData.segs.nLevelVersion >= 10);
 #if TRACE
-con_printf (CONDBG, "gameData.segs.nLevelVersion = %d\n", gameData.segs.nLevelVersion);
+console.printf (CON_DBG, "gameData.segs.nLevelVersion = %d\n", gameData.segs.nLevelVersion);
 #endif
 nMineDataOffset = cf.ReadInt ();
 nGameDataOffset = cf.ReadInt ();
@@ -1577,7 +1577,7 @@ if (gameData.segs.nLevelVersion >= 7) {
 	int i;
 
 #if TRACE
-con_printf (CONDBG, "   loading dynamic lights ...\n");
+console.printf (CON_DBG, "   loading dynamic lights ...\n");
 #endif
 gameData.render.lights.flicker.nLights = cf.ReadInt ();
 Assert ((gameData.render.lights.flicker.nLights >= 0) && (gameData.render.lights.flicker.nLights < MAX_FLICKERING_LIGHTS));
@@ -1589,27 +1589,12 @@ else
 
 if (gameData.segs.nLevelVersion < 6) {
 	gameData.segs.secret.nReturnSegment = 0;
-	gameData.segs.secret.returnOrient.RVec ()[Y] =
-	gameData.segs.secret.returnOrient.RVec ()[Z] = 
-	gameData.segs.secret.returnOrient.FVec ()[X] =
-	gameData.segs.secret.returnOrient.FVec ()[Z] =
-	gameData.segs.secret.returnOrient.UVec ()[X] =
-	gameData.segs.secret.returnOrient.UVec ()[Y] = 0;
-	gameData.segs.secret.returnOrient.RVec ()[X] =
-	gameData.segs.secret.returnOrient.FVec ()[Y] =
-	gameData.segs.secret.returnOrient.UVec ()[Z] = F1_0;
+	gameData.segs.secret.returnOrient = CFixMatrix::IDENTITY;
 	}
 else {
 	gameData.segs.secret.nReturnSegment = cf.ReadInt ();
-	gameData.segs.secret.returnOrient.RVec ()[X] = cf.ReadInt ();
-	gameData.segs.secret.returnOrient.RVec ()[Y] = cf.ReadInt ();
-	gameData.segs.secret.returnOrient.RVec ()[Z] = cf.ReadInt ();
-	gameData.segs.secret.returnOrient.FVec ()[X] = cf.ReadInt ();
-	gameData.segs.secret.returnOrient.FVec ()[Y] = cf.ReadInt ();
-	gameData.segs.secret.returnOrient.FVec ()[Z] = cf.ReadInt ();
-	gameData.segs.secret.returnOrient.UVec ()[X] = cf.ReadInt ();
-	gameData.segs.secret.returnOrient.UVec ()[Y] = cf.ReadInt ();
-	gameData.segs.secret.returnOrient.UVec ()[Z] = cf.ReadInt ();
+	for (int i = 0; i < 9; i++)
+		gameData.segs.secret.returnOrient [i] = cf.ReadInt ();
 	}
 
 //NOTE LINK TO ABOVE!!
@@ -1663,7 +1648,7 @@ if (Errors_in_mine) {
 		StartTime();
 	} else {
 #if TRACE
-		con_printf (1, TXT_MINE_ERRORS, Errors_in_mine, Level_being_loaded);
+		console.printf (1, TXT_MINE_ERRORS, Errors_in_mine, Level_being_loaded);
 #endif
 	}
 }

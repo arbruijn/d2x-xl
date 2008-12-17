@@ -18,12 +18,9 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "vecmat.h" //the vector/matrix library
 #include "globvars.h"
 #include "gr.h"
+#include "transformation.h"
 
 extern int g3d_interp_outline;      //if on, polygon models outlined in white
-
-extern CFixVector Matrix_scale;     //how the matrix is currently scaled
-
-extern short highest_texture_num;
 
 //Structure for storing u,v,light values.  This structure doesn't have a
 //prefix because it was defined somewhere else before it was moved here
@@ -43,19 +40,12 @@ typedef struct g3sCodes {
 #define PF_UVS          8   //has uv values set
 #define PF_LS           16  //has lighting values set
 
-//clipping codes flags
-
-#define CC_OFF_LEFT     1
-#define CC_OFF_RIGHT    2
-#define CC_OFF_BOT      4
-#define CC_OFF_TOP      8
-#define CC_BEHIND       0x80
 
 //Used to store rotated points for mines.  Has frame count to indicate
 //if rotated, and flag to indicate if projected.
 typedef struct g3sNormal {
-	CFloatVector		vNormal;
-	ubyte			nFaces;	// # of faces that use this vertex
+	CFloatVector	vNormal;
+	ubyte				nFaces;	// # of faces that use this vertex
 } g3sNormal;
 
 typedef struct tScreenPos {
@@ -126,18 +116,8 @@ int g3_compute_sky_polygon (fix *points_2d,CFixVector *vecs);
 //Instancing
 
 //instance at specified point with specified orientation
-//void G3StartInstanceMatrix (const CFixVector& pos);
-void G3StartInstanceMatrix (const CFixVector& pos,
-                           const CFixMatrix& orient=CFixMatrix::IDENTITY);
+//void transformation.Begin (const CFixVector& pos);
 
-//instance at specified point with specified orientation
-void G3StartInstanceAngles (const CFixVector& pos,
-                           const CAngleVector& angles = CAngleVector::ZERO);
-
-//pops the old context
-void G3DoneInstance ();
-int G3PushMatrix (void);
-int G3PopMatrix (void);
 
 //Misc utility functions:
 
@@ -170,70 +150,15 @@ g3sCodes g3_check_codes (int nv,g3sPoint **pointlist);
 void G3ProjectPoint (g3sPoint* point);
 
 //code a point.  fills in the p3_codes field of the point, and returns the codes
-#if 1
 static inline ubyte G3EncodePoint (g3sPoint* p) 
 {
-	ubyte cc = 0;
-	fix z = p->p3_vec [Z];
-	fix x = FixMulDiv (p->p3_vec [X], viewInfo.scale [X], viewInfo.zoom);
-
-if (x > z)
-	cc |= CC_OFF_RIGHT;
-if (x < -z)
-	cc |= CC_OFF_LEFT;
-if (p->p3_vec [Y] > z)
-	cc |= CC_OFF_TOP;
-if (p->p3_vec [Y] < -z)
-	cc |= CC_OFF_BOT;
-if (z < 0)
-	cc |= CC_BEHIND;
-return p->p3_codes = cc;
-}
-#else
-ubyte G3EncodePoint (g3sPoint *point);
-#endif
-
-static inline CFixVector& G3TranslatePoint (CFixVector& dest, const CFixVector& src) 
-{
-return dest = src - viewInfo.pos;
+return p->p3_codes = transformation.Codes (p->p3_vec);
 }
 
-static inline CFixVector& G3RotatePoint (CFixVector& dest, const CFixVector& src, int bUnscaled) 
-{
-return dest = viewInfo.view [bUnscaled] * src;
-}
-
-static inline CFixVector& G3TransformPoint (CFixVector& dest, const CFixVector& src, int bUnscaled) 
-{
-CFixVector vTrans = src - viewInfo.pos;
-return dest = viewInfo.view [bUnscaled] * vTrans;
-}
-
-static inline CFloatVector& G3TranslatePoint (CFloatVector& dest, const CFloatVector& src) 
-{
-return dest = src - viewInfo.posf [0];
-}
-
-static inline CFloatVector& G3RotatePoint (CFloatVector& dest, const CFloatVector& src, int bUnscaled) 
-{
-return dest = viewInfo.viewf [bUnscaled] * src;
-}
-
-static inline CFloatVector3& G3RotatePoint (CFloatVector3& dest, const CFloatVector3& src, int bUnscaled) 
-{
-return dest = viewInfo.viewf [bUnscaled] * src;
-}
-
-static inline CFloatVector& G3TransformPoint (CFloatVector& dest, const CFloatVector& src, int bUnscaled) 
-{
-CFloatVector vTrans = src - viewInfo.posf [0];
-return dest = viewInfo.viewf [bUnscaled] * vTrans;
-}
-
-static inline ubyte G3TransformAndEncodePoint (g3sPoint* dest, const CFixVector& src) 
+static inline ubyte G3TransformAndEncodePoint (g3sPoint* dest, const CFixVector& src)
 {
 dest->p3_src = src;
-G3TransformPoint (dest->p3_vec, src, 0);
+transformation.Transform (dest->p3_vec, src);
 dest->p3_flags = 0;
 return G3EncodePoint (dest);
 }
@@ -244,12 +169,7 @@ fix G3CalcPointDepth (const CFixVector& pnt);
 //from a 2d point, compute the vector through that point
 void G3Point2Vec (CFixVector& v, short sx, short sy);
 
-//delta rotation functions
-const CFixVector& G3RotateDeltaX (CFixVector& dest, fix dx);
-const CFixVector& G3RotateDeltaY (CFixVector& dest, fix dy);
-const CFixVector& G3RotateDeltaZ (CFixVector& dest, fix dz);
-const CFixVector& G3RotateDeltaVec (CFixVector& dest, const CFixVector& src);
-ubyte G3AddDeltaVec (g3sPoint *dest,g3sPoint *src,CFixVector *deltav);
+ubyte G3AddDeltaVec (g3sPoint *dest, g3sPoint *src, CFixVector *deltav);
 
 //Drawing functions:
 

@@ -20,7 +20,7 @@
 
 #define MAXGAP	0.01f
 
-using namespace OOFModel;
+using namespace OOF;
 
 //------------------------------------------------------------------------------
 
@@ -225,7 +225,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-void OOFModel::CFrameInfo::Init (void)
+void OOF::CFrameInfo::Init (void)
 {
 m_nFrames = 0;
 m_nFirstFrame = 0;
@@ -234,7 +234,7 @@ m_nLastFrame = 0;
 
 //------------------------------------------------------------------------------
 
-int OOFModel::CFrameInfo::Read (CFile& cf, CModel* po, int bTimed)
+int OOF::CFrameInfo::Read (CFile& cf, CModel* po, int bTimed)
 {
 nIndent += 2;
 OOF_PrintLog ("reading frame info\n");
@@ -307,7 +307,7 @@ CAnim::Destroy ();
 
 int CRotAnim::Read (CFile& cf, CModel* po, int bTimed)
 {
-if (!OOFModel::CFrameInfo::Read (cf, po, bTimed))
+if (!OOF::CFrameInfo::Read (cf, po, bTimed))
 	return 0;
 if (!m_frames.Create (m_nFrames))
 	return 0;
@@ -409,7 +409,7 @@ CAnim::Destroy ();
 
 int CPosAnim::Read (CFile& cf, CModel* po, int bTimed)
 {
-if (!OOFModel::CFrameInfo::Read (cf, po, bTimed))
+if (!OOF::CFrameInfo::Read (cf, po, bTimed))
 	return 0;
 if (bTimed &&
 	 (m_nTicks = m_nLastFrame - m_nFirstFrame) &&
@@ -576,6 +576,14 @@ return 1;
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+void CBattery::Init (void)
+{
+m_nVerts = 0;
+m_nTurrets = 0;
+}
+
 //------------------------------------------------------------------------------
 
 void CBattery::Destroy (void)

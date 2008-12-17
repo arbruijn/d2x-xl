@@ -43,11 +43,11 @@ void G3SetModelPoints(g3sPoint *pointlist);
 //calls the CObject interpreter to render an CObject.  The CObject renderer
 //is really a seperate pipeline. returns true if drew
 int G3DrawPolyModel (CObject *objP, void *modelDataP, CBitmap **modelBitmaps, CAngleVector *animAngles, CFixVector *vOffset,
-							 fix light, fix *glowValues, tRgbaColorf *obj_colors, tPOFObject *po, int nModel);
+							 fix light, fix *glowValues, tRgbaColorf *obj_colors, POF::CModel *po, int nModel);
 
 int G3DrawPolyModelShadow (CObject *objP, void *modelDataP, CAngleVector *pAnimAngles, int nModel);
 
-int G3FreePolyModelItems (tPOFObject *po);
+int G3FreePolyModelItems (POF::CModel *po);
 
 //init code for bitmap models
 void G3InitPolyModel(tPolyModel *pm, int nModel);
@@ -119,7 +119,7 @@ extern short nGlow;
 
 static inline void RotatePointListToVec (CFixVector *dest, CFixVector *src, int n) {
 	while(n--) {
-		G3TransformPoint(*dest, *src, 0);
+		transformation.Transform(*dest, *src, 0);
 		dest++; src++;
 	}
 }

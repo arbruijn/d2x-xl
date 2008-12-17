@@ -23,7 +23,7 @@ int ReplacementModelCount (void);
 
 // ----------------------------------------------------------------------------
 
-static inline ASEModel::CModel* GetASEModel (int nModel)
+static inline ASE::CModel* GetASEModel (int nModel)
 {
 if (gameData.models.modelToASE [1][nModel])
 	return gameData.models.modelToASE [1][nModel];
@@ -34,7 +34,7 @@ return NULL;
 
 // ----------------------------------------------------------------------------
 
-static inline OOFModel::CModel* GetOOFModel (int nModel)
+static inline OOF::CModel* GetOOFModel (int nModel)
 {
 if (gameData.models.modelToOOF [1][nModel])
 	return gameData.models.modelToOOF [1][nModel];

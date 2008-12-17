@@ -730,7 +730,7 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
 	if (gameStates.ogl.bUseTransform)
 		psl->vPosf [1] = psl->vPosf [0];
 	else {
-		G3TransformPoint(psl->vPosf[1], psl->vPosf[0], 0);
+		transformation.Transform(psl->vPosf[1], psl->vPosf[0], 0);
 		psl->vPosf[1][W] = 1;
 		}
 	psl->vPosf [0][W] = 1;
@@ -1354,7 +1354,7 @@ else if (gameStates.render.bPerPixelLighting) {
 else {
 	if (vPosP) {
 		COMPUTE_SEGMENT_CENTER_I (&vCenter, nSegment);
-		//G3TransformPoint (&vCenter, &vCenter);
+		//transformation.Transform (&vCenter, &vCenter);
 		ds = 0.0f;
 		}
 	else
@@ -1366,7 +1366,7 @@ else {
 		pvc = gameData.render.color.vertices + *pv;
 		if (vPosP) {
 			vVertex = gameData.segs.vertices [*pv];
-			//G3TransformPoint (&vVertex, &vVertex);
+			//transformation.Transform (&vVertex, &vVertex);
 			d = 2.0f - X2F (CFixVector::Dist(vVertex, *vPosP)) / X2F (CFixVector::Dist(vCenter, vVertex));
 			c.color.red += pvc->color.red * d;
 			c.color.green += pvc->color.green * d;
@@ -1400,7 +1400,7 @@ else {
 #if 1
 			if (vPosP) {
 				vVertex = gameData.segs.vertices [*pv];
-				//G3TransformPoint (&vVertex, &vVertex);
+				//transformation.Transform (&vVertex, &vVertex);
 				fLightDist = VmVecDist (psl->vPosf, &vPosf) / fLightRange;
 				fAttenuation = fLightDist / psl->info.fBrightness;
 				VmVecScaleAdd (reinterpret_cast<CFloatVector*> (&c.color), reinterpret_cast<CFloatVector*> (&c.color, reinterpret_cast<CFloatVector*> (&psl->color, 1.0f / fAttenuation);

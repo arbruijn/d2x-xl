@@ -61,7 +61,7 @@ int StringWidth (char * s, int n)
 	char p = s [n];
 
 s [n] = 0;
-FONT->StringSize (s, w, h, aw);
+fontManager.Current ()->StringSize (s, w, h, aw);
 s [n] = p;
 return w;
 }
@@ -268,7 +268,7 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_S
 		sprintf (message, TXT_DEMO_RECORDING);
 	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
 	fontManager.SetColorRGBi (RGBA_PAL2 (27, 0, 0), 1, 0, 0);
-	FONT->StringSize (message, w, h, aw);
+	fontManager.Current ()->StringSize (message, w, h, aw);
 	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 		if (CCanvas::Current ()->Height () > 240)
 			h += 40;
@@ -459,7 +459,7 @@ void game_render_frame_stereo ()
 
 		fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
 		fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
-		FONT->StringSize (msg, w, h, aw);
+		fontManager.Current ()->StringSize (msg, w, h, aw);
 
 		GrPrintF (NULL, (CCanvas::Current ()->Width ()-w)/2, 3, msg);
 
@@ -863,7 +863,7 @@ if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 	gameData.objs.viewerP = viewerSave;
 	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
 	fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
-	FONT->StringSize (msg, w, h, aw);
+	fontManager.Current ()->StringSize (msg, w, h, aw);
 	GrPrintF (NULL, (CCanvas::Current ()->Width () - w) / 2, 3, msg);
 	DrawGuidedCrosshair ();
 	HUDRenderMessageFrame ();
@@ -918,7 +918,7 @@ else if (gameStates.render.cockpit.nMode == CM_REAR_VIEW)
 	UpdateCockpits (1);
 else
 	HUDShowIcons ();
-con_update ();
+console.Draw ();
 OglSwapBuffers (0, 0);
 if (gameStates.app.bSaveScreenshot)
 	SaveScreenShot (NULL, 0);
@@ -1081,7 +1081,7 @@ if (gameStates.render.cockpit.nMode != CM_STATUS_BAR && (gameStates.render.vr.nS
 	}
 
 #if TRACE
-con_printf (CONDBG, "Cockpit mode=%d\n", gameStates.render.cockpit.nMode);
+console.printf (CON_DBG, "Cockpit mode=%d\n", gameStates.render.cockpit.nMode);
 #endif
 if (gameData.render.window.w > WINDOW_MIN_W) {
 	//int x, y;
@@ -1090,7 +1090,7 @@ if (gameData.render.window.w > WINDOW_MIN_W) {
 	gameData.render.window.h -= WINDOW_H_DELTA;
 
 #if TRACE
-  con_printf (CONDBG, "NewW=%d NewH=%d VW=%d maxH=%d\n", gameData.render.window.w, gameData.render.window.h, gameData.render.window.wMax, gameData.render.window.hMax);
+  console.printf (CON_DBG, "NewW=%d NewH=%d VW=%d maxH=%d\n", gameData.render.window.w, gameData.render.window.h, gameData.render.window.wMax, gameData.render.window.hMax);
 #endif
 	if (gameData.render.window.w < WINDOW_MIN_W)
 		gameData.render.window.w = WINDOW_MIN_W;
@@ -1258,7 +1258,7 @@ if (bg.bmP) {
 	}
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
 fontManager.SetCurrent (MEDIUM1_FONT);
-FONT->StringSize (pszMsg, w, h, aw);
+fontManager.Current ()->StringSize (pszMsg, w, h, aw);
 x = (screen.Width ()-w)/2;
 y = (screen.Height ()-h)/2;
 // Save the background of the display
