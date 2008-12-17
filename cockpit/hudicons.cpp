@@ -46,7 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 CBitmap*	bmpInventory = NULL;
 CBitmap	bmInvItems [NUM_INV_ITEMS];
-CBitmap*	bmObjTally [2];
+CBitmap	bmObjTally [2];
 
 int bHaveInvBms = -1;
 int bHaveObjTallyBms = -1;
@@ -61,16 +61,16 @@ int LoadObjTallyIcons (void)
 
 if (bHaveObjTallyBms > -1)
 	return bHaveObjTallyBms;
-memset (bmObjTally, 0, sizeof (bmObjTally));
-for (i = 0; i < 2; i++)
+for (i = 0; i < 2; i++) {
+	bmObjTally [i].Destroy ();
 	if (!ReadTGA (pszObjTallyIcons [i], gameFolders.szDataDir, bmObjTally [i], -1, 1.0, 0, 0)) {
 		while (i) {
 			i--;
-			delete bmObjTally [i];
-			bmObjTally [i] = NULL;
+			bmObjTally [i].Destroy ();
 			}
 		return bHaveObjTallyBms = 0;
 		}
+	}
 return bHaveObjTallyBms = 1;
 }
 
@@ -82,8 +82,7 @@ void FreeObjTallyIcons (void)
 
 if (bHaveObjTallyBms > 0) {
 	for (i = 0; i < 2; i++)
-		delete bmObjTally [i];
-	memset (bmObjTally, 0, sizeof (bmObjTally));
+		bmObjTally.Destroy ();
 	bHaveObjTallyBms = -1;
 	}
 }
@@ -127,10 +126,10 @@ if (!IsMultiGame || IsCoopGame) {
 		}
 	if (!gameOpts->render.cockpit.bTextGauges && (LoadObjTallyIcons () > 0)) {
 		for (i = 0; i < 2; i++) {
-			bmH = bmObjTally [i]->Width () / 2;
-			bmW = bmObjTally [i]->Height () / 2;
+			bmH = bmObjTally [i].Width () / 2;
+			bmW = bmObjTally [i].Height () / 2;
 			x = x0 - bmW - HUD_LHX (2);
-			OglUBitMapMC (x, y, bmW, bmH, bmObjTally [i], NULL, F1_0, 0);
+			OglUBitMapMC (x, y, bmW, bmH, &bmObjTally [i], NULL, F1_0, 0);
 			sprintf (szInfo, "%d", objCounts [i]);
 			fontManager.Current ()->StringSize (szInfo, w, h, aw);
 			x -= w + HUD_LHY (2);
