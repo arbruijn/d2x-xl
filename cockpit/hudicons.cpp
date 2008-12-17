@@ -63,7 +63,7 @@ if (bHaveObjTallyBms > -1)
 	return bHaveObjTallyBms;
 for (i = 0; i < 2; i++) {
 	bmObjTally [i].Destroy ();
-	if (!ReadTGA (pszObjTallyIcons [i], gameFolders.szDataDir, bmObjTally [i], -1, 1.0, 0, 0)) {
+	if (!ReadTGA (pszObjTallyIcons [i], gameFolders.szDataDir, &bmObjTally [i], -1, 1.0, 0, 0)) {
 		while (i) {
 			i--;
 			bmObjTally [i].Destroy ();
@@ -82,7 +82,7 @@ void FreeObjTallyIcons (void)
 
 if (bHaveObjTallyBms > 0) {
 	for (i = 0; i < 2; i++)
-		bmObjTally.Destroy ();
+		bmObjTally [i].Destroy ();
 	bHaveObjTallyBms = -1;
 	}
 }
