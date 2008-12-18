@@ -1402,6 +1402,14 @@
 						</FileConfiguration>
 					</File>
 					<File
+						RelativePath="..\..\main\side.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\main\skybox.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\main\slew.cpp"
 						>
 						<FileConfiguration
@@ -4593,11 +4601,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File
