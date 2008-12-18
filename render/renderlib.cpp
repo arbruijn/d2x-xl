@@ -657,7 +657,7 @@ if (!IS_WALL (nWall))
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-wallP = gameData.walls.walls + nWall;
+wallP = WALLS + nWall;
 bCloaked = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING) || ((widFlags & WID_CLOAKED_FLAG) != 0);
 if (bCloaked || (widFlags & WID_TRANSPARENT_FLAG)) {
 	if (bIsMonitor)
@@ -671,8 +671,8 @@ if (bCloaked || (widFlags & WID_TRANSPARENT_FLAG)) {
 		}
 	if (!gameOpts->render.color.bWalls)
 		c = 0;
-	if (gameData.walls.walls [nWall].hps)
-		fAlpha = (float) fabs ((1.0f - (float) gameData.walls.walls [nWall].hps / ((float) F1_0 * 100.0f)));
+	if (WALLS [nWall].hps)
+		fAlpha = (float) fabs ((1.0f - (float) WALLS [nWall].hps / ((float) F1_0 * 100.0f)));
 	else if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1])
 		fAlpha = COMPETITION ? 0.5f : (float) (FADE_LEVELS - extraGameInfo [1].grWallTransparency) / (float) FADE_LEVELS;
 	else
@@ -725,7 +725,7 @@ bHaveMonitorBg = cameraP->Valid () && /*!cameraP->bShadowMap &&*/
 					  (cameraP->Texture ().Texture () || bCamBufAvail) &&
 					  (!bIsTeleCam || EGI_FLAG (bTeleporterCams, 0, 1, 0));
 if (bHaveMonitorBg) {
-	cameraP->GetUVL (faceP, NULL, gameData.segs.faces.texCoord + faceP->nIndex, gameData.segs.faces.vertices + faceP->nIndex);
+	cameraP->GetUVL (faceP, NULL, FACES.texCoord + faceP->nIndex, FACES.vertices + faceP->nIndex);
 	if (bIsTeleCam) {
 #if DBG
 		faceP->bmBot = &cameraP->Texture ();

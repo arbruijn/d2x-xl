@@ -952,33 +952,33 @@ if (gameFileInfo.walls.offset > -1) {
 		}
 	for (i = 0; i <gameFileInfo.walls.count; i++) {
 		if (gameTopFileInfo.fileinfoVersion >= 20)
-			ReadWall(&gameData.walls.walls [i], cf); // v20 walls and up.
+			ReadWall(&WALLS [i], cf); // v20 walls and up.
 		else if (gameTopFileInfo.fileinfoVersion >= 17) {
 			tWallV19 w;
 
 			ReadWallV19(&w, cf);
-			gameData.walls.walls [i].nSegment	   = w.nSegment;
-			gameData.walls.walls [i].nSide			= w.nSide;
-			gameData.walls.walls [i].nLinkedWall	= w.nLinkedWall;
-			gameData.walls.walls [i].nType			= w.nType;
-			gameData.walls.walls [i].flags			= w.flags;
-			gameData.walls.walls [i].hps				= w.hps;
-			gameData.walls.walls [i].nTrigger		= w.nTrigger;
-			gameData.walls.walls [i].nClip			= w.nClip;
-			gameData.walls.walls [i].keys				= w.keys;
-			gameData.walls.walls [i].state			= WALL_DOOR_CLOSED;
+			WALLS [i].nSegment	   = w.nSegment;
+			WALLS [i].nSide			= w.nSide;
+			WALLS [i].nLinkedWall	= w.nLinkedWall;
+			WALLS [i].nType			= w.nType;
+			WALLS [i].flags			= w.flags;
+			WALLS [i].hps				= w.hps;
+			WALLS [i].nTrigger		= w.nTrigger;
+			WALLS [i].nClip			= w.nClip;
+			WALLS [i].keys				= w.keys;
+			WALLS [i].state			= WALL_DOOR_CLOSED;
 			}
 		else {
 			tWallV16 w;
 
 			ReadWallV16(&w, cf);
-			gameData.walls.walls [i].nSegment = gameData.walls.walls [i].nSide = gameData.walls.walls [i].nLinkedWall = -1;
-			gameData.walls.walls [i].nType		= w.nType;
-			gameData.walls.walls [i].flags		= w.flags;
-			gameData.walls.walls [i].hps			= w.hps;
-			gameData.walls.walls [i].nTrigger	= w.nTrigger;
-			gameData.walls.walls [i].nClip		= w.nClip;
-			gameData.walls.walls [i].keys			= w.keys;
+			WALLS [i].nSegment = WALLS [i].nSide = WALLS [i].nLinkedWall = -1;
+			WALLS [i].nType		= w.nType;
+			WALLS [i].flags		= w.flags;
+			WALLS [i].hps			= w.hps;
+			WALLS [i].nTrigger	= w.nTrigger;
+			WALLS [i].nClip		= w.nClip;
+			WALLS [i].keys			= w.keys;
 			}
 		}
 	}
@@ -1313,7 +1313,7 @@ for (i = 0; i < gameData.segs.nSegments; i++) {
 		CWall  *w;
 		if (!IS_WALL (nWall))
 			continue;
-		w = gameData.walls.walls + nWall;
+		w = WALLS + nWall;
 		if (w->nClip == -1)
 			continue;
 		if (gameData.walls.animP [w->nClip].flags & WCF_TMAP1) {
@@ -1332,18 +1332,18 @@ static void CheckAndFixWalls (void)
 	short	nSegment, nSide, nWall;
 
 for (i = 0; i < gameData.walls.nWalls; i++)
-	if (gameData.walls.walls [i].nTrigger >= gameData.trigs.nTriggers) {
+	if (WALLS [i].nTrigger >= gameData.trigs.nTriggers) {
 #if TRACE
-		console.printf (CON_DBG,"Removing reference to invalid tTrigger %d from CWall %d\n",gameData.walls.walls [i].nTrigger,i);
+		console.printf (CON_DBG,"Removing reference to invalid tTrigger %d from CWall %d\n",WALLS [i].nTrigger,i);
 #endif
-		gameData.walls.walls [i].nTrigger = NO_TRIGGER;	//kill tTrigger
+		WALLS [i].nTrigger = NO_TRIGGER;	//kill tTrigger
 		}
 if (gameTopFileInfo.fileinfoVersion < 17) {
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
 		for (nSide = 0; nSide < 6; nSide++)
 			if (IS_WALL (nWall = WallNumI (nSegment, nSide))) {
-				gameData.walls.walls [nWall].nSegment = nSegment;
-				gameData.walls.walls [nWall].nSide = nSide;
+				WALLS [nWall].nSegment = nSegment;
+				WALLS [nWall].nSide = nSide;
 				}
 	}
 
@@ -1351,8 +1351,8 @@ if (gameTopFileInfo.fileinfoVersion < 17) {
 for (nSide = 0; nSide < 6; nSide++) {
 	nWall = WallNumI (gameData.segs.nLastSegment, nSide);
 	if (IS_WALL (nWall) &&
-			((gameData.walls.walls [nWall].nSegment != gameData.segs.nLastSegment) || 
-			(gameData.walls.walls [nWall].nSide != nSide))) {
+			((WALLS [nWall].nSegment != gameData.segs.nLastSegment) || 
+			(WALLS [nWall].nSide != nSide))) {
 			Int3();	//	Error.  Bogus walls in this segment.
 		}
 	}
@@ -1369,7 +1369,7 @@ static void CheckAndFixTriggers (void)
 for (i = 0; i < gameData.trigs.nTriggers; ) {
 	//	Find which CWall this tTrigger is connected to.
 	for (j = 0; j < gameData.walls.nWalls; j++)
-		if (gameData.walls.walls [j].nTrigger == i)
+		if (WALLS [j].nTrigger == i)
 			break;
 #ifdef EDITOR
 	if (j == gameData.walls.nWalls) {
@@ -1384,10 +1384,10 @@ for (i = 0; i < gameData.trigs.nTriggers; ) {
 	}
 
 for (i = 0; i < gameData.walls.nWalls; i++)
-	gameData.walls.walls [i].controllingTrigger = -1;
+	WALLS [i].controllingTrigger = -1;
 
 //	MK, 10/17/95: Make walls point back at the triggers that control them.
-//	Go through all triggers, stuffing controllingTrigger field in gameData.walls.walls.
+//	Go through all triggers, stuffing controllingTrigger field in WALLS.
 
 for (i = 0; i < gameData.trigs.nTriggers; i++) {
 	for (j = 0; j < TRIGGERS [i].nLinks; j++) {
@@ -1403,7 +1403,7 @@ for (i = 0; i < gameData.trigs.nTriggers; i++) {
 		else if ((TRIGGERS [i].nType != TT_LIGHT_OFF) && 
 					(TRIGGERS [i].nType != TT_LIGHT_ON)) { //light triggers don't require walls
 			if (IS_WALL (nWall))
-				gameData.walls.walls [nWall].controllingTrigger = i;
+				WALLS [nWall].controllingTrigger = i;
 			else {
 				Int3();	//	This is illegal.  This ttrigger requires a CWall
 				}
@@ -1828,7 +1828,7 @@ int SaveGameData(FILE * SaveFile)
 	//==================== SAVE WALL INFO =============================
 
 	walls.offset = ftell(SaveFile);
-	fwrite(gameData.walls.walls, sizeof(CWall), gameFileInfo.walls.count, SaveFile);
+	fwrite(WALLS, sizeof(CWall), gameFileInfo.walls.count, SaveFile);
 
 	//==================== SAVE DOOR INFO =============================
 

@@ -393,11 +393,11 @@ if (bmP)
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	faceP = faceP;
 #endif
-triP = gameData.segs.faces.tris + faceP->nTriIndex;
+triP = FACES.tris + faceP->nTriIndex;
 for (h = faceP->nTris; h; h--, triP++) {
 	for (i = 0, j = triP->nIndex; i < 3; i++, j++) {
 #if 1
-		transformation.Transform (vertices [i], *(reinterpret_cast<CFloatVector*> (gameData.segs.faces.vertices + j)), 0);
+		transformation.Transform (vertices [i], *(reinterpret_cast<CFloatVector*> (FACES.vertices + j)), 0);
 #else
 		if (gameStates.render.automap.bDisplay)
 			transformation.Transform (vertices + i, gameData.segs.fVertices + triP->index [i], 0);
@@ -405,8 +405,8 @@ for (h = faceP->nTris; h; h--, triP++) {
 			vertices [i].Assign (gameData.segs.points [triP->index [i]].p3_vec);
 #endif
 		}
-	if (!TIAddPoly (faceP, triP, bmP, vertices, 3, gameData.segs.faces.texCoord + triP->nIndex,
-						 gameData.segs.faces.color + triP->nIndex,
+	if (!TIAddPoly (faceP, triP, bmP, vertices, 3, FACES.texCoord + triP->nIndex,
+						 FACES.color + triP->nIndex,
 						 NULL, 3, 1, GL_TRIANGLES, GL_REPEAT,
 						 bAdditive, faceP->nSegment))
 		return 0;
@@ -433,7 +433,7 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 #endif
 for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
 #if 1
-	transformation.Transform (vertices [i], *(reinterpret_cast<CFloatVector*> (gameData.segs.faces.vertices + j)), 0);
+	transformation.Transform (vertices [i], *(reinterpret_cast<CFloatVector*> (FACES.vertices + j)), 0);
 #else
 	if (gameStates.render.automap.bDisplay)
 		transformation.Transform(vertices [i], gameData.segs.fVertices [faceP->index [i]], 0);
@@ -442,8 +442,8 @@ for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
 #endif
 	}
 return TIAddPoly (faceP, NULL, bmP,
-						vertices, 4, gameData.segs.faces.texCoord + faceP->nIndex,
-						gameData.segs.faces.color + faceP->nIndex,
+						vertices, 4, FACES.texCoord + faceP->nIndex,
+						FACES.color + faceP->nIndex,
 						NULL, 4, 1, GL_TRIANGLE_FAN, GL_REPEAT,
 						FaceIsAdditive (faceP), faceP->nSegment) > 0;
 }
@@ -804,8 +804,8 @@ inline void TISetRenderPointers (int nTMU, int nIndex, int bDecal)
 glActiveTexture (nTMU);
 glClientActiveTexture (nTMU);
 if (transpItems.bTextured)
-	glTexCoordPointer (2, GL_FLOAT, 0, (bDecal ? gameData.segs.faces.ovlTexCoord : gameData.segs.faces.texCoord) + nIndex);
-glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices + nIndex);
+	glTexCoordPointer (2, GL_FLOAT, 0, (bDecal ? FACES.ovlTexCoord : FACES.texCoord) + nIndex);
+glVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
 }
 
 //------------------------------------------------------------------------------
@@ -883,7 +883,7 @@ if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 
 	if (triP || faceP) {
 		TISetRenderPointers (GL_TEXTURE0 + bLightmaps, nIndex, bDecal < 0);
 		if (!bLightmaps)
-			glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.m_normals + nIndex);
+			glNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
 		if (bDecal > 0) {
 			TISetRenderPointers (GL_TEXTURE1 + bLightmaps, nIndex, 1);
 			if (mask)
@@ -903,13 +903,13 @@ if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 
 		glClientActiveTexture (GL_TEXTURE0);
 		glEnableClientState (GL_COLOR_ARRAY);
 		if (faceP || triP)
-			glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color + nIndex);
+			glColorPointer (4, GL_FLOAT, 0, FACES.color + nIndex);
 		else
 			glColorPointer (4, GL_FLOAT, 0, item->color);
 		if (bLightmaps) {
-			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.lMapTexCoord + nIndex);
-			glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.m_normals + nIndex);
-			glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices + nIndex);
+			glTexCoordPointer (2, GL_FLOAT, 0, FACES.lMapTexCoord + nIndex);
+			glNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
+			glVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
 			}
 		}
 	else if (item->nColors == 1)
@@ -1010,9 +1010,9 @@ if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 
 								transpItems.bTextured ? NULL : faceP ? &faceP->color : item->color);
 #if 0
 		if (triP)
-			glNormal3fv (reinterpret_cast<GLfloat*> (gameData.segs.faces.m_normals + triP->nIndex));
+			glNormal3fv (reinterpret_cast<GLfloat*> (FACES.normals + triP->nIndex));
 		else if (faceP)
-			glNormal3fv (reinterpret_cast<GLfloat*> (gameData.segs.faces.m_normals + faceP->nIndex));
+			glNormal3fv (reinterpret_cast<GLfloat*> (FACES.normals + faceP->nIndex));
 #endif
 		glDrawArrays (item->nPrimitive, 0, item->nVertices);
 		}

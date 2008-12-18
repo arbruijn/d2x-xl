@@ -733,13 +733,13 @@ for (i = 0; i < MAX_EXPLODING_WALLS; i++) {
 		if (gameData.walls.explWalls [i].time> (EXPL_WALL_TIME*3)/4) {
 			CSegment *seg = SEGMENTS + nSegment,
 						*csegp = SEGMENTS + seg->children [nSide];
-			ubyte	a = (ubyte) gameData.walls.walls [WallNumP (seg, nSide)].nClip;
+			ubyte	a = (ubyte) WALLS [WallNumP (seg, nSide)].nClip;
 			short n = AnimFrameCount (gameData.walls.animP + a);
 			short cside = ConnectedSide (seg, csegp);
 			WallSetTMapNum (seg, nSide, csegp, cside, a, n - 1);
-			gameData.walls.walls [WallNumP (seg, nSide)].flags |= WALL_BLASTED;
+			WALLS [WallNumP (seg, nSide)].flags |= WALL_BLASTED;
 			if (cside >= 0)
-				gameData.walls.walls [WallNumP (csegp, cside)].flags |= WALL_BLASTED;
+				WALLS [WallNumP (csegp, cside)].flags |= WALL_BLASTED;
 			}
 		newfrac = FixDiv (gameData.walls.explWalls [i].time, EXPL_WALL_TIME);
 		oldCount = X2I (EXPL_WALL_TOTAL_FIREBALLS * FixMul (oldfrac, oldfrac));

@@ -173,8 +173,8 @@ segP = SEGMENTS + OBJECTS [gameData.escort.nObjNum].info.nSegment;
 for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 	short	nWall = WallNumP (segP, (short) i);
 	if (IS_WALL (nWall) &&
-		 (gameData.walls.walls [nWall].nType == WALL_BLASTABLE) &&
-		 !(gameData.walls.walls [nWall].flags & WALL_BLASTED))
+		 (WALLS [nWall].nType == WALL_BLASTABLE) &&
+		 !(WALLS [nWall].flags & WALL_BLASTED))
 		return 0;
 	//	Check one level deeper.
 	if (IS_CHILD (segP->m_children [i])) {
@@ -184,8 +184,8 @@ for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 		for (j = 0; j<MAX_SIDES_PER_SEGMENT; j++) {
 			short	wall2 = WallNumP (connSegP, (short) j);
 			if (IS_WALL (wall2) &&
-				 (gameData.walls.walls [wall2].nType == WALL_BLASTABLE) &&
-				 !(gameData.walls.walls [wall2].flags & WALL_BLASTED))
+				 (WALLS [wall2].nType == WALL_BLASTABLE) &&
+				 !(WALLS [wall2].flags & WALL_BLASTED))
 				return 0;
 			}
 		}

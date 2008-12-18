@@ -968,7 +968,7 @@ if (objP->info.controlType == CT_AI) {
 		 (gameStates.app.cheats.bPhysics != 0xBADA55)) {
 		int nSide = ConnectedSide (SEGMENTS + objP->info.nSegment, SEGMENTS + nOrigSegment);
 		if (nSide != -1) {
-			if (!(SEGMENTs [nOrigSegment].IsDoorWay (nSide, (objP->info.nType == OBJ_PLAYER) ? objP : NULL) & WID_FLY_FLAG)) {
+			if (!(SEGMENTS [nOrigSegment].IsDoorWay (nSide, (objP->info.nType == OBJ_PLAYER) ? objP : NULL) & WID_FLY_FLAG)) {
 				CSide *sideP;
 				int	nVertex;
 				fix	dist;

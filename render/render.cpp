@@ -248,7 +248,7 @@ if (IS_WALL (nWallNum)) {
 	if (propsP->widFlags & (WID_CLOAKED_FLAG | WID_TRANSPARENT_FLAG)) {
 		if (!bIsMonitor) {
 			if (!RenderColoredSegFace (propsP->segNum, propsP->sideNum, propsP->nVertices, pointList)) {
-				c = gameData.walls.walls [nWallNum].cloakValue;
+				c = WALLS [nWallNum].cloakValue;
 				if (propsP->widFlags & WID_CLOAKED_FLAG) {
 					if (c < FADE_LEVELS) {
 						gameStates.render.grAlpha = (float) c;
@@ -258,8 +258,8 @@ if (IS_WALL (nWallNum)) {
 				else {
 					if (!gameOpts->render.color.bWalls)
 						c = 0;
-					if (gameData.walls.walls [nWallNum].hps)
-						gameStates.render.grAlpha = (float) fabs ((1.0f - (float) gameData.walls.walls [nWallNum].hps / ((float) F1_0 * 100.0f)) * FADE_LEVELS);
+					if (WALLS [nWallNum].hps)
+						gameStates.render.grAlpha = (float) fabs ((1.0f - (float) WALLS [nWallNum].hps / ((float) F1_0 * 100.0f)) * FADE_LEVELS);
 					else if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1])
 						gameStates.render.grAlpha = COMPETITION ? FADE_LEVELS * 3.0f / 2.0f : (float) (FADE_LEVELS - extraGameInfo [1].grWallTransparency);
 					else
@@ -277,7 +277,7 @@ if (IS_WALL (nWallNum)) {
 			}
 		}
 	else if (gameStates.app.bD2XLevel) {
-		c = gameData.walls.walls [nWallNum].cloakValue;
+		c = WALLS [nWallNum].cloakValue;
 		if (c && (c < FADE_LEVELS))
 			gameStates.render.grAlpha = (float) (FADE_LEVELS - c);
 		}

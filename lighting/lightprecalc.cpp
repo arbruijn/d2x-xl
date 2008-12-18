@@ -301,7 +301,7 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nSegment = nSegment;
 #endif
 	if (gameStates.render.bTriangleMesh) {
-		for (nTris = faceP->nTris, triP = gameData.segs.faces.tris + faceP->nTriIndex; nTris; nTris--, triP++)
+		for (nTris = faceP->nTris, triP = FACES.tris + faceP->nTriIndex; nTris; nTris--, triP++)
 			for (i = 0; i < 3; i++)
 				while (!SetVertVis (nStartSeg, triP->index [i], 1))
 					;

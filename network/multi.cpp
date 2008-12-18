@@ -1520,7 +1520,7 @@ if (!IS_WALL (WallNumP (segP, CSide))) {  //Opening door on illegal CWall
 	Int3 ();
 	return;
 	}
-wallP = gameData.walls.walls + WallNumP (segP, CSide);
+wallP = WALLS + WallNumP (segP, CSide);
 if (wallP->nType == WALL_BLASTABLE) {
 	if (!(wallP->flags & WALL_BLASTED))
 		WallDestroy (segP, CSide);
@@ -1751,7 +1751,7 @@ if ((!IS_WALL (wallnum)) || (wallnum > gameData.walls.nWalls))
 hps = GET_INTEL_INT (buf + 3);
 if (hps < 0)
 	return;
-wallP = gameData.walls.walls + wallnum;
+wallP = WALLS + wallnum;
 if (wallP->nType != WALL_BLASTABLE)
 	return;
 if (hps < wallP->hps)
@@ -2682,12 +2682,12 @@ void MultiSendHostageDoorStatus (int wallnum)
 	// should be
 	int count = 0;
 
-Assert (gameData.walls.walls [wallnum].nType == WALL_BLASTABLE);
+Assert (WALLS [wallnum].nType == WALL_BLASTABLE);
 gameData.multigame.msg.buf [count] = MULTI_HOSTAGE_DOOR;
 count += 1;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, wallnum);
 count += 2;
-PUT_INTEL_INT (gameData.multigame.msg.buf + count, gameData.walls.walls [wallnum].hps);
+PUT_INTEL_INT (gameData.multigame.msg.buf + count, WALLS [wallnum].hps);
 count += 4;
 MultiSendData (gameData.multigame.msg.buf, count, 0);
 }
@@ -3428,13 +3428,13 @@ void MultiDoWallStatus (char *buf)
 	state = buf [5];
 
 Assert (wallnum >= 0);
-gameData.walls.walls [wallnum].nType = nType;
-gameData.walls.walls [wallnum].flags = flag;
-gameData.walls.walls [wallnum].state = state;
-if (gameData.walls.walls [wallnum].nType == WALL_OPEN)
+WALLS [wallnum].nType = nType;
+WALLS [wallnum].flags = flag;
+WALLS [wallnum].state = state;
+if (WALLS [wallnum].nType == WALL_OPEN)
 	DigiKillSoundLinkedToSegment (
-		 (short) gameData.walls.walls [wallnum].nSegment, (short)
-		 gameData.walls.walls [wallnum].nSide, SOUND_FORCEFIELD_HUM);
+		 (short) WALLS [wallnum].nSegment, (short)
+		 WALLS [wallnum].nSide, SOUND_FORCEFIELD_HUM);
 }
 
 //-----------------------------------------------------------------------------

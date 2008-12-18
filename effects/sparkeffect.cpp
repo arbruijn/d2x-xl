@@ -21,6 +21,7 @@
 #include "gameseg.h"
 #include "piggy.h"
 #include "renderlib.h"
+#include "sparkeffect.h"
 #include "transprender.h"
 
 #define SPARK_MIN_PROB		16

@@ -246,7 +246,7 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 sideP = SEGMENTS [nSegment].m_sides + nSide;
 nWall = sideP->nWall;
 if (IS_WALL (nWall)) {
-	CWall *wallP = gameData.walls.walls + nWall;
+	CWall *wallP = WALLS + nWall;
 	ubyte nType = wallP->nType;
 
 	if ((nType == WALL_BLASTABLE) || (nType == WALL_DOOR) || (nType == WALL_OPEN) || (nType == WALL_CLOAKED))

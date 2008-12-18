@@ -90,9 +90,9 @@ int PlayerCanOpenDoor (CSegment *segP, short nSide)
 nWall = WallNumP (segP, nSide);
 if (!IS_WALL (nWall))
 	return 0;						//	no CWall here.
-wallType = gameData.walls.walls [nWall].nType;
+wallType = WALLS [nWall].nType;
 //	Can't open locked doors.
-if (( (wallType == WALL_DOOR) && (gameData.walls.walls [nWall].flags & WALL_DOOR_LOCKED)) || (wallType == WALL_CLOSED))
+if (( (wallType == WALL_DOOR) && (WALLS [nWall].flags & WALL_DOOR_LOCKED)) || (wallType == WALL_CLOSED))
 	return 0;
 return 1;
 }

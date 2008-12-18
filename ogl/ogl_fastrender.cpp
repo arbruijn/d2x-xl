@@ -79,7 +79,7 @@ int nIndex = faceP->nIndex;
 for (int i = 0; i < 4; i++)
 	*indexP++ = nIndex++;
 #else
-	tRgbaColorf	*pc = gameData.segs.faces.color + faceP->nIndex;
+	tRgbaColorf	*pc = FACES.color + faceP->nIndex;
 	float			l, lMax = 0;
 	int			i, j, nIndex;
 	int			iMax = 0;
@@ -184,8 +184,8 @@ return gameStates.render.history.nShader = nShader;
 void RenderWireFrame (tFace *faceP, int bTextured)
 {
 if (gameOpts->render.debug.bWireFrame) {
-	if ((nDbgFace < 0) || (faceP - gameData.segs.faces.faces == nDbgFace)) {
-		grsTriangle	*triP = gameData.segs.faces.tris + faceP->nTriIndex;
+	if ((nDbgFace < 0) || (faceP - FACES.faces == nDbgFace)) {
+		grsTriangle	*triP = FACES.tris + faceP->nTriIndex;
 		glDisableClientState (GL_COLOR_ARRAY);
 		if (bTextured)
 			glDisable (GL_TEXTURE_2D);
@@ -374,13 +374,13 @@ if (bmTop) {
 	glActiveTexture (GL_TEXTURE1 + bLightmaps);
 	glClientActiveTexture (GL_TEXTURE1 + bLightmaps);
 	glEnable (GL_TEXTURE_2D);
-	glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<GLvoid*> (gameData.segs.faces.ovlTexCoord.Buffer ()));
+	glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<GLvoid*> (FACES.ovlTexCoord.Buffer ()));
 	gameStates.render.history.bmTop = NULL;
 	}
 else {
 	glActiveTexture (GL_TEXTURE0 + bLightmaps);
 	glClientActiveTexture (GL_TEXTURE0 + bLightmaps);
-	glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<GLvoid*> (gameData.segs.faces.texCoord.Buffer ()));
+	glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<GLvoid*> (FACES.texCoord.Buffer ()));
 	gameStates.render.history.bmBot = NULL;
 	}
 }
@@ -533,7 +533,7 @@ return 0;
 
 inline void RenderFacePP (tFace *faceP)
 {
-if (gameData.segs.faces.vboDataHandle) {
+if (FACES.vboDataHandle) {
 	int i = faceP->nIndex;
 	glDrawRangeElements (GL_TRIANGLES, i, i + 5, 6, GL_UNSIGNED_SHORT, G3_BUFFER_OFFSET (i * sizeof (ushort)));
 	}

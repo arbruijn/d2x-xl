@@ -78,7 +78,7 @@ int nWall = WallNumI (nHitSeg, nHitWall);
 if (!IS_WALL (nWall))
 	return;
 
-CWall *wallP = gameData.walls.walls + nWall;
+CWall *wallP = WALLS + nWall;
 if (wallP->nType != WALL_DOOR)
 	return;
 
@@ -645,7 +645,7 @@ if (blower->cType.laserInfo.parent.nType == OBJ_ROBOT)
 if (!(bOkToBlow || (blower->cType.laserInfo.parent.nType == OBJ_PLAYER))) {
 	int nWall = WallNumP (segP, nSide);
 	if (IS_WALL (nWall)&&
-		 (gameData.walls.walls [nWall].nTrigger < gameData.trigs.nTriggers))
+		 (WALLS [nWall].nTrigger < gameData.trigs.nTriggers))
 		return 0;
 	}
 
@@ -688,7 +688,7 @@ if (IsMultiGame && netGame.bIndestructibleLights && !nSwitchType)
 nWall = WallNumP (segP, nSide);
 bPermaTrigger =
 	IS_WALL (nWall) &&
-	((nTrigger = gameData.walls.walls [nWall].nTrigger) != NO_TRIGGER) &&
+	((nTrigger = WALLS [nWall].nTrigger) != NO_TRIGGER) &&
 	(TRIGGERS [nTrigger].flags & TF_PERMANENT);
 if (!bPermaTrigger)
 	SubtractLight (SEG_IDX (segP), nSide);

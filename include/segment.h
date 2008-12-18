@@ -104,6 +104,7 @@ class CSegMasks {
 //------------------------------------------------------------------------------
 
 class CWall;
+class CObject;
 
 class CSide {
 	public:
@@ -125,6 +126,7 @@ class CSide {
 		fix			m_rads [2];
 		ushort		m_vertices [6];
 		ushort		m_faceVerts [6];
+		ushort		m_contour [4];
 		ushort		m_nMinVertex [2];
 		ubyte			m_nFaces;
 
@@ -133,6 +135,7 @@ class CSide {
 		void LoadBotGenTextures (void);
 		inline ushort WallNum (void) { return m_nWall; }
 		inline CWall* Wall (void);
+		inline sbyte Type (void) { return m_nType; }
 		int FaceCount (void);
 
 		int CheckTransparency (void);
@@ -161,7 +164,7 @@ class CSide {
 			return m_nFaces;
 			}
 		CFixVector* GetVertices (CFixVector* vertices);
-		inline ushort* Contour (void) { return m_contour (); }
+		inline ushort* Contour (void) { return m_contour; }
 		inline CFixVector& Vertex (int nVertex);
 		inline CFixVector& MinVertex (void);
 		inline CFixVector& Normal (int nFace);
@@ -172,7 +175,7 @@ class CSide {
 		void FindHitPointUV (fix *u, fix *v, fix *l, CFixVector& intersection, int iFace);
 		int CheckForTranspPixel (CFixVector& intersection, short iFace);
 
-		int HasOpenableDoor (void);
+		bool IsOpenableDoor (void);
 	};
 
 //------------------------------------------------------------------------------
@@ -216,13 +219,15 @@ class CSegment {
 		void ComputeRads (fix xMinDist);
 		inline void ComputeSideCenter (short nSide) { m_sides [nSide].ComputeCenter (); }
 		inline CSide* Side (int nSide) { return m_sides + nSide; }
+		inline CWall* Wall (int nSide) { return m_sides [nSide].Wall (); }
+		inline sbyte Type (int nSide) { return m_sides [nSide].m_nType; }
 		void ComputeSideRads (void);
 		void GetNormals (short nSide, CFixVector& n1, CFixVector& n2) { m_sides [nSide].GetNormals (n1, n2); }
 		inline CFixVector& Center (void) { return m_vCenter; }
 		inline CFixVector& SideCenter (int nSide) { return m_sides [nSide].Center (); }
 		inline int CreateVertexList (int nSide) { return m_sides [nSide].CreateVertexList (m_verts, sideVertIndex [nSide]); }
 		inline ubyte GetVertices (int nSide, ushort*& vertices) { return m_sides [nSide].GetVertices (vertices); }
-		inline ushort& Contour (int nSide) { return m_sides [nSide].Contour (); }
+		inline ushort* Contour (int nSide) { return m_sides [nSide].Contour (); }
 		inline CFixVector* GetVertices (int nSide, CFixVector* vertices) { return m_sides [nSide].GetVertices (vertices); }
 		ubyte SideDists (const CFixVector& intersection, fix* xSideDists, int bBehind = 1);
 		int ConnectedSide (CSegment* other);
@@ -252,6 +257,9 @@ class CSegment {
 		inline fix Volume (void) {return (fix) (1.25 * Pi * pow (AvgRadf (), 3) + 0.5);}
 
 		CFixVector RandomPoint (void);
+
+		int IsDoorWay (short nSide, CObject* objP);
+		int HasOpenableDoor (void);
 
 		inline int CheckForTranspPixel (CFixVector& intersection, int nSide, short iFace) 
 			{ return m_sides [nSide].CheckForTranspPixel (intersection, iFace); }

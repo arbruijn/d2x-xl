@@ -480,7 +480,7 @@ if (nTouchSeg < gameData.segs.nSegments) {
 	}
 else if (nTouchWall < gameData.walls.nWalls) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchWall < gameData.walls.nWalls); i++)
-		PagingTouchWall (gameData.walls.walls + nTouchWall++);
+		PagingTouchWall (WALLS + nTouchWall++);
 	}
 else if (nTouchPowerup1 < gameData.objs.pwrUp.nTypes) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchPowerup1 < gameData.objs.pwrUp.nTypes); i++, nTouchPowerup1++)

@@ -2050,7 +2050,7 @@ if (sideMask) {
 		nWall = pSide->nWall;
 		if (!IS_WALL (nWall))
 			continue;
-		if (gameData.walls.walls [nWall].nType != WALL_ILLUSION)
+		if (WALLS [nWall].nType != WALL_ILLUSION)
 			continue;
 		if ((nType = CheckVolatileWall (objP, objP->info.nSegment, nSide, &objP->info.position.vPos))) {
 			short sound = (nType==1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
@@ -2302,7 +2302,7 @@ if ((objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].obj
 			short nWall, nTrigger;
 			nWall = WallNumI (nPrevSegment, nConnSide);
 			if (IS_WALL (nWall)) {
-				nTrigger = gameData.walls.walls [nWall].nTrigger;
+				nTrigger = WALLS [nWall].nTrigger;
 				if ((nTrigger < gameData.trigs.nTriggers) &&
 					 (TRIGGERS [nTrigger].nType == TT_EXIT))
 					gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP->info.xLifeLeft = 0;

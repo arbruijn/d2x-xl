@@ -1239,7 +1239,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 			continue;
 		}
 
-	CWall* wallP = segP->WallNum (an);
+	CWall* wallP = segP->Wall (nSide);
 	if (wallP) {
 		nTrigger = wallP->nTrigger;
 		ttype = TRIGGERS [nTrigger].nType;
@@ -1266,7 +1266,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 					short	nConnSeg = segP->m_children [nSide];
 					if (nConnSeg != -1) {
 						short nConnSide = segP->ConnectedSide (&SEGMENTS [nConnSeg]);
-						switch (gameData.walls.walls [WallNumI (nConnSeg, nConnSide)].keys) {
+						switch (WALLS [WallNumI (nConnSeg, nConnSide)].keys) {
 							case KEY_BLUE:
 								color = automapColors.walls.nDoorBlue;
 								bNoFade = 1; 
@@ -1291,7 +1291,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 				break;
 			case WALL_CLOSED:
 				// Make bGrates draw properly
-				if (segP->HasDoorWay (nSide, NULL) & WID_RENDPAST_FLAG)
+				if (segP->IsDoorWay (nSide, NULL) & WID_RENDPAST_FLAG)
 					bIsGrate = 1;
 				else
 					bHidden = 1;
@@ -1339,7 +1339,7 @@ for (int nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 
 	// Only add edges that have no children
 	if (segP->m_children [nSide] == -1) {
-		ushort* contour = SEGMENTS [nSegment].Contour (nSide);
+		ushort* contour = segP->Contour (nSide);
 		AddOneUnknownEdge (contour [0], contour [1]);
 		AddOneUnknownEdge (contour [1], contour [2]);
 		AddOneUnknownEdge (contour [2], contour [3]);

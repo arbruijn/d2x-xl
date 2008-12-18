@@ -569,7 +569,7 @@ if (!cf.Open (Filename (szFilename, nLevel), gameFolders.szCacheDir, "wb", 0))
 	return 0;
 bOk = (cf.Write (&ldh, sizeof (ldh), 1) == 1);
 if (bOk) {
-	for (i = gameData.segs.nFaces, faceP = gameData.segs.faces.faces.Buffer (); i; i--, faceP++) {
+	for (i = gameData.segs.nFaces, faceP = FACES.faces.Buffer (); i; i--, faceP++) {
 		bOk = cf.Write (&faceP->nLightmap, sizeof (faceP->nLightmap), 1) == 1;
 		if (!bOk)
 			break;
@@ -609,7 +609,7 @@ if (bOk)
 			(ldh.nLights == m_list.nLights) && 
 			(ldh.nMaxLightRange == MAX_LIGHT_RANGE);
 if (bOk) {
-	for (i = ldh.nFaces, faceP = gameData.segs.faces.faces.Buffer (); i; i--, faceP++) {
+	for (i = ldh.nFaces, faceP = FACES.faces.Buffer (); i; i--, faceP++) {
 		bOk = cf.Read (&faceP->nLightmap, sizeof (faceP->nLightmap), 1) == 1;
 		if (!bOk)
 			break;

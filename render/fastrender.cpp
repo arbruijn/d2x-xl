@@ -99,7 +99,7 @@ if (faceP->nFrame == gameData.app.nMineRenderCount)
 	return 0;
 #endif
 #if DBG
-if (faceP - gameData.segs.faces.faces >= gameData.segs.nFaces)
+if (faceP - FACES.faces >= gameData.segs.nFaces)
 	return 0;
 #endif
 short	i, j, nKey = faceP->nBaseTex;
@@ -147,7 +147,7 @@ return 1;
 void LoadFaceBitmaps (CSegment *segP, tFace *faceP)
 {
 	CSide	*sideP = segP->m_sides + faceP->nSide;
-	short	nFrame = sideP->nFrame;
+	short	nFrame = sideP->m_nFrame;
 
 if (faceP->nCamera >= 0) {
 	if (SetupMonitorFace (faceP->nSegment, faceP->nSide, faceP->nCamera, faceP)) 
@@ -161,11 +161,11 @@ if (FACE_IDX (faceP) == nDbgFace)
 if ((faceP->nBaseTex < 0) || !faceP->bTextured)
 	return;
 if (faceP->bOverlay)
-	faceP->nBaseTex = sideP->nOvlTex;
+	faceP->nBaseTex = sideP->m_nOvlTex;
 else {
-	faceP->nBaseTex = sideP->nBaseTex;
+	faceP->nBaseTex = sideP->m_nBaseTex;
 	if (!faceP->bSplit)
-		faceP->nOvlTex = sideP->nOvlTex;
+		faceP->nOvlTex = sideP->m_nOvlTex;
 	}
 if (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk) {
 	faceP->bmBot = LoadFaceBitmap (faceP->nBaseTex, nFrame);
@@ -222,9 +222,9 @@ newFaceP = segFaceP->pFaces + segFaceP->nFaces++;
 newFaceP->nIndex = (newFaceP - 1)->nIndex + (newFaceP - 1)->nTris * 3;
 memcpy (newFaceP->index, faceP->index, sizeof (faceP->index));
 int nVerts = newFaceP->nTris * 3;
-memcpy (gameData.segs.faces.vertices + newFaceP->nIndex, gameData.segs.faces.vertices + faceP->nIndex, nVerts * sizeof (CFloatVector3));
-memcpy (gameData.segs.faces.texCoord + newFaceP->nIndex, gameData.segs.faces.ovlTexCoord + faceP->nIndex, nVerts * sizeof (tTexCoord2f));
-memcpy (gameData.segs.faces.color + newFaceP->nIndex, gameData.segs.faces.color + faceP->nIndex, nVerts * sizeof (tRgbaColorf));
+memcpy (FACES.vertices + newFaceP->nIndex, FACES.vertices + faceP->nIndex, nVerts * sizeof (CFloatVector3));
+memcpy (FACES.texCoord + newFaceP->nIndex, FACES.ovlTexCoord + faceP->nIndex, nVerts * sizeof (tTexCoord2f));
+memcpy (FACES.color + newFaceP->nIndex, FACES.color + faceP->nIndex, nVerts * sizeof (tRgbaColorf));
 newFaceP->nBaseTex = faceP->nOvlTex;
 faceP->nOvlTex = newFaceP->nOvlTex = 0;
 faceP->bmTop = 
@@ -241,28 +241,28 @@ if ((newFaceP->bIsLight = IsLight (newFaceP->nBaseTex)))
 
 void FixTriangleFan (CSegment *segP, tFace *faceP)
 {
-if (((faceP->nType = segP->m_sides [faceP->nSide].nType) == SIDE_IS_TRI_13)) {	//rearrange vertex order for TRIANGLE_FAN rendering
+if (((faceP->nType = segP->Type (faceP->nSide) == SIDE_IS_TRI_13)) {	//rearrange vertex order for TRIANGLE_FAN rendering
 	{
 	short	h = faceP->index [0];
 	memcpy (faceP->index, faceP->index + 1, 3 * sizeof (short));
 	faceP->index [3] = h;
 	}
 	{
-	CFloatVector3 h = gameData.segs.faces.vertices [faceP->nIndex];
-	memcpy (gameData.segs.faces.vertices + faceP->nIndex, gameData.segs.faces.vertices + faceP->nIndex + 1, 3 * sizeof (CFloatVector3));
-	gameData.segs.faces.vertices [faceP->nIndex + 3] = h;
+	CFloatVector3 h = FACES.vertices [faceP->nIndex];
+	memcpy (FACES.vertices + faceP->nIndex, FACES.vertices + faceP->nIndex + 1, 3 * sizeof (CFloatVector3));
+	FACES.vertices [faceP->nIndex + 3] = h;
 	}
 	{
-	tTexCoord2f h = gameData.segs.faces.texCoord [faceP->nIndex];
-	memcpy (gameData.segs.faces.texCoord + faceP->nIndex, gameData.segs.faces.texCoord + faceP->nIndex + 1, 3 * sizeof (tTexCoord2f));
-	gameData.segs.faces.texCoord [faceP->nIndex + 3] = h;
-	h = gameData.segs.faces.lMapTexCoord [faceP->nIndex];
-	memcpy (gameData.segs.faces.lMapTexCoord + faceP->nIndex, gameData.segs.faces.lMapTexCoord + faceP->nIndex + 1, 3 * sizeof (tTexCoord2f));
-	gameData.segs.faces.lMapTexCoord [faceP->nIndex + 3] = h;
+	tTexCoord2f h = FACES.texCoord [faceP->nIndex];
+	memcpy (FACES.texCoord + faceP->nIndex, FACES.texCoord + faceP->nIndex + 1, 3 * sizeof (tTexCoord2f));
+	FACES.texCoord [faceP->nIndex + 3] = h;
+	h = FACES.lMapTexCoord [faceP->nIndex];
+	memcpy (FACES.lMapTexCoord + faceP->nIndex, FACES.lMapTexCoord + faceP->nIndex + 1, 3 * sizeof (tTexCoord2f));
+	FACES.lMapTexCoord [faceP->nIndex + 3] = h;
 	if (faceP->nOvlTex) {
-		h = gameData.segs.faces.ovlTexCoord [faceP->nIndex];
-		memcpy (gameData.segs.faces.ovlTexCoord + faceP->nIndex, gameData.segs.faces.ovlTexCoord + faceP->nIndex + 1, 3 * sizeof (tTexCoord2f));
-		gameData.segs.faces.ovlTexCoord [faceP->nIndex + 3] = h;
+		h = FACES.ovlTexCoord [faceP->nIndex];
+		memcpy (FACES.ovlTexCoord + faceP->nIndex, FACES.ovlTexCoord + faceP->nIndex + 1, 3 * sizeof (tTexCoord2f));
+		FACES.ovlTexCoord [faceP->nIndex + 3] = h;
 		}
 	}
 	}
@@ -506,8 +506,8 @@ if (nType == 3) {
 	}
 else {
 #if GEOMETRY_VBOS
-	if (gameData.segs.faces.vboDataHandle) {
-		glBindBufferARB (GL_ARRAY_BUFFER_ARB, gameData.segs.faces.vboDataHandle);
+	if (FACES.vboDataHandle) {
+		glBindBufferARB (GL_ARRAY_BUFFER_ARB, FACES.vboDataHandle);
 		bVBO = 1;
 		}
 #endif
@@ -524,63 +524,63 @@ G3EnableClientStates (!bDepthOnly, !(bDepthOnly || gameStates.render.bFullBright
 #if GEOMETRY_VBOS
 if (bVBO) {
 	if (bNormals)
-		glNormalPointer (GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iNormals));
+		glNormalPointer (GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iNormals));
 	if (!bDepthOnly) {
 		if (bLightmaps)
-			glTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iLMapTexCoord));
+			glTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iLMapTexCoord));
 		else
-			glTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iTexCoord));
-		glColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iColor));
+			glTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iTexCoord));
+		glColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iColor));
 		}
-	glVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iVertices));
+	glVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iVertices));
 	if (bLightmaps) {
 		G3EnableClientStates (1, 1, bNormals, GL_TEXTURE1);
-		glTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iTexCoord));
-		glColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iColor));
-		glVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iVertices));
+		glTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iTexCoord));
+		glColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iColor));
+		glVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iVertices));
 		}
 	G3EnableClientStates (1, 1, 0, GL_TEXTURE1 + bLightmaps);
-	glTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iOvlTexCoord));
-	glColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iColor));
-	glVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iVertices));
+	glTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iOvlTexCoord));
+	glColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iColor));
+	glVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iVertices));
 	G3EnableClientStates (1, 1, 0, GL_TEXTURE2 + bLightmaps);
-	glTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iOvlTexCoord));
-	glColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iColor));
-	glVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iVertices));
-	if (gameData.segs.faces.vboIndexHandle)
-		glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, gameData.segs.faces.vboIndexHandle);
+	glTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iOvlTexCoord));
+	glColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iColor));
+	glVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iVertices));
+	if (FACES.vboIndexHandle)
+		glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, FACES.vboIndexHandle);
 	}	
 else 
 #endif
 	{
 	if (bNormals)
-		glNormalPointer (GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.m_normals.Buffer ()));
+		glNormalPointer (GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.normals.Buffer ()));
 	if (!bDepthOnly) {
 		if (bLightmaps)
-			glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.lMapTexCoord.Buffer ()));
+			glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.lMapTexCoord.Buffer ()));
 		else
-			glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.texCoord.Buffer ()));
+			glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.texCoord.Buffer ()));
 		if (!gameStates.render.bFullBright)
-			glColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.color.Buffer ()));
+			glColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
 		}
-	glVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.vertices.Buffer ()));
+	glVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
 	if (bLightmaps) {
 		G3EnableClientStates (1, !gameStates.render.bFullBright, bNormals, GL_TEXTURE1);
-		glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.texCoord.Buffer ()));
+		glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.texCoord.Buffer ()));
 		if (!gameStates.render.bFullBright)
-			glColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.color.Buffer ()));
-		glVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.vertices.Buffer ()));
+			glColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
+		glVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
 		}
 	G3EnableClientStates (1, !gameStates.render.bFullBright, bNormals, GL_TEXTURE1 + bLightmaps);
-	glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.ovlTexCoord.Buffer ()));
+	glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.ovlTexCoord.Buffer ()));
 	if (!gameStates.render.bFullBright)
-		glColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.color.Buffer ()));
-	glVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid*> (gameData.segs.faces.vertices.Buffer ()));
+		glColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
+	glVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid*> (FACES.vertices.Buffer ()));
 	G3EnableClientStates (1, !gameStates.render.bFullBright, 0, GL_TEXTURE2 + bLightmaps);
-	glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.ovlTexCoord.Buffer ()));
+	glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.ovlTexCoord.Buffer ()));
 	if (!gameStates.render.bFullBright)
-		glColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.color.Buffer ()));
-	glVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.vertices.Buffer ()));
+		glColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
+	glVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
 	}
 if (bNormals)
 	G3EnableClientState (GL_NORMAL_ARRAY, GL_TEXTURE0);
@@ -628,7 +628,7 @@ if (nType != 3) {
 	if (gameStates.render.bPerPixelLighting == 2)
 		OglDisableLighting ();
 	OglResetTransform (1);
-	if (gameData.segs.faces.vboDataHandle)
+	if (FACES.vboDataHandle)
 		glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
 	}
 else 	if (CoronaStyle () == 2)
@@ -895,7 +895,7 @@ short RenderSegments (int nType, int bVertexArrays, int bDepthOnly, int bHeadlig
 
 if (nType) {
 	if (gameData.render.mine.nRenderSegs == gameData.segs.nSegments) {
-		tFace *faceP = gameData.segs.faces.faces.Buffer ();
+		tFace *faceP = FACES.faces.Buffer ();
 		for (i = gameData.segs.nFaces; i; i--, faceP++)
 			if (RenderMineFace (SEGMENTS + faceP->nSegment, faceP, nType, bDepthOnly))
 				nFaces++;
@@ -1054,13 +1054,13 @@ void UpdateSlidingFaces (void)
 	tTexCoord2f	*texCoordP, *ovlTexCoordP;
 	tUVL			*uvlP;
 
-for (faceP = gameData.segs.faces.slidingFaces; faceP; faceP = faceP->nextSlidingFace) {
+for (faceP = FACES.slidingFaces; faceP; faceP = faceP->nextSlidingFace) {
 #if DBG
 	if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		faceP = faceP;
 #endif
-	texCoordP = gameData.segs.faces.texCoord + faceP->nIndex;
-	ovlTexCoordP = gameData.segs.faces.ovlTexCoord + faceP->nIndex;
+	texCoordP = FACES.texCoord + faceP->nIndex;
+	ovlTexCoordP = FACES.ovlTexCoord + faceP->nIndex;
 	uvlP = SEGMENTS [faceP->nSegment].m_sides [faceP->nSide].uvls;
 	nOffset = faceP->nType == SIDE_IS_TRI_13;
 	if (gameStates.render.bTriangleMesh) {
@@ -1472,7 +1472,7 @@ if (gameStates.ogl.bVertexLighting)
 	gameStates.ogl.bVertexLighting = ComputeVertexLight (-1, 0, NULL);
 #endif
 for (i = nStart, nStep = (nStart > nEnd) ? -1 : 1; i != nEnd; i += nStep) {
-	faceP = gameData.segs.faces.faces + i;
+	faceP = FACES.faces + i;
 	nSegment = faceP->nSegment;
 	nSide = faceP->nSide;
 	if (bVertexLight && !gameStates.render.bFullBright)
@@ -1491,7 +1491,7 @@ for (i = nStart, nStep = (nStart > nEnd) ? -1 : 1; i != nEnd; i += nStep) {
 	AddFaceListItem (faceP, nThread);
 #endif
 	faceP->color = faceColor [nColor].color;
-	pc = gameData.segs.faces.color + faceP->nIndex;
+	pc = FACES.color + faceP->nIndex;
 	for (h = 0; h < 4; h++, pc++) {
 		if (gameStates.render.bFullBright) 
 			*pc = nColor ? faceColor [nColor].color : brightColor.color;
@@ -1622,7 +1622,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 #endif
 		faceP->color = faceColor [nColor].color;
 //			SetDynLightMaterial (nSegment, faceP->nSide, -1);
-		pc = gameData.segs.faces.color + faceP->nIndex;
+		pc = FACES.color + faceP->nIndex;
 		for (h = 0; h < 4; h++, pc++) {
 			if (gameStates.render.bFullBright) 
 				*pc = nColor ? faceColor [nColor].color : brightColor.color;
@@ -1763,9 +1763,9 @@ for (i = nStart; i != nEnd; i += nStep) {
 		faceP->bHasColor = 1;
 #endif
 //			SetDynLightMaterial (nSegment, faceP->nSide, -1);
-		for (k = faceP->nTris, triP = gameData.segs.faces.tris + faceP->nTriIndex; k; k--, triP++) {
+		for (k = faceP->nTris, triP = FACES.tris + faceP->nTriIndex; k; k--, triP++) {
 			nIndex = triP->nIndex;
-			pc = gameData.segs.faces.color + nIndex;
+			pc = FACES.color + nIndex;
 			for (h = 0; h < 3; h++, pc++, nIndex++) {
 				if (gameStates.render.bFullBright) 
 					*pc = nColor ? faceColor [nColor].color : brightColor.color;
@@ -1790,8 +1790,8 @@ for (i = nStart; i != nEnd; i += nStep) {
 								pvc->index = gameStates.render.nFrameFlipFlop + 1;
 								}
 							else {
-								G3VertexColor (gameData.segs.faces.m_normals + nIndex, 
-													gameData.segs.faces.vertices + nIndex, nVertex, 
+								G3VertexColor (FACES.normals + nIndex, 
+													FACES.vertices + nIndex, nVertex, 
 													NULL, &c, 1, 0, nThread);
 								gameData.render.lights.dynamic.shader.index [0][nThread] = gameData.render.lights.dynamic.shader.index [1][nThread];
 								ResetNearestVertexLights (nVertex, nThread);
@@ -1880,7 +1880,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 			continue;
 #endif
 		faceP->color = faceColor [nColor].color;
-		pc = gameData.segs.faces.color + faceP->nIndex;
+		pc = FACES.color + faceP->nIndex;
 		uvlP = segP->m_sides [nSide].uvls;
 		for (h = 0, uvi = (segP->m_sides [nSide].nType == SIDE_IS_TRI_13); h < 4; h++, pc++, uvi++) {
 			if (gameStates.render.bFullBright) 
@@ -1985,7 +1985,7 @@ for (h = 0; h < gameData.render.mine.nRenderSegs; h++) {
 	segFaceP = SEGFACES + gameData.render.mine.nSegRenderList [h];
 	for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++)
 		for (j = 0; j < 4; j++)
-			gameData.segs.faces.color [j] = gameData.render.color.vertices [faceP->index [j]].color;
+			FACES.color [j] = gameData.render.color.vertices [faceP->index [j]].color;
 	}
 }
 

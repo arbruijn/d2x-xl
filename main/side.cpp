@@ -710,7 +710,7 @@ return IT_NONE;			//no hit
 
 bool CSide::IsOpenableDoor (void)
 {
-return IS_WALL (m_nWall) ? WALLS [nWall].IsOpenableDoor () : false;
+return IS_WALL (m_nWall) ? WALLS [m_nWall].IsOpenableDoor () : false;
 }
 
 //------------------------------------------------------------------------------

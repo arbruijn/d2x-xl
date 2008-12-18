@@ -667,7 +667,7 @@ if (gameOpts->render.nLightingMethod)
 	gameData.render.color.vertices.Clear ();
 //memset (gameData.render.color.ambient, 0, sizeof (*gameData.render.color.ambient) * MAX_VERTICES);
 gameData.render.lights.dynamic.Init ();
-for (nFace = gameData.segs.nFaces, faceP = gameData.segs.faces.faces.Buffer (); nFace; nFace--, faceP++) {
+for (nFace = gameData.segs.nFaces, faceP = FACES.faces.Buffer (); nFace; nFace--, faceP++) {
 	nSegment = faceP->nSegment;
 	if (SEGMENTS [nSegment].m_nType == SEGMENT_IS_SKYBOX)
 		continue;

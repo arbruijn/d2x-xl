@@ -2589,6 +2589,10 @@
 						RelativePath="..\..\include\perlin.h"
 						>
 					</File>
+					<File
+						RelativePath="..\..\include\sparkeffect.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter
@@ -4601,11 +4605,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File

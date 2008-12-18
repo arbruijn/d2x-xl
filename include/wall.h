@@ -158,7 +158,7 @@ class CWall {
 	public:
 		void LoadTextures (void);
 		int IsDoorWay (CObject* objP);
-		bool CWall::IsOpenableDoor (void);
+		bool IsOpenableDoor (void);
 
 };
 
@@ -219,15 +219,8 @@ typedef struct {
 
 extern char pszWallNames[7][10];
 
-//#define WALL_IS_DOORWAY(seg,CSide) WallIsDoorWay(seg, CSide)
-
-extern int WALL_IS_DOORWAY (CSegment *segP, short nSide, CObject *objP);
-
 // Initializes all walls (i.e. no special walls.)
 void WallInit();
-
-// Automatically checks if a there is a doorway (i.e. can fly through)
-int WallIsDoorWay (CSegment *segP, short nSide, CObject *objP );
 
 // Deteriorate appearance of CWall. (Changes bitmap (paste-ons))
 void WallDamage(CSegment *segP, short nSide, fix damage);

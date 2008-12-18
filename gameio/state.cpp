@@ -1069,7 +1069,7 @@ if (!m_bBetweenLevels)	{
 	i = gameData.walls.nWalls;
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
-		SaveWall (gameData.walls.walls + j);
+		SaveWall (WALLS + j);
 	DBG (fPos = m_cf.Tell ());
 //Save exploding wall info
 	i = MAX_EXPLODING_WALLS;
@@ -2172,7 +2172,7 @@ if (!m_bBetweenLevels)	{
 	//Restore CWall info
 	if (ReadBoundedInt (MAX_WALLS, &gameData.walls.nWalls))
 		return 0;
-	for (i = 0, wallP = gameData.walls.walls.Buffer (); i < gameData.walls.nWalls; i++, wallP++) {
+	for (i = 0, wallP = WALLS.Buffer (); i < gameData.walls.nWalls; i++, wallP++) {
 		CSaveGameHandler::LoadWall (wallP);
 		if (wallP->nType == WALL_OPEN)
 			DigiKillSoundLinkedToSegment ((short) wallP->nSegment, (short) wallP->nSide, -1);	//-1 means kill any sound
@@ -2239,7 +2239,7 @@ if (!m_bBetweenLevels)	{
 		}
 	DBG (fPos = m_cf.Tell ());
 	//Restore the fuelcen info
-	for (i = 0, wallP = gameData.walls.walls.Buffer (); i < gameData.walls.nWalls; i++, wallP++) {
+	for (i = 0, wallP = WALLS.Buffer (); i < gameData.walls.nWalls; i++, wallP++) {
 		if ((wallP->nType == WALL_DOOR) && (wallP->flags & WALL_DOOR_OPENED))
 			AnimateOpeningDoor (SEGMENTS + wallP->nSegment, wallP->nSide, -1);
 		else if ((wallP->nType == WALL_BLASTABLE) && (wallP->flags & WALL_BLASTED))
@@ -2456,10 +2456,10 @@ if (!m_bBetweenLevels)	{
 	//Restore CWall info
 	if (ReadBoundedInt (MAX_WALLS, &gameData.walls.nWalls))
 		return 0;
-	m_cf.Read (gameData.walls.walls.Buffer (), sizeof (CWall), gameData.walls.nWalls);
+	m_cf.Read (WALLS.Buffer (), sizeof (CWall), gameData.walls.nWalls);
 	//now that we have the walls, check if any sounds are linked to
 	//walls that are now open
-	for (i = 0, wallP = gameData.walls.walls.Buffer (); i < gameData.walls.nWalls; i++, wallP++)
+	for (i = 0, wallP = WALLS.Buffer (); i < gameData.walls.nWalls; i++, wallP++)
 		if (wallP->nType == WALL_OPEN)
 			DigiKillSoundLinkedToSegment ((short) wallP->nSegment, (short) wallP->nSide, -1);	//-1 means kill any sound
 	//Restore exploding wall info

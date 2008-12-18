@@ -2905,79 +2905,6 @@ class CMenuData {
 
 #include "fuelcen.h"
 
-class CEnergySpark {
-	public:
-		short				m_nProb;
-		char				m_nFrame;
-		ubyte				m_bRendered :1;
-		ubyte				m_nType :1;
-		fix				m_xSize;
-		time_t			m_tRender;
-		time_t			m_tCreate;
-		CFixVector		m_vPos;
-		CFixVector		m_vDir;
-
-	public:
-		void Setup (short nSegment);
-		void Update (void);
-		void Render (void);
-	};
-
-class CSparks {
-	public:
-		CArray<CEnergySpark>	sparks;
-		short						m_nSegment;
-		short						m_nMaxSparks;
-		ubyte						m_nType;
-		ubyte						m_bUpdate;
-
-	public:
-		CSparks () { Init (); }
-		~CSparks () { Destroy (); }
-		void Init (void) {
-			m_nMaxSparks = 0;
-			m_bUpdate = 0;
-			m_nSegment = -1;
-			}
-		void Destroy (void) {
-			sparks.Destroy ();
-			Init ();
-			}
-		void Setup (short nSegment, ubyte nType);
-		void Create (void);
-		void Render (void);
-		void Update (void);
-	};
-
-
-class CSparkManager {
-	private:
-		CSparks		m_sparks [2][MAX_FUEL_CENTERS];	//0: repair, 1: fuel center
-		short			m_segments [2][MAX_FUEL_CENTERS];
-		short			m_nSegments;
-
-	public:
-		CSparkManager () { Init (); }
-		~CSparkManager () { Destroy (); }
-		void Init (void);
-		void Setup (void);
-		void Render (void);
-		void Update (void);
-		void Destroy (void);
-		void Create (void);
-		void DoFrame (void);
-
-	private:
-		inline int Type (short nMatCen);
-		inline CSparks& Sparks (short nMatCen);
-		int BuildSegList (void);
-		void SetupSparks (short nMatCen);
-		void UpdateSparks (short nMatCen);
-		void RenderSparks (short nMatCen);
-		void DestroySparks (short nMatCen);
-	};
-
-
 class CMatCenData {
 	public:
 		fix				xFuelRefillSpeed;
@@ -3413,10 +3340,10 @@ return gameData.objs.objects.Index (objP);
 
 #define SEG_IDX(_segP)			((short) ((_segP) - SEGMENTS))
 #define SEG2_IDX(_seg2P)		((short) ((_seg2P) - SEGMENTS))
-#define WALL_IDX(_wallP)		((short) ((_wallP) - gameData.walls.walls))
+#define WALL_IDX(_wallP)		((short) ((_wallP) - WALLS))
 #define OBJ_IDX(_objP)			ObjIdx (_objP)
 #define TRIG_IDX(_triggerP)	((short) ((_triggerP) - TRIGGERS))
-#define FACE_IDX(_faceP)		((int) ((_faceP) - gameData.segs.faces.faces))
+#define FACE_IDX(_faceP)		((int) ((_faceP) - FACES.faces))
 
 #ifdef PIGGY_USE_PAGING
 
@@ -3489,7 +3416,7 @@ extern fix nDebrisLife [];
 #define SEGFACES	gameData.segs.segFaces
 #define OBJECTS	gameData.objs.objects
 #define WALLS		gameData.walls.walls
-#define TRIGGERS	TRIGGERS
+#define TRIGGERS	gameData.trigs.triggers
 #define FACES		gameData.segs.faces.faces
 #define TRIANGLES	gameData.segs.faces.tris
 

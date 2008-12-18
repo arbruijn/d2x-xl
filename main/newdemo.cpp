@@ -1564,11 +1564,11 @@ NDWriteByte ((sbyte)gameData.missions.nCurrentLevel);
 if (bJustStartedRecording == 1) {
 	NDWriteInt (gameData.walls.nWalls);
 	for (i = 0; i < gameData.walls.nWalls; i++) {
-		NDWriteByte (gameData.walls.walls [i].nType);
-		NDWriteByte (gameData.walls.walls [i].flags);
-		NDWriteByte (gameData.walls.walls [i].state);
-		segP = &SEGMENTS [gameData.walls.walls [i].nSegment];
-		nSide = gameData.walls.walls [i].nSide;
+		NDWriteByte (WALLS [i].nType);
+		NDWriteByte (WALLS [i].flags);
+		NDWriteByte (WALLS [i].state);
+		segP = &SEGMENTS [WALLS [i].nSegment];
+		nSide = WALLS [i].nSide;
 		NDWriteShort (segP->m_sides [nSide].m_nBaseTex);
 		NDWriteShort (segP->m_sides [nSide].nOvlTex | (segP->m_sides [nSide].nOvlOrient << 14));
 		bJustStartedRecording = 0;
@@ -1711,7 +1711,7 @@ for (i = 0; i < gameData.reactor.triggers.nLinks; i++) {
 	side = gameData.reactor.triggers.nSide [i];
 	connSegP = SEGMENTS + segP->m_children [side];
 	nConnSide = segP->ConnectedSide (connSegP);
-	anim_num = gameData.walls.walls [WallNumP (segP, side)].nClip;
+	anim_num = WALLS [WallNumP (segP, side)].nClip;
 	n = gameData.walls.animP [anim_num].nFrameCount;
 	if (gameData.walls.animP [anim_num].flags & WCF_TMAP1)
 		segP->m_sides [side].m_nBaseTex = 
@@ -1939,7 +1939,7 @@ while (!bDone) {
 			shot = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
-				if (TRIGGERS [gameData.walls.walls [WallNumI ((short) nSegment, (short) nSide)].nTrigger].nType == TT_SECRET_EXIT) {
+				if (TRIGGERS [WALLS [WallNumI ((short) nSegment, (short) nSide)].nTrigger].nType == TT_SECRET_EXIT) {
 					int truth;
 
 					nTag = NDReadByte ();
@@ -2490,7 +2490,7 @@ while (!bDone) {
 				segP = SEGMENTS + nSegment;
 				oppSegP = SEGMENTS + segP->m_children [nSide];
 				nConnSide = segP->ConnectedSide (oppSegP);
-				anim_num = gameData.walls.walls [WallNumP (segP, nSide)].nClip;
+				anim_num = WALLS [WallNumP (segP, nSide)].nClip;
 				if (gameData.walls.animP [anim_num].flags & WCF_TMAP1)
 					segP->m_sides [nSide].m_nBaseTex = oppSegP->m_sides [nConnSide].m_nBaseTex =
 						gameData.walls.animP [anim_num].frames [0];
@@ -2537,20 +2537,20 @@ while (!bDone) {
 			l1 = NDReadShort ();
 			l2 = NDReadShort ();
 			l3 = NDReadShort ();
-			gameData.walls.walls [nFrontWall].nType = nType;
-			gameData.walls.walls [nFrontWall].state = state;
-			gameData.walls.walls [nFrontWall].cloakValue = cloakValue;
-			segP = SEGMENTS + gameData.walls.walls [nFrontWall].nSegment;
-			nSide = gameData.walls.walls [nFrontWall].nSide;
+			WALLS [nFrontWall].nType = nType;
+			WALLS [nFrontWall].state = state;
+			WALLS [nFrontWall].cloakValue = cloakValue;
+			segP = SEGMENTS + WALLS [nFrontWall].nSegment;
+			nSide = WALLS [nFrontWall].nSide;
 			segP->m_sides [nSide].uvls [0].l = ((int) l0) << 8;
 			segP->m_sides [nSide].uvls [1].l = ((int) l1) << 8;
 			segP->m_sides [nSide].uvls [2].l = ((int) l2) << 8;
 			segP->m_sides [nSide].uvls [3].l = ((int) l3) << 8;
-			gameData.walls.walls [nBackWall].nType = nType;
-			gameData.walls.walls [nBackWall].state = state;
-			gameData.walls.walls [nBackWall].cloakValue = cloakValue;
-			segP = &SEGMENTS [gameData.walls.walls [nBackWall].nSegment];
-			nSide = gameData.walls.walls [nBackWall].nSide;
+			WALLS [nBackWall].nType = nType;
+			WALLS [nBackWall].state = state;
+			WALLS [nBackWall].cloakValue = cloakValue;
+			segP = &SEGMENTS [WALLS [nBackWall].nSegment];
+			nSide = WALLS [nBackWall].nSide;
 			segP->m_sides [nSide].uvls [0].l = ((int) l0) << 8;
 			segP->m_sides [nSide].uvls [1].l = ((int) l1) << 8;
 			segP->m_sides [nSide].uvls [2].l = ((int) l2) << 8;
@@ -2586,11 +2586,11 @@ while (!bDone) {
 			if (bJustStartedPlayback) {
 				gameData.walls.nWalls = NDReadInt ();
 				for (i = 0; i < gameData.walls.nWalls; i++) {   // restore the walls
-					gameData.walls.walls [i].nType = NDReadByte ();
-					gameData.walls.walls [i].flags = NDReadByte ();
-					gameData.walls.walls [i].state = NDReadByte ();
-					segP = SEGMENTS + gameData.walls.walls [i].nSegment;
-					nSide = gameData.walls.walls [i].nSide;
+					WALLS [i].nType = NDReadByte ();
+					WALLS [i].flags = NDReadByte ();
+					WALLS [i].state = NDReadByte ();
+					segP = SEGMENTS + WALLS [i].nSegment;
+					nSide = WALLS [i].nSide;
 					segP->m_sides [nSide].m_nBaseTex = NDReadShort ();
 					nTexture = NDReadShort ();
 					segP->m_sides [nSide].nOvlTex = nTexture & 0x3fff;

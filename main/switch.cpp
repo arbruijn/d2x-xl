@@ -242,8 +242,8 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 	nSegment = *segs;
 	nSide = *sides;
 	nWall=WallNumI (nSegment, nSide);
-	gameData.walls.walls [nWall].flags &= ~WALL_DOOR_LOCKED;
-	gameData.walls.walls [nWall].keys = KEY_NONE;
+	WALLS [nWall].flags &= ~WALL_DOOR_LOCKED;
+	WALLS [nWall].keys = KEY_NONE;
 }
 }
 
@@ -275,7 +275,7 @@ void FlagWallSwitchedDoors (void)
 
 for (i = 0; i < gameData.walls.nWalls; i++)
 	if (DoorIsWallSwitched (i))
-		gameData.walls.walls [i].flags |= WALL_WALL_SWITCH;
+		WALLS [i].flags |= WALL_WALL_SWITCH;
 }
 
 //------------------------------------------------------------------------------
@@ -287,7 +287,7 @@ void DoLockDoors (tTrigger *trigP)
 	short *sides = trigP->nSide;
 
 for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
-	gameData.walls.walls [WallNumI (*segs, *sides)].flags |= WALL_DOOR_LOCKED;
+	WALLS [WallNumI (*segs, *sides)].flags |= WALL_DOOR_LOCKED;
 }
 }
 
@@ -413,8 +413,8 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 		continue;
 		}
 	nConnWall = (nConnSide < 0) ? NO_WALL : WallNumP (cSegP, nConnSide);
-	if ((gameData.walls.walls [nWall].nType == nNewWallType) &&
-		 (!IS_WALL (nConnWall) || (gameData.walls.walls [nConnWall].nType == nNewWallType)))
+	if ((WALLS [nWall].nType == nNewWallType) &&
+		 (!IS_WALL (nConnWall) || (WALLS [nConnWall].nType == nNewWallType)))
 		continue;		//already in correct state, so skip
 	ret = 1;
 	switch (trigP->nType) {
@@ -425,10 +425,10 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 				CFixVector pos;
 				pos = segP->SideCenter (nSide);
 				DigiLinkSoundToPos (SOUND_FORCEFIELD_OFF, SEG_IDX (segP), nSide, &pos, 0, F1_0);
-				gameData.walls.walls [nWall].nType = nNewWallType;
+				WALLS [nWall].nType = nNewWallType;
 				DigiKillSoundLinkedToSegment (SEG_IDX (segP),nSide,SOUND_FORCEFIELD_HUM);
 				if (IS_WALL (nConnWall)) {
-					gameData.walls.walls [nConnWall].nType = nNewWallType;
+					WALLS [nConnWall].nType = nNewWallType;
 					DigiKillSoundLinkedToSegment (SEG_IDX (cSegP),nConnSide,SOUND_FORCEFIELD_HUM);
 					}
 				}
@@ -442,16 +442,16 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 				CFixVector pos;
 				pos = segP->SideCenter (nSide);
 				DigiLinkSoundToPos (SOUND_FORCEFIELD_HUM, SEG_IDX (segP),nSide,&pos,1, F1_0/2);
-				gameData.walls.walls [nWall].nType = nNewWallType;
+				WALLS [nWall].nType = nNewWallType;
 				if (IS_WALL (nConnWall))
-					gameData.walls.walls [nConnWall].nType = nNewWallType;
+					WALLS [nConnWall].nType = nNewWallType;
 				}
 			break;
 
 		case TT_ILLUSORY_WALL:
-			gameData.walls.walls [WallNumP (segP, nSide)].nType = nNewWallType;
+			WALLS [WallNumP (segP, nSide)].nType = nNewWallType;
 			if (IS_WALL (nConnWall))
-				gameData.walls.walls [nConnWall].nType = nNewWallType;
+				WALLS [nConnWall].nType = nNewWallType;
 			break;
 		}
 	KillStuckObjects (WallNumP (segP, nSide));
@@ -644,8 +644,8 @@ CWall *TriggerParentWall (short nTrigger)
 	int	i;
 
 for (i = 0; i < gameData.walls.nWalls; i++)
-	if (gameData.walls.walls [i].nTrigger == nTrigger)
-		return gameData.walls.walls + i;
+	if (WALLS [i].nTrigger == nTrigger)
+		return WALLS + i;
 return NULL;
 }
 
@@ -1124,7 +1124,7 @@ void CheckTrigger (CSegment *segP, short nSide, short nObject, int shot)
 nWall = WallNumP (segP, nSide);
 if (!IS_WALL (nWall)) 
 	return;
-nTrigger = gameData.walls.walls [nWall].nTrigger;
+nTrigger = WALLS [nWall].nTrigger;
 if (CheckTriggerSub (nObject, TRIGGERS.Buffer (), gameData.trigs.nTriggers, nTrigger, 
 							(objP->info.nType == OBJ_PLAYER) ? objP->info.nId : -1, shot, 0))
 	return;
@@ -1166,8 +1166,8 @@ CWall *FindTriggerWall (short nTrigger)
 	int	i;
 
 for (i = 0; i < gameData.walls.nWalls; i++)
-	if (gameData.walls.walls [i].nTrigger == nTrigger)
-		return gameData.walls.walls + i;
+	if (WALLS [i].nTrigger == nTrigger)
+		return WALLS + i;
 return NULL;
 }
 

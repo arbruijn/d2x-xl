@@ -276,10 +276,10 @@ if (!IS_WALL (nWall))		//if there's no door at alld:\temp\dm_test.
 	return 1;				//d:\temp\dm_testthen say it can't be opened
 	//	The mighty console CObject can open all doors (for purposes of determining paths).
 if (objP == gameData.objs.consoleP) {
-	if (gameData.walls.walls [nWall].nType == WALL_DOOR)
+	if (WALLS [nWall].nType == WALL_DOOR)
 		return 1;
 	}
-wallP = gameData.walls.walls + nWall;
+wallP = WALLS + nWall;
 if ((objP == NULL) || (ROBOTINFO (objP->info.nId).companion == 1)) {
 	int	ailp_mode;
 
