@@ -362,13 +362,13 @@ void SpeedtestFrame(void)
 
 	gameData.speedtest.nSide=gameData.speedtest.nSegment % MAX_SIDES_PER_SEGMENT;
 
-	COMPUTE_SEGMENT_CENTER(&gameData.objs.viewerP->info.position.vPos, &SEGMENTS[gameData.speedtest.nSegment]);
+	gameData.objs.viewerP->info.position.vPos = SEGMENTS [gameData.speedtest.nSegment].Center ();
 	gameData.objs.viewerP->info.position.vPos[X] += 0x10;	
 	gameData.objs.viewerP->info.position.vPos[Y] -= 0x10;	
 	gameData.objs.viewerP->info.position.vPos[Z] += 0x17;
 
 	gameData.objs.viewerP->RelinkToSeg (gameData.speedtest.nSegment);
-	COMPUTE_SIDE_CENTER(&center_point, &SEGMENTS[gameData.speedtest.nSegment], gameData.speedtest.nSide);
+	center_point = SEGMENTS [gameData.speedtest.nSegment].SideCenter (gameData.speedtest.nSide);
 	CFixVector::NormalizedDir(view_dir, center_point, gameData.objs.viewerP->info.position.vPos);
 	/*
 	gameData.objs.viewerP->info.position.mOrient = CFixMatrix::Create(view_dir, NULL, NULL);

@@ -74,7 +74,7 @@ for (i = 0; i < nHeadlights; i++) {
 	vecToObj = objP->info.position.vPos - lightObjP->info.position.vPos;
 	dist = CFixVector::Normalize(vecToObj);
 	if (dist > 0) {
-		dot = CFixVector::Dot(lightObjP->info.position.mOrient.FVec (), vecToObj);
+		dot = CFixVector::Dot (lightObjP->info.position.mOrient.FVec (), vecToObj);
 		if (dot < F1_0/2)
 			light += FixDiv (HEADLIGHT_SCALE, FixMul (HEADLIGHT_SCALE, dist));	//	Do the Normal thing, but darken around headlight.
 		else

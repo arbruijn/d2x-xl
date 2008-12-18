@@ -135,7 +135,7 @@ if (gameStates.app.bMultiThreaded)
 else
 	INIT_PROGRESS_LOOP (i, j, gameData.segs.nSegments);
 for (segP = SEGMENTS + i; i < j; i++, segP++) {
-	COMPUTE_SEGMENT_CENTER (&center, segP);
+	center = segP->Center ();
 	pl = gameData.render.lights.dynamic.lights;
 	for (l = n = 0; l < gameData.render.lights.dynamic.nLights; l++, pl++) {
 		m = (pl->info.nSegment < 0) ? OBJECTS [pl->info.nObject].info.nSegment : pl->info.nSegment;
@@ -215,8 +215,8 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 				continue;
 			if ((pl->info.nSegment >= 0) && (pl->info.nSide >= 0)) {
 				sideP = SEGMENTS [pl->info.nSegment].m_sides + pl->info.nSide;
-				if ((CFixVector::Dot(sideP->m_normals[0], vLightToVert) < -F1_0 / 6) &&
-					 ((sideP->nType == SIDE_IS_QUAD) || (CFixVector::Dot(sideP->m_normals[1], vLightToVert) < -F1_0 / 6)))
+				if ((CFixVector::Dot (sideP->m_normals[0], vLightToVert) < -F1_0 / 6) &&
+					 ((sideP->nType == SIDE_IS_QUAD) || (CFixVector::Dot (sideP->m_normals[1], vLightToVert) < -F1_0 / 6)))
 					continue;
 				}
 			}
@@ -336,7 +336,7 @@ if (nStartSeg == nDbgSeg)
 #endif
 gameData.objs.viewerP = &viewer;
 viewer.info.nSegment = nStartSeg;
-COMPUTE_SEGMENT_CENTER_I (&viewer.info.position.vPos, nStartSeg);
+viewer.info.position.vPos = SEGMENTS [nStartSeg].Center ();
 segP = SEGMENTS + nStartSeg;
 for (sideP = segP->m_sides, nSide = 0; nSide < 6; nSide++, sideP++) {
 #if 1

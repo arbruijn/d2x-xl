@@ -85,7 +85,7 @@ gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
 gameData.ai.nHitSeg = gameData.ai.hitData.hit.nSegment;
 if (gameData.ai.nHitType != HIT_NONE)
 	return 0;
-dot = CFixVector::Dot(*vVecToPlayer, objP->info.position.mOrient.FVec ());
+dot = CFixVector::Dot (*vVecToPlayer, objP->info.position.mOrient.FVec ());
 return (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) ? 2 : 1;
 }
 

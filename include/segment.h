@@ -97,7 +97,8 @@ class CSide {
 		CFixVector	m_vCenter;
 		fix			m_rads [2];
 		ushort		m_vertices [6];
-		ushort		m_nMinVertex;
+		ushort		m_faceVerts [6];
+		ushort		m_nMinVertex [2];
 		ubyte			m_nFaces;
 
 	public:
@@ -117,14 +118,31 @@ class CSide {
 		void ComputeCenter (void);
 		void ComputeRads (void);
 		CFixVector* Center (void) { return &m_vCenter; }
+		fix MinRad (void) { return m_rads [0]; }
+		fix MaxRad (void) { return m_rads [1]; }
+		CFixVector RandomPoint (void);
+
 		int CreateVertexList (ushort* verts, int* index);
+		void CreateFaceVertexIndex (int* index);
+		void AddAsQuad (CFixVector& vNormal);
+		void AddAsTwoTriangles (bool bSolid);
+		void CreateWalls (bool bSolid);
+		void Validate (bool bSolid);
+
 		inline ubyte GetVertices (ushort*& vertices) { 
 			vertices = m_vertices;
 			return m_nFaces;
 			}
-	CFixVector* GetVertices (CFixVector* vertices);
-	ubyte Dist (const CFixVector& intersection, fix& xSideDist, int bBehind, short sideBit);
-	tSegMasks Masks (const CFixVector& refP, fix xRad, short sideBit, short& faceBit);
+		CFixVector* GetVertices (CFixVector* vertices);
+		inline CFixVector& Vertex (int nVertex);
+		inline CFixVector& MinVertex (void);
+		inline CFixVector& Normal (int nFace) { return gameStates.render.bRendering ? m_rotNorms [nFace] : m_normals [nFace; }
+		inline fix Height (void);
+		inline bool IsPlanar (void);
+		ubyte DistToPoint (const CFixVector& point, fix& xSideDist, int bBehind, short sideBit);
+		CSegMasks Masks (const CFixVector& refP, fix xRad, short sideBit, short& faceBit);
+		void FindHitPointUV (fix *u, fix *v, fix *l, CFixVector& intersection, int iFace);
+		int CheckForTranspPixel (CFixVector& intersection, short iFace);
 	};
 
 //------------------------------------------------------------------------------
@@ -151,6 +169,7 @@ class CSegment {
 	public:
 		void Read (CFile& cf, bool bExtended);
 		void LoadTextures (void);
+		void Validate (void);
 		inline ushort WallNum (short nSide) { return m_sides [nSide].WallNum (); }
 		inline int CheckTransparency (short nSide) { return m_sides [nSide].CheckTransparency (); }
 		fix Refuel (fix xMaxFuel);
@@ -170,12 +189,13 @@ class CSegment {
 		void ComputeSideRads (void);
 		void GetNormals (short nSide, CFixVector& n1, CFixVector& n2) { m_sides [nSide].GetNormals (n1, n2); }
 		inline CFixVector* Center (void) { return &m_vCenter; }
+		inline CFixVector* SideCenter (int nSide) { return m_sides [nSide].Center (); }
 		inline int CreateVertexList (int nSide) { return m_sides [nSide].CreateVertexList (m_verts, sideVertIndex [nSide]); }
 		inline ubyte GetVertices (int nSide, ushort*& vertices) { return m_sides [nSide].GetVertices (vertices); }
 		inline CFixVector* GetVertices (int nSide, CFixVector* vertices) { return m_sides [nSide].GetVertices (vertices); }
 		ubyte SideDists (const CFixVector& intersection, fix* xSideDists, int bBehind = 1);
 		int FindConnectedSide (CSegment* other);
-		inline CFixVector& Normal (int nSide, int nFace);
+		inline CFixVector& Normal (int nSide, int nFace) { return m_nSide [nSide].Normal (nFace); }
 #if 0
 		inline uint CheckPointToFace (CFixVector& intersection, short nSide, short iFace)
 			{ return m_sides [nSide].CheckPointToFace (intersection, iFace, nVerts, Normal (nSide, iFace)); }
@@ -188,8 +208,21 @@ class CSegment {
 			{ return m_sides [nSide].SpecialCheckLineToFace (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
 
 		inline int FaceCount (int nSide) { return m_sides [nSide].FaceCount (); }
-		tSegMasks GetSideMasks (const CFixVector& refP, fix xRad);
+		CSegMasks GetSideMasks (const CFixVector& refP, fix xRad);
 		ubyte GetSideDists (const CFixVector& refP, fix* xSideDists, int bBehind);
+
+		fix MinRad (void) { return m_rads [0]; }
+		fix MaxRad (void) { return m_rads [1]; }
+		float MinRadf (void) { return X2F (m_rads [0]); }
+		float MaxRadf (void) { return X2F (m_rads [1]); }
+
+		inline fix AvgRad (void) {return (m_rads [0] + m_rads [1]) / 2;}
+		inline fix AvgRadf (void) {return X2F (m_rads [0] + m_rads [1]) / 2;}
+		inline fix Volume (void) {return (fix) (1.25 * Pi * pow (AvgRadf (), 3) + 0.5);}
+
+		inline int CheckForTranspPixel (CFixVector& intersection, int nSide short iFace) 
+			{ return m_sides [nSide].CheckForTranspPixel (intersection, iFace); }
+
 	};
 
 inline int operator- (CSegment* s, CArray<CSegment>& a) { return a.Index (s); }

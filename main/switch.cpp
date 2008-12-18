@@ -157,7 +157,7 @@ if (trigP->nLinks) {
 	short nSegment = trigP->nSegment [d_rand () % trigP->nLinks];
 	if (objP->info.nSegment != nSegment) {
 		objP->info.nSegment = nSegment;
-		COMPUTE_SEGMENT_CENTER_I (&objP->info.position.vPos, nSegment);
+		objP->info.position.vPos = SEGMENTS [nSegment].Center ();
 		OBJECTS [nObject].RelinkToSeg (nSegment);
 		if (ROBOTINFO (objP->info.nId).bossFlag) {
 			int	i = FindBoss (nObject);
@@ -423,7 +423,7 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 				StartWallCloak (segP,nSide);
 			else {
 				CFixVector pos;
-				COMPUTE_SIDE_CENTER (&pos, segP, nSide);
+				pos = segP->SideCenter (nSide);
 				DigiLinkSoundToPos (SOUND_FORCEFIELD_OFF, SEG_IDX (segP), nSide, &pos, 0, F1_0);
 				gameData.walls.walls [nWall].nType = nNewWallType;
 				DigiKillSoundLinkedToSegment (SEG_IDX (segP),nSide,SOUND_FORCEFIELD_HUM);
@@ -440,7 +440,7 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 				StartWallDecloak (segP,nSide);
 			else {
 				CFixVector pos;
-				COMPUTE_SIDE_CENTER (&pos, segP, nSide);
+				pos = segP->SideCenter (nSide);
 				DigiLinkSoundToPos (SOUND_FORCEFIELD_HUM, SEG_IDX (segP),nSide,&pos,1, F1_0/2);
 				gameData.walls.walls [nWall].nType = nNewWallType;
 				if (IS_WALL (nConnWall))
@@ -518,13 +518,13 @@ void DoIllusionOff (tTrigger *trigP)
 	int i;
 	short *segs = trigP->nSegment;
 	short *sides = trigP->nSide;
-	CSegment *seg;
+	CSegment *segP;
 
 for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 	CFixVector	cp;
-	seg = SEGMENTS + *segs;
-	WallIllusionOff (seg, *sides);
-	COMPUTE_SIDE_CENTER (&cp, seg, *sides);
+	segP = SEGMENTS + *segs;
+	WallIllusionOff (segP, *sides);
+	cp = segP->SideCenter (*sides);
 	DigiLinkSoundToPos (SOUND_WALL_REMOVED, SEG_IDX (seg), *sides, &cp, 0, F1_0);
   	}
 }
@@ -557,7 +557,7 @@ an = n.ToAnglesVec();
 if (!nStep)
 	posP->mOrient = CFixMatrix::Create(an);
 if (bSetPos)
-	COMPUTE_SEGMENT_CENTER_I (&posP->vPos, nSegment); 
+	posP->vPos = SEGMENTS [nSegment].Center (); 
 // rotate the ships vel vector accordingly
 //StopPlayerMovement ();
 }
@@ -676,8 +676,8 @@ if (sbd.bBoosted) {
 		CFixVector::Normalize(n);
 		}
 	else if (srcSegnum >= 0) {
-		COMPUTE_SIDE_CENTER (&sbd.vSrc, SEGMENTS + srcSegnum, srcSidenum);
-		COMPUTE_SIDE_CENTER (&sbd.vDest, SEGMENTS + destSegnum, destSidenum);
+		sbd.vSrc = SEGMENTS [srcSegnum].SideCenter (srcSidenum);
+		sbd.vDest = SEGMENTS [destSegnum].SideCenter (destSidenum);
 		if (memcmp (&sbd.vSrc, &sbd.vDest, sizeof (CFixVector))) {
 			n = sbd.vDest - sbd.vSrc;
 			CFixVector::Normalize(n);

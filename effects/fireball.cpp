@@ -709,7 +709,7 @@ gameData.walls.explWalls [i].nSegment = nSegment;
 gameData.walls.explWalls [i].nSide = nSide;
 gameData.walls.explWalls [i].time = 0;
 //play one long sound for whole door CWall explosion
-COMPUTE_SIDE_CENTER (&pos, &SEGMENTS [nSegment], nSide);
+pos = SEGMENTS [nSegment].SideCenter (nSide);
 DigiLinkSoundToPos (SOUND_EXPLODING_WALL, nSegment, nSide, &pos, 0, F1_0);
 }
 

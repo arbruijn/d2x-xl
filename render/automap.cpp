@@ -1408,7 +1408,7 @@ else {
 		for (e1 = 0; e1 < e->num_faces; e1++) {
 			for (e2 = 1; e2 < e->num_faces; e2++) {
 				if ((e1 != e2) && (e->nSegment [e1] != e->nSegment [e2]))	{
-					if (CFixVector::Dot(SEGMENTS [e->nSegment [e1]].m_sides [e->m_sides [e1]].m_normals [0], SEGMENTS [e->nSegment [e2]].m_sides [e->m_sides [e2]].m_normals [0]) > (F1_0- (F1_0/10)) )	{
+					if (CFixVector::Dot (SEGMENTS [e->nSegment [e1]].m_sides [e->m_sides [e1]].m_normals [0], SEGMENTS [e->nSegment [e2]].m_sides [e->m_sides [e2]].m_normals [0]) > (F1_0- (F1_0/10)) )	{
 						e->flags &= (~EF_DEFINING);
 						break;
 					}

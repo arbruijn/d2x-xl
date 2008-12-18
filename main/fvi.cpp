@@ -64,7 +64,7 @@ d21 = p2 - p1;
 if (!(m = d21 [X] * d21 [X] + d21 [Y] * d21 [Y] + d21 [Z] * d21 [Z]))
 	return 0;
 d31 = p3 - p1;
-u = CFloatVector::Dot(d31, d21);
+u = CFloatVector::Dot (d31, d21);
 u /= m;
 /*
 h [X] = p1 [X] + u * d21 [X];
@@ -76,7 +76,7 @@ h = p1 + u * d21;
 // limit the intersection to [p1,p2]
 v [0] = p1 - h;
 v [1] = p2 - h;
-m = CFloatVector::Dot(v [0], v [1]);
+m = CFloatVector::Dot (v [0], v [1]);
 if (m >= 1)
 	return 1;
 return 0;
@@ -96,15 +96,15 @@ int FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlanePoint
 
 w = *p0 - *vPlanePoint;
 d = *p1 - *p0;
-num = CFixVector::Dot(*vPlaneNorm, w) - rad;
-den = -CFixVector::Dot(*vPlaneNorm, d);
+num = CFixVector::Dot (*vPlaneNorm, w) - rad;
+den = -CFixVector::Dot (*vPlaneNorm, d);
 if (!den) {
 	CFloatVector	nf, df;
 	float denf;
 	nf.Assign (*vPlaneNorm);
 	df.Assign (d);
-	denf = -CFloatVector::Dot(nf, df);
-	denf = -CFloatVector::Dot(nf, df);
+	denf = -CFloatVector::Dot (nf, df);
+	denf = -CFloatVector::Dot (nf, df);
 	return 0;
 	}
 if (den > 0) {
@@ -137,8 +137,8 @@ int FindLineQuadIntersectionSub (CFixVector& intersection, CFixVector *vPlanePoi
 
 w = *vPlanePoint - *p0;
 d = *p1 - *p0;
-num = CFixVector::Dot(*vPlaneNorm, w);
-den = CFixVector::Dot(*vPlaneNorm, d);
+num = CFixVector::Dot (*vPlaneNorm, w);
+den = CFixVector::Dot (*vPlaneNorm, d);
 if (!den)
 	return 0;
 if (labs (num) > labs (den))
@@ -176,7 +176,7 @@ if (!FindLineQuadIntersectionSub (&vHit, planeP, planeNormP, p0, p1, 0))
 	return 0;
 d [0] = vHit - *p0;
 d [1] = vHit - *p1;
-if (CFixVector::Dot(d [0], d [1]) >= 0)
+if (CFixVector::Dot (d [0], d [1]) >= 0)
 	return 0;
 if (!CheckSphereToFace (&vHit, 0, planeP, 4, planeNormP))
 	return 0;
@@ -256,7 +256,7 @@ int FindHitboxIntersection (CFixVector& intersection, tBox *phb1, tBox *phb2, CF
 for (i = 0, pf1 = phb1->faces; i < 6; i++, pf1++) {
 	for (j = 0, pf2 = phb2->faces; j < 6; j++, pf2++) {
 #if 1
-		if (CFixVector::Dot(pf1->n [1], pf2->n [1]) >= 0)
+		if (CFixVector::Dot (pf1->n [1], pf2->n [1]) >= 0)
 			continue;
 #endif
 		if (FindQuadQuadIntersection (&vHit, pf1->v, pf1->n + 1, pf2->v, pf2->n + 1, vPos)) {
@@ -683,8 +683,6 @@ if (bSimpleFVI) {
 	//PrintLog ("done\n");
 	return h;
 	}
-//PrintLog ("      CreateAbsVertexLists ...");
-//PrintLog ("done\n");
 vMove = *p1 - *p0;
 //figure out which edge(side) to check against
 //PrintLog ("      CheckPointToSegFace ...\n");
@@ -755,7 +753,7 @@ if (mag_d == 0) {
 	intersection = *p0;
 	return ((xSphereRad < 0) || (intDist < xSphereRad)) ? intDist : 0;
 	}
-wDist = CFixVector::Dot(dn, w);
+wDist = CFixVector::Dot (dn, w);
 if (wDist < 0)
 	return 0;	//moving away from CObject
 if (wDist > mag_d + xSphereRad)
@@ -858,7 +856,7 @@ TransformHitboxes (objP, vPos, hb);
 for (; iModel <= nModels; iModel++) {
 	for (i = 0, pf = hb [iModel].faces; i < 6; i++, pf++) {
 #if 0
-		dot = CFixVector::Dot(pf->n + 1, pn);
+		dot = CFixVector::Dot (pf->n + 1, pn);
 		if (dot >= 0)
 			continue;	//shield face facing away from vector
 #endif
@@ -868,7 +866,7 @@ for (; iModel <= nModels; iModel++) {
 			v = vHit - *p0;
 			d = CFixVector::Normalize (v);
 #if 0
-			dot = CFixVector::Dot(pf->n + 1, pn);
+			dot = CFixVector::Dot (pf->n + 1, pn);
 			if (dot > 0)
 				continue;	//behind shield face
 			if (d > rad)
@@ -1002,8 +1000,6 @@ return (t == nObject);
 
 #define FVI_NEWCODE 2
 
-int CheckTransWall (CFixVector *vPoint, CSegment *segP, short nSide, short iFace);
-
 int FVICompute (CFixVector *vIntP, short *intS, CFixVector *p0, short nStartSeg, CFixVector *p1,
 					 fix radP0, fix radP1, short nThisObject, short *ignoreObjList, int flags, short *segList,
 					 short *nSegments, int nEntrySeg)
@@ -1011,7 +1007,7 @@ int FVICompute (CFixVector *vIntP, short *intS, CFixVector *p0, short nStartSeg,
 	CSegment		*segP;				//the CSegment we're looking at
 	int			startMask, endMask, centerMask;	//mask of faces
 	short			nObject, nFirstObj, nSegment, nSegObjs;
-	tSegMasks	masks;
+	CSegMasks	masks;
 	CFixVector	vHitPoint, vClosestHitPoint; 	//where we hit
 	fix			d, dMin = 0x7fffffff;					//distance to hit refP
 	int			nObjSegList [7], nObjSegs, iObjSeg, i;
@@ -1187,7 +1183,7 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 				}
 			if ((widResult & WID_FLY_FLAG) ||
 				 (((widResult & (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) == (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) &&
-				  ((flags & FQ_TRANSWALL) || ((flags & FQ_TRANSPOINT) && CheckTransWall (&vHitPoint, segP, nSide, iFace))))) {
+				  ((flags & FQ_TRANSWALL) || ((flags & FQ_TRANSPOINT) && segP->CheckForTranspPixel (&vHitPoint, nSide, iFace))))) {
 
 				int			i, nNewSeg, subHitType;
 				short			subHitSeg, nSaveHitObj = gameData.collisions.hitData.nObject;
@@ -1261,30 +1257,16 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 					}
 				}
 			else {//a wall
-#if 1
 				if (nFaceHitType)
-#endif
 					{
-#if DBG
-					int vertList [6];
-					int nFaces = CreateAbsVertexLists (vertList, SEG_IDX (segP), nSide);
-					if (iFace >= nFaces)
-						d = dMin + 1;
-					else
-#endif
 					//is this the closest hit?
 					d = CFixVector::Dist(vHitPoint, *p0);
 					if (d < dMin) {
 						dMin = d;
 						vClosestHitPoint = vHitPoint;
 						nHitType = HIT_WALL;
-#if 1
 						gameData.collisions.hitData.vNormal = segP->m_sides [nSide].m_normals [iFace];
 						gameData.collisions.hitData.nNormals = 1;
-#else
-						VmVecInc (&gameData.collisions.hitData.vNormal, segP->m_sides [nSide].m_normals + iFace);
-						gameData.collisions.hitData.nNormals++;
-#endif
 						if (!GetSegMasks (vHitPoint, nStartSeg, radP1).centerMask)
 							nHitSegment = nStartSeg;             //hit in this CSegment
 						else
@@ -1362,7 +1344,7 @@ int FindVectorIntersection (tFVIQuery *fq, tFVIData *hitData)
 	short			nHitSegment, nHitSegment2;
 	CFixVector	vHitPoint;
 	int			i;
-	tSegMasks	masks;
+	CSegMasks	masks;
 
 Assert(fq->ignoreObjList != reinterpret_cast<short*> (-1));
 gameData.collisions.hitData.vNormal.SetZero();
@@ -1445,16 +1427,12 @@ return nHitType;
 //	-----------------------------------------------------------------------------
 //finds the uv coords of the given refP on the given seg & side
 //fills in u & v. if l is non-NULL fills it in also
-void FindHitPointUV (fix *u, fix *v, fix *l, CFixVector& intersection, CSegment *segP, int nSide, int iFace)
+void CSide::FindHitPointUV (fix *u, fix *v, fix *l, CFixVector& intersection, int iFace)
 {
 	CFixVector	*vPoints;
-	CFixVector	vNormals;
-	int			nSegment = SEG_IDX (segP);
-	int			nFaces;
+	CFixVector	vNormal;
 	int			biggest, ii, jj;
-	CSide			*sideP = segP->m_sides + nSide;
-	int			vertList [6], vertNumList [6];
- 	vec2d			p1, vec0, vec1, refP;
+ 	vec2d			p1, vec0, vec1, vHit;
 	tUVL			uvls [3];
 	fix			k0, k1;
 	int			h;
@@ -1472,58 +1450,56 @@ if (nSegment == -1) {
 	Error ("nSegment == -1 in FindHitPointUV()");
 	return;
 	}
-nFaces = CreateAbsVertexLists (vertList, nSegment, nSide);
-if (iFace >= nFaces) {
+if (iFace >= m_nFaces) {
 	PrintLog ("invalid face number in FindHitPointUV\n");
 	*u = *v = 0;
 	return;
 	}
-CreateAllVertNumLists (&nFaces, vertNumList, nSegment, nSide);
 //now the hard work.
 //1. find what plane to project this CWall onto to make it a 2d case
-memcpy (&vNormals, sideP->m_normals + iFace, sizeof (CFixVector));
+vNormal = m_normals [iFace];
 biggest = 0;
-if (abs (vNormals [1]) > abs (vNormals [biggest]))
+if (abs (vNormals [1]) > abs (vNormal [biggest]))
 	biggest = 1;
-if (abs (vNormals [2]) > abs (vNormals [biggest]))
+if (abs (vNormals [2]) > abs (vNormal [biggest]))
 	biggest = 2;
 ii = (biggest == 0);
 jj = (biggest == 2) ? 1 : 2;
 //2. compute u, v of intersection refP
 //vec from 1 -> 0
 h = iFace * 3;
-vPoints = reinterpret_cast<CFixVector*> (gameData.segs.vertices + vertList [h+1]);
+vPoints = gameData.segs.vertices + m_vertices [h+1];
 p1.i = (*vPoints) [ii];
 p1.j = (*vPoints) [jj];
 
-vPoints = reinterpret_cast<CFixVector*> (gameData.segs.vertices + vertList [h]);
+vPoints = gameData.segs.vertices + m_vertices [h];
 vec0.i = (*vPoints) [ii] - p1.i;
 vec0.j = (*vPoints) [jj] - p1.j;
 
 //vec from 1 -> 2
-vPoints = reinterpret_cast<CFixVector*> (gameData.segs.vertices + vertList [h+2]);
+vPoints = gameData.segs.vertices + m_vertices [h+2];
 vec1.i = (*vPoints) [ii] - p1.i;
 vec1.j = (*vPoints) [jj] - p1.j;
 
 //vec from 1 -> checkPoint
 //vPoints = reinterpret_cast<CFixVector*> (refP);
-refP.i = (*refP) [ii];
-refP.j = (*refP) [jj];
+vHit.i = intersection [ii];
+vHit.j = intersection [jj];
 
 #if 1 // the MSVC 9 optimizer doesn't like the code in the else branch ...
-ii = Cross2D (refP, vec0) + Cross2D (vec0, p1);
+ii = Cross2D (vHit, vec0) + Cross2D (vec0, p1);
 jj = Cross2D (vec0, vec1);
 k1 = -FixDiv (ii, jj);
 #else
 k1 = -FixDiv (Cross2D (refP, vec0) + Cross2D (vec0, p1), Cross2D (vec0, vec1));
 #endif
 if (abs (vec0.i) > abs (vec0.j))
-	k0 = FixDiv (FixMul (-k1, vec1.i) + refP.i - p1.i, vec0.i);
+	k0 = FixDiv (FixMul (-k1, vec1.i) + vHit.i - p1.i, vec0.i);
 else
-	k0 = FixDiv (FixMul (-k1, vec1.j) + refP.j - p1.j, vec0.j);
-uvls [0] = sideP->uvls [vertNumList [h]];
-uvls [1] = sideP->uvls [vertNumList [h + 1]];
-uvls [2] = sideP->uvls [vertNumList [h + 2]];
+	k0 = FixDiv (FixMul (-k1, vec1.j) + vHit.j - p1.j, vec0.j);
+uvls [0] = m_uvls [m_faceVerts [h]];
+uvls [1] = m_uvls [m_faceVerts [h+1]];
+uvls [2] = m_uvls [m_faceVerts [h+2]];
 *u = uvls [1].u + FixMul (k0, uvls [0].u - uvls [1].u) + FixMul (k1, uvls [2].u - uvls [1].u);
 *v = uvls [1].v + FixMul (k0, uvls [0].v - uvls [1].v) + FixMul (k1, uvls [2].v - uvls [1].v);
 if (l)
@@ -1600,27 +1576,21 @@ return 0;
 //	-----------------------------------------------------------------------------
 //check if a particular refP on a CWall is a transparent pixel
 //returns 1 if can pass though the CWall, else 0
-int CheckTransWall (CFixVector& intersection, CSegment *segP, short nSide, short iFace)
+int CSide::CheckForTranspPixel (CFixVector& intersection, short iFace)
 {
 	CSide *sideP = segP->m_sides + nSide;
 	fix	u, v;
 	int	nTranspType;
 
-//PrintLog ("      FindHitPointUV (%d)...", iFace);
-FindHitPointUV (&u, &v, NULL, refP, segP, nSide, iFace);	//	Don't compute light value.
-//PrintLog ("done\n");
+sideP->FindHitPointUV (&u, &v, NULL, refP, iFace);	//	Don't compute light value.
 if (sideP->nOvlTex)	{
-	//PrintLog ("      PixelTranspType...");
 	nTranspType = PixelTranspType (sideP->nOvlTex, sideP->nOvlOrient, sideP->nFrame, u, v);
-	//PrintLog ("done\n");
 	if (nTranspType < 0)
 		return 1;
 	if (!nTranspType)
 		return 0;
 	}
-//PrintLog ("      PixelTranspType...");
 nTranspType = PixelTranspType (sideP->nBaseTex, 0, sideP->nFrame, u, v) != 0;
-//PrintLog ("done\n");
 return nTranspType;
 }
 

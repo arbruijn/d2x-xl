@@ -146,7 +146,7 @@ vSign [Z] = vd [Z] ? vd [Z] / abs(vd [Z]) : 0;
 nSign = VECSIGN (vd);
 do {
 	VmRandomVector (&vr);
-	nDot = CFixVector::Dot(vr, vd);
+	nDot = CFixVector::Dot (vr, vd);
 	if (++i == 100)
 		i = 0;
 	} while ((nDot > nMaxDot) || (nDot < nMinDot));
@@ -272,7 +272,7 @@ do {
 	VmRandomVector (vOffs);
 	// TODO: Use new vector dot prod method
 	// right now it hangs/crashes
-	nDot = CFixVector::Dot(va, *vOffs);
+	nDot = CFixVector::Dot (va, *vOffs);
 	if (++i > 100)
 		i = 0;
 	} while (abs (nDot) < F1_0 / 32);
@@ -447,7 +447,7 @@ if (m_bRandom) {
 		do {
 			VmRandomVector (&vDir);
 		}
-		while (CFixVector::Dot(vRefDir, vDir) < nMinDot);
+		while (CFixVector::Dot (vRefDir, vDir) < nMinDot);
 	}
 	m_vEnd = m_vPos + vDir * m_nLength;
 }

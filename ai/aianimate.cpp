@@ -57,7 +57,7 @@ if (gameOpts->gameplay.bIdleAnims) {
 	if (i == 8)
 		h = 1;
 	else if (AITurnTowardsVector (&vVecToGoal, objP, ROBOTINFO (objP->info.nId).turnTime [2]) < F1_0 - F1_0 / 5) {
-		if (CFixVector::Dot(vVecToGoal, objP->info.position.mOrient.FVec ()) > F1_0 - F1_0 / 5)
+		if (CFixVector::Dot (vVecToGoal, objP->info.position.mOrient.FVec ()) > F1_0 - F1_0 / 5)
 			h = rand () % 2 == 0;
 		else
 			h = 0;
@@ -69,7 +69,7 @@ if (gameOpts->gameplay.bIdleAnims) {
 	if (h && (rand () % 25 == 0)) {
 		j = rand () % 8;
 		if ((j == i) || (rand () % 3 == 0))
-			COMPUTE_SEGMENT_CENTER_I (&vGoal, objP->info.nSegment);
+			vGoal = SEGMENTS [objP->info.nSegment].Center ();
 		else
 			vGoal = gameData.segs.vertices [segP->verts [j]];
 		gameData.objs.vRobotGoals [OBJ_IDX (objP)] = vGoal;

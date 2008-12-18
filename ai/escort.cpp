@@ -859,7 +859,7 @@ vVecToRobot = buddyObjP->info.position.vPos - objP->info.position.vPos;
 dist = CFixVector::Normalize(vVecToRobot);
 if (dist > F1_0*100)
 	return 0;
-dot = CFixVector::Dot(vVecToRobot, buddyObjP->info.position.mOrient.FVec ());
+dot = CFixVector::Dot (vVecToRobot, buddyObjP->info.position.mOrient.FVec ());
 if (dot < F1_0/2)
 	return 0;
 if (!ObjectToObjectVisibility (buddyObjP, objP, FQ_TRANSWALL))
@@ -1229,7 +1229,7 @@ for (buddy_id = 0; buddy_id < gameData.bots.nTypes [0]; buddy_id++)
 #endif
 		return;
 	}
-	COMPUTE_SEGMENT_CENTER_I (&vObjPos, OBJSEG (gameData.objs.consoleP));
+	vObjPos = SEGMENTS [OBJSEG (gameData.objs.consoleP)].Center ();
 	CreateMorphRobot (SEGMENTS + OBJSEG (gameData.objs.consoleP), &vObjPos, buddy_id);
 }
 

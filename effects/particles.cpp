@@ -420,7 +420,7 @@ int CParticle::CollideWithWall (void)
 {
 	CSegment		*segP;
 	CSide			*sideP;
-	int			bInit, nSide, nVert, nChild, nFace, nInFront;
+	int			bInit, nSide, nChild, nFace, nInFront;
 	fix			nDist;
 	int			*vlP;
 
@@ -432,24 +432,11 @@ if ((bInit = (m_nSegment != nPartSeg)))
 for (nSide = 0, sideP = segP->m_sides; nSide < 6; nSide++, sideP++) {
 	vlP = vertexList [nSide];
 	if (bInit) {
-		nFaces [nSide] = CreateAbsVertexLists (vlP, nPartSeg, nSide);
-		if (nFaces [nSide] == 1) {
-			bSidePokesOut [nSide] = 0;
-			nVert = vlP [0];
-			}
-		else {
-			nVert = min(vlP [0], vlP [2]);
-			if (vlP [4] < vlP [1])
-				nDist = gameData.segs.vertices[vlP[4]].DistToPlane (sideP->m_normals[0], gameData.segs.vertices[nVert]);
-			else
-				nDist = gameData.segs.vertices[vlP[1]].DistToPlane (sideP->m_normals[1], gameData.segs.vertices[nVert]);
-			bSidePokesOut [nSide] = (nDist > PLANE_DIST_TOLERANCE);
-			}
+		bSidePokesOut [nSide] = !sideP->IsPlanar ();
+		nFaces [nSide] = sideP->m_nFaces;
 		}
-	else
-		nVert = (nFaces [nSide] == 1) ? vlP [0] : min(vlP [0], vlP [2]);
 	for (nFace = nInFront = 0; nFace < nFaces [nSide]; nFace++) {
-		nDist = m_vPos.DistToPlane (sideP->m_normals[nFace], gameData.segs.vertices[nVert]);
+		nDist = m_vPos.DistToPlane (sideP->m_normals [nFace], gameData.segs.vertices [sideP->m_nMinVertex]);
 		if (nDist > -PLANE_DIST_TOLERANCE)
 			nInFront++;
 		else
@@ -502,7 +489,7 @@ else {
 			CFixVector vi = drift, vj = m_vDir;
 			CFixVector::Normalize (vi);
 			CFixVector::Normalize (vj);
-//				if (CFixVector::Dot(drift, m_vDir) < 0)
+//				if (CFixVector::Dot (drift, m_vDir) < 0)
 			if (CFixVector::Dot (vi, vj) < 0)
 				drag = -drag;
 //				VmVecScaleInc (&drift, &m_vDir, drag);

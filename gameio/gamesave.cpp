@@ -1949,7 +1949,7 @@ int saveLevel_sub(char * filename, int compiledVersion)
 	if (!UpdateObjectSeg(OBJECTS + gameData.multiplayer.players [0].nObject)) {
 		if (gameData.objs.consoleP->info.nSegment > gameData.segs.nLastSegment)
 			gameData.objs.consoleP->info.nSegment = 0;
-		COMPUTE_SEGMENT_CENTER (&gameData.objs.consoleP->info.position.vPos, SEGMENTS + gameData.objs.consoleP->info.nSegment);
+		gameData.objs.consoleP->info.position.vPos = SEGMENTS [gameData.objs.consoleP->info.nSegment].Center ();
 	}
 	FixObjectSegs();
 

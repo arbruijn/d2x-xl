@@ -42,10 +42,10 @@ if (objP->info.nType == OBJ_ROBOT) {
 	}
 vGoal = objP->info.position.vPos - trackerP->info.position.vPos;
 CFixVector::Normalize(vGoal);
-*xDot = CFixVector::Dot(vGoal, trackerP->info.position.mOrient.FVec ());
+*xDot = CFixVector::Dot (vGoal, trackerP->info.position.mOrient.FVec ());
 if ((*xDot < xMinTrackableDot) && (*xDot > 9 * F1_0 / 10)) {
 	CFixVector::Normalize(vGoal);
-	*xDot = CFixVector::Dot(vGoal, trackerP->info.position.mOrient.FVec ());
+	*xDot = CFixVector::Dot (vGoal, trackerP->info.position.mOrient.FVec ());
 	}
 
 if ((*xDot >= xMinTrackableDot) || 
@@ -161,7 +161,7 @@ else {
 		vecToCurObj = curObjP->info.position.vPos - *vTrackerPos;
 		dist = CFixVector::Normalize(vecToCurObj);
 		if (dist < maxTrackableDist) {
-			dot = CFixVector::Dot(vecToCurObj, bSpectate ? gameStates.app.playerPos.mOrient.FVec () : trackerP->info.position.mOrient.FVec ());
+			dot = CFixVector::Dot (vecToCurObj, bSpectate ? gameStates.app.playerPos.mOrient.FVec () : trackerP->info.position.mOrient.FVec ());
 
 			//	Note: This uses the constant, not-scaled-by-frametime value, because it is only used
 			//	to determine if an CObject is initially trackable.  FindHomingObject is called on subsequent
@@ -176,7 +176,7 @@ else {
 				} 
 			else if (dot > F1_0 - (F1_0 - curMinTrackableDot) * 2) {
 				CFixVector::Normalize(vecToCurObj);
-				dot = CFixVector::Dot(vecToCurObj, trackerP->info.position.mOrient.FVec ());
+				dot = CFixVector::Dot (vecToCurObj, trackerP->info.position.mOrient.FVec ());
 				if (dot > curMinTrackableDot) {
 					if (dot > maxDot) {
 						if (ObjectToObjectVisibility (trackerP, OBJECTS + nObject, FQ_TRANSWALL)) {
@@ -268,7 +268,7 @@ FORALL_ACTOR_OBJS (curObjP, nObject) {
 	if (dist >= maxTrackableDist)
 		continue;
 	CFixVector::Normalize(vecToCurObj);
-	dot = CFixVector::Dot(vecToCurObj, trackerP->info.position.mOrient.FVec ());
+	dot = CFixVector::Dot (vecToCurObj, trackerP->info.position.mOrient.FVec ());
 	if (bIsProximity)
 		dot = ((dot << 3) + dot) >> 3;		//	I suspect Watcom would be too stupid to figure out the obvious...
 

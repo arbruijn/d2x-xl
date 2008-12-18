@@ -490,7 +490,7 @@ if (!WeaponIsMine (nWeaponType))
 	xParentSpeed = 0;
 else {
 	xParentSpeed = parentP->mType.physInfo.velocity.Mag();
-	if (CFixVector::Dot(parentP->mType.physInfo.velocity,
+	if (CFixVector::Dot (parentP->mType.physInfo.velocity,
 						parentP->info.position.mOrient.FVec ()) < 0)
 		xParentSpeed = -xParentSpeed;
 	}
@@ -928,7 +928,7 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 				if (h > 7)
 					vVecToObject *= (F1_0 / (h - 6));
 				}
-			// -- dot = CFixVector::Dot(vTemp, vVecToObject);
+			// -- dot = CFixVector::Dot (vTemp, vVecToObject);
 			vVecToObject *= (F1_0 / HomingMslScale ());
 			vTemp += vVecToObject;
 			//	The boss' smart children track better...

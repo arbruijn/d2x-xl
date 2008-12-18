@@ -94,7 +94,5 @@ int CanSeePoint (CObject *objP, CFixVector *vSource, CFixVector *vDest, short nS
 
 int ObjectToObjectVisibility (CObject *objP1, CObject *objP2, int transType);
 
-int CheckTransWall (CFixVector *vPoint, CSegment *segP, short nSide, short iFace);
-
 #endif
 

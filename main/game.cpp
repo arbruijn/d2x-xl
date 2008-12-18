@@ -561,18 +561,17 @@ else
 
 //--unused-- int Auto_flythrough=0;  //if set, start flythough automatically
 
-void MovePlayerToSegment (CSegment *segP,int CSide)
+void MovePlayerToSegment (CSegment* segP, int nSide)
 {
 	CFixVector vp;
 
-COMPUTE_SEGMENT_CENTER (&gameData.objs.consoleP->info.position.vPos,segP);
-COMPUTE_SIDE_CENTER (&vp,segP,CSide);
-vp -= gameData.objs.consoleP->info.position.vPos;
+gameData.objs.consoleP->info.position.vPos = segP->Center ();
+vp = segP->SideCenter (nSide) - gameData.objs.consoleP->info.position.vPos;
 /*
 gameData.objs.consoleP->info.position.mOrient = CFixMatrix::Create(vp, NULL, NULL);
 */
 // TODO: MatrixCreateFCheck
-gameData.objs.consoleP->info.position.mOrient = CFixMatrix::CreateF(vp);
+gameData.objs.consoleP->info.position.mOrient = CFixMatrix::CreateF (vp);
 gameData.objs.consoleP->RelinkToSeg (SEG_IDX (segP));
 }
 
@@ -1631,8 +1630,8 @@ if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects]
 	}
 else {
 	lightningManager.DoFrame ();
-	DoEnergySparkFrame ();
-	DoParticleFrame ();
+	sparkManager::DoFrame ();
+	particleManager::DoFrame ();
 	}
 }
 

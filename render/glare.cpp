@@ -349,7 +349,7 @@ for (i = 0; i < 4; i++) {
 	else
 		sprite [i] = gameData.segs.fVertices [sideVerts [i]];	//already transformed
 	}
-v.Assign (*SIDE_CENTER_I (nSegment, nSide));
+v.Assign (SEGMENTS [nSegment].SideCenter (nSide));
 transformation.Transform (*vCenter, v, 0);
 #if 0
 if (gameStates.render.bQueryCoronas) {

@@ -1249,8 +1249,8 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 	vh [3] = vPos + vNorm * (-fScale);
 	for (i = 0; i < 4; i++)
 		CFloatVector::Normalize(vh [i]);
-	a1 = (float) fabs (CFloatVector::Dot(vh [2], vh [0]));
-	a2 = (float) fabs (CFloatVector::Dot(vh [3], vh [1]));
+	a1 = (float) fabs (CFloatVector::Dot (vh [2], vh [0]));
+	a2 = (float) fabs (CFloatVector::Dot (vh [3], vh [1]));
 #if 0
 	HUDMessage (0, "%1.2f %1.2f", a1, a2);
 	glLineWidth (2);

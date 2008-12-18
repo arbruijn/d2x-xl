@@ -990,7 +990,7 @@ for (;;) {
 				continue;
 			if (0 <= LineHitsFace (&vHit, vPos, &v, nSegment, nSide)) {
 				vh = vHit - *vPos;
-				if (CFixVector::Dot(vh, v) > 0) {
+				if (CFixVector::Dot (vh, v) > 0) {
 					nHitSide = nSide;
 					break;
 					}

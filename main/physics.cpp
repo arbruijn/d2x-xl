@@ -81,7 +81,7 @@ nBestSide = 0;
 // bank CPlayerData according to CSegment orientation
 //find CSide of CSegment that CPlayerData is most aligned with
 for (i = 0; i < 6; i++) {
-	d = CFixVector::Dot(SEGMENTS [objP->info.nSegment].m_sides [i].m_normals[0], objP->info.position.mOrient.UVec ());
+	d = CFixVector::Dot (SEGMENTS [objP->info.nSegment].m_sides [i].m_normals[0], objP->info.position.mOrient.UVec ());
 	if (d > largest_d) {largest_d = d; nBestSide=i;}
 	}
 if (gameOpts->gameplay.nAutoLeveling == 1) {	 // new CPlayerData leveling code: use Normal of CSide closest to our up vec
@@ -99,7 +99,7 @@ else if (gameOpts->gameplay.nAutoLeveling == 3)	// mine's up vector
 	desiredUpVec = (*PlayerSpawnOrient(gameData.multiplayer.nLocalPlayer)).UVec ();
 else
 	return;
-if (labs (CFixVector::Dot(desiredUpVec, objP->info.position.mOrient.FVec ())) < f1_0/2) {
+if (labs (CFixVector::Dot (desiredUpVec, objP->info.position.mOrient.FVec ())) < f1_0/2) {
 	fixang save_delta_ang;
 	CAngleVector turnAngles;
 
@@ -270,10 +270,10 @@ void DoBumpHack (CObject *objP)
 HUDMessage (0, "BUMP HACK");
 #endif
 //bump CPlayerData a little towards vCenter of CSegment to unstick
-COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->info.nSegment);
+vCenter = SEGMENTS [objP->info.nSegment].Center ();
 //HUDMessage (0, "BUMP! %d %d", d1, d2);
 //don't bump CPlayerData towards center of reactor CSegment
-CFixVector::NormalizedDir(vBump, vCenter, objP->info.position.vPos);
+CFixVector::NormalizedDir (vBump, vCenter, objP->info.position.vPos);
 if (SEGMENTS [objP->info.nSegment].m_nType == SEGMENT_IS_CONTROLCEN)
 	vBump.Neg();
 objP->info.position.vPos += vBump * (objP->info.xSize / 5);
@@ -644,20 +644,6 @@ retryMove:
 #endif
 		}
 	else if (fviResult == HIT_WALL) {
-#if 0//def _DEBUG
-		tFVIData hiSave = hi;
-		fviResult = FindVectorIntersection (&fq, &hi);
-		{
-		int vertList [6];
-		int nFaces = CreateAbsVertexLists (vertList, hi.hit.nSideSegment, hi.hit.nSide);
-		if (hi.hit.nFace >= nFaces)
-			fviResult = FindVectorIntersection (&fq, &hi);
-		}
-#	if 0
-		HUDMessage (0, "hit wall %d:%d (%d)", hi.hit.nSideSegment, hi.hit.nSide, OBJECTS->nSegment);
-#	endif
-#endif
-#if 1 //make shots and missiles pass through skyboxes
 		if (gameStates.render.bHaveSkyBox && (objP->info.nType == OBJ_WEAPON) && (hi.hit.nSegment >= 0)) {
 			if (SEGMENTS [hi.hit.nSegment].m_nType == SEGMENT_IS_SKYBOX) {
 				short nConnSeg = SEGMENTS [hi.hit.nSegment].children [hi.hit.nSide];
@@ -667,7 +653,7 @@ retryMove:
 					}
 				fviResult = HIT_NONE;
 				}
-			else if (CheckTransWall (&hi.hit.vPoint, SEGMENTS + hi.hit.nSideSegment, hi.hit.nSide, hi.hit.nFace)) {
+			else if (SEGMENTS [hi.hit.nSideSegment].CheckForTranspPixel (&hi.hit.vPoint, hi.hit.nSide, hi.hit.nFace)) {
 				short nNewSeg = FindSegByPos (vNewPos, gameData.segs.skybox [0], 1, 1);
 				if ((nNewSeg >= 0) && (SEGMENTS [nNewSeg].m_nType == SEGMENT_IS_SKYBOX)) {
 					hi.hit.nSegment = nNewSeg;
@@ -675,7 +661,6 @@ retryMove:
 					}
 				}
 			}
-#endif
 		}
 	//	Matt: Mike's hack.
 	else if (fviResult == HIT_OBJECT) {
@@ -737,7 +722,7 @@ retryMove:
 				}
 			else {
 				CFixVector vCenter;
-				COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->info.nSegment);
+				vCenter = SEGMENTS [objP->info.nSegment].Center ();
 				vCenter -= objP->info.position.vPos;
 				if (vCenter.Mag() > F1_0) {
 					CFixVector::Normalize(vCenter);
@@ -797,7 +782,7 @@ retryMove:
 		fviResult = FindVectorIntersection (&fq, &hi);
 #endif
 		vMoved = objP->info.position.vPos - vSavePos;
-		xWallPart = CFixVector::Dot(vMoved, hi.hit.vNormal) / gameData.collisions.hitData.nNormals;
+		xWallPart = CFixVector::Dot (vMoved, hi.hit.vNormal) / gameData.collisions.hitData.nNormals;
 		if (xWallPart && (xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, xMovedTime)) > 0)) {
 			CollideObjectWithWall (objP, xHitSpeed, nWallHitSeg, nWallHitSide, &hi.hit.vPoint);
 #if 0//def _DEBUG
@@ -840,7 +825,7 @@ retryMove:
 
 				// TODO: fix this with new dot product method, without bouncing off walls
 				// THIS IS DELICATE!!
-				xWallPart = CFixVector::Dot(hi.hit.vNormal, objP->mType.physInfo.velocity);
+				xWallPart = CFixVector::Dot (hi.hit.vNormal, objP->mType.physInfo.velocity);
 				if (bForceFieldBounce || (objP->mType.physInfo.flags & PF_BOUNCE)) {		//bounce off CWall
 					xWallPart *= 2;	//Subtract out wall part twice to achieve bounce
 					if (bForceFieldBounce) {
@@ -983,9 +968,9 @@ if (objP->info.controlType == CT_AI) {
 		 (gameStates.app.cheats.bPhysics != 0xBADA55)) {
 		int nSide = FindConnectedSide (SEGMENTS + objP->info.nSegment, SEGMENTS + nOrigSegment);
 		if (nSide != -1) {
-			if (!(WALL_IS_DOORWAY (SEGMENTS + nOrigSegment, nSide, (objP->info.nType == OBJ_PLAYER) ? objP : NULL) & WID_FLY_FLAG)) {
+			if (!(SEGMENTs [nOrigSegment].IsDoorWay (nSide, (objP->info.nType == OBJ_PLAYER) ? objP : NULL) & WID_FLY_FLAG)) {
 				CSide *sideP;
-				int	nVertex, nFaces;
+				int	nVertex;
 				fix	dist;
 				int	vertexList [6];
 
@@ -993,17 +978,8 @@ if (objP->info.controlType == CT_AI) {
 				sideP = SEGMENTS [nOrigSegment].m_sides + nSide;
 				if (nOrigSegment == -1)
 					Error ("nOrigSegment == -1 in physics");
-				nFaces = CreateAbsVertexLists (vertexList, nOrigSegment, nSide);
-				//let'sideP pretend this CWall is not triangulated
-				nVertex = vertexList [0];
-				if (nVertex > vertexList [1])
-					nVertex = vertexList [1];
-				if (nVertex > vertexList [2])
-					nVertex = vertexList [2];
-				if (nVertex > vertexList [3])
-					nVertex = vertexList [3];
-				dist = vStartPos.DistToPlane(sideP->m_normals[0], gameData.segs.vertices[nVertex]);
-				objP->info.position.vPos = vStartPos + sideP->m_normals[0] * (objP->info.xSize-dist);
+				dist = vStartPos.DistToPlane (sideP->m_normals [0], gameData.segs.vertices [sideP->m_nMinVertex [0]]);
+				objP->info.position.vPos = vStartPos + sideP->m_normals [0] * (objP->info.xSize - dist);
 				UpdateObjectSeg (objP);
 				}
 			}
@@ -1019,7 +995,7 @@ if (GetSegMasks (objP->info.position.vPos, objP->info.nSegment, 0).centerMask) {
 			OBJECTS [nObject].RelinkToSeg (n);
 			}
 		else {
-			COMPUTE_SEGMENT_CENTER_I (&objP->info.position.vPos, objP->info.nSegment);
+			objP->info.position.vPos = SEGMENTS [objP->info.nSegment].Center ();
 			objP->info.position.vPos[X] += nObject;
 			}
 		if (objP->info.nType == OBJ_WEAPON)

@@ -69,7 +69,7 @@ for (i = 0; i < nGunCount; i++) {
 
 	vGun = *vObjPos - vGunPos[i];
 	CFixVector::Normalize(vGun);
-	dot = CFixVector::Dot(vGunDir[i], vGun);
+	dot = CFixVector::Dot (vGunDir[i], vGun);
 	if (dot > xBestDot) {
 		xBestDot = dot;
 		nBestGun = i;

@@ -61,10 +61,10 @@ int FaceIsVisible (short nSegment, short nSide)
 CSegment *segP = SEGMENTS + nSegment;
 CSide *sideP = segP->m_sides + nSide;
 CFixVector v;
-v = gameData.render.mine.viewerEye - *SIDE_CENTER_I(nSegment, nSide); //gameData.segs.vertices + segP->verts [sideVertIndex [nSide][0]]);
-return (sideP->nType == SIDE_IS_QUAD) ?
-		 CFixVector::Dot(sideP->m_normals[0], v) >= 0 :
-		 (CFixVector::Dot(sideP->m_normals[0], v) >= 0) || (CFixVector::Dot(sideP->m_normals[1], v) >= 0);
+v = gameData.render.mine.viewerEye - segP->SideCenter (nSide); //gameData.segs.vertices + segP->verts [sideVertIndex [nSide][0]]);
+return (sideP->m_nType == SIDE_IS_QUAD) 
+		 ? CFixVector::Dot (sideP->m_normals [0], v) >= 0 
+		 : (CFixVector::Dot (sideP->m_normals [0], v) >= 0) || (CFixVector::Dot (sideP->m_normals [1], v) >= 0);
 #else
 return 1;
 #endif
@@ -937,7 +937,7 @@ for (i = 0, j = 1; nRadius; nRadius--) {
 	for (h = i, i = j; h < i; h++) {
 		nSegment = gameData.render.mine.nSegRenderList [h];
 		if ((gameData.render.mine.bVisible [nSegment] == gameData.render.mine.nVisible) &&
-			 (!nMaxDist || (CFixVector::Dist(*SEGMENT_CENTER_I (nStartSeg), *SEGMENT_CENTER_I (nSegment)) <= nMaxDist)))
+			 (!nMaxDist || (CFixVector::Dist(SEGMENTS [nStartSeg].Center (), SEGMENTS [nSegment].Center ()) <= nMaxDist)))
 			return 1;
 		segP = SEGMENTS + nSegment;
 		for (nChild = 0; nChild < 6; nChild++) {

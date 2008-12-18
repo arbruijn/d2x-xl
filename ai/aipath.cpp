@@ -75,7 +75,7 @@ tPointSeg *InsertTransitPoint (tPointSeg *curSegP, tPointSeg *predSegP, tPointSe
 	CFixVector	vCenter, vPoint;
 	short			nSegment;
 
-COMPUTE_SIDE_CENTER (&vCenter, SEGMENTS + predSegP->nSegment, nConnSide);
+vCenter = SEGMENTS [predSegP->nSegment].SideCenter (nConnSide);
 vPoint = predSegP->point - vCenter;
 vPoint[X] /= 16;
 vPoint[Y] /= 16;
@@ -112,7 +112,7 @@ for (i = 1; i < nSegs - 1; i += 2) {
 		}
 	temp2 = pointSegP [i + 1].point - pointSegP [i].point;
 	mag2 = temp1.Mag();
-	dot = CFixVector::Dot(temp1, temp2);
+	dot = CFixVector::Dot (temp1, temp2);
 	if (dot * 9/8 > FixMul (mag1, mag2))
 		pointSegP [i].nSegment = -1;
 	}
@@ -181,7 +181,7 @@ for (i = 1, --j; i < j; i++) {
 	b = ptSegs [i + 1].point - ptSegs [i].point;
 	c = ptSegs [i + 1].point - ptSegs [i-1].point;
 	CFixVector::Normalize(b);
-	if (abs (CFixVector::Dot(a, b)) > 3*F1_0/4) {
+	if (abs (CFixVector::Dot (a, b)) > 3*F1_0/4) {
 		if (abs (a[Z]) < F1_0/2) {
 			if (bRandom) {
 				e[X] = (d_rand ()- 16384) / 2;
@@ -346,7 +346,7 @@ while (nCurSeg != nEndSeg) {
 		if (bVisited [nDestSeg])
 			continue;
 		if (bAvoidPlayer && ((nCurSeg == nAvoidSeg) || (nDestSeg == nAvoidSeg))) {
-			COMPUTE_SIDE_CENTER (&vCenter, segP, hSide);
+			vCenter = segP->SideCenter (hSide);
 			fq.p0					= &objP->info.position.vPos;
 			fq.startSeg			= objP->info.nSegment;
 			fq.p1					= &vCenter;
@@ -410,7 +410,7 @@ if (bSafeMode && ((pointSegP - gameData.ai.pointSegs) + 2 * lNumPoints + 1 >= MA
 	return -1;
 	}
 pointSegP->nSegment = nStartSeg;
-COMPUTE_SEGMENT_CENTER_I (&pointSegP->point, nStartSeg);
+pointSegP->point = SEGMENTS [nStartSeg].Center ();
 if (bSafeMode)
 	lNumPoints *= 2;
 j = lNumPoints++;
@@ -419,7 +419,7 @@ for (i = qTail; i >= 0; j -= h) {
 	nDestSeg = segmentQ [i].end;
 	nParentSeg = segmentQ [i].start;
 	pointSegP [j].nSegment = nDestSeg;
-	COMPUTE_SEGMENT_CENTER_I (&pointSegP [j].point, nDestSeg);
+	pointSegP [j].point = SEGMENTS [nDestSeg].Center ();
 	pointSegP [j].nConnSide = segmentQ [i].nConnSide;
 	if (nParentSeg == nStartSeg)
 		break;
@@ -842,7 +842,7 @@ if (nSegment == -1) {
 	Int3 ();	//	Oops, CObject is not in any CSegment.
 				// Contact Mike: This is impossible.p.
 	//	Hack, move CObject to center of CSegment it used to be in.
-	COMPUTE_SEGMENT_CENTER_I (&objP->info.position.vPos, objP->info.nSegment);
+	objP->info.position.vPos = SEGMENTS [objP->info.nSegment].Center ();
 	}
 else
 	objP->RelinkToSeg (nSegment);
@@ -1191,7 +1191,7 @@ vNormCurVel = vCurVel;
 CFixVector::Normalize(vNormCurVel);
 vNormFwd = objP->info.position.mOrient.FVec ();
 CFixVector::Normalize(vNormFwd);
-dot = CFixVector::Dot(vNormToGoal, vNormFwd);
+dot = CFixVector::Dot (vNormToGoal, vNormFwd);
 //	If very close to facing opposite desired vector, perturb vector
 if (dot < -15*F1_0/16) {
 	vNormCurVel = vNormToGoal;
@@ -1530,7 +1530,7 @@ void player_path_set_orient_and_vel (CObject *objP, CFixVector *vGoalPoint)
 	vNormFwd = objP->info.position.mOrient.FVec ();
 	CFixVector::Normalize(vNormFwd);
 
-	dot = CFixVector::Dot(vNormToGoal, &vNormFwd);
+	dot = CFixVector::Dot (vNormToGoal, &vNormFwd);
 	if (gameData.ai.localInfo [OBJ_IDX (objP)].mode == AIM_SNIPE_RETREAT_BACKWARDS) {
 		dot = -dot;
 	}

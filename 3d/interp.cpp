@@ -399,7 +399,7 @@ if (bmP) {
 		return;
 	}
 #if 1
-if (CFixVector::Dot(*vNormal, vForward) > -F1_0 / 3)
+if (CFixVector::Dot (*vNormal, vForward) > -F1_0 / 3)
 #else
 if (vNormal->p.x || vNormal->p.y || (vNormal->p.z != -F1_0))
 #endif
@@ -526,7 +526,7 @@ for (;;) {
 
 			//calculate light from surface Normal
 			if (nGlow < 0) {			//no glow
-				l = -CFixVector::Dot(transformation.m_info.view[0].FVec (), *VECPTR(p+16));
+				l = -CFixVector::Dot (transformation.m_info.view[0].FVec (), *VECPTR(p+16));
 				l = f1_0 / 4 + (l * 3) / 4;
 				l = FixMul (l, xModelLight);
 				}
@@ -679,7 +679,7 @@ for (;;) {
 			fix light;
 			//calculate light from surface Normal
 			if (nGlow < 0) {			//no glow
-				light = -CFixVector::Dot(transformation.m_info.view [0].FVec (), *VECPTR (p+16));
+				light = -CFixVector::Dot (transformation.m_info.view [0].FVec (), *VECPTR (p+16));
 				light = f1_0/4 + (light*3)/4;
 				light = FixMul (light, xModelLight);
 				}

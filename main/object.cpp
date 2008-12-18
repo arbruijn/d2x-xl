@@ -2714,9 +2714,10 @@ if (0 > (nNewSeg = FindObjectSeg (objP))) {
 	if (!bMove)
 		return 0;
 	nNewSeg = FindClosestSeg (objP->info.position.vPos);
-	CFixVector vOffset = objP->info.position.vPos - *SEGMENT_CENTER_I (nNewSeg);
+	CSegment* segP = SEGMENTS + nNewSeg;
+	CFixVector vOffset = objP->info.position.vPos - segP->Center ();
 	CFixVector::Normalize (vOffset);
-	objP->info.position.vPos = *SEGMENT_CENTER_I (nNewSeg) + vOffset * MinSegRad (nNewSeg);
+	objP->info.position.vPos = segP->Center () + vOffset * segP->MinRad ();
 	}
 if (nNewSeg != objP->info.nSegment)
 	objP->RelinkToSeg (nNewSeg);
@@ -2735,14 +2736,15 @@ FORALL_OBJS (objP, i) {
 		continue;
 	if (UpdateObjectSeg (objP))
 		continue;
-	fix xScale = MinSegRad (objP->info.nSegment) - objP->info.xSize;
+	CSegment* segP = SEGMENTS + objP->info.nSegment;
+	fix xScale = segP->MinRad () - objP->info.xSize;
 	if (xScale < 0)
-		COMPUTE_SEGMENT_CENTER_I (&objP->info.position.vPos, objP->info.nSegment);
+		objP->info.position.vPos = segP->Center ();
 	else {
 		CFixVector	vCenter, vOffset;
-		COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->info.nSegment);
+		vCenter = segP->Center ();
 		vOffset = objP->info.position.vPos - vCenter;
-		CFixVector::Normalize(vOffset);
+		CFixVector::Normalize (vOffset);
 		objP->info.position.vPos = vCenter + vOffset * xScale;
 		}
 	}

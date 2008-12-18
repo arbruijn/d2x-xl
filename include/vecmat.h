@@ -116,7 +116,9 @@ class CFixVector {
 		const CFixVector& operator*= (const fix s);
 		const CFixVector& operator/= (const fix s);
 		const CFixVector operator+ (const CFixVector& vec) const;
+		const CFixVector operator+ (const CFloatVector& vec) const;
 		const CFixVector operator- (const CFixVector& vec) const;
+		const CFixVector operator- (const CFloatVector& vec) const;
 		CFixVector& Assign (const CFloatVector3& other);
 		CFixVector& Assign (const CFloatVector& other);
 		CFixVector& Assign (const CFixVector& other);
@@ -196,7 +198,9 @@ class CFloatVector {
 		const CFloatVector& operator*= (const float s);
 		const CFloatVector& operator/= (const float s);
 		const CFloatVector  operator+ (const CFloatVector& other) const;
+		const CFloatVector  operator+ (const CFixVector& other) const;
 		const CFloatVector  operator- (const CFloatVector& other) const;
+		const CFloatVector  operator- (const CFixVector& other) const;
 		CFloatVector& Assign (const CFloatVector3& other);
 		CFloatVector& Assign (const CFloatVector& other);
 		CFloatVector& Assign (const CFixVector& other);
@@ -436,8 +440,18 @@ inline const CFloatVector& CFloatVector::operator+= (const CFloatVector& other) 
 	return *this;
 }
 
+inline const CFloatVector& CFloatVector::operator+= (const CFixVector& other) {
+	v [X] += X2F (other [X]); v [Y] += X2F (other [Y]); v [Z] += X2F (other [Z]);
+	return *this;
+}
+
 inline const CFloatVector& CFloatVector::operator-= (const CFloatVector& other) {
 	v [X] -= other [X]; v [Y] -= other [Y]; v [Z] -= other [Z];
+	return *this;
+}
+
+inline const CFloatVector& CFloatVector::operator-= (const CFixVector& X2F (other) {
+	v [X] -= X2F (other [X]); v [Y] -= X2F (other [Y]); v [Z] -= X2F (other [Z]);
 	return *this;
 }
 
@@ -455,10 +469,17 @@ inline const CFloatVector CFloatVector::operator+ (const CFloatVector& other) co
 	return Create (v [0]+other [0], v [1]+other [1], v [2]+other [2], 1);
 }
 
+inline const CFloatVector CFloatVector::operator+ (const CFixVector& other) const {
+	return Create (v [0] + X2F (other [0]), v [1] + X2F (other [1]), v [2] + X2F (other [2]), 1);
+}
+
 inline const CFloatVector CFloatVector::operator- (const CFloatVector& other) const {
 	return Create (v [0]-other [0], v [1]-other [1], v [2]-other [2], 1);
 }
 
+inline const CFloatVector CFloatVector::operator- (const CFixVector& other) const {
+	return Create (v [0] - X2F (other [0]), v [1] - X2F (other [1]), v [2] - X2F (other [2]), 1);
+}
 
 // -----------------------------------------------------------------------------
 // CFloatVector-related non-member ops
@@ -900,13 +921,23 @@ inline const bool CFixVector::operator!= (const CFixVector& vec) {
 	return v [0] != vec [0] || v [1] != vec [1] || v [2] != vec [2];
 }
 
-inline const CFixVector& CFixVector::operator+= (const CFixVector& vec) {
-	v [0] += vec [0]; v [1] += vec [1]; v [2] += vec [2];
+inline const CFixVector& CFixVector::operator+= (const CFixVector& other) {
+	v [0] += other [0]; v [1] += other [1]; v [2] += other [2];
 	return *this;
 }
 
-inline const CFixVector& CFixVector::operator-= (const CFixVector& vec) {
-	v [0] -= vec [0]; v [1] -= vec [1]; v [2] -= vec [2];
+inline const CFixVector& CFixVector::operator+= (const CFloatVector& other) {
+	v [0] += F2X (other [0]); v [1] += F2X (other [1]); v [2] += F2X (other [2]);
+	return *this;
+}
+
+inline const CFixVector& CFixVector::operator-= (const CFixVector& other) {
+	v [0] -= other [0]; v [1] -= other [1]; v [2] -= other [2];
+	return *this;
+}
+
+inline const CFixVector& CFixVector::operator-= (const CFloatVector& other) {
+	v [0] -= F2X (other [0]); v [1] -= F2X (other [1]); v [2] -= F2X (other [2]);
 	return *this;
 }
 
@@ -925,12 +956,20 @@ inline const CFixVector& CFixVector::operator/= (const fix s) {
 	return *this;
 }
 
-inline const CFixVector CFixVector::operator+ (const CFixVector& vec) const {
-	return Create (v [0]+vec [0], v [1]+vec [1], v [2]+vec [2]);
+inline const CFixVector CFixVector::operator+ (const CFixVector& other) const {
+	return Create (v [0]+other [0], v [1]+other [1], v [2]+other [2]);
 }
 
-inline const CFixVector CFixVector::operator- (const CFixVector& vec) const {
-	return Create (v [0]-vec [0], v [1]-vec [1], v [2]-vec [2]);
+inline const CFixVector CFixVector::operator+ (const CFloatVector& other) const {
+	return Create (v [0] + F2X (other [0]), v [1] + F2X (other [1]), v [2] + F2X (other [2]);
+}
+
+inline const CFixVector CFixVector::operator- (const CFixVector& other) const {
+	return Create (v [0]-other [0], v [1]-other [1], v [2]-other [2]);
+}
+
+inline const CFixVector CFixVector::operator- (const CFloatVector& other) const {
+	return Create (v [0] - F2X (other [0]), v [1] - F2X (other [1]), v [2] - F2X (other [2]);
 }
 
 

@@ -481,7 +481,7 @@ if (xObjIntensity) {
 							CFixVector	vecToPoint;
 							vecToPoint = *vVertPos - *vObjPos;
 							CFixVector::Normalize(vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
-							dot = CFixVector::Dot(vecToPoint, objP->info.position.mOrient.FVec ());
+							dot = CFixVector::Dot (vecToPoint, objP->info.position.mOrient.FVec ());
 							if (gameData.render.vertColor.bDarkness)
 								maxDot = F1_0 / spotSize;
 							else
@@ -1048,7 +1048,7 @@ for (i = 0; i <nChangedSegs; i++)
 	if (changedSegs [i] == nSegment)
 		break;
 if (i == nChangedSegs) {
-	COMPUTE_SEGMENT_CENTER (&rSegmentCenter, segP);
+	rSegmentCenter = segP->Center ();
 	xDistToRSeg = CFixVector::Dist(rSegmentCenter, *vSegCenter);
 
 	if (xDistToRSeg <= LIGHT_DISTANCE_THRESHOLD) {
@@ -1095,7 +1095,7 @@ if (segP->IsDoorWay (nSide, NULL) & WID_RENDER_FLAG) {
 	nChangedSegs = 0;
 	if (xBrightness) {
 		CFixVector	vSegCenter;
-		COMPUTE_SEGMENT_CENTER (&vSegCenter, segP);
+		vSegCenter = segP->Center ();
 		ApplyLightToSegment (segP, &vSegCenter, xBrightness, 0);
 		}
 	}
@@ -1293,6 +1293,43 @@ for (i = 0, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, seg
 	gameData.segs.segment2s [i].xAvgSegLight = h ? xTotal / (h * 4) : 0;
 	}
 }
+
+//------------------------------------------------------------------------------
+// reads a tLightDelta structure from a CFile
+
+void ReadlightDelta (tLightDelta *dlP, CFile& cf)
+{
+dlP->nSegment = cf.ReadShort ();
+dlP->nSide = cf.ReadByte ();
+cf.ReadByte ();
+if (!(dlP->bValid = (dlP->nSegment >= 0) && (dlP->nSegment < gameData.segs.nSegments) && (dlP->nSide >= 0) && (dlP->nSide < 6)))
+	PrintLog ("Invalid delta light data %d (%d,%d)\n", dlP - gameData.render.lights.deltas, dlP->nSegment, dlP->nSide);
+cf.Read (dlP->vertLight, sizeof (dlP->vertLight [0]), sizeofa (dlP->vertLight));
+}
+
+
+//------------------------------------------------------------------------------
+// reads a tLightDeltaIndex structure from a CFile
+
+void ReadlightDeltaIndex (tLightDeltaIndex *di, CFile& cf)
+{
+if (gameStates.render.bD2XLights) {
+	short	i, j;
+	di->d2x.nSegment = cf.ReadShort ();
+	i = (short) cf.ReadByte ();
+	j = (short) cf.ReadByte ();
+	di->d2x.nSide = i;
+	di->d2x.count = (j << 5) + ((i >> 3) & 63);
+	di->d2x.index = cf.ReadShort ();
+	}
+else {
+	di->d2.nSegment = cf.ReadShort ();
+	di->d2.nSide = cf.ReadByte ();
+	di->d2.count = cf.ReadByte ();
+	di->d2.index = cf.ReadShort ();
+	}
+}
+#endif
 
 // ----------------------------------------------------------------------------------------------
 //eof

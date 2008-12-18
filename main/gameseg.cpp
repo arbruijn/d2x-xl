@@ -30,135 +30,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // How far a point can be from a plane, and still be "in" the plane
 
-// ------------------------------------------------------------------------------------------
-// Compute the center point of a CSide of a CSegment.
-//	The center point is defined to be the average of the 4 points defining the CSide.
-void CSide::ComputeCenter (void)
-{
-m_vCenter = gameData.segs.vertices [m_vertices [0]];
-m_vCenter += gameData.segs.vertices [m_vertices [1]];
-m_vCenter += gameData.segs.vertices [m_vertices [2]];
-m_vCenter += gameData.segs.vertices [m_vertices [3]];
-m_vCenter [X] /= 4;
-m_vCenter [Y] /= 4;
-m_vCenter [Z] /= 4;
-}
-
-// ------------------------------------------------------------------------------------------
-
-void CSide::ComputeRads (void)
-{
-	fix 			d, rMin = 0x7fffffff, rMax = 0;
-	CFixVector	v;
-
-m_rads [0] = 0x7fffffff;
-m_rads [1] = 0;
-for (int i = 0; i < 4; i++) {
-	v = CFixVector::Avg (gameData.segs.vertices [m_vertices [i]], gameData.segs.vertices [m_vertices [(i + 1) % 4]]);
-	d = CFixVector::Dist (v, m_vCenter);
-	if (m_rads [0] > d)
-		m_rads [0] = d;
-	d = CFixVector::Dist (m_vCenter, gameData.segs.vertices [m_vertices [i]]);
-	if (m_rads [1] < d)
-		m_rads [1] = d;
-	}
-}
-
-// ------------------------------------------------------------------------------------------
-// Compute the center point of a CSide of a CSegment.
-//	The center point is defined to be the average of the 4 points defining the CSide.
-void CSegment::ComputeSideRads (void)
-{
-for (int i = 0; i < 6; i++)
-	m_sides [i].ComputeRads ();
-}
-
-// ------------------------------------------------------------------------------------------
-// Compute CSegment center.
-//	The center point is defined to be the average of the 8 points defining the CSegment.
-void CSegment::ComputeCenter (void)
-{
-m_vCenter = gameData.segs.vertices [m_verts [0]];
-m_vCenter += gameData.segs.vertices [m_verts [1]];
-m_vCenter += gameData.segs.vertices [m_verts [2]];
-m_vCenter += gameData.segs.vertices [m_verts [3]];
-m_vCenter += gameData.segs.vertices [m_verts [4]];
-m_vCenter += gameData.segs.vertices [m_verts [5]];
-m_vCenter += gameData.segs.vertices [m_verts [6]];
-m_vCenter += gameData.segs.vertices [m_verts [7]];
-m_vCenter [X] /= 8;
-m_vCenter [Y] /= 8;
-m_vCenter [Z] /= 8;
-}
-
-// -----------------------------------------------------------------------------
-
-void CSegment::ComputeRads (fix xMinDist)
-{
-	CFixVector	vMin, vMax, v;
-	fix			xDist;
-
-m_rads [0] = xMinDist;
-m_rads [1] = 0;
-vMin [X] = vMin [Y] = vMin [Z] = 0x7FFFFFFF;
-vMax [X] = vMax [Y] = vMax [Z] = -0x7FFFFFFF;
-for (int i = 0; i < 8; i++) {
-	v = m_vCenter - gameData.segs.vertices [m_verts [i]];
-	if (vMin [X] > v [X])
-		vMin [X] = v [X];
-	if (vMin [Y] > v [Y])
-		vMin [Y] = v [Y];
-	if (vMin [Z] > v [Z])
-		vMin [Z] = v [Z];
-	if (vMax [X] < v [X])
-		vMax [X] = v [X];
-	if (vMax [Y] < v [Y])
-		vMax [Y] = v [Y];
-	if (vMax [Z] < v [Z])
-		vMax [Z] = v [Z];
-	xDist = v.Mag ();
-	if (m_rads [1] < xDist)
-		m_rads [1] = xDist;
-	}
-m_extents [0] = vMin;
-m_extents [1] = vMax;
-}
-
-// -----------------------------------------------------------------------------
-//	Given two segments, return the side index in the connecting segment which connects to the base segment
-
-int CSegment::FindConnectedSide (CSegment* other)
-{
-	short		nSegment = SEG_IDX (this);
-	ushort*	childP = other->m_children;
-
-if (childP [0] == nSegment)
-		return 0;
-if (childP [1] == nSegment)
-		return 1;
-if (childP [2] == nSegment)
-		return 2;
-if (childP [3] == nSegment)
-		return 3;
-if (childP [4] == nSegment)
-		return 4;
-if (childP [5] == nSegment)
-		return 5;
-return -1;
-}
-
-// -----------------------------------------------------------------------------------
-//	Given a CSide, return the number of faces
-int CSide::FaceCount (void)
-{
-if (m_nType == SIDE_IS_QUAD)
-	return 1;
-if ((m_nType == SIDE_IS_TRI_02) || (m_nType == SIDE_IS_TRI_13))
-	return 2;
-Error ("Illegal side type = %i\n", m_nType);
-return -1;
-}
-
 // -----------------------------------------------------------------------------------
 // Fill in array with four absolute point numbers for a given CSide
 void GetSideVertIndex (ushort* vertIndex, int nSegment, int nSide)
@@ -170,17 +41,6 @@ vertIndex [0] = vp [sv [0]];
 vertIndex [1] = vp [sv [1]];
 vertIndex [2] = vp [sv [2]];
 vertIndex [3] = vp [sv [3]];
-}
-
-// -----------------------------------------------------------------------------------
-// Fill in array with four absolute point numbers for a given CSide
-CFixVector* CSide::GetVertices (CFixVector* vertices)
-{
-vertices [0] = gameData.segs.vertices [m_vertices [0]];
-vertices [1] = gameData.segs.vertices [m_vertices [1]];
-vertices [2] = gameData.segs.vertices [m_vertices [2]];
-vertices [3] = gameData.segs.vertices [m_vertices [3]];
-return vertices;
 }
 
 #ifdef EDITOR
@@ -243,255 +103,8 @@ switch (sideP->nType) {
 }
 #endif
 
-// -----------------------------------------------------------------------------------
-// Like create all vertex lists, but returns the vertnums (relative to
-// the side) for each of the faces that make up the CSide.
-//	If there is one face, it has 4 vertices.
-//	If there are two faces, they both have three vertices, so face #0 is stored in vertices 0, 1, 2,
-//	face #1 is stored in vertices 3, 4, 5.
-
-void CreateAllVertNumLists (int *nFaces, int *vertnums, int nSegment, int nSide)
-{
-	CSide	*sideP = &SEGMENTS [nSegment].m_sides [nSide];
-
-Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= 0));
-switch (sideP->nType) {
-	case SIDE_IS_QUAD:
-		vertnums [0] = 0;
-		vertnums [1] = 1;
-		vertnums [2] = 2;
-		vertnums [3] = 3;
-		*nFaces = 1;
-		break;
-
-	case SIDE_IS_TRI_02:
-		*nFaces = 2;
-		vertnums [0] =
-		vertnums [5] = 0;
-		vertnums [1] = 1;
-		vertnums [2] =
-		vertnums [3] = 2;
-		vertnums [4] = 3;
-		//IMPORTANT: DON'T CHANGE THIS CODE WITHOUT CHANGING GET_SEG_MASKS ()
-		//CREATE_ABS_VERTEX_LISTS (), CREATE_ALL_VERTEX_LISTS (), CREATE_ALL_VERTNUM_LISTS ()
-		break;
-
-	case SIDE_IS_TRI_13:
-		*nFaces = 2;
-		vertnums [0] =
-		vertnums [5] = 3;
-		vertnums [1] = 0;
-		vertnums [2] =
-		vertnums [3] = 1;
-		vertnums [4] = 2;
-		//IMPORTANT: DON'T CHANGE THIS CODE WITHOUT CHANGING GET_SEG_MASKS ()
-		//CREATE_ABS_VERTEX_LISTS (), CREATE_ALL_VERTEX_LISTS (), CREATE_ALL_VERTNUM_LISTS ()
-		break;
-
-	default:
-		Error ("Illegal CSide nType (2), nType = %i, CSegment # = %i, CSide # = %i\n", sideP->nType, nSegment, nSide);
-		break;
-	}
-}
-
-// -------------------------------------------------------------------------------
-
-int CSide::CreateVertexList (short* verts, int* index)
-{
-m_nFaces = -1;
-m_nMinVertex = -1;
-if (m_nType == SIDE_IS_QUAD) {
-	m_vertices [0] = verts [index [0]];
-	m_vertices [1] = verts [index [1]];
-	m_vertices [2] = verts [index [2]];
-	m_vertices [3] = verts [index [3]];
-	m_nMinVertex = m_vertices [0];
-	if (m_nMinVertex > m_vertices [1])
-		m_nMinVertex = m_vertices [1];
-	if (m_nMinVertex > m_vertices [2])
-		m_nMinVertex = m_vertices [2];
-	if (m_nMinVertex > m_vertices [3])
-		m_nMinVertex = m_vertices [3];
-	m_nFaces = 1;
-	}
-else if (m_nType == SIDE_IS_TRI_02) {
-	m_vertices [0] =
-	m_vertices [5] = verts [index [0]];
-	m_vertices [1] = verts [index [1]];
-	m_vertices [2] =
-	m_vertices [3] = verts [index [2]];
-	m_vertices [4] = verts [index [3]];
-	m_nFaces = 2;
-	}
-else if (m_nType == SIDE_IS_TRI_13) {
-	m_vertices [0] =
-	m_vertices [5] = verts [index [3]];
-	m_vertices [1] = verts [index [0]];
-	m_vertices [2] =
-	m_vertices [3] = verts [index [1]];
-	m_vertices [4] = verts [index [2]];
-	m_nFaces = 2;
-	}
-else {
-	Error ("Illegal CSide nType (3), nType = %i, CSegment # = %i, CSide # = %i\n", sideP->nType, nSegment, nSide);
-	m_nFaces = -1;
-	}
-return m_nFaces;
-}
-
-// -------------------------------------------------------------------------------
-//returns 3 different bitmasks with info telling if this sphere is in
-//this CSegment.  See tSegMasks structure for info on fields
-tSegMasks CSide::Masks (const CFixVector& refP, fix xRad, short sideBit, short& faceBit)
-{
-	int			nVertex, nSideCount, nCenterCount, bSidePokesOut;
-	fix			xDist;
-	tSegMasks	masks;
-
-masks.centerMask = 0;
-masks.faceMask = 0;
-masks.sideMask = 0;
-masks.valid = 1;
-if (m_nFaces == 2) {
-	nVertex = min (m_vertices [0], m_vertices [2]);
-	if (m_vertices [4] < m_vertices [1])
-		if (gameStates.render.bRendering)
-			xDist = gameData.segs.points [m_vertices[4]].p3_vec.DistToPlane (m_rotNorms [0], gameData.segs.points [nVertex].p3_vec);
-		else
-			xDist = gameData.segs.vertices [m_vertices[4]].DistToPlane (m_m_normals [0], gameData.segs.vertices [nVertex]);
-	else
-		if (gameStates.render.bRendering)
-			xDist = gameData.segs.points [m_vertices [1]].p3_vec.DistToPlane (m_rotNorms [1], gameData.segs.points [nVertex].p3_vec);
-		else
-			xDist = gameData.segs.vertices [m_vertices[1]].DistToPlane (m_m_normals [1], gameData.segs.vertices [nVertex]);
-	bSidePokesOut = (xDist > PLANE_DIST_TOLERANCE);
-	nSideCount = nCenterCount = 0;
-
-	for (int nFace = 0; nFace < 2; nFace++, faceBit <<= 1) {
-		if (gameStates.render.bRendering)
-			xDist = refP.DistToPlane (m_rotNorms [nFace], gameData.segs.points [nVertex].p3_vec);
-		else
-			xDist = refP.DistToPlane (m_m_normals [nFace], gameData.segs.vertices [nVertex]);
-		if (xDist < -PLANE_DIST_TOLERANCE) //in front of face
-			nCenterCount++;
-		if (xDist - xRad < -PLANE_DIST_TOLERANCE) {
-			masks.faceMask |= faceBit;
-			nSideCount++;
-			}
-		}
-	if (bSidePokesOut) {		//must be behind at least one face
-		if (nSideCount)
-			masks.sideMask |= sideBit;
-		if (nCenterCount)
-			masks.centerMask |= sideBit;
-		}
-	else {							//must be behind both faces
-		if (nSideCount == 2)
-			masks.sideMask |= sideBit;
-		if (nCenterCount == 2)
-			masks.centerMask |= sideBit;
-		}
-	}
-else {	
-	xDist = gameStates.render.bRendering
-			  ? refP.DistToPlane (m_rotNorms [0], gameData.segs.points [m_nMinVertex].p3_vec)
-			  : refP.DistToPlane (m_m_normals [0], gameData.segs.vertices [m_nMinVertex]);
-	if (xDist < -PLANE_DIST_TOLERANCE)
-		masks.centerMask |= sideBit;
-	if (xDist - xRad < -PLANE_DIST_TOLERANCE) {
-		masks.faceMask |= faceBit;
-		masks.sideMask |= sideBit;
-		}
-	faceBit <<= 2;
-	}
-masks.valid = 1;
-return masks;
-}
-
-// -------------------------------------------------------------------------------
-//returns 3 different bitmasks with info telling if this sphere is in
-//this CSegment.  See tSegMasks structure for info on fields
-tSegMasks CSegment::GetSideMasks (const CFixVector& refP, fix xRad)
-{
-	short			nSide, faceBit;
-
-masks.centerMask = 0;
-masks.faceMask = 0;
-masks.sideMask = 0;
-//check point against each CSide of CSegment. return bitmask
-for (nSide = 0, faceBit = 1; nSide < 6; nSide++)
-	sideMasks = m_sides [nSide].Masks (refP, rad, 1 << nSide, faceBit);
-	masks.centerMask |= sideMasks.centerMask;
-	masks.faceMask |= sideMasks.faceMask;
-	masks.sideMask |= sideMasks.sideMask;
-	}
-masks.valid = 1;
-return masks;
-}
-
-// -------------------------------------------------------------------------------
-
-ubyte CSide::Dist (const CFixVector& refP, fix& xSideDist, int bBehind, short sideBit)
-{
-	fix	xDist;
-	int	nVertex;
-	ubyte mask = 0;
-
-xSideDist = 0;
-if (m_nFaces == 2) {
-	nVertex = min (m_vertices [0], m_vertices [2]);
-	if (m_vertices [4] < m_vertices [1])
-		if (gameStates.render.bRendering)
-			xDist = gameData.segs.points [m_vertices [4]].p3_vec.DistToPlane (m_rotNorms [0], gameData.segs.points [nVertex].p3_vec);
-		else
-			xDist = gameData.segs.vertices [m_vertices [4]].DistToPlane (m_normals [0], gameData.segs.vertices [nVertex]);
-	else
-		if (gameStates.render.bRendering)
-			xDist = gameData.segs.points [m_vertices [1]].p3_vec.DistToPlane (m_rotNorms [1], gameData.segs.points [nVertex].p3_vec);
-		else
-			xDist = gameData.segs.vertices [m_vertices [1]].DistToPlane (m_normals [1], gameData.segs.vertices [nVertex]);
-
-	bool bSidePokesOut = (xDist > PLANE_DIST_TOLERANCE);
-	int nCenterCount = 0;
-
-	for (nFace = 0; nFace < 2; nFace++, faceBit <<= 1) {
-		if (gameStates.render.bRendering)
-			xDist = refP.DistToPlane (m_rotNorms [nFace], gameData.segs.points [nVertex].p3_vec);
-		else
-			xDist = refP.DistToPlane (m_normals [nFace], gameData.segs.vertices [nVertex]);
-		if ((xDist < -PLANE_DIST_TOLERANCE) == bBehind) {	//in front of face
-			nCenterCount++;
-			xSideDist += xDist;
-			}
-		}
-	if (!bSidePokesOut) {		//must be behind both faces
-		if (nCenterCount == 2) {
-			mask |= sideBit;
-			xSideDist /= 2;		//get average
-			}
-		}
-	else {							//must be behind at least one face
-		if (nCenterCount) {
-			mask |= sideBit;
-			if (nCenterCount == 2)
-				xSideDist /= 2;		//get average
-			}
-		}
-	}
-else {				//only one face on this CSide
-	//use lowest point number
-	)
-		xDist = gameStates.render.bRendering 
-				  ? refP.DistToPlane (m_rotNorms [0], gameData.segs.points [m_nMinVertex].p3_vec)
-				  : refP.DistToPlane (m_normals [0], gameData.segs.vertices [m_nMinVertex]);
-	if ((xDist < -PLANE_DIST_TOLERANCE) == bBehind) {
-		mask |= sideBit;
-		xSideDist = xDist;
-		}
-	}
-return mask;
-}
-
+// ------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------
 //this was converted from GetSegMasks ()...it fills in an array of 6
 //elements for the distace behind each CSide, or zero if not behind
@@ -501,7 +114,7 @@ ubyte CSegment::GetSideDists (const CFixVector& refP, fix* xSideDists, int bBehi
 	ubyte		mask = 0;
 
 for (nSide = 0; nSide < 6; nSide++)
-	mask |= segP->m_sides [nSide].GetDist (refP, xSideDists [nSide], bBehind, 1 << nSide);
+	mask |= segP->m_sides [nSide].Dist (refP, xSideDists [nSide], bBehind, 1 << nSide);
 return mask;
 }
 
@@ -617,11 +230,12 @@ return nNewSeg;		//no CSegment found
 
 short FindClosestSeg (CFixVector& vPos)
 {
-	short		nSegment, nClosestSeg = -1;
-	fix		nDist, nMinDist = 0x7fffffff;
+	CSegment*	segP = SEGMENTS + 0;
+	short			nSegment, nClosestSeg = -1;
+	fix			nDist, nMinDist = 0x7fffffff;
 
-for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++) {
-	nDist = CFixVector::Dist (vPos, *SEGMENT_CENTER_I (nSegment)) - MinSegRad (nSegment);
+for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
+	nDist = CFixVector::Dist (vPos, segP->Center ()) - segP->MinRad ();
 	if (nDist < nMinDist) {
 		nMinDist = nDist;
 		nClosestSeg = nSegment;
@@ -853,7 +467,7 @@ while (qTail >= 0) {
 	nThisSeg = segmentQ [qTail].end;
 	nParentSeg = segmentQ [qTail].start;
 	pointSegs [nPoints].nSegment = nThisSeg;
-	COMPUTE_SEGMENT_CENTER_I (&pointSegs [nPoints].point, nThisSeg);
+	pointSegs [nPoints].point = SEGMENTS [nThisSeg].Center ();
 	nPoints++;
 	if (nParentSeg == seg0)
 		break;
@@ -861,7 +475,7 @@ while (qTail >= 0) {
 		Assert (qTail >= 0);
 	}
 pointSegs [nPoints].nSegment = seg0;
-COMPUTE_SEGMENT_CENTER_I (&pointSegs [nPoints].point, seg0);
+pointSegs [nPoints].point = SEGMENTS [seg0].Center ();
 nPoints++;
 if (nPoints == 1) {
 	gameData.fcd.nConnSegDist = nPoints;
@@ -1067,40 +681,15 @@ void extract_up_vector_from_segment (CSegment *segP, CFixVector *vp)
 #endif
 
 // -------------------------------------------------------------------------------
-
-void AddSideAsQuad (CSegment *segP, int nSide, CFixVector *Normal)
-{
-	CSide	*sideP = segP->m_sides + nSide;
-
-	sideP->nType = SIDE_IS_QUAD;
-	#ifdef COMPACT_SEGS
-		Normal = Normal;		//avoid compiler warning
-	#else
-	sideP->m_normals [0] = *Normal;
-	sideP->m_normals [1] = *Normal;
-	#endif
-
-	//	If there is a connection here, we only formed the faces for the purpose of determining CSegment boundaries,
-	//	so don't generate polys, else they will get rendered.
-//	if (segP->m_children [nSide] != -1)
-//		sideP->renderFlag = 0;
-//	else
-//		sideP->renderFlag = 1;
-
-}
-
-
-// -------------------------------------------------------------------------------
 //	Return v0, v1, v2 = 3 vertices with smallest numbers.  If *bFlip set, then negate Normal after computation.
 //	Note, pos [Y]u cannot just compute the Normal by treating the points in the opposite direction as this introduces
 //	small differences between normals which should merely be opposites of each other.
 int GetVertsForNormal (int v0, int v1, int v2, int v3, int *pv0, int *pv1, int *pv2, int *pv3)
 {
-	int	i, j, t;
-	int	v [4], w [4] = {0, 1, 2, 3};
+	int		i, j, t;
+	ushort	v [4], w [4] = {0, 1, 2, 3};
 
 //	w is a list that shows how things got scrambled so we know if our Normal is pointing backwards
-
 v [0] = v0;
 v [1] = v1;
 v [2] = v2;
@@ -1124,108 +713,6 @@ return ((((w [0] + 3) % 4) == w [1]) || (((w [1] + 3) % 4) == w [2]));
 
 // -------------------------------------------------------------------------------
 
-void AddSideAsTwoTriangles (CSegment *segP, int nSide)
-{
-	CFixVector	vNormal;
-	sbyte       *vs = sideVertIndex [nSide];
-	short			v0 = segP->verts [vs [0]];
-	short			v1 = segP->verts [vs [1]];
-	short			v2 = segP->verts [vs [2]];
-	short			v3 = segP->verts [vs [3]];
-	fix			dot;
-	CFixVector	vec_13;		//	vector from vertex 1 to vertex 3
-
-	CSide	*sideP = segP->m_sides + nSide;
-
-	//	Choose how to triangulate.
-	//	If a CWall, then
-	//		Always triangulate so CSegment is convex.
-	//		Use Matt's formula: Na . AD > 0, where ABCD are vertices on CSide, a is face formed by A, B, C, Na is Normal from face a.
-	//	If not a CWall, then triangulate so whatever is on the other CSide is triangulated the same (ie, between the same absoluate vertices)
-#if DBG
-if ((SEG_IDX (segP) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-	segP = segP;
-#endif
-if (!IS_CHILD (segP->m_children [nSide])) {
-	vNormal = CFixVector::Normal(gameData.segs.vertices [v0],
-	                            gameData.segs.vertices [v1],
-	                            gameData.segs.vertices [v2]);
-	vec_13 = gameData.segs.vertices [v3] - gameData.segs.vertices [v1];
-	dot = CFixVector::Dot(vNormal, vec_13);
-
-	//	Now, signify whether to triangulate from 0:2 or 1:3
-	if (dot >= 0)
-		sideP->nType = SIDE_IS_TRI_02;
-	else
-		sideP->nType = SIDE_IS_TRI_13;
-
-#	ifndef COMPACT_SEGS
-	//	Now, based on triangulation nType, set the normals.
-	if (sideP->nType == SIDE_IS_TRI_02) {
-		//VmVecNormalChecked (&vNormal, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v2);
-		sideP->m_normals [0] = vNormal;
-		vNormal = CFixVector::Normal(gameData.segs.vertices [v0], gameData.segs.vertices [v2], gameData.segs.vertices [v3]);
-		sideP->m_normals [1] = vNormal;
-		}
-	else {
-		vNormal = CFixVector::Normal(gameData.segs.vertices [v0], gameData.segs.vertices [v1], gameData.segs.vertices [v3]);
-		sideP->m_normals [0] = vNormal;
-		vNormal = CFixVector::Normal(gameData.segs.vertices [v1], gameData.segs.vertices [v2], gameData.segs.vertices [v3]);
-		sideP->m_normals [1] = vNormal;
-		}
-#	endif
-	}
-else {
-	int	vSorted [4];
-	int	bFlip;
-
-	bFlip = GetVertsForNormal (v0, v1, v2, v3, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
-	if ((vSorted [0] == v0) || (vSorted [0] == v2)) {
-		sideP->nType = SIDE_IS_TRI_02;
-#	ifndef COMPACT_SEGS
-		//	Now, get vertices for Normal for each triangle based on triangulation nType.
-		bFlip = GetVertsForNormal (v0, v1, v2, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
-		sideP->m_normals [0] = CFixVector::Normal(
-						 gameData.segs.vertices [vSorted[0]],
-						 gameData.segs.vertices [vSorted[1]],
-						 gameData.segs.vertices [vSorted[2]]);
-		if (bFlip)
-			sideP->m_normals [0].Neg();
-		bFlip = GetVertsForNormal (v0, v2, v3, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
-		sideP->m_normals [1] = CFixVector::Normal(
-						 gameData.segs.vertices [vSorted[0]],
-						 gameData.segs.vertices [vSorted[1]],
-						 gameData.segs.vertices [vSorted[2]]);
-		if (bFlip)
-			sideP->m_normals [1].Neg();
-		GetVertsForNormal (v0, v2, v3, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
-#	endif
-		}
-	else {
-		sideP->nType = SIDE_IS_TRI_13;
-#	ifndef COMPACT_SEGS
-		//	Now, get vertices for Normal for each triangle based on triangulation nType.
-		bFlip = GetVertsForNormal (v0, v1, v3, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
-		sideP->m_normals [0] = CFixVector::Normal(
-						 gameData.segs.vertices [vSorted[0]],
-						 gameData.segs.vertices [vSorted[1]],
-						 gameData.segs.vertices [vSorted[2]]);
-		if (bFlip)
-			sideP->m_normals [0].Neg();
-		bFlip = GetVertsForNormal (v1, v2, v3, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
-		sideP->m_normals [1] = CFixVector::Normal(
-						 gameData.segs.vertices [vSorted[0]],
-						 gameData.segs.vertices [vSorted[1]],
-						 gameData.segs.vertices [vSorted[2]]);
-		if (bFlip)
-			sideP->m_normals [1].Neg();
-#	endif
-		}
-	}
-}
-
-// -------------------------------------------------------------------------------
-
 int sign (fix v)
 {
 if (v > PLANE_DIST_TOLERANCE)
@@ -1237,7 +724,7 @@ return 0;
 
 // -------------------------------------------------------------------------------
 
-void AddToVertexNormal (int nVertex, CFixVector *pvNormal)
+void AddToVertexNormal (int nVertex, CFixVector& vNormal)
 {
 	g3sNormal	*pn = &gameData.segs.points [nVertex].p3_normal;
 
@@ -1246,183 +733,27 @@ if (nVertex == nDbgVertex)
 	nDbgVertex = nDbgVertex;
 #endif
 pn->nFaces++;
-pn->vNormal[X] += X2F ((*pvNormal)[X]);
-pn->vNormal[Y] += X2F ((*pvNormal)[Y]);
-pn->vNormal[Z] += X2F ((*pvNormal)[Z]);
+pn->vNormal += vNormal;
 }
-
-// -------------------------------------------------------------------------------
 
 int bRenderQuads = 0;
-
-void CreateWallsOnSide (CSegment *segP, int nSide)
-{
-	int			vm0, vm1, vm2, vm3, bFlip;
-	int			v0, v1, v2, v3, i;
-	int			vertexList [6];
-	CFixVector	vn;
-	fix			xDistToPlane;
-	sbyte			*s2v = sideVertIndex [nSide];
-
-	v0 = segP->verts [s2v [0]];
-	v1 = segP->verts [s2v [1]];
-	v2 = segP->verts [s2v [2]];
-	v3 = segP->verts [s2v [3]];
-	bFlip = GetVertsForNormal (v0, v1, v2, v3, &vm0, &vm1, &vm2, &vm3);
-	vn = CFixVector::Normal(gameData.segs.vertices [vm0], gameData.segs.vertices [vm1], gameData.segs.vertices [vm2]);
-	xDistToPlane = abs(gameData.segs.vertices [vm3].DistToPlane (vn, gameData.segs.vertices [vm0]));
-	if (bFlip)
-		vn.Neg();
-#if 1
-	if (bRenderQuads || (xDistToPlane <= PLANE_DIST_TOLERANCE))
-		AddSideAsQuad (segP, nSide, &vn);
-	else {
-		AddSideAsTwoTriangles (segP, nSide);
-		//this code checks to see if we really should be triangulated, and
-		//de-triangulates if we shouldn't be.
-		{
-			int			nFaces;
-			fix			dist0, dist1;
-			int			s0, s1;
-			int			nVertex;
-			CSide			*s;
-
-			nFaces = CreateAbsVertexLists (vertexList, SEG_IDX (segP), nSide);
-#if DBG
-			if (nFaces != 2)
-				nFaces = CreateAbsVertexLists (vertexList, SEG_IDX (segP), nSide);
-#endif
-			Assert (nFaces == 2);
-			s = segP->m_sides + nSide;
-			nVertex = min(vertexList [0], vertexList [2]);
-			{
-			dist0 = gameData.segs.vertices [vertexList[1]].DistToPlane (s->m_normals [1], gameData.segs.vertices [nVertex]);
-			dist1 = gameData.segs.vertices [vertexList[4]].DistToPlane (s->m_normals [0], gameData.segs.vertices [nVertex]);
-			}
-			s0 = sign (dist0);
-			s1 = sign (dist1);
-			if (s0 == 0 || s1 == 0 || s0 != s1) {
-				segP->m_sides [nSide].nType = SIDE_IS_QUAD; 	//detriangulate!
-			}
-		}
-	}
-#endif
-if (segP->m_sides [nSide].nType == SIDE_IS_QUAD) {
-	AddToVertexNormal (v0, &vn);
-	AddToVertexNormal (v1, &vn);
-	AddToVertexNormal (v2, &vn);
-	AddToVertexNormal (v3, &vn);
-	}
-else {
-	vn = segP->m_sides [nSide].m_normals [0];
-	for (i = 0; i < 3; i++)
-		AddToVertexNormal (vertexList [i], &vn);
-	vn = segP->m_sides [nSide].m_normals [1];
-	for (; i < 6; i++)
-		AddToVertexNormal (vertexList [i], &vn);
-	}
-}
-
-// -------------------------------------------------------------------------------
-
-void ValidateRemovableWall (CSegment *segP, int nSide, int nTexture)
-{
-CreateWallsOnSide (segP, nSide);
-segP->m_sides [nSide].m_nBaseTex = nTexture;
-//	assign_default_uvs_to_side (segP, nSide);
-//	assign_light_to_side (segP, nSide);
-}
-
-// -------------------------------------------------------------------------------
-//	Make a just-modified CSegment CSide valid.
-void ValidateSegmentSide (CSegment *segP, short nSide)
-{
-if (IS_WALL (WallNumP (segP, nSide)))
-	ValidateRemovableWall (segP, nSide, segP->m_sides [nSide].m_nBaseTex);
-else
-	CreateWallsOnSide (segP, nSide);
-}
-
-// -------------------------------------------------------------------------------
-
-void ComputeVertexNormals (void)
-{
-	int		h, i;
-	g3sPoint	*pp;
-
-for (i = gameData.segs.nVertices, pp = gameData.segs.points.Buffer (); i; i--, pp++) {
-	if (1 < (h = pp->p3_normal.nFaces)) {
-		pp->p3_normal.vNormal /= (float) h;
-		/*
-		pp->p3_normal.vNormal[Y] /= h;
-		pp->p3_normal.vNormal[Z] /= h;
-		*/
-		CFloatVector::Normalize (pp->p3_normal.vNormal);
-		}
-	pp->p3_normal.nFaces = 1;
-	}
-}
-
-// -------------------------------------------------------------------------------
-
-float FaceSize (short nSegment, ubyte nSide)
-{
-	CSegment		*segP = SEGMENTS + nSegment;
-	sbyte			*s2v = sideVertIndex [nSide];
-
-	short			v0 = segP->verts [s2v [0]];
-	short			v1 = segP->verts [s2v [1]];
-	short			v2 = segP->verts [s2v [2]];
-	short			v3 = segP->verts [s2v [3]];
-
-return TriangleSize (gameData.segs.vertices [v0], gameData.segs.vertices [v1], gameData.segs.vertices [v2]) +
-		 TriangleSize (gameData.segs.vertices [v0], gameData.segs.vertices [v2], gameData.segs.vertices [v3]);
-}
-
-// -------------------------------------------------------------------------------
-
-void ResetVertexNormals (void)
-{
-	int		i;
-	g3sPoint	*pp;
-
-for (i = gameData.segs.nVertices, pp = gameData.segs.points.Buffer (); i; i--, pp++) {
-	pp->p3_normal.vNormal.SetZero();
-	pp->p3_normal.nFaces = 0;
-	}
-}
-
-// -------------------------------------------------------------------------------
-//	Make a just-modified CSegment valid.
-//		check all sides to see how many faces they each should have (0, 1, 2)
-//		create new vector normals
-void ValidateSegment (CSegment *segP)
-{
-	short	CSide;
-
-#ifdef EDITOR
-check_for_degenerate_segment (segP);
-#endif
-for (CSide = 0; CSide < MAX_SIDES_PER_SEGMENT; CSide++)
-	ValidateSegmentSide (segP, CSide);
-}
 
 // -------------------------------------------------------------------------------
 //	Validate all segments.
 //	gameData.segs.nLastSegment must be set.
 //	For all used segments (number <= gameData.segs.nLastSegment), nSegment field must be != -1.
 
-void ValidateSegmentAll (void)
+void ValidateSegments (void)
 {
 	int	s;
 
 gameOpts->render.nMathFormat = 0;
 gameData.segs.points.Clear ();
-for (s = 0; s <= gameData.segs.nLastSegment; s++)
+for (int i = 0; i <= gameData.segs.nLastSegment; i++)
 #ifdef EDITOR
 	if (SEGMENTS [s].nSegment != -1)
 #endif
-		ValidateSegment (SEGMENTS + s);
+	SEGMENTS [i].Validate ();
 #ifdef EDITOR
 	{
 	int said = 0;
@@ -1444,34 +775,13 @@ for (s = 0; s <= gameData.segs.nLastSegment; s++)
 	}
 #endif
 
-#if DBG
-#	ifndef COMPACT_SEGS
-if (CheckSegmentConnections ())
-	Int3 ();		//Get Matt, si vous plait.
-#	endif
-#endif
 ComputeVertexNormals ();
 gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 }
 
 
-//	------------------------------------------------------------------------------------------------------
-//	Picks a Random point in a CSegment like so:
-//		From center, go up to 50% of way towards any of the 8 vertices.
-void PickRandomPointInSeg (CFixVector *new_pos, int nSegment)
-{
-	int			vnum;
-	CFixVector	vec2;
 
-	COMPUTE_SEGMENT_CENTER_I (new_pos, nSegment);
-	vnum = (d_rand () * MAX_VERTICES_PER_SEGMENT) >> 15;
-	vec2 = gameData.segs.vertices [SEGMENTS[nSegment].verts [vnum]] - *new_pos;
-	vec2 *= (d_rand ());          // d_rand () always in 0..1/2
-	*new_pos += vec2;
-}
-
-
-//	----------------------------------------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
 //	Set the segment depth of all segments from nStartSeg in *segbuf.
 //	Returns maximum nDepth value.
 int SetSegmentDepths (int nStartSeg, ushort *pDepthBuf)
@@ -1539,23 +849,23 @@ fix FindConnectedDistanceSegments (short seg0, short seg1, int nDepth, int widFl
 {
 	CFixVector	p0, p1;
 
-COMPUTE_SEGMENT_CENTER_I (&p0, seg0);
-COMPUTE_SEGMENT_CENTER_I (&p1, seg1);
+p0 = SEGMENTS [seg0].Center ();
+p1 = SEGMENTS [seg1].Center ();
 return FindConnectedDistance (&p0, seg0, &p1, seg1, nDepth, widFlag, 0);
 }
 
 #define	AMBIENT_SEGMENT_DEPTH		5
 
 //	-----------------------------------------------------------------------------
-//	Do a bfs from nSegment, marking slots in marked_segs if the CSegment is reachable.
+//	Do a bfs from nSegment, marking slots in markedSegs if the segment is reachable.
 void AmbientMarkBfs (short nSegment, sbyte* markedSegs, int nDepth)
 {
 	short	i, child;
 
 if (nDepth < 0)
 	return;
-marked_segs [nSegment] = 1;
-for (i=0; i<MAX_SIDES_PER_SEGMENT; i++) {
+markedSegs [nSegment] = 1;
+for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 	child = SEGMENTS [nSegment].children [i];
 	if (IS_CHILD (child) && (SEGMENTS [nSegment].IsDoorWay (i, NULL) & WID_RENDPAST_FLAG) && !markedSegs [child])
 		AmbientMarkBfs (child, markedSegs, nDepth - 1);
@@ -1568,43 +878,40 @@ for (i=0; i<MAX_SIDES_PER_SEGMENT; i++) {
 void SetAmbientSoundFlagsCommon (int tmi_bit, int s2f_bit)
 {
 	short		i, j;
-	tSegment2	*seg2p;
-	static sbyte   marked_segs [MAX_SEGMENTS_D2X];
+
+	static sbyte	markedSegs [MAX_SEGMENTS_D2X];
 
 	//	Now, all segments containing ambient lava or water sound makers are flagged.
 	//	Additionally flag all segments which are within range of them.
-for (i=0; i<=gameData.segs.nLastSegment; i++) {
-	marked_segs [i] = 0;
-	gameData.segs.segment2s [i].s2Flags &= ~s2f_bit;
+memset (markedSegs, 0, sizeof (markedSegs));
+for (i = 0; i <= gameData.segs.nLastSegment; i++) {
+	SEGMENTS [i].m_flags &= ~s2f_bit;
 	}
 
 //	Mark all segments which are sources of the sound.
-for (i=0; i<=gameData.segs.nLastSegment; i++) {
-	CSegment	*segp = &SEGMENTS [i];
-	tSegment2	*seg2p = &gameData.segs.segment2s [i];
-
-	for (j=0; j<MAX_SIDES_PER_SEGMENT; j++) {
-		CSide	*sideP = &segp->m_sides [j];
-
+CSegment	*segP = SEGMENTS.Buffer ();
+for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
+	CSide	*sideP = segP->m_sides;
+	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
 		if ((gameData.pig.tex.tMapInfoP [sideP->nBaseTex].flags & tmi_bit) ||
-			   (gameData.pig.tex.tMapInfoP [sideP->nOvlTex].flags & tmi_bit)) {
-			if (!IS_CHILD (segp->children [j]) || IS_WALL (sideP->nWall)) {
-				seg2p->s2Flags |= s2f_bit;
-				marked_segs [i] = 1;		//	Say it's itself that it is close enough to to hear something.
+			 (gameData.pig.tex.tMapInfoP [sideP->nOvlTex].flags & tmi_bit)) {
+			if (!IS_CHILD (segP->m_children [j]) || IS_WALL (sideP->m_nWall)) {
+				segP->m_flags |= s2f_bit;
+				markedSegs [i] = 1;		//	Say it's itself that it is close enough to to hear something.
 				}
 			}
 		}
 	}
 //	Next mark all segments within N segments of a source.
-for (i=0; i<=gameData.segs.nLastSegment; i++) {
-	seg2p = &gameData.segs.segment2s [i];
-	if (seg2p->s2Flags & s2f_bit)
-		AmbientMarkBfs (i, marked_segs, AMBIENT_SEGMENT_DEPTH);
+segP = SEGMENTS.Buffer ();
+for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
+	if (segP->m_flags & s2f_bit)
+		AmbientMarkBfs (i, markedSegs, AMBIENT_SEGMENT_DEPTH);
 	}
 //	Now, flip bits in all segments which can hear the ambient sound.
-for (i=0; i<=gameData.segs.nLastSegment; i++)
-	if (marked_segs [i])
-		gameData.segs.segment2s [i].s2Flags |= s2f_bit;
+for (i = 0; i <= gameData.segs.nLastSegment; i++)
+	if (markedSegs [i])
+		SEGMENTS [i].m_flags |= s2f_bit;
 }
 
 //	-----------------------------------------------------------------------------
@@ -1615,6 +922,55 @@ void SetAmbientSoundFlags (void)
 {
 SetAmbientSoundFlagsCommon (TMI_VOLATILE, S2F_AMBIENT_LAVA);
 SetAmbientSoundFlagsCommon (TMI_WATER, S2F_AMBIENT_WATER);
+}
+
+// -------------------------------------------------------------------------------
+
+float FaceSize (short nSegment, ubyte nSide)
+{
+	CSegment		*segP = SEGMENTS + nSegment;
+	sbyte			*s2v = sideVertIndex [nSide];
+
+	short			v0 = segP->verts [s2v [0]];
+	short			v1 = segP->verts [s2v [1]];
+	short			v2 = segP->verts [s2v [2]];
+	short			v3 = segP->verts [s2v [3]];
+
+return TriangleSize (gameData.segs.vertices [v0], gameData.segs.vertices [v1], gameData.segs.vertices [v2]) +
+		 TriangleSize (gameData.segs.vertices [v0], gameData.segs.vertices [v2], gameData.segs.vertices [v3]);
+}
+
+// -------------------------------------------------------------------------------
+
+void ComputeVertexNormals (void)
+{
+	int		h, i;
+	g3sPoint	*pp;
+
+for (i = gameData.segs.nVertices, pp = gameData.segs.points.Buffer (); i; i--, pp++) {
+	if (1 < (h = pp->p3_normal.nFaces)) {
+		pp->p3_normal.vNormal /= (float) h;
+		/*
+		pp->p3_normal.vNormal[Y] /= h;
+		pp->p3_normal.vNormal[Z] /= h;
+		*/
+		CFloatVector::Normalize (pp->p3_normal.vNormal);
+		}
+	pp->p3_normal.nFaces = 1;
+	}
+}
+
+// -------------------------------------------------------------------------------
+
+void ResetVertexNormals (void)
+{
+	int		i;
+	g3sPoint	*pp;
+
+for (i = gameData.segs.nVertices, pp = gameData.segs.points.Buffer (); i; i--, pp++) {
+	pp->p3_normal.vNormal.SetZero();
+	pp->p3_normal.nFaces = 0;
+	}
 }
 
 //	-----------------------------------------------------------------------------

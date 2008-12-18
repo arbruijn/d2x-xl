@@ -370,7 +370,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if (vcd.vertNorm.IsZero())
 		NdotL = 1.0f;
 	else
-		NdotL = CFloatVector3::Dot(vcd.vertNorm, lightDir);
+		NdotL = CFloatVector3::Dot (vcd.vertNorm, lightDir);
 	nMinDot = -0.1f;
 	if (gameStates.render.nState || (nType < 2)) {
 #if CHECK_LIGHT_VERT == 2
@@ -382,7 +382,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		if (fLightDist < 0)
 			fLightDist = 0;
 #if 1 //don't directly light faces turning their back side towards the light source
-		if ((NdotL < 0) && (CFloatVector3::Dot(lightDir, *psl->info.vDirf.V3()) <= 0))
+		if ((NdotL < 0) && (CFloatVector3::Dot (lightDir, *psl->info.vDirf.V3()) <= 0))
 			nMinDot = 0;
 #endif
 		}
@@ -416,7 +416,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		lightDir[Z] = -lightDir[Z];
 		*/
 		//spotEffect = G3_DOTF (spotDir, lightDir);
-		spotEffect = CFloatVector3::Dot(spotDir, lightDir);
+		spotEffect = CFloatVector3::Dot (spotDir, lightDir);
 
 		if (spotEffect <= psl->info.fSpotAngle)
 			continue;
@@ -446,7 +446,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		if (nVertex == nDbgVertex)
 			nDbgVertex = nDbgVertex;
 #endif
-		RdotE = CFloatVector3::Dot(vReflect, vertPos);
+		RdotE = CFloatVector3::Dot (vReflect, vertPos);
 		if (RdotE > 0) {
 			//spec = pow (Reflect dot lightToEye, matShininess) * matSpecular * lightSpecular
 			vertColor += (lightColor * (float) pow (RdotE, vcd.fMatShininess));
@@ -590,7 +590,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			else
 #endif
 				fAttenuation = (1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist);
-			NdotL = CFixVector::Dot(vcd.vertNorm, &lightDir);
+			NdotL = CFixVector::Dot (vcd.vertNorm, &lightDir);
 #if 0
 			NdotL = 1 - ((1 - NdotL) * 0.9f);
 #endif

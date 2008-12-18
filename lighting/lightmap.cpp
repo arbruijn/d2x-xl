@@ -268,7 +268,7 @@ for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dyna
 	//Process found light.
 	lmiP->range += sideRad;
 	//find where it is in the level.
-	lmiP->vPos = SIDE_CENTER_V (faceP->nSegment, faceP->nSide);
+	lmiP->vPos = SEGMENTS [faceP->nSegment].SideCenter (faceP->nSide);
 	lmiP->nIndex = nIndex; 
 	//find light direction, currently based on first 3 points of CSide, not always right.
 	CFixVector *normalP = SEGMENTS [faceP->nSegment].m_sides [faceP->nSide].m_normals;

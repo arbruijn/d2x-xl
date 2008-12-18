@@ -60,7 +60,7 @@ else
 int G3CheckNormalFacing(const CFixVector& pv, const CFixVector& pnorm)
 {
 CFixVector v = transformation.m_info.pos - pv;
-return (CFixVector::Dot(v, pnorm) > 0);
+return (CFixVector::Dot (v, pnorm) > 0);
 }
 
 //------------------------------------------------------------------------------
@@ -74,7 +74,7 @@ else {	//Normal not specified, so must compute
 	CFixVector vTemp;
 	//get three points (rotated) and compute Normal
 	vTemp = CFixVector::Perp(vertlist [0]->p3_vec, vertlist [1]->p3_vec, vertlist [2]->p3_vec);
-	return (CFixVector::Dot(vTemp, vertlist [1]->p3_vec) < 0);
+	return (CFixVector::Dot (vTemp, vertlist [1]->p3_vec) < 0);
 	}
 }
 

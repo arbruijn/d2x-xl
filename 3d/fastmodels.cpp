@@ -153,7 +153,7 @@ else {
 		else if (bEmissive)
 			l = F1_0;
 		else {
-			l = -CFixVector::Dot(transformation.m_info.view [0].FVec (), pmf->m_vNormal);
+			l = -CFixVector::Dot (transformation.m_info.view [0].FVec (), pmf->m_vNormal);
 			l = 3 * f1_0 / 4 + l / 4;
 			l = FixMul (l, xModelLight);
 			}
@@ -241,7 +241,7 @@ if (!pm->m_bRendered || !gameData.models.vScale.IsZero ())
 else if (mtP->nCount >= (((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT)) ? 2 : 1))
 	return;
 vn.Assign (pmf ? pmf->m_vNormal : *vNormal);
-if (CFloatVector3::Dot(vn, vForward) > -1.0f / 3.0f)
+if (CFloatVector3::Dot (vn, vForward) > -1.0f / 3.0f)
 	return;
 if (pmf) {
 	for (i = 0, j = pmf->m_nVerts, pmv = pm->m_faceVerts + pmf->m_nIndex; i < j; i++)

@@ -981,13 +981,13 @@ if (sideOpposite [c0] == c1)
 //find normals of adjoining sides
 FindAdjacentSideNorms (segP, c0, c1, s);
 temp = gameData.render.mine.viewerEye - *s [0].p;
-d0 = CFixVector::Dot(s [0].n [0], temp);
+d0 = CFixVector::Dot (s [0].n [0], temp);
 if (s [0].t != 1)	// triangularized face -> 2 different normals
-	d0 |= CFixVector::Dot(s [0].n [1], temp);	// we only need the sign, so a bitwise or does the trick
+	d0 |= CFixVector::Dot (s [0].n [1], temp);	// we only need the sign, so a bitwise or does the trick
 temp = gameData.render.mine.viewerEye - *s [1].p;
-d1 = CFixVector::Dot(s [1].n [0], temp);
+d1 = CFixVector::Dot (s [1].n [0], temp);
 if (s [1].t != 1)
-	d1 |= CFixVector::Dot(s [1].n [1], temp);
+	d1 |= CFixVector::Dot (s [1].n [1], temp);
 if ((d0 & d1) < 0)	// only < 0 if both negative due to bitwise and
 	return 0;
 if (d0 < 0)
@@ -1247,7 +1247,7 @@ else {
 if (bSparks) {
 	SEM_ENTER (SEM_SPARKS)
 	//PrintLog ("RenderEnergySparks\n");
-	RenderEnergySparks ();
+	sparkManager::Render ();
 	//SEM_LEAVE (SEM_SPARKS)
 	}
 if (bParticles) {
@@ -1423,7 +1423,7 @@ void BuildRenderObjLists (int nSegCount)
 PROF_START
 	CObject*		objP;
 	CSegment*	segP;
-	tSegMasks	mask;
+	CSegMasks	mask;
 	short			nSegment, nNewSeg, nChild, nSide, sideFlag;
 	int			nListPos;
 	short			nObject;
@@ -1519,12 +1519,13 @@ void InitSegZRef (int i, int j, int nThread)
 	CFixVector	v;
 	int			zMax = -0x7fffffff;
 	short			nSegment;
+	CSegment*	segP;
 
 for (; i < j; i++, ps++) {
-	nSegment = gameData.render.mine.nSegRenderList [i];
-	COMPUTE_SEGMENT_CENTER_I (&v, nSegment);
-	transformation.Transform(v, v, 0);
-	v [Z] += gameData.segs.segRads [1] [nSegment];
+	segP = SEGMENTS + gameData.render.mine.nSegRenderList [i];
+	v = segP->Center ();
+	transformation.Transform (v, v, 0);
+	v [Z] += segP->MaxRad ();
 	if (zMax < v [Z])
 		zMax = v [Z];
 	ps->z = v [Z];
@@ -1575,7 +1576,7 @@ if (!RENDERPATH) {
 void CalcRenderDepth (void)
 {
 CFixVector vCenter;
-transformation.Transform(vCenter, *SEGMENT_CENTER_I(gameData.objs.viewerP->info.nSegment), 0);
+transformation.Transform(vCenter, SEGMENTS (gameData.objs.viewerP->info.nSegment].Center (), 0);
 CFixVector v;
 transformation.Transform(v, gameData.segs.vMin, 0);
 fix d1 = CFixVector::Dist(v, vCenter);

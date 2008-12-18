@@ -767,7 +767,7 @@ if ((nPlayer < 0) || (nObject < 0) || (nFuelCen < 0) ||
 	}
 robotcen = gameData.matCens.fuelCenters + nFuelCen;
 // Play effect and sound
-COMPUTE_SEGMENT_CENTER_I (&curObject_loc, robotcen->nSegment);
+curObject_loc = SEGMENTS [robotcen->nSegment].Center ();
 objP = ObjectCreateExplosion ((short) robotcen->nSegment, &curObject_loc, I2X (10), VCLIP_MORPHING_ROBOT);
 if (objP)
 	ExtractOrientFromSegment (&objP->info.position.mOrient, &SEGMENTS [robotcen->nSegment]);
@@ -839,7 +839,7 @@ switch (action)  {
 			Int3 ();  // See Rob
 			return;
 			}
-		COMPUTE_SEGMENT_CENTER_I (&bossObjP->info.position.vPos, nTeleportSeg);
+		bossObjP->info.position.vPos = SEGMENTS [nTeleportSeg].Center ();
 		OBJECTS [nBossObj].RelinkToSeg (nTeleportSeg);
 		gameData.boss [nBossIdx].nLastTeleportTime = gameData.time.xGame;
 		vBossDir = OBJECTS [gameData.multiplayer.players [nPlayer].nObject].info.position.vPos - bossObjP->info.position.vPos;

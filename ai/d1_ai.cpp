@@ -575,7 +575,7 @@ int player_is_visible_from_object(CObject *objP, CFixVector *pos, fix fieldOfVie
 	Hit_seg = hitData.hit.nSegment;
 
 	if ((hitType == HIT_NONE) || ((hitType == HIT_OBJECT) && (hitData.hit.nObject == LOCALPLAYER.nObject))) {
-		dot = CFixVector::Dot(*vec_to_player, objP->info.position.mOrient.FVec ());
+		dot = CFixVector::Dot (*vec_to_player, objP->info.position.mOrient.FVec ());
 		if (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) {
 			return 2;
 		} else {
@@ -955,7 +955,7 @@ void move_towards_vector(CObject *objP, CFixVector *vec_goal)
 
 	vel = piP->velocity;
 	CFixVector::Normalize(vel);
-	dot = CFixVector::Dot(vel, objP->info.position.mOrient.FVec ());
+	dot = CFixVector::Dot (vel, objP->info.position.mOrient.FVec ());
 
 	if (dot < 3*F1_0/4) {
 		//	This funny code is supposed to slow down the robotP and move his velocity towards his direction
@@ -1055,7 +1055,7 @@ void move_around_player(CObject *objP, CFixVector *vec_to_player, int fast_flag)
 		//	Only take evasive action if looking at playerP.
 		//	Evasion speed is scaled by percentage of shields left so wounded robots evade less effectively.
 
-		dot = CFixVector::Dot(*vec_to_player, objP->info.position.mOrient.FVec ());
+		dot = CFixVector::Dot (*vec_to_player, objP->info.position.mOrient.FVec ());
 		if ((dot > botInfoP->fieldOfView [gameStates.app.nDifficultyLevel]) && !(gameData.objs.consoleP->info.nFlags & PLAYER_FLAGS_CLOAKED)) {
 			fix	damage_scale;
 
@@ -1118,7 +1118,7 @@ void move_away_from_player(CObject *objP, CFixVector *vec_to_player, int attackT
 //--old--
 //--old--	//	Trying to move away from playerP.  If forward vector much different than velocity vector,
 //--old--	//	bash velocity vector twice as much away from playerP as usual.
-//--old--	dot = VmVecDot(&piP->velocity, &objP->info.position.mOrient.FVec ());
+//--old--	dot = VmVecDot (&piP->velocity, &objP->info.position.mOrient.FVec ());
 //--old--	if (dot > -3*F1_0/4) {
 //--old--		//	This funny code is supposed to slow down the robotP and move his velocity towards his direction
 //--old--		//	more quickly than the general code
@@ -1163,7 +1163,7 @@ void ai_move_relative_to_player(CObject *objP, tAILocalInfo *ailP, fix dist_to_p
 
 			vec_to_laser = dangerObjP->info.position.vPos - objP->info.position.vPos;
 			dist_to_laser = CFixVector::Normalize (vec_to_laser);
-			dot = CFixVector::Dot(vec_to_laser, objP->info.position.mOrient.FVec());
+			dot = CFixVector::Dot (vec_to_laser, objP->info.position.mOrient.FVec());
 
 			if (dot > fieldOfView) {
 				fix			laser_robot_dot;
@@ -1179,7 +1179,7 @@ void ai_move_relative_to_player(CObject *objP, tAILocalInfo *ailP, fix dist_to_p
 				}
 				laser_vec_to_robot = objP->info.position.vPos - dangerObjP->info.position.vPos;
 				CFixVector::Normalize(laser_vec_to_robot);
-				laser_robot_dot = CFixVector::Dot(laser_fVec, laser_vec_to_robot);
+				laser_robot_dot = CFixVector::Dot (laser_fVec, laser_vec_to_robot);
 
 				if ((laser_robot_dot > F1_0*7/8) && (dist_to_laser < F1_0*80)) {
 					int	evadeSpeed;
@@ -1233,7 +1233,7 @@ void do_firing_stuff(CObject *objP, int player_visibility, CFixVector *vec_to_pl
 {
 	if (player_visibility >= 1) {
 		//	Now, if in robotP's field of view, lock onto playerP
-		fix	dot = CFixVector::Dot(objP->info.position.mOrient.FVec (), *vec_to_player);
+		fix	dot = CFixVector::Dot (objP->info.position.mOrient.FVec (), *vec_to_player);
 		if ((dot >= 7*F1_0/8) || (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
 			tAIStaticInfo	*aiP = &objP->cType.aiInfo;
 			tAILocalInfo		*ailP = &gameData.ai.localInfo [OBJ_IDX (objP)];
@@ -1383,7 +1383,7 @@ void move_object_to_legal_spot(CObject *objP)
 			CFixVector	vSegCenter, goal_dir;
 			fix			dist_to_center;
 
-			COMPUTE_SEGMENT_CENTER_I (&vSegCenter, objP->info.nSegment);
+			vSegCenter = SEGMENTS [objP->info.nSegment].Center ();
 			goal_dir = vSegCenter - objP->info.position.vPos;
 			dist_to_center = CFixVector::Normalize(goal_dir);
 			goal_dir *= objP->info.xSize;
@@ -1412,7 +1412,7 @@ void move_towards_segment_center(CObject *objP)
 	fix			dist_to_center;
 	CFixVector	vSegCenter, goal_dir;
 
-	COMPUTE_SEGMENT_CENTER_I (&vSegCenter, objP->info.nSegment);
+	vSegCenter = SEGMENTS [objP->info.nSegment].Center ();
 	goal_dir = vSegCenter - objP->info.position.vPos;
 	dist_to_center = CFixVector::Normalize(goal_dir);
 	if (dist_to_center < objP->info.xSize) {
@@ -1538,8 +1538,7 @@ int CreateGatedRobot (int nSegment, int nObjId)
 		return 0;
 	}
 
-	COMPUTE_SEGMENT_CENTER (&vObjPos, segP);
-	PickRandomPointInSeg (&vObjPos, segP - SEGMENTS);
+	vObjPos = segP->RandomPoint ();
 
 	//	See if legal to place CObject here.  If not, move about in CSegment and try again.
 	if (CheckObjectObjectIntersection(&vObjPos, objsize, segP)) {
@@ -1605,28 +1604,26 @@ int gate_in_robot(int type, int nSegment)
 // --------------------------------------------------------------------------------------------------------------------
 int boss_fits_in_seg(CObject *bossObjP, int nSegment)
 {
-	CFixVector	segcenter;
-	int			boss_objnum = bossObjP-OBJECTS;
+	CFixVector	vCenter;
+	int			nBossObj = bossObjP - OBJECTS;
 	int			posnum;
 
-	COMPUTE_SEGMENT_CENTER_I (&segcenter, nSegment);
+vCenter = SEGMENTS [nSegment].Center ();
+for (posnum=0; posnum<9; posnum++) {
+	if (posnum > 0) {
+		CFixVector	vertex_pos;
 
-	for (posnum=0; posnum<9; posnum++) {
-		if (posnum > 0) {
-			CFixVector	vertex_pos;
+		Assert((posnum-1 >= 0) && (posnum-1 < 8));
+		vertex_pos = gameData.segs.vertices[SEGMENTS[nSegment].verts[posnum-1]];
+		bossObjP->info.position.vPos = CFixVector::Avg(vertex_pos, vCenter);
+	} else
+		bossObjP->info.position.vPos = vCenter;
 
-			Assert((posnum-1 >= 0) && (posnum-1 < 8));
-			vertex_pos = gameData.segs.vertices[SEGMENTS[nSegment].verts[posnum-1]];
-			bossObjP->info.position.vPos = CFixVector::Avg(vertex_pos, segcenter);
-		} else
-			bossObjP->info.position.vPos = segcenter;
-
-		OBJECTS [boss_objnum].RelinkToSeg(nSegment);
-		if (!ObjectIntersectsWall(bossObjP))
-			return 1;
+	OBJECTS [nBossObj].RelinkToSeg(nSegment);
+	if (!ObjectIntersectsWall(bossObjP))
+		return 1;
 	}
-
-	return 0;
+return 0;
 }
 
 #define	QUEUE_SIZE	256
@@ -1769,7 +1766,7 @@ void ai_do_actual_firing_stuff(CObject *objP, tAIStaticInfo *aiP, tAILocalInfo *
 		//	Changed by mk, 01/04/94, onearm would take about 9 seconds until he can fire at you.
 		// if (((!object_animates) || (ailP->achievedState[aiP->CURRENT_GUN] == D1_AIS_FIRE)) && (ailP->nextPrimaryFire <= 0)) {
 		if (!object_animates || (ailP->nextPrimaryFire <= 0)) {
-			dot = CFixVector::Dot(objP->info.position.mOrient.FVec (), *vec_to_player);
+			dot = CFixVector::Dot (objP->info.position.mOrient.FVec (), *vec_to_player);
 			if (dot >= 7*F1_0/8) {
 
 				if (aiP->CURRENT_GUN < gameData.bots.info [1][objP->info.nId].nGuns) {
@@ -2417,7 +2414,7 @@ if (nObject == nDbgObj)
 
 			if (!ai_multiplayer_awareness(objP, 62))
 				return;
-			COMPUTE_SIDE_CENTER (&vCenter, SEGMENTS + objP->info.nSegment, aiP->GOALSIDE);
+			vCenter = SEGMENTS [objP->info.nSegment].SideCenter (aiP->GOALSIDE);
 			vGoal = vCenter - objP->info.position.vPos;
 			CFixVector::Normalize(vGoal);
 			ai_turn_towards_vector(&vGoal, objP, botInfoP->turnTime[gameStates.app.nDifficultyLevel]);
@@ -2488,7 +2485,7 @@ if (nObject == nDbgObj)
 			case	D1_AIS_NONE:
 				compute_vis_and_vec(objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
 
-				dot = CFixVector::Dot(objP->info.position.mOrient.FVec (), vec_to_player);
+				dot = CFixVector::Dot (objP->info.position.mOrient.FVec (), vec_to_player);
 				if (dot >= F1_0/2)
 					if (aiP->GOAL_STATE == D1_AIS_REST)
 						aiP->GOAL_STATE = D1_AIS_SRCH;

@@ -278,7 +278,7 @@ if (!pc || pc->index) {
 	CAngleVector	a;
 #endif
 	pli->nIndex = (int) nSegment * 6 + nSide;
-	COMPUTE_SIDE_CENTER_I (&pli->pos, nSegment, nSide);
+	pli->pos = SEGMENTS [nSegment].SideCenter (nSide);
 	OOF_VecVms2Gl (pli->glPos, &pli->pos);
 	pli->nSegNum = nSegment;
 	pli->nSideNum = (ubyte) nSide;
@@ -460,7 +460,7 @@ else if (nSegment >= 0) {
 		if (vPos)
 			pl->info.vPos = *vPos;
 		else
-			COMPUTE_SEGMENT_CENTER_I (&pl->info.vPos, nSegment);
+			pl->info.vPos = SEGMENTS [nSegment].Center ();
 		}
 	else {
 #if DBG
@@ -472,7 +472,7 @@ else if (nSegment >= 0) {
 		//RegisterLight (NULL, nSegment, nSide);
 		pl->info.bVariable = IsDestructibleLight (nTexture) || IsFlickeringLight (nSegment, nSide) || WallIsVolatile (SEGMENTS [nSegment].m_sides [nSide].nWall);
 		gameData.render.lights.dynamic.nVariable += pl->info.bVariable;
-		COMPUTE_SIDE_CENTER_I (&pl->info.vPos, nSegment, nSide);
+		pl->info.vPos = SEGMENTS [nSegment].SideCenter (nSide);
 		CSide			*sideP = SEGMENTS [nSegment].m_sides + nSide;
 		CFixVector	vOffs;
 		vOffs = sideP->m_normals[0] + sideP->m_normals[1];
@@ -937,7 +937,7 @@ if (nVertex == nDbgVertex)
 #if 1
 		if (vNormalP) {
 			vLightDir /= xLightDist;
-			if(CFixVector::Dot(*vNormalP, vLightDir) > F1_0 / 2)
+			if(CFixVector::Dot (*vNormalP, vLightDir) > F1_0 / 2)
 				continue;
 		}
 #endif
@@ -1151,7 +1151,7 @@ if (gameOpts->render.nLightingMethod) {
 	CFixVector				c;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
 
-	COMPUTE_SEGMENT_CENTER_I (&c, nSegment);
+	c = SEGMENTS [nSegment].Center ();
 	ResetUsedLights (1, nThread);
 	ResetActiveLights (nThread, 0);
 	while (i--) {
@@ -1337,7 +1337,7 @@ else if (gameStates.render.bPerPixelLighting) {
 		if (vPosP)
 			vcd.vertPos.Assign (*vPosP);
 		else {
-			COMPUTE_SEGMENT_CENTER_I (&vCenter, nSegment);
+			vCenter = SEGMENTS [nSegment].Center ();
 			vcd.vertPos.Assign (vCenter);
 			}
 		vcd.vertPosP = &vcd.vertPos;
@@ -1353,7 +1353,7 @@ else if (gameStates.render.bPerPixelLighting) {
 	}
 else {
 	if (vPosP) {
-		COMPUTE_SEGMENT_CENTER_I (&vCenter, nSegment);
+		vCenter = SEGMENTS [nSegment].Center ();
 		//transformation.Transform (&vCenter, &vCenter);
 		ds = 0.0f;
 		}

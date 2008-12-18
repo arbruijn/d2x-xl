@@ -539,7 +539,7 @@ else
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	// NOTE THE LINK TO ABOVE!!!!
 	CFixVector cp;
-	COMPUTE_SIDE_CENTER (&cp, segP, nSide);
+	cp = segP->SideCenter (nSide);
 	if (gameData.walls.animP [wallP->nClip].openSound > -1)
 		DigiLinkSoundToPos (gameData.walls.animP [wallP->nClip].openSound, SEG_IDX (segP), nSide, &cp, 0, F1_0);
 	}
@@ -604,8 +604,7 @@ cloakWallP->nBackWall = nConnWall;
 Assert(SEG_IDX (segP) != -1);
 //Assert(!IS_WALL (wallP->nLinkedWall));
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-	CFixVector cp;
-	COMPUTE_SIDE_CENTER (&cp, segP, nSide);
+	CFixVector cp = segP->SideCenter (nSide);
 	DigiLinkSoundToPos (SOUND_WALL_CLOAK_ON, SEG_IDX (segP), nSide, &cp, 0, F1_0);
 	}
 for (i = 0; i < 4; i++) {
@@ -672,9 +671,8 @@ cloakWallP->nBackWall = WallNumP (connSegP, nConnSide);
 Assert(SEG_IDX (segP) != -1);
 Assert(!IS_WALL (wallP->nLinkedWall));
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-	CFixVector cp;
-	COMPUTE_SIDE_CENTER(&cp, segP, nSide);
-	DigiLinkSoundToPos(SOUND_WALL_CLOAK_OFF, SEG_IDX (segP), nSide, &cp, 0, F1_0);
+	CFixVector cp = segP->SideCenter (nSide);
+	DigiLinkSoundToPos (SOUND_WALL_CLOAK_OFF, SEG_IDX (segP), nSide, &cp, 0, F1_0);
 	}
 for (i = 0; i < 4; i++) {
 	cloakWallP->front_ls [i] = segP->m_sides [nSide].uvls [i].l;
@@ -822,8 +820,7 @@ else
 	doorP->nPartCount = 1;
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	// NOTE THE LINK TO ABOVE!!!!
-	CFixVector cp;
-	COMPUTE_SIDE_CENTER (&cp, segP, nSide);
+	CFixVector cp = segP->SideCenter (nSide);
 	if (gameData.walls.animP [wallP->nClip].openSound > -1)
 		DigiLinkSoundToPos (gameData.walls.animP [wallP->nClip].openSound, SEG_IDX (segP), nSide, &cp, 0, F1_0);
 	}
@@ -991,7 +988,7 @@ for (i = 0; i < doorP->nPartCount; i++) {
 	if ((gameData.demo.nState != ND_STATE_PLAYBACK) && !(i || doorP->time)) {
 		if (gameData.walls.animP [wallP->nClip].closeSound  > -1)
 			DigiLinkSoundToPos ((short) gameData.walls.animP [gameData.walls.walls [WallNumP (segP, nSide)].nClip].closeSound,
-									  SEG_IDX (segP), nSide, SIDE_CENTER_I (wallP->nSegment, nSide), 0, F1_0);
+									  SEG_IDX (segP), nSide, SEGMENTS [wallP->nSegment].SideCenter (nSide), 0, F1_0);
 		}
 	doorP->time += gameData.time.xFrame;
 	bFlags &= AnimateClosingDoor (segP, nSide, doorP->time);
@@ -1173,7 +1170,7 @@ Assert(nPlayer > -1);
 //	Determine whether CPlayerData is moving forward.  If not, don't say negative
 //	messages because he probably didn't intentionally hit the door.
 if (objP->info.nType == OBJ_PLAYER)
-	bShowMessage = (CFixVector::Dot(objP->info.position.mOrient.FVec (), objP->mType.physInfo.velocity) > 0);
+	bShowMessage = (CFixVector::Dot (objP->info.position.mOrient.FVec (), objP->mType.physInfo.velocity) > 0);
 else if (objP->info.nType == OBJ_ROBOT)
 	bShowMessage = 0;
 else if ((objP->info.nType == OBJ_WEAPON) && (objP->cType.laserInfo.parent.nType == OBJ_ROBOT))
@@ -1586,7 +1583,7 @@ if (nStuckObjects)
 // -----------------------------------------------------------------------------------
 #define	MAX_BLAST_GLASS_DEPTH	5
 
-void BngProcessSegment(CObject *objP, fix damage, CSegment *segp, int depth, sbyte *visited)
+void BngProcessSegment(CObject *objP, fix damage, CSegment *segP, int depth, sbyte *visited)
 {
 	int	i;
 	short	nSide;
@@ -1602,7 +1599,7 @@ void BngProcessSegment(CObject *objP, fix damage, CSegment *segp, int depth, sby
 		CFixVector	pnt;
 
 		//	Process only walls which have glass.
-		if ((tm = segp->m_sides [nSide].nOvlTex)) {
+		if ((tm = segP->m_sides [nSide].nOvlTex)) {
 			int	ec, db;
 			tEffectClip *ecP;
 
@@ -1612,23 +1609,23 @@ void BngProcessSegment(CObject *objP, fix damage, CSegment *segp, int depth, sby
 
 			if (((ec != -1) && (db != -1) && !(ecP->flags & EF_ONE_SHOT)) ||
 			 	 ((ec == -1) && (gameData.pig.tex.tMapInfoP [tm].destroyed != -1))) {
-				COMPUTE_SIDE_CENTER(&pnt, segp, nSide);
+				pnt = segP->SideCenter (nSide);
 				dist = CFixVector::Dist(pnt, objP->info.position.vPos);
 				if (dist < damage/2) {
-					dist = FindConnectedDistance(&pnt, SEG_IDX (segp), &objP->info.position.vPos, objP->info.nSegment, MAX_BLAST_GLASS_DEPTH, WID_RENDPAST_FLAG, 0);
+					dist = FindConnectedDistance (&pnt, SEG_IDX (segP), &objP->info.position.vPos, objP->info.nSegment, MAX_BLAST_GLASS_DEPTH, WID_RENDPAST_FLAG, 0);
 					if ((dist > 0) && (dist < damage/2))
-						CheckEffectBlowup(segp, nSide, &pnt, OBJECTS + objP->cType.laserInfo.parent.nObject, 1);
+						CheckEffectBlowup (segP, nSide, &pnt, OBJECTS + objP->cType.laserInfo.parent.nObject, 1);
 				}
 			}
 		}
 	}
 
 	for (i=0; i<MAX_SIDES_PER_SEGMENT; i++) {
-		int	nSegment = segp->children [i];
+		int	nSegment = segP->children [i];
 
 		if (nSegment != -1) {
 			if (!visited [nSegment]) {
-				if (WALL_IS_DOORWAY(segp, (short) i, NULL) & WID_FLY_FLAG) {
+				if (WALL_IS_DOORWAY(segP, (short) i, NULL) & WID_FLY_FLAG) {
 					visited [nSegment] = 1;
 					BngProcessSegment (objP, damage, &SEGMENTS [nSegment], depth, visited);
 				}

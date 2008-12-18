@@ -50,7 +50,7 @@ if (gameData.hoard.nMonsterballSeg >= 0)
 	nDropSeg = gameData.hoard.nMonsterballSeg;
 else {
 	nDropSeg = ChooseDropSegment (NULL, NULL, EXEC_DROP);
-	COMPUTE_SEGMENT_CENTER_I (&gameData.hoard.vMonsterballPos, nDropSeg);
+	gameData.hoard.vMonsterballPos = SEGMENTS [nDropSeg].Center ();
 	}
 #endif
 if (nDropSeg >= 0) {

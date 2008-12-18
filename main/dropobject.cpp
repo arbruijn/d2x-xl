@@ -238,7 +238,7 @@ while (nSegment == -1) {
 		}
 	//bail if not far enough from original position
 	if (nSegment > -1) {
-		COMPUTE_SEGMENT_CENTER_I (&tempv, nSegment);
+		tempv = SEGMENTS [nSegment].Center ();
 		nDist = FindConnectedDistance (vPlayerPos, nPlayerSeg, &tempv, nSegment, -1, WID_FLY_FLAG, 0);
 		if ((nDist < 0) || (nDist >= I2X (20) * nDepth))
 			break;
@@ -383,7 +383,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	if (bFixedPos)
 		vNewPos = OBJECTS [nObject].info.position.vPos;
 	else
-		PickRandomPointInSeg (&vNewPos, nSegment);
+		vNewPos = SEGMENTS [nSegment].RandomPoint ();
 	MultiSendCreatePowerup (nPowerupType, nSegment, nObject, &vNewPos);
 	if (!bFixedPos)
 		OBJECTS [nObject].info.position.vPos = vNewPos;

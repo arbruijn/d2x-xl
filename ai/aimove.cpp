@@ -52,10 +52,10 @@ if (rate == 0)
 	return 0;
 if ((objP->info.nId == BABY_SPIDER_ID) && (objP->info.nType == OBJ_ROBOT)) {
 	PhysicsTurnTowardsVector (vGoal, objP, rate);
-	return CFixVector::Dot(*vGoal, objP->info.position.mOrient.FVec ());
+	return CFixVector::Dot (*vGoal, objP->info.position.mOrient.FVec ());
 	}
 new_fvec = *vGoal;
-dot = CFixVector::Dot(*vGoal, objP->info.position.mOrient.FVec ());
+dot = CFixVector::Dot (*vGoal, objP->info.position.mOrient.FVec ());
 if (!IsMultiGame)
 	dot = (fix) (dot / gameStates.gameplay.slowmo [0].fSpeed);
 if (dot < (F1_0 - gameData.time.xFrame/2)) {
@@ -98,7 +98,7 @@ void MoveTowardsVector (CObject *objP, CFixVector *vGoalVec, int bDotBased)
 
 vel = pptr->velocity;
 CFixVector::Normalize(vel);
-dot = CFixVector::Dot(vel, objP->info.position.mOrient.FVec ());
+dot = CFixVector::Dot (vel, objP->info.position.mOrient.FVec ());
 
 if (botInfoP->thief)
 	dot = (F1_0+dot)/2;
@@ -271,7 +271,7 @@ void MoveAroundPlayer (CObject *objP, CFixVector *vVecToPlayer, int fastFlag)
 		//	Only take evasive action if looking at player.
 		//	Evasion speed is scaled by percentage of shields left so wounded robots evade less effectively.
 
-		dot = CFixVector::Dot(gameData.ai.vVecToPlayer, objP->info.position.mOrient.FVec ());
+		dot = CFixVector::Dot (gameData.ai.vVecToPlayer, objP->info.position.mOrient.FVec ());
 		if ((dot > botInfoP->fieldOfView [gameStates.app.nDifficultyLevel]) &&
 			 !(gameData.objs.consoleP->info.nFlags & PLAYER_FLAGS_CLOAKED)) {
 			fix	damage_scale;
@@ -371,7 +371,7 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 		fieldOfView = ROBOTINFO (objP->info.nId).fieldOfView [gameStates.app.nDifficultyLevel];
 		vVecToLaser = dObjP->info.position.vPos - objP->info.position.vPos;
 		xDistToLaser = CFixVector::Normalize(vVecToLaser);
-		dot = CFixVector::Dot(vVecToLaser, objP->info.position.mOrient.FVec ());
+		dot = CFixVector::Dot (vVecToLaser, objP->info.position.mOrient.FVec ());
 
 		if ((dot > fieldOfView) || (botInfoP->companion)) {
 			fix			dotLaserRobot;
@@ -387,7 +387,7 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 				}
 			vLaserToRobot = objP->info.position.vPos - dObjP->info.position.vPos;
 			CFixVector::Normalize(vLaserToRobot);
-			dotLaserRobot = CFixVector::Dot(fVecLaser, vLaserToRobot);
+			dotLaserRobot = CFixVector::Dot (fVecLaser, vLaserToRobot);
 
 			if ((dotLaserRobot > F1_0*7/8) && (xDistToLaser < F1_0*80)) {
 				int evadeSpeed = ROBOTINFO (objP->info.nId).evadeSpeed [gameStates.app.nDifficultyLevel];
@@ -465,14 +465,14 @@ void MoveObjectToLegalSpot (CObject *objP, int bMoveToCenter)
 	CSegment		*segP = SEGMENTS + objP->info.nSegment;
 
 if (bMoveToCenter) {
-	COMPUTE_SEGMENT_CENTER_I (&vSegCenter, objP->info.nSegment);
+	vSegCenter = SEGMENTS [objP->info.nSegment].Center ();
 	MoveObjectToLegalPoint (objP, &vSegCenter);
 	return;
 	}
 else {
 	for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 		if (segP->IsDoorWay ((short) i, objP) & WID_FLY_FLAG) {
-			COMPUTE_SEGMENT_CENTER_I (&vSegCenter, segP->m_children [i]);
+			vSegCenter = SEGMENTS [segP->m_children [i]].Center ();
 			MoveObjectToLegalPoint (objP, &vSegCenter);
 			if (ObjectIntersectsWall (objP))
 				objP->info.position.vPos = vOrigPos;
@@ -547,9 +547,7 @@ return xDistToGoal;
 //	If CSegment center is nearer than 2 radii, move it to center.
 fix MoveTowardsSegmentCenter (CObject *objP)
 {
-	CFixVector	vSegCenter;
-
-COMPUTE_SEGMENT_CENTER_I (&vSegCenter, objP->info.nSegment);
+CFixVector vSegCenter = SEGMENTS [objP->info.nSegment].Center ();
 return MoveTowardsPoint (objP, &vSegCenter, 0);
 }
 

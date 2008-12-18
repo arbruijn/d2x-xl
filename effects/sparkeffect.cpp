@@ -38,220 +38,231 @@ class CEnergySparks {
 
 //-----------------------------------------------------------------------------
 
-void AllocSegmentSparks (short nSegment)
+void CEnergySpark::Setup (short nSegment, ubyte nType)
 {
-	int				nMatCen = nSegment;
-	tSegment2		*seg2P = gameData.segs.segment2s + (nSegment = gameData.matCens.sparkSegs [nSegment]);
-	int				i, bFuel = (seg2P->special == SEGMENT_IS_FUELCEN);
-	tSegmentSparks	*segP = gameData.matCens.sparks [bFuel] + nMatCen;
-	tEnergySpark	*sparkP = segP->sparks;
+	CSegment*			segP = SEGMENTS + nSegment;
+	CFixVector			vOffs;
+	CFloatVector		vMaxf, vMax2f;
 
-segP->nMaxSparks = (ushort) (2 * AvgSegRadf (nSegment) + 0.5f);
-if (!(sparkP = new tEnergySpark [segP->nMaxSparks]))
-	segP->nMaxSparks = 0;
-else {
-	segP->sparks = sparkP;
-	segP->bUpdate = 0;
-	memset (sparkP, 0, segP->nMaxSparks * sizeof (tEnergySpark));
-	for (i = segP->nMaxSparks; i; i--, sparkP++)
-		sparkP->nProb = d_rand () % SPARK_MIN_PROB + 1;
-	}
-}
-
-//-----------------------------------------------------------------------------
-
-void FreeSegmentSparks (short nSegment)
-{
-	int				nMatCen = nSegment;
-	tSegment2		*seg2P = gameData.segs.segment2s + (nSegment = gameData.matCens.sparkSegs [nSegment]);
-	int				bFuel = (seg2P->special == SEGMENT_IS_FUELCEN);
-	tSegmentSparks	*segP = gameData.matCens.sparks [bFuel]+ nMatCen;
-
-if (segP->sparks) {
-	delete[] segP->sparks;
-	segP->nMaxSparks = 0;
-	}
-}
-
-//-----------------------------------------------------------------------------
-
-void CreateSegmentSparks (short nSegment)
-{
-	int				nMatCen = nSegment;
-	tSegment2		*seg2P = gameData.segs.segment2s + (nSegment = gameData.matCens.sparkSegs [nSegment]);
-	int				bFuel = (seg2P->special == SEGMENT_IS_FUELCEN);
-	tSegmentSparks	*segP = gameData.matCens.sparks [bFuel] + nMatCen;
-	tEnergySpark	*sparkP = segP->sparks;
-	CFixVector		vOffs;
-	CFloatVector			vMaxf, vMax2f;
-	int				i;
-
-vMaxf.Assign (gameData.segs.extent [nSegment].vMax);
+vMaxf.Assign (segP->m_extents [0]);
 vMax2f = vMaxf * 2;
-for (i = segP->nMaxSparks; i; i--, sparkP++) {
-	if (sparkP->tRender)
-		continue;
-	if (!sparkP->nProb)
-		sparkP->nProb = SPARK_MIN_PROB;
-	if (gameStates.app.nSDLTicks - sparkP->tCreate < SPARK_FRAME_TIME)
-		continue;
-	sparkP->tCreate = gameStates.app.nSDLTicks;
-	if (d_rand () % sparkP->nProb)
-		sparkP->nProb--;
+if (m_tRender)
+	return;
+if (!m_nProb)
+	m_nProb = SPARK_MIN_PROB;
+if (gameStates.app.nSDLTicks - m_tCreate < SPARK_FRAME_TIME)
+	return;
+m_nType = nType;
+m_tCreate = gameStates.app.nSDLTicks;
+if (d_rand () % m_nProb)
+	m_nProb--;
+else {
+	vOffs [X] = F2X (vMaxf [X] - f_rand () * vMax2f [X]);
+	vOffs [Y] = F2X (vMaxf [Y] - f_rand () * vMax2f [Y]);
+	vOffs [Z] = F2X (vMaxf [Z] - f_rand () * vMax2f [Z]);
+	m_vPos = SEGMENTS [nSegment].Center () + vOffs;
+	if ((vOffs.Mag () > segP->MinRad ()) && segP->Masks (m_vPos, nSegment, 0).m_center)
+		m_nProb = 1;
 	else {
-		vOffs [X] = F2X (vMaxf [X] - f_rand () * vMax2f [X]);
-		vOffs [Y] = F2X (vMaxf [Y] - f_rand () * vMax2f [Y]);
-		vOffs [Z] = F2X (vMaxf [Z] - f_rand () * vMax2f [Z]);
-		sparkP->vPos = *SEGMENT_CENTER_I (nSegment) + vOffs;
-		if ((vOffs.Mag () > MinSegRad (nSegment)) && GetSegMasks (sparkP->vPos, nSegment, 0).centerMask)
-			sparkP->nProb = 1;
-		else {
-			sparkP->xSize = F1_0 + 4 * d_rand ();
-			sparkP->nFrame = 0;
-			sparkP->tRender = -1;
-			sparkP->bRendered = 0;
-			sparkP->nProb = SPARK_MIN_PROB;
-			if (gameOpts->render.effects.bMovingSparks) {
-				sparkP->vDir [X] = (F1_0 / 4) - d_rand ();
-				sparkP->vDir [Y] = (F1_0 / 4) - d_rand ();
-				sparkP->vDir [Z] = (F1_0 / 4) - d_rand ();
-				CFixVector::Normalize (sparkP->vDir);
-				sparkP->vDir *= ((F1_0 / (16 + d_rand () % 16)));
-				}
-			else
-				sparkP->vDir.SetZero ();
+		m_xSize = F1_0 + 4 * d_rand ();
+		m_nFrame = 0;
+		m_tRender = -1;
+		m_bRendered = 0;
+		m_nProb = SPARK_MIN_PROB;
+		if (gameOpts->render.effects.bMovingSparks) {
+			m_vDir [X] = (F1_0 / 4) - d_rand ();
+			m_vDir [Y] = (F1_0 / 4) - d_rand ();
+			m_vDir [Z] = (F1_0 / 4) - d_rand ();
+			CFixVector::Normalize (m_vDir);
+			m_vDir *= ((F1_0 / (16 + d_rand () % 16)));
 			}
+		else
+			m_vDir.SetZero ();
 		}
 	}
 }
 
 //-----------------------------------------------------------------------------
 
-void UpdateSegmentSparks (short nSegment)
+void CEnergySpark::Update (void)
 {
-	int				nMatCen = nSegment;
-	tSegment2		*seg2P = gameData.segs.segment2s + (nSegment = gameData.matCens.sparkSegs [nSegment]);
-	int				bFuel = (seg2P->special == SEGMENT_IS_FUELCEN);
-	tSegmentSparks	*segP = gameData.matCens.sparks [bFuel] + nMatCen;
-
-if (segP->bUpdate) {
-		tEnergySpark	*sparkP = segP->sparks;
-		int				i;
-
-	for (i = segP->nMaxSparks; i; i--, sparkP++) {
-		if (!sparkP->tRender)
-			continue;
-		if (gameStates.app.nSDLTicks - sparkP->tRender < SPARK_FRAME_TIME)
-			continue;
-		if (++sparkP->nFrame < 32) {
-			sparkP->tRender = gameStates.app.nSDLTicks; //+= SPARK_FRAME_TIME;
-			if (gameOpts->render.effects.bMovingSparks)
-				sparkP->vPos += sparkP->vDir;
-			}
-		else {
-			sparkP->tRender = 0;
-			sparkP->tCreate = -1;
-			}
-		}
-	CreateSegmentSparks (nMatCen);
-	segP->bUpdate = 0;
+if (!m_tRender)
+	continue;
+if (gameStates.app.nSDLTicks - m_tRender < SPARK_FRAME_TIME)
+	continue;
+if (++m_nFrame < 32) {
+	m_tRender = gameStates.app.nSDLTicks; //+= SPARK_FRAME_TIME;
+	if (gameOpts->render.effects.bMovingSparks)
+		m_vPos += m_vDir;
+	}
+else {
+	m_tRender = 0;
+	m_tCreate = -1;
 	}
 }
 
 //-----------------------------------------------------------------------------
 
-void RenderSegmentSparks (short nSegment)
+void CEnergySpark::Render (void)
 {
-	int			nMatCen = nSegment;
-	tSegment2	*seg2P = gameData.segs.segment2s + (nSegment = gameData.matCens.sparkSegs [nSegment]);
+if (m_tRender) {
+	if (m_nFrame > 31)
+		m_tRender = 0;
+	else
+		TIAddSpark (m_vPos, (char) m_nType, m_xSize, (char) m_nFrame);
+	}
+}
 
-if (gameData.render.mine.bVisible [nSegment] == gameData.render.mine.nVisible) {
-	int				bFuel = (seg2P->special == SEGMENT_IS_FUELCEN);
-	tSegmentSparks	*segP = gameData.matCens.sparks [bFuel] + nMatCen;
-	tEnergySpark	*sparkP = segP->sparks;
-	int				i;
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-	segP->bUpdate = 1;
-	for (i = segP->nMaxSparks; i; i--, sparkP++) {
-		if (sparkP->tRender) {
-			if (sparkP->nFrame > 31)
-				sparkP->tRender = 0;
-			else
-				TIAddSpark (sparkP->vPos, (char) bFuel, sparkP->xSize, (char) sparkP->nFrame);
-			}
-		}
+void CSparks::Create (void)
+{
+for (i = m_nMaxSparks; i; i--, sparkP++)
+	m_sparks [i].Setup (m_nSegment, m_nType);
+}
+
+//-----------------------------------------------------------------------------
+
+void CSparks::Setup (short nSegment, ubyte nType)
+{
+m_nMaxSparks = (ushort) (2 * AvgSegRadf (nSegment) + 0.5f);
+if (!m_sparks.Create (m_nMaxSparks))
+	m_nMaxSparks = 0;
+else {
+	m_bUpdate = 0;
+	m_nSegment = nSegment;
+	m_nType = nType;
+	sparks.Clear ();
+	for (int i = 0; i < m_nMaxSparks; i++)
+		m_sparks [i].m_nProb = d_rand () % SPARK_MIN_PROB + 1;
 	}
 }
 
 //-----------------------------------------------------------------------------
 
-void DoEnergySparkFrame (void)
+void CSparks::Update (void)
 {
-SEM_ENTER (SEM_SPARKS)
-
-	short	nSegment;
-
-if (gameOpts->render.effects.bEnergySparks)
-	for (nSegment = 0; nSegment < gameData.matCens.nSparkSegs; nSegment++)
-		UpdateSegmentSparks (nSegment);
-SEM_LEAVE (SEM_SPARKS)
-}
-
-
-//-----------------------------------------------------------------------------
-
-void RenderEnergySparks (void)
-{
-if (gameOpts->render.effects.bEnergySparks) {
-	for (short nSegment = 0; nSegment < gameData.matCens.nSparkSegs; nSegment++)
-		RenderSegmentSparks (nSegment);
+if (m_bUpdate) {
+	for (int i = 0; i < m_nMaxSparks; i++)
+		m_sparks [i].Update ();
+	Create ();
+	m_bUpdate = 0;
 	}
 }
 
 //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-int BuildSparkSegList (void)
+inline int CSparkManager::Type (short nMatCen)
 {
-	tSegment2	*seg2P = gameData.segs.segment2s.Buffer ();
+return SEGMENTS [m_segments [nMatCent]].m_nType == SEGMENT_IS_FUELCEN;
+}
+
+//-----------------------------------------------------------------------------
+
+inline CSparks& CSparkManager::Sparks (short nMatCen)
+{
+return m_sparks [Type (nMatCen)][nMatCen];
+}
+
+//-----------------------------------------------------------------------------
+
+void CSparkManager::SetupSparks (short nMatCen)
+{
+Sparks (nMatCen).Setup (m_segments [nMatCen], Type (nMatCen));
+}
+
+//-----------------------------------------------------------------------------
+
+void CSparkManager::UpdateSparks (short nMatCen)
+{
+Sparks (nMatCen).Update ();
+}
+
+//-----------------------------------------------------------------------------
+
+void CSparkManager::RenderSparks (short nMatCen)
+{
+Sparks (nMatCen).Render ();
+}
+
+//-----------------------------------------------------------------------------
+
+void CSparkManager::DestroySparks (short nMatCen)
+{
+Sparks (nMatCen).Destroy ();
+}
+
+//-----------------------------------------------------------------------------
+
+int CSparkManager::BuildSegList (void)
+{
+	CSegment*	segP = SEGMENTS.Buffer ();
 	short			nSegment;
 
-gameData.matCens.nSparkSegs = 0;
-for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, seg2P++)
-	if ((seg2P->special == SEGMENT_IS_FUELCEN) || (seg2P->special == SEGMENT_IS_REPAIRCEN))
-		gameData.matCens.sparkSegs [gameData.matCens.nSparkSegs++] = nSegment;
-return gameData.matCens.nSparkSegs;
+m_nSegments = 0;
+for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++)
+	if ((segP->m_nType == SEGMENT_IS_FUELCEN) || (segP->m_nType == SEGMENT_IS_REPAIRCEN))
+		m_segments [m_nSegments++] = nSegment;
+return m_nSegments;
 }
 
 
 //-----------------------------------------------------------------------------
 
-void AllocEnergySparks (void)
+void CSparkManager::Setup (void)
 {
 SEM_ENTER (SEM_SPARKS)
-	short	nSegment;
+if ((gameStates.render.bHaveSparks = gameOpts->render.effects.bEnergySparks && bmpSparks && (BuildSegList () > 0)) {
+	for (short i = 0; i < m_nSegments; i++)
+		SetupSparks (i);
+	d_srand ((uint) gameStates.app.nSDLTicks);
+	}	
+SEM_LEAVE (SEM_SPARKS)
+}
 
-if (gameOpts->render.effects.bEnergySparks && BuildSparkSegList ()) {
-	if (bmpSparks) {
-		for (nSegment = 0; nSegment < gameData.matCens.nSparkSegs; nSegment++)
-			AllocSegmentSparks (nSegment);
-		d_srand ((uint) gameStates.app.nSDLTicks);
-		}
-	else
-		gameOpts->render.effects.bEnergySparks = 0;
+//-----------------------------------------------------------------------------
+
+void CSparkManager::Render (void)
+{
+if (gameStates.render.bHaveSparks) {
+	for (short i = 0; i < m_nSegments; i++)
+		RenderSparks (i);
+	}
+}
+
+//-----------------------------------------------------------------------------
+
+void CSparkManager::Update (void)
+{
+if (gameStates.render.bHaveSparks) {
+	for (short i = 0; i < m_nSegments; i++)
+		UpdateSparks (i);
+	}
+}
+
+//-----------------------------------------------------------------------------
+
+void CSparkManager::Destroy (void)
+{
+SEM_ENTER (SEM_SPARKS)
+if (gameStates.render.bHaveSparks) {
+	for (int i = 0; i < m_nSegments; i++)
+		DestroySparks (i);
+	gameStates.render.bHaveSparks = 0;
 	}
 SEM_LEAVE (SEM_SPARKS)
 }
 
 //-----------------------------------------------------------------------------
 
-void FreeEnergySparks (void)
+void CSparkManager::DoFrame (void)
 {
 SEM_ENTER (SEM_SPARKS)
-	short	nSegment;
-
-if (gameOpts->render.effects.bEnergySparks)
-	for (nSegment = 0; nSegment < gameData.matCens.nSparkSegs; nSegment++)
-		FreeSegmentSparks (nSegment);
+Update ();
 SEM_LEAVE (SEM_SPARKS)
 }
 

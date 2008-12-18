@@ -296,7 +296,7 @@ if (gameOpts->render.particles.bDecreaseLag && (i == gameData.multiplayer.nLocal
 	mn = objP->info.position.vPos - objP->info.vLastPos;
 	CFixVector::Normalize (fn);
 	CFixVector::Normalize (mn);
-	d = CFixVector::Dot(fn, mn);
+	d = CFixVector::Dot (fn, mn);
 	if (d >= -F1_0 / 2)
 		bForward = 1;
 	else {

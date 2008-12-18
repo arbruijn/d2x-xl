@@ -6,8 +6,6 @@
 #include "u_mem.h"
 #include "error.h"
 
-#if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
-
 // Number of vertices in current mine (ie, gameData.segs.vertices, pointed to by Vp)
 //	Translate table to get opposite CSide of a face on a CSegment.
 char	sideOpposite[MAX_SIDES_PER_SEGMENT] = {WRIGHT, WBOTTOM, WLEFT, WTOP, WFRONT, WBACK};
@@ -31,112 +29,129 @@ if (bExtended) {
 	m_nType = cf.ReadByte ();
 	m_nMatCen = cf.ReadByte ();
 	m_value = cf.ReadByte ();
-	m_s2Flags = cf.ReadByte ();
+	m_flags = cf.ReadByte ();
 	m_xAvgSegLight = cf.ReadFix ();
 	}
-}
-
-//------------------------------------------------------------------------------
-// reads a tLightDelta structure from a CFile
-
-void ReadlightDelta (tLightDelta *dlP, CFile& cf)
-{
-dlP->nSegment = cf.ReadShort ();
-dlP->nSide = cf.ReadByte ();
-cf.ReadByte ();
-if (!(dlP->bValid = (dlP->nSegment >= 0) && (dlP->nSegment < gameData.segs.nSegments) && (dlP->nSide >= 0) && (dlP->nSide < 6)))
-	PrintLog ("Invalid delta light data %d (%d,%d)\n", dlP - gameData.render.lights.deltas, dlP->nSegment, dlP->nSide);
-cf.Read (dlP->vertLight, sizeof (dlP->vertLight [0]), sizeofa (dlP->vertLight));
-}
-
-
-//------------------------------------------------------------------------------
-// reads a tLightDeltaIndex structure from a CFile
-
-void ReadlightDeltaIndex (tLightDeltaIndex *di, CFile& cf)
-{
-if (gameStates.render.bD2XLights) {
-	short	i, j;
-	di->d2x.nSegment = cf.ReadShort ();
-	i = (short) cf.ReadByte ();
-	j = (short) cf.ReadByte ();
-	di->d2x.nSide = i;
-	di->d2x.count = (j << 5) + ((i >> 3) & 63);
-	di->d2x.index = cf.ReadShort ();
-	}
 else {
-	di->d2.nSegment = cf.ReadShort ();
-	di->d2.nSide = cf.ReadByte ();
-	di->d2.count = cf.ReadByte ();
-	di->d2.index = cf.ReadShort ();
 	}
 }
-#endif
 
 //------------------------------------------------------------------------------
 
-int CSkyBox::CountSegments (void)
+void CSegment::ComputeSideRads (void)
 {
-	tSegment2	*seg2P;
-	int			i, nSegments;
-
-for (i = gameData.segs.nSegments, nSegments = 0, seg2P = SEGMENTS.Buffer (); i; i--, seg2P++)
-	if (seg2P->special == SEGMENT_IS_SKYBOX)
-		nSegments++;
-return nSegments;
-}
-
-
-//------------------------------------------------------------------------------
-
-void CSkyBox::Destroy (void)
-{
-CStack::Destroy ();
-gameStates.render.bHaveSkyBox = 0;
+for (int i = 0; i < 6; i++)
+	m_sides [i].ComputeRads ();
 }
 
 //------------------------------------------------------------------------------
 
-int BuildSkyBoxSegList (void)
+void CSegment::ComputeCenter (void)
 {
-gameData.segs.skybox.Destroy ();
+m_vCenter = gameData.segs.vertices [m_verts [0]];
+m_vCenter += gameData.segs.vertices [m_verts [1]];
+m_vCenter += gameData.segs.vertices [m_verts [2]];
+m_vCenter += gameData.segs.vertices [m_verts [3]];
+m_vCenter += gameData.segs.vertices [m_verts [4]];
+m_vCenter += gameData.segs.vertices [m_verts [5]];
+m_vCenter += gameData.segs.vertices [m_verts [6]];
+m_vCenter += gameData.segs.vertices [m_verts [7]];
+m_vCenter [X] /= 8;
+m_vCenter [Y] /= 8;
+m_vCenter [Z] /= 8;
+}
 
-short nSegments = gameData.segs.skybox.CountSegments ();
+// -----------------------------------------------------------------------------
 
-if (!nSegments) {
-	return 0;
+void CSegment::ComputeRads (fix xMinDist)
+{
+	CFixVector	vMin, vMax, v;
+	fix			xDist;
 
-	tSegment2	*seg2P;
-	int			h, i;
-
-if (!(gameData.segs.skybox.Create (nSegments)))
-	return 0;
-for (h = gameData.segs.nSegments, i = 0, seg2P = SEGMENTS.Buffer (); i < h; i++, seg2P++)
-	if (seg2P->special == SEGMENT_IS_SKYBOX)
-		gameData.segs.skybox.Push (i);
+m_rads [0] = xMinDist;
+m_rads [1] = 0;
+vMin [X] = vMin [Y] = vMin [Z] = 0x7FFFFFFF;
+vMax [X] = vMax [Y] = vMax [Z] = -0x7FFFFFFF;
+for (int i = 0; i < 8; i++) {
+	v = m_vCenter - gameData.segs.vertices [m_verts [i]];
+	if (vMin [X] > v [X])
+		vMin [X] = v [X];
+	if (vMin [Y] > v [Y])
+		vMin [Y] = v [Y];
+	if (vMin [Z] > v [Z])
+		vMin [Z] = v [Z];
+	if (vMax [X] < v [X])
+		vMax [X] = v [X];
+	if (vMax [Y] < v [Y])
+		vMax [Y] = v [Y];
+	if (vMax [Z] < v [Z])
+		vMax [Z] = v [Z];
+	xDist = v.Mag ();
+	if (m_rads [1] < xDist)
+		m_rads [1] = xDist;
 	}
-gameStates.render.bHaveSkyBox = (gameData.segs.skybox.ToS () > 0);
-return gameData.segs.skybox.ToS ();
+m_extents [0] = vMin;
+m_extents [1] = vMax;
 }
 
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+//	Given two segments, return the side index in the connecting segment which connects to the base segment
 
-inline CWall* CSide::Wall (void) { return IS_WALL (m_nWall) ? WALLS + m_nWall : NULL; }
+int CSegment::FindConnectedSide (CSegment* other)
+{
+	short		nSegment = SEG_IDX (this);
+	ushort*	childP = other->m_children;
 
-//------------------------------------------------------------------------------
+if (childP [0] == nSegment)
+		return 0;
+if (childP [1] == nSegment)
+		return 1;
+if (childP [2] == nSegment)
+		return 2;
+if (childP [3] == nSegment)
+		return 3;
+if (childP [4] == nSegment)
+		return 4;
+if (childP [5] == nSegment)
+		return 5;
+return -1;
+}
 
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------
+//returns 3 different bitmasks with info telling if this sphere is in
+//this CSegment.  See CSegMasks structure for info on fields
+CSegMasks CSegment::GetSideMasks (const CFixVector& refP, fix xRad)
+{
+	short		nSide, faceBit;
+	CSegMask	mask;
 
-inline CFixVector& CSegment::Normal (int nSide, int nFace) {
-	if (gameStates.render.bRendering)
-		return m_sides [nSide].m_rotNorms [nFace];
-	else
-		return m_sides [nSide].m_normals [nFace];
-	}
+//check refPoint against each CSide of CSegment. return bitmask
+for (nSide = 0, faceBit = 1; nSide < 6; nSide++)
+	masks |= m_sides [nSide].Masks (refP, rad, 1 << nSide, faceBit);
+masks.m_valid = 1;
+return masks;
+}
+
+// -------------------------------------------------------------------------------
+//	Make a just-modified CSegment valid.
+//		check all sides to see how many faces they each should have (0, 1, 2)
+//		create new vector normals
+void CSegment::Validate (void)
+{
+for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
+	m_sides [i].Validate (m_children [i] < 0);
+}
+
+//	--------------------------------------------------------------------------------
+//	Picks a Random point in a CSegment like so:
+//		From center, go up to 50% of way towards any of the 8 vertices.
+CFixVector CSegment::RandomPoint (void)
+{
+int nVertex = (d_rand () * MAX_VERTICES_PER_SEGMENT) >> 15;
+CFixVector v = gameData.segs.vertices [m_verts [nVertex]] - m_vCenter;
+v *= (d_rand ());        
+return v;
+}
 
 //------------------------------------------------------------------------------
 //eof

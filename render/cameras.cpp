@@ -217,9 +217,9 @@ else {
 	m_info.obj.info.position.mOrient = CFixMatrix::Create(a);
 #if 1
 	if (bTeleport)
-		COMPUTE_SEGMENT_CENTER_I (&m_info.obj.info.position.vPos, srcSeg);
+		m_info.obj.info.position.vPos = SEGMENTS [srcSeg].Center ();
 	else
-		COMPUTE_SIDE_CENTER_I (&m_info.obj.info.position.vPos, srcSeg, srcSide);
+		m_info.obj.info.position.vPos = SEGMENTS [srcSeg].SideCenter (srcSide);
 #else
 	GetSideVertIndex (sideVerts, srcSeg, srcSide);
 	for (i = 0; i < 4; i++) {

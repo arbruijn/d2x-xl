@@ -846,7 +846,7 @@ int load_mine_data (CFile& cf)
 	#endif
 
 	#ifdef EDITOR
-		ValidateSegmentAll ();
+		ValidateSegments ();
 	#endif
 
 	//create_local_segment_data ();
@@ -1284,7 +1284,7 @@ if (loadOp == 0) {
 		}
 	}
 else if (loadOp == 1) {
-	ValidateSegmentAll ();			// Fill in CSide nType and normals.
+	ValidateSegments ();			// Fill in CSide nType and normals.
 	loadOp = 2;
 	}
 else if (loadOp == 2) {
@@ -1455,7 +1455,7 @@ if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 	LoadSegmentsGauge (cf);
 else {
 	LoadSegmentsCompiled (-1, cf);
-	ValidateSegmentAll ();			// Fill in side type and normals.
+	ValidateSegments ();			// Fill in side type and normals.
 	LoadExtSegmentsCompiled (cf);
 	LoadVertLightsCompiled (-1, cf);
 	LoadSideLightsCompiled (-1, cf);

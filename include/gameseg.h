@@ -24,39 +24,34 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //figure out what seg the given point is in, tracing through segments
 int get_new_seg(CFixVector *p0,int startseg);
 
-typedef struct tSegMasks {
-   short faceMask;     //which faces sphere pokes through (12 bits)
-   sbyte sideMask;     //which sides sphere pokes through (6 bits)
-   sbyte centerMask;   //which sides center point is on back of (6 bits)
-	sbyte valid;
-} tSegMasks;
+class CSegMasks {
+	public:
+	   short m_face;     //which faces sphere pokes through (12 bits)
+		sbyte m_side;     //which sides sphere pokes through (6 bits)
+		sbyte m_center;   //which sides center point is on back of (6 bits)
+		sbyte m_valid;
+
+	public:
+		CSeg () { Init (); }
+		void Init (void) {
+			m_face = 0;
+			m_side = m_center = 0;
+			m_valid = 0;
+			}
+
+		inline CSegMask& operator|= (CSegMask other) {
+			if (other.m_valid) {
+				m_center |= other.m_center;
+				m_face |= other.m_face;
+				m_side |= other.m_side;
+				}
+			return *this;
+			}
+	};
 
 
 void ComputeSideRads (short nSegment, short CSide, fix *prMin, fix *prMax);
 int FindConnectedSide (CSegment *base_seg, CSegment *con_seg);
-
-#define	SEGMENT_CENTER_I(_nSeg)	(gameData.segs.segCenters [0] + (_nSeg))
-
-#define	SIDE_CENTER_I(_nSeg,_nSide)	(gameData.segs.sideCenters + (_nSeg) * 6 + (_nSide))
-
-#define	SIDE_CENTER_V(_nSeg,_nSide)	gameData.segs.sideCenters [(_nSeg) * 6 + (_nSide)]
-
-#define	COMPUTE_SEGMENT_CENTER_I(_pc,_nSeg) *(_pc) = (*SEGMENT_CENTER_I (_nSeg))
-
-#define	COMPUTE_SIDE_CENTER_I(_pc,_nSeg,_nSide) \
-			*(_pc) = SIDE_CENTER_V (_nSeg, _nSide)
-
-#define	COMPUTE_SEGMENT_RAD_I(_rad,_nSeg) \
-			*(_rad) = gameData.segs.segRads [_nSeg]
-
-#define	COMPUTE_SEGMENT_CENTER(_pc,_segP) \
-			COMPUTE_SEGMENT_CENTER_I (_pc, SEG_IDX (_segP))
-
-#define	COMPUTE_SIDE_CENTER(_pc,_segP,_nSide) \
-			COMPUTE_SIDE_CENTER_I (_pc, SEG_IDX (_segP), _nSide)
-
-#define	COMPUTE_SEGMENT_RAD(_rad,_segP) \
-			COMPUTE_SEGMENT_RAD_I (_rad, SEG_IDX (_segP))
 
 //   adjacent on the diagonal edge
 void CreateAllVertexLists (int *num_faces, int *vertices, int nSegment, int nSide);
@@ -65,19 +60,11 @@ void CreateAllVertexLists (int *num_faces, int *vertices, int nSegment, int nSid
 int CreateAbsVertexLists (int *vertices, int nSegment, int nSide);
 
 // -----------------------------------------------------------------------------------
-// Like create all vertex lists, but returns the vertnums (relative to
-// the CSide) for each of the faces that make up the CSide.
-//      If there is one face, it has 4 vertices.
-//      If there are two faces, they both have three vertices, so face #0 is stored in vertices 0,1,2,
-//      face #1 is stored in vertices 3,4,5.
-void CreateAllVertNumLists(int *num_faces, int *vertnums, int nSegment, int nSide);
-
-//      Given a CSide, return the number of faces
 //returns 3 different bitmasks with info telling if this sphere is in
-//this CSegment.  See tSegMasks structure for info on fields
-tSegMasks GetSideMasks (CFixVector *checkP, int nSegment, int nSide, fix xRad);
+//this CSegment.  See CSegMasks structure for info on fields
+CSegMasks GetSideMasks (CFixVector *checkP, int nSegment, int nSide, fix xRad);
 
-tSegMasks GetSegMasks(const CFixVector& checkp,int nSegment,fix rad);
+CSegMasks GetSegMasks(const CFixVector& checkp,int nSegment,fix rad);
 
 //this macro returns true if the nSegment for an CObject is correct
 #define check_obj_seg(obj) (GetSegMasks(&(obj)->pos,(obj)->nSegment,0).centermask == 0)
@@ -114,7 +101,7 @@ void ExtractOrientFromSegment(CFixMatrix *m,CSegment *seg);
 //              create new vector normals
 void ValidateSegment(CSegment *sp);
 
-void ValidateSegmentAll(void);
+void ValidateSegments(void);
 
 //      Extract the forward vector from CSegment *sp, return in *vp.
 //      The forward vector is defined to be the vector from the the center of the front face of the CSegment
@@ -132,8 +119,6 @@ void extract_right_vector_from_segment(CSegment *sp,CFixVector *vp);
 void extract_up_vector_from_segment(CSegment *sp,CFixVector *vp);
 
 void CreateWallsOnSide(CSegment *sp, int nSide);
-
-void PickRandomPointInSeg(CFixVector *new_pos, int nSegment);
 
 int GetVertsForNormal (int v0, int v1, int v2, int v3, int *pv0, int *pv1, int *pv2, int *pv3);
 int GetVertsForNormalTri (int v0, int v1, int v2, int *pv0, int *pv1, int *pv2);

@@ -135,7 +135,7 @@ gameData.matCens.fuelCenters [i].bFlag = 0;
 //	gameData.matCens.fuelCenters [i].NextRobotType = -1;
 //	gameData.matCens.fuelCenters [i].last_created_obj=NULL;
 //	gameData.matCens.fuelCenters [i].last_created_sig = -1;
-COMPUTE_SEGMENT_CENTER (&gameData.matCens.fuelCenters [i].vCenter, segP);
+gameData.matCens.fuelCenters [i].vCenter = segP->Center ();
 if (oldType == SEGMENT_IS_NOTHING)
 	gameData.matCens.nFuelCenters++;
 if (oldType == SEGMENT_IS_EQUIPMAKER)
@@ -179,7 +179,7 @@ gameData.matCens.fuelCenters [i].xMaxCapacity = gameData.matCens.fuelCenters [i]
 gameData.matCens.fuelCenters [i].nSegment = nSegment;
 gameData.matCens.fuelCenters [i].xTimer = -1;
 gameData.matCens.fuelCenters [i].bFlag = 0;
-COMPUTE_SEGMENT_CENTER_I (&gameData.matCens.fuelCenters [i].vCenter, seg2P - gameData.segs.segment2s);
+gameData.matCens.fuelCenters [i].vCenter = m_vCenter;
 i = gameData.matCens.nBotCenters++;
 gameData.matCens.botGens [i].xHitPoints = MATCEN_HP_DEFAULT;
 gameData.matCens.botGens [i].xInterval = MATCEN_INTERVAL_DEFAULT;
@@ -237,7 +237,7 @@ gameData.matCens.fuelCenters [i].nSegment = nSegment;
 gameData.matCens.fuelCenters [i].xTimer = -1;
 gameData.matCens.fuelCenters [i].bFlag = 0;
 //gameData.matCens.fuelCenters [i].bEnabled = FindTriggerTarget (nSegment, -1) == 0;
-COMPUTE_SEGMENT_CENTER_I (&gameData.matCens.fuelCenters [i].vCenter, nSegment);
+gameData.matCens.fuelCenters [i].vCenter = m_vCenter;
 //m_nMatCen = gameData.matCens.nEquipCenters;
 i = m_nMatCen;
 gameData.matCens.equipGens [i].xHitPoints = MATCEN_HP_DEFAULT;
@@ -439,7 +439,7 @@ void CreateMatCenEffect (tFuelCenInfo *matCenP, ubyte nVideoClip)
 	CFixVector	vPos;
 	CObject		*objP;
 
-COMPUTE_SEGMENT_CENTER_I (&vPos, matCenP->nSegment);
+vPos = SEGMENTS [matCenP->nSegment].Center ();
 // HACK!!!The 10 under here should be something equal to the 1/2 the size of the CSegment.
 objP = ObjectCreateExplosion ((short) matCenP->nSegment, &vPos, I2X (10), nVideoClip);
 if (objP) {
@@ -520,7 +520,7 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 	nType = GetMatCenObjType (matCenP, gameData.matCens.equipGens [nMatCen].objFlags);
 	if (nType < 0)
 		return;
-	COMPUTE_SEGMENT_CENTER_I (&vPos, matCenP->nSegment);
+	vPos = SEGMENTS [matCenP->nSegment].Center ();
 	// If this is the first materialization, set to valid robot.
 	nObject = CreatePowerup (nType, -1, (short) matCenP->nSegment, vPos, 1);
 	if (nObject < 0)
@@ -581,7 +581,7 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 		return;
 	matCenP->bFlag = 0;
 	matCenP->xTimer = 0;
-	COMPUTE_SEGMENT_CENTER_I (&vPos, matCenP->nSegment);
+	vPos = SEGMENTS [matCenP->nSegment].Center ();
 	// If this is the first materialization, set to valid robot.
 	nObject = CreatePowerup (POW_ENTROPY_VIRUS, -1, (short) matCenP->nSegment, vPos, 1);
 	if (nObject >= 0) {
@@ -724,7 +724,7 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 	matCenP->xCapacity -= gameData.matCens.xEnergyToCreateOneRobot;
 	matCenP->bFlag = 0;
 	matCenP->xTimer = 0;
-	COMPUTE_SEGMENT_CENTER_I (&vPos, matCenP->nSegment);
+	vPos = SEGMENTS [matCenP->nSegment].Center ();
 	// If this is the first materialization, set to valid robot.
 	nType = (int) GetMatCenObjType (matCenP, gameData.matCens.botGens [nMatCen].objFlags);
 	if (nType < 0)

@@ -641,7 +641,7 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSeg
 			if (connSegP->m_sides [nConnSide].nOvlTex == segP->m_sides [nSide].nOvlTex)
 				continue;		//skip this one
 			}
-		COMPUTE_SIDE_CENTER (&v, segP, nSide);
+		v = segP->SideCenter (nSide);
 		DigiLinkSoundToPos (nSound, nSegment, nSide, &v, 1, F1_0 / 2);
 		}
 
@@ -1680,8 +1680,7 @@ void SetPosFromReturnSegment (int bRelink)
 {
 	int	nPlayerObj = LOCALPLAYER.nObject;
 
-COMPUTE_SEGMENT_CENTER_I (&OBJECTS [nPlayerObj].info.position.vPos, 
-							     gameData.segs.secret.nReturnSegment);
+OBJECTS [nPlayerObj].info.position.vPos = SEGMENTS [gameData.segs.secret.nReturnSegment].Center ();
 if (bRelink)
 	OBJECTS [nPlayerObj].RelinkToSeg (gameData.segs.secret.nReturnSegment);
 ResetPlayerObject ();

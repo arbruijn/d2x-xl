@@ -1183,7 +1183,7 @@ for (i = 0; i < vld.nLights; i++) {
 		lightDist *= lightDist;
 		if (nType)
 			lightDist *= 2.0f;
-		NdotL = CFloatVector::Dot(*vertNorm, lightDir);
+		NdotL = CFloatVector::Dot (*vertNorm, lightDir);
 		if (NdotL < 0.0f)
 			NdotL = 0.0f;
 		}	
@@ -1196,7 +1196,7 @@ for (i = 0; i < vld.nLights; i++) {
 		CFloatVector::Normalize(vReflect);
 		lightPos->Neg();
 		CFloatVector::Normalize(*lightPos);
-		RdotE = CFloatVector::Dot(vReflect, *lightPos);
+		RdotE = CFloatVector::Dot (vReflect, *lightPos);
 		if (RdotE < 0.0f)
 			RdotE = 0.0f;
 		specular = (float) pow (RdotE, shininess);

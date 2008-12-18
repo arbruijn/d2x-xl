@@ -922,6 +922,7 @@ typedef struct tRenderStates {
 	int bTransparency;
 	int bSplitPolys;
 	int bHaveDynLights;
+	int bHaveSparks;
 	int bPaletteFadedOut;
 	int bHaveStencilBuffer;
 	int bUsePerPixelLighting;
@@ -2904,22 +2905,78 @@ class CMenuData {
 
 #include "fuelcen.h"
 
-typedef struct tEnergySpark {
-	short				nProb;
-	char				nFrame;
-	char				bRendered;
-	fix				xSize;
-	time_t			tRender;
-	time_t			tCreate;
-	CFixVector		vPos;
-	CFixVector		vDir;
-	} tEnergySpark;
+class CEnergySpark {
+	public:
+		short				m_nProb;
+		char				m_nFrame;
+		ubyte				m_bRendered :1;
+		ubyte				m_nType :1;
+		fix				m_xSize;
+		time_t			m_tRender;
+		time_t			m_tCreate;
+		CFixVector		m_vPos;
+		CFixVector		m_vDir;
 
-typedef struct tSegmentSparks {
-	tEnergySpark	*sparks;
-	short				nMaxSparks;
-	short				bUpdate;
-	} tSegmentSparks;
+	public:
+		void Setup (short nSegment);
+		void Update (void);
+		void Render (void);
+	};
+
+class CSparks {
+	public:
+		CArray<CEnergySpark>	sparks;
+		short						m_nSegment;
+		short						m_nMaxSparks;
+		ubyte						m_nType;
+		ubyte						m_bUpdate;
+
+	public:
+		CSparks () { Init (); }
+		~CSparks () { Destroy (); }
+		void Init (void) {
+			m_nMaxSparks = 0;
+			m_bUpdate = 0;
+			m_nSegment = -1;
+			}
+		void Destroy (void) {
+			sparks.Destroy ();
+			Init ();
+			}
+		void Setup (short nSegment, ubyte nType);
+		void Create (void);
+		void Render (void);
+		void Update (void);
+	};
+
+
+class CSparkManager {
+	private:
+		CSparks		m_sparks [2][MAX_FUEL_CENTERS];	//0: repair, 1: fuel center
+		short			m_segments [2][MAX_FUEL_CENTERS];
+		short			m_nSegments;
+
+	public:
+		CSparkManager () { Init (); }
+		~CSparkManager () { Destroy (); }
+		void Init (void);
+		void Setup (void);
+		void Render (void);
+		void Update (void);
+		void Destroy (void);
+		void Create (void);
+		void DoFrame (void);
+
+	private:
+		inline int Type (short nMatCen);
+		inline CSparks& Sparks (short nMatCen);
+		int BuildSegList (void);
+		void SetupSparks (short nMatCen);
+		void UpdateSparks (short nMatCen);
+		void RenderSparks (short nMatCen);
+		void DestroySparks (short nMatCen);
+	};
+
 
 class CMatCenData {
 	public:
@@ -2935,9 +2992,6 @@ class CMatCenData {
 		int				nRepairCenters;
 		fix				xEnergyToCreateOneRobot;
 		int				origStationTypes [MAX_FUEL_CENTERS];
-		tSegmentSparks	sparks [2][MAX_FUEL_CENTERS];	//0: repair, 1: fuel center
-		short				sparkSegs [2 * MAX_FUEL_CENTERS];
-		short				nSparkSegs;
 		CSegment*		playerSegP;
 
 	public:
@@ -3346,29 +3400,6 @@ static inline ushort WallNumI (short nSegment, short nSide) { return WallNumP(SE
 #endif
 
 //-----------------------------------------------------------------------------
-
-static inline fix MinSegRad (short nSegment)
-	{return gameData.segs.segRads [0][nSegment];}
-
-static inline float MinSegRadf (short nSegment)
-	{return X2F (gameData.segs.segRads [0][nSegment]);}
-
-static inline fix MaxSegRad (short nSegment)
-	{return gameData.segs.segRads [1][nSegment];}
-
-static inline float MaxSegRadf (short nSegment)
-	{return X2F (gameData.segs.segRads [1][nSegment]);}
-
-static inline fix AvgSegRad (short nSegment)
-	{return (MinSegRad (nSegment) + MaxSegRad (nSegment)) / 2;}
-
-static inline float AvgSegRadf (short nSegment)
-	{return X2F (gameData.segs.segRads [0][nSegment] + gameData.segs.segRads [1][nSegment]) / 2;}
-
-static inline fix SegmentVolume (short nSegment)
-	{return (fix) (1.25 * Pi * pow (AvgSegRadf (nSegment), 3) + 0.5);}
-
-//	-----------------------------------------------------------------------------------------------------------
 
 static inline short ObjIdx (CObject *objP)
 {

@@ -490,14 +490,14 @@ if (gameData.ai.nPlayerVisibility == 2) {
 	CFixVector  goal_point, vGoal, vec_to_goal, vRand;
 	fix         dot;
 
-	dot = CFixVector::Dot(OBJPOS (gameData.objs.consoleP)->mOrient.FVec (), gameData.ai.vVecToPlayer);
+	dot = CFixVector::Dot (OBJPOS (gameData.objs.consoleP)->mOrient.FVec (), gameData.ai.vVecToPlayer);
 	if (dot > 0) {          // Remember, we're interested in the rear vector dot being < 0.
 		vGoal = OBJPOS (gameData.objs.consoleP)->mOrient.FVec ();
 		vGoal = -vGoal;
 		}
 	else {
 		fix dot;
-		dot = CFixVector::Dot(OBJPOS (gameData.objs.consoleP)->mOrient.RVec (), gameData.ai.vVecToPlayer);
+		dot = CFixVector::Dot (OBJPOS (gameData.objs.consoleP)->mOrient.RVec (), gameData.ai.vVecToPlayer);
 		vGoal = OBJPOS (gameData.objs.consoleP)->mOrient.RVec ();
 		if (dot > 0) {
 			vGoal = -vGoal;
@@ -598,7 +598,7 @@ int AIMOpenDoorHandler2 (CObject *objP, tAIStateInfo *siP)
 Assert (objP->info.nId == ROBOT_BRAIN);     // Make sure this guy is allowed to be in this mode.
 if (!AIMultiplayerAwareness (objP, 62))
 	return 1;
-COMPUTE_SIDE_CENTER (&vCenter, SEGMENTS + objP->info.nSegment, siP->aiP->GOALSIDE);
+vCenter = SEGMENTS [objP->info.nSegment].SideCenter (siP->aiP->GOALSIDE);
 vGoal = vCenter - objP->info.position.vPos;
 CFixVector::Normalize(vGoal);
 AITurnTowardsVector (&vGoal, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
@@ -632,7 +632,7 @@ int AISNoneHandler1 (CObject *objP, tAIStateInfo *siP)
 	fix	dot;
 
 ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_WAKEUP_DIST);
-dot = CFixVector::Dot(objP->info.position.mOrient.FVec (), gameData.ai.vVecToPlayer);
+dot = CFixVector::Dot (objP->info.position.mOrient.FVec (), gameData.ai.vVecToPlayer);
 if ((dot >= F1_0/2) && (siP->aiP->GOAL_STATE == AIS_REST))
 	siP->aiP->GOAL_STATE = AIS_SEARCH;
 return 0;
@@ -856,7 +856,7 @@ if (siP->botInfoP->companion) {
 		else
 			;
 
-		if (bDoStuff && (CFixVector::Dot(objP->info.position.mOrient.FVec (), gameData.ai.vVecToPlayer) < F1_0 / 2)) {
+		if (bDoStuff && (CFixVector::Dot (objP->info.position.mOrient.FVec (), gameData.ai.vVecToPlayer) < F1_0 / 2)) {
 			CreateNewLaserEasy (&objP->info.position.mOrient.FVec (), &objP->info.position.vPos, OBJ_IDX (objP), FLARE_ID, 1);
 			siP->ailP->nextPrimaryFire = F1_0/2;
 			if (!gameData.escort.bMayTalk) // If buddy not talking, make him fire flares less often.

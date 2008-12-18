@@ -712,11 +712,11 @@ int FindExitSide (CObject *objP)
 
 //find exit CSide
 CFixVector::NormalizedDir (vPreferred, objP->info.position.vPos, objP->info.vLastPos);
-COMPUTE_SEGMENT_CENTER (&vSegCenter, segP);
+vSegCenter = segP->Center ();
 nBestSide = -1;
 for (i = MAX_SIDES_PER_SEGMENT; --i >= 0;) {
 	if (segP->m_children [i] != -1) {
-		COMPUTE_SIDE_CENTER (&vSide, segP, i);
+		vSide = segP->SideCenter (i);
 		CFixVector::NormalizedDir (vSide, vSide, vSegCenter);
 		d = CFixVector::Dot (vSide, vPreferred);
 		if (labs (d) < MIN_D)
@@ -972,7 +972,7 @@ if (UpdateObjectSeg (objP, false)) {
 				}
 			}
 		//update target point & angles
-		COMPUTE_SIDE_CENTER (&vDest, segP, nExitSide);
+		vDest = segP->SideCenter (nExitSide);
 		//update target point and movement points
 		//offset CObject sideways
 		if (exitFlightDataP->offset_frac) {
@@ -987,8 +987,8 @@ if (UpdateObjectSeg (objP, false)) {
 					else
 						s1 = i;
 					}
-			COMPUTE_SIDE_CENTER (&s0p, segP, s0);
-			COMPUTE_SIDE_CENTER (&s1p, segP, s1);
+			s0p = segP->SideCenter (s0);
+			s1p = segP->SideCenter (s1);
 			dist = FixMul (CFixVector::Dist (s0p, s1p), exitFlightDataP->offset_frac);
 			if (dist-exitFlightDataP->offsetDist > MAX_SLIDE_PER_SEGMENT)
 				dist = exitFlightDataP->offsetDist + MAX_SLIDE_PER_SEGMENT;
@@ -998,8 +998,8 @@ if (UpdateObjectSeg (objP, false)) {
 		exitFlightDataP->step = vDest - objP->info.position.vPos;
 		xStepSize = CFixVector::Normalize (exitFlightDataP->step);
 		exitFlightDataP->step *= exitFlightDataP->speed;
-		COMPUTE_SEGMENT_CENTER (&curcenter, segP);
-		COMPUTE_SEGMENT_CENTER_I (&nextcenter, segP->m_children [nExitSide]);
+		curcenter = segP->Center ();
+		nextcenter = SEGMENTS [segP->m_children [nExitSide]].Center ();
 		exitFlightDataP->headvec = nextcenter - curcenter;
 		mDest = CFixMatrix::CreateFU (exitFlightDataP->headvec, segP->m_sides [nUpSide].m_normals [0]);
 		aDest = mDest.ExtractAnglesVec();
@@ -1272,9 +1272,9 @@ if (gameData.endLevel.exit.nSegNum == -1) {
 	return;
 	}
 PrintLog ("      computing endlevel element orientation\n");
-COMPUTE_SEGMENT_CENTER_I (&gameData.endLevel.exit.vMineExit, gameData.endLevel.exit.nSegNum);
+gameData.endLevel.exit.vMineExit = SEGMENTS [gameData.endLevel.exit.nSegNum].Center ();
 ExtractOrientFromSegment (&gameData.endLevel.exit.mOrient, &SEGMENTS [gameData.endLevel.exit.nSegNum]);
-COMPUTE_SIDE_CENTER_I (&gameData.endLevel.exit.vSideExit, gameData.endLevel.exit.nSegNum, nExitSide);
+gameData.endLevel.exit.vSideExit = SEGMENTS [gameData.endLevel.exit.nSegNum].SideCenter (nExitSide);
 gameData.endLevel.exit.vGroundExit = gameData.endLevel.exit.vMineExit + gameData.endLevel.exit.mOrient.UVec() * (-I2X (20));
 //compute orientation of surface
 {

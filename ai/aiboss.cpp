@@ -242,10 +242,10 @@ if (count > 2 * gameStates.app.nDifficultyLevel + 6) {
 	gameData.boss [nBoss].nLastGateTime = gameData.time.xGame - 3 * gameData.boss [nBoss].nGateInterval / 4;
 	return -1;
 	}
-COMPUTE_SEGMENT_CENTER (&vObjPos, segP);
+vObjPos = segP->Center ();
 for (;;) {
 	if (!pos)
-		PickRandomPointInSeg (&vObjPos, SEG_IDX (segP));
+		vObjPos = segP->RandomPoint ();
 	else
 		vObjPos = *pos;
 
@@ -311,7 +311,7 @@ if (nSegment == -1) {
 	}
 if (!pos) {
 	pos = &vPos;
-	COMPUTE_SEGMENT_CENTER_I (pos, nSegment);
+	pos = SEGMENTS [nSegment].Center ();
 	}
 if (objType < 0)
 	objType = spewBots [gameStates.app.bD1Mission][nBossIndex][(maxSpewBots [nBossIndex] * d_rand ()) >> 15];
@@ -371,7 +371,7 @@ int BossFitsInSeg (CObject *bossObjP, int nSegment)
 	CFixVector	vSegCenter, vVertPos;
 
 gameData.collisions.nSegsVisited = 0;
-COMPUTE_SEGMENT_CENTER_I (&vSegCenter, nSegment);
+vSegCenter = SEGMENTS [nSegment].Center ();
 for (nPos = 0; nPos < 9; nPos++) {
 	if (!nPos)
 		bossObjP->info.position.vPos = vSegCenter;
@@ -425,7 +425,7 @@ do {
 	Assert ((nRandSeg >= 0) && (nRandSeg <= gameData.segs.nLastSegment));
 	if (IsMultiGame)
 		MultiSendBossActions (nObject, 1, nRandSeg, 0);
-	COMPUTE_SEGMENT_CENTER_I (&vNewPos, nRandSeg);
+	vNewPos = SEGMENTS [nRandSeg].Center ();
 	if (IsValidTeleportDest (&vNewPos, objP->info.xSize))
 		break;
 	}

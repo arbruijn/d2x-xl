@@ -249,7 +249,7 @@ FORALL_ACTOR_OBJS (objP, i)
 				(gameOpts->render.shadows.bRobots && (objP->info.nType == OBJ_ROBOT))) {
 		for (j = gameData.render.mine.nRenderSegs; j--;) {
 			fakePlayerPos.info.nSegment = gameData.render.mine.nSegRenderList [j];
-			COMPUTE_SEGMENT_CENTER_I (&fakePlayerPos.info.position.vPos, fakePlayerPos.info.nSegment);
+			fakePlayerPos.info.position.vPos = SEGMENTS [fakePlayerPos.info.nSegment].Center ();
 			bSee = ObjectToObjectVisibility (objP, &fakePlayerPos, FQ_TRANSWALL);
 			if (bSee) {
 				RenderObject (objP, 0, 0);
@@ -363,7 +363,7 @@ FORALL_OBJS (objP, h) {
 		CFixVector::Normalize(vLightDir);
 		if (n) {
 			for (j = 0; j < n; j++)
-				if (abs (CFixVector::Dot(vLightDir, gameData.render.shadows.vLightDir[j])) > 2 * F1_0 / 3) // 60 deg
+				if (abs (CFixVector::Dot (vLightDir, gameData.render.shadows.vLightDir[j])) > 2 * F1_0 / 3) // 60 deg
 					break;
 			if (j < n)
 				continue;

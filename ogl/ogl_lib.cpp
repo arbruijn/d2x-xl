@@ -252,7 +252,7 @@ pvNormal->Assign (vNormal);
 CFloatVector *G3Reflect (CFloatVector *vReflect, CFloatVector *vLight, CFloatVector *vNormal)
 {
 //2 * n * (l dot n) - l
-	float		LdotN = 2 * CFloatVector::Dot(*vLight, *vNormal);
+	float		LdotN = 2 * CFloatVector::Dot (*vLight, *vNormal);
 
 #if 0
 VmVecScale (vReflect, vNormal, LdotN);
