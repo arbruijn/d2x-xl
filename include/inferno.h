@@ -3417,8 +3417,8 @@ extern fix nDebrisLife [];
 #define OBJECTS	gameData.objs.objects
 #define WALLS		gameData.walls.walls
 #define TRIGGERS	gameData.trigs.triggers
-#define FACES		gameData.segs.faces.faces
-#define TRIANGLES	gameData.segs.faces.tris
+#define FACES		gameData.segs.faces
+#define TRIANGLES	FACES.tris
 
 // limit framerate to 30 while recording demo and to 40 when in automap and framerate display is disabled
 #define MAXFPS		((gameData.demo.nState == ND_STATE_RECORDING) ? 30 : \

@@ -1375,11 +1375,11 @@ void compute_vis_and_vec(CObject *objP, CFixVector *pos, tAILocalInfo *ailP, CFi
 void move_object_to_legal_spot(CObject *objP)
 {
 	CFixVector	original_pos = objP->info.position.vPos;
-	int		i;
-	CSegment	*segP = &SEGMENTS [objP->info.nSegment];
+	int			i;
+	CSegment*	segP = SEGMENTS + objP->info.nSegment;
 
-	for (i=0; i<MAX_SIDES_PER_SEGMENT; i++) {
-		if (WALL_IS_DOORWAY(segP, i, objP) & WID_FLY_FLAG) {
+	for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+		if (segP->IsDoorWay (i, objP) & WID_FLY_FLAG) {
 			CFixVector	vSegCenter, goal_dir;
 			fix			dist_to_center;
 
@@ -1492,7 +1492,7 @@ int get_random_child(int nSegment)
 {
 CSegment	*segP = SEGMENTS + nSegment;
 int sidenum = (rand() * 6) >> 15;
-while (!(WALL_IS_DOORWAY(segP, sidenum, NULL) & WID_FLY_FLAG))
+while (!(segP->IsDoorWay (sidenum, NULL) & WID_FLY_FLAG))
 	sidenum = (rand() * 6) >> 15;
 return segP->m_children [sidenum];
 }

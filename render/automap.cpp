@@ -1265,22 +1265,25 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 				else if (!(gameData.walls.animP [wallP->nClip].flags & WCF_HIDDEN)) {
 					short	nConnSeg = segP->m_children [nSide];
 					if (nConnSeg != -1) {
-						short nConnSide = segP->ConnectedSide (&SEGMENTS [nConnSeg]);
-						switch (WALLS [WallNumI (nConnSeg, nConnSide)].keys) {
-							case KEY_BLUE:
-								color = automapColors.walls.nDoorBlue;
-								bNoFade = 1; 
-								break;
-							case KEY_GOLD:
-								color = automapColors.walls.nDoorGold;
-								bNoFade = 1; 
-								break;
-							case KEY_RED:
-								color = automapColors.walls.nDoorRed;
-								bNoFade = 1; 
-								break;
-							default:
-								color = automapColors.walls.nDoor;
+						short nConnSide = segP->ConnectedSide (SEGMENTS + nConnSeg);
+						CWall* connWallP = SEGMENTS [nConnSeg].Wall (nConnSide);
+						if (connWallP) {
+							switch (connWallP->keys) {
+								case KEY_BLUE:
+									color = automapColors.walls.nDoorBlue;
+									bNoFade = 1; 
+									break;
+								case KEY_GOLD:
+									color = automapColors.walls.nDoorGold;
+									bNoFade = 1; 
+									break;
+								case KEY_RED:
+									color = automapColors.walls.nDoorRed;
+									bNoFade = 1; 
+									break;
+								default:
+									color = automapColors.walls.nDoor;
+								}
 							}
 						}
 					}
