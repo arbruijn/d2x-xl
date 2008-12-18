@@ -218,7 +218,7 @@ while (nSegment == -1) {
 		nDepth--;
 		continue;
 		}
-	special = gameData.segs.segment2s [nSegment].m_special;
+	special = gameData.segs.segment2s [nSegment].m_nType;
 	if ((special == SEGMENT_IS_CONTROLCEN) ||
 		 (special == SEGMENT_IS_BLOCKED) ||
 		 (special == SEGMENT_IS_SKYBOX) ||
@@ -230,7 +230,7 @@ while (nSegment == -1) {
 	else {	//don't drop in any children of control centers
 		for (int i = 0; i < 6; i++) {
 			int nChild = SEGMENTS [nSegment].children [i];
-			if (IS_CHILD (nChild) && (gameData.segs.segment2s [nChild].m_special == SEGMENT_IS_CONTROLCEN)) {
+			if (IS_CHILD (nChild) && (gameData.segs.segment2s [nChild].m_nType == SEGMENT_IS_CONTROLCEN)) {
 				nSegment = -1;
 				break;
 				}
@@ -1031,7 +1031,7 @@ int ReturnFlagHome (CObject *objP)
 	CObject	*initObjP;
 
 if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF) {
-	if (gameData.segs.segment2s [objP->info.nSegment].m_special == ((objP->info.nId == POW_REDFLAG) ? SEGMENT_IS_GOAL_RED : SEGMENT_IS_GOAL_BLUE))
+	if (gameData.segs.segment2s [objP->info.nSegment].m_nType == ((objP->info.nId == POW_REDFLAG) ? SEGMENT_IS_GOAL_RED : SEGMENT_IS_GOAL_BLUE))
 		return objP->info.nSegment;
 	if ((initObjP = FindInitObject (objP))) {
 	//objP->info.nSegment = initObjP->info.nSegment;

@@ -399,7 +399,7 @@ else if (IsEntropyGame) {
 		if ((extraGameInfo [1].entropy.nVirusStability < 2) ||
 			 ((extraGameInfo [1].entropy.nVirusStability < 3) && 
 			 ((gameData.segs.xSegments [objP->info.nSegment].owner != objP->info.nCreator) ||
-			 (gameData.segs.segment2s [objP->info.nSegment].m_special != SEGMENT_IS_ROBOTMAKER))))
+			 (gameData.segs.segment2s [objP->info.nSegment].m_nType != SEGMENT_IS_ROBOTMAKER))))
 			objP->info.xLifeLeft = -1;	//make orb disappear if touched by opposing team CPlayerData
 		}
 	else if (!extraGameInfo [1].entropy.nMaxVirusCapacity ||

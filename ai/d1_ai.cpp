@@ -1975,7 +1975,7 @@ if (nObject == nDbgObj)
 
 	//	- -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -
  	//	If in materialization center, exit
- 	if (!(IsMultiGame) && (gameData.segs.segment2s [objP->info.nSegment].m_special == SEGMENT_IS_ROBOTMAKER)) {
+ 	if (!(IsMultiGame) && (gameData.segs.segment2s [objP->info.nSegment].m_nType == SEGMENT_IS_ROBOTMAKER)) {
  		AIFollowPath (objP, 1, 1, NULL);		// 1 = playerP is visible, which might be a lie, but it works.
  		return;
  	}

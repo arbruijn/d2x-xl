@@ -61,7 +61,7 @@ void ResetGenerators (void)
 	int i;
 
 for (i = 0; i < MAX_SEGMENTS; i++)
-	SEGMENTS [i].m_special = SEGMENT_IS_NOTHING;
+	SEGMENTS [i].m_nType = SEGMENT_IS_NOTHING;
 gameData.matCens.nFuelCenters = 0;
 gameData.matCens.nBotCenters = 0;
 gameData.matCens.nEquipCenters = 0;
@@ -75,8 +75,8 @@ void reset_allRobot_centers ()
 
 	// Remove all materialization centers
 for (i = 0; i < gameData.segs.nSegments; i++)
-	if (gameData.segs.segment2s [i].m_special == SEGMENT_IS_ROBOTMAKER) {
-		gameData.segs.segment2s [i].m_special = SEGMENT_IS_NOTHING;
+	if (gameData.segs.segment2s [i].m_nType == SEGMENT_IS_ROBOTMAKER) {
+		gameData.segs.segment2s [i].m_nType = SEGMENT_IS_NOTHING;
 		gameData.segs.segment2s [i].nMatCen = -1;
 		}
 }
@@ -86,7 +86,7 @@ for (i = 0; i < gameData.segs.nSegments; i++)
 // Turns a CSegment into a fully charged up fuel center...
 void CSegment::CreateFuelCen (int oldType)
 {
-	int			i, stationType = m_special;
+	int			i, stationType = m_nType;
 
 switch (stationType)	{
 	case SEGMENT_IS_NOTHING:
@@ -152,12 +152,12 @@ else if (oldType == SEGMENT_IS_ROBOTMAKER) {
 // This function is separate from other fuelcens because we don't want values reset.
 void CSegment::CreateBotGen (int oldType)
 {
-	int	i, stationType = m_special;
+	int	i, stationType = m_nType;
 
 Assert (stationType == SEGMENT_IS_ROBOTMAKER);
 Assert (gameData.matCens.nFuelCenters > -1);
 if (m_nMatCen >= gameFileInfo.botGen.count) {
-	m_special = SEGMENT_IS_NOTHING;
+	m_nType = SEGMENT_IS_NOTHING;
 	m_nMatCen = -1;
 	return;
 	}
@@ -207,13 +207,13 @@ void CSegment::CreateEquipGen (int oldType)
 {
 	short			nSegment = SEG_IDX (segP);
 	tSegment2	*seg2P = gameData.segs.segment2s  + nSegment;
-	int			stationType = m_special;
+	int			stationType = m_nType;
 	int			i;
 
 Assert (stationType == SEGMENT_IS_EQUIPMAKER);
 Assert (gameData.matCens.nFuelCenters > -1);
 if (m_nMatCen >= gameFileInfo.equipGen.count) {
-	m_special = SEGMENT_IS_NOTHING;
+	m_nType = SEGMENT_IS_NOTHING;
 	m_nMatCen = -1;
 	return;
 	}
@@ -254,14 +254,14 @@ gameData.matCens.nFuelCenters++;
 // Adds a CSegment that already is a special nType into the gameData.matCens.fuelCenters array.
 void CSegment::CreateGenerator (int nType)
 {
-m_special = nType;
-if (m_special == SEGMENT_IS_ROBOTMAKER)
+m_nType = nType;
+if (m_nType == SEGMENT_IS_ROBOTMAKER)
 	CreateBotGen (segP, SEGMENT_IS_NOTHING);
-else if (m_special == SEGMENT_IS_EQUIPMAKER)
+else if (m_nType == SEGMENT_IS_EQUIPMAKER)
 	CreateEquipGen (segP, SEGMENT_IS_NOTHING);
 else {
 	CreateFuelCen (segP, SEGMENT_IS_NOTHING);
-	if (m_special == SEGMENT_IS_REPAIRCEN)
+	if (m_nType == SEGMENT_IS_REPAIRCEN)
 		m_nMatCen = gameData.matCens.nRepairCenters++;
 	}
 }
@@ -1391,7 +1391,7 @@ return 0;
 
 int CSegment::CheckFlagDrop (int nTeamId, int nFlagId, int nGoalId)
 {
-if (m_special != nGoalId)
+if (m_nType != nGoalId)
 	return 0;
 if (GetTeam (gameData.multiplayer.nLocalPlayer) != nTeamId)
 	return 0;
@@ -1442,7 +1442,7 @@ void CSegment::CheckForHoardGoal (void)
 Assert (gameData.app.nGameMode & GM_HOARD);
 if (gameStates.app.bPlayerIsDead)
 	return;
-if ((m_special != SEGMENT_IS_GOAL_BLUE) && (m_special != SEGMENT_IS_GOAL_RED))
+if ((m_nType != SEGMENT_IS_GOAL_BLUE) && (m_nType != SEGMENT_IS_GOAL_RED))
 	return;
 if (!LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX])
 	return;

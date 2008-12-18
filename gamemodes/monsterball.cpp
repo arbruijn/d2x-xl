@@ -114,7 +114,7 @@ if (!gameData.hoard.monsterballP)
 	return 0;
 if (gameData.hoard.nLastHitter != LOCALPLAYER.nObject)
 	return 0;
-special = gameData.segs.segment2s [gameData.hoard.monsterballP->info.nSegment].m_special;
+special = gameData.segs.segment2s [gameData.hoard.monsterballP->info.nSegment].m_nType;
 if ((special != SEGMENT_IS_GOAL_BLUE) && (special != SEGMENT_IS_GOAL_RED))
 	return 0;
 if ((GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_RED) == (special == SEGMENT_IS_GOAL_RED))

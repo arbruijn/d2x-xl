@@ -697,12 +697,12 @@ int load_mine_data (CFile& cf)
 				for (j=0; j<MAX_VERTICES_PER_SEGMENT; j++)
 					SEGMENTS [i].verts [j] = v16_seg.verts [j];
 
-				gameData.segs.segment2s [i].m_special = v16_seg.m_special;
+				gameData.segs.segment2s [i].m_nType = v16_seg.m_nType;
 				gameData.segs.segment2s [i].value = v16_seg.value;
 				gameData.segs.segment2s [i].s2Flags = 0;
 				gameData.segs.segment2s [i].nMatCen = v16_seg.nMatCen;
 				gameData.segs.segment2s [i].xAvgSegLight = v16_seg.xAvgSegLight;
-				FuelCenActivate ( &SEGMENTS [i], gameData.segs.segment2s [i].m_special );
+				FuelCenActivate ( &SEGMENTS [i], gameData.segs.segment2s [i].m_nType );
 
 			} else  {
 				if (cf.Read (SEGMENTS + i, mine_fileinfo.segment_sizeof, 1 )!=1)
@@ -759,7 +759,7 @@ int load_mine_data (CFile& cf)
 		if (mine_top_fileinfo.fileinfoVersion >= 20)
 			for (i = 0; i<=gameData.segs.nLastSegment; i++) {
 				cf.Read (gameData.segs.segment2s + i, sizeof (tSegment2), 1);
-				FuelCenActivate (SEGMENTS + i, gameData.segs.segment2s [i].m_special );
+				FuelCenActivate (SEGMENTS + i, gameData.segs.segment2s [i].m_nType );
 			}
 	}
 
@@ -915,12 +915,12 @@ for (int i = 0; i < MAX_VERTICES_PER_SEGMENT; i++)
 void ReadSegSpecialType (int nSegment, ubyte bitMask, CFile& cf)
 {
 if (bitMask & (1 << MAX_SIDES_PER_SEGMENT)) {
-	gameData.segs.segment2s [nSegment].m_special = cf.ReadByte ();
+	gameData.segs.segment2s [nSegment].m_nType = cf.ReadByte ();
 	gameData.segs.segment2s [nSegment].nMatCen = cf.ReadByte ();
 	gameData.segs.segment2s [nSegment].value = (char) cf.ReadShort ();
 	}
 else {
-	gameData.segs.segment2s [nSegment].m_special = 0;
+	gameData.segs.segment2s [nSegment].m_nType = 0;
 	gameData.segs.segment2s [nSegment].nMatCen = -1;
 	gameData.segs.segment2s [nSegment].value = 0;
 	}
@@ -1106,7 +1106,7 @@ gameData.matCens.nRepairCenters = 0;
 for (i = 0; i < gameData.segs.nSegments; i++) {
 	if (gameData.segs.nLevelVersion > 5)
 		SEGMENTS [i].CExtSegment::Read (cf);
-	SEGMENTS [i].CreateGenerator (SEGMENTS [i].m_special);
+	SEGMENTS [i].CreateGenerator (SEGMENTS [i].m_nType);
 	}
 }
 

@@ -57,25 +57,6 @@ static ubyte *nmBufP = NULL;
 #define	BE_GET_BYTES(_dest,_destSize)		memcpy (_dest, nmBufP + nmBufI, _destSize); nmBufI += (_destSize)
 
 //------------------------------------------------------------------------------
-// routine to calculate the checksum of the segments.  We add these specialized routines
-// since the current way is byte order dependent.
-
-void BEDoCheckSumCalc (ubyte *b, int len, uint *ps1, uint *ps2)
-{
-	int	s1 = *ps1;
-	int	s2 = *ps2;
-
-while(len--) {
-	s1 += *b++;
-	if (s1 >= 255) 
-		s1 -= 255;
-	s2 += s1;
-	}
-*ps1 = s1;
-*ps2 = s2;
-}
-
-//------------------------------------------------------------------------------
 
 ushort BECalcSegmentCheckSum (void)
 {
@@ -90,41 +71,41 @@ ushort BECalcSegmentCheckSum (void)
 sum1 = sum2 = 0;
 for (i = 0, segP = gameData.segs.segments.Buffer (); i < gameData.segs.nSegments; i++, segP++) {
 	for (j = 0, sideP = segP->sides; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
-		BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&sideP->nType), 1, &sum1, &sum2);
-		BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&sideP->nFrame), 1, &sum1, &sum2);
+		CalcCheckSum (reinterpret_cast<ubyte*> (&sideP->nType), 1, &sum1, &sum2);
+		CalcCheckSum (reinterpret_cast<ubyte*> (&sideP->nFrame), 1, &sum1, &sum2);
 		s = INTEL_SHORT (WallNumI (i, j));
-		BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&s), 2, &sum1, &sum2);
+		CalcCheckSum (reinterpret_cast<ubyte*> (&s), 2, &sum1, &sum2);
 		s = INTEL_SHORT (sideP->nBaseTex);
-		BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&s), 2, &sum1, &sum2);
+		CalcCheckSum (reinterpret_cast<ubyte*> (&s), 2, &sum1, &sum2);
 		s = INTEL_SHORT (sideP->nOvlOrient + (((short) sideP->nOvlTex) << 2));
-		BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&s), 2, &sum1, &sum2);
+		CalcCheckSum (reinterpret_cast<ubyte*> (&s), 2, &sum1, &sum2);
 		for (k = 0, uvlP = sideP->uvls; k < 4; k++, uvlP++) {
 			t = INTEL_INT (((int) uvlP->u));
-			BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
+			CalcCheckSum (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
 			t = INTEL_INT (((int) uvlP->v));
-			BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
+			CalcCheckSum (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
 			t = INTEL_INT (((int) uvlP->l));
-			BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
+			CalcCheckSum (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
 			}
 		for (k = 0, normP = sideP->normals; k < 2; k++, normP++) {
 			t = INTEL_INT ((int) (*normP) [X]);
-			BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
+			CalcCheckSum (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
 			t = INTEL_INT ((int) (*normP) [Y]);
-			BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
+			CalcCheckSum (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
 			t = INTEL_INT ((int) (*normP) [Z]);
-			BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
+			CalcCheckSum (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
 			}
 		}
 	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++) {
 		s = INTEL_SHORT (segP->children [j]);
-		BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&s), 2, &sum1, &sum2);
+		CalcCheckSum (reinterpret_cast<ubyte*> (&s), 2, &sum1, &sum2);
 	}
 	for (j = 0; j < MAX_VERTICES_PER_SEGMENT; j++) {
 		s = INTEL_SHORT (segP->verts [j]);
-		BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&s), 2, &sum1, &sum2);
+		CalcCheckSum (reinterpret_cast<ubyte*> (&s), 2, &sum1, &sum2);
 	}
 	t = INTEL_INT (segP->objects);
-	BEDoCheckSumCalc(reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
+	CalcCheckSum(reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
 }
 sum2 %= 255;
 return ((sum1<<8)+ sum2);
@@ -588,6 +569,110 @@ while (nElemCount--) {
 	}
 return (sum1 * 256 + sum2 % 255);
 #endif
+}
+
+//------------------------------------------------------------------------------
+// routine to calculate the checksum of the segments.  We add these specialized routines
+// since the current way is byte order dependent.
+
+ubyte* CalcCheckSum (ubyte* bufP, int len, uint& sum1, uint& sum2)
+{
+while(len--) {
+	sum1 += *bufP++;
+	if (sum1 >= 255) 
+		sum1 -= 255;
+	sum2 += sum1;
+	}
+return bufP;
+}
+
+//------------------------------------------------------------------------------
+
+ushort CSide::tCheckSum (void)
+{
+	int				i, j, k, t;
+	uint				sum1, sum2;
+	short				s;
+	tSegment			*segP;
+	tSide				*sideP;
+	tUVL				*uvlP;
+	CFixVector		*normP;
+
+sum1 = sum2 = 0;
+for (i = 0, segP = gameData.segs.segments.Buffer (); i < gameData.segs.nSegments; i++, segP++) {
+	for (j = 0, sideP = segP->sides; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
+		CalcCheckSum (reinterpret_cast<ubyte*> (&m_nType), 1, &sum1, &sum2);
+		CalcCheckSum (reinterpret_cast<ubyte*> (&m_nFrame), 1, &sum1, &sum2);
+		s = INTEL_SHORT (WallNumI (i, j));
+		CalcCheckSum (reinterpret_cast<ubyte*> (&s), 2, &sum1, &sum2);
+		s = INTEL_SHORT (m_nBaseTex);
+		CalcCheckSum (reinterpret_cast<ubyte*> (&s), 2, &sum1, &sum2);
+		s = INTEL_SHORT (m_nOvlOrient + (((short) m_nOvlTex) << 2));
+		CalcCheckSum (reinterpret_cast<ubyte*> (&s), 2, &sum1, &sum2);
+		for (k = 0, uvlP = m_uvls; k < 4; k++, uvlP++) {
+			t = INTEL_INT (((int) uvlP->u));
+			CalcCheckSum (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
+			t = INTEL_INT (((int) uvlP->v));
+			CalcCheckSum (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
+			t = INTEL_INT (((int) uvlP->l));
+			CalcCheckSum (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
+			}
+		for (k = 0, normP = m_normals; k < 2; k++, normP++) {
+			t = INTEL_INT ((int) (*normP) [X]);
+			CalcCheckSum (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
+			t = INTEL_INT ((int) (*normP) [Y]);
+			CalcCheckSum (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
+			t = INTEL_INT ((int) (*normP) [Z]);
+			CalcCheckSum (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
+			}
+		}
+	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++) {
+		s = INTEL_SHORT (segP->children [j]);
+		CalcCheckSum (reinterpret_cast<ubyte*> (&s), 2, &sum1, &sum2);
+	}
+	for (j = 0; j < MAX_VERTICES_PER_SEGMENT; j++) {
+		s = INTEL_SHORT (segP->verts [j]);
+		CalcCheckSum (reinterpret_cast<ubyte*> (&s), 2, &sum1, &sum2);
+	}
+	t = INTEL_INT (segP->objects);
+	CalcCheckSum(reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
+}
+sum2 %= 255;
+return ((sum1<<8)+ sum2);
+}
+
+//------------------------------------------------------------------------------
+
+ushort CSegment::CheckSum (uint& sum1, uint& sum2)
+{
+	int	i;
+	short	j;
+
+for (i = 0; i < 6; i++) {
+	m_sides [i].CheckSum (sum1, sum2);
+for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+	j = INTEL_SHORT (m_children [i]);
+	CalcCheckSum (reinterpret_cast<ubyte*> (&j), 2, sum1, sum2);
+	}
+for (i = 0; i < MAX_VERTICES_PER_SEGMENT; i++) {
+	j = INTEL_SHORT (m_verts [i]);
+	CalcCheckSum (reinterpret_cast<ubyte*> (&j), 2, &sum1, &sum2);
+	}
+i = INTEL_INT (m_objects);
+CalcCheckSum (reinterpret_cast<ubyte*> (&i), 4, &sum1, &sum2);
+}
+
+//------------------------------------------------------------------------------
+
+uint CalcSegmentCheckSum (void)
+{
+	uint sum1, sum2;
+
+sum1 = sum2 = 0;
+for (int i = 0; i < gameData.segs.nSegments; i++)
+	SEGMENTS [i].CheckSum (sum1, sum2);
+sum2 %= 255;
+return ((sum1 << 8) + sum2);
 }
 
 //------------------------------------------------------------------------------

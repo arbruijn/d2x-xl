@@ -25,13 +25,15 @@ int sideVertIndex [MAX_SIDES_PER_SEGMENT][4] = {
 //------------------------------------------------------------------------------
 // reads a tSegment2 structure from a CFile
  
-void CExtSegment::Read (CFile& cf)
+void CSegment::Read (CFile& cf, bool bExtended)
 {
-s2->special = cf.ReadByte ();
-s2->nMatCen = cf.ReadByte ();
-s2->value = cf.ReadByte ();
-s2->s2Flags = cf.ReadByte ();
-s2->xAvgSegLight = cf.ReadFix ();
+if (bExtended) {
+	m_nType = cf.ReadByte ();
+	m_nMatCen = cf.ReadByte ();
+	m_value = cf.ReadByte ();
+	m_s2Flags = cf.ReadByte ();
+	m_xAvgSegLight = cf.ReadFix ();
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -131,9 +133,9 @@ inline CWall* CSide::Wall (void) { return IS_WALL (m_nWall) ? WALLS + m_nWall : 
 
 inline CFixVector& CSegment::Normal (int nSide, int nFace) {
 	if (gameStates.render.bRendering)
-		return CExtSegment::m_sides [nSide].m_rotNorms [nFace];
+		return m_sides [nSide].m_rotNorms [nFace];
 	else
-		return CBaseSegment::m_sides [nSide].m_normals [nFace];
+		return m_sides [nSide].m_normals [nFace];
 	}
 
 //------------------------------------------------------------------------------

@@ -374,9 +374,9 @@ if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrid
 	if ((nConnSeg < 0) || (gameData.segs.xSegments [nConnSeg].owner != owner))
 		return (owner == 1) ? 2 : 1;
 	}
-special = gameData.segs.segment2s [nSegment].m_special;
+special = gameData.segs.segment2s [nSegment].m_nType;
 nConnSeg = SEGMENTS [nSegment].children [nSide];
-if ((nConnSeg >= 0) && (special == gameData.segs.segment2s [nConnSeg].m_special))
+if ((nConnSeg >= 0) && (special == gameData.segs.segment2s [nConnSeg].m_nType))
 	return 0;
 if (special == SEGMENT_IS_WATER)
 	return 3;
@@ -409,7 +409,7 @@ else {
 			return NULL;
 		nColor = (owner == 1);
 		}
-	special = gameData.segs.segment2s [nSegment].m_special;
+	special = gameData.segs.segment2s [nSegment].m_nType;
 	if (special == SEGMENT_IS_WATER)
 		nColor = 2;
 	else if (special == SEGMENT_IS_LAVA)
@@ -418,7 +418,7 @@ else {
 		return NULL;
 	nConnSeg = SEGMENTS [nSegment].children [nSide];
 	if (nConnSeg >= 0) {
-		if (special == gameData.segs.segment2s [nConnSeg].m_special)
+		if (special == gameData.segs.segment2s [nConnSeg].m_nType)
 			return NULL;
 		if (IS_WALL (SEGMENTS [nSegment].m_sides [nSide].nWall))
 			return NULL;

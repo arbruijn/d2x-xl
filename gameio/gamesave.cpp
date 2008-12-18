@@ -1188,7 +1188,7 @@ if (gameFileInfo.botGen.offset > -1) {
 
 		//	Set links in gameData.matCens.botGens to gameData.matCens.fuelCenters array
 		for (j = 0; j <= gameData.segs.nLastSegment; j++)
-			if ((gameData.segs.segment2s [j].m_special == SEGMENT_IS_ROBOTMAKER) &&
+			if ((gameData.segs.segment2s [j].m_nType == SEGMENT_IS_ROBOTMAKER) &&
 					(gameData.segs.segment2s [j].nMatCen == i)) {
 				gameData.matCens.botGens [i].nFuelCen = gameData.segs.segment2s [j].value;
 				break;
@@ -1213,7 +1213,7 @@ if (gameFileInfo.equipGen.offset > -1) {
 		MatCenInfoRead (gameData.matCens.equipGens + i, cf);
 		//	Set links in gameData.matCens.botGens to gameData.matCens.fuelCenters array
 		for (j = 0; j <= gameData.segs.nLastSegment; j++)
-			if ((gameData.segs.segment2s [j].m_special == SEGMENT_IS_EQUIPMAKER) &&
+			if ((gameData.segs.segment2s [j].m_nType == SEGMENT_IS_EQUIPMAKER) &&
 					(gameData.segs.segment2s [j].nMatCen == i))
 				gameData.matCens.equipGens [i].nFuelCen = gameData.segs.segment2s [j].value;
 		}
@@ -1397,7 +1397,7 @@ for (i = 0; i < gameData.trigs.nTriggers; i++) {
 		//check to see that if a tTrigger requires a CWall that it has one,
 		//and if it requires a botGen that it has one
 		if (gameData.trigs.triggers [i].nType == TT_MATCEN) {
-			if (gameData.segs.segment2s [nSegment].m_special != SEGMENT_IS_ROBOTMAKER)
+			if (gameData.segs.segment2s [nSegment].m_nType != SEGMENT_IS_ROBOTMAKER)
 				continue;		//botGen tTrigger doesn'i point to botGen
 			}
 		else if ((gameData.trigs.triggers [i].nType != TT_LIGHT_OFF) && 

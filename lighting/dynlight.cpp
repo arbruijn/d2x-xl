@@ -669,7 +669,7 @@ if (gameOpts->render.nLightingMethod)
 gameData.render.lights.dynamic.Init ();
 for (nFace = gameData.segs.nFaces, faceP = gameData.segs.faces.faces.Buffer (); nFace; nFace--, faceP++) {
 	nSegment = faceP->nSegment;
-	if (gameData.segs.segment2s [nSegment].m_special == SEGMENT_IS_SKYBOX)
+	if (gameData.segs.segment2s [nSegment].m_nType == SEGMENT_IS_SKYBOX)
 		continue;
 #if DBG
 	if (nSegment == nDbgSeg)
@@ -1318,7 +1318,7 @@ if (!vPosP && (psc->index == (char) (gameData.app.nFrameCount & 0xff)) && (psc->
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
-if (SEGMENTS [nSegment].m_special == SEGMENT_IS_SKYBOX) {
+if (SEGMENTS [nSegment].m_nType == SEGMENT_IS_SKYBOX) {
 	psc->color.red = psc->color.green = psc->color.blue = 1.0f;
 	psc->index = 1;
 	}

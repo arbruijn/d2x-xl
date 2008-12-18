@@ -519,7 +519,7 @@ CreateBfsList (start_seg, bfs_list, &length, MAX_SEGMENTS);
 if (objtype == FUELCEN_CHECK) {
 	for (nSegIdx = 0; nSegIdx < length; nSegIdx++) {
 		nSegment = bfs_list [nSegIdx];
-		if (gameData.segs.segment2s [nSegment].m_special == SEGMENT_IS_FUELCEN)
+		if (gameData.segs.segment2s [nSegment].m_nType == SEGMENT_IS_FUELCEN)
 			return nSegment;
 		}
 	}
@@ -536,7 +536,7 @@ else {
 //	which the buddybot doesn't understand.
 if (objtype == FUELCEN_CHECK) {
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
-		if (gameData.segs.segment2s [nSegment].m_special == SEGMENT_IS_FUELCEN)
+		if (gameData.segs.segment2s [nSegment].m_nType == SEGMENT_IS_FUELCEN)
 			return -2;
 	}
 else {

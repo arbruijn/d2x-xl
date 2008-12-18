@@ -2379,7 +2379,7 @@ if (objP->info.nType == OBJ_ROBOT) {
 		}
 	}
 else if ((objP->info.nType == OBJ_PLAYER) && gameOpts->render.lightnings.bPlayers) {
-	int s = gameData.segs.segment2s [objP->info.nSegment].m_special;
+	int s = gameData.segs.segment2s [objP->info.nSegment].m_nType;
 	if (s == SEGMENT_IS_FUELCEN) {
 		RequestEffects (objP, PLAYER_LIGHTNINGS);
 		}

@@ -931,7 +931,7 @@ void CQuadMeshBuilder::InitColoredFace (short nSegment)
 {
 m_faceP->nBaseTex = -1;
 m_faceP->bTransparent = 1;
-m_faceP->bAdditive = gameData.segs.segment2s [nSegment].m_special >= SEGMENT_IS_LAVA;
+m_faceP->bAdditive = gameData.segs.segment2s [nSegment].m_nType >= SEGMENT_IS_LAVA;
 }
 
 //------------------------------------------------------------------------------
@@ -1265,8 +1265,8 @@ PrintLog ("   Creating face list\n");
 gameData.segs.nFaces = 0;
 gameData.segs.nTris = 0;
 for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_segFaceP++) {
-	m_bColoredSeg = ((gameData.segs.segment2s [nSegment].m_special >= SEGMENT_IS_WATER) &&
-					     (gameData.segs.segment2s [nSegment].m_special <= SEGMENT_IS_TEAM_RED)) ||
+	m_bColoredSeg = ((gameData.segs.segment2s [nSegment].m_nType >= SEGMENT_IS_WATER) &&
+					     (gameData.segs.segment2s [nSegment].m_nType <= SEGMENT_IS_TEAM_RED)) ||
 					     (gameData.segs.xSegments [nSegment].group >= 0);
 #if DBG
 	if (nSegment == nDbgSeg)

@@ -1574,7 +1574,7 @@ if (objP->info.nType == OBJ_ROBOT) {
 		}
 	}
 else if ((objP->info.nType == OBJ_PLAYER) && gameOpts->render.lightnings.bPlayers) {
-	int s = SEGMENTS [objP->info.nSegment].m_special;
+	int s = SEGMENTS [objP->info.nSegment].m_nType;
 	if (s == SEGMENT_IS_FUELCEN) {
 		static tRgbaColorf color = {1.0f, 0.8f, 0.3f, 0.2f};
 		return &color;

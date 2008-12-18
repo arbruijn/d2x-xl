@@ -303,7 +303,7 @@ if (!(faceP->widFlags & WID_RENDER_FLAG))
 if (faceP->bmBot)
 	return false;
 short nSegment = faceP->nSegment;
-short special = gameData.segs.segment2s [nSegment].m_special;
+short special = gameData.segs.segment2s [nSegment].m_nType;
 if ((special < SEGMENT_IS_WATER) || (special > SEGMENT_IS_TEAM_RED) || 
 	 (gameData.segs.xSegments [nSegment].group < 0) || (gameData.segs.xSegments [nSegment].owner < 1))
 	return false;
@@ -677,7 +677,7 @@ if (bAutomap) {
 	if (gameStates.render.automap.bDisplay) {
 		if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisible [nSegment]))
 			return 0;
-		if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].m_special == SEGMENT_IS_SKYBOX))
+		if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].m_nType == SEGMENT_IS_SKYBOX))
 			return 0;
 		}
 	else
@@ -743,7 +743,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 		if (gameStates.render.automap.bDisplay) {
 			if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisible [nSegment]))
 				return;
-			if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].m_special == SEGMENT_IS_SKYBOX))
+			if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].m_nType == SEGMENT_IS_SKYBOX))
 				continue;
 			}
 		if (nPass == 1) {
@@ -834,8 +834,8 @@ gameData.render.lights.nCoronas = 0;
 for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 		continue;
-	if ((gameData.segs.segment2s [nSegment].m_special == SEGMENT_IS_SKYBOX) ||
-		 (gameData.segs.segment2s [nSegment].m_special == SEGMENT_IS_OUTDOOR))
+	if ((gameData.segs.segment2s [nSegment].m_nType == SEGMENT_IS_SKYBOX) ||
+		 (gameData.segs.segment2s [nSegment].m_nType == SEGMENT_IS_OUTDOOR))
 		continue;
 	segFaceP = SEGFACES + nSegment;
 #if DBG

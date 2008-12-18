@@ -477,7 +477,7 @@ for (m_data.faceP = FACES + nFace; nFace < nLastFace; nFace++, m_data.faceP++) {
 	if ((m_data.faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
-	if (SEGMENTS [m_data.faceP->nSegment].m_special == SEGMENT_IS_SKYBOX)
+	if (SEGMENTS [m_data.faceP->nSegment].m_nType == SEGMENT_IS_SKYBOX)
 		continue;
 	sideP = SEGMENTS [m_data.faceP->nSegment].m_sides + m_data.faceP->nSide;
 	memcpy (m_data.sideVerts, m_data.faceP->index, sizeof (m_data.sideVerts));

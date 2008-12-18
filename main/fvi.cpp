@@ -1177,10 +1177,10 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 			if ((nThisObject == LOCALPLAYER.nObject) && (gameStates.app.cheats.bPhysics == 0xBADA55)) {
 				int childSide = segP->m_children [nSide];
 				if (childSide >= 0) {
-					int special = gameData.segs.segment2s [childSide].m_special;
+					int special = gameData.segs.segment2s [childSide].m_nType;
 					if (((special != SEGMENT_IS_BLOCKED) && (special != SEGMENT_IS_SKYBOX)) ||
 							(gameData.objs.speedBoost [nThisObject].bBoosted &&
-							((gameData.segs.segment2s [nStartSeg].m_special != SEGMENT_IS_SPEEDBOOST) ||
+							((gameData.segs.segment2s [nStartSeg].m_nType != SEGMENT_IS_SPEEDBOOST) ||
 							(special == SEGMENT_IS_SPEEDBOOST))))
  						widResult |= WID_FLY_FLAG;
 					}

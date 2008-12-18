@@ -214,11 +214,11 @@ if (OBJ_IDX (objP) == nDbgObj)
 
 if ((objP == gameData.objs.consoleP) &&
 	 gameData.objs.speedBoost [OBJ_IDX (objP)].bBoosted &&
-	 (m_special == SEGMENT_IS_SPEEDBOOST) && (childP->m_special != SEGMENT_IS_SPEEDBOOST) &&
+	 (m_nType == SEGMENT_IS_SPEEDBOOST) && (childP->m_nType != SEGMENT_IS_SPEEDBOOST) &&
 	 (!wallP || (TRIGGERS [wallP->nTrigger].nType != TT_SPEEDBOOST)))
 	return objP ? WID_RENDER_FLAG : wallP ? wallP->IsDoorWay (objP) : WID_RENDPAST_FLAG;
 
-if ((childP->m_special == SEGMENT_IS_BLOCKED) || (childP->m_special == SEGMENT_IS_SKYBOX))
+if ((childP->m_nType == SEGMENT_IS_BLOCKED) || (childP->m_nType == SEGMENT_IS_SKYBOX))
 	return (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT))) 
 			 ? WID_RENDER_FLAG 
 			 : wallP ? wallP->IsDoorWay (objP) : WID_FLY_FLAG | WID_RENDPAST_FLAG;

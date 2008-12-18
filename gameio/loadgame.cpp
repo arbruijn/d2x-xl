@@ -260,20 +260,20 @@ for (i = 0; i < nPlayers; i++) {
 		segNum = startSegs [j];
 		if (segNum < 0)
 			continue;
-		segType = bCoop ? gameData.segs.segment2s [segNum].m_special : SEGMENT_IS_NOTHING;
+		segType = bCoop ? gameData.segs.segment2s [segNum].m_nType : SEGMENT_IS_NOTHING;
 #if 0
 		switch (segType) {
 			case SEGMENT_IS_GOAL_RED:
 			case SEGMENT_IS_TEAM_RED:
 				if (i < nPlayers / 2) // (GetTeam (i) != TEAM_RED)
 					continue;
-				gameData.segs.segment2s [segNum].m_special = SEGMENT_IS_NOTHING;
+				gameData.segs.segment2s [segNum].m_nType = SEGMENT_IS_NOTHING;
 				break;
 			case SEGMENT_IS_GOAL_BLUE:
 			case SEGMENT_IS_TEAM_BLUE:
 				if (i >= nPlayers / 2) //GetTeam (i) != TEAM_BLUE)
 					continue;
-				gameData.segs.segment2s [segNum].m_special = SEGMENT_IS_NOTHING;
+				gameData.segs.segment2s [segNum].m_nType = SEGMENT_IS_NOTHING;
 				break;
 			default:
 				break;
@@ -938,7 +938,7 @@ if (0 > LoadRobotReplacements (pszLevelName, 0, 0)) {
 LoadHiresModels (1);
 /*---*/PrintLog ("   initializing cambot\n");
 InitCamBots (0);
-networkData.nSegmentCheckSum = NetMiscCalcCheckSum (SEGMENTS.Buffer (), sizeof (CSegment) * gameData.segs.nSegments);
+networkData.nSegmentCheckSum = CalcSegmentCheckSum ();
 ResetNetworkObjects ();
 ResetChildObjects ();
 externalView.Reset (-1, -1);

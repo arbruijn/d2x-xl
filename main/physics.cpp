@@ -274,11 +274,11 @@ COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->info.nSegment);
 //HUDMessage (0, "BUMP! %d %d", d1, d2);
 //don't bump CPlayerData towards center of reactor CSegment
 CFixVector::NormalizedDir(vBump, vCenter, objP->info.position.vPos);
-if (SEGMENTS [objP->info.nSegment].m_special == SEGMENT_IS_CONTROLCEN)
+if (SEGMENTS [objP->info.nSegment].m_nType == SEGMENT_IS_CONTROLCEN)
 	vBump.Neg();
 objP->info.position.vPos += vBump * (objP->info.xSize / 5);
 //if moving away from seg, might move out of seg, so update
-if (SEGMENTS [objP->info.nSegment].m_special == SEGMENT_IS_CONTROLCEN)
+if (SEGMENTS [objP->info.nSegment].m_nType == SEGMENT_IS_CONTROLCEN)
 	UpdateObjectSeg (objP);
 }
 
@@ -534,9 +534,9 @@ if ((nDbgSeg >= 0) && (objP->info.nSegment == nDbgSeg))
 #endif
 
 if (extraGameInfo [IsMultiGame].bFluidPhysics) {
-	if (SEGMENTS [objP->info.nSegment].m_special == SEGMENT_IS_WATER)
+	if (SEGMENTS [objP->info.nSegment].m_nType == SEGMENT_IS_WATER)
 		xTimeScale = 75;
-	else if (SEGMENTS [objP->info.nSegment].m_special == SEGMENT_IS_LAVA)
+	else if (SEGMENTS [objP->info.nSegment].m_nType == SEGMENT_IS_LAVA)
 		xTimeScale = 66;
 	else
 		xTimeScale = 100;
@@ -659,7 +659,7 @@ retryMove:
 #endif
 #if 1 //make shots and missiles pass through skyboxes
 		if (gameStates.render.bHaveSkyBox && (objP->info.nType == OBJ_WEAPON) && (hi.hit.nSegment >= 0)) {
-			if (SEGMENTS [hi.hit.nSegment].m_special == SEGMENT_IS_SKYBOX) {
+			if (SEGMENTS [hi.hit.nSegment].m_nType == SEGMENT_IS_SKYBOX) {
 				short nConnSeg = SEGMENTS [hi.hit.nSegment].children [hi.hit.nSide];
 				if ((nConnSeg < 0) && (objP->info.xLifeLeft > F1_0)) {	//leaving the mine
 					objP->info.xLifeLeft = 0;
@@ -669,7 +669,7 @@ retryMove:
 				}
 			else if (CheckTransWall (&hi.hit.vPoint, SEGMENTS + hi.hit.nSideSegment, hi.hit.nSide, hi.hit.nFace)) {
 				short nNewSeg = FindSegByPos (vNewPos, gameData.segs.skybox [0], 1, 1);
-				if ((nNewSeg >= 0) && (SEGMENTS [nNewSeg].m_special == SEGMENT_IS_SKYBOX)) {
+				if ((nNewSeg >= 0) && (SEGMENTS [nNewSeg].m_nType == SEGMENT_IS_SKYBOX)) {
 					hi.hit.nSegment = nNewSeg;
 					fviResult = HIT_NONE;
 					}

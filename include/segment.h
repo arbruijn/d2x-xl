@@ -93,6 +93,12 @@ class CSide {
 #endif
 		tUVL     	m_uvls [4];
 		CFixVector	m_normals [2];  // 2 normals, if quadrilateral, both the same.
+		CFixVector	m_rotNorms [2];
+		CFixVector	m_vCenter;
+		fix			m_rads [2];
+		ushort		m_vertices [6];
+		ushort		m_nMinVertex;
+		ubyte			m_nFaces;
 
 	public:
 		void LoadTextures (void);
@@ -107,29 +113,7 @@ class CSide {
 		uint CheckPointToFace (CFixVector& intersection, short iFace, CFixVector vNormal);
 
 		void GetNormals (CFixVector& n1, CFixVector& n2);
-	};
 
-//------------------------------------------------------------------------------
-
-class CBaseSegment {
-	public:
-		CSide   m_sides [MAX_SIDES_PER_SEGMENT];       // 6 sides
-		ushort  m_children [MAX_SIDES_PER_SEGMENT];    // indices of 6 children segments, front, left, top, right, bottom, back
-		ushort  m_verts [MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
-		int     m_objects;    // pointer to objects in this tSegment
-	};
-
-//------------------------------------------------------------------------------
-
-class CExtSide {
-	public:
-		CFixVector	m_rotNorms [2];
-		CFixVector	m_vCenter;
-		fix			m_rads [2];
-		ushort		m_vertices [6];
-		ubyte			m_nFaces;
-
-	public:
 		void ComputeCenter (void);
 		void ComputeRads (void);
 		CFixVector* Center (void) { return &m_vCenter; }
@@ -140,28 +124,24 @@ class CExtSide {
 			}
 	CFixVector* GetVertices (CFixVector* vertices);
 	ubyte Dist (const CFixVector& intersection, fix& xSideDist, int bBehind, short sideBit);
+	tSegMasks Masks (const CFixVector& refP, fix xRad, short sideBit, short& faceBit);
 	};
 
 //------------------------------------------------------------------------------
 
-class CExtSegment {
+class CSegment {
 	public:
-		ubyte			m_special;
+		CSide			m_sides [MAX_SIDES_PER_SEGMENT];       // 6 sides
+		ushort		m_children [MAX_SIDES_PER_SEGMENT];    // indices of 6 children segments, front, left, top, right, bottom, back
+		ushort		m_verts [MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
+		int			m_objects;    // pointer to objects in this tSegment
+
+		ubyte			m_nType;
 		sbyte			m_nMatCen;
 		sbyte			m_value;
 		ubyte			m_flags;
 		fix			m_xAvgSegLight;
-		CExtSide		m_sides [MAX_SIDES_PER_SEGMENT];
 
-	public:
-		void Read (CFile& cf);
-		inline CExtSide* ExtSide (int nSide) { return m_sides + nSide; }
-	};
-
-//------------------------------------------------------------------------------
-
-class CSegment : public CBaseSegment, public CExtSegment {
-	public:
 		char			m_owner;		  // team owning that tSegment (-1: always neutral, 0: neutral, 1: blue team, 2: red team)
 		char			m_group;
 		CFixVector	m_vCenter;
@@ -169,9 +149,10 @@ class CSegment : public CBaseSegment, public CExtSegment {
 		CFixVector	m_extents [2];
 
 	public:
+		void Read (CFile& cf, bool bExtended);
 		void LoadTextures (void);
-		inline ushort WallNum (short nSide) { return CBaseSegment::m_sides [nSide].WallNum (); }
-		inline int CheckTransparency (short nSide) { return CBaseSegment::m_sides [nSide].CheckTransparency (); }
+		inline ushort WallNum (short nSide) { return m_sides [nSide].WallNum (); }
+		inline int CheckTransparency (short nSide) { return m_sides [nSide].CheckTransparency (); }
 		fix Refuel (fix xMaxFuel);
 		fix Repair (fix xMaxShields);
 		fix Damage (fix xMaxDamage);
@@ -184,29 +165,31 @@ class CSegment : public CBaseSegment, public CExtSegment {
 		void CreateBotGen (int oldType);
 		void ComputeCenter (void);
 		void ComputeRads (fix xMinDist);
-		inline void ComputeSideCenter (short nSide) { CExtSegment::m_sides [nSide].ComputeCenter (); }
-		inline CSide* Side (int nSide) { return CBaseSegment::m_sides + nSide; }
+		inline void ComputeSideCenter (short nSide) { m_sides [nSide].ComputeCenter (); }
+		inline CSide* Side (int nSide) { return m_sides + nSide; }
 		void ComputeSideRads (void);
-		void GetNormals (short nSide, CFixVector& n1, CFixVector& n2) { CBaseSegment::m_sides [nSide].GetNormals (n1, n2); }
+		void GetNormals (short nSide, CFixVector& n1, CFixVector& n2) { m_sides [nSide].GetNormals (n1, n2); }
 		inline CFixVector* Center (void) { return &m_vCenter; }
-		inline int CreateVertexList (int nSide) { return CExtSegment::m_sides [nSide].CreateVertexList (m_verts, sideVertIndex [nSide]); }
-		inline ubyte GetVertices (int nSide, ushort*& vertices) { return CExtSegment::m_sides [nSide].GetVertices (vertices); }
-		inline CFixVector* GetVertices (int nSide, CFixVector* vertices) { return CExtSegment::m_sides [nSide].GetVertices (vertices); }
+		inline int CreateVertexList (int nSide) { return m_sides [nSide].CreateVertexList (m_verts, sideVertIndex [nSide]); }
+		inline ubyte GetVertices (int nSide, ushort*& vertices) { return m_sides [nSide].GetVertices (vertices); }
+		inline CFixVector* GetVertices (int nSide, CFixVector* vertices) { return m_sides [nSide].GetVertices (vertices); }
 		ubyte SideDists (const CFixVector& intersection, fix* xSideDists, int bBehind = 1);
 		int FindConnectedSide (CSegment* other);
 		inline CFixVector& Normal (int nSide, int nFace);
 #if 0
 		inline uint CheckPointToFace (CFixVector& intersection, short nSide, short iFace)
-			{ return CBaseSegment::m_sides [nSide].CheckPointToFace (intersection, iFace, nVerts, Normal (nSide, iFace)); }
+			{ return m_sides [nSide].CheckPointToFace (intersection, iFace, nVerts, Normal (nSide, iFace)); }
 		inline int CheckSphereToFace (CFixVector& intersection, short nSide, short iFace, fix rad)
-			{ return CBaseSegment::m_sides [nSide].CheckSphereToFace (intersection, iFace, nVerts, Normal (nSide, iFace)); }
+			{ return m_sides [nSide].CheckSphereToFace (intersection, iFace, nVerts, Normal (nSide, iFace)); }
 #endif
 		inline int CheckLineToFace (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short nSide, short iFace)
-			{ return CBaseSegment::m_sides [nSide].CheckLineToFace (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
+			{ return m_sides [nSide].CheckLineToFace (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
 		inline int SpecialCheckLineToFace (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short nSide, int iFace)
-			{ return CBaseSegment::m_sides [nSide].SpecialCheckLineToFace (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
+			{ return m_sides [nSide].SpecialCheckLineToFace (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
 
-		inline int FaceCount (int nSide) { return CBaseSegment::m_sides [nSide].FaceCount (); }
+		inline int FaceCount (int nSide) { return m_sides [nSide].FaceCount (); }
+		tSegMasks GetSideMasks (const CFixVector& refP, fix xRad);
+		ubyte GetSideDists (const CFixVector& refP, fix* xSideDists, int bBehind);
 	};
 
 inline int operator- (CSegment* s, CArray<CSegment>& a) { return a.Index (s); }

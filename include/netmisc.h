@@ -19,7 +19,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network_lib.h"
 
 // Returns a checksum of a block of memory.
-ushort NetMiscCalcCheckSum(void *vptr, int len);
+ushort CalcSegmentCheckSum (void);
 
 // Finds the difference between block1 and block2.  Fills in
 // diff_buffer and returns the size of diff_buffer.

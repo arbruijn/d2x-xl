@@ -519,7 +519,7 @@ else {
 				if (nSegment < 0)
 					return 0;
 				}
-			if ((m_nType == BUBBLE_PARTICLES) && (SEGMENTS [nSegment].m_special != SEGMENT_IS_WATER))
+			if ((m_nType == BUBBLE_PARTICLES) && (SEGMENTS [nSegment].m_nType != SEGMENT_IS_WATER))
 				return 0;
 			m_nSegment = nSegment;
 			}
