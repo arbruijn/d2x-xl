@@ -387,7 +387,7 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 		}
 	else {
 		cSegP = SEGMENTS + segP->m_children [nSide];
-		nConnSide = FindConnectedSide (segP, cSegP);
+		nConnSide = segP->ConnectedSide (cSegP);
 		}
 	switch (trigP->nType) {
 		case TT_OPEN_WALL:

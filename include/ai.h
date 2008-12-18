@@ -262,7 +262,6 @@ extern void mprintf_animation_info (CObject *objP);
 void AIFrameAnimation (CObject *objP);
 void AIIdleAnimation (CObject *objP);
 int DoSillyAnimation (CObject *objP);
-int OpenableDoorsInSegment (short nSegment);
 void ComputeVisAndVec (CObject *objP, CFixVector *pos, tAILocalInfo *ailp, tRobotInfo *robptr, int *flag, fix xMaxVisibleDist);
 void DoFiringStuff (CObject *obj, int player_visibility, CFixVector *vec_to_player);
 int AIMaybeDoActualFiringStuff (CObject *obj, tAIStaticInfo *aip);

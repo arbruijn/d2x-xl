@@ -1001,7 +1001,7 @@ for (i = 0; i <= nHighestEdgeIndex; i++)	{
 		tv1 = gameData.segs.vertices + e->verts [0];
 		j = 0;
 		while (j<e->num_faces && (nfacing==0 || nnfacing==0))	{
-			if (!G3CheckNormalFacing (*tv1, SEGMENTS [e->nSegment [j]].m_sides [e->m_sides [j]].m_normals [0]))
+			if (!G3CheckNormalFacing (*tv1, SEGMENTS [e->nSegment [j]].m_sides [e->sides [j]].m_normals [0]))
 				nfacing++;
 			else
 				nnfacing++;
@@ -1151,7 +1151,7 @@ if (found == -1) {
 	e->color = color;
 	e->num_faces = 1;
 	e->flags = EF_USED | EF_DEFINING;			// Assume a Normal line
-	e->m_sides [0] = CSide;
+	e->sides [0] = CSide;
 	e->nSegment [0] = nSegment;
 	//Edge_used_list [nNumEdges] = EDGE_IDX (e);
 	if ( EDGE_IDX (e) > nHighestEdgeIndex)
@@ -1163,7 +1163,7 @@ else {
 	if ((color != automapColors.walls.nNormal) && (color != automapColors.walls.nRevealed))
 		e->color = color;
 	if (e->num_faces < 4) {
-		e->m_sides [e->num_faces] = CSide;
+		e->sides [e->num_faces] = CSide;
 		e->nSegment [e->num_faces] = nSegment;
 		e->num_faces++;
 		}
@@ -1200,20 +1200,20 @@ if (found != -1)
 void AddSegmentEdges (CSegment *segP)
 {
 	int		 		bIsGrate, bNoFade;
-	uint	color;
-	int				wn;
-	ubyte				sn;
+	uint				color;
+	int				nWall;
+	ubyte				nSide;
 	short				nSegment = SEG_IDX (segP);
 	int				bHidden;
 	int				ttype, nTrigger;
-	short				vertex_list [4];
+	ushort*			contour;
 
-for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
+for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	bHidden = 0;
 	bIsGrate = 0;
 	bNoFade = 0;
 	color = WHITE_RGBA;
-	if (segP->m_children [sn] == -1)
+	if (segP->m_children [nSide] == -1)
 		color = automapColors.walls.nNormal;
 	switch (SEGMENTS [nSegment].m_nType)	{
 		case SEGMENT_IS_FUELCEN:
@@ -1239,8 +1239,8 @@ for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
 			continue;
 		}
 
-	if (IS_WALL (wn = WallNumP (segP, sn))) {
-		CWall	*wallP = gameData.walls.walls + wn;
+	CWall* wallP = segP->WallNum (an);
+	if (wallP) {
 		nTrigger = wallP->nTrigger;
 		ttype = TRIGGERS [nTrigger].nType;
 		if (ttype==TT_SECRET_EXIT)	{
@@ -1263,10 +1263,10 @@ for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
 					color = automapColors.walls.nDoorRed;
 					}
 				else if (!(gameData.walls.animP [wallP->nClip].flags & WCF_HIDDEN)) {
-					short	connected_seg = segP->m_children [sn];
-					if (connected_seg != -1) {
-						short connected_side = FindConnectedSide (segP, &SEGMENTS [connected_seg]);
-						switch (gameData.walls.walls [WallNumI (connected_seg, connected_side)].keys) {
+					short	nConnSeg = segP->m_children [nSide];
+					if (nConnSeg != -1) {
+						short nConnSide = segP->ConnectedSide (&SEGMENTS [nConnSeg]);
+						switch (gameData.walls.walls [WallNumI (nConnSeg, nConnSide)].keys) {
 							case KEY_BLUE:
 								color = automapColors.walls.nDoorBlue;
 								bNoFade = 1; 
@@ -1291,7 +1291,7 @@ for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
 				break;
 			case WALL_CLOSED:
 				// Make bGrates draw properly
-				if (segP->IsDoorWay (sn, NULL) & WID_RENDPAST_FLAG)
+				if (segP->HasDoorWay (nSide, NULL) & WID_RENDPAST_FLAG)
 					bIsGrate = 1;
 				else
 					bHidden = 1;
@@ -1315,15 +1315,15 @@ for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
 
 addEdge:
 
-		GetSideVertIndex (vertex_list,nSegment,sn);
-		AddOneEdge (vertex_list [0], vertex_list [1], color, sn, nSegment, bHidden, 0, bNoFade);
-		AddOneEdge (vertex_list [1], vertex_list [2], color, sn, nSegment, bHidden, 0, bNoFade);
-		AddOneEdge (vertex_list [2], vertex_list [3], color, sn, nSegment, bHidden, 0, bNoFade);
-		AddOneEdge (vertex_list [3], vertex_list [0], color, sn, nSegment, bHidden, 0, bNoFade);
+		contour = SEGMENTS [nSegment].Contour (nSide);
+		AddOneEdge (contour [0], contour [1], color, nSide, nSegment, bHidden, 0, bNoFade);
+		AddOneEdge (contour [1], contour [2], color, nSide, nSegment, bHidden, 0, bNoFade);
+		AddOneEdge (contour [2], contour [3], color, nSide, nSegment, bHidden, 0, bNoFade);
+		AddOneEdge (contour [3], contour [0], color, nSide, nSegment, bHidden, 0, bNoFade);
 
 		if (bIsGrate) {
-			AddOneEdge (vertex_list [0], vertex_list [2], color, sn, nSegment, bHidden, 1, bNoFade);
-			AddOneEdge (vertex_list [1], vertex_list [3], color, sn, nSegment, bHidden, 1, bNoFade);
+			AddOneEdge (contour [0], contour [2], color, nSide, nSegment, bHidden, 1, bNoFade);
+			AddOneEdge (contour [1], contour [3], color, nSide, nSegment, bHidden, 1, bNoFade);
 			}
 		}
 	}
@@ -1332,29 +1332,25 @@ addEdge:
 //------------------------------------------------------------------------------
 // Adds all the edges from a CSegment we haven't visited yet.
 
-void AddUnknownSegmentEdges (CSegment *segP)
+void AddUnknownSegmentEdges (CSegment* segP)
 {
-	int sn;
-	int nSegment = SEG_IDX (segP);
-
-for (sn=0;sn<MAX_SIDES_PER_SEGMENT;sn++) {
-	short	vertex_list [4];
+for (int nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+	;
 
 	// Only add edges that have no children
-	if (segP->m_children [sn] == -1) {
-		GetSideVertIndex (vertex_list,nSegment,sn);
-
-		AddOneUnknownEdge (vertex_list [0], vertex_list [1]);
-		AddOneUnknownEdge (vertex_list [1], vertex_list [2]);
-		AddOneUnknownEdge (vertex_list [2], vertex_list [3]);
-		AddOneUnknownEdge (vertex_list [3], vertex_list [0]);
+	if (segP->m_children [nSide] == -1) {
+		ushort* contour = SEGMENTS [nSegment].Contour (nSide);
+		AddOneUnknownEdge (contour [0], contour [1]);
+		AddOneUnknownEdge (contour [1], contour [2]);
+		AddOneUnknownEdge (contour [2], contour [3]);
+		AddOneUnknownEdge (contour [3], contour [0]);
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void AutomapBuildEdgeList ()
+void AutomapBuildEdgeList (void)
 {
 	int	h = 0, i, e1, e2, s;
 	tEdgeInfo * e;
@@ -1408,7 +1404,7 @@ else {
 		for (e1 = 0; e1 < e->num_faces; e1++) {
 			for (e2 = 1; e2 < e->num_faces; e2++) {
 				if ((e1 != e2) && (e->nSegment [e1] != e->nSegment [e2]))	{
-					if (CFixVector::Dot (SEGMENTS [e->nSegment [e1]].m_sides [e->m_sides [e1]].m_normals [0], SEGMENTS [e->nSegment [e2]].m_sides [e->m_sides [e2]].m_normals [0]) > (F1_0- (F1_0/10)) )	{
+					if (CFixVector::Dot (SEGMENTS [e->nSegment [e1]].m_sides [e->sides [e1]].m_normals [0], SEGMENTS [e->nSegment [e2]].m_sides [e->sides [e2]].m_normals [0]) > (F1_0- (F1_0/10)) )	{
 						e->flags &= (~EF_DEFINING);
 						break;
 					}

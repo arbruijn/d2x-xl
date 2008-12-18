@@ -1487,7 +1487,7 @@ if (RENDERPATH && gameStates.render.bPerPixelLighting && lightmapManager.HaveLig
 	}
 if (gameOpts->render.nLightingMethod || (gameStates.render.bAmbientColor && !gameStates.render.bColored)) {
 		tFaceColor		*pfh, *pf = gameData.render.color.ambient.Buffer ();
-		tSegment2		*seg2P;
+		CSegment		*seg2P;
 
 	memset (pf, 0, gameData.segs.nVertices * sizeof (*pf));
 	if (!RunRenderThreads (rtStaticVertLight))

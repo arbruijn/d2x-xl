@@ -282,7 +282,7 @@ if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 	//	This is almost always ok, but it is not ok if something solid is in between.
 	int	nGunSeg = FindSegByPos (*vFirePoint, objP->info.nSegment, 1, 0);
 	//	See if these segments are connected, which should almost always be the case.
-	short nConnSide = FindConnectedSide (&SEGMENTS [nGunSeg], &SEGMENTS [objP->info.nSegment]);
+	short nConnSide = ConnectedSide (&SEGMENTS [nGunSeg], &SEGMENTS [objP->info.nSegment]);
 	if (nConnSide != -1) {
 		//	They are connected via nConnSide in CSegment objP->info.nSegment.
 		//	See if they are unobstructed.

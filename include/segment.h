@@ -145,7 +145,7 @@ class CSide {
 
 		void ComputeCenter (void);
 		void ComputeRads (void);
-		CFixVector* Center (void) { return &m_vCenter; }
+		CFixVector& Center (void) { return m_vCenter; }
 		fix MinRad (void) { return m_rads [0]; }
 		fix MaxRad (void) { return m_rads [1]; }
 
@@ -161,6 +161,7 @@ class CSide {
 			return m_nFaces;
 			}
 		CFixVector* GetVertices (CFixVector* vertices);
+		inline ushort* Contour (void) { return m_contour (); }
 		inline CFixVector& Vertex (int nVertex);
 		inline CFixVector& MinVertex (void);
 		inline CFixVector& Normal (int nFace);
@@ -170,6 +171,8 @@ class CSide {
 		CSegMasks Masks (const CFixVector& refP, fix xRad, short sideBit, short& faceBit);
 		void FindHitPointUV (fix *u, fix *v, fix *l, CFixVector& intersection, int iFace);
 		int CheckForTranspPixel (CFixVector& intersection, short iFace);
+
+		int HasOpenableDoor (void);
 	};
 
 //------------------------------------------------------------------------------
@@ -215,13 +218,14 @@ class CSegment {
 		inline CSide* Side (int nSide) { return m_sides + nSide; }
 		void ComputeSideRads (void);
 		void GetNormals (short nSide, CFixVector& n1, CFixVector& n2) { m_sides [nSide].GetNormals (n1, n2); }
-		inline CFixVector* Center (void) { return &m_vCenter; }
-		inline CFixVector* SideCenter (int nSide) { return m_sides [nSide].Center (); }
+		inline CFixVector& Center (void) { return m_vCenter; }
+		inline CFixVector& SideCenter (int nSide) { return m_sides [nSide].Center (); }
 		inline int CreateVertexList (int nSide) { return m_sides [nSide].CreateVertexList (m_verts, sideVertIndex [nSide]); }
 		inline ubyte GetVertices (int nSide, ushort*& vertices) { return m_sides [nSide].GetVertices (vertices); }
+		inline ushort& Contour (int nSide) { return m_sides [nSide].Contour (); }
 		inline CFixVector* GetVertices (int nSide, CFixVector* vertices) { return m_sides [nSide].GetVertices (vertices); }
 		ubyte SideDists (const CFixVector& intersection, fix* xSideDists, int bBehind = 1);
-		int FindConnectedSide (CSegment* other);
+		int ConnectedSide (CSegment* other);
 		inline CFixVector& Normal (int nSide, int nFace) { return m_sides [nSide].Normal (nFace); }
 #if 0
 		inline uint CheckPointToFace (CFixVector& intersection, short nSide, short iFace)
@@ -385,25 +389,19 @@ extern int med_delete_segment(tSegment *sp);
 // Delete tSegment from group
 extern void DeleteSegmentFromGroup (int nSegment, int nGroup);
 
-// Add tSegment to group
-extern void AddSegmentToGroup (int nSegment, int nGroup);
+// Add segment to group
+void AddSegmentToGroup (int nSegment, int nGroup);
 
 #endif
 
 // Verify that all vertices are legal.
-extern void med_check_all_vertices();
+void med_check_all_vertices();
 
-/*
- * reads a tLightDelta structure from a CFILE
- */
 void ReadlightDelta(tLightDelta *dl, CFile& cf);
-
-/*
- * reads a tLightDeltaIndex structure from a CFILE
- */
-void ReadlightDeltaIndex(tLightDeltaIndex *di, CFile& cf);
+void ReadlightDeltaIndex (tLightDeltaIndex *di, CFile& cf);
 
 void FreeSkyBoxSegList (void);
 int BuildSkyBoxSegList (void);
+void GetContour (int nSegment, int nSide, ushort* vertIndex);
 
 #endif

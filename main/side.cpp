@@ -135,7 +135,12 @@ else if (m_nType == SIDE_IS_TRI_13) {
 else {
 	return m_nFaces = -1;
 	}
-return CreateFaceVertIndex ();
+m_contour [0] = verts [index [0]];
+m_contour [1] = verts [index [1]];
+m_contour [2] = verts [index [2]];
+m_contour [3] = verts [index [3]];
+CreateFaceVertIndex ();
+return m_nFaces;
 }
 
 // -----------------------------------------------------------------------------------
@@ -699,6 +704,13 @@ if (closestDist < (rad * 9) / 10) {		//we hit.  figure out where
 	return IT_EDGE;
 	}
 return IT_NONE;			//no hit
+}
+
+//------------------------------------------------------------------------------
+
+bool CSide::IsOpenableDoor (void)
+{
+return IS_WALL (m_nWall) ? WALLS [nWall].IsOpenableDoor () : false;
 }
 
 //------------------------------------------------------------------------------

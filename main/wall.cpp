@@ -363,7 +363,7 @@ if (segP->m_children [nSide] < 0) {
 	}
 else {
 	connSegP = SEGMENTS + segP->m_children [nSide];
-	nConnSide = FindConnectedSide (segP, connSegP);
+	nConnSide = segP->ConnectedSide (connSegP);
 	Assert (nConnSide != -1);
 	nConnWall = WallNumP (connSegP, nConnSide);
 	}
@@ -427,7 +427,7 @@ if (segP->m_children [nSide] < 0) {
 	}
 else {
 	connSegP = SEGMENTS + segP->m_children [nSide];
-	nConnSide = FindConnectedSide (segP, connSegP);
+	nConnSide = segP->ConnectedSide (connSegP);
 	Assert(nConnSide != -1);
 	nConnWall = connSegP->WallNum (nConnSide);
 	}
@@ -507,7 +507,7 @@ if (segP->m_children [nSide] < 0) {
 	}
 else {
 	connSegP = SEGMENTS + segP->m_children [nSide];
-	nConnSide = FindConnectedSide (segP, connSegP);
+	nConnSide = segP->ConnectedSide (connSegP);
 	if (nConnSide >= 0) {
 		nConnWall = WallNumP (connSegP, nConnSide);
 		if (IS_WALL (nConnWall))
@@ -526,7 +526,7 @@ if (IS_WALL (wallP->nLinkedWall) && IS_WALL (nConnWall) && (wallP->nLinkedWall =
 	CSegment *segP2 = SEGMENTS + wallP2->nSegment;
 	wallP2->state = WALL_DOOR_OPENING;
 	connSegP = SEGMENTS + segP2->children [wallP2->nSide];
-	nConnSide = FindConnectedSide(segP2, connSegP);
+	nConnSide = ConnectedSide(segP2, connSegP);
 	Assert(nConnSide != -1);
 	if (IS_WALL (nConnWall))
 		gameData.walls.walls [nConnWall].state = WALL_DOOR_OPENING;
@@ -564,7 +564,7 @@ if (wallP->nType == WALL_OPEN || wallP->state == WALL_DOOR_CLOAKING)		//already 
 	return;
 
 connSegP = SEGMENTS + segP->m_children [nSide];
-nConnSide = FindConnectedSide (segP, connSegP);
+nConnSide = segP->ConnectedSide (connSegP);
 Assert(nConnSide != -1);
 nConnWall = WallNumP (connSegP, nConnSide);
 
@@ -661,7 +661,7 @@ else {
 wallP->state = WALL_DOOR_DECLOAKING;
 // So that door can't be shot while opening
 connSegP = SEGMENTS + segP->m_children [nSide];
-nConnSide = FindConnectedSide (segP, connSegP);
+nConnSide = segP->ConnectedSide (connSegP);
 Assert(nConnSide != -1);
 nConnWall = WallNumP (connSegP, nConnSide);
 if (IS_WALL (nConnWall))
@@ -707,7 +707,7 @@ for (p = 0; p < d->nPartCount; p++) {
 		CSegment *segP = SEGMENTS + w->nSegment,
 					*connSegP = SEGMENTS + segP->m_children [nSide];
 
-	nConnSide = FindConnectedSide(segP, connSegP);
+	nConnSide = ConnectedSide(segP, connSegP);
 	nConnWall = WallNumP (connSegP, nConnSide);
 	gameData.walls.walls [WallNumP (segP, nSide)].state = WALL_DOOR_CLOSED;
 	if (IS_WALL (nConnWall)) {
@@ -743,7 +743,7 @@ int DoorIsBlocked (CSegment *segP, short nSide)
 	short		nObject, t;
 
 connSegP = SEGMENTS + segP->m_children [nSide];
-nConnSide = FindConnectedSide (segP, connSegP);
+nConnSide = segP->ConnectedSide (connSegP);
 Assert(nConnSide != -1);
 
 //go through each CObject in each of two segments, and see if
@@ -804,7 +804,7 @@ else {											//create new door
 wallP->state = WALL_DOOR_CLOSING;
 // So that door can't be shot while opening
 connSegP = SEGMENTS + segP->m_children [nSide];
-nConnSide = FindConnectedSide (segP, connSegP);
+nConnSide = segP->ConnectedSide (connSegP);
 Assert(nConnSide != -1);
 nConnWall = WallNumP (connSegP, nConnSide);
 if (IS_WALL (nConnWall))
@@ -898,7 +898,7 @@ for (i = 0; i < doorP->nPartCount; i++) {
 		}
 	bFlags &= AnimateOpeningDoor (segP, nSide, doorP->time);
 	connSegP = SEGMENTS + segP->m_children [nSide];
-	cSide = FindConnectedSide (segP, connSegP);
+	cSide = segP->ConnectedSide (connSegP);
 	if (cSide < 0) {
 		PrintLog ("Door %d @ %d,%d has no oppposite door in %d\n", nWall, wallP->nSegment, nSide, segP->m_children [nSide]);
 		continue;
@@ -980,7 +980,7 @@ for (i = 0; i < doorP->nPartCount; i++) {
 	//don't assert here, because now we have triggers to close non-auto doors
 	// Otherwise, close it.
 	connSegP = SEGMENTS + segP->m_children [nSide];
-	cSide = FindConnectedSide (segP, connSegP);
+	cSide = segP->ConnectedSide (connSegP);
 	if (cSide < 0) {
 		PrintLog ("Door %d @ %d,%d has no oppposite door in %d\n", WallNumP (segP, nSide), wallP->nSegment, nSide, segP->m_children [nSide]);
 		continue;
@@ -1018,7 +1018,7 @@ if (segP->m_children [nSide] < 0) {
 	}
 else {
 	connSegP = SEGMENTS+segP->m_children [nSide];
-	cSide = FindConnectedSide(segP, connSegP);
+	cSide = ConnectedSide(segP, connSegP);
 	Assert(cSide != -1);
 	}
 
@@ -1057,7 +1057,7 @@ if (segP->m_children [nSide] < 0) {
 	}
 else {
 	connSegP = SEGMENTS+segP->m_children [nSide];
-	cSide = FindConnectedSide(segP, connSegP);
+	cSide = ConnectedSide(segP, connSegP);
 	Assert(cSide != -1);
 	}
 nWall = WallNumP (segP, nSide);
@@ -1685,15 +1685,14 @@ void BlastNearbyGlass(CObject *objP, fix damage)
 	sbyte   visited [MAX_SEGMENTS_D2X];
 	CSegment	*cursegp;
 
-	cursegp = &SEGMENTS [objP->info.nSegment];
-	for (i=0; i<=gameData.segs.nLastSegment; i++)
-		visited [i] = 0;
-
-	visited [objP->info.nSegment] = 1;
-	BngProcessSegment(objP, damage, cursegp, 0, visited);
-
-
+cursegp = &SEGMENTS [objP->info.nSegment];
+for (i=0; i<=gameData.segs.nLastSegment; i++)
+memset (visited, 0, sizeof (visited));
+visited [objP->info.nSegment] = 1;
+BngProcessSegment(objP, damage, cursegp, 0, visited);
 }
+
+// -----------------------------------------------------------------------------------
 
 #define MAX_CLIP_FRAMES_D1 20
 
@@ -1718,7 +1717,8 @@ int ReadD1WallClips(tWallClip *wc, int n, CFile& cf)
 	return i;
 }
 
-#if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
+// -----------------------------------------------------------------------------------
+
 /*
  * reads a tWallClip structure from a CFile
  */
@@ -1740,6 +1740,7 @@ for (i = 0; i < n; i++) {
 return i;
 }
 
+// -----------------------------------------------------------------------------------
 /*
  * reads a tWallV16 structure from a CFile
  */
@@ -1753,6 +1754,7 @@ w->nClip = cf.ReadByte ();
 w->keys = cf.ReadByte ();
 }
 
+// -----------------------------------------------------------------------------------
 /*
  * reads a tWallV19 structure from a CFile
  */
@@ -1769,6 +1771,7 @@ w->keys = cf.ReadByte ();
 w->nLinkedWall = cf.ReadInt ();
 }
 
+// -----------------------------------------------------------------------------------
 /*
  * reads a CWall structure from a CFile
  */
@@ -1788,6 +1791,7 @@ w->controllingTrigger = cf.ReadByte ();
 w->cloakValue = cf.ReadByte ();
 }
 
+// -----------------------------------------------------------------------------------
 /*
  * reads a v19_door structure from a CFile
  */
@@ -1803,6 +1807,7 @@ extern void ReadActiveDoorV19(v19_door *d, CFile& cf)
 	d->open = cf.ReadFix ();
 }
 
+// -----------------------------------------------------------------------------------
 /*
  * reads an tActiveDoor structure from a CFile
  */
@@ -1816,3 +1821,12 @@ extern void ReadActiveDoor(tActiveDoor *ad, CFile& cf)
 	ad->time = cf.ReadFix ();
 }
 #endif
+
+// -----------------------------------------------------------------------------------
+
+bool CWall::IsOpenableDoor (void)
+{
+return (nType == WALL_DOOR) && (keys == KEY_NONE) && (state == WALL_DOOR_CLOSED) && !(flags & WALL_DOOR_LOCKED);
+}
+
+// -----------------------------------------------------------------------------------

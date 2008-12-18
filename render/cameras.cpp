@@ -155,7 +155,7 @@ int CCamera::Create (short nId, short srcSeg, short srcSide, short tgtSeg, short
 	CAngleVector	a;
 	int			h, i;
 #if 0
-	short			sideVerts [4];
+	ushort*		contour;
 	CFixVector	*pv;
 #endif
 
@@ -221,9 +221,9 @@ else {
 	else
 		m_info.obj.info.position.vPos = SEGMENTS [srcSeg].SideCenter (srcSide);
 #else
-	GetSideVertIndex (sideVerts, srcSeg, srcSide);
+	contour SEGMENTS [srcSeg].Contour (srcSide);
 	for (i = 0; i < 4; i++) {
-		pv = gameData.segs.vertices + sideVerts [i];
+		pv = gameData.segs.vertices + contour [i];
 		m_info.obj.info.position.p.vPos.x += pv->x;
 		m_info.obj.info.position.p.vPos.y += pv->y;
 		m_info.obj.info.position.p.vPos.z += pv->z;

@@ -2276,7 +2276,7 @@ for (i = 0; i < nPhysSegs - 1; i++) {
 	if (physSegList [i] > gameData.segs.nLastSegment)
 		PrintLog ("invalid segment in physSegList\n");
 #endif
-	nConnSide = FindConnectedSide (SEGMENTS + physSegList [i+1], SEGMENTS + physSegList [i]);
+	nConnSide = ConnectedSide (SEGMENTS + physSegList [i+1], SEGMENTS + physSegList [i]);
 	if (nConnSide != -1)
 		CheckTrigger (SEGMENTS + physSegList [i], nConnSide, OBJ_IDX (objP), 0);
 #if DBG
@@ -2297,7 +2297,7 @@ void CheckGuidedMissileThroughExit (CObject *objP, short nPrevSegment)
 if ((objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP) &&
 	 (objP->info.nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature)) {
 	if (nPrevSegment != objP->info.nSegment) {
-		short	nConnSide = FindConnectedSide (SEGMENTS + objP->info.nSegment, SEGMENTS + nPrevSegment);
+		short	nConnSide = ConnectedSide (SEGMENTS + objP->info.nSegment, SEGMENTS + nPrevSegment);
 		if (nConnSide != -1) {
 			short nWall, nTrigger;
 			nWall = WallNumI (nPrevSegment, nConnSide);
@@ -3176,6 +3176,13 @@ gameStates.render.bBuildModels = 0;
 PrintLog ("   saving optimized polygon model data\n", h);
 SaveModelData ();
 PrintLog ("   finished building optimized polygon model data (%d models converted)\n", h);
+}
+
+//------------------------------------------------------------------------------
+
+inline int CObject::OpenableDoorsInSegment (void)
+{
+return SEGMENTS [objP->info.nSegment].HasOpenableDoors ();
 }
 
 //------------------------------------------------------------------------------

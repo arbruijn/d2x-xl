@@ -637,7 +637,7 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSeg
 		if (IS_CHILD (nConnSeg) && (nConnSeg < nSegment) &&
 			 (segP->IsDoorWay (nSide, NULL) & (WID_FLY_FLAG | WID_RENDPAST_FLAG))) {
 			connSegP = SEGMENTS + segP->m_children [nSide];
-			nConnSide = FindConnectedSide (segP, connSegP);
+			nConnSide = segP->ConnectedSide (connSegP);
 			if (connSegP->m_sides [nConnSide].nOvlTex == segP->m_sides [nSide].nOvlTex)
 				continue;		//skip this one
 			}

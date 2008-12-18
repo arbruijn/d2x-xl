@@ -1007,7 +1007,7 @@ if (gameFileInfo.doors.offset > -1) {
 			gameData.walls.activeDoors [i].nPartCount = d.nPartCount;
 			for (p = 0; p < d.nPartCount; p++) {
 				nConnSeg = SEGMENTS [d.seg [p]].children [d.nSide [p]];
-				nConnSide = FindConnectedSide(SEGMENTS + d.seg [p], SEGMENTS + nConnSeg);
+				nConnSide = ConnectedSide(SEGMENTS + d.seg [p], SEGMENTS + nConnSeg);
 				gameData.walls.activeDoors [i].nFrontWall [p] = WallNumI (d.seg [p], d.nSide [p]);
 				gameData.walls.activeDoors [i].nBackWall [p] = WallNumI (nConnSeg, nConnSide);
 				}

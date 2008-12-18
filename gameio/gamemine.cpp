@@ -483,7 +483,7 @@ int load_mine_data (CFile& cf)
 
 	mine_fileinfo.segment2_offset		= -1;
 	mine_fileinfo.segment2_howmany	= 0;
-	mine_fileinfo.segment2_sizeof    = sizeof (tSegment2);
+	mine_fileinfo.segment2_sizeof    = sizeof (CSegment);
 
 	// Read in mine_top_fileinfo to get size of saved fileinfo.
 
@@ -758,7 +758,7 @@ int load_mine_data (CFile& cf)
 
 		if (mine_top_fileinfo.fileinfoVersion >= 20)
 			for (i = 0; i<=gameData.segs.nLastSegment; i++) {
-				cf.Read (SEGMENTS + i, sizeof (tSegment2), 1);
+				cf.Read (SEGMENTS + i, sizeof (CSegment), 1);
 				FuelCenActivate (SEGMENTS + i, SEGMENTS [i].m_nType );
 			}
 	}
@@ -961,7 +961,7 @@ void LoadSegmentsCompiled (short nSegment, CFile& cf)
 	CSide			*sideP;
 	short			temp_short;
 	ushort		nWall, temp_ushort = 0;
-	ushort		sideVerts [4];
+	ushort*		sideVerts;
 	ubyte			bitMask;
 
 INIT_PROGRESS_LOOP (nSegment, lastSeg, gameData.segs.nSegments);
@@ -1072,7 +1072,7 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 				}
 
 			// Read tUVL sideP->uvls [4] (u, v>>5, write as short, l>>1 write as short)
-			GetSideVertIndex (sideVerts, nSegment, nSide);
+			GetContour (nSegment, nSide, sideVerts);
 			for (i = 0; i < 4; i++) {
 				temp_short = cf.ReadShort ();
 				sideP->uvls [i].u = ((fix)temp_short) << 5;

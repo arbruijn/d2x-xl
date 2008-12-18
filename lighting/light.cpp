@@ -1057,7 +1057,7 @@ if (i == nChangedSegs) {
 									 MAGIC_LIGHT_CONSTANT;
 
 		if (xLightAtPoint >= 0) {
-			tSegment2 *seg2P = SEGMENTS + nSegment;
+			CSegment *seg2P = SEGMENTS + nSegment;
 			xLightAtPoint = FixMul (xLightAtPoint, xBrightness);
 			if (xLightAtPoint >= F1_0)
 				xLightAtPoint = F1_0-1;

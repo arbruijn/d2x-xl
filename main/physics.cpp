@@ -966,7 +966,7 @@ if (objP->info.controlType == CT_AI) {
 	//hack to keep CPlayerData from going through closed doors
 	if (((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT)) && (objP->info.nSegment != nOrigSegment) &&
 		 (gameStates.app.cheats.bPhysics != 0xBADA55)) {
-		int nSide = FindConnectedSide (SEGMENTS + objP->info.nSegment, SEGMENTS + nOrigSegment);
+		int nSide = ConnectedSide (SEGMENTS + objP->info.nSegment, SEGMENTS + nOrigSegment);
 		if (nSide != -1) {
 			if (!(SEGMENTs [nOrigSegment].IsDoorWay (nSide, (objP->info.nType == OBJ_PLAYER) ? objP : NULL) & WID_FLY_FLAG)) {
 				CSide *sideP;

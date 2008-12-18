@@ -766,7 +766,7 @@ if (OBJSEG (gameData.objs.consoleP) == objP->info.nSegment) {
 	AIMultiSendRobotPos (siP->nObject, -1);
 	}
 else if (siP->ailP->mode != AIM_IDLING) {
-	int r = OpenableDoorsInSegment (objP->info.nSegment);
+	int r = objP->OpenableDoorsInSegment ();
 	if (r != -1) {
 		siP->ailP->mode = AIM_OPEN_DOOR;
 		siP->aiP->GOALSIDE = r;
@@ -844,11 +844,11 @@ if (siP->botInfoP->companion) {
 	if (ReadyToFire (siP->botInfoP, siP->ailP)) {
 		int bDoStuff = 0;
 
-		if (OpenableDoorsInSegment (objP->info.nSegment) != -1)
+		if (objP->OpenableDoorsInSegment () != -1)
 			bDoStuff = 1;
-		else if (OpenableDoorsInSegment ((short) gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex + aiP->PATH_DIR].nSegment) != -1)
+		else if (SEGMENTS [gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex + aiP->PATH_DIR].nSegment].HasOpenableDoor () != -1)
 			bDoStuff = 1;
-		else if (OpenableDoorsInSegment ((short) gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex + 2*aiP->PATH_DIR].nSegment) != -1)
+		else if (SEGMENTS [gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex + 2*aiP->PATH_DIR].nSegment].HasOpenableDoors () != -1)
 			bDoStuff = 1;
 		else if ((siP->ailP->mode == AIM_GOTO_PLAYER) && (gameData.ai.xDistToPlayer < 3*MIN_ESCORT_DISTANCE/2) ) {
 			bDoStuff = 1;
@@ -878,11 +878,11 @@ if (siP->botInfoP->thief) {
 	DoThiefFrame (objP);
 	if (ReadyToFire (siP->botInfoP, siP->ailP)) {
 		int bDoStuff = 0;
-		if (OpenableDoorsInSegment (objP->info.nSegment) != -1)
+		if (objP->OpenableDoorsInSegment () != -1)
 			bDoStuff = 1;
-		else if (OpenableDoorsInSegment ((short) gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex + aiP->PATH_DIR].nSegment) != -1)
+		else if (SEGMENTS [gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex + aiP->PATH_DIR].nSegment].HasOpenableDoors () != -1)
 			bDoStuff = 1;
-		else if (OpenableDoorsInSegment ((short) gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex + 2*aiP->PATH_DIR].nSegment) != -1)
+		else if (SEGMENTS [gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex + 2*aiP->PATH_DIR].nSegment].HasOpenableDoors () != -1)
 			bDoStuff = 1;
 		if (bDoStuff) {
 			// @mk, 05/08/95: Firing flare from center of CObject, this is dumb...

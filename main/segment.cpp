@@ -21,7 +21,7 @@ int sideVertIndex [MAX_SIDES_PER_SEGMENT][4] = {
 	};	
 
 //------------------------------------------------------------------------------
-// reads a tSegment2 structure from a CFile
+// reads a CSegment structure from a CFile
  
 void CSegment::Read (CFile& cf, bool bExtended)
 {
@@ -97,7 +97,7 @@ m_extents [1] = vMax;
 // -----------------------------------------------------------------------------
 //	Given two segments, return the side index in the connecting segment which connects to the base segment
 
-int CSegment::FindConnectedSide (CSegment* other)
+int CSegment::ConnectedSide (CSegment* other)
 {
 	short		nSegment = SEG_IDX (this);
 	ushort*	childP = other->m_children;
@@ -153,5 +153,14 @@ v *= (d_rand ());
 return v;
 }
 
+//------------------------------------------------------------------------------
+
+int CSegment::HasOpenableDoor (void)
+{
+for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
+	if (m_sides [i].IsOpenableDoor ())
+		return i;
+return -1;
+}
 //------------------------------------------------------------------------------
 //eof

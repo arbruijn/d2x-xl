@@ -158,6 +158,8 @@ class CWall {
 	public:
 		void LoadTextures (void);
 		int IsDoorWay (CObject* objP);
+		bool CWall::IsOpenableDoor (void);
+
 };
 
 inline int operator- (CWall* o, CArray<CWall>& a) { return a.Index (o); }

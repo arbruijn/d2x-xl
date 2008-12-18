@@ -206,7 +206,7 @@ for (i = 0; i < gameData.matCens.nEquipCenters; i++)
 void CSegment::CreateEquipGen (int oldType)
 {
 	short			nSegment = SEG_IDX (segP);
-	tSegment2	*seg2P = SEGMENTS  + nSegment;
+	CSegment	*seg2P = SEGMENTS  + nSegment;
 	int			stationType = m_nType;
 	int			i;
 
@@ -276,7 +276,7 @@ else {
 int MatCenTrigger (short nSegment)
 {
 	// -- CSegment		*segP = &SEGMENTS [nSegment];
-	tSegment2		*seg2P = &SEGMENTS [nSegment];
+	CSegment		*seg2P = &SEGMENTS [nSegment];
 	CFixVector		pos, delta;
 	tFuelCenInfo	*matCenP;
 	int				nObject;
@@ -328,7 +328,7 @@ return 0;
 //	Trigger (enable) the materialization center in CSegment nSegment
 void SpawnBotTrigger (CObject *objP, short nSegment)
 {
-	tSegment2		*seg2P = &SEGMENTS [nSegment];
+	CSegment		*seg2P = &SEGMENTS [nSegment];
 	tFuelCenInfo	*matCenP;
 	short				nType;
 
@@ -352,7 +352,7 @@ BossSpewRobot (objP, NULL, nType, 1);
 //	Deletes the CSegment point entry in the tFuelCenInfo list.
 void FuelCenDelete (CSegment * segP)
 {
-	tSegment2	*seg2P = &SEGMENTS [SEG_IDX (segP)];
+	CSegment	*seg2P = &SEGMENTS [SEG_IDX (segP)];
 	int i, j;
 
 Restart: ;
@@ -838,7 +838,7 @@ return amount;
 fix CSegment:Refuel (fix nMaxFuel)
 {
 	short			nSegment = SEG_IDX (segP);
-	tSegment2	*seg2P = SEGMENTS + nSegment;
+	CSegment	*seg2P = SEGMENTS + nSegment;
 	xsegment		*xsegp = SEGMENTS + nSegment;
 	fix			amount;
 
@@ -889,7 +889,7 @@ return amount;
 fix CSegment::Repair (fix nMaxShields)
 {
 	short		nSegment = SEG_IDX (segP);
-	tSegment2	*seg2P = SEGMENTS + nSegment;
+	CSegment	*seg2P = SEGMENTS + nSegment;
 	xsegment	*xsegp = SEGMENTS + nSegment;
 	static fix last_playTime=0;
 	fix amount;
@@ -1349,7 +1349,7 @@ short blueFlagGoals = -1;
 int GatherFlagGoals (void)
 {
 	int			h, i, j;
-	tSegment2	*seg2P = SEGMENTS.Buffer ();
+	CSegment	*seg2P = SEGMENTS.Buffer ();
 
 memset (flagGoalList, 0xff, sizeof (flagGoalList));
 for (h = i = 0; i <= gameData.segs.nLastSegment; i++, seg2P++) {

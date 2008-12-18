@@ -721,6 +721,9 @@ class CObject : public CObjectInfo {
 		void LoadTextures (void);
 		int PowerupToWeapon (void);
 		void HandleSpecialSegment (void);
+
+		inline int OpenableDoorsInSegment (void);
+
 		//inline short Index (void) { return gameData.objs.objects.Index (this); }
 };
 

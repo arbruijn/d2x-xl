@@ -735,7 +735,7 @@ for (i = 0; i < MAX_EXPLODING_WALLS; i++) {
 						*csegp = SEGMENTS + seg->children [nSide];
 			ubyte	a = (ubyte) gameData.walls.walls [WallNumP (seg, nSide)].nClip;
 			short n = AnimFrameCount (gameData.walls.animP + a);
-			short cside = FindConnectedSide (seg, csegp);
+			short cside = ConnectedSide (seg, csegp);
 			WallSetTMapNum (seg, nSide, csegp, cside, a, n - 1);
 			gameData.walls.walls [WallNumP (seg, nSide)].flags |= WALL_BLASTED;
 			if (cside >= 0)
@@ -747,17 +747,17 @@ for (i = 0; i < MAX_EXPLODING_WALLS; i++) {
 		//n = newCount - oldCount;
 		//now create all the next explosions
 		for (e = oldCount; e < newCount; e++) {
-			short			vertnum_list [4];
+			ushort*		contour;
 			CFixVector	*v0, *v1, *v2;
 			CFixVector	vv0, vv1, pos;
 			fix			size;
 
 			//calc expl position
 
-			GetSideVertIndex (vertnum_list, nSegment, nSide);
-			v0 = gameData.segs.vertices + vertnum_list [0];
-			v1 = gameData.segs.vertices + vertnum_list [1];
-			v2 = gameData.segs.vertices + vertnum_list [2];
+			contour = SEGMENTS [nSegment].Contour (nSide);
+			v0 = gameData.segs.vertices + contour [0];
+			v1 = gameData.segs.vertices + contour [1];
+			v2 = gameData.segs.vertices + contour [2];
 			vv0 = *v0 - *v1;
 			vv1 = *v2 - *v1;
 			pos = *v1 + vv0 * (d_rand ()*2);

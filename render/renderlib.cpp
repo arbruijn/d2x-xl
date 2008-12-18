@@ -864,7 +864,7 @@ void RotateSideNorms (void)
 {
 	int			i, j;
 	CSegment		*segP = SEGMENTS.Buffer ();
-	tSegment2	*seg2P = SEGMENTS.Buffer ();
+	CSegment	*seg2P = SEGMENTS.Buffer ();
 	CSide			*sideP;
 	tSide2		*side2P;
 

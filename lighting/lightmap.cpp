@@ -199,14 +199,14 @@ double CLightmapManager::SideRad (int nSegment, int nSide)
 	int			i;
 	double		h, xMin, xMax, yMin, yMax, zMin, zMax;
 	double		dx, dy, dz;
-	short			sideVerts [4];
+	ushort*		contour;
 	CFixVector	*v;
 
-GetSideVertIndex (sideVerts, nSegment, nSide); 
+contour = SEGMENTS [nSegment].Contour (nSide);
 xMin = yMin = zMin = 1e300;
 xMax = yMax = zMax = -1e300;
 for (i = 0; i < 4; i++) {
-	v = gameData.segs.vertices +sideVerts [i];
+	v = gameData.segs.vertices +contour [i];
 	h = (*v)[X];
 	if (xMin > h)
 		xMin = h;
@@ -361,10 +361,10 @@ pixelPosP = m_data.pixelPos + xMin * LM_H;
 for (x = xMin; x < xMax; x++) {
 	for (y = 0; y < LM_H; y++, pixelPosP++) {
 		if (m_data.nType) {
-			v0 = m_data.sideVerts [0]; 
-			v2 = m_data.sideVerts [2]; 
+			v0 = m_data.contour [0]; 
+			v2 = m_data.contour [2]; 
 			if (x >= y)	{
-				v1 = m_data.sideVerts [1]; 
+				v1 = m_data.contour [1]; 
 				//Next calculate this pixel's place in the world (tricky stuff)
 				ComputePixelPos (&offsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v1], m_data.fOffset [x]);
 				ComputePixelPos (&offsetV, gameData.segs.vertices [v1], gameData.segs.vertices [v2], m_data.fOffset [y]);
@@ -373,7 +373,7 @@ for (x = xMin; x < xMax; x++) {
 				}
 			else {
 				//Next calculate this pixel's place in the world (tricky stuff)
-				v3 = m_data.sideVerts [3]; 
+				v3 = m_data.contour [3]; 
 				ComputePixelPos (&offsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v3], m_data.fOffset [y]); 
 				ComputePixelPos (&offsetU, gameData.segs.vertices [v3], gameData.segs.vertices [v2], m_data.fOffset [x]); 
 				*pixelPosP = offsetU + offsetV; 
@@ -381,17 +381,17 @@ for (x = xMin; x < xMax; x++) {
 				}
 			}
 		else {//SIDE_IS_TRI_02
-			v1 = m_data.sideVerts [1]; 
-			v3 = m_data.sideVerts [3]; 
+			v1 = m_data.contour [1]; 
+			v3 = m_data.contour [3]; 
 			if (LM_W - x >= y) {
-				v0 = m_data.sideVerts [0]; 
+				v0 = m_data.contour [0]; 
 				ComputePixelPos (&offsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v1], m_data.fOffset [x]);  
 				ComputePixelPos (&offsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v3], m_data.fOffset [y]);
 				*pixelPosP = offsetU + offsetV; 
 				*pixelPosP += gameData.segs.vertices [v0];  //This should be the real world position of the pixel.
 				}
 			else {
-				v2 = m_data.sideVerts [2]; 
+				v2 = m_data.contour [2]; 
 				//Not certain this is correct, may need to subtract something
 				ComputePixelPos (&offsetV, gameData.segs.vertices [v2], gameData.segs.vertices [v1], m_data.fOffset [LM_W - 1 - y]);  
 				ComputePixelPos (&offsetU, gameData.segs.vertices [v2], gameData.segs.vertices [v3], m_data.fOffset [LM_W - 1 - x]); 
@@ -480,7 +480,7 @@ for (m_data.faceP = FACES + nFace; nFace < nLastFace; nFace++, m_data.faceP++) {
 	if (SEGMENTS [m_data.faceP->nSegment].m_nType == SEGMENT_IS_SKYBOX)
 		continue;
 	sideP = SEGMENTS [m_data.faceP->nSegment].m_sides + m_data.faceP->nSide;
-	memcpy (m_data.sideVerts, m_data.faceP->index, sizeof (m_data.sideVerts));
+	memcpy (m_data.contour, m_data.faceP->index, sizeof (m_data.contour));
 	m_data.nType = (sideP->nType == SIDE_IS_QUAD) || (sideP->nType == SIDE_IS_TRI_02);
 	m_data.vNormal = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
 	m_data.vcd.vertNorm.Assign (m_data.vNormal);

@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // -----------------------------------------------------------------------------------
 // Fill in array with four absolute point numbers for a given CSide
-void GetSideVertIndex (ushort* vertIndex, int nSegment, int nSide)
+void GetContour (int nSegment, int nSide, ushort* vertIndex)
 {
 	sbyte *sv = sideVertIndex [nSide];
 	short	*vp = SEGMENTS [nSegment].m_verts;
@@ -386,7 +386,7 @@ if (seg0 == seg1) {
 	gameData.fcd.nConnSegDist = 0;
 	return CFixVector::Dist(*p0, *p1);
 	}
-nConnSide = FindConnectedSide (SEGMENTS + seg0, SEGMENTS + seg1);
+nConnSide = ConnectedSide (SEGMENTS + seg0, SEGMENTS + seg1);
 if ((nConnSide != -1) &&
 	 (SEGMENTS [seg1].IsDoorWay (nConnSide, NULL) & widFlag)) {
 	gameData.fcd.nConnSegDist = 1;

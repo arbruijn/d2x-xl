@@ -377,32 +377,6 @@ else if ((objP->info.nId == ROBOT_BRAIN) || (objP->cType.aiInfo.behavior == AIB_
 return 0;
 }
 
-//	-----------------------------------------------------------------------------------------------------------
-//	Return CSide of openable door in CSegment, if any.  If none, return -1.
-int OpenableDoorsInSegment (short nSegment)
-{
-	ushort	i;
-
-	if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment))
-		return -1;
-
-	for (i=0; i<MAX_SIDES_PER_SEGMENT; i++) {
-		int	nWall = WallNumI (nSegment, i);
-		if (IS_WALL (nWall)) {
-			CWall	*wallP = gameData.walls.walls + nWall;
-			if ((wallP->nType == WALL_DOOR) &&
-				 (wallP->keys == KEY_NONE) &&
-				 (wallP->state == WALL_DOOR_CLOSED) &&
-				 !(wallP->flags & WALL_DOOR_LOCKED) &&
-				 !(gameData.walls.animP [wallP->nClip].flags & WCF_HIDDEN))
-				return i;
-		}
-	}
-
-	return -1;
-
-}
-
 // -- // --------------------------------------------------------------------------------------------------------------------
 // -- //	Return true if a special CObject (CPlayerData or control center) is in this CSegment.
 // -- int specialObject_in_seg (int nSegment)

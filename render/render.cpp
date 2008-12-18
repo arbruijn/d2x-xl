@@ -597,7 +597,7 @@ if (sideP->nType == SIDE_IS_QUAD) {
 	props.vNormal = sideP->m_normals [0];
 	props.nVertices = 4;
 	memcpy (props.uvls, sideP->uvls, sizeof (tUVL) * 4);
-	GetSideVertIndex (props.vp, props.segNum, props.sideNum);
+	memcpy (props.vp, SEGMENTS [props.segNum].Contour (props.sideNum), 4 * sizeof (ushort));
 	RenderFace (&props);
 #ifdef EDITOR
 	CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->nBaseTex, sideP->nOvlTex, sideP->uvls);
@@ -612,13 +612,13 @@ else {
 	props.nVertices = 4;
 	if (sideP->nType == SIDE_IS_TRI_02) {
 		memcpy (props.uvls, sideP->uvls, sizeof (tUVL) * 4);
-		GetSideVertIndex (props.vp, props.segNum, props.sideNum);
+		memcpy (props.vp, SEGMENTS [props.segNum].Contour (props.sideNum), 4 * sizeof (ushort));
 		RenderFace (&props);
 		}
 	else if (sideP->nType == SIDE_IS_TRI_13) {	//just rendering the fan with vertex 1 instead of 0
 		memcpy (props.uvls + 1, sideP->uvls, sizeof (tUVL) * 3);
 		props.uvls [0] = sideP->uvls [3];
-		GetSideVertIndex (props.vp + 1, props.segNum, props.sideNum);
+		memcpy (props.vp + 1, SEGMENTS [props.segNum].Contour (props.sideNum), 4 * sizeof (ushort));
 		props.vp [0] = props.vp [4];
 		RenderFace (&props);
 		}
@@ -950,9 +950,9 @@ seg1 = SEGMENTS + segP->m_children [s1];
 edgeVerts [0] = segP->verts [edgeBetweenTwoSides [s0] [s1] [0]];
 edgeVerts [1] = segP->verts [edgeBetweenTwoSides [s0] [s1] [1]];
 Assert(edgeVerts [0] != -1 && edgeVerts [1] != -1);
-oppSide0 = FindConnectedSide (segP, seg0);
+oppSide0 = segP->ConnectedSide (seg0);
 Assert (oppSide0 != -1);
-oppSide1 = FindConnectedSide (segP, seg1);
+oppSide1 = segP->ConnectedSide (seg1);
 Assert (oppSide1 != -1);
 otherSide0 = FindOtherSideOnEdge (seg0, edgeVerts, oppSide0);
 otherSide1 = FindOtherSideOnEdge (seg1, edgeVerts, oppSide1);

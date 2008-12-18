@@ -800,7 +800,7 @@ if (aiP->nPathLength < 2)
 Assert (objP->info.nSegment != -1);
 #if DBG
 if (objP->info.nSegment != nGoalSeg)
-	if (FindConnectedSide (SEGMENTS + objP->info.nSegment, SEGMENTS + nGoalSeg) == -1) {
+	if (ConnectedSide (SEGMENTS + objP->info.nSegment, SEGMENTS + nGoalSeg) == -1) {
 		fix dist = FindConnectedDistance (&objP->info.position.vPos, objP->info.nSegment, vGoalPoint, nGoalSeg, 30, WID_FLY_FLAG, 0);
 #	if TRACE
 		if (gameData.fcd.nConnSegDist > 2)	//	This global is set in FindConnectedDistance
@@ -959,7 +959,7 @@ if (!(nPlayerVisibility || nPrevVisibility) && (xDistToPlayer > F1_0*200) && !Is
 		tRobotInfo	*botInfoP = &ROBOTINFO (objP->info.nId);
 		fix	xCurSpeed = botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel]/2;
 		fix	xCoverableDist = FixMul (gameData.time.xFrame, xCurSpeed);
-		// int	nConnSide = FindConnectedSide (objP->info.nSegment, nGoalSeg);
+		// int	nConnSide = ConnectedSide (objP->info.nSegment, nGoalSeg);
 		//	Only move to goal if allowed to fly through the CSide.p.
 		//	Buddy-bot can create paths he can't fly, waiting for player.
 		// -- bah, this isn't good enough, buddy will fail to get through any door!if (WALL_IS_DOORWAY (&SEGMENTS]objP->info.nSegment], nConnSide) & WID_FLY_FLAG) {

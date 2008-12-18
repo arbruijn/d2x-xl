@@ -172,7 +172,7 @@ if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP->info.nId).companion) {
 			if (0 > (nDestSeg = FindSegByPos (vNewPos, nStartSeg, 0, 0)))
 				continue;
 			if (nStartSeg != nDestSeg) {
-				if (0 > (nSide = FindConnectedSide (segP, SEGMENTS + nDestSeg)))
+				if (0 > (nSide = segP->ConnectedSide (SEGMENTS + nDestSeg)))
 					continue;
 				if (!((segP->IsDoorWay (nSide, NULL) & WID_FLY_FLAG) || (AIDoorIsOpenable (objP, segP, nSide))))
 					continue;

@@ -1710,7 +1710,7 @@ for (i = 0; i < gameData.reactor.triggers.nLinks; i++) {
 	segP = SEGMENTS + gameData.reactor.triggers.nSegment [i];
 	side = gameData.reactor.triggers.nSide [i];
 	connSegP = SEGMENTS + segP->m_children [side];
-	nConnSide = FindConnectedSide (segP, connSegP);
+	nConnSide = segP->ConnectedSide (connSegP);
 	anim_num = gameData.walls.walls [WallNumP (segP, side)].nClip;
 	n = gameData.walls.animP [anim_num].nFrameCount;
 	if (gameData.walls.animP [anim_num].flags & WCF_TMAP1)
@@ -2489,7 +2489,7 @@ while (!bDone) {
 
 				segP = SEGMENTS + nSegment;
 				oppSegP = SEGMENTS + segP->m_children [nSide];
-				nConnSide = FindConnectedSide (segP, oppSegP);
+				nConnSide = segP->ConnectedSide (oppSegP);
 				anim_num = gameData.walls.walls [WallNumP (segP, nSide)].nClip;
 				if (gameData.walls.animP [anim_num].flags & WCF_TMAP1)
 					segP->m_sides [nSide].m_nBaseTex = oppSegP->m_sides [nConnSide].m_nBaseTex =

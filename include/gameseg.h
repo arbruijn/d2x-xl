@@ -25,7 +25,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 int get_new_seg(CFixVector *p0,int startseg);
 
 void ComputeSideRads (short nSegment, short CSide, fix *prMin, fix *prMax);
-int FindConnectedSide (CSegment *base_seg, CSegment *con_seg);
+int ConnectedSide (CSegment *base_seg, CSegment *con_seg);
 
 // -----------------------------------------------------------------------------------
 //this macro returns true if the nSegment for an CObject is correct

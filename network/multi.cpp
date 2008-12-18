@@ -2933,7 +2933,7 @@ int Goal_blue_segnum, Goal_red_segnum;
 void ChangeSegmentTexture (int nSegment, int oldOwner)
 {
 	CSegment	*segP = SEGMENTS + nSegment;
-	tSegment2 *seg2P = SEGMENTS + nSegment;
+	CSegment *seg2P = SEGMENTS + nSegment;
 	xsegment *xSegP = SEGMENTS + nSegment;
 	int		bFullBright = ((gameData.app.nGameMode & GM_HOARD) != 0) || ((gameData.app.nGameMode & GM_ENTROPY) && extraGameInfo [1].entropy.bBrightenRooms);
 	static	short texOverrides [3] = {-313, TMI_BLUE_TEAM, TMI_RED_TEAM};

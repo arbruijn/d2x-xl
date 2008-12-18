@@ -313,7 +313,7 @@ FORALL_OBJS (objP, i)
 void CSegment::LoadTextures (void)
 {
 	short			nSide, nObject;
-	tSegment2	*seg2p = &SEGMENTS [SEG_IDX (segP)];
+	CSegment	*seg2p = &SEGMENTS [SEG_IDX (segP)];
 
 #if DBG
 if (SEG_IDX (segP) == nDbgSeg)
