@@ -218,8 +218,8 @@ for (i = 1, --j; i < j; i++) {
 	if (e.Mag () < F1_0/2)
 		Int3 ();
 #endif
-	xSegSize = CFixVector::Dist (gameData.segs.vertices [SEGMENTS [nSegment].verts [0]], 
-										 gameData.segs.vertices [SEGMENTS [nSegment].verts [6]]);
+	xSegSize = CFixVector::Dist (gameData.segs.vertices [SEGMENTS [nSegment].m_verts [0]], 
+										 gameData.segs.vertices [SEGMENTS [nSegment].m_verts [6]]);
 	if (xSegSize > F1_0*40)
 		xSegSize = F1_0*40;
 	vGoalPos = ptSegs [i].point + e * (xSegSize/4);
@@ -548,7 +548,7 @@ for (i = 1; i < numPoints; i++) {
 		}
 	if (nCurSeg != nNextSeg) {
 		for (nSide=0; nSide<MAX_SIDES_PER_SEGMENT; nSide++)
-			if (SEGMENTS [nCurSeg].children [nSide] == nNextSeg)
+			if (SEGMENTS [nCurSeg].m_children [nSide] == nNextSeg)
 				break;
 		if (nSide == MAX_SIDES_PER_SEGMENT) {
 #if TRACE
@@ -1429,7 +1429,7 @@ void test_create_all_paths (void)
 	for (nStartSeg=0; nStartSeg<=gameData.segs.nLastSegment-1; nStartSeg++) {
 		if (SEGMENTS [nStartSeg].nSegment != -1) {
 			for (nEndSeg=nStartSeg + 1; nEndSeg<=gameData.segs.nLastSegment; nEndSeg++) {
-				if (SEGMENTS [nEndSeg].nSegment != -1) {
+				if (SEGMENTS [nEndSeg].m_nSegment != -1) {
 					CreatePathPoints (&OBJECTS [0], nStartSeg, nEndSeg, gameData.ai.freePointSegs, &resultant_length, -1, 0, 0, -1);
 					show_path (nStartSeg, nEndSeg, gameData.ai.freePointSegs, resultant_length);
 				}
@@ -1477,7 +1477,7 @@ void test_create_all_paths (void)
 //--anchor--	Num_anchors = 0;
 //--anchor--
 //--anchor--	for (nSegment=0; nSegment<=gameData.segs.nLastSegment; nSegment++) {
-//--anchor--		if (SEGMENTS [nSegment].nSegment != -1) {
+//--anchor--		if (SEGMENTS [nSegment].m_nSegment != -1) {
 //--anchor--			nearest_anchorDistance = get_nearest_anchorDistance (nSegment);
 //--anchor--			if (nearest_anchorDistance > AnchorDistance)
 //--anchor--				create_new_anchor (nSegment);

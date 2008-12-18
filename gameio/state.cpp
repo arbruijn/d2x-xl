@@ -1092,7 +1092,7 @@ if (!m_bBetweenLevels)	{
 //Save tTrigger info
 	m_cf.WriteInt (gameData.trigs.nTriggers);
 	for (i = 0; i < gameData.trigs.nTriggers; i++)
-		SaveTrigger (gameData.trigs.triggers + i);
+		SaveTrigger (TRIGGERS + i);
 	DBG (fPos = m_cf.Tell ());
 	m_cf.WriteInt (gameData.trigs.nObjTriggers);
 	if (!gameData.trigs.nObjTriggers)
@@ -2199,7 +2199,7 @@ if (!m_bBetweenLevels)	{
 	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nTriggers))
 		return 0;
 	for (i = 0; i < gameData.trigs.nTriggers; i++)
-		CSaveGameHandler::LoadTrigger (gameData.trigs.triggers + i);
+		CSaveGameHandler::LoadTrigger (TRIGGERS + i);
 	DBG (fPos = m_cf.Tell ());
 	//Restore CObject tTrigger info
 	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nObjTriggers))
@@ -2479,7 +2479,7 @@ if (!m_bBetweenLevels)	{
 	//Restore tTrigger info
 	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nTriggers))
 		return 0;
-	m_cf.Read (gameData.trigs.triggers.Buffer (), sizeof (tTrigger), gameData.trigs.nTriggers);
+	m_cf.Read (TRIGGERS.Buffer (), sizeof (tTrigger), gameData.trigs.nTriggers);
 	if (m_nVersion >= 26) {
 		//Restore CObject tTrigger info
 

@@ -75,9 +75,9 @@ void reset_allRobot_centers ()
 
 	// Remove all materialization centers
 for (i = 0; i < gameData.segs.nSegments; i++)
-	if (gameData.segs.segment2s [i].m_nType == SEGMENT_IS_ROBOTMAKER) {
-		gameData.segs.segment2s [i].m_nType = SEGMENT_IS_NOTHING;
-		gameData.segs.segment2s [i].nMatCen = -1;
+	if (SEGMENTS [i].m_nType == SEGMENT_IS_ROBOTMAKER) {
+		SEGMENTS [i].m_nType = SEGMENT_IS_NOTHING;
+		SEGMENTS [i].nMatCen = -1;
 		}
 }
 #endif
@@ -206,7 +206,7 @@ for (i = 0; i < gameData.matCens.nEquipCenters; i++)
 void CSegment::CreateEquipGen (int oldType)
 {
 	short			nSegment = SEG_IDX (segP);
-	tSegment2	*seg2P = gameData.segs.segment2s  + nSegment;
+	tSegment2	*seg2P = SEGMENTS  + nSegment;
 	int			stationType = m_nType;
 	int			i;
 
@@ -276,7 +276,7 @@ else {
 int MatCenTrigger (short nSegment)
 {
 	// -- CSegment		*segP = &SEGMENTS [nSegment];
-	tSegment2		*seg2P = &gameData.segs.segment2s [nSegment];
+	tSegment2		*seg2P = &SEGMENTS [nSegment];
 	CFixVector		pos, delta;
 	tFuelCenInfo	*matCenP;
 	int				nObject;
@@ -308,7 +308,7 @@ matCenP->xDisableTime = MATCEN_LIFE;
 
 //	Create a bright CObject in the CSegment.
 pos = matCenP->vCenter;
-delta = gameData.segs.vertices[SEGMENTS [nSegment].verts [0]] - matCenP->vCenter;
+delta = gameData.segs.vertices[SEGMENTS [nSegment].m_verts [0]] - matCenP->vCenter;
 pos += delta * (F1_0/2);
 nObject = CreateLight (SINGLE_LIGHT_ID, nSegment, pos);
 if (nObject != -1) {
@@ -328,7 +328,7 @@ return 0;
 //	Trigger (enable) the materialization center in CSegment nSegment
 void SpawnBotTrigger (CObject *objP, short nSegment)
 {
-	tSegment2		*seg2P = &gameData.segs.segment2s [nSegment];
+	tSegment2		*seg2P = &SEGMENTS [nSegment];
 	tFuelCenInfo	*matCenP;
 	short				nType;
 
@@ -352,7 +352,7 @@ BossSpewRobot (objP, NULL, nType, 1);
 //	Deletes the CSegment point entry in the tFuelCenInfo list.
 void FuelCenDelete (CSegment * segP)
 {
-	tSegment2	*seg2P = &gameData.segs.segment2s [SEG_IDX (segP)];
+	tSegment2	*seg2P = &SEGMENTS [SEG_IDX (segP)];
 	int i, j;
 
 Restart: ;
@@ -369,8 +369,8 @@ for (i = 0; i < gameData.matCens.nFuelCenters; i++) {
 				gameData.matCens.botGens [j] = gameData.matCens.botGens [j+1];
 			for (j = 0; j < gameData.matCens.nFuelCenters; j++) {
 				if (gameData.matCens.fuelCenters [j].nType == SEGMENT_IS_ROBOTMAKER)
-					if (gameData.segs.segment2s [gameData.matCens.fuelCenters [j].nSegment].nMatCen > seg2P->nMatCen)
-						gameData.segs.segment2s [gameData.matCens.fuelCenters [j].nSegment].nMatCen--;
+					if (SEGMENTS [gameData.matCens.fuelCenters [j].nSegment].nMatCen > seg2P->nMatCen)
+						SEGMENTS [gameData.matCens.fuelCenters [j].nSegment].nMatCen--;
 				}
 			}
 		//fix gameData.matCens.botGens so they point to correct fuelcenter
@@ -382,7 +382,7 @@ for (i = 0; i < gameData.matCens.nFuelCenters; i++) {
 		Assert (gameData.matCens.nFuelCenters >= 0);
 		for (j = i; j < gameData.matCens.nFuelCenters; j++) {
 			gameData.matCens.fuelCenters [j] = gameData.matCens.fuelCenters [j+1];
-			gameData.segs.segment2s [gameData.matCens.fuelCenters [j].nSegment].value = j;
+			SEGMENTS [gameData.matCens.fuelCenters [j].nSegment].value = j;
 			}
 		goto Restart;
 		}
@@ -489,7 +489,7 @@ void EquipGenHandler (tFuelCenInfo * matCenP)
 
 if (!matCenP->bEnabled)
 	return;
-nMatCen = gameData.segs.segment2s [matCenP->nSegment].nMatCen;
+nMatCen = SEGMENTS [matCenP->nSegment].nMatCen;
 if (nMatCen == -1) {
 #if TRACE
 	console.printf (CON_DBG, "Dysfunctional robot generator at %d\n", matCenP->nSegment);
@@ -533,7 +533,7 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 	objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
 	objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
 	objP->rType.vClipInfo.nCurFrame = 0;
-	objP->info.nCreator = gameData.segs.xSegments [matCenP->nSegment].owner;
+	objP->info.nCreator = SEGMENTS [matCenP->nSegment].m_owner;
 	objP->info.xLifeLeft = IMMORTAL_TIME;
 	}
 else {
@@ -551,9 +551,9 @@ void VirusGenHandler (tFuelCenInfo * matCenP)
 	CFixVector	vPos;
 	fix			topTime;
 
-if (gameStates.entropy.bExitSequence || (gameData.segs.xSegments [matCenP->nSegment].owner <= 0))
+if (gameStates.entropy.bExitSequence || (SEGMENTS [matCenP->nSegment].m_owner <= 0))
 	return;
-nMatCen = gameData.segs.segment2s [matCenP->nSegment].nMatCen;
+nMatCen = SEGMENTS [matCenP->nSegment].nMatCen;
 if (nMatCen == -1) {
 #if TRACE
 	console.printf (CON_DBG, "Dysfunctional robot generator at %d\n", matCenP->nSegment);
@@ -591,7 +591,7 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 		objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
 		objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
 		objP->rType.vClipInfo.nCurFrame = 0;
-		objP->info.nCreator = gameData.segs.xSegments [matCenP->nSegment].owner;
+		objP->info.nCreator = SEGMENTS [matCenP->nSegment].m_owner;
 		objP->info.xLifeLeft = IMMORTAL_TIME;
 		}
 	}
@@ -639,7 +639,7 @@ if (IsMultiGame && (!(gameData.app.nGameMode & GM_MULTI_ROBOTS) || !NetworkIAmMa
 // Wait until transmorgafier has capacity to make a robot...
 if (matCenP->xCapacity <= 0)
 	return;
-nMatCen = gameData.segs.segment2s [matCenP->nSegment].nMatCen;
+nMatCen = SEGMENTS [matCenP->nSegment].nMatCen;
 if (nMatCen == -1) {
 #if TRACE
 	console.printf (CON_DBG, "Dysfunctional robot generator at %d\n", matCenP->nSegment);
@@ -696,7 +696,7 @@ if (!matCenP->bFlag) {
 		//	Whack on any robot or CPlayerData in the matcen CSegment.
 	nCount = 0;
 	nSegment = matCenP->nSegment;
-	for (nObject = SEGMENTS [nSegment].objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
+	for (nObject = SEGMENTS [nSegment].m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
 		nCount++;
 		if (nCount > MAX_OBJECTS) {
 #if TRACE
@@ -838,8 +838,8 @@ return amount;
 fix CSegment:Refuel (fix nMaxFuel)
 {
 	short			nSegment = SEG_IDX (segP);
-	tSegment2	*seg2P = gameData.segs.segment2s + nSegment;
-	xsegment		*xsegp = gameData.segs.xSegments + nSegment;
+	tSegment2	*seg2P = SEGMENTS + nSegment;
+	xsegment		*xsegp = SEGMENTS + nSegment;
 	fix			amount;
 
 	static fix last_playTime = 0;
@@ -889,8 +889,8 @@ return amount;
 fix CSegment::Repair (fix nMaxShields)
 {
 	short		nSegment = SEG_IDX (segP);
-	tSegment2	*seg2P = gameData.segs.segment2s + nSegment;
-	xsegment	*xsegp = gameData.segs.xSegments + nSegment;
+	tSegment2	*seg2P = SEGMENTS + nSegment;
+	xsegment	*xsegp = SEGMENTS + nSegment;
 	static fix last_playTime=0;
 	fix amount;
 
@@ -1349,7 +1349,7 @@ short blueFlagGoals = -1;
 int GatherFlagGoals (void)
 {
 	int			h, i, j;
-	tSegment2	*seg2P = gameData.segs.segment2s.Buffer ();
+	tSegment2	*seg2P = SEGMENTS.Buffer ();
 
 memset (flagGoalList, 0xff, sizeof (flagGoalList));
 for (h = i = 0; i <= gameData.segs.nLastSegment; i++, seg2P++) {

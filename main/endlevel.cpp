@@ -283,7 +283,7 @@ do {
 	nEntrySide = ELFindConnectedSide (nSegment, nOldSeg);
 	nExitSide = sideOpposite [nEntrySide];
 	nOldSeg = nSegment;
-	nSegment = SEGMENTS [nSegment].children [nExitSide];
+	nSegment = SEGMENTS [nSegment].m_children [nExitSide];
 	nTunnelLength++;
 	} while (nSegment >= 0);
 if (nSegment != -2) {
@@ -300,7 +300,7 @@ while (i--) {
 	nEntrySide = ELFindConnectedSide (nSegment, nOldSeg);
 	nExitSide = sideOpposite [nEntrySide];
 	nOldSeg = nSegment;
-	nSegment = SEGMENTS [nSegment].children [nExitSide];
+	nSegment = SEGMENTS [nSegment].m_children [nExitSide];
 	}
 gameData.endLevel.exit.nTransitSegNum = nSegment;
 gameStates.render.cockpit.nModeSave = gameStates.render.cockpit.nMode;
@@ -1258,7 +1258,7 @@ for (nSegment = 0, gameData.endLevel.exit.nSegNum = -1;
 	  (gameData.endLevel.exit.nSegNum == -1) && (nSegment <= gameData.segs.nLastSegment);
 	  nSegment++)
 	for (nSide = 0; nSide < 6; nSide++)
-		if (SEGMENTS [nSegment].children [nSide] == -2) {
+		if (SEGMENTS [nSegment].m_children [nSide] == -2) {
 			gameData.endLevel.exit.nSegNum = nSegment;
 			nExitSide = nSide;
 			break;

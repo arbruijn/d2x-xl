@@ -81,11 +81,11 @@ void TriggerInit ()
 	gameData.trigs.nTriggers = 0;
 
 for (i = 0; i < MAX_TRIGGERS; i++) {
-	gameData.trigs.triggers [i].nType = 0;
-	gameData.trigs.triggers [i].flags = 0;
-	gameData.trigs.triggers [i].nLinks = 0;
-	gameData.trigs.triggers [i].value = 0;
-	gameData.trigs.triggers [i].time = -1;
+	TRIGGERS [i].nType = 0;
+	TRIGGERS [i].flags = 0;
+	TRIGGERS [i].nLinks = 0;
+	TRIGGERS [i].value = 0;
+	TRIGGERS [i].time = -1;
 	}
 memset (gameData.trigs.delay, -1, sizeof (gameData.trigs.delay));
 }
@@ -157,7 +157,7 @@ if (trigP->nLinks) {
 	short nSegment = trigP->nSegment [d_rand () % trigP->nLinks];
 	if (objP->info.nSegment != nSegment) {
 		objP->info.nSegment = nSegment;
-		objP->info.position.vPos = SEGMENTS [nSegment].Center ();
+		objP->info.position.vPos = SEGMENTS [nSegment].m_Center ();
 		OBJECTS [nObject].RelinkToSeg (nSegment);
 		if (ROBOTINFO (objP->info.nId).bossFlag) {
 			int	i = FindBoss (nObject);
@@ -252,7 +252,7 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 int DoorIsWallSwitched (int nWall)
 {
 	int i, nTrigger;
-	tTrigger *trigP = gameData.trigs.triggers.Buffer ();
+	tTrigger *trigP = TRIGGERS.Buffer ();
 	short *segs, *sides;
 
 for (nTrigger=0; nTrigger < gameData.trigs.nTriggers; nTrigger++, trigP++) {
@@ -305,7 +305,7 @@ for (h = trigP->nLinks, i = j = 0; i < MAX_PLAYERS; i++) {
 	nSegment = segs [j];
 	TriggerSetOrient (&gameData.multiplayer.playerInit [i].position, nSegment, sides [j], 1, 0);
 	gameData.multiplayer.playerInit [i].nSegment = nSegment;
-	gameData.multiplayer.playerInit [i].nSegType = gameData.segs.segment2s [nSegment].m_nType;
+	gameData.multiplayer.playerInit [i].nSegType = SEGMENTS [nSegment].m_nType;
 	if (i == gameData.multiplayer.nLocalPlayer)
 		MoveSpawnMarker (&gameData.multiplayer.playerInit [i].position, nSegment);
 	j = (j + 1) % h;
@@ -333,7 +333,7 @@ for (h = masterP->nLinks, i = 0; i < h; i++) {
 		wallP = WALLS + nWall;
 		nTrigger = wallP->nTrigger;
 		if ((nTrigger >= 0) && (nTrigger < gameData.trigs.nTriggers)) 
-			CheckTriggerSub (nObject, gameData.trigs.triggers.Buffer (), gameData.trigs.nTriggers, 
+			CheckTriggerSub (nObject, TRIGGERS.Buffer (), gameData.trigs.nTriggers, 
 								  nTrigger, gameData.multiplayer.nLocalPlayer, 0, 0);
 		}
 	}
@@ -408,7 +408,7 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 	if (!IS_WALL (nWall)) {
 #if DBG
 		PrintLog ("WARNING: Wall trigger %d targets non-existant CWall @ %d,%d\n", 
-				  trigP - gameData.trigs.triggers, SEG_IDX (segP), nSide);
+				  trigP - TRIGGERS, SEG_IDX (segP), nSide);
 #endif
 		continue;
 		}
@@ -473,7 +473,7 @@ if (nPlayer < 0)
 else {
 	if (nPlayer != gameData.multiplayer.nLocalPlayer)
 		return;
-	triggers = gameData.trigs.triggers.Buffer ();
+	triggers = TRIGGERS.Buffer ();
 	}
 pl = (triggers [trig].nLinks > 1) ? reinterpret_cast<char*> ("s") : reinterpret_cast<char*> ("");
 if (!(triggers [trig].flags & TF_NO_MESSAGE) && shot)
@@ -557,7 +557,7 @@ an = n.ToAnglesVec();
 if (!nStep)
 	posP->mOrient = CFixMatrix::Create(an);
 if (bSetPos)
-	posP->vPos = SEGMENTS [nSegment].Center (); 
+	posP->vPos = SEGMENTS [nSegment].m_Center (); 
 // rotate the ships vel vector accordingly
 //StopPlayerMovement ();
 }
@@ -842,7 +842,7 @@ else {
 			return 1;
 		}
 #if 1
-if ((triggers == gameData.trigs.triggers.Buffer ()) && 
+if ((triggers == TRIGGERS.Buffer ()) && 
 	 (trigP->nType != TT_TELEPORT) && (trigP->nType != TT_SPEEDBOOST)) {
 	int t = gameStates.app.nSDLTicks;
 	if ((gameData.trigs.delay [nTrigger] >= 0) && (t - gameData.trigs.delay [nTrigger] < 750))
@@ -1018,16 +1018,16 @@ switch (trigP->nType) {
 
 	case TT_SHIELD_DAMAGE:
 		if (gameStates.app.bD1Mission)
-			LOCALPLAYER.shields += gameData.trigs.triggers [nTrigger].value;
+			LOCALPLAYER.shields += TRIGGERS [nTrigger].value;
 		else
-			LOCALPLAYER.shields += (fix) (LOCALPLAYER.shields * X2F (gameData.trigs.triggers [nTrigger].value) / 100);
+			LOCALPLAYER.shields += (fix) (LOCALPLAYER.shields * X2F (TRIGGERS [nTrigger].value) / 100);
 		break;
 
 	case TT_ENERGY_DRAIN:
 		if (gameStates.app.bD1Mission)
-			LOCALPLAYER.energy += gameData.trigs.triggers [nTrigger].value;
+			LOCALPLAYER.energy += TRIGGERS [nTrigger].value;
 		else
-			LOCALPLAYER.energy += (fix) (LOCALPLAYER.energy * X2F (gameData.trigs.triggers [nTrigger].value) / 100);
+			LOCALPLAYER.energy += (fix) (LOCALPLAYER.energy * X2F (TRIGGERS [nTrigger].value) / 100);
 		break;
 
 	case TT_CHANGE_TEXTURE:
@@ -1125,7 +1125,7 @@ nWall = WallNumP (segP, nSide);
 if (!IS_WALL (nWall)) 
 	return;
 nTrigger = gameData.walls.walls [nWall].nTrigger;
-if (CheckTriggerSub (nObject, gameData.trigs.triggers.Buffer (), gameData.trigs.nTriggers, nTrigger, 
+if (CheckTriggerSub (nObject, TRIGGERS.Buffer (), gameData.trigs.nTriggers, nTrigger, 
 							(objP->info.nType == OBJ_PLAYER) ? objP->info.nId : -1, shot, 0))
 	return;
 if (gameData.demo.nState == ND_STATE_RECORDING)
@@ -1139,7 +1139,7 @@ if (IsMultiGame)
 void TriggersFrameProcess ()
 {
 	int		i;
-	tTrigger	*trigP = gameData.trigs.triggers.Buffer ();
+	tTrigger	*trigP = TRIGGERS.Buffer ();
 
 for (i = gameData.trigs.nTriggers; i > 0; i--, trigP++)
 	if ((trigP->nType != TT_COUNTDOWN) && (trigP->nType != TT_MESSAGE) && (trigP->nType != TT_SOUND) && (trigP->time >= 0))
@@ -1229,7 +1229,7 @@ for (i = 0; i < gameData.trigs.nTriggers; i++) {
 		if (ecP->nDestBm < 0)
 			continue;
 		}
-	if (TriggerHasTarget (gameData.trigs.triggers + i, nSegment, nSide))
+	if (TriggerHasTarget (TRIGGERS + i, nSegment, nSide))
 		return i + 1;
 	}
 for (i = 0; i < gameData.trigs.nObjTriggers; i++) {
@@ -1341,7 +1341,7 @@ for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
 
 int OpenExits (void)
 {
-	tTrigger *trigP = gameData.trigs.triggers.Buffer ();
+	tTrigger *trigP = TRIGGERS.Buffer ();
 	CWall		*wallP;
 	int		nExits = 0;
 

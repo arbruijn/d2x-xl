@@ -845,7 +845,7 @@ do {
 	m [opt].nType = NM_TYPE_RADIO; \
 	m [opt].text = const_cast<char*> (_text); \
 	m [opt].value = 0; \
-	m [opt].group = _group; \
+	m [opt].m_group = _group; \
 	m [opt++].key = _key; \
 	m [opt].szHelp = const_cast<char*> (HTX_ONLINE_MANUAL)
 

@@ -369,14 +369,14 @@ char IsColoredSegFace (short nSegment, short nSide)
 	int	special;
 
 if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2) &&
-	 ((owner = gameData.segs.xSegments [nSegment].owner) > 0)) {
-	nConnSeg = SEGMENTS [nSegment].children [nSide];
-	if ((nConnSeg < 0) || (gameData.segs.xSegments [nConnSeg].owner != owner))
+	 ((owner = SEGMENTS [nSegment].m_owner) > 0)) {
+	nConnSeg = SEGMENTS [nSegment].m_children [nSide];
+	if ((nConnSeg < 0) || (SEGMENTS [nConnSeg].m_owner != owner))
 		return (owner == 1) ? 2 : 1;
 	}
-special = gameData.segs.segment2s [nSegment].m_nType;
-nConnSeg = SEGMENTS [nSegment].children [nSide];
-if ((nConnSeg >= 0) && (special == gameData.segs.segment2s [nConnSeg].m_nType))
+special = SEGMENTS [nSegment].m_nType;
+nConnSeg = SEGMENTS [nSegment].m_children [nSide];
+if ((nConnSeg >= 0) && (special == SEGMENTS [nConnSeg].m_nType))
 	return 0;
 if (special == SEGMENT_IS_WATER)
 	return 3;
@@ -403,22 +403,22 @@ if (nColor > 0)
 	nColor--;
 else {
 	if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2) &&
-		((owner = gameData.segs.xSegments [nSegment].owner) > 0)) {
-		nConnSeg = SEGMENTS [nSegment].children [nSide];
-		if ((nConnSeg >= 0) && (gameData.segs.xSegments [nConnSeg].owner == owner))
+		((owner = SEGMENTS [nSegment].m_owner) > 0)) {
+		nConnSeg = SEGMENTS [nSegment].m_children [nSide];
+		if ((nConnSeg >= 0) && (SEGMENTS [nConnSeg].m_owner == owner))
 			return NULL;
 		nColor = (owner == 1);
 		}
-	special = gameData.segs.segment2s [nSegment].m_nType;
+	special = SEGMENTS [nSegment].m_nType;
 	if (special == SEGMENT_IS_WATER)
 		nColor = 2;
 	else if (special == SEGMENT_IS_LAVA)
 		nColor = 3;
 	else
 		return NULL;
-	nConnSeg = SEGMENTS [nSegment].children [nSide];
+	nConnSeg = SEGMENTS [nSegment].m_children [nSide];
 	if (nConnSeg >= 0) {
-		if (special == gameData.segs.segment2s [nConnSeg].m_nType)
+		if (special == SEGMENTS [nConnSeg].m_nType)
 			return NULL;
 		if (IS_WALL (SEGMENTS [nSegment].m_sides [nSide].nWall))
 			return NULL;
@@ -864,7 +864,7 @@ void RotateSideNorms (void)
 {
 	int			i, j;
 	CSegment		*segP = SEGMENTS.Buffer ();
-	tSegment2	*seg2P = gameData.segs.segment2s.Buffer ();
+	tSegment2	*seg2P = SEGMENTS.Buffer ();
 	CSide			*sideP;
 	tSide2		*side2P;
 
@@ -937,7 +937,7 @@ for (i = 0, j = 1; nRadius; nRadius--) {
 	for (h = i, i = j; h < i; h++) {
 		nSegment = gameData.render.mine.nSegRenderList [h];
 		if ((gameData.render.mine.bVisible [nSegment] == gameData.render.mine.nVisible) &&
-			 (!nMaxDist || (CFixVector::Dist(SEGMENTS [nStartSeg].Center (), SEGMENTS [nSegment].Center ()) <= nMaxDist)))
+			 (!nMaxDist || (CFixVector::Dist(SEGMENTS [nStartSeg].Center (), SEGMENTS [nSegment].m_Center ()) <= nMaxDist)))
 			return 1;
 		segP = SEGMENTS + nSegment;
 		for (nChild = 0; nChild < 6; nChild++) {

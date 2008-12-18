@@ -98,12 +98,12 @@ if (newAwareness [nSegment] < nType)
 	newAwareness [nSegment] = nType;
 // Process children.
 for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++)
-	if (IS_CHILD (SEGMENTS [nSegment].children [j])) {
+	if (IS_CHILD (SEGMENTS [nSegment].m_children [j])) {
 		if (level <= 3) {
 			if (nType == 4)
-				pae_aux (SEGMENTS [nSegment].children [j], nType-1, level+1);
+				pae_aux (SEGMENTS [nSegment].m_children [j], nType-1, level+1);
 			else
-				pae_aux (SEGMENTS [nSegment].children [j], nType, level+1);
+				pae_aux (SEGMENTS [nSegment].m_children [j], nType, level+1);
 			}
 		}
 }

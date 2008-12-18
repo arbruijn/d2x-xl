@@ -74,7 +74,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //version 28->29  ??
 //version 29->30  changed tTrigger structure
 //version 30->31  changed tTrigger structure some more
-//version 31->32  change CSegment structure, make it 512 bytes w/o editor, add gameData.segs.segment2s array.
+//version 31->32  change CSegment structure, make it 512 bytes w/o editor, add SEGMENTS array.
 
 #define MENU_CURSOR_X_MIN       MENU_X
 #define MENU_CURSOR_X_MAX       MENU_X+6
@@ -1032,7 +1032,7 @@ if (gameFileInfo.triggers.offset > -1) {
 		Error ("Error seeking to trigger data\n(file damaged or invalid)");
 		return -1;
 		}
-	for (i = 0, trigP = gameData.trigs.triggers.Buffer (); i < gameFileInfo.triggers.count; i++, trigP++) {
+	for (i = 0, trigP = TRIGGERS.Buffer (); i < gameFileInfo.triggers.count; i++, trigP++) {
 		if (gameTopFileInfo.fileinfoVersion >= 31) 
 			TriggerRead (trigP, cf, 0);
 		else {
@@ -1188,9 +1188,9 @@ if (gameFileInfo.botGen.offset > -1) {
 
 		//	Set links in gameData.matCens.botGens to gameData.matCens.fuelCenters array
 		for (j = 0; j <= gameData.segs.nLastSegment; j++)
-			if ((gameData.segs.segment2s [j].m_nType == SEGMENT_IS_ROBOTMAKER) &&
-					(gameData.segs.segment2s [j].nMatCen == i)) {
-				gameData.matCens.botGens [i].nFuelCen = gameData.segs.segment2s [j].value;
+			if ((SEGMENTS [j].m_nType == SEGMENT_IS_ROBOTMAKER) &&
+					(SEGMENTS [j].nMatCen == i)) {
+				gameData.matCens.botGens [i].nFuelCen = SEGMENTS [j].value;
 				break;
 				}
 		}
@@ -1213,9 +1213,9 @@ if (gameFileInfo.equipGen.offset > -1) {
 		MatCenInfoRead (gameData.matCens.equipGens + i, cf);
 		//	Set links in gameData.matCens.botGens to gameData.matCens.fuelCenters array
 		for (j = 0; j <= gameData.segs.nLastSegment; j++)
-			if ((gameData.segs.segment2s [j].m_nType == SEGMENT_IS_EQUIPMAKER) &&
-					(gameData.segs.segment2s [j].nMatCen == i))
-				gameData.matCens.equipGens [i].nFuelCen = gameData.segs.segment2s [j].value;
+			if ((SEGMENTS [j].m_nType == SEGMENT_IS_EQUIPMAKER) &&
+					(SEGMENTS [j].nMatCen == i))
+				gameData.matCens.equipGens [i].nFuelCen = SEGMENTS [j].value;
 		}
 	}
 return 0;
@@ -1390,18 +1390,18 @@ for (i = 0; i < gameData.walls.nWalls; i++)
 //	Go through all triggers, stuffing controllingTrigger field in gameData.walls.walls.
 
 for (i = 0; i < gameData.trigs.nTriggers; i++) {
-	for (j = 0; j < gameData.trigs.triggers [i].nLinks; j++) {
-		nSegment = gameData.trigs.triggers [i].nSegment [j];
-		nSide = gameData.trigs.triggers [i].nSide [j];
+	for (j = 0; j < TRIGGERS [i].nLinks; j++) {
+		nSegment = TRIGGERS [i].nSegment [j];
+		nSide = TRIGGERS [i].nSide [j];
 		nWall = WallNumI (nSegment, nSide);
 		//check to see that if a tTrigger requires a CWall that it has one,
 		//and if it requires a botGen that it has one
-		if (gameData.trigs.triggers [i].nType == TT_MATCEN) {
-			if (gameData.segs.segment2s [nSegment].m_nType != SEGMENT_IS_ROBOTMAKER)
+		if (TRIGGERS [i].nType == TT_MATCEN) {
+			if (SEGMENTS [nSegment].m_nType != SEGMENT_IS_ROBOTMAKER)
 				continue;		//botGen tTrigger doesn'i point to botGen
 			}
-		else if ((gameData.trigs.triggers [i].nType != TT_LIGHT_OFF) && 
-					(gameData.trigs.triggers [i].nType != TT_LIGHT_ON)) { //light triggers don't require walls
+		else if ((TRIGGERS [i].nType != TT_LIGHT_OFF) && 
+					(TRIGGERS [i].nType != TT_LIGHT_ON)) { //light triggers don't require walls
 			if (IS_WALL (nWall))
 				gameData.walls.walls [nWall].controllingTrigger = i;
 			else {
@@ -1838,7 +1838,7 @@ int SaveGameData(FILE * SaveFile)
 	//==================== SAVE TRIGGER INFO =============================
 
 	triggers.offset = ftell(SaveFile);
-	fwrite(gameData.trigs.triggers, sizeof(tTrigger), gameFileInfo.triggers.count, SaveFile);
+	fwrite(TRIGGERS, sizeof(tTrigger), gameFileInfo.triggers.count, SaveFile);
 
 	//================ SAVE CONTROL CENTER TRIGGER INFO ===============
 
@@ -2055,8 +2055,8 @@ void dump_mine_info(void)
 			int	vertnum;
 			CSide	*sideP = &SEGMENTS [nSegment].m_sides [nSide];
 
-			if (gameData.segs.segment2s [nSegment].xAvgSegLight > max_sl)
-				max_sl = gameData.segs.segment2s [nSegment].xAvgSegLight;
+			if (SEGMENTS [nSegment].m_xAvgSegLight > max_sl)
+				max_sl = SEGMENTS [nSegment].m_xAvgSegLight;
 
 			for (vertnum=0; vertnum<4; vertnum++) {
 				if (sideP->uvls [vertnum].u < min_u)

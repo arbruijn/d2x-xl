@@ -173,7 +173,7 @@ if (nType == WALL_TRANSPARENT)
 if (nType == WALL_DOOR) {
 	if ((state == WALL_DOOR_OPENING) || (state == WALL_DOOR_CLOSING))
 		return WID_TRANSPARENT_WALL;
-	if ((cloakValue && (cloakValue < FADE_LEVELS)) || SEGMENTS [nSegment].CheckTransparency (nSide))
+	if ((cloakValue && (cloakValue < FADE_LEVELS)) || SEGMENTS [nSegment].m_CheckTransparency (nSide))
 		return WID_TRANSPARENT_WALL;
 	return WID_WALL;
 	}
@@ -1641,7 +1641,7 @@ bool WallIsTriggerTarget (short nWall)
 CWall	*wallP = WALLS + nWall;
 short nSegment = wallP->nSegment;
 short nSide = wallP->nSide;
-tTrigger *triggerP = gameData.trigs.triggers.Buffer ();
+tTrigger *triggerP = TRIGGERS.Buffer ();
 for (int i = gameData.trigs.nTriggers; i; i--, triggerP++) {
 	short *nSegP = triggerP->nSegment;
 	short *nSideP = triggerP->nSide;

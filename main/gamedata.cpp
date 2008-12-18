@@ -405,8 +405,8 @@ void CSegmentData::Create (void)
 CREATE (gameData.segs.vertices, 65536, 0);
 CREATE (gameData.segs.fVertices, 65536, 0);
 CREATE (SEGMENTS, MAX_SEGMENTS, 0);
-CREATE (gameData.segs.segment2s, MAX_SEGMENTS, 0);
-CREATE (gameData.segs.xSegments, MAX_SEGMENTS, 0);
+CREATE (SEGMENTS, MAX_SEGMENTS, 0);
+CREATE (SEGMENTS, MAX_SEGMENTS, 0);
 CREATE (gameData.segs.points, 65536, 0);
 #if CALC_SEGRADS
 CREATE (gameData.segs.segRads [0], MAX_SEGMENTS, 0);

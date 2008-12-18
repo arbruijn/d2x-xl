@@ -218,7 +218,7 @@ while (nSegment == -1) {
 		nDepth--;
 		continue;
 		}
-	special = gameData.segs.segment2s [nSegment].m_nType;
+	special = SEGMENTS [nSegment].m_nType;
 	if ((special == SEGMENT_IS_CONTROLCEN) ||
 		 (special == SEGMENT_IS_BLOCKED) ||
 		 (special == SEGMENT_IS_SKYBOX) ||
@@ -229,8 +229,8 @@ while (nSegment == -1) {
 		nSegment = -1;
 	else {	//don't drop in any children of control centers
 		for (int i = 0; i < 6; i++) {
-			int nChild = SEGMENTS [nSegment].children [i];
-			if (IS_CHILD (nChild) && (gameData.segs.segment2s [nChild].m_nType == SEGMENT_IS_CONTROLCEN)) {
+			int nChild = SEGMENTS [nSegment].m_children [i];
+			if (IS_CHILD (nChild) && (SEGMENTS [nChild].m_nType == SEGMENT_IS_CONTROLCEN)) {
 				nSegment = -1;
 				break;
 				}
@@ -238,7 +238,7 @@ while (nSegment == -1) {
 		}
 	//bail if not far enough from original position
 	if (nSegment > -1) {
-		tempv = SEGMENTS [nSegment].Center ();
+		tempv = SEGMENTS [nSegment].m_Center ();
 		nDist = FindConnectedDistance (vPlayerPos, nPlayerSeg, &tempv, nSegment, -1, WID_FLY_FLAG, 0);
 		if ((nDist < 0) || (nDist >= I2X (20) * nDepth))
 			break;
@@ -383,7 +383,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	if (bFixedPos)
 		vNewPos = OBJECTS [nObject].info.position.vPos;
 	else
-		vNewPos = SEGMENTS [nSegment].RandomPoint ();
+		vNewPos = SEGMENTS [nSegment].m_RandomPoint ();
 	MultiSendCreatePowerup (nPowerupType, nSegment, nObject, &vNewPos);
 	if (!bFixedPos)
 		OBJECTS [nObject].info.position.vPos = vNewPos;
@@ -402,7 +402,7 @@ int SegmentContainsObject (int objType, int obj_id, int nSegment)
 
 if (nSegment == -1)
 	return 0;
-nObject = SEGMENTS [nSegment].objects;
+nObject = SEGMENTS [nSegment].m_objects;
 while (nObject != -1)
 	if ((OBJECTS [nObject].info.nType == objType) && (OBJECTS [nObject].info.nId == obj_id))
 		return 1;
@@ -422,7 +422,7 @@ if (depth == 0)
 if (SegmentContainsObject (objectType, object_id, nSegment))
 	return 1;
 for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
-	seg2 = SEGMENTS [nSegment].children [i];
+	seg2 = SEGMENTS [nSegment].m_children [i];
 	if (seg2 != -1)
 		if (ObjectNearbyAux (seg2, objectType, object_id, depth-1))
 			return 1;
@@ -1031,7 +1031,7 @@ int ReturnFlagHome (CObject *objP)
 	CObject	*initObjP;
 
 if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF) {
-	if (gameData.segs.segment2s [objP->info.nSegment].m_nType == ((objP->info.nId == POW_REDFLAG) ? SEGMENT_IS_GOAL_RED : SEGMENT_IS_GOAL_BLUE))
+	if (SEGMENTS [objP->info.nSegment].m_nType == ((objP->info.nId == POW_REDFLAG) ? SEGMENT_IS_GOAL_RED : SEGMENT_IS_GOAL_BLUE))
 		return objP->info.nSegment;
 	if ((initObjP = FindInitObject (objP))) {
 	//objP->info.nSegment = initObjP->info.nSegment;

@@ -215,11 +215,11 @@ extraGameInfo [0].nBossCount =
 extraGameInfo [1].nBossCount = 0;
 DoReactorDestroyedStuff (NULL);
 for (i = 0; i < gameData.trigs.nTriggers; i++) {
-	if (gameData.trigs.triggers [i].nType == TT_EXIT) {
+	if (TRIGGERS [i].nType == TT_EXIT) {
 		for (j = 0; j < gameData.walls.nWalls; j++) {
 			if (gameData.walls.walls [j].nTrigger == i) {
 				short nSegment = gameData.walls.walls [j].nSegment;
-				gameData.objs.consoleP->info.position.vPos = SEGMENTS [nSegment].Center ();
+				gameData.objs.consoleP->info.position.vPos = SEGMENTS [nSegment].m_Center ();
 				gameData.objs.consoleP->RelinkToSeg (nSegment);
 				gameData.objs.consoleP->info.position.mOrient.FVec () = SEGMENTS [nSegment].m_sides [gameData.walls.walls [j].nSide].m_normals [0];
 				gameData.objs.consoleP->info.position.mOrient.FVec ().Neg();
@@ -1029,10 +1029,10 @@ void DoCheatMenu ()
 	mm[6].nType = NM_TYPE_INPUT; 
 	mm[6].text_len  =  10; 
 	mm[6].text  =  score_text;
-	//mm[7].nType = NM_TYPE_RADIO; mm[7].value =  (LOCALPLAYER.laserLevel =  = 0); mm[7].group = 0; mm[7].text = "Laser level 1";
-	//mm[8].nType = NM_TYPE_RADIO; mm[8].value =  (LOCALPLAYER.laserLevel =  = 1); mm[8].group = 0; mm[8].text = "Laser level 2";
-	//mm[9].nType = NM_TYPE_RADIO; mm[9].value =  (LOCALPLAYER.laserLevel =  = 2); mm[9].group = 0; mm[9].text = "Laser level 3";
-	//mm[10].nType = NM_TYPE_RADIO; mm[10].value =  (LOCALPLAYER.laserLevel =  = 3); mm[10].group = 0; mm[10].text = "Laser level 4";
+	//mm[7].nType = NM_TYPE_RADIO; mm[7].value =  (LOCALPLAYER.laserLevel =  = 0); mm[7].m_group = 0; mm[7].text = "Laser level 1";
+	//mm[8].nType = NM_TYPE_RADIO; mm[8].value =  (LOCALPLAYER.laserLevel =  = 1); mm[8].m_group = 0; mm[8].text = "Laser level 2";
+	//mm[9].nType = NM_TYPE_RADIO; mm[9].value =  (LOCALPLAYER.laserLevel =  = 2); mm[9].m_group = 0; mm[9].text = "Laser level 3";
+	//mm[10].nType = NM_TYPE_RADIO; mm[10].value =  (LOCALPLAYER.laserLevel =  = 3); mm[10].m_group = 0; mm[10].text = "Laser level 4";
 
 	mm[7].nType = NM_TYPE_NUMBER; 
 	mm[7].value = LOCALPLAYER.laserLevel+1; 

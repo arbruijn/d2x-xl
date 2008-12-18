@@ -998,9 +998,9 @@ return 0;
 
 int AIMatCenHandler (CObject *objP, tAIStateInfo *siP)
 {
-if (siP->bMultiGame || (gameData.segs.segment2s [objP->info.nSegment].m_nType != SEGMENT_IS_ROBOTMAKER))
+if (siP->bMultiGame || (SEGMENTS [objP->info.nSegment].m_nType != SEGMENT_IS_ROBOTMAKER))
 	return 0;
-if (!gameData.matCens.fuelCenters [gameData.segs.segment2s [objP->info.nSegment].value].bEnabled)
+if (!gameData.matCens.fuelCenters [SEGMENTS [objP->info.nSegment].m_value].bEnabled)
 	return 0;
 AIFollowPath (objP, 1, 1, NULL);    // 1 = CPlayerData is visible, which might be a lie, but it works.
 return 1;

@@ -275,7 +275,7 @@ inline int IsSegVert (short nSegment, int nVertex)
 
 if (nSegment < 0)
 	return 0;
-for (i = 8, psv = SEGMENTS [nSegment].verts; i; i--, psv++)
+for (i = 8, psv = SEGMENTS [nSegment].m_verts; i; i--, psv++)
 	if (nVertex == *psv)
 		return 1;
 return 0;

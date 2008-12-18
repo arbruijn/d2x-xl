@@ -205,7 +205,7 @@ objP->info.position.mOrient.UVec()[Z] = *sp++ << MATRIX_PRECISION;
 objP->info.position.mOrient.FVec()[Z] = *sp++ << MATRIX_PRECISION;
 nSegment = spp->nSegment;
 objP->info.nSegment = nSegment;
-const CFixVector& v = gameData.segs.vertices [SEGMENTS [nSegment].verts [0]];
+const CFixVector& v = gameData.segs.vertices [SEGMENTS [nSegment].m_verts [0]];
 objP->info.position.vPos [X] = (spp->pos [X] << RELPOS_PRECISION) + v [X];
 objP->info.position.vPos [Y] = (spp->pos [Y] << RELPOS_PRECISION) + v [Y];
 objP->info.position.vPos [Z] = (spp->pos [Z] << RELPOS_PRECISION) + v [Z];
@@ -1939,7 +1939,7 @@ while (!bDone) {
 			shot = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
-				if (gameData.trigs.triggers [gameData.walls.walls [WallNumI ((short) nSegment, (short) nSide)].nTrigger].nType == TT_SECRET_EXIT) {
+				if (TRIGGERS [gameData.walls.walls [WallNumI ((short) nSegment, (short) nSide)].nTrigger].nType == TT_SECRET_EXIT) {
 					int truth;
 
 					nTag = NDReadByte ();

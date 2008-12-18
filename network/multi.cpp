@@ -1670,7 +1670,7 @@ if (gameStates.multi.nGameType == UDP_GAME)
 	nObject = GET_INTEL_SHORT (buf + 3);
 else
 	nObject = gameData.multiplayer.players [nPlayer].nObject;
-CheckTriggerSub (nObject, gameData.trigs.triggers.Buffer (), gameData.trigs.nTriggers, tTrigger, nPlayer, 0, 0);
+CheckTriggerSub (nObject, TRIGGERS.Buffer (), gameData.trigs.nTriggers, tTrigger, nPlayer, 0, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -2920,7 +2920,7 @@ if (nTexture >- 1)
 			}
 		}
 if (bFullBright)
-	gameData.segs.segment2s [SEG_IDX (segP)].xAvgSegLight = I2X (100);	//make static light bright
+	SEGMENTS [SEG_IDX (segP)].xAvgSegLight = I2X (100);	//make static light bright
 }
 
 //-----------------------------------------------------------------------------
@@ -2933,8 +2933,8 @@ int Goal_blue_segnum, Goal_red_segnum;
 void ChangeSegmentTexture (int nSegment, int oldOwner)
 {
 	CSegment	*segP = SEGMENTS + nSegment;
-	tSegment2 *seg2P = gameData.segs.segment2s + nSegment;
-	xsegment *xSegP = gameData.segs.xSegments + nSegment;
+	tSegment2 *seg2P = SEGMENTS + nSegment;
+	xsegment *xSegP = SEGMENTS + nSegment;
 	int		bFullBright = ((gameData.app.nGameMode & GM_HOARD) != 0) || ((gameData.app.nGameMode & GM_ENTROPY) && extraGameInfo [1].entropy.bBrightenRooms);
 	static	short texOverrides [3] = {-313, TMI_BLUE_TEAM, TMI_RED_TEAM};
 
@@ -3507,7 +3507,7 @@ if (gameData.reactor.bDestroyed) {
 #endif
 countDown = -1;
 gameStates.entropy.bExitSequence = 0;
-for (i = 0, xSegP = gameData.segs.xSegments.Buffer (); i <= gameData.segs.nLastSegment; i++, xSegP++)
+for (i = 0, xSegP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, xSegP++)
 	if ((t = (int) xSegP->owner) > 0) {
 		bGotRoom [--t] = 1;
 		if (bGotRoom [!t])
@@ -3527,7 +3527,7 @@ for (h = i = 0; i < gameData.multiplayer.nPlayers; i++)
 if ((h  >= extraGameInfo [1].entropy.nCaptureVirusLimit) && extraGameInfo [1].entropy.nVirusStability)
 	return;
 HUDInitMessage (TXT_WINNING_TEAM, t ? TXT_RED : TXT_BLUE);
-for (i = 0, xSegP = gameData.segs.xSegments.Buffer (); i <= gameData.segs.nLastSegment; i++, xSegP++) {
+for (i = 0, xSegP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, xSegP++) {
 	if (xSegP->owner != t + 1)
 		xSegP->owner = t + 1;
 	ChangeSegmentTexture (i, -1);
@@ -4549,7 +4549,7 @@ NetworkSendNakedPacket (gameData.multigame.msg.buf, 2, nPlayer);
 
 void MultiDoStartTrigger (char *buf)
 {
-gameData.trigs.triggers [(int) ((ubyte) buf [1])].flags |= TF_DISABLED;
+TRIGGERS [(int) ((ubyte) buf [1])].flags |= TF_DISABLED;
 }
 
 //-----------------------------------------------------------------------------

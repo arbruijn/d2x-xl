@@ -37,7 +37,7 @@ return -1;
 int CountRooms (void)
 {
 	int		i;
-	xsegment	*segP = gameData.segs.xSegments.Buffer ();
+	xsegment	*segP = SEGMENTS.Buffer ();
 
 memset (gameData.entropy.nRoomOwners, 0xFF, sizeof (gameData.entropy.nRoomOwners));
 memset (gameData.entropy.nTeamRooms, 0, sizeof (gameData.entropy.nTeamRooms));
@@ -76,13 +76,13 @@ void ConquerRoom (int newOwner, int oldOwner, int roomId)
 // back to their original nType
 gameData.entropy.nTeamRooms [oldOwner]--;
 gameData.entropy.nTeamRooms [newOwner]++;
-for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, segP = SEGMENTS.Buffer (), xsegP = gameData.segs.xSegments.Buffer (); 
+for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, segP = SEGMENTS.Buffer (), xsegP = SEGMENTS.Buffer (); 
 	  i <= gameData.segs.nLastSegment; 
 	  i++, segP++, xsegP++) {
 	if ((xsegP->group == roomId) && (xsegP->owner == oldOwner)) {
 		xsegP->owner = newOwner;
 		ChangeSegmentTexture (i, oldOwner);
-		if (gameData.segs.segment2s [i].m_nType == SEGMENT_IS_ROBOTMAKER) {
+		if (SEGMENTS [i].m_nType == SEGMENT_IS_ROBOTMAKER) {
 			--k;
 			if (extraGameInfo [1].entropy.bRevertRooms && (-1 < (f = FindFuelCen (i))) &&
 				 (gameData.matCens.origStationTypes [f] != SEGMENT_IS_NOTHING))
@@ -95,7 +95,7 @@ for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, segP = SEGMENTS.Buffer (), xs
 			}
 		}
 	else {
-		if ((xsegP->owner == newOwner) && (gameData.segs.segment2s [i].m_nType == SEGMENT_IS_ROBOTMAKER)) {
+		if ((xsegP->owner == newOwner) && (SEGMENTS [i].m_nType == SEGMENT_IS_ROBOTMAKER)) {
 			j++;
 			if (extraGameInfo [1].entropy.bRevertRooms && (-1 < (f = FindFuelCen (i))) &&
 				 (gameData.matCens.origStationTypes [f] != SEGMENT_IS_NOTHING))
@@ -113,8 +113,8 @@ if (extraGameInfo [1].entropy.bRevertRooms && (jj + (MAX_FUEL_CENTERS - kk)) && 
 		for (j = 0; j < jj; j++) {
 			fuelP = gameData.matCens.fuelCenters + virusGens [j];
 			h = fuelP->nSegment;
-			gameData.segs.segment2s [h].m_nType = gameData.matCens.origStationTypes [fuelP - gameData.matCens.fuelCenters];
-			FuelCenCreate (SEGMENTS + h, gameData.segs.segment2s [h].m_nType);
+			SEGMENTS [h].m_nType = gameData.matCens.origStationTypes [fuelP - gameData.matCens.fuelCenters];
+			FuelCenCreate (SEGMENTS + h, SEGMENTS [h].m_nType);
 			ChangeSegmentTexture (h, newOwner);
 			}
 		}
@@ -123,9 +123,9 @@ if (extraGameInfo [1].entropy.bRevertRooms && (jj + (MAX_FUEL_CENTERS - kk)) && 
 // check if the other newOwner's last virus center has been conquered
 // if so, find a fuel or repair center owned by that and turn it into a virus generator
 // preferrably convert repair centers
-for (i = 0, h = -1, xsegP = gameData.segs.xSegments.Buffer (); i <= gameData.segs.nLastSegment; i++, xsegP++)
+for (i = 0, h = -1, xsegP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, xsegP++)
 	if (xsegP->owner == oldOwner) 
-		switch (gameData.segs.segment2s [i].m_nType) {
+		switch (SEGMENTS [i].m_nType) {
 			case SEGMENT_IS_ROBOTMAKER:
 				return;
 			case SEGMENT_IS_FUELCEN:
@@ -133,13 +133,13 @@ for (i = 0, h = -1, xsegP = gameData.segs.xSegments.Buffer (); i <= gameData.seg
 					h = i;
 				break;
 			case SEGMENT_IS_REPAIRCEN:
-				if ((h < 0) || (gameData.segs.segment2s [h].m_nType == SEGMENT_IS_FUELCEN))
+				if ((h < 0) || (SEGMENTS [h].m_nType == SEGMENT_IS_FUELCEN))
 					h = i;
 			}
 if (h < 0)
 	return;
-i = gameData.segs.segment2s [h].m_nType;
-gameData.segs.segment2s [h].m_nType = SEGMENT_IS_ROBOTMAKER;
+i = SEGMENTS [h].m_nType;
+SEGMENTS [h].m_nType = SEGMENT_IS_ROBOTMAKER;
 BotGenCreate (SEGMENTS + h, i);
 ChangeSegmentTexture (h, newOwner);
 }

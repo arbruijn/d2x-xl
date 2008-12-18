@@ -642,7 +642,7 @@ for (i = 0, wallP = gameData.walls.walls.Buffer (); (i < gameData.walls.nWalls) 
 	t = wallP->nTrigger;
 	if (t >= gameData.trigs.nTriggers)
 		continue;
-	triggerP = gameData.trigs.triggers + t;
+	triggerP = TRIGGERS + t;
 	if (triggerP->nType == TT_CAMERA) {
 		for (j = 0; j < triggerP->nLinks; j++)
 			if (m_cameras [m_nCameras].Create (m_nCameras, (short) wallP->nSegment, (short) wallP->nSide, triggerP->nSegment [j], triggerP->nSide [j], NULL, 0, 0))

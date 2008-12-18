@@ -257,7 +257,7 @@ return nClosestSeg;
 //--repair--
 //--repair-- 	//	--- Set repair center bit for all segments adjacent to a repair center.
 //--repair-- 	for (nSide=0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
-//--repair-- 		int	s = SEGMENTS [nSegment].children [nSide];
+//--repair-- 		int	s = SEGMENTS [nSegment].m_children [nSide];
 //--repair--
 //--repair-- 		if ((s != -1) && (SEGMENTS [s].m_nType == SEGMENT_IS_REPAIRCEN)) {
 //--repair-- 			Lsegments [nSegment].specialType |= SS_REPAIR_CENTER;
@@ -589,7 +589,7 @@ void ExtractShortPos (CObject *objP, tShortPos *spp, int swap_bytes)
 
 	Assert ((nSegment >= 0) && (nSegment <= gameData.segs.nLastSegment));
 
-	pv = gameData.segs.vertices + SEGMENTS [nSegment].verts [0];
+	pv = gameData.segs.vertices + SEGMENTS [nSegment].m_verts [0];
 	objP->info.position.vPos [X] = (spp->pos [X] << RELPOS_PRECISION) + (*pv)[X];
 	objP->info.position.vPos [Y] = (spp->pos [Y] << RELPOS_PRECISION) + (*pv)[Y];
 	objP->info.position.vPos [Z] = (spp->pos [Z] << RELPOS_PRECISION) + (*pv)[Z];
@@ -802,7 +802,7 @@ while (head < tail) {
 		nDbgSeg = nDbgSeg;
 #endif
 	nParentDepth = pDepthBuf [nSegment];
-	childP = SEGMENTS [nSegment].children;
+	childP = SEGMENTS [nSegment].m_children;
 	for (nSide = MAX_SIDES_PER_SEGMENT; nSide; nSide--, childP++) {
 		if (0 > (nChild = *childP))
 			continue;
@@ -853,8 +853,8 @@ if (nDepth < 0)
 	return;
 markedSegs [nSegment] = 1;
 for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
-	child = SEGMENTS [nSegment].children [i];
-	if (IS_CHILD (child) && (SEGMENTS [nSegment].IsDoorWay (i, NULL) & WID_RENDPAST_FLAG) && !markedSegs [child])
+	child = SEGMENTS [nSegment].m_children [i];
+	if (IS_CHILD (child) && (SEGMENTS [nSegment].m_IsDoorWay (i, NULL) & WID_RENDPAST_FLAG) && !markedSegs [child])
 		AmbientMarkBfs (child, markedSegs, nDepth - 1);
 	}
 }
@@ -904,7 +904,7 @@ for (i = 0; i <= gameData.segs.nLastSegment; i++)
 //	-----------------------------------------------------------------------------
 //	Indicate all segments which are within audible range of falling water or lava,
 //	and so should hear ambient gurgles.
-//	Bashes values in gameData.segs.segment2s array.
+
 void SetAmbientSoundFlags (void)
 {
 SetAmbientSoundFlagsCommon (TMI_VOLATILE, S2F_AMBIENT_LAVA);

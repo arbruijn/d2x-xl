@@ -1215,7 +1215,7 @@ for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
 	color = WHITE_RGBA;
 	if (segP->m_children [sn] == -1)
 		color = automapColors.walls.nNormal;
-	switch (gameData.segs.segment2s [nSegment].m_nType)	{
+	switch (SEGMENTS [nSegment].m_nType)	{
 		case SEGMENT_IS_FUELCEN:
 			color = GOLD_RGBA;
 			break;
@@ -1242,7 +1242,7 @@ for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
 	if (IS_WALL (wn = WallNumP (segP, sn))) {
 		CWall	*wallP = gameData.walls.walls + wn;
 		nTrigger = wallP->nTrigger;
-		ttype = gameData.trigs.triggers [nTrigger].nType;
+		ttype = TRIGGERS [nTrigger].nType;
 		if (ttype==TT_SECRET_EXIT)	{
 	 		color = RGBA_PAL2 (29, 0, 31);
 			bNoFade=1;

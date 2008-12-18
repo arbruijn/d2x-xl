@@ -799,7 +799,7 @@ if (flags & FQ_CHECK_OBJS) {
 restart:
 #endif
 		nSegObjs = gameData.objs.nObjects;
-		for (nObject = nFirstObj = SEGMENTS [nSegment].objects; nObject != -1; nObject = otherObjP->info.nNextInSeg, nSegObjs--) {
+		for (nObject = nFirstObj = SEGMENTS [nSegment].m_objects; nObject != -1; nObject = otherObjP->info.nNextInSeg, nSegObjs--) {
 			otherObjP = OBJECTS + nObject;
 #if DBG
 			if ((nSegObjs < 0) || !CheckSegObjList (otherObjP, nObject, nFirstObj)) {
@@ -908,11 +908,11 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 			if ((nThisObject == LOCALPLAYER.nObject) && (gameStates.app.cheats.bPhysics == 0xBADA55)) {
 				int childSide = segP->m_children [nSide];
 				if (childSide >= 0) {
-					int special = gameData.segs.segment2s [childSide].m_nType;
-					if (((special != SEGMENT_IS_BLOCKED) && (special != SEGMENT_IS_SKYBOX)) ||
+					int nType = SEGMENTS [childSide].m_nType;
+					if (((nType != SEGMENT_IS_BLOCKED) && (nType != SEGMENT_IS_SKYBOX)) ||
 							(gameData.objs.speedBoost [nThisObject].bBoosted &&
-							((gameData.segs.segment2s [nStartSeg].m_nType != SEGMENT_IS_SPEEDBOOST) ||
-							(special == SEGMENT_IS_SPEEDBOOST))))
+							((SEGMENTS [nStartSeg].m_nType != SEGMENT_IS_SPEEDBOOST) ||
+							(nType == SEGMENT_IS_SPEEDBOOST))))
  						widResult |= WID_FLY_FLAG;
 					}
 				}

@@ -252,7 +252,7 @@ if (gameData.escort.nSpecialGoal != -1) {
 					goto dega_ok;
 					}
 				else {
-					childJ = SEGMENTS [*childI].children;
+					childJ = SEGMENTS [*childI].m_children;
 					for (j = MAX_SIDES_PER_SEGMENT; j; j--, childJ++) {
 						if (*childJ == gameData.escort.nGoalIndex) {
 							bDetected = 1;
@@ -465,7 +465,7 @@ int GetBossId (void)
 //	"special" is used to find OBJECTS spewed by CPlayerData which is hacked into flags field of powerup.
 int ExistsInMine2 (int nSegment, int objtype, int objid, int special)
 {
-	int nObject = SEGMENTS [nSegment].objects;
+	int nObject = SEGMENTS [nSegment].m_objects;
 	
 if (nObject != -1) {
 	int		id;
@@ -519,7 +519,7 @@ CreateBfsList (start_seg, bfs_list, &length, MAX_SEGMENTS);
 if (objtype == FUELCEN_CHECK) {
 	for (nSegIdx = 0; nSegIdx < length; nSegIdx++) {
 		nSegment = bfs_list [nSegIdx];
-		if (gameData.segs.segment2s [nSegment].m_nType == SEGMENT_IS_FUELCEN)
+		if (SEGMENTS [nSegment].m_nType == SEGMENT_IS_FUELCEN)
 			return nSegment;
 		}
 	}
@@ -536,7 +536,7 @@ else {
 //	which the buddybot doesn't understand.
 if (objtype == FUELCEN_CHECK) {
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
-		if (gameData.segs.segment2s [nSegment].m_nType == SEGMENT_IS_FUELCEN)
+		if (SEGMENTS [nSegment].m_nType == SEGMENT_IS_FUELCEN)
 			return -2;
 	}
 else {
@@ -558,7 +558,7 @@ int FindExitSegment (void)
 	//	---------- Find exit doors ----------
 	for (i=0; i<=gameData.segs.nLastSegment; i++)
 		for (j=0; j<MAX_SIDES_PER_SEGMENT; j++)
-			if (SEGMENTS [i].children [j] == -2) {
+			if (SEGMENTS [i].m_children [j] == -2) {
 				return i;
 			}
 

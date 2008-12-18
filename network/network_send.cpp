@@ -635,7 +635,7 @@ void NetworkSendFlyThruTriggers (int nPlayer)
   int i;
 
 for (i = 0; i < gameData.trigs.nTriggers; i++)
-	if (gameData.trigs.triggers [i].flags & TF_DISABLED)
+	if (TRIGGERS [i].flags & TF_DISABLED)
 		MultiSendTriggerSpecific ((char) nPlayer, (ubyte) i);
  }
 

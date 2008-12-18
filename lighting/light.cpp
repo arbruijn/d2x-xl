@@ -726,7 +726,7 @@ if (!gameOpts->render.nLightingMethod) {
 	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs; iRenderSeg++) {
 		nSegment = gameData.render.mine.nSegRenderList [iRenderSeg];
 		if (nSegment != -1) {
-			short	*vp = SEGMENTS [nSegment].verts;
+			short	*vp = SEGMENTS [nSegment].m_verts;
 			for (v = 0; v < MAX_VERTICES_PER_SEGMENT; v++) {
 				nv = vp [v];
 				if ((nv < 0) || (nv > gameData.segs.nLastVertex)) {
@@ -820,7 +820,7 @@ if (!bKeepDynColoring)
 
 fix ComputeSegDynamicLight (int nSegment)
 {
-short *verts = SEGMENTS [nSegment].verts;
+short *verts = SEGMENTS [nSegment].m_verts;
 fix sum = gameData.render.lights.dynamicLight [*verts++];
 sum += gameData.render.lights.dynamicLight [*verts++];
 sum += gameData.render.lights.dynamicLight [*verts++];
@@ -866,7 +866,7 @@ if (gameOpts->render.nLightingMethod && !((RENDERPATH && gameOpts->ogl.bObjLight
 	light = F1_0;
 	}
 else
-	light = gameData.segs.segment2s [objP->info.nSegment].xAvgSegLight;
+	light = SEGMENTS [objP->info.nSegment].xAvgSegLight;
 //return light;
 //Now, maybe return different value to smooth transitions
 if (!bResetLightingHack && (gameData.objs.nLightSig [nObject] == objP->info.nSignature)) {
@@ -1057,7 +1057,7 @@ if (i == nChangedSegs) {
 									 MAGIC_LIGHT_CONSTANT;
 
 		if (xLightAtPoint >= 0) {
-			tSegment2 *seg2P = gameData.segs.segment2s + nSegment;
+			tSegment2 *seg2P = SEGMENTS + nSegment;
 			xLightAtPoint = FixMul (xLightAtPoint, xBrightness);
 			if (xLightAtPoint >= F1_0)
 				xLightAtPoint = F1_0-1;
@@ -1290,7 +1290,7 @@ for (i = 0, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, seg
 				xTotal += sideP->uvls [k].l;
 			}
 		}
-	gameData.segs.segment2s [i].xAvgSegLight = h ? xTotal / (h * 4) : 0;
+	SEGMENTS [i].xAvgSegLight = h ? xTotal / (h * 4) : 0;
 	}
 }
 

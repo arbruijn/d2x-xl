@@ -3412,10 +3412,10 @@ return gameData.objs.objects.Index (objP);
 #define  IS_WALL(_wallnum)		((ushort) (_wallnum) < NO_WALL)
 
 #define SEG_IDX(_segP)			((short) ((_segP) - SEGMENTS))
-#define SEG2_IDX(_seg2P)		((short) ((_seg2P) - gameData.segs.segment2s))
+#define SEG2_IDX(_seg2P)		((short) ((_seg2P) - SEGMENTS))
 #define WALL_IDX(_wallP)		((short) ((_wallP) - gameData.walls.walls))
 #define OBJ_IDX(_objP)			ObjIdx (_objP)
-#define TRIG_IDX(_triggerP)	((short) ((_triggerP) - gameData.trigs.triggers))
+#define TRIG_IDX(_triggerP)	((short) ((_triggerP) - TRIGGERS))
 #define FACE_IDX(_faceP)		((int) ((_faceP) - gameData.segs.faces.faces))
 
 #ifdef PIGGY_USE_PAGING
@@ -3489,7 +3489,7 @@ extern fix nDebrisLife [];
 #define SEGFACES	gameData.segs.segFaces
 #define OBJECTS	gameData.objs.objects
 #define WALLS		gameData.walls.walls
-#define TRIGGERS	gameData.trigs.triggers
+#define TRIGGERS	TRIGGERS
 #define FACES		gameData.segs.faces.faces
 #define TRIANGLES	gameData.segs.faces.tris
 

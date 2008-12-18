@@ -409,7 +409,7 @@ int OpenableDoorsInSegment (short nSegment)
 // -- {
 // -- 	int	nObject;
 // --
-// -- 	nObject = SEGMENTS [nSegment].objects;
+// -- 	nObject = SEGMENTS [nSegment].m_objects;
 // --
 // -- 	while (nObject != -1) {
 // -- 		if ((OBJECTS [nObject].nType == OBJ_PLAYER) || (OBJECTS [nObject].nType == OBJ_REACTOR)) {

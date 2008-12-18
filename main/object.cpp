@@ -498,7 +498,7 @@ int IsObjectInSeg (int nSegment, int objn)
 {
 	short nObject, count = 0;
 
-for (nObject = SEGMENTS [nSegment].objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg)	{
+for (nObject = SEGMENTS [nSegment].m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg)	{
 	if (count > MAX_OBJECTS) {
 		Int3 ();
 		return count;
@@ -530,7 +530,7 @@ void JohnsObjUnlink (int nSegment, int nObject)
 
 Assert (nObject != -1);
 if (objP->info.nPrevInSeg == -1)
-	SEGMENTS [nSegment].objects = objP->info.nNextInSeg;
+	SEGMENTS [nSegment].m_objects = objP->info.nNextInSeg;
 else
 	OBJECTS [objP->info.nPrevInSeg].info.nNextInSeg = objP->info.nNextInSeg;
 if (objP->info.nNextInSeg != -1)
@@ -545,7 +545,7 @@ void RemoveIncorrectObjects ()
 
 for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
 	count = 0;
-	for (nObject = SEGMENTS [nSegment].objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
+	for (nObject = SEGMENTS [nSegment].m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
 		count++;
 		#if DBG
 		if (count > MAX_OBJECTS)	{
@@ -611,7 +611,7 @@ void ListSegObjects (int nSegment)
 {
 	int nObject, count = 0;
 
-for (nObject = SEGMENTS [nSegment].objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
+for (nObject = SEGMENTS [nSegment].m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
 	count++;
 	if (count > MAX_OBJECTS) 	{
 		Int3 ();
@@ -1184,7 +1184,7 @@ bool CObject::IsLinkedToSeg (short nSegment)
 {
 	short nObject = OBJ_IDX (this);
 
-for (short h = SEGMENTS [nSegment].objects; h >= 0; h = OBJECTS [h].info.nNextInSeg)
+for (short h = SEGMENTS [nSegment].m_objects; h >= 0; h = OBJECTS [h].info.nNextInSeg)
 	if (nObject == h)
 		return true;
 return false;
@@ -1204,12 +1204,12 @@ SetSegment (nSegment);
 if (IsLinkedToSeg (nSegment))
 	UnlinkFromSeg ();
 #else
-if (SEGMENTS [nSegment].objects == nObject)
+if (SEGMENTS [nSegment].m_objects == nObject)
 	return;
 #endif
-SetNextInSeg (SEGMENTS [nSegment].objects);
+SetNextInSeg (SEGMENTS [nSegment].m_objects);
 SetPrevInSeg (-1);
-SEGMENTS [nSegment].objects = OBJ_IDX (this);
+SEGMENTS [nSegment].m_objects = OBJ_IDX (this);
 if (info.nNextInSeg != -1)
 	OBJECTS [info.nNextInSeg].info.nPrevInSeg = OBJ_IDX (this);
 }
@@ -2304,7 +2304,7 @@ if ((objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].obj
 			if (IS_WALL (nWall)) {
 				nTrigger = gameData.walls.walls [nWall].nTrigger;
 				if ((nTrigger < gameData.trigs.nTriggers) &&
-					 (gameData.trigs.triggers [nTrigger].nType == TT_EXIT))
+					 (TRIGGERS [nTrigger].nType == TT_EXIT))
 					gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP->info.xLifeLeft = 0;
 				}
 			}
@@ -2379,7 +2379,7 @@ if (objP->info.nType == OBJ_ROBOT) {
 		}
 	}
 else if ((objP->info.nType == OBJ_PLAYER) && gameOpts->render.lightnings.bPlayers) {
-	int s = gameData.segs.segment2s [objP->info.nSegment].m_nType;
+	int s = SEGMENTS [objP->info.nSegment].m_nType;
 	if (s == SEGMENT_IS_FUELCEN) {
 		RequestEffects (objP, PLAYER_LIGHTNINGS);
 		}

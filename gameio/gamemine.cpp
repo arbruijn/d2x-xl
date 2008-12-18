@@ -697,12 +697,12 @@ int load_mine_data (CFile& cf)
 				for (j=0; j<MAX_VERTICES_PER_SEGMENT; j++)
 					SEGMENTS [i].verts [j] = v16_seg.verts [j];
 
-				gameData.segs.segment2s [i].m_nType = v16_seg.m_nType;
-				gameData.segs.segment2s [i].value = v16_seg.value;
-				gameData.segs.segment2s [i].s2Flags = 0;
-				gameData.segs.segment2s [i].nMatCen = v16_seg.nMatCen;
-				gameData.segs.segment2s [i].xAvgSegLight = v16_seg.xAvgSegLight;
-				FuelCenActivate ( &SEGMENTS [i], gameData.segs.segment2s [i].m_nType );
+				SEGMENTS [i].m_nType = v16_seg.m_nType;
+				SEGMENTS [i].value = v16_seg.value;
+				SEGMENTS [i].s2Flags = 0;
+				SEGMENTS [i].nMatCen = v16_seg.nMatCen;
+				SEGMENTS [i].xAvgSegLight = v16_seg.xAvgSegLight;
+				FuelCenActivate ( &SEGMENTS [i], SEGMENTS [i].m_nType );
 
 			} else  {
 				if (cf.Read (SEGMENTS + i, mine_fileinfo.segment_sizeof, 1 )!=1)
@@ -711,7 +711,7 @@ int load_mine_data (CFile& cf)
 
 			SEGMENTS [i].objects = -1;
 			#ifdef EDITOR
-			SEGMENTS [i].group = -1;
+			SEGMENTS [i].m_group = -1;
 			#endif
 
 			if (mine_top_fileinfo.fileinfoVersion < 15) {	//used old tUVL ranges
@@ -758,8 +758,8 @@ int load_mine_data (CFile& cf)
 
 		if (mine_top_fileinfo.fileinfoVersion >= 20)
 			for (i = 0; i<=gameData.segs.nLastSegment; i++) {
-				cf.Read (gameData.segs.segment2s + i, sizeof (tSegment2), 1);
-				FuelCenActivate (SEGMENTS + i, gameData.segs.segment2s [i].m_nType );
+				cf.Read (SEGMENTS + i, sizeof (tSegment2), 1);
+				FuelCenActivate (SEGMENTS + i, SEGMENTS [i].m_nType );
 			}
 	}
 
@@ -869,9 +869,9 @@ void ReadSegChildren (int nSegment, ubyte nSideMask, CFile& cf)
 
 for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) 
 	if (nSideMask & (1 << nSide)) 
-		SEGMENTS [nSegment].children [nSide] = cf.ReadShort ();
+		SEGMENTS [nSegment].m_children [nSide] = cf.ReadShort ();
 	else
-		SEGMENTS [nSegment].children [nSide] = -1;
+		SEGMENTS [nSegment].m_children [nSide] = -1;
 }
 
 //------------------------------------------------------------------------------
@@ -907,7 +907,7 @@ pc->color.alpha = 1;
 void ReadSegVerts (int nSegment, CFile& cf)
 {
 for (int i = 0; i < MAX_VERTICES_PER_SEGMENT; i++)
-	SEGMENTS [nSegment].verts [i] = cf.ReadShort ();
+	SEGMENTS [nSegment].m_verts [i] = cf.ReadShort ();
 }
 
 //------------------------------------------------------------------------------
@@ -915,14 +915,14 @@ for (int i = 0; i < MAX_VERTICES_PER_SEGMENT; i++)
 void ReadSegSpecialType (int nSegment, ubyte bitMask, CFile& cf)
 {
 if (bitMask & (1 << MAX_SIDES_PER_SEGMENT)) {
-	gameData.segs.segment2s [nSegment].m_nType = cf.ReadByte ();
-	gameData.segs.segment2s [nSegment].nMatCen = cf.ReadByte ();
-	gameData.segs.segment2s [nSegment].value = (char) cf.ReadShort ();
+	SEGMENTS [nSegment].m_nType = cf.ReadByte ();
+	SEGMENTS [nSegment].m_nMatCen = cf.ReadByte ();
+	SEGMENTS [nSegment].m_value = (char) cf.ReadShort ();
 	}
 else {
-	gameData.segs.segment2s [nSegment].m_nType = 0;
-	gameData.segs.segment2s [nSegment].nMatCen = -1;
-	gameData.segs.segment2s [nSegment].value = 0;
+	SEGMENTS [nSegment].m_nType = 0;
+	SEGMENTS [nSegment].m_nMatCen = -1;
+	SEGMENTS [nSegment].m_value = 0;
 	}
 }
 
@@ -978,12 +978,12 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 #endif
 	segFaceP->nFaces = 0;
 	if (gameStates.app.bD2XLevel) {
-		gameData.segs.xSegments [nSegment].owner = cf.ReadByte ();
-		gameData.segs.xSegments [nSegment].group = cf.ReadByte ();
+		SEGMENTS [nSegment].m_owner = cf.ReadByte ();
+		SEGMENTS [nSegment].m_group = cf.ReadByte ();
 		}
 	else {
-		gameData.segs.xSegments [nSegment].owner = -1;
-		gameData.segs.xSegments [nSegment].group = -1;
+		SEGMENTS [nSegment].m_owner = -1;
+		SEGMENTS [nSegment].m_group = -1;
 		}
 	if (bNewFileFormat)
 		bitMask = cf.ReadByte ();
@@ -1002,12 +1002,12 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 			ReadSegSpecialType (nSegment, bitMask, cf);
 			}
 		}
-	SEGMENTS [nSegment].objects = -1;
+	SEGMENTS [nSegment].m_objects = -1;
 
 	if (gameData.segs.nLevelVersion <= 5) { // descent 1 thru d2 SHAREWARE level
 		// Read fix	segP->xAvgSegLight (shift down 5 bits, write as short)
 		temp_ushort = cf.ReadShort ();
-		gameData.segs.segment2s [nSegment].xAvgSegLight	= ((fix)temp_ushort) << 4;
+		SEGMENTS [nSegment].m_xAvgSegLight	= ((fix)temp_ushort) << 4;
 		//cf.Read ( &segP->xAvgSegLight, sizeof (fix), 1 );
 		}
 

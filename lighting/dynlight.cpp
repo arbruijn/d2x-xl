@@ -278,7 +278,7 @@ if (!pc || pc->index) {
 	CAngleVector	a;
 #endif
 	pli->nIndex = (int) nSegment * 6 + nSide;
-	pli->pos = SEGMENTS [nSegment].SideCenter (nSide);
+	pli->pos = SEGMENTS [nSegment].m_SideCenter (nSide);
 	OOF_VecVms2Gl (pli->glPos, &pli->pos);
 	pli->nSegNum = nSegment;
 	pli->nSideNum = (ubyte) nSide;
@@ -460,7 +460,7 @@ else if (nSegment >= 0) {
 		if (vPos)
 			pl->info.vPos = *vPos;
 		else
-			pl->info.vPos = SEGMENTS [nSegment].Center ();
+			pl->info.vPos = SEGMENTS [nSegment].m_Center ();
 		}
 	else {
 #if DBG
@@ -472,7 +472,7 @@ else if (nSegment >= 0) {
 		//RegisterLight (NULL, nSegment, nSide);
 		pl->info.bVariable = IsDestructibleLight (nTexture) || IsFlickeringLight (nSegment, nSide) || WallIsVolatile (SEGMENTS [nSegment].m_sides [nSide].nWall);
 		gameData.render.lights.dynamic.nVariable += pl->info.bVariable;
-		pl->info.vPos = SEGMENTS [nSegment].SideCenter (nSide);
+		pl->info.vPos = SEGMENTS [nSegment].m_SideCenter (nSide);
 		CSide			*sideP = SEGMENTS [nSegment].m_sides + nSide;
 		CFixVector	vOffs;
 		vOffs = sideP->m_normals[0] + sideP->m_normals[1];
@@ -669,7 +669,7 @@ if (gameOpts->render.nLightingMethod)
 gameData.render.lights.dynamic.Init ();
 for (nFace = gameData.segs.nFaces, faceP = gameData.segs.faces.faces.Buffer (); nFace; nFace--, faceP++) {
 	nSegment = faceP->nSegment;
-	if (gameData.segs.segment2s [nSegment].m_nType == SEGMENT_IS_SKYBOX)
+	if (SEGMENTS [nSegment].m_nType == SEGMENT_IS_SKYBOX)
 		continue;
 #if DBG
 	if (nSegment == nDbgSeg)
@@ -1151,7 +1151,7 @@ if (gameOpts->render.nLightingMethod) {
 	CFixVector				c;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
 
-	c = SEGMENTS [nSegment].Center ();
+	c = SEGMENTS [nSegment].m_Center ();
 	ResetUsedLights (1, nThread);
 	ResetActiveLights (nThread, 0);
 	while (i--) {
@@ -1337,7 +1337,7 @@ else if (gameStates.render.bPerPixelLighting) {
 		if (vPosP)
 			vcd.vertPos.Assign (*vPosP);
 		else {
-			vCenter = SEGMENTS [nSegment].Center ();
+			vCenter = SEGMENTS [nSegment].m_Center ();
 			vcd.vertPos.Assign (vCenter);
 			}
 		vcd.vertPosP = &vcd.vertPos;
@@ -1353,13 +1353,13 @@ else if (gameStates.render.bPerPixelLighting) {
 	}
 else {
 	if (vPosP) {
-		vCenter = SEGMENTS [nSegment].Center ();
+		vCenter = SEGMENTS [nSegment].m_Center ();
 		//transformation.Transform (&vCenter, &vCenter);
 		ds = 0.0f;
 		}
 	else
 		ds = 1.0f;
-	pv = SEGMENTS [nSegment].verts;
+	pv = SEGMENTS [nSegment].m_verts;
 	c.color.red = c.color.green = c.color.blue = 0.0f;
 	c.index = 0;
 	for (i = 0; i < 8; i++, pv++) {
@@ -1493,7 +1493,7 @@ if (gameOpts->render.nLightingMethod || (gameStates.render.bAmbientColor && !gam
 	if (!RunRenderThreads (rtStaticVertLight))
 		ComputeStaticVertexLights (0, gameData.segs.nVertices, 0);
 	pf = gameData.render.color.ambient.Buffer ();
-	for (i = 0, seg2P = gameData.segs.segment2s.Buffer (); i < gameData.segs.nSegments; i++, seg2P++) {
+	for (i = 0, seg2P = SEGMENTS.Buffer (); i < gameData.segs.nSegments; i++, seg2P++) {
 		if (seg2P->m_nType == SEGMENT_IS_SKYBOX) {
 			short	*sv = SEGMENTS [i].verts;
 			for (j = 8; j; j--, sv++) {

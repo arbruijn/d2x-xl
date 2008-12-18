@@ -448,7 +448,7 @@ else {
 #endif
    WallHitProcess (SEGMENTS + nHitSeg, nHitWall, 20, playerObjP->info.nId, playerObjP);
 	}
-if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [nHitSeg].m_nType == SEGMENT_IS_NODAMAGE))
+if (gameStates.app.bD2XLevel && (SEGMENTS [nHitSeg].m_nType == SEGMENT_IS_NODAMAGE))
 	return;
 //	** Damage from hitting CWall **
 //	If the CPlayerData has less than 10% shields, don't take damage from bump
@@ -534,9 +534,9 @@ int CheckVolatileSegment (CObject *objP, int nSegment)
 //	Assert (objP->info.nType==OBJ_PLAYER);
 if (!EGI_FLAG (bFluidPhysics, 1, 0, 0))
 	return 0;
-if (gameData.segs.segment2s [nSegment].m_nType == SEGMENT_IS_WATER)
+if (SEGMENTS [nSegment].m_nType == SEGMENT_IS_WATER)
 	d = 0;
-else if (gameData.segs.segment2s [nSegment].m_nType == SEGMENT_IS_LAVA)
+else if (SEGMENTS [nSegment].m_nType == SEGMENT_IS_LAVA)
 	d = gameData.pig.tex.tMapInfo [0][404].damage / 2;
 else {
 #ifdef TACTILE
@@ -689,7 +689,7 @@ nWall = WallNumP (segP, nSide);
 bPermaTrigger =
 	IS_WALL (nWall) &&
 	((nTrigger = gameData.walls.walls [nWall].nTrigger) != NO_TRIGGER) &&
-	(gameData.trigs.triggers [nTrigger].flags & TF_PERMANENT);
+	(TRIGGERS [nTrigger].flags & TF_PERMANENT);
 if (!bPermaTrigger)
 	SubtractLight (SEG_IDX (segP), nSide);
 if (gameData.demo.nState == ND_STATE_RECORDING)
@@ -1816,7 +1816,7 @@ return 1;
 int CollidePlayerAndPlayer (CObject *player1, CObject *player2, CFixVector *vHitPt)
 {
 if (gameStates.app.bD2XLevel &&
-	 (gameData.segs.segment2s [player1->info.nSegment].m_nType == SEGMENT_IS_NODAMAGE))
+	 (SEGMENTS [player1->info.nSegment].m_nType == SEGMENT_IS_NODAMAGE))
 	return 1;
 if (BumpTwoObjects (player1, player2, 1, vHitPt))
 	DigiLinkSoundToPos (SOUND_ROBOT_HIT_PLAYER, player1->info.nSegment, 0, vHitPt, 0, F1_0);
@@ -1864,7 +1864,7 @@ CPlayerData *killerP = (killerObjP && (killerObjP->info.nType == OBJ_PLAYER)) ? 
 if (gameStates.app.bPlayerIsDead)
 	return;
 
-if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [playerObjP->info.nSegment].m_nType == SEGMENT_IS_NODAMAGE))
+if (gameStates.app.bD2XLevel && (SEGMENTS [playerObjP->info.nSegment].m_nType == SEGMENT_IS_NODAMAGE))
 	return;
 if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)
 	return;
@@ -1927,7 +1927,7 @@ int CollidePlayerAndWeapon (CObject *playerObjP, CObject *weaponP, CFixVector *v
 	//	This is necessary because in multiplayer, due to varying framerates, omega blobs actually
 	//	have a bit of a lifetime.  But they start out with a lifetime of ONE_FRAME_TIME, and this
 	//	gets bashed to 1/4 second in laser_doWeapon_sequence.  This bashing occurs for visual purposes only.
-if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [playerObjP->info.nSegment].m_nType == SEGMENT_IS_NODAMAGE))
+if (gameStates.app.bD2XLevel && (SEGMENTS [playerObjP->info.nSegment].m_nType == SEGMENT_IS_NODAMAGE))
 	return 1;
 if ((weaponP->info.nId == PROXMINE_ID) && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	return 1;
@@ -2107,7 +2107,7 @@ return 1;
 int CollideActorAndClutter (CObject *actor, CObject *clutter, CFixVector *vHitPt)
 {
 if (gameStates.app.bD2XLevel &&
-	 (gameData.segs.segment2s [actor->info.nSegment].m_nType == SEGMENT_IS_NODAMAGE))
+	 (SEGMENTS [actor->info.nSegment].m_nType == SEGMENT_IS_NODAMAGE))
 	return 1;
 if (!(actor->info.nFlags & OF_EXPLODING) && BumpTwoObjects (clutter, actor, 1, vHitPt))
 	DigiLinkSoundToPos (SOUND_ROBOT_HIT_PLAYER, actor->info.nSegment, 0, vHitPt, 0, F1_0);

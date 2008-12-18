@@ -103,7 +103,7 @@ xBossSizeSave = bossObjP->info.xSize;
 // -- Causes problems!!	-- bossObjP->info.xSize = FixMul ((F1_0/4)*3, bossObjP->info.xSize);
 nBossHomeSeg = bossObjP->info.nSegment;
 vBossHomePos = bossObjP->info.position.vPos;
-nGroup = gameData.segs.xSegments [nBossHomeSeg].group;
+nGroup = SEGMENTS [nBossHomeSeg].m_group;
 head =
 tail = 0;
 seqQueue [head++] = nBossHomeSeg;
@@ -131,7 +131,7 @@ while (tail != head) {
 			bOneWallHack--;
 		if (gameData.render.mine.bVisited [childSeg])
 			continue;
-		if (nGroup != gameData.segs.xSegments [childSeg].group)
+		if (nGroup != SEGMENTS [childSeg].m_group)
 			continue;
 		seqQueue [head++] = childSeg;
 		gameData.render.mine.bVisited [childSeg] = 1;
@@ -371,12 +371,12 @@ int BossFitsInSeg (CObject *bossObjP, int nSegment)
 	CFixVector	vSegCenter, vVertPos;
 
 gameData.collisions.nSegsVisited = 0;
-vSegCenter = SEGMENTS [nSegment].Center ();
+vSegCenter = SEGMENTS [nSegment].m_Center ();
 for (nPos = 0; nPos < 9; nPos++) {
 	if (!nPos)
 		bossObjP->info.position.vPos = vSegCenter;
 	else {
-		vVertPos = gameData.segs.vertices [SEGMENTS [nSegment].verts [nPos-1]];
+		vVertPos = gameData.segs.vertices [SEGMENTS [nSegment].m_verts [nPos-1]];
 		bossObjP->info.position.vPos = CFixVector::Avg(vVertPos, vSegCenter);
 		}
 	OBJECTS [nObject].RelinkToSeg (nSegment);

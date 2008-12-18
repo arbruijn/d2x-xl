@@ -1481,8 +1481,8 @@ int openable_doors_in_segment(CObject *objP)
 
 	for (i=0; i<MAX_SIDES_PER_SEGMENT; i++) {
 		if (IS_WALL (SEGMENTS[nSegment].m_sides[i].nWall)) {
-			int	nWall = SEGMENTS[nSegment].m_sides[i].nWall;
-			if ((WALLS[nWall].nType == WALL_DOOR) && (WALLS[nWall].keys == KEY_NONE) && (WALLS[nWall].state == WALL_DOOR_CLOSED) && !(WALLS[nWall].flags & WALL_DOOR_LOCKED))
+			int	nWall = SEGMENTS[nSegment].m_sides [i].nWall;
+			if ((WALLS[nWall].nType == WALL_DOOR) && (WALLS [nWall].keys == KEY_NONE) && (WALLS[nWall].state == WALL_DOOR_CLOSED) && !(WALLS[nWall].flags & WALL_DOOR_LOCKED))
 				return i;
 		}
 	}
@@ -1495,7 +1495,7 @@ int openable_doors_in_segment(CObject *objP)
 //	Return true if a special CObject (playerP or control center) is in this CSegment.
 int special_object_in_seg (int nSegment)
 {
-	int nObject = SEGMENTS [nSegment].objects;
+	int nObject = SEGMENTS [nSegment].m_objects;
 
 while (nObject != -1) {
 	if ((OBJECTS [nObject].info.nType == OBJ_PLAYER) || (OBJECTS [nObject].info.nType == OBJ_REACTOR))
@@ -1608,7 +1608,7 @@ int boss_fits_in_seg(CObject *bossObjP, int nSegment)
 	int			nBossObj = bossObjP - OBJECTS;
 	int			posnum;
 
-vCenter = SEGMENTS [nSegment].Center ();
+vCenter = SEGMENTS [nSegment].m_Center ();
 for (posnum=0; posnum<9; posnum++) {
 	if (posnum > 0) {
 		CFixVector	vertex_pos;
@@ -1972,7 +1972,7 @@ if (nObject == nDbgObj)
 
 	//	- -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -
  	//	If in materialization center, exit
- 	if (!(IsMultiGame) && (gameData.segs.segment2s [objP->info.nSegment].m_nType == SEGMENT_IS_ROBOTMAKER)) {
+ 	if (!(IsMultiGame) && (SEGMENTS [objP->info.nSegment].m_nType == SEGMENT_IS_ROBOTMAKER)) {
  		AIFollowPath (objP, 1, 1, NULL);		// 1 = playerP is visible, which might be a lie, but it works.
  		return;
  	}

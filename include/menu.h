@@ -57,7 +57,7 @@ extern int Cockpit_rearView;
 #define	ADD_CHECK(_n,_t,_v,_k,_h) \
 			m [_n].nType = NM_TYPE_CHECK, m [_n].text = (char *) (_t), m [_n].value = NMBOOL(_v), m [_n].key = (_k), m [_n].szHelp = (char *) (_h)
 #define	ADD_RADIO(_n,_t,_v,_k,_g,_h) \
-			m [_n].nType = NM_TYPE_RADIO, m [_n].text = (char *) (_t), m [_n].value = _v, m [_n].key = (_k), m [_n].group=_g, m [_n].szHelp = (char *) (_h)
+			m [_n].nType = NM_TYPE_RADIO, m [_n].text = (char *) (_t), m [_n].value = _v, m [_n].key = (_k), m [_n].m_group=_g, m [_n].szHelp = (char *) (_h)
 #define	ADD_MENU(_n,_t,_k,_h) \
 			m [_n].nType = NM_TYPE_MENU, m [_n].text = (char *) (_t), m [_n].key = (_k), m [_n].szHelp = (char *) (_h)
 #define	ADD_TEXT(_n,_t,_k)  \

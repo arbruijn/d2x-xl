@@ -211,12 +211,12 @@ else {
 
 int RenderColoredSegFace (int nSegment, int nSide, int nVertices, g3sPoint **pointList)
 {
-	short nConnSeg = SEGMENTS [nSegment].children [nSide];
-	int	owner = gameData.segs.xSegments [nSegment].owner;
-	int	special = gameData.segs.segment2s [nSegment].m_nType;
+	short nConnSeg = SEGMENTS [nSegment].m_children [nSide];
+	int	owner = SEGMENTS [nSegment].m_owner;
+	int	special = SEGMENTS [nSegment].m_nType;
 
 if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (owner > 0)) {
-	if ((nConnSeg >= 0) && (gameData.segs.xSegments [nConnSeg].owner == owner))
+	if ((nConnSeg >= 0) && (SEGMENTS [nConnSeg].m_owner == owner))
 			return 0;
 	if (owner == 1)
 		G3DrawPolyAlpha (nVertices, pointList, segmentColors + 1, 0, nSegment);
@@ -225,12 +225,12 @@ if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrid
 	return 1;
 	}
 if (special == SEGMENT_IS_WATER) {
-	if ((nConnSeg < 0) || (gameData.segs.segment2s [nConnSeg].m_nType != SEGMENT_IS_WATER))
+	if ((nConnSeg < 0) || (SEGMENTS [nConnSeg].m_nType != SEGMENT_IS_WATER))
 		G3DrawPolyAlpha (nVertices, pointList, segmentColors + 2, 0, nSegment);
 	return 1;
 	}
 if (special == SEGMENT_IS_LAVA) {
-	if ((nConnSeg < 0) || (gameData.segs.segment2s [nConnSeg].m_nType != SEGMENT_IS_LAVA))
+	if ((nConnSeg < 0) || (SEGMENTS [nConnSeg].m_nType != SEGMENT_IS_LAVA))
 		G3DrawPolyAlpha (nVertices, pointList, segmentColors + 3, 0, nSegment);
 	return 1;
 	}
@@ -527,7 +527,7 @@ if (!(gameOpts->render.debug.bWalls || IsMultiGame) && IS_WALL (WallNumP (segP, 
 	return;
 switch (gameStates.render.nType) {
 	case -1:
-		if (!(props.widFlags & WID_RENDER_FLAG) && (gameData.segs.segment2s [props.segNum].m_nType < SEGMENT_IS_WATER))		//if (WALL_IS_DOORWAY(segP, props.sideNum) == WID_NO_WALL)
+		if (!(props.widFlags & WID_RENDER_FLAG) && (SEGMENTS [props.segNum].m_nType < SEGMENT_IS_WATER))		//if (WALL_IS_DOORWAY(segP, props.sideNum) == WID_NO_WALL)
 			return;
 		break;
 	case 0:
@@ -539,8 +539,8 @@ switch (gameStates.render.nType) {
 			return;
 		break;
 	case 2:
-		if ((gameData.segs.segment2s [props.segNum].m_nType < SEGMENT_IS_WATER) &&
-			 (gameData.segs.xSegments [props.segNum].owner < 1))
+		if ((SEGMENTS [props.segNum].m_nType < SEGMENT_IS_WATER) &&
+			 (SEGMENTS [props.segNum].m_owner < 1))
 			return;
 		break;
 	case 3:
@@ -1439,7 +1439,7 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
-	for (nObject = SEGMENTS [nSegment].objects; nObject != -1; nObject = objP->info.nNextInSeg) {
+	for (nObject = SEGMENTS [nSegment].m_objects; nObject != -1; nObject = objP->info.nNextInSeg) {
 #if DBG
 		if (nObject == nDbgObj)
 			nDbgObj = nDbgObj;
@@ -1844,7 +1844,7 @@ else {
 		if (SEGVIS (nStartSeg, nSegment)) {
 			gameData.render.mine.bVisible [nSegment] = gameData.render.mine.nVisible;
 			gameData.render.mine.nSegRenderList [gameData.render.mine.nRenderSegs++] = nSegment;
-			RotateVertexList (8, SEGMENTS [nSegment].verts);
+			RotateVertexList (8, SEGMENTS [nSegment].m_verts);
 			}
 		}
 	}
@@ -1926,7 +1926,7 @@ if (nSegment < 0)
 if (gameStates.render.automap.bDisplay) {
 	if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisited [nSegment]))
 		return;
-	if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].m_nType == SEGMENT_IS_SKYBOX))
+	if (!gameOpts->render.automap.bSkybox && (SEGMENTS [nSegment].m_nType == SEGMENT_IS_SKYBOX))
 		return;
 	}
 else {
