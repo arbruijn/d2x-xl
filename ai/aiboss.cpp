@@ -115,16 +115,16 @@ Selected_segs [nSelectedSegs++] = nBossHomeSeg;
 memset (gameData.render.mine.bVisited, 0, gameData.segs.nSegments);
 
 while (tail != head) {
-	segP = gameData.segs.segments + seqQueue [tail++];
+	segP = SEGMENTS + seqQueue [tail++];
 	tail &= QUEUE_SIZE-1;
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
-		childSeg = segP->children [nSide];
+		childSeg = segP->m_children [nSide];
 		if (!bOneWallHack) {
-			w = WALL_IS_DOORWAY (segP, nSide, NULL);
+			w = segP->IsDoorWay (nSide, NULL);
 			if (!(w & WID_FLY_FLAG))
 				continue;
 			}
-		//	If we get here and w == WID_WALL, then we want to process through this tWall, else not.
+		//	If we get here and w == WID_WALL, then we want to process through this CWall, else not.
 		if (!IS_CHILD (childSeg))
 			continue;
 		if (bOneWallHack)
@@ -221,7 +221,7 @@ int CreateGatedRobot (CObject *bossObjP, short nSegment, ubyte nObjId, CFixVecto
 {
 	int			nObject, nTries = 5;
 	CObject		*objP;
-	CSegment		*segP = gameData.segs.segments + nSegment;
+	CSegment		*segP = SEGMENTS + nSegment;
 	CFixVector	vObjPos;
 	tRobotInfo	*botInfoP = &ROBOTINFO (nObjId);
 	int			i, nBoss, count = 0;
@@ -376,7 +376,7 @@ for (nPos = 0; nPos < 9; nPos++) {
 	if (!nPos)
 		bossObjP->info.position.vPos = vSegCenter;
 	else {
-		vVertPos = gameData.segs.vertices [gameData.segs.segments [nSegment].verts [nPos-1]];
+		vVertPos = gameData.segs.vertices [SEGMENTS [nSegment].verts [nPos-1]];
 		bossObjP->info.position.vPos = CFixVector::Avg(vVertPos, vSegCenter);
 		}
 	OBJECTS [nObject].RelinkToSeg (nSegment);

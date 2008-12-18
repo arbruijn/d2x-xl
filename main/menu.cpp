@@ -2823,7 +2823,7 @@ do {
 			ADD_CHECK (nOptions, "render back faces", bBackFaces, 0, NULL);
 			optBackFaces = nOptions++;
 			}
-		ADD_CHECK (nOptions, "render tWall shadows", bWallShadows, 0, NULL);
+		ADD_CHECK (nOptions, "render CWall shadows", bWallShadows, 0, NULL);
 		optWallShadows = nOptions++;
 		ADD_CHECK (nOptions, "software culling", bSWCulling, 0, NULL);
 		optSWCulling = nOptions++;

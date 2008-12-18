@@ -1841,8 +1841,6 @@ class CSegmentData {
 		CArray<CFixVector>	vertices;
 		CArray<CFloatVector>	fVertices;
 		CArray<CSegment>		segments;
-		CArray<tSegment2>		segment2s;
-		CArray<xsegment>		xSegments;
 		CArray<tSegFaces>		segFaces;
 		CArray<g3sPoint>		points;
 		CSkyBox					skybox;
@@ -1880,7 +1878,7 @@ class CSegmentData {
 
 class CWallData {
 	public:
-		CArray<tWall>				walls ; //[MAX_WALLS];
+		CArray<CWall>				walls ; //[MAX_WALLS];
 		CArray<tExplWall>			explWalls ; //[MAX_EXPLODING_WALLS];
 		CArray<tActiveDoor>		activeDoors ; //[MAX_DOORS];
 		CArray<tCloakingWall>	cloaking ; //[MAX_CLOAKING_WALLS];
@@ -3341,9 +3339,11 @@ extern tBossProps bossProps [2][NUM_D2_BOSSES];
 extern char szAutoMission [255];
 extern char szAutoHogFile [255];
 
-static inline ushort WallNumS (tSide *sideP) { return (sideP)->nWall; }
-static inline ushort WallNumP (CSegment *segP, short nSide) { return WallNumS ((segP)->sides + (nSide)); }
-static inline ushort WallNumI (short nSegment, short nSide) { return WallNumP(gameData.segs.segments + (nSegment), nSide); }
+#if 0
+static inline ushort WallNumS (CSide *sideP) { return (sideP)->nWall; }
+static inline ushort WallNumP (CSegment *segP, short nSide) { return WallNumS ((segP)->m_sides + (nSide)); }
+static inline ushort WallNumI (short nSegment, short nSide) { return WallNumP(SEGMENTS + (nSegment), nSide); }
+#endif
 
 //-----------------------------------------------------------------------------
 
@@ -3380,7 +3380,7 @@ return gameData.objs.objects.Index (objP);
 #define	NO_WALL					(gameStates.app.bD2XLevel ? 2047 : 255)
 #define  IS_WALL(_wallnum)		((ushort) (_wallnum) < NO_WALL)
 
-#define SEG_IDX(_segP)			((short) ((_segP) - gameData.segs.segments))
+#define SEG_IDX(_segP)			((short) ((_segP) - SEGMENTS))
 #define SEG2_IDX(_seg2P)		((short) ((_seg2P) - gameData.segs.segment2s))
 #define WALL_IDX(_wallP)		((short) ((_wallP) - gameData.walls.walls))
 #define OBJ_IDX(_objP)			ObjIdx (_objP)
@@ -3455,10 +3455,10 @@ extern fix nDebrisLife [];
 #define CLEAR(_v)		memset (_v, 0, sizeof (_v))
 
 #define SEGMENTS	gameData.segs.segments
-#define SEGMENT2S	gameData.segs.segment2s
 #define SEGFACES	gameData.segs.segFaces
 #define OBJECTS	gameData.objs.objects
 #define WALLS		gameData.walls.walls
+#define TRIGGERS	gameData.trigs.triggers
 #define FACES		gameData.segs.faces.faces
 #define TRIANGLES	gameData.segs.faces.tris
 

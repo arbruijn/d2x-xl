@@ -32,9 +32,7 @@ typedef struct tSegMasks {
 } tSegMasks;
 
 
-void ComputeSideCenter (CFixVector *vp,CSegment *sp,int tSide);
-void ComputeSideRads (short nSegment, short tSide, fix *prMin, fix *prMax);
-void ComputeSegmentCenter (CFixVector *vp,CSegment *sp);
+void ComputeSideRads (short nSegment, short CSide, fix *prMin, fix *prMax);
 int FindConnectedSide (CSegment *base_seg, CSegment *con_seg);
 
 #define	SEGMENT_CENTER_I(_nSeg)	(gameData.segs.segCenters [0] + (_nSeg))
@@ -60,21 +58,6 @@ int FindConnectedSide (CSegment *base_seg, CSegment *con_seg);
 #define	COMPUTE_SEGMENT_RAD(_rad,_segP) \
 			COMPUTE_SEGMENT_RAD_I (_rad, SEG_IDX (_segP))
 
-// Fill in array with four absolute point numbers for a given tSide
-void GetSideVertIndex (short *vertIndex, int nSegment, int nSide);
-void GetSideVerts (CFixVector *vertices, int nSegment, int nSide);
-ubyte GetSideDists (const CFixVector& checkp, int nSegment, fix *xSideDists, int bBehind);
-ubyte GetSideDistsAll (const CFixVector& checkp, int nSegment, fix *xSideDists);
-
-//      Create all vertex lists (1 or 2) for faces on a tSide.
-//      Sets:
-//              num_faces               number of lists
-//              vertices                        vertices in all (1 or 2) faces
-//      If there is one face, it has 4 vertices.
-//      If there are two faces, they both have three vertices, so face #0 is stored in vertices 0,1,2,
-//      face #1 is stored in vertices 3,4,5.
-// Note: these are not absolute vertex numbers, but are relative to the CSegment
-// Note:  for triagulated sides, the middle vertex of each trianle is the one NOT
 //   adjacent on the diagonal edge
 void CreateAllVertexLists (int *num_faces, int *vertices, int nSegment, int nSide);
 
@@ -83,15 +66,13 @@ int CreateAbsVertexLists (int *vertices, int nSegment, int nSide);
 
 // -----------------------------------------------------------------------------------
 // Like create all vertex lists, but returns the vertnums (relative to
-// the tSide) for each of the faces that make up the tSide.
+// the CSide) for each of the faces that make up the CSide.
 //      If there is one face, it has 4 vertices.
 //      If there are two faces, they both have three vertices, so face #0 is stored in vertices 0,1,2,
 //      face #1 is stored in vertices 3,4,5.
 void CreateAllVertNumLists(int *num_faces, int *vertnums, int nSegment, int nSide);
 
-//      Given a tSide, return the number of faces
-extern int GetNumFaces(tSide *sidep);
-
+//      Given a CSide, return the number of faces
 //returns 3 different bitmasks with info telling if this sphere is in
 //this CSegment.  See tSegMasks structure for info on fields
 tSegMasks GetSideMasks (CFixVector *checkP, int nSegment, int nSide, fix xRad);

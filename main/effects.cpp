@@ -244,9 +244,9 @@ xEffectTime += gameData.time.xFrame;
 #if DBG
 					Assert (ecP->nSegment != -1);
 					Assert ((ecP->nSide >= 0) && (ecP->nSide < 6));
-					Assert (ecP->nDestBm != 0 && gameData.segs.segments [ecP->nSegment].sides [ecP->nSide].nOvlTex);
+					Assert (ecP->nDestBm != 0 && SEGMENTS [ecP->nSegment].m_sides [ecP->nSide].nOvlTex);
 #endif
-					gameData.segs.segments [ecP->nSegment].sides [ecP->nSide].nOvlTex = ecP->nDestBm;		//replace with destroyed
+					SEGMENTS [ecP->nSegment].m_sides [ecP->nSide].nOvlTex = ecP->nDestBm;		//replace with destroyed
 					ecP->flags &= ~EF_ONE_SHOT;
 					ecP->nSegment = -1;		//done with this
 					}
@@ -305,9 +305,9 @@ xEffectTime += gameData.time.xFrame;
 	#if DBG
 					Assert(ecP->nSegment != -1);
 					Assert((ecP->nSide >= 0) && (ecP->nSide < 6));
-					Assert(ecP->nDestBm !=0 && gameData.segs.segments [ecP->nSegment].sides [ecP->nSide].nOvlTex);
+					Assert(ecP->nDestBm !=0 && SEGMENTS [ecP->nSegment].m_sides [ecP->nSide].nOvlTex);
 	#endif
-					gameData.segs.segments [ecP->nSegment].sides [ecP->nSide].nOvlTex = ecP->nDestBm;		//replace with destoyed
+					SEGMENTS [ecP->nSegment].m_sides [ecP->nSide].nOvlTex = ecP->nDestBm;		//replace with destoyed
 					ecP->flags &= ~EF_ONE_SHOT;
 					ecP->nSegment = -1;		//done with this
 					}

@@ -144,31 +144,31 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-int ConvertPowerupToWeapon (CObject *objP)
+int CObject::PowerupToWeapon (void)
 {
 	CAngleVector	a;
-	short			nModel, nId;
-	int			bHasModel = 0;
+	short				nModel, nId;
+	int				bHasModel = 0;
 
 if (!SHOW_OBJ_FX)
 	return 0;
 if (!gameOpts->render.powerups.b3D)
 	return 0;
-if (objP->info.controlType == CT_WEAPON)
+if (info.controlType == CT_WEAPON)
 	return 1;
-if ((objP->info.nType != OBJ_POWERUP) && (objP->info.nType != OBJ_WEAPON))
+if ((info.nType != OBJ_POWERUP) && (info.nType != OBJ_WEAPON))
 	return 0;
-nModel = PowerupToModel (objP->info.nId);
+nModel = PowerupToModel (info.nId);
 if (nModel)
-	nId = objP->info.nId;
+	nId = info.nId;
 else {
-	nId = PowerupToObject (objP->info.nId);
+	nId = PowerupToObject (info.nId);
 	if (nId >= 0) {
 		nModel = gameData.weapons.info [nId].nModel;
 		bHasModel = 1;
 		}
 	}
-if (!bHasModel && ((objP->info.nType != OBJ_WEAPON) || !gameData.objs.bIsMissile [objP->info.nId]) &&
+if (!bHasModel && ((info.nType != OBJ_WEAPON) || !gameData.objs.bIsMissile [info.nId]) &&
 	 !(nModel && HaveReplacementModel (nModel)))
 		return 0;
 
@@ -176,36 +176,37 @@ if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	a[PA] = (rand () % F1_0) - F1_0 / 2;
 	a[BA] = (rand () % F1_0) - F1_0 / 2;
 	a[HA] = (rand () % F1_0) - F1_0 / 2;
-	objP->info.position.mOrient = CFixMatrix::Create(a);
+	info.position.mOrient = CFixMatrix::Create(a);
 	}
-objP->mType.physInfo.mass = F1_0;
-objP->mType.physInfo.drag = 512;
+mType.physInfo.mass = F1_0;
+mType.physInfo.drag = 512;
+mType.physInfo.brakes = 0;
 #if 0
-if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->info.nId])
+if ((info.nType == OBJ_WEAPON) && gameData.objs.bIsMissile [info.nId])
 #endif
 	{
-	objP->mType.physInfo.rotVel[X] = 0;
-	objP->mType.physInfo.rotVel[Y] =
-	objP->mType.physInfo.rotVel[Z] = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
+	mType.physInfo.rotVel[X] = 0;
+	mType.physInfo.rotVel[Y] =
+	mType.physInfo.rotVel[Z] = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
 	}
 #if 0
 else {
-	objP->mType.physInfo.rotVel[X] =
-	objP->mType.physInfo.rotVel[Z] = 0;
-	objP->mType.physInfo.rotVel[Y] = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
+	mType.physInfo.rotVel[X] =
+	mType.physInfo.rotVel[Z] = 0;
+	mType.physInfo.rotVel[Y] = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
 	}
 #endif
-objP->info.controlType = CT_WEAPON;
-objP->info.renderType = RT_POLYOBJ;
-objP->info.movementType = MT_PHYSICS;
-objP->mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
-objP->rType.polyObjInfo.nModel = nModel;
+info.controlType = CT_WEAPON;
+info.renderType = RT_POLYOBJ;
+info.movementType = MT_PHYSICS;
+mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
+rType.polyObjInfo.nModel = nModel;
 #if 1
 if (bHasModel)
-	objP->info.xSize = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
+	info.xSize = gameData.models.polyModels [rType.polyObjInfo.nModel].rad;
 #endif
-objP->rType.polyObjInfo.nTexOverride = -1;
-objP->info.xLifeLeft = IMMORTAL_TIME;
+rType.polyObjInfo.nTexOverride = -1;
+info.xLifeLeft = IMMORTAL_TIME;
 return 1;
 }
 
@@ -218,8 +219,8 @@ void ConvertAllPowerupsToWeapons (void)
 
 FORALL_OBJS (objP, i)
 	if (objP->info.renderType == RT_POWERUP) {
-		ConvertPowerupToWeapon (objP);
-		PagingTouchObject (objP);
+		objP->PowerupToWeapon ();
+		objP->LoadTextures ();
 		}
 }
 
@@ -1120,7 +1121,7 @@ switch (objP->info.renderType) {
 			return 0;
 		if (gameStates.render.nType != 1)
 			return 0;
-		if (ConvertPowerupToWeapon (objP)) {
+		if (objP->PowerupToWeapon ()) {
 			RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
 			DrawPolygonObject (objP, bDepthSort, 0);
 			}

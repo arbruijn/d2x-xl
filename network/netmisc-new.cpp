@@ -568,24 +568,23 @@ switch (objP->info.renderType) {
 //------------------------------------------------------------------------------
 
 // Calculates the checksum of a block of memory.
-ushort NetMiscCalcCheckSum (void * vptr, int len)
+ushort NetMiscCalcCheckSum (void* buffer, int nElemCount, int nElemSize, int nStride)
 {
 #if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
 return BECalcSegmentCheckSum ();
 #else
-	ubyte *ptr = reinterpret_cast<ubyte*> (vptr);
+	ubyte *bufP = reinterpret_cast<ubyte*> (buffer);
 	uint sum1, sum2;
+	int nOffset = (nStride > nSize) ? nStride - nSize : 0;
 
 sum1 = sum2 = 0;
-for (; len; len--) {
-	sum1 += *ptr++;
-#if 1
-	sum1 %= 255;
-#else
-	if (sum1 >= 255)
-		sum1 -= 255;
-#endif
-	sum2 += sum1;
+while (nElemCount--) {
+	for (int i = nElemSize; i; i--) {
+		sum1 += *bufP++;
+		sum1 %= 255;
+		sum2 += sum1;
+		}
+	bufP += nOffset;
 	}
 return (sum1 * 256 + sum2 % 255);
 #endif

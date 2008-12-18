@@ -640,7 +640,7 @@ commandbuffer = m_VChars - (int) strlen (m_Prompt) - 1; // -1 to make cursor vis
 CurrentFont = m_surface->Font ();
 #endif
 
-//Concatenate the left and right tSide to command
+//Concatenate the left and right CSide to command
 strcpy (m_Command, m_LCommand);
 strncat (m_Command, m_RCommand, strlen (m_RCommand));
 

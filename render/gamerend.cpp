@@ -568,7 +568,7 @@ void game_render_frame_stereo ()
 		height = RenderCanvas [0].Bitmap ().Height ();
 		quarter = width / 4;
 
-		// black out left-hand tSide of left page
+		// black out left-hand CSide of left page
 
 		// draw registration code for left eye
 		if (gameStates.render.vr.nEyeSwitch)

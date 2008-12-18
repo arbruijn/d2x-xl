@@ -909,12 +909,12 @@ return 1;
 int LineHitsFace (CFixVector *pHit, CFixVector *p0, CFixVector *p1, short nSegment, short nSide)
 {
 	short			i, nFaces, nVerts;
-	CSegment		*segP = gameData.segs.segments + nSegment;
+	CSegment*	segP = SEGMENTS + nSegment;
 
-nFaces = GetNumFaces (segP->sides + nSide);
+nFaces = segP->Side (nSide)->FaceCount ();
 nVerts = 5 - nFaces;
 for (i = 0; i < nFaces; i++)
-	if (CheckLineToSegFace (pHit, p0, p1, nSegment, nSide, i, nVerts, 0))
+	if (segP->CheckLineToFace (pHit, p0, p1, nSide, i, nVerts, 0))
 		return nSide;
 return -1;
 }
@@ -967,12 +967,12 @@ if (bPrintLine) {
 nParent = 0x7fffffff;
 vHit = *vPos;
 for (;;) {
-	segP = gameData.segs.segments + nSegment;
+	segP = SEGMENTS + nSegment;
 	bVisited [nSegment] = nVisited;
 	nHitSide = -1;
 #if USE_SEGRADS
 	for (nSide = 0; nSide < 6; nSide++) {
-		nChild = segP->children [nSide];
+		nChild = segP->m_children [nSide];
 		if ((nChild < 0) || (bVisited [nChild] == nVisited))
 			continue;
 		xDist = VmLinePointDist (vPos, &v, gameData.segs.segCenters [1] + nChild);
@@ -985,7 +985,7 @@ for (;;) {
 #endif
 		{
 		for (nSide = 0; nSide < 6; nSide++) {
-			nChild = segP->children [nSide];
+			nChild = segP->m_children [nSide];
 			if ((nChild >= 0) && (bVisited [nChild] == nVisited))
 				continue;
 			if (0 <= LineHitsFace (&vHit, vPos, &v, nSegment, nSide)) {
@@ -1004,7 +1004,7 @@ for (;;) {
 		bHit = 1;
 		break;
 		}
-	nWID = WALL_IS_DOORWAY (segP, nHitSide, OBJECTS + nObject);
+	nWID = segP->IsDoorWay (nHitSide, OBJECTS + nObject);
 	if (!(nWID & WID_FLY_FLAG) &&
 		 (((nWID & (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) != (WID_RENDER_FLAG | WID_RENDPAST_FLAG)))) {
 		bHit = 1;

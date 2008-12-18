@@ -221,7 +221,7 @@ if (bFinalCountdown ||
 		if (extraGameInfo [0].nBossCount)
 			KillAllBossRobots (0);
 		for (i = 0; i < gameData.reactor.triggers.nLinks; i++)
-			WallToggle (gameData.segs.segments + gameData.reactor.triggers.nSegment [i], gameData.reactor.triggers.nSide [i]);
+			WallToggle (SEGMENTS + gameData.reactor.triggers.nSegment [i], gameData.reactor.triggers.nSide [i]);
 		if (gameData.missions.nCurrentLevel < 0)
 			CFile::Delete ("secret.sgc", gameFolders.szSaveDir);
 		}
@@ -289,7 +289,7 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 		CFixVector	vecToPlayer;
 		fix			xDistToPlayer;
 		int			i;
-		CSegment		*segP = gameData.segs.segments + objP->info.nSegment;
+		CSegment		*segP = SEGMENTS + objP->info.nSegment;
 
 		// This is a hack.  Since the control center is not processed by
 		// ai_do_frame, it doesn't know how to deal with cloaked dudes.  It
@@ -305,7 +305,7 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 		//	Hack for special control centers which are isolated and not reachable because the
 		//	real control center is inside the boss.
 		for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
-			if (IS_CHILD (segP->children [i]))
+			if (IS_CHILD (segP->m_children [i]))
 				break;
 		if (i == MAX_SIDES_PER_SEGMENT)
 			return;

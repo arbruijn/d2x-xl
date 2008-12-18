@@ -20,7 +20,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //return values for FindVectorIntersection() - what did we hit?
 #define HIT_NONE		0		//we hit nothing
-#define HIT_WALL		1		//we hit - guess - a tWall
+#define HIT_WALL		1		//we hit - guess - a CWall
 #define HIT_OBJECT	2		//we hit an CObject - which one?  no way to tell...
 #define HIT_BAD_P0	3		//start point is not in specified CSegment
 
@@ -30,12 +30,12 @@ typedef struct tFVIHitInfo {
 	int 			nType;						//what sort of intersection
 	short 		nSegment;					//what CSegment hit_pnt is in
 	short			nSegment2;
-	short 		nSide;						//if hit tWall, which tSide
+	short 		nSide;						//if hit CWall, which CSide
 	short			nFace;
-	short 		nSideSegment;				//what CSegment the hit tSide is in
+	short 		nSideSegment;				//what CSegment the hit CSide is in
 	short 		nObject;						//if CObject hit, which CObject
 	CFixVector	vPoint;						//where we hit
-	CFixVector 	vNormal;						//if hit tWall, ptr to its surface normal
+	CFixVector 	vNormal;						//if hit CWall, ptr to its surface normal
 	int			nNormals;
 	int			nNestCount;
 } tFVIHitInfo;
@@ -50,7 +50,7 @@ typedef struct tFVIData {
 //flags for fvi query
 #define FQ_CHECK_OBJS		1		//check against objects?
 #define FQ_TRANSWALL			2		//go through transparent walls
-#define FQ_TRANSPOINT		4		//go through trans tWall if hit point is transparent
+#define FQ_TRANSPOINT		4		//go through trans CWall if hit point is transparent
 #define FQ_GET_SEGLIST		8		//build a list of segments
 #define FQ_IGNORE_POWERUPS	16		//ignore powerups
 #define FQ_SEE_OBJS			32
@@ -78,7 +78,7 @@ typedef struct tFVIQuery {
 //Returns the hit_data->hitType
 int FindVectorIntersection(tFVIQuery *fq,tFVIData *hit_data);
 
-//finds the uv coords of the given point on the given seg & tSide
+//finds the uv coords of the given point on the given seg & CSide
 //fills in u & v. if l is non-NULL fills it in also
 void FindHitPointUV(fix *u,fix *v,fix *l, CFixVector *pnt,CSegment *seg,int nSide,int facenum);
 

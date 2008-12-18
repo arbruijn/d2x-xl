@@ -40,7 +40,7 @@ void NetworkSendDoorUpdates (int nPlayer)
 	// Send door status when new CPlayerData joins
 
 	int i;
-	tWall *wallP;
+	CWall *wallP;
    
 //   Assert (nPlayer>-1 && nPlayer<gameData.multiplayer.nPlayers);
 for (i = 0, wallP = gameData.walls.walls.Buffer (); i < gameData.walls.nWalls; i++, wallP++) {

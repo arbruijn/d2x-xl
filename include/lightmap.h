@@ -25,7 +25,7 @@ typedef struct tLightmapInfo {
 	GLfloat		color [3];
 	//float		bright;
 	double		range;
-	int			nIndex;  //(seg*6)+tSide ie which tSide the light is on
+	int			nIndex;  //(seg*6)+CSide ie which CSide the light is on
 } tLightmapInfo;
 
 typedef struct tLightmap {

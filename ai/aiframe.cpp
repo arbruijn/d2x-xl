@@ -152,7 +152,7 @@ sbyte aiTransitionTable [AI_MAX_EVENT][AI_MAX_STATE][AI_MAX_STATE] = {
 		{ AIS_ERROR, AIS_LOCK, AIS_LOCK, AIS_LOCK, AIS_FLINCH, AIS_FIRE, AIS_FIRE }  // recoil
 	},
 
-	// Event = AIE_HIT, a nearby CObject was hit (or a tWall was hit)
+	// Event = AIE_HIT, a nearby CObject was hit (or a CWall was hit)
 	{
 		{ AIS_ERROR, AIS_LOCK, AIS_LOCK, AIS_LOCK, AIS_FLINCH, AIS_FIRE, AIS_RECOVER},
 		{ AIS_ERROR, AIS_LOCK, AIS_LOCK, AIS_LOCK, AIS_FLINCH, AIS_FIRE, AIS_RECOVER},
@@ -598,7 +598,7 @@ int AIMOpenDoorHandler2 (CObject *objP, tAIStateInfo *siP)
 Assert (objP->info.nId == ROBOT_BRAIN);     // Make sure this guy is allowed to be in this mode.
 if (!AIMultiplayerAwareness (objP, 62))
 	return 1;
-COMPUTE_SIDE_CENTER (&vCenter, gameData.segs.segments + objP->info.nSegment, siP->aiP->GOALSIDE);
+COMPUTE_SIDE_CENTER (&vCenter, SEGMENTS + objP->info.nSegment, siP->aiP->GOALSIDE);
 vGoal = vCenter - objP->info.position.vPos;
 CFixVector::Normalize(vGoal);
 AITurnTowardsVector (&vGoal, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
@@ -998,7 +998,7 @@ return 0;
 
 int AIMatCenHandler (CObject *objP, tAIStateInfo *siP)
 {
-if (siP->bMultiGame || (gameData.segs.segment2s [objP->info.nSegment].special != SEGMENT_IS_ROBOTMAKER))
+if (siP->bMultiGame || (gameData.segs.segment2s [objP->info.nSegment].m_special != SEGMENT_IS_ROBOTMAKER))
 	return 0;
 if (!gameData.matCens.fuelCenters [gameData.segs.segment2s [objP->info.nSegment].value].bEnabled)
 	return 0;

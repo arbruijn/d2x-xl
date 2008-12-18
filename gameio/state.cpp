@@ -120,7 +120,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // 9 - Save palette with screen shot
 // 12- Saved last_was_super array
 // 13- Saved palette flash stuff
-// 14- Save cloaking tWall stuff
+// 14- Save cloaking CWall stuff
 // 15- Save additional ai info
 // 16- Save gameData.render.lights.subtracted
 // 17- New marker save
@@ -838,7 +838,7 @@ switch (objP->info.renderType) {
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::SaveWall (tWall *wallP)
+void CSaveGameHandler::SaveWall (CWall *wallP)
 {
 m_cf.WriteInt (wallP->nSegment);
 m_cf.WriteInt (wallP->nSide);
@@ -1065,7 +1065,7 @@ if (!m_bBetweenLevels)	{
 	for (j = 0; j < i; j++)
 		SaveObject (OBJECTS + j);
 	DBG (fPos = m_cf.Tell ());
-//Save tWall info
+//Save CWall info
 	i = gameData.walls.nWalls;
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
@@ -1083,7 +1083,7 @@ if (!m_bBetweenLevels)	{
 	for (j = 0; j < i; j++)
 		SaveActiveDoor (gameData.walls.activeDoors + j);
 	DBG (fPos = m_cf.Tell ());
-//Save cloaking tWall info
+//Save cloaking CWall info
 	i = gameData.walls.nCloaking;
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
@@ -1125,8 +1125,8 @@ if (!m_bBetweenLevels)	{
 		for (j = 0; j < 6; j++)	{
 			ushort nWall = WallNumI ((short) i, (short) j);
 			m_cf.WriteShort (nWall);
-			m_cf.WriteShort (gameData.segs.segments [i].sides [j].nBaseTex);
-			m_cf.WriteShort (gameData.segs.segments [i].sides [j].nOvlTex | (gameData.segs.segments [i].sides [j].nOvlOrient << 14));
+			m_cf.WriteShort (SEGMENTS [i].m_sides [j].m_nBaseTex);
+			m_cf.WriteShort (SEGMENTS [i].m_sides [j].nOvlTex | (SEGMENTS [i].m_sides [j].nOvlOrient << 14));
 			}
 		}
 	DBG (fPos = m_cf.Tell ());
@@ -1893,7 +1893,7 @@ switch (objP->info.renderType) {
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::LoadWall (tWall *wallP)
+void CSaveGameHandler::LoadWall (CWall *wallP)
 {
 wallP->nSegment = m_cf.ReadInt ();
 wallP->nSide = m_cf.ReadInt ();
@@ -2053,7 +2053,7 @@ int CSaveGameHandler::LoadUniFormat (int bMulti, fix xOldGameTime, int *nLevel)
 	int		nPlayers, nServerPlayer = -1;
 	int		nOtherObjNum = -1, nServerObjNum = -1, nLocalObjNum = -1, nSavedLocalPlayer = -1;
 	int		nCurrentLevel, nNextLevel;
-	tWall		*wallP;
+	CWall		*wallP;
 	char		szOrgCallSign [CALLSIGN_LEN+16];
 	int		h, i, j;
 	short		nTexture;
@@ -2169,7 +2169,7 @@ if (!m_bBetweenLevels)	{
 		if (m_bSecret == 2)
 			InitPlayerStatsNewShip ();
 		}
-	//Restore tWall info
+	//Restore CWall info
 	if (ReadBoundedInt (MAX_WALLS, &gameData.walls.nWalls))
 		return 0;
 	for (i = 0, wallP = gameData.walls.walls.Buffer (); i < gameData.walls.nWalls; i++, wallP++) {
@@ -2230,11 +2230,11 @@ if (!m_bBetweenLevels)	{
 	//Restore tmap info
 	for (i = 0; i <= gameData.segs.nLastSegment; i++)	{
 		for (j = 0; j < 6; j++)	{
-			gameData.segs.segments [i].sides [j].nWall = m_cf.ReadShort ();
-			gameData.segs.segments [i].sides [j].nBaseTex = m_cf.ReadShort ();
+			SEGMENTS [i].m_sides [j].nWall = m_cf.ReadShort ();
+			SEGMENTS [i].m_sides [j].m_nBaseTex = m_cf.ReadShort ();
 			nTexture = m_cf.ReadShort ();
-			gameData.segs.segments [i].sides [j].nOvlTex = nTexture & 0x3fff;
-			gameData.segs.segments [i].sides [j].nOvlOrient = (nTexture >> 14) & 3;
+			SEGMENTS [i].m_sides [j].nOvlTex = nTexture & 0x3fff;
+			SEGMENTS [i].m_sides [j].nOvlOrient = (nTexture >> 14) & 3;
 			}
 		}
 	DBG (fPos = m_cf.Tell ());
@@ -2372,7 +2372,7 @@ int CSaveGameHandler::LoadBinFormat (int bMulti, fix xOldGameTime, int *nLevel)
 	int		nPlayers, nServerPlayer = -1;
 	int		nOtherObjNum = -1, nServerObjNum = -1, nLocalObjNum = -1, nSavedLocalPlayer = -1;
 	int		nCurrentLevel, nNextLevel;
-	tWall		*wallP;
+	CWall		*wallP;
 	char		szOrgCallSign [CALLSIGN_LEN+16];
 	int		i, j;
 	short		nTexture;
@@ -2453,10 +2453,10 @@ if (!m_bBetweenLevels)	{
 		if (m_bSecret == 2)
 			InitPlayerStatsNewShip ();
 		}
-	//Restore tWall info
+	//Restore CWall info
 	if (ReadBoundedInt (MAX_WALLS, &gameData.walls.nWalls))
 		return 0;
-	m_cf.Read (gameData.walls.walls.Buffer (), sizeof (tWall), gameData.walls.nWalls);
+	m_cf.Read (gameData.walls.walls.Buffer (), sizeof (CWall), gameData.walls.nWalls);
 	//now that we have the walls, check if any sounds are linked to
 	//walls that are now open
 	for (i = 0, wallP = gameData.walls.walls.Buffer (); i < gameData.walls.nWalls; i++, wallP++)
@@ -2471,7 +2471,7 @@ if (!m_bBetweenLevels)	{
 	if (ReadBoundedInt (MAX_DOORS, &gameData.walls.nOpenDoors))
 		return 0;
 	m_cf.Read (gameData.walls.activeDoors.Buffer (), sizeof (tActiveDoor), gameData.walls.nOpenDoors);
-	if (m_nVersion >= 14) {		//Restore cloaking tWall info
+	if (m_nVersion >= 14) {		//Restore cloaking CWall info
 		if (ReadBoundedInt (MAX_WALLS, &gameData.walls.nCloaking))
 			return 0;
 		m_cf.Read (gameData.walls.cloaking.Buffer (), sizeof (tCloakingWall), gameData.walls.nCloaking);
@@ -2495,11 +2495,11 @@ if (!m_bBetweenLevels)	{
 	//Restore tmap info
 	for (i = 0; i <= gameData.segs.nLastSegment; i++)	{
 		for (j = 0; j < 6; j++)	{
-			gameData.segs.segments [i].sides [j].nWall = m_cf.ReadShort ();
-			gameData.segs.segments [i].sides [j].nBaseTex = m_cf.ReadShort ();
+			SEGMENTS [i].m_sides [j].nWall = m_cf.ReadShort ();
+			SEGMENTS [i].m_sides [j].m_nBaseTex = m_cf.ReadShort ();
 			nTexture = m_cf.ReadShort ();
-			gameData.segs.segments [i].sides [j].nOvlTex = nTexture & 0x3fff;
-			gameData.segs.segments [i].sides [j].nOvlOrient = (nTexture >> 14) & 3;
+			SEGMENTS [i].m_sides [j].nOvlTex = nTexture & 0x3fff;
+			SEGMENTS [i].m_sides [j].nOvlOrient = (nTexture >> 14) & 3;
 			}
 		}
 //Restore the fuelcen info

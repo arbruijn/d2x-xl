@@ -50,7 +50,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define EF_USED     1   // This edge is used
 #define EF_DEFINING 2   // A structure defining edge that should always draw.
 #define EF_FRONTIER 4   // An edge between the known and the unknown.
-#define EF_SECRET   8   // An edge that is part of a secret tWall.
+#define EF_SECRET   8   // An edge that is part of a secret CWall.
 #define EF_GRATE    16  // A bGrate... draw it all the time.
 #define EF_NO_FADE  32  // An edge that doesn't fade with distance
 #define EF_TOO_FAR  64  // An edge that is too far away
@@ -60,7 +60,7 @@ void ModexPrintF (int x,int y, char *s, CFont *font, uint color);
 typedef struct tEdgeInfo {
 	short verts [2];     // 4 bytes
 	ubyte sides [4];     // 4 bytes
-	short nSegment [4];    // 8 bytes  // This might not need to be stored... If you can access the normals of a tSide.
+	short nSegment [4];    // 8 bytes  // This might not need to be stored... If you can access the normals of a CSide.
 	ubyte flags;        // 1 bytes  // See the EF_??? defines above.
 	uint color; // 4 bytes
 	ubyte num_faces;    // 1 bytes  // 19 bytes...
@@ -1001,7 +1001,7 @@ for (i = 0; i <= nHighestEdgeIndex; i++)	{
 		tv1 = gameData.segs.vertices + e->verts [0];
 		j = 0;
 		while (j<e->num_faces && (nfacing==0 || nnfacing==0))	{
-			if (!G3CheckNormalFacing(*tv1, gameData.segs.segments [e->nSegment [j]].sides [e->sides [j]].normals [0]))
+			if (!G3CheckNormalFacing (*tv1, SEGMENTS [e->nSegment [j]].m_sides [e->m_sides [j]].m_normals [0]))
 				nfacing++;
 			else
 				nnfacing++;
@@ -1120,7 +1120,7 @@ return ret ? hash : -1;
 
 //------------------------------------------------------------------------------
 
-void AddOneEdge (int va, int vb, uint color, ubyte tSide, short nSegment, 
+void AddOneEdge (int va, int vb, uint color, ubyte CSide, short nSegment, 
 					  int bHidden, int bGrate, int bNoFade)
 {
 	int found;
@@ -1151,7 +1151,7 @@ if (found == -1) {
 	e->color = color;
 	e->num_faces = 1;
 	e->flags = EF_USED | EF_DEFINING;			// Assume a Normal line
-	e->sides [0] = tSide;
+	e->m_sides [0] = CSide;
 	e->nSegment [0] = nSegment;
 	//Edge_used_list [nNumEdges] = EDGE_IDX (e);
 	if ( EDGE_IDX (e) > nHighestEdgeIndex)
@@ -1163,7 +1163,7 @@ else {
 	if ((color != automapColors.walls.nNormal) && (color != automapColors.walls.nRevealed))
 		e->color = color;
 	if (e->num_faces < 4) {
-		e->sides [e->num_faces] = tSide;
+		e->m_sides [e->num_faces] = CSide;
 		e->nSegment [e->num_faces] = nSegment;
 		e->num_faces++;
 		}
@@ -1213,9 +1213,9 @@ for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
 	bIsGrate = 0;
 	bNoFade = 0;
 	color = WHITE_RGBA;
-	if (segP->children [sn] == -1)
+	if (segP->m_children [sn] == -1)
 		color = automapColors.walls.nNormal;
-	switch (gameData.segs.segment2s [nSegment].special)	{
+	switch (gameData.segs.segment2s [nSegment].m_special)	{
 		case SEGMENT_IS_FUELCEN:
 			color = GOLD_RGBA;
 			break;
@@ -1240,7 +1240,7 @@ for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
 		}
 
 	if (IS_WALL (wn = WallNumP (segP, sn))) {
-		tWall	*wallP = gameData.walls.walls + wn;
+		CWall	*wallP = gameData.walls.walls + wn;
 		nTrigger = wallP->nTrigger;
 		ttype = gameData.trigs.triggers [nTrigger].nType;
 		if (ttype==TT_SECRET_EXIT)	{
@@ -1263,9 +1263,9 @@ for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
 					color = automapColors.walls.nDoorRed;
 					}
 				else if (!(gameData.walls.animP [wallP->nClip].flags & WCF_HIDDEN)) {
-					short	connected_seg = segP->children [sn];
+					short	connected_seg = segP->m_children [sn];
 					if (connected_seg != -1) {
-						short connected_side = FindConnectedSide (segP, &gameData.segs.segments [connected_seg]);
+						short connected_side = FindConnectedSide (segP, &SEGMENTS [connected_seg]);
 						switch (gameData.walls.walls [WallNumI (connected_seg, connected_side)].keys) {
 							case KEY_BLUE:
 								color = automapColors.walls.nDoorBlue;
@@ -1291,7 +1291,7 @@ for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
 				break;
 			case WALL_CLOSED:
 				// Make bGrates draw properly
-				if (WALL_IS_DOORWAY (segP, sn, NULL) & WID_RENDPAST_FLAG)
+				if (segP->IsDoorWay (sn, NULL) & WID_RENDPAST_FLAG)
 					bIsGrate = 1;
 				else
 					bHidden = 1;
@@ -1341,7 +1341,7 @@ for (sn=0;sn<MAX_SIDES_PER_SEGMENT;sn++) {
 	short	vertex_list [4];
 
 	// Only add edges that have no children
-	if (segP->children [sn] == -1) {
+	if (segP->m_children [sn] == -1) {
 		GetSideVertIndex (vertex_list,nSegment,sn);
 
 		AddOneUnknownEdge (vertex_list [0], vertex_list [1]);
@@ -1375,28 +1375,28 @@ if (amData.bCheat || (LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP))	{
 	// Cheating, add all edges as visited
 	for (s=0; s<=gameData.segs.nLastSegment; s++)
 #ifdef EDITOR
-		if (gameData.segs.segments [s].nSegment != -1)
+		if (SEGMENTS [s].nSegment != -1)
 #endif
 			{
-			AddSegmentEdges (&gameData.segs.segments [s]);
+			AddSegmentEdges (&SEGMENTS [s]);
 			}
 	} 
 else {
 	// Not cheating, add visited edges, and then unvisited edges
 	for (s=0; s<=gameData.segs.nLastSegment; s++)
 #ifdef EDITOR
-		if (gameData.segs.segments [s].nSegment != -1)
+		if (SEGMENTS [s].nSegment != -1)
 #endif
 		if (gameData.render.mine.bAutomapVisited [s]) {
 			h++;
-			AddSegmentEdges (&gameData.segs.segments [s]);
+			AddSegmentEdges (&SEGMENTS [s]);
 			}
 		for (s=0; s<=gameData.segs.nLastSegment; s++)
 #ifdef EDITOR
-			if (gameData.segs.segments [s].nSegment != -1)
+			if (SEGMENTS [s].nSegment != -1)
 #endif
 			if (!gameData.render.mine.bAutomapVisited [s]) {
-				AddUnknownSegmentEdges (&gameData.segs.segments [s]);
+				AddUnknownSegmentEdges (&SEGMENTS [s]);
 				}
 		}
 	// Find unnecessary lines (These are lines that don't have to be drawn because they have small curvature)
@@ -1408,7 +1408,7 @@ else {
 		for (e1 = 0; e1 < e->num_faces; e1++) {
 			for (e2 = 1; e2 < e->num_faces; e2++) {
 				if ((e1 != e2) && (e->nSegment [e1] != e->nSegment [e2]))	{
-					if (CFixVector::Dot(gameData.segs.segments [e->nSegment [e1]].sides [e->sides [e1]].normals [0], gameData.segs.segments [e->nSegment [e2]].sides [e->sides [e2]].normals [0]) > (F1_0- (F1_0/10)) )	{
+					if (CFixVector::Dot(SEGMENTS [e->nSegment [e1]].m_sides [e->m_sides [e1]].m_normals [0], SEGMENTS [e->nSegment [e2]].m_sides [e->m_sides [e2]].m_normals [0]) > (F1_0- (F1_0/10)) )	{
 						e->flags &= (~EF_DEFINING);
 						break;
 					}

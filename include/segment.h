@@ -26,9 +26,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Version 1 - Initial version
 // Version 2 - Mike changed some shorts to bytes in segments, so incompatible!
 
-#define SIDE_IS_QUAD    1   // render tSide as quadrilateral
-#define SIDE_IS_TRI_02  2   // render tSide as two triangles, triangulated along edge from 0 to 2
-#define SIDE_IS_TRI_13  3   // render tSide as two triangles, triangulated along edge from 1 to 3
+#define SIDE_IS_QUAD    1   // render CSide as quadrilateral
+#define SIDE_IS_TRI_02  2   // render CSide as two triangles, triangulated along edge from 0 to 2
+#define SIDE_IS_TRI_13  3   // render CSide as two triangles, triangulated along edge from 1 to 3
 
 // Set maximum values for tSegment and face data structures.
 #define MAX_VERTICES_PER_SEGMENT    8
@@ -70,99 +70,159 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Note that -1 means no connection, -2 means a connection to the outside world.
 #define IS_CHILD(nSegment) (nSegment > -1)
 
+
+extern int sideVertIndex [MAX_SIDES_PER_SEGMENT][4];
+extern char sideOpposite [MAX_SIDES_PER_SEGMENT];
+
+//------------------------------------------------------------------------------
+
+class CWall;
+
+class CSide {
+	public:
+		sbyte   		m_nType;       // replaces num_faces and tri_edge, 1 = quad, 2 = 0:2 triangulation, 3 = 1:3 triangulation
+		sbyte   		m_nFrame;      //keep us longword aligned
+		ushort  		m_nWall;
+		short   		m_nBaseTex;
+#ifdef WORDS_BIGENDIAN
+		ushort		m_nOvlOrient : 2;
+		ushort		m_nOvlTex : 14;
+#else
+		ushort		m_nOvlTex : 14;
+		ushort		m_nOvlOrient : 2;
+#endif
+		tUVL     	m_uvls [4];
+		CFixVector	m_normals [2];  // 2 normals, if quadrilateral, both the same.
+
+	public:
+		void LoadTextures (void);
+		inline ushort WallNum (void) { return m_nWall; }
+		inline CWall* Wall (void);
+		int FaceCount (void);
+
+		int CheckTransparency (void);
+		int SpecialCheckLineToFace (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short iFace, CFixVector vNormal);
+		int CheckLineToFace (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short iFace, CFixVector vNormal);
+		int CheckSphereToFace (CFixVector& intersection, short iFace, fix rad, CFixVector vNormal);
+		uint CheckPointToFace (CFixVector& intersection, short iFace, CFixVector vNormal);
+
+		void GetNormals (CFixVector& n1, CFixVector& n2);
+	};
+
+//------------------------------------------------------------------------------
+
+class CBaseSegment {
+	public:
+		CSide   m_sides [MAX_SIDES_PER_SEGMENT];       // 6 sides
+		ushort  m_children [MAX_SIDES_PER_SEGMENT];    // indices of 6 children segments, front, left, top, right, bottom, back
+		ushort  m_verts [MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
+		int     m_objects;    // pointer to objects in this tSegment
+	};
+
+//------------------------------------------------------------------------------
+
+class CExtSide {
+	public:
+		CFixVector	m_rotNorms [2];
+		CFixVector	m_vCenter;
+		fix			m_rads [2];
+		ushort		m_vertices [6];
+		ubyte			m_nFaces;
+
+	public:
+		void ComputeCenter (void);
+		void ComputeRads (void);
+		CFixVector* Center (void) { return &m_vCenter; }
+		int CreateVertexList (ushort* verts, int* index);
+		inline ubyte GetVertices (ushort*& vertices) { 
+			vertices = m_vertices;
+			return m_nFaces;
+			}
+	CFixVector* GetVertices (CFixVector* vertices);
+	ubyte Dist (const CFixVector& intersection, fix& xSideDist, int bBehind, short sideBit);
+	};
+
+//------------------------------------------------------------------------------
+
+class CExtSegment {
+	public:
+		ubyte			m_special;
+		sbyte			m_nMatCen;
+		sbyte			m_value;
+		ubyte			m_flags;
+		fix			m_xAvgSegLight;
+		CExtSide		m_sides [MAX_SIDES_PER_SEGMENT];
+
+	public:
+		void Read (CFile& cf);
+		inline CExtSide* ExtSide (int nSide) { return m_sides + nSide; }
+	};
+
+//------------------------------------------------------------------------------
+
+class CSegment : public CBaseSegment, public CExtSegment {
+	public:
+		char			m_owner;		  // team owning that tSegment (-1: always neutral, 0: neutral, 1: blue team, 2: red team)
+		char			m_group;
+		CFixVector	m_vCenter;
+		fix			m_rads [2];
+		CFixVector	m_extents [2];
+
+	public:
+		void LoadTextures (void);
+		inline ushort WallNum (short nSide) { return CBaseSegment::m_sides [nSide].WallNum (); }
+		inline int CheckTransparency (short nSide) { return CBaseSegment::m_sides [nSide].CheckTransparency (); }
+		fix Refuel (fix xMaxFuel);
+		fix Repair (fix xMaxShields);
+		fix Damage (fix xMaxDamage);
+		void CheckForGoal (void);
+		void CheckForHoardGoal (void);
+		int CheckFlagDrop (int nTeamId, int nFlagId, int nGoalId);
+		int ConquerCheck (void);
+		void CreateGenerator (int nType);
+		void CreateEquipGen (int oldType);
+		void CreateBotGen (int oldType);
+		void ComputeCenter (void);
+		void ComputeRads (fix xMinDist);
+		inline void ComputeSideCenter (short nSide) { CExtSegment::m_sides [nSide].ComputeCenter (); }
+		inline CSide* Side (int nSide) { return CBaseSegment::m_sides + nSide; }
+		void ComputeSideRads (void);
+		void GetNormals (short nSide, CFixVector& n1, CFixVector& n2) { CBaseSegment::m_sides [nSide].GetNormals (n1, n2); }
+		inline CFixVector* Center (void) { return &m_vCenter; }
+		inline int CreateVertexList (int nSide) { return CExtSegment::m_sides [nSide].CreateVertexList (m_verts, sideVertIndex [nSide]); }
+		inline ubyte GetVertices (int nSide, ushort*& vertices) { return CExtSegment::m_sides [nSide].GetVertices (vertices); }
+		inline CFixVector* GetVertices (int nSide, CFixVector* vertices) { return CExtSegment::m_sides [nSide].GetVertices (vertices); }
+		ubyte SideDists (const CFixVector& intersection, fix* xSideDists, int bBehind = 1);
+		int FindConnectedSide (CSegment* other);
+		inline CFixVector& Normal (int nSide, int nFace);
 #if 0
-//Structure for storing u,v,light values.
-//NOTE: this structure should be the same as the one in 3d.h
-typedef struct tUVL {
-	fix u, v, l;
-} tUVL;
+		inline uint CheckPointToFace (CFixVector& intersection, short nSide, short iFace)
+			{ return CBaseSegment::m_sides [nSide].CheckPointToFace (intersection, iFace, nVerts, Normal (nSide, iFace)); }
+		inline int CheckSphereToFace (CFixVector& intersection, short nSide, short iFace, fix rad)
+			{ return CBaseSegment::m_sides [nSide].CheckSphereToFace (intersection, iFace, nVerts, Normal (nSide, iFace)); }
 #endif
+		inline int CheckLineToFace (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short nSide, short iFace)
+			{ return CBaseSegment::m_sides [nSide].CheckLineToFace (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
+		inline int SpecialCheckLineToFace (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short nSide, int iFace)
+			{ return CBaseSegment::m_sides [nSide].SpecialCheckLineToFace (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
 
-#ifdef COMPACT_SEGS
-typedef struct tSide {
-	sbyte   nType;          //replaces num_faces and tri_edge, 1 = quad, 2 = 0:2 triangulation, 3 = 1:3 triangulation
-	ubyte   pad;            //keep us longword alligned
-	short   nWall;
-	short   nTexture [2];
-	tUVL     uvls [4];
-	//CFixVector normals[2]; // 2 normals, if quadrilateral, both the same.
-} tSide;
-#else
-typedef struct tSide {
-	sbyte   		nType;           // replaces num_faces and tri_edge, 1 = quad, 2 = 0:2 triangulation, 3 = 1:3 triangulation
-	sbyte   		nFrame;      //keep us longword aligned
-	ushort  		nWall;
-	short   		nBaseTex;
-#ifndef WORDS_BIGENDIAN
-	ushort		nOvlTex : 14;
-	ushort		nOvlOrient : 2;
-#else
-	ushort		nOvlOrient : 2;
-	ushort		nOvlTex : 14;
-#endif
-	tUVL     	uvls [4];
-	CFixVector	normals [2];  // 2 normals, if quadrilateral, both the same.
-} tSide;
-#endif
-
-#ifdef EDITOR
-
-typedef struct tSegment {
-	short   nSegment;     // tSegment number, not sure what it means
-	tSide   sides [MAX_SIDES_PER_SEGMENT];       // 6 sides
-	short   children [MAX_SIDES_PER_SEGMENT];    // indices of 6 children segments, front, left, top, right, bottom, back
-	short   verts [MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
-	short   group;      // group number to which the tSegment belongs.
-	short   objects;    // pointer to objects in this tSegment
-} tSegment;
-
-#else //!EDITOR
-
-typedef struct tSegment {
-	tSide   sides [MAX_SIDES_PER_SEGMENT];       // 6 sides
-	short   children [MAX_SIDES_PER_SEGMENT];    // indices of 6 children segments, front, left, top, right, bottom, back
-	short   verts [MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
-	int     objects;    // pointer to objects in this tSegment
-} tSegment;
-
-#endif //!EDITOR
-
-class CSegment : public tSegment {
-	//public:
+		inline int FaceCount (int nSide) { return CBaseSegment::m_sides [nSide].FaceCount (); }
 	};
 
 inline int operator- (CSegment* s, CArray<CSegment>& a) { return a.Index (s); }
 
+//------------------------------------------------------------------------------
+
 typedef struct tSegFaces {
-	tFace	*pFaces;
+	tFace*	pFaces;
 	ubyte		nFaces;
 	ubyte		bVisible;
 } tSegFaces;
 
-typedef struct xsegment {
-	char		owner;		  // team owning that tSegment (-1: always neutral, 0: neutral, 1: blue team, 2: red team)
-	char		group;
-} xsegment;
-
-
 #define S2F_AMBIENT_WATER   0x01
 #define S2F_AMBIENT_LAVA    0x02
 
-typedef struct tSide2 {
-	CFixVector	rotNorms [2];
-} tSide2;
-
-
-typedef struct tSegment2 {
-	ubyte			special;
-	sbyte			nMatCen;
-	sbyte			value;
-	ubyte			s2Flags;
-	fix			xAvgSegLight;
-	tSide2		sides [MAX_SIDES_PER_SEGMENT];
-} tSegment2;
-
-inline int operator- (tSegment2* s, CArray<tSegment2>& a) { return a.Index (s); }
+//------------------------------------------------------------------------------
 
 //values for special field
 #define SEGMENT_IS_NOTHING			0
@@ -183,11 +243,6 @@ inline int operator- (tSegment2* s, CArray<tSegment2>& a) { return a.Index (s); 
 #define SEGMENT_IS_EQUIPMAKER		15
 #define SEGMENT_IS_OUTDOOR			16
 #define MAX_CENTER_TYPES			17
-
-#ifdef COMPACT_SEGS
-extern void GetSideNormal(tSegment *sp, int nSide, int normal_num, CFixVector * vm );
-extern void GetSideNormals(tSegment *sp, int nSide, CFixVector * vm1, CFixVector *vm2 );
-#endif
 
 // Local tSegment data.
 // This is stuff specific to a tSegment that does not need to get
@@ -213,9 +268,8 @@ typedef struct {
 #endif
 
 // Globals from mglobal.c
-extern sbyte sideToVerts[MAX_SIDES_PER_SEGMENT][4];       // sideToVerts[my_side] is list of vertices forming tSide my_side.
-extern int  sideToVertsInt[MAX_SIDES_PER_SEGMENT][4];    // sideToVerts[my_side] is list of vertices forming tSide my_side.
-extern char sideOpposite[];                                // sideOpposite[my_side] returns tSide opposite cube from my_side.
+extern int	sideVertIndex [MAX_SIDES_PER_SEGMENT][4];       // sideVertIndex[my_side] is list of vertices forming CSide my_side.
+extern char sideOpposite [];                                // sideOpposite[my_side] returns CSide opposite cube from my_side.
 
 // New stuff, 10/14/95: For shooting out lights and monitors.
 // Light cast upon vertLight vertices in nSegment:nSide by some light
@@ -273,12 +327,12 @@ extern void med_get_vertex_list(tSegment *s,int *nv,short **vp);
 
 // Return a pointer to the list of vertex indices for face facenum in
 // vp and the number of vertices in *nv.
-extern void med_get_face_vertex_list(tSegment *s,int tSide, int facenum,int *nv,short **vp);
+extern void med_get_face_vertex_list(tSegment *s,int CSide, int facenum,int *nv,short **vp);
 
 // Set *nf = number of faces in tSegment s.
 extern void med_get_num_faces(tSegment *s,int *nf);
 
-void med_validate_segment_side(tSegment *sp, short tSide);
+void med_validate_segment_side(tSegment *sp, short CSide);
 
 // Delete tSegment function added for curves.c
 extern int med_delete_segment(tSegment *sp);
@@ -294,16 +348,6 @@ extern void AddSegmentToGroup (int nSegment, int nGroup);
 // Verify that all vertices are legal.
 extern void med_check_all_vertices();
 
-#if 0
-#define ReadSegment2(s2, fp) CFRead(s2, sizeof(tSegment2), 1, fp)
-#define ReadlightDelta(dl, fp) CFRead(dl, sizeof(tLightDelta), 1, fp)
-#define ReadlightDeltaIndex(di, fp) CFRead(di, sizeof(tLightDeltaIndex), 1, fp)
-#else
-/*
- * reads a tSegment2 structure from a CFILE
- */
-void ReadSegment2(tSegment2 *s2, CFile& cf);
-
 /*
  * reads a tLightDelta structure from a CFILE
  */
@@ -313,7 +357,6 @@ void ReadlightDelta(tLightDelta *dl, CFile& cf);
  * reads a tLightDeltaIndex structure from a CFILE
  */
 void ReadlightDeltaIndex(tLightDeltaIndex *di, CFile& cf);
-#endif
 
 void FreeSkyBoxSegList (void);
 int BuildSkyBoxSegList (void);

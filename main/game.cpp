@@ -561,12 +561,12 @@ else
 
 //--unused-- int Auto_flythrough=0;  //if set, start flythough automatically
 
-void MovePlayerToSegment (CSegment *segP,int tSide)
+void MovePlayerToSegment (CSegment *segP,int CSide)
 {
 	CFixVector vp;
 
 COMPUTE_SEGMENT_CENTER (&gameData.objs.consoleP->info.position.vPos,segP);
-COMPUTE_SIDE_CENTER (&vp,segP,tSide);
+COMPUTE_SIDE_CENTER (&vp,segP,CSide);
 vp -= gameData.objs.consoleP->info.position.vPos;
 /*
 gameData.objs.consoleP->info.position.mOrient = CFixMatrix::Create(vp, NULL, NULL);
@@ -1040,7 +1040,7 @@ InitGauges ();
 //gameStates.input.keys.bRepeat = 0;                // Don't allow repeat in game
 gameStates.input.keys.bRepeat = 1;                // Do allow repeat in game
 #ifdef EDITOR
-	if (gameData.segs.segments[gameData.objs.consoleP->info.nSegment].nSegment == -1)      //CSegment no longer exists
+	if (SEGMENTS[gameData.objs.consoleP->info.nSegment].nSegment == -1)      //CSegment no longer exists
 		gameData.objs.consoleP->RelinkToSeg (SEG_IDX (Cursegp));
 
 	if (!check_obj_seg (gameData.objs.consoleP))
@@ -1468,8 +1468,8 @@ if (gameStates.app.bPlayerIsDead)
 	int	bLava, bWater;
 	short nSound;
 
-	bLava = (SEGMENT2S [gameData.objs.consoleP->info.nSegment].s2Flags & S2F_AMBIENT_LAVA);
-	bWater = (SEGMENT2S [gameData.objs.consoleP->info.nSegment].s2Flags & S2F_AMBIENT_WATER);
+	bLava = (SEGMENTS [gameData.objs.consoleP->info.nSegment].s2Flags & S2F_AMBIENT_LAVA);
+	bWater = (SEGMENTS [gameData.objs.consoleP->info.nSegment].s2Flags & S2F_AMBIENT_WATER);
 
 if (bLava) {							//has lava
 	nSound = SOUND_AMBIENT_LAVA;
@@ -1838,7 +1838,7 @@ gameData.segs.nSlideSegs = 0;
 for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
 	bIsSlideSeg = 0;
 	for (nSide = 0; nSide < 6; nSide++) {
-		nTexture = gameData.segs.segments [nSegment].sides [nSide].nBaseTex;
+		nTexture = SEGMENTS [nSegment].m_sides [nSide].m_nBaseTex;
 		if (gameData.pig.tex.tMapInfoP [nTexture].slide_u  ||
 			 gameData.pig.tex.tMapInfoP [nTexture].slide_v) {
 			if (!bIsSlideSeg) {
@@ -1861,7 +1861,7 @@ void SlideTextures (void)
 {
 	int	nSegment, nSide, h, i, j, tmn;
 	ubyte	sides;
-	tSide	*sideP;
+	CSide	*sideP;
 	tUVL	*uvlP;
 	fix	slideU, slideV, xDelta;
 
@@ -1870,7 +1870,7 @@ if (!gameData.segs.bHaveSlideSegs)
 for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 	nSegment = gameData.segs.slideSegs [h].nSegment;
 	sides = gameData.segs.slideSegs [h].nSides;
-	for (nSide = 0, sideP = gameData.segs.segments [nSegment].sides; nSide < 6; nSide++, sideP++) {
+	for (nSide = 0, sideP = SEGMENTS [nSegment].m_sides; nSide < 6; nSide++, sideP++) {
 		if (!(sides & (1 << nSide)))
 			continue;
 		tmn = sideP->nBaseTex;
@@ -1882,7 +1882,7 @@ for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nSegment = nSegment;
 #endif
-		i = (SEGMENT2S [nSegment].special == SEGMENT_IS_SKYBOX) ? 3 : 8;
+		i = (SEGMENTS [nSegment].m_special == SEGMENT_IS_SKYBOX) ? 3 : 8;
 		slideU = FixMul (gameData.time.xFrame, slideU << i);
 		slideV = FixMul (gameData.time.xFrame, slideV << i);
 		for (i = 0, uvlP = sideP->uvls; i < 4; i++) {
@@ -2072,7 +2072,7 @@ int MarkPathToExit (void)
 	//	---------- Find exit doors ----------
 for (i = 0; i <= gameData.segs.nLastSegment; i++)
 	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++)
-		if (gameData.segs.segments [i].children [j] == -2)
+		if (SEGMENTS [i].children [j] == -2)
 			return MarkPlayerPathToSegment (i);
 return 0;
 }

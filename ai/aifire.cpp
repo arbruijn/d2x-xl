@@ -273,20 +273,20 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 		return;
 		}
 	}
-//	Handle problem of a robot firing through a tWall because its gun tip is on the other
-//	tSide of the tWall than the robot's center.  For speed reasons, we normally only compute
+//	Handle problem of a robot firing through a CWall because its gun tip is on the other
+//	CSide of the CWall than the robot's center.  For speed reasons, we normally only compute
 //	the vector from the gun point to the player.  But we need to know whether the gun point
-//	is separated from the robot's center by a tWall.  If so, don't fire!
+//	is separated from the robot's center by a CWall.  If so, don't fire!
 if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 	//	Well, the gun point is in a different CSegment than the robot's center.
 	//	This is almost always ok, but it is not ok if something solid is in between.
 	int	nGunSeg = FindSegByPos (*vFirePoint, objP->info.nSegment, 1, 0);
 	//	See if these segments are connected, which should almost always be the case.
-	short nConnSide = FindConnectedSide (&gameData.segs.segments [nGunSeg], &gameData.segs.segments [objP->info.nSegment]);
+	short nConnSide = FindConnectedSide (&SEGMENTS [nGunSeg], &SEGMENTS [objP->info.nSegment]);
 	if (nConnSide != -1) {
 		//	They are connected via nConnSide in CSegment objP->info.nSegment.
 		//	See if they are unobstructed.
-		if (!(WALL_IS_DOORWAY (gameData.segs.segments + objP->info.nSegment, nConnSide, NULL) & WID_FLY_FLAG)) {
+		if (!(WALL_IS_DOORWAY (SEGMENTS + objP->info.nSegment, nConnSide, NULL) & WID_FLY_FLAG)) {
 			//	Can't fly through, so don't let this bot fire through!
 			return;
 			}
@@ -308,7 +308,7 @@ if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 
 		fate = FindVectorIntersection (&fq, &hit_data);
 		if (fate != HIT_NONE) {
-			Int3 ();		//	This bot's gun is poking through a tWall, so don't fire.
+			Int3 ();		//	This bot's gun is poking through a CWall, so don't fire.
 			MoveTowardsSegmentCenter (objP);		//	And decrease chances it will happen again.
 			return;
 			}

@@ -179,7 +179,7 @@ if (ROBOTINFO (robotIndex).bossFlag == 2) {
 
 //------------------------------------------------------------------------------
 
-void PagingTouchObject (CObject *objP)
+void CObject::LoadTextures (void)
 {
 	int v;
 
@@ -195,8 +195,8 @@ switch (objP->info.renderType) {
 		break;
 
 	case RT_POWERUP:
-		if (ConvertPowerupToWeapon (objP))
-			PagingTouchObject (objP);
+		if (objP->PowerupToWeapon ())
+			objP->LoadTextures ();
 		else if (objP->rType.vClipInfo.nClipIndex >= gameData.eff.nClips [0])
 			objP->rType.vClipInfo.nClipIndex = -MAX_ADDON_BITMAP_FILES - 1;
 		break;
@@ -244,12 +244,12 @@ void PagingTouchSide (CSegment * segP, short nSide)
 if ((SEG_IDX (segP) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-if (!(WALL_IS_DOORWAY (segP,nSide, NULL) & WID_RENDER_FLAG))
+if (!(segP->IsDoorWay (nSide, NULL) & WID_RENDER_FLAG))
 	return;
 
-tmap1 = segP->sides [nSide].nBaseTex;
+tmap1 = segP->m_sides [nSide].m_nBaseTex;
 PagingTouchWallEffects (tmap1);
-tmap2 = segP->sides [nSide].nOvlTex;
+tmap2 = segP->m_sides [nSide].nOvlTex;
 if (tmap2) {
 	PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [tmap2].index, gameStates.app.bD1Data);
 	PagingTouchWallEffects (tmap2);
@@ -306,12 +306,12 @@ void PagingTouchObjects (int nType)
 
 FORALL_OBJS (objP, i)
 	if ((nType < 0) || (objP->info.nType == nType))
-		PagingTouchObject (objP);
+		objP->LoadTextures ();
 }
 
 //------------------------------------------------------------------------------
 
-void PagingTouchSegment (CSegment * segP)
+void CSegment::LoadTextures (void)
 {
 	short			nSide, nObject;
 	tSegment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
@@ -325,19 +325,16 @@ if (seg2p->special == SEGMENT_IS_ROBOTMAKER)
 for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) 
 	PagingTouchSide (segP, nSide);
 for (nObject = segP->objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg)
-	PagingTouchObject (OBJECTS + nObject);
+	OBJECTS [nObject].LoadTextures ();
 }
 
 //------------------------------------------------------------------------------
 
-void PagingTouchWall (tWall *wallP)
+void CWall::LoadTextures (void)
 {
-	int	j;
-	tWallClip *anim;
-
 if (wallP->nClip > -1)	{
-	anim = gameData.walls.animP + wallP->nClip;
-	for (j=0; j < anim->nFrameCount; j++)
+	tWallClip* anim = gameData.walls.animP + wallP->nClip;
+	for (int j = 0; j < anim->nFrameCount; j++)
 		PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [anim->frames [j]].index, gameStates.app.bD1Data);
 	}
 }
@@ -349,7 +346,7 @@ void PagingTouchWalls (void)
 	int i;
 
 for (i = 0; i < gameData.walls.nWalls; i++)
-	PagingTouchWall (gameData.walls.walls + i);
+	gameData.wall.walls [i].LoadTextures ();
 }
 
 //------------------------------------------------------------------------------
@@ -359,7 +356,7 @@ void PagingTouchSegments (void)
 	int	s;
 
 for (s=0; s < gameData.segs.nSegments; s++)
-	PagingTouchSegment (gameData.segs.segments + s);
+	PagingTouchSegment (SEGMENTS + s);
 }
 
 //------------------------------------------------------------------------------
@@ -470,8 +467,17 @@ static int PagingTouchPoll (int nItems, tMenuItem *m, int *key, int nCurItem)
 
 paletteManager.LoadEffect  ();
 if (nTouchSeg < gameData.segs.nSegments) {
-	for (i = 0; (i < PROGRESS_INCR) && (nTouchSeg < gameData.segs.nSegments); i++)
-		PagingTouchSegment (gameData.segs.segments + nTouchSeg++);
+	for (i = 0; (i < PROGRESS_INCR) && (nTouchSeg < gameData.segs.nSegments); i++) {
+#if DBG
+		if (nTouchSeg == nDbgSeg)
+			nDbgSeg = nDbgSeg;
+#endif
+		PagingTouchSegment (SEGMENTS + nTouchSeg++);
+#if DBG
+		if (OBJECTS [59].info.movementType)
+			i = i;
+#endif
+		}
 	}
 else if (nTouchWall < gameData.walls.nWalls) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchWall < gameData.walls.nWalls); i++)

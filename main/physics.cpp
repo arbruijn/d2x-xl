@@ -75,28 +75,26 @@ void DoPhysicsAlignObject (CObject * objP)
 	//CFixVector forvec = {0, 0, f1_0};
 	CFixMatrix	temp_matrix;
 	fix			d, largest_d=-f1_0;
-	int			i, best_side;
+	int			i, nBestSide;
 
-best_side = 0;
+nBestSide = 0;
 // bank CPlayerData according to CSegment orientation
-//find tSide of CSegment that CPlayerData is most aligned with
+//find CSide of CSegment that CPlayerData is most aligned with
 for (i = 0; i < 6; i++) {
-	d = CFixVector::Dot(gameData.segs.segments [objP->info.nSegment].sides [i].normals[0], objP->info.position.mOrient.UVec ());
-	if (d > largest_d) {largest_d = d; best_side=i;}
+	d = CFixVector::Dot(SEGMENTS [objP->info.nSegment].m_sides [i].m_normals[0], objP->info.position.mOrient.UVec ());
+	if (d > largest_d) {largest_d = d; nBestSide=i;}
 	}
-if (gameOpts->gameplay.nAutoLeveling == 1) {	 // new CPlayerData leveling code: use Normal of tSide closest to our up vec
-	if (GetNumFaces (&gameData.segs.segments [objP->info.nSegment].sides [best_side])==2) {
-		tSide *s = &gameData.segs.segments [objP->info.nSegment].sides [best_side];
-		desiredUpVec[X] = (s->normals[0][X] + s->normals[1][X]) / 2;
-		desiredUpVec[Y] = (s->normals[0][Y] + s->normals[1][Y]) / 2;
-		desiredUpVec[Z] = (s->normals[0][Z] + s->normals[1][Z]) / 2;
-		CFixVector::Normalize(desiredUpVec);
+if (gameOpts->gameplay.nAutoLeveling == 1) {	 // new CPlayerData leveling code: use Normal of CSide closest to our up vec
+	CSide* sideP = &SEGMENTS [objP->info.nSegment].m_sides + nBestSide;
+	if (sideP->FaceCount () == 2) {
+		desiredUpVec = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
+		CFixVector::Normalize (desiredUpVec);
 		}
 	else
-		desiredUpVec = gameData.segs.segments [objP->info.nSegment].sides [best_side].normals [0];
+		desiredUpVec = SEGMENTS [objP->info.nSegment].m_sides [nBestSide].m_normals [0];
 	}
 else if (gameOpts->gameplay.nAutoLeveling == 2)	// old way: used floor's Normal as upvec
-	desiredUpVec = gameData.segs.segments [objP->info.nSegment].sides [3].normals [0];
+	desiredUpVec = SEGMENTS [objP->info.nSegment].m_sides [3].m_normals [0];
 else if (gameOpts->gameplay.nAutoLeveling == 3)	// mine's up vector
 	desiredUpVec = (*PlayerSpawnOrient(gameData.multiplayer.nLocalPlayer)).UVec ();
 else
@@ -276,11 +274,11 @@ COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->info.nSegment);
 //HUDMessage (0, "BUMP! %d %d", d1, d2);
 //don't bump CPlayerData towards center of reactor CSegment
 CFixVector::NormalizedDir(vBump, vCenter, objP->info.position.vPos);
-if (SEGMENT2S [objP->info.nSegment].special == SEGMENT_IS_CONTROLCEN)
+if (SEGMENTS [objP->info.nSegment].m_special == SEGMENT_IS_CONTROLCEN)
 	vBump.Neg();
 objP->info.position.vPos += vBump * (objP->info.xSize / 5);
 //if moving away from seg, might move out of seg, so update
-if (SEGMENT2S [objP->info.nSegment].special == SEGMENT_IS_CONTROLCEN)
+if (SEGMENTS [objP->info.nSegment].m_special == SEGMENT_IS_CONTROLCEN)
 	UpdateObjectSeg (objP);
 }
 
@@ -294,7 +292,7 @@ int BounceObject (CObject *objP, tFVIData	hi, float fOffs, fix *pxSideDists)
 	short	nSegment;
 
 if (!pxSideDists) {
-	GetSideDistsAll (objP->info.position.vPos, hi.hit.nSideSegment, xSideDists);
+	SEGMENTS [hi.hit.nSideSegment].GetSideDists (objP->info.position.vPos, hi.hit.nSideSegment, xSideDists);
 	pxSideDists = xSideDists;
 	}
 xSideDist = pxSideDists [hi.hit.nSide];
@@ -536,9 +534,9 @@ if ((nDbgSeg >= 0) && (objP->info.nSegment == nDbgSeg))
 #endif
 
 if (extraGameInfo [IsMultiGame].bFluidPhysics) {
-	if (SEGMENT2S [objP->info.nSegment].special == SEGMENT_IS_WATER)
+	if (SEGMENTS [objP->info.nSegment].m_special == SEGMENT_IS_WATER)
 		xTimeScale = 75;
-	else if (SEGMENT2S [objP->info.nSegment].special == SEGMENT_IS_LAVA)
+	else if (SEGMENTS [objP->info.nSegment].m_special == SEGMENT_IS_LAVA)
 		xTimeScale = 66;
 	else
 		xTimeScale = 100;
@@ -661,7 +659,7 @@ retryMove:
 #endif
 #if 1 //make shots and missiles pass through skyboxes
 		if (gameStates.render.bHaveSkyBox && (objP->info.nType == OBJ_WEAPON) && (hi.hit.nSegment >= 0)) {
-			if (SEGMENT2S [hi.hit.nSegment].special == SEGMENT_IS_SKYBOX) {
+			if (SEGMENTS [hi.hit.nSegment].m_special == SEGMENT_IS_SKYBOX) {
 				short nConnSeg = SEGMENTS [hi.hit.nSegment].children [hi.hit.nSide];
 				if ((nConnSeg < 0) && (objP->info.xLifeLeft > F1_0)) {	//leaving the mine
 					objP->info.xLifeLeft = 0;
@@ -671,7 +669,7 @@ retryMove:
 				}
 			else if (CheckTransWall (&hi.hit.vPoint, SEGMENTS + hi.hit.nSideSegment, hi.hit.nSide, hi.hit.nFace)) {
 				short nNewSeg = FindSegByPos (vNewPos, gameData.segs.skybox [0], 1, 1);
-				if ((nNewSeg >= 0) && (SEGMENT2S [nNewSeg].special == SEGMENT_IS_SKYBOX)) {
+				if ((nNewSeg >= 0) && (SEGMENTS [nNewSeg].m_special == SEGMENT_IS_SKYBOX)) {
 					hi.hit.nSegment = nNewSeg;
 					fviResult = HIT_NONE;
 					}
@@ -819,7 +817,7 @@ retryMove:
 #if UNSTICK_OBJS == 2
 		{
 		fix	xSideDists [6];
-		GetSideDistsAll (&objP->info.position.vPos, nWallHitSeg, xSideDists);
+		SEGMENTS [nWallHitSeg].GetSideDists (&objP->info.position.vPos, xSideDists);
 		bRetry = BounceObject (objP, hi, 0.1f, xSideDists);
 		}
 #else
@@ -829,21 +827,21 @@ retryMove:
 			int bForceFieldBounce;		//bounce off a forcefield
 
 			///Assert (gameStates.app.cheats.bBouncingWeapons || ((objP->mType.physInfo.flags & (PF_STICK | PF_BOUNCE)) != (PF_STICK | PF_BOUNCE)));	//can't be bounce and stick
-			bForceFieldBounce = (gameData.pig.tex.tMapInfoP [gameData.segs.segments [nWallHitSeg].sides [nWallHitSide].nBaseTex].flags & TMI_FORCE_FIELD);
+			bForceFieldBounce = (gameData.pig.tex.tMapInfoP [SEGMENTS [nWallHitSeg].m_sides [nWallHitSide].m_nBaseTex].flags & TMI_FORCE_FIELD);
 			if (!bForceFieldBounce && (objP->mType.physInfo.flags & PF_STICK)) {		//stop moving
 				AddStuckObject (objP, nWallHitSeg, nWallHitSide);
 				objP->mType.physInfo.velocity.SetZero();
 				bObjStopped = 1;
 				bRetry = 0;
 				}
-			else {				// Slide CObject along tWall
+			else {				// Slide CObject along CWall
 				int bCheckVel = 0;
 				//We're constrained by a wall, so subtract wall part from velocity vector
 
 				// TODO: fix this with new dot product method, without bouncing off walls
 				// THIS IS DELICATE!!
 				xWallPart = CFixVector::Dot(hi.hit.vNormal, objP->mType.physInfo.velocity);
-				if (bForceFieldBounce || (objP->mType.physInfo.flags & PF_BOUNCE)) {		//bounce off tWall
+				if (bForceFieldBounce || (objP->mType.physInfo.flags & PF_BOUNCE)) {		//bounce off CWall
 					xWallPart *= 2;	//Subtract out wall part twice to achieve bounce
 					if (bForceFieldBounce) {
 						bCheckVel = 1;				//check for max velocity
@@ -983,20 +981,20 @@ if (objP->info.controlType == CT_AI) {
 	//hack to keep CPlayerData from going through closed doors
 	if (((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT)) && (objP->info.nSegment != nOrigSegment) &&
 		 (gameStates.app.cheats.bPhysics != 0xBADA55)) {
-		int nSide = FindConnectedSide (gameData.segs.segments + objP->info.nSegment, gameData.segs.segments + nOrigSegment);
+		int nSide = FindConnectedSide (SEGMENTS + objP->info.nSegment, SEGMENTS + nOrigSegment);
 		if (nSide != -1) {
-			if (!(WALL_IS_DOORWAY (gameData.segs.segments + nOrigSegment, nSide, (objP->info.nType == OBJ_PLAYER) ? objP : NULL) & WID_FLY_FLAG)) {
-				tSide *sideP;
+			if (!(WALL_IS_DOORWAY (SEGMENTS + nOrigSegment, nSide, (objP->info.nType == OBJ_PLAYER) ? objP : NULL) & WID_FLY_FLAG)) {
+				CSide *sideP;
 				int	nVertex, nFaces;
 				fix	dist;
 				int	vertexList [6];
 
 				//bump CObject back
-				sideP = gameData.segs.segments [nOrigSegment].sides + nSide;
+				sideP = SEGMENTS [nOrigSegment].m_sides + nSide;
 				if (nOrigSegment == -1)
 					Error ("nOrigSegment == -1 in physics");
 				nFaces = CreateAbsVertexLists (vertexList, nOrigSegment, nSide);
-				//let'sideP pretend this tWall is not triangulated
+				//let'sideP pretend this CWall is not triangulated
 				nVertex = vertexList [0];
 				if (nVertex > vertexList [1])
 					nVertex = vertexList [1];
@@ -1004,8 +1002,8 @@ if (objP->info.controlType == CT_AI) {
 					nVertex = vertexList [2];
 				if (nVertex > vertexList [3])
 					nVertex = vertexList [3];
-				dist = vStartPos.DistToPlane(sideP->normals[0], gameData.segs.vertices[nVertex]);
-				objP->info.position.vPos = vStartPos + sideP->normals[0] * (objP->info.xSize-dist);
+				dist = vStartPos.DistToPlane(sideP->m_normals[0], gameData.segs.vertices[nVertex]);
+				objP->info.position.vPos = vStartPos + sideP->m_normals[0] * (objP->info.xSize-dist);
 				UpdateObjectSeg (objP);
 				}
 			}

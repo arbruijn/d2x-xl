@@ -211,9 +211,9 @@ else {
 
 int RenderColoredSegFace (int nSegment, int nSide, int nVertices, g3sPoint **pointList)
 {
-	short nConnSeg = gameData.segs.segments [nSegment].children [nSide];
+	short nConnSeg = SEGMENTS [nSegment].children [nSide];
 	int	owner = gameData.segs.xSegments [nSegment].owner;
-	int	special = gameData.segs.segment2s [nSegment].special;
+	int	special = gameData.segs.segment2s [nSegment].m_special;
 
 if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (owner > 0)) {
 	if ((nConnSeg >= 0) && (gameData.segs.xSegments [nConnSeg].owner == owner))
@@ -225,12 +225,12 @@ if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrid
 	return 1;
 	}
 if (special == SEGMENT_IS_WATER) {
-	if ((nConnSeg < 0) || (gameData.segs.segment2s [nConnSeg].special != SEGMENT_IS_WATER))
+	if ((nConnSeg < 0) || (gameData.segs.segment2s [nConnSeg].m_special != SEGMENT_IS_WATER))
 		G3DrawPolyAlpha (nVertices, pointList, segmentColors + 2, 0, nSegment);
 	return 1;
 	}
 if (special == SEGMENT_IS_LAVA) {
-	if ((nConnSeg < 0) || (gameData.segs.segment2s [nConnSeg].special != SEGMENT_IS_LAVA))
+	if ((nConnSeg < 0) || (gameData.segs.segment2s [nConnSeg].m_special != SEGMENT_IS_LAVA))
 		G3DrawPolyAlpha (nVertices, pointList, segmentColors + 3, 0, nSegment);
 	return 1;
 	}
@@ -299,11 +299,11 @@ void RenderFace (tFaceProps *propsP)
 
 	int			i, bIsMonitor, bIsTeleCam, bHaveMonitorBg, nCamNum, bCamBufAvail;
 	g3sPoint		*pointList [8], **pp;
-	CSegment		*segP = gameData.segs.segments + props.segNum;
-	tSide			*sideP = segP->sides + props.sideNum;
+	CSegment		*segP = SEGMENTS + props.segNum;
+	CSide			*sideP = segP->m_sides + props.sideNum;
 	CCamera		*cameraP = NULL;
 
-if (props.nBaseTex < 0)
+if (props.m_nBaseTex < 0)
 	return;
 if (gameStates.render.nShadowPass == 2) {
 #if DBG_SHADOWS
@@ -319,7 +319,7 @@ if (gameStates.render.nShadowPass == 2) {
 #if DBG //convenient place for a debug breakpoint
 if (props.segNum == nDbgSeg && ((nDbgSide < 0) || (props.sideNum == nDbgSide)))
 	props.segNum = props.segNum;
-if (props.nBaseTex == nDbgBaseTex)
+if (props.m_nBaseTex == nDbgBaseTex)
 	props.segNum = props.segNum;
 if (props.nOvlTex == nDbgOvlTex)
 	props.segNum = props.segNum;
@@ -375,7 +375,7 @@ if (RenderWall (&props, pointList, bIsMonitor)) {	//handle semi-transparent wall
 	return;
 	}
 if (props.widFlags & WID_RENDER_FLAG) {
-	if (props.nBaseTex >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]) {
+	if (props.m_nBaseTex >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]) {
 	sideP->nBaseTex = 0;
 	}
 if (!(bHaveMonitorBg && gameOpts->render.cameras.bFitToWall)) {
@@ -392,21 +392,21 @@ if (!(bHaveMonitorBg && gameOpts->render.cameras.bFitToWall)) {
 		props.uvls [3].v = 3 * F1_0 / 4;
 		}
 	else if (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk) {
-		bmBot = LoadFaceBitmap (props.nBaseTex, sideP->nFrame);
+		bmBot = LoadFaceBitmap (props.m_nBaseTex, sideP->nFrame);
 		if (props.nOvlTex)
 			bmTop = LoadFaceBitmap ((short) (props.nOvlTex), sideP->nFrame);
 		}
 	else {
 		if (props.nOvlTex != 0) {
-			bmBot = TexMergeGetCachedBitmap (props.nBaseTex, props.nOvlTex, props.nOvlOrient);
+			bmBot = TexMergeGetCachedBitmap (props.m_nBaseTex, props.nOvlTex, props.nOvlOrient);
 #if DBG
 			if (!bmBot)
-				bmBot = TexMergeGetCachedBitmap (props.nBaseTex, props.nOvlTex, props.nOvlOrient);
+				bmBot = TexMergeGetCachedBitmap (props.m_nBaseTex, props.nOvlTex, props.nOvlOrient);
 #endif
 			}
 		else {
-			bmBot = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [props.nBaseTex].index;
-			PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [props.nBaseTex].index, gameStates.app.bD1Mission);
+			bmBot = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [props.m_nBaseTex].index;
+			PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [props.m_nBaseTex].index, gameStates.app.bD1Mission);
 			}
 		}
 	}
@@ -495,14 +495,14 @@ fix	Min_n0_n1_dot	= (F1_0*15/16);
 
 // -----------------------------------------------------------------------------------
 //	Render a side.
-//	Check for Normal facing.  If so, render faces on tSide dictated by sideP->nType.
+//	Check for Normal facing.  If so, render faces on CSide dictated by sideP->nType.
 
 #undef LMAP_LIGHTADJUST
 #define LMAP_LIGHTADJUST 0
 
 void RenderSide (CSegment *segP, short nSide)
 {
-	tSide			*sideP = segP->sides + nSide;
+	CSide			*sideP = segP->m_sides + nSide;
 	tFaceProps	props;
 
 #if LIGHTMAPS
@@ -522,16 +522,16 @@ props.sideNum = nSide;
 if ((props.segNum == nDbgSeg) && ((nDbgSide < 0) || (props.sideNum == nDbgSide)))
 	segP = segP;
 #endif
-props.widFlags = WALL_IS_DOORWAY (segP, props.sideNum, NULL);
+props.widFlags = segP->IsDoorWay (props.sideNum, NULL);
 if (!(gameOpts->render.debug.bWalls || IsMultiGame) && IS_WALL (WallNumP (segP, props.sideNum)))
 	return;
 switch (gameStates.render.nType) {
 	case -1:
-		if (!(props.widFlags & WID_RENDER_FLAG) && (gameData.segs.segment2s [props.segNum].special < SEGMENT_IS_WATER))		//if (WALL_IS_DOORWAY(segP, props.sideNum) == WID_NO_WALL)
+		if (!(props.widFlags & WID_RENDER_FLAG) && (gameData.segs.segment2s [props.segNum].m_special < SEGMENT_IS_WATER))		//if (WALL_IS_DOORWAY(segP, props.sideNum) == WID_NO_WALL)
 			return;
 		break;
 	case 0:
-		if (segP->children [props.sideNum] >= 0) //&& IS_WALL (WallNumP (segP, props.sideNum)))
+		if (segP->m_children [props.sideNum] >= 0) //&& IS_WALL (WallNumP (segP, props.sideNum)))
 			return;
 		break;
 	case 1:
@@ -539,7 +539,7 @@ switch (gameStates.render.nType) {
 			return;
 		break;
 	case 2:
-		if ((gameData.segs.segment2s [props.segNum].special < SEGMENT_IS_WATER) &&
+		if ((gameData.segs.segment2s [props.segNum].m_special < SEGMENT_IS_WATER) &&
 			 (gameData.segs.xSegments [props.segNum].owner < 1))
 			return;
 		break;
@@ -563,7 +563,7 @@ if (gameStates.render.bDoLightmaps) {
 	props.uvl_lMaps [3].v = F2X (1-h);
 	}
 #endif
-props.nBaseTex = sideP->nBaseTex;
+props.m_nBaseTex = sideP->nBaseTex;
 props.nOvlTex = sideP->nOvlTex;
 props.nOvlOrient = sideP->nOvlOrient;
 
@@ -581,7 +581,7 @@ props.nOvlOrient = sideP->nOvlOrient;
 #if DBG //convenient place for a debug breakpoint
 if (props.segNum == nDbgSeg && props.sideNum == nDbgSide)
 	props.segNum = props.segNum;
-if (props.nBaseTex == nDbgBaseTex)
+if (props.m_nBaseTex == nDbgBaseTex)
 	props.segNum = props.segNum;
 if (props.nOvlTex == nDbgOvlTex)
 	props.segNum = props.segNum;
@@ -594,7 +594,7 @@ else
 if (!FaceIsVisible (props.segNum, props.sideNum))
 	return;
 if (sideP->nType == SIDE_IS_QUAD) {
-	props.vNormal = sideP->normals [0];
+	props.vNormal = sideP->m_normals [0];
 	props.nVertices = 4;
 	memcpy (props.uvls, sideP->uvls, sizeof (tUVL) * 4);
 	GetSideVertIndex (props.vp, props.segNum, props.sideNum);
@@ -607,7 +607,7 @@ else {
 	// new code
 	// non-planar faces are still passed as quads to the renderer as it will render triangles (GL_TRIANGLE_FAN) anyway
 	// just need to make sure the vertices come in the proper order depending of the the orientation of the two non-planar triangles
-	props.vNormal = sideP->normals [0] + sideP->normals [1];
+	props.vNormal = sideP->m_normals [0] + sideP->m_normals [1];
 	props.vNormal *= (F1_0 / 2);
 	props.nVertices = 4;
 	if (sideP->nType == SIDE_IS_TRI_02) {
@@ -623,7 +623,7 @@ else {
 		RenderFace (&props);
 		}
 	else {
-		Error("Illegal tSide nType in RenderSide, nType = %i, CSegment # = %i, tSide # = %i\n", sideP->nType, SEG_IDX (segP), props.sideNum);
+		Error("Illegal CSide nType in RenderSide, nType = %i, CSegment # = %i, CSide # = %i\n", sideP->nType, SEG_IDX (segP), props.sideNum);
 		return;
 		}
 	}
@@ -633,7 +633,7 @@ else {
 
 static int RenderSegmentFaces (short nSegment, int nWindow)
 {
-	CSegment		*segP = gameData.segs.segments + nSegment;
+	CSegment		*segP = SEGMENTS + nSegment;
 	g3sCodes 	cc;
 	short			nSide;
 
@@ -891,7 +891,7 @@ int edgeToSides [8] [8] [2] = {
 
 
 //------------------------------------------------------------------------------
-//given an edge and one tSide adjacent to that edge, return the other adjacent tSide
+//given an edge and one CSide adjacent to that edge, return the other adjacent CSide
 
 int FindOtherSideOnEdge (CSegment *seg, short *verts, int oppSide)
 {
@@ -939,14 +939,14 @@ typedef struct tSideNormData {
 int FindAdjacentSideNorms (CSegment *segP, short s0, short s1, tSideNormData *s)
 {
 	CSegment	*seg0, *seg1;
-	tSide		*side0, *side1;
+	CSide		*side0, *side1;
 	short		edgeVerts [2];
 	int		oppSide0, oppSide1;
 	int		otherSide0, otherSide1;
 
 Assert(s0 != -1 && s1 != -1);
-seg0 = gameData.segs.segments + segP->children [s0];
-seg1 = gameData.segs.segments + segP->children [s1];
+seg0 = SEGMENTS + segP->m_children [s0];
+seg1 = SEGMENTS + segP->m_children [s1];
 edgeVerts [0] = segP->verts [edgeBetweenTwoSides [s0] [s1] [0]];
 edgeVerts [1] = segP->verts [edgeBetweenTwoSides [s0] [s1] [1]];
 Assert(edgeVerts [0] != -1 && edgeVerts [1] != -1);
@@ -956,12 +956,12 @@ oppSide1 = FindConnectedSide (segP, seg1);
 Assert (oppSide1 != -1);
 otherSide0 = FindOtherSideOnEdge (seg0, edgeVerts, oppSide0);
 otherSide1 = FindOtherSideOnEdge (seg1, edgeVerts, oppSide1);
-side0 = seg0->sides + otherSide0;
-side1 = seg1->sides + otherSide1;
-memcpy (s [0].n, side0->normals, 2 * sizeof (CFixVector));
-memcpy (s [1].n, side1->normals, 2 * sizeof (CFixVector));
-s [0].p = gameData.segs.vertices + seg0->verts [sideToVerts [otherSide0] [(s [0].t = side0->nType) == 3]];
-s [1].p = gameData.segs.vertices + seg1->verts [sideToVerts [otherSide1] [(s [1].t = side1->nType) == 3]];
+side0 = seg0->m_sides + otherSide0;
+side1 = seg1->m_sides + otherSide1;
+memcpy (s [0].n, side0->m_normals, 2 * sizeof (CFixVector));
+memcpy (s [1].n, side1->m_normals, 2 * sizeof (CFixVector));
+s [0].p = gameData.segs.vertices + seg0->verts [sideVertIndex [otherSide0] [(s [0].t = side0->nType) == 3]];
+s [1].p = gameData.segs.vertices + seg1->verts [sideVertIndex [otherSide1] [(s [1].t = side1->nType) == 3]];
 return 1;
 }
 
@@ -1456,8 +1456,8 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 					if (!(mask.sideMask & sideFlag))
 						continue;
 					segP = SEGMENTS + nNewSeg;
-					if (WALL_IS_DOORWAY (segP, nSide, NULL) & WID_FLY_FLAG) {	//can explosion migrate through
-						nChild = segP->children [nSide];
+					if (segP->IsDoorWay (nSide, NULL) & WID_FLY_FLAG) {	//can explosion migrate through
+						nChild = segP->m_children [nSide];
 						if (gameData.render.mine.bVisible [nChild] == gameData.render.mine.nVisible)
 							nNewSeg = nChild;	// only migrate to segment in render list
 						}
@@ -1672,16 +1672,16 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 		if (nSegment == nDbgSeg)
 			nSegment = nSegment;
 #endif
-		segP = gameData.segs.segments + nSegment;
+		segP = SEGMENTS + nSegment;
 		sv = segP->verts;
 		bRotated = 0;
 		//look at all sides of this CSegment.
 		//tricky code to look at sides in correct order follows
 		for (nChild = nChildren = 0; nChild < MAX_SIDES_PER_SEGMENT; nChild++) {		//build list of sides
-			nChildSeg = segP->children [nChild];
+			nChildSeg = segP->m_children [nChild];
 			if (nChildSeg < 0)
 				continue;
-			if (!(WALL_IS_DOORWAY (segP, nChild, NULL) & WID_RENDPAST_FLAG))
+			if (!(segP->IsDoorWay (nChild, NULL) & WID_RENDPAST_FLAG))
 				continue;
 #if DBG
 			if (nChildSeg == nDbgSeg)
@@ -1689,7 +1689,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 #endif
 			if (bCullIfBehind) {
 				andCodes = 0xff;
-				s2v = sideToVerts [nChild];
+				s2v = sideVertIndex [nChild];
 				if (!bRotated) {
 					RotateVertexList (8, sv);
 					bRotated = 1;
@@ -1709,7 +1709,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 #endif
 		for (nChild = 0; nChild < nChildren; nChild++) {
 			nSide = childList [nChild];
-			nChildSeg = segP->children [nSide];
+			nChildSeg = segP->m_children [nSide];
 #if DBG
 			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nChildSeg = nChildSeg;
@@ -1725,7 +1725,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 				bRotated = 2;
 				}
 #endif
-			s2v = sideToVerts [nSide];
+			s2v = sideVertIndex [nSide];
 			andCodes3D = 0xff;
 			for (j = 0; j < 4; j++) {
 				g3sPoint *pnt = gameData.segs.points + sv [s2v [j]];
@@ -1925,7 +1925,7 @@ if (nSegment < 0)
 if (gameStates.render.automap.bDisplay) {
 	if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisited [nSegment]))
 		return;
-	if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX))
+	if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].m_special == SEGMENT_IS_SKYBOX))
 		return;
 	}
 else {
@@ -2315,7 +2315,7 @@ void RenderObjectSearch(CObject *objP)
 
 	if (changed) {
 		if (objP->info.nSegment != -1)
-			Cursegp = gameData.segs.segments+objP->info.nSegment;
+			Cursegp = SEGMENTS+objP->info.nSegment;
 		found_seg = -(OBJ_IDX (objP)+1);
 	}
 }
@@ -2327,10 +2327,10 @@ void RenderObjectSearch(CObject *objP)
 
 extern int render_3d_in_big_tPortal;
 
-//finds what CSegment is at a given x&y -  seg, tSide, face are filled in
+//finds what CSegment is at a given x&y -  seg, CSide, face are filled in
 //works on last frame rendered. returns true if found
 //if seg<0, then an CObject was found, and the CObject number is -seg-1
-int FindSegSideFace(short x, short y, int *seg, int *tSide, int *face, int *poly)
+int FindSegSideFace(short x, short y, int *seg, int *CSide, int *face, int *poly)
 {
 	bSearchMode = -1;
 	_search_x = x; _search_y = y;
@@ -2349,7 +2349,7 @@ int FindSegSideFace(short x, short y, int *seg, int *tSide, int *face, int *poly
 	}
 	bSearchMode = 0;
 	*seg = found_seg;
-	*tSide = found_side;
+	*CSide = found_side;
 	*face = found_face;
 	*poly = found_poly;
 	return (found_seg!=-1);

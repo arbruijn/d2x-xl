@@ -92,7 +92,7 @@ gameData.escort.nLastKey = -1;
 //	Return true if it is reachable, else return false.
 int SegmentIsReachable (int curseg, short nSide)
 {
-return AIDoorIsOpenable (NULL, gameData.segs.segments + curseg, nSide);
+return AIDoorIsOpenable (NULL, SEGMENTS + curseg, nSide);
 }
 
 
@@ -123,7 +123,7 @@ while ((head != tail) && (head < max_segs)) {
 	CSegment	*cursegp;
 
 	curseg = bfs_list [tail++];
-	cursegp = gameData.segs.segments + curseg;
+	cursegp = SEGMENTS + curseg;
 
 	for (i=0; i<MAX_SIDES_PER_SEGMENT; i++) {
 		int	connected_seg = cursegp->children [i];
@@ -145,7 +145,7 @@ while ((head != tail) && (head < max_segs)) {
 
 //	-----------------------------------------------------------------------------
 //	Return true if ok for buddy to talk, else return false.
-//	Buddy is allowed to talk if the CSegment he is in does not contain a blastable tWall that has not been blasted
+//	Buddy is allowed to talk if the CSegment he is in does not contain a blastable CWall that has not been blasted
 //	AND he has never yet, since being initialized for level, been allowed to talk.
 int BuddyMayTalk (void)
 {
@@ -169,7 +169,7 @@ if ((OBJECTS [gameData.escort.nObjNum].info.nType == OBJ_ROBOT) &&
 		return 0;
 	gameData.escort.nObjNum = OBJ_IDX (objP);
 	}
-segP = gameData.segs.segments + OBJECTS [gameData.escort.nObjNum].info.nSegment;
+segP = SEGMENTS + OBJECTS [gameData.escort.nObjNum].info.nSegment;
 for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 	short	nWall = WallNumP (segP, (short) i);
 	if (IS_WALL (nWall) &&
@@ -177,9 +177,9 @@ for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 		 !(gameData.walls.walls [nWall].flags & WALL_BLASTED))
 		return 0;
 	//	Check one level deeper.
-	if (IS_CHILD (segP->children [i])) {
+	if (IS_CHILD (segP->m_children [i])) {
 		int		j;
-		CSegment	*connSegP = gameData.segs.segments + segP->children [i];
+		CSegment	*connSegP = SEGMENTS + segP->m_children [i];
 
 		for (j = 0; j<MAX_SIDES_PER_SEGMENT; j++) {
 			short	wall2 = WallNumP (connSegP, (short) j);
@@ -245,14 +245,14 @@ if (gameData.escort.nSpecialGoal != -1) {
 			bDetected = 1;
 		else if ((index >= 0) && (index <= gameData.segs.nLastSegment) &&
 					(gameData.escort.nGoalIndex >= 0) && (gameData.escort.nGoalIndex <= gameData.segs.nLastSegment)) {
-			childI = gameData.segs.segments [index].children;
+			childI = SEGMENTS [index].children;
 			for (i = MAX_SIDES_PER_SEGMENT; i; i--, childI++) {
 				if (*childI == gameData.escort.nGoalIndex) {
 					bDetected = 1;
 					goto dega_ok;
 					}
 				else {
-					childJ = gameData.segs.segments [*childI].children;
+					childJ = SEGMENTS [*childI].children;
 					for (j = MAX_SIDES_PER_SEGMENT; j; j--, childJ++) {
 						if (*childJ == gameData.escort.nGoalIndex) {
 							bDetected = 1;
@@ -507,7 +507,7 @@ return -1;
 //	Return nearest CObject of interest.
 //	If special == ESCORT_GOAL_PLAYER_SPEW, then looking for any CObject spewed by player.
 //	-1 means CObject does not exist in mine.
-//	-2 means CObject does exist in mine, but buddy-bot can't reach it (eg, behind triggered tWall)
+//	-2 means CObject does exist in mine, but buddy-bot can't reach it (eg, behind triggered CWall)
 int ExistsInMine (int start_seg, int objtype, int objid, int special)
 {
 	int	nSegIdx, nSegment;
@@ -519,7 +519,7 @@ CreateBfsList (start_seg, bfs_list, &length, MAX_SEGMENTS);
 if (objtype == FUELCEN_CHECK) {
 	for (nSegIdx = 0; nSegIdx < length; nSegIdx++) {
 		nSegment = bfs_list [nSegIdx];
-		if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_FUELCEN)
+		if (gameData.segs.segment2s [nSegment].m_special == SEGMENT_IS_FUELCEN)
 			return nSegment;
 		}
 	}
@@ -536,7 +536,7 @@ else {
 //	which the buddybot doesn't understand.
 if (objtype == FUELCEN_CHECK) {
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
-		if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_FUELCEN)
+		if (gameData.segs.segment2s [nSegment].m_special == SEGMENT_IS_FUELCEN)
 			return -2;
 	}
 else {
@@ -558,7 +558,7 @@ int FindExitSegment (void)
 	//	---------- Find exit doors ----------
 	for (i=0; i<=gameData.segs.nLastSegment; i++)
 		for (j=0; j<MAX_SIDES_PER_SEGMENT; j++)
-			if (gameData.segs.segments [i].children [j] == -2) {
+			if (SEGMENTS [i].children [j] == -2) {
 				return i;
 			}
 
@@ -1230,7 +1230,7 @@ for (buddy_id = 0; buddy_id < gameData.bots.nTypes [0]; buddy_id++)
 		return;
 	}
 	COMPUTE_SEGMENT_CENTER_I (&vObjPos, OBJSEG (gameData.objs.consoleP));
-	CreateMorphRobot (gameData.segs.segments + OBJSEG (gameData.objs.consoleP), &vObjPos, buddy_id);
+	CreateMorphRobot (SEGMENTS + OBJSEG (gameData.objs.consoleP), &vObjPos, buddy_id);
 }
 
 //	-------------------------------------------------------------------------------

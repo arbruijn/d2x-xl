@@ -15,7 +15,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define _FIREBALL_H
 
 // explosion types
-#define ET_SPARKS       0   //little sparks, like when laser hits tWall
+#define ET_SPARKS       0   //little sparks, like when laser hits CWall
 #define ET_MULTI_START  1   //first part of multi-part explosion
 #define ET_MULTI_SECOND 2   //second part of multi-part explosion
 

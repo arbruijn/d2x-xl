@@ -113,7 +113,7 @@ static int		bRevertFormat = -1;
 #define ND_EVENT_LASER_LEVEL        42
   // no data
 #define ND_EVENT_PLAYER_AFTERBURNER 43  // followed by byte old ab, current ab
-#define ND_EVENT_CLOAKING_WALL      44  // info changing while tWall cloaking
+#define ND_EVENT_CLOAKING_WALL      44  // info changing while CWall cloaking
 #define ND_EVENT_CHANGE_COCKPIT     45  // change the cockpit
 #define ND_EVENT_START_GUIDED       46  // switch to guided view
 #define ND_EVENT_END_GUIDED         47  // stop guided view/return to ship
@@ -205,7 +205,7 @@ objP->info.position.mOrient.UVec()[Z] = *sp++ << MATRIX_PRECISION;
 objP->info.position.mOrient.FVec()[Z] = *sp++ << MATRIX_PRECISION;
 nSegment = spp->nSegment;
 objP->info.nSegment = nSegment;
-const CFixVector& v = gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]];
+const CFixVector& v = gameData.segs.vertices [SEGMENTS [nSegment].verts [0]];
 objP->info.position.vPos [X] = (spp->pos [X] << RELPOS_PRECISION) + v [X];
 objP->info.position.vPos [Y] = (spp->pos [Y] << RELPOS_PRECISION) + v [Y];
 objP->info.position.vPos [Z] = (spp->pos [Z] << RELPOS_PRECISION) + v [Z];
@@ -539,7 +539,7 @@ else {
 if ((objP->info.nId == VCLIP_MORPHING_ROBOT) && 
 	 (renderType == RT_FIREBALL) && 
 	 (objP->info.controlType == CT_EXPLOSION))
-	ExtractOrientFromSegment (&objP->info.position.mOrient, gameData.segs.segments + objP->info.nSegment);
+	ExtractOrientFromSegment (&objP->info.position.mOrient, SEGMENTS + objP->info.nSegment);
 if (!(bRevertFormat || bSkip)) {
 	bRevertFormat = 1;
 	NDWritePosition (objP);
@@ -1567,10 +1567,10 @@ if (bJustStartedRecording == 1) {
 		NDWriteByte (gameData.walls.walls [i].nType);
 		NDWriteByte (gameData.walls.walls [i].flags);
 		NDWriteByte (gameData.walls.walls [i].state);
-		segP = &gameData.segs.segments [gameData.walls.walls [i].nSegment];
+		segP = &SEGMENTS [gameData.walls.walls [i].nSegment];
 		nSide = gameData.walls.walls [i].nSide;
-		NDWriteShort (segP->sides [nSide].nBaseTex);
-		NDWriteShort (segP->sides [nSide].nOvlTex | (segP->sides [nSide].nOvlOrient << 14));
+		NDWriteShort (segP->m_sides [nSide].m_nBaseTex);
+		NDWriteShort (segP->m_sides [nSide].nOvlTex | (segP->m_sides [nSide].nOvlOrient << 14));
 		bJustStartedRecording = 0;
 		}
 	}
@@ -1707,18 +1707,18 @@ void NDPopCtrlCenTriggers ()
 	CSegment *segP, *connSegP;
 
 for (i = 0; i < gameData.reactor.triggers.nLinks; i++) {
-	segP = gameData.segs.segments + gameData.reactor.triggers.nSegment [i];
+	segP = SEGMENTS + gameData.reactor.triggers.nSegment [i];
 	side = gameData.reactor.triggers.nSide [i];
-	connSegP = gameData.segs.segments + segP->children [side];
+	connSegP = SEGMENTS + segP->m_children [side];
 	nConnSide = FindConnectedSide (segP, connSegP);
 	anim_num = gameData.walls.walls [WallNumP (segP, side)].nClip;
 	n = gameData.walls.animP [anim_num].nFrameCount;
 	if (gameData.walls.animP [anim_num].flags & WCF_TMAP1)
-		segP->sides [side].nBaseTex = 
-		connSegP->sides [nConnSide].nBaseTex = gameData.walls.animP [anim_num].frames [n-1];
+		segP->m_sides [side].m_nBaseTex = 
+		connSegP->m_sides [nConnSide].m_nBaseTex = gameData.walls.animP [anim_num].frames [n-1];
 	else
-		segP->sides [side].nOvlTex = 
-		connSegP->sides [nConnSide].nOvlTex = gameData.walls.animP [anim_num].frames [n-1];
+		segP->m_sides [side].nOvlTex = 
+		connSegP->m_sides [nConnSide].nOvlTex = gameData.walls.animP [anim_num].frames [n-1];
 	}
 }
 
@@ -1928,7 +1928,7 @@ while (!bDone) {
 			CPlayerData = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED)
-				WallHitProcess (&gameData.segs.segments [nSegment], (short) nSide, damage, CPlayerData, &(OBJECTS [0]));
+				WallHitProcess (&SEGMENTS [nSegment], (short) nSide, damage, CPlayerData, &(OBJECTS [0]));
 			break;
 		}
 
@@ -1946,10 +1946,10 @@ while (!bDone) {
 					Assert (nTag == ND_EVENT_SECRET_THINGY);
 					truth = NDReadInt ();
 					if (!truth)
-						CheckTrigger (gameData.segs.segments + nSegment, (short) nSide, (short) nObject, shot);
+						CheckTrigger (SEGMENTS + nSegment, (short) nSide, (short) nObject, shot);
 					} 
 				else
-					CheckTrigger (gameData.segs.segments + nSegment, (short) nSide, (short) nObject, shot);
+					CheckTrigger (SEGMENTS + nSegment, (short) nSide, (short) nObject, shot);
 				}
 			break;
 
@@ -1986,7 +1986,7 @@ while (!bDone) {
 			nSide = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED)
-				WallToggle (gameData.segs.segments + nSegment, (short) nSide);
+				WallToggle (SEGMENTS + nSegment, (short) nSide);
 			break;
 
 		case ND_EVENT_CONTROL_CENTER_DESTROYED:
@@ -2172,7 +2172,7 @@ while (!bDone) {
 			nSide = NDReadByte ();
 			NDReadVector(pnt);
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED)
-				CheckEffectBlowup (gameData.segs.segments + nSegment, nSide, &pnt, &dummy, 0);
+				CheckEffectBlowup (SEGMENTS + nSegment, nSide, &pnt, &dummy, 0);
 			}
 			break;
 
@@ -2267,8 +2267,8 @@ while (!bDone) {
 			if ((gameData.demo.nVcrState != ND_STATE_PAUSED) && 
 				 (gameData.demo.nVcrState != ND_STATE_REWINDING) &&
 				 (gameData.demo.nVcrState != ND_STATE_ONEFRAMEBACKWARD))
-				gameData.segs.segments [segP].sides [nSide].nBaseTex = 
-					gameData.segs.segments [nConnSeg].sides [nConnSide].nBaseTex = tmap;
+				SEGMENTS [segP].m_sides [nSide].m_nBaseTex = 
+					SEGMENTS [nConnSeg].m_sides [nConnSide].m_nBaseTex = tmap;
 			}
 			break;
 
@@ -2284,11 +2284,11 @@ while (!bDone) {
 			if ((gameData.demo.nVcrState != ND_STATE_PAUSED) &&
 				 (gameData.demo.nVcrState != ND_STATE_REWINDING) &&
 				 (gameData.demo.nVcrState != ND_STATE_ONEFRAMEBACKWARD)) {
-				Assert (tmap!=0 && gameData.segs.segments [segP].sides [nSide].nOvlTex!=0);
-				gameData.segs.segments [segP].sides [nSide].nOvlTex = 
-				gameData.segs.segments [nConnSeg].sides [nConnSide].nOvlTex = tmap & 0x3fff;
-				gameData.segs.segments [segP].sides [nSide].nOvlOrient = 
-				gameData.segs.segments [nConnSeg].sides [nConnSide].nOvlOrient = (tmap >> 14) & 3;
+				Assert (tmap!=0 && SEGMENTS [segP].m_sides [nSide].nOvlTex!=0);
+				SEGMENTS [segP].m_sides [nSide].nOvlTex = 
+				SEGMENTS [nConnSeg].m_sides [nConnSide].nOvlTex = tmap & 0x3fff;
+				SEGMENTS [segP].m_sides [nSide].nOvlOrient = 
+				SEGMENTS [nConnSeg].m_sides [nConnSide].nOvlOrient = (tmap >> 14) & 3;
 				}
 			}
 			break;
@@ -2487,19 +2487,19 @@ while (!bDone) {
 				int nConnSide;
 				CSegment *segP, *oppSegP;
 
-				segP = gameData.segs.segments + nSegment;
-				oppSegP = gameData.segs.segments + segP->children [nSide];
+				segP = SEGMENTS + nSegment;
+				oppSegP = SEGMENTS + segP->m_children [nSide];
 				nConnSide = FindConnectedSide (segP, oppSegP);
 				anim_num = gameData.walls.walls [WallNumP (segP, nSide)].nClip;
 				if (gameData.walls.animP [anim_num].flags & WCF_TMAP1)
-					segP->sides [nSide].nBaseTex = oppSegP->sides [nConnSide].nBaseTex =
+					segP->m_sides [nSide].m_nBaseTex = oppSegP->m_sides [nConnSide].m_nBaseTex =
 						gameData.walls.animP [anim_num].frames [0];
 				else
-					segP->sides [nSide].nOvlTex = 
-					oppSegP->sides [nConnSide].nOvlTex = gameData.walls.animP [anim_num].frames [0];
+					segP->m_sides [nSide].nOvlTex = 
+					oppSegP->m_sides [nConnSide].nOvlTex = gameData.walls.animP [anim_num].frames [0];
 				}
 			else
-				WallOpenDoor (gameData.segs.segments + nSegment, nSide);
+				WallOpenDoor (SEGMENTS + nSegment, nSide);
 			}
 			break;
 
@@ -2540,21 +2540,21 @@ while (!bDone) {
 			gameData.walls.walls [nFrontWall].nType = nType;
 			gameData.walls.walls [nFrontWall].state = state;
 			gameData.walls.walls [nFrontWall].cloakValue = cloakValue;
-			segP = gameData.segs.segments + gameData.walls.walls [nFrontWall].nSegment;
+			segP = SEGMENTS + gameData.walls.walls [nFrontWall].nSegment;
 			nSide = gameData.walls.walls [nFrontWall].nSide;
-			segP->sides [nSide].uvls [0].l = ((int) l0) << 8;
-			segP->sides [nSide].uvls [1].l = ((int) l1) << 8;
-			segP->sides [nSide].uvls [2].l = ((int) l2) << 8;
-			segP->sides [nSide].uvls [3].l = ((int) l3) << 8;
+			segP->m_sides [nSide].uvls [0].l = ((int) l0) << 8;
+			segP->m_sides [nSide].uvls [1].l = ((int) l1) << 8;
+			segP->m_sides [nSide].uvls [2].l = ((int) l2) << 8;
+			segP->m_sides [nSide].uvls [3].l = ((int) l3) << 8;
 			gameData.walls.walls [nBackWall].nType = nType;
 			gameData.walls.walls [nBackWall].state = state;
 			gameData.walls.walls [nBackWall].cloakValue = cloakValue;
-			segP = &gameData.segs.segments [gameData.walls.walls [nBackWall].nSegment];
+			segP = &SEGMENTS [gameData.walls.walls [nBackWall].nSegment];
 			nSide = gameData.walls.walls [nBackWall].nSide;
-			segP->sides [nSide].uvls [0].l = ((int) l0) << 8;
-			segP->sides [nSide].uvls [1].l = ((int) l1) << 8;
-			segP->sides [nSide].uvls [2].l = ((int) l2) << 8;
-			segP->sides [nSide].uvls [3].l = ((int) l3) << 8;
+			segP->m_sides [nSide].uvls [0].l = ((int) l0) << 8;
+			segP->m_sides [nSide].uvls [1].l = ((int) l1) << 8;
+			segP->m_sides [nSide].uvls [2].l = ((int) l2) << 8;
+			segP->m_sides [nSide].uvls [3].l = ((int) l3) << 8;
 			}
 			break;
 
@@ -2589,12 +2589,12 @@ while (!bDone) {
 					gameData.walls.walls [i].nType = NDReadByte ();
 					gameData.walls.walls [i].flags = NDReadByte ();
 					gameData.walls.walls [i].state = NDReadByte ();
-					segP = gameData.segs.segments + gameData.walls.walls [i].nSegment;
+					segP = SEGMENTS + gameData.walls.walls [i].nSegment;
 					nSide = gameData.walls.walls [i].nSide;
-					segP->sides [nSide].nBaseTex = NDReadShort ();
+					segP->m_sides [nSide].m_nBaseTex = NDReadShort ();
 					nTexture = NDReadShort ();
-					segP->sides [nSide].nOvlTex = nTexture & 0x3fff;
-					segP->sides [nSide].nOvlOrient = (nTexture >> 14) & 3;
+					segP->m_sides [nSide].nOvlTex = nTexture & 0x3fff;
+					segP->m_sides [nSide].nOvlOrient = (nTexture >> 14) & 3;
 					}
 				if (gameData.demo.nGameMode & GM_CAPTURE)
 					MultiApplyGoalTextures ();

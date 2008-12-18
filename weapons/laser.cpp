@@ -281,7 +281,7 @@ if (parentP->info.nType == OBJ_ROBOT)
 	DoMuzzleStuff (nSegment, vPosition);
 else if (gameStates.app.bD2XLevel &&
 			(parentP == gameData.objs.consoleP) &&
-			(gameData.segs.segment2s [gameData.objs.consoleP->info.nSegment].special == SEGMENT_IS_NODAMAGE))
+			(gameData.segs.segment2s [gameData.objs.consoleP->info.nSegment].m_special == SEGMENT_IS_NODAMAGE))
 	return -1;
 #if 1
 if ((nParent == LOCALPLAYER.nObject) &&
@@ -384,7 +384,7 @@ if (parentP->info.nType == OBJ_PLAYER) {
 		}
 	}
 
-//	Make children of smart bomb bounce so if they hit a tWall right away, they
+//	Make children of smart bomb bounce so if they hit a CWall right away, they
 //	won't detonate.  The frame xInterval code will clear this bit after 1/2 second.
 if ((nWeaponType == SMARTMSL_BLOB_ID) ||
 	 (nWeaponType == SMARTMINE_BLOB_ID) ||
@@ -1010,7 +1010,7 @@ int LocalPlayerFireLaser (void)
 
 if (gameStates.app.bPlayerIsDead)
 	return 0;
-if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [OBJECTS [playerP->nObject].info.nSegment].special == SEGMENT_IS_NODAMAGE))
+if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [OBJECTS [playerP->nObject].info.nSegment].m_special == SEGMENT_IS_NODAMAGE))
 	return 0;
 nWeaponIndex = primaryWeaponToWeaponInfo [gameData.weapons.nPrimary];
 xEnergyUsed = WI_energy_usage (nWeaponIndex);

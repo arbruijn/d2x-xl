@@ -270,8 +270,8 @@ for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dyna
 	//find where it is in the level.
 	lmiP->vPos = SIDE_CENTER_V (faceP->nSegment, faceP->nSide);
 	lmiP->nIndex = nIndex; 
-	//find light direction, currently based on first 3 points of tSide, not always right.
-	CFixVector *normalP = SEGMENTS [faceP->nSegment].sides [faceP->nSide].normals;
+	//find light direction, currently based on first 3 points of CSide, not always right.
+	CFixVector *normalP = SEGMENTS [faceP->nSegment].m_sides [faceP->nSide].m_normals;
 	lmiP->vDir = CFixVector::Avg(normalP[0], normalP[1]);
 	lmiP++; 
 	}
@@ -449,7 +449,7 @@ else
 
 void CLightmapManager::BuildAll (int nFace)
 {
-	tSide			*sideP; 
+	CSide			*sideP; 
 	int			nLastFace; 
 	int			i; 
 	int			nBlackLightmaps = 0, nWhiteLightmaps = 0; 
@@ -477,12 +477,12 @@ for (m_data.faceP = FACES + nFace; nFace < nLastFace; nFace++, m_data.faceP++) {
 	if ((m_data.faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
-	if (SEGMENT2S [m_data.faceP->nSegment].special == SEGMENT_IS_SKYBOX)
+	if (SEGMENTS [m_data.faceP->nSegment].m_special == SEGMENT_IS_SKYBOX)
 		continue;
-	sideP = SEGMENTS [m_data.faceP->nSegment].sides + m_data.faceP->nSide;
+	sideP = SEGMENTS [m_data.faceP->nSegment].m_sides + m_data.faceP->nSide;
 	memcpy (m_data.sideVerts, m_data.faceP->index, sizeof (m_data.sideVerts));
 	m_data.nType = (sideP->nType == SIDE_IS_QUAD) || (sideP->nType == SIDE_IS_TRI_02);
-	m_data.vNormal = CFixVector::Avg (sideP->normals [0], sideP->normals [1]);
+	m_data.vNormal = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
 	m_data.vcd.vertNorm.Assign (m_data.vNormal);
 	m_data.nColor = 0;
 	memset (m_data.texColor, 0, LM_W * LM_H * sizeof (tRgbColorb));

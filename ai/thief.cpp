@@ -73,7 +73,7 @@ while (nSegment == -1) {
 	nSegment = PickConnectedSegment (OBJECTS + LOCALPLAYER.nObject, nDepth, &nDropDepth);
 	if (nDropDepth < THIEF_DEPTH / 2)
 		return (d_rand() * gameData.segs.nLastSegment) >> 15;
-	if ((nSegment >= 0) && (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_CONTROLCEN))
+	if ((nSegment >= 0) && (gameData.segs.segment2s [nSegment].m_special == SEGMENT_IS_CONTROLCEN))
 		nSegment = -1;
 	nDepth--;
 	}
@@ -97,7 +97,7 @@ void RecreateThief(CObject *objP)
 	nSegment = ChooseThiefRecreationSegment();
 	COMPUTE_SEGMENT_CENTER_I (&center_point, nSegment);
 
-	new_obj = CreateMorphRobot( &gameData.segs.segments[nSegment], &center_point, objP->info.nId);
+	new_obj = CreateMorphRobot( &SEGMENTS[nSegment], &center_point, objP->info.nId);
 	InitAIObject(OBJ_IDX (new_obj), AIB_SNIPE, -1);
 	gameData.thief.xReInitTime = gameData.time.xGame + F1_0*10;		//	In 10 seconds, re-initialize thief.
 }

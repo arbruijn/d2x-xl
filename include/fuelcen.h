@@ -26,7 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //-------------------------------------------------------------
 // To hook into Inferno:
 // * When all segents are deleted or before a new mine is created
-//   or loaded, call FuelCenReset().
+//   or loaded, call ResetGenerators().
 // * Add call to FuelCenCreate(CSegment * segp) to make a CSegment
 //   which isn't a fuel center be a fuel center.
 // * When a mine is loaded call fuelcen_activate(segp) with each
@@ -42,7 +42,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 
 // Destroys all fuel centers, clears CSegment backpointer array.
-void FuelCenReset();
+void ResetGenerators();
 // Create materialization center
 void MatCenCreate ( CSegment * segp, int oldType );
 // Makes a CSegment a fuel center.
@@ -61,9 +61,6 @@ CObject *CreateMorphRobot (CSegment *segp, CFixVector *object_pos, ubyte object_
 
 // Returns the amount of fuel this CSegment can give up.
 // Can be from 0 to 100.
-fix FuelCenGiveFuel(CSegment *segp, fix MaxAmountCanTake );
-fix RepairCenGiveShields(CSegment *segp, fix MaxAmountCanTake );
-fix HostileRoomDamageShields (CSegment *segp, fix MaxAmountCanGive);
 
 // Call once per frame.
 void FuelcenUpdateAll();
@@ -131,7 +128,6 @@ int MatCenTrigger (short nSegment);
 void DisableMatCens (void);
 void InitAllMatCens (void);
 void BotGenCreate (CSegment *segP, int oldType);
-void FuelCenCheckForHoardGoal(CSegment *segp);
 void SpawnBotTrigger (CObject *objP, short nSegment);
 int GetMatCenObjType (tFuelCenInfo *matCenP, int *objFlags);
 void SetEquipGenStates (void);

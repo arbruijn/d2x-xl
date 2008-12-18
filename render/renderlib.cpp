@@ -45,7 +45,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------
 
 #ifdef EDITOR
-int bSearchMode = 0;			//true if looking for curseg, tSide, face
+int bSearchMode = 0;			//true if looking for curseg, CSide, face
 short _search_x, _search_y;	//pixel we're looking at
 int found_seg, found_side, found_face, found_poly;
 #endif
@@ -59,12 +59,12 @@ int FaceIsVisible (short nSegment, short nSide)
 {
 #if SW_CULLING
 CSegment *segP = SEGMENTS + nSegment;
-tSide *sideP = segP->sides + nSide;
+CSide *sideP = segP->m_sides + nSide;
 CFixVector v;
-v = gameData.render.mine.viewerEye - *SIDE_CENTER_I(nSegment, nSide); //gameData.segs.vertices + segP->verts [sideToVerts [nSide][0]]);
+v = gameData.render.mine.viewerEye - *SIDE_CENTER_I(nSegment, nSide); //gameData.segs.vertices + segP->verts [sideVertIndex [nSide][0]]);
 return (sideP->nType == SIDE_IS_QUAD) ?
-		 CFixVector::Dot(sideP->normals[0], v) >= 0 :
-		 (CFixVector::Dot(sideP->normals[0], v) >= 0) || (CFixVector::Dot(sideP->normals[1], v) >= 0);
+		 CFixVector::Dot(sideP->m_normals[0], v) >= 0 :
+		 (CFixVector::Dot(sideP->m_normals[0], v) >= 0) || (CFixVector::Dot(sideP->m_normals[1], v) >= 0);
 #else
 return 1;
 #endif
@@ -370,13 +370,13 @@ char IsColoredSegFace (short nSegment, short nSide)
 
 if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2) &&
 	 ((owner = gameData.segs.xSegments [nSegment].owner) > 0)) {
-	nConnSeg = gameData.segs.segments [nSegment].children [nSide];
+	nConnSeg = SEGMENTS [nSegment].children [nSide];
 	if ((nConnSeg < 0) || (gameData.segs.xSegments [nConnSeg].owner != owner))
 		return (owner == 1) ? 2 : 1;
 	}
-special = gameData.segs.segment2s [nSegment].special;
-nConnSeg = gameData.segs.segments [nSegment].children [nSide];
-if ((nConnSeg >= 0) && (special == gameData.segs.segment2s [nConnSeg].special))
+special = gameData.segs.segment2s [nSegment].m_special;
+nConnSeg = SEGMENTS [nSegment].children [nSide];
+if ((nConnSeg >= 0) && (special == gameData.segs.segment2s [nConnSeg].m_special))
 	return 0;
 if (special == SEGMENT_IS_WATER)
 	return 3;
@@ -404,23 +404,23 @@ if (nColor > 0)
 else {
 	if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2) &&
 		((owner = gameData.segs.xSegments [nSegment].owner) > 0)) {
-		nConnSeg = gameData.segs.segments [nSegment].children [nSide];
+		nConnSeg = SEGMENTS [nSegment].children [nSide];
 		if ((nConnSeg >= 0) && (gameData.segs.xSegments [nConnSeg].owner == owner))
 			return NULL;
 		nColor = (owner == 1);
 		}
-	special = gameData.segs.segment2s [nSegment].special;
+	special = gameData.segs.segment2s [nSegment].m_special;
 	if (special == SEGMENT_IS_WATER)
 		nColor = 2;
 	else if (special == SEGMENT_IS_LAVA)
 		nColor = 3;
 	else
 		return NULL;
-	nConnSeg = gameData.segs.segments [nSegment].children [nSide];
+	nConnSeg = SEGMENTS [nSegment].children [nSide];
 	if (nConnSeg >= 0) {
-		if (special == gameData.segs.segment2s [nConnSeg].special)
+		if (special == gameData.segs.segment2s [nConnSeg].m_special)
 			return NULL;
-		if (IS_WALL (gameData.segs.segments [nSegment].sides [nSide].nWall))
+		if (IS_WALL (SEGMENTS [nSegment].m_sides [nSide].nWall))
 			return NULL;
 		}
 	}
@@ -603,7 +603,7 @@ return 1;
 
 static inline int IsLava (tFaceProps *propsP)
 {
-	short	nTexture = gameData.segs.segments [propsP->segNum].sides [propsP->sideNum].nBaseTex;
+	short	nTexture = SEGMENTS [propsP->segNum].m_sides [propsP->sideNum].m_nBaseTex;
 
 return (nTexture == 378) || ((nTexture >= 404) && (nTexture <= 409));
 }
@@ -612,7 +612,7 @@ return (nTexture == 378) || ((nTexture >= 404) && (nTexture <= 409));
 
 static inline int IsWater (tFaceProps *propsP)
 {
-	short	nTexture = gameData.segs.segments [propsP->segNum].sides [propsP->sideNum].nBaseTex;
+	short	nTexture = SEGMENTS [propsP->segNum].m_sides [propsP->sideNum].m_nBaseTex;
 
 return ((nTexture >= 399) && (nTexture <= 403));
 }
@@ -621,7 +621,7 @@ return ((nTexture >= 399) && (nTexture <= 403));
 
 static inline int IsWaterOrLava (tFaceProps *propsP)
 {
-	short	nTexture = gameData.segs.segments [propsP->segNum].sides [propsP->sideNum].nBaseTex;
+	short	nTexture = SEGMENTS [propsP->segNum].m_sides [propsP->sideNum].m_nBaseTex;
 
 return (nTexture == 378) || ((nTexture >= 399) && (nTexture <= 409));
 }
@@ -646,7 +646,7 @@ float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int b
 {
 	static tRgbaColorf cloakColor = {0, 0, 0, 0};
 
-	tWall	*wallP;
+	CWall	*wallP;
 	float fAlpha;
 	short	c;
 	int	bCloaked;
@@ -692,7 +692,7 @@ if (gameStates.app.bD2XLevel) {
 	c = wallP->cloakValue;
 	return colorP->alpha = (c && (c < FADE_LEVELS)) ? (float) (FADE_LEVELS - c) / (float) FADE_LEVELS : 1;
 	}
-if (gameOpts->render.effects.bAutoTransparency && IsTransparentTexture (gameData.segs.segments [nSegment].sides [nSide].nBaseTex))
+if (gameOpts->render.effects.bAutoTransparency && IsTransparentTexture (SEGMENTS [nSegment].m_sides [nSide].m_nBaseTex))
 	return colorP->alpha = 0.8f;
 return colorP->alpha = 1;
 }
@@ -763,10 +763,10 @@ if (! cc.ccAnd) {		//all off screen?
 	g3sPoint *pnt;
 	//render curedge of curside of curseg in green
 	CCanvas::Current ()->SetColorRGB (0, 255, 0, 255);
-	G3DrawLine(gameData.segs.points + seg->verts [sideToVerts [_side][edge]],
-						gameData.segs.points + seg->verts [sideToVerts [_side][(edge+1)%4]]);
+	G3DrawLine(gameData.segs.points + seg->verts [sideVertIndex [_side][edge]],
+						gameData.segs.points + seg->verts [sideVertIndex [_side][(edge+1)%4]]);
 	//draw a little cross at the current vert
-	pnt = gameData.segs.points + seg->verts [sideToVerts [_side][vert]];
+	pnt = gameData.segs.points + seg->verts [sideVertIndex [_side][vert]];
 	G3ProjectPoint(pnt);		//make sure projected
 	fix x = I2X (pnt->p3_screen.x);
 	fix y = I2X (pnt->p3_screen.y);
@@ -863,15 +863,15 @@ for (i = 0; i < nVertices; i++) {
 void RotateSideNorms (void)
 {
 	int			i, j;
-	CSegment		*segP = gameData.segs.segments.Buffer ();
+	CSegment		*segP = SEGMENTS.Buffer ();
 	tSegment2	*seg2P = gameData.segs.segment2s.Buffer ();
-	tSide			*sideP;
+	CSide			*sideP;
 	tSide2		*side2P;
 
 for (i = gameData.segs.nSegments; i; i--, segP++, seg2P++)
-	for (j = 6, sideP = segP->sides, side2P = seg2P->sides; j; j--, sideP++, side2P++) {
-		transformation.Rotate(side2P->rotNorms[0], sideP->normals[0], 0);
-		transformation.Rotate(side2P->rotNorms[1], sideP->normals[1], 0);
+	for (j = 6, sideP = segP->m_sides, side2P = seg2P->m_sides; j; j--, sideP++, side2P++) {
+		transformation.Rotate(side2P->rotNorms[0], sideP->m_normals[0], 0);
+		transformation.Rotate(side2P->rotNorms[1], sideP->m_normals[1], 0);
 		}
 }
 
@@ -941,8 +941,8 @@ for (i = 0, j = 1; nRadius; nRadius--) {
 			return 1;
 		segP = SEGMENTS + nSegment;
 		for (nChild = 0; nChild < 6; nChild++) {
-			nChildSeg = segP->children [nChild];
-			if ((nChildSeg >= 0) && (WALL_IS_DOORWAY (segP, nChild, NULL) == WID_RENDPAST_FLAG))
+			nChildSeg = segP->m_children [nChild];
+			if ((nChildSeg >= 0) && (segP->IsDoorWay (nChild, NULL) == WID_RENDPAST_FLAG))
 				gameData.render.mine.nSegRenderList [j++] = nChildSeg;
 			}
 		}

@@ -1376,7 +1376,7 @@ void move_object_to_legal_spot(CObject *objP)
 {
 	CFixVector	original_pos = objP->info.position.vPos;
 	int		i;
-	CSegment	*segP = &gameData.segs.segments[objP->info.nSegment];
+	CSegment	*segP = &SEGMENTS[objP->info.nSegment];
 
 	for (i=0; i<MAX_SIDES_PER_SEGMENT; i++) {
 		if (WALL_IS_DOORWAY(segP, i, objP) & WID_FLY_FLAG) {
@@ -1444,14 +1444,14 @@ int ai_door_is_openable(CObject *objP, CSegment *segP, int sidenum)
 
 	//	The mighty console CObject can open all doors (for purposes of determining paths).
 	if (objP == gameData.objs.consoleP) {
-		int	nWall = segP->sides[sidenum].nWall;
+		int	nWall = segP->m_sides[sidenum].nWall;
 
 		if (WALLS[nWall].nType == WALL_DOOR)
 			return 1;
 	}
 
 	if ((objP->info.nId == ROBOT_BRAIN) || (objP->cType.aiInfo.behavior == D1_AIB_RUN_FROM)) {
-		nWall = segP->sides[sidenum].nWall;
+		nWall = segP->m_sides[sidenum].nWall;
 
 		if (nWall != -1)
 			if ((WALLS[nWall].nType == WALL_DOOR) && (WALLS[nWall].keys == KEY_NONE) && !(WALLS[nWall].flags & WALL_DOOR_LOCKED))
@@ -1480,8 +1480,8 @@ int openable_doors_in_segment(CObject *objP)
 	int	nSegment = objP->info.nSegment;
 
 	for (i=0; i<MAX_SIDES_PER_SEGMENT; i++) {
-		if (IS_WALL (gameData.segs.segments[nSegment].sides[i].nWall)) {
-			int	nWall = gameData.segs.segments[nSegment].sides[i].nWall;
+		if (IS_WALL (SEGMENTS[nSegment].m_sides[i].nWall)) {
+			int	nWall = SEGMENTS[nSegment].m_sides[i].nWall;
 			if ((WALLS[nWall].nType == WALL_DOOR) && (WALLS[nWall].keys == KEY_NONE) && (WALLS[nWall].state == WALL_DOOR_CLOSED) && !(WALLS[nWall].flags & WALL_DOOR_LOCKED))
 				return i;
 		}
@@ -1513,7 +1513,7 @@ CSegment	*segP = SEGMENTS + nSegment;
 int sidenum = (rand() * 6) >> 15;
 while (!(WALL_IS_DOORWAY(segP, sidenum, NULL) & WID_FLY_FLAG))
 	sidenum = (rand() * 6) >> 15;
-return segP->children[sidenum];
+return segP->m_children[sidenum];
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -1522,7 +1522,7 @@ int CreateGatedRobot (int nSegment, int nObjId)
 {
 	int			nObject;
 	CObject		*objP;
-	CSegment		*segP = &gameData.segs.segments [nSegment];
+	CSegment		*segP = &SEGMENTS [nSegment];
 	CFixVector	vObjPos;
 	tRobotInfo	*botInfoP = &gameData.bots.info [1][nObjId];
 	int			i, count = 0;
@@ -1539,7 +1539,7 @@ int CreateGatedRobot (int nSegment, int nObjId)
 	}
 
 	COMPUTE_SEGMENT_CENTER (&vObjPos, segP);
-	PickRandomPointInSeg (&vObjPos, segP - gameData.segs.segments);
+	PickRandomPointInSeg (&vObjPos, segP - SEGMENTS);
 
 	//	See if legal to place CObject here.  If not, move about in CSegment and try again.
 	if (CheckObjectObjectIntersection(&vObjPos, objsize, segP)) {
@@ -1616,7 +1616,7 @@ int boss_fits_in_seg(CObject *bossObjP, int nSegment)
 			CFixVector	vertex_pos;
 
 			Assert((posnum-1 >= 0) && (posnum-1 < 8));
-			vertex_pos = gameData.segs.vertices[gameData.segs.segments[nSegment].verts[posnum-1]];
+			vertex_pos = gameData.segs.vertices[SEGMENTS[nSegment].verts[posnum-1]];
 			bossObjP->info.position.vPos = CFixVector::Avg(vertex_pos, segcenter);
 		} else
 			bossObjP->info.position.vPos = segcenter;
@@ -1975,7 +1975,7 @@ if (nObject == nDbgObj)
 
 	//	- -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -
  	//	If in materialization center, exit
- 	if (!(IsMultiGame) && (gameData.segs.segment2s [objP->info.nSegment].special == SEGMENT_IS_ROBOTMAKER)) {
+ 	if (!(IsMultiGame) && (gameData.segs.segment2s [objP->info.nSegment].m_special == SEGMENT_IS_ROBOTMAKER)) {
  		AIFollowPath (objP, 1, 1, NULL);		// 1 = playerP is visible, which might be a lie, but it works.
  		return;
  	}
@@ -2417,7 +2417,7 @@ if (nObject == nDbgObj)
 
 			if (!ai_multiplayer_awareness(objP, 62))
 				return;
-			COMPUTE_SIDE_CENTER (&vCenter, gameData.segs.segments + objP->info.nSegment, aiP->GOALSIDE);
+			COMPUTE_SIDE_CENTER (&vCenter, SEGMENTS + objP->info.nSegment, aiP->GOALSIDE);
 			vGoal = vCenter - objP->info.position.vPos;
 			CFixVector::Normalize(vGoal);
 			ai_turn_towards_vector(&vGoal, objP, botInfoP->turnTime[gameStates.app.nDifficultyLevel]);

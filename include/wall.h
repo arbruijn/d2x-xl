@@ -28,26 +28,26 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_CLOAKING_WALLS		  100
 #define MAX_EXPLODING_WALLS     10
 
-// Various tWall types.
-#define WALL_NORMAL             0   // Normal tWall
-#define WALL_BLASTABLE          1   // Removable (by shooting) tWall
+// Various CWall types.
+#define WALL_NORMAL             0   // Normal CWall
+#define WALL_BLASTABLE          1   // Removable (by shooting) CWall
 #define WALL_DOOR               2   // Door
 #define WALL_ILLUSION           3   // Wall that appears to be there, but you can fly thru
-#define WALL_OPEN               4   // Just an open tSide. (Trigger)
+#define WALL_OPEN               4   // Just an open CSide. (Trigger)
 #define WALL_CLOSED             5   // Wall.  Used for transparent walls.
-#define WALL_OVERLAY            6   // Goes over an actual solid tSide.  For triggers
+#define WALL_OVERLAY            6   // Goes over an actual solid CSide.  For triggers
 #define WALL_CLOAKED            7   // Can see it, and see through it
 #define WALL_TRANSPARENT        8   // like cloaked, but fixed transparency and colored
 
-// Various tWall flags.
-#define WALL_BLASTED            1   // Blasted out tWall.
+// Various CWall flags.
+#define WALL_BLASTED            1   // Blasted out CWall.
 #define WALL_DOOR_OPENED        2   // Open door.
 #define WALL_RENDER_ADDITIVE	  4
 #define WALL_DOOR_LOCKED        8   // Door is locked.
 #define WALL_DOOR_AUTO          16  // Door automatically closes after time.
-#define WALL_ILLUSION_OFF       32  // Illusionary tWall is shut off.
-#define WALL_WALL_SWITCH        64  // This tWall is openable by a tWall switch.
-#define WALL_BUDDY_PROOF        128 // Buddy assumes he cannot get through this tWall.
+#define WALL_ILLUSION_OFF       32  // Illusionary CWall is shut off.
+#define WALL_WALL_SWITCH        64  // This CWall is openable by a CWall switch.
+#define WALL_BUDDY_PROOF        128 // Buddy assumes he cannot get through this CWall.
 
 // Wall states
 #define WALL_DOOR_CLOSED        0       // Door is closed
@@ -86,19 +86,19 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //define these here so I don't have to change WallIsDoorWay and run
 //the risk of screwing it up.
-#define WID_WALL						2	// 0/1/0		tWall
-#define WID_TRANSPARENT_WALL		6	//	0/1/1		transparent tWall
-#define WID_ILLUSORY_WALL			3	//	1/1/0		illusory tWall
-#define WID_TRANSILLUSORY_WALL	7	//	1/1/1		transparent illusory tWall
-#define WID_NO_WALL					5	//	1/0/1		no tWall, can fly through
+#define WID_WALL						2	// 0/1/0		CWall
+#define WID_TRANSPARENT_WALL		6	//	0/1/1		transparent CWall
+#define WID_ILLUSORY_WALL			3	//	1/1/0		illusory CWall
+#define WID_TRANSILLUSORY_WALL	7	//	1/1/1		transparent illusory CWall
+#define WID_NO_WALL					5	//	1/0/1		no CWall, can fly through
 #define WID_EXTERNAL					8	// 0/0/0/1	don't see it, dont fly through it
 
 //@@//  WALL_IS_DOORWAY return values          F/R/RP
-//@@#define WID_WALL                    2   // 0/1/0        tWall
-//@@#define WID_TRANSPARENT_WALL        6   // 0/1/1        transparent tWall
-//@@#define WID_ILLUSORY_WALL           3   // 1/1/0        illusory tWall
-//@@#define WID_TRANSILLUSORY_WALL      7   // 1/1/1        transparent illusory tWall
-//@@#define WID_NO_WALL                 5   //  1/0/1       no tWall, can fly through
+//@@#define WID_WALL                    2   // 0/1/0        CWall
+//@@#define WID_TRANSPARENT_WALL        6   // 0/1/1        transparent CWall
+//@@#define WID_ILLUSORY_WALL           3   // 1/1/0        illusory CWall
+//@@#define WID_TRANSILLUSORY_WALL      7   // 1/1/1        transparent illusory CWall
+//@@#define WID_NO_WALL                 5   //  1/0/1       no CWall, can fly through
 //@@#define WID_EXTERNAL                8   // 0/0/0/1  don't see it, dont fly through it
 
 #define MAX_STUCK_OBJECTS   64
@@ -108,26 +108,26 @@ typedef struct tStuckObject {
 	int     nSignature;
 } tStuckObject;
 
-//Start old tWall structures
+//Start old CWall structures
 
 typedef struct tWallV16 {
-	sbyte   nType;             // What kind of special tWall.
-	sbyte   flags;             // Flags for the tWall.
-	fix     hps;               // "Hit points" of the tWall.
-	sbyte   nTrigger;          // Which tTrigger is associated with the tWall.
-	sbyte   nClip;					// Which animation associated with the tWall.
+	sbyte   nType;             // What kind of special CWall.
+	sbyte   flags;             // Flags for the CWall.
+	fix     hps;               // "Hit points" of the CWall.
+	sbyte   nTrigger;          // Which tTrigger is associated with the CWall.
+	sbyte   nClip;					// Which animation associated with the CWall.
 	sbyte   keys;
 } __pack__ tWallV16;
 
 typedef struct tWallV19 {
-	int     nSegment,nSide;     // Seg & tSide for this tWall
-	sbyte   nType;              // What kind of special tWall.
-	sbyte   flags;              // Flags for the tWall.
-	fix     hps;                // "Hit points" of the tWall.
-	sbyte   nTrigger;            // Which tTrigger is associated with the tWall.
-	sbyte   nClip;           // Which animation associated with the tWall.
+	int     nSegment,nSide;     // Seg & CSide for this CWall
+	sbyte   nType;              // What kind of special CWall.
+	sbyte   flags;              // Flags for the CWall.
+	fix     hps;                // "Hit points" of the CWall.
+	sbyte   nTrigger;            // Which tTrigger is associated with the CWall.
+	sbyte   nClip;           // Which animation associated with the CWall.
 	sbyte   keys;
-	int nLinkedWall;            // number of linked tWall
+	int nLinkedWall;            // number of linked CWall
 } __pack__ tWallV19;
 
 typedef struct v19_door {
@@ -138,30 +138,35 @@ typedef struct v19_door {
 	fix     open;               // How long it has been open.
 } __pack__ v19_door;
 
-//End old tWall structures
+//End old CWall structures
 
-typedef struct tWall {
-	int	  nSegment, nSide;		// Seg & tSide for this tWall
-	fix     hps;						// "Hit points" of the tWall.
-	int     nLinkedWall;				// number of linked tWall
-	ubyte   nType;						// What kind of special tWall.
-	ubyte   flags;						// Flags for the tWall.
-	ubyte   state;						// Opening, closing, etc.
-	ubyte   nTrigger;					// Which tTrigger is associated with the tWall.
-	sbyte   nClip;						// Which animation associated with the tWall.
-	ubyte   keys;						// which keys are required
-	sbyte   controllingTrigger;	// which tTrigger causes something to happen here.  Not like "tTrigger" above, which is the tTrigger on this tWall.
-											//  Note: This gets stuffed at load time in gamemine.c.  Don't try to use it in the editor.  You will be sorry!
-	sbyte   cloakValue;				// if this tWall is cloaked, the fade value
-} tWall;
+class CWall {
+	public:
+		int	  nSegment, nSide;		// Seg & CSide for this CWall
+		fix     hps;						// "Hit points" of the CWall.
+		int     nLinkedWall;				// number of linked CWall
+		ubyte   nType;						// What kind of special CWall.
+		ubyte   flags;						// Flags for the CWall.
+		ubyte   state;						// Opening, closing, etc.
+		ubyte   nTrigger;					// Which tTrigger is associated with the CWall.
+		sbyte   nClip;						// Which animation associated with the CWall.
+		ubyte   keys;						// which keys are required
+		sbyte   controllingTrigger;	// which tTrigger causes something to happen here.  Not like "tTrigger" above, which is the tTrigger on this CWall.
+												//  Note: This gets stuffed at load time in gamemine.c.  Don't try to use it in the editor.  You will be sorry!
+		sbyte   cloakValue;				// if this CWall is cloaked, the fade value
+	
+	public:
+		void LoadTextures (void);
+		int IsDoorWay (CObject* objP);
+};
 
-inline int operator- (tWall* o, CArray<tWall>& a) { return a.Index (o); }
+inline int operator- (CWall* o, CArray<CWall>& a) { return a.Index (o); }
 
 
 typedef struct tActiveDoor {
 	int     nPartCount;           // for linked walls
-	short   nFrontWall[2];			// front tWall numbers for this door
-	short   nBackWall[2];			// back tWall numbers for this door
+	short   nFrontWall[2];			// front CWall numbers for this door
+	short   nBackWall[2];			// back CWall numbers for this door
 	fix     time;						// how long been opening, closing, waiting
 } __pack__ tActiveDoor;
 
@@ -172,16 +177,16 @@ typedef struct tExplWall {
 } tExplWall;
 
 typedef struct tCloakingWall {
-	short   nFrontWall;			 // front tWall numbers for this door
-	short   nBackWall;			 // back tWall numbers for this door
-	fix     front_ls[4];        // front tWall saved light values
-	fix     back_ls[4];         // back tWall saved light values
+	short   nFrontWall;			 // front CWall numbers for this door
+	short   nBackWall;			 // back CWall numbers for this door
+	fix     front_ls[4];        // front CWall saved light values
+	fix     back_ls[4];         // back CWall saved light values
 	fix     time;               // how long been cloaking or decloaking
 } __pack__ tCloakingWall;
 
-//tWall clip flags
+//CWall clip flags
 #define WCF_EXPLODES    1       //door explodes when opening
-#define WCF_BLASTABLE   2       //this is a blastable tWall
+#define WCF_BLASTABLE   2       //this is a blastable CWall
 #define WCF_TMAP1       4       //this uses primary tmap, not tmap2
 #define WCF_HIDDEN      8       //this uses primary tmap, not tmap2
 #define WCF_ALTFMT		16
@@ -212,7 +217,7 @@ typedef struct {
 
 extern char pszWallNames[7][10];
 
-//#define WALL_IS_DOORWAY(seg,tSide) WallIsDoorWay(seg, tSide)
+//#define WALL_IS_DOORWAY(seg,CSide) WallIsDoorWay(seg, CSide)
 
 extern int WALL_IS_DOORWAY (CSegment *segP, short nSide, CObject *objP);
 
@@ -222,10 +227,10 @@ void WallInit();
 // Automatically checks if a there is a doorway (i.e. can fly through)
 int WallIsDoorWay (CSegment *segP, short nSide, CObject *objP );
 
-// Deteriorate appearance of tWall. (Changes bitmap (paste-ons))
+// Deteriorate appearance of CWall. (Changes bitmap (paste-ons))
 void WallDamage(CSegment *segP, short nSide, fix damage);
 
-// Destroys a blastable tWall. (So it is an opening afterwards)
+// Destroys a blastable CWall. (So it is an opening afterwards)
 void WallDestroy(CSegment *segP, short nSide);
 
 void WallIllusionOn(CSegment *segP, short nSide);
@@ -245,14 +250,14 @@ void WallOpenDoor(CSegment *segP, short nSide);
 void WallCloseDoor(CSegment *segP, short nSide);
 
 //return codes for WallHitProcess()
-#define WHP_NOT_SPECIAL     0       //wasn't a quote-tWall-unquote
+#define WHP_NOT_SPECIAL     0       //wasn't a quote-CWall-unquote
 #define WHP_NO_KEY          1       //hit door, but didn't have key
-#define WHP_BLASTABLE       2       //hit blastable tWall
+#define WHP_BLASTABLE       2       //hit blastable CWall
 #define WHP_DOOR            3       //a door (which will now be opening)
 
 int AnimFrameCount (tWallClip *anim);
 
-// Determines what happens when a tWall is shot
+// Determines what happens when a CWall is shot
 //obj is the CObject that hit...either a weapon or the CPlayerData himself
 extern int WallHitProcess(CSegment *segP, short nSide, fix damage, int playernum, CObject *obj );
 
@@ -274,17 +279,17 @@ extern tStuckObject StuckObjects [MAX_STUCK_OBJECTS];
 void AddStuckObject (CObject *objP, short nSegment, short nSide);
 void RemoveObsoleteStuckObjects(void);
 
-//set the tmap_num or tmap_num2 field for a tWall/door
+//set the tmap_num or tmap_num2 field for a CWall/door
 void WallSetTMapNum(CSegment *segP,short nSide,CSegment *csegp, short cside,int anim_num,int nFrame);
 
 void InitDoorAnims (void);
 int AnimateOpeningDoor (CSegment *segP, short nSide, fix xElapsedTime);
 void BlastBlastableWall (CSegment *segP, short nSide);
 
-// Remove any flares from a tWall
+// Remove any flares from a CWall
 void KillStuckObjects(int nWall);
 
-//start tWall open <-> closed transitions
+//start CWall open <-> closed transitions
 void StartWallCloak(CSegment *segP, short nSide);
 void StartWallDecloak(CSegment *segP, short nSide);
 
@@ -309,9 +314,9 @@ void ReadWallV16(tWallV16 *w, CFile& cf);
 void ReadWallV19(tWallV19 *w, CFile& cf);
 
 /*
- * reads a tWall structure from a CFILE
+ * reads a CWall structure from a CFILE
  */
-void ReadWall(tWall *w, CFile& cf);
+void ReadWall(CWall *w, CFile& cf);
 
 /*
  * reads a v19_door structure from a CFILE

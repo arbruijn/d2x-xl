@@ -17,7 +17,7 @@ fix	xMinTrackableDot = MIN_TRACKABLE_DOT;
 //	-----------------------------------------------------------------------------------------------------------
 //	Return true if weapon *trackerP is able to track CObject OBJECTS [nHomingTarget], else return false.
 //	In order for the CObject to be trackable, it must be within a reasonable turning radius for the missile
-//	and it must not be obstructed by a tWall.
+//	and it must not be obstructed by a CWall.
 int ObjectIsTrackeable (int nHomingTarget, CObject *trackerP, fix *xDot)
 {
 	CFixVector	vGoal;

@@ -419,17 +419,17 @@ static CFixVector	*wallNorm;
 int CParticle::CollideWithWall (void)
 {
 	CSegment		*segP;
-	tSide			*sideP;
+	CSide			*sideP;
 	int			bInit, nSide, nVert, nChild, nFace, nInFront;
 	fix			nDist;
 	int			*vlP;
 
 //redo:
 
-segP = gameData.segs.segments + m_nSegment;
+segP = SEGMENTS + m_nSegment;
 if ((bInit = (m_nSegment != nPartSeg)))
 	nPartSeg = m_nSegment;
-for (nSide = 0, sideP = segP->sides; nSide < 6; nSide++, sideP++) {
+for (nSide = 0, sideP = segP->m_sides; nSide < 6; nSide++, sideP++) {
 	vlP = vertexList [nSide];
 	if (bInit) {
 		nFaces [nSide] = CreateAbsVertexLists (vlP, nPartSeg, nSide);
@@ -440,23 +440,23 @@ for (nSide = 0, sideP = segP->sides; nSide < 6; nSide++, sideP++) {
 		else {
 			nVert = min(vlP [0], vlP [2]);
 			if (vlP [4] < vlP [1])
-				nDist = gameData.segs.vertices[vlP[4]].DistToPlane (sideP->normals[0], gameData.segs.vertices[nVert]);
+				nDist = gameData.segs.vertices[vlP[4]].DistToPlane (sideP->m_normals[0], gameData.segs.vertices[nVert]);
 			else
-				nDist = gameData.segs.vertices[vlP[1]].DistToPlane (sideP->normals[1], gameData.segs.vertices[nVert]);
+				nDist = gameData.segs.vertices[vlP[1]].DistToPlane (sideP->m_normals[1], gameData.segs.vertices[nVert]);
 			bSidePokesOut [nSide] = (nDist > PLANE_DIST_TOLERANCE);
 			}
 		}
 	else
 		nVert = (nFaces [nSide] == 1) ? vlP [0] : min(vlP [0], vlP [2]);
 	for (nFace = nInFront = 0; nFace < nFaces [nSide]; nFace++) {
-		nDist = m_vPos.DistToPlane (sideP->normals[nFace], gameData.segs.vertices[nVert]);
+		nDist = m_vPos.DistToPlane (sideP->m_normals[nFace], gameData.segs.vertices[nVert]);
 		if (nDist > -PLANE_DIST_TOLERANCE)
 			nInFront++;
 		else
-			wallNorm = sideP->normals + nFace;
+			wallNorm = sideP->m_normals + nFace;
 		}
 	if (!nInFront || (bSidePokesOut [nSide] && (nFaces [nSide] == 2) && (nInFront < 2))) {
-		if (0 > (nChild = segP->children [nSide]))
+		if (0 > (nChild = segP->m_children [nSide]))
 			return 1;
 		m_nSegment = nChild;
 		break;
@@ -519,7 +519,7 @@ else {
 				if (nSegment < 0)
 					return 0;
 				}
-			if ((m_nType == BUBBLE_PARTICLES) && (SEGMENT2S [nSegment].special != SEGMENT_IS_WATER))
+			if ((m_nType == BUBBLE_PARTICLES) && (SEGMENTS [nSegment].m_special != SEGMENT_IS_WATER))
 				return 0;
 			m_nSegment = nSegment;
 			}
@@ -1382,7 +1382,7 @@ int CParticleSystem::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOr
 	CFixVector			vEmittingFace [4];
 
 if (nSide >= 0)
-	GetSideVerts (vEmittingFace, nSegment, nSide);
+	SEGMENTS [nSegment].GetVertices (vEmittingFace);
 nMaxParts = MAX_PARTICLES (nMaxParts, gameOpts->render.particles.nDens [0]);
 if (gameStates.render.bPointSprites)
 	nMaxParts *= 2;

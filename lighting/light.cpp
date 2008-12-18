@@ -260,7 +260,7 @@ if ((cache_frame == 0) || (cache_frame + nLightingFrameDelta <= gameData.app.nFr
 		fix distDist = CFixVector::Dist(hit_data.hit.vPoint, *vObjPos);
 		if (distDist < F1_0/4) {
 			bApplyLight = 1;
-			// -- Int3 ();	//	Curious, did fvi detect intersection with tWall containing vertex?
+			// -- Int3 ();	//	Curious, did fvi detect intersection with CWall containing vertex?
 			}
 		}
 	lightingCache [((nSegment << LIGHTING_CACHE_SHIFT) ^ nVertex) & (LIGHTING_CACHE_SIZE-1)] = bApplyLight + (gameData.app.nFrameCount << 1);
@@ -398,7 +398,7 @@ if (xObjIntensity) {
 	// for pretty dim sources, only process vertices in CObject's own CSegment.
 	//	12/04/95, MK, markers only cast light in own CSegment.
 	if (objP && ((abs (obji_64) <= F1_0 * 8) || (nObjType == OBJ_MARKER))) {
-		short *vp = gameData.segs.segments [nObjSeg].verts;
+		short *vp = SEGMENTS [nObjSeg].verts;
 		for (iVertex = 0; iVertex < MAX_VERTICES_PER_SEGMENT; iVertex++) {
 			nVertex = vp [iVertex];
 #if !FLICKERFIX
@@ -726,7 +726,7 @@ if (!gameOpts->render.nLightingMethod) {
 	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs; iRenderSeg++) {
 		nSegment = gameData.render.mine.nSegRenderList [iRenderSeg];
 		if (nSegment != -1) {
-			short	*vp = gameData.segs.segments [nSegment].verts;
+			short	*vp = SEGMENTS [nSegment].verts;
 			for (v = 0; v < MAX_VERTICES_PER_SEGMENT; v++) {
 				nv = vp [v];
 				if ((nv < 0) || (nv > gameData.segs.nLastVertex)) {
@@ -820,7 +820,7 @@ if (!bKeepDynColoring)
 
 fix ComputeSegDynamicLight (int nSegment)
 {
-short *verts = gameData.segs.segments [nSegment].verts;
+short *verts = SEGMENTS [nSegment].verts;
 fix sum = gameData.render.lights.dynamicLight [*verts++];
 sum += gameData.render.lights.dynamicLight [*verts++];
 sum += gameData.render.lights.dynamicLight [*verts++];
@@ -923,16 +923,16 @@ void FlickerLights (void)
 {
 	tVariableLight	*flP = gameData.render.lights.flicker.lights;
 	int				l;
-	tSide				*sideP;
+	CSide				*sideP;
 	short				nSegment, nSide;
 
 for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++) {
 	//make sure this is actually a light
-	if (!(WALL_IS_DOORWAY (gameData.segs.segments + flP->nSegment, flP->nSide, NULL) & WID_RENDER_FLAG))
+	if (!(WALL_IS_DOORWAY (SEGMENTS + flP->nSegment, flP->nSide, NULL) & WID_RENDER_FLAG))
 		continue;
 	nSegment = flP->nSegment;
 	nSide = flP->nSide;
-	sideP = gameData.segs.segments [nSegment].sides + nSide;
+	sideP = SEGMENTS [nSegment].m_sides + nSide;
 	if (!(gameData.pig.tex.brightness [sideP->nBaseTex] ||
 			gameData.pig.tex.brightness [sideP->nOvlTex]))
 		continue;
@@ -989,7 +989,7 @@ int AddVariableLight (int nSegment, int nSide, fix delay, uint mask)
 #if TRACE
 	//console.printf (CON_DBG,"AddVariableLight: %d:%d %x %x\n",nSegment,nSide,delay,mask);
 #endif
-	//see if there's already an entry for this seg/tSide
+	//see if there's already an entry for this seg/CSide
 	flP = gameData.render.lights.flicker.lights;
 	for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++)
 		if ((flP->nSegment == nSegment) && (flP->nSide == nSide))	//found it!
@@ -1073,8 +1073,8 @@ if (i == nChangedSegs) {
 
 if (nCallDepth < 2)
 	for (nSide=0; nSide<6; nSide++) {
-		if (WALL_IS_DOORWAY (segP, nSide, NULL) & WID_RENDPAST_FLAG)
-			ApplyLightToSegment (&gameData.segs.segments [segP->children [nSide]], vSegCenter, xBrightness, nCallDepth+1);
+		if (segP->IsDoorWay (nSide, NULL) & WID_RENDPAST_FLAG)
+			ApplyLightToSegment (&SEGMENTS [segP->m_children [nSide]], vSegCenter, xBrightness, nCallDepth+1);
 		}
 }
 
@@ -1085,10 +1085,10 @@ extern CObject *oldViewer;
 //this code is copied from the editor routine calim_process_all_lights ()
 void ChangeSegmentLight (short nSegment, short nSide, int dir)
 {
-	CSegment *segP = gameData.segs.segments+nSegment;
+	CSegment *segP = SEGMENTS+nSegment;
 
-if (WALL_IS_DOORWAY (segP, nSide, NULL) & WID_RENDER_FLAG) {
-	tSide	*sideP = segP->sides+nSide;
+if (segP->IsDoorWay (nSide, NULL) & WID_RENDER_FLAG) {
+	CSide	*sideP = segP->m_sides+nSide;
 	fix	xBrightness;
 	xBrightness = gameData.pig.tex.tMapInfoP [sideP->nBaseTex].lighting + gameData.pig.tex.tMapInfoP [sideP->nOvlTex].lighting;
 	xBrightness *= dir;
@@ -1201,7 +1201,7 @@ for (dliP = gameData.render.lights.deltaIndices + i; i < gameData.render.lights.
 		for (j = (gameStates.render.bD2XLights ? dliP->d2x.count : dliP->d2.count); j; j--, dlP++) {
 			if (!dlP->bValid)
 				continue;	//bogus data!
-			uvlP = gameData.segs.segments [dlP->nSegment].sides [dlP->nSide].uvls;
+			uvlP = SEGMENTS [dlP->nSegment].m_sides [dlP->nSide].uvls;
 			pSegLightDelta = gameData.render.lights.segDeltas + dlP->nSegment * 6 + dlP->nSide;
 			for (k = 0; k < 4; k++, uvlP++) {
 				dl = dir * dlP->vertLight [k] * DL_SCALE;
@@ -1278,13 +1278,13 @@ void ComputeAllStaticLight (void)
 {
 	int		h, i, j, k;
 	CSegment	*segP;
-	tSide		*sideP;
+	CSide		*sideP;
 	fix		xTotal;
 
-for (i = 0, segP = gameData.segs.segments.Buffer (); i <= gameData.segs.nLastSegment; i++, segP++) {
+for (i = 0, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, segP++) {
 	xTotal = 0;
-	for (h = j = 0, sideP = segP->sides; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
-		if ((segP->children [j] < 0) || IS_WALL (sideP->nWall)) {
+	for (h = j = 0, sideP = segP->m_sides; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
+		if ((segP->m_children [j] < 0) || IS_WALL (sideP->nWall)) {
 			h++;
 			for (k = 0; k < 4; k++)
 				xTotal += sideP->uvls [k].l;

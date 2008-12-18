@@ -283,7 +283,7 @@ if (!pc || pc->index) {
 	pli->nSegNum = nSegment;
 	pli->nSideNum = (ubyte) nSide;
 #if DBG
-	VmExtractAnglesVector (&a, gameData.segs.segments [nSegment].sides [nSide].normals);
+	VmExtractAnglesVector (&a, SEGMENTS [nSegment].m_sides [nSide].m_normals);
 	VmAngles2Matrix (&pli->position.mOrient, &a);
 #endif
 	}
@@ -451,7 +451,7 @@ if (nObject >= 0) {
 else if (nSegment >= 0) {
 #if 0
 	CFixVector	vOffs;
-	tSide			*sideP = gameData.segs.segments [nSegment].sides + nSide;
+	CSide			*sideP = SEGMENTS [nSegment].m_sides + nSide;
 #endif
 	if (nSide < 0) {
 		pl->info.nType = 2;
@@ -470,12 +470,12 @@ else if (nSegment >= 0) {
 		pl->info.nType = 0;
 		pl->info.fRad = faceP ? faceP->fRads [1] : 0;
 		//RegisterLight (NULL, nSegment, nSide);
-		pl->info.bVariable = IsDestructibleLight (nTexture) || IsFlickeringLight (nSegment, nSide) || WallIsVolatile (SEGMENTS [nSegment].sides [nSide].nWall);
+		pl->info.bVariable = IsDestructibleLight (nTexture) || IsFlickeringLight (nSegment, nSide) || WallIsVolatile (SEGMENTS [nSegment].m_sides [nSide].nWall);
 		gameData.render.lights.dynamic.nVariable += pl->info.bVariable;
 		COMPUTE_SIDE_CENTER_I (&pl->info.vPos, nSegment, nSide);
-		tSide			*sideP = SEGMENTS [nSegment].sides + nSide;
+		CSide			*sideP = SEGMENTS [nSegment].m_sides + nSide;
 		CFixVector	vOffs;
-		vOffs = sideP->normals[0] + sideP->normals[1];
+		vOffs = sideP->m_normals[0] + sideP->m_normals[1];
 		pl->info.vDirf.Assign (vOffs);
 		pl->info.vDirf *= 0.5f;
 		if (gameStates.render.bPerPixelLighting) {
@@ -669,7 +669,7 @@ if (gameOpts->render.nLightingMethod)
 gameData.render.lights.dynamic.Init ();
 for (nFace = gameData.segs.nFaces, faceP = gameData.segs.faces.faces.Buffer (); nFace; nFace--, faceP++) {
 	nSegment = faceP->nSegment;
-	if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX)
+	if (gameData.segs.segment2s [nSegment].m_special == SEGMENT_IS_SKYBOX)
 		continue;
 #if DBG
 	if (nSegment == nDbgSeg)
@@ -978,7 +978,7 @@ nFrameCount = gameData.app.nFrameCount;
 #endif
 	int			i;
 	CFixVector	vNormal;
-	tSide			*sideP = SEGMENTS [faceP->nSegment].sides + faceP->nSide;
+	CSide			*sideP = SEGMENTS [faceP->nSegment].m_sides + faceP->nSide;
 
 #if DBG
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -998,7 +998,7 @@ else {
 #else
 SetNearestSegmentLights (faceP->nSegment, faceP - FACES, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
 #endif
-vNormal = sideP->normals[0] + sideP->normals[1];
+vNormal = sideP->m_normals[0] + sideP->m_normals[1];
 vNormal *= (F1_0 / 2);
 #if 1
 for (i = 0; i < 4; i++)
@@ -1318,7 +1318,7 @@ if (!vPosP && (psc->index == (char) (gameData.app.nFrameCount & 0xff)) && (psc->
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
-if (SEGMENT2S [nSegment].special == SEGMENT_IS_SKYBOX) {
+if (SEGMENTS [nSegment].m_special == SEGMENT_IS_SKYBOX) {
 	psc->color.red = psc->color.green = psc->color.blue = 1.0f;
 	psc->index = 1;
 	}
@@ -1359,7 +1359,7 @@ else {
 		}
 	else
 		ds = 1.0f;
-	pv = gameData.segs.segments [nSegment].verts;
+	pv = SEGMENTS [nSegment].verts;
 	c.color.red = c.color.green = c.color.blue = 0.0f;
 	c.index = 0;
 	for (i = 0; i < 8; i++, pv++) {

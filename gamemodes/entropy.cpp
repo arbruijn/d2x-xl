@@ -76,13 +76,13 @@ void ConquerRoom (int newOwner, int oldOwner, int roomId)
 // back to their original nType
 gameData.entropy.nTeamRooms [oldOwner]--;
 gameData.entropy.nTeamRooms [newOwner]++;
-for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, segP = gameData.segs.segments.Buffer (), xsegP = gameData.segs.xSegments.Buffer (); 
+for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, segP = SEGMENTS.Buffer (), xsegP = gameData.segs.xSegments.Buffer (); 
 	  i <= gameData.segs.nLastSegment; 
 	  i++, segP++, xsegP++) {
 	if ((xsegP->group == roomId) && (xsegP->owner == oldOwner)) {
 		xsegP->owner = newOwner;
 		ChangeSegmentTexture (i, oldOwner);
-		if (gameData.segs.segment2s [i].special == SEGMENT_IS_ROBOTMAKER) {
+		if (gameData.segs.segment2s [i].m_special == SEGMENT_IS_ROBOTMAKER) {
 			--k;
 			if (extraGameInfo [1].entropy.bRevertRooms && (-1 < (f = FindFuelCen (i))) &&
 				 (gameData.matCens.origStationTypes [f] != SEGMENT_IS_NOTHING))
@@ -95,7 +95,7 @@ for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, segP = gameData.segs.segments
 			}
 		}
 	else {
-		if ((xsegP->owner == newOwner) && (gameData.segs.segment2s [i].special == SEGMENT_IS_ROBOTMAKER)) {
+		if ((xsegP->owner == newOwner) && (gameData.segs.segment2s [i].m_special == SEGMENT_IS_ROBOTMAKER)) {
 			j++;
 			if (extraGameInfo [1].entropy.bRevertRooms && (-1 < (f = FindFuelCen (i))) &&
 				 (gameData.matCens.origStationTypes [f] != SEGMENT_IS_NOTHING))
@@ -113,8 +113,8 @@ if (extraGameInfo [1].entropy.bRevertRooms && (jj + (MAX_FUEL_CENTERS - kk)) && 
 		for (j = 0; j < jj; j++) {
 			fuelP = gameData.matCens.fuelCenters + virusGens [j];
 			h = fuelP->nSegment;
-			gameData.segs.segment2s [h].special = gameData.matCens.origStationTypes [fuelP - gameData.matCens.fuelCenters];
-			FuelCenCreate (gameData.segs.segments + h, gameData.segs.segment2s [h].special);
+			gameData.segs.segment2s [h].m_special = gameData.matCens.origStationTypes [fuelP - gameData.matCens.fuelCenters];
+			FuelCenCreate (SEGMENTS + h, gameData.segs.segment2s [h].m_special);
 			ChangeSegmentTexture (h, newOwner);
 			}
 		}
@@ -125,7 +125,7 @@ if (extraGameInfo [1].entropy.bRevertRooms && (jj + (MAX_FUEL_CENTERS - kk)) && 
 // preferrably convert repair centers
 for (i = 0, h = -1, xsegP = gameData.segs.xSegments.Buffer (); i <= gameData.segs.nLastSegment; i++, xsegP++)
 	if (xsegP->owner == oldOwner) 
-		switch (gameData.segs.segment2s [i].special) {
+		switch (gameData.segs.segment2s [i].m_special) {
 			case SEGMENT_IS_ROBOTMAKER:
 				return;
 			case SEGMENT_IS_FUELCEN:
@@ -133,14 +133,14 @@ for (i = 0, h = -1, xsegP = gameData.segs.xSegments.Buffer (); i <= gameData.seg
 					h = i;
 				break;
 			case SEGMENT_IS_REPAIRCEN:
-				if ((h < 0) || (gameData.segs.segment2s [h].special == SEGMENT_IS_FUELCEN))
+				if ((h < 0) || (gameData.segs.segment2s [h].m_special == SEGMENT_IS_FUELCEN))
 					h = i;
 			}
 if (h < 0)
 	return;
-i = gameData.segs.segment2s [h].special;
-gameData.segs.segment2s [h].special = SEGMENT_IS_ROBOTMAKER;
-BotGenCreate (gameData.segs.segments + h, i);
+i = gameData.segs.segment2s [h].m_special;
+gameData.segs.segment2s [h].m_special = SEGMENT_IS_ROBOTMAKER;
+BotGenCreate (SEGMENTS + h, i);
 ChangeSegmentTexture (h, newOwner);
 }
 
@@ -169,7 +169,7 @@ if (gameStates.entropy.bConquerWarning) {
 
 //	------------------------------------------------------------------------------------------------------
 
-int CheckConquerRoom (xsegment *segP)
+int CSegment::ConquerCheck (void)
 {
 	CPlayerData	*playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
 	int		team = GetTeam (gameData.multiplayer.nLocalPlayer) + 1;
@@ -194,12 +194,12 @@ if (playerP->secondaryAmmo [PROXMINE_INDEX] < extraGameInfo [1].nCaptureVirusLim
 	StopConquerWarning ();
 	return 0;
 	}
-if (segP->owner < 0) {
+if (m_owner < 0) {
 	HUDMessage (0, "neutral room");
 	StopConquerWarning ();
 	return 0;
 	}
-if (segP->owner == team) {
+if (m_owner == team) {
 	HUDMessage (0, "own room");
 	StopConquerWarning ();
 	return 0;
@@ -208,8 +208,8 @@ if (segP->owner == team) {
 if ((gameStates.entropy.nTimeLastMoved < 0) || 
 	 (playerP->shields < 0) || 
 	 (playerP->secondaryAmmo [PROXMINE_INDEX] < extraGameInfo [1].entropy.nCaptureVirusLimit) ||
-	 (segP->owner < 0) || 
-	 (segP->owner == team)) {
+	 (m_owner < 0) || 
+	 (m_owner == team)) {
 	StopConquerWarning ();
 	return 0;
 	}
@@ -219,20 +219,20 @@ if (!gameStates.entropy.nTimeLastMoved)
 	gameStates.entropy.nTimeLastMoved = (int) t;
 if (t - gameStates.entropy.nTimeLastMoved < extraGameInfo [1].entropy.nCaptureTimeLimit * 1000) {
 	gameStates.entropy.bConquering = 1;
-	if (segP->owner > 0)
+	if (m_owner > 0)
 		StartConquerWarning ();
 	return 0;
 	}
 StopConquerWarning ();
-if (segP->owner)
+if (m_owner)
 	MultiSendCaptureBonus ((char) gameData.multiplayer.nLocalPlayer);
 playerP->secondaryAmmo [PROXMINE_INDEX] -= extraGameInfo [1].entropy.nCaptureVirusLimit;
 if (playerP->secondaryAmmo [SMARTMINE_INDEX] > extraGameInfo [1].entropy.nBashVirusCapacity)
 	playerP->secondaryAmmo [SMARTMINE_INDEX] -= extraGameInfo [1].entropy.nBashVirusCapacity;
 else
 	playerP->secondaryAmmo [SMARTMINE_INDEX] = 0;
-MultiSendConquerRoom ((char) team, (char) segP->owner, (char) segP->group);
-ConquerRoom ((char) team, (char) segP->owner, (char) segP->group);
+MultiSendConquerRoom (char (team), char (m_owner), char (m_group));
+ConquerRoom (char (team), char (m_owner), char (m_group));
 return 1;
 }
 

@@ -204,7 +204,7 @@ if (objP) {
 else {
 	m_info.objP = &m_info.obj;
 	if (bTeleport) {
-		CFixVector n = *gameData.segs.segments [srcSeg].sides [srcSide].normals;
+		CFixVector n = *SEGMENTS [srcSeg].m_sides [srcSide].m_normals;
 		/*
 		n[X] = -n[X];
 		n[Y] = -n[Y];
@@ -213,7 +213,7 @@ else {
 		a = n.ToAnglesVec();
 		}
 	else
-		a = gameData.segs.segments [srcSeg].sides [srcSide].normals [0].ToAnglesVec();
+		a = SEGMENTS [srcSeg].m_sides [srcSide].m_normals [0].ToAnglesVec();
 	m_info.obj.info.position.mOrient = CFixMatrix::Create(a);
 #if 1
 	if (bTeleport)
@@ -625,7 +625,7 @@ int CCameraManager::Create (void)
 {
 	int		h, i, j, k, r;
 	ubyte		t;
-	tWall		*wallP;
+	CWall		*wallP;
 	CObject	*objP;
 	tTrigger	*triggerP;
 

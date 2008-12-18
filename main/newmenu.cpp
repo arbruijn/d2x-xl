@@ -3357,7 +3357,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 			}	
 
 			
-			// If Win95 port, draw up/down arrows on left tSide of menu
+			// If Win95 port, draw up/down arrows on left CSide of menu
 			SDL_ShowCursor (1);
 			GrUpdate (0);
 		} else if (nItem != ocitem)	{

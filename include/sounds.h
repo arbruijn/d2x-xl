@@ -129,7 +129,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define SOUND_LIGHT_BLOWNUP                     157
 
-#define SOUND_WALL_REMOVED                      246 // Wall removed, probably due to a tWall switch.
+#define SOUND_WALL_REMOVED                      246 // Wall removed, probably due to a CWall switch.
 #define SOUND_AFTERBURNER_IGNITE                247
 #define SOUND_AFTERBURNER_PLAY                  248
 

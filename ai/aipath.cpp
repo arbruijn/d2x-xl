@@ -75,7 +75,7 @@ tPointSeg *InsertTransitPoint (tPointSeg *curSegP, tPointSeg *predSegP, tPointSe
 	CFixVector	vCenter, vPoint;
 	short			nSegment;
 
-COMPUTE_SIDE_CENTER (&vCenter, gameData.segs.segments + predSegP->nSegment, nConnSide);
+COMPUTE_SIDE_CENTER (&vCenter, SEGMENTS + predSegP->nSegment, nConnSide);
 vPoint = predSegP->point - vCenter;
 vPoint[X] /= 16;
 vPoint[Y] /= 16;
@@ -124,7 +124,7 @@ return j;
 }
 
 //	-----------------------------------------------------------------------------------------------------------
-//	Insert the point at the center of the tSide connecting two segments between the two points.
+//	Insert the point at the center of the CSide connecting two segments between the two points.
 // This is messy because we must insert into the list.  The simplest (and not too slow) way to do this is to start
 // at the end of the list and go backwards.
 int InsertCenterPoints (tPointSeg *pointSegP, int numPoints)
@@ -218,8 +218,8 @@ for (i = 1, --j; i < j; i++) {
 	if (e.Mag () < F1_0/2)
 		Int3 ();
 #endif
-	xSegSize = CFixVector::Dist (gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]], 
-										 gameData.segs.vertices [gameData.segs.segments [nSegment].verts [6]]);
+	xSegSize = CFixVector::Dist (gameData.segs.vertices [SEGMENTS [nSegment].verts [0]], 
+										 gameData.segs.vertices [SEGMENTS [nSegment].verts [6]]);
 	if (xSegSize > F1_0*40)
 		xSegSize = F1_0*40;
 	vGoalPos = ptSegs [i].point + e * (xSegSize/4);
@@ -337,12 +337,12 @@ while (nCurSeg != nEndSeg) {
 
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		hSide = bRandom ? randomXlate [nSide] : nSide;
-		if (!IS_CHILD (segP->children [hSide]))
+		if (!IS_CHILD (segP->m_children [hSide]))
 			continue;
-		if (!((WALL_IS_DOORWAY (segP, hSide, NULL) & WID_FLY_FLAG) ||
+		if (!((segP->IsDoorWay (hSide, NULL) & WID_FLY_FLAG) ||
 			  (AIDoorIsOpenable (objP, segP, hSide))))
 			continue;
-		nDestSeg = segP->children [hSide];
+		nDestSeg = segP->m_children [hSide];
 		if (bVisited [nDestSeg])
 			continue;
 		if (bAvoidPlayer && ((nCurSeg == nAvoidSeg) || (nDestSeg == nAvoidSeg))) {
@@ -548,7 +548,7 @@ for (i = 1; i < numPoints; i++) {
 		}
 	if (nCurSeg != nNextSeg) {
 		for (nSide=0; nSide<MAX_SIDES_PER_SEGMENT; nSide++)
-			if (gameData.segs.segments [nCurSeg].children [nSide] == nNextSeg)
+			if (SEGMENTS [nCurSeg].children [nSide] == nNextSeg)
 				break;
 		if (nSide == MAX_SIDES_PER_SEGMENT) {
 #if TRACE
@@ -800,7 +800,7 @@ if (aiP->nPathLength < 2)
 Assert (objP->info.nSegment != -1);
 #if DBG
 if (objP->info.nSegment != nGoalSeg)
-	if (FindConnectedSide (gameData.segs.segments + objP->info.nSegment, gameData.segs.segments + nGoalSeg) == -1) {
+	if (FindConnectedSide (SEGMENTS + objP->info.nSegment, SEGMENTS + nGoalSeg) == -1) {
 		fix dist = FindConnectedDistance (&objP->info.position.vPos, objP->info.nSegment, vGoalPoint, nGoalSeg, 30, WID_FLY_FLAG, 0);
 #	if TRACE
 		if (gameData.fcd.nConnSegDist > 2)	//	This global is set in FindConnectedDistance
@@ -960,9 +960,9 @@ if (!(nPlayerVisibility || nPrevVisibility) && (xDistToPlayer > F1_0*200) && !Is
 		fix	xCurSpeed = botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel]/2;
 		fix	xCoverableDist = FixMul (gameData.time.xFrame, xCurSpeed);
 		// int	nConnSide = FindConnectedSide (objP->info.nSegment, nGoalSeg);
-		//	Only move to goal if allowed to fly through the tSide.p.
+		//	Only move to goal if allowed to fly through the CSide.p.
 		//	Buddy-bot can create paths he can't fly, waiting for player.
-		// -- bah, this isn't good enough, buddy will fail to get through any door!if (WALL_IS_DOORWAY (&gameData.segs.segments]objP->info.nSegment], nConnSide) & WID_FLY_FLAG) {
+		// -- bah, this isn't good enough, buddy will fail to get through any door!if (WALL_IS_DOORWAY (&SEGMENTS]objP->info.nSegment], nConnSide) & WID_FLY_FLAG) {
 		if (!(botInfoP->companion || botInfoP->thief)) {
 			if ((xCoverableDist >= xDistToGoal) || ((d_rand () >> 1) < FixDiv (xCoverableDist, xDistToGoal)))
 				MoveObjectToGoal (objP, &vGoalPoint, nGoalSeg);
@@ -1341,7 +1341,7 @@ AIPathGarbageCollect ();
 }
 
 //	---------------------------------------------------------------------------------------------------------
-//	Probably called because a robot bashed a tWall, getting a bunch of retries.
+//	Probably called because a robot bashed a CWall, getting a bunch of retries.
 //	Try to resume path.
 void AttemptToResumePath (CObject *objP)
 {
@@ -1392,8 +1392,8 @@ void test_create_path_many (void)
 	int			i;
 
 for (i=0; i<Test_size; i++) {
-	Cursegp = &gameData.segs.segments [ (d_rand () * (gameData.segs.nLastSegment + 1)) / D_RAND_MAX];
-	Markedsegp = &gameData.segs.segments [ (d_rand () * (gameData.segs.nLastSegment + 1)) / D_RAND_MAX];
+	Cursegp = &SEGMENTS [ (d_rand () * (gameData.segs.nLastSegment + 1)) / D_RAND_MAX];
+	Markedsegp = &SEGMENTS [ (d_rand () * (gameData.segs.nLastSegment + 1)) / D_RAND_MAX];
 	CreatePathPoints (&OBJECTS [0], CurSEG_IDX (segp), MarkedSEG_IDX (segp), tPointSegs, &numPoints, -1, 0, 0, -1);
 	}
 
@@ -1427,9 +1427,9 @@ void test_create_all_paths (void)
 	gameData.ai.freePointSegs = gameData.ai.pointSegs;
 
 	for (nStartSeg=0; nStartSeg<=gameData.segs.nLastSegment-1; nStartSeg++) {
-		if (gameData.segs.segments [nStartSeg].nSegment != -1) {
+		if (SEGMENTS [nStartSeg].nSegment != -1) {
 			for (nEndSeg=nStartSeg + 1; nEndSeg<=gameData.segs.nLastSegment; nEndSeg++) {
-				if (gameData.segs.segments [nEndSeg].nSegment != -1) {
+				if (SEGMENTS [nEndSeg].nSegment != -1) {
 					CreatePathPoints (&OBJECTS [0], nStartSeg, nEndSeg, gameData.ai.freePointSegs, &resultant_length, -1, 0, 0, -1);
 					show_path (nStartSeg, nEndSeg, gameData.ai.freePointSegs, resultant_length);
 				}
@@ -1477,7 +1477,7 @@ void test_create_all_paths (void)
 //--anchor--	Num_anchors = 0;
 //--anchor--
 //--anchor--	for (nSegment=0; nSegment<=gameData.segs.nLastSegment; nSegment++) {
-//--anchor--		if (gameData.segs.segments [nSegment].nSegment != -1) {
+//--anchor--		if (SEGMENTS [nSegment].nSegment != -1) {
 //--anchor--			nearest_anchorDistance = get_nearest_anchorDistance (nSegment);
 //--anchor--			if (nearest_anchorDistance > AnchorDistance)
 //--anchor--				create_new_anchor (nSegment);

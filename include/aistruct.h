@@ -23,7 +23,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_SEGMENTS_PER_PATH       20
 
 #define PA_NEARBY_ROBOT_FIRED       1   // Level of robot awareness after nearby robot fires a weapon
-#define PA_WEAPON_WALL_COLLISION    2   // Level of robot awareness after CPlayerData weapon hits nearby tWall
+#define PA_WEAPON_WALL_COLLISION    2   // Level of robot awareness after CPlayerData weapon hits nearby CWall
 //#define PA_PLAYER_VISIBLE         2   // Level of robot awareness if robot is looking towards CPlayerData, and CPlayerData not hidden
 #define PA_PLAYER_COLLISION         3   // Level of robot awareness after CPlayerData bumps into robot
 #define PA_RETURN_FIRE					4	 // Level of robot awareness while firing back after having been hit by player
@@ -32,8 +32,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define WEAPON_WALL_COLLISION 	(USE_D1_AI ? D1_PA_WEAPON_WALL_COLLISION : PA_WEAPON_WALL_COLLISION)
 #define WEAPON_ROBOT_COLLISION 	(USE_D1_AI ? D1_PA_WEAPON_ROBOT_COLLISION : PA_WEAPON_ROBOT_COLLISION)
 
-//#define PAE_WEAPON_HIT_WALL         1   // weapon hit tWall, create CPlayerData awareness
-//#define PAE_WEAPON_HIT_ROBOT        2   // weapon hit tWall, create CPlayerData awareness
+//#define PAE_WEAPON_HIT_WALL         1   // weapon hit CWall, create CPlayerData awareness
+//#define PAE_WEAPON_HIT_ROBOT        2   // weapon hit CWall, create CPlayerData awareness
 
 // Constants indicating currently moving forward or backward through
 // path.  Note that you can add aip->direction to aip_path_index to
@@ -124,7 +124,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define GOAL_STATE      flags[2]    // goal state
 #define PATH_DIR        flags[3]    // direction traveling path, 1 = forward, -1 = backward, other = error!
 #define SUB_FLAGS       flags[4]    // bit 0: Set -> Robot's current gun in different CSegment than robot's center.
-#define GOALSIDE        flags[5]    // for guys who open doors, this is the tSide they are going after.
+#define GOALSIDE        flags[5]    // for guys who open doors, this is the CSide they are going after.
 #define CLOAKED         flags[6]    // Cloaked now.
 #define SKIP_AI_COUNT   flags[7]    // Skip AI this frame, but decrement in DoAIFrame.
 #define  REMOTE_OWNER   flags[8]    // Who is controlling this remote AI CObject (multiplayer use only)

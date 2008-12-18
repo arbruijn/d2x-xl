@@ -770,17 +770,17 @@ robotcen = gameData.matCens.fuelCenters + nFuelCen;
 COMPUTE_SEGMENT_CENTER_I (&curObject_loc, robotcen->nSegment);
 objP = ObjectCreateExplosion ((short) robotcen->nSegment, &curObject_loc, I2X (10), VCLIP_MORPHING_ROBOT);
 if (objP)
-	ExtractOrientFromSegment (&objP->info.position.mOrient, &gameData.segs.segments [robotcen->nSegment]);
+	ExtractOrientFromSegment (&objP->info.position.mOrient, &SEGMENTS [robotcen->nSegment]);
 if (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound > -1)
 	DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, (short) robotcen->nSegment, 0, &curObject_loc, 0, F1_0);
 // Set robot center flags, in case we become the master for the next one
 robotcen->bFlag = 0;
 robotcen->xCapacity -= gameData.matCens.xEnergyToCreateOneRobot;
 robotcen->xTimer = 0;
-if (! (objP = CreateMorphRobot (gameData.segs.segments + robotcen->nSegment, &curObject_loc, nType)))
+if (! (objP = CreateMorphRobot (SEGMENTS + robotcen->nSegment, &curObject_loc, nType)))
 	return; // Cannot create CObject!
 objP->info.nCreator = ((short) (robotcen - gameData.matCens.fuelCenters)) | 0x80;
-//	ExtractOrientFromSegment (&objP->info.position.mOrient, &gameData.segs.segments [robotcen->nSegment]);
+//	ExtractOrientFromSegment (&objP->info.position.mOrient, &SEGMENTS [robotcen->nSegment]);
 direction = gameData.objs.consoleP->info.position.vPos - objP->info.position.vPos;
 objP->info.position.mOrient = CFixMatrix::CreateFU(direction, objP->info.position.mOrient.UVec ());
 //objP->info.position.mOrient = CFixMatrix::CreateFU(direction, &objP->info.position.mOrient.UVec (), NULL);

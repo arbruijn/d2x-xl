@@ -79,7 +79,7 @@ class CQuadMeshBuilder {
 		tFaceColor		*m_colorP;
 		CSegment			*m_segP;
 		tSegFaces		*m_segFaceP;
-		tSide				*m_sideP;
+		CSide				*m_sideP;
 
 		short				m_sideVerts [5];
 		short				m_nOvlTexCount;

@@ -1502,32 +1502,32 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 void MultiDoDoorOpen (char *buf)
 {
 	int nSegment;
-	sbyte tSide;
+	sbyte CSide;
 	CSegment *segP;
-	tWall *wallP;
+	CWall *wallP;
 	ubyte flag;
 
 nSegment = GET_INTEL_SHORT (buf + 1);
-tSide = buf [3];
+CSide = buf [3];
 flag = buf [4];
 
-if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment) || (tSide < 0) || (tSide > 5)) {
+if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment) || (CSide < 0) || (CSide > 5)) {
 	Int3 ();
 	return;
 	}
-segP = gameData.segs.segments + nSegment;
-if (!IS_WALL (WallNumP (segP, tSide))) {  //Opening door on illegal tWall
+segP = SEGMENTS + nSegment;
+if (!IS_WALL (WallNumP (segP, CSide))) {  //Opening door on illegal CWall
 	Int3 ();
 	return;
 	}
-wallP = gameData.walls.walls + WallNumP (segP, tSide);
+wallP = gameData.walls.walls + WallNumP (segP, CSide);
 if (wallP->nType == WALL_BLASTABLE) {
 	if (!(wallP->flags & WALL_BLASTED))
-		WallDestroy (segP, tSide);
+		WallDestroy (segP, CSide);
 	return;
 	}
 else if (wallP->state != WALL_DOOR_OPENING) {
-	WallOpenDoor (segP, tSide);
+	WallOpenDoor (segP, CSide);
 	wallP->flags = flag;
 	}
 else
@@ -1741,7 +1741,7 @@ strcpy (gameData.marker.nOwner [nMarker], gameData.multiplayer.players [nPlayer]
 
 void MultiDoHostageDoorStatus (char *buf)
 {
-	tWall	*wallP;
+	CWall	*wallP;
 	fix	hps;
 	short	wallnum;
 
@@ -1755,7 +1755,7 @@ wallP = gameData.walls.walls + wallnum;
 if (wallP->nType != WALL_BLASTABLE)
 	return;
 if (hps < wallP->hps)
-	WallDamage (gameData.segs.segments + wallP->nSegment, (short) wallP->nSide, wallP->hps - hps);
+	WallDamage (SEGMENTS + wallP->nSegment, (short) wallP->nSide, wallP->hps - hps);
 }
 
 //-----------------------------------------------------------------------------
@@ -2437,11 +2437,11 @@ MultiSendData (gameData.multigame.msg.buf, 2, 1);
 //-----------------------------------------------------------------------------
 // When we open a door make sure everyone else opens that door
 
-void MultiSendDoorOpen (int nSegment, int tSide, ubyte flag)
+void MultiSendDoorOpen (int nSegment, int CSide, ubyte flag)
 {
 gameData.multigame.msg.buf [0] = MULTI_DOOR_OPEN;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf+1, nSegment);
-gameData.multigame.msg.buf [3] = (sbyte)tSide;
+gameData.multigame.msg.buf [3] = (sbyte)CSide;
 gameData.multigame.msg.buf [4] = flag;
 MultiSendData (gameData.multigame.msg.buf, 5, 2);
 }
@@ -2451,12 +2451,12 @@ MultiSendData (gameData.multigame.msg.buf, 5, 2);
 
 extern void NetworkSendNakedPacket (char *, short, int);
 
-void MultiSendDoorOpenSpecific (int nPlayer, int nSegment, int tSide, ubyte flag)
+void MultiSendDoorOpenSpecific (int nPlayer, int nSegment, int CSide, ubyte flag)
 {
 Assert (gameData.app.nGameMode & GM_NETWORK);
 gameData.multigame.msg.buf [0] = MULTI_DOOR_OPEN;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf+1, nSegment);
-gameData.multigame.msg.buf [3] = (sbyte)tSide;
+gameData.multigame.msg.buf [3] = (sbyte)CSide;
 gameData.multigame.msg.buf [4] = flag;
 NetworkSendNakedPacket (gameData.multigame.msg.buf, 5, nPlayer);
 }
@@ -2909,14 +2909,14 @@ nTexture = (nTexture < 0) ? -nTexture : MultiFindGoalTexture (nTexture);
 nOldTexture = (nOldTexture < 0) ? -nOldTexture : MultiFindGoalTexture (nOldTexture);
 if (nTexture >- 1)
 	for (j = 0; j < 6; j++) {
-		if (bForce || (segP->sides [j].nBaseTex == nOldTexture)) {
-			segP->sides [j].nBaseTex = nTexture;
+		if (bForce || (segP->m_sides [j].m_nBaseTex == nOldTexture)) {
+			segP->m_sides [j].m_nBaseTex = nTexture;
 			if ((extraGameInfo [1].entropy.nOverrideTextures == 1) &&
-				 (segP->sides [j].nOvlTex > 0) && (nTexture2 > 0))
-				segP->sides [j].nOvlTex = nTexture2;
+				 (segP->m_sides [j].nOvlTex > 0) && (nTexture2 > 0))
+				segP->m_sides [j].nOvlTex = nTexture2;
 			if ((extraGameInfo [1].entropy.nOverrideTextures == 1) && bFullBright)
 				for (v = 0; v < 4; v++)
-					segP->sides [j].uvls [v].l = I2X (100);		//max out
+					segP->m_sides [j].uvls [v].l = I2X (100);		//max out
 			}
 		}
 if (bFullBright)
@@ -2932,7 +2932,7 @@ int Goal_blue_segnum, Goal_red_segnum;
 
 void ChangeSegmentTexture (int nSegment, int oldOwner)
 {
-	CSegment	*segP = gameData.segs.segments + nSegment;
+	CSegment	*segP = SEGMENTS + nSegment;
 	tSegment2 *seg2P = gameData.segs.segment2s + nSegment;
 	xsegment *xSegP = gameData.segs.xSegments + nSegment;
 	int		bFullBright = ((gameData.app.nGameMode & GM_HOARD) != 0) || ((gameData.app.nGameMode & GM_ENTROPY) && extraGameInfo [1].entropy.bBrightenRooms);
@@ -3401,7 +3401,7 @@ MultiSendData (gameData.multigame.msg.buf, count, 1);
 
 void MultiSendWallStatusSpecific (int nPlayer, int wallnum, ubyte nType, ubyte flags, ubyte state)
 {
-	// Send tWall states a specific rejoining CPlayerData
+	// Send CWall states a specific rejoining CPlayerData
 	short count = 0;
 
 Assert (gameData.app.nGameMode & GM_NETWORK);
@@ -3603,7 +3603,7 @@ PUT_INTEL_INT (gameData.multigame.msg.buf + count, nSegment);
 count += sizeof (int);
 gameData.multigame.msg.buf [count++] = val;
 for (i = 0; i < 6; i++,  count += 2)
-	PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, gameData.segs.segments [nSegment].sides [i].nOvlTex);
+	PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, SEGMENTS [nSegment].m_sides [i].nOvlTex);
 MultiSendData (gameData.multigame.msg.buf, count, 1);
 }
 
@@ -3619,7 +3619,7 @@ PUT_INTEL_INT (gameData.multigame.msg.buf + count, nSegment);
 count += sizeof (int);
 gameData.multigame.msg.buf [count++] = val;
 for (i = 0; i < 6; i++, count += 2)
-	PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, gameData.segs.segments [nSegment].sides [i].nOvlTex);
+	PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, SEGMENTS [nSegment].m_sides [i].nOvlTex);
 NetworkSendNakedPacket (gameData.multigame.msg.buf, count, nPlayer);
 }
 
@@ -3634,7 +3634,7 @@ buf += 6;
 for (i = 0; i < 6; i++, buf += 2) {
 	if ((sides & (1 << i))) {
 		SubtractLight (seg, i);
-		gameData.segs.segments [seg].sides [i].nOvlTex = GET_INTEL_SHORT (buf);
+		SEGMENTS [seg].m_sides [i].nOvlTex = GET_INTEL_SHORT (buf);
 		}
 	}
 }

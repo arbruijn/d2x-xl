@@ -164,7 +164,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 	if (i > gameData.objs.nLastObject [0]) {
 		if (syncP->objs.nMode) {
 			syncP->objs.nCurrent = i;
-			// Send count so other tSide can make sure he got them all
+			// Send count so other CSide can make sure he got them all
 			objBuf [0] = PID_OBJECT_DATA;
 			objBuf [1] = 1;
 			syncP->objs.nFrame++;
@@ -740,7 +740,7 @@ int NetworkLevelSync (void)
 	int result;
 	networkData.bSyncPackInited = 0;
 
-//networkData.nSegmentCheckSum = NetMiscCalcCheckSum (gameData.segs.segments, sizeof (CSegment)* (gameData.segs.nLastSegment+1);
+//networkData.nSegmentCheckSum = NetMiscCalcCheckSum (SEGMENTS, sizeof (CSegment)* (gameData.segs.nLastSegment+1);
 NetworkFlush (); // Flush any old packets
 if (!gameData.multiplayer.nPlayers)
 	result = NetworkWaitForSync ();

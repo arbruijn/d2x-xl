@@ -41,7 +41,7 @@ typedef struct tEffectClip {
 	int     dest_eclip;     //what tEffectClip to play when exploding
 	fix     dest_size;      //3d size of explosion
 	int     nSound;      //what sound this makes
-	int     nSegment,nSide; //what seg & tSide, for one-shot clips
+	int     nSegment,nSide; //what seg & CSide, for one-shot clips
 } __pack__ tEffectClip;
 
 typedef tEffectClip D1_eclip;

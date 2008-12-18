@@ -8,16 +8,30 @@
 
 #if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
 
+// Number of vertices in current mine (ie, gameData.segs.vertices, pointed to by Vp)
+//	Translate table to get opposite CSide of a face on a CSegment.
+char	sideOpposite[MAX_SIDES_PER_SEGMENT] = {WRIGHT, WBOTTOM, WLEFT, WTOP, WFRONT, WBACK};
+
+//	Note, this MUST be the same as sideVertIndex, it is an int for speed reasons.
+int sideVertIndex [MAX_SIDES_PER_SEGMENT][4] = {
+			{7,6,2,3},			// left
+			{0,4,7,3},			// top
+			{0,1,5,4},			// right
+			{2,6,5,1},			// bottom
+			{4,5,6,7},			// back
+			{3,2,1,0}			// front
+	};	
+
 //------------------------------------------------------------------------------
 // reads a tSegment2 structure from a CFile
  
-void ReadSegment2 (tSegment2 *s2, CFile& cf)
+void CExtSegment::Read (CFile& cf)
 {
-	s2->special = cf.ReadByte ();
-	s2->nMatCen = cf.ReadByte ();
-	s2->value = cf.ReadByte ();
-	s2->s2Flags = cf.ReadByte ();
-	s2->xAvgSegLight = cf.ReadFix ();
+s2->special = cf.ReadByte ();
+s2->nMatCen = cf.ReadByte ();
+s2->value = cf.ReadByte ();
+s2->s2Flags = cf.ReadByte ();
+s2->xAvgSegLight = cf.ReadFix ();
 }
 
 //------------------------------------------------------------------------------
@@ -64,7 +78,7 @@ int CSkyBox::CountSegments (void)
 	tSegment2	*seg2P;
 	int			i, nSegments;
 
-for (i = gameData.segs.nSegments, nSegments = 0, seg2P = SEGMENT2S.Buffer (); i; i--, seg2P++)
+for (i = gameData.segs.nSegments, nSegments = 0, seg2P = SEGMENTS.Buffer (); i; i--, seg2P++)
 	if (seg2P->special == SEGMENT_IS_SKYBOX)
 		nSegments++;
 return nSegments;
@@ -95,13 +109,32 @@ if (!nSegments) {
 
 if (!(gameData.segs.skybox.Create (nSegments)))
 	return 0;
-for (h = gameData.segs.nSegments, i = 0, seg2P = SEGMENT2S.Buffer (); i < h; i++, seg2P++)
+for (h = gameData.segs.nSegments, i = 0, seg2P = SEGMENTS.Buffer (); i < h; i++, seg2P++)
 	if (seg2P->special == SEGMENT_IS_SKYBOX)
 		gameData.segs.skybox.Push (i);
 	}
 gameStates.render.bHaveSkyBox = (gameData.segs.skybox.ToS () > 0);
 return gameData.segs.skybox.ToS ();
 }
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+inline CWall* CSide::Wall (void) { return IS_WALL (m_nWall) ? WALLS + m_nWall : NULL; }
+
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+inline CFixVector& CSegment::Normal (int nSide, int nFace) {
+	if (gameStates.render.bRendering)
+		return CExtSegment::m_sides [nSide].m_rotNorms [nFace];
+	else
+		return CBaseSegment::m_sides [nSide].m_normals [nFace];
+	}
 
 //------------------------------------------------------------------------------
 //eof

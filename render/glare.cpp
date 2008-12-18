@@ -233,7 +233,7 @@ return i;
 int FaceHasCorona (short nSegment, short nSide, int *bAdditiveP, float *fIntensityP)
 {
 	ushort		nWall;
-	tSide			*sideP;
+	CSide			*sideP;
 	char			*pszName;
 	int			i, bAdditive, nTexture, nBrightness;
 
@@ -243,10 +243,10 @@ if (IsMultiGame && extraGameInfo [1].bDarkness)
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-sideP = gameData.segs.segments [nSegment].sides + nSide;
+sideP = SEGMENTS [nSegment].m_sides + nSide;
 nWall = sideP->nWall;
 if (IS_WALL (nWall)) {
-	tWall *wallP = gameData.walls.walls + nWall;
+	CWall *wallP = gameData.walls.walls + nWall;
 	ubyte nType = wallP->nType;
 
 	if ((nType == WALL_BLASTABLE) || (nType == WALL_DOOR) || (nType == WALL_OPEN) || (nType == WALL_CLOAKED))
@@ -335,7 +335,7 @@ return nTexture;
 
 float ComputeCoronaSprite (CFloatVector *sprite, CFloatVector *vCenter, short nSegment, short nSide)
 {
-	tSide		*sideP = gameData.segs.segments [nSegment].sides + nSide;
+	CSide		*sideP = SEGMENTS [nSegment].m_sides + nSide;
 	short		sideVerts [4];
 	int		i;
 	float		fLight = 0;

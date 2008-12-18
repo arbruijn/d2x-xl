@@ -78,21 +78,21 @@ int nWall = WallNumI (nHitSeg, nHitWall);
 if (!IS_WALL (nWall))
 	return;
 
-tWall *wallP = gameData.walls.walls + nWall;
+CWall *wallP = gameData.walls.walls + nWall;
 if (wallP->nType != WALL_DOOR)
 	return;
 
 if ((wallP->keys == KEY_NONE) && (wallP->state == WALL_DOOR_CLOSED) && !(wallP->flags & WALL_DOOR_LOCKED))
-	WallOpenDoor (gameData.segs.segments + nHitSeg, nHitWall);
+	WallOpenDoor (SEGMENTS + nHitSeg, nHitWall);
 else if (botInfoP->companion) {
 	if ((ailp->mode != AIM_GOTO_PLAYER) && (gameData.escort.nSpecialGoal != ESCORT_GOAL_SCRAM))
 		return;
 	if (!(wallP->flags & WALL_DOOR_LOCKED) || ((wallP->keys != KEY_NONE) && (wallP->keys & LOCALPLAYER.flags)))
-		WallOpenDoor (gameData.segs.segments + nHitSeg, nHitWall);
+		WallOpenDoor (SEGMENTS + nHitSeg, nHitWall);
 	}
 else if (botInfoP->thief) {		//	Thief allowed to go through doors to which CPlayerData has key.
 	if ((wallP->keys != KEY_NONE) && (wallP->keys & LOCALPLAYER.flags))
-		WallOpenDoor (gameData.segs.segments + nHitSeg, nHitWall);
+		WallOpenDoor (SEGMENTS + nHitSeg, nHitWall);
 	}
 }
 
@@ -414,8 +414,8 @@ void CollidePlayerAndWall (CObject *playerObjP, fix xHitSpeed, short nHitSeg, sh
 
 if (playerObjP->info.nId != gameData.multiplayer.nLocalPlayer) // Execute only for local CPlayerData
 	return;
-nBaseTex = gameData.segs.segments [nHitSeg].sides [nHitWall].nBaseTex;
-//	If this tWall does damage, don't make *BONK* sound, we'll be making another sound.
+nBaseTex = SEGMENTS [nHitSeg].m_sides [nHitWall].m_nBaseTex;
+//	If this CWall does damage, don't make *BONK* sound, we'll be making another sound.
 if (gameData.pig.tex.tMapInfoP [nBaseTex].damage > 0)
 	return;
 if (gameData.pig.tex.tMapInfoP [nBaseTex].flags & TMI_FORCE_FIELD) {
@@ -446,16 +446,16 @@ else {
 		Tactile_do_collide (&vForce, &playerObjP->info.position.mOrient);
 	}
 #endif
-   WallHitProcess (gameData.segs.segments + nHitSeg, nHitWall, 20, playerObjP->info.nId, playerObjP);
+   WallHitProcess (SEGMENTS + nHitSeg, nHitWall, 20, playerObjP->info.nId, playerObjP);
 	}
-if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [nHitSeg].special == SEGMENT_IS_NODAMAGE))
+if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [nHitSeg].m_special == SEGMENT_IS_NODAMAGE))
 	return;
-//	** Damage from hitting tWall **
+//	** Damage from hitting CWall **
 //	If the CPlayerData has less than 10% shields, don't take damage from bump
 // Note: Does quad damage if hit a vForce field - JL
 damage = (xHitSpeed / DAMAGE_SCALE) * (bForceFieldHit * 8 + 1);
-nOvlTex = gameData.segs.segments [nHitSeg].sides [nHitWall].nOvlTex;
-//don't do tWall damage and sound if hit lava or water
+nOvlTex = SEGMENTS [nHitSeg].m_sides [nHitWall].nOvlTex;
+//don't do CWall damage and sound if hit lava or water
 if ((gameData.pig.tex.tMapInfoP [nBaseTex].flags & (TMI_WATER|TMI_VOLATILE)) ||
 		(nOvlTex && (gameData.pig.tex.tMapInfoP [nOvlTex].flags & (TMI_WATER|TMI_VOLATILE))))
 	damage = 0;
@@ -483,7 +483,7 @@ fix	xLastVolatileScrapeSoundTime = 0;
 int CollideWeaponAndWall (CObject *weaponP, fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector * vHitPt);
 int CollideDebrisAndWall (CObject *debris, fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector * vHitPt);
 
-//see if tWall is volatile or water
+//see if CWall is volatile or water
 //if volatile, cause damage to CPlayerData
 //returns 1=lava, 2=water
 int CheckVolatileWall (CObject *objP, int nSegment, int nSide, CFixVector *vHitPt)
@@ -492,7 +492,7 @@ int CheckVolatileWall (CObject *objP, int nSegment, int nSide, CFixVector *vHitP
 	int	nTexture;
 
 Assert (objP->info.nType == OBJ_PLAYER);
-nTexture = gameData.segs.segments [nSegment].sides [nSide].nBaseTex;
+nTexture = SEGMENTS [nSegment].m_sides [nSide].m_nBaseTex;
 d = gameData.pig.tex.tMapInfoP [nTexture].damage;
 water = (gameData.pig.tex.tMapInfoP [nTexture].flags & TMI_WATER);
 if (d > 0 || water) {
@@ -534,9 +534,9 @@ int CheckVolatileSegment (CObject *objP, int nSegment)
 //	Assert (objP->info.nType==OBJ_PLAYER);
 if (!EGI_FLAG (bFluidPhysics, 1, 0, 0))
 	return 0;
-if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_WATER)
+if (gameData.segs.segment2s [nSegment].m_special == SEGMENT_IS_WATER)
 	d = 0;
-else if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_LAVA)
+else if (gameData.segs.segment2s [nSegment].m_special == SEGMENT_IS_LAVA)
 	d = gameData.pig.tex.tMapInfo [0][404].damage / 2;
 else {
 #ifdef TACTILE
@@ -578,7 +578,7 @@ return 0;
 }
 
 //	-----------------------------------------------------------------------------
-//this gets called when an CObject is scraping along the tWall
+//this gets called when an CObject is scraping along the CWall
 void ScrapeObjectOnWall (CObject *objP, short nHitSeg, short hitside, CFixVector * vHitPt)
 {
 switch (objP->info.nType) {
@@ -596,7 +596,7 @@ switch (objP->info.nType) {
 					if (IsMultiGame)
 						MultiSendPlaySound (sound, F1_0);
 					}
-				vHit = gameData.segs.segments [nHitSeg].sides [hitside].normals [0];
+				vHit = SEGMENTS [nHitSeg].m_sides [hitside].m_normals [0];
 				vRand = CFixVector::Random();
 				vHit += vRand * (F1_0/8);
 				CFixVector::Normalize (vHit);
@@ -608,7 +608,7 @@ switch (objP->info.nType) {
 	//these two kinds of OBJECTS below shouldn't really slide, so
 	//if this scrape routine gets called (which it might if the
 	//CObject (such as a fusion blob) was created already poking
-	//through the tWall) call the Collide routine.
+	//through the CWall) call the Collide routine.
 
 	case OBJ_WEAPON:
 		CollideWeaponAndWall (objP, 0, nHitSeg, hitside, vHitPt);
@@ -636,7 +636,7 @@ int CheckEffectBlowup (CSegment *segP, short nSide, CFixVector *pnt, CObject *bl
 	fix			xDestSize;
 	tEffectClip			*ecP = NULL;
 	CBitmap	*bmP;
-	//	If this tWall has a tTrigger and the blower-upper is not the CPlayerData or the buddy, abort!
+	//	If this CWall has a tTrigger and the blower-upper is not the CPlayerData or the buddy, abort!
 
 if (blower->cType.laserInfo.parent.nType == OBJ_ROBOT)
 	if (ROBOTINFO (OBJECTS [blower->cType.laserInfo.parent.nObject].info.nId).companion)
@@ -649,10 +649,10 @@ if (!(bOkToBlow || (blower->cType.laserInfo.parent.nType == OBJ_PLAYER))) {
 		return 0;
 	}
 
-if (!(tm = segP->sides [nSide].nOvlTex))
+if (!(tm = segP->m_sides [nSide].nOvlTex))
 	return 0;
 
-tmf = segP->sides [nSide].nOvlOrient;		//tm flags
+tmf = segP->m_sides [nSide].nOvlOrient;		//tm flags
 ec = gameData.pig.tex.tMapInfoP [tm].nEffectClip;
 if (ec < 0) {
 	if (gameData.pig.tex.tMapInfoP [tm].destroyed == -1)
@@ -675,7 +675,7 @@ PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [tm].index, gameStates.app.bD1Data);
 //this can be blown up...did we hit it?
 if (!bForceBlowup) {
 	FindHitPointUV (&u, &v, NULL, pnt, segP, nSide, 0);	//evil: always say face zero
-	bForceBlowup = !PixelTranspType (tm, tmf,  segP->sides [nSide].nFrame, u, v);
+	bForceBlowup = !PixelTranspType (tm, tmf,  segP->m_sides [nSide].nFrame, u, v);
 	}
 if (!bForceBlowup)
 	return 0;
@@ -718,18 +718,18 @@ if (nSwitchType) {
 		newEcP->flags |= EF_ONE_SHOT;
 		newEcP->nDestBm = ecP->nDestBm;
 
-		Assert ((nNewBm != 0) && (segP->sides [nSide].nOvlTex != 0));
-		segP->sides [nSide].nOvlTex = nNewBm;		//replace with destoyed
+		Assert ((nNewBm != 0) && (segP->m_sides [nSide].nOvlTex != 0));
+		segP->m_sides [nSide].nOvlTex = nNewBm;		//replace with destoyed
 		}
 	else {
-		Assert ((nBitmap != 0) && (segP->sides [nSide].nOvlTex != 0));
+		Assert ((nBitmap != 0) && (segP->m_sides [nSide].nOvlTex != 0));
 		if (!bPermaTrigger)
-			segP->sides [nSide].nOvlTex = nBitmap;		//replace with destoyed
+			segP->m_sides [nSide].nOvlTex = nBitmap;		//replace with destoyed
 		}
 	}
 else {
 	if (!bPermaTrigger)
-		segP->sides [nSide].nOvlTex = gameData.pig.tex.tMapInfoP [tm].destroyed;
+		segP->m_sides [nSide].nOvlTex = gameData.pig.tex.tMapInfoP [tm].destroyed;
 	//assume this is a light, and play light sound
 	DigiLinkSoundToPos (SOUND_LIGHT_BLOWNUP, SEG_IDX (segP), 0, pnt,  0, F1_0);
 	}
@@ -778,7 +778,7 @@ return 0;
 }
 
 //	-----------------------------------------------------------------------------
-//these gets added to the weapon's values when the weapon hits a volitle tWall
+//these gets added to the weapon's values when the weapon hits a volitle CWall
 #define VOLATILE_WALL_EXPL_STRENGTH I2X (10)
 #define VOLATILE_WALL_IMPACT_SIZE	I2X (3)
 #define VOLATILE_WALL_DAMAGE_FORCE	I2X (5)
@@ -788,8 +788,8 @@ return 0;
 
 int CollideWeaponAndWall (CObject *weaponP, fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector * vHitPt)
 {
-	CSegment		*segP = gameData.segs.segments + nHitSeg;
-	tSide			*sideP = segP->sides + nHitWall;
+	CSegment		*segP = SEGMENTS + nHitSeg;
+	CSide			*sideP = segP->m_sides + nHitWall;
 	tWeaponInfo *wInfoP = gameData.weapons.info + weaponP->info.nId;
 	CObject		*wObjP = OBJECTS + weaponP->cType.laserInfo.parent.nObject;
 
@@ -802,7 +802,7 @@ if (weaponP->info.nId == OMEGA_ID)
 
 //	If this is a guided missile and it strikes fairly directly, clear bounce flag.
 if (weaponP->info.nId == GUIDEDMSL_ID) {
-	fix dot = CFixVector::Dot (weaponP->info.position.mOrient.FVec (), sideP->normals[0]);
+	fix dot = CFixVector::Dot (weaponP->info.position.mOrient.FVec (), sideP->m_normals[0]);
 #if TRACE
 	console.printf (CON_DBG, "Guided missile dot = %7.3f \n", X2F (dot));
 #endif
@@ -815,7 +815,7 @@ if (weaponP->info.nId == GUIDEDMSL_ID) {
 	else {
 		CFixVector	vReflect;
 		CAngleVector	va;
-		vReflect = CFixVector::Reflect(weaponP->info.position.mOrient.FVec (), sideP->normals[0]);
+		vReflect = CFixVector::Reflect(weaponP->info.position.mOrient.FVec (), sideP->m_normals[0]);
 		va = vReflect.ToAnglesVec();
 		weaponP->info.position.mOrient = CFixMatrix::Create(va);
 		}
@@ -838,9 +838,9 @@ if ((gameData.pig.tex.tMapInfoP [sideP->nBaseTex].flags & TMI_FORCE_FIELD) &&
 #if DBG
 if (gameStates.input.keys.pressed [KEY_LAPOSTRO])
 	if (weaponP->cType.laserInfo.parent.nObject == LOCALPLAYER.nObject) {
-		//	MK: Real pain when you need to know a segP:tSide and you've got quad lasers.
+		//	MK: Real pain when you need to know a segP:CSide and you've got quad lasers.
 #if TRACE
-		console.printf (CON_DBG, "Your laser hit at CSegment = %i, tSide = %i \n", nHitSeg, nHitWall);
+		console.printf (CON_DBG, "Your laser hit at CSegment = %i, CSide = %i \n", nHitSeg, nHitWall);
 #endif
 		//HUDInitMessage ("Hit at segment = %i, side = %i", nHitSeg, nHitWall);
 		if (weaponP->info.nId < 4)
@@ -851,7 +851,7 @@ if (gameStates.input.keys.pressed [KEY_LAPOSTRO])
 if (!(weaponP->mType.physInfo.velocity[X] ||
 	   weaponP->mType.physInfo.velocity[Y] ||
 	   weaponP->mType.physInfo.velocity[Z])) {
-	Int3 ();	//	Contact Matt: This is impossible.  A weaponP with 0 velocity hit a tWall, which doesn't move.
+	Int3 ();	//	Contact Matt: This is impossible.  A weaponP with 0 velocity hit a CWall, which doesn't move.
 	return 1;
 	}
 #endif
@@ -868,9 +868,9 @@ else {
 	bEscort = 0;
 	nPlayer = (wObjP->info.nType == OBJ_PLAYER) ? wObjP->info.nId : -1;
 	}
-if (bBlewUp) {		//could be a tWall switch
-	//for tWall triggers, always say that the CPlayerData shot it out.  This is
-	//because robots can shoot out tWall triggers, and so the tTrigger better
+if (bBlewUp) {		//could be a CWall switch
+	//for CWall triggers, always say that the CPlayerData shot it out.  This is
+	//because robots can shoot out CWall triggers, and so the tTrigger better
 	//take effect
 	//	NO -- Changed by MK, 10/18/95.  We don't want robots blowing puzzles.  Only CPlayerData or buddy can open!
 	CheckTrigger (segP, nHitWall, weaponP->cType.laserInfo.parent.nObject, 1);
@@ -882,9 +882,9 @@ wallType = WallHitProcess (segP, nHitWall, weaponP->info.xShields, nPlayer, weap
 if ((gameData.pig.tex.tMapInfoP [sideP->nBaseTex].flags & TMI_VOLATILE) ||
 	 (sideP->nOvlTex && (gameData.pig.tex.tMapInfoP [sideP->nOvlTex].flags & TMI_VOLATILE))) {
 	ubyte tVideoClip;
-	//we've hit a volatile tWall
+	//we've hit a volatile CWall
 	DigiLinkSoundToPos (SOUND_VOLATILE_WALL_HIT, nHitSeg, 0, vHitPt, 0, F1_0);
-	//for most weapons, use volatile tWall hit.  For mega, use its special tVideoClip
+	//for most weapons, use volatile CWall hit.  For mega, use its special tVideoClip
 	tVideoClip = (weaponP->info.nId == MEGAMSL_ID) ? wInfoP->robot_hit_vclip : VCLIP_VOLATILE_WALL_HIT;
 	//	New by MK: If powerful badass, explode as badass, not due to lava, fixes megas being wimpy in lava.
 	if (wInfoP->damage_radius >= VOLATILE_WALL_DAMAGE_RADIUS/2)
@@ -928,7 +928,7 @@ else if ((gameData.pig.tex.tMapInfoP [sideP->nBaseTex].flags & TMI_WATER) ||
 else {
 	if (!bBounce) {
 		//if it's not the CPlayerData's weaponP, or it is the CPlayerData's and there
-		//is no tWall, and no blowing up monitor, then play sound
+		//is no CWall, and no blowing up monitor, then play sound
 		if ((weaponP->cType.laserInfo.parent.nType != OBJ_PLAYER) ||
 			 ((!IS_WALL (WallNumS (sideP)) || wallType == WHP_NOT_SPECIAL) && !bBlewUp))
 			if ((wInfoP->wall_hitSound > -1) && !(weaponP->info.nFlags & OF_SILENT))
@@ -973,7 +973,7 @@ if ((weaponP->cType.laserInfo.parent.nType == OBJ_PLAYER) || bEscort) {
 				break;
 
 			case WHP_BLASTABLE:
-				//play special blastable tWall sound (if/when we get it)
+				//play special blastable CWall sound (if/when we get it)
 				if ((wInfoP->wall_hitSound > -1) && (!(weaponP->info.nFlags & OF_SILENT)))
 					DigiLinkSoundToPos (SOUND_WEAPON_HIT_BLASTABLE, weaponP->info.nSegment, 0, &weaponP->info.position.vPos, 0, F1_0);
 				break;
@@ -1005,7 +1005,7 @@ int CollideDebrisAndWall (CObject *debris, fix xHitSpeed, short nHitSeg, short n
 {
 if (gameOpts->render.nDebrisLife) {
 	CFixVector	vDir = debris->mType.physInfo.velocity,
-					vNormal = gameData.segs.segments [nHitSeg].sides [nHitWall].normals [0];
+					vNormal = SEGMENTS [nHitSeg].m_sides [nHitWall].m_normals [0];
 	debris->mType.physInfo.velocity = CFixVector::Reflect(vDir, vNormal);
 	DigiLinkSoundToPos (SOUND_PLAYER_HIT_WALL, nHitSeg, 0, vHitPt, 0, F1_0 / 3);
 	}
@@ -1816,7 +1816,7 @@ return 1;
 int CollidePlayerAndPlayer (CObject *player1, CObject *player2, CFixVector *vHitPt)
 {
 if (gameStates.app.bD2XLevel &&
-	 (gameData.segs.segment2s [player1->info.nSegment].special == SEGMENT_IS_NODAMAGE))
+	 (gameData.segs.segment2s [player1->info.nSegment].m_special == SEGMENT_IS_NODAMAGE))
 	return 1;
 if (BumpTwoObjects (player1, player2, 1, vHitPt))
 	DigiLinkSoundToPos (SOUND_ROBOT_HIT_PLAYER, player1->info.nSegment, 0, vHitPt, 0, F1_0);
@@ -1864,7 +1864,7 @@ CPlayerData *killerP = (killerObjP && (killerObjP->info.nType == OBJ_PLAYER)) ? 
 if (gameStates.app.bPlayerIsDead)
 	return;
 
-if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [playerObjP->info.nSegment].special == SEGMENT_IS_NODAMAGE))
+if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [playerObjP->info.nSegment].m_special == SEGMENT_IS_NODAMAGE))
 	return;
 if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)
 	return;
@@ -1927,7 +1927,7 @@ int CollidePlayerAndWeapon (CObject *playerObjP, CObject *weaponP, CFixVector *v
 	//	This is necessary because in multiplayer, due to varying framerates, omega blobs actually
 	//	have a bit of a lifetime.  But they start out with a lifetime of ONE_FRAME_TIME, and this
 	//	gets bashed to 1/4 second in laser_doWeapon_sequence.  This bashing occurs for visual purposes only.
-if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [playerObjP->info.nSegment].special == SEGMENT_IS_NODAMAGE))
+if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [playerObjP->info.nSegment].m_special == SEGMENT_IS_NODAMAGE))
 	return 1;
 if ((weaponP->info.nId == PROXMINE_ID) && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	return 1;
@@ -1997,20 +1997,20 @@ return 1;
 
 int CollidePlayerAndMatCen (CObject *objP)
 {
-	short	tSide;
+	short	CSide;
 	CFixVector	exit_dir;
-	CSegment	*segp = gameData.segs.segments + objP->info.nSegment;
+	CSegment	*segp = SEGMENTS + objP->info.nSegment;
 
 DigiLinkSoundToPos (SOUND_PLAYER_GOT_HIT, objP->info.nSegment, 0, &objP->info.position.vPos, 0, F1_0);
 //	DigiPlaySample (SOUND_PLAYER_GOT_HIT, F1_0);
 ObjectCreateExplosion (objP->info.nSegment, &objP->info.position.vPos, I2X (10)/2, VCLIP_PLAYER_HIT);
 if (objP->info.nId != gameData.multiplayer.nLocalPlayer)
 	return 1;
-for (tSide = 0; tSide < MAX_SIDES_PER_SEGMENT; tSide++)
-	if (WALL_IS_DOORWAY (segp, tSide, objP) & WID_FLY_FLAG) {
+for (CSide = 0; CSide < MAX_SIDES_PER_SEGMENT; CSide++)
+	if (WALL_IS_DOORWAY (segp, CSide, objP) & WID_FLY_FLAG) {
 		CFixVector	exit_point, rand_vec;
 
-		COMPUTE_SIDE_CENTER (&exit_point, segp, tSide);
+		COMPUTE_SIDE_CENTER (&exit_point, segp, CSide);
 		exit_dir = exit_point - objP->info.position.vPos;
 		CFixVector::Normalize (exit_dir);
 		rand_vec = CFixVector::Random();
@@ -2029,20 +2029,20 @@ return 1;
 
 int CollideRobotAndMatCen (CObject *objP)
 {
-	short	tSide;
+	short	CSide;
 	CFixVector	exit_dir;
-	CSegment *segp=gameData.segs.segments + objP->info.nSegment;
+	CSegment *segp=SEGMENTS + objP->info.nSegment;
 
 DigiLinkSoundToPos (SOUND_ROBOT_HIT, objP->info.nSegment, 0, &objP->info.position.vPos, 0, F1_0);
 //	DigiPlaySample (SOUND_ROBOT_HIT, F1_0);
 
 if (ROBOTINFO (objP->info.nId).nExp1VClip > -1)
 	ObjectCreateExplosion ((short) objP->info.nSegment, &objP->info.position.vPos, (objP->info.xSize/2*3)/4, (ubyte) ROBOTINFO (objP->info.nId).nExp1VClip);
-for (tSide=0; tSide<MAX_SIDES_PER_SEGMENT; tSide++)
-	if (WALL_IS_DOORWAY (segp, tSide, NULL) & WID_FLY_FLAG) {
+for (CSide=0; CSide<MAX_SIDES_PER_SEGMENT; CSide++)
+	if (WALL_IS_DOORWAY (segp, CSide, NULL) & WID_FLY_FLAG) {
 		CFixVector	exit_point;
 
-		COMPUTE_SIDE_CENTER (&exit_point, segp, tSide);
+		COMPUTE_SIDE_CENTER (&exit_point, segp, CSide);
 		exit_dir = exit_point - objP->info.position.vPos;
 		CFixVector::Normalize (exit_dir);
 	}
@@ -2107,7 +2107,7 @@ return 1;
 int CollideActorAndClutter (CObject *actor, CObject *clutter, CFixVector *vHitPt)
 {
 if (gameStates.app.bD2XLevel &&
-	 (gameData.segs.segment2s [actor->info.nSegment].special == SEGMENT_IS_NODAMAGE))
+	 (gameData.segs.segment2s [actor->info.nSegment].m_special == SEGMENT_IS_NODAMAGE))
 	return 1;
 if (!(actor->info.nFlags & OF_EXPLODING) && BumpTwoObjects (clutter, actor, 1, vHitPt))
 	DigiLinkSoundToPos (SOUND_ROBOT_HIT_PLAYER, actor->info.nSegment, 0, vHitPt, 0, F1_0);
@@ -2469,7 +2469,7 @@ switch (objP->info.nType)	{
 #endif
 		break;	//CollidePowerupAndWall (objP, xHitSpeed, nHitSeg, nHitWall, vHitPt);
 	default:
-		Error ("Unhandled CObject nType hit tWall in Collide.c \n");
+		Error ("Unhandled CObject nType hit CWall in Collide.c \n");
 	}
 return 1;
 }

@@ -135,12 +135,12 @@ explObjP->cType.explInfo.nDeleteTime = -1;
 
 if (xMaxDamage <= 0)
 	return explObjP;
-// -- now legal for xBadAss explosions on a tWall. Assert (objP != NULL);
+// -- now legal for xBadAss explosions on a CWall. Assert (objP != NULL);
 FORALL_OBJS (obj0P, i) {
 	t = obj0P->info.nType;
 	id = obj0P->info.nId;
 	//	Weapons used to be affected by xBadAss explosions, but this introduces serious problems.
-	//	When a smart bomb blows up, if one of its children goes right towards a nearby tWall, it will
+	//	When a smart bomb blows up, if one of its children goes right towards a nearby CWall, it will
 	//	blow up, blowing up all the children.  So I remove it.  MK, 09/11/94
 	if (obj0P == objP)
 		continue;
@@ -533,8 +533,8 @@ else {
 		return;
 		}
 	//don't make debris explosions have physics, because they often
-	//happen when the debris has hit the tWall, so the fireball is trying
-	//to move into the tWall, which shows off FVI problems.
+	//happen when the debris has hit the CWall, so the fireball is trying
+	//to move into the CWall, which shows off FVI problems.
 	if ((hitObjP->info.nType != OBJ_DEBRIS) && (hitObjP->info.movementType == MT_PHYSICS)) {
 		explObjP->info.movementType = MT_PHYSICS;
 		explObjP->mType.physInfo = hitObjP->mType.physInfo;
@@ -688,7 +688,7 @@ for (i = 0; i < MAX_EXPLODING_WALLS; i++)
 }
 
 //------------------------------------------------------------------------------
-//explode the given tWall
+//explode the given CWall
 void ExplodeWall (short nSegment, short nSide)
 {
 	int i;
@@ -708,14 +708,14 @@ if (i==MAX_EXPLODING_WALLS) {		//didn't find slot.
 gameData.walls.explWalls [i].nSegment = nSegment;
 gameData.walls.explWalls [i].nSide = nSide;
 gameData.walls.explWalls [i].time = 0;
-//play one long sound for whole door tWall explosion
-COMPUTE_SIDE_CENTER (&pos, &gameData.segs.segments [nSegment], nSide);
+//play one long sound for whole door CWall explosion
+COMPUTE_SIDE_CENTER (&pos, &SEGMENTS [nSegment], nSide);
 DigiLinkSoundToPos (SOUND_EXPLODING_WALL, nSegment, nSide, &pos, 0, F1_0);
 }
 
 //------------------------------------------------------------------------------
 //handle walls for this frame
-//note: this tWall code assumes the tWall is not triangulated
+//note: this CWall code assumes the CWall is not triangulated
 void DoExplodingWallFrame ()
 {
 	int i;
@@ -731,8 +731,8 @@ for (i = 0; i < MAX_EXPLODING_WALLS; i++) {
 		if (gameData.walls.explWalls [i].time > EXPL_WALL_TIME)
 			gameData.walls.explWalls [i].time = EXPL_WALL_TIME;
 		if (gameData.walls.explWalls [i].time> (EXPL_WALL_TIME*3)/4) {
-			CSegment *seg = gameData.segs.segments + nSegment,
-						*csegp = gameData.segs.segments + seg->children [nSide];
+			CSegment *seg = SEGMENTS + nSegment,
+						*csegp = SEGMENTS + seg->children [nSide];
 			ubyte	a = (ubyte) gameData.walls.walls [WallNumP (seg, nSide)].nClip;
 			short n = AnimFrameCount (gameData.walls.animP + a);
 			short cside = FindConnectedSide (seg, csegp);
@@ -764,7 +764,7 @@ for (i = 0; i < MAX_EXPLODING_WALLS; i++) {
 			pos += vv1 * (d_rand ()*2);
 			size = EXPL_WALL_FIREBALL_SIZE + (2*EXPL_WALL_FIREBALL_SIZE * e / EXPL_WALL_TOTAL_FIREBALLS);
 			//fireballs start away from door, with subsequent ones getting closer
-			pos += gameData.segs.segments [nSegment].sides [nSide].normals[0] * (size* (EXPL_WALL_TOTAL_FIREBALLS-e)/EXPL_WALL_TOTAL_FIREBALLS);
+			pos += SEGMENTS [nSegment].m_sides [nSide].m_normals[0] * (size* (EXPL_WALL_TOTAL_FIREBALLS-e)/EXPL_WALL_TOTAL_FIREBALLS);
 			if (e & 3)		//3 of 4 are Normal
 				ObjectCreateExplosion ((short) gameData.walls.explWalls [i].nSegment, &pos, size, (ubyte) VCLIP_SMALL_EXPLOSION);
 			else

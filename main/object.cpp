@@ -1968,7 +1968,7 @@ objP->info.position.mOrient.CheckAndFix();
 extern void MultiSendDropBlobs (char);
 extern void FuelCenCheckForGoal (CSegment *);
 
-//see if tWall is volatile, and if so, cause damage to CPlayerData
+//see if CWall is volatile, and if so, cause damage to CPlayerData
 //returns true if CPlayerData is in lava
 int CheckVolatileWall (CObject *objP, int nSegment, int nSide, CFixVector *hitpt);
 int CheckVolatileSegment (CObject *objP, int nSegment);
@@ -2043,7 +2043,7 @@ sideMask = GetSegMasks (objP->info.position.vPos, objP->info.nSegment, objP->inf
 if (sideMask) {
 	short nSide, nWall;
 	int bit;
-	tSide *pSide = gameData.segs.segments [objP->info.nSegment].sides;
+	CSide *pSide = SEGMENTS [objP->info.nSegment].m_sides;
 	for (nSide = 0, bit = 1; nSide < 6; bit <<= 1, nSide++, pSide++) {
 		if (!(sideMask & bit))
 			continue;
@@ -2081,47 +2081,47 @@ if (!bUnderLavaFall && nLavaFallHissPlaying [objP->info.nId]) {
 
 //--------------------------------------------------------------------
 
-void HandleSpecialSegments (CObject *objP)
+void CObject::HandleSpecialSegment (void)
 {
-	fix fuel, shields;
-	CSegment *segP = gameData.segs.segments + objP->info.nSegment;
-	xsegment *xsegP = gameData.segs.xSegments + objP->info.nSegment;
-	CPlayerData *playerPP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
+if ((info.nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == info.nId)) {
+	CSegment*		segP = SEGMENTS + info.nSegment;
+	CPlayerData*	playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
+	fix				shields, fuel;
 
-if ((objP->info.nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == objP->info.nId)) {
    if (gameData.app.nGameMode & GM_CAPTURE)
-		 FuelCenCheckForGoal (segP);
+		 segP->CheckForGoal ();
    else if (gameData.app.nGameMode & GM_HOARD)
-		 FuelCenCheckForHoardGoal (segP);
+		 segP->CheckForHoardGoal ();
 	else if (Controls [0].forwardThrustTime || Controls [0].verticalThrustTime || Controls [0].sidewaysThrustTime) {
 		gameStates.entropy.nTimeLastMoved = -1;
 		if ((gameData.app.nGameMode & GM_ENTROPY) &&
-			 ((xsegP->owner < 0) || (xsegP->owner == GetTeam (gameData.multiplayer.nLocalPlayer) + 1))) {
+			 ((segP->m_owner < 0) || (segP->m_owner == GetTeam (gameData.multiplayer.nLocalPlayer) + 1))) {
 			StopConquerWarning ();
 			}
 		}
 	else if (gameStates.entropy.nTimeLastMoved < 0)
 		gameStates.entropy.nTimeLastMoved = 0;
-	shields = HostileRoomDamageShields (segP, playerPP->shields + 1);
+
+	shields = segP->Damage (playerP->shields + 1);
 	if (shields > 0) {
-		playerPP->shields -= shields;
+		playerP->shields -= shields;
 		MultiSendShields ();
-		if (playerPP->shields < 0)
+		if (playerP->shields < 0)
 			StartPlayerDeathSequence (objP);
 		else
-			CheckConquerRoom (xsegP);
+			segP->ConquerCheck ();
 		}
 	else {
 		StopConquerWarning ();
-		fuel = FuelCenGiveFuel (segP, INITIAL_ENERGY - playerPP->energy);
+		fuel = segP->Refuel (INITIAL_ENERGY - playerP->energy);
 		if (fuel > 0)
-			playerPP->energy += fuel;
-		shields = RepairCenGiveShields (segP, INITIAL_SHIELDS - playerPP->shields);
+			playerP->energy += fuel;
+		shields = segP->Repair (INITIAL_SHIELDS - playerP->shields);
 		if (shields > 0) {
-			playerPP->shields += shields;
+			playerP->shields += shields;
 			MultiSendShields ();
 			}
-		if (!xsegP->owner)
+		if (!segP->m_owner)
 			CheckConquerRoom (xsegP);
 		}
 	}
@@ -2276,9 +2276,9 @@ for (i = 0; i < nPhysSegs - 1; i++) {
 	if (physSegList [i] > gameData.segs.nLastSegment)
 		PrintLog ("invalid segment in physSegList\n");
 #endif
-	nConnSide = FindConnectedSide (gameData.segs.segments + physSegList [i+1], gameData.segs.segments + physSegList [i]);
+	nConnSide = FindConnectedSide (SEGMENTS + physSegList [i+1], SEGMENTS + physSegList [i]);
 	if (nConnSide != -1)
-		CheckTrigger (gameData.segs.segments + physSegList [i], nConnSide, OBJ_IDX (objP), 0);
+		CheckTrigger (SEGMENTS + physSegList [i], nConnSide, OBJ_IDX (objP), 0);
 #if DBG
 	else	// segments are not directly connected, so do binary subdivision until you find connected segments.
 		PrintLog ("UNCONNECTED SEGMENTS %d, %d\n", physSegList [i+1], physSegList [i]);
@@ -2297,7 +2297,7 @@ void CheckGuidedMissileThroughExit (CObject *objP, short nPrevSegment)
 if ((objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP) &&
 	 (objP->info.nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature)) {
 	if (nPrevSegment != objP->info.nSegment) {
-		short	nConnSide = FindConnectedSide (gameData.segs.segments + objP->info.nSegment, gameData.segs.segments + nPrevSegment);
+		short	nConnSide = FindConnectedSide (SEGMENTS + objP->info.nSegment, SEGMENTS + nPrevSegment);
 		if (nConnSide != -1) {
 			short nWall, nTrigger;
 			nWall = WallNumI (nPrevSegment, nConnSide);
@@ -2379,7 +2379,7 @@ if (objP->info.nType == OBJ_ROBOT) {
 		}
 	}
 else if ((objP->info.nType == OBJ_PLAYER) && gameOpts->render.lightnings.bPlayers) {
-	int s = gameData.segs.segment2s [objP->info.nSegment].special;
+	int s = gameData.segs.segment2s [objP->info.nSegment].m_special;
 	if (s == SEGMENT_IS_FUELCEN) {
 		RequestEffects (objP, PLAYER_LIGHTNINGS);
 		}
@@ -2419,7 +2419,7 @@ if (objP->info.nType == OBJ_ROBOT) {
 		}
 	}
 objP->info.vLastPos = objP->info.position.vPos;			// Save the current position
-HandleSpecialSegments (objP);
+objP->HandleSpecialSegment ();
 if ((objP->info.xLifeLeft != IMMORTAL_TIME) &&
 	 (objP->info.xLifeLeft != ONE_FRAME_TIME) &&
 	 (gameData.physics.xTime != F1_0))
@@ -2639,7 +2639,7 @@ if (psi->nSide > 0) {
 		if (psi->nType == SMOKE_TYPE_SPRAY)
 			psi->nParts *= 4;
 		}
-	else if ((gameData.segs.nLevelVersion < 18) && IsWaterTexture (gameData.segs.segments [objP->info.nSegment].sides [psi->nSide - 1].nBaseTex)) {
+	else if ((gameData.segs.nLevelVersion < 18) && IsWaterTexture (SEGMENTS [objP->info.nSegment].m_sides [psi->nSide - 1].m_nBaseTex)) {
 		psi->nParts *= 4;
 		//psi->nSize [1] /= 2;
 		}

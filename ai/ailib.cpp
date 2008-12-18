@@ -267,10 +267,10 @@ if (OBJ_IDX (objP) == nDbgObj) {
 int AIDoorIsOpenable (CObject *objP, CSegment *segP, short nSide)
 {
 	short nWall;
-	tWall	*wallP;
+	CWall	*wallP;
 
-if (!IS_CHILD (segP->children [nSide]))
-	return 0;		//trap -2 (exit tSide)
+if (!IS_CHILD (segP->m_children [nSide]))
+	return 0;		//trap -2 (exit CSide)
 nWall = WallNumP (segP, nSide);
 if (!IS_WALL (nWall))		//if there's no door at alld:\temp\dm_test.
 	return 1;				//d:\temp\dm_testthen say it can't be opened
@@ -308,7 +308,7 @@ if ((objP == NULL) || (ROBOTINFO (objP->info.nId).companion == 1)) {
 
 	//	If Buddy is returning to CPlayerData, don't let him think he can get through triggered doors.
 	//	It's only valid to think that if the CPlayerData is going to get him through.  But if he's
-	//	going to the CPlayerData, the CPlayerData is probably on the opposite tSide.
+	//	going to the CPlayerData, the CPlayerData is probably on the opposite CSide.
 	if (objP)
 		ailp_mode = gameData.ai.localInfo [OBJ_IDX (objP)].mode;
 	else if (gameData.escort.nObjNum >= 0)
@@ -378,7 +378,7 @@ return 0;
 }
 
 //	-----------------------------------------------------------------------------------------------------------
-//	Return tSide of openable door in CSegment, if any.  If none, return -1.
+//	Return CSide of openable door in CSegment, if any.  If none, return -1.
 int OpenableDoorsInSegment (short nSegment)
 {
 	ushort	i;
@@ -389,7 +389,7 @@ int OpenableDoorsInSegment (short nSegment)
 	for (i=0; i<MAX_SIDES_PER_SEGMENT; i++) {
 		int	nWall = WallNumI (nSegment, i);
 		if (IS_WALL (nWall)) {
-			tWall	*wallP = gameData.walls.walls + nWall;
+			CWall	*wallP = gameData.walls.walls + nWall;
 			if ((wallP->nType == WALL_DOOR) &&
 				 (wallP->keys == KEY_NONE) &&
 				 (wallP->state == WALL_DOOR_CLOSED) &&
@@ -409,7 +409,7 @@ int OpenableDoorsInSegment (short nSegment)
 // -- {
 // -- 	int	nObject;
 // --
-// -- 	nObject = gameData.segs.segments [nSegment].objects;
+// -- 	nObject = SEGMENTS [nSegment].objects;
 // --
 // -- 	while (nObject != -1) {
 // -- 		if ((OBJECTS [nObject].nType == OBJ_PLAYER) || (OBJECTS [nObject].nType == OBJ_REACTOR)) {
@@ -426,14 +426,14 @@ int OpenableDoorsInSegment (short nSegment)
 // -- int get_random_child (int nSegment)
 // -- {
 // -- 	int	nSide;
-// -- 	CSegment	*segP = &gameData.segs.segments [nSegment];
+// -- 	CSegment	*segP = &SEGMENTS [nSegment];
 // --
 // -- 	nSide = (rand () * 6) >> 15;
 // --
-// -- 	while (!(WALL_IS_DOORWAY (segP, nSide) & WID_FLY_FLAG))
+// -- 	while (!(segP->IsDoorWay (nSide) & WID_FLY_FLAG))
 // -- 		nSide = (rand () * 6) >> 15;
 // --
-// -- 	nSegment = segP->children [nSide];
+// -- 	nSegment = segP->m_children [nSide];
 // --
 // -- 	return nSegment;
 // -- }

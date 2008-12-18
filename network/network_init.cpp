@@ -132,8 +132,8 @@ int NetworkCreateMonitorVector (void)
 	int      nBlownBitmaps = 0;
 	int      nMonitor = 0;
 	int      vector = 0;
-	CSegment *segP = gameData.segs.segments.Buffer ();
-	tSide    *sideP;
+	CSegment *segP = SEGMENTS.Buffer ();
+	CSide    *sideP;
 	int      h, i, j, k;
 	int      tm, ec;
 
@@ -150,7 +150,7 @@ for (i = 0; i < gameData.eff.nEffects [gameStates.app.bD1Data]; i++) {
 	}               
 	
 for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
-	for (j = 0, sideP = segP->sides; j < 6; j++, sideP++) {
+	for (j = 0, sideP = segP->m_sides; j < 6; j++, sideP++) {
 		if ((tm = sideP->nOvlTex) != 0) {
 			if (((ec = gameData.pig.tex.tMapInfoP [tm].nEffectClip) != -1) &&
 					(gameData.eff.effectP[ec].nDestBm != -1)) {

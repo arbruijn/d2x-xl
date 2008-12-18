@@ -129,7 +129,7 @@ extern int LaserFireObject(short nObject, ubyte weapon_id, int level, int flags,
 
 // Easier to call than CreateNewWeapon because it determines the
 // CSegment containing the firing point and deals with it being stuck
-// in an CObject or through a tWall.
+// in an CObject or through a CWall.
 // Fires a laser of nType "weaponType" from an CObject (parent) in the
 // direction "direction" from the position "position"
 // Returns CObject number of laser fired or -1 if not possible to fire

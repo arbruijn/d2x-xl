@@ -1,4 +1,4 @@
-/*
+		/*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTTIBUTING THE CODE TO
 END-USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
@@ -883,7 +883,7 @@ if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 
 	if (triP || faceP) {
 		TISetRenderPointers (GL_TEXTURE0 + bLightmaps, nIndex, bDecal < 0);
 		if (!bLightmaps)
-			glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + nIndex);
+			glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.m_normals + nIndex);
 		if (bDecal > 0) {
 			TISetRenderPointers (GL_TEXTURE1 + bLightmaps, nIndex, 1);
 			if (mask)
@@ -908,7 +908,7 @@ if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 
 			glColorPointer (4, GL_FLOAT, 0, item->color);
 		if (bLightmaps) {
 			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.lMapTexCoord + nIndex);
-			glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + nIndex);
+			glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.m_normals + nIndex);
 			glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices + nIndex);
 			}
 		}
@@ -1010,9 +1010,9 @@ if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 
 								transpItems.bTextured ? NULL : faceP ? &faceP->color : item->color);
 #if 0
 		if (triP)
-			glNormal3fv (reinterpret_cast<GLfloat*> (gameData.segs.faces.normals + triP->nIndex));
+			glNormal3fv (reinterpret_cast<GLfloat*> (gameData.segs.faces.m_normals + triP->nIndex));
 		else if (faceP)
-			glNormal3fv (reinterpret_cast<GLfloat*> (gameData.segs.faces.normals + faceP->nIndex));
+			glNormal3fv (reinterpret_cast<GLfloat*> (gameData.segs.faces.m_normals + faceP->nIndex));
 #endif
 		glDrawArrays (item->nPrimitive, 0, item->nVertices);
 		}

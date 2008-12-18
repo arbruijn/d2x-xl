@@ -174,7 +174,7 @@ if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP->info.nId).companion) {
 			if (nStartSeg != nDestSeg) {
 				if (0 > (nSide = FindConnectedSide (segP, SEGMENTS + nDestSeg)))
 					continue;
-				if (!((WALL_IS_DOORWAY (segP, nSide, NULL) & WID_FLY_FLAG) || (AIDoorIsOpenable (objP, segP, nSide))))
+				if (!((segP->IsDoorWay (nSide, NULL) & WID_FLY_FLAG) || (AIDoorIsOpenable (objP, segP, nSide))))
 					continue;
 				fq.p0					= &objP->info.position.vPos;
 				fq.startSeg			= nStartSeg;
@@ -456,13 +456,13 @@ return xDistToGoal;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Move the CObject objP to a spot in which it doesn't intersect a tWall.
+//	Move the CObject objP to a spot in which it doesn't intersect a CWall.
 //	It might mean moving it outside its current CSegment.
 void MoveObjectToLegalSpot (CObject *objP, int bMoveToCenter)
 {
 	CFixVector	vSegCenter, vOrigPos = objP->info.position.vPos;
 	int			i;
-	CSegment		*segP = gameData.segs.segments + objP->info.nSegment;
+	CSegment		*segP = SEGMENTS + objP->info.nSegment;
 
 if (bMoveToCenter) {
 	COMPUTE_SEGMENT_CENTER_I (&vSegCenter, objP->info.nSegment);
@@ -471,8 +471,8 @@ if (bMoveToCenter) {
 	}
 else {
 	for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
-		if (WALL_IS_DOORWAY (segP, (short) i, objP) & WID_FLY_FLAG) {
-			COMPUTE_SEGMENT_CENTER_I (&vSegCenter, segP->children [i]);
+		if (segP->IsDoorWay ((short) i, objP) & WID_FLY_FLAG) {
+			COMPUTE_SEGMENT_CENTER_I (&vSegCenter, segP->m_children [i]);
 			MoveObjectToLegalPoint (objP, &vSegCenter);
 			if (ObjectIntersectsWall (objP))
 				objP->info.position.vPos = vOrigPos;

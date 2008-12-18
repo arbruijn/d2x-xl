@@ -89,7 +89,7 @@ int PlayerCanOpenDoor (CSegment *segP, short nSide)
 
 nWall = WallNumP (segP, nSide);
 if (!IS_WALL (nWall))
-	return 0;						//	no tWall here.
+	return 0;						//	no CWall here.
 wallType = gameData.walls.walls [nWall].nType;
 //	Can't open locked doors.
 if (( (wallType == WALL_DOOR) && (gameData.walls.walls [nWall].flags & WALL_DOOR_LOCKED)) || (wallType == WALL_CLOSED))
@@ -134,14 +134,14 @@ while (nTail != nHead) {
 
 	//	to make Random, switch a pair of entries in rndSide.
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
-		if (0 > (nChild = segP->children [nSide]))
+		if (0 > (nChild = segP->m_children [nSide]))
 			continue;
 		if (bVisited [nChild])
 			continue;
 		nWall = WallNumP (segP, nSide);
 		if (IS_WALL (nWall) && !PlayerCanOpenDoor (segP, nSide))
 			continue;
-		segQueue [nHead++] = segP->children [nSide];
+		segQueue [nHead++] = segP->m_children [nSide];
 		bVisited [nChild] = nCurDepth + 1;
 		}
 	}
@@ -218,7 +218,7 @@ while (nSegment == -1) {
 		nDepth--;
 		continue;
 		}
-	special = gameData.segs.segment2s [nSegment].special;
+	special = gameData.segs.segment2s [nSegment].m_special;
 	if ((special == SEGMENT_IS_CONTROLCEN) ||
 		 (special == SEGMENT_IS_BLOCKED) ||
 		 (special == SEGMENT_IS_SKYBOX) ||
@@ -229,8 +229,8 @@ while (nSegment == -1) {
 		nSegment = -1;
 	else {	//don't drop in any children of control centers
 		for (int i = 0; i < 6; i++) {
-			int nChild = gameData.segs.segments [nSegment].children [i];
-			if (IS_CHILD (nChild) && (gameData.segs.segment2s [nChild].special == SEGMENT_IS_CONTROLCEN)) {
+			int nChild = SEGMENTS [nSegment].children [i];
+			if (IS_CHILD (nChild) && (gameData.segs.segment2s [nChild].m_special == SEGMENT_IS_CONTROLCEN)) {
 				nSegment = -1;
 				break;
 				}
@@ -422,7 +422,7 @@ if (depth == 0)
 if (SegmentContainsObject (objectType, object_id, nSegment))
 	return 1;
 for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
-	seg2 = gameData.segs.segments [nSegment].children [i];
+	seg2 = SEGMENTS [nSegment].children [i];
 	if (seg2 != -1)
 		if (ObjectNearbyAux (seg2, objectType, object_id, depth-1))
 			return 1;
@@ -1031,7 +1031,7 @@ int ReturnFlagHome (CObject *objP)
 	CObject	*initObjP;
 
 if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF) {
-	if (gameData.segs.segment2s [objP->info.nSegment].special == ((objP->info.nId == POW_REDFLAG) ? SEGMENT_IS_GOAL_RED : SEGMENT_IS_GOAL_BLUE))
+	if (gameData.segs.segment2s [objP->info.nSegment].m_special == ((objP->info.nId == POW_REDFLAG) ? SEGMENT_IS_GOAL_RED : SEGMENT_IS_GOAL_BLUE))
 		return objP->info.nSegment;
 	if ((initObjP = FindInitObject (objP))) {
 	//objP->info.nSegment = initObjP->info.nSegment;

@@ -80,8 +80,8 @@ class CConsole {
 		int						m_VChars;			//! The number of visible characters in one console line (autocalculated)
 		char*						m_Prompt;			//! Prompt displayed in command line
 		char						m_Command [CON_CHARS_PER_LINE];	//! current command in command line = lcommand + rcommand
-		char						m_RCommand [CON_CHARS_PER_LINE];	//! left hand tSide of cursor
-		char						m_LCommand [CON_CHARS_PER_LINE];	//! right hand tSide of cursor
+		char						m_RCommand [CON_CHARS_PER_LINE];	//! left hand CSide of cursor
+		char						m_LCommand [CON_CHARS_PER_LINE];	//! right hand CSide of cursor
 		char						m_VCommand [CON_CHARS_PER_LINE];	//! current visible command line
 		int						m_CursorPos;			//! Current cursor position in CurrentCommand
 		int						m_Offset;			//! CommandOffset (first visible char of command) - if command is too long to fit into console

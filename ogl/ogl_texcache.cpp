@@ -107,10 +107,10 @@ void CacheSideTextures (int nSeg)
 {
 	short				nSide, tMap1, tMap2;
 	CBitmap			*bmP, *bm2, *bmm;
-	struct tSide	*sideP;
+	struct CSide	*sideP;
 
 for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
-	sideP = gameData.segs.segments [nSeg].sides + nSide;
+	sideP = SEGMENTS [nSeg].m_sides + nSide;
 	tMap1 = sideP->nBaseTex;
 	if ((tMap1 < 0) || (tMap1 >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]))
 		continue;
@@ -191,7 +191,7 @@ int OglCacheLevelTextures (void)
 	short			nBaseTex, nOvlTex;
 	CBitmap	*bmBot,*bmTop, *bmm;
 	CSegment		*segP;
-	tSide			*sideP;
+	CSide			*sideP;
 	CObject		*objP;
 
 if (gameStates.render.bBriefing)
@@ -217,7 +217,7 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 
 PrintLog ("   caching geometry textures\n");
 for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
-	for (nSide = 0, sideP = segP->sides; nSide < MAX_SIDES_PER_SEGMENT; nSide++, sideP++) {
+	for (nSide = 0, sideP = segP->m_sides; nSide < MAX_SIDES_PER_SEGMENT; nSide++, sideP++) {
 		nBaseTex = sideP->nBaseTex;
 		if ((nBaseTex < 0) || (nBaseTex >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]))
 			continue;

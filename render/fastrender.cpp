@@ -146,7 +146,7 @@ return 1;
 
 void LoadFaceBitmaps (CSegment *segP, tFace *faceP)
 {
-	tSide	*sideP = segP->sides + faceP->nSide;
+	CSide	*sideP = segP->m_sides + faceP->nSide;
 	short	nFrame = sideP->nFrame;
 
 if (faceP->nCamera >= 0) {
@@ -241,7 +241,7 @@ if ((newFaceP->bIsLight = IsLight (newFaceP->nBaseTex)))
 
 void FixTriangleFan (CSegment *segP, tFace *faceP)
 {
-if (((faceP->nType = segP->sides [faceP->nSide].nType) == SIDE_IS_TRI_13)) {	//rearrange vertex order for TRIANGLE_FAN rendering
+if (((faceP->nType = segP->m_sides [faceP->nSide].nType) == SIDE_IS_TRI_13)) {	//rearrange vertex order for TRIANGLE_FAN rendering
 	{
 	short	h = faceP->index [0];
 	memcpy (faceP->index, faceP->index + 1, 3 * sizeof (short));
@@ -303,7 +303,7 @@ if (!(faceP->widFlags & WID_RENDER_FLAG))
 if (faceP->bmBot)
 	return false;
 short nSegment = faceP->nSegment;
-short special = gameData.segs.segment2s [nSegment].special;
+short special = gameData.segs.segment2s [nSegment].m_special;
 if ((special < SEGMENT_IS_WATER) || (special > SEGMENT_IS_TEAM_RED) || 
 	 (gameData.segs.xSegments [nSegment].group < 0) || (gameData.segs.xSegments [nSegment].owner < 1))
 	return false;
@@ -554,7 +554,7 @@ else
 #endif
 	{
 	if (bNormals)
-		glNormalPointer (GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.normals.Buffer ()));
+		glNormalPointer (GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.m_normals.Buffer ()));
 	if (!bDepthOnly) {
 		if (bLightmaps)
 			glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.lMapTexCoord.Buffer ()));
@@ -677,7 +677,7 @@ if (bAutomap) {
 	if (gameStates.render.automap.bDisplay) {
 		if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisible [nSegment]))
 			return 0;
-		if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX))
+		if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].m_special == SEGMENT_IS_SKYBOX))
 			return 0;
 		}
 	else
@@ -743,7 +743,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 		if (gameStates.render.automap.bDisplay) {
 			if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisible [nSegment]))
 				return;
-			if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX))
+			if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].m_special == SEGMENT_IS_SKYBOX))
 				continue;
 			}
 		if (nPass == 1) {
@@ -834,8 +834,8 @@ gameData.render.lights.nCoronas = 0;
 for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 		continue;
-	if ((gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX) ||
-		 (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_OUTDOOR))
+	if ((gameData.segs.segment2s [nSegment].m_special == SEGMENT_IS_SKYBOX) ||
+		 (gameData.segs.segment2s [nSegment].m_special == SEGMENT_IS_OUTDOOR))
 		continue;
 	segFaceP = SEGFACES + nSegment;
 #if DBG
@@ -1018,7 +1018,7 @@ if (FACE_IDX (faceP) == nDbgFace)
 #endif
 bWall = IS_WALL (faceP->nWall);
 if (bWall) {
-	faceP->widFlags = WALL_IS_DOORWAY (segP, nSide, NULL);
+	faceP->widFlags = segP->IsDoorWay (nSide, NULL);
 	if (!(faceP->widFlags & (WID_RENDER_FLAG | WID_RENDPAST_FLAG)))
 		return -1;
 	}
@@ -1061,7 +1061,7 @@ for (faceP = gameData.segs.faces.slidingFaces; faceP; faceP = faceP->nextSliding
 #endif
 	texCoordP = gameData.segs.faces.texCoord + faceP->nIndex;
 	ovlTexCoordP = gameData.segs.faces.ovlTexCoord + faceP->nIndex;
-	uvlP = SEGMENTS [faceP->nSegment].sides [faceP->nSide].uvls;
+	uvlP = SEGMENTS [faceP->nSegment].m_sides [faceP->nSide].uvls;
 	nOffset = faceP->nType == SIDE_IS_TRI_13;
 	if (gameStates.render.bTriangleMesh) {
 		static short nTriVerts [2][6] = {{0,1,2,0,2,3},{0,1,3,1,2,3}};
@@ -1790,7 +1790,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 								pvc->index = gameStates.render.nFrameFlipFlop + 1;
 								}
 							else {
-								G3VertexColor (gameData.segs.faces.normals + nIndex, 
+								G3VertexColor (gameData.segs.faces.m_normals + nIndex, 
 													gameData.segs.faces.vertices + nIndex, nVertex, 
 													NULL, &c, 1, 0, nThread);
 								gameData.render.lights.dynamic.shader.index [0][nThread] = gameData.render.lights.dynamic.shader.index [1][nThread];
@@ -1881,8 +1881,8 @@ for (i = nStart; i != nEnd; i += nStep) {
 #endif
 		faceP->color = faceColor [nColor].color;
 		pc = gameData.segs.faces.color + faceP->nIndex;
-		uvlP = segP->sides [nSide].uvls;
-		for (h = 0, uvi = (segP->sides [nSide].nType == SIDE_IS_TRI_13); h < 4; h++, pc++, uvi++) {
+		uvlP = segP->m_sides [nSide].uvls;
+		for (h = 0, uvi = (segP->m_sides [nSide].nType == SIDE_IS_TRI_13); h < 4; h++, pc++, uvi++) {
 			if (gameStates.render.bFullBright) 
 				*pc = nColor ? faceColor [nColor].color : brightColor.color;
 			else {

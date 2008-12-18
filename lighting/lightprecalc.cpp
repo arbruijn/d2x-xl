@@ -134,7 +134,7 @@ if (gameStates.app.bMultiThreaded)
 	j = i ? gameData.segs.nSegments : gameData.segs.nSegments / 2;
 else
 	INIT_PROGRESS_LOOP (i, j, gameData.segs.nSegments);
-for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
+for (segP = SEGMENTS + i; i < j; i++, segP++) {
 	COMPUTE_SEGMENT_CENTER (&center, segP);
 	pl = gameData.render.lights.dynamic.lights;
 	for (l = n = 0; l < gameData.render.lights.dynamic.nLights; l++, pl++) {
@@ -170,7 +170,7 @@ int ComputeNearestVertexLights (int nVertex)
 {
 	CFixVector			*vertP;
 	CDynLight			*pl;
-	tSide					*sideP;
+	CSide					*sideP;
 	int					h, j, k, l, n, nMaxLights;
 	CFixVector			vLightToVert;
 	struct tLightDist	*pDists;
@@ -214,9 +214,9 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 			if (h > MAX_LIGHT_RANGE * pl->info.fRange)
 				continue;
 			if ((pl->info.nSegment >= 0) && (pl->info.nSide >= 0)) {
-				sideP = SEGMENTS [pl->info.nSegment].sides + pl->info.nSide;
-				if ((CFixVector::Dot(sideP->normals[0], vLightToVert) < -F1_0 / 6) &&
-					 ((sideP->nType == SIDE_IS_QUAD) || (CFixVector::Dot(sideP->normals[1], vLightToVert) < -F1_0 / 6)))
+				sideP = SEGMENTS [pl->info.nSegment].m_sides + pl->info.nSide;
+				if ((CFixVector::Dot(sideP->m_normals[0], vLightToVert) < -F1_0 / 6) &&
+					 ((sideP->nType == SIDE_IS_QUAD) || (CFixVector::Dot(sideP->m_normals[1], vLightToVert) < -F1_0 / 6)))
 					continue;
 				}
 			}
@@ -275,7 +275,7 @@ inline int IsSegVert (short nSegment, int nVertex)
 
 if (nSegment < 0)
 	return 0;
-for (i = 8, psv = gameData.segs.segments [nSegment].verts; i; i--, psv++)
+for (i = 8, psv = SEGMENTS [nSegment].verts; i; i--, psv++)
 	if (nVertex == *psv)
 		return 1;
 return 0;
@@ -322,7 +322,7 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 void ComputeSingleSegmentVisibility (short nStartSeg)
 {
 	CSegment		*segP, *childP;
-	tSide			*sideP;
+	CSide			*sideP;
 	short			nSegment, nSide, nChildSeg, nChildSide, i;
 	CFixVector	vNormal;
 	CAngleVector	vAngles;
@@ -338,10 +338,10 @@ gameData.objs.viewerP = &viewer;
 viewer.info.nSegment = nStartSeg;
 COMPUTE_SEGMENT_CENTER_I (&viewer.info.position.vPos, nStartSeg);
 segP = SEGMENTS + nStartSeg;
-for (sideP = segP->sides, nSide = 0; nSide < 6; nSide++, sideP++) {
+for (sideP = segP->m_sides, nSide = 0; nSide < 6; nSide++, sideP++) {
 #if 1
 	if (gameStates.render.bPerPixelLighting) {
-		if (0 <= (nChildSeg = segP->children [nSide])) {
+		if (0 <= (nChildSeg = segP->m_children [nSide])) {
 			while (!SetSegVis (nStartSeg, nChildSeg))
 				;
 			childP = SEGMENTS + nChildSeg;
@@ -353,7 +353,7 @@ for (sideP = segP->sides, nSide = 0; nSide < 6; nSide++, sideP++) {
 				}
 			}
 		}
-	vNormal = sideP->normals[0] + sideP->normals[1];
+	vNormal = sideP->m_normals[0] + sideP->m_normals[1];
 	vNormal *= (-F1_0 / 2);
 	vAngles = vNormal.ToAnglesVec();
 	viewer.info.position.mOrient = CFixMatrix::Create(vAngles);

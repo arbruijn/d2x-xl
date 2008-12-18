@@ -260,20 +260,20 @@ for (i = 0; i < nPlayers; i++) {
 		segNum = startSegs [j];
 		if (segNum < 0)
 			continue;
-		segType = bCoop ? gameData.segs.segment2s [segNum].special : SEGMENT_IS_NOTHING;
+		segType = bCoop ? gameData.segs.segment2s [segNum].m_special : SEGMENT_IS_NOTHING;
 #if 0
 		switch (segType) {
 			case SEGMENT_IS_GOAL_RED:
 			case SEGMENT_IS_TEAM_RED:
 				if (i < nPlayers / 2) // (GetTeam (i) != TEAM_RED)
 					continue;
-				gameData.segs.segment2s [segNum].special = SEGMENT_IS_NOTHING;
+				gameData.segs.segment2s [segNum].m_special = SEGMENT_IS_NOTHING;
 				break;
 			case SEGMENT_IS_GOAL_BLUE:
 			case SEGMENT_IS_TEAM_BLUE:
 				if (i >= nPlayers / 2) //GetTeam (i) != TEAM_BLUE)
 					continue;
-				gameData.segs.segment2s [segNum].special = SEGMENT_IS_NOTHING;
+				gameData.segs.segment2s [segNum].m_special = SEGMENT_IS_NOTHING;
 				break;
 			default:
 				break;
@@ -616,29 +616,29 @@ void SetSoundSources (void)
 gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires;
 DigiInitSounds ();		//clear old sounds
 gameStates.sound.bDontStartObjects = 1;
-for (segP = gameData.segs.segments.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSegment; segP++, nSegment++)
+for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSegment; segP++, nSegment++)
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
-		if (!(WALL_IS_DOORWAY (segP,nSide, NULL) & WID_RENDER_FLAG))
+		if (!(segP->IsDoorWay (nSide, NULL) & WID_RENDER_FLAG))
 			continue;
-		nEffect = (nOvlTex = segP->sides [nSide].nOvlTex) ? gameData.pig.tex.tMapInfoP [nOvlTex].nEffectClip : -1;
+		nEffect = (nOvlTex = segP->m_sides [nSide].nOvlTex) ? gameData.pig.tex.tMapInfoP [nOvlTex].nEffectClip : -1;
 		if (nEffect < 0)
-			nEffect = gameData.pig.tex.tMapInfoP [segP->sides [nSide].nBaseTex].nEffectClip;
+			nEffect = gameData.pig.tex.tMapInfoP [segP->m_sides [nSide].m_nBaseTex].nEffectClip;
 		if (nEffect < 0)
 			continue;
 		if ((nSound = gameData.eff.effectP [nEffect].nSound) == -1)
 			continue;
-		nConnSeg = segP->children [nSide];
+		nConnSeg = segP->m_children [nSide];
 
-		//check for sound on other tSide of tWall.  Don't add on
-		//both walls if sound travels through tWall.  If sound
-		//does travel through tWall, add sound for lower-numbered
+		//check for sound on other CSide of CWall.  Don't add on
+		//both walls if sound travels through CWall.  If sound
+		//does travel through CWall, add sound for lower-numbered
 		//CSegment.
 
 		if (IS_CHILD (nConnSeg) && (nConnSeg < nSegment) &&
-			 (WALL_IS_DOORWAY (segP, nSide, NULL) & (WID_FLY_FLAG | WID_RENDPAST_FLAG))) {
-			connSegP = gameData.segs.segments + segP->children [nSide];
+			 (segP->IsDoorWay (nSide, NULL) & (WID_FLY_FLAG | WID_RENDPAST_FLAG))) {
+			connSegP = SEGMENTS + segP->m_children [nSide];
 			nConnSide = FindConnectedSide (segP, connSegP);
-			if (connSegP->sides [nConnSide].nOvlTex == segP->sides [nSide].nOvlTex)
+			if (connSegP->m_sides [nConnSide].nOvlTex == segP->m_sides [nSide].nOvlTex)
 				continue;		//skip this one
 			}
 		COMPUTE_SIDE_CENTER (&v, segP, nSide);
@@ -938,7 +938,7 @@ if (0 > LoadRobotReplacements (pszLevelName, 0, 0)) {
 LoadHiresModels (1);
 /*---*/PrintLog ("   initializing cambot\n");
 InitCamBots (0);
-networkData.nSegmentCheckSum = NetMiscCalcCheckSum (gameData.segs.segments.Buffer (), sizeof (CSegment) * gameData.segs.nSegments);
+networkData.nSegmentCheckSum = NetMiscCalcCheckSum (SEGMENTS.Buffer (), sizeof (CSegment) * gameData.segs.nSegments);
 ResetNetworkObjects ();
 ResetChildObjects ();
 externalView.Reset (-1, -1);

@@ -314,8 +314,10 @@ int MultiPowerupIs4Pack(int);
 //reads one CObject of the given version from the given file
 void CObject::Read (CFile& cf)
 {
-	int	i;
-
+#if DBG
+if (OBJ_IDX (this) == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
 info.nType = cf.ReadByte ();
 info.nId = cf.ReadByte ();
 info.controlType = cf.ReadByte ();
@@ -359,7 +361,7 @@ switch (info.movementType) {
 switch (info.controlType) {
 	case CT_AI: 
 		cType.aiInfo.behavior = cf.ReadByte ();
-		for (i=0;i<MAX_AI_FLAGS;i++)
+		for (int i = 0; i < MAX_AI_FLAGS; i++)
 			cType.aiInfo.flags [i] = cf.ReadByte ();
 		cType.aiInfo.nHideSegment = cf.ReadShort ();
 		cType.aiInfo.nHideIndex = cf.ReadShort ();
@@ -425,12 +427,11 @@ switch (info.renderType) {
 
 	case RT_MORPH:
 	case RT_POLYOBJ: {
-		int i,tmo;
 		rType.polyObjInfo.nModel = cf.ReadInt ();
-		for (i=0;i<MAX_SUBMODELS;i++)
+		for (int i = 0; i <MAX_SUBMODELS; i++)
 			cf.ReadAngVec(rType.polyObjInfo.animAngles [i]);
 		rType.polyObjInfo.nSubObjFlags = cf.ReadInt ();
-		tmo = cf.ReadInt ();
+		int tmo = cf.ReadInt ();
 #ifndef EDITOR
 		rType.polyObjInfo.nTexOverride = tmo;
 #else
@@ -787,7 +788,7 @@ gameFileInfo.objects.count		=	0;
 gameFileInfo.objects.size		=	sizeof(CObject);  
 gameFileInfo.walls.offset		=	-1;
 gameFileInfo.walls.count		=	0;
-gameFileInfo.walls.size			=	sizeof(tWall);  
+gameFileInfo.walls.size			=	sizeof(CWall);  
 gameFileInfo.doors.offset		=	-1;
 gameFileInfo.doors.count		=	0;
 gameFileInfo.doors.size			=	sizeof(tActiveDoor);  
@@ -1005,8 +1006,8 @@ if (gameFileInfo.doors.offset > -1) {
 			ReadActiveDoorV19(&d, cf);
 			gameData.walls.activeDoors [i].nPartCount = d.nPartCount;
 			for (p = 0; p < d.nPartCount; p++) {
-				nConnSeg = gameData.segs.segments [d.seg [p]].children [d.nSide [p]];
-				nConnSide = FindConnectedSide(gameData.segs.segments + d.seg [p], gameData.segs.segments + nConnSeg);
+				nConnSeg = SEGMENTS [d.seg [p]].children [d.nSide [p]];
+				nConnSide = FindConnectedSide(SEGMENTS + d.seg [p], SEGMENTS + nConnSeg);
 				gameData.walls.activeDoors [i].nFrontWall [p] = WallNumI (d.seg [p], d.nSide [p]);
 				gameData.walls.activeDoors [i].nBackWall [p] = WallNumI (nConnSeg, nConnSide);
 				}
@@ -1187,7 +1188,7 @@ if (gameFileInfo.botGen.offset > -1) {
 
 		//	Set links in gameData.matCens.botGens to gameData.matCens.fuelCenters array
 		for (j = 0; j <= gameData.segs.nLastSegment; j++)
-			if ((gameData.segs.segment2s [j].special == SEGMENT_IS_ROBOTMAKER) &&
+			if ((gameData.segs.segment2s [j].m_special == SEGMENT_IS_ROBOTMAKER) &&
 					(gameData.segs.segment2s [j].nMatCen == i)) {
 				gameData.matCens.botGens [i].nFuelCen = gameData.segs.segment2s [j].value;
 				break;
@@ -1212,7 +1213,7 @@ if (gameFileInfo.equipGen.offset > -1) {
 		MatCenInfoRead (gameData.matCens.equipGens + i, cf);
 		//	Set links in gameData.matCens.botGens to gameData.matCens.fuelCenters array
 		for (j = 0; j <= gameData.segs.nLastSegment; j++)
-			if ((gameData.segs.segment2s [j].special == SEGMENT_IS_EQUIPMAKER) &&
+			if ((gameData.segs.segment2s [j].m_special == SEGMENT_IS_EQUIPMAKER) &&
 					(gameData.segs.segment2s [j].nMatCen == i))
 				gameData.matCens.equipGens [i].nFuelCen = gameData.segs.segment2s [j].value;
 		}
@@ -1303,13 +1304,13 @@ for (i = 0; i < gameFileInfo.objects.count; i++, objP++) {
 static void CheckAndFixDoors (void)
 {
 	int	i, j;
-	tSide	*sideP;
+	CSide	*sideP;
 
 for (i = 0; i < gameData.segs.nSegments; i++) {
-	sideP = gameData.segs.segments [i].sides;
+	sideP = SEGMENTS [i].m_sides;
 	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
 		short nWall = WallNumS (sideP);
-		tWall  *w;
+		CWall  *w;
 		if (!IS_WALL (nWall))
 			continue;
 		w = gameData.walls.walls + nWall;
@@ -1333,7 +1334,7 @@ static void CheckAndFixWalls (void)
 for (i = 0; i < gameData.walls.nWalls; i++)
 	if (gameData.walls.walls [i].nTrigger >= gameData.trigs.nTriggers) {
 #if TRACE
-		console.printf (CON_DBG,"Removing reference to invalid tTrigger %d from tWall %d\n",gameData.walls.walls [i].nTrigger,i);
+		console.printf (CON_DBG,"Removing reference to invalid tTrigger %d from CWall %d\n",gameData.walls.walls [i].nTrigger,i);
 #endif
 		gameData.walls.walls [i].nTrigger = NO_TRIGGER;	//kill tTrigger
 		}
@@ -1366,7 +1367,7 @@ static void CheckAndFixTriggers (void)
 	short	nSegment, nSide, nWall;
 
 for (i = 0; i < gameData.trigs.nTriggers; ) {
-	//	Find which tWall this tTrigger is connected to.
+	//	Find which CWall this tTrigger is connected to.
 	for (j = 0; j < gameData.walls.nWalls; j++)
 		if (gameData.walls.walls [j].nTrigger == i)
 			break;
@@ -1393,10 +1394,10 @@ for (i = 0; i < gameData.trigs.nTriggers; i++) {
 		nSegment = gameData.trigs.triggers [i].nSegment [j];
 		nSide = gameData.trigs.triggers [i].nSide [j];
 		nWall = WallNumI (nSegment, nSide);
-		//check to see that if a tTrigger requires a tWall that it has one,
+		//check to see that if a tTrigger requires a CWall that it has one,
 		//and if it requires a botGen that it has one
 		if (gameData.trigs.triggers [i].nType == TT_MATCEN) {
-			if (gameData.segs.segment2s [nSegment].special != SEGMENT_IS_ROBOTMAKER)
+			if (gameData.segs.segment2s [nSegment].m_special != SEGMENT_IS_ROBOTMAKER)
 				continue;		//botGen tTrigger doesn'i point to botGen
 			}
 		else if ((gameData.trigs.triggers [i].nType != TT_LIGHT_OFF) && 
@@ -1404,7 +1405,7 @@ for (i = 0; i < gameData.trigs.nTriggers; i++) {
 			if (IS_WALL (nWall))
 				gameData.walls.walls [nWall].controllingTrigger = i;
 			else {
-				Int3();	//	This is illegal.  This ttrigger requires a tWall
+				Int3();	//	This is illegal.  This ttrigger requires a CWall
 				}
 			}
 		}
@@ -1778,7 +1779,7 @@ int SaveGameData(FILE * SaveFile)
 	gameFileInfo.objects.size		=	sizeof(CObject);
 	gameFileInfo.walls.offset			=	-1;
 	gameFileInfo.walls.count		=	gameData.walls.nWalls;
-	gameFileInfo.walls.size			=	sizeof(tWall);
+	gameFileInfo.walls.size			=	sizeof(CWall);
 	gameFileInfo.doors.offset			=	-1;
 	gameFileInfo.doors.count		=	gameData.walls.nOpenDoors;
 	gameFileInfo.doors.size			=	sizeof(tActiveDoor);
@@ -1827,7 +1828,7 @@ int SaveGameData(FILE * SaveFile)
 	//==================== SAVE WALL INFO =============================
 
 	walls.offset = ftell(SaveFile);
-	fwrite(gameData.walls.walls, sizeof(tWall), gameFileInfo.walls.count, SaveFile);
+	fwrite(gameData.walls.walls, sizeof(CWall), gameFileInfo.walls.count, SaveFile);
 
 	//==================== SAVE DOOR INFO =============================
 
@@ -1948,7 +1949,7 @@ int saveLevel_sub(char * filename, int compiledVersion)
 	if (!UpdateObjectSeg(OBJECTS + gameData.multiplayer.players [0].nObject)) {
 		if (gameData.objs.consoleP->info.nSegment > gameData.segs.nLastSegment)
 			gameData.objs.consoleP->info.nSegment = 0;
-		COMPUTE_SEGMENT_CENTER (&gameData.objs.consoleP->info.position.vPos, gameData.segs.segments + gameData.objs.consoleP->info.nSegment);
+		COMPUTE_SEGMENT_CENTER (&gameData.objs.consoleP->info.position.vPos, SEGMENTS + gameData.objs.consoleP->info.nSegment);
 	}
 	FixObjectSegs();
 
@@ -2052,7 +2053,7 @@ void dump_mine_info(void)
 	for (nSegment=0; nSegment<=gameData.segs.nLastSegment; nSegment++) {
 		for (nSide=0; nSide<MAX_SIDES_PER_SEGMENT; nSide++) {
 			int	vertnum;
-			tSide	*sideP = &gameData.segs.segments [nSegment].sides [nSide];
+			CSide	*sideP = &SEGMENTS [nSegment].m_sides [nSide];
 
 			if (gameData.segs.segment2s [nSegment].xAvgSegLight > max_sl)
 				max_sl = gameData.segs.segment2s [nSegment].xAvgSegLight;
