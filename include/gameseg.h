@@ -53,19 +53,7 @@ class CSegMasks {
 void ComputeSideRads (short nSegment, short CSide, fix *prMin, fix *prMax);
 int FindConnectedSide (CSegment *base_seg, CSegment *con_seg);
 
-//   adjacent on the diagonal edge
-void CreateAllVertexLists (int *num_faces, int *vertices, int nSegment, int nSide);
-
-//like create_all_vertex_lists(), but generate absolute point numbers
-int CreateAbsVertexLists (int *vertices, int nSegment, int nSide);
-
 // -----------------------------------------------------------------------------------
-//returns 3 different bitmasks with info telling if this sphere is in
-//this CSegment.  See CSegMasks structure for info on fields
-CSegMasks GetSideMasks (CFixVector *checkP, int nSegment, int nSide, fix xRad);
-
-CSegMasks GetSegMasks(const CFixVector& checkp,int nSegment,fix rad);
-
 //this macro returns true if the nSegment for an CObject is correct
 #define check_obj_seg(obj) (GetSegMasks(&(obj)->pos,(obj)->nSegment,0).centermask == 0)
 
@@ -99,8 +87,6 @@ void ExtractOrientFromSegment(CFixMatrix *m,CSegment *seg);
 //      Make a just-modified CSegment valid.
 //              check all sides to see how many faces they each should have (0,1,2)
 //              create new vector normals
-void ValidateSegment(CSegment *sp);
-
 void ValidateSegments(void);
 
 //      Extract the forward vector from CSegment *sp, return in *vp.
@@ -118,15 +104,11 @@ void extract_right_vector_from_segment(CSegment *sp,CFixVector *vp);
 // to the center of the top face of the CSegment.
 void extract_up_vector_from_segment(CSegment *sp,CFixVector *vp);
 
-void CreateWallsOnSide(CSegment *sp, int nSide);
-
 int GetVertsForNormal (int v0, int v1, int v2, int v3, int *pv0, int *pv1, int *pv2, int *pv3);
 int GetVertsForNormalTri (int v0, int v1, int v2, int *pv0, int *pv1, int *pv2);
 
 void ComputeVertexNormals (void);
 void ResetVertexNormals (void);
-float FaceSize (short nSegment, ubyte nSide);
-
 float FaceSize (short nSegment, ubyte nSide);
 
 #endif

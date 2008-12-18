@@ -56,6 +56,13 @@ typedef struct tFVIData {
 #define FQ_SEE_OBJS			32
 #define FQ_ANY_OBJECT		64
 
+//intersection types
+#define IT_ERROR	-1
+#define IT_NONE	0       //doesn't touch face at all
+#define IT_FACE	1       //touches face
+#define IT_EDGE	2       //touches edge of face
+#define IT_POINT  3       //touches vertex
+
 //this data contains the parms to fvi()
 typedef struct tFVIQuery {
 	CFixVector	*p0, *p1;
