@@ -32,6 +32,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // How far a point can be from a plane, and still be "in" the plane
 
 // ------------------------------------------------------------------------------------------
+
+inline CFixVector& CSide::Normal (int nFace)
+{ 
+return gameStates.render.bRendering ? m_rotNorms [nFace] : m_normals [nFace]; 
+}
+
+// ------------------------------------------------------------------------------------------
 // Compute the center point of a CSide of a CSegment.
 //	The center point is defined to be the average of the 4 points defining the CSide.
 void CSide::ComputeCenter (void)
@@ -90,7 +97,7 @@ return vertices;
 
 // -------------------------------------------------------------------------------
 
-int CSide::CreateVertexList (short* verts, int* index)
+int CSide::CreateVertexList (ushort* verts, int* index)
 {
 m_nFaces = -1;
 m_nMinVertex [0] = min (m_vertices [0], m_vertices [2]);
@@ -99,7 +106,6 @@ if (m_nType == SIDE_IS_QUAD) {
 	m_vertices [1] = verts [index [1]];
 	m_vertices [2] = verts [index [2]];
 	m_vertices [3] = verts [index [3]];
-	m_nMinVertex = m_vertices [0];
 	if (m_nMinVertex [0] > m_vertices [1])
 		m_nMinVertex [0] = m_vertices [1];
 	if (m_nMinVertex [0] > m_vertices [3])
@@ -127,8 +133,7 @@ else if (m_nType == SIDE_IS_TRI_13) {
 	m_nFaces = 2;
 	}
 else {
-	Error ("Illegal CSide nType (3), nType = %i, CSegment # = %i, CSide # = %i\n", sideP->nType, nSegment, nSide);
-	m_nFaces = -1;
+	return m_nFaces = -1;
 	}
 return CreateFaceVertIndex ();
 }
@@ -140,7 +145,7 @@ return CreateFaceVertIndex ();
 //	If there are two faces, they both have three vertices, so face #0 is stored in vertices 0, 1, 2,
 //	face #1 is stored in vertices 3, 4, 5.
 
-void CSide::CreateFaceVertexIndex (void)
+int CSide::CreateFaceVertIndex (void)
 {
 if (m_nType == SIDE_IS_QUAD) {
 	m_faceVerts [0] = 0;
@@ -165,8 +170,7 @@ else if (m_nType == SIDE_IS_TRI_13) {
 	m_faceVerts [4] = 2;
 	}
 else {
-	Error ("Illegal CSide nType (2), nType = %i, CSegment # = %i, CSide # = %i\n", m_nType, nSegment, nSide);
-	return -1;
+	return m_nFaces = -1;
 	}
 return m_nFaces;
 }
@@ -261,52 +265,56 @@ else {
 
 // -------------------------------------------------------------------------------
 
+int sign (fix v)
+{
+if (v > PLANE_DIST_TOLERANCE)
+	return 1;
+if (v < - (PLANE_DIST_TOLERANCE + 1))		//neg & pos round differently
+	return -1;
+return 0;
+}
+
+// -------------------------------------------------------------------------------
+
 void CSide::CreateWalls (bool bSolid)
 {
 	int			vm0, vm1, vm2, vm3, bFlip;
-	int			v0, v1, v2, v3, i;
+	int			i;
 	int			vertexList [6];
 	CFixVector	vNormal;
 	fix			xDistToPlane;
-	sbyte			*s2v = sideVertIndex [nSide];
 
-	v0 = segP->verts [s2v [0]];
-	v1 = segP->verts [s2v [1]];
-	v2 = segP->verts [s2v [2]];
-	v3 = segP->verts [s2v [3]];
 	bFlip = GetVertsForNormal (m_vertices [0], m_vertices [1], m_vertices [2], m_vertices [3], &vm0, &vm1, &vm2, &vm3);
 	vNormal = CFixVector::Normal (gameData.segs.vertices [vm0], gameData.segs.vertices [vm1], gameData.segs.vertices [vm2]);
 	xDistToPlane = abs (gameData.segs.vertices [vm3].DistToPlane (vNormal, gameData.segs.vertices [vm0]));
 	if (bFlip)
 		vNormal.Neg ();
-#if 1
-	if (bRenderQuads || (xDistToPlane <= PLANE_DIST_TOLERANCE))
-		AddAsQuad (&vNormal);
+	if (xDistToPlane <= PLANE_DIST_TOLERANCE)
+		AddAsQuad (vNormal);
 	else {
 		AddAsTwoTriangles (bSolid);
 		//this code checks to see if we really should be triangulated, and
 		//de-triangulates if we shouldn't be.
 		Assert (m_nFaces == 2);
-		fix dist0 = gameData.segs.vertices [m_vertices [1]].DistToPlane (m_normals [1], gameData.segs.vertices [m_nMinVertex]);
-		fix dist1 = gameData.segs.vertices [m_vertices [4]].DistToPlane (m_normals [0], gameData.segs.vertices [m_nMinVertex]);
+		fix dist0 = gameData.segs.vertices [m_vertices [1]].DistToPlane (m_normals [1], gameData.segs.vertices [m_nMinVertex [0]]);
+		fix dist1 = gameData.segs.vertices [m_vertices [4]].DistToPlane (m_normals [0], gameData.segs.vertices [m_nMinVertex [0]]);
 		int s0 = sign (dist0);
 		int s1 = sign (dist1);
 		if (s0 == 0 || s1 == 0 || s0 != s1) {
 			m_nType = SIDE_IS_QUAD; 	//detriangulate!
 		}
 	}
-#endif
 if (m_nType == SIDE_IS_QUAD) {
-	AddToVertexNormal (m_vertices [0], &vNormal);
-	AddToVertexNormal (m_vertices [1], &vNormal);
-	AddToVertexNormal (m_vertices [2], &vNormal);
-	AddToVertexNormal (m_vertices [3], &vNormal);
+	AddToVertexNormal (m_vertices [0], vNormal);
+	AddToVertexNormal (m_vertices [1], vNormal);
+	AddToVertexNormal (m_vertices [2], vNormal);
+	AddToVertexNormal (m_vertices [3], vNormal);
 	}
 else {
 	for (i = 0; i < 3; i++)
-		AddToVertexNormal (vertexList [i], m_normals);
+		AddToVertexNormal (vertexList [i], m_normals [0]);
 	for (; i < 6; i++)
-		AddToVertexNormal (vertexList [i], m_normals + 1);
+		AddToVertexNormal (vertexList [i], m_normals [1]);
 	}
 }
 
@@ -354,7 +362,7 @@ CSegMasks CSide::Masks (const CFixVector& refPoint, fix xRad, short sideBit, sho
 	CSegMasks	masks;
 	fix			xDist;
 
-masks.valid = 1;
+masks.m_valid = 1;
 if (m_nFaces == 2) {
 	int	nSideCount = 0, 
 			nCenterCount = 0;
@@ -363,7 +371,7 @@ if (m_nFaces == 2) {
 	for (int nFace = 0; nFace < 2; nFace++, faceBit <<= 1) {
 		xDist = refPoint.DistToPlane (Normal (nFace), minVertex);
 		if (xDist - xRad < -PLANE_DIST_TOLERANCE) {	// xRad must be >= 0!
-			masks.faceMask |= faceBit;
+			masks.m_face |= faceBit;
 			nSideCount++;
 			if (xDist < -PLANE_DIST_TOLERANCE) //in front of face
 				nCenterCount++;
@@ -371,28 +379,28 @@ if (m_nFaces == 2) {
 		}
 	if (IsPlanar ()) {	//must be behind both faces
 		if (nSideCount == 2)
-			masks.sideMask |= sideBit;
+			masks.m_side |= sideBit;
 		if (nCenterCount == 2)
-			masks.centerMask |= sideBit;
+			masks.m_center |= sideBit;
 		}
 	else {	//must be behind at least one face
 		if (nSideCount)
-			masks.sideMask |= sideBit;
+			masks.m_side |= sideBit;
 		if (nCenterCount)
-			masks.centerMask |= sideBit;
+			masks.m_center |= sideBit;
 		}
 	}
 else {	
 	xDist = refPoint.DistToPlane (Normal (0), MinVertex ());
 	if (xDist - xRad < -PLANE_DIST_TOLERANCE) {	// xRad must be >= 0!
-		masks.faceMask |= faceBit;
-		masks.sideMask |= sideBit;
+		masks.m_face |= faceBit;
+		masks.m_side |= sideBit;
 		if (xDist < -PLANE_DIST_TOLERANCE)
-			masks.centerMask |= sideBit;
+			masks.m_center |= sideBit;
 		}
 	faceBit <<= 2;
 	}
-masks.valid = 1;
+masks.m_valid = 1;
 return masks;
 }
 
@@ -401,7 +409,6 @@ return masks;
 ubyte CSide::Dist (const CFixVector& refPoint, fix& xSideDist, int bBehind, short sideBit)
 {
 	fix	xDist;
-	int	nVertex;
 	ubyte mask = 0;
 
 xSideDist = 0;
@@ -409,7 +416,7 @@ if (m_nFaces == 2) {
 	int nCenterCount = 0;
 
 	CFixVector minVertex = MinVertex ();
-	for (nFace = 0; nFace < 2; nFace++, faceBit <<= 1) {
+	for (int nFace = 0; nFace < 2; nFace++) {
 		xDist = refPoint.DistToPlane (Normal (nFace), minVertex);
 		if ((xDist < -PLANE_DIST_TOLERANCE) == bBehind) {	//in front of face
 			nCenterCount++;
@@ -529,12 +536,12 @@ for (nEdge = 0; !(nEdgeMask & 1); (nEdgeMask >>= 1), nEdge++)
 	;
 nVerts = 5 - m_nFaces;
 if (gameStates.render.bRendering) {
-	v0 = &gameData.segs.points [vertList [iFace * 3 + nEdge]].p3_vec;
-	v1 = &gameData.segs.points [vertList [iFace * 3 + ((nEdge + 1) % nVerts)]].p3_vec;
+	v0 = &gameData.segs.points [m_vertices [iFace * 3 + nEdge]].p3_vec;
+	v1 = &gameData.segs.points [m_vertices [iFace * 3 + ((nEdge + 1) % nVerts)]].p3_vec;
 	}
 else {
-	v0 = gameData.segs.vertices + vertList [iFace * 3 + nEdge];
-	v1 = gameData.segs.vertices + vertList [iFace * 3 + ((nEdge + 1) % nVerts)];
+	v0 = gameData.segs.vertices + m_vertices [iFace * 3 + nEdge];
+	v1 = gameData.segs.vertices + m_vertices [iFace * 3 + ((nEdge + 1) % nVerts)];
 	}
 //check if we are touching an edge or refP
 vCheck = intersection - *v0;
@@ -568,8 +575,7 @@ return IT_NONE;
 //note: the seg parm is temporary, until the face itself has a refP field
 int CSide::CheckLineToFace (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short iFace, CFixVector vNormal)
 {
-	CFixVector	vNormal, v1;
-	int*			vertexList;
+	CFixVector	v1;
 	int			pli, nVertex, bCheckRad = 0;
 
 //use lowest refP number
@@ -643,22 +649,15 @@ int CSide::SpecialCheckLineToFace (CFixVector& intersection, CFixVector *p0, CFi
 	CFixVector	vMove;
 	fix			edge_t, move_t, edge_t2, move_t2, closestDist;
 	fix			edge_len, move_len;
-	int			h, nEdge, nVerts;
+	int			nEdge, nVerts;
 	uint			nEdgeMask;
 	CFixVector	*edge_v0, *edge_v1, vEdge;
-	CSegment		*segP = SEGMENTS + nSegment;
 	CFixVector	vClosestEdgePoint, vClosestMovePoint;
 
-if (bSimpleFVI) {
-	//PrintLog ("      CheckLineToSegFace ...");
-	h = CheckLineToFace (intersection, p0, p1, rad, iFace, vNormal);
-	//PrintLog ("done\n");
-	return h;
-	}
 vMove = *p1 - *p0;
 //figure out which edge(side) to check against
 //PrintLog ("      CheckPointToSegFace ...\n");
-if (!(nEdgeMask = CheckPointToFace (p0, iFace, vNormal))) {
+if (!(nEdgeMask = CheckPointToFace (*p0, iFace, vNormal))) {
 	//PrintLog ("      CheckLineToSegFace ...");
 	return CheckLineToFace (intersection, p0, p1, rad, iFace, vNormal);
 	//PrintLog ("done\n");

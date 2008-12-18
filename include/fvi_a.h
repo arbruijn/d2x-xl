@@ -3,4 +3,8 @@
 
 #define oflow_check(_a,_b) 	0
 
+typedef struct vec2d {
+	fix i, j;
+} vec2d;
+
 #endif

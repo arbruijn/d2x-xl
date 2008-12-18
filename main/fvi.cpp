@@ -273,10 +273,6 @@ return nHits;
 
 //	-----------------------------------------------------------------------------
 
-typedef struct vec2d {
-	fix i, j;
-} vec2d;
-
 //given largest component of Normal, return i & j
 //if largest component is negative, swap i & j
 int ijTable [3][2] = {
@@ -880,11 +876,11 @@ segP = SEGMENTS + nStartSeg;
 if ((nThisObject > -1) && (gameData.objs.collisionResult [nThisType][OBJ_WALL] == RESULT_NOTHING))
 	radP1 = 0;		//HACK - ignore when edges hit walls
 //now, check segment walls
-startMask = GetSegMasks (*p0, nStartSeg, radP0).faceMask;
+startMask = GetSegMasks (*p0, nStartSeg, radP0).m_face;
 masks = GetSegMasks (*p1, nStartSeg, radP1);    //on back of which faces?
-if (!(centerMask = masks.centerMask))
+if (!(centerMask = masks.m_center))
 	nHitNoneSegment = nStartSeg;
-if ((endMask = masks.faceMask)) { //on the back of at least one face
+if ((endMask = masks.m_face)) { //on the back of at least one face
 	short nSide, iFace, bit;
 
 	//for each face we are on the back of, check if intersected
@@ -1006,7 +1002,7 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 						nHitType = HIT_WALL;
 						gameData.collisions.hitData.vNormal = segP->m_sides [nSide].m_normals [iFace];
 						gameData.collisions.hitData.nNormals = 1;
-						if (!GetSegMasks (vHitPoint, nStartSeg, radP1).centerMask)
+						if (!GetSegMasks (vHitPoint, nStartSeg, radP1).m_center)
 							nHitSegment = nStartSeg;             //hit in this CSegment
 						else
 							gameData.collisions.hitData.nSegment2 = nStartSeg;
@@ -1095,11 +1091,11 @@ gameData.collisions.hitData.nSide = -1;
 gameData.collisions.hitData.nObject = -1;
 
 //check to make sure start refP is in seg its supposed to be in
-//Assert(check_point_in_seg(p0, startseg, 0).centerMask==0);	//start refP not in seg
+//Assert(check_point_in_seg(p0, startseg, 0).m_center==0);	//start refP not in seg
 
 // gameData.objs.viewerP is not in CSegment as claimed, so say there is no hit.
 masks = GetSegMasks (*fq->p0, fq->startSeg, 0);
-if (masks.centerMask) {
+if (masks.m_center) {
 	hitData->hit.nType = HIT_BAD_P0;
 	hitData->hit.vPoint = *fq->p0;
 	hitData->hit.nSegment = fq->startSeg;
@@ -1117,14 +1113,14 @@ nHitType = FVICompute (&vHitPoint, &nHitSegment2, fq->p0, (short) fq->startSeg, 
 							  fq->radP0, fq->radP1, (short) fq->thisObjNum, fq->ignoreObjList, fq->flags,
 							  hitData->segList, &hitData->nSegments, -2);
 //!!nHitSegment = FindSegByPos(&vHitPoint, fq->startSeg, 1, 0);
-if ((nHitSegment2 != -1) && !GetSegMasks (vHitPoint, nHitSegment2, 0).centerMask)
+if ((nHitSegment2 != -1) && !GetSegMasks (vHitPoint, nHitSegment2, 0).m_center)
 	nHitSegment = nHitSegment2;
 else {
 	nHitSegment = FindSegByPos (vHitPoint, fq->startSeg, 1, 0);
 	}
 //MATT: TAKE OUT THIS HACK AND FIX THE BUGS!
 if ((nHitType == HIT_WALL) && (nHitSegment == -1))
-	if ((gameData.collisions.hitData.nSegment2 != -1) && !GetSegMasks (vHitPoint, gameData.collisions.hitData.nSegment2, 0).centerMask)
+	if ((gameData.collisions.hitData.nSegment2 != -1) && !GetSegMasks (vHitPoint, gameData.collisions.hitData.nSegment2, 0).m_center)
 		nHitSegment = gameData.collisions.hitData.nSegment2;
 
 if (nHitSegment == -1) {
@@ -1348,7 +1344,7 @@ if (nSegment == -1) {
 if ((gameData.collisions.nSegsVisited < 0) || (gameData.collisions.nSegsVisited > MAX_SEGS_VISITED))
 	gameData.collisions.nSegsVisited = 0;
 gameData.collisions.segsVisited [gameData.collisions.nSegsVisited++] = nSegment;
-faceMask = GetSegMasks (*vPoint, nSegment, rad).faceMask;
+faceMask = GetSegMasks (*vPoint, nSegment, rad).m_face;
 segP = SEGMENTS + nSegment;
 if (faceMask != 0) {				//on the back of at least one face
 	int nSide, bit, iFace, nChild, i;

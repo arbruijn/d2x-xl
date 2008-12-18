@@ -202,12 +202,12 @@ console.printf (1, "Warning: doing exhaustive search to find point CSegment (%i 
 #endif
 if (bSkyBox) {
 	for (i = gameData.segs.skybox.ToS (), segP = gameData.segs.skybox.Buffer (); i; i--, segP++)
-		if (!GetSegMasks (p, *segP, 0).centerMask)
+		if (!GetSegMasks (p, *segP, 0).m_center)
 			goto funcExit;
 	}
 else {
 	for (nNewSeg = 0; nNewSeg <= gameData.segs.nLastSegment; nNewSeg++)
-		if ((SEGMENTS [nNewSeg].m_nType != SEGMENT_IS_SKYBOX) && !GetSegMasks (p, nNewSeg, 0).centerMask)
+		if ((SEGMENTS [nNewSeg].m_nType != SEGMENT_IS_SKYBOX) && !GetSegMasks (p, nNewSeg, 0).m_center)
 			goto funcExit;
 	}
 nNewSeg = -1;
@@ -713,17 +713,6 @@ return ((((w [0] + 3) % 4) == w [1]) || (((w [1] + 3) % 4) == w [2]));
 
 // -------------------------------------------------------------------------------
 
-int sign (fix v)
-{
-if (v > PLANE_DIST_TOLERANCE)
-	return 1;
-if (v < - (PLANE_DIST_TOLERANCE+1))		//neg & pos round differently
-	return -1;
-return 0;
-}
-
-// -------------------------------------------------------------------------------
-
 void AddToVertexNormal (int nVertex, CFixVector& vNormal)
 {
 	g3sNormal	*pn = &gameData.segs.points [nVertex].p3_normal;
@@ -735,8 +724,6 @@ if (nVertex == nDbgVertex)
 pn->nFaces++;
 pn->vNormal += vNormal;
 }
-
-int bRenderQuads = 0;
 
 // -------------------------------------------------------------------------------
 //	Validate all segments.

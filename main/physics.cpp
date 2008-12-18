@@ -711,7 +711,7 @@ retryMove:
 	if (iSeg != objP->info.nSegment)
 		OBJECTS [nObject].RelinkToSeg (iSeg);
 	//if start point not in CSegment, move CObject to center of CSegment
-	if (GetSegMasks (objP->info.position.vPos, objP->info.nSegment, 0).centerMask) {	//object stuck
+	if (GetSegMasks (objP->info.position.vPos, objP->info.nSegment, 0).m_center) {	//object stuck
 		int n = FindObjectSeg (objP);
 		if (n == -1) {
 			if (bGetPhysSegs)
@@ -986,7 +986,7 @@ if (objP->info.controlType == CT_AI) {
 		}
 
 //if end point not in CSegment, move CObject to last pos, or CSegment center
-if (GetSegMasks (objP->info.position.vPos, objP->info.nSegment, 0).centerMask) {
+if (GetSegMasks (objP->info.position.vPos, objP->info.nSegment, 0).m_center) {
 	if (FindObjectSeg (objP) == -1) {
 		int n;
 

@@ -26,6 +26,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_FVI_SEGS 200
 
+typedef struct vec2d {
+	fix i, j;
+} vec2d;
+
+extern int ijTable [3][2];
+
 typedef struct tFVIHitInfo {
 	int 			nType;						//what sort of intersection
 	short 		nSegment;					//what CSegment hit_pnt is in
@@ -100,6 +106,11 @@ int CheckLineToSegFace (CFixVector *newP, CFixVector *p0, CFixVector *p1,
 int CanSeePoint (CObject *objP, CFixVector *vSource, CFixVector *vDest, short nSegment);
 
 int ObjectToObjectVisibility (CObject *objP1, CObject *objP2, int transType);
+
+int FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlanePoint, CFixVector *vPlaneNorm,
+										 CFixVector *p0, CFixVector *p1, fix rad);
+
+int CheckLineToLine (fix *t1, fix *t2, CFixVector *p1, CFixVector *v1, CFixVector *p2, CFixVector *v2);
 
 #endif
 

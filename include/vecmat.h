@@ -111,6 +111,8 @@ class CFixVector {
 		const bool operator== (const CFixVector& vec);
 		const bool operator!= (const CFixVector& vec);
 		const CFixVector& operator+= (const CFixVector& vec);
+		const CFixVector& operator+= (const CFloatVector& vec);
+		const CFixVector& operator-= (const CFloatVector& vec);
 		const CFixVector& operator-= (const CFixVector& vec);
 		const CFixVector& operator*= (const CFixVector& s);
 		const CFixVector& operator*= (const fix s);
@@ -194,6 +196,8 @@ class CFloatVector {
 		const bool operator== (const CFloatVector& other);
 		const bool operator!= (const CFloatVector& other);
 		const CFloatVector& operator+= (const CFloatVector& other);
+		const CFloatVector& operator+= (const CFixVector& other);
+		const CFloatVector& operator-= (const CFixVector& other);
 		const CFloatVector& operator-= (const CFloatVector& other);
 		const CFloatVector& operator*= (const float s);
 		const CFloatVector& operator/= (const float s);
@@ -450,7 +454,7 @@ inline const CFloatVector& CFloatVector::operator-= (const CFloatVector& other) 
 	return *this;
 }
 
-inline const CFloatVector& CFloatVector::operator-= (const CFixVector& X2F (other) {
+inline const CFloatVector& CFloatVector::operator-= (const CFixVector& other) {
 	v [X] -= X2F (other [X]); v [Y] -= X2F (other [Y]); v [Z] -= X2F (other [Z]);
 	return *this;
 }
@@ -961,7 +965,7 @@ inline const CFixVector CFixVector::operator+ (const CFixVector& other) const {
 }
 
 inline const CFixVector CFixVector::operator+ (const CFloatVector& other) const {
-	return Create (v [0] + F2X (other [0]), v [1] + F2X (other [1]), v [2] + F2X (other [2]);
+	return Create (v [0] + F2X (other [0]), v [1] + F2X (other [1]), v [2] + F2X (other [2]));
 }
 
 inline const CFixVector CFixVector::operator- (const CFixVector& other) const {
@@ -969,7 +973,7 @@ inline const CFixVector CFixVector::operator- (const CFixVector& other) const {
 }
 
 inline const CFixVector CFixVector::operator- (const CFloatVector& other) const {
-	return Create (v [0] - F2X (other [0]), v [1] - F2X (other [1]), v [2] - F2X (other [2]);
+	return Create (v [0] - F2X (other [0]), v [1] - F2X (other [1]), v [2] - F2X (other [2]));
 }
 
 

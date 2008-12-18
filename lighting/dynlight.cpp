@@ -1494,7 +1494,7 @@ if (gameOpts->render.nLightingMethod || (gameStates.render.bAmbientColor && !gam
 		ComputeStaticVertexLights (0, gameData.segs.nVertices, 0);
 	pf = gameData.render.color.ambient.Buffer ();
 	for (i = 0, seg2P = gameData.segs.segment2s.Buffer (); i < gameData.segs.nSegments; i++, seg2P++) {
-		if (seg2P->special == SEGMENT_IS_SKYBOX) {
+		if (seg2P->m_nType == SEGMENT_IS_SKYBOX) {
 			short	*sv = SEGMENTS [i].verts;
 			for (j = 8; j; j--, sv++) {
 				pfh = pf + *sv;

@@ -278,20 +278,19 @@ if (!(gameData.pig.tex.tMapInfoP [tmap1].flags & TMI_VOLATILE) && (gameData.pig.
 
 //------------------------------------------------------------------------------
 
-void PagingTouchRobotMaker (CSegment * segP)
+void CSegment::LoadBotGenTextures (void)
 {
-	tSegment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
-	int			i;
-	uint			flags;
-	int			robotIndex;
+	int		i;
+	uint		flags;
+	int		robotIndex;
 
-if (seg2p->special != SEGMENT_IS_ROBOTMAKER)
+if (m_nType != SEGMENT_IS_ROBOTMAKER)
 	return;
 PagingTouchVClip (&gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT], 0);
-if (!gameData.matCens.botGens [seg2p->nMatCen].objFlags)
+if (!gameData.matCens.botGens [m_nMatCen].objFlags)
 	return;
 for (i = 0, robotIndex = 0; i < 2; i++, robotIndex += 32)
-	for (flags = gameData.matCens.botGens [seg2p->nMatCen].objFlags [i]; flags; flags >>= 1, robotIndex++)
+	for (flags = gameData.matCens.botGens [m_nMatCen].objFlags [i]; flags; flags >>= 1, robotIndex++)
 		if (flags & 1)
 			PagingTouchRobot (robotIndex);
 }
@@ -320,7 +319,7 @@ void CSegment::LoadTextures (void)
 if (SEG_IDX (segP) == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-if (seg2p->special == SEGMENT_IS_ROBOTMAKER)
+if (seg2p->m_nType == SEGMENT_IS_ROBOTMAKER)
 	PagingTouchRobotMaker (segP);
 for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) 
 	PagingTouchSide (segP, nSide);

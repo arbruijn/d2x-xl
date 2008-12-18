@@ -24,32 +24,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //figure out what seg the given point is in, tracing through segments
 int get_new_seg(CFixVector *p0,int startseg);
 
-class CSegMasks {
-	public:
-	   short m_face;     //which faces sphere pokes through (12 bits)
-		sbyte m_side;     //which sides sphere pokes through (6 bits)
-		sbyte m_center;   //which sides center point is on back of (6 bits)
-		sbyte m_valid;
-
-	public:
-		CSeg () { Init (); }
-		void Init (void) {
-			m_face = 0;
-			m_side = m_center = 0;
-			m_valid = 0;
-			}
-
-		inline CSegMask& operator|= (CSegMask other) {
-			if (other.m_valid) {
-				m_center |= other.m_center;
-				m_face |= other.m_face;
-				m_side |= other.m_side;
-				}
-			return *this;
-			}
-	};
-
-
 void ComputeSideRads (short nSegment, short CSide, fix *prMin, fix *prMax);
 int FindConnectedSide (CSegment *base_seg, CSegment *con_seg);
 
@@ -107,6 +81,7 @@ void extract_up_vector_from_segment(CSegment *sp,CFixVector *vp);
 int GetVertsForNormal (int v0, int v1, int v2, int v3, int *pv0, int *pv1, int *pv2, int *pv3);
 int GetVertsForNormalTri (int v0, int v1, int v2, int *pv0, int *pv1, int *pv2);
 
+void AddToVertexNormal (int nVertex, CFixVector& vNormal);
 void ComputeVertexNormals (void);
 void ResetVertexNormals (void);
 float FaceSize (short nSegment, ubyte nSide);

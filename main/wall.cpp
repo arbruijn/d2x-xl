@@ -729,7 +729,7 @@ CObject *objP = OBJECTS + nObject;
 	//note: don't let OBJECTS with zero size block door
 if (nObject == 126)
 	nObject = nObject;
-if (objP->info.xSize && GetSideMasks (&objP->info.position.vPos, nSegment, nSide, objP->info.xSize).sideMask)
+if (objP->info.xSize && GetSideMasks (&objP->info.position.vPos, nSegment, nSide, objP->info.xSize).m_side)
 	return 1;		//pokes through nSide!
 return 0;		//does not!
 }

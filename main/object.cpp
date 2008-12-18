@@ -1375,7 +1375,7 @@ else if (nType == OBJ_POWERUP)
 	nType = nType;
 #endif
 
-//if (GetSegMasks (vPos, nSegment, 0).centerMask))
+//if (GetSegMasks (vPos, nSegment, 0).m_center))
 nSegment = FindSegByPos (vPos, nSegment, 1, 0);
 if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment))
 	return -1;
@@ -1941,7 +1941,7 @@ UnlinkFromSeg ();
 LinkToSeg (nNewSeg);
 #if DBG
 #if TRACE
-if (GetSegMasks (info.position.vPos, info.nSegment, 0).centerMask)
+if (GetSegMasks (info.position.vPos, info.nSegment, 0).m_center)
 	console.printf (1, "CObject::RelinkToSeg violates seg masks.\n");
 #endif
 #endif
@@ -2039,7 +2039,7 @@ void CheckObjectInVolatileWall (CObject *objP)
 
 if (objP->info.nType != OBJ_PLAYER)
 	return;
-sideMask = GetSegMasks (objP->info.position.vPos, objP->info.nSegment, objP->info.xSize).sideMask;
+sideMask = GetSegMasks (objP->info.position.vPos, objP->info.nSegment, objP->info.xSize).m_side;
 if (sideMask) {
 	short nSide, nWall;
 	int bit;

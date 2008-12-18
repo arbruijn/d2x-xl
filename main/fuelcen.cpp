@@ -284,11 +284,11 @@ int MatCenTrigger (short nSegment)
 #if TRACE
 console.printf (CON_DBG, "Trigger matcen, CSegment %i\n", nSegment);
 #endif
-if (seg2P->special == SEGMENT_IS_EQUIPMAKER) {
+if (seg2P->m_nType == SEGMENT_IS_EQUIPMAKER) {
 	matCenP = gameData.matCens.fuelCenters + gameData.matCens.equipGens [seg2P->nMatCen].nFuelCen;
 	return (matCenP->bEnabled = !matCenP->bEnabled) ? 1 : 2;
 	}
-Assert (seg2P->special == SEGMENT_IS_ROBOTMAKER);
+Assert (seg2P->m_nType == SEGMENT_IS_ROBOTMAKER);
 Assert (seg2P->nMatCen < gameData.matCens.nFuelCenters);
 Assert ((seg2P->nMatCen >= 0) && (seg2P->nMatCen <= gameData.segs.nLastSegment));
 
@@ -335,7 +335,7 @@ void SpawnBotTrigger (CObject *objP, short nSegment)
 if (nSegment < 0)
 	nType = 255;
 else {
-	Assert (seg2P->special == SEGMENT_IS_ROBOTMAKER);
+	Assert (seg2P->m_nType == SEGMENT_IS_ROBOTMAKER);
 	Assert (seg2P->nMatCen < gameData.matCens.nFuelCenters);
 	Assert ((seg2P->nMatCen >= 0) && (seg2P->nMatCen <= gameData.segs.nLastSegment));
 	matCenP = gameData.matCens.fuelCenters + gameData.matCens.botGens [seg2P->nMatCen].nFuelCen;
@@ -357,7 +357,7 @@ void FuelCenDelete (CSegment * segP)
 
 Restart: ;
 
-seg2P->special = 0;
+seg2P->m_nType = 0;
 
 for (i = 0; i < gameData.matCens.nFuelCenters; i++) {
 	if (gameData.matCens.fuelCenters [i].nSegment == SEG_IDX (segP)) {
@@ -849,7 +849,7 @@ gameData.matCens.playerSegP = segP;
 if ((gameData.app.nGameMode & GM_ENTROPY) && ((xsegp->owner < 0) ||
 	 ((xsegp->owner > 0) && (xsegp->owner != GetTeam (gameData.multiplayer.nLocalPlayer) + 1))))
 	return 0;
-if (!segP || (seg2P->special != SEGMENT_IS_FUELCEN))
+if (!segP || (seg2P->m_nType != SEGMENT_IS_FUELCEN))
 	return 0;
 DetectEscortGoalAccomplished (-4);	//	UGLY!Hack!-4 means went through fuelcen.
 #if 0
@@ -903,7 +903,7 @@ gameData.matCens.playerSegP = segP;
 if ((gameData.app.nGameMode & GM_ENTROPY) && ((xsegp->owner < 0) ||
 	 ((xsegp->owner > 0) && (xsegp->owner != GetTeam (gameData.multiplayer.nLocalPlayer) + 1))))
 	return 0;
-if (seg2P->special != SEGMENT_IS_REPAIRCEN)
+if (seg2P->m_nType != SEGMENT_IS_REPAIRCEN)
 	return 0;
 //		DetectEscortGoalAccomplished (-4);	//	UGLY!Hack!-4 means went through fuelcen.
 //		if (gameData.matCens.fuelCenters [segP->value].xMaxCapacity<=0)	{
@@ -941,7 +941,7 @@ return amount;
 //--unused-- 	Assert (segP != NULL);
 //--unused-- 	if (segP == NULL) return;
 //--unused--
-//--unused-- 	switch (segP->special)	{
+//--unused-- 	switch (segP->m_nType)	{
 //--unused-- 	case SEGMENT_IS_NOTHING:
 //--unused-- 		return;
 //--unused-- 	case SEGMENT_IS_ROBOTMAKER:
@@ -1353,11 +1353,11 @@ int GatherFlagGoals (void)
 
 memset (flagGoalList, 0xff, sizeof (flagGoalList));
 for (h = i = 0; i <= gameData.segs.nLastSegment; i++, seg2P++) {
-	if (seg2P->special == SEGMENT_IS_GOAL_BLUE) {
+	if (seg2P->m_nType == SEGMENT_IS_GOAL_BLUE) {
 		j = 0;
 		h |= 1;
 		}
-	else if (seg2P->special == SEGMENT_IS_GOAL_RED) {
+	else if (seg2P->m_nType == SEGMENT_IS_GOAL_RED) {
 		h |= 2;
 		j = 1;
 		}
@@ -1418,14 +1418,14 @@ CheckFlagDrop (TEAM_RED, POW_BLUEFLAG, SEGMENT_IS_GOAL_RED);
 #else
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_FLAG))
 	return;
-if (seg2P->special == SEGMENT_IS_GOAL_BLUE)	{
+if (seg2P->m_nType == SEGMENT_IS_GOAL_BLUE)	{
 	if (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_BLUE) && FlagAtHome (POW_BLUEFLAG)) {
 		MultiSendCaptureBonus (gameData.multiplayer.nLocalPlayer);
 		LOCALPLAYER.flags &= (~(PLAYER_FLAGS_FLAG);
 		MaybeDropNetPowerup (-1, POW_REDFLAG, FORCE_DROP);
 		}
 	}
-else if (seg2P->special == SEGMENT_IS_GOAL_RED) {
+else if (seg2P->m_nType == SEGMENT_IS_GOAL_RED) {
 	if (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_RED) && FlagAtHome (POW_REDFLAG)) {
 		MultiSendCaptureBonus (gameData.multiplayer.nLocalPlayer);
 		LOCALPLAYER.flags &= (~(PLAYER_FLAGS_FLAG);

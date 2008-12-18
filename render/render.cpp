@@ -1451,9 +1451,9 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 		nNewSeg = nSegment;
 		if ((objP->info.nType != OBJ_REACTOR) && ((objP->info.nType != OBJ_ROBOT) || (objP->info.nId == 65))) { //don't migrate controlcen
 			mask = GetSegMasks (OBJPOS (objP)->vPos, nNewSeg, objP->info.xSize);
-			if (mask.sideMask) {
+			if (mask.m_side) {
 				for (nSide = 0, sideFlag = 1; nSide < 6; nSide++, sideFlag <<= 1) {
-					if (!(mask.sideMask & sideFlag))
+					if (!(mask.m_side & sideFlag))
 						continue;
 					segP = SEGMENTS + nNewSeg;
 					if (segP->IsDoorWay (nSide, NULL) & WID_FLY_FLAG) {	//can explosion migrate through

@@ -76,6 +76,33 @@ extern char sideOpposite [MAX_SIDES_PER_SEGMENT];
 
 //------------------------------------------------------------------------------
 
+class CSegMasks {
+	public:
+	   short m_face;     //which faces sphere pokes through (12 bits)
+		sbyte m_side;     //which sides sphere pokes through (6 bits)
+		sbyte m_center;   //which sides center point is on back of (6 bits)
+		sbyte m_valid;
+
+	public:
+		CSegMasks () { Init (); }
+		void Init (void) {
+			m_face = 0;
+			m_side = m_center = 0;
+			m_valid = 0;
+			}
+
+		inline CSegMasks& operator|= (CSegMasks other) {
+			if (other.m_valid) {
+				m_center |= other.m_center;
+				m_face |= other.m_face;
+				m_side |= other.m_side;
+				}
+			return *this;
+			}
+	};
+
+//------------------------------------------------------------------------------
+
 class CWall;
 
 class CSide {
@@ -103,6 +130,7 @@ class CSide {
 
 	public:
 		void LoadTextures (void);
+		void LoadBotGenTextures (void);
 		inline ushort WallNum (void) { return m_nWall; }
 		inline CWall* Wall (void);
 		int FaceCount (void);
@@ -110,7 +138,7 @@ class CSide {
 		int CheckTransparency (void);
 		int SpecialCheckLineToFace (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short iFace, CFixVector vNormal);
 		int CheckLineToFace (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short iFace, CFixVector vNormal);
-		int CheckSphereToFace (CFixVector& intersection, short iFace, fix rad, CFixVector vNormal);
+		int CheckSphereToFace (CFixVector& intersection, fix rad, short iFace, CFixVector vNormal);
 		uint CheckPointToFace (CFixVector& intersection, short iFace, CFixVector vNormal);
 
 		void GetNormals (CFixVector& n1, CFixVector& n2);
@@ -123,7 +151,7 @@ class CSide {
 		CFixVector RandomPoint (void);
 
 		int CreateVertexList (ushort* verts, int* index);
-		void CreateFaceVertexIndex (int* index);
+		int CreateFaceVertIndex (void);
 		void AddAsQuad (CFixVector& vNormal);
 		void AddAsTwoTriangles (bool bSolid);
 		void CreateWalls (bool bSolid);
@@ -136,10 +164,10 @@ class CSide {
 		CFixVector* GetVertices (CFixVector* vertices);
 		inline CFixVector& Vertex (int nVertex);
 		inline CFixVector& MinVertex (void);
-		inline CFixVector& Normal (int nFace) { return gameStates.render.bRendering ? m_rotNorms [nFace] : m_normals [nFace; }
+		inline CFixVector& Normal (int nFace);
 		inline fix Height (void);
 		inline bool IsPlanar (void);
-		ubyte DistToPoint (const CFixVector& point, fix& xSideDist, int bBehind, short sideBit);
+		ubyte Dist (const CFixVector& point, fix& xSideDist, int bBehind, short sideBit);
 		CSegMasks Masks (const CFixVector& refP, fix xRad, short sideBit, short& faceBit);
 		void FindHitPointUV (fix *u, fix *v, fix *l, CFixVector& intersection, int iFace);
 		int CheckForTranspPixel (CFixVector& intersection, short iFace);
@@ -195,7 +223,7 @@ class CSegment {
 		inline CFixVector* GetVertices (int nSide, CFixVector* vertices) { return m_sides [nSide].GetVertices (vertices); }
 		ubyte SideDists (const CFixVector& intersection, fix* xSideDists, int bBehind = 1);
 		int FindConnectedSide (CSegment* other);
-		inline CFixVector& Normal (int nSide, int nFace) { return m_nSide [nSide].Normal (nFace); }
+		inline CFixVector& Normal (int nSide, int nFace) { return m_sides [nSide].Normal (nFace); }
 #if 0
 		inline uint CheckPointToFace (CFixVector& intersection, short nSide, short iFace)
 			{ return m_sides [nSide].CheckPointToFace (intersection, iFace, nVerts, Normal (nSide, iFace)); }
@@ -217,10 +245,10 @@ class CSegment {
 		float MaxRadf (void) { return X2F (m_rads [1]); }
 
 		inline fix AvgRad (void) {return (m_rads [0] + m_rads [1]) / 2;}
-		inline fix AvgRadf (void) {return X2F (m_rads [0] + m_rads [1]) / 2;}
+		inline float AvgRadf (void) {return X2F (m_rads [0] + m_rads [1]) / 2;}
 		inline fix Volume (void) {return (fix) (1.25 * Pi * pow (AvgRadf (), 3) + 0.5);}
 
-		inline int CheckForTranspPixel (CFixVector& intersection, int nSide short iFace) 
+		inline int CheckForTranspPixel (CFixVector& intersection, int nSide, short iFace) 
 			{ return m_sides [nSide].CheckForTranspPixel (intersection, iFace); }
 
 	};

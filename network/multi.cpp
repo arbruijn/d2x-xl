@@ -2942,7 +2942,7 @@ void ChangeSegmentTexture (int nSegment, int oldOwner)
 //	oldOwner = segP->nOwner;
 if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2))
 	return;
-switch (seg2P->special) {
+switch (seg2P->m_nType) {
 	case SEGMENT_IS_GOAL_BLUE:
 		Goal_blue_segnum = nSegment;
 		OverrideTextures (segP, (short) ((gameData.app.nGameMode & GM_HOARD) ? TMI_GOAL_HOARD : TMI_GOAL_BLUE), -1, -1, bFullBright, 1);
