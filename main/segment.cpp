@@ -122,13 +122,13 @@ return -1;
 //this CSegment.  See CSegMasks structure for info on fields
 CSegMasks CSegment::GetSideMasks (const CFixVector& refP, fix xRad)
 {
-	short		nSide, faceBit;
-	CSegMask	mask;
+	short			nSide, faceBit;
+	CSegMasks	masks;
 
 //check refPoint against each CSide of CSegment. return bitmask
-for (nSide = 0, faceBit = 1; nSide < 6; nSide++)
-	masks |= m_sides [nSide].Masks (refP, rad, 1 << nSide, faceBit);
 masks.m_valid = 1;
+for (nSide = 0, faceBit = 1; nSide < 6; nSide++)
+	masks |= m_sides [nSide].Masks (refP, xRad, 1 << nSide, faceBit);
 return masks;
 }
 

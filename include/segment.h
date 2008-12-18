@@ -148,7 +148,6 @@ class CSide {
 		CFixVector* Center (void) { return &m_vCenter; }
 		fix MinRad (void) { return m_rads [0]; }
 		fix MaxRad (void) { return m_rads [1]; }
-		CFixVector RandomPoint (void);
 
 		int CreateVertexList (ushort* verts, int* index);
 		int CreateFaceVertIndex (void);
@@ -247,6 +246,8 @@ class CSegment {
 		inline fix AvgRad (void) {return (m_rads [0] + m_rads [1]) / 2;}
 		inline float AvgRadf (void) {return X2F (m_rads [0] + m_rads [1]) / 2;}
 		inline fix Volume (void) {return (fix) (1.25 * Pi * pow (AvgRadf (), 3) + 0.5);}
+
+		CFixVector RandomPoint (void);
 
 		inline int CheckForTranspPixel (CFixVector& intersection, int nSide, short iFace) 
 			{ return m_sides [nSide].CheckForTranspPixel (intersection, iFace); }
