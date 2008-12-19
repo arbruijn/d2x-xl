@@ -972,7 +972,7 @@ void CreateLightTrail (CFixVector& vPos, CFixVector &vDir, float fSize, float fL
 	static tTexCoord2f	tcTrail [3] = {{{0,0}},{{1,1}},{{1,0}}};
 	static CFloatVector	vEye = CFloatVector::ZERO;
 
-	CFloatVector	v, vPosf, vDirf, vNormf, vTrail [3], vCorona [4], fVecf;
+	CFloatVector	v, vPosf, vNormf, vTrail [3], vCorona [4], fVecf;
 	float		c = 1/*0.7f + 0.03f * fPulse*/, dotTrail, dotCorona;
 	int		i;
 
@@ -1822,18 +1822,17 @@ else if ((objP->info.nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 fix flashDist=F2X (.9);
 
 //create flash for CPlayerData appearance
-void CreatePlayerAppearanceEffect (CObject *playerObjP)
+void CObject::CreateAppearanceEffect (void)
 {
-	CFixVector	pos;
-	CObject		*effectObjP;
+	CFixVector	vPos;
 
-if (playerObjP == gameData.objs.viewerP)
-	pos = playerObjP->info.position.vPos + playerObjP->info.position.mOrient.FVec() * FixMul(playerObjP->info.xSize,flashDist);
+if (this == gameData.objs.viewerP)
+	vPos = info.position.vPos + info.position.mOrient.FVec() * FixMul (info.xSize, flashDist);
 else
-	pos = playerObjP->info.position.vPos;
-effectObjP = /*Object*/CreateExplosion (playerObjP->info.nSegment, &pos, playerObjP->info.xSize, VCLIP_PLAYER_APPEARANCE);
+	vPos = info.position.vPos;
+CObject* effectObjP = /*Object*/CreateExplosion (info.nSegment, vPos, info.xSize, VCLIP_PLAYER_APPEARANCE);
 if (effectObjP) {
-	effectObjP->info.position.mOrient = playerObjP->info.position.mOrient;
+	effectObjP->info.position.mOrient = info.position.mOrient;
 	if (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound > -1)
 		DigiLinkSoundToObject (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound, OBJ_IDX (effectObjP), 0, F1_0, SOUNDCLASS_PLAYER);
 	}

@@ -815,6 +815,7 @@ class CObject : public CObjectInfo {
 		void MaybeKillWeapon (CObject *otherObjP);
 		int MaybeDetonateWeapon (CObject* otherP, CFixVector& vHitPt);
 		void DoExplosionSequence (void);
+		void CreateAppearanceEffect (void);
 
 		int BossSpewRobot (CFixVector* vPos, short objType, int bObjTrigger);
 		int CreateGatedRobot (short nSegment, ubyte nObjId, CFixVector* vPos);

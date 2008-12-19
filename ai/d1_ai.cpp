@@ -1319,7 +1319,7 @@ void compute_vis_and_vec(CObject *objP, CFixVector *pos, tAILocalInfo *ailP, CFi
 
 			if ((ailP->nextMiscSoundTime < gameData.time.xGame) && (ailP->nextPrimaryFire < F1_0) && (dist < F1_0*20)) {
 				ailP->nextMiscSoundTime = gameData.time.xGame + (rand() + F1_0) * (7 - gameStates.app.nDifficultyLevel) / 1;
-				DigiLinkSoundToPos( botInfoP->seeSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
+				DigiLinkSoundToPos (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
 			}
 		} else {
 			//	Compute expensive stuff -- vec_to_player and player_visibility
@@ -1343,19 +1343,19 @@ void compute_vis_and_vec(CObject *objP, CFixVector *pos, tAILocalInfo *ailP, CFi
 			if (!gameStates.app.bPlayerExploded && (ailP->nPrevVisibility != *player_visibility) && (*player_visibility == 2)) {
 				if (ailP->nPrevVisibility == 0) {
 					if (ailP->timePlayerSeen + F1_0/2 < gameData.time.xGame) {
-						DigiLinkSoundToPos( botInfoP->seeSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
+						DigiLinkSoundToPos (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
 						ailP->timePlayerSoundAttacked = gameData.time.xGame;
 						ailP->nextMiscSoundTime = gameData.time.xGame + F1_0 + rand()*4;
 					}
 				} else if (ailP->timePlayerSoundAttacked + F1_0/4 < gameData.time.xGame) {
-					DigiLinkSoundToPos( botInfoP->attackSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
+					DigiLinkSoundToPos (botInfoP->attackSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
 					ailP->timePlayerSoundAttacked = gameData.time.xGame;
 				}
 			}
 
 			if ((*player_visibility == 2) && (ailP->nextMiscSoundTime < gameData.time.xGame)) {
 				ailP->nextMiscSoundTime = gameData.time.xGame + (rand() + F1_0) * (7 - gameStates.app.nDifficultyLevel) / 2;
-				DigiLinkSoundToPos( botInfoP->attackSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
+				DigiLinkSoundToPos (botInfoP->attackSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
 			}
 			ailP->nPrevVisibility = *player_visibility;
 		}
@@ -1401,7 +1401,7 @@ void move_object_to_legal_spot(CObject *objP)
 	}
 
 	// Int3();		//	Darn you John, you done it again!  (But contact Mike)
-	ApplyDamageToRobot(objP, objP->info.xShields*2, OBJ_IDX (objP));
+	objP->ApplyDamageToRobot(objP->info.xShields*2, OBJ_IDX (objP));
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -1557,8 +1557,8 @@ int CreateGatedRobot (int nSegment, int nObjId)
 
 	InitAIObject (OBJ_IDX (objP), default_behavior, -1 );		//	Note, -1 = CSegment this robotP goes to to hide, should probably be something useful
 
-	/*Object*/CreateExplosion (nSegment, &vObjPos, I2X(10), VCLIP_MORPHING_ROBOT );
-	DigiLinkSoundToPos( gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, &vObjPos, 0 , F1_0);
+	/*Object*/CreateExplosion (nSegment, vObjPos, I2X(10), VCLIP_MORPHING_ROBOT);
+	DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, vObjPos, 0, F1_0);
 	MorphStart (objP);
 
 	gameData.boss [0].nLastGateTime = gameData.time.xGame;
