@@ -482,93 +482,73 @@ int CollideDebrisAndWall (CObject *debris, fix xHitSpeed, short nHitSeg, short n
 //see if CWall is volatile or water
 //if volatile, cause damage to CPlayerData
 //returns 1=lava, 2=water
-int CheckVolatileWall (CObject *objP, int nSegment, int nSide, CFixVector *vHitPt)
+int CObject::ApplyWallPhysics (int nSide)
 {
-	fix	d, water;
-	int	nTexture;
+	fix	xDamage;
+	int	nType;
 
-Assert (objP->info.nType == OBJ_PLAYER);
-nTexture = SEGMENTS [nSegment].m_sides [nSide].m_nBaseTex;
-d = gameData.pig.tex.tMapInfoP [nTexture].damage;
-water = (gameData.pig.tex.tMapInfoP [nTexture].flags & TMI_WATER);
-if (d > 0 || water) {
-	if (objP->info.nId == gameData.multiplayer.nLocalPlayer) {
-		if (d > 0) {
-			fix damage = FixMul (d, gameData.time.xFrame);
-			if (gameStates.app.nDifficultyLevel == 0)
-				damage /= 2;
-			if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
-				ApplyDamageToPlayer (objP, objP, damage);
-
-#ifdef TACTILE
-			if (TactileStick)
-				Tactile_Xvibrate (50, 25);
-#endif
-
-			paletteManager.BumpEffect (X2I (damage*4), 0, 0);	//flash red
-			}
-		objP->mType.physInfo.rotVel[X] = (d_rand () - 16384)/2;
-		objP->mType.physInfo.rotVel[Z] = (d_rand () - 16384)/2;
-		}
-	return (d > 0) ? 1 : 2;
-	}
-else {
-#ifdef TACTILE
-	if (TactileStick && !(gameData.app.nFrameCount & 15))
-		 Tactile_Xvibrate_clear ();
-#endif
+if (!(nType = SEGMENTS [info.nSegment].Physics (&xDamage)))
 	return 0;
+if (objP->info.nId == gameData.multiplayer.nLocalPlayer) {
+	if (xDamage > 0) {
+		xDamage = FixMul (xDamage, gameData.time.xFrame);
+		if (gameStates.app.nDifficultyLevel == 0)
+			xDamage /= 2;
+		if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
+			ApplyDamageToPlayer (objP, objP, xDamage);
+
+#ifdef TACTILE
+		if (TactileStick)
+			Tactile_Xvibrate (50, 25);
+#endif
+
+		paletteManager.BumpEffect (X2I (xDamage * 4), 0, 0);	//flash red
+		}
+	mType.physInfo.rotVel [X] = (d_rand () - 16384) / 2;
+	mType.physInfo.rotVel [Z] = (d_rand () - 16384) / 2;
 	}
+return nType;
 }
 
 //	-----------------------------------------------------------------------------
 
-int CheckVolatileSegment (CObject *objP, int nSegment)
+int CObject::CheckSegmentPhysics (void)
 {
-	fix d;
+	fix xDamage;
+	int nType;
 
-//	Assert (objP->info.nType==OBJ_PLAYER);
+//	Assert (info.nType==OBJ_PLAYER);
 if (!EGI_FLAG (bFluidPhysics, 1, 0, 0))
 	return 0;
-if (SEGMENTS [nSegment].m_nType == SEGMENT_IS_WATER)
-	d = 0;
-else if (SEGMENTS [nSegment].m_nType == SEGMENT_IS_LAVA)
-	d = gameData.pig.tex.tMapInfo [0][404].damage / 2;
-else {
-#ifdef TACTILE
-	if (TactileStick && !(gameData.app.nFrameCount & 15))
-		Tactile_Xvibrate_clear ();
-#endif
+if (!(nType = SEGMENTS [info.nSegment].Physics (xDamage)))
 	return 0;
-	}
-if (d > 0) {
-	fix damage = FixMul (d, gameData.time.xFrame) / 2;
+if (xDamage > 0) {
+	xDamage = FixMul (xDamage, gameData.time.xFrame) / 2;
 	if (gameStates.app.nDifficultyLevel == 0)
-		damage /= 2;
-	if (objP->info.nType == OBJ_PLAYER) {
-		if (!(gameData.multiplayer.players [objP->info.nId].flags & PLAYER_FLAGS_INVULNERABLE))
-			ApplyDamageToPlayer (objP, objP, damage);
+		xDamage /= 2;
+	if (info.nType == OBJ_PLAYER) {
+		if (!(gameData.multiplayer.players [info.nId].flags & PLAYER_FLAGS_INVULNERABLE))
+			ApplyDamageToPlayer (objP, objP, xDamage);
 		}
-	if (objP->info.nType == OBJ_ROBOT) {
-		ApplyDamageToRobot (objP, objP->info.xShields + 1, OBJ_IDX (objP));
+	if (info.nType == OBJ_ROBOT) {
+		ApplyDamageToRobot (objP, info.xShields + 1, OBJ_IDX (objP));
 		}
 
 #ifdef TACTILE
 	if (TactileStick)
 		Tactile_Xvibrate (50, 25);
 #endif
-	if ((objP->info.nType == OBJ_PLAYER) && (objP->info.nId == gameData.multiplayer.nLocalPlayer))
-		paletteManager.BumpEffect (X2I (damage*4), 0, 0);	//flash red
-	if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT)) {
-		objP->mType.physInfo.rotVel[X] = (d_rand () - 16384) / 4;
-		objP->mType.physInfo.rotVel[Z] = (d_rand () - 16384) / 4;
+	if ((info.nType == OBJ_PLAYER) && (info.nId == gameData.multiplayer.nLocalPlayer))
+		paletteManager.BumpEffect (X2I (xDamage*4), 0, 0);	//flash red
+	if ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) {
+		mType.physInfo.rotVel[X] = (d_rand () - 16384) / 4;
+		mType.physInfo.rotVel[Z] = (d_rand () - 16384) / 4;
 		}
-	return (d > 0) ? 1 : 2;
+	return (xDamage > 0) ? 1 : 2;
 	}
-if (((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT)) &&
-	 (objP->mType.physInfo.thrust[X] || objP->mType.physInfo.thrust[Y] || objP->mType.physInfo.thrust[Z])) {
-	objP->mType.physInfo.rotVel[X] = (d_rand () - 16384) / 8;
-	objP->mType.physInfo.rotVel[Z] = (d_rand () - 16384) / 8;
+if (((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) && !mType.physInfo.thrust.IsZero ()) {
+	mType.physInfo.rotVel [X] = (d_rand () - 16384) / 8;
+	mType.physInfo.rotVel [Z] = (d_rand () - 16384) / 8;
 	}
 return 0;
 }

@@ -629,7 +629,7 @@ void ResetSegObjLists (void)
 	int	i, j = gameData.segs.nSegments ? gameData.segs.nSegments : MAX_SEGMENTS;
 
 for (i = 0; i < j; i++)
-	SEGMENTS [i].objects = -1;
+	SEGMENTS [i].m_objects = -1;
 }
 
 //------------------------------------------------------------------------------
@@ -690,7 +690,7 @@ SetNext (NULL);
 void CObject::UnlinkFromSeg (void)
 {
 if (info.nPrevInSeg == -1)
-	SEGMENTS [info.nSegment].objects = info.nNextInSeg;
+	SEGMENTS [info.nSegment].m_objects = info.nNextInSeg;
 else
 	OBJECTS [info.nPrevInSeg].info.nNextInSeg = info.nNextInSeg;
 if (info.nNextInSeg != -1)
@@ -1941,7 +1941,7 @@ UnlinkFromSeg ();
 LinkToSeg (nNewSeg);
 #if DBG
 #if TRACE
-if (GetSegMasks (info.position.vPos, info.nSegment, 0).m_center)
+if (SEGMENTS [info.nSegment].SideMasks (info.position.vPos, 0).m_center)
 	console.printf (1, "CObject::RelinkToSeg violates seg masks.\n");
 #endif
 #endif
@@ -2032,50 +2032,39 @@ if (EGI_FLAG (bRotateMarkers, 0, 1, 0) && gameStates.app.tick40fps.bTick) {
 
 //--------------------------------------------------------------------
 
-void CheckObjectInVolatileWall (CObject *objP)
+void CObject::CheckWallPhysics (void)
 {
-	int bChkVolaSeg = 1, nType, sideMask, bUnderLavaFall = 0;
-	static int nLavaFallHissPlaying [MAX_PLAYERS]={0};
+	int			bCheck = 1, nType, sideMask, bUnderLavaFall = 0;
+	CSegment*	segP = SEGMENTS + info.nSegment;
 
-if (objP->info.nType != OBJ_PLAYER)
+	static bool bPlayingSound [MAX_PLAYERS] = {false, false, false, false, false, false, false, false};
+
+if (info.nType != OBJ_PLAYER)
 	return;
-sideMask = GetSegMasks (objP->info.position.vPos, objP->info.nSegment, objP->info.xSize).m_side;
+sideMask = segP->SideMasks (info.position.vPos, info.xSize).m_side;
 if (sideMask) {
-	short nSide, nWall;
-	int bit;
-	CSide *pSide = SEGMENTS [objP->info.nSegment].m_sides;
-	for (nSide = 0, bit = 1; nSide < 6; bit <<= 1, nSide++, pSide++) {
+	short		nSide;
+	int		bit;
+	CSide*	sideP = segP->m_sides;
+	for (nSide = 0, bit = 1; nSide < 6; bit <<= 1, nSide++, sideP++) {
 		if (!(sideMask & bit))
 			continue;
-		nWall = pSide->nWall;
-		if (!IS_WALL (nWall))
-			continue;
-		if (WALLS [nWall].nType != WALL_ILLUSION)
-			continue;
-		if ((nType = CheckVolatileWall (objP, objP->info.nSegment, nSide, &objP->info.position.vPos))) {
-			short sound = (nType==1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
-			bUnderLavaFall = 1;
-			bChkVolaSeg = 0;
-			if (!nLavaFallHissPlaying [objP->info.nId]) {
-				DigiLinkSoundToObject3 (sound, OBJ_IDX (objP), 1, F1_0, I2X (256), -1, -1, NULL, 0, SOUNDCLASS_GENERIC);
-				nLavaFallHissPlaying [objP->info.nId] = 1;
-				}
-			}
+		if ((nType = ApplyWallPhysics (nSide)))
+			break;
 		}
 	}
-if (bChkVolaSeg) {
-	if ((nType = CheckVolatileSegment (objP, objP->info.nSegment))) {
-		short sound = (nType==1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
-		bUnderLavaFall = 1;
-		if (!nLavaFallHissPlaying [objP->info.nId]) {
-			DigiLinkSoundToObject3 (sound, OBJ_IDX (objP), 1, F1_0, I2X (256), -1, -1, NULL, 0, SOUNDCLASS_GENERIC);
-			nLavaFallHissPlaying [objP->info.nId] = 1;
-			}
+if (!nType)
+	nType = CheckSegmentPhysics ();
+if (nType) {
+	if (!bPlayingSound [info.nId]) {
+		short sound = (nType == 1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
+		DigiLinkSoundToObject3 (sound, OBJ_IDX (objP), 1, F1_0, I2X (256), -1, -1, NULL, 0, SOUNDCLASS_GENERIC);
+		bPlayingSound [info.nId] = 1;
 		}
 	}
-if (!bUnderLavaFall && nLavaFallHissPlaying [objP->info.nId]) {
+else if (bPlayingSound [info.nId]) {
 	DigiKillSoundLinkedToObject (OBJ_IDX (objP));
-	nLavaFallHissPlaying [objP->info.nId] = 0;
+	bPlayingSound [info.nId] = 0;
 	}
 }
 
@@ -2107,7 +2096,7 @@ if ((info.nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == info.nId
 		playerP->shields -= shields;
 		MultiSendShields ();
 		if (playerP->shields < 0)
-			StartPlayerDeathSequence (objP);
+			StartPlayerDeathSequence (this);
 		else
 			segP->ConquerCheck ();
 		}
@@ -2122,7 +2111,7 @@ if ((info.nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == info.nId
 			MultiSendShields ();
 			}
 		if (!segP->m_owner)
-			CheckConquerRoom (xsegP);
+			segP->ConquerCheck ();
 		}
 	}
 }
@@ -2299,14 +2288,9 @@ if ((objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].obj
 	if (nPrevSegment != objP->info.nSegment) {
 		short	nConnSide = ConnectedSide (SEGMENTS + objP->info.nSegment, SEGMENTS + nPrevSegment);
 		if (nConnSide != -1) {
-			short nWall, nTrigger;
-			nWall = WallNumI (nPrevSegment, nConnSide);
-			if (IS_WALL (nWall)) {
-				nTrigger = WALLS [nWall].nTrigger;
-				if ((nTrigger < gameData.trigs.nTriggers) &&
-					 (TRIGGERS [nTrigger].nType == TT_EXIT))
-					gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP->info.xLifeLeft = 0;
-				}
+			CTrigger* trigP = SEGMENTS [nPrevSegment].Trigger (nConnSide);
+			if (trigP && (trigP->nType == TT_EXIT))
+				gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP->info.xLifeLeft = 0;
 			}
 		}
 	}
@@ -3182,7 +3166,7 @@ PrintLog ("   finished building optimized polygon model data (%d models converte
 
 inline int CObject::OpenableDoorsInSegment (void)
 {
-return SEGMENTS [objP->info.nSegment].HasOpenableDoors ();
+return SEGMENTS [info.nSegment].HasOpenableDoors ();
 }
 
 //------------------------------------------------------------------------------

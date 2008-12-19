@@ -178,6 +178,7 @@ class CSide {
 		CSegMasks Masks (const CFixVector& refP, fix xRad, short sideBit, short& faceBit);
 		void HitPointUV (fix *u, fix *v, fix *l, CFixVector& intersection, int iFace);
 		int CheckForTranspPixel (CFixVector& intersection, short iFace);
+		int Physics (fix* damageP);
 
 		bool IsOpenableDoor (void);
 	};
@@ -271,6 +272,8 @@ class CSegment {
 		inline int CheckForTranspPixel (CFixVector& intersection, int nSide, short iFace) 
 			{ return m_sides [nSide].CheckForTranspPixel (intersection, iFace); }
 
+		int Physics (int nSide, fix* damageP) { return m_sides [nSide].Physics (damageP); }
+		int Physics (fix& xDamage);
 	};
 
 inline int operator- (CSegment* s, CArray<CSegment>& a) { return a.Index (s); }

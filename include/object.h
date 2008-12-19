@@ -723,6 +723,9 @@ class CObject : public CObjectInfo {
 		void HandleSpecialSegment (void);
 
 		inline int OpenableDoorsInSegment (void);
+		void CheckWallPhysics (void);
+		int ApplyWallPhysics (int nSide);
+		int CheckSegmentPhysics (void);
 
 		//inline short Index (void) { return gameData.objs.objects.Index (this); }
 };

@@ -695,43 +695,6 @@ if (closestDist < (rad * 9) / 10) {		//we hit.  figure out where
 return IT_NONE;			//no hit
 }
 
-//------------------------------------------------------------------------------
-
-bool CSide::IsOpenableDoor (void)
-{
-return IS_WALL (m_nWall) ? WALLS [m_nWall].IsOpenableDoor () : false;
-}
-
-//------------------------------------------------------------------------------
-
-inline CFixVector* CSide::GetCorners (CFixVector* vertices) 
-{ 
-for (int i = 0; i < 4; i++)
-	vertices [i] = gameData.segs.vertices [m_contour [i]];
-return vertices;
-}
-
-//------------------------------------------------------------------------------
-
-inline bool CSide::IsWall (void)
-{
-return IS_WALL (m_nWall); 
-}
-
-//------------------------------------------------------------------------------
-
-inline CTrigger* CSide::Trigger (void)
-{
-return IS_WALL (m_nWall) ? Wall ()->Trigger () : NULL;
-}
-
-//------------------------------------------------------------------------------
-
-bool CSide::IsVolatile (void)
-{
-return IsWall () && WALLS [m_nWall].IsVolatile ();
-}
-
 //	-----------------------------------------------------------------------------
 //finds the uv coords of the given refP on the given seg & side
 //fills in u & v. if l is non-NULL fills it in also
@@ -799,6 +762,60 @@ uvls [2] = m_uvls [m_faceVerts [h+2]];
 *v = uvls [1].v + FixMul (k0, uvls [0].v - uvls [1].v) + FixMul (k1, uvls [2].v - uvls [1].v);
 if (l)
 	*l = uvls [1].l + FixMul (k0, uvls [0].l - uvls [1].l) + FixMul (k1, uvls [2].l - uvls [1].l);
+}
+
+//------------------------------------------------------------------------------
+
+bool CSide::IsOpenableDoor (void)
+{
+return IS_WALL (m_nWall) ? WALLS [m_nWall].IsOpenableDoor () : false;
+}
+
+//------------------------------------------------------------------------------
+
+inline CFixVector* CSide::GetCorners (CFixVector* vertices) 
+{ 
+for (int i = 0; i < 4; i++)
+	vertices [i] = gameData.segs.vertices [m_contour [i]];
+return vertices;
+}
+
+//------------------------------------------------------------------------------
+
+inline bool CSide::IsWall (void)
+{
+return IS_WALL (m_nWall); 
+}
+
+//------------------------------------------------------------------------------
+
+inline CTrigger* CSide::Trigger (void)
+{
+return IS_WALL (m_nWall) ? Wall ()->Trigger () : NULL;
+}
+
+//------------------------------------------------------------------------------
+
+bool CSide::IsVolatile (void)
+{
+return IsWall () && WALLS [m_nWall].IsVolatile ();
+}
+
+//------------------------------------------------------------------------------
+
+int CSide::Physics (fix* damageP)
+{
+CWall* wallP = Wall ();
+if (!wallP || (wallP->nType != WALL_ILLUSION))
+	return 0;
+if (gameData.pig.tex.tMapInfoP [m_nBaseTex].damage) {
+	if (damageP)
+		damageP = gameData.pig.tex.tMapInfoP [m_nBaseTex].damage;
+	return 1;
+	}
+if (gameData.pig.tex.tMapInfoP [nTexture].flags & TMI_WATER)
+	return 2;
+return 0;
 }
 
 //------------------------------------------------------------------------------
