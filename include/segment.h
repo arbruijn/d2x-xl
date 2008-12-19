@@ -297,7 +297,7 @@ class CSegment {
 		int Physics (fix& xDamage);
 
 	private:
-		inline int CheckPoke (int nObject, short nSide);
+		inline int PokesThrough (int nObject, short nSide);
 
 	};
 

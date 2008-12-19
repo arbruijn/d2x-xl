@@ -293,7 +293,7 @@ if (connSegP)
 
 //-----------------------------------------------------------------
 
-inline int CSegment::CheckPoke (int nObject, short nSide)
+inline int CSegment::PokesThrough (int nObject, short nSide)
 {
 	CObject *objP = OBJECTS + nObject;
 
@@ -319,7 +319,7 @@ for (nObject = m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextI
 	nType = OBJECTS [nObject].info.nType;
 	if ((nType == OBJ_WEAPON) || (nType == OBJ_FIREBALL) || (nType == OBJ_EXPLOSION) || (nType == OBJ_EFFECT))
 		continue;
-	if (CheckPoke (nObject, nSide) || connSegP->CheckPoke (nObject, nConnSide))
+	if (PokesThrough (nObject, nSide) || connSegP->PokesThrough (nObject, nConnSide))
 		return 1;	//not free
 		}
 return 0; 	//doorway is free!
