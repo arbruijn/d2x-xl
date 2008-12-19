@@ -704,10 +704,10 @@ return IS_WALL (m_nWall) ? WALLS [m_nWall].IsOpenableDoor () : false;
 
 //------------------------------------------------------------------------------
 
-inline CFixVector* CSide::GetCorners (CFixVector vertices) 
+inline CFixVector* CSide::GetCorners (CFixVector* vertices) 
 { 
 for (int i = 0; i < 4; i++)
-	vertices [i] = gameData.segs.vertices [contour [i]];
+	vertices [i] = gameData.segs.vertices [m_contour [i]];
 return vertices;
 }
 

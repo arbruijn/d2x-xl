@@ -114,9 +114,9 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	tMap1 = sideP->nBaseTex;
 	if ((tMap1 < 0) || (tMap1 >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]))
 		continue;
-	bmP = OglLoadFaceBitmap (tMap1, sideP->nFrame);
+	bmP = OglLoadFaceBitmap (tMap1, sideP->m_nFrame);
 	if ((tMap2 = sideP->nOvlTex)) {
-		bm2 = OglLoadFaceBitmap (tMap1, sideP->nFrame);
+		bm2 = OglLoadFaceBitmap (tMap1, sideP->m_nFrame);
 		if (!(bm2->Flags () & BM_FLAG_SUPER_TRANSPARENT) ||
 			 (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk))
 			bm2->SetupTexture (1, 3, 1);
@@ -221,9 +221,9 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segs.nSegments
 		nBaseTex = sideP->nBaseTex;
 		if ((nBaseTex < 0) || (nBaseTex >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]))
 			continue;
-		bmBot = OglLoadFaceBitmap (nBaseTex, sideP->nFrame);
+		bmBot = OglLoadFaceBitmap (nBaseTex, sideP->m_nFrame);
 		if ((nOvlTex = sideP->nOvlTex)) {
-			bmTop = OglLoadFaceBitmap (nOvlTex, sideP->nFrame);
+			bmTop = OglLoadFaceBitmap (nOvlTex, sideP->m_nFrame);
 			if (!(bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) ||
 				 (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk))
 				bmTop->SetupTexture (1, 3, 1);

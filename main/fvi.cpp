@@ -1319,13 +1319,13 @@ int CSide::CheckForTranspPixel (CFixVector& intersection, short iFace)
 
 sideP->FindHitPointUV (&u, &v, NULL, refP, iFace);	//	Don't compute light value.
 if (sideP->nOvlTex)	{
-	nTranspType = PixelTranspType (sideP->nOvlTex, sideP->nOvlOrient, sideP->nFrame, u, v);
+	nTranspType = PixelTranspType (sideP->nOvlTex, sideP->nOvlOrient, sideP->m_nFrame, u, v);
 	if (nTranspType < 0)
 		return 1;
 	if (!nTranspType)
 		return 0;
 	}
-nTranspType = PixelTranspType (sideP->nBaseTex, 0, sideP->nFrame, u, v) != 0;
+nTranspType = PixelTranspType (sideP->nBaseTex, 0, sideP->m_nFrame, u, v) != 0;
 return nTranspType;
 }
 

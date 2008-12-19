@@ -868,8 +868,8 @@ void RotateSideNorms (void)
 
 for (i = 0; i < gameData.segs.nSegments; i++)
 	for (j = 6, sideP = SEGMENTS [i].m_sides; j; j--, sideP++) {
-		transformation.Rotate (sideP->rotNorms [0], sideP->m_normals [0], 0);
-		transformation.Rotate (sideP->rotNorms [1], sideP->m_normals [1], 0);
+		transformation.Rotate (sideP->m_rotNorms [0], sideP->m_normals [0], 0);
+		transformation.Rotate (sideP->m_rotNorms [1], sideP->m_normals [1], 0);
 		}
 }
 

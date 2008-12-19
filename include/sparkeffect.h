@@ -36,7 +36,7 @@ class CSparks {
 			m_nSegment = -1;
 			}
 		void Destroy (void) {
-			sparks.Destroy ();
+			m_sparks.Destroy ();
 			Init ();
 			}
 		void Setup (short nSegment, ubyte nType);

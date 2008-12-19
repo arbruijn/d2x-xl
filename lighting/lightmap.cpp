@@ -481,7 +481,7 @@ for (m_data.faceP = FACES + nFace; nFace < nLastFace; nFace++, m_data.faceP++) {
 		continue;
 	sideP = SEGMENTS [m_data.faceP->nSegment].m_sides + m_data.faceP->nSide;
 	memcpy (m_data.contour, m_data.faceP->index, sizeof (m_data.contour));
-	m_data.nType = (sideP->nType == SIDE_IS_QUAD) || (sideP->nType == SIDE_IS_TRI_02);
+	m_data.nType = (sideP->m_nType == SIDE_IS_QUAD) || (sideP->m_nType == SIDE_IS_TRI_02);
 	m_data.vNormal = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
 	m_data.vcd.vertNorm.Assign (m_data.vNormal);
 	m_data.nColor = 0;

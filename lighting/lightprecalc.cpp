@@ -216,7 +216,7 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 			if ((pl->info.nSegment >= 0) && (pl->info.nSide >= 0)) {
 				sideP = SEGMENTS [pl->info.nSegment].m_sides + pl->info.nSide;
 				if ((CFixVector::Dot (sideP->m_normals[0], vLightToVert) < -F1_0 / 6) &&
-					 ((sideP->nType == SIDE_IS_QUAD) || (CFixVector::Dot (sideP->m_normals[1], vLightToVert) < -F1_0 / 6)))
+					 ((sideP->m_nType == SIDE_IS_QUAD) || (CFixVector::Dot (sideP->m_normals[1], vLightToVert) < -F1_0 / 6)))
 					continue;
 				}
 			}

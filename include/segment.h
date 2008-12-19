@@ -163,7 +163,7 @@ class CSide {
 			vertices = m_vertices;
 			return m_nFaces;
 			}
-		inline CFixVector* GetCorners (CFixVector vertices);
+		inline CFixVector* GetCorners (CFixVector* vertices);
 		inline ushort* Contour (void) { return m_contour; }
 		inline CFixVector& Vertex (int nVertex);
 		inline CFixVector& MinVertex (void);
@@ -227,7 +227,7 @@ class CSegment {
 		inline CFixVector& SideCenter (int nSide) { return m_sides [nSide].Center (); }
 		inline int CreateVertexList (int nSide) { return m_sides [nSide].CreateVertexList (m_verts, sideVertIndex [nSide]); }
 		inline ushort* Contour (int nSide) { return m_sides [nSide].Contour (); }
-		inline void GetCorners (int nSide CFixVector vertices) { return m_sides [nSide].GetCorners (vertices); }
+		inline CFixVector* GetCorners (int nSide, CFixVector* vertices) { return m_sides [nSide].GetCorners (vertices); }
 		ubyte SideDists (const CFixVector& intersection, fix* xSideDists, int bBehind = 1);
 		int ConnectedSide (CSegment* other);
 		inline CFixVector& Normal (int nSide, int nFace) { return m_sides [nSide].Normal (nFace); }

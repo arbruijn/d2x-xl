@@ -63,7 +63,7 @@ void CreateAllVertexLists (int *nFaces, int *vertices, int nSegment, int nSide)
 Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= 0);
 Assert ((nSide >= 0) && (nSide < 6);
 
-switch (sideP->nType) {
+switch (sideP->m_nType) {
 	case SIDE_IS_QUAD:
 
 		vertices [0] = sv [0];
@@ -97,7 +97,7 @@ switch (sideP->nType) {
 		//CREATE_ABS_VERTEX_LISTS (), CREATE_ALL_VERTEX_LISTS (), CREATE_ALL_VERTNUM_LISTS ()
 		break;
 	default:
-		Error ("Illegal CSide nType (1), nType = %i, CSegment # = %i, CSide # = %i\n", sideP->nType, nSegment, nSide);
+		Error ("Illegal CSide nType (1), nType = %i, CSegment # = %i, CSide # = %i\n", sideP->m_nType, nSegment, nSide);
 		break;
 	}
 }

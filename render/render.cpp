@@ -241,7 +241,7 @@ return 0;
 
 int RenderWall (tFaceProps *propsP, g3sPoint **pointList, int bIsMonitor)
 {
-	short c, nWallNum = SEGMENTS (propsP->segNum)->WallNum (propsP->sideNum);
+	short c, nWallNum = SEGMENTS [propsP->segNum].WallNum (propsP->sideNum);
 	static tRgbaColorf cloakColor = {0, 0, 0, -1};
 
 if (IS_WALL (nWallNum)) {
@@ -376,7 +376,7 @@ if (RenderWall (&props, pointList, bIsMonitor)) {	//handle semi-transparent wall
 	}
 if (props.widFlags & WID_RENDER_FLAG) {
 	if (props.nBaseTex >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]) {
-	sideP->nBaseTex = 0;
+	sideP->m_nBaseTex = 0;
 	}
 if (!(bHaveMonitorBg && gameOpts->render.cameras.bFitToWall)) {
 	if (gameStates.render.nType == 3) {
@@ -392,9 +392,9 @@ if (!(bHaveMonitorBg && gameOpts->render.cameras.bFitToWall)) {
 		props.uvls [3].v = 3 * F1_0 / 4;
 		}
 	else if (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk) {
-		bmBot = LoadFaceBitmap (props.nBaseTex, sideP->nFrame);
+		bmBot = LoadFaceBitmap (props.nBaseTex, sideP->m_nFrame);
 		if (props.nOvlTex)
-			bmTop = LoadFaceBitmap ((short) (props.nOvlTex), sideP->nFrame);
+			bmTop = LoadFaceBitmap ((short) (props.nOvlTex), sideP->m_nFrame);
 		}
 	else {
 		if (props.nOvlTex != 0) {
@@ -495,7 +495,7 @@ fix	Min_n0_n1_dot	= (F1_0*15/16);
 
 // -----------------------------------------------------------------------------------
 //	Render a side.
-//	Check for Normal facing.  If so, render faces on CSide dictated by sideP->nType.
+//	Check for Normal facing.  If so, render faces on CSide dictated by sideP->m_nType.
 
 #undef LMAP_LIGHTADJUST
 #define LMAP_LIGHTADJUST 0
@@ -610,12 +610,12 @@ else {
 	props.vNormal = sideP->m_normals [0] + sideP->m_normals [1];
 	props.vNormal *= (F1_0 / 2);
 	props.nVertices = 4;
-	if (sideP->nType == SIDE_IS_TRI_02) {
+	if (sideP->m_nType == SIDE_IS_TRI_02) {
 		memcpy (props.uvls, sideP->m_uvls, sizeof (tUVL) * 4);
 		memcpy (props.vp, SEGMENTS [props.segNum].Contour (props.sideNum), 4 * sizeof (ushort));
 		RenderFace (&props);
 		}
-	else if (sideP->nType == SIDE_IS_TRI_13) {	//just rendering the fan with vertex 1 instead of 0
+	else if (sideP->m_nType == SIDE_IS_TRI_13) {	//just rendering the fan with vertex 1 instead of 0
 		memcpy (props.uvls + 1, sideP->m_uvls, sizeof (tUVL) * 3);
 		props.uvls [0] = sideP->m_uvls [3];
 		memcpy (props.vp + 1, SEGMENTS [props.segNum].Contour (props.sideNum), 4 * sizeof (ushort));
@@ -623,7 +623,7 @@ else {
 		RenderFace (&props);
 		}
 	else {
-		Error("Illegal CSide nType in RenderSide, nType = %i, CSegment # = %i, CSide # = %i\n", sideP->nType, SEG_IDX (segP), props.sideNum);
+		Error("Illegal CSide nType in RenderSide, nType = %i, CSegment # = %i, CSide # = %i\n", sideP->m_nType, SEG_IDX (segP), props.sideNum);
 		return;
 		}
 	}
@@ -891,9 +891,11 @@ int edgeToSides [8][8][2] = {
 
 
 //------------------------------------------------------------------------------
-//given an edge and one CSide adjacent to that edge, return the other adjacent CSide
+//given an edge and one side adjacent to that edge, return the other adjacent CSide
 
-int FindOtherSideOnEdge (CSegment *seg, short *verts, int oppSide)
+#if SORT_RENDER_SEGS
+
+int FindOtherSideOnEdge (CSegment *segP, short *verts, int oppSide)
 {
 	int	i;
 	int	i0 = -1, i1 = -1;
@@ -968,8 +970,6 @@ return 1;
 //------------------------------------------------------------------------------
 //see if the order matters for these two children.
 //returns 0 if order doesn't matter, 1 if c0 before c1, -1 if c1 before c0
-#if SORT_RENDER_SEGS
-
 static int CompareChildren (CSegment *segP, short c0, short c1)
 {
 	tSideNormData	s [2];
@@ -2060,11 +2060,11 @@ return !gameStates.render.cameras.bActive && (gameData.objs.viewerP->info.nType 
 void RenderSkyBoxObjects (void)
 {
 	short		i, nObject;
-	short		*segP;
+	short		*segNumP;
 
 gameStates.render.nType = 1;
-for (i = gameData.segs.skybox.ToS (), segP = gameData.segs.skybox.Buffer (); i; i--, segP++)
-	for (nObject = SEGMENTS [*segP].objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg)
+for (i = gameData.segs.skybox.ToS (), segNumP = gameData.segs.skybox.Buffer (); i; i--, segNumP++)
+	for (nObject = SEGMENTS [*segNumP].m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg)
 		DoRenderObject (nObject, gameStates.render.nWindow);
 }
 
