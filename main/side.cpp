@@ -810,10 +810,10 @@ if (!wallP || (wallP->nType != WALL_ILLUSION))
 	return 0;
 if (gameData.pig.tex.tMapInfoP [m_nBaseTex].damage) {
 	if (damageP)
-		damageP = gameData.pig.tex.tMapInfoP [m_nBaseTex].damage;
+		*damageP = gameData.pig.tex.tMapInfoP [m_nBaseTex].damage;
 	return 1;
 	}
-if (gameData.pig.tex.tMapInfoP [nTexture].flags & TMI_WATER)
+if (gameData.pig.tex.tMapInfoP [m_nBaseTex].flags & TMI_WATER)
 	return 2;
 return 0;
 }
