@@ -645,12 +645,12 @@ for (i = 0, wallP = WALLS.Buffer (); (i < gameData.walls.nWalls) && (m_nCameras 
 	triggerP = TRIGGERS + t;
 	if (triggerP->nType == TT_CAMERA) {
 		for (j = 0; j < triggerP->nLinks; j++)
-			if (m_cameras [m_nCameras].Create (m_nCameras, (short) wallP->nSegment, (short) wallP->nSide, triggerP->nSegment [j], triggerP->nSide [j], NULL, 0, 0))
-				SetFaceCamera (triggerP->nSegment [j] * 6 + triggerP->nSide [j], (char) m_nCameras++);
+			if (m_cameras [m_nCameras].Create (m_nCameras, (short) wallP->nSegment, (short) wallP->nSide, triggerP->segments [j], triggerP->sides [j], NULL, 0, 0))
+				SetFaceCamera (triggerP->segments [j] * 6 + triggerP->sides [j], (char) m_nCameras++);
 		}
 #if TELEPORT_CAMERAS
 	else if (/*EGI_FLAG (bTeleporterCams, 0, 0) &&*/ (triggerP->nType == TT_TELEPORT)) {
-		if (m_cameras [m_nCameras].Create (m_nCameras, triggerP->nSegment [0], triggerP->nSide [0], (short) wallP->nSegment, (short) wallP->nSide, NULL, 0, 1))
+		if (m_cameras [m_nCameras].Create (m_nCameras, triggerP->segments [0], triggerP->sides [0], (short) wallP->nSegment, (short) wallP->nSide, NULL, 0, 1))
 			SetFaceCamera (wallP->nSegment * 6 + wallP->nSide, (char) m_nCameras++);
 		}
 #endif
@@ -665,8 +665,8 @@ FORALL_OBJS (objP, i) {
 		triggerP = OBJTRIGGERS + j;
 		if (triggerP->nType == TT_CAMERA) {
 			for (k = 0; k < triggerP->nLinks; k++)
-				if (m_cameras [m_nCameras].Create (m_nCameras, -1, -1, triggerP->nSegment [k], triggerP->nSide [k], objP, 0, 0))
-					SetFaceCamera (triggerP->nSegment [k] * 6 + triggerP->nSide [k], (char) m_nCameras++);
+				if (m_cameras [m_nCameras].Create (m_nCameras, -1, -1, triggerP->segments [k], triggerP->sides [k], objP, 0, 0))
+					SetFaceCamera (triggerP->segments [k] * 6 + triggerP->sides [k], (char) m_nCameras++);
 			}
 		if (r == (j = gameData.trigs.objTriggerRefs [j].next))
 			break;

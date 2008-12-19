@@ -2166,7 +2166,7 @@ switch (info.controlType) {
 		break;
 
 	case CT_EXPLOSION:
-		DoExplosionSequence (this);
+		DoExplosionSequence ();
 		break;
 
 	case CT_SLEW:
@@ -2209,7 +2209,8 @@ int nObject = OBJ_IDX (this);
 if (nObject != LOCALPLAYER.nObject)
 	return;
 
-int nSpeed -= 2 * F1_0;
+int nSpeed = nSpeed = mType.physInfo.velocity.Mag();
+nSpeed -= 2 * F1_0;
 if (nSpeed < 0)
 	nSpeed = 0;
 if (gameData.multiplayer.bMoving == nSpeed)
@@ -2280,14 +2281,14 @@ return 0;
 
 void CObject::CheckGuidedMissileThroughExit (short nPrevSegment)
 {
-if ((this == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].this) &&
+if ((this == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP) &&
 	 (info.nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature)) {
 	if (nPrevSegment != info.nSegment) {
 		short	nConnSide = SEGMENTS [info.nSegment].ConnectedSide (SEGMENTS + nPrevSegment);
 		if (nConnSide != -1) {
 			CTrigger* trigP = SEGMENTS [nPrevSegment].Trigger (nConnSide);
 			if (trigP && (trigP->nType == TT_EXIT))
-				gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].info.xLifeLeft = 0;
+				gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP->info.xLifeLeft = 0;
 			}
 		}
 	}
@@ -2411,9 +2412,9 @@ if (UpdateControl ()) {
 if (info.xLifeLeft < 0) {		// We died of old age
 	Kill ();
 	if ((info.nType == OBJ_WEAPON) && WI_damage_radius (info.nId))
-		ExplodeBadassWeapon (&info.position.vPos);
+		ExplodeBadassWeapon (info.position.vPos);
 	else if (info.nType == OBJ_ROBOT)	//make robots explode
-		ExplodeObject (0);
+		Explode (0);
 	}
 if ((info.nType == OBJ_NONE) || (info.nFlags & OF_SHOULD_BE_DEAD)) {
 	return 1;			//CObject has been deleted
@@ -2422,7 +2423,7 @@ UpdateMovement ();
 UpdateEffects ();
 if (CheckTriggerHits (nPrevSegment))
 	return 0;
-CheckWallPhysics ();
+CheckSegmentPhysics ();
 CheckGuidedMissileThroughExit (nPrevSegment);
 CheckAfterburnerBlobDrop ();
 return 1;
@@ -3161,7 +3162,7 @@ PrintLog ("   finished building optimized polygon model data (%d models converte
 
 inline int CObject::OpenableDoorsInSegment (void)
 {
-return SEGMENTS [info.nSegment].HasOpenableDoors ();
+return SEGMENTS [info.nSegment].HasOpenableDoor ();
 }
 
 //------------------------------------------------------------------------------
