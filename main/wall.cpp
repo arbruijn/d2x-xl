@@ -466,8 +466,7 @@ for (i = 0; i < doorP->nPartCount; i++) {
 
 	segP = SEGMENTS + wallP->nSegment;
 	nSide = wallP->nSide;
-	nWall = WallNumP (segP, nSide);
-	if (!IS_WALL (nWall)) {
+	if (!segP->IsWall (nSide)) {
 		PrintLog ("Trying to open non existant door @ %d,%d\n", wallP->nSegment, nSide);
 		continue;
 		}
@@ -475,10 +474,10 @@ for (i = 0; i < doorP->nPartCount; i++) {
 	connSegP = SEGMENTS + segP->m_children [nSide];
 	nConnSide = segP->ConnectedSide (connSegP);
 	if (nConnSide < 0) {
-		PrintLog ("Door %d @ %d,%d has no oppposite door in %d\n", nWall, wallP->nSegment, nSide, segP->m_children [nSide]);
+		PrintLog ("Door %d @ %d,%d has no oppposite door in %d\n", segP->WallNum (nSide), wallP->nSegment, nSide, segP->m_children [nSide]);
 		continue;
 		}
-	if (IS_WALL (WallNumP (connSegP, nConnSide)))
+	if (connSegP->IsWall (nConnSide))
 		bFlags &= connSegP->AnimateOpeningDoor (nConnSide, doorP->time);
 	}
 if (bFlags & 2)
@@ -505,15 +504,16 @@ CSegment* segP = SEGMENTS + wallP->nSegment;
 //check for OBJECTS in doorway before closing
 if (wallP->flags & WALL_DOOR_AUTO)
 	if (segP->DoorIsBlocked (short (wallP->nSide))) {
-		DigiKillSoundLinkedToSegment (short (wallP->nSegment, short (wallP->nSide), -1);
-		segP->WallOpenDoor (short (wallP->nSide));		//re-open door
+		DigiKillSoundLinkedToSegment (short (wallP->nSegment), short (wallP->nSide), -1);
+		segP->OpenDoor (short (wallP->nSide));		//re-open door
 		return;
 		}
 
 for (i = 0; i < doorP->nPartCount; i++) {
 	wallP = WALLS + doorP->nFrontWall [i];
 	segP = SEGMENTS + wallP->nSegment;
-	if (!segP->IsWall (wallP->nSide)) {
+	nSide = wallP->nSide;
+	if (!segP->IsWall (nSide)) {
 #if DBG
 		PrintLog ("Trying to close non existant door\n");
 #endif
@@ -526,7 +526,8 @@ for (i = 0; i < doorP->nPartCount; i++) {
 	connSegP = SEGMENTS + segP->m_children [nSide];
 	nConnSide = segP->ConnectedSide (connSegP);
 	if (nConnSide < 0) {
-		PrintLog ("Door %d @ %d,%d has no oppposite door in %d\n", WallNumP (segP, nSide), wallP->nSegment, nSide, segP->m_children [nSide]);
+		PrintLog ("Door %d @ %d,%d has no oppposite door in %d\n", 
+					 segP->WallNum (nSide), wallP->nSegment, nSide, segP->m_children [nSide]);
 		continue;
 		}
 	if ((gameData.demo.nState != ND_STATE_PLAYBACK) && !(i || doorP->time)) {
@@ -535,9 +536,9 @@ for (i = 0; i < doorP->nPartCount; i++) {
 									  wallP->nSegment, nSide, SEGMENTS [wallP->nSegment].SideCenter (nSide), 0, F1_0);
 		}
 	doorP->time += gameData.time.xFrame;
-	bFlags &= AnimateClosingDoor (segP, nSide, doorP->time);
+	bFlags &= segP->AnimateClosingDoor (nSide, doorP->time);
 	if (connSegP->IsWall (nConnSide))
-		bFlags &= AnimateClosingDoor (connSegP, nConnSide, doorP->time);
+		bFlags &= connSegP->AnimateClosingDoor (nConnSide, doorP->time);
 	}
 if (bFlags & 1)
 	CloseDoor (nDoor);
@@ -596,7 +597,7 @@ for (i = 0, wallP = WALLS.Buffer (); i < gameData.walls.nWalls; wallP++, i++) {
 			continue;
 		h = (animP->flags & WCF_TMAP1) ? -1 : 1;
 		segP = SEGMENTS + wallP->nSegment;
-		segP->m_sides [wallP->nSide].nFrame = h;
+		segP->m_sides [wallP->nSide].m_nFrame = h;
 		}
 	}
 }
@@ -610,14 +611,16 @@ for (i = 0, wallP = WALLS.Buffer (); i < gameData.walls.nWalls; wallP++, i++) {
 
 int CWall::ProcessHit (int nPlayer, CObject* objP)
 {
+	bool bShowMessage;
+
 if (objP->info.nType == OBJ_PLAYER)
 	bShowMessage = (CFixVector::Dot (objP->info.position.mOrient.FVec (), objP->mType.physInfo.velocity) > 0);
 else if (objP->info.nType == OBJ_ROBOT)
-	bShowMessage = 0;
+	bShowMessage = false;
 else if ((objP->info.nType == OBJ_WEAPON) && (objP->cType.laserInfo.parent.nType == OBJ_ROBOT))
-	bShowMessage = 0;
+	bShowMessage = false;
 else
-	bShowMessage = 1;
+	bShowMessage = true;
 
 if (keys == KEY_BLUE) {
 	if (!(gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_BLUE_KEY)) {
@@ -675,7 +678,6 @@ void ResetWalls (void)
 {
 for (int i = 0; i < gameData.walls.nWalls; i++)
 	WALLS [i].Init ();
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -725,21 +727,21 @@ else if (SHOW_DYN_LIGHT || (cloakWallP->time > CLOAKING_WALL_TIME / 2)) {
 		if (backWallP)
 			backWallP->nType = WALL_CLOAKED;
 		for (i = 0; i < 4; i++) {
-			SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].uvls [i].l = cloakWallP->front_ls [i];
+			SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].m_uvls [i].l = cloakWallP->front_ls [i];
 			if (backWallP)
-				SEGMENTS [backWallP->nSegment].m_sides [backWallP->nSide].uvls [i].l = cloakWallP->back_ls [i];
+				SEGMENTS [backWallP->nSegment].m_sides [backWallP->nSide].m_uvls [i].l = cloakWallP->back_ls [i];
 			}
 		}
 	}
 else {		//fading out
 	fix xLightScale = FixDiv (CLOAKING_WALL_TIME / 2 - cloakWallP->time, CLOAKING_WALL_TIME / 2);
 	for (int i = 0; i < 4; i++) {
-		SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].uvls [i].l = FixMul (cloakWallP->front_ls [i], xLightScale);
+		SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].m_uvls [i].l = FixMul (cloakWallP->front_ls [i], xLightScale);
 		if (backWallP)
-			SEGMENTS [backWallP->nSegment].m_sides [backWallP->nSide].uvls [i].l = FixMul (cloakWallP->back_ls [i], xLightScale);
+			SEGMENTS [backWallP->nSegment].m_sides [backWallP->nSide].m_uvls [i].l = FixMul (cloakWallP->back_ls [i], xLightScale);
 		}
 	if (gameData.demo.nState == ND_STATE_RECORDING) {
-		tUVL *uvlP = SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].uvls;
+		tUVL *uvlP = SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].m_uvls;
 		NDRecordCloakingWall (cloakWallP->nFrontWall, cloakWallP->nBackWall, frontWallP->nType, frontWallP->state, frontWallP->cloakValue,
 									 uvlP [0].l, uvlP [1].l, uvlP [2].l, uvlP [3].l);
 		}
@@ -767,9 +769,9 @@ if (cloakWallP->time > CLOAKING_WALL_TIME) {
 	if (backWallP)
 	backWallP->state = WALL_DOOR_CLOSED;
 	for (i = 0;i < 4; i++) {
-		SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].uvls [i].l = cloakWallP->front_ls [i];
+		SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].m_uvls [i].l = cloakWallP->front_ls [i];
 		if (backWallP)
-			SEGMENTS [backWallP->nSegment].m_sides [backWallP->nSide].uvls [i].l = cloakWallP->back_ls [i];
+			SEGMENTS [backWallP->nSegment].m_sides [backWallP->nSide].m_uvls [i].l = cloakWallP->back_ls [i];
 		}
 
 	for (i = nCloakingWall; i < gameData.walls.nCloaking; i++)
@@ -787,9 +789,9 @@ else if (cloakWallP->time > CLOAKING_WALL_TIME/2) {		//fading in
 		}
 	fix xLightScale = FixDiv(cloakWallP->time-CLOAKING_WALL_TIME/2,CLOAKING_WALL_TIME/2);
 	for (int i = 0; i < 4; i++) {
-		SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].uvls [i].l = FixMul(cloakWallP->front_ls [i],xLightScale);
+		SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].m_uvls [i].l = FixMul(cloakWallP->front_ls [i],xLightScale);
 		if (backWallP)
-			SEGMENTS [backWallP->nSegment].m_sides [backWallP->nSide].uvls [i].l = FixMul(cloakWallP->back_ls [i],xLightScale);
+			SEGMENTS [backWallP->nSegment].m_sides [backWallP->nSide].m_uvls [i].l = FixMul(cloakWallP->back_ls [i],xLightScale);
 		}
 	}
 else {		//cloaking in
@@ -801,7 +803,7 @@ else {		//cloaking in
 		}
 	}
 if (gameData.demo.nState == ND_STATE_RECORDING) {
-	tUVL *uvlP = SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].uvls;
+	tUVL *uvlP = SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].m_uvls;
 	NDRecordCloakingWall (cloakWallP->nFrontWall, cloakWallP->nBackWall, frontWallP->nType, frontWallP->state, frontWallP->cloakValue,
 								 uvlP [0].l, uvlP [1].l, uvlP [2].l, uvlP [3].l);
 	}
@@ -832,7 +834,7 @@ for (i = 0; i < gameData.walls.nOpenDoors; i++, doorP++) {
 		if (IS_WALL (doorP->nBackWall [0]))
 			WALLS [doorP->nBackWall [0]].state = WALL_DOOR_CLOSING;
 		if ((doorP->time > DOOR_WAIT_TIME) &&
-			 !DoorIsBlocked (SEGMENTS + wallP->nSegment, (short) wallP->nSide)) {
+			 !SEGMENTS [wallP->nSegment].DoorIsBlocked (wallP->nSide)) {
 			wallP->state = WALL_DOOR_CLOSING;
 			doorP->time = 0;
 			}
@@ -878,11 +880,11 @@ void AddStuckObject (CObject *objP, short nSegment, short nSide)
 	short				nWall;
 	tStuckObject	*stuckObjP;
 
-nWall = WallNumI (nSegment, nSide);
-if (IS_WALL (nWall)) {
-	if (WALLS [nWall].flags & WALL_BLASTED)
+CWall* wallP = SEGMENTS [nSegment].Wall (nSide);
+if (wallP) {
+	if (wallP->flags & WALL_BLASTED)
 		objP->Kill ();
-
+	nWall = wallP - WALLS;
 	for (i = 0, stuckObjP = stuckObjects; i < MAX_STUCK_OBJECTS; i++, stuckObjP++) {
 		if (stuckObjP->nWall == NO_WALL) {
 			stuckObjP->nWall = nWall;
@@ -890,14 +892,8 @@ if (IS_WALL (nWall)) {
 			stuckObjP->nSignature = objP->info.nSignature;
 			nStuckObjects++;
 			break;
+			}
 		}
-	}
-#if TRACE
-	if (i == MAX_STUCK_OBJECTS)
-		console.printf (1,
-			"Warning: Unable to add CObject %i which got stuck in CWall %i to stuckObjects\n",
-			OBJ_IDX (objP), nWall);
-#endif
 	}
 }
 
@@ -997,48 +993,44 @@ void BngProcessSegment (CObject *objP, fix damage, CSegment *segP, int depth, sb
 	int	i;
 	short	nSide;
 
-	if (depth > MAX_BLAST_GLASS_DEPTH)
-		return;
+if (depth > MAX_BLAST_GLASS_DEPTH)
+	return;
 
-	depth++;
+depth++;
 
-	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
-		int			tm;
-		fix			dist;
-		CFixVector	pnt;
+for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+	int			tm;
+	fix			dist;
+	CFixVector	pnt;
 
-		//	Process only walls which have glass.
-		if ((tm = segP->m_sides [nSide].m_nOvlTex)) {
-			int	ec, db;
-			tEffectClip *ecP;
+	//	Process only walls which have glass.
+	if ((tm = segP->m_sides [nSide].m_nOvlTex)) {
+		int				ec, db;
+		tEffectClip*	ecP;
 
-			ec=gameData.pig.tex.tMapInfoP [tm].nEffectClip;
-			ecP = (ec < 0) ? NULL : gameData.eff.effectP + ec;
-			db = ecP ? ecP->nDestBm : -1;
+		ec=gameData.pig.tex.tMapInfoP [tm].nEffectClip;
+		ecP = (ec < 0) ? NULL : gameData.eff.effectP + ec;
+		db = ecP ? ecP->nDestBm : -1;
 
-			if (((ec != -1) && (db != -1) && !(ecP->flags & EF_ONE_SHOT)) ||
-			 	 ((ec == -1) && (gameData.pig.tex.tMapInfoP [tm].destroyed != -1))) {
-				pnt = segP->SideCenter (nSide);
-				dist = CFixVector::Dist(pnt, objP->info.position.vPos);
-				if (dist < damage/2) {
-					dist = FindConnectedDistance (&pnt, SEG_IDX (segP), &objP->info.position.vPos, objP->info.nSegment, MAX_BLAST_GLASS_DEPTH, WID_RENDPAST_FLAG, 0);
-					if ((dist > 0) && (dist < damage/2))
-						CheckEffectBlowup (segP, nSide, &pnt, OBJECTS + objP->cType.laserInfo.parent.nObject, 1);
+		if (((ec != -1) && (db != -1) && !(ecP->flags & EF_ONE_SHOT)) ||
+		 	 ((ec == -1) && (gameData.pig.tex.tMapInfoP [tm].destroyed != -1))) {
+			pnt = segP->SideCenter (nSide);
+			dist = CFixVector::Dist(pnt, objP->info.position.vPos);
+			if (dist < damage/2) {
+				dist = FindConnectedDistance (&pnt, SEG_IDX (segP), &objP->info.position.vPos, objP->info.nSegment, MAX_BLAST_GLASS_DEPTH, WID_RENDPAST_FLAG, 0);
+				if ((dist > 0) && (dist < damage / 2))
+					CheckEffectBlowup (segP, nSide, &pnt, OBJECTS + objP->cType.laserInfo.parent.nObject, 1);
 				}
 			}
 		}
 	}
 
-	for (i=0; i<MAX_SIDES_PER_SEGMENT; i++) {
-		int	nSegment = segP->children [i];
+for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+	short nSegment = segP->m_children [i];
 
-		if (nSegment != -1) {
-			if (!visited [nSegment]) {
-				if (WALL_IS_DOORWAY(segP, (short) i, NULL) & WID_FLY_FLAG) {
-					visited [nSegment] = 1;
-					BngProcessSegment (objP, damage, &SEGMENTS [nSegment], depth, visited);
-				}
-			}
+	if ((nSegment != -1) && !visited [nSegment] && (segP->IsDoorWay (i, NULL) & WID_FLY_FLAG)) {
+		visited [nSegment] = 1;
+		BngProcessSegment (objP, damage, &SEGMENTS [nSegment], depth, visited);
 		}
 	}
 }
@@ -1220,7 +1212,6 @@ d.nBackWall [0] = cf.ReadShort ();
 d.nBackWall [1] = cf.ReadShort ();
 d.time = cf.ReadFix ();
 }
-#endif
 
 // -----------------------------------------------------------------------------------
 
@@ -1231,9 +1222,9 @@ return (nType == WALL_DOOR) && (keys == KEY_NONE) && (state == WALL_DOOR_CLOSED)
 
 // -----------------------------------------------------------------------------------
 
-inline CTrigger* Trigger (void)
+inline CTrigger* CWall::Trigger (void)
 {
-return (nTrigger == NO_TRIGGER) ? : NULL : TRIGGERS + nTrigger;
+return (nTrigger == NO_TRIGGER) ? NULL : TRIGGERS + nTrigger;
 }
 
 // -----------------------------------------------------------------------------------

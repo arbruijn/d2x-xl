@@ -211,6 +211,7 @@ class CSegment {
 		inline ushort WallNum (short nSide) { return m_sides [nSide].WallNum (); }
 		inline int CheckTransparency (short nSide) { return m_sides [nSide].CheckTransparency (); }
 
+		inline bool IsWall (int nSide) { return m_sides [nSide].IsWall (); }
 		void SetTexture (short nSide, CSegment *connSegP, short nConnSide, int nAnim, int nFrame);
 		void DestroyWall (short nSide);
 		void DamageWall (short nSide, fix damage);
@@ -222,6 +223,7 @@ class CSegment {
 		void IllusionOn (short nSide);
 		void ToggleWall (short nSide);
 		int ProcessWallHit (short nSide, fix damage, int nPlayer, CObject *objP);
+		int DoorIsBlocked (short nSide);
 
 		fix Refuel (fix xMaxFuel);
 		fix Repair (fix xMaxShields);
@@ -291,7 +293,6 @@ class CSegment {
 		int Physics (fix& xDamage);
 
 	private:
-		int DoorIsBlocked (short nSide);
 		inline int CheckPoke (int nObject, short nSide);
 
 	};
