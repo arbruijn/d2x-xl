@@ -2344,7 +2344,7 @@ DISABLE_COLLISION  (OBJ_ROBOT, OBJ_EFFECT);
 
 //	-----------------------------------------------------------------------------
 
-int CObject::CollideObjectWithWall (fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector& vHitPt)
+int CObject::CollideObjectAndWall (fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector& vHitPt)
 {
 switch (info.nType)	{
 	case OBJ_NONE:

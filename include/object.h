@@ -825,7 +825,23 @@ class CObject : public CObjectInfo {
 		void SetTurnRoll (void);
 		void DoPhysicsSimRot (void);
 		void DoPhysicsSim (void);
+		void Spin (void);
+		int Update (void);
 		//inline short Index (void) { return gameData.objs.objects.Index (this); }
+
+		void DoPowerupFrame (void);
+		void DoMorphFrame (void);
+		inline void RotateCamera (void);
+		void RotateMarker (void);
+
+	private:
+		void CheckGuidedMissileThroughExit (short nPrevSegment);
+		void CheckAfterburnerBlobDrop (void);
+		int CheckTriggerHits (short nPrevSegment);
+		void UpdateShipSound (void);
+		void UpdateEffects (void);
+		void UpdateControl (void);
+		void UpdateMovement (void);
 };
 
 inline int operator- (CObject* o, CArray<CObject>& a) { return a.Index (o); }
@@ -1171,8 +1187,8 @@ void FixObjectSizes (void);
 void DoSlowMotionFrame (void);
 CFixMatrix *ObjectView (CObject *objP);
 
-CFixVector&PlayerSpawnPos (int nPlayer);
-CFixMatrix *PlayerSpawnOrient (int nPlayer);
+CFixVector* PlayerSpawnPos (int nPlayer);
+CFixMatrix* PlayerSpawnOrient (int nPlayer);
 void GetPlayerSpawn (int nPlayer, CObject *objP);
 void RecreateThief(CObject *objP);
 void DeadPlayerFrame (void);

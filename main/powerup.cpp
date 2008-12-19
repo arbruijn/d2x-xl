@@ -172,17 +172,17 @@ if (!gameStates.app.bDemoData) {
 
 //------------------------------------------------------------------------------
 //process this powerup for this frame
-void DoPowerupFrame (CObject *objP)
+void CObject::DoPowerupFrame (void)
 {
 //if (gameStates.app.tick40fps.bTick) 
-	tVClipInfo	*vciP = &objP->rType.vClipInfo;
+	tVClipInfo	*vciP = &rType.vClipInfo;
 	tVideoClip	*vcP = (vciP->nClipIndex < 0) ? NULL : gameData.eff.vClips [0] + vciP->nClipIndex;
-	int			i = OBJ_IDX (objP);
+	int			i = OBJ_IDX (this);
 
-if (objP->info.renderType != RT_POLYOBJ)
+if (info.renderType != RT_POLYOBJ)
 	UpdatePowerupClip (vcP, vciP, i);
-if (objP->info.xLifeLeft <= 0) {
-	/*Object*/CreateExplosion (objP->info.nSegment, &objP->info.position.vPos, F1_0 * 7 / 2, VCLIP_POWERUP_DISAPPEARANCE);
+if (info.xLifeLeft <= 0) {
+	/*Object*/CreateExplosion (info.nSegment, info.position.vPos, F1_0 * 7 / 2, VCLIP_POWERUP_DISAPPEARANCE);
 	if (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].nSound > -1)
 		DigiLinkSoundToObject (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].nSound, i, 0, F1_0, SOUNDCLASS_GENERIC);
 	}

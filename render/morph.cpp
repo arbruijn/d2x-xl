@@ -182,17 +182,17 @@ return 1;
 
 //-------------------------------------------------------------
 //process the morphing CObject for one frame
-void DoMorphFrame (CObject *objP)
+void CObject::DoMorphFrame (void)
 {
 	int			i, t;
 	tPolyModel	*pmP;
 	tMorphInfo	*mdP;
 
-if (!(mdP = MorphFindData (objP))) {	//maybe loaded half-morphed from disk
-	objP->Kill ();	//so kill it
+if (!(mdP = MorphFindData (this))) {	//maybe loaded half-morphed from disk
+	Kill ();	//so kill it
 	return;
 	}
-pmP = gameData.models.polyModels + mdP->objP->rType.polyObjInfo.nModel;
+pmP = gameData.models.polyModels + mdP->rType.polyObjInfo.nModel;
 G3CheckAndSwap (reinterpret_cast<void*> (pmP->modelData.Buffer ()));
 for (i = 0; i < pmP->nModels; i++)
 	if (mdP->submodelActive [i] == 1) {
@@ -208,7 +208,7 @@ for (i = 0; i < pmP->nModels; i++)
 			}
 		}
 if (!mdP->nSubmodelsActive) {			//done morphing!
-	CObject *objP = mdP->objP;
+	CObject* objP = mdP->objP;
 	objP->info.controlType = mdP->saveControlType;
 	objP->info.movementType = mdP->saveMovementType;
 	objP->info.renderType = RT_POLYOBJ;

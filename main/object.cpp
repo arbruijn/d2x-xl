@@ -327,7 +327,7 @@ pos += rand_vec;
 size = FixMul (size_scale, F1_0 / 2 + d_rand () * 4 / 2);
 nSegment = FindSegByPos (pos, objP->info.nSegment, 1, 0);
 if (nSegment != -1) {
-	CObject *explObjP = /*Object*/CreateExplosion (nSegment, &pos, size, VCLIP_SMALL_EXPLOSION);
+	CObject *explObjP = /*Object*/CreateExplosion (nSegment, pos, size, VCLIP_SMALL_EXPLOSION);
 	if (!explObjP)
 		return;
 	AttachObject (objP, explObjP);
@@ -1026,7 +1026,7 @@ DelObjChildrenN (nObject);
 DelObjChildN (nObject);
 gameData.objs.bWantEffect [nObject] = 0;
 #if 1
-RequestEffects (OBJECTS + nObject, DESTROY_SMOKE | DESTROY_LIGHTNINGS);
+OBJECTS [nObject].RequestEffects (DESTROY_SMOKE | DESTROY_LIGHTNINGS);
 #else
 SEM_ENTER (SEM_SMOKE)
 KillObjectSmoke (nObject);
@@ -1222,7 +1222,7 @@ void CObject::Initialize (ubyte nType, ubyte nId, short nCreator, short nSegment
 SetSignature (gameData.objs.nNextSignature++);
 SetType (nType);
 SetId (nId);
-SetLastPos (&vPos);
+SetLastPos (vPos);
 SetSize (xSize);
 SetCreator ((sbyte) nCreator);
 SetOrient (&mOrient);
@@ -1289,7 +1289,7 @@ m_nId = OBJ_IDX (this);
 SetSignature (gameData.objs.nNextSignature++);
 SetType (nType);
 SetId (nId);
-SetLastPos (&vPos);
+SetLastPos (vPos);
 SetPos (&vPos);
 SetSize (xSize);
 SetCreator ((sbyte) nCreator);
@@ -1765,9 +1765,9 @@ if (gameStates.app.bPlayerIsDead) {
 			gameStates.app.bPlayerEggsDropped = 1;
 			if (IsMultiGame)
 				MultiSendPlayerExplode (MULTI_PLAYER_EXPLODE);
-			ExplodeBadassPlayer (gameData.objs.consoleP);
+			gameData.objs.consoleP->ExplodeBadassPlayer ();
 			//is this next line needed, given the badass call above?
-			ExplodeObject (gameData.objs.consoleP, 0);
+			gameData.objs.consoleP->ExplodeObject (0);
 			gameData.objs.consoleP->info.nFlags &= ~OF_SHOULD_BE_DEAD;		//don't really kill CPlayerData
 			gameData.objs.consoleP->info.renderType = RT_NONE;				//..just make him disappear
 			gameData.objs.consoleP->SetType (OBJ_GHOST);						//..and kill intersections
@@ -1949,20 +1949,20 @@ if (SEGMENTS [info.nSegment].SideMasks (info.position.vPos, 0).m_center)
 
 //--------------------------------------------------------------------
 //process a continuously-spinning CObject
-void SpinObject (CObject *objP)
+void CObject::Spin (void)
 {
 	CAngleVector rotangs;
 	CFixMatrix rotmat, new_pm;
 
-Assert (objP->info.movementType == MT_SPINNING);
-rotangs = CAngleVector::Create((fixang) FixMul (objP->mType.spinRate[X], gameData.time.xFrame),
-                            (fixang) FixMul (objP->mType.spinRate[Y], gameData.time.xFrame),
-                            (fixang) FixMul (objP->mType.spinRate[Z], gameData.time.xFrame));
-rotmat = CFixMatrix::Create(rotangs);
+Assert (info.movementType == MT_SPINNING);
+rotangs = CAngleVector::Create((fixang) FixMul (mType.spinRate[X], gameData.time.xFrame),
+										 (fixang) FixMul (mType.spinRate[Y], gameData.time.xFrame),
+										 (fixang) FixMul (mType.spinRate[Z], gameData.time.xFrame));
+rotmat = CFixMatrix::Create (rotangs);
 // TODO MM
-new_pm = objP->info.position.mOrient * rotmat;
-objP->info.position.mOrient = new_pm;
-objP->info.position.mOrient.CheckAndFix();
+new_pm = info.position.mOrient * rotmat;
+info.position.mOrient = new_pm;
+info.position.mOrient.CheckAndFix();
 }
 
 extern void MultiSendDropBlobs (char);
@@ -2007,14 +2007,14 @@ if (!gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted) {
 
 //--------------------------------------------------------------------
 
-void RotateCamera (CObject *objP)
+inline void CObject::RotateCamera (void)
 {
-cameraManager.Rotate (objP);
+cameraManager.Rotate (this);
 }
 
 //--------------------------------------------------------------------
 
-void RotateMarker (CObject *objP)
+void CObject::RotateMarker (void)
 {
 if (EGI_FLAG (bRotateMarkers, 0, 1, 0) && gameStates.app.tick40fps.bTick) {
 	static time_t	t0 = 0;
@@ -2024,8 +2024,8 @@ if (EGI_FLAG (bRotateMarkers, 0, 1, 0) && gameStates.app.tick40fps.bTick) {
 	if (t) {
 		CAngleVector a = CAngleVector::Create(0, 0, (fixang) ((float) (F1_0 / 512) * t / 25.0f));
 		CFixMatrix mRotate = CFixMatrix::Create(a);
-		CFixMatrix mOrient = mRotate * objP->info.position.mOrient;
-		objP->info.position.mOrient = mOrient;
+		CFixMatrix mOrient = mRotate * info.position.mOrient;
+		info.position.mOrient = mOrient;
 		}
 	}
 }
@@ -2058,12 +2058,12 @@ if (!nType)
 if (nType) {
 	if (!bPlayingSound [info.nId]) {
 		short sound = (nType == 1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
-		DigiLinkSoundToObject3 (sound, OBJ_IDX (objP), 1, F1_0, I2X (256), -1, -1, NULL, 0, SOUNDCLASS_GENERIC);
+		DigiLinkSoundToObject3 (sound, OBJ_IDX (this), 1, F1_0, I2X (256), -1, -1, NULL, 0, SOUNDCLASS_GENERIC);
 		bPlayingSound [info.nId] = 1;
 		}
 	}
 else if (bPlayingSound [info.nId]) {
-	DigiKillSoundLinkedToObject (OBJ_IDX (objP));
+	DigiKillSoundLinkedToObject (OBJ_IDX (this));
 	bPlayingSound [info.nId] = 0;
 	}
 return nType;
@@ -2119,61 +2119,61 @@ if ((info.nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == info.nId
 
 //--------------------------------------------------------------------
 
-int HandleObjectControl (CObject *objP)
+int CObject::UpdateControl (void)
 {
-switch (objP->info.controlType) {
+switch (info.controlType) {
 	case CT_NONE:
 		break;
 
 	case CT_FLYING:
-		ReadFlyingControls (objP);
+		ReadFlyingControls (this);
 		break;
 
 	case CT_REPAIRCEN:
-		Int3 ();	// -- hey!these are no longer supported!!-- do_repair_sequence (objP); break;
+		Int3 ();	// -- hey!these are no longer supported!!-- do_repair_sequence (this); break;
 
 	case CT_POWERUP:
-		DoPowerupFrame (objP);
+		DoPowerupFrame ();
 		break;
 
 	case CT_MORPH:			//morph implies AI
-		DoMorphFrame (objP);
+		DoMorphFrame ();
 		//NOTE: FALLS INTO AI HERE!!!!
 
 	case CT_AI:
 		//NOTE LINK TO CT_MORPH ABOVE!!!
 		if (gameStates.gameplay.bNoBotAI || (gameStates.app.bGameSuspended & SUSP_ROBOTS)) {
-			objP->mType.physInfo.velocity.SetZero();
-			objP->mType.physInfo.thrust.SetZero();
-			objP->mType.physInfo.rotThrust.SetZero();
-			DoAnyRobotDyingFrame (objP);
+			mType.physInfo.velocity.SetZero();
+			mType.physInfo.thrust.SetZero();
+			mType.physInfo.rotThrust.SetZero();
+			DoAnyRobotDyingFrame (this);
 #if 1//ndef _DEBUG
 			return 1;
 #endif
 			}
 		else if (USE_D1_AI)
-			DoD1AIFrame (objP);
+			DoD1AIFrame (this);
 		else
-			DoAIFrame(objP);
+			DoAIFrame (this);
 		break;
 
 	case CT_CAMERA:
-		RotateCamera (objP);
+		RotateCamera (this);
 		break;
 
 	case CT_WEAPON:
-		LaserDoWeaponSequence (objP);
+		LaserDoWeaponSequence (this);
 		break;
 
 	case CT_EXPLOSION:
-		DoExplosionSequence (objP);
+		DoExplosionSequence (this);
 		break;
 
 	case CT_SLEW:
 		break;	//ignore
 
 	case CT_DEBRIS:
-		DoDebrisFrame (objP);
+		DoDebrisFrame (this);
 		break;
 
 	case CT_LIGHT:
@@ -2185,14 +2185,14 @@ switch (objP->info.controlType) {
 	case CT_CNTRLCEN:
 		if (gameStates.gameplay.bNoBotAI)
 			return 1;
-		DoReactorFrame (objP);
+		DoReactorFrame (this);
 		break;
 
 	default:
 #ifdef __DJGPP__
-		Error ("Unknown control nType %d in CObject %li, sig/nType/id = %i/%i/%i", objP->info.controlType, OBJ_IDX (objP), objP->info.nSignature, objP->info.nType, objP->info.nId);
+		Error ("Unknown control nType %d in CObject %li, sig/nType/id = %i/%i/%i", info.controlType, OBJ_IDX (this), info.nSignature, info.nType, info.nId);
 #else
-		Error ("Unknown control nType %d in CObject %i, sig/nType/id = %i/%i/%i", objP->info.controlType, OBJ_IDX (objP), objP->info.nSignature, objP->info.nType, objP->info.nId);
+		Error ("Unknown control nType %d in CObject %i, sig/nType/id = %i/%i/%i", info.controlType, OBJ_IDX (this), info.nSignature, info.nType, info.nId);
 #endif
 	}
 return 0;
@@ -2200,65 +2200,61 @@ return 0;
 
 //--------------------------------------------------------------------
 
-void UpdateShipSound (CObject *objP)
+void CObject::UpdateShipSound (void)
 {
-	int	nSpeed = objP->mType.physInfo.velocity.Mag();
-	int	nObject = OBJ_IDX (objP);
-
 if (!gameOpts->sound.bShip)
 	return;
+
+int nObject = OBJ_IDX (this);
 if (nObject != LOCALPLAYER.nObject)
 	return;
 if (gameData.multiplayer.bMoving == nSpeed)
 	return;
-nSpeed -= 2 * F1_0;
+
+int nSpeed -= 2 * F1_0;
 if (nSpeed < 0)
 	nSpeed = 0;
 
 if (gameData.multiplayer.bMoving < 0)
-	DigiLinkSoundToObject3 (-1, OBJ_IDX (objP), 1, F1_0 / 64 + nSpeed / 256, I2X (256), -1, -1, "missileflight-small.wav", 1, SOUNDCLASS_PLAYER);
+	DigiLinkSoundToObject3 (-1, OBJ_IDX (this), 1, F1_0 / 64 + nSpeed / 256, I2X (256), -1, -1, "missileflight-small.wav", 1, SOUNDCLASS_PLAYER);
 else
-	DigiChangeSoundLinkedToObject (OBJ_IDX (objP), F1_0 / 64 + nSpeed / 256);
+	DigiChangeSoundLinkedToObject (OBJ_IDX (this), F1_0 / 64 + nSpeed / 256);
 gameData.multiplayer.bMoving = nSpeed;
 }
 
 //--------------------------------------------------------------------
 
-void HandleObjectMovement (CObject *objP)
+void CObject::UpdateMovement (void)
 {
-if (objP->info.nType == OBJ_MARKER)
-	RotateMarker (objP);
+if (info.nType == OBJ_MARKER)
+	RotateMarker ();
 
-switch (objP->info.movementType) {
+switch (info.movementType) {
 	case MT_NONE:
 		break;								//this doesn't move
 
 	case MT_PHYSICS:
-#if DBG
-		if (objP->info.nType != OBJ_PLAYER)
-			objP = objP;
-#endif
-		DoPhysicsSim (objP);
-		SetDynLightPos (OBJ_IDX (objP));
-		lightningManager.MoveForObject (objP);
-		if (objP->info.nType == OBJ_PLAYER)
-			UpdateShipSound (objP);
+		DoPhysicsSim ();
+		SetDynLightPos (OBJ_IDX (this));
+		lightningManager.MoveForObject (this);
+		if (info.nType == OBJ_PLAYER)
+			UpdateShipSound ();
 		break;	//move by physics
 
 	case MT_SPINNING:
-		SpinObject (objP);
+		Spin ();
 		break;
 	}
 }
 
 //--------------------------------------------------------------------
 
-int CheckObjectHitTriggers (CObject *objP, short nPrevSegment)
+int CObject::CheckTriggerHits (short nPrevSegment)
 {
 		short	nConnSide, i;
 		int	nOldLevel;
 
-if ((objP->info.movementType != MT_PHYSICS) || (nPrevSegment == objP->info.nSegment))
+if ((info.movementType != MT_PHYSICS) || (nPrevSegment == info.nSegment))
 	return 0;
 nOldLevel = gameData.missions.nCurrentLevel;
 for (i = 0; i < nPhysSegs - 1; i++) {
@@ -2282,16 +2278,16 @@ return 0;
 
 //--------------------------------------------------------------------
 
-void CheckGuidedMissileThroughExit (CObject *objP, short nPrevSegment)
+void CObject::CheckGuidedMissileThroughExit (short nPrevSegment)
 {
-if ((objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP) &&
-	 (objP->info.nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature)) {
-	if (nPrevSegment != objP->info.nSegment) {
-		short	nConnSide = ConnectedSide (SEGMENTS + objP->info.nSegment, SEGMENTS + nPrevSegment);
+if ((this == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].this) &&
+	 (info.nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature)) {
+	if (nPrevSegment != info.nSegment) {
+		short	nConnSide = SEGMENTS [info.nSegment].ConnectedSide (SEGMENTS + nPrevSegment);
 		if (nConnSide != -1) {
 			CTrigger* trigP = SEGMENTS [nPrevSegment].Trigger (nConnSide);
 			if (trigP && (trigP->nType == TT_EXIT))
-				gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP->info.xLifeLeft = 0;
+				gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].info.xLifeLeft = 0;
 			}
 		}
 	}
@@ -2299,31 +2295,31 @@ if ((objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].obj
 
 //--------------------------------------------------------------------
 
-void CheckAfterburnerBlobDrop (CObject *objP)
+void CObject::CheckAfterburnerBlobDrop (void)
 {
 if (gameStates.render.bDropAfterburnerBlob) {
-	Assert (objP == gameData.objs.consoleP);
-	DropAfterburnerBlobs (objP, 2, I2X (5) / 2, -1, NULL, 0);	//	-1 means use default lifetime
+	Assert (this == gameData.objs.consoleP);
+	DropAfterburnerBlobs (this, 2, I2X (5) / 2, -1, NULL, 0);	//	-1 means use default lifetime
 	if (IsMultiGame)
 		MultiSendDropBlobs ((char) gameData.multiplayer.nLocalPlayer);
 	gameStates.render.bDropAfterburnerBlob = 0;
 	}
 
-if ((objP->info.nType == OBJ_WEAPON) && (gameData.weapons.info [objP->info.nId].afterburner_size)) {
+if ((info.nType == OBJ_WEAPON) && (gameData.weapons.info [info.nId].afterburner_size)) {
 	int	nObject, bSmoke;
 	fix	vel;
 	fix	delay, lifetime, nSize;
 
 #if 1
-	if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->info.nId]) {
+	if ((info.nType == OBJ_WEAPON) && gameData.objs.bIsMissile [info.nId]) {
 		if (SHOW_SMOKE && gameOpts->render.particles.bMissiles)
 			return;
 		if ((gameStates.app.bNostalgia || EGI_FLAG (bThrusterFlames, 1, 1, 0)) &&
-			 (objP->info.nId != MERCURYMSL_ID))
+			 (info.nId != MERCURYMSL_ID))
 			return;
 		}
 #endif
-	if ((vel = objP->mType.physInfo.velocity.Mag()) > F1_0 * 200)
+	if ((vel = mType.physInfo.velocity.Mag()) > F1_0 * 200)
 		delay = F1_0 / 16;
 	else if (vel > F1_0 * 40)
 		delay = FixDiv (F1_0 * 13, vel);
@@ -2336,7 +2332,7 @@ if ((objP->info.nType == OBJ_WEAPON) && (gameData.weapons.info [objP->info.nId].
 		delay = 0;
 		}
 	else {
-		nSize = I2X (gameData.weapons.info [objP->info.nId].afterburner_size) / 16;
+		nSize = I2X (gameData.weapons.info [info.nId].afterburner_size) / 16;
 		lifetime = 3 * delay / 2;
 		if (!IsMultiGame) {
 			delay /= 2;
@@ -2344,11 +2340,11 @@ if ((objP->info.nType == OBJ_WEAPON) && (gameData.weapons.info [objP->info.nId].
 			}
 		}
 
-	nObject = OBJ_IDX (objP);
+	nObject = OBJ_IDX (this);
 	if (bSmoke ||
 		 (gameData.objs.xLastAfterburnerTime [nObject] + delay < gameData.time.xGame) ||
 		 (gameData.objs.xLastAfterburnerTime [nObject] > gameData.time.xGame)) {
-		DropAfterburnerBlobs (objP, 1, nSize, lifetime, NULL, bSmoke);
+		DropAfterburnerBlobs (this, 1, nSize, lifetime, NULL, bSmoke);
 		gameData.objs.xLastAfterburnerTime [nObject] = gameData.time.xGame;
 		}
 	}
@@ -2356,81 +2352,79 @@ if ((objP->info.nType == OBJ_WEAPON) && (gameData.weapons.info [objP->info.nId].
 
 //--------------------------------------------------------------------
 
-void HandleObjectEffects (CObject *objP)
+void CObject::UpdateEffects (void)
 {
-if (objP->info.nType == OBJ_ROBOT) {
-	if (ROBOTINFO (objP->info.nId).energyDrain) {
-		objP->RequestEffects (ROBOT_LIGHTNINGS);
+if (info.nType == OBJ_ROBOT) {
+	if (ROBOTINFO (info.nId).energyDrain) {
+		RequestEffects (ROBOT_LIGHTNINGS);
 		}
 	}
-else if ((objP->info.nType == OBJ_PLAYER) && gameOpts->render.lightnings.bPlayers) {
-	int s = SEGMENTS [objP->info.nSegment].m_nType;
-	if (s == SEGMENT_IS_FUELCEN) {
-		objP->RequestEffects (PLAYER_LIGHTNINGS);
-		}
-	else if (s == SEGMENT_IS_REPAIRCEN) {
-		objP->RequestEffects (PLAYER_LIGHTNINGS);
-		}
+else if ((info.nType == OBJ_PLAYER) && gameOpts->render.lightnings.bPlayers) {
+	int nType = SEGMENTS [info.nSegment].m_nType;
+	if (nType == SEGMENT_IS_FUELCEN)
+		RequestEffects (PLAYER_LIGHTNINGS);
+	else if (nType == SEGMENT_IS_REPAIRCEN)
+		RequestEffects (PLAYER_LIGHTNINGS);
 	else
-		objP->RequestEffects (DESTROY_LIGHTNINGS);
+		RequestEffects (DESTROY_LIGHTNINGS);
 	}
 }
 
 //--------------------------------------------------------------------
 //move an CObject for the current frame
 
-int UpdateObject (CObject * objP)
+int CObject::Update (void)
 {
-	short	nPrevSegment = (short) objP->info.nSegment;
+	short	nPrevSegment = (short) info.nSegment;
 
 #if DBG
-if ((objP->info.nType == OBJ_WEAPON) && (objP->info.nId == SMARTMINE_BLOB_ID)) {
-	nDbgObj = OBJ_IDX (objP);
+if ((info.nType == OBJ_WEAPON) && (info.nId == SMARTMINE_BLOB_ID)) {
+	nDbgObj = OBJ_IDX (this);
 	nDbgObj = nDbgObj;
 	}
-if (OBJ_IDX (objP) == nDbgObj)
+if (OBJ_IDX (this) == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
-if (objP->info.nType == OBJ_ROBOT) {
-	if (gameOpts->gameplay.bNoThief && (!IsMultiGame || IsCoopGame) && ROBOTINFO (objP->info.nId).thief) {
-		objP->info.xShields = 0;
-		objP->info.xLifeLeft = 0;
-		objP->Kill ();
+if (info.nType == OBJ_ROBOT) {
+	if (gameOpts->gameplay.bNoThief && (!IsMultiGame || IsCoopGame) && ROBOTINFO (info.nId).thief) {
+		info.xShields = 0;
+		info.xLifeLeft = 0;
+		Kill ();
 		}
 	else {
-		fix xMaxShields = RobotDefaultShields (objP);
-		if (objP->info.xShields > xMaxShields)
-			objP->info.xShields = xMaxShields;
+		fix xMaxShields = RobotDefaultShields (this);
+		if (info.xShields > xMaxShields)
+			info.xShields = xMaxShields;
 		}
 	}
-objP->info.vLastPos = objP->info.position.vPos;			// Save the current position
-objP->HandleSpecialSegment ();
-if ((objP->info.xLifeLeft != IMMORTAL_TIME) &&
-	 (objP->info.xLifeLeft != ONE_FRAME_TIME) &&
+info.vLastPos = info.position.vPos;			// Save the current position
+HandleSpecialSegment ();
+if ((info.xLifeLeft != IMMORTAL_TIME) &&
+	 (info.xLifeLeft != ONE_FRAME_TIME) &&
 	 (gameData.physics.xTime != F1_0))
-	objP->info.xLifeLeft -= (fix) (gameData.physics.xTime / gameStates.gameplay.slowmo [0].fSpeed);		//...inevitable countdown towards death
+	info.xLifeLeft -= (fix) (gameData.physics.xTime / gameStates.gameplay.slowmo [0].fSpeed);		//...inevitable countdown towards death
 gameStates.render.bDropAfterburnerBlob = 0;
-if (HandleObjectControl (objP)) {
-	HandleObjectEffects (objP);
+if (UpdateControl ()) {
+	UpdateEffects ();
 	return 1;
 	}
-if (objP->info.xLifeLeft < 0) {		// We died of old age
-	objP->Kill ();
-	if ((objP->info.nType == OBJ_WEAPON) && WI_damage_radius (objP->info.nId))
-		ExplodeBadassWeapon (objP, &objP->info.position.vPos);
-	else if (objP->info.nType == OBJ_ROBOT)	//make robots explode
-		ExplodeObject (objP, 0);
+if (info.xLifeLeft < 0) {		// We died of old age
+	Kill ();
+	if ((info.nType == OBJ_WEAPON) && WI_damage_radius (info.nId))
+		ExplodeBadassWeapon (&info.position.vPos);
+	else if (info.nType == OBJ_ROBOT)	//make robots explode
+		ExplodeObject (0);
 	}
-if ((objP->info.nType == OBJ_NONE) || (objP->info.nFlags & OF_SHOULD_BE_DEAD)) {
+if ((info.nType == OBJ_NONE) || (info.nFlags & OF_SHOULD_BE_DEAD)) {
 	return 1;			//CObject has been deleted
 	}
-HandleObjectMovement (objP);
-HandleObjectEffects (objP);
-if (CheckObjectHitTriggers (objP, nPrevSegment))
+UpdateMovement ();
+UpdateEffects ();
+if (CheckTriggerHits (nPrevSegment))
 	return 0;
-CheckObjectInVolatileWall (objP);
-CheckGuidedMissileThroughExit (objP, nPrevSegment);
-CheckAfterburnerBlobDrop (objP);
+CheckWallPhysics ();
+CheckGuidedMissileThroughExit (nPrevSegment);
+CheckAfterburnerBlobDrop ();
 return 1;
 }
 
@@ -3059,7 +3053,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-CFixVector *PlayerSpawnPos (int nPlayer)
+CFixVector* PlayerSpawnPos (int nPlayer)
 {
 	CObject	*markerP = SpawnMarkerObject (nPlayer);
 

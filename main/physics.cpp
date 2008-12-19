@@ -1013,9 +1013,6 @@ UnstickObject (this);
 
 void CObject::ApplyForce (CFixVector vForce)
 {
-#if DBG
-	fix mag;
-#endif
 	//	Put in by MK on 2/13/96 for force getting applied to Omega blobs, which have 0 mass,
 	//	in collision with crazy reactor robot thing on d2levf-s.
 if (mType.physInfo.mass == 0)
