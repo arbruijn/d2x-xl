@@ -2360,19 +2360,19 @@ void HandleObjectEffects (CObject *objP)
 {
 if (objP->info.nType == OBJ_ROBOT) {
 	if (ROBOTINFO (objP->info.nId).energyDrain) {
-		RequestEffects (objP, ROBOT_LIGHTNINGS);
+		objP->RequestEffects (ROBOT_LIGHTNINGS);
 		}
 	}
 else if ((objP->info.nType == OBJ_PLAYER) && gameOpts->render.lightnings.bPlayers) {
 	int s = SEGMENTS [objP->info.nSegment].m_nType;
 	if (s == SEGMENT_IS_FUELCEN) {
-		RequestEffects (objP, PLAYER_LIGHTNINGS);
+		objP->RequestEffects (PLAYER_LIGHTNINGS);
 		}
 	else if (s == SEGMENT_IS_REPAIRCEN) {
-		RequestEffects (objP, PLAYER_LIGHTNINGS);
+		objP->RequestEffects (PLAYER_LIGHTNINGS);
 		}
 	else
-		RequestEffects (objP, DESTROY_LIGHTNINGS);
+		objP->RequestEffects (DESTROY_LIGHTNINGS);
 	}
 }
 

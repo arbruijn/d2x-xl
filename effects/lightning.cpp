@@ -1688,9 +1688,9 @@ void CLightningManager::DestroyForAllObjects (int nType, int nId)
 FORALL_OBJS (objP, i) {
 	if ((objP->info.nType == nType) && ((nId < 0) || (objP->info.nId == nId)))
 #if 1
-		RequestEffects (objP, DESTROY_LIGHTNINGS);
+		objP->RequestEffects (DESTROY_LIGHTNINGS);
 #else
-		DestroyObjecCLightnings (objP);
+		DestroyObjectLightnings (objP);
 #endif
 	}
 }
