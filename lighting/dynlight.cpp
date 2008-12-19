@@ -470,7 +470,7 @@ else if (nSegment >= 0) {
 		pl->info.nType = 0;
 		pl->info.fRad = faceP ? faceP->fRads [1] : 0;
 		//RegisterLight (NULL, nSegment, nSide);
-		pl->info.bVariable = IsDestructibleLight (nTexture) || IsFlickeringLight (nSegment, nSide) || SEGMENTS [nSegment].Side (nSide).IsVolatile ();
+		pl->info.bVariable = IsDestructibleLight (nTexture) || IsFlickeringLight (nSegment, nSide) || SEGMENTS [nSegment].Side (nSide)->IsVolatile ();
 		gameData.render.lights.dynamic.nVariable += pl->info.bVariable;
 		pl->info.vPos = SEGMENTS [nSegment].SideCenter (nSide);
 		CSide			*sideP = SEGMENTS [nSegment].m_sides + nSide;
@@ -1495,7 +1495,7 @@ if (gameOpts->render.nLightingMethod || (gameStates.render.bAmbientColor && !gam
 	pf = gameData.render.color.ambient.Buffer ();
 	for (i = 0, seg2P = SEGMENTS.Buffer (); i < gameData.segs.nSegments; i++, seg2P++) {
 		if (seg2P->m_nType == SEGMENT_IS_SKYBOX) {
-			short	*sv = SEGMENTS [i].m_verts;
+			ushort	*sv = SEGMENTS [i].m_verts;
 			for (j = 8; j; j--, sv++) {
 				pfh = pf + *sv;
 				pfh->color.red =
