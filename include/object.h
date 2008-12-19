@@ -820,6 +820,10 @@ class CObject : public CObjectInfo {
 		int BossSpewRobot (CFixVector* vPos, short objType, int bObjTrigger);
 		int CreateGatedRobot (short nSegment, ubyte nObjId, CFixVector* vPos);
 
+		inline int FindSegment (void);
+		void SetTurnRoll (void);
+		void DoPhysicsSimRot (void);
+		void DoPhysicsSim (void);
 		//inline short Index (void) { return gameData.objs.objects.Index (this); }
 };
 

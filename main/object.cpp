@@ -2678,9 +2678,9 @@ nDebrisObjectCount = 0;
 
 //------------------------------------------------------------------------------
 //Tries to find a CSegment for an CObject, using FindSegByPos ()
-int FindObjectSeg (CObject * objP)
+inline int CObject::FindSegment (void)
 {
-return FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
+return FindSegByPos (info.position.vPos, info.nSegment, 1, 0);
 }
 
 //------------------------------------------------------------------------------

@@ -132,21 +132,21 @@ if (labs (CFixVector::Dot (desiredUpVec, objP->info.position.mOrient.FVec ())) <
 
 //	-----------------------------------------------------------------------------------------------------------
 
-void SetObjectTurnRoll (CObject *objP)
+void CObject::SetTurnRoll (void)
 {
 //if (!gameStates.app.bD1Mission)
 {
-	fixang desired_bank = (fixang) -FixMul (objP->mType.physInfo.rotVel [Y], TURNROLL_SCALE);
-	if (objP->mType.physInfo.turnRoll != desired_bank) {
+	fixang desired_bank = (fixang) -FixMul (mType.physInfo.rotVel [Y], TURNROLL_SCALE);
+	if (mType.physInfo.turnRoll != desired_bank) {
 		fixang delta_ang, max_roll;
 		max_roll = (fixang) FixMul (ROLL_RATE, gameData.physics.xTime);
-		delta_ang = desired_bank - objP->mType.physInfo.turnRoll;
+		delta_ang = desired_bank - mType.physInfo.turnRoll;
 		if (labs (delta_ang) < max_roll)
 			max_roll = delta_ang;
 		else
 			if (delta_ang < 0)
 				max_roll = -max_roll;
-		objP->mType.physInfo.turnRoll += max_roll;
+		mType.physInfo.turnRoll += max_roll;
 		}
 	}
 }
@@ -172,7 +172,7 @@ int	bDontMoveAIObjects=0;
 extern int bSimpleFVI;
 //	-----------------------------------------------------------------------------------------------------------
 // add rotational velocity & acceleration
-void DoPhysicsSimRot (CObject *objP)
+void CObject::DoPhysicsSimRot (void)
 {
 	CAngleVector	turnAngles;
 	CFixMatrix	mRotate, mNewOrient;
@@ -185,56 +185,56 @@ Assert (gameData.physics.xTime > 0); 		//Get MATT if hit this!
 if (gameData.physics.xTime <= 0)
 	return;
 #endif
-pi = &objP->mType.physInfo;
+pi = &mType.physInfo;
 if (!(pi->rotVel [X] || pi->rotVel [Y] || pi->rotVel [Z] ||
 		pi->rotThrust[X] || pi->rotThrust[Y] || pi->rotThrust[Z]))
 	return;
-if (objP->mType.physInfo.drag) {
+if (mType.physInfo.drag) {
 	CFixVector	accel;
 	int			nTries = gameData.physics.xTime / FT;
 	fix			r = gameData.physics.xTime % FT;
 	fix			k = FixDiv (r, FT);
-	fix			xDrag = (objP->mType.physInfo.drag * 5) / 2;
+	fix			xDrag = (mType.physInfo.drag * 5) / 2;
 	fix			xScale = f1_0 - xDrag;
 
-	if (objP == gameData.objs.consoleP)
+	if (this == gameData.objs.consoleP)
 		xDrag = EGI_FLAG (nDrag, 0, 0, 0) * xDrag / 10;
-	if (objP->mType.physInfo.flags & PF_USES_THRUST) {
-		accel = objP->mType.physInfo.rotThrust * FixDiv (f1_0, objP->mType.physInfo.mass);
+	if (mType.physInfo.flags & PF_USES_THRUST) {
+		accel = mType.physInfo.rotThrust * FixDiv (f1_0, mType.physInfo.mass);
 		while (nTries--) {
-			objP->mType.physInfo.rotVel += accel;
-			objP->mType.physInfo.rotVel *= xScale;
+			mType.physInfo.rotVel += accel;
+			mType.physInfo.rotVel *= xScale;
 			}
 		//do linear scale on remaining bit of time
-		objP->mType.physInfo.rotVel += accel * k;
+		mType.physInfo.rotVel += accel * k;
 		if (xDrag)
-			objP->mType.physInfo.rotVel *= (f1_0 - FixMul (k, xDrag));
+			mType.physInfo.rotVel *= (f1_0 - FixMul (k, xDrag));
 		}
-	else if (xDrag && !(objP->mType.physInfo.flags & PF_FREE_SPINNING)) {
+	else if (xDrag && !(mType.physInfo.flags & PF_FREE_SPINNING)) {
 		fix xTotalDrag = f1_0;
 		while (nTries--)
 			xTotalDrag = FixMul (xTotalDrag, xScale);
 		//do linear scale on remaining bit of time
 		xTotalDrag = FixMul (xTotalDrag, f1_0 - FixMul (k, xDrag));
-		objP->mType.physInfo.rotVel *= xTotalDrag;
+		mType.physInfo.rotVel *= xTotalDrag;
 		}
 	}
 //now rotate CObject
 //unrotate CObject for bank caused by turn
-if (objP->mType.physInfo.turnRoll) {
+if (mType.physInfo.turnRoll) {
 	CFixMatrix mOrient;
 
 	turnAngles[PA] = turnAngles[HA] = 0;
-	turnAngles[BA] = -objP->mType.physInfo.turnRoll;
+	turnAngles[BA] = -mType.physInfo.turnRoll;
 	mRotate = CFixMatrix::Create(turnAngles);
-	mOrient = objP->info.position.mOrient * mRotate;
-	objP->info.position.mOrient = mOrient;
+	mOrient = info.position.mOrient * mRotate;
+	info.position.mOrient = mOrient;
 }
-turnAngles[PA] = (fixang) FixMul (objP->mType.physInfo.rotVel [X], gameData.physics.xTime);
-turnAngles[HA] = (fixang) FixMul (objP->mType.physInfo.rotVel [Y], gameData.physics.xTime);
-turnAngles[BA] = (fixang) FixMul (objP->mType.physInfo.rotVel [Z], gameData.physics.xTime);
+turnAngles[PA] = (fixang) FixMul (mType.physInfo.rotVel [X], gameData.physics.xTime);
+turnAngles[HA] = (fixang) FixMul (mType.physInfo.rotVel [Y], gameData.physics.xTime);
+turnAngles[BA] = (fixang) FixMul (mType.physInfo.rotVel [Z], gameData.physics.xTime);
 if (!IsMultiGame) {
-	int i = (objP != gameData.objs.consoleP) ? 0 : 1;
+	int i = (this != gameData.objs.consoleP) ? 0 : 1;
 	if (gameStates.gameplay.slowmo [i].fSpeed != 1) {
 		turnAngles[PA] = (fixang) (turnAngles[PA] / gameStates.gameplay.slowmo [i].fSpeed);
 		turnAngles[HA] = (fixang) (turnAngles[HA] / gameStates.gameplay.slowmo [i].fSpeed);
@@ -243,22 +243,22 @@ if (!IsMultiGame) {
 	}
 mRotate = CFixMatrix::Create(turnAngles);
 // TODO MM
-mNewOrient = objP->info.position.mOrient * mRotate;
-objP->info.position.mOrient = mNewOrient;
-if (objP->mType.physInfo.flags & PF_TURNROLL)
-	SetObjectTurnRoll (objP);
+mNewOrient = info.position.mOrient * mRotate;
+info.position.mOrient = mNewOrient;
+if (mType.physInfo.flags & PF_TURNROLL)
+	SetTurnRoll ();
 //re-rotate object for bank caused by turn
-if (objP->mType.physInfo.turnRoll) {
+if (mType.physInfo.turnRoll) {
 	CFixMatrix m;
 
 	turnAngles[PA] = turnAngles[HA] = 0;
-	turnAngles[BA] = objP->mType.physInfo.turnRoll;
+	turnAngles[BA] = mType.physInfo.turnRoll;
 	mRotate = CFixMatrix::Create(turnAngles);
 	// TODO MM
-	m = objP->info.position.mOrient * mRotate;
-	objP->info.position.mOrient = m;
+	m = info.position.mOrient * mRotate;
+	info.position.mOrient = m;
 	}
-objP->info.position.mOrient.CheckAndFix();
+info.position.mOrient.CheckAndFix();
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -418,7 +418,7 @@ else
 
 //Simulate a physics CObject for this frame
 
-void DoPhysicsSim (CObject *objP)
+void CObject::DoPhysicsSim (void)
 {
 	short					nIgnoreObjs;
 	int					iSeg, i;
@@ -427,7 +427,7 @@ void DoPhysicsSim (CObject *objP)
 	CFixVector			vFrame;				//movement in this frame
 	CFixVector			vNewPos, iPos;		//position after this frame
 	int					nTries = 0;
-	short					nObject = OBJ_IDX (objP);
+	short					nObject = OBJ_IDX (this);
 	short					nWallHitSeg, nWallHitSide;
 	tFVIData				hi;
 	tFVIQuery			fq;
@@ -439,54 +439,54 @@ void DoPhysicsSim (CObject *objP)
 	fix					xMovedTime;			//how long objected moved before hit something
 	CFixVector			vSaveP0, vSaveP1;
 	tPhysicsInfo		*pi;
-	short					nOrigSegment = objP->info.nSegment;
+	short					nOrigSegment = info.nSegment;
 	int					nBadSeg = 0, bBounced = 0;
 	tSpeedBoostData	sbd = gameData.objs.speedBoost [nObject];
-	int					bDoSpeedBoost = sbd.bBoosted; // && (objP == gameData.objs.consoleP);
+	int					bDoSpeedBoost = sbd.bBoosted; // && (this == gameData.objs.consoleP);
 
-Assert (objP->info.nType != OBJ_NONE);
-Assert (objP->info.movementType == MT_PHYSICS);
+Assert (info.nType != OBJ_NONE);
+Assert (info.movementType == MT_PHYSICS);
 #if DBG
 if (bDontMoveAIObjects)
-	if (objP->info.controlType == CT_AI)
+	if (info.controlType == CT_AI)
 		return;
 #endif
-CATCH_OBJ (objP, objP->mType.physInfo.velocity[Y] == 0);
-DoPhysicsSimRot (objP);
-pi = &objP->mType.physInfo;
+CATCH_OBJ (this, mType.physInfo.velocity[Y] == 0);
+DoPhysicsSimRot ();
+pi = &mType.physInfo;
 nPhysSegs = 0;
 nIgnoreObjs = 0;
 xSimTime = gameData.physics.xTime;
-bSimpleFVI = (objP->info.nType != OBJ_PLAYER);
-vStartPos = objP->info.position.vPos;
+bSimpleFVI = (info.nType != OBJ_PLAYER);
+vStartPos = info.position.vPos;
 if (pi->velocity.IsZero()) {
 #	if UNSTICK_OBJS
-	UnstickObject (objP);
+	UnstickObject (this);
 #	endif
-	if (objP == gameData.objs.consoleP)
+	if (this == gameData.objs.consoleP)
 		gameData.objs.speedBoost [nObject].bBoosted = sbd.bBoosted = 0;
 	if (pi->thrust.IsZero())
 		return;
 	}
 
 
-Assert (objP->mType.physInfo.brakes == 0);		//brakes not used anymore?
+Assert (mType.physInfo.brakes == 0);		//brakes not used anymore?
 //if uses thrust, cannot have zero xDrag
-Assert (!(objP->mType.physInfo.flags & PF_USES_THRUST) || objP->mType.physInfo.drag);
+Assert (!(mType.physInfo.flags & PF_USES_THRUST) || mType.physInfo.drag);
 //do thrust & xDrag
-if (objP->mType.physInfo.drag) {
-	CFixVector accel, &vel = objP->mType.physInfo.velocity;
+if (mType.physInfo.drag) {
+	CFixVector accel, &vel = mType.physInfo.velocity;
 	int		nTries = xSimTime / FT;
-	fix		xDrag = objP->mType.physInfo.drag;
+	fix		xDrag = mType.physInfo.drag;
 	fix		r = xSimTime % FT;
 	fix		k = FixDiv (r, FT);
 	fix		d = f1_0 - xDrag;
 	fix		a;
 
-	if (objP == gameData.objs.consoleP)
+	if (this == gameData.objs.consoleP)
 		xDrag = EGI_FLAG (nDrag, 0, 0, 0) * xDrag / 10;
-	if (objP->mType.physInfo.flags & PF_USES_THRUST) {
-		accel = objP->mType.physInfo.thrust * FixDiv (f1_0, objP->mType.physInfo.mass);
+	if (mType.physInfo.flags & PF_USES_THRUST) {
+		accel = mType.physInfo.thrust * FixDiv (f1_0, mType.physInfo.mass);
 		a = !accel.IsZero();
 		if (bDoSpeedBoost && !(a || gameStates.input.bControlsSkipFrame))
 			vel = sbd.vVel;
@@ -522,21 +522,21 @@ if (objP->mType.physInfo.drag) {
 			xTotalDrag = FixMul (xTotalDrag, d);
 		//do linear scale on remaining bit of time
 		xTotalDrag = FixMul (xTotalDrag, f1_0-FixMul (k, xDrag));
-		objP->mType.physInfo.velocity *= xTotalDrag;
+		mType.physInfo.velocity *= xTotalDrag;
 		}
 	}
 
 //moveIt:
 
 #if DBG
-if ((nDbgSeg >= 0) && (objP->info.nSegment == nDbgSeg))
+if ((nDbgSeg >= 0) && (info.nSegment == nDbgSeg))
 	nDbgSeg = nDbgSeg;
 #endif
 
 if (extraGameInfo [IsMultiGame].bFluidPhysics) {
-	if (SEGMENTS [objP->info.nSegment].m_nType == SEGMENT_IS_WATER)
+	if (SEGMENTS [info.nSegment].m_nType == SEGMENT_IS_WATER)
 		xTimeScale = 75;
-	else if (SEGMENTS [objP->info.nSegment].m_nType == SEGMENT_IS_LAVA)
+	else if (SEGMENTS [info.nSegment].m_nType == SEGMENT_IS_LAVA)
 		xTimeScale = 66;
 	else
 		xTimeScale = 100;
@@ -546,22 +546,22 @@ else
 nTries = 0;
 do {
 	//Move the CObject
-	float fScale = !gameStates.app.bNostalgia && (IS_MISSILE (objP) && (objP->info.nId != EARTHSHAKER_MEGA_ID) && (objP->info.nId != ROBOT_SHAKER_MEGA_ID)) ?
-						MissileSpeedScale (objP) : 1;
+	float fScale = !gameStates.app.bNostalgia && (IS_MISSILE (this) && (info.nId != EARTHSHAKER_MEGA_ID) && (info.nId != ROBOT_SHAKER_MEGA_ID)) ?
+						MissileSpeedScale (this) : 1;
 	bRetry = 0;
 	if (fScale < 1) {
-		CFixVector vStartVel = objP->StartVel ();
+		CFixVector vStartVel = StartVel ();
 		CFixVector::Normalize (vStartVel);
-		fix xDot = CFixVector::Dot (objP->info.position.mOrient.FVec (), vStartVel);
-		vFrame = objP->mType.physInfo.velocity + objP->StartVel ();
+		fix xDot = CFixVector::Dot (info.position.mOrient.FVec (), vStartVel);
+		vFrame = mType.physInfo.velocity + StartVel ();
 		vFrame *= F2X (fScale * fScale);
-		vFrame += objP->StartVel () * ((xDot > 0) ? -xDot : xDot);
+		vFrame += StartVel () * ((xDot > 0) ? -xDot : xDot);
 		vFrame *= FixMulDiv (xSimTime, xTimeScale, 100 * (nBadSeg + 1));
 		}
 	else
-		vFrame = objP->mType.physInfo.velocity * FixMulDiv (xSimTime, xTimeScale, 100 * (nBadSeg + 1));
+		vFrame = mType.physInfo.velocity * FixMulDiv (xSimTime, xTimeScale, 100 * (nBadSeg + 1));
 	if (!IsMultiGame) {
-		int i = (objP != gameData.objs.consoleP) ? 0 : 1;
+		int i = (this != gameData.objs.consoleP) ? 0 : 1;
 		if (gameStates.gameplay.slowmo [i].fSpeed != 1) {
 			vFrame *= (fix) (F1_0 / gameStates.gameplay.slowmo [i].fSpeed);
 			}
@@ -573,7 +573,7 @@ retryMove:
 #if 1//ndef _DEBUG
 	//	If retry count is getting large, then we are trying to do something stupid.
 	if (++nTries > 3) {
-		if (objP->info.nType != OBJ_PLAYER)
+		if (info.nType != OBJ_PLAYER)
 			break;
 		if (nTries > 8) {
 			if (sbd.bBoosted)
@@ -582,9 +582,9 @@ retryMove:
 			}
 		}
 #endif
-	vNewPos = objP->info.position.vPos + vFrame;
+	vNewPos = info.position.vPos + vFrame;
 #if 0
-	iSeg = FindSegByPos (&vNewPos, objP->info.nSegment, 1, 0);
+	iSeg = FindSegByPos (&vNewPos, info.nSegment, 1, 0);
 	if (iSeg < 0) {
 #if 0//def _DEBUG
 		static int nBadSegs = 0;
@@ -597,29 +597,29 @@ retryMove:
 		}
 #endif
 	gameData.physics.ignoreObjs [nIgnoreObjs] = -1;
-	fq.p0 = &objP->info.position.vPos;
-	fq.startSeg = objP->info.nSegment;
+	fq.p0 = &info.position.vPos;
+	fq.startSeg = info.nSegment;
 	fq.p1 = &vNewPos;
-	fq.radP0 = fq.radP1 = objP->info.xSize;
+	fq.radP0 = fq.radP1 = info.xSize;
 	fq.thisObjNum = nObject;
 	fq.ignoreObjList = gameData.physics.ignoreObjs.Buffer ();
 	fq.flags = FQ_CHECK_OBJS;
 
-	if (objP->info.nType == OBJ_WEAPON)
+	if (info.nType == OBJ_WEAPON)
 		fq.flags |= FQ_TRANSPOINT;
-	if ((bGetPhysSegs = ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT))))
+	if ((bGetPhysSegs = ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT))))
 		fq.flags |= FQ_GET_SEGLIST;
 
 	vSaveP0 = *fq.p0;
 	vSaveP1 = *fq.p1;
 	memset (&hi, 0, sizeof (hi));
 	fviResult = FindVectorIntersection (&fq, &hi);
-	UpdateStats (objP, fviResult);
-	vSavePos = objP->info.position.vPos;			//save the CObject's position
-	nSaveSeg = objP->info.nSegment;
+	UpdateStats (this, fviResult);
+	vSavePos = info.position.vPos;			//save the CObject's position
+	nSaveSeg = info.nSegment;
 #if 0//def _DEBUG
-	if (objP->info.nType == OBJ_PLAYER)
-		HUDMessage (0, "FVI: %d (%1.2f)", fviResult, X2F (VmVecMag (&objP->mType.physInfo.velocity)));
+	if (info.nType == OBJ_PLAYER)
+		HUDMessage (0, "FVI: %d (%1.2f)", fviResult, X2F (VmVecMag (&mType.physInfo.velocity)));
 #endif
 	if (fviResult == HIT_BAD_P0) {
 #if DBG
@@ -631,25 +631,25 @@ retryMove:
 #else
 		memset (&hi, 0, sizeof (hi));
 		fviResult = FindVectorIntersection (&fq, &hi);
-		fq.startSeg = FindSegByPos (vNewPos, objP->info.nSegment, 1, 0);
-		if ((fq.startSeg < 0) || (fq.startSeg == objP->info.nSegment)) {
-			objP->info.position.vPos = vSavePos;
+		fq.startSeg = FindSegByPos (vNewPos, info.nSegment, 1, 0);
+		if ((fq.startSeg < 0) || (fq.startSeg == info.nSegment)) {
+			info.position.vPos = vSavePos;
 			break;
 			}
 		fviResult = FindVectorIntersection (&fq, &hi);
 		if (fviResult == HIT_BAD_P0) {
-			objP->info.position.vPos = vSavePos;
+			info.position.vPos = vSavePos;
 			break;
 			}
 #endif
 		}
 	else if (fviResult == HIT_WALL) {
-		if (gameStates.render.bHaveSkyBox && (objP->info.nType == OBJ_WEAPON) && (hi.hit.nSegment >= 0)) {
+		if (gameStates.render.bHaveSkyBox && (info.nType == OBJ_WEAPON) && (hi.hit.nSegment >= 0)) {
 			if (SEGMENTS [hi.hit.nSegment].m_nType == SEGMENT_IS_SKYBOX) {
 				short nConnSeg = SEGMENTS [hi.hit.nSegment].m_children [hi.hit.nSide];
-				if ((nConnSeg < 0) && (objP->info.xLifeLeft > F1_0)) {	//leaving the mine
-					objP->info.xLifeLeft = 0;
-					objP->info.nFlags |= OF_SHOULD_BE_DEAD;
+				if ((nConnSeg < 0) && (info.xLifeLeft > F1_0)) {	//leaving the mine
+					info.xLifeLeft = 0;
+					info.nFlags |= OF_SHOULD_BE_DEAD;
 					}
 				fviResult = HIT_NONE;
 				}
@@ -701,37 +701,37 @@ retryMove:
 	nWallHitSide = hi.hit.nSide;
 	nWallHitSeg = hi.hit.nSideSegment;
 	if (iSeg == -1) {		//some sort of horrible error
-		if (objP->info.nType == OBJ_WEAPON)
-			objP->Kill ();
+		if (info.nType == OBJ_WEAPON)
+			Kill ();
 		break;
 		}
 	Assert ((fviResult != HIT_WALL) || ((nWallHitSeg > -1) && (nWallHitSeg <= gameData.segs.nLastSegment)));
 	// update CObject's position and CSegment number
-	objP->info.position.vPos = iPos;
-	if (iSeg != objP->info.nSegment)
+	info.position.vPos = iPos;
+	if (iSeg != info.nSegment)
 		OBJECTS [nObject].RelinkToSeg (iSeg);
 	//if start point not in CSegment, move CObject to center of CSegment
-	if (SEGMENTS [objP->info.nSegment].SideMasks (objP->info.position.vPos, 0).m_center) {	//object stuck
-		int n = FindObjectSeg (objP);
+	if (SEGMENTS [info.nSegment].SideMasks (info.position.vPos, 0).m_center) {	//object stuck
+		int n = FindSegment ();
 		if (n == -1) {
 			if (bGetPhysSegs)
-				n = FindSegByPos (objP->info.vLastPos, objP->info.nSegment, 1, 0);
+				n = FindSegByPos (info.vLastPos, info.nSegment, 1, 0);
 			if (n == -1) {
-				objP->info.position.vPos = objP->info.vLastPos;
-				OBJECTS [nObject].RelinkToSeg (objP->info.nSegment);
+				info.position.vPos = info.vLastPos;
+				OBJECTS [nObject].RelinkToSeg (info.nSegment);
 				}
 			else {
 				CFixVector vCenter;
-				vCenter = SEGMENTS [objP->info.nSegment].Center ();
-				vCenter -= objP->info.position.vPos;
+				vCenter = SEGMENTS [info.nSegment].Center ();
+				vCenter -= info.position.vPos;
 				if (vCenter.Mag() > F1_0) {
 					CFixVector::Normalize(vCenter);
 					vCenter /= 10;
 					}
-				objP->info.position.vPos -= vCenter;
+				info.position.vPos -= vCenter;
 				}
-			if (objP->info.nType == OBJ_WEAPON) {
-				objP->Kill ();
+			if (info.nType == OBJ_WEAPON) {
+				Kill ();
 				return;
 				}
 			}
@@ -745,15 +745,15 @@ retryMove:
 		fix attemptedDist, actualDist;
 
 		xOldSimTime = xSimTime;
-		actualDist = CFixVector::NormalizedDir (vMoveNormal, objP->info.position.vPos, vSavePos);
+		actualDist = CFixVector::NormalizedDir (vMoveNormal, info.position.vPos, vSavePos);
 		if ((fviResult == HIT_WALL) && (CFixVector::Dot (vMoveNormal, vFrame) < 0)) {		//moved backwards
 			//don't change position or xSimTime
-			objP->info.position.vPos = vSavePos;
-			//iSeg = objP->info.nSegment;		//don't change CSegment
+			info.position.vPos = vSavePos;
+			//iSeg = info.nSegment;		//don't change CSegment
 			if (nSaveSeg != iSeg)
 				OBJECTS [nObject].RelinkToSeg (nSaveSeg);
 			if (bDoSpeedBoost) {
-				objP->info.position.vPos = vStartPos;
+				info.position.vPos = vStartPos;
 				SetSpeedBoostVelocity (nObject, -1, -1, -1, -1, -1, &vStartPos, &sbd.vDest, 0);
 				vFrame = sbd.vVel * xSimTime;
 				goto retryMove;
@@ -777,45 +777,45 @@ retryMove:
 		// Find hit speed
 
 #if 0//def _DEBUG
-		if (objP->info.nType == OBJ_PLAYER)
+		if (info.nType == OBJ_PLAYER)
 			HUDMessage (0, "WALL CONTACT");
 		fviResult = FindVectorIntersection (&fq, &hi);
 #endif
-		vMoved = objP->info.position.vPos - vSavePos;
+		vMoved = info.position.vPos - vSavePos;
 		xWallPart = CFixVector::Dot (vMoved, hi.hit.vNormal) / gameData.collisions.hitData.nNormals;
 		if (xWallPart && (xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, xMovedTime)) > 0)) {
-			CollideObjectWithWall (objP, xHitSpeed, nWallHitSeg, nWallHitSide, &hi.hit.vPoint);
+			CollideObjectWithWall (xHitSpeed, nWallHitSeg, nWallHitSide, &hi.hit.vPoint);
 #if 0//def _DEBUG
-			if (objP->info.nType == OBJ_PLAYER)
+			if (info.nType == OBJ_PLAYER)
 				HUDMessage (0, "BUMP %1.2f (%d,%d)!", X2F (xHitSpeed), nWallHitSeg, nWallHitSide);
 #endif
 			}
 		else {
 #if 0//def _DEBUG
-			if (objP->info.nType == OBJ_PLAYER)
+			if (info.nType == OBJ_PLAYER)
 				HUDMessage (0, "SCREEEEEEEEEECH");
 #endif
-			ScrapeObjectOnWall (objP, nWallHitSeg, nWallHitSide, &hi.hit.vPoint);
+			ScrapeObjectOnWall (nWallHitSeg, nWallHitSide, &hi.hit.vPoint);
 			}
 		Assert (nWallHitSeg > -1);
 		Assert (nWallHitSide > -1);
 #if UNSTICK_OBJS == 2
 		{
 		fix	xSideDists [6];
-		SEGMENTS [nWallHitSeg].GetSideDists (&objP->info.position.vPos, xSideDists);
-		bRetry = BounceObject (objP, hi, 0.1f, xSideDists);
+		SEGMENTS [nWallHitSeg].GetSideDists (&info.position.vPos, xSideDists);
+		bRetry = BounceObject (this, hi, 0.1f, xSideDists);
 		}
 #else
 		bRetry = 0;
 #endif
-		if (!(objP->info.nFlags & OF_SHOULD_BE_DEAD) && (objP->info.nType != OBJ_DEBRIS)) {
+		if (!(info.nFlags & OF_SHOULD_BE_DEAD) && (info.nType != OBJ_DEBRIS)) {
 			int bForceFieldBounce;		//bounce off a forcefield
 
-			///Assert (gameStates.app.cheats.bBouncingWeapons || ((objP->mType.physInfo.flags & (PF_STICK | PF_BOUNCE)) != (PF_STICK | PF_BOUNCE)));	//can't be bounce and stick
+			///Assert (gameStates.app.cheats.bBouncingWeapons || ((mType.physInfo.flags & (PF_STICK | PF_BOUNCE)) != (PF_STICK | PF_BOUNCE)));	//can't be bounce and stick
 			bForceFieldBounce = (gameData.pig.tex.tMapInfoP [SEGMENTS [nWallHitSeg].m_sides [nWallHitSide].m_nBaseTex].flags & TMI_FORCE_FIELD);
-			if (!bForceFieldBounce && (objP->mType.physInfo.flags & PF_STICK)) {		//stop moving
-				AddStuckObject (objP, nWallHitSeg, nWallHitSide);
-				objP->mType.physInfo.velocity.SetZero();
+			if (!bForceFieldBounce && (mType.physInfo.flags & PF_STICK)) {		//stop moving
+				AddStuckObject (this, nWallHitSeg, nWallHitSide);
+				mType.physInfo.velocity.SetZero();
 				bObjStopped = 1;
 				bRetry = 0;
 				}
@@ -825,32 +825,32 @@ retryMove:
 
 				// TODO: fix this with new dot product method, without bouncing off walls
 				// THIS IS DELICATE!!
-				xWallPart = CFixVector::Dot (hi.hit.vNormal, objP->mType.physInfo.velocity);
-				if (bForceFieldBounce || (objP->mType.physInfo.flags & PF_BOUNCE)) {		//bounce off CWall
+				xWallPart = CFixVector::Dot (hi.hit.vNormal, mType.physInfo.velocity);
+				if (bForceFieldBounce || (mType.physInfo.flags & PF_BOUNCE)) {		//bounce off CWall
 					xWallPart *= 2;	//Subtract out wall part twice to achieve bounce
 					if (bForceFieldBounce) {
 						bCheckVel = 1;				//check for max velocity
-						if (objP->info.nType == OBJ_PLAYER)
+						if (info.nType == OBJ_PLAYER)
 							xWallPart *= 2;		//CPlayerData bounce twice as much
 						}
-					if ((objP->mType.physInfo.flags & (PF_BOUNCE | PF_BOUNCES_TWICE)) == (PF_BOUNCE | PF_BOUNCES_TWICE)) {
-						//Assert (objP->mType.physInfo.flags & PF_BOUNCE);
-						if (objP->mType.physInfo.flags & PF_HAS_BOUNCED)
-							objP->mType.physInfo.flags &= ~(PF_BOUNCE | PF_HAS_BOUNCED | PF_BOUNCES_TWICE);
+					if ((mType.physInfo.flags & (PF_BOUNCE | PF_BOUNCES_TWICE)) == (PF_BOUNCE | PF_BOUNCES_TWICE)) {
+						//Assert (mType.physInfo.flags & PF_BOUNCE);
+						if (mType.physInfo.flags & PF_HAS_BOUNCED)
+							mType.physInfo.flags &= ~(PF_BOUNCE | PF_HAS_BOUNCED | PF_BOUNCES_TWICE);
 						else
-							objP->mType.physInfo.flags |= PF_HAS_BOUNCED;
+							mType.physInfo.flags |= PF_HAS_BOUNCED;
 						}
 					bBounced = 1;		//this CObject bBounced
 					}
-				objP->mType.physInfo.velocity += hi.hit.vNormal * (-xWallPart);
+				mType.physInfo.velocity += hi.hit.vNormal * (-xWallPart);
 				if (bCheckVel) {
-					fix vel = objP->mType.physInfo.velocity.Mag();
+					fix vel = mType.physInfo.velocity.Mag();
 					if (vel > MAX_OBJECT_VEL)
-						objP->mType.physInfo.velocity *= (FixDiv (MAX_OBJECT_VEL, vel));
+						mType.physInfo.velocity *= (FixDiv (MAX_OBJECT_VEL, vel));
 					}
-				if (bBounced && (objP->info.nType == OBJ_WEAPON))
-					objP->info.position.mOrient = CFixMatrix::CreateFU(objP->mType.physInfo.velocity, objP->info.position.mOrient.UVec ());
-					//objP->info.position.mOrient = CFixMatrix::CreateFU(objP->mType.physInfo.velocity, &objP->info.position.mOrient.UVec (), NULL);
+				if (bBounced && (info.nType == OBJ_WEAPON))
+					info.position.mOrient = CFixMatrix::CreateFU(mType.physInfo.velocity, info.position.mOrient.UVec ());
+					//info.position.mOrient = CFixMatrix::CreateFU(mType.physInfo.velocity, &info.position.mOrient.UVec (), NULL);
 				bRetry = 1;
 				}
 			}
@@ -861,7 +861,7 @@ retryMove:
 		fix			size0, size1;
 		// Mark the hit CObject so that on a retry the fvi code
 		// ignores this CObject.
-		//if (bSpeedBoost && (objP == gameData.objs.consoleP))
+		//if (bSpeedBoost && (this == gameData.objs.consoleP))
 		//	break;
 #if DBG
 		tFVIData				_hi;
@@ -870,9 +870,9 @@ retryMove:
 #endif
 		Assert (hi.hit.nObject != -1);
 		ppos0 = &OBJECTS [hi.hit.nObject].info.position.vPos;
-		ppos1 = &objP->info.position.vPos;
+		ppos1 = &info.position.vPos;
 		size0 = OBJECTS [hi.hit.nObject].info.xSize;
-		size1 = objP->info.xSize;
+		size1 = info.xSize;
 		//	Calculate the hit point between the two objects.
 		Assert (size0 + size1 != 0);	// Error, both sizes are 0, so how did they collide, anyway?!?
 #if 0
@@ -884,17 +884,17 @@ retryMove:
 			vHitPos = *ppos1 - *ppos0;
 			vHitPos = *ppos0 + vHitPos * FixDiv(size0, size0 + size1);
 			}
-		vOldVel = objP->mType.physInfo.velocity;
-		//if (!(SPECTATOR (objP) || SPECTATOR (OBJECTS + hi.hit.nObject)))
-			CollideTwoObjects (objP, OBJECTS + hi.hit.nObject, &vHitPos);
-		if (sbd.bBoosted && (objP == gameData.objs.consoleP))
-			objP->mType.physInfo.velocity = vOldVel;
+		vOldVel = mType.physInfo.velocity;
+		//if (!(SPECTATOR (this) || SPECTATOR (OBJECTS + hi.hit.nObject)))
+			CollideTwoObjects (OBJECTS + hi.hit.nObject, &vHitPos);
+		if (sbd.bBoosted && (this == gameData.objs.consoleP))
+			mType.physInfo.velocity = vOldVel;
 		// Let object continue its movement
-		if (!(objP->info.nFlags & OF_SHOULD_BE_DEAD)) {
-			if ((objP->mType.physInfo.flags & PF_PERSISTENT) ||
-				 (vOldVel [X] == objP->mType.physInfo.velocity[X] &&
-				  vOldVel [Y] == objP->mType.physInfo.velocity[Y]) &&
-				  vOldVel [Z] == objP->mType.physInfo.velocity[Z]) {
+		if (!(info.nFlags & OF_SHOULD_BE_DEAD)) {
+			if ((mType.physInfo.flags & PF_PERSISTENT) ||
+				 (vOldVel [X] == mType.physInfo.velocity[X] &&
+				  vOldVel [Y] == mType.physInfo.velocity[Y]) &&
+				  vOldVel [Z] == mType.physInfo.velocity[Z]) {
 				if (OBJECTS [hi.hit.nObject].info.nType == OBJ_POWERUP)
 					nTries--;
 				gameData.physics.ignoreObjs [nIgnoreObjs++] = hi.hit.nObject;
@@ -908,7 +908,7 @@ retryMove:
 		}
 	else if (fviResult == HIT_NONE) {
 #ifdef TACTILE
-		if (TactileStick && (objP == gameData.objs.consoleP) && !(FrameCount & 15))
+		if (TactileStick && (this == gameData.objs.consoleP) && !(FrameCount & 15))
 			Tactile_Xvibrate_clear ();
 #endif
 		}
@@ -927,7 +927,7 @@ retryMove:
 #endif
 	} while (bRetry);
 	//	Pass retry nTries info to AI.
-if (objP->info.controlType == CT_AI) {
+if (info.controlType == CT_AI) {
 	Assert (nObject >= 0);
 	if (nTries > 0) {
 		gameData.ai.localInfo [nObject].nRetryCount = nTries - 1;
@@ -945,30 +945,30 @@ if (objP->info.controlType == CT_AI) {
 		CFixVector vMoved;
 		fix s = FixMulDiv (FixDiv (F1_0, gameData.physics.xTime), xTimeScale, 100);
 
-		vMoved = objP->info.position.vPos - vStartPos;
+		vMoved = info.position.vPos - vStartPos;
 		s = vMoved.Mag();
 		vMoved *= (FixMulDiv (FixDiv (F1_0, gameData.physics.xTime), xTimeScale, 100));
 #if 1
 		if (!bDoSpeedBoost)
-			objP->mType.physInfo.velocity = vMoved;
+			mType.physInfo.velocity = vMoved;
 #endif
 #ifdef BUMP_HACK
-		if ((objP == gameData.objs.consoleP) &&
+		if ((this == gameData.objs.consoleP) &&
 			 vMoved.IsZero() &&
-			 !objP->mType.physInfo.thrust.IsZero()) {
-			DoBumpHack (objP);
+			 !mType.physInfo.thrust.IsZero()) {
+			DoBumpHack (this);
 			}
 #endif
 		}
 
-	if (objP->mType.physInfo.flags & PF_LEVELLING)
-		DoPhysicsAlignObject (objP);
+	if (mType.physInfo.flags & PF_LEVELLING)
+		DoPhysicsAlignObject (this);
 	//hack to keep CPlayerData from going through closed doors
-	if (((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT)) && (objP->info.nSegment != nOrigSegment) &&
+	if (((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) && (info.nSegment != nOrigSegment) &&
 		 (gameStates.app.cheats.bPhysics != 0xBADA55)) {
-		int nSide = ConnectedSide (SEGMENTS + objP->info.nSegment, SEGMENTS + nOrigSegment);
+		int nSide = ConnectedSide (SEGMENTS + info.nSegment, SEGMENTS + nOrigSegment);
 		if (nSide != -1) {
-			if (!(SEGMENTS [nOrigSegment].IsDoorWay (nSide, (objP->info.nType == OBJ_PLAYER) ? objP : NULL) & WID_FLY_FLAG)) {
+			if (!(SEGMENTS [nOrigSegment].IsDoorWay (nSide, (info.nType == OBJ_PLAYER) ? this : NULL) & WID_FLY_FLAG)) {
 				CSide *sideP;
 				fix	dist;
 
@@ -977,33 +977,33 @@ if (objP->info.controlType == CT_AI) {
 				if (nOrigSegment == -1)
 					Error ("nOrigSegment == -1 in physics");
 				dist = vStartPos.DistToPlane (sideP->m_normals [0], gameData.segs.vertices [sideP->m_nMinVertex [0]]);
-				objP->info.position.vPos = vStartPos + sideP->m_normals [0] * (objP->info.xSize - dist);
-				UpdateObjectSeg (objP);
+				info.position.vPos = vStartPos + sideP->m_normals [0] * (info.xSize - dist);
+				UpdateObjectSeg (this);
 				}
 			}
 		}
 
 //if end point not in CSegment, move CObject to last pos, or CSegment center
-if (SEGMENTS [objP->info.nSegment].SideMasks (objP->info.position.vPos, 0).m_center) {
-	if (FindObjectSeg (objP) == -1) {
+if (SEGMENTS [info.nSegment].SideMasks (info.position.vPos, 0).m_center) {
+	if (FindObjectSeg (this) == -1) {
 		int n;
 
-		if (((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT)) && 
-			 (n = FindSegByPos (objP->info.vLastPos, objP->info.nSegment, 1, 0)) != -1) {
-			objP->info.position.vPos = objP->info.vLastPos;
+		if (((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) && 
+			 (n = FindSegByPos (info.vLastPos, info.nSegment, 1, 0)) != -1) {
+			info.position.vPos = info.vLastPos;
 			OBJECTS [nObject].RelinkToSeg (n);
 			}
 		else {
-			objP->info.position.vPos = SEGMENTS [objP->info.nSegment].Center ();
-			objP->info.position.vPos[X] += nObject;
+			info.position.vPos = SEGMENTS [info.nSegment].Center ();
+			info.position.vPos[X] += nObject;
 			}
-		if (objP->info.nType == OBJ_WEAPON)
-			objP->Kill ();
+		if (info.nType == OBJ_WEAPON)
+			Kill ();
 		}
 	}
-CATCH_OBJ (objP, objP->mType.physInfo.velocity[Y] == 0);
+CATCH_OBJ (this, mType.physInfo.velocity[Y] == 0);
 #if UNSTICK_OBJS
-UnstickObject (objP);
+UnstickObject (this);
 #endif
 }
 
@@ -1018,27 +1018,19 @@ void CObject::ApplyForce (CFixVector vForce)
 #endif
 	//	Put in by MK on 2/13/96 for force getting applied to Omega blobs, which have 0 mass,
 	//	in collision with crazy reactor robot thing on d2levf-s.
-if (objP->mType.physInfo.mass == 0)
+if (mType.physInfo.mass == 0)
 	return;
-if (objP->info.movementType != MT_PHYSICS)
+if (info.movementType != MT_PHYSICS)
 	return;
-if ((gameStates.render.automap.bDisplay && (objP == gameData.objs.consoleP)) || SPECTATOR (objP))
+if ((gameStates.render.automap.bDisplay && (this == gameData.objs.consoleP)) || SPECTATOR (this))
 	return;
 #ifdef TACTILE
   if (TactileStick && (obj == OBJECTS + LOCALPLAYER.nObject))
-	Tactile_apply_force (vForce, &objP->info.position.mOrient);
+	Tactile_apply_force (vForce, &info.position.mOrient);
 #endif
 //Add in acceleration due to force
-#if DBG
-mag = objP->mType.physInfo.velocity.Mag ();
-#endif
-if (!gameData.objs.speedBoost [OBJ_IDX (objP)].bBoosted || (objP != gameData.objs.consoleP))
-	objP->mType.physInfo.velocity += *vForce * FixDiv (f1_0, objP->mType.physInfo.mass);
-#if DBG
-mag = objP->mType.physInfo.velocity.Mag ();
-if (X2F (mag) > 500)
-	objP = objP;
-#endif
+if (!gameData.objs.speedBoost [OBJ_IDX (this)].bBoosted || (this != gameData.objs.consoleP))
+	mType.physInfo.velocity += *vForce * FixDiv (f1_0, mType.physInfo.mass);
 }
 
 //	----------------------------------------------------------------
