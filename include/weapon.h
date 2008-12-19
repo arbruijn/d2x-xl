@@ -255,7 +255,7 @@ extern ubyte primaryWeaponToPowerup [MAX_SECONDARY_WEAPONS];
 extern ubyte secondaryWeaponToPowerup [MAX_SECONDARY_WEAPONS];
 
 //flags whether the last time we use this weapon, it was the 'super' version
-extern ubyte bLastWeaponWasSuper [2] [MAX_PRIMARY_WEAPONS];
+extern ubyte bLastWeaponWasSuper [2][MAX_PRIMARY_WEAPONS];
 
 extern void AutoSelectWeapon(int weaponType, int auto_select);        //parm is primary or secondary
 extern void SelectWeapon (int nWeapon, int secondaryFlag, int bPrintMessage, int bWaitForRearm);
@@ -317,8 +317,8 @@ void tactile_set_button_jolt (void);
  */
 int ReadWeaponInfos (tWeaponInfo *wi, int n, CFile& cf, int fileVersion);
 
-extern ubyte nWeaponOrder [2] [11];
-extern ubyte nDefaultWeaponOrder [2] [11];
+extern ubyte nWeaponOrder [2][11];
+extern ubyte nDefaultWeaponOrder [2][11];
 
 #define primaryOrder		(nWeaponOrder [0])
 #define secondaryOrder	(nWeaponOrder [1])

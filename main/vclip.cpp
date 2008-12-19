@@ -78,7 +78,7 @@ int SetupHiresVClip (tVideoClip *vcP, tVClipInfo *vciP)
 if (vcP->flags & WCF_ALTFMT) {
 	CBitmap	*bmP;
 	if (vcP->flags & WCF_INITIALIZED) {
-		bmP = gameData.pig.tex.bitmaps [0] [vcP->frames [0].index].Override ();
+		bmP = gameData.pig.tex.bitmaps [0][vcP->frames [0].index].Override ();
 		nFrames = ((bmP->Type () != BM_TYPE_ALT) && bmP->Parent ()) ? bmP->Parent ()->FrameCount () : bmP->FrameCount ();
 		}
 	else {

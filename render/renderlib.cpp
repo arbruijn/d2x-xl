@@ -61,7 +61,7 @@ int FaceIsVisible (short nSegment, short nSide)
 CSegment *segP = SEGMENTS + nSegment;
 CSide *sideP = segP->m_sides + nSide;
 CFixVector v;
-v = gameData.render.mine.viewerEye - segP->SideCenter (nSide); //gameData.segs.vertices + segP->verts [sideVertIndex [nSide][0]]);
+v = gameData.render.mine.viewerEye - segP->SideCenter (nSide); //gameData.segs.vertices + segP->m_verts [sideVertIndex [nSide][0]]);
 return (sideP->m_nType == SIDE_IS_QUAD) 
 		 ? CFixVector::Dot (sideP->m_normals [0], v) >= 0 
 		 : (CFixVector::Dot (sideP->m_normals [0], v) >= 0) || (CFixVector::Dot (sideP->m_normals [1], v) >= 0);
@@ -420,7 +420,7 @@ else {
 	if (nConnSeg >= 0) {
 		if (special == SEGMENTS [nConnSeg].m_nType)
 			return NULL;
-		if (IS_WALL (SEGMENTS [nSegment].m_sides [nSide].nWall))
+		if (IS_WALL (SEGMENTS [nSegment].WallNum (nSide)))
 			return NULL;
 		}
 	}
@@ -754,19 +754,19 @@ return bHaveMonitorBg || gameOpts->render.cameras.bFitToWall;
 #define CROSS_WIDTH  I2X(8)
 #define CROSS_HEIGHT I2X(8)
 
-void OutlineSegSide (CSegment *seg, int _side, int edge, int vert)
+void OutlineSegSide (CSegment *segP, int _side, int edge, int vert)
 {
 	g3sCodes cc;
 
-cc = RotateVertexList (8, seg->verts);
+cc = RotateVertexList (8, segP->m_verts);
 if (! cc.ccAnd) {		//all off screen?
 	g3sPoint *pnt;
 	//render curedge of curside of curseg in green
 	CCanvas::Current ()->SetColorRGB (0, 255, 0, 255);
-	G3DrawLine(gameData.segs.points + seg->verts [sideVertIndex [_side][edge]],
-						gameData.segs.points + seg->verts [sideVertIndex [_side][(edge+1)%4]]);
+	G3DrawLine(gameData.segs.points + segP->m_verts [sideVertIndex [_side][edge]],
+						gameData.segs.points + segP->m_verts [sideVertIndex [_side][(edge+1)%4]]);
 	//draw a little cross at the current vert
-	pnt = gameData.segs.points + seg->verts [sideVertIndex [_side][vert]];
+	pnt = gameData.segs.points + segP->m_verts [sideVertIndex [_side][vert]];
 	G3ProjectPoint(pnt);		//make sure projected
 	fix x = I2X (pnt->p3_screen.x);
 	fix y = I2X (pnt->p3_screen.y);
@@ -831,7 +831,7 @@ return p;
 //cc.ccAnd and cc.ccOr will contain the position/orientation of the face that is determined
 //by the vertices passed relative to the viewer
 
-g3sCodes RotateVertexList (int nVertices, short *vertexIndexP) 
+g3sCodes RotateVertexList (int nVertices, ushort* vertexIndexP) 
 {
 	int			i;
 	g3sPoint		*p;
@@ -864,14 +864,12 @@ void RotateSideNorms (void)
 {
 	int			i, j;
 	CSegment		*segP = SEGMENTS.Buffer ();
-	CSegment	*seg2P = SEGMENTS.Buffer ();
 	CSide			*sideP;
-	tSide2		*side2P;
 
-for (i = gameData.segs.nSegments; i; i--, segP++, seg2P++)
-	for (j = 6, sideP = segP->m_sides, side2P = seg2P->m_sides; j; j--, sideP++, side2P++) {
-		transformation.Rotate(side2P->rotNorms[0], sideP->m_normals[0], 0);
-		transformation.Rotate(side2P->rotNorms[1], sideP->m_normals[1], 0);
+for (i = 0; i < gameData.segs.nSegments; i++)
+	for (j = 6, sideP = SEGMENTS [i].m_sides; j; j--, sideP++) {
+		transformation.Rotate (sideP->rotNorms [0], sideP->m_normals [0], 0);
+		transformation.Rotate (sideP->rotNorms [1], sideP->m_normals [1], 0);
 		}
 }
 
@@ -937,7 +935,7 @@ for (i = 0, j = 1; nRadius; nRadius--) {
 	for (h = i, i = j; h < i; h++) {
 		nSegment = gameData.render.mine.nSegRenderList [h];
 		if ((gameData.render.mine.bVisible [nSegment] == gameData.render.mine.nVisible) &&
-			 (!nMaxDist || (CFixVector::Dist(SEGMENTS [nStartSeg].Center (), SEGMENTS [nSegment].m_Center ()) <= nMaxDist)))
+			 (!nMaxDist || (CFixVector::Dist(SEGMENTS [nStartSeg].Center (), SEGMENTS [nSegment].Center ()) <= nMaxDist)))
 			return 1;
 		segP = SEGMENTS + nSegment;
 		for (nChild = 0; nChild < 6; nChild++) {

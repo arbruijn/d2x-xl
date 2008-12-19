@@ -14,14 +14,14 @@ class CEnergySpark {
 		CFixVector		m_vDir;
 
 	public:
-		void Setup (short nSegment);
+		void Setup (short nSegment, ubyte nType);
 		void Update (void);
 		void Render (void);
 	};
 
 class CSparks {
 	public:
-		CArray<CEnergySpark>	sparks;
+		CArray<CEnergySpark>	m_sparks;
 		short						m_nSegment;
 		short						m_nMaxSparks;
 		ubyte						m_nType;

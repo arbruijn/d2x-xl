@@ -1292,7 +1292,7 @@ if (nSegment == nDbgSeg)
 SetNearestSegmentLights (nSegment, -1, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
 #if 1
 for (i = 0; i < 8; i++)
-	SetNearestVertexLights (-1, segP->verts [i], NULL, 0, 1, 1, 0);
+	SetNearestVertexLights (-1, segP->m_verts [i], NULL, 0, 1, 1, 0);
 #endif
 return gameData.render.lights.dynamic.shader.index [0][0].nActive;
 }

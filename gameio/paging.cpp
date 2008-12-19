@@ -386,7 +386,7 @@ void PagingTouchGauges (void)
 	int	s;
 
 for (s = 0; s < MAX_GAUGE_BMS; s++)
-	if (gameData.cockpit.gauges [1] [s].index)
+	if (gameData.cockpit.gauges [1][s].index)
 		PIGGY_PAGE_IN (gameData.cockpit.gauges [1][s].index, 0);
 }
 
@@ -498,8 +498,8 @@ else if (nTouchPowerup2 < gameData.objs.pwrUp.nTypes) {
 	}
 else if (nTouchGauge < MAX_GAUGE_BMS) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchGauge < MAX_GAUGE_BMS); i++, nTouchGauge++)
-		if (gameData.cockpit.gauges [1] [nTouchGauge].index)
-			PIGGY_PAGE_IN (gameData.cockpit.gauges [1] [nTouchGauge].index, 0);
+		if (gameData.cockpit.gauges [1][nTouchGauge].index)
+			PIGGY_PAGE_IN (gameData.cockpit.gauges [1][nTouchGauge].index, 0);
 	}
 else {
 	PagingTouchVClip (&gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE], 0);

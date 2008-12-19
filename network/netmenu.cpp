@@ -1568,7 +1568,7 @@ int NetworkSelectTeams (void)
 	tMenuItem m [MAX_PLAYERS+4];
 	int choice, opt, opt_team_b;
 	ubyte teamVector = 0;
-	char team_names [2] [CALLSIGN_LEN+1];
+	char team_names [2][CALLSIGN_LEN+1];
 	int i;
 	int pnums [MAX_PLAYERS+2];
 
@@ -1659,7 +1659,7 @@ int NetworkSelectPlayers (int bAutoRun)
 {
 	int i, j, choice = 1;
    tMenuItem m [MAX_PLAYERS+4];
-   char text [MAX_PLAYERS+4] [45];
+   char text [MAX_PLAYERS+4][45];
 	char title [50];
 	int nSavePlayers;              //how may people would like to join
 

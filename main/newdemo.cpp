@@ -1852,9 +1852,9 @@ while (!bDone) {
 						break;
 					CPlayerData--;
 					for (i = 0; i < N_PLAYER_SHIP_TEXTURES; i++)
-						mpTextureIndex [CPlayerData] [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nFirstTexture+i]];
-					mpTextureIndex [CPlayerData] [4] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap+ (CPlayerData)*2]];
-					mpTextureIndex [CPlayerData] [5] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap+ (CPlayerData)*2+1]];
+						mpTextureIndex [CPlayerData][i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nFirstTexture+i]];
+					mpTextureIndex [CPlayerData][4] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap+ (CPlayerData)*2]];
+					mpTextureIndex [CPlayerData][5] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap+ (CPlayerData)*2+1]];
 					objP->rType.polyObjInfo.nAltTextures = CPlayerData+1;
 					}
 				}

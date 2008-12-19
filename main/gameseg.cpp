@@ -628,8 +628,8 @@ void extract_vector_from_segment (CSegment *segP, CFixVector *vp, int start, int
 	ve.SetZero();
 
 	for (i=0; i<4; i++) {
-		vs += gameData.segs.vertices [segP->verts [sideVertIndex [start][i]]];
-		ve += gameData.segs.vertices [segP->verts [sideVertIndex [end][i]]];
+		vs += gameData.segs.vertices [segP->m_verts [sideVertIndex [start][i]]];
+		ve += gameData.segs.vertices [segP->m_verts [sideVertIndex [end][i]]];
 	}
 
 	*vp = ve - vs;
@@ -918,10 +918,10 @@ float FaceSize (short nSegment, ubyte nSide)
 	CSegment		*segP = SEGMENTS + nSegment;
 	sbyte			*s2v = sideVertIndex [nSide];
 
-	short			v0 = segP->verts [s2v [0]];
-	short			v1 = segP->verts [s2v [1]];
-	short			v2 = segP->verts [s2v [2]];
-	short			v3 = segP->verts [s2v [3]];
+	short			v0 = segP->m_verts [s2v [0]];
+	short			v1 = segP->m_verts [s2v [1]];
+	short			v2 = segP->m_verts [s2v [2]];
+	short			v3 = segP->m_verts [s2v [3]];
 
 return TriangleSize (gameData.segs.vertices [v0], gameData.segs.vertices [v1], gameData.segs.vertices [v2]) +
 		 TriangleSize (gameData.segs.vertices [v0], gameData.segs.vertices [v2], gameData.segs.vertices [v3]);

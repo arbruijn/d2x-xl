@@ -120,7 +120,7 @@ return -1;
 // -------------------------------------------------------------------------------
 //returns 3 different bitmasks with info telling if this sphere is in
 //this CSegment.  See CSegMasks structure for info on fields
-CSegMasks CSegment::GetSideMasks (const CFixVector& refP, fix xRad)
+CSegMasks CSegment::SideMasks (const CFixVector& refP, fix xRad)
 {
 	short			nSide, faceBit;
 	CSegMasks	masks;

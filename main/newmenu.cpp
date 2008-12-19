@@ -3421,7 +3421,7 @@ return nItem;
 
 //------------------------------------------------------------------------------
 
-static char FilenameText [MAX_FILES] [ (FILENAME_LEN+1)];
+static char FilenameText [MAX_FILES][ (FILENAME_LEN+1)];
 
 int ExecMenuFileList (char *pszTitle, char *filespec, char *filename)
 {

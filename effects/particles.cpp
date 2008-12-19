@@ -436,7 +436,7 @@ for (nSide = 0, sideP = segP->m_sides; nSide < 6; nSide++, sideP++) {
 		nFaces [nSide] = sideP->m_nFaces;
 		}
 	for (nFace = nInFront = 0; nFace < nFaces [nSide]; nFace++) {
-		nDist = m_vPos.DistToPlane (sideP->m_normals [nFace], gameData.segs.vertices [sideP->m_nMinVertex]);
+		nDist = m_vPos.DistToPlane (sideP->m_normals [nFace], gameData.segs.vertices [sideP->m_nMinVertex [0]]);
 		if (nDist > -PLANE_DIST_TOLERANCE)
 			nInFront++;
 		else
@@ -1365,11 +1365,11 @@ int CParticleSystem::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOr
 									  float fScale, int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType,
 									  int nObject, tRgbaColorf *colorP, int bBlowUpParts, char nSide)
 {
-	int					i;
-	CFixVector			vEmittingFace [4];
+	int			i;
+	CFixVector	vEmittingFace [4];
 
 if (nSide >= 0)
-	SEGMENTS [nSegment].m_GetVertices (vEmittingFace);
+	SEGMENTS [nSegment].GetCorners (vEmittingFace);
 nMaxParts = MAX_PARTICLES (nMaxParts, gameOpts->render.particles.nDens [0]);
 if (gameStates.render.bPointSprites)
 	nMaxParts *= 2;

@@ -205,9 +205,9 @@ extern int   Escort_goalObject, Escort_special_goal, Escort_goal_index;
 extern int 	 nEscortGoalText [MAX_ESCORT_GOALS];
 
 extern int   Num_boss_teleport_segs [MAX_BOSS_COUNT];
-extern short Boss_teleport_segs [MAX_BOSS_COUNT] [MAX_BOSS_TELEPORT_SEGS];
+extern short Boss_teleport_segs [MAX_BOSS_COUNT][MAX_BOSS_TELEPORT_SEGS];
 extern int   Num_boss_gate_segs [MAX_BOSS_COUNT];
-extern short Boss_gate_segs [MAX_BOSS_COUNT] [MAX_BOSS_TELEPORT_SEGS];
+extern short Boss_gate_segs [MAX_BOSS_COUNT][MAX_BOSS_TELEPORT_SEGS];
 extern int	 boss_obj_num [MAX_BOSS_COUNT];
 
 // --------- John: These variables must be saved as part of gamesave. ---------
@@ -248,10 +248,10 @@ extern sbyte Super_boss_gate_list [];
 #if DBG
 // Index into this array with ailp->mode
 // Index into this array with aip->behavior
-extern char behavior_text [6] [9];
+extern char behavior_text [6][9];
 
 // Index into this array with aip->GOAL_STATE or aip->CURRENT_STATE
-extern char state_text [8] [5];
+extern char state_text [8][5];
 
 extern int bDoAIFlag, nBreakOnObject;
 

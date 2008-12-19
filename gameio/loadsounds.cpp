@@ -312,7 +312,7 @@ int PiggySoundIsNeeded (int nSound)
 if (!gameStates.sound.digi.bLoMem)
 	return 1;
 for (i = 0; i < MAX_SOUNDS; i++) {
-	if ((AltSounds [gameStates.app.bD1Data][i] < 255) && (Sounds [gameStates.app.bD1Data] [AltSounds [gameStates.app.bD1Data][i]] == nSound))
+	if ((AltSounds [gameStates.app.bD1Data][i] < 255) && (Sounds [gameStates.app.bD1Data][AltSounds [gameStates.app.bD1Data][i]] == nSound))
 		return 1;
 	}
 return 0;

@@ -252,7 +252,7 @@ int _CDECL_ EffectsThread (void *pThreadId)
 do {
 	while (!tiEffects.bExec)
 		G3_SLEEP (0);
-	particleManager::DoFrame ();
+	DoParticleFrame ();
 	sparkManager.DoFrame ();
 	lightningManager.DoFrame ();
 	tiEffects.bExec = 0;

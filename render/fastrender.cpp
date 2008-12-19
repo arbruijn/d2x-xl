@@ -241,7 +241,7 @@ if ((newFaceP->bIsLight = IsLight (newFaceP->nBaseTex)))
 
 void FixTriangleFan (CSegment *segP, tFace *faceP)
 {
-if (((faceP->nType = segP->Type (faceP->nSide) == SIDE_IS_TRI_13)) {	//rearrange vertex order for TRIANGLE_FAN rendering
+if (((faceP->nType = segP->Type (faceP->nSide)) == SIDE_IS_TRI_13)) {	//rearrange vertex order for TRIANGLE_FAN rendering
 	{
 	short	h = faceP->index [0];
 	memcpy (faceP->index, faceP->index + 1, 3 * sizeof (short));
@@ -1000,7 +1000,7 @@ inline int SegmentIsVisible (CSegment *segP)
 {
 if (gameStates.render.automap.bDisplay)
 	return 1;
-return RotateVertexList (8, segP->verts).ccAnd == 0;
+return RotateVertexList (8, segP->m_verts).ccAnd == 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1061,7 +1061,7 @@ for (faceP = FACES.slidingFaces; faceP; faceP = faceP->nextSlidingFace) {
 #endif
 	texCoordP = FACES.texCoord + faceP->nIndex;
 	ovlTexCoordP = FACES.ovlTexCoord + faceP->nIndex;
-	uvlP = SEGMENTS [faceP->nSegment].m_sides [faceP->nSide].uvls;
+	uvlP = SEGMENTS [faceP->nSegment].m_sides [faceP->nSide].m_uvls;
 	nOffset = faceP->nType == SIDE_IS_TRI_13;
 	if (gameStates.render.bTriangleMesh) {
 		static short nTriVerts [2][6] = {{0,1,2,0,2,3},{0,1,3,1,2,3}};
@@ -1881,8 +1881,8 @@ for (i = nStart; i != nEnd; i += nStep) {
 #endif
 		faceP->color = faceColor [nColor].color;
 		pc = FACES.color + faceP->nIndex;
-		uvlP = segP->m_sides [nSide].uvls;
-		for (h = 0, uvi = (segP->m_sides [nSide].nType == SIDE_IS_TRI_13); h < 4; h++, pc++, uvi++) {
+		uvlP = segP->m_sides [nSide].m_uvls;
+		for (h = 0, uvi = (segP->m_sides [nSide].m_nType == SIDE_IS_TRI_13); h < 4; h++, pc++, uvi++) {
 			if (gameStates.render.bFullBright) 
 				*pc = nColor ? faceColor [nColor].color : brightColor.color;
 			else {

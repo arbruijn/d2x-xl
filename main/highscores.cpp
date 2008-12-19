@@ -71,23 +71,23 @@ GrPrintF (NULL, LHX (CENTERING_OFFSET (gameData.multiplayer.nPlayers)) + xOffs, 
 for (j=0; j<gameData.multiplayer.nPlayers; j++) {
 	x = LHX (70 + CENTERING_OFFSET (gameData.multiplayer.nPlayers) + j*25) + xOffs;
 	if (sorted [i]==sorted [j]) {
-		if (gameData.multigame.kills.matrix [sorted [i]] [sorted [j]] == 0) {
+		if (gameData.multigame.kills.matrix [sorted [i]][sorted [j]] == 0) {
 			fontManager.SetColorRGBi (RGBA_PAL2 (10,10,10), 1, 0, 0);
-			GrPrintF (NULL, x, y, "%d", gameData.multigame.kills.matrix [sorted [i]] [sorted [j]]);
+			GrPrintF (NULL, x, y, "%d", gameData.multigame.kills.matrix [sorted [i]][sorted [j]]);
 			} 
 		else {
 			fontManager.SetColorRGBi (RGBA_PAL2 (25,25,25), 1, 0, 0);
-			GrPrintF (NULL, x, y, "-%d", gameData.multigame.kills.matrix [sorted [i]] [sorted [j]]);
+			GrPrintF (NULL, x, y, "-%d", gameData.multigame.kills.matrix [sorted [i]][sorted [j]]);
 			}
 		} 
 	else {
-		if (gameData.multigame.kills.matrix [sorted [i]] [sorted [j]] <= 0) {
+		if (gameData.multigame.kills.matrix [sorted [i]][sorted [j]] <= 0) {
 			fontManager.SetColorRGBi (RGBA_PAL2 (10,10,10), 1, 0, 0);
-			GrPrintF (NULL, x, y, "%d", gameData.multigame.kills.matrix [sorted [i]] [sorted [j]]);
+			GrPrintF (NULL, x, y, "%d", gameData.multigame.kills.matrix [sorted [i]][sorted [j]]);
 			} 
 		else {
 			fontManager.SetColorRGBi (RGBA_PAL2 (25,25,25), 1, 0, 0);
-			GrPrintF (NULL, x, y, "%d", gameData.multigame.kills.matrix [sorted [i]] [sorted [j]]);
+			GrPrintF (NULL, x, y, "%d", gameData.multigame.kills.matrix [sorted [i]][sorted [j]]);
 			}
 		}
 	}

@@ -84,17 +84,6 @@ Error ("Illegal side type = %i\n", m_nType);
 return -1;
 }
 
-// -----------------------------------------------------------------------------------
-// Fill in array with four absolute point numbers for a given CSide
-CFixVector* CSide::GetVertices (CFixVector* vertices)
-{
-vertices [0] = gameData.segs.vertices [m_vertices [0]];
-vertices [1] = gameData.segs.vertices [m_vertices [1]];
-vertices [2] = gameData.segs.vertices [m_vertices [2]];
-vertices [3] = gameData.segs.vertices [m_vertices [3]];
-return vertices;
-}
-
 // -------------------------------------------------------------------------------
 
 int CSide::CreateVertexList (ushort* verts, int* index)
@@ -711,6 +700,15 @@ return IT_NONE;			//no hit
 bool CSide::IsOpenableDoor (void)
 {
 return IS_WALL (m_nWall) ? WALLS [m_nWall].IsOpenableDoor () : false;
+}
+
+//------------------------------------------------------------------------------
+
+inline CFixVector* CSide::GetCorners (CFixVector vertices) 
+{ 
+for (int i = 0; i < 4; i++)
+	vertices [i] = gameData.segs.vertices [contour [i]];
+return vertices;
 }
 
 //------------------------------------------------------------------------------

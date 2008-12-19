@@ -241,7 +241,7 @@ return 0;
 
 int RenderWall (tFaceProps *propsP, g3sPoint **pointList, int bIsMonitor)
 {
-	short c, nWallNum = WallNumI (propsP->segNum, propsP->sideNum);
+	short c, nWallNum = SEGMENTS (propsP->segNum)->WallNum (propsP->sideNum);
 	static tRgbaColorf cloakColor = {0, 0, 0, -1};
 
 if (IS_WALL (nWallNum)) {
@@ -303,7 +303,7 @@ void RenderFace (tFaceProps *propsP)
 	CSide			*sideP = segP->m_sides + props.sideNum;
 	CCamera		*cameraP = NULL;
 
-if (props.m_nBaseTex < 0)
+if (props.nBaseTex < 0)
 	return;
 if (gameStates.render.nShadowPass == 2) {
 #if DBG_SHADOWS
@@ -319,7 +319,7 @@ if (gameStates.render.nShadowPass == 2) {
 #if DBG //convenient place for a debug breakpoint
 if (props.segNum == nDbgSeg && ((nDbgSide < 0) || (props.sideNum == nDbgSide)))
 	props.segNum = props.segNum;
-if (props.m_nBaseTex == nDbgBaseTex)
+if (props.nBaseTex == nDbgBaseTex)
 	props.segNum = props.segNum;
 if (props.nOvlTex == nDbgOvlTex)
 	props.segNum = props.segNum;
@@ -375,7 +375,7 @@ if (RenderWall (&props, pointList, bIsMonitor)) {	//handle semi-transparent wall
 	return;
 	}
 if (props.widFlags & WID_RENDER_FLAG) {
-	if (props.m_nBaseTex >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]) {
+	if (props.nBaseTex >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]) {
 	sideP->nBaseTex = 0;
 	}
 if (!(bHaveMonitorBg && gameOpts->render.cameras.bFitToWall)) {
@@ -392,21 +392,21 @@ if (!(bHaveMonitorBg && gameOpts->render.cameras.bFitToWall)) {
 		props.uvls [3].v = 3 * F1_0 / 4;
 		}
 	else if (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk) {
-		bmBot = LoadFaceBitmap (props.m_nBaseTex, sideP->nFrame);
+		bmBot = LoadFaceBitmap (props.nBaseTex, sideP->nFrame);
 		if (props.nOvlTex)
 			bmTop = LoadFaceBitmap ((short) (props.nOvlTex), sideP->nFrame);
 		}
 	else {
 		if (props.nOvlTex != 0) {
-			bmBot = TexMergeGetCachedBitmap (props.m_nBaseTex, props.nOvlTex, props.nOvlOrient);
+			bmBot = TexMergeGetCachedBitmap (props.nBaseTex, props.nOvlTex, props.nOvlOrient);
 #if DBG
 			if (!bmBot)
-				bmBot = TexMergeGetCachedBitmap (props.m_nBaseTex, props.nOvlTex, props.nOvlOrient);
+				bmBot = TexMergeGetCachedBitmap (props.nBaseTex, props.nOvlTex, props.nOvlOrient);
 #endif
 			}
 		else {
-			bmBot = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [props.m_nBaseTex].index;
-			PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [props.m_nBaseTex].index, gameStates.app.bD1Mission);
+			bmBot = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [props.nBaseTex].index;
+			PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [props.nBaseTex].index, gameStates.app.bD1Mission);
 			}
 		}
 	}
@@ -523,7 +523,7 @@ if ((props.segNum == nDbgSeg) && ((nDbgSide < 0) || (props.sideNum == nDbgSide))
 	segP = segP;
 #endif
 props.widFlags = segP->IsDoorWay (props.sideNum, NULL);
-if (!(gameOpts->render.debug.bWalls || IsMultiGame) && IS_WALL (WallNumP (segP, props.sideNum)))
+if (!(gameOpts->render.debug.bWalls || IsMultiGame) && IS_WALL (segP->WallNum (props.sideNum)))
 	return;
 switch (gameStates.render.nType) {
 	case -1:
@@ -535,7 +535,7 @@ switch (gameStates.render.nType) {
 			return;
 		break;
 	case 1:
-		if (!IS_WALL (WallNumP (segP, props.sideNum)))
+		if (!IS_WALL (segP->WallNum (props.sideNum)))
 			return;
 		break;
 	case 2:
@@ -544,7 +544,7 @@ switch (gameStates.render.nType) {
 			return;
 		break;
 	case 3:
-		if ((IsLight (sideP->nBaseTex) || (sideP->nOvlTex && IsLight (sideP->nOvlTex))))
+		if ((IsLight (sideP->m_nBaseTex) || (sideP->m_nOvlTex && IsLight (sideP->m_nOvlTex))))
 			RenderCorona (props.segNum, props.sideNum, 1, 20);
 		return;
 	}
@@ -563,9 +563,9 @@ if (gameStates.render.bDoLightmaps) {
 	props.uvl_lMaps [3].v = F2X (1-h);
 	}
 #endif
-props.m_nBaseTex = sideP->nBaseTex;
-props.nOvlTex = sideP->nOvlTex;
-props.nOvlOrient = sideP->nOvlOrient;
+props.nBaseTex = sideP->m_nBaseTex;
+props.nOvlTex = sideP->m_nOvlTex;
+props.nOvlOrient = sideP->m_nOvlOrient;
 
 	//	========== Mark: Here is the change...beginning here: ==========
 
@@ -581,7 +581,7 @@ props.nOvlOrient = sideP->nOvlOrient;
 #if DBG //convenient place for a debug breakpoint
 if (props.segNum == nDbgSeg && props.sideNum == nDbgSide)
 	props.segNum = props.segNum;
-if (props.m_nBaseTex == nDbgBaseTex)
+if (props.nBaseTex == nDbgBaseTex)
 	props.segNum = props.segNum;
 if (props.nOvlTex == nDbgOvlTex)
 	props.segNum = props.segNum;
@@ -593,10 +593,10 @@ else
 
 if (!FaceIsVisible (props.segNum, props.sideNum))
 	return;
-if (sideP->nType == SIDE_IS_QUAD) {
+if (sideP->m_nType == SIDE_IS_QUAD) {
 	props.vNormal = sideP->m_normals [0];
 	props.nVertices = 4;
-	memcpy (props.uvls, sideP->uvls, sizeof (tUVL) * 4);
+	memcpy (props.uvls, sideP->m_uvls, sizeof (tUVL) * 4);
 	memcpy (props.vp, SEGMENTS [props.segNum].Contour (props.sideNum), 4 * sizeof (ushort));
 	RenderFace (&props);
 #ifdef EDITOR
@@ -611,13 +611,13 @@ else {
 	props.vNormal *= (F1_0 / 2);
 	props.nVertices = 4;
 	if (sideP->nType == SIDE_IS_TRI_02) {
-		memcpy (props.uvls, sideP->uvls, sizeof (tUVL) * 4);
+		memcpy (props.uvls, sideP->m_uvls, sizeof (tUVL) * 4);
 		memcpy (props.vp, SEGMENTS [props.segNum].Contour (props.sideNum), 4 * sizeof (ushort));
 		RenderFace (&props);
 		}
 	else if (sideP->nType == SIDE_IS_TRI_13) {	//just rendering the fan with vertex 1 instead of 0
-		memcpy (props.uvls + 1, sideP->uvls, sizeof (tUVL) * 3);
-		props.uvls [0] = sideP->uvls [3];
+		memcpy (props.uvls + 1, sideP->m_uvls, sizeof (tUVL) * 3);
+		props.uvls [0] = sideP->m_uvls [3];
 		memcpy (props.vp + 1, SEGMENTS [props.segNum].Contour (props.sideNum), 4 * sizeof (ushort));
 		props.vp [0] = props.vp [4];
 		RenderFace (&props);
@@ -638,7 +638,7 @@ static int RenderSegmentFaces (short nSegment, int nWindow)
 	short			nSide;
 
 OglSetupTransform (0);
-cc = RotateVertexList (8, segP->verts);
+cc = RotateVertexList (8, segP->m_verts);
 gameData.render.vertP = gameData.segs.fVertices.Buffer ();
 //	return;
 if (cc.ccAnd /*&& !gameStates.render.automap.bDisplay*/)	//all off screen and not rendering the automap
@@ -850,7 +850,7 @@ ubyte bVisible [MAX_SEGMENTS_D2X];
 
 //Given two sides of CSegment, tell the two verts which form the
 //edge between them
-short edgeBetweenTwoSides [6] [6] [2] = {
+short edgeBetweenTwoSides [6][6][2] = {
 	{ {-1, -1}, {3, 7}, {-1, -1}, {2, 6}, {6, 7}, {2, 3} },
 	{ {3, 7}, {-1, -1}, {0, 4}, {-1, -1}, {4, 7}, {0, 3} },
 	{ {-1, -1}, {0, 4}, {-1, -1}, {1, 5}, {4, 5}, {0, 1} },
@@ -860,7 +860,7 @@ short edgeBetweenTwoSides [6] [6] [2] = {
 };
 
 //given an edge specified by two verts, give the two sides on that edge
-int edgeToSides [8] [8] [2] = {
+int edgeToSides [8][8][2] = {
 	{ {-1, -1}, {2, 5}, {-1, -1}, {1, 5}, {1, 2}, {-1, -1}, {-1, -1}, {-1, -1} },
 	{ {2, 5}, {-1, -1}, {3, 5}, {-1, -1}, {-1, -1}, {2, 3}, {-1, -1}, {-1, -1} },
 	{ {-1, -1}, {3, 5}, {-1, -1}, {0, 5}, {-1, -1}, {-1, -1}, {0, 3}, {-1, -1} },
@@ -878,13 +878,13 @@ int edgeToSides [8] [8] [2] = {
 //@@
 //@@	for (i=0;i<8;i++)
 //@@		for (j=0;j<8;j++)
-//@@			Assert(edgeToSides [i] [j] [0] == edgeToSides [j] [i] [0] &&
-//@@					edgeToSides [i] [j] [1] == edgeToSides [j] [i] [1]);
+//@@			Assert(edgeToSides [i][j][0] == edgeToSides [j][i][0] &&
+//@@					edgeToSides [i][j][1] == edgeToSides [j][i][1]);
 //@@
 //@@	for (i=0;i<6;i++)
 //@@		for (j=0;j<6;j++)
-//@@			Assert(edgeBetweenTwoSides [i] [j] [0] == edgeBetweenTwoSides [j] [i] [0] &&
-//@@					edgeBetweenTwoSides [i] [j] [1] == edgeBetweenTwoSides [j] [i] [1]);
+//@@			Assert(edgeBetweenTwoSides [i][j][0] == edgeBetweenTwoSides [j][i][0] &&
+//@@					edgeBetweenTwoSides [i][j][1] == edgeBetweenTwoSides [j][i][1]);
 //@@
 //@@
 //@@}
@@ -920,7 +920,7 @@ for (i = 0; i < 8; i++) {
 			break;
 		}
 	}
-eptr = edgeToSides [i0] [i1];
+eptr = edgeToSides [i0][i1];
 side0 = eptr [0];
 side1 = eptr [1];
 return (side0 == oppSide) ? side1 : side0;
@@ -947,8 +947,8 @@ int FindAdjacentSideNorms (CSegment *segP, short s0, short s1, tSideNormData *s)
 Assert(s0 != -1 && s1 != -1);
 seg0 = SEGMENTS + segP->m_children [s0];
 seg1 = SEGMENTS + segP->m_children [s1];
-edgeVerts [0] = segP->verts [edgeBetweenTwoSides [s0] [s1] [0]];
-edgeVerts [1] = segP->verts [edgeBetweenTwoSides [s0] [s1] [1]];
+edgeVerts [0] = segP->m_verts [edgeBetweenTwoSides [s0][s1][0]];
+edgeVerts [1] = segP->m_verts [edgeBetweenTwoSides [s0][s1][1]];
 Assert(edgeVerts [0] != -1 && edgeVerts [1] != -1);
 oppSide0 = segP->ConnectedSide (seg0);
 Assert (oppSide0 != -1);
@@ -960,8 +960,8 @@ side0 = seg0->m_sides + otherSide0;
 side1 = seg1->m_sides + otherSide1;
 memcpy (s [0].n, side0->m_normals, 2 * sizeof (CFixVector));
 memcpy (s [1].n, side1->m_normals, 2 * sizeof (CFixVector));
-s [0].p = gameData.segs.vertices + seg0->verts [sideVertIndex [otherSide0] [(s [0].t = side0->nType) == 3]];
-s [1].p = gameData.segs.vertices + seg1->verts [sideVertIndex [otherSide1] [(s [1].t = side1->nType) == 3]];
+s [0].p = gameData.segs.vertices + seg0->m_verts [sideVertIndex [otherSide0][(s [0].t = side0->m_nType) == 3]];
+s [1].p = gameData.segs.vertices + seg1->m_verts [sideVertIndex [otherSide1][(s [1].t = side1->m_nType) == 3]];
 return 1;
 }
 
@@ -1247,7 +1247,7 @@ else {
 if (bSparks) {
 	SEM_ENTER (SEM_SPARKS)
 	//PrintLog ("RenderEnergySparks\n");
-	sparkManager::Render ();
+	sparkManager.Render ();
 	//SEM_LEAVE (SEM_SPARKS)
 	}
 if (bParticles) {
@@ -1450,7 +1450,7 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 			continue;		//ignore this CObject
 		nNewSeg = nSegment;
 		if ((objP->info.nType != OBJ_REACTOR) && ((objP->info.nType != OBJ_ROBOT) || (objP->info.nId == 65))) { //don't migrate controlcen
-			mask = GetSegMasks (OBJPOS (objP)->vPos, nNewSeg, objP->info.xSize);
+			mask = SEGMENTS [nNewSeg].SideMasks (OBJPOS (objP)->vPos, objP->info.xSize);
 			if (mask.m_side) {
 				for (nSide = 0, sideFlag = 1; nSide < 6; nSide++, sideFlag <<= 1) {
 					if (!(mask.m_side & sideFlag))
@@ -1480,7 +1480,7 @@ typedef struct tSegZRef {
 	short	nSegment;
 } tSegZRef;
 
-static tSegZRef segZRef [2] [MAX_SEGMENTS_D2X];
+static tSegZRef segZRef [2][MAX_SEGMENTS_D2X];
 
 void QSortSegZRef (short left, short right)
 {
@@ -1576,16 +1576,16 @@ if (!RENDERPATH) {
 void CalcRenderDepth (void)
 {
 CFixVector vCenter;
-transformation.Transform(vCenter, SEGMENTS (gameData.objs.viewerP->info.nSegment].Center (), 0);
+transformation.Transform (vCenter, SEGMENTS [gameData.objs.viewerP->info.nSegment].Center (), 0);
 CFixVector v;
-transformation.Transform(v, gameData.segs.vMin, 0);
-fix d1 = CFixVector::Dist(v, vCenter);
-transformation.Transform(v, gameData.segs.vMax, 0);
-fix d2 = CFixVector::Dist(v, vCenter);
+transformation.Transform (v, gameData.segs.vMin, 0);
+fix d1 = CFixVector::Dist (v, vCenter);
+transformation.Transform (v, gameData.segs.vMax, 0);
+fix d2 = CFixVector::Dist (v, vCenter);
 
 if (d1 < d2)
 	d1 = d2;
-fix r = gameData.segs.segRads [1] [gameData.objs.viewerP->info.nSegment];
+fix r = gameData.segs.segRads [1][gameData.objs.viewerP->info.nSegment];
 gameData.render.zMin = 0;
 gameData.render.zMax = vCenter [Z] + d1 + r;
 }
@@ -1598,8 +1598,8 @@ void BuildRenderSegList (short nStartSeg, int nWindow)
 	int		l, i, j;
 	short		nChild;
 	short		nChildSeg;
-	short		*sv;
-	sbyte		*s2v;
+	short*	sv;
+	int*		s2v;
 	ubyte		andCodes, andCodes3D;
 	int		bRotated, nSegment, bNotProjected;
 	tPortal	*curPortal;
@@ -1674,7 +1674,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 			nSegment = nSegment;
 #endif
 		segP = SEGMENTS + nSegment;
-		sv = segP->verts;
+		sv = segP->m_verts;
 		bRotated = 0;
 		//look at all sides of this CSegment.
 		//tricky code to look at sides in correct order follows
@@ -1721,8 +1721,8 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 #if 0
 			if (bRotated < 2) {
 				if (!bRotated)
-					RotateVertexList (8, segP->verts);
-				ProjectVertexList (8, segP->verts);
+					RotateVertexList (8, segP->m_verts);
+				ProjectVertexList (8, segP->m_verts);
 				bRotated = 2;
 				}
 #endif
@@ -1954,7 +1954,7 @@ else if ((gameStates.render.nType == 1) && (gameData.render.mine.renderObjs.ref 
 	gameStates.render.bApplyDynLight = (gameStates.render.nLightingMethod != 0) && ((RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects);
 	RenderObjList (nListPos, gameStates.render.nWindow);
 	gameStates.render.bApplyDynLight = gameStates.render.nLightingMethod != 0;
-	//gameData.render.lights.dynamic.shader.index [0] [0].nActive = gameData.render.lights.dynamic.shader.iStaticLights [0];
+	//gameData.render.lights.dynamic.shader.index [0][0].nActive = gameData.render.lights.dynamic.shader.iStaticLights [0];
 	}
 else if (gameStates.render.nType == 2)	// render objects containing transparency, like explosions
 	RenderObjList (nListPos, gameStates.render.nWindow);

@@ -244,9 +244,9 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
 sideP = SEGMENTS [nSegment].m_sides + nSide;
-nWall = sideP->nWall;
-if (IS_WALL (nWall)) {
-	CWall *wallP = WALLS + nWall;
+CWall* wallP = sideP->Wall ();
+nWall = sideP->m_nWall;
+if (wallP) {
 	ubyte nType = wallP->nType;
 
 	if ((nType == WALL_BLASTABLE) || (nType == WALL_DOOR) || (nType == WALL_OPEN) || (nType == WALL_CLOAKED))
@@ -255,11 +255,11 @@ if (IS_WALL (nWall)) {
 		return 0;
 	}
 // get and check the corona emitting texture
-nBrightness = (nTexture = sideP->nOvlTex) ? IsLight (nTexture) : 0;
+nBrightness = (nTexture = sideP->m_nOvlTex) ? IsLight (nTexture) : 0;
 if (nBrightness >= F1_0 / 8) {
 	bAdditive = gameOpts->render.coronas.bAdditive;
 	}
-else if ((nBrightness = IsLight (nTexture = sideP->nBaseTex))) {
+else if ((nBrightness = IsLight (nTexture = sideP->m_nBaseTex))) {
 	if (fIntensityP)
 		*fIntensityP /= 2;
 	bAdditive = 0;
@@ -335,21 +335,21 @@ return nTexture;
 
 float ComputeCoronaSprite (CFloatVector *sprite, CFloatVector *vCenter, short nSegment, short nSide)
 {
-	CSide		*sideP = SEGMENTS [nSegment].m_sides + nSide;
-	short		sideVerts [4];
-	int		i;
-	float		fLight = 0;
+	CSide*			sideP = SEGMENTS [nSegment].m_sides + nSide;
+	ushort*			contour;
+	int				i;
+	float				fLight = 0;
 	CFloatVector	v;
 
-GetSideVertIndex (sideVerts, nSegment, nSide);
+contour = SEGMENTS [nSegment].Contour (nSide);
 for (i = 0; i < 4; i++) {
 	fLight += X2F (sideP->uvls [i].l);
 	if (RENDERPATH)
-		transformation.Transform (sprite [i], gameData.segs.fVertices [sideVerts [i]], 0);
+		transformation.Transform (sprite [i], gameData.segs.fVertices [contour [i]], 0);
 	else
-		sprite [i] = gameData.segs.fVertices [sideVerts [i]];	//already transformed
+		sprite [i] = gameData.segs.fVertices [contour [i]];	//already transformed
 	}
-v.Assign (SEGMENTS [nSegment].m_SideCenter (nSide));
+v.Assign (SEGMENTS [nSegment].SideCenter (nSide));
 transformation.Transform (*vCenter, v, 0);
 #if 0
 if (gameStates.render.bQueryCoronas) {

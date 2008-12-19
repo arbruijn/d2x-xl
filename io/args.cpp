@@ -119,7 +119,7 @@ for (i = 0; i < argc; i++)
 	pszArgList [nArgCount++] = StrDup (argv [i]);
 
 for (i = 0; i < nArgCount; i++)
-	if (pszArgList [i] [0] == '-')
+	if (pszArgList [i][0] == '-')
 		strlwr (pszArgList [i]);  // Convert all args to lowercase
 
 // look for the ini file

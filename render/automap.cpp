@@ -1201,7 +1201,6 @@ void AddSegmentEdges (CSegment *segP)
 {
 	int		 		bIsGrate, bNoFade;
 	uint				color;
-	int				nWall;
 	ubyte				nSide;
 	short				nSegment = SEG_IDX (segP);
 	int				bHidden;

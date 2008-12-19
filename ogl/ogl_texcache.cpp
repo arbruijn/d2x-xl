@@ -54,7 +54,7 @@ void OglCacheVClipTextures (tVideoClip *vc, int nTransp)
 
 for (i = 0; i < vc->nFrameCount; i++) {
 	PIGGY_PAGE_IN (vc->frames [i].index, 0);
-	gameData.pig.tex.bitmaps [0] [vc->frames [i].index].SetupTexture (1, nTransp, 1);
+	gameData.pig.tex.bitmaps [0][vc->frames [i].index].SetupTexture (1, nTransp, 1);
 	}
 }
 

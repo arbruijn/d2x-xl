@@ -709,18 +709,16 @@ gameData.walls.explWalls [i].nSegment = nSegment;
 gameData.walls.explWalls [i].nSide = nSide;
 gameData.walls.explWalls [i].time = 0;
 //play one long sound for whole door CWall explosion
-pos = SEGMENTS [nSegment].m_SideCenter (nSide);
+pos = SEGMENTS [nSegment].SideCenter (nSide);
 DigiLinkSoundToPos (SOUND_EXPLODING_WALL, nSegment, nSide, &pos, 0, F1_0);
 }
 
 //------------------------------------------------------------------------------
 //handle walls for this frame
 //note: this CWall code assumes the CWall is not triangulated
-void DoExplodingWallFrame ()
+void DoExplodingWallFrame (void)
 {
-	int i;
-
-for (i = 0; i < MAX_EXPLODING_WALLS; i++) {
+for (int i = 0; i < MAX_EXPLODING_WALLS; i++) {
 	short nSegment = gameData.walls.explWalls [i].nSegment;
 	if (nSegment != -1) {
 		short nSide = gameData.walls.explWalls [i].nSide;
@@ -731,15 +729,15 @@ for (i = 0; i < MAX_EXPLODING_WALLS; i++) {
 		if (gameData.walls.explWalls [i].time > EXPL_WALL_TIME)
 			gameData.walls.explWalls [i].time = EXPL_WALL_TIME;
 		if (gameData.walls.explWalls [i].time> (EXPL_WALL_TIME*3)/4) {
-			CSegment *seg = SEGMENTS + nSegment,
-						*csegp = SEGMENTS + seg->children [nSide];
-			ubyte	a = (ubyte) WALLS [WallNumP (seg, nSide)].nClip;
+			CSegment *segP = SEGMENTS + nSegment,
+						*connSegP = SEGMENTS + segP->m_children [nSide];
+			ubyte	a = (ubyte) segP->Wall (nSide)->nClip;
 			short n = AnimFrameCount (gameData.walls.animP + a);
-			short cside = ConnectedSide (seg, csegp);
-			WallSetTMapNum (seg, nSide, csegp, cside, a, n - 1);
-			WALLS [WallNumP (seg, nSide)].flags |= WALL_BLASTED;
-			if (cside >= 0)
-				WALLS [WallNumP (csegp, cside)].flags |= WALL_BLASTED;
+			short nConnSide = ConnectedSide (segP, connSegP);
+			WallSetTMapNum (segP, nSide, connSegP, nConnSide, a, n - 1);
+			segP->Wall (nSide)->flags |= WALL_BLASTED;
+			if (nConnSide >= 0)
+				connSegP->Wall (nConnSide)->flags |= WALL_BLASTED;
 			}
 		newfrac = FixDiv (gameData.walls.explWalls [i].time, EXPL_WALL_TIME);
 		oldCount = X2I (EXPL_WALL_TOTAL_FIREBALLS * FixMul (oldfrac, oldfrac));

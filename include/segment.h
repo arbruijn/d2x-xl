@@ -163,7 +163,7 @@ class CSide {
 			vertices = m_vertices;
 			return m_nFaces;
 			}
-		CFixVector* GetVertices (CFixVector* vertices);
+		inline CFixVector* GetCorners (CFixVector vertices);
 		inline ushort* Contour (void) { return m_contour; }
 		inline CFixVector& Vertex (int nVertex);
 		inline CFixVector& MinVertex (void);
@@ -226,9 +226,8 @@ class CSegment {
 		inline CFixVector& Center (void) { return m_vCenter; }
 		inline CFixVector& SideCenter (int nSide) { return m_sides [nSide].Center (); }
 		inline int CreateVertexList (int nSide) { return m_sides [nSide].CreateVertexList (m_verts, sideVertIndex [nSide]); }
-		inline ubyte GetVertices (int nSide, ushort*& vertices) { return m_sides [nSide].GetVertices (vertices); }
 		inline ushort* Contour (int nSide) { return m_sides [nSide].Contour (); }
-		inline CFixVector* GetVertices (int nSide, CFixVector* vertices) { return m_sides [nSide].GetVertices (vertices); }
+		inline void GetCorners (int nSide CFixVector vertices) { return m_sides [nSide].GetCorners (vertices); }
 		ubyte SideDists (const CFixVector& intersection, fix* xSideDists, int bBehind = 1);
 		int ConnectedSide (CSegment* other);
 		inline CFixVector& Normal (int nSide, int nFace) { return m_sides [nSide].Normal (nFace); }
@@ -244,7 +243,7 @@ class CSegment {
 			{ return m_sides [nSide].SpecialCheckLineToFace (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
 
 		inline int FaceCount (int nSide) { return m_sides [nSide].FaceCount (); }
-		CSegMasks GetSideMasks (const CFixVector& refP, fix xRad);
+		CSegMasks SideMasks (const CFixVector& refP, fix xRad);
 		ubyte GetSideDists (const CFixVector& refP, fix* xSideDists, int bBehind);
 
 		fix MinRad (void) { return m_rads [0]; }

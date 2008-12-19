@@ -61,7 +61,7 @@ else {
 	vOffs [X] = F2X (vMaxf [X] - f_rand () * vMax2f [X]);
 	vOffs [Y] = F2X (vMaxf [Y] - f_rand () * vMax2f [Y]);
 	vOffs [Z] = F2X (vMaxf [Z] - f_rand () * vMax2f [Z]);
-	m_vPos = SEGMENTS [nSegment].m_Center () + vOffs;
+	m_vPos = segP->Center () + vOffs;
 	if ((vOffs.Mag () > segP->MinRad ()) && segP->Masks (m_vPos, nSegment, 0).m_center)
 		m_nProb = 1;
 	else {
@@ -88,9 +88,9 @@ else {
 void CEnergySpark::Update (void)
 {
 if (!m_tRender)
-	continue;
+	return;
 if (gameStates.app.nSDLTicks - m_tRender < SPARK_FRAME_TIME)
-	continue;
+	return;
 if (++m_nFrame < 32) {
 	m_tRender = gameStates.app.nSDLTicks; //+= SPARK_FRAME_TIME;
 	if (gameOpts->render.effects.bMovingSparks)
@@ -120,7 +120,7 @@ if (m_tRender) {
 
 void CSparks::Create (void)
 {
-for (i = m_nMaxSparks; i; i--, sparkP++)
+for (int i = 0; i < m_nMaxSparks; i++)
 	m_sparks [i].Setup (m_nSegment, m_nType);
 }
 
@@ -128,7 +128,7 @@ for (i = m_nMaxSparks; i; i--, sparkP++)
 
 void CSparks::Setup (short nSegment, ubyte nType)
 {
-m_nMaxSparks = (ushort) (2 * AvgSegRadf (nSegment) + 0.5f);
+m_nMaxSparks = (ushort) (2 * SEGMENTS [nSegment].AvgRadf () + 0.5f);
 if (!m_sparks.Create (m_nMaxSparks))
 	m_nMaxSparks = 0;
 else {

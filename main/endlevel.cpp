@@ -77,7 +77,7 @@ void GenerateStarfield ();
 void StartEndLevelFlyThrough (int n, CObject *objP, fix speed);
 void StartRenderedEndLevelSequence ();
 
-char movieTable [2] [30] = {
+char movieTable [2][30] = {
 	{'a', 'b', 'c',
 	'a',
 	'd', 'f', 'd', 'f',
@@ -155,11 +155,11 @@ if (!IS_D2_OEM)
 		return 1;   //don't play movie
 if (gameData.missions.nCurrentLevel > 0)
 	if (gameStates.app.bD1Mission)
-		szMovieName [4] = movieTable [1] [gameData.missions.nCurrentLevel-1];
+		szMovieName [4] = movieTable [1][gameData.missions.nCurrentLevel-1];
 	else
-		szMovieName [2] = movieTable [0] [gameData.missions.nCurrentLevel-1];
+		szMovieName [2] = movieTable [0][gameData.missions.nCurrentLevel-1];
 else if (gameStates.app.bD1Mission) {
-	szMovieName [4] = movieTable [1] [26 - gameData.missions.nCurrentLevel];
+	szMovieName [4] = movieTable [1][26 - gameData.missions.nCurrentLevel];
 	}
 else {
 #ifndef SHAREWARE
@@ -806,9 +806,9 @@ void GenerateStarfield (void)
 	int i;
 
 for (i = 0; i < MAX_STARS; i++) {
-	stars [i] [X] = (d_rand () - RAND_MAX/2) << 14;
-	stars [i] [Z] = (d_rand () - RAND_MAX/2) << 14;
-	stars [i] [Y] = (d_rand ()/2) << 14;
+	stars [i][X] = (d_rand () - RAND_MAX/2) << 14;
+	stars [i][Z] = (d_rand () - RAND_MAX/2) << 14;
+	stars [i][Y] = (d_rand ()/2) << 14;
 	}
 }
 
