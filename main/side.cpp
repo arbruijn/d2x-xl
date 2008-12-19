@@ -818,6 +818,30 @@ if (gameData.pig.tex.tMapInfoP [m_nBaseTex].flags & TMI_WATER)
 return 0;
 }
 
+//-----------------------------------------------------------------
+
+int CSide::CheckTransparency (void)
+{
+	CBitmap	*bmP;
+
+if (nOvlTex) {
+	bmP = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [nOvlTex].index].Override (-1);
+	if (bmP->Flags () & BM_FLAG_SUPER_TRANSPARENT)
+		return 1;
+	if (!(bmP->Flags () & BM_FLAG_TRANSPARENT))
+		return 0;
+	}
+bmP = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [nBaseTex].index].Override (-1);
+if (bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
+	return 1;
+if ((gameStates.app.bD2XLevel) && IS_WALL (nWall)) {
+	short c = WALLS [nWallNum].cloakValue;
+	if (c && (c < FADE_LEVELS))
+		return 1;
+	}
+return gameOpts->render.effects.bAutoTransparency && IsTransparentTexture (nBaseTex);
+}
+
 //------------------------------------------------------------------------------
 
 //eof

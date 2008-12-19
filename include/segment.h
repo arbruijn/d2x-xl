@@ -210,10 +210,19 @@ class CSegment {
 		void Validate (void);
 		inline ushort WallNum (short nSide) { return m_sides [nSide].WallNum (); }
 		inline int CheckTransparency (short nSide) { return m_sides [nSide].CheckTransparency (); }
+
 		void SetTexture (short nSide, CSegment *connSegP, short nConnSide, int nAnim, int nFrame);
 		void DestroyWall (short nSide);
 		void DamageWall (short nSide, fix damage);
 		void BlastWall (short nSide);
+		void OpenDoor (short nSide);
+		int AnimateOpeningDoor (short nSide, fix xElapsedTime);
+		int AnimateClosingDoor (short nSide, fix xElapsedTime);
+		void IllusionOff (short nSide);
+		void IllusionOn (short nSide);
+		void ToggleWall (short nSide);
+		int ProcessWallHit (short nSide, fix damage, int nPlayer, CObject *objP);
+
 		fix Refuel (fix xMaxFuel);
 		fix Repair (fix xMaxShields);
 		fix Damage (fix xMaxDamage);
@@ -221,9 +230,11 @@ class CSegment {
 		void CheckForHoardGoal (void);
 		int CheckFlagDrop (int nTeamId, int nFlagId, int nGoalId);
 		int ConquerCheck (void);
+
 		void CreateGenerator (int nType);
 		void CreateEquipGen (int oldType);
 		void CreateBotGen (int oldType);
+
 		void ComputeCenter (void);
 		void ComputeRads (fix xMinDist);
 		inline void ComputeSideCenter (short nSide) { m_sides [nSide].ComputeCenter (); }
@@ -278,6 +289,11 @@ class CSegment {
 
 		int Physics (int nSide, fix* damageP) { return m_sides [nSide].Physics (damageP); }
 		int Physics (fix& xDamage);
+
+	private:
+		int DoorIsBlocked (short nSide);
+		inline int CheckPoke (int nObject, short nSide);
+
 	};
 
 inline int operator- (CSegment* s, CArray<CSegment>& a) { return a.Index (s); }

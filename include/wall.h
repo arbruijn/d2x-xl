@@ -156,6 +156,7 @@ class CWall {
 		sbyte   cloakValue;				// if this CWall is cloaked, the fade value
 	
 	public:
+		void Init (void);
 		void Read (CFile& cf);
 		void LoadTextures (void);
 		int IsDoorWay (CObject* objP);
@@ -163,11 +164,14 @@ class CWall {
 		bool IsTriggerTarget (void);
 		bool IsVolatile (void);
 		bool IsInvisible (void);
+		tActiveDoor* OpenDoor (void);
+		tCloakingWall* StartCloak (void);
+		void CloseDoor (int nDoor);
+		int AnimateOpeningDoor (fix xElapsedTime);
+		int AnimateClosingDoor (fix xElapsedTime);
+		int ProcessHit (int nPlayer, CObject* objP);
 		CTrigger* Trigger (void);
-
-
-
-};
+	};
 
 inline int operator- (CWall* o, CArray<CWall>& a) { return a.Index (o); }
 
