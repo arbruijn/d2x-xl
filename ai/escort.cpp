@@ -532,7 +532,7 @@ else {
 		}
 	}
 //	Couldn't find what we're looking for by looking at connectivity.
-//	See if it's in the mine.  It could be hidden behind a tTrigger or switch
+//	See if it's in the mine.  It could be hidden behind a CTrigger or switch
 //	which the buddybot doesn't understand.
 if (objtype == FUELCEN_CHECK) {
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)

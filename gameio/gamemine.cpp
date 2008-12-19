@@ -461,7 +461,7 @@ int load_mine_data (CFile& cf)
 	mine_fileinfo.walls.size		  =	sizeof (CWall);
  	mine_fileinfo.triggers.offset	  =	-1;
 	mine_fileinfo.triggers.count  =	0;
-	mine_fileinfo.triggers.size	  =	sizeof (tTrigger);
+	mine_fileinfo.triggers.size	  =	sizeof (CTrigger);
 	mine_fileinfo.object.offset		=	-1;
 	mine_fileinfo.object.count		=	1;
 	mine_fileinfo.object.size		=	sizeof (CObject);

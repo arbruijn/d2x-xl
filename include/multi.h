@@ -172,7 +172,7 @@ void MultiSendPlaySound (int nSound, fix volume);
 void MultiSendAudioTaunt (int taunt_num);
 void MultiSendScore (void);
 void MultiSendTrigger (int nTrigger, int nObject);
-void MultiSendObjTrigger (int tTrigger);
+void MultiSendObjTrigger (int CTrigger);
 void MultiSendHostageDoorStatus (int wallnum);
 void MultiSendNetPlayerStatsRequest (ubyte nPlayer);
 void MultiSendDropWeapon (int nObject,int seed);

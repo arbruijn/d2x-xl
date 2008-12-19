@@ -134,7 +134,7 @@ char pszAIState [8][5] = {
 
 // Current state indicates where the robot current is, or has just done.
 // Transition table between states for an AI CObject.
-// First dimension is tTrigger event.
+// First dimension is CTrigger event.
 // Second dimension is current state.
 // Third dimension is goal state.
 // Result is new goal state.

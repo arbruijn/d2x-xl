@@ -620,7 +620,7 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSeg
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		if (!(segP->IsDoorWay (nSide, NULL) & WID_RENDER_FLAG))
 			continue;
-		nEffect = (nOvlTex = segP->m_sides [nSide].nOvlTex) ? gameData.pig.tex.tMapInfoP [nOvlTex].nEffectClip : -1;
+		nEffect = (nOvlTex = segP->m_sides [nSide].m_nOvlTex) ? gameData.pig.tex.tMapInfoP [nOvlTex].nEffectClip : -1;
 		if (nEffect < 0)
 			nEffect = gameData.pig.tex.tMapInfoP [segP->m_sides [nSide].m_nBaseTex].nEffectClip;
 		if (nEffect < 0)
@@ -638,7 +638,7 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSeg
 			 (segP->IsDoorWay (nSide, NULL) & (WID_FLY_FLAG | WID_RENDPAST_FLAG))) {
 			connSegP = SEGMENTS + segP->m_children [nSide];
 			nConnSide = segP->ConnectedSide (connSegP);
-			if (connSegP->m_sides [nConnSide].nOvlTex == segP->m_sides [nSide].nOvlTex)
+			if (connSegP->m_sides [nConnSide].nOvlTex == segP->m_sides [nSide].m_nOvlTex)
 				continue;		//skip this one
 			}
 		v = segP->SideCenter (nSide);

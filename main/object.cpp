@@ -2559,7 +2559,7 @@ return h;
 void ConvertSmokeObject (CObject *objP)
 {
 	int			j;
-	tTrigger		*trigP;
+	CTrigger		*trigP;
 
 objP->SetType (OBJ_EFFECT);
 objP->info.nId = SMOKE_ID;

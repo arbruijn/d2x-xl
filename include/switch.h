@@ -63,13 +63,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //could also use flags for one-shots
 
 #define TF_NO_MESSAGE       1   // Don't show a message when triggered
-#define TF_ONE_SHOT         2   // Only tTrigger once
+#define TF_ONE_SHOT         2   // Only CTrigger once
 #define TF_DISABLED         4   // Set after one-shot fires
 #define TF_PERMANENT			 8
 #define TF_ALTERNATE			 16
 #define TF_SET_ORIENT		 32
 
-//old tTrigger structs
+//old CTrigger structs
 
 typedef struct tTriggerV29 {
 	sbyte   nType;
@@ -100,27 +100,28 @@ typedef struct tTriggerV30 {
 #define TRIGGER_ON                16    // Whether Trigger is active
 #define TRIGGER_ONE_SHOT          32    // If Trigger can only be triggered once
 #define TRIGGER_MATCEN            64    // Trigger for materialization centers
-#define TRIGGER_ILLUSION_OFF     128    // Switch Illusion OFF tTrigger
+#define TRIGGER_ILLUSION_OFF     128    // Switch Illusion OFF CTrigger
 #define TRIGGER_SECRET_EXIT      256    // Exit to secret level
-#define TRIGGER_ILLUSION_ON      512    // Switch Illusion ON tTrigger
+#define TRIGGER_ILLUSION_ON      512    // Switch Illusion ON CTrigger
 #define TRIGGER_UNLOCK_DOORS    1024    // Unlocks a door
 #define TRIGGER_OPEN_WALL       2048    // Makes a CWall open
 #define TRIGGER_CLOSE_WALL      4096    // Makes a CWall closed
 #define TRIGGER_ILLUSORY_WALL   8192    // Makes a CWall illusory
 
-//the tTrigger really should have both a nType & a flags, since most of the
+//the CTrigger really should have both a nType & a flags, since most of the
 //flags bits are exclusive of the others.
-typedef struct tTrigger {
-	ubyte   nType;       //what this tTrigger does
-	short   flags;      //currently unused
-	sbyte   nLinks;  //how many doors, etc. linked to this
-	fix     value;
-	fix     time;
-	short   nSegment [MAX_TRIGGER_TARGETS];
-	short   nSide [MAX_TRIGGER_TARGETS];
-} __pack__ tTrigger;
+class CTrigger {
+	public:
+		ubyte   nType;       //what this CTrigger does
+		short   flags;      //currently unused
+		sbyte   nLinks;  //how many doors, etc. linked to this
+		fix     value;
+		fix     time;
+		short   nSegment [MAX_TRIGGER_TARGETS];
+		short   nSide [MAX_TRIGGER_TARGETS];
+};
 
-inline int operator- (tTrigger* t, CArray<tTrigger>& a) { return a.Index (t); }
+inline int operator- (CTrigger* t, CArray<CTrigger>& a) { return a.Index (t); }
 
 
 typedef struct tObjTriggerRef {
@@ -131,7 +132,7 @@ typedef struct tObjTriggerRef {
 
 void TriggerInit();
 void CheckTrigger(CSegment *seg, short CSide, short nObject,int shot);
-int CheckTriggerSub (short nObject, tTrigger *triggers, int nTriggerCount, int nTrigger, 
+int CheckTriggerSub (short nObject, CTrigger *triggers, int nTriggerCount, int nTrigger, 
 							int nPlayer, int shot, int bBotTrigger);
 void TriggersFrameProcess();
 void ExecObjTriggers (short nObject, int bDamage);
@@ -139,7 +140,7 @@ void ExecObjTriggers (short nObject, int bDamage);
 #if 0
 #define V29TriggerRead(t, fp) CFRead(t, sizeof(tTriggerV29), 1, fp)
 #define V30TriggerRead(t, fp) CFRead(t, sizeof(tTriggerV30), 1, fp)
-#define TriggerRead(t, fp) CFRead(t, sizeof(tTrigger), 1, fp)
+#define TriggerRead(t, fp) CFRead(t, sizeof(CTrigger), 1, fp)
 #else
 /*
  * reads a tTriggerV29 structure from a CFILE
@@ -152,9 +153,9 @@ void V29TriggerRead(tTriggerV29 *t, CFile& cf);
 void V30TriggerRead(tTriggerV30 *t, CFile& cf);
 
 /*
- * reads a tTrigger structure from a CFILE
+ * reads a CTrigger structure from a CFILE
  */
-void TriggerRead(tTrigger *t, CFile& cf, int bObjTrigger);
+void TriggerRead(CTrigger *t, CFile& cf, int bObjTrigger);
 #endif
 
 void SetSpeedBoostVelocity (short nObject, fix speed, 
@@ -168,7 +169,7 @@ void TriggerSetObjOrient (short nObject, short nSegment, short nSide, int bSetPo
 void TriggerSetObjPos (short nObject, short nSegment);
 void UpdatePlayerOrient (void);
 int FindTriggerTarget (short nSegment, short nSide);
-tTrigger *FindObjTrigger (short nObject, short nType, short nTrigger);
+CTrigger *FindObjTrigger (short nObject, short nType, short nTrigger);
 int OpenExits (void);
 
 extern CFixVector	speedBoostSrc, speedBoostDest;

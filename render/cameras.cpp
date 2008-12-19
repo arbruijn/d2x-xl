@@ -627,7 +627,7 @@ int CCameraManager::Create (void)
 	ubyte		t;
 	CWall		*wallP;
 	CObject	*objP;
-	tTrigger	*triggerP;
+	CTrigger	*triggerP;
 
 if (!gameStates.app.bD2XLevel)
 	return 0;

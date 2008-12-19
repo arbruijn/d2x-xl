@@ -894,7 +894,7 @@ m_cf.WriteFix (doorP->time);
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::SaveTrigger (tTrigger *triggerP)
+void CSaveGameHandler::SaveTrigger (CTrigger *triggerP)
 {
 	int	i;
 
@@ -1089,7 +1089,7 @@ if (!m_bBetweenLevels)	{
 	for (j = 0; j < i; j++)
 		SaveCloakingWall (gameData.walls.cloaking + j);
 	DBG (fPos = m_cf.Tell ());
-//Save tTrigger info
+//Save CTrigger info
 	m_cf.WriteInt (gameData.trigs.nTriggers);
 	for (i = 0; i < gameData.trigs.nTriggers; i++)
 		SaveTrigger (TRIGGERS + i);
@@ -1350,7 +1350,7 @@ if (m_bQuick) {
 if (!m_bQuick) {
 	if (m_override) {
 		strcpy (m_filename, m_override);
-		nSaveSlot = NUM_SAVES + 1;		//	So we don't tTrigger autosave
+		nSaveSlot = NUM_SAVES + 1;		//	So we don't CTrigger autosave
 		}
 	else if (!(nSaveSlot = GetLoadFile (0))) {
 		gameData.app.bGamePaused = 0;
@@ -1949,7 +1949,7 @@ doorP->time = m_cf.ReadFix ();
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::LoadTrigger (tTrigger *triggerP)
+void CSaveGameHandler::LoadTrigger (CTrigger *triggerP)
 {
 	int	i;
 
@@ -2195,13 +2195,13 @@ if (!m_bBetweenLevels)	{
 	for (i = 0; i < gameData.walls.nCloaking; i++)
 		CSaveGameHandler::LoadCloakingWall (gameData.walls.cloaking + i);
 	DBG (fPos = m_cf.Tell ());
-	//Restore tTrigger info
+	//Restore CTrigger info
 	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nTriggers))
 		return 0;
 	for (i = 0; i < gameData.trigs.nTriggers; i++)
 		CSaveGameHandler::LoadTrigger (TRIGGERS + i);
 	DBG (fPos = m_cf.Tell ());
-	//Restore CObject tTrigger info
+	//Restore CObject CTrigger info
 	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nObjTriggers))
 		return 0;
 	if (gameData.trigs.nObjTriggers > 0) {
@@ -2476,16 +2476,16 @@ if (!m_bBetweenLevels)	{
 			return 0;
 		m_cf.Read (gameData.walls.cloaking.Buffer (), sizeof (tCloakingWall), gameData.walls.nCloaking);
 		}
-	//Restore tTrigger info
+	//Restore CTrigger info
 	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nTriggers))
 		return 0;
-	m_cf.Read (TRIGGERS.Buffer (), sizeof (tTrigger), gameData.trigs.nTriggers);
+	m_cf.Read (TRIGGERS.Buffer (), sizeof (CTrigger), gameData.trigs.nTriggers);
 	if (m_nVersion >= 26) {
-		//Restore CObject tTrigger info
+		//Restore CObject CTrigger info
 
 		m_cf.Read (&gameData.trigs.nObjTriggers, sizeof (gameData.trigs.nObjTriggers), 1);
 		if (gameData.trigs.nObjTriggers > 0) {
-			m_cf.Read (gameData.trigs.objTriggers.Buffer (), sizeof (tTrigger), gameData.trigs.nObjTriggers);
+			m_cf.Read (gameData.trigs.objTriggers.Buffer (), sizeof (CTrigger), gameData.trigs.nObjTriggers);
 			m_cf.Read (gameData.trigs.objTriggerRefs.Buffer (), sizeof (tObjTriggerRef), gameData.trigs.nObjTriggers);
 			m_cf.Read (gameData.trigs.firstObjTrigger.Buffer (), sizeof (short), 700);
 			}

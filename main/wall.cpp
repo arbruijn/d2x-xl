@@ -276,7 +276,7 @@ if (anim->flags & WCF_ALTFMT) {
 			}
 		}
 	}
-else if ((anim->flags & WCF_TMAP1) || !segP->m_sides [nSide].nOvlTex) {
+else if ((anim->flags & WCF_TMAP1) || !segP->m_sides [nSide].m_nOvlTex) {
 	segP->m_sides [nSide].m_nBaseTex = tmap;
 	if (connSegP)
 		connSegP->m_sides [cSide].m_nBaseTex = tmap;
@@ -285,7 +285,7 @@ else if ((anim->flags & WCF_TMAP1) || !segP->m_sides [nSide].nOvlTex) {
 			SEG_IDX (segP), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) cSide, tmap);
 	}
 else {
-	segP->m_sides [nSide].nOvlTex = tmap;
+	segP->m_sides [nSide].m_nOvlTex = tmap;
 	if (connSegP)
 		connSegP->m_sides [cSide].nOvlTex = tmap;
 	if (gameData.demo.nState == ND_STATE_RECORDING)
@@ -1558,7 +1558,7 @@ void BngProcessSegment (CObject *objP, fix damage, CSegment *segP, int depth, sb
 		CFixVector	pnt;
 
 		//	Process only walls which have glass.
-		if ((tm = segP->m_sides [nSide].nOvlTex)) {
+		if ((tm = segP->m_sides [nSide].m_nOvlTex)) {
 			int	ec, db;
 			tEffectClip *ecP;
 
@@ -1597,7 +1597,7 @@ void BngProcessSegment (CObject *objP, fix damage, CSegment *segP, int depth, sb
 
 bool CWall::IsTriggerTarget (void)
 {
-tTrigger *triggerP = TRIGGERS.Buffer ();
+CTrigger *triggerP = TRIGGERS.Buffer ();
 for (int i = gameData.trigs.nTriggers; i; i--, triggerP++) {
 	short *nSegP = triggerP->nSegment;
 	short *nSideP = triggerP->nSide;
@@ -1708,75 +1708,82 @@ w->keys = cf.ReadByte ();
 /*
  * reads a tWallV19 structure from a CFile
  */
-void ReadWallV19(tWallV19 *w, CFile& cf)
+void ReadWallV19 (tWallV19& w, CFile& cf)
 {
-w->nSegment = cf.ReadInt ();
-w->nSide = cf.ReadInt ();
-w->nType = cf.ReadByte ();
-w->flags = cf.ReadByte ();
-w->hps = cf.ReadFix ();
-w->nTrigger = (ubyte) cf.ReadByte ();
-w->nClip = cf.ReadByte ();
-w->keys = cf.ReadByte ();
-w->nLinkedWall = cf.ReadInt ();
+w.nSegment = cf.ReadInt ();
+w.nSide = cf.ReadInt ();
+w.nType = cf.ReadByte ();
+w.flags = cf.ReadByte ();
+w.hps = cf.ReadFix ();
+w.nTrigger = (ubyte) cf.ReadByte ();
+w.nClip = cf.ReadByte ();
+w.keys = cf.ReadByte ();
+w.nLinkedWall = cf.ReadInt ();
 }
 
 // -----------------------------------------------------------------------------------
 /*
  * reads a CWall structure from a CFile
  */
-void ReadWall(CWall *w, CFile& cf)
+void CWall::Read (CFile& cf)
 {
-w->nSegment = cf.ReadInt ();
-w->nSide = cf.ReadInt ();
-w->hps = cf.ReadFix ();
-w->nLinkedWall = cf.ReadInt ();
-w->nType = cf.ReadByte ();
-w->flags = cf.ReadByte ();
-w->state = cf.ReadByte ();
-w->nTrigger = (ubyte) cf.ReadByte ();
-w->nClip = cf.ReadByte ();
-w->keys = cf.ReadByte ();
-w->controllingTrigger = cf.ReadByte ();
-w->cloakValue = cf.ReadByte ();
+nSegment = cf.ReadInt ();
+nSide = cf.ReadInt ();
+hps = cf.ReadFix ();
+nLinkedWall = cf.ReadInt ();
+nType = cf.ReadByte ();
+flags = cf.ReadByte ();
+state = cf.ReadByte ();
+nTrigger = (ubyte) cf.ReadByte ();
+nClip = cf.ReadByte ();
+keys = cf.ReadByte ();
+controllingTrigger = cf.ReadByte ();
+cloakValue = cf.ReadByte ();
 }
 
 // -----------------------------------------------------------------------------------
 /*
  * reads a v19_door structure from a CFile
  */
-extern void ReadActiveDoorV19(v19_door *d, CFile& cf)
+void ReadActiveDoorV19 (v19_door& d, CFile& cf)
 {
-	d->nPartCount = cf.ReadInt ();
-	d->seg [0] = cf.ReadShort ();
-	d->seg [1] = cf.ReadShort ();
-	d->nSide [0] = cf.ReadShort ();
-	d->nSide [1] = cf.ReadShort ();
-	d->nType [0] = cf.ReadShort ();
-	d->nType [1] = cf.ReadShort ();
-	d->open = cf.ReadFix ();
+d.nPartCount = cf.ReadInt ();
+d.seg [0] = cf.ReadShort ();
+d.seg [1] = cf.ReadShort ();
+d.nSide [0] = cf.ReadShort ();
+d.nSide [1] = cf.ReadShort ();
+d.nType [0] = cf.ReadShort ();
+d.nType [1] = cf.ReadShort ();
+d.open = cf.ReadFix ();
 }
 
 // -----------------------------------------------------------------------------------
 /*
  * reads an tActiveDoor structure from a CFile
  */
-extern void ReadActiveDoor(tActiveDoor *ad, CFile& cf)
+void ReadActiveDoor (tActiveDoor& d, CFile& cf)
 {
-	ad->nPartCount = cf.ReadInt ();
-	ad->nFrontWall [0] = cf.ReadShort ();
-	ad->nFrontWall [1] = cf.ReadShort ();
-	ad->nBackWall [0] = cf.ReadShort ();
-	ad->nBackWall [1] = cf.ReadShort ();
-	ad->time = cf.ReadFix ();
+d.nPartCount = cf.ReadInt ();
+d.nFrontWall [0] = cf.ReadShort ();
+d.nFrontWall [1] = cf.ReadShort ();
+d.nBackWall [0] = cf.ReadShort ();
+d.nBackWall [1] = cf.ReadShort ();
+d.time = cf.ReadFix ();
 }
 #endif
 
 // -----------------------------------------------------------------------------------
 
-bool CWall::IsOpenableDoor (void)
+inline bool CWall::IsOpenableDoor (void)
 {
 return (nType == WALL_DOOR) && (keys == KEY_NONE) && (state == WALL_DOOR_CLOSED) && !(flags & WALL_DOOR_LOCKED);
+}
+
+// -----------------------------------------------------------------------------------
+
+inline CTrigger* Trigger (void)
+{
+return (nTrigger == NO_TRIGGER) ? : NULL : TRIGGERS + nTrigger;
 }
 
 // -----------------------------------------------------------------------------------

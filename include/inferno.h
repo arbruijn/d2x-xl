@@ -1899,8 +1899,8 @@ class CWallData {
 
 class CTriggerData {
 	public:
-		CArray<tTrigger>			triggers; // [MAX_TRIGGERS];
-		CArray<tTrigger>			objTriggers; // [MAX_TRIGGERS];
+		CArray<CTrigger>			triggers; // [MAX_TRIGGERS];
+		CArray<CTrigger>			objTriggers; // [MAX_TRIGGERS];
 		CArray<tObjTriggerRef>	objTriggerRefs; // [MAX_OBJ_TRIGGERS];
 		CArray<short>				firstObjTrigger; // [MAX_OBJECTS_D2X];
 		CArray<int>					delay; // [MAX_TRIGGERS];

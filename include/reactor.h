@@ -64,6 +64,6 @@ int ReadReactors (tReactorProps *r, int n, CFile& cf);
 int ReadReactorTriggers (tReactorTriggers *cct, int n, CFile& cf);
 
 int FindReactor (CObject *objP);
-void InitCountdown (tTrigger *trigP, int bReactorDestroyed, int nTimer);
+void InitCountdown (CTrigger *trigP, int bReactorDestroyed, int nTimer);
 
 #endif /* _CNTRLCEN_H */

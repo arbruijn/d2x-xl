@@ -1655,22 +1655,22 @@ MultiSortKillList ();
 void MultiDoTrigger (char *buf)
 {
 	int nPlayer = (int) (buf [1]);
-	int tTrigger = (int) ((ubyte) buf [2]);
+	int CTrigger = (int) ((ubyte) buf [2]);
 	short nObject;
 
 if ((nPlayer < 0) || (nPlayer  >= gameData.multiplayer.nPlayers) || (nPlayer == gameData.multiplayer.nLocalPlayer)) {
-	Int3 (); // Got tTrigger from illegal nPlayer
+	Int3 (); // Got CTrigger from illegal nPlayer
 	return;
 	}
-if ((tTrigger < 0) || (tTrigger  >= gameData.trigs.nTriggers)) {
-	Int3 (); // Illegal tTrigger number in multiplayer
+if ((CTrigger < 0) || (CTrigger  >= gameData.trigs.nTriggers)) {
+	Int3 (); // Illegal CTrigger number in multiplayer
 	return;
 	}
 if (gameStates.multi.nGameType == UDP_GAME)
 	nObject = GET_INTEL_SHORT (buf + 3);
 else
 	nObject = gameData.multiplayer.players [nPlayer].nObject;
-CheckTriggerSub (nObject, TRIGGERS.Buffer (), gameData.trigs.nTriggers, tTrigger, nPlayer, 0, 0);
+CheckTriggerSub (nObject, TRIGGERS.Buffer (), gameData.trigs.nTriggers, CTrigger, nPlayer, 0, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -1681,7 +1681,7 @@ void MultiDoShields (char *buf)
 	int	shields = GET_INTEL_INT (buf+2);
 
 if ((nPlayer < 0) || (nPlayer  >= gameData.multiplayer.nPlayers) || (nPlayer == gameData.multiplayer.nLocalPlayer)) {
-	Int3 (); // Got tTrigger from illegal nPlayer
+	Int3 (); // Got CTrigger from illegal nPlayer
 	return;
 	}
 gameData.multiplayer.players [nPlayer].shields  =
@@ -1693,18 +1693,18 @@ OBJECTS [gameData.multiplayer.players [nPlayer].nObject].info.xShields = shields
 void MultiDoObjTrigger (char *buf)
 {
 	int nPlayer = (int) (buf [1]);
-	int tTrigger = (int) ((ubyte) buf [2]);
+	int CTrigger = (int) ((ubyte) buf [2]);
 
 if ((nPlayer < 0) || (nPlayer  >= gameData.multiplayer.nPlayers) || (nPlayer == gameData.multiplayer.nLocalPlayer)) {
-	Int3 (); // Got tTrigger from illegal nPlayer
+	Int3 (); // Got CTrigger from illegal nPlayer
 	return;
 	}
-if ((tTrigger < 0) || (tTrigger  >= gameData.trigs.nObjTriggers)) {
-	Int3 (); // Illegal tTrigger number in multiplayer
+if ((CTrigger < 0) || (CTrigger  >= gameData.trigs.nObjTriggers)) {
+	Int3 (); // Illegal CTrigger number in multiplayer
 	return;
 	}
 CheckTriggerSub (gameData.multiplayer.players [nPlayer].nObject, gameData.trigs.objTriggers.Buffer (),
-					  gameData.trigs.nObjTriggers, tTrigger, nPlayer, 0, 1);
+					  gameData.trigs.nObjTriggers, CTrigger, nPlayer, 0, 1);
 }
 
 //-----------------------------------------------------------------------------
@@ -2637,7 +2637,7 @@ MultiSendData (gameData.multigame.msg.buf, count, 0);
 
 void MultiSendTrigger (int nTrigger, int nObject)
 {
-	// Send an even to tTrigger something in the mine
+	// Send an even to CTrigger something in the mine
 
 	int count = 1;
 
@@ -2660,7 +2660,7 @@ MultiSendData (gameData.multigame.msg.buf, count, 1);
 
 void MultiSendObjTrigger (int nTrigger)
 {
-	// Send an even to tTrigger something in the mine
+	// Send an even to CTrigger something in the mine
 
 	int count = 0;
 

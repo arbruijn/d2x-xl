@@ -100,7 +100,7 @@ void NetworkSyncObjects (tNetworkSyncData *syncP)
 	int		nObjFrames = 0;
 	int		nPlayer = syncP->player [1].player.connected;
 
-// Send clear OBJECTS array tTrigger and send CPlayerData num
+// Send clear OBJECTS array CTrigger and send CPlayerData num
 objFilter [OBJ_MARKER] = !gameStates.app.bHaveExtraGameInfo [1];
 for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try to speed it up without
 																// over-stressing the receiver.

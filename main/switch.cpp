@@ -92,10 +92,10 @@ memset (gameData.trigs.delay, -1, sizeof (gameData.trigs.delay));
 #endif
 
 //-----------------------------------------------------------------
-// Executes a link, attached to a tTrigger.
+// Executes a link, attached to a CTrigger.
 // Toggles all walls linked to the switch.
 // Opens doors, Blasts blast walls, turns off illusions.
-void DoLink (tTrigger *trigP)
+void DoLink (CTrigger *trigP)
 {
 	int i;
 
@@ -107,7 +107,7 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++)
 
 //-----------------------------------------------------------------
 
-void DoChangeTexture (tTrigger *trigP)
+void DoChangeTexture (CTrigger *trigP)
 {
 	int	i, 
 			baseTex = trigP->value & 0xffff,
@@ -124,7 +124,7 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 
 //-----------------------------------------------------------------
 
-inline int DoExecObjTrigger (tTrigger *trigP, short nObject, int bDamage)
+inline int DoExecObjTrigger (CTrigger *trigP, short nObject, int bDamage)
 {
 	fix	v = 10 - trigP->value;
 
@@ -143,14 +143,14 @@ return 1;
 
 //-----------------------------------------------------------------
 
-void DoSpawnBot (tTrigger *trigP, short nObject)
+void DoSpawnBot (CTrigger *trigP, short nObject)
 {
 SpawnBotTrigger (OBJECTS + nObject, trigP->nLinks ? trigP->nSegment [0] : -1);
 }
 
 //-----------------------------------------------------------------
 
-void DoTeleportBot (tTrigger *trigP, short nObject)
+void DoTeleportBot (CTrigger *trigP, short nObject)
 {
 if (trigP->nLinks) {
 	CObject *objP = OBJECTS + nObject;
@@ -171,7 +171,7 @@ if (trigP->nLinks) {
 
 //------------------------------------------------------------------------------
 //close a door
-void DoCloseDoor (tTrigger *trigP)
+void DoCloseDoor (CTrigger *trigP)
 {
 	int i;
 
@@ -184,7 +184,7 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++)
 //------------------------------------------------------------------------------
 //turns lighting on.  returns true if lights were actually turned on. (they
 //would not be if they had previously been shot out).
-int DoLightOn (tTrigger *trigP)
+int DoLightOn (CTrigger *trigP)
 {
 	int i,ret=0;
 
@@ -197,7 +197,7 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 
 	//check if tmap2 casts light before turning the light on.  This
 	//is to keep us from turning on blown-out lights
-	if (gameData.pig.tex.tMapInfoP [SEGMENTS [nSegment].m_sides [nSide].nOvlTex].lighting) {
+	if (gameData.pig.tex.tMapInfoP [SEGMENTS [nSegment].m_sides [nSide].m_nOvlTex].lighting) {
 		ret |= AddLight (nSegment, nSide); 		//any light sets flag
 		EnableVariableLight (nSegment, nSide);
 	}
@@ -208,7 +208,7 @@ return ret;
 //------------------------------------------------------------------------------
 //turns lighting off.  returns true if lights were actually turned off. (they
 //would not be if they had previously been shot out).
-int DoLightOff (tTrigger *trigP)
+int DoLightOff (CTrigger *trigP)
 {
 	int i,ret=0;
 
@@ -221,7 +221,7 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 
 	//check if tmap2 casts light before turning the light off.  This
 	//is to keep us from turning off blown-out lights
-	if (gameData.pig.tex.tMapInfoP [SEGMENTS [nSegment].m_sides [nSide].nOvlTex].lighting) {
+	if (gameData.pig.tex.tMapInfoP [SEGMENTS [nSegment].m_sides [nSide].m_nOvlTex].lighting) {
 		ret |= SubtractLight (nSegment, nSide); 	//any light sets flag
 		DisableVariableLight (nSegment, nSide);
 	}
@@ -231,7 +231,7 @@ return ret;
 
 //------------------------------------------------------------------------------
 // Unlocks all doors linked to the switch.
-void DoUnlockDoors (tTrigger *trigP)
+void DoUnlockDoors (CTrigger *trigP)
 {
 	int i;
 
@@ -248,11 +248,11 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 }
 
 //------------------------------------------------------------------------------
-// Return tTrigger number if door is controlled by a CWall switch, else return -1.
+// Return CTrigger number if door is controlled by a CWall switch, else return -1.
 int DoorIsWallSwitched (int nWall)
 {
 	int i, nTrigger;
-	tTrigger *trigP = TRIGGERS.Buffer ();
+	CTrigger *trigP = TRIGGERS.Buffer ();
 	short *segs, *sides;
 
 for (nTrigger=0; nTrigger < gameData.trigs.nTriggers; nTrigger++, trigP++) {
@@ -280,7 +280,7 @@ for (i = 0; i < gameData.walls.nWalls; i++)
 
 //------------------------------------------------------------------------------
 // Locks all doors linked to the switch.
-void DoLockDoors (tTrigger *trigP)
+void DoLockDoors (CTrigger *trigP)
 {
 	int i;
 	short *segs = trigP->nSegment;
@@ -294,7 +294,7 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 //------------------------------------------------------------------------------
 // Changes player spawns according to triggers segments,sides list
 
-int DoSetSpawnPoints (tTrigger *trigP, short nObject)
+int DoSetSpawnPoints (CTrigger *trigP, short nObject)
 {
 	int 		h, i, j;
 	short 	*segs = trigP->nSegment;
@@ -320,7 +320,7 @@ return 1;
 //------------------------------------------------------------------------------
 // Changes player spawns according to triggers segments,sides list
 
-int DoMasterTrigger (tTrigger *masterP, short nObject)
+int DoMasterTrigger (CTrigger *masterP, short nObject)
 {
 	int 		h, i;
 	short 	*segs = masterP->nSegment;
@@ -342,7 +342,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int DoShowMessage (tTrigger *trigP, short nObject)
+int DoShowMessage (CTrigger *trigP, short nObject)
 {
 ShowGameMessage (gameData.messages, X2I (trigP->value), trigP->time);
 return 1;
@@ -350,7 +350,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int DoPlaySound (tTrigger *trigP, short nObject)
+int DoPlaySound (CTrigger *trigP, short nObject)
 {
 	tTextIndex	*indexP = FindTextData (&gameData.sounds, X2I (trigP->value));
 
@@ -364,8 +364,8 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
-// Changes walls pointed to by a tTrigger. returns true if any walls changed
-int DoChangeWalls (tTrigger *trigP)
+// Changes walls pointed to by a CTrigger. returns true if any walls changed
+int DoChangeWalls (CTrigger *trigP)
 {
 	int 		i,ret = 0;
 	short 	*segs = trigP->nSegment;
@@ -466,7 +466,7 @@ return ret;
 void PrintTriggerMessage (int nPlayer, int trig, int shot, const char *message)
  {
 	char		*pl;		//points to 's' or nothing for plural word
-	tTrigger	*triggers;
+	CTrigger	*triggers;
 
 if (nPlayer < 0)
 	triggers = gameData.trigs.objTriggers.Buffer ();
@@ -483,7 +483,7 @@ if (!(triggers [trig].flags & TF_NO_MESSAGE) && shot)
 
 //------------------------------------------------------------------------------
 
-void DoMatCen (tTrigger *trigP, int bMessage)
+void DoMatCen (CTrigger *trigP, int bMessage)
 {
 	int i, h [3] = {0,0,0};
 
@@ -500,7 +500,7 @@ if (bMessage) {
 
 //------------------------------------------------------------------------------
 
-void DoIllusionOn (tTrigger *trigP)
+void DoIllusionOn (CTrigger *trigP)
 {
 	int i;
 
@@ -513,7 +513,7 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 
 //------------------------------------------------------------------------------
 
-void DoIllusionOff (tTrigger *trigP)
+void DoIllusionOff (CTrigger *trigP)
 {
 	int i;
 	short *segs = trigP->nSegment;
@@ -619,7 +619,7 @@ OBJECTS [nObject].RelinkToSeg (nSegment);
 
 //------------------------------------------------------------------------------
 
-void DoTeleport (tTrigger *trigP, short nObject)
+void DoTeleport (CTrigger *trigP, short nObject)
 {
 if (trigP->nLinks > 0) {
 		int		i;
@@ -782,7 +782,7 @@ if (gameStates.app.tick40fps.bTick && gameStates.gameplay.nDirSteps)
 
 //------------------------------------------------------------------------------
 
-void DoSpeedBoost (tTrigger *trigP, short nObject)
+void DoSpeedBoost (CTrigger *trigP, short nObject)
 {
 if (!(COMPETITION || IsCoopGame) || extraGameInfo [IsMultiGame].nSpeedBoost) {
 	CWall *w = TriggerParentWall (TRIG_IDX (trigP));
@@ -799,7 +799,7 @@ extern void EnterSecretLevel (void);
 extern void ExitSecretLevel (void);
 extern int PSecretLevelDestroyed (void);
 
-int WallIsForceField (tTrigger *trigP)
+int WallIsForceField (CTrigger *trigP)
 {
 	int i;
 	short *segs = trigP->nSegment;
@@ -813,10 +813,10 @@ return (i > 0);
 
 //------------------------------------------------------------------------------
 
-int CheckTriggerSub (short nObject, tTrigger *triggers, int nTriggerCount, 
+int CheckTriggerSub (short nObject, CTrigger *triggers, int nTriggerCount, 
 							int nTrigger, int nPlayer, int shot, int bObjTrigger)
 {
-	tTrigger	*trigP;
+	CTrigger	*trigP;
 	CObject	*objP = OBJECTS + nObject;
 	ubyte		bIsPlayer = (objP->info.nType == OBJ_PLAYER);
 
@@ -871,7 +871,7 @@ switch (trigP->nType) {
 			}
 		else {
 #ifdef EDITOR
-				ExecMessageBox ("Yo!", 1, "You have hit the exit tTrigger!", "");
+				ExecMessageBox ("Yo!", 1, "You have hit the exit CTrigger!", "");
 #else
 				Int3 ();		//level num == 0, but no editor!
 			#endif
@@ -1078,7 +1078,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-tTrigger *FindObjTrigger (short nObject, short nType, short nTrigger)
+CTrigger *FindObjTrigger (short nObject, short nType, short nTrigger)
 {
 	short i = (nTrigger < 0) ? gameData.trigs.firstObjTrigger [nObject] : gameData.trigs.objTriggerRefs [nTrigger].next;
 
@@ -1114,7 +1114,7 @@ while ((i >= 0) && (j < 256)) {
 }
 
 //-----------------------------------------------------------------
-// Checks for a tTrigger whenever an CObject hits a tTrigger nSide.
+// Checks for a CTrigger whenever an CObject hits a CTrigger nSide.
 void CheckTrigger (CSegment *segP, short nSide, short nObject, int shot)
 {
 	int 		nWall;
@@ -1139,7 +1139,7 @@ if (IsMultiGame)
 void TriggersFrameProcess ()
 {
 	int		i;
-	tTrigger	*trigP = TRIGGERS.Buffer ();
+	CTrigger	*trigP = TRIGGERS.Buffer ();
 
 for (i = gameData.trigs.nTriggers; i > 0; i--, trigP++)
 	if ((trigP->nType != TT_COUNTDOWN) && (trigP->nType != TT_MESSAGE) && (trigP->nType != TT_SOUND) && (trigP->time >= 0))
@@ -1148,7 +1148,7 @@ for (i = gameData.trigs.nTriggers; i > 0; i--, trigP++)
 
 //------------------------------------------------------------------------------
 
-static inline int TriggerHasTarget (tTrigger *triggerP, short nSegment, short nSide)
+static inline int TriggerHasTarget (CTrigger *triggerP, short nSegment, short nSide)
 {
 	int	i;
 		
@@ -1315,9 +1315,9 @@ for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
 //------------------------------------------------------------------------------
 
 /*
- * reads a tTrigger structure from a CFile
+ * reads a CTrigger structure from a CFile
  */
-extern void TriggerRead (tTrigger *trigP, CFile& cf, int bObjTrigger)
+extern void TriggerRead (CTrigger *trigP, CFile& cf, int bObjTrigger)
 {
 	int i;
 
@@ -1341,7 +1341,7 @@ for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
 
 int OpenExits (void)
 {
-	tTrigger *trigP = TRIGGERS.Buffer ();
+	CTrigger *trigP = TRIGGERS.Buffer ();
 	CWall		*wallP;
 	int		nExits = 0;
 

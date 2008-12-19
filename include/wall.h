@@ -114,7 +114,7 @@ typedef struct tWallV16 {
 	sbyte   nType;             // What kind of special CWall.
 	sbyte   flags;             // Flags for the CWall.
 	fix     hps;               // "Hit points" of the CWall.
-	sbyte   nTrigger;          // Which tTrigger is associated with the CWall.
+	sbyte   nTrigger;          // Which CTrigger is associated with the CWall.
 	sbyte   nClip;					// Which animation associated with the CWall.
 	sbyte   keys;
 } __pack__ tWallV16;
@@ -124,7 +124,7 @@ typedef struct tWallV19 {
 	sbyte   nType;              // What kind of special CWall.
 	sbyte   flags;              // Flags for the CWall.
 	fix     hps;                // "Hit points" of the CWall.
-	sbyte   nTrigger;            // Which tTrigger is associated with the CWall.
+	sbyte   nTrigger;            // Which CTrigger is associated with the CWall.
 	sbyte   nClip;           // Which animation associated with the CWall.
 	sbyte   keys;
 	int nLinkedWall;            // number of linked CWall
@@ -148,20 +148,22 @@ class CWall {
 		ubyte   nType;						// What kind of special CWall.
 		ubyte   flags;						// Flags for the CWall.
 		ubyte   state;						// Opening, closing, etc.
-		ubyte   nTrigger;					// Which tTrigger is associated with the CWall.
+		ubyte   nTrigger;					// Which CTrigger is associated with the CWall.
 		sbyte   nClip;						// Which animation associated with the CWall.
 		ubyte   keys;						// which keys are required
-		sbyte   controllingTrigger;	// which tTrigger causes something to happen here.  Not like "tTrigger" above, which is the tTrigger on this CWall.
+		sbyte   controllingTrigger;	// which CTrigger causes something to happen here.  Not like "CTrigger" above, which is the CTrigger on this CWall.
 												//  Note: This gets stuffed at load time in gamemine.c.  Don't try to use it in the editor.  You will be sorry!
 		sbyte   cloakValue;				// if this CWall is cloaked, the fade value
 	
 	public:
+		void Read (CFile& cf);
 		void LoadTextures (void);
 		int IsDoorWay (CObject* objP);
 		bool IsOpenableDoor (void);
 		bool IsTriggerTarget (void);
 		bool IsVolatile (void);
 		bool IsInvisible (void);
+		CTrigger* Trigger (void);
 
 
 

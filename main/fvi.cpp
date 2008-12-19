@@ -1048,8 +1048,6 @@ Assert(!(nHitType==HIT_OBJECT && gameData.collisions.hitData.nObject==-1));
 return nHitType;
 }
 
-#define Cross2D(v0, v1) (FixMul((v0).i, (v1).j) - FixMul((v0).j, (v1).i))
-
 //	-----------------------------------------------------------------------------
 
 //Find out if a vector intersects with anything.
@@ -1149,75 +1147,6 @@ return nHitType;
 }
 
 //	-----------------------------------------------------------------------------
-//finds the uv coords of the given refP on the given seg & side
-//fills in u & v. if l is non-NULL fills it in also
-void CSide::FindHitPointUV (fix *u, fix *v, fix *l, CFixVector& intersection, int iFace)
-{
-	CFixVector	*vPoints;
-	CFixVector	vNormal;
-	int			biggest, ii, jj;
- 	vec2d			p1, vec0, vec1, vHit;
-	tUVL			uvls [3];
-	fix			k0, k1;
-	int			h;
-
-if (iFace >= m_nFaces) {
-	PrintLog ("invalid face number in FindHitPointUV\n");
-	*u = *v = 0;
-	return;
-	}
-//now the hard work.
-//1. find what plane to project this CWall onto to make it a 2d case
-vNormal = m_normals [iFace];
-biggest = 0;
-if (abs (vNormal [1]) > abs (vNormal [biggest]))
-	biggest = 1;
-if (abs (vNormal [2]) > abs (vNormal [biggest]))
-	biggest = 2;
-ii = (biggest == 0);
-jj = (biggest == 2) ? 1 : 2;
-//2. compute u, v of intersection refP
-//vec from 1 -> 0
-h = iFace * 3;
-vPoints = gameData.segs.vertices + m_vertices [h+1];
-p1.i = (*vPoints) [ii];
-p1.j = (*vPoints) [jj];
-
-vPoints = gameData.segs.vertices + m_vertices [h];
-vec0.i = (*vPoints) [ii] - p1.i;
-vec0.j = (*vPoints) [jj] - p1.j;
-
-//vec from 1 -> 2
-vPoints = gameData.segs.vertices + m_vertices [h+2];
-vec1.i = (*vPoints) [ii] - p1.i;
-vec1.j = (*vPoints) [jj] - p1.j;
-
-//vec from 1 -> checkPoint
-//vPoints = reinterpret_cast<CFixVector*> (refP);
-vHit.i = intersection [ii];
-vHit.j = intersection [jj];
-
-#if 1 // the MSVC 9 optimizer doesn't like the code in the else branch ...
-ii = Cross2D (vHit, vec0) + Cross2D (vec0, p1);
-jj = Cross2D (vec0, vec1);
-k1 = -FixDiv (ii, jj);
-#else
-k1 = -FixDiv (Cross2D (refP, vec0) + Cross2D (vec0, p1), Cross2D (vec0, vec1));
-#endif
-if (abs (vec0.i) > abs (vec0.j))
-	k0 = FixDiv (FixMul (-k1, vec1.i) + vHit.i - p1.i, vec0.i);
-else
-	k0 = FixDiv (FixMul (-k1, vec1.j) + vHit.j - p1.j, vec0.j);
-uvls [0] = m_uvls [m_faceVerts [h]];
-uvls [1] = m_uvls [m_faceVerts [h+1]];
-uvls [2] = m_uvls [m_faceVerts [h+2]];
-*u = uvls [1].u + FixMul (k0, uvls [0].u - uvls [1].u) + FixMul (k1, uvls [2].u - uvls [1].u);
-*v = uvls [1].v + FixMul (k0, uvls [0].v - uvls [1].v) + FixMul (k1, uvls [2].v - uvls [1].v);
-if (l)
-	*l = uvls [1].l + FixMul (k0, uvls [0].l - uvls [1].l) + FixMul (k1, uvls [2].l - uvls [1].l);
-}
-
-//	-----------------------------------------------------------------------------
 
 CBitmap *LoadFaceBitmap (short tMapNum, short nFrameNum);
 
@@ -1292,7 +1221,7 @@ int CSide::CheckForTranspPixel (CFixVector& intersection, short iFace)
 	fix	u, v;
 	int	nTranspType;
 
-FindHitPointUV (&u, &v, NULL, intersection, iFace);	//	Don't compute light value.
+HitPointUV (&u, &v, NULL, intersection, iFace);	//	Don't compute light value.
 if (m_nOvlTex)	{
 	nTranspType = PixelTranspType (m_nOvlTex, m_nOvlOrient, m_nFrame, u, v);
 	if (nTranspType < 0)

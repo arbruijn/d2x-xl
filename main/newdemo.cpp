@@ -1570,7 +1570,7 @@ if (bJustStartedRecording == 1) {
 		segP = &SEGMENTS [WALLS [i].nSegment];
 		nSide = WALLS [i].nSide;
 		NDWriteShort (segP->m_sides [nSide].m_nBaseTex);
-		NDWriteShort (segP->m_sides [nSide].nOvlTex | (segP->m_sides [nSide].nOvlOrient << 14));
+		NDWriteShort (segP->m_sides [nSide].m_nOvlTex | (segP->m_sides [nSide].nOvlOrient << 14));
 		bJustStartedRecording = 0;
 		}
 	}
@@ -2284,8 +2284,8 @@ while (!bDone) {
 			if ((gameData.demo.nVcrState != ND_STATE_PAUSED) &&
 				 (gameData.demo.nVcrState != ND_STATE_REWINDING) &&
 				 (gameData.demo.nVcrState != ND_STATE_ONEFRAMEBACKWARD)) {
-				Assert (tmap!=0 && SEGMENTS [segP].m_sides [nSide].nOvlTex!=0);
-				SEGMENTS [segP].m_sides [nSide].nOvlTex = 
+				Assert (tmap!=0 && SEGMENTS [segP].m_sides [nSide].m_nOvlTex!=0);
+				SEGMENTS [segP].m_sides [nSide].m_nOvlTex = 
 				SEGMENTS [nConnSeg].m_sides [nConnSide].nOvlTex = tmap & 0x3fff;
 				SEGMENTS [segP].m_sides [nSide].nOvlOrient = 
 				SEGMENTS [nConnSeg].m_sides [nConnSide].nOvlOrient = (tmap >> 14) & 3;
@@ -2495,7 +2495,7 @@ while (!bDone) {
 					segP->m_sides [nSide].m_nBaseTex = oppSegP->m_sides [nConnSide].m_nBaseTex =
 						gameData.walls.animP [anim_num].frames [0];
 				else
-					segP->m_sides [nSide].nOvlTex = 
+					segP->m_sides [nSide].m_nOvlTex = 
 					oppSegP->m_sides [nConnSide].nOvlTex = gameData.walls.animP [anim_num].frames [0];
 				}
 			else
@@ -2593,7 +2593,7 @@ while (!bDone) {
 					nSide = WALLS [i].nSide;
 					segP->m_sides [nSide].m_nBaseTex = NDReadShort ();
 					nTexture = NDReadShort ();
-					segP->m_sides [nSide].nOvlTex = nTexture & 0x3fff;
+					segP->m_sides [nSide].m_nOvlTex = nTexture & 0x3fff;
 					segP->m_sides [nSide].nOvlOrient = (nTexture >> 14) & 3;
 					}
 				if (gameData.demo.nGameMode & GM_CAPTURE)

@@ -183,7 +183,7 @@ else {
 
 //	-----------------------------------------------------------------------------
 
-void InitCountdown (tTrigger *trigP, int bReactorDestroyed, int nTimer)
+void InitCountdown (CTrigger *trigP, int bReactorDestroyed, int nTimer)
 {
 if (trigP && (trigP->time > 0))
 	gameData.reactor.countdown.nTotalTime = trigP->time;
@@ -205,7 +205,7 @@ if (bReactorDestroyed)
 void DoReactorDestroyedStuff (CObject *objP)
 {
 	int		i, bFinalCountdown, bReactor = objP && (objP->info.nType == OBJ_REACTOR);
-	tTrigger	*trigP = NULL;
+	CTrigger	*trigP = NULL;
 
 if ((gameData.app.nGameMode & GM_MULTI_ROBOTS) && gameData.reactor.bDestroyed)
    return; // Don't allow resetting if control center and boss on same level

@@ -103,6 +103,7 @@ class CSegMasks {
 
 //------------------------------------------------------------------------------
 
+class CTrigger;
 class CWall;
 class CObject;
 
@@ -136,6 +137,7 @@ class CSide {
 		inline ushort WallNum (void) { return m_nWall; }
 		inline bool IsWall (void);
 		inline CWall* Wall (void);
+		inline CTrigger* Trigger (void);
 		inline sbyte Type (void) { return m_nType; }
 		bool IsVolatile (void);
 		int FaceCount (void);
@@ -174,7 +176,7 @@ class CSide {
 		inline bool IsPlanar (void);
 		ubyte Dist (const CFixVector& point, fix& xSideDist, int bBehind, short sideBit);
 		CSegMasks Masks (const CFixVector& refP, fix xRad, short sideBit, short& faceBit);
-		void FindHitPointUV (fix *u, fix *v, fix *l, CFixVector& intersection, int iFace);
+		void HitPointUV (fix *u, fix *v, fix *l, CFixVector& intersection, int iFace);
 		int CheckForTranspPixel (CFixVector& intersection, short iFace);
 
 		bool IsOpenableDoor (void);
@@ -222,6 +224,7 @@ class CSegment {
 		inline void ComputeSideCenter (short nSide) { m_sides [nSide].ComputeCenter (); }
 		inline CSide* Side (int nSide) { return m_sides + nSide; }
 		inline CWall* Wall (int nSide) { return m_sides [nSide].Wall (); }
+		inline CTrigger* Trigger (int nSide) { return m_sides [nSide].Trigger (); }
 		inline sbyte Type (int nSide) { return m_sides [nSide].m_nType; }
 		void ComputeSideRads (void);
 		inline bool IsVertex (int nVertex);
@@ -248,6 +251,8 @@ class CSegment {
 		inline int FaceCount (int nSide) { return m_sides [nSide].FaceCount (); }
 		CSegMasks SideMasks (const CFixVector& refP, fix xRad);
 		ubyte GetSideDists (const CFixVector& refP, fix* xSideDists, int bBehind);
+		void HitPointUV (int nSide, fix *u, fix *v, fix *l, CFixVector& intersection, int iFace)
+			{ return m_sides [nSide].HitPointUV (u, v, l, intersection, iFace); }
 
 		fix MinRad (void) { return m_rads [0]; }
 		fix MaxRad (void) { return m_rads [1]; }

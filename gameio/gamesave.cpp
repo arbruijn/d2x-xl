@@ -72,8 +72,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //version 28->29  add delta light support
 //version 27->28  controlcen id now is reactor number, not model number
 //version 28->29  ??
-//version 29->30  changed tTrigger structure
-//version 30->31  changed tTrigger structure some more
+//version 29->30  changed CTrigger structure
+//version 30->31  changed CTrigger structure some more
 //version 31->32  change CSegment structure, make it 512 bytes w/o editor, add SEGMENTS array.
 
 #define MENU_CURSOR_X_MIN       MENU_X
@@ -794,7 +794,7 @@ gameFileInfo.doors.count		=	0;
 gameFileInfo.doors.size			=	sizeof(tActiveDoor);  
 gameFileInfo.triggers.offset	=	-1;
 gameFileInfo.triggers.count	=	0;
-gameFileInfo.triggers.size		=	sizeof(tTrigger);  
+gameFileInfo.triggers.size		=	sizeof(CTrigger);  
 gameFileInfo.control.offset	=	-1;
 gameFileInfo.control.count		=	0;
 gameFileInfo.control.size		=	sizeof(tReactorTriggers);
@@ -1022,11 +1022,11 @@ return 0;
 static int ReadTriggerInfo (CFile& cf)
 {
 	int		h, i, j;
-	tTrigger	*trigP;
+	CTrigger	*trigP;
 
 if (gameFileInfo.triggers.offset > -1) {
 #if TRACE
-	console.printf(CON_DBG, "   loading tTrigger data ...\n");
+	console.printf(CON_DBG, "   loading CTrigger data ...\n");
 #endif
 	if (cf.Seek (gameFileInfo.triggers.offset, SEEK_SET)) {
 		Error ("Error seeking to trigger data\n(file damaged or invalid)");
@@ -1334,9 +1334,9 @@ static void CheckAndFixWalls (void)
 for (i = 0; i < gameData.walls.nWalls; i++)
 	if (WALLS [i].nTrigger >= gameData.trigs.nTriggers) {
 #if TRACE
-		console.printf (CON_DBG,"Removing reference to invalid tTrigger %d from CWall %d\n",WALLS [i].nTrigger,i);
+		console.printf (CON_DBG,"Removing reference to invalid CTrigger %d from CWall %d\n",WALLS [i].nTrigger,i);
 #endif
-		WALLS [i].nTrigger = NO_TRIGGER;	//kill tTrigger
+		WALLS [i].nTrigger = NO_TRIGGER;	//kill CTrigger
 		}
 if (gameTopFileInfo.fileinfoVersion < 17) {
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
@@ -1367,14 +1367,14 @@ static void CheckAndFixTriggers (void)
 	short	nSegment, nSide, nWall;
 
 for (i = 0; i < gameData.trigs.nTriggers; ) {
-	//	Find which CWall this tTrigger is connected to.
+	//	Find which CWall this CTrigger is connected to.
 	for (j = 0; j < gameData.walls.nWalls; j++)
 		if (WALLS [j].nTrigger == i)
 			break;
 #ifdef EDITOR
 	if (j == gameData.walls.nWalls) {
 #if TRACE
-		console.printf (CON_DBG,"Removing unreferenced tTrigger %d\n",i);
+		console.printf (CON_DBG,"Removing unreferenced CTrigger %d\n",i);
 #endif
 		RemoveTriggerNum (i);
 		}
@@ -1394,11 +1394,11 @@ for (i = 0; i < gameData.trigs.nTriggers; i++) {
 		nSegment = TRIGGERS [i].nSegment [j];
 		nSide = TRIGGERS [i].nSide [j];
 		nWall = WallNumI (nSegment, nSide);
-		//check to see that if a tTrigger requires a CWall that it has one,
+		//check to see that if a CTrigger requires a CWall that it has one,
 		//and if it requires a botGen that it has one
 		if (TRIGGERS [i].nType == TT_MATCEN) {
 			if (SEGMENTS [nSegment].m_nType != SEGMENT_IS_ROBOTMAKER)
-				continue;		//botGen tTrigger doesn'i point to botGen
+				continue;		//botGen CTrigger doesn'i point to botGen
 			}
 		else if ((TRIGGERS [i].nType != TT_LIGHT_OFF) && 
 					(TRIGGERS [i].nType != TT_LIGHT_ON)) { //light triggers don't require walls
@@ -1785,7 +1785,7 @@ int SaveGameData(FILE * SaveFile)
 	gameFileInfo.doors.size			=	sizeof(tActiveDoor);
 	gameFileInfo.triggers.offset		=	-1;
 	gameFileInfo.triggers.count	=	gameData.trigs.nTriggers;
-	gameFileInfo.triggers.size		=	sizeof(tTrigger);
+	gameFileInfo.triggers.size		=	sizeof(CTrigger);
 	gameFileInfo.control.offset		=	-1;
 	gameFileInfo.control.count		=  1;
 	gameFileInfo.control.size		=  sizeof(tReactorTriggers);
@@ -1838,7 +1838,7 @@ int SaveGameData(FILE * SaveFile)
 	//==================== SAVE TRIGGER INFO =============================
 
 	triggers.offset = ftell(SaveFile);
-	fwrite(TRIGGERS, sizeof(tTrigger), gameFileInfo.triggers.count, SaveFile);
+	fwrite(TRIGGERS, sizeof(CTrigger), gameFileInfo.triggers.count, SaveFile);
 
 	//================ SAVE CONTROL CENTER TRIGGER INFO ===============
 

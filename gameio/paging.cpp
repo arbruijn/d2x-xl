@@ -249,7 +249,7 @@ if (!(segP->IsDoorWay (nSide, NULL) & WID_RENDER_FLAG))
 
 tmap1 = segP->m_sides [nSide].m_nBaseTex;
 PagingTouchWallEffects (tmap1);
-tmap2 = segP->m_sides [nSide].nOvlTex;
+tmap2 = segP->m_sides [nSide].m_nOvlTex;
 if (tmap2) {
 	PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [tmap2].index, gameStates.app.bD1Data);
 	PagingTouchWallEffects (tmap2);
