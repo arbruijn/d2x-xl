@@ -313,6 +313,25 @@ void ChangeGuidebotName ()
 
 //	-----------------------------------------------------------------------------
 
+void BuddyOuchMessage (fix damage)
+{
+	char	szOuch [6 * 4 + 2];
+
+int count = X2I (damage / 8);
+if (count > 4)
+	count = 4;
+else if (count <= 0)
+	count = 1;
+szOuch [0] = 0;
+for (int i = 0; i < count; i++) {
+	strcat (szOuch, TXT_BUDDY_OUCH);
+	strcat (szOuch, " ");
+	}
+BuddyMessage (szOuch);
+}
+
+//	-----------------------------------------------------------------------------
+
 void _CDECL_ BuddyMessage (const char * format, ... )
 {
 if (gameData.escort.bMsgsSuppressed)

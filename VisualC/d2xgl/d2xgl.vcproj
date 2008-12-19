@@ -3734,6 +3734,10 @@
 					Name="Header Files"
 					>
 					<File
+						RelativePath="..\..\include\escort.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\include\hostage.h"
 						>
 					</File>

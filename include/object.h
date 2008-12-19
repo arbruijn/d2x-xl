@@ -763,6 +763,7 @@ class CObject : public CObjectInfo {
 		void ScrapeOnWall (short nHitSeg, short nHitSide, CFixVector& vHitPt);
 
 		inline void Kill (void);
+		void MaybeDelete (void);
 
 		void TurnTowardsVector (CFixVector vGoal, fix rate);
 		void ApplyForce (CFixVector vForce);
@@ -775,6 +776,8 @@ class CObject : public CObjectInfo {
 		void ApplyDamageToReactor (fix xDamage, short nAttacker);
 		int ApplyDamageToClutter (fix xDamage);
 		void Explode (fix delayTime);
+		void ExplodePolyModel (void);
+		CObject* CreateDebris (int nSubObj);
 
 		void CollidePlayerAndWall (fix xHitSpeed, short nHitSeg, short nHitSide, CFixVector& vHitPt);
 		void CollideRobotAndWall (fix xHitSpeed, short nHitSeg, short nHitSide, CFixVector& vHitPt);
