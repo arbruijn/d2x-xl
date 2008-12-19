@@ -327,7 +327,7 @@ pos += rand_vec;
 size = FixMul (size_scale, F1_0 / 2 + d_rand () * 4 / 2);
 nSegment = FindSegByPos (pos, objP->info.nSegment, 1, 0);
 if (nSegment != -1) {
-	CObject *explObjP = ObjectCreateExplosion (nSegment, &pos, size, VCLIP_SMALL_EXPLOSION);
+	CObject *explObjP = /*Object*/CreateExplosion (nSegment, &pos, size, VCLIP_SMALL_EXPLOSION);
 	if (!explObjP)
 		return;
 	AttachObject (objP, explObjP);
@@ -356,7 +356,7 @@ pos += rand_vec;
 size = FixMul (size_scale, F1_0 + d_rand ()*4);
 nSegment = FindSegByPos (pos, objP->info.nSegment, 1, 0);
 if (nSegment != -1) {
-	CObject *explObjP = ObjectCreateExplosion (nSegment, &pos, size, vclip_num);
+	CObject *explObjP = /*Object*/CreateExplosion (nSegment, &pos, size, vclip_num);
 	if (!explObjP)
 		return;
 

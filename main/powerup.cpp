@@ -182,7 +182,7 @@ void DoPowerupFrame (CObject *objP)
 if (objP->info.renderType != RT_POLYOBJ)
 	UpdatePowerupClip (vcP, vciP, i);
 if (objP->info.xLifeLeft <= 0) {
-	ObjectCreateExplosion (objP->info.nSegment, &objP->info.position.vPos, F1_0 * 7 / 2, VCLIP_POWERUP_DISAPPEARANCE);
+	/*Object*/CreateExplosion (objP->info.nSegment, &objP->info.position.vPos, F1_0 * 7 / 2, VCLIP_POWERUP_DISAPPEARANCE);
 	if (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].nSound > -1)
 		DigiLinkSoundToObject (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].nSound, i, 0, F1_0, SOUNDCLASS_GENERIC);
 	}

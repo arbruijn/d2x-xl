@@ -768,7 +768,7 @@ if ((nPlayer < 0) || (nObject < 0) || (nFuelCen < 0) ||
 robotcen = gameData.matCens.fuelCenters + nFuelCen;
 // Play effect and sound
 curObject_loc = SEGMENTS [robotcen->nSegment].Center ();
-objP = ObjectCreateExplosion ((short) robotcen->nSegment, &curObject_loc, I2X (10), VCLIP_MORPHING_ROBOT);
+objP = /*Object*/CreateExplosion ((short) robotcen->nSegment, &curObject_loc, I2X (10), VCLIP_MORPHING_ROBOT);
 if (objP)
 	ExtractOrientFromSegment (&objP->info.position.mOrient, &SEGMENTS [robotcen->nSegment]);
 if (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound > -1)

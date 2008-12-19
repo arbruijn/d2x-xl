@@ -1831,7 +1831,7 @@ if (playerObjP == gameData.objs.viewerP)
 	pos = playerObjP->info.position.vPos + playerObjP->info.position.mOrient.FVec() * FixMul(playerObjP->info.xSize,flashDist);
 else
 	pos = playerObjP->info.position.vPos;
-effectObjP = ObjectCreateExplosion (playerObjP->info.nSegment, &pos, playerObjP->info.xSize, VCLIP_PLAYER_APPEARANCE);
+effectObjP = /*Object*/CreateExplosion (playerObjP->info.nSegment, &pos, playerObjP->info.xSize, VCLIP_PLAYER_APPEARANCE);
 if (effectObjP) {
 	effectObjP->info.position.mOrient = playerObjP->info.position.mOrient;
 	if (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound > -1)

@@ -1296,13 +1296,13 @@ StartTime (0);
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordEffectBlowup (short CSegment, int nSide, CFixVector *pnt)
+void NDRecordEffectBlowup (short CSegment, int nSide, CFixVector& vPos)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_EFFECT_BLOWUP);
 NDWriteShort (CSegment);
 NDWriteByte ((sbyte)nSide);
-NDWriteVector(*pnt);
+NDWriteVector (vPos);
 StartTime (0);
 }
 

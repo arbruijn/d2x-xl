@@ -445,7 +445,7 @@ return DigiLinkSoundToObject2 (nSound, nObject, bForever, maxVolume, 256 * F1_0,
 //------------------------------------------------------------------------------
 
 int DigiLinkSoundToPos2 (
-	short nOrgSound, short nSegment, short nSide, CFixVector * pos, int bForever,
+	short nOrgSound, short nSegment, short nSide, CFixVector& vPos, int bForever,
 	fix maxVolume, fix maxDistance, const char *pszSound)
 {
 
@@ -518,10 +518,9 @@ return soP->nSignature;
 
 //------------------------------------------------------------------------------
 
-int DigiLinkSoundToPos (
-	short nSound, short nSegment, short nSide, CFixVector * pos, int bForever, fix maxVolume)
+int DigiLinkSoundToPos (short nSound, short nSegment, short nSide, CFixVector& vPos, int bForever, fix maxVolume)
 {
-return DigiLinkSoundToPos2 (nSound, nSegment, nSide, pos, bForever, maxVolume, F1_0 * 256, NULL);
+return DigiLinkSoundToPos2 (nSound, nSegment, nSide, vPos, bForever, maxVolume, F1_0 * 256, NULL);
 }
 
 //------------------------------------------------------------------------------

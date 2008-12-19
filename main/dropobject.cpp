@@ -388,7 +388,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	if (!bFixedPos)
 		OBJECTS [nObject].info.position.vPos = vNewPos;
 	OBJECTS [nObject].RelinkToSeg (nSegment);
-	ObjectCreateExplosion (nSegment, &vNewPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
+	/*Object*/CreateExplosion (nSegment, &vNewPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
 	return 1;
 	}
 return 0;
@@ -775,7 +775,7 @@ for (i = 0; i < nThrusters; i++) {
 	nSegment = FindSegByPos (ti.vPos[i], objP->info.nSegment, 1, 0);
 	if (nSegment == -1)
 		continue;
-	if (!(blobObjP = ObjectCreateExplosion (nSegment, ti.vPos + i, xSizeScale, VCLIP_AFTERBURNER_BLOB)))
+	if (!(blobObjP = /*Object*/CreateExplosion (nSegment, ti.vPos + i, xSizeScale, VCLIP_AFTERBURNER_BLOB)))
 		continue;
 	if (xLifeTime != -1) {
 		blobObjP->rType.vClipInfo.xTotalTime = xLifeTime;

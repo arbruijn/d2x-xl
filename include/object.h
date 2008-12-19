@@ -153,6 +153,9 @@ extern char szObjectTypeNames [MAX_OBJECT_TYPES][10];
 // time, used by homing missiles in laser.c
 #define MAX_RENDERED_OBJECTS    100
 
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
 /*
  * STRUCTURES
  */
@@ -180,6 +183,7 @@ class CShortPos {
 		inline void SetVel (short vel, int i) { m_pos.vel [i] = vel; }
 };
 
+//	-----------------------------------------------------------------------------
 // This is specific to the tShortPos extraction routines in gameseg.c.
 #define RELPOS_PRECISION    10
 #define MATRIX_PRECISION    9
@@ -204,6 +208,7 @@ class RenderSmokeInfo : public RenderInfo { };
 class RenderLightningInfo : public RenderInfo { };
 #endif
 
+//	-----------------------------------------------------------------------------
 // information for physics sim for an CObject
 typedef struct tPhysicsInfo {
 	CFixVector	velocity;   // velocity vector of this CObject
@@ -241,6 +246,8 @@ class CPhysicsInfo {
 		inline void SetTurnRoll (fixang turnRoll) { m_info.turnRoll = turnRoll; }
 		inline void SetFlags (ushort flags) { m_info.flags = flags; }
 };
+
+//	-----------------------------------------------------------------------------
 // stuctures for different kinds of simulation
 
 typedef struct nParentInfo {
@@ -278,6 +285,8 @@ class CLaserInfo {
 		inline void SetScale (fix xScale) { m_info.xScale = xScale; }
 };
 
+//	-----------------------------------------------------------------------------
+
 typedef struct tAttachedObjInfo {
 	short	nParent;	// explosion is attached to this CObject
 	short	nPrev;	// previous explosion in attach list
@@ -296,6 +305,8 @@ class CAttachedInfo {
 		inline void SetPrevAttached (short nPrev) { m_info.nPrev = nPrev; }
 		inline void SetNextAttached (short nNext) { m_info.nNext = nNext; }
 };
+
+//	-----------------------------------------------------------------------------
 
 typedef struct tExplosionInfo {
     fix     nSpawnTime;       // when lifeleft is < this, spawn another
@@ -316,6 +327,8 @@ class CExplosionInfo : public CAttachedInfo {
 		inline void SetDeleteTime (fix nDeleteTime) { m_info.nDeleteTime = nDeleteTime; }
 		inline void SetDeleteObj (fix nDeleteObj) { m_info.nDeleteObj = nDeleteObj; }
 };
+
+//	-----------------------------------------------------------------------------
 
 typedef struct tObjLightInfo {
     fix				intensity;  // how bright the light is
@@ -339,6 +352,8 @@ class CObjLightInfo {
 		inline void SetColor (tRgbaColorf *color) { m_info.color = *color; }
 };
 
+//	-----------------------------------------------------------------------------
+
 typedef struct tPowerupInfo {
 	int     nCount;          // how many/much we pick up (vulcan cannon only?)
 	fix     xCreationTime;  // Absolute time of creation.
@@ -358,6 +373,8 @@ class CPowerupInfo {
 		inline void SetFlags (int nFlags) { m_info.nFlags = nFlags; }
 };
 
+//	-----------------------------------------------------------------------------
+
 typedef struct tVClipInfo {
 public:
 	int     nClipIndex;
@@ -376,6 +393,8 @@ class CVClipInfo {
 		inline fix GetFrameTime (void) { return m_info.xFrameTime; }
 		inline sbyte GetCurFrame (void) { return m_info.nCurFrame; }
 };
+
+//	-----------------------------------------------------------------------------
 
 #define SMOKE_TYPE_SMOKE	0
 #define SMOKE_TYPE_SPRAY	1
@@ -408,6 +427,8 @@ class CSmokeInfo {
 		inline tRgbaColorb GetColor (void) { return m_info.color; }
 		inline char GetSide (void) { return m_info.nSide; }
 };
+
+//	-----------------------------------------------------------------------------
 
 typedef struct tLightningInfo {
 public:
@@ -459,6 +480,7 @@ class CLightningInfo {
 		inline char GetInPlane (void) { return m_info.bInPlane; }
 };
 
+//	-----------------------------------------------------------------------------
 // structures for different kinds of rendering
 
 typedef struct tPolyObjInfo {
@@ -487,6 +509,8 @@ class CPolyObjInfo {
 		inline void SetAltTextures (int nAltTextures) { m_info.nAltTextures = nAltTextures; }
 };
 
+//	-----------------------------------------------------------------------------
+
 typedef struct tObjTransformation {
 	CFixVector	vPos;				// absolute x,y,z coordinate of center of object
 	CFixMatrix	mOrient;			// orientation of object in world
@@ -502,6 +526,8 @@ class CObjTransformation {
 		inline void SetPos (const CFixVector* vPos) { m_t.vPos = *vPos; }
 		inline void SetOrient (const CFixMatrix* mOrient) { m_t.mOrient = *mOrient ; }
 	};
+
+//	-----------------------------------------------------------------------------
 
 typedef struct tObjContainerInfo {
 	sbyte			nType;
@@ -521,6 +547,8 @@ class CObjContainerInfo {
 		inline void SetContainsId (sbyte nId) { m_info.nId = nId; }
 		inline void SetContainsCount (sbyte nCount) { m_info.nCount = nCount; }
 };
+
+//	-----------------------------------------------------------------------------
 
 typedef struct tObjectInfo {
 	int     				nSignature;    // Every CObject ever has a unique nSignature...
@@ -574,6 +602,8 @@ typedef struct tBaseObject {
 #endif
 } tBaseObject;
 
+//	-----------------------------------------------------------------------------
+
 class CObjectInfo : public CObjTransformation, public CObjContainerInfo, public tBaseObject {
 	public:
 		CObjectInfo () { memset (&info, 0, sizeof (info)); }
@@ -619,8 +649,10 @@ class CObjectInfo : public CObjTransformation, public CObjContainerInfo, public 
 		inline void SetMovementType (ubyte movementType) { info.movementType = movementType; }
 		inline void SetRenderType (ubyte renderType) { info.renderType = renderType; }
 		inline void SetFlags (ubyte nFlags) { info.nFlags = nFlags; }
-		inline void SetLastPos (const CFixVector *vLastPos) { info.vLastPos = *vLastPos; }
+		inline void SetLastPos (const CFixVector& vLastPos) { info.vLastPos = vLastPos; }
 };
+
+//	-----------------------------------------------------------------------------
 
 struct tObject;
 
@@ -645,15 +677,18 @@ typedef struct tObject : public tBaseObject {
 
 class CObject;
 
+
 class CObjListLink {
 	public:
 		CObject	*prev, *next;
 };
 
+
 typedef struct tObjListRef {
 	CObject	*head, *tail;
 	short		nObjects;
 } tObjListRef;
+
 
 class CObject : public CObjectInfo {
 	private:
@@ -675,7 +710,6 @@ class CObject : public CObjectInfo {
 		int Create (ubyte nType, ubyte nId, short nCreator, short nSegment, const CFixVector& vPos,
 						const CFixMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType);
 
-		inline void Kill (void) { SetFlags (Flags () | OF_SHOULD_BE_DEAD); }
 		inline bool Exists (void) { return !(Flags () & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)); }
 		// unlinks an CObject from a CSegment's list of objects
 		void Init (void);
@@ -726,15 +760,9 @@ class CObject : public CObjectInfo {
 		int CheckSegmentPhysics (void);
 		int CheckWallPhysics (short nSegment, short nSide);
 		int ApplyWallPhysics (short nSegment, short nSide);
-		void ScrapeOnWall (short nHitSeg, short nHitSide, CFixVector * vHitPt);
+		void ScrapeOnWall (short nHitSeg, short nHitSide, CFixVector& vHitPt);
 
-		inline void CObject::Kill (void) {
-			info.nFlags |= OF_SHOULD_BE_DEAD;
-			#if DBG
-			if (this == dbgObjP)
-				dbgObjP = dbgObjP;
-			#endif
-			}
+		inline void Kill (void);
 
 		void TurnTowardsVector (CFixVector vGoal, fix rate);
 		void ApplyForce (CFixVector vForce);
@@ -748,24 +776,45 @@ class CObject : public CObjectInfo {
 		int ApplyDamageToClutter (fix xDamage);
 		void Explode (fix delayTime);
 
-		void CollidePlayerAndWall (fix xHitSpeed, short nHitSeg, short nHitSide, CFixVector * vHitPt);
-		void CollideRobotAndWall (fix xHitSpeed, short nHitSeg, short nHitSide, CFixVector * vHitPt);
-		int CollideWeaponAndWall (fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector * vHitPt);
-		int CollideDebrisAndWall (fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector * vHitPt);
-		int CollideWeaponAndWeapon (CObject *other, CFixVector *vHitPt);
-		int CollideWeaponAndMonsterball (CObject *powerup, CFixVector *vHitPt);
-		int CollideRobotAndPlayer (CObject *playerObjP, CFixVector *vHitPt);
-		int CollideRobotAndWeapon (CObject *weaponP, CFixVector *vHitPt);
-		int CollideWeaponAndReactor (CObject *reactorP, CFixVector *vHitPt);
+		void CollidePlayerAndWall (fix xHitSpeed, short nHitSeg, short nHitSide, CFixVector& vHitPt);
+		void CollideRobotAndWall (fix xHitSpeed, short nHitSeg, short nHitSide, CFixVector& vHitPt);
+		int CollideWeaponAndWall (fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector& vHitPt);
+		int CollideDebrisAndWall (fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector& vHitPt);
+		int CollideRobotAndPlayer (CObject* playerObjP, CFixVector& vHitPt);
+		int CollideRobotAndReactor (CObject* reactorP, CFixVector& vHitPt);
+		int CollideRobotAndMatCen (void);
+		int CollideRobotAndRobot (CObject* other, CFixVector& vHitPt);
+
+		int CollidePlayerAndMatCen (void);
+		int CollidePlayerAndReactor (CObject* reactorP, CFixVector& vHitPt);
+		int CollidePlayerAndPowerup (CObject* powerupP, CFixVector& vHitPt);
+		int CollidePlayerAndMonsterball (CObject* monsterball, CFixVector& vHitPt);
+		int CollidePlayerAndHostage (CObject* hostageP, CFixVector& vHitPt);
+		int CollidePlayerAndMarker (CObject* markerP, CFixVector& vHitPt);
+		int CollidePlayerAndPlayer (CObject* other, CFixVector& vHitPt);
+
+		int CollideWeaponAndRobot (CObject* robotP, CFixVector& vHitPt);
+		int CollideWeaponAndReactor (CObject* reactorP, CFixVector& vHitPt);
+		int CollideWeaponAndClutter (CObject *clutterP, CFixVector& vHitPt);
+		int CollideWeaponAndDebris (CObject *debrisP, CFixVector& vHitPt);
+		int CollideWeaponAndPlayer (CObject *playerObjP, CFixVector& vHitPt);
+		int CollideWeaponAndMonsterball (CObject *mBallP, CFixVector& vHitPt);
+		int CollideWeaponAndWeapon (CObject *other, CFixVector& vHitPt);
+
+		int CollideActorAndClutter (CObject* clutter, CFixVector& vHitPt);
 
 		inline void RequestEffects (ubyte nEffects);
 		CObject* CreateExplBlast (void);
 		int CreateWeaponEffects (int bExplBlast);
-		CObject* CreateExplosionSub (short nSegment, CFixVector *vPos, fix xSize,
-											  ubyte nVClip, fix xMaxDamage, fix xMaxDistance, fix xMaxForce, short nParent);
-		CObject* CreateBadassExplosion (short nSegment, CFixVector *position, fix size, ubyte nVClip,
-												  fix maxDamage, fix maxDistance, fix maxForce, short parent);
-		CObject* ExplodeBadassWeapon (CFixVector* vPos);
+		CObject* ExplodeBadass (fix damage, fix distance, fix force);
+		CObject* ExplodeBadassPlayer (void);
+		CObject* ExplodeBadassWeapon (CFixVector& vPos);
+		void MaybeKillWeapon (CObject *otherObjP);
+		int MaybeDetonateWeapon (CObject* otherP, CFixVector& vHitPt);
+		void DoExplosionSequence (void);
+
+		int BossSpewRobot (CFixVector* vPos, short objType, int bObjTrigger);
+		int CreateGatedRobot (short nSegment, ubyte nObjId, CFixVector* vPos);
 
 		//inline short Index (void) { return gameData.objs.objects.Index (this); }
 };
@@ -773,6 +822,8 @@ class CObject : public CObjectInfo {
 inline int operator- (CObject* o, CArray<CObject>& a) { return a.Index (o); }
 
 #if 0
+
+//	-----------------------------------------------------------------------------
 
 class CRobotObject : public CObject, public CPhysicsInfo, public CAIStaticInfo, public CPolyObjInfo {
 	public:
@@ -782,6 +833,8 @@ class CRobotObject : public CObject, public CPhysicsInfo, public CAIStaticInfo, 
 		void ToBaseObject (tBaseObject *objP);
 };
 
+//	-----------------------------------------------------------------------------
+
 class CPowerupObject : public CObject, public CPhysicsInfo, public CPolyObjInfo {
 	public:
 		CPowerupObject () {}
@@ -789,6 +842,8 @@ class CPowerupObject : public CObject, public CPhysicsInfo, public CPolyObjInfo 
 		void Initialize (void) {};
 		void ToBaseObject (tBaseObject *objP);
 };
+
+//	-----------------------------------------------------------------------------
 
 class CWeaponObject : public CObject, public CPhysicsInfo, public CPolyObjInfo {
 	public:
@@ -798,6 +853,8 @@ class CWeaponObject : public CObject, public CPhysicsInfo, public CPolyObjInfo {
 		void ToBaseObject (tBaseObject *objP);
 };
 
+//	-----------------------------------------------------------------------------
+
 class CLightObject : public CObject, public CObjLightInfo {
 	public:
 		CLightObject () {};
@@ -805,6 +862,8 @@ class CLightObject : public CObject, public CObjLightInfo {
 		void Initialize (void) {};
 		void ToBaseObject (tBaseObject *objP);
 };
+
+//	-----------------------------------------------------------------------------
 
 class CLightningObject : public CObject, public CLightningInfo {
 	public:
@@ -824,6 +883,7 @@ class CParticleObject : public CObject, public CSmokeInfo {
 
 #endif
 
+//	-----------------------------------------------------------------------------
 
 typedef struct tObjPosition {
 	tObjTransformation	position;
@@ -839,6 +899,8 @@ class CObjPosition : public CObjTransformation {
 		inline short& Segment () { return m_nSegment; }
 		inline short& SegType () { return m_nSegType; }
 };
+
+//	-----------------------------------------------------------------------------
 
 typedef struct tWindowRenderedData {
 	int     nFrame;
@@ -861,6 +923,8 @@ class WIndowRenderedData {
 		inline CObject *Viewer () { return m_data.viewerP; }
 };
 
+//	-----------------------------------------------------------------------------
+
 typedef struct tObjDropInfo {
 	time_t	nDropTime;
 	short		nPowerupType;
@@ -880,11 +944,15 @@ class CObjDropInfo {
 		inline short& Object () { return m_info.nObject; }
 };
 
+//	-----------------------------------------------------------------------------
+
 class tObjectRef {
 public:
 	short		objIndex;
 	short		nextObj;
 };
+
+//	-----------------------------------------------------------------------------
 
 #define MAX_RENDERED_WINDOWS    3
 
@@ -900,10 +968,12 @@ extern char *robot_names[];         // name of each robot
 
 extern CObject Follow;
 
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
 /*
  * FUNCTIONS
  */
-
 
 // do whatever setup needs to be done
 void InitObjects();
@@ -949,7 +1019,7 @@ void UnlinkObjFromSeg (CObject *objP);
 //               const CFixMatrix& orient, fix size, ubyte ctype, ubyte mtype, ubyte rtype, int bIgnoreLimits);
 
 // make a copy of an CObject. returs num of new CObject
-int ObjectCreateCopy(int nObject, CFixVector *new_pos, int newsegnum);
+int ObjectCreateCopy(int nObject, CFixVector& new_pos, int newsegnum);
 
 // remove CObject from the world
 void ReleaseObject(short nObject);
@@ -1049,7 +1119,7 @@ void AttachObject(CObject *parent, CObject *sub);
 extern void CreateSmallFireballOnObject(CObject *objp, fix size_scale, int soundFlag);
 
 // returns CObject number
-int DropMarkerObject(CFixVector *pos, short nSegment, CFixMatrix *orient, ubyte marker_num);
+int DropMarkerObject(CFixVector&pos, short nSegment, CFixMatrix *orient, ubyte marker_num);
 
 extern void WakeupRenderedObjects(CObject *gmissp, int window_num);
 
@@ -1092,7 +1162,7 @@ void FixObjectSizes (void);
 void DoSlowMotionFrame (void);
 CFixMatrix *ObjectView (CObject *objP);
 
-CFixVector *PlayerSpawnPos (int nPlayer);
+CFixVector&PlayerSpawnPos (int nPlayer);
 CFixMatrix *PlayerSpawnOrient (int nPlayer);
 void GetPlayerSpawn (int nPlayer, CObject *objP);
 void RecreateThief(CObject *objP);
@@ -1101,6 +1171,10 @@ void DeadPlayerFrame (void);
 void SetObjectType (CObject *objP, ubyte nNewType);
 
 extern ubyte bIsMissile [];
+
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
 
 #define	OBJ_CLOAKED(_objP)	((_objP)->ctype.aiInfo.flags [6])
 

@@ -217,7 +217,7 @@ memset (gameData.boss + BOSS_COUNT, 0, sizeof (gameData.boss [BOSS_COUNT]));
 // --------------------------------------------------------------------------------------------------------------------
 //	Return nObject if CObject created, else return -1.
 //	If pos == NULL, pick random spot in CSegment.
-int CreateGatedRobot (CObject *bossObjP, short nSegment, ubyte nObjId, CFixVector *pos)
+int CObject::CreateGatedRobot (short nSegment, ubyte nObjId, CFixVector* vPos)
 {
 	int			nObject, nTries = 5;
 	CObject		*objP;
@@ -230,7 +230,7 @@ int CreateGatedRobot (CObject *bossObjP, short nSegment, ubyte nObjId, CFixVecto
 
 if (gameStates.gameplay.bNoBotAI)
 	return -1;
-nBoss = FindBoss (OBJ_IDX (bossObjP));
+nBoss = FindBoss (OBJ_IDX (this));
 if (nBoss < 0)
 	return -1;
 if (gameData.time.xGame - gameData.boss [nBoss].nLastGateTime < gameData.boss [nBoss].nGateInterval)
@@ -244,10 +244,10 @@ if (count > 2 * gameStates.app.nDifficultyLevel + 6) {
 	}
 vObjPos = segP->Center ();
 for (;;) {
-	if (!pos)
+	if (!vPos)
 		vObjPos = segP->RandomPoint ();
 	else
-		vObjPos = *pos;
+		vObjPos = *vPos;
 
 	//	See if legal to place CObject here.  If not, move about in CSegment and try again.
 	if (CheckObjectObjectIntersection (&vObjPos, objsize, segP)) {
@@ -255,7 +255,7 @@ for (;;) {
 			gameData.boss [nBoss].nLastGateTime = gameData.time.xGame - 3 * gameData.boss [nBoss].nGateInterval / 4;
 			return -1;
 			}
-		pos = NULL;
+		vPos = NULL;
 		}
 	else
 		break;
@@ -280,7 +280,7 @@ objP->info.xShields = botInfoP->strength;
 objP->info.nCreator = BOSS_GATE_MATCEN_NUM;	//	flag this robot as having been created by the boss.
 default_behavior = ROBOTINFO (objP->info.nId).behavior;
 InitAIObject (OBJ_IDX (objP), default_behavior, -1);		//	Note, -1 = CSegment this robot goes to to hide, should probably be something useful
-ObjectCreateExplosion (nSegment, &vObjPos, I2X (10), VCLIP_MORPHING_ROBOT);
+/*Object*/CreateExplosion (nSegment, &vObjPos, I2X (10), VCLIP_MORPHING_ROBOT);
 DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, &vObjPos, 0 , F1_0);
 MorphStart (objP);
 gameData.boss [nBoss].nLastGateTime = gameData.time.xGame;
@@ -291,28 +291,25 @@ return OBJ_IDX (objP);
 
 //	----------------------------------------------------------------------------------------------------------
 //	objP points at a boss.  He was presumably just hit and he's supposed to create a bot at the hit location *pos.
-int BossSpewRobot (CObject *objP, CFixVector *pos, short objType, int bObjTrigger)
+int CObject::BossSpewRobot (CFixVector *vPos, short objType, int bObjTrigger)
 {
 	short			nObject, nSegment, maxRobotTypes;
-	short			nBossIndex, nBossId = ROBOTINFO (objP->info.nId).bossFlag;
+	short			nBossIndex, nBossId = ROBOTINFO (info.nId).bossFlag;
 	tRobotInfo	*pri;
-	CFixVector	vPos;
 
-if (!bObjTrigger && FindObjTrigger (OBJ_IDX (objP), TT_SPAWN_BOT, -1))
+if (!bObjTrigger && FindObjTrigger (OBJ_IDX (this), TT_SPAWN_BOT, -1))
 	return -1;
 nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
 Assert ((nBossIndex >= 0) && (nBossIndex < NUM_D2_BOSSES));
-nSegment = pos ? FindSegByPos (*pos, objP->info.nSegment, 1, 0) : objP->info.nSegment;
+nSegment = vPos ? FindSegByPos (*vPos, info.nSegment, 1, 0) : info.nSegment;
 if (nSegment == -1) {
 #if TRACE
 	console.printf (CON_DBG, "Tried to spew a bot outside the mine! Aborting!\n");
 #endif
 	return -1;
 	}
-if (!pos) {
-	pos = &vPos;
-	pos = SEGMENTS [nSegment].Center ();
-	}
+if (!vPos) 
+	vPos = SEGMENTS [nSegment].Center ();
 if (objType < 0)
 	objType = spewBots [gameStates.app.bD1Mission][nBossIndex][(maxSpewBots [nBossIndex] * d_rand ()) >> 15];
 if (objType == 255) {	// spawn an arbitrary robot
@@ -324,7 +321,7 @@ if (objType == 255) {	// spawn an arbitrary robot
 					pri->companion || //the buddy bot isn't exactly an enemy ... ^_^
 					(pri->scoreValue < 700)); //avoid spawning a ... spawn nType bot
 	}
-nObject = CreateGatedRobot (objP, nSegment, (ubyte) objType, pos);
+nObject = CreateGatedRobot (nSegment, (ubyte) objType, vPos);
 //	Make spewed robot come tumbling out as if blasted by a flash missile.
 if (nObject != -1) {
 	CObject	*newObjP = OBJECTS + nObject;
@@ -337,8 +334,8 @@ if (nObject != -1) {
 		newObjP->mType.physInfo.flags |= PF_USES_THRUST;
 
 		//	Now, give a big initial velocity to get moving away from boss.
-		newObjP->mType.physInfo.velocity = *pos - objP->info.position.vPos;
-		CFixVector::Normalize(newObjP->mType.physInfo.velocity);
+		newObjP->mType.physInfo.velocity = *vPos - info.position.vPos;
+		CFixVector::Normalize (newObjP->mType.physInfo.velocity);
 		newObjP->mType.physInfo.velocity *= (F1_0*128);
 		}
 	}

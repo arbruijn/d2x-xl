@@ -1610,7 +1610,7 @@ OBJECTS [nLocalObj].info.position.vPos = vNewPos;
 OBJECTS [nLocalObj].mType.physInfo.velocity.SetZero();
 OBJECTS [nLocalObj].RelinkToSeg (nSegment);
 MapObjnumLocalToRemote (nLocalObj, nObject, nPlayer);
-ObjectCreateExplosion (nSegment, &vNewPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
+/*Object*/CreateExplosion (nSegment, &vNewPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
 #if 0
 if (gameData.app.nGameMode & GM_NETWORK)
 	gameData.multiplayer.powerupsInMine [(int) powerupType]++;

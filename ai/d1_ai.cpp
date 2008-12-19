@@ -1557,7 +1557,7 @@ int CreateGatedRobot (int nSegment, int nObjId)
 
 	InitAIObject (OBJ_IDX (objP), default_behavior, -1 );		//	Note, -1 = CSegment this robotP goes to to hide, should probably be something useful
 
-	ObjectCreateExplosion (nSegment, &vObjPos, I2X(10), VCLIP_MORPHING_ROBOT );
+	/*Object*/CreateExplosion (nSegment, &vObjPos, I2X(10), VCLIP_MORPHING_ROBOT );
 	DigiLinkSoundToPos( gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, &vObjPos, 0 , F1_0);
 	MorphStart (objP);
 

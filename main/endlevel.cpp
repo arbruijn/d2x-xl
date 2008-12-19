@@ -238,7 +238,7 @@ if (gameStates.app.bPlayerIsDead || (gameData.objs.consoleP->info.nFlags & OF_SH
 //	Dematerialize Buddy!
 FORALL_ROBOT_OBJS (objP, i)
 	if (IS_GUIDEBOT (objP)) {
-			ObjectCreateExplosion (objP->info.nSegment, &objP->info.position.vPos, F1_0*7/2, VCLIP_POWERUP_DISAPPEARANCE);
+			/*Object*/CreateExplosion (objP->info.nSegment, &objP->info.position.vPos, F1_0*7/2, VCLIP_POWERUP_DISAPPEARANCE);
 			objP->Kill ();
 		}
 LOCALPLAYER.homingObjectDist = -F1_0; // Turn off homing sound.
@@ -465,7 +465,7 @@ if (!gameStates.render.bOutsideMine) {
 		if (CFixVector::Dot (tvec, gameData.endLevel.exit.mOrient.FVec()) > 0) {
 			CObject *objP;
 			gameStates.render.bOutsideMine = 1;
-			objP = ObjectCreateExplosion (gameData.endLevel.exit.nSegNum, &gameData.endLevel.exit.vSideExit, I2X (50), VCLIP_BIG_PLAYER_EXPLOSION);
+			objP = /*Object*/CreateExplosion (gameData.endLevel.exit.nSegNum, &gameData.endLevel.exit.vSideExit, I2X (50), VCLIP_BIG_PLAYER_EXPLOSION);
 			if (objP) {
 				externalExplosion = *objP;
 				objP->Kill ();
@@ -489,7 +489,7 @@ if (!gameStates.render.bOutsideMine) {
 		tpnt += gameData.objs.consoleP->info.position.mOrient.UVec() * ((d_rand ()- RAND_MAX / 2) * 15);
 		nSegment = FindSegByPos (tpnt, gameData.objs.consoleP->info.nSegment, 1, 0);
 		if (nSegment != -1) {
-			expl = ObjectCreateExplosion (nSegment, &tpnt, I2X (20), VCLIP_BIG_PLAYER_EXPLOSION);
+			expl = /*Object*/CreateExplosion (nSegment, &tpnt, I2X (20), VCLIP_BIG_PLAYER_EXPLOSION);
 			if (d_rand ()<10000 || ++soundCount==7) {		//pseudo-random
 				DigiLinkSoundToPos (SOUND_TUNNEL_EXPLOSION, nSegment, 0, &tpnt, 0, F1_0);
 				soundCount=0;
@@ -524,7 +524,7 @@ if ((gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH) && (gameStates.app.bEndL
 		fq.flags				= 0;
 		FindVectorIntersection (&fq, &hit_data);
 		if ((hit_data.hit.nType == HIT_WALL) && (hit_data.hit.nSegment != -1))
-			ObjectCreateExplosion ((short) hit_data.hit.nSegment, &hit_data.hit.vPoint, I2X (3)+d_rand ()*6, VCLIP_SMALL_EXPLOSION);
+			/*Object*/CreateExplosion ((short) hit_data.hit.nSegment, &hit_data.hit.vPoint, I2X (3)+d_rand ()*6, VCLIP_SMALL_EXPLOSION);
 		explosion_wait2 = (0xa00 + d_rand ()/8)/2;
 		}
 

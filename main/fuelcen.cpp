@@ -441,7 +441,7 @@ void CreateMatCenEffect (tFuelCenInfo *matCenP, ubyte nVideoClip)
 
 vPos = SEGMENTS [matCenP->nSegment].Center ();
 // HACK!!!The 10 under here should be something equal to the 1/2 the size of the CSegment.
-objP = ObjectCreateExplosion ((short) matCenP->nSegment, &vPos, I2X (10), nVideoClip);
+objP = /*Object*/CreateExplosion ((short) matCenP->nSegment, &vPos, I2X (10), nVideoClip);
 if (objP) {
 	ExtractOrientFromSegment (&objP->info.position.mOrient, SEGMENTS + matCenP->nSegment);
 	if (gameData.eff.vClips [0][nVideoClip].nSound > -1)
