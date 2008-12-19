@@ -1249,7 +1249,7 @@ if ((gameData.collisions.nSegsVisited < 0) || (gameData.collisions.nSegsVisited 
 	gameData.collisions.nSegsVisited = 0;
 gameData.collisions.segsVisited [gameData.collisions.nSegsVisited++] = nSegment;
 segP = SEGMENTS + nSegment;
-faceMask = segP->SideMasks (*vPoint, rad).m_face;
+faceMask = segP->Masks (*vPoint, rad).m_face;
 if (faceMask != 0) {				//on the back of at least one face
 	int		nSide, bit, iFace, nChild, i;
 	int		nFaceHitType;      //in what way did we hit the face?

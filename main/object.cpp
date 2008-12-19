@@ -2041,7 +2041,7 @@ int CObject::CheckWallPhysics (short nSegment, short nSide)
 
 if (info.nType != OBJ_PLAYER)
 	return 0;
-sideMask = segP->SideMasks (info.position.vPos, info.xSize).m_side;
+sideMask = segP->Masks (info.position.vPos, info.xSize).m_side;
 if (sideMask) {
 	short		nSide;
 	int		bit;

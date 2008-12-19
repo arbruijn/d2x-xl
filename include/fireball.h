@@ -37,10 +37,6 @@ CObject* CreateExplosion (short nSegment, CFixVector& vPos, fix xSize, ubyte nVC
 								  fix xMaxDamage, fix xMaxDistance, fix xMaxForce, short nParent);
 
 
-void ExplodeWall (short nSegment, short nSide);
-void DoExplodingWallFrame (void);
-void InitExplodingWalls (void);
-
 short GetExplosionVClip (CObject *obj, int stage);
 
 //------------------------------------------------------------------------------

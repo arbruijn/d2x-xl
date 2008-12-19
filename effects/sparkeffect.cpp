@@ -62,7 +62,7 @@ else {
 	vOffs [Y] = F2X (vMaxf [Y] - f_rand () * vMax2f [Y]);
 	vOffs [Z] = F2X (vMaxf [Z] - f_rand () * vMax2f [Z]);
 	m_vPos = segP->Center () + vOffs;
-	if ((vOffs.Mag () > segP->MinRad ()) && segP->SideMasks (m_vPos, 0).m_center)
+	if ((vOffs.Mag () > segP->MinRad ()) && segP->Masks (m_vPos, 0).m_center)
 		m_nProb = 1;
 	else {
 		m_xSize = F1_0 + 4 * d_rand ();

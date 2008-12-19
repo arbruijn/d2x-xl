@@ -5,6 +5,9 @@
 #include "inferno.h"
 #include "u_mem.h"
 #include "error.h"
+#include "newdemo.h"
+#include "wall.h"
+#include "text.h"
 
 // Number of vertices in current mine (ie, gameData.segs.vertices, pointed to by Vp)
 //	Translate table to get opposite CSide of a face on a CSegment.
@@ -120,7 +123,7 @@ return -1;
 // -------------------------------------------------------------------------------
 //returns 3 different bitmasks with info telling if this sphere is in
 //this CSegment.  See CSegMasks structure for info on fields
-CSegMasks CSegment::SideMasks (const CFixVector& refP, fix xRad)
+CSegMasks CSegment::Masks (const CFixVector& refP, fix xRad)
 {
 	short			nSide, faceBit;
 	CSegMasks	masks;
@@ -130,6 +133,16 @@ masks.m_valid = 1;
 for (nSide = 0, faceBit = 1; nSide < 6; nSide++)
 	masks |= m_sides [nSide].Masks (refP, xRad, 1 << nSide, faceBit);
 return masks;
+}
+
+// -------------------------------------------------------------------------------
+//returns 3 different bitmasks with info telling if this sphere is in
+//this CSegment.  See CSegMasks structure for info on fields
+CSegMasks CSegment::SideMasks (int nSide, const CFixVector& refP, fix xRad)
+{
+	short faceBit = 1;
+
+return m_sides [nSide].Masks (refP, xRad, 1, faceBit);
 }
 
 // -------------------------------------------------------------------------------
@@ -166,7 +179,7 @@ return -1;
 
 int CSegment::IsDoorWay (short nSide, CObject *objP)
 {
-	int	nChild = segP->m_children [nSide];
+	int	nChild = m_children [nSide];
 
 if (nChild == -1)
 	return WID_RENDER_FLAG;
@@ -210,7 +223,7 @@ return false;
 
 //------------------------------------------------------------------------------
 
-int Physics (fix& xDamage)
+int CSegment::Physics (fix& xDamage)
 {
 if (m_nType == SEGMENT_IS_WATER) {
 	xDamage = 0;
@@ -263,19 +276,19 @@ else if ((animP->flags & WCF_TMAP1) || !m_sides [nSide].m_nOvlTex) {
 		connSegP->m_sides [nConnSide].m_nBaseTex = nTexture;
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordWallSetTMapNum1(
-			SEG_IDX (segP), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) nConnSide, nTexture);
+			SEG_IDX (this), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) nConnSide, nTexture);
 	}
 else {
 	m_sides [nSide].m_nOvlTex = nTexture;
 	if (connSegP)
-		connSegP->m_sides [nConnSide].nOvlTex = nTexture;
+		connSegP->m_sides [nConnSide].m_nOvlTex = nTexture;
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordWallSetTMapNum2(
 		SEG_IDX (this), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) nConnSide, nTexture);
 	}
-m_sides [nSide].nFrame = -nFrame;
+m_sides [nSide].m_nFrame = -nFrame;
 if (connSegP)
-	connSegP->m_sides [nConnSide].nFrame = -nFrame;
+	connSegP->m_sides [nConnSide].m_nFrame = -nFrame;
 }
 
 //-----------------------------------------------------------------
@@ -284,7 +297,7 @@ inline int CSegment::CheckPoke (int nObject, short nSide)
 {
 	CObject *objP = OBJECTS + nObject;
 
-return (objP->info.xSize && SideMasks (&objP->info.position.vPos, nSide, objP->info.xSize).m_side)
+return (objP->info.xSize && SideMasks (nSide, objP->info.position.vPos, objP->info.xSize).m_side);
 }
 
 //-----------------------------------------------------------------
@@ -319,31 +332,31 @@ void CSegment::BlastWall (short nSide)
 	short			nConnSide;
 	CSegment*	connSegP;
 	int			a, n;
-	short			nWall, nConnWall;
+	short			nConnWall;
 	CWall*		wallP = Wall (nSide);
 
 if (!wallP)
 	return;
 wallP->hps = -1;	//say it's blasted
-if (segP->m_children [nSide] < 0) {
+if (m_children [nSide] < 0) {
 	if (gameOpts->legacy.bWalls)
-		Warning (TXT_BLAST_SINGLE, segP - SEGMENTS, nSide, nWall);
+		Warning (TXT_BLAST_SINGLE, this - SEGMENTS, nSide, wallP - WALLS);
 	connSegP = NULL;
 	nConnSide = -1;
 	nConnWall = NO_WALL;
 	}
 else {
-	connSegP = SEGMENTS + segP->m_children [nSide];
-	nConnSide = segP->ConnectedSide (connSegP);
+	connSegP = SEGMENTS + m_children [nSide];
+	nConnSide = ConnectedSide (connSegP);
 	Assert (nConnSide != -1);
 	nConnWall = connSegP->WallNum (nConnSide);
 	KillStuckObjects (nConnWall);
 	}
-KillStuckObjects (segP->WallNum (nSide));
+KillStuckObjects (WallNum (nSide));
 
 //if this is an exploding wall, explode it
 if ((gameData.walls.animP [wallP->nClip].flags & WCF_EXPLODES) && !(wallP->flags & WALL_BLASTED))
-	ExplodeWall (SEG_IDX (segP), nSide);
+	ExplodeWall (SEG_IDX (this), nSide);
 else {
 	//if not exploding, set final frame, and make door passable
 	a = wallP->nClip;
@@ -363,7 +376,7 @@ void CSegment::DestroyWall (short nSide)
 
 if (wallP)
 	if (wallP->nType == WALL_BLASTABLE)
-		BlastBlastableWall (segP, nSide);
+		BlastBlastableWall (this, nSide);
 	else
 		Error (TXT_WALL_INDESTRUCTIBLE);
 }
@@ -390,14 +403,14 @@ if ((wallP->flags & WALL_BLASTED) || (wallP->hps < 0))
 
 if (m_children [nSide] < 0) {
 	if (gameOpts->legacy.bWalls)
-		Warning (TXT_DMG_SINGLE, segP - SEGMENTS, nSide, nWall);
+		Warning (TXT_DMG_SINGLE, this - SEGMENTS, nSide, wallP - WALLS);
 	connSegP = NULL;
 	nConnSide = -1;
 	nConnWall = NO_WALL;
 	}
 else {
-	connSegP = SEGMENTS + segP->m_children [nSide];
-	nConnSide = segP->ConnectedSide (connSegP);
+	connSegP = SEGMENTS + m_children [nSide];
+	nConnSide = ConnectedSide (connSegP);
 	Assert(nConnSide != -1);
 	nConnWall = connSegP->WallNum (nConnSide);
 	}
@@ -409,7 +422,7 @@ n = AnimFrameCount (gameData.walls.animP + a);
 if (wallP->hps < WALL_HPS * 1 / n) {
 	BlastWall (nSide);
 	if (IsMultiGame)
-		MultiSendDoorOpen (SEG_IDX (segP), nSide, wallP->flags);
+		MultiSendDoorOpen (SEG_IDX (this), nSide, wallP->flags);
 	}
 else {
 	for (i = 0; i < n; i++)
@@ -422,43 +435,45 @@ else {
 // Opens a door
 void CSegment::OpenDoor (short nSide)
 {
-	CWall			*wallP;
-	short			nConnSide, nConnWall = NO_WALL;
-	CSegment		*connSegP;
-
+CWall* wallP;
 if (!(wallP = Wall (nSide)))
 	return;
+
+tActiveDoor* doorP;
 if (!(doorP = wallP->OpenDoor ()))
 	return;
+
+	short			nConnSide, nConnWall = NO_WALL;
+	CSegment		*connSegP;
 // So that door can't be shot while opening
-if (segP->m_children [nSide] < 0) {
+if (m_children [nSide] < 0) {
 	if (gameOpts->legacy.bWalls)
-		Warning (TXT_OPEN_SINGLE, segP - SEGMENTS, nSide, WallNum (nSide));
+		Warning (TXT_OPEN_SINGLE, this - SEGMENTS, nSide, WallNum (nSide));
 	connSegP = NULL;
 	nConnSide = -1;
 	nConnWall = NO_WALL;
 	}
 else {
-	connSegP = SEGMENTS + segP->m_children [nSide];
-	nConnSide = segP->ConnectedSide (connSegP);
+	connSegP = SEGMENTS + m_children [nSide];
+	nConnSide = ConnectedSide (connSegP);
 	if (nConnSide >= 0) {
-		nConnWall = WallNumP (connSegP, nConnSide);
-		if (IS_WALL (nConnWall))
-			WALLS [nConnWall].state = WALL_DOOR_OPENING;
+		CWall* wallP = connSegP->Wall (nConnSide);
+		if (wallP)
+			wallP->state = WALL_DOOR_OPENING;
 		}
 	}
 
 //KillStuckObjects(WallNumP (connSegP, nConnSide));
 doorP->nFrontWall [0] = WallNum (nSide);
 doorP->nBackWall [0] = nConnWall;
-Assert(SEG_IDX (segP) != -1);
+Assert(SEG_IDX (this) != -1);
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordDoorOpening (SEG_IDX (segP), nSide);
+	NDRecordDoorOpening (SEG_IDX (this), nSide);
 if (IS_WALL (wallP->nLinkedWall) && IS_WALL (nConnWall) && (wallP->nLinkedWall == nConnWall)) {
 	CWall *linkedWallP = WALLS + wallP->nLinkedWall;
 	CSegment *linkedSegP = SEGMENTS + linkedWallP->nSegment;
 	linkedWallP->state = WALL_DOOR_OPENING;
-	connSegP = SEGMENTS + linkedSegP->children [linkedWallP->nSide];
+	connSegP = SEGMENTS + linkedSegP->m_children [linkedWallP->nSide];
 	if (IS_WALL (nConnWall))
 		WALLS [nConnWall].state = WALL_DOOR_OPENING;
 	doorP->nPartCount = 2;
@@ -468,10 +483,8 @@ if (IS_WALL (wallP->nLinkedWall) && IS_WALL (nConnWall) && (wallP->nLinkedWall =
 else
 	doorP->nPartCount = 1;
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-	// NOTE THE LINK TO ABOVE!!!!
-	CFixVector cp = segP->SideCenter (nSide);
 	if (gameData.walls.animP [wallP->nClip].openSound > -1)
-		DigiLinkSoundToPos (gameData.walls.animP [wallP->nClip].openSound, SEG_IDX (segP), nSide, &cp, 0, F1_0);
+		DigiLinkSoundToPos (gameData.walls.animP [wallP->nClip].openSound, SEG_IDX (this), nSide, SideCenter (nSide), 0, F1_0);
 	}
 }
 
@@ -498,25 +511,23 @@ if (!(doorP = wallP->CloseDoor ()))
 	CSegment*		connSegP;
 	short				nConnSide, nConnWall;
 
-connSegP = SEGMENTS + segP->m_children [nSide];
-nConnSide = segP->ConnectedSide (connSegP);
+connSegP = SEGMENTS + m_children [nSide];
+nConnSide = ConnectedSide (connSegP);
 nConnWall = connSegP->WallNum (nConnSide);
 if (IS_WALL (nConnWall))
 	WALLS [nConnWall].state = WALL_DOOR_CLOSING;
-doorP->nFrontWall [0] = segP->WallNum (nSide);
+doorP->nFrontWall [0] = WallNum (nSide);
 doorP->nBackWall [0] = nConnWall;
-Assert(SEG_IDX (segP) != -1);
+Assert(SEG_IDX (this) != -1);
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordDoorOpening (SEG_IDX (segP), nSide);
+	NDRecordDoorOpening (SEG_IDX (this), nSide);
 if (IS_WALL (wallP->nLinkedWall))
 	Int3();		//don't think we ever used linked walls
 else
 	doorP->nPartCount = 1;
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-	// NOTE THE LINK TO ABOVE!!!!
-	CFixVector cp = segP->SideCenter (nSide);
 	if (gameData.walls.animP [wallP->nClip].openSound > -1)
-		DigiLinkSoundToPos (gameData.walls.animP [wallP->nClip].openSound, SEG_IDX (segP), nSide, &cp, 0, F1_0);
+		DigiLinkSoundToPos (gameData.walls.animP [wallP->nClip].openSound, SEG_IDX (this), nSide, SideCenter (nSide), 0, F1_0);
 	}
 }
 
@@ -528,10 +539,10 @@ void CSegment::StartCloak (short nSide)
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	return;
 
-	CWall*			wallP = Wall (nSide);
-
+CWall* wallP = Wall (nSide);
 if (!wallP)
 	return;
+
 if (wallP->nType == WALL_OPEN || wallP->state == WALL_DOOR_CLOAKING)		//already open or cloaking
 	return;
 
@@ -549,24 +560,23 @@ if (!(cloakWallP = wallP->StartCloak ())) {
 	wallP->nType = WALL_OPEN;
 	if ((wallP = connSegP->Wall (nConnSide)))
 		wallP->nType = WALL_OPEN;
-	return NULL;
+	return;
 	}
 
 nConnWall = connSegP->WallNum (nConnSide);
 if (IS_WALL (nConnWall))
 	WALLS [nConnWall].state = WALL_DOOR_CLOAKING;
-cloakWallP->nFrontWall = WallNumP (segP, nSide);
+cloakWallP->nFrontWall = WallNum (nSide);
 cloakWallP->nBackWall = nConnWall;
-Assert(SEG_IDX (segP) != -1);
+Assert(SEG_IDX (this) != -1);
 //Assert(!IS_WALL (wallP->nLinkedWall));
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-	CFixVector cp = SideCenter (nSide);
-	DigiLinkSoundToPos (SOUND_WALL_CLOAK_ON, SEG_IDX (segP), nSide, &cp, 0, F1_0);
+	DigiLinkSoundToPos (SOUND_WALL_CLOAK_ON, SEG_IDX (this), nSide, SideCenter (nSide), 0, F1_0);
 	}
 for (i = 0; i < 4; i++) {
-	cloakWallP->front_ls [i] = m_sides [nSide].uvls [i].l;
+	cloakWallP->front_ls [i] = m_sides [nSide].m_uvls [i].l;
 	if (IS_WALL (nConnWall))
-		cloakWallP->back_ls [i] = connSegP->m_sides [nConnSide].uvls [i].l;
+		cloakWallP->back_ls [i] = connSegP->m_sides [nConnSide].m_uvls [i].l;
 	}
 }
 
@@ -587,7 +597,6 @@ if (wallP->nType == WALL_CLOSED || wallP->state == WALL_DOOR_DECLOAKING)		//alre
 	short				nConnSide;
 	CSegment			*connSegP;
 	int				i;
-	short				nConnWall;
 
 connSegP = SEGMENTS + m_children [nSide];
 nConnSide = ConnectedSide (connSegP);
@@ -598,19 +607,17 @@ if (!(cloakWallP = wallP->StartDecloak ())) {
 	return;
 	}
 // So that door can't be shot while opening
-nConnWall = WallNumP (connSegP, nConnSide);
-if (IS_WALL (nConnWall))
-	WALLS [nConnWall].state = WALL_DOOR_DECLOAKING;
+if ((wallP = connSegP->Wall (nConnSide)))
+	wallP->state = WALL_DOOR_DECLOAKING;
 cloakWallP->nFrontWall = WallNum (nSide);
 cloakWallP->nBackWall = connSegP->WallNum (nConnSide);
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-	CFixVector cp = SideCenter (nSide);
-	DigiLinkSoundToPos (SOUND_WALL_CLOAK_OFF, SEG_IDX (segP), nSide, &cp, 0, F1_0);
+	DigiLinkSoundToPos (SOUND_WALL_CLOAK_OFF, SEG_IDX (this), nSide, SideCenter (nSide), 0, F1_0);
 	}
 for (i = 0; i < 4; i++) {
-	cloakWallP->front_ls [i] = m_sides [nSide].uvls [i].l;
-	if (IS_WALL (nConnWall))
-		cloakWallP->back_ls [i] = connSegP->m_sides [nConnSide].uvls [i].l;
+	cloakWallP->front_ls [i] = m_sides [nSide].m_uvls [i].l;
+	if (wallP)
+		cloakWallP->back_ls [i] = connSegP->m_sides [nConnSide].m_uvls [i].l;
 	}
 }
 
@@ -649,16 +656,16 @@ if (!wallP)
 	short			nConnSide;
 
 wallP->flags &= ~WALL_ILLUSION_OFF;
-if (segP->m_children [nSide] < 0) {
+if (m_children [nSide] < 0) {
 	if (gameOpts->legacy.bWalls)
-		Warning (TXT_ILLUS_SINGLE, segP - SEGMENTS, nSide);
+		Warning (TXT_ILLUS_SINGLE, this - SEGMENTS, nSide);
 	connSegP = NULL;
 	nConnSide = -1;
 	}
 else {
-	connSegP = SEGMENTS + segP->m_children [nSide];
-	nConnSide = segP->ConnectedSide (connSegP);
-	if ((wallP = connSegP->Wall (nConnSide))
+	connSegP = SEGMENTS + m_children [nSide];
+	nConnSide = ConnectedSide (connSegP);
+	if ((wallP = connSegP->Wall (nConnSide)))
 		wallP->flags &= ~WALL_ILLUSION_OFF;
 	}
 }
@@ -680,15 +687,15 @@ if (!wallP)
 wallP->flags |= WALL_ILLUSION_OFF;
 KillStuckObjects (wallP - WALLS);
 
-if (segP->m_children [nSide] < 0) {
+if (m_children [nSide] < 0) {
 	if (gameOpts->legacy.bWalls)
-		Warning (TXT_ILLUS_SINGLE,	segP - SEGMENTS, nSide);
+		Warning (TXT_ILLUS_SINGLE,	this - SEGMENTS, nSide);
 	connSegP = NULL;
 	nConnSide = -1;
 	}
 else {
-	connSegP = SEGMENTS + segP->m_children [nSide];
-	nConnSide = segP->ConnectedSide (connSegP);
+	connSegP = SEGMENTS + m_children [nSide];
+	nConnSide = ConnectedSide (connSegP);
 	if ((wallP = connSegP->Wall (nSide))) {
 		wallP->flags |= WALL_ILLUSION_OFF;
 		KillStuckObjects (wallP - WALLS);
@@ -704,11 +711,11 @@ CWall	*wallP = Wall (nSide);
 if (!wallP)
 	return;
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordWallToggle (SEG_IDX (segP), nSide);
+	NDRecordWallToggle (SEG_IDX (this), nSide);
 if (wallP->nType == WALL_BLASTABLE)
-	segP->DestroyWall (nSide);
+	DestroyWall (nSide);
 if ((wallP->nType == WALL_DOOR) && (wallP->state == WALL_DOOR_CLOSED))
-	segP->OpenDoor (nSide);
+	OpenDoor (nSide);
 }
 
 //-----------------------------------------------------------------
@@ -726,7 +733,7 @@ if (!wallP)
 	return WHP_NOT_SPECIAL;
 
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordWallHitProcess (SEG_IDX (segP), nSide, damage, nPlayer);
+	NDRecordWallHitProcess (SEG_IDX (this), nSide, damage, nPlayer);
 
 if (wallP->nType == WALL_BLASTABLE) {
 	if (objP->cType.laserInfo.parent.nType == OBJ_PLAYER)

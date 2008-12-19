@@ -348,5 +348,8 @@ void ReadActiveDoorV19(v19_door *d, CFile& cf);
  */
 void ReadActiveDoor(tActiveDoor *ad, CFile& cf);
 
+void ExplodeWall (short nSegment, short nSide);
+void DoExplodingWallFrame (void);
+void InitExplodingWalls (void);
 
 #endif

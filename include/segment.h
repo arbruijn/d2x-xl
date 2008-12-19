@@ -217,10 +217,13 @@ class CSegment {
 		void DamageWall (short nSide, fix damage);
 		void BlastWall (short nSide);
 		void OpenDoor (short nSide);
-		int AnimateOpeningDoor (short nSide, fix xElapsedTime);
-		int AnimateClosingDoor (short nSide, fix xElapsedTime);
+		void CloseDoor (short nSide);
+		void StartCloak (short nSide);
+		void StartDecloak (short nSide);
 		void IllusionOff (short nSide);
 		void IllusionOn (short nSide);
+		int AnimateOpeningDoor (short nSide, fix xElapsedTime);
+		int AnimateClosingDoor (short nSide, fix xElapsedTime);
 		void ToggleWall (short nSide);
 		int ProcessWallHit (short nSide, fix damage, int nPlayer, CObject *objP);
 		int DoorIsBlocked (short nSide);
@@ -267,7 +270,8 @@ class CSegment {
 			{ return m_sides [nSide].SpecialCheckLineToFace (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
 
 		inline int FaceCount (int nSide) { return m_sides [nSide].FaceCount (); }
-		CSegMasks SideMasks (const CFixVector& refP, fix xRad);
+		CSegMasks Masks (const CFixVector& refP, fix xRad);
+		CSegMasks SideMasks (int nSide, const CFixVector& refP, fix xRad);
 		ubyte GetSideDists (const CFixVector& refP, fix* xSideDists, int bBehind);
 		void HitPointUV (int nSide, fix *u, fix *v, fix *l, CFixVector& intersection, int iFace)
 			{ return m_sides [nSide].HitPointUV (u, v, l, intersection, iFace); }
