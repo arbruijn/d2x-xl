@@ -153,7 +153,7 @@ pAISnipeHandler aiSnipeHandlers [] = {DoSnipeAttack, DoSnipeFire, DoSnipeRetreat
 void DoSnipeFrame (CObject *objP)
 {
 if (gameData.ai.xDistToPlayer <= MAX_SNIPE_DIST) {
-	tAILocalInfo		*ailP = gameData.ai.localInfo + OBJ_IDX (objP);
+	tAILocalInfo		*ailP = gameData.ai.localInfo + objP->Index ();
 	int			i = ailP->mode;
 
 	if ((i >= AIM_SNIPE_ATTACK) && (i <= AIM_SNIPE_WAIT))

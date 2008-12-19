@@ -181,7 +181,7 @@ if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP->info.nId).companion) {
 				fq.p1					= &vNewPos;
 				fq.radP0				=
 				fq.radP1				= objP->info.xSize;
-				fq.thisObjNum		= OBJ_IDX (objP);
+				fq.thisObjNum		= objP->Index ();
 				fq.ignoreObjList	= NULL;
 				fq.flags				= 0;
 				hitType = FindVectorIntersection (&fq, &hitData);
@@ -212,7 +212,7 @@ void MoveAroundPlayer (CObject *objP, CFixVector *vVecToPlayer, int fastFlag)
 	tPhysicsInfo	*pptr = &objP->mType.physInfo;
 	fix				speed;
 	tRobotInfo		*botInfoP = &ROBOTINFO (objP->info.nId);
-	int				nObject = OBJ_IDX (objP);
+	int				nObject = objP->Index ();
 	int				dir;
 	int				dir_change;
 	fix				ft;
@@ -294,7 +294,7 @@ void MoveAroundPlayer (CObject *objP, CFixVector *vVecToPlayer, int fastFlag)
 	pptr->velocity[Z] += vEvade[Z];
 
 	speed = pptr->velocity.Mag();
-	if ((OBJ_IDX (objP) != 1) && (speed > botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel])) {
+	if ((objP->Index () != 1) && (speed > botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel])) {
 		pptr->velocity[X] = (pptr->velocity[X]*3)/4;
 		pptr->velocity[Y] = (pptr->velocity[Y]*3)/4;
 		pptr->velocity[Z] = (pptr->velocity[Z]*3)/4;
@@ -314,7 +314,7 @@ void MoveAwayFromPlayer (CObject *objP, CFixVector *vVecToPlayer, int attackType
 
 	if (attackType) {
 		//	Get value in 0d:\temp\dm_test3 to choose evasion direction.
-		objref = ((OBJ_IDX (objP)) ^ ((gameData.app.nFrameCount + 3* (OBJ_IDX (objP))) >> 5)) & 3;
+		objref = ((objP->Index ()) ^ ((gameData.app.nFrameCount + 3* (objP->Index ())) >> 5)) & 3;
 
 		switch (objref) {
 			case 0:
@@ -420,7 +420,7 @@ if (botInfoP->attackType == 1) {
 else if (botInfoP->thief)
 	MoveTowardsPlayer (objP, &gameData.ai.vVecToPlayer);
 else {
-	int	objval = ((OBJ_IDX (objP)) & 0x0f) ^ 0x0a;
+	int	objval = ((objP->Index ()) & 0x0f) ^ 0x0a;
 
 	//	Changes here by MK, 12/29/95.  Trying to get rid of endless circling around bots in a large room.
 	if (botInfoP->kamikaze)
@@ -493,9 +493,9 @@ if (ROBOTINFO (objP->info.nId).bossFlag) {
 	}
 	else {
 #if TRACE
-		console.printf (CON_DBG, "Note: Killing robot #%i because he's badly stuck outside the mine.\n", OBJ_IDX (objP));
+		console.printf (CON_DBG, "Note: Killing robot #%i because he's badly stuck outside the mine.\n", objP->Index ());
 #endif
-		ApplyDamageToRobot (objP, objP->info.xShields*2, OBJ_IDX (objP));
+		ApplyDamageToRobot (objP, objP->info.xShields*2, objP->Index ());
 	}
 }
 

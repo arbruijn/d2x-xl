@@ -197,12 +197,12 @@ CWall* wallP = m_sides [nSide].Wall ();
 CSegment* childP = SEGMENTS + nChild;
 
 #if DBG
-if (OBJ_IDX (objP) == nDbgObj)
+if (objP->Index () == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
 
 if ((objP == gameData.objs.consoleP) &&
-	 gameData.objs.speedBoost [OBJ_IDX (objP)].bBoosted &&
+	 gameData.objs.speedBoost [objP->Index ()].bBoosted &&
 	 (m_nType == SEGMENT_IS_SPEEDBOOST) && (childP->m_nType != SEGMENT_IS_SPEEDBOOST) &&
 	 (!wallP || (TRIGGERS [wallP->nTrigger].nType != TT_SPEEDBOOST)))
 	return objP ? WID_RENDER_FLAG : wallP ? wallP->IsDoorWay (objP) : WID_RENDPAST_FLAG;
@@ -769,9 +769,9 @@ if (!trigP)
 if (trigP->Operate (nObject, (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : -1, shot, 0))
 	return;
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordTrigger (segP->Index (), nSide, OBJ_IDX (objP), shot);
+	NDRecordTrigger (segP->Index (), nSide, objP->Index (), shot);
 if (IsMultiGame)
-	MultiSendTrigger (Index (), OBJ_IDX (objP));
+	MultiSendTrigger (Index (), objP->Index ());
 }
 
 //------------------------------------------------------------------------------

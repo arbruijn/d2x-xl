@@ -160,10 +160,10 @@ if (nLinks) {
 		objP->info.position.vPos = SEGMENTS [nSegment].Center ();
 		objP->RelinkToSeg (nSegment);
 		if (ROBOTINFO (objP->info.nId).bossFlag) {
-			int	i = FindBoss (OBJ_IDX (objP));
+			int	i = FindBoss (objP->Index ());
 
 			if (i >= 0)
-				InitBossData (i, OBJ_IDX (objP));
+				InitBossData (i, objP->Index ());
 			}
 		}
 	}
@@ -1106,7 +1106,7 @@ int ObjTriggerIsValid (int nTrigger)
 	CObject	*objP;
 
 FORALL_OBJS (objP, i) {
-	j = gameData.trigs.firstObjTrigger [OBJ_IDX (objP)];
+	j = gameData.trigs.firstObjTrigger [objP->Index ()];
 	if (j < 0)
 		continue;
 	if (gameData.trigs.objTriggerRefs [j].nObject < 0)

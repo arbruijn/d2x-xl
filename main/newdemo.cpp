@@ -223,7 +223,7 @@ int NDFindObject (int nSignature)
 
 FORALL_OBJSi (objP, i)
 	if ((objP->info.nType != OBJ_NONE) && (objP->info.nSignature == nSignature))
-		return OBJ_IDX (objP);
+		return objP->Index ();
 return -1;
 }
 
@@ -836,7 +836,7 @@ else {
 	}
 if (o.info.nType == OBJ_ROBOT) {
 	if (ROBOTINFO (o.info.nId).bossFlag) {
-		int i = FindBoss (OBJ_IDX (objP));
+		int i = FindBoss (objP->Index ());
 		if ((i >= 0) &&
 			 (gameData.time.xGame > gameData.boss [i].nCloakStartTime) && 
 			 (gameData.time.xGame < gameData.boss [i].nCloakEndTime))
@@ -1019,7 +1019,7 @@ StartTime (0);
 
 void NDRecordRenderObject (CObject * objP)
 {
-if (gameData.demo.bViewWasRecorded [OBJ_IDX (objP)])
+if (gameData.demo.bViewWasRecorded [objP->Index ()])
 	return;
 //if (obj==&OBJECTS [LOCALPLAYER.nObject] && !gameStates.app.bPlayerIsDead)
 //	return;
@@ -1033,11 +1033,11 @@ StartTime (0);
 
 void NDRecordViewerObject (CObject * objP)
 {
-	int	i = OBJ_IDX (objP);
+	int	i = objP->Index ();
 	int	h = gameData.demo.bViewWasRecorded [i];
 if (h && (h - 1 == gameStates.render.nRenderingType))
 	return;
-//if (gameData.demo.bWasRecorded [OBJ_IDX (objP)])
+//if (gameData.demo.bWasRecorded [objP->Index ()])
 //	return;
 if (gameData.demo.bRenderingWasRecorded [gameStates.render.nRenderingType])
 	return;

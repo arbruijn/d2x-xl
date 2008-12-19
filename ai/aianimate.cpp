@@ -40,13 +40,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void AIIdleAnimation (CObject *objP)
 {
 #if DBG
-if (OBJ_IDX (objP) == nDbgObj)
+if (objP->Index () == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
 if (gameOpts->gameplay.bIdleAnims) {
 		int			h, i, j;
 		CSegment		*segP = SEGMENTS + objP->info.nSegment;
-		CFixVector	*vVertex, vVecToGoal, vGoal = gameData.objs.vRobotGoals [OBJ_IDX (objP)];
+		CFixVector	*vVertex, vVecToGoal, vGoal = gameData.objs.vRobotGoals [objP->Index ()];
 
 	for (i = 0; i < 8; i++) {
 		vVertex = gameData.segs.vertices + segP->m_verts [i];
@@ -72,7 +72,7 @@ if (gameOpts->gameplay.bIdleAnims) {
 			vGoal = SEGMENTS [objP->info.nSegment].Center ();
 		else
 			vGoal = gameData.segs.vertices [segP->m_verts [j]];
-		gameData.objs.vRobotGoals [OBJ_IDX (objP)] = vGoal;
+		gameData.objs.vRobotGoals [objP->Index ()] = vGoal;
 		DoSillyAnimation (objP);
 		}
 	}
@@ -86,7 +86,7 @@ sbyte   xlatAnimation [] = {AS_REST, AS_REST, AS_ALERT, AS_ALERT, AS_FLINCH, AS_
 
 int DoSillyAnimation (CObject *objP)
 {
-	int				nObject = OBJ_IDX (objP);
+	int				nObject = objP->Index ();
 	tJointPos 		*jp_list;
 	int				robotType, nGun, robotState, nJointPositions;
 	tPolyObjInfo	*polyObjInfo = &objP->rType.polyObjInfo;
@@ -195,7 +195,7 @@ int DoSillyAnimation (CObject *objP)
 
 		if (at_goal) {
 			//tAIStaticInfo	*aiP = &objP->cType.aiInfo;
-			tAILocalInfo		*ailP = gameData.ai.localInfo + OBJ_IDX (objP);
+			tAILocalInfo		*ailP = gameData.ai.localInfo + objP->Index ();
 			ailP->achievedState [nGun] = ailP->goalState [nGun];
 			if (ailP->achievedState [nGun] == AIS_RECOVER)
 				ailP->goalState [nGun] = AIS_FIRE;
@@ -219,7 +219,7 @@ int DoSillyAnimation (CObject *objP)
 //	Delta orientation of CObject is at:		aiInfo.deltaAngles
 void AIFrameAnimation (CObject *objP)
 {
-	int	nObject = OBJ_IDX (objP);
+	int	nObject = objP->Index ();
 	int	nJoint;
 	int	nJoints = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nModels;
 
@@ -311,7 +311,7 @@ if (StartTime + xRollDuration - xSoundDuration < gameData.time.xGame) {
 		console.printf (CON_DBG, "Starting death sound!\n");
 #endif
 		*bDyingSoundPlaying = 1;
-		DigiLinkSoundToObject2 (deathSound, OBJ_IDX (objP), 0, xSoundScale, xSoundScale * 256, SOUNDCLASS_ROBOT);	//	F1_0*512 means play twice as loud
+		DigiLinkSoundToObject2 (deathSound, objP->Index (), 0, xSoundScale, xSoundScale * 256, SOUNDCLASS_ROBOT);	//	F1_0*512 means play twice as loud
 		}
 	else if (d_rand () < gameData.time.xFrame*16)
 		CreateSmallFireballOnObject (objP, (F1_0 + d_rand ()) * (16 * xExplScale/F1_0) / 8, 0);
@@ -343,7 +343,7 @@ if (objP->cType.aiInfo.xDyingStartTime) {
 											bDeathRoll * F1_0 / 8, bDeathRoll * F1_0 / 2);
 	if (rval) {
 		ExplodeObject (objP, F1_0/4);
-		DigiLinkSoundToObject2 (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F2_0, F1_0*512, SOUNDCLASS_EXPLOSION);
+		DigiLinkSoundToObject2 (SOUND_BADASS_EXPLOSION, objP->Index (), 0, F2_0, F1_0*512, SOUNDCLASS_EXPLOSION);
 		if ((gameData.missions.nCurrentLevel < 0) && (ROBOTINFO (objP->info.nId).thief))
 			RecreateThief (objP);
 		}

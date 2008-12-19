@@ -785,7 +785,7 @@ direction = gameData.objs.consoleP->info.position.vPos - objP->info.position.vPo
 objP->info.position.mOrient = CFixMatrix::CreateFU(direction, objP->info.position.mOrient.UVec ());
 //objP->info.position.mOrient = CFixMatrix::CreateFU(direction, &objP->info.position.mOrient.UVec (), NULL);
 MorphStart (objP);
-MapObjnumLocalToRemote (OBJ_IDX (objP), nObject, nPlayer);
+MapObjnumLocalToRemote (objP->Index (), nObject, nPlayer);
 Assert (objP->cType.aiInfo.REMOTE_OWNER == -1);
 }
 

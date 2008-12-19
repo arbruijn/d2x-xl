@@ -92,7 +92,7 @@ void RenderLaser (CObject *objP)
 switch (gameData.weapons.info [objP->info.nId].renderType)	{
 	case WEAPON_RENDER_LASER:
 		Int3 ();	// Not supported anymore!
-					//Laser_draw_one (OBJ_IDX (objP), gameData.weapons.info [objP->info.nId].bitmap);
+					//Laser_draw_one (objP->Index (), gameData.weapons.info [objP->info.nId].bitmap);
 		break;
 	case WEAPON_RENDER_BLOB:
 		DrawObjectBlob (objP, gameData.weapons.info [objP->info.nId].bitmap.index, gameData.weapons.info [objP->info.nId].bitmap.index, 0, NULL, 2.0f / 3.0f);
@@ -597,7 +597,7 @@ CFixVector *TransformGunPoint (CObject *objP, CFixVector *vGunPoints, int nGun,
 	CFixVector	v [2];
 #if FULL_COCKPIT_OFFS
 	int			bLaserOffs = ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) &&
-									  (OBJ_IDX (objP) == LOCALPLAYER.nObject));
+									  (objP->Index () == LOCALPLAYER.nObject));
 #else
 	int			bLaserOffs = 0;
 #endif
@@ -653,7 +653,7 @@ int LaserPlayerFireSpreadDelay (
 	CObject		*laserP;
 #if FULL_COCKPIT_OFFS
 	int bLaserOffs = ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) &&
-							(OBJ_IDX (objP) == LOCALPLAYER.nObject));
+							(objP->Index () == LOCALPLAYER.nObject));
 #else
 	int bLaserOffs = 0;
 #endif
@@ -701,7 +701,7 @@ fq.startSeg			= bSpectate ? gameStates.app.nPlayerSegment : objP->info.nSegment;
 fq.p1					= &vLaserPos;
 fq.radP0				=
 fq.radP1				= 0x10;
-fq.thisObjNum		= OBJ_IDX (objP);
+fq.thisObjNum		= objP->Index ();
 fq.ignoreObjList	= NULL;
 fq.flags				= FQ_CHECK_OBJS | FQ_IGNORE_POWERUPS;
 nFate = FindVectorIntersection (&fq, &hitData);
@@ -734,7 +734,7 @@ if (xSpreadR || xSpreadU) {
 	}
 if (bLaserOffs)
 	vLaserDir += m.UVec () * LASER_OFFS;
-nObject = CreateNewWeapon (&vLaserDir, &vLaserPos, nLaserSeg, OBJ_IDX (objP), nLaserType, bMakeSound);
+nObject = CreateNewWeapon (&vLaserDir, &vLaserPos, nLaserSeg, objP->Index (), nLaserType, bMakeSound);
 //	Omega cannon is a hack, not surprisingly.  Don't want to do the rest of this stuff.
 if (nLaserType == OMEGA_ID)
 	return -1;
@@ -873,7 +873,7 @@ if (!((gameData.app.nFrameCount ^ objP->info.nSignature) & 3) &&
 		(objP->info.nType == OBJ_WEAPON) && (objP->info.nId != FLARE_ID) &&
 		(gameData.weapons.info [objP->info.nId].speed [gameStates.app.nDifficultyLevel] > 0) &&
 		(xWeaponSpeed < F2_0)) {
-	ReleaseObject (OBJ_IDX (objP));
+	ReleaseObject (objP->Index ());
 	return;
 	}
 if ((objP->info.nType == OBJ_WEAPON) && (objP->info.nId == FUSION_ID)) {		//always set fusion weapon to max vel
@@ -1480,7 +1480,7 @@ else { //	Create a vector towards the goal, then add some noise to it.
 	vGoal += vRandom * (F1_0/4);
 	CFixVector::Normalize (vGoal);
 	}
-if (0 > (nObject = CreateNewWeapon (&vGoal, &objP->info.position.vPos, objP->info.nSegment, OBJ_IDX (objP), objType, bMakeSound)))
+if (0 > (nObject = CreateNewWeapon (&vGoal, &objP->info.position.vPos, objP->info.nSegment, objP->Index (), objType, bMakeSound)))
 	return -1;
 OBJECTS [nObject].cType.laserInfo.nHomingTarget = nGoalObj;
 return nObject;
@@ -1501,7 +1501,7 @@ if (nObjType == OBJ_WEAPON) {
 	}
 else if (nObjType == OBJ_ROBOT) {
 	parent.nType = OBJ_ROBOT;
-	parent.nObject = OBJ_IDX (objP);
+	parent.nObject = objP->Index ();
 	}
 else {
 	Int3 ();	//	Hey, what kind of CObject is this!?

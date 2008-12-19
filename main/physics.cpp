@@ -343,7 +343,7 @@ fq.p0 = fq.p1 = &objP->info.position.vPos;
 fq.startSeg = objP->info.nSegment;
 fq.radP0 = 0;
 fq.radP1 = objP->info.xSize;
-fq.thisObjNum = OBJ_IDX (objP);
+fq.thisObjNum = objP->Index ();
 fq.ignoreObjList = NULL;
 fq.flags = 0;
 fviResult = FindVectorIntersection (&fq, &hi);

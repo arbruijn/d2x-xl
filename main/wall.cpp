@@ -888,7 +888,7 @@ if (wallP) {
 	for (i = 0, stuckObjP = stuckObjects; i < MAX_STUCK_OBJECTS; i++, stuckObjP++) {
 		if (stuckObjP->nWall == NO_WALL) {
 			stuckObjP->nWall = nWall;
-			stuckObjP->nObject = OBJ_IDX (objP);
+			stuckObjP->nObject = objP->Index ();
 			stuckObjP->nSignature = objP->info.nSignature;
 			nStuckObjects++;
 			break;

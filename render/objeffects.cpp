@@ -599,7 +599,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
 #endif
 #if 0
-if (!CanSeeObject (OBJ_IDX (objP), 1))
+if (!CanSeeObject (objP->Index (), 1))
 	return;
 #endif
 if (!EGI_FLAG (bCloakedIndicators, 0, 1, 0)) {

@@ -387,11 +387,11 @@ if ((siP->ailP->nextPrimaryFire <= 0) && (gameData.ai.nPlayerVisibility)) {
 	fire_vec = objP->info.position.mOrient.FVec ();
 	fire_vec = -fire_vec;
 	fire_pos = objP->info.position.vPos + fire_vec;
-	CreateNewLaserEasy (&fire_vec, &fire_pos, OBJ_IDX (objP), (aiP->SUB_FLAGS & SUB_FLAGS_SPROX) ? ROBOT_SMARTMINE_ID : PROXMINE_ID, 1);
+	CreateNewLaserEasy (&fire_vec, &fire_pos, objP->Index (), (aiP->SUB_FLAGS & SUB_FLAGS_SPROX) ? ROBOT_SMARTMINE_ID : PROXMINE_ID, 1);
 	siP->ailP->nextPrimaryFire = (F1_0/2)* (NDL+5 - gameStates.app.nDifficultyLevel);      // Drop a proximity bomb every 5 seconds.
 	if (siP->bMultiGame) {
-		AIMultiSendRobotPos (OBJ_IDX (objP), -1);
-		MultiSendRobotFire (OBJ_IDX (objP), (aiP->SUB_FLAGS & SUB_FLAGS_SPROX) ? -2 : -1, &fire_vec);
+		AIMultiSendRobotPos (objP->Index (), -1);
+		MultiSendRobotFire (objP->Index (), (aiP->SUB_FLAGS & SUB_FLAGS_SPROX) ? -2 : -1, &fire_vec);
 		}
 	}
 return 0;
@@ -857,7 +857,7 @@ if (siP->botInfoP->companion) {
 			;
 
 		if (bDoStuff && (CFixVector::Dot (objP->info.position.mOrient.FVec (), gameData.ai.vVecToPlayer) < F1_0 / 2)) {
-			CreateNewLaserEasy (&objP->info.position.mOrient.FVec (), &objP->info.position.vPos, OBJ_IDX (objP), FLARE_ID, 1);
+			CreateNewLaserEasy (&objP->info.position.mOrient.FVec (), &objP->info.position.vPos, objP->Index (), FLARE_ID, 1);
 			siP->ailP->nextPrimaryFire = F1_0/2;
 			if (!gameData.escort.bMayTalk) // If buddy not talking, make him fire flares less often.
 				siP->ailP->nextPrimaryFire += d_rand ()*4;
@@ -886,7 +886,7 @@ if (siP->botInfoP->thief) {
 			bDoStuff = 1;
 		if (bDoStuff) {
 			// @mk, 05/08/95: Firing flare from center of CObject, this is dumb...
-			CreateNewLaserEasy (&objP->info.position.mOrient.FVec (), &objP->info.position.vPos, OBJ_IDX (objP), FLARE_ID, 1);
+			CreateNewLaserEasy (&objP->info.position.mOrient.FVec (), &objP->info.position.vPos, objP->Index (), FLARE_ID, 1);
 			siP->ailP->nextPrimaryFire = F1_0 / 2;
 			if (gameData.thief.nStolenItem == 0)     // If never stolen an item, fire flares less often (bad: gameData.thief.nStolenItem wraps, but big deal)
 				siP->ailP->nextPrimaryFire += d_rand ()*4;
@@ -902,7 +902,7 @@ return 0;
 int AIBumpHandler (CObject *objP, tAIStateInfo *siP)
 {
 #if DBG
-if (OBJ_IDX (objP) == nDbgObj)
+if (objP->Index () == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
 if (gameData.ai.nPlayerVisibility != 1) // Only increase visibility if unobstructed, else claw guys attack through doors.
@@ -1012,7 +1012,7 @@ return 1;
 int AIApproachHandler (CObject *objP, tAIStateInfo *siP)
 {
 #if DBG
-if (OBJ_IDX (objP) == nDbgObj)
+if (objP->Index () == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
 if (siP->bMultiGame || siP->botInfoP->companion || siP->botInfoP->thief)
@@ -1029,14 +1029,14 @@ if (gameData.ai.nOverallAgitation < 71)
 		return 0;
 	}
 #if DBG
-if (OBJ_IDX (objP) == nDbgObj)
+if (objP->Index () == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
 if (gameOpts->gameplay.nAIAggressivity && 
 	 (siP->ailP->mode == AIM_FOLLOW_PATH) && 
 	 (siP->ailP->nGoalSegment == gameData.ai.nBelievedPlayerSeg)) {
 #if DBG
-	if (OBJ_IDX (objP) == nDbgObj)
+	if (objP->Index () == nDbgObj)
 		nDbgObj = nDbgObj;
 #endif
 	if (objP->info.nSegment == siP->ailP->nGoalSegment) {
@@ -1309,11 +1309,11 @@ void DoAIFrame (CObject *objP)
 	tAIStateInfo	si;
 
 #if DBG
-if (OBJ_IDX (objP) == nDbgObj)
+if (objP->Index () == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
 Assert (objP->info.nSegment != -1);
-si.nObject = OBJ_IDX (objP);
+si.nObject = objP->Index ();
 si.nObjRef = si.nObject ^ gameData.app.nFrameCount;
 si.aiP = &objP->cType.aiInfo;
 si.ailP = gameData.ai.localInfo + si.nObject;

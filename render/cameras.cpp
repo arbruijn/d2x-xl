@@ -199,7 +199,7 @@ if (objP) {
 	m_info.curAngle =
 	m_info.curDelta = 0;
 	m_info.t0 = 0;
-	cameraManager.SetObjectCamera (OBJ_IDX (objP), nId);
+	cameraManager.SetObjectCamera (objP->Index (), nId);
 	}
 else {
 	m_info.objP = &m_info.obj;
@@ -656,7 +656,7 @@ for (i = 0, wallP = WALLS.Buffer (); (i < gameData.walls.nWalls) && (m_nCameras 
 #endif
 	}
 FORALL_OBJS (objP, i) {
-	r = j = gameData.trigs.firstObjTrigger [OBJ_IDX (objP)];
+	r = j = gameData.trigs.firstObjTrigger [objP->Index ()];
 #if DBG
 	if (j >= 0)
 		j = j;
@@ -771,7 +771,7 @@ if (m_faceCameras.Buffer ())
 
 CCamera* CCameraManager::Camera (CObject *objP)
 {
-	short i = GetObjectCamera (OBJ_IDX (objP));
+	short i = GetObjectCamera (objP->Index ());
 
 return (i < 0) ? NULL : m_cameras + i;
 }
@@ -780,7 +780,7 @@ return (i < 0) ? NULL : m_cameras + i;
 
 void CCameraManager::Rotate (CObject *objP)
 {
-	short i = GetObjectCamera (OBJ_IDX (objP));
+	short i = GetObjectCamera (objP->Index ());
 
 if (i >= 0)
 	m_cameras [i].Rotate ();

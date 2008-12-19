@@ -420,7 +420,7 @@ objP->mType.physInfo.drag = botInfoP->drag;
 objP->mType.physInfo.flags |= (PF_LEVELLING);
 objP->info.xShields = RobotDefaultShields (objP);
 default_behavior = botInfoP->behavior;
-InitAIObject (OBJ_IDX (objP), default_behavior, -1);		//	Note, -1 = CSegment this robot goes to to hide, should probably be something useful
+InitAIObject (objP->Index (), default_behavior, -1);		//	Note, -1 = CSegment this robot goes to to hide, should probably be something useful
 CreateNSegmentPath (objP, 6, -1);		//	Create a 6 CSegment path from creation point.
 gameData.ai.localInfo [nObject].mode = AIBehaviorToMode (default_behavior);
 return objP;
@@ -739,7 +739,7 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 		return;
 		}
 	if (IsMultiGame)
-		MultiSendCreateRobot (FUELCEN_IDX (matCenP), OBJ_IDX (objP), nType);
+		MultiSendCreateRobot (FUELCEN_IDX (matCenP), objP->Index (), nType);
 	objP->info.nCreator = (FUELCEN_IDX (matCenP)) | 0x80;
 	// Make object face player...
 	vDir = gameData.objs.consoleP->info.position.vPos - objP->info.position.vPos;

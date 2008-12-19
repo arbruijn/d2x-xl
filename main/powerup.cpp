@@ -227,7 +227,7 @@ else if ((objP->info.nId < MAX_POWERUP_TYPES_D2) || ((objP->info.nType == OBJ_EX
 #endif
 	DrawObjectBlob (objP, frameP->index, frameP [iFrame].index, iFrame, NULL, 0);
 #ifdef EDITOR
-	if ((gameStates.app.nFunctionMode == FMODE_EDITOR) && (CurObject_index == OBJ_IDX (objP)))
+	if ((gameStates.app.nFunctionMode == FMODE_EDITOR) && (CurObject_index == objP->Index ()))
 		if (blob_vertices[0] != 0x80000)
 			DrawBlobOutline ();
 #endif

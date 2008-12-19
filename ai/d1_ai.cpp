@@ -565,7 +565,7 @@ int player_is_visible_from_object(CObject *objP, CFixVector *pos, fix fieldOfVie
 		fq.startSeg		= objP->info.nSegment;
 	fq.p1					= &gameData.ai.vBelievedPlayerPos;
 	fq.radP0				= F1_0/4;
-	fq.thisObjNum		= OBJ_IDX (objP);
+	fq.thisObjNum		= objP->Index ();
 	fq.ignoreObjList	= NULL;
 	fq.flags				= FQ_TRANSWALL | FQ_CHECK_OBJS;		//what about trans walls???
 
@@ -590,7 +590,7 @@ int player_is_visible_from_object(CObject *objP, CFixVector *pos, fix fieldOfVie
 //	Return 1 if animates, else return 0
 int do_silly_animation(CObject *objP)
 {
-	int				nObject = OBJ_IDX (objP);
+	int				nObject = objP->Index ();
 	tJointPos 		*jp_list;
 	int				robot_type, nGun, robotState, nJointPositions;
 	tPolyObjInfo	*polyObjInfo = &objP->rType.polyObjInfo;
@@ -699,7 +699,7 @@ int do_silly_animation(CObject *objP)
 
 		if (at_goal) {
 			//tAIStaticInfo	*aiP = &objP->cType.aiInfo;
-			tAILocalInfo		*ailP = &gameData.ai.localInfo [OBJ_IDX (objP)];
+			tAILocalInfo		*ailP = &gameData.ai.localInfo [objP->Index ()];
 			ailP->achievedState [nGun] = ailP->goalState [nGun];
 			if (ailP->achievedState [nGun] == D1_AIS_RECO)
 				ailP->goalState [nGun] = D1_AIS_FIRE;
@@ -723,7 +723,7 @@ int do_silly_animation(CObject *objP)
 //	Delta orientation of CObject is at:		aiInfo.deltaAngles
 void ai_frame_animation(CObject *objP)
 {
-	int	nObject = OBJ_IDX (objP);
+	int	nObject = objP->Index ();
 	int	joint;
 	int	num_joints;
 
@@ -837,7 +837,7 @@ if (IsMultiGame)
 //	When this routine is complete, the parameter vec_to_player should not be necessary.
 void ai_fire_laser_at_player(CObject *objP, CFixVector *fire_point)
 {
-	int			nObject = OBJ_IDX (objP);
+	int			nObject = objP->Index ();
 	tAILocalInfo		*ailP = &gameData.ai.localInfo [nObject];
 	tRobotInfo	*botInfoP = &gameData.bots.info [1][objP->info.nId];
 	CFixVector	fire_vec;
@@ -881,7 +881,7 @@ void ai_fire_laser_at_player(CObject *objP, CFixVector *fire_point)
 //--	fq.startseg				= objP->info.nSegment;
 //--	fq.p1						= fire_point;
 //--	fq.rad					= 0;
-//--	fq.thisobjnum			= OBJ_IDX (objP);
+//--	fq.thisobjnum			= objP->Index ();
 //--	fq.ignore_obj_list	= NULL;
 //--	fq.flags					= FQ_TRANSWALL | FQ_CHECK_OBJS;		//what about trans walls???
 //--
@@ -924,7 +924,7 @@ void ai_fire_laser_at_player(CObject *objP, CFixVector *fire_point)
 		}
 	}
 
-	CreateNewLaserEasy ( &fire_vec, fire_point, OBJ_IDX (objP), botInfoP->nWeaponType, 1);
+	CreateNewLaserEasy ( &fire_vec, fire_point, objP->Index (), botInfoP->nWeaponType, 1);
 
 	if (IsMultiGame)
 	{
@@ -997,7 +997,7 @@ void move_around_player(CObject *objP, CFixVector *vec_to_player, int fast_flag)
 	tPhysicsInfo	*piP = &objP->mType.physInfo;
 	fix				speed;
 	tRobotInfo		*botInfoP = &gameData.bots.info [1][objP->info.nId];
-	int				nObject = OBJ_IDX (objP);
+	int				nObject = objP->Index ();
 	int				dir;
 	int				dir_change;
 	fix				ft;
@@ -1092,7 +1092,7 @@ void move_away_from_player(CObject *objP, CFixVector *vec_to_player, int attackT
 
 	if (attackType) {
 		//	Get value in 0..3 to choose evasion direction.
-		objref = (OBJ_IDX (objP) ^ ((gameData.app.nFrameCount + 3*OBJ_IDX (objP)) >> 5)) & 3;
+		objref = (objP->Index () ^ ((gameData.app.nFrameCount + 3*objP->Index ()) >> 5)) & 3;
 
 		switch (objref) {
 			case 0:	piP->velocity += objP->info.position.mOrient.UVec () * ( gameData.time.xFrame << 5);	break;
@@ -1236,7 +1236,7 @@ void do_firing_stuff(CObject *objP, int player_visibility, CFixVector *vec_to_pl
 		fix	dot = CFixVector::Dot (objP->info.position.mOrient.FVec (), *vec_to_player);
 		if ((dot >= 7*F1_0/8) || (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
 			tAIStaticInfo	*aiP = &objP->cType.aiInfo;
-			tAILocalInfo		*ailP = &gameData.ai.localInfo [OBJ_IDX (objP)];
+			tAILocalInfo		*ailP = &gameData.ai.localInfo [objP->Index ()];
 
 			switch (aiP->GOAL_STATE) {
 				case D1_AIS_NONE:
@@ -1274,7 +1274,7 @@ void DoD1AIRobotHit (CObject *objP, int type)
 					objP->cType.aiInfo.SUBMODE = AISM_GOHIDE;
 					break;
 				case D1_AIM_STILL:
-					gameData.ai.localInfo [OBJ_IDX (objP)].mode = D1_AIM_CHASE_OBJECT;
+					gameData.ai.localInfo [objP->Index ()].mode = D1_AIM_CHASE_OBJECT;
 					break;
 			}
 	}
@@ -1302,7 +1302,7 @@ void compute_vis_and_vec(CObject *objP, CFixVector *pos, tAILocalInfo *ailP, CFi
 	if (!*flag) {
 		if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 			fix			delta_time, dist;
-			int			cloak_index = OBJ_IDX (objP) % D1_MAX_AI_CLOAK_INFO;
+			int			cloak_index = objP->Index () % D1_MAX_AI_CLOAK_INFO;
 
 			delta_time = gameData.time.xGame - gameData.ai.cloakInfo [cloak_index].lastTime;
 			if (delta_time > F1_0*2) {
@@ -1401,7 +1401,7 @@ void move_object_to_legal_spot(CObject *objP)
 	}
 
 	// Int3();		//	Darn you John, you done it again!  (But contact Mike)
-	objP->ApplyDamageToRobot(objP->info.xShields*2, OBJ_IDX (objP));
+	objP->ApplyDamageToRobot(objP->info.xShields*2, objP->Index ());
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -1555,7 +1555,7 @@ int CreateGatedRobot (int nSegment, int nObjId)
 	if (nObjId == 10)						//	This is a toaster guy!
 		default_behavior = D1_AIB_RUN_FROM;
 
-	InitAIObject (OBJ_IDX (objP), default_behavior, -1 );		//	Note, -1 = CSegment this robotP goes to to hide, should probably be something useful
+	InitAIObject (objP->Index (), default_behavior, -1 );		//	Note, -1 = CSegment this robotP goes to to hide, should probably be something useful
 
 	/*Object*/CreateExplosion (nSegment, vObjPos, I2X(10), VCLIP_MORPHING_ROBOT);
 	DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, vObjPos, 0, F1_0);
@@ -1626,7 +1626,7 @@ int ai_multiplayer_awareness(CObject *objP, int awareness_level)
 	if (IsMultiGame) {
 		if (awareness_level == 0)
 			return 0;
-		rval = MultiCanRemoveRobot(OBJ_IDX (objP), awareness_level);
+		rval = MultiCanRemoveRobot(objP->Index (), awareness_level);
 	}
 	return rval;
 
@@ -1667,7 +1667,7 @@ void do_boss_stuff(CObject *objP)
 					gameData.boss [0].nCloakEndTime = gameData.time.xGame+BOSS_CLOAK_DURATION;
 					objP->cType.aiInfo.CLOAKED = 1;
 					if (IsMultiGame)
-						MultiSendBossActions(OBJ_IDX (objP), 2, 0, 0);
+						MultiSendBossActions(objP->Index (), 2, 0, 0);
 				}
 			}
 		}
@@ -1693,14 +1693,14 @@ void do_super_boss_stuff(CObject *objP, fix dist_to_player, int player_visibilit
 		if (gameData.time.xGame - gameData.boss [0].nLastGateTime > gameData.boss [0].nGateInterval/2) {
 			RestartEffect(BOSS_ECLIP_NUM);
 			if (eclipState == 0) {
-				MultiSendBossActions(OBJ_IDX (objP), 4, 0, 0);
+				MultiSendBossActions(objP->Index (), 4, 0, 0);
 				eclipState = 1;
 			}
 		}
 		else {
 			StopEffect(BOSS_ECLIP_NUM);
 			if (eclipState == 1) {
-				MultiSendBossActions(OBJ_IDX (objP), 5, 0, 0);
+				MultiSendBossActions(objP->Index (), 5, 0, 0);
 				eclipState = 0;
 			}
 		}
@@ -1717,7 +1717,7 @@ void do_super_boss_stuff(CObject *objP, fix dist_to_player, int player_visibilit
 				nObject = gate_in_robot(randtype, -1);
 				if ((nObject >= 0) && (IsMultiGame))
 				{
-					MultiSendBossActions(OBJ_IDX (objP), 3, randtype, nObject);
+					MultiSendBossActions(objP->Index (), 3, randtype, nObject);
 					MapObjnumLocalToLocal (nObject);
 
 				}
@@ -1809,7 +1809,7 @@ void ai_do_actual_firing_stuff(CObject *objP, tAIStaticInfo *aiP, tAILocalInfo *
 // --------------------------------------------------------------------------------------------------------------------
 void DoD1AIFrame (CObject *objP)
 {
-	int				nObject = OBJ_IDX (objP);
+	int				nObject = objP->Index ();
 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
 	tAILocalInfo	*ailP = &gameData.ai.localInfo [nObject];
 	fix				dist_to_player;
@@ -2246,14 +2246,14 @@ if (nObject == nDbgObj)
 				fire_vec = -fire_vec;
 				fire_pos = objP->info.position.vPos + fire_vec;
 
-				CreateNewLaserEasy( &fire_vec, &fire_pos, OBJ_IDX (objP), PROXMINE_ID, 1);
+				CreateNewLaserEasy( &fire_vec, &fire_pos, objP->Index (), PROXMINE_ID, 1);
 				ailP->nextPrimaryFire = F1_0*5;		//	Drop a proximity bomb every 5 seconds.
 
 				#ifdef NETWORK
 				if (IsMultiGame)
 				{
-					ai_multi_send_robot_position(OBJ_IDX (objP), -1);
-					MultiSendRobotFire(OBJ_IDX (objP), -1, &fire_vec);
+					ai_multi_send_robot_position(objP->Index (), -1);
+					MultiSendRobotFire(objP->Index (), -1, &fire_vec);
 				}
 				#endif
 			}

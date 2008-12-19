@@ -44,7 +44,7 @@ if (gameStates.render.nShadowPass == 2)
 	return;
 if (!gameStates.app.bNostalgia && (!EGI_FLAG (nDrag, 0, 0, 0) || !EGI_FLAG (bWiggle, 1, 0, 1)))
 	return;
-nParent = gameData.objs.parentObjs [OBJ_IDX (objP)];
+nParent = gameData.objs.parentObjs [objP->Index ()];
 pParent = (nParent < 0) ? NULL : OBJECTS + nParent;
 FixFastSinCos ((fix) (gameData.time.xGame / gameStates.gameplay.slowmo [1].fSpeed), &xWiggle, NULL);
 if (wiggleTime < F1_0)// Only scale wiggle if getting at least 1 FPS, to avoid causing the opposite problem.
@@ -166,7 +166,7 @@ void ReadFlyingControls (CObject *objP)
 	if (!gameStates.input.bSkipControls)
 		memcpy (&gameData.physics.playerThrust, &objP->mType.physInfo.thrust, sizeof (gameData.physics.playerThrust));
 	bMulti = IsMultiGame;
-	if ((objP->mType.physInfo.flags & PF_WIGGLE) && !gameData.objs.speedBoost [OBJ_IDX (objP)].bBoosted) {
+	if ((objP->mType.physInfo.flags & PF_WIGGLE) && !gameData.objs.speedBoost [objP->Index ()].bBoosted) {
 #if 1//ndef _DEBUG
 		wiggleTime = gameData.time.xFrame;
 		WiggleObject (objP);

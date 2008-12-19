@@ -336,7 +336,7 @@ if (nSegment != -1) {
 		if (objP->info.nType == OBJ_ROBOT)
 			vol *= 2;
 		else if (bSound)
-			DigiLinkSoundToObject (SOUND_EXPLODING_WALL, OBJ_IDX (objP), 0, vol, SOUNDCLASS_EXPLOSION);
+			DigiLinkSoundToObject (SOUND_EXPLODING_WALL, objP->Index (), 0, vol, SOUNDCLASS_EXPLOSION);
 		}
 	}
 }
@@ -589,15 +589,15 @@ int CheckDuplicateObjects (void)
 
 FORALL_OBJS (objP, i) {
 	if (objP->info.nType != OBJ_NONE)	{
-		count = SearchAllSegsForObject (OBJ_IDX (objP));
+		count = SearchAllSegsForObject (objP->Index ());
 		if (count > 1)	{
 #if DBG
 #	if TRACE
-			console.printf (1, "Object %d is in %d segments!\n", OBJ_IDX (objP), count);
+			console.printf (1, "Object %d is in %d segments!\n", objP->Index (), count);
 #	endif
 			Int3 ();
 #endif
-			RemoveAllObjectsBut (objP->info.nSegment, OBJ_IDX (objP));
+			RemoveAllObjectsBut (objP->info.nSegment, objP->Index ());
 			return count;
 			}
 		}
@@ -1695,7 +1695,7 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->info.xSize) {
 		fq.startSeg			= objP->info.nSegment;
 		fq.radP0				=
 		fq.radP1				= 0;
-		fq.thisObjNum		= OBJ_IDX (objP);
+		fq.thisObjNum		= objP->Index ();
 		fq.ignoreObjList	= NULL;
 		fq.flags				= 0;
 		FindVectorIntersection (&fq, &hit_data);
@@ -1907,12 +1907,12 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 		continue;
 	Assert ((objP->info.nType != OBJ_FIREBALL) || (objP->cType.explInfo.nDeleteTime == -1));
 	if (objP->info.nType != OBJ_PLAYER)
-		ReleaseObject (OBJ_IDX (objP));
+		ReleaseObject (objP->Index ());
 	else {
 		if (objP->info.nId == gameData.multiplayer.nLocalPlayer) {
 			if (nLocalDeadPlayerObj == -1) {
 				StartPlayerDeathSequence (objP);
-				nLocalDeadPlayerObj = OBJ_IDX (objP);
+				nLocalDeadPlayerObj = objP->Index ();
 				}
 			else
 				Int3 ();
@@ -2543,27 +2543,27 @@ void ConvertSmokeObject (CObject *objP)
 objP->SetType (OBJ_EFFECT);
 objP->info.nId = SMOKE_ID;
 objP->info.renderType = RT_SMOKE;
-trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_LIFE, -1);
+trigP = FindObjTrigger (objP->Index (), TT_SMOKE_LIFE, -1);
 #if 1
 j = (trigP && trigP->value) ? trigP->value : 5;
 objP->rType.particleInfo.nLife = (j * (j + 1)) / 2;
 #else
 objP->rType.particleInfo.nLife = (trigP && trigP->value) ? trigP->value : 5;
 #endif
-trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_BRIGHTNESS, -1);
+trigP = FindObjTrigger (objP->Index (), TT_SMOKE_BRIGHTNESS, -1);
 objP->rType.particleInfo.nBrightness = (trigP && trigP->value) ? trigP->value * 10 : 75;
-trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_SPEED, -1);
+trigP = FindObjTrigger (objP->Index (), TT_SMOKE_SPEED, -1);
 j = (trigP && trigP->value) ? trigP->value : 5;
 #if 1
 objP->rType.particleInfo.nSpeed = (j * (j + 1)) / 2;
 #else
 objP->rType.particleInfo.nSpeed = j;
 #endif
-trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_DENS, -1);
+trigP = FindObjTrigger (objP->Index (), TT_SMOKE_DENS, -1);
 objP->rType.particleInfo.nParts = j * ((trigP && trigP->value) ? trigP->value * 50 : STATIC_SMOKE_MAX_PARTS);
-trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_DRIFT, -1);
+trigP = FindObjTrigger (objP->Index (), TT_SMOKE_DRIFT, -1);
 objP->rType.particleInfo.nDrift = (trigP && trigP->value) ? j * trigP->value * 50 : objP->rType.particleInfo.nSpeed * 50;
-trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_SIZE, -1);
+trigP = FindObjTrigger (objP->Index (), TT_SMOKE_SIZE, -1);
 j = (trigP && trigP->value) ? trigP->value : 5;
 objP->rType.particleInfo.nSize [0] = j + 1;
 objP->rType.particleInfo.nSize [1] = (j * (j + 1)) / 2;
@@ -2686,7 +2686,7 @@ int UpdateObjectSeg (CObject * objP, bool bMove)
 	int nNewSeg;
 
 #if DBG
-if (OBJ_IDX (objP) == nDbgObj)
+if (objP->Index () == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
 if (0 > (nNewSeg = FindObjectSeg (objP))) {
@@ -2761,16 +2761,16 @@ for (objP = gameData.objs.lists.weapons.head; objP; objP = nextObjP) {
 #	if TRACE
 		if (objP->info.xLifeLeft > I2X (2))
 			console.printf (CON_DBG, "Note: Clearing CObject %d (nType=%d, id=%d) with lifeleft=%x\n",
-							OBJ_IDX (objP), objP->info.nType, objP->info.nId, objP->info.xLifeLeft);
+							objP->Index (), objP->info.nType, objP->info.nId, objP->info.xLifeLeft);
 #	endif
 #endif
-		ReleaseObject (OBJ_IDX (objP));
+		ReleaseObject (objP->Index ());
 		}
 	#if DBG
 #	if TRACE
 		else if ((objP->info.nType != OBJ_NONE) && (objP->info.xLifeLeft < I2X (2)))
 		console.printf (CON_DBG, "Note: NOT clearing CObject %d (nType=%d, id=%d) with lifeleft=%x\n",
-						OBJ_IDX (objP), objP->info.nType, objP->info.nId,	objP->info.xLifeLeft);
+						objP->Index (), objP->info.nType, objP->info.nId,	objP->info.xLifeLeft);
 #	endif
 #endif
 	}
@@ -3073,7 +3073,7 @@ return markerP ? &markerP->info.position.mOrient : &gameData.multiplayer.playerI
 
 CFixMatrix *ObjectView (CObject *objP)
 {
-	tObjectViewData	*viewP = gameData.objs.viewData + OBJ_IDX (objP);
+	tObjectViewData	*viewP = gameData.objs.viewData + objP->Index ();
 
 if (viewP->nFrame != gameData.objs.nFrameCount) {
 	viewP->mView = OBJPOS (objP)->mOrient.Transpose();
@@ -3168,7 +3168,7 @@ return SEGMENTS [info.nSegment].HasOpenableDoors ();
 
 inline int CObject::Index (void)
 { 
-return this - OBJECTS; 
+return OBJ_IDX (this); 
 }
 
 //------------------------------------------------------------------------------

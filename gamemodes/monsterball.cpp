@@ -90,7 +90,7 @@ FORALL_STATIC_OBJS (objP, i)
 			gameData.hoard.nMonsterballSeg = objP->info.nSegment;
 			gameData.hoard.vMonsterballPos = OBJPOS (objP)->vPos;
 			}
-		ReleaseObject (OBJ_IDX (objP));
+		ReleaseObject (objP->Index ());
 		}
 #if !DBG
 if (!(NetworkIAmMaster () && IsMultiGame && (gameData.app.nGameMode & GM_MONSTERBALL)))

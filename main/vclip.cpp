@@ -297,7 +297,7 @@ if (modtime == IMMORTAL_TIME)
 if (modtime == ONE_FRAME_TIME)
 	modtime = d_rand();
 if (objP->info.nId == PROXMINE_ID) {		//make prox bombs spin out of sync
-	int nObject = OBJ_IDX (objP);
+	int nObject = objP->Index ();
 	modtime += (modtime * (nObject & 7)) / 16;	//add variance to spin rate
 	while (modtime > playTime)
 		modtime -= playTime;

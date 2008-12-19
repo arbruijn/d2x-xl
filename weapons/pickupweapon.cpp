@@ -105,7 +105,7 @@ if (playerP->secondaryAmmo [nWeaponIndex] > nMaxAmount) {
 	nPickedUp = nAmount - (playerP->secondaryAmmo [nWeaponIndex] - nMaxAmount);
 	playerP->secondaryAmmo [nWeaponIndex] = nMaxAmount;
 	if ((nPickedUp < nAmount) && (nWeaponIndex != PROXMINE_INDEX) && (nWeaponIndex != SMARTMINE_INDEX)) {
-		short nObject = OBJ_IDX (objP);
+		short nObject = objP->Index ();
 		gameData.multiplayer.leftoverPowerups [nObject].nCount = nAmount - nPickedUp;
 		gameData.multiplayer.leftoverPowerups [nObject].nType = secondaryWeaponToPowerup [nWeaponIndex];
 		gameData.multiplayer.leftoverPowerups [nObject].spitterP = OBJECTS + playerP->nObject;

@@ -114,8 +114,8 @@ if (nThrusters < 0) {
 	nThrusters =
 		particleManager.Create (&objP->info.position.vPos, &dir, objP->info.nSegment, 2, -2000, 20000,
 										gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [1],
-										2, -2000, PLR_PART_SPEED * 50, LIGHT_PARTICLES, OBJ_IDX (objP), NULL, 1, -1);
-	particleManager.SetObjectSystem (OBJ_IDX (objP)) = nThrusters;
+										2, -2000, PLR_PART_SPEED * 50, LIGHT_PARTICLES, objP->Index (), NULL, 1, -1);
+	particleManager.SetObjectSystem (objP->Index ()) = nThrusters;
 	}
 else
 	particleManager.SetDir (nThrusters, &dir);
@@ -290,7 +290,7 @@ if ((gameData.multiplayer.players [i].flags & PLAYER_FLAGS_CLOAKED) ||
 	KillObjectSmoke (i);
 	return;
 	}
-j = OBJ_IDX (objP);
+j = objP->Index ();
 if (gameOpts->render.particles.bDecreaseLag && (i == gameData.multiplayer.nLocalPlayer)) {
 	fn = objP->info.position.mOrient.FVec();
 	mn = objP->info.position.vPos - objP->info.vLastPos;
@@ -399,7 +399,7 @@ void DoRobotSmoke (CObject *objP)
 	float			nScale;
 	CFixVector	pos;
 
-i = OBJ_IDX (objP);
+i = objP->Index ();
 if (!(SHOW_SMOKE && gameOpts->render.particles.bRobots)) {
 	if (particleManager.GetObjectSystem (i) >= 0)
 		KillObjectSmoke (i);
@@ -454,7 +454,7 @@ void DoReactorSmoke (CObject *objP)
 	int			h = -1, i, nShields = 0, nParts;
 	CFixVector	vDir, vPos;
 
-i = OBJ_IDX (objP);
+i = objP->Index ();
 if (!(SHOW_SMOKE && gameOpts->render.particles.bRobots)) {
 	if (particleManager.GetObjectSystem (i) >= 0)
 		KillObjectSmoke (i);
@@ -499,7 +499,7 @@ void DoMissileSmoke (CObject *objP)
 	float				nScale = 1.5f;
 	tThrusterInfo	ti;
 
-i = OBJ_IDX (objP);
+i = objP->Index ();
 if (!(SHOW_SMOKE && gameOpts->render.particles.bMissiles)) {
 	if (particleManager.GetObjectSystem (i) >= 0)
 		KillObjectSmoke (i);
@@ -548,7 +548,7 @@ void DoDebrisSmoke (CObject *objP)
 	float			nScale = 2;
 	CFixVector	pos;
 
-i = OBJ_IDX (objP);
+i = objP->Index ();
 if (!(SHOW_SMOKE && gameOpts->render.particles.bDebris)) {
 	if (particleManager.GetObjectSystem (i) >= 0)
 		KillObjectSmoke (i);
@@ -584,7 +584,7 @@ void DoStaticParticles (CObject *objP)
 
 	static tRgbaColorf defaultColors [2] = {{0.5f, 0.5f, 0.5f, 0.0f}, {0.8f, 0.9f, 1.0f, 1.0f}};
 
-i = (int) OBJ_IDX (objP);
+i = (int) objP->Index ();
 if (!(SHOW_SMOKE && (bBubbles ? gameOpts->render.particles.bBubbles : gameOpts->render.particles.bStatic))) {
 	if (particleManager.GetObjectSystem (i) >= 0)
 		KillObjectSmoke (i);
@@ -636,7 +636,7 @@ void DoBombSmoke (CObject *objP)
 
 if (gameStates.app.bNostalgia || !gameStates.app.bHaveExtraGameInfo [IsMultiGame])
 	return;
-i = OBJ_IDX (objP);
+i = objP->Index ();
 if ((objP->info.xShields < 0) || (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 	nParts = 0;
 else
@@ -667,7 +667,7 @@ void DoParticleTrail (CObject *objP)
 
 if (!(SHOW_OBJ_FX && (bGatling ? EGI_FLAG (bGatlingTrails, 1, 1, 0) : EGI_FLAG (bLightTrails, 1, 1, 0))))
 	return;
-i = OBJ_IDX (objP);
+i = objP->Index ();
 if (!(bGatling || gameOpts->render.particles.bPlasmaTrails)) {
 	if (particleManager.GetObjectSystem (i) >= 0)
 		KillObjectSmoke (i);

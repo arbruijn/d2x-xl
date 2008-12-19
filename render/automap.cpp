@@ -275,7 +275,7 @@ G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
 //transformation.Rotate (&spherePoint.p3_vec, &objP->info.position.vPos, 0);
 G3DrawSphere (&spherePoint, gameStates.render.automap.bRadar ? objP->info.xSize * 2 : objP->info.xSize, !gameStates.render.automap.bRadar);
 
-if (gameStates.render.automap.bRadar && (OBJ_IDX (objP) != LOCALPLAYER.nObject))
+if (gameStates.render.automap.bRadar && (objP->Index () != LOCALPLAYER.nObject))
 	return;
 // Draw shaft of arrow
 vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (size*3);

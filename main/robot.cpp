@@ -175,7 +175,7 @@ FORALL_STATIC_OBJS (objP, i)
 		objP->info.controlType = CT_CAMERA;
 		objP->info.movementType = MT_NONE;
 		objP->rType.polyObjInfo.nModel = gameData.bots.nCamBotModel;
-		gameData.ai.localInfo [OBJ_IDX (objP)].mode = AIM_IDLING;
+		gameData.ai.localInfo [objP->Index ()].mode = AIM_IDLING;
 		}
 	else if (objP->info.nType == OBJ_EFFECT) {
 		objP->info.xSize = 0;

@@ -235,7 +235,7 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 	nextObjP = objP->Links (0).next;
 	t = objP->info.nType;
 	if ((t == OBJ_PLAYER) || (t == OBJ_GHOST) || (t == OBJ_COOP)) {
-		i = OBJ_IDX (objP);
+		i = objP->Index ();
 		if ((nPlayers >= nMaxPlayers) || (bCoop ? (j && (t != OBJ_COOP)) : (t == OBJ_COOP)))
 			ReleaseObject ((short) i);
 		else {
@@ -650,7 +650,7 @@ if (0 <= (nSound = DigiGetSoundByName ("explode2"))) {
 		if (objP->info.nType == OBJ_EXPLOSION) {
 			objP->info.renderType = RT_POWERUP;
 			objP->rType.vClipInfo.nClipIndex = objP->info.nId;
-			DigiSetObjectSound (OBJ_IDX (objP), nSound, NULL);
+			DigiSetObjectSound (objP->Index (), nSound, NULL);
 			}
 	}
 //gameStates.sound.bD1Sound = 0;
@@ -1919,7 +1919,7 @@ void FilterObjectsFromLevel (void)
 
 FORALL_POWERUP_OBJS (objP, i) {
 	if ((objP->info.nId == POW_REDFLAG) || (objP->info.nId == POW_BLUEFLAG))
-		BashToShield (OBJ_IDX (objP), "Flag!!!!");
+		BashToShield (objP->Index (), "Flag!!!!");
   }
 }
 

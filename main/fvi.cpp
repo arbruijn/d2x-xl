@@ -1300,7 +1300,7 @@ fq.p0 = vSource;
 fq.p1 = vDest;
 fq.radP0 =
 fq.radP1 = 0;
-fq.thisObjNum = objP ? OBJ_IDX (objP) : -1;
+fq.thisObjNum = objP ? objP->Index () : -1;
 fq.flags = FQ_TRANSWALL;
 if (SPECTATOR (objP))
 	fq.startSeg = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);

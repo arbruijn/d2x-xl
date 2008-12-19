@@ -1560,7 +1560,7 @@ if (SHOW_LIGHTNINGS && (IsUsed (i) >= 0))
 
 void CLightningManager::MoveForObject (CObject *objP)
 {
-Move (m_objects [OBJ_IDX (objP)], &OBJPOS (objP)->vPos, objP->info.nSegment, 0, 0);
+Move (m_objects [objP->Index ()], &OBJPOS (objP)->vPos, objP->info.nSegment, 0, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -1626,7 +1626,7 @@ if (SHOW_LIGHTNINGS) {
 	SEM_LEAVE (SEM_LIGHTNINGS)
 
 	FORALL_OBJS (objP, i) {
-		i = OBJ_IDX (objP);
+		i = objP->Index ();
 		h = gameData.objs.bWantEffect [i];
 		if (h & EXPL_LIGHTNINGS) {
 			if ((objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR))
@@ -1670,7 +1670,7 @@ SEM_LEAVE (SEM_LIGHTNINGS)
 
 void CLightningManager::DestroyForObject (CObject *objP)
 {
-	int i = OBJ_IDX (objP);
+	int i = objP->Index ();
 
 if (m_objects [i] >= 0) {
 	Destroy (m_objects [i], NULL, 0);
@@ -1767,7 +1767,7 @@ if (!gameOpts->render.lightnings.bStatic)
 FORALL_EFFECT_OBJS (objP, i) {
 	if (objP->info.nId != LIGHTNING_ID)
 		continue;
-	i = OBJ_IDX (objP);
+	i = objP->Index ();
 	if (m_objects [i] >= 0)
 		continue;
 	pli = &objP->rType.lightningInfo;
@@ -1917,9 +1917,9 @@ if (SHOW_LIGHTNINGS) {
 void CLightningManager::CreateForExplosion (CObject *objP, tRgbaColorf *colorP, int nRods, int nRad, int nTTL)
 {
 if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bExplosions) {
-	//m_objects [OBJ_IDX (objP)] =
+	//m_objects [objP->Index ()] =
 		Create (
-			nRods, &objP->info.position.vPos, NULL, NULL, OBJ_IDX (objP), nTTL, 0,
+			nRods, &objP->info.position.vPos, NULL, NULL, objP->Index (), nTTL, 0,
 			nRad, F1_0 * 4, 0, 2 * F1_0, 50, 5, 1, 3, 1, 1, 0, 0, 1, -1, colorP);
 	}
 }
@@ -1985,12 +1985,12 @@ CreateForExplosion (objP, &color, h + rand () % h, h * (F1_0 + F1_0 / 2), 500);
 void CLightningManager::CreateForRobot (CObject *objP, tRgbaColorf *colorP)
 {
 if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bRobots && OBJECT_EXISTS (objP)) {
-		int h, i = OBJ_IDX (objP);
+		int h, i = objP->Index ();
 
 	if (0 <= m_objects [i])
 		MoveForObject (objP);
 	else {
-		h = Create (2 * objP->info.xSize / F1_0, &objP->info.position.vPos, NULL, NULL, OBJ_IDX (objP), -1000, 100,
+		h = Create (2 * objP->info.xSize / F1_0, &objP->info.position.vPos, NULL, NULL, objP->Index (), -1000, 100,
 						objP->info.xSize, objP->info.xSize / 8, 0, 0, 25, 3, 1, 3, 1, 1, 0, 0, 1, 0, colorP);
 		if (h >= 0)
 			m_objects [i] = h;
@@ -2003,12 +2003,12 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bRobots && OBJECT_EXISTS (obj
 void CLightningManager::CreateForPlayer (CObject *objP, tRgbaColorf *colorP)
 {
 if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bPlayers && OBJECT_EXISTS (objP)) {
-	int h, i = OBJ_IDX (objP);
+	int h, i = objP->Index ();
 
 	if (0 <= m_objects [i])
 		MoveForObject (objP);
 	else {
-		h = Create (4 * objP->info.xSize / F1_0, &objP->info.position.vPos, NULL, NULL, OBJ_IDX (objP), -5000, 1000,
+		h = Create (4 * objP->info.xSize / F1_0, &objP->info.position.vPos, NULL, NULL, objP->Index (), -5000, 1000,
 						4 * objP->info.xSize, objP->info.xSize, 0, 2 * objP->info.xSize, 50, 5, 1, 5, 1, 1, 0, 1, 1, 1, colorP);
 		if (h >= 0)
 			m_objects [i] = h;
@@ -2021,7 +2021,7 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bPlayers && OBJECT_EXISTS (ob
 void CLightningManager::CreateForDamage (CObject *objP, tRgbaColorf *colorP)
 {
 if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage && OBJECT_EXISTS (objP)) {
-		int h, n, i = OBJ_IDX (objP);
+		int h, n, i = objP->Index ();
 
 	n = X2IR (RobotDefaultShields (objP));
 	h = X2IR (objP->info.xShields) * 100 / n;
@@ -2035,7 +2035,7 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage && OBJECT_EXISTS (obj
 			}
 		Destroy (h, NULL, 0);
 		}
-	h = Create (n, &objP->info.position.vPos, NULL, NULL, OBJ_IDX (objP), -1000, 4000,
+	h = Create (n, &objP->info.position.vPos, NULL, NULL, objP->Index (), -1000, 4000,
 					objP->info.xSize, objP->info.xSize / 8, 0, 0, 20, 0, 1, 10, 1, 1, 0, 0, 0, -1, colorP);
 	if (h >= 0)
 		m_objects [i] = h;
@@ -2099,7 +2099,7 @@ else {
 	for (; i < 4; i++)
 		key.s [i] = 0;
 	}
-i = FindDamageLightning (nObject = OBJ_IDX (objP), key.i);
+i = FindDamageLightning (nObject = objP->Index (), key.i);
 if (i < 0) {
 	if ((nLastObject != nObject) || (nFrameFlipFlop != gameStates.render.nFrameFlipFlop)) {
 		nLastObject = nObject;

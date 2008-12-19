@@ -207,14 +207,14 @@ return Create (objP);
 
 void CShrapnelManager::Draw (CObject *objP)
 {
-m_data.buffer [OBJ_IDX (objP)].Draw ();
+m_data.buffer [objP->Index ()].Draw ();
 }
 
 // -----------------------------------------------------------------------------
 
 int CShrapnelManager::Update (CObject *objP)
 {
-if ((objP->LifeLeft () <= 0) || !m_data.buffer [OBJ_IDX (objP)].Update ())
+if ((objP->LifeLeft () <= 0) || !m_data.buffer [objP->Index ()].Update ())
 	Destroy (objP);
 return 0;
 }
@@ -225,7 +225,7 @@ void CShrapnelManager::Destroy (CObject *objP)
 {
 if ((objP->info.nType != OBJ_FIREBALL) || (objP->info.renderType != RT_SHRAPNELS))
 	return;
-m_data.buffer [OBJ_IDX (objP)].Destroy ();
+m_data.buffer [objP->Index ()].Destroy ();
 objP->SetLifeLeft (-1);
 }
 
@@ -242,7 +242,7 @@ FORALL_STATIC_OBJS (objP, i)
 	if (objP->info.renderType == RT_SHRAPNELS)
 		Update (objP);
 FORALL_ACTOR_OBJS (objP, i) {
-	i = OBJ_IDX (objP);
+	i = objP->Index ();
 	if (gameData.objs.bWantEffect [i] & SHRAPNEL_SMOKE) {
 		gameData.objs.bWantEffect [i] &= ~SHRAPNEL_SMOKE;
 		Create (objP);

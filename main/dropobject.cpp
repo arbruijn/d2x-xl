@@ -1040,7 +1040,7 @@ if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF) {
 		objP->RelinkToSeg (initObjP->info.nSegment);
 		HUDInitMessage (TXT_FLAG_RETURN);
 		DigiPlaySample (SOUND_DROP_WEAPON, F1_0);
-		MultiSendReturnFlagHome (OBJ_IDX (objP));
+		MultiSendReturnFlagHome (objP->Index ());
 		}
 	}
 return objP->info.nSegment;

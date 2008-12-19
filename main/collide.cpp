@@ -1515,7 +1515,7 @@ return bDamage;
 
 int FindHitObject (CObject* objP, short nObject)
 {
-	short	*p = gameData.objs.nHitObjects + OBJ_IDX (objP) * MAX_HIT_OBJECTS;
+	short	*p = gameData.objs.nHitObjects + objP->Index () * MAX_HIT_OBJECTS;
 	int	i;
 
 for (i = objP->cType.laserInfo.nLastHitObj; i; i--, p++)
@@ -1533,7 +1533,7 @@ int AddHitObject (CObject* objP, short nObject)
 
 if (FindHitObject (objP, nObject))
 	return -1;
-p = gameData.objs.nHitObjects + OBJ_IDX (objP) * MAX_HIT_OBJECTS;
+p = gameData.objs.nHitObjects + objP->Index () * MAX_HIT_OBJECTS;
 i = objP->cType.laserInfo.nLastHitObj;
 if (i >= MAX_HIT_OBJECTS) {
 	memcpy (p + 1, p, (MAX_HIT_OBJECTS - 1) * sizeof (*p));

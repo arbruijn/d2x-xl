@@ -770,7 +770,7 @@ switch (objP->info.controlType) {
 		m_cf.WriteInt (objP->cType.laserInfo.parent.nSignature);
 		m_cf.WriteFix (objP->cType.laserInfo.xCreationTime);
 		if (objP->cType.laserInfo.nLastHitObj)
-			m_cf.WriteShort (gameData.objs.nHitObjects [OBJ_IDX (objP) * MAX_HIT_OBJECTS + objP->cType.laserInfo.nLastHitObj - 1]);
+			m_cf.WriteShort (gameData.objs.nHitObjects [objP->Index () * MAX_HIT_OBJECTS + objP->cType.laserInfo.nLastHitObj - 1]);
 		else
 			m_cf.WriteShort (-1);
 		m_cf.WriteShort (objP->cType.laserInfo.nHomingTarget);
@@ -1104,14 +1104,14 @@ if (!m_bBetweenLevels)	{
 			SaveObjTriggerRef (gameData.trigs.objTriggerRefs + i);
 		nObjsWithTrigger = 0;
 		FORALL_OBJS (objP, nObject) {
-			nObject = OBJ_IDX (objP);
+			nObject = objP->Index ();
 			nFirstTrigger = gameData.trigs.firstObjTrigger [nObject];
 			if ((nFirstTrigger >= 0) && (nFirstTrigger < gameData.trigs.nObjTriggers))
 				nObjsWithTrigger++;
 			}
 		m_cf.WriteShort (nObjsWithTrigger);
 		FORALL_OBJS (objP, nObject) {
-			nObject = OBJ_IDX (objP);
+			nObject = objP->Index ();
 			nFirstTrigger = gameData.trigs.firstObjTrigger [nObject];
 			if ((nFirstTrigger >= 0) && (nFirstTrigger < gameData.trigs.nObjTriggers)) {
 				m_cf.WriteShort (nObject);
@@ -1781,7 +1781,7 @@ if (objP->info.nType == OBJ_REACTOR)
 else 
 #endif
 if ((m_nVersion < 32) && IS_BOSS (objP))
-	gameData.boss [(int) extraGameInfo [0].nBossCount++].nObject = OBJ_IDX (objP);
+	gameData.boss [(int) extraGameInfo [0].nBossCount++].nObject = objP->Index ();
 objP->info.nId = (ubyte) m_cf.ReadByte ();
 objP->info.nNextInSeg = m_cf.ReadShort ();
 objP->info.nPrevInSeg = m_cf.ReadShort ();
@@ -1825,7 +1825,7 @@ switch (objP->info.controlType) {
 		if (objP->cType.laserInfo.nLastHitObj < 0)
 			objP->cType.laserInfo.nLastHitObj = 0;
 		else {
-			gameData.objs.nHitObjects [OBJ_IDX (objP) * MAX_HIT_OBJECTS] = objP->cType.laserInfo.nLastHitObj;
+			gameData.objs.nHitObjects [objP->Index () * MAX_HIT_OBJECTS] = objP->cType.laserInfo.nLastHitObj;
 			objP->cType.laserInfo.nLastHitObj = 1;
 			}
 		objP->cType.laserInfo.nHomingTarget = m_cf.ReadShort ();

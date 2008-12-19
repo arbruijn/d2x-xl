@@ -215,7 +215,7 @@ if ((!objP || (objP->info.nType == OBJ_ROBOT)) && gameStates.gameplay.bKillBossC
 // And start the countdown stuff.
 bFinalCountdown = !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses && extraGameInfo [0].nBossCount);
 if (bFinalCountdown ||
-	 (gameStates.app.bD2XLevel && bReactor && (trigP = FindObjTrigger (OBJ_IDX (objP), TT_COUNTDOWN, -1)))) {
+	 (gameStates.app.bD2XLevel && bReactor && (trigP = FindObjTrigger (objP->Index (), TT_COUNTDOWN, -1)))) {
 //	If a secret level, delete secret.sgc to indicate that we can't return to our secret level.
 	if (bFinalCountdown) {
 		if (extraGameInfo [0].nBossCount)
@@ -228,9 +228,9 @@ if (bFinalCountdown ||
 	InitCountdown (trigP, bFinalCountdown, -1);
 	}
 if (bReactor) {
-	ExecObjTriggers (OBJ_IDX (objP), 0);
+	ExecObjTriggers (objP->Index (), 0);
 	if (0 <= (i = FindReactor (objP))) {
-		gameData.reactor.states [i].nDeadObj = OBJ_IDX (objP);
+		gameData.reactor.states [i].nDeadObj = objP->Index ();
 		gameStates.gameplay.nReactorCount--;
 		}
 	}
@@ -240,7 +240,7 @@ if (bReactor) {
 
 int FindReactor (CObject *objP)
 {
-	int	i, nObject = OBJ_IDX (objP);
+	int	i, nObject = objP->Index ();
 
 for (i = 0; i <= gameStates.gameplay.nLastReactor; i++)
 	if (gameData.reactor.states [i].nObject == nObject)
@@ -362,8 +362,8 @@ if ((rStatP->nNextFireTime < 0) &&
 			return;
 			}
 		if (gameData.app.nGameMode & GM_MULTI)
-			MultiSendCtrlcenFire (&vecToGoal, nBestGun, OBJ_IDX (objP));
-		CreateNewLaserEasy (&vecToGoal, &rStatP->vGunPos [nBestGun], OBJ_IDX (objP), CONTROLCEN_WEAPON_NUM, 1);
+			MultiSendCtrlcenFire (&vecToGoal, nBestGun, objP->Index ());
+		CreateNewLaserEasy (&vecToGoal, &rStatP->vGunPos [nBestGun], objP->Index (), CONTROLCEN_WEAPON_NUM, 1);
 		//	some of time, based on level, fire another thing, not directly at CPlayerData, so it might hit him if he's constantly moving.
 		nRandProb = F1_0 / (abs (gameData.missions.nCurrentLevel) / 4 + 2);
 		count = 0;
@@ -374,8 +374,8 @@ if ((rStatP->nNextFireTime < 0) &&
 			vecToGoal += vRand * (F1_0/6);
 			CFixVector::Normalize(vecToGoal);
 			if (IsMultiGame)
-				MultiSendCtrlcenFire (&vecToGoal, nBestGun, OBJ_IDX (objP));
-			CreateNewLaserEasy (&vecToGoal, &rStatP->vGunPos [nBestGun], OBJ_IDX (objP), CONTROLCEN_WEAPON_NUM, 0);
+				MultiSendCtrlcenFire (&vecToGoal, nBestGun, objP->Index ());
+			CreateNewLaserEasy (&vecToGoal, &rStatP->vGunPos [nBestGun], objP->Index (), CONTROLCEN_WEAPON_NUM, 0);
 			count++;
 			}
 		xDeltaFireTime = (NDL - gameStates.app.nDifficultyLevel) * F1_0/4;
@@ -453,7 +453,7 @@ FORALL_ACTOR_OBJS (objP, i) {
 				for (j = 0; j < nGuns; j++)
 					CalcReactorGunPoint (rStatP->vGunPos + j, rStatP->vGunDir + j, objP, j);
 				gameData.reactor.bPresent = 1;
-				rStatP->nObject = OBJ_IDX (objP);
+				rStatP->nObject = objP->Index ();
 				if (bNew) {
 					objP->info.xShields = ReactorStrength ();
 					//	Say the control center has not yet been hit.
@@ -470,14 +470,14 @@ FORALL_ACTOR_OBJS (objP, i) {
 
 	if (IS_BOSS (objP)) {
 		extraGameInfo [0].nBossCount++;
-		//InitBossData (extraGameInfo [0].nBossCount - 1, OBJ_IDX (objP));
+		//InitBossData (extraGameInfo [0].nBossCount - 1, objP->Index ());
 		if (BOSS_COUNT > 1) {
 #if TRACE
-			console.printf (1, "Warning: Two or more bosses including %i and %i\n", OBJ_IDX (objP), nBossObj);
+			console.printf (1, "Warning: Two or more bosses including %i and %i\n", objP->Index (), nBossObj);
 #endif
 			}			
 		else
-			nBossObj = OBJ_IDX (objP);
+			nBossObj = objP->Index ();
 		}
 	}
 

@@ -105,7 +105,7 @@ gameData.thief.xReInitTime = gameData.time.xGame + F1_0*10;		//	In 10 seconds, r
 
 void DoThiefFrame(CObject *objP)
 {
-	int			nObject = OBJ_IDX (objP);
+	int			nObject = objP->Index ();
 	tAILocalInfo		*ailp = gameData.ai.localInfo + nObject;
 	fix			connectedDistance;
 
@@ -188,8 +188,8 @@ void DoThiefFrame(CObject *objP)
 				ailp->playerAwarenessType = 0;
 				if (d_rand() > 8192) {
 					CreateNSegmentPath(objP, 10, gameData.objs.consoleP->info.nSegment);
-					gameData.ai.localInfo[OBJ_IDX (objP)].nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
-					gameData.ai.localInfo[OBJ_IDX (objP)].mode = AIM_THIEF_RETREAT;
+					gameData.ai.localInfo[objP->Index ()].nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
+					gameData.ai.localInfo[objP->Index ()].mode = AIM_THIEF_RETREAT;
 				}
 			} else if (ailp->nextActionTime < 0) {
 				//	This forces him to create a new path every second.
@@ -204,8 +204,8 @@ void DoThiefFrame(CObject *objP)
 						fix dot = CFixVector::Dot (gameData.ai.vVecToPlayer, OBJPOS (gameData.objs.consoleP)->mOrient.FVec());
 						if (dot < -F1_0/2) {	//	Looking at least towards thief, so thief will run!
 							CreateNSegmentPath(objP, 10, gameData.objs.consoleP->info.nSegment);
-							gameData.ai.localInfo[OBJ_IDX (objP)].nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
-							gameData.ai.localInfo[OBJ_IDX (objP)].mode = AIM_THIEF_RETREAT;
+							gameData.ai.localInfo[objP->Index ()].nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
+							gameData.ai.localInfo[objP->Index ()].mode = AIM_THIEF_RETREAT;
 						}
 					}
 					AITurnTowardsVector(&gameData.ai.vVecToPlayer, objP, F1_0/4);
@@ -354,7 +354,7 @@ int AttemptToStealItem3(CObject *objP, int nPlayer)
 {
 	int	i;
 
-	if (gameData.ai.localInfo[OBJ_IDX (objP)].mode != AIM_THIEF_ATTACK)
+	if (gameData.ai.localInfo[objP->Index ()].mode != AIM_THIEF_ATTACK)
 		return 0;
 
 	//	First, try to steal equipped items.
@@ -442,8 +442,8 @@ int AttemptToStealItem(CObject *objP, int nPlayer)
 			break;
 	}
 	CreateNSegmentPath(objP, 10, gameData.objs.consoleP->info.nSegment);
-	gameData.ai.localInfo[OBJ_IDX (objP)].nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
-	gameData.ai.localInfo[OBJ_IDX (objP)].mode = AIM_THIEF_RETREAT;
+	gameData.ai.localInfo[objP->Index ()].nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
+	gameData.ai.localInfo[objP->Index ()].mode = AIM_THIEF_RETREAT;
 	if (rval) {
 		paletteManager.BumpEffect(30, 15, -20);
 		UpdateLaserWeaponInfo();

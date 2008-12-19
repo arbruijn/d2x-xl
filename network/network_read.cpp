@@ -522,7 +522,7 @@ if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
 //	bHaveReactor = 1;	// multiplayer maps do not need a control center ...
 nPlayers = 0;
 FORALL_OBJS (objP, i) {
-	i = OBJ_IDX (objP);
+	i = objP->Index ();
 	t = objP->info.nType;
 	if (t == OBJ_GHOST) {
 		for (j = 0; j < MAX_PLAYERS; j++) {
@@ -577,7 +577,7 @@ return -1;
 inline bool ObjectIsLinked (CObject *objP, short nSegment)
 {
 if (nSegment != -1) {
-	short nObject = OBJ_IDX (objP);
+	short nObject = objP->Index ();
 	for (short i = SEGMENTS [objP->info.nSegment].objects, j = -1; i >= 0; j = i, i = OBJECTS [i].info.nNextInSeg) {
 		if (i == nObject) {
 			objP->info.nPrevInSeg = j;
@@ -688,7 +688,7 @@ else if (i < 0)
 			objP = OBJECTS + nObject;
 #if 1//def _DEBUG
 			if (objP->info.nSegment >= 0)
-				nDbgObj = OBJ_IDX (objP);
+				nDbgObj = objP->Index ();
 #endif
 			objP->Unlink ();
 			while (ObjectIsLinked (objP, objP->info.nSegment))

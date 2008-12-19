@@ -134,7 +134,7 @@ void SetPlayerAwarenessAll (void)
 ProcessAwarenessEvents ();
 FORALL_OBJS (objP, i)
 	if (objP->info.controlType == CT_AI) {
-		i = OBJ_IDX (objP);
+		i = objP->Index ();
 		nSegment = OBJECTS [i].info.nSegment;
 		if (newAwareness [nSegment] > gameData.ai.localInfo [i].playerAwarenessType) {
 			gameData.ai.localInfo [i].playerAwarenessType = newAwareness [nSegment];

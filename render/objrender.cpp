@@ -486,7 +486,7 @@ if (!(xCloakStartTime || xCloakEndTime)) {
 			xCloakStartTime = gameData.time.xGame - F1_0 * 10;
 			xCloakEndTime = gameData.time.xGame + F1_0 * 10;
 			}
-		else if (0 <= (i = FindBoss (OBJ_IDX (objP)))) {
+		else if (0 <= (i = FindBoss (objP->Index ()))) {
 			xCloakStartTime = gameData.boss [i].nCloakStartTime;
 			xCloakEndTime = gameData.boss [i].nCloakEndTime;
 			}
@@ -723,7 +723,7 @@ else {
 		else if (objP->info.nType == OBJ_ROBOT) {
 			if (!ROBOTINFO (id).bossFlag)
 				bOk = DrawCloakedObject (objP, xLight, xEngineGlow, gameData.time.xGame - F1_0 * 10, gameData.time.xGame + F1_0 * 10);
-			else if (0 <= (i = FindBoss (OBJ_IDX (objP))))
+			else if (0 <= (i = FindBoss (objP->Index ())))
 				bOk = DrawCloakedObject (objP, xLight, xEngineGlow, gameData.boss [i].nCloakStartTime, gameData.boss [i].nCloakEndTime);
 			}
 		}
@@ -733,7 +733,7 @@ else {
 		//	Snipers get bright when they fire.
 		if (!gameStates.render.bBuildModels) {
 			if ((objP->info.nType == OBJ_ROBOT) &&
-				 (gameData.ai.localInfo [OBJ_IDX (objP)].nextPrimaryFire < F1_0 / 8) &&
+				 (gameData.ai.localInfo [objP->Index ()].nextPrimaryFire < F1_0 / 8) &&
 				 (objP->cType.aiInfo.behavior == AIB_SNIPE))
 				xLight = 2 * xLight + F1_0;
 			bBlendPolys = bEnergyWeapon && (gameData.weapons.info [id].nInnerModel > -1);
@@ -794,7 +794,7 @@ return bOk;
 int RenderObject (CObject *objP, int nWindowNum, int bForce)
 {
 PROF_START
-	short			nObject = OBJ_IDX (objP);
+	short			nObject = objP->Index ();
 	int			mldSave, bSpectate = 0, bDepthSort = RENDERPATH || (gameOpts->render.bDepthSort > 0);
 	int			bEmissive = (objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId];
 	tObjTransformation	savePos;
@@ -926,7 +926,7 @@ switch (objP->info.renderType) {
 			gameData.models.vScale.SetZero ();
 			//DoObjectSmoke (objP);
 #if DBG
-			if (OBJ_IDX (objP) == nDbgObj)
+			if (objP->Index () == nDbgObj)
 				nDbgObj = nDbgObj;
 #endif
 			DrawPolygonObject (objP, bDepthSort, 0);

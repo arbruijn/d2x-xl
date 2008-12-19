@@ -62,7 +62,7 @@ if (((*pos)[X] != objP->info.position.vPos [X]) ||
 		fq.startSeg = objP->info.nSegment;
 		*pos = objP->info.position.vPos;
 #if TRACE
-		console.printf (1, "Object %i, gun is outside mine, moving towards center.\n", OBJ_IDX (objP));
+		console.printf (1, "Object %i, gun is outside mine, moving towards center.\n", objP->Index ());
 #endif
 		MoveTowardsSegmentCenter (objP);
 		}
@@ -77,7 +77,7 @@ else
 fq.p1					= &gameData.ai.vBelievedPlayerPos;
 fq.radP0				=
 fq.radP1				= F1_0 / 4;
-fq.thisObjNum		= OBJ_IDX (objP);
+fq.thisObjNum		= objP->Index ();
 fq.ignoreObjList	= NULL;
 fq.flags				= FQ_TRANSWALL;
 gameData.ai.nHitType = FindVectorIntersection (&fq, &gameData.ai.hitData);
@@ -125,7 +125,7 @@ fq.p0					= vGun;
 fq.p1					= vPlayer;
 fq.radP0				=
 fq.radP1				= F1_0;
-fq.thisObjNum		= OBJ_IDX (objP);
+fq.thisObjNum		= objP->Index ();
 fq.ignoreObjList	= ignoreObjs;
 fq.flags				= FQ_CHECK_OBJS | FQ_ANY_OBJECT | FQ_IGNORE_POWERUPS;		//what about trans walls???
 gameData.ai.nHitType = FindVectorIntersection (&fq, &gameData.ai.hitData);
@@ -170,7 +170,7 @@ if (*flag) {
 else {
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 		fix			deltaTime, dist;
-		int			cloak_index = (OBJ_IDX (objP)) % MAX_AI_CLOAK_INFO;
+		int			cloak_index = (objP->Index ()) % MAX_AI_CLOAK_INFO;
 
 		deltaTime = gameData.time.xGame - gameData.ai.cloakInfo [cloak_index].lastTime;
 		if (deltaTime > F1_0*2) {
@@ -255,7 +255,7 @@ else {
 	if (gameData.ai.nPlayerVisibility)
 		ailP->timePlayerSeen = gameData.time.xGame;
 	}
-if (OBJ_IDX (objP) == nDbgObj) {
+if (objP->Index () == nDbgObj) {
 	HUDMessage (0, "vis: %d", gameData.ai.nPlayerVisibility);
 	}
 }
@@ -310,7 +310,7 @@ if ((objP == NULL) || (ROBOTINFO (objP->info.nId).companion == 1)) {
 	//	It's only valid to think that if the CPlayerData is going to get him through.  But if he's
 	//	going to the CPlayerData, the CPlayerData is probably on the opposite CSide.
 	if (objP)
-		ailp_mode = gameData.ai.localInfo [OBJ_IDX (objP)].mode;
+		ailp_mode = gameData.ai.localInfo [objP->Index ()].mode;
 	else if (gameData.escort.nObjNum >= 0)
 		ailp_mode = gameData.ai.localInfo [gameData.escort.nObjNum].mode;
 	else
@@ -447,7 +447,7 @@ if (!IsMultiGame)
 	return 1;
 if (!awarenessLevel)
 	return 0;
-return MultiCanRemoveRobot (OBJ_IDX (objP), awarenessLevel);
+return MultiCanRemoveRobot (objP->Index (), awarenessLevel);
 }
 
 // --------------------------------------------------------------------------------------------------------------------

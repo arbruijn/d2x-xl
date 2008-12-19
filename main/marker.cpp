@@ -268,7 +268,7 @@ return (i < 0) ? NULL : OBJECTS + gameData.marker.objects [i];
 int IsSpawnMarkerObject (CObject *objP)
 {
 if (objP->info.nType == OBJ_MARKER) {
-	int nMaxDrop, h, i, nObject = OBJ_IDX (objP);
+	int nMaxDrop, h, i, nObject = objP->Index ();
 
 	nMaxDrop = MaxDrop ();
 	for (i = gameData.multiplayer.nLocalPlayer * 2, h = i + nMaxDrop; i < h; i++)

@@ -129,7 +129,7 @@ if (!gameStates.render.bClusterLights)
 
 FORALL_LIGHT_OBJS (objP, i) {
 	if ((objP->info.nType == OBJ_LIGHT) && (objP->info.nId == CLUSTER_LIGHT_ID))	{
-		i = OBJ_IDX (objP);
+		i = objP->Index ();
 		if (!(h = objP->cType.lightInfo.nObjects)) {
 			RemoveDynLight (-1, -1, i);
 			objP->Kill ();
@@ -774,7 +774,7 @@ FORALL_OBJS (objP, nObject) {
 		continue;
 	if (SkipPowerup (objP))
 		continue;
-	nObject = OBJ_IDX (objP);
+	nObject = objP->Index ();
 	objPos = &objP->info.position.vPos;
 	xObjIntensity = ComputeLightIntensity (nObject, &color, &bGotColor);
 	if (bGotColor)
@@ -786,7 +786,7 @@ FORALL_OBJS (objP, nObject) {
 	}
 //	Now, process all lights from last frame which haven't been processed this frame.
 FORALL_OBJS (objP, nObject) {
-	nObject = OBJ_IDX (objP);
+	nObject = objP->Index ();
 	//	In multiplayer games, process even unprocessed OBJECTS every 4th frame, else don't know about CPlayerData sneaking up.
 	if ((gameData.render.lights.objects [nObject]) ||
 		 (IsMultiGame && (((nObject ^ gameData.app.nFrameCount) & 3) == 0))) {
@@ -855,7 +855,7 @@ fix ComputeObjectLight (CObject *objP, CFixVector *vRotated)
       return 0;
 #endif
 	fix light;
-	int nObject = OBJ_IDX (objP);
+	int nObject = objP->Index ();
 	if (nObject < 0)
 		return F1_0;
 	if (nObject >= gameData.objs.nLastObject [0])

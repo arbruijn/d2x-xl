@@ -123,7 +123,7 @@ void G3LightModel (CObject *objP, int nModel, fix xModelLight, fix *xGlowValues,
 													 !gameData.objs.bIsMissile [objP->info.nId]);
 
 #if DBG
-if (OBJ_IDX (objP) == nDbgObj)
+if (objP->Index () == nDbgObj)
 	objP = objP;
 #endif
 #if 0

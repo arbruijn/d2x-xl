@@ -230,7 +230,7 @@ for (i = 1, --j; i < j; i++) {
 		fq.p1					= &vGoalPos;
 		fq.radP0				=
 		fq.radP1				= objP->info.xSize;
-		fq.thisObjNum		= OBJ_IDX (objP);
+		fq.thisObjNum		= objP->Index ();
 		fq.ignoreObjList	= NULL;
 		fq.flags				= 0;
 		nHitType = FindVectorIntersection (&fq, &hitData);
@@ -323,7 +323,7 @@ bVisited [nCurSeg] = 1;
 nCurDepth = 0;
 
 #if DBG
-if (OBJ_IDX (objP) == nDbgObj)
+if (objP->Index () == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
 if (bRandom)
@@ -352,7 +352,7 @@ while (nCurSeg != nEndSeg) {
 			fq.p1					= &vCenter;
 			fq.radP0				=
 			fq.radP1				= objP->info.xSize;
-			fq.thisObjNum		= OBJ_IDX (objP);
+			fq.thisObjNum		= objP->Index ();
 			fq.ignoreObjList	= NULL;
 			fq.flags				= 0;
 			hitType = FindVectorIntersection (&fq, &hitData);
@@ -493,7 +493,7 @@ fq.p0					= &objP->info.position.vPos;
 fq.startSeg			= objP->info.nSegment;
 fq.radP0				=
 fq.radP1				= objP->info.xSize;
-fq.thisObjNum		= OBJ_IDX (objP);
+fq.thisObjNum		= objP->Index ();
 fq.ignoreObjList	= NULL;
 fq.flags				= 0;
 for (i = 0; i < 2; i++) {
@@ -594,7 +594,7 @@ FORALL_ROBOT_OBJS (objP, i) {
 // -- void create_path (CObject *objP)
 // -- {
 // -- 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
-// -- 	tAILocalInfo		*ailP = &gameData.ai.localInfo [OBJ_IDX (objP)];
+// -- 	tAILocalInfo		*ailP = &gameData.ai.localInfo [objP->Index ()];
 // -- 	int			nStartSeg, nEndSeg;
 // --
 // -- 	nStartSeg = objP->info.nSegment;
@@ -604,7 +604,7 @@ FORALL_ROBOT_OBJS (objP, i) {
 // -- 		CreateNSegmentPath (objP, 3, -1);
 // --
 // -- 	if (nEndSeg == -1) {
-// -- 		; //console.printf (CON_DBG, "Object %i, nHideSegment = -1, not creating path.\n", OBJ_IDX (objP));
+// -- 		; //console.printf (CON_DBG, "Object %i, nHideSegment = -1, not creating path.\n", objP->Index ());
 // -- 	} else {
 // -- 		CreatePathPoints (objP, nStartSeg, nEndSeg, gameData.ai.freePointSegs, &aiP->nPathLength, -1, 0, 0, -1);
 // -- 		aiP->nHideIndex = gameData.ai.freePointSegs - gameData.ai.pointSegs;
@@ -637,7 +637,7 @@ FORALL_ROBOT_OBJS (objP, i) {
 void CreatePathToPlayer (CObject *objP, int nMaxDepth, int bSafeMode)
 {
 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
-	tAILocalInfo		*ailP = gameData.ai.localInfo + OBJ_IDX (objP);
+	tAILocalInfo		*ailP = gameData.ai.localInfo + objP->Index ();
 	int			nStartSeg, nEndSeg;
 
 if (nMaxDepth == -1)
@@ -673,7 +673,7 @@ MaybeAIPathGarbageCollect ();
 void CreatePathToSegment (CObject *objP, short goalseg, int nMaxDepth, int bSafeMode)
 {
 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
-	tAILocalInfo		*ailP = &gameData.ai.localInfo [OBJ_IDX (objP)];
+	tAILocalInfo		*ailP = &gameData.ai.localInfo [objP->Index ()];
 	short			nStartSeg, nEndSeg;
 
 if (nMaxDepth == -1)
@@ -708,7 +708,7 @@ MaybeAIPathGarbageCollect ();
 void CreatePathToStation (CObject *objP, int nMaxDepth)
 {
 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
-	tAILocalInfo		*ailP = &gameData.ai.localInfo [OBJ_IDX (objP)];
+	tAILocalInfo		*ailP = &gameData.ai.localInfo [objP->Index ()];
 	int			nStartSeg, nEndSeg;
 
 if (nMaxDepth == -1)
@@ -747,8 +747,8 @@ static int nObject = 0;
 void CreateNSegmentPath (CObject *objP, int nPathLength, short nAvoidSeg)
 {
 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
-	tAILocalInfo		*ailP = gameData.ai.localInfo + OBJ_IDX (objP);
-	nObject = OBJ_IDX (objP);
+	tAILocalInfo		*ailP = gameData.ai.localInfo + objP->Index ();
+	nObject = objP->Index ();
 
 if (CreatePathPoints (objP, objP->info.nSegment, -2, gameData.ai.freePointSegs, &aiP->nPathLength, nPathLength, 1, 0, nAvoidSeg) == -1) {
 	gameData.ai.freePointSegs += aiP->nPathLength;
@@ -769,7 +769,7 @@ aiP->PATH_DIR = 1;		//	Initialize to moving forward.
 ailP->mode = AIM_FOLLOW_PATH;
 //	If this robot is visible (nPlayerVisibility is not available) and it's running away, move towards outside with
 //	randomness to prevent a stream of bots from going away down the center of a corridor.
-if (gameData.ai.localInfo [OBJ_IDX (objP)].nPrevVisibility) {
+if (gameData.ai.localInfo [objP->Index ()].nPrevVisibility) {
 	if (aiP->nPathLength) {
 		int nPoints = aiP->nPathLength;
 		MoveTowardsOutside (gameData.ai.pointSegs + aiP->nHideIndex, &nPoints, objP, 1);
@@ -804,7 +804,7 @@ if (objP->info.nSegment != nGoalSeg)
 		fix dist = FindConnectedDistance (&objP->info.position.vPos, objP->info.nSegment, vGoalPoint, nGoalSeg, 30, WID_FLY_FLAG, 0);
 #	if TRACE
 		if (gameData.fcd.nConnSegDist > 2)	//	This global is set in FindConnectedDistance
-			console.printf (1, "Warning: Object %i hopped across %i segments, a distance of %7.3f.\n", OBJ_IDX (objP), gameData.fcd.nConnSegDist, X2F (dist));
+			console.printf (1, "Warning: Object %i hopped across %i segments, a distance of %7.3f.\n", objP->Index (), gameData.fcd.nConnSegDist, X2F (dist));
 #	endif
 		}
 #endif
@@ -821,7 +821,7 @@ else if (aiP->nCurPathIndex >= aiP->nPathLength - 1) {
 	if (aiP->behavior == AIB_STATION) {
 		CreatePathToStation (objP, 15);
 		if (!aiP->nPathLength) {
-			tAILocalInfo	*ailP = &gameData.ai.localInfo [OBJ_IDX (objP)];
+			tAILocalInfo	*ailP = &gameData.ai.localInfo [objP->Index ()];
 			ailP->mode = AIM_IDLING;
 			}
 		return;
@@ -836,7 +836,7 @@ objP->info.position.vPos = *vGoalPoint;
 nSegment = FindObjectSeg (objP);
 #if TRACE
 if (nSegment != nGoalSeg)
-	console.printf (1, "Object #%i goal supposed to be in CSegment #%i, but in CSegment #%i\n", OBJ_IDX (objP), nGoalSeg, nSegment);
+	console.printf (1, "Object #%i goal supposed to be in CSegment #%i, but in CSegment #%i\n", objP->Index (), nGoalSeg, nSegment);
 #endif
 if (nSegment == -1) {
 	Int3 ();	//	Oops, CObject is not in any CSegment.
@@ -866,7 +866,7 @@ else
 // -- too much work -- 	fq.startSeg				= objP->info.nSegment;
 // -- too much work -- 	fq.p1						= &kill_objP->info.position.vPos;
 // -- too much work -- 	fq.rad					= objP->info.xSize;
-// -- too much work -- 	fq.thisObjNum			= OBJ_IDX (objP);
+// -- too much work -- 	fq.thisObjNum			= objP->Index ();
 // -- too much work -- 	fq.ignoreObjList	= NULL;
 // -- too much work -- 	fq.flags					= 0;
 // -- too much work --
@@ -890,7 +890,7 @@ void AIFollowPath (CObject *objP, int nPlayerVisibility, int nPrevVisibility, CF
 	int			forced_break, original_dir, original_index;
 	fix			xDistToPlayer;
 	short			nGoalSeg;
-	tAILocalInfo		*ailP = gameData.ai.localInfo + OBJ_IDX (objP);
+	tAILocalInfo		*ailP = gameData.ai.localInfo + objP->Index ();
 	fix			thresholdDistance;
 
 
@@ -979,7 +979,7 @@ if (ailP->mode == AIM_RUN_FROM_OBJECT) {
 		objP->mType.physInfo.velocity *= xVelScale;
 		return;
 		}
-	else if (!(gameData.app.nFrameCount ^ ((OBJ_IDX (objP)) & 0x07))) {		//	Done 1/8 frames.
+	else if (!(gameData.app.nFrameCount ^ ((objP->Index ()) & 0x07))) {		//	Done 1/8 frames.
 		//	If CPlayerData on path (beyond point robot is now at), then create a new path.
 		tPointSeg	*curPSP = &gameData.ai.pointSegs [aiP->nHideIndex];
 		short			nPlayerSeg = gameData.objs.consoleP->info.nSegment;
@@ -1115,7 +1115,7 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 			fq.p1					= vOppositeEndPoint;
 			fq.radP0				=
 			fq.radP1				= objP->info.xSize;
-			fq.thisObjNum		= OBJ_IDX (objP);
+			fq.thisObjNum		= objP->Index ();
 			fq.ignoreObjList	= NULL;
 			fq.flags				= 0; 				//what about trans walls???
 			fate = FindVectorIntersection (&fq, &hitData);
@@ -1183,7 +1183,7 @@ void AIPathSetOrientAndVel (CObject *objP, CFixVector *vGoalPoint, int nPlayerVi
 
 //	If evading CPlayerData, use highest difficulty level speed, plus something based on diff level
 xMaxSpeed = botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel];
-if ((gameData.ai.localInfo [OBJ_IDX (objP)].mode == AIM_RUN_FROM_OBJECT) || (objP->cType.aiInfo.behavior == AIB_SNIPE))
+if ((gameData.ai.localInfo [objP->Index ()].mode == AIM_RUN_FROM_OBJECT) || (objP->cType.aiInfo.behavior == AIB_SNIPE))
 	xMaxSpeed = xMaxSpeed*3/2;
 vNormToGoal = *vGoalPoint - vCurPos;
 CFixVector::Normalize(vNormToGoal);
@@ -1215,8 +1215,8 @@ if ((objP->cType.aiInfo.behavior == AIB_SNIPE) && (dot < F1_0/2))
 xSpeedScale = FixMul (xMaxSpeed, dot);
 vNormCurVel *= xSpeedScale;
 objP->mType.physInfo.velocity = vNormCurVel;
-if ((gameData.ai.localInfo [OBJ_IDX (objP)].mode == AIM_RUN_FROM_OBJECT) || (botInfoP->companion == 1) || (objP->cType.aiInfo.behavior == AIB_SNIPE)) {
-	if (gameData.ai.localInfo [OBJ_IDX (objP)].mode == AIM_SNIPE_RETREAT_BACKWARDS) {
+if ((gameData.ai.localInfo [objP->Index ()].mode == AIM_RUN_FROM_OBJECT) || (botInfoP->companion == 1) || (objP->cType.aiInfo.behavior == AIB_SNIPE)) {
+	if (gameData.ai.localInfo [objP->Index ()].mode == AIM_SNIPE_RETREAT_BACKWARDS) {
 		if ((nPlayerVisibility) && (vec_to_player != NULL))
 			vNormToGoal = *vec_to_player;
 		else
@@ -1255,7 +1255,7 @@ FORALL_ROBOT_OBJS (objP, nObject) {
 		aiP = &objP->cType.aiInfo;
 		if (aiP->nPathLength) {
 			objectList [nPathObjects].path_start = aiP->nHideIndex;
-			objectList [nPathObjects++].nObject = OBJ_IDX (objP);
+			objectList [nPathObjects++].nObject = objP->Index ();
 			}
 		}
 	}
@@ -1345,20 +1345,20 @@ AIPathGarbageCollect ();
 //	Try to resume path.
 void AttemptToResumePath (CObject *objP)
 {
-	//int				nObject = OBJ_IDX (objP);
+	//int				nObject = objP->Index ();
 	tAIStaticInfo		*aiP = &objP->cType.aiInfo;
 //	int				nGoalSegnum, object_segnum,
 	int				nAbsIndex, nNewPathIndex;
 
 if ((aiP->behavior == AIB_STATION) && (ROBOTINFO (objP->info.nId).companion != 1))
 	if (d_rand () > 8192) {
-		tAILocalInfo			*ailP = &gameData.ai.localInfo [OBJ_IDX (objP)];
+		tAILocalInfo			*ailP = &gameData.ai.localInfo [objP->Index ()];
 
 		aiP->nHideSegment = objP->info.nSegment;
 //Int3 ();
 		ailP->mode = AIM_IDLING;
 #if TRACE
-		console.printf (1, "Note: Bashing hide CSegment of robot %i to current CSegment because he's lost.\n", OBJ_IDX (objP));
+		console.printf (1, "Note: Bashing hide CSegment of robot %i to current CSegment because he's lost.\n", objP->Index ());
 #endif
 		}
 
@@ -1531,7 +1531,7 @@ void player_path_set_orient_and_vel (CObject *objP, CFixVector *vGoalPoint)
 	CFixVector::Normalize(vNormFwd);
 
 	dot = CFixVector::Dot (vNormToGoal, &vNormFwd);
-	if (gameData.ai.localInfo [OBJ_IDX (objP)].mode == AIM_SNIPE_RETREAT_BACKWARDS) {
+	if (gameData.ai.localInfo [objP->Index ()].mode == AIM_SNIPE_RETREAT_BACKWARDS) {
 		dot = -dot;
 	}
 

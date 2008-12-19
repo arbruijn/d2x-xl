@@ -81,7 +81,7 @@ FORALL_ROBOT_OBJS (objP, i)
 	if (IS_GUIDEBOT (objP))
 		break;
 if (IS_OBJECT (objP, i))
-	gameData.escort.nObjNum = OBJ_IDX (objP);
+	gameData.escort.nObjNum = objP->Index ();
 gameData.escort.xSorryTime = -F1_0;
 gameData.escort.bSearchingMarker = -1;
 gameData.escort.nLastKey = -1;
@@ -167,7 +167,7 @@ if ((OBJECTS [gameData.escort.nObjNum].info.nType == OBJ_ROBOT) &&
 			break;
 	if (!IS_OBJECT (objP, i))
 		return 0;
-	gameData.escort.nObjNum = OBJ_IDX (objP);
+	gameData.escort.nObjNum = objP->Index ();
 	}
 segP = SEGMENTS + OBJECTS [gameData.escort.nObjNum].info.nSegment;
 for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
@@ -659,7 +659,7 @@ switch (goal_num) {
 void EscortCreatePathToGoal (CObject *objP)
 {
 	short			nGoalSeg = -1;
-	short			nObject = OBJ_IDX (objP);
+	short			nObject = objP->Index ();
 	tAIStaticInfo	*aip = &objP->cType.aiInfo;
 	tAILocalInfo		*ailp = gameData.ai.localInfo + nObject;
 
@@ -941,14 +941,14 @@ if (Buddy_last_missileTime + F1_0*2 < gameData.time.xGame) {
 	//	See if a robot potentially in view cone
 	FORALL_ROBOT_OBJS (objP, i)
 		if (!ROBOTINFO (objP->info.nId).companion)
-			if (MaybeBuddyFireMega (OBJ_IDX (objP))) {
+			if (MaybeBuddyFireMega (objP->Index ())) {
 				Buddy_last_missileTime = gameData.time.xGame;
 				return;
 			}
 	//	See if a robot near enough that buddy should fire smart missile
 	FORALL_ROBOT_OBJS (objP, i)
 		if (!ROBOTINFO (objP->info.nId).companion)
-			if (MaybeBuddyFireSmart (OBJ_IDX (objP))) {
+			if (MaybeBuddyFireSmart (objP->Index ())) {
 				Buddy_last_missileTime = gameData.time.xGame;
 				return;
 			}
@@ -959,7 +959,7 @@ if (Buddy_last_missileTime + F1_0*2 < gameData.time.xGame) {
 //	Called every frame (or something).
 void DoEscortFrame (CObject *objP, fix xDistToPlayer, int player_visibility)
 {
-	int			nObject = OBJ_IDX (objP);
+	int			nObject = objP->Index ();
 	tAIStaticInfo	*aip = &objP->cType.aiInfo;
 	tAILocalInfo		*ailp = gameData.ai.localInfo + nObject;
 

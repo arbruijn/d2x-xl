@@ -2316,7 +2316,7 @@ void RenderObjectSearch(CObject *objP)
 	if (changed) {
 		if (objP->info.nSegment != -1)
 			Cursegp = SEGMENTS+objP->info.nSegment;
-		found_seg = -(OBJ_IDX (objP)+1);
+		found_seg = -(objP->Index ()+1);
 	}
 }
 #endif

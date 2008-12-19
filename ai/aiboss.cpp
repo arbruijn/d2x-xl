@@ -279,14 +279,14 @@ objP->mType.physInfo.flags |= (PF_LEVELLING);
 objP->info.xShields = botInfoP->strength;
 objP->info.nCreator = BOSS_GATE_MATCEN_NUM;	//	flag this robot as having been created by the boss.
 default_behavior = ROBOTINFO (objP->info.nId).behavior;
-InitAIObject (OBJ_IDX (objP), default_behavior, -1);		//	Note, -1 = CSegment this robot goes to to hide, should probably be something useful
+InitAIObject (objP->Index (), default_behavior, -1);		//	Note, -1 = CSegment this robot goes to to hide, should probably be something useful
 /*Object*/CreateExplosion (nSegment, &vObjPos, I2X (10), VCLIP_MORPHING_ROBOT);
 DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, &vObjPos, 0 , F1_0);
 MorphStart (objP);
 gameData.boss [nBoss].nLastGateTime = gameData.time.xGame;
 LOCALPLAYER.numRobotsLevel++;
 LOCALPLAYER.numRobotsTotal++;
-return OBJ_IDX (objP);
+return objP->Index ();
 }
 
 //	----------------------------------------------------------------------------------------------------------
@@ -405,7 +405,7 @@ return 0;
 
 void TeleportBoss (CObject *objP)
 {
-	short			i, nAttempts = 5, nRandSeg = 0, nRandIndex, nObject = OBJ_IDX (objP);
+	short			i, nAttempts = 5, nRandSeg = 0, nRandIndex, nObject = objP->Index ();
 	CFixVector	vBossDir, vNewPos;
 
 //	Pick a random CSegment from the list of boss-teleportable-to segments.
@@ -437,7 +437,7 @@ vBossDir = OBJECTS [LOCALPLAYER.nObject].info.position.vPos - vNewPos;
 objP->info.position.mOrient = CFixMatrix::CreateF(vBossDir);
 DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nRandSeg, 0, &objP->info.position.vPos, 0 , F1_0);
 DigiKillSoundLinkedToObject (nObject);
-DigiLinkSoundToObject2 (ROBOTINFO (objP->info.nId).seeSound, OBJ_IDX (objP), 1, F1_0, F1_0*512, SOUNDCLASS_ROBOT);	//	F1_0*512 means play twice as loud
+DigiLinkSoundToObject2 (ROBOTINFO (objP->info.nId).seeSound, objP->Index (), 1, F1_0, F1_0*512, SOUNDCLASS_ROBOT);	//	F1_0*512 means play twice as loud
 //	After a teleport, boss can fire right away.
 gameData.ai.localInfo [nObject].nextPrimaryFire = 0;
 gameData.ai.localInfo [nObject].nextSecondaryFire = 0;
@@ -448,7 +448,7 @@ gameData.ai.localInfo [nObject].nextSecondaryFire = 0;
 void StartBossDeathSequence (CObject *objP)
 {
 if (ROBOTINFO (objP->info.nId).bossFlag) {
-	int	nObject = OBJ_IDX (objP),
+	int	nObject = objP->Index (),
 			i = FindBoss (nObject);
 
 	if (i < 0)
@@ -464,7 +464,7 @@ if (ROBOTINFO (objP->info.nId).bossFlag) {
 
 void DoBossDyingFrame (CObject *objP)
 {
-	int	rval, i = FindBoss (OBJ_IDX (objP));
+	int	rval, i = FindBoss (objP->Index ());
 
 if (i < 0)
 	return;
@@ -475,7 +475,7 @@ if (rval) {
 	RemoveBoss (i);
 	DoReactorDestroyedStuff (NULL);
 	ExplodeObject (objP, F1_0/4);
-	DigiLinkSoundToObject2 (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F2_0, F1_0*512, SOUNDCLASS_EXPLOSION);
+	DigiLinkSoundToObject2 (SOUND_BADASS_EXPLOSION, objP->Index (), 0, F2_0, F1_0*512, SOUNDCLASS_EXPLOSION);
 	}
 }
 
@@ -485,7 +485,7 @@ void DoBossStuff (CObject *objP, int nPlayerVisibility)
 {
 	int	i, nBossId, nBossIndex, nObject;
 
-nObject = OBJ_IDX (objP);
+nObject = objP->Index ();
 i = FindBoss (nObject);
 if (i < 0)
 	return;
@@ -495,7 +495,7 @@ nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
 #if DBG
 if (objP->info.xShields != gameData.boss [i].xPrevShields) {
 #if TRACE
-	console.printf (CON_DBG, "Boss shields = %7.3f, CObject %i\n", X2F (objP->info.xShields), OBJ_IDX (objP));
+	console.printf (CON_DBG, "Boss shields = %7.3f, CObject %i\n", X2F (objP->info.xShields), objP->Index ());
 #endif
 	gameData.boss [i].xPrevShields = objP->info.xShields;
 	}
@@ -548,7 +548,7 @@ if (bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
 			gameData.boss [i].nCloakEndTime = gameData.time.xGame + gameData.boss [i].nCloakDuration;
 			objP->cType.aiInfo.CLOAKED = 1;
 			if (IsMultiGame)
-				MultiSendBossActions (OBJ_IDX (objP), 2, 0, 0);
+				MultiSendBossActions (objP->Index (), 2, 0, 0);
 			}
 		}
 	}

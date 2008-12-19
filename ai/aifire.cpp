@@ -235,7 +235,7 @@ if (nPrevShot >= 0) {
 //	When this routine is complete, the parameter gameData.ai.vVecToPlayer should not be necessary.
 void AIFireLaserAtPlayer (CObject *objP, CFixVector *vFirePoint, int nGun, CFixVector *vBelievedPlayerPos)
 {
-	short				nShot, nObject = OBJ_IDX (objP);
+	short				nShot, nObject = objP->Index ();
 	tAILocalInfo	*ailP = gameData.ai.localInfo + nObject;
 	tRobotInfo		*botInfoP = &ROBOTINFO (objP->info.nId);
 	CFixVector		vFire;
@@ -302,7 +302,7 @@ if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 		fq.p1					= vFirePoint;
 		fq.radP0				=
 		fq.radP1				= 0;
-		fq.thisObjNum		= OBJ_IDX (objP);
+		fq.thisObjNum		= objP->Index ();
 		fq.ignoreObjList	= NULL;
 		fq.flags				= FQ_TRANSWALL;
 
@@ -350,7 +350,7 @@ if ((botInfoP->nSecWeaponType != -1) && ((nWeaponType < 0) || !nGun))
 	nWeaponType = botInfoP->nSecWeaponType;
 if (nWeaponType < 0)
 	return;
-if (0 > (nShot = CreateNewLaserEasy (&vFire, vFirePoint, OBJ_IDX (objP), (ubyte) nWeaponType, 1)))
+if (0 > (nShot = CreateNewLaserEasy (&vFire, vFirePoint, objP->Index (), (ubyte) nWeaponType, 1)))
 	return;
 
 AICreateClusterLight (objP, nObject, nShot);
@@ -383,7 +383,7 @@ if ((gameData.ai.nDistToLastPlayerPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD) 
 	fix dot = CFixVector::Dot (objP->info.position.mOrient.FVec (), gameData.ai.vVecToPlayer);
 	if ((dot >= 7 * F1_0 / 8) || (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
 		tAIStaticInfo	*aiP = &objP->cType.aiInfo;
-		tAILocalInfo	*ailP = gameData.ai.localInfo + OBJ_IDX (objP);
+		tAILocalInfo	*ailP = gameData.ai.localInfo + objP->Index ();
 
 		switch (aiP->GOAL_STATE) {
 			case AIS_NONE:
@@ -431,11 +431,11 @@ if (r < 4096) {
 	CreatePathToPlayer (objP, 10, 1);
 	objP->cType.aiInfo.behavior = AIB_STATION;
 	objP->cType.aiInfo.nHideSegment = objP->info.nSegment;
-	gameData.ai.localInfo [OBJ_IDX (objP)].mode = AIM_CHASE_OBJECT;
+	gameData.ai.localInfo [objP->Index ()].mode = AIM_CHASE_OBJECT;
 	}
 else if (r < 4096 + 8192) {
 	CreateNSegmentPath (objP, d_rand () / 8192 + 2, -1);
-	gameData.ai.localInfo [OBJ_IDX (objP)].mode = AIM_FOLLOW_PATH;
+	gameData.ai.localInfo [objP->Index ()].mode = AIM_FOLLOW_PATH;
 	}
 }
 

@@ -1053,7 +1053,7 @@ inline float CFace::ClipDist (CObject *objP)
 	CFixVector	vCenter;
 	
 vCenter.Assign (m_vCenterf);
-return NearestShadowedWallDist (OBJ_IDX (objP), objP->info.nSegment, &vCenter, 0.0f);
+return NearestShadowedWallDist (objP->Index (), objP->info.nSegment, &vCenter, 0.0f);
 }
 
 //------------------------------------------------------------------------------
@@ -1087,7 +1087,7 @@ float CSubModel::ClipDistByFaceVerts (CObject *objP, CModel* po, float fMaxDist,
 	float*			pfc;
 	CFace*			pf, ** ppf;
 	short*			pfv, h, j, m, n;
-	short				nObject = OBJ_IDX (objP);
+	short				nObject = objP->Index ();
 	short				nPointSeg, nSegment = objP->info.nSegment;
 	float				fClipDist;
 
@@ -1124,7 +1124,7 @@ float G3ClipDistByLitVerts (CObject *objP, CModel* po, float fMaxDist, int i, in
 	float			*pfc;
 	short			j;
 	ubyte			*pvf;
-	short			nObject = OBJ_IDX (objP);
+	short			nObject = objP->Index ();
 	short			nPointSeg, nSegment = objP->info.nSegment;
 	float			fClipDist;
 	ubyte			nVertFlag = po->m_nVertFlag;
@@ -1465,7 +1465,7 @@ if (FAST_SHADOWS) {
 			if (gameOpts->render.shadows.nClip) {
 				// get a default clipping distance using the model position as fall back
 				transformation.Transform (v, objP->info.position.vPos, 0);
-				fInf = NearestShadowedWallDist (OBJ_IDX (objP), objP->info.nSegment, &v, 0);
+				fInf = NearestShadowedWallDist (objP->Index (), objP->info.nSegment, &v, 0);
 				}
 			else
 				fInf = G3_INFINITY;
@@ -1481,7 +1481,7 @@ if (FAST_SHADOWS) {
 		}
 	}
 else {
-	h = OBJ_IDX (objP);
+	h = objP->Index ();
 	j = (int) (gameData.render.shadows.lights - gameData.render.lights.dynamic.shader.lights);
 	pnl = gameData.render.shadows.objLights + h * MAX_SHADOW_LIGHTS;
 	for (i = 0; i < gameOpts->render.shadows.nLights; i++, pnl++) {
