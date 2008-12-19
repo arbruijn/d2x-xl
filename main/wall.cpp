@@ -244,31 +244,31 @@ wallP->nLinkedWall = NO_WALL;
 
 //-----------------------------------------------------------------
 //set the nBaseTex or nOvlTex field for a CWall/door
-void WallSetTMapNum (CSegment *segP, short nSide, CSegment *connSegP, short cSide, int nAnim, int nFrame)
+void CSegment::SetTexture (short nSide, CSegment *connSegP, short nConnSide, int nAnim, int nFrame)
 {
-	tWallClip	*anim = gameData.walls.animP + nAnim;
-	short			tmap = anim->frames [(anim->flags & WCF_ALTFMT) ? 0 : nFrame];
-	CBitmap	*bmP;
+	tWallClip*	animP = gameData.walls.animP + nAnim;
+	short			nTexture = animP->frames [(animP->flags & WCF_ALTFMT) ? 0 : nFrame];
+	CBitmap*		bmP;
 	int			nFrames;
 
 //if (gameData.demo.nState == ND_STATE_PLAYBACK)
 //	return;
-if (cSide < 0)
+if (nConnSide < 0)
 	connSegP = NULL;
-if (anim->flags & WCF_ALTFMT) {
-	nFrames = anim->nFrameCount;
-	bmP = SetupHiresAnim (reinterpret_cast<short*> (anim->frames), nFrames, -1, 1, 0, &nFrames);
-	//if (anim->flags & WCF_TMAP1)
+if (animP->flags & WCF_ALTFMT) {
+	nFrames = animP->nFrameCount;
+	bmP = SetupHiresAnim (reinterpret_cast<short*> (animP->frames), nFrames, -1, 1, 0, &nFrames);
+	//if (animP->flags & WCF_TMAP1)
 	if (!bmP)
-		anim->flags &= ~WCF_ALTFMT;
+		animP->flags &= ~WCF_ALTFMT;
 	else {
 		bmP->SetWallAnim (1);
 		if (!gameOpts->ogl.bGlTexMerge)
-			anim->flags &= ~WCF_ALTFMT;
+			animP->flags &= ~WCF_ALTFMT;
 		else if (!bmP->Frames ())
-			anim->flags &= ~WCF_ALTFMT;
+			animP->flags &= ~WCF_ALTFMT;
 		else {
-			anim->flags |= WCF_INITIALIZED;
+			animP->flags |= WCF_INITIALIZED;
 			bmP->SetCurFrame (bmP->Frames () + nFrame);
 			bmP->CurFrame ()->SetupTexture (1, 3, 1);
 			if (++nFrame > nFrames)
@@ -276,43 +276,39 @@ if (anim->flags & WCF_ALTFMT) {
 			}
 		}
 	}
-else if ((anim->flags & WCF_TMAP1) || !segP->m_sides [nSide].m_nOvlTex) {
-	segP->m_sides [nSide].m_nBaseTex = tmap;
+else if ((animP->flags & WCF_TMAP1) || !m_sides [nSide].m_nOvlTex) {
+	m_sides [nSide].m_nBaseTex = nTexture;
 	if (connSegP)
-		connSegP->m_sides [cSide].m_nBaseTex = tmap;
+		connSegP->m_sides [nConnSide].m_nBaseTex = nTexture;
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordWallSetTMapNum1(
-			SEG_IDX (segP), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) cSide, tmap);
+			SEG_IDX (segP), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) nConnSide, nTexture);
 	}
 else {
-	segP->m_sides [nSide].m_nOvlTex = tmap;
+	m_sides [nSide].m_nOvlTex = nTexture;
 	if (connSegP)
-		connSegP->m_sides [cSide].nOvlTex = tmap;
+		connSegP->m_sides [nConnSide].nOvlTex = nTexture;
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordWallSetTMapNum2(
-		SEG_IDX (segP), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) cSide, tmap);
+		SEG_IDX (this), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) nConnSide, nTexture);
 	}
-segP->m_sides [nSide].nFrame = -nFrame;
+m_sides [nSide].nFrame = -nFrame;
 if (connSegP)
-	connSegP->m_sides [cSide].nFrame = -nFrame;
+	connSegP->m_sides [nConnSide].nFrame = -nFrame;
 }
 
 
 // -------------------------------------------------------------------------------
 //when the CWall has used all its hitpoints, this will destroy it
-void BlastBlastableWall (CSegment *segP, short nSide)
+void CSegment::BlastWall (short nSide)
 {
-	short nConnSide;
-	CSegment *connSegP;
-	int a, n;
-	short nWall, nConnWall;
-	CWall *wallP;
+	short			nConnSide;
+	CSegment*	connSegP;
+	int			a, n;
+	short			nWall, nConnWall;
+	CWall*		wallP = Wall (nSide);
 
-nWall = WallNumP (segP, nSide);
-Assert(IS_WALL (nWall));
-wallP = WALLS + nWall;
 wallP->hps = -1;	//say it's blasted
-
 if (segP->m_children [nSide] < 0) {
 	if (gameOpts->legacy.bWalls)
 		Warning (TXT_BLAST_SINGLE, segP - SEGMENTS, nSide, nWall);
@@ -324,11 +320,10 @@ else {
 	connSegP = SEGMENTS + segP->m_children [nSide];
 	nConnSide = segP->ConnectedSide (connSegP);
 	Assert (nConnSide != -1);
-	nConnWall = WallNumP (connSegP, nConnSide);
-	}
-KillStuckObjects (WallNumP (segP, nSide));
-if (IS_WALL (nConnWall))
+	nConnWall = connSegP->WallNum (nConnSide);
 	KillStuckObjects (nConnWall);
+	}
+KillStuckObjects (segP->WallNum (nSide));
 
 //if this is an exploding wall, explode it
 if ((gameData.walls.animP [wallP->nClip].flags & WCF_EXPLODES) && !(wallP->flags & WALL_BLASTED))
@@ -337,7 +332,7 @@ else {
 	//if not exploding, set final frame, and make door passable
 	a = wallP->nClip;
 	n = AnimFrameCount (gameData.walls.animP + a);
-	WallSetTMapNum (segP, nSide, connSegP, nConnSide, a, n - 1);
+	SetTexture (nSide, connSegP, nConnSide, a, n - 1);
 	wallP->flags |= WALL_BLASTED;
 	if (IS_WALL (nConnWall))
 		WALLS [nConnWall].flags |= WALL_BLASTED;
@@ -346,38 +341,38 @@ else {
 
 //-----------------------------------------------------------------
 // Destroys a blastable CWall.
-void WallDestroy (CSegment *segP, short nSide)
+void CSegment::DestroyWall (short nSide)
 {
-Assert (IS_WALL (WallNumP (segP, nSide)));
-Assert (SEG_IDX (segP) != 0);
-if (WALLS [WallNumP (segP, nSide)].nType == WALL_BLASTABLE)
-	BlastBlastableWall (segP, nSide);
-else
-	Error (TXT_WALL_INDESTRUCTIBLE);
+	CWall*	wallP = Wall (nSide);
+
+if (wallP)
+	if (wallP->nType == WALL_BLASTABLE)
+		BlastBlastableWall (segP, nSide);
+	else
+		Error (TXT_WALL_INDESTRUCTIBLE);
 }
 
 //-----------------------------------------------------------------
 // Deteriorate appearance of CWall. (Changes bitmap (paste-ons))
-void WallDamage (CSegment *segP, short nSide, fix damage)
+void CSegment::DamageWall (short nSide, fix damage)
 {
 	int		a, i, n;
-	short		nConnSide, nConnWall, nWall = WallNumP (segP, nSide);
-	CWall		*wallP;
+	short		nConnSide, nConnWall;
+	CWall		*wallP = Wall (nSide);
 	CSegment *connSegP;
 
-if (!IS_WALL (nWall)) {
+if (!wallP) {
 #if TRACE
 	console.printf (CON_DBG, "Damaging illegal CWall\n");
 #endif
 	return;
 	}
-wallP = WALLS + nWall;
 if (wallP->nType != WALL_BLASTABLE)
 	return;
 if ((wallP->flags & WALL_BLASTED) || (wallP->hps < 0))
 	return;
 
-if (segP->m_children [nSide] < 0) {
+if (m_children [nSide] < 0) {
 	if (gameOpts->legacy.bWalls)
 		Warning (TXT_DMG_SINGLE, segP - SEGMENTS, nSide, nWall);
 	connSegP = NULL;
@@ -396,14 +391,14 @@ if (IS_WALL (nConnWall))
 a = wallP->nClip;
 n = AnimFrameCount (gameData.walls.animP + a);
 if (wallP->hps < WALL_HPS * 1 / n) {
-	BlastBlastableWall (segP, nSide);
+	BlastWall (nSide);
 	if (IsMultiGame)
 		MultiSendDoorOpen (SEG_IDX (segP), nSide, wallP->flags);
 	}
 else {
 	for (i = 0; i < n; i++)
 		if (wallP->hps < WALL_HPS * (n - i) / n)
-			WallSetTMapNum (segP, nSide, connSegP, nConnSide, a, i);
+			SetTexture (nSide, connSegP, nConnSide, a, i);
 	}
 }
 

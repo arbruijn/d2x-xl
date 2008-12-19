@@ -210,6 +210,10 @@ class CSegment {
 		void Validate (void);
 		inline ushort WallNum (short nSide) { return m_sides [nSide].WallNum (); }
 		inline int CheckTransparency (short nSide) { return m_sides [nSide].CheckTransparency (); }
+		void SetTexture (short nSide, CSegment *connSegP, short nConnSide, int nAnim, int nFrame);
+		void DestroyWall (short nSide);
+		void DamageWall (short nSide, fix damage);
+		void BlastWall (short nSide);
 		fix Refuel (fix xMaxFuel);
 		fix Repair (fix xMaxShields);
 		fix Damage (fix xMaxDamage);

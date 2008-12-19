@@ -192,7 +192,7 @@ if (!(mdP = MorphFindData (this))) {	//maybe loaded half-morphed from disk
 	Kill ();	//so kill it
 	return;
 	}
-pmP = gameData.models.polyModels + mdP->rType.polyObjInfo.nModel;
+pmP = gameData.models.polyModels + mdP->objP->rType.polyObjInfo.nModel;
 G3CheckAndSwap (reinterpret_cast<void*> (pmP->modelData.Buffer ()));
 for (i = 0; i < pmP->nModels; i++)
 	if (mdP->submodelActive [i] == 1) {
@@ -232,7 +232,7 @@ for (i = 0; i < MAX_MORPH_OBJECTS; i++)
 
 //-------------------------------------------------------------
 //make the CObject morph
-void MorphStart (CObject *objP)
+void CObject::MorphStart (void)
 {
 	tPolyModel *pmP;
 	CFixVector pmmin, pmmax;
@@ -240,32 +240,32 @@ void MorphStart (CObject *objP)
 	int i;
 	tMorphInfo *mdP = gameData.render.morph.objects;
 
-for (i=0;i<MAX_MORPH_OBJECTS;i++, mdP++)
+for (i = 0; i < MAX_MORPH_OBJECTS; i++, mdP++)
 	if (mdP->objP == NULL ||
-			mdP->objP->info.nType==OBJ_NONE  ||
-			mdP->objP->info.nSignature!=mdP->nSignature)
+		 mdP->objP->info.nType == OBJ_NONE  ||
+		 mdP->objP->info.nSignature != mdP->nSignature)
 		break;
 
-if (i==MAX_MORPH_OBJECTS)		//no free slots
+if (i == MAX_MORPH_OBJECTS)		//no free slots
 	return;
 
-Assert (objP->info.renderType == RT_POLYOBJ);
-mdP->objP = objP;
-mdP->nSignature = objP->info.nSignature;
-mdP->saveControlType = objP->info.controlType;
-mdP->saveMovementType = objP->info.movementType;
-mdP->savePhysInfo = objP->mType.physInfo;
-Assert (objP->info.controlType == CT_AI);		//morph OBJECTS are also AI gameData.objPs.objPects
-objP->info.controlType = CT_MORPH;
-objP->info.renderType = RT_MORPH;
-objP->info.movementType = MT_PHYSICS;		//RT_NONE;
-objP->mType.physInfo.rotVel = morph_rotvel;
-pmP = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
+Assert (info.renderType == RT_POLYOBJ);
+mdP->objP = this;
+mdP->nSignature = info.nSignature;
+mdP->saveControlType = info.controlType;
+mdP->saveMovementType = info.movementType;
+mdP->savePhysInfo = mType.physInfo;
+Assert (info.controlType == CT_AI);		//morph OBJECTS are also AI gameData.objPs.objPects
+info.controlType = CT_MORPH;
+info.renderType = RT_MORPH;
+info.movementType = MT_PHYSICS;		//RT_NONE;
+mType.physInfo.rotVel = morph_rotvel;
+pmP = gameData.models.polyModels + rType.polyObjInfo.nModel;
 G3CheckAndSwap (reinterpret_cast<void*> (pmP->modelData.Buffer ()));
 MorphFindModelBounds (pmP, 0, pmmin, pmmax);
-vBoxSize[X] = max (-pmmin[X], pmmax[X]) / 2;
-vBoxSize[Y] = max (-pmmin[Y], pmmax[Y]) / 2;
-vBoxSize[Z] = max (-pmmin[Z], pmmax[Z]) / 2;
+vBoxSize [X] = max (-pmmin [X], pmmax [X]) / 2;
+vBoxSize [Y] = max (-pmmin [Y], pmmax [Y]) / 2;
+vBoxSize [Z] = max (-pmmin [Z], pmmax [Z]) / 2;
 for (i = 0; i < MAX_VECS; i++)		//clear all points
 	mdP->times [i] = 0;
 for (i = 1; i < MAX_SUBMODELS; i++)		//clear all parts

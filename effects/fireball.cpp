@@ -707,8 +707,8 @@ for (int i = 0; i < MAX_EXPLODING_WALLS; i++) {
 						*connSegP = SEGMENTS + segP->m_children [nSide];
 			ubyte	a = (ubyte) segP->Wall (nSide)->nClip;
 			short n = AnimFrameCount (gameData.walls.animP + a);
-			short nConnSide = ConnectedSide (segP, connSegP);
-			WallSetTMapNum (segP, nSide, connSegP, nConnSide, a, n - 1);
+			short nConnSide = segP->ConnectedSide (connSegP);
+			segP->SetTexture (nSide, connSegP, nConnSide, a, n - 1);
 			segP->Wall (nSide)->flags |= WALL_BLASTED;
 			if (nConnSide >= 0)
 				connSegP->Wall (nConnSide)->flags |= WALL_BLASTED;

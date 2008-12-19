@@ -829,8 +829,9 @@ class CObject : public CObjectInfo {
 		int Update (void);
 		//inline short Index (void) { return gameData.objs.objects.Index (this); }
 
-		void DoPowerupFrame (void);
+		void MorphStart (void);
 		void DoMorphFrame (void);
+		void DoPowerupFrame (void);
 		inline void RotateCamera (void);
 		void RotateMarker (void);
 
