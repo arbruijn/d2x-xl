@@ -134,8 +134,10 @@ class CSide {
 		void LoadTextures (void);
 		void LoadBotGenTextures (void);
 		inline ushort WallNum (void) { return m_nWall; }
+		inline bool IsWall (void);
 		inline CWall* Wall (void);
 		inline sbyte Type (void) { return m_nType; }
+		bool IsVolatile (void);
 		int FaceCount (void);
 
 		int CheckTransparency (void);
@@ -222,6 +224,7 @@ class CSegment {
 		inline CWall* Wall (int nSide) { return m_sides [nSide].Wall (); }
 		inline sbyte Type (int nSide) { return m_sides [nSide].m_nType; }
 		void ComputeSideRads (void);
+		inline bool IsVertex (int nVertex);
 		void GetNormals (short nSide, CFixVector& n1, CFixVector& n2) { m_sides [nSide].GetNormals (n1, n2); }
 		inline CFixVector& Center (void) { return m_vCenter; }
 		inline CFixVector& SideCenter (int nSide) { return m_sides [nSide].Center (); }

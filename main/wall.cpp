@@ -1542,7 +1542,7 @@ if (nStuckObjects)
 // -----------------------------------------------------------------------------------
 #define	MAX_BLAST_GLASS_DEPTH	5
 
-void BngProcessSegment(CObject *objP, fix damage, CSegment *segP, int depth, sbyte *visited)
+void BngProcessSegment (CObject *objP, fix damage, CSegment *segP, int depth, sbyte *visited)
 {
 	int	i;
 	short	nSide;
@@ -1595,11 +1595,8 @@ void BngProcessSegment(CObject *objP, fix damage, CSegment *segP, int depth, sby
 
 // -----------------------------------------------------------------------------------
 
-bool WallIsTriggerTarget (short nWall)
+bool CWall::IsTriggerTarget (void)
 {
-CWall	*wallP = WALLS + nWall;
-short nSegment = wallP->nSegment;
-short nSide = wallP->nSide;
 tTrigger *triggerP = TRIGGERS.Buffer ();
 for (int i = gameData.trigs.nTriggers; i; i--, triggerP++) {
 	short *nSegP = triggerP->nSegment;
@@ -1613,32 +1610,26 @@ return false;
 
 // -----------------------------------------------------------------------------------
 
-bool WallIsVolatile (short nWall)
+bool CWall::IsVolatile (void)
 {
-if (!IS_WALL (nWall))
-	return false;
-CWall	*wallP = WALLS + nWall;
-if ((wallP->nType == WALL_DOOR) || (wallP->nType == WALL_BLASTABLE))
+if ((nType == WALL_DOOR) || (nType == WALL_BLASTABLE))
 	return true;
-return WallIsTriggerTarget (nWall);
+return CWall::IsTriggerTarget ();
 }
 
 // -----------------------------------------------------------------------------------
 
-bool WallIsInvisible (short nWall)
+bool CWall::IsInvisible (void)
 {
-if (!IS_WALL (nWall))
+if ((nType != WALL_OPEN) && ((nType != WALL_CLOAKED) || (cloakValue <  FADE_LEVELS)))
 	return false;
-CWall	*wallP = WALLS + nWall;
-if ((wallP->nType != WALL_OPEN) && ((wallP->nType != WALL_CLOAKED) || (wallP->cloakValue <  FADE_LEVELS)))
-	return false;
-return !WallIsTriggerTarget (nWall);
+return !IsTriggerTarget ();
 }
 
 // -----------------------------------------------------------------------------------
 //	objP is going to detonate
 //	blast nearby monitors, lights, maybe other things
-void BlastNearbyGlass(CObject *objP, fix damage)
+void BlastNearbyGlass (CObject *objP, fix damage)
 {
 	int		i;
 	sbyte   visited [MAX_SEGMENTS_D2X];

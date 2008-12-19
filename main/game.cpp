@@ -1872,7 +1872,7 @@ for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 	for (nSide = 0, sideP = SEGMENTS [nSegment].m_sides; nSide < 6; nSide++, sideP++) {
 		if (!(sides & (1 << nSide)))
 			continue;
-		tmn = sideP->nBaseTex;
+		tmn = sideP->m_nBaseTex;
 		slideU = (fix) gameData.pig.tex.tMapInfoP [tmn].slide_u;
 		slideV = (fix) gameData.pig.tex.tMapInfoP [tmn].slide_v;
 		if (!(slideU || slideV))
@@ -1884,7 +1884,7 @@ for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 		i = (SEGMENTS [nSegment].m_nType == SEGMENT_IS_SKYBOX) ? 3 : 8;
 		slideU = FixMul (gameData.time.xFrame, slideU << i);
 		slideV = FixMul (gameData.time.xFrame, slideV << i);
-		for (i = 0, uvlP = sideP->uvls; i < 4; i++) {
+		for (i = 0, uvlP = sideP->m_uvls; i < 4; i++) {
 			uvlP [i].u += slideU;
 			if (uvlP [i].u > f2_0) {
 				xDelta = (uvlP [i].u / F1_0 - 1) * F1_0;

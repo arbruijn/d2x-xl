@@ -600,7 +600,7 @@ if (sideP->m_nType == SIDE_IS_QUAD) {
 	memcpy (props.vp, SEGMENTS [props.segNum].Contour (props.sideNum), 4 * sizeof (ushort));
 	RenderFace (&props);
 #ifdef EDITOR
-	CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->nBaseTex, sideP->nOvlTex, sideP->uvls);
+	CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->m_nBaseTex, sideP->m_nOvlTex, sideP->m_uvls);
 #endif
 	}
 else {
@@ -1518,7 +1518,6 @@ void InitSegZRef (int i, int j, int nThread)
 	tSegZRef		*ps = segZRef [0] + i;
 	CFixVector	v;
 	int			zMax = -0x7fffffff;
-	short			nSegment;
 	CSegment*	segP;
 
 for (; i < j; i++, ps++) {
@@ -1598,7 +1597,7 @@ void BuildRenderSegList (short nStartSeg, int nWindow)
 	int		l, i, j;
 	short		nChild;
 	short		nChildSeg;
-	short*	sv;
+	ushort*	sv;
 	int*		s2v;
 	ubyte		andCodes, andCodes3D;
 	int		bRotated, nSegment, bNotProjected;

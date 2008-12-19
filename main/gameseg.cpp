@@ -880,8 +880,8 @@ CSegment	*segP = SEGMENTS.Buffer ();
 for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 	CSide	*sideP = segP->m_sides;
 	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
-		if ((gameData.pig.tex.tMapInfoP [sideP->nBaseTex].flags & tmi_bit) ||
-			 (gameData.pig.tex.tMapInfoP [sideP->nOvlTex].flags & tmi_bit)) {
+		if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & tmi_bit) ||
+			 (gameData.pig.tex.tMapInfoP [sideP->m_nOvlTex].flags & tmi_bit)) {
 			if (!IS_CHILD (segP->m_children [j]) || IS_WALL (sideP->m_nWall)) {
 				segP->m_flags |= s2f_bit;
 				markedSegs [i] = 1;		//	Say it's itself that it is close enough to to hear something.

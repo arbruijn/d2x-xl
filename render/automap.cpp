@@ -58,12 +58,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void ModexPrintF (int x,int y, char *s, CFont *font, uint color);
 
 typedef struct tEdgeInfo {
-	short verts [2];     // 4 bytes
-	ubyte sides [4];     // 4 bytes
-	short nSegment [4];    // 8 bytes  // This might not need to be stored... If you can access the normals of a CSide.
-	ubyte flags;        // 1 bytes  // See the EF_??? defines above.
-	uint color; // 4 bytes
-	ubyte num_faces;    // 1 bytes  // 19 bytes...
+	ushort	verts [2];     // 4 bytes
+	ubyte		sides [4];     // 4 bytes
+	short		nSegment [4];  // 8 bytes  // This might not need to be stored... If you can access the normals of a CSide.
+	ubyte		flags;			// 1 bytes  // See the EF_??? defines above.
+	uint		color;			// 4 bytes
+	ubyte		nFaces;			// 1 bytes  // 19 bytes...
 } tEdgeInfo;
 
 #define MAX_EDGES 65536 // Determined by loading all the levels by John & Mike, Feb 9, 1995
@@ -956,7 +956,7 @@ void AdjustSegmentLimit (int nSegmentLimit, ushort *pVisited)
 for (i = 0; i <= nHighestEdgeIndex; i++)	{
 	e = Edges + i;
 	e->flags |= EF_TOO_FAR;
-	for (e1 = 0; e1 < e->num_faces; e1++)	{
+	for (e1 = 0; e1 < e->nFaces; e1++)	{
 		if (pVisited [e->nSegment [e1]] <= nSegmentLimit)	{
 			e->flags &= ~EF_TOO_FAR;
 			break;
@@ -972,7 +972,7 @@ void DrawAllEdges (void)
 	g3sCodes		cc;
 	int			i, j, nbright = 0;
 	ubyte			nfacing, nnfacing;
-	tEdgeInfo	*e;
+	tEdgeInfo	*edgeP;
 	CFixVector	*tv1;
 	fix			distance;
 	fix			minDistance = 0x7fffffff;
@@ -981,27 +981,27 @@ void DrawAllEdges (void)
 
 gameStates.ogl.bUseTransform = RENDERPATH;
 for (i = 0; i <= nHighestEdgeIndex; i++)	{
-	//e = &Edges [Edge_used_list [i]];
-	e = Edges + i;
-	if (!(e->flags & EF_USED)) 
+	//edgeP = &Edges [Edge_used_list [i]];
+	edgeP = Edges + i;
+	if (!(edgeP->flags & EF_USED)) 
 		continue;
-	if (e->flags & EF_TOO_FAR) 
+	if (edgeP->flags & EF_TOO_FAR) 
 		continue;
-	if (e->flags & EF_FRONTIER) {		// A line that is between what we have seen and what we haven't
-		if ((!(e->flags & EF_SECRET)) && (e->color == automapColors.walls.nNormal))
+	if (edgeP->flags & EF_FRONTIER) {		// A line that is between what we have seen and what we haven't
+		if ((!(edgeP->flags & EF_SECRET)) && (edgeP->color == automapColors.walls.nNormal))
 			continue;		// If a line isn't secret and is Normal color, then don't draw it
 		}
 
-	cc = RotateVertexList (2,e->verts);
-	distance = gameData.segs.points [e->verts [1]].p3_vec[Z];
+	cc = RotateVertexList (2, edgeP->verts);
+	distance = gameData.segs.points [edgeP->verts [1]].p3_vec[Z];
 	if (minDistance>distance)
 		minDistance = distance;
 	if (!cc.ccAnd) 	{	//all off screen?
 		nfacing = nnfacing = 0;
-		tv1 = gameData.segs.vertices + e->verts [0];
+		tv1 = gameData.segs.vertices + edgeP->verts [0];
 		j = 0;
-		while (j<e->num_faces && (nfacing==0 || nnfacing==0))	{
-			if (!G3CheckNormalFacing (*tv1, SEGMENTS [e->nSegment [j]].m_sides [e->sides [j]].m_normals [0]))
+		while (j<edgeP->nFaces && (nfacing==0 || nnfacing==0))	{
+			if (!G3CheckNormalFacing (*tv1, SEGMENTS [edgeP->nSegment [j]].m_sides [edgeP->sides [j]].m_normals [0]))
 				nfacing++;
 			else
 				nnfacing++;
@@ -1010,18 +1010,18 @@ for (i = 0; i <= nHighestEdgeIndex; i++)	{
 
 		if (nfacing && nnfacing) {
 			// a contour line
-			DrawingListBright [nbright++] = EDGE_IDX (e);
+			DrawingListBright [nbright++] = EDGE_IDX (edgeP);
 			}
-		else if (e->flags & (EF_DEFINING|EF_GRATE))	{
+		else if (edgeP->flags & (EF_DEFINING|EF_GRATE))	{
 			if (nfacing == 0)	{
-				if (e->flags & EF_NO_FADE)
-					CCanvas::Current ()->SetColorRGBi (e->color);
+				if (edgeP->flags & EF_NO_FADE)
+					CCanvas::Current ()->SetColorRGBi (edgeP->color);
 				else
-					CCanvas::Current ()->SetColorRGBi (RGBA_FADE (e->color, 32.0 / 8.0));
-				G3DrawLine (gameData.segs.points + e->verts [0], gameData.segs.points + e->verts [1]);
+					CCanvas::Current ()->SetColorRGBi (RGBA_FADE (edgeP->color, 32.0 / 8.0));
+				G3DrawLine (gameData.segs.points + edgeP->verts [0], gameData.segs.points + edgeP->verts [1]);
 				}
 			else {
-				DrawingListBright [nbright++] = EDGE_IDX (e);
+				DrawingListBright [nbright++] = EDGE_IDX (edgeP);
 				}
 			}
 		}
@@ -1063,9 +1063,9 @@ while (incr > 0) {
 for (i = 0; i < nbright; i++) {
 	int color;
 	fix dist;
-	e = Edges + DrawingListBright [i];
-	p1 = gameData.segs.points + e->verts [0];
-	p2 = gameData.segs.points + e->verts [1];
+	edgeP = Edges + DrawingListBright [i];
+	p1 = gameData.segs.points + edgeP->verts [0];
+	p2 = gameData.segs.points + edgeP->verts [1];
 	dist = p1->p3_vec[Z] - minDistance;
 	// Make distance be 1.0 to 0.0, where 0.0 is 10 segments away;
 	if (dist < 0) 
@@ -1073,12 +1073,12 @@ for (i = 0; i < nbright; i++) {
 	if (dist >= amData.nMaxDist) 
 		continue;
 
-	if (e->flags & EF_NO_FADE)
-		CCanvas::Current ()->SetColorRGBi (e->color);
+	if (edgeP->flags & EF_NO_FADE)
+		CCanvas::Current ()->SetColorRGBi (edgeP->color);
 	else {
 		dist = F1_0 - FixDiv (dist, amData.nMaxDist);
 		color = X2I (dist*31);
-		CCanvas::Current ()->SetColorRGBi (RGBA_FADE (e->color, 32.0 / color));
+		CCanvas::Current ()->SetColorRGBi (RGBA_FADE (edgeP->color, 32.0 / color));
 		}
 	G3DrawLine (p1, p2);
 	}
@@ -1107,7 +1107,7 @@ while (ret==-1) {
 	ev0 = (int) (Edges [hash].verts [0]);
 	ev1 = (int) (Edges [hash].verts [1]);
 	evv = (ev1<<16)+ev0;
-	if (Edges [hash].num_faces == 0) ret=0;
+	if (Edges [hash].nFaces == 0) ret=0;
 	else if (evv == vv) ret=1;
 	else {
 		if (++hash==nMaxEdges) hash=0;
@@ -1149,7 +1149,7 @@ if (found == -1) {
 	e->verts [0] = va;
 	e->verts [1] = vb;
 	e->color = color;
-	e->num_faces = 1;
+	e->nFaces = 1;
 	e->flags = EF_USED | EF_DEFINING;			// Assume a Normal line
 	e->sides [0] = CSide;
 	e->nSegment [0] = nSegment;
@@ -1159,13 +1159,13 @@ if (found == -1) {
 	nNumEdges++;
 	} 
 else {
-	//Assert (e->num_faces < 8);
+	//Assert (e->nFaces < 8);
 	if ((color != automapColors.walls.nNormal) && (color != automapColors.walls.nRevealed))
 		e->color = color;
-	if (e->num_faces < 4) {
-		e->sides [e->num_faces] = CSide;
-		e->nSegment [e->num_faces] = nSegment;
-		e->num_faces++;
+	if (e->nFaces < 4) {
+		e->sides [e->nFaces] = CSide;
+		e->nSegment [e->nFaces] = nSegment;
+		e->nFaces++;
 		}
 	}
 if (bGrate)
@@ -1363,7 +1363,7 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP_CHEAT)
 
 	// clear edge list
 for (i=0; i < nMaxEdges; i++) {
-	Edges [i].num_faces = 0;
+	Edges [i].nFaces = 0;
 	Edges [i].flags = 0;
 	}
 nNumEdges = 0;
@@ -1403,8 +1403,8 @@ else {
 		if (!(e->flags & EF_USED))
 			continue;
 
-		for (e1 = 0; e1 < e->num_faces; e1++) {
-			for (e2 = 1; e2 < e->num_faces; e2++) {
+		for (e1 = 0; e1 < e->nFaces; e1++) {
+			for (e2 = 1; e2 < e->nFaces; e2++) {
 				if ((e1 != e2) && (e->nSegment [e1] != e->nSegment [e2]))	{
 					if (CFixVector::Dot (SEGMENTS [e->nSegment [e1]].m_sides [e->sides [e1]].m_normals [0], SEGMENTS [e->nSegment [e2]].m_sides [e->sides [e2]].m_normals [0]) > (F1_0- (F1_0/10)) )	{
 						e->flags &= (~EF_DEFINING);

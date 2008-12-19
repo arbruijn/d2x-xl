@@ -1269,14 +1269,14 @@ PROF_START
 #if DBG
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
-if (faceP - FACES == nDbgFace)
+if (faceP - FACES.faces == nDbgFace)
 	nDbgFace = nDbgFace;
 #endif
 if (!gameStates.ogl.iLight) {
 #if DBG
 	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
-	if (faceP - FACES == nDbgFace)
+	if (faceP - FACES.faces == nDbgFace)
 		nDbgFace = nDbgFace;
 #endif
 #if ONLY_LIGHTMAPS == 2

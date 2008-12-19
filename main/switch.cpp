@@ -157,7 +157,7 @@ if (trigP->nLinks) {
 	short nSegment = trigP->nSegment [d_rand () % trigP->nLinks];
 	if (objP->info.nSegment != nSegment) {
 		objP->info.nSegment = nSegment;
-		objP->info.position.vPos = SEGMENTS [nSegment].m_Center ();
+		objP->info.position.vPos = SEGMENTS [nSegment].Center ();
 		OBJECTS [nObject].RelinkToSeg (nSegment);
 		if (ROBOTINFO (objP->info.nId).bossFlag) {
 			int	i = FindBoss (nObject);
@@ -557,7 +557,7 @@ an = n.ToAnglesVec();
 if (!nStep)
 	posP->mOrient = CFixMatrix::Create(an);
 if (bSetPos)
-	posP->vPos = SEGMENTS [nSegment].m_Center (); 
+	posP->vPos = SEGMENTS [nSegment].Center (); 
 // rotate the ships vel vector accordingly
 //StopPlayerMovement ();
 }

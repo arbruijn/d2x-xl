@@ -219,7 +219,7 @@ for (i = 0; i < gameData.trigs.nTriggers; i++) {
 		for (j = 0; j < gameData.walls.nWalls; j++) {
 			if (WALLS [j].nTrigger == i) {
 				short nSegment = WALLS [j].nSegment;
-				gameData.objs.consoleP->info.position.vPos = SEGMENTS [nSegment].m_Center ();
+				gameData.objs.consoleP->info.position.vPos = SEGMENTS [nSegment].Center ();
 				gameData.objs.consoleP->RelinkToSeg (nSegment);
 				gameData.objs.consoleP->info.position.mOrient.FVec () = SEGMENTS [nSegment].m_sides [WALLS [j].nSide].m_normals [0];
 				gameData.objs.consoleP->info.position.mOrient.FVec ().Neg();

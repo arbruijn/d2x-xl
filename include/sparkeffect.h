@@ -48,8 +48,8 @@ class CSparks {
 
 class CSparkManager {
 	private:
-		CSparks		m_sparks [2][MAX_FUEL_CENTERS];	//0: repair, 1: fuel center
-		short			m_segments [2][MAX_FUEL_CENTERS];
+		CSparks		m_sparks [2 * MAX_FUEL_CENTERS];	//0: repair, 1: fuel center
+		short			m_segments [2 * MAX_FUEL_CENTERS];
 		short			m_nSegments;
 
 	public:

@@ -98,7 +98,7 @@ class CQuadMeshBuilder {
 		void SplitIn2Tris (void);
 		void SplitIn4Tris (void);
 		void BuildSlidingFaceList (void);
-		int IsBigFace (short *m_sideVerts);
+		int IsBigFace (ushort* sideVerts);
 		CFloatVector3 *SetTriNormals (grsTriangle *triP, CFloatVector3 *m_normalP);
 
 	public:

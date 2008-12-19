@@ -159,6 +159,11 @@ class CWall {
 		void LoadTextures (void);
 		int IsDoorWay (CObject* objP);
 		bool IsOpenableDoor (void);
+		bool IsTriggerTarget (void);
+		bool IsVolatile (void);
+		bool IsInvisible (void);
+
+
 
 };
 

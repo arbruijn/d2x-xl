@@ -191,18 +191,16 @@ else {
 
 // -----------------------------------------------------------------------------------
 
-int CalcFaceDimensions (short nSegment, short nSide, fix *w, fix *h, short *pSideVerts)
+int CalcFaceDimensions (short nSegment, short nSide, fix *w, fix *h, ushort* contour)
 {
-	short			sideVerts [4];
-	fix			d, d1, d2, dMax = -1;
-	int			i, j;
+	fix		d, d1, d2, dMax = -1;
+	int		i, j;
 
-if (!pSideVerts) {
-	GetSideVertIndex (sideVerts, nSegment, nSide);
-	pSideVerts = sideVerts;
+if (!contour) {
+	contour = SEGMENTS [nSegment].Contour (nSide);
 	}
 for (i = j = 0; j < 4; j++) {
-	d = CFixVector::Dist (gameData.segs.vertices [pSideVerts [j]], gameData.segs.vertices [pSideVerts [ (j + 1) % 4]]);
+	d = CFixVector::Dist (gameData.segs.vertices [contour [j]], gameData.segs.vertices [contour [(j + 1) % 4]]);
 	if (dMax < d) {
 		dMax = d;
 		i = j;
@@ -213,16 +211,16 @@ if (w)
 if (i > 2)
 	i--;
 j = i + 1;
-d1 = VmLinePointDist (gameData.segs.vertices [pSideVerts [i]],
-                     gameData.segs.vertices [pSideVerts [j]],
-                     gameData.segs.vertices [pSideVerts [ (j+1)%4]]);
-d = CFixVector::Dist (gameData.segs.vertices [pSideVerts [i]], gameData.segs.vertices [pSideVerts [ (j + 1) % 4]]);
-d = CFixVector::Dist (gameData.segs.vertices [pSideVerts [j]], gameData.segs.vertices [pSideVerts [ (j + 1) % 4]]);
-d2 = VmLinePointDist (gameData.segs.vertices [pSideVerts [i]],
-                     gameData.segs.vertices [pSideVerts [j]],
-                     gameData.segs.vertices [pSideVerts [ (j+2)%4]]);
-d = CFixVector::Dist (gameData.segs.vertices [pSideVerts [i]], gameData.segs.vertices [pSideVerts [ (j + 2) % 4]]);
-d = CFixVector::Dist (gameData.segs.vertices [pSideVerts [j]], gameData.segs.vertices [pSideVerts [ (j + 2) % 4]]);
+d1 = VmLinePointDist (gameData.segs.vertices [contour [i]],
+                      gameData.segs.vertices [contour [j]],
+                      gameData.segs.vertices [contour [(j + 1) % 4]]);
+d = CFixVector::Dist (gameData.segs.vertices [contour [i]], gameData.segs.vertices [contour [(j + 1) % 4]]);
+d = CFixVector::Dist (gameData.segs.vertices [contour [j]], gameData.segs.vertices [contour [(j + 1) % 4]]);
+d2 = VmLinePointDist (gameData.segs.vertices [contour [i]],
+                      gameData.segs.vertices [contour [j]],
+                      gameData.segs.vertices [contour [(j + 2) % 4]]);
+d = CFixVector::Dist (gameData.segs.vertices [contour [i]], gameData.segs.vertices [contour [(j + 2) % 4]]);
+d = CFixVector::Dist (gameData.segs.vertices [contour [j]], gameData.segs.vertices [contour [(j + 2) % 4]]);
 if (h)
 	*h = d1 > d2 ? d1 : d2;
 return i;
@@ -343,7 +341,7 @@ float ComputeCoronaSprite (CFloatVector *sprite, CFloatVector *vCenter, short nS
 
 contour = SEGMENTS [nSegment].Contour (nSide);
 for (i = 0; i < 4; i++) {
-	fLight += X2F (sideP->uvls [i].l);
+	fLight += X2F (sideP->m_uvls [i].l);
 	if (RENDERPATH)
 		transformation.Transform (sprite [i], gameData.segs.fVertices [contour [i]], 0);
 	else

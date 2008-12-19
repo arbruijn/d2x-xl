@@ -151,7 +151,7 @@ for (i = 0; i < gameData.eff.nEffects [gameStates.app.bD1Data]; i++) {
 	
 for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 	for (j = 0, sideP = segP->m_sides; j < 6; j++, sideP++) {
-		if ((tm = sideP->nOvlTex) != 0) {
+		if ((tm = sideP->m_nOvlTex) != 0) {
 			if (((ec = gameData.pig.tex.tMapInfoP [tm].nEffectClip) != -1) &&
 					(gameData.eff.effectP[ec].nDestBm != -1)) {
 				nMonitor++;

@@ -460,7 +460,7 @@ else if (nSegment >= 0) {
 		if (vPos)
 			pl->info.vPos = *vPos;
 		else
-			pl->info.vPos = SEGMENTS [nSegment].m_Center ();
+			pl->info.vPos = SEGMENTS [nSegment].Center ();
 		}
 	else {
 #if DBG
@@ -470,9 +470,9 @@ else if (nSegment >= 0) {
 		pl->info.nType = 0;
 		pl->info.fRad = faceP ? faceP->fRads [1] : 0;
 		//RegisterLight (NULL, nSegment, nSide);
-		pl->info.bVariable = IsDestructibleLight (nTexture) || IsFlickeringLight (nSegment, nSide) || WallIsVolatile (SEGMENTS [nSegment].m_sides [nSide].nWall);
+		pl->info.bVariable = IsDestructibleLight (nTexture) || IsFlickeringLight (nSegment, nSide) || SEGMENTS [nSegment].Side (nSide).IsVolatile ();
 		gameData.render.lights.dynamic.nVariable += pl->info.bVariable;
-		pl->info.vPos = SEGMENTS [nSegment].m_SideCenter (nSide);
+		pl->info.vPos = SEGMENTS [nSegment].SideCenter (nSide);
 		CSide			*sideP = SEGMENTS [nSegment].m_sides + nSide;
 		CFixVector	vOffs;
 		vOffs = sideP->m_normals[0] + sideP->m_normals[1];
@@ -946,7 +946,7 @@ if (nVertex == nDbgVertex)
 #else
 		psl->xDistance = (fix) (xLightDist / psl->info.fRange);
 		if (psl->info.nSegment >= 0)
-			psl->xDistance -= AvgSegRad (psl->info.nSegment);
+			psl->xDistance -= SEGMENTS [psl->info.nSegment].AvgRad ();
 #endif
 		if (psl->xDistance > xMaxLightRange)
 			continue;
@@ -983,12 +983,12 @@ nFrameCount = gameData.app.nFrameCount;
 #if DBG
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
-if (faceP - FACES == nDbgFace)
+if (faceP - FACES.faces == nDbgFace)
 	nDbgFace = nDbgFace;
 #endif
 #if 1//!DBG
 if (gameData.render.lights.dynamic.shader.index [0][0].nActive < 0)
-	SetNearestSegmentLights (faceP->nSegment, faceP - FACES, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
+	SetNearestSegmentLights (faceP->nSegment, faceP - FACES.faces, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
 else {
 #if 0//def _DEBUG
 	CheckUsedLights2 ();
@@ -1002,7 +1002,7 @@ vNormal = sideP->m_normals[0] + sideP->m_normals[1];
 vNormal *= (F1_0 / 2);
 #if 1
 for (i = 0; i < 4; i++)
-	SetNearestVertexLights (faceP - FACES, faceP->index [i], &vNormal, 0, 0, 1, 0);
+	SetNearestVertexLights (faceP - FACES.faces, faceP->index [i], &vNormal, 0, 0, 1, 0);
 #endif
 PROF_END(ptPerPixelLighting)
 return gameData.render.lights.dynamic.shader.index [0][0].nActive;
@@ -1146,12 +1146,12 @@ if (gameOpts->render.nLightingMethod) {
 	short						i = gameData.render.lights.dynamic.shader.nLights,
 								nLightSeg;
 	int						bSkipHeadlight = !gameStates.render.nState && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bHeadlight);
-	fix						xMaxLightRange = AvgSegRad (nSegment) + ((gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 : MAX_LIGHT_RANGE);
+	fix						xMaxLightRange = SEGMENTS [nSegment].AvgRad () + ((gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 : MAX_LIGHT_RANGE);
 	CShaderLight			*psl = gameData.render.lights.dynamic.shader.lights + i;
 	CFixVector				c;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
 
-	c = SEGMENTS [nSegment].m_Center ();
+	c = SEGMENTS [nSegment].Center ();
 	ResetUsedLights (1, nThread);
 	ResetActiveLights (nThread, 0);
 	while (i--) {
@@ -1304,7 +1304,7 @@ extern short nDbgSeg;
 tFaceColor *AvgSgmColor (int nSegment, CFixVector *vPosP)
 {
 	tFaceColor	c, *pvc, *psc = gameData.render.color.segments + nSegment;
-	short			i, *pv;
+	ushort		i, *pv;
 	CFixVector	vCenter, vVertex;
 	float			d, ds;
 
@@ -1337,7 +1337,7 @@ else if (gameStates.render.bPerPixelLighting) {
 		if (vPosP)
 			vcd.vertPos.Assign (*vPosP);
 		else {
-			vCenter = SEGMENTS [nSegment].m_Center ();
+			vCenter = SEGMENTS [nSegment].Center ();
 			vcd.vertPos.Assign (vCenter);
 			}
 		vcd.vertPosP = &vcd.vertPos;
@@ -1353,7 +1353,7 @@ else if (gameStates.render.bPerPixelLighting) {
 	}
 else {
 	if (vPosP) {
-		vCenter = SEGMENTS [nSegment].m_Center ();
+		vCenter = SEGMENTS [nSegment].Center ();
 		//transformation.Transform (&vCenter, &vCenter);
 		ds = 0.0f;
 		}
@@ -1495,7 +1495,7 @@ if (gameOpts->render.nLightingMethod || (gameStates.render.bAmbientColor && !gam
 	pf = gameData.render.color.ambient.Buffer ();
 	for (i = 0, seg2P = SEGMENTS.Buffer (); i < gameData.segs.nSegments; i++, seg2P++) {
 		if (seg2P->m_nType == SEGMENT_IS_SKYBOX) {
-			short	*sv = SEGMENTS [i].verts;
+			short	*sv = SEGMENTS [i].m_verts;
 			for (j = 8; j; j--, sv++) {
 				pfh = pf + *sv;
 				pfh->color.red =

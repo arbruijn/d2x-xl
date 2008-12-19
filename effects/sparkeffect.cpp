@@ -62,7 +62,7 @@ else {
 	vOffs [Y] = F2X (vMaxf [Y] - f_rand () * vMax2f [Y]);
 	vOffs [Z] = F2X (vMaxf [Z] - f_rand () * vMax2f [Z]);
 	m_vPos = segP->Center () + vOffs;
-	if ((vOffs.Mag () > segP->MinRad ()) && segP->Masks (m_vPos, nSegment, 0).m_center)
+	if ((vOffs.Mag () > segP->MinRad ()) && segP->SideMasks (m_vPos, 0).m_center)
 		m_nProb = 1;
 	else {
 		m_xSize = F1_0 + 4 * d_rand ();
@@ -135,7 +135,7 @@ else {
 	m_bUpdate = 0;
 	m_nSegment = nSegment;
 	m_nType = nType;
-	sparks.Clear ();
+	m_sparks.Clear ();
 	for (int i = 0; i < m_nMaxSparks; i++)
 		m_sparks [i].m_nProb = d_rand () % SPARK_MIN_PROB + 1;
 	}
@@ -159,42 +159,42 @@ if (m_bUpdate) {
 
 inline int CSparkManager::Type (short nMatCen)
 {
-return SEGMENTS [m_segments [nMatCent]].m_nType == SEGMENT_IS_FUELCEN;
+return SEGMENTS [m_segments [nMatCen]].m_nType == SEGMENT_IS_FUELCEN;
 }
 
 //-----------------------------------------------------------------------------
 
 inline CSparks& CSparkManager::Sparks (short nMatCen)
 {
-return m_sparks [Type (nMatCen)][nMatCen];
+return m_sparks [nMatCen];
 }
 
 //-----------------------------------------------------------------------------
 
 void CSparkManager::SetupSparks (short nMatCen)
 {
-Sparks (nMatCen).Setup (m_segments [nMatCen], Type (nMatCen));
+m_sparks [nMatCen].Setup (m_segments [nMatCen], Type (nMatCen));
 }
 
 //-----------------------------------------------------------------------------
 
 void CSparkManager::UpdateSparks (short nMatCen)
 {
-Sparks (nMatCen).Update ();
+m_sparks [nMatCen].Update ();
 }
 
 //-----------------------------------------------------------------------------
 
 void CSparkManager::RenderSparks (short nMatCen)
 {
-Sparks (nMatCen).Render ();
+m_sparks [nMatCen].Render ();
 }
 
 //-----------------------------------------------------------------------------
 
 void CSparkManager::DestroySparks (short nMatCen)
 {
-Sparks (nMatCen).Destroy ();
+m_sparks [nMatCen].Destroy ();
 }
 
 //-----------------------------------------------------------------------------
@@ -217,7 +217,7 @@ return m_nSegments;
 void CSparkManager::Setup (void)
 {
 SEM_ENTER (SEM_SPARKS)
-if ((gameStates.render.bHaveSparks = gameOpts->render.effects.bEnergySparks && bmpSparks && (BuildSegList () > 0)) {
+if ((gameStates.render.bHaveSparks = gameOpts->render.effects.bEnergySparks) && bmpSparks && (BuildSegList () > 0)) {
 	for (short i = 0; i < m_nSegments; i++)
 		SetupSparks (i);
 	d_srand ((uint) gameStates.app.nSDLTicks);

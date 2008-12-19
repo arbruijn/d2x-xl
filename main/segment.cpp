@@ -199,4 +199,14 @@ return wallP->IsDoorWay (objP);
 }
 
 //------------------------------------------------------------------------------
+
+inline bool CSegment::IsVertex (int nVertex)
+{
+for (int i = 0; i < 8; i++)
+	if (nVertex == m_verts [i])
+		return true;
+return false;
+}
+
+//------------------------------------------------------------------------------
 //eof

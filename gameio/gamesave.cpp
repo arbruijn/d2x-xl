@@ -1317,8 +1317,8 @@ for (i = 0; i < gameData.segs.nSegments; i++) {
 		if (w->nClip == -1)
 			continue;
 		if (gameData.walls.animP [w->nClip].flags & WCF_TMAP1) {
-			sideP->nBaseTex = gameData.walls.animP [w->nClip].frames [0];
-			sideP->nOvlTex = 0;
+			sideP->m_nBaseTex = gameData.walls.animP [w->nClip].frames [0];
+			sideP->m_nOvlTex = 0;
 			}
 		}
 	}
@@ -2059,20 +2059,20 @@ void dump_mine_info(void)
 				max_sl = SEGMENTS [nSegment].m_xAvgSegLight;
 
 			for (vertnum=0; vertnum<4; vertnum++) {
-				if (sideP->uvls [vertnum].u < min_u)
-					min_u = sideP->uvls [vertnum].u;
-				else if (sideP->uvls [vertnum].u > max_u)
-					max_u = sideP->uvls [vertnum].u;
+				if (sideP->m_uvls [vertnum].u < min_u)
+					min_u = sideP->m_uvls [vertnum].u;
+				else if (sideP->m_uvls [vertnum].u > max_u)
+					max_u = sideP->m_uvls [vertnum].u;
 
-				if (sideP->uvls [vertnum].v < min_v)
-					min_v = sideP->uvls [vertnum].v;
-				else if (sideP->uvls [vertnum].v > max_v)
-					max_v = sideP->uvls [vertnum].v;
+				if (sideP->m_uvls [vertnum].v < min_v)
+					min_v = sideP->m_uvls [vertnum].v;
+				else if (sideP->m_uvls [vertnum].v > max_v)
+					max_v = sideP->m_uvls [vertnum].v;
 
-				if (sideP->uvls [vertnum].l < min_l)
-					min_l = sideP->uvls [vertnum].l;
-				else if (sideP->uvls [vertnum].l > max_l)
-					max_l = sideP->uvls [vertnum].l;
+				if (sideP->m_uvls [vertnum].l < min_l)
+					min_l = sideP->m_uvls [vertnum].l;
+				else if (sideP->m_uvls [vertnum].l > max_l)
+					max_l = sideP->m_uvls [vertnum].l;
 			}
 
 		}

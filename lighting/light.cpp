@@ -398,7 +398,7 @@ if (xObjIntensity) {
 	// for pretty dim sources, only process vertices in CObject's own CSegment.
 	//	12/04/95, MK, markers only cast light in own CSegment.
 	if (objP && ((abs (obji_64) <= F1_0 * 8) || (nObjType == OBJ_MARKER))) {
-		short *vp = SEGMENTS [nObjSeg].verts;
+		ushort *vp = SEGMENTS [nObjSeg].m_verts;
 		for (iVertex = 0; iVertex < MAX_VERTICES_PER_SEGMENT; iVertex++) {
 			nVertex = vp [iVertex];
 #if !FLICKERFIX
@@ -726,7 +726,7 @@ if (!gameOpts->render.nLightingMethod) {
 	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs; iRenderSeg++) {
 		nSegment = gameData.render.mine.nSegRenderList [iRenderSeg];
 		if (nSegment != -1) {
-			short	*vp = SEGMENTS [nSegment].m_verts;
+			ushort	*vp = SEGMENTS [nSegment].m_verts;
 			for (v = 0; v < MAX_VERTICES_PER_SEGMENT; v++) {
 				nv = vp [v];
 				if ((nv < 0) || (nv > gameData.segs.nLastVertex)) {
@@ -820,7 +820,7 @@ if (!bKeepDynColoring)
 
 fix ComputeSegDynamicLight (int nSegment)
 {
-short *verts = SEGMENTS [nSegment].m_verts;
+ushort *verts = SEGMENTS [nSegment].m_verts;
 fix sum = gameData.render.lights.dynamicLight [*verts++];
 sum += gameData.render.lights.dynamicLight [*verts++];
 sum += gameData.render.lights.dynamicLight [*verts++];
@@ -866,7 +866,7 @@ if (gameOpts->render.nLightingMethod && !((RENDERPATH && gameOpts->ogl.bObjLight
 	light = F1_0;
 	}
 else
-	light = SEGMENTS [objP->info.nSegment].xAvgSegLight;
+	light = SEGMENTS [objP->info.nSegment].m_xAvgSegLight;
 //return light;
 //Now, maybe return different value to smooth transitions
 if (!bResetLightingHack && (gameData.objs.nLightSig [nObject] == objP->info.nSignature)) {
@@ -928,13 +928,13 @@ void FlickerLights (void)
 
 for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++) {
 	//make sure this is actually a light
-	if (!(WALL_IS_DOORWAY (SEGMENTS + flP->nSegment, flP->nSide, NULL) & WID_RENDER_FLAG))
+	if (!(SEGMENTS [flP->nSegment].IsDoorWay (flP->nSide, NULL) & WID_RENDER_FLAG))
 		continue;
 	nSegment = flP->nSegment;
 	nSide = flP->nSide;
 	sideP = SEGMENTS [nSegment].m_sides + nSide;
-	if (!(gameData.pig.tex.brightness [sideP->nBaseTex] ||
-			gameData.pig.tex.brightness [sideP->nOvlTex]))
+	if (!(gameData.pig.tex.brightness [sideP->m_nBaseTex] ||
+			gameData.pig.tex.brightness [sideP->m_nOvlTex]))
 		continue;
 	if (flP->timer == (fix) 0x80000000)		//disabled
 		continue;
@@ -1057,15 +1057,14 @@ if (i == nChangedSegs) {
 									 MAGIC_LIGHT_CONSTANT;
 
 		if (xLightAtPoint >= 0) {
-			CSegment *seg2P = SEGMENTS + nSegment;
 			xLightAtPoint = FixMul (xLightAtPoint, xBrightness);
 			if (xLightAtPoint >= F1_0)
 				xLightAtPoint = F1_0-1;
 			else if (xLightAtPoint <= -F1_0)
 				xLightAtPoint = - (F1_0-1);
-			seg2P->xAvgSegLight += xLightAtPoint;
-			if (seg2P->xAvgSegLight < 0)	// if it went negative, saturate
-				seg2P->xAvgSegLight = 0;
+			segP->m_xAvgSegLight += xLightAtPoint;
+			if (segP->m_xAvgSegLight < 0)	// if it went negative, saturate
+				segP->m_xAvgSegLight = 0;
 			}	//	end if (xLightAtPoint...
 		}	//	end if (xDistToRSeg...
 	changedSegs [nChangedSegs++] = nSegment;
@@ -1090,7 +1089,7 @@ void ChangeSegmentLight (short nSegment, short nSide, int dir)
 if (segP->IsDoorWay (nSide, NULL) & WID_RENDER_FLAG) {
 	CSide	*sideP = segP->m_sides+nSide;
 	fix	xBrightness;
-	xBrightness = gameData.pig.tex.tMapInfoP [sideP->nBaseTex].lighting + gameData.pig.tex.tMapInfoP [sideP->nOvlTex].lighting;
+	xBrightness = gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].lighting + gameData.pig.tex.tMapInfoP [sideP->m_nOvlTex].lighting;
 	xBrightness *= dir;
 	nChangedSegs = 0;
 	if (xBrightness) {
@@ -1201,7 +1200,7 @@ for (dliP = gameData.render.lights.deltaIndices + i; i < gameData.render.lights.
 		for (j = (gameStates.render.bD2XLights ? dliP->d2x.count : dliP->d2.count); j; j--, dlP++) {
 			if (!dlP->bValid)
 				continue;	//bogus data!
-			uvlP = SEGMENTS [dlP->nSegment].m_sides [dlP->nSide].uvls;
+			uvlP = SEGMENTS [dlP->nSegment].m_sides [dlP->nSide].m_uvls;
 			pSegLightDelta = gameData.render.lights.segDeltas + dlP->nSegment * 6 + dlP->nSide;
 			for (k = 0; k < 4; k++, uvlP++) {
 				dl = dir * dlP->vertLight [k] * DL_SCALE;
@@ -1284,13 +1283,13 @@ void ComputeAllStaticLight (void)
 for (i = 0, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, segP++) {
 	xTotal = 0;
 	for (h = j = 0, sideP = segP->m_sides; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
-		if ((segP->m_children [j] < 0) || IS_WALL (sideP->nWall)) {
+		if ((segP->m_children [j] < 0) || sideP->IsWall ()) {
 			h++;
 			for (k = 0; k < 4; k++)
-				xTotal += sideP->uvls [k].l;
+				xTotal += sideP->m_uvls [k].l;
 			}
 		}
-	SEGMENTS [i].xAvgSegLight = h ? xTotal / (h * 4) : 0;
+	SEGMENTS [i].m_xAvgSegLight = h ? xTotal / (h * 4) : 0;
 	}
 }
 
@@ -1329,7 +1328,6 @@ else {
 	di->d2.index = cf.ReadShort ();
 	}
 }
-#endif
 
 // ----------------------------------------------------------------------------------------------
 //eof

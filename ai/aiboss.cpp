@@ -371,7 +371,7 @@ int BossFitsInSeg (CObject *bossObjP, int nSegment)
 	CFixVector	vSegCenter, vVertPos;
 
 gameData.collisions.nSegsVisited = 0;
-vSegCenter = SEGMENTS [nSegment].m_Center ();
+vSegCenter = SEGMENTS [nSegment].Center ();
 for (nPos = 0; nPos < 9; nPos++) {
 	if (!nPos)
 		bossObjP->info.position.vPos = vSegCenter;

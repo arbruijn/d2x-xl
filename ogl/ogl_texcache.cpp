@@ -105,22 +105,22 @@ return bmP;
 
 void CacheSideTextures (int nSeg)
 {
-	short				nSide, tMap1, tMap2;
-	CBitmap			*bmP, *bm2, *bmm;
-	struct CSide	*sideP;
+	short			nSide, tMap1, tMap2;
+	CBitmap*		bmP, * bm2, * bmm;
+	CSide*		sideP;
 
 for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	sideP = SEGMENTS [nSeg].m_sides + nSide;
-	tMap1 = sideP->nBaseTex;
+	tMap1 = sideP->m_nBaseTex;
 	if ((tMap1 < 0) || (tMap1 >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]))
 		continue;
 	bmP = OglLoadFaceBitmap (tMap1, sideP->m_nFrame);
-	if ((tMap2 = sideP->nOvlTex)) {
+	if ((tMap2 = sideP->m_nOvlTex)) {
 		bm2 = OglLoadFaceBitmap (tMap1, sideP->m_nFrame);
 		if (!(bm2->Flags () & BM_FLAG_SUPER_TRANSPARENT) ||
 			 (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk))
 			bm2->SetupTexture (1, 3, 1);
-		else if ((bmm = TexMergeGetCachedBitmap (tMap1, tMap2, sideP->nOvlOrient)))
+		else if ((bmm = TexMergeGetCachedBitmap (tMap1, tMap2, sideP->m_nOvlOrient)))
 			bmP = bmm;
 		else
 			bm2->SetupTexture (1, 3, 1);
@@ -218,16 +218,16 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 PrintLog ("   caching geometry textures\n");
 for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
 	for (nSide = 0, sideP = segP->m_sides; nSide < MAX_SIDES_PER_SEGMENT; nSide++, sideP++) {
-		nBaseTex = sideP->nBaseTex;
+		nBaseTex = sideP->m_nBaseTex;
 		if ((nBaseTex < 0) || (nBaseTex >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]))
 			continue;
 		bmBot = OglLoadFaceBitmap (nBaseTex, sideP->m_nFrame);
-		if ((nOvlTex = sideP->nOvlTex)) {
+		if ((nOvlTex = sideP->m_nOvlTex)) {
 			bmTop = OglLoadFaceBitmap (nOvlTex, sideP->m_nFrame);
 			if (!(bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) ||
 				 (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk))
 				bmTop->SetupTexture (1, 3, 1);
-			else if ((bmm = TexMergeGetCachedBitmap (nBaseTex, nOvlTex, sideP->nOvlOrient)))
+			else if ((bmm = TexMergeGetCachedBitmap (nBaseTex, nOvlTex, sideP->m_nOvlOrient)))
 				bmBot = bmm;
 			else
 				bmTop->SetupTexture (1, 3, 1);

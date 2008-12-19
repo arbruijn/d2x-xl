@@ -825,7 +825,7 @@ bBounce = (weaponP->mType.physInfo.flags & PF_BOUNCE) != 0;
 if (!bBounce)
 	CreateWeaponEffects (weaponP, 1);
 //if an energy weaponP hits a forcefield, let it bounce
-if ((gameData.pig.tex.tMapInfoP [sideP->nBaseTex].flags & TMI_FORCE_FIELD) &&
+if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_FORCE_FIELD) &&
 	 ((weaponP->info.nType != OBJ_WEAPON) || wInfoP->energy_usage)) {
 
 	//make sound
@@ -879,8 +879,8 @@ if (weaponP->info.nId == EARTHSHAKER_ID)
 	ShakerRockStuff ();
 wallType = WallHitProcess (segP, nHitWall, weaponP->info.xShields, nPlayer, weaponP);
 // Wall is volatile if either tmap 1 or 2 is volatile
-if ((gameData.pig.tex.tMapInfoP [sideP->nBaseTex].flags & TMI_VOLATILE) ||
-	 (sideP->nOvlTex && (gameData.pig.tex.tMapInfoP [sideP->nOvlTex].flags & TMI_VOLATILE))) {
+if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_VOLATILE) ||
+	 (sideP->m_nOvlTex && (gameData.pig.tex.tMapInfoP [sideP->m_nOvlTex].flags & TMI_VOLATILE))) {
 	ubyte tVideoClip;
 	//we've hit a volatile CWall
 	DigiLinkSoundToPos (SOUND_VOLATILE_WALL_HIT, nHitSeg, 0, vHitPt, 0, F1_0);
@@ -899,8 +899,8 @@ if ((gameData.pig.tex.tMapInfoP [sideP->nBaseTex].flags & TMI_VOLATILE) ||
 			weaponP->cType.laserInfo.parent.nObject);
 	KillObject (weaponP);		//make flares die in lava
 	}
-else if ((gameData.pig.tex.tMapInfoP [sideP->nBaseTex].flags & TMI_WATER) ||
-			(sideP->nOvlTex && (gameData.pig.tex.tMapInfoP [sideP->nOvlTex].flags & TMI_WATER))) {
+else if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_WATER) ||
+			(sideP->m_nOvlTex && (gameData.pig.tex.tMapInfoP [sideP->m_nOvlTex].flags & TMI_WATER))) {
 	//we've hit water
 	//	MK: 09/13/95: Badass in water is 1/2 Normal intensity.
 	if (wInfoP->matter) {
@@ -955,7 +955,7 @@ if ((weaponP->cType.laserInfo.parent.nType == OBJ_PLAYER) || bEscort) {
 		}
 
 	//don't let flares stick in vForce fields
-	if ((weaponP->info.nId == FLARE_ID) && (gameData.pig.tex.tMapInfoP [sideP->nBaseTex].flags & TMI_FORCE_FIELD)) {
+	if ((weaponP->info.nId == FLARE_ID) && (gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_FORCE_FIELD)) {
 		KillObject (weaponP);
 		}
 	if (!(weaponP->info.nFlags & OF_SILENT)) {

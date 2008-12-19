@@ -2920,7 +2920,7 @@ if (nTexture >- 1)
 			}
 		}
 if (bFullBright)
-	SEGMENTS [SEG_IDX (segP)].xAvgSegLight = I2X (100);	//make static light bright
+	SEGMENTS [SEG_IDX (segP)].m_xAvgSegLight = I2X (100);	//make static light bright
 }
 
 //-----------------------------------------------------------------------------

@@ -268,21 +268,6 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-inline int IsSegVert (short nSegment, int nVertex)
-{
-	int	i;
-	short	*psv;
-
-if (nSegment < 0)
-	return 0;
-for (i = 8, psv = SEGMENTS [nSegment].m_verts; i; i--, psv++)
-	if (nVertex == *psv)
-		return 1;
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
 static void SetSegAndVertVis (short nStartSeg, short nSegment)
 {
 if (SEGVIS (nStartSeg, nSegment))
@@ -346,7 +331,7 @@ for (sideP = segP->m_sides, nSide = 0; nSide < 6; nSide++, sideP++) {
 				;
 			childP = SEGMENTS + nChildSeg;
 			for (nChildSide = 0; nChildSide < 6; nChildSide++) {
-				if (0 <= (nSegment = childP->children [nSide])) {
+				if (0 <= (nSegment = childP->m_children [nSide])) {
 					while (!SetSegVis (nChildSeg, nSegment))
 						;
 					}

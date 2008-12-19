@@ -701,7 +701,7 @@ int load_mine_data (CFile& cf)
 				SEGMENTS [i].value = v16_seg.value;
 				SEGMENTS [i].s2Flags = 0;
 				SEGMENTS [i].nMatCen = v16_seg.nMatCen;
-				SEGMENTS [i].xAvgSegLight = v16_seg.xAvgSegLight;
+				SEGMENTS [i].m_xAvgSegLight = v16_seg.m_xAvgSegLight;
 				FuelCenActivate ( &SEGMENTS [i], SEGMENTS [i].m_nType );
 
 			} else  {
@@ -1051,46 +1051,46 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 		nWall = WallNumI (nSegment, nSide);
 		if ((segP->m_children [nSide] == -1) || IS_WALL (nWall)) {
 #endif
-			// Read short sideP->nBaseTex;
+			// Read short sideP->m_nBaseTex;
 			if (bNewFileFormat) {
 				temp_ushort = cf.ReadShort ();
-				sideP->nBaseTex = temp_ushort & 0x7fff;
+				sideP->m_nBaseTex = temp_ushort & 0x7fff;
 				}
 			else
-				sideP->nBaseTex = cf.ReadShort ();
+				sideP->m_nBaseTex = cf.ReadShort ();
 			if (gameData.segs.nLevelVersion <= 1)
-				sideP->nBaseTex = ConvertD1Texture (sideP->nBaseTex, 0);
+				sideP->m_nBaseTex = ConvertD1Texture (sideP->m_nBaseTex, 0);
 			if (bNewFileFormat && !(temp_ushort & 0x8000))
-				sideP->nOvlTex = 0;
+				sideP->m_nOvlTex = 0;
 			else {
-				// Read short sideP->nOvlTex;
+				// Read short sideP->m_nOvlTex;
 				short h = cf.ReadShort ();
-				sideP->nOvlTex = h & 0x3fff;
+				sideP->m_nOvlTex = h & 0x3fff;
 				sideP->nOvlOrient = (h >> 14) & 3;
-				if ((gameData.segs.nLevelVersion <= 1) && sideP->nOvlTex)
-					sideP->nOvlTex = ConvertD1Texture (sideP->nOvlTex, 0);
+				if ((gameData.segs.nLevelVersion <= 1) && sideP->m_nOvlTex)
+					sideP->m_nOvlTex = ConvertD1Texture (sideP->m_nOvlTex, 0);
 				}
 
-			// Read tUVL sideP->uvls [4] (u, v>>5, write as short, l>>1 write as short)
+			// Read tUVL sideP->m_uvls [4] (u, v>>5, write as short, l>>1 write as short)
 			GetContour (nSegment, nSide, sideVerts);
 			for (i = 0; i < 4; i++) {
 				temp_short = cf.ReadShort ();
-				sideP->uvls [i].u = ((fix)temp_short) << 5;
+				sideP->m_uvls [i].u = ((fix)temp_short) << 5;
 				temp_short = cf.ReadShort ();
-				sideP->uvls [i].v = ((fix)temp_short) << 5;
+				sideP->m_uvls [i].v = ((fix)temp_short) << 5;
 				temp_ushort = cf.ReadShort ();
 #if 0 //LIGHTMAPS
 				if (USE_LIGHTMAPS)
-					sideP->uvls [i].l = F1_0 / 2;
+					sideP->m_uvls [i].l = F1_0 / 2;
 				else
 #endif
-				sideP->uvls [i].l = ((fix)temp_ushort) << 1;
-				gameData.render.color.vertBright [sideVerts [i]] = X2F (sideP->uvls [i].l);
+				sideP->m_uvls [i].l = ((fix)temp_ushort) << 1;
+				gameData.render.color.vertBright [sideVerts [i]] = X2F (sideP->m_uvls [i].l);
 				}
 			}
 		else {
-			sideP->nBaseTex =
-			sideP->nOvlTex = 0;
+			sideP->m_nBaseTex =
+			sideP->m_nOvlTex = 0;
 			}
 		}
 	}
@@ -1214,7 +1214,7 @@ else {
 	segP = SEGMENTS + i;
 	for (i = 0; i < j; i++, segP++)
 		for (h = 0, sideP = segP->m_sides; h < 6; h++, sideP++)
-			if (IsLight (sideP->nBaseTex) || IsLight (sideP->nOvlTexf))
+			if (IsLight (sideP->m_nBaseTex) || IsLight (sideP->nOvlTexf))
 				RegisterLight (NULL, (short) i, (short) h);
 #endif
 	}

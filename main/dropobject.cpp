@@ -238,7 +238,7 @@ while (nSegment == -1) {
 		}
 	//bail if not far enough from original position
 	if (nSegment > -1) {
-		tempv = SEGMENTS [nSegment].m_Center ();
+		tempv = SEGMENTS [nSegment].Center ();
 		nDist = FindConnectedDistance (vPlayerPos, nPlayerSeg, &tempv, nSegment, -1, WID_FLY_FLAG, 0);
 		if ((nDist < 0) || (nDist >= I2X (20) * nDepth))
 			break;

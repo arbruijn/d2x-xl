@@ -1369,7 +1369,7 @@ int CParticleSystem::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOr
 	CFixVector	vEmittingFace [4];
 
 if (nSide >= 0)
-	SEGMENTS [nSegment].GetCorners (vEmittingFace);
+	SEGMENTS [nSegment].GetCorners (nSide, vEmittingFace);
 nMaxParts = MAX_PARTICLES (nMaxParts, gameOpts->render.particles.nDens [0]);
 if (gameStates.render.bPointSprites)
 	nMaxParts *= 2;
