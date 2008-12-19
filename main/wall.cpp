@@ -69,7 +69,7 @@ char	pszWallNames [7][10] = {
 
 void FlushFCDCache (void);
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 int AnimFrameCount (tWallClip *anim)
 {
@@ -82,7 +82,7 @@ n = (bmP->Type () == BM_TYPE_ALT) ? bmP->FrameCount () : anim->nFrameCount;
 return (n > 1) ? n : anim->nFrameCount;
 }
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 fix AnimPlayTime (tWallClip *anim)
 {
@@ -99,7 +99,7 @@ return (fix) (((double) pt * (double) anim->nFrameCount) / (double) nFrames);
 //		0 = NO
 #ifdef EDITOR
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Initializes all the walls (in other words, no special walls)
 void WallInit ()
 {
@@ -121,7 +121,7 @@ gameData.walls.nOpenDoors = 0;
 gameData.walls.nCloaking = 0;
 }
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Initializes one CWall.
 void WallReset (CSegment *segP, short nSide)
 {
@@ -147,20 +147,21 @@ wallP->nLinkedWall = NO_WALL;
 #endif
 
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 tActiveDoor* FindActiveDoor (short nWall)
 {
-	tActiveDoor* = gameData.walls.activeDoors.Buffer ();
+	tActiveDoor* doorP = gameData.walls.activeDoors.Buffer ();
 
 for (int i = gameData.walls.nOpenDoors; i; i--, doorP++) {		//find door
 	for (int j = 0; j < doorP->nPartCount; j++)
 		if ((doorP->nFrontWall [j] == nWall) || (doorP->nBackWall [j] == nWall))
 			return doorP;
+	}
 return NULL;
 }
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 // This function checks whether we can fly through the given nSide.
 //	In other words, whether or not we have a 'doorway'
 //	 Flags:
@@ -185,7 +186,7 @@ if (nType == WALL_OPEN)
 if (nType == WALL_ILLUSION) {
 	if (flags & WALL_ILLUSION_OFF)
 		return WID_NO_WALL;
-	if ((cloakValue < FADE_LEVELS) || CheckTransparency (segP, nSide))
+	if ((cloakValue < FADE_LEVELS) || SEGMENTS [nSegment].CheckTransparency (nSide))
 		return WID_TRANSILLUSORY_WALL;
 	return WID_ILLUSORY_WALL;
 	}
@@ -193,7 +194,7 @@ if (nType == WALL_ILLUSION) {
 if (nType == WALL_BLASTABLE) {
 	if (flags & WALL_BLASTED)
 		return WID_TRANSILLUSORY_WALL;
-	if ((cloakValue < FADE_LEVELS) || CheckTransparency (segP, nSide))
+	if ((cloakValue < FADE_LEVELS) || SEGMENTS [nSegment].CheckTransparency (nSide))
 		return WID_TRANSPARENT_WALL;
 	return WID_WALL;
 	}
@@ -212,7 +213,7 @@ if (nType == WALL_TRANSPARENT)
 if (nType == WALL_DOOR) {
 	if ((state == WALL_DOOR_OPENING) || (state == WALL_DOOR_CLOSING))
 		return WID_TRANSPARENT_WALL;
-	if ((cloakValue && (cloakValue < FADE_LEVELS)) || SEGMENTS [nSegment].m_CheckTransparency (nSide))
+	if ((cloakValue && (cloakValue < FADE_LEVELS)) || SEGMENTS [nSegment].CheckTransparency (nSide))
 		return WID_TRANSPARENT_WALL;
 	return WID_WALL;
 	}
@@ -227,12 +228,12 @@ if (nType == WALL_CLOSED) {
 		}
 	}
 // If none of the above flags are set, there is no doorway.
-if ((cloakValue && (cloakValue < FADE_LEVELS)) || CheckTransparency (segP, nSide)) 
+if ((cloakValue && (cloakValue < FADE_LEVELS)) || SEGMENTS [nSegment].CheckTransparency (nSide)) 
 	return WID_TRANSPARENT_WALL;
 return WID_WALL; // There are children behind the door.
 }
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 tActiveDoor* CWall::OpenDoor (void)
 {
@@ -263,19 +264,20 @@ state = WALL_DOOR_OPENING;
 return doorP;
 }
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 tCloakingWall* FindCloakingWall (short nWall)
 {
-	tCloakingWall* cloakWallP = gameData.walls.nCloaking;
+	tCloakingWall* cloakWallP = gameData.walls.cloaking.Buffer ();
 
 for (int i = gameData.walls.nCloaking; i; i--, cloakWallP++) {		//find door
 	if ((cloakWallP->nFrontWall == nWall) || (cloakWallP->nBackWall == nWall))
 		return cloakWallP;
+	}
 return NULL;
 }
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 void DeleteActiveDoor (int nDoor)
 {
@@ -285,33 +287,19 @@ if (--gameData.walls.nOpenDoors > nDoor)
 			  sizeof (gameData.walls.activeDoors [0]));
 }
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 // This function closes the specified door and restuckObjPres the closed
 //  door texture.  This is called when the animation is done
 void CloseDoor (int nDoor)
 {
-	int				p;
-	tActiveDoor*	d;
-	short				nConnWall;
+	tActiveDoor*	doorP = gameData.walls.activeDoors + nDoor;
 
-d = gameData.walls.activeDoors + nDoor;
-for (p = 0; p < d->nPartCount; p++) {
-		CWall		*wallP = WALLS + d->nFrontWall [p];
-		short		nConnSide, nSide = wallP->nSide;
-		CSegment *segP = SEGMENTS + wallP->nSegment,
-					*connSegP = SEGMENTS + segP->m_children [nSide];
-
-	wallP->state = WALL_DOOR_CLOSED;
-	segP->SetTexture (nSide, NULL, -1, wallP->nClip, 0);
-	if ((wallP = connSegP->Wall (nConnSide))) {
-		wallP->state = WALL_DOOR_CLOSED;
-		connSegP->SetTexture (nConnSide, NULL, -1, wall->nClip, 0);
-		}
-	}
+for (int i = doorP->nPartCount; i; )
+	WALLS [doorP->nFrontWall [--i]].CloseActiveDoor ();
 DeleteActiveDoor (nDoor);
 }
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 tCloakingWall* CWall::StartCloak (void)
 {
@@ -330,11 +318,11 @@ else if (state == WALL_DOOR_CLOSED) {	//create new door
 	}
 else
 	return NULL;
-wallP->state = WALL_DOOR_CLOAKING;
+state = WALL_DOOR_CLOAKING;
 return cloakWallP;
 }
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 tCloakingWall* CWall::StartDecloak (void)
 {
@@ -357,7 +345,25 @@ state = WALL_DOOR_DECLOAKING;
 return cloakWallP;
 }
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+void CWall::CloseActiveDoor (void)
+{
+CSegment* segP = SEGMENTS + nSegment;
+CSegment* connSegP = SEGMENTS + segP->m_children [nSide];
+short nConnSide = segP->ConnectedSide (connSegP);
+
+state = WALL_DOOR_CLOSED;
+segP->SetTexture (nSide, NULL, -1, nClip, 0);
+
+CWall* wallP = connSegP->Wall (nConnSide);
+if (wallP) {
+	wallP->state = WALL_DOOR_CLOSED;
+	connSegP->SetTexture (nConnSide, NULL, -1, wallP->nClip, 0);
+	}
+}
+
+//------------------------------------------------------------------------------
 
 tActiveDoor* CWall::CloseDoor (void)
 {
@@ -382,7 +388,7 @@ state = WALL_DOOR_CLOSING;
 return doorP;
 }
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 int CWall::AnimateOpeningDoor (fix xElapsedTime)
 {
@@ -413,26 +419,27 @@ if (i >= nFrames - 1) {
 return 0;
 }
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 int CWall::AnimateClosingDoor (fix xElapsedTime)
 {
-int nFrames = AnimFrameCount (gameData.walls.animP + wallP->nClip);
+int nFrames = AnimFrameCount (gameData.walls.animP + nClip);
 if (!nFrames)
 	return 0;
 
-fix xTotalTime = (fix) (gameData.walls.animP [wallP->nClip].xTotalTime * gameStates.gameplay.slowmo [0].fSpeed);
+fix xTotalTime = (fix) (gameData.walls.animP [nClip].xTotalTime * gameStates.gameplay.slowmo [0].fSpeed);
 fix xFrameTime = xTotalTime / nFrames;
 int i = nFrames - xElapsedTime / xFrameTime - 1;
 if (i < nFrames / 2)
 	flags &= ~WALL_DOOR_OPENED;
 if (i <= 0)
 	return 1;
-SEGMENTS [nSegment].SetTexture (nSide, NULL, -1, wallP->nClip, i);
+SEGMENTS [nSegment].SetTexture (nSide, NULL, -1, nClip, i);
 state = WALL_DOOR_CLOSING;
 return 0;
+}
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Animates opening of a door.
 // Called in the game loop.
 void DoDoorOpen (int nDoor)
@@ -480,7 +487,7 @@ if (bFlags & 1)
 	DeleteActiveDoor (nDoor);
 }
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Animates and processes the closing of a door.
 // Called from the game loop.
 void DoDoorClose (int nDoor)
@@ -549,7 +556,7 @@ if (IsMultiGame)
 return 0;
 }
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 void UnlockAllWalls (int bOnlyDoors)
 {
@@ -570,7 +577,7 @@ for (i = gameData.walls.nWalls, wallP = WALLS.Buffer (); i; wallP++, i--) {
 	}
 }
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 // set up renderer for alternative highres animation method
 // (all frames are stuckObjPred in one texture, and struct nSide.nFrame
 // holds the frame index).
@@ -594,7 +601,7 @@ for (i = 0, wallP = WALLS.Buffer (); i < gameData.walls.nWalls; wallP++, i++) {
 	}
 }
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Determines what happens when a CWall is shot
 //returns info about CWall.  see wall[HA] for codes
 //obj is the CObject that hit...either a weapon or the CPlayerData himself
@@ -651,7 +658,7 @@ if (nType == WALL_DOOR) {
 return WHP_NOT_SPECIAL;		//default is treat like Normal CWall
 }
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 void CWall::Init (void)
 {
@@ -662,7 +669,7 @@ nTrigger = -1;
 nClip = -1;
 }
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Tidy up WALLS array for load/save purposes.
 void ResetWalls (void)
 {
@@ -671,7 +678,7 @@ for (int i = 0; i < gameData.walls.nWalls; i++)
 	}
 }
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 void DoCloakingWallFrame (int nCloakingWall)
 {
@@ -739,7 +746,7 @@ else {		//fading out
 	}
 }
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 void DoDecloakingWallFrame (int nCloakingWall)
 {
@@ -800,7 +807,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 	}
 }
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 void WallFrameProcess (void)
 {
@@ -862,7 +869,7 @@ for (i = 0; i < gameData.walls.nCloaking; i++, cloakWallP++) {
 int				nStuckObjects = 0;
 tStuckObject	stuckObjects [MAX_STUCK_OBJECTS];
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 //	An CObject got stuck in a door (like a flare).
 //	Add global entry.
 void AddStuckObject (CObject *objP, short nSegment, short nSide)

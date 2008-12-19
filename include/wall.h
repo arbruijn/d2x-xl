@@ -103,11 +103,41 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_STUCK_OBJECTS   64
 
+//------------------------------------------------------------------------------
+
 typedef struct tStuckObject {
 	short   nObject, nWall;
 	int     nSignature;
 } tStuckObject;
 
+//------------------------------------------------------------------------------
+
+typedef struct tActiveDoor {
+	int     nPartCount;           // for linked walls
+	short   nFrontWall[2];			// front CWall numbers for this door
+	short   nBackWall[2];			// back CWall numbers for this door
+	fix     time;						// how long been opening, closing, waiting
+} __pack__ tActiveDoor;
+
+//------------------------------------------------------------------------------
+// data for exploding walls (such as hostage door)
+
+typedef struct tExplWall {
+	int	nSegment, nSide;
+	fix	time;
+} tExplWall;
+
+//------------------------------------------------------------------------------
+
+typedef struct tCloakingWall {
+	short   nFrontWall;			 // front CWall numbers for this door
+	short   nBackWall;			 // back CWall numbers for this door
+	fix     front_ls[4];        // front CWall saved light values
+	fix     back_ls[4];         // back CWall saved light values
+	fix     time;               // how long been cloaking or decloaking
+} __pack__ tCloakingWall;
+
+//------------------------------------------------------------------------------
 //Start old CWall structures
 
 typedef struct tWallV16 {
@@ -140,6 +170,8 @@ typedef struct v19_door {
 
 //End old CWall structures
 
+//------------------------------------------------------------------------------
+
 class CWall {
 	public:
 		int	  nSegment, nSide;		// Seg & CSide for this CWall
@@ -165,8 +197,11 @@ class CWall {
 		bool IsVolatile (void);
 		bool IsInvisible (void);
 		tActiveDoor* OpenDoor (void);
+		tActiveDoor* CloseDoor (void);
 		tCloakingWall* StartCloak (void);
+		tCloakingWall* StartDecloak (void);
 		void CloseDoor (int nDoor);
+		void CloseActiveDoor (void);
 		int AnimateOpeningDoor (fix xElapsedTime);
 		int AnimateClosingDoor (fix xElapsedTime);
 		int ProcessHit (int nPlayer, CObject* objP);
@@ -175,28 +210,7 @@ class CWall {
 
 inline int operator- (CWall* o, CArray<CWall>& a) { return a.Index (o); }
 
-
-typedef struct tActiveDoor {
-	int     nPartCount;           // for linked walls
-	short   nFrontWall[2];			// front CWall numbers for this door
-	short   nBackWall[2];			// back CWall numbers for this door
-	fix     time;						// how long been opening, closing, waiting
-} __pack__ tActiveDoor;
-
-// data for exploding walls (such as hostage door)
-typedef struct tExplWall {
-	int	nSegment, nSide;
-	fix	time;
-} tExplWall;
-
-typedef struct tCloakingWall {
-	short   nFrontWall;			 // front CWall numbers for this door
-	short   nBackWall;			 // back CWall numbers for this door
-	fix     front_ls[4];        // front CWall saved light values
-	fix     back_ls[4];         // back CWall saved light values
-	fix     time;               // how long been cloaking or decloaking
-} __pack__ tCloakingWall;
-
+//------------------------------------------------------------------------------
 //CWall clip flags
 #define WCF_EXPLODES    1       //door explodes when opening
 #define WCF_BLASTABLE   2       //this is a blastable CWall
