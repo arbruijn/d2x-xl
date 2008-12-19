@@ -841,7 +841,7 @@ class CObject : public CObjectInfo {
 		int CheckTriggerHits (short nPrevSegment);
 		void UpdateShipSound (void);
 		void UpdateEffects (void);
-		void UpdateControl (void);
+		int UpdateControl (void);
 		void UpdateMovement (void);
 };
 

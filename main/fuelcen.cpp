@@ -205,8 +205,8 @@ for (i = 0; i < gameData.matCens.nEquipCenters; i++)
 // This function is separate from other fuelcens because we don't want values reset.
 void CSegment::CreateEquipGen (int oldType)
 {
-	short			nSegment = SEG_IDX (segP);
-	CSegment	*seg2P = SEGMENTS  + nSegment;
+	short			nSegment = segP->Index ();
+	CSegment	*segP = SEGMENTS  + nSegment;
 	int			stationType = m_nType;
 	int			i;
 
@@ -276,7 +276,7 @@ else {
 int MatCenTrigger (short nSegment)
 {
 	// -- CSegment		*segP = &SEGMENTS [nSegment];
-	CSegment		*seg2P = &SEGMENTS [nSegment];
+	CSegment*		segP = &SEGMENTS [nSegment];
 	CFixVector		pos, delta;
 	tFuelCenInfo	*matCenP;
 	int				nObject;
@@ -284,15 +284,15 @@ int MatCenTrigger (short nSegment)
 #if TRACE
 console.printf (CON_DBG, "Trigger matcen, CSegment %i\n", nSegment);
 #endif
-if (seg2P->m_nType == SEGMENT_IS_EQUIPMAKER) {
-	matCenP = gameData.matCens.fuelCenters + gameData.matCens.equipGens [seg2P->nMatCen].nFuelCen;
+if (segP->m_nType == SEGMENT_IS_EQUIPMAKER) {
+	matCenP = gameData.matCens.fuelCenters + gameData.matCens.equipGens [segP->nMatCen].nFuelCen;
 	return (matCenP->bEnabled = !matCenP->bEnabled) ? 1 : 2;
 	}
-Assert (seg2P->m_nType == SEGMENT_IS_ROBOTMAKER);
-Assert (seg2P->nMatCen < gameData.matCens.nFuelCenters);
-Assert ((seg2P->nMatCen >= 0) && (seg2P->nMatCen <= gameData.segs.nLastSegment));
+Assert (segP->m_nType == SEGMENT_IS_ROBOTMAKER);
+Assert (segP->nMatCen < gameData.matCens.nFuelCenters);
+Assert ((segP->nMatCen >= 0) && (segP->nMatCen <= gameData.segs.nLastSegment));
 
-matCenP = gameData.matCens.fuelCenters + gameData.matCens.botGens [seg2P->nMatCen].nFuelCen;
+matCenP = gameData.matCens.fuelCenters + gameData.matCens.botGens [segP->nMatCen].nFuelCen;
 if (matCenP->bEnabled)
 	return 0;
 if (!matCenP->nLives)
@@ -326,24 +326,24 @@ return 0;
 
 //------------------------------------------------------------
 //	Trigger (enable) the materialization center in CSegment nSegment
-void SpawnBotTrigger (CObject *objP, short nSegment)
+void TriggerBotGen (CObject *objP, short nSegment)
 {
-	CSegment		*seg2P = &SEGMENTS [nSegment];
-	tFuelCenInfo	*matCenP;
+	CSegment*		segP = &SEGMENTS [nSegment];
+	tFuelCenInfo*	matCenP;
 	short				nType;
 
 if (nSegment < 0)
 	nType = 255;
 else {
-	Assert (seg2P->m_nType == SEGMENT_IS_ROBOTMAKER);
-	Assert (seg2P->nMatCen < gameData.matCens.nFuelCenters);
-	Assert ((seg2P->nMatCen >= 0) && (seg2P->nMatCen <= gameData.segs.nLastSegment));
-	matCenP = gameData.matCens.fuelCenters + gameData.matCens.botGens [seg2P->nMatCen].nFuelCen;
-	nType = GetMatCenObjType (matCenP, gameData.matCens.botGens [seg2P->nMatCen].objFlags);
+	Assert (segP->m_nType == SEGMENT_IS_ROBOTMAKER);
+	Assert (segP->nMatCen < gameData.matCens.nFuelCenters);
+	Assert ((segP->nMatCen >= 0) && (segP->nMatCen <= gameData.segs.nLastSegment));
+	matCenP = gameData.matCens.fuelCenters + gameData.matCens.botGens [segP->nMatCen].nFuelCen;
+	nType = GetMatCenObjType (matCenP, gameData.matCens.botGens [segP->nMatCen].objFlags);
 	if (nType < 0)
 		nType = 255;
 	}
-BossSpewRobot (objP, NULL, nType, 1);
+objP->BossSpewRobot (NULL, nType, 1);
 }
 
 #ifdef EDITOR
@@ -352,24 +352,24 @@ BossSpewRobot (objP, NULL, nType, 1);
 //	Deletes the CSegment point entry in the tFuelCenInfo list.
 void FuelCenDelete (CSegment * segP)
 {
-	CSegment	*seg2P = &SEGMENTS [SEG_IDX (segP)];
+	CSegment	*segP = &SEGMENTS [segP->Index ()];
 	int i, j;
 
 Restart: ;
 
-seg2P->m_nType = 0;
+segP->m_nType = 0;
 
 for (i = 0; i < gameData.matCens.nFuelCenters; i++) {
-	if (gameData.matCens.fuelCenters [i].nSegment == SEG_IDX (segP)) {
+	if (gameData.matCens.fuelCenters [i].nSegment == segP->Index ()) {
 		// If Robot maker is deleted, fix SEGMENTS and gameData.matCens.botGens.
 		if (gameData.matCens.fuelCenters [i].nType == SEGMENT_IS_ROBOTMAKER) {
 			gameData.matCens.nBotCenters--;
 			Assert (gameData.matCens.nBotCenters >= 0);
-			for (j = seg2P->nMatCen; j < gameData.matCens.nBotCenters; j++)
+			for (j = segP->nMatCen; j < gameData.matCens.nBotCenters; j++)
 				gameData.matCens.botGens [j] = gameData.matCens.botGens [j+1];
 			for (j = 0; j < gameData.matCens.nFuelCenters; j++) {
 				if (gameData.matCens.fuelCenters [j].nType == SEGMENT_IS_ROBOTMAKER)
-					if (SEGMENTS [gameData.matCens.fuelCenters [j].nSegment].nMatCen > seg2P->nMatCen)
+					if (SEGMENTS [gameData.matCens.fuelCenters [j].nSegment].nMatCen > segP->nMatCen)
 						SEGMENTS [gameData.matCens.fuelCenters [j].nSegment].nMatCen--;
 				}
 			}
@@ -401,7 +401,7 @@ CObject *CreateMorphRobot (CSegment *segP, CFixVector *vObjPosP, ubyte nObjId)
 
 LOCALPLAYER.numRobotsLevel++;
 LOCALPLAYER.numRobotsTotal++;
-nObject = CreateRobot (nObjId, SEG_IDX (segP), *vObjPosP);
+nObject = CreateRobot (nObjId, segP->Index (), *vObjPosP);
 if (nObject < 0) {
 #if TRACE
 	console.printf (1, "Can't create morph robot.  Aborting morph.\n");
@@ -837,8 +837,8 @@ return amount;
 
 fix CSegment:Refuel (fix nMaxFuel)
 {
-	short			nSegment = SEG_IDX (segP);
-	CSegment	*seg2P = SEGMENTS + nSegment;
+	short			nSegment = segP->Index ();
+	CSegment	*segP = SEGMENTS + nSegment;
 	xsegment		*xsegp = SEGMENTS + nSegment;
 	fix			amount;
 
@@ -849,7 +849,7 @@ gameData.matCens.playerSegP = segP;
 if ((gameData.app.nGameMode & GM_ENTROPY) && ((xsegp->owner < 0) ||
 	 ((xsegp->owner > 0) && (xsegp->owner != GetTeam (gameData.multiplayer.nLocalPlayer) + 1))))
 	return 0;
-if (!segP || (seg2P->m_nType != SEGMENT_IS_FUELCEN))
+if (!segP || (segP->m_nType != SEGMENT_IS_FUELCEN))
 	return 0;
 DetectEscortGoalAccomplished (-4);	//	UGLY!Hack!-4 means went through fuelcen.
 #if 0
@@ -888,8 +888,8 @@ return amount;
 // use same values as fuel centers
 fix CSegment::Repair (fix nMaxShields)
 {
-	short		nSegment = SEG_IDX (segP);
-	CSegment	*seg2P = SEGMENTS + nSegment;
+	short		nSegment = segP->Index ();
+	CSegment	*segP = SEGMENTS + nSegment;
 	xsegment	*xsegp = SEGMENTS + nSegment;
 	static fix last_playTime=0;
 	fix amount;
@@ -903,7 +903,7 @@ gameData.matCens.playerSegP = segP;
 if ((gameData.app.nGameMode & GM_ENTROPY) && ((xsegp->owner < 0) ||
 	 ((xsegp->owner > 0) && (xsegp->owner != GetTeam (gameData.multiplayer.nLocalPlayer) + 1))))
 	return 0;
-if (seg2P->m_nType != SEGMENT_IS_REPAIRCEN)
+if (segP->m_nType != SEGMENT_IS_REPAIRCEN)
 	return 0;
 //		DetectEscortGoalAccomplished (-4);	//	UGLY!Hack!-4 means went through fuelcen.
 //		if (gameData.matCens.fuelCenters [segP->value].xMaxCapacity<=0)	{
@@ -1349,15 +1349,15 @@ short blueFlagGoals = -1;
 int GatherFlagGoals (void)
 {
 	int			h, i, j;
-	CSegment	*seg2P = SEGMENTS.Buffer ();
+	CSegment	*segP = SEGMENTS.Buffer ();
 
 memset (flagGoalList, 0xff, sizeof (flagGoalList));
-for (h = i = 0; i <= gameData.segs.nLastSegment; i++, seg2P++) {
-	if (seg2P->m_nType == SEGMENT_IS_GOAL_BLUE) {
+for (h = i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
+	if (segP->m_nType == SEGMENT_IS_GOAL_BLUE) {
 		j = 0;
 		h |= 1;
 		}
-	else if (seg2P->m_nType == SEGMENT_IS_GOAL_RED) {
+	else if (segP->m_nType == SEGMENT_IS_GOAL_RED) {
 		h |= 2;
 		j = 1;
 		}
@@ -1418,14 +1418,14 @@ CheckFlagDrop (TEAM_RED, POW_BLUEFLAG, SEGMENT_IS_GOAL_RED);
 #else
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_FLAG))
 	return;
-if (seg2P->m_nType == SEGMENT_IS_GOAL_BLUE)	{
+if (segP->m_nType == SEGMENT_IS_GOAL_BLUE)	{
 	if (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_BLUE) && FlagAtHome (POW_BLUEFLAG)) {
 		MultiSendCaptureBonus (gameData.multiplayer.nLocalPlayer);
 		LOCALPLAYER.flags &= (~(PLAYER_FLAGS_FLAG);
 		MaybeDropNetPowerup (-1, POW_REDFLAG, FORCE_DROP);
 		}
 	}
-else if (seg2P->m_nType == SEGMENT_IS_GOAL_RED) {
+else if (segP->m_nType == SEGMENT_IS_GOAL_RED) {
 	if (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_RED) && FlagAtHome (POW_REDFLAG)) {
 		MultiSendCaptureBonus (gameData.multiplayer.nLocalPlayer);
 		LOCALPLAYER.flags &= (~(PLAYER_FLAGS_FLAG);

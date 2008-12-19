@@ -1202,7 +1202,7 @@ void AddSegmentEdges (CSegment *segP)
 	int		 		bIsGrate, bNoFade;
 	uint				color;
 	ubyte				nSide;
-	short				nSegment = SEG_IDX (segP);
+	short				nSegment = segP->Index ();
 	int				bHidden;
 	int				ttype, nTrigger;
 	ushort*			contour;

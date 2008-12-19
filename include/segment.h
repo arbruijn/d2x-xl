@@ -163,6 +163,8 @@ class CSide {
 		void CreateWalls (bool bSolid);
 		void Validate (bool bSolid);
 
+		inline void SetTextures (int nBaseTex, int nOvlTex);
+
 		inline ubyte GetVertices (ushort*& vertices) { 
 			vertices = m_vertices;
 			return m_nFaces;
@@ -205,6 +207,7 @@ class CSegment {
 		CFixVector	m_extents [2];
 
 	public:
+		inline int Index (void);
 		void Read (CFile& cf, bool bExtended);
 		void LoadTextures (void);
 		void Validate (void);
@@ -247,6 +250,8 @@ class CSegment {
 		inline CWall* Wall (int nSide) { return m_sides [nSide].Wall (); }
 		inline CTrigger* Trigger (int nSide) { return m_sides [nSide].Trigger (); }
 		inline sbyte Type (int nSide) { return m_sides [nSide].m_nType; }
+		inline void SetTextures (int nSide, int nBaseTex, int nOvlTex) { m_sides [nSide].SetTextures (nBaseTex, nOvlTex); }
+
 		void ComputeSideRads (void);
 		inline bool IsVertex (int nVertex);
 		void GetNormals (short nSide, CFixVector& n1, CFixVector& n2) { m_sides [nSide].GetNormals (n1, n2); }

@@ -124,11 +124,10 @@ extern tMatCenInfo RobotCenters [MAX_ROBOT_CENTERS];
 
 // Called when a materialization center gets triggered by the CPlayerData
 // flying through some CTrigger!
-int MatCenTrigger (short nSegment);
+int TriggerMatCen (short nSegment);
 void DisableMatCens (void);
 void InitAllMatCens (void);
-void BotGenCreate (CSegment *segP, int oldType);
-void SpawnBotTrigger (CObject *objP, short nSegment);
+void TriggerBotGen (CObject *objP, short nSegment);
 int GetMatCenObjType (tFuelCenInfo *matCenP, int *objFlags);
 void SetEquipGenStates (void);
 

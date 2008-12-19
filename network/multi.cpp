@@ -1670,7 +1670,7 @@ if (gameStates.multi.nGameType == UDP_GAME)
 	nObject = GET_INTEL_SHORT (buf + 3);
 else
 	nObject = gameData.multiplayer.players [nPlayer].nObject;
-CheckTriggerSub (nObject, TRIGGERS.Buffer (), gameData.trigs.nTriggers, CTrigger, nPlayer, 0, 0);
+OperateTrigger (nObject, TRIGGERS.Buffer (), gameData.trigs.nTriggers, CTrigger, nPlayer, 0, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -1703,7 +1703,7 @@ if ((CTrigger < 0) || (CTrigger  >= gameData.trigs.nObjTriggers)) {
 	Int3 (); // Illegal CTrigger number in multiplayer
 	return;
 	}
-CheckTriggerSub (gameData.multiplayer.players [nPlayer].nObject, gameData.trigs.objTriggers.Buffer (),
+OperateTrigger (gameData.multiplayer.players [nPlayer].nObject, gameData.trigs.objTriggers.Buffer (),
 					  gameData.trigs.nObjTriggers, CTrigger, nPlayer, 0, 1);
 }
 
@@ -2920,7 +2920,7 @@ if (nTexture >- 1)
 			}
 		}
 if (bFullBright)
-	SEGMENTS [SEG_IDX (segP)].m_xAvgSegLight = I2X (100);	//make static light bright
+	SEGMENTS [segP->Index ()].m_xAvgSegLight = I2X (100);	//make static light bright
 }
 
 //-----------------------------------------------------------------------------

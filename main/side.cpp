@@ -27,6 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "byteswap.h"
 #include "light.h"
 #include "segment.h"
+#include "renderlib.h"
 #include "fvi.h"
 
 // How far a point can be from a plane, and still be "in" the plane
@@ -824,22 +825,32 @@ int CSide::CheckTransparency (void)
 {
 	CBitmap	*bmP;
 
-if (nOvlTex) {
-	bmP = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [nOvlTex].index].Override (-1);
+if (m_nOvlTex) {
+	bmP = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [m_nOvlTex].index].Override (-1);
 	if (bmP->Flags () & BM_FLAG_SUPER_TRANSPARENT)
 		return 1;
 	if (!(bmP->Flags () & BM_FLAG_TRANSPARENT))
 		return 0;
 	}
-bmP = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [nBaseTex].index].Override (-1);
+bmP = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [m_nBaseTex].index].Override (-1);
 if (bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 	return 1;
-if ((gameStates.app.bD2XLevel) && IS_WALL (nWall)) {
-	short c = WALLS [nWallNum].cloakValue;
+if ((gameStates.app.bD2XLevel) && IS_WALL (m_nWall)) {
+	short c = WALLS [m_nWall].cloakValue;
 	if (c && (c < FADE_LEVELS))
 		return 1;
 	}
-return gameOpts->render.effects.bAutoTransparency && IsTransparentTexture (nBaseTex);
+return gameOpts->render.effects.bAutoTransparency && IsTransparentTexture (m_nBaseTex);
+}
+
+//------------------------------------------------------------------------------
+
+inline void CSide::SetTextures (int nBaseTex, int nOvlTex)
+{
+if (nBaseTex >= 0)
+	m_nBaseTex = nBaseTex;
+if (nOvlTex >= 0)
+	m_nOvlTex = nOvlTex;
 }
 
 //------------------------------------------------------------------------------

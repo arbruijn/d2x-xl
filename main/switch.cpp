@@ -92,43 +92,40 @@ memset (gameData.trigs.delay, -1, sizeof (gameData.trigs.delay));
 #endif
 
 //-----------------------------------------------------------------
+
+inline int CTrigger::Index (void)
+{
+return this - TRIGGERS;
+}
+
+//-----------------------------------------------------------------
 // Executes a link, attached to a CTrigger.
 // Toggles all walls linked to the switch.
 // Opens doors, Blasts blast walls, turns off illusions.
-void DoLink (CTrigger *trigP)
+void CTrigger::DoLink (void)
 {
-	int i;
-
-short *segs = trigP->nSegment;
-short *sides = trigP->nSide;
-for (i = trigP->nLinks; i > 0; i--, segs++, sides++)
-	WallToggle (SEGMENTS + *segs, *sides);
+for (int i = 0; i < nLinks; i++)
+	SEGMENTS [segments [i]].ToggleWall (sides [i]);
 }
 
 //-----------------------------------------------------------------
 
-void DoChangeTexture (CTrigger *trigP)
+void CTrigger::DoChangeTexture (CTrigger *trigP)
 {
-	int	i, 
-			baseTex = trigP->value & 0xffff,
-			ovlTex = (trigP->value >> 16);
+	int	baseTex = value & 0xffff,
+			ovlTex = (value >> 16);
 
-short *segs = trigP->nSegment;
-short *sides = trigP->nSide;
-for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
-	SEGMENTS [*segs].m_sides [*sides].m_nBaseTex = baseTex;
-	if (ovlTex > 0)
-		SEGMENTS [*segs].m_sides [*sides].nOvlTex = ovlTex;
-	}
+for (int i = 0; i < nLinks; i++)
+	SEGMENTS [segments [i]].SetTextures (sides [i], baseTex, ovlTex);
 }
 
 //-----------------------------------------------------------------
 
-inline int DoExecObjTrigger (CTrigger *trigP, short nObject, int bDamage)
+inline int CTrigger::DoExecObjTrigger (short nObject, int bDamage)
 {
-	fix	v = 10 - trigP->value;
+	fix	v = 10 - value;
 
-if (bDamage != ((trigP->nType == TT_TELEPORT) || (trigP->nType == TT_SPAWN_BOT)))
+if (bDamage != ((nType == TT_TELEPORT) || (nType == TT_SPAWN_BOT)))
 	return 0;
 if (!bDamage)
 	return 1;
@@ -136,34 +133,33 @@ if (v >= 10)
 	return 0;
 if ((fix) (ObjectDamage (OBJECTS + nObject) * 100) > v * 10)
 	return 0;
-if (!(trigP->flags & TF_PERMANENT))
-	trigP->value = 0;
+if (!(flags & TF_PERMANENT))
+	value = 0;
 return 1;
 }
 
 //-----------------------------------------------------------------
 
-void DoSpawnBot (CTrigger *trigP, short nObject)
+void CTrigger::DoSpawnBots (CObject* objP)
 {
-SpawnBotTrigger (OBJECTS + nObject, trigP->nLinks ? trigP->nSegment [0] : -1);
+TriggerBotGen (objP, nLinks ? segments [0] : -1);
 }
 
 //-----------------------------------------------------------------
 
-void DoTeleportBot (CTrigger *trigP, short nObject)
+void CTrigger::DoTeleportBot (CObject* objP)
 {
-if (trigP->nLinks) {
-	CObject *objP = OBJECTS + nObject;
-	short nSegment = trigP->nSegment [d_rand () % trigP->nLinks];
+if (nLinks) {
+	short nSegment = segments [d_rand () % nLinks];
 	if (objP->info.nSegment != nSegment) {
 		objP->info.nSegment = nSegment;
 		objP->info.position.vPos = SEGMENTS [nSegment].Center ();
-		OBJECTS [nObject].RelinkToSeg (nSegment);
+		objP->RelinkToSeg (nSegment);
 		if (ROBOTINFO (objP->info.nId).bossFlag) {
-			int	i = FindBoss (nObject);
+			int	i = FindBoss (OBJ_IDX (objP));
 
 			if (i >= 0)
-				InitBossData (i, nObject);
+				InitBossData (i, OBJ_IDX (objP));
 			}
 		}
 	}
@@ -171,144 +167,124 @@ if (trigP->nLinks) {
 
 //------------------------------------------------------------------------------
 //close a door
-void DoCloseDoor (CTrigger *trigP)
+void CTrigger::DoCloseDoor (void)
 {
-	int i;
-
-short *segs = trigP->nSegment;
-short *sides = trigP->nSide;
-for (i = trigP->nLinks; i > 0; i--, segs++, sides++)
-	WallCloseDoor (SEGMENTS+*segs, *sides);
+for (int i = 0; i < nLinks; i++)
+	SEGMENTS [segments [i]].CloseDoor (sides [i]);
 }
 
 //------------------------------------------------------------------------------
 //turns lighting on.  returns true if lights were actually turned on. (they
 //would not be if they had previously been shot out).
-int DoLightOn (CTrigger *trigP)
+int CTrigger::DoLightOn (void)
 {
-	int i,ret=0;
+	int ret = 0;
+	short nSegment, nSide;
 
-short *segs = trigP->nSegment;
-short *sides = trigP->nSide;
-short nSegment,nSide;
-for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
-	nSegment = *segs;
-	nSide = *sides;
-
+for (int i = 0; i < nLinks; i++) {
+	nSegment = segments [i];
+	nSide = sides [i];
 	//check if tmap2 casts light before turning the light on.  This
 	//is to keep us from turning on blown-out lights
 	if (gameData.pig.tex.tMapInfoP [SEGMENTS [nSegment].m_sides [nSide].m_nOvlTex].lighting) {
 		ret |= AddLight (nSegment, nSide); 		//any light sets flag
 		EnableVariableLight (nSegment, nSide);
+		}
 	}
-}
 return ret;
 }
 
 //------------------------------------------------------------------------------
 //turns lighting off.  returns true if lights were actually turned off. (they
 //would not be if they had previously been shot out).
-int DoLightOff (CTrigger *trigP)
+int CTrigger::DoLightOff (void)
 {
-	int i,ret=0;
+	int ret = 0;
+	short nSegment, nSide;
 
-short *segs = trigP->nSegment;
-short *sides = trigP->nSide;
-short nSegment,nSide;
-for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
-	nSegment = *segs;
-	nSide = *sides;
-
+for (int i = 0; i < nLinks; i++) {
+	nSegment = segments [i];
+	nSide = sides [i];
 	//check if tmap2 casts light before turning the light off.  This
 	//is to keep us from turning off blown-out lights
 	if (gameData.pig.tex.tMapInfoP [SEGMENTS [nSegment].m_sides [nSide].m_nOvlTex].lighting) {
 		ret |= SubtractLight (nSegment, nSide); 	//any light sets flag
 		DisableVariableLight (nSegment, nSide);
+		}
 	}
-}
 return ret;
 }
 
 //------------------------------------------------------------------------------
 // Unlocks all doors linked to the switch.
-void DoUnlockDoors (CTrigger *trigP)
+void CTrigger::DoUnlockDoors (void)
 {
-	int i;
+	CWall*	wallP;
 
-short *segs = trigP->nSegment;
-short *sides = trigP->nSide;
-short nSegment,nSide, nWall;
-for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
-	nSegment = *segs;
-	nSide = *sides;
-	nWall=WallNumI (nSegment, nSide);
-	WALLS [nWall].flags &= ~WALL_DOOR_LOCKED;
-	WALLS [nWall].keys = KEY_NONE;
-}
+for (int i = 0; i < nLinks; i++) {
+	if ((wallP = SEGMENTS [segments [i]].Wall (sides [i]))) {
+		wallP->flags &= ~WALL_DOOR_LOCKED;
+		wallP->keys = KEY_NONE;
+		}
+	}	
 }
 
 //------------------------------------------------------------------------------
-// Return CTrigger number if door is controlled by a CWall switch, else return -1.
-int DoorIsWallSwitched (int nWall)
-{
-	int i, nTrigger;
-	CTrigger *trigP = TRIGGERS.Buffer ();
-	short *segs, *sides;
 
-for (nTrigger=0; nTrigger < gameData.trigs.nTriggers; nTrigger++, trigP++) {
-	segs = trigP->nSegment;
-	sides = trigP->nSide;
-	for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
-		if (WallNumI (*segs, *sides) == nWall) {
-			return nTrigger;
-			}
-	  	}
-	}
+bool CTrigger::TargetsWall (int nWall)
+{
+for (int i = 0; i < nLinks; i++) 
+	if ((nWall == SEGMENTS [segments [i]].WallNum (sides [i]))) 
+		return true;
+return false;
+}
+
+//------------------------------------------------------------------------------
+// Return trigger number if door is controlled by a Wall switch, else return -1.
+int DoorSwitch (int nWall)
+{
+for (int i = 0; i < gameData.trigs.nTriggers; i++)
+	if (TRIGGERS [i].TargetsWall (nWall))
+		return i;
 return -1;
 }
 
 //------------------------------------------------------------------------------
 
-void FlagWallSwitchedDoors (void)
+void FlagTriggeredDoors (void)
 {
-	int	i;
-
-for (i = 0; i < gameData.walls.nWalls; i++)
-	if (DoorIsWallSwitched (i))
+for (int i = 0; i < gameData.walls.nWalls; i++)
+	if (DoorSwitch (i) >= 0)
 		WALLS [i].flags |= WALL_WALL_SWITCH;
 }
 
 //------------------------------------------------------------------------------
 // Locks all doors linked to the switch.
-void DoLockDoors (CTrigger *trigP)
+void CTrigger::DoLockDoors (void)
 {
-	int i;
-	short *segs = trigP->nSegment;
-	short *sides = trigP->nSide;
+	CWall*	wallP;
 
-for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
-	WALLS [WallNumI (*segs, *sides)].flags |= WALL_DOOR_LOCKED;
-}
+for (int i = 0; i < nLinks; i++) 
+	if ((wallP = SEGMENTS [segments [i]].Wall (sides [i])))
+		wallP->flags |= WALL_DOOR_LOCKED;
 }
 
 //------------------------------------------------------------------------------
 // Changes player spawns according to triggers segments,sides list
 
-int DoSetSpawnPoints (CTrigger *trigP, short nObject)
+int CTrigger::DoSetSpawnPoints (void)
 {
-	int 		h, i, j;
-	short 	*segs = trigP->nSegment;
-	short 	*sides = trigP->nSide;
+	int 		i, j;
 	short		nSegment;
 
-for (h = trigP->nLinks, i = j = 0; i < MAX_PLAYERS; i++) {
-	nSegment = segs [j];
+for (i = j = 0; i < MAX_PLAYERS; i++) {
+	nSegment = segments [j];
 	TriggerSetOrient (&gameData.multiplayer.playerInit [i].position, nSegment, sides [j], 1, 0);
 	gameData.multiplayer.playerInit [i].nSegment = nSegment;
 	gameData.multiplayer.playerInit [i].nSegType = SEGMENTS [nSegment].m_nType;
 	if (i == gameData.multiplayer.nLocalPlayer)
 		MoveSpawnMarker (&gameData.multiplayer.playerInit [i].position, nSegment);
-	j = (j + 1) % h;
+	j = (j + 1) % nLinks;
 	}
 // delete any spawn markers that have been set before passing through this trigger to 
 // avoid players getting stuck when respawning at that marker
@@ -320,76 +296,64 @@ return 1;
 //------------------------------------------------------------------------------
 // Changes player spawns according to triggers segments,sides list
 
-int DoMasterTrigger (CTrigger *masterP, short nObject)
+int CTrigger::DoMasterTrigger (short nObject)
 {
-	int 		h, i;
-	short 	*segs = masterP->nSegment;
-	short 	*sides = masterP->nSide;
-	short		nWall, nTrigger;
-	CWall		*wallP;
+	CTrigger*	trigP;
 
-for (h = masterP->nLinks, i = 0; i < h; i++) {
-	if (IS_WALL (nWall = WallNumP (SEGMENTS + segs [i], sides [i]))) {
-		wallP = WALLS + nWall;
-		nTrigger = wallP->nTrigger;
-		if ((nTrigger >= 0) && (nTrigger < gameData.trigs.nTriggers)) 
-			CheckTriggerSub (nObject, TRIGGERS.Buffer (), gameData.trigs.nTriggers, 
-								  nTrigger, gameData.multiplayer.nLocalPlayer, 0, 0);
-		}
-	}
+for (int i = 0; i < nLinks; i++)
+	if ((trigP = SEGMENTS [segments [i]].Trigger (sides [i])))
+		trigP->Operate (nObject, gameData.multiplayer.nLocalPlayer, 0, 0);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int DoShowMessage (CTrigger *trigP, short nObject)
+int CTrigger::DoShowMessage (void)
 {
-ShowGameMessage (gameData.messages, X2I (trigP->value), trigP->time);
+ShowGameMessage (gameData.messages, X2I (value), time);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int DoPlaySound (CTrigger *trigP, short nObject)
+int CTrigger::DoPlaySound (short nObject)
 {
-	tTextIndex	*indexP = FindTextData (&gameData.sounds, X2I (trigP->value));
+	tTextIndex	*indexP = FindTextData (&gameData.sounds, X2I (value));
 
 if (!indexP)
 	return 0;
-if (trigP->time < 0)
+if (time < 0)
 	DigiStartSound (-1, F1_0, 0xffff / 2, -1, -1, -1, -1, F1_0, indexP->pszText, NULL, 0);
 else
-	DigiStartSound (-1, F1_0, 0xffff / 2, 0, 0, trigP->time - 1, -1, F1_0, indexP->pszText, NULL, 0);
+	DigiStartSound (-1, F1_0, 0xffff / 2, 0, 0, time - 1, -1, F1_0, indexP->pszText, NULL, 0);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 // Changes walls pointed to by a CTrigger. returns true if any walls changed
-int DoChangeWalls (CTrigger *trigP)
+int CTrigger::DoChangeWalls (void)
 {
-	int 		i,ret = 0;
-	short 	*segs = trigP->nSegment;
-	short 	*sides = trigP->nSide;
-	short 	nSide,nConnSide,nWall,nConnWall;
-	int 		nNewWallType;
-	CSegment *segP, *cSegP;
+	int 			bChanged = 0;
+	short 		nSide, nConnSide;
+	int 			nNewWallType;
+	CSegment*	segP, * connSegP;
+	CWall*		wallP, * connWallP;
 
-for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
-
-	segP = SEGMENTS + *segs;
-	nSide = *sides;
+for (int i = 0; i < nLinks; i++) {
+	segP = SEGMENTS + segments [i];
+	nSide = sides [i];
 
 	if (segP->m_children [nSide] < 0) {
 		if (gameOpts->legacy.bSwitches)
-			Warning (TXT_TRIG_SINGLE, *segs, nSide, TRIG_IDX (trigP));
-		cSegP = NULL;
+			Warning (TXT_TRIG_SINGLE, segments [i], nSide, Index ());
+		connSegP = NULL;
 		nConnSide = -1;
 		}
 	else {
-		cSegP = SEGMENTS + segP->m_children [nSide];
-		nConnSide = segP->ConnectedSide (cSegP);
+		connSegP = SEGMENTS + segP->m_children [nSide];
+		nConnSide = segP->ConnectedSide (connSegP);
 		}
-	switch (trigP->nType) {
+	switch (nType) {
 		case TT_OPEN_WALL:
 			nNewWallType = WALL_OPEN; 
 			break;
@@ -404,92 +368,82 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 			return 0;
 			break;
 		}
-	nWall = WallNumP (segP, nSide);
-	if (!IS_WALL (nWall)) {
+
+	if (!(wallP = segP->Wall (nSide))) {
 #if DBG
-		PrintLog ("WARNING: Wall trigger %d targets non-existant CWall @ %d,%d\n", 
-				  trigP - TRIGGERS, SEG_IDX (segP), nSide);
+		PrintLog ("WARNING: Wall trigger %d targets non-existant wall @ %d,%d\n", Index (), segP->Index (), nSide);
 #endif
 		continue;
 		}
-	nConnWall = (nConnSide < 0) ? NO_WALL : WallNumP (cSegP, nConnSide);
-	if ((WALLS [nWall].nType == nNewWallType) &&
-		 (!IS_WALL (nConnWall) || (WALLS [nConnWall].nType == nNewWallType)))
+
+	connWallP = connSegP->Wall (nConnSide);
+	if ((wallP->nType == nNewWallType) && (!connWallP || (connWallP->nType == nNewWallType)))
 		continue;		//already in correct state, so skip
-	ret = 1;
-	switch (trigP->nType) {
+
+	bChanged = 1;
+	switch (nType) {
 		case TT_OPEN_WALL:
 			if (!(gameData.pig.tex.tMapInfoP [segP->m_sides [nSide].m_nBaseTex].flags & TMI_FORCE_FIELD)) 
 				StartWallCloak (segP,nSide);
 			else {
-				CFixVector pos;
-				pos = segP->SideCenter (nSide);
-				DigiLinkSoundToPos (SOUND_FORCEFIELD_OFF, SEG_IDX (segP), nSide, &pos, 0, F1_0);
-				WALLS [nWall].nType = nNewWallType;
-				DigiKillSoundLinkedToSegment (SEG_IDX (segP),nSide,SOUND_FORCEFIELD_HUM);
-				if (IS_WALL (nConnWall)) {
-					WALLS [nConnWall].nType = nNewWallType;
-					DigiKillSoundLinkedToSegment (SEG_IDX (cSegP),nConnSide,SOUND_FORCEFIELD_HUM);
+				CFixVector vPos = segP->SideCenter (nSide);
+				DigiLinkSoundToPos (SOUND_FORCEFIELD_OFF, segP->Index (), nSide, vPos, 0, F1_0);
+				wallP->nType = nNewWallType;
+				DigiKillSoundLinkedToSegment (segP->Index (), nSide, SOUND_FORCEFIELD_HUM);
+				if (connWallP) {
+					connWallP->nType = nNewWallType;
+					DigiKillSoundLinkedToSegment (SEG_IDX (connSegP), nConnSide, SOUND_FORCEFIELD_HUM);
 					}
 				}
-			ret = 1;
 			break;
 
 		case TT_CLOSE_WALL:
 			if (!(gameData.pig.tex.tMapInfoP [segP->m_sides [nSide].m_nBaseTex].flags & TMI_FORCE_FIELD)) 
-				StartWallDecloak (segP,nSide);
+				segP->StartDecloak (nSide);
 			else {
-				CFixVector pos;
-				pos = segP->SideCenter (nSide);
-				DigiLinkSoundToPos (SOUND_FORCEFIELD_HUM, SEG_IDX (segP),nSide,&pos,1, F1_0/2);
-				WALLS [nWall].nType = nNewWallType;
-				if (IS_WALL (nConnWall))
-					WALLS [nConnWall].nType = nNewWallType;
+				CFixVector vPos = segP->SideCenter (nSide);
+				DigiLinkSoundToPos (SOUND_FORCEFIELD_HUM, segP->Index (), nSide, vPos, 1, F1_0/2);
+				wallP->nType = nNewWallType;
+				if (connWallP)
+					connWallP->nType = nNewWallType;
 				}
 			break;
 
 		case TT_ILLUSORY_WALL:
-			WALLS [WallNumP (segP, nSide)].nType = nNewWallType;
-			if (IS_WALL (nConnWall))
-				WALLS [nConnWall].nType = nNewWallType;
+			wallP->nType = nNewWallType;
+			if (connWallP)
+				connWallP->nType = nNewWallType;
 			break;
 		}
-	KillStuckObjects (WallNumP (segP, nSide));
-	if (IS_WALL (nConnWall))
-		KillStuckObjects (nConnWall);
+	KillStuckObjects (wallP - WALLS);
+	if (connWallP)
+		KillStuckObjects (connWallP - WALLS);
   	}
-return ret;
+return bChanged;
 }
 
 //------------------------------------------------------------------------------
 
-void PrintTriggerMessage (int nPlayer, int trig, int shot, const char *message)
- {
+void CTrigger::PrintMessage (int nPlayer, int shot, const char *message)
+{
 	char		*pl;		//points to 's' or nothing for plural word
 	CTrigger	*triggers;
 
-if (nPlayer < 0)
-	triggers = gameData.trigs.objTriggers.Buffer ();
-else {
-	if (nPlayer != gameData.multiplayer.nLocalPlayer)
-		return;
-	triggers = TRIGGERS.Buffer ();
+if ((nPlayer < 0) || (nPlayer == gameData.multiplayer.nLocalPlayer)) {
+	pl = (nLinks > 1) ? reinterpret_cast<char*> ("s") : reinterpret_cast<char*> ("");
+	if (!(flags & TF_NO_MESSAGE) && shot)
+		HUDInitMessage (message, pl);
 	}
-pl = (triggers [trig].nLinks > 1) ? reinterpret_cast<char*> ("s") : reinterpret_cast<char*> ("");
-if (!(triggers [trig].flags & TF_NO_MESSAGE) && shot)
-	HUDInitMessage (message, pl);
 }
-
 
 //------------------------------------------------------------------------------
 
-void DoMatCen (CTrigger *trigP, int bMessage)
+void CTrigger::DoMatCen (int bMessage)
 {
 	int i, h [3] = {0,0,0};
 
-short *segs = trigP->nSegment;
-for (i = trigP->nLinks; i > 0; i--, segs++)
-	h [MatCenTrigger (*segs)]++;
+for (i = 0; i < nLinks; i++)
+	h [TriggerMatCen (segments [i])]++;
 if (bMessage) {
 	if (h [1])
 		HUDInitMessage (TXT_EQUIPGENS_ON, (h [1] == 1) ? "" : "s");
@@ -500,32 +454,25 @@ if (bMessage) {
 
 //------------------------------------------------------------------------------
 
-void DoIllusionOn (CTrigger *trigP)
+void CTrigger::DoIllusionOn (void)
 {
-	int i;
-
-short *segs = trigP->nSegment;
-short *sides = trigP->nSide;
-for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
-	WallIllusionOn (&SEGMENTS [*segs], *sides);
+for (int i = 0; i < nLinks; i++)
+	SEGMENTS [segments [i]].IllusionOn (sides [i]);
 }
 }
 
 //------------------------------------------------------------------------------
 
-void DoIllusionOff (CTrigger *trigP)
+void CTrigger::DoIllusionOff (void)
 {
-	int i;
-	short *segs = trigP->nSegment;
-	short *sides = trigP->nSide;
-	CSegment *segP;
+	CSegment*	segP;
+	short			nSide;
 
-for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
-	CFixVector	cp;
-	segP = SEGMENTS + *segs;
-	WallIllusionOff (segP, *sides);
-	cp = segP->SideCenter (*sides);
-	DigiLinkSoundToPos (SOUND_WALL_REMOVED, SEG_IDX (seg), *sides, &cp, 0, F1_0);
+for (int i = 0; i < nLinks; i++) {
+	segP = SEGMENTS + segments [i];
+	nSide = sides [i];
+	segP->IllusionOff (nSide);
+	DigiLinkSoundToPos (SOUND_WALL_REMOVED, SEG_IDX (seg), nSide, segP->SideCenter (nSide), 0, F1_0);
   	}
 }
 
@@ -534,14 +481,14 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 void TriggerSetOrient (tObjTransformation *posP, short nSegment, short nSide, int bSetPos, int nStep)
 {
 	CAngleVector	an;
-	CFixVector	n;
+	CFixVector		n;
 
 if (nStep <= 0) {
 	n = *SEGMENTS [nSegment].m_sides [nSide].m_normals;
 	n = -n;
 	/*
-	n[Y] = -n[Y];
-	n[Z] = -n[Z];
+	n [Y] = -n [Y];
+	n [Z] = -n [Z];
 	*/
 	gameStates.gameplay.vTgtDir = n;
 	if (nStep < 0)
@@ -567,16 +514,16 @@ if (bSetPos)
 void TriggerSetObjOrient (short nObject, short nSegment, short nSide, int bSetPos, int nStep)
 {
 	CAngleVector	ad, an, av;
-	CFixVector	vel, n;
-	CFixMatrix	rm;
-	CObject		*objP = OBJECTS + nObject;
+	CFixVector		vel, n;
+	CFixMatrix		rm;
+	CObject*			objP = OBJECTS + nObject;
 
 TriggerSetOrient (&objP->info.position, nSegment, nSide, bSetPos, nStep);
 if (nStep <= 0) {
 	n = *SEGMENTS [nSegment].m_sides [nSide].m_normals;
 	/*
-	n[X] = -n[X];
-	n[Y] = -n[Y];
+	n [X] = -n [X];
+	n [Y] = -n [Y];
 	*/
 	n = -n;
 	gameStates.gameplay.vTgtDir = n;
@@ -587,18 +534,18 @@ else
 	n = gameStates.gameplay.vTgtDir;
 an = n.ToAnglesVec();
 av = objP->mType.physInfo.velocity.ToAnglesVec();
-av[PA] -= an[PA];
-av[BA] -= an[BA];
-av[HA] -= an[HA];
+av [PA] -= an [PA];
+av [BA] -= an [BA];
+av [HA] -= an [HA];
 if (nStep) {
 	if (nStep > 1) {
-		av[PA] /= nStep;
-		av[BA] /= nStep;
-		av[HA] /= nStep;
+		av [PA] /= nStep;
+		av [BA] /= nStep;
+		av [HA] /= nStep;
 		ad = objP->info.position.mOrient.ExtractAnglesVec();
-		ad[PA] += (an[PA] - ad[PA]) / nStep;
-		ad[BA] += (an[BA] - ad[BA]) / nStep;
-		ad[HA] += (an[HA] - ad[HA]) / nStep;
+		ad [PA] += (an [PA] - ad [PA]) / nStep;
+		ad [BA] += (an [BA] - ad [BA]) / nStep;
+		ad [HA] += (an [HA] - ad [HA]) / nStep;
 		objP->info.position.mOrient = CFixMatrix::Create(ad);
 		}
 	else
@@ -619,7 +566,7 @@ OBJECTS [nObject].RelinkToSeg (nSegment);
 
 //------------------------------------------------------------------------------
 
-void DoTeleport (CTrigger *trigP, short nObject)
+void CTrigger::DoTeleport (short nObject)
 {
 if (trigP->nLinks > 0) {
 		int		i;
@@ -627,8 +574,8 @@ if (trigP->nLinks > 0) {
 
 	d_srand (TimerGetFixedSeconds ());
 	i = d_rand () % trigP->nLinks;
-	nSegment = trigP->nSegment [i];
-	nSide = trigP->nSide [i];
+	nSegment = segments [i];
+	nSide = sides [i];
 	// set new CPlayerData direction, facing the destination nSide
 	TriggerSetObjOrient (nObject, nSegment, nSide, 1, 0);
 	TriggerSetObjPos (nObject, nSegment);
@@ -639,11 +586,9 @@ if (trigP->nLinks > 0) {
 
 //------------------------------------------------------------------------------
 
-CWall *TriggerParentWall (short nTrigger)
+CWall* TriggerParentWall (short nTrigger)
 {
-	int	i;
-
-for (i = 0; i < gameData.walls.nWalls; i++)
+for (int i = 0; i < gameData.walls.nWalls; i++)
 	if (WALLS [i].nTrigger == nTrigger)
 		return WALLS + i;
 return NULL;
@@ -690,8 +635,8 @@ if (sbd.bBoosted) {
 		// turn the ship so that it is facing the destination nSide of the destination CSegment
 		// Invert the Normal as it points into the CSegment
 			/*
-			n[X] = -n[X];
-			n[Y] = -n[Y];
+			n [X] = -n [X];
+			n [Y] = -n [Y];
 			*/
 			n = -n;
 			}
@@ -701,62 +646,62 @@ if (sbd.bBoosted) {
 	// turn the ship so that it is facing the destination nSide of the destination CSegment
 	// Invert the Normal as it points into the CSegment
 		/*
-		n[X] = -n[X];
-		n[Y] = -n[Y];
+		n [X] = -n [X];
+		n [Y] = -n [Y];
 		*/
 		n = -n;
 		}
-	sbd.vVel[X] = n[X] * v;
-	sbd.vVel[Y] = n[Y] * v;
-	sbd.vVel[Z] = n[Z] * v;
+	sbd.vVel [X] = n [X] * v;
+	sbd.vVel [Y] = n [Y] * v;
+	sbd.vVel [Z] = n [Z] * v;
 #if 0
-	d = (double) (labs (n[X]) + labs (n[Y]) + labs (n[Z])) / ((double) F1_0 * 60.0);
-	h[X] = n[X] ? (fix) ((double) n[X] / d) : 0;
-	h[Y] = n[Y] ? (fix) ((double) n[Y] / d) : 0;
-	h[Z] = n[Z] ? (fix) ((double) n[Z] / d) : 0;
+	d = (double) (labs (n [X]) + labs (n [Y]) + labs (n [Z])) / ((double) F1_0 * 60.0);
+	h [X] = n [X] ? (fix) ((double) n [X] / d) : 0;
+	h [Y] = n [Y] ? (fix) ((double) n [Y] / d) : 0;
+	h [Z] = n [Z] ? (fix) ((double) n [Z] / d) : 0;
 #else
 #	if 1
-	h[X] =
-	h[Y] =
-	h[Z] = F1_0 * 60;
+	h [X] =
+	h [Y] =
+	h [Z] = F1_0 * 60;
 #	else
-	h[X] = (n[X] ? n[X] : F1_0) * 60;
-	h[Y] = (n[Y] ? n[Y] : F1_0) * 60;
-	h[Z] = (n[Z] ? n[Z] : F1_0) * 60;
+	h [X] = (n [X] ? n [X] : F1_0) * 60;
+	h [Y] = (n [Y] ? n [Y] : F1_0) * 60;
+	h [Z] = (n [Z] ? n [Z] : F1_0) * 60;
 #	endif
 #endif
 	sbd.vMinVel = sbd.vVel - h;
 /*
-	if (!sbd.vMinVel[X])
-		sbd.vMinVel[X] = F1_0 * -60;
-	if (!sbd.vMinVel[Y])
-		sbd.vMinVel[Y] = F1_0 * -60;
-	if (!sbd.vMinVel[Z])
-		sbd.vMinVel[Z] = F1_0 * -60;
+	if (!sbd.vMinVel [X])
+		sbd.vMinVel [X] = F1_0 * -60;
+	if (!sbd.vMinVel [Y])
+		sbd.vMinVel [Y] = F1_0 * -60;
+	if (!sbd.vMinVel [Z])
+		sbd.vMinVel [Z] = F1_0 * -60;
 */
 	sbd.vMaxVel = sbd.vVel + h;
 /*
-	if (!sbd.vMaxVel[X])
-		sbd.vMaxVel[X] = F1_0 * 60;
-	if (!sbd.vMaxVel[Y])
-		sbd.vMaxVel[Y] = F1_0 * 60;
-	if (!sbd.vMaxVel[Z])
-		sbd.vMaxVel[Z] = F1_0 * 60;
+	if (!sbd.vMaxVel [X])
+		sbd.vMaxVel [X] = F1_0 * 60;
+	if (!sbd.vMaxVel [Y])
+		sbd.vMaxVel [Y] = F1_0 * 60;
+	if (!sbd.vMaxVel [Z])
+		sbd.vMaxVel [Z] = F1_0 * 60;
 */
-	if (sbd.vMinVel[X] > sbd.vMaxVel[X]) {
-		fix h = sbd.vMinVel[X];
-		sbd.vMinVel[X] = sbd.vMaxVel[X];
-		sbd.vMaxVel[X] = h;
+	if (sbd.vMinVel [X] > sbd.vMaxVel [X]) {
+		fix h = sbd.vMinVel [X];
+		sbd.vMinVel [X] = sbd.vMaxVel [X];
+		sbd.vMaxVel [X] = h;
 		}
-	if (sbd.vMinVel[Y] > sbd.vMaxVel[Y]) {
-		fix h = sbd.vMinVel[Y];
-		sbd.vMinVel[Y] = sbd.vMaxVel[Y];
-		sbd.vMaxVel[Y] = h;
+	if (sbd.vMinVel [Y] > sbd.vMaxVel [Y]) {
+		fix h = sbd.vMinVel [Y];
+		sbd.vMinVel [Y] = sbd.vMaxVel [Y];
+		sbd.vMaxVel [Y] = h;
 		}
-	if (sbd.vMinVel[Z] > sbd.vMaxVel[Z]) {
-		fix h = sbd.vMinVel[Z];
-		sbd.vMinVel[Z] = sbd.vMaxVel[Z];
-		sbd.vMaxVel[Z] = h;
+	if (sbd.vMinVel [Z] > sbd.vMaxVel [Z]) {
+		fix h = sbd.vMinVel [Z];
+		sbd.vMinVel [Z] = sbd.vMaxVel [Z];
+		sbd.vMaxVel [Z] = h;
 		}
 	objP->mType.physInfo.velocity = sbd.vVel;
 	if (bSetOrient) {
@@ -766,9 +711,9 @@ if (sbd.bBoosted) {
 	gameData.objs.speedBoost [nObject] = sbd;
 	}
 else {
-	objP->mType.physInfo.velocity[X] = objP->mType.physInfo.velocity[X] / v * 60;
-	objP->mType.physInfo.velocity[Y] = objP->mType.physInfo.velocity[Y] / v * 60;
-	objP->mType.physInfo.velocity[Z] = objP->mType.physInfo.velocity[Z] / v * 60;
+	objP->mType.physInfo.velocity [X] = objP->mType.physInfo.velocity [X] / v * 60;
+	objP->mType.physInfo.velocity [Y] = objP->mType.physInfo.velocity [Y] / v * 60;
+	objP->mType.physInfo.velocity [Z] = objP->mType.physInfo.velocity [Z] / v * 60;
 	}
 }
 
@@ -782,56 +727,103 @@ if (gameStates.app.tick40fps.bTick && gameStates.gameplay.nDirSteps)
 
 //------------------------------------------------------------------------------
 
-void DoSpeedBoost (CTrigger *trigP, short nObject)
+void CTrigger::DoSpeedBoost (short nObject)
 {
 if (!(COMPETITION || IsCoopGame) || extraGameInfo [IsMultiGame].nSpeedBoost) {
-	CWall *w = TriggerParentWall (TRIG_IDX (trigP));
+	CWall* wallP = TriggerParentWall (Index ());
 	gameData.objs.speedBoost [nObject].bBoosted = (trigP->value && (trigP->nLinks > 0));
-	SetSpeedBoostVelocity ((short) nObject, trigP->value, 
-								  (short) (w ? w->nSegment : -1), (short) (w ? w->nSide : -1),
-								  trigP->nSegment [0], trigP->nSide [0], NULL, NULL, (trigP->flags & TF_SET_ORIENT) != 0);
+	SetSpeedBoostVelocity ((short) nObject, value, 
+								  (short) (wallP ? wallP->nSegment : -1), (short) (wallP ? wallP->nSide : -1),
+								  segments [0], sides [0], NULL, NULL, (flags & TF_SET_ORIENT) != 0);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-extern void EnterSecretLevel (void);
-extern void ExitSecretLevel (void);
-extern int PSecretLevelDestroyed (void);
-
-int WallIsForceField (CTrigger *trigP)
+bool CTrigger::DoExit (int nPlayer)
 {
-	int i;
-	short *segs = trigP->nSegment;
-	short *sides = trigP->nSide;
-
-for (i = trigP->nLinks; i > 0; i--, segs++, sides++)
-	if ((gameData.pig.tex.tMapInfoP [SEGMENTS [*segs].m_sides [*sides].m_nBaseTex].flags & TMI_FORCE_FIELD))
-		break;
-return (i > 0);
+if (nPlayer != gameData.multiplayer.nLocalPlayer)
+	return false;
+DigiStopAll ();		//kill the sounds
+if ((gameData.missions.nCurrentLevel > 0) || gameStates.app.bD1Mission) {
+	StartEndLevelSequence (0);
+	return true;
+	} 
+else if (gameData.missions.nCurrentLevel < 0) {
+	if ((LOCALPLAYER.shields < 0) || gameStates.app.bPlayerIsDead)
+		return false;
+	ExitSecretLevel ();
+	return true;
+	}
+return false;
 }
 
 //------------------------------------------------------------------------------
 
-int CheckTriggerSub (short nObject, CTrigger *triggers, int nTriggerCount, 
-							int nTrigger, int nPlayer, int shot, int bObjTrigger)
+bool CTrigger::DoSecretExit (int nPlayer)
 {
-	CTrigger	*trigP;
-	CObject	*objP = OBJECTS + nObject;
-	ubyte		bIsPlayer = (objP->info.nType == OBJ_PLAYER);
+if (nPlayer != gameData.multiplayer.nLocalPlayer)
+	return false;
+if ((LOCALPLAYER.shields < 0) || gameStates.app.bPlayerIsDead)
+	return false;
+if (gameData.app.nGameMode & GM_MULTI) {
+	HUDInitMessage (TXT_TELEPORT_MULTI);
+	DigiPlaySample (SOUND_BAD_SELECTION, F1_0);
+	return false;
+	}
 
-if (nTrigger >= nTriggerCount)
-	return 1;
-trigP = triggers + nTrigger;
-if (trigP->flags & TF_DISABLED)
+bool bDisabled = PSecretLevelDestroyed ();
+
+if (gameData.demo.nState == ND_STATE_RECORDING)			// record whether we're really going to the secret level
+	NDRecordSecretExitBlown (bDisabled);
+
+if (bDisabled && (gameData.demo.nState != ND_STATE_PLAYBACK)) {
+	HUDInitMessage (TXT_SECRET_DESTROYED);
+	DigiPlaySample (SOUND_BAD_SELECTION, F1_0);
+	return false;
+}
+
+if (gameData.demo.nState == ND_STATE_RECORDING)		// stop demo recording
+	gameData.demo.nState = ND_STATE_PAUSED;
+DigiStopAll ();		//kill the sounds
+DigiPlaySample (SOUND_SECRET_EXIT, F1_0);
+paletteManager.FadeOut ();
+EnterSecretLevel ();
+gameData.reactor.bDestroyed = 0;
+return true;
+}
+
+//------------------------------------------------------------------------------
+
+void EnterSecretLevel (void);
+void ExitSecretLevel (void);
+int PSecretLevelDestroyed (void);
+
+int CTrigger::WallIsForceField (void)
+{
+for (int i = 0; i < nLinks; i++)
+	if ((gameData.pig.tex.tMapInfoP [SEGMENTS [segments [i]].m_sides [sides [i]].m_nBaseTex].flags & TMI_FORCE_FIELD))
+		return 1;
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int CTrigger::Operate (short nObject, int nPlayer, int shot, bool bObjTrigger)
+{
+if (flags & TF_DISABLED)
 	return 1;		//1 means don't send trigger hit to other players
+
+CObject*	objP = OBJECTS + nObject;
+bool bIsPlayer = (objP->info.nType == OBJ_PLAYER);
+
 if (bIsPlayer) {
 	if (!IsMultiGame && (nObject != LOCALPLAYER.nObject))
 		return 1;
 	}
 else {
 	nPlayer = -1;
-	if ((trigP->nType != TT_TELEPORT) && (trigP->nType != TT_SPEEDBOOST)) {
+	if ((nType != TT_TELEPORT) && (nType != TT_SPEEDBOOST)) {
 		if ((objP->info.nType != OBJ_ROBOT) && (objP->info.nType != OBJ_REACTOR))
 			return 1;
 		if (!bObjTrigger)
@@ -842,151 +834,101 @@ else {
 			return 1;
 		}
 #if 1
-if ((triggers == TRIGGERS.Buffer ()) && 
-	 (trigP->nType != TT_TELEPORT) && (trigP->nType != TT_SPEEDBOOST)) {
+if (!bObjTrigger && (nType != TT_TELEPORT) && (nType != TT_SPEEDBOOST)) {
 	int t = gameStates.app.nSDLTicks;
 	if ((gameData.trigs.delay [nTrigger] >= 0) && (t - gameData.trigs.delay [nTrigger] < 750))
 		return 1;
 	gameData.trigs.delay [nTrigger] = t;
 	}
 #endif
-if (trigP->flags & TF_ONE_SHOT)		//if this is a one-shot...
-	trigP->flags |= TF_DISABLED;		//..then don't let it happen again
+if (flags & TF_ONE_SHOT)		//if this is a one-shot...
+	flags |= TF_DISABLED;		//..then don't let it happen again
 
-switch (trigP->nType) {
+switch (nType) {
 
 	case TT_EXIT:
-		if (nPlayer != gameData.multiplayer.nLocalPlayer)
-			break;
-		DigiStopAll ();		//kill the sounds
-		if ((gameData.missions.nCurrentLevel > 0) || gameStates.app.bD1Mission) {
-			StartEndLevelSequence (0);
-			} 
-		else if (gameData.missions.nCurrentLevel < 0) {
-			if ((LOCALPLAYER.shields < 0) || 
-					gameStates.app.bPlayerIsDead)
-				break;
-			ExitSecretLevel ();
+		if (DoExit (nPlayer))
 			return 1;
-			}
-		else {
-#ifdef EDITOR
-				ExecMessageBox ("Yo!", 1, "You have hit the exit CTrigger!", "");
-#else
-				Int3 ();		//level num == 0, but no editor!
-			#endif
-			}
-		return 1;
 		break;
 
-	case TT_SECRET_EXIT: {
-		int	truth;
-
-		if (nPlayer != gameData.multiplayer.nLocalPlayer)
-			break;
-		if ((LOCALPLAYER.shields < 0) || 
-				gameStates.app.bPlayerIsDead)
-			break;
-		if (gameData.app.nGameMode & GM_MULTI) {
-			HUDInitMessage (TXT_TELEPORT_MULTI);
-			DigiPlaySample (SOUND_BAD_SELECTION, F1_0);
-			break;
-		}
-		truth = PSecretLevelDestroyed ();
-
-		if (gameData.demo.nState == ND_STATE_RECORDING)			// record whether we're really going to the secret level
-			NDRecordSecretExitBlown (truth);
-
-		if ((gameData.demo.nState != ND_STATE_PLAYBACK) && truth) {
-			HUDInitMessage (TXT_SECRET_DESTROYED);
-			DigiPlaySample (SOUND_BAD_SELECTION, F1_0);
-			break;
-		}
-
-		if (gameData.demo.nState == ND_STATE_RECORDING)		// stop demo recording
-			gameData.demo.nState = ND_STATE_PAUSED;
-		DigiStopAll ();		//kill the sounds
-		DigiPlaySample (SOUND_SECRET_EXIT, F1_0);
-		paletteManager.FadeOut ();
-		EnterSecretLevel ();
-		gameData.reactor.bDestroyed = 0;
-		return 1;
+	case TT_SECRET_EXIT:
+		if (DoSecretExit (nPlayer))
+			return 1;
 		break;
-	}
 
 	case TT_OPEN_DOOR:
-		DoLink (trigP);
-		PrintTriggerMessage (nPlayer, nTrigger, shot, "Door%s opened!");
+		DoLink ();
+		PrintMessage (nPlayer, shot, "Door%s opened!");
 		break;
 
 	case TT_CLOSE_DOOR:
-		DoCloseDoor (trigP);
-		PrintTriggerMessage (nPlayer, nTrigger, shot, "Door%s closed!");
+		DoCloseDoor ();
+		PrintMessage (nPlayer, shot, "Door%s closed!");
 		break;
 
 	case TT_UNLOCK_DOOR:
-		DoUnlockDoors (trigP);
-		PrintTriggerMessage (nPlayer, nTrigger, shot, "Door%s unlocked!");
+		DoUnlockDoors ();
+		PrintMessage (nPlayer, shot, "Door%s unlocked!");
 		break;
 
 	case TT_LOCK_DOOR:
-		DoLockDoors (trigP);
-		PrintTriggerMessage (nPlayer, nTrigger, shot, "Door%s locked!");
+		DoLockDoors ();
+		PrintMessage (nPlayer, shot, "Door%s locked!");
 		break;
 
 	case TT_OPEN_WALL:
-		if (DoChangeWalls (trigP))	{
-			if (WallIsForceField (trigP))
-				PrintTriggerMessage (nPlayer, nTrigger, shot, "Force field%s deactivated!");
+		if (DoChangeWalls ()) {
+			if (WallIsForceField ())
+				PrintMessage (nPlayer, shot, "Force field%s deactivated!");
 			else
-				PrintTriggerMessage (nPlayer, nTrigger, shot, "Wall%s opened!");
+				PrintMessage (nPlayer, shot, "Wall%s opened!");
 			}
 		break;
 
 	case TT_CLOSE_WALL:
-		if (DoChangeWalls (trigP)) {
-			if (WallIsForceField (trigP))
-				PrintTriggerMessage (nPlayer, nTrigger, shot, "Force field%s activated!");
+		if (DoChangeWalls ()) {
+			if (WallIsForceField ())
+				PrintMessage (nPlayer, shot, "Force field%s activated!");
 			else
-				PrintTriggerMessage (nPlayer, nTrigger, shot, "Wall%s closed!");
+				PrintMessage (nPlayer, shot, "Wall%s closed!");
 		}
 		break;
 
 	case TT_ILLUSORY_WALL:
 		//don't know what to say, so say nothing
-		DoChangeWalls (trigP);
-		PrintTriggerMessage (nPlayer, nTrigger, shot, "Creating Illusion!");
+		DoChangeWalls ();
+		PrintMessage (nPlayer, shot, "Creating Illusion!");
 		break;
 
 	case TT_MATCEN:
 		if (!(gameData.app.nGameMode & GM_MULTI) || (gameData.app.nGameMode & GM_MULTI_ROBOTS))
-			DoMatCen (trigP, nPlayer == gameData.multiplayer.nLocalPlayer);
+			DoMatCen (nPlayer == gameData.multiplayer.nLocalPlayer);
 		break;
 
 	case TT_ILLUSION_ON:
-		DoIllusionOn (trigP);
-		PrintTriggerMessage (nPlayer, nTrigger, shot, "Illusion%s on!");
+		DoIllusionOn ();
+		PrintMessage (nPlayer, shot, "Illusion%s on!");
 		break;
 
 	case TT_ILLUSION_OFF:
-		DoIllusionOff (trigP);
-		PrintTriggerMessage (nPlayer, nTrigger, shot, "Illusion%s off!");
+		DoIllusionOff ();
+		PrintMessage (nPlayer, shot, "Illusion%s off!");
 		break;
 
 	case TT_LIGHT_OFF:
-		if (DoLightOff (trigP))
-			PrintTriggerMessage (nPlayer, nTrigger, shot, "Lights off!");
+		if (DoLightOff ())
+			PrintMessage (nPlayer, shot, "Lights off!");
 		break;
 
 	case TT_LIGHT_ON:
-		if (DoLightOn (trigP))
-			PrintTriggerMessage (nPlayer, nTrigger, shot, "Lights on!");
+		if (DoLightOn ())
+			PrintMessage (nPlayer, shot, "Lights on!");
 		break;
 
 	case TT_TELEPORT:
 		if (bObjTrigger) {
-			DoTeleportBot (trigP, nObject);
-			PrintTriggerMessage (nPlayer, nTrigger, shot, "Robot is fleeing!");
+			DoTeleportBot (objP);
+			PrintMessage (nPlayer, shot, "Robot is fleeing!");
 			}
 		else {
 			if (bIsPlayer) {
@@ -997,9 +939,9 @@ switch (trigP->nType) {
 					break;
 				}
 			DigiPlaySample (SOUND_SECRET_EXIT, F1_0);
-			DoTeleport (trigP, nObject);
+			DoTeleport (nObject);
 			if (bIsPlayer)
-				PrintTriggerMessage (nPlayer, nTrigger, shot, "Teleport!");
+				PrintMessage (nPlayer, shot, "Teleport!");
 			}
 		break;
 
@@ -1011,9 +953,9 @@ switch (trigP->nType) {
 				 gameStates.app.bPlayerIsDead)
 				break;
 			}
-		DoSpeedBoost (trigP, nObject);
+		DoSpeedBoost (nObject);
 		if (bIsPlayer)
-			PrintTriggerMessage (nPlayer, nTrigger, shot, "Speed Boost!");
+			PrintMessage (nPlayer, shot, "Speed Boost!");
 		break;
 
 	case TT_SHIELD_DAMAGE:
@@ -1031,18 +973,18 @@ switch (trigP->nType) {
 		break;
 
 	case TT_CHANGE_TEXTURE:
-		DoChangeTexture (trigP);
-		PrintTriggerMessage (nPlayer, nTrigger, 2, "Walls have been changed!");
+		DoChangeTexture ();
+		PrintMessage (nPlayer, nTrigger, 2, "Walls have been changed!");
 		break;
 
 	case TT_SPAWN_BOT:
-		DoSpawnBot (trigP, nObject);
-		PrintTriggerMessage (nPlayer, nTrigger, 1, "Robot is summoning help!");
+		DoSpawnBot (objP);
+		PrintMessage (nPlayer, nTrigger, 1, "Robot is summoning help!");
 		break;
 
 	case TT_SET_SPAWN:
-		DoSetSpawnPoints (trigP, nObject);
-		PrintTriggerMessage (nPlayer, nTrigger, 1, "New spawn points set!");
+		DoSetSpawnPoints ();
+		PrintMessage (nPlayer, nTrigger, 1, "New spawn points set!");
 		break;
 
 	case TT_SMOKE_LIFE:
@@ -1053,26 +995,26 @@ switch (trigP->nType) {
 		break;
 
 	case TT_COUNTDOWN:
-		InitCountdown (trigP, 1, -1);
+		InitCountdown (1, -1);
 		break;
 
 	case TT_MESSAGE:
-		DoShowMessage (trigP, nObject);
+		DoShowMessage ();
 		break;
 
 	case TT_SOUND:
-		DoPlaySound (trigP, nObject);
+		DoPlaySound (nObject);
 		break;
 
 	case TT_MASTER:
-		DoMasterTrigger (trigP, nObject);
+		DoMasterTrigger (nObject);
 
 	default:
 		Int3 ();
 		break;
 	}
-if (trigP->flags & TF_ALTERNATE)
-	trigP->nType = oppTrigTypes [trigP->nType];
+if (flags & TF_ALTERNATE)
+	nType = oppTrigTypes [nType];
 return 0;
 }
 
@@ -1102,7 +1044,7 @@ while ((i >= 0) && (j < 256)) {
 	if (gameData.trigs.objTriggerRefs [i].nObject < 0)
 		break;
 	if (DoExecObjTrigger (gameData.trigs.objTriggers + i, nObject, bDamage)) {
-		CheckTriggerSub (nObject, gameData.trigs.objTriggers.Buffer (), gameData.trigs.nObjTriggers, i, -1, 1, 1);
+		OperateTrigger (nObject, gameData.trigs.objTriggers.Buffer (), gameData.trigs.nObjTriggers, i, -1, 1, 1);
 		if (IsMultiGame)
 			MultiSendObjTrigger (i);
 		}
@@ -1115,23 +1057,19 @@ while ((i >= 0) && (j < 256)) {
 
 //-----------------------------------------------------------------
 // Checks for a CTrigger whenever an CObject hits a CTrigger nSide.
-void CheckTrigger (CSegment *segP, short nSide, short nObject, int shot)
+void CSegment::CheckTrigger (short nSide, CObject *objP, int shot)
 {
-	int 		nWall;
-	ubyte		nTrigger;	//, cnTrigger;
-	CObject	*objP = OBJECTS + nObject;
-
-nWall = WallNumP (segP, nSide);
-if (!IS_WALL (nWall)) 
+CTrigger* trigP = Trigger (nSide);
+if (!trigP)
 	return;
-nTrigger = WALLS [nWall].nTrigger;
-if (CheckTriggerSub (nObject, TRIGGERS.Buffer (), gameData.trigs.nTriggers, nTrigger, 
+
+if (OperateTrigger (nObject, TRIGGERS.Buffer (), gameData.trigs.nTriggers, nTrigger, 
 							(objP->info.nType == OBJ_PLAYER) ? objP->info.nId : -1, shot, 0))
 	return;
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordTrigger (SEG_IDX (segP), nSide, nObject, shot);
+	NDRecordTrigger (segP->Index (), nSide, OBJ_IDX (objP), shot);
 if (IsMultiGame)
-	MultiSendTrigger (nTrigger, nObject);
+	MultiSendTrigger (Index (), OBJ_IDX (objP));
 }
 
 //------------------------------------------------------------------------------
@@ -1148,13 +1086,10 @@ for (i = gameData.trigs.nTriggers; i > 0; i--, trigP++)
 
 //------------------------------------------------------------------------------
 
-static inline int TriggerHasTarget (CTrigger *triggerP, short nSegment, short nSide)
+inline int CTrigger::HasTarget (short nSegment, short nSide)
 {
-	int	i;
-		
-for (i = 0; i < triggerP->nLinks; i++)
-	if ((triggerP->nSegment [i] == nSegment) && 
-		 ((nSide < 0) || (triggerP->nSide [i] == nSide)))
+for (int i = 0; i < nLinks; i++)
+	if ((segments [i] == nSegment) && ((nSide < 0) || (sides [i] == nSide)))
 	return 1;
 return 0;
 }
@@ -1214,7 +1149,7 @@ for (i = 0; i < gameData.trigs.nTriggers; i++) {
 	nSegSide = FindTriggerSegSide (i);
 	if (nSegSide == -1)
 		continue;
-	nOvlTex = SEGMENTS [nSegSide / 65536].m_sides [nSegSide & 0xffff].nOvlTex;
+	nOvlTex = SEGMENTS [nSegSide / 65536].m_sides [nSegSide & 0xffff].m_nOvlTex;
 	if (nOvlTex <= 0)
 		continue;
 	ec = gameData.pig.tex.tMapInfoP [nOvlTex].nEffectClip;
@@ -1244,7 +1179,6 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-#if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
 #if 0
 	static char d2TriggerMap [10] = {
 		TT_OPEN_DOOR,
@@ -1297,19 +1231,19 @@ for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
 /*
  * reads a tTriggerV30 structure from a CFile
  */
-extern void V30TriggerRead (tTriggerV30 *trigP, CFile& cf)
+void V30TriggerRead (tTriggerV30& trigger, CFile& cf)
 {
 	int i;
 
-trigP->flags = cf.ReadShort ();
-trigP->nLinks = cf.ReadByte ();
-trigP->pad = cf.ReadByte ();
-trigP->value = cf.ReadFix ();
-trigP->time = cf.ReadFix ();
+trigger.flags = cf.ReadShort ();
+trigger.nLinks = cf.ReadByte ();
+trigger.pad = cf.ReadByte ();
+trigger.value = cf.ReadFix ();
+trigger.time = cf.ReadFix ();
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
-	trigP->nSegment [i] = cf.ReadShort ();
+	trigger.nSegment [i] = cf.ReadShort ();
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
-	trigP->nSide [i] = cf.ReadShort ();
+	trigger.nSide [i] = cf.ReadShort ();
 }
 
 //------------------------------------------------------------------------------
@@ -1317,25 +1251,24 @@ for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
 /*
  * reads a CTrigger structure from a CFile
  */
-extern void TriggerRead (CTrigger *trigP, CFile& cf, int bObjTrigger)
+void CTrigger::Read (CFile& cf, int bObjTrigger)
 {
 	int i;
 
-trigP->nType = cf.ReadByte ();
+nType = cf.ReadByte ();
 if (bObjTrigger)
-	trigP->flags = (short) cf.ReadShort ();
+	flags = (short) cf.ReadShort ();
 else
-	trigP->flags = (short) cf.ReadByte ();
-trigP->nLinks = cf.ReadByte ();
+	flags = (short) cf.ReadByte ();
+nLinks = cf.ReadByte ();
 cf.ReadByte ();
-trigP->value = cf.ReadFix ();
-trigP->time = cf.ReadFix ();
+value = cf.ReadFix ();
+time = cf.ReadFix ();
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
-	trigP->nSegment [i] = cf.ReadShort ();
+	segments [i] = cf.ReadShort ();
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
-	trigP->nSide [i] = cf.ReadShort ();
+	sides [i] = cf.ReadShort ();
 }
-#endif
 
 //	-----------------------------------------------------------------------------
 

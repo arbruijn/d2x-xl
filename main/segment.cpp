@@ -24,6 +24,13 @@ int sideVertIndex [MAX_SIDES_PER_SEGMENT][4] = {
 	};	
 
 //------------------------------------------------------------------------------
+
+inline int CSegment::Index (void)
+{
+return this - SEGMENTS;
+}
+
+//------------------------------------------------------------------------------
 // reads a CSegment structure from a CFile
  
 void CSegment::Read (CFile& cf, bool bExtended)

@@ -644,9 +644,9 @@ if (IsMultiGame && netGame.bIndestructibleLights && !nSwitchType)
 wallP = segP->Wall (nSide);
 bPermaTrigger = (trigP = segP->Trigger (nSide)) && (trigP->flags & TF_PERMANENT);
 if (!bPermaTrigger)
-	SubtractLight (SEG_IDX (segP), nSide);
+	SubtractLight (segP->Index (), nSide);
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordEffectBlowup (SEG_IDX (segP), nSide, vHit);
+	NDRecordEffectBlowup (segP->Index (), nSide, vHit);
 if (nSwitchType) {
 	xDestSize = ecP->dest_size;
 	vc = ecP->dest_vclip;
@@ -655,18 +655,18 @@ else {
 	xDestSize = I2X (20);
 	vc = 3;
 	}
-/*Object*/CreateExplosion (SEG_IDX (segP), vHit, xDestSize, vc);
+/*Object*/CreateExplosion (segP->Index (), vHit, xDestSize, vc);
 if (nSwitchType) {
 	if ((nSound = gameData.eff.vClipP [vc].nSound) != -1)
-		DigiLinkSoundToPos (nSound, SEG_IDX (segP), 0, vHit,  0, F1_0);
+		DigiLinkSoundToPos (nSound, segP->Index (), 0, vHit,  0, F1_0);
 	if ((nSound = ecP->nSound) != -1)		//kill sound
-		DigiKillSoundLinkedToSegment (SEG_IDX (segP), nSide, nSound);
+		DigiKillSoundLinkedToSegment (segP->Index (), nSide, nSound);
 	if (!bPermaTrigger && (ecP->dest_eclip != -1) && (gameData.eff.effectP [ecP->dest_eclip].nSegment == -1)) {
 		tEffectClip	*newEcP = gameData.eff.effectP + ecP->dest_eclip;
 		int nNewBm = newEcP->changingWallTexture;
 		newEcP->time_left = EffectFrameTime (newEcP);
 		newEcP->nCurFrame = 0;
-		newEcP->nSegment = SEG_IDX (segP);
+		newEcP->nSegment = segP->Index ();
 		newEcP->nSide = nSide;
 		newEcP->flags |= EF_ONE_SHOT;
 		newEcP->nDestBm = ecP->nDestBm;
@@ -684,7 +684,7 @@ else {
 	if (!bPermaTrigger)
 		segP->m_sides [nSide].m_nOvlTex = gameData.pig.tex.tMapInfoP [tm].destroyed;
 	//assume this is a light, and play light sound
-	DigiLinkSoundToPos (SOUND_LIGHT_BLOWNUP, SEG_IDX (segP), 0, vHit,  0, F1_0);
+	DigiLinkSoundToPos (SOUND_LIGHT_BLOWNUP, segP->Index (), 0, vHit,  0, F1_0);
 	}
 return 1;		//blew up!
 }

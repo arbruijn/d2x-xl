@@ -1042,7 +1042,7 @@ void ApplyLightToSegment (CSegment *segP, CFixVector *vSegCenter, fix xBrightnes
 	fix			xDistToRSeg;
 	int 			i;
 	short			nSide,
-					nSegment = SEG_IDX (segP);
+					nSegment = segP->Index ();
 
 for (i = 0; i <nChangedSegs; i++)
 	if (changedSegs [i] == nSegment)

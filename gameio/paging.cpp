@@ -241,7 +241,7 @@ void PagingTouchSide (CSegment * segP, short nSide)
 	int tmap1, tmap2;
 
 #if DBG
-if ((SEG_IDX (segP) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+if ((segP->Index () == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
 if (!(segP->IsDoorWay (nSide, NULL) & WID_RENDER_FLAG))
@@ -313,10 +313,10 @@ FORALL_OBJS (objP, i)
 void CSegment::LoadTextures (void)
 {
 	short			nSide, nObject;
-	CSegment	*seg2p = &SEGMENTS [SEG_IDX (segP)];
+	CSegment	*seg2p = &SEGMENTS [segP->Index ()];
 
 #if DBG
-if (SEG_IDX (segP) == nDbgSeg)
+if (segP->Index () == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
 if (seg2p->m_nType == SEGMENT_IS_ROBOTMAKER)

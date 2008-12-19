@@ -865,8 +865,8 @@ segP = SEGMENTS + nStartSeg;
 if ((nThisObject > -1) && (gameData.objs.collisionResult [nThisType][OBJ_WALL] == RESULT_NOTHING))
 	radP1 = 0;		//HACK - ignore when edges hit walls
 //now, check segment walls
-startMask = SEGMENTS [nStartSeg].SideMasks (*p0, radP0).m_face;
-masks = SEGMENTS [nStartSeg].SideMasks (*p1, radP1);    //on back of which faces?
+startMask = SEGMENTS [nStartSeg].Masks (*p0, radP0).m_face;
+masks = SEGMENTS [nStartSeg].Masks (*p1, radP1);    //on back of which faces?
 if (!(centerMask = masks.m_center))
 	nHitNoneSegment = nStartSeg;
 if ((endMask = masks.m_face)) { //on the back of at least one face
@@ -991,7 +991,7 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 						nHitType = HIT_WALL;
 						gameData.collisions.hitData.vNormal = segP->m_sides [nSide].m_normals [iFace];
 						gameData.collisions.hitData.nNormals = 1;
-						if (!SEGMENTS [nStartSeg].SideMasks (vHitPoint, radP1).m_center)
+						if (!SEGMENTS [nStartSeg].Masks (vHitPoint, radP1).m_center)
 							nHitSegment = nStartSeg;             //hit in this CSegment
 						else
 							gameData.collisions.hitData.nSegment2 = nStartSeg;
@@ -1081,7 +1081,7 @@ gameData.collisions.hitData.nObject = -1;
 //Assert(check_point_in_seg(p0, startseg, 0).m_center==0);	//start refP not in seg
 
 // gameData.objs.viewerP is not in CSegment as claimed, so say there is no hit.
-masks = SEGMENTS [fq->startSeg].SideMasks (*fq->p0, 0);
+masks = SEGMENTS [fq->startSeg].Masks (*fq->p0, 0);
 if (masks.m_center) {
 	hitData->hit.nType = HIT_BAD_P0;
 	hitData->hit.vPoint = *fq->p0;
@@ -1100,14 +1100,14 @@ nHitType = FVICompute (&vHitPoint, &nHitSegment2, fq->p0, (short) fq->startSeg, 
 							  fq->radP0, fq->radP1, (short) fq->thisObjNum, fq->ignoreObjList, fq->flags,
 							  hitData->segList, &hitData->nSegments, -2);
 //!!nHitSegment = FindSegByPos(&vHitPoint, fq->startSeg, 1, 0);
-if ((nHitSegment2 != -1) && !SEGMENTS [nHitSegment2].SideMasks (vHitPoint, 0).m_center)
+if ((nHitSegment2 != -1) && !SEGMENTS [nHitSegment2].Masks (vHitPoint, 0).m_center)
 	nHitSegment = nHitSegment2;
 else {
 	nHitSegment = FindSegByPos (vHitPoint, fq->startSeg, 1, 0);
 	}
 //MATT: TAKE OUT THIS HACK AND FIX THE BUGS!
 if ((nHitType == HIT_WALL) && (nHitSegment == -1))
-	if ((gameData.collisions.hitData.nSegment2 != -1) && !SEGMENTS [gameData.collisions.hitData.nSegment2].SideMasks (vHitPoint, 0).m_center)
+	if ((gameData.collisions.hitData.nSegment2 != -1) && !SEGMENTS [gameData.collisions.hitData.nSegment2].Masks (vHitPoint, 0).m_center)
 		nHitSegment = gameData.collisions.hitData.nSegment2;
 
 if (nHitSegment == -1) {

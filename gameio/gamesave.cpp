@@ -1034,15 +1034,15 @@ if (gameFileInfo.triggers.offset > -1) {
 		}
 	for (i = 0, trigP = TRIGGERS.Buffer (); i < gameFileInfo.triggers.count; i++, trigP++) {
 		if (gameTopFileInfo.fileinfoVersion >= 31) 
-			TriggerRead (trigP, cf, 0);
+			trigP->Read (cf, 0);
 		else {
 			tTriggerV30 trig;
 			int t, nType = 0, flags = 0;
 			if (gameTopFileInfo.fileinfoVersion == 30)
-				V30TriggerRead (&trig, cf);
+				V30TriggerRead (trig, cf);
 			else {
 				tTriggerV29 trig29;
-				V29TriggerRead (&trig29, cf);
+				V29TriggerRead (trig29, cf);
 				trig.flags = trig29.flags;
 				trig.nLinks	= (char) trig29.nLinks;
 				trig.value = trig29.value;

@@ -516,7 +516,7 @@ void RenderSide (CSegment *segP, short nSide)
 	};
 #endif
 
-props.segNum = SEG_IDX (segP);
+props.segNum = segP->Index ();
 props.sideNum = nSide;
 #if DBG
 if ((props.segNum == nDbgSeg) && ((nDbgSide < 0) || (props.sideNum == nDbgSide)))
@@ -623,7 +623,7 @@ else {
 		RenderFace (&props);
 		}
 	else {
-		Error("Illegal CSide nType in RenderSide, nType = %i, CSegment # = %i, CSide # = %i\n", sideP->m_nType, SEG_IDX (segP), props.sideNum);
+		Error("Illegal CSide nType in RenderSide, nType = %i, CSegment # = %i, CSide # = %i\n", sideP->m_nType, segP->Index (), props.sideNum);
 		return;
 		}
 	}
@@ -1450,7 +1450,7 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 			continue;		//ignore this CObject
 		nNewSeg = nSegment;
 		if ((objP->info.nType != OBJ_REACTOR) && ((objP->info.nType != OBJ_ROBOT) || (objP->info.nId == 65))) { //don't migrate controlcen
-			mask = SEGMENTS [nNewSeg].SideMasks (OBJPOS (objP)->vPos, objP->info.xSize);
+			mask = SEGMENTS [nNewSeg].Masks (OBJPOS (objP)->vPos, objP->info.xSize);
 			if (mask.m_side) {
 				for (nSide = 0, sideFlag = 1; nSide < 6; nSide++, sideFlag <<= 1) {
 					if (!(mask.m_side & sideFlag))

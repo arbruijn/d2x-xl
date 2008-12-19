@@ -108,8 +108,10 @@ typedef struct tTriggerV30 {
 #define TRIGGER_CLOSE_WALL      4096    // Makes a CWall closed
 #define TRIGGER_ILLUSORY_WALL   8192    // Makes a CWall illusory
 
+//------------------------------------------------------------------------------
 //the CTrigger really should have both a nType & a flags, since most of the
 //flags bits are exclusive of the others.
+
 class CTrigger {
 	public:
 		ubyte   nType;       //what this CTrigger does
@@ -117,12 +119,45 @@ class CTrigger {
 		sbyte   nLinks;  //how many doors, etc. linked to this
 		fix     value;
 		fix     time;
-		short   nSegment [MAX_TRIGGER_TARGETS];
-		short   nSide [MAX_TRIGGER_TARGETS];
+		short   segments [MAX_TRIGGER_TARGETS];
+		short   sides [MAX_TRIGGER_TARGETS];
+
+	public:
+		void Read (CFile& cf, int bObjTrigger);
+		int Operate (short nObject, int nPlayer, int shot, bool bObjTrigger);
+		void PrintMessage (int nPlayer, int shot, const char *message);
+		void DoLink (void);
+		void DoChangeTexture (CTrigger *trigP);
+		int DoExecObjTrigger (short nObject, int bDamage);
+		void DoSpawnBots (CObject* objP);
+		bool DoExit (int nPlayer);
+		bool DoSecretExit (int nPlayer);
+		void DoTeleportBot (CObject* objP);
+		void DoCloseDoor (void);
+		int DoLightOn (void);
+		int DoLightOff (void);
+		void DoUnlockDoors (void);
+		void DoLockDoors (void);
+		int DoSetSpawnPoints (void);
+		int DoMasterTrigger (short nObject);
+		int DoShowMessage (void);
+		int DoPlaySound (short nObject);
+		int DoChangeWalls (void);
+		void DoMatCen (int bMessage);
+		void DoIllusionOn (void);
+		void DoIllusionOff (void);
+		void DoSpeedBoost (short nObject);
+		bool TargetsWall (int nWall);
+		inline int Index (void);
+
+	private:
+		int WallIsForceField (void);
+		inline int HasTarget (short nSegment, short nSide);
 };
 
 inline int operator- (CTrigger* t, CArray<CTrigger>& a) { return a.Index (t); }
 
+//------------------------------------------------------------------------------
 
 typedef struct tObjTriggerRef {
 	short		prev;
@@ -131,32 +166,23 @@ typedef struct tObjTriggerRef {
 } tObjTriggerRef;
 
 void TriggerInit();
-void CheckTrigger(CSegment *seg, short CSide, short nObject,int shot);
-int CheckTriggerSub (short nObject, CTrigger *triggers, int nTriggerCount, int nTrigger, 
-							int nPlayer, int shot, int bBotTrigger);
+void CheckTrigger (CSegment *seg, short CSide, short nObject,int shot);
 void TriggersFrameProcess();
 void ExecObjTriggers (short nObject, int bDamage);
 
-#if 0
-#define V29TriggerRead(t, fp) CFRead(t, sizeof(tTriggerV29), 1, fp)
-#define V30TriggerRead(t, fp) CFRead(t, sizeof(tTriggerV30), 1, fp)
-#define TriggerRead(t, fp) CFRead(t, sizeof(CTrigger), 1, fp)
-#else
 /*
  * reads a tTriggerV29 structure from a CFILE
  */
-void V29TriggerRead(tTriggerV29 *t, CFile& cf);
+void V29TriggerRead (tTriggerV29& trigger, CFile& cf);
 
 /*
  * reads a tTriggerV30 structure from a CFILE
  */
-void V30TriggerRead(tTriggerV30 *t, CFile& cf);
+void V30TriggerRead (tTriggerV30& trigger, CFile& cf);
 
 /*
  * reads a CTrigger structure from a CFILE
  */
-void TriggerRead(CTrigger *t, CFile& cf, int bObjTrigger);
-#endif
 
 void SetSpeedBoostVelocity (short nObject, fix speed, 
 									 short srcSegnum, short srcSidenum,

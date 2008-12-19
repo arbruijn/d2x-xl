@@ -343,27 +343,27 @@ if (nSegment != -1) {
 
 //	------------------------------------------------------------------------------------------------------------------
 
-void CreateVClipOnObject (CObject *objP, fix size_scale, ubyte vclip_num)
+void CreateVClipOnObject (CObject *objP, fix xScale, ubyte nVClip)
 {
-	fix			size;
-	CFixVector	pos, rand_vec;
+	fix			xSize;
+	CFixVector	vPos, vRand;
 	short			nSegment;
 
-pos = objP->info.position.vPos;
-rand_vec = CFixVector::Random();
-rand_vec *= (objP->info.xSize / 2);
-pos += rand_vec;
-size = FixMul (size_scale, F1_0 + d_rand ()*4);
-nSegment = FindSegByPos (pos, objP->info.nSegment, 1, 0);
+vPos = objP->info.position.vPos;
+vRand = CFixVector::Random();
+vRand *= (objP->info.xSize / 2);
+vPos += vRand;
+xSize = FixMul (xScale, F1_0 + d_rand ()*4);
+nSegment = FindSegByPos (vPos, objP->info.nSegment, 1, 0);
 if (nSegment != -1) {
-	CObject *explObjP = /*Object*/CreateExplosion (nSegment, &pos, size, vclip_num);
+	CObject *explObjP = /*Object*/CreateExplosion (nSegment, vPos, xSize, nVClip);
 	if (!explObjP)
 		return;
 
 	explObjP->info.movementType = MT_PHYSICS;
-	explObjP->mType.physInfo.velocity[X] = objP->mType.physInfo.velocity[X] / 2;
-	explObjP->mType.physInfo.velocity[Y] = objP->mType.physInfo.velocity[Y] / 2;
-	explObjP->mType.physInfo.velocity[Z] = objP->mType.physInfo.velocity[Z] / 2;
+	explObjP->mType.physInfo.velocity [X] = objP->mType.physInfo.velocity [X] / 2;
+	explObjP->mType.physInfo.velocity [Y] = objP->mType.physInfo.velocity [Y] / 2;
+	explObjP->mType.physInfo.velocity [Z] = objP->mType.physInfo.velocity [Z] / 2;
 	}
 }
 
@@ -1767,7 +1767,7 @@ if (gameStates.app.bPlayerIsDead) {
 				MultiSendPlayerExplode (MULTI_PLAYER_EXPLODE);
 			gameData.objs.consoleP->ExplodeBadassPlayer ();
 			//is this next line needed, given the badass call above?
-			gameData.objs.consoleP->ExplodeObject (0);
+			gameData.objs.consoleP->Explode (0);
 			gameData.objs.consoleP->info.nFlags &= ~OF_SHOULD_BE_DEAD;		//don't really kill CPlayerData
 			gameData.objs.consoleP->info.renderType = RT_NONE;				//..just make him disappear
 			gameData.objs.consoleP->SetType (OBJ_GHOST);						//..and kill intersections
@@ -1941,7 +1941,7 @@ UnlinkFromSeg ();
 LinkToSeg (nNewSeg);
 #if DBG
 #if TRACE
-if (SEGMENTS [info.nSegment].SideMasks (info.position.vPos, 0).m_center)
+if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center)
 	console.printf (1, "CObject::RelinkToSeg violates seg masks.\n");
 #endif
 #endif
@@ -2158,7 +2158,7 @@ switch (info.controlType) {
 		break;
 
 	case CT_CAMERA:
-		RotateCamera (this);
+		RotateCamera ();
 		break;
 
 	case CT_WEAPON:
@@ -2208,12 +2208,12 @@ if (!gameOpts->sound.bShip)
 int nObject = OBJ_IDX (this);
 if (nObject != LOCALPLAYER.nObject)
 	return;
-if (gameData.multiplayer.bMoving == nSpeed)
-	return;
 
 int nSpeed -= 2 * F1_0;
 if (nSpeed < 0)
 	nSpeed = 0;
+if (gameData.multiplayer.bMoving == nSpeed)
+	return;
 
 if (gameData.multiplayer.bMoving < 0)
 	DigiLinkSoundToObject3 (-1, OBJ_IDX (this), 1, F1_0 / 64 + nSpeed / 256, I2X (256), -1, -1, "missileflight-small.wav", 1, SOUNDCLASS_PLAYER);
@@ -2262,9 +2262,9 @@ for (i = 0; i < nPhysSegs - 1; i++) {
 	if (physSegList [i] > gameData.segs.nLastSegment)
 		PrintLog ("invalid segment in physSegList\n");
 #endif
-	nConnSide = ConnectedSide (SEGMENTS + physSegList [i+1], SEGMENTS + physSegList [i]);
+	nConnSide = SEGMENTS [physSegList [i+1]].ConnectedSide (SEGMENTS + physSegList [i]);
 	if (nConnSide != -1)
-		CheckTrigger (SEGMENTS + physSegList [i], nConnSide, OBJ_IDX (objP), 0);
+		CheckTrigger (SEGMENTS + physSegList [i], nConnSide, OBJ_IDX (this), 0);
 #if DBG
 	else	// segments are not directly connected, so do binary subdivision until you find connected segments.
 		PrintLog ("UNCONNECTED SEGMENTS %d, %d\n", physSegList [i+1], physSegList [i]);

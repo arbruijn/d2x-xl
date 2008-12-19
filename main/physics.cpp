@@ -711,7 +711,7 @@ retryMove:
 	if (iSeg != info.nSegment)
 		OBJECTS [nObject].RelinkToSeg (iSeg);
 	//if start point not in CSegment, move CObject to center of CSegment
-	if (SEGMENTS [info.nSegment].SideMasks (info.position.vPos, 0).m_center) {	//object stuck
+	if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {	//object stuck
 		int n = FindSegment ();
 		if (n == -1) {
 			if (bGetPhysSegs)
@@ -966,7 +966,7 @@ if (info.controlType == CT_AI) {
 	//hack to keep CPlayerData from going through closed doors
 	if (((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) && (info.nSegment != nOrigSegment) &&
 		 (gameStates.app.cheats.bPhysics != 0xBADA55)) {
-		int nSide = ConnectedSide (SEGMENTS + info.nSegment, SEGMENTS + nOrigSegment);
+		int nSide = SEGMENTS [info.nSegment].ConnectedSide (SEGMENTS + nOrigSegment);
 		if (nSide != -1) {
 			if (!(SEGMENTS [nOrigSegment].IsDoorWay (nSide, (info.nType == OBJ_PLAYER) ? this : NULL) & WID_FLY_FLAG)) {
 				CSide *sideP;
@@ -984,7 +984,7 @@ if (info.controlType == CT_AI) {
 		}
 
 //if end point not in CSegment, move CObject to last pos, or CSegment center
-if (SEGMENTS [info.nSegment].SideMasks (info.position.vPos, 0).m_center) {
+if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {
 	if (FindObjectSeg (this) == -1) {
 		int n;
 

@@ -135,7 +135,7 @@ if (!IS_WALL (i)) {
 	return;
 	}
 wallP = WALLS;
-wallP->nSegment = SEG_IDX (segP);
+wallP->nSegment = segP->Index ();
 wallP->nSide = nSide;
 wallP->nType = WALL_NORMAL;
 wallP->flags = 0;
@@ -1017,7 +1017,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 			pnt = segP->SideCenter (nSide);
 			dist = CFixVector::Dist(pnt, objP->info.position.vPos);
 			if (dist < damage/2) {
-				dist = FindConnectedDistance (&pnt, SEG_IDX (segP), &objP->info.position.vPos, objP->info.nSegment, MAX_BLAST_GLASS_DEPTH, WID_RENDPAST_FLAG, 0);
+				dist = FindConnectedDistance (&pnt, segP->Index (), &objP->info.position.vPos, objP->info.nSegment, MAX_BLAST_GLASS_DEPTH, WID_RENDPAST_FLAG, 0);
 				if ((dist > 0) && (dist < damage / 2))
 					CheckEffectBlowup (segP, nSide, &pnt, OBJECTS + objP->cType.laserInfo.parent.nObject, 1);
 				}
@@ -1224,7 +1224,7 @@ return (nType == WALL_DOOR) && (keys == KEY_NONE) && (state == WALL_DOOR_CLOSED)
 
 inline CTrigger* CWall::Trigger (void)
 {
-return (nTrigger == NO_TRIGGER) ? NULL : TRIGGERS + nTrigger;
+return ((nTrigger == NO_TRIGGER) || (nTrigger >= gameData.trigs.nTriggers)) ? NULL : &TRIGGERS [nTrigger];
 }
 
 //------------------------------------------------------------------------------
