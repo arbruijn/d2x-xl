@@ -723,9 +723,49 @@ class CObject : public CObjectInfo {
 		void HandleSpecialSegment (void);
 
 		inline int OpenableDoorsInSegment (void);
-		void CheckWallPhysics (void);
-		int ApplyWallPhysics (int nSide);
 		int CheckSegmentPhysics (void);
+		int CheckWallPhysics (short nSegment, short nSide);
+		int ApplyWallPhysics (short nSegment, short nSide);
+		void ScrapeOnWall (short nHitSeg, short nHitSide, CFixVector * vHitPt);
+
+		inline void CObject::Kill (void) {
+			info.nFlags |= OF_SHOULD_BE_DEAD;
+			#if DBG
+			if (this == dbgObjP)
+				dbgObjP = dbgObjP;
+			#endif
+			}
+
+		void TurnTowardsVector (CFixVector vGoal, fix rate);
+		void ApplyForce (CFixVector vForce);
+		void ApplyRotForce (CFixVector vForce);
+		void Bump (CFixVector vForce, fix xDamage);
+		void Bump (CObject *otherObjP, CFixVector vForce, int bDamage);
+		void ApplyForceDamage (fix vForce, CObject *otherObjP);
+		int ApplyDamageToRobot (fix damage, int nKillerObj);
+		void ApplyDamageToPlayer (CObject *killerObjP, fix damage);
+		void ApplyDamageToReactor (fix xDamage, short nAttacker);
+		int ApplyDamageToClutter (fix xDamage);
+		void Explode (fix delayTime);
+
+		void CollidePlayerAndWall (fix xHitSpeed, short nHitSeg, short nHitSide, CFixVector * vHitPt);
+		void CollideRobotAndWall (fix xHitSpeed, short nHitSeg, short nHitSide, CFixVector * vHitPt);
+		int CollideWeaponAndWall (fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector * vHitPt);
+		int CollideDebrisAndWall (fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector * vHitPt);
+		int CollideWeaponAndWeapon (CObject *other, CFixVector *vHitPt);
+		int CollideWeaponAndMonsterball (CObject *powerup, CFixVector *vHitPt);
+		int CollideRobotAndPlayer (CObject *playerObjP, CFixVector *vHitPt);
+		int CollideRobotAndWeapon (CObject *weaponP, CFixVector *vHitPt);
+		int CollideWeaponAndReactor (CObject *reactorP, CFixVector *vHitPt);
+
+		inline void RequestEffects (ubyte nEffects);
+		CObject* CreateExplBlast (void);
+		int CreateWeaponEffects (int bExplBlast);
+		CObject* CreateExplosionSub (short nSegment, CFixVector *vPos, fix xSize,
+											  ubyte nVClip, fix xMaxDamage, fix xMaxDistance, fix xMaxForce, short nParent);
+		CObject* CreateBadassExplosion (short nSegment, CFixVector *position, fix size, ubyte nVClip,
+												  fix maxDamage, fix maxDistance, fix maxForce, short parent);
+		CObject* ExplodeBadassWeapon (CFixVector* vPos);
 
 		//inline short Index (void) { return gameData.objs.objects.Index (this); }
 };
@@ -1117,17 +1157,6 @@ extern CObject *dbgObjP;
 #	define FORALL_STATIC_OBJS(_objP,_i)					FORALL_SUPERCLASS_OBJS (gameData.objs.lists.statics, _objP, _i)
 #	define IS_OBJECT(_objP, _i)							((_objP) != NULL)
 #endif
-
-//	-----------------------------------------------------------------------------------------------------------
-
-static inline void KillObject (CObject *objP)
-{
-objP->info.nFlags |= OF_SHOULD_BE_DEAD;
-#if DBG
-if (objP == dbgObjP)
-	objP = objP;
-#endif
-}
 
 //	-----------------------------------------------------------------------------------------------------------
 

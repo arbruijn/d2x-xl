@@ -1431,7 +1431,7 @@ void AddStuckObject (CObject *objP, short nSegment, short nSide)
 nWall = WallNumI (nSegment, nSide);
 if (IS_WALL (nWall)) {
 	if (WALLS [nWall].flags & WALL_BLASTED)
-		KillObject (objP);
+		objP->Kill ();
 
 	for (i = 0, stuckObjP = stuckObjects; i < MAX_STUCK_OBJECTS; i++, stuckObjP++) {
 		if (stuckObjP->nWall == NO_WALL) {

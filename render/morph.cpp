@@ -189,7 +189,7 @@ void DoMorphFrame (CObject *objP)
 	tMorphInfo	*mdP;
 
 if (!(mdP = MorphFindData (objP))) {	//maybe loaded half-morphed from disk
-	KillObject (objP);	//so kill it
+	objP->Kill ();	//so kill it
 	return;
 	}
 pmP = gameData.models.polyModels + mdP->objP->rType.polyObjInfo.nModel;

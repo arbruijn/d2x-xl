@@ -1286,7 +1286,7 @@ for (i = 0; i < nRemoteCreated; i++) {
 	count += 2;
 	}
 for (i = nRemoteCreated; i < gameData.multigame.create.nLoc; i++)
-	KillObject (OBJECTS + gameData.multigame.create.nObjNums [i]);
+	OBJECTS [gameData.multigame.create.nObjNums [i]].Kill ();
 if (buf [0] == MULTI_PLAYER_EXPLODE) {
 	KillPlayerSmoke (nPlayer);
 	ExplodeBadassPlayer (objP);
@@ -1412,7 +1412,7 @@ if (OBJECTS [nLocalObj].info.nType == OBJ_POWERUP)
 				gameData.multiplayer.powerupsInMine [id] -= 4;
 			}
 		}
-KillObject (OBJECTS + nLocalObj); // quick and painless
+OBJECTS [nLocalObj].Kill (); // quick and painless
 }
 
 //-----------------------------------------------------------------------------
@@ -3034,7 +3034,7 @@ FORALL_OBJS (objP, i) {
 		if (nType == OBJ_ROBOT)
 			if (objP->info.contains.nCount && (objP->info.contains.nType == OBJ_POWERUP))
 				ObjectCreateEgg (objP);
-		KillObject (objP);
+		objP->Kill ();
 		}
 	}
 return nnp;

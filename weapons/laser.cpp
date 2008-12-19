@@ -721,7 +721,7 @@ if (nFate == HIT_WALL)  {
 //just fire away normally
 if (nFate == HIT_OBJECT) {
 	if (OBJECTS [hitData.hitObject].nType == OBJ_ROBOT)
-		KillObject (OBJECTS + hitData.hitObject);
+		OBJECTS [hitData.hitObject].Kill ();
 	if (OBJECTS [hitData.hitObject].nType != OBJ_POWERUP)
 		return;
 	}
@@ -862,7 +862,7 @@ if (objP->info.xLifeLeft == ONE_FRAME_TIME) {
 	objP->info.renderType = RT_NONE;
 	}
 if (objP->info.xLifeLeft < 0) {		// We died of old age
-	KillObject (objP);
+	objP->Kill ();
 	if (WI_damage_radius (objP->info.nId))
 		ExplodeBadassWeapon (objP,&objP->info.position.vPos);
 	return;
@@ -1320,7 +1320,7 @@ gameData.fusion.xCharge = 0;
 vForce[X] = -(objP->info.position.mOrient.FVec ()[X] << 7);
 vForce[Y] = -(objP->info.position.mOrient.FVec ()[Y] << 7);
 vForce[Z] = -(objP->info.position.mOrient.FVec ()[Z] << 7);
-PhysApplyForce (objP, &vForce);
+objP->ApplyForce (&vForce);
 vForce[X] = (vForce[X] >> 4) + d_rand () - 16384;
 vForce[Y] = (vForce[Y] >> 4) + d_rand () - 16384;
 vForce[Z] = (vForce[Z] >> 4) + d_rand () - 16384;

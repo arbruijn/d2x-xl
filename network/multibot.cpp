@@ -929,7 +929,7 @@ for (i = 0; i < gameData.multigame.create.nLoc; i++) {
 	if (s != -1)
 		MapObjnumLocalToRemote ((short)gameData.multigame.create.nObjNums [i], s, nPlayer);
 	else
-		KillObject (OBJECTS + gameData.multigame.create.nObjNums [i]); // Delete OBJECTS other guy didn't create one of
+		OBJECTS [gameData.multigame.create.nObjNums [i]].Kill (); // Delete OBJECTS other guy didn't create one of
 	bufP += 2;
 	}
 }

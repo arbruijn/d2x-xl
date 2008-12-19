@@ -702,7 +702,7 @@ retryMove:
 	nWallHitSeg = hi.hit.nSideSegment;
 	if (iSeg == -1) {		//some sort of horrible error
 		if (objP->info.nType == OBJ_WEAPON)
-			KillObject (objP);
+			objP->Kill ();
 		break;
 		}
 	Assert ((fviResult != HIT_WALL) || ((nWallHitSeg > -1) && (nWallHitSeg <= gameData.segs.nLastSegment)));
@@ -731,7 +731,7 @@ retryMove:
 				objP->info.position.vPos -= vCenter;
 				}
 			if (objP->info.nType == OBJ_WEAPON) {
-				KillObject (objP);
+				objP->Kill ();
 				return;
 				}
 			}
@@ -998,7 +998,7 @@ if (SEGMENTS [objP->info.nSegment].SideMasks (objP->info.position.vPos, 0).m_cen
 			objP->info.position.vPos[X] += nObject;
 			}
 		if (objP->info.nType == OBJ_WEAPON)
-			KillObject (objP);
+			objP->Kill ();
 		}
 	}
 CATCH_OBJ (objP, objP->mType.physInfo.velocity[Y] == 0);
@@ -1011,7 +1011,7 @@ UnstickObject (objP);
 //Applies an instantaneous force on an CObject, resulting in an instantaneous
 //change in velocity.
 
-void PhysApplyForce (CObject *objP, CFixVector *vForce)
+void CObject::ApplyForce (CFixVector vForce)
 {
 #if DBG
 	fix mag;
@@ -1062,26 +1062,26 @@ else {
 //	------------------------------------------------------------------------------------------------------
 //	Note: This is the old AITurnTowardsVector code.
 //	PhysApplyRot used to call AITurnTowardsVector until I fixed it, which broke PhysApplyRot.
-void PhysicsTurnTowardsVector (CFixVector *vGoal, CObject *objP, fix rate)
+void CObject::TurnTowardsVector (CFixVector vGoal, fix rate)
 {
 	CAngleVector	dest_angles, cur_angles;
-	fix			delta_p, delta_h;
-	CFixVector&	pvRotVel = objP->mType.physInfo.rotVel;
+	fix				delta_p, delta_h;
+	CFixVector&		pvRotVel = mType.physInfo.rotVel;
 
 // Make this CObject turn towards the vGoal.  Changes orientation, doesn't change direction of movement.
 // If no one moves, will be facing vGoal in 1 second.
 
 //	Detect null vector.
-if (gameStates.render.automap.bDisplay && (objP == gameData.objs.consoleP))
+if (gameStates.render.automap.bDisplay && (this == gameData.objs.consoleP))
 	return;
-if (vGoal->IsZero())
+if (vGoal.IsZero())
 	return;
 //	Make morph OBJECTS turn more slowly.
-if (objP->info.controlType == CT_MORPH)
+if (info.controlType == CT_MORPH)
 	rate *= 2;
 
 dest_angles = vGoal->ToAnglesVec();
-cur_angles = objP->info.position.mOrient.FVec ().ToAnglesVec();
+cur_angles = info.position.mOrient.FVec ().ToAnglesVec();
 delta_p = (dest_angles[PA] - cur_angles[PA]);
 delta_h = (dest_angles[HA] - cur_angles[HA]);
 if (delta_p > F1_0/2)
@@ -1111,30 +1111,30 @@ pvRotVel [Z] = 0;
 //	-----------------------------------------------------------------------------
 //	Applies an instantaneous whack on an CObject, resulting in an instantaneous
 //	change in orientation.
-void PhysApplyRot (CObject *objP, CFixVector *vForce)
+void CObject::PhysRot (CFixVector vForce)
 {
 	fix	xRate, xMag;
 
-if (objP->info.movementType != MT_PHYSICS)
+if (info.movementType != MT_PHYSICS)
 	return;
 xMag = vForce->Mag()/8;
 if (xMag < F1_0/256)
 	xRate = 4 * F1_0;
-else if (xMag < objP->mType.physInfo.mass >> 14)
+else if (xMag < mType.physInfo.mass >> 14)
 	xRate = 4 * F1_0;
 else {
-	xRate = FixDiv (objP->mType.physInfo.mass, xMag);
-	if (objP->info.nType == OBJ_ROBOT) {
+	xRate = FixDiv (mType.physInfo.mass, xMag);
+	if (info.nType == OBJ_ROBOT) {
 		if (xRate < F1_0/4)
 			xRate = F1_0/4;
 		//	Changed by mk, 10/24/95, claw guys should not slow down when attacking!
-		if (!(ROBOTINFO (objP->info.nId).thief || ROBOTINFO (objP->info.nId).attackType)) {
-			if (objP->cType.aiInfo.SKIP_AI_COUNT * gameData.physics.xTime < 3*F1_0/4) {
+		if (!(ROBOTINFO (info.nId).thief || ROBOTINFO (info.nId).attackType)) {
+			if (cType.aiInfo.SKIP_AI_COUNT * gameData.physics.xTime < 3*F1_0/4) {
 				fix	tval = FixDiv (F1_0, 8 * gameData.physics.xTime);
 				int	addval = X2I (tval);
 				if ((d_rand () * 2) < (tval & 0xffff))
 					addval++;
-				objP->cType.aiInfo.SKIP_AI_COUNT += addval;
+				cType.aiInfo.SKIP_AI_COUNT += addval;
 				}
 			}
 		}

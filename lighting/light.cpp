@@ -132,7 +132,7 @@ FORALL_LIGHT_OBJS (objP, i) {
 		i = OBJ_IDX (objP);
 		if (!(h = objP->cType.lightInfo.nObjects)) {
 			RemoveDynLight (-1, -1, i);
-			KillObject (objP);
+			objP->Kill ();
 			}
 		else {
 			if (h > 1) {

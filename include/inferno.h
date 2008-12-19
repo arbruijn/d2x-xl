@@ -3445,9 +3445,9 @@ return vPosP;
 
 //	-----------------------------------------------------------------------------
 
-static inline void RequestEffects (CObject *objP, ubyte nEffects)
+inline void CObject::RequestEffects (ubyte nEffects)
 {
-gameData.objs.bWantEffect [OBJ_IDX (objP)] |= nEffects;
+gameData.objs.bWantEffect [OBJ_IDX (this)] |= nEffects;
 }
 
 //	-----------------------------------------------------------------------------

@@ -1095,7 +1095,7 @@ for (i = 0; i < h; ) {
 	else {
 		if (i < --h)
 			candidateP [i] = candidateP [h];
-		KillObject (objP);
+		objP->Kill ();
 		if (!--nToFree)
 			return 0;
 		}
@@ -2032,15 +2032,15 @@ if (EGI_FLAG (bRotateMarkers, 0, 1, 0) && gameStates.app.tick40fps.bTick) {
 
 //--------------------------------------------------------------------
 
-void CObject::CheckWallPhysics (void)
+int CObject::CheckWallPhysics (short nSegment, short nSide)
 {
 	int			bCheck = 1, nType, sideMask, bUnderLavaFall = 0;
-	CSegment*	segP = SEGMENTS + info.nSegment;
+	CSegment*	segP = SEGMENTS + nSegment;
 
 	static bool bPlayingSound [MAX_PLAYERS] = {false, false, false, false, false, false, false, false};
 
 if (info.nType != OBJ_PLAYER)
-	return;
+	return 0;
 sideMask = segP->SideMasks (info.position.vPos, info.xSize).m_side;
 if (sideMask) {
 	short		nSide;
@@ -2049,7 +2049,7 @@ if (sideMask) {
 	for (nSide = 0, bit = 1; nSide < 6; bit <<= 1, nSide++, sideP++) {
 		if (!(sideMask & bit))
 			continue;
-		if ((nType = ApplyWallPhysics (nSide)))
+		if ((nType = ApplyWallPhysics (nSegment, nSide)))
 			break;
 		}
 	}
@@ -2066,6 +2066,7 @@ else if (bPlayingSound [info.nId]) {
 	DigiKillSoundLinkedToObject (OBJ_IDX (objP));
 	bPlayingSound [info.nId] = 0;
 	}
+return nType;
 }
 
 //--------------------------------------------------------------------
@@ -2394,7 +2395,7 @@ if (objP->info.nType == OBJ_ROBOT) {
 	if (gameOpts->gameplay.bNoThief && (!IsMultiGame || IsCoopGame) && ROBOTINFO (objP->info.nId).thief) {
 		objP->info.xShields = 0;
 		objP->info.xLifeLeft = 0;
-		KillObject (objP);
+		objP->Kill ();
 		}
 	else {
 		fix xMaxShields = RobotDefaultShields (objP);
@@ -2414,7 +2415,7 @@ if (HandleObjectControl (objP)) {
 	return 1;
 	}
 if (objP->info.xLifeLeft < 0) {		// We died of old age
-	KillObject (objP);
+	objP->Kill ();
 	if ((objP->info.nType == OBJ_WEAPON) && WI_damage_radius (objP->info.nId))
 		ExplodeBadassWeapon (objP, &objP->info.position.vPos);
 	else if (objP->info.nType == OBJ_ROBOT)	//make robots explode
