@@ -30,7 +30,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "interp.h"
 #include "hitbox.h"
 #include "network.h"
-#include "fvi_a.h"
+#include "fvi.h"
 
 int CheckSphereToFace (CFixVector& intersection, fix rad, CFixVector *vertList, int nVerts, CFixVector *vNormal);
 
@@ -40,7 +40,7 @@ int CheckSphereToFace (CFixVector& intersection, fix rad, CFixVector *vertList, 
 
 inline fix RegisterHit (CFixVector *vBestHit, CFixVector *vCurHit, CFixVector *vPos, fix dMax)
 {
-   fix d = CFixVector::Dist(*vPos, *vCurHit);
+   fix d = CFixVector::Dist (*vPos, *vCurHit);
 
 if (dMax < d) {
 	dMax = d;
@@ -161,7 +161,7 @@ int CheckLineHitsQuad (CFixVector& intersection, CFixVector *planeP)
 	int	i;
 
 for (i = 0; i < 4; i++)
-	if (FindPointLineIntersectionf (planeP + i, planeP + ((i + 1) % 4), intersection))
+	if (FindPointLineIntersectionf (planeP + i, planeP + ((i + 1) % 4), &intersection))
 		return 0;	//doesn't hit
 return 1;	//hits
 }
@@ -172,13 +172,13 @@ int FindLineQuadIntersection (CFixVector& intersection, CFixVector *planeP, CFix
 {
 	CFixVector	vHit, d [2];
 
-if (!FindLineQuadIntersectionSub (&vHit, planeP, planeNormP, p0, p1, 0))
+if (!FindLineQuadIntersectionSub (vHit, planeP, planeNormP, p0, p1, 0))
 	return 0;
 d [0] = vHit - *p0;
 d [1] = vHit - *p1;
 if (CFixVector::Dot (d [0], d [1]) >= 0)
 	return 0;
-if (!CheckSphereToFace (&vHit, 0, planeP, 4, planeNormP))
+if (!CheckSphereToFace (vHit, 0, planeP, 4, planeNormP))
 	return 0;
 intersection = vHit;
 return 1;
@@ -195,8 +195,8 @@ int FindQuadQuadIntersectionSub (CFixVector& intersection, CFixVector *p1, CFixV
 	CFixVector	vHit;
 
 for (i = 0; i < 4; i++)
-	if (FindLineQuadIntersection (&vHit, p2, vn2, p1 + i, p1 + ((i + 1) % 4))) {
-		dMax = RegisterHit (intersection, &vHit, vPos, dMax);
+	if (FindLineQuadIntersection (vHit, p2, vn2, p1 + i, p1 + ((i + 1) % 4))) {
+		dMax = RegisterHit (&intersection, &vHit, vPos, dMax);
 		nHits++;
 		}
 return nHits;
@@ -211,13 +211,13 @@ int FindQuadQuadIntersection (CFixVector& intersection, CFixVector *p1, CFixVect
 	fix			dMax = 0;
 
 // test whether any edges of p1 penetrate p2
-if (FindQuadQuadIntersectionSub (&vHit, p1, vn1, p2, vn2, vPos)) {
-	dMax = RegisterHit (intersection, &vHit, vPos, dMax);
+if (FindQuadQuadIntersectionSub (vHit, p1, vn1, p2, vn2, vPos)) {
+	dMax = RegisterHit (&intersection, &vHit, vPos, dMax);
 	nHits++;
 	}
 // test whether any edges of p2 penetrate p1
-if (FindQuadQuadIntersectionSub (&vHit, p2, vn2, p1, vn1, vPos)) {
-	dMax = RegisterHit (intersection, &vHit, vPos, dMax);
+if (FindQuadQuadIntersectionSub (vHit, p2, vn2, p1, vn1, vPos)) {
+	dMax = RegisterHit (&intersection, &vHit, vPos, dMax);
 	nHits++;
 	}
 return nHits;
@@ -235,8 +235,8 @@ int FindLineHitboxIntersection (CFixVector& intersection, tBox *phb, CFixVector 
 // create all faces of hitbox 2 and their normals before testing because they will
 // be used multiple times
 for (i = 0, pf = phb->faces; i < 6; i++, pf++)
-	if (FindLineQuadIntersection (&vHit, pf->v, pf->n + 1, p0, p1)) {
-		dMax = RegisterHit (intersection, &vHit, vPos, dMax);
+	if (FindLineQuadIntersection (vHit, pf->v, pf->n + 1, p0, p1)) {
+		dMax = RegisterHit (&intersection, &vHit, vPos, dMax);
 		nHits++;
 		}
 return nHits;
@@ -259,8 +259,8 @@ for (i = 0, pf1 = phb1->faces; i < 6; i++, pf1++) {
 		if (CFixVector::Dot (pf1->n [1], pf2->n [1]) >= 0)
 			continue;
 #endif
-		if (FindQuadQuadIntersection (&vHit, pf1->v, pf1->n + 1, pf2->v, pf2->n + 1, vPos)) {
-			dMax = RegisterHit (intersection, &vHit, vPos, dMax);
+		if (FindQuadQuadIntersection (vHit, pf1->v, pf1->n + 1, pf2->v, pf2->n + 1, vPos)) {
+			dMax = RegisterHit (&intersection, &vHit, vPos, dMax);
 			nHits++;
 #if DBG
 			pf1->t = pf2->t = gameStates.app.nSDLTicks;
@@ -319,8 +319,8 @@ else {
 	j = ijTable [biggest][0];
 	}
 //now do the 2d problem in the i, j plane
-check_i = refP [i];
-check_j = refP [j];
+check_i = (*refP) [i];
+check_j = (*refP) [j];
 for (nEdge = nEdgeMask = 0; nEdge < nVerts; nEdge++) {
 	v0 = vertList + nEdge;
 	v1 = vertList + ((nEdge + 1) % nVerts);
@@ -435,26 +435,16 @@ int CheckLineToLine (fix *t1, fix *t2, CFixVector *p1, CFixVector *v1, CFixVecto
 	CFixMatrix det;
 	fix d, cross_mag2;		//mag squared Cross product
 
-//PrintLog ("         VmVecSub\n");
 det.RVec () = *p2 - *p1;
-//PrintLog ("         VmVecCrossProd\n");
 det.FVec () = CFixVector::Cross (*v1, *v2);
-//PrintLog ("         CFloatVector::Dot\n");
 cross_mag2 = CFixVector::Dot (det.FVec (), det.FVec ());
 if (!cross_mag2)
 	return 0;			//lines are parallel
 det.UVec () = *v2;
 d = det.Det();
-if (oflow_check (d, cross_mag2))
-	return 0;
-//PrintLog ("         FixDiv (%d)\n", cross_mag2);
 *t1 = FixDiv (d, cross_mag2);
 det.UVec () = *v1;
-//PrintLog ("         CalcDetValue\n");
 d = det.Det();
-if (oflow_check (d, cross_mag2))
-	return 0;
-//PrintLog ("         FixDiv (%d)\n", cross_mag2);
 *t2 = FixDiv (d, cross_mag2);
 return 1;		//found refP
 }
@@ -472,8 +462,7 @@ int bSimpleFVI = 0;
 //vector defined by p0, p1
 //returns dist if intersects, and fills in intP
 //else returns 0
-int CheckVectorToSphere1 (CFixVector intersection, CFixVector *p0, CFixVector *p1, CFixVector *vSpherePos,
-								  fix xSphereRad)
+int CheckVectorToSphere1 (CFixVector& intersection, CFixVector *p0, CFixVector *p1, CFixVector *vSpherePos, fix xSphereRad)
 {
 	CFixVector	d, dn, w, vClosestPoint;
 	fix			mag_d, dist, wDist, intDist;
@@ -515,7 +504,7 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 
-fix CheckHitboxToHitbox (CFixVector intersection, CObject *objP1, CObject *objP2, CFixVector *p0, CFixVector *p1)
+fix CheckHitboxToHitbox (CFixVector& intersection, CObject *objP1, CObject *objP2, CFixVector *p0, CFixVector *p1)
 {
 	CFixVector		vHit, vPos = objP2->info.position.vPos;
 	int				iModel1, nModels1, iModel2, nModels2, nHits = 0;
@@ -545,16 +534,16 @@ TransformHitboxes (objP1, p1, hb1);
 TransformHitboxes (objP2, &vPos, hb2);
 for (; iModel1 <= nModels1; iModel1++) {
 	for (; iModel2 <= nModels2; iModel2++) {
-		if (FindHitboxIntersection (&vHit, hb1 + iModel1, hb2 + iModel2, &vPos)) {
-			dMax = RegisterHit (intP, &vHit, &vPos, dMax);
+		if (FindHitboxIntersection (vHit, hb1 + iModel1, hb2 + iModel2, &vPos)) {
+			dMax = RegisterHit (&intersection, &vHit, &vPos, dMax);
 			nHits++;
 			}
 		}
 	}
 if (!nHits) {
 	for (; iModel2 <= nModels2; iModel2++) {
-		if (FindLineHitboxIntersection (&vHit, hb2 + iModel2, p0, p1, &vPos)) {
-			dMax = RegisterHit (intP, &vHit, &vPos, dMax);
+		if (FindLineHitboxIntersection (vHit, hb2 + iModel2, p0, p1, &vPos)) {
+			dMax = RegisterHit (&intersection, &vHit, &vPos, dMax);
 			nHits++;
 			}
 		}
@@ -595,9 +584,9 @@ for (; iModel <= nModels; iModel++) {
 		if (dot >= 0)
 			continue;	//shield face facing away from vector
 #endif
-		h = CheckLineToFace (vHit, p0, p1, rad, pf->v, pf->n + 1, 4);
+		h = CheckLineToFace (vHit, p0, p1, rad, pf->v, 4, pf->n + 1);
 		if (h) {
-		h = CheckLineToFace (vHit, p0, p1, rad, pf->v, pf->n + 1, 4);
+		h = CheckLineToFace (vHit, p0, p1, rad, pf->v, 4, pf->n + 1);
 			v = vHit - *p0;
 			d = CFixVector::Normalize (v);
 #if 0
@@ -638,7 +627,7 @@ return (nType == OBJ_MONSTERBALL) || (nType == OBJ_HOSTAGE) || (nType == OBJ_POW
 //	-----------------------------------------------------------------------------
 //determine if a vector intersects with an CObject
 //if no intersects, returns 0, else fills in intP and returns dist
-fix CheckVectorToObject (CFixVector intersection, CFixVector *p0, CFixVector *p1, fix rad,
+fix CheckVectorToObject (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad,
 								 CObject *thisObjP, CObject *otherObjP)
 {
 	fix			size, dist;
@@ -675,14 +664,14 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 		return 0;
 	// check hitbox collisions for all polygonal objects
 	if (bThisPoly && bOtherPoly) {
-		if (!(dist = CheckHitboxToHitbox (&vHit, otherObjP, thisObjP, p0, p1))) {
+		if (!(dist = CheckHitboxToHitbox (vHit, otherObjP, thisObjP, p0, p1))) {
 			if (!CFixVector::Dist(*p0, *p1))
 				return 0;
-			dist = CheckVectorToHitbox (&vHit, p0, p1, &vn, NULL, thisObjP, 0);
+			dist = CheckVectorToHitbox (vHit, p0, p1, &vn, NULL, thisObjP, 0);
 			if ((dist == 0x7fffffff) || (dist > otherObjP->info.xSize))
 				return 0;
 			}
-		CheckHitboxToHitbox (&vHit, otherObjP, thisObjP, p0, p1);
+		CheckHitboxToHitbox (vHit, otherObjP, thisObjP, p0, p1);
 //		VmPointLineIntersection (vHit, *p0, *p1, vHit, thisObjP->info.position.vPos, 1);
 		VmPointLineIntersection (vHit, *p0, *p1, vHit, 1);
 		}
@@ -692,7 +681,7 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 		// intersects with the hitbox, check whether the radius line of *thisObjP intersects any of the hitboxes.
 			vn = *p1-*p0;
 			CFixVector::Normalize (vn);
-			if (0x7fffffff == (dist = CheckVectorToHitbox (&vHit, p0, p1, &vn, NULL, thisObjP, otherObjP->info.xSize)))
+			if (0x7fffffff == (dist = CheckVectorToHitbox (vHit, p0, p1, &vn, NULL, thisObjP, otherObjP->info.xSize)))
 				return 0;
 //			VmPointLineIntersection (vHit, *p0, *p1, vHit, &otherObjP->info.position.vPos, 1);
 			VmPointLineIntersection (vHit, *p0, *p1, vHit, 1);
@@ -704,7 +693,7 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 			vn = otherObjP->info.position.vPos - v0;
 			CFixVector::Normalize(vn);
 			v1 = v0 + vn * thisObjP->info.xSize;
-			if (0x7fffffff == (dist = CheckVectorToHitbox (&vHit, &v0, &v0, &vn, p1, otherObjP, thisObjP->info.xSize)))
+			if (0x7fffffff == (dist = CheckVectorToHitbox (vHit, &v0, &v0, &vn, p1, otherObjP, thisObjP->info.xSize)))
 				return 0;
 //			VmPointLineIntersection (vHit, *p0, *p1, vHit, &thisObjP->info.position.vPos, 1);
 			VmPointLineIntersection (vHit, *p0, *p1, vHit, 1);
@@ -712,7 +701,7 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 		}
 	}
 else {
-	if (!(dist = CheckVectorToSphere1 (&vHit, p0, p1, &vPos, size + rad)))
+	if (!(dist = CheckVectorToSphere1 (vHit, p0, p1, &vPos, size + rad)))
 		return 0;
 	}
 intersection = vHit;
@@ -847,12 +836,12 @@ restart:
 				 (IsCoopGame && (nOtherType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parent.nType == OBJ_PLAYER))))
 				nFudgedRad = radP1 / 2;
 			if (flags & FQ_ANY_OBJECT)
-				d = CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
+				d = CheckVectorToObject (vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
 			else
-				d = CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
+				d = CheckVectorToObject (vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
 			if (d && (d < dMin)) {
 #if DBG
-				CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
+				CheckVectorToObject (vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
 #endif
 				gameData.collisions.hitData.nObject = nObject;
 				Assert(gameData.collisions.hitData.nObject != -1);
@@ -860,7 +849,7 @@ restart:
 				vClosestHitPoint = vHitPoint;
 				nHitType = HIT_OBJECT;
 #if DBG
-				CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
+				CheckVectorToObject (vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
 #endif
 				if (flags & FQ_ANY_OBJECT)
 					goto fviObjsDone;
@@ -876,8 +865,8 @@ segP = SEGMENTS + nStartSeg;
 if ((nThisObject > -1) && (gameData.objs.collisionResult [nThisType][OBJ_WALL] == RESULT_NOTHING))
 	radP1 = 0;		//HACK - ignore when edges hit walls
 //now, check segment walls
-startMask = GetSegMasks (*p0, nStartSeg, radP0).m_face;
-masks = GetSegMasks (*p1, nStartSeg, radP1);    //on back of which faces?
+startMask = SEGMENTS [nStartSeg].SideMasks (*p0, radP0).m_face;
+masks = SEGMENTS [nStartSeg].SideMasks (*p1, radP1);    //on back of which faces?
 if (!(centerMask = masks.m_center))
 	nHitNoneSegment = nStartSeg;
 if ((endMask = masks.m_face)) { //on the back of at least one face
@@ -896,8 +885,8 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 				continue;
 			//did we go through this CWall/door?
 			nFaceHitType = (startMask & bit)	?	//start was also though.  Do extra check
-				segP->SpecialCheckLineToFace (&vHitPoint, p0, p1, radP1, nSide, iFace) :
-				segP->CheckLineToSegFace (&vHitPoint, p0, p1, radP1, nSide, iFace);
+				segP->SpecialCheckLineToFace (vHitPoint, p0, p1, radP1, nSide, iFace) :
+				segP->CheckLineToFace (vHitPoint, p0, p1, radP1, nSide, iFace);
 #if 0
 			if (!nFaceHitType)
 				continue;
@@ -918,7 +907,7 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 				}
 			if ((widResult & WID_FLY_FLAG) ||
 				 (((widResult & (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) == (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) &&
-				  ((flags & FQ_TRANSWALL) || ((flags & FQ_TRANSPOINT) && segP->CheckForTranspPixel (&vHitPoint, nSide, iFace))))) {
+				  ((flags & FQ_TRANSWALL) || ((flags & FQ_TRANSPOINT) && segP->CheckForTranspPixel (vHitPoint, nSide, iFace))))) {
 
 				int			i, nNewSeg, subHitType;
 				short			subHitSeg, nSaveHitObj = gameData.collisions.hitData.nObject;
@@ -1002,7 +991,7 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 						nHitType = HIT_WALL;
 						gameData.collisions.hitData.vNormal = segP->m_sides [nSide].m_normals [iFace];
 						gameData.collisions.hitData.nNormals = 1;
-						if (!GetSegMasks (vHitPoint, nStartSeg, radP1).m_center)
+						if (!SEGMENTS [nStartSeg].SideMasks (vHitPoint, radP1).m_center)
 							nHitSegment = nStartSeg;             //hit in this CSegment
 						else
 							gameData.collisions.hitData.nSegment2 = nStartSeg;
@@ -1094,7 +1083,7 @@ gameData.collisions.hitData.nObject = -1;
 //Assert(check_point_in_seg(p0, startseg, 0).m_center==0);	//start refP not in seg
 
 // gameData.objs.viewerP is not in CSegment as claimed, so say there is no hit.
-masks = GetSegMasks (*fq->p0, fq->startSeg, 0);
+masks = SEGMENTS [fq->startSeg].SideMasks (*fq->p0, 0);
 if (masks.m_center) {
 	hitData->hit.nType = HIT_BAD_P0;
 	hitData->hit.vPoint = *fq->p0;
@@ -1113,14 +1102,14 @@ nHitType = FVICompute (&vHitPoint, &nHitSegment2, fq->p0, (short) fq->startSeg, 
 							  fq->radP0, fq->radP1, (short) fq->thisObjNum, fq->ignoreObjList, fq->flags,
 							  hitData->segList, &hitData->nSegments, -2);
 //!!nHitSegment = FindSegByPos(&vHitPoint, fq->startSeg, 1, 0);
-if ((nHitSegment2 != -1) && !GetSegMasks (vHitPoint, nHitSegment2, 0).m_center)
+if ((nHitSegment2 != -1) && !SEGMENTS [nHitSegment2].SideMasks (vHitPoint, 0).m_center)
 	nHitSegment = nHitSegment2;
 else {
 	nHitSegment = FindSegByPos (vHitPoint, fq->startSeg, 1, 0);
 	}
 //MATT: TAKE OUT THIS HACK AND FIX THE BUGS!
 if ((nHitType == HIT_WALL) && (nHitSegment == -1))
-	if ((gameData.collisions.hitData.nSegment2 != -1) && !GetSegMasks (vHitPoint, gameData.collisions.hitData.nSegment2, 0).m_center)
+	if ((gameData.collisions.hitData.nSegment2 != -1) && !SEGMENTS [gameData.collisions.hitData.nSegment2].SideMasks (vHitPoint, 0).m_center)
 		nHitSegment = gameData.collisions.hitData.nSegment2;
 
 if (nHitSegment == -1) {
@@ -1172,19 +1161,6 @@ void CSide::FindHitPointUV (fix *u, fix *v, fix *l, CFixVector& intersection, in
 	fix			k0, k1;
 	int			h;
 
-//do lasers pass through illusory walls?
-//when do I return 0 & 1 for non-transparent walls?
-if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment)) {
-#if TRACE
-	console.printf (CON_DBG, "Bad nSegment (%d) in FindHitPointUV()\n", nSegment);
-#endif
-	*u = *v = 0;
-	return;
-	}
-if (nSegment == -1) {
-	Error ("nSegment == -1 in FindHitPointUV()");
-	return;
-	}
 if (iFace >= m_nFaces) {
 	PrintLog ("invalid face number in FindHitPointUV\n");
 	*u = *v = 0;
@@ -1194,9 +1170,9 @@ if (iFace >= m_nFaces) {
 //1. find what plane to project this CWall onto to make it a 2d case
 vNormal = m_normals [iFace];
 biggest = 0;
-if (abs (vNormals [1]) > abs (vNormal [biggest]))
+if (abs (vNormal [1]) > abs (vNormal [biggest]))
 	biggest = 1;
-if (abs (vNormals [2]) > abs (vNormal [biggest]))
+if (abs (vNormal [2]) > abs (vNormal [biggest]))
 	biggest = 2;
 ii = (biggest == 0);
 jj = (biggest == 2) ? 1 : 2;
@@ -1313,19 +1289,18 @@ return 0;
 //returns 1 if can pass though the CWall, else 0
 int CSide::CheckForTranspPixel (CFixVector& intersection, short iFace)
 {
-	CSide *sideP = segP->m_sides + nSide;
 	fix	u, v;
 	int	nTranspType;
 
-sideP->FindHitPointUV (&u, &v, NULL, refP, iFace);	//	Don't compute light value.
-if (sideP->m_nOvlTex)	{
-	nTranspType = PixelTranspType (sideP->m_nOvlTex, sideP->nOvlOrient, sideP->m_nFrame, u, v);
+FindHitPointUV (&u, &v, NULL, intersection, iFace);	//	Don't compute light value.
+if (m_nOvlTex)	{
+	nTranspType = PixelTranspType (m_nOvlTex, m_nOvlOrient, m_nFrame, u, v);
 	if (nTranspType < 0)
 		return 1;
 	if (!nTranspType)
 		return 0;
 	}
-nTranspType = PixelTranspType (sideP->m_nBaseTex, 0, sideP->m_nFrame, u, v) != 0;
+nTranspType = PixelTranspType (m_nBaseTex, 0, m_nFrame, u, v) != 0;
 return nTranspType;
 }
 
@@ -1344,21 +1319,18 @@ if (nSegment == -1) {
 if ((gameData.collisions.nSegsVisited < 0) || (gameData.collisions.nSegsVisited > MAX_SEGS_VISITED))
 	gameData.collisions.nSegsVisited = 0;
 gameData.collisions.segsVisited [gameData.collisions.nSegsVisited++] = nSegment;
-faceMask = GetSegMasks (*vPoint, nSegment, rad).m_face;
 segP = SEGMENTS + nSegment;
+faceMask = segP->SideMasks (*vPoint, rad).m_face;
 if (faceMask != 0) {				//on the back of at least one face
-	int nSide, bit, iFace, nChild, i;
-	int nFaceHitType;      //in what way did we hit the face?
-	int nFaces, vertList [6];
+	int		nSide, bit, iFace, nChild, i;
+	int		nFaceHitType;      //in what way did we hit the face?
 
 //for each face we are on the back of, check if intersected
 	for (nSide = 0, bit = 1; (nSide < 6) && (faceMask >= bit); nSide++) {
 		for (iFace = 0; iFace < 2; iFace++, bit <<= 1) {
 			if (faceMask & bit) {            //on the back of this iFace
 				//did we go through this CWall/door?
-				nFaces = CreateAbsVertexLists (vertList, SEG_IDX (segP), nSide);
-				nFaceHitType = CheckSphereToSegFace (vPoint, nSegment, nSide, iFace,
-															 (nFaces == 1) ? 4 : 3, rad, vertList);
+				nFaceHitType = segP->CheckSphereToFace (*vPoint, rad, nSide, iFace);
 				if (nFaceHitType) {            //through this CWall/door
 					//if what we have hit is a door, check the adjoining segP
 					nChild = segP->m_children [nSide];

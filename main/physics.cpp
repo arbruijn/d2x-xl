@@ -85,7 +85,7 @@ for (i = 0; i < 6; i++) {
 	if (d > largest_d) {largest_d = d; nBestSide=i;}
 	}
 if (gameOpts->gameplay.nAutoLeveling == 1) {	 // new CPlayerData leveling code: use Normal of CSide closest to our up vec
-	CSide* sideP = &SEGMENTS [objP->info.nSegment].m_sides + nBestSide;
+	CSide* sideP = SEGMENTS [objP->info.nSegment].m_sides + nBestSide;
 	if (sideP->FaceCount () == 2) {
 		desiredUpVec = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
 		CFixVector::Normalize (desiredUpVec);
@@ -292,7 +292,7 @@ int BounceObject (CObject *objP, tFVIData	hi, float fOffs, fix *pxSideDists)
 	short	nSegment;
 
 if (!pxSideDists) {
-	SEGMENTS [hi.hit.nSideSegment].GetSideDists (objP->info.position.vPos, hi.hit.nSideSegment, xSideDists);
+	SEGMENTS [hi.hit.nSideSegment].GetSideDists (objP->info.position.vPos, xSideDists, 1);
 	pxSideDists = xSideDists;
 	}
 xSideDist = pxSideDists [hi.hit.nSide];
@@ -646,14 +646,14 @@ retryMove:
 	else if (fviResult == HIT_WALL) {
 		if (gameStates.render.bHaveSkyBox && (objP->info.nType == OBJ_WEAPON) && (hi.hit.nSegment >= 0)) {
 			if (SEGMENTS [hi.hit.nSegment].m_nType == SEGMENT_IS_SKYBOX) {
-				short nConnSeg = SEGMENTS [hi.hit.nSegment].children [hi.hit.nSide];
+				short nConnSeg = SEGMENTS [hi.hit.nSegment].m_children [hi.hit.nSide];
 				if ((nConnSeg < 0) && (objP->info.xLifeLeft > F1_0)) {	//leaving the mine
 					objP->info.xLifeLeft = 0;
 					objP->info.nFlags |= OF_SHOULD_BE_DEAD;
 					}
 				fviResult = HIT_NONE;
 				}
-			else if (SEGMENTS [hi.hit.nSideSegment].CheckForTranspPixel (&hi.hit.vPoint, hi.hit.nSide, hi.hit.nFace)) {
+			else if (SEGMENTS [hi.hit.nSideSegment].CheckForTranspPixel (hi.hit.vPoint, hi.hit.nSide, hi.hit.nFace)) {
 				short nNewSeg = FindSegByPos (vNewPos, gameData.segs.skybox [0], 1, 1);
 				if ((nNewSeg >= 0) && (SEGMENTS [nNewSeg].m_nType == SEGMENT_IS_SKYBOX)) {
 					hi.hit.nSegment = nNewSeg;
@@ -711,7 +711,7 @@ retryMove:
 	if (iSeg != objP->info.nSegment)
 		OBJECTS [nObject].RelinkToSeg (iSeg);
 	//if start point not in CSegment, move CObject to center of CSegment
-	if (GetSegMasks (objP->info.position.vPos, objP->info.nSegment, 0).m_center) {	//object stuck
+	if (SEGMENTS [objP->info.nSegment].SideMasks (objP->info.position.vPos, 0).m_center) {	//object stuck
 		int n = FindObjectSeg (objP);
 		if (n == -1) {
 			if (bGetPhysSegs)
@@ -970,9 +970,7 @@ if (objP->info.controlType == CT_AI) {
 		if (nSide != -1) {
 			if (!(SEGMENTS [nOrigSegment].IsDoorWay (nSide, (objP->info.nType == OBJ_PLAYER) ? objP : NULL) & WID_FLY_FLAG)) {
 				CSide *sideP;
-				int	nVertex;
 				fix	dist;
-				int	vertexList [6];
 
 				//bump CObject back
 				sideP = SEGMENTS [nOrigSegment].m_sides + nSide;
@@ -986,11 +984,12 @@ if (objP->info.controlType == CT_AI) {
 		}
 
 //if end point not in CSegment, move CObject to last pos, or CSegment center
-if (GetSegMasks (objP->info.position.vPos, objP->info.nSegment, 0).m_center) {
+if (SEGMENTS [objP->info.nSegment].SideMasks (objP->info.position.vPos, 0).m_center) {
 	if (FindObjectSeg (objP) == -1) {
 		int n;
 
-		if (((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT)) && (n = FindSegByPos (objP->info.vLastPos, objP->info.nSegment, 1, 0)) != -1) {
+		if (((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT)) && 
+			 (n = FindSegByPos (objP->info.vLastPos, objP->info.nSegment, 1, 0)) != -1) {
 			objP->info.position.vPos = objP->info.vLastPos;
 			OBJECTS [nObject].RelinkToSeg (n);
 			}
