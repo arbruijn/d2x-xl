@@ -69,6 +69,10 @@ int oppTrigTypes  [] = {
 //link Links [MAX_WALL_LINKS];
 //int Num_links;
 
+void EnterSecretLevel (void);
+void ExitSecretLevel (void);
+int PSecretLevelDestroyed (void);
+
 #ifdef EDITOR
 fix triggerTimeCount=F1_0;
 
@@ -110,7 +114,7 @@ for (int i = 0; i < nLinks; i++)
 
 //-----------------------------------------------------------------
 
-void CTrigger::DoChangeTexture (CTrigger *trigP)
+void CTrigger::DoChangeTexture (void)
 {
 	int	baseTex = value & 0xffff,
 			ovlTex = (value >> 16);
@@ -427,7 +431,6 @@ return bChanged;
 void CTrigger::PrintMessage (int nPlayer, int shot, const char *message)
 {
 	char		*pl;		//points to 's' or nothing for plural word
-	CTrigger	*triggers;
 
 if ((nPlayer < 0) || (nPlayer == gameData.multiplayer.nLocalPlayer)) {
 	pl = (nLinks > 1) ? reinterpret_cast<char*> ("s") : reinterpret_cast<char*> ("");
@@ -459,7 +462,6 @@ void CTrigger::DoIllusionOn (void)
 for (int i = 0; i < nLinks; i++)
 	SEGMENTS [segments [i]].IllusionOn (sides [i]);
 }
-}
 
 //------------------------------------------------------------------------------
 
@@ -472,7 +474,7 @@ for (int i = 0; i < nLinks; i++) {
 	segP = SEGMENTS + segments [i];
 	nSide = sides [i];
 	segP->IllusionOff (nSide);
-	DigiLinkSoundToPos (SOUND_WALL_REMOVED, SEG_IDX (seg), nSide, segP->SideCenter (nSide), 0, F1_0);
+	DigiLinkSoundToPos (SOUND_WALL_REMOVED, segP->Index (), nSide, segP->SideCenter (nSide), 0, F1_0);
   	}
 }
 
@@ -568,12 +570,12 @@ OBJECTS [nObject].RelinkToSeg (nSegment);
 
 void CTrigger::DoTeleport (short nObject)
 {
-if (trigP->nLinks > 0) {
+if (nLinks > 0) {
 		int		i;
 		short		nSegment, nSide;
 
 	d_srand (TimerGetFixedSeconds ());
-	i = d_rand () % trigP->nLinks;
+	i = d_rand () % nLinks;
 	nSegment = segments [i];
 	nSide = sides [i];
 	// set new CPlayerData direction, facing the destination nSide
@@ -731,7 +733,7 @@ void CTrigger::DoSpeedBoost (short nObject)
 {
 if (!(COMPETITION || IsCoopGame) || extraGameInfo [IsMultiGame].nSpeedBoost) {
 	CWall* wallP = TriggerParentWall (Index ());
-	gameData.objs.speedBoost [nObject].bBoosted = (trigP->value && (trigP->nLinks > 0));
+	gameData.objs.speedBoost [nObject].bBoosted = (value && (nLinks > 0));
 	SetSpeedBoostVelocity ((short) nObject, value, 
 								  (short) (wallP ? wallP->nSegment : -1), (short) (wallP ? wallP->nSide : -1),
 								  segments [0], sides [0], NULL, NULL, (flags & TF_SET_ORIENT) != 0);
@@ -772,7 +774,7 @@ if (gameData.app.nGameMode & GM_MULTI) {
 	return false;
 	}
 
-bool bDisabled = PSecretLevelDestroyed ();
+bool bDisabled = PSecretLevelDestroyed () == 1;
 
 if (gameData.demo.nState == ND_STATE_RECORDING)			// record whether we're really going to the secret level
 	NDRecordSecretExitBlown (bDisabled);
@@ -794,10 +796,6 @@ return true;
 }
 
 //------------------------------------------------------------------------------
-
-void EnterSecretLevel (void);
-void ExitSecretLevel (void);
-int PSecretLevelDestroyed (void);
 
 int CTrigger::WallIsForceField (void)
 {
@@ -833,14 +831,16 @@ else {
 		if ((objP->info.nType != OBJ_ROBOT) && (objP->info.nType != OBJ_REACTOR))
 			return 1;
 		}
-#if 1
+
+int nTrigger = Index ();
+
 if (!bObjTrigger && (nType != TT_TELEPORT) && (nType != TT_SPEEDBOOST)) {
 	int t = gameStates.app.nSDLTicks;
 	if ((gameData.trigs.delay [nTrigger] >= 0) && (t - gameData.trigs.delay [nTrigger] < 750))
 		return 1;
 	gameData.trigs.delay [nTrigger] = t;
 	}
-#endif
+
 if (flags & TF_ONE_SHOT)		//if this is a one-shot...
 	flags |= TF_DISABLED;		//..then don't let it happen again
 
@@ -974,17 +974,17 @@ switch (nType) {
 
 	case TT_CHANGE_TEXTURE:
 		DoChangeTexture ();
-		PrintMessage (nPlayer, nTrigger, 2, "Walls have been changed!");
+		PrintMessage (nPlayer, 2, "Walls have been changed!");
 		break;
 
 	case TT_SPAWN_BOT:
-		DoSpawnBot (objP);
-		PrintMessage (nPlayer, nTrigger, 1, "Robot is summoning help!");
+		DoSpawnBots (objP);
+		PrintMessage (nPlayer, 1, "Robot is summoning help!");
 		break;
 
 	case TT_SET_SPAWN:
 		DoSetSpawnPoints ();
-		PrintMessage (nPlayer, nTrigger, 1, "New spawn points set!");
+		PrintMessage (nPlayer, 1, "New spawn points set!");
 		break;
 
 	case TT_SMOKE_LIFE:
@@ -995,7 +995,7 @@ switch (nType) {
 		break;
 
 	case TT_COUNTDOWN:
-		InitCountdown (1, -1);
+		InitCountdown (this, 1, -1);
 		break;
 
 	case TT_MESSAGE:
@@ -1027,8 +1027,8 @@ CTrigger *FindObjTrigger (short nObject, short nType, short nTrigger)
 while (i >= 0) {
 	if (gameData.trigs.objTriggerRefs [i].nObject < 0)
 		break;
-	if (gameData.trigs.objTriggers [i].nType == nType)
-		return gameData.trigs.objTriggers + i;
+	if (OBJTRIGGERS [i].nType == nType)
+		return OBJTRIGGERS + i;
 	i = gameData.trigs.objTriggerRefs [i].next;
 	}
 return NULL;
@@ -1043,8 +1043,8 @@ void ExecObjTriggers (short nObject, int bDamage)
 while ((i >= 0) && (j < 256)) {
 	if (gameData.trigs.objTriggerRefs [i].nObject < 0)
 		break;
-	if (DoExecObjTrigger (gameData.trigs.objTriggers + i, nObject, bDamage)) {
-		OperateTrigger (nObject, gameData.trigs.objTriggers.Buffer (), gameData.trigs.nObjTriggers, i, -1, 1, 1);
+	if (OBJTRIGGERS [i].DoExecObjTrigger (nObject, bDamage)) {
+		OBJTRIGGERS [i].Operate (nObject, -1, 1, 1);
 		if (IsMultiGame)
 			MultiSendObjTrigger (i);
 		}
@@ -1053,23 +1053,6 @@ while ((i >= 0) && (j < 256)) {
 	i = gameData.trigs.objTriggerRefs [i].next;
 	j++;
 	}
-}
-
-//-----------------------------------------------------------------
-// Checks for a CTrigger whenever an CObject hits a CTrigger nSide.
-void CSegment::CheckTrigger (short nSide, CObject *objP, int shot)
-{
-CTrigger* trigP = Trigger (nSide);
-if (!trigP)
-	return;
-
-if (OperateTrigger (nObject, TRIGGERS.Buffer (), gameData.trigs.nTriggers, nTrigger, 
-							(objP->info.nType == OBJ_PLAYER) ? objP->info.nId : -1, shot, 0))
-	return;
-if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordTrigger (segP->Index (), nSide, OBJ_IDX (objP), shot);
-if (IsMultiGame)
-	MultiSendTrigger (Index (), OBJ_IDX (objP));
 }
 
 //------------------------------------------------------------------------------
@@ -1164,11 +1147,11 @@ for (i = 0; i < gameData.trigs.nTriggers; i++) {
 		if (ecP->nDestBm < 0)
 			continue;
 		}
-	if (TriggerHasTarget (TRIGGERS + i, nSegment, nSide))
+	if (TRIGGERS [i].HasTarget (nSegment, nSide))
 		return i + 1;
 	}
 for (i = 0; i < gameData.trigs.nObjTriggers; i++) {
-	if (!TriggerHasTarget (gameData.trigs.objTriggers + i, nSegment, nSide))
+	if (!OBJTRIGGERS [i].HasTarget (nSegment, nSide))
 		continue;
 	if (!ObjTriggerIsValid (i))
 		continue;

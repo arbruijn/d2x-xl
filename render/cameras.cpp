@@ -662,7 +662,7 @@ FORALL_OBJS (objP, i) {
 		j = j;
 #endif
 	for (h = sizeofa (gameData.trigs.objTriggerRefs); (j >= 0) && h && (m_nCameras < MAX_CAMERAS); h--) {
-		triggerP = gameData.trigs.objTriggers + j;
+		triggerP = OBJTRIGGERS + j;
 		if (triggerP->nType == TT_CAMERA) {
 			for (k = 0; k < triggerP->nLinks; k++)
 				if (m_cameras [m_nCameras].Create (m_nCameras, -1, -1, triggerP->nSegment [k], triggerP->nSide [k], objP, 0, 0))

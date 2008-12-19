@@ -301,6 +301,8 @@ class CSegment {
 		int Physics (int nSide, fix* damageP) { return m_sides [nSide].Physics (damageP); }
 		int Physics (fix& xDamage);
 
+		void OperateTrigger (short nSide, CObject *objP, int shot);
+
 	private:
 		inline int PokesThrough (int nObject, short nSide);
 

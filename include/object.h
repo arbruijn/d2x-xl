@@ -827,7 +827,7 @@ class CObject : public CObjectInfo {
 		void DoPhysicsSim (void);
 		void Spin (void);
 		int Update (void);
-		//inline short Index (void) { return gameData.objs.objects.Index (this); }
+		inline int Index (void);
 
 		void MorphStart (void);
 		void DoMorphFrame (void);

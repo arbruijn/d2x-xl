@@ -127,7 +127,7 @@ class CTrigger {
 		int Operate (short nObject, int nPlayer, int shot, bool bObjTrigger);
 		void PrintMessage (int nPlayer, int shot, const char *message);
 		void DoLink (void);
-		void DoChangeTexture (CTrigger *trigP);
+		void DoChangeTexture (void);
 		int DoExecObjTrigger (short nObject, int bDamage);
 		void DoSpawnBots (CObject* objP);
 		bool DoExit (int nPlayer);
@@ -140,6 +140,7 @@ class CTrigger {
 		void DoLockDoors (void);
 		int DoSetSpawnPoints (void);
 		int DoMasterTrigger (short nObject);
+		void DoTeleport (short nObject);
 		int DoShowMessage (void);
 		int DoPlaySound (short nObject);
 		int DoChangeWalls (void);
@@ -149,10 +150,10 @@ class CTrigger {
 		void DoSpeedBoost (short nObject);
 		bool TargetsWall (int nWall);
 		inline int Index (void);
+		inline int HasTarget (short nSegment, short nSide);
 
 	private:
 		int WallIsForceField (void);
-		inline int HasTarget (short nSegment, short nSide);
 };
 
 inline int operator- (CTrigger* t, CArray<CTrigger>& a) { return a.Index (t); }

@@ -758,5 +758,21 @@ Assert(nPlayer > -1);
 return wallP->ProcessHit (nPlayer, objP);
 }
 
+//-----------------------------------------------------------------
+// Checks for a CTrigger whenever an CObject hits a CTrigger nSide.
+void CSegment::OperateTrigger (short nSide, CObject *objP, int shot)
+{
+CTrigger* trigP = Trigger (nSide);
+if (!trigP)
+	return;
+
+if (trigP->Operate (nObject, (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : -1, shot, 0))
+	return;
+if (gameData.demo.nState == ND_STATE_RECORDING)
+	NDRecordTrigger (segP->Index (), nSide, OBJ_IDX (objP), shot);
+if (IsMultiGame)
+	MultiSendTrigger (Index (), OBJ_IDX (objP));
+}
+
 //------------------------------------------------------------------------------
 //eof

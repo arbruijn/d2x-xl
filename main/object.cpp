@@ -3166,6 +3166,13 @@ return SEGMENTS [info.nSegment].HasOpenableDoors ();
 
 //------------------------------------------------------------------------------
 
+inline int CObject::Index (void)
+{ 
+return this - OBJECTS; 
+}
+
+//------------------------------------------------------------------------------
+
 void InitWeaponFlags (void)
 {
 memset (gameData.objs.bIsMissile, 0, sizeof (gameData.objs.bIsMissile));

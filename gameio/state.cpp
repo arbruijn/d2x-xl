@@ -1099,7 +1099,7 @@ if (!m_bBetweenLevels)	{
 		m_cf.WriteShort (0);
 	else {
 		for (i = 0; i < gameData.trigs.nObjTriggers; i++)
-			SaveTrigger (gameData.trigs.objTriggers + i);
+			SaveTrigger (OBJTRIGGERS + i);
 		for (i = 0; i < gameData.trigs.nObjTriggers; i++)
 			SaveObjTriggerRef (gameData.trigs.objTriggerRefs + i);
 		nObjsWithTrigger = 0;
@@ -2206,7 +2206,7 @@ if (!m_bBetweenLevels)	{
 		return 0;
 	if (gameData.trigs.nObjTriggers > 0) {
 		for (i = 0; i < gameData.trigs.nObjTriggers; i++)
-			CSaveGameHandler::LoadTrigger (gameData.trigs.objTriggers + i);
+			CSaveGameHandler::LoadTrigger (OBJTRIGGERS + i);
 		for (i = 0; i < gameData.trigs.nObjTriggers; i++)
 			CSaveGameHandler::LoadObjTriggerRef (gameData.trigs.objTriggerRefs + i);
 		if (m_nVersion < 36) {
@@ -2485,7 +2485,7 @@ if (!m_bBetweenLevels)	{
 
 		m_cf.Read (&gameData.trigs.nObjTriggers, sizeof (gameData.trigs.nObjTriggers), 1);
 		if (gameData.trigs.nObjTriggers > 0) {
-			m_cf.Read (gameData.trigs.objTriggers.Buffer (), sizeof (CTrigger), gameData.trigs.nObjTriggers);
+			m_cf.Read (OBJTRIGGERS.Buffer (), sizeof (CTrigger), gameData.trigs.nObjTriggers);
 			m_cf.Read (gameData.trigs.objTriggerRefs.Buffer (), sizeof (tObjTriggerRef), gameData.trigs.nObjTriggers);
 			m_cf.Read (gameData.trigs.firstObjTrigger.Buffer (), sizeof (short), 700);
 			}

@@ -1703,7 +1703,7 @@ if ((CTrigger < 0) || (CTrigger  >= gameData.trigs.nObjTriggers)) {
 	Int3 (); // Illegal CTrigger number in multiplayer
 	return;
 	}
-OperateTrigger (gameData.multiplayer.players [nPlayer].nObject, gameData.trigs.objTriggers.Buffer (),
+OperateTrigger (gameData.multiplayer.players [nPlayer].nObject, OBJTRIGGERS.Buffer (),
 					  gameData.trigs.nObjTriggers, CTrigger, nPlayer, 0, 1);
 }
 

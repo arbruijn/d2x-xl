@@ -1113,7 +1113,7 @@ if (gameFileInfo.triggers.offset > -1) {
 		gameData.trigs.nObjTriggers = cf.ReadInt ();
 		if (gameData.trigs.nObjTriggers) {
 			for (i = 0; i < gameData.trigs.nObjTriggers; i++)
-				TriggerRead (gameData.trigs.objTriggers + i, cf, 1);
+				TriggerRead (OBJTRIGGERS + i, cf, 1);
 			for (i = 0; i < gameData.trigs.nObjTriggers; i++) {
 				gameData.trigs.objTriggerRefs [i].prev = cf.ReadShort ();
 				gameData.trigs.objTriggerRefs [i].next = cf.ReadShort ();
@@ -1134,7 +1134,7 @@ if (gameFileInfo.triggers.offset > -1) {
 		}
 	else {
 		gameData.trigs.nObjTriggers = 0;
-		gameData.trigs.objTriggers.Clear ();
+		OBJTRIGGERS.Clear ();
 		gameData.trigs.objTriggerRefs.Clear (0xff);
 		gameData.trigs.firstObjTrigger.Clear (0xff);
 		}
