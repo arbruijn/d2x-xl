@@ -805,6 +805,7 @@ class CObject : public CObjectInfo {
 		int CollideWeaponAndWeapon (CObject *other, CFixVector& vHitPt);
 
 		int CollideActorAndClutter (CObject* clutter, CFixVector& vHitPt);
+		int CollideObjectAndWall (fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector& vHitPt);
 
 		inline void RequestEffects (ubyte nEffects);
 		CObject* CreateExplBlast (void);

@@ -81,7 +81,7 @@ nBestSide = 0;
 // bank CPlayerData according to CSegment orientation
 //find CSide of CSegment that CPlayerData is most aligned with
 for (i = 0; i < 6; i++) {
-	d = CFixVector::Dot (SEGMENTS [objP->info.nSegment].m_sides [i].m_normals[0], objP->info.position.mOrient.UVec ());
+	d = CFixVector::Dot (SEGMENTS [objP->info.nSegment].m_sides [i].m_normals [0], objP->info.position.mOrient.UVec ());
 	if (d > largest_d) {largest_d = d; nBestSide=i;}
 	}
 if (gameOpts->gameplay.nAutoLeveling == 1) {	 // new CPlayerData leveling code: use Normal of CSide closest to our up vec
@@ -116,8 +116,8 @@ if (labs (CFixVector::Dot (desiredUpVec, objP->info.position.mOrient.FVec ())) <
 			roll_ang = delta_ang;
 		else if (delta_ang < 0)
 			roll_ang = -roll_ang;
-		turnAngles[PA] = turnAngles[HA] = 0;
-		turnAngles[BA] = roll_ang;
+		turnAngles [PA] = turnAngles [HA] = 0;
+		turnAngles [BA] = roll_ang;
 		mRotate = CFixMatrix::Create(turnAngles);
 		// TODO MM
 		new_pm = objP->info.position.mOrient * mRotate;
@@ -187,7 +187,7 @@ if (gameData.physics.xTime <= 0)
 #endif
 pi = &mType.physInfo;
 if (!(pi->rotVel [X] || pi->rotVel [Y] || pi->rotVel [Z] ||
-		pi->rotThrust[X] || pi->rotThrust[Y] || pi->rotThrust[Z]))
+		pi->rotThrust [X] || pi->rotThrust [Y] || pi->rotThrust [Z]))
 	return;
 if (mType.physInfo.drag) {
 	CFixVector	accel;
@@ -224,21 +224,21 @@ if (mType.physInfo.drag) {
 if (mType.physInfo.turnRoll) {
 	CFixMatrix mOrient;
 
-	turnAngles[PA] = turnAngles[HA] = 0;
-	turnAngles[BA] = -mType.physInfo.turnRoll;
+	turnAngles [PA] = turnAngles [HA] = 0;
+	turnAngles [BA] = -mType.physInfo.turnRoll;
 	mRotate = CFixMatrix::Create(turnAngles);
 	mOrient = info.position.mOrient * mRotate;
 	info.position.mOrient = mOrient;
 }
-turnAngles[PA] = (fixang) FixMul (mType.physInfo.rotVel [X], gameData.physics.xTime);
-turnAngles[HA] = (fixang) FixMul (mType.physInfo.rotVel [Y], gameData.physics.xTime);
-turnAngles[BA] = (fixang) FixMul (mType.physInfo.rotVel [Z], gameData.physics.xTime);
+turnAngles [PA] = (fixang) FixMul (mType.physInfo.rotVel [X], gameData.physics.xTime);
+turnAngles [HA] = (fixang) FixMul (mType.physInfo.rotVel [Y], gameData.physics.xTime);
+turnAngles [BA] = (fixang) FixMul (mType.physInfo.rotVel [Z], gameData.physics.xTime);
 if (!IsMultiGame) {
 	int i = (this != gameData.objs.consoleP) ? 0 : 1;
 	if (gameStates.gameplay.slowmo [i].fSpeed != 1) {
-		turnAngles[PA] = (fixang) (turnAngles[PA] / gameStates.gameplay.slowmo [i].fSpeed);
-		turnAngles[HA] = (fixang) (turnAngles[HA] / gameStates.gameplay.slowmo [i].fSpeed);
-		turnAngles[BA] = (fixang) (turnAngles[BA] / gameStates.gameplay.slowmo [i].fSpeed);
+		turnAngles [PA] = (fixang) (turnAngles [PA] / gameStates.gameplay.slowmo [i].fSpeed);
+		turnAngles [HA] = (fixang) (turnAngles [HA] / gameStates.gameplay.slowmo [i].fSpeed);
+		turnAngles [BA] = (fixang) (turnAngles [BA] / gameStates.gameplay.slowmo [i].fSpeed);
 		}
 	}
 mRotate = CFixMatrix::Create(turnAngles);
@@ -251,8 +251,8 @@ if (mType.physInfo.flags & PF_TURNROLL)
 if (mType.physInfo.turnRoll) {
 	CFixMatrix m;
 
-	turnAngles[PA] = turnAngles[HA] = 0;
-	turnAngles[BA] = mType.physInfo.turnRoll;
+	turnAngles [PA] = turnAngles [HA] = 0;
+	turnAngles [BA] = mType.physInfo.turnRoll;
 	mRotate = CFixMatrix::Create(turnAngles);
 	// TODO MM
 	m = info.position.mOrient * mRotate;
@@ -306,9 +306,9 @@ if (/*(0 <= xSideDist) && */
 	xSideDist = objP->info.xSize - xSideDist;
 	r = ((float) xSideDist / (float) objP->info.xSize) * X2F (objP->info.xSize);
 #	endif
-	objP->info.position.vPos[X] += (fix) ((float) hi.hit.vNormal[X] * fOffs);
-	objP->info.position.vPos[Y] += (fix) ((float) hi.hit.vNormal[Y] * fOffs);
-	objP->info.position.vPos[Z] += (fix) ((float) hi.hit.vNormal[Z] * fOffs);
+	objP->info.position.vPos [X] += (fix) ((float) hi.hit.vNormal [X] * fOffs);
+	objP->info.position.vPos [Y] += (fix) ((float) hi.hit.vNormal [Y] * fOffs);
+	objP->info.position.vPos [Z] += (fix) ((float) hi.hit.vNormal [Z] * fOffs);
 #endif
 	nSegment = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
 	if ((nSegment < 0) || (nSegment > gameData.segs.nSegments)) {
@@ -451,7 +451,7 @@ if (bDontMoveAIObjects)
 	if (info.controlType == CT_AI)
 		return;
 #endif
-CATCH_OBJ (this, mType.physInfo.velocity[Y] == 0);
+CATCH_OBJ (this, mType.physInfo.velocity [Y] == 0);
 DoPhysicsSimRot ();
 pi = &mType.physInfo;
 nPhysSegs = 0;
@@ -501,18 +501,18 @@ if (mType.physInfo.drag) {
 			if (xDrag)
 				vel *= (f1_0 - FixMul (k, xDrag));
 			if (bDoSpeedBoost) {
-				if (vel[X] < sbd.vMinVel [X])
-					vel[X] = sbd.vMinVel [X];
-				else if (vel[X] > sbd.vMaxVel [X])
-					vel[X] = sbd.vMaxVel [X];
-				if (vel[Y] < sbd.vMinVel [Y])
-					vel[Y] = sbd.vMinVel [Y];
-				else if (vel[Y] > sbd.vMaxVel [Y])
-					vel[Y] = sbd.vMaxVel [Y];
-				if (vel[Z] < sbd.vMinVel [Z])
-					vel[Z] = sbd.vMinVel [Z];
-				else if (vel[Z] > sbd.vMaxVel [Z])
-					vel[Z] = sbd.vMaxVel [Z];
+				if (vel [X] < sbd.vMinVel [X])
+					vel [X] = sbd.vMinVel [X];
+				else if (vel [X] > sbd.vMaxVel [X])
+					vel [X] = sbd.vMaxVel [X];
+				if (vel [Y] < sbd.vMinVel [Y])
+					vel [Y] = sbd.vMinVel [Y];
+				else if (vel [Y] > sbd.vMaxVel [Y])
+					vel [Y] = sbd.vMaxVel [Y];
+				if (vel [Z] < sbd.vMinVel [Z])
+					vel [Z] = sbd.vMinVel [Z];
+				else if (vel [Z] > sbd.vMaxVel [Z])
+					vel [Z] = sbd.vMaxVel [Z];
 				}
 			}
 		}
@@ -784,7 +784,7 @@ retryMove:
 		vMoved = info.position.vPos - vSavePos;
 		xWallPart = CFixVector::Dot (vMoved, hi.hit.vNormal) / gameData.collisions.hitData.nNormals;
 		if (xWallPart && (xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, xMovedTime)) > 0)) {
-			CollideObjectWithWall (xHitSpeed, nWallHitSeg, nWallHitSide, &hi.hit.vPoint);
+			CollideObjectAndWall (xHitSpeed, nWallHitSeg, nWallHitSide, hi.hit.vPoint);
 #if 0//def _DEBUG
 			if (info.nType == OBJ_PLAYER)
 				HUDMessage (0, "BUMP %1.2f (%d,%d)!", X2F (xHitSpeed), nWallHitSeg, nWallHitSide);
@@ -795,7 +795,7 @@ retryMove:
 			if (info.nType == OBJ_PLAYER)
 				HUDMessage (0, "SCREEEEEEEEEECH");
 #endif
-			ScrapeObjectOnWall (nWallHitSeg, nWallHitSide, &hi.hit.vPoint);
+			ScrapeOnWall (nWallHitSeg, nWallHitSide, hi.hit.vPoint);
 			}
 		Assert (nWallHitSeg > -1);
 		Assert (nWallHitSide > -1);
@@ -886,15 +886,15 @@ retryMove:
 			}
 		vOldVel = mType.physInfo.velocity;
 		//if (!(SPECTATOR (this) || SPECTATOR (OBJECTS + hi.hit.nObject)))
-			CollideTwoObjects (OBJECTS + hi.hit.nObject, &vHitPos);
+			CollideTwoObjects (this, OBJECTS + hi.hit.nObject, vHitPos);
 		if (sbd.bBoosted && (this == gameData.objs.consoleP))
 			mType.physInfo.velocity = vOldVel;
 		// Let object continue its movement
 		if (!(info.nFlags & OF_SHOULD_BE_DEAD)) {
 			if ((mType.physInfo.flags & PF_PERSISTENT) ||
-				 (vOldVel [X] == mType.physInfo.velocity[X] &&
-				  vOldVel [Y] == mType.physInfo.velocity[Y]) &&
-				  vOldVel [Z] == mType.physInfo.velocity[Z]) {
+				 (vOldVel [X] == mType.physInfo.velocity [X] &&
+				  vOldVel [Y] == mType.physInfo.velocity [Y]) &&
+				  vOldVel [Z] == mType.physInfo.velocity [Z]) {
 				if (OBJECTS [hi.hit.nObject].info.nType == OBJ_POWERUP)
 					nTries--;
 				gameData.physics.ignoreObjs [nIgnoreObjs++] = hi.hit.nObject;
@@ -995,13 +995,13 @@ if (SEGMENTS [info.nSegment].SideMasks (info.position.vPos, 0).m_center) {
 			}
 		else {
 			info.position.vPos = SEGMENTS [info.nSegment].Center ();
-			info.position.vPos[X] += nObject;
+			info.position.vPos [X] += nObject;
 			}
 		if (info.nType == OBJ_WEAPON)
 			Kill ();
 		}
 	}
-CATCH_OBJ (this, mType.physInfo.velocity[Y] == 0);
+CATCH_OBJ (this, mType.physInfo.velocity [Y] == 0);
 #if UNSTICK_OBJS
 UnstickObject (this);
 #endif
@@ -1030,7 +1030,7 @@ if ((gameStates.render.automap.bDisplay && (this == gameData.objs.consoleP)) || 
 #endif
 //Add in acceleration due to force
 if (!gameData.objs.speedBoost [OBJ_IDX (this)].bBoosted || (this != gameData.objs.consoleP))
-	mType.physInfo.velocity += *vForce * FixDiv (f1_0, mType.physInfo.mass);
+	mType.physInfo.velocity += vForce * FixDiv (f1_0, mType.physInfo.mass);
 }
 
 //	----------------------------------------------------------------
@@ -1072,24 +1072,24 @@ if (vGoal.IsZero())
 if (info.controlType == CT_MORPH)
 	rate *= 2;
 
-dest_angles = vGoal->ToAnglesVec();
+dest_angles = vGoal.ToAnglesVec();
 cur_angles = info.position.mOrient.FVec ().ToAnglesVec();
-delta_p = (dest_angles[PA] - cur_angles[PA]);
-delta_h = (dest_angles[HA] - cur_angles[HA]);
+delta_p = (dest_angles [PA] - cur_angles [PA]);
+delta_h = (dest_angles [HA] - cur_angles [HA]);
 if (delta_p > F1_0/2)
-	delta_p = dest_angles[PA] - cur_angles[PA] - F1_0;
+	delta_p = dest_angles [PA] - cur_angles [PA] - F1_0;
 if (delta_p < -F1_0/2)
-	delta_p = dest_angles[PA] - cur_angles[PA] + F1_0;
+	delta_p = dest_angles [PA] - cur_angles [PA] + F1_0;
 if (delta_h > F1_0/2)
-	delta_h = dest_angles[HA] - cur_angles[HA] - F1_0;
+	delta_h = dest_angles [HA] - cur_angles [HA] - F1_0;
 if (delta_h < -F1_0/2)
-	delta_h = dest_angles[HA] - cur_angles[HA] + F1_0;
+	delta_h = dest_angles [HA] - cur_angles [HA] + F1_0;
 delta_p = FixDiv (delta_p, rate);
 delta_h = FixDiv (delta_h, rate);
 if (abs (delta_p) < F1_0/16) delta_p *= 4;
 if (abs (delta_h) < F1_0/16) delta_h *= 4;
 if (!IsMultiGame) {
-	int i = (objP != gameData.objs.consoleP) ? 0 : 1;
+	int i = (this != gameData.objs.consoleP) ? 0 : 1;
 	if (gameStates.gameplay.slowmo [i].fSpeed != 1) {
 		delta_p = (fix) (delta_p / gameStates.gameplay.slowmo [i].fSpeed);
 		delta_h = (fix) (delta_h / gameStates.gameplay.slowmo [i].fSpeed);
@@ -1103,14 +1103,14 @@ pvRotVel [Z] = 0;
 //	-----------------------------------------------------------------------------
 //	Applies an instantaneous whack on an CObject, resulting in an instantaneous
 //	change in orientation.
-void CObject::PhysRot (CFixVector vForce)
+void CObject::ApplyRotForce (CFixVector vForce)
 {
 	fix	xRate, xMag;
 
 if (info.movementType != MT_PHYSICS)
 	return;
-xMag = vForce->Mag()/8;
-if (xMag < F1_0/256)
+xMag = vForce.Mag() / 8;
+if (xMag < F1_0 / 256)
 	xRate = 4 * F1_0;
 else if (xMag < mType.physInfo.mass >> 14)
 	xRate = 4 * F1_0;
@@ -1136,7 +1136,7 @@ else {
 		}
 	}
 //	Turn amount inversely proportional to mass.  Third parameter is seconds to do 360 turn.
-PhysicsTurnTowardsVector (vForce, objP, xRate);
+TurnTowardsVector (vForce, xRate);
 }
 
 

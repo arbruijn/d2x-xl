@@ -2344,40 +2344,37 @@ DISABLE_COLLISION  (OBJ_ROBOT, OBJ_EFFECT);
 
 //	-----------------------------------------------------------------------------
 
-int CollideObjectWithWall (CObject* objP, fix xHitSpeed, short nHitSeg, short nHitWall,   CFixVector& vHitPt)
+int CObject::CollideObjectWithWall (fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector& vHitPt)
 {
-switch (objP->info.nType)	{
+switch (info.nType)	{
 	case OBJ_NONE:
 		Error ("An object of type NONE hit a wall! \n");
 		break;
 	case OBJ_PLAYER:
-		objP->CollidePlayerAndWall (xHitSpeed, nHitSeg, nHitWall, vHitPt);
+		CollidePlayerAndWall (xHitSpeed, nHitSeg, nHitWall, vHitPt);
 		break;
 	case OBJ_WEAPON:
-		objP->CollideWeaponAndWall (xHitSpeed, nHitSeg, nHitWall, vHitPt);
+		CollideWeaponAndWall (xHitSpeed, nHitSeg, nHitWall, vHitPt);
 		break;
 	case OBJ_DEBRIS:
-		objP->CollideDebrisAndWall (xHitSpeed, nHitSeg, nHitWall, vHitPt);
+		CollideDebrisAndWall (xHitSpeed, nHitSeg, nHitWall, vHitPt);
 		break;
 	case OBJ_FIREBALL:
-		break;	//objP->CollideFireballAndWall (xHitSpeed, nHitSeg, nHitWall, vHitPt);
+		break;	//CollideFireballAndWall (xHitSpeed, nHitSeg, nHitWall, vHitPt);
 	case OBJ_ROBOT:
-		objP->CollideRobotAndWall (xHitSpeed, nHitSeg, nHitWall, vHitPt);
+		CollideRobotAndWall (xHitSpeed, nHitSeg, nHitWall, vHitPt);
 		break;
 	case OBJ_HOSTAGE:
-		break;	//objP->CollideHostageAndWall (xHitSpeed, nHitSeg, nHitWall, vHitPt);
+		break;	//CollideHostageAndWall (xHitSpeed, nHitSeg, nHitWall, vHitPt);
 	case OBJ_CAMERA:
-		break;	//objP->CollideCameraAndWall (xHitSpeed, nHitSeg, nHitWall, vHitPt);
+		break;	//CollideCameraAndWall (xHitSpeed, nHitSeg, nHitWall, vHitPt);
 	case OBJ_EFFECT:
-		break;	//objP->CollideSmokeAndWall (xHitSpeed, nHitSeg, nHitWall, vHitPt);
+		break;	//CollideSmokeAndWall (xHitSpeed, nHitSeg, nHitWall, vHitPt);
 	case OBJ_POWERUP:
-		break;	//objP->CollidePowerupAndWall (xHitSpeed, nHitSeg, nHitWall, vHitPt);
+		break;	//CollidePowerupAndWall (xHitSpeed, nHitSeg, nHitWall, vHitPt);
 	case OBJ_GHOST:
 		break;	//do nothing
 	case OBJ_MONSTERBALL:
-#if DBG
-		objP = objP;
-#endif
 		break;	//CollidePowerupAndWall (objP, xHitSpeed, nHitSeg, nHitWall, vHitPt);
 	default:
 		Error ("Unhandled CObject nType hit CWall in Collide.c \n");
