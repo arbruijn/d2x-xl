@@ -136,7 +136,7 @@ class CSide {
 		inline ushort WallNum (void) { return m_nWall; }
 		inline bool IsWall (void);
 		inline CWall* Wall (void);
-		inline CTrigger* Trigger (void);
+		CTrigger* Trigger (void);
 		inline sbyte Type (void) { return m_nType; }
 		bool IsVolatile (void);
 		int FaceCount (void);
@@ -169,7 +169,7 @@ class CSide {
 			vertices = m_vertices;
 			return m_nFaces;
 			}
-		inline CFixVector* GetCorners (CFixVector* vertices);
+		CFixVector* GetCorners (CFixVector* vertices);
 		inline ushort* Contour (void) { return m_contour; }
 		inline CFixVector& Vertex (int nVertex);
 		inline CFixVector& MinVertex (void);

@@ -418,7 +418,7 @@ gameData.objs.idToOOF [MEGAMSL_ID] = OOF_MEGA;
 
 //------------------------------------------------------------------------------
 
-inline void CObject::Kill (void)
+inline void CObject::Die (void)
 {
 info.nFlags |= OF_SHOULD_BE_DEAD;
 #if DBG
@@ -1106,7 +1106,7 @@ for (i = 0; i < h; ) {
 	else {
 		if (i < --h)
 			candidateP [i] = candidateP [h];
-		objP->Kill ();
+		objP->Die ();
 		if (!--nToFree)
 			return 0;
 		}
@@ -2401,7 +2401,7 @@ if (info.nType == OBJ_ROBOT) {
 	if (gameOpts->gameplay.bNoThief && (!IsMultiGame || IsCoopGame) && ROBOTINFO (info.nId).thief) {
 		info.xShields = 0;
 		info.xLifeLeft = 0;
-		Kill ();
+		Die ();
 		}
 	else {
 		fix xMaxShields = RobotDefaultShields (this);
@@ -2421,7 +2421,7 @@ if (UpdateControl ()) {
 	return 1;
 	}
 if (info.xLifeLeft < 0) {		// We died of old age
-	Kill ();
+	Die ();
 	if ((info.nType == OBJ_WEAPON) && WI_damage_radius (info.nId))
 		ExplodeBadassWeapon (info.position.vPos);
 	else if (info.nType == OBJ_ROBOT)	//make robots explode
@@ -2442,7 +2442,7 @@ return 1;
 
 //--------------------------------------------------------------------
 //move all OBJECTS for the current frame
-int UpdateAllObjects ()
+int UpdateAllObjects (void)
 {
 	int i;
 	CObject *objP, *nextObjP;
@@ -2471,7 +2471,7 @@ UpdatePlayerOrient ();
 i = 0;
 for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 	nextObjP = objP->Links (0).next;
-	if ((objP->info.nType != OBJ_NONE) && !(objP->info.nFlags & OF_SHOULD_BE_DEAD) && !UpdateObject (objP))
+	if ((objP->info.nType != OBJ_NONE) && !(objP->info.nFlags & OF_SHOULD_BE_DEAD) && !objP->Update ())
 		return 0;
 	i++;
 	}
@@ -3171,7 +3171,7 @@ PrintLog ("   finished building optimized polygon model data (%d models converte
 
 //------------------------------------------------------------------------------
 
-int CObject::OpenableDoorsInSegment (void)
+inline int CObject::OpenableDoorsInSegment (void)
 {
 return SEGMENTS [info.nSegment].HasOpenableDoor ();
 }

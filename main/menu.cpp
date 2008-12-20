@@ -2396,7 +2396,7 @@ do {
 	gameOpts->render.effects.bEnergySparks = m [effectOpts.nSparks].value;
 	if ((gameOpts->render.effects.bEnergySparks != bEnergySparks) && gameStates.app.bGameRunning) {
 		if (gameOpts->render.effects.bEnergySparks)
-			sparkManager.Create ();
+			sparkManager.Setup ();
 		else
 			sparkManager.Destroy ();
 		}

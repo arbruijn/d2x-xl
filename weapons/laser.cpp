@@ -720,7 +720,7 @@ if (nFate == HIT_WALL)  {
 //just fire away normally
 if (nFate == HIT_OBJECT) {
 	if (OBJECTS [hitData.hitObject].nType == OBJ_ROBOT)
-		OBJECTS [hitData.hitObject].Kill ();
+		OBJECTS [hitData.hitObject].Die ();
 	if (OBJECTS [hitData.hitObject].nType != OBJ_POWERUP)
 		return;
 	}
@@ -861,7 +861,7 @@ if (objP->info.xLifeLeft == ONE_FRAME_TIME) {
 	objP->info.renderType = RT_NONE;
 	}
 if (objP->info.xLifeLeft < 0) {		// We died of old age
-	objP->Kill ();
+	objP->Die ();
 	if (WI_damage_radius (objP->info.nId))
 		objP->ExplodeBadassWeapon (objP->info.position.vPos);
 	return;

@@ -797,7 +797,7 @@ return IS_WALL (m_nWall) ? Wall ()->Trigger () : NULL;
 
 //------------------------------------------------------------------------------
 
-bool CSide::IsVolatile (void)
+inline bool CSide::IsVolatile (void)
 {
 return IsWall () && WALLS [m_nWall].IsVolatile ();
 }

@@ -24,8 +24,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //figure out what seg the given point is in, tracing through segments
 int get_new_seg(CFixVector *p0,int startseg);
 
-void ComputeSideRads (short nSegment, short CSide, fix *prMin, fix *prMax);
-
 // -----------------------------------------------------------------------------------
 //this macro returns true if the nSegment for an CObject is correct
 #define check_obj_seg(obj) (GetSegMasks(&(obj)->pos,(obj)->nSegment,0).centermask == 0)

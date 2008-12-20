@@ -1205,7 +1205,7 @@ memcpy (reinterpret_cast<ubyte*> (&sp.xo), reinterpret_cast<ubyte*> (buf + 10), 
 ExtractShortPos (&OBJECTS [gameData.multiplayer.players [nPlayer].nObject], &sp, 1);
 #endif
 if (objP->info.movementType == MT_PHYSICS)
-	SetThrustFromVelocity (objP);
+	objP->SetThrustFromVelocity ();
 }
 
 //-----------------------------------------------------------------------------
@@ -1286,7 +1286,7 @@ for (i = 0; i < nRemoteCreated; i++) {
 	count += 2;
 	}
 for (i = nRemoteCreated; i < gameData.multigame.create.nLoc; i++)
-	OBJECTS [gameData.multigame.create.nObjNums [i]].Kill ();
+	OBJECTS [gameData.multigame.create.nObjNums [i]].Die ();
 if (buf [0] == MULTI_PLAYER_EXPLODE) {
 	KillPlayerSmoke (nPlayer);
 	objP->ExplodeBadassPlayer ();
@@ -1412,7 +1412,7 @@ if (OBJECTS [nLocalObj].info.nType == OBJ_POWERUP)
 				gameData.multiplayer.powerupsInMine [id] -= 4;
 			}
 		}
-OBJECTS [nLocalObj].Kill (); // quick and painless
+OBJECTS [nLocalObj].Die (); // quick and painless
 }
 
 //-----------------------------------------------------------------------------
@@ -3030,7 +3030,7 @@ FORALL_OBJS (objP, i) {
 		if (nType == OBJ_ROBOT)
 			if (objP->info.contains.nCount && (objP->info.contains.nType == OBJ_POWERUP))
 				ObjectCreateEgg (objP);
-		objP->Kill ();
+		objP->Die ();
 		}
 	}
 return nnp;

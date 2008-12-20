@@ -702,7 +702,7 @@ retryMove:
 	nWallHitSeg = hi.hit.nSideSegment;
 	if (iSeg == -1) {		//some sort of horrible error
 		if (info.nType == OBJ_WEAPON)
-			Kill ();
+			Die ();
 		break;
 		}
 	Assert ((fviResult != HIT_WALL) || ((nWallHitSeg > -1) && (nWallHitSeg <= gameData.segs.nLastSegment)));
@@ -731,7 +731,7 @@ retryMove:
 				info.position.vPos -= vCenter;
 				}
 			if (info.nType == OBJ_WEAPON) {
-				Kill ();
+				Die ();
 				return;
 				}
 			}
@@ -998,7 +998,7 @@ if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {
 			info.position.vPos [X] += nObject;
 			}
 		if (info.nType == OBJ_WEAPON)
-			Kill ();
+			Die ();
 		}
 	}
 CATCH_OBJ (this, mType.physInfo.velocity [Y] == 0);

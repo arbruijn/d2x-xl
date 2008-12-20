@@ -31,18 +31,6 @@ CSparkManager sparkManager;
 
 //-----------------------------------------------------------------------------
 
-class CEnergySparks {
-	private:
-		short	m_nSegments;
-
-	public:
-		CEnergySparks () { m_nSegments = 0; };
-		~CEnergySparks () {};
-
-};
-
-//-----------------------------------------------------------------------------
-
 void CEnergySpark::Setup (short nSegment, ubyte nType)
 {
 	CSegment*			segP = SEGMENTS + nSegment;
@@ -143,6 +131,15 @@ else {
 	for (int i = 0; i < m_nMaxSparks; i++)
 		m_sparks [i].m_nProb = d_rand () % SPARK_MIN_PROB + 1;
 	}
+}
+
+//-----------------------------------------------------------------------------
+
+void CSparks::Render (void)
+{
+m_bUpdate = 1;
+for (int i = 0; i < m_nMaxSparks; i++)
+	m_sparks [i].Render ();
 }
 
 //-----------------------------------------------------------------------------

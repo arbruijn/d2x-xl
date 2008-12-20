@@ -874,8 +874,6 @@ return m_normalP;
 
 void CQuadMeshBuilder::InitFace (short nSegment, ubyte nSide, bool bRebuild)
 {
-	fix	rMin, rMax;
-
 if (bRebuild)
 	m_faceP->nTris = 0;
 else
@@ -893,11 +891,8 @@ m_faceP->nSide = nSide;
 m_faceP->nWall = gameStates.app.bD2XLevel ? m_nWall : IS_WALL (m_nWall) ? m_nWall : (ushort) -1;
 m_faceP->bAnimation = IsAnimatedTexture (m_faceP->nBaseTex) || IsAnimatedTexture (m_faceP->nOvlTex);
 m_faceP->bHasColor = 0;
-ComputeSideRads (nSegment, nSide, &rMin, &rMax);
-//float rMinf = X2F (rMin);
-//float rMaxf = X2F (rMax);
-m_faceP->fRads [0] = X2F (rMin); //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
-m_faceP->fRads [1] = X2F (rMax); //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
+m_faceP->fRads [0] = X2F (SEGMENTS [nSegment].Side (nSide)->rads [0]); //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
+m_faceP->fRads [1] = X2F (SEGMENTS [nSegment].Side (nSide)->rads [1]); //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
 }
 
 //------------------------------------------------------------------------------

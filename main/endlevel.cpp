@@ -239,7 +239,7 @@ if (gameStates.app.bPlayerIsDead || (gameData.objs.consoleP->info.nFlags & OF_SH
 FORALL_ROBOT_OBJS (objP, i)
 	if (IS_GUIDEBOT (objP)) {
 			/*Object*/CreateExplosion (objP->info.nSegment, objP->info.position.vPos, F1_0*7/2, VCLIP_POWERUP_DISAPPEARANCE);
-			objP->Kill ();
+			objP->Die ();
 		}
 LOCALPLAYER.homingObjectDist = -F1_0; // Turn off homing sound.
 ResetRearView ();		//turn off rear view if set
@@ -468,7 +468,7 @@ if (!gameStates.render.bOutsideMine) {
 			objP = /*Object*/CreateExplosion (gameData.endLevel.exit.nSegNum, gameData.endLevel.exit.vSideExit, I2X (50), VCLIP_BIG_PLAYER_EXPLOSION);
 			if (objP) {
 				externalExplosion = *objP;
-				objP->Kill ();
+				objP->Die ();
 				gameStates.render.nFlashScale = 0;	//kill lights in mine
 				ext_expl_halflife = objP->info.xLifeLeft;
 				gameStates.render.bExtExplPlaying = 1;

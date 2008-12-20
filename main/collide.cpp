@@ -846,7 +846,7 @@ if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_VOLATILE) ||
 		CreateBadassExplosion (this, nHitSeg, vHitPt, wInfoP->impact_size + VOLATILE_WALL_IMPACT_SIZE, tVideoClip,
 									  nStrength / 4 + VOLATILE_WALL_EXPL_STRENGTH, wInfoP->damage_radius+VOLATILE_WALL_DAMAGE_RADIUS,
 									  nStrength / 2 + VOLATILE_WALL_DAMAGE_FORCE, cType.laserInfo.parent.nObject);
-	Kill ();		//make flares die in lava
+	Die ();		//make flares die in lava
 	}
 else if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_WATER) ||
 			(sideP->m_nOvlTex && (gameData.pig.tex.tMapInfoP [sideP->m_nOvlTex].flags & TMI_WATER))) {
@@ -867,7 +867,7 @@ else if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_WATER) ||
 		DigiLinkSoundToPos (SOUND_LASER_HIT_WATER, nHitSeg, 0, vHitPt, 0, F1_0);
 		/*Object*/CreateExplosion (info.nSegment, info.position.vPos, wInfoP->impact_size, VCLIP_WATER_HIT);
 		}
-	Kill ();		//make flares die in water
+	Die ();		//make flares die in water
 	}
 else {
 	if (!bBounce) {
@@ -895,12 +895,12 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) || bEscort) {
 //	We now allow flares to open doors.
 
 	if (!bBounce && ((info.nId != FLARE_ID) || (cType.laserInfo.parent.nType != OBJ_PLAYER))) {
-		Kill ();
+		Die ();
 		}
 
 	//don't let flares stick in vForce fields
 	if ((info.nId == FLARE_ID) && (gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_FORCE_FIELD)) {
-		Kill ();
+		Die ();
 		}
 	if (!(info.nFlags & OF_SILENT)) {
 		switch (wallType) {
@@ -931,7 +931,7 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) || bEscort) {
 else {
 	// This is a robotP's laser
 	if (!bBounce)
-		Kill ();
+		Die ();
 	}
 return 1;
 }
@@ -975,7 +975,7 @@ return 1;
 //##}
 
 //##void CollideFireballAndWeapon (CObject* fireball, CObject* weaponP, CFixVector& vHitPt) {
-//##	//weaponP->Kill ();
+//##	//weaponP->Die ();
 //##	return;
 //##}
 
@@ -1193,7 +1193,7 @@ return 1;
 void CObject::MaybeKillWeapon (CObject* otherObjP)
 {
 if (WeaponIsMine (info.nId)) {
-	Kill ();
+	Die ();
 	return;
 	}
 if (mType.physInfo.flags & PF_PERSISTENT) {
@@ -1202,12 +1202,12 @@ if (mType.physInfo.flags & PF_PERSISTENT) {
 		info.xShields -= otherObjP->info.xShields / ((otherObjP->info.nType == OBJ_WEAPON) ? 2 : 4);
 		if (info.xShields <= 0) {
 			info.xShields = 0;
-			Kill ();	// info.xLifeLeft = 1;
+			Die ();	// info.xLifeLeft = 1;
 			}
 		}
 	}
 else {
-	Kill ();	// info.xLifeLeft = 1;
+	Die ();	// info.xLifeLeft = 1;
 	}
 }
 
@@ -1685,7 +1685,7 @@ if (this == gameData.objs.consoleP) {
 	// Do effect
 	RescueHostage (hostageP->info.nId);
 	// Remove the hostage CObject.
-	hostageP->Kill ();
+	hostageP->Die ();
 	if (IsMultiGame)
 		MultiSendRemObj (OBJ_IDX (hostageP));
 	}
@@ -1706,7 +1706,7 @@ return 1;
 //--unused--
 //--unused-- 	if (hostage->info.xShields <= 0) {
 //--unused-- 		ExplodeObject (hostage, 0);
-//--unused-- 		hostage->Kill ();
+//--unused-- 		hostage->Die ();
 //--unused-- 	}
 //--unused--
 //--unused-- 	if (WI_damage_radius (weaponP->info.nId))
@@ -1824,7 +1824,7 @@ if (info.nId == gameData.multiplayer.nLocalPlayer) {		//is this the local CPlaye
 	paletteManager.BumpEffect (X2I (damage)*4, -X2I (damage/2), -X2I (damage/2));	//flash red
 	if (playerP->shields < 0)	{
   		playerP->nKillerObj = OBJ_IDX (killerObjP);
-		Kill ();
+		Die ();
 		if (gameData.escort.nObjNum != -1)
 			if (killerObjP && (killerObjP->info.nType == OBJ_ROBOT) && (ROBOTINFO (killerObjP->info.nId).companion))
 				gameData.escort.xSorryTime = gameData.time.xGame;
@@ -1968,7 +1968,7 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead &&
 	(info.nId == gameData.multiplayer.nLocalPlayer)) {
 	int bPowerupUsed = DoPowerup (powerupP, info.nId);
 	if (bPowerupUsed) {
-		powerupP->Kill ();
+		powerupP->Die ();
 		if (IsMultiGame)
 			MultiSendRemObj (OBJ_IDX (powerupP));
 		}
@@ -2131,7 +2131,7 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && !(debrisP->info.nFlags & OF_
 	if (WI_damage_radius (info.nId))
 		ExplodeBadassWeapon (vHitPt);
 	MaybeKillWeapon (debrisP);
-	Kill ();
+	Die ();
 	}
 return 1;
 }

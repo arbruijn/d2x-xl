@@ -816,7 +816,7 @@ if (objP == dbgObjP) {
 	}
 #endif
 if (objP->info.nType == 255) {
-	objP->Kill ();
+	objP->Die ();
 	return 0;
 	}
 if (bEmissive && gameStates.render.bQueryCoronas)

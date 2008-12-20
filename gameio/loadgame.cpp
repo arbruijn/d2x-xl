@@ -1007,7 +1007,7 @@ if (!bRestore) {
 LoadExtraImages ();
 CreateShieldSphere ();
 PrintLog ("   initializing energy spark render data\n");
-sparkManager.Create ();
+sparkManager.Setup ();
 PrintLog ("   setting robot generator vertigo robot flags\n");
 SetVertigoRobotFlags ();
 PrintLog ("   initializing debris collision handlers\n");

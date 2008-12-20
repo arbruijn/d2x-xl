@@ -756,13 +756,13 @@ class CObject : public CObjectInfo {
 		int PowerupToWeapon (void);
 		void HandleSpecialSegment (void);
 
-		inline int OpenableDoorsInSegment (void);
+		int OpenableDoorsInSegment (void);
 		int CheckSegmentPhysics (void);
 		int CheckWallPhysics (short nSegment, short nSide);
 		int ApplyWallPhysics (short nSegment, short nSide);
 		void ScrapeOnWall (short nHitSeg, short nHitSide, CFixVector& vHitPt);
 
-		inline void Kill (void);
+		inline void Die (void);
 		void MaybeDelete (void);
 
 		void TurnTowardsVector (CFixVector vGoal, fix rate);

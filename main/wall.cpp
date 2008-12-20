@@ -883,7 +883,7 @@ void AddStuckObject (CObject *objP, short nSegment, short nSide)
 CWall* wallP = SEGMENTS [nSegment].Wall (nSide);
 if (wallP) {
 	if (wallP->flags & WALL_BLASTED)
-		objP->Kill ();
+		objP->Die ();
 	nWall = wallP - WALLS;
 	for (i = 0, stuckObjP = stuckObjects; i < MAX_STUCK_OBJECTS; i++, stuckObjP++) {
 		if (stuckObjP->nWall == NO_WALL) {
@@ -1215,7 +1215,7 @@ d.time = cf.ReadFix ();
 
 // -----------------------------------------------------------------------------------
 
-inline bool CWall::IsOpenableDoor (void)
+bool CWall::IsOpenableDoor (void)
 {
 return (nType == WALL_DOOR) && (keys == KEY_NONE) && (state == WALL_DOOR_CLOSED) && !(flags & WALL_DOOR_LOCKED);
 }

@@ -272,7 +272,7 @@ else {
 
 //------------------------------------------------------------
 //	Trigger (enable) the materialization center in CSegment nSegment
-int MatCenTrigger (short nSegment)
+int TriggerMatCen (short nSegment)
 {
 	// -- CSegment		*segP = &SEGMENTS [nSegment];
 	CSegment*		segP = &SEGMENTS [nSegment];

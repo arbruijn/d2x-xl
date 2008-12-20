@@ -108,6 +108,7 @@ for (int i = 0; i < 8; i++) {
 	if (m_rads [1] < xDist)
 		m_rads [1] = xDist;
 	}
+ComputeSideRads ();
 m_extents [0] = vMin;
 m_extents [1] = vMax;
 }

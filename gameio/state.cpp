@@ -1051,7 +1051,7 @@ if (!m_bBetweenLevels)	{
 				md->objP = NULL;
 				} 
 			else {						//maybe loaded half-morphed from disk
-				objP->Kill ();
+				objP->Die ();
 				objP->info.renderType = RT_POLYOBJ;
 				objP->info.controlType = CT_NONE;
 				objP->info.movementType = MT_NONE;

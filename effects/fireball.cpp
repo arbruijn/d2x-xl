@@ -176,7 +176,7 @@ FORALL_OBJS (objP, i) {
 	if (nType == OBJ_WEAPON) {
 		objP->ApplyForce (vForce);
 		if (WeaponIsMine (objP->info.nId) && (FixMul (dist, force) > I2X (8000))) {	//prox bombs have chance of blowing up
-			objP->Kill ();
+			objP->Die ();
 			objP->ExplodeBadassWeapon (objP->info.position.vPos);
 			}
 		}
@@ -469,7 +469,7 @@ else {		//Normal, multi-stage explosion
 	if (info.nType == OBJ_PLAYER)
 		info.renderType = RT_NONE;
 	else
-		Kill ();
+		Die ();
 	}
 }
 
@@ -548,7 +548,7 @@ void CObject::DoExplosionSequence (void)
 Assert (info.controlType == CT_EXPLOSION);
 //See if we should die of old age
 if (info.xLifeLeft <= 0) {	// We died of old age
-	Kill ();
+	Die ();
 	info.xLifeLeft = 0;
 	}
 if (info.renderType == RT_EXPLBLAST)
