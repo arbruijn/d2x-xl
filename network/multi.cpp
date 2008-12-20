@@ -3841,7 +3841,7 @@ gameData.multigame.msg.buf [0] = MULTI_ACTIVE_DOOR;
 gameData.multigame.msg.buf [1] = i;
 gameData.multigame.msg.buf [2] = gameData.walls.nOpenDoors;
 count = 3;
-memcpy (gameData.multigame.msg.buf + 3, gameData.walls.activeDoors + i, sizeof (struct CActiveDoor);
+memcpy (gameData.multigame.msg.buf + 3, gameData.walls.activeDoors + i, sizeof (CActiveDoor);
 count += sizeof (CActiveDoor);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 {
@@ -3854,7 +3854,7 @@ ad->nBackWall [1] = INTEL_SHORT (ad->nBackWall [1]);
 ad->time = INTEL_INT (ad->time);
 }
 #endif
-//MultiSendData (gameData.multigame.msg.buf, sizeof (struct CActiveDoor)+3, 1);
+//MultiSendData (gameData.multigame.msg.buf, sizeof (CActiveDoor)+3, 1);
 MultiSendData (gameData.multigame.msg.buf, count, 1);
 }
 #endif // 0 (never used)
@@ -3866,7 +3866,7 @@ void MultiDoActiveDoor (char *buf)
 	char i = gameData.multigame.msg.buf [1];
 
 gameData.walls.nOpenDoors = buf [2];
-memcpy (&gameData.walls.activeDoors [(int)i], buf+3, sizeof (struct CActiveDoor));
+memcpy (&gameData.walls.activeDoors [(int)i], buf+3, sizeof (CActiveDoor));
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 {
 CActiveDoor *ad = gameData.walls.activeDoors + i;
