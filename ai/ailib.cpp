@@ -189,7 +189,7 @@ else {
 #endif
 		if ((ailP->nextMiscSoundTime < gameData.time.xGame) && ((ailP->nextPrimaryFire < F1_0) || (ailP->nextSecondaryFire < F1_0)) && (dist < F1_0*20)) {
 			ailP->nextMiscSoundTime = gameData.time.xGame + (d_rand () + F1_0) * (7 - gameStates.app.nDifficultyLevel) / 1;
-			DigiLinkSoundToPos (botInfoP->seeSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
+			DigiLinkSoundToPos (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0 , nRobotSoundVolume);
 			}
 		}
 	else {
@@ -221,7 +221,7 @@ else {
 					// -- if (gameStates.app.bPlayerExploded)
 					// -- 	DigiLinkSoundToPos (botInfoP->tauntSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
 					// -- else
-						DigiLinkSoundToPos (botInfoP->seeSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
+						DigiLinkSoundToPos (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0 , nRobotSoundVolume);
 					ailP->timePlayerSoundAttacked = gameData.time.xGame;
 					ailP->nextMiscSoundTime = gameData.time.xGame + F1_0 + d_rand ()*4;
 					}
@@ -230,7 +230,7 @@ else {
 				// -- if (gameStates.app.bPlayerExploded)
 				// -- 	DigiLinkSoundToPos (botInfoP->tauntSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
 				// -- else
-					DigiLinkSoundToPos (botInfoP->attackSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
+					DigiLinkSoundToPos (botInfoP->attackSound, objP->info.nSegment, 0, *pos, 0 , nRobotSoundVolume);
 				ailP->timePlayerSoundAttacked = gameData.time.xGame;
 				}
 			}
@@ -240,7 +240,7 @@ else {
 			// -- if (gameStates.app.bPlayerExploded)
 			// -- 	DigiLinkSoundToPos (botInfoP->tauntSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
 			// -- else
-				DigiLinkSoundToPos (botInfoP->attackSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
+				DigiLinkSoundToPos (botInfoP->attackSound, objP->info.nSegment, 0, *pos, 0 , nRobotSoundVolume);
 			}
 		ailP->nPrevVisibility = gameData.ai.nPlayerVisibility;
 		}
@@ -271,15 +271,13 @@ int AIDoorIsOpenable (CObject *objP, CSegment *segP, short nSide)
 
 if (!IS_CHILD (segP->m_children [nSide]))
 	return 0;		//trap -2 (exit CSide)
-nWall = WallNumP (segP, nSide);
-if (!IS_WALL (nWall))		//if there's no door at alld:\temp\dm_test.
+if (!(wallP = segP->Wall (nSide)))
 	return 1;				//d:\temp\dm_testthen say it can't be opened
 	//	The mighty console CObject can open all doors (for purposes of determining paths).
 if (objP == gameData.objs.consoleP) {
-	if (WALLS [nWall].nType == WALL_DOOR)
+	if (wallP->nType == WALL_DOOR)
 		return 1;
 	}
-wallP = WALLS + nWall;
 if ((objP == NULL) || (ROBOTINFO (objP->info.nId).companion == 1)) {
 	int	ailp_mode;
 

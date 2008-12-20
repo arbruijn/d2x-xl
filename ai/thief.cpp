@@ -140,7 +140,8 @@ void DoThiefFrame(CObject *objP)
 
 			ailp->nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
 
-			connectedDistance = FindConnectedDistance (&objP->info.position.vPos, objP->info.nSegment, &gameData.ai.vBelievedPlayerPos, gameData.ai.nBelievedPlayerSeg, 30, WID_FLY_FLAG, 0);
+			connectedDistance = FindConnectedDistance (objP->info.position.vPos, objP->info.nSegment, gameData.ai.vBelievedPlayerPos, 
+																	 gameData.ai.nBelievedPlayerSeg, 30, WID_FLY_FLAG, 0);
 			if (connectedDistance < F1_0*500) {
 				CreatePathToPlayer(objP, 30, 1);
 				ailp->mode = AIM_THIEF_ATTACK;

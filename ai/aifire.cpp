@@ -282,11 +282,11 @@ if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 	//	This is almost always ok, but it is not ok if something solid is in between.
 	int	nGunSeg = FindSegByPos (*vFirePoint, objP->info.nSegment, 1, 0);
 	//	See if these segments are connected, which should almost always be the case.
-	short nConnSide = ConnectedSide (&SEGMENTS [nGunSeg], &SEGMENTS [objP->info.nSegment]);
+	short nConnSide = SEGMENTS [nGunSeg].ConnectedSide (&SEGMENTS [objP->info.nSegment]);
 	if (nConnSide != -1) {
 		//	They are connected via nConnSide in CSegment objP->info.nSegment.
 		//	See if they are unobstructed.
-		if (!(WALL_IS_DOORWAY (SEGMENTS + objP->info.nSegment, nConnSide, NULL) & WID_FLY_FLAG)) {
+		if (!(SEGMENTS [objP->info.nSegment].IsDoorWay (nConnSide, NULL) & WID_FLY_FLAG)) {
 			//	Can't fly through, so don't let this bot fire through!
 			return;
 			}

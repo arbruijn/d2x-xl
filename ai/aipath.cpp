@@ -800,8 +800,8 @@ if (aiP->nPathLength < 2)
 Assert (objP->info.nSegment != -1);
 #if DBG
 if (objP->info.nSegment != nGoalSeg)
-	if (ConnectedSide (SEGMENTS + objP->info.nSegment, SEGMENTS + nGoalSeg) == -1) {
-		fix dist = FindConnectedDistance (&objP->info.position.vPos, objP->info.nSegment, vGoalPoint, nGoalSeg, 30, WID_FLY_FLAG, 0);
+	if (SEGMENTS [objP->info.nSegment].ConnectedSide (SEGMENTS + nGoalSeg) == -1) {
+		fix dist = FindConnectedDistance (objP->info.position.vPos, objP->info.nSegment, *vGoalPoint, nGoalSeg, 30, WID_FLY_FLAG, 0);
 #	if TRACE
 		if (gameData.fcd.nConnSegDist > 2)	//	This global is set in FindConnectedDistance
 			console.printf (1, "Warning: Object %i hopped across %i segments, a distance of %7.3f.\n", objP->Index (), gameData.fcd.nConnSegDist, X2F (dist));

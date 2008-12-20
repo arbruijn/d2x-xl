@@ -140,6 +140,7 @@ class CSide {
 		inline sbyte Type (void) { return m_nType; }
 		bool IsVolatile (void);
 		int FaceCount (void);
+		void CheckSum (uint& sum1, uint& sum2);
 
 		int CheckTransparency (void);
 		int SpecialCheckLineToFace (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short iFace, CFixVector vNormal);
@@ -214,6 +215,7 @@ class CSegment {
 		void Validate (void);
 		inline ushort WallNum (short nSide) { return m_sides [nSide].WallNum (); }
 		inline int CheckTransparency (short nSide) { return m_sides [nSide].CheckTransparency (); }
+		void CheckSum (uint& sum1, uint& sum2);
 
 		inline bool IsWall (int nSide) { return m_sides [nSide].IsWall (); }
 		void SetTexture (short nSide, CSegment *connSegP, short nConnSide, int nAnim, int nFrame);

@@ -150,7 +150,7 @@ nStartSeg = objP->info.nSegment;
 vPos = objP->info.position.vPos;
 if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP->info.nId).companion) {
 	// move out from all other robots in same segment that are too close
-	for (nObject = SEGMENTS [nStartSeg].objects; nObject != -1; nObject = avoidObjP->info.nNextInSeg) {
+	for (nObject = SEGMENTS [nStartSeg].m_objects; nObject != -1; nObject = avoidObjP->info.nNextInSeg) {
 		avoidObjP = OBJECTS + nObject;
 		if ((avoidObjP->info.nType != OBJ_ROBOT) || (avoidObjP->info.nSignature >= objP->info.nSignature))
 			continue;	// comparing the sigs ensures that only one of two bots tested against each other will move, keeping them from bouncing around
@@ -495,7 +495,7 @@ if (ROBOTINFO (objP->info.nId).bossFlag) {
 #if TRACE
 		console.printf (CON_DBG, "Note: Killing robot #%i because he's badly stuck outside the mine.\n", objP->Index ());
 #endif
-		ApplyDamageToRobot (objP, objP->info.xShields*2, objP->Index ());
+		objP->ApplyDamageToRobot (objP->info.xShields*2, objP->Index ());
 	}
 }
 

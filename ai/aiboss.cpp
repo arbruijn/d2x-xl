@@ -280,9 +280,9 @@ objP->info.xShields = botInfoP->strength;
 objP->info.nCreator = BOSS_GATE_MATCEN_NUM;	//	flag this robot as having been created by the boss.
 default_behavior = ROBOTINFO (objP->info.nId).behavior;
 InitAIObject (objP->Index (), default_behavior, -1);		//	Note, -1 = CSegment this robot goes to to hide, should probably be something useful
-/*Object*/CreateExplosion (nSegment, &vObjPos, I2X (10), VCLIP_MORPHING_ROBOT);
-DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, &vObjPos, 0 , F1_0);
-MorphStart (objP);
+/*Object*/CreateExplosion (nSegment, vObjPos, I2X (10), VCLIP_MORPHING_ROBOT);
+DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, vObjPos, 0 , F1_0);
+objP->MorphStart ();
 gameData.boss [nBoss].nLastGateTime = gameData.time.xGame;
 LOCALPLAYER.numRobotsLevel++;
 LOCALPLAYER.numRobotsTotal++;
@@ -309,7 +309,7 @@ if (nSegment == -1) {
 	return -1;
 	}
 if (!vPos) 
-	vPos = SEGMENTS [nSegment].Center ();
+	vPos = &SEGMENTS [nSegment].Center ();
 if (objType < 0)
 	objType = spewBots [gameStates.app.bD1Mission][nBossIndex][(maxSpewBots [nBossIndex] * d_rand ()) >> 15];
 if (objType == 255) {	// spawn an arbitrary robot
@@ -356,7 +356,7 @@ if (nSegment < 0) {
 	nSegment = gameData.boss [i].gateSegs [(d_rand () * gameData.boss [i].nGateSegs) >> 15];
 	}
 Assert ((nSegment >= 0) && (nSegment <= gameData.segs.nLastSegment));
-return CreateGatedRobot (OBJECTS + nObject, nSegment, nType, NULL);
+return OBJECTS [nObject].CreateGatedRobot (nSegment, nType, NULL);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -435,7 +435,7 @@ gameData.boss [i].nLastTeleportTime = gameData.time.xGame;
 objP->info.position.vPos = vNewPos;
 vBossDir = OBJECTS [LOCALPLAYER.nObject].info.position.vPos - vNewPos;
 objP->info.position.mOrient = CFixMatrix::CreateF(vBossDir);
-DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nRandSeg, 0, &objP->info.position.vPos, 0 , F1_0);
+DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nRandSeg, 0, objP->info.position.vPos, 0 , F1_0);
 DigiKillSoundLinkedToObject (nObject);
 DigiLinkSoundToObject2 (ROBOTINFO (objP->info.nId).seeSound, objP->Index (), 1, F1_0, F1_0*512, SOUNDCLASS_ROBOT);	//	F1_0*512 means play twice as loud
 //	After a teleport, boss can fire right away.
@@ -474,7 +474,7 @@ rval = DoRobotDyingFrame (objP, gameData.boss [i].nDyingStartTime, BOSS_DEATH_DU
 if (rval) {
 	RemoveBoss (i);
 	DoReactorDestroyedStuff (NULL);
-	ExplodeObject (objP, F1_0/4);
+	objP->Explode (F1_0/4);
 	DigiLinkSoundToObject2 (SOUND_BADASS_EXPLOSION, objP->Index (), 0, F2_0, F1_0*512, SOUNDCLASS_EXPLOSION);
 	}
 }

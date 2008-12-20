@@ -1289,7 +1289,7 @@ for (i = nRemoteCreated; i < gameData.multigame.create.nLoc; i++)
 	OBJECTS [gameData.multigame.create.nObjNums [i]].Kill ();
 if (buf [0] == MULTI_PLAYER_EXPLODE) {
 	KillPlayerSmoke (nPlayer);
-	ExplodeBadassPlayer (objP);
+	objP->ExplodeBadassPlayer ();
 	objP->info.nFlags &= ~OF_SHOULD_BE_DEAD;              //don't really kill CPlayerData
 	MultiMakePlayerGhost (nPlayer);
 	}
@@ -1502,32 +1502,31 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 void MultiDoDoorOpen (char *buf)
 {
 	int nSegment;
-	sbyte CSide;
+	sbyte nSide;
 	CSegment *segP;
 	CWall *wallP;
 	ubyte flag;
 
 nSegment = GET_INTEL_SHORT (buf + 1);
-CSide = buf [3];
+nSide = buf [3];
 flag = buf [4];
 
-if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment) || (CSide < 0) || (CSide > 5)) {
+if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment) || (nSide < 0) || (nSide > 5)) {
 	Int3 ();
 	return;
 	}
 segP = SEGMENTS + nSegment;
-if (!IS_WALL (WallNumP (segP, CSide))) {  //Opening door on illegal CWall
+if (!(wallP = segP->Wall (nSide))) {  //Opening door on illegal CWall
 	Int3 ();
 	return;
 	}
-wallP = WALLS + WallNumP (segP, CSide);
 if (wallP->nType == WALL_BLASTABLE) {
 	if (!(wallP->flags & WALL_BLASTED))
-		WallDestroy (segP, CSide);
+		WallDestroy (segP, nSide);
 	return;
 	}
 else if (wallP->state != WALL_DOOR_OPENING) {
-	WallOpenDoor (segP, CSide);
+	WallOpenDoor (segP, nSide);
 	wallP->flags = flag;
 	}
 else
@@ -1610,7 +1609,7 @@ OBJECTS [nLocalObj].info.position.vPos = vNewPos;
 OBJECTS [nLocalObj].mType.physInfo.velocity.SetZero();
 OBJECTS [nLocalObj].RelinkToSeg (nSegment);
 MapObjnumLocalToRemote (nLocalObj, nObject, nPlayer);
-/*Object*/CreateExplosion (nSegment, &vNewPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
+/*Object*/CreateExplosion (nSegment, vNewPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
 #if 0
 if (gameData.app.nGameMode & GM_NETWORK)
 	gameData.multiplayer.powerupsInMine [(int) powerupType]++;
@@ -1655,22 +1654,22 @@ MultiSortKillList ();
 void MultiDoTrigger (char *buf)
 {
 	int nPlayer = (int) (buf [1]);
-	int CTrigger = (int) ((ubyte) buf [2]);
+	int nTrigger = (int) ((ubyte) buf [2]);
 	short nObject;
 
 if ((nPlayer < 0) || (nPlayer  >= gameData.multiplayer.nPlayers) || (nPlayer == gameData.multiplayer.nLocalPlayer)) {
-	Int3 (); // Got CTrigger from illegal nPlayer
+	Int3 (); // Got nTrigger from illegal nPlayer
 	return;
 	}
-if ((CTrigger < 0) || (CTrigger  >= gameData.trigs.nTriggers)) {
-	Int3 (); // Illegal CTrigger number in multiplayer
+if ((nTrigger < 0) || (nTrigger  >= gameData.trigs.nTriggers)) {
+	Int3 (); // Illegal nTrigger number in multiplayer
 	return;
 	}
 if (gameStates.multi.nGameType == UDP_GAME)
 	nObject = GET_INTEL_SHORT (buf + 3);
 else
 	nObject = gameData.multiplayer.players [nPlayer].nObject;
-OperateTrigger (nObject, TRIGGERS.Buffer (), gameData.trigs.nTriggers, CTrigger, nPlayer, 0, 0);
+TRIGGERS [nTrigger].Operate (nObject, nPlayer, 0, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -1693,18 +1692,17 @@ OBJECTS [gameData.multiplayer.players [nPlayer].nObject].info.xShields = shields
 void MultiDoObjTrigger (char *buf)
 {
 	int nPlayer = (int) (buf [1]);
-	int CTrigger = (int) ((ubyte) buf [2]);
+	int nTrigger = (int) ((ubyte) buf [2]);
 
 if ((nPlayer < 0) || (nPlayer  >= gameData.multiplayer.nPlayers) || (nPlayer == gameData.multiplayer.nLocalPlayer)) {
-	Int3 (); // Got CTrigger from illegal nPlayer
+	Int3 (); // Got nTrigger from illegal nPlayer
 	return;
 	}
-if ((CTrigger < 0) || (CTrigger  >= gameData.trigs.nObjTriggers)) {
-	Int3 (); // Illegal CTrigger number in multiplayer
+if ((nTrigger < 0) || (nTrigger  >= gameData.trigs.nObjTriggers)) {
+	Int3 (); // Illegal nTrigger number in multiplayer
 	return;
 	}
-OperateTrigger (gameData.multiplayer.players [nPlayer].nObject, OBJTRIGGERS.Buffer (),
-					  gameData.trigs.nObjTriggers, CTrigger, nPlayer, 0, 1);
+OBJTRIGGERS [nTrigger].Operate (gameData.multiplayer.players [nPlayer].nObject, nPlayer, 0, 1);
 }
 
 //-----------------------------------------------------------------------------
@@ -1729,9 +1727,9 @@ if ((gameData.marker.objects [nMarker] != -1) &&
 	ReleaseObject (gameData.marker.objects [nMarker]);
 gameData.marker.objects [(nPlayer*2)+nMsg] =
 	DropMarkerObject (
-		&position,
+		position,
 		OBJECTS [LOCALPLAYER.nObject].info.nSegment,
-		&OBJECTS [LOCALPLAYER.nObject].info.position.mOrient,
+		OBJECTS [LOCALPLAYER.nObject].info.position.mOrient,
 		(ubyte) nMarker);
 strcpy (gameData.marker.nOwner [nMarker], gameData.multiplayer.players [nPlayer].callsign);
 }
@@ -2912,11 +2910,11 @@ if (nTexture >- 1)
 		if (bForce || (segP->m_sides [j].m_nBaseTex == nOldTexture)) {
 			segP->m_sides [j].m_nBaseTex = nTexture;
 			if ((extraGameInfo [1].entropy.nOverrideTextures == 1) &&
-				 (segP->m_sides [j].nOvlTex > 0) && (nTexture2 > 0))
-				segP->m_sides [j].nOvlTex = nTexture2;
+				 (segP->m_sides [j].m_nOvlTex > 0) && (nTexture2 > 0))
+				segP->m_sides [j].m_nOvlTex = nTexture2;
 			if ((extraGameInfo [1].entropy.nOverrideTextures == 1) && bFullBright)
 				for (v = 0; v < 4; v++)
-					segP->m_sides [j].uvls [v].l = I2X (100);		//max out
+					segP->m_sides [j].m_uvls [v].l = I2X (100);		//max out
 			}
 		}
 if (bFullBright)
@@ -2933,8 +2931,6 @@ int Goal_blue_segnum, Goal_red_segnum;
 void ChangeSegmentTexture (int nSegment, int oldOwner)
 {
 	CSegment	*segP = SEGMENTS + nSegment;
-	CSegment *seg2P = SEGMENTS + nSegment;
-	xsegment *xSegP = SEGMENTS + nSegment;
 	int		bFullBright = ((gameData.app.nGameMode & GM_HOARD) != 0) || ((gameData.app.nGameMode & GM_ENTROPY) && extraGameInfo [1].entropy.bBrightenRooms);
 	static	short texOverrides [3] = {-313, TMI_BLUE_TEAM, TMI_RED_TEAM};
 
@@ -2942,7 +2938,7 @@ void ChangeSegmentTexture (int nSegment, int oldOwner)
 //	oldOwner = segP->nOwner;
 if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2))
 	return;
-switch (seg2P->m_nType) {
+switch (segP->m_nType) {
 	case SEGMENT_IS_GOAL_BLUE:
 		Goal_blue_segnum = nSegment;
 		OverrideTextures (segP, (short) ((gameData.app.nGameMode & GM_HOARD) ? TMI_GOAL_HOARD : TMI_GOAL_BLUE), -1, -1, bFullBright, 1);
@@ -2955,26 +2951,26 @@ switch (seg2P->m_nType) {
 		break;
 
 	case SEGMENT_IS_ROBOTMAKER:
-		if ((gameData.app.nGameMode & GM_ENTROPY) && (xSegP->owner >= 0))
-			OverrideTextures (segP, texOverrides [(int) xSegP->owner],
+		if ((gameData.app.nGameMode & GM_ENTROPY) && (segP->m_owner >= 0))
+			OverrideTextures (segP, texOverrides [(int) segP->m_owner],
 									 (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), 316, bFullBright, oldOwner < 0);
 		break;
 
 	case SEGMENT_IS_REPAIRCEN:
-		if ((gameData.app.nGameMode & GM_ENTROPY) && (xSegP->owner >= 0))
-			OverrideTextures (segP, texOverrides [(int) xSegP->owner],
+		if ((gameData.app.nGameMode & GM_ENTROPY) && (segP->m_owner >= 0))
+			OverrideTextures (segP, texOverrides [(int) segP->m_owner],
 									 (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), 315, bFullBright, oldOwner < 0);
 		break;
 
 	case SEGMENT_IS_FUELCEN:
-		if ((gameData.app.nGameMode & GM_ENTROPY) && (xSegP->owner >= 0))
-			OverrideTextures (segP, texOverrides [(int) xSegP->owner],
+		if ((gameData.app.nGameMode & GM_ENTROPY) && (segP->m_owner >= 0))
+			OverrideTextures (segP, texOverrides [(int) segP->m_owner],
 								   (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), 314, bFullBright, oldOwner < 0);
 		break;
 
 	default:
-		if ((gameData.app.nGameMode & GM_ENTROPY) && (xSegP->owner >= 0))
-			OverrideTextures (segP, texOverrides [(int) xSegP->owner],
+		if ((gameData.app.nGameMode & GM_ENTROPY) && (segP->m_owner >= 0))
+			OverrideTextures (segP, texOverrides [(int) segP->m_owner],
 									 (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), -1, bFullBright, oldOwner < 0);
 	}
 }
@@ -3490,9 +3486,9 @@ gameStates.app.xThisLevelTime = num;
 void MultiCheckForEntropyWinner ()
 {
 #if 1//!DBG
-	xsegment *xSegP;
-	int		h, i, t;
-	char	bGotRoom [2] = {0, 0};
+	CSegment*	segP;
+	int			h, i, t;
+	char			bGotRoom [2] = {0, 0};
 
 	static int		countDown;
 
@@ -3507,8 +3503,8 @@ if (gameData.reactor.bDestroyed) {
 #endif
 countDown = -1;
 gameStates.entropy.bExitSequence = 0;
-for (i = 0, xSegP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, xSegP++)
-	if ((t = (int) xSegP->owner) > 0) {
+for (i = 0, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, segP++)
+	if ((t = (int) segP->m_owner) > 0) {
 		bGotRoom [--t] = 1;
 		if (bGotRoom [!t])
 			return;
@@ -3527,9 +3523,9 @@ for (h = i = 0; i < gameData.multiplayer.nPlayers; i++)
 if ((h  >= extraGameInfo [1].entropy.nCaptureVirusLimit) && extraGameInfo [1].entropy.nVirusStability)
 	return;
 HUDInitMessage (TXT_WINNING_TEAM, t ? TXT_RED : TXT_BLUE);
-for (i = 0, xSegP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, xSegP++) {
-	if (xSegP->owner != t + 1)
-		xSegP->owner = t + 1;
+for (i = 0, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, segP++) {
+	if (segP->m_owner != t + 1)
+		segP->m_owner = t + 1;
 	ChangeSegmentTexture (i, -1);
 	}
 gameStates.entropy.bExitSequence = 1;
@@ -3603,7 +3599,7 @@ PUT_INTEL_INT (gameData.multigame.msg.buf + count, nSegment);
 count += sizeof (int);
 gameData.multigame.msg.buf [count++] = val;
 for (i = 0; i < 6; i++,  count += 2)
-	PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, SEGMENTS [nSegment].m_sides [i].nOvlTex);
+	PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, SEGMENTS [nSegment].m_sides [i].m_nOvlTex);
 MultiSendData (gameData.multigame.msg.buf, count, 1);
 }
 
@@ -3619,7 +3615,7 @@ PUT_INTEL_INT (gameData.multigame.msg.buf + count, nSegment);
 count += sizeof (int);
 gameData.multigame.msg.buf [count++] = val;
 for (i = 0; i < 6; i++, count += 2)
-	PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, SEGMENTS [nSegment].m_sides [i].nOvlTex);
+	PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, SEGMENTS [nSegment].m_sides [i].m_nOvlTex);
 NetworkSendNakedPacket (gameData.multigame.msg.buf, count, nPlayer);
 }
 
@@ -3634,7 +3630,7 @@ buf += 6;
 for (i = 0; i < 6; i++, buf += 2) {
 	if ((sides & (1 << i))) {
 		SubtractLight (seg, i);
-		SEGMENTS [seg].m_sides [i].nOvlTex = GET_INTEL_SHORT (buf);
+		SEGMENTS [seg].m_sides [i].m_nOvlTex = GET_INTEL_SHORT (buf);
 		}
 	}
 }

@@ -119,19 +119,19 @@ void CreateBfsList (int start_seg, short bfs_list [], int *length, int max_segs)
 
 while ((head != tail) && (head < max_segs)) {
 	int		i;
-	short		curseg;
-	CSegment	*cursegp;
+	short		nSegment;
+	CSegment	*segP;
 
-	curseg = bfs_list [tail++];
-	cursegp = SEGMENTS + curseg;
+	nSegment = bfs_list [tail++];
+	segP = SEGMENTS + nSegment;
 
 	for (i=0; i<MAX_SIDES_PER_SEGMENT; i++) {
-		int	connected_seg = cursegp->children [i];
+		int	connected_seg = segP->m_children [i];
 		if (!IS_CHILD (connected_seg))
 			continue;
 		if (bVisited [connected_seg])
 			continue;
-		if (!SegmentIsReachable (curseg, (short) i))
+		if (!SegmentIsReachable (nSegment, (short) i))
 			continue;
 		bfs_list [head++] = connected_seg;
 		if (head >= max_segs)
@@ -171,10 +171,8 @@ if ((OBJECTS [gameData.escort.nObjNum].info.nType == OBJ_ROBOT) &&
 	}
 segP = SEGMENTS + OBJECTS [gameData.escort.nObjNum].info.nSegment;
 for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
-	short	nWall = WallNumP (segP, (short) i);
-	if (IS_WALL (nWall) &&
-		 (WALLS [nWall].nType == WALL_BLASTABLE) &&
-		 !(WALLS [nWall].flags & WALL_BLASTED))
+	CWall* wallP = segP->Wall (i);
+	if (wallP && (wallP->nType == WALL_BLASTABLE) && !(wallP->flags & WALL_BLASTED))
 		return 0;
 	//	Check one level deeper.
 	if (IS_CHILD (segP->m_children [i])) {
@@ -182,10 +180,8 @@ for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 		CSegment	*connSegP = SEGMENTS + segP->m_children [i];
 
 		for (j = 0; j<MAX_SIDES_PER_SEGMENT; j++) {
-			short	wall2 = WallNumP (connSegP, (short) j);
-			if (IS_WALL (wall2) &&
-				 (WALLS [wall2].nType == WALL_BLASTABLE) &&
-				 !(WALLS [wall2].flags & WALL_BLASTED))
+			CWall* otherWallP = connSegP->Wall (j);
+			if (otherWallP && (otherWallP->nType == WALL_BLASTABLE) && !(otherWallP->flags & WALL_BLASTED))
 				return 0;
 			}
 		}
@@ -201,7 +197,7 @@ void DetectEscortGoalAccomplished (int index)
 	int		i, j;
 	int		bDetected = 0;
 	CObject	*objP;
-	short		*childI, *childJ;
+	ushort*	childI, * childJ;
 
 //	If goal is to go away, how can it be achieved?
 if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM)
@@ -245,7 +241,7 @@ if (gameData.escort.nSpecialGoal != -1) {
 			bDetected = 1;
 		else if ((index >= 0) && (index <= gameData.segs.nLastSegment) &&
 					(gameData.escort.nGoalIndex >= 0) && (gameData.escort.nGoalIndex <= gameData.segs.nLastSegment)) {
-			childI = SEGMENTS [index].children;
+			childI = SEGMENTS [index].m_children;
 			for (i = MAX_SIDES_PER_SEGMENT; i; i--, childI++) {
 				if (*childI == gameData.escort.nGoalIndex) {
 					bDetected = 1;
@@ -785,7 +781,8 @@ else {
 			BuddyMessage (TXT_CANT_REACH, GT (nEscortGoalText [gameData.escort.nGoalObject-1]));
 			gameData.escort.bSearchingMarker = -1;
 			gameData.escort.nGoalObject = ESCORT_GOAL_SCRAM;
-			xDistToPlayer = FindConnectedDistance (&objP->info.position.vPos, objP->info.nSegment, &gameData.ai.vBelievedPlayerPos, gameData.ai.nBelievedPlayerSeg, 100, WID_FLY_FLAG, 0);
+			xDistToPlayer = FindConnectedDistance (objP->info.position.vPos, objP->info.nSegment, gameData.ai.vBelievedPlayerPos, 
+																gameData.ai.nBelievedPlayerSeg, 100, WID_FLY_FLAG, 0);
 			if (xDistToPlayer > MIN_ESCORT_DISTANCE)
 				CreatePathToPlayer (objP, gameData.escort.nMaxLength, 1);	//	MK!: Last parm used to be 1!
 			else {

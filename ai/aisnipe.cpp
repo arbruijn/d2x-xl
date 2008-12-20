@@ -77,8 +77,8 @@ void DoSnipeWait (CObject *objP, tAILocalInfo *ailP)
 if ((gameData.ai.xDistToPlayer > F1_0 * 50) && (ailP->nextActionTime > 0))
 	return;
 ailP->nextActionTime = SNIPE_WAIT_TIME;
-xConnectedDist = FindConnectedDistance (&objP->info.position.vPos, objP->info.nSegment, &gameData.ai.vBelievedPlayerPos, 
-														 gameData.ai.nBelievedPlayerSeg, 30, WID_FLY_FLAG, 0);
+xConnectedDist = FindConnectedDistance (objP->info.position.vPos, objP->info.nSegment, gameData.ai.vBelievedPlayerPos, 
+													 gameData.ai.nBelievedPlayerSeg, 30, WID_FLY_FLAG, 0);
 if (xConnectedDist < MAX_SNIPE_DIST) {
 	CreatePathToPlayer (objP, 30, 1);
 	ailP->mode = AIM_SNIPE_ATTACK;

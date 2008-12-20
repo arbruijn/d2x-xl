@@ -713,9 +713,9 @@ else {
 	if (robotP->info.nId == SPECIAL_REACTOR_ROBOT)
 		SpecialReactorStuff ();
 	if (ROBOTINFO (robotP->info.nId).kamikaze)
-		ExplodeObject (robotP,1);	//	Kamikaze, explode right away, IN YOUR FACE!
+		robotP->Explode (1);	//	Kamikaze, explode right away, IN YOUR FACE!
 	else
-		ExplodeObject (robotP,STANDARD_EXPL_DELAY);
+		robotP->Explode (STANDARD_EXPL_DELAY);
    }
 return 1;
 }
@@ -756,7 +756,7 @@ void MultiDoCreateRobot (char *buf)
 	ubyte		nType = buf [5];
 
 	tFuelCenInfo *robotcen;
-	CFixVector curObject_loc, direction;
+	CFixVector vObjPos, direction;
 	CObject *objP;
 
 nObject = GET_INTEL_SHORT (buf + 3);
@@ -767,17 +767,17 @@ if ((nPlayer < 0) || (nObject < 0) || (nFuelCen < 0) ||
 	}
 robotcen = gameData.matCens.fuelCenters + nFuelCen;
 // Play effect and sound
-curObject_loc = SEGMENTS [robotcen->nSegment].Center ();
-objP = /*Object*/CreateExplosion ((short) robotcen->nSegment, &curObject_loc, I2X (10), VCLIP_MORPHING_ROBOT);
+vObjPos = SEGMENTS [robotcen->nSegment].Center ();
+objP = /*Object*/CreateExplosion ((short) robotcen->nSegment, vObjPos, I2X (10), VCLIP_MORPHING_ROBOT);
 if (objP)
 	ExtractOrientFromSegment (&objP->info.position.mOrient, &SEGMENTS [robotcen->nSegment]);
 if (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound > -1)
-	DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, (short) robotcen->nSegment, 0, &curObject_loc, 0, F1_0);
+	DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, (short) robotcen->nSegment, 0, vObjPos, 0, F1_0);
 // Set robot center flags, in case we become the master for the next one
 robotcen->bFlag = 0;
 robotcen->xCapacity -= gameData.matCens.xEnergyToCreateOneRobot;
 robotcen->xTimer = 0;
-if (! (objP = CreateMorphRobot (SEGMENTS + robotcen->nSegment, &curObject_loc, nType)))
+if (! (objP = CreateMorphRobot (SEGMENTS + robotcen->nSegment, &vObjPos, nType)))
 	return; // Cannot create CObject!
 objP->info.nCreator = ((short) (robotcen - gameData.matCens.fuelCenters)) | 0x80;
 //	ExtractOrientFromSegment (&objP->info.position.mOrient, &SEGMENTS [robotcen->nSegment]);
@@ -849,7 +849,7 @@ switch (action)  {
 		// TODO: MatrixCreateFCheck
 		bossObjP->info.position.mOrient = CFixMatrix::CreateF(vBossDir);
 
-		DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nTeleportSeg, 0, &bossObjP->info.position.vPos, 0 , F1_0);
+		DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nTeleportSeg, 0, bossObjP->info.position.vPos, 0 , F1_0);
 		DigiKillSoundLinkedToObject (OBJ_IDX (bossObjP));
 		DigiLinkSoundToObject2 (SOUND_BOSS_SHARE_SEE, OBJ_IDX (bossObjP), 1, F1_0, F1_0*512, SOUNDCLASS_ROBOT);	//	F1_0*512 means play twice as loud
 		gameData.ai.localInfo [OBJ_IDX (bossObjP)].nextPrimaryFire = 0;
