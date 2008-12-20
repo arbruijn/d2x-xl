@@ -1802,7 +1802,7 @@ else { // Note the link to above!
 		gameData.laser.nGlobalFiringCount = 0;
 	}
 if (gameStates.render.bDoAppearanceEffect) {
-	CreatePlayerAppearanceEffect (gameData.objs.consoleP);
+	gameData.objs.consoleP->CreateAppearanceEffect ();
 	gameStates.render.bDoAppearanceEffect = 0;
 	if (IsMultiGame && netGame.invul) {
 		LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;

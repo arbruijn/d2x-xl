@@ -2678,7 +2678,7 @@ else {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	  if (!gameData.multiplayer.players [i].connected) {
 			NetworkDisconnectPlayer (i);
-  			CreatePlayerAppearanceEffect (OBJECTS + gameData.multiplayer.players [i].nObject);
+  			OBJECTS [gameData.multiplayer.players [i].nObject].CreateAppearanceEffect ();
 	      }
 		}
 	}

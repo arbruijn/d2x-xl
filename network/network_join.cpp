@@ -171,7 +171,7 @@ for (short i = 0; i < networkData.nJoining; i++)
 	if (networkData.sync [i].nPlayer == nPlayer)
 		DeleteSyncData (i);
 	NetworkResetSyncStates ();
-// CreatePlayerAppearanceEffect (&OBJECTS [gameData.multiplayer.players [nPlayer].nObject]);
+// OBJECTS [gameData.multiplayer.players [nPlayer].nObject].CreateAppearanceEffect ();
 MultiMakePlayerGhost (nPlayer);
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordMultiDisconnect (nPlayer);
@@ -231,7 +231,7 @@ MultiMakeGhostPlayer (nPlayer);
 GetPlayerSpawn (GetRandomPlayerPosition (), OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
 MultiSendScore ();
 MultiSortKillList ();
-//      CreatePlayerAppearanceEffect (&OBJECTS [nObject]);
+// OBJECTS [nObject].CreateAppearanceEffect ();
 }
 
 //------------------------------------------------------------------------------

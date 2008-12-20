@@ -1217,7 +1217,7 @@ void MultiDoReappear (char *buf)
 
 Assert (nObject >= 0);
 MultiMakeGhostPlayer (objP->info.nId);
-CreatePlayerAppearanceEffect (objP);
+objP->CreateAppearanceEffect ();
 gameData.multigame.kills.pFlags [objP->info.nId] = 0;
 }
 
@@ -1294,7 +1294,7 @@ if (buf [0] == MULTI_PLAYER_EXPLODE) {
 	MultiMakePlayerGhost (nPlayer);
 	}
 else
-	CreatePlayerAppearanceEffect (objP);
+	objP->CreateAppearanceEffect ();
 playerP->flags &= ~(PLAYER_FLAGS_CLOAKED | PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_FLAG);
 playerP->cloakTime = 0;
 }
@@ -1371,7 +1371,7 @@ else if (buf [2] == 1) {
 	if (!gameData.multigame.bGotoSecret)
 		gameData.multigame.bGotoSecret = 1;
 	}
-CreatePlayerAppearanceEffect (&OBJECTS [nObject]);
+OBJECTS [nObject].CreateAppearanceEffect ();
 MultiMakePlayerGhost (buf [1]);
 }
 
@@ -4813,7 +4813,7 @@ void MultiDoTeleport (char *buf)
 //	short	nSide = buf [4];
 
 TriggerSetObjPos (nObject, nSegment);
-CreatePlayerAppearanceEffect (OBJECTS + nObject);
+OBJECTS [nObject].CreateAppearanceEffect ();
 }
 
 //-----------------------------------------------------------------------------

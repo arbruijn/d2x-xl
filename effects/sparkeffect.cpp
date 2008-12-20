@@ -27,6 +27,10 @@
 #define SPARK_MIN_PROB		16
 #define SPARK_FRAME_TIME	50
 
+CSparkManager sparkManager;
+
+//-----------------------------------------------------------------------------
+
 class CEnergySparks {
 	private:
 		short	m_nSegments;

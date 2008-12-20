@@ -280,7 +280,7 @@ void NetworkTimeoutPlayer (int nPlayer)
 Assert (nPlayer < gameData.multiplayer.nPlayers);
 Assert (nPlayer > -1);
 NetworkDisconnectPlayer (nPlayer);
-CreatePlayerAppearanceEffect (OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
+OBJECTS [gameData.multiplayer.players [nPlayer].nObject].CreateAppearanceEffect ();
 DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
 HUDInitMessage ("%s %s", gameData.multiplayer.players [nPlayer].callsign, TXT_DISCONNECTING);
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)

@@ -32,7 +32,6 @@ void RenderShockwave (CObject *objP);
 void RenderTracers (CObject *objP);
 void RenderLightTrail (CObject *objP);
 void DrawDebrisCorona (CObject *objP);
-void CreatePlayerAppearanceEffect (CObject *playerObjP);
 
 #endif //_OBJEFFECTS_H
 //eof

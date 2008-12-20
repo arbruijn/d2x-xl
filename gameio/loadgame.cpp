@@ -1193,7 +1193,7 @@ gameData.objs.consoleP->info.controlType = CT_FLYING;
 gameData.objs.consoleP->info.movementType = MT_PHYSICS;
 // -- WHY? -- DisableMatCens ();
 ClearTransientObjects (0);		//0 means leave proximity bombs
-// CreatePlayerAppearanceEffect (gameData.objs.consoleP);
+// gameData.objs.consoleP->CreateAppearanceEffect ();
 gameStates.render.bDoAppearanceEffect = 1;
 AIResetAllPaths ();
 ResetTime ();
@@ -2228,7 +2228,7 @@ gameData.objs.consoleP->info.movementType = MT_PHYSICS;
 MultiSendShields ();
 DisableMatCens ();
 ClearTransientObjects (0);		//0 means leave proximity bombs
-// CreatePlayerAppearanceEffect (gameData.objs.consoleP);
+// gameData.objs.consoleP->CreateAppearanceEffect ();
 gameStates.render.bDoAppearanceEffect = 1;
 if (IsMultiGame) {
 	if (IsCoopGame)

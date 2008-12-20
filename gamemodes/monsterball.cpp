@@ -63,7 +63,7 @@ if (nDropSeg >= 0) {
 		gameData.hoard.monsterballP->mType.physInfo.rotThrust.SetZero();
 		gameData.hoard.monsterballP->mType.physInfo.velocity.SetZero();
 		gameData.hoard.nLastHitter = -1;
-		CreatePlayerAppearanceEffect (gameData.hoard.monsterballP);
+		gameData.hoard.monsterballP->CreateAppearanceEffect ();
 		return 1;
 		}
 	}
@@ -121,7 +121,7 @@ if ((GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_RED) == (special == SEG
 	MultiSendCaptureBonus (-gameData.multiplayer.nLocalPlayer - 1);
 else
 	MultiSendCaptureBonus (gameData.multiplayer.nLocalPlayer);
-CreatePlayerAppearanceEffect (gameData.hoard.monsterballP);
+gameData.hoard.monsterballP->CreateAppearanceEffect ();
 RemoveMonsterball ();
 CreateMonsterball ();
 MultiSendMonsterball (1, 1);

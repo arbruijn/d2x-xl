@@ -343,7 +343,7 @@ if (!gameData.multiplayer.players [nTheirPlayer].connected) {
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordMultiReconnect (nTheirPlayer);
 	MultiMakeGhostPlayer (nTheirPlayer);
-	CreatePlayerAppearanceEffect (OBJECTS + theirObjNum);
+	OBJECTS [theirObjNum].CreateAppearanceEffect ();
 	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
 	ClipRank (reinterpret_cast<char*> (&netPlayers.players [nTheirPlayer].rank));
 	if (gameOpts->multi.bNoRankings)
@@ -480,7 +480,7 @@ if (!gameData.multiplayer.players [nTheirPlayer].connected) {
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordMultiReconnect (nTheirPlayer);
 	MultiMakeGhostPlayer (nTheirPlayer);
-	CreatePlayerAppearanceEffect (OBJECTS + theirObjNum);
+	OBJECTS [theirObjNum].CreateAppearanceEffect ();
 	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
 	ClipRank (reinterpret_cast<char*> (&netPlayers.players [nTheirPlayer].rank));
 	if (gameOpts->multi.bNoRankings)
