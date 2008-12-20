@@ -985,7 +985,7 @@ if (info.controlType == CT_AI) {
 
 //if end point not in CSegment, move CObject to last pos, or CSegment center
 if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {
-	if (FindObjectSeg (this) == -1) {
+	if (FindSegment () == -1) {
 		int n;
 
 		if (((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) && 

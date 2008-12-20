@@ -1837,7 +1837,7 @@ while (!bDone) {
 			NDReadObject (objP);
 			CATCH_BAD_READ
 			if (objP->info.controlType == CT_POWERUP)
-				DoPowerupFrame (objP);
+				objP->DoPowerupFrame ();
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
 				nSegment = objP->info.nSegment;
 				objP->info.nNextInSeg = objP->info.nPrevInSeg = objP->info.nSegment = -1;

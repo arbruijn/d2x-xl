@@ -1136,14 +1136,14 @@ return i;
 /*
  * reads a tWallV16 structure from a CFile
  */
-void ReadWallV16(tWallV16 *w, CFile& cf)
+void ReadWallV16(tWallV16&  w, CFile& cf)
 {
-w->nType = cf.ReadByte ();
-w->flags = cf.ReadByte ();
-w->hps = cf.ReadFix ();
-w->nTrigger = (ubyte) cf.ReadByte ();
-w->nClip = cf.ReadByte ();
-w->keys = cf.ReadByte ();
+w.nType = cf.ReadByte ();
+w.flags = cf.ReadByte ();
+w.hps = cf.ReadFix ();
+w.nTrigger = (ubyte) cf.ReadByte ();
+w.nClip = cf.ReadByte ();
+w.keys = cf.ReadByte ();
 }
 
 // -----------------------------------------------------------------------------------
@@ -1258,7 +1258,7 @@ return (nType == WALL_DOOR) && (keys == KEY_NONE) && (state == WALL_DOOR_CLOSED)
 
 // -----------------------------------------------------------------------------------
 
-inline CTrigger* CWall::Trigger (void)
+CTrigger* CWall::Trigger (void)
 {
 return ((nTrigger == NO_TRIGGER) || (nTrigger >= gameData.trigs.nTriggers)) ? NULL : &TRIGGERS [nTrigger];
 }

@@ -119,7 +119,6 @@ void DrawPowerup(CObject *objP);
 int DoPowerup(CObject *objP, int nPlayer);
 
 //process (animate) a powerup for one frame
-void DoPowerupFrame(CObject *objP);
 void UpdatePowerupClip (tVideoClip *vcP, tVClipInfo *vciP, int nObject);
 void UpdateFlagClips (void);
 

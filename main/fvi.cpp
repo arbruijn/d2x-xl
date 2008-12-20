@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network.h"
 #include "fvi.h"
 
-int CheckSphereToFace (CFixVector& intersection, fix rad, CFixVector *vertList, int nVerts, CFixVector *vNormal);
+int CheckSphereToFace (CFixVector* refP, fix rad, CFixVector *vertList, int nVerts, CFixVector* vNormal);
 
 //#define _DEBUG
 
@@ -178,7 +178,7 @@ d [0] = vHit - *p0;
 d [1] = vHit - *p1;
 if (CFixVector::Dot (d [0], d [1]) >= 0)
 	return 0;
-if (!CheckSphereToFace (vHit, 0, planeP, 4, planeNormP))
+if (!CheckSphereToFace (&vHit, 0, planeP, 4, planeNormP))
 	return 0;
 intersection = vHit;
 return 1;
@@ -283,7 +283,7 @@ int ijTable [3][2] = {
 
 //	-----------------------------------------------------------------------------
 //see if a refP is inside a face by projecting into 2d
-uint CheckPointToFace (CFixVector* refP, CFixVector *vertList, int nVerts, CFixVector& vNormal)
+uint CheckPointToFace (CFixVector* refP, CFixVector *vertList, int nVerts, CFixVector* vNormal)
 {
 //	CFixVector	vNormal;
 	CFixVector	t;
@@ -298,9 +298,9 @@ uint CheckPointToFace (CFixVector* refP, CFixVector *vertList, int nVerts, CFixV
 //VmVecNormal (&vNormal, vertList, vertList + 1, vertList + 2);
 //now do 2d check to see if refP is in CSide
 //project polygon onto plane by finding largest component of Normal
-t [X] = labs (vNormal [0]);
-t [Y] = labs (vNormal [1]);
-t [Z] = labs (vNormal [2]);
+t [X] = labs ((*vNormal) [0]);
+t [Y] = labs ((*vNormal) [1]);
+t [Z] = labs ((*vNormal) [2]);
 if (t [X] > t [Y])
 	if (t [X] > t [Z])
 		biggest = 0;
@@ -310,7 +310,7 @@ else if (t [Y] > t [Z])
 	biggest = 1;
 else
 	biggest = 2;
-if (vNormal [biggest] > 0) {
+if ((*vNormal) [biggest] > 0) {
 	i = ijTable [biggest][0];
 	j = ijTable [biggest][1];
 	}
@@ -337,7 +337,7 @@ return nEdgeMask;
 
 //	-----------------------------------------------------------------------------
 //check if a sphere intersects a face
-int CheckSphereToFace (CFixVector* refP, fix rad, CFixVector *vertList, int nVerts, CFixVector& vNormal)
+int CheckSphereToFace (CFixVector* refP, fix rad, CFixVector *vertList, int nVerts, CFixVector* vNormal)
 {
 	CFixVector	vEdge, vCheck;            //this time, real 3d vectors
 	CFixVector	vClosestPoint;
@@ -407,7 +407,7 @@ vHit = intersection;
 //if rad != 0, project the refP down onto the plane of the polygon
 if (rad)
 	vHit += *vNormal * (-rad);
-if ((pli = CheckSphereToFace (vHit, rad, vertList, nVerts, vNormal)))
+if ((pli = CheckSphereToFace (&vHit, rad, vertList, nVerts, vNormal)))
 	return pli;
 #if 1
 if (bCheckRad) {

@@ -134,11 +134,11 @@ class CSide {
 	public:
 		void LoadTextures (void);
 		inline ushort WallNum (void) { return m_nWall; }
-		inline bool IsWall (void);
-		inline CWall* Wall (void);
-		inline CTrigger* Trigger (void);
 		inline sbyte Type (void) { return m_nType; }
-		inline bool IsVolatile (void);
+		bool IsWall (void);
+		CWall* Wall (void);
+		CTrigger* Trigger (void);
+		bool IsVolatile (void);
 		int FaceCount (void);
 		void CheckSum (uint& sum1, uint& sum2);
 
@@ -163,7 +163,7 @@ class CSide {
 		void CreateWalls (bool bSolid);
 		void Validate (bool bSolid);
 
-		inline void SetTextures (int nBaseTex, int nOvlTex);
+		void SetTextures (int nBaseTex, int nOvlTex);
 
 		inline ubyte GetVertices (ushort*& vertices) { 
 			vertices = m_vertices;

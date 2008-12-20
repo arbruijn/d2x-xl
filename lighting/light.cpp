@@ -1220,7 +1220,7 @@ ChangeSegmentLight (nSegment, nSide, dir);
 //	Subtract light cast by a light source from all surfaces to which it applies light.
 //	This is precomputed data, stored at static light application time in the editor (the slow lighting function).
 // returns 1 if lights actually subtracted, else 0
-int SubtractLight (short nSegment, short nSide)
+int SubtractLight (short nSegment, int nSide)
 {
 if (gameData.render.lights.subtracted [nSegment] & (1 << nSide))
 	return 0;
@@ -1234,7 +1234,7 @@ return 1;
 //	This is precomputed data, stored at static light application time in the editor (the slow lighting function).
 //	You probably only want to call this after light has been subtracted.
 // returns 1 if lights actually added, else 0
-int AddLight (short nSegment, short nSide)
+int AddLight (short nSegment, int nSide)
 {
 if (!(gameData.render.lights.subtracted [nSegment] & (1 << nSide)))
 	return 0;

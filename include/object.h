@@ -1092,18 +1092,12 @@ void InitPlayerObject();
 int UpdateObjectSeg(CObject *objP, bool bMove = true);
 
 
-// Finds what CSegment *obj is in, returns CSegment number.  If not in
-// any CSegment, returns -1.  Note: This function is defined in
-// gameseg.h, but object[HA] depends on gameseg.h, and object[HA] is where
-// CObject is defined...get it?
-int FindObjectSeg(CObject * obj);
-
 // go through all objects and make sure they have the correct CSegment
 // numbers used when debugging is on
-void FixObjectSegs();
+void FixObjectSegs (void);
 
 // Drops objects contained in objp.
-int ObjectCreateEgg(CObject *objp);
+int ObjectCreateEgg (CObject *objP);
 
 // Interface to ObjectCreateEgg, puts count objects of nType nType, id
 // = id in objp and then drops them.

@@ -7,6 +7,7 @@
 #include "error.h"
 #include "newdemo.h"
 #include "wall.h"
+#include "fireball.h"
 #include "text.h"
 
 // Number of vertices in current mine (ie, gameData.segs.vertices, pointed to by Vp)
@@ -859,7 +860,7 @@ else {
 	xDestSize = I2X (20);
 	vc = 3;
 	}
-/*Object*/CreateExplosion (Index (), vHit, xDestSize, vc);
+/*Object*/CreateExplosion (short (Index ()), vHit, xDestSize, vc);
 if (nSwitchType) {
 	if ((nSound = gameData.eff.vClipP [vc].nSound) != -1)
 		DigiLinkSoundToPos (nSound, Index (), 0, vHit);
@@ -897,7 +898,7 @@ return 1;		//blew up!
 
 void CSegment::CreateSound (int nSide, short nSound)
 {
-DigiLinkSoundToPos (nSound, Index (), SideCenter (nSide), forever, maxVolume);
+DigiLinkSoundToPos (nSound, Index (), nSide, SideCenter (nSide));
 }
 
 //------------------------------------------------------------------------------

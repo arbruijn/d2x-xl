@@ -1225,20 +1225,20 @@ return 0;
 /*
  * reads a tTriggerV29 structure from a CFile
  */
-extern void V29TriggerRead (tTriggerV29 *trigP, CFile& cf)
+void V29TriggerRead (tTriggerV29& trigger, CFile& cf)
 {
 	int	i;
 
-trigP->nType = cf.ReadByte ();
-trigP->flags = cf.ReadShort ();
-trigP->value = cf.ReadFix ();
-trigP->time = cf.ReadFix ();
-trigP->link_num = cf.ReadByte ();
-trigP->nLinks = cf.ReadShort ();
+trigger.nType = cf.ReadByte ();
+trigger.flags = cf.ReadShort ();
+trigger.value = cf.ReadFix ();
+trigger.time = cf.ReadFix ();
+trigger.link_num = cf.ReadByte ();
+trigger.nLinks = cf.ReadShort ();
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
-	trigP->segments [i] = cf.ReadShort ();
+	trigger.segments [i] = cf.ReadShort ();
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
-	trigP->sides [i] = cf.ReadShort ();
+	trigger.sides [i] = cf.ReadShort ();
 }
 
 //------------------------------------------------------------------------------
