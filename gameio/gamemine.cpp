@@ -1280,16 +1280,16 @@ if (loadOp == 0) {
 		}
 	}
 else if (loadOp == 1) {
+	SetupSegments ();			// Fill in CSide nType and normals.
+	loadOp++;
+	}
+else if (loadOp == 2) {
 	ComputeSegSideCenters (loadIdx);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= gameData.segs.nSegments) {
 		loadIdx = 0;
 		loadOp++;
 		}
-	}
-else if (loadOp == 2) {
-	SetupSegments ();			// Fill in CSide nType and normals.
-	loadOp++;
 	}
 else if (loadOp == 4) {
 	LoadExtSegmentsCompiled (*mineDataFile);
