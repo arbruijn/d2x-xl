@@ -78,8 +78,8 @@ int LoadPolygonModel(const char *filename,int n_textures,CBitmap ***textures);
 int DrawPolygonModel (CObject *objP, CFixVector *pos,CFixMatrix *orient,CAngleVector *animAngles, int nModel, int flags, fix light, 
 							 fix *glowValues, tBitmapIndex nAltTextures[], tRgbaColorf *obj_color);
 
-// fills in arrays gunPoints & gun_dirs, returns the number of guns read
-int ReadModelGuns (const char *filename,CFixVector *gunPoints, CFixVector *gun_dirs, int *gunSubModels);
+// fills in arrays gunPoints & gunDirs, returns the number of guns read
+int ReadModelGuns (const char *filename,CFixVector *gunPoints, CFixVector *gunDirs, int *gunSubModels);
 
 // draws the given model in the current canvas.  The distance is set to
 // more-or-less fill the canvas.  Note that this routine actually renders

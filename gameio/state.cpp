@@ -904,8 +904,8 @@ m_cf.WriteByte (triggerP->nLinks);
 m_cf.WriteFix (triggerP->value);
 m_cf.WriteFix (triggerP->time);
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++) {
-	m_cf.WriteShort (triggerP->nSegment [i]);
-	m_cf.WriteShort (triggerP->nSide [i]);
+	m_cf.WriteShort (triggerP->segments [i]);
+	m_cf.WriteShort (triggerP->sides [i]);
 	}
 }
 
@@ -956,8 +956,8 @@ void CSaveGameHandler::SaveReactorTrigger (tReactorTriggers *triggerP)
 
 m_cf.WriteShort (triggerP->nLinks);
 for (i = 0; i < MAX_CONTROLCEN_LINKS; i++) {
-	m_cf.WriteShort (triggerP->nSegment [i]);
-	m_cf.WriteShort (triggerP->nSide [i]);
+	m_cf.WriteShort (triggerP->segments [i]);
+	m_cf.WriteShort (triggerP->sides [i]);
 	}
 }
 
@@ -1123,10 +1123,10 @@ if (!m_bBetweenLevels)	{
 //Save tmap info
 	for (i = 0; i <= gameData.segs.nLastSegment; i++) {
 		for (j = 0; j < 6; j++)	{
-			ushort nWall = WallNumI ((short) i, (short) j);
+			ushort nWall = SEGMENTS [i].WallNum (j);
 			m_cf.WriteShort (nWall);
 			m_cf.WriteShort (SEGMENTS [i].m_sides [j].m_nBaseTex);
-			m_cf.WriteShort (SEGMENTS [i].m_sides [j].nOvlTex | (SEGMENTS [i].m_sides [j].nOvlOrient << 14));
+			m_cf.WriteShort (SEGMENTS [i].m_sides [j].m_nOvlTex | (SEGMENTS [i].m_sides [j].m_nOvlOrient << 14));
 			}
 		}
 	DBG (fPos = m_cf.Tell ());
@@ -1960,8 +1960,8 @@ triggerP->nLinks = m_cf.ReadByte ();
 triggerP->value = m_cf.ReadFix ();
 triggerP->time = m_cf.ReadFix ();
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++) {
-	triggerP->nSegment [i] = m_cf.ReadShort ();
-	triggerP->nSide [i] = m_cf.ReadShort ();
+	triggerP->segments [i] = m_cf.ReadShort ();
+	triggerP->sides [i] = m_cf.ReadShort ();
 	}
 }
 
@@ -2012,8 +2012,8 @@ void CSaveGameHandler::LoadReactorTrigger (tReactorTriggers *triggerP)
 
 triggerP->nLinks = m_cf.ReadShort ();
 for (i = 0; i < MAX_CONTROLCEN_LINKS; i++) {
-	triggerP->nSegment [i] = m_cf.ReadShort ();
-	triggerP->nSide [i] = m_cf.ReadShort ();
+	triggerP->segments [i] = m_cf.ReadShort ();
+	triggerP->sides [i] = m_cf.ReadShort ();
 	}
 }
 

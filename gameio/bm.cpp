@@ -1050,7 +1050,7 @@ void BMReadAllD1 (CFile& cf)
 	/*for (i=0;i<4;i++)
 		cf.ReadVector (& (gameData.reactor.reactors [0].gunPoints [i]), cf);
 	for (i=0;i<4;i++)
-		cf.ReadVector (& (gameData.reactor.reactors [0].gun_dirs [i]), cf);
+		cf.ReadVector (& (gameData.reactor.reactors [0].gunDirs [i]), cf);
 	*/cf.Seek (fp, 8 * 12, SEEK_CUR);
 
 	/*gameData.endLevel.exit.nModel = */ cf.ReadInt ();

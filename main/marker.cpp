@@ -170,7 +170,7 @@ if (!(bSpawn && MoveSpawnMarker (&playerP->info.position, playerP->info.nSegment
 	if (bSpawn)
 		strcpy (gameData.marker.szMessage [nMarker], "SPAWN");
 	gameData.marker.objects [nMarker] =
-		DropMarkerObject (&playerP->info.position.vPos, (short) playerP->info.nSegment, &playerP->info.position.mOrient, nMarker);
+		DropMarkerObject (playerP->info.position.vPos, (short) playerP->info.nSegment, playerP->info.position.mOrient, nMarker);
 	if (IsMultiGame)
 		MultiSendDropMarker (gameData.multiplayer.nLocalPlayer, playerP->info.position.vPos, nPlayerMarker, gameData.marker.szMessage [nMarker]);
 	}
@@ -205,7 +205,7 @@ sprintf (gameData.marker.szMessage [nMarker], "RIP: %s",gameData.escort.szName);
 gameData.marker.point [nMarker] = objP->info.position.vPos;
 if (gameData.marker.objects [nMarker] != -1 && gameData.marker.objects [nMarker] !=0)
 	ReleaseObject (gameData.marker.objects [nMarker]);
-gameData.marker.objects [nMarker] = DropMarkerObject (&objP->info.position.vPos, (short) objP->info.nSegment, &objP->info.position.mOrient, nMarker);
+gameData.marker.objects [nMarker] = DropMarkerObject (objP->info.position.vPos, (short) objP->info.nSegment, objP->info.position.mOrient, nMarker);
 }
 
 //------------------------------------------------------------------------------

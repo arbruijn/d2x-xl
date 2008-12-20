@@ -323,7 +323,7 @@ if (seg2p->m_nType == SEGMENT_IS_ROBOTMAKER)
 	PagingTouchRobotMaker (segP);
 for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) 
 	PagingTouchSide (segP, nSide);
-for (nObject = segP->objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg)
+for (nObject = segP->m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg)
 	OBJECTS [nObject].LoadTextures ();
 }
 

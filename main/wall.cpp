@@ -1041,8 +1041,8 @@ bool CWall::IsTriggerTarget (void)
 {
 CTrigger *triggerP = TRIGGERS.Buffer ();
 for (int i = gameData.trigs.nTriggers; i; i--, triggerP++) {
-	short *nSegP = triggerP->nSegment;
-	short *nSideP = triggerP->nSide;
+	short *nSegP = triggerP->segments;
+	short *nSideP = triggerP->sides;
 	for (int j = triggerP->nLinks; j; j--, nSegP++, nSideP++)
 		if ((*nSegP == nSegment) && (*nSideP == nSide))
 			return true;

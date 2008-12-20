@@ -47,7 +47,7 @@ props = &gameData.reactor.props [objP->info.nId];
 //instance gun position & orientation
 *vGunPoint = *viewP * props->gunPoints[nGun];
 *vGunPoint += objP->info.position.vPos;
-*vGunDir = *viewP * props->gun_dirs[nGun];
+*vGunDir = *viewP * props->gunDirs[nGun];
 }
 
 //	-----------------------------------------------------------------------------
@@ -221,7 +221,7 @@ if (bFinalCountdown ||
 		if (extraGameInfo [0].nBossCount)
 			KillAllBossRobots (0);
 		for (i = 0; i < gameData.reactor.triggers.nLinks; i++)
-			WallToggle (SEGMENTS + gameData.reactor.triggers.nSegment [i], gameData.reactor.triggers.nSide [i]);
+			WallToggle (SEGMENTS + gameData.reactor.triggers.segments [i], gameData.reactor.triggers.sides [i]);
 		if (gameData.missions.nCurrentLevel < 0)
 			CFile::Delete ("secret.sgc", gameFolders.szSaveDir);
 		}
@@ -534,7 +534,7 @@ for (i = 0; i < n; i++) {
 	for (j = 0; j < MAX_CONTROLCEN_GUNS; j++)
 		cf.ReadVector (r[i].gunPoints[j]);
 	for (j = 0; j < MAX_CONTROLCEN_GUNS; j++)
-		cf.ReadVector (r[i].gun_dirs[j]);
+		cf.ReadVector (r[i].gunDirs[j]);
 	}
 return i;
 }

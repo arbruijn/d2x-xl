@@ -360,7 +360,7 @@ void AddToFCDCache (int seg0, int seg1, int nDepth, fix dist)
 //	Determine whether seg0 and seg1 are reachable in a way that allows sound to pass.
 //	Search up to a maximum nDepth of nMaxDepth.
 //	Return the distance.
-fix FindConnectedDistance (CFixVector *p0, short seg0, CFixVector *p1, short seg1, int nMaxDepth, int widFlag, int bUseCache)
+fix FindConnectedDistance (CFixVector& p0, short seg0, CFixVector& p1, short seg1, int nMaxDepth, int widFlag, int bUseCache)
 {
 	short				nConnSide;
 	short				nCurSeg, nParentSeg, nThisSeg;

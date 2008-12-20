@@ -969,7 +969,7 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 
 #ifdef EDITOR
 	segP->nSegment = nSegment;
-	segP->group = 0;
+	segP->m_group = 0;
 #endif
 
 #if DBG

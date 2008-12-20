@@ -350,7 +350,7 @@ if (nWeaponType == OMEGA_ID) {
 	if (((nParent != nViewer) || bSpectator) && (parentP->info.nType != OBJ_WEAPON)) {
 		// Muzzle flash
 		if (weaponInfoP->nFlashVClip > -1)
-			ObjectCreateMuzzleFlash (objP->info.nSegment, &objP->info.position.vPos, weaponInfoP->xFlashSize, weaponInfoP->nFlashVClip);
+			CreateMuzzleFlash (objP->info.nSegment, objP->info.position.vPos, weaponInfoP->xFlashSize, weaponInfoP->nFlashVClip);
 		}
 	DoOmegaStuff (OBJECTS + nParent, vPosition, objP);
 	return nObject;
@@ -432,18 +432,17 @@ if (parentP->info.nType == OBJ_WEAPON) {
 if (((nParent != nViewer) || SPECTATOR (parentP)) && (parentP->info.nType != OBJ_WEAPON)) {
 	// Muzzle flash
 	if (weaponInfoP->nFlashVClip > -1)
-		ObjectCreateMuzzleFlash (objP->info.nSegment, &objP->info.position.vPos, weaponInfoP->xFlashSize,
-										 weaponInfoP->nFlashVClip);
+		CreateMuzzleFlash (objP->info.nSegment, objP->info.position.vPos, weaponInfoP->xFlashSize, weaponInfoP->nFlashVClip);
 	}
 volume = F1_0;
 if (bMakeSound && (weaponInfoP->flashSound > -1)) {
 	int bGatling = (nWeaponType == VULCAN_ID) || (nWeaponType == GAUSS_ID);
 	if (nParent != nViewer) {
 		if (bGatling && (parentP->info.nType == OBJ_PLAYER) && (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling)
-			DigiLinkSoundToPos2 (weaponInfoP->flashSound, objP->info.nSegment, 0, &objP->info.position.vPos, 0, volume, F1_0 * 256,
+			DigiLinkSoundToPos2 (weaponInfoP->flashSound, objP->info.nSegment, 0, objP->info.position.vPos, 0, volume, F1_0 * 256,
 										AddonSoundName (nGatlingSounds [nWeaponType == GAUSS_ID]));
 		else
-			DigiLinkSoundToPos (weaponInfoP->flashSound, objP->info.nSegment, 0, &objP->info.position.vPos, 0, volume);
+			DigiLinkSoundToPos (weaponInfoP->flashSound, objP->info.nSegment, 0, objP->info.position.vPos, 0, volume);
 		}
 	else {
 		if (nWeaponType == VULCAN_ID)	// Make your own vulcan gun  1/2 as loud.
@@ -864,7 +863,7 @@ if (objP->info.xLifeLeft == ONE_FRAME_TIME) {
 if (objP->info.xLifeLeft < 0) {		// We died of old age
 	objP->Kill ();
 	if (WI_damage_radius (objP->info.nId))
-		ExplodeBadassWeapon (objP,&objP->info.position.vPos);
+		objP->ExplodeBadassWeapon (objP->info.position.vPos);
 	return;
 	}
 //delete weapons that are not moving
@@ -1320,7 +1319,7 @@ gameData.fusion.xCharge = 0;
 vForce[X] = -(objP->info.position.mOrient.FVec ()[X] << 7);
 vForce[Y] = -(objP->info.position.mOrient.FVec ()[Y] << 7);
 vForce[Z] = -(objP->info.position.mOrient.FVec ()[Z] << 7);
-objP->ApplyForce (&vForce);
+objP->ApplyForce (vForce);
 vForce[X] = (vForce[X] >> 4) + d_rand () - 16384;
 vForce[Y] = (vForce[Y] >> 4) + d_rand () - 16384;
 vForce[Z] = (vForce[Z] >> 4) + d_rand () - 16384;

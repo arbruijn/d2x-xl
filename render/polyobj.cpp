@@ -408,8 +408,8 @@ return pm;
 
 //------------------------------------------------------------------------------
 //reads the gun information for a model
-//fills in arrays gunPoints & gun_dirs, returns the number of guns read
-int ReadModelGuns (const char *filename, CFixVector *gunPoints, CFixVector *gun_dirs, int *gunSubModels)
+//fills in arrays gunPoints & gunDirs, returns the number of guns read
+int ReadModelGuns (const char *filename, CFixVector *gunPoints, CFixVector *gunDirs, int *gunSubModels)
 {
 	CFile cf;
 	short version;
@@ -445,7 +445,7 @@ while (POF_ReadIntNew (id, modelBuf) == 1) {
 				Error ("Invalid gun submodel in file <%s>", filename);
 			POF_ReadVecs (&gunPoints [id], 1, modelBuf);
 
-			POF_ReadVecs (&gun_dirs [id], 1, modelBuf);
+			POF_ReadVecs (&gunDirs [id], 1, modelBuf);
 			}
 		}
 		else

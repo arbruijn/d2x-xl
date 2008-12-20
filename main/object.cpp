@@ -2830,12 +2830,12 @@ while (parent->info.nAttachedObj != -1)
 
 //------------------------------------------------------------------------------
 //creates a marker CObject in the world.  returns the CObject number
-int DropMarkerObject (CFixVector *pos, short nSegment, CFixMatrix *orient, ubyte nMarker)
+int DropMarkerObject (CFixVector& vPos, short nSegment, CFixMatrix& orient, ubyte nMarker)
 {
 	short nObject;
 
 Assert (gameData.models.nMarkerModel != -1);
-nObject = CreateObject (OBJ_MARKER, nMarker, -1, nSegment, *pos, *orient,
+nObject = CreateObject (OBJ_MARKER, nMarker, -1, nSegment, vPos, orient,
 								gameData.models.polyModels [gameData.models.nMarkerModel].rad, CT_NONE, MT_NONE, RT_POLYOBJ);
 if (nObject >= 0) {
 	CObject *objP = OBJECTS + nObject;

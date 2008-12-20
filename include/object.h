@@ -1145,7 +1145,7 @@ void AttachObject(CObject *parent, CObject *sub);
 extern void CreateSmallFireballOnObject(CObject *objp, fix size_scale, int soundFlag);
 
 // returns CObject number
-int DropMarkerObject(CFixVector&pos, short nSegment, CFixMatrix *orient, ubyte marker_num);
+int DropMarkerObject(CFixVector& vPos, short nSegment, CFixMatrix& orient, ubyte marker_num);
 
 extern void WakeupRenderedObjects(CObject *gmissp, int window_num);
 

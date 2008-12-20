@@ -51,7 +51,7 @@ int check_lsegments_validity(void);
 //      set to WID_FLY_FLAG to see if a robot could fly from one to the other.
 //      Search up to a maximum depth of max_depth.
 //      Return the distance.
-fix FindConnectedDistance(CFixVector *p0, short seg0, CFixVector *p1, short seg1, int max_depth, int widFlag, int bUseCache);
+fix FindConnectedDistance(CFixVector& p0, short seg0, CFixVector& p1, short seg1, int max_depth, int widFlag, int bUseCache);
 
 //create a matrix that describes the orientation of the given CSegment
 void ExtractOrientFromSegment(CFixMatrix *m,CSegment *seg);

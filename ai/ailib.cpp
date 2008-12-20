@@ -417,7 +417,7 @@ return 0;
 int CheckObjectObjectIntersection (CFixVector *pos, fix size, CSegment *segP)
 {
 //	If this would intersect with another CObject (only check those in this CSegment), then try to move.
-short nObject = segP->objects;
+short nObject = segP->m_objects;
 CObject *objP;
 while (nObject != -1) {
 	objP = OBJECTS + nObject;

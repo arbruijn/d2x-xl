@@ -137,9 +137,9 @@ extern void DigiStopSound (int channel);
 extern int DigiFindChannel(short nSound);
 
 // Volume 0-F1_0
-extern int DigiStartSound (short nSound, fix xVolume, int xPan, int bLooping, 
-								   int nLoopStart, int nLoopEnd, int nSoundObj, int nSpeed, 
-								   const char *pszWAV, CFixVector *vPos, int nSoundClass);
+int DigiStartSound (short nSound, fix xVolume, int xPan, int bLooping, 
+					     int nLoopStart, int nLoopEnd, int nSoundObj, int nSpeed, 
+						  const char *pszWAV, CFixVector *vPos, int nSoundClass);
 
 // Stops all sounds that are playing
 void DigiStopAllChannels();

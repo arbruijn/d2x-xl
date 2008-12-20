@@ -37,14 +37,14 @@ return -1;
 int CountRooms (void)
 {
 	int		i;
-	xsegment	*segP = SEGMENTS.Buffer ();
+	CSegment	*segP = SEGMENTS.Buffer ();
 
 memset (gameData.entropy.nRoomOwners, 0xFF, sizeof (gameData.entropy.nRoomOwners));
 memset (gameData.entropy.nTeamRooms, 0, sizeof (gameData.entropy.nTeamRooms));
 for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++)
-	if ((segP->owner >= 0) && (segP->group >= 0) && 
-		 /* (segP->group <= N_MAX_ROOMS) &&*/ (gameData.entropy.nRoomOwners [(int) segP->group] < 0))
-		gameData.entropy.nRoomOwners [(int) segP->group] = segP->owner;
+	if ((segP->m_owner >= 0) && (segP->m_group >= 0) && 
+		 /* (segP->m_group <= N_MAX_ROOMS) &&*/ (gameData.entropy.nRoomOwners [(int) segP->m_group] < 0))
+		gameData.entropy.nRoomOwners [(int) segP->m_group] = segP->m_owner;
 for (i = 0; i < N_MAX_ROOMS; i++)
 	if (gameData.entropy.nRoomOwners [i] >= 0) {
 		gameData.entropy.nTeamRooms [(int) gameData.entropy.nRoomOwners [i]]++;
@@ -57,12 +57,11 @@ return gameData.entropy.nTotalRooms;
 
 void ConquerRoom (int newOwner, int oldOwner, int roomId)
 {
-	int			f, h, i, j, jj, k, kk, nObject;
-	CSegment		*segP;
-	xsegment		*xsegP;
-	CObject		*objP;
-	tFuelCenInfo	*fuelP;
-	short			virusGens [MAX_FUEL_CENTERS];
+	int				f, h, i, j, jj, k, kk, nObject;
+	CSegment*		segP;
+	CObject*			objP;
+	tFuelCenInfo*	fuelP;
+	short				virusGens [MAX_FUEL_CENTERS];
 
 // this loop with
 // a) convert all segments with group 'roomId' to newOwner 'newOwner'
@@ -76,18 +75,18 @@ void ConquerRoom (int newOwner, int oldOwner, int roomId)
 // back to their original nType
 gameData.entropy.nTeamRooms [oldOwner]--;
 gameData.entropy.nTeamRooms [newOwner]++;
-for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, segP = SEGMENTS.Buffer (), xsegP = SEGMENTS.Buffer (); 
+for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, segP = SEGMENTS.Buffer (), segP = SEGMENTS.Buffer (); 
 	  i <= gameData.segs.nLastSegment; 
-	  i++, segP++, xsegP++) {
-	if ((xsegP->group == roomId) && (xsegP->owner == oldOwner)) {
-		xsegP->owner = newOwner;
+	  i++, segP++, segP++) {
+	if ((segP->m_group == roomId) && (segP->m_owner == oldOwner)) {
+		segP->m_owner = newOwner;
 		ChangeSegmentTexture (i, oldOwner);
 		if (SEGMENTS [i].m_nType == SEGMENT_IS_ROBOTMAKER) {
 			--k;
 			if (extraGameInfo [1].entropy.bRevertRooms && (-1 < (f = FindFuelCen (i))) &&
 				 (gameData.matCens.origStationTypes [f] != SEGMENT_IS_NOTHING))
 				virusGens [--kk] = f;
-			for (nObject = segP->objects; nObject >= 0; nObject = objP->info.nNextInSeg) {
+			for (nObject = segP->m_objects; nObject >= 0; nObject = objP->info.nNextInSeg) {
 				objP = OBJECTS + nObject;
 				if ((objP->info.nType == OBJ_POWERUP) && (objP->info.nType == POW_ENTROPY_VIRUS))
 					objP->info.nCreator = newOwner;
@@ -95,7 +94,7 @@ for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, segP = SEGMENTS.Buffer (), xs
 			}
 		}
 	else {
-		if ((xsegP->owner == newOwner) && (SEGMENTS [i].m_nType == SEGMENT_IS_ROBOTMAKER)) {
+		if ((segP->m_owner == newOwner) && (SEGMENTS [i].m_nType == SEGMENT_IS_ROBOTMAKER)) {
 			j++;
 			if (extraGameInfo [1].entropy.bRevertRooms && (-1 < (f = FindFuelCen (i))) &&
 				 (gameData.matCens.origStationTypes [f] != SEGMENT_IS_NOTHING))
@@ -123,8 +122,8 @@ if (extraGameInfo [1].entropy.bRevertRooms && (jj + (MAX_FUEL_CENTERS - kk)) && 
 // check if the other newOwner's last virus center has been conquered
 // if so, find a fuel or repair center owned by that and turn it into a virus generator
 // preferrably convert repair centers
-for (i = 0, h = -1, xsegP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, xsegP++)
-	if (xsegP->owner == oldOwner) 
+for (i = 0, h = -1, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, segP++)
+	if (segP->m_owner == oldOwner) 
 		switch (SEGMENTS [i].m_nType) {
 			case SEGMENT_IS_ROBOTMAKER:
 				return;
@@ -140,7 +139,7 @@ if (h < 0)
 	return;
 i = SEGMENTS [h].m_nType;
 SEGMENTS [h].m_nType = SEGMENT_IS_ROBOTMAKER;
-BotGenCreate (SEGMENTS + h, i);
+SEGMENTS [h].CreateBotGen (i);
 ChangeSegmentTexture (h, newOwner);
 }
 

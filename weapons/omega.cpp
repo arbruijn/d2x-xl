@@ -285,7 +285,7 @@ if (parentObjP == gameData.objs.viewerP)
 	DigiPlaySample (gameData.weapons.info [weaponObjP->info.nId].flashSound, F1_0);
 else
 	DigiLinkSoundToPos (gameData.weapons.info [weaponObjP->info.nId].flashSound,
-							  weaponObjP->info.nSegment, 0, &weaponObjP->info.position.vPos, 0, F1_0);
+							  weaponObjP->info.nSegment, 0, weaponObjP->info.position.vPos, 0, F1_0);
 //	Delete the original CObject.  Its only purpose in life was to determine which CObject to home in on.
 ReleaseObject (OBJ_IDX (weaponObjP));
 if (nTargetObj != -1)
