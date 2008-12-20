@@ -133,7 +133,6 @@ class CSide {
 
 	public:
 		void LoadTextures (void);
-		void LoadBotGenTextures (void);
 		inline ushort WallNum (void) { return m_nWall; }
 		inline bool IsWall (void);
 		inline CWall* Wall (void);
@@ -210,6 +209,8 @@ class CSegment {
 		inline int Index (void);
 		void Read (CFile& cf, bool bExtended);
 		void LoadTextures (void);
+		void LoadSideTextures (short nSide);
+		void LoadBotGenTextures (void);
 		void Validate (void);
 		inline ushort WallNum (short nSide) { return m_sides [nSide].WallNum (); }
 		inline int CheckTransparency (short nSide) { return m_sides [nSide].CheckTransparency (); }

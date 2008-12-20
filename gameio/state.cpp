@@ -2056,7 +2056,6 @@ int CSaveGameHandler::LoadUniFormat (int bMulti, fix xOldGameTime, int *nLevel)
 	CWall		*wallP;
 	char		szOrgCallSign [CALLSIGN_LEN+16];
 	int		h, i, j;
-	short		nTexture;
 
 if (m_nVersion >= 39) {
 	h = m_cf.ReadInt ();
@@ -2228,22 +2227,15 @@ if (!m_bBetweenLevels)	{
 		m_cf.ReadShort ();
 	DBG (fPos = m_cf.Tell ());
 	//Restore tmap info
-	for (i = 0; i <= gameData.segs.nLastSegment; i++)	{
-		for (j = 0; j < 6; j++)	{
-			SEGMENTS [i].m_sides [j].nWall = m_cf.ReadShort ();
-			SEGMENTS [i].m_sides [j].m_nBaseTex = m_cf.ReadShort ();
-			nTexture = m_cf.ReadShort ();
-			SEGMENTS [i].m_sides [j].nOvlTex = nTexture & 0x3fff;
-			SEGMENTS [i].m_sides [j].nOvlOrient = (nTexture >> 14) & 3;
-			}
-		}
+	for (i = 0; i <= gameData.segs.nLastSegment; i++)
+		SEGMENTS [i].Read (m_cf, false);
 	DBG (fPos = m_cf.Tell ());
 	//Restore the fuelcen info
 	for (i = 0, wallP = WALLS.Buffer (); i < gameData.walls.nWalls; i++, wallP++) {
 		if ((wallP->nType == WALL_DOOR) && (wallP->flags & WALL_DOOR_OPENED))
-			AnimateOpeningDoor (SEGMENTS + wallP->nSegment, wallP->nSide, -1);
+			SEGMENTS [wallP->nSegment].AnimateOpeningDoor (wallP->nSide, -1);
 		else if ((wallP->nType == WALL_BLASTABLE) && (wallP->flags & WALL_BLASTED))
-			BlastBlastableWall (SEGMENTS + wallP->nSegment, wallP->nSide);
+			SEGMENTS [wallP->nSegment].BlastWall (wallP->nSide);
 		}
 	gameData.reactor.bDestroyed = m_cf.ReadInt ();
 	gameData.reactor.countdown.nTimer = m_cf.ReadFix ();
@@ -2493,13 +2485,16 @@ if (!m_bBetweenLevels)	{
 			m_cf.Seek ((m_nVersion < 35) ? 700 : MAX_OBJECTS_D2X * sizeof (short), SEEK_CUR);
 		}
 	//Restore tmap info
-	for (i = 0; i <= gameData.segs.nLastSegment; i++)	{
-		for (j = 0; j < 6; j++)	{
-			SEGMENTS [i].m_sides [j].nWall = m_cf.ReadShort ();
-			SEGMENTS [i].m_sides [j].m_nBaseTex = m_cf.ReadShort ();
+	CSegment* segP = SEGMENTS.Buffer ();
+	CSide* sideP;
+	for (i = 0; i <= gameData.segs.nLastSegment; i++, segP) {
+		sideP = segP->m_sides;
+		for (j = 0; j < 6; j++, sideP++)	{
+			sideP->m_nWall = m_cf.ReadShort ();
+			sideP->m_nBaseTex = m_cf.ReadShort ();
 			nTexture = m_cf.ReadShort ();
-			SEGMENTS [i].m_sides [j].nOvlTex = nTexture & 0x3fff;
-			SEGMENTS [i].m_sides [j].nOvlOrient = (nTexture >> 14) & 3;
+			sideP->m_nOvlTex = nTexture & 0x3fff;
+			sideP->m_nOvlOrient = (nTexture >> 14) & 3;
 			}
 		}
 //Restore the fuelcen info

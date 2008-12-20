@@ -540,7 +540,7 @@ for (i = 0; i < MAX_CONTROLCEN_GUNS; i++)
  */
 extern int ReadReactors (CFile& cf)
 {
-	int i, j;
+	int i;
 
 for (i = 0; i < gameData.reactor.nReactors; i++)
 	ReadReactor (gameData.reactor.props [i], cf); 
@@ -549,16 +549,18 @@ return gameData.reactor.nReactors;
 
 //------------------------------------------------------------------------------
 
-void ReadReactorTriggers (CFile& cf)
+INT ReadReactorTriggers (CFile& cf)
 {
-	int i;
+	int i, j;
 
 for (i = 0; i < gameFileInfo.control.count; i++) {
-gameData.reactor.trigger.nLinks = cf.ReadShort ();
-for (i = 0; i < MAX_CONTROLCEN_LINKS; i++)
-	gameData.reactor.trigger.segments [i] = cf.ReadShort ();
-for (i = 0; i < MAX_CONTROLCEN_LINKS; i++)
-	gameData.reactor.trigger.sides [i] = cf.ReadShort ();
+	gameData.reactor.triggers.nLinks = cf.ReadShort ();
+	for (i = 0; i < MAX_CONTROLCEN_LINKS; i++)
+		gameData.reactor.triggers.segments [i] = cf.ReadShort ();
+	for (i = 0; i < MAX_CONTROLCEN_LINKS; i++)
+		gameData.reactor.triggers.sides [i] = cf.ReadShort ();
+	}
+return gameFileInfo.control.count;
 }
 
 //------------------------------------------------------------------------------

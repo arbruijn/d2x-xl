@@ -43,6 +43,14 @@ if (bExtended) {
 	m_xAvgSegLight = cf.ReadFix ();
 	}
 else {
+	sideP = m_sides;
+	for (j = 0; j < 6; j++, sideP++) {
+		sideP->m_nWall = m_cf.ReadShort ();
+		sideP->m_nBaseTex = m_cf.ReadShort ();
+		nTexture = m_cf.ReadShort ();
+		sideP->m_nOvlTex = nTexture & 0x3fff;
+		sideP->m_nOvlOrient = (nTexture >> 14) & 3;
+		}
 	}
 }
 
