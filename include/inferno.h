@@ -2748,7 +2748,7 @@ typedef struct tReactorStates {
 class CReactorData {
 	public:
 		tReactorProps		props [MAX_REACTORS];
-		tReactorTriggers	triggers;
+		tReactorTrigger	triggers;
 		tReactorStates		states [MAX_BOSS_COUNT];
 		tCountdownData		countdown;
 		int					nReactors;

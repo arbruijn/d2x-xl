@@ -797,7 +797,7 @@ gameFileInfo.triggers.count	=	0;
 gameFileInfo.triggers.size		=	sizeof(CTrigger);  
 gameFileInfo.control.offset	=	-1;
 gameFileInfo.control.count		=	0;
-gameFileInfo.control.size		=	sizeof(tReactorTriggers);
+gameFileInfo.control.size		=	sizeof(tReactorTrigger);
 gameFileInfo.botGen.offset		=	-1;
 gameFileInfo.botGen.count		=	0;
 gameFileInfo.botGen.size		=	sizeof(tMatCenInfo);
@@ -1154,7 +1154,7 @@ if (gameFileInfo.control.offset > -1) {
 		Error ("Error seeking to reactor data\n(file damaged or invalid)");
 		return -1;
 		}
-	ReadReactorTriggers (&gameData.reactor.triggers, gameFileInfo.control.count, cf);
+	ReadReactorTriggers (cf);
 	}
 return 0;
 }
@@ -1788,7 +1788,7 @@ int SaveGameData(FILE * SaveFile)
 	gameFileInfo.triggers.size		=	sizeof(CTrigger);
 	gameFileInfo.control.offset		=	-1;
 	gameFileInfo.control.count		=  1;
-	gameFileInfo.control.size		=  sizeof(tReactorTriggers);
+	gameFileInfo.control.size		=  sizeof(tReactorTrigger);
  	gameFileInfo.botGen.offset		=	-1;
 	gameFileInfo.botGen.count		=	gameData.matCens.nBotCenters;
 	gameFileInfo.botGen.size		=	sizeof(tMatCenInfo);
@@ -1843,7 +1843,7 @@ int SaveGameData(FILE * SaveFile)
 	//================ SAVE CONTROL CENTER TRIGGER INFO ===============
 
 	control.offset = ftell(SaveFile);
-	fwrite(&gameData.reactor.triggers, sizeof(tReactorTriggers), 1, SaveFile);
+	fwrite(&gameData.reactor.triggers, sizeof(tReactorTrigger), 1, SaveFile);
 
 
 	//================ SAVE MATERIALIZATION CENTER TRIGGER INFO ===============

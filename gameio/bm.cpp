@@ -294,7 +294,7 @@ gameData.pig.tex.nFirstMultiBitmap = cf.ReadInt ();
 
 gameData.reactor.nReactors = cf.ReadInt ();
 /*---*/PrintLog ("      Loading %d reactor descriptions\n", gameData.reactor.nReactors);
-ReadReactors (gameData.reactor.props, gameData.reactor.nReactors, cf);
+ReadReactors (cf);
 
 gameData.models.nMarkerModel = cf.ReadInt ();
 if (gameData.pig.tex.nHamFileVersion < 3) {

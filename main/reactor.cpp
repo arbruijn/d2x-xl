@@ -519,43 +519,57 @@ if (gameData.reactor.bDestroyed) {
 	}
 }
 
-#if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
+//------------------------------------------------------------------------------
+
+void ReadReactor (tReactorProps& reactor, CFile& cf)
+{
+	int i;
+
+reactor.nModel = cf.ReadInt ();
+reactor.nGuns = cf.ReadInt ();
+for (i = 0; i < MAX_CONTROLCEN_GUNS; i++)
+	cf.ReadVector (reactor.gunPoints [i]);
+for (i = 0; i < MAX_CONTROLCEN_GUNS; i++)
+	cf.ReadVector (reactor.gunDirs [i]);
+}
+
 //------------------------------------------------------------------------------
 /*
  * reads n reactor structs from a CFile
  */
-extern int ReadReactors (tReactorProps *r, int n, CFile& cf)
+extern int ReadReactors (CFile& cf)
 {
 	int i, j;
 
-for (i = 0; i < n; i++) {
-	r[i].nModel = cf.ReadInt ();
-	r[i].nGuns = cf.ReadInt ();
-	for (j = 0; j < MAX_CONTROLCEN_GUNS; j++)
-		cf.ReadVector (r[i].gunPoints[j]);
-	for (j = 0; j < MAX_CONTROLCEN_GUNS; j++)
-		cf.ReadVector (r[i].gunDirs[j]);
-	}
-return i;
+for (i = 0; i < gameData.reactor.nReactors; i++)
+	ReadReactor (gameData.reactor.props [i], cf); 
+return gameData.reactor.nReactors;
+}
+
+//------------------------------------------------------------------------------
+
+void ReadReactorTrigger (tReactorTrigger& trigger, CFile& cf)
+{
+	int j;
+
+trigger.nLinks = cf.ReadShort ();
+for (i = 0; i < MAX_CONTROLCEN_LINKS; i++)
+	trigger.segments [i] = cf.ReadShort ();
+for (i = 0; i < MAX_CONTROLCEN_LINKS; i++)
+	trigger.sides [i] = cf.ReadShort ();
 }
 
 //------------------------------------------------------------------------------
 /*
- * reads a tReactorTriggers structure from a CFile
+ * reads a tReactorTrigger structure from a CFile
  */
-extern int ReadReactorTriggers (tReactorTriggers *cct, int n, CFile& cf)
+int ReadReactorTriggers (tReactorTrigger& trigger, int n, CFile& cf)
 {
 	int i, j;
 
-for (i = 0; i < n; i++) {
-	cct->nLinks = cf.ReadShort ();
-	for (j = 0; j < MAX_CONTROLCEN_LINKS; j++)
-		cct->nSegment [j] = cf.ReadShort ();
-	for (j = 0; j < MAX_CONTROLCEN_LINKS; j++)
-		cct->nSide [j] = cf.ReadShort ();
-	}
-return i;
+for (int i = 0; i < gameFileInfo.control.count; i++) {
+	ReadReactorTrigger (gameData.reactor.triggers [i], cf);
+return gameFileInfo.control.count;
 }
-#endif
 
 //------------------------------------------------------------------------------

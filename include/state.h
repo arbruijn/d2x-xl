@@ -1,5 +1,4 @@
-/* $Id: 
-,v 1.2 2003/10/10 09:36:35 btb Exp $ */
+
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -62,7 +61,7 @@ class CSaveGameHandler {
 		void SaveImage (void);
 		void SaveGameData (void);
 		void SaveSpawnPoint (int i);
-		void SaveReactorTrigger (tReactorTriggers *triggerP);
+		void SaveReactorTrigger (tReactorTrigger *triggerP);
 		void SaveReactorState (tReactorStates *stateP);
 		void SaveFuelCen (tFuelCenInfo *fuelcenP);
 		void SaveMatCen (tMatCenInfo *matcenP);
@@ -97,7 +96,7 @@ class CSaveGameHandler {
 		void LoadObjTriggerRef (tObjTriggerRef *refP);
 		void LoadMatCen (tMatCenInfo *matcenP);
 		void LoadFuelCen (tFuelCenInfo *fuelcenP);
-		void LoadReactorTrigger (tReactorTriggers *triggerP);
+		void LoadReactorTrigger (tReactorTrigger *triggerP);
 		void LoadReactorState (tReactorStates *stateP);
 		int LoadSpawnPoint (int i);
 		int LoadUniFormat (int bMulti, fix xOldGameTime, int *nLevel);
