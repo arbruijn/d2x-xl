@@ -61,7 +61,7 @@ class CSaveGameHandler {
 		void SaveImage (void);
 		void SaveGameData (void);
 		void SaveSpawnPoint (int i);
-		void SaveReactorTrigger (tReactorTrigger *triggerP);
+		void SaveReactorTrigger (tReactorTriggers *triggerP);
 		void SaveReactorState (tReactorStates *stateP);
 		void SaveFuelCen (tFuelCenInfo *fuelcenP);
 		void SaveMatCen (tMatCenInfo *matcenP);
@@ -96,7 +96,7 @@ class CSaveGameHandler {
 		void LoadObjTriggerRef (tObjTriggerRef *refP);
 		void LoadMatCen (tMatCenInfo *matcenP);
 		void LoadFuelCen (tFuelCenInfo *fuelcenP);
-		void LoadReactorTrigger (tReactorTrigger *triggerP);
+		void LoadReactorTrigger (tReactorTriggers *triggerP);
 		void LoadReactorState (tReactorStates *stateP);
 		int LoadSpawnPoint (int i);
 		int LoadUniFormat (int bMulti, fix xOldGameTime, int *nLevel);

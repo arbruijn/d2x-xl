@@ -25,11 +25,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_CONTROLCEN_LINKS    10
 
-typedef struct tReactorTrigger {
+typedef struct tReactorTriggers {
 	short   nLinks;
 	short   segments [MAX_CONTROLCEN_LINKS];
 	short   sides [MAX_CONTROLCEN_LINKS];
-} __pack__ tReactorTrigger;
+} tReactorTriggers;
 
 typedef struct tReactorProps {
 	int nModel;
@@ -59,7 +59,7 @@ fix ReactorStrength (void);
 int ReadReactors (CFile& cf);
 
 /*
- * reads n tReactorTrigger structs from a CFILE
+ * reads n tReactorTriggers structs from a CFILE
  */
 int ReadReactorTriggers (CFile& cf);
 

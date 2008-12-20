@@ -28,6 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network.h"
 #include "switch.h"
 #include "cheats.h"
+#include "gamesave.h"
 
 //@@CFixVector controlcen_gun_points[MAX_CONTROLCEN_GUNS];
 //@@CFixVector controlcen_gun_dirs[MAX_CONTROLCEN_GUNS];
@@ -548,28 +549,16 @@ return gameData.reactor.nReactors;
 
 //------------------------------------------------------------------------------
 
-void ReadReactorTrigger (tReactorTrigger& trigger, CFile& cf)
+void ReadReactorTriggers (CFile& cf)
 {
-	int j;
+	int i;
 
-trigger.nLinks = cf.ReadShort ();
+for (i = 0; i < gameFileInfo.control.count; i++) {
+gameData.reactor.trigger.nLinks = cf.ReadShort ();
 for (i = 0; i < MAX_CONTROLCEN_LINKS; i++)
-	trigger.segments [i] = cf.ReadShort ();
+	gameData.reactor.trigger.segments [i] = cf.ReadShort ();
 for (i = 0; i < MAX_CONTROLCEN_LINKS; i++)
-	trigger.sides [i] = cf.ReadShort ();
-}
-
-//------------------------------------------------------------------------------
-/*
- * reads a tReactorTrigger structure from a CFile
- */
-int ReadReactorTriggers (tReactorTrigger& trigger, int n, CFile& cf)
-{
-	int i, j;
-
-for (int i = 0; i < gameFileInfo.control.count; i++) {
-	ReadReactorTrigger (gameData.reactor.triggers [i], cf);
-return gameFileInfo.control.count;
+	gameData.reactor.trigger.sides [i] = cf.ReadShort ();
 }
 
 //------------------------------------------------------------------------------
