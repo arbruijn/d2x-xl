@@ -39,7 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_HIGH_SCORES 	10
 
 typedef struct stats_info {
-  	char	name[CALLSIGN_LEN+1];
+  	char	name [CALLSIGN_LEN+1];
 	int		score;
 	sbyte   startingLevel;
 	sbyte   endingLevel;
@@ -50,7 +50,7 @@ typedef struct stats_info {
 } stats_info;
 
 typedef struct all_scores {
-	char			nSignature[3];			// DHS
+	char			nSignature [3];			// DHS
 	sbyte           version;				// version
 	char			cool_saying[COOL_MESSAGE_LEN];
 	stats_info	stats[MAX_HIGH_SCORES];
@@ -62,7 +62,7 @@ stats_info Last_game;
 
 static int xOffs = 0, yOffs = 0;
 
-char scores_filename[128];
+char scores_filename [128];
 
 #define XX		(7)
 #define YY		(-3)
@@ -130,7 +130,7 @@ void scores_read ()
 	cf.Read (&Scores, sizeof (all_scores), 1);
 	cf.Close ();
 
-	if ((Scores.version!=VERSION_NUMBER)|| (Scores.nSignature[0]!='D')|| (Scores.nSignature[1]!='H')|| (Scores.nSignature[2]!='S'))	{
+	if ((Scores.version!=VERSION_NUMBER)|| (Scores.nSignature [0]!='D')|| (Scores.nSignature [1]!='H')|| (Scores.nSignature [2]!='S'))	{
 		memset (&Scores, 0, sizeof (all_scores));
 		return;
 	}
@@ -147,9 +147,9 @@ if (!cf.Open (GetScoresFilename (), gameFolders.szDataDir, "wb", 0)) {
 	return;
 	}
 
-Scores.nSignature[0]='D';
-Scores.nSignature[1]='H';
-Scores.nSignature[2]='S';
+Scores.nSignature [0]='D';
+Scores.nSignature [1]='H';
+Scores.nSignature [2]='S';
 Scores.version = VERSION_NUMBER;
 cf.Write (&Scores,sizeof (all_scores),1);
 cf.Close ();

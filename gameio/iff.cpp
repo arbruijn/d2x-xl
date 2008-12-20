@@ -426,9 +426,9 @@ while ((Pos() < endPos) && (sig = GetSig ()) != EOF) {
 		case cmap_sig: {
 			int ncolors = (int) (len/3), cnum;
 			for (cnum = 0; cnum < ncolors; cnum++) {
-				bmHeader->palette[cnum].r = GetByte () >> 2;
-				bmHeader->palette[cnum].g = GetByte () >> 2;
-				bmHeader->palette[cnum].b = GetByte () >> 2;
+				bmHeader->palette [cnum].r = GetByte () >> 2;
+				bmHeader->palette [cnum].g = GetByte () >> 2;
+				bmHeader->palette [cnum].b = GetByte () >> 2;
 				}
 			if (len & 1) 
 				NextPos();
@@ -486,7 +486,7 @@ for (y=0;y<bmHeader->h;y++) {
 		if ((checkmask >>= 1) == 0) checkmask=0x80;
 		}
 	}
-delete[] bmHeader->raw_data;
+delete [] bmHeader->raw_data;
 bmHeader->raw_data = new_data;
 bmHeader->nType = TYPE_PBM;
 return IFF_NO_ERROR;
@@ -543,7 +543,7 @@ return ret;
 void CIFF::Close (void)
 {
 if (Data ()) {
-	delete[] Data ();
+	delete [] Data ();
 	Data () = NULL;
 	}
 SetPos (0);
@@ -587,7 +587,7 @@ else
 	ret = IFF_UNKNOWN_FORM;
 if (ret != IFF_NO_ERROR) {		//got an error parsing
 	if (bmHeader.raw_data) 
-		delete[] bmHeader.raw_data;
+		delete [] bmHeader.raw_data;
 	return ret;
 	}
 //If IFF file is ILBM, convert to PPB
@@ -669,9 +669,9 @@ PutSig(cmap_sig, fp);
 PutLong(3 * n_colors, fp);
 for (i=0; i<256; i++) {
 	ubyte r, g, b;
-	r = bitmap_header->palette[i].r * 4 + (bitmap_header->palette[i].r?3:0);
-	g = bitmap_header->palette[i].g * 4 + (bitmap_header->palette[i].g?3:0);
-	b = bitmap_header->palette[i].b * 4 + (bitmap_header->palette[i].b?3:0);
+	r = bitmap_header->palette [i].r * 4 + (bitmap_header->palette [i].r?3:0);
+	g = bitmap_header->palette [i].g * 4 + (bitmap_header->palette [i].g?3:0);
+	b = bitmap_header->palette [i].b * 4 + (bitmap_header->palette [i].b?3:0);
 	fputc(r, fp);
 	fputc(g, fp);
 	fputc(b, fp);
@@ -769,7 +769,7 @@ if (bCompression) {		//write actual data length
 	Assert(fseek(fp, total_len, SEEK_CUR)==0);
 	if (total_len&1) fputc(0, fp);		//pad to even
 	}
-delete[] new_span;
+delete [] new_span;
 return ((bCompression) ? (EVEN(total_len)+8) : (len+8));
 }
 

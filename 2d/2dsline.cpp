@@ -29,7 +29,7 @@ void gr_linear_darken(ubyte * dest, int darkeningLevel, int count, ubyte * fade_
 
 	for (i=0;i<count;i++)
 	{
-		*dest = fade_table[(*dest)+(darkeningLevel*256)];
+		*dest = fade_table [(*dest)+(darkeningLevel*256)];
 		dest++;
 	}
 }

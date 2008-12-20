@@ -62,7 +62,7 @@ if (transpItems.depthBufP)
 if (!(transpItems.depthBufP = new tTranspItem* [ITEM_DEPTHBUFFER_SIZE]))
 	return 0;
 if (!(transpItems.itemListP = new tTranspItem [ITEM_BUFFER_SIZE])) {
-	delete[] transpItems.depthBufP;
+	delete [] transpItems.depthBufP;
 	transpItems.depthBufP = NULL;
 	return 0;
 	}
@@ -75,9 +75,9 @@ return 1;
 
 void FreeTranspItems (void)
 {
-delete[] transpItems.itemListP;
+delete [] transpItems.itemListP;
 transpItems.itemListP = NULL;
-delete[] transpItems.depthBufP;
+delete [] transpItems.depthBufP;
 transpItems.depthBufP = NULL;
 }
 

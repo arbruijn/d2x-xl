@@ -32,7 +32,7 @@ typedef struct tIFFBitmapHeader {
 	sbyte nplanes;              //number of planes (8 for 256 color image)
 	sbyte masking, compression;  //see constants above
 	sbyte xaspect, yaspect;      //aspect ratio (usually 5/6)
-	tPalEntry palette[256];		//the palette for this bitmap
+	tPalEntry palette [256];		//the palette for this bitmap
 	ubyte *raw_data;				//ptr to array of data
 	short row_size;				//offset to next row
 } tIFFBitmapHeader;

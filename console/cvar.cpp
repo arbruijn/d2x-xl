@@ -43,11 +43,11 @@ m_value = 0;
 void CCvar::Destroy (void)
 {
 if (m_name) {
-	delete[] m_name;
+	delete [] m_name;
 	m_name = NULL;
 	}
 if (m_text) {
-	delete[] m_text;
+	delete [] m_text;
 	m_text = NULL;
 	}
 delete this;
@@ -108,7 +108,7 @@ void CCvar::Set (char* value)
 if (!(text = StrDup (value)))
 	return;
 if (m_text)
-	delete[] m_text;
+	delete [] m_text;
 m_text = text;
 m_value = strtod (value, reinterpret_cast<char **> (NULL));
 }

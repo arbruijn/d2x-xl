@@ -56,7 +56,7 @@ char *MemStrDup (const char * str);
 #define StrDup(_s)			MemStrDup (_s)
 
 #define MALLOC(_v,_t,_c)		(_v) = new _t [_c]
-#define FREE(_v)					delete[] (_v)
+#define FREE(_v)					delete [] (_v)
 
 #endif
 

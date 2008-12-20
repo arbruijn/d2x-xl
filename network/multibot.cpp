@@ -614,7 +614,7 @@ if (OBJECTS [nRobot].cType.aiInfo.REMOTE_OWNER != nPlayer) {
 	else
 		OBJECTS [nRobot].cType.aiInfo.REMOTE_SLOT_NUM++;
 	}
-SetThrustFromVelocity (&OBJECTS [nRobot]); // Try to smooth out movement
+OBJECTS [nRobot].SetThrustFromVelocity (); // Try to smooth out movement
 #if ! (defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 ExtractShortPos (&OBJECTS [nRobot], reinterpret_cast<tShortPos*> (buf+bufP), 0);
 #else
@@ -643,9 +643,9 @@ nRobot = ObjnumRemoteToLocal (nRemoteBot, (sbyte)buf [bufP+2]);
 bufP += 3;
 nGun = (sbyte)buf [bufP++];                                      
 memcpy (&vFire, buf+bufP, sizeof (CFixVector));
-vFire[X] = (fix)INTEL_INT ((int)vFire[X]);
-vFire[Y] = (fix)INTEL_INT ((int)vFire[Y]);
-vFire[Z] = (fix)INTEL_INT ((int)vFire[Z]);
+vFire [X] = (fix)INTEL_INT ((int)vFire [X]);
+vFire [Y] = (fix)INTEL_INT ((int)vFire [Y]);
+vFire [Z] = (fix)INTEL_INT ((int)vFire [Z]);
 if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]) || 
 		 (OBJECTS [nRobot].info.nType != OBJ_ROBOT) || 
 		 (OBJECTS [nRobot].info.nFlags & OF_EXPLODING))
@@ -784,7 +784,7 @@ objP->info.nCreator = ((short) (robotcen - gameData.matCens.fuelCenters)) | 0x80
 direction = gameData.objs.consoleP->info.position.vPos - objP->info.position.vPos;
 objP->info.position.mOrient = CFixMatrix::CreateFU(direction, objP->info.position.mOrient.UVec ());
 //objP->info.position.mOrient = CFixMatrix::CreateFU(direction, &objP->info.position.mOrient.UVec (), NULL);
-MorphStart (objP);
+objP->MorphStart ();
 MapObjnumLocalToRemote (objP->Index (), nObject, nPlayer);
 Assert (objP->cType.aiInfo.REMOTE_OWNER == -1);
 }

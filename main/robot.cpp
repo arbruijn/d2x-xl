@@ -254,11 +254,11 @@ for (i = 0; i < n; i++) {
 	for (j = 0; j < NDL; j++)
 		pri [h].secondaryFiringWait[j] = cf.ReadFix ();
 	for (j = 0; j < NDL; j++)
-		pri [h].turnTime[j] = cf.ReadFix ();
+		pri [h].turnTime [j] = cf.ReadFix ();
 	for (j = 0; j < NDL; j++)
 		pri [h].xMaxSpeed[j] = cf.ReadFix ();
 	for (j = 0; j < NDL; j++)
-		pri [h].circleDistance[j] = cf.ReadFix ();
+		pri [h].circleDistance [j] = cf.ReadFix ();
 	cf.Read(pri [h].nRapidFireCount, NDL, 1);
 	cf.Read(pri [h].evadeSpeed, NDL, 1);
 	pri [h].cloakType = cf.ReadByte ();

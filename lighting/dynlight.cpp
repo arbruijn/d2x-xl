@@ -118,7 +118,7 @@ for (i = 0; i < 3; i++) {
 	pl->info.fAmbient.v [i] = pl->info.fDiffuse [i] * 0.01f;
 	pl->info.fDiffuse.v [i] =
 #endif
-	pl->fEmissive[i] = pl->fSpecular[i] * fBrightness;
+	pl->fEmissive [i] = pl->fSpecular[i] * fBrightness;
 	}
 // light alphas
 #if USE_OGL_LIGHTS

@@ -45,9 +45,6 @@ typedef struct tMorphInfo {
 
 #define MORPH_RATE (f1_0*3)
 
-void MorphStart(CObject *obj);
-void MorphDrawObject(CObject *obj);
-
 //process the morphing CObject for one frame
 void DoMorphFrame(CObject *obj);
 

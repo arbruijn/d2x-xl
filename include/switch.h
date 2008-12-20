@@ -167,7 +167,6 @@ typedef struct tObjTriggerRef {
 } tObjTriggerRef;
 
 void TriggerInit();
-void CheckTrigger (CSegment *seg, short CSide, short nObject,int shot);
 void TriggersFrameProcess();
 void ExecObjTriggers (short nObject, int bDamage);
 

@@ -1522,7 +1522,7 @@ if (!(wallP = segP->Wall (nSide))) {  //Opening door on illegal CWall
 	}
 if (wallP->nType == WALL_BLASTABLE) {
 	if (!(wallP->flags & WALL_BLASTED))
-		WallDestroy (segP, nSide);
+		segP->DestroyWall (nSide);
 	return;
 	}
 else if (wallP->state != WALL_DOOR_OPENING) {
@@ -1753,7 +1753,7 @@ wallP = WALLS + wallnum;
 if (wallP->nType != WALL_BLASTABLE)
 	return;
 if (hps < wallP->hps)
-	WallDamage (SEGMENTS + wallP->nSegment, (short) wallP->nSide, wallP->hps - hps);
+	SEGMENTS [wallP->nSegment].DamageWall ((short) wallP->nSide, wallP->hps - hps);
 }
 
 //-----------------------------------------------------------------------------
@@ -3738,14 +3738,14 @@ v[Y] = GET_INTEL_INT (buf + bufP);
 bufP += 4;
 v[Z] = GET_INTEL_INT (buf + bufP);
 bufP += 4;
-PhysApplyForce (gameData.hoard.monsterballP, &v);
+gameData.hoard.monsterballP->ApplyForce (v);
 v[X] = GET_INTEL_INT (buf + bufP);
 bufP += 4;
 v[Y] = GET_INTEL_INT (buf + bufP);
 bufP += 4;
 v[Z] = GET_INTEL_INT (buf + bufP);
 bufP += 4;
-PhysApplyRot (gameData.hoard.monsterballP, &v);
+gameData.hoard.monsterballP->ApplyRotForce (v);
 }
 
 //-----------------------------------------------------------------------------

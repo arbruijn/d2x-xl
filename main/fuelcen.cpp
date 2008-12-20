@@ -743,7 +743,7 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 	vDir = gameData.objs.consoleP->info.position.vPos - objP->info.position.vPos;
 	objP->info.position.mOrient = CFixMatrix::CreateFU(vDir, objP->info.position.mOrient.UVec ());
 	//objP->info.position.mOrient = CFixMatrix::CreateFU(vDir, &objP->info.position.mOrient.UVec (), NULL);
-	MorphStart (objP);
+	objP->MorphStart ();
 	}
 else {
 	matCenP->bFlag = 0;

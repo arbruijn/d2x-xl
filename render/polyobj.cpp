@@ -262,7 +262,7 @@ void AlignPolyModelData (tPolyModel *pm)
 	if (!pm->modelData.Create (pm->nDataSize))
 		Error ("Not enough memory for game models.");
 	pm->modelData = tmp;
-	delete[] tmp;
+	delete [] tmp;
 }
 #endif //def WORDS_NEED_ALIGNMENT
 

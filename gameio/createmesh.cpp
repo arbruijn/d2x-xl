@@ -775,7 +775,7 @@ if (bOk) {
 	memcpy (FACES.faceVerts.Buffer (), bufP, sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts);
 	}
 if (ioBuffer) {
-	delete[] ioBuffer;
+	delete [] ioBuffer;
 	ioBuffer = NULL;
 	}
 if (bOk) {
@@ -1281,7 +1281,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 			nDbgSeg = nDbgSeg;
 #endif
 		m_nWall = SEGMENTS [nSegment].WallNum (nSide);
-		m_nWallType = IS_WALL (m_nWall) ? WallIsInvisible (m_nWall) ? 0 : 2 : (m_segP->m_children [nSide] == -1) ? 1 : 0;
+		m_nWallType = IS_WALL (m_nWall) ? WALLS [m_nWall].IsInvisible () ? 0 : 2 : (m_segP->m_children [nSide] == -1) ? 1 : 0;
 		if (m_bColoredSeg || m_nWallType) {
 #if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))

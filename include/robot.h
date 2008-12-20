@@ -84,11 +84,11 @@ typedef struct tRobotInfo {
 	fix     fieldOfView[NDL]; // compare this value with forward_vector.dot.vector_to_player, if fieldOfView <, then robot can see CPlayerData
 	fix     primaryFiringWait[NDL];   //  time in seconds between shots
 	fix     secondaryFiringWait[NDL];  //  time in seconds between shots
-	fix     turnTime[NDL];     // time in seconds to rotate 360 degrees in a dimension
+	fix     turnTime [NDL];     // time in seconds to rotate 360 degrees in a dimension
 // -- unused, mk, 05/25/95  fix fire_power[NDL];    //  damage done by a hit from this robot
 // -- unused, mk, 05/25/95  fix shield[NDL];        //  shield strength of this robot
 	fix     xMaxSpeed[NDL];         //  maximum speed attainable by this robot
-	fix     circleDistance[NDL];   //  distance at which robot circles CPlayerData
+	fix     circleDistance [NDL];   //  distance at which robot circles CPlayerData
 
 	sbyte   nRapidFireCount[NDL];   //  number of shots fired rapidly
 	sbyte   evadeSpeed[NDL];       //  rate at which robot can evade shots, 0=none, 4=very fast
@@ -149,11 +149,11 @@ typedef struct D1Robot_info {
 
 	fix		fieldOfView[NDL];					// compare this value with forward_vector.dot.vector_to_player, if fieldOfView <, then robot can see CPlayerData
 	fix		primaryFiringWait[NDL];						//	time in seconds between shots
-	fix		turnTime[NDL];						// time in seconds to rotate 360 degrees in a dimension
+	fix		turnTime [NDL];						// time in seconds to rotate 360 degrees in a dimension
 	fix		fire_power[NDL];						//	damage done by a hit from this robot
 	fix		shield[NDL];							//	shield strength of this robot
 	fix		xMaxSpeed[NDL];						//	maximum speed attainable by this robot
-	fix		circleDistance[NDL];				//	distance at which robot circles CPlayerData
+	fix		circleDistance [NDL];				//	distance at which robot circles CPlayerData
 
 	sbyte		nRapidFireCount[NDL];				//	number of shots fired rapidly
 	sbyte		evadeSpeed[NDL];						//	rate at which robot can evade shots, 0=none, 4=very fast

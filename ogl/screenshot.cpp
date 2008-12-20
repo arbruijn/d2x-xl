@@ -181,7 +181,7 @@ if (glErrCode == GL_NO_ERROR) {
 		}
 	}
 if (bTmpBuf)
-	delete[] buf;
+	delete [] buf;
 //KeyFlush ();
 StartTime (0);
 }

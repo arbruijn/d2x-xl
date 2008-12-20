@@ -128,7 +128,7 @@ return reinterpret_cast<void*> (new ubyte [size]);
 
 void MPlayFree (void *p)
 {
-delete[] reinterpret_cast<ubyte*> (p);
+delete [] reinterpret_cast<ubyte*> (p);
 }
 
 
@@ -485,7 +485,7 @@ readCount = (int) cf.Read (subTitles.rawDataP, 1, size);
 cf.Close ();
 subTitles.rawDataP [size] = 0;
 if (readCount != size) {
-	delete[] subTitles.rawDataP;
+	delete [] subTitles.rawDataP;
 	return 0;
 	}
 p = subTitles.rawDataP;
@@ -521,7 +521,7 @@ return 1;
 void CloseSubTitles (void)
 {
 if (subTitles.rawDataP)
-	delete[] subTitles.rawDataP;
+	delete [] subTitles.rawDataP;
 subTitles.rawDataP = NULL;
 subTitles.nCaptions = 0;
 }
@@ -645,7 +645,7 @@ while (1) {
 size = sizeof (*table) + sizeof (ml_entry) * nFiles;
 table2 = new tMovieLib [size];
 memcpy (table2, table, size);
-delete[] table;
+delete [] table;
 table = table2;
 strcpy (table->name, filename);
 table->n_movies = nFiles;
@@ -801,7 +801,7 @@ strcpy (filename, pszFilename);
 void close_movie (int i)
 {
 if (movies.libs [i]) {
-	delete[] movies.libs [i]->movies;
+	delete [] movies.libs [i]->movies;
 	delete movies.libs [i];
 	}
 }

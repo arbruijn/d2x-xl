@@ -391,12 +391,12 @@ void OglDrawReticle (int cross,int primary,int secondary);
 void OglCachePolyModelTextures (int nModel);
 
 //whee
-//#define PAL2Tr(c) ((gr_palette[c*3]+gameData.render.bPaletteGamma)/63.0)
-//#define PAL2Tg(c) ((gr_palette[c*3+1]+gameData.render.bPaletteGamma)/63.0)
-//#define PAL2Tb(c) ((gr_palette[c*3+2]+gameData.render.bPaletteGamma)/63.0)
-//#define PAL2Tr(c) ((gr_palette[c*3])/63.0)
-//#define PAL2Tg(c) ((gr_palette[c*3+1])/63.0)
-//#define PAL2Tb(c) ((gr_palette[c*3+2])/63.0)
+//#define PAL2Tr(c) ((gr_palette [c*3]+gameData.render.bPaletteGamma)/63.0)
+//#define PAL2Tg(c) ((gr_palette [c*3+1]+gameData.render.bPaletteGamma)/63.0)
+//#define PAL2Tb(c) ((gr_palette [c*3+2]+gameData.render.bPaletteGamma)/63.0)
+//#define PAL2Tr(c) ((gr_palette [c*3])/63.0)
+//#define PAL2Tg(c) ((gr_palette [c*3+1])/63.0)
+//#define PAL2Tb(c) ((gr_palette [c*3+2])/63.0)
 #if 1
 #define CPAL2Tr(_p,_c)	((float) ((_p)[(_c)*3])/63.0f)
 #define CPAL2Tg(_p,_c)	((float) ((_p)[(_c)*3+1])/63.0f)

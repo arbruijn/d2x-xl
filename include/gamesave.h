@@ -38,7 +38,7 @@ typedef struct {
 	ushort  fileinfo_signature;
 	ushort  fileinfoVersion;
 	int     fileinfo_sizeof;
-	char    mine_filename[15];
+	char    mine_filename [15];
 	int     level;
 	tGameItemInfo	player;
 	tGameItemInfo	objects;
@@ -63,7 +63,7 @@ int SaveLevel(char *filename);
 // called in place of load_game() to only load the .min data
 extern void load_mine_only(char * filename);
 
-extern char Gamesave_current_filename[];
+extern char Gamesave_current_filename [];
 extern int nGameSaveOrgRobots;
 
 // In dumpmine.c

@@ -768,6 +768,7 @@ class CObject : public CObjectInfo {
 		void TurnTowardsVector (CFixVector vGoal, fix rate);
 		void ApplyForce (CFixVector vForce);
 		void ApplyRotForce (CFixVector vForce);
+		void SetThrustFromVelocity (void);
 		void Bump (CFixVector vForce, fix xDamage);
 		void Bump (CObject *otherObjP, CFixVector vForce, int bDamage);
 		void ApplyForceDamage (fix vForce, CObject *otherObjP);
@@ -831,6 +832,7 @@ class CObject : public CObjectInfo {
 		inline int Index (void);
 
 		void MorphStart (void);
+		void MorphDraw (void);
 		void DoMorphFrame (void);
 		void DoPowerupFrame (void);
 		inline void RotateCamera (void);

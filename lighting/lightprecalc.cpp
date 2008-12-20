@@ -156,7 +156,7 @@ for (segP = SEGMENTS + i; i < j; i++, segP++) {
 	for (; l < MAX_NEAREST_LIGHTS; l++)
 		gameData.render.lights.dynamic.nearestSegLights [k + l] = -1;
 	}
-delete[] pDists;
+delete [] pDists;
 return 1;
 }
 
@@ -233,7 +233,7 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 	for (; l < MAX_NEAREST_LIGHTS; l++)
 		gameData.render.lights.dynamic.nearestVertLights [k + l] = -1;
 	}
-delete[] pDists;
+delete [] pDists;
 return 1;
 }
 

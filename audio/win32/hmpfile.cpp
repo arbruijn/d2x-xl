@@ -97,7 +97,7 @@ if (!hmp->stop) {
 while ((mhdr = hmp->evbuf)) {
 	midiOutUnprepareHeader (reinterpret_cast<HMIDIOUT> (hmp->hmidi), mhdr, sizeof (MIDIHDR));
 	hmp->evbuf = mhdr->lpNext;
-	delete[] mhdr;
+	delete [] mhdr;
 	mhdr = NULL;
 	}
 

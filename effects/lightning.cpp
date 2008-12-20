@@ -582,7 +582,7 @@ if (m_nodes) {
 
 	for (i = abs (m_nNodes), nodeP = m_nodes; i > 0; i--, nodeP++)
 		nodeP->Destroy ();
-	delete[] m_nodes;
+	delete [] m_nodes;
 	 m_nodes = NULL;
 	m_nNodes = 0;
 	}
@@ -1230,7 +1230,7 @@ DestroySound ();
 if (m_lightnings) {
 	for (int i = 0; i < m_nLightnings; i++)
 		m_lightnings [i].Destroy ();
-	delete[] m_lightnings;
+	delete [] m_lightnings;
 	 m_lightnings = NULL;
 	m_nLightnings = 0;
 	}
@@ -1401,9 +1401,9 @@ m_lights = NULL;
 CLightningManager::~CLightningManager () 
 { 
 Shutdown (true);
-delete[] m_objects;
+delete [] m_objects;
 m_objects = NULL;
-delete[] m_lights;
+delete [] m_lights;
 m_lights = NULL;
 }
 

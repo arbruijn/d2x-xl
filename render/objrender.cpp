@@ -1045,7 +1045,7 @@ switch (objP->info.renderType) {
 		if (gameStates.render.nType != 1)
 			return 0;
 		if (gameStates.render.nShadowPass != 2)
-			MorphDrawObject (objP);
+			objP->MorphDraw ();
 		break;
 
 	case RT_THRUSTER:

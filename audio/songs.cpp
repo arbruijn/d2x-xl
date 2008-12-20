@@ -467,7 +467,7 @@ void FreeUserSongs (void)
 	int	i;
 
 for (i = 0; i < gameData.songs.user.nLevelSongs; i++)
-	delete[] gameData.songs.user.pszLevelSongs [i];
+	delete [] gameData.songs.user.pszLevelSongs [i];
 gameData.songs.user.pszLevelSongs.Destroy ();
 gameData.songs.user.pszLevelSongs = NULL;
 gameData.songs.user.nLevelSongs = 0;

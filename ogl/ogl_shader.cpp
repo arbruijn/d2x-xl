@@ -129,7 +129,7 @@ if (bProgram) {
 		glGetProgramInfoLog (_HANDLE, nLogLen, &charsWritten, infoLog);
 		if (*infoLog)
 			PrintLog ("\n%s\n\n", infoLog);
-		delete[] infoLog;
+		delete [] infoLog;
 		}
 	}
 else {
@@ -138,7 +138,7 @@ else {
 		glGetShaderInfoLog (_HANDLE, nLogLen, &charsWritten, infoLog);
 		if (*infoLog)
 			PrintLog ("\n%s\n\n", infoLog);
-		delete[] infoLog;
+		delete [] infoLog;
 		}
 	}
 #else
@@ -147,7 +147,7 @@ if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
 	glGetInfoLog (_HANDLE, nLogLen, &charsWritten, infoLog);
 	if (*infoLog)
 		PrintLog ("\n%s\n\n", infoLog);
-	delete[] infoLog;
+	delete [] infoLog;
 	}
 #endif
 }
@@ -252,8 +252,8 @@ glShaderSource (vs, 1, reinterpret_cast<const GLcharARB **> (&vsName), NULL);
 glShaderSource (fs, 1, reinterpret_cast<const GLcharARB **> (&fsName), NULL); 
 #if DBG_SHADERS
 if (bFromFile) {
-	delete[] vsName; 
-	delete[] fsName; 
+	delete [] vsName; 
+	delete [] fsName; 
 	}
 #endif
 glCompileShader (vs); 

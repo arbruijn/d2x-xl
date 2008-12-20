@@ -91,7 +91,7 @@ DestroyMask ();
 void CBitmap::DestroyFrames (void)
 {
 if (m_info.frames.bmP) {
-	delete[] m_info.frames.bmP;
+	delete [] m_info.frames.bmP;
 	m_info.frames.bmP =
 	m_info.frames.currentP = NULL;
 	m_info.frames.nCount = 0;

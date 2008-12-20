@@ -345,22 +345,22 @@ for (i = 0; i < sort_n; i++) {
 
 //-------------------------------------------------------------
 
-void MorphDrawObject (CObject *objP)
+void CObject::MorphDraw (void)
 {
 //	int save_light;
 	tPolyModel *pmP;
 	fix light;
 	tMorphInfo *mdP;
 
-mdP = MorphFindData (objP);
+mdP = MorphFindData (this);
 Assert (mdP != NULL);
-Assert (objP->rType.polyObjInfo.nModel < gameData.models.nPolyModels);
-pmP = gameData.models.polyModels+objP->rType.polyObjInfo.nModel;
-light = ComputeObjectLight (objP, NULL);
-transformation.Begin(objP->info.position.vPos, objP->info.position.mOrient);
+Assert (rType.polyObjInfo.nModel < gameData.models.nPolyModels);
+pmP = gameData.models.polyModels+rType.polyObjInfo.nModel;
+light = ComputeObjectLight (this, NULL);
+transformation.Begin(info.position.vPos, info.position.mOrient);
 G3SetModelPoints (gameData.models.polyModelPoints);
 gameData.render.vertP = gameData.models.fPolyModelVerts;
-MorphDrawModel (pmP, 0, objP->rType.polyObjInfo.animAngles, light, mdP, objP->rType.polyObjInfo.nModel);
+MorphDrawModel (pmP, 0, rType.polyObjInfo.animAngles, light, mdP, rType.polyObjInfo.nModel);
 gameData.render.vertP = NULL;
 transformation.End ();
 

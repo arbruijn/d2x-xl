@@ -219,7 +219,7 @@ void gr_ubitmap00m(int x, int y, CBitmap *bmP)
 		}
 	} else {
 		for (y1=0; y1 < bmP->Height (); y1++)    {
-			gr_linear_rep_movsdm_faded (src, dest, bmP->Width (), grBitBltFadeTable[y1+y], 
+			gr_linear_rep_movsdm_faded (src, dest, bmP->Width (), grBitBltFadeTable [y1+y], 
 												 bmP->Palette (), CCanvas::Current ()->Palette ());
 			src += bmP->RowSize ();
 			dest+= (int)(dest_rowSize);
@@ -348,7 +348,7 @@ void gr_bm_ubitblt00m(int w, int h, int dx, int dy, int sx, int sy, CBitmap * sr
 		}
 	} else {
 		for (i=0; i < h; i++)    {
-			gr_linear_rep_movsdm_faded (sbits, dbits, w, grBitBltFadeTable[dy+i], src->Palette (), dest->Palette ());
+			gr_linear_rep_movsdm_faded (sbits, dbits, w, grBitBltFadeTable [dy+i], src->Palette (), dest->Palette ());
 			sbits += src->RowSize ();
 			dbits += dest->RowSize ();
 		}

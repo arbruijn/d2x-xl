@@ -35,7 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define D1_ENDMOVIE	"final"
 
 int PlayMovie(const char *filename, int allow_abort, int bForce, int bFullScreen);
-int PlayMovies(int num_files, const char *filename[], int graphmode, int allow_abort);
+int PlayMovies(int num_files, const char *filename [], int graphmode, int allow_abort);
 int InitRobotMovie(char *filename);
 int RotateRobot();
 void DeInitRobotMovie(void);

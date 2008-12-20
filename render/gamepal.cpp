@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "texmerge.h"
 #include "strutil.h"
 
-char szCurrentLevelPalette[SHORT_FILENAME_LEN];
+char szCurrentLevelPalette [SHORT_FILENAME_LEN];
 
 //give a filename a new extension
 void LoadBackgroundBitmap(void);
@@ -56,7 +56,7 @@ if (bDoFadeTableHack) {
 		gamma[i] = (int)((pow(intensity, 1.0/g)*i) + 0.5);
 	for (i=0;i<256;i++) {
 		int c;
-		c = GrFindClosestColor(gamma[grPalette[i*3]],gamma[grPalette[i*3+1]],gamma[grPalette[i*3+2]]);
+		c = GrFindClosestColor(gamma[grPalette [i*3]],gamma[grPalette [i*3+1]],gamma[grPalette [i*3+2]]);
 		paletteManager.FadeTable ()[14*256+i] = c;
 		}
 	}

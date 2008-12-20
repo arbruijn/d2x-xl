@@ -1115,7 +1115,7 @@ return 1;
 int CParticleEmitter::Destroy (void)
 {
 if (m_particles) {
-	delete[] m_particles;
+	delete [] m_particles;
 	m_particles = NULL;
 	}
 m_nParts =
@@ -1337,7 +1337,7 @@ if (nMaxParts > m_nPartLimit) {
 			memcpy (pp + h, m_particles, (m_nParts - h) * sizeof (CParticle));
 		m_nFirstPart = 0;
 		m_nPartLimit = nMaxParts;
-		delete[] m_particles;
+		delete [] m_particles;
 		}
 	m_particles = pp;
 	}
@@ -1420,7 +1420,7 @@ void CParticleSystem::Destroy (void)
 if (m_emitters) {
 	for (int i = m_nEmitters; i; )
 		m_emitters [--i].Destroy ();
-	delete[] m_emitters;
+	delete [] m_emitters;
 	m_emitters = NULL;
 	if ((m_nObject >= 0) && (m_nObject < 0x70000000))
 		particleManager.SetObjectSystem (m_nObject, -1);
@@ -1835,7 +1835,7 @@ fAvgBright /= j;
 for (i = 0, bmfP = bmP->Frames (); i < j; i++, bmfP++) {
 	TGAChangeBrightness (bmfP, 0, 1, 2 * (int) (255 * fFrameBright [i] * (fAvgBright - fFrameBright [i])), 0);
 	}
-delete[] fFrameBright;
+delete [] fFrameBright;
 }
 
 //	-----------------------------------------------------------------------------

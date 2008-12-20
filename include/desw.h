@@ -68,11 +68,11 @@ typedef struct RGBBITMAPINFO {
 
 
 typedef struct WinJoystickDesc {
-	char title[32];
-	char cal_ztitle[16];
-	char cal_rtitle[16];
-	char cal_utitle[16];
-	char cal_vtitle[16];
+	char title [32];
+	char cal_ztitle [16];
+	char cal_rtitle [16];
+	char cal_utitle [16];
+	char cal_vtitle [16];
 	char cal_zmsg[6][16];
 	char cal_rmsg[6][16];
 	char cal_umsg[6][16];

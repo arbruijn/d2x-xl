@@ -1316,14 +1316,14 @@ if (EGI_FLAG (bTripleFusion, 0, 0, 0) && gameData.multiplayer.weaponStates [objP
 #endif
 nFlags = (sbyte) (gameData.fusion.xCharge >> 12);
 gameData.fusion.xCharge = 0;
-vForce[X] = -(objP->info.position.mOrient.FVec ()[X] << 7);
-vForce[Y] = -(objP->info.position.mOrient.FVec ()[Y] << 7);
-vForce[Z] = -(objP->info.position.mOrient.FVec ()[Z] << 7);
+vForce [X] = -(objP->info.position.mOrient.FVec ()[X] << 7);
+vForce [Y] = -(objP->info.position.mOrient.FVec ()[Y] << 7);
+vForce [Z] = -(objP->info.position.mOrient.FVec ()[Z] << 7);
 objP->ApplyForce (vForce);
-vForce[X] = (vForce[X] >> 4) + d_rand () - 16384;
-vForce[Y] = (vForce[Y] >> 4) + d_rand () - 16384;
-vForce[Z] = (vForce[Z] >> 4) + d_rand () - 16384;
-PhysApplyRot (objP, &vForce);
+vForce [X] = (vForce [X] >> 4) + d_rand () - 16384;
+vForce [Y] = (vForce [Y] >> 4) + d_rand () - 16384;
+vForce [Z] = (vForce [Z] >> 4) + d_rand () - 16384;
+objP->ApplyRotForce (vForce);
 return nRoundsPerShot;
 }
 
@@ -1664,14 +1664,14 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 	else if ((gameData.weapons.nSecondary == MEGA_INDEX) || (gameData.weapons.nSecondary == EARTHSHAKER_INDEX)) {
 		CFixVector vForce;
 
-	vForce[X] = - (gameData.objs.consoleP->info.position.mOrient.FVec ()[X] << 7);
-	vForce[Y] = - (gameData.objs.consoleP->info.position.mOrient.FVec ()[Y] << 7);
-	vForce[Z] = - (gameData.objs.consoleP->info.position.mOrient.FVec ()[Z] << 7);
-	PhysApplyForce (gameData.objs.consoleP, &vForce);
-	vForce[X] = (vForce[X] >> 4) + d_rand () - 16384;
-	vForce[Y] = (vForce[Y] >> 4) + d_rand () - 16384;
-	vForce[Z] = (vForce[Z] >> 4) + d_rand () - 16384;
-	PhysApplyRot (gameData.objs.consoleP, &vForce);
+	vForce [X] = - (gameData.objs.consoleP->info.position.mOrient.FVec ()[X] << 7);
+	vForce [Y] = - (gameData.objs.consoleP->info.position.mOrient.FVec ()[Y] << 7);
+	vForce [Z] = - (gameData.objs.consoleP->info.position.mOrient.FVec ()[Z] << 7);
+	gameData.objs.consoleP->ApplyForce (vForce);
+	vForce [X] = (vForce [X] >> 4) + d_rand () - 16384;
+	vForce [Y] = (vForce [Y] >> 4) + d_rand () - 16384;
+	vForce [Z] = (vForce [Z] >> 4) + d_rand () - 16384;
+	gameData.objs.consoleP->ApplyRotForce (vForce);
 	break; //no dual mega/smart missile launch
 	}
 }

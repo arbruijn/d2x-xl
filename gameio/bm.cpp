@@ -941,7 +941,7 @@ if (d2_Textures_backup) {
 	int i;
 	for (i = 0;i < D1_LAST_STATIC_TMAP_NUM;i++)
 		gameData.pig.tex.bmIndex [0][i].index = d2_Textures_backup [i];
-	delete[] d2_Textures_backup;
+	delete [] d2_Textures_backup;
 	d2_Textures_backup = NULL;
 	}
 }
@@ -1429,7 +1429,7 @@ if (!bip->index) {
 	char *name2 = StrDup (name);
 	*strrchr (name2, '.') = '\0';
 	*bip = ReadExtraBitmapD1Pig (name2);
-	delete[] name2;
+	delete [] name2;
 	}
 if (!(i = bip->index))
 	return NULL;

@@ -808,7 +808,7 @@ if ((gameStates.ogl.bHeadlight = (gameStates.ogl.bShadersOk && RENDERPATH))) {
 					CreateShaderFunc (&headlightShaderProgs [i][j], &lfs [i][j], &lvs [i][j], pszFS, headlightVS [i][h], 1) &&
 					LinkShaderProg (&headlightShaderProgs [i][j]);
 			if (pszFS && (nLights > 1))
-				delete[] pszFS;
+				delete [] pszFS;
 			if (!bOk) {
 				DeleteHeadlightShader ();
 				nLights = 0;

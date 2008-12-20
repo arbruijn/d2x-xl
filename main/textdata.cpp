@@ -19,9 +19,9 @@
 
 void FreeTextData (CTextData *msgP)
 {
-delete[] msgP->textBuffer;
+delete [] msgP->textBuffer;
 msgP->textBuffer = NULL;
-delete[] msgP->index;
+delete [] msgP->index;
 msgP->index = NULL;
 if (msgP->bmP)
 	delete msgP->bmP;

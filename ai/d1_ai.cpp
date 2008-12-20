@@ -399,8 +399,6 @@ void set_rotvel_and_saturate(fix *dest, fix delta)
 #define	D1_AI_TURN_SCALE	1
 #define	BABY_SPIDER_ID	14
 
-extern void PhysicsTurnTowardsVector(CFixVector *vGoal, CObject *objP, fix rate);
-
 //-------------------------------------------------------------------------------------------
 void ai_turn_towards_vector(CFixVector *vGoal, CObject *objP, fix rate)
 {
@@ -408,7 +406,7 @@ void ai_turn_towards_vector(CFixVector *vGoal, CObject *objP, fix rate)
 	fix			dot;
 
 	if ((objP->info.nId == BABY_SPIDER_ID) && (objP->info.nType == OBJ_ROBOT)) {
-		PhysicsTurnTowardsVector(vGoal, objP, rate);
+		objP->TurnTowardsVector(*vGoal, rate);
 		return;
 	}
 
@@ -814,7 +812,7 @@ void DoD1AIRobotHitAttack(CObject *robotP, CObject *playerP, CFixVector *vCollis
 			if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
 				if (CFixVector::Dist (OBJPOS (gameData.objs.consoleP)->vPos, robotP->info.position.vPos) < 
 					 robotP->info.xSize + gameData.objs.consoleP->info.xSize + F1_0*2)
-					playerP->CollidePlayerAndNastyRobot (robotP, vCollision);
+					playerP->CollidePlayerAndNastyRobot (robotP, *vCollision);
 
 			robotP->cType.aiInfo.GOAL_STATE = D1_AIS_RECO;
 			SetNextPrimaryFireTime (ailP, botInfoP);
@@ -1559,7 +1557,7 @@ int CreateGatedRobot (int nSegment, int nObjId)
 
 	/*Object*/CreateExplosion (nSegment, vObjPos, I2X(10), VCLIP_MORPHING_ROBOT);
 	DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, vObjPos, 0, F1_0);
-	MorphStart (objP);
+	objP->MorphStart ();
 
 	gameData.boss [0].nLastGateTime = gameData.time.xGame;
 	LOCALPLAYER.numRobotsLevel++;

@@ -388,7 +388,7 @@ for (int i = 0; i < nLinks; i++) {
 	switch (nType) {
 		case TT_OPEN_WALL:
 			if (!(gameData.pig.tex.tMapInfoP [segP->m_sides [nSide].m_nBaseTex].flags & TMI_FORCE_FIELD)) 
-				StartWallCloak (segP,nSide);
+				segP->StartCloak (nSide);
 			else {
 				CFixVector vPos = segP->SideCenter (nSide);
 				DigiLinkSoundToPos (SOUND_FORCEFIELD_OFF, segP->Index (), nSide, vPos, 0, F1_0);

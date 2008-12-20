@@ -336,7 +336,7 @@ if ((theirObjP->info.renderType != pd->objRenderType) && (pd->objRenderType == R
 	MultiMakeGhostPlayer (nTheirPlayer);
 OBJECTS [theirObjNum].RelinkToSeg (pd->nObjSeg);
 if (theirObjP->info.movementType == MT_PHYSICS)
-	SetThrustFromVelocity (theirObjP);
+	theirObjP->SetThrustFromVelocity ();
 //------------ Welcome them back if reconnecting --------------
 if (!gameData.multiplayer.players [nTheirPlayer].connected) {
 	gameData.multiplayer.players [nTheirPlayer].connected = 1;
@@ -473,7 +473,7 @@ ExtractShortPos (theirObjP, &new_pd.objPos, 0);
 if ((theirObjP->info.renderType != new_pd.objRenderType) && (new_pd.objRenderType == RT_POLYOBJ))
 	MultiMakeGhostPlayer (nTheirPlayer);
 if (theirObjP->info.movementType == MT_PHYSICS)
-	SetThrustFromVelocity (theirObjP);
+	theirObjP->SetThrustFromVelocity ();
 //------------ Welcome them back if reconnecting --------------
 if (!gameData.multiplayer.players [nTheirPlayer].connected) {
 	gameData.multiplayer.players [nTheirPlayer].connected = 1;

@@ -317,7 +317,7 @@ if (!gameData.demo.bAuto) 	{
 
 #ifdef	EDITOR
 int	Auto_exit = 0;
-char	Auto_file[128] = "";
+char	Auto_file [128] = "";
 #endif
 
 // ----------------------------------------------------------------------------
@@ -435,7 +435,7 @@ if (FindArg ("-hoarddata")) {
 	CBitmap icon;
 	int nframes;
 	short nframes_short;
-	ubyte palette[256*3];
+	ubyte palette [256*3];
 	FILE *ofile;
 	int iff_error, i;
 
@@ -482,7 +482,7 @@ if (FindArg ("-hoarddata")) {
 		fread (buf, 1, size, cf);
 		fwrite (&size, sizeof (size), 1, ofile);
 		fwrite (buf, 1, size, ofile);
-		delete[] buf;
+		delete [] buf;
 		fclose (cf);
 		}
 	fclose (ofile);
@@ -606,10 +606,10 @@ gameData.render.vertColor.matAmbient[R] =
 gameData.render.vertColor.matAmbient[G] = 
 gameData.render.vertColor.matAmbient[B] = AMBIENT_LIGHT;
 gameData.render.vertColor.matAmbient[A] = 1.0f;
-gameData.render.vertColor.matDiffuse[R] = 
-gameData.render.vertColor.matDiffuse[G] = 
-gameData.render.vertColor.matDiffuse[B] = DIFFUSE_LIGHT;
-gameData.render.vertColor.matDiffuse[A] = 1.0f;
+gameData.render.vertColor.matDiffuse [R] = 
+gameData.render.vertColor.matDiffuse [G] = 
+gameData.render.vertColor.matDiffuse [B] = DIFFUSE_LIGHT;
+gameData.render.vertColor.matDiffuse [A] = 1.0f;
 gameData.render.vertColor.matSpecular[R] = 
 gameData.render.vertColor.matSpecular[G] = 
 gameData.render.vertColor.matSpecular[B] = 0.0f;

@@ -3034,7 +3034,7 @@ if (bInitialized) {
 	}
 
 if (filenames)
-	delete[] filenames;
+	delete [] filenames;
 
 SDL_EnableKeyRepeat(0, 0);
 return exitValue;
@@ -3510,7 +3510,7 @@ while (wordptr) {
 		}
 	wordptr = strtok (NULL, " ");
 	}
-delete[] tbuf;
+delete [] tbuf;
 }
 
 //------------------------------------------------------------------------------

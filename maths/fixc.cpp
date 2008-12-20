@@ -30,11 +30,11 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 #endif
 
-extern ubyte guess_table[];
-extern short sincos_table[];
-extern ushort asin_table[];
-extern ushort acos_table[];
-extern fix isqrt_guess_table[];
+extern ubyte guess_table [];
+extern short sincos_table [];
+extern ushort asin_table [];
+extern ushort acos_table [];
+extern fix isqrt_guess_table [];
 
 // ------------------------------------------------------------------------
 //multiply two ints & add 64-bit result to 64-bit sum
@@ -333,9 +333,9 @@ void FixFastSinCos (fix a,fix *s,fix *c)
 	int i = (a >> 8) & 0xff;
 
 if (s) 
-	*s = sincos_table[i] << 2;
+	*s = sincos_table [i] << 2;
 if (c) 
-	*c = sincos_table[i+64] << 2;
+	*c = sincos_table [i+64] << 2;
 }
 
 // ------------------------------------------------------------------------
@@ -349,8 +349,8 @@ if (vv >= f1_0)		//check for out of range
 	return 0x4000;
 i = (vv >> 8) & 0xff;
 f = vv & 0xff;
-aa = asin_table[i];
-aa = aa + (((asin_table[i+1] - aa) * f) >> 8);
+aa = asin_table [i];
+aa = aa + (((asin_table [i+1] - aa) * f) >> 8);
 if (v < 0)
 	aa = -aa;
 return aa;
@@ -367,8 +367,8 @@ if (vv >= f1_0)		//check for out of range
 	return 0;
 i = (vv >> 8) & 0xff;
 f = vv & 0xff;
-aa = acos_table[i];
-aa = aa + (((acos_table[i+1] - aa) * f)>>8);
+aa = acos_table [i];
+aa = aa + (((acos_table [i+1] - aa) * f)>>8);
 if (v < 0)
 	aa = 0x8000 - aa;
 return aa;
@@ -390,7 +390,7 @@ while (b >= TABLE_SIZE) {
 	b >>= 1;
 	cnt++;
 	}
-r = isqrt_guess_table[b] >> ((cnt+1)/2);
+r = isqrt_guess_table [b] >> ((cnt+1)/2);
 for (i = 0; i < 3; i++ )	{
 	int old_r = r;
 	r = FixMul (((3*65536) - FixMul(FixMul (r, r), a)), r) / 2;

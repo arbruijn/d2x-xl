@@ -193,7 +193,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void DigiPlaySample3D (short nSound, int angle, int volume, int no_dups, CFixVector& vPos, const char *pszSound)
+void DigiPlaySample3D (short nSound, int angle, int volume, int no_dups, CFixVector* vPos, const char *pszSound)
 {
 
 	no_dups = 1;

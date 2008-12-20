@@ -429,7 +429,7 @@ if (m_info.chars) {
 	m_info.chars = NULL;
 	}
 if (m_info.bitmaps) {
-	delete[] m_info.bitmaps; 
+	delete [] m_info.bitmaps; 
 	m_info.bitmaps = NULL;
 	}
 m_info.parentBitmap.Destroy ();

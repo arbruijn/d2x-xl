@@ -163,8 +163,8 @@ typedef struct tWallV19 {
 typedef struct v19_door {
 	int     nPartCount;            // for linked walls
 	short   seg[2];             // Segment pointer of door.
-	short   nSide[2];            // Side number of door.
-	short   nType[2];            // What kind of door animation.
+	short   nSide [2];            // Side number of door.
+	short   nType [2];            // What kind of door animation.
 	fix     open;               // How long it has been open.
 } __pack__ v19_door;
 
@@ -227,7 +227,7 @@ typedef struct {
 	short   openSound;
 	short   closeSound;
 	short   flags;
-	char    filename[13];
+	char    filename [13];
 	char    pad;
 } __pack__ tWallClip;
 
@@ -238,7 +238,7 @@ typedef struct {
 	short   openSound;
 	short   closeSound;
 	short   flags;
-	char    filename[13];
+	char    filename [13];
 	char    pad;
 } __pack__ tD1WallClip;
 
@@ -246,16 +246,6 @@ extern char pszWallNames[7][10];
 
 // Initializes all walls (i.e. no special walls.)
 void WallInit();
-
-// Deteriorate appearance of CWall. (Changes bitmap (paste-ons))
-void WallDamage(CSegment *segP, short nSide, fix damage);
-
-// Destroys a blastable CWall. (So it is an opening afterwards)
-void WallDestroy(CSegment *segP, short nSide);
-
-void WallIllusionOn(CSegment *segP, short nSide);
-
-void WallIllusionOff(CSegment *segP, short nSide);
 
 // Opens a door, including animation and other processing.
 void DoDoorOpen(int nDoor);
@@ -295,11 +285,6 @@ void InitDoorAnims (void);
 
 // Remove any flares from a CWall
 void KillStuckObjects(int nWall);
-
-
-bool WallIsTriggerTarget (short nWall);
-bool WallIsVolatile (short nWall);
-bool WallIsInvisible (short nWall);
 
 int ReadD1WallClips(tWallClip *wc, int n, CFile& cf);
 /*

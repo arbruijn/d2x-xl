@@ -526,9 +526,9 @@ if (bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
 					spewPoint = objP->info.position.mOrient.FVec () * (objP->info.xSize * 2);
 					spewPoint += objP->info.position.vPos;
 					if (bossProps [gameStates.app.bD1Mission][nBossIndex].bSpewMore && (d_rand () > 16384) &&
-						 (BossSpewRobot (objP, &spewPoint, -1, 0) != -1))
+						 (objP->BossSpewRobot (&spewPoint, -1, 0) != -1))
 						gameData.boss [i].nLastGateTime = gameData.time.xGame - gameData.boss [i].nGateInterval - 1;	//	Force allowing spew of another bot.
-					BossSpewRobot (objP, &spewPoint, -1, 0);
+					objP->BossSpewRobot (&spewPoint, -1, 0);
 					}
 				}
 			}

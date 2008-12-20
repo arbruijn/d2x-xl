@@ -94,7 +94,7 @@ struct me {
 	int Markedsegp;
 	int Markedside;
 	int Groupsegp[10];
-	int Groupside[10];
+	int Groupside [10];
 	int num_groups;
 	int current_group;
 	//int numObjects;
@@ -118,7 +118,7 @@ void CreateFaceList (void);
 void ComputeNearestLights (int nLevel);
 void InitTexColors (void);
 
-extern short tmap_xlate_table[];
+extern short tmap_xlate_table [];
 extern fix Level_shake_frequency, Level_shake_duration;
 extern int Secret_return_segment;
 extern CFixMatrix Secret_return_orient;

@@ -306,10 +306,10 @@ switch (key) {
 		break;
 	case KEYDBGGED + KEY_K: {
 		int how_many, c;
-		char filename[FILENAME_LEN], num[16];
+		char filename [FILENAME_LEN], num[16];
 		tMenuItem m[6];
 
-		filename[0] = '\0';
+		filename [0] = '\0';
 		memset (m, 0, sizeof (m));
 		m[0].nType = NM_TYPE_TEXT; 
 		m[0].text = "output file name";
@@ -979,7 +979,7 @@ void HandleTestKey(int key)
 			break;
 	case KEY_Q + KEY_SHIFTED + KEYDBGGED:
 		{
-			char pal_save[768];
+			char pal_save [768];
 			memcpy(pal_save, grPalette, 768);
 			InitSubTitles("end.tex");	//ingore errors
 			PlayMovie ("end.mve", MOVIE_ABORT_ON, 0, gameOpts->movies.bResize);
@@ -1165,7 +1165,7 @@ void HandleTestKey(int key)
 //	Cheat functions ------------------------------------------------------------
 
 char old_IntMethod;
-char OldHomingState[20];
+char OldHomingState [20];
 
 //------------------------------------------------------------------------------
 

@@ -647,12 +647,12 @@ typedef Bool ( * PFNGLXWAITFORSBCOMLPROC) (Display *dpy, GLXDrawable drawable, i
 #define GLX_SGIX_hyperpipe 1
 
 typedef struct {
-    char    pipeName[GLX_HYPERPIPE_PIPE_NAME_LENGTH_SGIX];
+    char    pipeName [GLX_HYPERPIPE_PIPE_NAME_LENGTH_SGIX];
     int     networkId;
 } GLXHyperpipeNetworkSGIX;
 
 typedef struct {
-    char    pipeName[GLX_HYPERPIPE_PIPE_NAME_LENGTH_SGIX];
+    char    pipeName [GLX_HYPERPIPE_PIPE_NAME_LENGTH_SGIX];
     int     channel;
     uint
       participationType;
@@ -660,13 +660,13 @@ typedef struct {
 } GLXHyperpipeConfigSGIX;
 
 typedef struct {
-    char pipeName[GLX_HYPERPIPE_PIPE_NAME_LENGTH_SGIX];
+    char pipeName [GLX_HYPERPIPE_PIPE_NAME_LENGTH_SGIX];
     int srcXOrigin, srcYOrigin, srcWidth, srcHeight;
     int destXOrigin, destYOrigin, destWidth, destHeight;
 } GLXPipeRect;
 
 typedef struct {
-    char pipeName[GLX_HYPERPIPE_PIPE_NAME_LENGTH_SGIX];
+    char pipeName [GLX_HYPERPIPE_PIPE_NAME_LENGTH_SGIX];
     int XOrigin, YOrigin, maxHeight, maxWidth;
 } GLXPipeRectLimits;
 

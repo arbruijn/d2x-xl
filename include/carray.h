@@ -104,7 +104,7 @@ template < class _T > class CArray : public CQuickSort < _T > {
 				else 
 #endif
 				if (!m_data.bChild)
-					delete[] m_data.buffer;
+					delete [] m_data.buffer;
 				Init ();
 				}
 			}
@@ -142,7 +142,7 @@ template < class _T > class CArray : public CQuickSort < _T > {
 				memcpy (p, m_data.buffer, ((length > m_data.length) ? m_data.length : length) * sizeof (_T)); 
 			m_data.length = length;
 			m_data.pos %= length;
-			delete[] m_data.buffer;
+			delete [] m_data.buffer;
 			return m_data.buffer = p;
 			}
 

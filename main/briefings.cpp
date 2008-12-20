@@ -1674,7 +1674,7 @@ if (gameStates.app.bD1Mission) {
 else
 	ShowBriefingScreen (nLevel, 0, (short) nLevel);
 gameStates.render.bBriefing = 0;
-delete[] szBriefingText;
+delete [] szBriefingText;
 szBriefingText = NULL;
 KeyFlush ();
 return;

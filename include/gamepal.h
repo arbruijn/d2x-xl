@@ -20,7 +20,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define D2_DEFAULT_PALETTE "default.256"
 #define MENU_PALETTE			"default.256"
 
-extern char szCurrentLevelPalette[SHORT_FILENAME_LEN];
+extern char szCurrentLevelPalette [SHORT_FILENAME_LEN];
 
 // load a palette by name. returns 1 if new palette loaded, else 0
 // if used_forLevel is set, load pig, etc.

@@ -879,8 +879,8 @@ if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 			bmP->SetAvgColorIndex (bmP->Palette ()->ClosestColor (&color));
 		UseBitmapCache (gameData.pig.tex.altBitmapP + j, (int) bm.Width () * (int) bm.RowSize ());
 		}
-	delete[] indices;
-	delete[] bmh;
+	delete [] indices;
+	delete [] bmh;
 	cf.Close ();
 	paletteManager.SetLastPig ("");
 	TexMergeFlush ();       //for re-merging with new textures

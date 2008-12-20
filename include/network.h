@@ -371,7 +371,7 @@ extern int Network_rejoined;
 extern int Network_new_game;
 extern int Network_status;
 
-extern fix LastPacketTime[MAX_PLAYERS];
+extern fix LastPacketTime [MAX_PLAYERS];
 
 // By putting an up-to-20-char-message into Network_message and
 // setting Network_message_reciever to the CPlayerData num you want to

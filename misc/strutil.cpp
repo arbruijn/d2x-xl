@@ -193,17 +193,17 @@ void _splitpath(char *name, char *drive, char *path, char *base, char *ext)
 #if 0
 void main()
 {
-	char drive[10], path[50], name[16], ext[5];
+	char drive [10], path[50], name [16], ext[5];
 
-	drive[0] = path[0] = name[0] = ext[0] = '\0';
+	drive [0] = path[0] = name [0] = ext[0] = '\0';
 	_splitpath("f:\\tmp\\x.out", drive, path, name, ext);
-	drive[0] = path[0] = name[0] = ext[0] = '\0';
+	drive [0] = path[0] = name [0] = ext[0] = '\0';
 	_splitpath("tmp\\x.out", drive, path, name, ext);
-	drive[0] = path[0] = name[0] = ext[0] = '\0';
+	drive [0] = path[0] = name [0] = ext[0] = '\0';
 	_splitpath("f:\\tmp\\a.out", NULL, NULL, name, NULL);
-	drive[0] = path[0] = name[0] = ext[0] = '\0';
+	drive [0] = path[0] = name [0] = ext[0] = '\0';
 	_splitpath("tmp\\*.dem", drive, path, NULL, NULL);
-	drive[0] = path[0] = name[0] = ext[0] = '\0';
+	drive [0] = path[0] = name [0] = ext[0] = '\0';
 	_splitpath(".\\tmp\\*.dem", drive, path, NULL, NULL);
 }
 #endif

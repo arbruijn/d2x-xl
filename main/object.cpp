@@ -1966,9 +1966,9 @@ void CObject::Spin (void)
 	CFixMatrix rotmat, new_pm;
 
 Assert (info.movementType == MT_SPINNING);
-rotangs = CAngleVector::Create((fixang) FixMul (mType.spinRate[X], gameData.time.xFrame),
-										 (fixang) FixMul (mType.spinRate[Y], gameData.time.xFrame),
-										 (fixang) FixMul (mType.spinRate[Z], gameData.time.xFrame));
+rotangs = CAngleVector::Create((fixang) FixMul (mType.spinRate [X], gameData.time.xFrame),
+										 (fixang) FixMul (mType.spinRate [Y], gameData.time.xFrame),
+										 (fixang) FixMul (mType.spinRate [Z], gameData.time.xFrame));
 rotmat = CFixMatrix::Create (rotangs);
 // TODO MM
 new_pm = info.position.mOrient * rotmat;
@@ -2701,7 +2701,7 @@ int UpdateObjectSeg (CObject * objP, bool bMove)
 if (objP->Index () == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
-if (0 > (nNewSeg = FindObjectSeg (objP))) {
+if (0 > (nNewSeg = objP->FindSegment ())) {
 	if (!bMove)
 		return 0;
 	nNewSeg = FindClosestSeg (objP->info.position.vPos);
@@ -3171,7 +3171,7 @@ PrintLog ("   finished building optimized polygon model data (%d models converte
 
 //------------------------------------------------------------------------------
 
-inline int CObject::OpenableDoorsInSegment (void)
+int CObject::OpenableDoorsInSegment (void)
 {
 return SEGMENTS [info.nSegment].HasOpenableDoor ();
 }

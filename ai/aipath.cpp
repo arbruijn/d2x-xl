@@ -184,28 +184,28 @@ for (i = 1, --j; i < j; i++) {
 	if (abs (CFixVector::Dot (a, b)) > 3*F1_0/4) {
 		if (abs (a[Z]) < F1_0/2) {
 			if (bRandom) {
-				e[X] = (d_rand ()- 16384) / 2;
-				e[Y] = (d_rand ()- 16384) / 2;
-				e[Z] = abs (e[X]) + abs (e[Y]) + 1;
+				e [X] = (d_rand ()- 16384) / 2;
+				e [Y] = (d_rand ()- 16384) / 2;
+				e [Z] = abs (e [X]) + abs (e [Y]) + 1;
 				CFixVector::Normalize(e);
 				}
 			else {
-				e[X] =
-				e[Y] = 0;
-				e[Z] = F1_0;
+				e [X] =
+				e [Y] = 0;
+				e [Z] = F1_0;
 				}
 			}
 		else {
 			if (bRandom) {
-				e[Y] = (d_rand ()-16384)/2;
-				e[Z] = (d_rand ()-16384)/2;
-				e[X] = abs (e[Y]) + abs (e[Z]) + 1;
+				e [Y] = (d_rand ()-16384)/2;
+				e [Z] = (d_rand ()-16384)/2;
+				e [X] = abs (e [Y]) + abs (e [Z]) + 1;
 				CFixVector::Normalize(e);
 				}
 			else {
-				e[X] = F1_0;
-				e[Y] =
-				e[Z] = 0;
+				e [X] = F1_0;
+				e [Y] =
+				e [Z] = 0;
 				}
 			}
 		}
@@ -833,7 +833,7 @@ else if (aiP->nCurPathIndex >= aiP->nPathLength - 1) {
 else
 	aiP->nCurPathIndex += aiP->PATH_DIR;
 objP->info.position.vPos = *vGoalPoint;
-nSegment = FindObjectSeg (objP);
+nSegment = objP->FindSegment ();
 #if TRACE
 if (nSegment != nGoalSeg)
 	console.printf (1, "Object #%i goal supposed to be in CSegment #%i, but in CSegment #%i\n", objP->Index (), nGoalSeg, nSegment);

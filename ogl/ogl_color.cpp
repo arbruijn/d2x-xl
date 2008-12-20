@@ -624,9 +624,9 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #if VECMAT_CALLS
 		VmVecScaleAdd (&vertColor, &gameData.render.vertColor.matAmbient, &gameData.render.vertColor.matDiffuse, NdotL);
 #else
-		vertColor[X] = gameData.render.vertColor.matAmbient[X] + gameData.render.vertColor.matDiffuse[X] * NdotL;
-		vertColor[Y] = gameData.render.vertColor.matAmbient[Y] + gameData.render.vertColor.matDiffuse[Y] * NdotL;
-		vertColor[Z] = gameData.render.vertColor.matAmbient[Z] + gameData.render.vertColor.matDiffuse[Z] * NdotL;
+		vertColor[X] = gameData.render.vertColor.matAmbient[X] + gameData.render.vertColor.matDiffuse [X] * NdotL;
+		vertColor[Y] = gameData.render.vertColor.matAmbient[Y] + gameData.render.vertColor.matDiffuse [Y] * NdotL;
+		vertColor[Z] = gameData.render.vertColor.matAmbient[Z] + gameData.render.vertColor.matDiffuse [Z] * NdotL;
 #endif
 		}
 	else {
@@ -638,9 +638,9 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #if VECMAT_CALLS
 			VmVecScaleInc (&vertColor, &gameData.render.vertColor.matDiffuse, NdotL);
 #else
-			vertColor[X] += gameData.render.vertColor.matDiffuse[X] * NdotL;
-			vertColor[Y] += gameData.render.vertColor.matDiffuse[Y] * NdotL;
-			vertColor[Z] += gameData.render.vertColor.matDiffuse[Z] * NdotL;
+			vertColor[X] += gameData.render.vertColor.matDiffuse [X] * NdotL;
+			vertColor[Y] += gameData.render.vertColor.matDiffuse [Y] * NdotL;
+			vertColor[Z] += gameData.render.vertColor.matDiffuse [Z] * NdotL;
 #endif
 			}
 		}
@@ -747,9 +747,9 @@ vcd.bMatEmissive = 0;
 vcd.nMatLight = -1;
 if (gameData.render.lights.dynamic.material.bValid) {
 #if 0
-	if (gameData.render.lights.dynamic.material.emissive[R] ||
-		 gameData.render.lights.dynamic.material.emissive[G] ||
-		 gameData.render.lights.dynamic.material.emissive[B]) {
+	if (gameData.render.lights.dynamic.material.emissive [R] ||
+		 gameData.render.lights.dynamic.material.emissive [G] ||
+		 gameData.render.lights.dynamic.material.emissive [B]) {
 		vcd.bMatEmissive = 1;
 		vcd.nMatLight = gameData.render.lights.dynamic.material.nLight;
 		colorSum = gameData.render.lights.dynamic.material.emissive;

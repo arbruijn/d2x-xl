@@ -51,7 +51,7 @@ fix AITurnTowardsVector (CFixVector *vGoal, CObject *objP, fix rate)
 if (rate == 0)
 	return 0;
 if ((objP->info.nId == BABY_SPIDER_ID) && (objP->info.nType == OBJ_ROBOT)) {
-	PhysicsTurnTowardsVector (vGoal, objP, rate);
+	objP->TurnTowardsVector (*vGoal, rate);
 	return CFixVector::Dot (*vGoal, objP->info.position.mOrient.FVec ());
 	}
 new_fvec = *vGoal;
@@ -241,24 +241,24 @@ void MoveAroundPlayer (CObject *objP, CFixVector *vVecToPlayer, int fastFlag)
 	ft = gameData.time.xFrame * 32;
 	switch (dir) {
 		case 0:
-			vEvade[X] = FixMul (gameData.ai.vVecToPlayer[Z], ft);
-			vEvade[Y] = FixMul (gameData.ai.vVecToPlayer[Y], ft);
-			vEvade[Z] = FixMul (-gameData.ai.vVecToPlayer[X], ft);
+			vEvade [X] = FixMul (gameData.ai.vVecToPlayer[Z], ft);
+			vEvade [Y] = FixMul (gameData.ai.vVecToPlayer[Y], ft);
+			vEvade [Z] = FixMul (-gameData.ai.vVecToPlayer[X], ft);
 			break;
 		case 1:
-			vEvade[X] = FixMul (-gameData.ai.vVecToPlayer[Z], ft);
-			vEvade[Y] = FixMul (gameData.ai.vVecToPlayer[Y], ft);
-			vEvade[Z] = FixMul (gameData.ai.vVecToPlayer[X], ft);
+			vEvade [X] = FixMul (-gameData.ai.vVecToPlayer[Z], ft);
+			vEvade [Y] = FixMul (gameData.ai.vVecToPlayer[Y], ft);
+			vEvade [Z] = FixMul (gameData.ai.vVecToPlayer[X], ft);
 			break;
 		case 2:
-			vEvade[X] = FixMul (-gameData.ai.vVecToPlayer[Y], ft);
-			vEvade[Y] = FixMul (gameData.ai.vVecToPlayer[X], ft);
-			vEvade[Z] = FixMul (gameData.ai.vVecToPlayer[Z], ft);
+			vEvade [X] = FixMul (-gameData.ai.vVecToPlayer[Y], ft);
+			vEvade [Y] = FixMul (gameData.ai.vVecToPlayer[X], ft);
+			vEvade [Z] = FixMul (gameData.ai.vVecToPlayer[Z], ft);
 			break;
 		case 3:
-			vEvade[X] = FixMul (gameData.ai.vVecToPlayer[Y], ft);
-			vEvade[Y] = FixMul (-gameData.ai.vVecToPlayer[X], ft);
-			vEvade[Z] = FixMul (gameData.ai.vVecToPlayer[Z], ft);
+			vEvade [X] = FixMul (gameData.ai.vVecToPlayer[Y], ft);
+			vEvade [Y] = FixMul (-gameData.ai.vVecToPlayer[X], ft);
+			vEvade [Z] = FixMul (gameData.ai.vVecToPlayer[Z], ft);
 			break;
 		default:
 			Error ("Function MoveAroundPlayer: Bad case.");
@@ -289,9 +289,9 @@ void MoveAroundPlayer (CObject *objP, CFixVector *vVecToPlayer, int fastFlag)
 		}
 	}
 
-	pptr->velocity[X] += vEvade[X];
-	pptr->velocity[Y] += vEvade[Y];
-	pptr->velocity[Z] += vEvade[Z];
+	pptr->velocity[X] += vEvade [X];
+	pptr->velocity[Y] += vEvade [Y];
+	pptr->velocity[Z] += vEvade [Z];
 
 	speed = pptr->velocity.Mag();
 	if ((objP->Index () != 1) && (speed > botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel])) {

@@ -373,7 +373,7 @@ typedef struct {
 
 // Globals from mglobal.c
 extern int	sideVertIndex [MAX_SIDES_PER_SEGMENT][4];       // sideVertIndex[my_side] is list of vertices forming CSide my_side.
-extern char sideOpposite [];                                // sideOpposite[my_side] returns CSide opposite cube from my_side.
+extern char sideOpposite [];                                // sideOpposite [my_side] returns CSide opposite cube from my_side.
 
 // New stuff, 10/14/95: For shooting out lights and monitors.
 // Light cast upon vertLight vertices in nSegment:nSide by some light

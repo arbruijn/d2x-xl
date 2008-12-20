@@ -167,7 +167,7 @@ extern void gr_snow_out(int num_dots);
 extern void TestRotateBitmap(void);
 extern void RotateBitmap(CBitmap *bp, grsPoint *vertbuf, int lightValue);
 
-extern ubyte grInverseTable[32*32*32];
+extern ubyte grInverseTable [32*32*32];
 
 extern ushort grPaletteSelector;
 extern ushort grInverseTableSelector;
@@ -192,9 +192,9 @@ int GetSelector(void * address, int size, uint * selector);
 // this return value since there is a limited number of selectors!!!!!!!
 int GrBitmapAssignSelector(CBitmap * bmPp);
 
-//#define GR_GETCOLOR(r, g, b) (gr_inverse_table[((((r)&31)<<10) | (((g)&31)<<5) | ((b)&31))])
-//#define gr_getcolor(r, g, b) (gr_inverse_table[((((r)&31)<<10) | (((g)&31)<<5) | ((b)&31))])
-//#define BM_XRGB(r, g, b) (gr_inverse_table[((((r)&31)<<10) | (((g)&31)<<5) | ((b)&31))])
+//#define GR_GETCOLOR(r, g, b) (gr_inverse_table [((((r)&31)<<10) | (((g)&31)<<5) | ((b)&31))])
+//#define gr_getcolor(r, g, b) (gr_inverse_table [((((r)&31)<<10) | (((g)&31)<<5) | ((b)&31))])
+//#define BM_XRGB(r, g, b) (gr_inverse_table [((((r)&31)<<10) | (((g)&31)<<5) | ((b)&31))])
 
 #define BM_RGB(r, g, b) ((((r)&31)<<10) | (((g)&31)<<5) | ((b)&31))
 //#define BM_XRGB(r, g, b) GrFindClosestColor((r)*2, (g)*2, (b)*2)

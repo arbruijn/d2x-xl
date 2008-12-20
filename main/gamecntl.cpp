@@ -189,7 +189,7 @@ int DoGamePause()
 	int key;
 	int bScreenChanged;
 	char msg[1000];
-	char totalTime[9], xLevelTime[9];
+	char totalTime [9], xLevelTime [9];
 
 	key=0;
 

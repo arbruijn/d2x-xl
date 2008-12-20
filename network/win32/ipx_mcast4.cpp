@@ -209,7 +209,7 @@ static int ipx_mcast4_SendPacket(ipx_socket_t *sk, IPXPacket_t *IPXHeader, u_cha
 #ifdef IPX_MCAST4DBG
 	/*printf(MSGHDR "sendto((%d),Node=[4] %02X %02X,Socket=%02X %02X,s_port=%u,",
 	       dataLen,
-	       IPXHeader->Destination.Node[4], IPXHeader->Destination.Node[5],
+	       IPXHeader->Destination.Node [4], IPXHeader->Destination.Node [5],
 	       IPXHeader->Destination.Socket[0], IPXHeader->Destination.Socket[1],
 	       ntohs(toaddr.sin_port);
 	*/

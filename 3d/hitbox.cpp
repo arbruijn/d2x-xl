@@ -319,9 +319,9 @@ for (i = 1; i <= nSubModels; i++) {
 	dx = (phb [i].vMax[X] - phb [i].vMin[X]) / 2;
 	dy = (phb [i].vMax[Y] - phb [i].vMin[Y]) / 2;
 	dz = (phb [i].vMax[Z] - phb [i].vMin[Z]) / 2;
-	phb [i].vSize[X] = (fix) dx;
-	phb [i].vSize[Y] = (fix) dy;
-	phb [i].vSize[Z] = (fix) dz;
+	phb [i].vSize [X] = (fix) dx;
+	phb [i].vSize [Y] = (fix) dy;
+	phb [i].vSize [Z] = (fix) dz;
 	hv = phb [i].vMin + phb [i].vOffset;
 	if (phb [0].vMin[X] > hv[X])
 		phb [0].vMin[X] = hv[X];
@@ -340,9 +340,9 @@ for (i = 1; i <= nSubModels; i++) {
 dx = (phb [0].vMax[X] - phb [0].vMin[X]) / 2;
 dy = (phb [0].vMax[Y] - phb [0].vMin[Y]) / 2;
 dz = (phb [0].vMax[Z] - phb [0].vMin[Z]) / 2;
-phb [0].vSize[X] = (fix) dx;
-phb [0].vSize[Y] = (fix) dy;
-phb [0].vSize[Z] = (fix) dz;
+phb [0].vSize [X] = (fix) dx;
+phb [0].vSize [Y] = (fix) dy;
+phb [0].vSize [Z] = (fix) dz;
 gameData.models.hitboxes [nModel].nHitboxes = nSubModels;
 for (i = 0; i <= nSubModels; i++)
 	ComputeHitbox (nModel, i);

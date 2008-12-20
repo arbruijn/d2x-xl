@@ -266,7 +266,6 @@ if (objP->Index () == nDbgObj) {
 //	objP == NULL means treat as buddy.
 int AIDoorIsOpenable (CObject *objP, CSegment *segP, short nSide)
 {
-	short nWall;
 	CWall	*wallP;
 
 if (!IS_CHILD (segP->m_children [nSide]))
@@ -363,7 +362,7 @@ if ((objP == NULL) || (ROBOTINFO (objP->info.nId).companion == 1)) {
 		}
 	}
 else if ((objP->info.nId == ROBOT_BRAIN) || (objP->cType.aiInfo.behavior == AIB_RUN_FROM) || (objP->cType.aiInfo.behavior == AIB_SNIPE)) {
-	if (IS_WALL (nWall)) {
+	if (wallP) {
 		if ((wallP->nType == WALL_DOOR) && (wallP->keys == KEY_NONE) && !(wallP->flags & WALL_DOOR_LOCKED))
 			return 1;
 		else if (wallP->keys != KEY_NONE) {	//	Allow bots to open doors to which CPlayerData has keys.

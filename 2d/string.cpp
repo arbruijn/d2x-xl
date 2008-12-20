@@ -79,7 +79,7 @@ void FreeStringPool (void)
 
 PrintLog ("unloading string pool\n");
 for (i = nPoolStrings, ps = stringPool; i; i--, ps++) {
-	delete[] ps->pszText;
+	delete [] ps->pszText;
 	ps->pszText = NULL;
 	if (ps->pId)
 		*ps->pId = 0;
@@ -116,7 +116,7 @@ if (!(ps->bmP = CreateStringBitmap (s, 0, 0, 0, 0, w, 1))) {
 	}
 l = (int) strlen (s) + 1;
 if (ps->pszText && (ps->nLength < l))
-	delete[] ps->pszText;
+	delete [] ps->pszText;
 if (!ps->pszText) {
 	ps->nLength = 3 * l / 2;
 	if (!(ps->pszText = new char [ps->nLength])) {

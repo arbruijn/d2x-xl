@@ -53,7 +53,7 @@ if (!w_str) {
 if (MultiByteToWideChar (CP_ACP, 0, str, -1, w_str, len))
 	return w_str;
 if (bAlloc)
-	delete[] w_str;
+	delete [] w_str;
 return NULL;
 }
 #else

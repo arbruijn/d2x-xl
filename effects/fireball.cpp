@@ -129,7 +129,7 @@ if (nObject < 0) {
 
 explObjP = OBJECTS + nObject;
 //now set explosion-specific data
-explObjP->info.xLifeLeft = gameData.eff.vClips [0][nVClip].xTotalTime;
+explObjP->info.xLifeLeft = gameData.eff.vClips [0] [nVClip].xTotalTime;
 explObjP->cType.explInfo.nSpawnTime = -1;
 explObjP->cType.explInfo.nDeleteObj = -1;
 explObjP->cType.explInfo.nDeleteTime = -1;
@@ -174,7 +174,7 @@ FORALL_OBJS (objP, i) {
 	vHit = explObjP->info.position.vPos - objP->info.position.vPos;
 	vHit *= (FixDiv (objP->info.xSize, objP->info.xSize + dist));
 	if (nType == OBJ_WEAPON) {
-		PhysApplyForce (objP, &vForce);
+		objP->ApplyForce (vForce);
 		if (WeaponIsMine (objP->info.nId) && (FixMul (dist, force) > I2X (8000))) {	//prox bombs have chance of blowing up
 			objP->Kill ();
 			objP->ExplodeBadassWeapon (objP->info.position.vPos);
@@ -194,9 +194,9 @@ FORALL_OBJS (objP, i) {
 				aip->SKIP_AI_COUNT--;
 			else {
 				aip->SKIP_AI_COUNT += nForce;
-				objP->mType.physInfo.rotThrust[X] = ((d_rand () - 16384) * nForce) / 16;
-				objP->mType.physInfo.rotThrust[Y] = ((d_rand () - 16384) * nForce) / 16;
-				objP->mType.physInfo.rotThrust[Z] = ((d_rand () - 16384) * nForce) / 16;
+				objP->mType.physInfo.rotThrust [X] = ((d_rand () - 16384) * nForce) / 16;
+				objP->mType.physInfo.rotThrust [Y] = ((d_rand () - 16384) * nForce) / 16;
+				objP->mType.physInfo.rotThrust [Z] = ((d_rand () - 16384) * nForce) / 16;
 				objP->mType.physInfo.flags |= PF_USES_THRUST;
 				}
 			}
@@ -206,7 +206,7 @@ FORALL_OBJS (objP, i) {
 		objP->ApplyRotForce (vNegForce);
 		if (objP->info.xShields >= 0) {
 			if (ROBOTINFO (objP->info.nId).bossFlag &&
-				 bossProps [gameStates.app.bD1Mission][ROBOTINFO (objP->info.nId).bossFlag-BOSS_D2].bInvulKinetic)
+				 bossProps [gameStates.app.bD1Mission] [ROBOTINFO (objP->info.nId).bossFlag-BOSS_D2].bInvulKinetic)
 				damage /= 4;
 			if (objP->ApplyDamageToRobot (damage, nParent)) {
 				if (!gameStates.gameplay.bNoBotAI && parentP && (nParent == LOCALPLAYER.nObject))
@@ -222,7 +222,7 @@ FORALL_OBJS (objP, i) {
 		}
 	else if (nType == OBJ_PLAYER) {
 		CObject*		killerP = NULL;
-		CFixVector	vForce2;
+		CFixVector	vRotForce;
 
 		//	Hack!Warning!Test code!
 		if (flash && (objP->info.nId == gameData.multiplayer.nLocalPlayer)) {
@@ -242,19 +242,19 @@ FORALL_OBJS (objP, i) {
 			}
 		if (parentP && IsMultiGame && (parentP->info.nType == OBJ_PLAYER))
 			killerP = parentP;
-		vForce2 = vForce;
+		vRotForce = vForce;
 		if (nParent > -1) {
 			killerP = OBJECTS + nParent;
 			if (killerP != gameData.objs.consoleP)		// if someone else whacks you, cut force by 2x
-				vForce2[X] /= 2;
-				vForce2[Y] /= 2;
-				vForce2[Z] /= 2;
+				vRotForce [X] /= 2;
+				vRotForce [Y] /= 2;
+				vRotForce [Z] /= 2;
 			}
-		vForce2[X] /= 2;
-		vForce2[Y] /= 2;
-		vForce2[Z] /= 2;
-		PhysApplyForce (objP, &vForce);
-		PhysApplyRot (objP, &vForce2);
+		vRotForce [X] /= 2;
+		vRotForce [Y] /= 2;
+		vRotForce [Z] /= 2;
+		objP->ApplyForce (vForce);
+		objP->ApplyRotForce (vRotForce);
 		if (gameStates.app.nDifficultyLevel == 0)
 			damage /= 4;
 		if (objP->info.xShields >= 0)

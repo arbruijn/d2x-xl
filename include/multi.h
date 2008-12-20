@@ -264,7 +264,7 @@ enum compType {DOS,WIN_32,WIN_95,MAC} __pack__ ;
 
 typedef struct ipx_addr {
 	ubyte   server[4];
-	ubyte   node[6];
+	ubyte   node [6];
 } ipx_addr;
 
 typedef struct appletalk_addr {

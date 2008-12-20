@@ -8,7 +8,7 @@
 // Empty file
 typedef struct FILEFINDSTRUCT {
 	unsigned long size;
-	char name[256];
+	char name [256];
 } FILEFINDSTRUCT;
 
 int FileFindFirst(const char *search_str, FILEFINDSTRUCT *ffstruct, int bFindDirs);

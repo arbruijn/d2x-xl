@@ -42,7 +42,7 @@ typedef struct control_info {
 	ubyte automapState;
 
 	//CAngleVector heading;
-	//char oem_message[64];
+	//char oem_message [64];
 
 	ubyte afterburnerState;
 	ubyte cyclePrimaryCount;
@@ -79,7 +79,7 @@ typedef struct ext_control_info {
 	ubyte automapState;
 
 	//CAngleVector heading;   	    // for version >=1.0
-	//char oem_message[64];     	// for version >=1.0
+	//char oem_message [64];     	// for version >=1.0
 
 	//CFixVector ship_pos           // for version >=2.0
 	//CFixMatrix ship_orient        // for version >=2.0
@@ -141,7 +141,7 @@ typedef struct advanced_ext_control_info {
 	// everything below this line is for version >=1.0
 
 	CAngleVector heading;
-	char oem_message[64];
+	char oem_message [64];
 
 	// everything below this line is for version >=2.0
 

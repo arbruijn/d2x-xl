@@ -252,7 +252,7 @@ CCanvas::SetCurrent (NULL);
 fontManager.SetCurrent (GAME_FONT);
 
 if (bGameCockpitCopyCode) {
-	delete[] bGameCockpitCopyCode;
+	delete [] bGameCockpitCopyCode;
 	bGameCockpitCopyCode  = NULL;
 	}
 switch (gameStates.render.cockpit.nMode) {
@@ -621,7 +621,7 @@ void SavePictScreen (int multiplayer)
 {
 	OSErr err;
 	int parid, i, count;
-	char *pfilename, filename[50], buf[512], cwd[FILENAME_MAX];
+	char *pfilename, filename [50], buf[512], cwd[FILENAME_MAX];
 	short fd;
 	FSSpec spec;
 	PicHandle pict_handle;
@@ -974,7 +974,7 @@ jmp_buf gameExitPoint;
 void DoLunacyOn ();
 void DoLunacyOff ();
 
-extern char OldHomingState[20];
+extern char OldHomingState [20];
 extern char old_IntMethod;
 
 //turns off active cheats
@@ -984,7 +984,7 @@ void TurnCheatsOff ()
 
 	if (gameStates.app.cheats.bHomingWeapons)
 		for (i=0;i<20;i++)
-			WI_set_homingFlag (i, OldHomingState[i]);
+			WI_set_homingFlag (i, OldHomingState [i]);
 
 	if (gameStates.app.cheats.bAcid)
 	{
@@ -1298,7 +1298,7 @@ CloseGaugeCanvases ();
 PrintLog ("restoring effect bitmaps\n");
 RestoreEffectBitmapIcons ();
 if (bGameCockpitCopyCode) {
-	delete[] bGameCockpitCopyCode;
+	delete [] bGameCockpitCopyCode;
 	bGameCockpitCopyCode = NULL;
 }
 if (bmBackground.Buffer ()) {
@@ -1372,7 +1372,7 @@ CBitmap bmMovie;
 
 void flush_movie_buffer ()
 {
-	char savename[128];
+	char savename [128];
 	int f;
 
 StopTime ();

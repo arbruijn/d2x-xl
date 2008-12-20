@@ -275,7 +275,7 @@ if (t) {
 #if 1//def _DEBUG
 	if (!vForce.IsZero())
 #endif
-	PhysApplyForce (t, &vForce);
+	t->ApplyForce (vForce);
 	return 1;
 	}
 #if DBG
@@ -342,7 +342,7 @@ mag = vForce.Mag();
 #if 0//def _DEBUG
 if (fabs (X2F (mag) > 10000))
 	;//goto redo;
-HUDMessage (0, "bump force: %c%1.2f", (SIGN (vForce[X]) * SIGN (vForce[Y]) * SIGN (vForce[Z])) ? '-' : '+', X2F (mag));
+HUDMessage (0, "bump force: %c%1.2f", (SIGN (vForce [X]) * SIGN (vForce [Y]) * SIGN (vForce [Z])) ? '-' : '+', X2F (mag));
 #endif
 if (mag < (m0 + m1) / 200) {
 #if 0//def _DEBUG
@@ -417,7 +417,7 @@ if (gameData.pig.tex.tMapInfoP [nBaseTex].flags & TMI_FORCE_FIELD) {
 	vForce [X] = 40 * (d_rand () - 16384);
 	vForce [Y] = 40 * (d_rand () - 16384);
 	vForce [Z] = 40 * (d_rand () - 16384);
-	PhysApplyRot (this, &vForce);
+	ApplyRotForce (vForce);
 #ifdef TACTILE
 	if (TactileStick)
 		Tactile_apply_force (&vForce, &info.position.mOrient);
@@ -432,9 +432,9 @@ else {
 #ifdef TACTILE
 	CFixVector vForce;
 	if (TactileStick) {
-		vForce[X] = -mType.physInfo.velocity[X];
-		vForce[Y] = -mType.physInfo.velocity[Y];
-		vForce[Z] = -mType.physInfo.velocity[Z];
+		vForce [X] = -mType.physInfo.velocity[X];
+		vForce [Y] = -mType.physInfo.velocity[Y];
+		vForce [Z] = -mType.physInfo.velocity[Z];
 		Tactile_do_collide (&vForce, &info.position.mOrient);
 	}
 #endif
@@ -1419,9 +1419,9 @@ if (weaponP->cType.laserInfo.parent.nType == OBJ_PLAYER) {
 		int i = FindBoss (OBJ_IDX (robotP));
 		if (i >= 0) {
 			if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bSpewMore && (d_rand () > 16384) &&
-				 (BossSpewRobot (robotP, &vHitPt, -1, 0) != -1))
+				 (robotP->BossSpewRobot (&vHitPt, -1, 0) != -1))
 				gameData.boss [i].nLastGateTime = gameData.time.xGame - gameData.boss [i].nGateInterval - 1;	//	Force allowing spew of another bot.
-			BossSpewRobot (robotP, &vHitPt, -1, 0);
+			robotP->BossSpewRobot (&vHitPt, -1, 0);
 			}
 		}
 	}
@@ -1901,7 +1901,7 @@ int CObject::CollidePlayerAndNastyRobot (CObject* robotP, CFixVector& vHitPt)
 /*Object*/CreateExplosion (info.nSegment, vHitPt, I2X (10) / 2, VCLIP_PLAYER_HIT);
 if (BumpTwoObjects (this, robotP, 0, vHitPt))	{//no damage from bump
 	DigiLinkSoundToPos (ROBOTINFO (robotP->info.nId).clawSound, info.nSegment, 0, vHitPt, 0, F1_0);
-	robotP->ApplyDamageToPlayer (F1_0* (gameStates.app.nDifficultyLevel+1));
+	ApplyDamageToPlayer (robotP, F1_0* (gameStates.app.nDifficultyLevel+1));
 	}
 return 1;
 }

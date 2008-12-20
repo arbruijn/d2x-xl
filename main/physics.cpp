@@ -1050,7 +1050,7 @@ else {
 
 //	------------------------------------------------------------------------------------------------------
 //	Note: This is the old AITurnTowardsVector code.
-//	PhysApplyRot used to call AITurnTowardsVector until I fixed it, which broke PhysApplyRot.
+//	ApplyRotForce used to call AITurnTowardsVector until I fixed it, which broke ApplyRotForce.
 void CObject::TurnTowardsVector (CFixVector vGoal, fix rate)
 {
 	CAngleVector	dest_angles, cur_angles;
@@ -1139,15 +1139,10 @@ TurnTowardsVector (vForce, xRate);
 
 //this routine will set the thrust for an CObject to a value that will
 // (hopefully) maintain the CObject's current velocity
-void SetThrustFromVelocity (CObject *objP)
+void CObject::SetThrustFromVelocity (void)
 {
-	fix k;
-
-	Assert (objP->info.movementType == MT_PHYSICS);
-
-	k = FixMulDiv (objP->mType.physInfo.mass, objP->mType.physInfo.drag, (f1_0-objP->mType.physInfo.drag));
-
-	objP->mType.physInfo.thrust = objP->mType.physInfo.velocity * k;
+fix k = FixMulDiv (mType.physInfo.mass, mType.physInfo.drag, (f1_0 - mType.physInfo.drag));
+mType.physInfo.thrust = mType.physInfo.velocity * k;
 
 }
 

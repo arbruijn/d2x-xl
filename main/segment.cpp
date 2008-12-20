@@ -11,7 +11,7 @@
 
 // Number of vertices in current mine (ie, gameData.segs.vertices, pointed to by Vp)
 //	Translate table to get opposite CSide of a face on a CSegment.
-char	sideOpposite[MAX_SIDES_PER_SEGMENT] = {WRIGHT, WBOTTOM, WLEFT, WTOP, WFRONT, WBACK};
+char	sideOpposite [MAX_SIDES_PER_SEGMENT] = {WRIGHT, WBOTTOM, WLEFT, WTOP, WFRONT, WBACK};
 
 //	Note, this MUST be the same as sideVertIndex, it is an int for speed reasons.
 int sideVertIndex [MAX_SIDES_PER_SEGMENT][4] = {
@@ -391,7 +391,7 @@ void CSegment::DestroyWall (short nSide)
 
 if (wallP)
 	if (wallP->nType == WALL_BLASTABLE)
-		BlastBlastableWall (this, nSide);
+		BlastWall (nSide);
 	else
 		Error (TXT_WALL_INDESTRUCTIBLE);
 }

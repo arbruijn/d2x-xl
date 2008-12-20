@@ -1096,9 +1096,9 @@ if (pos) {
 			kcKeyboard [i].l = FindNextItemLeft (kcKeyboard, j, i, pos, ref);
 			kcKeyboard [i].r = FindNextItemRight (kcKeyboard, j, i, pos, ref);
 			}
-		delete[] ref;
+		delete [] ref;
 		}
-	delete[] pos;
+	delete [] pos;
 	}
 }
 
@@ -1117,9 +1117,9 @@ if (pos) {
 			kcJoystick [i].l = FindNextItemLeft (kcJoystick, j, i, pos, ref);
 			kcJoystick [i].r = FindNextItemRight (kcJoystick, j, i, pos, ref);
 			}
-		delete[] ref;
+		delete [] ref;
 		}
-	delete[] pos;
+	delete [] pos;
 	}
 }
 
@@ -1138,9 +1138,9 @@ if (pos) {
 			kcMouse [i].l = FindNextItemLeft (kcMouse, j, i, pos, ref);
 			kcMouse [i].r = FindNextItemRight (kcMouse, j, i, pos, ref);
 			}
-		delete[] ref;
+		delete [] ref;
 		}
-	delete[] pos;
+	delete [] pos;
 	}
 }
 
@@ -1159,9 +1159,9 @@ if (pos) {
 			kcHotkeys [i].l = FindNextItemLeft (kcHotkeys, j, i, pos, ref);
 			kcHotkeys [i].r = FindNextItemRight (kcHotkeys, j, i, pos, ref);
 			}
-		delete[] ref;
+		delete [] ref;
 		}
-	delete[] pos;
+	delete [] pos;
 	}
 }
 

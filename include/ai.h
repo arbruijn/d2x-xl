@@ -100,8 +100,6 @@ void DoEscortFrame (CObject *objP, fix dist_to_player, int player_visibility);
 void DoSnipeFrame (CObject *objP);
 void DoThiefFrame (CObject *objP);
 
-int BossSpewRobot (CObject *objP, CFixVector *vPos, short objType, int bObjTrigger);
-
 #if DBG
 void force_dump_aiObjects_all (char *msg);
 #else

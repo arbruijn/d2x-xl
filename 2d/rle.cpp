@@ -311,7 +311,7 @@ int CBitmap::RLECompress (void)
 	for (y=0; y<m_info.props.h; y++)	{
 		d1 = gr_rle_getsize (m_info.props.w, &Buffer ()[m_info.props.w*y]);
 		if (( (doffset+d1) > m_info.props.w*m_info.props.h) || (d1 > (large_rle?32767:255))) {
-			delete[] rle_data;
+			delete [] rle_data;
 			return 0;
 		}
 		d = gr_rle_encode (m_info.props.w, &Buffer ()[m_info.props.w*y], &rle_data[doffset]);
@@ -324,7 +324,7 @@ int CBitmap::RLECompress (void)
 	}
 	memcpy (rle_data, &doffset, 4);
 	memcpy (Buffer (), rle_data, doffset);
-	delete[] rle_data;
+	delete [] rle_data;
 	m_info.props.flags |= BM_FLAG_RLE;
 	if (large_rle)
 		m_info.props.flags |= BM_FLAG_RLE_BIG;
@@ -345,7 +345,7 @@ typedef struct rle_cache_element {
 int rle_cache_initialized = 0;
 int rleCounter = 0;
 int rle_next = 0;
-rle_cache_element rle_cache[MAX_CACHE_BITMAPS];
+rle_cache_element rle_cache [MAX_CACHE_BITMAPS];
 
 int rle_hits = 0;
 int rle_misses = 0;
@@ -371,10 +371,10 @@ void RLECacheInit ()
 	int i;
 
 for (i=0; i<MAX_CACHE_BITMAPS; i++)	{
-	rle_cache[i].rle_bitmap = NULL;
-	rle_cache[i].expanded_bitmap = CBitmap::Create (0, 64, 64, 1);
-	rle_cache[i].last_used = 0;
-	Assert (rle_cache[i].expanded_bitmap != NULL);
+	rle_cache [i].rle_bitmap = NULL;
+	rle_cache [i].expanded_bitmap = CBitmap::Create (0, 64, 64, 1);
+	rle_cache [i].last_used = 0;
+	Assert (rle_cache [i].expanded_bitmap != NULL);
 	}
 rle_cache_initialized = 1;
 //atexit (RLECacheClose);
@@ -409,12 +409,12 @@ lc = rleCounter;
 rleCounter++;
 if (rleCounter < lc) {
 	for (i=0; i<MAX_CACHE_BITMAPS; i++)	{
-		rle_cache[i].rle_bitmap = NULL;
-		rle_cache[i].last_used = 0;
+		rle_cache [i].rle_bitmap = NULL;
+		rle_cache [i].last_used = 0;
 		}
 	}
 
-lowestCount = rle_cache[rle_next].last_used;
+lowestCount = rle_cache [rle_next].last_used;
 least_recently_used = rle_next;
 rle_next++;
 if (rle_next >= MAX_CACHE_BITMAPS)
@@ -422,20 +422,20 @@ if (rle_next >= MAX_CACHE_BITMAPS)
 for (i = 0; i < MAX_CACHE_BITMAPS; i++) {
 	if (rle_cache [i].rle_bitmap == bmP) {
 		rle_hits++;
-		rle_cache[i].last_used = rleCounter;
+		rle_cache [i].last_used = rleCounter;
 		return rle_cache [i].expanded_bitmap;
 		}
 	if (rle_cache [i].last_used < lowestCount) {
-		lowestCount = rle_cache[i].last_used;
+		lowestCount = rle_cache [i].last_used;
 		least_recently_used = i;
 		}
 	}
 Assert (bmP->Width () <=64 && bmP->Height () <= 64); //dest buffer is 64x64
 rle_misses++;
-bmP->ExpandTo (rle_cache[least_recently_used].expanded_bitmap);
-rle_cache[least_recently_used].rle_bitmap = bmP;
-rle_cache[least_recently_used].last_used = rleCounter;
-return rle_cache[least_recently_used].expanded_bitmap;
+bmP->ExpandTo (rle_cache [least_recently_used].expanded_bitmap);
+rle_cache [least_recently_used].rle_bitmap = bmP;
+rle_cache [least_recently_used].last_used = rleCounter;
+return rle_cache [least_recently_used].expanded_bitmap;
 }
 
 //------------------------------------------------------------------------------
@@ -650,7 +650,7 @@ for (i = 0; i < m_info.props.h; i++) {
 len = (int) (ptr2 - temp);
 *reinterpret_cast<int*> (temp) = len;           // set total size
 memcpy (Buffer (), temp, len);
-delete[] temp;
+delete [] temp;
 }
 
 //------------------------------------------------------------------------------
@@ -702,7 +702,7 @@ len = (int) (destP - remapBuf);
 Assert (len <= m_info.props.w * m_info.props.rowSize);
 *reinterpret_cast<int*> (remapBuf) = len;           // set total size
 memcpy (Buffer (), remapBuf, len);
-delete[] remapBuf;
+delete [] remapBuf;
 return len;
 }
 

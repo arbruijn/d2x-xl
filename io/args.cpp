@@ -56,7 +56,7 @@ void _CDECL_ args_exit (void)
 PrintLog ("unloading program arguments\n");
 for (i = 0; i < nArgCount; i++)
 	if (pszArgList [i])
-		delete[] pszArgList [i];
+		delete [] pszArgList [i];
 memset (pszArgList, 0, sizeof (pszArgList));
 nArgCount = 0;
 }
@@ -152,7 +152,7 @@ if (cf.File()) {
 				pszArgList [nArgCount++] = *pszLine ? StrDup (pszLine) : NULL;
 				}
 			}
-		delete[] pszLine; 
+		delete [] pszLine; 
 		}
 	cf.Close ();
 	}
