@@ -578,7 +578,7 @@ inline bool ObjectIsLinked (CObject *objP, short nSegment)
 {
 if (nSegment != -1) {
 	short nObject = objP->Index ();
-	for (short i = SEGMENTS [objP->info.nSegment].objects, j = -1; i >= 0; j = i, i = OBJECTS [i].info.nNextInSeg) {
+	for (short i = SEGMENTS [objP->info.nSegment].m_objects, j = -1; i >= 0; j = i, i = OBJECTS [i].info.nNextInSeg) {
 		if (i == nObject) {
 			objP->info.nPrevInSeg = j;
 			return true;

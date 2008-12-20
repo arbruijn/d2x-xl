@@ -961,7 +961,7 @@ void LoadSegmentsCompiled (short nSegment, CFile& cf)
 	CSide			*sideP;
 	short			temp_short;
 	ushort		nWall, temp_ushort = 0;
-	ushort*		sideVerts;
+	ushort		sideVerts [4];
 	ubyte			bitMask;
 
 INIT_PROGRESS_LOOP (nSegment, lastSeg, gameData.segs.nSegments);
@@ -1013,7 +1013,7 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 
 	// Read the walls as a 6 byte array
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++ )	{
-		segP->m_sides [nSide].nFrame = 0;
+		segP->m_sides [nSide].m_nFrame = 0;
 		}
 
 	if (bNewFileFormat)
@@ -1021,14 +1021,14 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 	else
 		bitMask = 0x3f; // read all six sides
 	for (nSide = 0, sideP = segP->m_sides; nSide < MAX_SIDES_PER_SEGMENT; nSide++, sideP++) {
-		sideP->nWall = (ushort) -1;
+		sideP->m_nWall = (ushort) -1;
 		if (bitMask & (1 << nSide)) {
 			if (gameData.segs.nLevelVersion >= 13)
 				nWall = (ushort) cf.ReadShort ();
 			else
 				nWall = (ushort) ((ubyte) cf.ReadByte ());
 			if (IS_WALL (nWall))
-				sideP->nWall = nWall;
+				sideP->m_nWall = nWall;
 			}
 		}
 
@@ -1039,7 +1039,7 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 	for (nSide = 0, sideP = segP->m_sides; nSide < MAX_SIDES_PER_SEGMENT; nSide++, sideP++ )	{
 #if DBG
 		int bReadSideData;
-		nWall = WallNumI (nSegment, nSide);
+		nWall = SEGMENTS [nSegment].WallNum (nSide);
 		if (segP->m_children [nSide] == -1)
 			bReadSideData = 1;
 		else if (IS_WALL (nWall))
@@ -1066,7 +1066,7 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 				// Read short sideP->m_nOvlTex;
 				short h = cf.ReadShort ();
 				sideP->m_nOvlTex = h & 0x3fff;
-				sideP->nOvlOrient = (h >> 14) & 3;
+				sideP->m_nOvlOrient = (h >> 14) & 3;
 				if ((gameData.segs.nLevelVersion <= 1) && sideP->m_nOvlTex)
 					sideP->m_nOvlTex = ConvertD1Texture (sideP->m_nOvlTex, 0);
 				}
@@ -1105,7 +1105,7 @@ void LoadExtSegmentsCompiled (CFile& cf)
 gameData.matCens.nRepairCenters = 0;
 for (i = 0; i < gameData.segs.nSegments; i++) {
 	if (gameData.segs.nLevelVersion > 5)
-		SEGMENTS [i].CExtSegment::Read (cf);
+		SEGMENTS [i].Read (cf, true);
 	SEGMENTS [i].CreateGenerator (SEGMENTS [i].m_nType);
 	}
 }
@@ -1228,9 +1228,7 @@ void ComputeSegSideCenters (int nSegment)
 	CSegment*	segP;
 	CSide*		sideP;
 #if CALC_SEGRADS
-	fix			*xSideDists, xMinDist, xMaxDist, xDist;
-	short			k;
-	CFixVector	v, vMin, vMax;
+	fix			xSideDists [6], xMinDist;
 #endif
 
 INIT_PROGRESS_LOOP (nSegment, j, gameData.segs.nSegments);
@@ -1240,7 +1238,7 @@ for (i = nSegment * 6, segP = SEGMENTS + nSegment; nSegment < j; nSegment++, seg
 	for (nSide = 0, sideP = segP->m_sides; nSide < 6; nSide++, i++)
 		segP->CreateVertexList (nSide);
 #if CALC_SEGRADS
-	segP->CalcSideDists (segP->m_center, xSideDists, 0);
+	segP->GetSideDists (segP->m_vCenter, xSideDists, 0);
 	xMinDist = 0x7fffffff;
 #endif
 	for (nSide = 0, sideP = segP->m_sides; nSide < 6; nSide++, i++) {

@@ -1000,16 +1000,17 @@ if (gameFileInfo.doors.offset > -1) {
 			ReadActiveDoor (&gameData.walls.activeDoors [i], cf); // version 20 and up
 		else {
 			v19_door d;
-			int p;
 			short nConnSeg, nConnSide;
+			CSegment* segP;
 
 			ReadActiveDoorV19(&d, cf);
 			gameData.walls.activeDoors [i].nPartCount = d.nPartCount;
-			for (p = 0; p < d.nPartCount; p++) {
-				nConnSeg = SEGMENTS [d.seg [p]].children [d.nSide [p]];
-				nConnSide = ConnectedSide(SEGMENTS + d.seg [p], SEGMENTS + nConnSeg);
-				gameData.walls.activeDoors [i].nFrontWall [p] = WallNumI (d.seg [p], d.nSide [p]);
-				gameData.walls.activeDoors [i].nBackWall [p] = WallNumI (nConnSeg, nConnSide);
+			for (int j = 0; j < d.nPartCount; j++) {
+				segP = SEGMENTS + d.seg [j];
+				nConnSeg = segP->m_children [d.nSide [j]];
+				nConnSide = segP->ConnectedSide (SEGMENTS + nConnSeg);
+				gameData.walls.activeDoors [i].nFrontWall [j] = segP->WallNum (d.nSide [j]);
+				gameData.walls.activeDoors [i].nBackWall [j] = SEGMENTS [nConnSeg].WallNum (nConnSide);
 				}
 			}
 		}
@@ -1048,8 +1049,8 @@ if (gameFileInfo.triggers.offset > -1) {
 				trig.value = trig29.value;
 				trig.time = trig29.time;
 				for (t = 0; t < trig.nLinks; t++) {
-					trig.nSegment [t] = trig29.nSegment [t];
-					trig.nSide [t] = trig29.nSide [t];
+					trig.segments [t] = trig29.segments [t];
+					trig.sides [t] = trig29.sides [t];
 					}
 				}
 			//Assert(trig.flags & TRIGGER_ON);
@@ -1090,8 +1091,8 @@ if (gameFileInfo.triggers.offset > -1) {
 			trigP->value = trig.value;
 			trigP->time = trig.time;
 			for (t = 0; t < trig.nLinks; t++) {
-				trigP->nSegment [t] = trig.nSegment [t];
-				trigP->nSide [t] = trig.nSide [t];
+				trigP->segments [t] = trig.segments [t];
+				trigP->sides [t] = trig.sides [t];
 				}
 			}
 		if (trigP->nLinks < 0)
@@ -1099,12 +1100,12 @@ if (gameFileInfo.triggers.offset > -1) {
 		else if (trigP->nLinks > MAX_TRIGGER_TARGETS)
 			trigP->nLinks = MAX_TRIGGER_TARGETS;
 		for (h = trigP->nLinks, j = 0; j < h; ) {
-			if ((trigP->nSegment [j] >= 0) && (trigP->nSegment [j] < gameData.segs.nSegments) &&
-				 (trigP->nSide [j] >= 0) && (trigP->nSide [j] < 6))
+			if ((trigP->segments [j] >= 0) && (trigP->segments [j] < gameData.segs.nSegments) &&
+				 (trigP->sides [j] >= 0) && (trigP->sides [j] < 6))
 				j++;
 			else if (--h) {
-				trigP->nSegment [j] = trigP->nSegment [h];
-				trigP->nSide [j] = trigP->nSide [h];
+				trigP->segments [j] = trigP->segments [h];
+				trigP->sides [j] = trigP->sides [h];
 				}
 			}
 		trigP->nLinks = h;
@@ -1113,7 +1114,7 @@ if (gameFileInfo.triggers.offset > -1) {
 		gameData.trigs.nObjTriggers = cf.ReadInt ();
 		if (gameData.trigs.nObjTriggers) {
 			for (i = 0; i < gameData.trigs.nObjTriggers; i++)
-				TriggerRead (OBJTRIGGERS + i, cf, 1);
+				OBJTRIGGERS [i].Read (cf, 1);
 			for (i = 0; i < gameData.trigs.nObjTriggers; i++) {
 				gameData.trigs.objTriggerRefs [i].prev = cf.ReadShort ();
 				gameData.trigs.objTriggerRefs [i].next = cf.ReadShort ();
@@ -1189,8 +1190,8 @@ if (gameFileInfo.botGen.offset > -1) {
 		//	Set links in gameData.matCens.botGens to gameData.matCens.fuelCenters array
 		for (j = 0; j <= gameData.segs.nLastSegment; j++)
 			if ((SEGMENTS [j].m_nType == SEGMENT_IS_ROBOTMAKER) &&
-					(SEGMENTS [j].nMatCen == i)) {
-				gameData.matCens.botGens [i].nFuelCen = SEGMENTS [j].value;
+					(SEGMENTS [j].m_nMatCen == i)) {
+				gameData.matCens.botGens [i].nFuelCen = SEGMENTS [j].m_value;
 				break;
 				}
 		}
@@ -1212,10 +1213,10 @@ if (gameFileInfo.equipGen.offset > -1) {
 	for (i = 0; i < gameFileInfo.equipGen.count; i++) {
 		MatCenInfoRead (gameData.matCens.equipGens + i, cf);
 		//	Set links in gameData.matCens.botGens to gameData.matCens.fuelCenters array
-		for (j = 0; j <= gameData.segs.nLastSegment; j++)
-			if ((SEGMENTS [j].m_nType == SEGMENT_IS_EQUIPMAKER) &&
-					(SEGMENTS [j].nMatCen == i))
-				gameData.matCens.equipGens [i].nFuelCen = SEGMENTS [j].value;
+		CSegment* segP = SEGMENTS.Buffer ();
+		for (j = 0; j <= gameData.segs.nLastSegment; j++, segP++)
+			if ((segP->m_nType == SEGMENT_IS_EQUIPMAKER) && (segP->m_nMatCen == i))
+				gameData.matCens.equipGens [i].nFuelCen = segP->m_value;
 		}
 	}
 return 0;
@@ -1309,15 +1310,11 @@ static void CheckAndFixDoors (void)
 for (i = 0; i < gameData.segs.nSegments; i++) {
 	sideP = SEGMENTS [i].m_sides;
 	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
-		short nWall = WallNumS (sideP);
-		CWall  *w;
-		if (!IS_WALL (nWall))
+		CWall* wallP = sideP->Wall ();
+		if (wallP->nClip == -1)
 			continue;
-		w = WALLS + nWall;
-		if (w->nClip == -1)
-			continue;
-		if (gameData.walls.animP [w->nClip].flags & WCF_TMAP1) {
-			sideP->m_nBaseTex = gameData.walls.animP [w->nClip].frames [0];
+		if (gameData.walls.animP [wallP->nClip].flags & WCF_TMAP1) {
+			sideP->m_nBaseTex = gameData.walls.animP [wallP->nClip].frames [0];
 			sideP->m_nOvlTex = 0;
 			}
 		}
@@ -1328,8 +1325,9 @@ for (i = 0; i < gameData.segs.nSegments; i++) {
 //go through all walls, killing references to invalid triggers
 static void CheckAndFixWalls (void)
 {
-	int	i;
-	short	nSegment, nSide, nWall;
+	int		i;
+	short		nSegment, nSide;
+	CWall*	wallP;
 
 for (i = 0; i < gameData.walls.nWalls; i++)
 	if (WALLS [i].nTrigger >= gameData.trigs.nTriggers) {
@@ -1341,22 +1339,11 @@ for (i = 0; i < gameData.walls.nWalls; i++)
 if (gameTopFileInfo.fileinfoVersion < 17) {
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
 		for (nSide = 0; nSide < 6; nSide++)
-			if (IS_WALL (nWall = WallNumI (nSegment, nSide))) {
-				WALLS [nWall].nSegment = nSegment;
-				WALLS [nWall].nSide = nSide;
+			if ((wallP = SEGMENTS [nSegment].Wall (nSide))) {
+				wallP->nSegment = nSegment;
+				wallP->nSide = nSide;
 				}
 	}
-
-#if DBG
-for (nSide = 0; nSide < 6; nSide++) {
-	nWall = WallNumI (gameData.segs.nLastSegment, nSide);
-	if (IS_WALL (nWall) &&
-			((WALLS [nWall].nSegment != gameData.segs.nLastSegment) || 
-			(WALLS [nWall].nSide != nSide))) {
-			Int3();	//	Error.  Bogus walls in this segment.
-		}
-	}
-#endif
 }
 
 // -----------------------------------------------------------------------------
@@ -1389,19 +1376,19 @@ for (i = 0; i < gameData.walls.nWalls; i++)
 //	MK, 10/17/95: Make walls point back at the triggers that control them.
 //	Go through all triggers, stuffing controllingTrigger field in WALLS.
 
-for (i = 0; i < gameData.trigs.nTriggers; i++) {
-	for (j = 0; j < TRIGGERS [i].nLinks; j++) {
-		nSegment = TRIGGERS [i].nSegment [j];
-		nSide = TRIGGERS [i].nSide [j];
-		nWall = WallNumI (nSegment, nSide);
+CTrigger* trigP = TRIGGERS.Buffer ();
+for (i = 0; i < gameData.trigs.nTriggers; i++, trigP++) {
+	for (j = 0; j < trigP->nLinks; j++) {
+		nSegment = trigP->segments [j];
+		nSide = trigP->sides [j];
+		nWall = SEGMENTS [nSegment].WallNum (nSide);
 		//check to see that if a CTrigger requires a CWall that it has one,
 		//and if it requires a botGen that it has one
-		if (TRIGGERS [i].nType == TT_MATCEN) {
+		if (trigP->nType == TT_MATCEN) {
 			if (SEGMENTS [nSegment].m_nType != SEGMENT_IS_ROBOTMAKER)
 				continue;		//botGen CTrigger doesn'i point to botGen
 			}
-		else if ((TRIGGERS [i].nType != TT_LIGHT_OFF) && 
-					(TRIGGERS [i].nType != TT_LIGHT_ON)) { //light triggers don't require walls
+		else if ((trigP->nType != TT_LIGHT_OFF) && (trigP->nType != TT_LIGHT_ON)) { //light triggers don't require walls
 			if (IS_WALL (nWall))
 				WALLS [nWall].controllingTrigger = i;
 			else {

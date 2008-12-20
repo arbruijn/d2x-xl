@@ -557,7 +557,7 @@ void PiggyLoadLevelData (void)
 {
 PrintLog ("   loading level textures\n");
 PiggyBitmapPageOutAll (0);
-PagingTouchAll ();
+LoadLevelTextures ();
 }
 
 //------------------------------------------------------------------------------

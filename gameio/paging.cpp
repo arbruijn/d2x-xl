@@ -117,7 +117,7 @@ for (i = pm->nTextures, pi = gameData.pig.tex.objBmIndexP + pm->nFirstTexture; i
 
 //------------------------------------------------------------------------------
 
-void PagingTouchWeapon (int nWeaponType)
+void LoadWeaponTextures (int nWeaponType)
 {
 // Page in the robot's weapons.
 
@@ -168,7 +168,7 @@ if (ROBOTINFO (robotIndex).nExp1VClip>-1)
 if (ROBOTINFO (robotIndex).nExp2VClip>-1)
 	LoadVClipTextures (&gameData.eff.vClips [0][ROBOTINFO (robotIndex).nExp2VClip], 0);
 // Page in his weapons
-PagingTouchWeapon (ROBOTINFO (robotIndex).nWeaponType);
+LoadWeaponTextures (ROBOTINFO (robotIndex).nWeaponType);
 // A super-boss can gate in robots...
 if (ROBOTINFO (robotIndex).bossFlag == 2) {
 	for (i = 0; i < 13; i++)
@@ -227,7 +227,7 @@ switch (info.nType) {
 		break;
 
 	case OBJ_REACTOR:
-		PagingTouchWeapon (CONTROLCEN_WEAPON_NUM);
+		LoadWeaponTextures (CONTROLCEN_WEAPON_NUM);
 		if (gameData.models.nDeadModels [rType.polyObjInfo.nModel] != -1)
 			PagingTouchModel (gameData.models.nDeadModels [rType.polyObjInfo.nModel]);
 		break;
@@ -251,10 +251,10 @@ PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [m_nBaseTex].index, gameStates.app.bD1D
 void CSegment::LoadSideTextures (short nSide)
 {
 #if DBG
-if ((segP->Index () == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+if ((Index () == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-if (!(segP->IsDoorWay (nSide, NULL) & WID_RENDER_FLAG))
+if (!(IsDoorWay (nSide, NULL) & WID_RENDER_FLAG))
 	return;
 m_sides [nSide].LoadTextures ();
 }
@@ -301,10 +301,10 @@ void CSegment::LoadTextures (void)
 if (Index () == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-if (seg2p->m_nType == SEGMENT_IS_ROBOTMAKER)
+if (m_nType == SEGMENT_IS_ROBOTMAKER)
 	LoadBotGenTextures ();
 for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) 
-	PagingTouchSide (segP, nSide);
+	m_sides [nSide].LoadTextures ();
 for (nObject = m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg)
 	OBJECTS [nObject].LoadTextures ();
 }
@@ -313,8 +313,8 @@ for (nObject = m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextI
 
 void CWall::LoadTextures (void)
 {
-if (wallP->nClip > -1)	{
-	tWallClip* anim = gameData.walls.animP + wallP->nClip;
+if (nClip > -1)	{
+	tWallClip* anim = gameData.walls.animP + nClip;
 	for (int j = 0; j < anim->nFrameCount; j++)
 		PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [anim->frames [j]].index, gameStates.app.bD1Data);
 	}
@@ -322,59 +322,49 @@ if (wallP->nClip > -1)	{
 
 //------------------------------------------------------------------------------
 
-void PagingTouchWalls (void)
+void LoadWallTextures (void)
 {
-	int i;
-
-for (i = 0; i < gameData.walls.nWalls; i++)
-	gameData.wall.walls [i].LoadTextures ();
+for (int i = 0; i < gameData.walls.nWalls; i++)
+	WALLS [i].LoadTextures ();
 }
 
 //------------------------------------------------------------------------------
 
-void PagingTouchSegments (void)
+void LoadSegmentTextures (void)
 {
-	int	s;
-
-for (s=0; s < gameData.segs.nSegments; s++)
-	PagingTouchSegment (SEGMENTS + s);
+for (int i = 0; i < gameData.segs.nSegments; i++)
+	SEGMENTS [i].LoadTextures ();
 }
 
 //------------------------------------------------------------------------------
 
-void PagingTouchPowerups (void)
+void LoadPowerupTextures (void)
 {
-	int	s;
-
-for (s = 0; s < gameData.objs.pwrUp.nTypes; s++)
-	if (gameData.objs.pwrUp.info [s].nClipIndex > -1)
-		LoadVClipTextures (&gameData.eff.vClips [0][gameData.objs.pwrUp.info [s].nClipIndex], 0);
+for (int i = 0; i < gameData.objs.pwrUp.nTypes; i++)
+	if (gameData.objs.pwrUp.info [i].nClipIndex > -1)
+		LoadVClipTextures (&gameData.eff.vClips [0][gameData.objs.pwrUp.info [i].nClipIndex], 0);
 }
 
 //------------------------------------------------------------------------------
 
-void PagingTouchWeapons (void)
+void LoadWeaponTextures (void)
 {
-	int	s;
-
-for (s = 0; s < gameData.weapons.nTypes [0]; s++)
-	PagingTouchWeapon (s);
+for (int i = 0; i < gameData.weapons.nTypes [0]; i++)
+	LoadWeaponTextures (i);
 }
 
 //------------------------------------------------------------------------------
 
-void PagingTouchGauges (void)
+void LoadGaugeTextures (void)
 {
-	int	s;
-
-for (s = 0; s < MAX_GAUGE_BMS; s++)
-	if (gameData.cockpit.gauges [1][s].index)
-		PIGGY_PAGE_IN (gameData.cockpit.gauges [1][s].index, 0);
+for (int i = 0; i < MAX_GAUGE_BMS; i++)
+	if (gameData.cockpit.gauges [1][i].index)
+		PIGGY_PAGE_IN (gameData.cockpit.gauges [1][i].index, 0);
 }
 
 //------------------------------------------------------------------------------
 
-void PagingTouchAddonTextures (void)
+void LoadAddonTextures (void)
 {
 	int	i;
 
@@ -384,9 +374,9 @@ for (i = 0; i < MAX_ADDON_BITMAP_FILES; i++)
 
 //------------------------------------------------------------------------------
 
-void PagingTouchAllSub (void)
+void LoadAllTextures (void)
 {
-	int 			bBlackScreen;
+	int 	bBlackScreen;
 
 StopTime ();
 bBlackScreen = gameStates.render.bPaletteFadedOut;
@@ -395,31 +385,21 @@ if (gameStates.render.bPaletteFadedOut)	{
 	paletteManager.LoadEffect  ();
 	}
 //	ShowBoxedMessage (TXT_LOADING);
-#if TRACE			
-console.printf (CON_VERBOSE, "Loading all textures in mine...");
-#endif
-PagingTouchSegments ();
-PagingTouchWalls ();
-PagingTouchPowerups ();
-PagingTouchWeapons ();
-PagingTouchPowerups ();
-PagingTouchGauges ();
+LoadSegmentTextures ();
+LoadWallTextures ();
+LoadPowerupTextures ();
+LoadWeaponTextures ();
+LoadPowerupTextures ();
+LoadGaugeTextures ();
 LoadVClipTextures (&gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE], 0);
 LoadVClipTextures (&gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE], 0);
-PagingTouchAddonTextures ();
-
-#if TRACE			
-	console.printf (CON_VERBOSE, "... loading all textures in mine done\n");
-#endif
-//@@	ClearBoxedMessage ();
-
-	if (bBlackScreen)	{
-		paletteManager.ClearEffect ();
-		CCanvas::Current ()->Clear (BLACK_RGBA);
+LoadAddonTextures ();
+if (bBlackScreen)	{
+	paletteManager.ClearEffect ();
+	CCanvas::Current ()->Clear (BLACK_RGBA);
 	}
-	StartTime (0);
-	ResetCockpit ();		//force cockpit redraw next time
-
+StartTime (0);
+ResetCockpit ();		//force cockpit redraw next time
 }
 
 //------------------------------------------------------------------------------
@@ -442,7 +422,7 @@ static int nTouchPowerup1 = 0;
 static int nTouchPowerup2 = 0;
 static int nTouchGauge = 0;
 
-static int PagingTouchPoll (int nItems, tMenuItem *m, int *key, int nCurItem)
+static int LoadTexturesPoll (int nItems, tMenuItem *m, int *key, int nCurItem)
 {
 	int	i;
 
@@ -453,16 +433,12 @@ if (nTouchSeg < gameData.segs.nSegments) {
 		if (nTouchSeg == nDbgSeg)
 			nDbgSeg = nDbgSeg;
 #endif
-		PagingTouchSegment (SEGMENTS + nTouchSeg++);
-#if DBG
-		if (OBJECTS [59].info.movementType)
-			i = i;
-#endif
+		SEGMENTS [nTouchSeg++].LoadTextures ();
 		}
 	}
 else if (nTouchWall < gameData.walls.nWalls) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchWall < gameData.walls.nWalls); i++)
-		PagingTouchWall (WALLS + nTouchWall++);
+		WALLS [nTouchWall++].LoadTextures ();
 	}
 else if (nTouchPowerup1 < gameData.objs.pwrUp.nTypes) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchPowerup1 < gameData.objs.pwrUp.nTypes); i++, nTouchPowerup1++)
@@ -471,7 +447,7 @@ else if (nTouchPowerup1 < gameData.objs.pwrUp.nTypes) {
 	}
 else if (nTouchWeapon < gameData.weapons.nTypes [0]) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchWeapon < gameData.weapons.nTypes [0]); i++)
-		PagingTouchWeapon (nTouchWeapon++);
+		LoadWeaponTextures (nTouchWeapon++);
 	}
 else if (nTouchPowerup2 < gameData.objs.pwrUp.nTypes) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchPowerup2 < gameData.objs.pwrUp.nTypes); i++, nTouchPowerup2++)
@@ -499,7 +475,7 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-void PagingTouchAll ()
+void LoadLevelTextures (void)
 {
 if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 		int	i = LoadMineGaugeSize ();
@@ -510,10 +486,10 @@ if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 	nTouchPowerup1 = 0;
 	nTouchPowerup2 = 0;
 	nTouchGauge = 0;
-	NMProgressBar (TXT_PREP_DESCENT, i, i + PagingGaugeSize () + SortLightsGaugeSize (), PagingTouchPoll); 
+	NMProgressBar (TXT_PREP_DESCENT, i, i + PagingGaugeSize () + SortLightsGaugeSize (), LoadTexturesPoll); 
 	}
 else
-	PagingTouchAllSub ();
+	LoadAllTextures ();
 }
 
 //------------------------------------------------------------------------------

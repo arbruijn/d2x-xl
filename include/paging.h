@@ -22,9 +22,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _PAGING_H
 #define _PAGING_H
 
-void PagingTouchAll ();
+void LoadLevelTextures ();
 int PagingGaugeSize ();
-void PagingTouchObject (CObject *objP);
-void PagingTouchObjects (int nType);
+void LoadObjectTextures (int nType);
 
 #endif /* _PAGING_H */

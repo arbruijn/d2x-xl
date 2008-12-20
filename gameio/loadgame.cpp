@@ -638,11 +638,10 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSeg
 			 (segP->IsDoorWay (nSide, NULL) & (WID_FLY_FLAG | WID_RENDPAST_FLAG))) {
 			connSegP = SEGMENTS + segP->m_children [nSide];
 			nConnSide = segP->ConnectedSide (connSegP);
-			if (connSegP->m_sides [nConnSide].nOvlTex == segP->m_sides [nSide].m_nOvlTex)
+			if (connSegP->m_sides [nConnSide].m_nOvlTex == segP->m_sides [nSide].m_nOvlTex)
 				continue;		//skip this one
 			}
-		v = segP->SideCenter (nSide);
-		DigiLinkSoundToPos (nSound, nSegment, nSide, &v, 1, F1_0 / 2);
+		DigiLinkSoundToPos (nSound, nSegment, nSide, segP->SideCenter (nSide), 1, F1_0 / 2);
 		}
 
 if (0 <= (nSound = DigiGetSoundByName ("explode2"))) {
@@ -791,7 +790,7 @@ BMFreeExtraObjBitmaps ();
 /*---*/PrintLog ("   unloading additional model textures\n");
 PiggyFreeHiresAnimations ();
 /*---*/PrintLog ("   freeing spark effect buffers\n");
-FreeEnergySparks ();
+sparkManager.Destroy ();
 /*---*/PrintLog ("   freeing sound buffers\n");
 DigiFreeSoundBufs ();
 /*---*/PrintLog ("   freeing auxiliary poly model data\n");
@@ -1008,7 +1007,7 @@ if (!bRestore) {
 LoadExtraImages ();
 CreateShieldSphere ();
 PrintLog ("   initializing energy spark render data\n");
-AllocEnergySparks ();
+sparkManager.Create ();
 PrintLog ("   setting robot generator vertigo robot flags\n");
 SetVertigoRobotFlags ();
 PrintLog ("   initializing debris collision handlers\n");
@@ -2079,9 +2078,9 @@ for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 		if (j != gameData.multiplayer.nLocalPlayer) {
 			objP = OBJECTS + gameData.multiplayer.players [j].nObject;
 			if ((objP->info.nType == OBJ_PLAYER))	{
-				xDist = FindConnectedDistance (&objP->info.position.vPos,
+				xDist = FindConnectedDistance (objP->info.position.vPos,
 														 objP->info.nSegment,
-														 &gameData.multiplayer.playerInit [i].position.vPos,
+														 gameData.multiplayer.playerInit [i].position.vPos,
 														 gameData.multiplayer.playerInit [i].nSegment,
 														 10, WID_FLY_FLAG, 0);	//	Used to be 5, search up to 10 segments
 				if (xDist < 0)

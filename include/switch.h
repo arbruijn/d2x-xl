@@ -78,8 +78,8 @@ typedef struct tTriggerV29 {
 	fix     time;
 	sbyte   link_num;
 	short   nLinks;
-	short   nSegment [MAX_TRIGGER_TARGETS];
-	short   nSide [MAX_TRIGGER_TARGETS];
+	short   segments [MAX_TRIGGER_TARGETS];
+	short   sides [MAX_TRIGGER_TARGETS];
 } __pack__ tTriggerV29;
 
 typedef struct tTriggerV30 {
@@ -88,8 +88,8 @@ typedef struct tTriggerV30 {
 	sbyte   pad;                        //keep alignment
 	fix     value;
 	fix     time;
-	short   nSegment [MAX_TRIGGER_TARGETS];
-	short   nSide [MAX_TRIGGER_TARGETS];
+	short   segments [MAX_TRIGGER_TARGETS];
+	short   sides [MAX_TRIGGER_TARGETS];
 } __pack__ tTriggerV30;
 
 //flags for V30 & below triggers
