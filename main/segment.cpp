@@ -193,7 +193,7 @@ return -1;
 }
 //-----------------------------------------------------------------
 
-int CSegment::IsDoorWay (short nSide, CObject *objP)
+int CSegment::IsDoorWay (int nSide, CObject *objP)
 {
 	int	nChild = m_children [nSide];
 
@@ -254,7 +254,7 @@ return 0;
 
 //-----------------------------------------------------------------
 //set the nBaseTex or nOvlTex field for a CWall/door
-void CSegment::SetTexture (short nSide, CSegment *connSegP, short nConnSide, int nAnim, int nFrame)
+void CSegment::SetTexture (int nSide, CSegment *connSegP, short nConnSide, int nAnim, int nFrame)
 {
 	tWallClip*	animP = gameData.walls.animP + nAnim;
 	short			nTexture = animP->frames [(animP->flags & WCF_ALTFMT) ? 0 : nFrame];
@@ -309,7 +309,7 @@ if (connSegP)
 
 //-----------------------------------------------------------------
 
-inline int CSegment::PokesThrough (int nObject, short nSide)
+inline int CSegment::PokesThrough (int nObject, int nSide)
 {
 	CObject *objP = OBJECTS + nObject;
 
@@ -318,7 +318,7 @@ return (objP->info.xSize && SideMasks (nSide, objP->info.position.vPos, objP->in
 
 //-----------------------------------------------------------------
 //returns true of door in unobjstructed (& thus can close)
-int CSegment::DoorIsBlocked (short nSide)
+int CSegment::DoorIsBlocked (int nSide)
 {
 	short		nConnSide;
 	CSegment *connSegP;
@@ -343,7 +343,7 @@ return 0; 	//doorway is free!
 
 // -------------------------------------------------------------------------------
 //when the CWall has used all its hitpoints, this will destroy it
-void CSegment::BlastWall (short nSide)
+void CSegment::BlastWall (int nSide)
 {
 	short			nConnSide;
 	CSegment*	connSegP;
@@ -372,7 +372,7 @@ KillStuckObjects (WallNum (nSide));
 
 //if this is an exploding wall, explode it
 if ((gameData.walls.animP [wallP->nClip].flags & WCF_EXPLODES) && !(wallP->flags & WALL_BLASTED))
-	ExplodeWall (SEG_IDX (this), nSide);
+	ExplodeWall (Index (), nSide);
 else {
 	//if not exploding, set final frame, and make door passable
 	a = wallP->nClip;
@@ -386,7 +386,7 @@ else {
 
 //-----------------------------------------------------------------
 // Destroys a blastable CWall.
-void CSegment::DestroyWall (short nSide)
+void CSegment::DestroyWall (int nSide)
 {
 	CWall* wallP = Wall (nSide);
 
@@ -399,7 +399,7 @@ if (wallP)
 
 //-----------------------------------------------------------------
 // Deteriorate appearance of CWall. (Changes bitmap (paste-ons))
-void CSegment::DamageWall (short nSide, fix damage)
+void CSegment::DamageWall (int nSide, fix damage)
 {
 	int		a, i, n;
 	short		nConnSide, nConnWall;
@@ -449,7 +449,7 @@ else {
 
 //-----------------------------------------------------------------
 // Opens a door
-void CSegment::OpenDoor (short nSide)
+void CSegment::OpenDoor (int nSide)
 {
 CWall* wallP;
 if (!(wallP = Wall (nSide)))
@@ -500,13 +500,13 @@ else
 	doorP->nPartCount = 1;
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	if (gameData.walls.animP [wallP->nClip].openSound > -1)
-		DigiLinkSoundToPos (gameData.walls.animP [wallP->nClip].openSound, SEG_IDX (this), nSide, SideCenter (nSide), 0, F1_0);
+		CreateSound (gameData.walls.animP [wallP->nClip].openSound, nSide);
 	}
 }
 
 //-----------------------------------------------------------------
 // Closes a door
-void CSegment::CloseDoor (short nSide)
+void CSegment::CloseDoor (int nSide)
 {
 	CWall*	wallP;
 
@@ -543,14 +543,14 @@ else
 	doorP->nPartCount = 1;
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	if (gameData.walls.animP [wallP->nClip].openSound > -1)
-		DigiLinkSoundToPos (gameData.walls.animP [wallP->nClip].openSound, SEG_IDX (this), nSide, SideCenter (nSide), 0, F1_0);
+		CreateSound (gameData.walls.animP [wallP->nClip].openSound, nSide);
 	}
 }
 
 //-----------------------------------------------------------------
 
 // start the transition from closed -> open CWall
-void CSegment::StartCloak (short nSide)
+void CSegment::StartCloak (int nSide)
 {
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	return;
@@ -587,7 +587,7 @@ cloakWallP->nBackWall = nConnWall;
 Assert(SEG_IDX (this) != -1);
 //Assert(!IS_WALL (wallP->nLinkedWall));
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-	DigiLinkSoundToPos (SOUND_WALL_CLOAK_ON, SEG_IDX (this), nSide, SideCenter (nSide), 0, F1_0);
+	CreateSound (SOUND_WALL_CLOAK_ON, nSide);
 	}
 for (i = 0; i < 4; i++) {
 	cloakWallP->front_ls [i] = m_sides [nSide].m_uvls [i].l;
@@ -598,7 +598,7 @@ for (i = 0; i < 4; i++) {
 
 //-----------------------------------------------------------------
 // start the transition from open -> closed CWall
-void CSegment::StartDecloak (short nSide)
+void CSegment::StartDecloak (int nSide)
 {
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	return;
@@ -628,7 +628,7 @@ if ((wallP = connSegP->Wall (nConnSide)))
 cloakWallP->nFrontWall = WallNum (nSide);
 cloakWallP->nBackWall = connSegP->WallNum (nConnSide);
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-	DigiLinkSoundToPos (SOUND_WALL_CLOAK_OFF, SEG_IDX (this), nSide, SideCenter (nSide), 0, F1_0);
+	CreateSound (SOUND_WALL_CLOAK_OFF, nSide);
 	}
 for (i = 0; i < 4; i++) {
 	cloakWallP->front_ls [i] = m_sides [nSide].m_uvls [i].l;
@@ -639,7 +639,7 @@ for (i = 0; i < 4; i++) {
 
 //-----------------------------------------------------------------
 
-int CSegment::AnimateOpeningDoor (short nSide, fix xElapsedTime)
+int CSegment::AnimateOpeningDoor (int nSide, fix xElapsedTime)
 {
 CWall	*wallP = Wall (nSide);
 if (!wallP)
@@ -649,7 +649,7 @@ return wallP->AnimateOpeningDoor (xElapsedTime);
 
 //-----------------------------------------------------------------
 
-int CSegment::AnimateClosingDoor (short nSide, fix xElapsedTime)
+int CSegment::AnimateClosingDoor (int nSide, fix xElapsedTime)
 {
 	CWall	*wallP = Wall (nSide);
 
@@ -661,7 +661,7 @@ return wallP->AnimateClosingDoor (xElapsedTime);
 //-----------------------------------------------------------------
 // Turns on an illusionary CWall (This will be used primarily for
 //  CWall switches or triggers that can turn on/off illusionary walls.)
-void CSegment::IllusionOn (short nSide)
+void CSegment::IllusionOn (int nSide)
 {
 	CWall* wallP = Wall (nSide);
 
@@ -689,7 +689,7 @@ else {
 //-----------------------------------------------------------------
 // Turns off an illusionary CWall (This will be used primarily for
 //  CWall switches or triggers that can turn on/off illusionary walls.)
-void CSegment::IllusionOff (short nSide)
+void CSegment::IllusionOff (int nSide)
 {
 
 	CWall*	wallP = Wall (nSide);
@@ -721,7 +721,7 @@ else {
 
 //-----------------------------------------------------------------
 // Opens doors/destroys CWall/shuts off triggers.
-void CSegment::ToggleWall (short nSide)
+void CSegment::ToggleWall (int nSide)
 {
 CWall	*wallP = Wall (nSide);
 if (!wallP)
@@ -741,7 +741,7 @@ if ((wallP->nType == WALL_DOOR) && (wallP->state == WALL_DOOR_CLOSED))
 //nPlayer is the number the CPlayerData who hit the CWall or fired the weapon,
 //or -1 if a robot fired the weapon
 
-int CSegment::ProcessWallHit (short nSide, fix damage, int nPlayer, CObject *objP)
+int CSegment::ProcessWallHit (int nSide, fix damage, int nPlayer, CObject *objP)
 {
 	CWall* wallP = Wall (nSide);
 
@@ -769,7 +769,7 @@ return wallP->ProcessHit (nPlayer, objP);
 
 //-----------------------------------------------------------------
 // Checks for a CTrigger whenever an CObject hits a CTrigger nSide.
-void CSegment::OperateTrigger (short nSide, CObject *objP, int shot)
+void CSegment::OperateTrigger (int nSide, CObject *objP, int shot)
 {
 CTrigger* trigP = Trigger (nSide);
 if (!trigP)
@@ -781,6 +781,123 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordTrigger (Index (), nSide, objP->Index (), shot);
 if (IsMultiGame)
 	MultiSendTrigger (Index (), objP->Index ());
+}
+
+//	-----------------------------------------------------------------------------
+//if an effect is hit, and it can blow up, then blow it up
+//returns true if it blew up
+int CSegment::CheckEffectBlowup (int nSide, CFixVector& vHit, CObject* blower, int bForceBlowup)
+{
+	int				tm, tmf, ec, nBitmap = 0;
+	int				bOkToBlow = 0, nSwitchType = -1;
+	short				nSound, bPermaTrigger;
+	ubyte				vc;
+	fix				u, v;
+	fix				xDestSize;
+	tEffectClip*	ecP = NULL;
+	CBitmap*			bmP;
+	CWall*			wallP;
+	CTrigger*		trigP;
+	//	If this CWall has a CTrigger and the blower-upper is not the CPlayerData or the buddy, abort!
+
+if (blower->cType.laserInfo.parent.nType == OBJ_ROBOT)
+	if (ROBOTINFO (OBJECTS [blower->cType.laserInfo.parent.nObject].info.nId).companion)
+		bOkToBlow = 1;
+
+if (!(bOkToBlow || (blower->cType.laserInfo.parent.nType == OBJ_PLAYER))) {
+	if ((wallP = Wall (nSide)) && (wallP->nTrigger < gameData.trigs.nTriggers))
+		return 0;
+	}
+
+if (!(tm = m_sides [nSide].m_nOvlTex))
+	return 0;
+
+tmf = m_sides [nSide].m_nOvlOrient;		//tm flags
+ec = gameData.pig.tex.tMapInfoP [tm].nEffectClip;
+if (ec < 0) {
+	if (gameData.pig.tex.tMapInfoP [tm].destroyed == -1)
+		return 0;
+	nBitmap = -1;
+	nSwitchType = 0;
+	}
+else {
+	ecP = gameData.eff.effectP + ec;
+	if (ecP->flags & EF_ONE_SHOT)
+		return 0;
+	nBitmap = ecP->nDestBm;
+	if (nBitmap < 0)
+		return 0;
+	nSwitchType = 1;
+	}
+//check if it's an animation (monitor) or casts light
+bmP = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [tm].index;
+PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [tm].index, gameStates.app.bD1Data);
+//this can be blown up...did we hit it?
+if (!bForceBlowup) {
+	HitPointUV (nSide, &u, &v, NULL, vHit, 0);	//evil: always say face zero
+	bForceBlowup = !PixelTranspType (tm, tmf,  m_sides [nSide].m_nFrame, u, v);
+	}
+if (!bForceBlowup)
+	return 0;
+
+if (IsMultiGame && netGame.bIndestructibleLights && !nSwitchType)
+	return 0;
+//note: this must get called before the texture changes,
+//because we use the light value of the texture to change
+//the static light in the CSegment
+wallP = Wall (nSide);
+bPermaTrigger = (trigP = Trigger (nSide)) && (trigP->flags & TF_PERMANENT);
+if (!bPermaTrigger)
+	SubtractLight (Index (), nSide);
+if (gameData.demo.nState == ND_STATE_RECORDING)
+	NDRecordEffectBlowup (Index (), nSide, vHit);
+if (nSwitchType) {
+	xDestSize = ecP->dest_size;
+	vc = ecP->dest_vclip;
+	}
+else {
+	xDestSize = I2X (20);
+	vc = 3;
+	}
+/*Object*/CreateExplosion (Index (), vHit, xDestSize, vc);
+if (nSwitchType) {
+	if ((nSound = gameData.eff.vClipP [vc].nSound) != -1)
+		DigiLinkSoundToPos (nSound, Index (), 0, vHit);
+	if ((nSound = ecP->nSound) != -1)		//kill sound
+		DigiKillSoundLinkedToSegment (Index (), nSide, nSound);
+	if (!bPermaTrigger && (ecP->dest_eclip != -1) && (gameData.eff.effectP [ecP->dest_eclip].nSegment == -1)) {
+		tEffectClip	*newEcP = gameData.eff.effectP + ecP->dest_eclip;
+		int nNewBm = newEcP->changingWallTexture;
+		newEcP->time_left = EffectFrameTime (newEcP);
+		newEcP->nCurFrame = 0;
+		newEcP->nSegment = Index ();
+		newEcP->nSide = nSide;
+		newEcP->flags |= EF_ONE_SHOT;
+		newEcP->nDestBm = ecP->nDestBm;
+
+		Assert ((nNewBm != 0) && (m_sides [nSide].m_nOvlTex != 0));
+		m_sides [nSide].m_nOvlTex = nNewBm;		//replace with destoyed
+		}
+	else {
+		Assert ((nBitmap != 0) && (m_sides [nSide].m_nOvlTex != 0));
+		if (!bPermaTrigger)
+			m_sides [nSide].m_nOvlTex = nBitmap;		//replace with destoyed
+		}
+	}
+else {
+	if (!bPermaTrigger)
+		m_sides [nSide].m_nOvlTex = gameData.pig.tex.tMapInfoP [tm].destroyed;
+	//assume this is a light, and play light sound
+	DigiLinkSoundToPos (SOUND_LIGHT_BLOWNUP, Index (), 0, vHit);
+	}
+return 1;		//blew up!
+}
+
+//------------------------------------------------------------------------------
+
+void CSegment::CreateSound (int nSide, short nSound)
+{
+DigiLinkSoundToPos (nSound, Index (), SideCenter (nSide), forever, maxVolume);
 }
 
 //------------------------------------------------------------------------------

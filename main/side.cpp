@@ -774,7 +774,7 @@ return IS_WALL (m_nWall) ? WALLS [m_nWall].IsOpenableDoor () : false;
 
 //------------------------------------------------------------------------------
 
-inline CFixVector* CSide::GetCorners (CFixVector* vertices) 
+CFixVector* CSide::GetCorners (CFixVector* vertices) 
 { 
 for (int i = 0; i < 4; i++)
 	vertices [i] = gameData.segs.vertices [m_contour [i]];
@@ -783,21 +783,21 @@ return vertices;
 
 //------------------------------------------------------------------------------
 
-inline bool CSide::IsWall (void)
+bool CSide::IsWall (void)
 {
 return IS_WALL (m_nWall); 
 }
 
 //------------------------------------------------------------------------------
 
-inline CTrigger* CSide::Trigger (void)
+CTrigger* CSide::Trigger (void)
 {
 return IS_WALL (m_nWall) ? Wall ()->Trigger () : NULL;
 }
 
 //------------------------------------------------------------------------------
 
-inline bool CSide::IsVolatile (void)
+bool CSide::IsVolatile (void)
 {
 return IsWall () && WALLS [m_nWall].IsVolatile ();
 }
@@ -845,7 +845,7 @@ return gameOpts->render.effects.bAutoTransparency && IsTransparentTexture (m_nBa
 
 //------------------------------------------------------------------------------
 
-inline void CSide::SetTextures (int nBaseTex, int nOvlTex)
+void CSide::SetTextures (int nBaseTex, int nOvlTex)
 {
 if (nBaseTex >= 0)
 	m_nBaseTex = nBaseTex;

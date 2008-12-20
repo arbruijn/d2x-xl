@@ -761,6 +761,7 @@ class CObject : public CObjectInfo {
 		int CheckWallPhysics (short nSegment, short nSide);
 		int ApplyWallPhysics (short nSegment, short nSide);
 		void ScrapeOnWall (short nHitSeg, short nHitSide, CFixVector& vHitPt);
+		void CreateSound (short nSound);
 
 		inline void Die (void);
 		void MaybeDelete (void);

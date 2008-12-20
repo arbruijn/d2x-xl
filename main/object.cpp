@@ -3171,7 +3171,14 @@ PrintLog ("   finished building optimized polygon model data (%d models converte
 
 //------------------------------------------------------------------------------
 
-inline int CObject::OpenableDoorsInSegment (void)
+void CObject::CreateSound (short nSound)
+{
+DigiLinkSoundToPos (nSound, info.nSegment, 0, info.position.vPos);
+}
+
+//------------------------------------------------------------------------------
+
+int CObject::OpenableDoorsInSegment (void)
 {
 return SEGMENTS [info.nSegment].HasOpenableDoor ();
 }

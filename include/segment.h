@@ -136,9 +136,9 @@ class CSide {
 		inline ushort WallNum (void) { return m_nWall; }
 		inline bool IsWall (void);
 		inline CWall* Wall (void);
-		CTrigger* Trigger (void);
+		inline CTrigger* Trigger (void);
 		inline sbyte Type (void) { return m_nType; }
-		bool IsVolatile (void);
+		inline bool IsVolatile (void);
 		int FaceCount (void);
 		void CheckSum (uint& sum1, uint& sum2);
 
@@ -210,30 +210,31 @@ class CSegment {
 		inline int Index (void);
 		void Read (CFile& cf, bool bExtended);
 		void LoadTextures (void);
-		void LoadSideTextures (short nSide);
+		void LoadSideTextures (int nSide);
 		void LoadBotGenTextures (void);
 		void Validate (void);
-		inline ushort WallNum (short nSide) { return m_sides [nSide].WallNum (); }
-		inline int CheckTransparency (short nSide) { return m_sides [nSide].CheckTransparency (); }
+		inline ushort WallNum (int nSide) { return m_sides [nSide].WallNum (); }
+		inline int CheckTransparency (int nSide) { return m_sides [nSide].CheckTransparency (); }
 		void CheckSum (uint& sum1, uint& sum2);
 
 		inline bool IsWall (int nSide) { return m_sides [nSide].IsWall (); }
-		void SetTexture (short nSide, CSegment *connSegP, short nConnSide, int nAnim, int nFrame);
-		void DestroyWall (short nSide);
-		void DamageWall (short nSide, fix damage);
-		void BlastWall (short nSide);
-		void OpenDoor (short nSide);
-		void CloseDoor (short nSide);
-		void StartCloak (short nSide);
-		void StartDecloak (short nSide);
-		void IllusionOff (short nSide);
-		void IllusionOn (short nSide);
-		int AnimateOpeningDoor (short nSide, fix xElapsedTime);
-		int AnimateClosingDoor (short nSide, fix xElapsedTime);
-		void ToggleWall (short nSide);
-		int ProcessWallHit (short nSide, fix damage, int nPlayer, CObject *objP);
-		int DoorIsBlocked (short nSide);
-		int CheckEffectBlowup (short nSide, CFixVector& vHit, CObject* blower, int bForceBlowup);
+		void SetTexture (int nSide, CSegment *connSegP, short nConnSide, int nAnim, int nFrame);
+		void DestroyWall (int nSide);
+		void DamageWall (int nSide, fix damage);
+		void BlastWall (int nSide);
+		void OpenDoor (int nSide);
+		void CloseDoor (int nSide);
+		void StartCloak (int nSide);
+		void StartDecloak (int nSide);
+		void IllusionOff (int nSide);
+		void IllusionOn (int nSide);
+		int AnimateOpeningDoor (int nSide, fix xElapsedTime);
+		int AnimateClosingDoor (int nSide, fix xElapsedTime);
+		void ToggleWall (int nSide);
+		int ProcessWallHit (int nSide, fix damage, int nPlayer, CObject *objP);
+		int DoorIsBlocked (int nSide);
+		int CheckEffectBlowup (int nSide, CFixVector& vHit, CObject* blower, int bForceBlowup);
+		void CreateSound (int nSide, short nSound);
 
 		fix Refuel (fix xMaxFuel);
 		fix Repair (fix xMaxShields);
@@ -250,7 +251,7 @@ class CSegment {
 
 		void ComputeCenter (void);
 		void ComputeRads (fix xMinDist);
-		inline void ComputeSideCenter (short nSide) { m_sides [nSide].ComputeCenter (); }
+		inline void ComputeSideCenter (int nSide) { m_sides [nSide].ComputeCenter (); }
 		inline CSide* Side (int nSide) { return m_sides + nSide; }
 		inline CWall* Wall (int nSide) { return m_sides [nSide].Wall (); }
 		inline CTrigger* Trigger (int nSide) { return m_sides [nSide].Trigger (); }
@@ -259,7 +260,7 @@ class CSegment {
 
 		void ComputeSideRads (void);
 		inline bool IsVertex (int nVertex);
-		void GetNormals (short nSide, CFixVector& n1, CFixVector& n2) { m_sides [nSide].GetNormals (n1, n2); }
+		void GetNormals (int nSide, CFixVector& n1, CFixVector& n2) { m_sides [nSide].GetNormals (n1, n2); }
 		inline CFixVector& Center (void) { return m_vCenter; }
 		inline CFixVector& SideCenter (int nSide) { return m_sides [nSide].Center (); }
 		inline int CreateVertexList (int nSide) { return m_sides [nSide].CreateVertexList (m_verts, sideVertIndex [nSide]); }
@@ -269,14 +270,14 @@ class CSegment {
 		int ConnectedSide (CSegment* other);
 		inline CFixVector& Normal (int nSide, int nFace) { return m_sides [nSide].Normal (nFace); }
 #if 0
-		inline uint CheckPointToFace (CFixVector& intersection, short nSide, short iFace)
+		inline uint CheckPointToFace (CFixVector& intersection, int nSide, short iFace)
 			{ return m_sides [nSide].CheckPointToFace (intersection, iFace, Normal (nSide, iFace)); }
 #endif
-		inline int CheckSphereToFace (CFixVector& intersection, fix rad, short nSide, short iFace)
+		inline int CheckSphereToFace (CFixVector& intersection, fix rad, int nSide, short iFace)
 			{ return m_sides [nSide].CheckSphereToFace (intersection, rad, iFace, Normal (nSide, iFace)); }
-		inline int CheckLineToFace (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short nSide, short iFace)
+		inline int CheckLineToFace (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int nSide, short iFace)
 			{ return m_sides [nSide].CheckLineToFace (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
-		inline int SpecialCheckLineToFace (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short nSide, int iFace)
+		inline int SpecialCheckLineToFace (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int nSide, int iFace)
 			{ return m_sides [nSide].SpecialCheckLineToFace (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
 
 		inline int FaceCount (int nSide) { return m_sides [nSide].FaceCount (); }
@@ -297,7 +298,7 @@ class CSegment {
 
 		CFixVector RandomPoint (void);
 
-		int IsDoorWay (short nSide, CObject* objP);
+		int IsDoorWay (int nSide, CObject* objP);
 		int HasOpenableDoor (void);
 
 		inline int CheckForTranspPixel (CFixVector& intersection, int nSide, short iFace) 
@@ -306,10 +307,10 @@ class CSegment {
 		int Physics (int nSide, fix* damageP) { return m_sides [nSide].Physics (damageP); }
 		int Physics (fix& xDamage);
 
-		void OperateTrigger (short nSide, CObject *objP, int shot);
+		void OperateTrigger (int nSide, CObject *objP, int shot);
 
 	private:
-		inline int PokesThrough (int nObject, short nSide);
+		inline int PokesThrough (int nObject, int nSide);
 
 	};
 
@@ -412,8 +413,8 @@ typedef union {
 
 #define DL_SCALE            2048    // Divide light to allow 3 bits integer, 5 bits fraction.
 
-int SubtractLight (short nSegment, short nSide);
-int AddLight (short nSegment, short nSide);
+int SubtractLight (short nSegment, int nSide);
+int AddLight (short nSegment, int nSide);
 void ClearLightSubtracted (void);
 
 // ----------------------------------------------------------------------------

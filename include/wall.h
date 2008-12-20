@@ -295,27 +295,22 @@ int ReadWallClips(CArray<tWallClip>& wc, int n, CFile& cf);
 /*
  * reads a tWallV16 structure from a CFILE
  */
-void ReadWallV16(tWallV16 *w, CFile& cf);
+void ReadWallV16(tWallV16& w, CFile& cf);
 
 /*
  * reads a tWallV19 structure from a CFILE
  */
-void ReadWallV19(tWallV19 *w, CFile& cf);
-
-/*
- * reads a CWall structure from a CFILE
- */
-void ReadWall(CWall *w, CFile& cf);
+void ReadWallV19(tWallV19& w, CFile& cf);
 
 /*
  * reads a v19_door structure from a CFILE
  */
-void ReadActiveDoorV19(v19_door *d, CFile& cf);
+void ReadActiveDoorV19(v19_door& d, CFile& cf);
 
 /*
  * reads an tActiveDoor structure from a CFILE
  */
-void ReadActiveDoor(tActiveDoor *ad, CFile& cf);
+void ReadActiveDoor(tActiveDoor& d, CFile& cf);
 
 void ExplodeWall (short nSegment, short nSide);
 void DoExplodingWallFrame (void);

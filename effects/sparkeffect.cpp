@@ -215,6 +215,13 @@ return m_nSegments;
 
 //-----------------------------------------------------------------------------
 
+void CSparkManager::Init (void)
+{
+m_nSegments = 0;
+}
+
+//-----------------------------------------------------------------------------
+
 void CSparkManager::Setup (void)
 {
 SEM_ENTER (SEM_SPARKS)

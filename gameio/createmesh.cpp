@@ -891,8 +891,8 @@ m_faceP->nSide = nSide;
 m_faceP->nWall = gameStates.app.bD2XLevel ? m_nWall : IS_WALL (m_nWall) ? m_nWall : (ushort) -1;
 m_faceP->bAnimation = IsAnimatedTexture (m_faceP->nBaseTex) || IsAnimatedTexture (m_faceP->nOvlTex);
 m_faceP->bHasColor = 0;
-m_faceP->fRads [0] = X2F (SEGMENTS [nSegment].Side (nSide)->rads [0]); //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
-m_faceP->fRads [1] = X2F (SEGMENTS [nSegment].Side (nSide)->rads [1]); //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
+m_faceP->fRads [0] = X2F (SEGMENTS [nSegment].Side (nSide)->m_rads [0]); //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
+m_faceP->fRads [1] = X2F (SEGMENTS [nSegment].Side (nSide)->m_rads [1]); //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
 }
 
 //------------------------------------------------------------------------------

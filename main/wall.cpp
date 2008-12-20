@@ -1250,21 +1250,13 @@ void ExplodeWall (short nSegment, short nSide)
 
 	//find a D2_FREE slot
 
-for (i = 0; (i < MAX_EXPLODING_WALLS) && (gameData.walls.explWalls [i].nSegment != -1); i++)
+for (int i = 0; (i < MAX_EXPLODING_WALLS) && (gameData.walls.explWalls [i].nSegment != -1); i++)
 	;
-if (i==MAX_EXPLODING_WALLS) {		//didn't find slot.
-#if TRACE
-	console.printf (CON_DBG, "Couldn't find a free slot for exploding wall!\n");
-#endif
+if (i == MAX_EXPLODING_WALLS) {		//didn't find slot.
 	Int3 ();
 	return;
 	}
-gameData.walls.explWalls [i].nSegment = nSegment;
-gameData.walls.explWalls [i].nSide = nSide;
-gameData.walls.explWalls [i].time = 0;
-//play one long sound for whole door CWall explosion
-pos = SEGMENTS [nSegment].SideCenter (nSide);
-DigiLinkSoundToPos (SOUND_EXPLODING_WALL, nSegment, nSide, pos, 0, F1_0);
+DigiLinkSoundToPos (SOUND_EXPLODING_WALL, nSegment, nSide, SEGMENTS [nSegment].SideCenter (nSide), 0, F1_0);
 }
 
 //------------------------------------------------------------------------------
