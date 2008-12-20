@@ -455,7 +455,7 @@ CWall* wallP;
 if (!(wallP = Wall (nSide)))
 	return;
 
-tActiveDoor* doorP;
+CActiveDoor* doorP;
 if (!(doorP = wallP->OpenDoor ()))
 	return;
 
@@ -519,7 +519,7 @@ if ((wallP->state == WALL_DOOR_CLOSING) ||		//already closing
 if (DoorIsBlocked (nSide))
 	return;
 
-	tActiveDoor*	doorP;
+	CActiveDoor*	doorP;
 
 if (!(doorP = wallP->CloseDoor ()))
 	return;
@@ -562,7 +562,7 @@ if (!wallP)
 if (wallP->nType == WALL_OPEN || wallP->state == WALL_DOOR_CLOAKING)		//already open or cloaking
 	return;
 
-	tCloakingWall*	cloakWallP;
+	CCloakingWall*	cloakWallP;
 	CSegment*		connSegP;
 	short				nConnSide;
 	int				i;
@@ -609,7 +609,7 @@ if (!(wallP = Wall (nSide)))
 if (wallP->nType == WALL_CLOSED || wallP->state == WALL_DOOR_DECLOAKING)		//already closed or decloaking
 	return;
 
-	tCloakingWall	*cloakWallP;
+	CCloakingWall	*cloakWallP;
 	short				nConnSide;
 	CSegment			*connSegP;
 	int				i;

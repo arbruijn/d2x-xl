@@ -840,73 +840,35 @@ switch (objP->info.renderType) {
 
 void CSaveGameHandler::SaveWall (CWall *wallP)
 {
-m_cf.WriteInt (wallP->nSegment);
-m_cf.WriteInt (wallP->nSide);
-m_cf.WriteFix (wallP->hps);    
-m_cf.WriteInt (wallP->nLinkedWall);
-m_cf.WriteByte ((sbyte) wallP->nType);       
-m_cf.WriteByte ((sbyte) wallP->flags);      
-m_cf.WriteByte ((sbyte) wallP->state);      
-m_cf.WriteByte ((sbyte) wallP->nTrigger);    
-m_cf.WriteByte (wallP->nClip);   
-m_cf.WriteByte ((sbyte) wallP->keys);       
-m_cf.WriteByte (wallP->controllingTrigger);
-m_cf.WriteByte (wallP->cloakValue); 
+wallP->SaveState (m_cf);
 }
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::SaveExplWall (tExplWall *wallP)
+void CSaveGameHandler::SaveExplWall (CExplodingWall *wallP)
 {
-m_cf.WriteInt (wallP->nSegment);
-m_cf.WriteInt (wallP->nSide);
-m_cf.WriteFix (wallP->time);    
+wallP->SaveState (m_cf);
 }
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::SaveCloakingWall (tCloakingWall *wallP)
+void CSaveGameHandler::SaveCloakingWall (CCloakingWall *wallP)
 {
-	int	i;
-
-m_cf.WriteShort (wallP->nFrontWall);
-m_cf.WriteShort (wallP->nBackWall); 
-for (i = 0; i < 4; i++) {
-	m_cf.WriteFix (wallP->front_ls [i]); 
-	m_cf.WriteFix (wallP->back_ls [i]);
-	}
-m_cf.WriteFix (wallP->time);    
+wallP->SaveState (m_cf);
 }
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::SaveActiveDoor (tActiveDoor *doorP)
+void CSaveGameHandler::SaveActiveDoor (CActiveDoor *doorP)
 {
-	int	i;
-
-m_cf.WriteInt (doorP->nPartCount);
-for (i = 0; i < 2; i++) {
-	m_cf.WriteShort (doorP->nFrontWall [i]);
-	m_cf.WriteShort (doorP->nBackWall [i]);
-	}
-m_cf.WriteFix (doorP->time);    
+doorP->SaveState (m_cf);
 }
 
 //------------------------------------------------------------------------------
 
 void CSaveGameHandler::SaveTrigger (CTrigger *triggerP)
 {
-	int	i;
-
-m_cf.WriteByte ((sbyte) triggerP->nType); 
-m_cf.WriteByte ((sbyte) triggerP->flags); 
-m_cf.WriteByte (triggerP->nLinks);
-m_cf.WriteFix (triggerP->value);
-m_cf.WriteFix (triggerP->time);
-for (i = 0; i < MAX_TRIGGER_TARGETS; i++) {
-	m_cf.WriteShort (triggerP->segments [i]);
-	m_cf.WriteShort (triggerP->sides [i]);
-	}
+triggerP->SaveState (m_cf);
 }
 
 //------------------------------------------------------------------------------
@@ -1895,74 +1857,35 @@ switch (objP->info.renderType) {
 
 void CSaveGameHandler::LoadWall (CWall *wallP)
 {
-wallP->nSegment = m_cf.ReadInt ();
-wallP->nSide = m_cf.ReadInt ();
-wallP->hps = m_cf.ReadFix ();    
-wallP->nLinkedWall = m_cf.ReadInt ();
-wallP->nType = (ubyte) m_cf.ReadByte ();       
-wallP->flags = (ubyte) m_cf.ReadByte ();      
-wallP->state = (ubyte) m_cf.ReadByte ();      
-wallP->nTrigger = (ubyte) m_cf.ReadByte ();    
-wallP->nClip = m_cf.ReadByte ();   
-wallP->keys = (ubyte) m_cf.ReadByte ();       
-wallP->controllingTrigger = m_cf.ReadByte ();
-wallP->cloakValue = m_cf.ReadByte (); 
+wallP->LoadState (m_cf);
 }
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::LoadExplWall (tExplWall *wallP)
+void CSaveGameHandler::LoadExplWall (CExplodingWall *wallP)
 {
-wallP->nSegment = m_cf.ReadInt ();
-wallP->nSide = m_cf.ReadInt ();
-wallP->time = m_cf.ReadFix ();    
+wallP->LoadState (m_cf);
 }
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::LoadCloakingWall (tCloakingWall *wallP)
+void CSaveGameHandler::LoadCloakingWall (CCloakingWall *wallP)
 {
-	int	i;
-
-wallP->nFrontWall = m_cf.ReadShort ();
-wallP->nBackWall = m_cf.ReadShort (); 
-for (i = 0; i < 4; i++) {
-	wallP->front_ls [i] = m_cf.ReadFix (); 
-	wallP->back_ls [i] = m_cf.ReadFix ();
-	}
-wallP->time = m_cf.ReadFix ();    
+wallP->LoadState (m_cf);
 }
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::LoadActiveDoor (tActiveDoor *doorP)
+void CSaveGameHandler::LoadActiveDoor (CActiveDoor *doorP)
 {
-	int	i;
-
-doorP->nPartCount = m_cf.ReadInt ();
-for (i = 0; i < 2; i++) {
-	doorP->nFrontWall [i] = m_cf.ReadShort ();
-	doorP->nBackWall [i] = m_cf.ReadShort ();
-	}
-doorP->time = m_cf.ReadFix ();    
+doorP->LoadState (m_cf);
 }
 
 //------------------------------------------------------------------------------
 
 void CSaveGameHandler::LoadTrigger (CTrigger *triggerP)
 {
-	int	i;
-
-i = m_cf.Tell ();
-triggerP->nType = (ubyte) m_cf.ReadByte (); 
-triggerP->flags = (ubyte) m_cf.ReadByte (); 
-triggerP->nLinks = m_cf.ReadByte ();
-triggerP->value = m_cf.ReadFix ();
-triggerP->time = m_cf.ReadFix ();
-for (i = 0; i < MAX_TRIGGER_TARGETS; i++) {
-	triggerP->segments [i] = m_cf.ReadShort ();
-	triggerP->sides [i] = m_cf.ReadShort ();
-	}
+triggerP->LoadState (m_cf);
 }
 
 //------------------------------------------------------------------------------
@@ -2328,8 +2251,8 @@ paletteManager.SetRedEffect ((ubyte) m_cf.ReadShort ());
 paletteManager.SetGreenEffect ((ubyte) m_cf.ReadShort ());
 paletteManager.SetBlueEffect ((ubyte) m_cf.ReadShort ());
 m_cf.Read (gameData.render.lights.subtracted.Buffer (), 
-		  sizeof (gameData.render.lights.subtracted [0]), 
-		  (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2);
+			  sizeof (gameData.render.lights.subtracted [0]), 
+			  (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2);
 ApplyAllChangedLight ();
 gameStates.app.bFirstSecretVisit = m_cf.ReadInt ();
 if (m_bSecret) 
@@ -2462,11 +2385,11 @@ if (!m_bBetweenLevels)	{
 	//Restore door info
 	if (ReadBoundedInt (MAX_DOORS, &gameData.walls.nOpenDoors))
 		return 0;
-	m_cf.Read (gameData.walls.activeDoors.Buffer (), sizeof (tActiveDoor), gameData.walls.nOpenDoors);
+	m_cf.Read (gameData.walls.activeDoors.Buffer (), sizeof (CActiveDoor), gameData.walls.nOpenDoors);
 	if (m_nVersion >= 14) {		//Restore cloaking CWall info
 		if (ReadBoundedInt (MAX_WALLS, &gameData.walls.nCloaking))
 			return 0;
-		m_cf.Read (gameData.walls.cloaking.Buffer (), sizeof (tCloakingWall), gameData.walls.nCloaking);
+		m_cf.Read (gameData.walls.cloaking.Buffer (), sizeof (CCloakingWall), gameData.walls.nCloaking);
 		}
 	//Restore CTrigger info
 	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nTriggers))

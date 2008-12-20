@@ -180,7 +180,7 @@ int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 	6,  // MULTI_FLAGS
 	2,  // MULTI_DROP_BLOB
 	MAX_POWERUP_TYPES+1, // MULTI_POWERUP_UPDATE
-	sizeof (tActiveDoor)+3, // MULTI_ACTIVE_DOOR
+	sizeof (CActiveDoor)+3, // MULTI_ACTIVE_DOOR
 	4,  // MULTI_SOUND_FUNCTION
 	2,  // MULTI_CAPTURE_BONUS
 	2,  // MULTI_GOT_FLAG
@@ -3841,11 +3841,11 @@ gameData.multigame.msg.buf [0] = MULTI_ACTIVE_DOOR;
 gameData.multigame.msg.buf [1] = i;
 gameData.multigame.msg.buf [2] = gameData.walls.nOpenDoors;
 count = 3;
-memcpy (gameData.multigame.msg.buf + 3, gameData.walls.activeDoors + i, sizeof (struct tActiveDoor);
-count += sizeof (tActiveDoor);
+memcpy (gameData.multigame.msg.buf + 3, gameData.walls.activeDoors + i, sizeof (struct CActiveDoor);
+count += sizeof (CActiveDoor);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 {
-tActiveDoor *ad = reinterpret_cast<tActiveDoor*> (gameData.multigame.msg.buf + 3);
+CActiveDoor *ad = reinterpret_cast<CActiveDoor*> (gameData.multigame.msg.buf + 3);
 ad->nPartCount = INTEL_INT (ad->nPartCount);
 ad->nFrontWall [0] = INTEL_SHORT (ad->nFrontWall [0]);
 ad->nFrontWall [1] = INTEL_SHORT (ad->nFrontWall [1]);
@@ -3854,7 +3854,7 @@ ad->nBackWall [1] = INTEL_SHORT (ad->nBackWall [1]);
 ad->time = INTEL_INT (ad->time);
 }
 #endif
-//MultiSendData (gameData.multigame.msg.buf, sizeof (struct tActiveDoor)+3, 1);
+//MultiSendData (gameData.multigame.msg.buf, sizeof (struct CActiveDoor)+3, 1);
 MultiSendData (gameData.multigame.msg.buf, count, 1);
 }
 #endif // 0 (never used)
@@ -3866,10 +3866,10 @@ void MultiDoActiveDoor (char *buf)
 	char i = gameData.multigame.msg.buf [1];
 
 gameData.walls.nOpenDoors = buf [2];
-memcpy (&gameData.walls.activeDoors [(int)i], buf+3, sizeof (struct tActiveDoor));
+memcpy (&gameData.walls.activeDoors [(int)i], buf+3, sizeof (struct CActiveDoor));
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 {
-tActiveDoor *ad = gameData.walls.activeDoors + i;
+CActiveDoor *ad = gameData.walls.activeDoors + i;
 ad->nPartCount = INTEL_INT (ad->nPartCount);
 ad->nFrontWall [0] = INTEL_SHORT (ad->nFrontWall [0]);
 ad->nFrontWall [1] = INTEL_SHORT (ad->nFrontWall [1]);

@@ -791,7 +791,7 @@ gameFileInfo.walls.count		=	0;
 gameFileInfo.walls.size			=	sizeof(CWall);  
 gameFileInfo.doors.offset		=	-1;
 gameFileInfo.doors.count		=	0;
-gameFileInfo.doors.size			=	sizeof(tActiveDoor);  
+gameFileInfo.doors.size			=	sizeof(CActiveDoor);  
 gameFileInfo.triggers.offset	=	-1;
 gameFileInfo.triggers.count	=	0;
 gameFileInfo.triggers.size		=	sizeof(CTrigger);  
@@ -952,11 +952,11 @@ if (gameFileInfo.walls.offset > -1) {
 		}
 	for (i = 0; i <gameFileInfo.walls.count; i++) {
 		if (gameTopFileInfo.fileinfoVersion >= 20)
-			ReadWall(&WALLS [i], cf); // v20 walls and up.
+			WALLS [i].Read (cf); // v20 walls and up.
 		else if (gameTopFileInfo.fileinfoVersion >= 17) {
 			tWallV19 w;
 
-			ReadWallV19(&w, cf);
+			ReadWallV19(w, cf);
 			WALLS [i].nSegment	   = w.nSegment;
 			WALLS [i].nSide			= w.nSide;
 			WALLS [i].nLinkedWall	= w.nLinkedWall;
@@ -971,7 +971,7 @@ if (gameFileInfo.walls.offset > -1) {
 		else {
 			tWallV16 w;
 
-			ReadWallV16(&w, cf);
+			ReadWallV16(w, cf);
 			WALLS [i].nSegment = WALLS [i].nSide = WALLS [i].nLinkedWall = -1;
 			WALLS [i].nType		= w.nType;
 			WALLS [i].flags		= w.flags;
@@ -997,13 +997,13 @@ if (gameFileInfo.doors.offset > -1) {
 		}
 	for (i = 0; i < gameFileInfo.doors.count; i++) {
 		if (gameTopFileInfo.fileinfoVersion >= 20)
-			ReadActiveDoor (&gameData.walls.activeDoors [i], cf); // version 20 and up
+			ReadActiveDoor (gameData.walls.activeDoors [i], cf); // version 20 and up
 		else {
 			v19_door d;
 			short nConnSeg, nConnSide;
 			CSegment* segP;
 
-			ReadActiveDoorV19(&d, cf);
+			ReadActiveDoorV19 (d, cf);
 			gameData.walls.activeDoors [i].nPartCount = d.nPartCount;
 			for (int j = 0; j < d.nPartCount; j++) {
 				segP = SEGMENTS + d.seg [j];
@@ -1769,7 +1769,7 @@ int SaveGameData(FILE * SaveFile)
 	gameFileInfo.walls.size			=	sizeof(CWall);
 	gameFileInfo.doors.offset			=	-1;
 	gameFileInfo.doors.count		=	gameData.walls.nOpenDoors;
-	gameFileInfo.doors.size			=	sizeof(tActiveDoor);
+	gameFileInfo.doors.size			=	sizeof(CActiveDoor);
 	gameFileInfo.triggers.offset		=	-1;
 	gameFileInfo.triggers.count	=	gameData.trigs.nTriggers;
 	gameFileInfo.triggers.size		=	sizeof(CTrigger);
@@ -1820,7 +1820,7 @@ int SaveGameData(FILE * SaveFile)
 	//==================== SAVE DOOR INFO =============================
 
 	doors.offset = ftell(SaveFile);
-	fwrite(gameData.walls.activeDoors, sizeof(tActiveDoor), gameFileInfo.doors.count, SaveFile);
+	fwrite(gameData.walls.activeDoors, sizeof(CActiveDoor), gameFileInfo.doors.count, SaveFile);
 
 	//==================== SAVE TRIGGER INFO =============================
 

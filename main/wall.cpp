@@ -149,9 +149,9 @@ wallP->nLinkedWall = NO_WALL;
 
 //------------------------------------------------------------------------------
 
-tActiveDoor* FindActiveDoor (short nWall)
+CActiveDoor* FindActiveDoor (short nWall)
 {
-	tActiveDoor* doorP = gameData.walls.activeDoors.Buffer ();
+	CActiveDoor* doorP = gameData.walls.activeDoors.Buffer ();
 
 for (int i = gameData.walls.nOpenDoors; i; i--, doorP++) {		//find door
 	for (int j = 0; j < doorP->nPartCount; j++)
@@ -235,9 +235,9 @@ return WID_WALL; // There are children behind the door.
 
 //------------------------------------------------------------------------------
 
-tActiveDoor* CWall::OpenDoor (void)
+CActiveDoor* CWall::OpenDoor (void)
 {
-	tActiveDoor* doorP;
+	CActiveDoor* doorP;
 
 if ((state == WALL_DOOR_OPENING) ||	//already opening
 	 (state == WALL_DOOR_WAITING) ||	//open, waiting to close
@@ -266,9 +266,9 @@ return doorP;
 
 //------------------------------------------------------------------------------
 
-tCloakingWall* FindCloakingWall (short nWall)
+CCloakingWall* FindCloakingWall (short nWall)
 {
-	tCloakingWall* cloakWallP = gameData.walls.cloaking.Buffer ();
+	CCloakingWall* cloakWallP = gameData.walls.cloaking.Buffer ();
 
 for (int i = gameData.walls.nCloaking; i; i--, cloakWallP++) {		//find door
 	if ((cloakWallP->nFrontWall == nWall) || (cloakWallP->nBackWall == nWall))
@@ -292,7 +292,7 @@ if (--gameData.walls.nOpenDoors > nDoor)
 //  door texture.  This is called when the animation is done
 void CloseDoor (int nDoor)
 {
-	tActiveDoor*	doorP = gameData.walls.activeDoors + nDoor;
+	CActiveDoor*	doorP = gameData.walls.activeDoors + nDoor;
 
 for (int i = doorP->nPartCount; i; )
 	WALLS [doorP->nFrontWall [--i]].CloseActiveDoor ();
@@ -301,9 +301,9 @@ DeleteActiveDoor (nDoor);
 
 //------------------------------------------------------------------------------
 
-tCloakingWall* CWall::StartCloak (void)
+CCloakingWall* CWall::StartCloak (void)
 {
-	tCloakingWall* cloakWallP = NULL;
+	CCloakingWall* cloakWallP = NULL;
 
 if (state == WALL_DOOR_DECLOAKING) {	//decloaking, so reuse door
 	if (!(cloakWallP = FindCloakingWall (this - WALLS)))
@@ -324,9 +324,9 @@ return cloakWallP;
 
 //------------------------------------------------------------------------------
 
-tCloakingWall* CWall::StartDecloak (void)
+CCloakingWall* CWall::StartDecloak (void)
 {
-	tCloakingWall*	cloakWallP = NULL;
+	CCloakingWall*	cloakWallP = NULL;
 
 if (state == WALL_DOOR_CLOAKING) {	//cloaking, so reuse door
 	if (!(cloakWallP = FindCloakingWall (this - WALLS)))
@@ -365,9 +365,9 @@ if (wallP) {
 
 //------------------------------------------------------------------------------
 
-tActiveDoor* CWall::CloseDoor (void)
+CActiveDoor* CWall::CloseDoor (void)
 {
-	tActiveDoor* doorP = NULL;
+	CActiveDoor* doorP = NULL;
 
 if (state == WALL_DOOR_OPENING) {	//reuse door
 	if ((doorP = FindActiveDoor (this - WALLS))) {
@@ -444,7 +444,7 @@ return 0;
 // Called in the game loop.
 void DoDoorOpen (int nDoor)
 {
-	tActiveDoor *doorP;
+	CActiveDoor *doorP;
 	CWall			*wallP;
 	short			nConnSide, nSide;
 	CSegment		*connSegP, *segP;
@@ -493,7 +493,7 @@ void DoDoorClose (int nDoor)
 {
 if (nDoor < -1)
 	return;
-tActiveDoor* doorP = gameData.walls.activeDoors + nDoor;
+CActiveDoor* doorP = gameData.walls.activeDoors + nDoor;
 CWall* wallP = WALLS + doorP->nFrontWall [0];
 CSegment* segP = SEGMENTS + wallP->nSegment;
 
@@ -684,7 +684,7 @@ for (int i = 0; i < gameData.walls.nWalls; i++)
 
 void DoCloakingWallFrame (int nCloakingWall)
 {
-	tCloakingWall	*cloakWallP;
+	CCloakingWall	*cloakWallP;
 	CWall				*frontWallP,*backWallP;
 
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
@@ -752,7 +752,7 @@ else {		//fading out
 
 void DoDecloakingWallFrame (int nCloakingWall)
 {
-	tCloakingWall	*cloakWallP;
+	CCloakingWall	*cloakWallP;
 	CWall				*frontWallP,*backWallP;
 
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
@@ -814,8 +814,8 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 void WallFrameProcess (void)
 {
 	int				i;
-	tCloakingWall	*cloakWallP;
-	tActiveDoor		*doorP = gameData.walls.activeDoors.Buffer ();
+	CCloakingWall	*cloakWallP;
+	CActiveDoor		*doorP = gameData.walls.activeDoors.Buffer ();
 	CWall				*wallP, *backWallP;
 
 for (i = 0; i < gameData.walls.nOpenDoors; i++, doorP++) {
@@ -1183,6 +1183,42 @@ controllingTrigger = cf.ReadByte ();
 cloakValue = cf.ReadByte ();
 }
 
+//------------------------------------------------------------------------------
+
+void CWall::SaveState (CFile& cf)
+{
+cf.WriteInt (nSegment);
+cf.WriteInt (nSide);
+cf.WriteFix (hps);    
+cf.WriteInt (nLinkedWall);
+cf.WriteByte ((sbyte) nType);       
+cf.WriteByte ((sbyte) flags);      
+cf.WriteByte ((sbyte) state);      
+cf.WriteByte ((sbyte) nTrigger);    
+cf.WriteByte (nClip);   
+cf.WriteByte ((sbyte) keys);       
+cf.WriteByte (controllingTrigger);
+cf.WriteByte (cloakValue); 
+}
+
+//------------------------------------------------------------------------------
+
+void CWall::LoadState (CFile& cf)
+{
+nSegment = cf.ReadInt ();
+nSide = cf.ReadInt ();
+hps = cf.ReadFix ();    
+nLinkedWall = cf.ReadInt ();
+nType = (ubyte) cf.ReadByte ();       
+flags = (ubyte) cf.ReadByte ();      
+state = (ubyte) cf.ReadByte ();      
+nTrigger = (ubyte) cf.ReadByte ();    
+nClip = cf.ReadByte ();   
+keys = (ubyte) cf.ReadByte ();       
+controllingTrigger = cf.ReadByte ();
+cloakValue = cf.ReadByte (); 
+}
+
 // -----------------------------------------------------------------------------------
 /*
  * reads a v19_door structure from a CFile
@@ -1201,9 +1237,9 @@ d.open = cf.ReadFix ();
 
 // -----------------------------------------------------------------------------------
 /*
- * reads an tActiveDoor structure from a CFile
+ * reads an CActiveDoor structure from a CFile
  */
-void ReadActiveDoor (tActiveDoor& d, CFile& cf)
+void ReadActiveDoor (CActiveDoor& d, CFile& cf)
 {
 d.nPartCount = cf.ReadInt ();
 d.nFrontWall [0] = cf.ReadShort ();
@@ -1228,12 +1264,88 @@ return ((nTrigger == NO_TRIGGER) || (nTrigger >= gameData.trigs.nTriggers)) ? NU
 }
 
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+void CActiveDoor::LoadState (CFile& cf)
+{
+nPartCount = cf.ReadInt ();
+for (int i = 0; i < 2; i++) {
+	nFrontWall [i] = cf.ReadShort ();
+	nBackWall [i] = cf.ReadShort ();
+	}
+time = cf.ReadFix ();    
+}
+
+//------------------------------------------------------------------------------
+
+void CActiveDoor::SaveState (CFile& cf)
+{
+cf.WriteInt (nPartCount);
+for (int i = 0; i < 2; i++) {
+	cf.WriteShort (nFrontWall [i]);
+	cf.WriteShort (nBackWall [i]);
+	}
+cf.WriteFix (time);   
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+void CCloakingWall::LoadState (CFile& cf)
+{
+nFrontWall = cf.ReadShort ();
+nBackWall = cf.ReadShort (); 
+for (int i = 0; i < 4; i++) {
+	front_ls [i] = cf.ReadFix (); 
+	back_ls [i] = cf.ReadFix ();
+	}
+time = cf.ReadFix ();    
+}
+
+//------------------------------------------------------------------------------
+
+void CCloakingWall::SaveState (CFile& cf)
+{
+cf.WriteShort (nFrontWall);
+cf.WriteShort (nBackWall); 
+for (int i = 0; i < 4; i++) {
+	cf.WriteFix (front_ls [i]); 
+	cf.WriteFix (back_ls [i]);
+	}
+cf.WriteFix (time);    
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+void CExplodingWall::LoadState (CFile& cf)
+{
+nSegment = cf.ReadInt ();
+nSide = cf.ReadInt ();
+time = cf.ReadFix ();    
+}
+
+//------------------------------------------------------------------------------
+
+void CExplodingWall::SaveState (CFile& cf)
+{
+cf.WriteInt (nSegment);
+cf.WriteInt (nSide);
+cf.WriteFix (time);    
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 #define EXPL_WALL_TIME					(f1_0)
 #define EXPL_WALL_TOTAL_FIREBALLS	32
 #define EXPL_WALL_FIREBALL_SIZE 		(0x48000*6/10)	//smallest size
 
-void InitExplodingWalls ()
+void InitExplodingWalls (void)
 {
 	int i;
 
@@ -1245,18 +1357,14 @@ for (i = 0; i < MAX_EXPLODING_WALLS; i++)
 //explode the given CWall
 void ExplodeWall (short nSegment, short nSide)
 {
-	int i;
-	CFixVector pos;
-
-	//find a D2_FREE slot
-
-for (int i = 0; (i < MAX_EXPLODING_WALLS) && (gameData.walls.explWalls [i].nSegment != -1); i++)
-	;
-if (i == MAX_EXPLODING_WALLS) {		//didn't find slot.
-	Int3 ();
-	return;
-	}
-DigiLinkSoundToPos (SOUND_EXPLODING_WALL, nSegment, nSide, SEGMENTS [nSegment].SideCenter (nSide), 0, F1_0);
+for (int i = 0; (i < MAX_EXPLODING_WALLS); i++)
+	if (gameData.walls.explWalls [i].nSegment != -1) {
+		gameData.walls.explWalls [i].nSegment = nSegment;
+		gameData.walls.explWalls [i].nSide = nSide;
+		gameData.walls.explWalls [i].time = 0;
+		SEGMENTS [nSegment].CreateSound (SOUND_EXPLODING_WALL, nSide);
+		return;
+		}
 }
 
 //------------------------------------------------------------------------------

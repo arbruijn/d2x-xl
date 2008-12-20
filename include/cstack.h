@@ -45,6 +45,19 @@ template < class _T > class CStack : public CArray<_T> {
 					m_data.buffer [i] = m_data.buffer [m_tos];
 			}
 
+		inline _T& Pull (_T& elem, uint i) {
+			if (i < m_tos) {
+				elem = m_data.buffer [i];
+				Delete (i);
+				}
+			return elem;
+			}
+
+		inline _T Pull (uint i) {
+			_T	v;
+			return Pull (v, i);
+			}
+
 		inline void Destroy (void) { 
 			CArray<_T>::Destroy ();
 			Init ();

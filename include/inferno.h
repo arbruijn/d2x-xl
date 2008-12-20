@@ -1880,9 +1880,9 @@ class CSegmentData {
 class CWallData {
 	public:
 		CArray<CWall>				walls ; //[MAX_WALLS];
-		CArray<tExplWall>			explWalls ; //[MAX_EXPLODING_WALLS];
-		CArray<tActiveDoor>		activeDoors ; //[MAX_DOORS];
-		CArray<tCloakingWall>	cloaking ; //[MAX_CLOAKING_WALLS];
+		CArray<CExplodingWall>			explWalls ; //[MAX_EXPLODING_WALLS];
+		CArray<CActiveDoor>		activeDoors ; //[MAX_DOORS];
+		CArray<CCloakingWall>	cloaking ; //[MAX_CLOAKING_WALLS];
 		CArray<tWallClip>			anims [2]; //[MAX_WALL_ANIMS];
 		CArray<int>					bitmaps ; //[MAX_WALL_ANIMS];
 		int							nWalls;

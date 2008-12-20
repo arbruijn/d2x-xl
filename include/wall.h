@@ -112,30 +112,45 @@ typedef struct tStuckObject {
 
 //------------------------------------------------------------------------------
 
-typedef struct tActiveDoor {
-	int     nPartCount;           // for linked walls
-	short   nFrontWall[2];			// front CWall numbers for this door
-	short   nBackWall[2];			// back CWall numbers for this door
-	fix     time;						// how long been opening, closing, waiting
-} __pack__ tActiveDoor;
+class CActiveDoor {
+	public:
+		int     nPartCount;           // for linked walls
+		short   nFrontWall[2];			// front CWall numbers for this door
+		short   nBackWall[2];			// back CWall numbers for this door
+		fix     time;						// how long been opening, closing, waiting
+
+	public:
+		void LoadState (CFile& cf);
+		void SaveState (CFile& cf);
+	};
 
 //------------------------------------------------------------------------------
 // data for exploding walls (such as hostage door)
 
-typedef struct tExplWall {
-	int	nSegment, nSide;
-	fix	time;
-} tExplWall;
+class CExplodingWall {
+	public:
+		int	nSegment, nSide;
+		fix	time;
+
+	public:
+		void LoadState (CFile& cf);
+		void SaveState (CFile& cf);
+	};
 
 //------------------------------------------------------------------------------
 
-typedef struct tCloakingWall {
-	short   nFrontWall;			 // front CWall numbers for this door
-	short   nBackWall;			 // back CWall numbers for this door
-	fix     front_ls[4];        // front CWall saved light values
-	fix     back_ls[4];         // back CWall saved light values
-	fix     time;               // how long been cloaking or decloaking
-} __pack__ tCloakingWall;
+class CCloakingWall {
+	public:
+		short   nFrontWall;			 // front CWall numbers for this door
+		short   nBackWall;			 // back CWall numbers for this door
+		fix     front_ls[4];        // front CWall saved light values
+		fix     back_ls[4];         // back CWall saved light values
+		fix     time;               // how long been cloaking or decloaking
+
+	public:
+		void LoadState (CFile& cf);
+		void SaveState (CFile& cf);
+	};
 
 //------------------------------------------------------------------------------
 //Start old CWall structures
@@ -196,16 +211,18 @@ class CWall {
 		bool IsTriggerTarget (void);
 		bool IsVolatile (void);
 		bool IsInvisible (void);
-		tActiveDoor* OpenDoor (void);
-		tActiveDoor* CloseDoor (void);
-		tCloakingWall* StartCloak (void);
-		tCloakingWall* StartDecloak (void);
+		CActiveDoor* OpenDoor (void);
+		CActiveDoor* CloseDoor (void);
+		CCloakingWall* StartCloak (void);
+		CCloakingWall* StartDecloak (void);
 		void CloseDoor (int nDoor);
 		void CloseActiveDoor (void);
 		int AnimateOpeningDoor (fix xElapsedTime);
 		int AnimateClosingDoor (fix xElapsedTime);
 		int ProcessHit (int nPlayer, CObject* objP);
 		CTrigger* Trigger (void);
+		void LoadState (CFile& cf);
+		void SaveState (CFile& cf);
 	};
 
 inline int operator- (CWall* o, CArray<CWall>& a) { return a.Index (o); }
@@ -308,9 +325,9 @@ void ReadWallV19(tWallV19& w, CFile& cf);
 void ReadActiveDoorV19(v19_door& d, CFile& cf);
 
 /*
- * reads an tActiveDoor structure from a CFILE
+ * reads an CActiveDoor structure from a CFILE
  */
-void ReadActiveDoor(tActiveDoor& d, CFile& cf);
+void ReadActiveDoor(CActiveDoor& d, CFile& cf);
 
 void ExplodeWall (short nSegment, short nSide);
 void DoExplodingWallFrame (void);

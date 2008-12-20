@@ -1020,6 +1020,38 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+void CTrigger::LoadState (CFile& cf)
+{
+nType = (ubyte) cf.ReadByte (); 
+flags = (ubyte) cf.ReadByte (); 
+nLinks = cf.ReadByte ();
+value = cf.ReadFix ();
+time = cf.ReadFix ();
+for (int i = 0; i < MAX_TRIGGER_TARGETS; i++) {
+	segments [i] = cf.ReadShort ();
+	sides [i] = cf.ReadShort ();
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CTrigger::SaveState (CFile& cf)
+{
+cf.WriteByte ((sbyte) nType); 
+cf.WriteByte ((sbyte) flags); 
+cf.WriteByte (nLinks);
+cf.WriteFix (value);
+cf.WriteFix (time);
+for (int i = 0; i < MAX_TRIGGER_TARGETS; i++) {
+	cf.WriteShort (segments [i]);
+	cf.WriteShort (sides [i]);
+	}
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
 CTrigger *FindObjTrigger (short nObject, short nType, short nTrigger)
 {
 	short i = (nTrigger < 0) ? gameData.trigs.firstObjTrigger [nObject] : gameData.trigs.objTriggerRefs [nTrigger].next;

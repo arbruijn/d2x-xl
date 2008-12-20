@@ -248,7 +248,7 @@ PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [m_nBaseTex].index, gameStates.app.bD1D
 
 //------------------------------------------------------------------------------
 
-void CSegment::LoadSideTextures (short nSide)
+void CSegment::LoadSideTextures (int nSide)
 {
 #if DBG
 if ((Index () == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
