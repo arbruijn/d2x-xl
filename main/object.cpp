@@ -317,17 +317,17 @@ FORALL_OBJS (objP, i)
 void CreateSmallFireballOnObject (CObject *objP, fix size_scale, int bSound)
 {
 	fix			size;
-	CFixVector	pos, rand_vec;
+	CFixVector	vPos, vRand;
 	short			nSegment;
 
-pos = objP->info.position.vPos;
-rand_vec = CFixVector::Random();
-rand_vec *= (objP->info.xSize / 2);
-pos += rand_vec;
+vPos = objP->info.position.vPos;
+vRand = CFixVector::Random();
+vRand *= (objP->info.xSize / 2);
+vPos += vRand;
 size = FixMul (size_scale, F1_0 / 2 + d_rand () * 4 / 2);
-nSegment = FindSegByPos (pos, objP->info.nSegment, 1, 0);
+nSegment = FindSegByPos (vPos, objP->info.nSegment, 1, 0);
 if (nSegment != -1) {
-	CObject *explObjP = /*Object*/CreateExplosion (nSegment, pos, size, VCLIP_SMALL_EXPLOSION);
+	CObject *explObjP = /*Object*/CreateExplosion (nSegment, vPos, size, VCLIP_SMALL_EXPLOSION);
 	if (!explObjP)
 		return;
 	AttachObject (objP, explObjP);
@@ -414,6 +414,17 @@ void InitIdToOOF (void)
 {
 memset (gameData.objs.idToOOF, 0, sizeof (gameData.objs.idToOOF));
 gameData.objs.idToOOF [MEGAMSL_ID] = OOF_MEGA;
+}
+
+//------------------------------------------------------------------------------
+
+inline void CObject::Kill (void)
+{
+info.nFlags |= OF_SHOULD_BE_DEAD;
+#if DBG
+if (this == dbgObjP)
+	dbgObjP = dbgObjP;
+#endif
 }
 
 //------------------------------------------------------------------------------

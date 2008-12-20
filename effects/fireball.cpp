@@ -269,7 +269,7 @@ return explObjP;
 CObject* CreateBadassExplosion (CObject* objP, short nSegment, CFixVector& position, fix size, ubyte nVClip,
 										  fix maxDamage, fix maxDistance, fix maxForce, short parent)
 {
-CObject* explObjP = CreateExplosion (nSegment, position, size, nVClip, maxDamage, maxDistance, maxForce, parent);
+CObject* explObjP = CreateExplosion (objP, nSegment, position, size, nVClip, maxDamage, maxDistance, maxForce, parent);
 if (explObjP && objP && (objP->info.nType == OBJ_WEAPON))
 	CreateSmartChildren (objP, NUM_SMART_CHILDREN);
 return explObjP;

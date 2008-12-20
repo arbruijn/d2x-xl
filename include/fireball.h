@@ -33,7 +33,7 @@ CObject *CreateBadassExplosion (CObject* parentObjP, short nSegment,
 void DoExplosionSequence (CObject* objP);
 void DoDebrisFrame (CObject* objP);      // deal with debris for this frame
 void DrawFireball (CObject* objP);
-CObject* CreateExplosion (short nSegment, CFixVector& vPos, fix xSize, ubyte nVClip, 
+CObject* CreateExplosion (CObject* parentP, short nSegment, CFixVector& vPos, fix xSize, ubyte nVClip, 
 								  fix xMaxDamage, fix xMaxDistance, fix xMaxForce, short nParent);
 
 
@@ -43,14 +43,14 @@ short GetExplosionVClip (CObject *obj, int stage);
 
 static inline CObject* CreateMuzzleFlash (short nSegment, CFixVector& position, fix size, ubyte nVClip)
 {
-return CreateExplosion (nSegment, position, size, nVClip, 0, 0, 0, -1);
+return CreateExplosion (NULL, nSegment, position, size, nVClip, 0, 0, 0, -1);
 }
 
 //------------------------------------------------------------------------------
 
 static inline CObject* CreateExplosion (short nSegment, CFixVector& position, fix size, ubyte nVClip)
 {
-return CreateExplosion (nSegment, position, size, nVClip, 0, 0, 0, -1);
+return CreateExplosion (NULL, nSegment, position, size, nVClip, 0, 0, 0, -1);
 }
 
 //------------------------------------------------------------------------------
