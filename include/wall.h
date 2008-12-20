@@ -263,13 +263,7 @@ void DoDoorOpen(int nDoor);
 // Closes a door, including animation and other processing.
 void DoDoorClose(int nDoor);
 
-// Opens a door
-void WallOpenDoor(CSegment *segP, short nSide);
-
-// Closes a door
-void WallCloseDoor(CSegment *segP, short nSide);
-
-//return codes for WallHitProcess()
+//return codes for CSegment::ProcessWallHit ()
 #define WHP_NOT_SPECIAL     0       //wasn't a quote-CWall-unquote
 #define WHP_NO_KEY          1       //hit door, but didn't have key
 #define WHP_BLASTABLE       2       //hit blastable CWall
@@ -279,11 +273,6 @@ int AnimFrameCount (tWallClip *anim);
 
 // Determines what happens when a CWall is shot
 //obj is the CObject that hit...either a weapon or the CPlayerData himself
-extern int WallHitProcess(CSegment *segP, short nSide, fix damage, int playernum, CObject *obj );
-
-// Opens/destroys specified door.
-void WallToggle(CSegment *segP, short nSide);
-
 // Tidy up Walls array for load/save purposes.
 void ResetWalls();
 
@@ -303,15 +292,10 @@ void RemoveObsoleteStuckObjects(void);
 void WallSetTMapNum(CSegment *segP,short nSide,CSegment *csegp, short cside,int anim_num,int nFrame);
 
 void InitDoorAnims (void);
-int AnimateOpeningDoor (CSegment *segP, short nSide, fix xElapsedTime);
-void BlastBlastableWall (CSegment *segP, short nSide);
 
 // Remove any flares from a CWall
 void KillStuckObjects(int nWall);
 
-//start CWall open <-> closed transitions
-void StartWallCloak(CSegment *segP, short nSide);
-void StartWallDecloak(CSegment *segP, short nSide);
 
 bool WallIsTriggerTarget (short nWall);
 bool WallIsVolatile (short nWall);

@@ -437,7 +437,7 @@ gameData.objs.consoleP->info.vLastPos = vLastPosSave;
 
 if (gameStates.render.bExtExplPlaying) {
 	externalExplosion.info.xLifeLeft -= gameData.time.xFrame;
-	DoExplosionSequence (&externalExplosion);
+	externalExplosion.DoExplosionSequence ();
 	if (externalExplosion.info.xLifeLeft < ext_expl_halflife)
 		gameStates.gameplay.bMineDestroyed = 1;
 	if (externalExplosion.info.nFlags & OF_SHOULD_BE_DEAD)

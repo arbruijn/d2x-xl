@@ -814,7 +814,7 @@ void DoD1AIRobotHitAttack(CObject *robotP, CObject *playerP, CFixVector *vCollis
 			if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
 				if (CFixVector::Dist (OBJPOS (gameData.objs.consoleP)->vPos, robotP->info.position.vPos) < 
 					 robotP->info.xSize + gameData.objs.consoleP->info.xSize + F1_0*2)
-					CollidePlayerAndNastyRobot (playerP, robotP, vCollision);
+					playerP->CollidePlayerAndNastyRobot (robotP, vCollision);
 
 			robotP->cType.aiInfo.GOAL_STATE = D1_AIS_RECO;
 			SetNextPrimaryFireTime (ailP, botInfoP);

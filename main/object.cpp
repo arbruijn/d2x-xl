@@ -2276,7 +2276,7 @@ for (i = 0; i < nPhysSegs - 1; i++) {
 #endif
 	nConnSide = SEGMENTS [physSegList [i+1]].ConnectedSide (SEGMENTS + physSegList [i]);
 	if (nConnSide != -1)
-		CheckTrigger (SEGMENTS + physSegList [i], nConnSide, OBJ_IDX (this), 0);
+		SEGMENTS [physSegList [i]].OperateTrigger (nConnSide, this, 0);
 #if DBG
 	else	// segments are not directly connected, so do binary subdivision until you find connected segments.
 		PrintLog ("UNCONNECTED SEGMENTS %d, %d\n", physSegList [i+1], physSegList [i]);

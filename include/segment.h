@@ -233,6 +233,7 @@ class CSegment {
 		void ToggleWall (short nSide);
 		int ProcessWallHit (short nSide, fix damage, int nPlayer, CObject *objP);
 		int DoorIsBlocked (short nSide);
+		int CheckEffectBlowup (short nSide, CFixVector& vHit, CObject* blower, int bForceBlowup);
 
 		fix Refuel (fix xMaxFuel);
 		fix Repair (fix xMaxShields);

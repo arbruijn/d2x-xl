@@ -90,7 +90,7 @@ if (ailP->nextPrimaryFire > 0)
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
 	if (CFixVector::Dist (OBJPOS (gameData.objs.consoleP)->vPos, robotP->info.position.vPos) <
 		 robotP->info.xSize + gameData.objs.consoleP->info.xSize + F1_0 * 2) {
-		CollidePlayerAndNastyRobot (playerobjP, robotP, vCollision);
+		playerobjP->CollidePlayerAndNastyRobot (robotP, vCollision);
 		if (botInfoP->energyDrain && LOCALPLAYER.energy) {
 			LOCALPLAYER.energy -= botInfoP->energyDrain * F1_0;
 			if (LOCALPLAYER.energy < 0)

@@ -1985,7 +1985,7 @@ if (CFixVector::Dist (powerupP->info.position.vPos, posP->vPos) >=
 	 2 * (playerP->info.xSize + powerupP->info.xSize) / (gameStates.app.bHaveExtraGameInfo [IsMultiGame] + 1))
 	return;
 vCollision = CFixVector::Avg (powerupP->info.position.vPos, posP->vPos);
-CollidePlayerAndPowerup (playerP, powerupP, &vCollision);
+playerP->CollidePlayerAndPowerup (powerupP, vCollision);
 }
 
 //	-------------------------------------------------------------------------------------------------------

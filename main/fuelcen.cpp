@@ -704,12 +704,12 @@ if (!matCenP->bFlag) {
 			return;
 			}
 		if (OBJECTS [nObject].info.nType == OBJ_ROBOT) {
-			CollideRobotAndMatCen (OBJECTS + nObject);
+			OBJECTS [nObject].CollideRobotAndMatCen ();
 			matCenP->xTimer = topTime / 2;
 			return;
 			}
 		else if (OBJECTS [nObject].info.nType == OBJ_PLAYER) {
-			CollidePlayerAndMatCen (OBJECTS + nObject);
+			OBJECTS [nObject].CollidePlayerAndMatCen ();
 			matCenP->xTimer = topTime / 2;
 			return;
 			}

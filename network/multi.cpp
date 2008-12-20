@@ -1526,7 +1526,7 @@ if (wallP->nType == WALL_BLASTABLE) {
 	return;
 	}
 else if (wallP->state != WALL_DOOR_OPENING) {
-	WallOpenDoor (segP, nSide);
+	segP->OpenDoor (nSide);
 	wallP->flags = flag;
 	}
 else

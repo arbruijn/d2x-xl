@@ -1265,7 +1265,7 @@ for (int i = 0; i < gameData.trigs.nTriggers; i++, trigP++) {
 	if (trigP->nType == TT_EXIT) {
 		wallP = FindTriggerWall (i);
 		if (wallP) {
-			WallToggle (SEGMENTS + wallP->nSegment, wallP->nSide);
+			SEGMENTS [wallP->nSegment].ToggleWall (wallP->nSide);
 			nExits++;
 			}
 		}

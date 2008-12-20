@@ -222,7 +222,7 @@ if (bFinalCountdown ||
 		if (extraGameInfo [0].nBossCount)
 			KillAllBossRobots (0);
 		for (i = 0; i < gameData.reactor.triggers.nLinks; i++)
-			WallToggle (SEGMENTS + gameData.reactor.triggers.segments [i], gameData.reactor.triggers.sides [i]);
+			SEGMENTS [gameData.reactor.triggers.segments [i]].ToggleWall (gameData.reactor.triggers.sides [i]);
 		if (gameData.missions.nCurrentLevel < 0)
 			CFile::Delete ("secret.sgc", gameFolders.szSaveDir);
 		}

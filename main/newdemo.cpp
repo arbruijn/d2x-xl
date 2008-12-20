@@ -1928,7 +1928,7 @@ while (!bDone) {
 			CPlayerData = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED)
-				WallHitProcess (&SEGMENTS [nSegment], (short) nSide, damage, CPlayerData, &(OBJECTS [0]));
+				SEGMENTS [nSegment].ProcessWallHit ((short) nSide, damage, CPlayerData, &(OBJECTS [0]));
 			break;
 		}
 
@@ -1946,10 +1946,10 @@ while (!bDone) {
 					Assert (nTag == ND_EVENT_SECRET_THINGY);
 					truth = NDReadInt ();
 					if (!truth)
-						CheckTrigger (SEGMENTS + nSegment, (short) nSide, (short) nObject, shot);
+						SEGMENTS [nSegment].OperateTrigger ((short) nSide, OBJECTS + nObject, shot);
 					} 
 				else
-					CheckTrigger (SEGMENTS + nSegment, (short) nSide, (short) nObject, shot);
+					SEGMENTS [nSegment].OperateTrigger ((short) nSide, OBJECTS + nObject, shot);
 				}
 			break;
 
@@ -1986,7 +1986,7 @@ while (!bDone) {
 			nSide = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED)
-				WallToggle (SEGMENTS + nSegment, (short) nSide);
+				SEGMENTS [nSegment].ToggleWall (nSide);
 			break;
 
 		case ND_EVENT_CONTROL_CENTER_DESTROYED:
@@ -2172,7 +2172,7 @@ while (!bDone) {
 			nSide = NDReadByte ();
 			NDReadVector(pnt);
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED)
-				CheckEffectBlowup (SEGMENTS + nSegment, nSide, &pnt, &dummy, 0);
+				SEGMENTS [nSegment].CheckEffectBlowup (nSide, &pnt, &dummy, 0);
 			}
 			break;
 
@@ -2499,7 +2499,7 @@ while (!bDone) {
 					oppSegP->m_sides [nConnSide].m_nOvlTex = gameData.walls.animP [anim_num].frames [0];
 				}
 			else
-				WallOpenDoor (SEGMENTS + nSegment, nSide);
+				SEGMENTS [nSegment].WallOpenDoor (nSide);
 			}
 			break;
 

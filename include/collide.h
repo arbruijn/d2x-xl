@@ -19,18 +19,9 @@ int CollideTwoObjects (CObject* thisP, CObject* otherP, CFixVector& vCollision);
 
 // Returns 1 if robot died, else 0.
 
-int CollidePlayerAndWeapon (CObject* nPlayer, CObject* weaponP, CFixVector& vCollision);
-int CollidePlayerAndMatCen (CObject* objP);
-int CollideRobotAndMatCen (CObject* objP);
-
 int MaybeDetonateWeapon (CObject* thisP, CObject* otherP, CFixVector& vPos);
 
-int CollidePlayerAndNastyRobot (CObject* nPlayer, CObject* robot, CFixVector *vCollision);
-
 int NetDestroyReactor (CObject* reactorP);
-int CollidePlayerAndPowerup (CObject* nPlayer, CObject* powerup, CFixVector *vCollision);
-int CheckEffectBlowup (CSegment *segP, short nSide, CFixVector *vPos, CObject* blowerP, int bForceBlowup);
-void ApplyDamageToReactor (CObject* reactorP, fix xDamage, short nAttacker);
 void SetDebrisCollisions (void);
 
 extern int Immaterial;

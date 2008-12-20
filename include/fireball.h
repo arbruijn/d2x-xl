@@ -30,7 +30,6 @@ CObject *CreateBadassExplosion (CObject* parentObjP, short nSegment,
 // return the explosion CObject
 // blows up the CPlayerData with a badass explosion
 // return the explosion CObject
-void DoExplosionSequence (CObject* objP);
 void DoDebrisFrame (CObject* objP);      // deal with debris for this frame
 void DrawFireball (CObject* objP);
 CObject* CreateExplosion (CObject* parentP, short nSegment, CFixVector& vPos, fix xSize, ubyte nVClip, 

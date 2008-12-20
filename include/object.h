@@ -795,6 +795,7 @@ class CObject : public CObjectInfo {
 		int CollidePlayerAndHostage (CObject* hostageP, CFixVector& vHitPt);
 		int CollidePlayerAndMarker (CObject* markerP, CFixVector& vHitPt);
 		int CollidePlayerAndPlayer (CObject* other, CFixVector& vHitPt);
+		int CollidePlayerAndNastyRobot (CObject* robotP, CFixVector& vHitPt);
 
 		int CollideWeaponAndRobot (CObject* robotP, CFixVector& vHitPt);
 		int CollideWeaponAndReactor (CObject* reactorP, CFixVector& vHitPt);

@@ -79,16 +79,16 @@ if (!wallP || (wallP->nType != WALL_DOOR))
 	return;
 
 if ((wallP->keys == KEY_NONE) && (wallP->state == WALL_DOOR_CLOSED) && !(wallP->flags & WALL_DOOR_LOCKED))
-	WallOpenDoor (SEGMENTS + nHitSeg, nHitSide);
+	SEGMENTS [nHitSeg].OpenDoor (nHitSide);
 else if (botInfoP->companion) {
 	if ((ailP->mode != AIM_GOTO_PLAYER) && (gameData.escort.nSpecialGoal != ESCORT_GOAL_SCRAM))
 		return;
 	if (!(wallP->flags & WALL_DOOR_LOCKED) || ((wallP->keys != KEY_NONE) && (wallP->keys & LOCALPLAYER.flags)))
-		WallOpenDoor (SEGMENTS + nHitSeg, nHitSide);
+		SEGMENTS [nHitSeg].OpenDoor (nHitSide);
 	}
 else if (botInfoP->thief) {		//	Thief allowed to go through doors to which CPlayerData has key.
 	if ((wallP->keys != KEY_NONE) && (wallP->keys & LOCALPLAYER.flags))
-		WallOpenDoor (SEGMENTS + nHitSeg, nHitSide);
+		SEGMENTS [nHitSeg].OpenDoor (nHitSide);
 	}
 }
 
@@ -438,7 +438,7 @@ else {
 		Tactile_do_collide (&vForce, &info.position.mOrient);
 	}
 #endif
-   WallHitProcess (SEGMENTS + nHitSeg, nHitSide, 20, info.nId, this);
+   SEGMENTS [nHitSeg].ProcessWallHit (nHitSide, 20, info.nId, this);
 	}
 if (gameStates.app.bD2XLevel && (SEGMENTS [nHitSeg].m_nType == SEGMENT_IS_NODAMAGE))
 	return;
@@ -582,7 +582,7 @@ else if (info.nType == OBJ_DEBRIS)
 //	-----------------------------------------------------------------------------
 //if an effect is hit, and it can blow up, then blow it up
 //returns true if it blew up
-int CheckEffectBlowup (CSegment* segP, short nSide, CFixVector& vHit, CObject* blower, int bForceBlowup)
+int CSegment::CheckEffectBlowup (short nSide, CFixVector& vHit, CObject* blower, int bForceBlowup)
 {
 	int				tm, tmf, ec, nBitmap = 0;
 	int				bOkToBlow = 0, nSwitchType = -1;
@@ -601,14 +601,14 @@ if (blower->cType.laserInfo.parent.nType == OBJ_ROBOT)
 		bOkToBlow = 1;
 
 if (!(bOkToBlow || (blower->cType.laserInfo.parent.nType == OBJ_PLAYER))) {
-	if ((wallP = segP->Wall (nSide)) && (wallP->nTrigger < gameData.trigs.nTriggers))
+	if ((wallP = Wall (nSide)) && (wallP->nTrigger < gameData.trigs.nTriggers))
 		return 0;
 	}
 
-if (!(tm = segP->m_sides [nSide].m_nOvlTex))
+if (!(tm = m_sides [nSide].m_nOvlTex))
 	return 0;
 
-tmf = segP->m_sides [nSide].m_nOvlOrient;		//tm flags
+tmf = m_sides [nSide].m_nOvlOrient;		//tm flags
 ec = gameData.pig.tex.tMapInfoP [tm].nEffectClip;
 if (ec < 0) {
 	if (gameData.pig.tex.tMapInfoP [tm].destroyed == -1)
@@ -630,8 +630,8 @@ bmP = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [tm].index;
 PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [tm].index, gameStates.app.bD1Data);
 //this can be blown up...did we hit it?
 if (!bForceBlowup) {
-	segP->HitPointUV (nSide, &u, &v, NULL, vHit, 0);	//evil: always say face zero
-	bForceBlowup = !PixelTranspType (tm, tmf,  segP->m_sides [nSide].m_nFrame, u, v);
+	HitPointUV (nSide, &u, &v, NULL, vHit, 0);	//evil: always say face zero
+	bForceBlowup = !PixelTranspType (tm, tmf,  m_sides [nSide].m_nFrame, u, v);
 	}
 if (!bForceBlowup)
 	return 0;
@@ -641,12 +641,12 @@ if (IsMultiGame && netGame.bIndestructibleLights && !nSwitchType)
 //note: this must get called before the texture changes,
 //because we use the light value of the texture to change
 //the static light in the CSegment
-wallP = segP->Wall (nSide);
-bPermaTrigger = (trigP = segP->Trigger (nSide)) && (trigP->flags & TF_PERMANENT);
+wallP = Wall (nSide);
+bPermaTrigger = (trigP = Trigger (nSide)) && (trigP->flags & TF_PERMANENT);
 if (!bPermaTrigger)
-	SubtractLight (segP->Index (), nSide);
+	SubtractLight (Index (), nSide);
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordEffectBlowup (segP->Index (), nSide, vHit);
+	NDRecordEffectBlowup (Index (), nSide, vHit);
 if (nSwitchType) {
 	xDestSize = ecP->dest_size;
 	vc = ecP->dest_vclip;
@@ -655,36 +655,36 @@ else {
 	xDestSize = I2X (20);
 	vc = 3;
 	}
-/*Object*/CreateExplosion (segP->Index (), vHit, xDestSize, vc);
+/*Object*/CreateExplosion (Index (), vHit, xDestSize, vc);
 if (nSwitchType) {
 	if ((nSound = gameData.eff.vClipP [vc].nSound) != -1)
-		DigiLinkSoundToPos (nSound, segP->Index (), 0, vHit,  0, F1_0);
+		DigiLinkSoundToPos (nSound, Index (), 0, vHit,  0, F1_0);
 	if ((nSound = ecP->nSound) != -1)		//kill sound
-		DigiKillSoundLinkedToSegment (segP->Index (), nSide, nSound);
+		DigiKillSoundLinkedToSegment (Index (), nSide, nSound);
 	if (!bPermaTrigger && (ecP->dest_eclip != -1) && (gameData.eff.effectP [ecP->dest_eclip].nSegment == -1)) {
 		tEffectClip	*newEcP = gameData.eff.effectP + ecP->dest_eclip;
 		int nNewBm = newEcP->changingWallTexture;
 		newEcP->time_left = EffectFrameTime (newEcP);
 		newEcP->nCurFrame = 0;
-		newEcP->nSegment = segP->Index ();
+		newEcP->nSegment = Index ();
 		newEcP->nSide = nSide;
 		newEcP->flags |= EF_ONE_SHOT;
 		newEcP->nDestBm = ecP->nDestBm;
 
-		Assert ((nNewBm != 0) && (segP->m_sides [nSide].m_nOvlTex != 0));
-		segP->m_sides [nSide].m_nOvlTex = nNewBm;		//replace with destoyed
+		Assert ((nNewBm != 0) && (m_sides [nSide].m_nOvlTex != 0));
+		m_sides [nSide].m_nOvlTex = nNewBm;		//replace with destoyed
 		}
 	else {
-		Assert ((nBitmap != 0) && (segP->m_sides [nSide].m_nOvlTex != 0));
+		Assert ((nBitmap != 0) && (m_sides [nSide].m_nOvlTex != 0));
 		if (!bPermaTrigger)
-			segP->m_sides [nSide].m_nOvlTex = nBitmap;		//replace with destoyed
+			m_sides [nSide].m_nOvlTex = nBitmap;		//replace with destoyed
 		}
 	}
 else {
 	if (!bPermaTrigger)
-		segP->m_sides [nSide].m_nOvlTex = gameData.pig.tex.tMapInfoP [tm].destroyed;
+		m_sides [nSide].m_nOvlTex = gameData.pig.tex.tMapInfoP [tm].destroyed;
 	//assume this is a light, and play light sound
-	DigiLinkSoundToPos (SOUND_LIGHT_BLOWNUP, segP->Index (), 0, vHit,  0, F1_0);
+	DigiLinkSoundToPos (SOUND_LIGHT_BLOWNUP, Index (), 0, vHit,  0, F1_0);
 	}
 return 1;		//blew up!
 }
@@ -808,7 +808,7 @@ if (!(mType.physInfo.velocity[X] ||
 	return 1;
 	}
 #endif
-bBlewUp = CheckEffectBlowup (segP, nHitWall, vHitPt, this, 0);
+bBlewUp = segP->CheckEffectBlowup (nHitWall, vHitPt, this, 0);
 if ((cType.laserInfo.parent.nType == OBJ_ROBOT) && ROBOTINFO (wObjP->info.nId).companion) {
 	bEscort = 1;
 	if (IsMultiGame) {
@@ -826,11 +826,11 @@ if (bBlewUp) {		//could be a CWall switch
 	//because robots can shoot out CWall triggers, and so the CTrigger better
 	//take effect
 	//	NO -- Changed by MK, 10/18/95.  We don't want robots blowing puzzles.  Only CPlayerData or buddy can open!
-	CheckTrigger (segP, nHitWall, cType.laserInfo.parent.nObject, 1);
+	segP->OperateTrigger (nHitWall, OBJECTS + cType.laserInfo.parent.nObject, 1);
 	}
 if (info.nId == EARTHSHAKER_ID)
 	ShakerRockStuff ();
-wallType = WallHitProcess (segP, nHitWall, info.xShields, nPlayer, this);
+wallType = segP->ProcessWallHit (nHitWall, info.xShields, nPlayer, this);
 // Wall is volatile if either tmap 1 or 2 is volatile
 if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_VOLATILE) ||
 	 (sideP->m_nOvlTex && (gameData.pig.tex.tMapInfoP [sideP->m_nOvlTex].flags & TMI_VOLATILE))) {
@@ -1895,13 +1895,13 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 //	Nasty robots are the ones that attack you by running into you and doing lots of damage.
-int CollidePlayerAndNastyRobot (CObject* playerObjP, CObject* robotP, CFixVector& vHitPt)
+int CObject::CollidePlayerAndNastyRobot (CObject* robotP, CFixVector& vHitPt)
 {
-//	if (!(ROBOTINFO (objP->info.nId).energyDrain && gameData.multiplayer.players [playerObjP->info.nId].energy))
-/*Object*/CreateExplosion (playerObjP->info.nSegment, vHitPt, I2X (10) / 2, VCLIP_PLAYER_HIT);
-if (BumpTwoObjects (playerObjP, robotP, 0, vHitPt))	{//no damage from bump
-	DigiLinkSoundToPos (ROBOTINFO (robotP->info.nId).clawSound, playerObjP->info.nSegment, 0, vHitPt, 0, F1_0);
-	playerObjP->ApplyDamageToPlayer (robotP, F1_0* (gameStates.app.nDifficultyLevel+1));
+//	if (!(ROBOTINFO (objP->info.nId).energyDrain && gameData.multiplayer.players [info.nId].energy))
+/*Object*/CreateExplosion (info.nSegment, vHitPt, I2X (10) / 2, VCLIP_PLAYER_HIT);
+if (BumpTwoObjects (this, robotP, 0, vHitPt))	{//no damage from bump
+	DigiLinkSoundToPos (ROBOTINFO (robotP->info.nId).clawSound, info.nSegment, 0, vHitPt, 0, F1_0);
+	robotP->ApplyDamageToPlayer (F1_0* (gameStates.app.nDifficultyLevel+1));
 	}
 return 1;
 }
