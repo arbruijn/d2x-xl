@@ -212,7 +212,7 @@ if ((nSound < 0) && !(pszSound && *pszSound))
 if (volume < 10)
 	return;
 // start the sample playing
-DigiStartSound (nSound, volume, angle, 0, -1, -1, -1, F1_0, pszSound, &vPos, 0);
+DigiStartSound (nSound, volume, angle, 0, -1, -1, -1, F1_0, pszSound, vPos, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -377,7 +377,7 @@ if (!bForever) { 	// Hack to keep sounds from building up...
 		gameData.objs.viewerP->info.position.mOrient, gameData.objs.viewerP->info.position.vPos,
 		gameData.objs.viewerP->info.nSegment, objP->info.position.vPos, objP->info.nSegment, maxVolume, &volume, &pan,
 		maxDistance, nDecay);
-	DigiPlaySample3D (nOrgSound, pan, volume, 0, objP->info.position.vPos, pszSound);
+	DigiPlaySample3D (nOrgSound, pan, volume, 0, &objP->info.position.vPos, pszSound);
 	return -1;
 	}
 #ifdef NEWDEMO
@@ -469,7 +469,7 @@ if (!bForever) { 	//&& gameData.pig.sound.sounds [nSound - SOUND_OFFSET].length 
 	// Hack to keep sounds from building up...
 	DigiGetSoundLoc (gameData.objs.viewerP->info.position.mOrient, gameData.objs.viewerP->info.position.vPos, gameData.objs.viewerP->info.nSegment,
 						  vPos, nSegment, maxVolume, &volume, &pan, maxDistance, 0);
-	DigiPlaySample3D (nOrgSound, pan, volume, 0, vPos, pszSound);
+	DigiPlaySample3D (nOrgSound, pan, volume, 0, &vPos, pszSound);
 	return -1;
 	}
 for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++)
