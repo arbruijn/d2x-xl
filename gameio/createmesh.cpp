@@ -1282,7 +1282,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #endif
-			memcpy (m_sideVerts, SEGMENTS [nSegment].Contour (nSide), 4 * sizeof (ushort));
+			memcpy (m_sideVerts, SEGMENTS [nSegment].Corners (nSide), 4 * sizeof (ushort));
 			InitFace (nSegment, nSide, bRebuild);
 			if (m_nWallType)
 				InitTexturedFace ();

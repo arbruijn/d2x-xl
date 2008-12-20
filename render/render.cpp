@@ -597,7 +597,7 @@ if (sideP->m_nType == SIDE_IS_QUAD) {
 	props.vNormal = sideP->m_normals [0];
 	props.nVertices = 4;
 	memcpy (props.uvls, sideP->m_uvls, sizeof (tUVL) * 4);
-	memcpy (props.vp, SEGMENTS [props.segNum].Contour (props.sideNum), 4 * sizeof (ushort));
+	memcpy (props.vp, SEGMENTS [props.segNum].Corners (props.sideNum), 4 * sizeof (ushort));
 	RenderFace (&props);
 #ifdef EDITOR
 	CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->m_nBaseTex, sideP->m_nOvlTex, sideP->m_uvls);
@@ -612,13 +612,13 @@ else {
 	props.nVertices = 4;
 	if (sideP->m_nType == SIDE_IS_TRI_02) {
 		memcpy (props.uvls, sideP->m_uvls, sizeof (tUVL) * 4);
-		memcpy (props.vp, SEGMENTS [props.segNum].Contour (props.sideNum), 4 * sizeof (ushort));
+		memcpy (props.vp, SEGMENTS [props.segNum].Corners (props.sideNum), 4 * sizeof (ushort));
 		RenderFace (&props);
 		}
 	else if (sideP->m_nType == SIDE_IS_TRI_13) {	//just rendering the fan with vertex 1 instead of 0
 		memcpy (props.uvls + 1, sideP->m_uvls, sizeof (tUVL) * 3);
 		props.uvls [0] = sideP->m_uvls [3];
-		memcpy (props.vp + 1, SEGMENTS [props.segNum].Contour (props.sideNum), 4 * sizeof (ushort));
+		memcpy (props.vp + 1, SEGMENTS [props.segNum].Corners (props.sideNum), 4 * sizeof (ushort));
 		props.vp [0] = props.vp [4];
 		RenderFace (&props);
 		}

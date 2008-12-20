@@ -127,7 +127,7 @@ class CSide {
 		fix			m_rads [2];
 		ushort		m_vertices [6];
 		ushort		m_faceVerts [6];
-		ushort		m_contour [4];
+		ushort		m_corners [4];
 		ushort		m_nMinVertex [2];
 		ubyte			m_nFaces;
 
@@ -156,12 +156,7 @@ class CSide {
 		fix MinRad (void) { return m_rads [0]; }
 		fix MaxRad (void) { return m_rads [1]; }
 
-		int CreateVertexList (ushort* verts, int* index);
-		int CreateFaceVertIndex (void);
-		void AddAsQuad (CFixVector& vNormal);
-		void AddAsTwoTriangles (bool bSolid);
-		void CreateWalls (bool bSolid);
-		void Validate (bool bSolid);
+		void Setup (ushort* verts, int* index, bool bSolid);
 
 		void SetTextures (int nBaseTex, int nOvlTex);
 
@@ -170,7 +165,7 @@ class CSide {
 			return m_nFaces;
 			}
 		CFixVector* GetCorners (CFixVector* vertices);
-		inline ushort* Contour (void) { return m_contour; }
+		inline ushort* Corners (void) { return m_corners; }
 		inline CFixVector& Vertex (int nVertex);
 		inline CFixVector& MinVertex (void);
 		inline CFixVector& Normal (int nFace);
@@ -183,6 +178,13 @@ class CSide {
 		int Physics (fix* damageP);
 
 		bool IsOpenableDoor (void);
+
+	private:
+		void SetupCorners (ushort* verts, int* index);
+		void SetupVertexList (ushort* verts, int* index);
+		void SetupFaceVertIndex (void);
+		void SetupAsQuad (CFixVector& vNormal, ushort* verts, int* index);
+		void SetupAsTriangles (bool bSolid, ushort* verts, int* index);
 	};
 
 //------------------------------------------------------------------------------
@@ -212,7 +214,7 @@ class CSegment {
 		void LoadTextures (void);
 		void LoadSideTextures (int nSide);
 		void LoadBotGenTextures (void);
-		void Validate (void);
+		void Setup (void);
 		inline ushort WallNum (int nSide) { return m_sides [nSide].WallNum (); }
 		inline int CheckTransparency (int nSide) { return m_sides [nSide].CheckTransparency (); }
 		void CheckSum (uint& sum1, uint& sum2);
@@ -263,8 +265,7 @@ class CSegment {
 		void GetNormals (int nSide, CFixVector& n1, CFixVector& n2) { m_sides [nSide].GetNormals (n1, n2); }
 		inline CFixVector& Center (void) { return m_vCenter; }
 		inline CFixVector& SideCenter (int nSide) { return m_sides [nSide].Center (); }
-		inline int CreateVertexList (int nSide) { return m_sides [nSide].CreateVertexList (m_verts, sideVertIndex [nSide]); }
-		inline ushort* Contour (int nSide) { return m_sides [nSide].Contour (); }
+		inline ushort* Corners (int nSide) { return m_sides [nSide].Corners (); }
 		inline CFixVector* GetCorners (int nSide, CFixVector* vertices) { return m_sides [nSide].GetCorners (vertices); }
 		ubyte SideDists (const CFixVector& intersection, fix* xSideDists, int bBehind = 1);
 		int ConnectedSide (CSegment* other);

@@ -1406,7 +1406,7 @@ for (int i = 0; i < MAX_EXPLODING_WALLS; i++) {
 
 			//calc expl position
 
-			contour = SEGMENTS [nSegment].Contour (nSide);
+			contour = SEGMENTS [nSegment].Corners (nSide);
 			v0 = gameData.segs.vertices + contour [0];
 			v1 = gameData.segs.vertices + contour [1];
 			v2 = gameData.segs.vertices + contour [2];

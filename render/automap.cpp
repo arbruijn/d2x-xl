@@ -1317,7 +1317,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 
 addEdge:
 
-		contour = SEGMENTS [nSegment].Contour (nSide);
+		contour = SEGMENTS [nSegment].Corners (nSide);
 		AddOneEdge (contour [0], contour [1], color, nSide, nSegment, bHidden, 0, bNoFade);
 		AddOneEdge (contour [1], contour [2], color, nSide, nSegment, bHidden, 0, bNoFade);
 		AddOneEdge (contour [2], contour [3], color, nSide, nSegment, bHidden, 0, bNoFade);
@@ -1341,7 +1341,7 @@ for (int nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 
 	// Only add edges that have no children
 	if (segP->m_children [nSide] == -1) {
-		ushort* contour = segP->Contour (nSide);
+		ushort* contour = segP->Corners (nSide);
 		AddOneUnknownEdge (contour [0], contour [1]);
 		AddOneUnknownEdge (contour [1], contour [2]);
 		AddOneUnknownEdge (contour [2], contour [3]);

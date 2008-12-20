@@ -846,7 +846,7 @@ int load_mine_data (CFile& cf)
 	#endif
 
 	#ifdef EDITOR
-		ValidateSegments ();
+		SetupSegments ();
 	#endif
 
 	//create_local_segment_data ();
@@ -1235,8 +1235,6 @@ INIT_PROGRESS_LOOP (nSegment, j, gameData.segs.nSegments);
 
 for (i = nSegment * 6, segP = SEGMENTS + nSegment; nSegment < j; nSegment++, segP++) {
 	segP->ComputeCenter ();
-	for (nSide = 0, sideP = segP->m_sides; nSide < 6; nSide++, i++)
-		segP->CreateVertexList (nSide);
 #if CALC_SEGRADS
 	segP->GetSideDists (segP->m_vCenter, xSideDists, 0);
 	xMinDist = 0x7fffffff;
@@ -1282,44 +1280,44 @@ if (loadOp == 0) {
 		}
 	}
 else if (loadOp == 1) {
-	ValidateSegments ();			// Fill in CSide nType and normals.
-	loadOp = 2;
+	ComputeSegSideCenters (loadIdx);
+	loadIdx += PROGRESS_INCR;
+	if (loadIdx >= gameData.segs.nSegments) {
+		loadIdx = 0;
+		loadOp++;
+		}
 	}
 else if (loadOp == 2) {
-	LoadExtSegmentsCompiled (*mineDataFile);
-	loadOp = 3;
+	SetupSegments ();			// Fill in CSide nType and normals.
+	loadOp++;
 	}
-else if (loadOp == 3) {
+else if (loadOp == 4) {
+	LoadExtSegmentsCompiled (*mineDataFile);
+	loadOp++;
+	}
+else if (loadOp == 5) {
 	LoadVertLightsCompiled (loadIdx, *mineDataFile);
 	loadIdx += PROGRESS_INCR;
 	if (!gameStates.app.bD2XLevel || (loadIdx >= gameData.segs.nVertices)) {
 		loadIdx = 0;
-		loadOp = 4;
+		loadOp++;
 		}
 	}
-else if (loadOp == 4) {
+else if (loadOp == 6) {
 	LoadSideLightsCompiled (loadIdx, *mineDataFile);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= (gameStates.app.bD2XLevel ?
 						 gameData.segs.nSegments * 6 : bShadows ? gameData.segs.nSegments : 1)) {
 		loadIdx = 0;
-		loadOp = 5;
+		loadOp++;
 		}
 	}
-else if (loadOp == 5) {
+else if (loadOp == 6) {
 	LoadTexColorsCompiled (loadIdx, *mineDataFile);
 	loadIdx += PROGRESS_INCR;
 	if (!gameStates.app.bD2XLevel || (loadIdx >= MAX_WALL_TEXTURES)) {
 		loadIdx = 0;
-		loadOp = 6;
-		}
-	}
-else if (loadOp == 6) {
-	ComputeSegSideCenters (loadIdx);
-	loadIdx += PROGRESS_INCR;
-	if (loadIdx >= gameData.segs.nSegments) {
-		loadIdx = 0;
-		loadOp = 7;
+		loadOp++;
 		}
 	}
 else {
@@ -1453,7 +1451,7 @@ if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 	LoadSegmentsGauge (cf);
 else {
 	LoadSegmentsCompiled (-1, cf);
-	ValidateSegments ();			// Fill in side type and normals.
+	SetupSegments ();			// Fill in side type and normals.
 	LoadExtSegmentsCompiled (cf);
 	LoadVertLightsCompiled (-1, cf);
 	LoadSideLightsCompiled (-1, cf);

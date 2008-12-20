@@ -197,7 +197,7 @@ int CalcFaceDimensions (short nSegment, short nSide, fix *w, fix *h, ushort* con
 	int		i, j;
 
 if (!contour) {
-	contour = SEGMENTS [nSegment].Contour (nSide);
+	contour = SEGMENTS [nSegment].Corners (nSide);
 	}
 for (i = j = 0; j < 4; j++) {
 	d = CFixVector::Dist (gameData.segs.vertices [contour [j]], gameData.segs.vertices [contour [(j + 1) % 4]]);
@@ -339,7 +339,7 @@ float ComputeCoronaSprite (CFloatVector *sprite, CFloatVector *vCenter, short nS
 	float				fLight = 0;
 	CFloatVector	v;
 
-contour = SEGMENTS [nSegment].Contour (nSide);
+contour = SEGMENTS [nSegment].Corners (nSide);
 for (i = 0; i < 4; i++) {
 	fLight += X2F (sideP->m_uvls [i].l);
 	if (RENDERPATH)

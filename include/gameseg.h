@@ -58,7 +58,7 @@ void ExtractOrientFromSegment(CFixMatrix *m,CSegment *seg);
 //      Make a just-modified CSegment valid.
 //              check all sides to see how many faces they each should have (0,1,2)
 //              create new vector normals
-void ValidateSegments(void);
+void SetupSegments (void);
 
 //      Extract the forward vector from CSegment *sp, return in *vp.
 //      The forward vector is defined to be the vector from the the center of the front face of the CSegment

@@ -726,11 +726,11 @@ pn->vNormal += vNormal;
 }
 
 // -------------------------------------------------------------------------------
-//	Validate all segments.
+//	Set up all segments.
 //	gameData.segs.nLastSegment must be set.
 //	For all used segments (number <= gameData.segs.nLastSegment), nSegment field must be != -1.
 
-void ValidateSegments (void)
+void SetupSegments (void)
 {
 gameOpts->render.nMathFormat = 0;
 gameData.segs.points.Clear ();
@@ -738,7 +738,7 @@ for (int i = 0; i <= gameData.segs.nLastSegment; i++)
 #ifdef EDITOR
 	if (SEGMENTS [s].nSegment != -1)
 #endif
-	SEGMENTS [i].Validate ();
+	SEGMENTS [i].Setup ();
 #ifdef EDITOR
 	{
 	int said = 0;

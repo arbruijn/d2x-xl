@@ -87,19 +87,24 @@ return -1;
 
 // -------------------------------------------------------------------------------
 
-int CSide::CreateVertexList (ushort* verts, int* index)
+void CSide::SetupCorners (ushort* verts, int* index)
+{
+m_corners [0] = verts [index [0]];
+m_corners [1] = verts [index [1]];
+m_corners [2] = verts [index [2]];
+m_corners [3] = verts [index [3]];
+}
+
+// -------------------------------------------------------------------------------
+
+void CSide::SetupVertexList (ushort* verts, int* index)
 {
 m_nFaces = -1;
-m_nMinVertex [0] = min (m_vertices [0], m_vertices [2]);
 if (m_nType == SIDE_IS_QUAD) {
 	m_vertices [0] = verts [index [0]];
 	m_vertices [1] = verts [index [1]];
 	m_vertices [2] = verts [index [2]];
 	m_vertices [3] = verts [index [3]];
-	if (m_nMinVertex [0] > m_vertices [1])
-		m_nMinVertex [0] = m_vertices [1];
-	if (m_nMinVertex [0] > m_vertices [3])
-		m_nMinVertex [0] = m_vertices [3];
 	m_nFaces = 1;
 	}
 else if (m_nType == SIDE_IS_TRI_02) {
@@ -119,18 +124,24 @@ else if (m_nType == SIDE_IS_TRI_13) {
 	m_vertices [2] =
 	m_vertices [3] = verts [index [1]];
 	m_vertices [4] = verts [index [2]];
-	m_nMinVertex [1] = min (m_vertices [1], m_vertices [4]);
 	m_nFaces = 2;
 	}
 else {
-	return m_nFaces = -1;
+	return;
 	}
-m_contour [0] = verts [index [0]];
-m_contour [1] = verts [index [1]];
-m_contour [2] = verts [index [2]];
-m_contour [3] = verts [index [3]];
-CreateFaceVertIndex ();
-return m_nFaces;
+
+m_nMinVertex [0] = min (m_vertices [0], m_vertices [2]);
+if (m_nType == SIDE_IS_QUAD) {
+	if (m_nMinVertex [0] > m_vertices [1])
+		m_nMinVertex [0] = m_vertices [1];
+	if (m_nMinVertex [0] > m_vertices [3])
+		m_nMinVertex [0] = m_vertices [3];
+	m_nMinVertex [1] = m_nMinVertex [0];
+	}
+else
+	m_nMinVertex [1] = min (m_vertices [1], m_vertices [4]);
+
+SetupFaceVertIndex ();
 }
 
 // -----------------------------------------------------------------------------------
@@ -140,7 +151,7 @@ return m_nFaces;
 //	If there are two faces, they both have three vertices, so face #0 is stored in vertices 0, 1, 2,
 //	face #1 is stored in vertices 3, 4, 5.
 
-int CSide::CreateFaceVertIndex (void)
+void CSide::SetupFaceVertIndex (void)
 {
 if (m_nType == SIDE_IS_QUAD) {
 	m_faceVerts [0] = 0;
@@ -164,24 +175,21 @@ else if (m_nType == SIDE_IS_TRI_13) {
 	m_faceVerts [3] = 1;
 	m_faceVerts [4] = 2;
 	}
-else {
-	return m_nFaces = -1;
-	}
-return m_nFaces;
 }
 
 // -------------------------------------------------------------------------------
 
-void CSide::AddAsQuad (CFixVector& vNormal)
+void CSide::SetupAsQuad (CFixVector& vNormal, ushort* verts, int* index)
 {
 m_nType = SIDE_IS_QUAD;
 m_normals [0] = 
 m_normals [1] = vNormal;
+SetupVertexList (verts, index);
 }
 
 // -------------------------------------------------------------------------------
 
-void CSide::AddAsTwoTriangles (bool bSolid)
+void CSide::SetupAsTriangles (bool bSolid, ushort* verts, int* index)
 {
 	CFixVector	vNormal;
 	short			v0 = m_vertices [0];
@@ -256,6 +264,7 @@ else {
 			m_normals [1].Neg ();
 		}
 	}
+SetupVertexList (verts, index);
 }
 
 // -------------------------------------------------------------------------------
@@ -271,7 +280,7 @@ return 0;
 
 // -------------------------------------------------------------------------------
 
-void CSide::CreateWalls (bool bSolid)
+void CSide::Setup (ushort* verts, int* index, bool bSolid)
 {
 	int			vm0, vm1, vm2, vm3, bFlip;
 	int			i;
@@ -279,25 +288,25 @@ void CSide::CreateWalls (bool bSolid)
 	CFixVector	vNormal;
 	fix			xDistToPlane;
 
-	bFlip = GetVertsForNormal (m_vertices [0], m_vertices [1], m_vertices [2], m_vertices [3], &vm0, &vm1, &vm2, &vm3);
-	vNormal = CFixVector::Normal (gameData.segs.vertices [vm0], gameData.segs.vertices [vm1], gameData.segs.vertices [vm2]);
-	xDistToPlane = abs (gameData.segs.vertices [vm3].DistToPlane (vNormal, gameData.segs.vertices [vm0]));
-	if (bFlip)
-		vNormal.Neg ();
-	if (xDistToPlane <= PLANE_DIST_TOLERANCE)
-		AddAsQuad (vNormal);
-	else {
-		AddAsTwoTriangles (bSolid);
-		//this code checks to see if we really should be triangulated, and
-		//de-triangulates if we shouldn't be.
-		Assert (m_nFaces == 2);
-		fix dist0 = gameData.segs.vertices [m_vertices [1]].DistToPlane (m_normals [1], gameData.segs.vertices [m_nMinVertex [0]]);
-		fix dist1 = gameData.segs.vertices [m_vertices [4]].DistToPlane (m_normals [0], gameData.segs.vertices [m_nMinVertex [0]]);
-		int s0 = sign (dist0);
-		int s1 = sign (dist1);
-		if (s0 == 0 || s1 == 0 || s0 != s1) {
-			m_nType = SIDE_IS_QUAD; 	//detriangulate!
-		}
+SetupCorners (verts, index);
+bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_corners [3], &vm0, &vm1, &vm2, &vm3);
+vNormal = CFixVector::Normal (gameData.segs.vertices [vm0], gameData.segs.vertices [vm1], gameData.segs.vertices [vm2]);
+xDistToPlane = abs (gameData.segs.vertices [vm3].DistToPlane (vNormal, gameData.segs.vertices [vm0]));
+if (bFlip)
+	vNormal.Neg ();
+if (xDistToPlane <= PLANE_DIST_TOLERANCE)
+	SetupAsQuad (vNormal, verts, index);
+else {
+	SetupAsTriangles (bSolid, verts, index);
+	//this code checks to see if we really should be triangulated, and
+	//de-triangulates if we shouldn't be.
+	Assert (m_nFaces == 2);
+	fix dist0 = gameData.segs.vertices [m_vertices [1]].DistToPlane (m_normals [1], gameData.segs.vertices [m_nMinVertex [0]]);
+	fix dist1 = gameData.segs.vertices [m_vertices [4]].DistToPlane (m_normals [0], gameData.segs.vertices [m_nMinVertex [0]]);
+	int s0 = sign (dist0);
+	int s1 = sign (dist1);
+	if (s0 == 0 || s1 == 0 || s0 != s1)
+		SetupAsQuad (vNormal, verts, index);
 	}
 if (m_nType == SIDE_IS_QUAD) {
 	AddToVertexNormal (m_vertices [0], vNormal);
@@ -311,13 +320,6 @@ else {
 	for (; i < 6; i++)
 		AddToVertexNormal (vertexList [i], m_normals [1]);
 	}
-}
-
-// -------------------------------------------------------------------------------
-//	Make a just-modified CSegment CSide valid.
-void CSide::Validate (bool bSolid)
-{
-CreateWalls (bSolid);
 }
 
 // -------------------------------------------------------------------------------
@@ -777,7 +779,7 @@ return IS_WALL (m_nWall) ? WALLS [m_nWall].IsOpenableDoor () : false;
 CFixVector* CSide::GetCorners (CFixVector* vertices) 
 { 
 for (int i = 0; i < 4; i++)
-	vertices [i] = gameData.segs.vertices [m_contour [i]];
+	vertices [i] = gameData.segs.vertices [m_corners [i]];
 return vertices;
 }
 

@@ -166,10 +166,10 @@ return m_sides [nSide].Masks (refP, xRad, 1, faceBit);
 //	Make a just-modified CSegment valid.
 //		check all sides to see how many faces they each should have (0, 1, 2)
 //		create new vector normals
-void CSegment::Validate (void)
+void CSegment::Setup (void)
 {
 for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
-	m_sides [i].Validate (m_children [i] < 0);
+	m_sides [i].Setup (m_children [i] < 0);
 }
 
 //	--------------------------------------------------------------------------------

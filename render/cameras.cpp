@@ -221,7 +221,7 @@ else {
 	else
 		m_info.obj.info.position.vPos = SEGMENTS [srcSeg].SideCenter (srcSide);
 #else
-	contour SEGMENTS [srcSeg].Contour (srcSide);
+	contour SEGMENTS [srcSeg].Corners (srcSide);
 	for (i = 0; i < 4; i++) {
 		pv = gameData.segs.vertices + contour [i];
 		m_info.obj.info.position.p.vPos.x += pv->x;
