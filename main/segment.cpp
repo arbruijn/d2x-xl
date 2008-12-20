@@ -43,11 +43,11 @@ if (bExtended) {
 	m_xAvgSegLight = cf.ReadFix ();
 	}
 else {
-	sideP = m_sides;
-	for (j = 0; j < 6; j++, sideP++) {
-		sideP->m_nWall = m_cf.ReadShort ();
-		sideP->m_nBaseTex = m_cf.ReadShort ();
-		nTexture = m_cf.ReadShort ();
+	CSide* sideP = m_sides;
+	for (int i = 0; i < 6; i++, sideP++) {
+		sideP->m_nWall = cf.ReadShort ();
+		sideP->m_nBaseTex = cf.ReadShort ();
+		short nTexture = cf.ReadShort ();
 		sideP->m_nOvlTex = nTexture & 0x3fff;
 		sideP->m_nOvlOrient = (nTexture >> 14) & 3;
 		}
@@ -774,10 +774,10 @@ CTrigger* trigP = Trigger (nSide);
 if (!trigP)
 	return;
 
-if (trigP->Operate (nObject, (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : -1, shot, 0))
+if (trigP->Operate (objP->Index (), (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : -1, shot, 0))
 	return;
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordTrigger (segP->Index (), nSide, objP->Index (), shot);
+	NDRecordTrigger (Index (), nSide, objP->Index (), shot);
 if (IsMultiGame)
 	MultiSendTrigger (Index (), objP->Index ());
 }

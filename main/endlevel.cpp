@@ -238,7 +238,7 @@ if (gameStates.app.bPlayerIsDead || (gameData.objs.consoleP->info.nFlags & OF_SH
 //	Dematerialize Buddy!
 FORALL_ROBOT_OBJS (objP, i)
 	if (IS_GUIDEBOT (objP)) {
-			/*Object*/CreateExplosion (objP->info.nSegment, &objP->info.position.vPos, F1_0*7/2, VCLIP_POWERUP_DISAPPEARANCE);
+			/*Object*/CreateExplosion (objP->info.nSegment, objP->info.position.vPos, F1_0*7/2, VCLIP_POWERUP_DISAPPEARANCE);
 			objP->Kill ();
 		}
 LOCALPLAYER.homingObjectDist = -F1_0; // Turn off homing sound.
@@ -277,7 +277,7 @@ void StartRenderedEndLevelSequence (void)
 //count segments in exit tunnel
 nOldSeg = gameData.objs.consoleP->info.nSegment;
 nExitSide = FindExitSide (gameData.objs.consoleP);
-nSegment = SEGMENTS [nOldSeg].children [nExitSide];
+nSegment = SEGMENTS [nOldSeg].m_children [nExitSide];
 nTunnelLength = 0;
 do {
 	nEntrySide = ELFindConnectedSide (nSegment, nOldSeg);
@@ -294,7 +294,7 @@ nLastSeg = nOldSeg;
 //now pick transition nSegment 1/3 of the way in
 nOldSeg = gameData.objs.consoleP->info.nSegment;
 nExitSide = FindExitSide (gameData.objs.consoleP);
-nSegment = SEGMENTS [nOldSeg].children [nExitSide];
+nSegment = SEGMENTS [nOldSeg].m_children [nExitSide];
 i = nTunnelLength / 3;
 while (i--) {
 	nEntrySide = ELFindConnectedSide (nSegment, nOldSeg);
@@ -465,7 +465,7 @@ if (!gameStates.render.bOutsideMine) {
 		if (CFixVector::Dot (tvec, gameData.endLevel.exit.mOrient.FVec()) > 0) {
 			CObject *objP;
 			gameStates.render.bOutsideMine = 1;
-			objP = /*Object*/CreateExplosion (gameData.endLevel.exit.nSegNum, &gameData.endLevel.exit.vSideExit, I2X (50), VCLIP_BIG_PLAYER_EXPLOSION);
+			objP = /*Object*/CreateExplosion (gameData.endLevel.exit.nSegNum, gameData.endLevel.exit.vSideExit, I2X (50), VCLIP_BIG_PLAYER_EXPLOSION);
 			if (objP) {
 				externalExplosion = *objP;
 				objP->Kill ();
@@ -473,7 +473,7 @@ if (!gameStates.render.bOutsideMine) {
 				ext_expl_halflife = objP->info.xLifeLeft;
 				gameStates.render.bExtExplPlaying = 1;
 				}
-			DigiLinkSoundToPos (SOUND_BIG_ENDLEVEL_EXPLOSION, gameData.endLevel.exit.nSegNum, 0, &gameData.endLevel.exit.vSideExit, 0, I2X (3)/4);
+			DigiLinkSoundToPos (SOUND_BIG_ENDLEVEL_EXPLOSION, gameData.endLevel.exit.nSegNum, 0, gameData.endLevel.exit.vSideExit, 0, I2X (3)/4);
 			}
 		}
 
@@ -489,9 +489,9 @@ if (!gameStates.render.bOutsideMine) {
 		tpnt += gameData.objs.consoleP->info.position.mOrient.UVec() * ((d_rand ()- RAND_MAX / 2) * 15);
 		nSegment = FindSegByPos (tpnt, gameData.objs.consoleP->info.nSegment, 1, 0);
 		if (nSegment != -1) {
-			expl = /*Object*/CreateExplosion (nSegment, &tpnt, I2X (20), VCLIP_BIG_PLAYER_EXPLOSION);
+			expl = /*Object*/CreateExplosion (nSegment, tpnt, I2X (20), VCLIP_BIG_PLAYER_EXPLOSION);
 			if (d_rand ()<10000 || ++soundCount==7) {		//pseudo-random
-				DigiLinkSoundToPos (SOUND_TUNNEL_EXPLOSION, nSegment, 0, &tpnt, 0, F1_0);
+				DigiLinkSoundToPos (SOUND_TUNNEL_EXPLOSION, nSegment, 0, tpnt, 0, F1_0);
 				soundCount=0;
 				}
 			}
@@ -524,7 +524,7 @@ if ((gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH) && (gameStates.app.bEndL
 		fq.flags				= 0;
 		FindVectorIntersection (&fq, &hit_data);
 		if ((hit_data.hit.nType == HIT_WALL) && (hit_data.hit.nSegment != -1))
-			/*Object*/CreateExplosion ((short) hit_data.hit.nSegment, &hit_data.hit.vPoint, I2X (3)+d_rand ()*6, VCLIP_SMALL_EXPLOSION);
+			/*Object*/CreateExplosion ((short) hit_data.hit.nSegment, hit_data.hit.vPoint, I2X (3)+d_rand ()*6, VCLIP_SMALL_EXPLOSION);
 		explosion_wait2 = (0xa00 + d_rand ()/8)/2;
 		}
 

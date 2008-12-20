@@ -30,7 +30,7 @@ for (i = 0, objP = gameData.objs.init.Buffer (); i < gameFileInfo.objects.count;
 	if ((objP->info.nType != nType) || (objP->info.nId != id))
 		continue;
 	nTotal++;
-	for (bFree = 1, j = SEGMENTS [objP->info.nSegment].objects; j != -1; j = OBJECTS [j].info.nNextInSeg)
+	for (bFree = 1, j = SEGMENTS [objP->info.nSegment].m_objects; j != -1; j = OBJECTS [j].info.nNextInSeg)
 		if ((OBJECTS [j].info.nType == nType) && (OBJECTS [j].info.nId == id)) {
 			bFree = 0;
 			break;
@@ -66,7 +66,7 @@ for (i = 0, objP = gameData.objs.init.Buffer (); i < gameFileInfo.objects.count;
 	// if the current CSegment does not contain a powerup of the nType being looked for,
 	// return that CSegment
 	if (bUseFree) {
-		for (bUsed = 0, j = SEGMENTS [objP->info.nSegment].objects; j != -1; j = OBJECTS [j].info.nNextInSeg)
+		for (bUsed = 0, j = SEGMENTS [objP->info.nSegment].m_objects; j != -1; j = OBJECTS [j].info.nNextInSeg)
 			if ((OBJECTS [j].info.nType == nType) && (OBJECTS [j].info.nId == id)) {
 				bUsed = 1;
 				break;
@@ -85,14 +85,12 @@ return NULL;
 //	It is assumed that the CPlayerData has all keys.
 int PlayerCanOpenDoor (CSegment *segP, short nSide)
 {
-	short	nWall, wallType;
-
-nWall = WallNumP (segP, nSide);
-if (!IS_WALL (nWall))
+CWall* wallP = segP->Wall (nSide);
+if (!wallP)
 	return 0;						//	no CWall here.
-wallType = WALLS [nWall].nType;
+short wallType = wallP->nType;
 //	Can't open locked doors.
-if (( (wallType == WALL_DOOR) && (WALLS [nWall].flags & WALL_DOOR_LOCKED)) || (wallType == WALL_CLOSED))
+if (( (wallType == WALL_DOOR) && (wallP->flags & WALL_DOOR_LOCKED)) || (wallType == WALL_CLOSED))
 	return 0;
 return 1;
 }
@@ -107,12 +105,13 @@ static int	segQueue [MAX_SEGMENTS_D2X];
 
 int PickConnectedSegment (CObject *objP, int nMaxDepth, int *nDepthP)
 {
-	int		nCurDepth;
-	int		nStartSeg;
-	int		nHead, nTail;
-	short		nSide, nWall, nChild;
-	CSegment	*segP;
-	ubyte		bVisited [MAX_SEGMENTS_D2X];
+	int			nCurDepth;
+	int			nStartSeg;
+	int			nHead, nTail;
+	short			nSide, nChild;
+	CSegment*	segP;
+	CWall*		wallP;
+	ubyte			bVisited [MAX_SEGMENTS_D2X];
 
 if (!objP)
 	return -1;
@@ -138,8 +137,8 @@ while (nTail != nHead) {
 			continue;
 		if (bVisited [nChild])
 			continue;
-		nWall = WallNumP (segP, nSide);
-		if (IS_WALL (nWall) && !PlayerCanOpenDoor (segP, nSide))
+		wallP = segP->Wall (nSide);
+		if (wallP && !PlayerCanOpenDoor (segP, nSide))
 			continue;
 		segQueue [nHead++] = segP->m_children [nSide];
 		bVisited [nChild] = nCurDepth + 1;
@@ -239,7 +238,7 @@ while (nSegment == -1) {
 	//bail if not far enough from original position
 	if (nSegment > -1) {
 		tempv = SEGMENTS [nSegment].Center ();
-		nDist = FindConnectedDistance (vPlayerPos, nPlayerSeg, &tempv, nSegment, -1, WID_FLY_FLAG, 0);
+		nDist = FindConnectedDistance (*vPlayerPos, nPlayerSeg, tempv, nSegment, -1, WID_FLY_FLAG, 0);
 		if ((nDist < 0) || (nDist >= I2X (20) * nDepth))
 			break;
 		}
@@ -383,12 +382,12 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	if (bFixedPos)
 		vNewPos = OBJECTS [nObject].info.position.vPos;
 	else
-		vNewPos = SEGMENTS [nSegment].m_RandomPoint ();
+		vNewPos = SEGMENTS [nSegment].RandomPoint ();
 	MultiSendCreatePowerup (nPowerupType, nSegment, nObject, &vNewPos);
 	if (!bFixedPos)
 		OBJECTS [nObject].info.position.vPos = vNewPos;
 	OBJECTS [nObject].RelinkToSeg (nSegment);
-	/*Object*/CreateExplosion (nSegment, &vNewPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
+	/*Object*/CreateExplosion (nSegment, vNewPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
 	return 1;
 	}
 return 0;
@@ -775,7 +774,7 @@ for (i = 0; i < nThrusters; i++) {
 	nSegment = FindSegByPos (ti.vPos[i], objP->info.nSegment, 1, 0);
 	if (nSegment == -1)
 		continue;
-	if (!(blobObjP = /*Object*/CreateExplosion (nSegment, ti.vPos + i, xSizeScale, VCLIP_AFTERBURNER_BLOB)))
+	if (!(blobObjP = /*Object*/CreateExplosion (nSegment, ti.vPos [i], xSizeScale, VCLIP_AFTERBURNER_BLOB)))
 		continue;
 	if (xLifeTime != -1) {
 		blobObjP->rType.vClipInfo.xTotalTime = xLifeTime;

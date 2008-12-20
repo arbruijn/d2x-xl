@@ -245,6 +245,7 @@ class CSegment {
 		void CreateGenerator (int nType);
 		void CreateEquipGen (int oldType);
 		void CreateBotGen (int oldType);
+		void CreateFuelCen (int oldType);
 
 		void ComputeCenter (void);
 		void ComputeRads (fix xMinDist);

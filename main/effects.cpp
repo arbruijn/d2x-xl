@@ -35,7 +35,7 @@ if ((ecP->changingWallTexture < 0) && (ecP->changingObjectTexture < 0))
 	return ecP->vc.xFrameTime;
 else {
 	CBitmap	*bmP = gameData.pig.tex.bitmapP + ecP->vc.frames [0].index;
-	return (fix) ((((bmP->Type () == BM_TYPE_ALT) && bmP->Frames ()) ? 
+	return (fix) ((((bmP->Type () == Bm_TYPE_ALT) && bmP->Frames ()) ? 
 					  (ecP->vc.xFrameTime * ecP->vc.nFrameCount) / bmP->FrameCount () : 
 					  ecP->vc.xFrameTime) /  gameStates.gameplay.slowmo [0].fSpeed);
 	}
@@ -113,7 +113,7 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
 
 // ----------------------------------------------------------------------------
 
-#define BM_INDEX(_fP,_i,_bI,_bO)	\
+#define Bm_INDEX(_fP,_i,_bI,_bO)	\
 			((_bI) ? (_bO) ? gameData.pig.tex.objBmIndex [((_fP) [_i])].index : \
 								  gameData.pig.tex.bmIndexP [((_fP) [_i])].index : \
 								  ((_fP) [_i]))
@@ -125,9 +125,9 @@ CBitmap *FindAnimBaseTex (short *frameP, int nFrames, int bIndirect, int bObject
 
 for (i = 0; i < nFrames; i++) {
 	if (bObject)
-		bmP = gameData.pig.tex.bitmaps [0] + BM_INDEX (frameP, i, bIndirect, bObject);
+		bmP = gameData.pig.tex.bitmaps [0] + Bm_INDEX (frameP, i, bIndirect, bObject);
 	else
-		bmP = gameData.pig.tex.bitmapP + BM_INDEX (frameP, i, bIndirect, bObject);
+		bmP = gameData.pig.tex.bitmapP + Bm_INDEX (frameP, i, bIndirect, bObject);
 	if ((bmP = bmP->Override ()) && (bmP->Type () != BM_TYPE_FRAME)) {
 		*piBaseFrame = i;
 		return bmP;
@@ -152,7 +152,7 @@ bmP->SetupTexture (1, 3, 1);
 if (gameOpts->ogl.bGlTexMerge) {
 	pBitmaps = bObject ? gameData.pig.tex.bitmaps [0].Buffer () : gameData.pig.tex.bitmapP.Buffer ();
 	for (i = 0; i < nFrames; i++) {
-		j = BM_INDEX (frameP, i, bIndirect, bObject);
+		j = Bm_INDEX (frameP, i, bIndirect, bObject);
 		hbmP = pBitmaps + j;
 		if (hbmP->Override () != bmP) {
 			PiggyFreeHiresAnimation (hbmP, gameStates.app.bD1Data && !bObject);
@@ -173,7 +173,7 @@ else {
 		nFrameStep = (nBmFrames > nFrames) ? nBmFrames / nFrames : 1;
 		h = min(nFrames, nBmFrames);
 		for (i = 0; i < h; i++) {
-			j = BM_INDEX (frameP, i, bIndirect, bObject);
+			j = Bm_INDEX (frameP, i, bIndirect, bObject);
 			hbmP = gameData.pig.tex.bitmapP + j;
 			if (hbmP->Override () == bmP)
 				hbmP->SetOverride (NULL);	//prevent the root texture from being deleted
@@ -185,7 +185,7 @@ else {
 		}
 	else {
 		for (i = 0; i < nFrames; i++) {
-			j = BM_INDEX (frameP, i, bIndirect, bObject);
+			j = Bm_INDEX (frameP, i, bIndirect, bObject);
 			gameData.pig.tex.bitmapP [j].SetOverride (bmP);
 			}
 		}
@@ -244,9 +244,9 @@ xEffectTime += gameData.time.xFrame;
 #if DBG
 					Assert (ecP->nSegment != -1);
 					Assert ((ecP->nSide >= 0) && (ecP->nSide < 6));
-					Assert (ecP->nDestBm != 0 && SEGMENTS [ecP->nSegment].m_sides [ecP->nSide].nOvlTex);
+					Assert (ecP->nDestBm != 0 && SEGMENTS [ecP->nSegment].m_sides [ecP->nSide].m_nOvlTex);
 #endif
-					SEGMENTS [ecP->nSegment].m_sides [ecP->nSide].nOvlTex = ecP->nDestBm;		//replace with destroyed
+					SEGMENTS [ecP->nSegment].m_sides [ecP->nSide].m_nOvlTex = ecP->nDestBm;		//replace with destroyed
 					ecP->flags &= ~EF_ONE_SHOT;
 					ecP->nSegment = -1;		//done with this
 					}
@@ -305,9 +305,9 @@ xEffectTime += gameData.time.xFrame;
 	#if DBG
 					Assert(ecP->nSegment != -1);
 					Assert((ecP->nSide >= 0) && (ecP->nSide < 6));
-					Assert(ecP->nDestBm !=0 && SEGMENTS [ecP->nSegment].m_sides [ecP->nSide].nOvlTex);
+					Assert(ecP->nDestBm !=0 && SEGMENTS [ecP->nSegment].m_sides [ecP->nSide].m_nOvlTex);
 	#endif
-					SEGMENTS [ecP->nSegment].m_sides [ecP->nSide].nOvlTex = ecP->nDestBm;		//replace with destoyed
+					SEGMENTS [ecP->nSegment].m_sides [ecP->nSide].m_nOvlTex = ecP->nDestBm;		//replace with destoyed
 					ecP->flags &= ~EF_ONE_SHOT;
 					ecP->nSegment = -1;		//done with this
 					}

@@ -1308,7 +1308,7 @@ for (i = 0; i < nItems; i++)	{
 	if (itemP [i].nType == NM_TYPE_RADIO)	{
 		int fm = -1;	// ffs first marked one
 		for (j = 0; j < nItems; j++)	{
-			if ((itemP [j].nType == NM_TYPE_RADIO) && (itemP [j].m_group == itemP [i].m_group)) {
+			if ((itemP [j].nType == NM_TYPE_RADIO) && (itemP [j].group == itemP [i].group)) {
 				if ((fm == -1) && itemP [j].value)
 					fm = j;
 				itemP [j].value = 0;
@@ -1778,7 +1778,7 @@ if (k && (console.Events (k) || bWheelUp || bWheelDown))
 			if ((itemP [choice].nType==NM_TYPE_INPUT) &&(choice != old_choice))
 				itemP [choice].value = -1;
 			if ((old_choice>-1) &&(itemP [old_choice].nType==NM_TYPE_INPUT_MENU) &&(old_choice != choice))	{
-				itemP [old_choice].m_group=0;
+				itemP [old_choice].group=0;
 				strcpy (itemP [old_choice].text, itemP [old_choice].saved_text);
 				itemP [old_choice].value = -1;
 			}
@@ -1820,7 +1820,7 @@ if (k && (console.Events (k) || bWheelUp || bWheelDown))
 			if ((itemP [choice].nType == NM_TYPE_INPUT) && (choice != old_choice))
 				itemP [choice].value = -1;
 			if ((old_choice>-1) &&(itemP [old_choice].nType==NM_TYPE_INPUT_MENU) &&(old_choice != choice))	{
-				itemP [old_choice].m_group=0;
+				itemP [old_choice].group=0;
 				strcpy (itemP [old_choice].text, itemP [old_choice].saved_text);
 				itemP [old_choice].value = -1;
 			}
@@ -1854,7 +1854,7 @@ radioOption:
 					break;
 				case NM_TYPE_RADIO:
 					for (i = 0; i<nItems; i++)	{
-						if ((i != choice) &&(itemP [i].nType == NM_TYPE_RADIO) && (itemP [i].m_group == itemP [choice].m_group) &&(itemP [i].value))	{
+						if ((i != choice) &&(itemP [i].nType == NM_TYPE_RADIO) && (itemP [i].group == itemP [choice].group) &&(itemP [i].value))	{
 							itemP [i].value = 0;
 							itemP [i].redraw = 1;
 						}
@@ -1917,8 +1917,8 @@ radioOption:
 		case KEY_ENTER:
 		case KEY_PADENTER:
 launchOption:
-			if ((choice > -1) && (itemP [choice].nType == NM_TYPE_INPUT_MENU) && (itemP [choice].m_group == 0)) {
-				itemP [choice].m_group = 1;
+			if ((choice > -1) && (itemP [choice].nType == NM_TYPE_INPUT_MENU) && (itemP [choice].group == 0)) {
+				itemP [choice].group = 1;
 				itemP [choice].redraw = 1;
 				if (!strnicmp (itemP [choice].saved_text, TXT_EMPTY, strlen (TXT_EMPTY))) {
 					itemP [choice].text [0] = 0;
@@ -1936,8 +1936,8 @@ launchOption:
 			break;
 
 		case KEY_ESC:
-			if ((choice > -1) &&(itemP [choice].nType==NM_TYPE_INPUT_MENU) &&(itemP [choice].m_group == 1)) {
-				itemP [choice].m_group=0;
+			if ((choice > -1) &&(itemP [choice].nType==NM_TYPE_INPUT_MENU) &&(itemP [choice].group == 1)) {
+				itemP [choice].group=0;
 				strcpy (itemP [choice].text, itemP [choice].saved_text);
 				itemP [choice].redraw=1;
 				itemP [choice].value = -1;
@@ -1995,7 +1995,7 @@ launchOption:
 								break;
 							case NM_TYPE_RADIO:
 								for (i=0; i<nItems; i++)	{
-									if ((i!=choice) &&(itemP [i].nType==NM_TYPE_RADIO) &&(itemP [i].m_group==itemP [choice].m_group) &&(itemP [i].value))	{
+									if ((i!=choice) &&(itemP [i].nType==NM_TYPE_RADIO) &&(itemP [i].group==itemP [choice].group) &&(itemP [i].value))	{
 										itemP [i].value = 0;
 										itemP [i].redraw = 1;
 									}
@@ -2112,7 +2112,7 @@ launchOption:
 					if ((itemP [choice].nType==NM_TYPE_INPUT) &&(choice != old_choice))
 						itemP [choice].value = -1;
 					if ((old_choice>-1) &&(itemP [old_choice].nType==NM_TYPE_INPUT_MENU) &&(old_choice != choice))	{
-						itemP [old_choice].m_group=0;
+						itemP [old_choice].group=0;
 						strcpy (itemP [old_choice].text, itemP [old_choice].saved_text);
 						itemP [old_choice].value = -1;
 					}
@@ -2151,8 +2151,8 @@ launchOption:
 		}
 	
 		if (!done && !nMouseState && nOldMouseState && (choice > -1) &&
-			 (itemP [choice].nType == NM_TYPE_INPUT_MENU) && (itemP [choice].m_group == 0)) {
-			itemP [choice].m_group = 1;
+			 (itemP [choice].nType == NM_TYPE_INPUT_MENU) && (itemP [choice].group == 0)) {
+			itemP [choice].group = 1;
 			itemP [choice].redraw = 1;
 			if (!strnicmp (itemP [choice].saved_text, TXT_EMPTY, strlen (TXT_EMPTY)))	{
 				itemP [choice].text [0] = 0;
@@ -2184,7 +2184,7 @@ launchOption:
 			int ascii;
 
 			if (((itemP [choice].nType == NM_TYPE_INPUT) || 
-				 ((itemP [choice].nType == NM_TYPE_INPUT_MENU) && (itemP [choice].m_group == 1))) && (old_choice == choice)) {
+				 ((itemP [choice].nType == NM_TYPE_INPUT_MENU) && (itemP [choice].group == 1))) && (old_choice == choice)) {
 				if (k == KEY_LEFT || k == KEY_BACKSP || k == KEY_PAD4)	{
 					if (itemP [choice].value  == -1) 
 						itemP [choice].value = (int) strlen (itemP [choice].text);
@@ -2339,7 +2339,7 @@ launchOption:
 	        	}   
          if ((i == choice) && 
 				 ((itemP [i].nType == NM_TYPE_INPUT) || 
-				 ((itemP [i].nType == NM_TYPE_INPUT_MENU) && itemP [i].m_group)))
+				 ((itemP [i].nType == NM_TYPE_INPUT_MENU) && itemP [i].group)))
 				NMUpdateCursor (&itemP [i]);
 			}
 #endif

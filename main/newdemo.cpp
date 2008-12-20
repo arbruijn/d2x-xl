@@ -1570,7 +1570,7 @@ if (bJustStartedRecording == 1) {
 		segP = &SEGMENTS [WALLS [i].nSegment];
 		nSide = WALLS [i].nSide;
 		NDWriteShort (segP->m_sides [nSide].m_nBaseTex);
-		NDWriteShort (segP->m_sides [nSide].m_nOvlTex | (segP->m_sides [nSide].nOvlOrient << 14));
+		NDWriteShort (segP->m_sides [nSide].m_nOvlTex | (segP->m_sides [nSide].m_nOvlOrient << 14));
 		bJustStartedRecording = 0;
 		}
 	}
@@ -1711,14 +1711,14 @@ for (i = 0; i < gameData.reactor.triggers.nLinks; i++) {
 	side = gameData.reactor.triggers.sides [i];
 	connSegP = SEGMENTS + segP->m_children [side];
 	nConnSide = segP->ConnectedSide (connSegP);
-	anim_num = WALLS [WallNumP (segP, side)].nClip;
+	anim_num = segP->Wall (side)->nClip;
 	n = gameData.walls.animP [anim_num].nFrameCount;
 	if (gameData.walls.animP [anim_num].flags & WCF_TMAP1)
 		segP->m_sides [side].m_nBaseTex = 
 		connSegP->m_sides [nConnSide].m_nBaseTex = gameData.walls.animP [anim_num].frames [n-1];
 	else
-		segP->m_sides [side].nOvlTex = 
-		connSegP->m_sides [nConnSide].nOvlTex = gameData.walls.animP [anim_num].frames [n-1];
+		segP->m_sides [side].m_nOvlTex = 
+		connSegP->m_sides [nConnSide].m_nOvlTex = gameData.walls.animP [anim_num].frames [n-1];
 	}
 }
 
@@ -1939,7 +1939,7 @@ while (!bDone) {
 			shot = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
-				if (TRIGGERS [WALLS [WallNumI ((short) nSegment, (short) nSide)].nTrigger].nType == TT_SECRET_EXIT) {
+				if (TRIGGERS [SEGMENTS [nSegment].Wall (nSide)->nTrigger].nType == TT_SECRET_EXIT) {
 					int truth;
 
 					nTag = NDReadByte ();
@@ -2286,9 +2286,9 @@ while (!bDone) {
 				 (gameData.demo.nVcrState != ND_STATE_ONEFRAMEBACKWARD)) {
 				Assert (tmap!=0 && SEGMENTS [segP].m_sides [nSide].m_nOvlTex!=0);
 				SEGMENTS [segP].m_sides [nSide].m_nOvlTex = 
-				SEGMENTS [nConnSeg].m_sides [nConnSide].nOvlTex = tmap & 0x3fff;
-				SEGMENTS [segP].m_sides [nSide].nOvlOrient = 
-				SEGMENTS [nConnSeg].m_sides [nConnSide].nOvlOrient = (tmap >> 14) & 3;
+				SEGMENTS [nConnSeg].m_sides [nConnSide].m_nOvlTex = tmap & 0x3fff;
+				SEGMENTS [segP].m_sides [nSide].m_nOvlOrient = 
+				SEGMENTS [nConnSeg].m_sides [nConnSide].m_nOvlOrient = (tmap >> 14) & 3;
 				}
 			}
 			break;
@@ -2490,13 +2490,13 @@ while (!bDone) {
 				segP = SEGMENTS + nSegment;
 				oppSegP = SEGMENTS + segP->m_children [nSide];
 				nConnSide = segP->ConnectedSide (oppSegP);
-				anim_num = WALLS [WallNumP (segP, nSide)].nClip;
+				anim_num = segP->Wall (nSide)->nClip;
 				if (gameData.walls.animP [anim_num].flags & WCF_TMAP1)
 					segP->m_sides [nSide].m_nBaseTex = oppSegP->m_sides [nConnSide].m_nBaseTex =
 						gameData.walls.animP [anim_num].frames [0];
 				else
 					segP->m_sides [nSide].m_nOvlTex = 
-					oppSegP->m_sides [nConnSide].nOvlTex = gameData.walls.animP [anim_num].frames [0];
+					oppSegP->m_sides [nConnSide].m_nOvlTex = gameData.walls.animP [anim_num].frames [0];
 				}
 			else
 				WallOpenDoor (SEGMENTS + nSegment, nSide);
@@ -2542,19 +2542,19 @@ while (!bDone) {
 			WALLS [nFrontWall].cloakValue = cloakValue;
 			segP = SEGMENTS + WALLS [nFrontWall].nSegment;
 			nSide = WALLS [nFrontWall].nSide;
-			segP->m_sides [nSide].uvls [0].l = ((int) l0) << 8;
-			segP->m_sides [nSide].uvls [1].l = ((int) l1) << 8;
-			segP->m_sides [nSide].uvls [2].l = ((int) l2) << 8;
-			segP->m_sides [nSide].uvls [3].l = ((int) l3) << 8;
+			segP->m_sides [nSide].m_uvls [0].l = ((int) l0) << 8;
+			segP->m_sides [nSide].m_uvls [1].l = ((int) l1) << 8;
+			segP->m_sides [nSide].m_uvls [2].l = ((int) l2) << 8;
+			segP->m_sides [nSide].m_uvls [3].l = ((int) l3) << 8;
 			WALLS [nBackWall].nType = nType;
 			WALLS [nBackWall].state = state;
 			WALLS [nBackWall].cloakValue = cloakValue;
 			segP = &SEGMENTS [WALLS [nBackWall].nSegment];
 			nSide = WALLS [nBackWall].nSide;
-			segP->m_sides [nSide].uvls [0].l = ((int) l0) << 8;
-			segP->m_sides [nSide].uvls [1].l = ((int) l1) << 8;
-			segP->m_sides [nSide].uvls [2].l = ((int) l2) << 8;
-			segP->m_sides [nSide].uvls [3].l = ((int) l3) << 8;
+			segP->m_sides [nSide].m_uvls [0].l = ((int) l0) << 8;
+			segP->m_sides [nSide].m_uvls [1].l = ((int) l1) << 8;
+			segP->m_sides [nSide].m_uvls [2].l = ((int) l2) << 8;
+			segP->m_sides [nSide].m_uvls [3].l = ((int) l3) << 8;
 			}
 			break;
 
@@ -2594,7 +2594,7 @@ while (!bDone) {
 					segP->m_sides [nSide].m_nBaseTex = NDReadShort ();
 					nTexture = NDReadShort ();
 					segP->m_sides [nSide].m_nOvlTex = nTexture & 0x3fff;
-					segP->m_sides [nSide].nOvlOrient = (nTexture >> 14) & 3;
+					segP->m_sides [nSide].m_nOvlOrient = (nTexture >> 14) & 3;
 					}
 				if (gameData.demo.nGameMode & GM_CAPTURE)
 					MultiApplyGoalTextures ();

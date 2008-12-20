@@ -1467,8 +1467,8 @@ if (gameStates.app.bPlayerIsDead)
 	int	bLava, bWater;
 	short nSound;
 
-	bLava = (SEGMENTS [gameData.objs.consoleP->info.nSegment].s2Flags & S2F_AMBIENT_LAVA);
-	bWater = (SEGMENTS [gameData.objs.consoleP->info.nSegment].s2Flags & S2F_AMBIENT_WATER);
+	bLava = (SEGMENTS [gameData.objs.consoleP->info.nSegment].m_flags & S2F_AMBIENT_LAVA);
+	bWater = (SEGMENTS [gameData.objs.consoleP->info.nSegment].m_flags & S2F_AMBIENT_WATER);
 
 if (bLava) {							//has lava
 	nSound = SOUND_AMBIENT_LAVA;
@@ -1527,7 +1527,7 @@ if (gameData.fusion.xAutoFireTime) {
 		xBump = F1_0*4;
 		if (gameData.fusion.xCharge > F1_0*2)
 			xBump = gameData.fusion.xCharge*4;
-		BumpOneObject (gameData.objs.consoleP, &vRand, xBump);
+		gameData.objs.consoleP->Bump (vRand, xBump);
 		}
 	}
 return 1;
@@ -1630,8 +1630,8 @@ if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects]
 	}
 else {
 	lightningManager.DoFrame ();
-	sparkManager::DoFrame ();
-	particleManager::DoFrame ();
+	sparkManager.DoFrame ();
+	DoParticleFrame ();
 	}
 }
 
@@ -1952,7 +1952,7 @@ if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringC
 		if (gameData.fusion.xNextSoundTime < gameData.time.xGame) {
 			if (gameData.fusion.xCharge > F1_0*2) {
 				DigiPlaySample (11, F1_0);
-				ApplyDamageToPlayer (gameData.objs.consoleP, gameData.objs.consoleP, d_rand () * 4);
+				gameData.objs.consoleP->ApplyDamageToPlayer (gameData.objs.consoleP, d_rand () * 4);
 				}
 			else {
 				CreateAwarenessEvent (gameData.objs.consoleP, WEAPON_ROBOT_COLLISION);
@@ -1997,7 +1997,7 @@ CollidePlayerAndPowerup (playerP, powerupP, &vCollision);
 void PowerupGrabCheatAll (void)
 {
 if (gameStates.app.tick40fps.bTick) {
-	short nObject = SEGMENTS [gameData.objs.consoleP->info.nSegment].objects;
+	short nObject = SEGMENTS [gameData.objs.consoleP->info.nSegment].m_objects;
 	while (nObject != -1) {
 		if (OBJECTS [nObject].info.nType == OBJ_POWERUP)
 			PowerupGrabCheat (gameData.objs.consoleP, nObject);
@@ -2071,7 +2071,7 @@ int MarkPathToExit (void)
 	//	---------- Find exit doors ----------
 for (i = 0; i <= gameData.segs.nLastSegment; i++)
 	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++)
-		if (SEGMENTS [i].children [j] == -2)
+		if (SEGMENTS [i].m_children [j] == -2)
 			return MarkPlayerPathToSegment (i);
 return 0;
 }

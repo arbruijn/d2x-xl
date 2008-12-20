@@ -2396,9 +2396,9 @@ do {
 	gameOpts->render.effects.bEnergySparks = m [effectOpts.nSparks].value;
 	if ((gameOpts->render.effects.bEnergySparks != bEnergySparks) && gameStates.app.bGameRunning) {
 		if (gameOpts->render.effects.bEnergySparks)
-			AllocEnergySparks ();
+			sparkManager.Create ();
 		else
-			FreeEnergySparks ();
+			sparkManager.Destroy ();
 		}
 	GET_VAL (gameOpts->render.effects.bTransparent, optTranspExpl);
 	for (j = 0; j < 3; j++)

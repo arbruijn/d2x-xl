@@ -125,7 +125,7 @@ FORALL_ROBOT_OBJS (objP, i)
 		if (gameStates.app.bNostalgia)
 			objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		else 
-			ApplyDamageToRobot (objP, objP->info.xShields + 1, -1);
+			objP->ApplyDamageToRobot (objP->info.xShields + 1, -1);
 		if (bVerbose)
 			HUDInitMessage (TXT_BUDDY_TOASTED);
 		nKilled++;
@@ -150,7 +150,7 @@ FORALL_ROBOT_OBJS (objP, i)
 		if (gameStates.app.bNostalgia)
 			objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		else {
-			ApplyDamageToRobot (objP, objP->info.xShields + 1, -1);
+			objP->ApplyDamageToRobot (objP->info.xShields + 1, -1);
 			objP->info.nFlags |= OF_ARMAGEDDON;
 			}
 		}
@@ -177,7 +177,7 @@ else {
 			if (gameStates.app.bNostalgia)
 				objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 			else {
-				ApplyDamageToRobot (objP, objP->info.xShields + 1, -1);
+				objP->ApplyDamageToRobot (objP->info.xShields + 1, -1);
 				objP->info.nFlags |= OF_ARMAGEDDON;
 				}
 			gameStates.gameplay.bKillBossCheat = 1;
@@ -244,7 +244,7 @@ FORALL_ROBOT_OBJS (objP, i)
 		if (gameStates.app.bNostalgia)
 			objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		else {
-			ApplyDamageToRobot (objP, objP->info.xShields + 1, -1);
+			objP->ApplyDamageToRobot (objP->info.xShields + 1, -1);
 			objP->info.nFlags |= OF_ARMAGEDDON;
 			}
 		if (bVerbose)

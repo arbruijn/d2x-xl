@@ -1204,9 +1204,9 @@ trigP->time = cf.ReadFix ();
 trigP->link_num = cf.ReadByte ();
 trigP->nLinks = cf.ReadShort ();
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
-	trigP->nSegment [i] = cf.ReadShort ();
+	trigP->segments [i] = cf.ReadShort ();
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
-	trigP->nSide [i] = cf.ReadShort ();
+	trigP->sides [i] = cf.ReadShort ();
 }
 
 //------------------------------------------------------------------------------
@@ -1224,9 +1224,9 @@ trigger.pad = cf.ReadByte ();
 trigger.value = cf.ReadFix ();
 trigger.time = cf.ReadFix ();
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
-	trigger.nSegment [i] = cf.ReadShort ();
+	trigger.segments [i] = cf.ReadShort ();
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
-	trigger.nSide [i] = cf.ReadShort ();
+	trigger.sides [i] = cf.ReadShort ();
 }
 
 //------------------------------------------------------------------------------

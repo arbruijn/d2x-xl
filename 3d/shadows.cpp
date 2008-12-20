@@ -914,7 +914,7 @@ int LineHitsFace (CFixVector *pHit, CFixVector *p0, CFixVector *p1, short nSegme
 nFaces = segP->Side (nSide)->FaceCount ();
 nVerts = 5 - nFaces;
 for (i = 0; i < nFaces; i++)
-	if (segP->CheckLineToFace (pHit, p0, p1, nSide, i, nVerts, 0))
+	if (segP->CheckLineToFace (*pHit, p0, p1, 0, nSide, i))
 		return nSide;
 return -1;
 }

@@ -342,7 +342,7 @@ if (objP->cType.aiInfo.xDyingStartTime) {
 											&objP->cType.aiInfo.bDyingSoundPlaying, ROBOTINFO (objP->info.nId).deathrollSound, 
 											bDeathRoll * F1_0 / 8, bDeathRoll * F1_0 / 2);
 	if (rval) {
-		ExplodeObject (objP, F1_0/4);
+		objP->Explode (F1_0/4);
 		DigiLinkSoundToObject2 (SOUND_BADASS_EXPLOSION, objP->Index (), 0, F2_0, F1_0*512, SOUNDCLASS_EXPLOSION);
 		if ((gameData.missions.nCurrentLevel < 0) && (ROBOTINFO (objP->info.nId).thief))
 			RecreateThief (objP);

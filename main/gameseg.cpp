@@ -34,8 +34,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Fill in array with four absolute point numbers for a given CSide
 void GetContour (int nSegment, int nSide, ushort* vertIndex)
 {
-	sbyte *sv = sideVertIndex [nSide];
-	short	*vp = SEGMENTS [nSegment].m_verts;
+	int*		sv = sideVertIndex [nSide];
+	ushort*	vp = SEGMENTS [nSegment].m_verts;
 
 vertIndex [0] = vp [sv [0]];
 vertIndex [1] = vp [sv [1]];
@@ -113,8 +113,8 @@ ubyte CSegment::GetSideDists (const CFixVector& refP, fix* xSideDists, int bBehi
 {
 	ubyte		mask = 0;
 
-for (nSide = 0; nSide < 6; nSide++)
-	mask |= segP->m_sides [nSide].Dist (refP, xSideDists [nSide], bBehind, 1 << nSide);
+for (int nSide = 0; nSide < 6; nSide++)
+	mask |= m_sides [nSide].Dist (refP, xSideDists [nSide], bBehind, 1 << nSide);
 return mask;
 }
 
@@ -130,7 +130,7 @@ int	bDoingLightingHack=0;
 int TraceSegs (const CFixVector& p0, int nOldSeg, int nTraceDepth, char* bVisited)
 {
 	CSegment			*segP;
-	fix				xSideDists, xMaxDist;
+	fix				xSideDists [6], xMaxDist;
 	int				centerMask, nMaxSide, nSide, bit, nMatchSeg = -1;
 
 if (nTraceDepth >= gameData.segs.nSegments)
@@ -173,7 +173,7 @@ int FindSegByPos (const CFixVector& p, int nSegment, int bExhaustive, int bSkyBo
 	static char		bVisited [2][MAX_SEGMENTS_D2X]; 
 
 	int		nNewSeg, i;
-	short		*segP;
+	short		*segNumP;
 #if 0
 	static	int nSemaphore = 0;
 
@@ -201,13 +201,13 @@ if (bDoingLightingHack || !bExhaustive) {
 console.printf (1, "Warning: doing exhaustive search to find point CSegment (%i times)\n", nExhaustiveCount);
 #endif
 if (bSkyBox) {
-	for (i = gameData.segs.skybox.ToS (), segP = gameData.segs.skybox.Buffer (); i; i--, segP++)
-		if (!GetSegMasks (p, *segP, 0).m_center)
+	for (i = gameData.segs.skybox.ToS (), segNumP = gameData.segs.skybox.Buffer (); i; i--, segNumP++)
+		if (!SEGMENTS [*segNumP].Masks (p, 0).m_center)
 			goto funcExit;
 	}
 else {
 	for (nNewSeg = 0; nNewSeg <= gameData.segs.nLastSegment; nNewSeg++)
-		if ((SEGMENTS [nNewSeg].m_nType != SEGMENT_IS_SKYBOX) && !GetSegMasks (p, nNewSeg, 0).m_center)
+		if ((SEGMENTS [nNewSeg].m_nType != SEGMENT_IS_SKYBOX) && !SEGMENTS [nNewSeg].Masks (p, 0).m_center)
 			goto funcExit;
 	}
 nNewSeg = -1;
@@ -384,13 +384,13 @@ if (nMaxDepth > MAX_LOC_POINT_SEGS-2) {
 	}
 if (seg0 == seg1) {
 	gameData.fcd.nConnSegDist = 0;
-	return CFixVector::Dist(*p0, *p1);
+	return CFixVector::Dist (p0, p1);
 	}
-nConnSide = ConnectedSide (SEGMENTS + seg0, SEGMENTS + seg1);
+nConnSide = SEGMENTS [seg0].ConnectedSide (SEGMENTS + seg1);
 if ((nConnSide != -1) &&
 	 (SEGMENTS [seg1].IsDoorWay (nConnSide, NULL) & widFlag)) {
 	gameData.fcd.nConnSegDist = 1;
-	return CFixVector::Dist(*p0, *p1);
+	return CFixVector::Dist (p0, p1);
 	}
 //	Periodically flush cache.
 if ((gameData.time.xGame - gameData.fcd.xLastFlushTime > F1_0*2) ||
@@ -479,12 +479,12 @@ pointSegs [nPoints].point = SEGMENTS [seg0].Center ();
 nPoints++;
 if (nPoints == 1) {
 	gameData.fcd.nConnSegDist = nPoints;
-	return CFixVector::Dist(*p0, *p1);
+	return CFixVector::Dist (p0, p1);
 	}
 else {
 	fix	ndist;
-	dist = CFixVector::Dist(*p1, pointSegs [1].point);
-	dist += CFixVector::Dist(*p0, pointSegs [nPoints-2].point);
+	dist = CFixVector::Dist (p1, pointSegs [1].point);
+	dist += CFixVector::Dist (p0, pointSegs [nPoints-2].point);
 	for (i = 1; i < nPoints - 2; i++) {
 		ndist = CFixVector::Dist(pointSegs [i].point, pointSegs [i+1].point);
 		dist += ndist;
@@ -531,7 +531,7 @@ void CreateShortPos (tShortPos *spp, CObject *objP, int swap_bytes)
 	*segP++ = convert_to_byte(orient.UVec ()[Z]);
 	*segP++ = convert_to_byte(orient.FVec ()[Z]);
 
-	pv = gameData.segs.vertices + SEGMENTS [objP->info.nSegment].verts [0];
+	pv = gameData.segs.vertices + SEGMENTS [objP->info.nSegment].m_verts [0];
 	spp->pos [X] = (short) ((objP->info.position.vPos [X] - (*pv)[X]) >> RELPOS_PRECISION);
 	spp->pos [Y] = (short) ((objP->info.position.vPos [Y] - (*pv)[Y]) >> RELPOS_PRECISION);
 	spp->pos [Z] = (short) ((objP->info.position.vPos [Z] - (*pv)[Z]) >> RELPOS_PRECISION);
@@ -732,8 +732,6 @@ pn->vNormal += vNormal;
 
 void ValidateSegments (void)
 {
-	int	s;
-
 gameOpts->render.nMathFormat = 0;
 gameData.segs.points.Clear ();
 for (int i = 0; i <= gameData.segs.nLastSegment; i++)
@@ -780,7 +778,7 @@ int SetSegmentDepths (int nStartSeg, ushort *pDepthBuf)
 	int		nDepth = 1;
 	int		nSegment, nSide, nChild;
 	ushort	nParentDepth = 0;
-	short		*childP;
+	ushort*	childP;
 
 	head = 0;
 	tail = 0;
@@ -838,7 +836,7 @@ fix FindConnectedDistanceSegments (short seg0, short seg1, int nDepth, int widFl
 
 p0 = SEGMENTS [seg0].Center ();
 p1 = SEGMENTS [seg1].Center ();
-return FindConnectedDistance (&p0, seg0, &p1, seg1, nDepth, widFlag, 0);
+return FindConnectedDistance (p0, seg0, p1, seg1, nDepth, widFlag, 0);
 }
 
 #define	AMBIENT_SEGMENT_DEPTH		5
@@ -854,7 +852,7 @@ if (nDepth < 0)
 markedSegs [nSegment] = 1;
 for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 	child = SEGMENTS [nSegment].m_children [i];
-	if (IS_CHILD (child) && (SEGMENTS [nSegment].m_IsDoorWay (i, NULL) & WID_RENDPAST_FLAG) && !markedSegs [child])
+	if (IS_CHILD (child) && (SEGMENTS [nSegment].IsDoorWay (i, NULL) & WID_RENDPAST_FLAG) && !markedSegs [child])
 		AmbientMarkBfs (child, markedSegs, nDepth - 1);
 	}
 }
@@ -915,8 +913,8 @@ SetAmbientSoundFlagsCommon (TMI_WATER, S2F_AMBIENT_WATER);
 
 float FaceSize (short nSegment, ubyte nSide)
 {
-	CSegment		*segP = SEGMENTS + nSegment;
-	sbyte			*s2v = sideVertIndex [nSide];
+	CSegment*	segP = SEGMENTS + nSegment;
+	int*			s2v = sideVertIndex [nSide];
 
 	short			v0 = segP->m_verts [s2v [0]];
 	short			v1 = segP->m_verts [s2v [1]];
