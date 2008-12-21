@@ -197,7 +197,7 @@ void DetectEscortGoalAccomplished (int index)
 	int		i, j;
 	int		bDetected = 0;
 	CObject	*objP;
-	ushort*	childI, * childJ;
+	short*	childI, * childJ;
 
 //	If goal is to go away, how can it be achieved?
 if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM)

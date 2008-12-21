@@ -778,7 +778,7 @@ int SetSegmentDepths (int nStartSeg, ushort *pDepthBuf)
 	int		nDepth = 1;
 	int		nSegment, nSide, nChild;
 	ushort	nParentDepth = 0;
-	ushort*	childP;
+	short*	childP;
 
 	head = 0;
 	tail = 0;

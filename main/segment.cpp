@@ -209,7 +209,7 @@ m_extents [1] = vMax;
 int CSegment::ConnectedSide (CSegment* other)
 {
 	short		nSegment = SEG_IDX (this);
-	ushort*	childP = other->m_children;
+	short*	childP = other->m_children;
 
 if (childP [0] == nSegment)
 		return 0;
