@@ -153,7 +153,7 @@ template < class _T > class CArray : public CQuickSort < _T > {
 		inline size_t Size (void) { return m_data.length * sizeof (_T); }
 #if DBG
 		inline _T& operator[] (uint i) { 
-			if (i < m_data.length) 
+			if (m_data.buffer && (i < m_data.length))
 				return m_data.buffer [i];
 			return m_data.null; 
 			}
