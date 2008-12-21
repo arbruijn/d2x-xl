@@ -169,7 +169,7 @@ return m_sides [nSide].Masks (refP, xRad, 1, faceBit);
 void CSegment::Setup (void)
 {
 for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
-	m_sides [i].Setup (m_children [i] < 0);
+	m_sides [i].Setup (m_verts, sideVertIndex [i], m_children [i] < 0);
 }
 
 //	--------------------------------------------------------------------------------
