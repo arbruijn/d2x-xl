@@ -2045,7 +2045,7 @@ if (EGI_FLAG (bRotateMarkers, 0, 1, 0) && gameStates.app.tick40fps.bTick) {
 
 int CObject::CheckWallPhysics (short nSegment, short nSide)
 {
-	int			bCheck = 1, nType, sideMask, bUnderLavaFall = 0;
+	int			bCheck = 1, nType = 0, sideMask, bUnderLavaFall = 0;
 	CSegment*	segP = SEGMENTS + nSegment;
 
 	static bool bPlayingSound [MAX_PLAYERS] = {false, false, false, false, false, false, false, false};

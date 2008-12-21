@@ -1311,7 +1311,7 @@ for (i = 0; i < gameData.segs.nSegments; i++) {
 	sideP = SEGMENTS [i].m_sides;
 	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
 		CWall* wallP = sideP->Wall ();
-		if (wallP->nClip == -1)
+		if (!wallP || (wallP->nClip == -1))
 			continue;
 		if (gameData.walls.animP [wallP->nClip].flags & WCF_TMAP1) {
 			sideP->m_nBaseTex = gameData.walls.animP [wallP->nClip].frames [0];

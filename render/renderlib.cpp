@@ -160,6 +160,7 @@ void FreeSparks (void)
 {
 if (bmpSparks) {
 	delete bmpSparks;
+	bmpSparks = NULL;
 	bHaveSparks = 0;
 	}
 }
@@ -180,6 +181,7 @@ void FreeCorona (void)
 {
 if (bmpCorona) {
 	delete bmpCorona;
+	bmpCorona = NULL;
 	bHaveCorona = 0;
 	}
 }
@@ -200,6 +202,7 @@ void FreeGlare (void)
 {
 if (bmpGlare) {
 	delete bmpGlare;
+	bmpGlare = NULL;
 	bHaveGlare = 0;
 	}
 }
@@ -220,6 +223,7 @@ void FreeHalo (void)
 {
 if (bmpHalo) {
 	delete bmpHalo;
+	bmpHalo = NULL;
 	bHaveHalo = 0;
 	}
 }

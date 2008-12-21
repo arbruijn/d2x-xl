@@ -1015,6 +1015,10 @@ int CBitmap::SetupFrames (int bDoMipMap, int nTransp, int bLoad)
 if (nFrames < 2)
 	return 0;
 else {
+#if DBG
+	if (!strcmp (m_info.szName, "sparks.tga"))
+		nDbgSeg = nDbgSeg;
+#endif
 	CBitmap	*bmfP = new CBitmap [nFrames];
 	int		i, w = m_info.props.w;
 
@@ -1108,8 +1112,12 @@ int CBitmap::Bind (int bMipMaps, int nTransp)
 	CTexture		*texP = Texture ();
 	CBitmap		*bmP, *mask;
 
+#if DBG
+if (!strcmp (m_info.szName, "sparks.tga"))
+	nDbgSeg = nDbgSeg;
+#endif
 if (bmP = HasOverride ())
-	bmP->Bind (bMipMaps, nTransp);
+	return bmP->Bind (bMipMaps, nTransp);
 #if RENDER2TEXTURE
 if (texP && texP->IsRenderBuffer ())
 	texP->BindRenderBuffer ();
