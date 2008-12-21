@@ -293,7 +293,6 @@ void CSide::Setup (short* verts, int* index, bool bSolid)
 {
 	short			vSorted [4], bFlip;
 	int			i;
-	int			vertexList [6];
 	CFixVector	vNormal;
 	fix			xDistToPlane;
 
@@ -325,9 +324,9 @@ if (m_nType == SIDE_IS_QUAD) {
 	}
 else {
 	for (i = 0; i < 3; i++)
-		AddToVertexNormal (vertexList [i], m_normals [0]);
+		AddToVertexNormal (m_vertices [i], m_normals [0]);
 	for (; i < 6; i++)
-		AddToVertexNormal (vertexList [i], m_normals [1]);
+		AddToVertexNormal (m_vertices [i], m_normals [1]);
 	}
 }
 
