@@ -575,7 +575,6 @@ m_background = NULL;
 if (m_input)
 	delete m_input;
 m_input = NULL;
-delete this;
 }
 
 //------------------------------------------------------------------------------

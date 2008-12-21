@@ -1109,15 +1109,28 @@ return nMasks;
 
 int CBitmap::Bind (int bMipMaps, int nTransp)
 {
-	CTexture		*texP = Texture ();
-	CBitmap		*bmP, *mask;
+	CBitmap		*bmP;
 
 #if DBG
+	static int nDepth = 0;
+
+if (nDepth > 1)
+	return -1;
+nDepth++;
+
 if (!strcmp (m_info.szName, "sparks.tga"))
 	nDbgSeg = nDbgSeg;
 #endif
-if (bmP = HasOverride ())
-	return bmP->Bind (bMipMaps, nTransp);
+if (bmP = HasOverride ()) {
+	int i = bmP->Bind (bMipMaps, nTransp);
+#if DBG
+	nDepth--;
+#endif
+	return i;
+	}
+
+	CTexture* texP = Texture ();
+
 #if RENDER2TEXTURE
 if (texP && texP->IsRenderBuffer ())
 	texP->BindRenderBuffer ();
@@ -1133,10 +1146,17 @@ else
 			bmP->SetupTexture (1, nTransp, 1);
 #endif
 		}
-	if ((mask = Mask ()) && !mask->Prepared ())
+
+	CBitmap* mask = Mask ();
+
+	if (mask && !mask->Prepared ())
 		mask->SetupTexture (0, -1, 1);
 	}
 texP->Bind ();
+
+#if DBG
+nDepth--;
+#endif
 return 0;
 }
 

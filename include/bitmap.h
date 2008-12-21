@@ -134,7 +134,7 @@ class CBitmap : public CArray< ubyte > {
 				return this;
 			if (iFrame < 0)
 				return m_info.frames.currentP ? m_info.frames.currentP : this;
-			return m_info.frames.currentP = (m_info.frames.bmP ? m_info.frames.bmP + iFrame % m_info.frames.nCount : this);
+			return m_info.frames.bmP ? m_info.frames.currentP = m_info.frames.bmP + iFrame % m_info.frames.nCount : this;
 			}
 
 		inline CBitmap* HasParent (void)
