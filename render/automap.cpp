@@ -58,7 +58,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void ModexPrintF (int x,int y, char *s, CFont *font, uint color);
 
 typedef struct tEdgeInfo {
-	ushort	verts [2];     // 4 bytes
+	short		verts [2];     // 4 bytes
 	ubyte		sides [4];     // 4 bytes
 	short		nSegment [4];  // 8 bytes  // This might not need to be stored... If you can access the normals of a CSide.
 	ubyte		flags;			// 1 bytes  // See the EF_??? defines above.
@@ -1009,7 +1009,7 @@ for (i = 0; i <= nHighestEdgeIndex; i++)	{
 			}
 
 		if (nfacing && nnfacing) {
-			// a contour line
+			// a corners line
 			DrawingListBright [nbright++] = EDGE_IDX (edgeP);
 			}
 		else if (edgeP->flags & (EF_DEFINING|EF_GRATE))	{
@@ -1205,7 +1205,7 @@ void AddSegmentEdges (CSegment *segP)
 	short				nSegment = segP->Index ();
 	int				bHidden;
 	int				ttype, nTrigger;
-	ushort*			contour;
+	short*			corners;
 
 for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	bHidden = 0;
@@ -1317,15 +1317,15 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 
 addEdge:
 
-		contour = SEGMENTS [nSegment].Corners (nSide);
-		AddOneEdge (contour [0], contour [1], color, nSide, nSegment, bHidden, 0, bNoFade);
-		AddOneEdge (contour [1], contour [2], color, nSide, nSegment, bHidden, 0, bNoFade);
-		AddOneEdge (contour [2], contour [3], color, nSide, nSegment, bHidden, 0, bNoFade);
-		AddOneEdge (contour [3], contour [0], color, nSide, nSegment, bHidden, 0, bNoFade);
+		corners = SEGMENTS [nSegment].Corners (nSide);
+		AddOneEdge (corners [0], corners [1], color, nSide, nSegment, bHidden, 0, bNoFade);
+		AddOneEdge (corners [1], corners [2], color, nSide, nSegment, bHidden, 0, bNoFade);
+		AddOneEdge (corners [2], corners [3], color, nSide, nSegment, bHidden, 0, bNoFade);
+		AddOneEdge (corners [3], corners [0], color, nSide, nSegment, bHidden, 0, bNoFade);
 
 		if (bIsGrate) {
-			AddOneEdge (contour [0], contour [2], color, nSide, nSegment, bHidden, 1, bNoFade);
-			AddOneEdge (contour [1], contour [3], color, nSide, nSegment, bHidden, 1, bNoFade);
+			AddOneEdge (corners [0], corners [2], color, nSide, nSegment, bHidden, 1, bNoFade);
+			AddOneEdge (corners [1], corners [3], color, nSide, nSegment, bHidden, 1, bNoFade);
 			}
 		}
 	}
@@ -1341,11 +1341,11 @@ for (int nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 
 	// Only add edges that have no children
 	if (segP->m_children [nSide] == -1) {
-		ushort* contour = segP->Corners (nSide);
-		AddOneUnknownEdge (contour [0], contour [1]);
-		AddOneUnknownEdge (contour [1], contour [2]);
-		AddOneUnknownEdge (contour [2], contour [3]);
-		AddOneUnknownEdge (contour [3], contour [0]);
+		short* corners = segP->Corners (nSide);
+		AddOneUnknownEdge (corners [0], corners [1]);
+		AddOneUnknownEdge (corners [1], corners [2]);
+		AddOneUnknownEdge (corners [2], corners [3]);
+		AddOneUnknownEdge (corners [3], corners [0]);
 		}
 	}
 }

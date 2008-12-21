@@ -1304,7 +1304,7 @@ extern short nDbgSeg;
 tFaceColor *AvgSgmColor (int nSegment, CFixVector *vPosP)
 {
 	tFaceColor	c, *pvc, *psc = gameData.render.color.segments + nSegment;
-	ushort		i, *pv;
+	short			i, *pv;
 	CFixVector	vCenter, vVertex;
 	float			d, ds;
 
@@ -1486,16 +1486,16 @@ if (RENDERPATH && gameStates.render.bPerPixelLighting && lightmapManager.HaveLig
 	return;
 	}
 if (gameOpts->render.nLightingMethod || (gameStates.render.bAmbientColor && !gameStates.render.bColored)) {
-		tFaceColor		*pfh, *pf = gameData.render.color.ambient.Buffer ();
-		CSegment		*seg2P;
+		tFaceColor*	pfh, *pf = gameData.render.color.ambient.Buffer ();
+		CSegment*	segP;
 
 	memset (pf, 0, gameData.segs.nVertices * sizeof (*pf));
 	if (!RunRenderThreads (rtStaticVertLight))
 		ComputeStaticVertexLights (0, gameData.segs.nVertices, 0);
 	pf = gameData.render.color.ambient.Buffer ();
-	for (i = 0, seg2P = SEGMENTS.Buffer (); i < gameData.segs.nSegments; i++, seg2P++) {
-		if (seg2P->m_nType == SEGMENT_IS_SKYBOX) {
-			ushort	*sv = SEGMENTS [i].m_verts;
+	for (i = 0, segP = SEGMENTS.Buffer (); i < gameData.segs.nSegments; i++, segP++) {
+		if (segP->m_nType == SEGMENT_IS_SKYBOX) {
+			short* sv = segP->m_verts;
 			for (j = 8; j; j--, sv++) {
 				pfh = pf + *sv;
 				pfh->color.red =

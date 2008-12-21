@@ -398,7 +398,7 @@ if (xObjIntensity) {
 	// for pretty dim sources, only process vertices in CObject's own CSegment.
 	//	12/04/95, MK, markers only cast light in own CSegment.
 	if (objP && ((abs (obji_64) <= F1_0 * 8) || (nObjType == OBJ_MARKER))) {
-		ushort *vp = SEGMENTS [nObjSeg].m_verts;
+		short *vp = SEGMENTS [nObjSeg].m_verts;
 		for (iVertex = 0; iVertex < MAX_VERTICES_PER_SEGMENT; iVertex++) {
 			nVertex = vp [iVertex];
 #if !FLICKERFIX
@@ -726,7 +726,7 @@ if (!gameOpts->render.nLightingMethod) {
 	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs; iRenderSeg++) {
 		nSegment = gameData.render.mine.nSegRenderList [iRenderSeg];
 		if (nSegment != -1) {
-			ushort	*vp = SEGMENTS [nSegment].m_verts;
+			short* vp = SEGMENTS [nSegment].m_verts;
 			for (v = 0; v < MAX_VERTICES_PER_SEGMENT; v++) {
 				nv = vp [v];
 				if ((nv < 0) || (nv > gameData.segs.nLastVertex)) {
@@ -820,7 +820,7 @@ if (!bKeepDynColoring)
 
 fix ComputeSegDynamicLight (int nSegment)
 {
-ushort *verts = SEGMENTS [nSegment].m_verts;
+short *verts = SEGMENTS [nSegment].m_verts;
 fix sum = gameData.render.lights.dynamicLight [*verts++];
 sum += gameData.render.lights.dynamicLight [*verts++];
 sum += gameData.render.lights.dynamicLight [*verts++];

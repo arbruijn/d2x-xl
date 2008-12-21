@@ -89,7 +89,7 @@ return -1;
 
 // -------------------------------------------------------------------------------
 
-void CSide::SetupCorners (ushort* verts, int* index)
+void CSide::SetupCorners (short* verts, int* index)
 {
 m_corners [0] = verts [index [0]];
 m_corners [1] = verts [index [1]];
@@ -99,7 +99,7 @@ m_corners [3] = verts [index [3]];
 
 // -------------------------------------------------------------------------------
 
-void CSide::SetupVertexList (ushort* verts, int* index)
+void CSide::SetupVertexList (short* verts, int* index)
 {
 m_nFaces = -1;
 if (m_nType == SIDE_IS_QUAD) {
@@ -181,7 +181,7 @@ else if (m_nType == SIDE_IS_TRI_13) {
 
 // -------------------------------------------------------------------------------
 
-void CSide::SetupAsQuad (CFixVector& vNormal, ushort* verts, int* index)
+void CSide::SetupAsQuad (CFixVector& vNormal, short* verts, int* index)
 {
 m_nType = SIDE_IS_QUAD;
 m_normals [0] = 
@@ -191,7 +191,7 @@ SetupVertexList (verts, index);
 
 // -------------------------------------------------------------------------------
 
-void CSide::SetupAsTriangles (bool bSolid, ushort* verts, int* index)
+void CSide::SetupAsTriangles (bool bSolid, short* verts, int* index)
 {
 	CFixVector	vNormal;
 	short			v0 = m_vertices [0];
@@ -282,7 +282,7 @@ return 0;
 
 // -------------------------------------------------------------------------------
 
-void CSide::Setup (ushort* verts, int* index, bool bSolid)
+void CSide::Setup (short* verts, int* index, bool bSolid)
 {
 	int			vm0, vm1, vm2, vm3, bFlip;
 	int			i;
@@ -895,7 +895,7 @@ else {
 
 	// Read tUVL m_uvls [4] (u, v>>5, write as short, l>>1 write as short)
 	for (int i = 0; i < 4; i++) {
-		m_uvls [i].u = fix(cf.ReadShort ()) << 5;
+		m_uvls [i].u = fix (cf.ReadShort ()) << 5;
 		m_uvls [i].v = fix (cf.ReadShort ()) << 5;
 		m_uvls [i].l = fix (cf.ReadShort ()) << 1;
 		gameData.render.color.vertBright [sideVerts [i]] = X2F (m_uvls [i].l);

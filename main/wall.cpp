@@ -1399,17 +1399,17 @@ for (int i = 0; i < MAX_EXPLODING_WALLS; i++) {
 		//n = newCount - oldCount;
 		//now create all the next explosions
 		for (e = oldCount; e < newCount; e++) {
-			ushort*		contour;
+			short*		corners;
 			CFixVector	*v0, *v1, *v2;
 			CFixVector	vv0, vv1, vPos;
 			fix			size;
 
 			//calc expl position
 
-			contour = SEGMENTS [nSegment].Corners (nSide);
-			v0 = gameData.segs.vertices + contour [0];
-			v1 = gameData.segs.vertices + contour [1];
-			v2 = gameData.segs.vertices + contour [2];
+			corners = SEGMENTS [nSegment].Corners (nSide);
+			v0 = gameData.segs.vertices + corners [0];
+			v1 = gameData.segs.vertices + corners [1];
+			v2 = gameData.segs.vertices + corners [2];
 			vv0 = *v0 - *v1;
 			vv1 = *v2 - *v1;
 			vPos = *v1 + vv0 * (d_rand ()*2);

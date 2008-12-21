@@ -125,16 +125,16 @@ class CSide {
 		CFixVector	m_rotNorms [2];
 		CFixVector	m_vCenter;
 		fix			m_rads [2];
-		ushort		m_vertices [6];
-		ushort		m_faceVerts [6];
-		ushort		m_corners [4];
-		ushort		m_nMinVertex [2];
+		short			m_vertices [6];
+		short			m_faceVerts [6];
+		short			m_corners [4];
+		short			m_nMinVertex [2];
 		ubyte			m_nFaces;
 
 	public:
 		inline void Init (void) { memset (this, 0, sizeof (*this)); }
 		void Read (CFile& cf, ushort* sideVerts, bool bSolid);
-		void CSide::ReadWallNum (CFile& cf, bool bWall);
+		void ReadWallNum (CFile& cf, bool bWall);
 		void SaveState (CFile& cf);
 		void LoadState (CFile& cf);
 		void LoadTextures (void);
@@ -161,16 +161,16 @@ class CSide {
 		fix MinRad (void) { return m_rads [0]; }
 		fix MaxRad (void) { return m_rads [1]; }
 
-		void Setup (ushort* verts, int* index, bool bSolid);
+		void Setup (short* verts, int* index, bool bSolid);
 
 		void SetTextures (int nBaseTex, int nOvlTex);
 
-		inline ubyte GetVertices (ushort*& vertices) { 
+		inline ubyte GetVertices (short*& vertices) { 
 			vertices = m_vertices;
 			return m_nFaces;
 			}
 		CFixVector* GetCorners (CFixVector* vertices);
-		inline ushort* Corners (void) { return m_corners; }
+		inline short* Corners (void) { return m_corners; }
 		inline CFixVector& Vertex (int nVertex);
 		inline CFixVector& MinVertex (void);
 		inline CFixVector& Normal (int nFace);
@@ -185,11 +185,11 @@ class CSide {
 		bool IsOpenableDoor (void);
 
 	private:
-		void SetupCorners (ushort* verts, int* index);
-		void SetupVertexList (ushort* verts, int* index);
+		void SetupCorners (short* verts, int* index);
+		void SetupVertexList (short* verts, int* index);
 		void SetupFaceVertIndex (void);
-		void SetupAsQuad (CFixVector& vNormal, ushort* verts, int* index);
-		void SetupAsTriangles (bool bSolid, ushort* verts, int* index);
+		void SetupAsQuad (CFixVector& vNormal, short* verts, int* index);
+		void SetupAsTriangles (bool bSolid, short* verts, int* index);
 	};
 
 //------------------------------------------------------------------------------
@@ -198,7 +198,7 @@ class CSegment {
 	public:
 		CSide			m_sides [MAX_SIDES_PER_SEGMENT];       // 6 sides
 		short			m_children [MAX_SIDES_PER_SEGMENT];    // indices of 6 children segments, front, left, top, right, bottom, back
-		ushort		m_verts [MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
+		short			m_verts [MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
 		int			m_objects;    // pointer to objects in this tSegment
 
 		ubyte			m_nType;
@@ -276,7 +276,7 @@ class CSegment {
 		void GetNormals (int nSide, CFixVector& n1, CFixVector& n2) { m_sides [nSide].GetNormals (n1, n2); }
 		inline CFixVector& Center (void) { return m_vCenter; }
 		inline CFixVector& SideCenter (int nSide) { return m_sides [nSide].Center (); }
-		inline ushort* Corners (int nSide) { return m_sides [nSide].Corners (); }
+		inline short* Corners (int nSide) { return m_sides [nSide].Corners (); }
 		inline CFixVector* GetCorners (int nSide, CFixVector* vertices) { return m_sides [nSide].GetCorners (vertices); }
 		ubyte SideDists (const CFixVector& intersection, fix* xSideDists, int bBehind = 1);
 		int ConnectedSide (CSegment* other);

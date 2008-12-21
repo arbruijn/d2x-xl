@@ -1597,7 +1597,7 @@ void BuildRenderSegList (short nStartSeg, int nWindow)
 	int		l, i, j;
 	short		nChild;
 	short		nChildSeg;
-	ushort*	sv;
+	short*	sv;
 	int*		s2v;
 	ubyte		andCodes, andCodes3D;
 	int		bRotated, nSegment, bNotProjected;

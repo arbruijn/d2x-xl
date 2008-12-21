@@ -199,7 +199,7 @@ double CLightmapManager::SideRad (int nSegment, int nSide)
 	int			i;
 	double		h, xMin, xMax, yMin, yMax, zMin, zMax;
 	double		dx, dy, dz;
-	ushort*		sideVerts;
+	short*		sideVerts;
 	CFixVector	*v;
 
 sideVerts = SEGMENTS [nSegment].Corners (nSide);

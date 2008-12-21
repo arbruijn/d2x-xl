@@ -35,7 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void GetCorners (int nSegment, int nSide, ushort* vertIndex)
 {
 	int*		sv = sideVertIndex [nSide];
-	ushort*	vp = SEGMENTS [nSegment].m_verts;
+	short*	vp = SEGMENTS [nSegment].m_verts;
 
 vertIndex [0] = vp [sv [0]];
 vertIndex [1] = vp [sv [1]];

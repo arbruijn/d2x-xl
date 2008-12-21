@@ -831,7 +831,7 @@ return p;
 //cc.ccAnd and cc.ccOr will contain the position/orientation of the face that is determined
 //by the vertices passed relative to the viewer
 
-g3sCodes RotateVertexList (int nVertices, ushort* vertexIndexP) 
+g3sCodes RotateVertexList (int nVertices, short* vertexIndexP) 
 {
 	int			i;
 	g3sPoint		*p;
