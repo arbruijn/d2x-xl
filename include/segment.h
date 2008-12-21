@@ -197,7 +197,7 @@ class CSide {
 class CSegment {
 	public:
 		CSide			m_sides [MAX_SIDES_PER_SEGMENT];       // 6 sides
-		ushort		m_children [MAX_SIDES_PER_SEGMENT];    // indices of 6 children segments, front, left, top, right, bottom, back
+		short			m_children [MAX_SIDES_PER_SEGMENT];    // indices of 6 children segments, front, left, top, right, bottom, back
 		ushort		m_verts [MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
 		int			m_objects;    // pointer to objects in this tSegment
 

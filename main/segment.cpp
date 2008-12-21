@@ -40,7 +40,7 @@ void CSegment::ReadType (CFile& cf, ubyte flags)
 if (flags & (1 << MAX_SIDES_PER_SEGMENT)) {
 	m_nType = cf.ReadByte ();
 	m_nMatCen = cf.ReadByte ();
-	m_value = (char) cf.ReadShort ();
+	m_value = char (cf.ReadShort ());
 	}
 else {
 	m_nType = 0;
@@ -62,7 +62,7 @@ for (int i = 0; i < MAX_VERTICES_PER_SEGMENT; i++)
 void CSegment::ReadChildren (CFile& cf, ubyte flags)
 {
 for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) 
-	m_children [i] = (flags & (i << i)) ? cf.ReadShort () : -1;
+	m_children [i] = (flags & (1 << i)) ? cf.ReadShort () : -1;
 }
 
 //------------------------------------------------------------------------------
