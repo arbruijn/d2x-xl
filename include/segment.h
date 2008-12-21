@@ -132,6 +132,11 @@ class CSide {
 		ubyte			m_nFaces;
 
 	public:
+		inline void Init (void) { memset (this, 0, sizeof (*this)); }
+		void Read (CFile& cf, ushort* sideVerts, bool bSolid);
+		void CSide::ReadWallNum (CFile& cf, bool bWall);
+		void SaveState (CFile& cf);
+		void LoadState (CFile& cf);
 		void LoadTextures (void);
 		inline ushort WallNum (void) { return m_nWall; }
 		inline sbyte Type (void) { return m_nType; }
@@ -210,7 +215,12 @@ class CSegment {
 
 	public:
 		inline int Index (void);
-		void Read (CFile& cf, bool bExtended);
+		void Read (CFile& cf);
+		void ReadType (CFile& cf, ubyte flags);
+		void ReadVerts (CFile& cf);
+		void ReadChildren (CFile& cf, ubyte flags);
+		void SaveState (CFile& cf);
+		void LoadState (CFile& cf);
 		void LoadTextures (void);
 		void LoadSideTextures (int nSide);
 		void LoadBotGenTextures (void);
@@ -459,6 +469,6 @@ void ReadlightDeltaIndex (tLightDeltaIndex *di, CFile& cf);
 
 void FreeSkyBoxSegList (void);
 int BuildSkyBoxSegList (void);
-void GetContour (int nSegment, int nSide, ushort* vertIndex);
+void GetCorners (int nSegment, int nSide, ushort* vertIndex);
 
 #endif

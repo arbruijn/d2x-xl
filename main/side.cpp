@@ -32,6 +32,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // How far a point can be from a plane, and still be "in" the plane
 
+extern bool bNewFileFormat;
+
 // ------------------------------------------------------------------------------------------
 
 inline CFixVector& CSide::Normal (int nFace)
@@ -853,6 +855,81 @@ if (nBaseTex >= 0)
 	m_nBaseTex = nBaseTex;
 if (nOvlTex >= 0)
 	m_nOvlTex = nOvlTex;
+}
+
+//------------------------------------------------------------------------------
+
+short ConvertD1Texture (short nD1Texture, int bForce);
+
+void CSide::Read (CFile& cf, ushort* sideVerts, bool bSolid)
+{
+	int nType = bSolid ? 1 : IS_WALL (m_nWall) ? 2 : 0;
+
+m_nFrame = 0;
+if (!nType)
+	m_nBaseTex =
+	m_nOvlTex = 0;
+else {
+	// Read short sideP->m_nBaseTex;
+	ushort nTexture;
+	if (bNewFileFormat) {
+		nTexture = ushort (cf.ReadShort ());
+		m_nBaseTex = nTexture & 0x7fff;
+		}
+	else {
+		nTexture = 0;
+		m_nBaseTex = cf.ReadShort ();
+		}
+	if (gameData.segs.nLevelVersion <= 1)
+		m_nBaseTex = ConvertD1Texture (m_nBaseTex, 0);
+	if (bNewFileFormat && !(nTexture & 0x8000))
+		m_nOvlTex = 0;
+	else {
+		// Read short m_nOvlTex;
+		nTexture = cf.ReadShort ();
+		m_nOvlTex = nTexture & 0x3fff;
+		m_nOvlOrient = (nTexture >> 14) & 3;
+		if ((gameData.segs.nLevelVersion <= 1) && m_nOvlTex)
+			m_nOvlTex = ConvertD1Texture (m_nOvlTex, 0);
+		}
+
+	// Read tUVL m_uvls [4] (u, v>>5, write as short, l>>1 write as short)
+	for (int i = 0; i < 4; i++) {
+		m_uvls [i].u = fix(cf.ReadShort ()) << 5;
+		m_uvls [i].v = fix (cf.ReadShort ()) << 5;
+		m_uvls [i].l = fix (cf.ReadShort ()) << 1;
+		gameData.render.color.vertBright [sideVerts [i]] = X2F (m_uvls [i].l);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CSide::ReadWallNum (CFile& cf, bool bWall)
+{
+m_nWall = ushort (bWall ? (gameData.segs.nLevelVersion >= 13) ? cf.ReadShort () : cf.ReadByte () : -1);
+}
+
+//------------------------------------------------------------------------------
+// reads a CSegment structure from a CFile
+ 
+void CSide::SaveState (CFile& cf)
+{
+cf.WriteShort (m_nWall);
+cf.WriteShort (m_nBaseTex);
+cf.WriteShort (m_nOvlTex | (m_nOvlOrient << 14));
+}
+
+//------------------------------------------------------------------------------
+// reads a CSegment structure from a CFile
+ 
+void CSide::LoadState (CFile& cf)
+{
+m_nWall = cf.ReadShort ();
+m_nBaseTex = cf.ReadShort ();
+	short nTexture = cf.ReadShort ();
+m_nOvlTex = nTexture & 0x3fff;
+m_nOvlOrient = (nTexture >> 14) & 3;
 }
 
 //------------------------------------------------------------------------------

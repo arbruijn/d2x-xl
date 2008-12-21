@@ -141,7 +141,7 @@ struct mfi_v19 {
 
 int CreateDefaultNewSegment ();
 
-int bNewFileFormat = 1; // "new file format" is everything newer than d1 shareware
+bool bNewFileFormat = true; // "new file format" is everything newer than d1 shareware
 
 int bD1PigPresent = 0; // can descent.pig from descent 1 be loaded?
 
@@ -863,19 +863,6 @@ int load_mine_data (CFile& cf)
 
 //------------------------------------------------------------------------------
 
-void ReadSegChildren (int nSegment, ubyte nSideMask, CFile& cf)
-{
-	int nSide;
-
-for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) 
-	if (nSideMask & (1 << nSide)) 
-		SEGMENTS [nSegment].m_children [nSide] = cf.ReadShort ();
-	else
-		SEGMENTS [nSegment].m_children [nSide] = -1;
-}
-
-//------------------------------------------------------------------------------
-
 void ReadColor (CFile& cf, tFaceColor *pc, int bFloatData, int bRegisterColor)
 {
 pc->index = cf.ReadByte ();
@@ -900,30 +887,6 @@ if (bRegisterColor &&
 	 ((pc->color.blue > 0) && (pc->color.blue < 1))))
 	gameStates.render.bColored = 1;
 pc->color.alpha = 1;
-}
-
-//------------------------------------------------------------------------------
-
-void ReadSegVerts (int nSegment, CFile& cf)
-{
-for (int i = 0; i < MAX_VERTICES_PER_SEGMENT; i++)
-	SEGMENTS [nSegment].m_verts [i] = cf.ReadShort ();
-}
-
-//------------------------------------------------------------------------------
-
-void ReadSegSpecialType (int nSegment, ubyte bitMask, CFile& cf)
-{
-if (bitMask & (1 << MAX_SIDES_PER_SEGMENT)) {
-	SEGMENTS [nSegment].m_nType = cf.ReadByte ();
-	SEGMENTS [nSegment].m_nMatCen = cf.ReadByte ();
-	SEGMENTS [nSegment].m_value = (char) cf.ReadShort ();
-	}
-else {
-	SEGMENTS [nSegment].m_nType = 0;
-	SEGMENTS [nSegment].m_nMatCen = -1;
-	SEGMENTS [nSegment].m_value = 0;
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -974,9 +937,10 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 
 #if DBG
 	if (nSegment == nDbgSeg)
-		nSegment = nSegment;
+		nDbgSeg = nDbgSeg;
 #endif
 	segFaceP->nFaces = 0;
+	segP->Read (cf, bNewFileFormat);
 	if (gameStates.app.bD2XLevel) {
 		SEGMENTS [nSegment].m_owner = cf.ReadByte ();
 		SEGMENTS [nSegment].m_group = cf.ReadByte ();
@@ -1072,7 +1036,7 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 				}
 
 			// Read tUVL sideP->m_uvls [4] (u, v>>5, write as short, l>>1 write as short)
-			GetContour (nSegment, nSide, sideVerts);
+			GetCorners (nSegment, nSide, sideVerts);
 			for (i = 0; i < 4; i++) {
 				temp_short = cf.ReadShort ();
 				sideP->m_uvls [i].u = ((fix)temp_short) << 5;
@@ -1378,11 +1342,11 @@ int LoadMineSegmentsCompiled (CFile& cf)
 	ubyte			nCompiledVersion;
 	char			*psz;
 
-gameData.segs.vMin = CFixVector::Create(0x7fffffff,0x7fffffff,0x7fffffff);
+gameData.segs.vMin.Set (0x7fffffff, 0x7fffffff, 0x7fffffff);
 /*	[X] =
 gameData.segs.vMin[Y] =
 gameData.segs.vMin[Y] = 0x7fffffff;*/
-gameData.segs.vMax = CFixVector::Create(-0x7fffffff,-0x7fffffff,-0x7fffffff);
+gameData.segs.vMax.Set (-0x7fffffff, -0x7fffffff, -0x7fffffff);
 /*[X] =
 gameData.segs.vMax[X] =
 gameData.segs.vMax[Y] =
@@ -1422,25 +1386,25 @@ if (gameData.segs.nSegments >= MAX_SEGMENTS) {
 console.printf (CON_DBG, "   %d segments\n", gameData.segs.nSegments);
 #endif
 for (i = 0; i < gameData.segs.nVertices; i++) {
-	cf.ReadVector (gameData.segs.vertices[i]);
+	cf.ReadVector (gameData.segs.vertices [i]);
 #if !FLOAT_COORD
 	gameData.segs.fVertices [i][X] = X2F (gameData.segs.vertices [i][X]);
 	gameData.segs.fVertices [i][Y] = X2F (gameData.segs.vertices [i][Y]);
 	gameData.segs.fVertices [i][Z] = X2F (gameData.segs.vertices [i][Z]);
 #endif
 	}
-if (gameData.segs.vMin[X] > gameData.segs.vertices [i][X])
-	gameData.segs.vMin[X] = gameData.segs.vertices [i][X];
-if (gameData.segs.vMin[Y] > gameData.segs.vertices [i][Y])
-	gameData.segs.vMin[Y] = gameData.segs.vertices [i][Y];
-if (gameData.segs.vMin[Z] > gameData.segs.vertices [i][Z])
-	gameData.segs.vMin[Z] = gameData.segs.vertices [i][Z];
-if (gameData.segs.vMax[X] < gameData.segs.vertices [i][X])
-	gameData.segs.vMax[X] = gameData.segs.vertices [i][X];
-if (gameData.segs.vMax[Y] < gameData.segs.vertices [i][Y])
-	gameData.segs.vMax[Y] = gameData.segs.vertices [i][Y];
-if (gameData.segs.vMax[Z] < gameData.segs.vertices [i][Z])
-	gameData.segs.vMax[Z] = gameData.segs.vertices [i][Z];
+if (gameData.segs.vMin [X] > gameData.segs.vertices [i][X])
+	gameData.segs.vMin [X] = gameData.segs.vertices [i][X];
+if (gameData.segs.vMin [Y] > gameData.segs.vertices [i][Y])
+	gameData.segs.vMin [Y] = gameData.segs.vertices [i][Y];
+if (gameData.segs.vMin [Z] > gameData.segs.vertices [i][Z])
+	gameData.segs.vMin [Z] = gameData.segs.vertices [i][Z];
+if (gameData.segs.vMax [X] < gameData.segs.vertices [i][X])
+	gameData.segs.vMax [X] = gameData.segs.vertices [i][X];
+if (gameData.segs.vMax [Y] < gameData.segs.vertices [i][Y])
+	gameData.segs.vMax [Y] = gameData.segs.vertices [i][Y];
+if (gameData.segs.vMax [Z] < gameData.segs.vertices [i][Z])
+	gameData.segs.vMax [Z] = gameData.segs.vertices [i][Z];
 SEGMENTS.Clear ();
 #if TRACE
 console.printf (CON_DBG, "   loading segments ...\n");

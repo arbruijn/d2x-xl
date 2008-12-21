@@ -1083,14 +1083,8 @@ if (!m_bBetweenLevels)	{
 		}
 	DBG (fPos = m_cf.Tell ());
 //Save tmap info
-	for (i = 0; i <= gameData.segs.nLastSegment; i++) {
-		for (j = 0; j < 6; j++)	{
-			ushort nWall = SEGMENTS [i].WallNum (j);
-			m_cf.WriteShort (nWall);
-			m_cf.WriteShort (SEGMENTS [i].m_sides [j].m_nBaseTex);
-			m_cf.WriteShort (SEGMENTS [i].m_sides [j].m_nOvlTex | (SEGMENTS [i].m_sides [j].m_nOvlOrient << 14));
-			}
-		}
+	for (i = 0; i <= gameData.segs.nLastSegment; i++)
+		SEGMENTS [i].SaveState (m_cf);
 	DBG (fPos = m_cf.Tell ());
 // Save the fuelcen info
 	m_cf.WriteInt (gameData.reactor.bDestroyed);
@@ -2151,7 +2145,7 @@ if (!m_bBetweenLevels)	{
 	DBG (fPos = m_cf.Tell ());
 	//Restore tmap info
 	for (i = 0; i <= gameData.segs.nLastSegment; i++)
-		SEGMENTS [i].Read (m_cf, false);
+		SEGMENTS [i].LoadState (m_cf);
 	DBG (fPos = m_cf.Tell ());
 	//Restore the fuelcen info
 	for (i = 0, wallP = WALLS.Buffer (); i < gameData.walls.nWalls; i++, wallP++) {

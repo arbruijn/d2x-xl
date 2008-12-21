@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // -----------------------------------------------------------------------------------
 // Fill in array with four absolute point numbers for a given CSide
-void GetContour (int nSegment, int nSide, ushort* vertIndex)
+void GetCorners (int nSegment, int nSide, ushort* vertIndex)
 {
 	int*		sv = sideVertIndex [nSide];
 	ushort*	vp = SEGMENTS [nSegment].m_verts;

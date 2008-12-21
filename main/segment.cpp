@@ -24,6 +24,8 @@ int sideVertIndex [MAX_SIDES_PER_SEGMENT][4] = {
 			{3,2,1,0}			// front
 	};	
 
+extern bool bNewFileFormat;
+
 //------------------------------------------------------------------------------
 
 inline int CSegment::Index (void)
@@ -32,27 +34,103 @@ return this - SEGMENTS;
 }
 
 //------------------------------------------------------------------------------
-// reads a CSegment structure from a CFile
- 
-void CSegment::Read (CFile& cf, bool bExtended)
+
+void CSegment::ReadType (CFile& cf, ubyte flags)
 {
-if (bExtended) {
+if (flags & (1 << MAX_SIDES_PER_SEGMENT)) {
 	m_nType = cf.ReadByte ();
 	m_nMatCen = cf.ReadByte ();
-	m_value = cf.ReadByte ();
-	m_flags = cf.ReadByte ();
-	m_xAvgSegLight = cf.ReadFix ();
+	m_value = (char) cf.ReadShort ();
 	}
 else {
-	CSide* sideP = m_sides;
-	for (int i = 0; i < 6; i++, sideP++) {
-		sideP->m_nWall = cf.ReadShort ();
-		sideP->m_nBaseTex = cf.ReadShort ();
-		short nTexture = cf.ReadShort ();
-		sideP->m_nOvlTex = nTexture & 0x3fff;
-		sideP->m_nOvlOrient = (nTexture >> 14) & 3;
+	m_nType = 0;
+	m_nMatCen = -1;
+	m_value = 0;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CSegment::ReadVerts (CFile& cf)
+{
+for (int i = 0; i < MAX_VERTICES_PER_SEGMENT; i++)
+	m_verts [i] = cf.ReadShort ();
+}
+
+//------------------------------------------------------------------------------
+
+void CSegment::ReadChildren (CFile& cf, ubyte flags)
+{
+for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) 
+	m_children [i] = (flags & (i << i)) ? cf.ReadShort () : -1;
+}
+
+//------------------------------------------------------------------------------
+
+void CSegment::Read (CFile& cf)
+{
+#if DBG
+if (Index () == nDbgSeg)
+	nDbgSeg = nDbgSeg;
+#endif
+if (gameStates.app.bD2XLevel) {
+	m_owner = cf.ReadByte ();
+	m_group = cf.ReadByte ();
+	}
+else {
+	m_owner = -1;
+	m_group = -1;
+	}
+
+ubyte flags = bNewFileFormat ? cf.ReadByte () : 0x7f;
+
+if (gameData.segs.nLevelVersion == 5) { // d2 SHAREWARE level
+	ReadType (cf, flags);
+	ReadVerts (cf);
+	ReadChildren (cf, flags);
+	}
+else {
+	ReadChildren (cf, flags);
+	ReadVerts (cf);
+	if (gameData.segs.nLevelVersion <= 1) { // descent 1 level
+		ReadType (cf, flags);
 		}
 	}
+m_objects = -1;
+
+if (gameData.segs.nLevelVersion <= 5) // descent 1 thru d2 SHAREWARE level
+	m_xAvgSegLight	= fix (cf.ReadShort ()) << 4;
+
+// Read the walls as a 6 byte array
+flags = bNewFileFormat ? cf.ReadByte () : 0x3f;
+
+for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
+	m_sides [i].ReadWallNum (cf, (flags & (1 << i)) != 0);
+
+ushort sideVerts [4];
+
+for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+	::GetCorners (Index (), i, sideVerts);
+	m_sides [i].Read (cf, sideVerts, m_children [i] == -1);
+	}
+}
+
+//------------------------------------------------------------------------------
+// reads a CSegment structure from a CFile
+ 
+void CSegment::SaveState (CFile& cf)
+{
+for (int i = 0; i < 6; i++)
+	m_sides [i].SaveState (cf);
+}
+
+//------------------------------------------------------------------------------
+// reads a CSegment structure from a CFile
+ 
+void CSegment::LoadState (CFile& cf)
+{
+for (int i = 0; i < 6; i++) 
+	m_sides [i].LoadState (cf);
 }
 
 //------------------------------------------------------------------------------
