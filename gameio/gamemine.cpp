@@ -918,145 +918,20 @@ return 0;
 
 void LoadSegmentsCompiled (short nSegment, CFile& cf)
 {
-	short			lastSeg, nSide, i;
-	CSegment		*segP;
-	tSegFaces	*segFaceP;
-	CSide			*sideP;
-	short			temp_short;
-	ushort		nWall, temp_ushort = 0;
-	ushort		sideVerts [4];
-	ubyte			bitMask;
+	short			nLastSeg;
 
-INIT_PROGRESS_LOOP (nSegment, lastSeg, gameData.segs.nSegments);
-for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < lastSeg; nSegment++, segP++, segFaceP++) {
-
+INIT_PROGRESS_LOOP (nSegment, nLastSeg, gameData.segs.nSegments);
+for (; nSegment < nLastSeg; nSegment++) {
 #ifdef EDITOR
 	segP->nSegment = nSegment;
 	segP->m_group = 0;
 #endif
-
 #if DBG
 	if (nSegment == nDbgSeg)
 		nDbgSeg = nDbgSeg;
 #endif
-	segFaceP->nFaces = 0;
-	segP->Read (cf, bNewFileFormat);
-	if (gameStates.app.bD2XLevel) {
-		SEGMENTS [nSegment].m_owner = cf.ReadByte ();
-		SEGMENTS [nSegment].m_group = cf.ReadByte ();
-		}
-	else {
-		SEGMENTS [nSegment].m_owner = -1;
-		SEGMENTS [nSegment].m_group = -1;
-		}
-	if (bNewFileFormat)
-		bitMask = cf.ReadByte ();
-	else
-		bitMask = 0x7f; // read all six children and special stuff...
-
-	if (gameData.segs.nLevelVersion == 5) { // d2 SHAREWARE level
-		ReadSegSpecialType (nSegment, bitMask, cf);
-		ReadSegVerts (nSegment, cf);
-		ReadSegChildren (nSegment, bitMask, cf);
-		}
-	else {
-		ReadSegChildren (nSegment, bitMask, cf);
-		ReadSegVerts (nSegment, cf);
-		if (gameData.segs.nLevelVersion <= 1) { // descent 1 level
-			ReadSegSpecialType (nSegment, bitMask, cf);
-			}
-		}
-	SEGMENTS [nSegment].m_objects = -1;
-
-	if (gameData.segs.nLevelVersion <= 5) { // descent 1 thru d2 SHAREWARE level
-		// Read fix	segP->xAvgSegLight (shift down 5 bits, write as short)
-		temp_ushort = cf.ReadShort ();
-		SEGMENTS [nSegment].m_xAvgSegLight	= ((fix)temp_ushort) << 4;
-		//cf.Read ( &segP->xAvgSegLight, sizeof (fix), 1 );
-		}
-
-	// Read the walls as a 6 byte array
-	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++ )	{
-		segP->m_sides [nSide].m_nFrame = 0;
-		}
-
-	if (bNewFileFormat)
-		bitMask = cf.ReadByte ();
-	else
-		bitMask = 0x3f; // read all six sides
-	for (nSide = 0, sideP = segP->m_sides; nSide < MAX_SIDES_PER_SEGMENT; nSide++, sideP++) {
-		sideP->m_nWall = (ushort) -1;
-		if (bitMask & (1 << nSide)) {
-			if (gameData.segs.nLevelVersion >= 13)
-				nWall = (ushort) cf.ReadShort ();
-			else
-				nWall = (ushort) ((ubyte) cf.ReadByte ());
-			if (IS_WALL (nWall))
-				sideP->m_nWall = nWall;
-			}
-		}
-
-#if DBG
-	if (nSegment == nDbgSeg)
-		nSegment = nSegment;
-#endif
-	for (nSide = 0, sideP = segP->m_sides; nSide < MAX_SIDES_PER_SEGMENT; nSide++, sideP++ )	{
-#if DBG
-		int bReadSideData;
-		nWall = SEGMENTS [nSegment].WallNum (nSide);
-		if (segP->m_children [nSide] == -1)
-			bReadSideData = 1;
-		else if (IS_WALL (nWall))
-			bReadSideData = 2;
-		else
-			bReadSideData = 0;
-		if (bReadSideData) {
-#else
-		nWall = WallNumI (nSegment, nSide);
-		if ((segP->m_children [nSide] == -1) || IS_WALL (nWall)) {
-#endif
-			// Read short sideP->m_nBaseTex;
-			if (bNewFileFormat) {
-				temp_ushort = cf.ReadShort ();
-				sideP->m_nBaseTex = temp_ushort & 0x7fff;
-				}
-			else
-				sideP->m_nBaseTex = cf.ReadShort ();
-			if (gameData.segs.nLevelVersion <= 1)
-				sideP->m_nBaseTex = ConvertD1Texture (sideP->m_nBaseTex, 0);
-			if (bNewFileFormat && !(temp_ushort & 0x8000))
-				sideP->m_nOvlTex = 0;
-			else {
-				// Read short sideP->m_nOvlTex;
-				short h = cf.ReadShort ();
-				sideP->m_nOvlTex = h & 0x3fff;
-				sideP->m_nOvlOrient = (h >> 14) & 3;
-				if ((gameData.segs.nLevelVersion <= 1) && sideP->m_nOvlTex)
-					sideP->m_nOvlTex = ConvertD1Texture (sideP->m_nOvlTex, 0);
-				}
-
-			// Read tUVL sideP->m_uvls [4] (u, v>>5, write as short, l>>1 write as short)
-			GetCorners (nSegment, nSide, sideVerts);
-			for (i = 0; i < 4; i++) {
-				temp_short = cf.ReadShort ();
-				sideP->m_uvls [i].u = ((fix)temp_short) << 5;
-				temp_short = cf.ReadShort ();
-				sideP->m_uvls [i].v = ((fix)temp_short) << 5;
-				temp_ushort = cf.ReadShort ();
-#if 0 //LIGHTMAPS
-				if (USE_LIGHTMAPS)
-					sideP->m_uvls [i].l = F1_0 / 2;
-				else
-#endif
-				sideP->m_uvls [i].l = ((fix)temp_ushort) << 1;
-				gameData.render.color.vertBright [sideVerts [i]] = X2F (sideP->m_uvls [i].l);
-				}
-			}
-		else {
-			sideP->m_nBaseTex =
-			sideP->m_nOvlTex = 0;
-			}
-		}
+	SEGFACES [nSegment].nFaces = 0;
+	SEGMENTS [nSegment].Read (cf);
 	}
 }
 
