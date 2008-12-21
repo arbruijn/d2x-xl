@@ -1701,7 +1701,7 @@ class CFaceListIndex {
 		short						nUsedFaces;
 		short						nUsedKeys;
 	public:
-		CFaceListIndex () { nUsedFaces = nUsedKeys = 0; }
+		CFaceListIndex ();
 	};
 
 #include "sphere.h"

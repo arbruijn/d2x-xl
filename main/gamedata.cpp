@@ -377,6 +377,15 @@ CREATE (ovlTexCoord, MAX_TRIANGLES * 2, 0);
 CREATE (lMapTexCoord, MAX_FACES * 2, 0);
 }
 
+CFaceListIndex::CFaceListIndex () 
+{ 
+nUsedFaces = 0;
+nUsedKeys = 0; 
+roots.Create (MAX_WALL_TEXTURES);
+tails.Create (MAX_WALL_TEXTURES);
+usedKeys.Create (MAX_WALL_TEXTURES);
+}
+
 //------------------------------------------------------------------------------
 
 CSegmentData::CSegmentData ()
