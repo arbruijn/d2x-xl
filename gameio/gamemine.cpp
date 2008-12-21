@@ -944,7 +944,7 @@ void LoadExtSegmentsCompiled (CFile& cf)
 gameData.matCens.nRepairCenters = 0;
 for (i = 0; i < gameData.segs.nSegments; i++) {
 	if (gameData.segs.nLevelVersion > 5)
-		SEGMENTS [i].Read (cf, true);
+		SEGMENTS [i].ReadExtras (cf);
 	SEGMENTS [i].CreateGenerator (SEGMENTS [i].m_nType);
 	}
 }

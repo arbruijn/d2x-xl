@@ -219,6 +219,7 @@ class CSegment {
 		void ReadType (CFile& cf, ubyte flags);
 		void ReadVerts (CFile& cf);
 		void ReadChildren (CFile& cf, ubyte flags);
+		void ReadExtras (CFile& cf);
 		void SaveState (CFile& cf);
 		void LoadState (CFile& cf);
 		void LoadTextures (void);

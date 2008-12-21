@@ -67,6 +67,17 @@ for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
 
 //------------------------------------------------------------------------------
 
+void CSegment::ReadExtras (CFile& cf)
+{
+m_nType = cf.ReadByte ();
+m_nMatCen = cf.ReadByte ();
+m_value = cf.ReadByte ();
+m_flags = cf.ReadByte ();
+m_xAvgSegLight = cf.ReadFix ();
+}
+
+//------------------------------------------------------------------------------
+
 void CSegment::Read (CFile& cf)
 {
 #if DBG
