@@ -684,31 +684,27 @@ void extract_up_vector_from_segment (CSegment *segP, CFixVector *vp)
 //	Return v0, v1, v2 = 3 vertices with smallest numbers.  If *bFlip set, then negate Normal after computation.
 //	Note, pos [Y]u cannot just compute the Normal by treating the points in the opposite direction as this introduces
 //	small differences between normals which should merely be opposites of each other.
-int GetVertsForNormal (int v0, int v1, int v2, int v3, int *pv0, int *pv1, int *pv2, int *pv3)
+short GetVertsForNormal (short v0, short v1, short v2, short v3, short* vSorted)
 {
-	int		i, j, t;
-	ushort	v [4], w [4] = {0, 1, 2, 3};
+	int		i, j;
+	ushort	index [4] = {0, 1, 2, 3};
 
-//	w is a list that shows how things got scrambled so we know if our Normal is pointing backwards
-v [0] = v0;
-v [1] = v1;
-v [2] = v2;
-v [3] = v3;
-// bubble sort v in reverse order (largest first)
+//	index is a list that shows how things got scrambled so we know if our Normal is pointing backwards
+vSorted [0] = v0;
+vSorted [1] = v1;
+vSorted [2] = v2;
+vSorted [3] = v3;
+// bubble sort vSorted in reverse order (largest first)
 for (i = 1; i < 4; i++)
 	for (j = 0; j < i; j++)
-		if (v [j] > v [i]) {
-			t = v [j]; v [j] = v [i]; v [i] = t;
-			t = w [j]; w [j] = w [i]; w [i] = t;
+		if (vSorted [j] > vSorted [i]) {
+			Swap (vSorted [i], vSorted [j]);
+			Swap (index [i], index [j]);
 			}
 
-Assert ((v [0] < v [1]) && (v [1] < v [2]) && (v [2] < v [3]));
-*pv0 = v [0];
-*pv1 = v [1];
-*pv2 = v [2];
-*pv3 = v [3];
-//	Now, if for any w [i] & w [i+1]: w [i+1] = (w [i]+3)%4, then must flip Normal
-return ((((w [0] + 3) % 4) == w [1]) || (((w [1] + 3) % 4) == w [2]));
+Assert ((vSorted [0] < vSorted [1]) && (vSorted [1] < vSorted [2]) && (vSorted [2] < vSorted [3]));
+//	Now, if for any index [i] & index [i+1]: index [i+1] = (index [i]+3)%4, then must flip Normal
+return (((index [0] + 3) % 4) == index [1]) || (((index [1] + 3) % 4) == index [2]);
 }
 
 // -------------------------------------------------------------------------------

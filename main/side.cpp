@@ -194,10 +194,6 @@ SetupVertexList (verts, index);
 void CSide::SetupAsTriangles (bool bSolid, short* verts, int* index)
 {
 	CFixVector	vNormal;
-	short			v0 = m_vertices [0];
-	short			v1 = m_vertices [1];
-	short			v2 = m_vertices [2];
-	short			v3 = m_vertices [3];
 	fix			dot;
 	CFixVector	vec_13;		//	vector from vertex 1 to vertex 3
 
@@ -207,57 +203,68 @@ void CSide::SetupAsTriangles (bool bSolid, short* verts, int* index)
 	//		Use Matt's formula: Na . AD > 0, where ABCD are vertices on CSide, a is face formed by A, B, C, Na is Normal from face a.
 	//	If not a CWall, then triangulate so whatever is on the other CSide is triangulated the same (ie, between the same absoluate vertices)
 if (bSolid) {
-	vNormal = CFixVector::Normal (gameData.segs.vertices [v0],
-	                              gameData.segs.vertices [v1],
-	                              gameData.segs.vertices [v2]);
-	vec_13 = gameData.segs.vertices [v3] - gameData.segs.vertices [v1];
+	vNormal = CFixVector::Normal (gameData.segs.vertices [m_corners [0]],
+	                              gameData.segs.vertices [m_corners [1]],
+	                              gameData.segs.vertices [m_corners [2]]);
+	vec_13 = gameData.segs.vertices [m_corners [3]] - gameData.segs.vertices [m_corners [1]];
 	dot = CFixVector::Dot (vNormal, vec_13);
 
 	//	Now, signify whether to triangulate from 0:2 or 1:3
 	m_nType = (dot >= 0) ? SIDE_IS_TRI_02 : SIDE_IS_TRI_13;
 	//	Now, based on triangulation nType, set the normals.
 	if (m_nType == SIDE_IS_TRI_02) {
-		//VmVecNormalChecked (&vNormal, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v2);
+#if 0
+		VmVecNormalChecked (&vNormal, 
+								  gameData.segs.vertices + m_corners [0], 
+								  gameData.segs.vertices + m_corners [1], 
+								  gameData.segs.vertices + m_corners [2]);
+#endif
 		m_normals [0] = vNormal;
-		m_normals [1] = CFixVector::Normal (gameData.segs.vertices [v0], gameData.segs.vertices [v2], gameData.segs.vertices [v3]);
+		m_normals [1] = CFixVector::Normal (gameData.segs.vertices [m_corners [0]], 
+														gameData.segs.vertices [m_corners [2]], 
+														gameData.segs.vertices [m_corners [3]]);
 		}
 	else {
-		m_normals [0] = CFixVector::Normal (gameData.segs.vertices [v0], gameData.segs.vertices [v1], gameData.segs.vertices [v3]);
-		m_normals [1] = CFixVector::Normal (gameData.segs.vertices [v1], gameData.segs.vertices [v2], gameData.segs.vertices [v3]);
+		m_normals [0] = CFixVector::Normal (gameData.segs.vertices [m_corners [0]], 
+														gameData.segs.vertices [m_corners [1]], 
+														gameData.segs.vertices [m_corners [3]]);
+		m_normals [1] = CFixVector::Normal (gameData.segs.vertices [m_corners [1]], 
+														gameData.segs.vertices [m_corners [2]], 
+														gameData.segs.vertices [m_corners [3]]);
 		}
 	}
 else {
-	int	vSorted [4];
+	short	vSorted [4];
 	int	bFlip;
 
-	bFlip = GetVertsForNormal (v0, v1, v2, v3, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
-	if ((vSorted [0] == v0) || (vSorted [0] == v2)) {
+	bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_corners [3], vSorted);
+	if ((vSorted [0] == m_corners [0]) || (vSorted [0] == m_corners [2])) {
 		m_nType = SIDE_IS_TRI_02;
 		//	Now, get vertices for Normal for each triangle based on triangulation nType.
-		bFlip = GetVertsForNormal (v0, v1, v2, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
+		bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], 32767, vSorted);
 		m_normals [0] = CFixVector::Normal (gameData.segs.vertices [vSorted [0]], 
 														gameData.segs.vertices [vSorted [1]], 
 														gameData.segs.vertices [vSorted [2]]);
 		if (bFlip)
 			m_normals [0].Neg ();
-		bFlip = GetVertsForNormal (v0, v2, v3, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
+		bFlip = GetVertsForNormal (m_corners [0], m_corners [2], m_corners [3], 32767, vSorted);
 		m_normals [1] = CFixVector::Normal (gameData.segs.vertices [vSorted [0]],
 														gameData.segs.vertices [vSorted [1]],
 														gameData.segs.vertices [vSorted [2]]);
 		if (bFlip)
 			m_normals [1].Neg ();
-		GetVertsForNormal (v0, v2, v3, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
+		GetVertsForNormal (m_corners [0], m_corners [2], m_corners [3], 32767, vSorted);
 		}
 	else {
 		m_nType = SIDE_IS_TRI_13;
 		//	Now, get vertices for Normal for each triangle based on triangulation nType.
-		bFlip = GetVertsForNormal (v0, v1, v3, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
+		bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [3], 32767, vSorted);
 		m_normals [0] = CFixVector::Normal (gameData.segs.vertices [vSorted [0]],
 														gameData.segs.vertices [vSorted [1]],
 														gameData.segs.vertices [vSorted [2]]);
 		if (bFlip)
 			m_normals [0].Neg ();
-		bFlip = GetVertsForNormal (v1, v2, v3, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
+		bFlip = GetVertsForNormal (m_corners [1], m_corners [2], m_corners [3], 32767, vSorted);
 		m_normals [1] = CFixVector::Normal (
 						 gameData.segs.vertices [vSorted [0]],
 						 gameData.segs.vertices [vSorted [1]],
@@ -284,16 +291,16 @@ return 0;
 
 void CSide::Setup (short* verts, int* index, bool bSolid)
 {
-	int			vm0, vm1, vm2, vm3, bFlip;
+	short			vSorted [4], bFlip;
 	int			i;
 	int			vertexList [6];
 	CFixVector	vNormal;
 	fix			xDistToPlane;
 
 SetupCorners (verts, index);
-bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_corners [3], &vm0, &vm1, &vm2, &vm3);
-vNormal = CFixVector::Normal (gameData.segs.vertices [vm0], gameData.segs.vertices [vm1], gameData.segs.vertices [vm2]);
-xDistToPlane = abs (gameData.segs.vertices [vm3].DistToPlane (vNormal, gameData.segs.vertices [vm0]));
+bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_corners [3], vSorted);
+vNormal = CFixVector::Normal (gameData.segs.vertices [vSorted [0]], gameData.segs.vertices [vSorted [1]], gameData.segs.vertices [vSorted [2]]);
+xDistToPlane = abs (gameData.segs.vertices [vSorted [3]].DistToPlane (vNormal, gameData.segs.vertices [vSorted [0]]));
 if (bFlip)
 	vNormal.Neg ();
 if (xDistToPlane <= PLANE_DIST_TOLERANCE)

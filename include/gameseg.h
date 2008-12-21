@@ -75,8 +75,7 @@ void extract_right_vector_from_segment(CSegment *sp,CFixVector *vp);
 // to the center of the top face of the CSegment.
 void extract_up_vector_from_segment(CSegment *sp,CFixVector *vp);
 
-int GetVertsForNormal (int v0, int v1, int v2, int v3, int *pv0, int *pv1, int *pv2, int *pv3);
-int GetVertsForNormalTri (int v0, int v1, int v2, int *pv0, int *pv1, int *pv2);
+short GetVertsForNormal (short v0, short v1, short v2, short v3, short* vSorted);
 
 void AddToVertexNormal (int nVertex, CFixVector& vNormal);
 void ComputeVertexNormals (void);

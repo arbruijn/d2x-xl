@@ -193,7 +193,7 @@ if (pvNormal) {
 else
 #endif
 	{
-	int	v [4];
+	short	v [4], vSorted [4];
 
 	v [0] = pointList [0]->p3_index;
 	v [1] = pointList [1]->p3_index;
@@ -205,18 +205,15 @@ else
 		glNormal3f ((GLfloat) X2F (vNormal[X]), (GLfloat) X2F (vNormal[Y]), (GLfloat) X2F (vNormal[Z]));
 		}
 	else {
-		int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, v, v + 1, v + 2, v + 3);
-		vNormal = CFixVector::Normal(gameData.segs.vertices[v [0]],
-							gameData.segs.vertices[v [1]],
-							gameData.segs.vertices[v [2]]);
+		int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, vSorted);
+		vNormal = CFixVector::Normal (gameData.segs.vertices [vSorted [0]],
+												gameData.segs.vertices [vSorted [1]],
+												gameData.segs.vertices [vSorted [2]]);
 		if (bFlip)
 			vNormal = -vNormal;
 		if (!gameStates.ogl.bUseTransform)
 			transformation.Rotate (vNormal, vNormal, 0);
-		//VmVecInc (&vNormal, &pointList [0]->p3_vec);
-		glNormal3f ((GLfloat) X2F (vNormal[X]),
-						(GLfloat) X2F (vNormal[Y]),
-						(GLfloat) X2F (vNormal[Z]));
+		glNormal3f ((GLfloat) X2F (vNormal [X]), (GLfloat) X2F (vNormal [Y]), (GLfloat) X2F (vNormal [Z]));
 		}
 	}
 }
@@ -226,21 +223,19 @@ else
 void G3CalcNormal (g3sPoint **pointList, CFloatVector *pvNormal)
 {
 	CFixVector	vNormal;
-	int	v [4];
+	short			v [4], vSorted [4];
 
 v [0] = pointList [0]->p3_index;
 v [1] = pointList [1]->p3_index;
 v [2] = pointList [2]->p3_index;
 if ((v [0] < 0) || (v [1] < 0) || (v [2] < 0)) {
-	vNormal = CFixVector::Normal(pointList [0]->p3_vec,
-					 pointList [1]->p3_vec,
-					 pointList [2]->p3_vec);
+	vNormal = CFixVector::Normal (pointList [0]->p3_vec, pointList [1]->p3_vec, pointList [2]->p3_vec);
 	}
 else {
-	int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, v, v + 1, v + 2, v + 3);
-	vNormal = CFixVector::Normal(gameData.segs.vertices[v[0]],
-					 gameData.segs.vertices[v[1]],
-					 gameData.segs.vertices[v[2]]);
+	int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, vSorted);
+	vNormal = CFixVector::Normal (gameData.segs.vertices [vSorted [0]],
+										   gameData.segs.vertices [vSorted [1]],
+										   gameData.segs.vertices [vSorted [2]]);
 	if (bFlip)
 		vNormal.Neg();
 	}
