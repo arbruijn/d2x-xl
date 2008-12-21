@@ -449,6 +449,7 @@ h = bmpInventory->Width () * bmpInventory->Height ();
 buffer = bmpInventory->Buffer ();
 for (i = 0; i < 1 /*NUM_INV_ITEMS*/; i++) {
 	bmInvItems [i] = *bmpInventory;
+	bmInvItems [i].SetName ("Inventory");
 	bmInvItems [i].SetHeight (bmInvItems [i].Width ());
 	bmInvItems [i].SetBuffer (buffer + h * 1 /*i*/, true, h);
 	bmInvItems [i].SetPalette (paletteManager.Game ());

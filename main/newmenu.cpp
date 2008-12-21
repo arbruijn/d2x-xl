@@ -1411,17 +1411,16 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void NMSaveScreen (CCanvas **save_canvas, CCanvas **game_canvas, CFont **saveFont)
+void NMSaveScreen (CCanvas **gameCanvasP)
 {
-*game_canvas = CCanvas::Current ();
-*save_canvas = CCanvas::Current ();
-*saveFont = CCanvas::Current ()->Font ();
+*gameCanvasP = CCanvas::Current ();
+CCanvas::Push ();
 CCanvas::SetCurrent (NULL);
 }
 
 //------------------------------------------------------------------------------
 
-void NMRestoreScreen (char *filename, bkg *bg, CCanvas *save_canvas, CFont *saveFont, int bDontRestore)
+void NMRestoreScreen (char *filename, bkg *bg, int bDontRestore)
 {
 CCanvas::SetCurrent (bg->menu_canvas);
 if (gameOpts->menus.nStyle) {
@@ -1446,8 +1445,7 @@ else {
 	}
 bg->menu_canvas->Destroy ();
 CCanvas::SetCurrent (NULL);		
-fontManager.SetCurrent (saveFont);
-CCanvas::SetCurrent (save_canvas);
+CCanvas::Pop ();
 memset (bg, 0, sizeof (*bg));
 GrabMouse (1, 0);
 }
@@ -1482,7 +1480,6 @@ int ExecMenu4 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuI
 	int			choice, old_choice, i;
 	tMenuProps	ctrl;
 	int			k, nLastScrollCheck = -1, sx, sy;
-	CFont		*saveFont;
 	bkg			bg;
 	int			bAllText=0;		//set true if all text itemP
 	int			sound_stopped=0, time_stopped=0;
@@ -1490,8 +1487,7 @@ int ExecMenu4 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuI
    char			*Temp, TempVal;
 	int			bDontRestore = 0;
 	int			bRedraw = 0, bRedrawAll = 0, bStart = 1;
-	CCanvas	*save_canvas;
-	CCanvas	*game_canvas;
+	CCanvas*		gameCanvasP;
 	int			bWheelUp, bWheelDown, nMouseState, nOldMouseState, bDblClick = 0;
 	int			mx=0, my=0, x1 = 0, x2, y1, y2;
 	int			bLaunchOption = 0;
@@ -1536,7 +1532,7 @@ if (!gameOpts->menus.nStyle) {
 		GrUpdate (0);
 		}
 	}
-NMSaveScreen (&save_canvas, &game_canvas, &saveFont);
+NMSaveScreen (&gameCanvasP);
 bKeyRepeat = gameStates.input.keys.bRepeat;
 gameStates.input.keys.bRepeat = 1;
 if (nItem == -1)
@@ -1620,9 +1616,9 @@ while (!done) {
 #if 1
 	if (ctrl.bValid && (ctrl.nDisplayMode != gameStates.video.nDisplayMode)) {
 		NMFreeAllTextBms (itemP, nItems);
-		NMRestoreScreen (filename, &bg, save_canvas, saveFont, bDontRestore);
+		NMRestoreScreen (filename, &bg, bDontRestore);
 		SetScreenMode (SCREEN_MENU);
-		NMSaveScreen (&save_canvas, &game_canvas, &saveFont);
+		NMSaveScreen (&gameCanvasP);
 //		RemapFontsAndMenus (1);
 		memset (&ctrl, 0, sizeof (ctrl));
 		ctrl.width = width;
@@ -1644,7 +1640,7 @@ while (!done) {
 		if (gameStates.app.bGameRunning) {
 			CCanvas *save_canvas;
 			save_canvas = CCanvas::Current ();
-			CCanvas::SetCurrent (game_canvas);
+			CCanvas::SetCurrent (gameCanvasP);
 			//GrPaletteStepLoad (paletteManager.Game ());
 			//GrCopyPalette (grPalette, paletteManager.Game (), sizeof (grPalette));
 			if (!gameStates.app.bShowError) {
@@ -1900,12 +1896,12 @@ radioOption:
 		case KEY_ALTED + KEY_ENTER: {
 			//int bLoadAltBg = NMFreeAltBg ();
 			NMFreeAllTextBms (itemP, nItems);
-			NMRestoreScreen (filename, &bg, save_canvas, saveFont, bDontRestore);
+			NMRestoreScreen (filename, &bg, bDontRestore);
 			NMFreeAltBg (1);
 			GrToggleFullScreenGame ();
 			GrabMouse (0, 0);
 			SetScreenMode (SCREEN_MENU);
-			NMSaveScreen (&save_canvas, &game_canvas, &saveFont);
+			NMSaveScreen (&gameCanvasP);
 			RemapFontsAndMenus (1);
 			memset (&ctrl, 0, sizeof (ctrl));
 			ctrl.width = width;
@@ -2380,7 +2376,7 @@ launchOption:
 	}
 SDL_ShowCursor (0);
 // Restore everything...
-NMRestoreScreen (filename, &bg, save_canvas, saveFont, bDontRestore);
+NMRestoreScreen (filename, &bg, bDontRestore);
 NMFreeAllTextBms (itemP, nItems);
 gameStates.input.keys.bRepeat = bKeyRepeat;
 GameFlushInputs ();
