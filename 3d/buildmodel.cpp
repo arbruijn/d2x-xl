@@ -618,7 +618,7 @@ do {
 				m_subModels [i].Size (this, objP, NULL);
 		}
 	else
-		m_subModels [i].Size (this, objP, NULL);
+		m_subModels [0].Size (this, objP, NULL);
 	// determine min and max size
 	for (i = 0, psm = m_subModels.Buffer (); i < m_nSubModels; i++, psm++) {
 		if (0 < (j = psm->m_nHitbox)) {

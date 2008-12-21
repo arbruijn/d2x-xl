@@ -2742,7 +2742,6 @@ void DoCockpitWindowView (int nWindow, CObject *viewerP, int bRearView, int nUse
 
 if (HIDE_HUD)
 	return;
-CCanvas::Push ();
 boxP = NULL;
 if (!viewerP) {								//this nUser is done
 	Assert (nUser == WBU_WEAPON || nUser == WBU_STATIC);
@@ -2832,6 +2831,7 @@ else {
 		HUD_SCALE_Y (boxP->bot - boxP->top+1));
 	}
 
+CCanvas::Push ();
 CCanvas::SetCurrent (&windowCanv);
 transformation.Push ();
 nZoomSave = gameStates.render.nZoomFactor;

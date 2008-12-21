@@ -447,6 +447,8 @@ void CObject::DoPhysicsSim (void)
 Assert (info.nType != OBJ_NONE);
 Assert (info.movementType == MT_PHYSICS);
 #if DBG
+if (Index () == nDbgObj)
+	nDbgObj = nDbgObj;
 if (bDontMoveAIObjects)
 	if (info.controlType == CT_AI)
 		return;
@@ -469,6 +471,10 @@ if (pi->velocity.IsZero()) {
 		return;
 	}
 
+#if DBG
+if (Index () == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
 
 Assert (mType.physInfo.brakes == 0);		//brakes not used anymore?
 //if uses thrust, cannot have zero xDrag

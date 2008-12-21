@@ -344,9 +344,11 @@ if (!gameData.render.terrain.heightmap) {
 if (i < 0)
 	i = 0;
 else if (i >= gameData.render.terrain.nGridW)
-	i = gameData.render.terrain.nGridW;
+	i = gameData.render.terrain.nGridW - 1;
 if (j < 0)
 	j = 0;
+else if (j >= gameData.render.terrain.nGridH)
+	j = gameData.render.terrain.nGridH - 1;
 *p = gameData.render.terrain.points [GRID_OFFS (i, j)];
 }
 

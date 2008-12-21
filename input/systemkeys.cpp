@@ -451,7 +451,6 @@ switch (key) {
 			if (!IsMultiGame) {
 				paletteManager.SaveEffect(); 
 				paletteManager.ResetEffect (); 
-				saveGameHandler.Save (0, 0, 0, NULL);
 				paletteManager.LoadEffect (); 
 				}
 			ConfigMenu();

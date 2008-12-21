@@ -381,9 +381,9 @@ CFaceListIndex::CFaceListIndex ()
 { 
 nUsedFaces = 0;
 nUsedKeys = 0; 
-roots.Create (MAX_WALL_TEXTURES);
-tails.Create (MAX_WALL_TEXTURES);
-usedKeys.Create (MAX_WALL_TEXTURES);
+roots.Create ((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
+tails.Create ((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
+usedKeys.Create ((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
 }
 
 //------------------------------------------------------------------------------
@@ -491,7 +491,7 @@ for (int i = 0; i < 2; i++) {
 	altBitmaps [i].Create (MAX_BITMAP_FILES);
 	bmIndex [i].Create (MAX_TEXTURES);
 	textureIndex [i].Create (MAX_BITMAP_FILES);
-	tMapInfo [i].Create (MAX_TEXTURES);
+	tMapInfo [i].Create (MAX_TEXTURES + MAX_TEXTURES / 10);	//add some room for extra textures like e.g. from the hoard data
 	defaultBrightness [i].Create (MAX_WALL_TEXTURES);
 	defaultBrightness [i].Clear ();
 	}

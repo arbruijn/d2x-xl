@@ -1905,6 +1905,7 @@ for (i = 0; i < 2; i++)
 	for (j = 0; j < PARTICLE_TYPES; j++)
 		if (bmpParticle [i][j]) {
 			delete bmpParticle [i][j];
+			bmpParticle [i][j] = NULL;
 			bHavePartImg [i][j] = 0;
 			}
 }

@@ -100,7 +100,7 @@ void InitHoardData (void)
 {
 	CFile					cf;
 	CPalette				palette;
-	int					i, fPos, nBitmap;
+	int					i, j, fPos, nBitmap;
 	tVideoClip			*vcP;
 	tEffectClip			*ecP;
 	tPowerupTypeInfo	*ptP;
@@ -173,7 +173,8 @@ if (!gameData.hoard.bInitialized) {
 	ecP->flags &= ~EF_INITIALIZED;
 
 	i = gameData.pig.tex.nTextures [0];
-	gameData.pig.tex.tMapInfoP [i] = gameData.pig.tex.tMapInfoP [MultiFindGoalTexture (TMI_GOAL_BLUE)];
+	if (0 <= (j = MultiFindGoalTexture (TMI_GOAL_BLUE)))
+		gameData.pig.tex.tMapInfoP [i] = gameData.pig.tex.tMapInfoP [j];
 	gameData.pig.tex.tMapInfoP [i].nEffectClip = gameData.hoard.goal.nClip;
 	gameData.pig.tex.tMapInfoP [i].flags = TMI_GOAL_HOARD;
 	gameData.pig.tex.nTextures [0]++;

@@ -691,11 +691,10 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-short RenderFaceList (CFaceListIndex *flxP, int nType, int bDepthOnly, int bHeadlight)
+short RenderFaceList (CFaceListIndex& flx, int nType, int bDepthOnly, int bHeadlight)
 {
-	CFaceListIndex	flx = *flxP;
-	tFaceListItem	*fliP;
-	tFace			*faceP;
+	tFaceListItem*	fliP;
+	tFace*			faceP;
 	short				i, j, nFaces = 0, nSegment = -1;
 	int				bAutomap = (nType == 0);
 
@@ -907,9 +906,9 @@ if (nType) {
 	}
 else {
 #if SORT_FACES > 1
-	nFaces += RenderFaceList (gameData.render.faceIndex, nType, bDepthOnly, bHeadlight);
+	nFaces += RenderFaceList (gameData.render.faceIndex [0], nType, bDepthOnly, bHeadlight);
 	if (gameStates.app.bMultiThreaded)
-		nFaces += RenderFaceList (gameData.render.faceIndex + 1, nType, bDepthOnly, bHeadlight);
+		nFaces += RenderFaceList (gameData.render.faceIndex [1], nType, bDepthOnly, bHeadlight);
 #else
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++)
 		nFaces += RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [i], bVertexArrays, bDepthOnly, bAutomap, bHeadlight);

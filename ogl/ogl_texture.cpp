@@ -114,7 +114,7 @@ for (i = 0; i < MAX_ADDON_BITMAP_FILES; i++)
 // Make sure all textures (bitmaps) from the game texture lists that had an OpenGL handle get the handle reset
 for (i = 0; i < 2; i++) {
 	bmP = gameData.pig.tex.bitmaps [i].Buffer ();
-	for (j = gameData.pig.tex.nBitmaps [i] + (i ? 0 : gameData.hoard.nBitmaps); j; j--, bmP++)
+	for (j = ((i || !gameData.hoard.nBitmaps) ? gameData.pig.tex.nBitmaps [i] : gameData.hoard.nBitmaps); j; j--, bmP++)
 		bmP->Unlink (0);
 	}
 #endif
@@ -1138,8 +1138,13 @@ else
 #endif
 	{
 	if (!Prepared ()) {
-		if (!(bmP = SetupTexture (bMipMaps, nTransp, 1)))
+		if (!(bmP = SetupTexture (bMipMaps, nTransp, 1))) {
+#if DBG
+			SetupTexture (bMipMaps, nTransp, 1);
+			nDepth--;
+#endif
 			return 1;
+			}
 		texP = bmP->Texture ();
 #if 0
 		if (!texP)
