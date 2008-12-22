@@ -109,16 +109,16 @@ return 1;
 
 CFace* CModel::AddPOFFace (CSubModel* psm, CFace* pmf, CFixVector* pn, ubyte* p, CBitmap** modelBitmaps, tRgbaColorf* objColorP)
 {
-	short							nVerts = WORDVAL (p+2);
-	CVertex*	pmv;
-	short*						pfv;
-	tUVL*							uvl;
-	CBitmap*						bmP;
-	tRgbaColorf					baseColor;
-	CFloatVector3				n, * pvn;
-	short							i, j;
-	ushort						c;
-	char							bTextured;
+	short					nVerts = WORDVAL (p+2);
+	CVertex*				pmv;
+	short*				pfv;
+	tUVL*					uvl;
+	CBitmap*				bmP;
+	tRgbaColorf			baseColor;
+	CFloatVector3		n, * pvn;
+	short					i, j;
+	ushort				c;
+	char					bTextured;
 
 if (!psm->m_faces)
 	psm->m_faces = pmf;
@@ -180,11 +180,11 @@ return ++pmf;
 int CModel::GetPOFModelItems (void *modelDataP, CAngleVector *pAnimAngles, int nThis, int nParent,
 										int bSubObject, CBitmap **modelBitmaps, tRgbaColorf *objColorP)
 {
-	ubyte*						p = reinterpret_cast<ubyte*> (modelDataP);
+	ubyte*		p = reinterpret_cast<ubyte*> (modelDataP);
 	CSubModel*	psm = m_subModels + nThis;
 	CFace*		pmf = m_faces + m_iFace;
-	int							nChild;
-	short							nTag;
+	int			nChild;
+	short			nTag;
 
 G3CheckAndSwap (modelDataP);
 nGlow = -1;
@@ -234,23 +234,23 @@ for (;;) {
 
 		case OP_FLATPOLY: {
 			int nVerts = WORDVAL (p+2);
-			pmf = AddPOFModelFace (psm, pmf, VECPTR (p+16), p, NULL, objColorP);
+			pmf = AddPOFFace (psm, pmf, VECPTR (p+16), p, NULL, objColorP);
 			p += 30 + (nVerts | 1) * 2;
 			break;
 			}
 
 		case OP_TMAPPOLY: {
 			int nVerts = WORDVAL (p + 2);
-			pmf = AddPOFModelFace (psm, pmf, VECPTR (p+16), p, modelBitmaps, objColorP);
+			pmf = AddPOFFace (psm, pmf, VECPTR (p+16), p, modelBitmaps, objColorP);
 			p += 30 + (nVerts | 1) * 2 + nVerts * 12;
 			break;
 			}
 
 		case OP_SORTNORM:
-			if (!G3GetPOFModelItems (p + WORDVAL (p+28), pAnimAngles, pm, nThis, nParent, 0, modelBitmaps, objColorP))
+			if (!GetPOFModelItems (p + WORDVAL (p+28), pAnimAngles, nThis, nParent, 0, modelBitmaps, objColorP))
 				return 0;
 			pmf = m_faces + m_iFace;
-			if (!G3GetPOFModelItems (p + WORDVAL (p+30), pAnimAngles, pm, nThis, nParent, 0, modelBitmaps, objColorP))
+			if (!GetPOFModelItems (p + WORDVAL (p+30), pAnimAngles, nThis, nParent, 0, modelBitmaps, objColorP))
 				return 0;
 			pmf = m_faces + m_iFace;
 			p += 32;
@@ -265,7 +265,7 @@ for (;;) {
 			m_subModels [nChild].m_vOffset = *VECPTR (p+4);
 			m_subModels [nChild].m_nAngles = WORDVAL (p+2);
 			m_subModels [nChild].InitMinMax ();
-			if (!G3GetPOFModelItems (p + WORDVAL (p+16), pAnimAngles, pm, nChild, nThis, 1, modelBitmaps, objColorP))
+			if (!GetPOFModelItems (p + WORDVAL (p+16), pAnimAngles, nChild, nThis, 1, modelBitmaps, objColorP))
 				return 0;
 			pmf = m_faces + m_iFace;
 			p += 20;
@@ -331,7 +331,7 @@ AssignPOFFaces ();
 memset (m_teamTextures, 0xFF, sizeof (m_teamTextures));
 m_nType = pp->nType;
 gameData.models.polyModels [nModel].rad = Size (objP, 0);
-wSetup (0, 1);
+Setup (0, 1);
 m_iSubModel = 0;
 return -1;
 }
