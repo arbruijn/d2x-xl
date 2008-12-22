@@ -875,7 +875,7 @@ SetDataVersion (-1);
 
 memcpy (gameData.pig.tex.brightness.Buffer (),
 		  gameData.pig.tex.defaultBrightness [gameStates.app.bD1Mission].Buffer (),
-		  sizeof (gameData.pig.tex.brightness));
+		  gameData.pig.tex.brightness. Size ());
 LoadTextureBrightness (pszLevelName, NULL);
 gameData.render.color.textures = gameData.render.color.defaultTextures [gameStates.app.bD1Mission];
 LoadTextureColors (pszLevelName, NULL);

@@ -1640,6 +1640,10 @@ for (i = nStart; i != nEnd; i += nStep) {
 					else {
 						tFaceColor *pvc = gameData.render.color.vertices + nVertex;
 						if (pvc->index != gameStates.render.nFrameFlipFlop + 1) {
+#if DBG
+							if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) 
+								nSegment = nSegment;
+#endif
 							if (nLights + gameData.render.lights.dynamic.variableVertLights [nVertex] == 0) {
 								pvc->color.red = c.color.red + gameData.render.color.ambient [nVertex].color.red;
 								pvc->color.green = c.color.green + gameData.render.color.ambient [nVertex].color.green;

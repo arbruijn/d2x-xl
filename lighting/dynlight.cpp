@@ -1444,16 +1444,16 @@ for (short i = gameData.segs.nSegments; i; i--, psc++)
 
 void ComputeStaticVertexLights (int nVertex, int nMax, int nThread)
 {
-	tFaceColor	*pf = gameData.render.color.ambient + nVertex;
-	CFloatVector		vVertex;
-	int			bColorize = !gameOpts->render.nLightingMethod;
+	tFaceColor*		pf = gameData.render.color.ambient + nVertex;
+	CFloatVector	vVertex;
+	int				bColorize = !gameOpts->render.nLightingMethod;
 
 for (; nVertex < nMax; nVertex++, pf++) {
 #if DBG
 	if (nVertex == nDbgVertex)
 		nVertex = nVertex;
 #endif
-	vVertex.Assign (gameData.segs.vertices[nVertex]);
+	vVertex.Assign (gameData.segs.vertices [nVertex]);
 	ResetActiveLights (nThread, 0);
 	ResetUsedLights (0, nThread);
 	SetNearestVertexLights (-1, nVertex, NULL, 1, 1, bColorize, nThread);

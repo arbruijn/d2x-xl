@@ -445,13 +445,13 @@ if (!((bmpInventory = PiggyLoadBitmap ("inventry.bmp")) ||
 	   (bmpInventory = PiggyLoadBitmap ("inventory.bmp"))))
 	return bHaveInvBms = 0;
 memset (bmInvItems, 0, sizeof (bmInvItems));
-h = bmpInventory->Width () * bmpInventory->Height ();
+h = bmpInventory->Width () * bmpInventory->Width ();
 buffer = bmpInventory->Buffer ();
-for (i = 0; i < 1 /*NUM_INV_ITEMS*/; i++) {
+for (i = 0; i < NUM_INV_ITEMS; i++) {
 	bmInvItems [i] = *bmpInventory;
 	bmInvItems [i].SetName ("Inventory");
 	bmInvItems [i].SetHeight (bmInvItems [i].Width ());
-	bmInvItems [i].SetBuffer (buffer + h * 1 /*i*/, true, h);
+	bmInvItems [i].SetBuffer (buffer + h * i, true, h);
 	bmInvItems [i].SetPalette (paletteManager.Game ());
 	}
 return bHaveInvBms = 1;
@@ -540,7 +540,7 @@ firstItem = gameStates.app.bD1Mission ? INV_ITEM_QUADLASERS : 0;
 x = (screen.Width () - (n - firstItem) * wIcon - (n - 1 - firstItem) * ox) / 2;
 for (j = firstItem; j < n; j++) {
 	int bHave, bArmed, bActive = HUDEquipmentActive (nInvFlags [j]);
-	bmP = bmInvItems + 0; //j;
+	bmP = bmInvItems + j;
 	HUDBitBlt (nIconScale * - (x + (w - bmP->Width ()) / (2 * nIconScale)), nIconScale * - (y - hIcon), bmP, nIconScale * F1_0, 0);
 	//m = 9 - j;
 	*szCount = '\0';
