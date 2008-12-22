@@ -108,16 +108,16 @@ return 1;
 RenderModel::CFace *G3AddModelFace (RenderModel::CModel *pm, RenderModel::CSubModel *psm, RenderModel::CFace *pmf, 
 												CFixVector *pn, ubyte *p, CBitmap **modelBitmaps, tRgbaColorf *objColorP)
 {
-	short				nVerts = WORDVAL (p+2);
-	RenderModel::CVertex	*pmv;
-	short				*pfv;
-	tUVL				*uvl;
-	CBitmap			*bmP;
-	tRgbaColorf		baseColor;
-	CFloatVector3			n, *pvn;
-	short				i, j;
-	ushort			c;
-	char				bTextured;
+	short							nVerts = WORDVAL (p+2);
+	RenderModel::CVertex*	pmv;
+	short*						pfv;
+	tUVL*							uvl;
+	CBitmap*						bmP;
+	tRgbaColorf					baseColor;
+	CFloatVector3				n, * pvn;
+	short							i, j;
+	ushort						c;
+	char							bTextured;
 
 if (!psm->m_faces)
 	psm->m_faces = pmf;
@@ -176,16 +176,16 @@ return ++pmf;
 
 //------------------------------------------------------------------------------
 
-int G3GetPOFModelItems (void *modelP, CAngleVector *pAnimAngles, RenderModel::CModel *pm, int nThis, int nParent,
+int G3GetPOFModelItems (void *modelDataP, CAngleVector *pAnimAngles, RenderModel::CModel *pm, int nThis, int nParent,
 								int bSubObject, CBitmap **modelBitmaps, tRgbaColorf *objColorP)
 {
-	ubyte*						p = reinterpret_cast<ubyte*> (modelP);
+	ubyte*						p = reinterpret_cast<ubyte*> (modelDataP);
 	RenderModel::CSubModel*	psm = pm->m_subModels + nThis;
 	RenderModel::CFace*		pmf = pm->m_faces + pm->m_iFace;
 	int							nChild;
 	short							nTag;
 
-G3CheckAndSwap (modelP);
+G3CheckAndSwap (modelDataP);
 nGlow = -1;
 if (bSubObject) {
 	psm->InitMinMax ();

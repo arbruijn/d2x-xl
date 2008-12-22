@@ -1484,7 +1484,6 @@ int ExecMenu4 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuI
 	int			bAllText=0;		//set true if all text itemP
 	int			sound_stopped=0, time_stopped=0;
    int			topChoice;   // Is this a scrolling box? Set to 0 at init
-   char			*Temp, TempVal;
 	int			bDontRestore = 0;
 	int			bRedraw = 0, bRedrawAll = 0, bStart = 1;
 	CCanvas*		gameCanvasP;
@@ -1638,8 +1637,7 @@ while (!done) {
 		}
 	else {
 		if (gameStates.app.bGameRunning) {
-			CCanvas *save_canvas;
-			save_canvas = CCanvas::Current ();
+			CCanvas::Push ();
 			CCanvas::SetCurrent (gameCanvasP);
 			//GrPaletteStepLoad (paletteManager.Game ());
 			//GrCopyPalette (grPalette, paletteManager.Game (), sizeof (grPalette));
@@ -1653,7 +1651,7 @@ while (!done) {
 					GameLoop (1, 0);
 					}
 				}
-			CCanvas::SetCurrent (save_canvas);
+			CCanvas::Pop ();
 			//paletteManager.Load (menuPalette); ???
 			}
 		}
@@ -1865,30 +1863,21 @@ radioOption:
 			break;
 
       case KEY_SHIFTED+KEY_UP:
-         if (gameStates.menus.bReordering && choice != topChoice)
-         {
-            Temp=itemP [choice].text;
-            TempVal=itemP [choice].value;
-            itemP [choice].text=itemP [choice-1].text;
-            itemP [choice].value=itemP [choice-1].value;
-            itemP [choice-1].text=Temp;
-            itemP [choice-1].value=TempVal;
-            itemP [choice].rebuild=1;
-            itemP [choice-1].rebuild=1;
+         if (gameStates.menus.bReordering && choice != topChoice) {
+            Swap (itemP [choice].text, itemP [choice - 1].text);
+            Swap (itemP [choice].value, itemP [choice - 1].value);
+            itemP [choice].rebuild =
+            itemP [choice - 1].rebuild = 1;
             choice--;
 				}
          break;
 
       case KEY_SHIFTED+KEY_DOWN:
          if (gameStates.menus.bReordering && choice !=  (nItems-1)) {
-            Temp=itemP [choice].text;
-            TempVal=itemP [choice].value;
-            itemP [choice].text=itemP [choice+1].text;
-            itemP [choice].value=itemP [choice+1].value;
-            itemP [choice+1].text=Temp;
-            itemP [choice+1].value=TempVal;
-            itemP [choice].rebuild=1;
-            itemP [choice+1].rebuild=1;
+            Swap (itemP [choice].text, itemP [choice + 1].text);
+            Swap (itemP [choice].value, itemP [choice + 1].value);
+            itemP [choice].rebuild =
+            itemP [choice + 1].rebuild = 1;
             choice++;
 				}
          break;
@@ -2225,7 +2214,7 @@ launchOption:
 						else if (itemP [choice1].key > 0)
 							ch = MENU_KEY (itemP [choice1].key, 0);
 						else if (itemP [choice1].key < 0) //skip any leading blanks
-							for (i=0; (ch=itemP [choice1].text [i]) && ch==' ';i++)
+							for (i = 0; (ch = itemP [choice1].text [i]) && ch == ' '; i++)
 								;
 						else
 							continue;
@@ -2235,7 +2224,7 @@ launchOption:
 							  (t == NM_TYPE_RADIO) ||
 							  (t == NM_TYPE_NUMBER) ||
 							  (t == NM_TYPE_SLIDER))
-								&& (ascii == toupper (ch)))	{
+								&& (ascii == toupper (ch))) {
 							k = 0;
 							choice = choice1;
 							if (old_choice>-1)

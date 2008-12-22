@@ -65,8 +65,8 @@ m_bValid = 0;
 m_bRendered = 0;
 m_bBullets = 0;
 m_vBullets.SetZero ();
-m_vboDataHandle;
-m_vboIndexHandle;
+m_vboDataHandle = 0;
+m_vboIndexHandle = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -354,14 +354,14 @@ for (i = 0, j = m_nFaceVerts; i < j; i++, pmv++) {
 	pc [i] = pmv->m_baseColor;
 	pt [i] = pmv->m_texCoord;
 	}
-if (m_vertBuf [1].Buffer ())
-	m_vertBuf [1].SetBuffer (m_vertBuf [0].Buffer (), true, m_vertBuf [0].Length ());
-if (m_index [1].Buffer ())
-	m_index [1].SetBuffer (m_index [0].Buffer (), true, m_index [0].Length ());
+if (m_vertBuf [1].Buffer ()) // points to graphics driver buffer for VBO based rendering
+	memcpy (m_vertBuf [1].Buffer (), m_vertBuf [0].Buffer (), m_vertBuf [1].Size ());
+if (m_index [1].Buffer ()) // points to graphics driver buffer for VBO based rendering
+	memcpy (m_index [1].Buffer (), m_index [0].Buffer (), m_index [1].Size ());
 if (bSort)
-	m_faceVerts = sortedVerts;
+	memcpy (m_faceVerts.Buffer (), m_sortedVerts.Buffer (), m_faceVerts.Size ());
 else
-	memcpy (sortedVerts, m_faceVerts.Buffer (), m_nFaceVerts * sizeof (RenderModel::CVertex));
+	memcpy (m_sortedVerts.Buffer (), m_faceVerts.Buffer (), m_sortedVerts.Size ());
 m_bValid = 1;
 if (gameStates.ogl.bHaveVBOs) {
 	glUnmapBufferARB (GL_ARRAY_BUFFER_ARB);
@@ -716,12 +716,11 @@ void CModel::SetShipGunPoints (OOF::CModel *po)
 {
 	static short nGunSubModels [] = {6, 7, 5, 4, 9, 10, 3, 3};
 
-	CSubModel*	psm;
-	OOF::CPoint	*pp;
-	int			i;
+	CSubModel*		psm;
+	OOF::CPoint*	pp = po->m_gunPoints.Buffer ();
 
 po->m_gunPoints.Resize (N_PLAYER_GUNS);
-for (i = 0, pp = po->m_gunPoints.Buffer (); i < po->m_gunPoints.Length (); i++, pp++) {
+for (uint i = 0; i < po->m_gunPoints.Length (); i++, pp++) {
 	if (nGunSubModels [i] >= m_nSubModels)
 		continue;
 	m_nGunSubModels [i] = nGunSubModels [i];
