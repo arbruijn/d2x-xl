@@ -262,6 +262,14 @@ class CBitmap : public CArray< ubyte > {
 		void UnlinkTexture (void);
 		void Unlink (int bAddon);
 
+		void RenderFullScreen (void);
+		int Render (CBitmap *dest, 
+						int xDest, int yDest, int wDest, int hDest, 
+						int xSrc, int ySrc, int wSrc, int hSrc, 
+						int bTransp = 0, int bMipMaps = 0, float fAlpha = 1.0f);
+		inline int Render (CBitmap* dest, int bTransp = 0, int bMipMaps = 0, float fAlpha = 1.0f)
+			{ return Render (dest, 0, 0, dest->Width (), dest->Height (), 0, 0, Width (), Height (), bTransp, bMipMaps, fAlpha); }
+
 		inline CBitmap& Clone (CBitmap& clone) { 
 			memcpy (&clone, this, sizeof (CBitmap)); 
 			return clone;

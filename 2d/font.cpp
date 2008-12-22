@@ -256,7 +256,7 @@ m_info.parentBitmap.Setup (BM_LINEAR, tw, th, 1, fontname, NULL);
 m_info.parentBitmap.Clear (TRANSPARENCY_COLOR);
 m_info.parentBitmap.AddFlags (BM_FLAG_TRANSPARENT);
 m_info.parentBitmap.SetPalette (palette);
-if (!(m_info.flags & FT_COLOR))
+//if (!(m_info.flags & FT_COLOR))
 	m_info.parentBitmap.SetTexture (textureManager.Get (&m_info.parentBitmap));
 m_info.bitmaps.Create (nChars); 
 //m_info.bitmaps.Clear ();
@@ -313,7 +313,7 @@ for (i = 0; i < nChars; i++) {
 	m_info.bitmaps [i].InitChild (&m_info.parentBitmap, curx, cury, w, h);
 	curx += w + gap;
 	}
-if (!(m_info.flags & FT_COLOR))
+//if (!(m_info.flags & FT_COLOR))
 	m_info.parentBitmap.PrepareTexture (0, 2, 0, NULL);
 }
 
@@ -669,7 +669,7 @@ if (bSetBG) {
 void CFontManager::RemapMono (void)
 {
 for (int i = 0; i < MAX_OPEN_FONTS; i++)
-	if (m_fonts [i].data && !(m_fonts [i].font.Flags () & FT_COLOR))
+	if (m_fonts [i].data /*&& !(m_fonts [i].font.Flags () & FT_COLOR)*/)
 		m_fonts [i].font.Remap (m_fonts [i].filename, m_fonts [i].data);
 }
 

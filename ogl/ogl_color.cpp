@@ -82,17 +82,17 @@ else {
 
 //------------------------------------------------------------------------------
 
-void OglCanvasColor (tCanvasColor *pc)
+void OglCanvasColor (tCanvasColor *colorP)
 {
 	GLfloat	fc [4];
 
-if (!pc)
+if (!colorP)
 	glColor4f (1.0, 1.0, 1.0, gameStates.render.grAlpha);
-else if (pc->rgb) {
-	fc [0] = (float) (pc->color.red) / 255.0f;
-	fc [1] = (float) (pc->color.green) / 255.0f;
-	fc [2] = (float) (pc->color.blue) / 255.0f;
-	fc [3] = (float) (pc->color.alpha) / 255.0f;
+else if (colorP->rgb) {
+	fc [0] = (float) (colorP->color.red) / 255.0f;
+	fc [1] = (float) (colorP->color.green) / 255.0f;
+	fc [2] = (float) (colorP->color.blue) / 255.0f;
+	fc [3] = (float) (colorP->color.alpha) / 255.0f;
 	if (fc [3] < 1.0f) {
 		glEnable (GL_BLEND);
 		glBlendFunc (gameData.render.ogl.nSrcBlend, gameData.render.ogl.nDestBlend);
@@ -100,7 +100,7 @@ else if (pc->rgb) {
 	glColor4fv (fc);
 	}
 else
-	OglPalColor (paletteManager.Game (), pc->index);
+	OglPalColor (paletteManager.Game (), colorP->index);
 }
 
 //------------------------------------------------------------------------------

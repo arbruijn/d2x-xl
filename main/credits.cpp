@@ -292,7 +292,7 @@ get_line:;
 
 		if (gameOpts->menus.nStyle) {
 			CCanvas::SetCurrent (NULL);
-			ShowFullscreenImage (&bmBackdrop);
+			bmBackdrop.RenderFullScreen ();
 	//			GrUpdate (0);
 	#if 0
 			if ((CCanvas::Current ()->Width () > 640) || (CCanvas::Current ()->Height () > 480)) {

@@ -157,19 +157,19 @@ return CreatePoolString (s, idP);
 //------------------------------------------------------------------------------
 //hack to allow color codes to be embedded in strings -MPM
 //note we subtract one from color, since 255 is "transparent" so it'll never be used, and 0 would otherwise end the string.
-//function must already have orig_color var set (or they could be passed as args...)
-//perhaps some sort of recursive orig_color nType thing would be better, but that would be way too much trouble for little gain
+//function must already have origColor var set (or they could be passed as args...)
+//perhaps some sort of recursive origColor nType thing would be better, but that would be way too much trouble for little gain
 int grMsgColorLevel = 1;
 
-inline char *CheckEmbeddedColors (char *textP, char c, int orig_color)
+inline char *CheckEmbeddedColors (char *textP, char c, int origColor, int nOffset, int nScale)
 {
 if ((c >= 1) && (c <= 3)) {
 	if (*++textP) {
 		if (grMsgColorLevel >= c) {
 			CCanvas::Current ()->FontColor (0).rgb = 1;
-			CCanvas::Current ()->FontColor (0).color.red = textP [0];
-			CCanvas::Current ()->FontColor (0).color.green = textP [1];
-			CCanvas::Current ()->FontColor (0).color.blue = textP [2];
+			CCanvas::Current ()->FontColor (0).color.red = (textP [0] - nOffset) * nScale;
+			CCanvas::Current ()->FontColor (0).color.green = (textP [1] - nOffset) * nScale;
+			CCanvas::Current ()->FontColor (0).color.blue = (textP [2] - nOffset) * nScale;
 			CCanvas::Current ()->FontColor (0).color.alpha = 0;
 			}
 		textP += 3;
@@ -177,7 +177,7 @@ if ((c >= 1) && (c <= 3)) {
 	}
 else if ((c >= 4) && (c <= 6)) {
 	if (grMsgColorLevel >= *textP - 3) {
-		CCanvas::Current ()->FontColor (0).index = orig_color;
+		CCanvas::Current ()->FontColor (0).index = origColor;
 		CCanvas::Current ()->FontColor (0).rgb = 0;
 		}
 	textP++;
@@ -200,7 +200,7 @@ return textP;
 		} \
 	else if ((c >= 4) && (c <= 6)) { \
 		if (grMsgColorLevel >= *textP - 3) { \
-			CCanvas::Current ()->FontColor (0).index = orig_color; \
+			CCanvas::Current ()->FontColor (0).index = origColor; \
 			CCanvas::Current ()->FontColor (0).rgb = 0; \
 			} \
 		textP++; \
@@ -210,25 +210,27 @@ return textP;
 
 int GrInternalString0 (int x, int y, const char *s)
 {
-	ubyte * fp;
-	const char *textP, *nextRowP, *text_ptr1;
-	int r, mask, i, bits, width, spacing, letter, underline;
-	int	skip_lines = 0;
-	uint videoOffset, videoOffset1;
-	CPalette *palette = paletteManager.Game ();
-	ubyte* videoBuffer = CCanvas::Current ()->Buffer ();
-	int rowSize = CCanvas::Current ()->RowSize ();
-	tFont	font;
+	ubyte*		fp;
+	const char*	textP, *nextRowP, *text_ptr1;
+	int			r, mask, i, bits, width, spacing, letter, underline;
+	int			skip_lines = 0;
+	uint			videoOffset, videoOffset1;
+	CPalette*	palette = paletteManager.Game ();
+	ubyte*		videoBuffer = CCanvas::Current ()->Buffer ();
+	int			rowSize = CCanvas::Current ()->RowSize ();
+	tFont			font;
 	
 if (CCanvas::Current ()->FontColor (0).rgb) {
 	CCanvas::Current ()->FontColor (0).rgb = 0;
-	CCanvas::Current ()->FontColor (0).index = palette->ClosestColor (
-		CCanvas::Current ()->FontColor (0).color.red, CCanvas::Current ()->FontColor (0).color.green, CCanvas::Current ()->FontColor (0).color.blue);
+	CCanvas::Current ()->FontColor (0).index = palette->ClosestColor (CCanvas::Current ()->FontColor (0).color.red, 
+																							CCanvas::Current ()->FontColor (0).color.green, 
+																							CCanvas::Current ()->FontColor (0).color.blue);
 	}
 if (CCanvas::Current ()->FontColor (1).rgb) {
 	CCanvas::Current ()->FontColor (1).rgb = 0;
-	CCanvas::Current ()->FontColor (1).index = palette->ClosestColor (
-			CCanvas::Current ()->FontColor (1).color.red, CCanvas::Current ()->FontColor (1).color.green, CCanvas::Current ()->FontColor (1).color.blue);
+	CCanvas::Current ()->FontColor (1).index = palette->ClosestColor (CCanvas::Current ()->FontColor (1).color.red, 
+																							CCanvas::Current ()->FontColor (1).color.green, 
+																							CCanvas::Current ()->FontColor (1).color.blue);
 	}
 bits=0;
 videoOffset1 = y * rowSize + x;
@@ -246,7 +248,7 @@ while (nextRowP != NULL) {
 		videoOffset = videoOffset1;
 		while (*textP) {
 			if (*textP == '\n') {
-				nextRowP = &textP[1];
+				nextRowP = textP + 1;
 				break;
 				}
 			if (*textP == CC_COLOR) {
@@ -279,7 +281,7 @@ while (nextRowP != NULL) {
 				fp = font.data + letter * BITS_TO_BYTES (width)*font.height;
 			if (underline)
 				for (i = 0; i < width; i++)
-					videoBuffer[videoOffset++] = (ubyte) CCanvas::Current ()->FontColor (0).index;
+					videoBuffer [videoOffset++] = (ubyte) CCanvas::Current ()->FontColor (0).index;
 				else {
 					fp += BITS_TO_BYTES (width)*r;
 					mask = 0;
@@ -289,9 +291,9 @@ while (nextRowP != NULL) {
 							mask = 0x80;
 							}
 						if (bits & mask)
-							videoBuffer[videoOffset++] = (ubyte) CCanvas::Current ()->FontColor (0).index;
+							videoBuffer [videoOffset++] = (ubyte) CCanvas::Current ()->FontColor (0).index;
 						else
-							videoBuffer[videoOffset++] = (ubyte) CCanvas::Current ()->FontColor (1).index;
+							videoBuffer [videoOffset++] = (ubyte) CCanvas::Current ()->FontColor (1).index;
 						mask >>= 1;
 						}
 					}
@@ -309,16 +311,42 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+static inline const char* ScanEmbeddedColors (char c, const char* textP, int origColor, int nOffset, int nScale)
+{
+if ((c >= 1) && (c <= 3)) {
+	if (textP [1]) {
+		if (grMsgColorLevel >= c) {
+			CCanvas::Current ()->FontColor (0).rgb = 1;
+			CCanvas::Current ()->FontColor (0).color.red = (textP [0] - nOffset) * nScale;
+			CCanvas::Current ()->FontColor (0).color.green = (textP [1] - nOffset) * nScale;
+			CCanvas::Current ()->FontColor (0).color.blue = (textP [2] - nOffset) * nScale;
+			CCanvas::Current ()->FontColor (0).color.alpha = 0;
+			}
+		return textP + 4;
+		}
+	}
+else if ((c >= 4) && (c <= 6)) {
+	if (grMsgColorLevel >= *textP - 3) {
+		CCanvas::Current ()->FontColor (0).index = origColor;
+		CCanvas::Current ()->FontColor (0).rgb = 0;
+		}
+	return textP + 1;
+	}
+return textP;
+}
+
+//------------------------------------------------------------------------------
+
 int GrInternalString0m (int x, int y, const char *s)
 {
-	ubyte	* fp;
-	const char		* textP, * nextRowP, * text_ptr1;
+	ubyte*			fp;
+	const char*		textP, * nextRowP, * text_ptr1;
 	int				r, mask, i, bits, width, spacing, letter, underline;
 	int				skip_lines = 0;
 	char				c;
-	int				orig_color;
-	uint	videoOffset, videoOffset1;
-	CPalette			*palette = paletteManager.Game ();
+	int				origColor;
+	uint				videoOffset, videoOffset1;
+	CPalette*		palette = paletteManager.Game ();
 	ubyte*			videoBuffer = CCanvas::Current ()->Buffer ();
 	int				rowSize = CCanvas::Current ()->RowSize ();
 	tFont				font;
@@ -331,112 +359,91 @@ if (CCanvas::Current ()->FontColor (1).rgb) {
 	CCanvas::Current ()->FontColor (1).rgb = 0;
 	CCanvas::Current ()->FontColor (1).index = fontManager.Current ()->ParentBitmap ().Palette ()->ClosestColor (CCanvas::Current ()->FontColor (1).color.red, CCanvas::Current ()->FontColor (1).color.green, CCanvas::Current ()->FontColor (1).color.blue);
 	}
-orig_color = CCanvas::Current ()->FontColor (0).index;//to allow easy reseting to default string color with colored strings -MPM
+origColor = CCanvas::Current ()->FontColor (0).index;//to allow easy reseting to default string color with colored strings -MPM
 bits=0;
 videoOffset1 = y * rowSize + x;
 fontManager.Current ()->GetInfo (font);
-	nextRowP = s;
-	CCanvas::Current ()->FontColor (0).rgb = 0;
-	while (nextRowP != NULL)
-	{
-		text_ptr1 = nextRowP;
-		nextRowP = NULL;
+nextRowP = s;
+CCanvas::Current ()->FontColor (0).rgb = 0;
+while (nextRowP != NULL) {
+	text_ptr1 = nextRowP;
+	nextRowP = NULL;
 
-		if (x==0x8000) {			//centered
-			int xx = fontManager.Current ()->GetCenteredX (text_ptr1);
-			videoOffset1 = y * rowSize + xx;
+	if (x==0x8000) {			//centered
+		int xx = fontManager.Current ()->GetCenteredX (text_ptr1);
+		videoOffset1 = y * rowSize + xx;
 		}
 
-		for (r=0; r<font.height; r++) {
-			textP = text_ptr1;
-			videoOffset = videoOffset1;
-			while ((c = *textP)) {
-				if (c == '\n') {
-					nextRowP = &textP[1];
-					break;
-					}
-				if (c == CC_COLOR) {
-					CCanvas::Current ()->FontColor (0).index = * (++textP);
-					textP++;
-					continue;
-					}
-				if (c == CC_LSPACING) {
-					skip_lines = * (++textP) - '0';
-					textP++;
-					continue;
-					}
-				underline = 0;
-				if (c == CC_UNDERLINE) {
-					if ((r==font.baseLine+2) || (r==font.baseLine+3))
-						underline = 1;
-					c = * (++textP);
-					}
-				fontManager.Current ()->GetCharWidth (c, textP[1], width, spacing);
-				letter = c - font.minChar;
-				if (!fontManager.Current ()->InFont (letter) || c <= 0x06) {	//not in font, draw as space
-#if 0
-					CHECK_EMBEDDED_COLORS ()
-#else
-					if ((c >= 1) && (c <= 3)) {
-						if (*++textP) {
-							if (grMsgColorLevel >= c) {
-								CCanvas::Current ()->FontColor (0).rgb = 1;
-								CCanvas::Current ()->FontColor (0).color.red = textP [0] - 128;
-								CCanvas::Current ()->FontColor (0).color.green = textP [1] - 128;
-								CCanvas::Current ()->FontColor (0).color.blue = textP [2] - 128;
-								CCanvas::Current ()->FontColor (0).color.alpha = 0;
-								}
-							textP += 3;
-							}
-						}
-					else if ((c >= 4) && (c <= 6)) {
-						if (grMsgColorLevel >= *textP - 3) {
-							CCanvas::Current ()->FontColor (0).index = orig_color;
-							CCanvas::Current ()->FontColor (0).rgb = 0;
-							}
-						textP++;
-						}
-#endif
-					else {
-						videoOffset += spacing;
-						textP++;
-						}
-					continue;
-					}
-				if (font.flags & FT_PROPORTIONAL)
-					fp = font.chars[letter];
-				else
-					fp = font.data + letter * BITS_TO_BYTES (width) * font.height;
+	for (r = 0; r < font.height; r++) {
+		textP = text_ptr1;
+		videoOffset = videoOffset1;
+		while ((c = *textP)) {
+			if (c == '\n') {
+				nextRowP = textP + 1;
+				break;
+				}
+			if (c == CC_COLOR) {
+				CCanvas::Current ()->FontColor (0).index = * (++textP);
+				textP++;
+				continue;
+				}
+			if (c == CC_LSPACING) {
+				skip_lines = * (++textP) - '0';
+				textP++;
+				continue;
+				}
+			underline = 0;
+			if (c == CC_UNDERLINE) {
+				if ((r==font.baseLine+2) || (r==font.baseLine+3))
+					underline = 1;
+				c = * (++textP);
+				}
+			fontManager.Current ()->GetCharWidth (c, textP[1], width, spacing);
+			letter = c - font.minChar;
+			if (c <= 0x06) {	//not in font, draw as space
+				textP = ScanEmbeddedColors (c, textP, origColor, 0, 1);
+				continue;
+				}
 
-				if (underline)
-					for (i=0; i< width; i++)
-						videoBuffer[videoOffset++] = (uint) CCanvas::Current ()->FontColor (0).index;
-				else {
-					fp += BITS_TO_BYTES (width)*r;
-					mask = 0;
-					for (i=0; i< width; i++) {
-						if (mask==0) {
-							bits = *fp++;
-							mask = 0x80;
+			if (!fontManager.Current ()->InFont (letter)) {
+				videoOffset += spacing;
+				textP++;
+				}
+
+			if (font.flags & FT_PROPORTIONAL)
+				fp = font.chars[letter];
+			else
+				fp = font.data + letter * BITS_TO_BYTES (width) * font.height;
+
+			if (underline)
+				for (i = 0; i < width; i++)
+					videoBuffer [videoOffset++] = (uint) CCanvas::Current ()->FontColor (0).index;
+			else {
+				fp += BITS_TO_BYTES (width) * r;
+				mask = 0;
+				for (i = 0; i < width; i++) {
+					if (mask == 0) {
+						bits = *fp++;
+						mask = 0x80;
 						}
-						if (bits & mask)
-							videoBuffer[videoOffset++] = (uint) CCanvas::Current ()->FontColor (0).index;
-						else
-							videoOffset++;
-						mask >>= 1;
+					if (bits & mask)
+						videoBuffer [videoOffset++] = (uint) CCanvas::Current ()->FontColor (0).index;
+					else
+						videoOffset++;
+					mask >>= 1;
 					}
 				}
-				textP++;
-				videoOffset += spacing-width;
+			textP++;
+			videoOffset += spacing-width;
 			}
-			videoOffset1 += rowSize;
-			y++;
+		videoOffset1 += rowSize;
+		y++;
 		}
-		y += skip_lines;
-		videoOffset1 += rowSize * skip_lines;
-		skip_lines = 0;
+	y += skip_lines;
+	videoOffset1 += rowSize * skip_lines;
+	skip_lines = 0;
 	}
-	return 0;
+return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -450,79 +457,48 @@ int Pow2ize (int x);//from ogl.c
 
 //------------------------------------------------------------------------------
 
-int OglInternalString (int x, int y, const char *s)
+int CFont::DrawString (int x, int y, const char *s)
 {
 	const char* textP, * nextRowP, * text_ptr1;
 	int			width, spacing, letter;
-	int			xx, yy;
-	int			orig_color = CCanvas::Current ()->FontColor (0).index;//to allow easy reseting to default string color with colored strings -MPM
+	int			l, t;
+	int			origColor = CCanvas::Current ()->FontColor (0).index;//to allow easy reseting to default string color with colored strings -MPM
 	ubyte			c;
 	CBitmap		*bmf;
-	tFont			font;
+	tCanvasColor*	colorP = (m_info.flags & FT_COLOR) ? NULL : &CCanvas::Current ()->FontColor (0);
 
-fontManager.Current ()->GetInfo (font);
 nextRowP = s;
-yy = y;
+t = y;
 if (screen.Canvas ()->Mode () != BM_OGL)
 	Error ("carp.\n");
 while (nextRowP != NULL) {
 	text_ptr1 = nextRowP;
 	nextRowP = NULL;
 	textP = text_ptr1;
-	xx = x;
-	if (xx == 0x8000)			//centered
-		xx = fontManager.Current ()->GetCenteredX (textP);
+	l = (x == 0x8000) ? fontManager.Current ()->GetCenteredX (textP) : x;
 	while ((c = *textP)) {
 		if (c == '\n') {
 			nextRowP = textP + 1;
-			yy += font.height + 2;
+			t += m_info.height + 2;
 			break;
 			}
-		letter = c - font.minChar;
+		letter = c - m_info.minChar;
 		fontManager.Current ()->GetCharWidth (c, textP [1], width, spacing);
-		if (!fontManager.Current ()->InFont (letter) || (c <= 0x06)) {	//not in font, draw as space
-#if 0
-			CHECK_EMBEDDED_COLORS ()
-#else
-			if ((c >= 1) && (c <= 3)) {
-				if (*++textP) {
-					if (grMsgColorLevel >= c) {
-						CCanvas::Current ()->FontColor (0).rgb = 1;
-						CCanvas::Current ()->FontColor (0).color.red = 2 * (textP [0] - 128);
-						CCanvas::Current ()->FontColor (0).color.green = 2 * (textP [1] - 128);
-						CCanvas::Current ()->FontColor (0).color.blue = 2 * (textP [2] - 128);
-						CCanvas::Current ()->FontColor (0).color.alpha = 255;
-						}
-					textP += 3;
-					}
-				}
-			else if ((c >= 4) && (c <= 6)) {
-				if (grMsgColorLevel >= *textP - 3) {
-					CCanvas::Current ()->FontColor (0).index = orig_color;
-					CCanvas::Current ()->FontColor (0).rgb = 0;
-					}
-				textP++;
-				}
-#endif
-			else {
-				xx += spacing;
-				textP++;
-				}
+		if (c <= 0x06) {	//not in font, draw as space
+			textP = ScanEmbeddedColors (c, textP, origColor, 128, 2);
 			continue;
 			}
-		bmf = font.bitmaps + letter;
-		bmf->AddFlags (BM_FLAG_TRANSPARENT);
-		if (font.flags & FT_COLOR)
-			GrBitmapM (xx, yy, bmf, 2); // credits need clipping
-		else {
-			OglUBitMapMC (xx, yy, 0, 0, bmf, &CCanvas::Current ()->FontColor (0), F1_0, 0);
+		if (!fontManager.Current ()->InFont (letter)) {
+			l += spacing;
+			textP++;
 			}
-		xx += spacing;
+		bmf = m_info.bitmaps + letter;
+		bmf->AddFlags (BM_FLAG_TRANSPARENT);
+		OglUBitMapMC (l, t, 0, 0, bmf, colorP, F1_0, 0);
+		l += spacing;
 		textP++;
 		}
 	}
-font.parentBitmap.SetBuffer (NULL);	//beware of the destructor!
-memset (&font, 0, sizeof (font));
 return 0;
 }
 
@@ -531,7 +507,7 @@ return 0;
 CBitmap *CreateStringBitmap (
 	const char *s, int nKey, uint nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce)
 {
-	int			orig_color = CCanvas::Current ()->FontColor (0).index;//to allow easy reseting to default string color with colored strings -MPM
+	int			origColor = CCanvas::Current ()->FontColor (0).index;//to allow easy reseting to default string color with colored strings -MPM
 	int			i, x, y, hx, hy, w, h, aw, cw, spacing, nTab, nChars, bHotKey;
 	CBitmap		*bmP, *bmfP;
 	tRgbaColorb	hc, kc, *pc;
@@ -541,12 +517,11 @@ CBitmap *CreateStringBitmap (
 	ubyte			c;
 	const char	*textP, *text_ptr1, *nextRowP;
 	int			letter;
-	tFont			font;
+	CFont*		fontP = fontManager.Current ();
 
 if (!(bForce || (gameOpts->menus.nStyle && gameOpts->menus.bFastMenus)))
 	return NULL;
-fontManager.Current ()->GetInfo (font);
-fontManager.Current ()->StringSizeTabbed (s, w, h, aw, nTabs, nMaxWidth);
+fontP->StringSizeTabbed (s, w, h, aw, nTabs, nMaxWidth);
 if (!(w && h))
 	return NULL;
 if (bForce >= 0) {
@@ -585,7 +560,7 @@ while (nextRowP) {
 	while ((c = *textP)) {
 		if (c == '\n') {
 			nextRowP = textP + 1;
-			y += font.height + 2;
+			y += fontP->Height () + 2;
 			nTab = 0;
 			break;
 			}
@@ -607,41 +582,19 @@ while (nextRowP) {
 				}
 			continue;
 			}
-		letter = c - font.minChar;
-		fontManager.Current ()->GetCharWidth (c, textP [1], cw, spacing);
-		if (!fontManager.Current ()->InFont (letter) || (c <= 0x06)) {	//not in font, draw as space
-#if 0
-			CHECK_EMBEDDED_COLORS ()
-#else
-			if ((c >= 1) && (c <= 3)) {
-				if (*++textP) {
-					if (grMsgColorLevel >= c) {
-						CCanvas::Current ()->FontColor (0).rgb = 1;
-						CCanvas::Current ()->FontColor (0).color.red = (textP [0] - 128) * 2;
-						CCanvas::Current ()->FontColor (0).color.green = (textP [1] - 128) * 2;
-						CCanvas::Current ()->FontColor (0).color.blue = (textP [2] - 128) * 2;
-						CCanvas::Current ()->FontColor (0).color.alpha = 255;
-						}
-					textP += 3;
-					}
-				}
-			else if ((c >= 4) && (c <= 6)) {
-				if (grMsgColorLevel >= *textP - 3) {
-					CCanvas::Current ()->FontColor (0).index = orig_color;
-					CCanvas::Current ()->FontColor (0).rgb = 0;
-					}
-				textP++;
-				}
-#endif
-			else {
-				x += spacing;
-				textP++;
-				}
+		letter = c - fontP->MinChar ();
+		fontP->GetCharWidth (c, textP [1], cw, spacing);
+		if (c <= 0x06) {	//not in font, draw as space
+			textP = ScanEmbeddedColors (c, textP, origColor, 128, 2);
 			continue;
+			}
+		if (!fontManager.Current ()->InFont (letter)) {
+			x += spacing;
+			textP++;
 			}
 		if ((bHotKey = ((nKey < 0) && isalnum (c)) || (nKey && ((int) c == nKey))))
 			nKey = 0;
-		bmfP = (bHotKey && (fontManager.Current () != SMALL_FONT)) ? SELECTED_FONT->Bitmaps () + letter : font.bitmaps + letter;
+		bmfP = (bHotKey && (fontManager.Current () != SMALL_FONT)) ? SELECTED_FONT->Bitmaps () + letter : fontP->Bitmaps () + letter;
 		palP = bmfP->Parent () ? bmfP->Parent ()->Palette () : bmfP->Palette ();
 		nChars++;
 		i = nKeyColor * 3;
@@ -649,7 +602,7 @@ while (nextRowP) {
 		kc.green = RGBA_GREEN (nKeyColor);
 		kc.blue = RGBA_BLUE (nKeyColor);
 		kc.alpha = 255;
-		if (font.flags & FT_COLOR) {
+		if (fontP->Flags () & FT_COLOR) {
 			for (hy = 0; hy < bmfP->Height (); hy++) {
 				pc = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ()) + (y + hy) * w + x;
 				pf = bmfP->Buffer () + hy * bmfP->RowSize ();
@@ -695,16 +648,7 @@ while (nextRowP) {
 		}
 	}
 bmP->SetPalette (palP);
-//bmP->SetupTexture (0, 2, 1);
-font.parentBitmap.SetBuffer (NULL);	//beware of the destructor!
 return bmP;
-}
-
-//------------------------------------------------------------------------------
-
-int GrInternalColorString (int x, int y, const char *s)
-{
-return OglInternalString (x, y, s);
 }
 
 //------------------------------------------------------------------------------
@@ -713,8 +657,6 @@ int OglUBitMapMC2 (int x, int y, int dw, int dh, CBitmap *bmP, tCanvasColor *c, 
 
 int GrString (int x, int y, const char *s, int *idP)
 {
-	int			w, h, aw, clipped = 0;
-
 if (gameOpts->render.coronas.nStyle < 2) {
 		grsString	*ps;
 
@@ -723,6 +665,14 @@ if (gameOpts->render.coronas.nStyle < 2) {
 		return (int) (ps - stringPool) + 1;
 		}
 	}
+#if 1
+
+return fontManager.Current ()->DrawString (x, y, s);
+
+#else
+
+	int			w, h, aw, clipped = 0;
+
 Assert (fontManager.Current () != NULL);
 if (x == 0x8000)	{
 	if (y < 0)
@@ -734,9 +684,9 @@ if (x == 0x8000)	{
 		clipped |= 1;
 	if (y > CCanvas::Current ()->Height ())
 		clipped |= 3;
-	else if ((y+h) > CCanvas::Current ()->Height ())
+	else if ((y + h) > CCanvas::Current ()->Height ())
 		clipped |= 1;
-	else if ((y+h) < 0)
+	else if ((y + h) < 0)
 		clipped |= 2;
 	}
 else {
@@ -757,7 +707,7 @@ else {
 		clipped |= 2;
 	}
 if (!clipped)
-	return GrUString (x, y, s);
+	return fontManager.Current ()->DrawString (x, y, s);
 if (clipped & 2) {
 	// Completely clipped...
 	return 0;
@@ -767,12 +717,15 @@ if (clipped & 1) {
 	}
 // Partially clipped...
 if (MODE == BM_OGL)
-	return OglInternalString (x, y, s);
+	return fontManager.Current ()->DrawString (x, y, s);
 if (fontManager.Current ()->Flags () & FT_COLOR)
-	return GrInternalColorString (x, y, s);
+	return fontManager.Current ()->DrawString (x, y, s);
 if (CCanvas::Current ()->FontColor (1).index == -1)
 	return GrInternalStringClippedM (x, y, s);
 return GrInternalStringClipped (x, y, s);
+
+#endif
+
 }
 
 //------------------------------------------------------------------------------
@@ -780,9 +733,9 @@ return GrInternalStringClipped (x, y, s);
 int GrUString (int x, int y, const char *s)
 {
 if (MODE == BM_OGL)
-	return OglInternalString (x, y, s);
+	return fontManager.Current ()->DrawString (x, y, s);
 if (fontManager.Current ()->Flags () & FT_COLOR)
-	return GrInternalColorString (x, y, s);
+	return fontManager.Current ()->DrawString (x, y, s);
 else if (MODE != BM_LINEAR)
 	return 0;
 if (CCanvas::Current ()->FontColor (1).index == -1)

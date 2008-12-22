@@ -197,10 +197,8 @@ if (gameOpts->movies.bFullScreen) {
 	int yOffs = (CCanvas::Current ()->Height () - dh) / 2;
 
 	glDisable (GL_BLEND);
-	OglUBitBltI (CCanvas::Current ()->Width (), dh, 0, yOffs, 
-					 bufw, bufh, sx, sy, 
-					 &bmFrame, CCanvas::Current (), 
-					 gameOpts->movies.nQuality, 1, 1.0f);
+	bmFrame.Render (CCanvas::Current (), 0, yOffs, CCanvas::Current ()->Width (), dh, 
+						 sx, sy, bufw, bufh, 1, gameOpts->movies.nQuality);
 	glEnable (GL_BLEND);
 	}
 else {

@@ -393,8 +393,8 @@ else {
 	pcxError = PCXReadBitmap (filename, &bm, BM_LINEAR, bD1Mission);
 	}
 if (pcxError == PCX_ERROR_NONE) {
-	paletteManager.LoadEffect  ();
-	ShowFullscreenImage (&bm);
+	paletteManager.LoadEffect ();
+	bm.RenderFullScreen ();
 	}
 return pcxError;
 }

@@ -370,7 +370,7 @@ if (strstr (szImg, ".tga")) {
 	if (!ReadTGA (szImg, gameFolders.szDataDir, &bm, -1, 1.0, 0, 0))
 		return PCX_ERROR_OPENING;
 	if (bFullScr) {
-		ShowFullscreenImage (&bm);
+		bm.RenderFullScreen ();
 		bm.Destroy ();
 		}
 	return PCX_ERROR_NONE;
@@ -419,7 +419,7 @@ if ((pcxResult = LoadBriefImg (filename, &title_bm, 0)) != PCX_ERROR_NONE) {
 //vfx_set_palette_sub (brief_palette);
 paletteManager.LoadEffect  ();
 CCanvas::SetCurrent (NULL);
-ShowFullscreenImage (&title_bm);
+title_bm.RenderFullScreen ();
 if (paletteManager.FadeIn ())
 	return 1;
 
@@ -1582,7 +1582,7 @@ if (gameStates.app.bD1Mission) {
 		}
 	paletteManager.LoadEffect (bmBriefing.Palette ());
 	CCanvas::SetCurrent (NULL);
-	ShowFullscreenImage (&bmBriefing);
+	bmBriefing.RenderFullScreen ();
 	GrUpdate (0);
 	bmBriefing.Destroy ();
 	if (paletteManager.FadeIn ())

@@ -107,6 +107,8 @@ class CFont {
 		int GetCenteredX (const char *s);
 		int TotalWidth (void);
 
+		int DrawString (int x, int y, const char *s);
+
 	private:
 		ubyte *FindKernEntry (ubyte first, ubyte second);
 		void ChooseSize (int gap, int& rw, int& rh);

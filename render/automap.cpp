@@ -345,7 +345,7 @@ if (gameStates.render.automap.bRadar && gameStates.render.bTopDownRadar) {
 #endif
 	}
 if (bAutomapFrame) {
-	ShowFullscreenImage (&bmAutomapBackground);
+	bmAutomapBackground.RenderFullScreen ();
 	fontManager.SetCurrent (HUGE_FONT);
 	fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
 	GrPrintF (NULL, RESCALE_X (80), RESCALE_Y (36), TXT_AUTOMAP, HUGE_FONT);
@@ -1199,13 +1199,12 @@ if (found != -1)
 
 void AddSegmentEdges (CSegment *segP)
 {
-	int		 		bIsGrate, bNoFade;
-	uint				color;
-	ubyte				nSide;
-	short				nSegment = segP->Index ();
-	int				bHidden;
-	int				ttype, nTrigger;
-	short*			corners;
+	int		bIsGrate, bNoFade;
+	uint		color;
+	ubyte		nSide;
+	short		nSegment = segP->Index ();
+	int		bHidden;
+	short*	corners;
 
 for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	bHidden = 0;
@@ -1240,9 +1239,8 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 
 	CWall* wallP = segP->Wall (nSide);
 	if (wallP) {
-		nTrigger = wallP->nTrigger;
-		ttype = TRIGGERS [nTrigger].nType;
-		if (ttype==TT_SECRET_EXIT)	{
+		CTrigger* triggerP = wallP->Trigger ();
+		if (triggerP && (triggerP->nType == TT_SECRET_EXIT)) {
 	 		color = RGBA_PAL2 (29, 0, 31);
 			bNoFade=1;
 			goto addEdge;

@@ -53,8 +53,6 @@ int GrInit(void);
 // the video mode changes.
 int GrInitScreen(int mode, int w, int h, int x, int y, int rowSize, ubyte *data);
 
-void ShowFullscreenImage (CBitmap *src);
-
 int GrVideoModeOK(u_int32_t mode);
 int GrSetMode(u_int32_t mode);
 

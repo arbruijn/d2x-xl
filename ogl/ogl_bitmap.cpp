@@ -130,7 +130,7 @@ else
 
 //------------------------------------------------------------------------------
 
-int OglUBitMapMC (int x, int y, int dw, int dh, CBitmap *bmP, tCanvasColor *c, int scale, int orient)
+int OglUBitMapMC (int x, int y, int dw, int dh, CBitmap *bmP, tCanvasColor *colorP, int scale, int orient)
 {
 	GLint		depthFunc, bBlend;
 	GLfloat	xo, yo, xf, yf;
@@ -203,7 +203,7 @@ else{
 	v2 = (float) bmP->Bottom () / (float) texP->TH ();
 	}
 
-OglCanvasColor (c);
+OglCanvasColor (colorP);
 glBegin (GL_QUADS);
 BmSetTexCoord (u1, v1, a, orient);
 glVertex2f (xo, yo);
@@ -226,38 +226,37 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OglUBitBltI (
-	int dw, int dh, int dx, int dy, 
-	int sw, int sh, int sx, int sy, 
-	CBitmap *src, CBitmap *dest, 
-	int bMipMaps, int bTransp, float fAlpha)
+int CBitmap::Render (CBitmap *dest, 
+							int xDest, int yDest, int wDest, int hDest, 
+							int xSrc, int ySrc, int wSrc, int hSrc, 
+							int bTransp, int bMipMaps, float fAlpha)
 {
 	GLfloat xo, yo, xs, ys;
 	GLfloat u1, v1;//, u2, v2;
 	CTexture tex, *texP;
 	GLint curFunc; 
-	int nTransp = (src->Flags () & BM_FLAG_TGA) ? -1 : src->HasTransparency () ? 2 : 0;
+	int nTransp = (Flags () & BM_FLAG_TGA) ? -1 : HasTransparency () ? 2 : 0;
 
 //	ubyte *oldpal;
 u1 = v1 = 0;
-dx += dest->Left ();
-dy += dest->Top ();
-xo = dx / (float) gameStates.ogl.nLastW;
-xs = dw / (float) gameStates.ogl.nLastW;
-yo = 1.0f - dy / (float) gameStates.ogl.nLastH;
-ys = dh / (float) gameStates.ogl.nLastH;
+xDest += dest->Left ();
+yDest += dest->Top ();
+xo = xDest / (float) gameStates.ogl.nLastW;
+xs = wDest / (float) gameStates.ogl.nLastW;
+yo = 1.0f - yDest / (float) gameStates.ogl.nLastH;
+ys = hDest / (float) gameStates.ogl.nLastH;
 
 glActiveTexture (GL_TEXTURE0);
 glEnable (GL_TEXTURE_2D);
-if (!(texP = src->Texture ())) {
+if (!(texP = Texture ())) {
 	texP = &tex;
 	texP->Init ();
-	texP->Setup (sw, sh, src->RowSize (), 0, 0, bMipMaps, src);
-	src->SetTexture (texP);
-	src->LoadTexture (sx, sy, nTransp, 0);
+	texP->Setup (wSrc, hSrc, RowSize (), 0, 0, bMipMaps, this);
+	SetTexture (texP);
+	LoadTexture (xSrc, ySrc, nTransp, 0);
 	}
 else
-	src->SetupTexture (0, bTransp, 1);
+	SetupTexture (0, bTransp, 1);
 texP->Bind ();
 texP->Wrap (GL_CLAMP);
 glGetIntegerv (GL_DEPTH_FUNC, &curFunc);

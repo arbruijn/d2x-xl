@@ -333,7 +333,7 @@ if (!(bRedraw && gameOpts->menus.nStyle && bgP && bmP)) {
 if (!bmP)
 	return;
 if (!((gameStates.menus.bNoBackground || gameStates.app.bGameRunning) && gameOpts->menus.nStyle))
-	ShowFullscreenImage (bmP);
+	bmP->RenderFullScreen ();
 if (bgP)
 	bgP->background = bmP;
 else if (bmP != pAltBg)
@@ -572,8 +572,7 @@ if (bCreateTextBms && gameOpts->menus.bFastMenus &&
 	 (bmP || (bmP = CreateStringBitmap (itemP->text, MENU_KEY (itemP->key, -1), 
 												   gameData.menu.keyColor,
 												   nTabs, itemP->centered, itemP->w, 0)))) {
-	OglUBitBltI (bmP->Width (), bmP->Height (), itemP->x, itemP->y, bmP->Width (), bmP->Height (), 0, 0, 
-					 bmP, CCanvas::Current (), 0, 1, 1.0f);
+	bmP->Render (CCanvas::Current (), itemP->x, itemP->y, bmP->Width (), bmP->Height (), 0, 0, bmP->Width (), bmP->Height (), 0, 1);
 	itemP->text_bm [bIsCurrent] = bmP;
 	}
 else 

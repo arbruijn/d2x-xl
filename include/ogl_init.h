@@ -330,7 +330,6 @@ int OglCacheLevelTextures (void);
 
 void OglURect(int left,int top,int right,int bot);
 int OglUBitMapMC (int x, int y, int dw, int dh, CBitmap *bm, tCanvasColor *c, int scale, int orient);
-int OglUBitBltI (int dw,int dh,int dx,int dy, int sw, int sh, int sx, int sy, CBitmap * src, CBitmap * dest, int bMipMaps, int bTransp);
 int OglUBitBltToLinear (int w,int h,int dx,int dy, int sx, int sy, CBitmap * src, CBitmap * dest);
 int OglUBitBltCopy (int w,int h,int dx,int dy, int sx, int sy, CBitmap * src, CBitmap * dest);
 void OglUPixelC (int x, int y, tCanvasColor *c);
@@ -446,16 +445,6 @@ extern PFNGLCLIENTACTIVETEXTUREARBPROC	glClientActiveTexture;
 #endif
 
 //------------------------------------------------------------------------------
-
-static inline int OglUBitBlt (int w,int h,int dx,int dy, int sx, int sy, CBitmap *src, CBitmap *dest, int bTransp)
-{
-return OglUBitBltI (w, h, dx, dy, w, h, sx, sy, src, dest, 0, bTransp);
-}
-
-static inline int OglUBitMapM (int x, int y,CBitmap *bm)
-{
-return OglUBitMapMC (x, y, 0, 0, bm, NULL, F1_0, 0);
-}
 
 typedef struct tSinCosf {
 	double	dSin, dCos;
