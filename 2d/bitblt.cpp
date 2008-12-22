@@ -364,32 +364,71 @@ extern void gr_lbitblt(CBitmap * source, CBitmap * dest, int height, int width);
 
 //------------------------------------------------------------------------------
 
-void GrBitmap (int x, int y, CBitmap *bmP)
+void CBitmap::RenderClipped (int x, int y)
 {
-	CBitmap * const scr = CCanvas::Current ();
-	int dx1=x, dx2=x+bmP->Width ()-1;
-	int dy1=y, dy2=y+bmP->Height ()-1;
-	int sx=0, sy=0;
+	CBitmap * const dest = CCanvas::Current ();
 
-if ((dx1 >= scr->Width ()) || (dx2 < 0)) 
-	return;
-if ((dy1 >= scr->Height ()) || (dy2 < 0)) 
-	return;
-if (dx1 < 0) { 
-	sx = -dx1; 
-	dx1 = 0; 
-	}
-if (dy1 < 0) { 
-	sy = -dy1; 
-	dy1 = 0; 
-	}
-if (dx2 >= scr->Width ())
-	dx2 = scr->Width ()-1;
-if (dy2 >= scr->Height ())
-	dy2 = scr->Height ()-1;
+	int left = x, right = x + Width () - 1;
+	int top = y, bottom = y + Height () - 1;
 
-// Draw bitmap bmP[x,y] into (dx1,dy1)-(dx2,dy2)
-GrBmUBitBlt (dx2 - dx1 + 1, dy2 - dy1 + 1, dx1, dy1, sx, sy, bmP, CCanvas::Current (), 0);
+if ((left >= dest->Width ()) || (right < 0)) 
+	return;
+if ((top >= dest->Height ()) || (bottom < 0)) 
+	return;
+if (left < 0) { 
+	x = -left; 
+	left = 0; 
+	}
+else
+	x = 0;
+if (top < 0) { 
+	y = -top; 
+	top = 0; 
+	}
+else
+	y = 0;
+if (right >= dest->Width ())
+	right = dest->Width ()-1;
+if (bottom >= dest->Height ())
+	bottom = dest->Height ()-1;
+
+// Draw bitmap bmP[x,y] into (left,top)-(right,bottom)
+//GrBmUBitBlt (right - left + 1, bottom - top + 1, left, top, x, y, bmP, CCanvas::Current (), 0);
+Render (CCanvas::Current (), left, top, right - left + 1, bottom - top + 1, x, y, Width (), Height ());
+}
+
+//------------------------------------------------------------------------------
+
+void GrBitmap (int x, int y, CBitmap* src)
+{
+	CBitmap * const dest = CCanvas::Current ();
+
+	int left = x, right = x + src->Width () - 1;
+	int top = y, bottom = y + src->Height () - 1;
+
+if ((left >= dest->Width ()) || (right < 0)) 
+	return;
+if ((top >= dest->Height ()) || (bottom < 0)) 
+	return;
+if (left < 0) { 
+	x = -left; 
+	left = 0; 
+	}
+else
+	x = 0;
+if (top < 0) { 
+	y = -top; 
+	top = 0; 
+	}
+else
+	y = 0;
+if (right >= dest->Width ())
+	right = dest->Width () - 1;
+if (bottom >= dest->Height ())
+	bottom = dest->Height () - 1;
+
+// Draw bitmap bmP[x,y] into (left,top)-(right,bottom)
+GrBmUBitBlt (right - left + 1, bottom - top + 1, left, top, x, y, src, dest, 0);
 }
 
 //------------------------------------------------------------------------------

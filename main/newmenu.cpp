@@ -1428,8 +1428,8 @@ if (gameOpts->menus.nStyle) {
 	}
 else {
 	if (!filename) {
-		// Save the background under the menu...
-		GrBitmap (0, 0, bg->saved); 
+		// Restore the background under the menu...
+		bg->saved->RenderClipped (); 
 		delete bg->saved;
 		bg->saved = NULL;
 		delete bg->background;
@@ -1437,7 +1437,7 @@ else {
 		} 
 	else {
 		if (!bDontRestore) {	//info passed back from menuCallback
-			GrBitmap (0, 0, bg->background);
+			bg->background->RenderClipped ();
 			}
 		bg->background->Destroy ();
 		}
