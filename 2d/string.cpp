@@ -83,7 +83,7 @@ for (i = nPoolStrings, ps = stringPool; i; i--, ps++) {
 	ps->pszText = NULL;
 	if (ps->pId)
 		*ps->pId = 0;
-	ps->bmP->FreeTexture ();
+	ps->bmP->ReleaseTexture ();
 	delete ps->bmP;
 	ps->bmP = NULL;
 	}
@@ -100,7 +100,7 @@ grsString *CreatePoolString (const char *s, int *idP)
 
 if (*idP) {
 	ps = stringPool + *idP - 1;
-	ps->bmP->FreeTexture ();
+	ps->bmP->ReleaseTexture ();
 	delete ps->bmP;
 	ps->bmP = NULL;
 	}

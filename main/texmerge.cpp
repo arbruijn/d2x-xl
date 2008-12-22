@@ -151,7 +151,7 @@ if (!bmBot->Palette ())
 cacheP = texCache + nLRU;
 bmP = cacheP->bitmap;
 if (bmP)
-	bmP->FreeTexture ();
+	bmP->ReleaseTexture ();
 
 // if necessary, allocate cache bitmap
 // in any case make sure the cache bitmap has the proper size

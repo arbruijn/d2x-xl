@@ -72,7 +72,7 @@ if (!OglEnablePBuffer (&m_info.pb))
 if (!m_info.fbo.Enable ())
 	return 0;
 #endif
-m_info.buffer.FreeTexture ();
+m_info.buffer.ReleaseTexture ();
 return 1;
 }
 
@@ -119,7 +119,7 @@ if (HaveBuffer (0) != 1)
 if (!m_info.pb.bBound)
 	return 1;
 #endif
-m_info.buffer.FreeTexture ();
+m_info.buffer.ReleaseTexture ();
 #if RENDER2TEXTURE == 1
 m_info.pb.bBound = 0;
 #endif
@@ -246,7 +246,7 @@ return 1;
 
 void CCamera::Destroy (void)
 {
-m_info.buffer.FreeTexture ();
+m_info.buffer.ReleaseTexture ();
 OglDeleteTextures (1, &m_info.glTexId);
 if (m_info.screenBuf && (m_info.screenBuf != m_info.buffer.Buffer ())) {
 	delete m_info.screenBuf;
@@ -475,7 +475,7 @@ if (m_info.buffer.Buffer ())
 	{
 	RenderFrame (0, 0);
 	m_info.bValid = 1;
-	m_info.buffer.FreeTexture ();
+	m_info.buffer.ReleaseTexture ();
 #if CAMERA_READPIXELS
 	memset (m_info.buffer.Buffer (), 0, m_info.buffer.Width () * m_info.buffer.Height () * 4);
 	glDisable (GL_TEXTURE_2D);

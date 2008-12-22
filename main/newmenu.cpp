@@ -1422,7 +1422,8 @@ CCanvas::SetCurrent (NULL);
 
 void NMRestoreScreen (char *filename, bkg *bg, int bDontRestore)
 {
-CCanvas::SetCurrent (bg->menu_canvas);
+CCanvas::Pop ();
+//CCanvas::SetCurrent (bg->menu_canvas);
 if (gameOpts->menus.nStyle) {
 	NMRemoveBackground (bg);
 	}
@@ -1445,7 +1446,6 @@ else {
 	}
 bg->menu_canvas->Destroy ();
 CCanvas::SetCurrent (NULL);		
-CCanvas::Pop ();
 memset (bg, 0, sizeof (*bg));
 GrabMouse (1, 0);
 }

@@ -229,7 +229,7 @@ ubyte* CFont::Remap (const char *fontname, ubyte* fontData)
 if (!m_info.parentBitmap.Buffer ())
 	return Load (fontname, fontData);
 if (m_info.parentBitmap.Texture ())
-	m_info.parentBitmap.Texture ()->Destroy ();
+	m_info.parentBitmap.Texture ()->Release ();
 m_info.parentBitmap.PrepareTexture (0, 2, 0, NULL);
 return fontData;
 }

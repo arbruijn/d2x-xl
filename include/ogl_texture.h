@@ -60,6 +60,7 @@ class CTexture {
 #endif
 		void Destroy (void);
 		void Unlink (void);
+		void Release (void);
 		static void Wrap (int state);
 		inline void Bind (void) { 
 			if (m_info.bRenderBuffer)

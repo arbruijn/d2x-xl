@@ -1080,7 +1080,7 @@ if (!gameData.pig.tex.nExtraBitmaps)
 for (i = gameData.pig.tex.nBitmaps [0], bmP = gameData.pig.tex.bitmaps [0] + i; 
 	  i < gameData.pig.tex.nExtraBitmaps; i++, bmP++) {
 	gameData.pig.tex.nObjBitmaps--;
-	bmP->FreeTexture ();
+	bmP->ReleaseTexture ();
 	if (bmP->Buffer ()) {
 		bmP->DestroyBuffer ();
 		UseBitmapCache (bmP, (int) -bmP->Height () * (int) bmP->RowSize ());

@@ -73,7 +73,7 @@ if ((m_info.nType != BM_TYPE_ALT) && m_info.parentP)
 	SetBuffer (NULL, 0);
 else if (Buffer ())
 	CArray<ubyte>::Destroy ();
-FreeTexture ();
+ReleaseTexture ();
 }
 
 //------------------------------------------------------------------------------
@@ -270,17 +270,17 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-CBitmap *CBitmap::FreeTexture (CBitmap *bmP)
+CBitmap *CBitmap::ReleaseTexture (CBitmap *bmP)
 {
 while ((bmP->Type () != BM_TYPE_ALT) && bmP->Parent () && (bmP != bmP->Parent ()))
 	bmP = bmP->Parent ();
-bmP->FreeTexture ();
+bmP->ReleaseTexture ();
 return bmP;
 }
 
 //------------------------------------------------------------------------------
 
-void CBitmap::FreeTexture (void)
+void CBitmap::ReleaseTexture (void)
 {
 	CBitmap	*frames = Frames ();
 
@@ -288,7 +288,7 @@ if (frames) {
 	int i, nFrames = m_info.props.h / m_info.props.w;
 
 	for (i = 0; i < nFrames; i++) {
-		frames [i].FreeTexture ();
+		frames [i].ReleaseTexture ();
 		frames [i].SetTexture (NULL);
 		}
 	}
@@ -305,7 +305,7 @@ else if (m_info.texture) {
 #	endif
 #endif
 		{
-		m_info.texture->Destroy ();
+		m_info.texture->Release ();
 		m_info.texture = NULL;
 		}
 	}

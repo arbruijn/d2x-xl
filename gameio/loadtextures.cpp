@@ -327,7 +327,7 @@ int PiggyFreeHiresFrame (CBitmap *bmP, int bD1)
 {
 
 gameData.pig.tex.bitmaps [bD1][bmP->Id ()].SetOverride (NULL);
-bmP->FreeTexture ();
+bmP->ReleaseTexture ();
 PiggyFreeMask (bmP);
 bmP->SetType (0);
 bmP->SetBuffer (NULL);
@@ -354,7 +354,7 @@ if ((bmfP = altBmP->Frames ()))
 		PiggyFreeHiresFrame (bmfP, bD1);
 else
 	PiggyFreeMask (altBmP);
-altBmP->FreeTexture ();
+altBmP->ReleaseTexture ();
 altBmP->DestroyFrames ();
 PiggyFreeBitmapData (altBmP);
 altBmP->SetPalette (NULL);
@@ -384,7 +384,7 @@ else if (i < 0)
 	i = (int) (bmP - gameData.pig.tex.bitmaps [bD1]);
 PiggyFreeMask (bmP);
 if (!PiggyFreeHiresAnimation (bmP, 0))
-	bmP->FreeTexture ();
+	bmP->ReleaseTexture ();
 if (bitmapOffsets [bD1][i] > 0)
 	bmP->AddFlags (BM_FLAG_PAGED_OUT);
 bmP->SetFromPog (0);

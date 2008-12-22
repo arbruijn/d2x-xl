@@ -684,6 +684,13 @@ if (m_info.handle && (m_info.handle != (GLuint) -1)) {
 }
 
 //------------------------------------------------------------------------------
+
+void CTexture::Release (void)
+{
+textureManager.Push (this);
+}
+
+//------------------------------------------------------------------------------
 //Texture () MUST be bound first
 void CTexture::Wrap (int state)
 {

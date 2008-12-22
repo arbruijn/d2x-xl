@@ -775,7 +775,7 @@ void CModelTextures::Release (void)
 if ((m_bitmaps.Buffer ())) {
 	for (i = 0; i < m_nBitmaps; i++) {
 		UseBitmapCache (&m_bitmaps [i], -static_cast<int> (m_bitmaps [i].Size ()));
-		m_bitmaps [i].FreeTexture ();
+		m_bitmaps [i].ReleaseTexture ();
 		}
 	}
 }

@@ -267,7 +267,7 @@ nIdEnergyBar = HUDPrintF (&nIdEnergyBar,
 								  SB_ENERGY_GAUGE_X + ((SB_ENERGY_GAUGE_W - w)/2), 
 								  SB_ENERGY_GAUGE_Y + SB_ENERGY_GAUGE_H - GAME_FONT->Height () - (GAME_FONT->Height () / 4), 
 							     "%d", nEnergy);
-Canv_SBEnergyGauge->FreeTexture ();
+Canv_SBEnergyGauge->ReleaseTexture ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -311,7 +311,7 @@ nIdAfterBurner = HUDPrintF (&nIdAfterBurner,
 									 SB_AFTERBURNER_GAUGE_X + ((SB_AFTERBURNER_GAUGE_W - w)/2), 
 									 SB_AFTERBURNER_GAUGE_Y+SB_AFTERBURNER_GAUGE_H-GAME_FONT->Height () - (GAME_FONT->Height () / 4), 
 									 "AB");
-Canv_SBAfterburnerGauge->FreeTexture ();
+Canv_SBAfterburnerGauge->ReleaseTexture ();
 }
 
 //	-----------------------------------------------------------------------------

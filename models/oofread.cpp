@@ -1756,7 +1756,7 @@ return 1;
 
 int OOF_FreeTextures (CModel* po)
 {
-po->FreeTextures ();
+po->ReleaseTextures ();
 return 0;
 }
 
