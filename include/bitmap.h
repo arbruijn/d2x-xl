@@ -49,6 +49,7 @@ typedef struct grsPoint {
 
 class CBitmap;
 class CTexture;
+class CCanvas;
 
 //-----------------------------------------------------------------------------
 
@@ -269,6 +270,7 @@ class CBitmap : public CArray< ubyte > {
 						int bTransp = 0, int bMipMaps = 0, float fAlpha = 1.0f);
 		inline int Render (CBitmap* dest, int bTransp = 0, int bMipMaps = 0, float fAlpha = 1.0f)
 			{ return Render (dest, 0, 0, dest->Width (), dest->Height (), 0, 0, Width (), Height (), bTransp, bMipMaps, fAlpha); }
+		int Render (CBitmap* dest = NULL, int x = 0, int y = 0);
 
 		inline CBitmap& Clone (CBitmap& clone) { 
 			memcpy (&clone, this, sizeof (CBitmap)); 

@@ -296,7 +296,7 @@ if (!gameOpts->menus.nStyle) {
 #endif
 /* draw the background image if there is one */
 	if (m_background)
-		GrBitmap (0, 0, m_background);
+		m_background->Render ();
 	}
 /* Draw the text from the back buffers, calculate in the scrollback from the user
  * this is a Normal SDL software-mode blit, so we need to temporarily set the ColorKey
@@ -668,7 +668,14 @@ if (m_output->flags & SDL_OPENGLBLIT) {
 if (!gameOpts->menus.nStyle) {
 	CCanvas::Push ();
 	CCanvas::SetCurrent (m_surface);
-	GrBitmap (0, m_surface->Height () - m_surface->Font ()->Height (), m_input);
+	if (m_background)
+		m_background->Render (CCanvas::Current (), 
+									 m_surface->Width (), m_surface->Font ()->Height (),
+									 0, m_surface->Height () - m_surface->Font ()->Height (),
+									 m_surface->Width (), m_surface->Font ()->Height (),
+									 0, m_surface->Height () - m_surface->Font ()->Height ());
+	else
+		GrBitmap (0, m_surface->Height () - m_surface->Font ()->Height (), m_input);
 	}
 //now add the text
 orig_color = CCanvas::Current ()->FontColor (0);
@@ -813,9 +820,9 @@ GrBitmapScaleTo (image, m_background);
 
 #if 0
 SDL_FillRect (m_input, NULL, SDL_MapRGBA (m_surface->format, 0, 0, 0, SDL_ALPHA_OPAQUE);
-#endif
 GrBmBitBlt (m_background->Width (), m_input->Height (), 0, 0, 0, 
 				m_surface->Height () - m_surface->Font ()->Height (), m_background, m_input);
+#endif
 return 0;
 }
 
@@ -846,7 +853,7 @@ else
 
 //------------------------------------------------------------------------------
 
-/* resizes the has to reset alot of stuff
+/* resizes the console, has to reset a lot of stuff
  * returns 1 on error */
 int CConsole::Resize (int x, int y, int w, int h)
 {
@@ -882,10 +889,10 @@ m_ConsoleScrollBack = 0;
 if (m_background) {
 #if 0
 	SDL_FillRect (m_input, NULL, SDL_MapRGBA (m_surface->format, 0, 0, 0, SDL_ALPHA_OPAQUE);
-#endif
 	GrBmBitBlt (m_background->Width (), m_input->Height (), 0, 0, 0, 
 					m_surface->Height () - m_surface->Font ()->Height (), 
 					m_background, m_input);
+#endif
 }
 
 #if 0
