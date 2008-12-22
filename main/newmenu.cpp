@@ -572,7 +572,7 @@ if (bCreateTextBms && gameOpts->menus.bFastMenus &&
 	 (bmP || (bmP = CreateStringBitmap (itemP->text, MENU_KEY (itemP->key, -1), 
 												   gameData.menu.keyColor,
 												   nTabs, itemP->centered, itemP->w, 0)))) {
-	bmP->Render (CCanvas::Current (), itemP->x, itemP->y, bmP->Width (), bmP->Height (), 0, 0, bmP->Width (), bmP->Height (), 0, 1);
+	bmP->Render (CCanvas::Current (), itemP->x, itemP->y, bmP->Width (), bmP->Height (), 0, 0, bmP->Width (), bmP->Height (), 1, 0);
 	itemP->text_bm [bIsCurrent] = bmP;
 	}
 else 
