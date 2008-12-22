@@ -26,46 +26,47 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hiresmodels.h"
 #include "buildmodel.h"
 
+using namespace RenderModel;
+
 //------------------------------------------------------------------------------
 
-int G3CountOOFModelItems (OOF::CModel *po, RenderModel::CModel *pm)
+void CModel::CountOOFModelItems (OOF::CModel *po)
 {
-	OOF::CSubModel	*pso;
-	OOF::CFace		*pf;
-	int						i, j;
+	OOF::CSubModel*	pso;
+	OOF::CFace*			pf;
+	int					i, j;
 
 i = po->m_nSubModels;
-pm->m_nSubModels = i;
-pm->m_nFaces = 0;
-pm->m_nVerts = 0;
-pm->m_nFaceVerts = 0;
+m_nSubModels = i;
+m_nFaces = 0;
+m_nVerts = 0;
+m_nFaceVerts = 0;
 for (pso = po->m_subModels.Buffer (); i; i--, pso++) {
 	j = pso->m_faces.m_nFaces;
-	pm->m_nFaces += j;
-	pm->m_nVerts += pso->m_nVerts;
+	m_nFaces += j;
+	m_nVerts += pso->m_nVerts;
 	for (pf = pso->m_faces.m_list.Buffer (); j; j--, pf++)
-		pm->m_nFaceVerts += pf->m_nVerts;
+		m_nFaceVerts += pf->m_nVerts;
 	}
-return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int G3GetOOFModelItems (int nModel, OOF::CModel *po, RenderModel::CModel *pm, float fScale)
+void CModel::GetOOFModelItems (int nModel, OOF::CModel *po, float fScale)
 {
-	OOF::CSubModel*		pso;
+	OOF::CSubModel*	pso;
 	OOF::CFace*			pof;
-	OOF::CFaceVert*		pfv;
-	RenderModel::CSubModel*	psm;
-	CFloatVector3*				pvn = pm->m_vertNorms.Buffer (), vNormal;
-	RenderModel::CVertex*	pmv = pm->m_faceVerts.Buffer ();
-	RenderModel::CFace*		pmf = pm->m_faces.Buffer ();
-	int							h, i, j, n, nIndex = 0;
+	OOF::CFaceVert*	pfv;
+	CSubModel*			psm;
+	CFloatVector3*		pvn = m_vertNorms.Buffer (), vNormal;
+	CVertex*				pmv = m_faceVerts.Buffer ();
+	CFace*				pmf = m_faces.Buffer ();
+	int					h, i, j, n, nIndex = 0;
 
-for (i = po->m_nSubModels, pso = po->m_subModels.Buffer (), psm = pm->m_subModels.Buffer (); i; i--, pso++, psm++) {
+for (i = po->m_nSubModels, pso = po->m_subModels.Buffer (), psm = m_subModels.Buffer (); i; i--, pso++, psm++) {
 	psm->m_nParent = pso->m_nParent;
 	if (psm->m_nParent < 0)
-		pm->m_iSubModel = (short) (psm - pm->m_subModels);
+		m_iSubModel = (short) (psm - m_subModels);
 	psm->m_vOffset [X] = F2X (pso->m_vOffset [X] * fScale);
 	psm->m_vOffset [Y] = F2X (pso->m_vOffset [Y] * fScale);
 	psm->m_vOffset [Z] = F2X (pso->m_vOffset [Z] * fScale);
@@ -108,8 +109,8 @@ for (i = po->m_nSubModels, pso = po->m_subModels.Buffer (), psm = pm->m_subModel
 			pmv->m_texCoord.v.u = pfv->m_fu;
 			pmv->m_texCoord.v.v = pfv->m_fv;
 			pmv->m_normal = vNormal;
-			*reinterpret_cast<CFloatVector*> (pm->m_verts + h) = *reinterpret_cast<CFloatVector*> (pso->m_verts + h) * fScale;
-			pmv->m_vertex = pm->m_verts [h];
+			*reinterpret_cast<CFloatVector*> (m_verts + h) = *reinterpret_cast<CFloatVector*> (pso->m_verts + h) * fScale;
+			pmv->m_vertex = m_verts [h];
 			psm->SetMinMax (&pmv->m_vertex);
 			*pvn = vNormal;
 			if ((pmv->m_bTextured = pof->m_bTextured))
@@ -126,15 +127,13 @@ for (i = po->m_nSubModels, pso = po->m_subModels.Buffer (), psm = pm->m_subModel
 			}
 		}
 	}
-return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int G3BuildModelFromOOF (CObject *objP, int nModel)
+int CModel::BuildFromOOF (CObject *objP, int nModel)
 {
-	OOF::CModel	*po = gameData.models.modelToOOF [1][nModel];
-	RenderModel::CModel		*pm;
+	OOF::CModel*	po = gameData.models.modelToOOF [1][nModel];
 
 if (!po) {
 	po = gameData.models.modelToOOF [0][nModel];
@@ -145,18 +144,17 @@ if (!po) {
 HUDMessage (0, "optimizing model");
 #endif
 PrintLog ("         optimizing OOF model %d\n", nModel);
-pm = gameData.models.renderModels [1] + nModel;
-G3CountOOFModelItems (po, pm);
-if (!G3AllocModel (pm))
+CountOOFModelItems (po);
+if (!Create ())
 	return 0;
-G3GetOOFModelItems (nModel, po, pm, /*((nModel == 108) || (nModel == 110)) ? 0.805f :*/ 1.0f);
-pm->m_textures = po->m_textures.m_bitmaps;
-memset (pm->m_teamTextures, 0xFF, sizeof (pm->m_teamTextures));
-pm->m_nType = -1;
-gameData.models.polyModels [nModel].rad = pm->Size (objP, 1);
-pm->Setup (1, 1);
+GetOOFModelItems (nModel, po, /*((nModel == 108) || (nModel == 110)) ? 0.805f :*/ 1.0f);
+m_textures = po->m_textures.m_bitmaps;
+memset (m_teamTextures, 0xFF, sizeof (m_teamTextures));
+m_nType = -1;
+gameData.models.polyModels [nModel].rad = Size (objP, 1);
+Setup (1, 1);
 #if 1
-pm->SetGunPoints (objP, 0);
+SetGunPoints (objP, 0);
 #endif
 return -1;
 }

@@ -27,13 +27,15 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hiresmodels.h"
 #include "buildmodel.h"
 
+using namespace RenderModel;
+
 //------------------------------------------------------------------------------
 
-int G3CountPOFModelItems (void *modelP, short *pnSubModels, short *pnVerts, short *pnFaces, short *pnFaceVerts)
+int CModel::CountPOFModelItems (void *modelDataP, short *pnSubModels, short *pnVerts, short *pnFaces, short *pnFaceVerts)
 {
-	ubyte *p = reinterpret_cast<ubyte*> (modelP);
+	ubyte *p = reinterpret_cast<ubyte*> (modelDataP);
 
-G3CheckAndSwap (modelP);
+G3CheckAndSwap (modelDataP);
 for (;;) {
 	switch (WORDVAL (p)) {
 		case OP_EOF:
@@ -70,9 +72,9 @@ for (;;) {
 			}
 
 		case OP_SORTNORM:
-			if (!G3CountPOFModelItems (p + WORDVAL (p+28), pnSubModels, pnVerts, pnFaces, pnFaceVerts))
+			if (!CountPOFModelItems (p + WORDVAL (p+28), pnSubModels, pnVerts, pnFaces, pnFaceVerts))
 				return 0;
-			if (!G3CountPOFModelItems (p + WORDVAL (p+30), pnSubModels, pnVerts, pnFaces, pnFaceVerts))
+			if (!CountPOFModelItems (p + WORDVAL (p+30), pnSubModels, pnVerts, pnFaces, pnFaceVerts))
 				return 0;
 			p += 32;
 			break;
@@ -85,7 +87,7 @@ for (;;) {
 
 		case OP_SUBCALL: {
 			(*pnSubModels)++;
-			if (!G3CountPOFModelItems (p + WORDVAL (p+16), pnSubModels, pnVerts, pnFaces, pnFaceVerts))
+			if (!CountPOFModelItems (p + WORDVAL (p+16), pnSubModels, pnVerts, pnFaces, pnFaceVerts))
 				return 0;
 			p += 20;
 			break;
@@ -105,11 +107,10 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-RenderModel::CFace *G3AddModelFace (RenderModel::CModel *pm, RenderModel::CSubModel *psm, RenderModel::CFace *pmf, 
-												CFixVector *pn, ubyte *p, CBitmap **modelBitmaps, tRgbaColorf *objColorP)
+CFace* CModel::AddPOFFace (CSubModel* psm, CFace* pmf, CFixVector* pn, ubyte* p, CBitmap** modelBitmaps, tRgbaColorf* objColorP)
 {
 	short							nVerts = WORDVAL (p+2);
-	RenderModel::CVertex*	pmv;
+	CVertex*	pmv;
 	short*						pfv;
 	tUVL*							uvl;
 	CBitmap*						bmP;
@@ -121,7 +122,7 @@ RenderModel::CFace *G3AddModelFace (RenderModel::CModel *pm, RenderModel::CSubMo
 
 if (!psm->m_faces)
 	psm->m_faces = pmf;
-Assert (pmf - pm->m_faces < pm->m_nFaces);
+Assert (pmf - m_faces < m_nFaces);
 if (modelBitmaps && *modelBitmaps) {
 	bTextured = 1;
 	pmf->m_nBitmap = WORDVAL (p+28);
@@ -143,13 +144,13 @@ else {
 	if (objColorP)
 		*objColorP = baseColor;
 	}
-pmf->m_nSubModel = psm - pm->m_subModels;
+pmf->m_nSubModel = psm - m_subModels;
 pmf->m_vNormal = *pn;
-pmf->m_nIndex = pm->m_iFaceVert;
-pmv = pm->m_faceVerts + pm->m_iFaceVert;
-pvn = pm->m_vertNorms + pm->m_iFaceVert;
+pmf->m_nIndex = m_iFaceVert;
+pmv = m_faceVerts + m_iFaceVert;
+pvn = m_vertNorms + m_iFaceVert;
 if (psm->m_nIndex < 0)
-	psm->m_nIndex = pm->m_iFaceVert;
+	psm->m_nIndex = m_iFaceVert;
 pmf->m_nVerts = nVerts;
 if ((pmf->m_bGlow = (nGlow >= 0)))
 	nGlow = -1;
@@ -157,8 +158,8 @@ uvl = reinterpret_cast<tUVL*> (p + 30 + (nVerts | 1) * 2);
 n.Assign (*pn);
 for (i = nVerts, pfv = WORDPTR (p+30); i; i--, pfv++, uvl++, pmv++, pvn++) {
 	j = *pfv;
-	Assert (pmv - pm->m_faceVerts < pm->m_nFaceVerts);
-	pmv->m_vertex = pm->m_verts [j];
+	Assert (pmv - m_faceVerts < m_nFaceVerts);
+	pmv->m_vertex = m_verts [j];
 	pmv->m_texCoord.v.u = X2F (uvl->u);
 	pmv->m_texCoord.v.v = X2F (uvl->v);
 	pmv->m_renderColor =
@@ -168,20 +169,20 @@ for (i = nVerts, pfv = WORDPTR (p+30); i; i--, pfv++, uvl++, pmv++, pvn++) {
 	pmv->m_normal = *pvn = n;
 	psm->SetMinMax (&pmv->m_vertex);
 	}
-pm->m_iFaceVert += nVerts;
-pm->m_iFace++;
+m_iFaceVert += nVerts;
+m_iFace++;
 psm->m_nFaces++;
 return ++pmf;
 }
 
 //------------------------------------------------------------------------------
 
-int G3GetPOFModelItems (void *modelDataP, CAngleVector *pAnimAngles, RenderModel::CModel *pm, int nThis, int nParent,
-								int bSubObject, CBitmap **modelBitmaps, tRgbaColorf *objColorP)
+int CModel::GetPOFModelItems (void *modelDataP, CAngleVector *pAnimAngles, int nThis, int nParent,
+										int bSubObject, CBitmap **modelBitmaps, tRgbaColorf *objColorP)
 {
 	ubyte*						p = reinterpret_cast<ubyte*> (modelDataP);
-	RenderModel::CSubModel*	psm = pm->m_subModels + nThis;
-	RenderModel::CFace*		pmf = pm->m_faces + pm->m_iFace;
+	CSubModel*	psm = m_subModels + nThis;
+	CFace*		pmf = m_faces + m_iFace;
 	int							nChild;
 	short							nTag;
 
@@ -208,7 +209,7 @@ for (;;) {
 
 		case OP_DEFPOINTS: {
 			int i, n = WORDVAL (p+2);
-			CFloatVector3 *pfv = pm->m_verts.Buffer ();
+			CFloatVector3 *pfv = m_verts.Buffer ();
 			CFixVector *pv = VECPTR (p+4);
 			for (i = n; i; i--) {
 				pfv->Assign (*pv);
@@ -221,7 +222,7 @@ for (;;) {
 		case OP_DEFP_START: {
 			int i, n = WORDVAL (p+2);
 			int s = WORDVAL (p+4);
-			CFloatVector3 *pfv = pm->m_verts + s;
+			CFloatVector3 *pfv = m_verts + s;
 			CFixVector *pv = VECPTR (p+8);
 			for (i = n; i; i--) {
 				pfv->Assign (*pv);
@@ -233,14 +234,14 @@ for (;;) {
 
 		case OP_FLATPOLY: {
 			int nVerts = WORDVAL (p+2);
-			pmf = G3AddModelFace (pm, psm, pmf, VECPTR (p+16), p, NULL, objColorP);
+			pmf = AddPOFModelFace (psm, pmf, VECPTR (p+16), p, NULL, objColorP);
 			p += 30 + (nVerts | 1) * 2;
 			break;
 			}
 
 		case OP_TMAPPOLY: {
 			int nVerts = WORDVAL (p + 2);
-			pmf = G3AddModelFace (pm, psm, pmf, VECPTR (p+16), p, modelBitmaps, objColorP);
+			pmf = AddPOFModelFace (psm, pmf, VECPTR (p+16), p, modelBitmaps, objColorP);
 			p += 30 + (nVerts | 1) * 2 + nVerts * 12;
 			break;
 			}
@@ -248,10 +249,10 @@ for (;;) {
 		case OP_SORTNORM:
 			if (!G3GetPOFModelItems (p + WORDVAL (p+28), pAnimAngles, pm, nThis, nParent, 0, modelBitmaps, objColorP))
 				return 0;
-			pmf = pm->m_faces + pm->m_iFace;
+			pmf = m_faces + m_iFace;
 			if (!G3GetPOFModelItems (p + WORDVAL (p+30), pAnimAngles, pm, nThis, nParent, 0, modelBitmaps, objColorP))
 				return 0;
-			pmf = pm->m_faces + pm->m_iFace;
+			pmf = m_faces + m_iFace;
 			p += 32;
 			break;
 
@@ -260,13 +261,13 @@ for (;;) {
 			break;
 
 		case OP_SUBCALL:
-			nChild = ++pm->m_iSubModel;
-			pm->m_subModels [nChild].m_vOffset = *VECPTR (p+4);
-			pm->m_subModels [nChild].m_nAngles = WORDVAL (p+2);
-			pm->m_subModels [nChild].InitMinMax ();
+			nChild = ++m_iSubModel;
+			m_subModels [nChild].m_vOffset = *VECPTR (p+4);
+			m_subModels [nChild].m_nAngles = WORDVAL (p+2);
+			m_subModels [nChild].InitMinMax ();
 			if (!G3GetPOFModelItems (p + WORDVAL (p+16), pAnimAngles, pm, nChild, nThis, 1, modelBitmaps, objColorP))
 				return 0;
-			pmf = pm->m_faces + pm->m_iFace;
+			pmf = m_faces + m_iFace;
 			p += 20;
 			break;
 
@@ -285,53 +286,53 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void G3AssignModelFaces (RenderModel::CModel *pm)
+void CModel::AssignPOFFaces (void)
 {
 	int				i;
 	ubyte				nSubModel = 255;
-	RenderModel::CFace	*pmf;
+	CFace	*pmf;
 
-for (pmf = pm->m_faces.Buffer (), i = pm->m_nFaces; i; i--, pmf++)
+for (pmf = m_faces.Buffer (), i = m_nFaces; i; i--, pmf++)
 	if (pmf->m_nSubModel != nSubModel) {
 		nSubModel = pmf->m_nSubModel;
-		pm->m_subModels [nSubModel].m_faces = pmf;
-		if (nSubModel == pm->m_nSubModels - 1)
+		m_subModels [nSubModel].m_faces = pmf;
+		if (nSubModel == m_nSubModels - 1)
 			break;
 		}
 }
 
 //------------------------------------------------------------------------------
 
-int G3BuildModelFromPOF (CObject *objP, int nModel, tPolyModel *pp, CBitmap **modelBitmaps, tRgbaColorf *objColorP)
+int CModel::BuildFromPOF (CObject* objP, int nModel, tPolyModel* pp, CBitmap** modelBitmaps, tRgbaColorf* objColorP)
 {
-	RenderModel::CModel	*pm = gameData.models.renderModels [0] + nModel;
+	CModel	*pm = gameData.models.renderModels [0] + nModel;
 
 if (!pp->modelData)
 	return 0;
-pm->m_nSubModels = 1;
+m_nSubModels = 1;
 #if DBG
 HUDMessage (0, "optimizing model");
 if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
 PrintLog ("         optimizing POF model %d\n", nModel);
-if (!G3CountPOFModelItems (pp->modelData.Buffer (), &pm->m_nSubModels, &pm->m_nVerts, &pm->m_nFaces, &pm->m_nFaceVerts))
+if (!CountPOFModelItems (pp->modelData.Buffer (), &m_nSubModels, &m_nVerts, &m_nFaces, &m_nFaceVerts))
 	return 0;
-if (!G3AllocModel (pm))
+if (!Create ())
 	return 0;
-pm->m_subModels [0].InitMinMax ();
+m_subModels [0].InitMinMax ();
 #if TRACE_TAGS
 PrintLog ("building model for object type %d, id %d\n", objP->info.nType, objP->info.nId);
 #endif
-if (!G3GetPOFModelItems (pp->modelData.Buffer (), NULL, pm, 0, -1, 1, modelBitmaps, objColorP))
+if (!GetPOFModelItems (pp->modelData.Buffer (), NULL, 0, -1, 1, modelBitmaps, objColorP))
 	return 0;
-pm->m_faces.SortAscending ();
-G3AssignModelFaces (pm);
-memset (pm->m_teamTextures, 0xFF, sizeof (pm->m_teamTextures));
-pm->m_nType = pp->nType;
-gameData.models.polyModels [nModel].rad = pm->Size (objP, 0);
-pm->Setup (0, 1);
-pm->m_iSubModel = 0;
+m_faces.SortAscending ();
+AssignPOFFaces ();
+memset (m_teamTextures, 0xFF, sizeof (m_teamTextures));
+m_nType = pp->nType;
+gameData.models.polyModels [nModel].rad = Size (objP, 0);
+wSetup (0, 1);
+m_iSubModel = 0;
 return -1;
 }
 

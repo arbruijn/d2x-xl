@@ -24,6 +24,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "inferno.h"
 #include "carray.h"
+#include "ase.h"
+#include "oof.h"
+#include "pof.h"
 
 namespace RenderModel {
 
@@ -191,6 +194,24 @@ class CModel {
 		void SetRobotGunPoints (OOF::CModel *po);
 
 		static int _CDECL_ CmpVerts (CFloatVector3* pv, CFloatVector3* pm);
+
+		int BuildFromASE (CObject *objP, int nModel);
+		int BuildFromOOF (CObject *objP, int nModel);
+		int BuildFromPOF (CObject* objP, int nModel, tPolyModel* pp, CBitmap** modelBitmaps, tRgbaColorf* objColorP);
+
+	private:
+		void CountASEModelItems (ASE::CModel *pa);
+		void GetASEModelItems (int nModel, ASE::CModel *pa, float fScale);
+
+		void CountOOFModelItems (OOF::CModel *po);
+		void GetOOFModelItems (int nModel, OOF::CModel *po, float fScale);
+
+		void AssignPOFFaces (void);
+		int CountPOFModelItems (void* modelDataP, short* pnSubModels, short* pnVerts, short* pnFaces, short* pnFaceVerts);
+		CFace* AddPOFFace (CSubModel* psm, CFace* pmf, CFixVector* pn, ubyte* p, CBitmap** modelBitmaps, tRgbaColorf* objColorP);
+		int GetPOFModelItems (void *modelDataP, CAngleVector *pAnimAngles, int nThis, int nParent,
+									 int bSubObject, CBitmap **modelBitmaps, tRgbaColorf *objColorP);
+
 	};	
 
 //	-----------------------------------------------------------------------------------------------------------

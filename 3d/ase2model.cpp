@@ -27,31 +27,33 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "buildmodel.h"
 #include "rendermodel.h"
 
+using namespace RenderModel;
+
 //------------------------------------------------------------------------------
 
-void G3CountASEModelItems (ASE::CModel *pa, RenderModel::CModel *pm)
+void CModel::CountASEModelItems (ASE::CModel *pa)
 {
-pm->m_nFaces = pa->m_nFaces;
-pm->m_nSubModels = pa->m_nSubModels;
-pm->m_nVerts = pa->m_nVerts;
-pm->m_nFaceVerts = pa->m_nFaces * 3;
+m_nFaces = pa->m_nFaces;
+m_nSubModels = pa->m_nSubModels;
+m_nVerts = pa->m_nVerts;
+m_nFaceVerts = pa->m_nFaces * 3;
 }
 
 //------------------------------------------------------------------------------
 
-void G3GetASEModelItems (int nModel, ASE::CModel *pa, RenderModel::CModel *pm, float fScale)
+void CModel::GetASEModelItems (int nModel, ASE::CModel *pa, float fScale)
 {
-	ASE::CSubModel*		psa;
+	ASE::CSubModel*	psa;
 	ASE::CFace*			pfa;
-	RenderModel::CSubModel*	psm;
-	RenderModel::CFace*		pmf = pm->m_faces.Buffer ();
-	RenderModel::CVertex*	pmv = pm->m_faceVerts.Buffer ();
-	CBitmap*						bmP;
-	int							h, i, nFaces, iFace, nVerts = 0, nIndex = 0;
-	int							bTextured;
+	CSubModel*			psm;
+	CFace*				pmf = m_faces.Buffer ();
+	CVertex*				pmv = m_faceVerts.Buffer ();
+	CBitmap*				bmP;
+	int					h, i, nFaces, iFace, nVerts = 0, nIndex = 0;
+	int					bTextured;
 
 for (psa = pa->m_subModels; psa; psa = psa->m_next) {
-	psm = pm->m_subModels + psa->m_nSubModel;
+	psm = m_subModels + psa->m_nSubModel;
 #if DBG
 	strcpy (psm->m_szName, psa->m_szName);
 #endif
@@ -104,8 +106,8 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 			if (psa->m_texCoord.Buffer ())
 				pmv->m_texCoord = psa->m_texCoord [pfa->m_nTexCoord [i]];
 			h += nVerts;
-			pm->m_verts [h] = pmv->m_vertex;
-			pm->m_vertNorms [h] = pmv->m_normal;
+			m_verts [h] = pmv->m_vertex;
+			m_vertNorms [h] = pmv->m_normal;
 			pmv->m_nIndex = h;
 			psm->SetMinMax (&pmv->m_vertex);
 			nIndex++;
@@ -117,11 +119,10 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 
 //------------------------------------------------------------------------------
 
-int G3BuildModelFromASE (CObject *objP, int nModel)
+int CModel::BuildFromASE (CObject *objP, int nModel)
 {
-	ASE::CModel*				pa = gameData.models.modelToASE [1][nModel];
-	RenderModel::CModel*	pm;
-	int						i, j;
+	ASE::CModel*	pa = gameData.models.modelToASE [1][nModel];
+	int				i, j;
 
 if (!pa) {
 	pa = gameData.models.modelToASE [0][nModel];
@@ -132,23 +133,22 @@ if (!pa) {
 HUDMessage (0, "optimizing model");
 #endif
 PrintLog ("         optimizing ASE model %d\n", nModel);
-pm = gameData.models.renderModels [1] + nModel;
-G3CountASEModelItems (pa, pm);
-if (!pm->Create ())
+CountASEModelItems (pa);
+if (!Create ())
 	return 0;
-G3GetASEModelItems (nModel, pa, pm, 1.0f); //(nModel == 108) || (nModel == 110)) ? 1.145f : 1.0f);
-pm->m_nModel = nModel;
-pm->m_textures = pa->m_textures.m_bitmaps;
-pm->m_nTextures = pa->m_textures.m_nBitmaps;
-memset (pm->m_teamTextures, 0xFF, sizeof (pm->m_teamTextures));
-for (i = 0; i < pm->m_nTextures; i++)
-	if ((j = (int) pm->m_textures [i].Team ()))
-		pm->m_teamTextures [j - 1] = i;
-pm->m_nType = 2;
-gameData.models.polyModels [nModel].rad = pm->Size (objP, 1);
-pm->Setup (1, 1);
+GetASEModelItems (nModel, pa, 1.0f); //(nModel == 108) || (nModel == 110)) ? 1.145f : 1.0f);
+m_nModel = nModel;
+m_textures = pa->m_textures.m_bitmaps;
+m_nTextures = pa->m_textures.m_nBitmaps;
+memset (m_teamTextures, 0xFF, sizeof (m_teamTextures));
+for (i = 0; i < m_nTextures; i++)
+	if ((j = (int) m_textures [i].Team ()))
+		m_teamTextures [j - 1] = i;
+m_nType = 2;
+gameData.models.polyModels [nModel].rad = Size (objP, 1);
+Setup (1, 1);
 #if 1
-pm->SetGunPoints (objP, 1);
+SetGunPoints (objP, 1);
 #endif
 return -1;
 }

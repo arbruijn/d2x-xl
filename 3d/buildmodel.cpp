@@ -886,9 +886,9 @@ if (nModel == nDbgModel)
 pm->Init ();
 return bHires ?
 			GetASEModel (nModel) ?
-				G3BuildModelFromASE (objP, nModel) :
-				G3BuildModelFromOOF (objP, nModel) :
-			G3BuildModelFromPOF (objP, nModel, pp, modelBitmaps, pObjColor);
+				pm->BuildFromASE (objP, nModel) :
+				pm->BuildFromOOF (objP, nModel) :
+			pm->BuildFromPOF (objP, nModel, pp, modelBitmaps, pObjColor);
 }
 
 //------------------------------------------------------------------------------
