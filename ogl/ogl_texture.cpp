@@ -669,6 +669,10 @@ void CTexture::Unlink (void)
 {
 if (m_info.bmP && (m_info.bmP->Texture () == this))
 	m_info.bmP->SetTexture (NULL);
+#if DBG
+else
+	m_info.bmP = m_info.bmP;
+#endif
 }
 
 //------------------------------------------------------------------------------

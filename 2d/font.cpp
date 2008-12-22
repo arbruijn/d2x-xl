@@ -253,8 +253,8 @@ m_info.parentBitmap.AddFlags (BM_FLAG_TRANSPARENT);
 m_info.parentBitmap.SetPalette (palette);
 if (!(m_info.flags & FT_COLOR))
 	m_info.parentBitmap.SetTexture (textureManager.Get (&m_info.parentBitmap));
-m_info.bitmaps = new CBitmap [nChars]; 
-//memset (m_info.bitmaps, 0, nChars * sizeof (CBitmap));
+m_info.bitmaps.Create (nChars); 
+//m_info.bitmaps.Clear ();
 h = m_info.height;
 white = palette->ClosestColor (63, 63, 63);
 
@@ -322,22 +322,14 @@ void CFont::Setup (const char *fontname, ubyte* fontData, CPalette& palette)
 	ubyte	*ptr;
 	int	freq [256];
 
-if (m_info.chars) {
-	delete [] m_info.chars;
-	m_info.chars = NULL;
-	}
-if (m_info.bitmaps) {
-	delete [] m_info.bitmaps;
-	m_info.bitmaps = NULL;
-	}
-m_info.parentBitmap.Destroy ();
+Destroy ();
 
 // make these offsets relative to font data
 nChars = m_info.maxChar - m_info.minChar + 1;
 if (m_info.flags & FT_PROPORTIONAL) {
 	m_info.widths = reinterpret_cast<short*> (fontData + (size_t) m_info.widthOffs - GRS_FONT_SIZE);
 	m_info.data = reinterpret_cast<ubyte*> (fontData + (size_t) m_info.dataOffs - GRS_FONT_SIZE);
-	m_info.chars = new ubyte* [nChars];
+	m_info.chars.Create (nChars);
 	ptr = m_info.data;
 	for (i = 0; i < nChars; i++) {
 		m_info.widths [i] = INTEL_SHORT (m_info.widths [i]);
@@ -350,7 +342,6 @@ if (m_info.flags & FT_PROPORTIONAL) {
 	}
 else  {
 	m_info.data = reinterpret_cast<ubyte*> (fontData);
-	m_info.chars = NULL;
 	m_info.widths = NULL;
 	ptr = m_info.data + (nChars * m_info.width * m_info.height);
 	}
@@ -424,14 +415,10 @@ return fontData;
 
 void CFont::Destroy (void)
 {
-if (m_info.chars) {
-	delete m_info.chars;
-	m_info.chars = NULL;
-	}
-if (m_info.bitmaps) {
-	delete [] m_info.bitmaps; 
-	m_info.bitmaps = NULL;
-	}
+m_info.chars.Destroy ();
+for (uint i = 0; i < m_info.bitmaps.Length (); i++)
+	m_info.bitmaps [i].SetTexture (NULL);
+m_info.bitmaps.Destroy ();
 m_info.parentBitmap.Destroy ();
 }
 

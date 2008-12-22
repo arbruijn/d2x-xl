@@ -71,6 +71,8 @@ template < class _T > class CDataPool {
 			}
 
 		void Push (uint i) {
+			if (m_used < 0)
+				return;
 			CPoolElem<_T>& e = m_buffer [i];
 			if (e.prev < 0)
 				m_used = e.next;

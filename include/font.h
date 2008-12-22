@@ -34,23 +34,23 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //font structure
 typedef struct tFont {
-	short       width;       // Width in pixels
-	short       height;      // Height in pixels
-	short       flags;       // Proportional?
-	short       baseLine;    //
-	ubyte       minChar;     // First char defined by this font
-	ubyte       maxChar;     // Last char defined by this font
-	short       byteWidth;   // Width in unsigned chars
-	ubyte     	*data;       // Ptr to raw data.
-	ubyte    	**chars;     // Ptrs to data for each char (required for prop font)
-	short     	*widths;     // Array of widths (required for prop font)
-	ubyte     	*kernData;   // Array of kerning triplet data
-	int			dataOffs;
-	int			widthOffs;
-	int			kernDataOffs;
+	short					width;      // Width in pixels
+	short					height;     // Height in pixels
+	short					flags;      // Proportional?
+	short					baseLine;   //
+	ubyte					minChar;    // First char defined by this font
+	ubyte					maxChar;    // Last char defined by this font
+	short					byteWidth;  // Width in unsigned chars
+	ubyte*				data;       // Ptr to raw data.
+	CArray<ubyte*>		chars;		// Ptrs to data for each char (required for prop font)
+	short*				widths;     // Array of widths (required for prop font)
+	ubyte*				kernData;   // Array of kerning triplet data
+	int					dataOffs;
+	int					widthOffs;
+	int					kernDataOffs;
 	// These fields do not participate in disk i/o!
-	CBitmap 		*bitmaps;
-	CBitmap 		parentBitmap;
+	CArray<CBitmap> 	bitmaps;
+	CBitmap 				parentBitmap;
 } tFont;
 
 class CFont {
@@ -76,10 +76,10 @@ class CFont {
 		inline ubyte MaxChar (void) { return m_info.maxChar; } 
 		inline short ByteWidth (void) { return m_info.byteWidth; }
 		inline ubyte* Data (void) { return m_info.data; } 
-		inline ubyte**	Chars (void) { return m_info.chars; }
+		inline ubyte**	Chars (void) { return m_info.chars.Buffer (); }
 		inline short* Widths (void) { return m_info.widths; }
 		inline ubyte* KernData (void) { return m_info.kernData; } 
-		inline CBitmap* Bitmaps (void) { return m_info.bitmaps; }
+		inline CBitmap* Bitmaps (void) { return m_info.bitmaps.Buffer (); }
 		inline CBitmap& ParentBitmap (void) { return m_info.parentBitmap; }
 
 		inline void GetWidth (short width) { m_info.width = width; }

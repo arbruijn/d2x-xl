@@ -325,13 +325,19 @@ SetEffect (0, 0, 0);
 
 //	------------------------------------------------------------------------------------
 
-static inline ubyte UpdateEffect (sbyte nColor, int nChange)
+static inline sbyte UpdateEffect (sbyte nColor, int nChange)
 {
-if (nColor > 0)
+if (nColor > 0) {
 	nColor -= nChange;
-else
+	if (nColor < 0)
+		nColor = 0;
+	}
+else if (nColor < 0) {
 	nColor += nChange;
-return (nColor < 0) ? 0 : nColor;
+	if (nColor > 0)
+		nColor = 0;
+	}
+return nColor;
 }
 
 //	------------------------------------------------------------------------------------
@@ -376,7 +382,6 @@ if (m_data.xEffectDuration) {
 		paletteManager.SetEffect ();
 		return;
 		}
-
 	}
 
 m_data.effect.red = UpdateEffect (m_data.effect.red, nDecAmount);
