@@ -500,11 +500,10 @@ if (!bmP->Buffer ()) {
 	if (nIndex >= 0)
 		GetFlagData (bmName, nIndex);
 #if DBG
-	if (strstr (bmName, "door13")) {
+	if (strstr (bmName, "misc066")) {
 		sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], 
 					*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
 		}
-	else
 #endif
 	if (gameStates.app.bNostalgia)
 		gameOpts->render.textures.bUseHires = 0;
@@ -557,7 +556,7 @@ if (!bmP->Buffer ()) {
 			if (nIndex >= 0) {
 				gameData.pig.tex.bitmapFlags [bD1][nIndex] &= ~(BM_FLAG_RLE | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 				gameData.pig.tex.bitmapFlags [bD1][nIndex] |= BM_FLAG_TGA;
-				if (bmP->Width () > bmP->Width ()) {
+				if (bmP->Height () > bmP->Width ()) {
 					tEffectClip	*ecP = NULL;
 					tWallClip *wcP;
 					tVideoClip *vcP;
