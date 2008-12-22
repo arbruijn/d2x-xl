@@ -555,10 +555,10 @@ INT ReadReactorTriggers (CFile& cf)
 
 for (i = 0; i < gameFileInfo.control.count; i++) {
 	gameData.reactor.triggers.nLinks = cf.ReadShort ();
-	for (i = 0; i < MAX_CONTROLCEN_LINKS; i++)
-		gameData.reactor.triggers.segments [i] = cf.ReadShort ();
-	for (i = 0; i < MAX_CONTROLCEN_LINKS; i++)
-		gameData.reactor.triggers.sides [i] = cf.ReadShort ();
+	for (j = 0; j < MAX_CONTROLCEN_LINKS; j++)
+		gameData.reactor.triggers.segments [j] = cf.ReadShort ();
+	for (j = 0; j < MAX_CONTROLCEN_LINKS; j++)
+		gameData.reactor.triggers.sides [j] = cf.ReadShort ();
 	}
 return gameFileInfo.control.count;
 }

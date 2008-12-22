@@ -97,7 +97,7 @@ class CFont {
 		inline void SetParentBitmap (CBitmap& parent) { m_info.parentBitmap = parent; }
 		inline void SetBuffer (ubyte* buffer) { m_info.parentBitmap.SetBuffer (buffer); }
 
-		inline void GetInfo (tFont& info) { info = m_info; }
+		inline void GetInfo (tFont& info) { memcpy (&info, &m_info, sizeof (info)); }
 
 		inline bool InFont (char c) { return (c >= 0) && (c <= (char) (m_info.maxChar - m_info.minChar)); }
 		inline int Range (void) { return m_info.maxChar - m_info.minChar + 1; }
