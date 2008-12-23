@@ -152,7 +152,7 @@ static const char *xlCredits [] = {
 #define FADE_DIST	120
 
 //if filename passed is NULL, show Normal credits
-void ShowCredits(char *credits_filename)
+void ShowCredits (char *credits_filename)
 {
 	int				i, j, l, bDone;
 	CFile				cf;
@@ -175,7 +175,6 @@ void ShowCredits(char *credits_filename)
 CCanvas::Push ();
 	// Clear out all tex buffer lines.
 memset (buffer, 0, sizeof (buffer));
-memset (dirtyBox, 0, sizeof (dirtyBox));
 
 sprintf(filename, "%s", CREDITS_FILE);
 bBinary = 0;
@@ -224,7 +223,8 @@ bmBackdrop.Remap (NULL, -1, -1);
 
 if (!gameOpts->menus.nStyle) {
 	CCanvas::SetCurrent (NULL);
-	GrBitmap (xOffs, yOffs, &bmBackdrop);
+	bmBackdrop.Blit (CCanvas::Current (), xOffs, yOffs);
+
 	if ((CCanvas::Current ()->Width () > 640) || (CCanvas::Current ()->Height () > 480)) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0,0,32));
 		GrUBox(xOffs, yOffs, xOffs + bmBackdrop.Width () + 1, yOffs + bmBackdrop.Height () + 1);
@@ -236,7 +236,7 @@ paletteManager.FadeIn ();
 //MWA  Let's be a little smarter about this and check the VR_offscreen buffer
 //MWA  for size to determine if we can use that buffer.  If the game size
 //MWA  matches what we need, then lets save memory.
-
+#if 0
 if (gameStates.menus.bHires && !gameOpts->menus.nStyle && gameStates.render.vr.buffers.offscreen->Width () == 640)
 	creditsOffscreenBuf = gameStates.render.vr.buffers.offscreen;
 else if (gameStates.menus.bHires)
@@ -248,6 +248,7 @@ if (!creditsOffscreenBuf)
 creditsOffscreenBuf->SetPalette (CCanvas::Current ()->Palette ());
 if (gameOpts->menus.nStyle)
 	creditsOffscreenBuf->AddFlags (BM_FLAG_TRANSPARENT);
+#endif
 KeyFlush ();
 
 bDone = 0;
@@ -293,7 +294,8 @@ get_line:;
 
 	//PrintLog ("%s\n", buffer [nLine]);
 	for (i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
-		if (gameOpts->menus.nStyle) {
+		//if (gameOpts->menus.nStyle) 
+			{
 			CCanvas::SetCurrent (NULL);
 			bmBackdrop.RenderFullScreen ();
 	//			GrUpdate (0);
@@ -305,7 +307,7 @@ get_line:;
 	#endif
 			}
 		int y = nFirstLineOffs - i;
-		CCanvas::SetCurrent (creditsOffscreenBuf);
+		//CCanvas::SetCurrent (creditsOffscreenBuf);
 		if (gameOpts->menus.nStyle)
 			CCanvas::Current ()->Clear (0);	
 		else
@@ -387,23 +389,15 @@ get_line:;
 		}
 #endif
 	GrUpdate (0);
-#if 1
-	{
+
 	int t = xTimeout - SDL_GetTicks ();
 	if (t > 0)
 		G3_SLEEP (t);
 	xTimeout = SDL_GetTicks () + xDelay;
-	}
-#endif
+	
 	//see if redbook song needs to be restarted
 	SongsCheckRedbookRepeat();
 	k = KeyInKey ();
-#if DBG
-	if (k == KEY_BACKSP) {
-		Int3();
-		k = 0;
-		}
-#endif
 
 	if ((k == KEY_PRINT_SCREEN) || (k == KEY_ALTED+KEY_F9)) {
 		gameStates.app.bSaveScreenshot = 1;
@@ -428,9 +422,10 @@ get_line:;
 		cf.Close ();
 		CCanvas::Pop ();
 		SongsPlaySong (SONG_TITLE, 1);
-
+#if 0
 		if (creditsOffscreenBuf != gameStates.render.vr.buffers.offscreen)
 			creditsOffscreenBuf->Destroy ();
+#endif
 		glDisable (GL_BLEND);
 		gameStates.menus.nInMenu = 0;
 		return;

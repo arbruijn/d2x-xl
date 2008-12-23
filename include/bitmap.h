@@ -270,7 +270,8 @@ class CBitmap : public CArray< ubyte > {
 						 int bTransp = 0, int bMipMaps = 0, float fAlpha = 1.0f, tRgbaColorf* colorP = NULL);
 		inline void Render (CBitmap* dest, int bTransp = 0, int bMipMaps = 0, float fAlpha = 1.0f)
 			{ Render (dest, 0, 0, dest->Width (), dest->Height (), 0, 0, Width (), Height (), bTransp, bMipMaps, fAlpha); }
-		void Render (CBitmap* dest = NULL, int x = 0, int y = 0);
+		void Stretch (CBitmap* dest = NULL, int x = 0, int y = 0);
+		void Blit (CBitmap* dest = NULL, int x = 0, int y = 0);
 		void RenderClipped (CBitmap* dest = NULL, int dx = 0, int dy = 0, int w = -1, int h = -1, int sx = 0, int sy = 0);
 		void RenderToBitmap (CBitmap* dest, int dx, int dy, int w, int h, int sx, int sy);
 
