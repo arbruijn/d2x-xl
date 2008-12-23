@@ -40,6 +40,7 @@ class CBackground {
 		void DrawBox (void);
 
 		inline CCanvas* Canvas () { return m_canvas; }
+		inline CBitmap* Background (void) { return m_background; }
 
 	private:
 		CBitmap* Load (char* filename, int width, int height);
@@ -73,6 +74,11 @@ class CBackgroundManager : private CStack<CBackground> {
 		inline int Depth (void) { return m_nDepth; }
 		inline bool Shadow (void) { return m_bShadow; }
 		inline void SetShadow (bool bShadow) { m_bShadow = bShadow; }
+		inline void Draw (void) { m_bg.Draw (); }
+		inline void DrawArea (int left, int top, int right, int bottom)
+			{ return m_bg.DrawArea (left, top, right, bottom); }
+		inline CBitmap* Current (void) { return m_bg.Background (); }
+		inline CCanvas* Canvas (void) { return m_bg.Canvas (); }
 
 		void DrawBox (int nLineWidth, float fAlpha, int bForce);
 
