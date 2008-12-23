@@ -57,68 +57,6 @@ typedef struct tMenuItem {
 
 //------------------------------------------------------------------------------
 
-typedef struct bkg {
-	short			x, y, w, h;		// The location of the menu.
-	CCanvas*		menu_canvas;
-	CBitmap*		saved;			// The background under the menu.
-	CBitmap*		background;
-	CBitmap*		bmP;
-	char			bIgnoreBg;
-	char			bIgnoreCanv;
-	char			*pszPrevBg;
-} bkg;
-
-class CBackground {
-	private:
-		CCanvas*	m_menu;			// canvas (screen area) of a menu
-		CBitmap*	m_saved;			// copy of a screen area covered by a menu
-		CBitmap*	m_background;	// complete background
-		char*		m_name;
-		bool		m_bIgnoreCanv;
-		bool		m_bIgnoreBg;
-		bool		m_bTopMenu;
-		bool		m_bMenuBox;
-
-	public:
-		CBackground () { Init (); }
-		~CBackground () { Destroy (); }
-		void Init (void);
-		void Destroy (void);
-		bool Create (void);
-		void Save (bool bForce);
-		void Restore (void);
-		void Draw (void);
-		void Box (void);
-		bool Load (char* filename);
-
-		static inline CCanvas* Canvas () { return m_canvas; }
-};
-
-class CBackgroundManager : private CStack<CBackground> {
-	private:
-		CStack<CBackground>	m_save;
-		CBackground				m_bg;
-		CBitmap*					m_background;
-		int						m_nDepth;
-		char*						m_filename;
-
-	public:
-		CBackgroundManager ();
-		void Setup (char* filename);
-		void Load (void);
-		void Restore (void);
-		void Remove (void);
-		void LoadBackground (char* filename);
-
-	private:
-		bool IsDefault (char* filename);
-		void LoadCustomBackground (void);
-	};
-
-extern  CBackgroundManager backgroundManager;
-
-//------------------------------------------------------------------------------
-
 // Pass an array of newmenu_items and it processes the menu. It will
 // return a -1 if Esc is pressed, otherwise, it returns the index of
 // the item that was current when Enter was was selected.
@@ -145,13 +83,6 @@ int ExecMenu3 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuI
 					 int (*menuCallback)(int nItems, tMenuItem *items, int *lastKeyP, int nItem), 
 					 int *pnItem, char *filename, int width, int height);
 
-void NMLoadBackground (char *filename, CBackground& bg, int bReload);
-
-void NMDrawBackground (CBackground& bg, int x1, int y1, int x2, int y2, int bReload);
-
-void NMRemoveBackground (CBackground& bg);
-
-
 // This function pops up a messagebox and returns which choice was selected...
 // Example:
 // ExecMessageBox( "Title", "Subtitle", 2, "Ok", "Cancel", "There are %d objects", nobjects );
@@ -170,9 +101,6 @@ int ExecMenuFileSelector (const char *pszTitle, const char *filespec, char *file
 extern int Max_linear_depthObjects;
 
 extern char *nmAllowedChars;
-
-void NMInitBackground (char *filename, CBackground& bg, int x, int y, int w, int h, int bRedraw);
-void NMDrawBackground (CBackground& bg, int x1, int y1, int x2, int y2, int bRedraw);
 
 int ExecMenuListBox (const char *pszTitle, int nItems, char *itemP [], int bAllowAbort, 
 						   int (*listbox_callback)(int *nItem, int *nItems, char *itemP [], int *keypress));
@@ -196,14 +124,6 @@ int ExecMenutiny2 (const char *pszTitle, const char *pszSubTitle, int nItems, tM
 //added on 10/14/98 by Victor Rachels to attempt a fixedwidth font messagebox
 int _CDECL_ NMMsgBoxFixedFont (const char *pszTitle, int nChoices, ...);
 //end this section addition
-
-//should be called whenever the palette changes
-void NMRemapBackground (void);
-void NMLoadAltBg (void);
-int NMFreeAltBg (int bForce);
-
-void NMRestoreScreen (char *filename, CBackground& bg, CCanvas *saveCanvasP, CFont *saveFontP, int bDontRestore);
-void NMBlueBox (int x1, int y1, int x2, int y2, int nLineWidth, float fAlpha, int bForce);
 
 extern double altBgAlpha;
 extern double altBgBrightness;

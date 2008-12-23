@@ -19,9 +19,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 class CBackground {
 	private:
-		CCanvas*	m_menu;			// canvas (screen area) of a menu
-		CBitmap*	m_saved;			// copy of a screen area covered by a menu
-		CBitmap*	m_background;	// complete background
+		CCanvas*	m_canvas;			// canvas (screen area) of a menu
+		CBitmap*	m_saved;				// copy of a screen area covered by a menu
+		CBitmap*	m_background;		// complete background
 		char*		m_name;
 		bool		m_bIgnoreCanv;
 		bool		m_bIgnoreBg;
@@ -33,35 +33,49 @@ class CBackground {
 		~CBackground () { Destroy (); }
 		void Init (void);
 		void Destroy (void);
-		bool Create (void);
-		void Save (bool bForce);
+		bool Create (char* filename, int x, int y, int width, int height);
 		void Restore (void);
 		void Draw (void);
-		void Box (void);
+		void DrawArea (int left, int top, int right, int bottom);
+		void DrawBox (void);
 		bool Load (char* filename);
 
-		static inline CCanvas* Canvas () { return m_canvas; }
+		inline CCanvas* Canvas () { return m_canvas; }
+
+	private:
+		bool Load (char* filename, int width, int height);
+		void Setup (int x, int y, int width, int height);
+		void Save (int width, int height);
 };
 
 class CBackgroundManager : private CStack<CBackground> {
 	private:
 		CStack<CBackground>	m_save;
 		CBackground				m_bg;
-		CBitmap*					m_background;
+		CBitmap*					m_background [2];
+		char*						m_filename [2];
 		int						m_nDepth;
-		char*						m_filename;
+		bool						m_b3DEffect;
 
 	public:
 		CBackgroundManager ();
+		void Init (void);
+		void Destroy (void);
 		void Setup (char* filename);
 		void Load (void);
 		void Restore (void);
 		void Remove (void);
-		void LoadBackground (char* filename);
+		CBitmap* LoadBackground (char* filename);
+		bool IsDefault (char* filename);
+
+		inline char* Filename (uint i = 0) { return m_filename [i]; }
+		inline CBitmap* Background (uint i = 0) { return m_background [i]; }
+		inline int Depth (void) { return m_nDepth; }
+
+		void DrawBox (int nLineWidth, float fAlpha, int bForce);
 
 	private:
-		bool IsDefault (char* filename);
-		void LoadCustomBackground (void);
+		CBitmap* LoadCustomBackground (void);
 	};
 
 extern  CBackgroundManager backgroundManager;
