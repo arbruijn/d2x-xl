@@ -44,7 +44,7 @@ void RemapFontsAndMenus (int bDoFadeTableHack)
 #if 0
 NMRemapBackground();
 GrRemapColorFonts();
-fontManager.RemapMono();
+fontManager.Remap();
 if (bDoFadeTableHack) {
 	int i;
 	double g = 1.0;

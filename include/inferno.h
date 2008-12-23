@@ -1543,7 +1543,7 @@ class CMorphData {
 
 //------------------------------------------------------------------------------
 
-#define OGLTEXBUFSIZE (2048*2048*4)
+#define OGLTEXBUFSIZE (4096 * 4096 * 4)
 
 typedef struct tScreenScale {
 	float x, y;

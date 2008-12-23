@@ -264,14 +264,15 @@ class CBitmap : public CArray< ubyte > {
 		void Unlink (int bAddon);
 
 		void RenderFullScreen (void);
-		int Render (CBitmap *dest, 
-						int xDest, int yDest, int wDest, int hDest, 
-						int xSrc, int ySrc, int wSrc, int hSrc, 
-						int bTransp = 0, int bMipMaps = 0, float fAlpha = 1.0f);
-		inline int Render (CBitmap* dest, int bTransp = 0, int bMipMaps = 0, float fAlpha = 1.0f)
-			{ return Render (dest, 0, 0, dest->Width (), dest->Height (), 0, 0, Width (), Height (), bTransp, bMipMaps, fAlpha); }
-		int Render (CBitmap* dest = NULL, int x = 0, int y = 0);
-		void RenderClipped (int x = 0, int y = 0);
+		void Render (CBitmap *dest, 
+						 int xDest, int yDest, int wDest, int hDest, 
+						 int xSrc, int ySrc, int wSrc, int hSrc, 
+						 int bTransp = 0, int bMipMaps = 0, float fAlpha = 1.0f, tRgbaColorf* colorP = NULL);
+		inline void Render (CBitmap* dest, int bTransp = 0, int bMipMaps = 0, float fAlpha = 1.0f)
+			{ Render (dest, 0, 0, dest->Width (), dest->Height (), 0, 0, Width (), Height (), bTransp, bMipMaps, fAlpha); }
+		void Render (CBitmap* dest = NULL, int x = 0, int y = 0);
+		void RenderClipped (CBitmap* dest = NULL, int dx = 0, int dy = 0, int w = -1, int h = -1, int sx = 0, int sy = 0);
+		void RenderToBitmap (CBitmap* dest, int dx, int dy, int w, int h, int sx, int sy);
 
 		inline CBitmap& Clone (CBitmap& clone) { 
 			memcpy (&clone, this, sizeof (CBitmap)); 

@@ -517,7 +517,7 @@ if ((t = FindArg ("-enable_shadows")))
 if ((t = FindArg ("-enable_freecam")))
 	gameStates.app.bEnableFreeCam = NumArg (t, 1);
 if ((t = FindArg ("-pured2")))
-	gameStates.app.bNostalgia = 3;
+	SetNostalgia (3);
 else if ((t = FindArg ("-nostalgia")))
 	SetNostalgia (pszArgList [t+1] ? NumArg (t, 0) : 1);
 else

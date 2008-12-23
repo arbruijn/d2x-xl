@@ -459,13 +459,14 @@ int Pow2ize (int x);//from ogl.c
 
 int CFont::DrawString (int x, int y, const char *s)
 {
-	const char* textP, * nextRowP, * text_ptr1;
-	int			width, spacing, letter;
-	int			l, t;
-	int			origColor = CCanvas::Current ()->FontColor (0).index;//to allow easy reseting to default string color with colored strings -MPM
-	ubyte			c;
-	CBitmap		*bmf;
+	const char*		textP, * nextRowP, * text_ptr1;
+	int				width, spacing, letter;
+	int				l, t;
+	int				origColor = CCanvas::Current ()->FontColor (0).index;//to allow easy reseting to default string color with colored strings -MPM
+	ubyte				c;
+	CBitmap*			bmf;
 	tCanvasColor*	colorP = (m_info.flags & FT_COLOR) ? NULL : &CCanvas::Current ()->FontColor (0);
+	bool				bOGL = CCanvas::Current ()->Mode () == BM_OGL;
 
 nextRowP = s;
 t = y;
@@ -494,7 +495,10 @@ while (nextRowP != NULL) {
 			}
 		bmf = m_info.bitmaps + letter;
 		bmf->AddFlags (BM_FLAG_TRANSPARENT);
-		OglUBitMapMC (l, t, 0, 0, bmf, colorP, F1_0, 0);
+		if (bOGL)
+			OglUBitMapMC (l, t, 0, 0, bmf, colorP, F1_0, 0);
+		else
+			GrBitmapM (l, t, bmf, 2); // credits need clipping
 		l += spacing;
 		textP++;
 		}
@@ -665,7 +669,7 @@ if (gameOpts->render.coronas.nStyle < 2) {
 		return (int) (ps - stringPool) + 1;
 		}
 	}
-#if 1
+#if 0
 
 return fontManager.Current ()->DrawString (x, y, s);
 

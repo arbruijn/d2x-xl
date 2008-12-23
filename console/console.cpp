@@ -817,12 +817,6 @@ if (m_background)
 	delete m_background;
 m_background = CBitmap::Create (0, m_surface->Width (), m_surface->Height (), 1);
 GrBitmapScaleTo (image, m_background);
-
-#if 0
-SDL_FillRect (m_input, NULL, SDL_MapRGBA (m_surface->format, 0, 0, 0, SDL_ALPHA_OPAQUE);
-GrBmBitBlt (m_background->Width (), m_input->Height (), 0, 0, 0, 
-				m_surface->Height () - m_surface->Font ()->Height (), m_background, m_input);
-#endif
 return 0;
 }
 
@@ -876,29 +870,9 @@ CFont* font = m_surface->Font ();
 m_surface->Destroy ();
 m_surface = CCanvas::Create (w, h);
 m_surface->SetFont (font);
-//m_surface->CBitmap::Create (BM_LINEAR, w, h, 1);
-
-/* Load the dirty rectangle for user input */
 delete m_input;
 m_input = CBitmap::Create (0, w, m_surface->Font ()->Height (), 1);
-
-/* Now reset some stuff dependent on the previous size */
 m_ConsoleScrollBack = 0;
-
-/* Reload the background image (for the input text area) in the console */
-if (m_background) {
-#if 0
-	SDL_FillRect (m_input, NULL, SDL_MapRGBA (m_surface->format, 0, 0, 0, SDL_ALPHA_OPAQUE);
-	GrBmBitBlt (m_background->Width (), m_input->Height (), 0, 0, 0, 
-					m_surface->Height () - m_surface->Font ()->Height (), 
-					m_background, m_input);
-#endif
-}
-
-#if 0
-/* restore the alpha level */
-Alpha (m_ConsoleAlpha);
-#endif
 return 0;
 }
 

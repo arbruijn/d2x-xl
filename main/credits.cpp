@@ -87,9 +87,9 @@ CPalette *creditsPalette = NULL;
 
 extern ubyte *grBitBltFadeTable;
 
-CFont * header_font;
-CFont * title_font;
-CFont * names_font;
+CFont * headerFont;
+CFont * titleFont;
+CFont * namesFont;
 
 #define ALLOWED_CHAR 'R'
 
@@ -107,7 +107,7 @@ typedef struct box {
 		  (CFile::Exist("mcredits.tex",gameFolders.szDataDir,0)?"mcredits.tex":\
 			CFile::Exist("ocredits.tex",gameFolders.szDataDir,0)?"ocredits.tex":"credits.tex")
 
-#define cr_gr_printf(x,y,s)	GrPrintF (NULL, (x) == 0x8000 ? (x) : (x), (y), s)
+#define cr_gr_printf(x,y,s)	//GrPrintF (NULL, (x) == 0x8000 ? (x) : (x), (y), s)
 
 static const char *xlCredits [] = {
 	"",
@@ -148,6 +148,9 @@ static const char *xlCredits [] = {
 	};
 
 #define NUM_XL_LINES	sizeofa(xlCredits)
+
+#define FADE_DIST	120
+
 //if filename passed is NULL, show Normal credits
 void ShowCredits(char *credits_filename)
 {
@@ -166,6 +169,8 @@ void ShowCredits(char *credits_filename)
 	int				xOffs, yOffs;
 	box				dirtyBox [NUM_LINES_HIRES];
 	CCanvas			*creditsOffscreenBuf = NULL;
+
+	tRgbaColorf		colors [4] = {{1,1,1,1},{1,1,1,1},{1,1,1,1},{1,1,1,1}};
 
 CCanvas::Push ();
 	// Clear out all tex buffer lines.
@@ -200,9 +205,9 @@ if (yOffs < 0)
 	yOffs = 0;
 creditsPalette = paletteManager.Load ("credits.256", NULL);
 paletteManager.LoadEffect  ();
-header_font = fontManager.Load (gameStates.menus.bHires ? reinterpret_cast<char*> ("font1-1h.fnt") : reinterpret_cast<char*> ("font1-1.fnt"));
-title_font = fontManager.Load (gameStates.menus.bHires ? reinterpret_cast<char*> ("font2-3h.fnt") : reinterpret_cast<char*> ("font2-3.fnt"));
-names_font = fontManager.Load (gameStates.menus.bHires ? reinterpret_cast<char*> ("font2-2h.fnt") : reinterpret_cast<char*> ("font2-2.fnt"));
+headerFont = fontManager.Load (gameStates.menus.bHires ? reinterpret_cast<char*> ("font1-1h.fnt") : reinterpret_cast<char*> ("font1-1.fnt"));
+titleFont = fontManager.Load (gameStates.menus.bHires ? reinterpret_cast<char*> ("font2-3h.fnt") : reinterpret_cast<char*> ("font2-3.fnt"));
+namesFont = fontManager.Load (gameStates.menus.bHires ? reinterpret_cast<char*> ("font2-2h.fnt") : reinterpret_cast<char*> ("font2-2.fnt"));
 bmBackdrop.SetBuffer (NULL);
 bmBackdrop.SetPalette (NULL);
 
@@ -214,15 +219,15 @@ if (nPcxError != PCX_ERROR_NONE) {
 	cf.Close();
 	return;
 	}
-SongsPlaySong(SONG_CREDITS, 1);
+SongsPlaySong (SONG_CREDITS, 1);
 bmBackdrop.Remap (NULL, -1, -1);
 
 if (!gameOpts->menus.nStyle) {
-	CCanvas::SetCurrent(NULL);
-	GrBitmap(xOffs,yOffs,&bmBackdrop);
+	CCanvas::SetCurrent (NULL);
+	GrBitmap (xOffs, yOffs, &bmBackdrop);
 	if ((CCanvas::Current ()->Width () > 640) || (CCanvas::Current ()->Height () > 480)) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0,0,32));
-		GrUBox(xOffs,yOffs,xOffs+bmBackdrop.Width ()+1,yOffs+bmBackdrop.Height ()+1);
+		GrUBox(xOffs, yOffs, xOffs + bmBackdrop.Width () + 1, yOffs + bmBackdrop.Height () + 1);
 		}
 	}
 paletteManager.FadeIn ();
@@ -288,8 +293,6 @@ get_line:;
 
 	//PrintLog ("%s\n", buffer [nLine]);
 	for (i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
-		int y;
-
 		if (gameOpts->menus.nStyle) {
 			CCanvas::SetCurrent (NULL);
 			bmBackdrop.RenderFullScreen ();
@@ -301,47 +304,45 @@ get_line:;
 				}
 	#endif
 			}
-		y = nFirstLineOffs - i;
+		int y = nFirstLineOffs - i;
 		CCanvas::SetCurrent (creditsOffscreenBuf);
 		if (gameOpts->menus.nStyle)
 			CCanvas::Current ()->Clear (0);	
 		else
 			GrBitmap (0, 0, &bmBackdrop);
 		for (j = 0; j < NUM_LINES; j++)	{
-			char *s;
-
 			l = (nLine + j + 1) %  NUM_LINES;
-			s = buffer [l];
-			if (s[0] == '!') 
+			char* s = buffer [l];
+			if (*s == '!') 
 				s++;
-			else if (s[0] == '$') {
-				fontManager.SetCurrent (header_font);
+			else if (*s == '$') {
+				fontManager.SetCurrent (headerFont);
 				s++;
 				} 
-			else if (s[0] == '*') {
-				fontManager.SetCurrent (title_font);
+			else if (*s == '*') {
+				fontManager.SetCurrent (titleFont);
 				s++;
 				} 
 			else
-				fontManager.SetCurrent (names_font);
+				fontManager.SetCurrent (namesFont);
 			grBitBltFadeTable = (gameStates.menus.bHires ? fadeValues_hires : fadeValues);
 			pszTemp = strchr (s, '\t');
 			if (pszTemp) {	//	Wacky Credits thing
 				int w, h, aw, w2, x1, x2;
 				*pszTemp = 0;
-				fontManager.Current ()->StringSize(s, w, h, aw);
-				x1 = ((gameStates.menus.bHires?320:160)-w)/2;
+				fontManager.Current ()->StringSize (s, w, h, aw);
+				x1 = ((gameStates.menus.bHires ? 320 : 160) - w) / 2;
 				cr_gr_printf (x1 , y, s);
 				fontManager.Current ()->StringSize (pszTemp + 1, w2, h, aw);
 				x2 = (gameStates.menus.bHires ? 320 : 160) + (((gameStates.menus.bHires ? 320 : 160) - w2) / 2);
-				cr_gr_printf(x2, y, &pszTemp[1]);
+				cr_gr_printf (x2, y, &pszTemp[1]);
 				dirtyBox [j].left = ((gameStates.menus.bHires?320:160)-w)/2;
 				dirtyBox [j].top = y;
 				dirtyBox [j].width =(x2+w2)-x1;
 				dirtyBox [j].height = h;
 				*pszTemp = '\t';
 				} 
-			else {
+			else if (*s) {
 			// Wacky Fast Credits thing
 				int w, h, aw;
 
@@ -349,8 +350,16 @@ get_line:;
 				dirtyBox [j].width = w;
         		dirtyBox [j].height = h;
         		dirtyBox [j].top = y;
-        		dirtyBox [j].left = ((gameStates.menus.bHires?640:320) - w) / 2;
-				cr_gr_printf (0x8000, y, s);
+        		dirtyBox [j].left = ((gameStates.menus.bHires ? 640 : 320) - w) / 2;
+				CBitmap* bmP = CreateStringBitmap (s, 0, 0, NULL, 1, w, -1);
+				if (bmP) {
+					float dy = float ((y < FADE_DIST) ? y : (480 - y < FADE_DIST) ? 480 - y : FADE_DIST);
+					colors [0].alpha = colors [1].alpha = dy / float (FADE_DIST);
+					dy = float ((y + h < FADE_DIST) ? y + h : (480 - y - h < FADE_DIST) ? 480 - y - h : FADE_DIST);
+					colors [2].alpha = colors [3].alpha = dy / float (FADE_DIST);
+					bmP->Render (CCanvas::Current (), (screen.Width () - w) / 2, yOffs + y, w, h, 0, 0, w, h, 1, 0, 1, colors);
+					delete bmP;
+					}
 				}
 			grBitBltFadeTable = NULL;
 			if (buffer[l][0] == '!')
@@ -361,7 +370,7 @@ get_line:;
 
 		if (gameOpts->menus.nStyle) 
 			CCanvas::SetCurrent (NULL);
-
+#if 0
 		{	// Wacky Fast Credits Thing
 		box	*newBox;
 		CBitmap *tempBmP;
@@ -370,12 +379,13 @@ get_line:;
 			newBox = dirtyBox + j;
 			tempBmP = creditsOffscreenBuf;
 
-			GrBmBitBlt (newBox->width + 1, newBox->height +4,
-							newBox->left + xOffs, newBox->top + yOffs, 
-							newBox->left, newBox->top,
-							tempBmP, screen.Canvas ());
+			tempBmP->RenderClipped (screen.Canvas (),
+										   newBox->left + xOffs, newBox->top + yOffs, 
+										   newBox->width + 1, newBox->height +4,
+										   newBox->left, newBox->top);
 			}
 		}
+#endif
 	GrUpdate (0);
 #if 1
 	{
@@ -409,9 +419,9 @@ get_line:;
 			xDelay = 1;
 		}
 	else if ((k == KEY_ESC) || (bDone > NUM_LINES)) {
-		fontManager.Unload (header_font);
-		fontManager.Unload (title_font);
-		fontManager.Unload (names_font);
+		fontManager.Unload (headerFont);
+		fontManager.Unload (titleFont);
+		fontManager.Unload (namesFont);
 		paletteManager.FadeOut ();
 		paletteManager.Load (D2_DEFAULT_PALETTE, NULL);
 		bmBackdrop.DestroyBuffer ();

@@ -213,7 +213,7 @@ if (gameStates.ogl.bInitialized && bRebuild) {
 		RebuildRenderContext (1);
 		}
 	else
-		fontManager.RemapMono ();
+		fontManager.Remap ();
 	}
 D2SetCaption ();
 OglCreateDrawBuffer ();

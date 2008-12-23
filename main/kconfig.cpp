@@ -1614,8 +1614,7 @@ void KConfig (int n, const char *pszTitle)
 		bmSave = CBitmap::Create (0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height (), 1);
 		Assert (bmSave != NULL);
 		bmSave->SetPalette (paletteManager.Texture ());
-		GrBmBitBlt (CCanvas::Current ()->Width (), CCanvas::Current ()->Width (), 
-						 0, 0, 0, 0, CCanvas::Current (), bmSave);
+		CCanvas::Current ()->RenderClipped (bmSave, 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Width (), 0, 0);
 		}
 	if (n == 0)
 		KConfigSub (kcKeyboard, NUM_KEY_CONTROLS, pszTitle);

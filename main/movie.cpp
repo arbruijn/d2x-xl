@@ -215,7 +215,7 @@ else {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
 		GrUBox (dstx-1, dsty, dstx+w, dsty+h+1);
 		}
-	GrBmUBitBlt (bufw, bufh, dstx, dsty, sx, sy, &bmFrame, CCanvas::Current (), 1);
+	GrBmUBitBlt (CCanvas::Current (), dstx, dsty, bufw, bufh, &bmFrame, sx, sy, 1);
 	}
 TRANSPARENCY_COLOR = DEFAULT_TRANSPARENCY_COLOR;
 }

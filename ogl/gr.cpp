@@ -170,7 +170,7 @@ if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
 	DestroyGlareDepthTexture ();
 	NMFreeAltBg (1);
 	if (bReload)
-		fontManager.RemapMono ();
+		fontManager.Remap ();
 	if (bGame) {
 		FreeInventoryIcons ();
 		FreeObjTallyIcons ();

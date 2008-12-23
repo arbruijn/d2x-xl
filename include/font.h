@@ -149,8 +149,7 @@ class CFontManager {
 		void SetColorRGBi (uint fgColor, int bSetFG, uint bgColor, int bSetBG);
 		void Push (void) { m_save.Push (m_current); }
 		void Pop (void) { m_current = m_save.Pop (); }
-		void RemapColor ();
-		void RemapMono ();
+		void Remap ();
 	};
 
 extern CFontManager fontManager;

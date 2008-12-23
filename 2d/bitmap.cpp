@@ -412,9 +412,9 @@ for (i = m_info.props.h * m_info.props.w, p = Buffer (); i; i--, p++) {
 
 //------------------------------------------------------------------------------
 
-int CBitmap::Render (CBitmap* dest, int x, int y)
+void CBitmap::Render (CBitmap* dest, int x, int y)
 { 
-return Render (dest ? dest : CCanvas::Current (), x, y, dest->Width (), dest->Height (), 0, 0, Width (), Height (), 0, 0, 1.0f); 
+Render (dest ? dest : CCanvas::Current (), x, y, dest->Width (), dest->Height (), 0, 0, Width (), Height (), 0, 0, 1.0f); 
 }
 
 //------------------------------------------------------------------------------

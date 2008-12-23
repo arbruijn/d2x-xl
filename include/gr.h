@@ -73,8 +73,7 @@ void _CDECL_ GrClose(void);
 //=========================================================================
 void gr_bm_pixel (CBitmap * bmP, int x, int y, ubyte color);
 void gr_bm_upixel (CBitmap * bmP, int x, int y, ubyte color);
-void GrBmBitBlt (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest);
-void GrBmUBitBlt (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest, int bTransp);
+void GrBmUBitBlt (CBitmap * dest, int dx, int dy, int w, int h, CBitmap * src, int sx, int sy, int bTransp);
 void GrBmUBitBltM (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest, int bTransp);
 void GrUBitmapM(int x, int y, CBitmap *bmP);
 

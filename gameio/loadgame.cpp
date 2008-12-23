@@ -1806,7 +1806,7 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 		case 0:
 			if (gameData.multiplayer.nLocalPlayer < 0)
 				return 0;
-			fontManager.RemapMono ();
+			fontManager.Remap ();
 			break;
 		case 1:
 			networkData.nStatus = 2;

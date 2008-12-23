@@ -138,61 +138,54 @@ void gr_linear_rep_movsd_2x(ubyte *src, ubyte *dest, uint num_dest_pixels);
 
 void gr_linear_rep_movsd_2x(ubyte *src, ubyte *dest, uint num_pixels)
 {
-	double  *d = reinterpret_cast<double*> (dest);
-	uint    *s = reinterpret_cast<uint*> (src);
-	uint   doubletemp[2];
-	uint    temp, work;
+	double*	d = reinterpret_cast<double*> (dest);
+	uint*		s = reinterpret_cast<uint*> (src);
+	uint		doubletemp[2];
+	uint		temp, work;
 	uint     i;
 
-	if (num_pixels & 0x3) {
-		// not a multiple of 4?  do single pixel at a time
-		for (i=0; i<num_pixels; i++) {
-			*dest++ = *src;
-			*dest++ = *src++;
+if (num_pixels & 0x3) {
+	// not a multiple of 4?  do single pixel at a time
+	for (i=0; i<num_pixels; i++) {
+		*dest++ = *src;
+		*dest++ = *src++;
 		}
-		return;
+	return;
 	}
 
-	for (i = 0; i < num_pixels / 4; i++) {
-		temp = work = *s++;
+for (i = 0; i < num_pixels / 4; i++) {
+	temp = work = *s++;
 
-		temp = ((temp >> 8) & 0x00FFFF00) | (temp & 0xFF0000FF); // 0xABCDEFGH -> 0xABABCDEF
-		temp = ((temp >> 8) & 0x000000FF) | (temp & 0xFFFFFF00); // 0xABABCDEF -> 0xABABCDCD
-		doubletemp[0] = temp;
+	temp = ((temp >> 8) & 0x00FFFF00) | (temp & 0xFF0000FF); // 0xABCDEFGH -> 0xABABCDEF
+	temp = ((temp >> 8) & 0x000000FF) | (temp & 0xFFFFFF00); // 0xABABCDEF -> 0xABABCDCD
+	doubletemp[0] = temp;
 
-		work = ((work << 8) & 0x00FFFF00) | (work & 0xFF0000FF); // 0xABCDEFGH -> 0xABEFGHGH
-		work = ((work << 8) & 0xFF000000) | (work & 0x00FFFFFF); // 0xABEFGHGH -> 0xEFEFGHGH
-		doubletemp[1] = work;
+	work = ((work << 8) & 0x00FFFF00) | (work & 0xFF0000FF); // 0xABCDEFGH -> 0xABEFGHGH
+	work = ((work << 8) & 0xFF000000) | (work & 0x00FFFFFF); // 0xABEFGHGH -> 0xEFEFGHGH
+	doubletemp[1] = work;
 
-		*d = *reinterpret_cast<double*> (doubletemp);
-		d++;
+	*d = *reinterpret_cast<double*> (doubletemp);
+	d++;
 	}
 }
 
-//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 
 void gr_ubitmap00(int x, int y, CBitmap *bmP)
 {
-	register int y1;
-	int dest_rowSize;
+int srcRowSize = bmP->RowSize ();
+int destRowSize = CCanvas::Current ()->RowSize () << gr_bitblt_dest_step_shift;
+ubyte* dest = &(CCanvas::Current ()->Buffer ()[ destRowSize*y+x ]);
+ubyte* src = bmP->Buffer ();
 
-	ubyte * dest;
-	ubyte * src;
-
-	dest_rowSize=CCanvas::Current ()->RowSize () << gr_bitblt_dest_step_shift;
-	dest = &(CCanvas::Current ()->Buffer ()[ dest_rowSize*y+x ]);
-
-	src = bmP->Buffer ();
-
-	for (y1=0; y1 < bmP->Height (); y1++)    {
-		if (gr_bitblt_double)
-			gr_linear_rep_movsd_2x(src, dest, bmP->Width ());
-		else
-			gr_linear_movsd(src, dest, bmP->Width ());
-		src += bmP->RowSize ();
-		dest+= (int)(dest_rowSize);
+for (int y1 = 0; y1 < bmP->Height (); y1++) {
+	if (gr_bitblt_double)
+		gr_linear_rep_movsd_2x(src, dest, bmP->Width ());
+	else
+		gr_linear_movsd(src, dest, bmP->Width ());
+	src += srcRowSize;
+	dest+= destRowSize;
 	}
 }
 
@@ -201,13 +194,13 @@ void gr_ubitmap00(int x, int y, CBitmap *bmP)
 void gr_ubitmap00m(int x, int y, CBitmap *bmP)
 {
 	register int y1;
-	int dest_rowSize;
+	int destRowSize;
 
 	ubyte * dest;
 	ubyte * src;
 
-	dest_rowSize=CCanvas::Current ()->RowSize () << gr_bitblt_dest_step_shift;
-	dest = &(CCanvas::Current ()->Buffer ()[ dest_rowSize*y+x ]);
+	destRowSize=CCanvas::Current ()->RowSize () << gr_bitblt_dest_step_shift;
+	dest = &(CCanvas::Current ()->Buffer ()[ destRowSize*y+x ]);
 
 	src = bmP->Buffer ();
 
@@ -215,14 +208,14 @@ void gr_ubitmap00m(int x, int y, CBitmap *bmP)
 		for (y1=0; y1 < bmP->Height (); y1++)    {
 			gr_linear_rep_movsdm(src, dest, bmP->Width ());
 			src += bmP->RowSize ();
-			dest+= (int)(dest_rowSize);
+			dest+= (int)(destRowSize);
 		}
 	} else {
 		for (y1=0; y1 < bmP->Height (); y1++)    {
 			gr_linear_rep_movsdm_faded (src, dest, bmP->Width (), grBitBltFadeTable [y1+y], 
 												 bmP->Palette (), CCanvas::Current ()->Palette ());
 			src += bmP->RowSize ();
-			dest+= (int)(dest_rowSize);
+			dest+= (int)(destRowSize);
 		}
 	}
 }
@@ -302,26 +295,18 @@ void gr_ubitmapGENERICm(int x, int y, CBitmap * bmP)
 // From Linear to Linear
 void gr_bm_ubitblt00(int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
 {
-	ubyte * dbits;
-	ubyte * sbits;
-	//int src_bm_rowSize_2, dest_bm_rowSize_2;
-	int dstep;
+ubyte* sbits = src->Buffer ()  + (src->RowSize () * sy) + sx;
+ubyte* dbits = dest->Buffer () + (dest->RowSize () * dy) + dx;
+int dstep = dest->RowSize () << gr_bitblt_dest_step_shift;
 
-	int i;
-
-	sbits =   src->Buffer ()  + (src->RowSize () * sy) + sx;
-	dbits =   dest->Buffer () + (dest->RowSize () * dy) + dx;
-
-	dstep = dest->RowSize () << gr_bitblt_dest_step_shift;
-
-	// No interlacing, copy the whole buffer.
-	for (i=0; i < h; i++)    {
-		if (gr_bitblt_double)
-			gr_linear_rep_movsd_2x(sbits, dbits, w);
-		else
-			gr_linear_movsd(sbits, dbits, w);
-		sbits += src->RowSize ();
-		dbits += dstep;
+// No interlacing, copy the whole buffer.
+for (int i = 0; i < h; i++) {
+	if (gr_bitblt_double)
+		gr_linear_rep_movsd_2x (sbits, dbits, w);
+	else
+		gr_linear_movsd (sbits, dbits, w);
+	sbits += src->RowSize ();
+	dbits += dstep;
 	}
 }
 
@@ -329,28 +314,23 @@ void gr_bm_ubitblt00(int w, int h, int dx, int dy, int sx, int sy, CBitmap * src
 // From Linear to Linear Masked
 void gr_bm_ubitblt00m(int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
 {
-	ubyte * dbits;
-	ubyte * sbits;
-	//int src_bm_rowSize_2, dest_bm_rowSize_2;
-
-	int i;
-
-	sbits =   src->Buffer ()  + (src->RowSize () * sy) + sx;
-	dbits =   dest->Buffer () + (dest->RowSize () * dy) + dx;
+ubyte* sbits = src->Buffer ()  + (src->RowSize () * sy) + sx;
+ubyte* dbits = dest->Buffer () + (dest->RowSize () * dy) + dx;
 
 	// No interlacing, copy the whole buffer.
 
-	if (grBitBltFadeTable==NULL) {
-		for (i=0; i < h; i++)    {
-			gr_linear_rep_movsdm(sbits, dbits, w);
-			sbits += src->RowSize ();
-			dbits += dest->RowSize ();
+if (grBitBltFadeTable == NULL) {
+	for (int i = 0; i < h; i++) {
+		gr_linear_rep_movsdm (sbits, dbits, w);
+		sbits += src->RowSize ();
+		dbits += dest->RowSize ();
 		}
-	} else {
-		for (i=0; i < h; i++)    {
-			gr_linear_rep_movsdm_faded (sbits, dbits, w, grBitBltFadeTable [dy+i], src->Palette (), dest->Palette ());
-			sbits += src->RowSize ();
-			dbits += dest->RowSize ();
+	} 
+else {
+	for (int i = 0; i < h; i++) {
+		gr_linear_rep_movsdm_faded (sbits, dbits, w, grBitBltFadeTable [dy+i], src->Palette (), dest->Palette ());
+		sbits += src->RowSize ();
+		dbits += dest->RowSize ();
 		}
 	}
 }
@@ -361,41 +341,6 @@ void gr_bm_ubitblt00m(int w, int h, int dx, int dy, int sx, int sy, CBitmap * sr
 extern void gr_lbitblt(CBitmap * source, CBitmap * dest, int height, int width);
 
 // Clipped bitmap ...
-
-//------------------------------------------------------------------------------
-
-void CBitmap::RenderClipped (int x, int y)
-{
-	CBitmap * const dest = CCanvas::Current ();
-
-	int left = x, right = x + Width () - 1;
-	int top = y, bottom = y + Height () - 1;
-
-if ((left >= dest->Width ()) || (right < 0)) 
-	return;
-if ((top >= dest->Height ()) || (bottom < 0)) 
-	return;
-if (left < 0) { 
-	x = -left; 
-	left = 0; 
-	}
-else
-	x = 0;
-if (top < 0) { 
-	y = -top; 
-	top = 0; 
-	}
-else
-	y = 0;
-if (right >= dest->Width ())
-	right = dest->Width ()-1;
-if (bottom >= dest->Height ())
-	bottom = dest->Height ()-1;
-
-// Draw bitmap bmP[x,y] into (left,top)-(right,bottom)
-//GrBmUBitBlt (right - left + 1, bottom - top + 1, left, top, x, y, bmP, CCanvas::Current (), 0);
-Render (CCanvas::Current (), left, top, right - left + 1, bottom - top + 1, x, y, Width (), Height ());
-}
 
 //------------------------------------------------------------------------------
 
@@ -428,7 +373,7 @@ if (bottom >= dest->Height ())
 	bottom = dest->Height () - 1;
 
 // Draw bitmap bmP[x,y] into (left,top)-(right,bottom)
-GrBmUBitBlt (right - left + 1, bottom - top + 1, left, top, x, y, src, dest, 0);
+GrBmUBitBlt (dest, left, top, right - left + 1, bottom - top + 1, src, x, y, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -549,7 +494,7 @@ void gr_bm_ubitblt0xm_rle(int w, int h, int dx, int dy, int sx, int sy, CBitmap 
 
 //------------------------------------------------------------------------------
 
-void GrBmUBitBlt (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest, int bTransp)
+void GrBmUBitBlt (CBitmap* dest, int dx, int dy, int w, int h,  CBitmap * src, int sx, int sy, int bTransp)
 {
 	register int x1, y1;
 
@@ -566,11 +511,7 @@ if ((src->Mode () == BM_LINEAR) && (dest->Mode () == BM_OGL)) {
 	return;
 	}
 if ((src->Mode () == BM_OGL) && (dest->Mode () == BM_LINEAR)) {
-	OglUBitBltToLinear (w, h, dx, dy, sx, sy, src, dest);
-	return;
-	}
-if ((src->Mode () == BM_OGL) && (dest->Mode () == BM_OGL)) {
-	OglUBitBltCopy (w, h, dx, dy, sx, sy, src, dest);
+	src->RenderToBitmap (dest, dx, dy, w, h, sx, sy);
 	return;
 	}
 if ((src->Flags () & BM_FLAG_RLE) && (src->Mode () == BM_LINEAR)) {
@@ -580,67 +521,6 @@ if ((src->Flags () & BM_FLAG_RLE) && (src->Mode () == BM_LINEAR)) {
 for (y1=0; y1 < h; y1++)  
 	for (x1=0; x1 < w; x1++)  
 		gr_bm_pixel(dest, dx+x1, dy+y1, gr_gpixel(src,sx+x1,sy+y1));
-}
-
-//------------------------------------------------------------------------------
-
-void GrBmBitBlt (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
-{
-	int	dx1 = dx, 
-			dx2 = dx + dest->Width () - 1;
-	int	dy1 = dy, 
-			dy2 = dy + dest->Height () - 1;
-	int	sx1 = sx, 
-			sx2 = sx + src->Width () - 1;
-	int	sy1 = sy, 
-			sy2 = sy + src->Height () - 1;
-
-if ((dx1 >= dest->Width ()) || (dx2 < 0)) 
-	return;
-if ((dy1 >= dest->Height ()) || (dy2 < 0)) 
-	return;
-if (dx1 < 0) { 
-	sx1 += -dx1; 
-	dx1 = 0; 
-	}
-if (dy1 < 0) { 
-	sy1 += -dy1; 
-	dy1 = 0; 
-	}
-if (dx2 >= dest->Width ()) { 
-	dx2 = dest->Width ()-1; 
-	}
-if (dy2 >= dest->Height ()) { 
-	dy2 = dest->Height ()-1; 
-	}
-
-if ((sx1 >= src->Width ()) || (sx2 < 0)) 
-	return;
-if ((sy1 >= src->Height ()) || (sy2 < 0)) 
-	return;
-if (sx1 < 0) { 
-	dx1 += -sx1; sx1 = 0; 
-	}
-if (sy1 < 0) { 
-	dy1 += -sy1; sy1 = 0; 
-	}
-if (sx2 >= src->Width ()) { 
-	sx2 = src->Width ()-1; 
-	}
-if (sy2 >= src->Height ()) { 
-	sy2 = src->Height ()-1; 
-	}
-
-// Draw bitmap bmP[x,y] into (dx1,dy1)-(dx2,dy2)
-if (dx2-dx1+1 < w)
-	w = dx2-dx1+1;
-if (dy2-dy1+1 < h)
-	h = dy2-dy1+1;
-if (sx2-sx1+1 < w)
-	w = sx2-sx1+1;
-if (sy2-sy1+1 < h)
-	h = sy2-sy1+1;
-GrBmUBitBlt (w, h, dx1, dy1, sx1, sy1, src, dest, 1);
 }
 
 //------------------------------------------------------------------------------
@@ -752,14 +632,12 @@ void GrBmUBitBltM (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, 
 if ((src->Mode () == BM_LINEAR) && (dest->Mode () == BM_OGL))
 	src->Render (dest, dx, dy, w, h, sx, sy, w, h, bTransp);
 else if ((src->Mode () == BM_OGL) && (dest->Mode () == BM_LINEAR))
-	OglUBitBltToLinear (w, h, dx, dy, sx, sy, src, dest);
-else if ((src->Mode () == BM_OGL) && (dest->Mode () == BM_OGL))
-	OglUBitBltCopy (w, h, dx, dy, sx, sy, src, dest);
+	src->RenderToBitmap (dest, dx, dy, w, h, sx, sy);
 else
 	for (y1 = 0; y1 < h; y1++) {
 		for (x1 = 0; x1 < w; x1++) {
 			if ((c = gr_gpixel (src, sx + x1, sy + y1)) != TRANSPARENCY_COLOR)
-				gr_bm_pixel (dest, dx + x1, dy + y1,c);
+				gr_bm_pixel (dest, dx + x1, dy + y1, c);
 		}
 	}
 }
@@ -811,6 +689,78 @@ void GrBitmapScaleTo(CBitmap *src, CBitmap *dst)
 		}
 		s += src->RowSize ();
 	}
+}
+
+//------------------------------------------------------------------------------
+// GrBmBitBlt 
+void CBitmap::RenderClipped (CBitmap* dest, int dx, int dy, int w, int h, int sx, int sy)
+{
+if (!dest)
+	dest = CCanvas::Current ();
+
+	int	dx1 = dx, 
+			dx2 = dx + dest->Width () - 1;
+	int	dy1 = dy, 
+			dy2 = dy + dest->Height () - 1;
+	int	sx1 = sx, 
+			sx2 = sx + Width () - 1;
+	int	sy1 = sy, 
+			sy2 = sy + Height () - 1;
+
+if ((dx1 >= dest->Width ()) || (dx2 < 0)) 
+	return;
+if ((dy1 >= dest->Height ()) || (dy2 < 0)) 
+	return;
+if (dx1 < 0) { 
+	sx1 += -dx1; 
+	dx1 = 0; 
+	}
+if (dy1 < 0) { 
+	sy1 += -dy1; 
+	dy1 = 0; 
+	}
+if (dx2 >= dest->Width ()) { 
+	dx2 = dest->Width () - 1; 
+	}
+if (dy2 >= dest->Height ()) { 
+	dy2 = dest->Height () - 1; 
+	}
+
+if (w < 0)
+	w = Width ();
+if ((sx1 >= w) || (sx2 < 0)) 
+	return;
+if (h < 0)
+	h = Height ();
+if ((sy1 >= h) || (sy2 < 0)) 
+	return;
+if (sx1 < 0) { 
+	dx1 += -sx1; 
+	sx1 = 0; 
+	}
+if (sy1 < 0) { 
+	dy1 += -sy1; 
+	sy1 = 0; 
+	}
+if (sx2 >= w) { 
+	sx2 = w - 1; 
+	}
+if (sy2 >= h) { 
+	sy2 = h - 1; 
+	}
+
+// Draw bitmap bmP[x,y] into (dx1,dy1)-(dx2,dy2)
+if (dx2 - dx1 + 1 < w)
+	w = dx2 - dx1 + 1;
+if (dy2 - dy1 + 1 < h)
+	h = dy2 - dy1 + 1;
+if (sx2 - sx1 + 1 < w)
+	w = sx2 - sx1 + 1;
+if (sy2 - sy1 + 1 < h)
+	h = sy2 - sy1 + 1;
+
+GrBmUBitBlt (dest, dx1, dy1, w, h, this, sx1, sy1, 1);
+//Render (CCanvas::Current (), dx1, dy1, w, h, sx1, sy1, w, h, 1);
 }
 
 //------------------------------------------------------------------------------

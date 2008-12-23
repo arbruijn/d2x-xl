@@ -11,7 +11,6 @@
 #include "ogl_lib.h"
 
 int OglUBitMapMC (int x, int y, int dw, int dh, CBitmap *bm, tCanvasColor *c, int scale, int orient);
-int OglUBitBltToLinear (int w,int h,int dx,int dy, int sx, int sy, CBitmap * src, CBitmap * dest);
 int OglUBitBltCopy (int w,int h,int dx,int dy, int sx, int sy, CBitmap * src, CBitmap * dest);
 
 //------------------------------------------------------------------------------

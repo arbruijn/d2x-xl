@@ -891,13 +891,14 @@ if (!bGameCockpitCopyCode)	{
 	if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING)	{
 		gameStates.render.vr.nCurrentPage = !gameStates.render.vr.nCurrentPage;
 		CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
-		GrBmUBitBlt (gameStates.render.vr.buffers.subRender [0].Width (),
-						 gameStates.render.vr.buffers.subRender [0].Height (),
+		GrBmUBitBlt (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage], 
 						 gameStates.render.vr.buffers.subRender [0].Left (),
 						 gameStates.render.vr.buffers.subRender [0].Top (),
-						 0, 0,
+						 gameStates.render.vr.buffers.subRender [0].Width (),
+						 gameStates.render.vr.buffers.subRender [0].Height (),
 						 &gameStates.render.vr.buffers.subRender [0],
-						 &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage], 1);
+						 0, 0,
+						 1);
 		}
 	}
 
@@ -1007,7 +1008,7 @@ void CopyBackgroundRect (int left, int top, int right, int bot)
 		for (x=tile_left;x<=tile_right;x++) {
 			//w = (right < dest_x+bm->Width ())? (right-dest_x+1): (bm->Width ()-ofs_x);
 			w = min(right-dest_x+1, bm->Width ()-ofs_x);
-			GrBmUBitBlt (w, h, dest_x, dest_y, ofs_x, ofs_y, &bmBackground, CCanvas::Current (), 1);
+			GrBmUBitBlt (CCanvas::Current (), dest_x, dest_y, w, h, &bmBackground, ofs_x, ofs_y, 1);
 			ofs_x = 0;
 			dest_x += w;
 			}
@@ -1268,7 +1269,7 @@ bg.w = w;
 bg.h = h;
 if (!gameOpts->menus.nStyle) {
 	bg.bmP = CBitmap::Create (0, w + BOX_BORDER, h + BOX_BORDER, 1);
-	GrBmUBitBlt (w + BOX_BORDER, h + BOX_BORDER, 0, 0, x - BOX_BORDER / 2, y - BOX_BORDER / 2, CCanvas::Current (), bg.bmP, 1);
+	GrBmUBitBlt (bg.bmP, 0, 0, w + BOX_BORDER, h + BOX_BORDER, CCanvas::Current (), x - BOX_BORDER / 2, y - BOX_BORDER / 2, 1);
 	}
 NMDrawBackground (&bg, x - BOX_BORDER / 2, y - BOX_BORDER / 2, x+w + BOX_BORDER / 2-1, y+h + BOX_BORDER / 2-1, 0);
 fontManager.SetColorRGBi (DKGRAY_RGBA, 1, 0, 0);

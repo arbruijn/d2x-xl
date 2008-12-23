@@ -184,7 +184,7 @@ if (gameStates.app.bGameRunning) {
 	paletteManager.LoadEffect  ();
 #if 1
 	RemapFontsAndMenus (1);
-	fontManager.RemapMono ();
+	fontManager.Remap ();
 #endif
 	}
 }
@@ -396,9 +396,9 @@ else {
 	y2 = y1 + h - 1;
 	glDisable (GL_BLEND);
 	if (bNoDarkening)
-		GrBmBitBlt (w, h, x1, y1, LHX (10), LHY (10), &nmBackground, CCanvas::Current ());
+		nmBackground.RenderClipped (CCanvas::Current (), x1, y1, w, h, LHX (10), LHY (10));
 	else
-		GrBmBitBlt (w, h, x1, y1, 0, 0, &nmBackground, CCanvas::Current ());
+		nmBackground.RenderClipped (CCanvas::Current (), x1, y1, w, h, 0, 0);
 	PrintVersionInfo ();
 	glEnable (GL_BLEND);
 	if (!bNoDarkening) {
@@ -457,7 +457,7 @@ if (filename || gameOpts->menus.nStyle) {	// background image file present
 				bgP->background = CBitmap::Create (0, w, h, 4);
 				Assert (bgP->background != NULL);
 				}
-			GrBmBitBlt (w, h, 0, 0, x, y, CCanvas::Current (), bgP->background);
+			CCanvas::Current ()->RenderClipped (bgP->background, 0, 0, w, h, x, y);
 			}
 		}
 	} 
@@ -486,7 +486,7 @@ if (bgP && !(gameOpts->menus.nStyle || filename)) {
 		}
 	bgP->saved->SetPalette (paletteManager.Default ());
 	if (!gameOpts->menus.nStyle)
-		GrBmBitBlt (w, h, 0, 0, 0, 0, CCanvas::Current (), bgP->saved);
+		CCanvas::Current ()->RenderClipped (bgP->saved, 0, 0, w, h, 0, 0);
 	CCanvas::SetCurrent (NULL);
 	NMDrawBackground (bgP, x, y, x + w - 1, y + h - 1, bRedraw);
 	GrUpdate (0);
@@ -518,7 +518,7 @@ void NMRestoreBackground (int sx, int sy, int dx, int dy, int w, int h)
 
 	w = x2 - x1 + 1;
 	h = y2 - y1 + 1;
-	GrBmBitBlt (w, h, dx, dy, x1, y1, &nmBackground, CCanvas::Current ());
+	nmBackground.RenderClipped (CCanvas::Current (), dx, dy, w, h, x1, y1);
 }
 
 //------------------------------------------------------------------------------
@@ -703,8 +703,7 @@ if (w1 > 0)
 fontManager.Current ()->StringSize (s2, w, h, aw);
 // CHANGED
 if (gameStates.ogl.nDrawBuffer != GL_BACK)
-	GrBmBitBlt (bgP->background->Width ()-15, h+2, 5, y-1, 5, y-1, bgP->background, CCanvas::Current ());
-//GrBmBitBlt (w, h, x, y, x, y, bgP->background, CCanvas::Current ());
+	bgP->background->RenderClipped (CCanvas::Current (), 5, y - 1, bgP->background->Width () - 15, h + 2, 5, y - 1);
 
 if (0 && gameStates.multi.bSurfingNet) {
 	for (i=0;i<l;i++) {
@@ -743,38 +742,28 @@ void NMStringSlider (tMenuItem *itemP, bkg * bgP, int bIsCurrent, int bTiny)
 			*s = itemP->saved_text;
 	char	*p, *s1;
 
-	s1=NULL;
-
-	p = strchr (s, '\t');
-	if (p)	{
-		*p = '\0';
-		s1 = p+1;
+s1 = NULL;
+p = strchr (s, '\t');
+if (p) {
+	*p = '\0';
+	s1 = p+1;
 	}
 
-	fontManager.Current ()->StringSize (s, w, h, aw);
-	// CHANGED
-
-		if (gameStates.ogl.nDrawBuffer != GL_BACK)
-			GrBmBitBlt (bgP->background->Width ()-15, h, 5, y, 5, y, bgP->background, CCanvas::Current ());
-		//GrBmBitBlt (w, h, x, y, x, y, bgP->background, CCanvas::Current ());
-
-		itemP->text = s;
-		NMHotKeyString (itemP, bIsCurrent, bTiny, 1, 0);
-		itemP->text = t;
-		//GrString (x, y, s, NULL);
-
-		if (p)	{
-			fontManager.Current ()->StringSize (s1, w, h, aw);
-
-			// CHANGED
-			if (gameStates.ogl.nDrawBuffer != GL_BACK) {
-				GrBmBitBlt (w, 1, x+w1-w, y, x+w1-w, y, bgP->background, CCanvas::Current ());
-				GrBmBitBlt (w, 1, x+w1-w, y+h-1, x+w1-w, y, bgP->background, CCanvas::Current ());
-				}
-			GrString (x+w1-w, y, s1, NULL);
-
-			*p = '\t';
+fontManager.Current ()->StringSize (s, w, h, aw);
+if (gameStates.ogl.nDrawBuffer != GL_BACK)
+	bgP->background->RenderClipped (CCanvas::Current (), 5, y, bgP->background->Width () - 15, h, 5, y);
+itemP->text = s;
+NMHotKeyString (itemP, bIsCurrent, bTiny, 1, 0);
+itemP->text = t;
+if (p) {
+	fontManager.Current ()->StringSize (s1, w, h, aw);
+	if (gameStates.ogl.nDrawBuffer != GL_BACK) {
+		bgP->background->RenderClipped (CCanvas::Current (), x + w1 - w, y, w, 1, x + w1 - w, y);
+		bgP->background->RenderClipped (CCanvas::Current (), x + w1 - w, y + h - 1, w, 1, x + w1 - w, y);
 		}
+	GrString (x+w1-w, y, s1, NULL);
+	*p = '\t';
+	}
 }
 
 
@@ -814,7 +803,7 @@ x -= 3;
 if (w1 == 0) 
 	w1 = w;
 if (gameStates.ogl.nDrawBuffer != GL_BACK)
-	GrBmBitBlt (w1, h, x-w1, y, x-w1, y, bgP->background, CCanvas::Current ());
+	bgP->background->RenderClipped (CCanvas::Current (), x - w1, y, w1, h, x - w1, y);
 hs = itemP->text;
 itemP->text = s;
 h = itemP->x;
@@ -835,7 +824,7 @@ x -= 3;
 if (w1 == 0) 
 	w1 = w;
 if (gameStates.ogl.nDrawBuffer != GL_BACK)
-	GrBmBitBlt (w1, h, x-w1, y, x-w1, y, bgP->background, CCanvas::Current ());
+	bgP->background->RenderClipped (CCanvas::Current (), x - w1, y, w1, h, x - w1, y);
 GrString (x-w, y, s, NULL);
 }
 
@@ -1421,7 +1410,6 @@ CCanvas::SetCurrent (NULL);
 
 void NMRestoreScreen (char *filename, bkg *bg, int bDontRestore)
 {
-CCanvas::Pop ();
 //CCanvas::SetCurrent (bg->menu_canvas);
 if (gameOpts->menus.nStyle) {
 	NMRemoveBackground (bg);
@@ -1437,7 +1425,7 @@ else {
 		} 
 	else {
 		if (!bDontRestore) {	//info passed back from menuCallback
-			bg->background->RenderClipped ();
+			//bg->background->RenderClipped ();
 			}
 		bg->background->Destroy ();
 		}
@@ -1445,6 +1433,7 @@ else {
 	}
 bg->menu_canvas->Destroy ();
 CCanvas::SetCurrent (NULL);		
+CCanvas::Pop ();
 memset (bg, 0, sizeof (*bg));
 GrabMouse (1, 0);
 }
@@ -2670,7 +2659,7 @@ if (!bInitialized) {
 		else
 			bg.background = CBitmap::Create (0, w_w, w_h, 1);
 		Assert (bg.background != NULL);
-		GrBmBitBlt (w_w, w_h, 0, 0, w_x, w_y, CCanvas::Current (), bg.background);
+		CCanvas::Current ()->RenderClipped (bg.background, 0, 0, w_w, w_h, w_x, w_y);
 		}
 	NMDrawBackground (&bg, w_x, w_y, w_x+w_w-1, w_y+w_h-1, 0);
 	GrString (0x8000, w_y+10, pszTitle, NULL);
@@ -3008,7 +2997,7 @@ if (bInitialized) {
 		NMRemoveBackground (&bg);
 	else {
 		if (gameData.demo.nState != ND_STATE_PLAYBACK)	//horrible hack to prevent restore when screen has been cleared
-			GrBmBitBlt (w_w, w_h, w_x, w_y, 0, 0, bg.background, CCanvas::Current ());
+			bg.background->RenderClipped (CCanvas::Current (), w_x, w_y, w_w, w_h, 0, 0);
 		if (bg.background != gameStates.render.vr.buffers.offscreen) {
 			delete bg.background;
 			bg.background = NULL;
@@ -3104,7 +3093,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 #endif
 			bg.background = CBitmap::Create (0, total_width, total_height, 1);
 		Assert (bg.background != NULL);
-		GrBmBitBlt (total_width, total_height, 0, 0, wx-border_size, wy-nTitleHeight-border_size, CCanvas::Current (), bg.background);
+		CCanvas::Current ()->RenderClipped (bg.background, 0, 0, total_width, total_height, wx - border_size, wy - nTitleHeight - border_size);
 		}
 
 	NMDrawBackground (&bg, wx-border_size, wy-nTitleHeight-border_size, wx+width+border_size-1, wy+height+border_size-1,0);
@@ -3392,7 +3381,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 		}
 	else {
 		SDL_ShowCursor (0);
-		GrBmBitBlt (total_width, total_height, wx-border_size, wy-nTitleHeight-border_size, 0, 0, bg.background, CCanvas::Current ());
+		bg.background->RenderClipped (CCanvas::Current (), wx - border_size, wy - nTitleHeight - border_size, total_width, total_height, 0, 0);
 		if (bg.background != gameStates.render.vr.buffers.offscreen) {
 			delete bg.background;
 			bg.background = NULL;

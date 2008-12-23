@@ -666,20 +666,11 @@ if (bSetBG) {
 
 //------------------------------------------------------------------------------
 
-void CFontManager::RemapMono (void)
+void CFontManager::Remap (void)
 {
 for (int i = 0; i < MAX_OPEN_FONTS; i++)
-	if (m_fonts [i].data /*&& !(m_fonts [i].font.Flags () & FT_COLOR)*/)
+	if (m_fonts [i].data)
 		m_fonts [i].font.Remap (m_fonts [i].filename, m_fonts [i].data);
-}
-
-//------------------------------------------------------------------------------
-//remap (by re-reading) all the color fonts
-void CFontManager::RemapColor (void)
-{
-for (int i = 0; i < MAX_OPEN_FONTS; i++)
-	if (m_fonts [i].data && (m_fonts [i].font.Flags () & FT_COLOR))
-		m_fonts [i].font.Load (m_fonts [i].filename, m_fonts [i].data);
 }
 
  //------------------------------------------------------------------------------
