@@ -38,12 +38,11 @@ class CBackground {
 		void Draw (void);
 		void DrawArea (int left, int top, int right, int bottom);
 		void DrawBox (void);
-		bool Load (char* filename);
 
 		inline CCanvas* Canvas () { return m_canvas; }
 
 	private:
-		bool Load (char* filename, int width, int height);
+		CBitmap* Load (char* filename, int width, int height);
 		void Setup (int x, int y, int width, int height);
 		void Save (int width, int height);
 };
@@ -55,13 +54,14 @@ class CBackgroundManager : private CStack<CBackground> {
 		CBitmap*					m_background [2];
 		char*						m_filename [2];
 		int						m_nDepth;
-		bool						m_b3DEffect;
+		bool						m_bShadow;
 
 	public:
 		CBackgroundManager ();
 		void Init (void);
 		void Destroy (void);
-		void Setup (char* filename);
+		void Create (void);
+		bool Setup (char *filename, int x, int y, int width, int height);
 		void Load (void);
 		void Restore (void);
 		void Remove (void);
@@ -71,6 +71,8 @@ class CBackgroundManager : private CStack<CBackground> {
 		inline char* Filename (uint i = 0) { return m_filename [i]; }
 		inline CBitmap* Background (uint i = 0) { return m_background [i]; }
 		inline int Depth (void) { return m_nDepth; }
+		inline bool Shadow (void) { return m_bShadow; }
+		inline void SetShadow (bool bShadow) { m_bShadow = bShadow; }
 
 		void DrawBox (int nLineWidth, float fAlpha, int bForce);
 

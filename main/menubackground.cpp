@@ -100,12 +100,13 @@ Init ();
 
 //------------------------------------------------------------------------------
 
-bool CBackground::Load (char* filename, int width, int height)
+CBitmap* CBackground::Load (char* filename, int width, int height)
 {
 if (!filename)
-	m_background = backgroundManager.Background (1)->CreateChild (0, 0, width, height);
+	return backgroundManager.Background (1)->CreateChild (0, 0, width, height);
 else if (backgroundManager.IsDefault (filename) || !(m_background = backgroundManager.LoadBackground (filename)))
-	m_background = backgroundManager.Background (0);
+	return backgroundManager.Background (0);
+return m_background;
 }
 
 //------------------------------------------------------------------------------
@@ -142,7 +143,7 @@ bool CBackground::Create (char* filename, int x, int y, int width, int height)
 Destroy ();
 m_bTopMenu = (backgroundManager.Depth () == 1);
 m_bMenuBox = gameOpts->menus.nStyle && (!m_bTopMenu || (gameOpts->menus.altBg.bHave > 0));
-if (!Load (filename, width, height))
+if (!(m_background = Load (filename, width, height)))
 	return false;
 Setup (x, y, width, height);
 Draw ();
@@ -176,7 +177,7 @@ GrUpdate (0);
 //------------------------------------------------------------------------------
 // Redraw a part of the menu area's background
 
-void CBackground::DrawArea (int left, int top, int right, int bottom, int bPartial)
+void CBackground::DrawArea (int left, int top, int right, int bottom)
 {
 if (gameOpts->menus.nStyle) 
 	Draw ();
@@ -193,7 +194,7 @@ else {
 	bottom = top + height - 1;
 	glDisable (GL_BLEND);
 	PrintVersionInfo ();
-	if (!m_b3DEffect)
+	if (!backgroundManager.Shadow ())
 		m_saved->RenderClipped (CCanvas::Current (), left, top, width, height, LHX (10), LHY (10));
 	else {
 		m_saved->RenderClipped (CCanvas::Current (), left, top, width, height, 0, 0);
@@ -239,7 +240,7 @@ m_background [0] = NULL;
 m_background [1] = NULL;
 m_nDepth = 0;
 m_filename [0] = MENU_PCX_NAME ();
-filename [1] = MENU_BACKGROUND_BITMAP;
+m_filename [1] = MENU_BACKGROUND_BITMAP;
 }
 
 //------------------------------------------------------------------------------
@@ -256,19 +257,22 @@ if (gameStates.app.bGameRunning)
 
 void CBackgroundManager::Init (void)
 {
-m_background = NULL;
-m_nDepth = 0; 
-m_b3DEffect = false;
-m_filename [0] = MENU_PCX_NAME;
+m_background [0] = NULL;
+m_background [1] = NULL;
+m_filename [0] = MENU_PCX_NAME ();
 m_filename [1] = MENU_BACKGROUND_BITMAP;
+m_nDepth = 0; 
+m_bShadow = false;
 }
 
 //------------------------------------------------------------------------------
 
 void CBackgroundManager::Destroy (void)
 {
-if (m_background)
-	m_background.Destroy ();
+if (m_background [0])
+	m_background [0]->Destroy ();
+if (m_background [1])
+	m_background [1]->Destroy ();
 Init ();
 }
 
@@ -303,8 +307,8 @@ return !strcmp (filename, m_filename [0]);
 
 CBitmap* CBackgroundManager::LoadCustomBackground (void)
 {
-if (m_background || (gameStates.app.bNostalgia || !gameOpts->menus.nStyle))
-	return m_background;
+if (m_background [0]|| (gameStates.app.bNostalgia || !gameOpts->menus.nStyle))
+	return m_background [0];
 
 CBitmap* bmP;
 
@@ -317,7 +321,7 @@ if (!ReadTGA (gameOpts->menus.altBg.szName,
 #else
 				  NULL, 
 #endif
-				  m_customBg, 
+				  bmP, 
 				 (gameOpts->menus.altBg.alpha < 0) ? -1 : (int) (gameOpts->menus.altBg.alpha * 255), 
 				 gameOpts->menus.altBg.brightness, gameOpts->menus.altBg.grayscale, 0)) {
 	delete bmP;
@@ -363,15 +367,12 @@ m_background [1] = LoadBackground (m_filename [1]);
 
 //------------------------------------------------------------------------------
 
-void CBackgroundManager::Setup (char *filename, int x, int y, int width, int height, int bPartial)
+bool CBackgroundManager::Setup (char *filename, int x, int y, int width, int height)
 {
 if (m_nDepth && !m_save.Push (m_bg))
-	return;
+	return false;
 m_nDepth++;
-if (m_bg.Create (filename, x, y, width, height, bPartial)) {
-	if (!m_filename)
-		m_filename = filename;
-	}
+return m_bg.Create (filename, x, y, width, height);
 }
 
 //------------------------------------------------------------------------------
