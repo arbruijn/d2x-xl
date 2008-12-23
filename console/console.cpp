@@ -296,7 +296,7 @@ if (!gameOpts->menus.nStyle) {
 #endif
 /* draw the background image if there is one */
 	if (m_background)
-		m_background->Render ();
+		m_background->Stretch ();
 	}
 /* Draw the text from the back buffers, calculate in the scrollback from the user
  * this is a Normal SDL software-mode blit, so we need to temporarily set the ColorKey
