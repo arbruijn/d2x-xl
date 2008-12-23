@@ -387,13 +387,8 @@ return (nPlayed != MOVIE_NOT_PLAYED);	//default is not nPlayed
 
 void ShowLoadingScreen (void)
 {
-if (!gameStates.app.bNostalgia) {
-	backgroundManager.Setup (NULL, 0, 0, screen.Width (), screen.Height ());
-	GrUpdate (0);
-	backgroundManager.Remove ();
-	}
-else {
-		int pcx_error;
+backgroundManager.Setup (MENU_PCX_NAME (), 0, 0, screen.Width (), screen.Height ());
+if (gameStates.app.bNostalgia) {
 		char filename [14];
 
 #if TRACE	
@@ -414,12 +409,14 @@ else {
 			: SM (320, 200));
 	SetScreenMode (SCREEN_MENU);
 	gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
-	if ((pcx_error = PcxReadFullScrImage (filename, 0)) == PCX_ERROR_NONE)	{
+	int pcxError = PcxReadFullScrImage (filename, 0);
+	if (pcxError == PCX_ERROR_NONE)	{
 		paletteManager.ClearEffect ();
 		paletteManager.FadeIn ();
+		GrUpdate (0);
 		} 
 	else
-		Error ("Couldn't load pcx file '%s', \nPCX load error: %s\n", filename, pcx_errormsg (pcx_error));
+		Error ("Couldn't load pcx file '%s', \nPCX load error: %s\n", filename, pcx_errormsg (pcxError));
 	}
 }
 
@@ -898,6 +895,7 @@ else {
 	for (loadOp = 0; loadOp < InitGaugeSize (); )
 		InitializePoll (0, NULL, NULL, 0);
 	}
+ClearBoxedMessage ();
 PrintBanner ();
 if (!gameStates.app.bAutoRunMission) {
 	/*---*/PrintLog ("Showing title screens\n");
@@ -977,6 +975,8 @@ if (gameData.demo.bAuto && !gameOpts->demo.bRevertFormat) {
 //autostart a demo from the main menu, never having gone into the game
 setjmp (gameExitPoint);
 /*---*/PrintLog ("Invoking main menu\n");
+if (gameStates.app.bNostalgia)
+	backgroundManager.Draw ();
 gameStates.app.bInitialized = 1;
 MainLoop ();
 CleanUp ();

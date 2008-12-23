@@ -1254,8 +1254,8 @@ void ShowBoxedMessage (const char *pszMsg)
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
 fontManager.SetCurrent (MEDIUM1_FONT);
 fontManager.Current ()->StringSize (pszMsg, w, h, aw);
-x = (screen.Width ()-w)/2;
-y = (screen.Height ()-h)/2;
+x = (screen.Width () - w) / 2;
+y = (screen.Height () - h) / 2;
 // Save the background of the display
 /*
 if (!gameOpts->menus.nStyle) {
@@ -1263,19 +1263,18 @@ if (!gameOpts->menus.nStyle) {
 	CCanvas::Current ()->RenderToBitmap (bg.bmP, 0, 0, w + BOX_BORDER, h + BOX_BORDER, x - BOX_BORDER / 2, y - BOX_BORDER / 2); 
 	}
 */
-backgroundManager.Setup (NULL, x - BOX_BORDER / 2, y - BOX_BORDER / 2, x+w + BOX_BORDER / 2-1, y+h + BOX_BORDER / 2-1);
+backgroundManager.Setup (NULL, x - BOX_BORDER / 2, y - BOX_BORDER / 2, w + BOX_BORDER, h + BOX_BORDER);
 fontManager.SetColorRGBi (DKGRAY_RGBA, 1, 0, 0);
 fontManager.SetCurrent (MEDIUM1_FONT);
-GrPrintF (NULL, 0x8000, y, pszMsg);
+GrPrintF (NULL, 0x8000, (h / 2+ BOX_BORDER) / 2, pszMsg);
 GrUpdate (0);
-backgroundManager.Remove ();
 }
 
 //------------------------------------------------------------------------------
 
 void ClearBoxedMessage ()
 {
-backgroundManager.Draw ();
+backgroundManager.Remove ();
 #if 0
 	CBitmap* bmP = backgroundManager.Current ();
 

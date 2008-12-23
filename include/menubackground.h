@@ -51,8 +51,7 @@ class CBackground {
 
 class CBackgroundManager : private CStack<CBackground> {
 	private:
-		CStack<CBackground>	m_save;
-		CBackground				m_bg;
+		CBackground				m_bg [3];
 		CBitmap*					m_background [2];
 		char*						m_filename [2];
 		int						m_nDepth;
@@ -66,8 +65,8 @@ class CBackgroundManager : private CStack<CBackground> {
 		void Create (void);
 		bool Setup (char *filename, int x, int y, int width, int height);
 		void Load (void);
-		inline void Restore (void) { m_bg.Restore (); }
-		inline void Restore (int dx, int dy, int w, int h, int sx, int sy) { m_bg.Restore (dx, dy, w, h, sy, sy); }
+		inline void Restore (void) { m_bg [m_nDepth].Restore (); }
+		inline void Restore (int dx, int dy, int w, int h, int sx, int sy) { m_bg [m_nDepth].Restore (dx, dy, w, h, sy, sy); }
 		void Remove (void);
 		CBitmap* LoadBackground (char* filename);
 		bool IsDefault (char* filename);
@@ -77,11 +76,11 @@ class CBackgroundManager : private CStack<CBackground> {
 		inline int Depth (void) { return m_nDepth; }
 		inline bool Shadow (void) { return m_bShadow; }
 		inline void SetShadow (bool bShadow) { m_bShadow = bShadow; }
-		inline void Draw (void) { m_bg.Draw (); }
+		inline void Draw (void) { m_bg [m_nDepth].Draw (); }
 		inline void DrawArea (int left, int top, int right, int bottom)
-			{ return m_bg.DrawArea (left, top, right, bottom); }
-		inline CBitmap* Current (void) { return m_bg.Background (); }
-		inline CCanvas* Canvas (void) { return m_bg.Canvas (); }
+			{ return m_bg [m_nDepth].DrawArea (left, top, right, bottom); }
+		inline CBitmap* Current (void) { return m_bg [m_nDepth].Background (); }
+		inline CCanvas* Canvas (void) { return m_bg [m_nDepth].Canvas (); }
 
 		void DrawBox (int left, int top, int right, int bottom, int nLineWidth, float fAlpha, int bForce);
 		inline void DrawBox (int nLineWidth, float fAlpha, int bForce) {

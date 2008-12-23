@@ -52,6 +52,7 @@
 #include "render.h"
 #include "sphere.h"
 #include "glare.h"
+#include "menubackground.h"
 
 #define _WIN32_WINNT		0x0600 
 
@@ -792,6 +793,8 @@ cameraManager.Create ();
 InitSpheres ();
 BuildObjectModels ();
 OglSetDrawBuffer (GL_BACK, 1);
+backgroundManager.Destroy ();
+backgroundManager.Setup (NULL /*MENU_PCX_NAME ()*/, 0, 0, screen.Width (), screen.Height ());
 }
 
 //------------------------------------------------------------------------------

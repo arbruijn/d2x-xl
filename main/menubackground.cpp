@@ -141,13 +141,13 @@ if (!gameOpts->menus.nStyle) {
 bool CBackground::Create (char* filename, int x, int y, int width, int height)
 {
 Destroy ();
-m_bTopMenu = (backgroundManager.Depth () == 1);
+m_bTopMenu = (backgroundManager.Depth () == 0);
 m_bMenuBox = gameOpts->menus.nStyle && (!m_bTopMenu || (gameOpts->menus.altBg.bHave > 0));
 if (!(m_background = Load (filename, width, height)))
 	return false;
 Setup (x, y, width, height);
-Draw ();
 Save (width, height);
+Draw ();
 return true;
 }
 
@@ -226,8 +226,10 @@ gameStates.render.grAlpha = FADE_LEVELS;
 void CBackground::Restore (void)
 {
 if (!gameOpts->menus.nStyle) {
-	if (m_saved)
+	if (m_saved) {
 		m_saved->Blit ();
+		GrUpdate (0);
+		}
 	}
 }
 
@@ -259,10 +261,9 @@ m_background->Render (CCanvas::Current (), dx, dy, w, h, x1, y1, w, h);
 
 CBackgroundManager::CBackgroundManager () 
 { 
-m_save.Create (3); 
 m_background [0] = NULL;
 m_background [1] = NULL;
-m_nDepth = 0;
+m_nDepth = -1;
 m_filename [0] = MENU_PCX_NAME ();
 m_filename [1] = MENU_BACKGROUND_BITMAP;
 }
@@ -271,17 +272,14 @@ m_filename [1] = MENU_BACKGROUND_BITMAP;
 
 void CBackgroundManager::Remove (void) 
 {
-m_bg.Restore ();
-m_bg.Destroy ();
-if (gameStates.app.bGameRunning) 
-	paletteManager.LoadEffect ();
-	m_nDepth--;
-if (m_save.ToS ())
-	m_bg = m_save.Pop ();
+if (m_nDepth) {
+	m_bg [m_nDepth].Restore ();
+	m_bg [m_nDepth--].Destroy ();
+	if (gameStates.app.bGameRunning) 
+		paletteManager.LoadEffect ();
+	}
 }
 
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 void CBackgroundManager::Init (void)
@@ -290,7 +288,7 @@ m_background [0] = NULL;
 m_background [1] = NULL;
 m_filename [0] = MENU_PCX_NAME ();
 m_filename [1] = MENU_BACKGROUND_BITMAP;
-m_nDepth = 0; 
+m_nDepth = -1; 
 m_bShadow = false;
 m_bValid = false;
 }
@@ -303,6 +301,8 @@ if (m_background [0])
 	m_background [0]->Destroy ();
 if (m_background [1])
 	m_background [1]->Destroy ();
+while (m_nDepth >= 0)
+	m_bg [m_nDepth--].Destroy ();
 Init ();
 }
 
@@ -408,10 +408,9 @@ if (!m_bValid) {
 bool CBackgroundManager::Setup (char *filename, int x, int y, int width, int height)
 {
 Create ();
-if (m_nDepth && !m_save.Push (m_bg))
+if (m_nDepth >= 2)
 	return false;
-m_nDepth++;
-return m_bg.Create (filename, x, y, width, height);
+return m_bg [++m_nDepth].Create (filename, x, y, width, height);
 }
 
 //------------------------------------------------------------------------------

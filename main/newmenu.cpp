@@ -1252,7 +1252,7 @@ while (!done) {
 
 	if (!bRedraw || gameOpts->menus.nStyle) {
 		int t;
-		//backgroundManager.Setup (filename, ctrl.x, ctrl.y, ctrl.w, ctrl.h);
+		backgroundManager.Draw ();
 		if (!gameStates.app.bGameRunning)
 			console.Draw();
 		if (menuCallback)

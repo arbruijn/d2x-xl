@@ -272,7 +272,7 @@ ubyte* CTexture::Convert (
 	ubyte			*rawData = bmP->Buffer ();
 	GLubyte		*bufP;
 	tRgbColorb	*colorP;
-	int			x, y, c, i;
+	int			x, y, c, i, l;
 	ushort		r, g, b, a;
 	int			bTransp;
 
@@ -297,12 +297,13 @@ colorP = paletteManager.Texture ()->Color ();
 restart:
 
 i = 0;
+l = bmP->Size ();
 bufP = gameData.render.ogl.buffer;
 //bmP->Flags () &= ~(BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 for (y = 0; y < m_info.th; y++) {
 	i = dxo + m_info.lw *(y + dyo);
-	for (x = 0; x < m_info.tw; x++){
-		if ((x < m_info.w) && (y < m_info.h))
+	for (x = 0; x < m_info.tw; x++) {
+		if ((i < l) && (x < m_info.w) && (y < m_info.h))
 			c = rawData [i++];
 		else
 			c = TRANSPARENCY_COLOR;	//fill the pad space with transparancy

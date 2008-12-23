@@ -158,8 +158,16 @@ m_info.maskP = NULL;
 memset (&m_info.frames, 0, sizeof (m_info.frames));
 m_info.bChild = 1;
 m_info.props.x += x;
+if (m_info.props.x > parent->Width () - 1)
+	m_info.props.x = parent->Width () - 1;
 m_info.props.y += y;
+if (m_info.props.y > parent->Height () - 1)
+	m_info.props.y = parent->Height () - 1;
+if (w > parent->Width () - m_info.props.x)
+	w = parent->Width () - m_info.props.x;
 m_info.props.w = w;
+if (h > parent->Height () - m_info.props.x)
+	h = parent->Height () - m_info.props.x;
 m_info.props.h = h;
 SetParent (parent ? parent : this);
 SetBuffer (parent->Buffer () + (uint) ((m_info.props.y * m_info.props.rowSize) + m_info.props.x * m_info.nBPP), true);
@@ -414,7 +422,10 @@ for (i = m_info.props.h * m_info.props.w, p = Buffer (); i; i--, p++) {
 
 void CBitmap::Stretch (CBitmap* dest, int x, int y)
 { 
-Render (dest ? dest : CCanvas::Current (), x, y, dest->Width (), dest->Height (), 0, 0, Width (), Height (), 0, 0, 1.0f); 
+if (!dest)
+	dest = CCanvas::Current ();
+if (dest)
+	Render (dest, x, y, dest->Width (), dest->Height (), 0, 0, Width (), Height (), 0, 0, 1.0f); 
 }
 
 //------------------------------------------------------------------------------
