@@ -26,7 +26,8 @@ class CCreditsManager {
 		CBitmap			m_bmBackdrop;
 		uint				m_bDone;
 		uint				m_nLines [2];
-		fix				m_xDelay;
+		int				m_xDelay;
+		int				m_xTimeout;
 		int				m_nExtraInc;
 		int				m_bBinary;
 		int				m_xOffs;
@@ -40,7 +41,7 @@ class CCreditsManager {
 		void Destroy (void);
 		void RenderBackdrop (void);
 		bool HandleInput (void);
-		uint GetLine (void);
+		uint Read (void);
 		bool Open (char* creditsFilename);
 		void Render (void);
 		void Show (char* creditsFilename);

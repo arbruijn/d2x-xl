@@ -144,7 +144,7 @@ static const char *xlCredits [] = {
 
 #define NUM_XL_LINES	sizeofa(xlCredits)
 
-#define FADE_DIST	120
+#define FADE_DIST	240
 
 CCreditsManager creditsManager;
 
@@ -165,7 +165,7 @@ else {
 
 //-----------------------------------------------------------------------------
 
-uint CCreditsManager::GetLine (void)
+uint CCreditsManager::Read (void)
 {
 do {
 	m_nLines [0] = (m_nLines [0] + 1) % NUM_LINES;
@@ -194,8 +194,10 @@ do {
 			m_buffer [m_nLines [0]][0] = 0;
 			m_bDone++;
 			}
+		break;
 		}
 	} while (m_nExtraInc--);
+m_nExtraInc = 0;
 return m_bDone;
 }
 
@@ -288,20 +290,21 @@ for (int i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
 			} 
 		else
 			fontManager.SetCurrent (m_fonts [2]);
-		grBitBltFadeTable = (gameStates.menus.bHires ? fadeValues_hires : fadeValues);
 		char* pszTemp = strchr (s, '\t');
 		if (*s) {
 			int w, h, aw;
 
 			fontManager.Current ()->StringSize (s, w, h, aw);
-			CBitmap* bmP = CreateStringBitmap (s, 0, 0, NULL, 1, w, -1);
-			if (bmP) {
-				float dy = float ((y < FADE_DIST) ? y : (480 - y < FADE_DIST) ? 480 - y : FADE_DIST);
-				colors [0].alpha = colors [1].alpha = dy / float (FADE_DIST);
-				dy = float ((y + h < FADE_DIST) ? y + h : (480 - y - h < FADE_DIST) ? 480 - y - h : FADE_DIST);
-				colors [2].alpha = colors [3].alpha = dy / float (FADE_DIST);
-				bmP->Render (CCanvas::Current (), (screen.Width () - w) / 2, m_yOffs + y, w, h, 0, 0, w, h, 1, 0, 1, colors);
-				delete bmP;
+			if ((y >= 0) && (y + h <= 480)) {
+				CBitmap* bmP = CreateStringBitmap (s, 0, 0, NULL, 1, w, -1);
+				if (bmP) {
+					float dy = float ((y < FADE_DIST) ? y : (480 - y < FADE_DIST) ? 480 - y : FADE_DIST);
+					colors [0].alpha = colors [1].alpha = dy / float (FADE_DIST);
+					dy = float ((y + h < FADE_DIST) ? y + h : (480 - y - h < FADE_DIST) ? 480 - y - h : FADE_DIST);
+					colors [2].alpha = colors [3].alpha = dy / float (FADE_DIST);
+					bmP->Render (CCanvas::Current (), (screen.Width () - w) / 2, m_yOffs + y, w, h, 0, 0, w, h, 1, 0, 1, colors);
+					delete bmP;
+					}
 				}
 			}
 		if (m_buffer[l][0] == '!')
@@ -309,6 +312,11 @@ for (int i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
 		else
 			y += ROW_SPACING;
 		}
+
+		int t = m_xTimeout - SDL_GetTicks ();
+		if (t > 0)
+			G3_SLEEP (t);
+		m_xTimeout = SDL_GetTicks () + m_xDelay;
 
 		if (gameOpts->menus.nStyle) 
 			CCanvas::SetCurrent (NULL);
@@ -345,10 +353,6 @@ m_bmBackdrop.DestroyBuffer ();
 //if filename passed is NULL, show Normal credits
 void CCreditsManager::Show (char *creditsFilename)
 {
-	int				nPcxError;
-	fix				xTimeout;
-
-
 if (!Open (creditsFilename))
 	return;
 
@@ -370,7 +374,7 @@ m_fonts [2] = fontManager.Load (gameStates.menus.bHires ? reinterpret_cast<char*
 m_bmBackdrop.SetBuffer (NULL);
 m_bmBackdrop.SetPalette (NULL);
 
-nPcxError = PCXReadBitmap (reinterpret_cast<char*> (CREDITS_BACKGROUND_FILENAME), &m_bmBackdrop, BM_LINEAR, 0);
+int nPcxError = PCXReadBitmap (reinterpret_cast<char*> (CREDITS_BACKGROUND_FILENAME), &m_bmBackdrop, BM_LINEAR, 0);
 if (nPcxError != PCX_ERROR_NONE) {
 	m_cf.Close ();
 	CCanvas::Pop ();
@@ -381,17 +385,13 @@ m_bmBackdrop.Remap (NULL, -1, -1);
 
 paletteManager.FadeIn ();
 KeyFlush ();
-xTimeout = SDL_GetTicks () + m_xDelay;
+m_xTimeout = SDL_GetTicks () + m_xDelay;
 glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 gameStates.menus.nInMenu = 1;
 for (;;) {
-	GetLine ();
+	Read ();
 	Render ();
-	int t = xTimeout - SDL_GetTicks ();
-	if (t > 0)
-		G3_SLEEP (t);
-	xTimeout = SDL_GetTicks () + m_xDelay;
 	SongsCheckRedbookRepeat();
 	if (!HandleInput ())
 		return;
