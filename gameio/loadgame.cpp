@@ -608,9 +608,8 @@ if (LOCALPLAYER.timeTotal > I2X (3600))	{
 void SetSoundSources (void)
 {
 	short			nSegment, nSide, nConnSeg, nConnSide, nSound;
-	CSegment		*segP, *connSegP;
-	CObject		*objP;
-	CFixVector	v;
+	CSegment*	segP, * connSegP;
+	CObject*		objP;
 	int			i, nOvlTex, nEffect;
 
 gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires;
@@ -1523,7 +1522,7 @@ if (!IsMultiGame) {
 
 		//try doing special credits
 		sprintf (szBriefing,"%s.ctb",gameStates.app.szCurrentMissionFile);
-		ShowCredits (szBriefing);
+		creditsManager.Show (szBriefing);
 		}
 	}
 KeyFlush ();

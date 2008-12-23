@@ -630,7 +630,7 @@ else if (nChoice == mainOpts.nSongs) {
 else if (nChoice == mainOpts.nCredits) {
 	paletteManager.FadeOut ();
 	SongsStopAll ();
-	ShowCredits (NULL); 
+	creditsManager.Show (NULL); 
 	}
 #ifdef EDITOR
 else if (nChoice == mainOpts.nEditor) {

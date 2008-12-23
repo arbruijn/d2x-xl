@@ -48,13 +48,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "joy.h"
 #include "screens.h"
 #include "compbit.h"
+#include "credits.h"
 
 #define LHX(x)      (gameStates.menus.bHires?2*(x):x)
 #define LHY(y)      (gameStates.menus.bHires?(24*(y))/10:y)
 
 #define ROW_SPACING (gameStates.menus.bHires?26:11)
-#define NUM_LINES_HIRES 21
-#define NUM_LINES (gameStates.menus.bHires ? NUM_LINES_HIRES : 20)
 
 ubyte fadeValues[200] = { 1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,8,9,9,10,10,
 11,11,12,12,12,13,13,14,14,15,15,15,16,16,17,17,17,18,18,19,19,19,20,20,
@@ -147,35 +146,7 @@ static const char *xlCredits [] = {
 
 #define FADE_DIST	120
 
-//-----------------------------------------------------------------------------
-
-class CCreditsManager {
-	private:
-		CFile				m_cf;
-		char				m_buffer [NUM_LINES_HIRES][80];
-		CFont*			m_fonts [3];
-		CBitmap			m_bmBackdrop;
-		uint				m_bDone;
-		uint				m_nLines [2];
-		fix				m_xDelay;
-		int				m_nExtraInc;
-		int				m_bBinary;
-		int				m_xOffs;
-		int				m_yOffs;
-		int				m_nFirstLineOffs;
-
-	public:
-		CCreditsManager () { Init (); }
-		~CCreditsManager () { Destroy (); }
-		void Init (void);
-		void Destroy (void);
-		void RenderBackdrop (void);
-		bool HandleInput (void);
-		uint GetLine (void);
-		bool Open (char* creditsFilename);
-		void Render (void);
-		void Show (char* creditsFilename);
-};
+CCreditsManager creditsManager;
 
 //-----------------------------------------------------------------------------
 

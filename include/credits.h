@@ -14,7 +14,38 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _CREDITS_H
 #define _CREDITS_H
 
-//if filename passed is NULL, show normal credits
-void ShowCredits(char *credits_filename);
+class CCreditsManager {
+
+#define NUM_LINES_HIRES 21
+#define NUM_LINES (gameStates.menus.bHires ? NUM_LINES_HIRES : 20)
+
+	private:
+		CFile				m_cf;
+		char				m_buffer [NUM_LINES_HIRES][80];
+		CFont*			m_fonts [3];
+		CBitmap			m_bmBackdrop;
+		uint				m_bDone;
+		uint				m_nLines [2];
+		fix				m_xDelay;
+		int				m_nExtraInc;
+		int				m_bBinary;
+		int				m_xOffs;
+		int				m_yOffs;
+		int				m_nFirstLineOffs;
+
+	public:
+		CCreditsManager () { Init (); }
+		~CCreditsManager () { Destroy (); }
+		void Init (void);
+		void Destroy (void);
+		void RenderBackdrop (void);
+		bool HandleInput (void);
+		uint GetLine (void);
+		bool Open (char* creditsFilename);
+		void Render (void);
+		void Show (char* creditsFilename);
+};
+
+extern CCreditsManager creditsManager;
 
 #endif /* _CREDITS_H */
