@@ -1319,7 +1319,7 @@ nCurrentColor = 0;
 bRobotPlaying = 0;
 
 if (gameStates.app.bNostalgia)
-	OglSetDrawBuffer (gameStates.ogl.nDrawBuffer = GL_FRONT, 0);
+	OglSetDrawBuffer (GL_FRONT, 0);
 InitMovieBriefing ();
 
 bi.bExtraSounds = gameStates.app.bHaveExtraData && gameStates.app.bD1Mission && 
@@ -1608,7 +1608,7 @@ PrintLog ("Starting the briefing\n");
 gameStates.render.bBriefing = 1;
 RebuildRenderContext (1);
 if (gameStates.app.bNostalgia)
-	OglSetDrawBuffer (gameStates.ogl.nDrawBuffer = GL_FRONT, 0);
+	OglSetDrawBuffer (GL_FRONT, 0);
 if (gameOpts->gameplay.bSkipBriefingScreens) {
 	console.printf (CON_DBG, "Skipping all briefing screens.\n");
 	gameStates.render.bBriefing = 0;

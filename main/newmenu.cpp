@@ -1039,8 +1039,6 @@ void NMRestoreScreen (char *filename, int bDontRestore)
 //CCanvas::SetCurrent (bg->menu_canvas);
 backgroundManager.Remove ();
 GrUpdate (0);
-while (KeyInKey () != KEY_ESC)
-	;
 CCanvas::SetCurrent (NULL);		
 CCanvas::Pop ();
 GrabMouse (1, 0);
@@ -2254,7 +2252,7 @@ if (!bInitialized) {
 
 // save the screen behind the menu.
 
-	backgroundManager.Setup (NULL, w_x, w_y, w_x + w_w - 1, w_y + w_h - 1);
+	backgroundManager.Setup (NULL, w_x, w_y, w_w, w_h);
 	GrString (0x8000, w_y+10, pszTitle, NULL);
 	bInitialized = 1;
 	}
@@ -2509,7 +2507,7 @@ while (!done)	{
 	if ((nPrevItem != nFirstItem) || gameOpts->menus.nStyle) {
 		if (!gameOpts->menus.nStyle) 
 			SDL_ShowCursor (0);
-		backgroundManager.Setup (NULL, w_x, w_y, w_x + w_w - 1, w_y + w_h - 1);
+		backgroundManager.Draw ();
 		fontManager.SetCurrent (NORMAL_FONT);
 		GrString (0x8000, w_y+10, pszTitle, NULL);
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
@@ -2663,8 +2661,11 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 	total_width = width+2*border_size;
 	total_height = height+2*border_size+nTitleHeight;
 
-	backgroundManager.Setup (NULL, wx-border_size, wy-nTitleHeight-border_size, wx+width+border_size-1, wy+height+border_size-1);
+	CCanvas::Push ();
+	backgroundManager.Setup (NULL, wx - border_size, wy - nTitleHeight - border_size, 
+									 width + border_size * 2, height + nTitleHeight + border_size * 2);
 	GrUpdate (0);
+	CCanvas::Pop ();
 	GrString (0x8000, wy - nTitleHeight, pszTitle, NULL);
 	done = 0;
 	nItem = nDefaultItem;

@@ -52,6 +52,7 @@
 #include "render.h"
 #include "sphere.h"
 #include "glare.h"
+#include "menu.h"
 #include "menubackground.h"
 
 #define _WIN32_WINNT		0x0600 
@@ -792,9 +793,9 @@ OglCreateDrawBuffer ();
 cameraManager.Create ();
 InitSpheres ();
 BuildObjectModels ();
-OglSetDrawBuffer (GL_BACK, 1);
+OglSetDrawBuffer (gameStates.ogl.nDrawBuffer, 1);
 backgroundManager.Destroy ();
-backgroundManager.Setup (NULL /*MENU_PCX_NAME ()*/, 0, 0, screen.Width (), screen.Height ());
+backgroundManager.Setup (MENU_PCX_NAME (), 0, 0, screen.Width (), screen.Height ());
 }
 
 //------------------------------------------------------------------------------
@@ -806,9 +807,9 @@ if ((gameStates.video.nLastScreenMode == gameStates.video.nScreenMode) &&
 	 (gameStates.app.bGameRunning || (gameStates.video.nScreenMode == SCREEN_GAME) || (gameStates.ogl.nDrawBuffer == GL_FRONT)))
 	return;
 if (gameStates.video.nScreenMode == SCREEN_GAME)
-	OglSetDrawBuffer (gameStates.ogl.nDrawBuffer = GL_BACK, 1);
+	OglSetDrawBuffer (GL_BACK, 1);
 else {
-	OglSetDrawBuffer (gameStates.ogl.nDrawBuffer = (gameOpts->menus.nStyle ? GL_BACK : GL_FRONT), 1);
+	OglSetDrawBuffer (gameOpts->menus.nStyle ? GL_BACK : GL_FRONT, 1);
 	if (!(gameStates.app.bGameRunning && gameOpts->menus.nStyle)) {
 		glClearColor (0,0,0,0);
 		glClear (GL_COLOR_BUFFER_BIT);
@@ -1099,7 +1100,7 @@ else {
 		gameData.render.ogl.drawBuffer.Disable ();
 		gameStates.ogl.bDrawBufferActive = 0;
 		}
-	glDrawBuffer (nBuffer);
+	glDrawBuffer (gameStates.ogl.nDrawBuffer = nBuffer);
 	}
 #else
 glDrawBuffer (gameStates.ogl.nDrawBuffer = nBuffer);
