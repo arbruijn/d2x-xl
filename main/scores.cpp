@@ -32,6 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "timer.h"
 #include "text.h"
 #include "strutil.h"
+#include "menubackground.h"
 
 #define VERSION_NUMBER 		1
 #define SCORES_FILENAME 	"descent.hi"
@@ -352,11 +353,9 @@ void ScoresView (int nCurItem)
 	int c,i,done,looper;
 	int k, bRedraw = 0;
 	sbyte fades[64] = { 1,1,1,2,2,3,4,4,5,6,8,9,10,12,13,15,16,17,19,20,22,23,24,26,27,28,28,29,30,30,31,31,31,31,31,30,30,29,28,28,27,26,24,23,22,20,19,17,16,15,13,12,10,9,8,6,5,4,4,3,2,2,1,1 };
-	bkg bg;
-
-	memset (&bg, 0, sizeof (bg));
 
 ReshowScores:
+
 	scores_read ();
 	SetScreenMode (SCREEN_MENU);
  	CCanvas::SetCurrent (NULL);
@@ -367,6 +366,7 @@ ReshowScores:
 	if (yOffs < 0)
 		yOffs = 0; 
 
+	backgroundManager.Setup (NULL, xOffs, yOffs, xOffs + 640, xOffs + 480);
 	GameFlushInputs ();
 
 	done = 0;
@@ -374,20 +374,19 @@ ReshowScores:
 
 	while (!done)	{
 		if (!bRedraw || gameOpts->menus.nStyle) {
-			NMDrawBackground (&bg,xOffs, yOffs, xOffs + 640, xOffs + 480, bRedraw);
+			backgroundManager.Draw ();
 			fontManager.SetCurrent (MEDIUM3_FONT);
 
 			GrString (0x8000, yOffs + LHY (15), TXT_HIGH_SCORES, NULL);
 			fontManager.SetCurrent (SMALL_FONT);
 			fontManager.SetColorRGBi (RGBA_PAL (31,26,5), 1, 0, 0);
-			GrString ( xOffs + LHX (31+33+XX), yOffs + LHY (46+7+YY), TXT_NAME, NULL);
-			GrString ( xOffs + LHX (82+33+XX), yOffs + LHY (46+7+YY), TXT_SCORE, NULL);
+			GrString (xOffs + LHX (31+33+XX), yOffs + LHY (46+7+YY), TXT_NAME, NULL);
+			GrString (xOffs + LHX (82+33+XX), yOffs + LHY (46+7+YY), TXT_SCORE, NULL);
 			GrString (xOffs + LHX (127+33+XX), yOffs + LHY (46+7+YY), TXT_SKILL, NULL);
 			GrString (xOffs + LHX (170+33+XX), yOffs + LHY (46+7+YY), TXT_LEVELS, NULL);
 		//	GrString (202, 46, "Kills");
 		//	GrString (234, 46, "Rescues");
-			GrString (xOffs + LHX (288-
-+XX), yOffs + LHY (46+7+YY), TXT_TIME, NULL);
+			GrString (xOffs + LHX (288-42+XX), yOffs + LHY (46+7+YY), TXT_TIME, NULL);
 			if (nCurItem < 0)
 				GrString (0x8000, yOffs + LHY (175), TXT_PRESS_CTRL_R, NULL);
 			fontManager.SetColorRGBi (RGBA_PAL (28,28,28), 1, 0, 0);
@@ -468,7 +467,7 @@ ReshowScores:
 paletteManager.FadeOut ();
 CCanvas::SetCurrent (NULL);
 GameFlushInputs ();
-NMRemoveBackground (&bg);
+backgroundManager.Remove ();
 }
 
 //------------------------------------------------------------------------------

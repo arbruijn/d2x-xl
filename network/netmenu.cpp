@@ -32,6 +32,7 @@
 #include "autodl.h"
 #include "tracker.h"
 #include "gamefont.h"
+#include "menubackground.h"
 
 #define LHX(x)      (gameStates.menus.bHires?2* (x):x)
 #define LHY(y)      (gameStates.menus.bHires? (24* (y))/10:y)
@@ -2022,13 +2023,10 @@ int NetworkBrowseGames (void)
 {
 	tMenuItem	m [MAX_ACTIVE_NETGAMES + 5];
 	int			choice, i, bAutoRun = gameData.multiplayer.autoNG.bValid;
-	bkg			bg;
 	char			callsign [CALLSIGN_LEN+1];
 
 //PrintLog ("launching netgame browser\n");
 memcpy (callsign, LOCALPLAYER.callsign, sizeof (callsign));
-memset (&bg, 0, sizeof (bg));
-bg.bIgnoreBg = 1;
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	if (!networkData.bActive) {
 		ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_IPX_NOT_FOUND);
@@ -2103,10 +2101,10 @@ if (bAutoRun) {
 	}
 else {
 	gameStates.multi.bSurfingNet = 1;
-	NMLoadBackground (MENU_PCX_NAME (), &bg, 0);             //load this here so if we abort after loading level, we restore the palette
-	paletteManager.LoadEffect  ();
+//	NMLoadBackground (MENU_PCX_NAME (), &bg, 0);             //load this here so if we abort after loading level, we restore the palette
+//	paletteManager.LoadEffect  ();
 	choice = ExecMenuTiny (TXT_NETGAMES, NULL, MAX_ACTIVE_NETGAMES + 2 + gameStates.multi.bUseTracker, m, NetworkJoinPoll);
-	NMRemoveBackground (&bg);
+//	backgroundManager.Remove ();
 	gameStates.multi.bSurfingNet = 0;
 	}
 if (choice == -1) {
@@ -2196,7 +2194,7 @@ NetworkAdjustMaxDataSize ();
 //PrintLog ("loading level\n");
 StartNewLevel (netGame.nLevel, 0);
 //PrintLog ("exiting netgame browser\n");
-NMRemoveBackground (&bg);
+backgroundManager.Remove ();
 return 1;         // look ma, we're in a game!!!
 }
 

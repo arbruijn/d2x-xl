@@ -39,6 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "automap.h"
 #include "gamepal.h"
 #include "lightning.h"
+#include "menubackground.h"
 
 #if DBG
 extern int Debug_pause;				//John's debugging pause system
@@ -1241,8 +1242,6 @@ void DrawGuidedCrosshair (void)
 
 //------------------------------------------------------------------------------
 
-bkg bg = {0, 0, 0, 0, NULL, NULL, NULL, NULL, 1, 1};
-
 #define BOX_BORDER (gameStates.menus.bHires?60:30)
 
 //show a message in a nice little box
@@ -1252,44 +1251,42 @@ void ShowBoxedMessage (const char *pszMsg)
 	int x, y;
 	//ubyte save_pal [256*3];
 
-	//memcpy (save_pal, grPalette, sizeof (save_pal));
-if (bg.bmP) {
-	delete bg.bmP;
-	bg.bmP = NULL;
-	}
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
 fontManager.SetCurrent (MEDIUM1_FONT);
 fontManager.Current ()->StringSize (pszMsg, w, h, aw);
 x = (screen.Width ()-w)/2;
 y = (screen.Height ()-h)/2;
 // Save the background of the display
-bg.x = x;
-bg.y = y;
-bg.w = w;
-bg.h = h;
+/*
 if (!gameOpts->menus.nStyle) {
 	bg.bmP = CBitmap::Create (0, w + BOX_BORDER, h + BOX_BORDER, 1);
 	CCanvas::Current ()->RenderToBitmap (bg.bmP, 0, 0, w + BOX_BORDER, h + BOX_BORDER, x - BOX_BORDER / 2, y - BOX_BORDER / 2); 
 	}
-NMDrawBackground (&bg, x - BOX_BORDER / 2, y - BOX_BORDER / 2, x+w + BOX_BORDER / 2-1, y+h + BOX_BORDER / 2-1, 0);
+*/
+backgroundManager.Setup (NULL, x - BOX_BORDER / 2, y - BOX_BORDER / 2, x+w + BOX_BORDER / 2-1, y+h + BOX_BORDER / 2-1);
 fontManager.SetColorRGBi (DKGRAY_RGBA, 1, 0, 0);
 fontManager.SetCurrent (MEDIUM1_FONT);
 GrPrintF (NULL, 0x8000, y, pszMsg);
 GrUpdate (0);
-NMRemoveBackground (&bg);
+backgroundManager.Remove ();
 }
 
 //------------------------------------------------------------------------------
 
 void ClearBoxedMessage ()
 {
-if (bg.bmP) {
+backgroundManager.Draw ();
+#if 0
+	CBitmap* bmP = backgroundManager.Current ();
+
+if (bmP) {
 	GrBitmap (bg.x - BOX_BORDER / 2, bg.y - BOX_BORDER / 2, bg.bmP);
 	if (bg.bmP) {
 		delete bg.bmP;
 		bg.bmP = NULL;
 		}
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------

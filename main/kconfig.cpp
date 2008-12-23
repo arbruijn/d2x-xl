@@ -39,6 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #include "args.h"
 #include "input.h"
 #include "collide.h"
+#include "menubackground.h"
 #if defined (TACTILE)
 #	include "tactile.h"
 #endif
@@ -758,12 +759,12 @@ KCDrawItemExt (items + nCurItem, 1, 0);
 
 //------------------------------------------------------------------------------
 
-void KCQuitMenu (bkg *bg, int time_stopped)
+void KCQuitMenu (int time_stopped)
 {
 CCanvas::Pop ();
 //bg->menu_canvas = NULL;
 GameFlushInputs ();
-NMRemoveBackground (bg);
+backgroundManager.Remove ();
 SDL_ShowCursor (0);
 if (time_stopped)
 	StartTime (0);
@@ -790,7 +791,7 @@ for (i = 0, n = (int) (item - All_items); i < Num_items; i++)	{
 item->value = code;					 
 if (gameStates.ogl.nDrawBuffer == GL_FRONT) {
 	KCDrawItem (item, 1);
-	NMRestoreBackground (0, KC_LHY (INFO_Y), xOffs, yOffs, KC_LHX (310), CCanvas::Current ()->Font ()->Height ());
+	backgroundManager.Restore (xOffs, yOffs, KC_LHX (310), CCanvas::Current ()->Font ()->Height (), 0, KC_LHY (INFO_Y));
 	}
 GameFlushInputs ();
 fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 1);
@@ -1194,12 +1195,9 @@ void KConfigSub (kcItem * items, int nItems, const char * pszTitle)
 	int		time_stopped = 0;
 	int		bRedraw = 0;
 	int		nChangeMode = BT_NONE, nPrevMode = BT_NONE;
-	bkg		bg;
 
 All_items = items;
 Num_items = nItems;
-memset (&bg, 0, sizeof (bg));
-bg.bIgnoreBg = 1;
 paletteManager.SetEffect (0, 0, 0);
 gameStates.menus.nInMenu++;
 memset (startAxis, 0, sizeof (startAxis));
@@ -1214,10 +1212,8 @@ CCanvas::SetCurrent (NULL);
 font = CCanvas::Current ()->Font ();
 
 FlushInput ();
-NMDrawBackground (&bg, xOffs, yOffs, 
-	xOffs + 639 /*CCanvas::Current ()->Width () - 1*/, 
-	yOffs + 479 /*CCanvas::Current ()->Height () - 1*/, 0);
-paletteManager.LoadEffect  ();
+backgroundManager.Setup (NULL, xOffs, yOffs, xOffs + 639 /*CCanvas::Current ()->Width () - 1*/, yOffs + 479 /*CCanvas::Current ()->Height () - 1*/);
+paletteManager.LoadEffect ();
 
 nCurItem = 0;
 SDL_ShowCursor (1);
@@ -1241,7 +1237,7 @@ for (;;) {
 			bRedraw = 1;
 			if (gameOpts->menus.nStyle && gameStates.app.bGameRunning)
 				GameRenderFrame ();
-			NMDrawBackground (&bg, xOffs, yOffs, xOffs + 639, yOffs + 479, 1);
+			backgroundManager.Draw ();
 			KCDrawTitle (pszTitle);
 			close_x = close_y = gameStates.menus.bHires ? 15 : 7;
 			close_x += xOffs;
@@ -1381,7 +1377,7 @@ for (;;) {
 			break;
 		case -2:
 		case KEY_ESC:
-			KCQuitMenu (&bg, time_stopped);
+			KCQuitMenu (time_stopped);
 			return;
 #if TABLE_CREATION
 		case KEYDBGGED+KEY_F12:	{
@@ -1481,7 +1477,7 @@ for (;;) {
 				y1 = CCanvas::Current ()->Top () + close_y + LHX (1);
 				y2 = y1 + close_size - LHY (1);
 				if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
-					KCQuitMenu (&bg, time_stopped);
+					KCQuitMenu (time_stopped);
 					return;
 				}
 			}
@@ -1493,7 +1489,7 @@ for (;;) {
 			SDL_ShowCursor (1);
 		}
 	}
-KCQuitMenu (&bg, time_stopped);
+KCQuitMenu (time_stopped);
 }
 
 //------------------------------------------------------------------------------

@@ -1307,7 +1307,6 @@ if (bmBackground.Buffer ()) {
 	}
 ClearWarnFunc (ShowInGameWarning);     //don't use this func anymore
 PrintLog ("unloading custom background data\n");
-NMFreeAltBg (1);
 banList.Save ();
 banList.Destroy ();
 PrintLog ("peak memory consumption: %ld bytes\n", nMaxAllocd);

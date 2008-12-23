@@ -862,6 +862,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\include\menubackground.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\include\movie.h"
 						>
 					</File>
@@ -4613,11 +4617,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File

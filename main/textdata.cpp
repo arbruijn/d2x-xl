@@ -14,6 +14,7 @@
 #include "gamecntl.h"
 #include "text.h"
 #include "textdata.h"
+#include "menubackground.h"
 
 //------------------------------------------------------------------------------
 
@@ -205,7 +206,7 @@ else if (!gameStates.render.nWindow) {
 			fAlpha = (float) (msgP->nEndTime - gameStates.app.nSDLTicks) / 500.0f;
 		else
 			fAlpha = 1.0f;
-		NMBlueBox (x - 8, y - 8, x + w + 4, y + h + 4, 3, fAlpha, 1);
+		backgroundManager.DrawBox (x - 8, y - 8, x + w + 4, y + h + 4, 3, fAlpha, 1);
 		msgP->bmP->Render (CCanvas::Current (), x, y, w, h, 0, 0, w, h, 1, 0, fAlpha);
 		}
 	}

@@ -168,7 +168,9 @@ else if (m_bMenuBox) {
 		if (!m_bIgnoreCanv)
 			CCanvas::SetCurrent (m_canvas);
 		}
-	backgroundManager.DrawBox (gameData.menu.nLineWidth, 1.0f, 0);
+	backgroundManager.DrawBox (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), 
+										CCanvas::Current ()->Right (), CCanvas::Current ()->Bottom (), 
+										gameData.menu.nLineWidth, 1.0f, 0);
 	}
 paletteManager.LoadEffect ();
 GrUpdate (0);
@@ -231,6 +233,30 @@ if (!gameOpts->menus.nStyle) {
 
 //------------------------------------------------------------------------------
 
+void CBackground::Restore (int dx, int dy, int w, int h, int sx, int sy)
+{
+int x1 = sx; 
+int x2 = sx+w-1;
+int y1 = sy; 
+int y2 = sy+h-1;
+
+if (x1 < 0) 
+	x1 = 0;
+if (y1 < 0) 
+	y1 = 0;
+
+if (x2 >= m_background->Width ()) 
+	x2 = m_background->Width () - 1;
+if (y2 >= m_background->Height ()) 
+	y2 = m_background->Height () - 1;
+
+w = x2 - x1 + 1;
+h = y2 - y1 + 1;
+m_background->Render (CCanvas::Current (), dx, dy, w, h, x1, y1, w, h);
+}
+
+//------------------------------------------------------------------------------
+
 CBackgroundManager::CBackgroundManager () 
 { 
 m_save.Create (3); 
@@ -255,6 +281,8 @@ if (m_save.ToS ())
 }
 
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 void CBackgroundManager::Init (void)
 {
@@ -264,6 +292,7 @@ m_filename [0] = MENU_PCX_NAME ();
 m_filename [1] = MENU_BACKGROUND_BITMAP;
 m_nDepth = 0; 
 m_bShadow = false;
+m_bValid = false;
 }
 
 //------------------------------------------------------------------------------
@@ -279,20 +308,26 @@ Init ();
 
 //------------------------------------------------------------------------------
 
-void CBackgroundManager::DrawBox (int nLineWidth, float fAlpha, int bForce)
+void CBackgroundManager::DrawBox (int left, int top, int right, int bottom, int nLineWidth, float fAlpha, int bForce)
 {
 gameStates.render.nFlashScale = 0;
 if (bForce || (gameOpts->menus.nStyle == 1)) {
+	if (left <= 0)
+		left = 1;
+	if (top <= 0)
+		top = 1;
+	if (right >= screen.Width ())
+		right = screen.Width () - 1;
+	if (bottom >= screen.Height ())
+		bottom = screen.Height () - 1;
 	CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), (ubyte) (gameData.menu.alpha * fAlpha));
 	gameStates.render.grAlpha = (float) gameData.menu.alpha * fAlpha / 255.0f;
 	glDisable (GL_TEXTURE_2D);
-	GrURect (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (),
-			   CCanvas::Current ()->Right (), CCanvas::Current ()->Bottom ());
+	GrURect (left, top, right, bottom);
 	gameStates.render.grAlpha = FADE_LEVELS;
 	CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), (ubyte) (255 * fAlpha));
 	glLineWidth ((GLfloat) nLineWidth);
-	GrUBox (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (),
-			  CCanvas::Current ()->Right (), CCanvas::Current ()->Bottom ());
+	GrUBox (left, top, right, bottom);
 	glLineWidth (1);
 	}
 }
@@ -360,27 +395,23 @@ return bmP;
 
 void CBackgroundManager::Create (void)
 {
-Destroy ();
-if (!LoadCustomBackground ())
+if (!m_bValid) {
+	if (!LoadCustomBackground ())
 	m_background [0] = LoadBackground (m_filename [0]);
-m_background [1] = LoadBackground (m_filename [1]);
+	m_background [1] = LoadBackground (m_filename [1]);
+	m_bValid = true;
+	}
 }
 
 //------------------------------------------------------------------------------
 
 bool CBackgroundManager::Setup (char *filename, int x, int y, int width, int height)
 {
+Create ();
 if (m_nDepth && !m_save.Push (m_bg))
 	return false;
 m_nDepth++;
 return m_bg.Create (filename, x, y, width, height);
-}
-
-//------------------------------------------------------------------------------
-
-void CBackgroundManager::Restore (void)
-{
-m_bg.Restore ();
 }
 
 //------------------------------------------------------------------------------

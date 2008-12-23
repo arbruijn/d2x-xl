@@ -121,6 +121,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "transprender.h"
 #include "slowmotion.h"
 #include "soundthreads.h"
+#include "menubackground.h"
 
 #if defined (TACTILE)
  #include "tactile.h"
@@ -141,7 +142,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void ShowLevelIntro (int nLevel);
 int StartNewLevelSecret (int nLevel, int bPageInTextures);
 void InitPlayerPosition (int bRandom);
-void LoadStars (bkg *bg, int bRedraw);
+void LoadStars (void);
 void ReturningToLevelMessage (void);
 void AdvancingToLevelMessage (void);
 void DoEndGame (void);
@@ -862,8 +863,8 @@ nLastMsgYCrd = -1;		//so we don't restore backgound under msg
 /*---*/PrintLog ("   loading palette\n");
 paletteManager.LoadEffect  ();
  //paletteManager.Load ("groupa.256", NULL, 0, 0, 1);		//don't change screen
-if (!gameOpts->menus.nStyle)
-	NMLoadBackground (NULL, NULL, 0);
+//if (!gameOpts->menus.nStyle)
+//	NMLoadBackground (NULL, NULL, 0);
 ShowBoxedMessage (TXT_LOADING);
 /*---*/PrintLog ("   loading level data\n");
 gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
@@ -1602,9 +1603,9 @@ gameStates.app.bBetweenLevels = 0;
 
 //------------------------------------------------------------------------------
 
-void LoadStars (bkg *bg, int bRedraw)
+void LoadStars (void)
 {
-NMLoadBackground (reinterpret_cast<char*> (STARS_BACKGROUND), bg, bRedraw);
+backgroundManager.Setup (reinterpret_cast<char*> (STARS_BACKGROUND), 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 }
 
 //------------------------------------------------------------------------------

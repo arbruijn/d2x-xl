@@ -39,6 +39,7 @@
 #include "glare.h"
 #include "lightmap.h"
 #include "newmenu.h"
+#include "menubackground.h"
 
 #define DECLARE_VARS
 
@@ -168,7 +169,7 @@ if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
 	if (lightmapManager.HaveLightmaps ())
 		lightmapManager.Release ();
 	DestroyGlareDepthTexture ();
-	NMFreeAltBg (1);
+	backgroundManager.Destroy ();
 	if (bReload)
 		fontManager.Remap ();
 	if (bGame) {

@@ -36,6 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gamefont.h"
 #include "network.h"
 #include "network_lib.h"
+#include "menubackground.h"
 
 #define CENTERING_OFFSET(x) ((300 - (70 + (x)*25))/2)
 #define CENTERSCREEN (gameStates.menus.bHires?320:160)
@@ -51,7 +52,7 @@ void ScoreTableDrawCoop ();
 
 static int xOffs = 0, yOffs = 0;
 
-void LoadStars (bkg *bg, int bRedraw);
+void LoadStars (void);
 
 //-----------------------------------------------------------------------------
 
@@ -358,7 +359,7 @@ GrUpdate (0);
 
 //-----------------------------------------------------------------------------
 
-void ScoreTableQuit (bkg *bg, int bQuit, int bNetwork)
+void ScoreTableQuit (int bQuit, int bNetwork)
 {
 if (bNetwork)
 	NetworkSendEndLevelPacket ();
@@ -367,7 +368,7 @@ if (bQuit) {
 	MultiLeaveGame ();
 	}
 gameData.score.bNoMovieMessage = 0;
-NMRemoveBackground (bg);
+backgroundManager.Remove ();
 gameStates.menus.nInMenu--;
 if ((gameData.missions.nCurrentLevel >= gameData.missions.nLastLevel) &&
 	 !extraGameInfo [IsMultiGame].bRotateLevels)
@@ -390,11 +391,9 @@ void ScoreTableView (int bNetwork)
    int	previousSeconds_left=-1;
    int	nReady,nEscaped;
 	int	bRedraw = 0;
-	bkg	bg;
 
 gameStates.menus.nInMenu++;
 gameStates.app.bGameRunning = 0;
-memset (&bg, 0, sizeof (bg));
 
 bNetwork = gameData.app.nGameMode & GM_NETWORK;
 
@@ -410,9 +409,10 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	oldstates  [i] = gameData.multiplayer.players [i].connected;
 if (bNetwork)
 	NetworkEndLevel (&key);
+LoadStars ();
 while (!done) {
 	if (!bRedraw || (gameStates.ogl.nDrawBuffer == GL_BACK)) {
-		LoadStars (&bg, bRedraw);
+		backgroundManager.Draw ();
 		ScoreTableRedraw ();
 		bRedraw = 1;
 		}
@@ -420,7 +420,7 @@ while (!done) {
 	for (i = 0; i < 4; i++)
 		if (JoyGetButtonDownCnt (i)) {
 			if (LAST_OEM_LEVEL) {
-				ScoreTableQuit (&bg, 1, bNetwork);
+				ScoreTableQuit (1, bNetwork);
 				return;
 				}
 			LOCALPLAYER.connected = 7;
@@ -431,7 +431,7 @@ while (!done) {
 	for (i = 0; i < 3; i++)
 		if (MouseButtonDownCount (i)) {
 			if (LAST_OEM_LEVEL) {
-				ScoreTableQuit (&bg, 1, bNetwork);
+				ScoreTableQuit (1, bNetwork);
 				return;
 				}
 			LOCALPLAYER.connected=7;
@@ -450,7 +450,7 @@ while (!done) {
 				break;
 				}
 			if (LAST_OEM_LEVEL) {
-				ScoreTableQuit (&bg, 1, bNetwork);
+				ScoreTableQuit (1, bNetwork);
 				return;
 				}
 			gameData.multiplayer.players  [gameData.multiplayer.nLocalPlayer].connected = 7;
@@ -466,7 +466,7 @@ while (!done) {
 			else
 				choice=ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
 				if (choice == 0) {
-					ScoreTableQuit (&bg, 1, bNetwork);
+					ScoreTableQuit (1, bNetwork);
 					return;
 					}
 				gameData.score.nKillsChanged=1;
@@ -486,7 +486,7 @@ while (!done) {
 	if ((SDL_GetTicks () >= entryTime + MAX_VIEW_TIME) && 
 		 (LOCALPLAYER.connected != 7)) {
 		if (LAST_OEM_LEVEL) {
-			ScoreTableQuit (&bg, 1, bNetwork);
+			ScoreTableQuit (1, bNetwork);
 			return;
 			}
 		if ((gameData.app.nGameMode & GM_SERIAL) || (gameData.app.nGameMode & GM_MODEM)) {
@@ -539,7 +539,7 @@ LOCALPLAYER.connected = 7;
 // Restore background and exit
 paletteManager.FadeOut ();
 GameFlushInputs ();
-ScoreTableQuit (&bg, 0, bNetwork);
+ScoreTableQuit (0, bNetwork);
 }
 
 //-----------------------------------------------------------------------------

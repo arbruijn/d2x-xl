@@ -81,6 +81,7 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "soundthreads.h"
 #include "automap.h"
 #include "banlist.h"
+#include "menubackground.h"
 
 #include "../texmap/scanline.h" //for select_tmap -MM
 
@@ -387,11 +388,9 @@ return (nPlayed != MOVIE_NOT_PLAYED);	//default is not nPlayed
 void ShowLoadingScreen (void)
 {
 if (!gameStates.app.bNostalgia) {
-		bkg	bg;
-
-	memset (&bg, 0, sizeof (bg));
-	NMInitBackground (NULL, &bg, 0, 0, screen.Width (), screen.Height (), -1);
+	backgroundManager.Setup (NULL, 0, 0, screen.Width (), screen.Height ());
 	GrUpdate (0);
+	backgroundManager.Remove ();
 	}
 else {
 		int pcx_error;

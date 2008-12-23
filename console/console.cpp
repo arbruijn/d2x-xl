@@ -26,6 +26,7 @@
 #include "pcx.h"
 #include "cmd.h"
 #include "console.h"
+#include "menubackground.h"
 
 #define get_msecs() approx_fsec_to_msec(TimerGetApproxSeconds ())
 
@@ -386,11 +387,11 @@ DrawCommandLine ();
 		CConsole::AlphaGL (m_surface, m_ConsoleAlpha);
 #endif
 
+CCanvas::Push ();
+CCanvas::SetCurrent (m_output->Canvas ());
 if (gameOpts->menus.nStyle)
-	NMBlueBox (0, 0, m_surface->Width (), m_RaiseOffset, 1, 1.0f, 0);
+	backgroundManager.DrawBox (0, 0, m_surface->Width (), m_RaiseOffset, 1, 1.0f, 0);
 else {
-	CCanvas::Push ();
-	CCanvas::SetCurrent (m_output->Canvas ());
 	clip = m_surface->CreateChild (
 		0, m_surface->Height () - m_RaiseOffset, 
 		m_surface->Width (), m_RaiseOffset);
@@ -400,8 +401,8 @@ else {
 	if (m_output->flags & SDL_OPENGLBLIT)
 		SDL_UpdateRects (m_output, 1, &DestRect);
 #endif
-	CCanvas::Pop ();
 	}
+CCanvas::Pop ();
 Update ();
 }
 

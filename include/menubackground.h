@@ -35,6 +35,7 @@ class CBackground {
 		void Destroy (void);
 		bool Create (char* filename, int x, int y, int width, int height);
 		void Restore (void);
+		void Restore (int dx, int dy, int w, int h, int sx, int sy);
 		void Draw (void);
 		void DrawArea (int left, int top, int right, int bottom);
 		void DrawBox (void);
@@ -55,6 +56,7 @@ class CBackgroundManager : private CStack<CBackground> {
 		CBitmap*					m_background [2];
 		char*						m_filename [2];
 		int						m_nDepth;
+		bool						m_bValid;
 		bool						m_bShadow;
 
 	public:
@@ -64,7 +66,8 @@ class CBackgroundManager : private CStack<CBackground> {
 		void Create (void);
 		bool Setup (char *filename, int x, int y, int width, int height);
 		void Load (void);
-		void Restore (void);
+		inline void Restore (void) { m_bg.Restore (); }
+		inline void Restore (int dx, int dy, int w, int h, int sx, int sy) { m_bg.Restore (dx, dy, w, h, sy, sy); }
 		void Remove (void);
 		CBitmap* LoadBackground (char* filename);
 		bool IsDefault (char* filename);
@@ -80,7 +83,12 @@ class CBackgroundManager : private CStack<CBackground> {
 		inline CBitmap* Current (void) { return m_bg.Background (); }
 		inline CCanvas* Canvas (void) { return m_bg.Canvas (); }
 
-		void DrawBox (int nLineWidth, float fAlpha, int bForce);
+		void DrawBox (int left, int top, int right, int bottom, int nLineWidth, float fAlpha, int bForce);
+		inline void DrawBox (int nLineWidth, float fAlpha, int bForce) {
+			DrawBox (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), 
+						CCanvas::Current ()->Right (), CCanvas::Current ()->Bottom (), 
+						nLineWidth, fAlpha, bForce);
+			}
 
 	private:
 		CBitmap* LoadCustomBackground (void);
