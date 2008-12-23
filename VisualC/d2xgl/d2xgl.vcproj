@@ -1282,6 +1282,10 @@
 						</FileConfiguration>
 					</File>
 					<File
+						RelativePath="..\..\main\menubackground.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\main\mglobal.cpp"
 						>
 						<FileConfiguration
@@ -4609,11 +4613,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

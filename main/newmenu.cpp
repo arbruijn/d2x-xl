@@ -87,7 +87,7 @@ char DOWN_ARROW_MARKER [2] = {(char) 136, 0};
 CPalette		*menuPalette;
 static		char *pszCurBg = NULL;
 
-CBitmap	*pAltBg = NULL;
+CBitmap	*customBgP = NULL;
 
 typedef struct tMenuProps {
 	int	scWidth,
@@ -125,16 +125,28 @@ int ExecMenu4 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuI
 
 //------------------------------------------------------------------------------
 
-int bNewMenuFirstTime = 1;
+extern int bNewMenuFirstTime;
 //--unused-- int Newmenu_fade_in = 1;
 
-CBitmap nmBackground, nmBackgroundSave;
+extern CBitmap nmBackground, nmBackgroundSave;
 
 #define MESSAGEBOX_TEXT_SIZE 10000		// How many characters in messagebox
 #define MAX_TEXT_WIDTH 	200				// How many pixels wide a input box can be
 
 char bPauseableMenu = 0;
 char bAlreadyShowingInfo = 0;
+
+//------------------------------------------------------------------------------
+
+void _CDECL_ NewMenuClose (void)
+{
+PrintLog ("unloading menu data\n");
+if (nmBackground.Buffer ())
+	nmBackground.DestroyBuffer ();
+if (nmBackgroundSave.Buffer ())
+	nmBackgroundSave.DestroyBuffer ();
+bNewMenuFirstTime = 1;
+}
 
 //------------------------------------------------------------------------------
 
@@ -154,371 +166,6 @@ void NMFreeAllTextBms (tMenuItem *itemP, int nItems)
 {
 for (; nItems; nItems--, itemP++)
 	NMFreeTextBm (itemP);
-}
-
-//------------------------------------------------------------------------------
-
-void NMRemoveBackground (bkg *bgP) 
-{
-if (gameOpts->menus.nStyle) {
-	if (bgP) {
-		if (bgP->background) {
-			if (bgP->background == pAltBg)
-				NMFreeAltBg (0);
-			else
-				delete bgP->background;
-			bgP->background = NULL;
-			}
-		if (bgP->pszPrevBg)
-			pszCurBg = bgP->pszPrevBg;
-#if 1
-		if (bgP->menu_canvas) {
-			bgP->menu_canvas->Destroy ();
-			CCanvas::SetCurrent (NULL);		
-			bgP->menu_canvas = NULL;
-			}
-#endif
-		}
-	}
-if (gameStates.app.bGameRunning) {
-	paletteManager.LoadEffect  ();
-#if 1
-	RemapFontsAndMenus (1);
-	fontManager.Remap ();
-#endif
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void _CDECL_ NewMenuClose (void)
-{
-PrintLog ("unloading menu data\n");
-if (nmBackground.Buffer ())
-	nmBackground.DestroyBuffer ();
-if (nmBackgroundSave.Buffer ())
-	nmBackgroundSave.DestroyBuffer ();
-bNewMenuFirstTime = 1;
-}
-
-//------------------------------------------------------------------------------
-
-ubyte bgPalette [256*3];
-//should be called whenever the palette changes
-void NMRemapBackground ()
-{
-if (!bNewMenuFirstTime) {
-	if (!nmBackground.Buffer ())
-		nmBackground.CreateBuffer ();
-	memcpy (nmBackground.Buffer (), nmBackgroundSave.Buffer (), nmBackground.Width () * nmBackground.Height ());
-	//GrRemapBitmapGood (&nmBackground, bgPalette, -1, -1);
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void NMBlueBox (int x1, int y1, int x2, int y2, int nLineWidth, float fAlpha, int bForce)
-{
-gameStates.render.nFlashScale = 0;
-if (bForce || (gameOpts->menus.nStyle == 1)) {
-	if (x1 <= 0)
-		x1 = 1;
-	if (y1 <= 0)
-		y1 = 1;
-	if (x2 >= screen.Width ())
-		x2 = screen.Width () - 1;
-	if (y2 >= screen.Height ())
-		y2 = screen.Height () - 1;
-	CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), (ubyte) (gameData.menu.alpha * fAlpha));
-	gameStates.render.grAlpha = (float) gameData.menu.alpha * fAlpha / 255.0f;
-	glDisable (GL_TEXTURE_2D);
-	GrURect (x1, y1, x2, y2);
-	gameStates.render.grAlpha = FADE_LEVELS;
-	CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), (ubyte) (255 * fAlpha));
-	glLineWidth ((GLfloat) nLineWidth);
-	GrUBox (x1, y1, x2, y2);
-	glLineWidth (1);
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void NMLoadAltBg (void)
-{
-if (gameStates.app.bNostalgia || !gameOpts->menus.nStyle)
-	gameOpts->menus.altBg.bHave = -1;
-else if (gameOpts->menus.altBg.bHave > 0)
-	gameOpts->menus.altBg.bHave++;
-else if (!gameOpts->menus.altBg.bHave) {
-	if ((pAltBg = CBitmap::Create (0, 0, 0, 1))) {
-		gameOpts->menus.altBg.bHave = 
-			ReadTGA (gameOpts->menus.altBg.szName, 
-#ifdef __linux__
-						gameFolders.szCacheDir,
-#else
-						NULL, 
-#endif
-						pAltBg, 
-						(gameOpts->menus.altBg.alpha < 0) ? -1 : (int) (gameOpts->menus.altBg.alpha * 255), 
-						gameOpts->menus.altBg.brightness, gameOpts->menus.altBg.grayscale, 0) ? 1 : -1;
-		}
-	else
-		gameOpts->menus.altBg.bHave = -1;
-	}
-}
-
-//------------------------------------------------------------------------------
-
-int NMFreeAltBg (int bForce)
-{
-if (!pAltBg)
-	return 0;
-if (!bForce && (gameOpts->menus.altBg.bHave == 1))
-	return 0;
-if (bForce || !--gameOpts->menus.altBg.bHave) {
-	gameOpts->menus.altBg.bHave = 0;
-	delete pAltBg;
-	pAltBg = NULL;
-	}
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-void NMLoadBackground (char *filename, bkg *bgP, int bRedraw)
-{
-	int		nPCXResult;
-	int		width, height;
-	CBitmap	*bmP = bgP ? bgP->background : NULL;
-
-if (!(bRedraw && gameOpts->menus.nStyle && bgP && bmP)) {
-	if (bmP && (bmP != pAltBg)) {
-		delete bmP;
-		}
-	if (!filename)
-		filename = pszCurBg;
-	else if (!pszCurBg)
-		pszCurBg = filename;
-	if (!filename)
-		filename = gameStates.app.bDemoData ? const_cast<char*> (MENU_PCX_SHAREWARE) : const_cast<char*> (MENU_PCX_FULL);
-	if (!(filename && strcmp (filename, const_cast<char*> (MENU_PCX_FULL)) && strcmp (filename, const_cast<char*> (MENU_PCX_SHAREWARE)))) {
-		NMLoadAltBg ();
-		if (gameOpts->menus.altBg.bHave > 0) {
-			bmP = pAltBg;
-			pAltBg->SetName ("Menu Background");
-			}
-		}
-	if (!pAltBg || !bmP || (bmP != pAltBg)) {
-		if (!filename)
-			return;
-		nPCXResult = PCXGetDimensions (filename, &width, &height);
-		if (nPCXResult != PCX_ERROR_NONE)
-			Error ("Could not open pcx file <%s>\n", filename);
-		if ((bmP = CBitmap::Create (0, width, height, 1)))
-			bmP->SetName (filename);
-		}
-	if (bmP && !pAltBg || (bmP != pAltBg))
-		nPCXResult = PCXReadBitmap (filename, bmP, bmP->Mode (), 0);
-	paletteManager.ClearEffect ();
-	paletteManager.SetLastLoaded ("");		//force palette load next time
-	if (bgP) {
-		if (bmP == NULL)
-			return;
-		if (gameOpts->menus.nStyle && gameOpts->menus.bFastMenus)
-			bmP->SetupTexture (0, 0, 1);
-		bgP->pszPrevBg = pszCurBg;
-		pszCurBg = filename;
-		}
-	}
-if (!bmP)
-	return;
-if (!((gameStates.menus.bNoBackground || gameStates.app.bGameRunning) && gameOpts->menus.nStyle))
-	bmP->RenderFullScreen ();
-if (bgP)
-	bgP->background = bmP;
-else if (bmP != pAltBg)
-	delete bmP;
-}
-
-//------------------------------------------------------------------------------
-
-#define MENU_BACKGROUND_BITMAP_HIRES (CFile::Exist ("scoresb.pcx", gameFolders.szDataDir, 0)?"scoresb.pcx":"scores.pcx")
-#define MENU_BACKGROUND_BITMAP_LORES (CFile::Exist ("scores.pcx", gameFolders.szDataDir, 0)?"scores.pcx":"scoresb.pcx") // Mac datafiles only have scoresb.pcx
-
-#define MENU_BACKGROUND_BITMAP (gameStates.menus.bHires ? MENU_BACKGROUND_BITMAP_HIRES : MENU_BACKGROUND_BITMAP_LORES)
-
-int bHiresBackground;
-int bNoDarkening = 0;
-
-void NMDrawBackground (bkg *bgP, int x1, int y1, int x2, int y2, int bRedraw)
-{
-	int w, h;
-
-
-if (gameOpts->menus.nStyle) {
-	if (bgP)
-		bgP->bIgnoreBg = 1;
-	NMInitBackground (NULL, bgP, x1, y1, x2 - x1 + 1, y2 - y1 + 1, bRedraw);
-//	if (!(bgP && bgP->menu_canvas))
-//		NMBlueBox (x1, y1, x2, y2);
-	}
-else {
-	if (bNewMenuFirstTime || (gameStates.menus.bHires != bHiresBackground)) {
-		int nPCXResult;
-
-		if (bNewMenuFirstTime) {
-			atexit (NewMenuClose);
-			bNewMenuFirstTime = 0;
-			nmBackgroundSave.SetBuffer (NULL);
-			}
-		else {
-			if (nmBackgroundSave.Buffer ())
-				nmBackgroundSave.DestroyBuffer ();
-			if (nmBackground.Buffer ())
-				nmBackground.DestroyBuffer ();
-			}
-		nPCXResult = PCXReadBitmap (reinterpret_cast<char*> (MENU_BACKGROUND_BITMAP), &nmBackgroundSave, BM_LINEAR, 0);
-		Assert (nPCXResult == PCX_ERROR_NONE);
-		nmBackground = nmBackgroundSave;
-		nmBackground.SetBuffer (NULL);	
-		NMRemapBackground ();
-		bHiresBackground = gameStates.menus.bHires;
-		}
-	if (x1 < 0) 
-		x1 = 0;
-	if (y1 < 0)
-		y1 = 0;
-	w = x2-x1+1;
-	h = y2-y1+1;
-	//if (w > nmBackground.Width ()) w = nmBackground.Width ();
-	//if (h > nmBackground.Height ()) h = nmBackground.Height ();
-	x2 = x1 + w - 1;
-	y2 = y1 + h - 1;
-	glDisable (GL_BLEND);
-	if (bNoDarkening)
-		nmBackground.RenderClipped (CCanvas::Current (), x1, y1, w, h, LHX (10), LHY (10));
-	else
-		nmBackground.RenderClipped (CCanvas::Current (), x1, y1, w, h, 0, 0);
-	PrintVersionInfo ();
-	glEnable (GL_BLEND);
-	if (!bNoDarkening) {
-		// give the menu background box a 3D look by changing its edges' brightness
-		gameStates.render.grAlpha = 2*7;
-		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-		GrURect (x2-5, y1+5, x2-6, y2-5);
-		GrURect (x2-4, y1+4, x2-5, y2-5);
-		GrURect (x2-3, y1+3, x2-4, y2-5);
-		GrURect (x2-2, y1+2, x2-3, y2-5);
-		GrURect (x2-1, y1+1, x2-2, y2-5);
-		GrURect (x2+0, y1+0, x2-1, y2-5);
-		GrURect (x1+5, y2-5, x2, y2-6);
-		GrURect (x1+4, y2-4, x2, y2-5);
-		GrURect (x1+3, y2-3, x2, y2-4);
-		GrURect (x1+2, y2-2, x2, y2-3);
-		GrURect (x1+1, y2-1, x2, y2-2);
-		GrURect (x1+0, y2, x2, y2-1);
-		}
-	GrUpdate (0);
-	}
-gameStates.render.grAlpha = FADE_LEVELS;
-}
-
-//------------------------------------------------------------------------------
-
-void NMInitBackground (char *filename, bkg *bgP, int x, int y, int w, int h, int bRedraw)
-{
-	static char *pszMenuPcx = NULL;
-	int bVerInfo, bBlueBox;
-
-paletteManager.SetEffect (0, 0, 0);
-if (!pszMenuPcx)
-	pszMenuPcx = MENU_PCX_NAME ();
-bVerInfo = filename && !strcmp (filename, pszMenuPcx);
-bBlueBox = gameOpts->menus.nStyle && (bRedraw > -1) && (!bVerInfo || (gameOpts->menus.altBg.bHave > 0));
-if (filename || gameOpts->menus.nStyle) {	// background image file present
-	NMLoadBackground (filename, bgP, bRedraw);
-	PrintVersionInfo ();
-	if (bVerInfo)
-		;
-	else if (bBlueBox) {
-		if (bgP && (bgP->menu_canvas || bgP->bIgnoreCanv)) {
-			if (bgP->menu_canvas)
-				CCanvas::SetCurrent (bgP->menu_canvas);
-			if (bVerInfo)
-				PrintVersionInfo ();
-			}
-		NMBlueBox (x, y, x + w, y + h, gameData.menu.nLineWidth, 1.0f, 0);
-		}
-	if (bgP && !bgP->bIgnoreBg) {
-		paletteManager.LoadEffect  ();
-		bgP->saved = NULL;
-		if (!gameOpts->menus.nStyle) {
-			if (!bgP->background) {
-				bgP->background = CBitmap::Create (0, w, h, 4);
-				Assert (bgP->background != NULL);
-				}
-			CCanvas::Current ()->RenderClipped (bgP->background, 0, 0, w, h, x, y);
-			}
-		}
-	} 
-// Save the background of the display
-//	Win95 must refer to the screen as a ddgrs_canvas, so...
-if (!(gameOpts->menus.nStyle && bRedraw)) {
-	if (bgP && !(bgP->menu_canvas || bgP->bIgnoreCanv)) {
-		if (gameOpts->menus.nStyle) {
-			x = y = 0;
-			w = screen.Width ();
-			h = screen.Height ();
-			}
-		bgP->menu_canvas = screen.Canvas ()->CreatePane (x, y, w, h);
-		CCanvas::SetCurrent (bgP->menu_canvas);
-		}
-	}
-if (bgP && !(gameOpts->menus.nStyle || filename)) {
-	// Save the background under the menu...
-#ifdef TACTILE
-	if (TactileStick)
-		DisableForces ();
-#endif
-	if (!(gameOpts->menus.nStyle || bgP->saved)) {
-		bgP->saved = CBitmap::Create (0, w, h, 1);
-		Assert (bgP->saved != NULL);
-		}
-	bgP->saved->SetPalette (paletteManager.Default ());
-	if (!gameOpts->menus.nStyle)
-		CCanvas::Current ()->RenderClipped (bgP->saved, 0, 0, w, h, 0, 0);
-	CCanvas::SetCurrent (NULL);
-	NMDrawBackground (bgP, x, y, x + w - 1, y + h - 1, bRedraw);
-	GrUpdate (0);
-	CCanvas::SetCurrent (bgP->menu_canvas);
-	bgP->background = nmBackground.CreateChild (0, 0, w, h);
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void NMRestoreBackground (int sx, int sy, int dx, int dy, int w, int h)
-{
-	int x1, x2, y1, y2;
-
-	x1 = sx; 
-	x2 = sx+w-1;
-	y1 = sy; 
-	y2 = sy+h-1;
-
-	if (x1 < 0) 
-		x1 = 0;
-	if (y1 < 0) 
-		y1 = 0;
-
-	if (x2 >= nmBackground.Width ()) 
-		x2=nmBackground.Width ()-1;
-	if (y2 >= nmBackground.Height ()) 
-		y2=nmBackground.Height ()-1;
-
-	w = x2 - x1 + 1;
-	h = y2 - y1 + 1;
-	nmBackground.RenderClipped (CCanvas::Current (), dx, dy, w, h, x1, y1);
 }
 
 //------------------------------------------------------------------------------
@@ -703,7 +350,7 @@ if (w1 > 0)
 fontManager.Current ()->StringSize (s2, w, h, aw);
 // CHANGED
 if (gameStates.ogl.nDrawBuffer != GL_BACK)
-	bgP->background->RenderClipped (CCanvas::Current (), 5, y - 1, bgP->background->Width () - 15, h + 2, 5, y - 1);
+	bg.background->RenderClipped (CCanvas::Current (), 5, y - 1, bg.background->Width () - 15, h + 2, 5, y - 1);
 
 if (0 && gameStates.multi.bSurfingNet) {
 	for (i=0;i<l;i++) {
@@ -751,15 +398,15 @@ if (p) {
 
 fontManager.Current ()->StringSize (s, w, h, aw);
 if (gameStates.ogl.nDrawBuffer != GL_BACK)
-	bgP->background->RenderClipped (CCanvas::Current (), 5, y, bgP->background->Width () - 15, h, 5, y);
+	bg.background->RenderClipped (CCanvas::Current (), 5, y, bg.background->Width () - 15, h, 5, y);
 itemP->text = s;
 NMHotKeyString (itemP, bIsCurrent, bTiny, 1, 0);
 itemP->text = t;
 if (p) {
 	fontManager.Current ()->StringSize (s1, w, h, aw);
 	if (gameStates.ogl.nDrawBuffer != GL_BACK) {
-		bgP->background->RenderClipped (CCanvas::Current (), x + w1 - w, y, w, 1, x + w1 - w, y);
-		bgP->background->RenderClipped (CCanvas::Current (), x + w1 - w, y + h - 1, w, 1, x + w1 - w, y);
+		bg.background->RenderClipped (CCanvas::Current (), x + w1 - w, y, w, 1, x + w1 - w, y);
+		bg.background->RenderClipped (CCanvas::Current (), x + w1 - w, y + h - 1, w, 1, x + w1 - w, y);
 		}
 	GrString (x+w1-w, y, s1, NULL);
 	*p = '\t';
@@ -803,7 +450,7 @@ x -= 3;
 if (w1 == 0) 
 	w1 = w;
 if (gameStates.ogl.nDrawBuffer != GL_BACK)
-	bgP->background->RenderClipped (CCanvas::Current (), x - w1, y, w1, h, x - w1, y);
+	bg.background->RenderClipped (CCanvas::Current (), x - w1, y, w1, h, x - w1, y);
 hs = itemP->text;
 itemP->text = s;
 h = itemP->x;
@@ -824,7 +471,7 @@ x -= 3;
 if (w1 == 0) 
 	w1 = w;
 if (gameStates.ogl.nDrawBuffer != GL_BACK)
-	bgP->background->RenderClipped (CCanvas::Current (), x - w1, y, w1, h, x - w1, y);
+	bg.background->RenderClipped (CCanvas::Current (), x - w1, y, w1, h, x - w1, y);
 GrString (x-w, y, s, NULL);
 }
 
@@ -863,7 +510,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-void NMStringInputBox (bkg *bgP, int w, int x, int y, char *text, int current)
+void NMStringInputBox (CBackground& bg, int w, int x, int y, char *text, int current)
 {
 	int w1, h1, aw;
 
@@ -883,7 +530,7 @@ if (current)
 
 //------------------------------------------------------------------------------
 
-void NMGauge (bkg *bgP, int w, int x, int y, int val, int maxVal, int current)
+void NMGauge (CBackground& bg, int w, int x, int y, int val, int maxVal, int current)
 {
 	int w1, h, aw;
 
@@ -1432,6 +1079,8 @@ else {
 	GrUpdate (0);
 	}
 bg->menu_canvas->Destroy ();
+while (KeyInKey () != KEY_ESC)
+	;
 CCanvas::SetCurrent (NULL);		
 CCanvas::Pop ();
 memset (bg, 0, sizeof (*bg));
@@ -1871,10 +1520,10 @@ radioOption:
          break;
                 
 		case KEY_ALTED + KEY_ENTER: {
-			//int bLoadAltBg = NMFreeAltBg ();
+			//int bLoadCustomBg = NMFreeCustomBg ();
 			NMFreeAllTextBms (itemP, nItems);
 			NMRestoreScreen (filename, &bg, bDontRestore);
-			NMFreeAltBg (1);
+			NMFreeCustomBg (1);
 			GrToggleFullScreenGame ();
 			GrabMouse (0, 0);
 			SetScreenMode (SCREEN_MENU);
@@ -2288,7 +1937,7 @@ launchOption:
 			NMDrawTitle (pszSubTitle, SUBTITLE_FONT, RGBA_PAL (21, 21, 21), t);
 			bRedrawAll = 0;
 			}
-		CCanvas::SetCurrent (bg.menu_canvas);
+		CCanvas::SetCurrent (bg.Canvas ());
 		fontManager.SetCurrent (ctrl.bTinyMode ? SMALL_FONT : NORMAL_FONT);
      	for (i = 0; i < ctrl.nMaxDisplayable + ctrl.nScrollOffset - ctrl.nMaxNoScroll; i++) {
 			if ((i >= ctrl.nMaxNoScroll) && (i < ctrl.nScrollOffset))
@@ -3372,10 +3021,10 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 	if (gameOpts->menus.nStyle) {
 		NMRemoveBackground (&bg);
 #if 1
-		if (bg.menu_canvas) {
-		  	bg.menu_canvas->Destroy ();
+		if (bg.Canvas ()) {
+		  	bg.Canvas ()->Destroy ();
 			CCanvas::SetCurrent (NULL);		
-			bg.menu_canvas = NULL;
+			bg.Canvas () = NULL;
 			}
 #endif
 		}

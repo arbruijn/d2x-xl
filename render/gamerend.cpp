@@ -1269,7 +1269,7 @@ bg.w = w;
 bg.h = h;
 if (!gameOpts->menus.nStyle) {
 	bg.bmP = CBitmap::Create (0, w + BOX_BORDER, h + BOX_BORDER, 1);
-	GrBmUBitBlt (bg.bmP, 0, 0, w + BOX_BORDER, h + BOX_BORDER, CCanvas::Current (), x - BOX_BORDER / 2, y - BOX_BORDER / 2, 1);
+	CCanvas::Current ()->RenderToBitmap (bg.bmP, 0, 0, w + BOX_BORDER, h + BOX_BORDER, x - BOX_BORDER / 2, y - BOX_BORDER / 2); 
 	}
 NMDrawBackground (&bg, x - BOX_BORDER / 2, y - BOX_BORDER / 2, x+w + BOX_BORDER / 2-1, y+h + BOX_BORDER / 2-1, 0);
 fontManager.SetColorRGBi (DKGRAY_RGBA, 1, 0, 0);

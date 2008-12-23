@@ -219,6 +219,7 @@ int GrInternalString0 (int x, int y, const char *s)
 	ubyte*		videoBuffer = CCanvas::Current ()->Buffer ();
 	int			rowSize = CCanvas::Current ()->RowSize ();
 	tFont			font;
+	char			c;
 	
 if (CCanvas::Current ()->FontColor (0).rgb) {
 	CCanvas::Current ()->FontColor (0).rgb = 0;
@@ -246,30 +247,30 @@ while (nextRowP != NULL) {
 	for (r = 0; r < font.height; r++) {
 		textP = text_ptr1;
 		videoOffset = videoOffset1;
-		while (*textP) {
-			if (*textP == '\n') {
+		while ((c = *textP)) {
+			if (c == '\n') {
 				nextRowP = textP + 1;
 				break;
 				}
-			if (*textP == CC_COLOR) {
-				CCanvas::Current ()->FontColor (0).index = *(textP+1);
+			if (c == CC_COLOR) {
+				CCanvas::Current ()->FontColor (0).index = *(++textP);
 				CCanvas::Current ()->FontColor (0).rgb = 0;
-				textP += 2;
+				textP++;
 				continue;
 				}
-			if (*textP == CC_LSPACING) {
-				skip_lines = * (textP+1) - '0';
-				textP += 2;
+			if (c == CC_LSPACING) {
+				skip_lines = *(++textP) - '0';
+				textP++;
 				continue;
 				}
 			underline = 0;
-			if (*textP == CC_UNDERLINE) {
+			if (c == CC_UNDERLINE) {
 				if ((r == font.baseLine + 2) || (r == font.baseLine + 3))
 					underline = 1;
 				textP++;
 				}
 			fontManager.Current ()->GetCharWidth (textP[0], textP[1], width, spacing);
-			letter = *textP - font.minChar;
+			letter = c - font.minChar;
 			if (!fontManager.Current ()->InFont (letter)) {	//not in font, draw as space
 				videoOffset += spacing;
 				textP++;
@@ -278,7 +279,7 @@ while (nextRowP != NULL) {
 			if (font.flags & FT_PROPORTIONAL)
 				fp = font.chars [letter];
 			else
-				fp = font.data + letter * BITS_TO_BYTES (width)*font.height;
+				fp = font.data + letter * BITS_TO_BYTES (width) * font.height;
 			if (underline)
 				for (i = 0; i < width; i++)
 					videoBuffer [videoOffset++] = (ubyte) CCanvas::Current ()->FontColor (0).index;
