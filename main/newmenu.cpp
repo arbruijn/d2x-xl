@@ -85,11 +85,6 @@ char SLIDER_MARKER [2] = {(char) 134, 0};
 char UP_ARROW_MARKER [2] = {(char) 135, 0};
 char DOWN_ARROW_MARKER [2] = {(char) 136, 0};
 
-CPalette		*menuPalette;
-static		char *pszCurBg = NULL;
-
-CBitmap	*customBgP = NULL;
-
 typedef struct tMenuProps {
 	int	scWidth,
 			scHeight,
@@ -126,28 +121,11 @@ int ExecMenu4 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuI
 
 //------------------------------------------------------------------------------
 
-extern int bNewMenuFirstTime;
-//--unused-- int Newmenu_fade_in = 1;
-
-extern CBitmap nmBackground, nmBackgroundSave;
-
 #define MESSAGEBOX_TEXT_SIZE 10000		// How many characters in messagebox
 #define MAX_TEXT_WIDTH 	200				// How many pixels wide a input box can be
 
 char bPauseableMenu = 0;
 char bAlreadyShowingInfo = 0;
-
-//------------------------------------------------------------------------------
-
-void _CDECL_ NewMenuClose (void)
-{
-PrintLog ("unloading menu data\n");
-if (nmBackground.Buffer ())
-	nmBackground.DestroyBuffer ();
-if (nmBackgroundSave.Buffer ())
-	nmBackgroundSave.DestroyBuffer ();
-bNewMenuFirstTime = 1;
-}
 
 //------------------------------------------------------------------------------
 
@@ -1269,7 +1247,6 @@ while (!done) {
 					}
 				}
 			CCanvas::Pop ();
-			//paletteManager.Load (menuPalette); ???
 			}
 		}
 
