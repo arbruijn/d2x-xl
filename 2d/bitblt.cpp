@@ -698,26 +698,22 @@ void CBitmap::RenderClipped (CBitmap* dest, int dx, int dy, int w, int h, int sx
 if (!dest)
 	dest = CCanvas::Current ();
 
-	int	dx1 = dx, 
-			dx2 = dx + dest->Width () - 1;
-	int	dy1 = dy, 
-			dy2 = dy + dest->Height () - 1;
-	int	sx1 = sx, 
-			sx2 = sx + Width () - 1;
-	int	sy1 = sy, 
-			sy2 = sy + Height () - 1;
+	int	dx2 = dx + dest->Width () - 1;
+	int	dy2 = dy + dest->Height () - 1;
+	int	sx2 = sx + Width () - 1;
+	int	sy2 = sy + Height () - 1;
 
-if ((dx1 >= dest->Width ()) || (dx2 < 0)) 
+if ((dx >= dest->Width ()) || (dx2 < 0)) 
 	return;
-if ((dy1 >= dest->Height ()) || (dy2 < 0)) 
+if ((dy >= dest->Height ()) || (dy2 < 0)) 
 	return;
-if (dx1 < 0) { 
-	sx1 += -dx1; 
-	dx1 = 0; 
+if (dx < 0) { 
+	sx -= dx; 
+	dx = 0; 
 	}
-if (dy1 < 0) { 
-	sy1 += -dy1; 
-	dy1 = 0; 
+if (dy < 0) { 
+	sy -= dy; 
+	dy = 0; 
 	}
 if (dx2 >= dest->Width ()) { 
 	dx2 = dest->Width () - 1; 
@@ -726,41 +722,41 @@ if (dy2 >= dest->Height ()) {
 	dy2 = dest->Height () - 1; 
 	}
 
+if ((sx >= Width ()) || (sx2 < 0)) 
+	return;
+if ((sy >= Height ()) || (sy2 < 0)) 
+	return;
+if (sx < 0) { 
+	dx += -sx; 
+	sx = 0; 
+	}
+if (sy < 0) { 
+	dy += -sy; 
+	sy = 0; 
+	}
+if (sx2 >= Width ()) { 
+	sx2 = Width () - 1; 
+	}
+if (sy2 >= Height ()) { 
+	sy2 = Height () - 1; 
+	}
+
+// Draw bitmap bmP[x,y] into (dx,dy)-(dx2,dy2)
 if (w < 0)
 	w = Width ();
-if ((sx1 >= w) || (sx2 < 0)) 
-	return;
 if (h < 0)
 	h = Height ();
-if ((sy1 >= h) || (sy2 < 0)) 
-	return;
-if (sx1 < 0) { 
-	dx1 += -sx1; 
-	sx1 = 0; 
-	}
-if (sy1 < 0) { 
-	dy1 += -sy1; 
-	sy1 = 0; 
-	}
-if (sx2 >= w) { 
-	sx2 = w - 1; 
-	}
-if (sy2 >= h) { 
-	sy2 = h - 1; 
-	}
+if (dx2 - dx + 1 < w)
+	w = dx2 - dx + 1;
+if (dy2 - dy + 1 < h)
+	h = dy2 - dy + 1;
+if (sx2 - sx + 1 < w)
+	w = sx2 - sx + 1;
+if (sy2 - sy + 1 < h)
+	h = sy2 - sy + 1;
 
-// Draw bitmap bmP[x,y] into (dx1,dy1)-(dx2,dy2)
-if (dx2 - dx1 + 1 < w)
-	w = dx2 - dx1 + 1;
-if (dy2 - dy1 + 1 < h)
-	h = dy2 - dy1 + 1;
-if (sx2 - sx1 + 1 < w)
-	w = sx2 - sx1 + 1;
-if (sy2 - sy1 + 1 < h)
-	h = sy2 - sy1 + 1;
-
-GrBmUBitBlt (dest, dx1, dy1, w, h, this, sx1, sy1, 1);
-//Render (CCanvas::Current (), dx1, dy1, w, h, sx1, sy1, w, h, 1);
+GrBmUBitBlt (dest, dx, dy, w, h, this, sx, sy, 1);
+//Render (CCanvas::Current (), dx, dy, w, h, sx, sy, w, h, 1);
 }
 
 //------------------------------------------------------------------------------

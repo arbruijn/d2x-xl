@@ -360,34 +360,31 @@ if (!gameStates.multi.bSurfingNet && p && (w1 > 0)) {
 // Draw a slider and it's string
 void NMStringSlider (tMenuItem *itemP, int bIsCurrent, int bTiny)
 {
-	int	w, h, aw;
-	int	w1 = itemP->w, 
-			x = itemP->x, 
-			y = itemP->y;
-	char	*t = itemP->text, 
-			*s = itemP->saved_text;
-	char	*p, *s1;
-
-s1 = NULL;
-p = strchr (s, '\t');
+char* s1 = NULL;
+char* p = strchr (itemP->savedText, '\t');
 if (p) {
 	*p = '\0';
-	s1 = p+1;
+	s1 = p + 1;
 	}
 
-fontManager.Current ()->StringSize (s, w, h, aw);
+int w, h, aw;
+fontManager.Current ()->StringSize (itemP->savedText, w, h, aw);
+
+int y = itemP->y;
 if (gameStates.ogl.nDrawBuffer != GL_BACK)
 	backgroundManager.Current ()->RenderClipped (CCanvas::Current (), 5, y, backgroundManager.Current ()->Width () - 15, h, 5, y);
-itemP->text = s;
+char* t = itemP->text;
+itemP->text = itemP->savedText;
 NMHotKeyString (itemP, bIsCurrent, bTiny, 1, 0);
 itemP->text = t;
 if (p) {
 	fontManager.Current ()->StringSize (s1, w, h, aw);
+	int x = itemP->x + itemP->w - w;
 	if (gameStates.ogl.nDrawBuffer != GL_BACK) {
-		backgroundManager.Current ()->RenderClipped (CCanvas::Current (), x + w1 - w, y, w, 1, x + w1 - w, y);
-		backgroundManager.Current ()->RenderClipped (CCanvas::Current (), x + w1 - w, y + h - 1, w, 1, x + w1 - w, y);
+		backgroundManager.Current ()->RenderClipped (CCanvas::Current (), x, y, w, 1, x, y);
+		backgroundManager.Current ()->RenderClipped (CCanvas::Current (), x, y + h - 1, w, 1, x, y);
 		}
-	GrString (x+w1-w, y, s1, NULL);
+	GrString (x, y, s1, NULL);
 	*p = '\t';
 	}
 }
@@ -547,7 +544,7 @@ switch (itemP->nType)	{
 
 	case NM_TYPE_SLIDER:	{
 		int h, l;
-		char *psz = itemP->saved_text;
+		char *psz = itemP->savedText;
 
 		if (itemP->value < itemP->minValue) 
 			itemP->value = itemP->minValue;
@@ -564,7 +561,7 @@ switch (itemP->nType)	{
 		for (j = 0; j < (itemP->maxValue - itemP->minValue + 1); j++) {
 			sprintf (psz, "%s%s", psz, SLIDER_MIDDLE);
 			}
-		sprintf (itemP->saved_text, "%s%s", itemP->saved_text, SLIDER_RIGHT);
+		sprintf (itemP->savedText, "%s%s", itemP->savedText, SLIDER_RIGHT);
 #endif
 		psz [itemP->value + 1 + strlen (itemP->text) + 1] = SLIDER_MARKER [0];
 		NMStringSlider (itemP, bIsCurrent, bTiny);
@@ -829,16 +826,16 @@ for (i = 0; i < nItems; i++, itemP++) {
 	if (gameStates.multi.bSurfingNet)
 		nStringHeight+=LHY (3);
 
-	itemP->saved_text [0] = '\0';
+	itemP->savedText [0] = '\0';
 	if (itemP->nType == NM_TYPE_SLIDER) {
 		int w1, h1, aw1;
 		(*nOthers)++;
-		sprintf (itemP->saved_text, "%s", SLIDER_LEFT);
+		sprintf (itemP->savedText, "%s", SLIDER_LEFT);
 		for (j = 0; j< (itemP->maxValue - itemP->minValue+1); j++)	{
-			sprintf (itemP->saved_text, "%s%s", itemP->saved_text, SLIDER_MIDDLE);
+			sprintf (itemP->savedText, "%s%s", itemP->savedText, SLIDER_MIDDLE);
 			}
-		sprintf (itemP->saved_text, "%s%s", itemP->saved_text, SLIDER_RIGHT);
-		fontManager.Current ()->StringSize (itemP->saved_text, w1, h1, aw1);
+		sprintf (itemP->savedText, "%s%s", itemP->savedText, SLIDER_RIGHT);
+		fontManager.Current ()->StringSize (itemP->savedText, w1, h1, aw1);
 		nStringWidth += w1 + *aw;
 		}
 	else if (itemP->nType == NM_TYPE_MENU)	{
@@ -876,7 +873,7 @@ for (i = 0; i < nItems; i++, itemP++) {
 		}
 	else if (itemP->nType == NM_TYPE_INPUT)	{
 		Assert (strlen (itemP->text) < NM_MAX_TEXT_LEN);
-		strncpy (itemP->saved_text, itemP->text, NM_MAX_TEXT_LEN);
+		strncpy (itemP->savedText, itemP->text, NM_MAX_TEXT_LEN);
 		(*nOthers)++;
 		nStringWidth = itemP->text_len*CCanvas::Current ()->Font ()->Width ()+ ((gameStates.menus.bHires?3:1)*itemP->text_len);
 		if (nStringWidth > MAX_TEXT_WIDTH) 
@@ -885,7 +882,7 @@ for (i = 0; i < nItems; i++, itemP++) {
 		}
 	else if (itemP->nType == NM_TYPE_INPUT_MENU)	{
 		Assert (strlen (itemP->text) < NM_MAX_TEXT_LEN);
-		strncpy (itemP->saved_text, itemP->text, NM_MAX_TEXT_LEN);
+		strncpy (itemP->savedText, itemP->text, NM_MAX_TEXT_LEN);
 		(*nMenus)++;
 		nStringWidth = itemP->text_len*CCanvas::Current ()->Font ()->Width ()+ ((gameStates.menus.bHires?3:1)*itemP->text_len);
 		itemP->value = -1;
@@ -1365,7 +1362,7 @@ if (k && (console.Events (k) || bWheelUp || bWheelDown))
 				itemP [choice].value = -1;
 			if ((old_choice>-1) &&(itemP [old_choice].nType==NM_TYPE_INPUT_MENU) &&(old_choice != choice))	{
 				itemP [old_choice].group=0;
-				strcpy (itemP [old_choice].text, itemP [old_choice].saved_text);
+				strcpy (itemP [old_choice].text, itemP [old_choice].savedText);
 				itemP [old_choice].value = -1;
 			}
 			if (old_choice>-1) 
@@ -1407,7 +1404,7 @@ if (k && (console.Events (k) || bWheelUp || bWheelDown))
 				itemP [choice].value = -1;
 			if ((old_choice>-1) &&(itemP [old_choice].nType==NM_TYPE_INPUT_MENU) &&(old_choice != choice))	{
 				itemP [old_choice].group=0;
-				strcpy (itemP [old_choice].text, itemP [old_choice].saved_text);
+				strcpy (itemP [old_choice].text, itemP [old_choice].savedText);
 				itemP [old_choice].value = -1;
 			}
 			if (old_choice>-1)
@@ -1497,7 +1494,7 @@ launchOption:
 			if ((choice > -1) && (itemP [choice].nType == NM_TYPE_INPUT_MENU) && (itemP [choice].group == 0)) {
 				itemP [choice].group = 1;
 				itemP [choice].redraw = 1;
-				if (!strnicmp (itemP [choice].saved_text, TXT_EMPTY, strlen (TXT_EMPTY))) {
+				if (!strnicmp (itemP [choice].savedText, TXT_EMPTY, strlen (TXT_EMPTY))) {
 					itemP [choice].text [0] = 0;
 					itemP [choice].value = -1;
 					}
@@ -1515,7 +1512,7 @@ launchOption:
 		case KEY_ESC:
 			if ((choice > -1) &&(itemP [choice].nType==NM_TYPE_INPUT_MENU) &&(itemP [choice].group == 1)) {
 				itemP [choice].group=0;
-				strcpy (itemP [choice].text, itemP [choice].saved_text);
+				strcpy (itemP [choice].text, itemP [choice].savedText);
 				itemP [choice].redraw=1;
 				itemP [choice].value = -1;
 				}
@@ -1650,7 +1647,7 @@ launchOption:
 						char slider_text [NM_MAX_TEXT_LEN+1], *p, *s1;
 						int slider_width, height, aw, sleft_width, sright_width, smiddle_width;
 					
-						strcpy (slider_text, itemP [choice].saved_text);
+						strcpy (slider_text, itemP [choice].savedText);
 						p = strchr (slider_text, '\t');
 						if (p) {
 							*p = '\0';
@@ -1690,7 +1687,7 @@ launchOption:
 						itemP [choice].value = -1;
 					if ((old_choice>-1) &&(itemP [old_choice].nType==NM_TYPE_INPUT_MENU) &&(old_choice != choice))	{
 						itemP [old_choice].group=0;
-						strcpy (itemP [old_choice].text, itemP [old_choice].saved_text);
+						strcpy (itemP [old_choice].text, itemP [old_choice].savedText);
 						itemP [old_choice].value = -1;
 					}
 					if (old_choice>-1) 
@@ -1731,7 +1728,7 @@ launchOption:
 			 (itemP [choice].nType == NM_TYPE_INPUT_MENU) && (itemP [choice].group == 0)) {
 			itemP [choice].group = 1;
 			itemP [choice].redraw = 1;
-			if (!strnicmp (itemP [choice].saved_text, TXT_EMPTY, strlen (TXT_EMPTY)))	{
+			if (!strnicmp (itemP [choice].savedText, TXT_EMPTY, strlen (TXT_EMPTY)))	{
 				itemP [choice].text [0] = 0;
 				itemP [choice].value = -1;
 			} else {
