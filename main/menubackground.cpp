@@ -77,10 +77,11 @@ int bHiresBackground;
 
 void CBackground::Init (void)
 {
-m_canvas = NULL;
+m_canvas [0] = NULL;
+m_canvas [1] = NULL;
 m_saved = NULL;
 m_background = NULL;
-m_name = NULL;
+m_filename = NULL;
 m_bIgnoreCanv = false;
 m_bIgnoreBg = false;
 }
@@ -95,8 +96,10 @@ if (m_background &&
 	delete m_background;
 if (m_saved)
 	delete m_saved;
-if (m_canvas)
-	m_canvas->Destroy ();
+if (m_canvas [0])
+	m_canvas [0]->Destroy ();
+if (gameOpts->menus.nStyle && m_canvas [1])
+	m_canvas [1]->Destroy ();
 Init ();
 }
 
@@ -104,10 +107,10 @@ Init ();
 
 CBitmap* CBackground::Load (char* filename, int width, int height)
 {
-m_name = filename;
+m_filename = filename;
 if (gameOpts->menus.nStyle)
 	return backgroundManager.Background (0);
-if (!m_name)
+if (!m_filename)
 	return backgroundManager.Background (1)->CreateChild (0, 0, width, height);
 else if (backgroundManager.IsDefault (filename) || !(m_background = backgroundManager.LoadBackground (filename)))
 	return backgroundManager.Background (0);
@@ -118,15 +121,15 @@ return m_background;
 
 void CBackground::Setup (int x, int y, int width, int height)
 {
-if (m_canvas)
-	m_canvas->Destroy ();
-#if 0
+if (m_canvas [1])
+	m_canvas [1]->Destroy ();
+m_canvas [1] = screen.Canvas ()->CreatePane (x, y, width, height);
 if (gameOpts->menus.nStyle)
-	m_canvas = screen.Canvas ()->CreatePane (0, 0, screen.Width (), screen.Height ());
+	m_canvas [0] = screen.Canvas ()->CreatePane (0, 0, screen.Width (), screen.Height ());
 else
+	m_canvas [0] = m_canvas [1];
 #endif
-	m_canvas = screen.Canvas ()->CreatePane (x, y, width, height);
-CCanvas::SetCurrent (m_canvas);
+CCanvas::SetCurrent (m_canvas [1]);
 	
 }
 
@@ -163,26 +166,26 @@ return true;
 void CBackground::Draw (void)
 {
 paletteManager.SetEffect (0, 0, 0);
-CCanvas::Push ();
-CCanvas::SetCurrent (NULL);
+//CCanvas::Push ();
+//CCanvas::SetCurrent (NULL);
 if (!(gameStates.menus.bNoBackground || gameStates.app.bGameRunning)) {
 	if (gameOpts->menus.nStyle || m_bTopMenu) 
 		m_background->Stretch ();
 	if (m_bTopMenu)
 		PrintVersionInfo ();
 	}
-if (!m_name) {
+if (!m_filename) {
 	if (m_bMenuBox)
-		;//backgroundManager.DrawBox (m_canvas->Left (), m_canvas->Top (), m_canvas->Right (), m_canvas->Bottom (), 
-		//									gameData.menu.nLineWidth, 1.0f, 0);
+		backgroundManager.DrawBox (m_canvas [1]->Left (), m_canvas [1]->Top (), m_canvas [1]->Right (), m_canvas [1]->Bottom (), 
+											gameData.menu.nLineWidth, 1.0f, 0);
 	else
 		DrawArea (0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 		//CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), 
 		//			 CCanvas::Current ()->Right (), CCanvas::Current ()->Bottom ());
 	}
 paletteManager.LoadEffect ();
-CCanvas::Pop ();
-GrUpdate (0);
+//CCanvas::Pop ();
+//GrUpdate (0);
 }
 
 //------------------------------------------------------------------------------
@@ -234,7 +237,7 @@ gameStates.render.grAlpha = FADE_LEVELS;
 void CBackground::Restore (void)
 {
 if (!gameOpts->menus.nStyle) {
-	CCanvas::SetCurrent (m_canvas);
+	CCanvas::SetCurrent (m_canvas [1]);
 	if (m_saved) {
 		m_saved->Blit ();
 		GrUpdate (0);

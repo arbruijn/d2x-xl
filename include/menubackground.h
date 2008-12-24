@@ -19,10 +19,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 class CBackground {
 	private:
-		CCanvas*	m_canvas;			// canvas (screen area) of a menu
+		CCanvas*	m_canvas [2];		// canvas (screen area) of a menu
 		CBitmap*	m_saved;				// copy of a screen area covered by a menu
 		CBitmap*	m_background;		// complete background
-		char*		m_name;
+		char*		m_filename;
 		bool		m_bIgnoreCanv;
 		bool		m_bIgnoreBg;
 		bool		m_bTopMenu;
@@ -40,7 +40,7 @@ class CBackground {
 		void DrawArea (int left, int top, int right, int bottom);
 		void DrawBox (void);
 
-		inline CCanvas* Canvas () { return m_canvas; }
+		inline CCanvas* Canvas (uint i = 0) { return m_canvas [i]; }
 		inline CBitmap* Background (void) { return m_background; }
 
 	private:

@@ -1892,7 +1892,8 @@ launchOption:
 			NMDrawTitle (pszSubTitle, SUBTITLE_FONT, RGBA_PAL (21, 21, 21), t);
 			bRedrawAll = 0;
 			}
-		CCanvas::SetCurrent (backgroundManager.Canvas ());
+		if (!gameOpts->menus.nStyle)
+			CCanvas::SetCurrent (backgroundManager.Canvas ());
 		fontManager.SetCurrent (ctrl.bTinyMode ? SMALL_FONT : NORMAL_FONT);
      	for (i = 0; i < ctrl.nMaxDisplayable + ctrl.nScrollOffset - ctrl.nMaxNoScroll; i++) {
 			if ((i >= ctrl.nMaxNoScroll) && (i < ctrl.nScrollOffset))
