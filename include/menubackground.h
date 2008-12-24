@@ -27,6 +27,7 @@ class CBackground {
 		bool		m_bIgnoreBg;
 		bool		m_bTopMenu;
 		bool		m_bMenuBox;
+		bool		m_bSetup;
 
 	public:
 		CBackground () { Init (); }

@@ -85,6 +85,7 @@ m_background = NULL;
 m_filename = NULL;
 m_bIgnoreCanv = false;
 m_bIgnoreBg = false;
+m_bSetup = false;
 }
 
 //------------------------------------------------------------------------------
@@ -145,6 +146,7 @@ if (!gameOpts->menus.nStyle) {
 		CCanvas::SetCurrent (m_canvas [0]);
 		m_saved [i]->SetPalette (paletteManager.Default ());
 		CCanvas::Current ()->RenderToBitmap (m_saved [i], 0, 0, width, height, 0, 0);
+		GrUpdate (0);
 		CCanvas::Pop ();
 		}
 	}
@@ -161,8 +163,7 @@ if (!(m_background = Load (filename, width, height)))
 	return false;
 Setup (x, y, width, height);
 Save (1, width, height);
-Draw ();
-GrUpdate (0);
+Draw (true);
 Save (0, width, height);
 return true;
 }
@@ -185,7 +186,7 @@ if (!m_filename) {
 		backgroundManager.DrawBox (m_canvas [1]->Left (), m_canvas [1]->Top (), m_canvas [1]->Right (), m_canvas [1]->Bottom (), 
 											gameData.menu.nLineWidth, 1.0f, 0);
 	else
-		DrawArea (0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+		DrawArea (0, 0, CCanvas::Current ()->Right (), CCanvas::Current ()->Bottom ());
 		//CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), 
 		//			 CCanvas::Current ()->Right (), CCanvas::Current ()->Bottom ());
 	}

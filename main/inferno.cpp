@@ -231,6 +231,7 @@ else
 	y = 37;
 
 gameStates.menus.bDrawCopyright = 0;
+CCanvas::Push ();
 CCanvas::SetCurrent (NULL);
 fontManager.SetCurrent (GAME_FONT);
 fontManager.Current ()->StringSize ("V2.2", w, h, aw);
@@ -258,6 +259,7 @@ fontManager.SetColorRGBi (D2BLUE_RGBA, 1, 0, 0);
 GrPrintF (NULL, CCanvas::Current ()->Width () - ws - 1, 
 			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0) + (h - hs) / 2, VERSION);
 fontManager.SetColorRGBi (RGBA_PAL (6, 6, 6), 1, 0, 0);
+CCanvas::Pop ();
 }
 
 // ----------------------------------------------------------------------------

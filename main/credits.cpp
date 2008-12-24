@@ -299,9 +299,9 @@ for (int i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
 			if ((y >= 0) && (y + h <= 480)) {
 				CBitmap* bmP = CreateStringBitmap (s, 0, 0, NULL, 1, w, -1);
 				if (bmP) {
-					float dy = float ((y < FADE_DIST) ? y : (480 - y < FADE_DIST) ? 480 - y : FADE_DIST);
+					float dy = float ((y < FADE_DIST) ? y : (480 - y - h < FADE_DIST) ? 480 - y - h : FADE_DIST);
 					colors [0].alpha = colors [1].alpha = dy / float (FADE_DIST);
-					dy = float ((y + h < FADE_DIST) ? y + h : (480 - y - h < FADE_DIST) ? 480 - y - h : FADE_DIST);
+					dy = float ((y + h < FADE_DIST) ? y + h : (480 - y - 2 * h < FADE_DIST) ? 480 - y - 2 * h : FADE_DIST);
 					colors [2].alpha = colors [3].alpha = dy / float (FADE_DIST);
 					bmP->Render (CCanvas::Current (), (screen.Width () - w) / 2, m_yOffs + y, w, h, 0, 0, w, h, 1, 0, 1, colors);
 					delete bmP;
@@ -395,7 +395,7 @@ for (;;) {
 	Render ();
 	SongsCheckRedbookRepeat();
 	if (!HandleInput ())
-		return;
+		break;
 
 	if (m_buffer [(m_nLines [0] + 1) %  NUM_LINES][0] == '!') {
 		m_nFirstLineOffs -= ROW_SPACING - ROW_SPACING / 2;
