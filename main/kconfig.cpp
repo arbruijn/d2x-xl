@@ -1210,10 +1210,10 @@ if (!IsMultiGame || (gameStates.app.nFunctionMode != FMODE_GAME) || gameStates.a
 CCanvas::Push ();
 CCanvas::SetCurrent (NULL);	
 font = CCanvas::Current ()->Font ();
-
 FlushInput ();
-backgroundManager.Setup (NULL, xOffs, yOffs, xOffs + 639 /*CCanvas::Current ()->Width () - 1*/, yOffs + 479 /*CCanvas::Current ()->Height () - 1*/);
+backgroundManager.Setup (NULL, xOffs, yOffs, 640, 480);
 paletteManager.LoadEffect ();
+CCanvas::SetCurrent (NULL);	
 
 nCurItem = 0;
 SDL_ShowCursor (1);
@@ -1237,7 +1237,9 @@ for (;;) {
 			bRedraw = 1;
 			if (gameOpts->menus.nStyle && gameStates.app.bGameRunning)
 				GameRenderFrame ();
+			CCanvas::SetCurrent (backgroundManager.Canvas ());
 			backgroundManager.Draw ();
+			CCanvas::SetCurrent (NULL);
 			KCDrawTitle (pszTitle);
 			close_x = close_y = gameStates.menus.bHires ? 15 : 7;
 			close_x += xOffs;

@@ -490,16 +490,14 @@ while (nextRowP != NULL) {
 			textP = ScanEmbeddedColors (c, textP, origColor, 128, 2);
 			continue;
 			}
-		if (!fontManager.Current ()->InFont (letter)) {
-			l += spacing;
-			textP++;
+		if (fontManager.Current ()->InFont (letter)) {
+			bmf = m_info.bitmaps + letter;
+			bmf->AddFlags (BM_FLAG_TRANSPARENT);
+			if (bOGL)
+				OglUBitMapMC (l, t, 0, 0, bmf, colorP, F1_0, 0);
+			else
+				GrBitmapM (l, t, bmf, 2); // credits need clipping
 			}
-		bmf = m_info.bitmaps + letter;
-		bmf->AddFlags (BM_FLAG_TRANSPARENT);
-		if (bOGL)
-			OglUBitMapMC (l, t, 0, 0, bmf, colorP, F1_0, 0);
-		else
-			GrBitmapM (l, t, bmf, 2); // credits need clipping
 		l += spacing;
 		textP++;
 		}
