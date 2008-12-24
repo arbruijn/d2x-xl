@@ -142,7 +142,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void ShowLevelIntro (int nLevel);
 int StartNewLevelSecret (int nLevel, int bPageInTextures);
 void InitPlayerPosition (int bRandom);
-void LoadStars (void);
 void ReturningToLevelMessage (void);
 void AdvancingToLevelMessage (void);
 void DoEndGame (void);

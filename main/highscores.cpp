@@ -52,8 +52,6 @@ void ScoreTableDrawCoop ();
 
 static int xOffs = 0, yOffs = 0;
 
-void LoadStars (void);
-
 //-----------------------------------------------------------------------------
 
 void ScoreTableDrawItem (int  i, int *sorted)
@@ -409,7 +407,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	oldstates  [i] = gameData.multiplayer.players [i].connected;
 if (bNetwork)
 	NetworkEndLevel (&key);
-LoadStars ();
+backgroundManager.LoadStars ();
 while (!done) {
 	if (!bRedraw || (gameStates.ogl.nDrawBuffer == GL_BACK)) {
 		backgroundManager.Draw ();
