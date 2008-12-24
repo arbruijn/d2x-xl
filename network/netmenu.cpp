@@ -2101,7 +2101,7 @@ if (bAutoRun) {
 	}
 else {
 	gameStates.multi.bSurfingNet = 1;
-//	NMLoadBackground (MENU_PCX_NAME (), &bg, 0);             //load this here so if we abort after loading level, we restore the palette
+//	NMLoadBackground (MenuPCXName (), &bg, 0);             //load this here so if we abort after loading level, we restore the palette
 //	paletteManager.LoadEffect  ();
 	choice = ExecMenuTiny (TXT_NETGAMES, NULL, MAX_ACTIVE_NETGAMES + 2 + gameStates.multi.bUseTracker, m, NetworkJoinPoll);
 //	backgroundManager.Remove ();

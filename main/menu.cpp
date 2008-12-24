@@ -424,7 +424,7 @@ do {
 		nChoice = 0;
 	gameStates.menus.bDrawCopyright = 1;
 	Assert (sizeofa (m) >= (size_t) nOptions);
-	i = ExecMenu2 ("", NULL, nOptions, m, AutoDemoMenuCheck, &nChoice, MENU_PCX_NAME ());
+	i = ExecMenu2 ("", NULL, nOptions, m, AutoDemoMenuCheck, &nChoice, MenuPCXName ());
 	if (gameStates.app.bNostalgia)
 		gameOpts->app.nVersionFilter = 3;
 	WritePlayerFile ();
@@ -5568,17 +5568,5 @@ if ((choice == -1) || !*m [1].text)
 ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INV_ADDRESS);
 }
 
-//------------------------------------------------------------------------------
-
- char *MENU_PCX_NAME (void)
-{
-if (CFile::Exist (MENU_PCX_FULL, gameFolders.szDataDir, 0))
-	return const_cast<char*> (MENU_PCX_FULL);
-if (CFile::Exist (MENU_PCX_OEM, gameFolders.szDataDir, 0))
-	return const_cast<char*> (MENU_PCX_OEM);
-if (CFile::Exist (MENU_PCX_SHAREWARE, gameFolders.szDataDir, 0))
-	return const_cast<char*> (MENU_PCX_SHAREWARE);
-return const_cast<char*> (MENU_PCX_MAC_SHARE);
-}
 //------------------------------------------------------------------------------
 //eof

@@ -1603,13 +1603,6 @@ gameStates.app.bBetweenLevels = 0;
 
 //------------------------------------------------------------------------------
 
-void LoadStars (void)
-{
-backgroundManager.Setup (reinterpret_cast<char*> (STARS_BACKGROUND), 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
-}
-
-//------------------------------------------------------------------------------
-
 void DiedInMineMessage (void)
 {
 	// Tell the CPlayerData he died in the mine, explain why

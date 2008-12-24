@@ -23,21 +23,6 @@ void GameplayOptionsMenu ();
 int QuitSaveLoadMenu (void);
 int SelectAndLoadMission (int bMulti, int *bAnarchyOnly);
 
-// name of background bitmap
-#if 0
-#define MENU_PCX_NAME \
-			(CFile::Exist (MENU_PCX_FULL,gameFolders.szDataDir,0) ? MENU_PCX_FULL : \
-			(CFile::Exist (MENU_PCX_OEM,gameFolders.szDataDir,0) ? MENU_PCX_OEM : \
-			CFile::Exist (MENU_PCX_SHAREWARE,gameFolders.szDataDir,0) ? MENU_PCX_SHAREWARE : MENU_PCX_MAC_SHARE))
-#else
-char *MENU_PCX_NAME (void);
-#endif
-
-#define MENU_PCX_FULL		menuBgNames [0][gameStates.menus.bHires]
-#define MENU_PCX_OEM			menuBgNames [1][gameStates.menus.bHires]
-#define MENU_PCX_SHAREWARE	menuBgNames [2][gameStates.menus.bHires]
-#define MENU_PCX_MAC_SHARE	menuBgNames [3][gameStates.menus.bHires]
-
 void InitDetailLevels(int detailLevel);
 
 int SwitchDisplayMode (int dir);

@@ -131,8 +131,4 @@ extern int altBgGrayScale;
 extern char altBgName [FILENAME_LEN];
 extern char bAlreadyShowingInfo;
 
-#define STARS_BACKGROUND \
-			((gameStates.menus.bHires && CFile::Exist ("starsb.pcx", gameFolders.szDataDir, 0)) ? "starsb.pcx":\
-			CFile::Exist ("stars.pcx", gameFolders.szDataDir, 0) ? "stars.pcx" : "starsb.pcx")
-
 #endif /* _NEWMENU_H */

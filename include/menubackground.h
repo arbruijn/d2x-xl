@@ -17,6 +17,18 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "bitmap.h"
 #include "canvas.h"
 
+//------------------------------------------------------------------------------
+
+#define STARS_BACKGROUND \
+			((gameStates.menus.bHires && CFile::Exist ("starsb.pcx", gameFolders.szDataDir, 0)) ? "starsb.pcx":\
+			CFile::Exist ("stars.pcx", gameFolders.szDataDir, 0) ? "stars.pcx" : "starsb.pcx")
+
+//------------------------------------------------------------------------------
+
+char *MenuPCXName (void);
+
+//------------------------------------------------------------------------------
+
 class CBackground {
 	private:
 		CCanvas*	m_canvas [2];		// canvas (screen area) of a menu
@@ -49,6 +61,8 @@ class CBackground {
 		void Setup (int x, int y, int width, int height);
 		void Save (int i, int width, int height);
 };
+
+//------------------------------------------------------------------------------
 
 class CBackgroundManager : private CStack<CBackground> {
 	private:
@@ -92,10 +106,16 @@ class CBackgroundManager : private CStack<CBackground> {
 						nLineWidth, fAlpha, bForce);
 			}
 
+		void LoadStars (void);
+
 	private:
 		CBitmap* LoadCustomBackground (void);
 	};
 
+//------------------------------------------------------------------------------
+
 extern  CBackgroundManager backgroundManager;
+
+//------------------------------------------------------------------------------
 
 #endif // _MENUBACKGROUND_H 

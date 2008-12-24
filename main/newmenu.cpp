@@ -1034,6 +1034,8 @@ void NMRestoreScreen (char *filename, int bDontRestore)
 {
 //CCanvas::SetCurrent (bg->menu_canvas);
 backgroundManager.Remove ();
+if (gameStates.app.bGameRunning)
+	backgroundManager.Remove ();
 GrUpdate (0);
 CCanvas::SetCurrent (NULL);		
 CCanvas::Pop ();
@@ -1091,6 +1093,8 @@ FlushInput ();
 
 if (nItems < 1)
 	return -1;
+if (gameStates.app.bGameRunning)
+	LoadStars ();
 SDL_ShowCursor (0);
 SDL_EnableKeyRepeat(60, 30);
 gameStates.menus.nInMenu++;

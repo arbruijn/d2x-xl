@@ -69,7 +69,25 @@ CBackgroundManager backgroundManager;
 
 #define MENU_BACKGROUND_BITMAP (gameStates.menus.bHires ? MENU_BACKGROUND_BITMAP_HIRES : MENU_BACKGROUND_BITMAP_LORES)
 
+#define MENU_PCX_FULL		menuBgNames [0][gameStates.menus.bHires]
+#define MENU_PCX_OEM			menuBgNames [1][gameStates.menus.bHires]
+#define MENU_PCX_SHAREWARE	menuBgNames [2][gameStates.menus.bHires]
+#define MENU_PCX_MAC_SHARE	menuBgNames [3][gameStates.menus.bHires]
+
 int bHiresBackground;
+
+//------------------------------------------------------------------------------
+
+char* MenuPCXName (void)
+{
+if (CFile::Exist (MENU_PCX_FULL, gameFolders.szDataDir, 0))
+	return const_cast<char*> (MENU_PCX_FULL);
+if (CFile::Exist (MENU_PCX_OEM, gameFolders.szDataDir, 0))
+	return const_cast<char*> (MENU_PCX_OEM);
+if (CFile::Exist (MENU_PCX_SHAREWARE, gameFolders.szDataDir, 0))
+	return const_cast<char*> (MENU_PCX_SHAREWARE);
+return const_cast<char*> (MENU_PCX_MAC_SHARE);
+}
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -302,7 +320,7 @@ void CBackgroundManager::Init (void)
 {
 m_background [0] = NULL;
 m_background [1] = NULL;
-m_filename [0] = MENU_PCX_NAME ();
+m_filename [0] = MenuPCXName ();
 m_filename [1] = MENU_BACKGROUND_BITMAP;
 m_nDepth = -1; 
 m_bShadow = true;
@@ -437,8 +455,15 @@ return m_bg [++m_nDepth].Create (filename, x, y, width, height);
 void CBackgroundManager::Rebuild (void)
 {
 Destroy ();
-Setup (MENU_PCX_NAME (), 0, 0, screen.Width (), screen.Height ());
+Setup (MenuPCXName (), 0, 0, screen.Width (), screen.Height ());
 GrUpdate (0);
+}
+
+//------------------------------------------------------------------------------
+
+void CBackgroundManager::LoadStars (void)
+{
+Setup (reinterpret_cast<char*> (STARS_BACKGROUND), 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 }
 
 //------------------------------------------------------------------------------
