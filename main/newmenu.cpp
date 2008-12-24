@@ -330,7 +330,6 @@ fontManager.Current ()->StringSize (s2, w, h, aw);
 // CHANGED
 if (gameStates.ogl.nDrawBuffer != GL_BACK)
 	backgroundManager.Current ()->RenderClipped (CCanvas::Current (), 5, y - 1, backgroundManager.Current ()->Width () - 15, h + 2, 5, y - 1);
-return;
 if (0 && gameStates.multi.bSurfingNet) {
 	for (i = 0;i < l;i++) {
 		if (s2 [i]=='\t' && gameStates.multi.bSurfingNet) {
@@ -372,7 +371,7 @@ fontManager.Current ()->StringSize (itemP->savedText, w, h, aw);
 
 int y = itemP->y;
 if (gameStates.ogl.nDrawBuffer != GL_BACK)
-	backgroundManager.Saved ()->RenderClipped (CCanvas::Current (), 5, y, backgroundManager.Current ()->Width () - 15, h, 5, y);
+	backgroundManager.Current ()->RenderClipped (CCanvas::Current (), 5, y, backgroundManager.Current ()->Width () - 15, h, 5, y);
 char* t = itemP->text;
 itemP->text = itemP->savedText;
 NMHotKeyString (itemP, bIsCurrent, bTiny, 1, 0);
@@ -1216,6 +1215,8 @@ while (!done) {
 #endif
 	if (NMInitCtrl (&ctrl, pszTitle, pszSubTitle, nItems, itemP)) {
 		backgroundManager.Setup (filename, ctrl.x, ctrl.y, ctrl.w, ctrl.h);
+		if (!gameOpts->menus.nStyle)
+			CCanvas::SetCurrent (backgroundManager.Canvas ());
 		bRedraw = 0;
 		ctrl.ty = ctrl.yOffs;
 		if (choice > ctrl.nScrollOffset + ctrl.nMaxOnMenu - 1)
@@ -1884,7 +1885,7 @@ launchOption:
 		bRedraw = 0;
 		if (bRedrawAll && !gameOpts->menus.nStyle) {
 			int t;
-			backgroundManager.Setup (filename, ctrl.x, ctrl.y, ctrl.w, ctrl.h);
+			backgroundManager.Draw ();
 			t = NMDrawTitle (pszTitle, TITLE_FONT, RGBA_PAL (31, 31, 31), ctrl.yOffs);
 			NMDrawTitle (pszSubTitle, SUBTITLE_FONT, RGBA_PAL (21, 21, 21), t);
 			bRedrawAll = 0;

@@ -405,4 +405,5 @@ for (;;) {
 		}
 	}
 CCanvas::Pop ();
+backgroundManager.Draw (true);
 }
