@@ -89,7 +89,9 @@ m_bIgnoreBg = false;
 
 void CBackground::Destroy (void)
 {
-if (m_background && (m_background != backgroundManager.Background ()))
+if (m_background && 
+	 (m_background != backgroundManager.Background (0)) && 
+	 (m_background != backgroundManager.Background (1)))
 	delete m_background;
 if (m_saved)
 	delete m_saved;
@@ -102,7 +104,10 @@ Init ();
 
 CBitmap* CBackground::Load (char* filename, int width, int height)
 {
-if (!(m_name = filename))
+m_name = filename;
+if (gameOpts->menus.nStyle)
+	return backgroundManager.Background (0);
+if (!m_name)
 	return backgroundManager.Background (1)->CreateChild (0, 0, width, height);
 else if (backgroundManager.IsDefault (filename) || !(m_background = backgroundManager.LoadBackground (filename)))
 	return backgroundManager.Background (0);
@@ -115,9 +120,11 @@ void CBackground::Setup (int x, int y, int width, int height)
 {
 if (m_canvas)
 	m_canvas->Destroy ();
+#if 0
 if (gameOpts->menus.nStyle)
 	m_canvas = screen.Canvas ()->CreatePane (0, 0, screen.Width (), screen.Height ());
 else
+#endif
 	m_canvas = screen.Canvas ()->CreatePane (x, y, width, height);
 CCanvas::SetCurrent (m_canvas);
 	
@@ -156,6 +163,8 @@ return true;
 void CBackground::Draw (void)
 {
 paletteManager.SetEffect (0, 0, 0);
+CCanvas::Push ();
+CCanvas::SetCurrent (NULL);
 if (!(gameStates.menus.bNoBackground || gameStates.app.bGameRunning)) {
 	if (gameOpts->menus.nStyle || m_bTopMenu) 
 		m_background->Stretch ();
@@ -163,19 +172,16 @@ if (!(gameStates.menus.bNoBackground || gameStates.app.bGameRunning)) {
 		PrintVersionInfo ();
 	}
 if (!m_name) {
-	if (m_bMenuBox) {
-		if (m_canvas || m_bIgnoreCanv) {
-			if (!m_bIgnoreCanv)
-				CCanvas::SetCurrent (m_canvas);
-			}
-		backgroundManager.DrawBox (gameData.menu.nLineWidth, 1.0f, 0);
-		}
+	if (m_bMenuBox)
+		;//backgroundManager.DrawBox (m_canvas->Left (), m_canvas->Top (), m_canvas->Right (), m_canvas->Bottom (), 
+		//									gameData.menu.nLineWidth, 1.0f, 0);
 	else
 		DrawArea (0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 		//CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), 
 		//			 CCanvas::Current ()->Right (), CCanvas::Current ()->Bottom ());
 	}
 paletteManager.LoadEffect ();
+CCanvas::Pop ();
 GrUpdate (0);
 }
 
@@ -264,11 +270,7 @@ m_background->Render (CCanvas::Current (), dx, dy, w, h, x1, y1, w, h);
 
 CBackgroundManager::CBackgroundManager () 
 { 
-m_background [0] = NULL;
-m_background [1] = NULL;
-m_nDepth = -1;
-m_filename [0] = MENU_PCX_NAME ();
-m_filename [1] = MENU_BACKGROUND_BITMAP;
+Init ();
 }
 
 //------------------------------------------------------------------------------
@@ -399,9 +401,12 @@ return bmP;
 void CBackgroundManager::Create (void)
 {
 if (!m_bValid) {
-	if (!LoadCustomBackground ())
-	m_background [0] = LoadBackground (m_filename [0]);
-	m_background [1] = LoadBackground (m_filename [1]);
+	if ((m_background [0] = LoadCustomBackground ()))
+		m_background [1] = m_background [0];
+	else {
+		m_background [0] = LoadBackground (m_filename [0]);
+		m_background [1] = LoadBackground (m_filename [1]);
+		}
 	m_bValid = true;
 	}
 }

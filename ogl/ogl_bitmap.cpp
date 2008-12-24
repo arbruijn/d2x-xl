@@ -244,7 +244,7 @@ glEnable (GL_TEXTURE_2D);
 if (!(texP = Texture ())) {
 	texP = &tex;
 	texP->Init ();
-	texP->Setup (wSrc, hSrc, RowSize (), 0, 0, bMipMaps, this);
+	texP->Setup (wSrc, hSrc, RowSize (), BPP (), 0, bMipMaps, this);
 	SetTexture (texP);
 	LoadTexture (xSrc, ySrc, nTransp, 0);
 	}

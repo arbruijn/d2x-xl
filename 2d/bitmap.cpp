@@ -166,8 +166,8 @@ if (m_info.props.y > parent->Height () - 1)
 if (w > parent->Width () - m_info.props.x)
 	w = parent->Width () - m_info.props.x;
 m_info.props.w = w;
-if (h > parent->Height () - m_info.props.x)
-	h = parent->Height () - m_info.props.x;
+if (h > parent->Height () - m_info.props.y)
+	h = parent->Height () - m_info.props.y;
 m_info.props.h = h;
 SetParent (parent ? parent : this);
 SetBuffer (parent->Buffer () + (uint) ((m_info.props.y * m_info.props.rowSize) + m_info.props.x * m_info.nBPP), true);

@@ -332,7 +332,7 @@ if (gameStates.ogl.nDrawBuffer != GL_BACK)
 	backgroundManager.Current ()->RenderClipped (CCanvas::Current (), 5, y - 1, backgroundManager.Current ()->Width () - 15, h + 2, 5, y - 1);
 
 if (0 && gameStates.multi.bSurfingNet) {
-	for (i=0;i<l;i++) {
+	for (i = 0;i < l;i++) {
 		if (s2 [i]=='\t' && gameStates.multi.bSurfingNet) {
 			x=XTabs [t];
 			t++;
@@ -647,7 +647,7 @@ int NMCharAllowed (char c)
 void NMTrimWhitespace (char *text)
 {
 	int i, l = (int) strlen (text);
-	for (i=l-1; i>=0; i--)	{
+	for (i = l-1; i>=0; i--)	{
 		if (::isspace (text [i]))
 			text [i] = 0;
 		else
@@ -1439,7 +1439,7 @@ radioOption:
 						goto launchOption;
 					break;
 				case NM_TYPE_RADIO:
-					for (i = 0; i<nItems; i++)	{
+					for (i = 0; i < nItems; i++)	{
 						if ((i != choice) &&(itemP [i].nType == NM_TYPE_RADIO) && (itemP [i].group == itemP [choice].group) &&(itemP [i].value))	{
 							itemP [i].value = 0;
 							itemP [i].redraw = 1;
@@ -1531,7 +1531,7 @@ launchOption:
 		case KEY_ALTED + KEY_F9:
 			gameStates.app.bSaveScreenshot = 1;
 			SaveScreenShot (NULL, 0);
-			for (i=0;i<nItems;i++)
+			for (i = 0;i < nItems;i++)
 				itemP [i].redraw=1;
 		
 			break;
@@ -1571,7 +1571,7 @@ launchOption:
 									nLastScrollCheck=-1;
 								break;
 							case NM_TYPE_RADIO:
-								for (i=0; i<nItems; i++)	{
+								for (i = 0; i < nItems; i++)	{
 									if ((i!=choice) &&(itemP [i].nType==NM_TYPE_RADIO) &&(itemP [i].group==itemP [choice].group) &&(itemP [i].value))	{
 										itemP [i].value = 0;
 										itemP [i].redraw = 1;
@@ -1778,7 +1778,7 @@ launchOption:
 						if (itemP [choice].value  == -1)
 							itemP [choice].value = 0;
 						bAllowed = NMCharAllowed ((char) ascii);
-						if (!bAllowed && ascii==' ' && NMCharAllowed ('_')) {
+						if (!bAllowed && ascii == ' ' && NMCharAllowed ('_')) {
 							ascii = '_';
 							bAllowed=1;
 							}
@@ -1995,7 +1995,7 @@ int _CDECL_ ExecMessageBox1 (
 va_start (args, nChoices);
 Assert (nChoices <= 5);
 memset (nmMsgItems, 0, sizeof (nmMsgItems));
-for (i=0; i<nChoices; i++)	{
+for (i = 0; i < nChoices; i++)	{
    s = va_arg (args, char *);
    nmMsgItems [i].nType = NM_TYPE_MENU; 
 	nmMsgItems [i].text = s;
@@ -2066,7 +2066,7 @@ void NMFileSort (int n, char *list)
 
 	incr = n / 2;
 	while (incr > 0)		{
-		for (i=incr; i<n; i++)		{
+		for (i = incr; i < n; i++)		{
 			j = i - incr;
 			while (j>=0)			{
 				if (strncmp (&list [j* (FILENAME_LEN + 1)], &list [ (j+incr)* (FILENAME_LEN + 1)], FILENAME_LEN - 1) > 0) {
@@ -2252,7 +2252,9 @@ if (!bInitialized) {
 
 // save the screen behind the menu.
 
+	CCanvas::Push ();
 	backgroundManager.Setup (NULL, w_x, w_y, w_w, w_h);
+	CCanvas::Pop ();
 	GrString (0x8000, w_y+10, pszTitle, NULL);
 	bInitialized = 1;
 	}
@@ -2459,7 +2461,7 @@ while (!done)	{
 		int w, h, aw;
 
 		MouseGetPos (&mx, &my);
-		for (i=nFirstItem; i<nFirstItem+nFilesDisplayed; i++)	{
+		for (i = nFirstItem; i < nFirstItem+nFilesDisplayed; i++)	{
 			fontManager.Current ()->StringSize (&filenames [i* (FILENAME_LEN+1)], w, h, aw);
 			x1 = box_x;
 			x2 = box_x + box_w - 1;
@@ -2557,7 +2559,7 @@ while (!done)	{
 			GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((bPlayerMode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0), NULL);
 			}
 		i = nItem;
-		if ((i>=0) &&(i<nFileCount))	{
+		if ((i>=0) &&(i < nFileCount))	{
 			y = (i-nFirstItem)* (CCanvas::Current ()->Font ()->Height ()+2)+box_y;
 			if (i == nItem)
 				fontManager.SetCurrent (SELECTED_FONT);
@@ -2630,7 +2632,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 	fontManager.SetCurrent (SUBTITLE_FONT);
 
 	width = 0;
-	for (i=0; i<nItems; i++)	{
+	for (i = 0; i < nItems; i++)	{
 		int w, h, aw;
 		fontManager.Current ()->StringSize (itemP [i], w, h, aw);	
 		if (w > width)
@@ -2638,7 +2640,6 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 	}
 	nItemsOnScreen = LB_ITEMS_ON_SCREEN * CCanvas::Current ()->Height () / 480;
 	height = (CCanvas::Current ()->Font ()->Height () + 2) * nItemsOnScreen;
-
 	{
 		int w, h, aw;
 		fontManager.Current ()->StringSize (pszTitle, w, h, aw);	
@@ -2817,18 +2818,18 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 		}
 		if (done) break;
 
-		if (nItem<0)
-			nItem=nItems-1;
-		else if (nItem>=nItems)
+		if (nItem < 0)
+			nItem = nItems - 1;
+		else if (nItem >= nItems)
 			nItem = 0;
-		if (nItem< nFirstItem)
+		if (nItem < nFirstItem)
 			nFirstItem = nItem;
-		else if (nItem>= (nFirstItem+nItemsOnScreen))
-			nFirstItem = nItem-nItemsOnScreen+1;
+		else if (nItem >= (nFirstItem + nItemsOnScreen))
+			nFirstItem = nItem - nItemsOnScreen + 1;
 		if (nItems <= nItemsOnScreen)
 			 nFirstItem = 0;
-		if (nFirstItem>nItems-nItemsOnScreen)
-			nFirstItem = nItems-nItemsOnScreen;
+		if (nFirstItem > nItems - nItemsOnScreen)
+			nFirstItem = nItems - nItemsOnScreen;
 		if (nFirstItem < 0) 
 			nFirstItem = 0;
 
@@ -2836,7 +2837,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 			int w, h, aw;
 
 			MouseGetPos (&mx, &my);
-			for (i=nFirstItem; i<nFirstItem+nItemsOnScreen; i++)	{
+			for (i = nFirstItem; i < nFirstItem + nItemsOnScreen; i++) {
 				if (i > nItems)
 					break;
 				fontManager.Current ()->StringSize (itemP [i], w, h, aw);
@@ -2881,7 +2882,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 				}
 
 			CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-			for (i=nFirstItem; i<nFirstItem+nItemsOnScreen; i++)	{
+			for (i = nFirstItem; i < nFirstItem + nItemsOnScreen; i++)	{
 				int w, h, aw, y;
 				y = (i-nFirstItem)* (CCanvas::Current ()->Font ()->Height ()+2)+wy;
 				if (i >= nItems)	{
@@ -2909,7 +2910,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 				SDL_ShowCursor (0);
 
 			i = ocitem;
-			if ((i>=0) &&(i<nItems))	{
+			if ((i>=0) &&(i < nItems))	{
 				y = (i-nFirstItem)* (CCanvas::Current ()->Font ()->Height ()+2)+wy;
 				if (i == nItem)
 					fontManager.SetCurrent (SELECTED_FONT);
@@ -2921,7 +2922,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 
 			}
 			i = nItem;
-			if ((i>=0) &&(i<nItems))	{
+			if ((i>=0) &&(i < nItems))	{
 				y = (i-nFirstItem)* (CCanvas::Current ()->Font ()->Height ()+2)+wy;
 				if (i == nItem)
 					fontManager.SetCurrent (SELECTED_FONT);
@@ -2991,7 +2992,7 @@ int _CDECL_ NMMsgBoxFixedFont (char *pszTitle, int nChoices, ...)
 	Assert (nChoices <= 5);
 
 	memset (nmMsgItems, 0, sizeof (nmMsgItems));
-	for (i=0; i<nChoices; i++)	{
+	for (i = 0; i < nChoices; i++)	{
 		s = va_arg (args, char *);
 		nmMsgItems [i].nType = NM_TYPE_MENU; nmMsgItems [i].text = s;
 	}
