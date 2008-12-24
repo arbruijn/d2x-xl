@@ -48,6 +48,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "joy.h"
 #include "screens.h"
 #include "compbit.h"
+#include "menubackground.h"
 #include "credits.h"
 
 #define LHX(x)      (gameStates.menus.bHires?2*(x):x)
