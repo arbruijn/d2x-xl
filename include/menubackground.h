@@ -68,6 +68,8 @@ class CBackgroundManager : private CStack<CBackground> {
 		inline void Restore (void) { m_bg [m_nDepth].Restore (); }
 		inline void Restore (int dx, int dy, int w, int h, int sx, int sy) { m_bg [m_nDepth].Restore (dx, dy, w, h, sy, sy); }
 		void Remove (void);
+		void Rebuild (void);
+
 		CBitmap* LoadBackground (char* filename);
 		bool IsDefault (char* filename);
 

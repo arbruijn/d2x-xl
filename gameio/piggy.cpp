@@ -267,6 +267,7 @@ do {
 			Error ("Cannot load file <%s> from CD",filename);
 		}
 	} while (ret != EXIT_SUCCESS);
+ClearBoxedMessage ();
 return cfPiggy [gameStates.app.bD1Data].Open (filename, gameFolders.szDataDir, "rb", 0);
 #endif
 }

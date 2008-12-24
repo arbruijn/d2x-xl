@@ -258,11 +258,9 @@ while (gameData.app.bGamePaused) {
 				RenderGauges();
 #endif			
 			}
-		}
-	GrabMouse (1, 0);
-	if (gameStates.render.vr.nScreenFlags & VRF_COMPATIBLE_MENUS) {
-		ClearBoxedMessage();
 	}
+GrabMouse (1, 0);
+ClearBoxedMessage();
 ResumeGame ();
 return key;
 }

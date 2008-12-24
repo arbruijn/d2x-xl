@@ -794,8 +794,7 @@ cameraManager.Create ();
 InitSpheres ();
 BuildObjectModels ();
 OglSetDrawBuffer (gameStates.ogl.nDrawBuffer, 1);
-backgroundManager.Destroy ();
-backgroundManager.Setup (MENU_PCX_NAME (), 0, 0, screen.Width (), screen.Height ());
+backgroundManager.Rebuild ();
 }
 
 //------------------------------------------------------------------------------

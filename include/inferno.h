@@ -1141,6 +1141,7 @@ typedef struct tApplicationStates {
 	int bSingleStep;
 	int bAutoDemos;	//automatically play demos or intro movie if user is idling in the main menu
 	int bShowError;
+	int bClearMessage;
 	fix xThisLevelTime;
 	fix nPlayerTimeOfDeath;
 	char *szCurrentMission;

@@ -128,8 +128,7 @@ if (gameOpts->menus.nStyle)
 	m_canvas [0] = screen.Canvas ()->CreatePane (0, 0, screen.Width (), screen.Height ());
 else
 	m_canvas [0] = m_canvas [1];
-#endif
-CCanvas::SetCurrent (m_canvas [1]);
+CCanvas::SetCurrent (m_canvas [0]);
 	
 }
 
@@ -169,10 +168,10 @@ paletteManager.SetEffect (0, 0, 0);
 //CCanvas::Push ();
 //CCanvas::SetCurrent (NULL);
 if (!(gameStates.menus.bNoBackground || gameStates.app.bGameRunning)) {
-	if (gameOpts->menus.nStyle || m_bTopMenu) 
+	if (gameOpts->menus.nStyle || m_bTopMenu) {
 		m_background->Stretch ();
-	if (m_bTopMenu)
 		PrintVersionInfo ();
+		}
 	}
 if (!m_filename) {
 	if (m_bMenuBox)
@@ -236,12 +235,12 @@ gameStates.render.grAlpha = FADE_LEVELS;
 
 void CBackground::Restore (void)
 {
-if (!gameOpts->menus.nStyle) {
-	CCanvas::SetCurrent (m_canvas [1]);
-	if (m_saved) {
-		m_saved->Blit ();
-		GrUpdate (0);
-		}
+CCanvas::SetCurrent (m_canvas [0]);
+if (gameOpts->menus.nStyle) 
+	m_background->Stretch ();
+else if (m_saved) {
+	m_saved->Blit ();
+	GrUpdate (0);
 	}
 }
 
@@ -422,6 +421,15 @@ Create ();
 if (m_nDepth >= 2)
 	return false;
 return m_bg [++m_nDepth].Create (filename, x, y, width, height);
+}
+
+//------------------------------------------------------------------------------
+
+void CBackgroundManager::Rebuild (void)
+{
+Destroy ();
+Setup (MENU_PCX_NAME (), 0, 0, screen.Width (), screen.Height ());
+GrUpdate (0);
 }
 
 //------------------------------------------------------------------------------

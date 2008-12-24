@@ -1251,6 +1251,7 @@ void ShowBoxedMessage (const char *pszMsg)
 	int x, y;
 	//ubyte save_pal [256*3];
 
+ClearBoxedMessage ();
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
 fontManager.SetCurrent (MEDIUM1_FONT);
 fontManager.Current ()->StringSize (pszMsg, w, h, aw);
@@ -1267,6 +1268,7 @@ backgroundManager.Setup (NULL, x - BOX_BORDER / 2, y - BOX_BORDER / 2, w + BOX_B
 fontManager.SetColorRGBi (DKGRAY_RGBA, 1, 0, 0);
 fontManager.SetCurrent (MEDIUM1_FONT);
 GrPrintF (NULL, 0x8000, (h / 2 + BOX_BORDER) / 2, pszMsg);
+gameStates.app.bClearMessage = 1;
 GrUpdate (0);
 }
 
@@ -1275,6 +1277,7 @@ GrUpdate (0);
 void ClearBoxedMessage ()
 {
 backgroundManager.Remove ();
+gameStates.app.bClearMessage = 0;
 #if 0
 	CBitmap* bmP = backgroundManager.Current ();
 

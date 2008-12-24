@@ -387,8 +387,9 @@ return (nPlayed != MOVIE_NOT_PLAYED);	//default is not nPlayed
 
 void ShowLoadingScreen (void)
 {
-backgroundManager.Setup (MENU_PCX_NAME (), 0, 0, screen.Width (), screen.Height ());
-if (gameStates.app.bNostalgia) {
+if (!gameStates.app.bNostalgia)
+	backgroundManager.Rebuild ();
+else {
 		char filename [14];
 
 #if TRACE	
@@ -976,7 +977,7 @@ if (gameData.demo.bAuto && !gameOpts->demo.bRevertFormat) {
 setjmp (gameExitPoint);
 /*---*/PrintLog ("Invoking main menu\n");
 if (gameStates.app.bNostalgia)
-	backgroundManager.Draw ();
+	backgroundManager.Rebuild ();
 gameStates.app.bInitialized = 1;
 MainLoop ();
 CleanUp ();
