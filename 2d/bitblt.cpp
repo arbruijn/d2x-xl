@@ -698,10 +698,10 @@ void CBitmap::RenderClipped (CBitmap* dest, int dx, int dy, int w, int h, int sx
 if (!dest)
 	dest = CCanvas::Current ();
 
-	int	dx2 = dx + dest->Width () - 1;
-	int	dy2 = dy + dest->Height () - 1;
-	int	sx2 = sx + Width () - 1;
-	int	sy2 = sy + Height () - 1;
+	int	dx2 = dx + w - 1;
+	int	dy2 = dy + h - 1;
+	int	sx2 = sx + w - 1;
+	int	sy2 = sy + h - 1;
 
 if ((dx >= dest->Width ()) || (dx2 < 0)) 
 	return;
@@ -746,6 +746,21 @@ if (w < 0)
 	w = Width ();
 if (h < 0)
 	h = Height ();
+#if 0
+int dw = dx2 - dx + 1;
+if (dw > w)
+	dw = w;
+int dh = dy2 - dy + 1;
+if (dh > h)
+	dh = h;
+int sw = sx2 - sx + 1;
+if (sw > w)
+	sw = w;
+int sh = sy2 - sy + 1;
+if (sh > h)
+	sh = h;
+Render (CCanvas::Current (), dx, dy, dw, dh, sx, sy, sw, sh, 1);
+#else
 if (dx2 - dx + 1 < w)
 	w = dx2 - dx + 1;
 if (dy2 - dy + 1 < h)
@@ -754,9 +769,8 @@ if (sx2 - sx + 1 < w)
 	w = sx2 - sx + 1;
 if (sy2 - sy + 1 < h)
 	h = sy2 - sy + 1;
-
+#endif
 GrBmUBitBlt (dest, dx, dy, w, h, this, sx, sy, 1);
-//Render (CCanvas::Current (), dx, dy, w, h, sx, sy, w, h, 1);
 }
 
 //------------------------------------------------------------------------------

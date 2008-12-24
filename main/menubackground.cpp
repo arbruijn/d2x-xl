@@ -79,7 +79,8 @@ void CBackground::Init (void)
 {
 m_canvas [0] = NULL;
 m_canvas [1] = NULL;
-m_saved = NULL;
+m_saved [0] = NULL;
+m_saved [1] = NULL;
 m_background = NULL;
 m_filename = NULL;
 m_bIgnoreCanv = false;
@@ -94,8 +95,10 @@ if (m_background &&
 	 (m_background != backgroundManager.Background (0)) && 
 	 (m_background != backgroundManager.Background (1)))
 	delete m_background;
-if (m_saved)
-	delete m_saved;
+if (m_saved [0])
+	delete m_saved [0];
+if (m_saved [1])
+	delete m_saved [1];
 if (m_canvas [0])
 	m_canvas [0]->Destroy ();
 if (gameOpts->menus.nStyle && m_canvas [1])
@@ -134,14 +137,15 @@ CCanvas::SetCurrent (m_canvas [0]);
 
 //------------------------------------------------------------------------------
 
-void CBackground::Save (int width, int height)
+void CBackground::Save (int i, int width, int height)
 {
 if (!gameOpts->menus.nStyle) {
-	if (m_saved)
-		delete m_saved;
-	m_saved = CBitmap::Create (0, width, height, 1);
-	m_saved->SetPalette (paletteManager.Default ());
-	CCanvas::Current ()->RenderToBitmap (m_saved, 0, 0, width, height, 0, 0);
+	if (m_saved [i])
+		delete m_saved [i];
+	if ((m_saved [i] = CBitmap::Create (0, width, height, 1))) {
+		m_saved [i]->SetPalette (paletteManager.Default ());
+		CCanvas::Current ()->RenderToBitmap (m_saved [i], 0, 0, width, height, 0, 0);
+		}
 	}
 }
 
@@ -155,8 +159,9 @@ m_bMenuBox = gameOpts->menus.nStyle && (gameOpts->menus.altBg.bHave > 0);
 if (!(m_background = Load (filename, width, height)))
 	return false;
 Setup (x, y, width, height);
-Save (width, height);
+Save (1, width, height);
 Draw ();
+Save (0, width, height);
 return true;
 }
 
@@ -238,8 +243,8 @@ void CBackground::Restore (void)
 CCanvas::SetCurrent (m_canvas [0]);
 if (gameOpts->menus.nStyle) 
 	m_background->Stretch ();
-else if (m_saved) {
-	m_saved->Blit ();
+else if (m_saved [1]) {
+	m_saved [1]->Blit ();
 	GrUpdate (0);
 	}
 }

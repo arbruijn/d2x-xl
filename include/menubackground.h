@@ -20,7 +20,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 class CBackground {
 	private:
 		CCanvas*	m_canvas [2];		// canvas (screen area) of a menu
-		CBitmap*	m_saved;				// copy of a screen area covered by a menu
+		CBitmap*	m_saved [2];		// copy of a screen area covered by a menu
 		CBitmap*	m_background;		// complete background
 		char*		m_filename;
 		bool		m_bIgnoreCanv;
@@ -41,13 +41,12 @@ class CBackground {
 		void DrawBox (void);
 
 		inline CCanvas* Canvas (uint i = 0) { return m_canvas [i]; }
-		inline CBitmap* Background (void) { return m_background; }
-		inline CBitmap* Saved (void) { return m_saved; }
+		inline CBitmap* Background (void) { return m_saved [0]; }
 
 	private:
 		CBitmap* Load (char* filename, int width, int height);
 		void Setup (int x, int y, int width, int height);
-		void Save (int width, int height);
+		void Save (int i, int width, int height);
 };
 
 class CBackgroundManager : private CStack<CBackground> {
@@ -83,7 +82,6 @@ class CBackgroundManager : private CStack<CBackground> {
 		inline void DrawArea (int left, int top, int right, int bottom)
 			{ return m_bg [m_nDepth].DrawArea (left, top, right, bottom); }
 		inline CBitmap* Current (void) { return m_bg [m_nDepth].Background (); }
-		inline CBitmap* Saved (void) { return m_bg [m_nDepth].Saved (); }
 		inline CCanvas* Canvas (void) { return m_bg [m_nDepth].Canvas (); }
 
 		void DrawBox (int left, int top, int right, int bottom, int nLineWidth, float fAlpha, int bForce);

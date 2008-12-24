@@ -330,7 +330,7 @@ fontManager.Current ()->StringSize (s2, w, h, aw);
 // CHANGED
 if (gameStates.ogl.nDrawBuffer != GL_BACK)
 	backgroundManager.Current ()->RenderClipped (CCanvas::Current (), 5, y - 1, backgroundManager.Current ()->Width () - 15, h + 2, 5, y - 1);
-
+return;
 if (0 && gameStates.multi.bSurfingNet) {
 	for (i = 0;i < l;i++) {
 		if (s2 [i]=='\t' && gameStates.multi.bSurfingNet) {
@@ -372,7 +372,7 @@ fontManager.Current ()->StringSize (itemP->savedText, w, h, aw);
 
 int y = itemP->y;
 if (gameStates.ogl.nDrawBuffer != GL_BACK)
-	backgroundManager.Current ()->RenderClipped (CCanvas::Current (), 5, y, backgroundManager.Current ()->Width () - 15, h, 5, y);
+	backgroundManager.Saved ()->RenderClipped (CCanvas::Current (), 5, y, backgroundManager.Current ()->Width () - 15, h, 5, y);
 char* t = itemP->text;
 itemP->text = itemP->savedText;
 NMHotKeyString (itemP, bIsCurrent, bTiny, 1, 0);
