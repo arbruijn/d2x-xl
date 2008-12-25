@@ -1729,17 +1729,17 @@ int NDUpdateSmoke (void)
 if (!EGI_FLAG (bUseParticles, 0, 1, 0))
 	return 0;
 else {
-		int					i, nObject;
-		CParticleSystem	*systemP;
+		int					nObject;
+		CParticleSystem*	systemP;
 
-	for (systemP = particleManager.GetFirst (); systemP; i = particleManager.GetNext ()) {
+	for (systemP = particleManager.GetFirst (); systemP; systemP = particleManager.GetNext ()) {
 		nObject = NDFindObject (systemP->m_nSignature);
 		if (nObject < 0) {
 			particleManager.SetObjectSystem (systemP->m_nObject, -1);
 			systemP->SetLife (0);
 			}
 		else {
-			particleManager.SetObjectSystem (nObject, i);
+			particleManager.SetObjectSystem (nObject, systemP->Id ());
 			systemP->m_nObject = nObject;
 			}
 		}

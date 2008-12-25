@@ -243,48 +243,39 @@ class CParticleManager {
 		inline short GetObjectSystem (short nObject) { return m_objectSystems [nObject]; }
 
 		inline CParticleEmitter* GetEmitter (int i, int j)
-			{ return (0 <= IsUsed (i)) ? GetSystem (i).GetEmitter (j) : NULL; }
+			{ return GetSystem (i).GetEmitter (j); }
 
 		inline void SetPos (int i, CFixVector *vPos, CFixMatrix *mOrient, short nSegment) { 
-			if (0 <= IsUsed (i)) 
-				GetSystem (i).SetPos (vPos, mOrient, nSegment); 
+			GetSystem (i).SetPos (vPos, mOrient, nSegment); 
 			}
 
 		inline void SetDensity (int i, int nMaxParts, int nDensity) {
-			if (0 <= IsUsed (i)) {
-				nMaxParts = MaxParticles (nMaxParts, gameOpts->render.particles.nDens [0]);
-				GetSystem (i).SetDensity (nMaxParts, nDensity);
-				}
+			nMaxParts = MaxParticles (nMaxParts, gameOpts->render.particles.nDens [0]);
+			GetSystem (i).SetDensity (nMaxParts, nDensity);
 			}
 
 		inline void SetScale (int i, float fScale) {
-			if (0 <= IsUsed (i))
-				GetSystem (i).SetScale (fScale);
+			GetSystem (i).SetScale (fScale);
 			}
 
 		inline void SetLife (int i, int nLife) {
-			if (0 <= IsUsed (i))
-				GetSystem (i).SetLife (nLife);
+			GetSystem (i).SetLife (nLife);
 			}
 
 		inline void SetBrightness (int i, int nBrightness) {
-			if (0 <= IsUsed (i))
-				GetSystem (i).SetBrightness (nBrightness);
+			GetSystem (i).SetBrightness (nBrightness);
 			}
 
 		inline void SetType (int i, int nType) {
-			if (0 <= IsUsed (i))
-				GetSystem (i).SetType (nType);
+			GetSystem (i).SetType (nType);
 			}
 
 		inline void SetSpeed (int i, int nSpeed) {
-			if (0 <= IsUsed (i))
-				GetSystem (i).SetSpeed (nSpeed);
+			GetSystem (i).SetSpeed (nSpeed);
 			}
 
 		inline void SetDir (int i, CFixVector *vDir) {
-			if (0 <= IsUsed (i))
-				GetSystem (i).SetDir (vDir);
+			GetSystem (i).SetDir (vDir);
 			}
 
 		inline int SetObjectSystem (int nObject, int i) {
@@ -294,7 +285,7 @@ class CParticleManager {
 			}
 
 		inline int GetType (int i) {
-			return (IsUsed (i)) ? GetSystem (i).GetType () : -1;
+			return GetSystem (i).GetType ();
 			}
 
 		inline int MaxParticles (int nParts, int nDens) {
@@ -309,10 +300,9 @@ class CParticleManager {
 			}
 
 		inline int RemoveEmitter (int i, int j)
-			{ return (0 <= IsUsed (i)) ? GetSystem (i).RemoveEmitter (j) : -1; }
+			{ return GetSystem (i).RemoveEmitter (j); }
 
 	private:
-		int IsUsed (int i);
 		void RebuildSystemList (void);
 
 };

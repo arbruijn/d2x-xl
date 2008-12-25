@@ -1691,6 +1691,7 @@ CParticleManager::~CParticleManager ()
 {
 Shutdown ();
 particleImageManager.FreeAll ();
+m_systems.Destroy ();
 m_objectSystems.Destroy ();
 m_objExplTime.Destroy ();
 }
