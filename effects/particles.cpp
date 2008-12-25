@@ -1600,7 +1600,7 @@ if (!m_objExplTime.Buffer ())
 	CREATE (m_objExplTime, MAX_OBJECTS, 0);
 if (m_systems.Create (MAX_PARTICLE_SYSTEMS)) {
 	i = 0;
-	for (CParticleSystem* systemP = GetFirst (); systemP; systemP = GetNext ())
+	for (CParticleSystem* systemP = m_systems.GetFirst (m_systems.FreeList ()); systemP; systemP = GetNext ())
 		systemP->Init (i++);
 	}
 }
