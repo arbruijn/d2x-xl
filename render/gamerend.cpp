@@ -1265,7 +1265,7 @@ if (!gameOpts->menus.nStyle) {
 	}
 */
 backgroundManager.Setup (NULL, x - BOX_BORDER / 2, y - BOX_BORDER / 2, w + BOX_BORDER, h + BOX_BORDER);
-CCanvas::SetCurrent (backgroundManager.Canvas ());
+CCanvas::SetCurrent (backgroundManager.Canvas (1));
 fontManager.SetColorRGBi (DKGRAY_RGBA, 1, 0, 0);
 fontManager.SetCurrent (MEDIUM1_FONT);
 GrPrintF (NULL, 0x8000, (h / 2 + BOX_BORDER) / 2, pszMsg);
