@@ -1732,8 +1732,7 @@ else {
 		int					i, nObject;
 		CParticleSystem	*systemP;
 
-	for (i = particleManager.GetUsed (); i >= 0; i = systemP->GetNext ()) {
-		systemP = &particleManager.GetSystem (i);
+	for (systemP = particleManager.GetFirst (); systemP; i = particleManager.GetNext ()) {
 		nObject = NDFindObject (systemP->m_nSignature);
 		if (nObject < 0) {
 			particleManager.SetObjectSystem (systemP->m_nObject, -1);

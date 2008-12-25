@@ -238,6 +238,8 @@ class CParticleManager {
 		inline int Stencil (void) { return m_bStencil; }
 		inline void SetStencil (int bStencil) { m_bStencil = bStencil; }
 		inline CParticleSystem& GetSystem (int i) { return m_systems [i]; }
+		inline CParticleSystem* GetFirst (void) { return m_systems.GetFirst (m_systems.UsedList ()); }
+		inline CParticleSystem* GetNext (void) { return m_systems.GetNext (); }
 		inline short GetObjectSystem (short nObject) { return m_objectSystems [nObject]; }
 
 		inline CParticleEmitter* GetEmitter (int i, int j)

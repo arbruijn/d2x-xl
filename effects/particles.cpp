@@ -1600,7 +1600,7 @@ if (!m_objExplTime.Buffer ())
 	CREATE (m_objExplTime, MAX_OBJECTS, 0);
 if (m_systems.Create (MAX_PARTICLE_SYSTEMS)) {
 	i = 0;
-	for (CParticleSystem* systemP = m_systems.GetFirst (m_systems.FreeList ()); systemP; systemP = m_systems.GetNext ())
+	for (CParticleSystem* systemP = GetFirst (); systemP; systemP = GetNext ())
 		systemP->Init (i++);
 	}
 }
@@ -1621,7 +1621,7 @@ int CParticleManager::Shutdown (void)
 SEM_ENTER (SEM_SMOKE)
 
 int i = 0;
-for (CParticleSystem* systemP = m_systems.GetFirst (m_systems.UsedList ()); systemP; systemP = m_systems.GetNext ()) {
+for (CParticleSystem* systemP = GetFirst (); systemP; systemP = GetNext ()) {
 	systemP->Destroy ();
 	m_systems.Push (systemP->Id ());
 	}
@@ -1672,7 +1672,7 @@ if (!gameStates.app.tick40fps.bTick)
 #endif
 	int	h = 0;
 
-for (CParticleSystem* systemP = m_systems.GetFirst (m_systems.UsedList ()); systemP; systemP = m_systems.GetNext ())
+for (CParticleSystem* systemP = GetFirst (); systemP; systemP = GetNext ())
 	h += systemP->Update ();
 return h;
 }
@@ -1681,7 +1681,7 @@ return h;
 
 void CParticleManager::Render (void)
 {
-for (CParticleSystem* systemP = m_systems.GetFirst (m_systems.UsedList ()); systemP; systemP = m_systems.GetNext ())
+for (CParticleSystem* systemP = GetFirst (); systemP; systemP = GetNext ())
 	systemP->Render ();
 }
 
