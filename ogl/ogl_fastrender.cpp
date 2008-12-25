@@ -406,7 +406,7 @@ return 0;
 
 static inline int G3FaceIsColored (tFace *faceP)
 {
-return !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [faceP->nSegment] || !gameOpts->render.automap.bGrayOut;
+return !gameStates.render.automap.bDisplay || m_visited [0] [faceP->nSegment] || !gameOpts->render.automap.bGrayOut;
 }
 
 //------------------------------------------------------------------------------

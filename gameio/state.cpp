@@ -1112,7 +1112,7 @@ if (!m_bBetweenLevels)	{
 	DBG (fPos = m_cf.Tell ());
 // Save the automap visited info
 	for (i = 0; i < MAX_SEGMENTS; i++)
-		m_cf.WriteShort (gameData.render.mine.bAutomapVisited [i]);
+		m_cf.WriteShort (m_visited [0] [i]);
 	DBG (fPos = m_cf.Tell ());
 	}
 m_cf.WriteInt ((int) gameData.app.nStateGameId);
@@ -2201,12 +2201,12 @@ if (!m_bBetweenLevels)	{
 	SpecialResetObjects ();
 	if (m_nVersion > 37) {
 		for (i = 0; i < MAX_SEGMENTS; i++)
-			gameData.render.mine.bAutomapVisited [i] = (ushort) m_cf.ReadShort ();
+			m_visited [0] [i] = (ushort) m_cf.ReadShort ();
 		}
 	else {
 		int	i, j = (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2;
 		for (i = 0; i < j; i++)
-			gameData.render.mine.bAutomapVisited [i] = (ushort) m_cf.ReadByte ();
+			m_visited [0] [i] = (ushort) m_cf.ReadByte ();
 		}
 	DBG (fPos = m_cf.Tell ());
 	//	Restore hacked up weapon system stuff.
@@ -2439,14 +2439,14 @@ if (!m_bBetweenLevels)	{
 	LoadAIBinFormat ();
 	// Restore the automap visited info
 	if (m_nVersion > 37)
-		m_cf.Read (gameData.render.mine.bAutomapVisited, sizeof (ushort), MAX_SEGMENTS);
+		m_cf.Read (m_visited [0], sizeof (ushort), MAX_SEGMENTS);
 	else {
 		int	i, j = (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2;
 		for (i = 0; i < j; i++)
-			gameData.render.mine.bAutomapVisited [i] = (ushort) m_cf.ReadByte ();
+			m_visited [0] [i] = (ushort) m_cf.ReadByte ();
 		}
 	
-	m_cf.Read (gameData.render.mine.bAutomapVisited, sizeof (ubyte), (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2);
+	m_cf.Read (m_visited [0], sizeof (ubyte), (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2);
 
 	//	Restore hacked up weapon system stuff.
 	gameData.fusion.xNextSoundTime = gameData.time.xGame;

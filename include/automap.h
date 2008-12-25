@@ -16,10 +16,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "player.h"
 
-void DoAutomap (int key_code, int bRadar);
 void AutomapClearVisited ();
-
-extern ubyte bAutomapVisited [MAX_SEGMENTS_D2X];
 
 #define AM_SHOW_PLAYERS			(!IsMultiGame || (gameData.app.nGameMode & (GM_TEAM | GM_MULTI_COOP)) || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))
 #define AM_SHOW_PLAYER(_i)		(!IsMultiGame || \
@@ -30,5 +27,108 @@ extern ubyte bAutomapVisited [MAX_SEGMENTS_D2X];
 #define AM_SHOW_POWERUPS(_i)	((EGI_FLAG (bPowerupsOnRadar, 0, 1, 0) >= (_i)) && (!IsMultiGame || IsCoopGame))
 
 void InitAutomapData (void);
+
+//------------------------------------------------------------------------------
+
+#define MAX_EDGES 65536 // Determined by loading all the levels by John & Mike, Feb 9, 1995
+
+typedef struct tEdgeInfo {
+	short		verts [2];     // 4 bytes
+	ubyte		sides [4];     // 4 bytes
+	short		nSegment [4];  // 8 bytes  // This might not need to be stored... If you can access the normals of a CSide.
+	ubyte		flags;			// 1 bytes  // See the EF_??? defines above.
+	uint		color;			// 4 bytes
+	ubyte		nFaces;			// 1 bytes  // 19 bytes...
+} tEdgeInfo;
+
+//------------------------------------------------------------------------------
+
+typedef struct tAutomapWallColors {
+	uint	nNormal;
+	uint	nDoor;
+	uint	nDoorBlue;
+	uint	nDoorGold;
+	uint	nDoorRed;
+	uint	nRevealed;
+} tAutomapWallColors;
+
+typedef struct tAutomapColors {
+	tAutomapWallColors	walls;
+	uint	nHostage;
+	uint	nMonsterball;
+	uint	nWhite;
+	uint	nMedGreen;
+	uint	nLgtBlue;
+	uint	nLgtRed;
+	uint	nDkGray;
+} tAutomapColors;
+
+#define EDGE_IDX(_edgeP)	((int) ((_edgeP) - m_edges [0]))
+
+typedef struct tAutomapData {
+	int			bCheat;
+	int			bHires;
+	fix			nViewDist;
+	fix			nMaxDist;
+	fix			nZoom;
+	CFixVector	viewPos;
+	CFixVector	viewTarget;
+	CFixMatrix	viewMatrix;
+} tAutomapData;
+
+//------------------------------------------------------------------------------
+
+class CAutomap {
+	private:
+		tAutomapData		m_data;
+		tAutomapColors		m_colors;
+		CArray<tEdgeInfo>	m_edges [2];
+		int					m_nEdges;
+		int					m_nMaxEdges;
+		int					m_nLastEdge;
+		int					m_nWidth;
+		int					m_nHeight;
+		char					m_szLevelNum [200];
+		char					m_szLevelName [200];
+		CBitmap				m_background;
+
+	public:
+		CByteArray			m_visited [2];
+		CArray<ushort>		m_visible;
+		int					m_bRadar;
+		int					m_bFull;
+
+	public:
+		CAutomap () { Init (); }
+		~CAutomap () {}
+		void Init (void);
+		void InitColors (void);
+		int Setup (int bPauseGame, fix& xEntryTime, CAngleVector& vTAngles);
+		int Update (CAngleVector& vTAngles);
+		void Draw (void);
+		void ClearVisited (void);
+		int ReadControls (int nLeaveMode, int bDone, int& bPauseGame);
+
+	private:
+		void AdjustSegmentLimit (int nSegmentLimit, CArray<ushort>& visited);
+		void DrawEdges (void);
+		void DrawPlayer (CObject* objP);
+		void DrawObjects (void);
+		void DrawLevelId (void);
+		void CreateNameCanvas (void);
+		int GameFrame (int bPauseGame, int bDone);
+		int FindEdge (int v0, int v1, tEdgeInfo*& edgeP);
+		void BuildEdgeList (void);
+		void AddEdge (int va, int vb, uint color, ubyte CSide, short nSegment, int bHidden, int bGrate, int bNoFade);
+		void AddUnknownEdge (int va, int vb);
+		void AddSegmentEdges (CSegment *segP);
+		void AddUnknownSegmentEdges (CSegment* segP);
+};
+
+//------------------------------------------------------------------------------
+
+extern CAutomap automap;
+
+//------------------------------------------------------------------------------
 
 #endif //_AUTOMAP_H

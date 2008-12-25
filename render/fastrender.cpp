@@ -675,13 +675,13 @@ if (nSegment < 0)
 	return 0;
 if (bAutomap) {
 	if (gameStates.render.automap.bDisplay) {
-		if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisible [nSegment]))
+		if (!(gameStates.render.automap.bFull || automap.m_visible [nSegment]))
 			return 0;
 		if (!gameOpts->render.automap.bSkybox && (SEGMENTS [nSegment].m_nType == SEGMENT_IS_SKYBOX))
 			return 0;
 		}
 	else
-		gameData.render.mine.bAutomapVisited [nSegment] = gameData.render.mine.bSetAutomapVisited;
+		m_visited [0] [nSegment] = gameData.render.mine.bSetAutomapVisited;
 	}
 if (VISITED (nSegment))
 	return 0;
@@ -740,7 +740,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 			continue;
 		nSegment = faceP->nSegment;
 		if (gameStates.render.automap.bDisplay) {
-			if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisible [nSegment]))
+			if (!(gameStates.render.automap.bFull || automap.m_visible [nSegment]))
 				return;
 			if (!gameOpts->render.automap.bSkybox && (SEGMENTS [nSegment].m_nType == SEGMENT_IS_SKYBOX))
 				continue;

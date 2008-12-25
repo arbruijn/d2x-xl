@@ -1006,7 +1006,7 @@ if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 
 			}
 		else
 			G3SetupShader (faceP, 0, 0, bDecal > 0, bmBot != NULL,
-								(item->nSegment < 0) || !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [item->nSegment],
+								(item->nSegment < 0) || !gameStates.render.automap.bDisplay || m_visited [0] [item->nSegment],
 								transpItems.bTextured ? NULL : faceP ? &faceP->color : item->color);
 #if 0
 		if (triP)
@@ -1034,7 +1034,7 @@ if (LoadTranspItemImage (bmBot, item->nColors, 0, item->nWrap, 0, 3, 1, lightmap
 	else {
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		G3SetupShader (faceP, 0, 0, 0, bmBot != NULL,
-							(item->nSegment < 0) || !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [item->nSegment],
+							(item->nSegment < 0) || !gameStates.render.automap.bDisplay || m_visited [0] [item->nSegment],
 							bmBot ? NULL : item->color);
 		}
 	j = item->nVertices;

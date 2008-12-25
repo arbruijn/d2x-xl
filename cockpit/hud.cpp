@@ -40,8 +40,6 @@ int bMSGPlayerMsgs = 0;
 int bNoMsgRedundancy = 0;
 int nModexHUDMsgs;
 
-CCanvas *PrintToCanvas (char *s,CFont *font, uint fc, uint bc, int doubleFlag);
-
 // ----------------------------------------------------------------------------
 
 void ClearBackgroundMessages (void)
@@ -80,15 +78,6 @@ for (j = 2, pMsgs = gameData.hud.msgs; j; j--, pMsgs++) {
 	}
 }
 
-
-//	-----------------------------------------------------------------------------
-//	print to buffer, double heights, and blit bitmap to screen
-void HUDModexMessage (int x, int y, char *s, CFont *font, uint color)
-{
-CCanvas *tempCanv = PrintToCanvas (s, font, color, 0, 1);
-GrBitmapM (x, y, tempCanv, 2);
-tempCanv->Destroy ();
-}
 
 // ----------------------------------------------------------------------------
 
@@ -143,7 +132,7 @@ if (pMsgs->nMessages > 0) {
 			if (CCanvas::Current ()->Mode () == BM_MODEX) {
 				ycrd -= h;
 				h *= 2;
-				HUDModexMessage ((CCanvas::Current ()->Width ()-w)/2, ycrd, pszMsg, SMALL_FONT, pMsgs->nColor);
+				SMALL_FONT->PrintToCanvas ((CCanvas::Current ()->Width () - w) / 2, ycrd, pszMsg, pMsgs->nColor, 2);
 				if (nModexHUDMsgs > 0) {
 					nModexHUDMsgs--;
 					szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage][0] = '!';

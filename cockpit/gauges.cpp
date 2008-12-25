@@ -44,7 +44,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SHOW_PLAYER_IP		0
 
 void DrawGuidedCrosshair (void);
-void DoAutomap (int key_code, int bRadar);
 
 double cmScaleX, cmScaleY;
 int nHUDLineSpacing;
@@ -2837,9 +2836,8 @@ transformation.Push ();
 nZoomSave = gameStates.render.nZoomFactor;
 gameStates.render.nZoomFactor = F1_0 * (gameOpts->render.cockpit.nWindowZoom + 1);					//the CPlayerData's zoom factor
 if ((nUser == WBU_RADAR_TOPDOWN) || (nUser == WBU_RADAR_HEADSUP)) {
-	gameStates.render.bTopDownRadar = (nUser == WBU_RADAR_TOPDOWN);
 	if (!IsMultiGame || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))
-		DoAutomap (0, 1);
+		automap.DoFrame (0, 1 + (nUser == WBU_RADAR_TOPDOWN));
 	else
 		RenderFrame (0, nWindow+1);
 	}

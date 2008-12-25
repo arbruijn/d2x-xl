@@ -1611,23 +1611,14 @@ gameData.render.zMax = -0x7fffffff;
 bCullIfBehind = !SHOW_SHADOWS || (gameStates.render.nShadowPass == 1);
 memset (gameData.render.mine.nRenderPos, -1, sizeof (gameData.render.mine.nRenderPos [0]) * (gameData.segs.nSegments));
 BumpVisitedFlag ();
-#if 1
 BumpProcessedFlag ();
 BumpVisibleFlag ();
-#else
-memset (gameData.render.mine.bProcessed, 0, sizeof (gameData.render.mine.bProcessed));
-memset (gameData.render.mine.bVisible, 0, sizeof (gameData.render.mine.bVisible));
-for (i = 0; i < sizeofa (gameData.render.mine.nSegRenderList); i++)
-	gameData.render.mine.nSegRenderList [i] = -32767;
-gameData.render.mine.nProcessed = 1;
-gameData.render.mine.nVisible = 1;
-#endif
 
 if (gameStates.render.automap.bDisplay && gameOpts->render.automap.bTextured && !gameStates.render.automap.bRadar) {
 	for (i = gameData.render.mine.nRenderSegs = 0; i < gameData.segs.nSegments; i++)
-		if ((gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisited [i]) &&
+		if ((gameStates.render.automap.bFull || m_visited [0] [i]) &&
 			 ((gameStates.render.automap.nSegmentLimit == gameStates.render.automap.nMaxSegsAway) ||
-			  (gameData.render.mine.bAutomapVisible [i] <= gameStates.render.automap.nSegmentLimit))) {
+			  (automap.m_visible [i] <= gameStates.render.automap.nSegmentLimit))) {
 			gameData.render.mine.nSegRenderList [gameData.render.mine.nRenderSegs++] = i;
 			gameData.render.mine.bVisible [i] = gameData.render.mine.nVisible;
 			VISIT (i);
@@ -1923,7 +1914,7 @@ void RenderSegment (int nListPos)
 if (nSegment < 0)
 	return;
 if (gameStates.render.automap.bDisplay) {
-	if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisited [nSegment]))
+	if (!(gameStates.render.automap.bFull || m_visited [0] [nSegment]))
 		return;
 	if (!gameOpts->render.automap.bSkybox && (SEGMENTS [nSegment].m_nType == SEGMENT_IS_SKYBOX))
 		return;
@@ -1943,7 +1934,7 @@ if (!RenderSegmentFaces (nSegment, gameStates.render.nWindow)) {
 	return;
 	}
 if ((gameStates.render.nType == 0) && !gameStates.render.automap.bDisplay)
-	gameData.render.mine.bAutomapVisited [nSegment] = gameData.render.mine.bSetAutomapVisited;
+	m_visited [0] [nSegment] = gameData.render.mine.bSetAutomapVisited;
 else if ((gameStates.render.nType == 1) && (gameData.render.mine.renderObjs.ref [gameData.render.mine.nSegRenderList [nListPos]] >= 0)) {
 #if DBG
 	if (nSegment == nDbgSeg)

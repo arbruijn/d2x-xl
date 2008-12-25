@@ -891,7 +891,6 @@ typedef struct tRenderHistory {
 } tRenderHistory;
 
 typedef struct tRenderStates {
-	int bTopDownRadar;
 	int bExternalView;
 	int bQueryOcclusion;
 	int bPointSprites;

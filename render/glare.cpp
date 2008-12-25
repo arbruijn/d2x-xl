@@ -675,7 +675,7 @@ if (RENDERPATH && gameStates.ogl.bOcclusionQuery && CoronaStyle ()) {
 		}
 #endif
 	RenderSoftGlare (sprite, &vCenter, nTexture, fIntensity, bAdditive,
-						  !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [nSegment]);
+						  !gameStates.render.automap.bDisplay || m_visited [0] [nSegment]);
 	glDepthFunc (GL_LESS);
 #if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -697,7 +697,7 @@ else {
 		return;
 	ComputeHardGlare (sprite, &vCenter, &vNormal);
 	RenderHardGlare (sprite, &vCenter, nTexture, fLight, fIntensity, &zRange, 0,	//bAdditive
-						  !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [nSegment]);
+						  !gameStates.render.automap.bDisplay || m_visited [0] [nSegment]);
 	}
 }
 

@@ -108,6 +108,7 @@ class CFont {
 		int TotalWidth (void);
 
 		int DrawString (int x, int y, const char *s);
+		void PrintToCanvas (int x, int y, char *s, uint color, int bScale);
 
 	private:
 		ubyte *FindKernEntry (ubyte first, ubyte second);

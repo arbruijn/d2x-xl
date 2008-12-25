@@ -233,7 +233,6 @@ gameStates.render.bQueryOcclusion = 0;
 gameStates.render.bPointSprites = 0;
 gameStates.render.bVertexArrays = 1;
 gameStates.render.bExternalView = 0;
-gameStates.render.bTopDownRadar = 0;
 gameStates.render.bDisableFades = 0;
 gameStates.render.bDropAfterburnerBlob = 0;
 gameStates.render.grAlpha = FADE_LEVELS;

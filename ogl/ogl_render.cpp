@@ -203,6 +203,65 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+int G3DrawSphere3D (g3sPoint *p0, int nSides, int rad)
+{
+	tCanvasColor	c = CCanvas::Current ()->Color ();
+	g3sPoint			p = *p0;
+	int				i;
+	float				hx, hy, x, y, z, r;
+	float				ang;
+
+glDisable (GL_TEXTURE_2D);
+OglCanvasColor (&CCanvas::Current ()->Color ());
+x = f2glf (p.p3_vec[X]);
+y = f2glf (p.p3_vec[Y]);
+z = f2glf (p.p3_vec[Z]);
+r = f2glf (rad);
+glBegin (GL_POLYGON);
+for (i = 0; i <= nSides; i++) {
+	ang = 2.0f * (float) Pi * (i % nSides) / nSides;
+	hx = x + (float) cos (ang) * r;
+	hy = y + (float) sin (ang) * r;
+	glVertex3f (hx, hy, z);
+	}
+if (c.rgb)
+	glDisable (GL_BLEND);
+glEnd ();
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int G3DrawCircle3D (g3sPoint *p0, int nSides, int rad)
+{
+	g3sPoint		p = *p0;
+	int			i, j;
+	CFloatVector		v;
+	float			x, y, r;
+	float			ang;
+
+glDisable (GL_TEXTURE_2D);
+OglCanvasColor (&CCanvas::Current ()->Color ());
+x = f2glf (p.p3_vec[X]);
+y = f2glf (p.p3_vec[Y]);
+v[Z] = f2glf (p.p3_vec[Z]);
+r = f2glf (rad);
+glBegin (GL_LINES);
+for (i = 0; i <= nSides; i++)
+	for (j = i; j <= i + 1; j++) {
+		ang = 2.0f * (float) Pi * (j % nSides) / nSides;
+		v[X] = x + (float) cos (ang) * r;
+		v[Y] = y + (float) sin (ang) * r;
+		glVertex3fv (reinterpret_cast<GLfloat*> (&v));
+		}
+if (CCanvas::Current ()->Color ().rgb)
+	glDisable (GL_BLEND);
+glEnd ();
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
 int GrUCircle (fix xc1, fix yc1, fix r1)
 {//dunno if this really works, radar doesn't seem to.. hm..
 glDisable (GL_TEXTURE_2D);
