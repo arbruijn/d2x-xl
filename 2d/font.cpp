@@ -530,22 +530,21 @@ do {
 
 void CFont::PrintToCanvas (int x, int y, char *s, uint color, int bScale)
 {
-	int		y;
 	ubyte		*data;
 	int		rs;
 	CCanvas	*canvP;
-	int		w,h,aw;
+	int		w, h, aw;
 
 CCanvas::Push ();
 fontManager.SetCurrent (this);					//set the font we're going to use
 fontManager.Current ()->StringSize (s, w, h, aw);		//now get the string size
 
 //canvP = GrCreateCanvas (font->width*strlen (s),font->height*2);
-if (!(canvP = CCanvas::Create (w, font->Height () * 2)))
+if (!(canvP = CCanvas::Create (w, Height () * 2)))
 	return;
 canvP->SetPalette (paletteManager.Game ());
 CCanvas::SetCurrent (canvP);
-fontManager.SetCurrent (font);
+fontManager.SetCurrent (this);
 canvP->Clear (0);						//trans color
 fontManager.SetColorRGBi (color, 1, 0, 1);
 GrPrintF (NULL, 0, 0, s);

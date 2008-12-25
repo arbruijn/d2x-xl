@@ -571,7 +571,7 @@ return 1;
 
 void ValidateAllPaths (void)
 {
-	int				i;
+	//int				i;
 	CObject			*objP;
 	tAIStaticInfo	*aiP;
 
@@ -1329,7 +1329,7 @@ else if (gameData.ai.freePointSegs - gameData.ai.pointSegs > MAX_POINT_SEGS/2) {
 //	Should be called at the start of each level.
 void AIResetAllPaths (void)
 {
-	int		i;
+	//int		i;
 	CObject	*objP = OBJECTS.Buffer ();
 
 FORALL_OBJS (objP, i)

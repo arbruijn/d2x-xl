@@ -213,10 +213,10 @@ int G3DrawSphere3D (g3sPoint *p0, int nSides, int rad)
 
 glDisable (GL_TEXTURE_2D);
 OglCanvasColor (&CCanvas::Current ()->Color ());
-x = f2glf (p.p3_vec[X]);
-y = f2glf (p.p3_vec[Y]);
-z = f2glf (p.p3_vec[Z]);
-r = f2glf (rad);
+x = X2F (p.p3_vec[X]);
+y = X2F (p.p3_vec[Y]);
+z = X2F (p.p3_vec[Z]);
+r = X2F (rad);
 glBegin (GL_POLYGON);
 for (i = 0; i <= nSides; i++) {
 	ang = 2.0f * (float) Pi * (i % nSides) / nSides;
@@ -242,10 +242,10 @@ int G3DrawCircle3D (g3sPoint *p0, int nSides, int rad)
 
 glDisable (GL_TEXTURE_2D);
 OglCanvasColor (&CCanvas::Current ()->Color ());
-x = f2glf (p.p3_vec[X]);
-y = f2glf (p.p3_vec[Y]);
-v[Z] = f2glf (p.p3_vec[Z]);
-r = f2glf (rad);
+x = X2F (p.p3_vec[X]);
+y = X2F (p.p3_vec[Y]);
+v[Z] = X2F (p.p3_vec[Z]);
+r = X2F (rad);
 glBegin (GL_LINES);
 for (i = 0; i <= nSides; i++)
 	for (j = i; j <= i + 1; j++) {

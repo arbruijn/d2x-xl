@@ -97,6 +97,8 @@ char	*pszMapBackgroundFilename [2] = {"MAP.PCX", "MAPB.PCX"};
 #	define MAP_BACKGROUND_FILENAME pszMapBackgroundFilename [m_data.bHires && CFile::Exist ("mapb.pcx",gameFolders.szDataDir,0)]
 #endif
 
+CAutomap automap;
+
 //------------------------------------------------------------------------------
 
 void CAutomap::InitColors (void)
@@ -122,6 +124,8 @@ void CAutomap::Init (void)
 {
 m_nWidth = 640;
 m_nHeight = 480;
+m_bFull = false;
+m_bDisplay = false;
 m_data.bCheat = 0;
 m_data.bHires = 1;
 m_data.nViewDist = 0;
@@ -130,9 +134,14 @@ m_data.nZoom = 0x9000;
 m_data.viewPos.SetZero ();
 m_data.viewTarget.SetZero ();
 m_data.viewMatrix = CFixMatrix::IDENTITY;
-m_visited [0].Create (MAX_SEGMENTS_D2X);
-m_visited [1].Create (MAX_SEGMENTS_D2X);
-m_visible.Create (MAX_SEGMENTS_D2X);
+for (int i = 0; i < 2; i++) {
+	if (!m_visited [i].Buffer ())
+		m_visited [i].Create (MAX_SEGMENTS_D2X);
+	m_visited [i].Clear ();
+	}
+if (!m_visible.Buffer ())
+	m_visible.Create (MAX_SEGMENTS_D2X);
+m_visible.Clear ();
 m_nEdges = 0;
 m_nMaxEdges = MAX_EDGES;
 m_nLastEdge = -1;
@@ -329,7 +338,7 @@ PROF_START
 								 (gameStates.render.cockpit.nMode != CM_LETTERBOX);
 	CFixMatrix	vmRadar;
 
-gameStates.render.automap.bFull = (LOCALPLAYER.flags & (PLAYER_FLAGS_FULLMAP_CHEAT | PLAYER_FLAGS_FULLMAP)) != 0;
+automap.m_bFull = (LOCALPLAYER.flags & (PLAYER_FLAGS_FULLMAP_CHEAT | PLAYER_FLAGS_FULLMAP)) != 0;
 if (gameStates.render.automap.bRadar == 2) {
 	CFixMatrix& po = gameData.multiplayer.playerInit [gameData.multiplayer.nLocalPlayer].position.mOrient;
 #if 1
@@ -440,7 +449,7 @@ int CAutomap::Setup (int bPauseGame, fix& xEntryTime, CAngleVector& vTAngles)
 		fix		t1, t2;
 		CObject	*playerP;
 
-gameStates.render.automap.bDisplay = 1;
+m_bDisplay = 1;
 gameStates.ogl.nContrast = 8;
 InitColors ();
 if (!gameStates.render.automap.bRadar)
@@ -501,7 +510,7 @@ if (gameStates.render.automap.bRadar) {
 	for (i = 0; i < gameData.segs.nSegments; i++)
 		automap.m_visible [i] = 1;
 	}
-else if (gameStates.render.automap.bFull) {
+else if (automap.m_bFull) {
 	for (i = 0; i < gameData.segs.nSegments; i++)
 		automap.m_visible [i] = 1;
 	}
@@ -734,7 +743,7 @@ bRedrawScreen = 0;
 if (bRadar) {
 	Draw ();
 	gameStates.ogl.nContrast = nContrast;
-	gameStates.render.automap.bDisplay = 0;
+	automap.m_bDisplay = false;
 	return;
 	}
 Controls [0].automapState = 0;
@@ -768,7 +777,7 @@ GameFlushInputs ();
 if (gameData.app.bGamePaused)
 	ResumeGame ();
 gameStates.ogl.nContrast = nContrast;
-gameStates.render.automap.bDisplay = 0;
+automap.m_bDisplay = false;
 }
 
 //------------------------------------------------------------------------------
@@ -1127,7 +1136,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	if (color != WHITE_RGBA) {
 		// If they have a map powerup, draw unvisited areas in dark blue.
 		if ((LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP) && 
-				!(gameStates.render.bAllVisited || m_visited [0][nSegment]))
+				!(gameStates.render.bAllVisited || automap.m_visited [0][nSegment]))
 			color = m_colors.walls.nRevealed;
 
 addEdge:
@@ -1198,7 +1207,7 @@ else {
 #ifdef EDITOR
 		if (SEGMENTS [s].nSegment != -1)
 #endif
-		if (m_visited [0][s]) {
+		if (automap.m_visited [0][s]) {
 			h++;
 			AddSegmentEdges (&SEGMENTS [s]);
 			}
@@ -1206,7 +1215,7 @@ else {
 #ifdef EDITOR
 			if (SEGMENTS [s].nSegment != -1)
 #endif
-			if (!m_visited [0][s]) {
+			if (!automap.m_visited [0][s]) {
 				AddUnknownSegmentEdges (&SEGMENTS [s]);
 				}
 		}

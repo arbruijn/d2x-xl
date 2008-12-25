@@ -185,7 +185,7 @@ for (i = 0; i < MAX_BOSS_COUNT; i++)
 //set viewerP CObject to next CObject in array
 void ObjectGotoNextViewer ()
 {
-	int 		i;
+	//int 		i;
 	CObject	*objP;
 
 FORALL_OBJS (objP, i) {
@@ -201,8 +201,9 @@ Error ("Couldn't find a viewerP CObject!");
 //set viewerP CObject to next CObject in array
 void ObjectGotoPrevViewer ()
 {
-	int 		i, nStartObj = 0;
 	CObject	*objP;
+	int 		nStartObj = 0;
+	//int		i;
 
 nStartObj = OBJ_IDX (gameData.objs.viewerP);		//get viewerP CObject number
 FORALL_OBJS (objP, i) {
@@ -221,7 +222,7 @@ Error ("Couldn't find a viewerP CObject!");
 
 CObject *ObjFindFirstOfType (int nType)
 {
-	int		i;
+	//int		i;
 	CObject	*objP;
 
 FORALL_OBJS (objP, i)
@@ -234,7 +235,8 @@ return reinterpret_cast<CObject*> (NULL);
 
 int ObjReturnNumOfType (int nType)
 {
-	int		i, count = 0;
+	int		count = 0;
+	//int		i;
 	CObject	*objP;
 
 FORALL_OBJS (objP, i)
@@ -247,8 +249,9 @@ return count;
 
 int ObjReturnNumOfTypeAndId (int nType, int id)
 {
-	int		i, count = 0;
+	int		count = 0;
 	CObject	*objP;
+	//int		i;
 
 FORALL_OBJS (objP, i)
 	if ((objP->info.nType == nType) && (objP->info.nId == id))
@@ -595,8 +598,9 @@ for (i = 0; i <= gameData.segs.nLastSegment; i++)
 
 int CheckDuplicateObjects (void)
 {
-	int 		i, count = 0;
+	int 		count = 0;
 	CObject	*objP;
+	//int		i;
 
 FORALL_OBJS (objP, i) {
 	if (objP->info.nType != OBJ_NONE)	{
@@ -648,7 +652,7 @@ for (i = 0; i < j; i++)
 void LinkAllObjsToSegs (void)
 {
 	CObject	*objP;
-	int		i;
+	//int		i;
 
 FORALL_OBJS (objP, i)
 	objP->LinkToSeg (objP->info.nSegment);
@@ -2536,7 +2540,8 @@ void compressObjects (void)
 
 int ObjectCount (int nType)
 {
-	int		h = 0, i;
+	int		h = 0;
+	//int		i;
 	CObject	*objP = OBJECTS.Buffer ();
 
 FORALL_OBJS (objP, i)
@@ -2586,7 +2591,7 @@ objP->rType.particleInfo.nSize [1] = (j * (j + 1)) / 2;
 void ConvertObjects (void)
 {
 	CObject	*objP;
-	int		i;
+	//int		i;
 
 PrintLog ("   converting deprecated smoke objects\n");
 FORALL_STATIC_OBJS (objP, i)
@@ -2647,7 +2652,7 @@ if (psi->nType == SMOKE_TYPE_BUBBLES) {
 void SetupEffects (void)
 {
 	CObject	*objP;
-	int		i;
+	//int		i;
 
 PrintLog ("   setting up effects\n");
 FORALL_EFFECT_OBJS (objP, i) 
@@ -2720,7 +2725,7 @@ return 1;
 void FixObjectSegs (void)
 {
 	CObject	*objP;
-	int		i;
+	//int		i;
 
 FORALL_OBJS (objP, i) {
 	if ((objP->info.nType == OBJ_NONE) || (objP->info.nType == OBJ_CAMBOT) || (objP->info.nType == OBJ_EFFECT))
@@ -2745,7 +2750,7 @@ FORALL_OBJS (objP, i) {
 //go through all OBJECTS and make sure they have the correct size
 void FixObjectSizes (void)
 {
-	int 		i;
+	//int 		i;
 	CObject	*objP = OBJECTS.Buffer ();
 
 FORALL_ROBOT_OBJS (objP, i)
@@ -3033,7 +3038,8 @@ return GetChildObjN (OBJ_IDX (pParent), pChildRef);
 
 int CountPlayerObjects (int nPlayer, int nType, int nId)
 {
-	int		i, h = 0;
+	int		h = 0;
+	//int		i;
 	CObject	*objP;
 
 FORALL_OBJS (objP, i) 

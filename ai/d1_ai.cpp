@@ -1504,7 +1504,8 @@ int CreateGatedRobot (int nSegment, int nObjId)
 	CSegment		*segP = &SEGMENTS [nSegment];
 	CFixVector	vObjPos;
 	tRobotInfo	*botInfoP = &gameData.bots.info [1][nObjId];
-	int			i, count = 0;
+	int			count = 0;
+	//int			i;
 	fix			objsize = gameData.models.polyModels [botInfoP->nModel].rad;
 	int			default_behavior;
 

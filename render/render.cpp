@@ -641,7 +641,7 @@ OglSetupTransform (0);
 cc = RotateVertexList (8, segP->m_verts);
 gameData.render.vertP = gameData.segs.fVertices.Buffer ();
 //	return;
-if (cc.ccAnd /*&& !gameStates.render.automap.bDisplay*/)	//all off screen and not rendering the automap
+if (cc.ccAnd /*&& !automap.m_bDisplay*/)	//all off screen and not rendering the automap
 	return 0;
 gameStates.render.nState = 0;
 #if DBG //convenient place for a debug breakpoint
@@ -1232,7 +1232,7 @@ if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects]
 		G3_SLEEP (0);
 	}
 #endif
-if (gameStates.render.automap.bDisplay) {
+if (automap.m_bDisplay) {
 	bLightnings = gameOpts->render.automap.bLightnings;
 	bParticles = gameOpts->render.automap.bParticles;
 	bSparks = gameOpts->render.automap.bSparks;
@@ -1319,7 +1319,7 @@ if (!gameStates.render.bHaveStencilBuffer)
 	extraGameInfo [0].bShadows =
 	extraGameInfo [1].bShadows = 0;
 if (SHOW_SHADOWS &&
-	 !(nWindow || gameStates.render.cameras.bActive || gameStates.render.automap.bDisplay)) {
+	 !(nWindow || gameStates.render.cameras.bActive || automap.m_bDisplay)) {
 	if (!gameStates.render.bShadowMaps) {
 		gameStates.render.nShadowPass = 1;
 #if SOFT_SHADOWS
@@ -1614,9 +1614,9 @@ BumpVisitedFlag ();
 BumpProcessedFlag ();
 BumpVisibleFlag ();
 
-if (gameStates.render.automap.bDisplay && gameOpts->render.automap.bTextured && !gameStates.render.automap.bRadar) {
+if (automap.m_bDisplay && gameOpts->render.automap.bTextured && !gameStates.render.automap.bRadar) {
 	for (i = gameData.render.mine.nRenderSegs = 0; i < gameData.segs.nSegments; i++)
-		if ((gameStates.render.automap.bFull || m_visited [0] [i]) &&
+		if ((automap.m_bFull || automap.m_visited [0][i]) &&
 			 ((gameStates.render.automap.nSegmentLimit == gameStates.render.automap.nMaxSegsAway) ||
 			  (automap.m_visible [i] <= gameStates.render.automap.nSegmentLimit))) {
 			gameData.render.mine.nSegRenderList [gameData.render.mine.nRenderSegs++] = i;
@@ -1913,8 +1913,8 @@ void RenderSegment (int nListPos)
 
 if (nSegment < 0)
 	return;
-if (gameStates.render.automap.bDisplay) {
-	if (!(gameStates.render.automap.bFull || m_visited [0] [nSegment]))
+if (automap.m_bDisplay) {
+	if (!(automap.m_bFull || automap.m_visited [0][nSegment]))
 		return;
 	if (!gameOpts->render.automap.bSkybox && (SEGMENTS [nSegment].m_nType == SEGMENT_IS_SKYBOX))
 		return;
@@ -1933,8 +1933,8 @@ if (!RenderSegmentFaces (nSegment, gameStates.render.nWindow)) {
 	gameData.render.mine.bVisible [gameData.render.mine.nSegRenderList [nListPos]] = gameData.render.mine.nVisible - 1;
 	return;
 	}
-if ((gameStates.render.nType == 0) && !gameStates.render.automap.bDisplay)
-	m_visited [0] [nSegment] = gameData.render.mine.bSetAutomapVisited;
+if ((gameStates.render.nType == 0) && !automap.m_bDisplay)
+	automap.m_visited [0][nSegment] = gameData.render.mine.bSetAutomapVisited;
 else if ((gameStates.render.nType == 1) && (gameData.render.mine.renderObjs.ref [gameData.render.mine.nSegRenderList [nListPos]] >= 0)) {
 #if DBG
 	if (nSegment == nDbgSeg)
@@ -1972,7 +1972,7 @@ gameStates.ogl.fAlpha = FADE_LEVELS;
 if (((gameStates.render.nRenderPass <= 0) &&
 	  (gameStates.render.nShadowPass < 2) && (gameStates.render.nShadowBlurPass < 2)) ||
 	 gameStates.render.bShadowMaps) {
-	if (!gameStates.render.automap.bDisplay)
+	if (!automap.m_bDisplay)
 		RenderStartFrame ();
 #if USE_SEGRADS
 	TransformSideCenters ();
@@ -2032,7 +2032,7 @@ if (nClearWindow == 2) {
 			}
 		}
 	}
-gameStates.render.bFullBright = gameStates.render.automap.bDisplay && gameOpts->render.automap.bBright;
+gameStates.render.bFullBright = automap.m_bDisplay && gameOpts->render.automap.bBright;
 gameStates.ogl.bStandardContrast = gameStates.app.bNostalgia || IsMultiGame || (gameStates.ogl.nContrast == 8);
 #if SHADOWS
 gameStates.ogl.bScaleLight = EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass < 3) && !FAST_SHADOWS;
@@ -2063,7 +2063,7 @@ for (i = gameData.segs.skybox.ToS (), segNumP = gameData.segs.skybox.Buffer (); 
 void RenderSkyBox (int nWindow)
 {
 PROF_START
-if (gameStates.render.bHaveSkyBox && (!gameStates.render.automap.bDisplay || gameOpts->render.automap.bSkybox)) {
+if (gameStates.render.bHaveSkyBox && (!automap.m_bDisplay || gameOpts->render.automap.bSkybox)) {
 	glDepthMask (1);
 	if (RENDERPATH)
 		RenderSkyBoxFaces ();
@@ -2203,7 +2203,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 		//PrintLog  ("InitTranspItemBuffer\n");
 		InitTranspItemBuffer (gameData.render.zMin, gameData.render.zMax);
 		gameStates.render.bHeadlights = gameOpts->ogl.bHeadlight && gameData.render.lights.dynamic.headlights.nLights && 
-												  !(gameStates.render.bFullBright || gameStates.render.automap.bDisplay);
+												  !(gameStates.render.bFullBright || automap.m_bDisplay);
 		}
 	}
 //PrintLog  ("RenderSegmentList (0,1)\n");
@@ -2220,7 +2220,7 @@ if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nSha
 		glDepthFunc (GL_LESS);
 		}
 	if (!gameStates.app.bNostalgia &&
-		 (!gameStates.render.automap.bDisplay || gameOpts->render.automap.bCoronas) && gameOpts->render.coronas.bUse) {
+		 (!automap.m_bDisplay || gameOpts->render.automap.bCoronas) && gameOpts->render.coronas.bUse) {
  		glEnable (GL_TEXTURE_2D);
 		glEnable (GL_BLEND);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

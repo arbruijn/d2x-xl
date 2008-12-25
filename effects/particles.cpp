@@ -39,6 +39,7 @@
 #include "glare.h"
 #include "particles.h"
 #include "renderthreads.h"
+#include "automap.h"
 
 #ifdef __macosx__
 #	include <OpenGL/gl.h>
@@ -889,7 +890,7 @@ if (iBuffer) {
 			if (bmP->Bind (0, 1))
 				return;
 #endif
-			if (gameData.render.lights.dynamic.headlights.nLights && !(gameStates.render.automap.bDisplay || particleManager.LastType ()))
+			if (gameData.render.lights.dynamic.headlights.nLights && !(automap.m_bDisplay || particleManager.LastType ()))
 				G3SetupHeadlightShader (1, 0, &color);
 			else if ((gameOpts->render.effects.bSoftParticles & 4) && (particleManager.LastType () <= BUBBLE_PARTICLES))
 				LoadGlareShader (10);

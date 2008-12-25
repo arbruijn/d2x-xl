@@ -239,7 +239,8 @@ return 1;
 void RenderObjectShadows (void)
 {
 	CObject		*objP;
-	int			i, j, bSee;
+	//int			i; 
+	int			j, bSee;
 	CObject		fakePlayerPos = *gameData.objs.viewerP;
 
 FORALL_ACTOR_OBJS (objP, i)

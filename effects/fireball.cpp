@@ -129,7 +129,7 @@ if (nObject < 0) {
 
 explObjP = OBJECTS + nObject;
 //now set explosion-specific data
-explObjP->info.xLifeLeft = gameData.eff.vClips [0] [nVClip].xTotalTime;
+explObjP->info.xLifeLeft = gameData.eff.vClips [0][nVClip].xTotalTime;
 explObjP->cType.explInfo.nSpawnTime = -1;
 explObjP->cType.explInfo.nDeleteObj = -1;
 explObjP->cType.explInfo.nDeleteTime = -1;
@@ -206,7 +206,7 @@ FORALL_OBJS (objP, i) {
 		objP->ApplyRotForce (vNegForce);
 		if (objP->info.xShields >= 0) {
 			if (ROBOTINFO (objP->info.nId).bossFlag &&
-				 bossProps [gameStates.app.bD1Mission] [ROBOTINFO (objP->info.nId).bossFlag-BOSS_D2].bInvulKinetic)
+				 bossProps [gameStates.app.bD1Mission][ROBOTINFO (objP->info.nId).bossFlag-BOSS_D2].bInvulKinetic)
 				damage /= 4;
 			if (objP->ApplyDamageToRobot (damage, nParent)) {
 				if (!gameStates.gameplay.bNoBotAI && parentP && (nParent == LOCALPLAYER.nObject))

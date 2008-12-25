@@ -32,6 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "dynlight.h"
 #include "lightmap.h"
 #include "headlight.h"
+#include "automap.h"
 
 // ---------------------------------------------------------
 
@@ -91,7 +92,7 @@ return light;
 
 void TransformHeadlights (void)
 {
-if (!gameData.render.lights.dynamic.headlights.nLights || gameStates.render.automap.bDisplay)
+if (!gameData.render.lights.dynamic.headlights.nLights || automap.m_bDisplay)
 	return;
 
 	CDynLight		*pl;

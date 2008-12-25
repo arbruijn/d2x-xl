@@ -181,7 +181,7 @@ particleManager.Shutdown ();
 particleManager.Init ();
 /*---*/PrintLog ("  loading background bitmap...\n");
 LoadBackgroundBitmap ();
-InitAutomapData ();
+automap.Init ();
 InitDefaultPlayerShip ();
 nClearWindow = 2;		//	do portal only window clear.
 InitDetailLevels (gameStates.app.nDetailLevel);
@@ -1101,9 +1101,9 @@ for (;;) {
 	int playerShields;
 		// GAME LOOP!
 #if DBG
-	if (gameStates.render.automap.bDisplay)
+	if (automap.m_bDisplay)
 #endif
-	gameStates.render.automap.bDisplay = 0;
+	automap.m_bDisplay = 0;
 	gameStates.app.bConfigMenu = 0;
 	if (gameData.objs.consoleP != OBJECTS + LOCALPLAYER.nObject) {
 #if TRACE
@@ -1141,10 +1141,10 @@ for (;;) {
 		if (!IsMultiGame)
 			paletteManager.LoadEffect ();
 		}
-	if (gameStates.render.automap.bDisplay) {
+	if (automap.m_bDisplay) {
 		int	save_w = gameData.render.window.w,
 				save_h = gameData.render.window.h;
-		DoAutomap (0, 0);
+		automap.DoFrame (0, 0);
 		gameStates.app.bEnterGame = 1;
 		//	FlushInput ();
 		//	StopPlayerMovement ();
@@ -1342,7 +1342,7 @@ extern void check_create_player_path (void);
 //returns ptr to escort robot, or NULL
 CObject *find_escort ()
 {
-	int 		i;
+//	int 		i;
 	CObject	*objP = OBJECTS.Buffer ();
 
 FORALL_ROBOT_OBJS (objP, i)
@@ -2086,7 +2086,7 @@ int	Max_objCount_mike = 0;
 void show_freeObjects (void)
 {
 	if (!(gameData.app.nFrameCount & 8)) {
-		int		i;
+//		int		i;
 		CObject	*objP;
 		int		count = 0;
 

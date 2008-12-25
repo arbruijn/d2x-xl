@@ -20,6 +20,7 @@
 #include "renderlib.h"
 #include "network.h"
 #include "glare.h"
+#include "automap.h"
 
 #define CORONA_OUTLINE	0
 #if DBG
@@ -665,7 +666,7 @@ fLight = ComputeCoronaSprite (sprite, &vCenter, nSegment, nSide);
 if (RENDERPATH && gameStates.ogl.bOcclusionQuery && CoronaStyle ()) {
 	fIntensity *= ComputeSoftGlare (sprite, &vCenter, &vEye);
 #if 1
-	if (gameStates.ogl.bUseDepthBlending && !gameStates.render.automap.bDisplay && (CoronaStyle () == 2)) {
+	if (gameStates.ogl.bUseDepthBlending && !automap.m_bDisplay && (CoronaStyle () == 2)) {
 		fSize *= 2;
 		if (fSize < 1)
 			fSize = 1;
@@ -675,7 +676,7 @@ if (RENDERPATH && gameStates.ogl.bOcclusionQuery && CoronaStyle ()) {
 		}
 #endif
 	RenderSoftGlare (sprite, &vCenter, nTexture, fIntensity, bAdditive,
-						  !gameStates.render.automap.bDisplay || m_visited [0] [nSegment]);
+						  !automap.m_bDisplay || automap.m_visited [0][nSegment]);
 	glDepthFunc (GL_LESS);
 #if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -697,7 +698,7 @@ else {
 		return;
 	ComputeHardGlare (sprite, &vCenter, &vNormal);
 	RenderHardGlare (sprite, &vCenter, nTexture, fLight, fIntensity, &zRange, 0,	//bAdditive
-						  !gameStates.render.automap.bDisplay || m_visited [0] [nSegment]);
+						  !automap.m_bDisplay || automap.m_visited [0][nSegment]);
 	}
 }
 
@@ -774,7 +775,7 @@ if (gameStates.ogl.bDepthBlending) {
 			glUniform1i (glGetUniformLocation (hGlareShader, "depthTex"), 1);
 			glUniform2fv (glGetUniformLocation (hGlareShader, "screenScale"), 1, reinterpret_cast<GLfloat*> (&gameData.render.ogl.screenScale));
 #if 0
-			if (gameStates.render.automap.bDisplay)
+			if (automap.m_bDisplay)
 				glUniform3fv (glGetUniformLocation (h, "depthScale"), 1, reinterpret_cast<GLfloat*> (&gameData.render.ogl.depthScale));
 			else 
 #endif

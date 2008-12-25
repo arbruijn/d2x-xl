@@ -150,7 +150,7 @@ if (gameStates.app.bNostalgia)
 	return;
 if (HIDE_HUD)
 	return;
-if (gameStates.render.automap.bDisplay)
+if (automap.m_bDisplay)
 	return;
 if (!(i = EGI_FLAG (nRadar, 0, 1, 0)))
 	return;

@@ -43,6 +43,7 @@
 #include "texmerge.h"
 #include "transprender.h"
 #include "gameseg.h"
+#include "automap.h"
 
 CRenderFaceDrawerP g3FaceDrawer = G3DrawFaceArrays;
 
@@ -406,7 +407,7 @@ return 0;
 
 static inline int G3FaceIsColored (tFace *faceP)
 {
-return !gameStates.render.automap.bDisplay || m_visited [0] [faceP->nSegment] || !gameOpts->render.automap.bGrayOut;
+return !automap.m_bDisplay || automap.m_visited [0][faceP->nSegment] || !gameOpts->render.automap.bGrayOut;
 }
 
 //------------------------------------------------------------------------------

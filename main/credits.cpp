@@ -250,7 +250,7 @@ else if (k == KEY_PADMINUS) {
 	else
 		m_xDelay = 1;
 	}
-else if ((k == KEY_ESC) || (m_bDone > NUM_LINES)) {
+else if ((k == KEY_ESC) || (m_bDone > uint (NUM_LINES))) {
 	Destroy ();
 	paletteManager.FadeOut ();
 	paletteManager.Load (D2_DEFAULT_PALETTE, NULL);

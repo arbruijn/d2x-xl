@@ -383,7 +383,6 @@ gameStates.app.bDeathSequenceAborted = 0;
 gameStates.app.bUseDefaults = 0;
 gameStates.app.nCompSpeed = 3;
 gameStates.app.bPlayerFiredLaserThisFrame = 0;
-gameStates.render.automap.bDisplay = 0;
 gameStates.app.bConfigMenu = 0;
 gameStates.app.bAutoRunMission = 0;
 gameStates.entropy.bConquering = 0;

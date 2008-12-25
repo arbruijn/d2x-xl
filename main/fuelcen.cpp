@@ -615,7 +615,8 @@ void BotGenHandler (tFuelCenInfo * matCenP)
 	int			nMatCen, nSegment, nObject;
 	CObject		*objP;
 	fix			topTime;
-	int			nType, nMyStation, nCount, i;
+	int			nType, nMyStation, nCount;
+	//int			i;
 
 if (gameStates.gameplay.bNoBotAI)
 	return;

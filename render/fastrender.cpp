@@ -674,14 +674,14 @@ static inline int VisitSegment (short nSegment, int bAutomap)
 if (nSegment < 0)
 	return 0;
 if (bAutomap) {
-	if (gameStates.render.automap.bDisplay) {
-		if (!(gameStates.render.automap.bFull || automap.m_visible [nSegment]))
+	if (automap.m_bDisplay) {
+		if (!(automap.m_bFull || automap.m_visible [nSegment]))
 			return 0;
 		if (!gameOpts->render.automap.bSkybox && (SEGMENTS [nSegment].m_nType == SEGMENT_IS_SKYBOX))
 			return 0;
 		}
 	else
-		m_visited [0] [nSegment] = gameData.render.mine.bSetAutomapVisited;
+		automap.m_visited [0][nSegment] = gameData.render.mine.bSetAutomapVisited;
 	}
 if (VISITED (nSegment))
 	return 0;
@@ -739,8 +739,8 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 		if (!faceP->nCorona)
 			continue;
 		nSegment = faceP->nSegment;
-		if (gameStates.render.automap.bDisplay) {
-			if (!(gameStates.render.automap.bFull || automap.m_visible [nSegment]))
+		if (automap.m_bDisplay) {
+			if (!(automap.m_bFull || automap.m_visible [nSegment]))
 				return;
 			if (!gameOpts->render.automap.bSkybox && (SEGMENTS [nSegment].m_nType == SEGMENT_IS_SKYBOX))
 				continue;
@@ -997,7 +997,7 @@ EndRenderFaces (nType, bVertexArrays, 0);
 
 inline int SegmentIsVisible (CSegment *segP)
 {
-if (gameStates.render.automap.bDisplay)
+if (automap.m_bDisplay)
 	return 1;
 return RotateVertexList (8, segP->m_verts).ccAnd == 0;
 }

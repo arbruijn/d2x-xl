@@ -311,7 +311,7 @@ return -1;
 
 void NetworkCountPowerupsInMine (void)
 {
-  int 		i;
+ //int 		i;
   CObject	*objP;
 
 memset (gameData.multiplayer.powerupsInMine, 0, sizeof (gameData.multiplayer.powerupsInMine));

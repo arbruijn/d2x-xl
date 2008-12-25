@@ -35,6 +35,7 @@ COPYTIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL TIGHTS RESERVED.
 #include "lightning.h"
 #include "sphere.h"
 #include "glare.h"
+#include "automap.h"
 #include "transprender.h"
 #include "renderthreads.h"
 
@@ -399,7 +400,7 @@ for (h = faceP->nTris; h; h--, triP++) {
 #if 1
 		transformation.Transform (vertices [i], *(reinterpret_cast<CFloatVector*> (FACES.vertices + j)), 0);
 #else
-		if (gameStates.render.automap.bDisplay)
+		if (automap.m_bDisplay)
 			transformation.Transform (vertices + i, gameData.segs.fVertices + triP->index [i], 0);
 		else
 			vertices [i].Assign (gameData.segs.points [triP->index [i]].p3_vec);
@@ -435,7 +436,7 @@ for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
 #if 1
 	transformation.Transform (vertices [i], *(reinterpret_cast<CFloatVector*> (FACES.vertices + j)), 0);
 #else
-	if (gameStates.render.automap.bDisplay)
+	if (automap.m_bDisplay)
 		transformation.Transform(vertices [i], gameData.segs.fVertices [faceP->index [i]], 0);
 	else
 		vertices [i].Assign (gameData.segs.points [faceP->index [i]].p3_vec);
@@ -938,7 +939,7 @@ if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 
 		else {
 			bool bAdditive = false;
 #if 0
-			if (gameData.render.lights.dynamic.headlights.nLights && !gameStates.render.automap.bDisplay) {
+			if (gameData.render.lights.dynamic.headlights.nLights && !automap.m_bDisplay) {
 				G3SetupHeadlightShader (transpItems.bTextured, 1, transpItems.bTextured ? NULL : &faceP->color);
 				glDrawArrays (item->nPrimitive, 0, item->nVertices);
 				bAdditive = true;
@@ -998,7 +999,7 @@ if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 
 			}
 		}
 	else {
-		if (i && !gameStates.render.automap.bDisplay) {
+		if (i && !automap.m_bDisplay) {
 			if (bSoftBlend)
 				LoadGlareShader (5);
 			else
@@ -1006,7 +1007,7 @@ if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 
 			}
 		else
 			G3SetupShader (faceP, 0, 0, bDecal > 0, bmBot != NULL,
-								(item->nSegment < 0) || !gameStates.render.automap.bDisplay || m_visited [0] [item->nSegment],
+								(item->nSegment < 0) || !automap.m_bDisplay || automap.m_visited [0][item->nSegment],
 								transpItems.bTextured ? NULL : faceP ? &faceP->color : item->color);
 #if 0
 		if (triP)
@@ -1034,7 +1035,7 @@ if (LoadTranspItemImage (bmBot, item->nColors, 0, item->nWrap, 0, 3, 1, lightmap
 	else {
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		G3SetupShader (faceP, 0, 0, 0, bmBot != NULL,
-							(item->nSegment < 0) || !gameStates.render.automap.bDisplay || m_visited [0] [item->nSegment],
+							(item->nSegment < 0) || !automap.m_bDisplay || automap.m_visited [0][item->nSegment],
 							bmBot ? NULL : item->color);
 		}
 	j = item->nVertices;

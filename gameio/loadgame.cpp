@@ -193,7 +193,7 @@ Assert (gameData.objs.consoleP->info.nId == gameData.multiplayer.nLocalPlayer);
 int CountRobotsInLevel (void)
 {
 	int robotCount = 0;
-	int 		i;
+	//int 		i;
 	CObject	*objP;
 
 FORALL_ROBOT_OBJS (objP, i)
@@ -206,7 +206,7 @@ return robotCount;
 int CountHostagesInLevel (void)
 {
 	int 		count = 0;
-	int 		i;
+	//int 		i;
 	CObject	*objP;
 
 FORALL_STATIC_OBJS (objP, i)
@@ -563,7 +563,7 @@ void editor_reset_stuff_onLevel ()
 	InitAllMatCens ();
 	InitPlayerStatsNewShip ();
 	InitReactorForLevel (0);
-	AutomapClearVisited ();
+	automap.ClearVisited ();
 	InitStuckObjects ();
 	InitThiefForLevel ();
 
@@ -610,7 +610,8 @@ void SetSoundSources (void)
 	short			nSegment, nSide, nConnSeg, nConnSide, nSound;
 	CSegment*	segP, * connSegP;
 	CObject*		objP;
-	int			i, nOvlTex, nEffect;
+	int			nOvlTex, nEffect;
+	//int			i;
 
 gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires;
 DigiInitSounds ();		//clear old sounds
@@ -660,7 +661,7 @@ gameStates.sound.bDontStartObjects = 0;
 void SetVertigoRobotFlags (void)
 {
 	CObject	*objP;
-	int		i;
+	//int		i;
 
 gameData.objs.nVertigoBotFlags = 0;
 FORALL_ROBOT_OBJS (objP, i)
@@ -722,7 +723,7 @@ gameData.songs.tSlowDown = 0;
 gameStates.gameplay.bKillBossCheat = 0;
 gameStates.render.nFlashScale = F1_0;
 gameOpts->app.nScreenShotInterval = 0;	//better reset this every time a level is loaded
-gameStates.render.automap.bFull = 0;
+automap.m_bFull = 0;
 gameData.render.ogl.nHeadlights = -1;
 gameData.render.nColoredFaces = 0;
 gameData.app.nFrameCount = 0;
@@ -1242,7 +1243,7 @@ Assert (gameData.missions.nCurrentLevel == nLevel);	//make sure level set right
 Assert (gameStates.app.nFunctionMode == FMODE_GAME);
 GameStartInitNetworkPlayers (); // Initialize the gameData.multiplayer.players array for this level
 HUDClearMessages ();
-AutomapClearVisited ();
+automap.ClearVisited ();
 InitPlayerStatsLevel (1);
 gameData.objs.viewerP = OBJECTS + LOCALPLAYER.nObject;
 GameStartRemoveUnusedPlayers ();
@@ -1807,7 +1808,7 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 	}
 Assert (gameStates.app.nFunctionMode == FMODE_GAME);
 HUDClearMessages ();
-AutomapClearVisited ();
+automap.ClearVisited ();
 if (networkData.bNewGame == 1) {
 	networkData.bNewGame = 0;
 	InitPlayerStatsNewShip ();
@@ -1905,7 +1906,7 @@ objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo
 
 void FilterObjectsFromLevel (void)
 {
-  int 		i;
+  //int 		i;
 	CObject	*objP;
 
 FORALL_POWERUP_OBJS (objP, i) {
@@ -2198,7 +2199,7 @@ objP->info.xShields = RobotDefaultShields (objP);
 //	This function should be called at level load time.
 void CopyDefaultsToRobotsAll ()
 {
-	int		i;
+	//int		i;
 	CObject	*objP;
 
 FORALL_ROBOT_OBJS (objP, i)

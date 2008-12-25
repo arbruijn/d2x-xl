@@ -78,7 +78,7 @@ return 0;
 
 int FindMonsterball (void)
 {
-	short		i;
+	//short		i;
 	CObject	*objP;
 
 gameData.hoard.monsterballP = NULL;

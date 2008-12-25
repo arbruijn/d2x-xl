@@ -39,6 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hud_defs.h"
 #include "statusbar.h"
 #include "slowmotion.h"
+#include "automap.h"
 #include "gr.h"
 
 #define SHOW_PLAYER_IP		0
@@ -2970,7 +2971,7 @@ if (gameStates.render.bShowFrameRate) {
 					gameData.render.nMaxLights);
 		x = 19;
 		}
-	if (gameStates.render.automap.bDisplay)
+	if (automap.m_bDisplay)
 		y = 2;
 	else if (IsMultiGame)
 		y = 7;

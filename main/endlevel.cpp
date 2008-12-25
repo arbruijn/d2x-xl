@@ -220,8 +220,9 @@ CFixMatrix mSurfaceOrient;
 
 void StartEndLevelSequence (int bSecret)
 {
-	int		i, nMoviePlayed = MOVIE_NOT_PLAYED;
 	CObject	*objP;
+	int		nMoviePlayed = MOVIE_NOT_PLAYED;
+	//int		i;
 
 if (gameData.demo.nState == ND_STATE_RECORDING)		// stop demo recording
 	gameData.demo.nState = ND_STATE_PAUSED;

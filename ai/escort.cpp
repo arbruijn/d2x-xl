@@ -68,7 +68,7 @@ int nEscortGoalText [MAX_ESCORT_GOALS] = {
 
 void InitBuddyForLevel (void)
 {
-	int		i;
+	//int		i;
 	CObject	*objP;
 
 gameData.escort.bMayTalk = 0;
@@ -367,7 +367,7 @@ if ((gameData.escort.xLastMsgTime + F1_0 < gameData.time.xGame) ||
 //	Return true if marker #id has been placed.
 int MarkerExistsInMine (int id)
 {
-	int		i;
+	//int		i;
 	CObject	*objP;
 
 FORALL_OBJS (objP, i)
@@ -385,7 +385,7 @@ gameData.escort.bMsgsSuppressed = 0;
 if (!gameData.escort.bMayTalk) {
 	BuddyMayTalk ();
 	if (!gameData.escort.bMayTalk) {
-		int		i;
+		//int		i;
 		CObject	*objP;
 
 		FORALL_ROBOT_OBJS (objP, i)
@@ -925,7 +925,7 @@ return 1;
 
 void DoBuddyDudeStuff (void)
 {
-	short		i;
+	//short		i;
 	CObject	*objP;
 
 if (!BuddyMayTalk ())

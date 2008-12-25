@@ -286,7 +286,7 @@ void DoPlayerSmoke (CObject *objP, int i)
 if (i < 0)
 	i = objP->info.nId;
 if ((gameData.multiplayer.players [i].flags & PLAYER_FLAGS_CLOAKED) ||
-	 (gameStates.render.automap.bDisplay && IsMultiGame && !AM_SHOW_PLAYERS)) {
+	 (automap.m_bDisplay && IsMultiGame && !AM_SHOW_PLAYERS)) {
 	KillObjectSmoke (i);
 	return;
 	}

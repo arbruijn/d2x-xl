@@ -1683,7 +1683,7 @@ if (m_objects [i] >= 0) {
 void CLightningManager::DestroyForAllObjects (int nType, int nId)
 {
 	CObject	*objP;
-	int		i;
+	//int		i;
 
 FORALL_OBJS (objP, i) {
 	if ((objP->info.nType == nType) && ((nId < 0) || (objP->info.nId == nId)))
@@ -1738,8 +1738,8 @@ if (SHOW_LIGHTNINGS) {
 
 CFixVector *CLightningManager::FindTargetPos (CObject *emitterP, short nTarget)
 {
-	int				i;
-	CObject			*objP;
+	//int		i;
+	CObject*	objP;
 
 if (!nTarget)
 	return 0;

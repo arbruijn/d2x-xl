@@ -214,8 +214,8 @@ return 1;
 
 void ConvertAllPowerupsToWeapons (void)
 {
-	int		i;
 	CObject	*objP;
+	//int		i;
 
 FORALL_OBJS (objP, i)
 	if (objP->info.renderType == RT_POWERUP) {
@@ -831,7 +831,7 @@ if (nObject != LOCALPLAYER.nObject) {
 	if (objP == gameData.objs.viewerP)
 		return 0;
 	 }
-else if ((gameData.objs.viewerP == gameData.objs.consoleP) && !gameStates.render.automap.bDisplay) {
+else if ((gameData.objs.viewerP == gameData.objs.consoleP) && !automap.m_bDisplay) {
 	if ((bSpectate = (gameStates.app.bFreeCam && !nWindowNum)))
 		;
 		//HUDMessage (0, "%1.2f %1.2f %1.2f", X2F (objP->info.position.vPos.p.x), X2F (objP->info.position.vPos.p.y), X2F (objP->info.position.vPos.p.z));
@@ -900,7 +900,7 @@ switch (objP->info.renderType) {
 			return 0;
 		if (objP->info.nType == OBJ_PLAYER) {
 			int bDynObjLight = (RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects;
-			if (gameStates.render.automap.bDisplay && !(AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId)))
+			if (automap.m_bDisplay && !(AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId)))
 				return 0;
 			if (bSpectate) {
 				savePos = objP->info.position;
@@ -921,7 +921,7 @@ switch (objP->info.renderType) {
 		else if (objP->info.nType == OBJ_ROBOT) {
 			if (gameStates.render.nType != 1)
 				return 0;
-			if (gameStates.render.automap.bDisplay && !AM_SHOW_ROBOTS)
+			if (automap.m_bDisplay && !AM_SHOW_ROBOTS)
 				return 0;
 			gameData.models.vScale.SetZero ();
 			//DoObjectSmoke (objP);
@@ -940,7 +940,7 @@ switch (objP->info.renderType) {
 				}
 			}
 		else if (objP->info.nType == OBJ_WEAPON) {
-			if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS (1))
+			if (automap.m_bDisplay && !AM_SHOW_POWERUPS (1))
 				return 0;
 			if (!(gameStates.app.bNostalgia || gameOpts->render.powerups.b3D) && WeaponIsMine (objP->info.nId) && (objP->info.nId != SMALLMINE_ID))
 				ConvertWeaponToVClip (objP);
@@ -1000,7 +1000,7 @@ switch (objP->info.renderType) {
 				RenderTargetIndicator (objP, NULL);
 			}
 		else if (objP->info.nType == OBJ_POWERUP) {
-			if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS (1))
+			if (automap.m_bDisplay && !AM_SHOW_POWERUPS (1))
 				return 0;
 			if (!gameStates.app.bNostalgia && gameOpts->render.powerups.b3D) {
 				RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
@@ -1083,7 +1083,7 @@ switch (objP->info.renderType) {
 		if (gameStates.render.nType != 1)
 			return 0;
 		if (gameStates.render.nShadowPass != 2) {
-			if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS (1))
+			if (automap.m_bDisplay && !AM_SHOW_POWERUPS (1))
 				return 0;
 			if (objP->info.nType != OBJ_WEAPON)
 				DrawWeaponVClip (objP);
@@ -1117,7 +1117,7 @@ switch (objP->info.renderType) {
 		break;
 
 	case RT_POWERUP:
-		if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS (1))
+		if (automap.m_bDisplay && !AM_SHOW_POWERUPS (1))
 			return 0;
 		if (gameStates.render.nType != 1)
 			return 0;

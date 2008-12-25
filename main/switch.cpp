@@ -1134,7 +1134,8 @@ return wallP ? wallP->nSegment * 65536 + wallP->nSide : -1;
 
 int ObjTriggerIsValid (int nTrigger)
 {
-	int		h, i, j;
+	int		h, j;
+	//int		i;
 	CObject	*objP;
 
 FORALL_OBJS (objP, i) {

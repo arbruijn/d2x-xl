@@ -28,6 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network.h"
 #include "gameseg.h"
 #include "kconfig.h"
+#include "automap.h"
 #ifdef TACTILE
 #	include "tactile.h"
 #endif
@@ -1025,7 +1026,7 @@ if (mType.physInfo.mass == 0)
 	return;
 if (info.movementType != MT_PHYSICS)
 	return;
-if ((gameStates.render.automap.bDisplay && (this == gameData.objs.consoleP)) || SPECTATOR (this))
+if ((automap.m_bDisplay && (this == gameData.objs.consoleP)) || SPECTATOR (this))
 	return;
 #ifdef TACTILE
   if (TactileStick && (obj == OBJECTS + LOCALPLAYER.nObject))
@@ -1067,7 +1068,7 @@ void CObject::TurnTowardsVector (CFixVector vGoal, fix rate)
 // If no one moves, will be facing vGoal in 1 second.
 
 //	Detect null vector.
-if (gameStates.render.automap.bDisplay && (this == gameData.objs.consoleP))
+if (automap.m_bDisplay && (this == gameData.objs.consoleP))
 	return;
 if (vGoal.IsZero())
 	return;

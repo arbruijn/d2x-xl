@@ -108,7 +108,7 @@ if (!gameStates.render.bClusterLights)
 	return;
 
 	CObject	*objP;
-	int		i;
+	//int		i;
 
 FORALL_LIGHT_OBJS (objP, i)
 	if ((objP->info.nType == OBJ_LIGHT) && (objP->info.nId == CLUSTER_LIGHT_ID)) {

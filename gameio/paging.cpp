@@ -283,7 +283,7 @@ for (i = 0, robotIndex = 0; i < 2; i++, robotIndex += 32)
 
 void PagingTouchObjects (int nType)
 {
-	int		i;
+	//int		i;
 	CObject	*objP;
 
 FORALL_OBJS (objP, i)
