@@ -83,7 +83,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define ZOOM_SPEED_FACTOR		500	// (1500)
 #define ROT_SPEED_DIVISOR		(115000)
 
-#define LEAVE_TIME 0x4000
+#define LEAVE_TIME				0x4000
+
+#define EDGE_IDX(_edgeP)		((int) ((_edgeP) - m_edges.Buffer ()))
 
 #if !DBG
 const char	*pszMapBackgroundFilename [2] = {"\x01MAP.PCX", "\x01MAPB.PCX"};
@@ -134,8 +136,8 @@ m_visible.Create (MAX_SEGMENTS_D2X);
 m_nEdges = 0;
 m_nMaxEdges = MAX_EDGES;
 m_nLastEdge = -1;
-m_edges [0].Create (MAX_EDGES);
-m_edges [1].Create (MAX_EDGES);
+m_edges.Create (MAX_EDGES);
+m_brightEdges.Create (MAX_EDGES);
 InitColors ();
 }
 
@@ -242,7 +244,7 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 				break;
 
 			case OBJ_ROBOT:
-				if (m_visited [0] [objP->info.nSegment] && AM_SHOW_ROBOTS) {
+				if (m_visited [0][objP->info.nSegment] && AM_SHOW_ROBOTS) {
 					static int c = 0;
 					static int t = 0;
 					int h = SDL_GetTicks ();
@@ -269,7 +271,7 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 
 			case OBJ_POWERUP:
 				if (AM_SHOW_POWERUPS (1) && 
-					(gameStates.render.bAllVisited || m_visited [0] [objP->info.nSegment]))	{
+					(gameStates.render.bAllVisited || m_visited [0][objP->info.nSegment]))	{
 					switch (objP->info.nId) {
 						case POW_KEY_RED:	
 							CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 5, 5));
@@ -333,7 +335,7 @@ if (gameStates.render.automap.bRadar == 2) {
 #if 1
 	vmRadar.RVec () = po.RVec ();
 	vmRadar.FVec () = po.UVec ();
-	vmRadar.FVec ()[Y] = -vmRadar.FVec ()[Y];
+	vmRadar.FVec () [Y] = -vmRadar.FVec () [Y];
 	vmRadar.UVec () = po.FVec ();
 #else
 	vmRadar.rVec.p.x = po->rVec.p.x;
@@ -421,7 +423,7 @@ else
 	strcpy (m_szLevelName, " ");
 strcat (m_szLevelName, gameData.missions.szCurrentLevel);
 for (h = i = 0; i < gameData.segs.nSegments; i++)
-	if (m_visited [0] [i])
+	if (m_visited [0][i])
 		h++;
 sprintf (szExplored, " (%1.1f %s)", (float) (h * 100) / (float) gameData.segs.nSegments, TXT_PERCENT_EXPLORED);
 strcat (m_szLevelName, szExplored);
@@ -487,9 +489,9 @@ else if (!m_data.nViewDist)
 playerP = OBJECTS + LOCALPLAYER.nObject;
 m_data.viewMatrix = playerP->info.position.mOrient;
 
-vTAngles[PA] = PITCH_DEFAULT;
-vTAngles[HA] = 0;
-vTAngles[BA] = 0;
+vTAngles [PA] = PITCH_DEFAULT;
+vTAngles [HA] = 0;
+vTAngles [BA] = 0;
 
 m_data.viewTarget = playerP->info.position.vPos;
 t1 = xEntryTime = TimerGetFixedSeconds ();
@@ -505,7 +507,7 @@ else if (gameStates.render.automap.bFull) {
 	}
 else
 	memcpy (automap.m_visible.Buffer (), m_visited [0].Buffer (), m_visited [0].Size ());
-//m_visited [0] [OBJECTS [LOCALPLAYER.nObject].nSegment] = 1;
+//m_visited [0][OBJECTS [LOCALPLAYER.nObject].nSegment] = 1;
 gameStates.render.automap.nSegmentLimit =
 gameStates.render.automap.nMaxSegsAway = 
 	SetSegmentDepths (OBJECTS [LOCALPLAYER.nObject].info.nSegment, automap.m_visible.Buffer ());
@@ -523,16 +525,16 @@ int CAutomap::Update (CAngleVector& vTAngles)
 if (Controls [0].firePrimaryDownCount)	{
 	// Reset orientation
 	m_data.nViewDist = ZOOM_DEFAULT;
-	vTAngles[PA] = PITCH_DEFAULT;
-	vTAngles[HA] = 0;
-	vTAngles[BA] = 0;
+	vTAngles [PA] = PITCH_DEFAULT;
+	vTAngles [HA] = 0;
+	vTAngles [BA] = 0;
 	m_data.viewTarget = playerP->info.position.vPos;
 	}
 if (Controls [0].forwardThrustTime)
 	m_data.viewTarget += m_data.viewMatrix.FVec () * (Controls [0].forwardThrustTime * ZOOM_SPEED_FACTOR); 
-vTAngles[PA] += (fixang) FixDiv (Controls [0].pitchTime, ROT_SPEED_DIVISOR);
-vTAngles[HA] += (fixang) FixDiv (Controls [0].headingTime, ROT_SPEED_DIVISOR);
-vTAngles[BA] += (fixang) FixDiv (Controls [0].bankTime, ROT_SPEED_DIVISOR*2);
+vTAngles [PA] += (fixang) FixDiv (Controls [0].pitchTime, ROT_SPEED_DIVISOR);
+vTAngles [HA] += (fixang) FixDiv (Controls [0].headingTime, ROT_SPEED_DIVISOR);
+vTAngles [BA] += (fixang) FixDiv (Controls [0].bankTime, ROT_SPEED_DIVISOR*2);
 
 m = CFixMatrix::Create(vTAngles);
 if (Controls [0].verticalThrustTime || Controls [0].sidewaysThrustTime)	{
@@ -777,7 +779,7 @@ void CAutomap::AdjustSegmentLimit (int nSegmentLimit, CArray<ushort>& visible)
 	tEdgeInfo * e;
 
 for (i = 0; i <= m_nLastEdge; i++)	{
-	e = m_edges [0] + i;
+	e = m_edges + i;
 	e->flags |= EF_TOO_FAR;
 	for (e1 = 0; e1 < e->nFaces; e1++)	{
 		if (visible [e->nSegment [e1]] <= nSegmentLimit)	{
@@ -795,7 +797,7 @@ void CAutomap::DrawEdges (void)
 	g3sCodes		cc;
 	int			i, j, nbright = 0;
 	ubyte			nfacing, nnfacing;
-	tEdgeInfo	*edgeP;
+	tEdgeInfo*	edgeP;
 	CFixVector	*tv1;
 	fix			distance;
 	fix			minDistance = 0x7fffffff;
@@ -804,8 +806,8 @@ void CAutomap::DrawEdges (void)
 
 gameStates.ogl.bUseTransform = RENDERPATH;
 for (i = 0; i <= m_nLastEdge; i++)	{
-	//edgeP = &m_edges [0][Edge_used_list [i]];
-	edgeP = m_edges [0] + i;
+	//edgeP = &m_edges [Edge_used_list [i]];
+	edgeP = m_edges + i;
 	if (!(edgeP->flags & EF_USED)) 
 		continue;
 	if (edgeP->flags & EF_TOO_FAR) 
@@ -816,14 +818,14 @@ for (i = 0; i <= m_nLastEdge; i++)	{
 		}
 
 	cc = RotateVertexList (2, edgeP->verts);
-	distance = gameData.segs.points [edgeP->verts [1]].p3_vec[Z];
+	distance = gameData.segs.points [edgeP->verts [1]].p3_vec [Z];
 	if (minDistance>distance)
 		minDistance = distance;
 	if (!cc.ccAnd) 	{	//all off screen?
 		nfacing = nnfacing = 0;
 		tv1 = gameData.segs.vertices + edgeP->verts [0];
 		j = 0;
-		while (j<edgeP->nFaces && (nfacing==0 || nnfacing==0))	{
+		while ((j < edgeP->nFaces) && !(nfacing && nnfacing))	{
 			if (!G3CheckNormalFacing (*tv1, SEGMENTS [edgeP->nSegment [j]].m_sides [edgeP->sides [j]].m_normals [0]))
 				nfacing++;
 			else
@@ -833,7 +835,7 @@ for (i = 0; i <= m_nLastEdge; i++)	{
 
 		if (nfacing && nnfacing) {
 			// a corners line
-			m_edges [1][nbright++] = EDGE_IDX (edgeP);
+			m_brightEdges [nbright++] = edgeP;
 			}
 		else if (edgeP->flags & (EF_DEFINING|EF_GRATE))	{
 			if (nfacing == 0)	{
@@ -844,7 +846,7 @@ for (i = 0; i <= m_nLastEdge; i++)	{
 				G3DrawLine (gameData.segs.points + edgeP->verts [0], gameData.segs.points + edgeP->verts [1]);
 				}
 			else {
-				m_edges [1][nbright++] = EDGE_IDX (edgeP);
+				m_brightEdges [nbright++] = edgeP;
 				}
 			}
 		}
@@ -855,7 +857,6 @@ if (minDistance < 0)
 
 // Sort the bright ones using a shell sort
 {
-	int t;
 	int i, j, incr, v1, v2;
 
 incr = nbright / 2;
@@ -863,15 +864,13 @@ while (incr > 0) {
 	for (i = incr; i < nbright; i++) {
 		j = i - incr;
 		while (j>=0) {
-			// compare element j and j+incr
-			v1 = m_edges [0][m_edges [1][j]].verts [0];
-			v2 = m_edges [0][m_edges [1][j+incr]].verts [0];
+			// compare element j and j + incr
+			v1 = m_brightEdges [j]->verts [0];
+			v2 = m_brightEdges [j + incr]->verts [0];
 
-			if (gameData.segs.points [v1].p3_vec[Z] < gameData.segs.points [v2].p3_vec[Z]) {
+			if (gameData.segs.points [v1].p3_vec [Z] < gameData.segs.points [v2].p3_vec [Z]) {
 				// If not in correct order, them swap 'em
-				t = m_edges [1][j+incr];
-				m_edges [1][j+incr] = m_edges [1][j];
-				m_edges [1][j] = t;
+				Swap (m_brightEdges [j + incr], m_brightEdges [j]);
 				j -= incr;
 				}
 			else
@@ -886,10 +885,10 @@ while (incr > 0) {
 for (i = 0; i < nbright; i++) {
 	int color;
 	fix dist;
-	edgeP = m_edges [0] + m_edges [1][i];
+	edgeP = m_brightEdges [i];
 	p1 = gameData.segs.points + edgeP->verts [0];
 	p2 = gameData.segs.points + edgeP->verts [1];
-	dist = p1->p3_vec[Z] - minDistance;
+	dist = p1->p3_vec [Z] - minDistance;
 	// Make distance be 1.0 to 0.0, where 0.0 is 10 segments away;
 	if (dist < 0) 
 		dist = 0;
@@ -927,10 +926,10 @@ vv = (v1<<16) + v0;
 oldhash = hash = ((v0*5+v1) % MAX_EDGES);
 ret = -1;
 while (ret == -1) {
-	ev0 = (int) (m_edges [0][hash].verts [0]);
-	ev1 = (int) (m_edges [0][hash].verts [1]);
+	ev0 = (int) (m_edges [hash].verts [0]);
+	ev1 = (int) (m_edges [hash].verts [1]);
 	evv = (ev1<<16)+ev0;
-	if (m_edges [0][hash].nFaces == 0) ret=0;
+	if (m_edges [hash].nFaces == 0) ret=0;
 	else if (evv == vv) 
 		ret=1;
 	else {
@@ -940,17 +939,17 @@ while (ret == -1) {
 			Error ("Edge list full!");
 		}
 	}
-edgeP = &m_edges [0][hash];
+edgeP = &m_edges [hash];
 return ret ? hash : -1;
 }
 
 //------------------------------------------------------------------------------
 
-void CAutomap::AddEdge (int va, int vb, uint color, ubyte CSide, short nSegment, int bHidden, int bGrate, int bNoFade)
+void CAutomap::AddEdge (int va, int vb, uint color, ubyte nSide, short nSegment, int bHidden, int bGrate, int bNoFade)
 {
-	int found;
-	tEdgeInfo *e;
-	int tmp;
+	int			found;
+	tEdgeInfo*	edgeP;
+	int			tmp;
 
 	if (m_nEdges >= MAX_EDGES) {
 		// GET JOHN!(And tell him that his
@@ -968,56 +967,49 @@ if (va > vb) {
 	va = vb;
 	vb = tmp;
 	}
-found = AutomapFindEdge (va,vb,&e);
+found = FindEdge (va, vb, edgeP);
 
 if (found == -1) {
-	e->verts [0] = va;
-	e->verts [1] = vb;
-	e->color = color;
-	e->nFaces = 1;
-	e->flags = EF_USED | EF_DEFINING;			// Assume a Normal line
-	e->sides [0] = CSide;
-	e->nSegment [0] = nSegment;
-	//Edge_used_list [m_nEdges] = EDGE_IDX (e);
-	if ( EDGE_IDX (e) > m_nLastEdge)
-		m_nLastEdge = EDGE_IDX (e);
+	edgeP->verts [0] = va;
+	edgeP->verts [1] = vb;
+	edgeP->color = color;
+	edgeP->nFaces = 1;
+	edgeP->flags = EF_USED | EF_DEFINING;			// Assume a Normal line
+	edgeP->sides [0] = nSide;
+	edgeP->nSegment [0] = nSegment;
+	//Edge_used_list [m_nEdges] = EDGE_IDX (edgeP);
+	if (EDGE_IDX (edgeP) > m_nLastEdge)
+		m_nLastEdge = EDGE_IDX (edgeP);
 	m_nEdges++;
 	} 
 else {
-	//Assert (e->nFaces < 8);
+	//Assert (edgeP->nFaces < 8);
 	if ((color != m_colors.walls.nNormal) && (color != m_colors.walls.nRevealed))
-		e->color = color;
-	if (e->nFaces < 4) {
-		e->sides [e->nFaces] = CSide;
-		e->nSegment [e->nFaces] = nSegment;
-		e->nFaces++;
+		edgeP->color = color;
+	if (edgeP->nFaces < 4) {
+		edgeP->sides [edgeP->nFaces] = nSide;
+		edgeP->nSegment [edgeP->nFaces] = nSegment;
+		edgeP->nFaces++;
 		}
 	}
 if (bGrate)
-	e->flags |= EF_GRATE;
+	edgeP->flags |= EF_GRATE;
 if (bHidden)
-	e->flags |= EF_SECRET;		// Mark this as a bHidden edge
+	edgeP->flags |= EF_SECRET;		// Mark this as a bHidden edge
 if (bNoFade)
-	e->flags |= EF_NO_FADE;
+	edgeP->flags |= EF_NO_FADE;
 }
 
 //------------------------------------------------------------------------------
 
 void CAutomap::AddUnknownEdge (int va, int vb)
 {
-	int found;
-	tEdgeInfo *e;
-	int tmp;
+	tEdgeInfo *edgeP;
 
-if (va > vb) {
-	tmp = va;
-	va = vb;
-	vb = tmp;
-	}
-
-found = AutomapFindEdge (va,vb,&e);
-if (found != -1)
-	e->flags |= EF_FRONTIER;		// Mark as a border edge
+if (va > vb)
+	Swap (va, vb);
+if (FindEdge (va, vb, edgeP) != -1)
+	edgeP->flags |= EF_FRONTIER;		// Mark as a border edge
 }
 
 //------------------------------------------------------------------------------
@@ -1135,7 +1127,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	if (color != WHITE_RGBA) {
 		// If they have a map powerup, draw unvisited areas in dark blue.
 		if ((LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP) && 
-				!(gameStates.render.bAllVisited || m_visited [0] [nSegment]))
+				!(gameStates.render.bAllVisited || m_visited [0][nSegment]))
 			color = m_colors.walls.nRevealed;
 
 addEdge:
@@ -1184,8 +1176,8 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP_CHEAT)
 
 	// clear edge list
 for (i=0; i < MAX_EDGES; i++) {
-	m_edges [0][i].nFaces = 0;
-	m_edges [0][i].flags = 0;
+	m_edges [i].nFaces = 0;
+	m_edges [i].flags = 0;
 	}
 m_nEdges = 0;
 m_nLastEdge = -1;
@@ -1206,7 +1198,7 @@ else {
 #ifdef EDITOR
 		if (SEGMENTS [s].nSegment != -1)
 #endif
-		if (m_visited [0] [s]) {
+		if (m_visited [0][s]) {
 			h++;
 			AddSegmentEdges (&SEGMENTS [s]);
 			}
@@ -1214,13 +1206,13 @@ else {
 #ifdef EDITOR
 			if (SEGMENTS [s].nSegment != -1)
 #endif
-			if (!m_visited [0] [s]) {
+			if (!m_visited [0][s]) {
 				AddUnknownSegmentEdges (&SEGMENTS [s]);
 				}
 		}
 	// Find unnecessary lines (These are lines that don't have to be drawn because they have small curvature)
 	for (i = 0; i <= m_nLastEdge; i++)	{
-		e = m_edges [0] + i;
+		e = m_edges + i;
 		if (!(e->flags & EF_USED))
 			continue;
 

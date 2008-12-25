@@ -14,6 +14,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _AUTOMAP_H
 #define _AUTOMAP_H
 
+#include "carray.h"
 #include "player.h"
 
 void AutomapClearVisited ();
@@ -54,16 +55,14 @@ typedef struct tAutomapWallColors {
 
 typedef struct tAutomapColors {
 	tAutomapWallColors	walls;
-	uint	nHostage;
-	uint	nMonsterball;
-	uint	nWhite;
-	uint	nMedGreen;
-	uint	nLgtBlue;
-	uint	nLgtRed;
-	uint	nDkGray;
+	uint						nHostage;
+	uint						nMonsterball;
+	uint						nWhite;
+	uint						nMedGreen;
+	uint						nLgtBlue;
+	uint						nLgtRed;
+	uint						nDkGray;
 } tAutomapColors;
-
-#define EDGE_IDX(_edgeP)	((int) ((_edgeP) - m_edges [0]))
 
 typedef struct tAutomapData {
 	int			bCheat;
@@ -80,23 +79,24 @@ typedef struct tAutomapData {
 
 class CAutomap {
 	private:
-		tAutomapData		m_data;
-		tAutomapColors		m_colors;
-		CArray<tEdgeInfo>	m_edges [2];
-		int					m_nEdges;
-		int					m_nMaxEdges;
-		int					m_nLastEdge;
-		int					m_nWidth;
-		int					m_nHeight;
-		char					m_szLevelNum [200];
-		char					m_szLevelName [200];
-		CBitmap				m_background;
+		tAutomapData			m_data;
+		tAutomapColors			m_colors;
+		CArray<tEdgeInfo>		m_edges;
+		CArray<tEdgeInfo*>	m_brightEdges;
+		int						m_nEdges;
+		int						m_nMaxEdges;
+		int						m_nLastEdge;
+		int						m_nWidth;
+		int						m_nHeight;
+		char						m_szLevelNum [200];
+		char						m_szLevelName [200];
+		CBitmap					m_background;
 
 	public:
-		CByteArray			m_visited [2];
-		CArray<ushort>		m_visible;
-		int					m_bRadar;
-		int					m_bFull;
+		CByteArray				m_visited [2];
+		CArray<ushort>			m_visible;
+		int						m_bRadar;
+		int						m_bFull;
 
 	public:
 		CAutomap () { Init (); }
@@ -106,6 +106,7 @@ class CAutomap {
 		int Setup (int bPauseGame, fix& xEntryTime, CAngleVector& vTAngles);
 		int Update (CAngleVector& vTAngles);
 		void Draw (void);
+		void DoFrame (int nKeyCode, int bRadar);
 		void ClearVisited (void);
 		int ReadControls (int nLeaveMode, int bDone, int& bPauseGame);
 
