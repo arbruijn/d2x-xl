@@ -70,7 +70,7 @@ template < class _T > class CArray : public CQuickSort < _T > {
 
 		inline void Clear (ubyte filler = 0, uint count = 0xffffffff) { 
 			if (m_data.buffer) 
-				memset (m_data.buffer, filler, (count < m_data.length) ? count : m_data.length); 
+				memset (m_data.buffer, filler, sizeof (_T) * ((count < m_data.length) ? count : m_data.length)); 
 			}
 		
 #ifdef _DEBUG

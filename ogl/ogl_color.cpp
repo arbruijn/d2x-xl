@@ -783,9 +783,9 @@ void G3VertexColor (CFloatVector3 *pvVertNorm, CFloatVector3 *pVertPos, int nVer
 						  float fScale, int bSetColor, int nThread)
 {
 PROF_START
-	CFloatVector3			colorSum = CFloatVector3::Create(0.0f, 0.0f, 0.0f);
-	CFloatVector3			vertPos;
-	tFaceColor		*pc = NULL;
+	CFloatVector3	colorSum = CFloatVector3::Create(0.0f, 0.0f, 0.0f);
+	CFloatVector3	vertPos;
+	tFaceColor*		pc = NULL;
 	int				bVertexLights;
 	CVertColorData	vcd;
 
@@ -837,14 +837,15 @@ if (gameStates.ogl.bUseTransform)
 	CFloatVector::Normalize(&vcd.vertNorm, pvVertNorm);
 #endif
 else {
-	if (!gameStates.render.nState) {
-		vcd.vertNorm = *pvVertNorm; CFloatVector3::Normalize(vcd.vertNorm);
+	if (gameStates.render.nState)
+		transformation.Rotate (vcd.vertNorm, *pvVertNorm, 0);
+	else {
+		vcd.vertNorm = *pvVertNorm; 
+		CFloatVector3::Normalize (vcd.vertNorm);
+		}
 	}
-	else
-		transformation.Rotate(vcd.vertNorm, *pvVertNorm, 0);
-}
 if ((bVertexLights = !(gameStates.render.nState || pVertColor))) {
-	vertPos.Assign (gameData.segs.vertices[nVertex]);
+	vertPos.Assign (gameData.segs.vertices [nVertex]);
 	pVertPos = &vertPos;
 	SetNearestVertexLights (-1, nVertex, NULL, 1, 0, 1, nThread);
 	}
@@ -863,9 +864,9 @@ else
 #endif
 #if 1
 if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE) {
-	colorSum[R] =
-	colorSum[G] =
-	colorSum[B] = 1;
+	colorSum [R] =
+	colorSum [G] =
+	colorSum [B] = 1;
 	}
 else
 #endif
