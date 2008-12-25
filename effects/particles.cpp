@@ -118,6 +118,7 @@ CParticleImageManager particleImageManager;
 
 void CParticleManager::RebuildSystemList (void)
 {
+#if 0
 m_nUsed =
 m_nFree = -1;
 CParticleSystem *systemP = m_systems;
@@ -132,6 +133,7 @@ for (int i = 0; i < MAX_PARTICLE_SYSTEMS; i++, systemP++) {
 		m_nFree = i;
 		}
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1068,7 +1070,7 @@ int CParticleEmitter::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mO
 										int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType,
 										tRgbaColorf *colorP, int nCurTime, int bBlowUpParts, CFixVector *vEmittingFace)
 {
-if (!(m_particles = new CParticle [nMaxParts]))
+if (!m_particles.Create (nMaxParts))
 	return 0;
 m_nLife = nLife;
 m_nBirth = nCurTime;
@@ -1114,10 +1116,7 @@ return 1;
 
 int CParticleEmitter::Destroy (void)
 {
-if (m_particles) {
-	delete [] m_particles;
-	m_particles = NULL;
-	}
+m_particles.Destroy ();
 m_nParts =
 m_nMaxParts = 0;
 return 1;
@@ -1326,7 +1325,7 @@ if (m_nMaxParts == nMaxParts)
 if (nMaxParts > m_nPartLimit) {
 	if (!(pp = new CParticle [nMaxParts]))
 		return 0;
-	if (m_particles) {
+	if (m_particles.Buffer ()) {
 		if (m_nParts > nMaxParts)
 			m_nParts = nMaxParts;
 		h = m_nPartLimit - m_nFirstPart;
@@ -1334,12 +1333,12 @@ if (nMaxParts > m_nPartLimit) {
 			h = m_nParts;
 		memcpy (pp, m_particles + m_nFirstPart, h * sizeof (CParticle));
 		if (h < m_nParts)
-			memcpy (pp + h, m_particles, (m_nParts - h) * sizeof (CParticle));
+			memcpy (pp + h, m_particles.Buffer (), (m_nParts - h) * sizeof (CParticle));
 		m_nFirstPart = 0;
 		m_nPartLimit = nMaxParts;
-		delete [] m_particles;
+		delete[] m_particles.Buffer ();
 		}
-	m_particles = pp;
+	m_particles.SetBuffer (pp);
 	}
 m_nDensity = nDensity;
 m_nMaxParts = nMaxParts;
@@ -1374,7 +1373,7 @@ nMaxParts = MAX_PARTICLES (nMaxParts, gameOpts->render.particles.nDens [0]);
 if (gameStates.render.bPointSprites)
 	nMaxParts *= 2;
 srand (SDL_GetTicks ());
-if (!(m_emitters = new CParticleEmitter [nMaxEmitters])) {
+if (!m_emitters.Create (nMaxEmitters)) {
 	//PrintLog ("cannot create m_systems\n");
 	return 0;
 	}
@@ -1394,7 +1393,7 @@ for (i = 0; i < nMaxEmitters; i++)
 		m_nEmitters++;
 	else {
 		particleManager.Destroy (m_nId);
-		//PrintLog ("cannot create m_systems\n");
+		//PrintLog ("cannot create particle systems\n");
 		return -1;
 		}
 m_nType = nType;
@@ -1403,10 +1402,9 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-void CParticleSystem::Init (int nId, int nNext)
+void CParticleSystem::Init (int nId)
 {
 m_nId = nId;
-m_nNext = nNext;
 m_nObject = -1;
 m_nObjType = -1;
 m_nObjId = -1;
@@ -1417,11 +1415,8 @@ m_nSignature = -1;
 
 void CParticleSystem::Destroy (void)
 {
-if (m_emitters) {
-	for (int i = m_nEmitters; i; )
-		m_emitters [--i].Destroy ();
-	delete [] m_emitters;
-	m_emitters = NULL;
+if (m_emitters.Buffer ()) {
+	m_emitters.Destroy ();
 	if ((m_nObject >= 0) && (m_nObject < 0x70000000))
 		particleManager.SetObjectSystem (m_nObject, -1);
 	m_nObject = -1;
@@ -1437,7 +1432,7 @@ int CParticleSystem::Render (void)
 {
 	int	h = 0;
 
-if (m_emitters) {
+if (m_emitters.Buffer ()) {
 	if (!particleImageManager.Load (m_nType))
 		return 0;
 	if ((m_nObject >= 0) && (m_nObject < 0x70000000) && 
@@ -1445,7 +1440,7 @@ if (m_emitters) {
 		  (OBJECTS [m_nObject].info.nSignature != m_nSignature) || 
 		  (particleManager.GetObjectSystem (m_nObject) < 0)))
 		SetLife (0);
-	CParticleEmitter *emitterP = m_emitters;
+	CParticleEmitter *emitterP = m_emitters.Buffer ();
 	for (int i = m_nEmitters; i; i--, emitterP++) 
 		h += emitterP->Render (-1);
 	}
@@ -1460,7 +1455,7 @@ return h;
 
 void CParticleSystem::SetPos (CFixVector *vPos, CFixMatrix *mOrient, short nSegment)
 {
-if (m_emitters)
+if (m_emitters.Buffer ())
 	for (int i = 0; i < m_nEmitters; i++)
 		m_emitters [i].SetPos (vPos, mOrient, nSegment);
 }
@@ -1469,7 +1464,7 @@ if (m_emitters)
 
 void CParticleSystem::SetDensity (int nMaxParts, int nDensity)
 {
-if (m_emitters) {
+if (m_emitters.Buffer ()) {
 	nMaxParts = MAX_PARTICLES (nMaxParts, gameOpts->render.particles.nDens [0]);
 	for (int i = 0; i < m_nEmitters; i++)
 		m_emitters [i].SetDensity (nMaxParts, nDensity);
@@ -1480,7 +1475,7 @@ if (m_emitters) {
 
 void CParticleSystem::SetScale (float fScale)
 {
-if (m_emitters)
+if (m_emitters.Buffer ())
 	for (int i = 0; i < m_nEmitters; i++)
 		m_emitters [i].SetScale (fScale);
 }
@@ -1489,7 +1484,7 @@ if (m_emitters)
 
 void CParticleSystem::SetLife (int nLife)
 {
-if (m_emitters && (m_nLife != nLife)) {
+if (m_emitters.Buffer () && (m_nLife != nLife)) {
 	m_nLife = nLife;
 	for (int i = 0; i < m_nEmitters; i++)
 		m_emitters [i].SetLife (nLife);
@@ -1500,7 +1495,7 @@ if (m_emitters && (m_nLife != nLife)) {
 
 void CParticleSystem::SetBrightness (int nBrightness)
 {
-if (m_emitters)
+if (m_emitters.Buffer ())
 	for (int i = 0; i < m_nEmitters; i++)
 		m_emitters [i].SetBrightness (nBrightness);
 }
@@ -1509,7 +1504,7 @@ if (m_emitters)
 
 void CParticleSystem::SetType (int nType)
 {
-if (m_emitters && (m_nType != nType)) {
+if (m_emitters.Buffer () && (m_nType != nType)) {
 	m_nType = nType;
 	for (int i = 0; i < m_nEmitters; i++)
 		m_emitters [i].SetType (nType);
@@ -1520,7 +1515,7 @@ if (m_emitters && (m_nType != nType)) {
 
 void CParticleSystem::SetSpeed (int nSpeed)
 {
-if (m_emitters && (m_nSpeed != nSpeed)) {
+if (m_emitters.Buffer () && (m_nSpeed != nSpeed)) {
 	m_nSpeed = nSpeed;
 	for (int i = 0; i < m_nEmitters; i++)
 		m_emitters [i].SetSpeed (nSpeed);
@@ -1531,7 +1526,7 @@ if (m_emitters && (m_nSpeed != nSpeed)) {
 
 void CParticleSystem::SetDir (CFixVector *vDir)
 {
-if (m_emitters)
+if (m_emitters.Buffer ())
 	for (int i = 0; i < m_nEmitters; i++)
 		m_emitters [i].SetDir (vDir);
 }
@@ -1540,7 +1535,7 @@ if (m_emitters)
 
 int CParticleSystem::RemoveEmitter (int i)
 {
-if ((m_emitters) && (i < m_nEmitters)) {
+if (m_emitters.Buffer () && (i < m_nEmitters)) {
 	m_emitters [i].Destroy ();
 	if (i < --m_nEmitters)
 		m_emitters [i] = m_emitters [m_nEmitters];
@@ -1562,7 +1557,7 @@ if ((m_nObject == 0x7fffffff) && (m_nType < 3) &&
 if ((m_nObject < 0x70000000) && (OBJECTS [m_nObject].info.nType == 255))
 	i = i;
 #endif
-if ((emitterP = m_emitters)) {
+if ((emitterP = m_emitters.Buffer ())) {
 	bool bKill = (m_nObject < 0) || ((m_nObject < 0x70000000) && 
 					 ((OBJECTS [m_nObject].info.nSignature != m_nSignature) || (OBJECTS [m_nObject].info.nType == OBJ_NONE)));
 	for (i = 0; i < m_nEmitters; ) {
@@ -1589,7 +1584,7 @@ return i;
 
 void CParticleManager::Init (void)
 {
-	int i, j;
+	int i;
 #if OGL_VERTEX_BUFFERS
 	GLfloat	pf = colorBuffer;
 
@@ -1603,52 +1598,19 @@ if (!m_objectSystems.Buffer ())
 	CREATE (m_objectSystems, MAX_OBJECTS, (char) 0xff);
 if (!m_objExplTime.Buffer ())
 	CREATE (m_objExplTime, MAX_OBJECTS, 0);
-for (i = 0, j = 1; j < MAX_PARTICLE_SYSTEMS; i++, j++)
-	m_systems [i].Init (i, j);
-m_systems [i].SetNext (-1);
-m_nFree = 0;
-m_nUsed = -1;
-}
-
-//------------------------------------------------------------------------------
-
-int CParticleManager::IsUsed (int i)
-{
-	int nPrev = -1;
-
-for (int j = m_nUsed; j >= 0; ) {
-	if (i == j)
-		return nPrev + 1;
-	nPrev = j;
-	j = m_systems [j].GetNext ();
-	if (j == m_nUsed) {
-		RebuildSystemList ();
-		return -1;
-		}
+if (m_systems.Create (MAX_PARTICLE_SYSTEMS)) {
+	i = 0;
+	for (CParticleSystem* systemP = m_systems.GetFirst (m_systems.FreeList ()); systemP; systemP = m_systems.GetNext ())
+		systemP->Init (i++);
 	}
-return -1;
 }
 
 //------------------------------------------------------------------------------
 
 int CParticleManager::Destroy (int i)
 {
-	int					nNext, nPrev;
-	CParticleSystem	*systemP;
-
-if (i < 0)
-	i = -i - 1;
-if (0 > (nPrev = IsUsed (i)))
-	return -1;
-systemP = m_systems + i;
-nNext = systemP->GetNext ();
-if (m_nUsed == i)
-	m_nUsed = nNext;
-systemP->SetNext (m_nFree);
-if (nPrev > 0)
-	m_systems [nPrev - 1].SetNext (nNext);
-m_nFree = i;
-systemP->Destroy ();
+m_systems [i].Destroy ();
+m_systems.Push (i);
 return i;
 }
 
@@ -1658,18 +1620,10 @@ int CParticleManager::Shutdown (void)
 {
 SEM_ENTER (SEM_SMOKE)
 
-	int i, j, bDone = 0;
-
-while (!bDone) {
-	bDone = 1;
-	for (i = m_nUsed; i >= 0; i = j) {
-		if ((j = m_systems [i].m_nNext) == m_nUsed) {
-			RebuildSystemList ();
-			bDone = 0;
-			}
-		else
-			m_systems [i].Destroy ();
-		}
+int i = 0;
+for (CParticleSystem* systemP = m_systems.GetFirst (m_systems.UsedList ()); systemP; systemP = m_systems.GetNext ()) {
+	systemP->Destroy ();
+	m_systems.Push (systemP->Id ());
 	}
 particleImageManager.FreeAll ();
 Init ();
@@ -1689,19 +1643,16 @@ if (!(EGI_FLAG (bUseParticleSystem, 0, 1, 0)))
 	return 0;
 else
 #endif
-if (m_nFree < 0)
-	return -1;
 if (!particleImageManager.Load (nType))
 	return -1;
-CParticleSystem *systemP = m_systems + m_nFree;
+CParticleSystem *systemP = m_systems.Pop ();
+if (!systemP)
+	return -1;
 int i = systemP->Create (vPos, vDir, mOrient, nSegment, nMaxEmitters, nMaxParts, fScale, nDensity, 
 								 nPartsPerPos, nLife, nSpeed, nType, nObject, colorP, bBlowUpParts, nSide);
 if (i < 1)
 	return i;
-i = m_nFree;
-m_nFree = systemP->GetNext ();
-systemP->SetNext (m_nUsed);
-return m_nUsed = i;
+return systemP->Id ();
 }
 
 //------------------------------------------------------------------------------
@@ -1719,15 +1670,10 @@ t0 += (int) (gameStates.gameplay.slowmo [0].fSpeed * 25);
 if (!gameStates.app.tick40fps.bTick)
 	return 0;
 #endif
-	int	i, j, h = 0;
+	int	h = 0;
 
-for (i = m_nUsed; i >= 0; i = j) {
-	if ((j = m_systems [i].GetNext ()) == m_nUsed) {
-		RebuildSystemList ();
-		break;
-		}
-	h += m_systems [i].Update ();
-	}
+for (CParticleSystem* systemP = m_systems.GetFirst (m_systems.UsedList ()); systemP; systemP = m_systems.GetNext ())
+	h += systemP->Update ();
 return h;
 }
 
@@ -1735,13 +1681,8 @@ return h;
 
 void CParticleManager::Render (void)
 {
-for (int j, i = m_nUsed; i >= 0; i = j) {
-	if ((j = m_systems [i].GetNext ()) == m_nUsed) {
-		RebuildSystemList ();
-		break;
-		}
-	m_systems [i].Render ();
-	}
+for (CParticleSystem* systemP = m_systems.GetFirst (m_systems.UsedList ()); systemP; systemP = m_systems.GetNext ())
+	systemP->Render ();
 }
 
 //------------------------------------------------------------------------------

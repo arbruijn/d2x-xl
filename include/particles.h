@@ -79,39 +79,39 @@ class CParticle : public tParticle {
 //------------------------------------------------------------------------------
 
 typedef struct tParticleEmitter {
-	char				m_nType;				//smoke/light trail (corona)
-	char				m_nClass;
-	int				m_nLife;				//max. particle life time
-	int				m_nBirth;			//time of creation
-	int				m_nSpeed;			//initial particle speed
-	int				m_nParts;			//curent no. of particles
-	int				m_nFirstPart;
-	int				m_nMaxParts;		//max. no. of particles
-	int				m_nDensity;			//density (opaqueness) of particle emitter
-	float				m_fPartsPerTick;
-	int				m_nTicks;
-	int				m_nPartsPerPos;	//particles per interpolated position mutiplier of moving objects
-	int				m_nPartLimit;		//highest max. part. no ever set for this emitter
-	float				m_fScale;
-	int				m_nDefBrightness;
-	float				m_fBrightness;
-	int				m_nMoved;			//time last moved
-	short				m_nSegment;
-	int				m_nObject;
-	short				m_nObjType;
-	short				m_nObjId;
-	CFixMatrix		m_mOrient;
-	CFixVector		m_vDir;
-	CFixVector		m_vPos;				//initial particle position
-	CFixVector		m_vPrevPos;			//initial particle position
-	CFixVector		m_vEmittingFace [4];
-	ubyte				m_bHaveDir;			//movement direction given?
-	ubyte				m_bHavePrevPos;	//valid previous position set?
-	CParticle*		m_particles;		//list of active particles
-	tRgbaColorf		m_color;
-	char				m_bHaveColor;
-	char				m_bBlowUpParts;	//blow particles up at their "birth"
-	char				m_bEmittingFace;
+	char					m_nType;				//smoke/light trail (corona)
+	char					m_nClass;
+	int					m_nLife;				//max. particle life time
+	int					m_nBirth;			//time of creation
+	int					m_nSpeed;			//initial particle speed
+	int					m_nParts;			//curent no. of particles
+	int					m_nFirstPart;
+	int					m_nMaxParts;		//max. no. of particles
+	int					m_nDensity;			//density (opaqueness) of particle emitter
+	float					m_fPartsPerTick;
+	int					m_nTicks;
+	int					m_nPartsPerPos;	//particles per interpolated position mutiplier of moving objects
+	int					m_nPartLimit;		//highest max. part. no ever set for this emitter
+	float					m_fScale;
+	int					m_nDefBrightness;
+	float					m_fBrightness;
+	int					m_nMoved;			//time last moved
+	short					m_nSegment;
+	int					m_nObject;
+	short					m_nObjType;
+	short					m_nObjId;
+	CFixMatrix			m_mOrient;
+	CFixVector			m_vDir;
+	CFixVector			m_vPos;				//initial particle position
+	CFixVector			m_vPrevPos;			//initial particle position
+	CFixVector			m_vEmittingFace [4];
+	ubyte					m_bHaveDir;			//movement direction given?
+	ubyte					m_bHavePrevPos;	//valid previous position set?
+	CArray<CParticle>	m_particles;		//list of active particles
+	tRgbaColorf			m_color;
+	char					m_bHaveColor;
+	char					m_bBlowUpParts;	//blow particles up at their "birth"
+	char					m_bEmittingFace;
 } tParticleEmitter;
 
 class CParticleEmitter : public tParticleEmitter {
@@ -147,26 +147,25 @@ class CParticleEmitter : public tParticleEmitter {
 //------------------------------------------------------------------------------
 
 typedef struct tParticleSystem {
-	CParticleEmitter	*m_emitters;		//list of active emitters
-	int					m_nId;
-	int					m_nNext;
-	int					m_nSignature;
-	int					m_nBirth;			//time of creation
-	int					m_nLife;				//max. particle life time
-	int					m_nSpeed;			//initial particle speed
-	int					m_nEmitters;		//number of separate particle emitters
-	int					m_nMaxEmitters;	//max. no. of emitters
-	int					m_nObject;
-	short					m_nObjType;
-	short					m_nObjId;
-	char					m_nType;				//black or white
+	CArray<CParticleEmitter>	m_emitters;		//list of active emitters
+	int								m_nId;
+	int								m_nSignature;
+	int								m_nBirth;			//time of creation
+	int								m_nLife;				//max. particle life time
+	int								m_nSpeed;			//initial particle speed
+	int								m_nEmitters;		//number of separate particle emitters
+	int								m_nMaxEmitters;	//max. no. of emitters
+	int								m_nObject;
+	short								m_nObjType;
+	short								m_nObjId;
+	char								m_nType;				//black or white
 } tParticleSystem;
 
 class CParticleSystem : public tParticleSystem {
 	public:
-		CParticleSystem () { m_emitters = NULL; };
+		CParticleSystem () {};
 		~CParticleSystem () { Destroy (); };
-		void Init (int nId, int nNext);
+		void Init (int nId);
 		int Create (CFixVector *pPos, CFixVector *pDir, CFixMatrix *pOrient,
 					   short nSegment, int nMaxEmitters, int nMaxParts, 
 						float fScale, int nDensity, int nPartsPerPos, 
@@ -186,26 +185,23 @@ class CParticleSystem : public tParticleSystem {
 		void SetSpeed (int nSpeed);
 		void SetBrightness (int nBrightness);
 
-		inline bool HasEmitters (void) { return m_emitters != NULL; }
+		inline bool HasEmitters (void) { return m_emitters.Buffer () != NULL; }
 		inline CParticleEmitter* GetEmitter (int i)
-			{ return (m_emitters && (i < m_nEmitters)) ? m_emitters + i : NULL; }
+			{ return m_emitters + i; }
 		inline int GetType (void) { return m_nType; }
-		inline int GetNext (void) { return m_nNext; }
-		inline void SetNext (int i) { m_nNext = i; }
+		inline int Id (void) { return m_nId; }
 };
 
 //------------------------------------------------------------------------------
 
 class CParticleManager {
 	private:
-		CParticleSystem	m_systems [MAX_PARTICLE_SYSTEMS];
-		CArray<short>		m_objectSystems;
-		CArray<time_t>		m_objExplTime;
-		int					m_nLastType;
-		int					m_bAnimate;
-		int					m_bStencil;
-		int					m_nFree;
-		int					m_nUsed;
+		CDataPool<CParticleSystem>	m_systems;
+		CArray<short>					m_objectSystems;
+		CArray<time_t>					m_objExplTime;
+		int								m_nLastType;
+		int								m_bAnimate;
+		int								m_bStencil;
 
 	public:
 		CParticleManager () {}
@@ -241,10 +237,6 @@ class CParticleManager {
 		inline void SetAnimate (int bAnimate) { m_bAnimate = bAnimate; }
 		inline int Stencil (void) { return m_bStencil; }
 		inline void SetStencil (int bStencil) { m_bStencil = bStencil; }
-		inline int GetFree (void) { return m_nFree; }
-		inline void SetFree (int i) { m_nFree = i; }
-		inline int GetUsed (void) { return m_nUsed; }
-		inline void SetUsed (int i) { m_nUsed = i; }
 		inline CParticleSystem& GetSystem (int i) { return m_systems [i]; }
 		inline short GetObjectSystem (short nObject) { return m_objectSystems [nObject]; }
 
