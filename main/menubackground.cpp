@@ -180,9 +180,11 @@ m_bMenuBox = gameOpts->menus.nStyle && (gameOpts->menus.altBg.bHave > 0);
 if (!(m_background = Load (filename, width, height)))
 	return false;
 Setup (x, y, width, height);
-Save (1, width, height);
-Draw (true);
-Save (0, width, height);
+if (!gameOpts->menus.nStyle) {
+	Save (1, width, height);
+	Draw (true);
+	Save (0, width, height);
+	}
 return true;
 }
 

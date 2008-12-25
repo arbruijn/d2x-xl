@@ -185,26 +185,28 @@ return dest;
 
 CFixMatrix CFixMatrix::Mul (const CFixMatrix& other) 
 {
-CFixVector m;
-m [X] = m_data.mat [RVEC][X];
-m [Y] = m_data.mat [UVEC][X];
-m [Z] = m_data.mat [FVEC][X];
-m_data.mat [RVEC][X] = CFixVector::Dot (m, other.m_data.mat [RVEC]);
-m_data.mat [UVEC][X] = CFixVector::Dot (m, other.m_data.mat [UVEC]);
-m_data.mat [FVEC][X] = CFixVector::Dot (m, other.m_data.mat [FVEC]);
-m [X] = m_data.mat [RVEC][Y];
-m [Y] = m_data.mat [UVEC][Y];
-m [Z] = m_data.mat [FVEC][Y];
-m_data.mat [RVEC][Y] = CFixVector::Dot (m, other.m_data.mat [RVEC]);
-m_data.mat [UVEC][Y] = CFixVector::Dot (m, other.m_data.mat [UVEC]);
-m_data.mat [FVEC][Y] = CFixVector::Dot (m, other.m_data.mat [FVEC]);
-m [X] = m_data.mat [RVEC][Z];
-m [Y] = m_data.mat [UVEC][Z];
-m [Z] = m_data.mat [FVEC][Z];
-m_data.mat [RVEC][Z] = CFixVector::Dot (m, other.m_data.mat [RVEC]);
-m_data.mat [UVEC][Z] = CFixVector::Dot (m, other.m_data.mat [UVEC]);
-m_data.mat [FVEC][Z] = CFixVector::Dot (m, other.m_data.mat [FVEC]);
-return *this;
+CFixVector v;
+CFixMatrix m;
+
+v [X] = m_data.mat [RVEC][X];
+v [Y] = m_data.mat [UVEC][X];
+v [Z] = m_data.mat [FVEC][X];
+m.m_data.mat [RVEC][X] = CFixVector::Dot (v, other.m_data.mat [RVEC]);
+m.m_data.mat [UVEC][X] = CFixVector::Dot (v, other.m_data.mat [UVEC]);
+m.m_data.mat [FVEC][X] = CFixVector::Dot (v, other.m_data.mat [FVEC]);
+v [X] = m_data.mat [RVEC][Y];
+v [Y] = m_data.mat [UVEC][Y];
+v [Z] = m_data.mat [FVEC][Y];
+m.m_data.mat [RVEC][Y] = CFixVector::Dot (v, other.m_data.mat [RVEC]);
+m.m_data.mat [UVEC][Y] = CFixVector::Dot (v, other.m_data.mat [UVEC]);
+m.m_data.mat [FVEC][Y] = CFixVector::Dot (v, other.m_data.mat [FVEC]);
+v [X] = m_data.mat [RVEC][Z];
+v [Y] = m_data.mat [UVEC][Z];
+v [Z] = m_data.mat [FVEC][Z];
+m.m_data.mat [RVEC][Z] = CFixVector::Dot (v, other.m_data.mat [RVEC]);
+m.m_data.mat [UVEC][Z] = CFixVector::Dot (v, other.m_data.mat [UVEC]);
+m.m_data.mat [FVEC][Z] = CFixVector::Dot (v, other.m_data.mat [FVEC]);
+return m;
 }
 
 // -----------------------------------------------------------------------------
