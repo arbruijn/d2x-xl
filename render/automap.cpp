@@ -351,23 +351,23 @@ if (bAutomapFrame) {
 	GrPrintF (NULL, RESCALE_X (80), RESCALE_Y (36), TXT_AUTOMAP, HUGE_FONT);
 	fontManager.SetCurrent (SMALL_FONT);
 	fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
-	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (
-6), TXT_TURN_SHIP);
+	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (426), TXT_TURN_SHIP);
 	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (443), TXT_SLIDE_UPDOWN);
 	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (460), TXT_VIEWING_DISTANCE);
 	//GrUpdate (0);
 	}
 G3StartFrame (gameStates.render.automap.bRadar || !gameOpts->render.automap.bTextured, 0); //!gameStates.render.automap.bRadar);
+#if 0
 if (bAutomapFrame)
 	OglViewport (RESCALE_X (27), RESCALE_Y (80), RESCALE_X (582), RESCALE_Y (334));
 RenderStartFrame ();
 if (gameStates.render.automap.bRadar && gameStates.render.bTopDownRadar) {
 	amData.viewPos = amData.viewTarget + vmRadar.FVec () * (-amData.nViewDist);
-	G3SetViewMatrix(amData.viewPos, vmRadar, amData.nZoom * 2, 1);
+	G3SetViewMatrix (amData.viewPos, vmRadar, amData.nZoom * 2, 1);
 	}
 else {
 	amData.viewPos = amData.viewTarget + amData.viewMatrix.FVec () * (gameStates.render.automap.bRadar ? -amData.nViewDist : -amData.nViewDist);
-	G3SetViewMatrix(amData.viewPos, amData.viewMatrix, gameStates.render.automap.bRadar ? (amData.nZoom * 3) / 2 : amData.nZoom, 1);
+	G3SetViewMatrix (amData.viewPos, amData.viewMatrix, gameStates.render.automap.bRadar ? (amData.nZoom * 3) / 2 : amData.nZoom, 1);
 	}
 if (!gameStates.render.automap.bRadar && gameOpts->render.automap.bTextured) {
 	gameData.render.mine.viewerEye = amData.viewPos;
@@ -379,7 +379,6 @@ else
 	// Draw player...
 color = IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer;	// Note link to above if!
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b));
-
 if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 	DrawPlayer (OBJECTS + LOCALPLAYER.nObject);
 	if (!gameStates.render.automap.bRadar) {
@@ -473,12 +472,15 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 			}
 		}
 	}
+#endif
 G3EndFrame ();
 gameData.app.nFrameCount++;
 if (gameStates.render.automap.bRadar) {
 	gameStates.ogl.bEnableScissor = 0;
 	return;
 	}
+
+#if 0
 if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) {
 	int offs = amData.bHires ? 10 : 5;
 
@@ -500,6 +502,7 @@ if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) {
 	if (gameOpts->render.automap.bTextured)
 		ShowFrameRate ();
 	}
+#endif
 PROF_END(ptFrame)
 OglSwapBuffers (0, 0);
 }
@@ -922,7 +925,7 @@ while (!bDone)	{
 	bDone = AMGameFrame (bPauseGame, bDone);
 	SongsCheckRedbookRepeat ();
 	bDone = ReadAutomapControls (nLeaveMode, bDone, &bPauseGame);
-	UpdateAutomap(vTAngles);
+	UpdateAutomap (vTAngles);
 	DrawAutomap ();
 	if (bFirstTime) {
 		bFirstTime = 0;
