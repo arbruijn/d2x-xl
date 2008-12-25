@@ -1954,8 +1954,8 @@ launchOption:
 			GrUpdate (0);
 		bRedraw = 1;
 		bStart = 0;
-		if (!bDontRestore && gameStates.render.bPaletteFadedOut) {
-			paletteManager.FadeIn ();
+		if (!bDontRestore && paletteManager.EffectDisabled ()) {
+			paletteManager.EnableEffect ();
 		}
 	}
 SDL_ShowCursor (0);

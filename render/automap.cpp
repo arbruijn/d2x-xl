@@ -332,6 +332,7 @@ if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) {
 
 void CAutomap::Draw (void)
 {
+#if 0
 PROF_START
 	int	bAutomapFrame = !gameStates.render.automap.bRadar && 
 								 (gameStates.render.cockpit.nMode != CM_FULL_SCREEN) && 
@@ -401,6 +402,7 @@ if (gameStates.render.automap.bRadar) {
 	}
 DrawLevelId ();
 PROF_END(ptFrame)
+#endif
 OglSwapBuffers (0, 0);
 }
 

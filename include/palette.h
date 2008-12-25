@@ -118,7 +118,7 @@ typedef struct tPaletteData {
 		tRgbColors		effect;
 		tRgbColors		lastEffect;
 		bool				bDoEffect;
-		bool				bFadedOut;
+		bool				bAllowEffect;
 } tPaletteData;
 
 class CPaletteManager {
@@ -158,9 +158,11 @@ class CPaletteManager {
 		void SetEffect (void);
 		void ClearEffect (void);
 		int ClearEffect (CPalette* palette);
-		int FadeIn (void);
-		int FadeOut (void);
-		inline bool FadedOut (void) { return m_data.bFadedOut; }
+		int EnableEffect (void);
+		int DisableEffect (void);
+		bool EffectEnabled (void) { return m_data.bAllowEffect; }
+		bool EffectDisabled (void) { return !m_data.bAllowEffect; }
+		inline bool FadedOut (void) { return m_data.bAllowEffect; }
 		void SetPrev (CPalette *palette) { m_data.prev = palette; }
 		inline CPalette* Activate (CPalette* palette) {
 			if (palette && (m_data.current != palette)) {

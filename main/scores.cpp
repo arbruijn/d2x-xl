@@ -402,7 +402,7 @@ ReshowScores:
 				scores_draw_item (i, Scores.stats + i);
 			}
 
-			paletteManager.FadeIn ();
+			paletteManager.EnableEffect ();
 
 			if (nCurItem < 0)
 				GrUpdate (0);
@@ -442,7 +442,7 @@ ReshowScores:
 				// Reset scores...
 				if (ExecMessageBox (NULL, NULL, 2,  TXT_NO, TXT_YES, TXT_RESET_HIGH_SCORES)==1)	{
 					CFile::Delete (GetScoresFilename (), gameFolders.szDataDir);
-					paletteManager.FadeOut ();
+					paletteManager.DisableEffect ();
 					goto ReshowScores;
 				}
 			}
@@ -464,7 +464,7 @@ ReshowScores:
 		}
 	}
 // Restore background and exit
-paletteManager.FadeOut ();
+paletteManager.DisableEffect ();
 CCanvas::SetCurrent (NULL);
 GameFlushInputs ();
 backgroundManager.Remove ();

@@ -433,7 +433,7 @@ do {
 		ExecMainMenuOption (nChoice);
 } while (gameStates.app.nFunctionMode == FMODE_MENU);
 if (gameStates.app.nFunctionMode == FMODE_GAME)
-	paletteManager.FadeOut ();
+	paletteManager.DisableEffect ();
 FlushInput ();
 StopPlayerMovement ();
 return mainOpts.nChoice;
@@ -596,7 +596,7 @@ else if (nChoice == mainOpts.nLoadDirect) {
 	ExecMenu (NULL, "Enter level to load", 1, m, NULL, NULL);
 	nLevel = atoi (m->text);
 	if (nLevel && (nLevel >= gameData.missions.nLastSecretLevel) && (nLevel <= gameData.missions.nLastLevel)) {
-		paletteManager.FadeOut ();
+		paletteManager.DisableEffect ();
 		StartNewGame (nLevel);
 		}
 	}
@@ -619,7 +619,7 @@ else if (nChoice == mainOpts.nDemo) {
 		NDStartPlayback (demoFile);
 	}
 else if (nChoice == mainOpts.nScores) {
-	paletteManager.FadeOut ();
+	paletteManager.DisableEffect ();
 	ScoresView (-1);
 	}
 else if (nChoice == mainOpts.nMovies) {
@@ -629,7 +629,7 @@ else if (nChoice == mainOpts.nSongs) {
 	PlayMenuSong ();
 	}
 else if (nChoice == mainOpts.nCredits) {
-	paletteManager.FadeOut ();
+	paletteManager.DisableEffect ();
 	SongsStopAll ();
 	creditsManager.Show (NULL); 
 	}
@@ -646,7 +646,7 @@ else if (nChoice == mainOpts.nQuit) {
 #ifdef EDITOR
 	if (SafetyCheck ()) {
 #endif
-	paletteManager.FadeOut ();
+	paletteManager.DisableEffect ();
 	SetFunctionMode (FMODE_EXIT);
 #ifdef EDITOR
 	}
@@ -1536,7 +1536,7 @@ try_again:
 WritePlayerFile ();
 if (!DifficultyMenu ())
 	return;
-paletteManager.FadeOut ();
+paletteManager.DisableEffect ();
 if (!StartNewGame (nNewLevel))
 	SetFunctionMode (FMODE_MENU);
 }
@@ -1680,7 +1680,7 @@ if (gameStates.app.nDifficultyLevel != i) {
 WritePlayerFile ();
 if (optLevel > 0)
 	nLevel = atoi (m [optLevel].text);
-paletteManager.FadeOut ();
+paletteManager.DisableEffect ();
 if (!bMsnLoaded)
 	LoadMission (nMission);
 if (!StartNewGame (nLevel))

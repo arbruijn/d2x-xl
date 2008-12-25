@@ -1163,7 +1163,7 @@ if (nFinalBossCountdownTime == 0)
 nFinalBossCountdownTime -= gameData.time.xFrame;
 if (nFinalBossCountdownTime > 0)
 	return;
-paletteManager.FadeOut ();
+paletteManager.DisableEffect ();
 StartEndLevelSequence (0);		//pretend we hit the exit CTrigger
 }
 

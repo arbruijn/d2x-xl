@@ -379,8 +379,8 @@ void LoadAllTextures (void)
 	int 	bBlackScreen;
 
 StopTime ();
-bBlackScreen = gameStates.render.bPaletteFadedOut;
-if (gameStates.render.bPaletteFadedOut)	{
+bBlackScreen = paletteManager.EffectDisabled ();
+if (paletteManager.EffectDisabled ())	{
 	CCanvas::Current ()->Clear (BLACK_RGBA);
 	paletteManager.LoadEffect  ();
 	}

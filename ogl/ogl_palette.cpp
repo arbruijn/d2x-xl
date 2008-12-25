@@ -40,7 +40,7 @@ void CPaletteManager::ApplyEffect (void)
 	int	bDepthTest, bBlend;
 	GLint	blendSrc, blendDest;
 
-if (m_data.bFadedOut) {
+if (!m_data.bAllowEffect) {
 	if ((bBlend = glIsEnabled (GL_BLEND))) {
 		glGetIntegerv (GL_BLEND_SRC, &blendSrc);
 		glGetIntegerv (GL_BLEND_DST, &blendDest);
@@ -83,7 +83,7 @@ else
 
 void CPaletteManager::SetEffect (int r, int g, int b)
 {
-if (m_data.bFadedOut)
+if (!m_data.bAllowEffect)
 	return;
 #if 0
 if (!gameOpts->render.nLightingMethod || gameStates.menus.nInMenu || !gameStates.app.bGameRunning) 
@@ -118,7 +118,7 @@ else {
 void CPaletteManager::ClearEffect (void)
 {
 SetEffect (0, 0, 0);
-m_data.bFadedOut = true;
+m_data.bAllowEffect = false;
 }
 
 //------------------------------------------------------------------------------
@@ -134,7 +134,7 @@ int CPaletteManager::ClearEffect (CPalette* palette)
 if (m_data.nLastGamma == m_data.nGamma)
 	return 1;
 m_data.nLastGamma = m_data.nGamma;
-m_data.bFadedOut = 0;
+m_data.bAllowEffect = true;
 SetEffect (0, 0, 0);
 m_data.current = Add (*palette);
 return 1;
@@ -143,17 +143,17 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CPaletteManager:: FadeOut (void)
+int CPaletteManager::DisableEffect (void)
 {
-m_data.bFadedOut = 1;
+m_data.bAllowEffect = false;
 return 0;
 }
 
 //------------------------------------------------------------------------------
 
-int CPaletteManager::FadeIn (void)
+int CPaletteManager::EnableEffect (void)
 {
-m_data.bFadedOut = 0;
+m_data.bAllowEffect = true;
 return 0;
 }
 

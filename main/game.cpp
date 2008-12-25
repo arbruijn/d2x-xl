@@ -1214,7 +1214,7 @@ if (gameStates.render.cockpit.nModeSave != -1) {
 	gameStates.render.cockpit.nModeSave = -1;
 	}
 if (gameStates.app.nFunctionMode != FMODE_EDITOR)
-	paletteManager.FadeOut ();			// Fade out before going to menu
+	paletteManager.DisableEffect ();			// Fade out before going to menu
 //@@	if ((!demo_playing) && (!multi_game) && (gameStates.app.nFunctionMode != FMODE_EDITOR))	{
 //@@		MaybeAddPlayerScore (gameStates.app.bGameAborted);
 //@@	}

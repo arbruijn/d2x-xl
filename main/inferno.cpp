@@ -415,7 +415,7 @@ else {
 	int pcxError = PcxReadFullScrImage (filename, 0);
 	if (pcxError == PCX_ERROR_NONE)	{
 		paletteManager.ClearEffect ();
-		paletteManager.FadeIn ();
+		paletteManager.EnableEffect ();
 		GrUpdate (0);
 		} 
 	else
@@ -545,9 +545,9 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 			GrabMouse (1, 1);
 			RunGame ();
 			GrabMouse (0, 1);
-			paletteManager.FadeIn ();
+			paletteManager.EnableEffect ();
 			paletteManager.ResetEffect ();
-			paletteManager.FadeOut ();
+			paletteManager.DisableEffect ();
 			gameStates.app.bD1Mission = 0;
 			if (gameData.multiplayer.autoNG.bValid)
 				gameStates.app.nFunctionMode = FMODE_EXIT;
@@ -962,7 +962,7 @@ else
 /*---*/PrintLog ("Loading player profile\n");
 DoSelectPlayer ();
 StartSoundThread (); //needs to be repeated here due to dependency on data read in DoSelectPlayer()
-paletteManager.FadeOut ();
+paletteManager.DisableEffect ();
 // handle direct loading and starting of a mission specified via the command line
 if (gameStates.app.bAutoRunMission) {
 	gameStates.app.nFunctionMode = StartNewGame (1) ? FMODE_GAME : FMODE_MENU;
@@ -1040,11 +1040,11 @@ void ShowOrderForm ()
 		return; // D2 registered
 
 	if ((pcx_error=PcxReadFullScrImage (exit_screen, 0))==PCX_ERROR_NONE) {
-		paletteManager.FadeIn ();
+		paletteManager.EnableEffect ();
 		GrUpdate (0);
 		while (!(KeyInKey () || MouseButtonState (0)))
 			;
-		paletteManager.FadeOut ();
+		paletteManager.DisableEffect ();
 	}
 	else
 		Int3 ();		//can't load order screen

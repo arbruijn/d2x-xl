@@ -789,7 +789,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING)		// stop demo recording
 	gameData.demo.nState = ND_STATE_PAUSED;
 DigiStopAll ();		//kill the sounds
 DigiPlaySample (SOUND_SECRET_EXIT, F1_0);
-paletteManager.FadeOut ();
+paletteManager.DisableEffect ();
 EnterSecretLevel ();
 gameData.reactor.bDestroyed = 0;
 return true;

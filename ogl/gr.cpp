@@ -427,7 +427,7 @@ gameStates.video.nLastScreenMode = -1;
 if (nCurrentVGAMode != nMenuMode) {
 	if (GrSetMode (nMenuMode))
 		Error ("Cannot set screen mode for menu");
-	if (!gameStates.render.bPaletteFadedOut)
+	if (!paletteManager.EffectDisabled ())
 		paletteManager.LoadEffect ();
 	gameStates.menus.bInitBG = 1;
 	RebuildRenderContext (gameStates.app.bGameRunning);

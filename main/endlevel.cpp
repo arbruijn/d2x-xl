@@ -263,7 +263,7 @@ if ((nMoviePlayed == MOVIE_NOT_PLAYED) && gameStates.app.bEndLevelDataLoaded) { 
 		}
 	}
 //don't have movie or rendered sequence, fade out
-paletteManager.FadeOut ();
+paletteManager.DisableEffect ();
 if (!bSecret)
 	PlayerFinishedLevel (0);		//done with level
 }
@@ -402,7 +402,7 @@ void StopEndLevelSequence (void)
 {
 	gameStates.render.nInterpolationMethod = 0;
 
-paletteManager.FadeOut ();
+paletteManager.DisableEffect ();
 SelectCockpit (gameStates.render.cockpit.nModeSave);
 gameStates.app.bEndLevelSequence = EL_OFF;
 PlayerFinishedLevel (0);

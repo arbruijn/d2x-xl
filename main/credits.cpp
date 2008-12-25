@@ -252,7 +252,7 @@ else if (k == KEY_PADMINUS) {
 	}
 else if ((k == KEY_ESC) || (m_bDone > uint (NUM_LINES))) {
 	Destroy ();
-	paletteManager.FadeOut ();
+	paletteManager.DisableEffect ();
 	paletteManager.Load (D2_DEFAULT_PALETTE, NULL);
 	CCanvas::Pop ();
 	SongsPlaySong (SONG_TITLE, 1);
@@ -384,7 +384,7 @@ if (nPcxError != PCX_ERROR_NONE) {
 SongsPlaySong (SONG_CREDITS, 1);
 m_bmBackdrop.Remap (NULL, -1, -1);
 
-paletteManager.FadeIn ();
+paletteManager.EnableEffect ();
 KeyFlush ();
 m_xTimeout = SDL_GetTicks () + m_xDelay;
 glEnable (GL_BLEND);

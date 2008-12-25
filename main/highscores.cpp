@@ -535,7 +535,7 @@ while (!done) {
 	}
 LOCALPLAYER.connected = 7;
 // Restore background and exit
-paletteManager.FadeOut ();
+paletteManager.DisableEffect ();
 GameFlushInputs ();
 ScoreTableQuit (0, bNetwork);
 }

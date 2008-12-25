@@ -1165,7 +1165,7 @@ sprintf (szTitle,
 			gameData.missions.szCurrentLevel,
 			TXT_DESTROYED);
 Assert (c <= N_GLITZITEMS);
-paletteManager.FadeOut ();
+paletteManager.DisableEffect ();
 if (network && (gameData.app.nGameMode & GM_NETWORK))
 	ExecMenu2 (NULL, szTitle, c, m, NetworkEndLevelPoll2, 0, reinterpret_cast<char*> (STARS_BACKGROUND));
 else
@@ -1279,7 +1279,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 	NDRecordStartFrame (gameData.app.nFrameCount, gameData.time.xFrame);
 	}
 else if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-	paletteManager.FadeOut ();
+	paletteManager.DisableEffect ();
 	SetScreenMode (SCREEN_MENU);		//go into menu mode
 	if (gameStates.app.bFirstSecretVisit)
 		DoSecretMessage (gameStates.app.bD1Mission ? TXT_ALTERNATE_EXIT : TXT_SECRET_EXIT);
@@ -1610,7 +1610,7 @@ void DiedInMineMessage (void)
 
 if (gameData.app.nGameMode & GM_MULTI)
 	return;
-paletteManager.FadeOut ();
+paletteManager.DisableEffect ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
 CCanvas::SetCurrent (NULL);
 old_fmode = gameStates.app.nFunctionMode;
@@ -1630,7 +1630,7 @@ void ReturningToLevelMessage (void)
 if (gameData.app.nGameMode & GM_MULTI)
 	return;
 StopTime ();
-paletteManager.FadeOut ();
+paletteManager.DisableEffect ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
 CCanvas::SetCurrent (NULL);
 old_fmode = gameStates.app.nFunctionMode;
@@ -1656,7 +1656,7 @@ void AdvancingToLevelMessage (void)
 Assert (gameData.missions.nCurrentLevel < 0);
 if (IsMultiGame)
 	return;
-paletteManager.FadeOut ();
+paletteManager.DisableEffect ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
 CCanvas::SetCurrent (NULL);
 old_fmode = gameStates.app.nFunctionMode;

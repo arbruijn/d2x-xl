@@ -420,7 +420,7 @@ if ((pcxResult = LoadBriefImg (filename, &title_bm, 0)) != PCX_ERROR_NONE) {
 paletteManager.LoadEffect  ();
 CCanvas::SetCurrent (NULL);
 title_bm.RenderFullScreen ();
-if (paletteManager.FadeIn ())
+if (paletteManager.EnableEffect ())
 	return 1;
 
 paletteManager.LoadEffect  ();
@@ -429,7 +429,7 @@ while (1) {
 	if (BriefingInKey () && bAllowKeys) break;
 	if (TimerGetFixedSeconds () > timer) break;
 }
-if (paletteManager.FadeOut ())
+if (paletteManager.DisableEffect ())
 	return 1;
 title_bm.DestroyBuffer ();
 return 0;
@@ -749,7 +749,7 @@ int LoadNewBriefingScreen (char *szBriefScreen, int bRedraw)
 console.printf (CON_DBG, "Loading new briefing <%s>\n", szBriefScreen);
 #endif
 strcpy (curBriefScreenName, szBriefScreen);
-if (paletteManager.FadeOut ())
+if (paletteManager.DisableEffect ())
 	return 0;
 if ((pcxResult = LoadBriefImg (szBriefScreen, NULL, 1)) != PCX_ERROR_NONE) {
 #if DBG
@@ -762,7 +762,7 @@ if ((pcxResult = LoadBriefImg (szBriefScreen, NULL, 1)) != PCX_ERROR_NONE) {
 		}
 #endif
 	}
-if (paletteManager.FadeIn ())
+if (paletteManager.EnableEffect ())
 	return 0;
 DoBriefingColorStuff ();
 return 1;
@@ -1585,12 +1585,12 @@ if (gameStates.app.bD1Mission) {
 	bmBriefing.RenderFullScreen ();
 	GrUpdate (0);
 	bmBriefing.Destroy ();
-	if (paletteManager.FadeIn ())
+	if (paletteManager.EnableEffect ())
 		return 1;
 	}
 if (!ShowBriefingText (nScreen, nLevel))
 	return 0;
-if (paletteManager.FadeOut ())
+if (paletteManager.DisableEffect ())
 	return 1;
 return 1;
 }

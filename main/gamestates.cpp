@@ -268,7 +268,6 @@ gameStates.render.nRenderPass = -1;
 gameStates.render.nShadowPass = 0;
 gameStates.render.bShadowMaps = 0;
 gameStates.render.bHeadlightOn = 0;
-gameStates.render.bPaletteFadedOut = 0;
 gameStates.render.bRenderIndirect = 0;
 gameStates.render.nModelQuality = 3;
 gameStates.render.nType = -1;

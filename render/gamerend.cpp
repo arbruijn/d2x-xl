@@ -1202,7 +1202,7 @@ paletteManager.ClearEffect (paletteManager.Game ());
 if (gameStates.render.vr.nRenderMode == VR_NONE)
 	GameRenderFrameMono ();
 StopTime ();
-paletteManager.FadeIn ();
+paletteManager.EnableEffect ();
 StartTime (0);
 gameData.app.nFrameCount++;
 PROF_END(ptRenderMine)

@@ -687,7 +687,7 @@ int RequestCD (void)
 #if 0
 	ubyte save_pal [256*3];
 	CCanvas *tcanv, canvP = CCanvas::Current ();
-	int ret, was_faded=gameStates.render.bPaletteFadedOut;
+	int ret, was_faded=paletteManager.EffectDisabled ();
 
 	GrPaletteStepClear ();
 

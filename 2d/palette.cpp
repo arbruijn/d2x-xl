@@ -401,7 +401,7 @@ CLAMP (gamma, 0, 16);
 if (m_data.nGamma != gamma) {
 	m_data.nGamma = gamma;
 #if 0
-	if (!gameStates.render.bPaletteFadedOut)
+	if (!paletteManager.EffectDisabled ())
 		paletteManager.LoadEffect  ();
 #endif
 	}

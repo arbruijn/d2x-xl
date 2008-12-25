@@ -922,7 +922,6 @@ typedef struct tRenderStates {
 	int bSplitPolys;
 	int bHaveDynLights;
 	int bHaveSparks;
-	int bPaletteFadedOut;
 	int bHaveStencilBuffer;
 	int bUsePerPixelLighting;
 	int nRenderPass;
