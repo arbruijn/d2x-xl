@@ -332,7 +332,7 @@ if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) {
 
 void CAutomap::Draw (void)
 {
-#if 0
+#if 1
 PROF_START
 	int	bAutomapFrame = !gameStates.render.automap.bRadar && 
 								 (gameStates.render.cockpit.nMode != CM_FULL_SCREEN) && 
@@ -359,6 +359,7 @@ if (gameStates.render.automap.bRadar == 2) {
 	vmRadar.uVec.p.z = po->fVec.p.z;
 #endif
 	}
+CCanvas::Current ()->Clear (RGBA_PAL2 (0,0,0));
 if (bAutomapFrame) {
 	m_background.RenderFullScreen ();
 	fontManager.SetCurrent (HUGE_FONT);
