@@ -731,11 +731,13 @@ for (nFace = gameData.segs.nFaces, faceP = FACES.faces.Buffer (); nFace; nFace--
 		}
 	}
 QSortStaticLights (0, gameData.render.lights.dynamic.nLights - 1);
+#if 0
 PrintLog ("light sources:\n");
 CDynLight* pl = gameData.render.lights.dynamic.lights;
 for (int i = gameData.render.lights.dynamic.nLights; i; i--, pl++)
 	PrintLog ("%d,%d,%d,%d\n", pl->info.nSegment, pl->info.nSide, pl->info.nObject, pl->info.bVariable);
 PrintLog ("\n");
+#endif
 }
 
 //------------------------------------------------------------------------------
