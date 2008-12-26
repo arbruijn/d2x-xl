@@ -609,66 +609,38 @@ gameData.render.lights.dynamic.material.bValid = 0;
 
 //------------------------------------------------------------------------------
 
-static inline int QCmpStaticLights (CDynLight *pl, CDynLight *pm)
+int CDynLight::Compare (CDynLight &other)
 {
-#if 1
-if (pl->info.bVariable < pm->info.bVariable) 
+if (info.bVariable < other.info.bVariable) 
 	return -1;
-if (pl->info.bVariable > pm->info.bVariable) 
+if (info.bVariable > other.info.bVariable) 
 	return 1;
-if (pl->info.nSegment < pm->info.nSegment) 
+if (info.nSegment < other.info.nSegment) 
 	return -1;
-if (pl->info.nSegment > pm->info.nSegment) 
+if (info.nSegment > other.info.nSegment) 
 	return 1;
-if (pl->info.nSide < pm->info.nSide) 
+if (info.nSide < other.info.nSide) 
 	return -1;
-if (pl->info.nSide > pm->info.nSide) 
+if (info.nSide > other.info.nSide) 
 	return 1;
-if (pl->info.nObject < pm->info.nObject) 
+if (info.nObject < other.info.nObject) 
 	return -1;
-if (pl->info.nObject > pm->info.nObject) 
+if (info.nObject > other.info.nObject) 
 	return 1;
-if (pl->info.fBrightness < pm->info.fBrightness) 
+if (info.fBrightness < other.info.fBrightness) 
 	return -1;
-if (pl->info.fBrightness > pm->info.fBrightness) 
+if (info.fBrightness > other.info.fBrightness) 
 	return 1;
 return 0;
-#else
-return (pl->info.bVariable == pm->info.bVariable) ? 0 : pl->info.bVariable ? 1 : -1;
-#endif
 }
 
 //------------------------------------------------------------------------------
 
-void QSortStaticLights (int left, int right)
+void SortLights (void)
 {
-	int	l = left,
-			r = right;
-			CDynLight m = gameData.render.lights.dynamic.lights [(l + r) / 2];
+	CQuickSort<CDynLight>	qs;
 
-do {
-#if 1
-	while (QCmpStaticLights (gameData.render.lights.dynamic.lights + l, &m) < 0)
-		l++;
-	while (QCmpStaticLights (gameData.render.lights.dynamic.lights + r, &m) > 0)
-		r--;
-#else
-	while (gameData.render.lights.dynamic.lights [l] < m)
-		l++;
-	while (gameData.render.lights.dynamic.lights [r] > m)
-		r--;
-#endif
-	if (l <= r) {
-		if (l < r)
-			Swap (gameData.render.lights.dynamic.lights [l], gameData.render.lights.dynamic.lights [r]);
-		l++;
-		r--;
-		}
-	} while (l <= r);
-if (l < right)
-	QSortStaticLights (l, right);
-if (left < r)
-	QSortStaticLights (left, r);
+qs.SortAscending  (gameData.render.lights.dynamic.lights, 0, gameData.render.lights.dynamic.nLights - 1);
 }
 
 //------------------------------------------------------------------------------
@@ -730,7 +702,7 @@ for (nFace = gameData.segs.nFaces, faceP = FACES.faces.Buffer (); nFace; nFace--
 		return;
 		}
 	}
-QSortStaticLights (0, gameData.render.lights.dynamic.nLights - 1);
+SortLights ();
 #if 0
 PrintLog ("light sources:\n");
 CDynLight* pl = gameData.render.lights.dynamic.lights;

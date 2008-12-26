@@ -368,7 +368,7 @@ while (!cf.EoF ()) {
 			gameConfig.vrTracking = strtol (value, NULL, 10);
 		else if (!strcmp (token, pszCfgDataHash))
 			gameConfig.cfgDataHash = strtoul (value, NULL, 10);
-		else if (!strcmp (token, pszHiresMovies))
+		else if (!strcmp (token, pszHiresMovies) && gameStates.app.bNostalgia)
 			bHiresMoviesSave = gameOpts->movies.bHires = strtol (value, NULL, 10);
 	}
 }
@@ -496,7 +496,9 @@ sprintf (str, "%s=%d\n", pszVrResolution, gameConfig.vrResolution);
 cf.PutS(str);
 sprintf (str, "%s=%d\n", pszVrTracking, gameConfig.vrTracking);
 cf.PutS(str);
-sprintf (str, "%s=%d\n", pszHiresMovies, (FindArg("-nohires") || FindArg("-nohighres") || FindArg("-lowresmovies"))?bHiresMoviesSave:gameOpts->movies.bHires);
+sprintf (str, "%s=%d\n", pszHiresMovies, (FindArg("-nohires") || FindArg("-nohighres") || FindArg("-lowresmovies"))
+			? bHiresMoviesSave
+			: gameOpts->movies.bHires);
 cf.PutS(str);
 cf.Close ();
 return 0;

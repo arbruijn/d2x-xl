@@ -224,11 +224,6 @@ if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0) {
 	Error ("SDL library video initialisation failed: %s.", SDL_GetError());
 }
 #endif
-if ((t = FindArg ("-gl_voodoo"))) {
-	gameStates.ogl.bVoodooHack = 
-	gameStates.ogl.bFullScreen = NumArg (t, 1);
-	//GrToggleFullScreen();
-	}
 if ((t = FindArg("-fullscreen"))) {
 	/***/PrintLog ("   switching to fullscreen\n");
 	gameStates.ogl.bFullScreen = NumArg (t, 1);

@@ -1340,10 +1340,13 @@ class CDynLight {
 	public:
 		CDynLight ();
 		void Init (void);
+		int Compare (CDynLight& other);
 		inline bool operator< (CDynLight& other)
-			{ return !info.bVariable && other.info.bVariable; }
+			{ return Compare (other) < 0; }
 		inline bool operator> (CDynLight& other)
-			{ return info.bVariable && !other.info.bVariable; }
+			{ return Compare (other) > 0; }
+		inline bool operator== (CDynLight& other)
+			{ return Compare (other) == 0; }
 };
 
 //------------------------------------------------------------------------------

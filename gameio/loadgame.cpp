@@ -975,8 +975,10 @@ ClearBoxedMessage ();		//remove message before new palette loaded
 paletteManager.LoadEffect  ();		//actually load the palette
 /*---*/PrintLog ("   rebuilding OpenGL texture data\n");
 /*---*/PrintLog ("      rebuilding effects\n");
-if (!bRestore)
+if (!bRestore) {
 	RebuildRenderContext (1);
+	SetRenderQuality ();
+	}
 ResetPingStats ();
 gameStates.gameplay.nDirSteps = 0;
 gameStates.gameplay.bMineMineCheat = 0;

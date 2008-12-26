@@ -407,18 +407,14 @@ return 1;
 
 static short _mve_get_short (ubyte *data)
 {
-short value = data[0] | (data[1] << 8);
-
-return value;
+return short (data[0]) | (short (data[1]) << 8);
 }
 
 //-----------------------------------------------------------------------
 
 static ushort _mve_get_ushort (ubyte *data)
 {
-ushort value = data[0] | (data[1] << 8);
-
-return value;
+return ushort (data[0]) | (ushort (data[1]) << 8);
 }
 
 //-----------------------------------------------------------------------
@@ -480,7 +476,8 @@ return reinterpret_cast<void*> (new ubyte [size]);
 
 void MVE_Free (void* ptr)
 {
-delete reinterpret_cast<ubyte*> (ptr);
+if (ptr)
+	delete[] reinterpret_cast<ubyte*> (ptr);
 }
 
 //-----------------------------------------------------------------------

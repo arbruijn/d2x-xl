@@ -525,6 +525,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 #endif
 				check_joystick_calibration ();
 				paletteManager.ClearEffect ();		//I'm not sure why we need this, but we do
+				SetRenderQuality (0);
 				MainMenu ();
 #ifdef EDITOR
 				if (gameStates.app.nFunctionMode == FMODE_EDITOR)	{

@@ -858,23 +858,11 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\include\menu.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\include\menubackground.h"
-						>
-					</File>
-					<File
 						RelativePath="..\..\include\movie.h"
 						>
 					</File>
 					<File
 						RelativePath="..\..\include\newdemo.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\include\newmenu.h"
 						>
 					</File>
 					<File
@@ -1266,30 +1254,6 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\main\menu.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\main\menubackground.cpp"
-						>
-					</File>
-					<File
 						RelativePath="..\..\main\mglobal.cpp"
 						>
 						<FileConfiguration
@@ -1331,26 +1295,6 @@
 					</File>
 					<File
 						RelativePath="..\..\main\newdemo.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\main\newmenu.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Win32"
@@ -4603,6 +4547,74 @@
 					</File>
 				</Filter>
 			</Filter>
+			<Filter
+				Name="menus"
+				>
+				<Filter
+					Name="Header Files"
+					>
+					<File
+						RelativePath="..\..\include\menu.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\menubackground.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\newmenu.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Source Files"
+					>
+					<File
+						RelativePath="..\..\main\menu.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\main\menubackground.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\main\newmenu.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+					</File>
+				</Filter>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -4621,11 +4633,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File

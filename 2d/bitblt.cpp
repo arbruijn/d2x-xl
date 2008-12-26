@@ -643,51 +643,52 @@ else
 }
 
 //------------------------------------------------------------------------------
-// rescalling bitmaps, 10/14/99 Jan Bobrowski jb@wizard.ae.krakow.pl
+// rescaling bitmaps, 10/14/99 Jan Bobrowski jb@wizard.ae.krakow.pl
 
-inline void scale_line(sbyte *in, sbyte *out, int ilen, int olen)
+inline void ScaleLine (ubyte *src, ubyte *dest, int ilen, int olen)
 {
-	int a = olen/ilen, b = olen%ilen;
+	int a = olen /ilen, b = olen % ilen;
 	int c = 0, i;
-	sbyte *end = out + olen;
-	while(out<end) {
-		i = a;
-		c += b;
-		if(c >= ilen) {
-			c -= ilen;
-			goto inside;
+	ubyte *end = dest + olen;
+
+while (dest < end) {
+	i = a;
+	c += b;
+	if(c >= ilen) {
+		c -= ilen;
+		goto inside;
 		}
-		while(--i>=0) {
-		inside:
-			*out++ = *in;
+	while(--i>=0) {
+inside:
+			*dest++ = *src;
 		}
-		in++;
+	src++;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void GrBitmapScaleTo(CBitmap *src, CBitmap *dst)
+void GrBitmapScaleTo (CBitmap *src, CBitmap *dest)
 {
-	sbyte *s = reinterpret_cast<sbyte*> (src->Buffer ());
-	sbyte *d = reinterpret_cast<sbyte*> (dst->Buffer ());
+	ubyte *s = src->Buffer ();
+	ubyte *d = dest->Buffer ();
 	int h = src->Height ();
-	int a = dst->Height ()/h, b = dst->Height ()%h;
+	int a = dest->Height () / h, b = dest->Height () % h;
 	int c = 0, i, y;
 
-	for(y=0; y<h; y++) {
-		i = a;
-		c += b;
-		if(c >= h) {
-			c -= h;
-			goto inside;
+for (y = 0; y < h; y++) {
+	i = a;
+	c += b;
+	if(c >= h) {
+		c -= h;
+		goto inside;
 		}
-		while(--i>=0) {
-		inside:
-			scale_line(s, d, src->Width (), dst->Width ());
-			d += dst->RowSize ();
+	while(--i >= 0) {
+inside:
+		ScaleLine (s, d, src->Width (), dest->Width ());
+		d += dest->RowSize ();
 		}
-		s += src->RowSize ();
+	s += src->RowSize ();
 	}
 }
 

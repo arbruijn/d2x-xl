@@ -416,7 +416,7 @@ int CreateShaderFunc (GLhandleARB *progP, GLhandleARB *fsP, GLhandleARB *vsP,
 int LinkShaderProg (GLhandleARB *progP);
 void DeleteShaderProg (GLhandleARB *progP);
 void InitShaders ();
-void SetRenderQuality ();
+void SetRenderQuality (int nQuality = -1);
 void DrawTexPolyFlat (CBitmap *bm,int nv,g3sPoint **vertlist);
 void OglSetupTransform (int bForce);
 void OglResetTransform (int bForce);

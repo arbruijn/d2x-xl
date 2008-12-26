@@ -9,15 +9,15 @@
 static ushort *backBuf1, *backBuf2;
 static int lookup_initialized;
 
-static void dispatchDecoder16(ushort **pFrame, ubyte codeType, ubyte **pData, ubyte **pOffData, int *pDataRemain, int *curXb, int *curYb);
+static void dispatchDecoder16(ushort **frameP, ubyte codeType, ubyte **dataP, ubyte **pOffData, int *remainDataP, int *curXb, int *curYb);
 static void genLoopkupTable();
 
-void decodeFrame16(ubyte *pFrame, ubyte *pMap, int mapRemain, ubyte *pData, int dataRemain)
+void decodeFrame16(ubyte *frameP, ubyte *mapP, int mapRemain, ubyte *dataP, int dataRemain)
 {
     ubyte *pOrig;
     ubyte *pOffData, *pEnd;
     ushort offset;
-    ushort *FramePtr = reinterpret_cast<ushort*> (pFrame);
+    ushort *FramePtr = reinterpret_cast<ushort*> (frameP);
     ubyte op;
     int length;
     int i, j;
@@ -27,47 +27,47 @@ void decodeFrame16(ubyte *pFrame, ubyte *pMap, int mapRemain, ubyte *pData, int 
 		genLoopkupTable();
 	}
 
-    backBuf1 = reinterpret_cast<ushort*> (g_vBackBuf1);
-    backBuf2 = reinterpret_cast<ushort*> (g_vBackBuf2);
+    backBuf1 = reinterpret_cast<ushort*> (g_vBackBuf [g_currBuf]);
+    backBuf2 = reinterpret_cast<ushort*> (g_vBackBuf [!g_currBuf]);
 
     xb = g_width >> 3;
     yb = g_height >> 3;
 
-    offset = pData[0]|(pData[1]<<8);
+    offset = dataP[0]|(dataP[1]<<8);
 
-    pOffData = pData + offset;
-    pEnd = pData + offset;
+    pOffData = dataP + offset;
+    pEnd = dataP + offset;
 
-    pData += 2;
+    dataP += 2;
 
-    pOrig = pData;
+    pOrig = dataP;
     length = offset - 2; /*dataRemain-2;*/
 
     for (j=0; j<yb; j++)
     {
         for (i=0; i<xb/2; i++)
         {
-            op = (*pMap) & 0xf;
-            dispatchDecoder16(&FramePtr, op, &pData, &pOffData, &dataRemain, &i, &j);
+            op = (*mapP) & 0xf;
+            dispatchDecoder16(&FramePtr, op, &dataP, &pOffData, &dataRemain, &i, &j);
 
 			/*
 			  if (FramePtr < backBuf1)
-			  fprintf(stderr, "danger!  pointing out of bounds below after dispatch decoder: %d, %d (1) [%x]\n", i, j, (*pMap) & 0xf);
+			  fprintf(stderr, "danger!  pointing out of bounds below after dispatch decoder: %d, %d (1) [%x]\n", i, j, (*mapP) & 0xf);
 			  else if (FramePtr >= backBuf1 + g_width*g_height)
-			  fprintf(stderr, "danger!  pointing out of bounds above after dispatch decoder: %d, %d (1) [%x]\n", i, j, (*pMap) & 0xf);
+			  fprintf(stderr, "danger!  pointing out of bounds above after dispatch decoder: %d, %d (1) [%x]\n", i, j, (*mapP) & 0xf);
 			*/
 
-			op = ((*pMap) >> 4) & 0xf;
-            dispatchDecoder16(&FramePtr, op, &pData, &pOffData, &dataRemain, &i, &j);
+			op = ((*mapP) >> 4) & 0xf;
+            dispatchDecoder16(&FramePtr, op, &dataP, &pOffData, &dataRemain, &i, &j);
 
 			/*
 			  if (FramePtr < backBuf1)
-			  fprintf(stderr, "danger!  pointing out of bounds below after dispatch decoder: %d, %d (2) [%x]\n", i, j, (*pMap) >> 4);
+			  fprintf(stderr, "danger!  pointing out of bounds below after dispatch decoder: %d, %d (2) [%x]\n", i, j, (*mapP) >> 4);
 			  else if (FramePtr >= backBuf1 + g_width*g_height)
-			  fprintf(stderr, "danger!  pointing out of bounds above after dispatch decoder: %d, %d (2) [%x]\n", i, j, (*pMap) >> 4);
+			  fprintf(stderr, "danger!  pointing out of bounds above after dispatch decoder: %d, %d (2) [%x]\n", i, j, (*mapP) >> 4);
 			*/
 
-            ++pMap;
+            ++mapP;
             --mapRemain;
         }
 
@@ -75,8 +75,8 @@ void decodeFrame16(ubyte *pFrame, ubyte *pMap, int mapRemain, ubyte *pData, int 
     }
 
 #if 0
-    if ((length-(pData-pOrig)) != 0) {
-    	fprintf(stderr, "DEBUG: junk left over: %d,%d,%d\n", (pData-pOrig), length, (length-(pData-pOrig));
+    if ((length-(dataP-pOrig)) != 0) {
+    	fprintf(stderr, "DEBUG: junk left over: %d,%d,%d\n", (dataP-pOrig), length, (length-(dataP-pOrig));
     }
 #endif
 }
@@ -160,7 +160,7 @@ static void copyFrame(ushort *pDest, ushort *pSrc)
     }
 }
 
-static void patternRow4Pixels(ushort *pFrame,
+static void patternRow4Pixels(ushort *frameP,
                               ubyte pat0, ubyte pat1,
                               ushort *p)
 {
@@ -170,13 +170,13 @@ static void patternRow4Pixels(ushort *pFrame,
 
     while (mask != 0)
     {
-        *pFrame++ = p[(mask & pattern) >> shift];
+        *frameP++ = p[(mask & pattern) >> shift];
         mask <<= 2;
         shift += 2;
     }
 }
 
-static void patternRow4Pixels2(ushort *pFrame,
+static void patternRow4Pixels2(ushort *frameP,
                                ubyte pat0,
                                ushort *p)
 {
@@ -189,11 +189,11 @@ static void patternRow4Pixels2(ushort *pFrame,
 	   while (mask != 0)
 	   {
 	   pel = p[(mask & pat0) >> shift];
-	   pFrame[0] = pel;
-	   pFrame[2] = pel;
-	   pFrame[g_width + 0] = pel;
-	   pFrame[g_width + 2] = pel;
-	   pFrame += skip;
+	   frameP[0] = pel;
+	   frameP[2] = pel;
+	   frameP[g_width + 0] = pel;
+	   frameP[g_width + 2] = pel;
+	   frameP += skip;
 	   skip = 4 - skip;
 	   mask <<= 2;
 	   shift += 2;
@@ -202,17 +202,17 @@ static void patternRow4Pixels2(ushort *pFrame,
     while (mask != 0)
     {
         pel = p[(mask & pat0) >> shift];
-        pFrame[0] = pel;
-        pFrame[1] = pel;
-        pFrame[g_width + 0] = pel;
-        pFrame[g_width + 1] = pel;
-        pFrame += 2;
+        frameP[0] = pel;
+        frameP[1] = pel;
+        frameP[g_width + 0] = pel;
+        frameP[g_width + 1] = pel;
+        frameP += 2;
         mask <<= 2;
         shift += 2;
     }
 }
 
-static void patternRow4Pixels2x1(ushort *pFrame, ubyte pat,
+static void patternRow4Pixels2x1(ushort *frameP, ubyte pat,
 								 ushort *p)
 {
     ubyte mask=0x03;
@@ -222,15 +222,15 @@ static void patternRow4Pixels2x1(ushort *pFrame, ubyte pat,
     while (mask != 0)
     {
         pel = p[(mask & pat) >> shift];
-        pFrame[0] = pel;
-        pFrame[1] = pel;
-        pFrame += 2;
+        frameP[0] = pel;
+        frameP[1] = pel;
+        frameP += 2;
         mask <<= 2;
         shift += 2;
     }
 }
 
-static void patternQuadrant4Pixels(ushort *pFrame,
+static void patternQuadrant4Pixels(ushort *frameP,
 								   ubyte pat0, ubyte pat1, ubyte pat2,
 								   ubyte pat3, ushort *p)
 {
@@ -241,10 +241,10 @@ static void patternQuadrant4Pixels(ushort *pFrame,
 
     for (i=0; i<16; i++)
     {
-        pFrame[i&3] = p[(pat & mask) >> shift];
+        frameP[i&3] = p[(pat & mask) >> shift];
 
         if ((i&3) == 3)
-            pFrame += g_width;
+            frameP += g_width;
 
         mask <<= 2;
         shift += 2;
@@ -252,19 +252,19 @@ static void patternQuadrant4Pixels(ushort *pFrame,
 }
 
 
-static void patternRow2Pixels(ushort *pFrame, ubyte pat,
+static void patternRow2Pixels(ushort *frameP, ubyte pat,
 							  ushort *p)
 {
     ubyte mask=0x01;
 
     while (mask != 0)
     {
-        *pFrame++ = p[(mask & pat) ? 1 : 0];
+        *frameP++ = p[(mask & pat) ? 1 : 0];
         mask <<= 1;
     }
 }
 
-static void patternRow2Pixels2(ushort *pFrame, ubyte pat,
+static void patternRow2Pixels2(ushort *frameP, ubyte pat,
 							   ushort *p)
 {
     ushort pel;
@@ -275,11 +275,11 @@ static void patternRow2Pixels2(ushort *pFrame, ubyte pat,
 	   while (mask != 0x10)
 	   {
 	   pel = p[(mask & pat) ? 1 : 0];
-	   pFrame[0] = pel;
-	   pFrame[2] = pel;
-	   pFrame[g_width + 0] = pel;
-	   pFrame[g_width + 2] = pel;
-	   pFrame += skip;
+	   frameP[0] = pel;
+	   frameP[2] = pel;
+	   frameP[g_width + 0] = pel;
+	   frameP[g_width + 2] = pel;
+	   frameP += skip;
 	   skip = 4 - skip;
 	   mask <<= 1;
 	   }
@@ -287,17 +287,17 @@ static void patternRow2Pixels2(ushort *pFrame, ubyte pat,
 	while (mask != 0x10) {
 		pel = p[(mask & pat) ? 1 : 0];
 
-		pFrame[0] = pel;
-		pFrame[1] = pel;
-		pFrame[g_width + 0] = pel;
-		pFrame[g_width + 1] = pel;
-		pFrame += 2;
+		frameP[0] = pel;
+		frameP[1] = pel;
+		frameP[g_width + 0] = pel;
+		frameP[g_width + 1] = pel;
+		frameP += 2;
 
 		mask <<= 1;
 	}
 }
 
-static void patternQuadrant2Pixels(ushort *pFrame, ubyte pat0,
+static void patternQuadrant2Pixels(ushort *frameP, ubyte pat0,
 								   ubyte pat1, ushort *p)
 {
     ushort mask = 0x0001;
@@ -306,16 +306,16 @@ static void patternQuadrant2Pixels(ushort *pFrame, ubyte pat0,
 
     for (i=0; i<16; i++)
     {
-        pFrame[i&3] = p[(pat & mask) ? 1 : 0];
+        frameP[i&3] = p[(pat & mask) ? 1 : 0];
 
         if ((i&3) == 3)
-            pFrame += g_width;
+            frameP += g_width;
 
         mask <<= 1;
     }
 }
 
-static void dispatchDecoder16(ushort **pFrame, ubyte codeType, ubyte **pData, ubyte **pOffData, int *pDataRemain, int *curXb, int *curYb)
+static void dispatchDecoder16(ushort **frameP, ubyte codeType, ubyte **dataP, ubyte **pOffData, int *remainDataP, int *curXb, int *curYb)
 {
     ushort p[4];
     ubyte pat[16];
@@ -323,12 +323,12 @@ static void dispatchDecoder16(ushort **pFrame, ubyte codeType, ubyte **pData, ub
     int x, y;
     ushort *pDstBak;
 
-    pDstBak = *pFrame;
+    pDstBak = *frameP;
 
     switch(codeType)
     {
 	case 0x0:
-		copyFrame(*pFrame, *pFrame + (backBuf2 - backBuf1));
+		copyFrame(*frameP, *frameP + (backBuf2 - backBuf1));
 	case 0x1:
 		break;
 	case 0x2: /*
@@ -339,8 +339,8 @@ static void dispatchDecoder16(ushort **pFrame, ubyte codeType, ubyte **pData, ub
 		x = far_p_table[k*2+0];
 		y = far_p_table[k*2+1];
 
-		copyFrame(*pFrame, *pFrame + x + y*g_width);
-		--*pDataRemain;
+		copyFrame(*frameP, *frameP + x + y*g_width);
+		--*remainDataP;
 		break;
 	case 0x3: /*
 				relFar(*(*pOffData)++, -1, &x, &y);
@@ -350,8 +350,8 @@ static void dispatchDecoder16(ushort **pFrame, ubyte codeType, ubyte **pData, ub
 		x = far_n_table[k*2+0];
 		y = far_n_table[k*2+1];
 
-		copyFrame(*pFrame, *pFrame + x + y*g_width);
-		--*pDataRemain;
+		copyFrame(*frameP, *frameP + x + y*g_width);
+		--*remainDataP;
 		break;
 	case 0x4: /*
 				relClose(*(*pOffData)++, &x, &y);
@@ -361,14 +361,14 @@ static void dispatchDecoder16(ushort **pFrame, ubyte codeType, ubyte **pData, ub
 		x = close_table[k*2+0];
 		y = close_table[k*2+1];
 
-		copyFrame(*pFrame, *pFrame + (backBuf2 - backBuf1) + x + y*g_width);
-		--*pDataRemain;
+		copyFrame(*frameP, *frameP + (backBuf2 - backBuf1) + x + y*g_width);
+		--*remainDataP;
 		break;
 	case 0x5:
-		x = (char)*(*pData)++;
-		y = (char)*(*pData)++;
-		copyFrame(*pFrame, *pFrame + (backBuf2 - backBuf1) + x + y*g_width);
-		*pDataRemain -= 2;
+		x = (char)*(*dataP)++;
+		y = (char)*(*dataP)++;
+		copyFrame(*frameP, *frameP + (backBuf2 - backBuf1) + x + y*g_width);
+		*remainDataP -= 2;
 		break;
 	case 0x6:
 #ifndef WIN32
@@ -376,10 +376,10 @@ static void dispatchDecoder16(ushort **pFrame, ubyte codeType, ubyte **pData, ub
 #endif
 		for (i=0; i<2; i++)
 		{
-			*pFrame += 16;
+			*frameP += 16;
 			if (++*curXb == (g_width >> 3))
 			{
-				*pFrame += 7*g_width;
+				*frameP += 7*g_width;
 				*curXb = 0;
 				if (++*curYb == (g_height >> 3))
 					return;
@@ -388,100 +388,100 @@ static void dispatchDecoder16(ushort **pFrame, ubyte codeType, ubyte **pData, ub
 		break;
 
 	case 0x7:
-		p[0] = GETPIXELI(pData, 0);
-		p[1] = GETPIXELI(pData, 0);
+		p[0] = GETPIXELI(dataP, 0);
+		p[1] = GETPIXELI(dataP, 0);
 
 		if (!((p[0]/*|p[1]*/)&0x8000))
 		{
 			for (i=0; i<8; i++)
 			{
-				patternRow2Pixels(*pFrame, *(*pData), p);
-				(*pData)++;
+				patternRow2Pixels(*frameP, *(*dataP), p);
+				(*dataP)++;
 
-				*pFrame += g_width;
+				*frameP += g_width;
 			}
 		}
 		else
 		{
 			for (i=0; i<2; i++)
 			{
-				patternRow2Pixels2(*pFrame, (ubyte) (*(*pData) & 0xf), p);
-				*pFrame += 2*g_width;
-				patternRow2Pixels2(*pFrame, (ubyte) (*(*pData) >> 4), p);
-				(*pData)++;
+				patternRow2Pixels2(*frameP, (ubyte) (*(*dataP) & 0xf), p);
+				*frameP += 2*g_width;
+				patternRow2Pixels2(*frameP, (ubyte) (*(*dataP) >> 4), p);
+				(*dataP)++;
 
-				*pFrame += 2*g_width;
+				*frameP += 2*g_width;
 			}
 		}
 		break;
 
 	case 0x8:
-		p[0] = GETPIXEL(pData, 0);
+		p[0] = GETPIXEL(dataP, 0);
 
 		if (!(p[0] & 0x8000))
 		{
 			for (i=0; i<4; i++)
 			{
-				p[0] = GETPIXELI(pData, 0);
-				p[1] = GETPIXELI(pData, 0);
+				p[0] = GETPIXELI(dataP, 0);
+				p[1] = GETPIXELI(dataP, 0);
 
-				pat[0] = (*pData)[0];
-				pat[1] = (*pData)[1];
-				(*pData) += 2;
+				pat[0] = (*dataP)[0];
+				pat[1] = (*dataP)[1];
+				(*dataP) += 2;
 
-				patternQuadrant2Pixels(*pFrame, pat[0], pat[1], p);
+				patternQuadrant2Pixels(*frameP, pat[0], pat[1], p);
 
 				if (i & 1)
-					*pFrame -= (4*g_width - 4);
+					*frameP -= (4*g_width - 4);
 				else
-					*pFrame += 4*g_width;
+					*frameP += 4*g_width;
 			}
 
 
 		} else {
-			p[2] = GETPIXEL(pData, 8);
+			p[2] = GETPIXEL(dataP, 8);
 
 			if (!(p[2]&0x8000)) {
 				for (i=0; i<4; i++)
 				{
 					if ((i & 1) == 0)
 					{
-						p[0] = GETPIXELI(pData, 0);
-						p[1] = GETPIXELI(pData, 0);
+						p[0] = GETPIXELI(dataP, 0);
+						p[1] = GETPIXELI(dataP, 0);
 					}
-					pat[0] = *(*pData)++;
-					pat[1] = *(*pData)++;
-					patternQuadrant2Pixels(*pFrame, pat[0], pat[1], p);
+					pat[0] = *(*dataP)++;
+					pat[1] = *(*dataP)++;
+					patternQuadrant2Pixels(*frameP, pat[0], pat[1], p);
 
 					if (i & 1)
-						*pFrame -= (4*g_width - 4);
+						*frameP -= (4*g_width - 4);
 					else
-						*pFrame += 4*g_width;
+						*frameP += 4*g_width;
 				}
 			} else {
 				for (i=0; i<8; i++)
 				{
 					if ((i & 3) == 0)
 					{
-						p[0] = GETPIXELI(pData, 0);
-						p[1] = GETPIXELI(pData, 0);
+						p[0] = GETPIXELI(dataP, 0);
+						p[1] = GETPIXELI(dataP, 0);
 					}
-					patternRow2Pixels(*pFrame, *(*pData), p);
-					(*pData)++;
+					patternRow2Pixels(*frameP, *(*dataP), p);
+					(*dataP)++;
 
-					*pFrame += g_width;
+					*frameP += g_width;
 				}
 			}
 		}
 		break;
 
 	case 0x9:
-		p[0] = GETPIXELI(pData, 0);
-		p[1] = GETPIXELI(pData, 0);
-		p[2] = GETPIXELI(pData, 0);
-		p[3] = GETPIXELI(pData, 0);
+		p[0] = GETPIXELI(dataP, 0);
+		p[1] = GETPIXELI(dataP, 0);
+		p[2] = GETPIXELI(dataP, 0);
+		p[3] = GETPIXELI(dataP, 0);
 
-		*pDataRemain -= 8;
+		*remainDataP -= 8;
 
 		if (!(p[0] & 0x8000))
 		{
@@ -490,27 +490,27 @@ static void dispatchDecoder16(ushort **pFrame, ubyte codeType, ubyte **pData, ub
 
 				for (i=0; i<8; i++)
 				{
-					pat[0] = (*pData)[0];
-					pat[1] = (*pData)[1];
-					(*pData) += 2;
-					patternRow4Pixels(*pFrame, pat[0], pat[1], p);
-					*pFrame += g_width;
+					pat[0] = (*dataP)[0];
+					pat[1] = (*dataP)[1];
+					(*dataP) += 2;
+					patternRow4Pixels(*frameP, pat[0], pat[1], p);
+					*frameP += g_width;
 				}
-				*pDataRemain -= 16;
+				*remainDataP -= 16;
 
 			}
 			else
 			{
-				patternRow4Pixels2(*pFrame, (*pData)[0], p);
-				*pFrame += 2*g_width;
-				patternRow4Pixels2(*pFrame, (*pData)[1], p);
-				*pFrame += 2*g_width;
-				patternRow4Pixels2(*pFrame, (*pData)[2], p);
-				*pFrame += 2*g_width;
-				patternRow4Pixels2(*pFrame, (*pData)[3], p);
+				patternRow4Pixels2(*frameP, (*dataP)[0], p);
+				*frameP += 2*g_width;
+				patternRow4Pixels2(*frameP, (*dataP)[1], p);
+				*frameP += 2*g_width;
+				patternRow4Pixels2(*frameP, (*dataP)[2], p);
+				*frameP += 2*g_width;
+				patternRow4Pixels2(*frameP, (*dataP)[3], p);
 
-				(*pData) += 4;
-				*pDataRemain -= 4;
+				(*dataP) += 4;
+				*remainDataP -= 4;
 
 			}
 		}
@@ -520,61 +520,61 @@ static void dispatchDecoder16(ushort **pFrame, ubyte codeType, ubyte **pData, ub
 			{
 				for (i=0; i<8; i++)
 				{
-					pat[0] = (*pData)[0];
-					(*pData) += 1;
-					patternRow4Pixels2x1(*pFrame, pat[0], p);
-					*pFrame += g_width;
+					pat[0] = (*dataP)[0];
+					(*dataP) += 1;
+					patternRow4Pixels2x1(*frameP, pat[0], p);
+					*frameP += g_width;
 				}
-				*pDataRemain -= 8;
+				*remainDataP -= 8;
 			}
 			else
 			{
 				for (i=0; i<4; i++)
 				{
-					pat[0] = (*pData)[0];
-					pat[1] = (*pData)[1];
+					pat[0] = (*dataP)[0];
+					pat[1] = (*dataP)[1];
 
-					(*pData) += 2;
+					(*dataP) += 2;
 
-					patternRow4Pixels(*pFrame, pat[0], pat[1], p);
-					*pFrame += g_width;
-					patternRow4Pixels(*pFrame, pat[0], pat[1], p);
-					*pFrame += g_width;
+					patternRow4Pixels(*frameP, pat[0], pat[1], p);
+					*frameP += g_width;
+					patternRow4Pixels(*frameP, pat[0], pat[1], p);
+					*frameP += g_width;
 				}
-				*pDataRemain -= 8;
+				*remainDataP -= 8;
 			}
 		}
 		break;
 
 	case 0xa:
-		p[0] = GETPIXEL(pData, 0);
+		p[0] = GETPIXEL(dataP, 0);
 
 		if (!(p[0] & 0x8000))
 		{
 			for (i=0; i<4; i++)
 			{
-				p[0] = GETPIXELI(pData, 0);
-				p[1] = GETPIXELI(pData, 0);
-				p[2] = GETPIXELI(pData, 0);
-				p[3] = GETPIXELI(pData, 0);
-				pat[0] = (*pData)[0];
-				pat[1] = (*pData)[1];
-				pat[2] = (*pData)[2];
-				pat[3] = (*pData)[3];
+				p[0] = GETPIXELI(dataP, 0);
+				p[1] = GETPIXELI(dataP, 0);
+				p[2] = GETPIXELI(dataP, 0);
+				p[3] = GETPIXELI(dataP, 0);
+				pat[0] = (*dataP)[0];
+				pat[1] = (*dataP)[1];
+				pat[2] = (*dataP)[2];
+				pat[3] = (*dataP)[3];
 
-				(*pData) += 4;
+				(*dataP) += 4;
 
-				patternQuadrant4Pixels(*pFrame, pat[0], pat[1], pat[2], pat[3], p);
+				patternQuadrant4Pixels(*frameP, pat[0], pat[1], pat[2], pat[3], p);
 
 				if (i & 1)
-					*pFrame -= (4*g_width - 4);
+					*frameP -= (4*g_width - 4);
 				else
-					*pFrame += 4*g_width;
+					*frameP += 4*g_width;
 			}
 		}
 		else
 		{
-			p[0] = GETPIXEL(pData, 16);
+			p[0] = GETPIXEL(dataP, 16);
 
 			if (!(p[0] & 0x8000))
 			{
@@ -582,25 +582,25 @@ static void dispatchDecoder16(ushort **pFrame, ubyte codeType, ubyte **pData, ub
 				{
 					if ((i&1) == 0)
 					{
-						p[0] = GETPIXELI(pData, 0);
-						p[1] = GETPIXELI(pData, 0);
-						p[2] = GETPIXELI(pData, 0);
-						p[3] = GETPIXELI(pData, 0);
+						p[0] = GETPIXELI(dataP, 0);
+						p[1] = GETPIXELI(dataP, 0);
+						p[2] = GETPIXELI(dataP, 0);
+						p[3] = GETPIXELI(dataP, 0);
 					}
 
-					pat[0] = (*pData)[0];
-					pat[1] = (*pData)[1];
-					pat[2] = (*pData)[2];
-					pat[3] = (*pData)[3];
+					pat[0] = (*dataP)[0];
+					pat[1] = (*dataP)[1];
+					pat[2] = (*dataP)[2];
+					pat[3] = (*dataP)[3];
 
-					(*pData) += 4;
+					(*dataP) += 4;
 
-					patternQuadrant4Pixels(*pFrame, pat[0], pat[1], pat[2], pat[3], p);
+					patternQuadrant4Pixels(*frameP, pat[0], pat[1], pat[2], pat[3], p);
 
 					if (i & 1)
-						*pFrame -= (4*g_width - 4);
+						*frameP -= (4*g_width - 4);
 					else
-						*pFrame += 4*g_width;
+						*frameP += 4*g_width;
 				}
 			}
 			else
@@ -609,18 +609,18 @@ static void dispatchDecoder16(ushort **pFrame, ubyte codeType, ubyte **pData, ub
 				{
 					if ((i&3) == 0)
 					{
-						p[0] = GETPIXELI(pData, 0);
-						p[1] = GETPIXELI(pData, 0);
-						p[2] = GETPIXELI(pData, 0);
-						p[3] = GETPIXELI(pData, 0);
+						p[0] = GETPIXELI(dataP, 0);
+						p[1] = GETPIXELI(dataP, 0);
+						p[2] = GETPIXELI(dataP, 0);
+						p[3] = GETPIXELI(dataP, 0);
 					}
 
-					pat[0] = (*pData)[0];
-					pat[1] = (*pData)[1];
-					patternRow4Pixels(*pFrame, pat[0], pat[1], p);
-					*pFrame += g_width;
+					pat[0] = (*dataP)[0];
+					pat[1] = (*dataP)[1];
+					patternRow4Pixels(*frameP, pat[0], pat[1], p);
+					*frameP += g_width;
 
-					(*pData) += 2;
+					(*dataP) += 2;
 				}
 			}
 		}
@@ -629,93 +629,93 @@ static void dispatchDecoder16(ushort **pFrame, ubyte codeType, ubyte **pData, ub
 	case 0xb:
 		for (i=0; i<8; i++)
 		{
-			memcpy(*pFrame, *pData, 16);
-			*pFrame += g_width;
-			*pData += 16;
-			*pDataRemain -= 16;
+			memcpy(*frameP, *dataP, 16);
+			*frameP += g_width;
+			*dataP += 16;
+			*remainDataP -= 16;
 		}
 		break;
 
 	case 0xc:
 		for (i=0; i<4; i++)
 		{
-			p[0] = GETPIXEL(pData, 0);
-			p[1] = GETPIXEL(pData, 2);
-			p[2] = GETPIXEL(pData, 4);
-			p[3] = GETPIXEL(pData, 6);
+			p[0] = GETPIXEL(dataP, 0);
+			p[1] = GETPIXEL(dataP, 2);
+			p[2] = GETPIXEL(dataP, 4);
+			p[3] = GETPIXEL(dataP, 6);
 
 			for (j=0; j<2; j++)
 			{
 				for (k=0; k<4; k++)
 				{
-					(*pFrame)[j+2*k] = p[k];
-					(*pFrame)[g_width+j+2*k] = p[k];
+					(*frameP)[j+2*k] = p[k];
+					(*frameP)[g_width+j+2*k] = p[k];
 				}
-				*pFrame += g_width;
+				*frameP += g_width;
 			}
-			*pData += 8;
-			*pDataRemain -= 8;
+			*dataP += 8;
+			*remainDataP -= 8;
 		}
 		break;
 
 	case 0xd:
 		for (i=0; i<2; i++)
 		{
-			p[0] = GETPIXEL(pData, 0);
-			p[1] = GETPIXEL(pData, 2);
+			p[0] = GETPIXEL(dataP, 0);
+			p[1] = GETPIXEL(dataP, 2);
 
 			for (j=0; j<4; j++)
 			{
 				for (k=0; k<4; k++)
 				{
-					(*pFrame)[k*g_width+j] = p[0];
-					(*pFrame)[k*g_width+j+4] = p[1];
+					(*frameP)[k*g_width+j] = p[0];
+					(*frameP)[k*g_width+j+4] = p[1];
 				}
 			}
 
-			*pFrame += 4*g_width;
+			*frameP += 4*g_width;
 
-			*pData += 4;
-			*pDataRemain -= 4;
+			*dataP += 4;
+			*remainDataP -= 4;
 		}
 		break;
 
 	case 0xe:
-		p[0] = GETPIXEL(pData, 0);
+		p[0] = GETPIXEL(dataP, 0);
 
 		for (i = 0; i < 8; i++) {
 			for (j = 0; j < 8; j++) {
-				(*pFrame)[j] = p[0];
+				(*frameP)[j] = p[0];
 			}
 
-			*pFrame += g_width;
+			*frameP += g_width;
 		}
 
-		*pData += 2;
-		*pDataRemain -= 2;
+		*dataP += 2;
+		*remainDataP -= 2;
 
 		break;
 
 	case 0xf:
-		p[0] = GETPIXEL(pData, 0);
-		p[1] = GETPIXEL(pData, 1);
+		p[0] = GETPIXEL(dataP, 0);
+		p[1] = GETPIXEL(dataP, 1);
 
 		for (i=0; i<8; i++)
 		{
 			for (j=0; j<8; j++)
 			{
-				(*pFrame)[j] = p[(i+j)&1];
+				(*frameP)[j] = p[(i+j)&1];
 			}
-			*pFrame += g_width;
+			*frameP += g_width;
 		}
 
-		*pData += 4;
-		*pDataRemain -= 4;
+		*dataP += 4;
+		*remainDataP -= 4;
 		break;
 
 	default:
 		break;
     }
 
-    *pFrame = pDstBak+8;
+    *frameP = pDstBak+8;
 }

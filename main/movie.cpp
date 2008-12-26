@@ -218,6 +218,7 @@ else {
 	GrBmUBitBlt (CCanvas::Current (), dstx, dsty, bufw, bufh, &bmFrame, sx, sy, 1);
 	}
 TRANSPARENCY_COLOR = DEFAULT_TRANSPARENCY_COLOR;
+bmFrame.SetBuffer (NULL);
 }
 
 //-----------------------------------------------------------------------
@@ -325,9 +326,10 @@ if (MVE_rmPrepMovie (reinterpret_cast<void*> (&cf), dx, dy, track, libP ? libP->
 	}
 nFrame = 0;
 gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && hiresFlag;
+SetRenderQuality (0);
 while ((result = MVE_rmStepMovie ()) == 0) {
 	DrawSubTitles (nFrame);
-	paletteManager.LoadEffect  (); // moved this here because of flashing
+	paletteManager.LoadEffect (); // moved this here because of flashing
 	GrUpdate (1);
 	key = KeyInKey ();
 	// If ESCAPE pressed, then quit movie.
@@ -923,7 +925,7 @@ return ((nLib < (int) N_MOVIE_LIBS) && movies.libs [nLib]) ? movies.libs [nLib]-
 
 char *GetMovieName (int nLib, int nMovie)
 {
-return (nLib < (int) N_MOVIE_LIBS) && (nMovie < movies.libs [nLib]->n_movies) ? movies.libs [nLib]->movies [nMovie].name : NULL;
+return ((nLib < (int) N_MOVIE_LIBS) && (nMovie < movies.libs [nLib]->n_movies)) ? movies.libs [nLib]->movies [nMovie].name : NULL;
 }
 
 //-----------------------------------------------------------------------

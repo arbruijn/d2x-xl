@@ -22,7 +22,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _TERRAIN_H
 #define _TERRAIN_H
 
-void LoadTerrain(char *filename);
-void RenderTerrain(CFixVector *org, int org_i, int org_j);
+void LoadTerrain (char *filename);
+void RenderTerrain (CFixVector *org, int org_i, int org_j);
 
 #endif /* _TERRAIN_H */

@@ -43,7 +43,7 @@ typedef struct tSinCosf {
 
 //------------------------------------------------------------------------------
 
-void SetRenderQuality (void);
+void SetRenderQuality (int nQuality = -1);
 void OglDeleteLists (GLuint *lp, int n);
 void OglComputeSinCos (int nSides, tSinCosf *sinCosP);
 int CircleListInit (int nSides, int nType, int mode);

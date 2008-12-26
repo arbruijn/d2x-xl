@@ -161,51 +161,6 @@ return CreatePoolString (s, idP);
 //perhaps some sort of recursive origColor nType thing would be better, but that would be way too much trouble for little gain
 int grMsgColorLevel = 1;
 
-inline char *CheckEmbeddedColors (char *textP, char c, int origColor, int nOffset, int nScale)
-{
-if ((c >= 1) && (c <= 3)) {
-	if (*++textP) {
-		if (grMsgColorLevel >= c) {
-			CCanvas::Current ()->FontColor (0).rgb = 1;
-			CCanvas::Current ()->FontColor (0).color.red = (textP [0] - nOffset) * nScale;
-			CCanvas::Current ()->FontColor (0).color.green = (textP [1] - nOffset) * nScale;
-			CCanvas::Current ()->FontColor (0).color.blue = (textP [2] - nOffset) * nScale;
-			CCanvas::Current ()->FontColor (0).color.alpha = 0;
-			}
-		textP += 3;
-		}
-	}
-else if ((c >= 4) && (c <= 6)) {
-	if (grMsgColorLevel >= *textP - 3) {
-		CCanvas::Current ()->FontColor (0).index = origColor;
-		CCanvas::Current ()->FontColor (0).rgb = 0;
-		}
-	textP++;
-	}
-return textP;
-}
-
-#define CHECK_EMBEDDED_COLORS () \
-	if ((c >= 1) && (c <= 3)) { \
-		if (*++textP) { \
-			if (grMsgColorLevel >= c) { \
-				CCanvas::Current ()->FontColor (0).rgb = 1; \
-				CCanvas::Current ()->FontColor (0).color.red = textP [0] - 128; \
-				CCanvas::Current ()->FontColor (0).color.green = textP [1] - 128; \
-				CCanvas::Current ()->FontColor (0).color.blue = textP [2] - 128; \
-				CCanvas::Current ()->FontColor (0).color.alpha = 0; \
-				} \
-			textP += 3; \
-			} \
-		} \
-	else if ((c >= 4) && (c <= 6)) { \
-		if (grMsgColorLevel >= *textP - 3) { \
-			CCanvas::Current ()->FontColor (0).index = origColor; \
-			CCanvas::Current ()->FontColor (0).rgb = 0; \
-			} \
-		textP++; \
-		}
-
 //------------------------------------------------------------------------------
 
 int GrInternalString0 (int x, int y, const char *s)

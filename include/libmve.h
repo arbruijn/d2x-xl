@@ -1,6 +1,8 @@
 #ifndef _LIBMVE_H
 #define _LIBMVE_H
 
+#include "pstypes.h"
+
 #define MVE_ERR_EOF 1
 
 typedef struct{

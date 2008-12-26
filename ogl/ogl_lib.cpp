@@ -108,17 +108,19 @@ tRenderQuality renderQualities [] = {
 
 //------------------------------------------------------------------------------
 
-void SetRenderQuality (void)
+void SetRenderQuality (int nQuality)
 {
 	static int nCurQual = -1;
 
-if (nCurQual == gameOpts->render.nQuality)
+if (nQuality < 0)
+	nQuality = gameOpts->render.nQuality;
+if (nCurQual == nQuality)
 	return;
-nCurQual = gameOpts->render.nQuality;
-gameStates.ogl.texMagFilter = renderQualities [gameOpts->render.nQuality].texMagFilter;
-gameStates.ogl.texMinFilter = renderQualities [gameOpts->render.nQuality].texMinFilter;
-gameStates.ogl.bNeedMipMaps = renderQualities [gameOpts->render.nQuality].bNeedMipmap;
-gameStates.ogl.bAntiAliasing = renderQualities [gameOpts->render.nQuality].bAntiAliasing;
+nCurQual = nQuality;
+gameStates.ogl.texMagFilter = renderQualities [nQuality].texMagFilter;
+gameStates.ogl.texMinFilter = renderQualities [nQuality].texMinFilter;
+gameStates.ogl.bNeedMipMaps = renderQualities [nQuality].bNeedMipmap;
+gameStates.ogl.bAntiAliasing = renderQualities [nQuality].bAntiAliasing;
 ResetTextures (1, gameStates.app.bGameRunning);
 }
 
