@@ -431,8 +431,8 @@ return 1;
 
 static int videobuf_created = 0;
 static int video_initialized = 0;
-int g_width, g_height, g_currBuf;
-void *g_vBackBuf [2] = {NULL, NULL};
+int g_width, g_height;
+void *g_vBuffers = NULL, *g_vBackBuf1, *g_vBackBuf2;
 
 static int g_destX, g_destY;
 static int g_screenWidth, g_screenHeight;
@@ -458,13 +458,13 @@ g_width = w << 3;
 g_height = h << 3;
 /* TODO: * 4 causes crashes on some files */
 /* only D2_ALLOC once */
-if (g_vBackBuf [0] == NULL)
-	g_vBackBuf [0] = mve_alloc (g_width * g_height * 4);
-if (g_vBackBuf [1] == NULL)
-	g_vBackBuf [1] = mve_alloc (g_width * g_height * 4);
-memset (g_vBackBuf [0], 0, g_width * g_height * 4);
-memset (g_vBackBuf [1], 0, g_width * g_height * 4);
-g_currBuf = 0;
+if (g_vBuffers == NULL)
+	g_vBackBuf1 = g_vBuffers = mve_alloc (g_width * g_height * 8);
+if (truecolor)
+	g_vBackBuf2 = reinterpret_cast<ushort*> (g_vBackBuf1) + (g_width * g_height);
+else
+	g_vBackBuf2 = reinterpret_cast<ubyte*> (g_vBackBuf1) + (g_width * g_height);
+memset (g_vBackBuf1, 0, g_width * g_height * 4);
 #ifdef DEBUG
 # ifndef WIN32
 fprintf (stderr, "DEBUG: w,h=%d,%d count=%d, tc=%d\n", w, h, count, truecolor);
@@ -482,7 +482,7 @@ if (g_destX == -1) // center it
 	g_destX = (g_screenWidth - g_width) >> 1;
 if (g_destY == -1) // center it
 	g_destY = (g_screenHeight - g_height) >> 1;
-mve_showframe (reinterpret_cast<ubyte*> (g_vBackBuf [g_currBuf]), g_width, g_height, 0, 0, g_width, g_height, g_destX, g_destY);
+mve_showframe (reinterpret_cast<ubyte*> (g_vBackBuf1), g_width, g_height, 0, 0, g_width, g_height, g_destX, g_destY);
 g_frameUpdated = 1;
 return 1;
 }
@@ -534,6 +534,7 @@ static int video_data_handler (ubyte major, ubyte minor, ubyte *data, int len, v
 	short nXoffset, nYoffset;
 	short nXsize, nYsize;
 	ushort nFlags;
+	ubyte *temp;
 
 nFrameHot  = get_short (data);
 nFrameCold = get_short (data+2);
@@ -543,13 +544,15 @@ nXsize     = get_short (data+8);
 nYsize     = get_short (data+10);
 nFlags     = get_ushort (data+12);
 if (nFlags & 1) {
-	g_currBuf = !g_currBuf;
+	temp = reinterpret_cast<ubyte*> (g_vBackBuf1);
+	g_vBackBuf1 = g_vBackBuf2;
+	g_vBackBuf2 = temp;
 	}
 /* convert the frame */
 if (g_truecolor)
-	decodeFrame16 (reinterpret_cast<ubyte*> (g_vBackBuf [g_currBuf]), g_pCurMap, g_nMapLength, data+14, len-14);
+	decodeFrame16 (reinterpret_cast<ubyte*> (g_vBackBuf1), g_pCurMap, g_nMapLength, data+14, len-14);
 else
-	decodeFrame8 (reinterpret_cast<ubyte*> (g_vBackBuf [g_currBuf]), g_pCurMap, g_nMapLength, data+14, len-14);
+	decodeFrame8 (reinterpret_cast<ubyte*> (g_vBackBuf1), g_pCurMap, g_nMapLength, data+14, len-14);
 return 1;
 }
 
@@ -646,15 +649,11 @@ int MVE_rmStepMovie ()
 {
 	static int initTimer=0;
 	int cont=1;
-int j = 0;
+
 if (!timer_started)
 	timer_start ();
 while (cont && !g_frameUpdated) // make a "step" be a frame, not a chunk...
-{
-	if (++j == 15)
-		j = j;
 	cont = mve_play_next_chunk (mve);
-}
 g_frameUpdated = 0;
 if (micro_frame_delay  && !initTimer) {
 	timer_start ();
@@ -697,11 +696,9 @@ if (mve_audio_spec)
 mve_audio_spec=NULL;
 audiobuf_created = 0;
 #endif
-mve_free (g_vBackBuf [0]);
-mve_free (g_vBackBuf [1]);
-g_vBackBuf [0] =
-g_vBackBuf [1] = NULL;
-g_pCurMap = NULL;
+mve_free (g_vBuffers);
+g_vBuffers = NULL;
+g_pCurMap=NULL;
 g_nMapLength=0;
 videobuf_created = 0;
 video_initialized = 0;

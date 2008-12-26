@@ -20,16 +20,16 @@ void decodeFrame8 (ubyte *frameP, ubyte *mapP, int mapRemain, ubyte *dataP, int 
 		{
 			dispatchDecoder (&frameP, (ubyte) (*mapP & 0xf), &dataP, &dataRemain, &i, &j);
 #ifndef WIN32
-			if (frameP < reinterpret_cast<ubyte*> (g_vBackBuf [g_currBuf]))
+			if (frameP < reinterpret_cast<ubyte*> (g_vBackBuf1))
 				fprintf (stderr, "danger!  pointing out of bounds below after dispatch decoder: %d, %d (1) [%x]\n", i, j, (*mapP) & 0xf);
-			else if (frameP >= reinterpret_cast<ubyte*> (g_vBackBuf [g_currBuf]) + g_width*g_height)
+			else if (frameP >= reinterpret_cast<ubyte*> (g_vBackBuf1) + g_width*g_height)
 				fprintf (stderr, "danger!  pointing out of bounds above after dispatch decoder: %d, %d (1) [%x]\n", i, j, (*mapP) & 0xf);
 #endif
 			dispatchDecoder (&frameP, (ubyte) (*mapP >> 4), &dataP, &dataRemain, &i, &j);
 #ifndef WIN32
-			if (frameP < reinterpret_cast<ubyte*> (g_vBackBuf [g_currBuf]))
+			if (frameP < reinterpret_cast<ubyte*> (g_vBackBuf1))
 				fprintf (stderr, "danger!  pointing out of bounds below after dispatch decoder: %d, %d (2) [%x]\n", i, j, (*mapP) >> 4);
-			else if (frameP >= reinterpret_cast<ubyte*> (g_vBackBuf [g_currBuf]) + g_width*g_height)
+			else if (frameP >= reinterpret_cast<ubyte*> (g_vBackBuf1) + g_width*g_height)
 				fprintf (stderr, "danger!  pointing out of bounds above after dispatch decoder: %d, %d (2) [%x]\n", i, j, (*mapP) >> 4);
 #endif
 			++mapP;
@@ -78,7 +78,7 @@ static void patternRow4Pixels (ubyte *frameP, ubyte pat0, ubyte pat1, ubyte *p)
 	ushort pattern = (pat1 << 8) | pat0;
 
 while (mask != 0) {
-	*frameP++ = p [(mask & pattern) >> shift];
+	*frameP++ = p [ (mask & pattern) >> shift];
 	mask <<= 2;
 	shift += 2;
 	}
@@ -93,7 +93,7 @@ static void patternRow4Pixels2 (ubyte *frameP, ubyte pat0, ubyte *p)
 	ubyte pel;
 
 while (mask != 0) {
-	pel = p [(mask & pat0) >> shift];
+	pel = p [ (mask & pat0) >> shift];
 	frameP [0] = pel;
 	frameP [1] = pel;
 	frameP [g_width + 0] = pel;
@@ -113,7 +113,7 @@ static void patternRow4Pixels2x1 (ubyte *frameP, ubyte pat, ubyte *p)
 	ubyte pel;
 
 while (mask != 0)	{
-	pel = p [(mask & pat) >> shift];
+	pel = p [ (mask & pat) >> shift];
 	frameP [0] = pel;
 	frameP [1] = pel;
 	frameP += 2;
@@ -132,7 +132,7 @@ static void patternQuadrant4Pixels (ubyte *frameP, ubyte pat0, ubyte pat1, ubyte
 	uint pat = (pat3 << 24) | (pat2 << 16) | (pat1 << 8) | pat0;
 
 for (i=0; i<16; i++) {
-	frameP [i&3] = p [(pat & mask) >> shift];
+	frameP [i&3] = p [ (pat & mask) >> shift];
 	if ((i&3) == 3)
 		frameP += g_width;
 	mask <<= 2;
@@ -146,7 +146,7 @@ static void patternRow2Pixels (ubyte *frameP, ubyte pat, ubyte *p)
 	ubyte mask = 0x01;
 
 while (mask != 0)	{
-	*frameP++ = p [(mask & pat) ? 1 : 0];
+	*frameP++ = p [ (mask & pat) ? 1 : 0];
 	mask <<= 1;
 	}
 }
@@ -158,7 +158,7 @@ static void patternRow2Pixels2 (ubyte *frameP, ubyte pat, ubyte *p)
 	ubyte mask = 0x1;
 
 while (mask != 0x10) {
-	pel = p [(mask & pat) ? 1 : 0];
+	pel = p [ (mask & pat) ? 1 : 0];
 	frameP [0] = pel;              // upper-left
 	frameP [1] = pel;              // upper-right
 	frameP [g_width + 0] = pel;    // lower-left
@@ -178,20 +178,12 @@ static void patternQuadrant2Pixels (ubyte *frameP, ubyte pat0, ubyte pat1, ubyte
 
 for (i=0; i<4; i++) {
 	for (j=0; j<4; j++) {
-		pel = p [(pat & mask) ? 1 : 0];
+		pel = p [ (pat & mask) ? 1 : 0];
 		frameP [j + i * g_width] = pel;
 		mask <<= 1;
 		}
 	}
 }
-
-
-static inline ubyte* OtherFrameP (ubyte* frameP)
-{
-return reinterpret_cast<ubyte*> (g_vBackBuf [!g_currBuf]) + (frameP - reinterpret_cast<ubyte*> (g_vBackBuf [g_currBuf]));
-}
-
-
 static void dispatchDecoder (ubyte **framePP, ubyte codeType, ubyte **dataPP, int *remainDataP, int *curXb, int *curYb)
 {
 	ubyte* frameP = *framePP;
@@ -208,8 +200,7 @@ static void dispatchDecoder (ubyte **framePP, ubyte codeType, ubyte **dataPP, in
 switch (codeType) {
 	case 0x0:
 		/* block is copied from block in current frame */
-		copyFrame (frameP, OtherFrameP (frameP));
-			//frameP + (reinterpret_cast<ubyte*> (g_vBackBuf [!g_currBuf]) - reinterpret_cast<ubyte*> (g_vBackBuf [g_currBuf])));
+		copyFrame (frameP, frameP + (reinterpret_cast<ubyte*> (g_vBackBuf2) - reinterpret_cast<ubyte*> (g_vBackBuf1)));
 
 	case 0x1:
 		/* block is unchanged from two frames ago */
@@ -268,7 +259,7 @@ switch (codeType) {
 		   y = -8 + BH
 		*/
 		relClose (*dataP++, &x, &y);
-		copyFrame (frameP, OtherFrameP (frameP) + x + y*g_width);
+		copyFrame (frameP, frameP + (reinterpret_cast<ubyte*> (g_vBackBuf2) - reinterpret_cast<ubyte*> (g_vBackBuf1)) + x + y*g_width);
 		frameP += 8;
 		--*remainDataP;
 		break;
@@ -281,7 +272,7 @@ switch (codeType) {
 		*/
 		x = (signed char)*dataP++;
 		y = (signed char)*dataP++;
-		copyFrame (frameP, OtherFrameP (frameP) + x + y*g_width);
+		copyFrame (frameP, frameP + (reinterpret_cast<ubyte*> (g_vBackBuf2) - reinterpret_cast<ubyte*> (g_vBackBuf1)) + x + y*g_width);
 		frameP += 8;
 		*remainDataP -= 2;
 		break;
@@ -303,8 +294,11 @@ switch (codeType) {
 			{
 				frameP += 7*g_width;
 				*curXb = 0;
-				if (++*curYb == (g_height >> 3))
+				if (++*curYb == (g_height >> 3)) {
+					*framePP = frameP;
+					*dataPP = dataP;
 					return;
+					}
 			}
 		}
 		break;
@@ -843,7 +837,7 @@ switch (codeType) {
 		{
 			for (j=0; j<8; j++)
 			{
-				 (frameP) [j] = dataP [(i+j)&1];
+				 (frameP) [j] = dataP [ (i+j)&1];
 			}
 			frameP += g_width;
 		}
@@ -855,4 +849,6 @@ switch (codeType) {
 	default:
 		break;
 	}
+*framePP = frameP;
+*dataPP = dataP;
 }
