@@ -357,6 +357,7 @@ else {
 	xMax = LM_W / 2;
 	}
 
+vcd.vertPosP = &vcd.vertPos;
 pixelPosP = m_data.pixelPos + xMin * LM_H;
 for (x = xMin; x < xMax; x++) {
 	for (y = 0; y < LM_H; y++, pixelPosP++) {
