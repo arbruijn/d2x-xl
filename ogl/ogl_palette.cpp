@@ -88,7 +88,7 @@ if (!m_data.bAllowEffect)
 #if 0
 if (!gameOpts->render.nLightingMethod || gameStates.menus.nInMenu || !gameStates.app.bGameRunning) 
 #endif
-	{
+ {
 	r += m_data.nGamma;
 	g += m_data.nGamma;
 	b += m_data.nGamma;

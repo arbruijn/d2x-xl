@@ -8,7 +8,7 @@
 template < class _T > 
 class CQuickSort {
 	public:
-		typedef int (*comparator) (_T*, _T*);
+		typedef int (*comparator) (const _T*, const _T*);
 
 		void SortAscending (_T* buffer, int left, int right);
 		void SortDescending (_T* buffer, int left, int right);

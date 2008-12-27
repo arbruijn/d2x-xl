@@ -117,7 +117,7 @@ int do_slew_movement(CObject *objP, int check_keys, int check_joy )
 
 	//check for joystick movement
 
-	if (check_joy && bJoyPresent && (gameStates.app.nFunctionMode == FMODE_EDITOR) )	{
+	if (check_joy && bJoyPresent && (gameStates.app.nFunctionMode == FMODE_EDITOR) ) {
 		JoyGetPos(&joy_x,&joy_y);
 		btns=JoyGetBtns();
 

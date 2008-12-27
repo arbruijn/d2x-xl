@@ -325,7 +325,7 @@ static void _stdcall midi_callback(HMIDISTRM hms, UINT uMsg, DWORD dwUser, DWORD
 	hmp->bufs_in_mm--;
 
 	if (!hmp->stop) {
-		while (fill_buffer(hmp) == HMP_EOF)	{
+		while (fill_buffer(hmp) == HMP_EOF) {
 			if (!hmp->bLoop)
 				hmp->stop=1;
 			reset_tracks(hmp);
@@ -409,7 +409,7 @@ if (hmp->devid == -1)
 				return rc;
 		}
 #if 0
-		{  FILE *f = fopen("dump","wb"); fwrite(hmp->evbuf->lpData, 
+	 {  FILE *f = fopen("dump","wb"); fwrite(hmp->evbuf->lpData, 
  hmp->evbuf->dwBytesRecorded,1,f); fclose(f); exit(1);}
 #endif
  		if ((rc = midiOutPrepareHeader((HMIDIOUT)hmp->hmidi, hmp->evbuf, 

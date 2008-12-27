@@ -557,7 +557,7 @@ int LoadModelTextures (tPolyModel *po, tBitmapIndex *altTextures)
 	int	i, j, nTextures = po->nTextures;
 
 if (altTextures) {
-	for (i = 0; i < nTextures; i++)	{
+	for (i = 0; i < nTextures; i++) {
 		gameData.models.textureIndex [i] = altTextures [i];
 		gameData.models.textures [i] = gameData.pig.tex.bitmaps [gameStates.app.bD1Model] + altTextures [i].index;
 #ifdef _3DFX
@@ -581,7 +581,7 @@ for (i = 0; i < nTextures; i++)
 	PIGGY_PAGE_IN (gameData.models.textureIndex [i].index, gameStates.app.bD1Model);
 // Hmmm... cache got flushed in the middle of paging all these in,
 // so we need to reread them all in.
-if (gameData.pig.tex.bPageFlushed)	{
+if (gameData.pig.tex.bPageFlushed) {
 	gameData.pig.tex.bPageFlushed = 0;
 	for (i = 0; i < nTextures; i++)
 		PIGGY_PAGE_IN (gameData.models.textureIndex [i].index, gameStates.app.bD1Model);
@@ -633,7 +633,7 @@ nTextures = bHires ? 0 : LoadModelTextures (po, altTextures);
 gameStates.ogl.bUseTransform = 1;
 G3SetModelPoints (gameData.models.polyModelPoints);
 gameData.render.vertP = gameData.models.fPolyModelVerts;
-if (!flags)	{	//draw entire CObject
+if (!flags) {	//draw entire CObject
 	if (!G3RenderModel (objP, nModel, -1, po, gameData.models.textures, animAngles, NULL, light, glowValues, colorP)) {
 		if (bHires)
 			return 0;

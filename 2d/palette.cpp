@@ -202,7 +202,7 @@ CPalette* CPaletteManager::Find (CPalette& palette)
 
 for (plP = m_data.list; plP; plP = plP->next)
 #if DBG
-	{
+ {
 	for (i = 0; i < PALETTE_SIZE * 3; i++)
 		if (palette.Data ().raw [i] != plP->palette.Data ().raw [i])
 			break;

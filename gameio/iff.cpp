@@ -281,7 +281,7 @@ else if (bmHeader->compression == cmpByteRun1)
 			--nn; 
 			Assert(width&1);
 			}
-		if (plane!=depth)	{//not masking row
+		if (plane!=depth) {//not masking row
 			memset(p, c, nn); 
 			p += nn;
 			}
@@ -830,7 +830,7 @@ bmHeader.pagewidth = bmP->Width ();	//I don't think it matters what I write
 bmHeader.pageheight = bmP->Height ();
 bmHeader.nplanes = 8;
 bmHeader.masking = mskNone;
-if (m_hasTransparency)	{
+if (m_hasTransparency) {
 	 bmHeader.masking |= mskHasTransparentColor;
 	}
 bmHeader.compression = (bCompression?cmpByteRun1:cmpNone);

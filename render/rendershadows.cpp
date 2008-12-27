@@ -393,7 +393,7 @@ for (bShadowTest = 1; bShadowTest >= 0; bShadowTest--)
 for (bShadowTest = 0; bShadowTest < 2; bShadowTest++) 
 #	endif
 #endif
-	{
+ {
 	gameStates.render.nShadowPass = 2;
 	OglStartFrame (0, 0);
 	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
@@ -403,7 +403,7 @@ for (bShadowTest = 0; bShadowTest < 2; bShadowTest++)
 #if DBG
 if (!bShadowTest) 
 #endif
-	{
+ {
 	gameStates.render.nShadowPass = 3;
 	OglStartFrame (0, 0);
 	if	(gameStates.render.bShadowMaps) {

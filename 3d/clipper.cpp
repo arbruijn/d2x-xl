@@ -142,7 +142,7 @@ void clip_line(g3sPoint **p0,g3sPoint **p1,ubyte codes_or)
 		if (codes_or & planeFlag) {
 
 			if ((*p0)->p3_codes & planeFlag)
-				{g3sPoint *t=*p0; *p0=*p1; *p1=t;}	//swap!
+			 {g3sPoint *t=*p0; *p0=*p1; *p1=t;}	//swap!
 
 			old_p1 = *p1;
 

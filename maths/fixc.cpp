@@ -119,7 +119,7 @@ Q = ((nh & 0x80000000) != 0);
 M = ((d & 0x80000000) != 0);
 T = (M != Q);
 
-if (M == 0)	{
+if (M == 0) {
 	for (i = 0; i < 32; i++) {
 		r <<= 1;
 		r |= T;
@@ -391,7 +391,7 @@ while (b >= TABLE_SIZE) {
 	cnt++;
 	}
 r = isqrt_guess_table [b] >> ((cnt+1)/2);
-for (i = 0; i < 3; i++ )	{
+for (i = 0; i < 3; i++ ) {
 	int old_r = r;
 	r = FixMul (((3*65536) - FixMul(FixMul (r, r), a)), r) / 2;
 	if (old_r >= r) 

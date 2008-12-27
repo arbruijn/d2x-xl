@@ -123,7 +123,7 @@ else {
 		glTexImage2D (GL_TEXTURE_2D, 0, 1, screen.Width (), screen.Height (), 0, GL_DEPTH_COMPONENT, GL_INT, NULL);
 	else 
 #endif
-		{
+	 {
 		glTexImage2D (GL_TEXTURE_2D, 0, 3, m_info.nWidth, m_info.nHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 		glGenerateMipmapEXT (GL_TEXTURE_2D);
 		}
@@ -142,7 +142,7 @@ else {
 #else
 	m_info.hStencilBuffer = 0;
 #endif
-		{
+	 {
 		glGenRenderbuffersEXT (1, &m_info.hDepthBuffer);
 		glBindRenderbufferEXT (GL_RENDERBUFFER_EXT, m_info.hDepthBuffer);
 		glRenderbufferStorageEXT (GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, m_info.nWidth, m_info.nHeight);

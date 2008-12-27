@@ -163,7 +163,7 @@ void OOF_SetCullAndStencil (int bCullFront)
 #if DBG_SHADOWS
 if (bSingleStencil || bShadowTest) 
 #endif
-	{
+ {
 	glEnable (GL_CULL_FACE);
 	if (bCullFront) {
 		OglCullFace (1);

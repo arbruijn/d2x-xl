@@ -72,19 +72,19 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #if DBG
 
 const char *menuBgNames [4][2] = {
-	{"menu.pcx", "menub.pcx"},
-	{"menuo.pcx", "menuob.pcx"},
-	{"menud.pcx", "menud.pcx"},
-	{"menub.pcx", "menub.pcx"}
+ {"menu.pcx", "menub.pcx"},
+ {"menuo.pcx", "menuob.pcx"},
+ {"menud.pcx", "menud.pcx"},
+ {"menub.pcx", "menub.pcx"}
 	};
 
 #else
 
 const char *menuBgNames [4][2] = {
-	{"\x01menu.pcx", "\x01menub.pcx"},
-	{"\x01menuo.pcx", "\x01menuob.pcx"},
-	{"\x01menud.pcx", "\x01menud.pcx"},
-	{"\x01menub.pcx", "\x01menub.pcx"}
+ {"\x01menu.pcx", "\x01menub.pcx"},
+ {"\x01menuo.pcx", "\x01menuob.pcx"},
+ {"\x01menud.pcx", "\x01menud.pcx"},
+ {"\x01menub.pcx", "\x01menub.pcx"}
 	};
 #endif
 
@@ -694,14 +694,14 @@ typedef struct tDetailData {
 } tDetailData;
 
 tDetailData	detailData = {
-	{15, 31, 63, 127, 255},
-	{ 1,  2,  3,   5,   8},
-	{ 3,  5,  7,  10,  50},
-	{ 1,  2,  3,   7,  20},
-	{ 2,  4,  7,  10,  15},
-	{ 2,  4,  7,  10,  15},
-	{ 2,  4,  8,  16,  50},
-	{ 2,  8, 16,  32,  64}};
+ {15, 31, 63, 127, 255},
+ { 1,  2,  3,   5,   8},
+ { 3,  5,  7,  10,  50},
+ { 1,  2,  3,   7,  20},
+ { 2,  4,  7,  10,  15},
+ { 2,  4,  7,  10,  15},
+ { 2,  4,  8,  16,  50},
+ { 2,  8, 16,  32,  64}};
 
 
 //      -----------------------------------------------------------------------------
@@ -1351,7 +1351,7 @@ do {
 	else
 		*szCustY = '\0';
 	//if (nDisplayMode == NUM_DISPLAY_MODES) 
-		{
+	 {
 		ADD_INPUT (nOptions, szCustX, 4, NULL);
 		nCustWOpt = nOptions++;
 		ADD_INPUT (nOptions, szCustY, 4, NULL);

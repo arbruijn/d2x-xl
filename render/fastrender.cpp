@@ -242,17 +242,17 @@ if ((newFaceP->bIsLight = IsLight (newFaceP->nBaseTex)))
 void FixTriangleFan (CSegment *segP, tFace *faceP)
 {
 if (((faceP->nType = segP->Type (faceP->nSide)) == SIDE_IS_TRI_13)) {	//rearrange vertex order for TRIANGLE_FAN rendering
-	{
+ {
 	short	h = faceP->index [0];
 	memcpy (faceP->index, faceP->index + 1, 3 * sizeof (short));
 	faceP->index [3] = h;
 	}
-	{
+ {
 	CFloatVector3 h = FACES.vertices [faceP->nIndex];
 	memcpy (FACES.vertices + faceP->nIndex, FACES.vertices + faceP->nIndex + 1, 3 * sizeof (CFloatVector3));
 	FACES.vertices [faceP->nIndex + 3] = h;
 	}
-	{
+ {
 	tTexCoord2f h = FACES.texCoord [faceP->nIndex];
 	memcpy (FACES.texCoord + faceP->nIndex, FACES.texCoord + faceP->nIndex + 1, 3 * sizeof (tTexCoord2f));
 	FACES.texCoord [faceP->nIndex + 3] = h;
@@ -552,7 +552,7 @@ if (bVBO) {
 	}	
 else 
 #endif
-	{
+ {
 	if (bNormals)
 		glNormalPointer (GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.normals.Buffer ()));
 	if (!bDepthOnly) {

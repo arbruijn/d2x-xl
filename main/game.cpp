@@ -278,7 +278,7 @@ switch (gameStates.render.cockpit.nMode) {
 		break;
 
 	case CM_STATUS_BAR:
-		{
+	 {
 		int h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [CM_STATUS_BAR + (gameStates.video.nDisplayMode ? (gameData.models.nCockpits / 2) : 0)].index].Height ();
 		if (gameStates.app.bDemoData)
 			h *= 2;
@@ -366,8 +366,8 @@ if (gameStates.render.vr.buffers.offscreen) {
 	gameStates.render.vr.buffers.offscreen->Destroy ();
 	}
 
-if ((gameStates.render.vr.nRenderMode == VR_AREA_DET) || (gameStates.render.vr.nRenderMode==VR_INTERLACED))	{
-	if (render_h*2 < 200)	{
+if ((gameStates.render.vr.nRenderMode == VR_AREA_DET) || (gameStates.render.vr.nRenderMode==VR_INTERLACED)) {
+	if (render_h*2 < 200) {
 		gameStates.render.vr.buffers.offscreen = CCanvas::Create (render_w, 200);
 		}
 	else {
@@ -987,7 +987,7 @@ void TurnCheatsOff ()
 			WI_set_homingFlag (i, OldHomingState [i]);
 
 	if (gameStates.app.cheats.bAcid)
-	{
+ {
 		gameStates.app.cheats.bAcid=0;
 		gameStates.render.nInterpolationMethod=old_IntMethod;
 	}
@@ -1215,7 +1215,7 @@ if (gameStates.render.cockpit.nModeSave != -1) {
 	}
 if (gameStates.app.nFunctionMode != FMODE_EDITOR)
 	paletteManager.DisableEffect ();			// Fade out before going to menu
-//@@	if ((!demo_playing) && (!multi_game) && (gameStates.app.nFunctionMode != FMODE_EDITOR))	{
+//@@	if ((!demo_playing) && (!multi_game) && (gameStates.app.nFunctionMode != FMODE_EDITOR)) {
 //@@		MaybeAddPlayerScore (gameStates.app.bGameAborted);
 //@@	}
 ClearWarnFunc (ShowInGameWarning);     //don't use this func anymore

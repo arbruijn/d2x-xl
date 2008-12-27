@@ -29,7 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //static CBitmap * cache_bitmaps [MAX_NUM_CACHE_BITMAPS];                     
 
-typedef struct	{
+typedef struct {
 	CBitmap*		bitmap;
 	CBitmap* 	bmBot;
 	CBitmap* 	bmTop;
@@ -122,7 +122,7 @@ for (i = 0, cacheP = texCache; i < nCacheEntries; i++,cacheP++) {
 		return cacheP->bitmap;
 	}
 #endif
-	if (cacheP->last_frame_used < nLowestFrame)	{
+	if (cacheP->last_frame_used < nLowestFrame) {
 		nLowestFrame = cacheP->last_frame_used;
 		nLRU = i;
 		}
@@ -134,7 +134,7 @@ nCacheMisses++;
 gameData.pig.tex.bPageFlushed = 0;
 PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [tMapTop].index, gameStates.app.bD1Mission);
 PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [tMapBot].index, gameStates.app.bD1Mission);
-if (gameData.pig.tex.bPageFlushed)	{	// If cache got flushed, re-read 'em.
+if (gameData.pig.tex.bPageFlushed) {	// If cache got flushed, re-read 'em.
 	gameData.pig.tex.bPageFlushed = 0;
 	PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [tMapTop].index, gameStates.app.bD1Mission);
 	PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [tMapBot].index, gameStates.app.bD1Mission);
@@ -213,7 +213,7 @@ if (!scale)
 if (scale > 1)
 	scale = scale;
 //	Assert(bottom_data != top_data);
-switch(nType)	{
+switch(nType) {
 	case 0:
 		// Normal
 		GrMergeTextures(bottom_data, top_data, dest_data, bmBot->Width (), bmBot->Height (), scale);
@@ -362,7 +362,7 @@ bBtmBPP = bmBot->BPP ();
 #if DBG
 memset (dest_data, 253, dest_bmp->Width () * dest_bmp->Height () * 4);
 #endif
-switch(nType)	{
+switch(nType) {
 	case 0:
 		// Normal
 		for (i = y = 0; y < dh; y++)

@@ -385,7 +385,7 @@ for (y = 0; y < m_info.th; y++) {
 							}
 						else
 #endif
-							{
+						 {
 							r = 120;
 							g = 88;
 							b = 128;
@@ -825,7 +825,7 @@ if (bCompressed) {
 	}
 else 
 #endif
-	{
+ {
 	if (m_info.bMipMaps && gameStates.ogl.bNeedMipMaps)
 		gluBuild2DMipmaps (GL_TEXTURE_2D, m_info.internalFormat, m_info.tw, m_info.th, m_info.format, GL_UNSIGNED_BYTE, buffer);
 	else
@@ -953,7 +953,7 @@ texP->Prepare ();
 #if RENDER2TEXTURE
 if (!texP->IsRenderBuffer ()) 
 #endif
-	{
+ {
 #if TEXTURE_COMPRESSION
 	if (data && !m_info.bCompressed)
 #else
@@ -1148,7 +1148,7 @@ if (texP && texP->IsRenderBuffer ())
 	texP->BindRenderBuffer ();
 else
 #endif
-	{
+ {
 	if (!Prepared ()) {
 		if (!(bmP = SetupTexture (bMipMaps, nTransp, 1))) {
 #if DBG

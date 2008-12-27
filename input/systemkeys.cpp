@@ -445,7 +445,7 @@ switch (key) {
 		break;
 
 	case KEY_F2:					//gameStates.app.bConfigMenu = 1; break;
-		{
+	 {
 			int bScanlineSave = bScanlineDouble;
 
 			if (!IsMultiGame) {
@@ -646,7 +646,7 @@ void HandleVRKey(int key)
 	switch( key )   {
 
 		case KEY_ALTED+KEY_F5:
-			if ( gameStates.render.vr.nRenderMode != VR_NONE )	{
+			if ( gameStates.render.vr.nRenderMode != VR_NONE ) {
 				VRResetParams();
 				HUDInitMessage( TXT_VR_RESET );
 				HUDInitMessage( TXT_VR_SEPARATION, X2F(gameStates.render.vr.xEyeWidth) );
@@ -655,7 +655,7 @@ void HandleVRKey(int key)
 			break;
 
 		case KEY_ALTED+KEY_F6:
-			if ( gameStates.render.vr.nRenderMode != VR_NONE )	{
+			if ( gameStates.render.vr.nRenderMode != VR_NONE ) {
 				gameStates.render.vr.nLowRes++;
 				if ( gameStates.render.vr.nLowRes > 3 ) gameStates.render.vr.nLowRes = 0;
 				switch( gameStates.render.vr.nLowRes )    {
@@ -668,7 +668,7 @@ void HandleVRKey(int key)
 			break;
 
 		case KEY_ALTED+KEY_F7:
-			if ( gameStates.render.vr.nRenderMode != VR_NONE )	{
+			if ( gameStates.render.vr.nRenderMode != VR_NONE ) {
 				gameStates.render.vr.nEyeSwitch = !gameStates.render.vr.nEyeSwitch;
 				HUDInitMessage( TXT_VR_TOGGLE );
 				if ( gameStates.render.vr.nEyeSwitch )
@@ -679,7 +679,7 @@ void HandleVRKey(int key)
 			break;
 
 		case KEY_ALTED+KEY_F8:
-			if ( gameStates.render.vr.nRenderMode != VR_NONE )	{
+			if ( gameStates.render.vr.nRenderMode != VR_NONE ) {
 			gameStates.render.vr.nSensitivity++;
 			if (gameStates.render.vr.nSensitivity > 2 )
 				gameStates.render.vr.nSensitivity = 0;
@@ -687,7 +687,7 @@ void HandleVRKey(int key)
 		 }
 			break;
 		case KEY_ALTED+KEY_F9:
-			if ( gameStates.render.vr.nRenderMode != VR_NONE )	{
+			if ( gameStates.render.vr.nRenderMode != VR_NONE ) {
 				gameStates.render.vr.xEyeWidth -= F1_0/10;
 				if ( gameStates.render.vr.xEyeWidth < 0 ) gameStates.render.vr.xEyeWidth = 0;
 				HUDInitMessage( TXT_VR_SEPARATION, X2F(gameStates.render.vr.xEyeWidth) );
@@ -695,7 +695,7 @@ void HandleVRKey(int key)
 			}
 			break;
 		case KEY_ALTED+KEY_F10:
-			if ( gameStates.render.vr.nRenderMode != VR_NONE )	{
+			if ( gameStates.render.vr.nRenderMode != VR_NONE ) {
 				gameStates.render.vr.xEyeWidth += F1_0/10;
 				if ( gameStates.render.vr.xEyeWidth > F1_0*4 )    gameStates.render.vr.xEyeWidth = F1_0*4;
 				HUDInitMessage( TXT_VR_SEPARATION, X2F(gameStates.render.vr.xEyeWidth) );
@@ -704,7 +704,7 @@ void HandleVRKey(int key)
 			break;
 
 		case KEY_ALTED+KEY_F11:
-			if ( gameStates.render.vr.nRenderMode != VR_NONE )	{
+			if ( gameStates.render.vr.nRenderMode != VR_NONE ) {
 				gameStates.render.vr.nEyeOffset--;
 				if ( gameStates.render.vr.nEyeOffset < -30 )	gameStates.render.vr.nEyeOffset = -30;
 				HUDInitMessage( TXT_VR_BALANCE, (double)gameStates.render.vr.nEyeOffset/30.0 );
@@ -713,7 +713,7 @@ void HandleVRKey(int key)
 			}
 			break;
 		case KEY_ALTED+KEY_F12:
-			if ( gameStates.render.vr.nRenderMode != VR_NONE )	{
+			if ( gameStates.render.vr.nRenderMode != VR_NONE ) {
 				gameStates.render.vr.nEyeOffset++;
 				if ( gameStates.render.vr.nEyeOffset > 30 )	 gameStates.render.vr.nEyeOffset = 30;
 				HUDInitMessage( TXT_VR_BALANCE, (double)gameStates.render.vr.nEyeOffset/30.0 );
@@ -782,7 +782,7 @@ void HandleGameKey(int key)
 		case KEY_8 + KEY_SHIFTED:
 		case KEY_9 + KEY_SHIFTED:
 		case KEY_0 + KEY_SHIFTED:
-		if (gameOpts->gameplay.bEscortHotKeys)	{
+		if (gameOpts->gameplay.bEscortHotKeys) {
 			if (IsMultiGame)
 				HUDInitMessage (TXT_GB_MULTIPLAYER);
 			else
@@ -845,14 +845,14 @@ void HandleGameKey(int key)
 			break;
 		case KEY_F6:
 			if (netGame.bRefusePlayers && networkData.refuse.bWaitForAnswer && !(gameData.app.nGameMode & GM_TEAM))
-				{
+			 {
 					networkData.refuse.bThisPlayer=1;
 					HUDInitMessage (TXT_ACCEPT_PLR);
 				}
 			break;
 		case KEY_ALTED + KEY_1:
 			if (netGame.bRefusePlayers && networkData.refuse.bWaitForAnswer && (gameData.app.nGameMode & GM_TEAM))
-				{
+			 {
 					networkData.refuse.bThisPlayer=1;
 					HUDInitMessage (TXT_ACCEPT_PLR);
 					networkData.refuse.bTeam=1;
@@ -860,7 +860,7 @@ void HandleGameKey(int key)
 			break;
 		case KEY_ALTED + KEY_2:
 			if (netGame.bRefusePlayers && networkData.refuse.bWaitForAnswer && (gameData.app.nGameMode & GM_TEAM))
-				{
+			 {
 					networkData.refuse.bThisPlayer=1;
 					HUDInitMessage (TXT_ACCEPT_PLR);
 					networkData.refuse.bTeam=2;
@@ -977,7 +977,7 @@ void HandleTestKey(int key)
 			SetFunctionMode (FMODE_EDITOR);
 			break;
 	case KEY_Q + KEY_SHIFTED + KEYDBGGED:
-		{
+	 {
 			char pal_save [768];
 			memcpy(pal_save, grPalette, 768);
 			InitSubTitles("end.tex");	//ingore errors
@@ -1074,7 +1074,7 @@ void HandleTestKey(int key)
 			DoMegaWowPowerup(10);
 			break;
 
-		case KEYDBGGED + KEY_A:	{
+		case KEYDBGGED + KEY_A: {
 			DoMegaWowPowerup(200);
 //								if ( gameData.app.nGameMode & GM_MULTI )     {
 //									ExecMessageBox( NULL, 1, "Damn", "CHEATER!\nYou cannot use the\nmega-thing in network mode." );
@@ -1217,7 +1217,7 @@ while ((key = KeyInKeyTime (&keyTime)) != 0) {
 		MarkerInputMessage (key);
 			continue;
 		}
-if ( IsMultiGame && (gameData.multigame.msg.bSending || gameData.multigame.msg.bDefining ))	{
+if ( IsMultiGame && (gameData.multigame.msg.bSending || gameData.multigame.msg.bDefining )) {
 	MultiMsgInputSub (key);
 	continue;		//get next key
 	}

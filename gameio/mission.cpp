@@ -522,7 +522,7 @@ void AddMissionsToList
 	for (bFindDirs = !bHaveSubFolders && (c == nBuiltIns + bSubFolder); bFindDirs >= 0; bFindDirs--) {
 		sprintf (searchName, "%s%s", gameFolders.szMissionDirs [nLocation], pszExt [bFindDirs][bD1Mission]);
 		if (!FFF (searchName, &ffs, bFindDirs)) {
-			do	{
+			do {
 				if (!(strcmp (ffs.name, ".") && strcmp (ffs.name, "..")))
 					continue;
 				if (bFindDirs) {

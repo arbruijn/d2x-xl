@@ -88,7 +88,7 @@ void CSegment::CreateFuelCen (int oldType)
 {
 	int			i, stationType = m_nType;
 
-switch (stationType)	{
+switch (stationType) {
 	case SEGMENT_IS_NOTHING:
 	case SEGMENT_IS_GOAL_BLUE:
 	case SEGMENT_IS_GOAL_RED:
@@ -795,7 +795,7 @@ for (i = 0; i < gameData.matCens.nFuelCenters; i++, fuelCenP++) {
 //--unused-- {
 //--unused-- 	int i;
 //--unused--
-//--unused-- 	for (i=0; i<gameData.matCens.nFuelCenters; i++)	{
+//--unused-- 	for (i=0; i<gameData.matCens.nFuelCenters; i++) {
 //--unused-- 		gameData.matCens.fuelCenters [i].xCapacity = gameData.matCens.fuelCenters [i].xMaxCapacity;
 //--unused-- 	}
 //--unused--
@@ -894,15 +894,15 @@ if ((gameData.app.nGameMode & GM_ENTROPY) && ((m_owner < 0) ||
 if (m_nType != SEGMENT_IS_REPAIRCEN)
 	return 0;
 //		DetectEscortGoalAccomplished (-4);	//	UGLY!Hack!-4 means went through fuelcen.
-//		if (gameData.matCens.fuelCenters [segP->value].xMaxCapacity<=0)	{
+//		if (gameData.matCens.fuelCenters [segP->value].xMaxCapacity<=0) {
 //			HUDInitMessage ("Repaircenter %d is destroyed.", segP->value);
 //			return 0;
 //		}
-//		if (gameData.matCens.fuelCenters [segP->value].xCapacity<=0)	{
+//		if (gameData.matCens.fuelCenters [segP->value].xCapacity<=0) {
 //			HUDInitMessage ("Repaircenter %d is empty.", segP->value);
 //			return 0;
 //		}
-if (nMaxShields <= 0)	{
+if (nMaxShields <= 0) {
 	return 0;
 }
 amount = FixMul (gameData.time.xFrame, extraGameInfo [IsMultiGame].entropy.nShieldFillRate * F1_0);
@@ -929,19 +929,19 @@ return amount;
 //--unused-- 	Assert (segP != NULL);
 //--unused-- 	if (segP == NULL) return;
 //--unused--
-//--unused-- 	switch (segP->m_nType)	{
+//--unused-- 	switch (segP->m_nType) {
 //--unused-- 	case SEGMENT_IS_NOTHING:
 //--unused-- 		return;
 //--unused-- 	case SEGMENT_IS_ROBOTMAKER:
 //--unused-- //--		// Robotmaker hit by laser
-//--unused-- //--		if (gameData.matCens.fuelCenters [station_num].xMaxCapacity<=0)	{
+//--unused-- //--		if (gameData.matCens.fuelCenters [station_num].xMaxCapacity<=0) {
 //--unused-- //--			// Shooting a already destroyed materializer
 //--unused-- //--		} else {
 //--unused-- //--			gameData.matCens.fuelCenters [station_num].xMaxCapacity -= damage;
-//--unused-- //--			if (gameData.matCens.fuelCenters [station_num].xCapacity > gameData.matCens.fuelCenters [station_num].xMaxCapacity)	{
+//--unused-- //--			if (gameData.matCens.fuelCenters [station_num].xCapacity > gameData.matCens.fuelCenters [station_num].xMaxCapacity) {
 //--unused-- //--				gameData.matCens.fuelCenters [station_num].xCapacity = gameData.matCens.fuelCenters [station_num].xMaxCapacity;
 //--unused-- //--			}
-//--unused-- //--			if (gameData.matCens.fuelCenters [station_num].xMaxCapacity <= 0)	{
+//--unused-- //--			if (gameData.matCens.fuelCenters [station_num].xMaxCapacity <= 0) {
 //--unused-- //--				gameData.matCens.fuelCenters [station_num].xMaxCapacity = 0;
 //--unused-- //--				// Robotmaker dead
 //--unused-- //--				for (i=0; i<6; i++)
@@ -951,12 +951,12 @@ return amount;
 //--unused-- 		break;
 //--unused-- 	case SEGMENT_IS_FUELCEN:
 //--unused-- //--		DigiPlaySample (SOUND_REFUEL_STATION_HIT);
-//--unused-- //--		if (gameData.matCens.fuelCenters [station_num].xMaxCapacity>0)	{
+//--unused-- //--		if (gameData.matCens.fuelCenters [station_num].xMaxCapacity>0) {
 //--unused-- //--			gameData.matCens.fuelCenters [station_num].xMaxCapacity -= damage;
-//--unused-- //--			if (gameData.matCens.fuelCenters [station_num].xCapacity > gameData.matCens.fuelCenters [station_num].xMaxCapacity)	{
+//--unused-- //--			if (gameData.matCens.fuelCenters [station_num].xCapacity > gameData.matCens.fuelCenters [station_num].xMaxCapacity) {
 //--unused-- //--				gameData.matCens.fuelCenters [station_num].xCapacity = gameData.matCens.fuelCenters [station_num].xMaxCapacity;
 //--unused-- //--			}
-//--unused-- //--			if (gameData.matCens.fuelCenters [station_num].xMaxCapacity <= 0)	{
+//--unused-- //--			if (gameData.matCens.fuelCenters [station_num].xMaxCapacity <= 0) {
 //--unused-- //--				gameData.matCens.fuelCenters [station_num].xMaxCapacity = 0;
 //--unused-- //--				DigiPlaySample (SOUND_REFUEL_STATION_DESTROYED);
 //--unused-- //--			}
@@ -1078,13 +1078,13 @@ return amount;
 //--repair-- }
 //--repair--
 //--repair-- //	----------------------------------------------------------------------------------------------------------
-//--repair-- int refuel_do_repair_effect (CObject * objP, int firstTime, int repair_seg)	{
+//--repair-- int refuel_do_repair_effect (CObject * objP, int firstTime, int repair_seg) {
 //--repair--
 //--repair-- 	objP->mType.physInfo.velocity.x = 0;
 //--repair-- 	objP->mType.physInfo.velocity.y = 0;
 //--repair-- 	objP->mType.physInfo.velocity.z = 0;
 //--repair--
-//--repair-- 	if (firstTime)	{
+//--repair-- 	if (firstTime) {
 //--repair-- 		int entry_side;
 //--repair-- 		currentTime = 0;
 //--repair--
@@ -1093,7 +1093,7 @@ return amount;
 //--repair-- 		entry_side = john_find_connect_side (repair_seg,objP->info.nSegment);
 //--repair-- 		Assert (entry_side > -1);
 //--repair--
-//--repair-- 		switch (entry_side)	{
+//--repair-- 		switch (entry_side) {
 //--repair-- 		case WBACK: sidelist = SideOrderBack; break;
 //--repair-- 		case WFRONT: sidelist = SideOrderFront; break;
 //--repair-- 		case WLEFT: sidelist = SideOrderLeft; break;
@@ -1118,7 +1118,7 @@ return amount;
 //--repair--
 //--repair-- 	currentTime += gameData.time.xFrame;
 //--repair--
-//--repair-- 	if (currentTime >= deltaTime)	{
+//--repair-- 	if (currentTime >= deltaTime) {
 //--repair-- 		CAngleVector av;
 //--repair-- 		objP->info.position.vPos = goal_pos;
 //--repair-- 		av	= goalAngles;
@@ -1127,11 +1127,11 @@ return amount;
 //--repair-- 		if (side_index >= 5)
 //--repair-- 			return 1;		// Done being repaired...
 //--repair--
-//--repair-- 		if (Repairing==0)		{
+//--repair-- 		if (Repairing==0)	 {
 //--repair-- 			//DigiPlaySample (SOUND_REPAIR_STATION_FIXING);
 //--repair-- 			Repairing=1;
 //--repair--
-//--repair-- 			switch (next_side)	{
+//--repair-- 			switch (next_side) {
 //--repair-- 			case 0:	DigiPlaySample (SOUND_REPAIR_STATION_FIXING_1,F1_0); break;
 //--repair-- 			case 1:	DigiPlaySample (SOUND_REPAIR_STATION_FIXING_2,F1_0); break;
 //--repair-- 			case 2:	DigiPlaySample (SOUND_REPAIR_STATION_FIXING_3,F1_0); break;
@@ -1144,7 +1144,7 @@ return amount;
 //--repair--
 //--repair-- 		}
 //--repair--
-//--repair-- 		if (currentTime >= (deltaTime+ (F1_0/2)))	{
+//--repair-- 		if (currentTime >= (deltaTime+ (F1_0/2))) {
 //--repair-- 			currentTime = 0;
 //--repair-- 			// Find next CSide...
 //--repair-- 			side_index++;
@@ -1406,7 +1406,7 @@ CheckFlagDrop (TEAM_RED, POW_BLUEFLAG, SEGMENT_IS_GOAL_RED);
 #else
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_FLAG))
 	return;
-if (segP->m_nType == SEGMENT_IS_GOAL_BLUE)	{
+if (segP->m_nType == SEGMENT_IS_GOAL_BLUE) {
 	if (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_BLUE) && FlagAtHome (POW_BLUEFLAG)) {
 		MultiSendCaptureBonus (gameData.multiplayer.nLocalPlayer);
 		LOCALPLAYER.flags &= (~(PLAYER_FLAGS_FLAG);

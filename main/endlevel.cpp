@@ -78,7 +78,7 @@ void StartEndLevelFlyThrough (int n, CObject *objP, fix speed);
 void StartRenderedEndLevelSequence ();
 
 char movieTable [2][30] = {
-	{'a', 'b', 'c',
+ {'a', 'b', 'c',
 	'a',
 	'd', 'f', 'd', 'f',
 	'g', 'h', 'i', 'g',
@@ -87,7 +87,7 @@ char movieTable [2][30] = {
 	'p', 'q', 'p', 'q',
 	0, 0, 0, 0, 0, 0
 	},
-	{'f', 'f', 'f', 'a', 'a', 'b', 'b', 'c', 'c',
+ {'f', 'f', 'f', 'a', 'a', 'b', 'b', 'c', 'c',
 	 'c', 'g', 'f', 'g', 'g', 'f', 'g', 'f', 'g',
 	 'f', 'f', 'f', 'g', 'f', 'g', 'd', 'd', 'f',
 	 'e', 'e', 'e'
@@ -669,7 +669,7 @@ switch (gameStates.app.bEndLevelSequence) {
 	}
 
 	case EL_CHASING:
-		{
+	 {
 		fix d, speed_scale;
 
 #ifdef SLEW_ON
@@ -1048,7 +1048,7 @@ if (check_keys) {
 	else
 		rotang [PA]itch = rotang.bank  = rotang.head  = 0;
 //check for joystick movement
-if (check_joy && bJoyPresent)	{
+if (check_joy && bJoyPresent) {
 	JoyGetpos (&joy_x, &joy_y);
 	btns=JoyGetBtns ();
 	joyx_moved = (abs (joy_x - old_joy_x)>JOY_NULL);

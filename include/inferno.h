@@ -1342,11 +1342,11 @@ class CDynLight {
 		void Init (void);
 		int Compare (CDynLight& other);
 		inline bool operator< (CDynLight& other)
-			{ return Compare (other) < 0; }
+		 { return Compare (other) < 0; }
 		inline bool operator> (CDynLight& other)
-			{ return Compare (other) > 0; }
+		 { return Compare (other) > 0; }
 		inline bool operator== (CDynLight& other)
-			{ return Compare (other) == 0; }
+		 { return Compare (other) == 0; }
 };
 
 //------------------------------------------------------------------------------
@@ -3393,7 +3393,7 @@ return 1.0f - gameStates.render.grAlpha / (float) FADE_LEVELS;
 //	-----------------------------------------------------------------------------------------------------------
 
 #define	CLAMP(_val,_minVal,_maxVal)	\
-			{if ((_val) < (_minVal)) (_val) = (_minVal); else if ((_val) > (_maxVal)) (_val) = (_maxVal);}
+		 {if ((_val) < (_minVal)) (_val) = (_minVal); else if ((_val) > (_maxVal)) (_val) = (_maxVal);}
 
 #define LOCALPLAYER	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer]
 

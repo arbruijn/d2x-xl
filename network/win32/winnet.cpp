@@ -77,7 +77,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 		(pid != PID_TRACKER_GET_SERVERLIST) &&
 		(pid != PID_TRACKER_ADD_SERVER)
 	)
-	{
+ {
 	memcpy (&their->player.network.ipx.server, &ipx_udpSrc.src_network, 10);
 	}
 */
@@ -295,8 +295,8 @@ if (gameStates.multi.nGameType > IPX_GAME)
 	IPXSendPacketData (data, datasize, reinterpret_cast<ubyte*> (ipxNetworks), broadcast, broadcast);
 else {
 	// send to all networks besides mine
-	for (i = 0; i < nIpxNetworks; i++)	{
-		if (memcmp (ipxNetworks + i, &ipx_network, 4))	{
+	for (i = 0; i < nIpxNetworks; i++) {
+		if (memcmp (ipxNetworks + i, &ipx_network, 4)) {
 			IpxGetLocalTarget (reinterpret_cast<ubyte*> (ipxNetworks) + i, broadcast, localAddress);
 			IPXSendPacketData (data, datasize, reinterpret_cast<ubyte*> (ipxNetworks + i), broadcast, localAddress);
 			} 
@@ -382,7 +382,7 @@ while (fgets (szTemp, sizeof (szTemp), fp)) {
 		}
 	if (n != 6)
 		continue;
-	if (nIpxUsers < MAX_USERS)	{
+	if (nIpxUsers < MAX_USERS) {
 		IpxGetLocalTarget (tmp.network, tmp.node, tmp.address);
 		ipxUsers [nIpxUsers++] = tmp;
 		} 

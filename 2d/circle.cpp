@@ -40,7 +40,7 @@ int gr_circle(fix xc1,fix yc1,fix r1)
 	if ( (yc-r) > CCanvas::Current ()->Height () ) return 1;
 
 	while(x<y)
-	{
+ {
 		// Draw the first octant
 		gr_pixel( xc-y, yc-x );
 		gr_pixel( xc+y, yc-x );
@@ -81,7 +81,7 @@ int GRUCircle(fix xc1,fix yc1,fix r1)
 	y=r;
 
 	while(x<y)
-	{
+ {
 		// Draw the first octant
 		gr_upixel( xc-y, yc-x );
 		gr_upixel( xc+y, yc-x );

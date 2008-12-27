@@ -201,161 +201,161 @@ short ConvertD1Texture (short nD1Texture, int bForce)
 	int h, i;
 
 	static nD1ToD2Texture nD1ToD2Texture [] = {
-		{0, 0, {43, 137}},
-		{1, 1, {0, 0}},
-		{2, 2, {43, 137}},
-		{3, 3, {1, 1}},
-		{4, 4, {43, 137}},
-		{5, 5, {43, 137}},
-		{6, 7, {-1, 270 - 6}},
-		{8, 8, {2, 2}},
-		{9, 9, {62, 138}},
-		{10, 10, {272}},
-		{11, 11, {117, 139}},
-		{12, 12, {12, 140}},
-		{13, 16, {-1, 3 - 13}},
-		{17, 17, {52, 141}},
-		{18, 18, {129, 129}},
-		{19, 19, {7, 7}},
-		{20, 20, {22, 142}},
-		{21, 21, {9, 143}},
-		{22, 22, {8, 8}},
-		{23, 23, {9, 9}},
-		{24, 24, {10, 10}},
-		{25, 25, {12, 144}},
-		{26, 27, {-1, 11 - 26}},
-		{28, 28, {11, 145}},
-		{29, 37, {-1, -16}},
-		{38, 38, {163, 163}},
-		{39, 39, {147, 147}},
-		{40, 40, {22, 22}},
-		{41, 41, {266, 266}},
-		{42, 43, {-1, 23 - 42}},
-		{44, 44, {136, 136}},
-		{45, 48, {-1, 25 - 45}},
-		{49, 49, {43, 146}},
-		{50, 50, {131, 131}},
-		{51, 54, {-1, 29 - 51}},
-		{55, 55, {165, 165}},
-		{56, 56, {33, 33}},
-		{57, 57, {132, 132}},
-		{58, 87, {-1, -24}},
-		{88, 88, {197, 197}},
-		{89, 131, {-1, -25}},
-		{132, 132, {167, 167}},
-		{133, 140, {-1, -26}},
-		{141, 141, {110, 148}},
-		{142, 146, {-1, 115 - 142}},
-		{147, 147, {93, 149}},
-		{148, 153, {-1, 120 - 148}},
-		{154, 154, {27, 150}},
-		{155, 155, {126, 126}},
-		{156, 157, {-1, 200 - 156}},
-		{158, 158, {186, 186}},
-		{159, 159, {190, 190}},
-		{160, 160, {206, 151}},
-		{161, 161, {114, 152}},
-		{162, 166, {-1, 202 - 162}},
-		{167, 167, {206, 153}},
-		{168, 168, {206, 154}},
-		{169, 169, {206, 155}},
-		{170, 170, {227, 156}},
-		{171, 171, {206, 157}},
-		{172, 173, {-1, 207 - 172}},
-		{174, 174, {202, 158}},
-		{175, 175, {206, 159}},
-		{176, 184, {-1, 33}},
-		{185, 185, {217, 160}},
-		{186, 192, {-1, 32}},
-		{193, 193, {206, 161}},
-		{194, 194, {203, 162}},
-		{195, 195, {234, 166}},
-		{196, 197, {-1, 225 - 196}},
-		{198, 198, {225, 167}},
-		{199, 199, {206, 168}},
-		{200, 200, {206, 169}},
-		{201, 201, {227, 227}},
-		{202, 202, {206, 170}},
-		{203, 209, {-1, 25}},
-		{210, 210, {234, 171}},
-		{211, 211, {206, 172}},
-		{212, 219, {-1, 23}},
-		{220, 220, {242, 173}},
-		{221, 222, {-1, 243 - 221}},
-		{223, 223, {313, 174}},
-		{224, 225, {-1, 245 - 224}},
-		{226, 226, {164, 164}},
-		{227, 227, {179, 179}},
-		{228, 228, {196, 196}},
-		{229, 229, {15, 175}},
-		{230, 230, {15, 176}},
-		{231, 239, {-1, 18}},
-		{240, 240, {6, 177}},
-		{241, 241, {130, 130}},
-		{242, 242, {78, 178}},
-		{243, 243, {33, 180}},
-		{244, 245, {-1, 258 - 244}},
-//		{246, 246, {321, 181}},
-		{246, 246, {321, 321}},
-		{247, 249, {-1, 260 - 247}},
-		{250, 250, {340, 340}},
-		{251, 251, {412, 412}},
-		{252, 253, {-1, 410 - 252}},
-		{254, 256, {-1, 263 - 254}},
-		{257, 257, {249, 182}},
-		{258, 258, {251, 183}},
-		{259, 259, {252, 184}},
-		{260, 260, {256, 185}},
-		{261, 262, {-1, 273 - 261}},
-		{263, 263, {281, 187}},
-		{264, 265, {-1, 275 - 264}},
-		{266, 266, {279, 188}},
-		{267, 281, {-1, 10}},
-		{282, 282, {293, 293}},
-		{283, 283, {295, 189}},
-		{284, 284, {295, 295}},
-		{285, 285, {296, 296}},
-		{286, 286, {298, 298}},
-		{287, 297, {-1, 13}},
-		{298, 298, {364, 191}},
-		{299, 304, {-1, 12}},
-		{305, 305, {322, 322}},
-		{306, 307, {-1, 12}},
-		{308, 308, {324, 324}},
-		{309, 314, {-1, 12}},
-		{315, 315, {361, 192}},
-		{316, 326, {-1, 11}},
-		{327, 329, {-1, 352 - 327}},
-		{330, 330, {380, 380}},
-		{331, 331, {379, 379}},
-		{332, 332, {350, 350}},
-		{333, 333, {409, 409}},
-		{334, 340, {-1, 356 - 334}},
-//		{341, 341, {364, 364}},
-		{341, 341, {372, 372}},
-		{342, 342, {363, 363}},
-		{343, 343, {366, 366}},
-		{344, 344, {365, 365}},
-		{345, 345, {382, 382}},
-		{346, 346, {376, 376}},
-		{347, 347, {370, 370}},
-		{348, 348, {367, 367}},
-		{349, 349, {331, 331}},
-		{350, 350, {369, 369}},
-//		{351, 352, {-1, 374 - 351}},
-		{351, 351, {394, 394}},
-		{352, 352, {370, 370}},
-		{353, 353, {371, 371}},
-//		{354, 354, {377, 377}},
-		{354, 354, {394, 394}},
-		{355, 355, {408, 408}},
-		{356, 356, {378, 378}},
-		{357, 361, {-1, 383 - 357}},
-		{362, 362, {388, 194}},
-		{363, 363, {388, 388}},
-		{364, 369, {-1, 388 - 364}},
-		{370, 370, {392, 195}},
-		{371, 374, {-1, 64}}
+	 {0, 0, {43, 137}},
+	 {1, 1, {0, 0}},
+	 {2, 2, {43, 137}},
+	 {3, 3, {1, 1}},
+	 {4, 4, {43, 137}},
+	 {5, 5, {43, 137}},
+	 {6, 7, {-1, 270 - 6}},
+	 {8, 8, {2, 2}},
+	 {9, 9, {62, 138}},
+	 {10, 10, {272}},
+	 {11, 11, {117, 139}},
+	 {12, 12, {12, 140}},
+	 {13, 16, {-1, 3 - 13}},
+	 {17, 17, {52, 141}},
+	 {18, 18, {129, 129}},
+	 {19, 19, {7, 7}},
+	 {20, 20, {22, 142}},
+	 {21, 21, {9, 143}},
+	 {22, 22, {8, 8}},
+	 {23, 23, {9, 9}},
+	 {24, 24, {10, 10}},
+	 {25, 25, {12, 144}},
+	 {26, 27, {-1, 11 - 26}},
+	 {28, 28, {11, 145}},
+	 {29, 37, {-1, -16}},
+	 {38, 38, {163, 163}},
+	 {39, 39, {147, 147}},
+	 {40, 40, {22, 22}},
+	 {41, 41, {266, 266}},
+	 {42, 43, {-1, 23 - 42}},
+	 {44, 44, {136, 136}},
+	 {45, 48, {-1, 25 - 45}},
+	 {49, 49, {43, 146}},
+	 {50, 50, {131, 131}},
+	 {51, 54, {-1, 29 - 51}},
+	 {55, 55, {165, 165}},
+	 {56, 56, {33, 33}},
+	 {57, 57, {132, 132}},
+	 {58, 87, {-1, -24}},
+	 {88, 88, {197, 197}},
+	 {89, 131, {-1, -25}},
+	 {132, 132, {167, 167}},
+	 {133, 140, {-1, -26}},
+	 {141, 141, {110, 148}},
+	 {142, 146, {-1, 115 - 142}},
+	 {147, 147, {93, 149}},
+	 {148, 153, {-1, 120 - 148}},
+	 {154, 154, {27, 150}},
+	 {155, 155, {126, 126}},
+	 {156, 157, {-1, 200 - 156}},
+	 {158, 158, {186, 186}},
+	 {159, 159, {190, 190}},
+	 {160, 160, {206, 151}},
+	 {161, 161, {114, 152}},
+	 {162, 166, {-1, 202 - 162}},
+	 {167, 167, {206, 153}},
+	 {168, 168, {206, 154}},
+	 {169, 169, {206, 155}},
+	 {170, 170, {227, 156}},
+	 {171, 171, {206, 157}},
+	 {172, 173, {-1, 207 - 172}},
+	 {174, 174, {202, 158}},
+	 {175, 175, {206, 159}},
+	 {176, 184, {-1, 33}},
+	 {185, 185, {217, 160}},
+	 {186, 192, {-1, 32}},
+	 {193, 193, {206, 161}},
+	 {194, 194, {203, 162}},
+	 {195, 195, {234, 166}},
+	 {196, 197, {-1, 225 - 196}},
+	 {198, 198, {225, 167}},
+	 {199, 199, {206, 168}},
+	 {200, 200, {206, 169}},
+	 {201, 201, {227, 227}},
+	 {202, 202, {206, 170}},
+	 {203, 209, {-1, 25}},
+	 {210, 210, {234, 171}},
+	 {211, 211, {206, 172}},
+	 {212, 219, {-1, 23}},
+	 {220, 220, {242, 173}},
+	 {221, 222, {-1, 243 - 221}},
+	 {223, 223, {313, 174}},
+	 {224, 225, {-1, 245 - 224}},
+	 {226, 226, {164, 164}},
+	 {227, 227, {179, 179}},
+	 {228, 228, {196, 196}},
+	 {229, 229, {15, 175}},
+	 {230, 230, {15, 176}},
+	 {231, 239, {-1, 18}},
+	 {240, 240, {6, 177}},
+	 {241, 241, {130, 130}},
+	 {242, 242, {78, 178}},
+	 {243, 243, {33, 180}},
+	 {244, 245, {-1, 258 - 244}},
+//	 {246, 246, {321, 181}},
+	 {246, 246, {321, 321}},
+	 {247, 249, {-1, 260 - 247}},
+	 {250, 250, {340, 340}},
+	 {251, 251, {412, 412}},
+	 {252, 253, {-1, 410 - 252}},
+	 {254, 256, {-1, 263 - 254}},
+	 {257, 257, {249, 182}},
+	 {258, 258, {251, 183}},
+	 {259, 259, {252, 184}},
+	 {260, 260, {256, 185}},
+	 {261, 262, {-1, 273 - 261}},
+	 {263, 263, {281, 187}},
+	 {264, 265, {-1, 275 - 264}},
+	 {266, 266, {279, 188}},
+	 {267, 281, {-1, 10}},
+	 {282, 282, {293, 293}},
+	 {283, 283, {295, 189}},
+	 {284, 284, {295, 295}},
+	 {285, 285, {296, 296}},
+	 {286, 286, {298, 298}},
+	 {287, 297, {-1, 13}},
+	 {298, 298, {364, 191}},
+	 {299, 304, {-1, 12}},
+	 {305, 305, {322, 322}},
+	 {306, 307, {-1, 12}},
+	 {308, 308, {324, 324}},
+	 {309, 314, {-1, 12}},
+	 {315, 315, {361, 192}},
+	 {316, 326, {-1, 11}},
+	 {327, 329, {-1, 352 - 327}},
+	 {330, 330, {380, 380}},
+	 {331, 331, {379, 379}},
+	 {332, 332, {350, 350}},
+	 {333, 333, {409, 409}},
+	 {334, 340, {-1, 356 - 334}},
+//	 {341, 341, {364, 364}},
+	 {341, 341, {372, 372}},
+	 {342, 342, {363, 363}},
+	 {343, 343, {366, 366}},
+	 {344, 344, {365, 365}},
+	 {345, 345, {382, 382}},
+	 {346, 346, {376, 376}},
+	 {347, 347, {370, 370}},
+	 {348, 348, {367, 367}},
+	 {349, 349, {331, 331}},
+	 {350, 350, {369, 369}},
+//	 {351, 352, {-1, 374 - 351}},
+	 {351, 351, {394, 394}},
+	 {352, 352, {370, 370}},
+	 {353, 353, {371, 371}},
+//	 {354, 354, {377, 377}},
+	 {354, 354, {394, 394}},
+	 {355, 355, {408, 408}},
+	 {356, 356, {378, 378}},
+	 {357, 361, {-1, 383 - 357}},
+	 {362, 362, {388, 194}},
+	 {363, 363, {388, 388}},
+	 {364, 369, {-1, 388 - 364}},
+	 {370, 370, {392, 195}},
+	 {371, 374, {-1, 64}}
 		};
 
 	if (gameStates.app.bHaveD1Data && !bForce)
@@ -393,7 +393,7 @@ short ConvertD1Texture (short nD1Texture, int bForce)
 				return nD1ToD2Texture [i].repl [bForce ? 0 : bD1PigPresent];
 			}
 
-	{ // handle rare case where orientation != 0
+ { // handle rare case where orientation != 0
 		short nTexture = nD1Texture & TMAP_NUM_MASK;
 		short orient = nD1Texture & ~TMAP_NUM_MASK;
 	if (orient)
@@ -531,7 +531,7 @@ int load_mine_data (CFile& cf)
 	mine_header.num_segments        =   0;
 
 	if (mine_fileinfo.header_offset > -1 )
-	{
+ {
 		if (cf.Seek ( loadFile, mine_fileinfo.header_offset, SEEK_SET ))
 			Error ( "Error seeking to header_offset in gamemine.c" );
 
@@ -550,7 +550,7 @@ int load_mine_data (CFile& cf)
 	mine_editor.Markedside          =   0;
 
 	if (mine_fileinfo.editor_offset > -1 )
-	{
+ {
 		if (cf.Seek ( loadFile, mine_fileinfo.editor_offset, SEEK_SET ))
 			Error ( "Error seeking to editor_offset in gamemine.c" );
 
@@ -561,12 +561,12 @@ int load_mine_data (CFile& cf)
 	//===================== READ TEXTURE INFO ==========================
 
 	if ((mine_fileinfo.texture_offset > -1) && (mine_fileinfo.texture_howmany > 0))
-	{
+ {
 		if (cf.Seek ( loadFile, mine_fileinfo.texture_offset, SEEK_SET ))
 			Error ( "Error seeking to texture_offset in gamemine.c" );
 
 		for (i=0; i< mine_fileinfo.texture_howmany; i++ )
-		{
+	 {
 			if (cf.Read ( &old_tmap_list [i], mine_fileinfo.texture_sizeof, 1 )!=1)
 				Error ( "Error reading old_tmap_list [i] in gamemine.c" );
 		}
@@ -578,14 +578,14 @@ int load_mine_data (CFile& cf)
 
 	Assert (gameData.pig.tex.nTextures < MAX_TEXTURES);
 
-	{
+ {
 		CHashTable ht;
 
 		HashTableInit ( &ht, gameData.pig.tex.nTextures );
 
 		// Remove all the file extensions in the textures list
 
-		for (i=0;i<gameData.pig.tex.nTextures;i++)	{
+		for (i=0;i<gameData.pig.tex.nTextures;i++) {
 			temptr = strchr (gameData.pig.tex.tMapInfoP [i].filename, '.');
 			if (temptr) *temptr = '\0';
 			HashTableInsert ( &ht, gameData.pig.tex.tMapInfoP [i].filename, i );
@@ -593,13 +593,13 @@ int load_mine_data (CFile& cf)
 
 		// For every texture, search through the texture list
 		// to find a matching name.
-		for (j=0;j<mine_fileinfo.texture_howmany;j++) 	{
+		for (j=0;j<mine_fileinfo.texture_howmany;j++)  {
 			// Remove this texture name's extension
 			temptr = strchr (old_tmap_list [j], '.');
 			if (temptr) *temptr = '\0';
 
 			tmap_xlate_table [j] = HashTableSearch ( &ht, old_tmap_list [j]);
-			if (tmap_xlate_table [j]	< 0 )	{
+			if (tmap_xlate_table [j]	< 0 ) {
 				//tmap_xlate_table [j] = 0;
 				;
 			}
@@ -608,7 +608,7 @@ int load_mine_data (CFile& cf)
 				tmapTimes_used [tmap_xlate_table [j]]++;
 		}
 
-		{
+	 {
 			int count = 0;
 			for (i=0; i<MAX_TEXTURES; i++ )
 				if (tmapTimes_used [i])
@@ -625,7 +625,7 @@ int load_mine_data (CFile& cf)
 
 	// New check added to make sure we don't read in too many vertices.
 	if ( mine_fileinfo.vertex_howmany > MAX_VERTICES )
-		{
+	 {
 #if TRACE
 		console.printf (CON_DBG, "Num vertices exceeds maximum.  Loading MAX %d vertices\n", MAX_VERTICES);
 #endif
@@ -633,12 +633,12 @@ int load_mine_data (CFile& cf)
 		}
 
 	if ((mine_fileinfo.vertex_offset > -1) && (mine_fileinfo.vertex_howmany > 0))
-	{
+ {
 		if (cf.Seek ( loadFile, mine_fileinfo.vertex_offset, SEEK_SET ))
 			Error ( "Error seeking to vertex_offset in gamemine.c" );
 
 		for (i=0; i< mine_fileinfo.vertex_howmany; i++ )
-		{
+	 {
 			// Set the default values for this vertex
 			gameData.segs.vertices [i].x = 1;
 			gameData.segs.vertices [i].y = 1;
@@ -662,7 +662,7 @@ int load_mine_data (CFile& cf)
 
 	// [commented out by mk on 11/20/94 (weren't we supposed to hit final in October?) because it looks redundant.  I think I'll test it now...]  ResetGenerators ();
 
-	if ((mine_fileinfo.segment_offset > -1) && (mine_fileinfo.segment_howmany > 0))	{
+	if ((mine_fileinfo.segment_offset > -1) && (mine_fileinfo.segment_howmany > 0)) {
 
 		if (cf.Seek ( loadFile, mine_fileinfo.segment_offset, SEEK_SET ))
 
@@ -731,7 +731,7 @@ int load_mine_data (CFile& cf)
 					tmap_xlate = SEGMENTS [i].m_sides [j].m_nBaseTex;
 					SEGMENTS [i].m_sides [j].m_nBaseTex = tmap_xlate_table [tmap_xlate];
 					if ((WALL_IS_DOORWAY (SEGMENTS + i, j, NULL) & WID_RENDER_FLAG))
-						if (SEGMENTS [i].m_sides [j].m_nBaseTex < 0)	{
+						if (SEGMENTS [i].m_sides [j].m_nBaseTex < 0) {
 #if TRACE
 							console.printf (CON_DBG, "Couldn't find texture '%s' for Segment %d, CSide %d\n", old_tmap_list [tmap_xlate], i, j);
 #endif
@@ -743,7 +743,7 @@ int load_mine_data (CFile& cf)
 						int xlated_tmap = tmap_xlate_table [tmap_xlate];
 
 						if ((WALL_IS_DOORWAY (SEGMENTS + i, j, NULL) & WID_RENDER_FLAG))
-							if (xlated_tmap <= 0)	{
+							if (xlated_tmap <= 0) {
 #if TRACE
 								console.printf (CON_DBG, "Couldn't find texture '%s' for Segment %d, CSide %d\n", old_tmap_list [tmap_xlate], i, j);
 #endif
@@ -767,14 +767,14 @@ int load_mine_data (CFile& cf)
 
 	#ifdef EDITOR
 
-	{		// Default CSegment created.
+ {		// Default CSegment created.
 		CFixVector	sizevec;
 		med_create_new_segment (VmVecMake (&sizevec, DEFAULT_X_SIZE, DEFAULT_Y_SIZE, DEFAULT_Z_SIZE);		// New_segment = SEGMENTS [0];
 		//memset ( &New_segment, 0, sizeof (CSegment) );
 	}
 
 	if (mine_editor.newsegment_offset > -1)
-	{
+ {
 		if (cf.Seek ( loadFile, mine_editor.newsegment_offset, SEEK_SET ))
 			Error ( "Error seeking to newsegment_offset in gamemine.c" );
 		if (cf.Read ( &New_segment, mine_editor.newsegment_size, 1 )!=1)
@@ -782,11 +782,11 @@ int load_mine_data (CFile& cf)
 	}
 
 	if ((mine_fileinfo.newseg_verts_offset > -1) && (mine_fileinfo.newseg_verts_howmany > 0))
-	{
+ {
 		if (cf.Seek ( loadFile, mine_fileinfo.newseg_verts_offset, SEEK_SET ))
 			Error ( "Error seeking to newseg_verts_offset in gamemine.c" );
 		for (i=0; i< mine_fileinfo.newseg_verts_howmany; i++ )
-		{
+	 {
 			// Set the default values for this vertex
 			gameData.segs.vertices [NEW_SEGMENT_VERTICES+i].x = 1;
 			gameData.segs.vertices [NEW_SEGMENT_VERTICES+i].y = 1;
@@ -1042,7 +1042,7 @@ if (gameStates.app.bD2XLevel) {
 	}
 else {
 #else
-	{
+ {
 #endif
 #if 0//SHADOWS
 	CSegment	*segP;

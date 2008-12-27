@@ -199,7 +199,7 @@ void DigiPlaySample3D (short nSound, int angle, int volume, int no_dups, CFixVec
 	no_dups = 1;
 
 #ifdef NEWDEMO
-if (gameData.demo.nState == ND_STATE_RECORDING)	{
+if (gameData.demo.nState == ND_STATE_RECORDING) {
 	if (no_dups)
 		NDRecordSound3DOnce (nSound, angle, volume);
 	else
@@ -465,7 +465,7 @@ if (!gameData.pig.sound.sounds [gameStates.sound.bD1Sound][nSound].data) {
 	}
 if ((nSegment < 0)|| (nSegment > gameData.segs.nLastSegment))
 	return -1;
-if (!bForever) { 	//&& gameData.pig.sound.sounds [nSound - SOUND_OFFSET].length < SOUND_3D_THRESHHOLD)	{
+if (!bForever) { 	//&& gameData.pig.sound.sounds [nSound - SOUND_OFFSET].length < SOUND_3D_THRESHHOLD) {
 	// Hack to keep sounds from building up...
 	DigiGetSoundLoc (gameData.objs.viewerP->info.position.mOrient, gameData.objs.viewerP->info.position.vPos, gameData.objs.viewerP->info.nSegment,
 						  vPos, nSegment, maxVolume, &volume, &pan, maxDistance, 0);
@@ -533,11 +533,11 @@ int DigiKillSoundLinkedToSegment (short nSegment, short nSide, short nSound)
 if (nSound != -1)
 	nSound = DigiXlatSound (nSound);
 nKilled = 0;
-for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++)	{
-	if ((soP->flags & (SOF_USED | SOF_LINK_TO_POS)) == (SOF_USED | SOF_LINK_TO_POS))	{
+for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++) {
+	if ((soP->flags & (SOF_USED | SOF_LINK_TO_POS)) == (SOF_USED | SOF_LINK_TO_POS)) {
 		if ((soP->linkType.pos.nSegment == nSegment) && (soP->linkType.pos.nSide==nSide) &&
 			 ((nSound == -1) || (soP->nSound == nSound))) {
-			if (soP->channel > -1)	{
+			if (soP->channel > -1) {
 				DigiStopSound (soP->channel);
 				gameStates.sound.digi.nActiveObjects--;
 				}
@@ -568,10 +568,10 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 if (nObject == LOCALPLAYER.nObject) {
 	gameData.multiplayer.bMoving = -1;
 	}
-for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++)	{
-	if ((soP->flags & (SOF_USED | SOF_LINK_TO_OBJ)) == (SOF_USED | SOF_LINK_TO_OBJ))	{
-		if (soP->linkType.obj.nObject == nObject)	{
-			if (soP->channel > -1)	{
+for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++) {
+	if ((soP->flags & (SOF_USED | SOF_LINK_TO_OBJ)) == (SOF_USED | SOF_LINK_TO_OBJ)) {
+		if (soP->linkType.obj.nObject == nObject) {
+			if (soP->channel > -1) {
 				DigiStopSound (soP->channel);
 				gameStates.sound.digi.nActiveObjects--;
 				}
@@ -599,9 +599,9 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordKillSoundLinkedToObject (nObject);
 #endif
 
-for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++)	{
-	if ((soP->flags & (SOF_USED | SOF_LINK_TO_OBJ)) == (SOF_USED | SOF_LINK_TO_OBJ))	{
-		if (soP->linkType.obj.nObject == nObject)	{
+for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++) {
+	if ((soP->flags & (SOF_USED | SOF_LINK_TO_OBJ)) == (SOF_USED | SOF_LINK_TO_OBJ)) {
+		if (soP->linkType.obj.nObject == nObject) {
 			if ((soP->channel > -1) && (soP->volume != volume)) {
 				DigiSetChannelVolume (soP->channel, soP->volume = volume);
 				return 1;
@@ -618,7 +618,7 @@ void DigiRecordsoundObjects ()
 {
 	int i;
 
-for (i = 0; i < MAX_SOUND_OBJECTS; i++)	{
+for (i = 0; i < MAX_SOUND_OBJECTS; i++) {
 	if ((soundObjects [i].flags & (SOF_USED | SOF_LINK_TO_OBJ | SOF_PLAY_FOREVER))
 		 == (SOF_USED | SOF_LINK_TO_OBJ | SOF_PLAY_FOREVER)) {
 		NDRecordLinkSoundToObject3 (DigiUnXlatSound (soundObjects [i].nSound), soundObjects [i].linkType.obj.nObject,
@@ -638,7 +638,7 @@ void DigiSyncSounds ()
 	tSoundObject	*soP;
 	CObject			*objP;
 
-if (gameData.demo.nState == ND_STATE_RECORDING)	{
+if (gameData.demo.nState == ND_STATE_RECORDING) {
 	if (!gameStates.sound.bWasRecording)
 		DigiRecordsoundObjects ();
 	gameStates.sound.bWasRecording = 1;
@@ -647,7 +647,7 @@ else
 	gameStates.sound.bWasRecording = 0;
 SoundQProcess ();
 for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++) {
-	if (soP->flags & SOF_USED)	{
+	if (soP->flags & SOF_USED) {
 		oldvolume = soP->volume;
 		oldpan = soP->pan;
 		// Check if its done.
@@ -676,7 +676,7 @@ for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++) {
 				objP = OBJECTS + soP->linkType.obj.nObject;
 			if ((objP->info.nType == OBJ_NONE) || (objP->info.nSignature != soP->linkType.obj.nObjSig)) {
 			// The CObject that this is linked to is dead, so just end this sound if it is looping.
-				if (soP->channel > -1)	{
+				if (soP->channel > -1) {
 					if (soP->flags & SOF_PLAY_FOREVER)
 						DigiStopSound (soP->channel);
 					else
@@ -698,9 +698,9 @@ for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++) {
 				}
 			}
 		if (oldvolume != soP->volume) {
-			if (soP->volume < 1)	{
+			if (soP->volume < 1) {
 			// Sound is too far away, so stop it from playing.
-				if (soP->channel > -1)	{
+				if (soP->channel > -1) {
 					if (soP->flags & SOF_PLAY_FOREVER)
 						DigiStopSound (soP->channel);
 					else
@@ -737,7 +737,7 @@ void DigiPauseDigiSounds ()
 	int i;
 
 DigiPauseLoopingSound ();
-for (i = 0; i < MAX_SOUND_OBJECTS; i++)	{
+for (i = 0; i < MAX_SOUND_OBJECTS; i++) {
 	if ((soundObjects [i].flags & SOF_USED) && (soundObjects [i].channel > -1)) {
 		DigiStopSound (soundObjects [i].channel);
 		if (!(soundObjects [i].flags & SOF_PLAY_FOREVER))
@@ -795,8 +795,8 @@ void DigiStopDigiSounds (void)
 
 DigiStopLoopingSound ();
 for (i = 0; i < MAX_SOUND_OBJECTS; i++) {
-	if (soundObjects [i].flags & SOF_USED)	{
-		if (soundObjects [i].channel > -1)	{
+	if (soundObjects [i].flags & SOF_USED) {
+		if (soundObjects [i].channel > -1) {
 			DigiStopSound (soundObjects [i].channel);
 			gameStates.sound.digi.nActiveObjects--;
 			}
@@ -823,8 +823,8 @@ int VerifySoundChannelFree (int channel)
 	int i;
 
 for (i = 0; i < MAX_SOUND_OBJECTS; i++) {
-	if (soundObjects [i].flags & SOF_USED)	{
-		if (soundObjects [i].channel == channel)	{
+	if (soundObjects [i].flags & SOF_USED) {
+		if (soundObjects [i].channel == channel) {
 			Int3 ();	// Get John!
 			}
 		}
@@ -840,7 +840,7 @@ void DigiSoundDebug ()
 	int n_activeSound_objs=0;
 	int nSound_objs=0;
 
-for (i = 0; i < MAX_SOUND_OBJECTS; i++)	{
+for (i = 0; i < MAX_SOUND_OBJECTS; i++) {
 	if (soundObjects [i].flags & SOF_USED) {
 		nSound_objs++;
 		if (soundObjects [i].channel > -1)
@@ -888,12 +888,12 @@ void SoundQProcess ()
 	fix curtime = TimerGetApproxSeconds ();
 	tSoundQueueEntry *q;
 
-if (soundQueue.nChannel > -1)	{
+if (soundQueue.nChannel > -1) {
 	if (DigiIsChannelPlaying (soundQueue.nChannel))
 		return;
 	SoundQEnd ();
 	}
-while (soundQueue.nHead != soundQueue.nTail)	{
+while (soundQueue.nHead != soundQueue.nTail) {
 	q = soundQueue.queue + soundQueue.nHead;
 	if (q->time_added + MAX_LIFE > curtime) {
 		soundQueue.nChannel = DigiStartSound (q->nSound, F1_0+1, 0xFFFF/2, 0, -1, -1, -1, F1_0, NULL, NULL, 0);
@@ -919,7 +919,7 @@ if (i>=MAX_SOUND_QUEUE)
 // Make sure its loud so it doesn't get cancelled!
 if (volume < F1_0 + 1)
 	volume = F1_0 + 1;
-if (i != soundQueue.nHead)	{
+if (i != soundQueue.nHead) {
 	q = soundQueue.queue + soundQueue.nTail;
 	q->time_added = TimerGetApproxSeconds ();
 	q->nSound = nSound;

@@ -148,7 +148,7 @@ v2 = v1 + gameData.objs.viewerP->info.position.mOrient.RVec() * (-F1_0*1);
 v2 += gameData.objs.viewerP->info.position.mOrient.UVec() * (-F1_0*1);
 G3TransformAndEncodePoint(&reticlePoints [3], v2);
 
-if ( reticleCanvas == NULL)	{
+if ( reticleCanvas == NULL) {
 	reticleCanvas = CCanvas::Create (64, 64);
 	if ( !reticleCanvas)
 		Error ("Couldn't allocate reticleCanvas");
@@ -509,10 +509,10 @@ void RenderSide (CSegment *segP, short nSide)
 #define	LMAP_SIZE	(1.0 / 16.0)
 
 	static tUVL	uvl_lMaps [4] = {
-		{F2X (LMAP_SIZE), F2X (LMAP_SIZE), 0}, 
-		{F2X (1.0 - LMAP_SIZE), F2X (LMAP_SIZE), 0}, 
-		{F2X (1.0 - LMAP_SIZE), F2X (1.0 - LMAP_SIZE), 0}, 
-		{F2X (LMAP_SIZE), F2X (1.0 - LMAP_SIZE), 0}
+	 {F2X (LMAP_SIZE), F2X (LMAP_SIZE), 0}, 
+	 {F2X (1.0 - LMAP_SIZE), F2X (LMAP_SIZE), 0}, 
+	 {F2X (1.0 - LMAP_SIZE), F2X (1.0 - LMAP_SIZE), 0}, 
+	 {F2X (LMAP_SIZE), F2X (1.0 - LMAP_SIZE), 0}
 	};
 #endif
 
@@ -851,24 +851,24 @@ ubyte bVisible [MAX_SEGMENTS_D2X];
 //Given two sides of CSegment, tell the two verts which form the
 //edge between them
 short edgeBetweenTwoSides [6][6][2] = {
-	{ {-1, -1}, {3, 7}, {-1, -1}, {2, 6}, {6, 7}, {2, 3} },
-	{ {3, 7}, {-1, -1}, {0, 4}, {-1, -1}, {4, 7}, {0, 3} },
-	{ {-1, -1}, {0, 4}, {-1, -1}, {1, 5}, {4, 5}, {0, 1} },
-	{ {2, 6}, {-1, -1}, {1, 5}, {-1, -1}, {5, 6}, {1, 2} },
-	{ {6, 7}, {4, 7}, {4, 5}, {5, 6}, {-1, -1}, {-1, -1} },
-	{ {2, 3}, {0, 3}, {0, 1}, {1, 2}, {-1, -1}, {-1, -1} }
+ { {-1, -1}, {3, 7}, {-1, -1}, {2, 6}, {6, 7}, {2, 3} },
+ { {3, 7}, {-1, -1}, {0, 4}, {-1, -1}, {4, 7}, {0, 3} },
+ { {-1, -1}, {0, 4}, {-1, -1}, {1, 5}, {4, 5}, {0, 1} },
+ { {2, 6}, {-1, -1}, {1, 5}, {-1, -1}, {5, 6}, {1, 2} },
+ { {6, 7}, {4, 7}, {4, 5}, {5, 6}, {-1, -1}, {-1, -1} },
+ { {2, 3}, {0, 3}, {0, 1}, {1, 2}, {-1, -1}, {-1, -1} }
 };
 
 //given an edge specified by two verts, give the two sides on that edge
 int edgeToSides [8][8][2] = {
-	{ {-1, -1}, {2, 5}, {-1, -1}, {1, 5}, {1, 2}, {-1, -1}, {-1, -1}, {-1, -1} },
-	{ {2, 5}, {-1, -1}, {3, 5}, {-1, -1}, {-1, -1}, {2, 3}, {-1, -1}, {-1, -1} },
-	{ {-1, -1}, {3, 5}, {-1, -1}, {0, 5}, {-1, -1}, {-1, -1}, {0, 3}, {-1, -1} },
-	{ {1, 5}, {-1, -1}, {0, 5}, {-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}, {0, 1} },
-	{ {1, 2}, {-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}, {2, 4}, {-1, -1}, {1, 4} },
-	{ {-1, -1}, {2, 3}, {-1, -1}, {-1, -1}, {2, 4}, {-1, -1}, {3, 4}, {-1, -1} },
-	{ {-1, -1}, {-1, -1}, {0, 3}, {-1, -1}, {-1, -1}, {3, 4}, {-1, -1}, {0, 4} },
-	{ {-1, -1}, {-1, -1}, {-1, -1}, {0, 1}, {1, 4}, {-1, -1}, {0, 4}, {-1, -1} },
+ { {-1, -1}, {2, 5}, {-1, -1}, {1, 5}, {1, 2}, {-1, -1}, {-1, -1}, {-1, -1} },
+ { {2, 5}, {-1, -1}, {3, 5}, {-1, -1}, {-1, -1}, {2, 3}, {-1, -1}, {-1, -1} },
+ { {-1, -1}, {3, 5}, {-1, -1}, {0, 5}, {-1, -1}, {-1, -1}, {0, 3}, {-1, -1} },
+ { {1, 5}, {-1, -1}, {0, 5}, {-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}, {0, 1} },
+ { {1, 2}, {-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}, {2, 4}, {-1, -1}, {1, 4} },
+ { {-1, -1}, {2, 3}, {-1, -1}, {-1, -1}, {2, 4}, {-1, -1}, {3, 4}, {-1, -1} },
+ { {-1, -1}, {-1, -1}, {0, 3}, {-1, -1}, {-1, -1}, {3, 4}, {-1, -1}, {0, 4} },
+ { {-1, -1}, {-1, -1}, {-1, -1}, {0, 1}, {1, 4}, {-1, -1}, {0, 4}, {-1, -1} },
 };
 
 //@@//perform simple check on tables
@@ -1357,7 +1357,7 @@ if (SHOW_SHADOWS &&
 	}
 else
 #endif
-	{
+ {
 	if (gameStates.render.nRenderPass < 0)
 		RenderMine (nStartSeg, nEyeOffset, nWindow);
 	else {
@@ -1988,7 +1988,7 @@ if (((gameStates.render.nRenderPass <= 0) &&
 #endif
 	 }
 #ifdef EDITOR
-	if (bSearchMode)	{
+	if (bSearchMode) {
 		}
 	else
 #endif
@@ -2186,7 +2186,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 		if (!gameStates.app.bMultiThreaded || gameStates.render.bPerPixelLighting ||
 			 (CountRenderFaces () < 16) || !RunRenderThreads (rtComputeFaceLight))
 #endif
-			{
+		 {
 		//PrintLog  ("ComputeFaceLight\n");
 			if (gameStates.render.bTriangleMesh || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
 				ComputeFaceLight (0, gameData.render.mine.nRenderSegs, 0);

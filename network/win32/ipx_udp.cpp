@@ -125,7 +125,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 		(pid != PID_TRACKER_GET_SERVERLIST) &&
 		(pid != PID_TRACKER_ADD_SERVER)
 	)
-	{
+ {
 	memcpy (&their->player.network.ipx.server, &ipx_udpSrc.src_network, 10);
 	}
 */
@@ -407,7 +407,7 @@ static int addiflist(void)
 
 #ifdef SIOCGIFCOUNT
 	if (ioctl(sock,SIOCGIFCOUNT,&cnt))
-		{ /* msg("Getting iterface count error."); */ }
+	 { /* msg("Getting iterface count error."); */ }
 	else
 		cnt=cnt*2+2;
 #endif

@@ -283,21 +283,21 @@ class CSegment {
 		inline CFixVector& Normal (int nSide, int nFace) { return m_sides [nSide].Normal (nFace); }
 #if 0
 		inline uint CheckPointToFace (CFixVector& intersection, int nSide, short iFace)
-			{ return m_sides [nSide].CheckPointToFace (intersection, iFace, Normal (nSide, iFace)); }
+		 { return m_sides [nSide].CheckPointToFace (intersection, iFace, Normal (nSide, iFace)); }
 #endif
 		inline int CheckSphereToFace (CFixVector& intersection, fix rad, int nSide, short iFace)
-			{ return m_sides [nSide].CheckSphereToFace (intersection, rad, iFace, Normal (nSide, iFace)); }
+		 { return m_sides [nSide].CheckSphereToFace (intersection, rad, iFace, Normal (nSide, iFace)); }
 		inline int CheckLineToFace (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int nSide, short iFace)
-			{ return m_sides [nSide].CheckLineToFace (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
+		 { return m_sides [nSide].CheckLineToFace (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
 		inline int SpecialCheckLineToFace (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int nSide, int iFace)
-			{ return m_sides [nSide].SpecialCheckLineToFace (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
+		 { return m_sides [nSide].SpecialCheckLineToFace (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
 
 		inline int FaceCount (int nSide) { return m_sides [nSide].FaceCount (); }
 		CSegMasks Masks (const CFixVector& refP, fix xRad);
 		CSegMasks SideMasks (int nSide, const CFixVector& refP, fix xRad);
 		ubyte GetSideDists (const CFixVector& refP, fix* xSideDists, int bBehind);
 		void HitPointUV (int nSide, fix *u, fix *v, fix *l, CFixVector& intersection, int iFace)
-			{ return m_sides [nSide].HitPointUV (u, v, l, intersection, iFace); }
+		 { return m_sides [nSide].HitPointUV (u, v, l, intersection, iFace); }
 
 		fix MinRad (void) { return m_rads [0]; }
 		fix MaxRad (void) { return m_rads [1]; }
@@ -314,7 +314,7 @@ class CSegment {
 		int HasOpenableDoor (void);
 
 		inline int CheckForTranspPixel (CFixVector& intersection, int nSide, short iFace) 
-			{ return m_sides [nSide].CheckForTranspPixel (intersection, iFace); }
+		 { return m_sides [nSide].CheckForTranspPixel (intersection, iFace); }
 
 		int Physics (int nSide, fix* damageP) { return m_sides [nSide].Physics (damageP); }
 		int Physics (fix& xDamage);

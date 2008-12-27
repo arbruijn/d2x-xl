@@ -85,8 +85,8 @@ static CBitmap *bmpBumpMaps [2] = {NULL, NULL};
 #endif
 
 static const char *szParticleImg [2][PARTICLE_TYPES] = {
-	{"smoke.tga", "bubble.tga", "bullcase.tga", "corona.tga"},
-	{"smoke.tga", "bubble.tga", "bullcase.tga", "corona.tga"}
+ {"smoke.tga", "bubble.tga", "bullcase.tga", "corona.tga"},
+ {"smoke.tga", "bubble.tga", "bullcase.tga", "corona.tga"}
 	};
 
 static int nParticleFrames [2][PARTICLE_TYPES] = {{1,1,1,1},{1,1,1,1}};
@@ -1150,7 +1150,7 @@ if ((nThread < 0) && RunEmitterThread (emitterP, nCurTime, rtUpdateParticles)) {
 	}
 else
 #endif
-	{
+ {
 		int			t, h, i, j;
 		float			fDist;
 		float			fBrightness = Brightness ();
@@ -1249,7 +1249,7 @@ if (((gameOpts->render.bDepthSort > 0) && (nThread < 0)) && RunEmitterThread (em
 	}
 else
 #endif
-	{
+ {
 		float			brightness = Brightness ();
 		int			nParts = m_nParts, h, i, j,
 						nFirstPart = m_nFirstPart,
@@ -1741,7 +1741,7 @@ if (nFrames > 1) {
 #if 1
 	if (t - t0 [nType] > 150)
 #endif
-		{
+	 {
 		t0 [nType] = t;
 #if 1
 		iParticleFrames [bPointSprites][nType] = (iFrame + 1) % nFrames;

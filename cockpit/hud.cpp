@@ -92,9 +92,9 @@ if ((pMsgs->nMessages < 0) || (pMsgs->nMessages > HUD_MAX_MSGS))
 if ((pMsgs->nMessages < 1) && (nModexHUDMsgs == 0))
 	return;
 pMsgs->xTimer -= gameData.time.xFrame;
-if (pMsgs->xTimer < 0)	{
+if (pMsgs->xTimer < 0) {
 	// Timer expired... get rid of oldest pszMsg...
-	if (pMsgs->nLast != pMsgs->nFirst)	{
+	if (pMsgs->nLast != pMsgs->nFirst) {
 		int	temp;
 
 		//&pMsgs->szMsgs.szMsg [pMsgs->nFirst][0] is deing deleted...;
@@ -173,7 +173,7 @@ if (pMsgs->nMessages > 0) {
 				yStart += SMALL_FONT->Height () + 3;
 			}
 
-		for (i = 0, y = yStart; i < pMsgs->nMessages; i++)	{
+		for (i = 0, y = yStart; i < pMsgs->nMessages; i++) {
 			n = (pMsgs->nFirst + i) % HUD_MAX_MSGS;
 			if ((n < 0) || (n >= HUD_MAX_MSGS))
 				return; // Get Rob!!
@@ -271,7 +271,7 @@ if (pMsgs->nMessages > 1) {
 if (pMsgs->nMessages > 0)
 	pszLastMsg = pMsgs->szMsgs [(pMsgs->nLast ? pMsgs->nLast : HUD_MAX_MSGS) - 1];
 temp = (pMsgs->nLast + 1) % HUD_MAX_MSGS;
-if (temp == pMsgs->nFirst)	{ // If too many messages, remove oldest pszMsg to make room
+if (temp == pMsgs->nFirst) { // If too many messages, remove oldest pszMsg to make room
 	pMsgs->nFirst = (pMsgs->nFirst + 1) % HUD_MAX_MSGS;
 	pMsgs->nMessages--;
 	}

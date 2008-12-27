@@ -68,10 +68,10 @@ void gr_rle_expand_scanline_masked (ubyte *dest, ubyte *src, int x1, int x2 )
 	if (x2 < x1) return;
 
 	count = 0;
-	while (i < x1)	{
+	while (i < x1) {
 		color = *src++;
 		if (color == RLE_CODE) return;
-		if (IS_RLE_CODE (color))	{
+		if (IS_RLE_CODE (color)) {
 			count = color & (~RLE_CODE);
 			color = *src++;
 		} else {
@@ -84,7 +84,7 @@ void gr_rle_expand_scanline_masked (ubyte *dest, ubyte *src, int x1, int x2 )
 	i = x1;
 	// we know have '*count' pixels of 'color'.
 
-	if (x1+count > x2)	{
+	if (x1+count > x2) {
 		count = x2-x1+1;
 		if (color != TRANSPARENCY_COLOR)
 			rle_stosb ((char* )dest, count, color);
@@ -96,10 +96,10 @@ void gr_rle_expand_scanline_masked (ubyte *dest, ubyte *src, int x1, int x2 )
 	dest += count;
 	i += count;
 
-	while (i <= x2)		{
+	while (i <= x2)	 {
 		color = *src++;
 		if (color == RLE_CODE) return;
-		if (IS_RLE_CODE (color))	{
+		if (IS_RLE_CODE (color)) {
 			count = color & (~RLE_CODE);
 			color = *src++;
 		} else {
@@ -107,7 +107,7 @@ void gr_rle_expand_scanline_masked (ubyte *dest, ubyte *src, int x1, int x2 )
 			count = 1;
 		}
 		// we know have '*count' pixels of 'color'.
-		if (i+count <= x2)	{
+		if (i+count <= x2) {
 			if (color != TRANSPARENCY_COLOR)
 				rle_stosb ((char* )dest, count, color);
 			i += count;
@@ -134,10 +134,10 @@ void gr_rle_expand_scanline (ubyte *dest, ubyte *src, int x1, int x2 )
 	if (x2 < x1) return;
 
 	count = 0;
-	while (i < x1)	{
+	while (i < x1) {
 		color = *src++;
 		if (color == RLE_CODE) return;
-		if (IS_RLE_CODE (color))	{
+		if (IS_RLE_CODE (color)) {
 			count = color & (~RLE_CODE);
 			color = *src++;
 		} else {
@@ -150,7 +150,7 @@ void gr_rle_expand_scanline (ubyte *dest, ubyte *src, int x1, int x2 )
 	i = x1;
 	// we know have '*count' pixels of 'color'.
 
-	if (x1+count > x2)	{
+	if (x1+count > x2) {
 		count = x2-x1+1;
 		rle_stosb ((char* )dest, count, color);
 		return;
@@ -160,10 +160,10 @@ void gr_rle_expand_scanline (ubyte *dest, ubyte *src, int x1, int x2 )
 	dest += count;
 	i += count;
 
-	while (i <= x2)		{
+	while (i <= x2)	 {
 		color = *src++;
 		if (color == RLE_CODE) return;
-		if (IS_RLE_CODE (color))	{
+		if (IS_RLE_CODE (color)) {
 			count = color & (~RLE_CODE);
 			color = *src++;
 		} else {
@@ -171,7 +171,7 @@ void gr_rle_expand_scanline (ubyte *dest, ubyte *src, int x1, int x2 )
 			count = 1;
 		}
 		// we know have '*count' pixels of 'color'.
-		if (i+count <= x2)	{
+		if (i+count <= x2) {
 			rle_stosb ((char* )dest, count, color);
 			i += count;
 			dest += count;
@@ -197,11 +197,11 @@ int gr_rle_encode (int org_size, ubyte *src, ubyte *dest)
 	oc = *src++;
 	count = 1;
 
-	for (i=1; i<org_size; i++)	{
+	for (i=1; i<org_size; i++) {
 		c = *src++;
-		if (c!=oc)	{
-			if (count)	{
-				if ((count==1) && (! IS_RLE_CODE (oc)))	{
+		if (c!=oc) {
+			if (count) {
+				if ((count==1) && (! IS_RLE_CODE (oc))) {
 					*dest++ = oc;
 					Assert (oc != RLE_CODE);
 				} else {
@@ -214,15 +214,15 @@ int gr_rle_encode (int org_size, ubyte *src, ubyte *dest)
 			count = 0;
 		}
 		count++;
-		if (count == NOT_RLE_CODE)	{
+		if (count == NOT_RLE_CODE) {
 			count |= RLE_CODE;
 			*dest++=count;
 			*dest++=oc;
 			count = 0;
 		}
 	}
-	if (count)	{
-		if ((count==1) && (! IS_RLE_CODE (oc)))	{
+	if (count) {
+		if ((count==1) && (! IS_RLE_CODE (oc))) {
 			*dest++ = oc;
 			Assert (oc != RLE_CODE);
 		} else {
@@ -248,11 +248,11 @@ int gr_rle_getsize (int org_size, ubyte *src)
 	oc = *src++;
 	count = 1;
 
-	for (i=1; i<org_size; i++)	{
+	for (i=1; i<org_size; i++) {
 		c = *src++;
-		if (c!=oc)	{
-			if (count)	{
-				if ((count==1) && (! IS_RLE_CODE (oc)))	{
+		if (c!=oc) {
+			if (count) {
+				if ((count==1) && (! IS_RLE_CODE (oc))) {
 					dest_size++;
 				} else {
 					dest_size++;
@@ -263,14 +263,14 @@ int gr_rle_getsize (int org_size, ubyte *src)
 			count = 0;
 		}
 		count++;
-		if (count == NOT_RLE_CODE)	{
+		if (count == NOT_RLE_CODE) {
 			dest_size++;
 			dest_size++;
 			count = 0;
 		}
 	}
-	if (count)	{
-		if ((count==1) && (! IS_RLE_CODE (oc)))	{
+	if (count) {
+		if ((count==1) && (! IS_RLE_CODE (oc))) {
 			dest_size++;
 		} else {
 			dest_size++;
@@ -293,7 +293,7 @@ int CBitmap::RLECompress (void)
 
 	// first must check to see if this is large bitmap.
 
-	for (y=0; y < m_info.props.h; y++)	{
+	for (y=0; y < m_info.props.h; y++) {
 		d1= gr_rle_getsize (m_info.props.w, &Buffer ()[m_info.props.w*y]);
 		if (d1 > 255) {
 			large_rle = 1;
@@ -308,7 +308,7 @@ int CBitmap::RLECompress (void)
 	else
 		doffset = 4 + (2 * m_info.props.h);		// each row of rle'd bitmap has short instead of byte offset now
 
-	for (y=0; y<m_info.props.h; y++)	{
+	for (y=0; y<m_info.props.h; y++) {
 		d1 = gr_rle_getsize (m_info.props.w, &Buffer ()[m_info.props.w*y]);
 		if (( (doffset+d1) > m_info.props.w*m_info.props.h) || (d1 > (large_rle?32767:255))) {
 			delete [] rle_data;
@@ -352,7 +352,7 @@ int rle_misses = 0;
 
 void _CDECL_ RLECacheClose (void)
 {
-if (rle_cache_initialized)	{
+if (rle_cache_initialized) {
 	int i;
 	PrintLog ("deleting RLE cache\n");
 	rle_cache_initialized = 0;
@@ -370,7 +370,7 @@ void RLECacheInit ()
 {
 	int i;
 
-for (i=0; i<MAX_CACHE_BITMAPS; i++)	{
+for (i=0; i<MAX_CACHE_BITMAPS; i++) {
 	rle_cache [i].rle_bitmap = NULL;
 	rle_cache [i].expanded_bitmap = CBitmap::Create (0, 64, 64, 1);
 	rle_cache [i].last_used = 0;
@@ -386,7 +386,7 @@ void RLECacheFlush (void)
 {
 	int i;
 
-for (i=0; i<MAX_CACHE_BITMAPS; i++)	{
+for (i=0; i<MAX_CACHE_BITMAPS; i++) {
 	rle_cache [i].rle_bitmap = NULL;
 	rle_cache [i].last_used = 0;
 	}
@@ -408,7 +408,7 @@ Assert (!(bmP->Flags () & BM_FLAG_PAGED_OUT));
 lc = rleCounter;
 rleCounter++;
 if (rleCounter < lc) {
-	for (i=0; i<MAX_CACHE_BITMAPS; i++)	{
+	for (i=0; i<MAX_CACHE_BITMAPS; i++) {
 		rle_cache [i].rle_bitmap = NULL;
 		rle_cache [i].last_used = 0;
 		}
@@ -449,10 +449,10 @@ void gr_rle_expand_scanline_generic (CBitmap * dest, int dx, int dy, ubyte *src,
 	if (x2 < x1) return;
 
 	count = 0;
-	while (i < x1)	{
+	while (i < x1) {
 		color = *src++;
 		if (color == RLE_CODE) return;
-		if (IS_RLE_CODE (color))	{
+		if (IS_RLE_CODE (color)) {
 			count = color & NOT_RLE_CODE;
 			color = *src++;
 		} else {
@@ -465,7 +465,7 @@ void gr_rle_expand_scanline_generic (CBitmap * dest, int dx, int dy, ubyte *src,
 	i = x1;
 	// we know have '*count' pixels of 'color'.
 
-	if (x1+count > x2)	{
+	if (x1+count > x2) {
 		count = x2-x1+1;
 		for (j=0; j<count; j++)
 			gr_bm_pixel (dest, dx++, dy, color);
@@ -476,10 +476,10 @@ void gr_rle_expand_scanline_generic (CBitmap * dest, int dx, int dy, ubyte *src,
 		gr_bm_pixel (dest, dx++, dy, color);
 	i += count;
 
-	while (i <= x2)		{
+	while (i <= x2)	 {
 		color = *src++;
 		if (color == RLE_CODE) return;
-		if (IS_RLE_CODE (color))	{
+		if (IS_RLE_CODE (color)) {
 			count = color & NOT_RLE_CODE;
 			color = *src++;
 		} else {
@@ -487,7 +487,7 @@ void gr_rle_expand_scanline_generic (CBitmap * dest, int dx, int dy, ubyte *src,
 			count = 1;
 		}
 		// we know have '*count' pixels of 'color'.
-		if (i+count <= x2)	{
+		if (i+count <= x2) {
 			for (j=0; j<count; j++)
 				gr_bm_pixel (dest, dx++, dy, color);
 			i += count;
@@ -511,10 +511,10 @@ void gr_rle_expand_scanline_generic_masked (CBitmap * dest, int dx, int dy, ubyt
 	if (x2 < x1) return;
 
 	count = 0;
-	while (i < x1)	{
+	while (i < x1) {
 		color = *src++;
 		if (color == RLE_CODE) return;
-		if (IS_RLE_CODE (color))	{
+		if (IS_RLE_CODE (color)) {
 			count = color & NOT_RLE_CODE;
 			color = *src++;
 		} else {
@@ -527,7 +527,7 @@ void gr_rle_expand_scanline_generic_masked (CBitmap * dest, int dx, int dy, ubyt
 	i = x1;
 	// we know have '*count' pixels of 'color'.
 
-	if (x1+count > x2)	{
+	if (x1+count > x2) {
 		count = x2-x1+1;
 		if (color != TRANSPARENCY_COLOR) {
 			for (j=0; j<count; j++)
@@ -543,10 +543,10 @@ void gr_rle_expand_scanline_generic_masked (CBitmap * dest, int dx, int dy, ubyt
 		dx += count;
 	i += count;
 
-	while (i <= x2)		{
+	while (i <= x2)	 {
 		color = *src++;
 		if (color == RLE_CODE) return;
-		if (IS_RLE_CODE (color))	{
+		if (IS_RLE_CODE (color)) {
 			count = color & NOT_RLE_CODE;
 			color = *src++;
 		} else {
@@ -554,7 +554,7 @@ void gr_rle_expand_scanline_generic_masked (CBitmap * dest, int dx, int dy, ubyt
 			count = 1;
 		}
 		// we know have '*count' pixels of 'color'.
-		if (i+count <= x2)	{
+		if (i+count <= x2) {
 			if (color != TRANSPARENCY_COLOR) {
 				for (j=0; j<count; j++)
 					gr_bm_pixel (dest, dx++, dy, color);

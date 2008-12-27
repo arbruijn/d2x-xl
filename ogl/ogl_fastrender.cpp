@@ -237,13 +237,13 @@ if (bTextured) {
 	if (bmBot != gameStates.render.history.bmBot) {
 		bStateChange = true;
 		gameStates.render.history.bmBot = bmBot;
-		{INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, lightmapManager.Buffer (), 1, 0);}
+	 {INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, lightmapManager.Buffer (), 1, 0);}
 		}
 	if (bmTop != gameStates.render.history.bmTop) {
 		bStateChange = true;
 		gameStates.render.history.bmTop = bmTop;
 		if (bmTop) {
-			{INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightmapManager.Buffer (), 1, 0);}
+		 {INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightmapManager.Buffer (), 1, 0);}
 			}
 		else {
 			glActiveTexture (GL_TEXTURE1);
@@ -257,7 +257,7 @@ if (bTextured) {
 		bStateChange = true;
 		gameStates.render.history.bmMask = mask;
 		if (mask) {
-			{INIT_TMU (InitTMU2, GL_TEXTURE2, mask, lightmapManager.Buffer (), 2, 0);}
+		 {INIT_TMU (InitTMU2, GL_TEXTURE2, mask, lightmapManager.Buffer (), 2, 0);}
 			G3EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE2);
 			}
 		else {
@@ -299,13 +299,13 @@ if (bTextured) {
 	if (bmBot != gameStates.render.history.bmBot) {
 		bStateChange = true;
 		gameStates.render.history.bmBot = bmBot;
-		{INIT_TMU (InitTMU1, GL_TEXTURE1, bmBot, lightmapManager.Buffer (), 1, 0);}
+	 {INIT_TMU (InitTMU1, GL_TEXTURE1, bmBot, lightmapManager.Buffer (), 1, 0);}
 		}
 	if (bmTop != gameStates.render.history.bmTop) {
 		bStateChange = true;
 		gameStates.render.history.bmTop = bmTop;
 		if (bmTop) {
-			{INIT_TMU (InitTMU2, GL_TEXTURE2, bmTop, lightmapManager.Buffer (), 1, 0);}
+		 {INIT_TMU (InitTMU2, GL_TEXTURE2, bmTop, lightmapManager.Buffer (), 1, 0);}
 			}
 		else {
 			glActiveTexture (GL_TEXTURE2);
@@ -320,7 +320,7 @@ if (bTextured) {
 		bStateChange = true;
 		gameStates.render.history.bmMask = mask;
 		if (mask) {
-			{INIT_TMU (InitTMU3, GL_TEXTURE3, mask, lightmapManager.Buffer (), 2, 0);}
+		 {INIT_TMU (InitTMU3, GL_TEXTURE3, mask, lightmapManager.Buffer (), 2, 0);}
 			G3EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE2);
 			}
 		else {
@@ -503,7 +503,7 @@ else
 #endif
 if (gameStates.render.bTriangleMesh) {
 #if USE_RANGE_ELEMENTS
-		{
+	 {
 		GLsizei nElements = faceP->nTris * 3;
 		glDrawRangeElements (GL_TRIANGLES, faceP->vertIndex [0], faceP->vertIndex [nElements - 1], nElements, GL_UNSIGNED_INT, faceP->vertIndex);
 		}	

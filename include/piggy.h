@@ -274,7 +274,7 @@ void FreeAddonSounds (void);
 #endif
 
 #define	PageInAddonBitmap(bmi) \
-			{if (((bmi) < 0) && ((bmi) >= -MAX_ADDON_BITMAP_FILES)) \
+		 {if (((bmi) < 0) && ((bmi) >= -MAX_ADDON_BITMAP_FILES)) \
 			 PageInBitmap (gameData.pig.tex.addonBitmaps - (bmi) - 1, szAddonTextures [-(bmi) - 1], (bmi), 0);}
 
 #define BM_ADDON(_i)	(gameData.pig.tex.addonBitmaps + (_i))

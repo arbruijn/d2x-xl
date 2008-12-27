@@ -99,11 +99,11 @@ int gr_badtexture = 0;
 //------------------------------------------------------------------------------
 
 tRenderQuality renderQualities [] = {
-	{GL_NEAREST, GL_NEAREST, 0, 0},	// no smoothing
-	{GL_NEAREST, GL_LINEAR, 0, 0},	// smooth close textures, don't smooth distant textures
-	{GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR, 1, 0},	// smooth close textures, use non-smoothed mipmaps distant textures
-	{GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1, 0},	//smooth close textures, use smoothed mipmaps for distant ones
-	{GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1, 1}	//smooth close textures, use smoothed mipmaps for distant ones, anti-aliasing
+ {GL_NEAREST, GL_NEAREST, 0, 0},	// no smoothing
+ {GL_NEAREST, GL_LINEAR, 0, 0},	// smooth close textures, don't smooth distant textures
+ {GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR, 1, 0},	// smooth close textures, use non-smoothed mipmaps distant textures
+ {GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1, 0},	//smooth close textures, use smoothed mipmaps for distant ones
+ {GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1, 1}	//smooth close textures, use smoothed mipmaps for distant ones, anti-aliasing
 	};
 
 //------------------------------------------------------------------------------
@@ -196,7 +196,7 @@ if (pvNormal) {
 	}
 else
 #endif
-	{
+ {
 	short	v [4], vSorted [4];
 
 	v [0] = pointList [0]->p3_index;
@@ -457,7 +457,7 @@ if (gameStates.render.nShadowPass) {
 				}
 			else
 #	endif
-				{
+			 {
 				glColorMask (0,0,0,0);
 				glDepthMask (0);
 				glEnable (GL_STENCIL_TEST);
@@ -521,7 +521,7 @@ if (gameStates.render.nShadowPass) {
 				glStencilOp (GL_REPLACE, GL_KEEP, GL_KEEP);
 				}
 			else
-				{
+			 {
 				glStencilFunc (GL_EQUAL, 0, ~0);
 #if 0
 				glStencilOp (GL_KEEP, GL_KEEP, GL_INCR);	//problem: layered texturing fails
@@ -547,7 +547,7 @@ if (gameStates.render.nShadowPass) {
 	}
 else
 #endif //SHADOWS
-	{
+ {
 	r_polyc =
 	r_tpolyc =
 	r_tvertexc =

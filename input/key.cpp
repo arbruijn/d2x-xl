@@ -44,7 +44,7 @@ typedef struct tKeyInfo {
 	ubyte		flags;
 } tKeyInfo;
 
-typedef struct tKeyboard	{
+typedef struct tKeyboard {
 	ushort		keybuffer [KEY_BUFFER_SIZE];
 	tKeyInfo				keys [256];
 	fix					xTimePressed [KEY_BUFFER_SIZE];
@@ -377,7 +377,7 @@ void KeyHandler(SDL_KeyboardEvent *event)
 		else
 			state = key->lastState;
 		
-		if ( key->lastState == state )	{
+		if ( key->lastState == state ) {
 			if (state) {
 				key->counter++;
 				gameStates.input.keys.nLastPressed = keycode;
@@ -432,7 +432,7 @@ void KeyHandler(SDL_KeyboardEvent *event)
 #endif			
 			temp = keyData.nKeyTail+1;
 			if ( temp >= KEY_BUFFER_SIZE ) temp=0;
-			if (temp!=keyData.nKeyHead)	{
+			if (temp!=keyData.nKeyHead) {
 				keyData.keybuffer[keyData.nKeyTail] = keycode;
 				keyData.xTimePressed[keyData.nKeyTail] = gameStates.input.keys.xLastPressTime;
 				keyData.nKeyTail = temp;
@@ -481,7 +481,7 @@ void KeyFlush()
 	keyData.nKeyHead = keyData.nKeyTail = 0;
 
 	//Clear the tKeyboard buffer
-	for (i=0; i<KEY_BUFFER_SIZE; i++ )	{
+	for (i=0; i<KEY_BUFFER_SIZE; i++ ) {
 		keyData.keybuffer[i] = 0;
 		keyData.xTimePressed[i] = 0;
 	}
@@ -489,7 +489,7 @@ void KeyFlush()
 //use gettimeofday here:
 	curtime = TimerGetFixedSeconds();
 
-	for (i=0; i<256; i++ )	{
+	for (i=0; i<256; i++ ) {
 		gameStates.input.keys.pressed[i] = 0;
 		keyData.keys[i].state = 1;
 		keyData.keys[i].lastState = 0;
@@ -554,7 +554,7 @@ int KeyInKeyTime(fix * time)
 	if (!bInstalled)
 		KeyInit();
         event_poll(SDL_KEYDOWNMASK | SDL_KEYUPMASK);
-	if (keyData.nKeyTail!=keyData.nKeyHead)	{
+	if (keyData.nKeyTail!=keyData.nKeyHead) {
 		key = keyData.keybuffer[keyData.nKeyHead];
 		*time = keyData.xTimePressed[keyData.nKeyHead];
 		keyData.nKeyHead = KeyAddKey(keyData.nKeyHead);

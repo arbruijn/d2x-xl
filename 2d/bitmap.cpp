@@ -249,7 +249,7 @@ void CBitmap::CheckTransparency (void)
 	ubyte *data = Buffer ();
 
 for (int i = m_info.props.w * m_info.props.h; i; i--, data++)
-	if  (*data++ == TRANSPARENCY_COLOR)	{
+	if  (*data++ == TRANSPARENCY_COLOR) {
 		SetTransparent (1);
 		return;
 		}
@@ -312,7 +312,7 @@ else if (m_info.texture) {
 	else
 #	endif
 #endif
-		{
+	 {
 		m_info.texture->Release ();
 		m_info.texture = NULL;
 		}

@@ -21,15 +21,21 @@ template < class _T > class CStack : public CArray<_T> {
 			CArray<_T>::Init ();
 			}
 
+		inline bool Push (void) {
+			if ((m_tos >= m_data.length) && (!(m_growth && Resize (m_data.length + m_growth))))
+				return false;
+			m_tos++;
+			return true;
+			}
+
 		inline bool Push (const _T elem) { 
 			if ((m_tos >= m_data.length) && (!(m_growth && Resize (m_data.length + m_growth))))
 				return false;
 			m_data.buffer [m_tos++] = elem;
 			return true;
 			}
-
 	
-		inline _T* Top (void) { return m_data.buffer ? m_data.buffer + m_tos : NULL; }
+		inline _T* Top (void) { return (m_data.buffer && m_tos) ? m_data.buffer + m_tos - 1 : NULL; }
 
 		inline uint ToS (void) { return m_tos; }
 

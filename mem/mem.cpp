@@ -159,7 +159,7 @@ for (i = 0, nErrors = 0; i < CHECKSIZE; i++)
 		PrintLog ("OA: %p ", pCheckData + i);
 		}
 
-if (nErrors && !bOutOfMemory)	{
+if (nErrors && !bOutOfMemory) {
 	PrintLog ("\nMEM_OVERWRITE: Memory after the end of allocated block overwritten.\n");
 #if LONG_MEM_ID
 	PrintLog ("%s\n", reinterpret_cast<char*> (buffer) - 256);

@@ -91,13 +91,13 @@ int	nCurrentColor = 0;
 uint nEraseColor = BLACK_RGBA;
 
 tRgbaColorb briefFgColors [2][MAX_BRIEFING_COLORS] = {
-	{{0, 160, 0, 255}, {160, 132, 140, 255}, {32, 124, 216, 255}, {0, 0, 216, 255}, {56, 56, 56, 255}, {216, 216, 0, 255}, {0, 216, 216, 255}, {255, 255, 255, 255}}, 
-	{{0, 216, 0, 255}, {168, 152, 128, 255}, {252, 0, 0, 255}, {0, 0, 216, 255}, {56, 56, 56, 255}, {216, 216, 0, 255}, {0, 216, 216, 255}, {255, 255, 255, 255}}
+ {{0, 160, 0, 255}, {160, 132, 140, 255}, {32, 124, 216, 255}, {0, 0, 216, 255}, {56, 56, 56, 255}, {216, 216, 0, 255}, {0, 216, 216, 255}, {255, 255, 255, 255}}, 
+ {{0, 216, 0, 255}, {168, 152, 128, 255}, {252, 0, 0, 255}, {0, 0, 216, 255}, {56, 56, 56, 255}, {216, 216, 0, 255}, {0, 216, 216, 255}, {255, 255, 255, 255}}
 	};
 
 tRgbaColorb briefBgColors [2][MAX_BRIEFING_COLORS] = {
-	{{0, 24, 255}, {20, 20, 20, 255}, {4, 16, 28, 255}, {0, 0, 76, 255}, {0, 0, 0, 255}, {76, 76, 0, 255}, {0, 76, 76, 255}, {255, 255, 255, 255}}, 
-	{{0, 76, 0, 255}, {56, 56, 56, 255}, {124, 0, 0, 255}, {0, 0, 76, 255}, {0, 0, 0, 255}, {76, 76, 0, 255}, {0, 76, 76, 255}, {255, 255, 255, 255}}
+ {{0, 24, 255}, {20, 20, 20, 255}, {4, 16, 28, 255}, {0, 0, 76, 255}, {0, 0, 0, 255}, {76, 76, 0, 255}, {0, 76, 76, 255}, {255, 255, 255, 255}}, 
+ {{0, 76, 0, 255}, {56, 56, 56, 255}, {124, 0, 0, 255}, {0, 0, 76, 255}, {0, 0, 0, 255}, {76, 76, 0, 255}, {0, 76, 76, 255}, {255, 255, 255, 255}}
 	};
 
 tRgbaColorb eraseColorRgb = {0, 0, 0, 255};
@@ -109,20 +109,20 @@ typedef struct tD1ExtraBotSound {
 } tD1ExtraBotSound;
 
 tD1ExtraBotSound extraBotSounds [] = {
-	{"enemy01.wav", 1, 0}, 
-	{"enemy02.wav", 1, 1}, 
-	{"enemy03.wav", 1, 2}, 
-	{"enemy04.wav", 1, 3}, 
-	{"enemy05.wav", 1, 4}, 
-	{"enemy06.wav", 1, 5}, 
-	{"enemy07.wav", 6, 0}, 
-	{"enemy08.wav", 8, 0}, 
-	{"enemy09.wav", 8, 1}, 
-	{"enemy10.wav", 8, 2}, 
-	{"enemy11.wav", 10, 0}, 
-	{"enemy12.wav", 13, 0}, 
-	{"enemy13.wav", 16, 0}, 
-	{"enemy14.wav", 17, 0}
+ {"enemy01.wav", 1, 0}, 
+ {"enemy02.wav", 1, 1}, 
+ {"enemy03.wav", 1, 2}, 
+ {"enemy04.wav", 1, 3}, 
+ {"enemy05.wav", 1, 4}, 
+ {"enemy06.wav", 1, 5}, 
+ {"enemy07.wav", 6, 0}, 
+ {"enemy08.wav", 8, 0}, 
+ {"enemy09.wav", 8, 1}, 
+ {"enemy10.wav", 8, 2}, 
+ {"enemy11.wav", 10, 0}, 
+ {"enemy12.wav", 13, 0}, 
+ {"enemy13.wav", 16, 0}, 
+ {"enemy14.wav", 17, 0}
 };
 
 //-----------------------------------------------------------------------------
@@ -136,61 +136,61 @@ tD1ExtraBotSound extraBotSounds [] = {
 #define ENDING_LEVEL_NUM 	REGISTERED_ENDING_LEVEL_NUM
 
 tBriefingScreen briefingScreens [] = {
-	{ "brief01.pcx",   0,  1,  13, 140, 290,  59 }, 
-	{ "brief02.pcx",   0,  2,  27,  34, 257, 177 }, 
-	{ "brief03.pcx",   0,  3,  20,  22, 257, 177 }, 
-	{ "brief02.pcx",   0,  4,  27,  34, 257, 177 }, 
+ { "brief01.pcx",   0,  1,  13, 140, 290,  59 }, 
+ { "brief02.pcx",   0,  2,  27,  34, 257, 177 }, 
+ { "brief03.pcx",   0,  3,  20,  22, 257, 177 }, 
+ { "brief02.pcx",   0,  4,  27,  34, 257, 177 }, 
 
-	{ "moon01.pcx",    1,  5,  10,  10, 300, 170 }, // level 1
-	{ "moon01.pcx",    2,  6,  10,  10, 300, 170 }, // level 2
-	{ "moon01.pcx",    3,  7,  10,  10, 300, 170 }, // level 3
+ { "moon01.pcx",    1,  5,  10,  10, 300, 170 }, // level 1
+ { "moon01.pcx",    2,  6,  10,  10, 300, 170 }, // level 2
+ { "moon01.pcx",    3,  7,  10,  10, 300, 170 }, // level 3
 
-	{ "venus01.pcx",   4,  8,  15, 15, 300,  200 }, // level 4
-	{ "venus01.pcx",   5,  9,  15, 15, 300,  200 }, // level 5
+ { "venus01.pcx",   4,  8,  15, 15, 300,  200 }, // level 4
+ { "venus01.pcx",   5,  9,  15, 15, 300,  200 }, // level 5
 
-	{ "brief03.pcx",   6, 10,  20,  22, 257, 177 }, 
-	{ "merc01.pcx",    6, 11,  10, 15, 300, 200 },  // level 6
-	{ "merc01.pcx",    7, 12,  10, 15, 300, 200 },  // level 7
+ { "brief03.pcx",   6, 10,  20,  22, 257, 177 }, 
+ { "merc01.pcx",    6, 11,  10, 15, 300, 200 },  // level 6
+ { "merc01.pcx",    7, 12,  10, 15, 300, 200 },  // level 7
 
-	{ "brief03.pcx",   8, 13,  20,  22, 257, 177 }, 
-	{ "mars01.pcx",    8, 14,  10, 100, 300,  200 }, // level 8
-	{ "mars01.pcx",    9, 15,  10, 100, 300,  200 }, // level 9
-	{ "brief03.pcx",  10, 16,  20,  22, 257, 177 }, 
-	{ "mars01.pcx",   10, 17,  10, 100, 300,  200 }, // level 10
+ { "brief03.pcx",   8, 13,  20,  22, 257, 177 }, 
+ { "mars01.pcx",    8, 14,  10, 100, 300,  200 }, // level 8
+ { "mars01.pcx",    9, 15,  10, 100, 300,  200 }, // level 9
+ { "brief03.pcx",  10, 16,  20,  22, 257, 177 }, 
+ { "mars01.pcx",   10, 17,  10, 100, 300,  200 }, // level 10
 
-	{ "jup01.pcx",    11, 18,  10, 40, 300,  200 }, // level 11
-	{ "jup01.pcx",    12, 19,  10, 40, 300,  200 }, // level 12
-	{ "brief03.pcx",  13, 20,  20,  22, 257, 177 }, 
-	{ "jup01.pcx",    13, 21,  10, 40, 300,  200 }, // level 13
-	{ "jup01.pcx",    14, 22,  10, 40, 300,  200 }, // level 14
+ { "jup01.pcx",    11, 18,  10, 40, 300,  200 }, // level 11
+ { "jup01.pcx",    12, 19,  10, 40, 300,  200 }, // level 12
+ { "brief03.pcx",  13, 20,  20,  22, 257, 177 }, 
+ { "jup01.pcx",    13, 21,  10, 40, 300,  200 }, // level 13
+ { "jup01.pcx",    14, 22,  10, 40, 300,  200 }, // level 14
 
-	{ "saturn01.pcx", 15, 23,  10, 40, 300,  200 }, // level 15
-	{ "brief03.pcx",  16, 24,  20,  22, 257, 177 }, 
-	{ "saturn01.pcx", 16, 25,  10, 40, 300,  200 }, // level 16
-	{ "brief03.pcx",  17, 26,  20,  22, 257, 177 }, 
-	{ "saturn01.pcx", 17, 27,  10, 40, 300,  200 }, // level 17
+ { "saturn01.pcx", 15, 23,  10, 40, 300,  200 }, // level 15
+ { "brief03.pcx",  16, 24,  20,  22, 257, 177 }, 
+ { "saturn01.pcx", 16, 25,  10, 40, 300,  200 }, // level 16
+ { "brief03.pcx",  17, 26,  20,  22, 257, 177 }, 
+ { "saturn01.pcx", 17, 27,  10, 40, 300,  200 }, // level 17
 
-	{ "uranus01.pcx", 18, 28,  100, 100, 300,  200 }, // level 18
-	{ "uranus01.pcx", 19, 29,  100, 100, 300,  200 }, // level 19
-	{ "uranus01.pcx", 20, 30,  100, 100, 300,  200 }, // level 20
-	{ "uranus01.pcx", 21, 31,  100, 100, 300,  200 }, // level 21
+ { "uranus01.pcx", 18, 28,  100, 100, 300,  200 }, // level 18
+ { "uranus01.pcx", 19, 29,  100, 100, 300,  200 }, // level 19
+ { "uranus01.pcx", 20, 30,  100, 100, 300,  200 }, // level 20
+ { "uranus01.pcx", 21, 31,  100, 100, 300,  200 }, // level 21
 
-	{ "neptun01.pcx", 22, 32,  10, 20, 300,  200 }, // level 22
-	{ "neptun01.pcx", 23, 33,  10, 20, 300,  200 }, // level 23
-	{ "neptun01.pcx", 24, 34,  10, 20, 300,  200 }, // level 24
+ { "neptun01.pcx", 22, 32,  10, 20, 300,  200 }, // level 22
+ { "neptun01.pcx", 23, 33,  10, 20, 300,  200 }, // level 23
+ { "neptun01.pcx", 24, 34,  10, 20, 300,  200 }, // level 24
 
-	{ "pluto01.pcx",  25, 35,  10, 20, 300,  200 }, // level 25
-	{ "pluto01.pcx",  26, 36,  10, 20, 300,  200 }, // level 26
-	{ "pluto01.pcx",  27, 37,  10, 20, 300,  200 }, // level 27
+ { "pluto01.pcx",  25, 35,  10, 20, 300,  200 }, // level 25
+ { "pluto01.pcx",  26, 36,  10, 20, 300,  200 }, // level 26
+ { "pluto01.pcx",  27, 37,  10, 20, 300,  200 }, // level 27
 
-	{ "aster01.pcx",  -1, 38,  10, 90, 300,  200 }, // secret level -1
-	{ "aster01.pcx",  -2, 39,  10, 90, 300,  200 }, // secret level -2
-	{ "aster01.pcx",  -3, 40,  10, 90, 300,  200 }, // secret level -3
+ { "aster01.pcx",  -1, 38,  10, 90, 300,  200 }, // secret level -1
+ { "aster01.pcx",  -2, 39,  10, 90, 300,  200 }, // secret level -2
+ { "aster01.pcx",  -3, 40,  10, 90, 300,  200 }, // secret level -3
 
-	{ "end01.pcx",   SHAREWARE_ENDING_LEVEL_NUM,  1,  23, 40, 320, 200 },   // shareware end
-	{ "end02.pcx",   REGISTERED_ENDING_LEVEL_NUM,  1,  5, 5, 300, 200 },    // registered end
-	{ "end01.pcx",   REGISTERED_ENDING_LEVEL_NUM,  2,  23, 40, 320, 200 },  // registered end
-	{ "end03.pcx",   REGISTERED_ENDING_LEVEL_NUM,  3,  5, 5, 300, 200 }    // registered end
+ { "end01.pcx",   SHAREWARE_ENDING_LEVEL_NUM,  1,  23, 40, 320, 200 },   // shareware end
+ { "end02.pcx",   REGISTERED_ENDING_LEVEL_NUM,  1,  5, 5, 300, 200 },    // registered end
+ { "end01.pcx",   REGISTERED_ENDING_LEVEL_NUM,  2,  23, 40, 320, 200 },  // registered end
+ { "end03.pcx",   REGISTERED_ENDING_LEVEL_NUM,  3,  5, 5, 300, 200 }    // registered end
 
 };
 
@@ -1278,27 +1278,27 @@ typedef struct tBriefingHandlerInfo {
 	} tBriefingHandlerInfo;
 
 static tBriefingHandlerInfo briefingHandlers1 [] = {
-	{'A', 0, _A},
-	{'B', 0, _B},
-	{'C', 0, _C},
-	{'D', 0, _D},
-	{'F', 0, _F},
-	{'N', 0, _N},
-	{'O', 0, _O},
-	{'P', 0, _P},
-	{'R', 0, _R},
-	{'S', 0, _S},
-	{'T', 0, _T},
-	{'U', 0, _U},
-	{'Z', 0, _Z}
+ {'A', 0, _A},
+ {'B', 0, _B},
+ {'C', 0, _C},
+ {'D', 0, _D},
+ {'F', 0, _F},
+ {'N', 0, _N},
+ {'O', 0, _O},
+ {'P', 0, _P},
+ {'R', 0, _R},
+ {'S', 0, _S},
+ {'T', 0, _T},
+ {'U', 0, _U},
+ {'Z', 0, _Z}
 	};
 
 static tBriefingHandlerInfo briefingHandlers2 [] = {
-	{'\t', 0, _TAB},
-	{'\\', 0, _BS},
-	{10, 0, _NEWL},
-	{';', 10, _SEMI},
-	{0, 0, _ANY}
+ {'\t', 0, _TAB},
+ {'\\', 0, _BS},
+ {10, 0, _NEWL},
+ {';', 10, _SEMI},
+ {0, 0, _ANY}
 	};
 
 //-----------------------------------------------------------------------------

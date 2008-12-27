@@ -276,9 +276,9 @@ return nHits;
 //given largest component of Normal, return i & j
 //if largest component is negative, swap i & j
 int ijTable [3][2] = {
-	{2, 1},          //pos x biggest
-	{0, 2},          //pos y biggest
-	{1, 0},          //pos z biggest
+ {2, 1},          //pos x biggest
+ {0, 2},          //pos y biggest
+ {1, 0},          //pos z biggest
 	};
 
 //	-----------------------------------------------------------------------------
@@ -982,7 +982,7 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 				}
 			else {//a wall
 				if (nFaceHitType)
-					{
+				 {
 					//is this the closest hit?
 					d = CFixVector::Dist(vHitPoint, *p0);
 					if (d < dMin) {
@@ -1222,7 +1222,7 @@ int CSide::CheckForTranspPixel (CFixVector& intersection, short iFace)
 	int	nTranspType;
 
 HitPointUV (&u, &v, NULL, intersection, iFace);	//	Don't compute light value.
-if (m_nOvlTex)	{
+if (m_nOvlTex) {
 	nTranspType = PixelTranspType (m_nOvlTex, m_nOvlOrient, m_nFrame, u, v);
 	if (nTranspType < 0)
 		return 1;

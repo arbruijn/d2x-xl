@@ -288,7 +288,7 @@ if (gameStates.app.bUseSwapFile) {
 bitmapCacheSize = nDataSize + (nDataSize / 10);   //extra mem for new bitmaps
 Assert (bitmapCacheSize > 0);
 #elif defined (WIN32)
-	{
+ {
 	MEMORYSTATUS	memStat;
 	GlobalMemoryStatus (&memStat);
 	bitmapCacheSize = (int) (memStat.dwAvailPhys / 10) * PIGGY_MEM_QUOTA;
@@ -450,7 +450,7 @@ for (i = 0; i < 2; i++) {
 	}
 
 /*---*/PrintLog ("   Initializing sound data (%d sounds)\n", MAX_SOUND_FILES);
-for (i=0; i < MAX_SOUND_FILES; i++)	{
+for (i=0; i < MAX_SOUND_FILES; i++) {
 	soundOffset [0][i] = 0;
 }
 /*---*/PrintLog ("   Initializing bitmap index (%d indices)\n", MAX_BITMAP_FILES);

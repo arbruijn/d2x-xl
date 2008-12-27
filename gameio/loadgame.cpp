@@ -448,7 +448,7 @@ void InitAIForShip (void);
 void AddPlayerLoadout (void)
 {
 if (gameStates.app.bHaveExtraGameInfo [IsMultiGame])
-	{
+ {
 	LOCALPLAYER.primaryWeaponFlags |= extraGameInfo [IsMultiGame].loadout.nGuns;
 	if (gameStates.app.bD1Mission)
 	   LOCALPLAYER.primaryWeaponFlags &= ~(HAS_FLAG (HELIX_INDEX) | HAS_FLAG (GAUSS_INDEX) | HAS_FLAG (PHOENIX_INDEX) | HAS_FLAG (OMEGA_INDEX));
@@ -462,7 +462,7 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame])
 	if (extraGameInfo [1].bDarkness)
 		LOCALPLAYER.flags |= PLAYER_FLAGS_HEADLIGHT;
 	if (gameStates.app.bD1Mission)
-		{
+	 {
 	   LOCALPLAYER.primaryWeaponFlags &= ~(HAS_FLAG (HELIX_INDEX) | HAS_FLAG (GAUSS_INDEX) | HAS_FLAG (PHOENIX_INDEX) | HAS_FLAG (OMEGA_INDEX));
 	   LOCALPLAYER.flags &= ~(PLAYER_FLAGS_FULLMAP | PLAYER_FLAGS_AMMO_RACK | PLAYER_FLAGS_CONVERTER | PLAYER_FLAGS_AFTERBURNER | PLAYER_FLAGS_HEADLIGHT);
 	   }
@@ -526,7 +526,7 @@ DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
 gameData.objs.missileViewerP = NULL;		///reset missile camera if out there
 #ifdef TACTILE
 	if (TactileStick)
-	{
+ {
 	tactile_set_button_jolt ();
 	}
 #endif
@@ -591,12 +591,12 @@ longjmp (gameExitPoint, 0);		// Exit out of game loop
 void UpdatePlayerStats (void)
 {
 LOCALPLAYER.timeLevel += gameData.time.xFrame;	//the never-ending march of time...
-if (LOCALPLAYER.timeLevel > I2X (3600))	{
+if (LOCALPLAYER.timeLevel > I2X (3600)) {
 	LOCALPLAYER.timeLevel -= I2X (3600);
 	LOCALPLAYER.hoursLevel++;
 	}
 LOCALPLAYER.timeTotal += gameData.time.xFrame;	//the never-ending march of time...
-if (LOCALPLAYER.timeTotal > I2X (3600))	{
+if (LOCALPLAYER.timeTotal > I2X (3600)) {
 	LOCALPLAYER.timeTotal -= I2X (3600);
 	LOCALPLAYER.hoursTotal++;
 	}
@@ -1028,7 +1028,7 @@ return 1;
 void InitMultiPlayerObject (void)
 {
 Assert ((gameData.multiplayer.nLocalPlayer >= 0) && (gameData.multiplayer.nLocalPlayer < MAX_PLAYERS));
-if (gameData.multiplayer.nLocalPlayer != 0)	{
+if (gameData.multiplayer.nLocalPlayer != 0) {
 	gameData.multiplayer.players [0] = LOCALPLAYER;
 	gameData.multiplayer.nLocalPlayer = 0;
 	}
@@ -2072,7 +2072,7 @@ for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 	for (j = 0; j < gameData.multiplayer.nPlayers; j++) {
 		if (j != gameData.multiplayer.nLocalPlayer) {
 			objP = OBJECTS + gameData.multiplayer.players [j].nObject;
-			if ((objP->info.nType == OBJ_PLAYER))	{
+			if ((objP->info.nType == OBJ_PLAYER)) {
 				xDist = FindConnectedDistance (objP->info.position.vPos,
 														 objP->info.nSegment,
 														 gameData.multiplayer.playerInit [i].position.vPos,

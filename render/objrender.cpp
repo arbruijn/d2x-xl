@@ -184,7 +184,7 @@ mType.physInfo.brakes = 0;
 #if 0
 if ((info.nType == OBJ_WEAPON) && gameData.objs.bIsMissile [info.nId])
 #endif
-	{
+ {
 	mType.physInfo.rotVel[X] = 0;
 	mType.physInfo.rotVel[Y] =
 	mType.physInfo.rotVel[Z] = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;

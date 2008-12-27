@@ -128,7 +128,7 @@ if (ReadPCXHeaders (&header, 1,  cf)!=1) {
 	}
 
 // Is it a 256 color PCX file?
-if ((header.Manufacturer != 10)|| (header.Encoding != 1)|| (header.Nplanes != 1)|| (header.BitsPerPixel != 8)|| (header.Version != 5))	{
+if ((header.Manufacturer != 10)|| (header.Encoding != 1)|| (header.Nplanes != 1)|| (header.BitsPerPixel != 8)|| (header.Version != 5)) {
 	cf.Close ();
 	return PCX_ERROR_WRONG_VERSION;
 	}
@@ -181,13 +181,13 @@ if (bmP->Mode () == BM_LINEAR) {
 else {
 	for (row=0; row< ysize ; row++)      {
 		for (col=0; col< xsize ;)      {
-			if (cf.Read (&data, 1, 1)!=1)	{
+			if (cf.Read (&data, 1, 1)!=1) {
 				cf.Close ();
 				return PCX_ERROR_READING;
 				}
 			if ( (data & 0xC0) == 0xC0)     {
 				count =  data & 0x3F;
-				if (cf.Read (&data, 1, 1)!=1)	{
+				if (cf.Read (&data, 1, 1)!=1) {
 					cf.Close ();
 					return PCX_ERROR_READING;
 					}
@@ -205,8 +205,8 @@ else {
 
 // Read the extended palette at the end of PCX file
 // Read in a character which should be 12 to be extended palette file
-if (cf.Read (&data, 1, 1)==1)	{
-	if (data == 12)	{
+if (cf.Read (&data, 1, 1)==1) {
+	if (data == 12) {
 		if (!palette.Read (cf)) {
 			cf.Close ();
 			return PCX_ERROR_READING;
@@ -250,13 +250,13 @@ int pcx_write_bitmap (const char * filename, CBitmap * bmP)
 		return PCX_ERROR_OPENING;
 
 	if (cf.Write (&header, PCXHEADER_SIZE, 1) != 1)
-	{
+ {
 		cf.Close ();
 		return PCX_ERROR_WRITING;
 	}
 
-	for (i=0; i < bmP->Height (); i++)	{
-		if (!PCXEncodeLine (&bmP->Buffer ()[bmP->RowSize ()*i], bmP->Width (), cf))	{
+	for (i=0; i < bmP->Height (); i++) {
+		if (!PCXEncodeLine (&bmP->Buffer ()[bmP->RowSize ()*i], bmP->Width (), cf)) {
 			cf.Close ();
 			return PCX_ERROR_WRITING;
 		}
@@ -265,7 +265,7 @@ int pcx_write_bitmap (const char * filename, CBitmap * bmP)
 	// Mark an extended palette
 	data = 12;
 	if (cf.Write (&data, 1, 1) != 1)
-	{
+ {
 		cf.Close ();
 		return PCX_ERROR_WRITING;
 	}
@@ -279,7 +279,7 @@ int pcx_write_bitmap (const char * filename, CBitmap * bmP)
 	for (i=0; i<768; i++)
 		palette.Raw () [i] >>= 2;
 
-	if (retval !=1)	{
+	if (retval !=1) {
 		cf.Close ();
 		return PCX_ERROR_WRITING;
 	}
@@ -303,16 +303,16 @@ int PCXEncodeLine (ubyte *inBuff, int inLen, CFile& cf)
 
 	for (srcIndex = 1; srcIndex < inLen; srcIndex++) {
 		current = * (++inBuff);
-		if (current == last)	{
+		if (current == last) {
 			runCount++;			// it encodes
-			if (runCount == 63)	{
+			if (runCount == 63) {
 				if (! (i=PCXEncodeByte (last, runCount, cf)))
 					return (0);
 				total += i;
 				runCount = 0;
 			}
 		} else {   	// current != last
-			if (runCount)	{
+			if (runCount) {
 				if (! (i=PCXEncodeByte (last, runCount, cf)))
 					return (0);
 				total += i;
@@ -322,7 +322,7 @@ int PCXEncodeLine (ubyte *inBuff, int inLen, CFile& cf)
 		}
 	}
 
-	if (runCount)	{		// finish up
+	if (runCount) {		// finish up
 		if (! (i=PCXEncodeByte (last, runCount, cf)))
 			return 0;
 		return total + i;
@@ -336,7 +336,7 @@ int PCXEncodeLine (ubyte *inBuff, int inLen, CFile& cf)
 int PCXEncodeByte (ubyte byt, ubyte cnt, CFile& cf)
 {
 	if (cnt) {
-		if ( (cnt==1) && (0xc0 != (0xc0 & byt)))	{
+		if ( (cnt==1) && (0xc0 != (0xc0 & byt))) {
 			if (EOF == cf.PutC ( (int)byt))
 				return 0; 	// disk write error (probably full)
 			return 1;

@@ -215,7 +215,7 @@ if (gameStates.limitFPS.bJoystick) {
 		if	((channelMasks = JoyReadRawAxis (JOY_ALL_AXIS, rawJoyAxis))) {
 			for (i = 0; i < JOY_MAX_AXES; i++) {
 #ifndef SDL_INPUT
-				if (channelMasks & (1 << i))	{
+				if (channelMasks & (1 << i)) {
 #endif
 					if ((i == 3) && (gameStates.input.nJoyType == CONTROL_THRUSTMASTER_FCS))
 						ControlsReadFCS (rawJoyAxis [i]);
@@ -239,7 +239,7 @@ else {   // LIMIT_JOY_FPS
 	memset (joyAxis, 0, sizeof (joyAxis));
 	if (gameOpts->input.joystick.bUse) {
 		if ((channelMasks = JoyReadRawAxis (JOY_ALL_AXIS, rawJoyAxis))) {
-			for (i = 0; i < JOY_MAX_AXES; i++)	{
+			for (i = 0; i < JOY_MAX_AXES; i++) {
 				if (channelMasks & (1 << i))
 					joyAxis [i] = ControlsReadJoyAxis (i, rawJoyAxis);
 				else
@@ -382,7 +382,7 @@ if (!(gameStates.app.bPlayerIsDead || automap.m_bDisplay)) { {
 	//----------------Weapon 1----------------
 	if (HaveD2XKey (kcHotkeys, 0) ||
 			(JoyGetButtonState (kcHotkeys [1].value) && (d2xJoystickState [0] != d2xJoystick_ostate [0])))
-	{
+ {
 		//int i, valu=0;
 		DoSelectWeapon (0,0);
 		/*
@@ -868,7 +868,7 @@ if (bGetSlideBank == 2) {
 			else
 				Controls [0].verticalThrustTime -= mouseAxis [v];
 			}
-		if ((v = kcMouse [15].value) < 255)	{
+		if ((v = kcMouse [15].value) < 255) {
 			if (kcMouse [16].value)		// If inverted...
 				Controls [0].sidewaysThrustTime -= mouseAxis [v];
 			else
@@ -945,7 +945,7 @@ if (bGetSlideBank == 2) {
 		}
 	}
 
-if (gameStates.input.nMouseType == CONTROL_CYBERMAN)	{
+if (gameStates.input.nMouseType == CONTROL_CYBERMAN) {
 	if (bGetSlideBank == 2) {
 		Controls [0].verticalThrustTime += MouseButtonDownTime (D2_MB_Z_UP) / 2;
 		Controls [0].verticalThrustTime -= MouseButtonDownTime (D2_MB_Z_DOWN) / 2;
@@ -1380,7 +1380,7 @@ gameStates.input.nCruiseSpeed=0;
 
 void CybermouseAdjust ()
  {
-/*	if (gameData.multiplayer.nLocalPlayer > -1)	{
+/*	if (gameData.multiplayer.nLocalPlayer > -1) {
 		OBJECTS [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_TURNROLL);	// Turn off roll when turning
 		OBJECTS [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest CSide.
 		gameOpts->gameplay.nAutoLeveling = 0;
@@ -1392,7 +1392,7 @@ void CybermouseAdjust ()
 
 			Kconfig_abs_movement = reinterpret_cast<CAngleVector*> (((uint)kc_external_control + sizeof (tControlInfo));
 
-			if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h)	{
+			if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h) {
 				VmAngles2Matrix (&tempm,Kconfig_abs_movement);
 				VmMatMul (&ViewMatrix,&OBJECTS [LOCALPLAYER.nObject].info.position.mOrient,&tempm);
 				OBJECTS [LOCALPLAYER.nObject].info.position.mOrient = ViewMatrix;	

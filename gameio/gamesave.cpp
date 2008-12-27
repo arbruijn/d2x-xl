@@ -187,8 +187,8 @@ if (objP->info.nType == OBJ_POWERUP) {
 			}
 		}
 	}
-else if (objP->info.nType == OBJ_WEAPON)	{
-	if (objP->info.nId >= gameData.weapons.nTypes [0])	{
+else if (objP->info.nType == OBJ_WEAPON) {
+	if (objP->info.nId >= gameData.weapons.nTypes [0]) {
 		objP->info.nId = 0;
 		Assert(objP->info.renderType != RT_POLYOBJ);
 		}
@@ -210,7 +210,7 @@ else if (objP->info.nType == OBJ_REACTOR) {
 		objP->rType.polyObjInfo.nModel = gameData.reactor.props [0].nModel;// descent 1 reactor
 		}
 #ifdef EDITOR
-	{
+ {
 	int i;
 	// Check, and set, strength of reactor
 	for (i = 0; i < gameData.objs.types.count; i++)
@@ -439,7 +439,7 @@ switch (info.renderType) {
 			rType.polyObjInfo.nTexOverride = -1;
 		else {
 			int xlated_tmo = tmap_xlate_table [tmo];
-			if (xlated_tmo < 0)	{
+			if (xlated_tmo < 0) {
 #if TRACE
 				console.printf (CON_DBG, "Couldn't find texture for demo CObject, nModel = %d\n", rType.polyObjInfo.nModel);
 #endif
@@ -991,7 +991,7 @@ static int ReadDoorInfo (CFile& cf)
 {
 if (gameFileInfo.doors.offset > -1) {
 	int	i;
-	if (cf.Seek (gameFileInfo.doors.offset, SEEK_SET))	{
+	if (cf.Seek (gameFileInfo.doors.offset, SEEK_SET)) {
 		Error ("Error seeking to door data\n(file damaged or invalid)");
 		return -1;
 		}
@@ -1609,7 +1609,7 @@ if (!gameStates.app.bNostalgia) {
 #if !SHADOWS
 	if (SHOW_DYN_LIGHT || !gameStates.app.bD2XLevel)
 #endif
-		{
+	 {
 		AddDynGeometryLights ();
 		ComputeNearestLights (nLevel);
 		if (gameStates.render.bPerPixelLighting) {
@@ -1703,7 +1703,7 @@ void GetLevelName()
 //NO_UI!!!
 //NO_UI!!!	strcpy(gameData.missions.szCurrentLevel, NameText->text);
 //NO_UI!!!
-//NO_UI!!!	if (NameWindow!=NULL)	{
+//NO_UI!!!	if (NameWindow!=NULL) {
 //NO_UI!!!		ui_close_window(NameWindow);
 //NO_UI!!!		NameWindow = NULL;
 //NO_UI!!!	}
@@ -1806,7 +1806,7 @@ int SaveGameData(FILE * SaveFile)
 
 	CObject.offset = ftell(SaveFile);
 	//fwrite(&OBJECTS, sizeof(CObject), gameFileInfo.objects.count, SaveFile);
-	{
+ {
 		int i;
 		for (i=0;i<gameFileInfo.objects.count;i++)
 			writeObject(&OBJECTS [i],SaveFile);
@@ -1882,7 +1882,7 @@ int saveLevel_sub(char * filename, int compiledVersion)
 	int sig = MAKE_SIG('P','L','V','L'),version=LEVEL_FILE_VERSION;
 	int nMineDataOffset=0,nGameDataOffset=0;
 
-	if (!compiledVersion)	{
+	if (!compiledVersion) {
 		write_game_text_file(filename);
 
 		if (Errors_in_mine) {
@@ -1893,7 +1893,7 @@ int saveLevel_sub(char * filename, int compiledVersion)
 				StopTime();
 				paletteManager.LoadEffect  ();
 	 
-				if (ExecMessageBox(NULL, 2, TXT_CANCEL_SAVE, TXT_DO_SAVE, ErrorMessage)!=1)	{
+				if (ExecMessageBox(NULL, 2, TXT_CANCEL_SAVE, TXT_DO_SAVE, ErrorMessage)!=1) {
 					StartTime();
 					return 1;
 				}
@@ -1903,13 +1903,13 @@ int saveLevel_sub(char * filename, int compiledVersion)
 		ChangeFilenameExtension(temp_filename,filename,".LVL");
 	}
 	else
-	{
+ {
 		// macs are using the regular hog/rl2 files for shareware
 	}
 
 	SaveFile = fopen(temp_filename, "wb");
 	if (!SaveFile)
-	{
+ {
 		char ErrorMessage [256];
 
 		char fname [20];
@@ -1991,7 +1991,7 @@ int saveLevel_sub(char * filename, int compiledVersion)
 	//==================== CLOSE THE FILE =============================
 	fclose(SaveFile);
 
-	if (!compiledVersion)	{
+	if (!compiledVersion) {
 		if (gameStates.app.nFunctionMode == FMODE_EDITOR)
 			editor_status("Saved mine %s, \"%s\"",filename,gameData.missions.szCurrentLevel);
 	}

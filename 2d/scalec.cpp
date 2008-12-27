@@ -120,8 +120,8 @@ void scale_up_bitmap_rle(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0,
 
 	v = v0;
 
-	for (y=y0; y<=y1; y++ )			{
-		if ( X2I(v) != last_row )	{
+	for (y=y0; y<=y1; y++ )		 {
+		if ( X2I(v) != last_row ) {
 			last_row = X2I(v);
 			decode_row( source_bmp, last_row );
 		}
@@ -260,12 +260,12 @@ void scale_bitmap_c(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, int 
 
 	v = v0;
 
-	for (y=y0; y<=y1; y++ )			{
+	for (y=y0; y<=y1; y++ )		 {
 		sbits = &source_bmp->Buffer ()[source_bmp->RowSize () * X2I(v)];
 		dbits = &dest_bmp->Buffer ()[dest_bmp->RowSize () * y + x0];
 		u = u0;
 		v += dv;
-		for (x=x0; x<=x1; x++ )			{
+		for (x=x0; x<=x1; x++ )		 {
 			c = sbits[u >> 16];
 			if (c != TRANSPARENCY_COLOR)
 				*dbits = c;
@@ -283,7 +283,7 @@ void scale_row_asm_transparent( ubyte * sbits, ubyte * dbits, int width, fix u, 
 	int i;
 	ubyte c;
 
-	for (i=0; i<width; i++ )	{
+	for (i=0; i<width; i++ ) {
 		c = sbits[ u >> 16 ];
 		if ( c!=TRANSPARENCY_COLOR)
 			*dbits = c;
@@ -295,7 +295,7 @@ void scale_row_asm_transparent( ubyte * sbits, ubyte * dbits, int width, fix u, 
 	ubyte c;
 	ubyte *dbits_end = &dbits[width-1];
 
-	if ( du < F1_0 )	{
+	if ( du < F1_0 ) {
 		// Scaling up.
 		fix next_u;
 		int next_u_int;
@@ -306,11 +306,11 @@ void scale_row_asm_transparent( ubyte * sbits, ubyte * dbits, int width, fix u, 
 		if ( c != TRANSPARENCY_COLOR ) goto NonTransparent;
 
 Transparent:
-		while (1)	{
+		while (1) {
 			dbits++;
 			if ( dbits > dbits_end ) return;
 			u += du;
-			if ( u > next_u )	{
+			if ( u > next_u ) {
 				next_u_int = X2I(u)+1;
 				c = sbits[ next_u_int ];
 				next_u = I2X(next_u_int);
@@ -320,11 +320,11 @@ Transparent:
 		return;
 
 NonTransparent:
-		while (1)	{
+		while (1) {
 			*dbits++ = c;
 			if ( dbits > dbits_end ) return;
 			u += du;
-			if ( u > next_u )	{
+			if ( u > next_u ) {
 				next_u_int = X2I(u)+1;
 				c = sbits[ next_u_int ];
 				next_u = I2X(next_u_int);
@@ -336,7 +336,7 @@ NonTransparent:
 
 
 	} else {
-		for ( i=0; i<width; i++ )	{
+		for ( i=0; i<width; i++ ) {
 			c = sbits[ X2I(u) ];
 
 			if ( c != TRANSPARENCY_COLOR )
@@ -384,8 +384,8 @@ void scale_bitmap_c_rle(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, 
 		return;
 	}
 
-	for (y=y0; y<=y1; y++ )			{
-		if ( X2I(v) != last_row )	{
+	for (y=y0; y<=y1; y++ )		 {
+		if ( X2I(v) != last_row ) {
 			last_row = X2I(v);
 			decode_row( source_bmp, last_row );
 		}
@@ -431,25 +431,25 @@ void ScaleBitmap(CBitmap *bmP, grsPoint *vertbuf, int orientation )
 	clipped_x1 = x1; clipped_y1 = y1;
 
 	// Clip the left, moving u0 right as necessary
-	if ( x0 < xmin ) 	{
+	if ( x0 < xmin )  {
 		clipped_u0 = FIND_SCALED_NUM(xmin,x0,x1,u0,u1);
 		clipped_x0 = xmin;
 	}
 
 	// Clip the right, moving u1 left as necessary
-	if ( x1 > xmax )	{
+	if ( x1 > xmax ) {
 		clipped_u1 = FIND_SCALED_NUM(xmax,x0,x1,u0,u1);
 		clipped_x1 = xmax;
 	}
 
 	// Clip the top, moving v0 down as necessary
-	if ( y0 < ymin ) 	{
+	if ( y0 < ymin )  {
 		clipped_v0 = FIND_SCALED_NUM(ymin,y0,y1,v0,v1);
 		clipped_y0 = ymin;
 	}
 
 	// Clip the bottom, moving v1 up as necessary
-	if ( y1 > ymax ) 	{
+	if ( y1 > ymax )  {
 		clipped_v1 = FIND_SCALED_NUM(ymax,y0,y1,v0,v1);
 		clipped_y1 = ymax;
 	}
@@ -473,7 +473,7 @@ void ScaleBitmap(CBitmap *bmP, grsPoint *vertbuf, int orientation )
 
 	dtemp = X2I(clipped_u1)-X2I(clipped_u0);
 
-	if ( bmP->Flags () & BM_FLAG_RLE )	{
+	if ( bmP->Flags () & BM_FLAG_RLE ) {
 		if ( (dtemp < (X2I(clipped_x1)-X2I(clipped_x0))) && (dtemp>0) )
 			scale_up_bitmap_rle(bmP, dbp, dx0, dy0, dx1, dy1, clipped_u0, clipped_v0, clipped_u1, clipped_v1, orientation  );
 		else

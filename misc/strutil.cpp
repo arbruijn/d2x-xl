@@ -62,7 +62,7 @@ int stricmp( char *s1, char *s2 )
 {
 	char c1, c2;
 
-for (;;)	{
+for (;;) {
 	c1 = *s1;
 	c2 = *s2;
 	if (!(c1 && c2))
@@ -103,7 +103,7 @@ return 0;
 char *strlwr( char *s1 )
 {
 	char *p = s1;
-	while( *s1 )	{
+	while( *s1 ) {
 		*s1 = tolower(*s1);
 		s1++;
 	}
@@ -113,7 +113,7 @@ char *strlwr( char *s1 )
 char *strupr( char *s1 )
 {
 	char *p = s1;
-	while( *s1 )	{
+	while( *s1 ) {
 		*s1 = toupper(*s1);
 		s1++;
 	}

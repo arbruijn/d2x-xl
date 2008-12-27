@@ -364,7 +364,7 @@ for (x = xMin; x < xMax; x++) {
 		if (m_data.nType) {
 			v0 = m_data.sideVerts [0]; 
 			v2 = m_data.sideVerts [2]; 
-			if (x >= y)	{
+			if (x >= y) {
 				v1 = m_data.sideVerts [1]; 
 				//Next calculate this pixel's place in the world (tricky stuff)
 				ComputePixelPos (&offsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v1], m_data.fOffset [x]);

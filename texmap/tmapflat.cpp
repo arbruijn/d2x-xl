@@ -47,7 +47,7 @@ void tmap_scanline_flat(int y, fix xleft, fix xright)
 
 	if ( gameStates.render.grAlpha >= FADE_LEVELS )
 		cur_tmap_scanline_flat();
-	else	{
+	else {
 		tmap_flat_shadeValue = gameStates.render.grAlpha;
 		cur_tmap_scanline_shaded();
 	}

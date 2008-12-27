@@ -5,9 +5,10 @@
 template <typename _T>
 inline void CQuickSort< _T >::Swap (_T* left, _T* right)
 {
-_T h = *left;
-*left = *right;
-*right = h;
+_T h;
+memcpy (&h, left, sizeof (_T));
+memcpy (left, right, sizeof (_T));
+memcpy (right, &h, sizeof (_T));
 }
 
 //-----------------------------------------------------------------------------
@@ -71,7 +72,9 @@ void CQuickSort< _T >::SortAscending (_T* buffer, int left, int right, comparato
 {
 	int	l = left,
 			r = right;
-	_T		median = buffer [(l + r) / 2];
+	_T		median;
+	
+memcpy (&median, buffer + (l + r) / 2, sizeof (_T));
 
 do {
 	while (compare (buffer + l, &median) < 0)

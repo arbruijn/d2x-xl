@@ -1,14 +1,14 @@
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
-SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
-END-USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
-ROYALTY-FREE, PERPETUAL LICENSE TO SUCH END-USERS FOR USE BY SUCH END-USERS
-IN USING, DISPLAYING,  AND CREATING DERIVATIVE WORKS THEREOF, SO LONG AS
-SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
-FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
-CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
+SOFTWARE CORPORATION ("PARALLAX"). PARALLAX, IN DISTRIBUTING THE CODE TO
+END - USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
+ROYALTY - FREE, PERPETUAL LICENSE TO SUCH END - USERS FOR USE BY SUCH END - USERS
+IN USING, DISPLAYING, AND CREATING DERIVATIVE WORKS THEREOF, SO LONG AS
+SUCH USE, DISPLAY OR CREATION IS FOR NON - COMMERCIAL, ROYALTY OR REVENUE
+FREE PURPOSES. IN NO EVENT SHALL THE END - USER USE THE COMPUTER CODE
+CONTAINED HEREIN FOR REVENUE - BEARING PURPOSES. THE END - USER UNDERSTANDS
 AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
-COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
+COPYRIGHT 1993 - 1999 PARALLAX SOFTWARE CORPORATION. ALL RIGHTS RESERVED.
 */
 
 #ifdef HAVE_CONFIG_H
@@ -70,8 +70,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  #include "tactile.h"
 #endif
 
-#define LHX(x)      (gameStates.menus.bHires? 2 * (x) : x)
-#define LHY(y)      (gameStates.menus.bHires? (24 * (y)) / 10 : y)
+#define LHX(x) (gameStates.menus.bHires? 2 * (x) : x)
+#define LHY(y) (gameStates.menus.bHires? (24 * (y)) / 10 : y)
 
 char NORMAL_RADIO_BOX [2] = {(char) 127, 0};
 char CHECKED_RADIO_BOX [2] = {(char) 128, 0};
@@ -85,41 +85,7 @@ char SLIDER_MARKER [2] = {(char) 134, 0};
 char UP_ARROW_MARKER [2] = {(char) 135, 0};
 char DOWN_ARROW_MARKER [2] = {(char) 136, 0};
 
-typedef struct tMenuProps {
-	int	scWidth,
-			scHeight,
-			x, 
-			y, 
-			xOffs, 
-			yOffs,
-			width,
-			height,
-			w, 
-			h, 
-			aw, 
-			tw, 
-			th, 
-			ty,
-			twidth, 
-			right_offset, 
-			nStringHeight,
-			bTinyMode,
-			nMenus, 
-			nOthers, 
-			nMaxNoScroll, 
-			nMaxOnMenu,
-			nMaxDisplayable,
-			nScrollOffset,
-			bIsScrollBox,
-			nDisplayMode,
-			bValid;
-} tMenuProps;
-
-int ExecMenu4 (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP, 
-					 int (*menuCallback) (int nItems, CMenuItem *itemP, int *lastKeyP, int nItem), 
-					 int *nCurItemP, char *filename, int width, int height, int bTinyMode);
-
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
 #define MESSAGEBOX_TEXT_SIZE 10000		// How many characters in messagebox
 #define MAX_TEXT_WIDTH 	200				// How many pixels wide a input box can be
@@ -127,29 +93,19 @@ int ExecMenu4 (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuI
 char bPauseableMenu = 0;
 char bAlreadyShowingInfo = 0;
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
+// ------------------------------------------------------------------------------ 
+// ------------------------------------------------------------------------------ 
 
-inline void NMFreeTextBm (CMenuItem *itemP)
+void CMenuItem::Destroy (void)
 {
-	int	i;
-
-for (i = 0; i < 2; i++) {
-	delete itemP->text_bm [i];
-	itemP->text_bm [i] = NULL;
-	}
+for (int i = 0; i < 2; i++)
+	delete m_bmText [i];
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
-void NMFreeAllTextBms (CMenuItem *itemP, int nItems)
-{
-for (; nItems; nItems--, itemP++)
-	NMFreeTextBm (itemP);
-}
-
-//------------------------------------------------------------------------------
-
-short NMSetItemColor (CMenuItem *itemP, int bIsCurrent, int bTiny) 
+short CMenuItem::SetColor (int bIsCurrent, int bTiny) 
 {
 if (bTiny) {
 	if (!gameData.menu.bValid) {
@@ -164,10 +120,10 @@ if (bTiny) {
 		}
 	if (gameData.menu.colorOverride)
 		fontManager.SetColorRGBi (gameData.menu.colorOverride, 1, 0, 0);
-	else if (itemP->text [0] == '\t')
+	else if (m_text [0] == '\t')
 		fontManager.SetColorRGBi (gameData.menu.tabbedColor, 1, 0, 0);
 	else 
-		fontManager.SetColorRGBi (gameData.menu.tinyColors [bIsCurrent][itemP->unavailable], 1, 0, 0);
+		fontManager.SetColorRGBi (gameData.menu.tinyColors [bIsCurrent][m_bUnavailable], 1, 0, 0);
 	}
 else {
 	if (bIsCurrent)
@@ -178,133 +134,134 @@ else {
 return CCanvas::Current ()->FontColor (0).index;
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
+
+void CMenuItem::TrimWhitespace (void)
+{
+int i, l = (int) strlen (m_text);
+
+for (i = l - 1; i >= 0; i--) {
+	if (::isspace (m_text [i]))
+		m_text [i] = 0;
+	else
+		return;
+	}
+}
+
+// ------------------------------------------------------------------------------ 
 
 int nTabIndex = -1;
 int nTabs [] = {15, 87, 124, 162, 228, 253};
 
-void NMHotKeyString (CMenuItem *itemP, int bIsCurrent, int bTiny, int bCreateTextBms, int nDepth)
+void CMenuItem::DrawHotKeyString (int bIsCurrent, int bTiny, int bCreateTextBms, int nDepth)
 {
-#if 1
-	CBitmap	*bmP = itemP->text_bm [bIsCurrent];
+	CBitmap	*bmP = m_bmText [bIsCurrent];
 
-if (!*itemP->text)
+if (!*m_text)
 	return;
-if (itemP->color)
-	fontManager.SetColorRGBi (itemP->color, 1, 0, 0);
+if (m_color)
+	fontManager.SetColorRGBi (m_color, 1, 0, 0);
 else
-	NMSetItemColor (itemP, bIsCurrent, bTiny);
-if (bCreateTextBms && gameOpts->menus.bFastMenus &&
-	 (bmP || (bmP = CreateStringBitmap (itemP->text, MENU_KEY (itemP->key, -1), 
-												   gameData.menu.keyColor,
-												   nTabs, itemP->centered, itemP->w, 0)))) {
-	bmP->Render (CCanvas::Current (), itemP->x, itemP->y, bmP->Width (), bmP->Height (), 0, 0, bmP->Width (), bmP->Height (), 1, 0);
-	itemP->text_bm [bIsCurrent] = bmP;
-	}
-else 
-#endif
-	{
-	int	w, h, aw, l, i, 
-			x = itemP->x, 
-			y = itemP->y;
-	char	*t, *ps = itemP->text, s [256], ch = 0, ch2;
-
-if (!nDepth)
-	itemP->textSave = itemP->text;
-if ((t = strchr (ps, '\n'))) {
-	strncpy (s, ps, sizeof (s));
-	itemP->text = s;
-	fontManager.Current ()->StringSize (s, w, h, aw);
-	do {
-		if ((t = strchr (itemP->text, '\n')))
-			*t = '\0';
-		NMHotKeyString (itemP, 0, bTiny, 0, nDepth + 1);
-		if (!t)
-			break;
-		itemP->text = t + 1;
-		itemP->y += h / 2;
-		itemP->x = itemP->xSave;
-		nTabIndex = -1;
-		} while (*(itemP->text));
-	}
-else if ((t = strchr (ps, '\t'))) {
-	strncpy (s, ps, sizeof (s));
-	itemP->text = s;
-	fontManager.Current ()->StringSize (s, w, h, aw);
-	do {
-		if ((t = strchr (itemP->text, '\t')))
-			*t = '\0';
-		NMHotKeyString (itemP, 0, bTiny, 0, nDepth + 1);
-		if (!t)
-			break;
-		itemP->text = t + 1;
-		nTabIndex++;
-	} while (*(itemP->text));
-	nTabIndex = -1;
-	itemP->text = ps;
-	itemP->y = y;
+	SetColor (bIsCurrent, bTiny);
+if (bCreateTextBms && gameOpts->menus.bFastMenus && 
+	 (bmP || (bmP = CreateStringBitmap (m_text, MENU_KEY (m_nKey, - 1), gameData.menu.keyColor, nTabs, m_bCentered, m_w, 0)))) {
+	bmP->Render (CCanvas::Current (), m_x, m_y, bmP->Width (), bmP->Height (), 0, 0, bmP->Width (), bmP->Height (), 1, 0);
+	m_bmText [bIsCurrent] = bmP;
 	}
 else {
-	l = (int) strlen (itemP->text);
-	if (bIsCurrent || !itemP->key)
-		i = l;
-	else {
-		ch = MENU_KEY (itemP->key, *ps);
-		for (i = 0; ps [i]; i++)
-			if (ps [i] == ch)
+
+		int	w, h, aw, l, i, 
+				x = m_x, 
+				y = m_y;
+		char	*t, *ps = m_text, s [256], ch = 0, ch2;
+
+	if ((t = strchr (ps, '\n'))) {
+		strncpy (s, ps, sizeof (s));
+		m_text = s;
+		fontManager.Current ()->StringSize (s, w, h, aw);
+		do {
+			if ((t = strchr (m_text, '\n')))
+				*t = '\0';
+			DrawHotKeyString (0, bTiny, 0, nDepth + 1);
+			if (!t)
 				break;
+			m_text = t + 1;
+			m_y += h / 2;
+			m_x = m_xSave;
+			nTabIndex = -1;
+			} while (*(m_text));
 		}
-	strncpy (s, ps, sizeof (s));
-	s [i] = '\0';
-	fontManager.Current ()->StringSize (s, w, h, aw);
-	if (nTabIndex >= 0) {
-		x += LHX (nTabs [nTabIndex]);
-		if (!gameStates.multi.bSurfingNet)
-			x += itemP->w - w;
+	else if ((t = strchr (ps, '\t'))) {
+		strncpy (s, ps, sizeof (s));
+		m_text = s;
+		fontManager.Current ()->StringSize (s, w, h, aw);
+		do {
+			if ((t = strchr (m_text, '\t')))
+				*t = '\0';
+			DrawHotKeyString (0, bTiny, 0, nDepth + 1);
+			if (!t)
+				break;
+			m_text = t + 1;
+			nTabIndex++;
+		} while (*(m_text));
+		nTabIndex = -1;
+		m_text = ps;
+		m_y = y;
 		}
-	//itemP->x = x + w;
-	if (i) {
-		GrString (x, y, s, NULL);
-#if DBG
-		//GrUpdate (0);
-#endif
-		}
-	if (i < l) {	// print the hotkey
-		x += w;
-		s [i] = ch;
-		ch2 = s [++i];
+	else {
+		l = (int) strlen (m_text);
+		if (bIsCurrent || !m_nKey)
+			i = l;
+		else {
+			ch = MENU_KEY (m_nKey, *ps);
+			for (i = 0; ps [i]; i++)
+				if (ps [i] == ch)
+					break;
+			}
+		strncpy (s, ps, sizeof (s));
 		s [i] = '\0';
-		NMSetItemColor (itemP, 1, bTiny);
-		GrString (x, y, s + i - 1, NULL);
-#if DBG
-		//GrUpdate (0);
-#endif
-		NMSetItemColor (itemP, 0, bTiny);
-		if (i < l) { // print text following the hotkey
-			fontManager.Current ()->StringSize (s + i - 1, w, h, aw);
+		fontManager.Current ()->StringSize (s, w, h, aw);
+		if (nTabIndex >= 0) {
+			x += LHX (nTabs [nTabIndex]);
+			if (!gameStates.multi.bSurfingNet)
+				x += m_w - w;
+			}
+		//m_x = x + w;
+		if (i) {
+			GrString (x, y, s, NULL);
+	#if DBG
+			//GrUpdate (0);
+	#endif
+			}
+		if (i < l) {	// print the hotkey
 			x += w;
-			s [i] = ch2;
-			GrString (x, y, s + i, NULL);
+			s [i] = ch;
+			ch2 = s [++i];
+			s [i] = '\0';
+			SetColor (1, bTiny);
+			GrString (x, y, s + i - 1, NULL);
+	#if DBG
+			//GrUpdate (0);
+	#endif
+			SetColor (0, bTiny);
+			if (i < l) { // print text following the hotkey
+				fontManager.Current ()->StringSize (s + i - 1, w, h, aw);
+				x += w;
+				s [i] = ch2;
+				GrString (x, y, s + i, NULL);
+				}
 			}
 		}
 	}
-#if 0
-if (!nDepth) {
-	itemP->text = itemP->textSave;
-	itemP->x = itemP->xSave;
-	itemP->y = itemP->ySave;
-	}
-#endif
-}
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 // Draw a left justfied string
-void NMString (CMenuItem *itemP, int bIsCurrent, int bTiny)
+void CMenuItem::DrawString (int bIsCurrent, int bTiny)
 {
-	int w1 = itemP->w, x = itemP->x, y = itemP->y;
-	int l, w, h, aw, tx=0, t=0, i;
-	char *p, *s1, measure [2] , *s = itemP->text;
+	int w1 = m_w, x = m_x, y = m_y;
+	int l, w, h, aw, tx = 0, t = 0, i;
+	char* p, *s1, measure [2] , *s = m_text;
 	int XTabs [6];
 	static char s2 [1024];
 
@@ -313,15 +270,15 @@ l = (int) strlen (s);
 memcpy (s2, s, l + 1);
 
 for (i = 0; i < 6; i++)
-	XTabs [i]= (LHX (nTabs [i])) + x;
+	XTabs [i] = (LHX (nTabs [i])) + x;
 
 measure [1] = 0;
 
 if (!gameStates.multi.bSurfingNet) {
 	p = strchr (s2, '\t');
-	if (p &&(w1>0)) {
+	if (p && (w1>0)) {
 		*p = '\0';
-		s1 = p+1;
+		s1 = p + 1;
 		}
 	}
 if (w1 > 0)
@@ -332,53 +289,53 @@ if (gameStates.ogl.nDrawBuffer != GL_BACK)
 	backgroundManager.Current ()->RenderClipped (CCanvas::Current (), 5, y - 1, backgroundManager.Current ()->Width () - 15, h + 2, 5, y - 1);
 if (0 && gameStates.multi.bSurfingNet) {
 	for (i = 0;i < l;i++) {
-		if (s2 [i]=='\t' && gameStates.multi.bSurfingNet) {
-			x=XTabs [t];
+		if (s2 [i] == '\t' && gameStates.multi.bSurfingNet) {
+			x = XTabs [t];
 			t++;
 			continue;
 			}
-		measure [0]=s2 [i];
+		measure [0] = s2 [i];
 		fontManager.Current ()->StringSize (measure, tx, h, aw);
 		GrString (x, y, measure, NULL);
 		x += tx;
 		}
 	}
 else {
-	NMHotKeyString (itemP, bIsCurrent, bTiny, 1, 0);
+	DrawHotKeyString (bIsCurrent, bTiny, 1, 0);
 	return;
-	}         
+	} 
 
 if (!gameStates.multi.bSurfingNet && p && (w1 > 0)) {
 	fontManager.Current ()->StringSize (s1, w, h, aw);
-	GrString (x+w1-w, y, s1, NULL);
+	GrString (x + w1 - w, y, s1, NULL);
 	*p = '\t';
 	}
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 // Draw a slider and it's string
-void NMStringSlider (CMenuItem *itemP, int bIsCurrent, int bTiny)
+void CMenuItem::DrawSlider (int bIsCurrent, int bTiny)
 {
 char* s1 = NULL;
-char* p = strchr (itemP->savedText, '\t');
+char* p = strchr (m_savedText, '\t');
 if (p) {
 	*p = '\0';
 	s1 = p + 1;
 	}
 
 int w, h, aw;
-fontManager.Current ()->StringSize (itemP->savedText, w, h, aw);
+fontManager.Current ()->StringSize (m_savedText, w, h, aw);
 
-int y = itemP->y;
+int y = m_y;
 if (gameStates.ogl.nDrawBuffer != GL_BACK)
 	backgroundManager.Current ()->RenderClipped (CCanvas::Current (), 5, y, backgroundManager.Current ()->Width () - 15, h, 5, y);
-char* t = itemP->text;
-itemP->text = itemP->savedText;
-NMHotKeyString (itemP, bIsCurrent, bTiny, 1, 0);
-itemP->text = t;
+char* t = m_text;
+m_text = m_savedText;
+DrawHotKeyString (bIsCurrent, bTiny, 1, 0);
+m_text = t;
 if (p) {
 	fontManager.Current ()->StringSize (s1, w, h, aw);
-	int x = itemP->x + itemP->w - w;
+	int x = m_x + m_w - w;
 	if (gameStates.ogl.nDrawBuffer != GL_BACK) {
 		backgroundManager.Current ()->RenderClipped (CCanvas::Current (), x, y, w, 1, x, y);
 		backgroundManager.Current ()->RenderClipped (CCanvas::Current (), x, y + h - 1, w, 1, x, y);
@@ -388,36 +345,14 @@ if (p) {
 	}
 }
 
-
-//------------------------------------------------------------------------------
-// Draw a left justfied string with black background.
-void NMStringBlack (int w1, int x, int y, const char *s)
-{
-	int w, h, aw;
-
-fontManager.Current ()->StringSize (s, w, h, aw);
-if (w1 == 0) 
-	w1 = w;
-
-CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (2, 2, 2));
-GrRect (x-1, y-1, x-1, y+h-1);
-GrRect (x-1, y-1, x+w1-1, y-1);
-CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (5, 5, 5));
-GrRect (x, y+h, x+w1, y+h);
-GrRect (x+w1, y-1, x+w1, y+h);
-CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-GrRect (x, y, x+w1-1, y+h-1);
-GrString (x+1, y+1, s, NULL);
-}
-
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 // Draw a right justfied string
-void NMRString (CMenuItem *itemP, int bIsCurrent, int bTiny, char *s)
+void CMenuItem::DrawRightString (int bIsCurrent, int bTiny, char* s)
 {
 	int	w, h, aw;
-	int	w1 = itemP->right_offset, 
-			x = itemP->x, 
-			y = itemP->y;
+	int	w1 = m_rightOffset, 
+			x = m_x, 
+			y = m_y;
 	char	*hs;
 
 fontManager.Current ()->StringSize (s, w, h, aw);
@@ -426,86 +361,59 @@ if (w1 == 0)
 	w1 = w;
 if (gameStates.ogl.nDrawBuffer != GL_BACK)
 	backgroundManager.Current ()->RenderClipped (CCanvas::Current (), x - w1, y, w1, h, x - w1, y);
-hs = itemP->text;
-itemP->text = s;
-h = itemP->x;
-itemP->x = x - w;
-NMHotKeyString (itemP, bIsCurrent, bTiny, 0, 0);
-itemP->text = hs;
-itemP->x = h;
+hs = m_text;
+m_text = s;
+h = m_x;
+m_x = x - w;
+DrawHotKeyString (bIsCurrent, bTiny, 0, 0);
+m_text = hs;
+m_x = h;
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
-void NMRStringWXY (int w1, int x, int y, const char *s)
-{
-	int	w, h, aw;
-
-fontManager.Current ()->StringSize (s, w, h, aw);
-x -= 3;
-if (w1 == 0) 
-	w1 = w;
-if (gameStates.ogl.nDrawBuffer != GL_BACK)
-	backgroundManager.Current ()->RenderClipped (CCanvas::Current (), x - w1, y, w1, h, x - w1, y);
-GrString (x-w, y, s, NULL);
-}
-
-//------------------------------------------------------------------------------
-
-#include "timer.h"
-
-//for text itemP, constantly redraw cursor (to achieve flash)
-void NMUpdateCursor (CMenuItem *itemP)
+void CMenuItem::DrawBlackBox (int w1, int x, int y, const char* s)
 {
 	int w, h, aw;
-	fix time = TimerGetApproxSeconds ();
-	int x, y;
-	char *text = itemP->text;
 
-	Assert (itemP->nType == NM_TYPE_INPUT_MENU || itemP->nType == NM_TYPE_INPUT);
+fontManager.Current ()->StringSize (s, w, h, aw);
+if (w1 == 0) 
+	w1 = w;
 
-while (*text)	{
-	fontManager.Current ()->StringSize (text, w, h, aw);
-	if (w > itemP->w-10)
-		text++;
-	else
-		break;
-	}
-if (!*text) 
-	w = 0;
-x = itemP->x+w; 
-y = itemP->y;
-if (time & 0x8000)
-	GrString (x, y, CURSOR_STRING, NULL);
-else {
-	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-	GrRect (x, y, x+CCanvas::Current ()->Font ()->Width ()-1, y+CCanvas::Current ()->Font ()->Height ()-1);
-	}
+CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (2, 2, 2));
+GrRect (x - 1, y - 1, x - 1, y + h - 1);
+GrRect (x - 1, y - 1, x + w1 - 1, y - 1);
+CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (5, 5, 5));
+GrRect (x, y + h, x + w1, y + h);
+GrRect (x + w1, y - 1, x + w1, y + h);
+CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
+GrRect (x, y, x + w1 - 1, y + h - 1);
+GrString (x + 1, y + 1, s, NULL);
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
-void NMStringInputBox (int w, int x, int y, char *text, int current)
+void CMenuItem::DrawInputBox (int w, int x, int y, char* text, int current)
 {
 	int w1, h1, aw;
 
 while (*text) {
 	fontManager.Current ()->StringSize (text, w1, h1, aw);
-	if (w1 > w-10)
+	if (w1 > w - 10)
 		text++;
 	else
 		break;
 	}
 if (!*text)
 	w1 = 0;
-  NMStringBlack (w, x, y, text);
+DrawBlackBox (w, x, y, text);
 if (current)	
-	GrString (x+w1+1, y, CURSOR_STRING, NULL);
+	GrString (x + w1 + 1, y, CURSOR_STRING, NULL);
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
-void NMGauge (int w, int x, int y, int val, int maxVal, int current)
+void CMenuItem::DrawGauge (int w, int x, int y, int val, int maxVal, int current)
 {
 	int w1, h, aw;
 
@@ -523,153 +431,291 @@ if (w1)
 GrUBox (x, y, x + w - 1, y + h - 1);
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
-void NMDrawItem (CMenuItem *itemP, int bIsCurrent, int bTiny)
+void CMenuItem::ShowHelp (void)
 {
-NMSetItemColor (itemP, bIsCurrent, bTiny);
-if (itemP->rebuild) {
-	NMFreeTextBm (itemP);
-	itemP->rebuild = 0;
+if (m_szHelp && *m_szHelp) {
+	int nInMenu = gameStates.menus.nInMenu;
+	int bFastMenus = gameOpts->menus.bFastMenus;
+	gameStates.menus.nInMenu = 0;
+	//gameOpts->menus.bFastMenus = 0;
+	gameData.menu.helpColor = RGBA_PAL (47, 47, 47);
+	gameData.menu.colorOverride = gameData.menu.helpColor;
+	MessageBox ("D2X - XL online help", NULL, - 3, m_szHelp, " ", TXT_CLOSE);
+	gameData.menu.colorOverride = 0;
+	gameOpts->menus.bFastMenus = bFastMenus;
+	gameStates.menus.nInMenu = nInMenu;
 	}
-switch (itemP->nType)	{
+}
+
+// ------------------------------------------------------------------------------ 
+
+#include "timer.h"
+
+//for text itemP, constantly redraw cursor (to achieve flash)
+void CMenuItem::UpdateCursor (void)
+{
+	int w, h, aw;
+	fix time = TimerGetApproxSeconds ();
+	int x, y;
+	char* text = m_text;
+
+	Assert (m_nType == NM_TYPE_INPUT_MENU || m_nType == NM_TYPE_INPUT);
+
+while (*text) {
+	fontManager.Current ()->StringSize (text, w, h, aw);
+	if (w > m_w - 10)
+		text++;
+	else
+		break;
+	}
+if (!*text) 
+	w = 0;
+x = m_x + w; 
+y = m_y;
+if (time & 0x8000)
+	GrString (x, y, CURSOR_STRING, NULL);
+else {
+	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
+	GrRect (x, y, x + CCanvas::Current ()->Font ()->Width () - 1, y + CCanvas::Current ()->Font ()->Height () - 1);
+	}
+}
+
+// ------------------------------------------------------------------------------ 
+
+void CMenuItem::Draw (int bIsCurrent, int bTiny)
+{
+SetColor (bIsCurrent, bTiny);
+if (m_bRebuild) {
+	Destroy ();
+	m_bRebuild = 0;
+	}
+switch (m_nType) {
 	case NM_TYPE_TEXT:
-      // CCanvas::Current ()->Font ()=TEXT_FONT);
+ // CCanvas::Current ()->Font () = TEXT_FONT);
 		// fall through on purpose
 
 	case NM_TYPE_MENU:
-		NMString (itemP, bIsCurrent, bTiny);
+		DrawString (bIsCurrent, bTiny);
 		break;
 
-	case NM_TYPE_SLIDER:	{
+	case NM_TYPE_SLIDER: {
 		int h, l;
-		char *psz = itemP->savedText;
+		char* psz = m_savedText;
 
-		if (itemP->value < itemP->minValue) 
-			itemP->value = itemP->minValue;
-		else if (itemP->value > itemP->maxValue) 
-			itemP->value = itemP->maxValue;
-		sprintf (psz, "%s\t%s", itemP->text, SLIDER_LEFT);
+		if (m_value < m_minValue) 
+			m_value = m_minValue;
+		else if (m_value > m_maxValue) 
+			m_value = m_maxValue;
+		sprintf (psz, "%s\t%s", m_text, SLIDER_LEFT);
 #if 1
 		l = (int) strlen (psz);
-		h = itemP->maxValue - itemP->minValue + 1;
+		h = m_maxValue - m_minValue + 1;
 		memset (psz + l, SLIDER_MIDDLE [0], h);
 		psz [l + h] = SLIDER_RIGHT [0];
 		psz [l + h + 1] = '\0';
 #else
-		for (j = 0; j < (itemP->maxValue - itemP->minValue + 1); j++) {
+		for (j = 0; j < (m_maxValue - m_minValue + 1); j++) {
 			sprintf (psz, "%s%s", psz, SLIDER_MIDDLE);
 			}
-		sprintf (itemP->savedText, "%s%s", itemP->savedText, SLIDER_RIGHT);
+		sprintf (m_savedText, "%s%s", m_savedText, SLIDER_RIGHT);
 #endif
-		psz [itemP->value + 1 + strlen (itemP->text) + 1] = SLIDER_MARKER [0];
-		NMStringSlider (itemP, bIsCurrent, bTiny);
+		psz [m_value + 1 + strlen (m_text) + 1] = SLIDER_MARKER [0];
+		DrawSlider (bIsCurrent, bTiny);
 		}
 		break;
 
 	case NM_TYPE_INPUT_MENU:
-		if (itemP->group)
-			NMStringInputBox (itemP->w, itemP->x, itemP->y, itemP->text, bIsCurrent);
+		if (m_group)
+			DrawInputBox (m_w, m_x, m_y, m_text, bIsCurrent);
 		else
-			NMString (itemP, bIsCurrent, bTiny);
+			DrawString (bIsCurrent, bTiny);
 		break;
 
 	case NM_TYPE_INPUT:
-		NMStringInputBox (itemP->w, itemP->x, itemP->y, itemP->text, bIsCurrent);
+		DrawInputBox (m_w, m_x, m_y, m_text, bIsCurrent);
 		break;
 
 	case NM_TYPE_GAUGE:
-		NMGauge (itemP->w, itemP->x, itemP->y, itemP->value, itemP->maxValue, bIsCurrent);
+		DrawGauge (m_w, m_x, m_y, m_value, m_maxValue, bIsCurrent);
 		break;
 
 	case NM_TYPE_CHECK:
-		NMString (itemP, bIsCurrent, bTiny);
-		if (itemP->value)
-			NMRString (itemP, bIsCurrent, bTiny, CHECKED_CHECK_BOX);
-		else														  
-			NMRString (itemP, bIsCurrent, bTiny, NORMAL_CHECK_BOX);
+		DrawString (bIsCurrent, bTiny);
+		if (m_value)
+			DrawRightString (bIsCurrent, bTiny, CHECKED_CHECK_BOX);
+		else														 
+			DrawRightString (bIsCurrent, bTiny, NORMAL_CHECK_BOX);
 		break;
 
 	case NM_TYPE_RADIO:
-		NMString (itemP, bIsCurrent, bTiny);
-		if (itemP->value)
-			NMRString (itemP, bIsCurrent, bTiny, CHECKED_RADIO_BOX);
+		DrawString (bIsCurrent, bTiny);
+		if (m_value)
+			DrawRightString (bIsCurrent, bTiny, CHECKED_RADIO_BOX);
 		else
-			NMRString (itemP, bIsCurrent, bTiny, NORMAL_RADIO_BOX);
+			DrawRightString (bIsCurrent, bTiny, NORMAL_RADIO_BOX);
 		break;
 
 	case NM_TYPE_NUMBER:
-		{
 		char text [10];
-		if (itemP->value < itemP->minValue) 
-			itemP->value=itemP->minValue;
-		if (itemP->value > itemP->maxValue) 
-			itemP->value=itemP->maxValue;
-		NMString (itemP, bIsCurrent, bTiny);
-		sprintf (text, "%d", itemP->value);
-		NMRString (itemP, bIsCurrent, bTiny, text);
-		}
+		if (m_value < m_minValue) 
+			m_value = m_minValue;
+		if (m_value > m_maxValue) 
+			m_value = m_maxValue;
+		DrawString (bIsCurrent, bTiny);
+		sprintf (text, "%d", m_value);
+		DrawRightString (bIsCurrent, bTiny, text);
 		break;
 	}
-
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
-char *nmAllowedChars = NULL;
+int CMenuItem::GetSize (int h, int aw, int& nStringWidth, int& nStringHeight, int& nAverageWidth, int& nMenus, int& nOthers)
+{
+	int	j;
+
+if (!gameStates.app.bEnglish)
+	m_nKey = *(m_text - 1);
+if (m_nKey) {
+	if (gameOpts->menus.nHotKeys < 0) {
+		if ((m_nKey < KEY_1) || (m_nKey > KEY_0))
+			m_nKey = -1;
+		}
+	else if (gameOpts->menus.nHotKeys == 0)
+		m_nKey = 0;
+	}
+m_bRedraw = 1;
+m_y = h;
+fontManager.Current ()->StringSize (m_text, nStringWidth, nStringHeight, nAverageWidth);
+m_rightOffset = 0;
+
+if (gameStates.multi.bSurfingNet)
+	nStringHeight += LHY (3);
+
+m_savedText [0] = '\0';
+if (m_nType == NM_TYPE_SLIDER) {
+	int w1, h1, aw1;
+	nOthers++;
+	sprintf (m_savedText, "%s", SLIDER_LEFT);
+	for (j = 0; j< (m_maxValue - m_minValue + 1); j++) {
+		sprintf (m_savedText, "%s%s", m_savedText, SLIDER_MIDDLE);
+		}
+	sprintf (m_savedText, "%s%s", m_savedText, SLIDER_RIGHT);
+	fontManager.Current ()->StringSize (m_savedText, w1, h1, aw1);
+	nStringWidth += w1 + aw;
+	}
+else if (m_nType == NM_TYPE_MENU) {
+	nMenus++;
+	}
+else if (m_nType == NM_TYPE_CHECK) {
+	int w1, h1, aw1;
+	nOthers++;
+	fontManager.Current ()->StringSize (NORMAL_CHECK_BOX, w1, h1, aw1);
+	m_rightOffset = w1;
+	fontManager.Current ()->StringSize (CHECKED_CHECK_BOX, w1, h1, aw1);
+	if (w1 > m_rightOffset)
+		m_rightOffset = w1;
+	}
+else if (m_nType == NM_TYPE_RADIO) {
+	int w1, h1, aw1;
+	nOthers++;
+	fontManager.Current ()->StringSize (NORMAL_RADIO_BOX, w1, h1, aw1);
+	m_rightOffset = w1;
+	fontManager.Current ()->StringSize (CHECKED_RADIO_BOX, w1, h1, aw1);
+	if (w1 > m_rightOffset)
+		m_rightOffset = w1;
+	}
+else if (m_nType == NM_TYPE_NUMBER) {
+	int w1, h1, aw1;
+	char test_text [20];
+	nOthers++;
+	sprintf (test_text, "%d", m_maxValue);
+	fontManager.Current ()->StringSize (test_text, w1, h1, aw1);
+	m_rightOffset = w1;
+	sprintf (test_text, "%d", m_minValue);
+	fontManager.Current ()->StringSize (test_text, w1, h1, aw1);
+	if (w1 > m_rightOffset)
+		m_rightOffset = w1;
+	}
+else if (m_nType == NM_TYPE_INPUT) {
+	Assert (strlen (m_text) < NM_MAX_TEXT_LEN);
+	strncpy (m_savedText, m_text, NM_MAX_TEXT_LEN);
+	nOthers++;
+	nStringWidth = m_nTextLen*CCanvas::Current ()->Font ()->Width () + ((gameStates.menus.bHires?3:1)*m_nTextLen);
+	if (nStringWidth > MAX_TEXT_WIDTH) 
+		nStringWidth = MAX_TEXT_WIDTH;
+	m_value = -1;
+	}
+else if (m_nType == NM_TYPE_INPUT_MENU) {
+	Assert (strlen (m_text) < NM_MAX_TEXT_LEN);
+	strncpy (m_savedText, m_text, NM_MAX_TEXT_LEN);
+	nMenus++;
+	nStringWidth = m_nTextLen*CCanvas::Current ()->Font ()->Width () + ((gameStates.menus.bHires?3:1)*m_nTextLen);
+	m_value = -1;
+	m_group = 0;
+	}
+m_w = nStringWidth;
+m_h = nStringHeight;
+return nStringHeight;
+}
+
+// ------------------------------------------------------------------------------ 
+// ------------------------------------------------------------------------------ 
+// ------------------------------------------------------------------------------ 
+// Draw a left justfied string with black background.
+void CMenuManager::DrawRightStringWXY (int w1, int x, int y, const char* s)
+{
+	int	w, h, aw;
+
+fontManager.Current ()->StringSize (s, w, h, aw);
+x -= 3;
+if (w1 == 0) 
+	w1 = w;
+if (gameStates.ogl.nDrawBuffer != GL_BACK)
+	backgroundManager.Current ()->RenderClipped (CCanvas::Current (), x - w1, y, w1, h, x - w1, y);
+GrString (x - w, y, s, NULL);
+}
+
+// ------------------------------------------------------------------------------ 
+
+char* nmAllowedChars = NULL;
 
 //returns true if char is bAllowed
-int NMCharAllowed (char c)
+int CMenuManager::CharAllowed (char c)
 {
-	char *p = nmAllowedChars;
+	char* p = nmAllowedChars;
 
-	if (!p)
+if (!p)
+	return 1;
+
+while (*p) {
+	Assert (p [1]);
+	if (c>= p [0] && c<= p [1])
 		return 1;
-
-	while (*p) {
-		Assert (p [1]);
-
-		if (c>=p [0] && c<=p [1])
-			return 1;
-
-		p += 2;
+	p += 2;
 	}
-
-	return 0;
+return 0;
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
-void NMTrimWhitespace (char *text)
+int CMenuManager::TinyMenu (const char* pszTitle, const char* pszSubTitle, pMenuCallback callback)
 {
-	int i, l = (int) strlen (text);
-	for (i = l-1; i>=0; i--)	{
-		if (::isspace (text [i]))
-			text [i] = 0;
-		else
-			return;
-	}
+return Menu (pszTitle, pszSubTitle, callback, NULL, NULL, - 1, - 1, 1);
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
-int ExecMenuTiny (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP, 
-						int (*menuCallback) (int nItems, CMenuItem *itemP, int *lastKeyP, int nItem))
+int CMenuManager::FixedFontMenu (const char* pszTitle, const char* pszSubTitle, 
+											pMenuCallback callback, int* nCurItemP, char* filename, int width, int height)
 {
-return ExecMenu (pszTitle, pszSubTitle, nItems, itemP, menuCallback, NULL, NULL, -1, -1, 1);
+SetScreenMode (SCREEN_MENU);
+return Menu (pszTitle, pszSubTitle, callback, nCurItemP, filename, width, height, 0);
 }
 
-//------------------------------------------------------------------------------
-
-int ExecMenuFixedFont (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP, 
-							  int (*menuCallback) (int nItems, CMenuItem * itemP, int * lastKeyP, int nItem), 
-							  int *nCurItemP, char *filename, int width, int height){
-SetScreenMode (SCREEN_MENU);//hafta set the screen mode before calling or fonts might get changed/freed up if screen res changes
-//	return ExecMenu3_real (pszTitle, pszSubTitle, nItems, itemP, menuCallback, nItem, filename, width, height, GAME_FONT, GAME_FONT, GAME_FONT, GAME_FONT);
-return ExecMenu4 (pszTitle, pszSubTitle, nItems, itemP, menuCallback, nCurItemP, filename, width, height, 0);
-}
-
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
 //returns 1 if a control device button has been pressed
 int NMCheckButtonPress ()
@@ -702,7 +748,7 @@ int NMCheckButtonPress ()
 	return 0;
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
 extern int bRestoringMenu;
 
@@ -710,11 +756,11 @@ ubyte bHackDblClickMenuMode = 0;
 
 # define JOYDEFS_CALIBRATING 0
 
-#define CLOSE_X     (gameStates.menus.bHires?15:7)
-#define CLOSE_Y     (gameStates.menus.bHires?15:7)
-#define CLOSE_SIZE  (gameStates.menus.bHires?10:5)
+#define CLOSE_X (gameStates.menus.bHires?15:7)
+#define CLOSE_Y (gameStates.menus.bHires?15:7)
+#define CLOSE_SIZE (gameStates.menus.bHires?10:5)
 
-void NMDrawCloseBox (int x, int y)
+void CMenuManager::DrawCloseBox (int x, int y)
 {
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 GrRect (x + CLOSE_X, y + CLOSE_Y, x + CLOSE_X + CLOSE_SIZE, y + CLOSE_Y + CLOSE_SIZE);
@@ -722,11 +768,11 @@ CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 21, 21));
 GrRect (x + CLOSE_X + LHX (1), y + CLOSE_Y + LHX (1), x + CLOSE_X + CLOSE_SIZE - LHX (1), y + CLOSE_Y + CLOSE_SIZE - LHX (1));
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
-int NMDrawTitle (const char *pszTitle, CFont *font, uint color, int ty)
+int CMenuManager::DrawTitle (const char* pszTitle, CFont* font, uint color, int ty)
 {
-if (pszTitle && *pszTitle)	{
+if (pszTitle && *pszTitle) {
 		int w, h, aw;
 
 	fontManager.SetCurrent (font);
@@ -738,257 +784,170 @@ if (pszTitle && *pszTitle)	{
 return ty;
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
-void NMGetTitleSize (const char *pszTitle, CFont *font, int *tw, int *th)
+void CMenuManager::GetTitleSize (const char* pszTitle, CFont* font, int& tw, int& th)
 {
-if (pszTitle && *pszTitle)	{
+if (pszTitle && *pszTitle) {
 		int nStringWidth, nStringHeight, nAverageWidth;
 
 	fontManager.SetCurrent (font);
 	fontManager.Current ()->StringSize (pszTitle, nStringWidth, nStringHeight, nAverageWidth);
-	if (nStringWidth > *tw)
-		*tw = nStringWidth;
-	*th += nStringHeight;
+	if (nStringWidth > tw)
+		tw = nStringWidth;
+	th += nStringHeight;
 	}
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
-int NMGetMenuSize (CMenuItem *itemP, int nItems, int *w, int *h, int *aw, int *nMenus, int *nOthers)
+int CMenuManager::GetSize (int& w, int& h, int& aw, int& nMenus, int& nOthers)
 {
 	int	nStringWidth = 0, nStringHeight = 0, nAverageWidth = 0;
-	int	i, j;
 
 #if 0
 if ((gameOpts->menus.nHotKeys > 0) && !gameStates.app.bEnglish)
 	gameOpts->menus.nHotKeys = -1;
 #endif
-for (i = 0; i < nItems; i++, itemP++) {
-	if (!gameStates.app.bEnglish)
-		itemP->key = *(itemP->text - 1);
-	if (itemP->key) {
-		if (gameOpts->menus.nHotKeys < 0) {
-			if ((itemP->key < KEY_1) || (itemP->key > KEY_0))
-				itemP->key = -1;
-			}
-		else if (gameOpts->menus.nHotKeys == 0)
-			itemP->key = 0;
-		}
-	itemP->redraw = 1;
-	itemP->y = *h;
-	fontManager.Current ()->StringSize (itemP->text, nStringWidth, nStringHeight, nAverageWidth);
-	itemP->right_offset = 0;
-
-	if (gameStates.multi.bSurfingNet)
-		nStringHeight+=LHY (3);
-
-	itemP->savedText [0] = '\0';
-	if (itemP->nType == NM_TYPE_SLIDER) {
-		int w1, h1, aw1;
-		(*nOthers)++;
-		sprintf (itemP->savedText, "%s", SLIDER_LEFT);
-		for (j = 0; j< (itemP->maxValue - itemP->minValue+1); j++)	{
-			sprintf (itemP->savedText, "%s%s", itemP->savedText, SLIDER_MIDDLE);
-			}
-		sprintf (itemP->savedText, "%s%s", itemP->savedText, SLIDER_RIGHT);
-		fontManager.Current ()->StringSize (itemP->savedText, w1, h1, aw1);
-		nStringWidth += w1 + *aw;
-		}
-	else if (itemP->nType == NM_TYPE_MENU)	{
-		(*nMenus)++;
-		}
-	else if (itemP->nType == NM_TYPE_CHECK)	{
-		int w1, h1, aw1;
-		(*nOthers)++;
-		fontManager.Current ()->StringSize (NORMAL_CHECK_BOX, w1, h1, aw1);
-		itemP->right_offset = w1;
-		fontManager.Current ()->StringSize (CHECKED_CHECK_BOX, w1, h1, aw1);
-		if (w1 > itemP->right_offset)
-			itemP->right_offset = w1;
-		}
-	else if (itemP->nType == NM_TYPE_RADIO) {
-		int w1, h1, aw1;
-		(*nOthers)++;
-		fontManager.Current ()->StringSize (NORMAL_RADIO_BOX, w1, h1, aw1);
-		itemP->right_offset = w1;
-		fontManager.Current ()->StringSize (CHECKED_RADIO_BOX, w1, h1, aw1);
-		if (w1 > itemP->right_offset)
-			itemP->right_offset = w1;
-		}
-	else if  (itemP->nType==NM_TYPE_NUMBER)	{
-		int w1, h1, aw1;
-		char test_text [20];
-		(*nOthers)++;
-		sprintf (test_text, "%d", itemP->maxValue);
-		fontManager.Current ()->StringSize (test_text, w1, h1, aw1);
-		itemP->right_offset = w1;
-		sprintf (test_text, "%d", itemP->minValue);
-		fontManager.Current ()->StringSize (test_text, w1, h1, aw1);
-		if (w1 > itemP->right_offset)
-			itemP->right_offset = w1;
-		}
-	else if (itemP->nType == NM_TYPE_INPUT)	{
-		Assert (strlen (itemP->text) < NM_MAX_TEXT_LEN);
-		strncpy (itemP->savedText, itemP->text, NM_MAX_TEXT_LEN);
-		(*nOthers)++;
-		nStringWidth = itemP->nTextLen*CCanvas::Current ()->Font ()->Width ()+ ((gameStates.menus.bHires?3:1)*itemP->nTextLen);
-		if (nStringWidth > MAX_TEXT_WIDTH) 
-			nStringWidth = MAX_TEXT_WIDTH;
-		itemP->value = -1;
-		}
-	else if (itemP->nType == NM_TYPE_INPUT_MENU)	{
-		Assert (strlen (itemP->text) < NM_MAX_TEXT_LEN);
-		strncpy (itemP->savedText, itemP->text, NM_MAX_TEXT_LEN);
-		(*nMenus)++;
-		nStringWidth = itemP->nTextLen*CCanvas::Current ()->Font ()->Width ()+ ((gameStates.menus.bHires?3:1)*itemP->nTextLen);
-		itemP->value = -1;
-		itemP->group = 0;
-		}
-	itemP->w = nStringWidth;
-	itemP->h = nStringHeight;
-
-	if (nStringWidth > *w)
-		*w = nStringWidth;		// Save maximum width
-	if (nAverageWidth > *aw)
-		*aw = nAverageWidth;
-	*h += nStringHeight + 1;		// Find the height of all strings
+for (uint i = 0; i < int (ToS ()); i++) {
+	Item (i).GetSize (h, aw, nStringWidth, nStringHeight, nAverageWidth, nMenus, nOthers);
+	if (w < nStringWidth)
+		w = nStringWidth;		// Save maximum width
+	if (aw < nAverageWidth)
+		aw = nAverageWidth;
+	h += nStringHeight + 1;		// Find the height of all strings
 	}
 return nStringHeight;
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
-void NMSetItemPos (CMenuItem *itemP, int nItems, int twidth, int xOffs, int yOffs, int right_offset)
+void CMenuManager::SetItemPos (int twidth, int xOffs, int yOffs, int m_rightOffset)
 {
-	int	i, j;
-
-for (i = 0; i < nItems; i++)	{
-	if (gameOpts->menus.nStyle && ((itemP [i].x == (short) 0x8000) || itemP [i].centered)) {
-		itemP [i].centered = 1;
-		itemP [i].x = fontManager.Current ()->GetCenteredX (itemP [i].text);
+for (uint i = 0; i < int (ToS ()); i++) {
+	if (gameOpts->menus.nStyle && ((Item (i).m_x == (short) 0x8000) || Item (i).m_bCentered)) {
+		Item (i).m_bCentered = 1;
+		Item (i).m_x = fontManager.Current ()->GetCenteredX (Item (i).m_text);
 		}
 	else
-		itemP [i].x = xOffs + twidth + right_offset;
-	itemP [i].y += yOffs;
-	itemP [i].xSave = itemP [i].x;
-	itemP [i].ySave = itemP [i].y;
-	if (itemP [i].nType == NM_TYPE_RADIO)	{
+		Item (i).m_x = xOffs + twidth + m_rightOffset;
+	Item (i).m_y += yOffs;
+	Item (i).m_xSave = Item (i).m_x;
+	Item (i).m_ySave = Item (i).m_y;
+	if (Item (i).m_nType == NM_TYPE_RADIO) {
 		int fm = -1;	// ffs first marked one
-		for (j = 0; j < nItems; j++)	{
-			if ((itemP [j].nType == NM_TYPE_RADIO) && (itemP [j].group == itemP [i].group)) {
-				if ((fm == -1) && itemP [j].value)
+		for (uint j = 0; j < int (ToS ()); j++) {
+			if ((Item (j).m_nType == NM_TYPE_RADIO) && (Item (j).m_group == Item (i).m_group)) {
+				if ((fm == -1) && Item (j).m_value)
 					fm = j;
-				itemP [j].value = 0;
+				Item (j).m_value = 0;
 				}
 			}
 		if ( fm >= 0)
-			itemP [fm].value = 1;
+			Item (fm).m_value = 1;
 		else
-			itemP [i].value = 1;
+			Item (i).m_value = 1;
 		}
 	}
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
-int NMInitCtrl (tMenuProps *ctrlP, const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP)
+int CMenuManager::InitProps (const char* pszTitle, const char* pszSubTitle)
 {
-if ((ctrlP->scWidth == screen.Width ()) && (ctrlP->scHeight == screen.Height ()))
+if ((m_props.scWidth == screen.Width ()) && (m_props.scHeight == screen.Height ()))
 	return 0;
 
-	tMenuProps	ctrl = *ctrlP;
-	int			i, gap, haveTitle;
+	int	i, gap, haveTitle;
 
-ctrl.scWidth = screen.Width ();
-ctrl.scHeight = screen.Height ();
-ctrl.nDisplayMode = gameStates.video.nDisplayMode;
-NMGetTitleSize (pszTitle, TITLE_FONT, &ctrl.tw, &ctrl.th);
-NMGetTitleSize (pszSubTitle, SUBTITLE_FONT, &ctrl.tw, &ctrl.th);
+m_props.scWidth = screen.Width ();
+m_props.scHeight = screen.Height ();
+m_props.nDisplayMode = gameStates.video.nDisplayMode;
+GetTitleSize (pszTitle, TITLE_FONT, m_props.tw, m_props.th);
+GetTitleSize (pszSubTitle, SUBTITLE_FONT, m_props.tw, m_props.th);
 
 haveTitle = ((pszTitle && *pszTitle) || (pszSubTitle && *pszSubTitle));
 gap = haveTitle ? (int) LHY (8) : 0;
-ctrl.th += gap;		//put some space between pszTitles & body
-fontManager.SetCurrent (ctrl.bTinyMode ? SMALL_FONT : NORMAL_FONT);
+m_props.th += gap;		//put some space between pszTitles & body
+fontManager.SetCurrent (m_props.bTinyMode ? SMALL_FONT : NORMAL_FONT);
 
-ctrl.h = ctrl.th;
-ctrl.nMenus = ctrl.nOthers = 0;
-ctrl.nStringHeight = NMGetMenuSize (itemP, nItems, &ctrl.w, &ctrl.h, &ctrl.aw, &ctrl.nMenus, &ctrl.nOthers);
-ctrl.nMaxOnMenu = (((gameOpts->menus.nStyle && (ctrl.scHeight > 480)) ? ctrl.scHeight * 4 / 5 : 480) - ctrl.th - LHY (8)) / ctrl.nStringHeight - 2;
-if (/*!ctrl.bTinyMode &&*/ (ctrl.h > (ctrl.nMaxOnMenu * (ctrl.nStringHeight+1)) + gap)) {
-  ctrl.bIsScrollBox = 1;
-  ctrl.h = (ctrl.nMaxOnMenu * (ctrl.nStringHeight + haveTitle) + haveTitle * LHY (ctrl.bTinyMode ? 12 : 8));
+m_props.h = m_props.th;
+m_props.nMenus = m_props.nOthers = 0;
+m_props.nStringHeight = GetSize (m_props.w, m_props.h, m_props.aw, m_props.nMenus, m_props.nOthers);
+m_props.nMaxOnMenu = (((gameOpts->menus.nStyle && (m_props.scHeight > 480)) ? m_props.scHeight * 4 / 5 : 480) - m_props.th - LHY (8)) / m_props.nStringHeight - 2;
+if (/*!m_props.bTinyMode && */ (m_props.h > (m_props.nMaxOnMenu * (m_props.nStringHeight + 1)) + gap)) {
+ m_props.bIsScrollBox = 1;
+ m_props.h = (m_props.nMaxOnMenu * (m_props.nStringHeight + haveTitle) + haveTitle * LHY (m_props.bTinyMode ? 12 : 8));
  }
 else
-	ctrl.bIsScrollBox = 0;
-ctrl.nMaxDisplayable = (ctrl.nMaxOnMenu < nItems) ? ctrl.nMaxOnMenu : nItems;
-ctrl.right_offset = 0;
-if (ctrl.width > -1)
-	ctrl.w = ctrl.width;
-if (ctrl.height > -1)
-	ctrl.h = ctrl.height;
+	m_props.bIsScrollBox = 0;
+m_props.nMaxDisplayable = (m_props.nMaxOnMenu < int (ToS ())) ? m_props.nMaxOnMenu : int (ToS ());
+m_props.rightOffset = 0;
+if (m_props.width > - 1)
+	m_props.w = m_props.width;
+if (m_props.height > - 1)
+	m_props.h = m_props.height;
 
-for (i = 0; i < nItems; i++) {
-	itemP [i].w = ctrl.w;
-	if (itemP [i].right_offset > ctrl.right_offset)
-		ctrl.right_offset = itemP [i].right_offset;
-	if (itemP [i].noscroll && (i == ctrl.nMaxNoScroll))
-		ctrl.nMaxNoScroll++;
+for (i = 0; i < int (ToS ()); i++) {
+	Item (i).m_w = m_props.w;
+	if (Item (i).m_rightOffset > m_props.rightOffset)
+		m_props.rightOffset = Item (i).m_rightOffset;
+	if (Item (i).m_bNoScroll && (i == m_props.nMaxNoScroll))
+		m_props.nMaxNoScroll++;
 	}
-ctrl.nScrollOffset = ctrl.nMaxNoScroll;
-if (ctrl.right_offset > 0)
-	ctrl.right_offset += 3;
+m_props.nScrollOffset = m_props.nMaxNoScroll;
+if (m_props.rightOffset > 0)
+	m_props.rightOffset += 3;
 
-ctrl.w += ctrl.right_offset;
-ctrl.twidth = 0;
-if (ctrl.tw > ctrl.w)	{
-	ctrl.twidth = (ctrl.tw - ctrl.w) / 2;
-	ctrl.w = ctrl.tw;
+m_props.w += m_props.rightOffset;
+m_props.twidth = 0;
+if (m_props.tw > m_props.w) {
+	m_props.twidth = (m_props.tw - m_props.w) / 2;
+	m_props.w = m_props.tw;
 }
 
 if (bRestoringMenu) { 
-	ctrl.right_offset = 0; 
-	ctrl.twidth = 0;
+	m_props.rightOffset = 0; 
+	m_props.twidth = 0;
 	}
 
-if (ctrl.w > ctrl.scWidth)
-	ctrl.w = ctrl.scWidth;
-if (ctrl.h > ctrl.scHeight)
-	ctrl.h = ctrl.scHeight;
+if (m_props.w > m_props.scWidth)
+	m_props.w = m_props.scWidth;
+if (m_props.h > m_props.scHeight)
+	m_props.h = m_props.scHeight;
 
-ctrl.xOffs = (gameStates.menus.bHires ? 30 : 15);
-i = (ctrl.scWidth - ctrl.w) / 2;
-if (i < ctrl.xOffs)
-	ctrl.xOffs = i / 2;
-ctrl.yOffs = (gameStates.menus.bHires ? 30 : 15);
-if (ctrl.scHeight - ctrl.h < 2 * ctrl.yOffs)
-	ctrl.h = ctrl.scHeight - 2 * ctrl.yOffs;
-ctrl.w += 2 * ctrl.xOffs;
-ctrl.h += 2 * ctrl.yOffs;
-ctrl.x = (ctrl.scWidth - ctrl.w) / 2;
-ctrl.y = (ctrl.scHeight - ctrl.h) / 2;
+m_props.xOffs = (gameStates.menus.bHires ? 30 : 15);
+i = (m_props.scWidth - m_props.w) / 2;
+if (i < m_props.xOffs)
+	m_props.xOffs = i / 2;
+m_props.yOffs = (gameStates.menus.bHires ? 30 : 15);
+if (m_props.scHeight - m_props.h < 2 * m_props.yOffs)
+	m_props.h = m_props.scHeight - 2 * m_props.yOffs;
+m_props.w += 2 * m_props.xOffs;
+m_props.h += 2 * m_props.yOffs;
+m_props.x = (m_props.scWidth - m_props.w) / 2;
+m_props.y = (m_props.scHeight - m_props.h) / 2;
 if (gameOpts->menus.nStyle) {
-	ctrl.xOffs += ctrl.x;
-	ctrl.yOffs += ctrl.y;
+	m_props.xOffs += m_props.x;
+	m_props.yOffs += m_props.y;
 	}
-ctrl.bValid = 1;
-*ctrlP = ctrl;
-NMSetItemPos (itemP, nItems, ctrl.twidth, ctrl.xOffs, ctrl.yOffs, ctrl.right_offset);
+m_props.bValid = 1;
+SetItemPos (m_props.twidth, m_props.xOffs, m_props.yOffs, m_props.rightOffset);
 return 1;
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
-void NMSaveScreen (CCanvas **gameCanvasP)
+void CMenuManager::SaveScreen (CCanvas **gameCanvasP)
 {
 *gameCanvasP = CCanvas::Current ();
 CCanvas::Push ();
 CCanvas::SetCurrent (NULL);
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
-void NMRestoreScreen (char *filename, int bDontRestore)
+void CMenuManager::RestoreScreen (char* filename, int bDontRestore)
 {
 //CCanvas::SetCurrent (bg->menu_canvas);
 backgroundManager.Remove ();
@@ -1000,57 +959,45 @@ CCanvas::Pop ();
 GrabMouse (1, 0);
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
-void ShowMenuHelp (char *szHelp)
+void CMenuManager::FreeTextBms (void)
 {
-if (szHelp && *szHelp) {
-	int nInMenu = gameStates.menus.nInMenu;
-	int bFastMenus = gameOpts->menus.bFastMenus;
-	gameStates.menus.nInMenu = 0;
-	//gameOpts->menus.bFastMenus = 0;
-	gameData.menu.helpColor = RGBA_PAL (47, 47, 47);
-	gameData.menu.colorOverride = gameData.menu.helpColor;
-	ExecMessageBox ("D2X-XL online help", NULL, -3, szHelp, " ", TXT_CLOSE);
-	gameData.menu.colorOverride = 0;
-	gameOpts->menus.bFastMenus = bFastMenus;
-	gameStates.menus.nInMenu = nInMenu;
-	}
+for (int i = 0; i < int (ToS ()); i++)
+	Item (i).Destroy ();
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
-#define REDRAW_ALL	for (i = 0; i < nItems; i++) itemP [i].redraw = 1; bRedrawAll = 1
+#define REDRAW_ALL	for (i = 0; i < int (ToS ()); i++) Item (i).m_bRedraw = 1; bRedrawAll = 1
 
-int ExecMenu (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP, 
-				  int (*menuCallback) (int nItems, CMenuItem *itemP, int *lastKeyP, int nItem), 
-				  int *nCurItemP, char *filename, int width, int height, int bTinyMode)
+int CMenuManager::Menu (const char* pszTitle, const char* pszSubTitle, 
+								pMenuCallback callback, int* nCurItemP, char* filename, int width, int height, int bTinyMode)
 {
 	int			bKeyRepeat, done, nItem = nCurItemP ? *nCurItemP : 0;
-	int			choice, old_choice, i;
-	tMenuProps	ctrl;
+	int			choice, oldChoice, i;
 	int			k, nLastScrollCheck = -1, sx, sy;
-	int			bAllText=0;		//set true if all text itemP
-	int			sound_stopped=0, time_stopped=0;
-   int			topChoice;   // Is this a scrolling box? Set to 0 at init
+	int			bAllText = 0;		//set true if all text itemP
+	int			sound_stopped = 0, time_stopped = 0;
+	int			topChoice;// Is this a scrolling box? Set to 0 at init
 	int			bDontRestore = 0;
 	int			bRedraw = 0, bRedrawAll = 0, bStart = 1;
 	CCanvas*		gameCanvasP;
 	int			bWheelUp, bWheelDown, nMouseState, nOldMouseState, bDblClick = 0;
-	int			mx=0, my=0, x1 = 0, x2, y1, y2;
+	int			mx = 0, my = 0, x1 = 0, x2, y1, y2;
 	int			bLaunchOption = 0;
 	int			bCloseBox = 0;
 
 if (gameStates.menus.nInMenu)
-	return -1;
-memset (&ctrl, 0, sizeof (ctrl));
-ctrl.width = width;
-ctrl.height = height;
-ctrl.bTinyMode = bTinyMode;
+	return - 1;
+memset (&m_props, 0, sizeof (m_props));
+m_props.width = width;
+m_props.height = height;
+m_props.bTinyMode = bTinyMode;
 FlushInput ();
 
-if (nItems < 1)
-	return -1;
+if (int (ToS ()) < 1)
+	return - 1;
 if (gameStates.app.bGameRunning)
 	backgroundManager.LoadStars ();
 SDL_ShowCursor (0);
@@ -1061,12 +1008,12 @@ if (!gameOpts->menus.nStyle && (gameStates.app.nFunctionMode == FMODE_GAME) && !
 	sound_stopped = 1;
 	}
 
-if (!(gameOpts->menus.nStyle || (IsMultiGame && (gameStates.app.nFunctionMode == FMODE_GAME) &&(!gameStates.app.bEndLevelSequence)))) {
+if (!(gameOpts->menus.nStyle || (IsMultiGame && (gameStates.app.nFunctionMode == FMODE_GAME) && (!gameStates.app.bEndLevelSequence)))) {
 	time_stopped = 1;
 	StopTime ();
 	#ifdef TACTILE 
-	  if (TactileStick)
-		  DisableForces ();
+	 if (TactileStick)
+		 DisableForces ();
 	#endif
 	}
 
@@ -1081,7 +1028,7 @@ if (!gameOpts->menus.nStyle) {
 		GrUpdate (0);
 		}
 	}
-NMSaveScreen (&gameCanvasP);
+SaveScreen (&gameCanvasP);
 bKeyRepeat = gameStates.input.keys.bRepeat;
 gameStates.input.keys.bRepeat = 1;
 if (nItem == -1)
@@ -1090,12 +1037,12 @@ else {
 	if (nItem < 0) 
 		nItem = 0;
 	else 
-		nItem %= nItems;
+		nItem %= int (ToS ());
 	choice = nItem;
 	bDblClick = 1;
-	while (itemP [choice].nType == NM_TYPE_TEXT) {
+	while (Item (choice).m_nType == NM_TYPE_TEXT) {
 		choice++;
-		if (choice >= nItems)
+		if (choice >= int (ToS ()))
 			choice = 0; 
 		if (choice == nItem) {
 			choice = 0; 
@@ -1107,9 +1054,9 @@ else {
 
 done = 0;
 topChoice = 0;
-while (itemP [topChoice].nType == NM_TYPE_TEXT) {
+while (Item (topChoice).m_nType == NM_TYPE_TEXT) {
 	topChoice++;
-	if (topChoice >= nItems)
+	if (topChoice >= int (ToS ()))
 		topChoice = 0; 
 	if (topChoice == nItem) {
 		topChoice = 0; 
@@ -1135,7 +1082,7 @@ while (!done) {
 		MultiSendTyping ();
 		}
 	if (!JOYDEFS_CALIBRATING)
-		SDL_ShowCursor (1);      // possibly hidden
+		SDL_ShowCursor (1); // possibly hidden
 	nOldMouseState = nMouseState;
 	if (!gameStates.menus.bReordering) {
 		int b = gameOpts->legacy.bInput;
@@ -1156,37 +1103,37 @@ while (!done) {
 		k = KeyInKey ();
 	if (mouseData.bDoubleClick)
 		k = KEY_ENTER;
-	if ((ctrl.scWidth != screen.Width ()) || (ctrl.scHeight != screen.Height ())) {
-		memset (&ctrl, 0, sizeof (ctrl));
-		ctrl.width = width;
-		ctrl.height = height;
-		ctrl.bTinyMode = bTinyMode;
+	if ((m_props.scWidth != screen.Width ()) || (m_props.scHeight != screen.Height ())) {
+		memset (&m_props, 0, sizeof (m_props));
+		m_props.width = width;
+		m_props.height = height;
+		m_props.bTinyMode = bTinyMode;
 		}
 #if 1
-	if (ctrl.bValid && (ctrl.nDisplayMode != gameStates.video.nDisplayMode)) {
-		NMFreeAllTextBms (itemP, nItems);
+	if (m_props.bValid && (m_props.nDisplayMode != gameStates.video.nDisplayMode)) {
+		FreeTextBms ();
 		backgroundManager.Remove (); //bDontRestore?
 		SetScreenMode (SCREEN_MENU);
-		NMSaveScreen (&gameCanvasP);
+		SaveScreen (&gameCanvasP);
 //		RemapFontsAndMenus (1);
-		memset (&ctrl, 0, sizeof (ctrl));
-		ctrl.width = width;
-		ctrl.height = height;
-		ctrl.bTinyMode = bTinyMode;
+		memset (&m_props, 0, sizeof (m_props));
+		m_props.width = width;
+		m_props.height = height;
+		m_props.bTinyMode = bTinyMode;
 		}
 #endif
-	if (NMInitCtrl (&ctrl, pszTitle, pszSubTitle, nItems, itemP)) {
-		backgroundManager.Setup (filename, ctrl.x, ctrl.y, ctrl.w, ctrl.h);
+	if (InitProps (pszTitle, pszSubTitle)) {
+		backgroundManager.Setup (filename, m_props.x, m_props.y, m_props.w, m_props.h);
 		if (!gameOpts->menus.nStyle)
 			CCanvas::SetCurrent (backgroundManager.Canvas ());
 		bRedraw = 0;
-		ctrl.ty = ctrl.yOffs;
-		if (choice > ctrl.nScrollOffset + ctrl.nMaxOnMenu - 1)
-			ctrl.nScrollOffset = choice - ctrl.nMaxOnMenu + 1;
+		m_props.ty = m_props.yOffs;
+		if (choice > m_props.nScrollOffset + m_props.nMaxOnMenu - 1)
+			m_props.nScrollOffset = choice - m_props.nMaxOnMenu + 1;
 		}
 	if (!gameOpts->menus.nStyle) {
-		if (menuCallback)
-			(*menuCallback) (nItems, itemP, &k, choice);
+		if (callback)
+			(*callback) (*this, k, choice);
 		}
 	else {
 		if (gameStates.app.bGameRunning) {
@@ -1212,13 +1159,13 @@ while (!done) {
 		int t;
 		backgroundManager.Draw ();
 		if (!gameStates.app.bGameRunning)
-			console.Draw();
-		if (menuCallback)
-     		choice = (*menuCallback) (nItems, itemP, &k, choice);
-		t = NMDrawTitle (pszTitle, TITLE_FONT, RGBA_PAL (31, 31, 31), ctrl.yOffs);
-		NMDrawTitle (pszSubTitle, SUBTITLE_FONT, RGBA_PAL (21, 21, 21), t);
+			console.Draw ();
+		if (callback)
+ 			choice = (*callback) (*this, k, choice);
+		t = DrawTitle (pszTitle, TITLE_FONT, RGBA_PAL (31, 31, 31), m_props.yOffs);
+		DrawTitle (pszSubTitle, SUBTITLE_FONT, RGBA_PAL (21, 21, 21), t);
 		if (!bRedraw)
-			ctrl.ty = t;
+			m_props.ty = t;
 		fontManager.SetCurrent (bTinyMode ? SMALL_FONT : NORMAL_FONT);
 		}
 	if (!time_stopped){
@@ -1227,8 +1174,8 @@ while (!done) {
 			k = -2;
 		}
 
-	if (k < -1) {
-		bDontRestore = (k == -3);		//-3 means don't restore
+	if (k < - 1) {
+		bDontRestore = (k == -3);		// - 3 means don't restore
 		if (choice >= 0)
 			choice = k;
 		else {
@@ -1238,9 +1185,9 @@ while (!done) {
 		k = -1;
 		done = 1;
 		}
-old_choice = choice;
-if (k && (console.Events (k) || bWheelUp || bWheelDown))
-	switch (k)	{
+	oldChoice = choice;
+	if (k && (console.Events (k) || bWheelUp || bWheelDown))
+		switch (k) {
 
 		case KEY_SHIFTED + KEY_ESC:
 			console.Show ();
@@ -1250,8 +1197,7 @@ if (k && (console.Events (k) || bWheelUp || bWheelDown))
 		case KEY_I:
 		 if (gameStates.multi.bSurfingNet && !bAlreadyShowingInfo)
 			 ShowNetGameInfo (choice - 2 - gameStates.multi.bUseTracker);
-		 if (gameStates.multi.bSurfingNet && bAlreadyShowingInfo)
-			{
+		 if (gameStates.multi.bSurfingNet && bAlreadyShowingInfo) {
 			 done = 1;
 			 choice = -1;
 			}
@@ -1261,16 +1207,16 @@ if (k && (console.Events (k) || bWheelUp || bWheelDown))
 		 if (gameStates.multi.bSurfingNet && !bAlreadyShowingInfo)
 			 NetworkRequestPlayerNames (choice - 2 - gameStates.multi.bUseTracker);
 		 if (gameStates.multi.bSurfingNet && bAlreadyShowingInfo) {
-			 done=1;
-			 choice=-1;
+			 done = 1;
+			 choice = - 1;
 			}
 		 break;
 
-		case KEY_CTRLED+KEY_F1:
-			SwitchDisplayMode (-1);
+		case KEY_CTRLED + KEY_F1:
+			SwitchDisplayMode ( - 1);
 			break;
 
-		case KEY_CTRLED+KEY_F2:
+		case KEY_CTRLED + KEY_F2:
 			SwitchDisplayMode (1);
 			break;
 
@@ -1282,14 +1228,15 @@ if (k && (console.Events (k) || bWheelUp || bWheelDown))
 		case KEY_COMMAND + KEY_P:
 		case KEY_CTRLED + KEY_P:
 		case KEY_PAUSE:
-		 if (bPauseableMenu) {
-			 bPauseableMenu=0;
-			 done=1;
-		 	 choice=-1;
-			}
-		 else
-			 gameData.app.bGamePaused = !gameData.app.bGamePaused;
-		 break;
+			if (bPauseableMenu) {
+				bPauseableMenu = 0;
+				done = 1;
+				choice = - 1;
+				}
+			else
+				gameData.app.bGamePaused = !gameData.app.bGamePaused;
+			break;
+
 		case KEY_TAB + KEY_SHIFTED:
 		case KEY_UP:
 		case KEY_PAD8:
@@ -1297,116 +1244,116 @@ if (k && (console.Events (k) || bWheelUp || bWheelDown))
 				break;
 			do {
 				choice--;
-      		if (ctrl.bIsScrollBox) {
-           		nLastScrollCheck=-1;
-              	if (choice < topChoice) { 
-						choice = nItems - 1; 
-						ctrl.nScrollOffset = nItems - ctrl.nMaxDisplayable + ctrl.nMaxNoScroll;
-						if (ctrl.nScrollOffset < ctrl.nMaxNoScroll)
-							ctrl.nScrollOffset = ctrl.nMaxNoScroll;
+ 				if (m_props.bIsScrollBox) {
+					nLastScrollCheck = - 1;
+		 			if (choice < topChoice) { 
+						choice = int (ToS ()) - 1; 
+						m_props.nScrollOffset = int (ToS ()) - m_props.nMaxDisplayable + m_props.nMaxNoScroll;
+						if (m_props.nScrollOffset < m_props.nMaxNoScroll)
+							m_props.nScrollOffset = m_props.nMaxNoScroll;
 						REDRAW_ALL;
 						break; 
 						}
-             	else if (choice < ctrl.nScrollOffset) {
+					else if (choice < m_props.nScrollOffset) {
 						REDRAW_ALL;
-                  ctrl.nScrollOffset--;
-						if (ctrl.nScrollOffset < ctrl.nMaxNoScroll)
-							ctrl.nScrollOffset = ctrl.nMaxNoScroll;
-					   }
-	           	}
-           	else {
-           		if (choice >= nItems) 
-						choice=0;
-            	else if (choice < 0) 
-						choice = nItems - 1;
-           		}
-				} while (itemP [choice].nType == NM_TYPE_TEXT);
-			if ((itemP [choice].nType==NM_TYPE_INPUT) &&(choice != old_choice))
-				itemP [choice].value = -1;
-			if ((old_choice>-1) &&(itemP [old_choice].nType==NM_TYPE_INPUT_MENU) &&(old_choice != choice))	{
-				itemP [old_choice].group=0;
-				strcpy (itemP [old_choice].text, itemP [old_choice].savedText);
-				itemP [old_choice].value = -1;
-			}
-			if (old_choice>-1) 
-				itemP [old_choice].redraw = 1;
-			itemP [choice].redraw=1;
+						m_props.nScrollOffset--;
+						if (m_props.nScrollOffset < m_props.nMaxNoScroll)
+							m_props.nScrollOffset = m_props.nMaxNoScroll;
+						}
+					}
+				else {
+					if (choice >= int (ToS ())) 
+						choice = 0;
+					else if (choice < 0) 
+						choice = int (ToS ()) - 1;
+					}
+				} while (Item (choice).m_nType == NM_TYPE_TEXT);
+			if ((Item (choice).m_nType == NM_TYPE_INPUT) && (choice != oldChoice))
+				Item (choice).m_value = -1;
+			if ((oldChoice> - 1) && (Item (oldChoice).m_nType == NM_TYPE_INPUT_MENU) && (oldChoice != choice)) {
+				Item (oldChoice).m_group = 0;
+				strcpy (Item (oldChoice).m_text, Item (oldChoice).m_savedText);
+				Item (oldChoice).m_value = -1;
+				}
+			if (oldChoice> - 1) 
+				Item (oldChoice).m_bRedraw = 1;
+			Item (choice).m_bRedraw = 1;
 			break;
 
-		case KEY_TAB:
-		case KEY_DOWN:
-		case KEY_PAD2:
-      	// ((0, "Pressing down! ctrl.bIsScrollBox=%d", ctrl.bIsScrollBox);
-     		if (bAllText) 
+			case KEY_TAB:
+			case KEY_DOWN:
+			case KEY_PAD2:
+		// ((0, "Pressing down! m_props.bIsScrollBox = %d", m_props.bIsScrollBox);
+			if (bAllText) 
 				break;
 			do {
 				choice++;
-        		if (ctrl.bIsScrollBox) {
-            	nLastScrollCheck = -1;
-					if (choice == nItems) {
-						choice = 0;
-						if (ctrl.nScrollOffset) {
+				if (m_props.bIsScrollBox) {
+					nLastScrollCheck = -1;
+						if (choice == int (ToS ())) {
+							choice = 0;
+							if (m_props.nScrollOffset) {
+								REDRAW_ALL;
+								m_props.nScrollOffset = m_props.nMaxNoScroll;
+								}
+							}
+						if (choice >= m_props.nMaxOnMenu + m_props.nScrollOffset - m_props.nMaxNoScroll) {
 							REDRAW_ALL;
-			            ctrl.nScrollOffset = ctrl.nMaxNoScroll;
+							m_props.nScrollOffset++;
 							}
 						}
-              	if (choice >= ctrl.nMaxOnMenu + ctrl.nScrollOffset - ctrl.nMaxNoScroll) {
-						REDRAW_ALL;
-                  ctrl.nScrollOffset++;
+					else {
+						if (choice < 0) 
+							choice = int (ToS ()) - 1;
+						else if (choice >= int (ToS ())) 
+							choice = 0;
 						}
-           		}
-            else {
-         		if (choice < 0) 
-						choice=nItems-1;
-           		else if (choice >= nItems) 
-						choice=0;
-           		}
-				} while (itemP [choice].nType==NM_TYPE_TEXT);
-                                                      
-			if ((itemP [choice].nType == NM_TYPE_INPUT) && (choice != old_choice))
-				itemP [choice].value = -1;
-			if ((old_choice>-1) &&(itemP [old_choice].nType==NM_TYPE_INPUT_MENU) &&(old_choice != choice))	{
-				itemP [old_choice].group=0;
-				strcpy (itemP [old_choice].text, itemP [old_choice].savedText);
-				itemP [old_choice].value = -1;
+					} while (Item (choice).m_nType == NM_TYPE_TEXT);
+ 
+			if ((Item (choice).m_nType == NM_TYPE_INPUT) && (choice != oldChoice))
+				Item (choice).m_value = -1;
+			if ((oldChoice> - 1) && (Item (oldChoice).m_nType == NM_TYPE_INPUT_MENU) && (oldChoice != choice)) {
+				Item (oldChoice).m_group = 0;
+				strcpy (Item (oldChoice).m_text, Item (oldChoice).m_savedText);
+				Item (oldChoice).m_value = -1;
 			}
-			if (old_choice>-1)
-				itemP [old_choice].redraw=1;
-			itemP [choice].redraw=1;
+			if (oldChoice> - 1)
+				Item (oldChoice).m_bRedraw = 1;
+			Item (choice).m_bRedraw = 1;
 			break;
 
 		case KEY_SPACEBAR:
 checkOption:
 radioOption:
-			if (choice > -1)	{
-				switch (itemP [choice].nType)	{
+			if (choice > - 1) {
+				switch (Item (choice).m_nType) {
 				case NM_TYPE_MENU:
 				case NM_TYPE_INPUT:
 				case NM_TYPE_INPUT_MENU:
 					break;
 				case NM_TYPE_CHECK:
-					if (itemP [choice].value)
-						itemP [choice].value = 0;
+					if (Item (choice).m_value)
+						Item (choice).m_value = 0;
 					else
-						itemP [choice].value = 1;
-					if (ctrl.bIsScrollBox) {
-						if (choice== (ctrl.nMaxOnMenu+ctrl.nScrollOffset-1) || choice==ctrl.nScrollOffset)
-							nLastScrollCheck=-1;				
+						Item (choice).m_value = 1;
+					if (m_props.bIsScrollBox) {
+						if (choice == (m_props.nMaxOnMenu + m_props.nScrollOffset - 1) || choice == m_props.nScrollOffset)
+							nLastScrollCheck = - 1;				
 						 }
 			
-					itemP [choice].redraw=1;
+					Item (choice).m_bRedraw = 1;
 					if (bLaunchOption)
 						goto launchOption;
 					break;
 				case NM_TYPE_RADIO:
-					for (i = 0; i < nItems; i++)	{
-						if ((i != choice) &&(itemP [i].nType == NM_TYPE_RADIO) && (itemP [i].group == itemP [choice].group) &&(itemP [i].value))	{
-							itemP [i].value = 0;
-							itemP [i].redraw = 1;
+					for (i = 0; i < int (ToS ()); i++) {
+						if ((i != choice) && (Item (i).m_nType == NM_TYPE_RADIO) && (Item (i).m_group == Item (choice).m_group) && (Item (i).m_value)) {
+							Item (i).m_value = 0;
+							Item (i).m_bRedraw = 1;
 						}
 					}
-					itemP [choice].value = 1;
-					itemP [choice].redraw = 1;
+					Item (choice).m_value = 1;
+					Item (choice).m_bRedraw = 1;
 					if (bLaunchOption)
 						goto launchOption;
 					break;
@@ -1414,55 +1361,55 @@ radioOption:
 			}
 			break;
 
-      case KEY_SHIFTED+KEY_UP:
-         if (gameStates.menus.bReordering && choice != topChoice) {
-            Swap (itemP [choice].text, itemP [choice - 1].text);
-            Swap (itemP [choice].value, itemP [choice - 1].value);
-            itemP [choice].rebuild =
-            itemP [choice - 1].rebuild = 1;
-            choice--;
+		case KEY_SHIFTED + KEY_UP:
+			if (gameStates.menus.bReordering && choice != topChoice) {
+				::Swap (Item (choice).m_text, Item (choice - 1).m_text);
+				::Swap (Item (choice).m_value, Item (choice - 1).m_value);
+				Item (choice).m_bRebuild = 
+				Item (choice - 1).m_bRebuild = 1;
+				choice--;
 				}
-         break;
+			 break;
 
-      case KEY_SHIFTED+KEY_DOWN:
-         if (gameStates.menus.bReordering && choice !=  (nItems-1)) {
-            Swap (itemP [choice].text, itemP [choice + 1].text);
-            Swap (itemP [choice].value, itemP [choice + 1].value);
-            itemP [choice].rebuild =
-            itemP [choice + 1].rebuild = 1;
-            choice++;
+		case KEY_SHIFTED + KEY_DOWN:
+			if (gameStates.menus.bReordering && choice !=(int (ToS ()) - 1)) {
+				::Swap (Item (choice).m_text, Item (choice + 1).m_text);
+				::Swap (Item (choice).m_value, Item (choice + 1).m_value);
+				Item (choice).m_bRebuild = 
+				Item (choice + 1).m_bRebuild = 1;
+				choice++;
 				}
-         break;
-                
+			 break;
+
 		case KEY_ALTED + KEY_ENTER: {
 			//int bLoadCustomBg = NMFreeCustomBg ();
-			NMFreeAllTextBms (itemP, nItems);
+			FreeTextBms ();
 			backgroundManager.Restore ();
 			//NMRestoreScreen (filename, & bDontRestore);
 			GrToggleFullScreenGame ();
 			GrabMouse (0, 0);
 			SetScreenMode (SCREEN_MENU);
-			NMSaveScreen (&gameCanvasP);
+			SaveScreen (&gameCanvasP);
 			RemapFontsAndMenus (1);
-			memset (&ctrl, 0, sizeof (ctrl));
-			ctrl.width = width;
-			ctrl.height = height;
-			ctrl.bTinyMode = bTinyMode;
+			memset (&m_props, 0, sizeof (m_props));
+			m_props.width = width;
+			m_props.height = height;
+			m_props.bTinyMode = bTinyMode;
 			continue;
 			}
 
 		case KEY_ENTER:
 		case KEY_PADENTER:
 launchOption:
-			if ((choice > -1) && (itemP [choice].nType == NM_TYPE_INPUT_MENU) && (itemP [choice].group == 0)) {
-				itemP [choice].group = 1;
-				itemP [choice].redraw = 1;
-				if (!strnicmp (itemP [choice].savedText, TXT_EMPTY, strlen (TXT_EMPTY))) {
-					itemP [choice].text [0] = 0;
-					itemP [choice].value = -1;
+			if ((choice > - 1) && (Item (choice).m_nType == NM_TYPE_INPUT_MENU) && (Item (choice).m_group == 0)) {
+				Item (choice).m_group = 1;
+				Item (choice).m_bRedraw = 1;
+				if (!strnicmp (Item (choice).m_savedText, TXT_EMPTY, strlen (TXT_EMPTY))) {
+					Item (choice).m_text [0] = 0;
+					Item (choice).m_value = -1;
 					}
 				else {
-					NMTrimWhitespace (itemP [choice].text);
+					Item (choice).TrimWhitespace ();
 					}
 				}
 			else {
@@ -1473,11 +1420,11 @@ launchOption:
 			break;
 
 		case KEY_ESC:
-			if ((choice > -1) &&(itemP [choice].nType==NM_TYPE_INPUT_MENU) &&(itemP [choice].group == 1)) {
-				itemP [choice].group=0;
-				strcpy (itemP [choice].text, itemP [choice].savedText);
-				itemP [choice].redraw=1;
-				itemP [choice].value = -1;
+			if ((choice > - 1) && (Item (choice).m_nType == NM_TYPE_INPUT_MENU) && (Item (choice).m_group == 1)) {
+				Item (choice).m_group = 0;
+				strcpy (Item (choice).m_text, Item (choice).m_savedText);
+				Item (choice).m_bRedraw = 1;
+				Item (choice).m_value = -1;
 				}
 			else {
 				done = 1;
@@ -1487,61 +1434,61 @@ launchOption:
 			}
 			break;
 
-		case KEY_COMMAND+KEY_SHIFTED+KEY_P:
+		case KEY_COMMAND + KEY_SHIFTED + KEY_P:
 		case KEY_ALTED + KEY_F9:
 			gameStates.app.bSaveScreenshot = 1;
 			SaveScreenShot (NULL, 0);
-			for (i = 0;i < nItems;i++)
-				itemP [i].redraw=1;
+			for (i = 0;i < int (ToS ());i++)
+				Item (i).m_bRedraw = 1;
 		
 			break;
 
 		#if DBG
 		case KEY_BACKSP:
-			if ((choice > -1) && (itemP [choice].nType != NM_TYPE_INPUT) && (itemP [choice].nType != NM_TYPE_INPUT_MENU))
+			if ((choice > - 1) && (Item (choice).m_nType != NM_TYPE_INPUT) && (Item (choice).m_nType != NM_TYPE_INPUT_MENU))
 				Int3 (); 
 			break;
 		#endif
 
 		case KEY_F1:
-			ShowMenuHelp (itemP [choice].szHelp);
+			Item (choice).ShowHelp ();
 			break;
 		}
 
 		if (!done && nMouseState && !nOldMouseState && !bAllText) {
 			MouseGetPos (&mx, &my);
-			for (i = 0; i < nItems; i++)	{
-				x1 = CCanvas::Current ()->Left () + itemP [i].x - itemP [i].right_offset - 6;
-				x2 = x1 + itemP [i].w;
-				y1 = CCanvas::Current ()->Top () + itemP [i].y;
-				y2 = y1 + itemP [i].h;
-				if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
-					if (i + ctrl.nScrollOffset - ctrl.nMaxNoScroll != choice) {
+			for (i = 0; i < int (ToS ()); i++) {
+				x1 = CCanvas::Current ()->Left () + Item (i).m_x - Item (i).m_rightOffset - 6;
+				x2 = x1 + Item (i).m_w;
+				y1 = CCanvas::Current ()->Top () + Item (i).m_y;
+				y2 = y1 + Item (i).m_h;
+				if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
+					if (i + m_props.nScrollOffset - m_props.nMaxNoScroll != choice) {
 						if (bHackDblClickMenuMode) 
 							bDblClick = 0; 
 					}
 				
-					choice = i + ctrl.nScrollOffset - ctrl.nMaxNoScroll;
-					if (choice >= 0 && choice < nItems)
-						switch (itemP [choice].nType)	{
+					choice = i + m_props.nScrollOffset - m_props.nMaxNoScroll;
+					if (choice >= 0 && choice < int (ToS ()))
+						switch (Item (choice).m_nType) {
 							case NM_TYPE_CHECK:
-								itemP [choice].value = !itemP [choice].value;
-								itemP [choice].redraw=1;
-								if (ctrl.bIsScrollBox)
-									nLastScrollCheck=-1;
+								Item (choice).m_value = !Item (choice).m_value;
+								Item (choice).m_bRedraw = 1;
+								if (m_props.bIsScrollBox)
+									nLastScrollCheck = - 1;
 								break;
 							case NM_TYPE_RADIO:
-								for (i = 0; i < nItems; i++)	{
-									if ((i!=choice) &&(itemP [i].nType==NM_TYPE_RADIO) &&(itemP [i].group==itemP [choice].group) &&(itemP [i].value))	{
-										itemP [i].value = 0;
-										itemP [i].redraw = 1;
+								for (i = 0; i < int (ToS ()); i++) {
+									if ((i!= choice) && (Item (i).m_nType == NM_TYPE_RADIO) && (Item (i).m_group == Item (choice).m_group) && (Item (i).m_value)) {
+										Item (i).m_value = 0;
+										Item (i).m_bRedraw = 1;
 									}
 								}
-								itemP [choice].value = 1;
-								itemP [choice].redraw = 1;
+								Item (choice).m_value = 1;
+								Item (choice).m_bRedraw = 1;
 								break;
 							}
-					itemP [old_choice].redraw=1;
+					Item (oldChoice).m_bRedraw = 1;
 					break;
 				}
 			}
@@ -1557,64 +1504,64 @@ launchOption:
 			MouseGetPos (&mx, &my);
 		
 			// check possible scrollbar stuff first
-			if (ctrl.bIsScrollBox) {
+			if (m_props.bIsScrollBox) {
 				int i, arrowWidth, arrowHeight, aw;
 			
-				if (ctrl.nScrollOffset > ctrl.nMaxNoScroll) {
+				if (m_props.nScrollOffset > m_props.nMaxNoScroll) {
 					fontManager.Current ()->StringSize (UP_ARROW_MARKER, arrowWidth, arrowHeight, aw);
-					x2 = CCanvas::Current ()->Left () + itemP [ctrl.nScrollOffset].x- (gameStates.menus.bHires?24:12);
-		         y1 = CCanvas::Current ()->Top () + itemP [ctrl.nScrollOffset].y- ((ctrl.nStringHeight+1)*(ctrl.nScrollOffset - ctrl.nMaxNoScroll));
+					x2 = CCanvas::Current ()->Left () + Item (m_props.nScrollOffset).m_x - (gameStates.menus.bHires ? 24 : 12);
+					 y1 = CCanvas::Current ()->Top () + Item (m_props.nScrollOffset).m_y - ((m_props.nStringHeight + 1)*(m_props.nScrollOffset - m_props.nMaxNoScroll));
 					x1 = x2 - arrowWidth;
 					y2 = y1 + arrowHeight;
-					if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
+					if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 						choice--;
-		           	nLastScrollCheck=-1;
-		            if (choice < ctrl.nScrollOffset) {
+						nLastScrollCheck = - 1;
+						if (choice < m_props.nScrollOffset) {
 							REDRAW_ALL;
-		               ctrl.nScrollOffset--;
-			            }
+							m_props.nScrollOffset--;
+							}
 						}
 					}
-				if ((i = ctrl.nScrollOffset + ctrl.nMaxDisplayable - ctrl.nMaxNoScroll) < nItems) {
+				if ((i = m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll) < int (ToS ())) {
 					fontManager.Current ()->StringSize (DOWN_ARROW_MARKER, arrowWidth, arrowHeight, aw);
-					x2 = CCanvas::Current ()->Left () + itemP [i-1].x - (gameStates.menus.bHires?24:12);
-					y1 = CCanvas::Current ()->Top () + itemP [i-1].y - ((ctrl.nStringHeight+1)*(ctrl.nScrollOffset - ctrl.nMaxNoScroll));
+					x2 = CCanvas::Current ()->Left () + Item (i - 1).m_x - (gameStates.menus.bHires?24:12);
+					y1 = CCanvas::Current ()->Top () + Item (i - 1).m_y - ((m_props.nStringHeight + 1)*(m_props.nScrollOffset - m_props.nMaxNoScroll));
 					x1 = x2 - arrowWidth;
 					y2 = y1 + arrowHeight;
-					if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
+					if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 						choice++;
-		            nLastScrollCheck=-1;
-		            if (choice >= ctrl.nMaxOnMenu + ctrl.nScrollOffset) {
+						nLastScrollCheck = - 1;
+						if (choice >= m_props.nMaxOnMenu + m_props.nScrollOffset) {
 							REDRAW_ALL;
-		               ctrl.nScrollOffset++;
+							m_props.nScrollOffset++;
 							}
 						}
 					}
 				}
 		
-			for (i = ctrl.nScrollOffset; i < nItems; i++)	{
-				x1 = CCanvas::Current ()->Left () + itemP [i].x - itemP [i].right_offset - 6;
-				x2 = x1 + itemP [i].w;
-				y1 = CCanvas::Current ()->Top () + itemP [i].y;
-				y1 -= ((ctrl.nStringHeight + 1) * (ctrl.nScrollOffset - ctrl.nMaxNoScroll));
-				y2 = y1 + itemP [i].h;
-				if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2)) &&(itemP [i].nType != NM_TYPE_TEXT)) {
-					if (i /*+ ctrl.nScrollOffset - ctrl.nMaxNoScroll*/ != choice) {
+			for (i = m_props.nScrollOffset; i < int (ToS ()); i++) {
+				x1 = CCanvas::Current ()->Left () + Item (i).m_x - Item (i).m_rightOffset - 6;
+				x2 = x1 + Item (i).m_w;
+				y1 = CCanvas::Current ()->Top () + Item (i).m_y;
+				y1 -= ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
+				y2 = y1 + Item (i).m_h;
+				if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2)) && (Item (i).m_nType != NM_TYPE_TEXT)) {
+					if (i /* + m_props.nScrollOffset - m_props.nMaxNoScroll*/ != choice) {
 						if (bHackDblClickMenuMode) 
 							bDblClick = 0; 
 					}
 
-					choice = i/* + ctrl.nScrollOffset - ctrl.nMaxNoScroll*/;
+					choice = i/* + m_props.nScrollOffset - m_props.nMaxNoScroll*/;
 
-					if (itemP [choice].nType == NM_TYPE_SLIDER) {
-						char slider_text [NM_MAX_TEXT_LEN+1], *p, *s1;
+					if (Item (choice).m_nType == NM_TYPE_SLIDER) {
+						char slider_text [NM_MAX_TEXT_LEN + 1], *p, *s1;
 						int slider_width, height, aw, sleft_width, sright_width, smiddle_width;
 					
-						strcpy (slider_text, itemP [choice].savedText);
+						strcpy (slider_text, Item (choice).m_savedText);
 						p = strchr (slider_text, '\t');
 						if (p) {
 							*p = '\0';
-							s1 = p+1;
+							s1 = p + 1;
 						}
 						if (p) {
 							fontManager.Current ()->StringSize (s1, slider_width, height, aw);
@@ -1622,54 +1569,54 @@ launchOption:
 							fontManager.Current ()->StringSize (SLIDER_RIGHT, sright_width, height, aw);
 							fontManager.Current ()->StringSize (SLIDER_MIDDLE, smiddle_width, height, aw);
 
-							x1 = CCanvas::Current ()->Left () + itemP [choice].x + itemP [choice].w - slider_width;
+							x1 = CCanvas::Current ()->Left () + Item (choice).m_x + Item (choice).m_w - slider_width;
 							x2 = x1 + slider_width + sright_width;
-							if ((mx > x1) &&(mx < (x1 + sleft_width)) &&(itemP [choice].value != itemP [choice].minValue)) {
-								itemP [choice].value = itemP [choice].minValue;
-								itemP [choice].redraw = 2;
-							} else if ((mx < x2) &&(mx > (x2 - sright_width)) &&(itemP [choice].value != itemP [choice].maxValue)) {
-								itemP [choice].value = itemP [choice].maxValue;
-								itemP [choice].redraw = 2;
-							} else if ((mx > (x1 + sleft_width)) &&(mx < (x2 - sright_width))) {
+							if ((mx > x1) && (mx < (x1 + sleft_width)) && (Item (choice).m_value != Item (choice).m_minValue)) {
+								Item (choice).m_value = Item (choice).m_minValue;
+								Item (choice).m_bRedraw = 2;
+							} else if ((mx < x2) && (mx > (x2 - sright_width)) && (Item (choice).m_value != Item (choice).m_maxValue)) {
+								Item (choice).m_value = Item (choice).m_maxValue;
+								Item (choice).m_bRedraw = 2;
+							} else if ((mx > (x1 + sleft_width)) && (mx < (x2 - sright_width))) {
 								int numValues, value_width, newValue;
 							
-								numValues = itemP [choice].maxValue - itemP [choice].minValue + 1;
+								numValues = Item (choice).m_maxValue - Item (choice).m_minValue + 1;
 								value_width = (slider_width - sleft_width - sright_width) / numValues;
 								newValue = (mx - x1 - sleft_width) / value_width;
-								if (itemP [choice].value != newValue) {
-									itemP [choice].value = newValue;
-									itemP [choice].redraw = 2;
+								if (Item (choice).m_value != newValue) {
+									Item (choice).m_value = newValue;
+									Item (choice).m_bRedraw = 2;
 								}
 							}
 							*p = '\t';
 						}
 					}
-					if (choice == old_choice)
+					if (choice == oldChoice)
 						break;
-					if ((itemP [choice].nType==NM_TYPE_INPUT) &&(choice != old_choice))
-						itemP [choice].value = -1;
-					if ((old_choice>-1) &&(itemP [old_choice].nType==NM_TYPE_INPUT_MENU) &&(old_choice != choice))	{
-						itemP [old_choice].group=0;
-						strcpy (itemP [old_choice].text, itemP [old_choice].savedText);
-						itemP [old_choice].value = -1;
+					if ((Item (choice).m_nType == NM_TYPE_INPUT) && (choice != oldChoice))
+						Item (choice).m_value = -1;
+					if ((oldChoice> - 1) && (Item (oldChoice).m_nType == NM_TYPE_INPUT_MENU) && (oldChoice != choice)) {
+						Item (oldChoice).m_group = 0;
+						strcpy (Item (oldChoice).m_text, Item (oldChoice).m_savedText);
+						Item (oldChoice).m_value = -1;
 					}
-					if (old_choice>-1) 
-						itemP [old_choice].redraw = 1;
-					itemP [choice].redraw=1;
+					if (oldChoice> - 1) 
+						Item (oldChoice).m_bRedraw = 1;
+					Item (choice).m_bRedraw = 1;
 					break;
 				}
 			}
 		}
 	
-		if (!done && !nMouseState && nOldMouseState && !bAllText &&(choice != -1) &&(itemP [choice].nType == NM_TYPE_MENU)) {
+		if (!done && !nMouseState && nOldMouseState && !bAllText && (choice != -1) && (Item (choice).m_nType == NM_TYPE_MENU)) {
 			MouseGetPos (&mx, &my);
-			x1 = CCanvas::Current ()->Left () + itemP [choice].x;
-			x2 = x1 + itemP [choice].w;
-			y1 = CCanvas::Current ()->Top () + itemP [choice].y;
-			if (choice >= ctrl.nScrollOffset)
-				y1 -= ((ctrl.nStringHeight + 1) * (ctrl.nScrollOffset - ctrl.nMaxNoScroll));
-			y2 = y1 + itemP [choice].h;
-			if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
+			x1 = CCanvas::Current ()->Left () + Item (choice).m_x;
+			x2 = x1 + Item (choice).m_w;
+			y1 = CCanvas::Current ()->Top () + Item (choice).m_y;
+			if (choice >= m_props.nScrollOffset)
+				y1 -= ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
+			y2 = y1 + Item (choice).m_h;
+			if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 				if (bHackDblClickMenuMode) {
 					if (bDblClick) {
 						if (nCurItemP)
@@ -1687,25 +1634,25 @@ launchOption:
 			}
 		}
 	
-		if (!done && !nMouseState && nOldMouseState && (choice > -1) &&
-			 (itemP [choice].nType == NM_TYPE_INPUT_MENU) && (itemP [choice].group == 0)) {
-			itemP [choice].group = 1;
-			itemP [choice].redraw = 1;
-			if (!strnicmp (itemP [choice].savedText, TXT_EMPTY, strlen (TXT_EMPTY)))	{
-				itemP [choice].text [0] = 0;
-				itemP [choice].value = -1;
+		if (!done && !nMouseState && nOldMouseState && (choice > - 1) && 
+			 (Item (choice).m_nType == NM_TYPE_INPUT_MENU) && (Item (choice).m_group == 0)) {
+			Item (choice).m_group = 1;
+			Item (choice).m_bRedraw = 1;
+			if (!strnicmp (Item (choice).m_savedText, TXT_EMPTY, strlen (TXT_EMPTY))) {
+				Item (choice).m_text [0] = 0;
+				Item (choice).m_value = -1;
 			} else {
-				NMTrimWhitespace (itemP [choice].text);
+				Item (choice).TrimWhitespace ();
 			}
 		}
 	
 		if (!done && !nMouseState && nOldMouseState && bCloseBox) {
 			MouseGetPos (&mx, &my);
-			x1 = (gameOpts->menus.nStyle ? ctrl.x : CCanvas::Current ()->Left ()) + CLOSE_X;
+			x1 = (gameOpts->menus.nStyle ? m_props.x : CCanvas::Current ()->Left ()) + CLOSE_X;
 			x2 = x1 + CLOSE_SIZE;
-			y1 = (gameOpts->menus.nStyle ? ctrl.y : CCanvas::Current ()->Top ()) + CLOSE_Y;
+			y1 = (gameOpts->menus.nStyle ? m_props.y : CCanvas::Current ()->Top ()) + CLOSE_Y;
 			y2 = y1 + CLOSE_SIZE;
-			if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
+			if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 				if (nCurItemP)
 					*nCurItemP = choice;
 				choice = -1;
@@ -1715,42 +1662,42 @@ launchOption:
 
 //	 HACK! Don't redraw loadgame preview
 		if (bRestoringMenu) 
-			itemP [0].redraw = 0;
+			Item (0).m_bRedraw = 0;
 
-		if (choice > -1)	{
+		if (choice > - 1) {
 			int ascii;
 
-			if (((itemP [choice].nType == NM_TYPE_INPUT) || 
-				 ((itemP [choice].nType == NM_TYPE_INPUT_MENU) && (itemP [choice].group == 1))) && (old_choice == choice)) {
-				if (k == KEY_LEFT || k == KEY_BACKSP || k == KEY_PAD4)	{
-					if (itemP [choice].value  == -1) 
-						itemP [choice].value = (int) strlen (itemP [choice].text);
-					if (itemP [choice].value > 0)
-						itemP [choice].value--;
-					itemP [choice].text [itemP [choice].value] = 0;
-					itemP [choice].redraw = 1;
+			if (((Item (choice).m_nType == NM_TYPE_INPUT) || 
+				 ((Item (choice).m_nType == NM_TYPE_INPUT_MENU) && (Item (choice).m_group == 1))) && (oldChoice == choice)) {
+				if (k == KEY_LEFT || k == KEY_BACKSP || k == KEY_PAD4) {
+					if (Item (choice).m_value == -1) 
+						Item (choice).m_value = (int) strlen (Item (choice).m_text);
+					if (Item (choice).m_value > 0)
+						Item (choice).m_value--;
+					Item (choice).m_text [Item (choice).m_value] = 0;
+					Item (choice).m_bRedraw = 1;
 					}
 				else {
 					ascii = KeyToASCII (k);
-					if ((ascii < 255) && (itemP [choice].value < itemP [choice].nTextLen)) {
+					if ((ascii < 255) && (Item (choice).m_value < Item (choice).m_nTextLen)) {
 						int bAllowed;
 
-						if (itemP [choice].value  == -1)
-							itemP [choice].value = 0;
-						bAllowed = NMCharAllowed ((char) ascii);
-						if (!bAllowed && ascii == ' ' && NMCharAllowed ('_')) {
+						if (Item (choice).m_value== -1)
+							Item (choice).m_value = 0;
+						bAllowed = CharAllowed ((char) ascii);
+						if (!bAllowed && ascii == ' ' && CharAllowed ('_')) {
 							ascii = '_';
-							bAllowed=1;
+							bAllowed = 1;
 							}
 						if (bAllowed) {
-							itemP [choice].text [itemP [choice].value++] = ascii;
-							itemP [choice].text [itemP [choice].value] = 0;
-							itemP [choice].redraw=1;
+							Item (choice).m_text [Item (choice).m_value++] = ascii;
+							Item (choice).m_text [Item (choice).m_value] = 0;
+							Item (choice).m_bRedraw = 1;
 							}
 						}
 					}
 				}
-			else if ((itemP [choice].nType != NM_TYPE_INPUT) && (itemP [choice].nType != NM_TYPE_INPUT_MENU)) {
+			else if ((Item (choice).m_nType != NM_TYPE_INPUT) && (Item (choice).m_nType != NM_TYPE_INPUT_MENU)) {
 				ascii = KeyToASCII (k);
 				if (ascii < 255) {
 					int choice1 = choice;
@@ -1758,15 +1705,15 @@ launchOption:
 					do {
 						int i, ch = 0, t;
 
-						if (++choice1 >= nItems) 
-							choice1=0;
-						t = itemP [choice1].nType;
+						if (++choice1 >= int (ToS ())) 
+							choice1 = 0;
+						t = Item (choice1).m_nType;
 						if (gameStates.app.bNostalgia)
-							ch = itemP [choice1].text [0];
-						else if (itemP [choice1].key > 0)
-							ch = MENU_KEY (itemP [choice1].key, 0);
-						else if (itemP [choice1].key < 0) //skip any leading blanks
-							for (i = 0; (ch = itemP [choice1].text [i]) && ch == ' '; i++)
+							ch = Item (choice1).m_text [0];
+						else if (Item (choice1).m_nKey > 0)
+							ch = MENU_KEY (Item (choice1).m_nKey, 0);
+						else if (Item (choice1).m_nKey < 0) //skip any leading blanks
+							for (i = 0; (ch = Item (choice1).m_text [i]) && ch == ' '; i++)
 								;
 						else
 							continue;
@@ -1779,19 +1726,19 @@ launchOption:
 								&& (ascii == toupper (ch))) {
 							k = 0;
 							choice = choice1;
-							if (old_choice>-1)
-								itemP [old_choice].redraw = 1;
-							itemP [choice].redraw = 1;
-							if (choice < ctrl.nScrollOffset) {
-								ctrl.nScrollOffset = choice;
+							if (oldChoice> - 1)
+								Item (oldChoice).m_bRedraw = 1;
+							Item (choice).m_bRedraw = 1;
+							if (choice < m_props.nScrollOffset) {
+								m_props.nScrollOffset = choice;
 								REDRAW_ALL;
 								}
-							else if (choice > ctrl.nScrollOffset + ctrl.nMaxDisplayable - 1) {
-								ctrl.nScrollOffset = choice;
-								if (ctrl.nScrollOffset + ctrl.nMaxDisplayable >= nItems) {
-									ctrl.nScrollOffset = nItems - ctrl.nMaxDisplayable;
-									if (ctrl.nScrollOffset < ctrl.nMaxNoScroll)
-										ctrl.nScrollOffset = ctrl.nMaxNoScroll;
+							else if (choice > m_props.nScrollOffset + m_props.nMaxDisplayable - 1) {
+								m_props.nScrollOffset = choice;
+								if (m_props.nScrollOffset + m_props.nMaxDisplayable >= int (ToS ())) {
+									m_props.nScrollOffset = int (ToS ()) - m_props.nMaxDisplayable;
+									if (m_props.nScrollOffset < m_props.nMaxNoScroll)
+										m_props.nScrollOffset = m_props.nMaxNoScroll;
 									}
 								REDRAW_ALL;
 								}
@@ -1799,7 +1746,7 @@ launchOption:
 								goto checkOption;
 							else if (t == NM_TYPE_RADIO)
 								goto radioOption;
-							else if ((t != NM_TYPE_SLIDER) && (itemP [choice1].key != 0))
+							else if ((t != NM_TYPE_SLIDER) && (Item (choice1).m_nKey != 0))
 								if (gameOpts->menus.nHotKeys > 0)
 									goto launchOption;
 						}
@@ -1807,105 +1754,105 @@ launchOption:
 				}
 			}
 
-			if ((itemP [choice].nType==NM_TYPE_NUMBER) || (itemP [choice].nType==NM_TYPE_SLIDER)) 	{
-				int ov=itemP [choice].value;
+			if ((Item (choice).m_nType == NM_TYPE_NUMBER) || (Item (choice).m_nType == NM_TYPE_SLIDER)) {
+				int ov = Item (choice).m_value;
 				switch (k) {
 				case KEY_PAD4:
-			  	case KEY_LEFT:
-			  	case KEY_MINUS:
-				case KEY_MINUS+KEY_SHIFTED:
+			 	case KEY_LEFT:
+			 	case KEY_MINUS:
+				case KEY_MINUS + KEY_SHIFTED:
 				case KEY_PADMINUS:
-					itemP [choice].value -= 1;
+					Item (choice).m_value -= 1;
 					break;
-			  	case KEY_RIGHT:
+			 	case KEY_RIGHT:
 				case KEY_PAD6:
-			  	case KEY_EQUAL:
-				case KEY_EQUAL+KEY_SHIFTED:
+			 	case KEY_EQUAL:
+				case KEY_EQUAL + KEY_SHIFTED:
 				case KEY_PADPLUS:
-					itemP [choice].value++;
+					Item (choice).m_value++;
 					break;
 				case KEY_PAGEUP:
 				case KEY_PAD9:
 				case KEY_SPACEBAR:
-					itemP [choice].value += 10;
+					Item (choice).m_value += 10;
 					break;
 				case KEY_PAGEDOWN:
 				case KEY_BACKSP:
 				case KEY_PAD3:
-					itemP [choice].value -= 10;
+					Item (choice).m_value -= 10;
 					break;
 				}
-				if (ov!=itemP [choice].value)
-					itemP [choice].redraw=1;
+				if (ov!= Item (choice).m_value)
+					Item (choice).m_bRedraw = 1;
 			}
 
 		}
 
 
-    	// Redraw everything...
+	// Redraw everything...
 #if 1
 		bRedraw = 0;
 		if (bRedrawAll && !gameOpts->menus.nStyle) {
 			int t;
 			backgroundManager.Draw ();
-			t = NMDrawTitle (pszTitle, TITLE_FONT, RGBA_PAL (31, 31, 31), ctrl.yOffs);
-			NMDrawTitle (pszSubTitle, SUBTITLE_FONT, RGBA_PAL (21, 21, 21), t);
+			t = DrawTitle (pszTitle, TITLE_FONT, RGBA_PAL (31, 31, 31), m_props.yOffs);
+			DrawTitle (pszSubTitle, SUBTITLE_FONT, RGBA_PAL (21, 21, 21), t);
 			bRedrawAll = 0;
 			}
 		if (!gameOpts->menus.nStyle)
 			CCanvas::SetCurrent (backgroundManager.Canvas ());
-		fontManager.SetCurrent (ctrl.bTinyMode ? SMALL_FONT : NORMAL_FONT);
-     	for (i = 0; i < ctrl.nMaxDisplayable + ctrl.nScrollOffset - ctrl.nMaxNoScroll; i++) {
-			if ((i >= ctrl.nMaxNoScroll) && (i < ctrl.nScrollOffset))
+		fontManager.SetCurrent (m_props.bTinyMode ? SMALL_FONT : NORMAL_FONT);
+	 	for (i = 0; i < m_props.nMaxDisplayable + m_props.nScrollOffset - m_props.nMaxNoScroll; i++) {
+			if ((i >= m_props.nMaxNoScroll) && (i < m_props.nScrollOffset))
 				continue;
-			if (!(gameOpts->menus.nStyle || (itemP [i].text && *itemP [i].text)))
+			if (!(gameOpts->menus.nStyle || (Item (i).m_text && *Item (i).m_text)))
 				continue;
-			if (bStart || (gameStates.ogl.nDrawBuffer == GL_BACK) || itemP [i].redraw || itemP [i].rebuild) {// warning! ugly hack below                  
+			if (bStart || (gameStates.ogl.nDrawBuffer == GL_BACK) || Item (i).m_bRedraw || Item (i).m_bRebuild) {// warning! ugly hack below 
 				bRedraw = 1;
-				if (itemP [i].rebuild && itemP [i].centered)
-					itemP [i].x = fontManager.Current ()->GetCenteredX (itemP [i].text);
-				if (i >= ctrl.nScrollOffset)
-         		itemP [i].y -= ((ctrl.nStringHeight + 1) * (ctrl.nScrollOffset - ctrl.nMaxNoScroll));
+				if (Item (i).m_bRebuild && Item (i).m_bCentered)
+					Item (i).m_x = fontManager.Current ()->GetCenteredX (Item (i).m_text);
+				if (i >= m_props.nScrollOffset)
+ 				Item (i).m_y -= ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
 				if (!gameOpts->menus.nStyle) 
 					SDL_ShowCursor (0);
-           	NMDrawItem (itemP + i, (i == choice) && !bAllText, bTinyMode);
-				itemP [i].redraw = 0;
+				Item (i).Draw ((i == choice) && !bAllText, bTinyMode);
+				Item (i).m_bRedraw = 0;
 				if (!gameStates.menus.bReordering && !JOYDEFS_CALIBRATING)
 					SDL_ShowCursor (1);
-				if (i >= ctrl.nScrollOffset)
-	            itemP [i].y += ((ctrl.nStringHeight + 1) * (ctrl.nScrollOffset - ctrl.nMaxNoScroll));
-	        	}   
-         if ((i == choice) && 
-				 ((itemP [i].nType == NM_TYPE_INPUT) || 
-				 ((itemP [i].nType == NM_TYPE_INPUT_MENU) && itemP [i].group)))
-				NMUpdateCursor (&itemP [i]);
+				if (i >= m_props.nScrollOffset)
+					Item (i).m_y += ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
+				}
+			if ((i == choice) && 
+				 ((Item (i).m_nType == NM_TYPE_INPUT) || 
+				 ((Item (i).m_nType == NM_TYPE_INPUT_MENU) && Item (i).m_group)))
+				Item (i).UpdateCursor ();
 			}
 #endif
-      if (ctrl.bIsScrollBox) {
-      	//fontManager.SetCurrent (NORMAL_FONT);
-        	if (bRedraw || (nLastScrollCheck != ctrl.nScrollOffset)) {
-          	nLastScrollCheck=ctrl.nScrollOffset;
-          	fontManager.SetCurrent (SELECTED_FONT);
-          	sy=itemP [ctrl.nScrollOffset].y - ((ctrl.nStringHeight+1)*(ctrl.nScrollOffset - ctrl.nMaxNoScroll));
-          	sx=itemP [ctrl.nScrollOffset].x - (gameStates.menus.bHires?24:12);
-          	if (ctrl.nScrollOffset > ctrl.nMaxNoScroll)
-           		NMRStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, UP_ARROW_MARKER);
-          	else
-           		NMRStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, "  ");
-				i = ctrl.nScrollOffset + ctrl.nMaxDisplayable - ctrl.nMaxNoScroll - 1;
-          	sy=itemP [i].y - ((ctrl.nStringHeight + 1) * (ctrl.nScrollOffset - ctrl.nMaxNoScroll));
-          	sx=itemP [i].x - (gameStates.menus.bHires ? 24 : 12);
-          	if (ctrl.nScrollOffset + ctrl.nMaxDisplayable - ctrl.nMaxNoScroll < nItems)
-           		NMRStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, DOWN_ARROW_MARKER);
-          	else
-	           	NMRStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, "  ");
-		    	}
-     		}   
+ if (m_props.bIsScrollBox) {
+ 	//fontManager.SetCurrent (NORMAL_FONT);
+	if (bRedraw || (nLastScrollCheck != m_props.nScrollOffset)) {
+ 	nLastScrollCheck = m_props.nScrollOffset;
+ 	fontManager.SetCurrent (SELECTED_FONT);
+ 	sy = Item (m_props.nScrollOffset).m_y - ((m_props.nStringHeight + 1)*(m_props.nScrollOffset - m_props.nMaxNoScroll));
+ 	sx = Item (m_props.nScrollOffset).m_x - (gameStates.menus.bHires?24:12);
+ 	if (m_props.nScrollOffset > m_props.nMaxNoScroll)
+		DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, UP_ARROW_MARKER);
+ 	else
+		DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, " ");
+				i = m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll - 1;
+ 	sy = Item (i).m_y - ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
+ 	sx = Item (i).m_x - (gameStates.menus.bHires ? 24 : 12);
+ 	if (m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll < int (ToS ()))
+		DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, DOWN_ARROW_MARKER);
+ 	else
+		DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, " ");
+			}
+ 		}
 		if (bCloseBox && (bStart || gameOpts->menus.nStyle)) {
 			if (gameOpts->menus.nStyle)
-				NMDrawCloseBox (ctrl.x, ctrl.y);
+				DrawCloseBox (m_props.x, m_props.y);
 			else
-				NMDrawCloseBox (ctrl.x - CCanvas::Current ()->Left (), ctrl.y - CCanvas::Current ()->Top ());
+				DrawCloseBox (m_props.x - CCanvas::Current ()->Left (), m_props.y - CCanvas::Current ()->Top ());
 			bCloseBox = 1;
 			}
 		if (bRedraw || !gameOpts->menus.nStyle)
@@ -1918,8 +1865,8 @@ launchOption:
 	}
 SDL_ShowCursor (0);
 // Restore everything...
-NMRestoreScreen (filename, bDontRestore);
-NMFreeAllTextBms (itemP, nItems);
+RestoreScreen (filename, bDontRestore);
+FreeTextBms ();
 gameStates.input.keys.bRepeat = bKeyRepeat;
 GameFlushInputs ();
 if (time_stopped) {
@@ -1928,7 +1875,7 @@ if (time_stopped) {
 		if (TactileStick)
 			EnableForces ();
 #endif
-  }
+ }
 if (sound_stopped)
 	DigiResumeDigiSounds ();
 gameStates.menus.nInMenu--;
@@ -1939,101 +1886,106 @@ if (gameStates.app.bGameRunning && IsMultiGame)
 return choice;
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
-int _CDECL_ ExecMessageBox1 (
-					const char *pszTitle, 
-					int (*menuCallback) (int nItems, CMenuItem * itemP, int * lastKeyP, int nItem), 
-					char *filename, int nChoices, ...)
+int _CDECL_ MessageBox (const char* pszTitle, pMenuCallback callback, char* filename, int nChoices, ...)
 {
-	int i;
-	char *format;
-	va_list args;
-	char *s;
-	char nm_text [MESSAGEBOX_TEXT_SIZE];
-	CMenuItem nmMsgItems [5];
+	int				i;
+	char*				format, * s;
+	va_list			args;
+	char				szSubTitle [MESSAGEBOX_TEXT_SIZE];
+	CMenuManager	mm;
+
+if (!mm.Create (5))
+	return - 1;
 
 va_start (args, nChoices);
-Assert (nChoices <= 5);
-memset (nmMsgItems, 0, sizeof (nmMsgItems));
-for (i = 0; i < nChoices; i++)	{
-   s = va_arg (args, char *);
-   nmMsgItems [i].nType = NM_TYPE_MENU; 
-	nmMsgItems [i].text = s;
-	nmMsgItems [i].key = -1;
+for (i = 0; i < nChoices; i++) {
+	s = va_arg (args, char *);
+	mm.AddMenu (s, - 1);
 	}
-format = va_arg (args, char *);
-strcpy (nm_text, "");
-vsprintf (nm_text, format, args);
+format = va_arg (args, char* );
+vsprintf (szSubTitle, format, args);
 va_end (args);
-Assert (strlen (nm_text) < MESSAGEBOX_TEXT_SIZE);
-return ExecMenu (pszTitle, nm_text, nChoices, nmMsgItems, menuCallback, NULL, filename);
+Assert (strlen (szSubTitle) < MESSAGEBOX_TEXT_SIZE);
+return mm.Menu (pszTitle, szSubTitle, callback, NULL, filename);
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
-int _CDECL_ ExecMessageBox (const char *pszTitle, char *filename, int nChoices, ...)
+int _CDECL_ MessageBox (const char* pszTitle, char* filename, int nChoices, ...)
 {
 	int				h, i, l, bTiny, nInMenu;
 	char				*format, *s;
 	va_list			args;
 	char				nm_text [MESSAGEBOX_TEXT_SIZE];
-	CMenuItem		nmMsgItems [10];
+	CMenuManager	mm;
 
 
-if (!nChoices)
+if (!(nChoices && mm.Create (10)))
 	return -1;
 if ((bTiny = (nChoices < 0)))
 	nChoices = -nChoices;
 va_start (args, nChoices);
-memset (nmMsgItems, 0, h = nChoices * sizeof (CMenuItem));
 for (i = l = 0; i < nChoices; i++) {
-	s = va_arg (args, char *);
+	s = va_arg (args, char* );
 	h = (int) strlen (s);
 	if (l + h > MESSAGEBOX_TEXT_SIZE)
 		break;
 	l += h;
 	if (!bTiny || i) 
-		nmMsgItems [i].nType = NM_TYPE_MENU; 
+		mm.AddMenu (s, - 1);
 	else {
-		nmMsgItems [i].nType = NM_TYPE_TEXT; 
-		nmMsgItems [i].unavailable = 1; 
+		mm.AddText (s);
+		mm.Item (i).m_bUnavailable = 1;
 		}
-	nmMsgItems [i].text = s;
-	nmMsgItems [i].key = (bTiny && !i) ? 0 : -1;
 	if (bTiny)
-		nmMsgItems [i].centered = (i != 0);
+		mm.Item (i).m_bCentered = (i != 0);
 	}
 if (!bTiny) {
-	format = va_arg (args, char *);
+	format = va_arg (args, char* );
 	vsprintf (nm_text, format, args);
 	va_end (args);
 	}
 nInMenu = gameStates.menus.nInMenu;
 gameStates.menus.nInMenu = 0;
 i = bTiny 
-	 ? ExecMenu (NULL, pszTitle, nChoices, nmMsgItems, NULL, NULL, NULL, LHX (340), -1, 1)
-	 : ExecMenu (pszTitle, nm_text, nChoices, nmMsgItems, NULL, NULL, filename);
+	 ? mm.Menu (NULL, pszTitle, NULL, NULL, NULL, LHX (340), - 1, 1)
+	 : mm.Menu (pszTitle, nm_text, NULL, NULL, filename);
 gameStates.menus.nInMenu = nInMenu;
 return i;
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
-void NMFileSort (int n, char *list)
+typedef char		tFilename [FILENAME_LEN + 1];
+
+int _CDECL_ CmpFilenames (const tFilename* left, const tFilename* right)
 {
+return strcmp ((char*) (left), (char*) (right));
+}
+
+// ------------------------------------------------------------------------------ 
+
+void SortFiles (int n, tFilename* list)
+{
+#if 1
+	CQuickSort<tFilename>	qs;
+
+qs.SortAscending (list, 0, n - 1, CmpFilenames);
+#else
 	int i, j, incr;
 	char t [FILENAME_LEN];
 
 	incr = n / 2;
-	while (incr > 0)		{
-		for (i = incr; i < n; i++)		{
+	while (incr > 0)	 {
+		for (i = incr; i < n; i++)	 {
 			j = i - incr;
-			while (j>=0)			{
-				if (strncmp (&list [j* (FILENAME_LEN + 1)], &list [ (j+incr)* (FILENAME_LEN + 1)], FILENAME_LEN - 1) > 0) {
-               memcpy (t, &list [j* (FILENAME_LEN + 1)], FILENAME_LEN);
-               memcpy (&list [j* (FILENAME_LEN + 1)], &list [ (j+incr)* (FILENAME_LEN + 1)], FILENAME_LEN);
-               memcpy (&list [ (j+incr)* (FILENAME_LEN + 1)], t, FILENAME_LEN);
+			while (j>= 0)		 {
+				if (strncmp (&list [j* (FILENAME_LEN + 1)], &list [ (j + incr)* (FILENAME_LEN + 1)], FILENAME_LEN - 1) > 0) {
+					memcpy (t, &list [j* (FILENAME_LEN + 1)], FILENAME_LEN);
+					memcpy (&list [j* (FILENAME_LEN + 1)], &list [ (j + incr)* (FILENAME_LEN + 1)], FILENAME_LEN);
+					memcpy (&list [ (j + incr)* (FILENAME_LEN + 1)], t, FILENAME_LEN);
 					j -= incr;
 				}
 				else
@@ -2042,11 +1994,12 @@ void NMFileSort (int n, char *list)
 		}
 		incr = incr / 2;
 	}
+#endif
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
-void DeletePlayerSavedGames (char *name)
+void DeleteSaveGames (char* name)
 {
 	int i;
 	char filename [16];
@@ -2057,36 +2010,36 @@ for (i = 0; i < 10; i++) {
 	}
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
 #define MAX_FILES 300
 
-int ExecMenuFileSelector (const char *pszTitle, const char *filespec, char *filename, int bAllowAbort)
+int FileSelector (const char* pszTitle, const char* filespec, char* filename, int bAllowAbort)
 {
-	int i;
-	FFS ffs;
-	int nFileCount = 0, key, done, nItem, ocitem;
-	char *filenames = NULL;
-	int nFilesDisplayed = 8;
-	int nFirstItem = -1, nPrevItem;
-	int bKeyRepeat = gameStates.input.keys.bRepeat;
-	int bPlayerMode = 0;
-	int bDemoMode = 0;
-	int bDemosDeleted = 0;
-	int bInitialized = 0;
-	int exitValue = 0;
-	int w_x, w_y, w_w, w_h, nTitleHeight;
-	int box_x, box_y, box_w, box_h;
-	int mx, my, x1, x2, y1, y2, nMouseState, nOldMouseState;
-	int mouse2State, omouse2State, bWheelUp, bWheelDown;
-	int bDblClick = 0;
-	char szPattern [40];
-	int nPatternLen = 0;
-	char *pszFn;
+	int					i;
+	FFS					ffs;
+	int					nFileCount = 0, key, done, nItem, ocitem;
+	CArray<tFilename>	filenames;
+	int					nFilesDisplayed = 8;
+	int					nFirstItem = -1, nPrevItem;
+	int					bKeyRepeat = gameStates.input.keys.bRepeat;
+	int					bPlayerMode = 0;
+	int					bDemoMode = 0;
+	int					bDemosDeleted = 0;
+	int					bInitialized = 0;
+	int					exitValue = 0;
+	int					w_x, w_y, w_w, w_h, nTitleHeight;
+	int					box_x, box_y, box_w, box_h;
+	int					mx, my, x1, x2, y1, y2, nMouseState, nOldMouseState;
+	int					mouse2State, omouse2State, bWheelUp, bWheelDown;
+	int					bDblClick = 0;
+	char					szPattern [40];
+	int					nPatternLen = 0;
+	char*					pszFn;
 
 w_x = w_y = w_w = w_h = nTitleHeight = 0;
 box_x = box_y = box_w = box_h = 0;
-if (!(filenames = new char [MAX_FILES * (FILENAME_LEN + 1)]))
+if (!filenames.Create (MAX_FILES))
 	return 0;
 nItem = 0;
 gameStates.input.keys.bRepeat = 1;
@@ -2102,19 +2055,19 @@ done = 0;
 nFileCount = 0;
 
 #if !defined (APPLE_DEMO)		// no new pilots for special apple oem version
-if (bPlayerMode)	{
-	strncpy (filenames + nFileCount * (FILENAME_LEN + 1), TXT_CREATE_NEW, FILENAME_LEN);
+if (bPlayerMode) {
+	strncpy (filenames [nFileCount], TXT_CREATE_NEW, FILENAME_LEN);
 	nFileCount++;
 	}
 #endif
 
-if (!FFF (filespec, &ffs, 0))	{
-	pszFn = filenames + nFileCount * (FILENAME_LEN + 1);
-	do	{
-		if (nFileCount < MAX_FILES)	{
-         strncpy (pszFn, ffs.name, FILENAME_LEN);
-			if (bPlayerMode)	{
-				char *p = strchr (pszFn, '.');
+if (!FFF (filespec, &ffs, 0)) {
+	do {
+		if (nFileCount < MAX_FILES) {
+			pszFn = filenames [nFileCount];
+ strncpy (pszFn, ffs.name, FILENAME_LEN);
+			if (bPlayerMode) {
+				char* p = strchr (pszFn, '.');
 				if (p) 
 					*p = '\0';
 			}
@@ -2125,7 +2078,6 @@ if (!FFF (filespec, &ffs, 0))	{
 		} else {
 			break;
 		}
-	pszFn += (FILENAME_LEN + 1);
 	} while (!FFN (&ffs, 0));
 	FFC (&ffs);
 	}
@@ -2134,8 +2086,8 @@ if (bDemoMode && gameFolders.bAltHogDirInited) {
 	sprintf (filespec2, "%s/%s", gameFolders.szAltHogDir, filespec);
 	if (!FFF (filespec2, &ffs, 0)) {
 		do {
-			if (nFileCount<MAX_FILES)	{
-				strncpy (filenames+nFileCount* (FILENAME_LEN + 1), ffs.name, FILENAME_LEN);
+			if (nFileCount<MAX_FILES) {
+				strncpy (filenames [nFileCount], ffs.name, FILENAME_LEN);
 				nFileCount++;
 			} else {
 				break;
@@ -2145,19 +2097,19 @@ if (bDemoMode && gameFolders.bAltHogDirInited) {
 		}
 	}
 
-if ((nFileCount < 1) && bDemosDeleted)	{
+if ((nFileCount < 1) && bDemosDeleted) {
 	exitValue = 0;
 	goto exitFileMenu;
 	}
 if ((nFileCount < 1) && bDemoMode) {
-	ExecMessageBox (NULL, NULL, 1, TXT_OK, "%s %s\n%s", TXT_NO_DEMO_FILES, TXT_USE_F5, TXT_TO_CREATE_ONE);
+	MessageBox (NULL, NULL, 1, TXT_OK, "%s %s\n%s", TXT_NO_DEMO_FILES, TXT_USE_F5, TXT_TO_CREATE_ONE);
 	exitValue = 0;
 	goto exitFileMenu;
 	}
 
 if (nFileCount < 1) {
 #ifndef APPLE_DEMO
-	ExecMessageBox (NULL, NULL, 1, "Ok", "%s\n '%s' %s", TXT_NO_FILES_MATCHING, filespec, TXT_WERE_FOUND);
+	MessageBox (NULL, NULL, 1, "Ok", "%s\n '%s' %s", TXT_NO_FILES_MATCHING, filespec, TXT_WERE_FOUND);
 #endif
 	exitValue = 0;
 	goto exitFileMenu;
@@ -2173,7 +2125,7 @@ if (!bInitialized) {
 
 	for (i = 0; i < nFileCount; i++) {
 		int w, h, aw;
-		fontManager.Current ()->StringSize (filenames+i* (FILENAME_LEN+1), w, h, aw);	
+		fontManager.Current ()->StringSize (filenames [nFileCount], w, h, aw);	
 		if (w > w_w)
 			w_w = w;
 		}
@@ -2200,8 +2152,8 @@ if (!bInitialized) {
 	if (w_h > 480)
 		w_h = 480;
 
-	w_x = (CCanvas::Current ()->Width ()-w_w)/2;
-	w_y = (CCanvas::Current ()->Height ()-w_h)/2;
+	w_x = (CCanvas::Current ()->Width () - w_w)/2;
+	w_y = (CCanvas::Current ()->Height () - w_h)/2;
 
 	if (w_x < 0) 
 		w_x = 0;
@@ -2216,16 +2168,16 @@ if (!bInitialized) {
 	CCanvas::Push ();
 	backgroundManager.Setup (NULL, w_x, w_y, w_w, w_h);
 	CCanvas::Pop ();
-	GrString (0x8000, w_y+10, pszTitle, NULL);
+	GrString (0x8000, w_y + 10, pszTitle, NULL);
 	bInitialized = 1;
 	}
 
 if (!bPlayerMode)
-	NMFileSort (nFileCount, filenames);
+	SortFiles (nFileCount, &filenames [0]);
 else {
-	NMFileSort (nFileCount-1, filenames+ (FILENAME_LEN+1));		// Don't sort first one!
-	for (i = 0; i < nFileCount; i++)	{
-		if (!stricmp (LOCALPLAYER.callsign, filenames+i* (FILENAME_LEN+1)))	{
+	SortFiles (nFileCount - 1, &filenames [1]);		// Don't sort first one!
+	for (i = 0; i < nFileCount; i++) {
+		if (!stricmp (LOCALPLAYER.callsign, filenames [i])) {
 			bDblClick = 1;
 			nItem = i;
 			}
@@ -2234,11 +2186,11 @@ else {
 
 nMouseState = nOldMouseState = 0;
 mouse2State = omouse2State = 0;
-NMDrawCloseBox (w_x, w_y);
+CMenuManager::DrawCloseBox (w_x, w_y);
 SDL_ShowCursor (1);
 
 SDL_EnableKeyRepeat(60, 30);
-while (!done)	{
+while (!done) {
 	ocitem = nItem;
 	nPrevItem = nFirstItem;
 	GrUpdate (0);
@@ -2257,147 +2209,148 @@ while (!done)	{
 	else
 		key = KeyInKey ();
 	switch (key) {
-	case KEY_CTRLED+KEY_F1:
-		SwitchDisplayMode (-1);
-		break;
-		
-	case KEY_CTRLED+KEY_F2:
-		SwitchDisplayMode (1);
-		break;
-		
-	case KEY_COMMAND+KEY_SHIFTED+KEY_P:
-	case KEY_ALTED + KEY_F9:
-		gameStates.app.bSaveScreenshot = 1;
-		SaveScreenShot (NULL, 0);
-		break;
-
-	case KEY_CTRLED+KEY_S:
-		if (gameStates.app.bNostalgia)
-			gameOpts->menus.bSmartFileSearch = 0;
-		else
-			gameOpts->menus.bSmartFileSearch = !gameOpts->menus.bSmartFileSearch;
-		break;
-
-	case KEY_CTRLED+KEY_D:
-		if (((bPlayerMode) && (nItem > 0)) || ((bDemoMode) && (nItem >= 0))) {
-			int x = 1;
-			char *pszFile = filenames + nItem * (FILENAME_LEN+1);
-			if (*pszFile == '$')
-				pszFile++;
-			SDL_ShowCursor (0);
-			if (bPlayerMode)
-				x = ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s %s?", TXT_DELETE_PILOT, pszFile);
-			else if (bDemoMode)
-				x = ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s %s?", TXT_DELETE_DEMO, pszFile);
-			SDL_ShowCursor (1);
-			if (!x)	{
-				char *p;
-				int ret;
-
-				p = pszFile + strlen (pszFile);
-				if (bPlayerMode)
-					*p = '.';
-				ret = CFile::Delete (pszFile, bPlayerMode ? gameFolders.szProfDir : gameFolders.szDemoDir);
-				if (bPlayerMode) {
-					if (!ret) {
-						p [3] = 'x';	//turn ".plr" to ".plx"
-						CFile::Delete (pszFile, gameFolders.szProfDir);
-						*p = 0;
-						DeletePlayerSavedGames (pszFile);
-						}
-					*p = 0;
-					}
-
-				if (ret) {
-					if (bPlayerMode)
-						ExecMessageBox (NULL, NULL, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_PILOT, pszFile);
-					else if (bDemoMode)
-						ExecMessageBox (NULL, NULL, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_DEMO, pszFile);
-					}
-				else if (bDemoMode)
-					bDemosDeleted = 1;
-				nFirstItem = -1;
-				goto ReadFileNames;
-			}
-		}
-		break;
-	case KEY_HOME:
-	case KEY_PAD7:
-		nItem = 0;
-		break;
-	case KEY_END:
-	case KEY_PAD1:
-		nItem = nFileCount-1;
-		break;
-	case KEY_UP:
-	case KEY_PAD8:
-		nItem--;		
-		break;
-	case KEY_DOWN:
-	case KEY_PAD2:
-		nItem++;		
-		break;
-	case KEY_PAGEDOWN:
-	case KEY_PAD3:
-		nItem += nFilesDisplayed;
-		break;
-	case KEY_PAGEUP:
-	case KEY_PAD9:
-		nItem -= nFilesDisplayed;
-		break;
-	case KEY_ESC:
-		if (bAllowAbort) {
-			nItem = -1;
-			done = 1;
-		}
-		break;
-	case KEY_ENTER:
-	case KEY_PADENTER:
-		done = 1;
-		break;
-
-	case KEY_BACKSP:
-		if (!gameOpts->menus.bSmartFileSearch)
+		case KEY_CTRLED + KEY_F1:
+			SwitchDisplayMode ( - 1);
 			break;
-		if (nPatternLen > 0)
-			szPattern [--nPatternLen] = '\0';
 			
-	default:
-		if (!gameOpts->menus.bSmartFileSearch || (nPatternLen < (int) sizeof (szPattern) - 1)) {
-			int nStart, ascii = KeyToASCII (key);
-			if ((key == KEY_BACKSP) || (ascii < 255)) {
-				int cc, bFound = 0;
-				if (!gameOpts->menus.bSmartFileSearch) {
-					cc = nItem + 1;
-					nStart = nItem;
-					if (cc < 0)  
-						cc = 0;
-					else if (cc >= nFileCount)  
-						cc = 0;
-					}
-				else {
-					cc = 0;
-					nStart = 0;
-					if (key != KEY_BACKSP) {
-						szPattern [nPatternLen++] = tolower (ascii);
-						szPattern [nPatternLen] = '\0';
+		case KEY_CTRLED + KEY_F2:
+			SwitchDisplayMode (1);
+			break;
+			
+		case KEY_COMMAND + KEY_SHIFTED + KEY_P:
+		case KEY_ALTED + KEY_F9:
+			gameStates.app.bSaveScreenshot = 1;
+			SaveScreenShot (NULL, 0);
+			break;
+
+		case KEY_CTRLED + KEY_S:
+			if (gameStates.app.bNostalgia)
+				gameOpts->menus.bSmartFileSearch = 0;
+			else
+				gameOpts->menus.bSmartFileSearch = !gameOpts->menus.bSmartFileSearch;
+			break;
+
+		case KEY_CTRLED + KEY_D:
+			if (((bPlayerMode) && (nItem > 0)) || ((bDemoMode) && (nItem >= 0))) {
+				int x = 1;
+				char* pszFile = filenames [nItem];
+				if (*pszFile == '$')
+					pszFile++;
+				SDL_ShowCursor (0);
+				if (bPlayerMode)
+					x = MessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s %s?", TXT_DELETE_PILOT, pszFile);
+				else if (bDemoMode)
+					x = MessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s %s?", TXT_DELETE_DEMO, pszFile);
+				SDL_ShowCursor (1);
+				if (!x) {
+					char* p;
+					int ret;
+
+					p = pszFile + strlen (pszFile);
+					if (bPlayerMode)
+						*p = '.';
+					ret = CFile::Delete (pszFile, bPlayerMode ? gameFolders.szProfDir : gameFolders.szDemoDir);
+					if (bPlayerMode) {
+						if (!ret) {
+							p [3] = 'x';	//turn ".plr" to ".plx"
+							CFile::Delete (pszFile, gameFolders.szProfDir);
+							*p = 0;
+							DeleteSaveGames (pszFile);
+							}
+						*p = 0;
 						}
-					}
-				do {
-					pszFn = filenames + cc * (FILENAME_LEN + 1);
-					if (gameOpts->menus.bSmartFileSearch ? strstr (pszFn, szPattern) == pszFn : *pszFn == toupper (ascii)) {
-						nItem = cc;
-						bFound = 1;
-						break;
-					}
-					cc++;
-					cc %= nFileCount;
-					} while (cc != nStart);
-				if (gameOpts->menus.bSmartFileSearch && !bFound)
-					szPattern [--nPatternLen] = '\0';
+
+					if (ret) {
+						if (bPlayerMode)
+							MessageBox (NULL, NULL, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_PILOT, pszFile);
+						else if (bDemoMode)
+							MessageBox (NULL, NULL, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_DEMO, pszFile);
+						}
+					else if (bDemoMode)
+						bDemosDeleted = 1;
+					nFirstItem = -1;
+					goto ReadFileNames;
 				}
 			}
+			break;
+		case KEY_HOME:
+		case KEY_PAD7:
+			nItem = 0;
+			break;
+		case KEY_END:
+		case KEY_PAD1:
+			nItem = nFileCount - 1;
+			break;
+		case KEY_UP:
+		case KEY_PAD8:
+			nItem--;		
+			break;
+		case KEY_DOWN:
+		case KEY_PAD2:
+			nItem++;		
+			break;
+		case KEY_PAGEDOWN:
+		case KEY_PAD3:
+			nItem += nFilesDisplayed;
+			break;
+		case KEY_PAGEUP:
+		case KEY_PAD9:
+			nItem -= nFilesDisplayed;
+			break;
+		case KEY_ESC:
+			if (bAllowAbort) {
+				nItem = -1;
+				done = 1;
+			}
+			break;
+		case KEY_ENTER:
+		case KEY_PADENTER:
+			done = 1;
+			break;
+
+		case KEY_BACKSP:
+			if (!gameOpts->menus.bSmartFileSearch)
+				break;
+			if (nPatternLen > 0)
+				szPattern [--nPatternLen] = '\0';
+				
+		default:
+			if (!gameOpts->menus.bSmartFileSearch || (nPatternLen < (int) sizeof (szPattern) - 1)) {
+				int nStart, ascii = KeyToASCII (key);
+				if ((key == KEY_BACKSP) || (ascii < 255)) {
+					int cc, bFound = 0;
+					if (!gameOpts->menus.bSmartFileSearch) {
+						cc = nItem + 1;
+						nStart = nItem;
+						if (cc < 0) 
+							cc = 0;
+						else if (cc >= nFileCount) 
+							cc = 0;
+						}
+					else {
+						cc = 0;
+						nStart = 0;
+						if (key != KEY_BACKSP) {
+							szPattern [nPatternLen++] = tolower (ascii);
+							szPattern [nPatternLen] = '\0';
+							}
+						}
+					do {
+						pszFn = filenames [cc];
+						if (gameOpts->menus.bSmartFileSearch ? strstr (pszFn, szPattern) == pszFn : *pszFn == toupper (ascii)) {
+							nItem = cc;
+							bFound = 1;
+							break;
+						}
+						cc++;
+						cc %= nFileCount;
+						} while (cc != nStart);
+					if (gameOpts->menus.bSmartFileSearch && !bFound)
+						szPattern [--nPatternLen] = '\0';
+					}
+				}
 		}
+
 	if (done) 
 		break;
 
@@ -2413,8 +2366,8 @@ while (!done)	{
 		nFirstItem = nItem - nFilesDisplayed + 1;
 	if (nFileCount <= nFilesDisplayed)
 		 nFirstItem = 0;
-	if (nFirstItem>nFileCount-nFilesDisplayed)
-		nFirstItem = nFileCount-nFilesDisplayed;
+	if (nFirstItem>nFileCount - nFilesDisplayed)
+		nFirstItem = nFileCount - nFilesDisplayed;
 	if (nFirstItem < 0) 
 		nFirstItem = 0;
 
@@ -2422,13 +2375,13 @@ while (!done)	{
 		int w, h, aw;
 
 		MouseGetPos (&mx, &my);
-		for (i = nFirstItem; i < nFirstItem+nFilesDisplayed; i++)	{
-			fontManager.Current ()->StringSize (&filenames [i* (FILENAME_LEN+1)], w, h, aw);
+		for (i = nFirstItem; i < nFirstItem + nFilesDisplayed; i++) {
+			fontManager.Current ()->StringSize (filenames [i], w, h, aw);
 			x1 = box_x;
 			x2 = box_x + box_w - 1;
-			y1 = (i-nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2) + box_y;
-			y2 = y1+h+1;
-			if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
+			y1 = (i - nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2) + box_y;
+			y2 = y1 + h + 1;
+			if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 				if (i == nItem && !mouse2State)
 					break;
 				nItem = i;
@@ -2441,13 +2394,13 @@ while (!done)	{
 	if (!nMouseState && nOldMouseState) {
 		int w, h, aw;
 
-		fontManager.Current ()->StringSize (&filenames [nItem* (FILENAME_LEN+1)], w, h, aw);
+		fontManager.Current ()->StringSize (filenames [nItem], w, h, aw);
 		MouseGetPos (&mx, &my);
 		x1 = box_x;
 		x2 = box_x + box_w - 1;
-		y1 = (nItem-nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2) + box_y;
-		y2 = y1+h+1;
-		if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
+		y1 = (nItem - nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2) + box_y;
+		y2 = y1 + h + 1;
+		if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 			if (bDblClick) 
 				done = 1;
 			else 
@@ -2461,7 +2414,7 @@ while (!done)	{
 		x2 = x1 + CLOSE_SIZE - 2;
 		y1 = w_y + CLOSE_Y + 2;
 		y2 = y1 + CLOSE_SIZE - 2;
-		if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
+		if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 			nItem = -1;
 			done = 1;
 			}
@@ -2472,15 +2425,15 @@ while (!done)	{
 			SDL_ShowCursor (0);
 		backgroundManager.Draw ();
 		fontManager.SetCurrent (NORMAL_FONT);
-		GrString (0x8000, w_y+10, pszTitle, NULL);
+		GrString (0x8000, w_y + 10, pszTitle, NULL);
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 		for (i = nFirstItem; i < nFirstItem + nFilesDisplayed; i++) {
 			int w, h, aw, y;
-			y = (i-nFirstItem) * (CCanvas::Current ()->Font ()->Height () + 2) + box_y;
+			y = (i - nFirstItem) * (CCanvas::Current ()->Font ()->Height () + 2) + box_y;
 	
-			if (i >= nFileCount)	{
+			if (i >= nFileCount) {
 				CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (5, 5, 5));
-				GrRect (box_x + box_w, y-1, box_x + box_w, y + CCanvas::Current ()->Font ()->Height () + 1);
+				GrRect (box_x + box_w, y - 1, box_x + box_w, y + CCanvas::Current ()->Font ()->Height () + 1);
 				//GrRect (box_x, y + CCanvas::Current ()->Font ()->Height () + 2, box_x + box_w, y + CCanvas::Current ()->Font ()->Height () + 2);
 			
 				CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (2, 2, 2));
@@ -2491,44 +2444,44 @@ while (!done)	{
 				} 
 			else {
 				fontManager.SetCurrent ((i == nItem) ? SELECTED_FONT : NORMAL_FONT);
-				fontManager.Current ()->StringSize (&filenames [i* (FILENAME_LEN+1)], w, h, aw);
+				fontManager.Current ()->StringSize ((char*) (&filenames [i]), w, h, aw);
 				CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (5, 5, 5));
 				GrRect (box_x + box_w, y - 1, box_x + box_w, y + h + 1);
 				CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (2, 2, 2));
 				GrRect (box_x - 1, y - 1, box_x - 1, y + h + 1);
 				CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-				GrRect (box_x, y-1, box_x + box_w - 1, y + h + 1);
-				GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((bPlayerMode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0), NULL);
+				GrRect (box_x, y - 1, box_x + box_w - 1, y + h + 1);
+				GrString (box_x + 5, y, reinterpret_cast<char*> (&filenames [i]) + ((bPlayerMode && filenames [i][0] == '$') ? 1 : 0), NULL);
 				}
 			}	 
 		SDL_ShowCursor (1);
 		}
-	else if (nItem != ocitem)	{
+	else if (nItem != ocitem) {
 		int w, h, aw, y;
 
 		if (!gameOpts->menus.nStyle) 
 			SDL_ShowCursor (0);
 		i = ocitem;
-		if ((i >= 0) && (i < nFileCount))	{
-			y = (i-nFirstItem)* (CCanvas::Current ()->Font ()->Height ()+2)+box_y;
+		if ((i >= 0) && (i < nFileCount)) {
+			y = (i - nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2) + box_y;
 			if (i == nItem)
 				fontManager.SetCurrent (SELECTED_FONT);
 			else
 				fontManager.SetCurrent (NORMAL_FONT);
-			fontManager.Current ()->StringSize (&filenames [i* (FILENAME_LEN+1)], w, h, aw);
-			GrRect (box_x, y-1, box_x + box_w - 1, y + h + 1);
-			GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((bPlayerMode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0), NULL);
+			fontManager.Current ()->StringSize (reinterpret_cast<char*> (&filenames [i]), w, h, aw);
+			GrRect (box_x, y - 1, box_x + box_w - 1, y + h + 1);
+			GrString (box_x + 5, y, reinterpret_cast<char*> (&filenames [i]) + (bPlayerMode && filenames [i][0] == '$'), NULL);
 			}
 		i = nItem;
-		if ((i>=0) &&(i < nFileCount))	{
-			y = (i-nFirstItem)* (CCanvas::Current ()->Font ()->Height ()+2)+box_y;
+		if ((i>= 0) && (i < nFileCount)) {
+			y = (i - nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2) + box_y;
 			if (i == nItem)
 				fontManager.SetCurrent (SELECTED_FONT);
 			else
 				fontManager.SetCurrent (NORMAL_FONT);
-			fontManager.Current ()->StringSize (&filenames [i* (FILENAME_LEN+1)], w, h, aw);
-			GrRect (box_x, y-1, box_x + box_w - 1, y + h + 1);
-			GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((bPlayerMode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0), NULL);
+			fontManager.Current ()->StringSize (reinterpret_cast<char*> (&filenames [i]), w, h, aw);
+			GrRect (box_x, y - 1, box_x + box_w - 1, y + h + 1);
+			GrString (box_x + 5, y, reinterpret_cast<char*> (&filenames [i]) + (bPlayerMode && filenames [i][0] == '$'), NULL);
 			}
 		GrUpdate (0);
 		SDL_ShowCursor (1);
@@ -2539,7 +2492,7 @@ while (!done)	{
 if (nItem < 0)
 	exitValue = 0;
 else {
-	strncpy (filename, (&filenames [nItem* (FILENAME_LEN+1)])+ ((bPlayerMode && filenames [nItem* (FILENAME_LEN+1)]=='$')?1:0), FILENAME_LEN);
+	strncpy (filename, reinterpret_cast<char*> (&filenames [nItem]) + (bPlayerMode && filenames [nItem][0] == '$'), FILENAME_LEN);
 	exitValue = 1;
 	}										 
 
@@ -2551,39 +2504,28 @@ if (bInitialized) {
 	GrUpdate (0);
 	}
 
-if (filenames)
-	delete [] filenames;
-
 SDL_EnableKeyRepeat(0, 0);
 return exitValue;
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
 #define LB_ITEMS_ON_SCREEN 8
 
-int ExecMenuListBox (const char *pszTitle, int nItems, char *itemP [], int bAllowAbort, 
-							int (*listbox_callback) (int *nItemP, int *nItems, char *itemP [], int *keypress))
+int ListBox (const char* pszTitle, CStack<char*>& items, int bAllowAbort, int nDefaultItem, pListBoxCallback callback)
 {
-return ExecMenuListBox1 (pszTitle, nItems, itemP, bAllowAbort, 0, listbox_callback);
-}
-
-//------------------------------------------------------------------------------
-
-int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAllowAbort, int nDefaultItem, 
-							 int (*listbox_callback) (int *nItemP, int *nItems, char *itemP [], int *keypress))
-{
-	int i;
-	int done, ocitem, nItem, nPrevItem, nFirstItem, key, redraw;
-	int bKeyRepeat = gameStates.input.keys.bRepeat;
-	int width, height, wx, wy, nTitleHeight, border_size;
-	int total_width, total_height;
-	int mx, my, x1, x2, y1, y2, nMouseState, nOldMouseState;	//, bDblClick;
-	int close_x, close_y, bWheelUp, bWheelDown;
-	int nItemsOnScreen;
-	char szPattern [40];
-	int nPatternLen = 0;
-	char *pszFn;
+	int	i;
+	int	done, ocitem, nItem, nPrevItem, nFirstItem, key, redraw;
+	int	bKeyRepeat = gameStates.input.keys.bRepeat;
+	int	width, height, wx, wy, nTitleHeight, border_size;
+	int	total_width, total_height;
+	int	mx, my, x1, x2, y1, y2, nMouseState, nOldMouseState;	//, bDblClick;
+	int	close_x, close_y, bWheelUp, bWheelDown;
+	int	nVisibleItems;
+	char	szPattern [40];
+	int	nPatternLen = 0;
+	int	w, h, aw;
+	char*	pszFn;
 
 	gameStates.input.keys.bRepeat = 1;
 
@@ -2592,103 +2534,100 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 	CCanvas::SetCurrent (NULL);
 	fontManager.SetCurrent (SUBTITLE_FONT);
 
-	width = 0;
-	for (i = 0; i < nItems; i++)	{
-		int w, h, aw;
-		fontManager.Current ()->StringSize (itemP [i], w, h, aw);	
-		if (w > width)
-			width = w;
+width = 0;
+for (i = 0; i < int (items.ToS ()); i++) {
+	int w, h, aw;
+	fontManager.Current ()->StringSize (items [i], w, h, aw);	
+	if (w > width)
+		width = w;
 	}
-	nItemsOnScreen = LB_ITEMS_ON_SCREEN * CCanvas::Current ()->Height () / 480;
-	height = (CCanvas::Current ()->Font ()->Height () + 2) * nItemsOnScreen;
-	{
-		int w, h, aw;
-		fontManager.Current ()->StringSize (pszTitle, w, h, aw);	
-		if (w > width)
-			width = w;
-		nTitleHeight = h + 5;
-	}
+nVisibleItems = LB_ITEMS_ON_SCREEN * CCanvas::Current ()->Height () / 480;
+height = (CCanvas::Current ()->Font ()->Height () + 2) * nVisibleItems;
 
-	border_size = CCanvas::Current ()->Font ()->Width ();
-	
-	width += (CCanvas::Current ()->Font ()->Width ());
-	if (width > CCanvas::Current ()->Width () - (CCanvas::Current ()->Font ()->Width () * 3))
-		width = CCanvas::Current ()->Width () - (CCanvas::Current ()->Font ()->Width () * 3);
+fontManager.Current ()->StringSize (pszTitle, w, h, aw);	
+if (w > width)
+	width = w;
+nTitleHeight = h + 5;
 
-	wx = (CCanvas::Current ()->Width ()-width)/2;
-	wy = (CCanvas::Current ()->Height ()- (height+nTitleHeight))/2 + nTitleHeight;
-	if (wy < nTitleHeight)
-		wy = nTitleHeight;
+border_size = CCanvas::Current ()->Font ()->Width ();
 
-	total_width = width+2*border_size;
-	total_height = height+2*border_size+nTitleHeight;
+width += (CCanvas::Current ()->Font ()->Width ());
+if (width > CCanvas::Current ()->Width () - (CCanvas::Current ()->Font ()->Width () * 3))
+	width = CCanvas::Current ()->Width () - (CCanvas::Current ()->Font ()->Width () * 3);
 
-	CCanvas::Push ();
-	backgroundManager.Setup (NULL, wx - border_size, wy - nTitleHeight - border_size, 
-									 width + border_size * 2, height + nTitleHeight + border_size * 2);
-	GrUpdate (0);
-	CCanvas::Pop ();
-	GrString (0x8000, wy - nTitleHeight, pszTitle, NULL);
-	done = 0;
-	nItem = nDefaultItem;
-	if (nItem < 0) 
-		nItem = 0;
-	if (nItem >= nItems) 
-		nItem = 0;
+wx = (CCanvas::Current ()->Width () - width)/2;
+wy = (CCanvas::Current ()->Height () - (height + nTitleHeight))/2 + nTitleHeight;
+if (wy < nTitleHeight)
+	wy = nTitleHeight;
 
-	nFirstItem = -1;
+total_width = width + 2*border_size;
+total_height = height + 2*border_size + nTitleHeight;
 
-	nMouseState = nOldMouseState = 0;	//bDblClick = 0;
-	close_x = wx-border_size;
-	close_y = wy-nTitleHeight-border_size;
-	NMDrawCloseBox (close_x, close_y);
-	SDL_ShowCursor (1);
+CCanvas::Push ();
+backgroundManager.Setup (NULL, wx - border_size, wy - nTitleHeight - border_size, 
+								 width + border_size * 2, height + nTitleHeight + border_size * 2);
+GrUpdate (0);
+CCanvas::Pop ();
+GrString (0x8000, wy - nTitleHeight, pszTitle, NULL);
+done = 0;
+nItem = nDefaultItem;
+if (nItem < 0) 
+	nItem = 0;
+if (nItem >= int (items.ToS ())) 
+	nItem = 0;
 
-	SDL_EnableKeyRepeat(60, 30);
-	while (!done)	{
-		ocitem = nItem;
-		nPrevItem = nFirstItem;
-		nOldMouseState = nMouseState;
-		nMouseState = MouseButtonState (0);
-		bWheelUp = MouseButtonState (3);
-		bWheelDown = MouseButtonState (4);
-		//see if redbook song needs to be restarted
-		SongsCheckRedbookRepeat ();
+nFirstItem = -1;
 
-		if (bWheelUp)
-			key = KEY_UP;
-		else if (bWheelDown)
-			key = KEY_DOWN;
-		else
-			key = KeyInKey ();
+nMouseState = nOldMouseState = 0;	//bDblClick = 0;
+close_x = wx - border_size;
+close_y = wy - nTitleHeight - border_size;
+CMenuManager::DrawCloseBox (close_x, close_y);
+SDL_ShowCursor (1);
 
-		if (listbox_callback)
-			redraw = (*listbox_callback) (&nItem, &nItems, itemP, &key);
-		else
-			redraw = 0;
+SDL_EnableKeyRepeat(60, 30);
+while (!done) {
+	ocitem = nItem;
+	nPrevItem = nFirstItem;
+	nOldMouseState = nMouseState;
+	nMouseState = MouseButtonState (0);
+	bWheelUp = MouseButtonState (3);
+	bWheelDown = MouseButtonState (4);
+	//see if redbook song needs to be restarted
+	SongsCheckRedbookRepeat ();
 
-		if (key<-1) {
-			nItem = key;
-			key = -1;
-			done = 1;
+	if (bWheelUp)
+		key = KEY_UP;
+	else if (bWheelDown)
+		key = KEY_DOWN;
+	else
+		key = KeyInKey ();
+
+	if (callback)
+		redraw = (*callback) (&nItem, items, &key);
+	else
+		redraw = 0;
+
+	if (key< - 1) {
+		nItem = key;
+		key = -1;
+		done = 1;
 		}
 
-
-		switch (key)	{
-		case KEY_CTRLED+KEY_F1:
-			SwitchDisplayMode (-1);
+	switch (key) {
+		case KEY_CTRLED + KEY_F1:
+			SwitchDisplayMode ( - 1);
 			break;
-		case KEY_CTRLED+KEY_F2:
+		case KEY_CTRLED + KEY_F2:
 			SwitchDisplayMode (1);
 			break;
-		case KEY_CTRLED+KEY_S:
+		case KEY_CTRLED + KEY_S:
 			if (gameStates.app.bNostalgia)
 				gameOpts->menus.bSmartFileSearch = 0;
 			else
 				gameOpts->menus.bSmartFileSearch = !gameOpts->menus.bSmartFileSearch;
 			break;
 
-		case KEY_COMMAND+KEY_SHIFTED+KEY_P:
+		case KEY_COMMAND + KEY_SHIFTED + KEY_P:
 		case KEY_PRINT_SCREEN: 	
 			SaveScreenShot (NULL, 0); 
 			break;
@@ -2698,7 +2637,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 			break;
 		case KEY_END:
 		case KEY_PAD1:
-			nItem = nItems-1;
+			nItem = int (items.ToS ()) - 1;
 			break;
 		case KEY_UP:
 		case KEY_PAD8:
@@ -2710,11 +2649,11 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 			break;
  		case KEY_PAGEDOWN:
 		case KEY_PAD3:
-			nItem += nItemsOnScreen;
+			nItem += nVisibleItems;
 			break;
 		case KEY_PAGEUP:
 		case KEY_PAD9:
-			nItem -= nItemsOnScreen;
+			nItem -= nVisibleItems;
 			break;
 		case KEY_ESC:
 			if (bAllowAbort) {
@@ -2742,9 +2681,9 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 					if (!gameOpts->menus.bSmartFileSearch) {
 						nStart = nItem;
 						cc = nItem + 1;
-						if (cc < 0)  
+						if (cc < 0) 
 							cc = 0;
-						else if (cc >= nItems)  
+						else if (cc >= int (items.ToS ())) 
 							cc = 0;
 						}
 					else {
@@ -2756,9 +2695,9 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 							}
 						}
 					do {
-						pszFn = itemP [cc];
-						if (itemP [cc][0] == '[') {
-							if (((itemP [cc][1] == '1') || (itemP [cc][1] == '2')) && (itemP [cc][2] == ']'))
+						pszFn = items [cc];
+						if (items [cc][0] == '[') {
+							if (((items [cc][1] == '1') || (items [cc][1] == '2')) && (items [cc][2] == ']'))
 								pszFn += 4;
 							else
 								pszFn++;
@@ -2770,7 +2709,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 							break;
 							}
 						cc++;
-						cc %= nItems;
+						cc %= int (items.ToS ());
 					} while (cc != nStart);
 				if (gameOpts->menus.bSmartFileSearch && !bFound && (nPatternLen > 0))
 					szPattern [--nPatternLen] = '\0';
@@ -2780,17 +2719,17 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 		if (done) break;
 
 		if (nItem < 0)
-			nItem = nItems - 1;
-		else if (nItem >= nItems)
+			nItem = int (items.ToS ()) - 1;
+		else if (nItem >= int (items.ToS ()))
 			nItem = 0;
 		if (nItem < nFirstItem)
 			nFirstItem = nItem;
-		else if (nItem >= (nFirstItem + nItemsOnScreen))
-			nFirstItem = nItem - nItemsOnScreen + 1;
-		if (nItems <= nItemsOnScreen)
+		else if (nItem >= (nFirstItem + nVisibleItems))
+			nFirstItem = nItem - nVisibleItems + 1;
+		if (int (items.ToS ()) <= nVisibleItems)
 			 nFirstItem = 0;
-		if (nFirstItem > nItems - nItemsOnScreen)
-			nFirstItem = nItems - nItemsOnScreen;
+		if (nFirstItem > int (items.ToS ()) - nVisibleItems)
+			nFirstItem = int (items.ToS ()) - nVisibleItems;
 		if (nFirstItem < 0) 
 			nFirstItem = 0;
 
@@ -2798,19 +2737,19 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 			int w, h, aw;
 
 			MouseGetPos (&mx, &my);
-			for (i = nFirstItem; i < nFirstItem + nItemsOnScreen; i++) {
-				if (i > nItems)
+			for (i = nFirstItem; i < nFirstItem + nVisibleItems; i++) {
+				if (i > int (items.ToS ()))
 					break;
-				fontManager.Current ()->StringSize (itemP [i], w, h, aw);
+				fontManager.Current ()->StringSize (items [i], w, h, aw);
 				x1 = wx;
 				x2 = wx + width;
-				y1 = (i-nFirstItem)* (CCanvas::Current ()->Font ()->Height ()+2)+wy;
-				y2 = y1+h+1;
-				if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
+				y1 = (i - nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2) + wy;
+				y2 = y1 + h + 1;
+				if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 					//if (i == nItem) {
 					//	break;
 					//}
-					//bDblClick= 0;
+					//bDblClick = 0;
 					nItem = i;
 					done = 1;
 					break;
@@ -2825,7 +2764,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 			x2 = x1 + CLOSE_SIZE - 2;
 			y1 = close_y + CLOSE_Y + 2;
 			y2 = y1 + CLOSE_SIZE - 2;
-			if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
+			if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 				nItem = -1;
 				done = 1;
 			}
@@ -2834,7 +2773,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 		if ((nPrevItem != nFirstItem) || redraw || gameOpts->menus.nStyle) {
 			if (gameOpts->menus.nStyle) 
 				backgroundManager.Draw ();
-				//NMDrawBackground (wx-border_size, wy-nTitleHeight-border_size, wx+width+border_size-1, wy+height+border_size-1,1);
+				//NMDrawBackground (wx - border_size, wy - nTitleHeight - border_size, wx + width + border_size - 1, wy + height + border_size - 1,1);
 			else
 				SDL_ShowCursor (0);
 			if (gameOpts->menus.nStyle) {
@@ -2843,20 +2782,20 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 				}
 
 			CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-			for (i = nFirstItem; i < nFirstItem + nItemsOnScreen; i++)	{
+			for (i = nFirstItem; i < nFirstItem + nVisibleItems; i++) {
 				int w, h, aw, y;
-				y = (i-nFirstItem)* (CCanvas::Current ()->Font ()->Height ()+2)+wy;
-				if (i >= nItems)	{
+				y = (i - nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2) + wy;
+				if (i >= int (items.ToS ())) {
 					CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-					GrRect (wx, y-1, wx+width-1, y+CCanvas::Current ()->Font ()->Height () + 1);
+					GrRect (wx, y - 1, wx + width - 1, y + CCanvas::Current ()->Font ()->Height () + 1);
 				} else {
 					if (i == nItem)
 						fontManager.SetCurrent (SELECTED_FONT);
 					else
 						fontManager.SetCurrent (NORMAL_FONT);
-					fontManager.Current ()->StringSize (itemP [i], w, h, aw);
-					GrRect (wx, y-1, wx+width-1, y+h+1);
-					GrString (wx+5, y, itemP [i], NULL);
+					fontManager.Current ()->StringSize (items [i], w, h, aw);
+					GrRect (wx, y - 1, wx + width - 1, y + h + 1);
+					GrString (wx + 5, y, items [i], NULL);
 				}
 			}	
 
@@ -2864,34 +2803,34 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 			// If Win95 port, draw up/down arrows on left CSide of menu
 			SDL_ShowCursor (1);
 			GrUpdate (0);
-		} else if (nItem != ocitem)	{
+		} else if (nItem != ocitem) {
 			int w, h, aw, y;
 
 			if (!gameOpts->menus.nStyle) 
 				SDL_ShowCursor (0);
 
 			i = ocitem;
-			if ((i>=0) &&(i < nItems))	{
-				y = (i-nFirstItem)* (CCanvas::Current ()->Font ()->Height ()+2)+wy;
+			if ((i>= 0) && (i < int (items.ToS ()))) {
+				y = (i - nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2) + wy;
 				if (i == nItem)
 					fontManager.SetCurrent (SELECTED_FONT);
 				else
 					fontManager.SetCurrent (NORMAL_FONT);
-				fontManager.Current ()->StringSize (itemP [i], w, h, aw);
-				GrRect (wx, y-1, wx+width-1, y+h+1);
-				GrString (wx+5, y, itemP [i], NULL);
+				fontManager.Current ()->StringSize (items [i], w, h, aw);
+				GrRect (wx, y - 1, wx + width - 1, y + h + 1);
+				GrString (wx + 5, y, items [i], NULL);
 
 			}
 			i = nItem;
-			if ((i>=0) &&(i < nItems))	{
-				y = (i-nFirstItem)* (CCanvas::Current ()->Font ()->Height ()+2)+wy;
+			if ((i >= 0) && (i < int (items.ToS ()))) {
+				y = (i - nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2) + wy;
 				if (i == nItem)
 					fontManager.SetCurrent (SELECTED_FONT);
 				else
 					fontManager.SetCurrent (NORMAL_FONT);
-				fontManager.Current ()->StringSize (itemP [i], w, h, aw);
-				GrRect (wx, y-1, wx+width-1, y+h);
-				GrString (wx+5, y, itemP [i], NULL);
+				fontManager.Current ()->StringSize (items [i], w, h, aw);
+				GrRect (wx, y - 1, wx + width - 1, y + h);
+				GrString (wx + 5, y, items [i], NULL);
 			}
 			SDL_ShowCursor (1);
 			GrUpdate (0);
@@ -2905,79 +2844,72 @@ SDL_EnableKeyRepeat(0, 0);
 return nItem;
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
-static char FilenameText [MAX_FILES][ (FILENAME_LEN+1)];
-
-int ExecMenuFileList (char *pszTitle, char *filespec, char *filename)
+int FileList (char* pszTitle, char* filespec, char* filename)
 {
-	int i, NumFiles;
-	char *Filenames [MAX_FILES];
-	FFS  ffs;
+	static char filenameList [MAX_FILES][FILENAME_LEN + 1];
 
-	NumFiles = 0;
-	if (!FFF (filespec, &ffs, 0))	{
-		do	{
-			if (NumFiles<MAX_FILES)	{
-            strncpy (FilenameText [NumFiles], ffs.name, FILENAME_LEN);
-				Filenames [NumFiles] = FilenameText [NumFiles];
-				NumFiles++;
-			} else {
-				break;
-			}
+	int				i, nFiles;
+	CStack<char*>	filenames;// [MAX_FILES];
+	FFS				ffs;
+
+if (!filenames.Create (MAX_FILES))
+	return - 1;
+nFiles = 0;
+if (!FFF (filespec, &ffs, 0)) {
+	do {
+		if (filenames.ToS () >= MAX_FILES) 
+			break;
+		strncpy (filenameList [nFiles], ffs.name, FILENAME_LEN);
+		filenames.Push (reinterpret_cast<char*> (&filenameList [nFiles]));
 		} while (!FFN (&ffs, 0));
-		FFC (&ffs);
+	FFC (&ffs);
 	}
-
-	i = ExecMenuListBox (pszTitle, NumFiles, Filenames, 1, NULL);
-	if (i > -1)	{
-		strcpy (filename, Filenames [i]);
-		return 1;
-	} 
+i = ListBox (pszTitle, filenames, 1, NULL);
+if (i < 0) 
 	return 0;
+strcpy (filename, filenames [i]);
+return 1;
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 //added on 10/14/98 by Victor Rachels to attempt a fixedwidth font messagebox
-int _CDECL_ NMMsgBoxFixedFont (char *pszTitle, int nChoices, ...)
+int _CDECL_ FixedFontMsgBox (char* pszTitle, int nChoices, ...)
 {
-	int i;
-	char *format;
-	va_list args;
-	char *s;
-	char nm_text [MESSAGEBOX_TEXT_SIZE];
-	CMenuItem nmMsgItems [5];
+	int				i;
+	char*				format;
+	va_list			args;
+	char*				s;
+	char				szSubTitle [MESSAGEBOX_TEXT_SIZE];
+	CMenuManager	mm;
 
-	va_start (args, nChoices);
+if (!mm.Create (5))
+	return -1;
 
-	Assert (nChoices <= 5);
-
-	memset (nmMsgItems, 0, sizeof (nmMsgItems));
-	for (i = 0; i < nChoices; i++)	{
-		s = va_arg (args, char *);
-		nmMsgItems [i].nType = NM_TYPE_MENU; nmMsgItems [i].text = s;
+va_start (args, nChoices);
+for (i = 0; i < nChoices; i++) {
+	s = va_arg (args, char*);
+	mm.AddMenu (s);
 	}
-	format = va_arg (args, char *);
-	//sprintf (	  nm_text, ""); // adb: ?
-	vsprintf (nm_text, format, args);
-	va_end (args);
-
-	Assert (strlen (nm_text) < MESSAGEBOX_TEXT_SIZE);
-
-   return ExecMenuFixedFont (pszTitle, nm_text, nChoices, nmMsgItems, NULL, 0, NULL, -1, -1);
+format = va_arg (args, char* );
+vsprintf (szSubTitle, format, args);
+va_end (args);
+Assert (strlen (szSubTitle) < MESSAGEBOX_TEXT_SIZE);
+return mm.FixedFontMenu (pszTitle, szSubTitle, NULL, 0, NULL, - 1, - 1);
 }
 //end this section addition - Victor Rachels
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 /* Spiffy word wrap string formatting function */
 
-void NMWrapText (char *dbuf, char *sbuf, int line_length)
+void NMWrapText (char* dbuf, char* sbuf, int line_length)
 {
 	int col;
-	char *wordptr;
-	char *tbuf;
+	char* wordptr;
+	char* tbuf;
 
-	tbuf = new char [strlen (sbuf)+1];
+	tbuf = new char [strlen (sbuf) + 1];
 	strcpy (tbuf, sbuf);
 
 	wordptr = strtok (tbuf, " ");
@@ -2986,8 +2918,8 @@ void NMWrapText (char *dbuf, char *sbuf, int line_length)
 	dbuf [0] = 0;
 
 while (wordptr) {
-	col = col + (int) strlen (wordptr)+1;
-	if (col >=line_length) {
+	col = col + (int) strlen (wordptr) + 1;
+	if (col >= line_length) {
 		col = 0;
 		sprintf (dbuf, "%s\n%s ", dbuf, wordptr);
 		}
@@ -2996,134 +2928,133 @@ while (wordptr) {
 		}
 	wordptr = strtok (NULL, " ");
 	}
-delete [] tbuf;
+delete[] tbuf;
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
-void NMProgressBar (const char *szCaption, int nCurProgress, int nMaxProgress, 
-						  int (*doProgress) (int nItems, CMenuItem *itemP, int *lastKeyP, int nCurItemP))
+void ProgressBar (const char* szCaption, int nCurProgress, int nMaxProgress, pMenuCallback doProgress)
 {
-	CMenuItem	m [3];
-	int			i, nInMenu;
+	int				i, nInMenu;
+	CMenuManager	mm;
 
-memset (m, 0, sizeof (m));
-ADD_GAUGE (0, "                    ", 0, nMaxProgress); 
-m [0].centered = 1;
-m [0].value = nCurProgress;
+mm.Create (3);
+mm.AddGauge ("", 0, nMaxProgress); 
+mm.Item (0).m_bCentered = 1;
+mm.Item (0).m_value = nCurProgress;
 nInMenu = gameStates.menus.nInMenu;
 gameStates.menus.nInMenu = 0;
 gameData.app.bGamePaused = 1;
 do {
-	i = ExecMenu2 (NULL, szCaption, 1, m, doProgress, 0, NULL);
+	i = mm.Menu (NULL, szCaption, doProgress, 0, NULL);
 	} while (i >= 0);
 gameData.app.bGamePaused = 0;
 gameStates.menus.nInMenu = nInMenu;
 }
 
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
+// ------------------------------------------------------------------------------ 
+// ------------------------------------------------------------------------------ 
 
 int CMenuManager::AddCheck (char* szText, int nValue, int nKey, char* szHelp)
 {
 CMenuItem& item = Item ();
-item.nType = NM_TYPE_CHECK;
-item.text = szText;
-item.value = NMBOOL (nValue);
-item.key = nKey;
-item.szHelp = szHelp;
+item.m_nType = NM_TYPE_CHECK;
+item.m_text = szText;
+item.m_value = NMBOOL (nValue);
+item.m_nKey = nKey;
+item.m_szHelp = szHelp;
 return m_opt++;
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
 int CMenuManager::AddRadio (char* szText, int nValue, int nGroup, int nKey, char* szHelp)
 {
 CMenuItem& item = Item ();
-item.nType = NM_TYPE_RADIO;
-item.text = szText;
-item.value = nValue;
-item.key = nKey;
-item.group=nGroup;
-item.szHelp = szHelp;
+item.m_nType = NM_TYPE_RADIO;
+item.m_text = szText;
+item.m_value = nValue;
+item.m_nKey = nKey;
+item.m_group = nGroup;
+item.m_szHelp = szHelp;
 return m_opt++;
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
 int CMenuManager::AddMenu (char* szText, int nKey, char* szHelp)
 {
 CMenuItem& item = Item ();
-item.nType = NM_TYPE_MENU;
-item.text = szText;
-item.key = nKey;
-item.szHelp = szHelp;
+item.m_nType = NM_TYPE_MENU;
+item.m_text = szText;
+item.m_nKey = nKey;
+item.m_szHelp = szHelp;
 return m_opt++;
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
 int CMenuManager::AddText (char* szText, int nKey)
 {
 CMenuItem& item = Item ();
-item.nType = NM_TYPE_TEXT;
-item.text = szText;
-item.key = nKey;
+item.m_nType = NM_TYPE_TEXT;
+item.m_text = szText;
+item.m_nKey = nKey;
 return m_opt++;
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
 int CMenuManager::AddSlider (char* szText, int nValue, int nMin, int nMax, int nKey, char* szHelp)
 {
 CMenuItem& item = Item ();
-item.nType = NM_TYPE_SLIDER;
-item.text = szText;
-item.value = NMCLAMP (nValue, nMin, nMax);
-item.minValue = nMin;
-item.maxValue = nMax;
-item.key = nKey;
-item.szHelp = szHelp;
+item.m_nType = NM_TYPE_SLIDER;
+item.m_text = szText;
+item.m_value = NMCLAMP (nValue, nMin, nMax);
+item.m_minValue = nMin;
+item.m_maxValue = nMax;
+item.m_nKey = nKey;
+item.m_szHelp = szHelp;
 return m_opt++;
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
 int CMenuManager::AddInput (char* szText, int nLen, char* szHelp)
 {
 CMenuItem& item = Item ();
-item.nType = NM_TYPE_INPUT;
-item.text = szText;
-item.nTextLen = nLen;
-item.szHelp = szHelp;
+item.m_nType = NM_TYPE_INPUT;
+item.m_text = szText;
+item.m_nTextLen = nLen;
+item.m_szHelp = szHelp;
 return m_opt++;
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
 int CMenuManager::AddInputBox (char* szText, int nLen, int nKey, char* szHelp)
 {
 CMenuItem& item = Item ();
-item.nType = NM_TYPE_INPUT_MENU;
-item.text = szText;
-item.nTextLen = nLen;
-item.key = nKey;
-item.szHelp = szHelp;
+item.m_nType = NM_TYPE_INPUT_MENU;
+item.m_text = szText;
+item.m_nTextLen = nLen;
+item.m_nKey = nKey;
+item.m_szHelp = szHelp;
 return m_opt++;
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 
 
 int CMenuManager::AddGauge (char* szText, int nValue, int nMax)
 {
 CMenuItem& item = Item ();
-item.nType = NM_TYPE_GAUGE;
-item.text = szText;
-item.nTextLen = *szText ? (int) strlen (szText) : 20;
-item.value = NMCLAMP (nValue, 0, nMax);
-item.maxValue = nMax;
+item.m_nType = NM_TYPE_GAUGE;
+item.m_text = szText;
+item.m_nTextLen = *szText ? (int) strlen (szText) : 20;
+item.m_value = NMCLAMP (nValue, 0, nMax);
+item.m_maxValue = nMax;
 return m_opt++;
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------ 

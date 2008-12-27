@@ -736,7 +736,7 @@ for (int i = 0; i <= gameData.segs.nLastSegment; i++)
 #endif
 	SEGMENTS [i].Setup ();
 #ifdef EDITOR
-	{
+ {
 	int said = 0;
 	for (s = gameData.segs.nLastSegment + 1; s < MAX_SEGMENTS; s++)
 		if (SEGMENTS [s].nSegment != -1) {

@@ -59,7 +59,7 @@ if (gameData.songs.bPlaying) {
 #	if USE_SDL_MIXER
 if (!gameOpts->sound.bUseSDLMixer)
 #	endif
-		{
+	 {
 		hmp_close (hmp);
 		hmp = NULL;
 		gameData.songs.bPlaying = 0;

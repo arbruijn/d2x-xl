@@ -53,9 +53,9 @@ class CTransformation {
 		bool Pop (void);
 		void Begin (const CFixVector& vPos, CFixMatrix& mOrient);
 		inline void Begin (const CFixVector& pos, const CAngleVector& angles) 
-			{ Begin (pos, CFixMatrix (CFixMatrix::Create (angles))); }
+		 { Begin (pos, CFixMatrix (CFixMatrix::Create (angles))); }
 		inline void Begin (const CFixVector& pos) 
-			{ Begin (pos, CFixMatrix (CFixMatrix::IDENTITY)); }
+		 { Begin (pos, CFixMatrix (CFixMatrix::IDENTITY)); }
 		inline void End (void) { Pop (); }
 		inline void Move (CFloatVector& v) { glTranslatef (-v [X], -v [Y], -v [Z]); }
 		inline void Rotate (CFloatMatrix& m) { glMultMatrixf (m.Vec ()); }
@@ -72,10 +72,10 @@ class CTransformation {
 			}
 
 		inline CFixVector& Translate (CFixVector& dest, const CFixVector& src) 
-			{ return dest = src - m_info.pos; }
+		 { return dest = src - m_info.pos; }
 
 		inline CFixVector& Rotate (CFixVector& dest, const CFixVector& src, int bUnscaled = 0) 
-			{ return dest = m_info.view [bUnscaled] * src; }
+		 { return dest = m_info.view [bUnscaled] * src; }
 
 		inline CFixVector& Transform (CFixVector& dest, const CFixVector& src, int bUnscaled = 0) {
 			CFixVector vTrans = src - m_info.pos;
@@ -83,13 +83,13 @@ class CTransformation {
 			}
 
 		inline CFloatVector& Translate (CFloatVector& dest, const CFloatVector& src) 
-			{ return dest = src - m_info.posf [0]; }
+		 { return dest = src - m_info.posf [0]; }
 
 		inline CFloatVector& Rotate (CFloatVector& dest, const CFloatVector& src, int bUnscaled = 0) 
-			{ return dest = m_info.viewf [bUnscaled] * src; }
+		 { return dest = m_info.viewf [bUnscaled] * src; }
 
 		inline CFloatVector3& Rotate (CFloatVector3& dest, const CFloatVector3& src, int bUnscaled = 0) 
-			{ return dest = m_info.viewf [bUnscaled] * src; }
+		 { return dest = m_info.viewf [bUnscaled] * src; }
 
 		inline CFloatVector& Transform (CFloatVector& dest, const CFloatVector& src, int bUnscaled = 0) {
 			CFloatVector vTrans = src - m_info.posf [0];

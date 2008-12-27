@@ -632,7 +632,7 @@ return fontManager.Current ()->DrawString (x, y, s);
 	int			w, h, aw, clipped = 0;
 
 Assert (fontManager.Current () != NULL);
-if (x == 0x8000)	{
+if (x == 0x8000) {
 	if (y < 0)
 		clipped |= 1;
 	fontManager.Current ()->StringSize (s, w, h, aw);
@@ -747,11 +747,11 @@ while (nextRowP != NULL) {
 		x = fontManager.Current ()->GetCenteredX (text_ptr1);
 	last_x = x;
 
-	for (r = 0; r < font.height; r++)	{
+	for (r = 0; r < font.height; r++) {
 		textP = text_ptr1;
 		x = last_x;
 
-		while (*textP)	{
+		while (*textP) {
 			if (*textP == '\n') {
 				nextRowP = &textP[1];
 				break;
@@ -770,7 +770,7 @@ while (nextRowP != NULL) {
 				}
 
 			underline = 0;
-			if (*textP == CC_UNDERLINE)	{
+			if (*textP == CC_UNDERLINE) {
 				if ((r==font.baseLine+2) || (r==font.baseLine+3))
 					underline = 1;
 				textP++;
@@ -789,8 +789,8 @@ while (nextRowP != NULL) {
 			else
 				fp = font.data + letter * BITS_TO_BYTES (width)*font.height;
 
-			if (underline)	{
-				for (i = 0; i < width; i++)	{
+			if (underline) {
+				for (i = 0; i < width; i++) {
 					CCanvas::Current ()->SetColor (CCanvas::Current ()->FontColor (0).index);
 					gr_pixel (x++, y);
 					}
@@ -798,7 +798,7 @@ while (nextRowP != NULL) {
 			else {
 				fp += BITS_TO_BYTES (width)*r;
 				mask = 0;
-				for (i = 0; i < width; i++)	{
+				for (i = 0; i < width; i++) {
 					if (mask == 0) {
 						bits = *fp++;
 						mask = 0x80;
@@ -842,11 +842,11 @@ while (nextRowP != NULL) {
 	if (x==0x8000)			//centered
 		x = fontManager.Current ()->GetCenteredX (text_ptr1);
 	last_x = x;
-	for (r = 0; r < font.height; r++)	{
+	for (r = 0; r < font.height; r++) {
 		x = last_x;
 		textP = text_ptr1;
-		while (*textP)	{
-			if (*textP == '\n')	{
+		while (*textP) {
+			if (*textP == '\n') {
 				nextRowP = &textP[1];
 				break;
 				}
@@ -882,7 +882,7 @@ while (nextRowP != NULL) {
 			else
 				fp = font.data + letter * BITS_TO_BYTES (width)*font.height;
 
-			if (underline)	{
+			if (underline) {
 				for (i = 0; i < width; i++) {
 					CCanvas::Current ()->SetColor (CCanvas::Current ()->FontColor (0).index);
 					gr_pixel (x++, y);
@@ -896,7 +896,7 @@ while (nextRowP != NULL) {
 						bits = *fp++;
 						mask = 0x80;
 						}
-					if (bits & mask)	{
+					if (bits & mask) {
 						CCanvas::Current ()->SetColor (CCanvas::Current ()->FontColor (0).index);
 						gr_pixel (x++, y);
 						} 

@@ -936,10 +936,10 @@ void CQuadMeshBuilder::SetupLMapTexCoord (tTexCoord2f *texCoordP)
 #define	LMAP_SIZE	0.0f //(1.0f / 16.0f)
 #if 0
 	static tTexCoord2f lMapTexCoord [4] = {
-		{{LMAP_SIZE, LMAP_SIZE}},
-		{{1.0f - LMAP_SIZE, LMAP_SIZE}},
-		{{1.0f - LMAP_SIZE, 1.0f - LMAP_SIZE}},
-		{{LMAP_SIZE, 1.0f - LMAP_SIZE}}
+	 {{LMAP_SIZE, LMAP_SIZE}},
+	 {{1.0f - LMAP_SIZE, LMAP_SIZE}},
+	 {{1.0f - LMAP_SIZE, 1.0f - LMAP_SIZE}},
+	 {{LMAP_SIZE, 1.0f - LMAP_SIZE}}
 	};
 #endif
 int i = m_faceP->nLightmap % LIGHTMAP_BUFSIZE;

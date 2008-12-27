@@ -491,7 +491,7 @@ for (;;) {
 #if CHECK_NORMAL_FACING
 		if (G3CheckNormalFacing (*VECPTR (p+4), *VECPTR (p+16)) > 0)
 #endif
-			{
+		 {
 			int i;
 			//fix l = X2I (32 * xModelLight);
 			CCanvas::Current ()->SetColorRGB15bpp (WORDVAL (p+28), (ubyte) (255 * GrAlpha ()));
@@ -518,7 +518,7 @@ for (;;) {
 #if CHECK_NORMAL_FACING
 		if (G3CheckNormalFacing (*VECPTR (p+4), *VECPTR (p+16)) > 0)
 #endif
-			{
+		 {
 			tUVL *uvlList;
 			int i;
 			fix l;
@@ -566,7 +566,7 @@ for (;;) {
 #if CHECK_NORMAL_FACING
 		if (G3CheckNormalFacing (*VECPTR (p+16), *VECPTR (p+4)) > 0)
 #endif
-			{		//facing
+		 {		//facing
 			//draw back then front
 			if (!(G3DrawPolyModel (objP, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, colorP, po, nModel) &&
 					G3DrawPolyModel (objP, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, colorP, po, nModel)))

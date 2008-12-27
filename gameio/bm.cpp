@@ -387,22 +387,22 @@ while (CFGetS (szInput, LINEBUF_SIZE, &infoFile)) {
 		Registered_only = 0;
 
 	while (arg != NULL)
-		{
+	 {
 		// Check all possible flags and defines.
 		if (*arg == '$') bmFlag = BM_NONE; // reset to no flags as default.
 
 		IFTOK ("$COCKPIT") 			bmFlag = BM_COCKPIT;
-		else IFTOK ("$GAUGES")		{bmFlag = BM_GAUGES;   clipCount = 0;}
+		else IFTOK ("$GAUGES")	 {bmFlag = BM_GAUGES;   clipCount = 0;}
 		else IFTOK ("$GAUGES_HIRES"){bmFlag = BM_GAUGES_HIRES; clipCount = 0;}
 		else IFTOK ("$SOUND") 		bm_readSound ();
 		else IFTOK ("$DOOR_ANIMS")	bmFlag = BM_WALL_ANIMS;
 		else IFTOK ("$WALL_ANIMS")	bmFlag = BM_WALL_ANIMS;
 		else IFTOK ("$TEXTURES") 	bmFlag = BM_TEXTURES;
-		else IFTOK ("$VCLIP")			{bmFlag = BM_VCLIP;		vlighting = 0;	clipCount = 0;}
-		else IFTOK ("$ECLIP")			{bmFlag = BM_ECLIP;		vlighting = 0;	clipCount = 0; obj_eclip=0; dest_bm=NULL; dest_vclip=-1; dest_eclip=-1; dest_size=-1; crit_clip=-1; critFlag=0; nSound=-1;}
-		else IFTOK ("$WCLIP")			{bmFlag = BM_WCLIP;		vlighting = 0;	clipCount = 0; wall_explodes = wall_blastable = 0; wall_openSound=wall_closeSound=-1; tmap1Flag=0; wall_hidden=0;}
+		else IFTOK ("$VCLIP")		 {bmFlag = BM_VCLIP;		vlighting = 0;	clipCount = 0;}
+		else IFTOK ("$ECLIP")		 {bmFlag = BM_ECLIP;		vlighting = 0;	clipCount = 0; obj_eclip=0; dest_bm=NULL; dest_vclip=-1; dest_eclip=-1; dest_size=-1; crit_clip=-1; critFlag=0; nSound=-1;}
+		else IFTOK ("$WCLIP")		 {bmFlag = BM_WCLIP;		vlighting = 0;	clipCount = 0; wall_explodes = wall_blastable = 0; wall_openSound=wall_closeSound=-1; tmap1Flag=0; wall_hidden=0;}
 
-		else IFTOK ("$EFFECTS")		{bmFlag = BM_EFFECTS;	nClip = 0;}
+		else IFTOK ("$EFFECTS")	 {bmFlag = BM_EFFECTS;	nClip = 0;}
 		else IFTOK ("$ALIAS")			bm_read_alias ();
 
 		else IFTOK ("lighting") 			gameData.pig.tex.tMapInfoP [textureCount-1].lighting = F2X (get_float ();
@@ -412,8 +412,8 @@ while (CFGetS (szInput, LINEBUF_SIZE, &infoFile)) {
 		else IFTOK ("goal_red")			gameData.pig.tex.tMapInfoP [textureCount-1].flags |= TMI_GOAL_RED;
 		else IFTOK ("water")	 			gameData.pig.tex.tMapInfoP [textureCount-1].flags |= TMI_WATER;
 		else IFTOK ("force_field")		gameData.pig.tex.tMapInfoP [textureCount-1].flags |= TMI_FORCE_FIELD;
-		else IFTOK ("slide")	 			{gameData.pig.tex.tMapInfoP [textureCount-1].slide_u = F2X (get_float ())>>8; gameData.pig.tex.tMapInfoP [textureCount-1].slide_v = F2X (get_float ())>>8;}
-		else IFTOK ("destroyed")	 		{int t=textureCount-1; gameData.pig.tex.tMapInfoP [t].destroyed = get_texture (strtok (NULL, space);}
+		else IFTOK ("slide")	 		 {gameData.pig.tex.tMapInfoP [textureCount-1].slide_u = F2X (get_float ())>>8; gameData.pig.tex.tMapInfoP [textureCount-1].slide_v = F2X (get_float ())>>8;}
+		else IFTOK ("destroyed")	 	 {int t=textureCount-1; gameData.pig.tex.tMapInfoP [t].destroyed = get_texture (strtok (NULL, space);}
 		//else IFTOK ("gameData.eff.nEffects")		gameData.eff.nEffects = get_int ();
 		else IFTOK ("gameData.walls.nAnims")	gameData.walls.nAnims = get_int ();
 		else IFTOK ("nClip")			nClip = get_int ();
@@ -440,20 +440,20 @@ while (CFGetS (szInput, LINEBUF_SIZE, &infoFile)) {
 		else IFTOK ("hidden")	 			wall_hidden = get_int ();
 		else IFTOK ("$ROBOT_AI") 		bm_readRobot_ai ();
 
-		else IFTOK ("$POWERUP")			{bm_read_powerup (0);		continue;}
-		else IFTOK ("$POWERUP_UNUSED")	{bm_read_powerup (1);		continue;}
-		else IFTOK ("$HOSTAGE")			{bm_read_hostage ();		continue;}
-		else IFTOK ("$ROBOT")				{bm_readRobot ();			continue;}
-		else IFTOK ("$WEAPON")			{bm_read_weapon (0);		continue;}
-		else IFTOK ("$WEAPON_UNUSED")	{bm_read_weapon (1);		continue;}
-		else IFTOK ("$REACTOR")			{bm_read_reactor ();		continue;}
-		else IFTOK ("$MARKER")			{bm_read_marker ();		continue;}
-		else IFTOK ("$PLAYER_SHIP")		{bm_read_player_ship ();	continue;}
+		else IFTOK ("$POWERUP")		 {bm_read_powerup (0);		continue;}
+		else IFTOK ("$POWERUP_UNUSED") {bm_read_powerup (1);		continue;}
+		else IFTOK ("$HOSTAGE")		 {bm_read_hostage ();		continue;}
+		else IFTOK ("$ROBOT")			 {bm_readRobot ();			continue;}
+		else IFTOK ("$WEAPON")		 {bm_read_weapon (0);		continue;}
+		else IFTOK ("$WEAPON_UNUSED") {bm_read_weapon (1);		continue;}
+		else IFTOK ("$REACTOR")		 {bm_read_reactor ();		continue;}
+		else IFTOK ("$MARKER")		 {bm_read_marker ();		continue;}
+		else IFTOK ("$PLAYER_SHIP")	 {bm_read_player_ship ();	continue;}
 		else IFTOK ("$EXIT") {
 				bm_read_exitmodel ();
 			continue;
 		}
-		else	{		//not a special token, must be a bitmap!
+		else {		//not a special token, must be a bitmap!
 
 			// Remove any illegal/unwanted spaces and tabs at this point.
 			while ((*arg=='\t') || (*arg==' ')) arg++;
@@ -723,7 +723,7 @@ cf.Read (tmpSounds, sizeof (ubyte), D1_MAX_SOUNDS);
 //for (i = 0, pr = &gameData.bots.info [1][0]; i < gameData.bots.nTypes [1]; i++, pr++) 
 pr = gameData.bots.info [1] + 17;
 /*---*/PrintLog ("         Initializing sound data\n", i);
-for (i = 0; i < D1_MAX_SOUNDS; i++)	{
+for (i = 0; i < D1_MAX_SOUNDS; i++) {
 	if (Sounds [1][i] == tmpSounds [pr->seeSound])
 		pr->seeSound = i;
 	if (Sounds [1][i] == tmpSounds [pr->attackSound])
@@ -732,7 +732,7 @@ for (i = 0; i < D1_MAX_SOUNDS; i++)	{
 		pr->clawSound = i;
 	}
 pr = gameData.bots.info [1] + 23;
-for (i = 0; i < D1_MAX_SOUNDS; i++)	{
+for (i = 0; i < D1_MAX_SOUNDS; i++) {
 	if (Sounds [1][i] == tmpSounds [pr->seeSound])
 		pr->seeSound = i;
 	if (Sounds [1][i] == tmpSounds [pr->attackSound])
@@ -752,7 +752,7 @@ for (i = 0; i < D1_MAX_SOUNDS; i++) {
 		pr->clawSound = i;
 	}
 pr = gameData.bots.info [1] + 23;
-for (i = 0; i < D1_MAX_SOUNDS; i++)	{
+for (i = 0; i < D1_MAX_SOUNDS; i++) {
 	if (AltSounds [1][i] == tmpSounds [pr->seeSound])
 		pr->seeSound = i;
 	if (AltSounds [1][i] == tmpSounds [pr->attackSound])
@@ -802,7 +802,7 @@ void BMReadWeaponInfoD1 (CFile& cf)
 	for (i = 0; i < gameData.weapons.nTypes [1]; i++)
 		BMReadWeaponInfoD1N (cf, i);
 #if 0	//write the important data to a C source file for hard coding the values into D2X-W32
-	{
+ {
 	int	i, j;
 	FILE	*f;
 
@@ -870,7 +870,7 @@ void BMReadWeaponInfoD1 (CFile& cf)
 	cf.Read (&gameData.models.nPolyModels, sizeof (int), 1, cf);
 	cf.Read (gameData.models.polyModels, sizeof (tPolyModel), gameData.models.nPolyModels, cf);
 
-	for (i=0;i<gameData.models.nPolyModels;i++)	{
+	for (i=0;i<gameData.models.nPolyModels;i++) {
 		gameData.models.polyModels [i].modelData.Create (gameData.models.polyModels [i].nDataSize);
 		Assert (gameData.models.polyModels [i].modelData.Buffer () != NULL);
 		cf.Read (gameData.models.polyModels [i].modelData, sizeof (ubyte), gameData.models.polyModels [i].nDataSize, cf);
@@ -1121,7 +1121,7 @@ if (!cf.Open (fname, folder, "rb", 0))
 	return 0;
 
 //if (bVertigoData) 
-	{
+ {
 	BMFreeExtraModels ();
 	BMFreeExtraObjBitmaps ();
 	}
@@ -1397,7 +1397,7 @@ tBitmapIndex ReadExtraBitmapIFF (const char * filename)
 
 bmi.index = 0;
 iff_error = iff.ReadBitmap (filename, bmP, BM_LINEAR);
-if (iff_error != IFF_NO_ERROR)		{
+if (iff_error != IFF_NO_ERROR)	 {
 #if TRACE
 	console.printf (CON_DBG, 
 		"Error loading exit model bitmap <%s> - IFF error: %s\n", 
@@ -1464,7 +1464,7 @@ int LoadExitModels (void)
 	start_num = gameData.pig.tex.nObjBitmaps;
 	for (i = 0; szExitBm [i]; i++) 
 		if (!BMLoadExtraBitmap (szExitBm [i]))
-		{
+	 {
 #if TRACE
 		console.printf (CON_NORMAL, "Can't load exit models!\n");
 #endif

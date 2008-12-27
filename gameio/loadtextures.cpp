@@ -617,7 +617,7 @@ reloadTextures:
 		UseBitmapCache (bmP, bmP->bmBufSize);
 	else 
 #endif
-		{
+	 {
 		if (bmP->CreateBuffer ()) 
 			UseBitmapCache (bmP, nSize);
 		}
@@ -651,7 +651,7 @@ reloadTextures:
 #if TEXTURE_COMPRESSION
 		if (!bmP->bmCompressed) 
 #endif
-		{
+	 {
 		nDescentCriticalError = 0;
 		if (bDefault) {
 			temp = (int) cfP->Read (bmP->Buffer (), 1, nSize);

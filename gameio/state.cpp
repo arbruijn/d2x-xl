@@ -368,7 +368,7 @@ int CSaveGameHandler::GetSaveFile (int bMulti)
 	char			filename [NUM_SAVES + 1][30];
 
 memset (m, 0, sizeof (m));
-for (i = 0; i < NUM_SAVES; i++)	{
+for (i = 0; i < NUM_SAVES; i++) {
 	sprintf (filename [i], bMulti ? "%s.mg%x" : "%s.sg%x", LOCALPLAYER.callsign, i);
 	saveGameInfo [i].Load (filename [i], -1);
 	ADD_INPUT_MENU (i, saveGameInfo [i].Label (), DESC_LENGTH - 1, -1, NULL);
@@ -995,7 +995,7 @@ for (i = 0; i < 2; i++) {
 	}
 for (i = 0; i < MAX_PLAYERS; i++)
 	m_cf.WriteInt (gameData.multiplayer.weaponStates [i].bTripleFusion);
-if (!m_bBetweenLevels)	{
+if (!m_bBetweenLevels) {
 //Finish all morph OBJECTS
 	FORALL_OBJS (objP, i) {
 	if (objP->info.nType == OBJ_NONE) 
@@ -1192,7 +1192,7 @@ if (thumbCanv) {
 	thumbCanv->Destroy ();
 	m_cf.Write (paletteManager.Game (), 3, 256);
 	}
-else	{
+else {
  	ubyte color = 0;
  	for (int i = 0; i < THUMBNAIL_LW * THUMBNAIL_LH; i++)
 		m_cf.Write (&color, sizeof (ubyte), 1);
@@ -1415,12 +1415,12 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	if (nServerPlayer > 0) {
 		nOtherObjNum = restoredPlayers [0].nObject;
 		nServerObjNum = restoredPlayers [nServerPlayer].nObject;
-		{
+	 {
 		tNetPlayerInfo h = netPlayers.players [0];
 		netPlayers.players [0] = netPlayers.players [nServerPlayer];
 		netPlayers.players [nServerPlayer] = h;
 		}
-		{
+	 {
 		CPlayerData h = restoredPlayers [0];
 		restoredPlayers [0] = restoredPlayers [nServerPlayer];
 		restoredPlayers [nServerPlayer] = h;
@@ -2060,7 +2060,7 @@ if (m_nVersion > 33) {
 		   gameData.multiplayer.weaponStates [i].bTripleFusion = !gameData.weapons.bTripleFusion;  //force MultiSendWeapons
 		   }
 	}
-if (!m_bBetweenLevels)	{
+if (!m_bBetweenLevels) {
 	gameStates.render.bDoAppearanceEffect = 0;			// Don't do this for middle o' game stuff.
 	//Clear out all the objects from the lvl file
 	ResetSegObjLists ();
@@ -2341,7 +2341,7 @@ SelectWeapon (gameData.weapons.nSecondary, 1, 0, 0);
 m_cf.Read (&gameStates.app.nDifficultyLevel, sizeof (int), 1);
 // Restore the cheats enabled flag
 m_cf.Read (&gameStates.app.cheats.bEnabled, sizeof (int), 1);
-if (!m_bBetweenLevels)	{
+if (!m_bBetweenLevels) {
 	gameStates.render.bDoAppearanceEffect = 0;			// Don't do this for middle o' game stuff.
 	//Clear out all the OBJECTS from the lvl file
 	ResetSegObjLists ();
@@ -2406,7 +2406,7 @@ if (!m_bBetweenLevels)	{
 	CSide* sideP;
 	for (i = 0; i <= gameData.segs.nLastSegment; i++, segP) {
 		sideP = segP->m_sides;
-		for (j = 0; j < 6; j++, sideP++)	{
+		for (j = 0; j < 6; j++, sideP++) {
 			sideP->m_nWall = m_cf.ReadShort ();
 			sideP->m_nBaseTex = m_cf.ReadShort ();
 			nTexture = m_cf.ReadShort ();
@@ -2455,7 +2455,7 @@ if (!m_bBetweenLevels)	{
 }
 gameData.app.nStateGameId = 0;
 
-if (m_nVersion >= 7)	{
+if (m_nVersion >= 7) {
 	m_cf.Read (&gameData.app.nStateGameId, sizeof (uint), 1);
 	m_cf.Read (&gameStates.app.cheats.bLaserRapidFire, sizeof (int), 1);
 	m_cf.Read (&gameStates.app.bLunacy, sizeof (int), 1);		//	Yes, writing this twice.  Removed the Ugly robot system, but didn't want to change savegame format.
@@ -2557,7 +2557,7 @@ if (memcmp (nId, dgss_id, 4)) {
 	}
 //Read m_nVersion
 m_cf.Read (&m_nVersion, sizeof (int), 1);
-if (m_nVersion < STATE_COMPATIBLE_VERSION)	{
+if (m_nVersion < STATE_COMPATIBLE_VERSION) {
 	m_cf.Close ();
 	StartTime (1);
 	return 0;

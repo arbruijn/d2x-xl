@@ -76,7 +76,7 @@ const char *grayScaleFS [2][3] = {{
 	"float l = (texColor.r * 0.3 + texColor.g * 0.59 + texColor.b * 0.11) / 4.0;\r\n" \
 	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
 	},
-	{
+ {
 	"uniform sampler2D baseTex;\r\n" \
 	"uniform vec4 faceColor;\r\n" \
 	"void main(void){" \
@@ -114,7 +114,7 @@ const char *grayScaleVS [2][3] = {{
 	"gl_Position=ftransform();"\
 	"gl_FrontColor=gl_Color;}"
 	},
-	{
+ {
 	"void main(void){" \
 	"gl_Position=ftransform();"\
 	"gl_FrontColor=gl_Color;}"
@@ -1094,13 +1094,13 @@ return pszFS;
 //-------------------------------------------------------------------------
 
 GLhandleARB perPixelLightingShaderProgs [9][4] =
-	{{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+ {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
 
 GLhandleARB ppLvs [9][4] =
-	{{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+ {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
 
 GLhandleARB ppLfs [9][4] =
-	{{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+ {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
 
 int CreatePerPixelLightingShader (int nType, int nLights)
 {
@@ -1124,7 +1124,7 @@ for (h = 0; h <= 3; h++) {
 #else
 	for (i = 0; i <= gameStates.render.nMaxLightsPerPass; i++)
 #endif
-		{
+	 {
 		if (perPixelLightingShaderProgs [i][h])
 			continue;
 		if (lightmapManager.HaveLightmaps ()) {
@@ -1373,7 +1373,7 @@ if ((gameStates.ogl.iLight < gameStates.ogl.nLights) && !nLightRange)
 #if 0
 if (CreatePerPixelLightingShader (nType, nLights) >= 0)
 #endif
-	{
+ {
 	PROF_END(ptPerPixelLighting)
 	return nLights;
 	}
@@ -1413,7 +1413,7 @@ if ((bLightmaps = lightmapManager.HaveLightmaps ())) {
 #if 1//def _DEBUG
 	if (lightmapManager.Bind (i))
 #endif
-		{INIT_TMU (InitTMU0, GL_TEXTURE0, nullBmP, lightmapManager.Buffer (i), 1, 1);}
+	 {INIT_TMU (InitTMU0, GL_TEXTURE0, nullBmP, lightmapManager.Buffer (i), 1, 1);}
 	}
 if (nShader != gameStates.render.history.nShader) {
 	gameData.render.nShaderChanges++;
@@ -1469,7 +1469,7 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 #endif
 int i = faceP->nLightmap / LIGHTMAP_BUFSIZE;
 if (lightmapManager.Bind (i))
-	{INIT_TMU (InitTMU0, GL_TEXTURE0, nullBmP, lightmapManager.Buffer (i), 1, 1);}
+ {INIT_TMU (InitTMU0, GL_TEXTURE0, nullBmP, lightmapManager.Buffer (i), 1, 1);}
 if (nShader != gameStates.render.history.nShader) {
 	gameData.render.nShaderChanges++;
 #if CONST_LIGHT_COUNT

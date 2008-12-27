@@ -206,7 +206,7 @@ else {
 #endif
 		//	This horrible code added by MK in desperation on 12/13/94 to make robots wake up as soon as they
 		//	see you without killing frame rate.
-		{
+	 {
 			tAIStaticInfo	*aiP = &objP->cType.aiInfo;
 		if ((gameData.ai.nPlayerVisibility == 2) && (ailP->nPrevVisibility != 2))
 			if ((aiP->GOAL_STATE == AIS_REST) || (aiP->CURRENT_STATE == AIS_REST)) {

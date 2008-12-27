@@ -30,10 +30,10 @@ g3sPoint rodPoints [4];
 g3sPoint *rodPointList [] = {rodPoints, rodPoints + 1, rodPoints + 2, rodPoints + 3};
 
 tUVL rodUvlList [4] = {
-	{0x0200, 0x0200, 0},
-	{0xfe00, 0x0200, 0},
-	{0xfe00, 0xfe00, 0},
-	{0x0200, 0xfe00, 0}};
+ {0x0200, 0x0200, 0},
+ {0xfe00, 0x0200, 0},
+ {0xfe00, 0xfe00, 0},
+ {0x0200, 0xfe00, 0}};
 
 //------------------------------------------------------------------------------
 //compute the corners of a rod.  fills in vertbuf.

@@ -38,7 +38,7 @@ int gr_disk(fix xc1,fix yc1,fix r1)
 	if ( (yc-r) > CCanvas::Current ()->Height () ) return 1;
 
 	while(x<y)
-	{
+ {
 		// Draw the first octant
 		GrScanLine( xc-y, xc+y, yc-x );
 		GrScanLine( xc-y, xc+y, yc+x );
@@ -73,7 +73,7 @@ int gr_udisk(fix xc1,fix yc1,fix r1)
 	y=r;
 
 	while(x<y)
-	{
+ {
 		// Draw the first octant
 		gr_uscanline( xc-y, xc+y, yc-x );
 		gr_uscanline( xc-y, xc+y, yc+x );

@@ -415,7 +415,7 @@ if (bShadowData) {
 #if 0
 		if (G3FindPolyModelFace (po, pf) < 0) //check for duplicate faces
 #endif
-			{
+		 {
 			m_iFaceVert += nVerts;
 			pf++;
 			m_iFace++;
@@ -983,7 +983,7 @@ for (;;) {
 		}
 	if (nHitSide < 0)
 #endif
-		{
+	 {
 		for (nSide = 0; nSide < 6; nSide++) {
 			nChild = segP->m_children [nSide];
 			if ((nChild >= 0) && (bVisited [nChild] == nVisited))
@@ -1229,7 +1229,7 @@ m_bCalcClipDist = 0;
 	}
 else
 #endif
-	{
+ {
 	fMaxDist = ClipDistByFaceCenters (objP, po, 0, 1);
 	if (gameOpts->render.shadows.nClip == 3)
 		fMaxDist = ClipDistByFaceVerts (objP, po, fMaxDist, 0, 1);
@@ -1292,7 +1292,7 @@ for (i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
 #if DBG_SHADOWS
 		if (bShadowTest < 4)
 #endif
-			{
+		 {
 #if NORM_INF
 #	if DBG_SHADOWS
 			if (bShadowTest == 2)

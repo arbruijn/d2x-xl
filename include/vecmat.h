@@ -1007,7 +1007,7 @@ inline const CAngleVector CFixVector::ToAnglesVecNorm (void) const {
 }
 
 //extract heading and pitch from a vector, assuming bank==0
-inline const CAngleVector CFixVector::ToAnglesVec (void) const	{
+inline const CAngleVector CFixVector::ToAnglesVec (void) const {
 	CFixVector t = *this;
 
 //			if (CFixVector::Normalize (t))

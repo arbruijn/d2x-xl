@@ -70,7 +70,7 @@ int yesNoTextIndex [2] = { TNUM_N, TNUM_Y };
 
 #ifndef USE_LINUX_JOY
 	int joybutton_text [28] = 
-	{ TNUM_BTN_1, TNUM_BTN_2, TNUM_BTN_3, TNUM_BTN_4,
+ { TNUM_BTN_1, TNUM_BTN_2, TNUM_BTN_3, TNUM_BTN_4,
 	  -1, TNUM_TRIG, TNUM_LEFT, TNUM_HAT_L,
 	 TNUM_RIGHT, -1, TNUM_HAT2_D, TNUM_HAT_R,
 	 TNUM_MID, -1, TNUM_HAT2_R, TNUM_HAT_U,
@@ -110,30 +110,30 @@ kcItem *All_items;
 //-------------------------------------------------------------------------
 
 tControlSettings controlSettings = {
-	{
-	{0xc8,0x48,0xd0,0x50,0xcb,0x4b,0xcd,0x4d,0x38,0xff,0xff,0x4f,0xff,0x51,0xff,0x4a,0xff,0x4e,0xff,0xff,0x10,0x47,0x12,0x49,0x1d,0x9d,0x39,0xff,0x21,0xff,0x1e,0xff,0x2c,0xff,0x30,0xff,0x13,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xf,0xff,0x1f,0xff,0x33,0xff,0x34,0xff,0x23,0xff,0x14,0xff,0xff,0xff,0x0,0x0},
-	{0x0,0x1,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0},
-	{0x5,0xc,0xff,0xff,0xff,0xff,0x7,0xf,0x13,0xb,0xff,0x6,0x8,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0},
-	{0x0,0x1,0xff,0xff,0x2,0xff,0x7,0xf,0x13,0xb,0xff,0xff,0xff,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x3,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0,0x0},
-	{0x3,0x0,0x1,0x2,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0,0x0},
-	{0x0,0x1,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0,0x0},
-	{0x0,0x1,0xff,0xff,0x2,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0},
+ {
+ {0xc8,0x48,0xd0,0x50,0xcb,0x4b,0xcd,0x4d,0x38,0xff,0xff,0x4f,0xff,0x51,0xff,0x4a,0xff,0x4e,0xff,0xff,0x10,0x47,0x12,0x49,0x1d,0x9d,0x39,0xff,0x21,0xff,0x1e,0xff,0x2c,0xff,0x30,0xff,0x13,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xf,0xff,0x1f,0xff,0x33,0xff,0x34,0xff,0x23,0xff,0x14,0xff,0xff,0xff,0x0,0x0},
+ {0x0,0x1,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0},
+ {0x5,0xc,0xff,0xff,0xff,0xff,0x7,0xf,0x13,0xb,0xff,0x6,0x8,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0},
+ {0x0,0x1,0xff,0xff,0x2,0xff,0x7,0xf,0x13,0xb,0xff,0xff,0xff,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x3,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0,0x0},
+ {0x3,0x0,0x1,0x2,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0,0x0},
+ {0x0,0x1,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0,0x0},
+ {0x0,0x1,0xff,0xff,0x2,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0},
 	},
-	{
-	{0xc8,0x48,0xd0,0x50,0xcb,0x4b,0xcd,0x4d,0x38,0xff,0xff,0x4f,0xff,0x51,0xff,0x4a,0xff,0x4e,0xff,0xff,0x10,0x47,0x12,0x49,0x1d,0x9d,0x39,0xff,0x21,0xff,0x1e,0xff,0x2c,0xff,0x30,0xff,0x13,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xf,0xff,0x1f,0xff,0x33,0xff,0x34,0xff,0x23,0xff,0x14,0xff,0xff,0xff,0x0,0x0},
-	{0x0,0x1,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0},
-	{0x5,0xc,0xff,0xff,0xff,0xff,0x7,0xf,0x13,0xb,0xff,0x6,0x8,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0},
-	{0x0,0x1,0xff,0xff,0x2,0xff,0x7,0xf,0x13,0xb,0xff,0xff,0xff,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x3,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0,0x0},
-	{0x3,0x0,0x1,0x2,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0,0x0},
-	{0x0,0x1,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0,0x0},
-	{0x0,0x1,0xff,0xff,0x2,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0},
+ {
+ {0xc8,0x48,0xd0,0x50,0xcb,0x4b,0xcd,0x4d,0x38,0xff,0xff,0x4f,0xff,0x51,0xff,0x4a,0xff,0x4e,0xff,0xff,0x10,0x47,0x12,0x49,0x1d,0x9d,0x39,0xff,0x21,0xff,0x1e,0xff,0x2c,0xff,0x30,0xff,0x13,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xf,0xff,0x1f,0xff,0x33,0xff,0x34,0xff,0x23,0xff,0x14,0xff,0xff,0xff,0x0,0x0},
+ {0x0,0x1,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0},
+ {0x5,0xc,0xff,0xff,0xff,0xff,0x7,0xf,0x13,0xb,0xff,0x6,0x8,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0},
+ {0x0,0x1,0xff,0xff,0x2,0xff,0x7,0xf,0x13,0xb,0xff,0xff,0xff,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x3,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0,0x0},
+ {0x3,0x0,0x1,0x2,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0,0x0},
+ {0x0,0x1,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0,0x0},
+ {0x0,0x1,0xff,0xff,0x2,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0},
 	},
-	{
+ {
 	0x2 ,0xff,0x3 ,0xff,0x4 ,0xff,0x5 ,0xff,0x6 ,0xff,0x7 ,0xff,0x8 ,0xff,0x9 ,
 	0xff,0xa ,0xff,0xb ,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
 	0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff 
 	},
-	{
+ {
 	0x2 ,0xff,0x3 ,0xff,0x4 ,0xff,0x5 ,0xff,0x6 ,0xff,0x7 ,0xff,0x8 ,0xff,0x9 ,
 	0xff,0xa ,0xff,0xb ,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
 	0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff 
@@ -141,70 +141,70 @@ tControlSettings controlSettings = {
 };
 
 kcItem kcKeyboard [] = {
-	{  0, 15, 49, 71, 26, 62, 2, 63, 1,"Pitch forward", 270, BT_KEY, 255 },
-	{  1, 15, 49,100, 26, 63, 3, 0, 24,"Pitch forward", 270, BT_KEY, 255 },
-	{  2, 15, 57, 71, 26, 0, 4, 25, 3,"Pitch backward", 271, BT_KEY, 255 },
-	{  3, 15, 57,100, 26, 1, 5, 2, 26,"Pitch backward", 271, BT_KEY, 255 },
-	{  4, 15, 65, 71, 26, 2, 6, 27, 5,"Turn left", 272, BT_KEY, 255 },
-	{  5, 15, 65,100, 26, 3, 7, 4, 28,"Turn left", 272, BT_KEY, 255 },
-	{  6, 15, 73, 71, 26, 4, 8, 29, 7,"Turn right", 273, BT_KEY, 255 },
-	{  7, 15, 73,100, 26, 5, 9, 6, 34,"Turn right", 273, BT_KEY, 255 },
-	{  8, 15, 84, 71, 26, 6, 10, 35, 9,"Slide on", 274, BT_KEY, 255 },
-	{  9, 15, 84,100, 26, 7, 11, 8, 36,"Slide on", 274, BT_KEY, 255 },
-	{ 10, 15, 92, 71, 26, 8, 12, 37, 11,"Slide left", 275, BT_KEY, 255 },
-	{ 11, 15, 92,100, 26, 9, 13, 10, 44,"Slide left", 275, BT_KEY, 255 },
-	{ 12, 15,100, 71, 26, 10, 14, 45, 13,"Slide right", 276, BT_KEY, 255 },
-	{ 13, 15,100,100, 26, 11, 15, 12, 30,"Slide right", 276, BT_KEY, 255 },
-	{ 14, 15,108, 71, 26, 12, 16, 31, 15,"Slide up", 277, BT_KEY, 255 },
-	{ 15, 15,108,100, 26, 13, 17, 14, 32,"Slide up", 277, BT_KEY, 255 },
-	{ 16, 15,116, 71, 26, 14, 18, 33, 17,"Slide down", 278, BT_KEY, 255 },
-	{ 17, 15,116,100, 26, 15, 19, 16, 46,"Slide down", 278, BT_KEY, 255 },
-	{ 18, 15,127, 71, 26, 16, 20, 47, 19,"Bank on", 279, BT_KEY, 255 },
-	{ 19, 15,127,100, 26, 17, 21, 18, 38,"Bank on", 279, BT_KEY, 255 },
-	{ 20, 15,135, 71, 26, 18, 22, 39, 21,"Bank left", 280, BT_KEY, 255 },
-	{ 21, 15,135,100, 26, 19, 23, 20, 40,"Bank left", 280, BT_KEY, 255 },
-	{ 22, 15,143, 71, 26, 20, 48, 41, 23,"Bank right", 281, BT_KEY, 255 },
-	{ 23, 15,143,100, 26, 21, 49, 22, 42,"Bank right", 281, BT_KEY, 255 },
-	{ 24,158, 49, 83, 26, 59, 26, 1, 25,"Fire primary", 282, BT_KEY, 255 },
-	{ 25,158, 49,112, 26, 57, 27, 24, 2,"Fire primary", 282, BT_KEY, 255 },
-	{ 26,158, 57, 83, 26, 24, 28, 3, 27,"Fire secondary", 283,BT_KEY, 255 },
-	{ 27,158, 57,112, 26, 25, 29, 26, 4,"Fire secondary", 283,BT_KEY, 255 },
-	{ 28,158, 65, 83, 26, 26, 34, 5, 29,"Fire flare", 284,BT_KEY, 255 },
-	{ 29,158, 65,112, 26, 27, 35, 28, 6,"Fire flare", 284,BT_KEY, 255 },
-	{ 30,158,103, 83, 26, 44, 32, 13, 31,"Accelerate", 285,BT_KEY, 255 },
-	{ 31,158,103,112, 26, 45, 33, 30, 14,"Accelerate", 285,BT_KEY, 255 },
-	{ 32,158,111, 83, 26, 30, 46, 15, 33,"reverse", 286,BT_KEY, 255 },
-	{ 33,158,111,112, 26, 31, 47, 32, 16,"reverse", 286,BT_KEY, 255 },
-	{ 34,158, 73, 83, 26, 28, 36, 7, 35,"Drop Bomb", 287,BT_KEY, 255 },
-	{ 35,158, 73,112, 26, 29, 37, 34, 8,"Drop Bomb", 287,BT_KEY, 255 },
-	{ 36,158, 84, 83, 26, 34, 44, 9, 37,"Rear View", 288,BT_KEY, 255 },
-	{ 37,158, 84, 112, 26, 35, 45, 36, 10,"Rear View", 288,BT_KEY, 255 },
-	{ 38,158,130, 83, 26, 46, 40, 19, 39,"Cruise Faster", 289,BT_KEY, 255 },
-	{ 39,158,130,112, 26, 47, 41, 38, 20,"Cruise Faster", 289,BT_KEY, 255 },
-	{ 40,158,138, 83, 26, 38, 42, 21, 41,"Cruise Slower", 290,BT_KEY, 255 },
-	{ 41,158,138,112, 26, 39, 43, 40, 22,"Cruise Slower", 290,BT_KEY, 255 },
-	{ 42,158,146, 83, 26, 40, 54, 23, 43,"Cruise Off", 291,BT_KEY, 255 },
-	{ 43,158,146,112, 26, 41, 55, 42, 48,"Cruise Off", 291,BT_KEY, 255 },
-	{ 44,158, 92, 83, 26, 36, 30, 11, 45,"Automap", 292,BT_KEY, 255 },
-	{ 45,158, 92,112, 26, 37, 31, 44, 12,"Automap", 292,BT_KEY, 255 },
-	{ 46,158,119, 83, 26, 32, 38, 17, 47,"Afterburner", 293,BT_KEY, 255 },
-	{ 47,158,119,112, 26, 33, 39, 46, 18,"Afterburner", 293,BT_KEY, 255 },
-	{ 48, 15,154, 71, 26, 22, 50, 43, 49,"Cycle Primary", 294,BT_KEY, 255 },
-	{ 49, 15,154,100, 26, 23, 51, 48, 54,"Cycle Primary", 294,BT_KEY, 255 },
-	{ 50, 15,162, 71, 26, 48, 52, 55, 51,"Cycle Second", 295,BT_KEY, 255 },
-	{ 51, 15,162,100, 26, 49, 53, 50, 56,"Cycle Second", 295,BT_KEY, 255 },
-	{ 52, 15,170, 71, 26, 50, 60, 57, 53,"Zoom In", 296,BT_KEY, 255 },
-	{ 53, 15,170,100, 26, 51, 61, 52, 58,"Zoom In", 296,BT_KEY, 255 },
-	{ 54,158,157, 83, 26, 42, 56, 49, 55,"Headlight", 297,BT_KEY, 255 },
-	{ 55,158,157,112, 26, 43, 57, 54, 50,"Headlight", 297,BT_KEY, 255 },
-	{ 56,158,165, 83, 26, 54, 58, 51, 57,"Energy->Shield", 298,BT_KEY, 255 },
-	{ 57,158,165,112, 26, 55, 25, 56, 52,"Energy->Shield", 298,BT_KEY, 255 },
+ {  0, 15, 49, 71, 26, 62, 2, 63, 1,"Pitch forward", 270, BT_KEY, 255 },
+ {  1, 15, 49,100, 26, 63, 3, 0, 24,"Pitch forward", 270, BT_KEY, 255 },
+ {  2, 15, 57, 71, 26, 0, 4, 25, 3,"Pitch backward", 271, BT_KEY, 255 },
+ {  3, 15, 57,100, 26, 1, 5, 2, 26,"Pitch backward", 271, BT_KEY, 255 },
+ {  4, 15, 65, 71, 26, 2, 6, 27, 5,"Turn left", 272, BT_KEY, 255 },
+ {  5, 15, 65,100, 26, 3, 7, 4, 28,"Turn left", 272, BT_KEY, 255 },
+ {  6, 15, 73, 71, 26, 4, 8, 29, 7,"Turn right", 273, BT_KEY, 255 },
+ {  7, 15, 73,100, 26, 5, 9, 6, 34,"Turn right", 273, BT_KEY, 255 },
+ {  8, 15, 84, 71, 26, 6, 10, 35, 9,"Slide on", 274, BT_KEY, 255 },
+ {  9, 15, 84,100, 26, 7, 11, 8, 36,"Slide on", 274, BT_KEY, 255 },
+ { 10, 15, 92, 71, 26, 8, 12, 37, 11,"Slide left", 275, BT_KEY, 255 },
+ { 11, 15, 92,100, 26, 9, 13, 10, 44,"Slide left", 275, BT_KEY, 255 },
+ { 12, 15,100, 71, 26, 10, 14, 45, 13,"Slide right", 276, BT_KEY, 255 },
+ { 13, 15,100,100, 26, 11, 15, 12, 30,"Slide right", 276, BT_KEY, 255 },
+ { 14, 15,108, 71, 26, 12, 16, 31, 15,"Slide up", 277, BT_KEY, 255 },
+ { 15, 15,108,100, 26, 13, 17, 14, 32,"Slide up", 277, BT_KEY, 255 },
+ { 16, 15,116, 71, 26, 14, 18, 33, 17,"Slide down", 278, BT_KEY, 255 },
+ { 17, 15,116,100, 26, 15, 19, 16, 46,"Slide down", 278, BT_KEY, 255 },
+ { 18, 15,127, 71, 26, 16, 20, 47, 19,"Bank on", 279, BT_KEY, 255 },
+ { 19, 15,127,100, 26, 17, 21, 18, 38,"Bank on", 279, BT_KEY, 255 },
+ { 20, 15,135, 71, 26, 18, 22, 39, 21,"Bank left", 280, BT_KEY, 255 },
+ { 21, 15,135,100, 26, 19, 23, 20, 40,"Bank left", 280, BT_KEY, 255 },
+ { 22, 15,143, 71, 26, 20, 48, 41, 23,"Bank right", 281, BT_KEY, 255 },
+ { 23, 15,143,100, 26, 21, 49, 22, 42,"Bank right", 281, BT_KEY, 255 },
+ { 24,158, 49, 83, 26, 59, 26, 1, 25,"Fire primary", 282, BT_KEY, 255 },
+ { 25,158, 49,112, 26, 57, 27, 24, 2,"Fire primary", 282, BT_KEY, 255 },
+ { 26,158, 57, 83, 26, 24, 28, 3, 27,"Fire secondary", 283,BT_KEY, 255 },
+ { 27,158, 57,112, 26, 25, 29, 26, 4,"Fire secondary", 283,BT_KEY, 255 },
+ { 28,158, 65, 83, 26, 26, 34, 5, 29,"Fire flare", 284,BT_KEY, 255 },
+ { 29,158, 65,112, 26, 27, 35, 28, 6,"Fire flare", 284,BT_KEY, 255 },
+ { 30,158,103, 83, 26, 44, 32, 13, 31,"Accelerate", 285,BT_KEY, 255 },
+ { 31,158,103,112, 26, 45, 33, 30, 14,"Accelerate", 285,BT_KEY, 255 },
+ { 32,158,111, 83, 26, 30, 46, 15, 33,"reverse", 286,BT_KEY, 255 },
+ { 33,158,111,112, 26, 31, 47, 32, 16,"reverse", 286,BT_KEY, 255 },
+ { 34,158, 73, 83, 26, 28, 36, 7, 35,"Drop Bomb", 287,BT_KEY, 255 },
+ { 35,158, 73,112, 26, 29, 37, 34, 8,"Drop Bomb", 287,BT_KEY, 255 },
+ { 36,158, 84, 83, 26, 34, 44, 9, 37,"Rear View", 288,BT_KEY, 255 },
+ { 37,158, 84, 112, 26, 35, 45, 36, 10,"Rear View", 288,BT_KEY, 255 },
+ { 38,158,130, 83, 26, 46, 40, 19, 39,"Cruise Faster", 289,BT_KEY, 255 },
+ { 39,158,130,112, 26, 47, 41, 38, 20,"Cruise Faster", 289,BT_KEY, 255 },
+ { 40,158,138, 83, 26, 38, 42, 21, 41,"Cruise Slower", 290,BT_KEY, 255 },
+ { 41,158,138,112, 26, 39, 43, 40, 22,"Cruise Slower", 290,BT_KEY, 255 },
+ { 42,158,146, 83, 26, 40, 54, 23, 43,"Cruise Off", 291,BT_KEY, 255 },
+ { 43,158,146,112, 26, 41, 55, 42, 48,"Cruise Off", 291,BT_KEY, 255 },
+ { 44,158, 92, 83, 26, 36, 30, 11, 45,"Automap", 292,BT_KEY, 255 },
+ { 45,158, 92,112, 26, 37, 31, 44, 12,"Automap", 292,BT_KEY, 255 },
+ { 46,158,119, 83, 26, 32, 38, 17, 47,"Afterburner", 293,BT_KEY, 255 },
+ { 47,158,119,112, 26, 33, 39, 46, 18,"Afterburner", 293,BT_KEY, 255 },
+ { 48, 15,154, 71, 26, 22, 50, 43, 49,"Cycle Primary", 294,BT_KEY, 255 },
+ { 49, 15,154,100, 26, 23, 51, 48, 54,"Cycle Primary", 294,BT_KEY, 255 },
+ { 50, 15,162, 71, 26, 48, 52, 55, 51,"Cycle Second", 295,BT_KEY, 255 },
+ { 51, 15,162,100, 26, 49, 53, 50, 56,"Cycle Second", 295,BT_KEY, 255 },
+ { 52, 15,170, 71, 26, 50, 60, 57, 53,"Zoom In", 296,BT_KEY, 255 },
+ { 53, 15,170,100, 26, 51, 61, 52, 58,"Zoom In", 296,BT_KEY, 255 },
+ { 54,158,157, 83, 26, 42, 56, 49, 55,"Headlight", 297,BT_KEY, 255 },
+ { 55,158,157,112, 26, 43, 57, 54, 50,"Headlight", 297,BT_KEY, 255 },
+ { 56,158,165, 83, 26, 54, 58, 51, 57,"Energy->Shield", 298,BT_KEY, 255 },
+ { 57,158,165,112, 26, 55, 25, 56, 52,"Energy->Shield", 298,BT_KEY, 255 },
    { 58,158,173, 83, 26, 56, 59, 53, 60,"Toggle Bomb", 299, BT_KEY,255},
    { 59,158,181, 83, 26, 58, 24, 61, 62,"Toggle Icons", 653, BT_KEY,255},
-	{ 60, 15,181, 71, 26, 52, 62, 58, 61,"Use Cloak", 751,BT_KEY, 255 },
-	{ 61, 15,181,100, 26, 53, 63, 60, 59,"Use Cloak", 751,BT_KEY, 255 },
-	{ 62, 15,189, 71, 26, 60, 0, 59, 63,"Use Invul", 752,BT_KEY, 255 },
-	{ 63, 15,189,100, 26, 61, 1, 62, 0,"Use Invul", 752,BT_KEY, 255 },
+ { 60, 15,181, 71, 26, 52, 62, 58, 61,"Use Cloak", 751,BT_KEY, 255 },
+ { 61, 15,181,100, 26, 53, 63, 60, 59,"Use Cloak", 751,BT_KEY, 255 },
+ { 62, 15,189, 71, 26, 60, 0, 59, 63,"Use Invul", 752,BT_KEY, 255 },
+ { 63, 15,189,100, 26, 61, 1, 62, 0,"Use Invul", 752,BT_KEY, 255 },
    { 64,158,189, 83, 26, 58, 24, 61, 62,"Slowmo/Speed", 910, BT_KEY,255 },
    { 65,158,189,112, 26, 58, 24, 61, 62,"Slowmo/Speed", 910, BT_KEY,255 }
 };
@@ -212,175 +212,175 @@ kcItem kcKeyboard [] = {
 ubyte kcKbdFlags [MAX_CONTROLS];
 
 kcItem kcJoystick [] = {
-	{  0, 15, 46, 71, 26, 15, 1, 24, 5,"Fire primary", 282, BT_JOY_BUTTON, 255 },
-	{  1, 15, 54, 71, 26, 0, 4, 5, 6,"Fire secondary", 283, BT_JOY_BUTTON, 255 },
-	{  2, 15, 94, 71, 26, 35, 3, 10, 11,"Accelerate", 285, BT_JOY_BUTTON, 255 },
-	{  3, 15,102, 71, 26, 2, 25, 11, 12,"reverse", 286, BT_JOY_BUTTON, 255 },
-	{  4, 15, 62, 71, 26, 1, 26, 6, 7,"Fire flare", 284, BT_JOY_BUTTON, 255 },
-	{  5,158, 46, 71, 26, 23, 6, 0, 1,"Slide on", 274, BT_JOY_BUTTON, 255 },
-	{  6,158, 54, 71, 26, 5, 7, 1, 4,"Slide left", 275, BT_JOY_BUTTON, 255 },
-	{  7,158, 62, 71, 26, 6, 8, 4, 26,"Slide right", 276, BT_JOY_BUTTON, 255 },
-	{  8,158, 70, 71, 26, 7, 9, 26, 34,"Slide up", 277, BT_JOY_BUTTON, 255 },
-	{  9,158, 78, 71, 26, 8, 10, 34, 35,"Slide down", 278, BT_JOY_BUTTON, 255 },
-	{ 10,158, 86, 71, 26, 9, 11, 35, 2,"Bank on", 279, BT_JOY_BUTTON, 255 },
-	{ 11,158, 94, 71, 26, 10, 12, 2, 3,"Bank left", 280, BT_JOY_BUTTON, 255 },
-	{ 12,158,102, 71, 26, 11, 28, 3, 25,"Bank right", 281, BT_JOY_BUTTON, 255 },
-	{ 13, 15,162, 51, 26, 33, 15, 32, 14,"Pitch U/D", 300, BT_JOY_AXIS, 255 },
-	{ 15, 15,170, 51, 26, 13, 0, 18, 16,"Turn L/R", 301, BT_JOY_AXIS, 255 },
-	{ 17,158,162, 58, 26, 32, 19, 14, 18,"Slide L/R", 302, BT_JOY_AXIS, 255 },
-	{ 19,158,170, 58, 26, 17, 21, 16, 20,"Slide U/D", 303, BT_JOY_AXIS, 255 },
-	{ 21,158,178, 58, 26, 19, 23, 20, 22,"Bank L/R", 304, BT_JOY_AXIS, 255 },
-	{ 23,158,186, 58, 26, 21, 5, 22, 24,"throttle", 305, BT_JOY_AXIS, 255 },
-	{ 25, 15,110, 71, 26, 3, 27, 12, 28,"Rear View", 288, BT_JOY_BUTTON, 255 },
-	{ 26, 15, 70, 71, 26, 4, 34, 7, 8,"Drop Bomb", 287, BT_JOY_BUTTON, 255 },
-	{ 27, 15,118, 71, 26, 25, 30, 28, 29,"Afterburner", 293, BT_JOY_BUTTON, 255 },
-	{ 28,158,110, 71, 26, 12, 29, 25, 27,"Cycle Primary", 294, BT_JOY_BUTTON, 255 },
-	{ 29,158,118, 71, 26, 28, 31, 27, 30,"Cycle Secondary", 295, BT_JOY_BUTTON, 255 },
-	{ 30, 15,126, 71, 26, 27, 33, 29, 31,"Headlight", 297, BT_JOY_BUTTON, 255 },
-	{ 31,158,126, 71, 26, 29, 32, 30, 33,"Toggle Bomb", 299, BT_JOY_BUTTON, 255 },
-	{ 32,158,134, 71, 26, 31, 18, 33, 13,"Toggle Icons", 653, BT_JOY_BUTTON, 255 },
-	{ 33, 15,134, 71, 26, 30, 14, 31, 32,"Automap", 292, BT_JOY_BUTTON, 255 },
-	{ 34, 15, 78, 71, 26, 26, 35, 8,  9,"Use Cloak", 751, BT_JOY_BUTTON, 255 },
-	{ 35, 15, 86, 71, 26, 34, 2, 9, 10,"Use Invul", 752, BT_JOY_BUTTON, 255 },
+ {  0, 15, 46, 71, 26, 15, 1, 24, 5,"Fire primary", 282, BT_JOY_BUTTON, 255 },
+ {  1, 15, 54, 71, 26, 0, 4, 5, 6,"Fire secondary", 283, BT_JOY_BUTTON, 255 },
+ {  2, 15, 94, 71, 26, 35, 3, 10, 11,"Accelerate", 285, BT_JOY_BUTTON, 255 },
+ {  3, 15,102, 71, 26, 2, 25, 11, 12,"reverse", 286, BT_JOY_BUTTON, 255 },
+ {  4, 15, 62, 71, 26, 1, 26, 6, 7,"Fire flare", 284, BT_JOY_BUTTON, 255 },
+ {  5,158, 46, 71, 26, 23, 6, 0, 1,"Slide on", 274, BT_JOY_BUTTON, 255 },
+ {  6,158, 54, 71, 26, 5, 7, 1, 4,"Slide left", 275, BT_JOY_BUTTON, 255 },
+ {  7,158, 62, 71, 26, 6, 8, 4, 26,"Slide right", 276, BT_JOY_BUTTON, 255 },
+ {  8,158, 70, 71, 26, 7, 9, 26, 34,"Slide up", 277, BT_JOY_BUTTON, 255 },
+ {  9,158, 78, 71, 26, 8, 10, 34, 35,"Slide down", 278, BT_JOY_BUTTON, 255 },
+ { 10,158, 86, 71, 26, 9, 11, 35, 2,"Bank on", 279, BT_JOY_BUTTON, 255 },
+ { 11,158, 94, 71, 26, 10, 12, 2, 3,"Bank left", 280, BT_JOY_BUTTON, 255 },
+ { 12,158,102, 71, 26, 11, 28, 3, 25,"Bank right", 281, BT_JOY_BUTTON, 255 },
+ { 13, 15,162, 51, 26, 33, 15, 32, 14,"Pitch U/D", 300, BT_JOY_AXIS, 255 },
+ { 15, 15,170, 51, 26, 13, 0, 18, 16,"Turn L/R", 301, BT_JOY_AXIS, 255 },
+ { 17,158,162, 58, 26, 32, 19, 14, 18,"Slide L/R", 302, BT_JOY_AXIS, 255 },
+ { 19,158,170, 58, 26, 17, 21, 16, 20,"Slide U/D", 303, BT_JOY_AXIS, 255 },
+ { 21,158,178, 58, 26, 19, 23, 20, 22,"Bank L/R", 304, BT_JOY_AXIS, 255 },
+ { 23,158,186, 58, 26, 21, 5, 22, 24,"throttle", 305, BT_JOY_AXIS, 255 },
+ { 25, 15,110, 71, 26, 3, 27, 12, 28,"Rear View", 288, BT_JOY_BUTTON, 255 },
+ { 26, 15, 70, 71, 26, 4, 34, 7, 8,"Drop Bomb", 287, BT_JOY_BUTTON, 255 },
+ { 27, 15,118, 71, 26, 25, 30, 28, 29,"Afterburner", 293, BT_JOY_BUTTON, 255 },
+ { 28,158,110, 71, 26, 12, 29, 25, 27,"Cycle Primary", 294, BT_JOY_BUTTON, 255 },
+ { 29,158,118, 71, 26, 28, 31, 27, 30,"Cycle Secondary", 295, BT_JOY_BUTTON, 255 },
+ { 30, 15,126, 71, 26, 27, 33, 29, 31,"Headlight", 297, BT_JOY_BUTTON, 255 },
+ { 31,158,126, 71, 26, 29, 32, 30, 33,"Toggle Bomb", 299, BT_JOY_BUTTON, 255 },
+ { 32,158,134, 71, 26, 31, 18, 33, 13,"Toggle Icons", 653, BT_JOY_BUTTON, 255 },
+ { 33, 15,134, 71, 26, 30, 14, 31, 32,"Automap", 292, BT_JOY_BUTTON, 255 },
+ { 34, 15, 78, 71, 26, 26, 35, 8,  9,"Use Cloak", 751, BT_JOY_BUTTON, 255 },
+ { 35, 15, 86, 71, 26, 34, 2, 9, 10,"Use Invul", 752, BT_JOY_BUTTON, 255 },
 
-	{ 36, 15, 46, 100, 26, 15, 1, 24, 5,"Fire primary", 282, BT_JOY_BUTTON, 255 },
-	{ 37, 15, 54, 100, 26, 0, 4, 5, 6,"Fire secondary", 283, BT_JOY_BUTTON, 255 },
-	{ 38, 15, 94, 100, 26, 35, 3, 10, 11,"Accelerate", 285, BT_JOY_BUTTON, 255 },
-	{ 39, 15,102, 100, 26, 2, 25, 11, 12,"reverse", 286, BT_JOY_BUTTON, 255 },
-	{ 40, 15, 62, 100, 26, 1, 26, 6, 7,"Fire flare", 284, BT_JOY_BUTTON, 255 },
-	{ 41,158, 46, 100, 26, 23, 6, 0, 1,"Slide on", 274, BT_JOY_BUTTON, 255 },
-	{ 42,158, 54, 100, 26, 5, 7, 1, 4,"Slide left", 275, BT_JOY_BUTTON, 255 },
-	{ 43,158, 62, 100, 26, 6, 8, 4, 26,"Slide right", 276, BT_JOY_BUTTON, 255 },
-	{ 44,158, 70, 100, 26, 7, 9, 26, 34,"Slide up", 277, BT_JOY_BUTTON, 255 },
-	{ 45,158, 78, 100, 26, 8, 10, 34, 35,"Slide down", 278, BT_JOY_BUTTON, 255 },
-	{ 46,158, 86, 100, 26, 9, 11, 35, 2,"Bank on", 279, BT_JOY_BUTTON, 255 },
-	{ 47,158, 94, 100, 26, 10, 12, 2, 3,"Bank left", 280, BT_JOY_BUTTON, 255 },
-	{ 48,158,102, 100, 26, 11, 28, 3, 25,"Bank right", 281, BT_JOY_BUTTON, 255 },
-	{ 49, 15,162, 80, 26, 33, 15, 32, 14,"Pitch U/D", 300, BT_JOY_AXIS, 255 },
-	{ 50, 15,170, 80, 26, 13, 0, 18, 16,"Turn L/R", 301, BT_JOY_AXIS, 255 },
-	{ 51,158,162, 87, 26, 32, 19, 14, 18,"Slide L/R", 302, BT_JOY_AXIS, 255 },
-	{ 52,158,170, 87, 26, 17, 21, 16, 20,"Slide U/D", 303, BT_JOY_AXIS, 255 },
-	{ 53,158,178, 87, 26, 19, 23, 20, 22,"Bank L/R", 304, BT_JOY_AXIS, 255 },
-	{ 54,158,186, 87, 26, 21, 5, 22, 24,"throttle", 305, BT_JOY_AXIS, 255 },
-	{ 55, 15,110, 100, 26, 3, 27, 12, 28,"Rear View", 288, BT_JOY_BUTTON, 255 },
-	{ 56, 15, 70, 100, 26, 4, 34, 7, 8,"Drop Bomb", 287, BT_JOY_BUTTON, 255 },
-	{ 57, 15,118, 100, 26, 25, 30, 28, 29,"Afterburner", 293, BT_JOY_BUTTON, 255 },
-	{ 58,158,110, 100, 26, 12, 29, 25, 27,"Cycle Primary", 294, BT_JOY_BUTTON, 255 },
-	{ 59,158,118, 100, 26, 28, 31, 27, 30,"Cycle Secondary", 295, BT_JOY_BUTTON, 255 },
-	{ 60, 15,126, 100, 26, 27, 33, 29, 31,"Headlight", 297, BT_JOY_BUTTON, 255 },
-	{ 61,158,126, 100, 26, 29, 32, 30, 33,"Toggle Bomb", 299, BT_JOY_BUTTON, 255 },
-	{ 62,158,134, 100, 26, 31, 18, 33, 13,"Toggle Icons", 653, BT_JOY_BUTTON, 255 },
-	{ 63, 15,134, 100, 26, 30, 14, 31, 32,"Automap", 292, BT_JOY_BUTTON, 255 },
-	{ 64, 15, 78, 100, 26, 26, 35, 8,  9,"Use Cloak", 751, BT_JOY_BUTTON, 255 },
-	{ 65, 15, 86, 100, 26, 34, 2, 9, 10,"Use Invul", 752, BT_JOY_BUTTON, 255 },
+ { 36, 15, 46, 100, 26, 15, 1, 24, 5,"Fire primary", 282, BT_JOY_BUTTON, 255 },
+ { 37, 15, 54, 100, 26, 0, 4, 5, 6,"Fire secondary", 283, BT_JOY_BUTTON, 255 },
+ { 38, 15, 94, 100, 26, 35, 3, 10, 11,"Accelerate", 285, BT_JOY_BUTTON, 255 },
+ { 39, 15,102, 100, 26, 2, 25, 11, 12,"reverse", 286, BT_JOY_BUTTON, 255 },
+ { 40, 15, 62, 100, 26, 1, 26, 6, 7,"Fire flare", 284, BT_JOY_BUTTON, 255 },
+ { 41,158, 46, 100, 26, 23, 6, 0, 1,"Slide on", 274, BT_JOY_BUTTON, 255 },
+ { 42,158, 54, 100, 26, 5, 7, 1, 4,"Slide left", 275, BT_JOY_BUTTON, 255 },
+ { 43,158, 62, 100, 26, 6, 8, 4, 26,"Slide right", 276, BT_JOY_BUTTON, 255 },
+ { 44,158, 70, 100, 26, 7, 9, 26, 34,"Slide up", 277, BT_JOY_BUTTON, 255 },
+ { 45,158, 78, 100, 26, 8, 10, 34, 35,"Slide down", 278, BT_JOY_BUTTON, 255 },
+ { 46,158, 86, 100, 26, 9, 11, 35, 2,"Bank on", 279, BT_JOY_BUTTON, 255 },
+ { 47,158, 94, 100, 26, 10, 12, 2, 3,"Bank left", 280, BT_JOY_BUTTON, 255 },
+ { 48,158,102, 100, 26, 11, 28, 3, 25,"Bank right", 281, BT_JOY_BUTTON, 255 },
+ { 49, 15,162, 80, 26, 33, 15, 32, 14,"Pitch U/D", 300, BT_JOY_AXIS, 255 },
+ { 50, 15,170, 80, 26, 13, 0, 18, 16,"Turn L/R", 301, BT_JOY_AXIS, 255 },
+ { 51,158,162, 87, 26, 32, 19, 14, 18,"Slide L/R", 302, BT_JOY_AXIS, 255 },
+ { 52,158,170, 87, 26, 17, 21, 16, 20,"Slide U/D", 303, BT_JOY_AXIS, 255 },
+ { 53,158,178, 87, 26, 19, 23, 20, 22,"Bank L/R", 304, BT_JOY_AXIS, 255 },
+ { 54,158,186, 87, 26, 21, 5, 22, 24,"throttle", 305, BT_JOY_AXIS, 255 },
+ { 55, 15,110, 100, 26, 3, 27, 12, 28,"Rear View", 288, BT_JOY_BUTTON, 255 },
+ { 56, 15, 70, 100, 26, 4, 34, 7, 8,"Drop Bomb", 287, BT_JOY_BUTTON, 255 },
+ { 57, 15,118, 100, 26, 25, 30, 28, 29,"Afterburner", 293, BT_JOY_BUTTON, 255 },
+ { 58,158,110, 100, 26, 12, 29, 25, 27,"Cycle Primary", 294, BT_JOY_BUTTON, 255 },
+ { 59,158,118, 100, 26, 28, 31, 27, 30,"Cycle Secondary", 295, BT_JOY_BUTTON, 255 },
+ { 60, 15,126, 100, 26, 27, 33, 29, 31,"Headlight", 297, BT_JOY_BUTTON, 255 },
+ { 61,158,126, 100, 26, 29, 32, 30, 33,"Toggle Bomb", 299, BT_JOY_BUTTON, 255 },
+ { 62,158,134, 100, 26, 31, 18, 33, 13,"Toggle Icons", 653, BT_JOY_BUTTON, 255 },
+ { 63, 15,134, 100, 26, 30, 14, 31, 32,"Automap", 292, BT_JOY_BUTTON, 255 },
+ { 64, 15, 78, 100, 26, 26, 35, 8,  9,"Use Cloak", 751, BT_JOY_BUTTON, 255 },
+ { 65, 15, 86, 100, 26, 34, 2, 9, 10,"Use Invul", 752, BT_JOY_BUTTON, 255 },
 
-	{ 14, 15,162,115, 8, 33, 16, 13, 17,"Pitch U/D", 300, BT_INVERT, 255 },
-	{ 16, 15,170,115, 8, 14, 17, 15, 19,"Turn L/R", 301, BT_INVERT, 255 },
-	{ 18,158,162,123, 8, 32, 20, 17, 15,"Slide L/R", 302, BT_INVERT, 255 },
-	{ 20,158,170,123, 8, 18, 22, 19, 21,"Slide U/D", 303, BT_INVERT, 255 },
-	{ 22,158,178,123, 8, 20, 24, 21, 23,"Bank L/R", 304, BT_INVERT, 255 },
-	{ 24,158,186,123, 8, 22, 13, 23, 0,"throttle", 305, BT_INVERT, 255 }
+ { 14, 15,162,115, 8, 33, 16, 13, 17,"Pitch U/D", 300, BT_INVERT, 255 },
+ { 16, 15,170,115, 8, 14, 17, 15, 19,"Turn L/R", 301, BT_INVERT, 255 },
+ { 18,158,162,123, 8, 32, 20, 17, 15,"Slide L/R", 302, BT_INVERT, 255 },
+ { 20,158,170,123, 8, 18, 22, 19, 21,"Slide U/D", 303, BT_INVERT, 255 },
+ { 22,158,178,123, 8, 20, 24, 21, 23,"Bank L/R", 304, BT_INVERT, 255 },
+ { 24,158,186,123, 8, 22, 13, 23, 0,"throttle", 305, BT_INVERT, 255 }
 
 };
 
 kcItem kcMouse [] = {
-	{  0, 25, 46, 85, 26, 23, 1, 24, 5,"Fire primary", 282, BT_MOUSE_BUTTON, 255 },
-	{  1, 25, 54, 85, 26, 0, 4, 5, 6,"Fire secondary", 283, BT_MOUSE_BUTTON, 255 },
-	{  2, 25, 78, 85, 26, 26, 3, 8, 9,"Accelerate", 285, BT_MOUSE_BUTTON, 255 },
-	{  3, 25, 86, 85, 26, 2, 27, 9, 10,"reverse", 286, BT_MOUSE_BUTTON, 255 },
-	{  4, 25, 62, 85, 26, 1, 26, 6, 7,"Fire flare", 284, BT_MOUSE_BUTTON, 255 },
-	{  5,180, 46, 59, 26, 24, 6, 0, 1,"Slide on", 274, BT_MOUSE_BUTTON, 255 },
-	{  6,180, 54, 59, 26, 5, 7, 1, 4,"Slide left", 275, BT_MOUSE_BUTTON, 255 },
-	{  7,180, 62, 59, 26, 6, 8, 4, 26,"Slide right", 276, BT_MOUSE_BUTTON, 255 },
-	{  8,180, 70, 59, 26, 7, 9, 26, 2,"Slide up", 277, BT_MOUSE_BUTTON, 255 },
-	{  9,180, 78, 59, 26, 8, 10, 2, 3,"Slide down", 278, BT_MOUSE_BUTTON, 255 },
-	{ 10,180, 86, 59, 26, 9, 11, 3, 27,"Bank on", 279, BT_MOUSE_BUTTON, 255 },
-	{ 11,180, 94, 59, 26, 10, 12, 27, 25,"Bank left", 280, BT_MOUSE_BUTTON, 255 },
-	{ 12,180,102, 59, 26, 11, 30, 25, 28,"Bank right", 281, BT_MOUSE_BUTTON, 255 },
+ {  0, 25, 46, 85, 26, 23, 1, 24, 5,"Fire primary", 282, BT_MOUSE_BUTTON, 255 },
+ {  1, 25, 54, 85, 26, 0, 4, 5, 6,"Fire secondary", 283, BT_MOUSE_BUTTON, 255 },
+ {  2, 25, 78, 85, 26, 26, 3, 8, 9,"Accelerate", 285, BT_MOUSE_BUTTON, 255 },
+ {  3, 25, 86, 85, 26, 2, 27, 9, 10,"reverse", 286, BT_MOUSE_BUTTON, 255 },
+ {  4, 25, 62, 85, 26, 1, 26, 6, 7,"Fire flare", 284, BT_MOUSE_BUTTON, 255 },
+ {  5,180, 46, 59, 26, 24, 6, 0, 1,"Slide on", 274, BT_MOUSE_BUTTON, 255 },
+ {  6,180, 54, 59, 26, 5, 7, 1, 4,"Slide left", 275, BT_MOUSE_BUTTON, 255 },
+ {  7,180, 62, 59, 26, 6, 8, 4, 26,"Slide right", 276, BT_MOUSE_BUTTON, 255 },
+ {  8,180, 70, 59, 26, 7, 9, 26, 2,"Slide up", 277, BT_MOUSE_BUTTON, 255 },
+ {  9,180, 78, 59, 26, 8, 10, 2, 3,"Slide down", 278, BT_MOUSE_BUTTON, 255 },
+ { 10,180, 86, 59, 26, 9, 11, 3, 27,"Bank on", 279, BT_MOUSE_BUTTON, 255 },
+ { 11,180, 94, 59, 26, 10, 12, 27, 25,"Bank left", 280, BT_MOUSE_BUTTON, 255 },
+ { 12,180,102, 59, 26, 11, 30, 25, 28,"Bank right", 281, BT_MOUSE_BUTTON, 255 },
 
-	{ 13,103,146, 58, 26, 29, 15, 30, 14,"Pitch U/D", 300, BT_MOUSE_AXIS, 255 },
-	{ 14,103,146,106, 8, 23, 16, 13, 15,"Pitch U/D", 300, BT_INVERT, 255 },
-	{ 15,103,154, 58, 26, 13, 17, 14, 16,"Turn L/R", 301, BT_MOUSE_AXIS, 255 },
-	{ 16,103,154,106, 8, 14, 18, 15, 17,"Turn L/R", 301, BT_INVERT, 255 },
-	{ 17,103,162, 58, 26, 15, 19, 16, 18,"Slide L/R", 302, BT_MOUSE_AXIS, 255 },
-	{ 18,103,162,106, 8, 16, 20, 17, 19,"Slide L/R", 302, BT_INVERT, 255 },
-	{ 19,103,170, 58, 26, 17, 21, 18, 20,"Slide U/D", 303, BT_MOUSE_AXIS, 255 },
-	{ 20,103,170,106, 8, 18, 22, 19, 21,"Slide U/D", 303, BT_INVERT, 255 },
-	{ 21,103,178, 58, 26, 19, 23, 20, 22,"Bank L/R", 304, BT_MOUSE_AXIS, 255 },
-	{ 22,103,178,106, 8, 20, 24, 21, 23,"Bank L/R", 304, BT_INVERT, 255 },
-	{ 23,103,186, 58, 26, 21, 0, 22, 24,"Throttle", 305, BT_MOUSE_AXIS, 255 },
-	{ 24,103,186,106, 8, 22, 5, 23, 0,"Throttle", 305, BT_INVERT, 255 },
+ { 13,103,146, 58, 26, 29, 15, 30, 14,"Pitch U/D", 300, BT_MOUSE_AXIS, 255 },
+ { 14,103,146,106, 8, 23, 16, 13, 15,"Pitch U/D", 300, BT_INVERT, 255 },
+ { 15,103,154, 58, 26, 13, 17, 14, 16,"Turn L/R", 301, BT_MOUSE_AXIS, 255 },
+ { 16,103,154,106, 8, 14, 18, 15, 17,"Turn L/R", 301, BT_INVERT, 255 },
+ { 17,103,162, 58, 26, 15, 19, 16, 18,"Slide L/R", 302, BT_MOUSE_AXIS, 255 },
+ { 18,103,162,106, 8, 16, 20, 17, 19,"Slide L/R", 302, BT_INVERT, 255 },
+ { 19,103,170, 58, 26, 17, 21, 18, 20,"Slide U/D", 303, BT_MOUSE_AXIS, 255 },
+ { 20,103,170,106, 8, 18, 22, 19, 21,"Slide U/D", 303, BT_INVERT, 255 },
+ { 21,103,178, 58, 26, 19, 23, 20, 22,"Bank L/R", 304, BT_MOUSE_AXIS, 255 },
+ { 22,103,178,106, 8, 20, 24, 21, 23,"Bank L/R", 304, BT_INVERT, 255 },
+ { 23,103,186, 58, 26, 21, 0, 22, 24,"Throttle", 305, BT_MOUSE_AXIS, 255 },
+ { 24,103,186,106, 8, 22, 5, 23, 0,"Throttle", 305, BT_INVERT, 255 },
 
-	{ 25, 25,102, 85, 26, 27, 28, 11, 12,"Rear View", 288, BT_MOUSE_BUTTON, 255 },
-	{ 26, 25, 70, 85, 26, 4, 2, 7, 8,"Drop Bomb", 287, BT_MOUSE_BUTTON, 255 },
-	{ 27, 25, 94, 85, 26, 3, 25, 10, 11,"Afterburner", 293, BT_MOUSE_BUTTON, 255 },
-	{ 28, 25,110, 85, 26, 25, 29, 12, 29,"Cycle Primary", 294, BT_MOUSE_BUTTON, 255 },
-	{ 29, 25,118, 85, 26, 28, 13, 28, 30,"Cycle Second", 295, BT_MOUSE_BUTTON, 255 },
-	{ 30,180,118, 59, 26, 12, 14, 29, 13,"Zoom in", 296, BT_MOUSE_BUTTON, 255 }
+ { 25, 25,102, 85, 26, 27, 28, 11, 12,"Rear View", 288, BT_MOUSE_BUTTON, 255 },
+ { 26, 25, 70, 85, 26, 4, 2, 7, 8,"Drop Bomb", 287, BT_MOUSE_BUTTON, 255 },
+ { 27, 25, 94, 85, 26, 3, 25, 10, 11,"Afterburner", 293, BT_MOUSE_BUTTON, 255 },
+ { 28, 25,110, 85, 26, 25, 29, 12, 29,"Cycle Primary", 294, BT_MOUSE_BUTTON, 255 },
+ { 29, 25,118, 85, 26, 28, 13, 28, 30,"Cycle Second", 295, BT_MOUSE_BUTTON, 255 },
+ { 30,180,118, 59, 26, 12, 14, 29, 13,"Zoom in", 296, BT_MOUSE_BUTTON, 255 }
 };
 
 kcItem kcSuperJoy [] = {
-	{  0, 25, 46, 85, 26, 15, 1, 24, 5,"Fire primary", 282, BT_JOY_BUTTON, 255 },
-	{  1, 25, 54, 85, 26, 0, 4, 5, 6,"Fire secondary", 283, BT_JOY_BUTTON, 255 },
-	{  2, 25, 85, 85, 26, 26, 3, 9, 10,"Accelerate", 285, BT_JOY_BUTTON, 255 },
-	{  3, 25, 93, 85, 26, 2, 25, 10, 11,"reverse", 286, BT_JOY_BUTTON, 255 },
-	{  4, 25, 62, 85, 26, 1, 26, 6, 7,"Fire flare", 284, BT_JOY_BUTTON, 255 },
-	{  5,180, 46, 79, 26, 23, 6, 0, 1,"Slide on", 274, BT_JOY_BUTTON, 255 },
-	{  6,180, 54, 79, 26, 5, 7, 1, 4,"Slide left", 275, BT_JOY_BUTTON, 255 },
-	{  7,180, 62, 79, 26, 6, 8, 4, 26,"Slide right", 276, BT_JOY_BUTTON, 255 },
-	{  8,180, 70, 79, 26, 7, 9, 26, 9,"Slide up", 277, BT_JOY_BUTTON, 255 },
-	{  9,180, 78, 79, 26, 8, 10, 8, 2,"Slide down", 278, BT_JOY_BUTTON, 255 },
-	{ 10,180, 86, 79, 26, 9, 11, 2, 3,"Bank on", 279, BT_JOY_BUTTON, 255 },
-	{ 11,180, 94, 79, 26, 10, 12, 3, 12,"Bank left", 280, BT_JOY_BUTTON, 255 },
-	{ 12,180,102, 79, 26, 11, 28, 11, 25,"Bank right", 281, BT_JOY_BUTTON, 255 },
-	{ 13, 22,162, 51, 26, 33, 15, 32, 14,"Pitch U/D", 300, BT_JOY_AXIS, 255 },
-	{ 14, 22,162, 99, 8, 33, 16, 13, 17,"Pitch U/D", 300, BT_INVERT, 255 },
-	{ 15, 22,170, 51, 26, 13, 0, 18, 16,"Turn L/R", 301, BT_JOY_AXIS, 255 },
-	{ 16, 22,170, 99, 8, 14, 17, 15, 19,"Turn L/R", 301, BT_INVERT, 255 },
-	{ 17,164,162, 58, 26, 32, 19, 14, 18,"Slide L/R", 302, BT_JOY_AXIS, 255 },
-	{ 18,164,162,106, 8, 32, 20, 17, 15,"Slide L/R", 302, BT_INVERT, 255 },
-	{ 19,164,170, 58, 26, 17, 21, 16, 20,"Slide U/D", 303, BT_JOY_AXIS, 255 },
-	{ 20,164,170,106, 8, 18, 22, 19, 21,"Slide U/D", 303, BT_INVERT, 255 },
-	{ 21,164,178, 58, 26, 19, 23, 20, 22,"Bank L/R", 304, BT_JOY_AXIS, 255 },
-	{ 22,164,178,106, 8, 20, 24, 21, 23,"Bank L/R", 304, BT_INVERT, 255 },
-	{ 23,164,186, 58, 26, 21, 5, 22, 24,"throttle", 305, BT_JOY_AXIS, 255 },
-	{ 24,164,186,106, 8, 22, 13, 23, 0,"throttle", 305, BT_INVERT, 255 },
-	{ 25, 25,110, 85, 26, 3, 27, 12, 28,"Rear View", 288, BT_JOY_BUTTON, 255 },
-	{ 26, 25, 70, 85, 26, 4, 2, 7, 8,"Drop Bomb", 287, BT_JOY_BUTTON, 255 },
-	{ 27, 25,118, 85, 26, 25, 30, 28, 29,"Afterburner", 293, BT_JOY_BUTTON, 255 },
-	{ 28,180,110, 79, 26, 12, 29, 25, 27,"Cycle Primary", 294, BT_JOY_BUTTON, 255 },
-	{ 29,180,118, 79, 26, 28, 31, 27, 30,"Cycle Secondary", 295, BT_JOY_BUTTON, 255 },
-	{ 30, 25,126, 85, 26, 27, 33, 29, 31,"Headlight", 297, BT_JOY_BUTTON, 255 },
-	{ 31,180,126, 79, 26, 29, 32, 30, 33,"Toggle Bomb", 299, BT_JOY_BUTTON, 255 },
-	{ 32,180,134, 79, 26, 31, 18, 33, 13,"Toggle Icons", 653, BT_JOY_BUTTON, 255 },
-	{ 33, 25,134, 85, 26, 30, 14, 31, 32,"Automap", 292, BT_JOY_BUTTON, 255 },
+ {  0, 25, 46, 85, 26, 15, 1, 24, 5,"Fire primary", 282, BT_JOY_BUTTON, 255 },
+ {  1, 25, 54, 85, 26, 0, 4, 5, 6,"Fire secondary", 283, BT_JOY_BUTTON, 255 },
+ {  2, 25, 85, 85, 26, 26, 3, 9, 10,"Accelerate", 285, BT_JOY_BUTTON, 255 },
+ {  3, 25, 93, 85, 26, 2, 25, 10, 11,"reverse", 286, BT_JOY_BUTTON, 255 },
+ {  4, 25, 62, 85, 26, 1, 26, 6, 7,"Fire flare", 284, BT_JOY_BUTTON, 255 },
+ {  5,180, 46, 79, 26, 23, 6, 0, 1,"Slide on", 274, BT_JOY_BUTTON, 255 },
+ {  6,180, 54, 79, 26, 5, 7, 1, 4,"Slide left", 275, BT_JOY_BUTTON, 255 },
+ {  7,180, 62, 79, 26, 6, 8, 4, 26,"Slide right", 276, BT_JOY_BUTTON, 255 },
+ {  8,180, 70, 79, 26, 7, 9, 26, 9,"Slide up", 277, BT_JOY_BUTTON, 255 },
+ {  9,180, 78, 79, 26, 8, 10, 8, 2,"Slide down", 278, BT_JOY_BUTTON, 255 },
+ { 10,180, 86, 79, 26, 9, 11, 2, 3,"Bank on", 279, BT_JOY_BUTTON, 255 },
+ { 11,180, 94, 79, 26, 10, 12, 3, 12,"Bank left", 280, BT_JOY_BUTTON, 255 },
+ { 12,180,102, 79, 26, 11, 28, 11, 25,"Bank right", 281, BT_JOY_BUTTON, 255 },
+ { 13, 22,162, 51, 26, 33, 15, 32, 14,"Pitch U/D", 300, BT_JOY_AXIS, 255 },
+ { 14, 22,162, 99, 8, 33, 16, 13, 17,"Pitch U/D", 300, BT_INVERT, 255 },
+ { 15, 22,170, 51, 26, 13, 0, 18, 16,"Turn L/R", 301, BT_JOY_AXIS, 255 },
+ { 16, 22,170, 99, 8, 14, 17, 15, 19,"Turn L/R", 301, BT_INVERT, 255 },
+ { 17,164,162, 58, 26, 32, 19, 14, 18,"Slide L/R", 302, BT_JOY_AXIS, 255 },
+ { 18,164,162,106, 8, 32, 20, 17, 15,"Slide L/R", 302, BT_INVERT, 255 },
+ { 19,164,170, 58, 26, 17, 21, 16, 20,"Slide U/D", 303, BT_JOY_AXIS, 255 },
+ { 20,164,170,106, 8, 18, 22, 19, 21,"Slide U/D", 303, BT_INVERT, 255 },
+ { 21,164,178, 58, 26, 19, 23, 20, 22,"Bank L/R", 304, BT_JOY_AXIS, 255 },
+ { 22,164,178,106, 8, 20, 24, 21, 23,"Bank L/R", 304, BT_INVERT, 255 },
+ { 23,164,186, 58, 26, 21, 5, 22, 24,"throttle", 305, BT_JOY_AXIS, 255 },
+ { 24,164,186,106, 8, 22, 13, 23, 0,"throttle", 305, BT_INVERT, 255 },
+ { 25, 25,110, 85, 26, 3, 27, 12, 28,"Rear View", 288, BT_JOY_BUTTON, 255 },
+ { 26, 25, 70, 85, 26, 4, 2, 7, 8,"Drop Bomb", 287, BT_JOY_BUTTON, 255 },
+ { 27, 25,118, 85, 26, 25, 30, 28, 29,"Afterburner", 293, BT_JOY_BUTTON, 255 },
+ { 28,180,110, 79, 26, 12, 29, 25, 27,"Cycle Primary", 294, BT_JOY_BUTTON, 255 },
+ { 29,180,118, 79, 26, 28, 31, 27, 30,"Cycle Secondary", 295, BT_JOY_BUTTON, 255 },
+ { 30, 25,126, 85, 26, 27, 33, 29, 31,"Headlight", 297, BT_JOY_BUTTON, 255 },
+ { 31,180,126, 79, 26, 29, 32, 30, 33,"Toggle Bomb", 299, BT_JOY_BUTTON, 255 },
+ { 32,180,134, 79, 26, 31, 18, 33, 13,"Toggle Icons", 653, BT_JOY_BUTTON, 255 },
+ { 33, 25,134, 85, 26, 30, 14, 31, 32,"Automap", 292, BT_JOY_BUTTON, 255 },
 };
 
 #ifdef D2X_KEYS
 //added on 2/4/99 by Victor Rachels to add d1x new keys
 kcItem kcHotkeys [] = {
 //        id,x,y,w1,w2,u,d,l,r,text_num1,nType,value
-	{  0, 15, 49, 71, 26, 27, 2, 27, 1, "Weapon 1", 306, BT_KEY, 255 },
-	{  1, 15, 49,100, 26, 26, 3, 0, 2, "Weapon 1", 306, BT_JOY_BUTTON, 255 },
-	{  2, 15, 57, 71, 26, 0, 4, 1, 3, "Weapon 2", 307, BT_KEY, 255 },
-	{  3, 15, 57,100, 26, 1, 5, 2, 4, "Weapon 2", 307, BT_JOY_BUTTON, 255 },
-	{  4, 15, 65, 71, 26, 2, 6, 3, 5, "Weapon 3", 308, BT_KEY, 255 },
-	{  5, 15, 65,100, 26, 3, 7, 4, 6, "Weapon 3", 308, BT_JOY_BUTTON, 255 },
-	{  6, 15, 73, 71, 26, 4, 8, 5, 7, "Weapon 4", 309, BT_KEY, 255 },
-	{  7, 15, 73,100, 26, 5, 9, 6, 8, "Weapon 4", 309, BT_JOY_BUTTON, 255 },
-	{  8, 15, 81, 71, 26, 6, 10, 7, 9, "Weapon 5", 310, BT_KEY, 255 },
-	{  9, 15, 81,100, 26, 7, 11, 8, 10, "Weapon 5", 310, BT_JOY_BUTTON, 255 },
+ {  0, 15, 49, 71, 26, 27, 2, 27, 1, "Weapon 1", 306, BT_KEY, 255 },
+ {  1, 15, 49,100, 26, 26, 3, 0, 2, "Weapon 1", 306, BT_JOY_BUTTON, 255 },
+ {  2, 15, 57, 71, 26, 0, 4, 1, 3, "Weapon 2", 307, BT_KEY, 255 },
+ {  3, 15, 57,100, 26, 1, 5, 2, 4, "Weapon 2", 307, BT_JOY_BUTTON, 255 },
+ {  4, 15, 65, 71, 26, 2, 6, 3, 5, "Weapon 3", 308, BT_KEY, 255 },
+ {  5, 15, 65,100, 26, 3, 7, 4, 6, "Weapon 3", 308, BT_JOY_BUTTON, 255 },
+ {  6, 15, 73, 71, 26, 4, 8, 5, 7, "Weapon 4", 309, BT_KEY, 255 },
+ {  7, 15, 73,100, 26, 5, 9, 6, 8, "Weapon 4", 309, BT_JOY_BUTTON, 255 },
+ {  8, 15, 81, 71, 26, 6, 10, 7, 9, "Weapon 5", 310, BT_KEY, 255 },
+ {  9, 15, 81,100, 26, 7, 11, 8, 10, "Weapon 5", 310, BT_JOY_BUTTON, 255 },
 
-	{ 10, 15, 89, 71, 26, 8, 12, 9, 11, "Weapon 6", 311, BT_KEY, 255 },
-	{ 11, 15, 89,100, 26, 9, 13, 10, 12, "Weapon 6", 311, BT_JOY_BUTTON, 255 },
-	{ 12, 15, 97, 71, 26, 10, 14, 11, 13, "Weapon 7", 312, BT_KEY, 255 },
-	{ 13, 15, 97,100, 26, 11, 15, 12, 14, "Weapon 7", 312, BT_JOY_BUTTON, 255 },
-	{ 14, 15,105, 71, 26, 12, 16, 13, 15, "Weapon 8", 313, BT_KEY, 255 },
-	{ 15, 15,105,100, 26, 13, 17, 14, 16, "Weapon 8", 313, BT_JOY_BUTTON, 255 },
-	{ 16, 15,113, 71, 26, 14, 18, 15, 17, "Weapon 9", 314, BT_KEY, 255 },
-	{ 17, 15,113,100, 26, 15, 19, 16, 18, "Weapon 9", 314, BT_JOY_BUTTON, 255 },
-	{ 18, 15,121, 71, 26, 16, 20, 17, 19, "Weapon 10", 315, BT_KEY, 255 },
-	{ 19, 15,121,100, 26, 17, 21, 18, 20, "Weapon 10", 315, BT_JOY_BUTTON, 255 }
+ { 10, 15, 89, 71, 26, 8, 12, 9, 11, "Weapon 6", 311, BT_KEY, 255 },
+ { 11, 15, 89,100, 26, 9, 13, 10, 12, "Weapon 6", 311, BT_JOY_BUTTON, 255 },
+ { 12, 15, 97, 71, 26, 10, 14, 11, 13, "Weapon 7", 312, BT_KEY, 255 },
+ { 13, 15, 97,100, 26, 11, 15, 12, 14, "Weapon 7", 312, BT_JOY_BUTTON, 255 },
+ { 14, 15,105, 71, 26, 12, 16, 13, 15, "Weapon 8", 313, BT_KEY, 255 },
+ { 15, 15,105,100, 26, 13, 17, 14, 16, "Weapon 8", 313, BT_JOY_BUTTON, 255 },
+ { 16, 15,113, 71, 26, 14, 18, 15, 17, "Weapon 9", 314, BT_KEY, 255 },
+ { 17, 15,113,100, 26, 15, 19, 16, 18, "Weapon 9", 314, BT_JOY_BUTTON, 255 },
+ { 18, 15,121, 71, 26, 16, 20, 17, 19, "Weapon 10", 315, BT_KEY, 255 },
+ { 19, 15,121,100, 26, 17, 21, 18, 20, "Weapon 10", 315, BT_JOY_BUTTON, 255 }
 
 	//{ 20, 15,131, 71, 26, 18, 22, 19, 21, "CYC PRIMARY", BT_KEY, 255 },
 	//{ 21, 15,131,100, 26, 19, 23, 20, 22, "CYC PRIMARY", BT_JOY_BUTTON, 255 },
@@ -444,7 +444,7 @@ int FindItemAt (kcItem * items, int nItems, int x, int y)
 {
 	int i;
 
-for (i = 0; i < nItems; i++)	{
+for (i = 0; i < nItems; i++) {
 	if (((items [i].x + items [i].w1) == x) && (items [i].y == y))
 		return i;
 	}
@@ -592,7 +592,7 @@ int KCGetItemHeight (kcItem *item)
 if (item->value == 255)
 	strcpy (szText, "");
 else {
-	switch (item->nType)	{
+	switch (item->nType) {
 		case BT_KEY:
 			strncpy (szText, (item->value < sizeofa (pszKeyText)) ? pszKeyText [item->value] : "", sizeof (szText)); 
 			break;
@@ -610,7 +610,7 @@ else {
 			sprintf (szText, "J%d B%d", j_button [item->value].joydev, 
 					  j_Get_joydev_button_number (item->value);
 #else 
-			{
+		 {
 				int	nStick = item->value / MAX_BUTTONS_PER_JOYSTICK;
 				int	nBtn = item->value % MAX_BUTTONS_PER_JOYSTICK;
 				int	nHat = sdlJoysticks [nStick].nButtons;
@@ -630,7 +630,7 @@ else {
 			sprintf (szText, "J%d A%d", j_axis [item->value].joydev, 
 					  j_Get_joydev_axis_number (item->value);
 #else
-			{
+		 {
 				int	nStick = item->value / MAX_AXES_PER_JOYSTICK;
 				int	nAxis = item->value % MAX_AXES_PER_JOYSTICK;
 				static char	cAxis [4] = {'X', 'Y', 'Z', 'R'};
@@ -685,7 +685,7 @@ fontManager.SetColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
 
 GrString (0x8000, KC_LHY (20), TXT_KCONFIG_STRING_1, NULL);
 fontManager.SetColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
-if (items == kcKeyboard)	{
+if (items == kcKeyboard) {
 	fontManager.SetColorRGBi (RGBA_PAL2 (31, 27, 6), 1, 0, 0);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (31, 27, 6));
 	kc_gr_scanline (KC_LHX (98), KC_LHX (106), KC_LHY (42));
@@ -707,7 +707,7 @@ if (items == kcKeyboard)	{
 	GrString (KC_LHX (264), KC_LHY (40), "OR", NULL);
 
 }
-if (items == kcJoystick)	{
+if (items == kcJoystick) {
 	fontManager.SetColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (31, 27, 6));
 	kc_gr_scanline (KC_LHX (18), KC_LHX (135), KC_LHY (37));
@@ -721,7 +721,7 @@ if (items == kcJoystick)	{
 	GrString (KC_LHX (120), KC_LHY (145+8), TXT_INVERT, NULL);
 	GrString (KC_LHX (235), KC_LHY (145+8), TXT_AXIS, NULL);
 	GrString (KC_LHX (270), KC_LHY (145+8), TXT_INVERT, NULL);
-} else if (items == kcMouse)	{
+} else if (items == kcMouse) {
 	fontManager.SetColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (31,27,6));
 	kc_gr_scanline (KC_LHX (18), KC_LHX (135), KC_LHY (37));
@@ -781,7 +781,7 @@ inline int KCAssignControl (kcItem *item, int nType, ubyte code)
 if (code == 255)
 	return nType;
 
-for (i = 0, n = (int) (item - All_items); i < Num_items; i++)	{
+for (i = 0, n = (int) (item - All_items); i < Num_items; i++) {
 	if ((i != n) && (All_items [i].nType == nType) && (All_items [i].value == code)) {
 		All_items [i].value = 255;
 		if (gameStates.ogl.nDrawBuffer == GL_FRONT)
@@ -831,8 +831,8 @@ ubyte KCKeyCtrlFunc (void)
 {
 	int	i, n, f;
 
-for (i = 0; i < 256; i++)	{
-	if (gameStates.input.keys.pressed [i] && strlen (pszKeyText [i]))	{
+for (i = 0; i < 256; i++) {
+	if (gameStates.input.keys.pressed [i] && strlen (pszKeyText [i])) {
 		f = 0;
 		for (n = 0; n < (int) sizeof (system_keys); n++)
 			if (system_keys [n] == i)
@@ -1133,7 +1133,7 @@ void LinkMouseEntries (void)
 
 if (pos) {
 	if ((ref = GetItemRef (kcMouse, NUM_MOUSE_CONTROLS, pos))) {
-		for (i = 0, j = NUM_MOUSE_CONTROLS; i < j; i++)	{
+		for (i = 0, j = NUM_MOUSE_CONTROLS; i < j; i++) {
 			kcMouse [i].u = FindNextItemUp (kcMouse, j, i, pos, ref);
 			kcMouse [i].d = FindNextItemDown (kcMouse, j, i, pos, ref);
 			kcMouse [i].l = FindNextItemLeft (kcMouse, j, i, pos, ref);
@@ -1154,7 +1154,7 @@ void LinkHotkeyEntries (void)
 
 if (pos) {
 	if ((ref = GetItemRef (kcHotkeys, NUM_HOTKEY_CONTROLS, pos))) {
-		for (i = 0, j = NUM_HOTKEY_CONTROLS; i < j; i++)	{
+		for (i = 0, j = NUM_HOTKEY_CONTROLS; i < j; i++) {
 			kcHotkeys [i].u = FindNextItemUp (kcHotkeys, j, i, pos, ref);
 			kcHotkeys [i].d = FindNextItemDown (kcHotkeys, j, i, pos, ref);
 			kcHotkeys [i].l = FindNextItemLeft (kcHotkeys, j, i, pos, ref);
@@ -1294,7 +1294,7 @@ for (;;) {
 			k = -2;
 		}
 	ocitem = nCurItem;
-	switch (k)	{
+	switch (k) {
 		case KEY_BACKSP:
 			Int3 ();
 			break;
@@ -1307,7 +1307,7 @@ for (;;) {
 			KCDrawItem (items + nCurItem, 1);
 			break;
 		case KEY_CTRLED+KEY_R:
-			if (items==kcKeyboard)	{
+			if (items==kcKeyboard) {
 				for (i=0; i<NUM_KEY_CONTROLS; i++) {
 					items [i].value=controlSettings.defaults [0][i];
 					KCDrawItem (items + i, 0);
@@ -1328,7 +1328,7 @@ for (;;) {
 					}
 				}
 			else {
-				for (i = 0; i < NUM_JOY_CONTROLS; i++)	{
+				for (i = 0; i < NUM_JOY_CONTROLS; i++) {
 					items [i].value = controlSettings.defaults [gameConfig.nControlType][i];
 					KCDrawItem (items + i, 0);
 					}
@@ -1382,7 +1382,7 @@ for (;;) {
 			KCQuitMenu (time_stopped);
 			return;
 #if TABLE_CREATION
-		case KEYDBGGED+KEY_F12:	{
+		case KEYDBGGED+KEY_F12: {
 			FILE *fp;
 #if TRACE	
 			console.printf (CON_DBG, "start table creation\n");
@@ -1390,7 +1390,7 @@ for (;;) {
 			LinkTableEntries (1 | 2 | 4 | 8);
 			fp = fopen ("KConfig.cod", "wt");
 			fprintf (fp, "ubyte controlSettings.defaults [CONTROL_MAX_TYPES][MAX_CONTROLS] = {\n");
-			for (i = 0; i < CONTROL_MAX_TYPES; i++)	{
+			for (i = 0; i < CONTROL_MAX_TYPES; i++) {
 				int j;
 				fprintf (fp, "{0x%x", controlSettings.custom [i][0]);
 				for (j = 1; j < MAX_CONTROLS; j++)
@@ -1400,7 +1400,7 @@ for (;;) {
 			fprintf (fp, "};\n");
 
 			fprintf (fp, "\nkc_item kcKeyboard [NUM_KEY_CONTROLS] = {\n");
-			for (i=0; i<NUM_KEY_CONTROLS; i++)	{
+			for (i=0; i<NUM_KEY_CONTROLS; i++) {
 				fprintf (fp, "\t{ %2d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%c%s%c, %s, 255 },\n", 
 					kcKeyboard [i].id, kcKeyboard [i].x, kcKeyboard [i].y, kcKeyboard [i].w1, kcKeyboard [i].w2,
 					kcKeyboard [i].u, kcKeyboard [i].d, kcKeyboard [i].l, kcKeyboard [i].r,
@@ -1409,7 +1409,7 @@ for (;;) {
 			fprintf (fp, "};");
 
 			fprintf (fp, "\nkc_item kcJoystick [NUM_JOY_CONTROLS] = {\n");
-			for (i=0; i<NUM_JOY_CONTROLS; i++)	{
+			for (i=0; i<NUM_JOY_CONTROLS; i++) {
 				if (kcJoystick [i].nType == BT_JOY_BUTTON)
 					fprintf (fp, "\t{ %2d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%c%s%c, %s, 255 },\n", 
 						kcJoystick [i].id, kcJoystick [i].x, kcJoystick [i].y, kcJoystick [i].w1, kcJoystick [i].w2,
@@ -1424,7 +1424,7 @@ for (;;) {
 			fprintf (fp, "};");
 
 			fprintf (fp, "\nkc_item kcMouse [NUM_MOUSE_CONTROLS] = {\n");
-			for (i=0; i<NUM_MOUSE_CONTROLS; i++)	{
+			for (i=0; i<NUM_MOUSE_CONTROLS; i++) {
 				fprintf (fp, "\t{ %2d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%c%s%c, %s, 255 },\n", 
 					kcMouse [i].id, kcMouse [i].x, kcMouse [i].y, kcMouse [i].w1, kcMouse [i].w2,
 					kcMouse [i].u, kcMouse [i].d, kcMouse [i].l, kcMouse [i].r,
@@ -1446,7 +1446,7 @@ for (;;) {
 			mx -= xOffs;
 			my -= yOffs;
 //			my = (my * 12) / 10;	//y mouse pos is off here, no clue why
-			for (i = 0; i < nItems; i++)	{
+			for (i = 0; i < nItems; i++) {
 				item_height = KCGetItemHeight (items + i);
 				x1 = CCanvas::Current ()->Left () + LHX (items [i].x) + LHX (items [i].w1);
 				x2 = x1 + LHX (items [i].w2);
@@ -1484,7 +1484,7 @@ for (;;) {
 				}
 			}
 		}
-		if (ocitem!=nCurItem)	{
+		if (ocitem!=nCurItem) {
 			SDL_ShowCursor (0);
 			KCDrawItem (items + ocitem, 0);
 			KCDrawItem (items + nCurItem, 1);
@@ -1512,7 +1512,7 @@ if (bRedraw && gameOpts->menus.nStyle)
 
 	*szText = '\0';
 	if (item->value != 255) {
-		switch (item->nType)	{
+		switch (item->nType) {
 			case BT_KEY:
 				if (item->value < sizeofa (pszKeyText))
 					strncat (szText, pszKeyText [item->value], 10); 
@@ -1532,7 +1532,7 @@ if (bRedraw && gameOpts->menus.nStyle)
 				sprintf (szText, "J%d B%d", 
 						  j_button [item->value].joydev, j_Get_joydev_button_number (item->value);
 #else
-				{
+			 {
 					int	nStick = item->value / MAX_BUTTONS_PER_JOYSTICK;
 					int	nBtn = item->value % MAX_BUTTONS_PER_JOYSTICK;
 					int	nHat = sdlJoysticks [nStick].nButtons;
@@ -1551,7 +1551,7 @@ if (bRedraw && gameOpts->menus.nStyle)
 #if defined (USE_LINUX_JOY)
 				sprintf (szText, "J%d A%d", j_axis [item->value].joydev, j_Get_joydev_axis_number (item->value));
 #elif 1//defined (_WIN32)
-				{
+			 {
 					int	nStick = item->value / MAX_AXES_PER_JOYSTICK;
 					int	nAxis = item->value % MAX_AXES_PER_JOYSTICK;
 					static char	cAxis [4] = {'X', 'Y', 'Z', 'R'};
@@ -1686,7 +1686,7 @@ read_head_tracker ()
 //------ read vfx1 helmet --------
 	if (vfx1_installed) {
 		vfx_get_data (&yaw,&pitch,&roll,&buttons);
-	} else if (iglasses_headset_installed)	{
+	} else if (iglasses_headset_installed) {
 		iglasses_read_headset (&yaw, &pitch, &roll);
 	} else if (Victor_headset_installed)   {
 		victor_read_headset_filtered (&yaw, &pitch, &roll);
@@ -1695,7 +1695,7 @@ read_head_tracker ()
 	}
 
 	transformation.m_info.bUsePlayerHeadAngles = 0;
-	if (Last_angles_read)	{
+	if (Last_angles_read) {
 		fix yaw1 = yaw;
 	
 		yaw1 = yaw;
@@ -1756,7 +1756,7 @@ void KCInitExternalControls (int intno, int address)
 
 	if (kc_externalVersion == 0) 
 		memset (kc_external_control, 0, sizeof (tControlInfo);
-	else if (kc_externalVersion > 0) 	{
+	else if (kc_externalVersion > 0)  {
 		memset (kc_external_control, 0, sizeof (tControlInfo)+sizeof (CAngleVector) + 64);
 		if (kc_externalVersion > 1) {
 			// Write ship pos and angles to external controls...
@@ -1784,7 +1784,7 @@ void KCInitExternalControls (int intno, int address)
 //	else
   //		ReadOWL (kc_external_control);
 
-	if (gameData.multiplayer.nLocalPlayer > -1)	{
+	if (gameData.multiplayer.nLocalPlayer > -1) {
 		OBJECTS [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_TURNROLL);	// Turn off roll when turning
 		OBJECTS [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest CSide.
 		gameOpts->gameplay.nAutoLeveling = 0;
@@ -1796,7 +1796,7 @@ void KCInitExternalControls (int intno, int address)
 
 			Kconfig_abs_movement = reinterpret_cast<CAngleVector*> ((uint)kc_external_control) + sizeof (tControlInfo);
 
-			if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h)	{
+			if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h) {
 				VmAngles2Matrix (&tempm,Kconfig_abs_movement);
 				VmMatMul (&ViewMatrix,&OBJECTS [LOCALPLAYER.nObject].info.position.mOrient,&tempm);
 				OBJECTS [LOCALPLAYER.nObject].info.position.mOrient = ViewMatrix;	
@@ -1836,7 +1836,7 @@ void KCReadExternalControls ()
 
 	if (kc_externalVersion == 0) 
 		memset (kc_external_control, 0, sizeof (ext_control_info));
-	else if (kc_externalVersion > 0) 	{
+	else if (kc_externalVersion > 0)  {
     
 		if (kc_externalVersion>=4)
 			memset (kc_external_control, 0, sizeof (advanced_ext_control_info));
@@ -1900,7 +1900,7 @@ void KCReadExternalControls ()
 
   #endif 
 
-	if (gameData.multiplayer.nLocalPlayer > -1)	{
+	if (gameData.multiplayer.nLocalPlayer > -1) {
 		OBJECTS [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_TURNROLL);	// Turn off roll when turning
 		OBJECTS [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest CSide.
 		gameOpts->gameplay.nAutoLeveling = 0;
@@ -1912,7 +1912,7 @@ void KCReadExternalControls ()
 
 			Kconfig_abs_movement = reinterpret_cast<CAngleVector*> ((size_t) kc_external_control + sizeof (ext_control_info));
 
-			if (!Kconfig_abs_movement->IsZero())	{
+			if (!Kconfig_abs_movement->IsZero()) {
 				tempm = CFixMatrix::Create(*Kconfig_abs_movement);
 				ViewMatrix = OBJECTS [LOCALPLAYER.nObject].info.position.mOrient * tempm;
 				OBJECTS [LOCALPLAYER.nObject].info.position.mOrient = ViewMatrix;	
@@ -1991,7 +1991,7 @@ if (gameOpts->input.joystick.bUse) {
 			controlSettings.custom [gameStates.input.nJoyType][i] = kcJoystick [i].value;
 		else {
 			kcJoystick [i].value = controlSettings.custom [gameStates.input.nJoyType][i];
-			if (kcJoystick [i].nType == BT_INVERT)	{
+			if (kcJoystick [i].nType == BT_INVERT) {
 				if (kcJoystick [i].value != 1)
 					kcJoystick [i].value = 0;
 				controlSettings.custom [gameStates.input.nJoyType][i] = kcJoystick [i].value;
@@ -2001,12 +2001,12 @@ if (gameOpts->input.joystick.bUse) {
 	}
 //else if (gameConfig.nControlType > 4 && gameConfig.nControlType < CONTROL_WINJOYSTICK) {
 if (gameOpts->input.mouse.bUse) {
-	for (i = 0, j = NUM_MOUSE_CONTROLS; i < j; i++)	{
+	for (i = 0, j = NUM_MOUSE_CONTROLS; i < j; i++) {
 		if (bGet)
 			controlSettings.custom [gameStates.input.nMouseType][i] = kcMouse [i].value;
 		else {
 			kcMouse [i].value = controlSettings.custom [gameStates.input.nMouseType][i];
-			if (kcMouse [i].nType == BT_INVERT)	{
+			if (kcMouse [i].nType == BT_INVERT) {
 				if (kcMouse [i].value != 1)
 					kcMouse [i].value = 0;
 				controlSettings.custom [gameStates.input.nMouseType][i] = kcMouse [i].value;
@@ -2021,7 +2021,7 @@ if (gameConfig.nControlType == CONTROL_WINJOYSTICK) {
 			controlSettings.custom [gameConfig.nControlType][i] = kcSuperJoy [i].value;
 		else {
 			kcSuperJoy [i].value = controlSettings.custom [gameConfig.nControlType][i];
-			if (kcSuperJoy [i].nType == BT_INVERT)	{
+			if (kcSuperJoy [i].nType == BT_INVERT) {
 				if (kcSuperJoy [i].value!=1)
 					kcSuperJoy [i].value	= 0;
 				controlSettings.custom [gameConfig.nControlType][i] = kcSuperJoy [i].value;

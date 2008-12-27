@@ -281,7 +281,7 @@ gameStates.app.bLittleEndian = (h.s == 256);
 void DoJoystickInit ()
 {
 
-if (!FindArg ("-nojoystick"))	{
+if (!FindArg ("-nojoystick")) {
 	JoyInit ();
 	if (FindArg ("-joyslow"))
 		JoySetSlowReading (JOY_SLOW_READINGS);
@@ -297,7 +297,7 @@ if (!FindArg ("-nojoystick"))	{
 void DoSelectPlayer (void)
 {
 LOCALPLAYER.callsign[0] = '\0';
-if (!gameData.demo.bAuto) 	{
+if (!gameData.demo.bAuto)  {
 	KeyFlush ();
 	//now, before we bring up the register player menu, we need to
 	//do some stuff to make sure the palette is ok.  First, we need to
@@ -366,7 +366,7 @@ if (FindArg ("-notitles"))
 	SongsPlaySong (SONG_TITLE, 1);
 else
 #endif
-	{	//NOTE LINK TO ABOVE!
+ {	//NOTE LINK TO ABOVE!
 	int bSongPlaying = 0;
 	if (movieManager.m_bHaveExtras) {
 		nPlayed = movieManager.Play ("starta.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
@@ -413,7 +413,7 @@ else {
 	SetScreenMode (SCREEN_MENU);
 	gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
 	int pcxError = PcxReadFullScrImage (filename, 0);
-	if (pcxError == PCX_ERROR_NONE)	{
+	if (pcxError == PCX_ERROR_NONE) {
 		paletteManager.ClearEffect ();
 		paletteManager.EnableEffect ();
 		GrUpdate (0);
@@ -506,7 +506,7 @@ void MainLoop (void)
 {
 while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 	gameStates.app.bGameRunning = (gameStates.app.nFunctionMode == FMODE_GAME);
-	switch (gameStates.app.nFunctionMode)	{
+	switch (gameStates.app.nFunctionMode) {
 		case FMODE_MENU:
 			SetScreenMode (SCREEN_MENU);
 			if (gameData.demo.bAuto && !gameOpts->demo.bRevertFormat) {
@@ -528,7 +528,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 				SetRenderQuality (0);
 				MainMenu ();
 #ifdef EDITOR
-				if (gameStates.app.nFunctionMode == FMODE_EDITOR)	{
+				if (gameStates.app.nFunctionMode == FMODE_EDITOR) {
 					create_new_mine ();
 					SetPlayerFromCurseg ();
 					paletteManager.Load (NULL, 1, 0);
@@ -1006,10 +1006,10 @@ void check_joystick_calibration ()
 		;
 	JoyGetpos (&x2, &y2);
 	// If joystick hasn't moved...
-	if ((abs (x2-x1)<30) &&  (abs (y2-y1)<30))	{
-		if ((abs (x1)>30) || (abs (x2)>30) ||  (abs (y1)>30) || (abs (y2)>30))	{
+	if ((abs (x2-x1)<30) &&  (abs (y2-y1)<30)) {
+		if ((abs (x1)>30) || (abs (x2)>30) ||  (abs (y1)>30) || (abs (y2)>30)) {
 			c = ExecMessageBox (NULL, NULL, 2, TXT_CALIBRATE, TXT_SKIP, TXT_JOYSTICK_NOT_CEN);
-			if (c==0)	{
+			if (c==0) {
 				JoyDefsCalibrate ();
 			}
 		}

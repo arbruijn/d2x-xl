@@ -280,7 +280,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 	}
 else 
 #endif
-	{
+ {
 	WaveSpec.freq = (int) (gameOpts->sound.digiSampleRate / fSlowDown);
 	//added/changed by Sam Lantinga on 12/01/98 for new SDL version
 	WaveSpec.format = AUDIO_U8;
@@ -404,7 +404,7 @@ if (bMP3)
 	l = (l * 32) / 11;	//sample up to approx. 32 kHz
 #else
 if (bMP3) 
-	{
+ {
 	l = 2 * i;
 	if (bD1Sound)
 		l *= 2;
@@ -720,7 +720,7 @@ else
 if (pszWAV && *pszWAV)
 	return -1;
 #endif
-	{
+ {
 	if (gameStates.sound.bD1Sound && (gameOpts->sound.digiSampleRate != SAMPLE_RATE_11K)) {
 		int l = DigiResampleSound (dsP, ssP, 0, 0);
 		if (l <= 0)

@@ -75,7 +75,7 @@ void DrawCenteredText (int y, char * s)
 	char	p;
 	int	i, l = (int) strlen (s);
 
-if (StringWidth (s, l) < CCanvas::Current ()->Width ())	{
+if (StringWidth (s, l) < CCanvas::Current ()->Width ()) {
 	GrString (0x8000, y, s, NULL);
 	return;
 	}
@@ -114,13 +114,13 @@ void GameDrawMultiMessage ()
 {
 	char temp_string [MAX_MULTI_MESSAGE_LEN+25];
 
-if ((gameData.app.nGameMode&GM_MULTI) && (gameData.multigame.msg.bSending))	{
+if ((gameData.app.nGameMode&GM_MULTI) && (gameData.multigame.msg.bSending)) {
 	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	sprintf (temp_string, "%s: %s_", TXT_MESSAGE, gameData.multigame.msg.szMsg);
 	DrawCenteredText (CCanvas::Current ()->Height ()/2-16, temp_string);
 	}
-if ((gameData.app.nGameMode&GM_MULTI) && (gameData.multigame.msg.bDefining))	{
+if ((gameData.app.nGameMode&GM_MULTI) && (gameData.multigame.msg.bDefining)) {
 	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	sprintf (temp_string, "%s #%d: %s_", TXT_MACRO, gameData.multigame.msg.bDefining, gameData.multigame.msg.szMsg);
@@ -214,7 +214,7 @@ if (ShowView_textTimer > 0) {
 
 void RenderCountdownGauge ()
 {
-if (!gameStates.app.bEndLevelSequence && gameData.reactor.bDestroyed  && (gameData.reactor.countdown.nSecsLeft>-1)) { // && (gameData.reactor.countdown.nSecsLeft<127))	{
+if (!gameStates.app.bEndLevelSequence && gameData.reactor.bDestroyed  && (gameData.reactor.countdown.nSecsLeft>-1)) { // && (gameData.reactor.countdown.nSecsLeft<127)) {
 	int	y;
 
 	if (!IS_D2_OEM && !IS_MAC_SHARE && !IS_SHAREWARE) {    // no countdown on registered only
@@ -285,7 +285,7 @@ if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || (gameStates.re
 	RenderCountdownGauge ();
 	if ((gameData.multiplayer.nLocalPlayer > -1) &&
 		 (gameData.objs.viewerP->info.nType == OBJ_PLAYER) &&
-		 (gameData.objs.viewerP->info.nId == gameData.multiplayer.nLocalPlayer))	{
+		 (gameData.objs.viewerP->info.nId == gameData.multiplayer.nLocalPlayer)) {
 		int	x = 3;
 		int	y = CCanvas::Current ()->Height ();
 
@@ -348,7 +348,7 @@ switch (flags & 3) {
 	case 2:	// expand x
 		Assert (bmP->RowSize () == bmP->Width ()*2);
 		dptr = &bmP->Buffer () [(bmP->Height ()-1)*bmP->RowSize ()];
-		for (i=bmP->Height ()-1; i>=0; i--)	{
+		for (i=bmP->Height ()-1; i>=0; i--) {
 			ExpandRow (dptr, dptr, bmP->Width ());
 			dptr -= bmP->RowSize ();
 			}
@@ -358,7 +358,7 @@ switch (flags & 3) {
 	case 1:	// expand y
 		dptr = &bmP->Buffer () [(2* (bmP->Height ()-1)+1)*bmP->RowSize ()];
 		sptr = &bmP->Buffer () [(bmP->Height ()-1)*bmP->RowSize ()];
-		for (i=bmP->Height ()-1; i>=0; i--)	{
+		for (i=bmP->Height ()-1; i>=0; i--) {
 			memcpy (dptr, sptr, bmP->Width ());
 			dptr -= bmP->RowSize ();
 			memcpy (dptr, sptr, bmP->Width ());
@@ -372,7 +372,7 @@ switch (flags & 3) {
 		Assert (bmP->RowSize () == bmP->Width ()*2);
 		dptr = &bmP->Buffer () [(2* (bmP->Height ()-1)+1) * bmP->RowSize ()];
 		sptr = &bmP->Buffer () [(bmP->Height ()-1) * bmP->RowSize ()];
-		for (i=bmP->Height ()-1; i>=0; i--)	{
+		for (i=bmP->Height ()-1; i>=0; i--) {
 			ExpandRow (dptr, sptr, bmP->Width ());
 			dptr -= bmP->RowSize ();
 			ExpandRow (dptr, sptr, bmP->Width ());
@@ -421,11 +421,11 @@ void game_render_frame_stereo ()
 	sw = dw = gameStates.render.vr.buffers.render [0].Width ();
 	sh = dh = gameStates.render.vr.buffers.render [0].Height ();
 
-	if (gameStates.render.vr.nLowRes & 1)	{
+	if (gameStates.render.vr.nLowRes & 1) {
 		sh /= 2;
 		screen.Aspect () * = 2;  //Muck with aspect ratio
 	}
-	if (gameStates.render.vr.nLowRes & 2)	{
+	if (gameStates.render.vr.nLowRes & 2) {
 		sw /= 2;
 		screen.Aspect () /= 2;  //Muck with aspect ratio
 	}
@@ -434,7 +434,7 @@ void game_render_frame_stereo ()
 	GrInitSubCanvas (RenderCanvas + 1, gameStates.render.vr.buffers.render + 1, 0, 0, sw, sh);
 
 	// Draw the left eye's view
-	if (gameStates.render.vr.nEyeSwitch)	{
+	if (gameStates.render.vr.nEyeSwitch) {
 		actual_eye_width = -gameStates.render.vr.xEyeWidth;
 		actual_eye_offset = -gameStates.render.vr.nEyeOffset;
 	} else {
@@ -478,7 +478,7 @@ void game_render_frame_stereo ()
 	if (gameStates.render.vr.nLowRes)
 		GameExpandBitmap (&RenderCanvas [0].Bitmap (), gameStates.render.vr.nLowRes);
 
-	{	//render small window into left eye's canvas
+ {	//render small window into left eye's canvas
 		CCanvas *save=CCanvas::Current ();
 		fix save_aspect2 = screen.Aspect ();
 		screen.Aspect () = save_aspect*2;
@@ -498,7 +498,7 @@ void game_render_frame_stereo ()
 		GrRect (0, 0, labs (actual_eye_offset)*2-1, CCanvas::Current ()->Height ());
 	}
 
-	if (gameStates.render.vr.bShowHUD && !bNoDrawHUD)	{
+	if (gameStates.render.vr.bShowHUD && !bNoDrawHUD) {
 		CCanvas tmp;
 		if (actual_eye_offset < 0) {
 			GrInitSubCanvas (&tmp, CCanvas::Current (), labs (actual_eye_offset*2), 0, CCanvas::Current ()->Width ()- (labs (actual_eye_offset)*2), CCanvas::Current ()->Height ());
@@ -526,7 +526,7 @@ void game_render_frame_stereo ()
 		}
 
 
-	{	//copy small window from left eye
+ {	//copy small window from left eye
 	CCanvas temp;
 	int w;
 	for (w=0;w<2;w++) {
@@ -541,14 +541,14 @@ void game_render_frame_stereo ()
 	if (actual_eye_offset>0) {
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 		GrRect (0, 0, labs (actual_eye_offset)*2-1, CCanvas::Current ()->Height ());
-	} else if (actual_eye_offset < 0)	{
+	} else if (actual_eye_offset < 0) {
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 		GrRect (CCanvas::Current ()->Width ()-labs (actual_eye_offset)*2, 0,
                CCanvas::Current ()->Width ()-1, CCanvas::Current ()->Height ());
 	}
 
 //NEWVR (Add the next 2 lines)
-	if (gameStates.render.vr.bShowHUD && !bNoDrawHUD)	{
+	if (gameStates.render.vr.bShowHUD && !bNoDrawHUD) {
 		CCanvas tmp;
 		if (actual_eye_offset > 0) {
 			GrInitSubCanvas (&tmp, CCanvas::Current (), labs (actual_eye_offset*2), 0, CCanvas::Current ()->Width ()- (labs (actual_eye_offset)*2), CCanvas::Current ()->Height ());
@@ -562,7 +562,7 @@ void game_render_frame_stereo ()
 
 	// Draws white and black registration encoding lines
 	// and Accounts for pixel-shift adjustment in upcoming bitblts
-	if (gameStates.render.vr.bUseRegCode)	{
+	if (gameStates.render.vr.bUseRegCode) {
 		int width, height, quarter;
 
 		width = RenderCanvas [0].Width ();
@@ -600,7 +600,7 @@ void game_render_frame_stereo ()
 
 //NEWVR
 
-	if (gameStates.render.vr.bEyeOffsetChanged > 0)	{
+	if (gameStates.render.vr.bEyeOffsetChanged > 0) {
 		gameStates.render.vr.bEyeOffsetChanged--;
 		GrClearCanvas (0);
 	}
@@ -611,12 +611,12 @@ void game_render_frame_stereo ()
 	// Copy left eye, then right eye
 	gr_bitblt_dest_step_shift = 1;		// Skip every other scanline.
 
-	if (gameStates.render.vr.nRenderMode == VR_INTERLACED) 	{
-		if (actual_eye_offset > 0)	{
+	if (gameStates.render.vr.nRenderMode == VR_INTERLACED)  {
+		if (actual_eye_offset > 0) {
 			int xoff = labs (actual_eye_offset);
 			GrBmUBitBlt (dw-xoff, dh, xoff, 0, 0, 0, &RenderCanvas [0].Bitmap (), &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].Bitmap ());
 			GrBmUBitBlt (dw-xoff, dh, 0, 1, xoff, 0, &RenderCanvas [1].Bitmap (), &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].Bitmap ());
-		} else if (actual_eye_offset < 0)	{
+		} else if (actual_eye_offset < 0) {
 			int xoff = labs (actual_eye_offset);
 			GrBmUBitBlt (dw-xoff, dh, 0, 0, xoff, 0, &RenderCanvas [0].Bitmap (), &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].Bitmap ());
 			GrBmUBitBlt (dw-xoff, dh, xoff, 1, 0, 0, &RenderCanvas [1].Bitmap (), &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].Bitmap ());
@@ -637,7 +637,7 @@ void game_render_frame_stereo ()
 	//if (Game_vfxFlag)
 	//	vfx_set_page (gameStates.render.vr.nCurrentPage);		// 0 or 1
 	//else
-		if (gameStates.render.vr.nScreenFlags&VRF_USE_PAGING)	{
+		if (gameStates.render.vr.nScreenFlags&VRF_USE_PAGING) {
 			gr_wait_for_retrace = 0;
 
 //	Added by Samir from John's code
@@ -680,7 +680,7 @@ int ShowMissileView (void)
 	CObject	*objP = NULL;
 
 if (GuidedMslView (&objP)) {
-	if (gameOpts->render.cockpit.bGuidedInMainView)	{
+	if (gameOpts->render.cockpit.bGuidedInMainView) {
 		gameStates.render.nRenderingType = 6 + (1<<4);
 		DoCockpitWindowView (1, gameData.objs.viewerP, 0, WBUMSL, "SHIP");
 		}
@@ -888,8 +888,8 @@ if (!bNoDrawHUD)
 
 if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT)
 	ShowExtraViews ();		//missile view, buddy bot, etc.
-if (!bGameCockpitCopyCode)	{
-	if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING)	{
+if (!bGameCockpitCopyCode) {
+	if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING) {
 		gameStates.render.vr.nCurrentPage = !gameStates.render.vr.nCurrentPage;
 		CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
 		GrBmUBitBlt (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage], 
@@ -1148,7 +1148,7 @@ gameStates.render.cockpit.nLastDrawn [gameStates.render.vr.nCurrentPage] = gameS
 //Redraw the on-screen cockpit bitmaps
 if (gameStates.render.vr.nRenderMode != VR_NONE)
 	return;
-switch (gameStates.render.cockpit.nMode)	{
+switch (gameStates.render.cockpit.nMode) {
 	case CM_FULL_COCKPIT:
 		DrawCockpit (nCockpit, 0);
 		if (bForceRedraw)

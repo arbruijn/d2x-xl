@@ -916,66 +916,66 @@ char szTriFusionCheat [9]			= "cottmeup";		//s-cottmeup (Scott me up, beamy!)
 
 tCheat cheats [] = {
 	// Descent 2
-	{szAccessoryCheat, AccessoryCheat, 1, 1, 0}, 
-	{szAcidCheat, AcidCheat, 0, 1, 0}, 
-	{szAfterburnerCheat, AfterburnerCheat, 1, 0, 0}, 
-	{szAhimsaCheat, AhimsaCheat, -1, 1, 0}, 
-	{szAllKeysCheat, AllKeysCheat, 1, 1, 0}, 
-	{szBlueOrbCheat, BlueOrbCheat, 1, 0, 0}, 
-	{szBouncyCheat, BouncyCheat, 1, 1, 0}, 
-	{szBuddyDudeCheat, BuddyDudeCheat, 1, 1, 0}, 
-	{szBuddyLifeCheat, BuddyLifeCheat, 1, 1, 0}, 
-	{szCloakCheat, CloakCheat, 1, 0, 0}, 
-	{szCubeWarpCheat, CubeWarpCheat, -1, 0, 0}, 
-	{szElectroCheat, ElectroCheat, 1, 0, 0}, 
-	{szExitPathCheat, ExitPathCheat, 1, 0, 0}, 
-	{szFinishLevelCheat, FinishLevelCheat, 1, 1, 0}, 
-	{szFramerateCheat, FramerateCheat, 0, 1, -1}, 
-	{szGasolineCheat, GasolineCheat, 1, 1, 0}, 
-	{szFullMapCheat, FullMapCheat, 1, 1, 0}, 
-	{szHomingCheat, HomingCheat, 1, 1, 0}, 
-	{szInvulCheat, InvulCheat, 1, 1, 0}, 
-	{szJohnHeadCheat, JohnHeadCheat, 0, 1, 0}, 
-	{szKillBossCheat, KillBossCheat, 1, 0, 0}, 
-	{szKillBuddyCheat, KillBuddyCheat, 0, 0, 0}, 
-	{szKillThiefCheat, KillThiefCheat, 1, 0, 0}, 
-	{szKillRobotsCheat, KillRobotsCheat, 1, 1, 0}, 
-	{szLevelWarpCheat, LevelWarpCheat, -1, 1, 0}, 
-	{szMonsterCheat, MonsterCheat, 1, 1, 0}, 
-	{szRapidFireCheat, RapidFireCheat, -1, 1, 0}, 
-	{szRobotsKillRobotsCheat, RobotsKillRobotsCheat, -1, 1, 0}, 
-	{szSpeedCheat, SpeedCheat, -1, 0, 0}, 
-	{szTriFusionCheat, TriFusionCheat, -1, 0, 0}, 
-	{szUnlockAllCheat, UnlockAllCheat, 1, 0, 0}, 
-	{szSuperWowieCheat, SuperWowieCheat, 1, 0, 0}, 
-	{szWowieCheat, WowieCheat, 1, 1, 0}, 
+ {szAccessoryCheat, AccessoryCheat, 1, 1, 0}, 
+ {szAcidCheat, AcidCheat, 0, 1, 0}, 
+ {szAfterburnerCheat, AfterburnerCheat, 1, 0, 0}, 
+ {szAhimsaCheat, AhimsaCheat, -1, 1, 0}, 
+ {szAllKeysCheat, AllKeysCheat, 1, 1, 0}, 
+ {szBlueOrbCheat, BlueOrbCheat, 1, 0, 0}, 
+ {szBouncyCheat, BouncyCheat, 1, 1, 0}, 
+ {szBuddyDudeCheat, BuddyDudeCheat, 1, 1, 0}, 
+ {szBuddyLifeCheat, BuddyLifeCheat, 1, 1, 0}, 
+ {szCloakCheat, CloakCheat, 1, 0, 0}, 
+ {szCubeWarpCheat, CubeWarpCheat, -1, 0, 0}, 
+ {szElectroCheat, ElectroCheat, 1, 0, 0}, 
+ {szExitPathCheat, ExitPathCheat, 1, 0, 0}, 
+ {szFinishLevelCheat, FinishLevelCheat, 1, 1, 0}, 
+ {szFramerateCheat, FramerateCheat, 0, 1, -1}, 
+ {szGasolineCheat, GasolineCheat, 1, 1, 0}, 
+ {szFullMapCheat, FullMapCheat, 1, 1, 0}, 
+ {szHomingCheat, HomingCheat, 1, 1, 0}, 
+ {szInvulCheat, InvulCheat, 1, 1, 0}, 
+ {szJohnHeadCheat, JohnHeadCheat, 0, 1, 0}, 
+ {szKillBossCheat, KillBossCheat, 1, 0, 0}, 
+ {szKillBuddyCheat, KillBuddyCheat, 0, 0, 0}, 
+ {szKillThiefCheat, KillThiefCheat, 1, 0, 0}, 
+ {szKillRobotsCheat, KillRobotsCheat, 1, 1, 0}, 
+ {szLevelWarpCheat, LevelWarpCheat, -1, 1, 0}, 
+ {szMonsterCheat, MonsterCheat, 1, 1, 0}, 
+ {szRapidFireCheat, RapidFireCheat, -1, 1, 0}, 
+ {szRobotsKillRobotsCheat, RobotsKillRobotsCheat, -1, 1, 0}, 
+ {szSpeedCheat, SpeedCheat, -1, 0, 0}, 
+ {szTriFusionCheat, TriFusionCheat, -1, 0, 0}, 
+ {szUnlockAllCheat, UnlockAllCheat, 1, 0, 0}, 
+ {szSuperWowieCheat, SuperWowieCheat, 1, 0, 0}, 
+ {szWowieCheat, WowieCheat, 1, 1, 0}, 
 	// Descent 1
-	{"ahimsa", AhimsaCheat, 1, 0, 1}, 
-	{"armerjoe", LevelWarpCheat, 1, 0, 1}, 
-	{"astral", PhysicsCheat, 1, 0, 1}, 
-	{"bigred", WowieCheat, 1, 0, 1}, 
-	{"bruin", ExtraLifeCheat, 1, 0, 1}, 
-	{"buggin", TurboCheat, -1, 0, 1}, 
-	{"flash", ExitPathCheat, 1, 0, 1}, 
-	{"gabbahey", EnableD1Cheats, 0, 0, -1}, 
-	{"guile", CloakCheat, 0, 0, -1}, 
-	{"lunacy", AhimsaCheat, 1, 0, 1}, 
-	{"mitzi", AllKeysCheat, 1, 0, 1}, 
-	{"opsytoys", FinishLevelCheat, 1, 0, 1}, 
-	{"pletch", NULL, 1, 0, 1}, 
-	{"poboys", FinishLevelCheat, 1, 0, 1}, 
-	{"porgys", WowieCheat, 1, 0, 1}, 
-	{"racerx", InvulCheat, 1, 0, 1}, 
-	{"scourge", WowieCheat, 1, 0, 1}, 
+ {"ahimsa", AhimsaCheat, 1, 0, 1}, 
+ {"armerjoe", LevelWarpCheat, 1, 0, 1}, 
+ {"astral", PhysicsCheat, 1, 0, 1}, 
+ {"bigred", WowieCheat, 1, 0, 1}, 
+ {"bruin", ExtraLifeCheat, 1, 0, 1}, 
+ {"buggin", TurboCheat, -1, 0, 1}, 
+ {"flash", ExitPathCheat, 1, 0, 1}, 
+ {"gabbahey", EnableD1Cheats, 0, 0, -1}, 
+ {"guile", CloakCheat, 0, 0, -1}, 
+ {"lunacy", AhimsaCheat, 1, 0, 1}, 
+ {"mitzi", AllKeysCheat, 1, 0, 1}, 
+ {"opsytoys", FinishLevelCheat, 1, 0, 1}, 
+ {"pletch", NULL, 1, 0, 1}, 
+ {"poboys", FinishLevelCheat, 1, 0, 1}, 
+ {"porgys", WowieCheat, 1, 0, 1}, 
+ {"racerx", InvulCheat, 1, 0, 1}, 
+ {"scourge", WowieCheat, 1, 0, 1}, 
 	// obsolete (demo?)
-	{"ei5cQ-ZQ", NULL, 1, 1, 0}, // mo-therlode
-	{"q^EpZxs8", NULL, 1, 1, 0}, // c-urrygoat
-	{"mxk (DyyP", NULL, 1, 1, 0}, // zi-ngermans
-	{"cBo#@y@P", NULL, 1, 1, 0}, // ea-tangelos
-	{"CLygLBGQ", NULL, 1, 1, 0}, // e-ricaanne
-	{"xAnHQxZX", NULL, 1, 1, 0}, // jos-huaakira
-	{"cKc[KUWo", NULL, 1, 1, 0}, // wh-ammazoom
-	{NULL, NULL, 0, 0, 0}
+ {"ei5cQ-ZQ", NULL, 1, 1, 0}, // mo-therlode
+ {"q^EpZxs8", NULL, 1, 1, 0}, // c-urrygoat
+ {"mxk (DyyP", NULL, 1, 1, 0}, // zi-ngermans
+ {"cBo#@y@P", NULL, 1, 1, 0}, // ea-tangelos
+ {"CLygLBGQ", NULL, 1, 1, 0}, // e-ricaanne
+ {"xAnHQxZX", NULL, 1, 1, 0}, // jos-huaakira
+ {"cKc[KUWo", NULL, 1, 1, 0}, // wh-ammazoom
+ {NULL, NULL, 0, 0, 0}
 	};
 
 

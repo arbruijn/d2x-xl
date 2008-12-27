@@ -139,9 +139,9 @@ class CBitmap : public CArray< ubyte > {
 			}
 
 		inline CBitmap* HasParent (void)
-			{ return (m_info.nType == BM_TYPE_STD) ? m_info.parentP :  NULL; } 
+		 { return (m_info.nType == BM_TYPE_STD) ? m_info.parentP :  NULL; } 
 		inline CBitmap* HasOverride (void)
-			{ return (m_info.nType == BM_TYPE_STD) ? m_info.overrideP :  m_info.frames.currentP; } 
+		 { return (m_info.nType == BM_TYPE_STD) ? m_info.overrideP :  m_info.frames.currentP; } 
 
 		inline CBitmap *Override (int iFrame) {
 			CBitmap *bmP = this;
@@ -269,7 +269,7 @@ class CBitmap : public CArray< ubyte > {
 						 int xSrc, int ySrc, int wSrc, int hSrc, 
 						 int bTransp = 0, int bMipMaps = 0, float fAlpha = 1.0f, tRgbaColorf* colorP = NULL);
 		inline void Render (CBitmap* dest, int bTransp = 0, int bMipMaps = 0, float fAlpha = 1.0f)
-			{ Render (dest, 0, 0, dest->Width (), dest->Height (), 0, 0, Width (), Height (), bTransp, bMipMaps, fAlpha); }
+		 { Render (dest, 0, 0, dest->Width (), dest->Height (), 0, 0, Width (), Height (), bTransp, bMipMaps, fAlpha); }
 		void Stretch (CBitmap* dest = NULL, int x = 0, int y = 0);
 		void Blit (CBitmap* dest = NULL, int x = 0, int y = 0);
 		void RenderClipped (CBitmap* dest = NULL, int dx = 0, int dy = 0, int w = -1, int h = -1, int sx = 0, int sy = 0);

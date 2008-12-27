@@ -52,7 +52,7 @@ int bFloorLeveling = 0;
 
 #if DBG
 
-#define CATCH_OBJ(_objP,_cond)	{if (((_objP) == dbgObjP) && (_cond)) CatchDbgObj (_cond);}
+#define CATCH_OBJ(_objP,_cond) {if (((_objP) == dbgObjP) && (_cond)) CatchDbgObj (_cond);}
 
 int CatchDbgObj (int cond)
 {
@@ -746,7 +746,7 @@ retryMove:
 		}
 
 	//calulate new sim time
-	{
+ {
 		//CFixVector vMoved;
 		CFixVector vMoveNormal;
 		fix attemptedDist, actualDist;
@@ -807,7 +807,7 @@ retryMove:
 		Assert (nWallHitSeg > -1);
 		Assert (nWallHitSide > -1);
 #if UNSTICK_OBJS == 2
-		{
+	 {
 		fix	xSideDists [6];
 		SEGMENTS [nWallHitSeg].GetSideDists (&info.position.vPos, xSideDists);
 		bRetry = BounceObject (this, hi, 0.1f, xSideDists);
@@ -887,7 +887,7 @@ retryMove:
 			vHitPos = hi.hit.vPoint;
 		else
 #endif
-			{
+		 {
 			vHitPos = *ppos1 - *ppos0;
 			vHitPos = *ppos0 + vHitPos * FixDiv(size0, size0 + size1);
 			}
@@ -948,7 +948,7 @@ if (info.controlType == CT_AI) {
 	// stored when entering this function, it has been stopped forcefully by something, so bounce it back to
 	// avoid that the ship gets driven into the obstacle (most likely a wall, as that doesn't give in ;)
 	if (((fviResult == HIT_WALL) || (fviResult == HIT_BAD_P0)) &&
-		 !(sbd.bBoosted || bObjStopped || bBounced))	{	//Set velocity from actual movement
+		 !(sbd.bBoosted || bObjStopped || bBounced)) {	//Set velocity from actual movement
 		CFixVector vMoved;
 		fix s = FixMulDiv (FixDiv (F1_0, gameData.physics.xTime), xTimeScale, 100);
 

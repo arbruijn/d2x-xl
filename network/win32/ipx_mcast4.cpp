@@ -130,7 +130,7 @@ static int ipx_mcast4_OpenSocket(ipx_socket_t *sk, int port)
 	int ttl = 128;
 
 	if((sk->fd = (int) socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
-	{
+ {
 		sk->fd = -1;
 #ifdef _GNUC
 		FAIL("socket() creation failed on port %d: %m", port);
@@ -144,7 +144,7 @@ static int ipx_mcast4_OpenSocket(ipx_socket_t *sk, int port)
 	sin.sin_addr.s_addr = htonl(INADDR_ANY);
 	sin.sin_port = htons(baseport);
 	if (bind(sk->fd, reinterpret_cast<struct sockaddr*> (&sin), sizeof(sin)))
-	{
+ {
 		closesocket(sk->fd);
 		sk->fd = -1;
 #ifdef _GNUC
@@ -262,7 +262,7 @@ static int ipx_mcast4_HandleNetgameAuxData(ipx_socket_t *sk, const u_char buf[NE
 
 	// Check the protocol version
 	if(buf[0] != IPX_MCAST4_VERSION)
-	{
+ {
 #ifdef _GNUC
 		FAIL("mcast4 protocol\nversion mismatch!\nGame version is %02x,\nour version is %02x", buf[0], IPX_MCAST4_VERSION);
 #else
@@ -274,7 +274,7 @@ static int ipx_mcast4_HandleNetgameAuxData(ipx_socket_t *sk, const u_char buf[NE
 	memcpy(&game_addr, buf + 1, sizeof(game_addr));
 
 #ifdef IPX_MCAST4DBG
-	{
+ {
 		struct sockaddr_in tmpaddr;
 		tmpaddr.sin_addr = game_addr;
 		tmpaddr.sin_port = 0;

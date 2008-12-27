@@ -270,7 +270,7 @@ int gr_uline(fix _a1, fix _b1, fix _a2, fix _b2)
 	int a1,b1,a2,b2;
 	a1 = X2I(_a1); b1 = X2I(_b1); a2 = X2I(_a2); b2 = X2I(_b2);
 	switch(MODE)
-	{
+ {
 	case BM_OGL:
 		OglULineC(a1,b1,a2,b2,&COLOR);
 		return 0;

@@ -63,9 +63,9 @@ void RenderPowerupCorona (CObject *objP, float red, float green, float blue, flo
 if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gameOpts->render.coronas.bWeapons) &&
 	 (bAdditive ? LoadGlare () : LoadCorona ())) {
 	static tRgbaColorf keyColors [3] = {
-		{0.2f, 0.2f, 0.9f, 0.2f},
-		{0.9f, 0.2f, 0.2f, 0.2f},
-		{0.9f, 0.8f, 0.2f, 0.2f}
+	 {0.2f, 0.2f, 0.9f, 0.2f},
+	 {0.9f, 0.2f, 0.2f, 0.2f},
+	 {0.9f, 0.8f, 0.2f, 0.2f}
 		};
 
 	tRgbaColorf color;
@@ -1650,7 +1650,7 @@ void Laser_draw_one (int nObject, CBitmap * bmp)
 
 #if 0
 static CFloatVector vTrailOffs [2][4] = {{{{0,0,0}},{{0,-10,-5}},{{0,-10,-50}},{{0,0,-50}}},
-												{{{0,0,0}},{{0,10,-5}},{{0,10,-50}},{{0,0,-50}}}};
+											 {{{0,0,0}},{{0,10,-5}},{{0,10,-50}},{{0,0,-50}}}};
 #endif
 
 void RenderLightTrail (CObject *objP)

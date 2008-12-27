@@ -28,7 +28,7 @@ ubyte gr_ugpixel( CBitmap * bitmap, int x, int y )
 {
 #ifdef __DJGPP__
 	switch(bitmap->props.nMode)
-	{
+ {
 	case BM_LINEAR:
 #endif
 		return bitmap->Buffer () [bitmap->RowSize () * y + x];
@@ -39,7 +39,7 @@ ubyte gr_ugpixel( CBitmap * bitmap, int x, int y )
 		gr_modex_setplane( x & 3 );
 		return gr_video_memory[(bitmap->RowSize () * y) + (x/4)];
 	case BM_SVGA:
-		{
+	 {
 		uint offset;
 		offset = (uint)bitmap->Buffer () + (uint)bitmap->RowSize () * y + x;
 		gr_vesa_setpage( offset >> 16 );
@@ -55,7 +55,7 @@ ubyte gr_gpixel( CBitmap * bitmap, int x, int y )
 	if ((x<0) || (y<0) || (x>=bitmap->Width ()) || (y>=bitmap->Height ())) return 0;
 #ifdef __DJGPP__
 	switch(bitmap->props.nMode)
-	{
+ {
 	case BM_LINEAR:
 #endif
 		return bitmap->Buffer ()[ bitmap->RowSize ()*y + x ];
@@ -66,7 +66,7 @@ ubyte gr_gpixel( CBitmap * bitmap, int x, int y )
 		gr_modex_setplane( x & 3 );
 		return gr_video_memory[(bitmap->RowSize () * y) + (x/4)];
 	case BM_SVGA:
-		{
+	 {
 		uint offset;
 		offset = (uint)bitmap->Buffer () + (uint)bitmap->RowSize () * y + x;
 		gr_vesa_setpage( offset >> 16 );

@@ -46,14 +46,14 @@
 tFaceColor lightColor = {{1.0f, 1.0f, 1.0f, 1.0f}, 0};
 tFaceColor tMapColor = {{1.0f, 1.0f, 1.0f, 1.0f}, 0};
 tFaceColor vertColors [8] = {
-	{{1.0f, 1.0f, 1.0f, 1.0f}, 0},
-	{{1.0f, 1.0f, 1.0f, 1.0f}, 0},
-	{{1.0f, 1.0f, 1.0f, 1.0f}, 0},
-	{{1.0f, 1.0f, 1.0f, 1.0f}, 0},
-	{{1.0f, 1.0f, 1.0f, 1.0f}, 0},
-	{{1.0f, 1.0f, 1.0f, 1.0f}, 0},
-	{{1.0f, 1.0f, 1.0f, 1.0f}, 0},
-	{{1.0f, 1.0f, 1.0f, 1.0f}, 0}
+ {{1.0f, 1.0f, 1.0f, 1.0f}, 0},
+ {{1.0f, 1.0f, 1.0f, 1.0f}, 0},
+ {{1.0f, 1.0f, 1.0f, 1.0f}, 0},
+ {{1.0f, 1.0f, 1.0f, 1.0f}, 0},
+ {{1.0f, 1.0f, 1.0f, 1.0f}, 0},
+ {{1.0f, 1.0f, 1.0f, 1.0f}, 0},
+ {{1.0f, 1.0f, 1.0f, 1.0f}, 0},
+ {{1.0f, 1.0f, 1.0f, 1.0f}, 0}
 	};
 tRgbaColorf shadowColor [2] = {{1.0f, 0.0f, 0.0f, 80.0f}, {0.0f, 0.0f, 1.0f, 80.0f}};
 tRgbaColorf modelColor [2] = {{0.0f, 0.5f, 1.0f, 0.5f}, {0.0f, 1.0f, 0.5f, 0.5f}};
@@ -264,7 +264,7 @@ else {
 //#define G3_DOTF(_v0,_v1)	((_v0)[X] * (_v1)[X] + (_v0)[Y] * (_v1)[Y] + (_v0)[Z] * (_v1)[Z])
 /*
 #define G3_REFLECT(_vr,_vl,_vn) \
-	{ \
+ { \
 	float	LdotN = 2 * G3_DOTF(_vl, _vn); \
 	(_vr)[X] = (_vn)[X] * LdotN - (_vl)[X]; \
 	(_vr)[Y] = (_vn)[Y] * LdotN - (_vl)[Y]; \
@@ -452,7 +452,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			vertColor += (lightColor * (float) pow (RdotE, vcd.fMatShininess));
 			}
 		}
-	if ((nSaturation < 2) || gameStates.render.bLightmaps)	{//sum up color components
+	if ((nSaturation < 2) || gameStates.render.bLightmaps) {//sum up color components
 		colorSum = colorSum + vertColor * (1.0f/fAttenuation);
 		}
 	else {	//use max. color components
@@ -559,7 +559,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		fAttenuation = 0.01f;
 	else
 #endif
-		{
+	 {
 #if VECMAT_CALLS
 		fLightDist = VmVecMag (&lightDir) / gameStates.ogl.fLightRange;
 #else
@@ -685,7 +685,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		vertColor[Z] += lightColor[Z] * vcd.matSpecular[Z];
 #endif
 		}
-	if ((nSaturation < 2) || gameStates.render.bLightmaps)	{//sum up color components
+	if ((nSaturation < 2) || gameStates.render.bLightmaps) {//sum up color components
 #if VECMAT_CALLS
 		VmVecScaleAdd (&colorSum, &colorSum, &vertColor, 1.0f / fAttenuation);
 #else
@@ -870,7 +870,7 @@ if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE) {
 	}
 else
 #endif
-	{
+ {
 	if (gameData.render.lights.dynamic.shader.index [0][nThread].nActive) {
 		if (pBaseColor)
 			memcpy (&colorSum, &pBaseColor->color, sizeof (colorSum));

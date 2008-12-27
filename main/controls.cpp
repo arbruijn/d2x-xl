@@ -124,10 +124,10 @@ void ReadFlyingControls (CObject *objP)
 		                                                   Controls[0].bankTime);
 		}
 	forwardThrustTime = Controls [0].forwardThrustTime;
-	if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)	{
+	if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) {
 		if (Controls [0].afterburnerState) {			//CPlayerData has key down
 			//if (forwardThrustTime >= 0) { 		//..ccAnd isn't moving backward
-			{
+		 {
 				fix afterburner_scale;
 				int oldCount,newCount;
 
@@ -180,7 +180,7 @@ void ReadFlyingControls (CObject *objP)
 
 	//	Prevent divide overflows on high frame rates.
 	//	In a signed divide, you get an overflow if num >= div<<15
-	{
+ {
 		fix	ft = gameData.time.xFrame;
 
 		//	Note, you must check for ft < F1_0/2, else you can get an overflow  on the << 15.

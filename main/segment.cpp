@@ -16,12 +16,12 @@ char	sideOpposite [MAX_SIDES_PER_SEGMENT] = {WRIGHT, WBOTTOM, WLEFT, WTOP, WFRON
 
 //	Note, this MUST be the same as sideVertIndex, it is an int for speed reasons.
 int sideVertIndex [MAX_SIDES_PER_SEGMENT][4] = {
-			{7,6,2,3},			// left
-			{0,4,7,3},			// top
-			{0,1,5,4},			// right
-			{2,6,5,1},			// bottom
-			{4,5,6,7},			// back
-			{3,2,1,0}			// front
+		 {7,6,2,3},			// left
+		 {0,4,7,3},			// top
+		 {0,1,5,4},			// right
+		 {2,6,5,1},			// bottom
+		 {4,5,6,7},			// back
+		 {3,2,1,0}			// front
 	};	
 
 extern bool bNewFileFormat;

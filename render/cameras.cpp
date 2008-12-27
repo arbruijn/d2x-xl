@@ -288,7 +288,7 @@ if (m_info.bHaveUVL) {
 	}
 else 
 #endif
-	{
+ {
 		fix	i;
 		float	duImage, dvImage, duFace, dvFace, du, dv,aFace, aImage;
 		int	xFlip, yFlip, rotLeft, rotRight;
@@ -472,7 +472,7 @@ else
 if (m_info.buffer.Buffer ()) 
 #	endif
 #endif
-	{
+ {
 	RenderFrame (0, 0);
 	m_info.bValid = 1;
 	m_info.buffer.ReleaseTexture ();

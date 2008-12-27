@@ -201,7 +201,7 @@ void DoSpecialEffects (void)
 
 xEffectTime += gameData.time.xFrame;
 //if (gameStates.app.tick40fps.bTick) 
-	{
+ {
 		CBitmap		*bmP = NULL;
 		tEffectClip				*ecP;
 		tBitmapIndex	bmi;
@@ -348,7 +348,7 @@ void RestoreEffectBitmapIcons()
 	tBitmapIndex	bmi;
 
 for (i = 0, j = gameData.eff.nEffects [gameStates.app.bD1Data], ecP = gameData.eff.effectP.Buffer (); i < j; i++, ecP++)
-	if (!(ecP->flags & EF_CRITICAL))	{
+	if (!(ecP->flags & EF_CRITICAL)) {
 		bmi = ecP->vc.frames [0];
 		if (ecP->changingWallTexture != -1)
 			gameData.pig.tex.bmIndexP[ecP->changingWallTexture] = bmi;

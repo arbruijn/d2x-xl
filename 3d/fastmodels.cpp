@@ -758,7 +758,7 @@ if (gameStates.render.bQueryCoronas &&
 #if G3_FAST_MODELS
 if (!RENDERPATH)
 #endif
-	{
+ {
 	gameData.models.renderModels [0][nModel].m_bValid =
 	gameData.models.renderModels [1][nModel].m_bValid = -1;
 	return 0;
@@ -835,7 +835,7 @@ if (bUseVBO) {
 		glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, pm->m_vboIndexHandle);
 	}
 else
-	{
+ {
 	if (!gameStates.render.bCloaked) {
 		glTexCoordPointer (2, GL_FLOAT, 0, pm->m_vbTexCoord.Buffer ());
 		if (gameOpts->ogl.bObjLighting)

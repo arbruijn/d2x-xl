@@ -50,7 +50,7 @@ void gr_upoly(int nverts, int *vert )
 	miny = vert[1];
 
 	for (i=3; i<(nverts*2); i+=2 )
-	{
+ {
 		if (vert[i]>maxy) maxy=vert[i];
 		if (vert[i]<miny) miny=vert[i];
 	}
@@ -72,7 +72,7 @@ void gr_upoly(int nverts, int *vert )
 	firsty = vert[1] >> 16;
 
 	do
-	{
+ {
 		nverts--;
 
 		// Get the beginning coordinates of the current edge.
@@ -99,7 +99,7 @@ void gr_upoly(int nverts, int *vert )
 		}
 
 		if (stopy == starty )
-		{
+	 {
 			// Draw a edge going horizontally across screen
 			x1 = startx>>16;
 			x2 = stopx>>16;
@@ -116,7 +116,7 @@ void gr_upoly(int nverts, int *vert )
 			dx_dy = (stopx - startx) / (stopy - starty);
 
 			for (; starty < stopy; starty++ )
-			{
+		 {
 				if (y_edge_list[starty]==-1)
 					y_edge_list[starty] = startx;
 				else    {
@@ -159,7 +159,7 @@ void gr_poly(int nverts, int *vert )
 	j = 0;
 
 	for (i=3; i<(nverts*2); i+=2 )
-	{
+ {
 		if (vert[i]>maxy) {
 			if ((maxy=vert[i]) > MAXY) j++;
 			//if (j>1) break;
@@ -188,7 +188,7 @@ void gr_poly(int nverts, int *vert )
 	firsty = vert[1] >> 16;
 
 	do
-	{
+ {
 		nverts--;
 
 		// Get the beginning coordinates of the current edge.
@@ -216,7 +216,7 @@ void gr_poly(int nverts, int *vert )
 		}
 
 		if (stopy == starty )
-		{
+	 {
 			// Draw a edge going horizontally across screen
 			if ((stopy >= MINY) && (stopy <=MAXY )) {
 				x1 = startx>>16;
@@ -229,7 +229,7 @@ void gr_poly(int nverts, int *vert )
 				}
 
 				if ((x1 <= MAXX ) && (x2 >= MINX))
-				{
+			 {
 					if (x1 < MINX ) x1 = MINX;
 					if (x2 > MAXX ) x2 = MAXX+1;
 					//gr_uscanline( x1, x2-1, stopy );
@@ -251,7 +251,7 @@ void gr_poly(int nverts, int *vert )
 			}
 
 			for (; starty < stopy; starty++ )
-			{   if (y_edge_list[starty]==-1)
+		 {   if (y_edge_list[starty]==-1)
 					y_edge_list[starty] = startx;
 				else {
 					x1 = y_edge_list[starty]>>16;
@@ -264,7 +264,7 @@ void gr_poly(int nverts, int *vert )
 					}
 
 					if ((x1 <= MAXX ) && (x2 >= MINX))
-					{
+				 {
 						if (x1 < MINX ) x1 = MINX;
 						if (x2 > MAXX ) x2 = MAXX+1;
 						//gr_uscanline( x1, x2-1, starty );

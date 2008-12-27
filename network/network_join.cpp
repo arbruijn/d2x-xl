@@ -275,7 +275,7 @@ return -1;
 
 static int FindPlayerSlot (tSequencePacket *player)
 {
-if (netGame.gameFlags & NETGAME_FLAG_CLOSED)	{
+if (netGame.gameFlags & NETGAME_FLAG_CLOSED) {
 	// Slots are open but game is closed
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (

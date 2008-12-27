@@ -78,7 +78,7 @@ void RenderLaser (CObject *objP)
 
 //	Commented out by John (sort of, typed by Mike) on 6/8/94
 #if 0
-	switch (objP->info.nId)	{
+	switch (objP->info.nId) {
 	case WEAPON_TYPE_WEAK_LASER:
 	case WEAPON_TYPE_STRONG_LASER:
 	case WEAPON_TYPE_CANNON_BALL:
@@ -89,7 +89,7 @@ void RenderLaser (CObject *objP)
 	}
 #endif
 
-switch (gameData.weapons.info [objP->info.nId].renderType)	{
+switch (gameData.weapons.info [objP->info.nId].renderType) {
 	case WEAPON_RENDER_LASER:
 		Int3 ();	// Not supported anymore!
 					//Laser_draw_one (objP->Index (), gameData.weapons.info [objP->info.nId].bitmap);
@@ -206,7 +206,7 @@ int CreateWeaponObject (ubyte nWeaponType, short nSegment, CFixVector *vPosition
 	int		nObject;
 	CObject	*objP;
 
-switch (gameData.weapons.info [nWeaponType].renderType)	{
+switch (gameData.weapons.info [nWeaponType].renderType) {
 	case WEAPON_RENDER_BLOB:
 		rType = RT_LASER;			// Render as a laser even if blob (see render code above for explanation)
 		xLaserRadius = gameData.weapons.info [nWeaponType].blob_size;
@@ -939,7 +939,7 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 
 			//	Subtract off life proportional to amount turned.
 			//	For hardest turn, it will lose 2 seconds per second.
-				{
+			 {
 				fix	absdot = abs (F1_0 - dot);
             fix	lifelost = FixMul (absdot*32, gameData.time.xFrame);
 				objP->info.xLifeLeft -= lifelost;
@@ -1172,7 +1172,7 @@ return rVal;
 // --
 // -- 		nObject = CreateNewWeapon (vDirection, &point_pos, tPointSeg, parent, LIGHTNING_BLOB_ID, 0);
 // --
-// -- 		if (nObject < 0) 	{
+// -- 		if (nObject < 0)  {
 // -- 			Int3 ();
 // -- 			return -1;
 // -- 		}
@@ -1377,14 +1377,14 @@ int HelixHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 		} tSpread;
 
 	static tSpread spreadTable [8] = {
-		{F1_0 / 16, 0},
-		{F1_0 / 17, F1_0 / 42},
-		{F1_0 / 22, F1_0 / 22},
-		{F1_0 / 42, F1_0 / 17},
-		{0, F1_0 / 16},
-		{-F1_0 / 42, F1_0 / 17},
-		{-F1_0 / 22, F1_0 / 22},
-		{-F1_0 / 17, F1_0 / 42}
+	 {F1_0 / 16, 0},
+	 {F1_0 / 17, F1_0 / 42},
+	 {F1_0 / 22, F1_0 / 22},
+	 {F1_0 / 42, F1_0 / 17},
+	 {0, F1_0 / 16},
+	 {-F1_0 / 42, F1_0 / 17},
+	 {-F1_0 / 22, F1_0 / 22},
+	 {-F1_0 / 17, F1_0 / 42}
 		};
 
 	tSpread	spread = spreadTable [(nFlags >> LASER_HELIX_SHIFT) & LASER_HELIX_MASK];

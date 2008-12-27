@@ -59,9 +59,9 @@ class CPalette {
 		bool Write (CFile& cf);
 		int ClosestColor (int r, int g, int b);
 		inline int ClosestColor (tRgbColorb* colorP)
-			{ return ClosestColor ((int) colorP->red, (int) colorP->green, (int) colorP->blue); }
+		 { return ClosestColor ((int) colorP->red, (int) colorP->green, (int) colorP->blue); }
 		inline int ClosestColor (tRgbColorf* colorP)
-			{ return ClosestColor ((int) (colorP->red * 63.0f), (int) (colorP->green * 63.0f), (int) (colorP->blue * 63.0f)); }
+		 { return ClosestColor ((int) (colorP->red * 63.0f), (int) (colorP->green * 63.0f), (int) (colorP->blue * 63.0f)); }
 		void SwapTransparency (void);
 		void AddComputedColor (int r, int g, int b, int nIndex);
 		void InitComputedColors (void);
@@ -73,9 +73,9 @@ class CPalette {
 		inline void Skip (CFile& cf) { cf.Seek (sizeof (m_data), SEEK_CUR); }
 		inline size_t Size (void) { return sizeof (m_data); }
 		inline void SetBlack (ubyte r, ubyte g, ubyte b) 
-			{ m_data.rgb [0].red = r, m_data.rgb [0].green = g, m_data.rgb [0].blue = b; }
+		 { m_data.rgb [0].red = r, m_data.rgb [0].green = g, m_data.rgb [0].blue = b; }
 		inline void SetTransparency (ubyte r, ubyte g, ubyte b) 
-			{ m_data.rgb [PALETTE_SIZE - 1].red = r, m_data.rgb [PALETTE_SIZE - 1].green = g, m_data.rgb [PALETTE_SIZE - 1].blue = b; }
+		 { m_data.rgb [PALETTE_SIZE - 1].red = r, m_data.rgb [PALETTE_SIZE - 1].green = g, m_data.rgb [PALETTE_SIZE - 1].blue = b; }
 		inline CPalette& operator= (CPalette& source) { 
 			memcpy (&Data (), &source.Data (), sizeof (tPalette));
 			Init ();
@@ -206,7 +206,7 @@ class CPaletteManager {
 
 
 		inline int ClosestColor (int r, int g, int b)
-			{ return m_data.current ? m_data.current->ClosestColor (r, g, b) : 0; }
+		 { return m_data.current ? m_data.current->ClosestColor (r, g, b) : 0; }
 	};
 
 extern CPaletteManager paletteManager;

@@ -87,7 +87,7 @@ void c_tmap_scanline_lin_nolight(void)
 
 	dest = reinterpret_cast<ubyte*> (write_buffer + fx_xleft + (bytes_per_row * fx_y));
 
-	if (!gameStates.render.bTransparency)	{
+	if (!gameStates.render.bTransparency) {
 		for (x= fx_xright-fx_xleft+1 ; x > 0; --x ) {
 			*dest++ = (uint)pixptr[ (X2I(v)&(64*63)) + (X2I(u)&63) ];
 			u += dudx;
@@ -123,7 +123,7 @@ void c_tmap_scanline_lin(void)
 	dldx = fx_dl_dx>>8;
 	dest = reinterpret_cast<ubyte*> (write_buffer + fx_xleft + (bytes_per_row * fx_y));
 
-	if (!gameStates.render.bTransparency)	{
+	if (!gameStates.render.bTransparency) {
 		ubyte*			pixPtrLocalCopy = pixptr;
 		ubyte*			fadeTableLocalCopy = paletteManager.FadeTable ();
 		uint	destlong;
@@ -131,14 +131,14 @@ void c_tmap_scanline_lin(void)
 		x = fx_xright-fx_xleft+1;
 
 		if ((j = (int) ((size_t) dest & 3)) != 0)
-			{
+		 {
 			j = 4 - j;
 
 			if (j > x)
 				j = x;
 
 			while (j > 0)
-				{
+			 {
 				//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
 				*dest++ = (ubyte) (uint) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ];
 				//end edit -MM
@@ -152,7 +152,7 @@ void c_tmap_scanline_lin(void)
 
 		j &= ~3;
 		while (j > 0)
-			{
+		 {
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
 			destlong = (uint) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ] << 24;
 			//end edit -MM
@@ -184,7 +184,7 @@ void c_tmap_scanline_lin(void)
 			}
 
 		while (x-- > 0)
-			{
+		 {
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
 			*dest++ = (ubyte) (uint) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ];
 			//end edit -MM
@@ -225,7 +225,7 @@ void c_tmap_scanline_lin(void)
 	dldx = fx_dl_dx>>8;
 	dest = reinterpret_cast<ubyte*> (write_buffer + fx_xleft + (bytes_per_row * fx_y));
 
-	if (!gameStates.render.bTransparency)	{
+	if (!gameStates.render.bTransparency) {
 		for (x= fx_xright-fx_xleft+1 ; x > 0; --x ) {
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
 			*dest++ = paletteManager.FadeTable ()[ (l&(0x7f00)) + (uint)pixptr[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ];
@@ -503,7 +503,7 @@ void c_tmap_scanline_per_nolight(void)
 
 	dest = reinterpret_cast<ubyte*> (write_buffer + fx_xleft + (bytes_per_row * fx_y));
 
-	if (!gameStates.render.bTransparency)	{
+	if (!gameStates.render.bTransparency) {
 		for (x= fx_xright-fx_xleft+1 ; x > 0; --x ) {
 			*dest++ = (uint)pixptr[ ( (v/z)&(64*63) ) + ((u/z)&63) ];
 			u += dudx;
@@ -810,7 +810,7 @@ void c_tmap_scanline_per(void)
 	dldx = fx_dl_dx>>8;
 	dest = reinterpret_cast<ubyte*> (write_buffer + fx_xleft + (bytes_per_row * fx_y));
 
-	if (!gameStates.render.bTransparency)	{
+	if (!gameStates.render.bTransparency) {
 		ubyte*			pixPtrLocalCopy = pixptr;
 		ubyte*			fadeTableLocalCopy = paletteManager.FadeTable ();
 		uint	destlong;
@@ -818,14 +818,14 @@ void c_tmap_scanline_per(void)
 		x = fx_xright-fx_xleft+1;
 
 		if ((j = (int) ((size_t) dest & 3)) != 0)
-			{
+		 {
 			j = 4 - j;
 
 			if (j > x)
 				j = x;
 
 			while (j > 0)
-				{
+			 {
 				//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
 				*dest++ = fadeTableLocalCopy[ (l&(0x7f00)) + (uint)pixPtrLocalCopy[ ( (v/z)&(64*63) ) + ((u/z)&63) ] ];
 				//end edit -MM
@@ -840,7 +840,7 @@ void c_tmap_scanline_per(void)
 
 		j &= ~3;
 		while (j > 0)
-			{
+		 {
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
 			destlong = (uint) fadeTableLocalCopy[ (l&(0x7f00)) + (uint)pixPtrLocalCopy[ ( (v/z)&(64*63) ) + ((u/z)&63) ] ] << 24;
 			//end edit -MM
@@ -876,7 +876,7 @@ void c_tmap_scanline_per(void)
 			}
 
 		while (x-- > 0)
-			{
+		 {
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
 			*dest++ = (ubyte) (uint) fadeTableLocalCopy[ (l&(0x7f00)) + (uint)pixPtrLocalCopy[ ( (v/z)&(64*63) ) + ((u/z)&63) ] ];
 			//end edit -MM
@@ -921,7 +921,7 @@ void c_tmap_scanline_per(void)
 	dldx = fx_dl_dx>>8;
 	dest = reinterpret_cast<ubyte*> (write_buffer + fx_xleft + (bytes_per_row * fx_y));
 
-	if (!gameStates.render.bTransparency)	{
+	if (!gameStates.render.bTransparency) {
 		for (x= fx_xright-fx_xleft+1 ; x > 0; --x ) {
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
 			*dest++ = paletteManager.FadeTable ()[ (l&(0x7f00)) + (uint)pixptr[ ( (v/z)&(64*63) ) + ((u/z)&63) ] ];

@@ -610,12 +610,12 @@ while (0 < (size = IpxGetPacketData (packet))) {
 #if SECURITY_CHECK
 				if (tmpPlayersInfo->nSecurity == tempNetInfo.nSecurity) {
 #else
-					{
+				 {
 #endif
 #if SECURITY_CHECK
 					if (tmpPlayersInfo->nSecurity == networkData.nSecurityCheck) {
 #else
-						{
+					 {
 #endif
 						memcpy (&activeNetGames + choice, reinterpret_cast<ubyte*> (&tempNetInfo), sizeof (tNetgameInfo));
 						memcpy (activeNetPlayers + choice, tmpPlayersInfo, sizeof (tAllNetPlayersInfo));

@@ -351,7 +351,7 @@ if (bDepthMask && transpItems.bSplitPolys) {
 	}
 else
 #endif
-	{
+ {
 #if TI_POLY_CENTER
 	zCenter = 0;
 #endif

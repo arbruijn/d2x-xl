@@ -358,7 +358,7 @@ if (gameOpts->render.bDepthSort > 0) {
 	}
 else
 #endif
-	{
+ {
 	r_polyc++;
 	glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 #if OGL_QUERY
@@ -661,7 +661,7 @@ if (bVertexArrays) {
 	}
 else
 #endif
-	{
+ {
 	glBegin (GL_TRIANGLE_FAN);
 	if (bDynLight) {
 		if (bOverlay) {

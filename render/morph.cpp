@@ -319,7 +319,7 @@ for (i = 0; i < sort_n; i++) {
 			PIGGY_PAGE_IN (gameData.models.textureIndex [i].index, 0);
 		// Hmmm.. cache got flushed in the middle of paging all these in,
 		// so we need to reread them all in.
-		if (gameData.pig.tex.bPageFlushed)	{
+		if (gameData.pig.tex.bPageFlushed) {
 			gameData.pig.tex.bPageFlushed = 0;
 			for (i=0;i<pmP->nTextures;i++)
 				PIGGY_PAGE_IN (gameData.models.textureIndex [i].index, 0);

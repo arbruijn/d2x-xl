@@ -34,7 +34,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void gr_upixel( int x, int y )
 {
 	switch (MODE)
-	{
+ {
 	case BM_OGL:
 		OglUPixelC(x,y, &COLOR);
 		return;
@@ -65,7 +65,7 @@ inline void gr_bm_upixel( CBitmap * bmP, int x, int y, ubyte color )
 {
 	tCanvasColor c;
 	switch (bmP->Mode ())
-	{
+ {
 	case BM_OGL:
 		c.index = color;
 		c.rgb = 0;

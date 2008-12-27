@@ -84,15 +84,15 @@ void joy_hat_handler (SDL_JoyHatEvent *jhe)
 
 	//determine if a hat-button up or down event based on state and lastState
 	for(hbi=0;hbi<4;hbi++)
-	{
+ {
 		if(	!joyInfo.buttons [hat+hbi].lastState && joyInfo.buttons [hat+hbi].state) //lastState up, current state down
-		{
+	 {
 			joyInfo.buttons [hat+hbi].xTimeWentDown
 				= TimerGetFixedSeconds();
 			joyInfo.buttons [hat+hbi].numDowns++;
 		}
 		else if(joyInfo.buttons [hat+hbi].lastState && !joyInfo.buttons [hat+hbi].state)  //lastState down, current state up
-		{
+	 {
 			joyInfo.buttons [hat+hbi].numUps++;
 		}
 	}

@@ -162,10 +162,10 @@ void DrawExplBlast (CObject *objP)
 	tRgbaColorf	color;
 #if 0
 	static tRgbaColorf blastColors [] = {
-		{0.5, 0.0f, 0.5f, 1},
-		{1, 0.5f, 0, 1},
-		{1, 0.75f, 0, 1},
-		{1, 1, 1, 3}};
+	 {0.5, 0.0f, 0.5f, 1},
+	 {1, 0.5f, 0, 1},
+	 {1, 0.75f, 0, 1},
+	 {1, 1, 1, 3}};
 #endif
 if (objP->info.xLifeLeft <= 0)
 	return;

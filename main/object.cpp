@@ -209,7 +209,7 @@ nStartObj = OBJ_IDX (gameData.objs.viewerP);		//get viewerP CObject number
 FORALL_OBJS (objP, i) {
 	if (--nStartObj < 0)
 		nStartObj = gameData.objs.nLastObject [0];
-	if (OBJECTS [nStartObj].info.nType != OBJ_NONE)	{
+	if (OBJECTS [nStartObj].info.nType != OBJ_NONE) {
 		gameData.objs.viewerP = OBJECTS + nStartObj;
 		return;
 		}
@@ -287,8 +287,8 @@ FORALL_OBJS (objP, i)
 //091494: 	// The following code keeps a list of the 10 closest robots to the
 //091494: 	// viewerP.  See comments in front of this function for how this works.
 //091494: 	dist = VmVecDist (&objP->info.position.vPos, &gameData.objs.viewerP->info.position.vPos);
-//091494: 	if (dist < I2X (20*10))	{
-//091494: 		if (Object_num_close < MAX_CLOSE_ROBOTS)	{
+//091494: 	if (dist < I2X (20*10)) {
+//091494: 		if (Object_num_close < MAX_CLOSE_ROBOTS) {
 //091494: 			Object_close_ones [Object_num_close] = obj;
 //091494: 			Object_closeDistance [Object_num_close] = dist;
 //091494: 			Object_num_close++;
@@ -298,15 +298,15 @@ FORALL_OBJS (objP, i)
 //091494: 			// Find the farthest robot in the list
 //091494: 			farthestRobot = 0;
 //091494: 			farthestDistance = Object_closeDistance [0];
-//091494: 			for (i=1; i<Object_num_close; i++)	{
-//091494: 				if (Object_closeDistance [i] > farthestDistance)	{
+//091494: 			for (i=1; i<Object_num_close; i++) {
+//091494: 				if (Object_closeDistance [i] > farthestDistance) {
 //091494: 					farthestDistance = Object_closeDistance [i];
 //091494: 					farthestRobot = i;
 //091494: 				}
 //091494: 			}
 //091494: 			// If this CObject is closer to the viewerP than
 //091494: 			// the farthest in the list, replace the farthest with this CObject.
-//091494: 			if (farthestDistance > dist)	{
+//091494: 			if (farthestDistance > dist) {
 //091494: 				Object_close_ones [farthestRobot] = obj;
 //091494: 				Object_closeDistance [farthestRobot] = dist;
 //091494: 			}
@@ -512,7 +512,7 @@ int IsObjectInSeg (int nSegment, int objn)
 {
 	short nObject, count = 0;
 
-for (nObject = SEGMENTS [nSegment].m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg)	{
+for (nObject = SEGMENTS [nSegment].m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
 	if (count > MAX_OBJECTS) {
 		Int3 ();
 		return count;
@@ -562,14 +562,14 @@ for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
 	for (nObject = SEGMENTS [nSegment].m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
 		count++;
 		#if DBG
-		if (count > MAX_OBJECTS)	{
+		if (count > MAX_OBJECTS) {
 #if TRACE
 			console.printf (1, "Object list in CSegment %d is circular.\n", nSegment);
 #endif
 			Int3 ();
 		}
 		#endif
-		if (OBJECTS [nObject].info.nSegment != nSegment)	{
+		if (OBJECTS [nObject].info.nSegment != nSegment) {
 			#if DBG
 #if TRACE
 			console.printf (CON_DBG, "Removing CObject %d from CSegment %d.\n", nObject, nSegment);
@@ -603,9 +603,9 @@ int CheckDuplicateObjects (void)
 	//int		i;
 
 FORALL_OBJS (objP, i) {
-	if (objP->info.nType != OBJ_NONE)	{
+	if (objP->info.nType != OBJ_NONE) {
 		count = SearchAllSegsForObject (objP->Index ());
-		if (count > 1)	{
+		if (count > 1) {
 #if DBG
 #	if TRACE
 			console.printf (1, "Object %d is in %d segments!\n", objP->Index (), count);
@@ -628,7 +628,7 @@ void ListSegObjects (int nSegment)
 
 for (nObject = SEGMENTS [nSegment].m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
 	count++;
-	if (count > MAX_OBJECTS) 	{
+	if (count > MAX_OBJECTS)  {
 		Int3 ();
 		return;
 		}
@@ -1516,7 +1516,7 @@ return nObject;
 int CreateWeapon (ubyte nId, short nCreator, short nSegment, const CFixVector& vPos, fix xSize, ubyte rType)
 {
 if (rType == 255) {
-	switch (gameData.weapons.info [nId].renderType)	{
+	switch (gameData.weapons.info [nId].renderType) {
 		case WEAPON_RENDER_BLOB:
 			rType = RT_LASER;			// Render as a laser even if blob (see render code above for explanation)
 			xSize = gameData.weapons.info [nId].blob_size;

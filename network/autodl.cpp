@@ -457,7 +457,7 @@ switch (pId) {
 	case PID_DL_OPEN:
 		if (dlState != PID_DL_OPEN)
 			return DownloadError (1);
-		{
+	 {
 			char	szDest [FILENAME_LEN];
 			char	*pszFile = reinterpret_cast<char*> (data + 6);
 
@@ -479,7 +479,7 @@ switch (pId) {
 	case PID_DL_DATA:
 		if (dlState != PID_DL_DATA)
 			return DownloadError (1);
-		{
+	 {
 			int id = GET_INTEL_INT (data + 2),
 				 h = id - nPacketId;
 

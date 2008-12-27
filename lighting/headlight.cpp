@@ -199,7 +199,7 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 #else
 
 const char *headlightFS [2][8] = {
-	{
+ {
 	//----------------------------------------
 	//single player version - one player
 	//untextured
@@ -402,7 +402,7 @@ const char *headlightFS [2][8] = {
 	"   }\r\n" \
 	"}"
 	},
-	{
+ {
 	//----------------------------------------
 	//single player version - one player
 	//untextured
@@ -603,7 +603,7 @@ const char *headlightFS [2][8] = {
 	};
 
 const char *headlightVS [2][8] = {
-	{
+ {
 	//no lightmaps
 	"varying vec3 normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
@@ -679,7 +679,7 @@ const char *headlightVS [2][8] = {
 	},
 	//with lightmaps
 	//single player
-	{
+ {
 	"varying vec3 normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
 	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].position);\r\n" \

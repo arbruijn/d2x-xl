@@ -392,10 +392,10 @@ return 0;
 // ----------------------------------------------------------------------------
 
 tRgbaColorf segmentColors [4] = {
-		{0.5f, 0, 0, 0.2f},
-		{0, 0, 0.5f, 0.2f},
-		{0, 1.0f / 16.0f, 0.5f, 0.2f},
-		{0.5f, 0, 0, 0.2f}};
+	 {0.5f, 0, 0, 0.2f},
+	 {0, 0, 0.5f, 0.2f},
+	 {0, 1.0f / 16.0f, 0.5f, 0.2f},
+	 {0.5f, 0, 0, 0.2f}};
 
 tRgbaColorf *ColoredSegmentColor (int nSegment, int nSide, char nColor)
 {

@@ -280,7 +280,7 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 
 			case OBJ_POWERUP:
 				if (AM_SHOW_POWERUPS (1) && 
-					(gameStates.render.bAllVisited || m_visited [0][objP->info.nSegment]))	{
+					(gameStates.render.bAllVisited || m_visited [0][objP->info.nSegment])) {
 					switch (objP->info.nId) {
 						case POW_KEY_RED:	
 							CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 5, 5));
@@ -534,7 +534,7 @@ int CAutomap::Update (CAngleVector& vTAngles)
 	CObject*		playerP = OBJECTS + LOCALPLAYER.nObject;
 	CFixMatrix	m;
 
-if (Controls [0].firePrimaryDownCount)	{
+if (Controls [0].firePrimaryDownCount) {
 	// Reset orientation
 	m_data.nViewDist = ZOOM_DEFAULT;
 	vTAngles [PA] = PITCH_DEFAULT;
@@ -549,7 +549,7 @@ vTAngles [HA] += (fixang) FixDiv (Controls [0].headingTime, ROT_SPEED_DIVISOR);
 vTAngles [BA] += (fixang) FixDiv (Controls [0].bankTime, ROT_SPEED_DIVISOR*2);
 
 m = CFixMatrix::Create(vTAngles);
-if (Controls [0].verticalThrustTime || Controls [0].sidewaysThrustTime)	{
+if (Controls [0].verticalThrustTime || Controls [0].sidewaysThrustTime) {
 	// TODO MM
 	m_data.viewMatrix = playerP->info.position.mOrient * m;
 	m_data.viewTarget += m_data.viewMatrix.UVec () * (Controls [0].verticalThrustTime * SLIDE_SPEED);
@@ -707,7 +707,7 @@ int CAutomap::GameFrame (int bPauseGame, int bDone)
 {
 	tControlInfo controlInfoSave;
 
-if (!bPauseGame)	{
+if (!bPauseGame) {
 	ushort bWiggleSave;
 	controlInfoSave = Controls [0];				// Save controls so we can zero them
 	memset (&Controls, 0, sizeof (tControlInfo));	// Clear everything...
@@ -751,7 +751,7 @@ if (bRadar) {
 	}
 Controls [0].automapState = 0;
 GetSlowTicks ();
-while (!bDone)	{
+while (!bDone) {
 	if (!nLeaveMode && Controls [0].automapState && ((TimerGetFixedSeconds ()- xEntryTime) > LEAVE_TIME))
 		nLeaveMode = 1;
 	if (!Controls [0].automapState && (nLeaveMode == 1))
@@ -790,11 +790,11 @@ void CAutomap::AdjustSegmentLimit (int nSegmentLimit, CArray<ushort>& visible)
 	int i,e1;
 	tEdgeInfo * e;
 
-for (i = 0; i <= m_nLastEdge; i++)	{
+for (i = 0; i <= m_nLastEdge; i++) {
 	e = m_edges + i;
 	e->flags |= EF_TOO_FAR;
-	for (e1 = 0; e1 < e->nFaces; e1++)	{
-		if (visible [e->nSegment [e1]] <= nSegmentLimit)	{
+	for (e1 = 0; e1 < e->nFaces; e1++) {
+		if (visible [e->nSegment [e1]] <= nSegmentLimit) {
 			e->flags &= ~EF_TOO_FAR;
 			break;
 			}
@@ -817,7 +817,7 @@ void CAutomap::DrawEdges (void)
 	int			bUseTransform = gameStates.ogl.bUseTransform;
 
 gameStates.ogl.bUseTransform = RENDERPATH;
-for (i = 0; i <= m_nLastEdge; i++)	{
+for (i = 0; i <= m_nLastEdge; i++) {
 	//edgeP = &m_edges [Edge_used_list [i]];
 	edgeP = m_edges + i;
 	if (!(edgeP->flags & EF_USED)) 
@@ -833,11 +833,11 @@ for (i = 0; i <= m_nLastEdge; i++)	{
 	distance = gameData.segs.points [edgeP->verts [1]].p3_vec [Z];
 	if (minDistance>distance)
 		minDistance = distance;
-	if (!cc.ccAnd) 	{	//all off screen?
+	if (!cc.ccAnd)  {	//all off screen?
 		nfacing = nnfacing = 0;
 		tv1 = gameData.segs.vertices + edgeP->verts [0];
 		j = 0;
-		while ((j < edgeP->nFaces) && !(nfacing && nnfacing))	{
+		while ((j < edgeP->nFaces) && !(nfacing && nnfacing)) {
 			if (!G3CheckNormalFacing (*tv1, SEGMENTS [edgeP->nSegment [j]].m_sides [edgeP->sides [j]].m_normals [0]))
 				nfacing++;
 			else
@@ -849,8 +849,8 @@ for (i = 0; i <= m_nLastEdge; i++)	{
 			// a corners line
 			m_brightEdges [nbright++] = edgeP;
 			}
-		else if (edgeP->flags & (EF_DEFINING|EF_GRATE))	{
-			if (nfacing == 0)	{
+		else if (edgeP->flags & (EF_DEFINING|EF_GRATE)) {
+			if (nfacing == 0) {
 				if (edgeP->flags & EF_NO_FADE)
 					CCanvas::Current ()->SetColorRGBi (edgeP->color);
 				else
@@ -1042,7 +1042,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	color = WHITE_RGBA;
 	if (segP->m_children [nSide] == -1)
 		color = m_colors.walls.nNormal;
-	switch (SEGMENTS [nSegment].m_nType)	{
+	switch (SEGMENTS [nSegment].m_nType) {
 		case SEGMENT_IS_FUELCEN:
 			color = GOLD_RGBA;
 			break;
@@ -1194,13 +1194,13 @@ for (i=0; i < MAX_EDGES; i++) {
 m_nEdges = 0;
 m_nLastEdge = -1;
 
-if (m_data.bCheat || (LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP))	{
+if (m_data.bCheat || (LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP)) {
 	// Cheating, add all edges as visited
 	for (s = 0; s <= gameData.segs.nLastSegment; s++)
 #ifdef EDITOR
 		if (SEGMENTS [s].nSegment != -1)
 #endif
-			{
+		 {
 			AddSegmentEdges (&SEGMENTS [s]);
 			}
 	} 
@@ -1223,14 +1223,14 @@ else {
 				}
 		}
 	// Find unnecessary lines (These are lines that don't have to be drawn because they have small curvature)
-	for (i = 0; i <= m_nLastEdge; i++)	{
+	for (i = 0; i <= m_nLastEdge; i++) {
 		e = m_edges + i;
 		if (!(e->flags & EF_USED))
 			continue;
 
 		for (e1 = 0; e1 < e->nFaces; e1++) {
 			for (e2 = 1; e2 < e->nFaces; e2++) {
-				if ((e1 != e2) && (e->nSegment [e1] != e->nSegment [e2]))	{
+				if ((e1 != e2) && (e->nSegment [e1] != e->nSegment [e2])) {
 					if (CFixVector::Dot (SEGMENTS [e->nSegment [e1]].m_sides [e->sides [e1]].m_normals [0], 
 												SEGMENTS [e->nSegment [e2]].m_sides [e->sides [e2]].m_normals [0]) > (F1_0- (F1_0/10))) {
 						e->flags &= (~EF_DEFINING);

@@ -34,7 +34,7 @@ void gr_ubox0(int left,int top,int right,int bot)
 	d = right - left;
 
 	for (i=top; i<=bot; i++ )
-	{
+ {
 		ptr2[0] = c;
 		ptr2[d] = c;
 		ptr2 += ROWSIZE;
@@ -44,7 +44,7 @@ void gr_ubox0(int left,int top,int right,int bot)
 	d = (bot - top)*ROWSIZE;
 
 	for (i=1; i<(right-left); i++ )
-	{
+ {
 		ptr2[i+0] = c;
 		ptr2[i+d] = c;
 	}

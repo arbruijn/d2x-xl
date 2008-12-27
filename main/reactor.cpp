@@ -439,7 +439,7 @@ FORALL_ACTOR_OBJS (objP, i) {
 #endif
 			}			
 		//else 
-			{
+		 {
 			//	Compute all gun positions.
 			if ((bNew = (!bRestore || (0 > (j = FindReactor (objP))))))
 				j = gameStates.gameplay.nReactorCount;

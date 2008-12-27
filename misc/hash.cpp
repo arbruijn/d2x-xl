@@ -97,7 +97,7 @@ int CHashTable::Search (const char *key)
 
 k = GetKey (key);
 i = 0;
-while (i < m_size)	{
+while (i < m_size) {
 	j = (k+ (i++)) & m_andMask;
 	if (m_key [j] == NULL)
 		return -1;

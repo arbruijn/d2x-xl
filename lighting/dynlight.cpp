@@ -1073,7 +1073,7 @@ if (gameOpts->render.nLightingMethod) {
 void ResetNearestVertexLights (int nVertex, int nThread)
 {
 //if (gameOpts->render.nLightingMethod)
-	{
+ {
 	short				*pnl = gameData.render.lights.dynamic.nearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
 	short				i, j;
 	CShaderLight	*psl;
@@ -1205,7 +1205,7 @@ if (gameOpts->render.nLightingMethod) {
 			continue;
 		if (SetActiveShaderLight (activeLightsP, psl, 1, nThread))
 #if DBG
-			{
+		 {
 			if ((nSegment == nDbgSeg) && (nDbgObj >= 0) && (psl->info.nObject == nDbgObj))
 				psl = psl;
 			if (nFace < 0)
@@ -1414,7 +1414,7 @@ else {
 				}
 			else
 #endif
-				{
+			 {
 				VmVecInc (reinterpret_cast<CFloatVector*> (&psc->color), reinterpret_cast<CFloatVector*> (&psl->color);
 				}
 			}

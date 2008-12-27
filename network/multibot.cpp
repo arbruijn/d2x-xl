@@ -826,7 +826,7 @@ if ((bossObjP->info.nType != OBJ_ROBOT) || !(ROBOTINFO (bossObjP->info.nId).boss
 	}
 switch (action)  {
 	case 1: // Teleport
-		{
+	 {
 		short nTeleportSeg;
 
 		CFixVector vBossDir;
@@ -1015,7 +1015,7 @@ if (nRemoteObj < 0)
 if ((gameData.multigame.robots.agitation [slot] < 70) || 
 	 (MULTI_ROBOT_PRIORITY (nRemoteObj, player_num) > 
 	  MULTI_ROBOT_PRIORITY (nRemoteObj, gameData.multiplayer.nLocalPlayer)) || 
-	  (d_rand () > 0x4400))	{
+	  (d_rand () > 0x4400)) {
 	if (gameData.multigame.robots.sendPending [slot])
 		MultiSendRobotPosition (gameData.multigame.robots.controlled [slot], -1);
 	MultiSendReleaseRobot (gameData.multigame.robots.controlled [slot]);

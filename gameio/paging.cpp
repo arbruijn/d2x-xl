@@ -129,12 +129,12 @@ if (gameData.weapons.info [nWeaponType].nFlashVClip > -1)
 	LoadVClipTextures (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].nFlashVClip], 0);
 if (gameData.weapons.info [nWeaponType].wall_hit_vclip > -1)
 	LoadVClipTextures (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].wall_hit_vclip], 0);
-if (WI_damage_radius (nWeaponType))	{
+if (WI_damage_radius (nWeaponType)) {
 	// Robot_hit_vclips are actually badass_vclips
 	if (gameData.weapons.info [nWeaponType].robot_hit_vclip > -1)
 		LoadVClipTextures (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].robot_hit_vclip], 0);
 	}
-switch (gameData.weapons.info [nWeaponType].renderType)	{
+switch (gameData.weapons.info [nWeaponType].renderType) {
 	case WEAPON_RENDER_VCLIP:
 		if (gameData.weapons.info [nWeaponType].nVClipIndex > -1)
 			LoadVClipTextures (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].nVClipIndex], 0);
@@ -313,7 +313,7 @@ for (nObject = m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextI
 
 void CWall::LoadTextures (void)
 {
-if (nClip > -1)	{
+if (nClip > -1) {
 	tWallClip* anim = gameData.walls.animP + nClip;
 	for (int j = 0; j < anim->nFrameCount; j++)
 		PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [anim->frames [j]].index, gameStates.app.bD1Data);
@@ -380,7 +380,7 @@ void LoadAllTextures (void)
 
 StopTime ();
 bBlackScreen = paletteManager.EffectDisabled ();
-if (paletteManager.EffectDisabled ())	{
+if (paletteManager.EffectDisabled ()) {
 	CCanvas::Current ()->Clear (BLACK_RGBA);
 	paletteManager.LoadEffect  ();
 	}
@@ -394,7 +394,7 @@ LoadGaugeTextures ();
 LoadVClipTextures (&gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE], 0);
 LoadVClipTextures (&gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE], 0);
 LoadAddonTextures ();
-if (bBlackScreen)	{
+if (bBlackScreen) {
 	paletteManager.ClearEffect ();
 	CCanvas::Current ()->Clear (BLACK_RGBA);
 	}

@@ -49,7 +49,7 @@ static inline void InitTMU0 (int bVertexArrays, int bLightmaps = 0)
 if (glIsList (g3InitTMU [0][bVertexArrays]))
 	glCallList (g3InitTMU [0][bVertexArrays]);
 else 
-	{
+ {
 	g3InitTMU [0][bVertexArrays] = glGenLists (1);
 	if (g3InitTMU [0][bVertexArrays])
 		glNewList (g3InitTMU [0][bVertexArrays], GL_COMPILE);
@@ -72,7 +72,7 @@ static inline void InitTMU1 (int bVertexArrays, int bLightmaps = 0)
 if (glIsList (g3InitTMU [1][bVertexArrays]))
 	glCallList (g3InitTMU [1][bVertexArrays]);
 else 
-	{
+ {
 	g3InitTMU [1][bVertexArrays] = glGenLists (1);
 	if (g3InitTMU [1][bVertexArrays])
 		glNewList (g3InitTMU [1][bVertexArrays], GL_COMPILE);
@@ -95,7 +95,7 @@ static inline void InitTMU2 (int bVertexArrays, int bLightmaps = 0)
 if (glIsList (g3InitTMU [2][bVertexArrays]))
 	glCallList (g3InitTMU [2][bVertexArrays]);
 else 
-	{
+ {
 	g3InitTMU [2][bVertexArrays] = glGenLists (1);
 	if (g3InitTMU [2][bVertexArrays])
 		glNewList (g3InitTMU [2][bVertexArrays], GL_COMPILE);
@@ -118,7 +118,7 @@ static inline void InitTMU3 (int bVertexArrays, int bLightmaps = 0)
 if (glIsList (g3InitTMU [3][bVertexArrays]))
 	glCallList (g3InitTMU [3][bVertexArrays]);
 else 
-	{
+ {
 	g3InitTMU [3][bVertexArrays] = glGenLists (1);
 	if (g3InitTMU [3][bVertexArrays])
 		glNewList (g3InitTMU [3][bVertexArrays], GL_COMPILE);
@@ -141,7 +141,7 @@ static inline void ExitTMU (int bVertexArrays)
 if (glIsList (g3ExitTMU [bVertexArrays]))
 	glCallList (g3ExitTMU [bVertexArrays]);
 else 
-	{
+ {
 	g3ExitTMU [bVertexArrays] = glGenLists (1);
 	if (g3ExitTMU [bVertexArrays])
 		glNewList (g3ExitTMU [bVertexArrays], GL_COMPILE);

@@ -283,9 +283,9 @@ extern PFNGLUNIFORM1FVARBPROC					glUniform1fv;
 #define OGL_TEXPARAM(p,m) OGL_SETSTATE(p,m,glTexParameteri(GL_TEXTURE_2D,p,m));
 
 #define	OGL_VIEWPORT(_x,_y,_w,_h) \
-			{if (((int) (_x) != gameStates.ogl.nLastX) || ((int) (_y) != gameStates.ogl.nLastY) || \
+		 {if (((int) (_x) != gameStates.ogl.nLastX) || ((int) (_y) != gameStates.ogl.nLastY) || \
 				  ((int) (_w) != gameStates.ogl.nLastW) || ((int) (_h) != gameStates.ogl.nLastH)) \
-				{glViewport ((GLint) (_x), (GLint) (grdCurScreen->scCanvas.cvBitmap.props.h - (_y) - (_h)), (GLsizei) (_w), (GLsizei) (_h));\
+			 {glViewport ((GLint) (_x), (GLint) (grdCurScreen->scCanvas.cvBitmap.props.h - (_y) - (_h)), (GLsizei) (_w), (GLsizei) (_h));\
 				gameStates.ogl.nLastX = (_x); \
 				gameStates.ogl.nLastY = (_y); \
 				gameStates.ogl.nLastW = (_w); \
@@ -466,7 +466,7 @@ void OglDisableLighting (void);
 extern GLint	boundHandles [8];
 extern int		nTMU;
 
-#define OglActiveTexture(_i)	{nTMU = (_i) - GL_TEXTURE0_ARB; glActiveTexture (_i);}
+#define OglActiveTexture(_i) {nTMU = (_i) - GL_TEXTURE0_ARB; glActiveTexture (_i);}
 
 extern int nTexBinds, nTexBindCalls;
 

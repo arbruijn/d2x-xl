@@ -134,9 +134,9 @@ class CParticleEmitter : public tParticleEmitter {
 		inline int SetDensity (int nMaxParts, int nDensity);
 		inline void SetScale (float fScale);
 		inline bool IsAlive (int nCurTime)
-			{ return (m_nLife < 0) || (m_nBirth + m_nLife > nCurTime); }
+		 { return (m_nLife < 0) || (m_nBirth + m_nLife > nCurTime); }
 		inline bool IsDead (int nCurTime)
-			{ return !(IsAlive (nCurTime) || m_nParts); }
+		 { return !(IsAlive (nCurTime) || m_nParts); }
 
 	private:
 		char ObjectClass (int nObject);
@@ -187,7 +187,7 @@ class CParticleSystem : public tParticleSystem {
 
 		inline bool HasEmitters (void) { return m_emitters.Buffer () != NULL; }
 		inline CParticleEmitter* GetEmitter (int i)
-			{ return m_emitters + i; }
+		 { return m_emitters + i; }
 		inline int GetType (void) { return m_nType; }
 		inline int Id (void) { return m_nId; }
 };
@@ -243,7 +243,7 @@ class CParticleManager {
 		inline short GetObjectSystem (short nObject) { return m_objectSystems [nObject]; }
 
 		inline CParticleEmitter* GetEmitter (int i, int j)
-			{ return GetSystem (i).GetEmitter (j); }
+		 { return GetSystem (i).GetEmitter (j); }
 
 		inline void SetPos (int i, CFixVector *vPos, CFixMatrix *mOrient, short nSegment) { 
 			GetSystem (i).SetPos (vPos, mOrient, nSegment); 
@@ -300,7 +300,7 @@ class CParticleManager {
 			}
 
 		inline int RemoveEmitter (int i, int j)
-			{ return GetSystem (i).RemoveEmitter (j); }
+		 { return GetSystem (i).RemoveEmitter (j); }
 
 	private:
 		void RebuildSystemList (void);

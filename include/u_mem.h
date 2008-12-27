@@ -35,7 +35,7 @@ void MemInit ();
 #define D2_ALLOC(size)			MemAlloc ((size), "Unknown", __FILE__, __LINE__, 0)
 #define D2_CALLOC(n,size)		MemAlloc ((n*size), "Unknown", __FILE__, __LINE__, 1)
 #define D2_REALLOC(ptr,size)	MemRealloc ((ptr), (size), "Unknown", __FILE__, __LINE__)
-#define D2_FREE(ptr)				{MemFree (reinterpret_cast<void *> (ptr)); ptr = NULL;} 
+#define D2_FREE(ptr)			 {MemFree (reinterpret_cast<void *> (ptr)); ptr = NULL;} 
 
 #define MALLOC(_var, _type, _count)   ((_var) = reinterpret_cast<_type *> (MemAlloc ((_count) * sizeof (_type), #_var, __FILE__, __LINE__, 0)))
 
@@ -52,7 +52,7 @@ char *MemStrDup (const char * str);
 #define D2_ALLOC(_size)			MemAlloc (_size)
 #define D2_CALLOC(n, _size)	MemAlloc (n * _size)
 #define D2_REALLOC(_p,_size)	MemRealloc (_p,_size)
-#define D2_FREE(_p)				{MemFree ((void *) (_p)); (_p) = NULL;}
+#define D2_FREE(_p)			 {MemFree ((void *) (_p)); (_p) = NULL;}
 #define StrDup(_s)			MemStrDup (_s)
 
 #define MALLOC(_v,_t,_c)		(_v) = new _t [_c]

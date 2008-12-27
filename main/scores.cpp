@@ -79,7 +79,7 @@ char *GetScoresFilename ()
 	// Only use the MINER variable for internal developement
 	char *p;
 	p=getenv ("MINER");
-	if (p)	{
+	if (p) {
 		sprintf (scores_filename, "%s\\game\\%s", p, SCORES_FILENAME);
 		Assert (strlen (scores_filename) < 128);
 		return scores_filename;
@@ -123,7 +123,7 @@ void scores_read ()
 	
 	fsize = cf.Length ();
 
-	if (fsize != sizeof (all_scores))	{
+	if (fsize != sizeof (all_scores)) {
 		cf.Close ();
 		return;
 	}
@@ -131,7 +131,7 @@ void scores_read ()
 	cf.Read (&Scores, sizeof (all_scores), 1);
 	cf.Close ();
 
-	if ((Scores.version!=VERSION_NUMBER)|| (Scores.nSignature [0]!='D')|| (Scores.nSignature [1]!='H')|| (Scores.nSignature [2]!='S'))	{
+	if ((Scores.version!=VERSION_NUMBER)|| (Scores.nSignature [0]!='D')|| (Scores.nSignature [1]!='H')|| (Scores.nSignature [2]!='S')) {
 		memset (&Scores, 0, sizeof (all_scores));
 		return;
 	}
@@ -174,7 +174,7 @@ void int_to_string (int number, char *dest)
 
 	c = 0;
 	p=dest;
-	for (i=l-1; i>=0; i--)	{
+	for (i=l-1; i>=0; i--) {
 		if (c==3) {
 			*p++=',';
 			c = 0;
@@ -228,8 +228,8 @@ void MaybeAddPlayerScore (int abortFlag)
 	scores_read ();
 
 	position = MAX_HIGH_SCORES;
-	for (i=0; i<MAX_HIGH_SCORES; i++)	{
-		if (LOCALPLAYER.score > Scores.stats[i].score)	{
+	for (i=0; i<MAX_HIGH_SCORES; i++) {
+		if (LOCALPLAYER.score > Scores.stats[i].score) {
 			position = i;
 			break;
 		}
@@ -240,13 +240,13 @@ void MaybeAddPlayerScore (int abortFlag)
 			return;
 		scores_fill_struct (&Last_game);
 	} else {
-//--		if (gameStates.app.nDifficultyLevel < 1)	{
+//--		if (gameStates.app.nDifficultyLevel < 1) {
 //--			ExecMessageBox ("GRADUATION TIME!", 1, "Ok", "If you would had been\nplaying at a higher difficulty\nlevel, you would have placed\n#%d on the high score list.", position+1);
 //--			return;
 //--		}
 
 		memset (m, 0, sizeof (m));
-		if (position==0)	{
+		if (position==0) {
 			strcpy (text1,  "");
 			m [0].nType = NM_TYPE_TEXT; 
 			m [0].text = const_cast<char*> (TXT_COOL_SAYING);
@@ -262,7 +262,7 @@ void MaybeAddPlayerScore (int abortFlag)
 		}
 
 		// move everyone down...
-		for (i=MAX_HIGH_SCORES-1; i>position; i--)	{
+		for (i=MAX_HIGH_SCORES-1; i>position; i--) {
 			Scores.stats[i] = Scores.stats[i-1];
 		}
 
@@ -307,7 +307,7 @@ void scores_draw_item (int  i, stats_info * stats)
 
 		y = 7+70+i*9;
 		if (i==0) y -= 8;
-		if (i==MAX_HIGH_SCORES) 	{
+		if (i==MAX_HIGH_SCORES)  {
 			y += 8;
 			//scores_rprintf (17+33+XX, y+YY, "");
 			} 
@@ -334,7 +334,7 @@ void scores_draw_item (int  i, stats_info * stats)
 		else if ((stats->startingLevel > 0) && (stats->endingLevel < 0))
 			scores_rprintf (192+33+XX, y+YY, "%d-S%d", stats->startingLevel, -stats->endingLevel);
 
-		{
+	 {
 			int h, m, s;
 			h = stats->seconds/3600;
 			s = stats->seconds%3600;
@@ -372,7 +372,7 @@ ReshowScores:
 	done = 0;
 	looper = 0;
 
-	while (!done)	{
+	while (!done) {
 		if (!bRedraw || gameOpts->menus.nStyle) {
 			backgroundManager.Draw ();
 			fontManager.SetCurrent (MEDIUM3_FONT);
@@ -392,7 +392,7 @@ ReshowScores:
 			fontManager.SetColorRGBi (RGBA_PAL (28,28,28), 1, 0, 0);
 			//GrPrintF (NULL, 0x8000, yOffs + LHY (31), "%c%s%c  - %s", 34, Scores.cool_saying, 34, Scores.stats[0].name);
 			for (i = 0; i < MAX_HIGH_SCORES; i++) {
-				//@@if (i==0)	{
+				//@@if (i==0) {
 				//@@	fontManager.SetColorRGBi (RGBA_PAL (28,28,28), 1, 0, 0);
 				//@@} else {
 				//@@	fontManager.SetColor (paletteManager.FadeTable ()[BM_XRGB (28,28,28)+ ((28-i*2)*256)], 1, 0, 0);
@@ -408,11 +408,11 @@ ReshowScores:
 				GrUpdate (0);
 			bRedraw = 1;
 			}
-		if (nCurItem > -1)	{
+		if (nCurItem > -1) {
 
 			t1	= TimerGetFixedSeconds ();
 			//if (t1 - t0 >= F1_0/128) 
-			{
+		 {
 				t0 = t1;
 				//@@fontManager.SetColor (paletteManager.FadeTable ()[fades[looper]*256+BM_XRGB (28,28,28)], -1);
 				c = 7 + fades [looper];
@@ -436,11 +436,11 @@ ReshowScores:
 		SongsCheckRedbookRepeat ();
 
 		k = KeyInKey ();
-		switch (k)	{
+		switch (k) {
 		case KEY_CTRLED+KEY_R:	
-			if (nCurItem < 0)		{
+			if (nCurItem < 0)	 {
 				// Reset scores...
-				if (ExecMessageBox (NULL, NULL, 2,  TXT_NO, TXT_YES, TXT_RESET_HIGH_SCORES)==1)	{
+				if (ExecMessageBox (NULL, NULL, 2,  TXT_NO, TXT_YES, TXT_RESET_HIGH_SCORES)==1) {
 					CFile::Delete (GetScoresFilename (), gameFolders.szDataDir);
 					paletteManager.DisableEffect ();
 					goto ReshowScores;

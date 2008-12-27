@@ -779,7 +779,7 @@ if (gameStates.ogl.bDepthBlending) {
 				glUniform3fv (glGetUniformLocation (h, "depthScale"), 1, reinterpret_cast<GLfloat*> (&gameData.render.ogl.depthScale));
 			else 
 #endif
-				{
+			 {
 #if 1
 				//glUniform1f (glGetUniformLocation (h, "depthScale"), (GLfloat) (gameData.render.ogl.depthScale [Z]));
 #else

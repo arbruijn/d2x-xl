@@ -128,13 +128,13 @@ for (;;) {
 		Error ("HOGFILE is limited to %d files.\n",  MAX_HOGFILES);
 		}
 	i = (int) fread (hogFiles [*nFiles].name, 13, 1, fp);
-	if (i != 1)	{		//eof here is ok
+	if (i != 1) {		//eof here is ok
 		fclose (fp);
 		return 1;
 		}
 	hogFiles [*nFiles].name [12] = '\0';
 	i = (int) fread (&len, 4, 1, fp);
-	if (i != 1)	{
+	if (i != 1) {
 		fclose (fp);
 		return 0;
 		}

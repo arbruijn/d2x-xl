@@ -57,7 +57,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define STANDARD_EXPL_DELAY (f1_0/4)
 
-//##void CollideFireballAndWall (CObject* fireball, fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector& vHitPt)	{
+//##void CollideFireballAndWall (CObject* fireball, fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector& vHitPt) {
 //##	return;
 //##}
 
@@ -92,7 +92,7 @@ else if (botInfoP->thief) {		//	Thief allowed to go through doors to which CPlay
 	}
 }
 
-//##void CollideHostageAndWall (CObject* hostage, fix xHitSpeed, short nHitSeg, short nHitSide,   CFixVector& vHitPt)	{
+//##void CollideHostageAndWall (CObject* hostage, fix xHitSpeed, short nHitSeg, short nHitSide,   CFixVector& vHitPt) {
 //##	return;
 //##}
 
@@ -767,7 +767,7 @@ else {
 			 ((!sideP->IsWall () || wallType == WHP_NOT_SPECIAL) && !bBlewUp))
 			if ((wInfoP->wall_hitSound > -1) && !(info.nFlags & OF_SILENT))
 				CreateSound (wInfoP->wall_hitSound);
-		if (wInfoP->wall_hit_vclip > -1)	{
+		if (wInfoP->wall_hit_vclip > -1) {
 			if (wInfoP->damage_radius)
 				ExplodeBadassWeapon (vHitPt);
 			else
@@ -827,11 +827,11 @@ return 1;
 }
 
 //	-----------------------------------------------------------------------------
-//##void CollideCameraAndWall (CObject* camera, fix xHitSpeed, short nHitSeg, short nHitWall,   CFixVector& vHitPt)	{
+//##void CollideCameraAndWall (CObject* camera, fix xHitSpeed, short nHitSeg, short nHitWall,   CFixVector& vHitPt) {
 //##	return;
 //##}
 
-//##void CollidePowerupAndWall (CObject* powerup, fix xHitSpeed, short nHitSeg, short nHitWall,   CFixVector& vHitPt)	{
+//##void CollidePowerupAndWall (CObject* powerup, fix xHitSpeed, short nHitSeg, short nHitWall,   CFixVector& vHitPt) {
 //##	return;
 //##}
 
@@ -1710,7 +1710,7 @@ if (info.nId == gameData.multiplayer.nLocalPlayer) {		//is this the local CPlaye
 	playerP->shields -= damage;
 	MultiSendShields ();
 	paletteManager.BumpEffect (X2I (damage)*4, -X2I (damage/2), -X2I (damage/2));	//flash red
-	if (playerP->shields < 0)	{
+	if (playerP->shields < 0) {
   		playerP->nKillerObj = OBJ_IDX (killerObjP);
 		Die ();
 		if (gameData.escort.nObjNum != -1)
@@ -1787,7 +1787,7 @@ int CObject::CollidePlayerAndNastyRobot (CObject* robotP, CFixVector& vHitPt)
 {
 //	if (!(ROBOTINFO (objP->info.nId).energyDrain && gameData.multiplayer.players [info.nId].energy))
 /*Object*/CreateExplosion (info.nSegment, vHitPt, I2X (10) / 2, VCLIP_PLAYER_HIT);
-if (BumpTwoObjects (this, robotP, 0, vHitPt))	{//no damage from bump
+if (BumpTwoObjects (this, robotP, 0, vHitPt)) {//no damage from bump
 	DigiLinkSoundToPos (ROBOTINFO (robotP->info.nId).clawSound, info.nSegment, 0, vHitPt);
 	ApplyDamageToPlayer (robotP, F1_0* (gameStates.app.nDifficultyLevel+1));
 	}
@@ -2013,7 +2013,7 @@ if (WeaponIsMine (info.nId)) {
 	if (cType.laserInfo.xCreationTime + F1_0/2 > gameData.time.xGame)
 		return 1;
 	}
-if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && !(debrisP->info.nFlags & OF_EXPLODING))	{
+if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && !(debrisP->info.nFlags & OF_EXPLODING)) {
 	DigiLinkSoundToPos (SOUND_ROBOT_HIT, info.nSegment, 0, vHitPt);
 	debrisP->Explode (0);
 	if (WI_damage_radius (info.nId))
@@ -2079,7 +2079,7 @@ int CollideTwoObjects (CObject* A, CObject* B, CFixVector& vHitPt)
 {
 	int collisionType = COLLISION_OF (A->info.nType, B->info.nType);
 
-switch (collisionType)	{
+switch (collisionType) {
 	NO_SAME_COLLISION (OBJ_FIREBALL, OBJ_FIREBALL,  CollideFireballAndFireball)
 	DO_SAME_COLLISION (OBJ_ROBOT, 	OBJ_ROBOT, 		CollideRobotAndRobot)
 	NO_SAME_COLLISION (OBJ_HOSTAGE, 	OBJ_HOSTAGE, 	CollideHostageAndHostage)
@@ -2234,7 +2234,7 @@ DISABLE_COLLISION  (OBJ_ROBOT, OBJ_EFFECT);
 
 int CObject::CollideObjectAndWall (fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector& vHitPt)
 {
-switch (info.nType)	{
+switch (info.nType) {
 	case OBJ_NONE:
 		Error ("An object of type NONE hit a wall! \n");
 		break;

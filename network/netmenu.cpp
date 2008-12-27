@@ -1576,7 +1576,7 @@ int NetworkSelectTeams (void)
 	// One-time initialization
 
 	for (i = gameData.multiplayer.nPlayers/2; i < gameData.multiplayer.nPlayers; i++) // Put first half of players on team A
-	{
+ {
 		teamVector |= (1 << i);
 	}
 
@@ -1594,9 +1594,9 @@ doMenu:
 
 	opt = 1;
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	{
+ {
 		if (!(teamVector & (1 << i)))
-		{
+	 {
 			m [opt].nType = NM_TYPE_MENU; 
 			m [opt].text = netPlayers.players [i].callsign; 
 			pnums [opt] = i; 
@@ -1609,9 +1609,9 @@ doMenu:
 	m [opt].nTextLen = CALLSIGN_LEN; 
 	opt++;
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	{
+ {
 		if (teamVector & (1 << i))
-		{
+	 {
 			m [opt].nType = NM_TYPE_MENU; 
 			m [opt].text = netPlayers.players [i].callsign; 
 			pnums [opt] = i; 
@@ -1631,9 +1631,9 @@ doMenu:
 	choice = ExecMenu (NULL, TXT_TEAM_SELECTION, opt, m, NULL, NULL);
 
 	if (choice == opt-1)
-	{
+ {
 		if ((opt-2-opt_team_b < 2) || (opt_team_b == 1)) 
-		{
+	 {
 			ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_TEAM_MUST_ONE);
 		}
 	
@@ -1870,7 +1870,7 @@ return pszDest;
 //------------------------------------------------------------------------------
 
 const char *szModeLetters []  = 
-	{"ANRCHY", 
+ {"ANRCHY", 
 	 "TEAM", 
 	 "ROBO", 
 	 "COOP", 
@@ -2006,7 +2006,7 @@ else
 		menus [h].value = SDL_GetTicks ();
 for (i = 3 + networkData.nActiveGames; i < MAX_ACTIVE_NETGAMES; i++, h++)
 	if (menus [h].value && (t - menus [h].value > 10000)) 
-		{
+	 {
 		InitNetgameMenuOption (menus, h);
 		bPlaySound = 1;
 		}
@@ -2409,7 +2409,7 @@ char szHighlight [] = {1, (char) 255, (char) 192, (char) 128, 0};
 #define FLAGTEXT(_b)	((_b) ? TXT_ON : TXT_OFF)
 
 #define	INITFLAGS(_t) \
-			{sprintf (mTexts [opt], _t); strcat (mTexts [opt], szHighlight); j = 0;}
+		 {sprintf (mTexts [opt], _t); strcat (mTexts [opt], szHighlight); j = 0;}
 
 #define	ADDFLAG(_f,_t) \
 	if (_f) {if (j) strcat (mTexts [opt], ", "); strcat (mTexts [opt], _t); if (++j == 5) {opt++; INITFLAGS ("   ")}; }
@@ -2446,7 +2446,7 @@ if (!*AXI.szGameName) {
 	}
 else 
 #endif
-	{
+ {
 	if (AXI.bShadows || AXI.bUseParticles || AXI.bBrightObjects || (!AXI.bCompetition && AXI.bUseLightnings)) {
 		INITFLAGS ("Graphics Fx: "); 
 		ADDFLAG (AXI.bShadows, "Shadows");
