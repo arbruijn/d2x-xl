@@ -270,9 +270,9 @@ int QueryTrackers (void)
 if (!RequestServerListFromTracker ())
 	return 0;
 memset (m, 0, sizeof (m));
-ADD_GAUGE (0, "                    ", 0, 1000); 
-ADD_TEXT (1, "", 0);
-ADD_TEXT (2, "(Press Escape to cancel)", 0);
+m.AddGauge (0, "                    ", 0, 1000); 
+m.AddText (1, "", 0);
+m.AddText (2, "(Press Escape to cancel)", 0);
 m [2].centered = 1;
 nQueryTimeout = SDL_GetTicks ();
 do {

@@ -244,7 +244,7 @@ extern void ui_draw_line_in( short x1, short y1, short x2, short y2 );
 
 void ui_init();
 void ui_close();
-int MessageBox( short x, short y, int NumButtons, char * text, ... );
+int MsgBox( short x, short y, int NumButtons, char * text, ... );
 void ui_string_centered( short x, short y, char * s );
 int PopupMenu( int NumItems, char * text[] );
 

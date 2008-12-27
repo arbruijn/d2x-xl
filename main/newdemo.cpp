@@ -143,14 +143,14 @@ int NDErrorMsg (const char *pszMsg1, const char *pszMsg2, const char *pszMsg3)
 	int			opt = 0;
 
 memset (m, 0, sizeof (m));
-ADD_TEXT (opt, pszMsg1, 0);
+m.AddText (opt, pszMsg1, 0);
 opt++;
 if (pszMsg2 && *pszMsg2) {
-	ADD_TEXT (opt, pszMsg2, 0);
+	m.AddText (opt, pszMsg2, 0);
 	opt++;
 	}
 if (pszMsg3 && *pszMsg3) {
-	ADD_TEXT (opt, pszMsg3, 0);
+	m.AddText (opt, pszMsg3, 0);
 	opt++;
 	}
 ExecMenu (NULL, NULL, opt, m, NULL, NULL);

@@ -58,6 +58,11 @@ template < class _T > class CArray : public CQuickSort < _T > {
 
 		CArray () { Init (); }
 		
+		CArray (uint nLength) { 
+			Init (); 
+			Create (nLength);
+			}
+		
 		~CArray() { Destroy (); }
 		
 		inline void Init (void) { 

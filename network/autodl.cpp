@@ -582,10 +582,10 @@ gameStates.multi.bTryAutoDL = 0;
 if (!(/*gameStates.app.bHaveExtraGameInfo [1] &&*/ extraGameInfo [0].bAutoDownload))
 	return 0;
 memset (m, 0, sizeof (m));
-ADD_TEXT (0, "", 0);
-ADD_GAUGE (PROGRESS_ITEM, "                    ", 0, 100);
+m.AddText (0, "", 0);
+m.AddGauge (PROGRESS_ITEM, "                    ", 0, 100);
 sprintf (szProgress, "0%c done", '%');
-ADD_TEXT (PERCENT_ITEM, szProgress, 0);
+m.AddText (PERCENT_ITEM, szProgress, 0);
 m [PERCENT_ITEM].x = (short) 0x8000;
 m [PERCENT_ITEM].centered = 1;
 if (!RequestUpload (PID_DL_START, 0))

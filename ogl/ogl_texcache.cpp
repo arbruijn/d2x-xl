@@ -158,7 +158,7 @@ int OglCacheTextures (void)
 	int i;
 
 memset (m, 0, sizeof (m));
-ADD_GAUGE (0, "                    ", 0, gameData.segs.nSegments + gameData.objs.nLastObject [0] + 4); 
+m.AddGauge (0, "                    ", 0, gameData.segs.nSegments + gameData.objs.nLastObject [0] + 4); 
 m [2].centered = 1;
 nCacheSeg = 0;
 nCacheObj = -3;

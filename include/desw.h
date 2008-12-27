@@ -135,7 +135,7 @@ extern void HideCursorW();
 #define CanvasHeight(C) (((C).bmiHeader.biHeight > 0) ? \
                          (C).bmiHeader.biHeight : -(C).bmiHeader.biHeight)
 
-#define DebugMessageBox(c) (MessageBox(NULL,c,"Message",MB_OK))
+#define DebugMessageBox(c) (MsgBox(NULL,c,"Message",MB_OK))
 
 #define DEFINE_SCREEN(fn) (_SCRContext.bkg_filename = fn)
 

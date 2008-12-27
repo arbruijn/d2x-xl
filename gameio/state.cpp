@@ -371,7 +371,7 @@ memset (m, 0, sizeof (m));
 for (i = 0; i < NUM_SAVES; i++) {
 	sprintf (filename [i], bMulti ? "%s.mg%x" : "%s.sg%x", LOCALPLAYER.callsign, i);
 	saveGameInfo [i].Load (filename [i], -1);
-	ADD_INPUT_MENU (i, saveGameInfo [i].Label (), DESC_LENGTH - 1, -1, NULL);
+	m.AddInputBox (i, saveGameInfo [i].Label (), DESC_LENGTH - 1, -1, NULL);
 	}
 
 m_nLastSlot = -1;
@@ -411,7 +411,7 @@ if (gameStates.app.bGameRunning) {
 for (i = 0; i < NUM_SAVES + 1; i++) {
 	sprintf (filename [i], bMulti ? "%s.mg%x" : "%s.sg%x", LOCALPLAYER.callsign, i);
 	if (saveGameInfo [i].Load (filename [i], i)) {
-		ADD_MENU (i + NM_IMG_SPACE, saveGameInfo [i].Label (), (i < NUM_SAVES) ? -1 : 0, NULL);
+		m.AddMenu (i + NM_IMG_SPACE, saveGameInfo [i].Label (), (i < NUM_SAVES) ? -1 : 0, NULL);
 		nSaves++;
 		}
 	else {

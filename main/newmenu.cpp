@@ -442,7 +442,7 @@ if (m_szHelp && *m_szHelp) {
 	//gameOpts->menus.bFastMenus = 0;
 	gameData.menu.helpColor = RGBA_PAL (47, 47, 47);
 	gameData.menu.colorOverride = gameData.menu.helpColor;
-	MessageBox ("D2X - XL online help", NULL, - 3, m_szHelp, " ", TXT_CLOSE);
+	MsgBox ("D2X - XL online help", NULL, - 3, m_szHelp, " ", TXT_CLOSE);
 	gameData.menu.colorOverride = 0;
 	gameOpts->menus.bFastMenus = bFastMenus;
 	gameStates.menus.nInMenu = nInMenu;
@@ -665,7 +665,7 @@ return nStringHeight;
 // ------------------------------------------------------------------------------ 
 // ------------------------------------------------------------------------------ 
 // Draw a left justfied string with black background.
-void CMenuManager::DrawRightStringWXY (int w1, int x, int y, const char* s)
+void CMenu::DrawRightStringWXY (int w1, int x, int y, const char* s)
 {
 	int	w, h, aw;
 
@@ -683,7 +683,7 @@ GrString (x - w, y, s, NULL);
 char* nmAllowedChars = NULL;
 
 //returns true if char is bAllowed
-int CMenuManager::CharAllowed (char c)
+int CMenu::CharAllowed (char c)
 {
 	char* p = nmAllowedChars;
 
@@ -701,14 +701,14 @@ return 0;
 
 // ------------------------------------------------------------------------------ 
 
-int CMenuManager::TinyMenu (const char* pszTitle, const char* pszSubTitle, pMenuCallback callback)
+int CMenu::TinyMenu (const char* pszTitle, const char* pszSubTitle, pMenuCallback callback)
 {
 return Menu (pszTitle, pszSubTitle, callback, NULL, NULL, - 1, - 1, 1);
 }
 
 // ------------------------------------------------------------------------------ 
 
-int CMenuManager::FixedFontMenu (const char* pszTitle, const char* pszSubTitle, 
+int CMenu::FixedFontMenu (const char* pszTitle, const char* pszSubTitle, 
 											pMenuCallback callback, int* nCurItemP, char* filename, int width, int height)
 {
 SetScreenMode (SCREEN_MENU);
@@ -760,7 +760,7 @@ ubyte bHackDblClickMenuMode = 0;
 #define CLOSE_Y (gameStates.menus.bHires?15:7)
 #define CLOSE_SIZE (gameStates.menus.bHires?10:5)
 
-void CMenuManager::DrawCloseBox (int x, int y)
+void CMenu::DrawCloseBox (int x, int y)
 {
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 GrRect (x + CLOSE_X, y + CLOSE_Y, x + CLOSE_X + CLOSE_SIZE, y + CLOSE_Y + CLOSE_SIZE);
@@ -770,7 +770,7 @@ GrRect (x + CLOSE_X + LHX (1), y + CLOSE_Y + LHX (1), x + CLOSE_X + CLOSE_SIZE -
 
 // ------------------------------------------------------------------------------ 
 
-int CMenuManager::DrawTitle (const char* pszTitle, CFont* font, uint color, int ty)
+int CMenu::DrawTitle (const char* pszTitle, CFont* font, uint color, int ty)
 {
 if (pszTitle && *pszTitle) {
 		int w, h, aw;
@@ -786,7 +786,7 @@ return ty;
 
 // ------------------------------------------------------------------------------ 
 
-void CMenuManager::GetTitleSize (const char* pszTitle, CFont* font, int& tw, int& th)
+void CMenu::GetTitleSize (const char* pszTitle, CFont* font, int& tw, int& th)
 {
 if (pszTitle && *pszTitle) {
 		int nStringWidth, nStringHeight, nAverageWidth;
@@ -801,7 +801,7 @@ if (pszTitle && *pszTitle) {
 
 // ------------------------------------------------------------------------------ 
 
-int CMenuManager::GetSize (int& w, int& h, int& aw, int& nMenus, int& nOthers)
+int CMenu::GetSize (int& w, int& h, int& aw, int& nMenus, int& nOthers)
 {
 	int	nStringWidth = 0, nStringHeight = 0, nAverageWidth = 0;
 
@@ -822,7 +822,7 @@ return nStringHeight;
 
 // ------------------------------------------------------------------------------ 
 
-void CMenuManager::SetItemPos (int twidth, int xOffs, int yOffs, int m_rightOffset)
+void CMenu::SetItemPos (int twidth, int xOffs, int yOffs, int m_rightOffset)
 {
 for (uint i = 0; i < int (ToS ()); i++) {
 	if (gameOpts->menus.nStyle && ((Item (i).m_x == (short) 0x8000) || Item (i).m_bCentered)) {
@@ -853,7 +853,7 @@ for (uint i = 0; i < int (ToS ()); i++) {
 
 // ------------------------------------------------------------------------------ 
 
-int CMenuManager::InitProps (const char* pszTitle, const char* pszSubTitle)
+int CMenu::InitProps (const char* pszTitle, const char* pszSubTitle)
 {
 if ((m_props.scWidth == screen.Width ()) && (m_props.scHeight == screen.Height ()))
 	return 0;
@@ -938,7 +938,7 @@ return 1;
 
 // ------------------------------------------------------------------------------ 
 
-void CMenuManager::SaveScreen (CCanvas **gameCanvasP)
+void CMenu::SaveScreen (CCanvas **gameCanvasP)
 {
 *gameCanvasP = CCanvas::Current ();
 CCanvas::Push ();
@@ -947,7 +947,7 @@ CCanvas::SetCurrent (NULL);
 
 // ------------------------------------------------------------------------------ 
 
-void CMenuManager::RestoreScreen (char* filename, int bDontRestore)
+void CMenu::RestoreScreen (char* filename, int bDontRestore)
 {
 //CCanvas::SetCurrent (bg->menu_canvas);
 backgroundManager.Remove ();
@@ -961,7 +961,7 @@ GrabMouse (1, 0);
 
 // ------------------------------------------------------------------------------ 
 
-void CMenuManager::FreeTextBms (void)
+void CMenu::FreeTextBms (void)
 {
 for (int i = 0; i < int (ToS ()); i++)
 	Item (i).Destroy ();
@@ -971,7 +971,7 @@ for (int i = 0; i < int (ToS ()); i++)
 
 #define REDRAW_ALL	for (i = 0; i < int (ToS ()); i++) Item (i).m_bRedraw = 1; bRedrawAll = 1
 
-int CMenuManager::Menu (const char* pszTitle, const char* pszSubTitle, 
+int CMenu::Menu (const char* pszTitle, const char* pszSubTitle, 
 								pMenuCallback callback, int* nCurItemP, char* filename, int width, int height, int bTinyMode)
 {
 	int			bKeyRepeat, done, nItem = nCurItemP ? *nCurItemP : 0;
@@ -1888,13 +1888,13 @@ return choice;
 
 // ------------------------------------------------------------------------------ 
 
-int _CDECL_ MessageBox (const char* pszTitle, pMenuCallback callback, char* filename, int nChoices, ...)
+int _CDECL_ MsgBox (const char* pszTitle, pMenuCallback callback, char* filename, int nChoices, ...)
 {
 	int				i;
 	char*				format, * s;
 	va_list			args;
 	char				szSubTitle [MESSAGEBOX_TEXT_SIZE];
-	CMenuManager	mm;
+	CMenu	mm;
 
 if (!mm.Create (5))
 	return - 1;
@@ -1904,7 +1904,7 @@ for (i = 0; i < nChoices; i++) {
 	s = va_arg (args, char *);
 	mm.AddMenu (s, - 1);
 	}
-format = va_arg (args, char* );
+format = va_arg (args, char*);
 vsprintf (szSubTitle, format, args);
 va_end (args);
 Assert (strlen (szSubTitle) < MESSAGEBOX_TEXT_SIZE);
@@ -1913,13 +1913,13 @@ return mm.Menu (pszTitle, szSubTitle, callback, NULL, filename);
 
 // ------------------------------------------------------------------------------ 
 
-int _CDECL_ MessageBox (const char* pszTitle, char* filename, int nChoices, ...)
+int _CDECL_ MsgBox (const char* pszTitle, char* filename, int nChoices, ...)
 {
 	int				h, i, l, bTiny, nInMenu;
 	char				*format, *s;
 	va_list			args;
 	char				nm_text [MESSAGEBOX_TEXT_SIZE];
-	CMenuManager	mm;
+	CMenu	mm;
 
 
 if (!(nChoices && mm.Create (10)))
@@ -2061,14 +2061,14 @@ if ((nFileCount < 1) && bDemosDeleted) {
 	goto exitFileMenu;
 	}
 if ((nFileCount < 1) && bDemoMode) {
-	MessageBox (NULL, NULL, 1, TXT_OK, "%s %s\n%s", TXT_NO_DEMO_FILES, TXT_USE_F5, TXT_TO_CREATE_ONE);
+	MsgBox (NULL, NULL, 1, TXT_OK, "%s %s\n%s", TXT_NO_DEMO_FILES, TXT_USE_F5, TXT_TO_CREATE_ONE);
 	exitValue = 0;
 	goto exitFileMenu;
 	}
 
 if (nFileCount < 1) {
 #ifndef APPLE_DEMO
-	MessageBox (NULL, NULL, 1, "Ok", "%s\n '%s' %s", TXT_NO_FILES_MATCHING, filespec, TXT_WERE_FOUND);
+	MsgBox (NULL, NULL, 1, "Ok", "%s\n '%s' %s", TXT_NO_FILES_MATCHING, filespec, TXT_WERE_FOUND);
 #endif
 	exitValue = 0;
 	goto exitFileMenu;
@@ -2145,7 +2145,7 @@ else {
 
 nMouseState = nOldMouseState = 0;
 mouse2State = omouse2State = 0;
-CMenuManager::DrawCloseBox (w_x, w_y);
+CMenu::DrawCloseBox (w_x, w_y);
 SDL_ShowCursor (1);
 
 SDL_EnableKeyRepeat(60, 30);
@@ -2197,9 +2197,9 @@ while (!done) {
 					pszFile++;
 				SDL_ShowCursor (0);
 				if (bPlayerMode)
-					x = MessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s %s?", TXT_DELETE_PILOT, pszFile);
+					x = MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s %s?", TXT_DELETE_PILOT, pszFile);
 				else if (bDemoMode)
-					x = MessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s %s?", TXT_DELETE_DEMO, pszFile);
+					x = MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s %s?", TXT_DELETE_DEMO, pszFile);
 				SDL_ShowCursor (1);
 				if (!x) {
 					char* p;
@@ -2221,9 +2221,9 @@ while (!done) {
 
 					if (ret) {
 						if (bPlayerMode)
-							MessageBox (NULL, NULL, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_PILOT, pszFile);
+							MsgBox (NULL, NULL, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_PILOT, pszFile);
 						else if (bDemoMode)
-							MessageBox (NULL, NULL, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_DEMO, pszFile);
+							MsgBox (NULL, NULL, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_DEMO, pszFile);
 						}
 					else if (bDemoMode)
 						bDemosDeleted = 1;
@@ -2540,7 +2540,7 @@ nFirstItem = -1;
 nMouseState = nOldMouseState = 0;	//bDblClick = 0;
 close_x = wx - border_size;
 close_y = wy - nTitleHeight - border_size;
-CMenuManager::DrawCloseBox (close_x, close_y);
+CMenu::DrawCloseBox (close_x, close_y);
 SDL_ShowCursor (1);
 
 SDL_EnableKeyRepeat(60, 30);
@@ -2841,7 +2841,7 @@ int _CDECL_ FixedFontMsgBox (char* pszTitle, int nChoices, ...)
 	va_list			args;
 	char*				s;
 	char				szSubTitle [MESSAGEBOX_TEXT_SIZE];
-	CMenuManager	mm;
+	CMenu	mm;
 
 if (!mm.Create (5))
 	return -1;
@@ -2895,7 +2895,7 @@ delete[] tbuf;
 void ProgressBar (const char* szCaption, int nCurProgress, int nMaxProgress, pMenuCallback doProgress)
 {
 	int				i, nInMenu;
-	CMenuManager	mm;
+	CMenu	mm;
 
 mm.Create (3);
 mm.AddGauge ("", 0, nMaxProgress); 
@@ -2915,7 +2915,7 @@ gameStates.menus.nInMenu = nInMenu;
 // ------------------------------------------------------------------------------ 
 // ------------------------------------------------------------------------------ 
 
-int CMenuManager::AddCheck (char* szText, int nValue, int nKey, char* szHelp)
+int CMenu::AddCheck (char* szText, int nValue, int nKey, char* szHelp)
 {
 CMenuItem& item = Item ();
 item.m_nType = NM_TYPE_CHECK;
@@ -2928,7 +2928,7 @@ return m_opt++;
 
 // ------------------------------------------------------------------------------ 
 
-int CMenuManager::AddRadio (char* szText, int nValue, int nGroup, int nKey, char* szHelp)
+int CMenu::AddRadio (char* szText, int nValue, int nGroup, int nKey, char* szHelp)
 {
 CMenuItem& item = Item ();
 item.m_nType = NM_TYPE_RADIO;
@@ -2942,7 +2942,7 @@ return m_opt++;
 
 // ------------------------------------------------------------------------------ 
 
-int CMenuManager::AddMenu (char* szText, int nKey, char* szHelp)
+int CMenu::AddMenu (char* szText, int nKey, char* szHelp)
 {
 CMenuItem& item = Item ();
 item.m_nType = NM_TYPE_MENU;
@@ -2954,7 +2954,7 @@ return m_opt++;
 
 // ------------------------------------------------------------------------------ 
 
-int CMenuManager::AddText (char* szText, int nKey)
+int CMenu::AddText (char* szText, int nKey)
 {
 CMenuItem& item = Item ();
 item.m_nType = NM_TYPE_TEXT;
@@ -2965,7 +2965,7 @@ return m_opt++;
 
 // ------------------------------------------------------------------------------ 
 
-int CMenuManager::AddSlider (char* szText, int nValue, int nMin, int nMax, int nKey, char* szHelp)
+int CMenu::AddSlider (char* szText, int nValue, int nMin, int nMax, int nKey, char* szHelp)
 {
 CMenuItem& item = Item ();
 item.m_nType = NM_TYPE_SLIDER;
@@ -2980,7 +2980,7 @@ return m_opt++;
 
 // ------------------------------------------------------------------------------ 
 
-int CMenuManager::AddInput (char* szText, int nLen, char* szHelp)
+int CMenu::AddInput (char* szText, int nLen, char* szHelp)
 {
 CMenuItem& item = Item ();
 item.m_nType = NM_TYPE_INPUT;
@@ -2992,7 +2992,7 @@ return m_opt++;
 
 // ------------------------------------------------------------------------------ 
 
-int CMenuManager::AddInputBox (char* szText, int nLen, int nKey, char* szHelp)
+int CMenu::AddInputBox (char* szText, int nLen, int nKey, char* szHelp)
 {
 CMenuItem& item = Item ();
 item.m_nType = NM_TYPE_INPUT_MENU;
@@ -3005,7 +3005,7 @@ return m_opt++;
 
 // ------------------------------------------------------------------------------ 
 
-int CMenuManager::AddGauge (char* szText, int nValue, int nMax)
+int CMenu::AddGauge (char* szText, int nValue, int nMax)
 {
 CMenuItem& item = Item ();
 item.m_nType = NM_TYPE_GAUGE;

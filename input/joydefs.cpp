@@ -99,7 +99,7 @@ if (szSizes)
 else
 	sprintf (szText + 1, szFmt);
 *szText = *(szFmt - 1);
-ADD_SLIDER (nOpt, szText + 1, nValue, 0, szSizes ? 4 : 15, nKey, szHelp);
+m.AddSlider (nOpt, szText + 1, nValue, 0, szSizes ? 4 : 15, nKey, szHelp);
 return (*pnOpt)++;
 }
 
@@ -133,7 +133,7 @@ for (i = 0; i < j; i++) {
 			sprintf (szText + i * 50 + 1, szFmt, szLabel [i]);
 		}
 	szText [i * 50] = *(szFmtSyncd - 1);
-	ADD_SLIDER (opt, szText + i * 50 + 1, v, 0, nValues - 1, bSyncControls ? nKeySyncd : pnKeys [i], szHelp);
+	m.AddSlider (opt, szText + i * 50 + 1, v, 0, nValues - 1, bSyncControls ? nKeySyncd : pnKeys [i], szHelp);
 	if (!i)
 		h = opt;
 	opt++;
@@ -247,40 +247,40 @@ do {
 
 		nCustMouseOpt = nMouseTypeOpt = -1;
 		SetControlType ();
-		ADD_CHECK (opt, TXT_USE_MOUSE, gameOpts->input.mouse.bUse, KEY_M, HTX_CONF_USEMOUSE);
+		m.AddCheck (opt, TXT_USE_MOUSE, gameOpts->input.mouse.bUse, KEY_M, HTX_CONF_USEMOUSE);
 		mouseOpts.nUse = opt++;
 		mouseOpts.nDeadzone = -1;
 		if (gameOpts->input.mouse.bUse || gameStates.app.bNostalgia) {
 			if (gameOpts->input.mouse.bUse) {
-				ADD_MENU (opt, TXT_CUST_MOUSE, KEY_O, HTX_CONF_CUSTMOUSE);
+				m.AddMenu (opt, TXT_CUST_MOUSE, KEY_O, HTX_CONF_CUSTMOUSE);
 				nCustMouseOpt = opt++;
 				}
-			ADD_TEXT (opt, "", 0);
+			m.AddText (opt, "", 0);
 			opt++;
 			if (gameStates.app.bNostalgia) {
 				gameOpts->input.mouse.bSyncAxes = 1;
 				}
 			else {
-				ADD_CHECK (opt, TXT_SYNC_MOUSE_AXES, gameOpts->input.mouse.bSyncAxes, KEY_A, HTX_CONF_SYNCMOUSE);
+				m.AddCheck (opt, TXT_SYNC_MOUSE_AXES, gameOpts->input.mouse.bSyncAxes, KEY_A, HTX_CONF_SYNCMOUSE);
 				mouseOpts.nSyncAxes = opt++;
 				}
 			mouseOpts.nSensitivity = AddAxisControls (m, &szMouseSens [0][0], TXT_MOUSE_SENS, TXT_MOUSE_SENS_N, szAxis3D, HTX_CONF_MOUSESENS, 
 														3, gameOpts->input.mouse.sensitivity, 16, NULL, KEY_O, axis3DHotkeys, gameOpts->input.mouse.bSyncAxes, &opt);
 			if (gameOpts->input.mouse.bUse && !gameStates.app.bNostalgia) {
-				ADD_TEXT (opt, "", 0);
+				m.AddText (opt, "", 0);
 				opt++;
-				ADD_CHECK (opt, TXT_MOUSELOOK, extraGameInfo [0].bMouseLook, KEY_L, HTX_CONF_MOUSELOOK);
+				m.AddCheck (opt, TXT_MOUSELOOK, extraGameInfo [0].bMouseLook, KEY_L, HTX_CONF_MOUSELOOK);
 				mouseOpts.nMouselook = opt++;
-				ADD_CHECK (opt, TXT_JOYMOUSE, gameOpts->input.mouse.bJoystick, KEY_J, HTX_CONF_JOYMOUSE);
+				m.AddCheck (opt, TXT_JOYMOUSE, gameOpts->input.mouse.bJoystick, KEY_J, HTX_CONF_JOYMOUSE);
 				mouseOpts.nJoystick = opt++;
 				if (gameOpts->input.mouse.bJoystick && gameOpts->app.bExpertMode)
 					mouseOpts.nDeadzone = AddDeadzoneControl (m, szMouseDeadzone, TXT_MOUSE_DEADZONE, HTX_MOUSE_DEADZONE, szDZoneSizes, gameOpts->input.mouse.nDeadzone, KEY_U, &opt);
-				ADD_TEXT (opt, "", 0);
+				m.AddText (opt, "", 0);
 				opt++;
 				nMouseTypeOpt = opt;
-				ADD_RADIO (opt, TXT_STD_MOUSE, 0, 0, 1, HTX_CONF_STDMOUSE);
+				m.AddRadio (opt, TXT_STD_MOUSE, 0, 0, 1, HTX_CONF_STDMOUSE);
 				opt++;
-				ADD_RADIO (opt, TXT_CYBERMAN, 0, 0, 1, HTX_CONF_CYBERMAN);
+				m.AddRadio (opt, TXT_CYBERMAN, 0, 0, 1, HTX_CONF_CYBERMAN);
 				opt++;
 				m [nMouseTypeOpt + NMCLAMP (gameStates.input.nMouseType - CONTROL_MOUSE, 0, 1)].value = 1;
 				}
@@ -413,17 +413,17 @@ do {
 
 		nCustJoyOpt = nJoyTypeOpt = -1;
 		SetControlType ();
-		ADD_CHECK (opt, TXT_USE_JOY, gameOpts->input.joystick.bUse, KEY_J, HTX_CONF_USEJOY);
+		m.AddCheck (opt, TXT_USE_JOY, gameOpts->input.joystick.bUse, KEY_J, HTX_CONF_USEJOY);
 		joyOpts.nUse = opt++;
 		if (gameOpts->input.joystick.bUse || gameStates.app.bNostalgia) {
-			ADD_MENU (opt, TXT_CUST_JOY, KEY_C, HTX_CONF_CUSTJOY);
+			m.AddMenu (opt, TXT_CUST_JOY, KEY_C, HTX_CONF_CUSTJOY);
 			nCustJoyOpt = opt++;
 			if (gameStates.app.bNostalgia || !gameOpts->app.bExpertMode)
 				gameOpts->input.joystick.bSyncAxes = 1;
 			else {
-				ADD_CHECK (opt, TXT_JOY_LINSCALE, gameOpts->input.joystick.bLinearSens, KEY_I, HTX_CONF_LINJOY);
+				m.AddCheck (opt, TXT_JOY_LINSCALE, gameOpts->input.joystick.bLinearSens, KEY_I, HTX_CONF_LINJOY);
 				joyOpts.nLinearSens = opt++;
-				ADD_CHECK (opt, TXT_SYNC_JOY_AXES, gameOpts->input.joystick.bSyncAxes, KEY_Y, HTX_CONF_SYNCJOY);
+				m.AddCheck (opt, TXT_SYNC_JOY_AXES, gameOpts->input.joystick.bSyncAxes, KEY_Y, HTX_CONF_SYNCJOY);
 				joyOpts.nSyncAxes = opt++;
 				}
 			h = gameOpts->input.joystick.bSyncAxes ? 1 : UNIQUE_JOY_AXES;
@@ -432,16 +432,16 @@ do {
 			if (!gameStates.app.bNostalgia) {
 				joyOpts.nDeadzone = AddAxisControls (m, &szJoyDeadzone [0][0], TXT_JOY_DEADZONE, TXT_JOY_DEADZONE_N, szJoyAxis, HTX_CONF_JOYDZONE, 
 															  UNIQUE_JOY_AXES, gameOpts->input.joystick.deadzones, 16, nJoyDeadzones, KEY_S, joyHotkeys, gameOpts->input.joystick.bSyncAxes, &opt);
-				ADD_TEXT (opt, "", 0);
+				m.AddText (opt, "", 0);
 				opt++;
 				nJoyTypeOpt = opt;
-				ADD_RADIO (opt, TXT_STD_JOY, 0, 0, 2, HTX_CONF_STDJOY);
+				m.AddRadio (opt, TXT_STD_JOY, 0, 0, 2, HTX_CONF_STDJOY);
 				opt++;
-				ADD_RADIO (opt, TXT_FSPRO_JOY, 0, 0, 2, HTX_CONF_FSPRO);
+				m.AddRadio (opt, TXT_FSPRO_JOY, 0, 0, 2, HTX_CONF_FSPRO);
 				opt++;
-				ADD_RADIO (opt, TXT_FCS_JOY, 0, 0, 2, HTX_CONF_FCS);
+				m.AddRadio (opt, TXT_FCS_JOY, 0, 0, 2, HTX_CONF_FCS);
 				opt++;
-				ADD_RADIO (opt, TXT_GRAVIS_JOY, 0, 0, 2, HTX_CONF_GRAVIS);
+				m.AddRadio (opt, TXT_GRAVIS_JOY, 0, 0, 2, HTX_CONF_GRAVIS);
 				opt++;
 				m [nJoyTypeOpt + NMCLAMP (gameStates.input.nJoyType - CONTROL_JOYSTICK, 0, 3)].value = 1;
 				}
@@ -564,20 +564,20 @@ szDZoneSizes [4] = TXT_VERY_LARGE;
 do {
 	memset (&m, 0, sizeof (m));
 	opt = 0;
-	ADD_CHECK (opt, TXT_USE_TRACKIR, gameOpts->input.trackIR.bUse, KEY_M, HTX_USE_TRACKIR);
+	m.AddCheck (opt, TXT_USE_TRACKIR, gameOpts->input.trackIR.bUse, KEY_M, HTX_USE_TRACKIR);
 	tirOpts.nUse = opt++;
 	if (gameOpts->input.trackIR.bUse) {
-		ADD_RADIO (opt, TXT_TRACKIR_AIM, 0, KEY_A, 1, HTX_TRACKIR_AIM);
+		m.AddRadio (opt, TXT_TRACKIR_AIM, 0, KEY_A, 1, HTX_TRACKIR_AIM);
 		tirOpts.nMode = opt++;
-		ADD_RADIO (opt, TXT_TRACKIR_STEER, 0, KEY_S, 1, HTX_TRACKIR_STEER);
+		m.AddRadio (opt, TXT_TRACKIR_STEER, 0, KEY_S, 1, HTX_TRACKIR_STEER);
 		opt++;
-		ADD_RADIO (opt, TXT_TRACKIR_LOOK, 0, KEY_L, 1, HTX_TRACKIR_LOOK);
+		m.AddRadio (opt, TXT_TRACKIR_LOOK, 0, KEY_L, 1, HTX_TRACKIR_LOOK);
 		opt++;
 		m [tirOpts.nMode + gameOpts->input.trackIR.nMode].value = 1;
-		ADD_TEXT (opt, "", 0);
+		m.AddText (opt, "", 0);
 		tirOpts.nMove = ++opt;
 		for (i = 0; i < 5; i++) {
-			ADD_CHECK (opt, GT (924 + i), gameOpts->input.trackIR.bMove [i], tirMoveHotkeys [i], HT (281 + i));
+			m.AddCheck (opt, GT (924 + i), gameOpts->input.trackIR.bMove [i], tirMoveHotkeys [i], HT (281 + i));
 			opt++;
 			}
 		if ((gameOpts->input.trackIR.nMode != 1) ||
@@ -586,9 +586,9 @@ do {
 			 gameOpts->input.trackIR.bMove [2] || 
 			 gameOpts->input.trackIR.bMove [3] || 
 			 gameOpts->input.trackIR.bMove [4]) {
-			ADD_TEXT (opt, "", 0);
+			m.AddText (opt, "", 0);
 			opt++;
-			ADD_CHECK (opt, TXT_SYNC_TRACKIR_AXES, gameOpts->input.trackIR.bSyncAxes, KEY_K, HTX_SYNC_TRACKIR_AXES);
+			m.AddCheck (opt, TXT_SYNC_TRACKIR_AXES, gameOpts->input.trackIR.bSyncAxes, KEY_K, HTX_SYNC_TRACKIR_AXES);
 			tirOpts.nSyncAxes = opt++;
 			tirOpts.nSensitivity = AddAxisControls (m, &szTrackIRSens [0][0], TXT_TRACKIR_SENS, TXT_TRACKIR_SENS_N, szAxis3D, HTX_TRACKIR_SENS, 
 																 3, gameOpts->input.trackIR.sensitivity, 16, NULL, KEY_S, axis3DHotkeys, gameOpts->input.trackIR.bSyncAxes, &opt);
@@ -660,7 +660,7 @@ do {
 
 		nCustHotKeysOpt = -1;
 		SetControlType ();
-		ADD_MENU (opt, TXT_CUST_JOY, KEY_K, HTX_CONF_CUSTKBD);
+		m.AddMenu (opt, TXT_CUST_JOY, KEY_K, HTX_CONF_CUSTKBD);
 		nCustKbdOpt = opt++;
 		if (gameStates.app.bNostalgia) {
 			gameOpts->input.keyboard.nRamp = 100;
@@ -668,28 +668,28 @@ do {
 			}
 		else {
 			if (gameOpts->app.bExpertMode) {
-				ADD_TEXT (opt, "", 0);
+				m.AddText (opt, "", 0);
 				opt++;
 				sprintf (szKeyRampScale + 1, TXT_KBD_RAMP, gameOpts->input.keyboard.nRamp, HTX_CONF_KBDRAMP);
 				*szKeyRampScale = *(TXT_KBD_RAMP - 1);
-				ADD_SLIDER (opt, szKeyRampScale + 1, gameOpts->input.keyboard.nRamp / 10, 0, 10, KEY_R, HTX_CONF_RAMPSCALE);   
+				m.AddSlider (opt, szKeyRampScale + 1, gameOpts->input.keyboard.nRamp / 10, 0, 10, KEY_R, HTX_CONF_RAMPSCALE);   
 				kbdOpts.nRamp = opt++;
 				if (gameOpts->input.keyboard.nRamp > 0) {
 					kbdOpts.nRampValues = opt;
-					ADD_CHECK (opt, TXT_RAMP_ACCEL, gameOpts->input.keyboard.bRamp [0], KEY_A, HTX_CONF_RAMPACC);
+					m.AddCheck (opt, TXT_RAMP_ACCEL, gameOpts->input.keyboard.bRamp [0], KEY_A, HTX_CONF_RAMPACC);
 					opt++;
-					ADD_CHECK (opt, TXT_RAMP_ROT, gameOpts->input.keyboard.bRamp [1], KEY_O, HTX_CONF_RAMPROT);
+					m.AddCheck (opt, TXT_RAMP_ROT, gameOpts->input.keyboard.bRamp [1], KEY_O, HTX_CONF_RAMPROT);
 					opt++;
-					ADD_CHECK (opt, TXT_RAMP_SLIDE, gameOpts->input.keyboard.bRamp [2], KEY_D, HTX_CONF_RAMPSLD);
+					m.AddCheck (opt, TXT_RAMP_SLIDE, gameOpts->input.keyboard.bRamp [2], KEY_D, HTX_CONF_RAMPSLD);
 					opt++;
 					}
 				}
-			ADD_TEXT (opt, "", 0);
+			m.AddText (opt, "", 0);
 			opt++;
-			ADD_CHECK (opt, TXT_USE_HOTKEYS, gameOpts->input.bUseHotKeys, KEY_H, HTX_CONF_HOTKEYS);
+			m.AddCheck (opt, TXT_USE_HOTKEYS, gameOpts->input.bUseHotKeys, KEY_H, HTX_CONF_HOTKEYS);
 			kbdOpts.nUseHotkeys = opt++;
 			if (gameOpts->input.bUseHotKeys) {
-				ADD_MENU (opt, TXT_CUST_HOTKEYS, KEY_W, HTX_CONF_CUSTHOT);
+				m.AddMenu (opt, TXT_CUST_HOTKEYS, KEY_W, HTX_CONF_CUSTHOT);
 				nCustHotKeysOpt = opt++;
 				}
 			}
@@ -721,26 +721,26 @@ do {
 	opt = 0;
 
 	SetControlType ();
-	ADD_MENU (opt, TXT_KBDCFG_MENUCALL, KEY_K, HTX_KEYBOARD_CONFIG);
+	m.AddMenu (opt, TXT_KBDCFG_MENUCALL, KEY_K, HTX_KEYBOARD_CONFIG);
 	nKeyboardOpt = opt++;
-	ADD_MENU (opt, TXT_MOUSECFG_MENUCALL, KEY_M, HTX_MOUSE_CONFIG);
+	m.AddMenu (opt, TXT_MOUSECFG_MENUCALL, KEY_M, HTX_MOUSE_CONFIG);
 	nMouseOpt = opt++;
 	if (gameStates.input.nJoysticks) {
-		ADD_MENU (opt, TXT_JOYCFG_MENUCALL, KEY_J, HTX_JOYSTICK_CONFIG);
+		m.AddMenu (opt, TXT_JOYCFG_MENUCALL, KEY_J, HTX_JOYSTICK_CONFIG);
 		nJoystickOpt = opt++;
 		}
 	else
 		nJoystickOpt = -1;
 	if (!gameStates.app.bNostalgia && gameStates.input.bHaveTrackIR) {
-		ADD_MENU (opt, TXT_TRACKIRCFG_MENUCALL, KEY_I, HTX_TRACKIR_CONFIG);
+		m.AddMenu (opt, TXT_TRACKIRCFG_MENUCALL, KEY_I, HTX_TRACKIR_CONFIG);
 		nTrackIROpt = opt++;
 		}
 	else
 		nTrackIROpt = -1;
-	ADD_TEXT (opt, "", 0);
+	m.AddText (opt, "", 0);
 	opt++;
 	if (gameOpts->app.bExpertMode && (gameStates.app.bNostalgia < 3)) {
-		ADD_CHECK (opt, TXT_FASTPITCH, (extraGameInfo [0].bFastPitch == 1) ? 1 : 0, KEY_T, HTX_CONF_FASTPITCH);
+		m.AddCheck (opt, TXT_FASTPITCH, (extraGameInfo [0].bFastPitch == 1) ? 1 : 0, KEY_T, HTX_CONF_FASTPITCH);
 		nFastPitchOpt = opt++;
 		extraGameInfo [0].bFastPitch = m [nFastPitchOpt].value ? 1 : 2;
 		}

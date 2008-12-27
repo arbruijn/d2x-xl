@@ -110,17 +110,21 @@ typedef struct tMenuProps {
 } tMenuProps;
 
 
-class CMenuManager;
+class CMenu;
 
-typedef int (*pMenuCallback) (CMenuManager& m, int& lastKey, int nItem);
+typedef int (*pMenuCallback) (CMenu& m, int& lastKey, int nItem);
 
-class CMenuManager : public CStack<CMenuItem> {
+class CMenu : public CStack<CMenuItem> {
 	private:
 		int			m_opt;
 		tMenuProps	m_props;
 
 	public:
-		CMenuManager () { Init (); }
+		CMenu () { Init (); }
+		CMenu (uint nLength) { 
+			Init (); 
+			Create (nLength);
+			}
 		inline void Init (void) { 
 			SetGrowth (10);
 			m_opt = 0; 
@@ -167,10 +171,10 @@ class CMenuManager : public CStack<CMenuItem> {
 // Example:
 // ExecMessageBox( "Title", "Subtitle", 2, "Ok", "Cancel", "There are %d objects", nobjects );
 // Returns 0 through nChoices-1.
-int _CDECL_ MessageBox (const char *pszTitle, char *filename, int nChoices, ...);
+int _CDECL_ MsgBox (const char *pszTitle, char *filename, int nChoices, ...);
 
 // Same as above, but you can pass a function
-int _CDECL_ MessageBox (const char *pszTitle, pMenuCallback callBack, char *filename, int nChoices, ...);
+int _CDECL_ MsgBox (const char *pszTitle, pMenuCallback callBack, char *filename, int nChoices, ...);
 
 int FileSelector (const char *pszTitle, const char *filespec, char *filename, int bAllowAbort);
 

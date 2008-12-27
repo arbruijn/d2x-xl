@@ -39,23 +39,6 @@ extern int Cockpit_rearView;
 #define NMCLAMP(_v,_min,_max)	((_v) < (_min) ? (_min) : (_v) > (_max) ? (_max) : (_v))
 #define NMBOOL(_v) ((_v) != 0)
 
-#define	ADD_CHECK(_n,_t,_v,_k,_h) \
-			m [_n].nType = NM_TYPE_CHECK, m [_n].text = (char *) (_t), m [_n].value = NMBOOL(_v), m [_n].key = (_k), m [_n].szHelp = (char *) (_h)
-#define	ADD_RADIO(_n,_t,_v,_k,_g,_h) \
-			m [_n].nType = NM_TYPE_RADIO, m [_n].text = (char *) (_t), m [_n].value = _v, m [_n].key = (_k), m [_n].group=_g, m [_n].szHelp = (char *) (_h)
-#define	ADD_MENU(_n,_t,_k,_h) \
-			m [_n].nType = NM_TYPE_MENU, m [_n].text = (char *) (_t), m [_n].key = (_k), m [_n].szHelp = (char *) (_h)
-#define	ADD_TEXT(_n,_t,_k)  \
-			m [_n].nType = NM_TYPE_TEXT, m [_n].text = (char *) (_t), m [_n].key = (_k)
-#define	ADD_SLIDER(_n,_t,_v,_min,_max,_k,_h) \
-			m [_n].nType = NM_TYPE_SLIDER, m [_n].text = (char *) (_t), m [_n].value = NMCLAMP(_v,_min,_max), m [_n].minValue = _min, m [_n].maxValue = _max, m [_n].key = (_k), m [_n].szHelp = (char *) (_h)
-#define	ADD_INPUT(_n,_t,_l,_h) \
-			m [_n].nType = NM_TYPE_INPUT, m [_n].text = (char *) (_t), m [_n].nTextLen = (_l), m [_n].szHelp = (char *) (_h)
-#define	ADD_INPUT_MENU(_n,_t,_l,_k,_h) \
-			m [_n].nType = NM_TYPE_INPUT_MENU, m [_n].text = (char *) (_t), m [_n].nTextLen = (_l), m [_n].key = (_k), m [_n].szHelp = (char *) (_h)
-#define	ADD_GAUGE(_n,_t,_v,_max) \
-			m [_n].nType = NM_TYPE_GAUGE, m [_n].text = (char *) (_t), m [_n].nTextLen = *(_t) ? (int) strlen (_t) : 20, m [_n].value = NMCLAMP(_v,0,_max), m [_n].maxValue = _max
-
 #define GET_VAL(_v,_n)	if ((_n) >= 0) (_v) = m [_n].value
 
 #define MENU_KEY(_k,_d)	((_k) < 0) ? (_d) : ((_k) == 0) ? 0 : gameStates.app.bEnglish ? toupper (KeyToASCII (_k)) : (_k)
