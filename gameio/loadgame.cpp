@@ -824,7 +824,7 @@ if (gameData.missions.nEnhancedMission) {
 	strncpy (t, gameStates.app.szCurrentMissionFile, 6);
 	strcat (t, "-l.mvl");
 	/*---*/PrintLog ("   initializing additional robot movies\n");
-	InitExtraRobotMovie (t);
+	movieManager.InitExtraRobotLib (t);
 	}
 #endif
 /*---*/PrintLog ("   Destroying camera objects\n");
@@ -1461,7 +1461,7 @@ void PlayLevelMovie (const char *pszExt, int nLevel)
 {
 	char szFilename [FILENAME_LEN];
 
-PlayMovie (MakeLevelFilename (nLevel, szFilename, pszExt), MOVIE_OPTIONAL, 0, gameOpts->movies.bResize);
+movieManager.Play (MakeLevelFilename (nLevel, szFilename, pszExt), MOVIE_OPTIONAL, 0, gameOpts->movies.bResize);
 }
 
 //------------------------------------------------------------------------------
@@ -1496,14 +1496,14 @@ if (!IsMultiGame) {
 		int bPlayed = MOVIE_NOT_PLAYED;	//default is not bPlayed
 
 		if (!gameStates.app.bD1Mission) {
-			InitSubTitles (ENDMOVIE ".tex");
-			bPlayed = PlayMovie (ENDMOVIE, MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
-			CloseSubTitles ();
+			subTitles.Init (ENDMOVIE ".tex");
+			bPlayed = movieManager.Play (ENDMOVIE, MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
+			subTitles.Close ();
 			}
-		else if (movieManager.bHaveExtras) {
+		else if (movieManager.m_bHaveExtras) {
 			//InitSubTitles (ENDMOVIE ".tex");	//ingore errors
-			bPlayed = PlayMovie (D1_ENDMOVIE, MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
-			CloseSubTitles ();
+			bPlayed = movieManager.Play (D1_ENDMOVIE, MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
+			subTitles.Close ();
 			}
 		if (!bPlayed) {
 			if (IS_D2_OEM) {
@@ -1949,13 +1949,13 @@ if (!IsMultiGame) {
 				DoBriefingScreens (reinterpret_cast<char*> ("brief2o.tex"), 1);
 			}
 		else { // full version
-			if (movieManager.bHaveExtras && (nLevel == 1)) {
-				PlayIntroMovie ();
+			if (movieManager.m_bHaveExtras && (nLevel == 1)) {
+				movieManager.PlayIntro ();
 				}
 			for (i = 0; i < NUM_INTRO_MOVIES; i++) {
 				if (szIntroMovies [i].nLevel == nLevel) {
 					gameStates.video.nScreenMode = -1;
-					PlayMovie (szIntroMovies [i].szMovieName, MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
+					movieManager.Play (szIntroMovies [i].szMovieName, MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
 					bPlayed=1;
 					break;
 					}
@@ -1975,9 +1975,9 @@ if (!IsMultiGame) {
 	else {	//not the built-in mission.  check for add-on briefing
 		if ((gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1) &&
 			 (gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission)) {
-			if (movieManager.bHaveExtras && (nLevel == 1)) {
-				if (PlayMovie ("briefa.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize) != MOVIE_ABORTED)
-					 PlayMovie ("briefb.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
+			if (movieManager.m_bHaveExtras && (nLevel == 1)) {
+				if (movieManager.Play ("briefa.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize) != MOVIE_ABORTED)
+					 movieManager.Play ("briefb.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
 				}
 			DoBriefingScreens (gameData.missions.szBriefingFilename, nLevel);
 			}

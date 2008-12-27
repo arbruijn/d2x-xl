@@ -624,7 +624,7 @@ void RotateBriefingRobot (void)
 {
 CCanvas::Push ();
 CCanvas::SetCurrent (robotCanvP);
-RotateRobot ();
+movieManager.RotateRobot ();
 CCanvas::Pop ();
 }
 
@@ -1007,7 +1007,7 @@ if (bi.message > bi.pj) {
 		robotCanvP = NULL;
 		}
 	if (bRobotPlaying) {
-		DeInitRobotMovie ();
+		movieManager.StopRobot ();
 		bRobotPlaying = 0;
 		}
 	InitSpinningRobot ();
@@ -1024,7 +1024,7 @@ else {
 	if (bi.message > bi.pj) {
 		CCanvas::Push ();
 		CCanvas::SetCurrent (robotCanvP);
-		bRobotPlaying = InitRobotMovie (bi.szSpinningRobot);
+		bRobotPlaying = movieManager.StartRobot (bi.szSpinningRobot);
 		CCanvas::Pop ();
 		if (bRobotPlaying) {
 			RotateBriefingRobot ();
@@ -1240,7 +1240,7 @@ int keypress = WaitForKeyPress (bi);
 if (!keypress)
 	return -1;
 if (bRobotPlaying)
-	DeInitRobotMovie ();
+	movieManager.StopRobot ();
 bRobotPlaying = 0;
 bi.nRobot = -1;
 if (keypress == KEY_ESC)
@@ -1321,7 +1321,7 @@ if (gameStates.app.bNostalgia)
 
 bi.bExtraSounds = gameStates.app.bHaveExtraData && gameStates.app.bD1Mission && 
 				  (gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission);
-bi.bOnlyRobots = movieManager.bHaveExtras && bi.bExtraSounds && (bi.nLevel == 1) && (bi.nScreen < 4);
+bi.bOnlyRobots = movieManager.m_bHaveExtras && bi.bExtraSounds && (bi.nLevel == 1) && (bi.nScreen < 4);
 if (!gameData.songs.bPlaying)
 	bi.nHumChannel = StartBriefingHum (bi.nHumChannel, bi.nLevel, bi.nScreen, bi.bExtraSounds);
 
@@ -1407,7 +1407,7 @@ for (;;) {
 done:
 
 if (bRobotPlaying) {
-	DeInitRobotMovie ();
+	movieManager.StopRobot ();
 	bRobotPlaying = 0;
 	}
 if (robotCanvP != NULL) {

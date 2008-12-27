@@ -20,6 +20,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _MOVIE_H
 #define _MOVIE_H
 
+//-----------------------------------------------------------------------
+
 #define MOVIE_ABORT_ON  1
 #define MOVIE_ABORT_OFF 0
 
@@ -34,27 +36,124 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define ENDMOVIE		"end"
 #	define D1_ENDMOVIE	"final"
 
-int PlayMovie(const char *filename, int allow_abort, int bForce, int bFullScreen);
-int PlayMovies(int num_files, const char *filename [], int graphmode, int allow_abort);
-int InitRobotMovie(char *filename);
-int RotateRobot();
-void DeInitRobotMovie(void);
-void InitExtraRobotMovie(char *filename);
-void PlayIntroMovie (void);
+//-----------------------------------------------------------------------
 
-// find and initialize the movie libraries
-void InitMovies();
+class CMovie {
+	public:
+		CFile	m_cf;
+		char	m_name [FILENAME_LEN];
+		int	m_offset;
+		int	m_len;
+		int	m_pos;
+		int	m_bLittleEndian;
 
-int InitSubTitles (const char *filename);
-void CloseSubTitles();
+	public:
+		~CMovie () { Close (); }
+		static void ShowFrame (ubyte* buf, uint bufw, uint bufh, uint sx, uint sy, uint w, uint h, uint dstx, uint dsty);
+		static void SetPalette (ubyte* p, unsigned start, unsigned count);
+		static void* Alloc (unsigned size);
+		static void Free (void* p);
+		static uint Read (void* handle, void* buf, uint count);
+		void Rewind (void);
+		inline void Close (void) { m_cf.Close (); }
+	};
 
-int GetNumMovieLibs (void);
-int GetNumMovies (int nLib);
-char *GetMovieName (int nLib, int nMovie);
-char *CycleThroughMovies (int bRestart, int bPlayMovie);
+//-----------------------------------------------------------------------
 
-extern int MovieHires;      // specifies whether movies use low or high res
-extern int bDrawSubTitles;
-extern int bResizeMovies;
+class CMovieLib {
+	public:
+		char				m_name [100]; // [FILENAME_LEN];
+		int				m_nMovies;
+		ubyte				m_flags;
+		ubyte				m_pad [3];
+		CArray<CMovie>	m_movies;
+		int				m_bLittleEndian;
+
+	public:
+		CMovieLib () { Init (); }
+		~CMovieLib () { Destroy (); }
+		void Init (void);
+		void Destroy (void);
+		CMovie* Open (char* filename, int bRequired);
+		bool Setup (const char* filename);
+		static CMovieLib* Create (char* filename);
+
+	private:	
+		int SetupMVL (CFile& cf);
+		int SetupHF (CFile& cf);
+		int Count (CFile& cf);
+	};
+
+//-----------------------------------------------------------------------
+
+class CMovieManager {
+	public:
+		CArray<CMovieLib>	m_libs; // [N_MOVIE_LIBS];
+		int					m_nLibs;
+		CPalette*			m_palette;
+		int					m_nRobots;
+		int					m_bHaveIntro;
+		int					m_bHaveExtras;
+
+	private:
+		int					m_nLib;
+		int					m_nMovies;
+		int					m_nMovie;
+		CMovie*				m_robotP;
+
+	public:
+		CMovieManager () { Init (); }
+		~CMovieManager () { Destroy (); }
+		void Init (void);
+		void InitLibs (void);
+		void InitExtraRobotLib (char* filename);
+		void Destroy (void);
+		CMovieLib* FindLib (const char* pszLib);
+		CMovieLib* Find (const char* pszMovie);
+		int Run (char* filename, int bHires, int bAllowAbort, int dx, int dy);
+		int Play (const char* filename, int bRequired, int bForce, int bFullScreen);
+		CMovie* Open (char* filename, int bRequired);
+		int RequestCD (void);
+		char* Cycle (int bRestart, int bPlayMovie);
+		void PlayIntro (void);
+		int StartRobot (char* filename);
+		int RotateRobot (void);
+		void StopRobot (void);
+
+	private:
+		void CMovieManager::InitLib (const char* pszFilename, int nLibrary, int bRobotMovie, int bRequired);
+};
+
+//-----------------------------------------------------------------------
+// Subtitle data
+
+#define MAX_SUBTITLES				500
+
+typedef struct {
+	short first_frame, last_frame;
+	char* msg;
+} subtitle;
+
+class CSubTitles {
+	public:
+		subtitle m_captions [MAX_SUBTITLES];
+		int		m_nCaptions;
+		ubyte*	m_rawDataP;
+
+	public:
+		int Init (const char* filename);
+		void Close (void);
+		void Draw (int nFrame);
+
+	private:
+		ubyte* NextField (ubyte* p);
+	};
+
+//-----------------------------------------------------------------------
+
+extern CMovieManager movieManager;
+extern CSubTitles subTitles;
+
+//-----------------------------------------------------------------------
 
 #endif /* _MOVIE_H */

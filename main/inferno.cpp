@@ -368,15 +368,15 @@ else
 #endif
 	{	//NOTE LINK TO ABOVE!
 	int bSongPlaying = 0;
-	if (movieManager.bHaveExtras) {
-		nPlayed = PlayMovie ("starta.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
+	if (movieManager.m_bHaveExtras) {
+		nPlayed = movieManager.Play ("starta.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
 		if (nPlayed == MOVIE_ABORTED)
 			nPlayed = MOVIE_PLAYED_FULL;
 		else
-			nPlayed = PlayMovie ("startb.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
+			nPlayed = movieManager.Play ("startb.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
 		}
 	else {
-		PlayIntroMovie ();
+		movieManager.PlayIntro ();
 		}
 
 	if (!bSongPlaying)
@@ -759,7 +759,7 @@ switch (loadOp) {
 			gameStates.menus.bHiresAvailable = 0;
 		else
 			gameStates.menus.bHires = gameStates.menus.bHiresAvailable = 1;
-		InitMovies ();		//init movie libraries
+		movieManager.InitLibs ();		//init movie libraries
 		break;
 	case 7:
 		/*---*/PrintLog ("Initializing game data\n");

@@ -274,7 +274,7 @@ try_again:;
 
 		if ((d_rand () % (nDemos+1)) == 0) {
 				gameStates.video.nScreenMode = -1;
-				PlayIntroMovie ();
+				movieManager.PlayIntro ();
 				SongsPlaySong (SONG_TITLE, 1);
 				*nLastKey = -3; //exit menu to force rebuild even if not going to game mode. -3 tells menu system not to restore
 				SetScreenMode (SCREEN_MENU);
@@ -446,16 +446,16 @@ static void PlayMenuMovie (void)
 	int h, i, j;
 	char **m, *ps;
 
-i = GetNumMovieLibs ();
+i = movieManager.m_nLibs;
 for (h = j = 0; j < i; j++)
 	if (j != 2)	//skip robot movies
-		h += GetNumMovies (j);
+		h += movieManager.m_libs [j].m_nMovies;
 if (!h)
 	return;
 if (!(m = new char * [h]))
 	return;
 for (i = j = 0; i < h; i++)
-	if ((ps = CycleThroughMovies (i == 0, 0))) {
+	if ((ps = movieManager.Cycle (i == 0, 0))) {
 		if (j && !strcmp (ps, m [0]))
 			break;
 		m [j++] = ps;
@@ -464,10 +464,10 @@ i = ExecMenuListBox (TXT_SELECT_MOVIE, j, m, 1, NULL);
 if (i > -1) {
 	SDL_ShowCursor (0);
 	if (strstr (m [i], "intro"))
-		InitSubTitles ("intro.tex");
+		subTitles.Init ("intro.tex");
 	else if (strstr (m [i], ENDMOVIE))
-		InitSubTitles (ENDMOVIE ".tex");
-	PlayMovie (m [i], 1, 1, gameOpts->movies.bResize);
+		subTitles.Init (ENDMOVIE ".tex");
+	movieManager.Play (m [i], 1, 1, gameOpts->movies.bResize);
 	SDL_ShowCursor (1);
 	}
 delete [] m;

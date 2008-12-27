@@ -981,7 +981,7 @@ void HandleTestKey(int key)
 			char pal_save [768];
 			memcpy(pal_save, grPalette, 768);
 			InitSubTitles("end.tex");	//ingore errors
-			PlayMovie ("end.mve", MOVIE_ABORT_ON, 0, gameOpts->movies.bResize);
+			movieManager.Play ("end.mve", MOVIE_ABORT_ON, 0, gameOpts->movies.bResize);
 			CloseSubTitles();
 			gameStates.video.nScreenMode = -1;
 			SetScreenMode(SCREEN_GAME);

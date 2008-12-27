@@ -65,123 +65,16 @@ char pszMovieLibs [][FILENAME_LEN] = {
 #define N_MOVIE_LIBS					(N_BUILTIN_MOVIE_LIBS+1)
 #define EXTRA_ROBOT_LIB				N_BUILTIN_MOVIE_LIBS
 
-#define MAX_SUBTITLES 500
-#define MAX_ACTIVE_SUBTITLES 3
-
-//-----------------------------------------------------------------------
-// Subtitle data
-typedef struct {
-	short first_frame, last_frame;
-	char* msg;
-} subtitle;
-
-class CSubTitles {
-	public:
-		subtitle m_captions [MAX_SUBTITLES];
-		int		m_nCaptions;
-		ubyte*	m_rawDataP;
-
-	public:
-		int Init (const char* filename);
-		void Close (void);
-		void Draw (int nFrame);
-
-	private:
-		ubyte* NextField (ubyte* p);
-	};
+#define MAX_ACTIVE_SUBTITLES		3
 
 CSubTitles subTitles;
 
 
 // Movielib data
-class CMovie {
-	public:
-		CFile	m_cf;
-		char	m_name [FILENAME_LEN];
-		int	m_offset;
-		int	m_len;
-		int	m_pos;
-		int	m_bLittleEndian;
-
-	public:
-		~CMovie () { Close (); }
-		static void ShowFrame (ubyte* buf, uint bufw, uint bufh, uint sx, uint sy, uint w, uint h, uint dstx, uint dsty);
-		static void SetPalette (ubyte* p, unsigned start, unsigned count);
-		static void* Alloc (unsigned size);
-		static void Free (void* p);
-		static uint Read (void* handle, void* buf, uint count);
-		void Rewind (void);
-		inline void Close (void) { m_cf.Close (); }
-	};
-
-
-class CMovieLib {
-	public:
-		char				m_name [100]; // [FILENAME_LEN];
-		int				m_nMovies;
-		ubyte				m_flags;
-		ubyte				m_pad [3];
-		CArray<CMovie>	m_movies;
-		int				m_bLittleEndian;
-
-	public:
-		CMovieLib () { Init (); }
-		~CMovieLib () { Destroy (); }
-		void Init (void);
-		void Destroy (void);
-		CMovie* Open (char* filename, int bRequired);
-		bool Setup (const char* filename);
-		static CMovieLib* Create (char* filename);
-
-	private:	
-		int SetupMVL (CFile& cf);
-		int SetupHF (CFile& cf);
-		int Count (CFile& cf);
-	};
-
-class CMovieManager {
-	public:
-		CArray<CMovieLib>	m_libs; // [N_MOVIE_LIBS];
-		int					m_nLibs;
-		CPalette*			m_palette;
-		int					m_nRobots;
-		int					m_bHaveIntro;
-		int					m_bHaveExtras;
-
-	private:
-		int					m_nLib;
-		int					m_nMovies;
-		int					m_nMovie;
-		CMovie*				m_robotP;
-
-	public:
-		CMovieManager () { Init (); }
-		~CMovieManager () { Destroy (); }
-		void Init (void);
-		void InitExtraRobotLib (char* filename);
-		void Destroy (void);
-		CMovieLib* FindLib (const char* pszLib);
-		CMovieLib* Find (const char* pszMovie);
-		int Run (char* filename, int bHires, int bAllowAbort, int dx, int dy);
-		int Play (const char* filename, int bRequired, int bForce, int bFullScreen);
-		CMovie* Open (char* filename, int bRequired);
-		int RequestCD (void);
-		char* Cycle (int bRestart, int bPlayMovie);
-		void PlayIntro (void);
-		int StartRobot (char* filename);
-		int RotateRobot (void);
-		void StopRobot (void);
-
-	private:
-		void CMovieManager::InitLib (const char* pszFilename, int nLibrary, int bRobotMovie, int bRequired);
-		void InitLibs (void);
-};
-
 CMovieManager movieManager;
 
 
 void DecodeTextLine (char* p);
-void DrawSubTitles (int nFrame);
 
 //-----------------------------------------------------------------------
 //-----------------------------------------------------------------------
@@ -841,7 +734,7 @@ nFrame = 0;
 gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && bHires;
 SetRenderQuality (0);
 while ((result = MVE_rmStepMovie ()) == 0) {
-	DrawSubTitles (nFrame);
+	subTitles.Draw (nFrame);
 	paletteManager.LoadEffect (); // moved this here because of flashing
 	GrUpdate (1);
 	key = KeyInKey ();
@@ -878,7 +771,7 @@ char* CMovieManager::Cycle (int bRestart, int bPlayMovie)
 	char* pszMovieName;
 
 if (m_nLibs < 0) {
-	InitMovies ();
+	InitLibs ();
 	bRestart = 1;
 	}
 
@@ -899,7 +792,7 @@ if (m_nLibs) {
 	if ((pszMovieName = m_libs [m_nLib].m_movies [m_nMovie].m_name)) {
 		gameStates.video.nScreenMode = -1;
 		if (bPlayMovie)
-			PlayMovie (pszMovieName, 1, 1, gameOpts->movies.bResize);
+			movieManager.Play (pszMovieName, 1, 1, gameOpts->movies.bResize);
 		}
 	return pszMovieName;
 	//CloseSubTitles ();
@@ -912,7 +805,7 @@ return NULL;
 CMovieLib* CMovieManager::FindLib (const char* pszLib)
 {
 if (m_nLibs < 0)
-	InitMovies ();
+	InitLibs ();
 if (m_nLibs) 
 	for (int i = 0; i < m_nLibs; i++)
 		if (!strcmp (pszLib, m_libs [i].m_name))
@@ -925,7 +818,7 @@ return NULL;
 CMovieLib* CMovieManager::Find (const char* pszMovie)
 {
 if (m_nLibs < 0)
-	InitMovies ();
+	InitLibs ();
 if (m_nLibs)
 	for (int i = 0; i < m_nLibs; i++)
 		for (int j = 0; j < m_libs [i].m_nMovies; j++)

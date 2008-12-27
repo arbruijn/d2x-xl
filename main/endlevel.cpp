@@ -169,7 +169,7 @@ else {
 #endif
 }
 #ifndef SHAREWARE
-r = PlayMovie (szMovieName, (gameData.app.nGameMode & GM_MULTI) ? 0 : MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
+r = movieManager.Play (szMovieName, (gameData.app.nGameMode & GM_MULTI) ? 0 : MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
 #else
 return 0;	// movie not played for shareware
 #endif
@@ -229,7 +229,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING)		// stop demo recording
 if (gameData.demo.nState == ND_STATE_PLAYBACK) {		// don't do this if in playback mode
 	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) ||
 		 ((gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission) &&
-		 movieManager.bHaveExtras))
+		 movieManager.m_bHaveExtras))
 		StartEndLevelMovie ();
 	paletteManager.SetLastLoaded ("");		//force palette load next time
 	return;
@@ -250,7 +250,7 @@ if (IsMultiGame) {
 	}
 if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) ||
 		((gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission) &&
-		movieManager.bHaveExtras)) {
+		movieManager.m_bHaveExtras)) {
 	// only play movie for built-in mission
 	if (!IsMultiGame)
 		nMoviePlayed = StartEndLevelMovie ();
