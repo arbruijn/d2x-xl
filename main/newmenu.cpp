@@ -653,53 +653,11 @@ void NMTrimWhitespace (char *text)
 
 //------------------------------------------------------------------------------
 
-int ExecMenu (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP, 
-					int (*menuCallback) (int nItems, CMenuItem * itemP, int * lastKeyP, int nItem),
-					char *filename)
-{
-return ExecMenu3 (pszTitle, pszSubTitle, nItems, itemP, menuCallback, NULL, filename, -1, -1);
-}
-
 int ExecMenuTiny (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP, 
 						int (*menuCallback) (int nItems, CMenuItem *itemP, int *lastKeyP, int nItem))
 {
-return ExecMenu4 (pszTitle, pszSubTitle, nItems, itemP, menuCallback, NULL, NULL, LHX (310), -1, 1);
+return ExecMenu (pszTitle, pszSubTitle, nItems, itemP, menuCallback, NULL, NULL, -1, -1, 1);
 }
-
-//------------------------------------------------------------------------------
-
-int ExecMenutiny2 (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP, 
-						  int (*menuCallback) (int nItems, CMenuItem * itemP, int * lastKeyP, int nItem))
-{
-return ExecMenu4 (pszTitle, pszSubTitle, nItems, itemP, menuCallback, 0, NULL, -1, -1, 1);
-}
-
-//------------------------------------------------------------------------------
-
-int ExecMenu1 (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP, 
-					int (*menuCallback) (int nItems, CMenuItem * itemP, int * lastKeyP, int nItem), 
-					int *nCurItemP)
-{
-return ExecMenu3 (pszTitle, pszSubTitle, nItems, itemP, menuCallback, nCurItemP, NULL, -1, -1);
-}
-
-//------------------------------------------------------------------------------
-
-int ExecMenu2 (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP, 
-					int (*menuCallback) (int nItems, CMenuItem * itemP, int * lastKeyP, int nItem), 
-					int *nCurItemP, char *filename)
-{
-return ExecMenu3 (pszTitle, pszSubTitle, nItems, itemP, menuCallback, nCurItemP, filename, -1, -1);
-}
-
-//------------------------------------------------------------------------------
-
-int ExecMenu3 (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP, 
-					int (*menuCallback) (int nItems, CMenuItem * itemP, int * lastKeyP, int nItem), 
-					int *nCurItemP, char *filename, int width, int height)
- {
- return ExecMenu4 (pszTitle, pszSubTitle, nItems, itemP, menuCallback, nCurItemP, filename, width, height, 0);
- }
 
 //------------------------------------------------------------------------------
 
@@ -1064,9 +1022,9 @@ if (szHelp && *szHelp) {
 
 #define REDRAW_ALL	for (i = 0; i < nItems; i++) itemP [i].redraw = 1; bRedrawAll = 1
 
-int ExecMenu4 (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP, 
-					 int (*menuCallback) (int nItems, CMenuItem *itemP, int *lastKeyP, int nItem), 
-					 int *nCurItemP, char *filename, int width, int height, int bTinyMode)
+int ExecMenu (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP, 
+				  int (*menuCallback) (int nItems, CMenuItem *itemP, int *lastKeyP, int nItem), 
+				  int *nCurItemP, char *filename, int width, int height, int bTinyMode)
 {
 	int			bKeyRepeat, done, nItem = nCurItemP ? *nCurItemP : 0;
 	int			choice, old_choice, i;
@@ -2009,7 +1967,7 @@ strcpy (nm_text, "");
 vsprintf (nm_text, format, args);
 va_end (args);
 Assert (strlen (nm_text) < MESSAGEBOX_TEXT_SIZE);
-return ExecMenu (pszTitle, nm_text, nChoices, nmMsgItems, menuCallback, filename);
+return ExecMenu (pszTitle, nm_text, nChoices, nmMsgItems, menuCallback, NULL, filename);
 }
 
 //------------------------------------------------------------------------------
@@ -2053,9 +2011,9 @@ if (!bTiny) {
 	}
 nInMenu = gameStates.menus.nInMenu;
 gameStates.menus.nInMenu = 0;
-i = bTiny ? 
-	 ExecMenuTiny (NULL, pszTitle, nChoices, nmMsgItems, NULL) :
-	 ExecMenu (pszTitle, nm_text, nChoices, nmMsgItems, NULL, filename);
+i = bTiny 
+	 ? ExecMenu (NULL, pszTitle, nChoices, nmMsgItems, NULL, NULL, NULL, LHX (340), -1, 1)
+	 : ExecMenu (pszTitle, nm_text, nChoices, nmMsgItems, NULL, NULL, filename);
 gameStates.menus.nInMenu = nInMenu;
 return i;
 }

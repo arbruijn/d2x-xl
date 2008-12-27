@@ -2103,7 +2103,7 @@ else {
 	gameStates.multi.bSurfingNet = 1;
 //	NMLoadBackground (MenuPCXName (), &bg, 0);             //load this here so if we abort after loading level, we restore the palette
 //	paletteManager.LoadEffect  ();
-	choice = ExecMenuTiny (TXT_NETGAMES, NULL, MAX_ACTIVE_NETGAMES + 2 + gameStates.multi.bUseTracker, m, NetworkJoinPoll);
+	choice = ExecMenu (TXT_NETGAMES, NULL, MAX_ACTIVE_NETGAMES + 2 + gameStates.multi.bUseTracker, m, NetworkJoinPoll, NULL, NULL, LHX (340), -1, 1);
 //	backgroundManager.Remove ();
 	gameStates.multi.bSurfingNet = 0;
 	}
