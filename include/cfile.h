@@ -62,6 +62,8 @@ class CFile {
 		int PutC (int c);
 		int PutS (const char *str);
 
+		inline int Size (void) { return m_cf.size; }
+
 		// prototypes for reading basic types from fp
 		int ReadInt (void);
 		short ReadShort (void);

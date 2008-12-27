@@ -77,14 +77,17 @@ typedef struct {
 
 class CSubTitles {
 	public:
-		subtitle captions [MAX_SUBTITLES];
-		int		nCaptions;
-		ubyte*	rawDataP;
+		subtitle m_captions [MAX_SUBTITLES];
+		int		m_nCaptions;
+		ubyte*	m_rawDataP;
 
 	public:
 		int Init (const char* filename);
 		void Close (void);
 		void Draw (int nFrame);
+
+	private:
+		ubyte* NextField (ubyte* p);
 	};
 
 CSubTitles subTitles;
@@ -127,21 +130,20 @@ class CMovieLib {
 		void Init (void);
 		void Destroy (void);
 		CMovie* Open (char* filename, int bRequired);
-		bool Setup (char* filename);
+		bool Setup (const char* filename);
 		static CMovieLib* Create (char* filename);
 
 	private:	
 		int SetupMVL (CFile& cf);
-		int SetupDF (CFile& cf)
-
-};
+		int SetupHF (CFile& cf);
+		int Count (CFile& cf);
+	};
 
 class CMovieManager {
 	public:
 		CArray<CMovieLib>	m_libs; // [N_MOVIE_LIBS];
 		int					m_nLibs;
 		CPalette*			m_palette;
-		CRobotMovie			m_robot;
 		int					m_nRobots;
 		int					m_bHaveIntro;
 		int					m_bHaveExtras;
@@ -158,7 +160,6 @@ class CMovieManager {
 		void Init (void);
 		void InitExtraRobotLib (char* filename);
 		void Destroy (void);
-		void InitLibs (void);
 		CMovieLib* FindLib (const char* pszLib);
 		CMovieLib* Find (const char* pszMovie);
 		int Run (char* filename, int bHires, int bAllowAbort, int dx, int dy);
@@ -166,9 +167,14 @@ class CMovieManager {
 		CMovie* Open (char* filename, int bRequired);
 		int RequestCD (void);
 		char* Cycle (int bRestart, int bPlayMovie);
-		void StartRobot (void);
-		void RotateRobot (void);
-		void EndRobot (void);
+		void PlayIntro (void);
+		int StartRobot (char* filename);
+		int RotateRobot (void);
+		void StopRobot (void);
+
+	private:
+		void CMovieManager::InitLib (const char* pszFilename, int nLibrary, int bRobotMovie, int bRequired);
+		void InitLibs (void);
 };
 
 CMovieManager movieManager;
@@ -240,10 +246,10 @@ while (p && (p < m_rawDataP + size)) {
 		DecodeTextLine (reinterpret_cast<char*> (p));
 	if (*p != ';') {
 		m_captions [m_nCaptions].first_frame = atoi (reinterpret_cast<char*> (p));
-		if (!(p = next_field (p))) 
+		if (!(p = NextField (p))) 
 			continue;
 		m_captions [m_nCaptions].last_frame = atoi (reinterpret_cast<char*> (p));
-		if (!(p = next_field (p)))
+		if (!(p = NextField (p)))
 			continue;
 		m_captions [m_nCaptions].msg = reinterpret_cast<char*> (p);
 		Assert (m_nCaptions==0 || m_captions [m_nCaptions].first_frame >= m_captions [m_nCaptions-1].first_frame);
@@ -343,7 +349,7 @@ void CMovie::ShowFrame (ubyte* buf, uint bufw, uint bufh, uint sx, uint sy, uint
 	CBitmap bmFrame;
 
 bmFrame.Init (BM_LINEAR, 0, 0, bufw, bufh, 1, buf);
-bmFrame.SetPalette (movies.palette);
+bmFrame.SetPalette (movieManager.m_palette);
 
 TRANSPARENCY_COLOR = -1;
 if (gameOpts->menus.nStyle) {
@@ -400,7 +406,7 @@ palette.SetBlack (0, 0, 0);
 //Set color 255 to be our subtitle color
 palette.SetTransparency (50, 50, 50);
 //finally set the palette in the hardware
-movies.palette = paletteManager.Add (palette);
+movieManager.m_palette = paletteManager.Add (palette);
 paletteManager.LoadEffect ();
 }
 
@@ -452,88 +458,6 @@ void ClearPauseMessage ()
 //-----------------------------------------------------------------------
 //-----------------------------------------------------------------------
 //-----------------------------------------------------------------------
-//returns 1 if frame updated ok
-int CMovieManager::RotateRobot (void)
-{
-if (!m_robotP)
-	return 0;
-
-	int res;
-
-gameOpts->movies.bFullScreen = 1;
-if (gameStates.ogl.nDrawBuffer == GL_BACK)
-	paletteManager.LoadEffect ();
-res = MVE_rmStepMovie ();
-paletteManager.LoadEffect ();
-if (res == MVE_ERR_EOF) {   //end of movie, so reset
-	m_robotP->Rewind ();
-	if (MVE_rmPrepMovie (reinterpret_cast<void*> (&movies.robot.cf), 
-								gameStates.menus.bHires ? 280 : 140, 
-								gameStates.menus.bHires ? 200 : 80, 0,
-								movies.robot.bLittleEndian)) {
-		return 0;
-		}
-	}
-else if (err) {
-	return 0;
-	}
-return 1;
-}
-
-//-----------------------------------------------------------------------
-
-void CMovieManager::StopRobot (void)
-{
-if (m_robotP) {
-	MVE_rmEndMovie ();
-	m_robotP->Close ();                           // Close Movie File
-	m_robotP = NULL;
-	}
-}
-
-//-----------------------------------------------------------------------
-
-int CMovieManager::StartRobot (char* filename)
-{
-	CMovieLib*	libP = movieManager.Find (filename);
-	CFile&		cf;
-
-if (gameOpts->movies.nLevel < 1)
-	return 0;
-
-#if TRACE
-console.printf (DEBUG_LEVEL, "movies.robot.cf=%s\n", filename);
-#endif
-MVE_sndInit (-1);        //tell movies to play no sound for robots
-if (!(m_robotP = movieManager.Open (cf, filename, 1))) {
-#if DBG
-	Warning (TXT_MOVIE_ROBOT, filename);
-#endif
-	return MOVIE_NOT_PLAYED;
-	}
-gameOpts->movies.bFullScreen = 1;
-robotP->m_bLittleEndian = libP ? libP->m_bLittleEndian : 1;
-MVE_memCallbacks (CMovie::Alloc, CMove::Free);
-MVE_ioCallbacks (CMove::Read);
-MVE_sfCallbacks (CMovie::ShowFrame);
-MVE_palCallbacks (CMovie::SetPalette);
-if (MVE_rmPrepMovie (reinterpret_cast<void*> (&cf), 
-							gameStates.menus.bHires ? 280 : 140, 
-							gameStates.menus.bHires ? 200 : 80, 0,
-							movies.robot.bLittleEndian)) {
-	Int3 ();
-	return 0;
-	}
-m_robotP->m_pos = m_robotP->m_cf.Tell ();
-#if TRACE
-console.printf (DEBUG_LEVEL, "movies.robot.nFilePos=%d!\n", movies.robot.nFilePos);
-#endif
-return 1;
-}
-
-//-----------------------------------------------------------------------
-//-----------------------------------------------------------------------
-//-----------------------------------------------------------------------
 
 void CMovieLib::Init (void)
 {
@@ -565,16 +489,15 @@ if (nFiles > 255) {
 	}
 if (!m_movies.Create (nFiles))
 	return 0;
-strcpy (m_name, filename);
 m_nMovies = nFiles;
 offset = 4 + 4 + nFiles * (13 + 4);	//id + nFiles + nFiles * (filename + size)
 for (i = 0; i < nFiles; i++) {
-	if (cf.Read (m_movies [i].name, 13, 1) != 1)
+	if (cf.Read (m_movies [i].m_name, 13, 1) != 1)
 		break;		//end of file (probably)
 	len = cf.ReadInt ();
-	m_movies [i].len = len;
-	m_movies [i].offset = offset;
-	offset += m_movies [i].len;
+	m_movies [i].m_len = len;
+	m_movies [i].m_offset = offset;
+	offset += m_movies [i].m_len;
 	}
 cf.Close ();
 m_flags = 0;
@@ -587,9 +510,8 @@ return nFiles;
 
 int CMovieLib::Count (CFile& cf)
 {
-	int	size = cf.m_cf.size;
+	int	size = cf.Size ();
 	int	nFiles = 0;
-	int	h;
 	int	fPos = cf.Tell ();
 
 for (;;) {
@@ -614,10 +536,10 @@ if (nFiles < 1)
 if (!m_movies.Create (nFiles))
 	return 0;
 for (int i = 0; i < nFiles; i++) {
-	cf.Read (m_movies [i].name, 13, 1);
-	m_movies [i].len = cf.ReadInt ();
-	m_movies [i].offset = cf.Tell ();
-	cf.Seek (m_movies [i].len, SEEK_CUR);       //skip data
+	cf.Read (m_movies [i].m_name, 13, 1);
+	m_movies [i].m_len = cf.ReadInt ();
+	m_movies [i].m_offset = cf.Tell ();
+	cf.Seek (m_movies [i].m_len, SEEK_CUR);       //skip data
 	}
 return nFiles;
 }
@@ -640,24 +562,12 @@ if (!strncmp (id, "DMVL", 4))
 	nFiles = SetupMVL (cf);
 else if (!strncmp (id, "DHF", 3)) {
 	cf.Seek (-1, SEEK_CUR);		//old file had 3 char id
-	nFiles = SetupDF (cf);
+	nFiles = SetupHF (cf);
 	}
 cf.Close ();
+if (nFiles > 0)
+	strcpy (m_name, filename);
 return nFiles > 0;
-}
-
-//-----------------------------------------------------------------------
-
-CMovieLib* CMovieLib::Create (const char* filename)
-{
-	CMovieLib*	lib = new CMovieLib;
-
-if (!lib)
-	return NULL;
-if (lib->Setup (filename))
-	return lib;
-delete lib;
-return NULL;
 }
 
 //-----------------------------------------------------------------------
@@ -669,13 +579,13 @@ CMovie* CMovieLib::Open (char* filename, int bRequired)
 	int i, bFromCD;
 
 for (i = 0; i < m_nMovies; i++)
-	if (!stricmp (filename, m_movies [i].name)) {	//found the movie in a library 
+	if (!stricmp (filename, m_movies [i].m_name)) {	//found the movie in a library 
 		if ((bFromCD = (m_flags & MLF_ON_CD)))
 			SongsStopRedbook ();		//ready to read from CD
 		do {		//keep trying until we get the file handle
 			m_movies [i].m_cf.Open (m_name, gameFolders.szMovieDir, "rb", 0);
 			if (bRequired && bFromCD && !m_movies [i].m_cf.File ()) {   //didn't get file!
-				if (RequestCD () == -1)		//ESC from requester
+				if (movieManager.RequestCD () == -1)		//ESC from requester
 					break;						//bail from here. will get error later
 				}
 			} while (bRequired && bFromCD && !m_movies [i].m_cf.File ());
@@ -774,14 +684,14 @@ strcpy (filename, pszFilename);
 	char* pszRes = strchr (filename, '.') - 1; // 'h' == high pszResolution, 'l' == low
 
 //for robots, load highpszRes versions if highpszRes menus set
-bHires = bRobotMovie ? gameStates.menus.bHipszResAvailable : gameOpts->movies.bHipszRes;
+bHires = bRobotMovie ? gameStates.menus.bHiresAvailable : gameOpts->movies.bHires;
 if (bHires)
 	*pszRes = 'h';
-for (nTries = 0; !movies.libs [nLibrary].Setup (filename); nTries++) {
+for (nTries = 0; !m_libs [nLibrary].Setup (filename); nTries++) {
 	strcpy (cdName, CDROM_dir);
 	strcat (cdName, filename);
-	if (movies.libs [nLibrary].Setup (cdName)) {
-		movies.libs [nLibrary]->m_flags |= MLF_ON_CD;
+	if (m_libs [nLibrary].Setup (cdName)) {
+		m_libs [nLibrary].m_flags |= MLF_ON_CD;
 		break; // we found our movie on the CD
 		}
 	if (nTries == 0) { // first attempt
@@ -812,7 +722,7 @@ for (nTries = 0; !movies.libs [nLibrary].Setup (filename); nTries++) {
 		}
 	}
 
-if (bRobotMovie && movies.m_libs [nLibrary].m_nMovies)
+if (bRobotMovie && m_libs [nLibrary].m_nMovies)
 	m_nRobots = bHires ? 2 : 1;
 }
 
@@ -825,14 +735,14 @@ void CMovieManager::InitLibs (void)
 
 m_nLibs = 0;
 
-int j = (bHaveExtras = !gameStates.app.bNostalgia) 
+int j = (m_bHaveExtras = !gameStates.app.bNostalgia) 
 		  ? N_BUILTIN_MOVIE_LIBS 
 		  : FIRST_EXTRA_MOVIE_LIB;
 
 for (int i = 0; i < N_BUILTIN_MOVIE_LIBS; i++) {
 	bRobotMovie = !strnicmp (pszMovieLibs [i], "robot", 5);
 	InitLib (pszMovieLibs [i], m_nLibs, bRobotMovie, 1);
-	if (m_movies.libs [m_nLibs].m_nMovies) {
+	if (m_libs [m_nLibs].m_nMovies) {
 		m_nLibs++;
 		PrintLog ("   found movie lib '%s'\n", pszMovieLibs [i]);
 		}
@@ -841,8 +751,7 @@ for (int i = 0; i < N_BUILTIN_MOVIE_LIBS; i++) {
 		m_bHaveExtras = 0;
 	}
 
-m_movies.libs [EXTRA_ROBOT_LIB].m_nMovies = 0;
-bMoviesInited = 1;
+m_libs [EXTRA_ROBOT_LIB].m_nMovies = 0;
 }
 
 //-----------------------------------------------------------------------
@@ -850,7 +759,7 @@ bMoviesInited = 1;
 void CMovieManager::InitExtraRobotLib (char* filename)
 {
 m_libs [EXTRA_ROBOT_LIB].Destroy ();
-m_libs [EXTRA_ROBOT_LIB].Setup (filename, 1, 0);
+InitLib (filename, EXTRA_ROBOT_LIB, 1, 0);
 }
 
 //-----------------------------------------------------------------------
@@ -860,7 +769,7 @@ CMovie* CMovieManager::Open (char* filename, int bRequired)
 	CMovie*	movieP;
 
 for (int i = 0; i < m_nLibs; i++)
-	if ((movieP = movies.libs [i].Open (cf, filename, bRequired)))
+	if ((movieP = m_libs [i].Open (filename, bRequired)))
 		return movieP;
 return NULL;    //couldn't find it
 }
@@ -901,7 +810,7 @@ return ret;
 int CMovieManager::Run (char* filename, int bHires, int bRequired, int dx, int dy)
 {
 	CFile			cf;
-	CMovie*		movieP;
+	CMovie*		movieP = NULL;
 	int			result = 1, aborted = 0;
 	int			track = 0;
 	int			nFrame;
@@ -924,7 +833,7 @@ MVE_memCallbacks (CMovie::Alloc, CMovie::Free);
 MVE_ioCallbacks (CMovie::Read);
 MVE_sfCallbacks (CMovie::ShowFrame);
 MVE_palCallbacks (CMovie::SetPalette);
-if (MVE_rmPrepMovie (reinterpret_cast<void*> (&cf), dx, dy, track, libP ? libP->bLittleEndian : 1)) {
+if (MVE_rmPrepMovie (reinterpret_cast<void*> (movieP ? &movieP->m_cf: &cf), dx, dy, track, libP ? libP->m_bLittleEndian : 1)) {
 	Int3 ();
 	return MOVIE_NOT_PLAYED;
 	}
@@ -955,7 +864,7 @@ while ((result = MVE_rmStepMovie ()) == 0) {
 	}
 Assert (aborted || result == MVE_ERR_EOF);	 ///movie should be over
 MVE_rmEndMovie ();
-cf.Close ();                           // Close Movie File
+movieP ? movieP->Close () : cf.Close ();                           // Close Movie File
 // Restore old graphic state
 gameStates.video.nScreenMode = -1;  //force reset of screen mode
 paletteManager.LoadEffect ();
@@ -1002,12 +911,10 @@ return NULL;
 
 CMovieLib* CMovieManager::FindLib (const char* pszLib)
 {
-	int i, j, nMovies;
-
 if (m_nLibs < 0)
 	InitMovies ();
-if (m_nLibs) {
-	for (i = 0; i < m_nLibs; i++) {
+if (m_nLibs) 
+	for (int i = 0; i < m_nLibs; i++)
 		if (!strcmp (pszLib, m_libs [i].m_name))
 			return m_libs + i;
 return NULL;
@@ -1017,19 +924,13 @@ return NULL;
 
 CMovieLib* CMovieManager::Find (const char* pszMovie)
 {
-	int i, j, nMovies;
-	char* pszMovieName;
-
 if (m_nLibs < 0)
 	InitMovies ();
-if (m_nLibs) {
-	for (i = 0; i < m_nLibs; i++) {
-		for (j = 0; j < m_libs [i].m_nMovies; j++) {
+if (m_nLibs)
+	for (int i = 0; i < m_nLibs; i++)
+		for (int j = 0; j < m_libs [i].m_nMovies; j++)
 			if (!strcmp (pszMovie, m_libs [i].m_movies [j].m_name))
-				return movies.libs + i;
-			}
-		}
-	}
+				return m_libs + i;
 return NULL;
 }
 
@@ -1042,6 +943,83 @@ if (m_bHaveIntro) {
 	if (Play ("intro.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize) == MOVIE_NOT_PLAYED)
 		m_bHaveIntro = 0;
 	subTitles.Close ();
+	}
+}
+
+//-----------------------------------------------------------------------
+
+int CMovieManager::StartRobot (char* filename)
+{
+	CMovieLib*	libP = movieManager.Find (filename);
+	CFile			cf;
+
+if (gameOpts->movies.nLevel < 1)
+	return 0;
+
+#if TRACE
+console.printf (DEBUG_LEVEL, "movies.robot.cf=%s\n", filename);
+#endif
+MVE_sndInit (-1);        //tell movies to play no sound for robots
+if (!(m_robotP = movieManager.Open (filename, 1))) {
+#if DBG
+	Warning (TXT_MOVIE_ROBOT, filename);
+#endif
+	return MOVIE_NOT_PLAYED;
+	}
+gameOpts->movies.bFullScreen = 1;
+m_robotP->m_bLittleEndian = libP ? libP->m_bLittleEndian : 1;
+MVE_memCallbacks (CMovie::Alloc, CMovie::Free);
+MVE_ioCallbacks (CMovie::Read);
+MVE_sfCallbacks (CMovie::ShowFrame);
+MVE_palCallbacks (CMovie::SetPalette);
+if (MVE_rmPrepMovie (reinterpret_cast<void*> (&cf), 
+							gameStates.menus.bHires ? 280 : 140, 
+							gameStates.menus.bHires ? 200 : 80, 0,
+							m_robotP->m_bLittleEndian)) {
+	Int3 ();
+	return 0;
+	}
+m_robotP->m_pos = m_robotP->m_cf.Tell ();
+return 1;
+}
+
+//-----------------------------------------------------------------------
+//returns 1 if frame updated ok
+int CMovieManager::RotateRobot (void)
+{
+if (!m_robotP)
+	return 0;
+
+	int res;
+
+gameOpts->movies.bFullScreen = 1;
+if (gameStates.ogl.nDrawBuffer == GL_BACK)
+	paletteManager.LoadEffect ();
+res = MVE_rmStepMovie ();
+paletteManager.LoadEffect ();
+if (res == MVE_ERR_EOF) {   //end of movie, so reset
+	m_robotP->Rewind ();
+	if (MVE_rmPrepMovie (reinterpret_cast<void*> (&m_robotP->m_cf), 
+								gameStates.menus.bHires ? 280 : 140, 
+								gameStates.menus.bHires ? 200 : 80, 0,
+								m_robotP->m_bLittleEndian)) {
+		return 0;
+		}
+	}
+else if (res) {
+	return 0;
+	}
+return 1;
+}
+
+//-----------------------------------------------------------------------
+
+void CMovieManager::StopRobot (void)
+{
+if (m_robotP) {
+	MVE_rmEndMovie ();
+	m_robotP->Close ();                           // Close Movie File
+	m_robotP = NULL;
 	}
 }
 
