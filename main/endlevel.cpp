@@ -229,7 +229,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING)		// stop demo recording
 if (gameData.demo.nState == ND_STATE_PLAYBACK) {		// don't do this if in playback mode
 	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) ||
 		 ((gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission) &&
-		 gameStates.app.bHaveExtraMovies))
+		 movieManager.bHaveExtras))
 		StartEndLevelMovie ();
 	paletteManager.SetLastLoaded ("");		//force palette load next time
 	return;
@@ -250,7 +250,7 @@ if (IsMultiGame) {
 	}
 if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) ||
 		((gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission) &&
-		gameStates.app.bHaveExtraMovies)) {
+		movieManager.bHaveExtras)) {
 	// only play movie for built-in mission
 	if (!IsMultiGame)
 		nMoviePlayed = StartEndLevelMovie ();

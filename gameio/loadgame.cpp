@@ -1500,7 +1500,7 @@ if (!IsMultiGame) {
 			bPlayed = PlayMovie (ENDMOVIE, MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
 			CloseSubTitles ();
 			}
-		else if (gameStates.app.bHaveExtraMovies) {
+		else if (movieManager.bHaveExtras) {
 			//InitSubTitles (ENDMOVIE ".tex");	//ingore errors
 			bPlayed = PlayMovie (D1_ENDMOVIE, MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
 			CloseSubTitles ();
@@ -1949,7 +1949,7 @@ if (!IsMultiGame) {
 				DoBriefingScreens (reinterpret_cast<char*> ("brief2o.tex"), 1);
 			}
 		else { // full version
-			if (gameStates.app.bHaveExtraMovies && (nLevel == 1)) {
+			if (movieManager.bHaveExtras && (nLevel == 1)) {
 				PlayIntroMovie ();
 				}
 			for (i = 0; i < NUM_INTRO_MOVIES; i++) {
@@ -1975,7 +1975,7 @@ if (!IsMultiGame) {
 	else {	//not the built-in mission.  check for add-on briefing
 		if ((gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1) &&
 			 (gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission)) {
-			if (gameStates.app.bHaveExtraMovies && (nLevel == 1)) {
+			if (movieManager.bHaveExtras && (nLevel == 1)) {
 				if (PlayMovie ("briefa.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize) != MOVIE_ABORTED)
 					 PlayMovie ("briefb.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
 				}

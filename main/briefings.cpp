@@ -823,8 +823,6 @@ if (gameStates.ogl.nDrawBuffer == GL_FRONT)
 	GrUpdate (0);
 }
 
-extern int InitMovieBriefing ();
-
 //-----------------------------------------------------------------------------
 
 const char *NextPage (const char *message)
@@ -1320,11 +1318,10 @@ bRobotPlaying = 0;
 
 if (gameStates.app.bNostalgia)
 	OglSetDrawBuffer (GL_FRONT, 0);
-InitMovieBriefing ();
 
 bi.bExtraSounds = gameStates.app.bHaveExtraData && gameStates.app.bD1Mission && 
 				  (gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission);
-bi.bOnlyRobots = gameStates.app.bHaveExtraMovies && bi.bExtraSounds && (bi.nLevel == 1) && (bi.nScreen < 4);
+bi.bOnlyRobots = movieManager.bHaveExtras && bi.bExtraSounds && (bi.nLevel == 1) && (bi.nScreen < 4);
 if (!gameData.songs.bPlaying)
 	bi.nHumChannel = StartBriefingHum (bi.nHumChannel, bi.nLevel, bi.nScreen, bi.bExtraSounds);
 

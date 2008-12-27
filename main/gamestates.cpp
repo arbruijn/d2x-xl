@@ -344,7 +344,7 @@ gameStates.video.bFullScreen = -1;
 void InitAppStates (void)
 {
 gameStates.app.bHaveExtraData = 0;
-gameStates.app.bHaveExtraMovies = 0;
+movieManager.bHaveExtras = 0;
 gameStates.app.nExtGameStatus = 1;
 gameStates.app.nFunctionMode = FMODE_MENU;
 gameStates.app.nLastFuncMode = -1;

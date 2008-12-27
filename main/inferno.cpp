@@ -368,7 +368,7 @@ else
 #endif
 	{	//NOTE LINK TO ABOVE!
 	int bSongPlaying = 0;
-	if (gameStates.app.bHaveExtraMovies) {
+	if (movieManager.bHaveExtras) {
 		nPlayed = PlayMovie ("starta.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
 		if (nPlayed == MOVIE_ABORTED)
 			nPlayed = MOVIE_PLAYED_FULL;
