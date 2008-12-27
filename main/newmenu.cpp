@@ -1958,47 +1958,6 @@ return i;
 
 // ------------------------------------------------------------------------------ 
 
-typedef char		tFilename [FILENAME_LEN + 1];
-
-int _CDECL_ CmpFilenames (const tFilename* left, const tFilename* right)
-{
-return strcmp ((char*) (left), (char*) (right));
-}
-
-// ------------------------------------------------------------------------------ 
-
-void SortFiles (int n, tFilename* list)
-{
-#if 1
-	CQuickSort<tFilename>	qs;
-
-qs.SortAscending (list, 0, n - 1, CmpFilenames);
-#else
-	int i, j, incr;
-	char t [FILENAME_LEN];
-
-	incr = n / 2;
-	while (incr > 0)	 {
-		for (i = incr; i < n; i++)	 {
-			j = i - incr;
-			while (j>= 0)		 {
-				if (strncmp (&list [j* (FILENAME_LEN + 1)], &list [ (j + incr)* (FILENAME_LEN + 1)], FILENAME_LEN - 1) > 0) {
-					memcpy (t, &list [j* (FILENAME_LEN + 1)], FILENAME_LEN);
-					memcpy (&list [j* (FILENAME_LEN + 1)], &list [ (j + incr)* (FILENAME_LEN + 1)], FILENAME_LEN);
-					memcpy (&list [ (j + incr)* (FILENAME_LEN + 1)], t, FILENAME_LEN);
-					j -= incr;
-				}
-				else
-					break;
-			}
-		}
-		incr = incr / 2;
-	}
-#endif
-}
-
-// ------------------------------------------------------------------------------ 
-
 void DeleteSaveGames (char* name)
 {
 	int i;
@@ -2019,7 +1978,7 @@ int FileSelector (const char* pszTitle, const char* filespec, char* filename, in
 	int					i;
 	FFS					ffs;
 	int					nFileCount = 0, key, done, nItem, ocitem;
-	CArray<tFilename>	filenames;
+	CArray<CFilename>	filenames;
 	int					nFilesDisplayed = 8;
 	int					nFirstItem = -1, nPrevItem;
 	int					bKeyRepeat = gameStates.input.keys.bRepeat;
@@ -2056,7 +2015,7 @@ nFileCount = 0;
 
 #if !defined (APPLE_DEMO)		// no new pilots for special apple oem version
 if (bPlayerMode) {
-	strncpy (filenames [nFileCount], TXT_CREATE_NEW, FILENAME_LEN);
+	filenames [nFileCount] = TXT_CREATE_NEW;
 	nFileCount++;
 	}
 #endif
@@ -2064,8 +2023,8 @@ if (bPlayerMode) {
 if (!FFF (filespec, &ffs, 0)) {
 	do {
 		if (nFileCount < MAX_FILES) {
-			pszFn = filenames [nFileCount];
- strncpy (pszFn, ffs.name, FILENAME_LEN);
+			pszFn = (char*) (&filenames [nFileCount][0]);
+			strncpy (pszFn, ffs.name, FILENAME_LEN);
 			if (bPlayerMode) {
 				char* p = strchr (pszFn, '.');
 				if (p) 
@@ -2087,7 +2046,7 @@ if (bDemoMode && gameFolders.bAltHogDirInited) {
 	if (!FFF (filespec2, &ffs, 0)) {
 		do {
 			if (nFileCount<MAX_FILES) {
-				strncpy (filenames [nFileCount], ffs.name, FILENAME_LEN);
+				filenames [nFileCount] = ffs.name;
 				nFileCount++;
 			} else {
 				break;
@@ -2173,9 +2132,9 @@ if (!bInitialized) {
 	}
 
 if (!bPlayerMode)
-	SortFiles (nFileCount, &filenames [0]);
+	filenames.SortAscending ();
 else {
-	SortFiles (nFileCount - 1, &filenames [1]);		// Don't sort first one!
+	filenames.SortAscending (1, filenames.Length () - 2); 
 	for (i = 0; i < nFileCount; i++) {
 		if (!stricmp (LOCALPLAYER.callsign, filenames [i])) {
 			bDblClick = 1;
@@ -2233,7 +2192,7 @@ while (!done) {
 		case KEY_CTRLED + KEY_D:
 			if (((bPlayerMode) && (nItem > 0)) || ((bDemoMode) && (nItem >= 0))) {
 				int x = 1;
-				char* pszFile = filenames [nItem];
+				char* pszFile = (char*) (&filenames [nItem][0]);
 				if (*pszFile == '$')
 					pszFile++;
 				SDL_ShowCursor (0);
@@ -2336,7 +2295,7 @@ while (!done) {
 							}
 						}
 					do {
-						pszFn = filenames [cc];
+						pszFn = (char*) (&filenames [cc][0]);
 						if (gameOpts->menus.bSmartFileSearch ? strstr (pszFn, szPattern) == pszFn : *pszFn == toupper (ascii)) {
 							nItem = cc;
 							bFound = 1;

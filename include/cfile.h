@@ -31,6 +31,30 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SHORT_FILENAME_LEN 13
 #define MAX_HOGFILES			300
 
+class CFilename {
+	public:
+		char m_buffer [FILENAME_LEN + 1];
+	public:
+		CFilename () { m_buffer [0] = '\0'; }
+		inline CFilename& operator= (CFilename& other) { 
+			memcpy (m_buffer, other.m_buffer, sizeof (m_buffer)); 
+			return *this;
+			}
+		inline CFilename& operator= (const char* other) { 
+			strncpy (m_buffer, other, sizeof (m_buffer)); 
+			return *this;
+			}
+		inline bool operator== (CFilename& other)
+			{ return !strcmp (m_buffer, other.m_buffer); }
+		inline bool operator< (CFilename& other)
+			{ return strcmp (m_buffer, other.m_buffer) < 0; }
+		inline bool operator> (CFilename& other)
+			{ return strcmp (m_buffer, other.m_buffer) > 0; }
+		inline operator const char*()
+			{ return reinterpret_cast<char*> (&m_buffer [0]); }
+	};
+
+
 typedef struct CFILE {
 	FILE		*file;
 	char		*filename;

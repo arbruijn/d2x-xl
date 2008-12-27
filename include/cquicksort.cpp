@@ -5,10 +5,9 @@
 template <typename _T>
 inline void CQuickSort< _T >::Swap (_T* left, _T* right)
 {
-_T h;
-memcpy (&h, left, sizeof (_T));
-memcpy (left, right, sizeof (_T));
-memcpy (right, &h, sizeof (_T));
+_T h = *left;
+*left = *right;
+*right = h;
 }
 
 //-----------------------------------------------------------------------------
@@ -18,12 +17,12 @@ void CQuickSort< _T >::SortAscending (_T* buffer, int left, int right)
 {
 	int	l = left,
 			r = right;
-	_T		m = buffer [(l + r) / 2];
+	_T		median = buffer [(l + r) / 2];
 
 do {
-	while (buffer [l] < m)
+	while (buffer [l] < median)
 		l++;
-	while (buffer [r] > m)
+	while (buffer [r] > median)
 		r--;
 	if (l <= r) {
 		if (l < r)
@@ -45,12 +44,12 @@ void CQuickSort< _T >::SortDescending (_T* buffer, int left, int right)
 {
 	int	l = left,
 			r = right;
-	_T		m = buffer [(l + r) / 2];
+	_T		median = buffer [(l + r) / 2];
 
 do {
-	while (buffer [l] > m)
+	while (buffer [l] > median)
 		l++;
-	while (buffer [r] < m)
+	while (buffer [r] < median)
 		r--;
 	if (l <= r) {
 		if (l < r)
@@ -72,9 +71,7 @@ void CQuickSort< _T >::SortAscending (_T* buffer, int left, int right, comparato
 {
 	int	l = left,
 			r = right;
-	_T		median;
-	
-memcpy (&median, buffer + (l + r) / 2, sizeof (_T));
+	_T		median = buffer [(l + r) / 2];
 
 do {
 	while (compare (buffer + l, &median) < 0)

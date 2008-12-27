@@ -239,24 +239,24 @@ template < class _T > class CArray : public CQuickSort < _T > {
 
 		inline void SetWrap (bool bWrap) { m_data.bWrap = bWrap; }
 
-		inline void SortAscending (void) { 
+		inline void SortAscending (int left = 0, int right = 0) { 
 			if (m_data.buffer) 
-				CQuickSort<_T>::SortAscending (m_data.buffer, 0, m_data.length - 1); 
+				CQuickSort<_T>::SortAscending (m_data.buffer, left, right ? right : m_data.length); 
 				}
 
-		inline void SortDescending (void) {
+		inline void SortDescending (int left = 0, int right = 0) {
 			if (m_data.buffer) 
-				CQuickSort<_T>::SortDescending (m_data.buffer, 0, m_data.length - 1); 
+				CQuickSort<_T>::SortDescending (m_data.buffer, left, right ? right : m_data.length);
 			}
 
-		inline void SortAscending (comparator compare) {
+		inline void SortAscending (comparator compare, int left = 0, int right = 0) {
 			if (m_data.buffer) 
-				CQuickSort<_T>::SortAscending (m_data.buffer, 0, m_data.length - 1, compare); 
+				CQuickSort<_T>::SortAscending (m_data.buffer, left, right ? right : m_data.length);
 			}
 
-		inline void SortDescending (comparator compare) {
+		inline void SortDescending (comparator compare, int left = 0, int right = 0) {
 			if (m_data.buffer) 
-				CQuickSort<_T>::SortDescending (m_data.buffer, 0, m_data.length - 1, compare); 
+				CQuickSort<_T>::SortDescending (m_data.buffer, left, right ? right : m_data.length);
 			}
 	};
 
