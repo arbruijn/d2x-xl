@@ -521,7 +521,7 @@ return 1;
 #define PROGRESS_ITEM	2
 #define PERCENT_ITEM		1
 
-int DownloadPoll (int nItems, tMenuItem *m, int *key, int nCurItem)
+int DownloadPoll (int nItems, CMenuItem *m, int *key, int nCurItem)
 {
 if (*key == KEY_ESC) {
 	m [PERCENT_ITEM].text = reinterpret_cast<char*> ("download aborted");
@@ -572,7 +572,7 @@ return nCurItem;
 
 int DownloadMission (char *pszMission)
 {
-	tMenuItem	m [3];
+	CMenuItem	m [3];
 	char			szTitle [30];
 	char			szProgress [30];
 	int			i;

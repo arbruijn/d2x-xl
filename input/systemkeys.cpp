@@ -307,14 +307,14 @@ switch (key) {
 	case KEYDBGGED + KEY_K: {
 		int how_many, c;
 		char filename [FILENAME_LEN], num[16];
-		tMenuItem m[6];
+		CMenuItem m[6];
 
 		filename [0] = '\0';
 		memset (m, 0, sizeof (m));
 		m[0].nType = NM_TYPE_TEXT; 
 		m[0].text = "output file name";
 		m[1].nType = NM_TYPE_INPUT;
-		m[1].text_len = 8; 
+		m[1].nTextLen = 8; 
 		m[1].text = filename;
 		c = ExecMenu( NULL, NULL, 2, m, NULL, NULL );
 		if (c == -2)
@@ -322,7 +322,7 @@ switch (key) {
 		strcat(filename, ".dem");
 		num[0] = '\0';
 		m[ 0].nType = NM_TYPE_TEXT; m[ 0].text = "strip how many bytes";
-		m[ 1].nType = NM_TYPE_INPUT;m[ 1].text_len = 16; m[1].text = num;
+		m[ 1].nType = NM_TYPE_INPUT;m[ 1].nTextLen = 16; m[1].text = num;
 		c = ExecMenu( NULL, NULL, 2, m, NULL, NULL );
 		if (c == -2)
 			break;
@@ -1122,12 +1122,12 @@ void HandleTestKey(int key)
 		#endif
 
 		case KEYDBGGED+KEY_B: {
-			tMenuItem m;
+			CMenuItem m;
 			char text[FILENAME_LEN]="";
 			int item;
 			memset (&m, 0, sizeof (m));
 			m.nType=NM_TYPE_INPUT; 
-			m.text_len = FILENAME_LEN; 
+			m.nTextLen = FILENAME_LEN; 
 			m.text = text;
 			item = ExecMenu( NULL, "Briefing to play?", 1, &m, NULL, NULL );
 			if (item != -1) {

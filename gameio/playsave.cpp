@@ -1472,7 +1472,7 @@ int NewPlayerConfig (void)
 {
 	int nitems;
 	int i,j,choice;
-	tMenuItem m[8];
+	CMenuItem m[8];
    int mct=CONTROL_MAX_TYPES;
 
 mct--;
@@ -2694,7 +2694,7 @@ int MakeNewPlayerFile (int bAllowAbort)
 {
 	int x;
 	char filename [FILENAME_LEN];
-	tMenuItem m;
+	CMenuItem m;
 	char text [CALLSIGN_LEN+1]="";
 
 strncpy (text, LOCALPLAYER.callsign,CALLSIGN_LEN);
@@ -2703,7 +2703,7 @@ try_again:
 
 memset (&m, 0, sizeof (m));
 m.nType = NM_TYPE_INPUT;
-m.text_len = 8;
+m.nTextLen = 8;
 m.text = text;
 
 nmAllowedChars = playername_allowed_chars;

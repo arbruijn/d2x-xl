@@ -1709,14 +1709,14 @@ void GetLevelName()
 //NO_UI!!!	}
 //NO_UI!!!
 
-	tMenuItem m [2];
+	CMenuItem m [2];
 
 	memset (m, 0, sizeof (m));
 	m [0].nType = NM_TYPE_TEXT; 
 	m [0].text = "Please enter a name for this mine:";
 	m [1].nType = NM_TYPE_INPUT; 
 	m [1].text = gameData.missions.szCurrentLevel; 
-	m [1].text_len = LEVEL_NAME_LEN;
+	m [1].nTextLen = LEVEL_NAME_LEN;
 
 	ExecMenu(NULL, "Enter mine name", 2, m, NULL);
 

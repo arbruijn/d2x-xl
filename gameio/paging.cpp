@@ -422,7 +422,7 @@ static int nTouchPowerup1 = 0;
 static int nTouchPowerup2 = 0;
 static int nTouchGauge = 0;
 
-static int LoadTexturesPoll (int nItems, tMenuItem *m, int *key, int nCurItem)
+static int LoadTexturesPoll (int nItems, CMenuItem *m, int *key, int nCurItem)
 {
 	int	i;
 

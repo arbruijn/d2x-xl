@@ -392,7 +392,7 @@ for (i = startI; i < endI; i++)
 
 //------------------------------------------------------------------------------
 
-static int SortLightsPoll (int nItems, tMenuItem *m, int *key, int nCurItem)
+static int SortLightsPoll (int nItems, CMenuItem *m, int *key, int nCurItem)
 {
 paletteManager.LoadEffect  ();
 if (loadOp == 0) {

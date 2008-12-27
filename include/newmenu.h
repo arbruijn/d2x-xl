@@ -18,42 +18,69 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "cfile.h"
 
 #define NM_TYPE_MENU        0   // A menu item... when enter is hit on this, ExecMenu returns this item number
-#define NM_TYPE_INPUT       1   // An input box... fills the text field in, and you need to fill in text_len field.
+#define NM_TYPE_INPUT       1   // An input box... fills the text field in, and you need to fill in nTextLen field.
 #define NM_TYPE_CHECK       2   // A check box. Set and get its status by looking at flags field (1=on, 0=off)
 #define NM_TYPE_RADIO       3   // Same as check box, but only 1 in a group can be set at a time. Set group fields.
 #define NM_TYPE_TEXT        4   // A line of text that does nothing.
 #define NM_TYPE_NUMBER      5   // A numeric entry counter.  Changes value from minValue to maxValue;
 #define NM_TYPE_INPUT_MENU  6   // A inputbox that you hit Enter to edit, when done, hit enter and menu leaves.
-#define NM_TYPE_SLIDER      7   // A slider from minValue to maxValue. Draws with text_len chars.
-#define NM_TYPE_GAUGE       8   // A slider from minValue to maxValue. Draws with text_len chars.
+#define NM_TYPE_SLIDER      7   // A slider from minValue to maxValue. Draws with nTextLen chars.
+#define NM_TYPE_GAUGE       8   // A slider from minValue to maxValue. Draws with nTextLen chars.
 
 #define NM_MAX_TEXT_LEN     50
 
 //------------------------------------------------------------------------------
 
-typedef struct tMenuItem {
-	int			nType;           // What kind of item this is, see NM_TYPE_????? defines
-	int			value;          // For checkboxes and radio buttons, this is 1 if marked initially, else 0
-	int			minValue, maxValue;   // For sliders and number bars.
-	int			group;          // What group this belongs to for radio buttons.
-	int			text_len;       // The maximum length of characters that can be entered by this inputboxes
-	char			*text;          // The text associated with this item.
-	char			*textSave;
-	uint			color;
-	short			key;
-	// The rest of these are used internally by by the menu system, so don't set 'em!!
-	short			x, y, xSave, ySave;
-	short			w, h;
-	short			right_offset;
-	ubyte			redraw;
-	ubyte			rebuild;
-	ubyte			noscroll;
-	ubyte			unavailable;
-	ubyte			centered;
-	char			savedText [NM_MAX_TEXT_LEN+1];
-	CBitmap		*text_bm [2];
-	char			*szHelp;
-} tMenuItem;
+class CMenuItem {
+	public:
+		int			nType;           // What kind of item this is, see NM_TYPE_????? defines
+		int			value;          // For checkboxes and radio buttons, this is 1 if marked initially, else 0
+		int			minValue, maxValue;   // For sliders and number bars.
+		int			group;          // What group this belongs to for radio buttons.
+		int			nTextLen;       // The maximum length of characters that can be entered by this inputboxes
+		char			*text;          // The text associated with this item.
+		char			*textSave;
+		uint			color;
+		short			key;
+		// The rest of these are used internally by by the menu system, so don't set 'em!!
+		short			x, y, xSave, ySave;
+		short			w, h;
+		short			right_offset;
+		ubyte			redraw;
+		ubyte			rebuild;
+		ubyte			noscroll;
+		ubyte			unavailable;
+		ubyte			centered;
+		char			savedText [NM_MAX_TEXT_LEN+1];
+		CBitmap		*text_bm [2];
+		char			*szHelp;
+
+	public:
+		CMenuItem () { memset (this, 0, sizeof (*this)); }
+	};
+
+//------------------------------------------------------------------------------
+
+class CMenuManager : CStack<CMenuItem> {
+	private:
+		int	m_opt;
+
+	public:
+		CMenuManager () { Init (); }
+		inline void Init (void) { 
+			SetGrowth (10);
+			m_opt = 0; 
+			}
+		int AddCheck (char* szText, int nValue, int nKey = 0, char* szHelp = NULL);
+		int AddRadio (char* szText, int nValue, int nGroup, int nKey = 0, char* szHelp = NULL);
+		int AddMenu (char* szText, int nKey = 0, char* szHelp = NULL);
+		int AddText (char* szText, int nKey = 0);
+		int AddSlider (char* szText, int nValue, int nMin, int nMax, int nKey = 0, char* szHelp = NULL);
+		int AddInput (char* szText, int nLen, char* szHelp = NULL);
+		int AddInputBox (char* szText, int nLen, int nKey = 0, char* szHelp = NULL);
+		int AddGauge (char* szText, int nValue, int nMax);
+		inline CMenuItem& Item (int i = -1) { return (i < 0) ? m_data.buffer [m_opt] : m_data.buffer [i]; }
+	};
 
 //------------------------------------------------------------------------------
 
@@ -64,23 +91,23 @@ typedef struct tMenuItem {
 // change the text of an item.  Just pass NULL if you don't want this.
 // Title draws big, Subtitle draw medium sized.  You can pass NULL for
 // either/both of these if you don't want them.
-int ExecMenu (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *item, 
-				  int (*menuCallback)(int nItems, tMenuItem *items, int *lastKeyP, int nItem),
+int ExecMenu (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *item, 
+				  int (*menuCallback)(int nItems, CMenuItem *items, int *lastKeyP, int nItem),
 				  char *filename);
 
 // Same as above, only you can pass through what item is initially selected.
-int ExecMenu1 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *item, 
-				   int (*menuCallback)(int nItems, tMenuItem *items, int *lastKeyP, int nItem), 
+int ExecMenu1 (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *item, 
+				   int (*menuCallback)(int nItems, CMenuItem *items, int *lastKeyP, int nItem), 
 				   int *pnItem);
 
 // Same as above, only you can pass through what background bitmap to use.
-int ExecMenu2 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *item, 
-				   int (*menuCallback)(int nItems, tMenuItem *items, int *lastKeyP, int nItem), 
+int ExecMenu2 (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *item, 
+				   int (*menuCallback)(int nItems, CMenuItem *items, int *lastKeyP, int nItem), 
 				   int *pnItem, char *filename);
 
 // Same as above, only you can pass through the width & height
-int ExecMenu3 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *item, 
-					 int (*menuCallback)(int nItems, tMenuItem *items, int *lastKeyP, int nItem), 
+int ExecMenu3 (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *item, 
+					 int (*menuCallback)(int nItems, CMenuItem *items, int *lastKeyP, int nItem), 
 					 int *pnItem, char *filename, int width, int height);
 
 // This function pops up a messagebox and returns which choice was selected...
@@ -91,7 +118,7 @@ int _CDECL_ ExecMessageBox (const char *pszTitle, char *filename, int nChoices, 
 // Same as above, but you can pass a function
 int _CDECL_ ExecMessageBox1 (
 					const char *pszTitle,
-					int (*menuCallback)(int nItems, tMenuItem *items, int *lastKeyP, int nItem), 
+					int (*menuCallback)(int nItems, CMenuItem *items, int *lastKeyP, int nItem), 
 					char *filename, int nChoices, ...);
 
 // Returns 0 if no file selected, else filename is filled with selected file.
@@ -109,17 +136,17 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 
 int ExecMenuFileList (const char *pszTitle, const char *filespace, char *filename);
 
-int ExecMenuTiny (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *itemP, 
-						 int (*menuCallback) (int nItems, tMenuItem *itemP, int *lastKeyP, int nItem));
+int ExecMenuTiny (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP, 
+						 int (*menuCallback) (int nItems, CMenuItem *itemP, int *lastKeyP, int nItem));
 
-int ExecMenutiny2 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *itemP, 
-							int (*menuCallback) (int nItems,tMenuItem *itemP, int *lastKeyP, int nItem));
+int ExecMenutiny2 (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP, 
+							int (*menuCallback) (int nItems,CMenuItem *itemP, int *lastKeyP, int nItem));
 
 void NMProgressBar (const char *szCaption, int nCurProgress, int nMaxProgress, 
-						  int (*doProgress) (int nItems, tMenuItem *items, int *lastKeyP, int cItem));
+						  int (*doProgress) (int nItems, CMenuItem *items, int *lastKeyP, int cItem));
 
-int ExecMenutiny2 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *itemP, 
-						 int (*menuCallback) (int nItems, tMenuItem *itemP, int *lastKeyP, int nItem));
+int ExecMenutiny2 (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP, 
+						 int (*menuCallback) (int nItems, CMenuItem *itemP, int *lastKeyP, int nItem));
 
 //added on 10/14/98 by Victor Rachels to attempt a fixedwidth font messagebox
 int _CDECL_ NMMsgBoxFixedFont (const char *pszTitle, int nChoices, ...);

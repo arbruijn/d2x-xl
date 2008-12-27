@@ -378,7 +378,7 @@ SpecialResetObjects ();
 /* Polling loop waiting for sync packet to start game
  * after having sent request
  */
-int NetworkSyncPoll (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int NetworkSyncPoll (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
 	int	nPackets = NetworkListen ();
 
@@ -413,7 +413,7 @@ return nCurItem;
 int NetworkWaitForSync (void)
 {
 	char					text [60];
-	tMenuItem			m [2];
+	CMenuItem			m [2];
 	int					i, choice;
 	tSequencePacket	me;
 
@@ -478,7 +478,7 @@ networkData.toWaitAllPoll = (time_t) SDL_GetTicks () + WaitAllPollTimeout ();
 
 //------------------------------------------------------------------------------
 
-int NetworkWaitAllPoll (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int NetworkWaitAllPoll (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
 if ((time_t) SDL_GetTicks () > networkData.toWaitAllPoll) {
 	NetworkSendAllInfoRequest (PID_SEND_ALL_GAMEINFO, networkData.nSecurityCheck);
@@ -496,7 +496,7 @@ int NetworkWaitForAllInfo (int choice)
  {
   int pick;
   
-  tMenuItem m [2];
+  CMenuItem m [2];
 
 memset (m, 0, sizeof (m));
 m [0].nType = NM_TYPE_TEXT; 
@@ -676,7 +676,7 @@ while (0 < (size = IpxGetPacketData (packet))) {
 
 //------------------------------------------------------------------------------
 
-int NetworkRequestPoll (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int NetworkRequestPoll (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
 	// Polling loop for waiting-for-requests menu
 
@@ -699,7 +699,7 @@ void NetworkWaitForRequests (void)
 {
 	// Wait for other players to load the level before we send the sync
 	int choice, i;
-	tMenuItem m [1];
+	CMenuItem m [1];
 
 networkData.nStatus = NETSTAT_WAITING;
 memset (m, 0, sizeof (m));

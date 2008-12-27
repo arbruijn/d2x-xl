@@ -1097,7 +1097,7 @@ static int loadIdx = 0;
 static int loadOp = 0;
 static CFile *mineDataFile;
 
-static int LoadSegmentsPoll (int nItems, tMenuItem *m, int *key, int nCurItem)
+static int LoadSegmentsPoll (int nItems, CMenuItem *m, int *key, int nCurItem)
 {
 	int	bLightmaps = 0, bShadows = 0;
 

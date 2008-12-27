@@ -270,7 +270,7 @@ MultiProcessBigData (reinterpret_cast<char*> (dataP + 2), len - 2);
 
 void NetworkProcessNamesReturn (char *dataP)
  {
-	tMenuItem m [15];
+	CMenuItem m [15];
    char mtext [15][50], temp [50];
 	int i, l, nInMenu, gnum, num = 0, count = 5, nPlayers;
    

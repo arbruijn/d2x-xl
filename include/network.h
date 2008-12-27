@@ -343,7 +343,7 @@ int NetworkStartGame();
 void NetworkRejoinGame();
 void NetworkLeaveGame();
 int NetworkEndLevel(int *secret);
-int NetworkEndLevelPoll2(int nitems, struct tMenuItem * menus, int * key, int nCurItem);
+int NetworkEndLevelPoll2(int nitems, CMenuItem * menus, int * key, int nCurItem);
 
 extern tExtraGameInfo extraGameInfo [2];
 
@@ -497,7 +497,7 @@ int  NetworkWaitForAllInfo(int choice);
 void NetworkSetGameMode(int gameMode);
 void NetworkAdjustMaxDataSize();
 int CanJoinNetgame(tNetgameInfo *game,tAllNetPlayersInfo *people);
-void RestartNetSearching(tMenuItem * m);
+void RestartNetSearching(CMenuItem * m);
 void DeleteTimedOutNetGames (void);
 void InitMonsterballSettings (tMonsterballInfo *monsterballP);
 void InitEntropySettings (int i);

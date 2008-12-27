@@ -96,13 +96,13 @@ return 0;
 
 int MenuGetValues (const char *pszMsg, int *valueP, int nValues)
 {
-	tMenuItem	m;
+	CMenuItem	m;
 	char			text [20] = "", *psz;
 	int			i = 0;
 
 memset (&m, 0, sizeof (m));
 m.nType = NM_TYPE_INPUT; 
-m.text_len = 20; 
+m.nTextLen = 20; 
 m.text = text;
 if (ExecMenu (NULL, pszMsg, 1, &m, NULL, NULL) >= 0) {
 	valueP [0] = atoi (m.text);
@@ -1003,7 +1003,7 @@ for (pCheat = cheats; pCheat->pszCheat && !Cheat (pCheat); pCheat++)
 void DoCheatMenu ()
 {
 	int mmn;
-	tMenuItem mm[16];
+	CMenuItem mm[16];
 	char score_text[21];
 
 	sprintf ( score_text, "%d", LOCALPLAYER.score );
@@ -1029,7 +1029,7 @@ void DoCheatMenu ()
 	mm[5].nType = NM_TYPE_TEXT; 
 	mm[5].text  =  "Score:";
 	mm[6].nType = NM_TYPE_INPUT; 
-	mm[6].text_len  =  10; 
+	mm[6].nTextLen  =  10; 
 	mm[6].text  =  score_text;
 	//mm[7].nType = NM_TYPE_RADIO; mm[7].value =  (LOCALPLAYER.laserLevel =  = 0); mm[7].m_group = 0; mm[7].text = "Laser level 1";
 	//mm[8].nType = NM_TYPE_RADIO; mm[8].value =  (LOCALPLAYER.laserLevel =  = 1); mm[8].m_group = 0; mm[8].text = "Laser level 2";

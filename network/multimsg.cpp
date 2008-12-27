@@ -527,7 +527,7 @@ switch (key) {
 
 void MultiSendMsgDialog (void)
 {
-	tMenuItem m [1];
+	CMenuItem m [1];
 	int choice;
 
 if (!(gameData.app.nGameMode & GM_MULTI))
@@ -536,7 +536,7 @@ gameData.multigame.msg.szMsg [0] = 0;             // Get rid of old contents
 memset (m, 0, sizeof (m));
 m [0].nType = NM_TYPE_INPUT; 
 m [0].text = gameData.multigame.msg.szMsg; 
-m [0].text_len = MAX_MESSAGE_LEN-1;
+m [0].nTextLen = MAX_MESSAGE_LEN-1;
 choice = ExecMenu (NULL, TXT_SEND_MESSAGE, 1, m, NULL, NULL);
 if ((choice > -1) && (strlen (gameData.multigame.msg.szMsg) > 0)) {
 	gameData.multigame.msg.nReceiver = 100;

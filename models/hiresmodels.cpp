@@ -326,7 +326,7 @@ return bCustom ? ++i : LoadLoresModel (i);
 static int loadIdx;
 static int loadOp = 0;
 
-static int LoadModelsPoll (int nItems, tMenuItem *m, int *key, int nCurItem)
+static int LoadModelsPoll (int nItems, CMenuItem *m, int *key, int nCurItem)
 {
 paletteManager.LoadEffect  ();
 if (loadOp == 0) {

@@ -722,7 +722,7 @@ return 21;
 
 static int loadOp = 0;
 
-static int InitializePoll (int nItems, tMenuItem *m, int *key, int nCurItem)
+static int InitializePoll (int nItems, CMenuItem *m, int *key, int nCurItem)
 {
 paletteManager.LoadEffect  ();
 switch (loadOp) {

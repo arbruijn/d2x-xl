@@ -276,7 +276,7 @@ CSaveGameInfo saveGameInfo [NUM_SAVES + 1];
 
 static int bShowTime = 1;
 
-int SaveStateMenuCallback (int nitems, tMenuItem *items, int *lastKey, int nCurItem)
+int SaveStateMenuCallback (int nitems, CMenuItem *items, int *lastKey, int nCurItem)
 {
 	int			x, y, i = nCurItem - NM_IMG_SPACE;
 	char			c = KeyToASCII (*lastKey);
@@ -316,7 +316,7 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int LoadStateMenuCallback (int nitems, tMenuItem *items, int *lastKey, int nCurItem)
+int LoadStateMenuCallback (int nitems, CMenuItem *items, int *lastKey, int nCurItem)
 {
 	int	i = nCurItem - NM_IMG_SPACE;
 	char	c = KeyToASCII (*lastKey);
@@ -364,7 +364,7 @@ m_nLastSlot = 0;
 int CSaveGameHandler::GetSaveFile (int bMulti)
 {
 	int			i, menuRes, choice;
-	tMenuItem	m [NUM_SAVES + 2];
+	CMenuItem	m [NUM_SAVES + 2];
 	char			filename [NUM_SAVES + 1][30];
 
 memset (m, 0, sizeof (m));
@@ -395,7 +395,7 @@ int bRestoringMenu = 0;
 int CSaveGameHandler::GetLoadFile (int bMulti)
 {
 	int			i, choice = -1, nSaves;
-	tMenuItem	m [NUM_SAVES + NM_IMG_SPACE + 1];
+	CMenuItem	m [NUM_SAVES + NM_IMG_SPACE + 1];
 	char			filename [NUM_SAVES + 1][30];
 
 nSaves = 0;

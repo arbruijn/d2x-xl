@@ -1073,7 +1073,7 @@ return result;
 //------------------------------------------------------------------------------
 
 #ifndef _NETWORK_H
-extern int NetworkEndLevelPoll2 (int nitems, tMenuItem * menus, int * key, int nCurItem); // network.c
+extern int NetworkEndLevelPoll2 (int nitems, CMenuItem * menus, int * key, int nCurItem); // network.c
 #endif
 
 //	Does the bonus scoring.
@@ -1086,7 +1086,7 @@ void DoEndLevelScoreGlitz (int network)
 	char			szAllHostages [64];
 	char			szEndGame [64];
 	char			szMenu [N_GLITZITEMS+1][40];
-	tMenuItem	m [N_GLITZITEMS+1];
+	CMenuItem	m [N_GLITZITEMS+1];
 	int			i, c;
 	char			szTitle [128];
 	int			bIsLastLevel = 0;
@@ -1262,7 +1262,7 @@ paletteManager.ResetEffect ();
 //	robots, powerups, walls, doors, etc.
 int StartNewLevelSecret (int nLevel, int bPageInTextures)
 {
-	tMenuItem	m [1];
+	CMenuItem	m [1];
   //int i;
 
 gameStates.app.xThisLevelTime=0;

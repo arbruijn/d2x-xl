@@ -512,7 +512,7 @@ for (m_data.faceP = FACES.faces + nFace; nFace < nLastFace; nFace++, m_data.face
 
 static int nFace = 0;
 
-static int _CDECL_ CreatePoll (int nItems, tMenuItem *m, int *key, int nCurItem)
+static int _CDECL_ CreatePoll (int nItems, CMenuItem *m, int *key, int nCurItem)
 {
 paletteManager.LoadEffect ();
 if (nFace < gameData.segs.nFaces) {

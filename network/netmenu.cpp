@@ -57,7 +57,7 @@ extern ubyte ipx_MyAddress [10];
 void NetworkSetWeaponsAllowed (void)
  {
   int opt = 0, choice, optPrimary, optSecond, opt_power;
-  tMenuItem m [40];
+  CMenuItem m [40];
   
   optPrimary = opt;
   memset (m, 0, sizeof (m));
@@ -221,7 +221,7 @@ WF (netGame.invul, 27);
 #define ENDLEVEL_SEND_INTERVAL  2000
 #define ENDLEVEL_IDLE_TIME      20000
 
-int NetworkEndLevelPoll2 (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int NetworkEndLevelPoll2 (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
 	// Polling loop for End-of-level menu
 
@@ -256,7 +256,7 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int NetworkEndLevelPoll3 (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int NetworkEndLevelPoll3 (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
 	// Polling loop for End-of-level menu
    int num_ready = 0, i;
@@ -276,7 +276,7 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int NetworkStartPoll (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int NetworkStartPoll (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
 	int i, n, nm;
 
@@ -358,7 +358,7 @@ return nCurItem;
 
 static int optGameTypes, nGameTypes, nGameItem;
 
-int NetworkGameParamPoll (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int NetworkGameParamPoll (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
 	static int oldmaxnet = 0;
 
@@ -423,7 +423,7 @@ int optMouseLook, optFastPitch, optSafeUDP, optTowFlags, optCompetition, optPena
 
 //------------------------------------------------------------------------------
 
-int NetworkMoreOptionsPoll (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int NetworkMoreOptionsPoll (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
 if (nLastReactorLife != menus [optReactorLife].value)   {
 	sprintf (menus [optReactorLife].text, "%s: %d %s", TXT_REACTOR_LIFE, menus [optReactorLife].value*5, TXT_MINUTES_ABBREV);
@@ -453,7 +453,7 @@ void NetworkMoreGameOptions ()
   int		opt = 0, i, choice = 0;
   char	szPlayTime [80], szKillGoal [80], szInvul [50],
 			socket_string [6], packstring [6];
-  tMenuItem m [40];
+  CMenuItem m [40];
 
 do {
 	memset (m, 0, sizeof (m));
@@ -580,7 +580,7 @@ else
 
 //------------------------------------------------------------------------------
 
-int NetworkD2XOptionsPoll (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int NetworkD2XOptionsPoll (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
 	int	v, j;
 
@@ -653,7 +653,7 @@ void NetworkD2XOptions ()
   int		opt = 0, i, j, choice = 0, optCheckPort = -1;
   char	szSpotSize [50];
   char	szPenalty [50];
-  tMenuItem m [40];
+  CMenuItem m [40];
 
 do {
 	memset (m, 0, sizeof (m));
@@ -839,7 +839,7 @@ do {
 	sprintf (_text, "%d", Value); \
 	m [opt].text = const_cast<char*> (_text); \
 	m [opt].value = Value; \
-	m [opt].text_len = _len; \
+	m [opt].nTextLen = _len; \
 	m [opt].szHelp = const_cast<char*> (HTX_ONLINE_MANUAL)
 
 #define SetRadioOpt(_text, _group, _key) \
@@ -859,11 +859,11 @@ do {
 
 //------------------------------------------------------------------------------
 
-int NetworkDummyCallback (int nitems, tMenuItem * menus, int * key, int nCurItem) { return nCurItem; }
+int NetworkDummyCallback (int nitems, CMenuItem * menus, int * key, int nCurItem) { return nCurItem; }
   
 void NetworkEntropyToggleOptions ()
 {
-	tMenuItem	m [12];
+	CMenuItem	m [12];
 	int				opt = 0;
 
 memset (m, 0, sizeof (m));
@@ -899,7 +899,7 @@ for (extraGameInfo [0].entropy.nVirusStability = 0;
 
 void NetworkEntropyTextureOptions ()
 {
-	tMenuItem	m [7];
+	CMenuItem	m [7];
 	int				opt = 0;
 
 memset (m, 0, sizeof (m));
@@ -928,7 +928,7 @@ for (extraGameInfo [0].entropy.nOverrideTextures = 0;
 
 void NetworkEntropyOptions (void)
 {
-	tMenuItem	m [25];
+	CMenuItem	m [25];
 	int			i, opt = 0;
 	char			szCapVirLim [10], szCapTimLim [10], szMaxVirCap [10], szBumpVirCap [10], 
 					szBashVirCap [10], szVirGenTim [10], szVirLife [10], 
@@ -993,9 +993,9 @@ extraGameInfo [0].entropy.nShieldDamageRate = (ushort) atol (m [optShieldDmg].te
 
 static int nBonusOpt, nSizeModOpt, nPyroForceOpt;
 
-int MonsterballMenuCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int MonsterballMenuCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
-	tMenuItem	*m;
+	CMenuItem	*m;
 	int			v;
 
 m = menus + nPyroForceOpt;
@@ -1100,7 +1100,7 @@ return i;
 
 void NetworkMonsterballOptions (void)
 {
-	tMenuItem		m [35];
+	CMenuItem		m [35];
 	int					h, i, j, opt = 0, optDefaultForces;
 	char					szBonus [60], szSize [60], szPyroForce [60];
 	tMonsterballForce	*pf = extraGameInfo [0].monsterball.forces;
@@ -1165,7 +1165,7 @@ extraGameInfo [0].monsterball.nSizeMod = m [nSizeModOpt].value + 2;
 
 //------------------------------------------------------------------------------
 
-int NetworkGetGameType (tMenuItem *m, int bAnarchyOnly)
+int NetworkGetGameType (CMenuItem *m, int bAnarchyOnly)
 {
 	int bHoard = HoardEquipped ();
 		   
@@ -1210,7 +1210,7 @@ int NetworkGetGameParams (int bAutoRun)
 	int i, key, choice = 1;
 	int opt, optGameName, optLevel, optLevelText, optMoreOpts, 
 		 optMission, optMissionName, optD2XOpts, optConfigMenu;
-	tMenuItem m [35];
+	CMenuItem m [35];
 	char name [NETGAME_NAME_LEN+1];
 	char szLevelText [32];
 	char szMaxNet [50];
@@ -1515,7 +1515,7 @@ return key;
 
 static time_t	nQueryTimeout;
 
-static int QueryPoll (int nItems, tMenuItem *m, int *key, int nCurItem)
+static int QueryPoll (int nItems, CMenuItem *m, int *key, int nCurItem)
 {
 	time_t t;
 
@@ -1540,7 +1540,7 @@ return nCurItem;
 
 int NetworkFindGame (void)
 {
-	tMenuItem	m [3];
+	CMenuItem	m [3];
 	int i;
 
 if (gameStates.multi.nGameType > IPX_GAME)
@@ -1566,7 +1566,7 @@ return (networkData.nActiveGames >= MAX_ACTIVE_NETGAMES);
 
 int NetworkSelectTeams (void)
 {
-	tMenuItem m [MAX_PLAYERS+4];
+	CMenuItem m [MAX_PLAYERS+4];
 	int choice, opt, opt_team_b;
 	ubyte teamVector = 0;
 	char team_names [2][CALLSIGN_LEN+1];
@@ -1590,7 +1590,7 @@ doMenu:
 
 	m [0].nType = NM_TYPE_INPUT; 
 	m [0].text = team_names [0]; 
-	m [0].text_len = CALLSIGN_LEN; 
+	m [0].nTextLen = CALLSIGN_LEN; 
 
 	opt = 1;
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
@@ -1606,7 +1606,7 @@ doMenu:
 	opt_team_b = opt;
 	m [opt].nType = NM_TYPE_INPUT; 
 	m [opt].text = team_names [1]; 
-	m [opt].text_len = CALLSIGN_LEN; 
+	m [opt].nTextLen = CALLSIGN_LEN; 
 	opt++;
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	{
@@ -1659,7 +1659,7 @@ doMenu:
 int NetworkSelectPlayers (int bAutoRun)
 {
 	int i, j, choice = 1;
-   tMenuItem m [MAX_PLAYERS+4];
+   CMenuItem m [MAX_PLAYERS+4];
    char text [MAX_PLAYERS+4][45];
 	char title [50];
 	int nSavePlayers;              //how may people would like to join
@@ -1805,7 +1805,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void InitNetgameMenuOption (tMenuItem *m, int j)
+void InitNetgameMenuOption (CMenuItem *m, int j)
 {
 m += j;
 if (!m->text) {
@@ -1820,7 +1820,7 @@ m->rebuild = 1;
 
 //------------------------------------------------------------------------------
 
-void InitNetgameMenu (tMenuItem *m, int i)
+void InitNetgameMenu (CMenuItem *m, int i)
 {
 	int j;
 
@@ -1880,7 +1880,7 @@ const char *szModeLetters []  =
 	 "ENTROPY",
 	 "MONSTER"};
 
-int NetworkJoinPoll (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int NetworkJoinPoll (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
 	// Polling loop for Join Game menu
 	static fix t1 = 0;
@@ -2021,7 +2021,7 @@ return nCurItem;
 
 int NetworkBrowseGames (void)
 {
-	tMenuItem	m [MAX_ACTIVE_NETGAMES + 5];
+	CMenuItem	m [MAX_ACTIVE_NETGAMES + 5];
 	int			choice, i, bAutoRun = gameData.multiplayer.autoNG.bValid;
 	char			callsign [CALLSIGN_LEN+1];
 
@@ -2215,7 +2215,7 @@ return 1;
 int NetworkChooseConnect ()
 {
 #if 0
-tMenuItem m [16];
+CMenuItem m [16];
 int choice, opt = 0;
 #endif
 if (gameStates.multi.nGameType >= IPX_GAME) {  
@@ -2325,7 +2325,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int IpAddrMenuCallBack (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int IpAddrMenuCallBack (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
 return nCurItem;
 }
@@ -2334,7 +2334,7 @@ return nCurItem;
 
 int NetworkGetIpAddr (void)
 {
-	tMenuItem m [9];
+	CMenuItem m [9];
 	int i, choice = 0;
 	int opt = 0, optServer = -1, optPort = -1;
 	int commands;
@@ -2416,7 +2416,7 @@ char szHighlight [] = {1, (char) 255, (char) 192, (char) 128, 0};
 
 void ShowNetGameInfo (int choice)
  {
-	tMenuItem	m [30];
+	CMenuItem	m [30];
    char			mTexts [30][200];
 	int			i, j, nInMenu, opt = 0;
 
@@ -2544,7 +2544,7 @@ extern char bPauseableMenu;
 
 void DoShowNetgameHelp()
  {
-	tMenuItem m [30];
+	CMenuItem m [30];
    char mtext [30][60];
 	int i, num = 0, eff;
 #if DBG

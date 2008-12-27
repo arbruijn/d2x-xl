@@ -253,7 +253,7 @@ int NDCountDemos (void);
 
 // ------------------------------------------------------------------------
 
-int AutoDemoMenuCheck (int nitems, tMenuItem * items, int *nLastKey, int nCurItem)
+int AutoDemoMenuCheck (int nitems, CMenuItem * items, int *nLastKey, int nCurItem)
 {
 	int curtime;
 
@@ -331,7 +331,7 @@ static struct {
 } multiOpts = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1};
 
 //      Create the main menu.
-int CreateMainMenu (tMenuItem *m)
+int CreateMainMenu (CMenuItem *m)
 {
 	int nOptions = 0;
 
@@ -398,7 +398,7 @@ return nOptions;
 //returns number of item chosen
 int MainMenu (void) 
 {
-	tMenuItem m [25];
+	CMenuItem m [25];
 	int i, nChoice = 0, nOptions = 0;
 
 IpxClose ();
@@ -588,7 +588,7 @@ else if (nChoice == mainOpts.nLoad) {
 	}
 #if DBG
 else if (nChoice == mainOpts.nLoadDirect) {
-	tMenuItem	m [1];
+	CMenuItem	m [1];
 	char			szLevel [10] = "";
 	int			nLevel;
 
@@ -665,7 +665,7 @@ return 1;
 int DifficultyMenu ()
 {
 	int i, choice = gameStates.app.nDifficultyLevel;
-	tMenuItem m [5];
+	CMenuItem m [5];
 
 memset (m, 0, sizeof (m));
 for (i = 0; i < 5; i++)
@@ -736,7 +736,7 @@ if (nDetailLevel < NUM_DETAIL_LEVELS - 1) {
 void DetailLevelMenu (void)
 {
 	int i, choice = gameStates.app.nDetailLevel;
-	tMenuItem m [8];
+	CMenuItem m [8];
 
 #if 1
 	char szMenuDetails [5][20];
@@ -776,7 +776,7 @@ gameOpts->movies.bHires = m [7].value;
 
 //      -----------------------------------------------------------------------------
 
-int CustomDetailsCallback (int nitems, tMenuItem * items, int *nLastKey, int nCurItem)
+int CustomDetailsCallback (int nitems, CMenuItem * items, int *nLastKey, int nCurItem)
 {
 	nitems = nitems;
 	*nLastKey = *nLastKey;
@@ -827,7 +827,7 @@ void CustomDetailsMenu (void)
 {
 	int	nOptions;
 	int	i, choice = 0;
-	tMenuItem m [DL_MAX];
+	CMenuItem m [DL_MAX];
 
 do {
 	nOptions = 0;
@@ -1151,9 +1151,9 @@ else if (gameStates.app.nCompSpeed == 4) {
 
 static const char *pszCompSpeeds [5];
 
-int PerformanceSettingsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int PerformanceSettingsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
-	tMenuItem * m;
+	CMenuItem * m;
 	int			v;
 
 m = menus + performanceOpts.nUseCompSpeed;
@@ -1181,7 +1181,7 @@ void PerformanceSettingsMenu (void)
 {
 	int		i, nOptions, choice = gameStates.app.nDetailLevel;
 	char		szCompSpeed [50];
-	tMenuItem m [10];
+	CMenuItem m [10];
 
 pszCompSpeeds [0] = TXT_VERY_SLOW;
 pszCompSpeeds [1] = TXT_SLOW;
@@ -1246,7 +1246,7 @@ static int ScreenResModeToMenuItem (int mode)
 
 //------------------------------------------------------------------------------
 
-int ScreenResCallback (int nItems, tMenuItem *m, int *nLastKey, int nCurItem)
+int ScreenResCallback (int nItems, CMenuItem *m, int *nLastKey, int nCurItem)
 {
 	int	i, j;
 
@@ -1305,7 +1305,7 @@ void ScreenResMenu ()
 {
 #	define N_SCREENRES_ITEMS (NUM_DISPLAY_MODES + 4)
 
-	tMenuItem	m [N_SCREENRES_ITEMS];
+	CMenuItem	m [N_SCREENRES_ITEMS];
 	int				choice;
 	int				i, j, key, nOptions = 0, nCustWOpt, nCustHOpt, nCustW, nCustH, bStdRes;
 	char				szMode [NUM_DISPLAY_MODES][20];
@@ -1508,7 +1508,7 @@ if (nHighestPlayerLevel > gameData.missions.nLastLevel)
 	nHighestPlayerLevel = gameData.missions.nLastLevel;
 
 if (nHighestPlayerLevel > 1) {
-	tMenuItem m [4];
+	CMenuItem m [4];
 	char szInfo [80];
 	char szNumber [10];
 	int nItems;
@@ -1545,9 +1545,9 @@ if (!StartNewGame (nNewLevel))
 
 static int nOptVerFilter = -1;
 
-int NewGameMenuCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int NewGameMenuCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
-	tMenuItem	*m;
+	CMenuItem	*m;
 	int			i, v;
 
 m = menus + gplayOpts.nDifficulty;
@@ -1571,7 +1571,7 @@ return nCurItem;
 
 void NewGameMenu ()
 {
-	tMenuItem		m [15];
+	CMenuItem		m [15];
 	int				nOptions, optSelMsn, optMsnName, optLevelText, optLevel, optLaunch;
 	int				nMission = gameData.missions.nLastMission, bMsnLoaded = 0;
 	int				i, choice = 0;
@@ -1694,7 +1694,7 @@ static int optContrast = -1;
 
 //------------------------------------------------------------------------------
 
-int ConfigMenuCallback (int nitems, tMenuItem * items, int *nLastKey, int nCurItem)
+int ConfigMenuCallback (int nitems, CMenuItem * items, int *nLastKey, int nCurItem)
 {
 if (gameStates.app.bNostalgia) {
 	if (nCurItem == optBrightness)
@@ -1712,9 +1712,9 @@ static const char *szCWS [4];
 
 //------------------------------------------------------------------------------
 
-int TgtIndOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int TgtIndOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
-	tMenuItem	*m;
+	CMenuItem	*m;
 	int			v, j;
 
 m = menus + optTgtInd;
@@ -1749,7 +1749,7 @@ return nCurItem;
 
 void TgtIndOptionsMenu ()
 {
-	tMenuItem m [15];
+	CMenuItem m [15];
 	int	i, j, nOptions, choice = 0;
 	int	optCloakedInd, optRotateInd;
 
@@ -1807,9 +1807,9 @@ do {
 
 //------------------------------------------------------------------------------
 
-int WeaponIconOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int WeaponIconOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
-	tMenuItem	*m;
+	CMenuItem	*m;
 	int			v;
 
 m = menus + optWeaponIcons;
@@ -1826,7 +1826,7 @@ return nCurItem;
 
 void WeaponIconOptionsMenu (void)
 {
-	tMenuItem m [35];
+	CMenuItem m [35];
 	int	i, j, nOptions, choice = 0;
 	int	optSmallIcons, optIconSort, optIconAmmo, optIconPos, optEquipIcons;
 
@@ -1903,9 +1903,9 @@ do {
 
 //------------------------------------------------------------------------------
 
-int GaugeOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int GaugeOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
-	tMenuItem	*m;
+	CMenuItem	*m;
 	int			v;
 
 m = menus + optTextGauges;
@@ -1922,7 +1922,7 @@ return nCurItem;
 
 void GaugeOptionsMenu (void)
 {
-	tMenuItem m [10];
+	CMenuItem m [10];
 	int	i, nOptions, choice = 0;
 	int	optScaleGauges, optFlashGauges, optShieldWarn, optObjectTally, optPlayerStats;
 
@@ -1972,9 +1972,9 @@ do {
 
 //------------------------------------------------------------------------------
 
-int CockpitOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int CockpitOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
-	tMenuItem	*m;
+	CMenuItem	*m;
 	int			v;
 
 if (gameOpts->app.bExpertMode) {
@@ -2001,7 +2001,7 @@ return nCurItem;
 
 void CockpitOptionsMenu (void)
 {
-	tMenuItem m [30];
+	CMenuItem m [30];
 	int	i, nOptions, 
 			nPosition = gameOpts->render.cockpit.nWindowPos / 3, 
 			nAlignment = gameOpts->render.cockpit.nWindowPos % 3, 
@@ -2140,9 +2140,9 @@ return j;
 static const char *pszCoronaInt [4];
 static const char *pszCoronaQual [3];
 
-int CoronaOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int CoronaOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
-	tMenuItem	*m;
+	CMenuItem	*m;
 	int			v;
 
 m = menus + effectOpts.nLightTrails;
@@ -2197,7 +2197,7 @@ return nCurItem;
 
 void CoronaOptionsMenu (void)
 {
-	tMenuItem m [30];
+	CMenuItem m [30];
 	int	i, choice = 0, optTrailType;
 	int	nOptions;
 	char	szCoronaQual [50], szCoronaInt [50], szObjCoronaInt [50];
@@ -2283,9 +2283,9 @@ do {
 
 static const char *pszExplShrapnels [5];
 
-int EffectOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int EffectOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
-	tMenuItem	*m;
+	CMenuItem	*m;
 	int			v;
 
 m = menus + effectOpts.nExplShrapnels;
@@ -2308,7 +2308,7 @@ return nCurItem;
 
 void EffectOptionsMenu (void)
 {
-	tMenuItem m [30];
+	CMenuItem m [30];
 	int	i, j, choice = 0;
 	int	nOptions;
 	int	optTranspExpl, optThrusterFlame, optDmgExpl, optAutoTransp, optPlayerShields, optSoftParticles [3],
@@ -2446,9 +2446,9 @@ SetDebrisCollisions ();
 
 static const char *pszRadarRange [3];
 
-int AutomapOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int AutomapOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
-	tMenuItem * m;
+	CMenuItem * m;
 	int			v;
 
 m = menus + automapOpts.nOptTextured;
@@ -2478,7 +2478,7 @@ return nCurItem;
 
 void AutomapOptionsMenu ()
 {
-	tMenuItem m [30];
+	CMenuItem m [30];
 	int	i, j, choice = 0;
 	int	nOptions;
 	int	optBright, optGrayOut, optShowRobots, optShowPowerups, optCoronas, optSmoke, optLightnings, optColor, optSkybox, optSparks;
@@ -2597,9 +2597,9 @@ do {
 
 static int nOpt3D;
 
-int PowerupOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int PowerupOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
-	tMenuItem * m;
+	CMenuItem * m;
 	int			v;
 
 m = menus + nOpt3D;
@@ -2617,7 +2617,7 @@ return nCurItem;
 
 void PowerupOptionsMenu ()
 {
-	tMenuItem m [10];
+	CMenuItem m [10];
 	int	i, j, choice = 0;
 	int	nOptions;
 	int	optSpin;
@@ -2663,9 +2663,9 @@ do {
 static const char *pszReach [4];
 static const char *pszClip [4];
 
-int ShadowOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int ShadowOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
-	tMenuItem	*m;
+	CMenuItem	*m;
 	int			v;
 
 m = menus + shadowOpts.nUse;
@@ -2725,7 +2725,7 @@ return nCurItem;
 
 void ShadowOptionsMenu ()
 {
-	tMenuItem m [30];
+	CMenuItem m [30];
 	int	i, j, choice = 0;
 	int	nOptions;
 	int	optClipShadows, optPlayerShadows, optRobotShadows, optMissileShadows, 
@@ -2868,9 +2868,9 @@ do {
 
 //------------------------------------------------------------------------------
 
-int CameraOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int CameraOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
-	tMenuItem	*m;
+	CMenuItem	*m;
 	int			v;
 
 m = menus + camOpts.nUse;
@@ -2907,7 +2907,7 @@ return nCurItem;
 
 void CameraOptionsMenu ()
 {
-	tMenuItem m [10];
+	CMenuItem m [10];
 	int	i, choice = 0;
 	int	nOptions;
 	int	bFSCameras = gameOpts->render.cameras.bFitToWall;
@@ -2973,9 +2973,9 @@ do {
 
 //------------------------------------------------------------------------------
 
-int SmokeOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int SmokeOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
-	tMenuItem	*m;
+	CMenuItem	*m;
 	int			i, v;
 
 m = menus + smokeOpts.nUse;
@@ -3107,7 +3107,7 @@ static char szSmokeSize [5][50];
 static char szSmokeLife [5][50];
 static char szSmokeAlpha [5][50];
 
-int AddSmokeSliders (tMenuItem *m, int nOptions, int i)
+int AddSmokeSliders (CMenuItem *m, int nOptions, int i)
 {
 sprintf (szSmokeDens [i] + 1, TXT_SMOKE_DENS, pszSmokeAmount [NMCLAMP (gameOpts->render.particles.nDens [i], 0, 4)]);
 *szSmokeDens [i] = *(TXT_SMOKE_DENS - 1);
@@ -3136,7 +3136,7 @@ return nOptions;
 
 void SmokeOptionsMenu ()
 {
-	tMenuItem m [40];
+	CMenuItem m [40];
 	int	i, j, choice = 0;
 	int	nOptions;
 	int	nOptSmokeLag, optStaticParticles, optCollisions, optDisperse, 
@@ -3314,9 +3314,9 @@ do {
 
 //------------------------------------------------------------------------------
 
-int AdvancedRenderOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int AdvancedRenderOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
-	tMenuItem	*m;
+	CMenuItem	*m;
 	int			v;
 
 if (optContrast >= 0) {
@@ -3367,9 +3367,9 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int LightOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int LightOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
-	tMenuItem	*m;
+	CMenuItem	*m;
 	int			v;
 
 if (lightOpts.nMethod >= 0) {
@@ -3478,7 +3478,7 @@ return i ? i - 1 : 0;
 
 void LightOptionsMenu (void)
 {
-	tMenuItem m [30];
+	CMenuItem m [30];
 	int	i, choice = 0;
 	int	nOptions;
 	int	optColoredLight, optMixColors, optPowerupLights, optFlickerLights, optColorSat, optBrightObjects, nPowerupLight = -1;
@@ -3674,9 +3674,9 @@ gameStates.render.bAmbientColor = gameStates.render.bPerPixelLighting || gameOpt
 static const char *pszLightningQuality [2];
 static const char *pszLightningStyle [3];
 
-int LightningOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int LightningOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
-	tMenuItem	*m;
+	CMenuItem	*m;
 	int			v;
 
 m = menus + lightningOpts.nUse;
@@ -3717,7 +3717,7 @@ return nCurItem;
 
 void LightningOptionsMenu (void)
 {
-	tMenuItem m [15];
+	CMenuItem m [15];
 	int	i, choice = 0;
 	int	nOptions;
 	int	optDamage, optExplosions, optPlayers, optRobots, optStatic, optRobotOmega, optPlasma, optAuxViews, optMonitors;
@@ -3809,7 +3809,7 @@ if (!gameOpts->render.lightnings.bStatic)
 
 void MovieOptionsMenu ()
 {
-	tMenuItem m [5];
+	CMenuItem m [5];
 	int	i, choice = 0;
 	int	nOptions;
 	int	optMovieQual, optMovieSize, optSubTitles;
@@ -3846,9 +3846,9 @@ do {
 
 static const char *pszShipColors [8];
 
-int ShipRenderOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int ShipRenderOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
-	tMenuItem	*m;
+	CMenuItem	*m;
 	int			v;
 
 m = menus + shipRenderOpts.nWeapons;
@@ -3873,7 +3873,7 @@ return nCurItem;
 
 void ShipRenderOptionsMenu (void)
 {
-	tMenuItem m [10];
+	CMenuItem m [10];
 	int	i, j, choice = 0;
 	int	nOptions;
 	int	optBullets, optWingtips;
@@ -3937,9 +3937,9 @@ do {
 
 //------------------------------------------------------------------------------
 
-int RenderOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int RenderOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
-	tMenuItem	*m;
+	CMenuItem	*m;
 	int			v;
 
 if (!gameStates.app.bNostalgia) {
@@ -4008,7 +4008,7 @@ return nCurItem;
 
 void RenderOptionsMenu (void)
 {
-	tMenuItem m [40];
+	CMenuItem m [40];
 	int	h, i, choice = 0;
 	int	nOptions;
 	int	optSmokeOpts, optShadowOpts, optCameraOpts, optLightOpts, optMovieOpts,
@@ -4293,9 +4293,9 @@ return (extraGameInfo [0].loadout.nDevices & nDeviceFlags [i]) != 0;
 
 //------------------------------------------------------------------------------
 
-int LoadoutCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int LoadoutCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
-	tMenuItem	*m = menus + nCurItem;
+	CMenuItem	*m = menus + nCurItem;
 	int			v = m->value;
 
 if (nCurItem == optGuns) {	//checked/unchecked lasers
@@ -4341,7 +4341,7 @@ return nCurItem;
 
 void LoadoutOptions (void)
 {
-	tMenuItem	m [25];
+	CMenuItem	m [25];
 	int			i, nOptions = 0;
 
 memset (m, 0, sizeof (m));
@@ -4378,9 +4378,9 @@ static const char *pszMslTurnSpeeds [3];
 static const char *pszMslStartSpeeds [4];
 static const char *pszAggressivities [5];
 
-int GameplayOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int GameplayOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
-	tMenuItem	*m;
+	CMenuItem	*m;
 	int			v;
 
 m = menus + gplayOpts.nDifficulty;
@@ -4445,7 +4445,7 @@ return nCurItem;
 
 void GameplayOptionsMenu (void)
 {
-	tMenuItem m [40];
+	CMenuItem m [40];
 	int	i, j, nOptions = 0, choice = 0;
 	int	optFixedSpawn = -1, optSnipeMode = -1, optAutoSel = -1, optInventory = -1, 
 			optDualMiss = -1, optDropAll = -1, optImmortal = -1, optMultiBosses = -1, optTripleFusion = -1,
@@ -4641,9 +4641,9 @@ return szRamp;
 
 //------------------------------------------------------------------------------
 
-int PhysicsOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int PhysicsOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
-	tMenuItem	*m;
+	CMenuItem	*m;
 	int			v;
 
 if (gameOpts->app.bExpertMode) {
@@ -4720,7 +4720,7 @@ return nCurItem;
 
 void PhysicsOptionsMenu (void)
 {
-	tMenuItem m [30];
+	CMenuItem m [30];
 	int	i, nOptions = 0, choice = 0;
 	int	optRobHits = -1, optWiggle = -1, optAutoLevel = -1,
 			optFluidPhysics = -1, optHitAngles = -1, optKillMissiles = -1, optHitboxes = -1;
@@ -4869,7 +4869,7 @@ if (IsMultiGame)
 
 void MultiThreadingOptionsMenu (void)
 {
-	tMenuItem	m [10];
+	CMenuItem	m [10];
 	int			h, i, bSound = gameData.app.bUseMultiThreading [rtSound], choice = 0;
 
 	static int	menuToTask [rtTaskCount] = {0, 1, 1, 2, 2, 3, 4, 5};	//map menu entries to tasks
@@ -4895,7 +4895,7 @@ if (bSound != gameData.app.bUseMultiThreading [rtSound]) {
 
 void ConfigMenu (void)
 {
-	tMenuItem	m [20];
+	CMenuItem	m [20];
 	int			i, nOptions, choice = 0;
 	int			optSound, optConfig, optJoyCal, optPerformance, optScrRes, optReorderPrim, optReorderSec, 
 					optMiscellaneous, optMultiThreading = -1, optRender, optGameplay, optCockpit, optPhysics = -1;
@@ -5017,7 +5017,7 @@ return i - 1;
 
 //------------------------------------------------------------------------------
 
-int SoundMenuCallback (int nitems, tMenuItem * m, int *nLastKey, int nCurItem)
+int SoundMenuCallback (int nitems, CMenuItem * m, int *nLastKey, int nCurItem)
 {
 	nitems = nitems;          
 	*nLastKey = *nLastKey;
@@ -5106,7 +5106,7 @@ return nCurItem;		//kill warning
 
 void SoundMenu (void)
 {
-   tMenuItem	m [20];
+   CMenuItem	m [20];
 	char			szChannels [50], szVolume [50];
 	int			i, nOptions, choice = 0, 
 					optReverse, optShipSound = -1, optMissileSound = -1, optSpeedUpSound = -1, optFadeMusic = -1, 
@@ -5196,9 +5196,9 @@ if (!gameStates.app.bNostalgia) {
 
 extern int screenShotIntervals [];
 
-int MiscellaneousCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
+int MiscellaneousCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
 {
-	tMenuItem * m;
+	CMenuItem * m;
 	int			v;
 
 if (!gameStates.app.bNostalgia) {
@@ -5256,7 +5256,7 @@ return nCurItem;
 
 void MiscellaneousMenu (void)
 {
-	tMenuItem m [20];
+	CMenuItem m [20];
 	int	i, nOptions, choice,
 #if 0
 			optFastResp, 
@@ -5390,7 +5390,7 @@ do {
 
 int QuitSaveLoadMenu (void)
 {
-	tMenuItem m [5];
+	CMenuItem m [5];
 	int	i, choice = 0, nOptions, optQuit, optOptions, optLoad, optSave;
 
 memset (m, 0, sizeof (m));
@@ -5424,7 +5424,7 @@ return *(reinterpret_cast<int*> (&multiOpts) + 2 * nType + bJoin);
 
 void MultiplayerMenu ()
 {
-	tMenuItem	m [15];
+	CMenuItem	m [15];
 	int choice = 0, nOptions = 0, i, optCreate, optJoin = -1, optConn = -1, nConnections = 0;
 	int old_game_mode;
 
@@ -5556,7 +5556,7 @@ else {
 
 void DoNewIPAddress ()
  {
-  tMenuItem m [2];
+  CMenuItem m [2];
   char		szIP [30];
   int			choice;
 

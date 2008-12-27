@@ -134,7 +134,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 static int nCacheSeg = 0;
 static int nCacheObj = -3;
 
-static int TexCachePoll (int nItems, tMenuItem *m, int *key, int nCurItem)
+static int TexCachePoll (int nItems, CMenuItem *m, int *key, int nCurItem)
 {
 if (nCacheSeg < gameData.segs.nSegments)
 	CacheSideTextures (nCacheSeg++);
@@ -154,7 +154,7 @@ return nCurItem;
 
 int OglCacheTextures (void)
 {
-	tMenuItem	m [3];
+	CMenuItem	m [3];
 	int i;
 
 memset (m, 0, sizeof (m));

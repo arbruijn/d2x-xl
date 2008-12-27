@@ -115,8 +115,8 @@ typedef struct tMenuProps {
 			bValid;
 } tMenuProps;
 
-int ExecMenu4 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *itemP, 
-					 int (*menuCallback) (int nItems, tMenuItem *itemP, int *lastKeyP, int nItem), 
+int ExecMenu4 (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP, 
+					 int (*menuCallback) (int nItems, CMenuItem *itemP, int *lastKeyP, int nItem), 
 					 int *nCurItemP, char *filename, int width, int height, int bTinyMode);
 
 //------------------------------------------------------------------------------
@@ -129,7 +129,7 @@ char bAlreadyShowingInfo = 0;
 
 //------------------------------------------------------------------------------
 
-inline void NMFreeTextBm (tMenuItem *itemP)
+inline void NMFreeTextBm (CMenuItem *itemP)
 {
 	int	i;
 
@@ -141,7 +141,7 @@ for (i = 0; i < 2; i++) {
 
 //------------------------------------------------------------------------------
 
-void NMFreeAllTextBms (tMenuItem *itemP, int nItems)
+void NMFreeAllTextBms (CMenuItem *itemP, int nItems)
 {
 for (; nItems; nItems--, itemP++)
 	NMFreeTextBm (itemP);
@@ -149,7 +149,7 @@ for (; nItems; nItems--, itemP++)
 
 //------------------------------------------------------------------------------
 
-short NMSetItemColor (tMenuItem *itemP, int bIsCurrent, int bTiny) 
+short NMSetItemColor (CMenuItem *itemP, int bIsCurrent, int bTiny) 
 {
 if (bTiny) {
 	if (!gameData.menu.bValid) {
@@ -183,7 +183,7 @@ return CCanvas::Current ()->FontColor (0).index;
 int nTabIndex = -1;
 int nTabs [] = {15, 87, 124, 162, 228, 253};
 
-void NMHotKeyString (tMenuItem *itemP, int bIsCurrent, int bTiny, int bCreateTextBms, int nDepth)
+void NMHotKeyString (CMenuItem *itemP, int bIsCurrent, int bTiny, int bCreateTextBms, int nDepth)
 {
 #if 1
 	CBitmap	*bmP = itemP->text_bm [bIsCurrent];
@@ -300,7 +300,7 @@ if (!nDepth) {
 
 //------------------------------------------------------------------------------
 // Draw a left justfied string
-void NMString (tMenuItem *itemP, int bIsCurrent, int bTiny)
+void NMString (CMenuItem *itemP, int bIsCurrent, int bTiny)
 {
 	int w1 = itemP->w, x = itemP->x, y = itemP->y;
 	int l, w, h, aw, tx=0, t=0, i;
@@ -357,7 +357,7 @@ if (!gameStates.multi.bSurfingNet && p && (w1 > 0)) {
 
 //------------------------------------------------------------------------------
 // Draw a slider and it's string
-void NMStringSlider (tMenuItem *itemP, int bIsCurrent, int bTiny)
+void NMStringSlider (CMenuItem *itemP, int bIsCurrent, int bTiny)
 {
 char* s1 = NULL;
 char* p = strchr (itemP->savedText, '\t');
@@ -412,7 +412,7 @@ GrString (x+1, y+1, s, NULL);
 
 //------------------------------------------------------------------------------
 // Draw a right justfied string
-void NMRString (tMenuItem *itemP, int bIsCurrent, int bTiny, char *s)
+void NMRString (CMenuItem *itemP, int bIsCurrent, int bTiny, char *s)
 {
 	int	w, h, aw;
 	int	w1 = itemP->right_offset, 
@@ -455,7 +455,7 @@ GrString (x-w, y, s, NULL);
 #include "timer.h"
 
 //for text itemP, constantly redraw cursor (to achieve flash)
-void NMUpdateCursor (tMenuItem *itemP)
+void NMUpdateCursor (CMenuItem *itemP)
 {
 	int w, h, aw;
 	fix time = TimerGetApproxSeconds ();
@@ -525,7 +525,7 @@ GrUBox (x, y, x + w - 1, y + h - 1);
 
 //------------------------------------------------------------------------------
 
-void NMDrawItem (tMenuItem *itemP, int bIsCurrent, int bTiny)
+void NMDrawItem (CMenuItem *itemP, int bIsCurrent, int bTiny)
 {
 NMSetItemColor (itemP, bIsCurrent, bTiny);
 if (itemP->rebuild) {
@@ -653,31 +653,31 @@ void NMTrimWhitespace (char *text)
 
 //------------------------------------------------------------------------------
 
-int ExecMenu (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *itemP, 
-					int (*menuCallback) (int nItems, tMenuItem * itemP, int * lastKeyP, int nItem),
+int ExecMenu (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP, 
+					int (*menuCallback) (int nItems, CMenuItem * itemP, int * lastKeyP, int nItem),
 					char *filename)
 {
 return ExecMenu3 (pszTitle, pszSubTitle, nItems, itemP, menuCallback, NULL, filename, -1, -1);
 }
 
-int ExecMenuTiny (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *itemP, 
-						int (*menuCallback) (int nItems, tMenuItem *itemP, int *lastKeyP, int nItem))
+int ExecMenuTiny (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP, 
+						int (*menuCallback) (int nItems, CMenuItem *itemP, int *lastKeyP, int nItem))
 {
 return ExecMenu4 (pszTitle, pszSubTitle, nItems, itemP, menuCallback, NULL, NULL, LHX (310), -1, 1);
 }
 
 //------------------------------------------------------------------------------
 
-int ExecMenutiny2 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *itemP, 
-						  int (*menuCallback) (int nItems, tMenuItem * itemP, int * lastKeyP, int nItem))
+int ExecMenutiny2 (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP, 
+						  int (*menuCallback) (int nItems, CMenuItem * itemP, int * lastKeyP, int nItem))
 {
 return ExecMenu4 (pszTitle, pszSubTitle, nItems, itemP, menuCallback, 0, NULL, -1, -1, 1);
 }
 
 //------------------------------------------------------------------------------
 
-int ExecMenu1 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *itemP, 
-					int (*menuCallback) (int nItems, tMenuItem * itemP, int * lastKeyP, int nItem), 
+int ExecMenu1 (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP, 
+					int (*menuCallback) (int nItems, CMenuItem * itemP, int * lastKeyP, int nItem), 
 					int *nCurItemP)
 {
 return ExecMenu3 (pszTitle, pszSubTitle, nItems, itemP, menuCallback, nCurItemP, NULL, -1, -1);
@@ -685,8 +685,8 @@ return ExecMenu3 (pszTitle, pszSubTitle, nItems, itemP, menuCallback, nCurItemP,
 
 //------------------------------------------------------------------------------
 
-int ExecMenu2 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *itemP, 
-					int (*menuCallback) (int nItems, tMenuItem * itemP, int * lastKeyP, int nItem), 
+int ExecMenu2 (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP, 
+					int (*menuCallback) (int nItems, CMenuItem * itemP, int * lastKeyP, int nItem), 
 					int *nCurItemP, char *filename)
 {
 return ExecMenu3 (pszTitle, pszSubTitle, nItems, itemP, menuCallback, nCurItemP, filename, -1, -1);
@@ -694,8 +694,8 @@ return ExecMenu3 (pszTitle, pszSubTitle, nItems, itemP, menuCallback, nCurItemP,
 
 //------------------------------------------------------------------------------
 
-int ExecMenu3 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *itemP, 
-					int (*menuCallback) (int nItems, tMenuItem * itemP, int * lastKeyP, int nItem), 
+int ExecMenu3 (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP, 
+					int (*menuCallback) (int nItems, CMenuItem * itemP, int * lastKeyP, int nItem), 
 					int *nCurItemP, char *filename, int width, int height)
  {
  return ExecMenu4 (pszTitle, pszSubTitle, nItems, itemP, menuCallback, nCurItemP, filename, width, height, 0);
@@ -703,8 +703,8 @@ int ExecMenu3 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuI
 
 //------------------------------------------------------------------------------
 
-int ExecMenuFixedFont (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *itemP, 
-							  int (*menuCallback) (int nItems, tMenuItem * itemP, int * lastKeyP, int nItem), 
+int ExecMenuFixedFont (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP, 
+							  int (*menuCallback) (int nItems, CMenuItem * itemP, int * lastKeyP, int nItem), 
 							  int *nCurItemP, char *filename, int width, int height){
 SetScreenMode (SCREEN_MENU);//hafta set the screen mode before calling or fonts might get changed/freed up if screen res changes
 //	return ExecMenu3_real (pszTitle, pszSubTitle, nItems, itemP, menuCallback, nItem, filename, width, height, GAME_FONT, GAME_FONT, GAME_FONT, GAME_FONT);
@@ -797,7 +797,7 @@ if (pszTitle && *pszTitle)	{
 
 //------------------------------------------------------------------------------
 
-int NMGetMenuSize (tMenuItem *itemP, int nItems, int *w, int *h, int *aw, int *nMenus, int *nOthers)
+int NMGetMenuSize (CMenuItem *itemP, int nItems, int *w, int *h, int *aw, int *nMenus, int *nOthers)
 {
 	int	nStringWidth = 0, nStringHeight = 0, nAverageWidth = 0;
 	int	i, j;
@@ -874,7 +874,7 @@ for (i = 0; i < nItems; i++, itemP++) {
 		Assert (strlen (itemP->text) < NM_MAX_TEXT_LEN);
 		strncpy (itemP->savedText, itemP->text, NM_MAX_TEXT_LEN);
 		(*nOthers)++;
-		nStringWidth = itemP->text_len*CCanvas::Current ()->Font ()->Width ()+ ((gameStates.menus.bHires?3:1)*itemP->text_len);
+		nStringWidth = itemP->nTextLen*CCanvas::Current ()->Font ()->Width ()+ ((gameStates.menus.bHires?3:1)*itemP->nTextLen);
 		if (nStringWidth > MAX_TEXT_WIDTH) 
 			nStringWidth = MAX_TEXT_WIDTH;
 		itemP->value = -1;
@@ -883,7 +883,7 @@ for (i = 0; i < nItems; i++, itemP++) {
 		Assert (strlen (itemP->text) < NM_MAX_TEXT_LEN);
 		strncpy (itemP->savedText, itemP->text, NM_MAX_TEXT_LEN);
 		(*nMenus)++;
-		nStringWidth = itemP->text_len*CCanvas::Current ()->Font ()->Width ()+ ((gameStates.menus.bHires?3:1)*itemP->text_len);
+		nStringWidth = itemP->nTextLen*CCanvas::Current ()->Font ()->Width ()+ ((gameStates.menus.bHires?3:1)*itemP->nTextLen);
 		itemP->value = -1;
 		itemP->group = 0;
 		}
@@ -901,7 +901,7 @@ return nStringHeight;
 
 //------------------------------------------------------------------------------
 
-void NMSetItemPos (tMenuItem *itemP, int nItems, int twidth, int xOffs, int yOffs, int right_offset)
+void NMSetItemPos (CMenuItem *itemP, int nItems, int twidth, int xOffs, int yOffs, int right_offset)
 {
 	int	i, j;
 
@@ -934,7 +934,7 @@ for (i = 0; i < nItems; i++)	{
 
 //------------------------------------------------------------------------------
 
-int NMInitCtrl (tMenuProps *ctrlP, const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *itemP)
+int NMInitCtrl (tMenuProps *ctrlP, const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP)
 {
 if ((ctrlP->scWidth == screen.Width ()) && (ctrlP->scHeight == screen.Height ()))
 	return 0;
@@ -1064,8 +1064,8 @@ if (szHelp && *szHelp) {
 
 #define REDRAW_ALL	for (i = 0; i < nItems; i++) itemP [i].redraw = 1; bRedrawAll = 1
 
-int ExecMenu4 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *itemP, 
-					 int (*menuCallback) (int nItems, tMenuItem *itemP, int *lastKeyP, int nItem), 
+int ExecMenu4 (const char *pszTitle, const char *pszSubTitle, int nItems, CMenuItem *itemP, 
+					 int (*menuCallback) (int nItems, CMenuItem *itemP, int *lastKeyP, int nItem), 
 					 int *nCurItemP, char *filename, int width, int height, int bTinyMode)
 {
 	int			bKeyRepeat, done, nItem = nCurItemP ? *nCurItemP : 0;
@@ -1774,7 +1774,7 @@ launchOption:
 					}
 				else {
 					ascii = KeyToASCII (k);
-					if ((ascii < 255) && (itemP [choice].value < itemP [choice].text_len)) {
+					if ((ascii < 255) && (itemP [choice].value < itemP [choice].nTextLen)) {
 						int bAllowed;
 
 						if (itemP [choice].value  == -1)
@@ -1985,7 +1985,7 @@ return choice;
 
 int _CDECL_ ExecMessageBox1 (
 					const char *pszTitle, 
-					int (*menuCallback) (int nItems, tMenuItem * itemP, int * lastKeyP, int nItem), 
+					int (*menuCallback) (int nItems, CMenuItem * itemP, int * lastKeyP, int nItem), 
 					char *filename, int nChoices, ...)
 {
 	int i;
@@ -1993,7 +1993,7 @@ int _CDECL_ ExecMessageBox1 (
 	va_list args;
 	char *s;
 	char nm_text [MESSAGEBOX_TEXT_SIZE];
-	tMenuItem nmMsgItems [5];
+	CMenuItem nmMsgItems [5];
 
 va_start (args, nChoices);
 Assert (nChoices <= 5);
@@ -2020,7 +2020,7 @@ int _CDECL_ ExecMessageBox (const char *pszTitle, char *filename, int nChoices, 
 	char				*format, *s;
 	va_list			args;
 	char				nm_text [MESSAGEBOX_TEXT_SIZE];
-	tMenuItem		nmMsgItems [10];
+	CMenuItem		nmMsgItems [10];
 
 
 if (!nChoices)
@@ -2028,7 +2028,7 @@ if (!nChoices)
 if ((bTiny = (nChoices < 0)))
 	nChoices = -nChoices;
 va_start (args, nChoices);
-memset (nmMsgItems, 0, h = nChoices * sizeof (tMenuItem));
+memset (nmMsgItems, 0, h = nChoices * sizeof (CMenuItem));
 for (i = l = 0; i < nChoices; i++) {
 	s = va_arg (args, char *);
 	h = (int) strlen (s);
@@ -2988,7 +2988,7 @@ int _CDECL_ NMMsgBoxFixedFont (char *pszTitle, int nChoices, ...)
 	va_list args;
 	char *s;
 	char nm_text [MESSAGEBOX_TEXT_SIZE];
-	tMenuItem nmMsgItems [5];
+	CMenuItem nmMsgItems [5];
 
 	va_start (args, nChoices);
 
@@ -3044,9 +3044,9 @@ delete [] tbuf;
 //------------------------------------------------------------------------------
 
 void NMProgressBar (const char *szCaption, int nCurProgress, int nMaxProgress, 
-						  int (*doProgress) (int nItems, tMenuItem *itemP, int *lastKeyP, int nCurItemP))
+						  int (*doProgress) (int nItems, CMenuItem *itemP, int *lastKeyP, int nCurItemP))
 {
-	tMenuItem	m [3];
+	CMenuItem	m [3];
 	int			i, nInMenu;
 
 memset (m, 0, sizeof (m));
@@ -3061,6 +3061,111 @@ do {
 	} while (i >= 0);
 gameData.app.bGamePaused = 0;
 gameStates.menus.nInMenu = nInMenu;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+int CMenuManager::AddCheck (char* szText, int nValue, int nKey, char* szHelp)
+{
+CMenuItem& item = Item ();
+item.nType = NM_TYPE_CHECK;
+item.text = szText;
+item.value = NMBOOL (nValue);
+item.key = nKey;
+item.szHelp = szHelp;
+return m_opt++;
+}
+
+//------------------------------------------------------------------------------
+
+int CMenuManager::AddRadio (char* szText, int nValue, int nGroup, int nKey, char* szHelp)
+{
+CMenuItem& item = Item ();
+item.nType = NM_TYPE_RADIO;
+item.text = szText;
+item.value = nValue;
+item.key = nKey;
+item.group=nGroup;
+item.szHelp = szHelp;
+return m_opt++;
+}
+
+//------------------------------------------------------------------------------
+
+int CMenuManager::AddMenu (char* szText, int nKey, char* szHelp)
+{
+CMenuItem& item = Item ();
+item.nType = NM_TYPE_MENU;
+item.text = szText;
+item.key = nKey;
+item.szHelp = szHelp;
+return m_opt++;
+}
+
+//------------------------------------------------------------------------------
+
+int CMenuManager::AddText (char* szText, int nKey)
+{
+CMenuItem& item = Item ();
+item.nType = NM_TYPE_TEXT;
+item.text = szText;
+item.key = nKey;
+return m_opt++;
+}
+
+//------------------------------------------------------------------------------
+
+int CMenuManager::AddSlider (char* szText, int nValue, int nMin, int nMax, int nKey, char* szHelp)
+{
+CMenuItem& item = Item ();
+item.nType = NM_TYPE_SLIDER;
+item.text = szText;
+item.value = NMCLAMP (nValue, nMin, nMax);
+item.minValue = nMin;
+item.maxValue = nMax;
+item.key = nKey;
+item.szHelp = szHelp;
+return m_opt++;
+}
+
+//------------------------------------------------------------------------------
+
+int CMenuManager::AddInput (char* szText, int nLen, char* szHelp)
+{
+CMenuItem& item = Item ();
+item.nType = NM_TYPE_INPUT;
+item.text = szText;
+item.nTextLen = nLen;
+item.szHelp = szHelp;
+return m_opt++;
+}
+
+//------------------------------------------------------------------------------
+
+int CMenuManager::AddInputBox (char* szText, int nLen, int nKey, char* szHelp)
+{
+CMenuItem& item = Item ();
+item.nType = NM_TYPE_INPUT_MENU;
+item.text = szText;
+item.nTextLen = nLen;
+item.key = nKey;
+item.szHelp = szHelp;
+return m_opt++;
+}
+
+//------------------------------------------------------------------------------
+
+int CMenuManager::AddGauge (char* szText, int nValue, int nMax)
+{
+CMenuItem& item = Item ();
+item.nType = NM_TYPE_GAUGE;
+item.text = szText;
+item.nTextLen = *szText ? (int) strlen (szText) : 20;
+item.value = NMCLAMP (nValue, 0, nMax);
+item.maxValue = nMax;
+return m_opt++;
 }
 
 //------------------------------------------------------------------------------

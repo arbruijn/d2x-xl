@@ -831,7 +831,7 @@ gameStates.gameplay.xLastAfterburnerCharge = gameData.physics.xAfterburnerCharge
 void ShowHelp ()
 {
 	int nitems, opt = 0;
-	tMenuItem m [40];
+	CMenuItem m [40];
 	#ifdef MACINTOSH
 	char command_help[64], pixel_double_help[64], save_help[64], restore_help[64];
 	#endif
@@ -1400,11 +1400,11 @@ void toggle_movie_saving ()
 	bSavingMovieFrames = !bSavingMovieFrames;
 
 	if (bSavingMovieFrames) {
-		tMenuItem m[1];
+		CMenuItem m[1];
 
 		memset (m, 0, sizeof (m));
 		m[0].nType=NM_TYPE_INPUT;
-		m[0].text_len = 50;
+		m[0].nTextLen = 50;
 		m[0].text = movie_path;
 		exit = ExecMenu (NULL, "Directory for movie frames?" , 1, & (m[0]), NULL, NULL);
 

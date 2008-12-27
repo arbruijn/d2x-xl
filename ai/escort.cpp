@@ -288,7 +288,7 @@ if (bDetected) {
 
 void ChangeGuidebotName ()
 {
-	tMenuItem m;
+	CMenuItem m;
 	char text [GUIDEBOT_NAME_LEN+1]="";
 	int item;
 
@@ -296,7 +296,7 @@ void ChangeGuidebotName ()
 
 	memset (&m, 0, sizeof (m));
 	m.nType=NM_TYPE_INPUT;
-	m.text_len = GUIDEBOT_NAME_LEN;
+	m.nTextLen = GUIDEBOT_NAME_LEN;
 	m.text = text;
 	item = ExecMenu (NULL, "Enter Guide-bot name:", 1, &m, NULL, NULL);
 
@@ -1066,7 +1066,7 @@ int ShowEscortHelp (char *pszGoal, char *tstr)
 {
 
 	int				nItems;
-	tMenuItem	m [12];
+	CMenuItem	m [12];
 	char szGoal		 [40], szMsgs [40];
 #if 0
 	static char *szEscortHelp [12] = {

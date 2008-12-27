@@ -76,7 +76,7 @@ for (i = 0; i <= n; i++)
 
 void ReorderPrimary (void)
 {
-	tMenuItem	m [MAX_PRIMARY_WEAPONS + 2];
+	CMenuItem	m [MAX_PRIMARY_WEAPONS + 2];
 	int			i;
 
 ValidatePrios (primaryOrder, defaultPrimaryOrder, MAX_PRIMARY_WEAPONS);
@@ -101,7 +101,7 @@ for (i = 0; i < MAX_PRIMARY_WEAPONS + 1; i++)
 
 void ReorderSecondary (void)
 {
-	tMenuItem m[MAX_SECONDARY_WEAPONS + 2];
+	CMenuItem m[MAX_SECONDARY_WEAPONS + 2];
 	int i;
 
 ValidatePrios (secondaryOrder, defaultSecondaryOrder, MAX_SECONDARY_WEAPONS);

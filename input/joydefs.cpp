@@ -90,7 +90,7 @@ void JoyDefsCalibrate()
 
 //------------------------------------------------------------------------------
 
-int AddDeadzoneControl (tMenuItem *m, char *szText, const char *szFmt, const char *szHelp, const char **szSizes, ubyte nValue, char nKey, int *pnOpt)
+int AddDeadzoneControl (CMenuItem *m, char *szText, const char *szFmt, const char *szHelp, const char **szSizes, ubyte nValue, char nKey, int *pnOpt)
 {
 	int nOpt = *pnOpt;
 
@@ -105,7 +105,7 @@ return (*pnOpt)++;
 
 //------------------------------------------------------------------------------
 
-int AddAxisControls (tMenuItem *m, char *szText, const char *szFmtSyncd, const char *szFmt, const char *szLabel, const char *szHelp, 
+int AddAxisControls (CMenuItem *m, char *szText, const char *szFmtSyncd, const char *szFmt, const char *szLabel, const char *szHelp, 
 							int nControls, int *pnValues, int nValues, int *pnIntervals, 
 							char nKeySyncd, char *pnKeys, int bSyncControls, int *pnOpt)
 {
@@ -144,11 +144,11 @@ return h;
 
 //------------------------------------------------------------------------------
 
-int MouseConfigCallback (int nitems, tMenuItem * items, int *key, int nCurItem)
+int MouseConfigCallback (int nitems, CMenuItem * items, int *key, int nCurItem)
 {
 	int h, i, v;
 	int ocType = gameConfig.nControlType;
-	tMenuItem * m;
+	CMenuItem * m;
 
 SetControlType ();
 if ((ocType != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS)) {
@@ -228,7 +228,7 @@ return nCurItem;
 
 void MouseConfigMenu (void)
 {
-	tMenuItem m [20];
+	CMenuItem m [20];
 	int	i, j, opt = 0, choice = 0;
 	int	nCustMouseOpt, nMouseTypeOpt;
 	char	szMouseSens [3][50];
@@ -312,11 +312,11 @@ do {
 
 //------------------------------------------------------------------------------
 
-int JoystickConfigCallback (int nitems, tMenuItem * items, int *key, int nCurItem)
+int JoystickConfigCallback (int nitems, CMenuItem * items, int *key, int nCurItem)
 {
 	int h, i, v;
 	int ocType = gameConfig.nControlType;
-	tMenuItem * m;
+	CMenuItem * m;
 
 SetControlType ();
 if ((ocType != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS)) {
@@ -400,7 +400,7 @@ return nCurItem;
 
 void JoystickConfigMenu (void)
 {
-	tMenuItem m [20];
+	CMenuItem m [20];
 	int	h, i, j, opt = 0, choice = 0;
 	int	nCustJoyOpt, nJoyTypeOpt;
 	char	szJoySens [UNIQUE_JOY_AXES][50];
@@ -472,10 +472,10 @@ do {
 
 //------------------------------------------------------------------------------
 
-int TrackIRConfigCallback (int nitems, tMenuItem * items, int *key, int nCurItem)
+int TrackIRConfigCallback (int nitems, CMenuItem * items, int *key, int nCurItem)
 {
 	int h, i, v;
-	tMenuItem * m;
+	CMenuItem * m;
 
 m = items + tirOpts.nUse;
 v = m->value;
@@ -550,7 +550,7 @@ return nCurItem;
 
 void TrackIRConfigMenu (void)
 {
-	tMenuItem m [20];
+	CMenuItem m [20];
 	int	i, opt = 0, choice = 0;
 	char	szTrackIRSens [3][50];
 	char	szTrackIRDeadzone [50];
@@ -606,10 +606,10 @@ do {
 
 //------------------------------------------------------------------------------
 
-int KeyboardConfigCallback (int nitems, tMenuItem * items, int *key, int nCurItem)
+int KeyboardConfigCallback (int nitems, CMenuItem * items, int *key, int nCurItem)
 {
 	int			i, v;
-	tMenuItem	*m;
+	CMenuItem	*m;
 
 if (!gameStates.app.bNostalgia) { 
 	m = items + kbdOpts.nUseHotkeys;
@@ -648,7 +648,7 @@ return nCurItem;
 
 void KeyboardConfigMenu (void)
 {
-	tMenuItem m [20];
+	CMenuItem m [20];
 	int	i, opt = 0, choice = 0;
 	int	nCustKbdOpt, nCustHotKeysOpt;
 	char	szKeyRampScale [50];
@@ -710,7 +710,7 @@ do {
 
 void InputDeviceConfig (void)
 {
-	tMenuItem m [10];
+	CMenuItem m [10];
 	int	i, opt = 0, choice = 0;
 	int	nMouseOpt, nJoystickOpt, nTrackIROpt, nKeyboardOpt, nFastPitchOpt;
 

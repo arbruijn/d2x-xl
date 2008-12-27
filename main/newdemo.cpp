@@ -139,7 +139,7 @@ CFile ndOutFile;
 
 int NDErrorMsg (const char *pszMsg1, const char *pszMsg2, const char *pszMsg3)
 {
-	tMenuItem	m [3];
+	CMenuItem	m [3];
 	int			opt = 0;
 
 memset (m, 0, sizeof (m));
@@ -3122,7 +3122,7 @@ ndOutFile.Close ();
 char demoname_allowed_chars [] = "azAZ09__--";
 void NDStopRecording (void)
 {
-	tMenuItem m [6];
+	CMenuItem m [6];
 	int exit = 0;
 	static char filename [15] = "", *s;
 	static ubyte tmpcnt = 0;
@@ -3156,7 +3156,7 @@ nmAllowedChars = demoname_allowed_chars;
 memset (m, 0, sizeof (m));
 if (!gameData.demo.bNoSpace) {
 	m [0].nType = NM_TYPE_INPUT; 
-	m [0].text_len = 8; 
+	m [0].nTextLen = 8; 
 	m [0].text = filename;
 	exit = ExecMenu (NULL, TXT_SAVE_DEMO_AS, 1, &(m [0]), NULL, NULL);
 	}
@@ -3164,7 +3164,7 @@ else if (gameData.demo.bNoSpace == 1) {
 	m [0].nType = NM_TYPE_TEXT; 
 	m [0].text = const_cast<char*> (TXT_DEMO_SAVE_BAD);
 	m [1].nType = NM_TYPE_INPUT;
-	m [1].text_len = 8; 
+	m [1].nTextLen = 8; 
 	m [1].text = filename;
 	exit = ExecMenu (NULL, NULL, 2, m, NULL, NULL);
 	} 
@@ -3172,7 +3172,7 @@ else if (gameData.demo.bNoSpace == 2) {
 	m [0].nType = NM_TYPE_TEXT; 
 	m [0].text = const_cast<char*> (TXT_DEMO_SAVE_NOSPACE);
 	m [1].nType = NM_TYPE_INPUT;
-	m [1].text_len = 8; 
+	m [1].nTextLen = 8; 
 	m [1].text = filename;
 	exit = ExecMenu (NULL, NULL, 2, m, NULL, NULL);
 	}

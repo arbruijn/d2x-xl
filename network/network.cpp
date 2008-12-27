@@ -208,7 +208,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-void RestartNetSearching (tMenuItem * m)
+void RestartNetSearching (CMenuItem * m)
 {
 gameData.multiplayer.nPlayers = 0;
 networkData.nActiveGames = 0;
