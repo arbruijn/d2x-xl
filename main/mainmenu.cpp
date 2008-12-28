@@ -165,8 +165,6 @@ return nCurItem;
 //      Create the main menu.
 int SetupMainMenu (CMenu& m)
 {
-	int nOptions = 0;
-
 memset (&mainOpts, 0xff, sizeof (mainOpts));
 #ifndef DEMO_ONLY
 SetScreenMode (SCREEN_MENU);

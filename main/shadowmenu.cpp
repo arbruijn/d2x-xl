@@ -69,6 +69,20 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include "editor/editor.h"
 #endif
 
+#if DBG_SHADOWS
+extern int bShadowTest;
+extern int bFrontCap;
+extern int bRearCap;
+extern int bShadowVolume;
+extern int bFrontFaces;
+extern int bBackFaces;
+extern int bWallShadows;
+extern int bSWCulling;
+#endif
+#if SHADOWS
+extern int bZPass;
+#endif
+
 //------------------------------------------------------------------------------
 
 static struct {
@@ -94,51 +108,51 @@ int ShadowOptionsCallback (CMenu& menu, int& key, int nCurItem)
 	CMenuItem	*m;
 	int			v;
 
-m = menus + shadowOpts.nUse;
-v = m->value;
+m = menu + shadowOpts.nUse;
+v = m->m_value;
 if (v != extraGameInfo [0].bShadows) {
 	extraGameInfo [0].bShadows = v;
-	*key = -2;
+	key = -2;
 	return nCurItem;
 	}
 if (extraGameInfo [0].bShadows) {
-	m = menus + shadowOpts.nMaxLights;
-	v = m->value + 1;
+	m = menu + shadowOpts.nMaxLights;
+	v = m->m_value + 1;
 	if (gameOpts->render.shadows.nLights != v) {
 		gameOpts->render.shadows.nLights = v;
-		sprintf (m->text, TXT_MAX_LIGHTS, gameOpts->render.shadows.nLights);
-		m->rebuild = 1;
+		sprintf (m->m_text, TXT_MAX_LIGHTS, gameOpts->render.shadows.nLights);
+		m->m_bRebuild = 1;
 		}
-	m = menus + shadowOpts.nReach;
-	v = m->value;
+	m = menu + shadowOpts.nReach;
+	v = m->m_value;
 	if (gameOpts->render.shadows.nReach != v) {
 		gameOpts->render.shadows.nReach = v;
-		sprintf (m->text, TXT_SHADOW_REACH, pszReach [gameOpts->render.shadows.nReach]);
-		m->rebuild = 1;
+		sprintf (m->m_text, TXT_SHADOW_REACH, pszReach [gameOpts->render.shadows.nReach]);
+		m->m_bRebuild = 1;
 		}
 #if DBG_SHADOWS
 	if (shadowOpts.nTest >= 0) {
-		m = menus + shadowOpts.nTest;
-		v = m->value;
+		m = menu + shadowOpts.nTest;
+		v = m->m_value;
 		if (bShadowTest != v) {
 			bShadowTest = v;
-			sprintf (m->text, "Test mode: %d", bShadowTest);
-			m->rebuild = 1;
+			sprintf (m->m_text, "Test mode: %d", bShadowTest);
+			m->m_bRebuild = 1;
 			}
-		m = menus + shadowOpts.nZPass;
-		v = m->value;
+		m = menu + shadowOpts.nZPass;
+		v = m->m_value;
 		if (bZPass != v) {
 			bZPass = v;
-			m->rebuild = 1;
-			*key = -2;
+			m->m_bRebuild = 1;
+			key = -2;
 			return nCurItem;
 			}
-		m = menus + shadowOpts.nVolume;
-		v = m->value;
+		m = menu + shadowOpts.nVolume;
+		v = m->m_value;
 		if (bShadowVolume != v) {
 			bShadowVolume = v;
-			m->rebuild = 1;
-			*key = -2;
+			m->m_bRebuild = 1;
+			key = -2;
 			return nCurItem;
 			}
 		}
@@ -151,9 +165,8 @@ return nCurItem;
 
 void ShadowOptionsMenu (void)
 {
-	CMenuItem m [30];
+	CMenu	m;
 	int	i, j, choice = 0;
-	int	nOptions;
 	int	optClipShadows, optPlayerShadows, optRobotShadows, optMissileShadows, 
 			optPowerupShadows, optReactorShadows;
 	char	szMaxLightsPerFace [50], szReach [50];
@@ -174,14 +187,12 @@ pszClip [2] = TXT_MEDIUM;
 pszClip [3] = TXT_PRECISE;
 
 do {
-	memset (m, 0, sizeof (m));
-	nOptions = 0;
-	if (extraGameInfo [0].bShadows) {
-		m.AddText (nOptions, "", 0);
-		nOptions++;
-		}
-	m.AddCheck (nOptions, TXT_RENDER_SHADOWS, extraGameInfo [0].bShadows, KEY_W, HTX_ADVRND_SHADOWS);
-	shadowOpts.nUse = nOptions++;
+	m.Destroy ();
+	m.Create (30);
+
+	if (extraGameInfo [0].bShadows)
+		m.AddText ("", 0);
+	shadowOpts.nUse = m.AddCheck (TXT_RENDER_SHADOWS, extraGameInfo [0].bShadows, KEY_W, HTX_ADVRND_SHADOWS);
 	optClipShadows =
 	optPlayerShadows =
 	optRobotShadows =
@@ -203,69 +214,47 @@ do {
 	if (extraGameInfo [0].bShadows) {
 		sprintf (szMaxLightsPerFace + 1, TXT_MAX_LIGHTS, gameOpts->render.shadows.nLights);
 		*szMaxLightsPerFace = *(TXT_MAX_LIGHTS - 1);
-		m.AddSlider (nOptions, szMaxLightsPerFace + 1, gameOpts->render.shadows.nLights - 1, 0, MAX_SHADOW_LIGHTS, KEY_S, HTX_ADVRND_MAXLIGHTS);
-		shadowOpts.nMaxLights = nOptions++;
+		shadowOpts.nMaxLights = m.AddSlider (szMaxLightsPerFace + 1, gameOpts->render.shadows.nLights - 1, 0, MAX_SHADOW_LIGHTS, KEY_S, HTX_ADVRND_MAXLIGHTS);
 		sprintf (szReach + 1, TXT_SHADOW_REACH, pszReach [gameOpts->render.shadows.nReach]);
 		*szReach = *(TXT_SHADOW_REACH - 1);
-		m.AddSlider (nOptions, szReach + 1, gameOpts->render.shadows.nReach, 0, 3, KEY_R, HTX_RENDER_SHADOWREACH);
-		shadowOpts.nReach = nOptions++;
-		m.AddText (nOptions, "", 0);
-		nOptions++;
-		m.AddText (nOptions, TXT_CLIP_SHADOWS, 0);
-		optClipShadows = ++nOptions;
-		for (j = 0; j < 4; j++) {
-			m.AddRadio (nOptions, pszClip [j], gameOpts->render.shadows.nClip == j, 0, 1, HTX_CLIP_SHADOWS);
-			nOptions++;
-			}
-		m.AddText (nOptions, "", 0);
-		nOptions++;
-		m.AddCheck (nOptions, TXT_PLAYER_SHADOWS, gameOpts->render.shadows.bPlayers, KEY_P, HTX_PLAYER_SHADOWS);
-		optPlayerShadows = nOptions++;
-		m.AddCheck (nOptions, TXT_ROBOT_SHADOWS, gameOpts->render.shadows.bRobots, KEY_O, HTX_ROBOT_SHADOWS);
-		optRobotShadows = nOptions++;
-		m.AddCheck (nOptions, TXT_MISSILE_SHADOWS, gameOpts->render.shadows.bMissiles, KEY_M, HTX_MISSILE_SHADOWS);
-		optMissileShadows = nOptions++;
-		m.AddCheck (nOptions, TXT_POWERUP_SHADOWS, gameOpts->render.shadows.bPowerups, KEY_W, HTX_POWERUP_SHADOWS);
-		optPowerupShadows = nOptions++;
-		m.AddCheck (nOptions, TXT_REACTOR_SHADOWS, gameOpts->render.shadows.bReactors, KEY_A, HTX_REACTOR_SHADOWS);
-		optReactorShadows = nOptions++;
+		shadowOpts.nReach = m.AddSlider (szReach + 1, gameOpts->render.shadows.nReach, 0, 3, KEY_R, HTX_RENDER_SHADOWREACH);
+		m.AddText ("", 0);
+		m.AddText (TXT_CLIP_SHADOWS, 0);
+		optClipShadows = m.ToS ();
+		for (j = 0; j < 4; j++)
+			m.AddRadio (pszClip [j], gameOpts->render.shadows.nClip == j, 0, 1, HTX_CLIP_SHADOWS);
+		m.AddText ("", 0);
+		optPlayerShadows = m.AddCheck (TXT_PLAYER_SHADOWS, gameOpts->render.shadows.bPlayers, KEY_P, HTX_PLAYER_SHADOWS);
+		optRobotShadows = m.AddCheck (TXT_ROBOT_SHADOWS, gameOpts->render.shadows.bRobots, KEY_O, HTX_ROBOT_SHADOWS);
+		optMissileShadows = m.AddCheck (TXT_MISSILE_SHADOWS, gameOpts->render.shadows.bMissiles, KEY_M, HTX_MISSILE_SHADOWS);
+		optPowerupShadows = m.AddCheck (TXT_POWERUP_SHADOWS, gameOpts->render.shadows.bPowerups, KEY_W, HTX_POWERUP_SHADOWS);
+		optReactorShadows = m.AddCheck (TXT_REACTOR_SHADOWS, gameOpts->render.shadows.bReactors, KEY_A, HTX_REACTOR_SHADOWS);
 #if DBG_SHADOWS
-		m.AddCheck (nOptions, TXT_FAST_SHADOWS, gameOpts->render.shadows.bFast, KEY_F, HTX_FAST_SHADOWS);
-		optFastShadows = nOptions++;
-		m.AddText (nOptions, "", 0);
-		nOptions++;
-		m.AddCheck (nOptions, "use Z-Pass algorithm", bZPass, 0, NULL);
-		shadowOpts.nZPass = nOptions++;
+		optFastShadows = m.AddCheck (TXT_FAST_SHADOWS, gameOpts->render.shadows.bFast, KEY_F, HTX_FAST_SHADOWS);
+		m.AddText ("", 0);
+		shadowOpts.nZPass = m.AddCheck ("use Z-Pass algorithm", bZPass, 0, NULL);
 		if (!bZPass) {
-			m.AddCheck (nOptions, "render front cap", bFrontCap, 0, NULL);
-			optFrontCap = nOptions++;
-			m.AddCheck (nOptions, "render rear cap", bRearCap, 0, NULL);
-			optRearCap = nOptions++;
+			optFrontCap = m.AddCheck ("render front cap", bFrontCap, 0, NULL);
+			optRearCap = m.AddCheck ("render rear cap", bRearCap, 0, NULL);
 			}
-		m.AddCheck (nOptions, "render shadow volume", bShadowVolume, 0, NULL);
-		shadowOpts.nVolume = nOptions++;
+		shadowOpts.nVolume = m.AddCheck ("render shadow volume", bShadowVolume, 0, NULL);
 		if (bShadowVolume) {
-			m.AddCheck (nOptions, "render front faces", bFrontFaces, 0, NULL);
-			optFrontFaces = nOptions++;
-			m.AddCheck (nOptions, "render back faces", bBackFaces, 0, NULL);
-			optBackFaces = nOptions++;
+			optFrontFaces = m.AddCheck ("render front faces", bFrontFaces, 0, NULL);
+			optBackFaces = m.AddCheck ("render back faces", bBackFaces, 0, NULL);
 			}
-		m.AddCheck (nOptions, "render CWall shadows", bWallShadows, 0, NULL);
-		optWallShadows = nOptions++;
-		m.AddCheck (nOptions, "software culling", bSWCulling, 0, NULL);
-		optSWCulling = nOptions++;
+		optWallShadows = m.AddCheck ("render CWall shadows", bWallShadows, 0, NULL);
+		optSWCulling = m.AddCheck ("software culling", bSWCulling, 0, NULL);
 		sprintf (szShadowTest, "test method: %d", bShadowTest);
-		m.AddSlider (nOptions, szShadowTest, bShadowTest, 0, 6, KEY_S, NULL);
-		shadowOpts.nTest = nOptions++;
+		shadowOpts.nTest = m.AddSlider (szShadowTest, bShadowTest, 0, 6, KEY_S, NULL);
 #endif
 		}
 	for (;;) {
-		i = ExecMenu1 (NULL, TXT_SHADOW_MENUTITLE, nOptions, m, &ShadowOptionsCallback, &choice);
+		i = m.Menu (NULL, TXT_SHADOW_MENUTITLE, ShadowOptionsCallback, &choice);
 		if (i < 0)
 			break;
 		} 
 	for (j = 0; j < 4; j++)
-		if (m [optClipShadows + j].value) {
+		if (m [optClipShadows + j].m_value) {
 			gameOpts->render.shadows.nClip = j;
 			break;
 			}

@@ -73,7 +73,23 @@ extern int ft_preference;
 // Cooperative mode via serial link is GM_SERIAL | GM_MULTI_COOP
 
 #define NDL 5       // Number of difficulty levels.
+
+//------------------------------------------------------------------------------
+
 #define NUM_DETAIL_LEVELS   6
+
+typedef struct tDetailData {
+	ubyte		renderDepths [NUM_DETAIL_LEVELS - 1];
+	sbyte		maxPerspectiveDepths [NUM_DETAIL_LEVELS - 1];
+	sbyte		maxLinearDepths [NUM_DETAIL_LEVELS - 1];
+	sbyte		maxLinearDepthObjects [NUM_DETAIL_LEVELS - 1];
+	sbyte		maxDebrisObjects [NUM_DETAIL_LEVELS - 1];
+	sbyte		maxObjsOnScreenDetailed [NUM_DETAIL_LEVELS - 1];
+	sbyte		simpleModelThresholdScales [NUM_DETAIL_LEVELS - 1];
+	sbyte		nSoundChannels [NUM_DETAIL_LEVELS - 1];
+} tDetailData;
+
+//------------------------------------------------------------------------------
 
 extern int gauge_message_on;
 

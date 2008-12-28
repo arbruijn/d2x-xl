@@ -69,6 +69,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include "editor/editor.h"
 #endif
 
+#if VR_NONE
+#   undef VR_NONE			//undef if != 0
+#endif
+#ifndef VR_NONE
+#   define VR_NONE 0		//make sure VR_NONE is defined and 0 here
+#endif
+
 //------------------------------------------------------------------------------
 
 static struct {
@@ -109,19 +116,19 @@ return item;
 
 //------------------------------------------------------------------------------
 
-int ScreenResCallback (CMenu& m, int *nLastKey, int nCurItem)
+int ScreenResCallback (CMenu& m, int& nLastKey, int nCurItem)
 {
 	int	i, j;
 
-if (m [screenResOpts.nCustom].value != (nDisplayMode == NUM_DISPLAY_MODES)) 
-	*nLastKey = -2;
+if (m [screenResOpts.nCustom].m_value != (nDisplayMode == NUM_DISPLAY_MODES)) 
+	nLastKey = -2;
 for (i = 0; i < screenResOpts.nCustom; i++)
-	if (m [i].value) {
+	if (m [i].m_value) {
 		j = ScreenResMenuItemToMode(i);
 		if ((j < NUM_DISPLAY_MODES) && (j != nDisplayMode)) {
 			SetDisplayMode (j, 0);
 			nDisplayMode = gameStates.video.nDisplayMode;
-			*nLastKey = -2;
+			nLastKey = -2;
 			}
 		break;
 		}
@@ -154,23 +161,13 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-#if VR_NONE
-#   undef VR_NONE			//undef if != 0
-#endif
-#ifndef VR_NONE
-#   define VR_NONE 0		//make sure VR_NONE is defined and 0 here
-#endif
-
-#define ADD_RES_OPT(_t) {m.AddRadio (nOptions, _t, 0, -1, 0, NULL); nOptions++;}
-//{m [nOptions].nType = NM_TYPE_RADIO; m [nOptions].text = (_t); m [nOptions].key = -1; m [nOptions].value = 0; nOptions++;}
-
 void ScreenResMenu (void)
 {
 #	define N_SCREENRES_ITEMS (NUM_DISPLAY_MODES + 4)
 
-	CMenu		m (N_SCREENRES_ITEMS);
+	CMenu		m;
 	int		choice;
-	int		i, j, key, nOptions = 0, nCustWOpt, nCustHOpt, nCustW, nCustH, bStdRes;
+	int		i, j, key, nCustWOpt, nCustHOpt, nCustW, nCustH, bStdRes;
 	char		szMode [NUM_DISPLAY_MODES][20];
 	char		cShortCut, szCustX [5], szCustY [5];
 
@@ -183,27 +180,25 @@ nDisplayMode = gameStates.video.nDisplayMode;
 do {
 	screenResOpts.nWideScreen = -1;
 	cShortCut = '1';
-	nOptions = 0;
-	memset (m, 0, sizeof (m));
+	m.Destroy ();
+	m.Create (N_SCREENRES_ITEMS);
 	for (i = 0, j = NUM_DISPLAY_MODES; i < j; i++) {
 		if (!(displayModeInfo [i].isAvailable = 
 				 ((i < 2) || gameStates.menus.bHiresAvailable) && GrVideoModeOK (displayModeInfo [i].VGA_mode)))
 				continue;
 		if (displayModeInfo [i].isWideScreen && !displayModeInfo [i-1].isWideScreen) {
-			m.AddText (nOptions, TXT_WIDESCREEN_RES, 0);
+			m.AddText (TXT_WIDESCREEN_RES, 0);
 			if (screenResOpts.nWideScreen < 0)
-				screenResOpts.nWideScreen = nOptions;
-			nOptions++;
+				screenResOpts.nWideScreen = m.ToS () - 1;
 			}
 		sprintf (szMode [i], "%c. %dx%d", cShortCut, displayModeInfo [i].w, displayModeInfo [i].h);
 		if (cShortCut == '9')
 			cShortCut = 'A';
 		else
 			cShortCut++;
-		ADD_RES_OPT (szMode [i]);
+		m.AddRadio (szMode [i], 0, -1, 0, NULL);
 		}
-	m.AddRadio (nOptions, TXT_CUSTOM_SCRRES, 0, KEY_U, 0, HTX_CUSTOM_SCRRES);
-	screenResOpts.nCustom = nOptions++;
+	screenResOpts.nCustom = m.AddRadio (TXT_CUSTOM_SCRRES, 0, KEY_U, 0, HTX_CUSTOM_SCRRES);
 	*szCustX = *szCustY = '\0';
 	if (displayModeInfo [NUM_DISPLAY_MODES].w)
 		sprintf (szCustX, "%d", displayModeInfo [NUM_DISPLAY_MODES].w);
@@ -213,26 +208,16 @@ do {
 		sprintf (szCustY, "%d", displayModeInfo [NUM_DISPLAY_MODES].h);
 	else
 		*szCustY = '\0';
-	//if (nDisplayMode == NUM_DISPLAY_MODES) 
-	 {
-		m.AddInput (nOptions, szCustX, 4, NULL);
-		nCustWOpt = nOptions++;
-		m.AddInput (nOptions, szCustY, 4, NULL);
-		nCustHOpt = nOptions++;
-		}
-/*
-	else
-		nCustWOpt =
-		nCustHOpt = -1;
-*/
+	nCustWOpt = m.AddInput (szCustX, 4, NULL);
+	nCustHOpt = m.AddInput (szCustY, 4, NULL);
 	choice = ScreenResModeToMenuItem(nDisplayMode);
-	m [choice].value = 1;
+	m [choice].m_value = 1;
 
-	key = ExecMenu1 (NULL, TXT_SELECT_SCRMODE, nOptions, m, ScreenResCallback, &choice);
+	key = m.Menu (NULL, TXT_SELECT_SCRMODE, ScreenResCallback, &choice);
 	if (key == -1)
 		return;
 	bStdRes = 0;
-	if (m [screenResOpts.nCustom].value) {
+	if (m [screenResOpts.nCustom].m_value) {
 		key = -2;
 		nDisplayMode = NUM_DISPLAY_MODES;
 		if ((nCustWOpt > 0) && (nCustHOpt > 0) &&
@@ -248,7 +233,7 @@ do {
 		}
 	else {
 		for (i = 0; i <= screenResOpts.nCustom; i++)
-			if (m [i].value) {
+			if (m [i].m_value) {
 				bStdRes = 1;
 				i = ScreenResMenuItemToMode(i);
 				break;

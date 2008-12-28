@@ -34,6 +34,8 @@ extern int MissileView_enabled;
 extern int EscortView_enabled;
 extern int Cockpit_rearView;
 
+//------------------------------------------------------------------------------
+
 #define EXPMODE_DEFAULTS 0
 
 #define NMCLAMP(_v,_min,_max)	((_v) < (_min) ? (_min) : (_v) > (_max) ? (_max) : (_v))
@@ -93,5 +95,7 @@ void SoundMenu (void);
 
 void IpxSetDriver (int ipx_driver);
 void DoNewIPAddress (void);
+
+//------------------------------------------------------------------------------
 
 #endif /* _MENU_H */

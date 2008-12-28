@@ -289,10 +289,6 @@ for (;;) {
 	optSelMsn = m.AddMenu (TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
 	optMsnName = m.AddText ((nMission < 0) ? TXT_NONE_SELECTED : gameData.missions.list [nMission].szMissionName, 0);
 	if ((nMission >= 0) && (nPlayerMaxLevel > 1)) {
-#if 0
-		m.AddText ("", 0);
-		nOptions++;
-#endif
 		sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, nPlayerMaxLevel);
 		Assert (strlen (szLevelText) < 32);
 		optLevelText = m.AddText (szLevelText, 0); 
@@ -437,7 +433,7 @@ return 0;
 void MultiplayerMenu (void)
 {
 	CMenu	m;
-	int	choice = 0, nOptions = 0, i, optCreate, optJoin = -1, optConn = -1, nConnections = 0;
+	int	choice = 0, i, optCreate, optJoin = -1, optConn = -1, nConnections = 0;
 	int	nOldGameMode;
 
 if ((gameStates.app.bNostalgia < 2) && gameData.multiplayer.autoNG.bValid) {
@@ -450,7 +446,6 @@ else {
 		nOldGameMode = gameData.app.nGameMode;
 		m.Destroy ();
 		m.Create (15);
-		nOptions = 0;
 		if (gameStates.app.bNostalgia < 2) {
 			optCreate = m.AddMenu (TXT_CREATE_GAME, KEY_S, HTX_NETWORK_SERVER);
 			optJoin = m.AddMenu (TXT_JOIN_GAME, KEY_J, HTX_NETWORK_CLIENT);

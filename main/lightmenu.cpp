@@ -240,10 +240,6 @@ do {
 	gameOpts->ogl.nMaxLightsPerObject = LightTableIndex (gameOpts->ogl.nMaxLightsPerObject);
 	gameOpts->ogl.nMaxLightsPerFace = LightTableIndex (gameOpts->ogl.nMaxLightsPerFace);
 	if (gameOpts->render.nLightingMethod) {
-#if 0
-		m.AddText ("", 0);
-		nOptions++;
-#endif
 		if (gameOpts->render.nLightingMethod == 1) {
 			if (gameStates.ogl.bHeadlight)
 				lightOpts.nHWHeadlight = m.AddCheck (TXT_HW_HEADLIGHT, gameOpts->ogl.bHeadlight, KEY_H, HTX_HW_HEADLIGHT);

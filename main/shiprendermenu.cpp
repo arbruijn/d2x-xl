@@ -87,19 +87,19 @@ int ShipRenderOptionsCallback (CMenu& menu, int& key, int nCurItem)
 	CMenuItem	*m;
 	int			v;
 
-m = menus + shipRenderOpts.nWeapons;
-v = m->value;
+m = menu + shipRenderOpts.nWeapons;
+v = m->m_value;
 if (v != extraGameInfo [0].bShowWeapons) {
 	extraGameInfo [0].bShowWeapons = v;
-	*key = -2;
+	key = -2;
 	}
 if (shipRenderOpts.nColor >= 0) {
-	m = menus + shipRenderOpts.nColor;
-	v = m->value;
+	m = menu + shipRenderOpts.nColor;
+	v = m->m_value;
 	if (v != gameOpts->render.ship.nColor) {
 		gameOpts->render.ship.nColor = v;
-		sprintf (m->text, TXT_SHIPCOLOR, pszShipColors [v]);
-		m->rebuild = 1;
+		sprintf (m->m_text, TXT_SHIPCOLOR, pszShipColors [v]);
+		m->m_bRebuild = 1;
 		}
 	}
 return nCurItem;
@@ -109,9 +109,8 @@ return nCurItem;
 
 void ShipRenderOptionsMenu (void)
 {
-	CMenuItem m [10];
+	CMenu m;
 	int	i, j, choice = 0;
-	int	nOptions;
 	int	optBullets, optWingtips;
 	char	szShipColor [50];
 
@@ -124,46 +123,36 @@ pszShipColors [5] = TXT_SHIP_PURPLE;
 pszShipColors [6] = TXT_SHIP_ORANGE;
 pszShipColors [7] = TXT_SHIP_CYAN;
 do {
-	memset (m, 0, sizeof (m));
-	nOptions = 0;
-	m.AddCheck (nOptions, TXT_SHIP_WEAPONS, extraGameInfo [0].bShowWeapons, KEY_W, HTX_SHIP_WEAPONS);
-	shipRenderOpts.nWeapons = nOptions++;
+	m.Destroy ();
+	m.Create (10);
+	shipRenderOpts.nWeapons = m.AddCheck (TXT_SHIP_WEAPONS, extraGameInfo [0].bShowWeapons, KEY_W, HTX_SHIP_WEAPONS);
 	if (extraGameInfo [0].bShowWeapons) {
-		m.AddCheck (nOptions, TXT_SHIP_BULLETS, gameOpts->render.ship.bBullets, KEY_B, HTX_SHIP_BULLETS);
-		optBullets = nOptions++;
-		m.AddText (nOptions, "", 0);
-		nOptions++;
-		m.AddRadio (nOptions, TXT_SHIP_WINGTIP_LASER, 0, KEY_A, 1, HTX_SHIP_WINGTIPS);
-		optWingtips = nOptions++;
-		m.AddRadio (nOptions, TXT_SHIP_WINGTIP_SUPLAS, 0, KEY_U, 1, HTX_SHIP_WINGTIPS);
-		nOptions++;
-		m.AddRadio (nOptions, TXT_SHIP_WINGTIP_SHORT, 0, KEY_S, 1, HTX_SHIP_WINGTIPS);
-		nOptions++;
-		m.AddRadio (nOptions, TXT_SHIP_WINGTIP_LONG, 0, KEY_L, 1, HTX_SHIP_WINGTIPS);
-		nOptions++;
-		m [optWingtips + gameOpts->render.ship.nWingtip].value = 1;
-		m.AddText (nOptions, "", 0);
-		nOptions++;
-		m.AddText (nOptions, TXT_SHIPCOLOR_HEADER, 0);
-		nOptions++;
+		optBullets = m.AddCheck (TXT_SHIP_BULLETS, gameOpts->render.ship.bBullets, KEY_B, HTX_SHIP_BULLETS);
+		m.AddText ("", 0);
+		optWingtips = m.AddRadio (TXT_SHIP_WINGTIP_LASER, 0, KEY_A, 1, HTX_SHIP_WINGTIPS);
+		m.AddRadio (TXT_SHIP_WINGTIP_SUPLAS, 0, KEY_U, 1, HTX_SHIP_WINGTIPS);
+		m.AddRadio (TXT_SHIP_WINGTIP_SHORT, 0, KEY_S, 1, HTX_SHIP_WINGTIPS);
+		m.AddRadio (TXT_SHIP_WINGTIP_LONG, 0, KEY_L, 1, HTX_SHIP_WINGTIPS);
+		m [optWingtips + gameOpts->render.ship.nWingtip].m_value = 1;
+		m.AddText ("", 0);
+		m.AddText (TXT_SHIPCOLOR_HEADER, 0);
 		sprintf (szShipColor + 1, TXT_SHIPCOLOR, pszShipColors [gameOpts->render.ship.nColor]);
 		*szShipColor = 0;
-		m.AddSlider (nOptions, szShipColor + 1, gameOpts->render.ship.nColor, 0, 7, KEY_C, HTX_SHIPCOLOR);
-		shipRenderOpts.nColor = nOptions++;
+		shipRenderOpts.nColor = m.AddSlider (szShipColor + 1, gameOpts->render.ship.nColor, 0, 7, KEY_C, HTX_SHIPCOLOR);
 		}
 	else
 		optBullets =
 		optWingtips =
 		shipRenderOpts.nColor = -1;
 	for (;;) {
-		i = ExecMenu1 (NULL, TXT_SHIP_RENDERMENU, nOptions, m, ShipRenderOptionsCallback, &choice);
+		i = m.Menu (NULL, TXT_SHIP_RENDERMENU, ShipRenderOptionsCallback, &choice);
 		if (i < 0)
 			break;
 		} 
-	if ((extraGameInfo [0].bShowWeapons = m [shipRenderOpts.nWeapons].value)) {
-		gameOpts->render.ship.bBullets = m [optBullets].value;
+	if ((extraGameInfo [0].bShowWeapons = m [shipRenderOpts.nWeapons].m_value)) {
+		gameOpts->render.ship.bBullets = m [optBullets].m_value;
 		for (j = 0; j < 4; j++)
-			if (m [optWingtips + j].value) {
+			if (m [optWingtips + j].m_value) {
 				gameOpts->render.ship.nWingtip = j;
 				break;
 				}

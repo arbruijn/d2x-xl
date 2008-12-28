@@ -38,6 +38,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network.h"
 #include "network_lib.h"
 #include "netmenu.h"
+#include "game.h"
 #include "scores.h"
 #include "joydefs.h"
 #include "playsave.h"
@@ -68,30 +69,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifdef EDITOR
 #	include "editor/editor.h"
 #endif
-
-//------------------------------------------------------------------------------
-
-typedef struct tDetailData {
-	ubyte		renderDepths [NUM_DETAIL_LEVELS - 1];
-	sbyte		maxPerspectiveDepths [NUM_DETAIL_LEVELS - 1];
-	sbyte		maxLinearDepths [NUM_DETAIL_LEVELS - 1];
-	sbyte		maxLinearDepthObjects [NUM_DETAIL_LEVELS - 1];
-	sbyte		maxDebrisObjects [NUM_DETAIL_LEVELS - 1];
-	sbyte		maxObjsOnScreenDetailed [NUM_DETAIL_LEVELS - 1];
-	sbyte		simpleModelThresholdScales [NUM_DETAIL_LEVELS - 1];
-	sbyte		nSoundChannels [NUM_DETAIL_LEVELS - 1];
-} tDetailData;
-
-tDetailData	detailData = {
- {15, 31, 63, 127, 255},
- { 1,  2,  3,   5,   8},
- { 3,  5,  7,  10,  50},
- { 1,  2,  3,   7,  20},
- { 2,  4,  7,  10,  15},
- { 2,  4,  7,  10,  15},
- { 2,  4,  8,  16,  50},
- { 2,  8, 16,  32,  64}};
-
 
 // -----------------------------------------------------------------------------
 // Set detail level based stuff.
