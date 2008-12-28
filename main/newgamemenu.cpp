@@ -69,27 +69,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include "editor/editor.h"
 #endif
 
-#if DBG
-
-const char *menuBgNames [4][2] = {
- {"menu.pcx", "menub.pcx"},
- {"menuo.pcx", "menuob.pcx"},
- {"menud.pcx", "menud.pcx"},
- {"menub.pcx", "menub.pcx"}
-	};
-
-#else
-
-const char *menuBgNames [4][2] = {
- {"\x01menu.pcx", "\x01menub.pcx"},
- {"\x01menuo.pcx", "\x01menuob.pcx"},
- {"\x01menud.pcx", "\x01menud.pcx"},
- {"\x01menub.pcx", "\x01menub.pcx"}
-	};
-#endif
-
-//------------------------------------------------------------------------------
-
 //------------------------------------------------------------------------------
 
 int SelectAndLoadMission (int bMulti, int *bAnarchyOnly)
@@ -368,6 +347,95 @@ if (!bMsnLoaded)
 	LoadMission (nMission);
 if (!StartNewGame (nLevel))
 	SetFunctionMode (FMODE_MENU);
+}
+
+//------------------------------------------------------------------------------
+
+static inline int MultiChoice (int nType, int bJoin)
+{
+return *(reinterpret_cast<int*> (&multiOpts) + 2 * nType + bJoin);
+}
+
+//------------------------------------------------------------------------------
+
+void MultiplayerMenu (void)
+{
+	CMenuItem	m [15];
+	int choice = 0, nOptions = 0, i, optCreate, optJoin = -1, optConn = -1, nConnections = 0;
+	int old_game_mode;
+
+if ((gameStates.app.bNostalgia < 2) && gameData.multiplayer.autoNG.bValid) {
+	i = MultiChoice (gameData.multiplayer.autoNG.uConnect, !gameData.multiplayer.autoNG.bHost);
+	if (i >= 0)
+		ExecMultiMenuOption (i);
+	}
+else {
+	do {
+		old_game_mode = gameData.app.nGameMode;
+		memset (m, 0, sizeof (m));
+		nOptions = 0;
+		if (gameStates.app.bNostalgia < 2) {
+			m.AddMenu (nOptions, TXT_CREATE_GAME, KEY_S, HTX_NETWORK_SERVER);
+			optCreate = nOptions++;
+			m.AddMenu (nOptions, TXT_JOIN_GAME, KEY_J, HTX_NETWORK_CLIENT);
+			optJoin = nOptions++;
+			m.AddText (nOptions, "", 0);
+			nOptions++;
+			m.AddRadio (nOptions, TXT_NGTYPE_IPX, 0, KEY_I, 0, HTX_NETWORK_IPX);
+			optConn = nOptions++;
+			m.AddRadio (nOptions, TXT_NGTYPE_UDP, 0, KEY_U, 0, HTX_NETWORK_UDP);
+			nOptions++;
+			m.AddRadio (nOptions, TXT_NGTYPE_TRACKER, 0, KEY_T, 0, HTX_NETWORK_TRACKER);
+			nOptions++;
+			m.AddRadio (nOptions, TXT_NGTYPE_MCAST4, 0, KEY_M, 0, HTX_NETWORK_MCAST);
+			nOptions++;
+#ifdef KALINIX
+			m.AddRadio (nOptions, TXT_NGTYPE_KALI, 0, KEY_K, 0, HTX_NETWORK_KALI);
+			nOptions++;
+#endif
+			nConnections = nOptions;
+			m [optConn + NMCLAMP (gameStates.multi.nConnection, 0, nConnections - optConn)].value = 1;
+			}
+		else {
+#ifdef NATIVE_IPX
+			m.AddMenu (nOptions, TXT_START_IPX_NET_GAME,  -1, HTX_NETWORK_IPX);
+			multiOpts.nStartIpx = nOptions++;
+			m.AddMenu (nOptions, TXT_JOIN_IPX_NET_GAME, -1, HTX_NETWORK_IPX);
+			multiOpts.nJoinIpx = nOptions++;
+#endif //NATIVE_IPX
+			m.AddMenu (nOptions, TXT_MULTICAST_START, KEY_M, HTX_NETWORK_MCAST);
+			multiOpts.nStartMCast4 = nOptions++;
+			m.AddMenu (nOptions, TXT_MULTICAST_JOIN, KEY_N, HTX_NETWORK_MCAST);
+			multiOpts.nJoinMCast4 = nOptions++;
+#ifdef KALINIX
+			m.AddMenu (nOptions, TXT_KALI_START, KEY_K, HTX_NETWORK_KALI);
+			multiOpts.nStartKali = nOptions++;
+			m.AddMenu (nOptions, TXT_KALI_JOIN, KEY_I, HTX_NETWORK_KALI);
+			multiOpts.nJoinKali = nOptions++;
+#endif // KALINIX
+			if (gameStates.app.bNostalgia > 2) {
+				m.AddMenu (nOptions, TXT_MODEM_GAME2, KEY_G, HTX_NETWORK_MODEM);
+				multiOpts.nSerial = nOptions++;
+				}
+			}
+		i = ExecMenu1 (NULL, TXT_MULTIPLAYER, nOptions, m, NULL, &choice);
+		if (i > -1) {      
+			if (gameStates.app.bNostalgia > 1)
+				i = choice;
+			else {
+				for (gameStates.multi.nConnection = 0; 
+					  gameStates.multi.nConnection < nConnections; 
+					  gameStates.multi.nConnection++)
+					if (m [optConn + gameStates.multi.nConnection].value)
+						break;
+				i = MultiChoice (gameStates.multi.nConnection, choice == optJoin);
+				}
+			ExecMultiMenuOption (i);
+			}
+		if (old_game_mode != gameData.app.nGameMode)
+			break;          // leave menu
+		} while (i > -1);
+	}
 }
 
 //------------------------------------------------------------------------------

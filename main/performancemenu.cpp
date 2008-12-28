@@ -69,50 +69,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include "editor/editor.h"
 #endif
 
-#if DBG
-
-const char *menuBgNames [4][2] = {
- {"menu.pcx", "menub.pcx"},
- {"menuo.pcx", "menuob.pcx"},
- {"menud.pcx", "menud.pcx"},
- {"menub.pcx", "menub.pcx"}
-	};
-
-#else
-
-const char *menuBgNames [4][2] = {
- {"\x01menu.pcx", "\x01menub.pcx"},
- {"\x01menuo.pcx", "\x01menuob.pcx"},
- {"\x01menud.pcx", "\x01menud.pcx"},
- {"\x01menub.pcx", "\x01menub.pcx"}
-	};
-#endif
-
 //------------------------------------------------------------------------------
 
 static struct {
 	int	nUseCompSpeed;
 	int	nCompSpeed;
 } performanceOpts;
-
-//------------------------------------------------------------------------------
-
-int DifficultyMenu (void)
-{
-	int		i, choice = gameStates.app.nDifficultyLevel;
-	CMenu		m (5);
-
-for (i = 0; i < 5; i++)
-	m.AddMenu ( MENU_DIFFICULTY_TEXT (i), 0, "");
-i = m.Menu (NULL, TXT_DIFFICULTY_LEVEL, NDL, m, NULL, &choice);
-if (i <= -1)
-	return 0;
-if (choice != gameStates.app.nDifficultyLevel) {       
-	gameStates.app.nDifficultyLevel = choice;
-	WritePlayerFile ();
-	}
-return 1;
-}
 
 //------------------------------------------------------------------------------
 
