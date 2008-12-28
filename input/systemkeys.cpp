@@ -1077,7 +1077,7 @@ void HandleTestKey(int key)
 		case KEYDBGGED + KEY_A: {
 			DoMegaWowPowerup(200);
 //								if ( gameData.app.nGameMode & GM_MULTI )     {
-//									ExecMessageBox( NULL, 1, "Damn", "CHEATER!\nYou cannot use the\nmega-thing in network mode." );
+//									MsgBox( NULL, 1, "Damn", "CHEATER!\nYou cannot use the\nmega-thing in network mode." );
 //									gameData.multigame.msg.nReceiver = 100;		// Send to everyone...
 //									sprintf( gameData.multigame.msg.szMsg, "%s cheated!", LOCALPLAYER.callsign);
 //								} else {

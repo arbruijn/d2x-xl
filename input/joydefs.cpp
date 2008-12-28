@@ -82,7 +82,7 @@ void JoyDefsCalibrate()
 	joydefs_calibrateFlag = 0;
 
 	if (!gameStates.input.nJoysticks) {
-		ExecMessageBox( NULL, NULL, 1, TXT_OK, TXT_NO_JOYSTICK );
+		MsgBox( NULL, NULL, 1, TXT_OK, TXT_NO_JOYSTICK );
 		return;
 	}
 	//Actual calibration if necessary
@@ -152,7 +152,7 @@ int MouseConfigCallback (int nitems, CMenuItem * items, int *key, int nCurItem)
 
 SetControlType ();
 if ((ocType != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS)) {
-	ExecMessageBox (TXT_IMPORTANT_NOTE, NULL, 1, TXT_OK, TXT_FCS);
+	MsgBox (TXT_IMPORTANT_NOTE, NULL, 1, TXT_OK, TXT_FCS);
 	}
 if (ocType != gameConfig.nControlType) {
 	switch (gameConfig.nControlType) {
@@ -320,7 +320,7 @@ int JoystickConfigCallback (int nitems, CMenuItem * items, int *key, int nCurIte
 
 SetControlType ();
 if ((ocType != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS)) {
-	ExecMessageBox (TXT_IMPORTANT_NOTE, NULL, 1, TXT_OK, TXT_FCS);
+	MsgBox (TXT_IMPORTANT_NOTE, NULL, 1, TXT_OK, TXT_FCS);
 	}
 
 if (ocType != gameConfig.nControlType) {

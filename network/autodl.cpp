@@ -414,13 +414,13 @@ return 0;
 inline int DownloadError (int nReason)
 {
 if (nReason == 1)
-	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_SYNC);
+	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_SYNC);
 else if (nReason == 2)
-	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_MISSPKTS);
+	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_MISSPKTS);
 else if (nReason == 3)
-	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_FILEIO);
+	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_FILEIO);
 else
-	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_FAILED);
+	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_FAILED);
 cf.Close ();
 RequestUpload (PID_DL_ERROR, 0);
 dlResult = 0;

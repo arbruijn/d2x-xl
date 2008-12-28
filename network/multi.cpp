@@ -1420,7 +1420,7 @@ OBJECTS [nLocalObj].Die (); // quick and painless
 void MultiOnlyPlayerMsg (int bMsgBox)
 {
 if (bMsgBox)
-	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_ONLY_PLAYER);
+	MsgBox (NULL, NULL, 1, TXT_OK, TXT_ONLY_PLAYER);
 else {
 	char szMsg [100];
 
@@ -4292,7 +4292,7 @@ else if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
 void MultiBadRestore ()
 {
 SetFunctionMode (FMODE_MENU);
-ExecMessageBox (NULL, NULL, 1, TXT_OK,
+MsgBox (NULL, NULL, 1, TXT_OK,
 	            "A multi-save game was restored\nthat you are missing or does not\nmatch that of the others.\nYou must rejoin if you wish to\ncontinue.");
 SetFunctionMode (FMODE_GAME);
 gameData.multigame.bQuitGame = 1;

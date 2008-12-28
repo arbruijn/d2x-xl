@@ -925,7 +925,7 @@ i = ParseMissionFile (cf);
 cf.Close ();
 if (!i) {
 	gameData.missions.nCurrentMission = -1;
-	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_MSNFILE_ERROR);
+	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_MSNFILE_ERROR);
 	return 0;
 	}
 //for non-builtin missions, load HOG

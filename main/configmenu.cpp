@@ -71,25 +71,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-int DifficultyMenu (void)
-{
-	int		i, choice = gameStates.app.nDifficultyLevel;
-	CMenu		m (5);
-
-for (i = 0; i < 5; i++)
-	m.AddMenu ( MENU_DIFFICULTY_TEXT (i), 0, "");
-i = m.Menu (NULL, TXT_DIFFICULTY_LEVEL, NULL, &choice);
-if (i <= -1)
-	return 0;
-if (choice != gameStates.app.nDifficultyLevel) {       
-	gameStates.app.nDifficultyLevel = choice;
-	WritePlayerFile ();
-	}
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
 void MultiThreadingOptionsMenu (void)
 {
 	CMenu	m (10);

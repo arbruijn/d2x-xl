@@ -304,7 +304,7 @@ if (gameData.multiplayer.nPlayerPositions != (bCoop ? 4 : 8)) {
 if (IS_D2_OEM && IsMultiGame && (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && (gameData.missions.nCurrentLevel == 8)) {
 	for (i = 0; i < nPlayers; i++)
 		if (gameData.multiplayer.players [i].connected && !(netPlayers.players [i].versionMinor & 0xF0)) {
-			ExecMessageBox ("Warning!", NULL, 1, TXT_OK,
+			MsgBox ("Warning!", NULL, 1, TXT_OK,
 								 "This special version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");
 			return;
 			}
@@ -312,7 +312,7 @@ if (IS_D2_OEM && IsMultiGame && (gameData.missions.nCurrentMission == gameData.m
 if (IS_MAC_SHARE && IsMultiGame && (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && (gameData.missions.nCurrentLevel == 4)) {
 	for (i = 0; i < nPlayers; i++)
 		if (gameData.multiplayer.players [i].connected && !(netPlayers.players [i].versionMinor & 0xF0)) {
-			ExecMessageBox ("Warning!", NULL, 1 , TXT_OK,
+			MsgBox ("Warning!", NULL, 1 , TXT_OK,
 								 "This shareware version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");
 			return;
 			}
@@ -576,7 +576,7 @@ void editor_reset_stuff_onLevel ()
 //do whatever needs to be done when a CPlayerData dies in multiplayer
 void DoGameOver (void)
 {
-//	ExecMessageBox (TXT_GAME_OVER, 1, TXT_OK, "");
+//	MsgBox (TXT_GAME_OVER, 1, TXT_OK, "");
 if (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission)
 	MaybeAddPlayerScore (0);
 SetFunctionMode (FMODE_MENU);
@@ -1232,7 +1232,7 @@ void DoSecretMessage (const char *msg)
 
 StopTime ();
 SetFunctionMode (FMODE_MENU);
-ExecMessageBox (NULL, reinterpret_cast<char*> (STARS_BACKGROUND), 1, TXT_OK, msg);
+MsgBox (NULL, reinterpret_cast<char*> (STARS_BACKGROUND), 1, TXT_OK, msg);
 SetFunctionMode (fMode);
 StartTime (0);
 }
@@ -1617,7 +1617,7 @@ SetScreenMode (SCREEN_MENU);		//go into menu mode
 CCanvas::SetCurrent (NULL);
 old_fmode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
-ExecMessageBox (NULL, reinterpret_cast<char*> (STARS_BACKGROUND), 1, TXT_OK, TXT_DIED_IN_MINE);
+MsgBox (NULL, reinterpret_cast<char*> (STARS_BACKGROUND), 1, TXT_OK, TXT_DIED_IN_MINE);
 SetFunctionMode (old_fmode);
 }
 
@@ -1641,7 +1641,7 @@ if (gameData.missions.nEnteredFromLevel < 0)
 	sprintf (msg, TXT_SECRET_LEVEL_RETURN);
 else
 	sprintf (msg, TXT_RETURN_LVL, gameData.missions.nEnteredFromLevel);
-ExecMessageBox (NULL, reinterpret_cast<char*> (STARS_BACKGROUND), 1, TXT_OK, msg);
+MsgBox (NULL, reinterpret_cast<char*> (STARS_BACKGROUND), 1, TXT_OK, msg);
 SetFunctionMode (old_fmode);
 StartTime (0);
 }
@@ -1664,7 +1664,7 @@ CCanvas::SetCurrent (NULL);
 old_fmode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
 sprintf (msg, "Base level destroyed.\nAdvancing to level %i", gameData.missions.nEnteredFromLevel + 1);
-ExecMessageBox (NULL, reinterpret_cast<char*> (STARS_BACKGROUND), 1, TXT_OK, msg);
+MsgBox (NULL, reinterpret_cast<char*> (STARS_BACKGROUND), 1, TXT_OK, msg);
 SetFunctionMode (old_fmode);
 }
 
@@ -1701,7 +1701,7 @@ gameStates.entropy.bConquering = 0;
 #ifdef EDITOR
 if (gameData.app.nGameMode == GM_EDITOR) {			//test mine, not real level
 	CObject * playerobj = OBJECTS + LOCALPLAYER.nObject;
-	//ExecMessageBox ("You're Dead!", 1, "Continue", "Not a real game, though.");
+	//MsgBox ("You're Dead!", 1, "Continue", "Not a real game, though.");
 	LoadLevelSub ("gamesave.lvl");
 	InitPlayerStatsNewShip ();
 	playerobjP->info.nFlags &= ~OF_SHOULD_BE_DEAD;
@@ -1788,7 +1788,7 @@ SetMonsterballForces ();
 #endif
 //	gameData.objs.viewerP = OBJECTS + LOCALPLAYER.nObject;
 if (gameData.multiplayer.nPlayers > gameData.multiplayer.nPlayerPositions) {
-	ExecMessageBox (NULL, NULL, 1, TXT_OK, "Too many players for this level.");
+	MsgBox (NULL, NULL, 1, TXT_OK, "Too many players for this level.");
 	return 0;
 	}
 Assert (gameData.multiplayer.nPlayers <= gameData.multiplayer.nPlayerPositions);

@@ -144,7 +144,7 @@ void scores_write ()
 	CFile cf;
 
 if (!cf.Open (GetScoresFilename (), gameFolders.szDataDir, "wb", 0)) {
-	ExecMessageBox (TXT_WARNING, NULL, 1, TXT_OK, "%s\n'%s'", TXT_UNABLE_TO_OPEN, GetScoresFilename () );
+	MsgBox (TXT_WARNING, NULL, 1, TXT_OK, "%s\n'%s'", TXT_UNABLE_TO_OPEN, GetScoresFilename () );
 	return;
 	}
 
@@ -241,7 +241,7 @@ void MaybeAddPlayerScore (int abortFlag)
 		scores_fill_struct (&Last_game);
 	} else {
 //--		if (gameStates.app.nDifficultyLevel < 1) {
-//--			ExecMessageBox ("GRADUATION TIME!", 1, "Ok", "If you would had been\nplaying at a higher difficulty\nlevel, you would have placed\n#%d on the high score list.", position+1);
+//--			MsgBox ("GRADUATION TIME!", 1, "Ok", "If you would had been\nplaying at a higher difficulty\nlevel, you would have placed\n#%d on the high score list.", position+1);
 //--			return;
 //--		}
 
@@ -258,7 +258,7 @@ void MaybeAddPlayerScore (int abortFlag)
 			if (strlen (Scores.cool_saying)<1)
 				sprintf (Scores.cool_saying, TXT_NO_COMMENT);
 		} else {
-			ExecMessageBox (TXT_HIGH_SCORE, NULL, 1, TXT_OK, "%s %s!", TXT_YOU_PLACED, GAMETEXT (57 + position));
+			MsgBox (TXT_HIGH_SCORE, NULL, 1, TXT_OK, "%s %s!", TXT_YOU_PLACED, GAMETEXT (57 + position));
 		}
 
 		// move everyone down...
@@ -440,7 +440,7 @@ ReshowScores:
 		case KEY_CTRLED+KEY_R:	
 			if (nCurItem < 0)	 {
 				// Reset scores...
-				if (ExecMessageBox (NULL, NULL, 2,  TXT_NO, TXT_YES, TXT_RESET_HIGH_SCORES)==1) {
+				if (MsgBox (NULL, NULL, 2,  TXT_NO, TXT_YES, TXT_RESET_HIGH_SCORES)==1) {
 					CFile::Delete (GetScoresFilename (), gameFolders.szDataDir);
 					paletteManager.DisableEffect ();
 					goto ReshowScores;

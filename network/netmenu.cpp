@@ -304,7 +304,7 @@ for (i = 0; i < nitems; i++) {
 		}
 	}
 if (nm > gameData.multiplayer.nMaxPlayers) {
-	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, "%s %d %s", TXT_SORRY_ONLY, gameData.multiplayer.nMaxPlayers, TXT_NETPLAYERS_IN);
+	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "%s %d %s", TXT_SORRY_ONLY, gameData.multiplayer.nMaxPlayers, TXT_NETPLAYERS_IN);
 	// Turn off the last CPlayerData highlighted
 	for (i = gameData.multiplayer.nPlayers; i > 0; i--)
 		if (menus [i].value == 1) {
@@ -538,17 +538,17 @@ if (i == optSetPower) {
 mpParams.nPPS = atoi (packstring);
 if (mpParams.nPPS > 20) {
 	mpParams.nPPS = 20;
-	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_PPS_HIGH_ERROR);
+	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_PPS_HIGH_ERROR);
 }
 else if (mpParams.nPPS<2) {
-	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_PPS_HIGH_ERROR);
+	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_PPS_HIGH_ERROR);
 	mpParams.nPPS = 2;      
 }
 netGame.nPacketsPerSec = mpParams.nPPS;
 if (gameStates.multi.nGameType >= IPX_GAME) { 
 	int newSocket = atoi (socket_string);
 	if ((newSocket < -0xFFFF) || (newSocket > 0xFFFF))
-		ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, 
+		MsgBox (TXT_ERROR, NULL, 1, TXT_OK, 
 							 TXT_INV_SOCKET, 
 							 (gameStates.multi.nGameType == UDP_GAME) ? udpBasePorts [1] : networkData.nSocket);
 	else if (newSocket != networkData.nSocket) {
@@ -1190,7 +1190,7 @@ else if (bHoard && m [optEntropy].value)
 else if (bHoard && m [optMonsterball].value)
 	mpParams.nGameMode = NETGAME_MONSTERBALL;
 else if (bAnarchyOnly) {
-	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_ANARCHY_ONLY_MISSION);
+	MsgBox (NULL, NULL, 1, TXT_OK, TXT_ANARCHY_ONLY_MISSION);
 	m [optAnarchy].value = 1;
 	m [optRobotAnarchy].value =
 	m [optCoop].value = 0;
@@ -1442,14 +1442,14 @@ if (key != -1) {
 			
 	for (j = 0; j < networkData.nActiveGames; j++)
 		if (!stricmp (activeNetGames [j].szGameName, name)) {
-			ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_DUPLICATE_NAME);
+			MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_DUPLICATE_NAME);
 			goto doMenu;
 		}
 	strncpy (mpParams.szGameName, name, sizeof (mpParams.szGameName));
 	mpParams.nLevel = atoi (szLevel);
 	if ((gameData.missions.nLastLevel > 0) && ((mpParams.nLevel < 1) || 
 		 (mpParams.nLevel > gameData.missions.nLastLevel))) {
-		ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_LEVEL_OUT_RANGE);
+		MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_LEVEL_OUT_RANGE);
 		sprintf (szLevel, "1");
 		goto doMenu;
 	}
@@ -1477,7 +1477,7 @@ if (key == -2)
 	goto build_menu;
 
 if (nNewMission < 0) {
-	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, "Please chose a mission");
+	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "Please chose a mission");
 	goto doMenu;
 	}
 if (gameStates.app.bNostalgia) {
@@ -1634,7 +1634,7 @@ doMenu:
  {
 		if ((opt-2-opt_team_b < 2) || (opt_team_b == 1)) 
 	 {
-			ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_TEAM_MUST_ONE);
+			MsgBox (NULL, NULL, 1, TXT_OK, TXT_TEAM_MUST_ONE);
 		}
 	
 		netGame.teamVector = teamVector;
@@ -1714,13 +1714,13 @@ for (i = 0; i < nSavePlayers; i++) {
 		gameData.multiplayer.nPlayers++;
 	}
 if (gameData.multiplayer.nPlayers > netGame.nMaxPlayers) {
-	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, "%s %d %s", TXT_SORRY_ONLY, gameData.multiplayer.nMaxPlayers, TXT_NETPLAYERS_IN);
+	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "%s %d %s", TXT_SORRY_ONLY, gameData.multiplayer.nMaxPlayers, TXT_NETPLAYERS_IN);
 	gameData.multiplayer.nPlayers = nSavePlayers;
 	goto GetPlayersAgain;
 	}
 #if !DBG
 if (gameData.multiplayer.nPlayers < 2) {
-	ExecMessageBox (TXT_WARNING, NULL, 1, TXT_OK, TXT_TEAM_ATLEAST_TWO);
+	MsgBox (TXT_WARNING, NULL, 1, TXT_OK, TXT_TEAM_ATLEAST_TWO);
 #	if 0
 	gameData.multiplayer.nPlayers = nSavePlayers;
 	goto GetPlayersAgain;
@@ -1733,7 +1733,7 @@ if (((netGame.gameMode == NETGAME_TEAM_ANARCHY) ||
 	  (netGame.gameMode == NETGAME_CAPTURE_FLAG) || 
 	  (netGame.gameMode == NETGAME_TEAM_HOARD)) && 
 	 (gameData.multiplayer.nPlayers < 2)) {
-	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_NEED_2PLAYERS);
+	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_NEED_2PLAYERS);
 	gameData.multiplayer.nPlayers = nSavePlayers;
 #if 0	
 	goto GetPlayersAgain;
@@ -2029,7 +2029,7 @@ int NetworkBrowseGames (void)
 memcpy (callsign, LOCALPLAYER.callsign, sizeof (callsign));
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	if (!networkData.bActive) {
-		ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_IPX_NOT_FOUND);
+		MsgBox (NULL, NULL, 1, TXT_OK, TXT_IPX_NOT_FOUND);
 		return 0;
 		}
 	}
@@ -2115,18 +2115,18 @@ if (choice == -1) {
 	}               
 choice -= (2 + gameStates.multi.bUseTracker);
 if ((choice < 0) || (choice >= networkData.nActiveGames)) {
-	//ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INVALID_CHOICE);
+	//MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INVALID_CHOICE);
 	goto doMenu;
 	}
 
 // Choice has been made and looks legit
 if (AGI.gameStatus == NETSTAT_ENDLEVEL) {
-	ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_NET_GAME_BETWEEN2);
+	MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_NET_GAME_BETWEEN2);
 	goto doMenu;
 	}
 if (AGI.protocolVersion != MULTI_PROTO_VERSION) {
 	if (AGI.protocolVersion == 3) {
-		ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INCOMPAT1);
+		MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INCOMPAT1);
 		}
 	else if (AGI.protocolVersion == 4) {
 		}
@@ -2135,7 +2135,7 @@ if (AGI.protocolVersion != MULTI_PROTO_VERSION) {
 
 		sprintf (szFmt, "%s%s", TXT_VERSION_MISMATCH, TXT_NETGAME_VERSIONS);
 		sprintf (szError, szFmt, MULTI_PROTO_VERSION, AGI.protocolVersion);
-		ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, szError);
+		MsgBox (TXT_SORRY, NULL, 1, TXT_OK, szError);
 		}
 	goto doMenu;
 	}
@@ -2150,19 +2150,19 @@ if (!(LoadMissionByName (AGI.szMissionName, -1) ||
 		(DownloadMission (AGI.szMissionName) &&
 		 LoadMissionByName (AGI.szMissionName, -1)))) {
 	PrintLog ("Mission '%s' not found%s\n", AGI.szMissionName);
-	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_NOT_FOUND);
+	MsgBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_NOT_FOUND);
 	goto doMenu;
 	}
 if (IS_D2_OEM && (AGI.nLevel > 8)) {
-	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_OEM_ONLY8);
+	MsgBox (NULL, NULL, 1, TXT_OK, TXT_OEM_ONLY8);
 	goto doMenu;
 	}
 if (IS_MAC_SHARE && (AGI.nLevel > 4)) {
-	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_SHARE_ONLY4);
+	MsgBox (NULL, NULL, 1, TXT_OK, TXT_SHARE_ONLY4);
 	goto doMenu;
 	}
 if (!NetworkWaitForAllInfo (choice)) {
-	ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_JOIN_ERROR);
+	MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_JOIN_ERROR);
 	networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
 	goto doMenu;
 	}       
@@ -2170,9 +2170,9 @@ if (!NetworkWaitForAllInfo (choice)) {
 networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
   if (!CanJoinNetgame (activeNetGames + choice, activeNetPlayers + choice)) {
 	if (AGI.nNumPlayers == AGI.nMaxPlayers)
-		ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_GAME_FULL);
+		MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_GAME_FULL);
 	else
-		ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_IN_PROGRESS);
+		MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_IN_PROGRESS);
 	goto doMenu;
 	}
 // Choice is valid, prepare to join in
@@ -2388,11 +2388,11 @@ for (;;) {
 			if (gameStates.multi.bUseTracker || stoip (mpParams.szServerIpAddr, ipx_ServerAddress + 4)) {
 				stoport (szClientPort, &mpParams.udpClientPort, &nClientPortSign);
 				if (gameStates.multi.bCheckPorts && !mpParams.udpClientPort)
-					ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_IP_INVALID);
+					MsgBox (NULL, NULL, 1, TXT_OK, TXT_IP_INVALID);
 				else
 					return 1;
 				}
-			ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_IP_INVALID);
+			MsgBox (NULL, NULL, 1, TXT_OK, TXT_IP_INVALID);
 			}
 		}
 	}

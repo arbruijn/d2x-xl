@@ -186,7 +186,7 @@ void NetworkProcessDump (tSequencePacket *their)
 	int i;
 
 if (their->player.connected != 7)
-	ExecMessageBox (NULL, NULL, 1, TXT_OK, NET_DUMP_STRINGS (their->player.connected));
+	MsgBox (NULL, NULL, 1, TXT_OK, NET_DUMP_STRINGS (their->player.connected));
 else {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (!stricmp (their->player.callsign, gameData.multiplayer.players [i].callsign)) {
@@ -194,7 +194,7 @@ else {
 				HUDInitMessage (TXT_KICK_ATTEMPT, their->player.callsign);
 			else {
 				sprintf (temp, TXT_KICKED_YOU, their->player.callsign);
-				ExecMessageBox (NULL, NULL, 1, TXT_OK, &temp);
+				MsgBox (NULL, NULL, 1, TXT_OK, &temp);
 				if (networkData.nStatus == NETSTAT_PLAYING) {
 					gameStates.multi.bIWasKicked=1;
 					MultiLeaveGame ();     
@@ -285,7 +285,7 @@ nPlayers = dataP [count++];
 if (nPlayers == 255) {
 	gameStates.multi.bSurfingNet = 0;
 	networkData.nNamesInfoSecurity = -1;
-	ExecMessageBox (NULL, NULL, 1, "OK", "That game is refusing\nname requests.\n");
+	MsgBox (NULL, NULL, 1, "OK", "That game is refusing\nname requests.\n");
 	gameStates.multi.bSurfingNet=1;
 	return;
 	}
@@ -305,7 +305,7 @@ for (gnum = -1, i = 0; i < networkData.nActiveGames; i++) {
 if (gnum == -1) {
 	gameStates.multi.bSurfingNet = 0;
 	networkData.nNamesInfoSecurity = -1;
-	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_GAME_GONE);
+	MsgBox (NULL, NULL, 1, TXT_OK, TXT_GAME_GONE);
 	gameStates.multi.bSurfingNet = 1;
 	return;
 	}

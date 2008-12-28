@@ -110,20 +110,6 @@ static struct {
 	int	nChoice;
 } mainOpts;
 
-static struct {
-	int	nStartIpx;
-	int	nJoinIpx;
-	int	nStartUdp;
-	int	nJoinUdp;
-	int	nStartUdpTracker;
-	int	nJoinUdpTracker;
-	int	nStartMCast4;
-	int	nJoinMCast4;
-	int	nStartKali;
-	int	nJoinKali;
-	int	nSerial;
-} multiOpts = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1};
-
 //------------------------------------------------------------------------------
 
 // Function Prototypes added after LINTING
@@ -282,7 +268,7 @@ for (i = j = 0; i < h; i++)
 			break;
 		m.Push (ps);
 		}
-i = ListBox (TXT_SELECT_MOVIE, m, 1, NULL);
+i = ListBox (TXT_SELECT_MOVIE, m);
 if (i > -1) {
 	SDL_ShowCursor (0);
 	if (strstr (m [i], "intro"))
@@ -314,7 +300,7 @@ for (i = 0; i < gameData.songs.nTotalSongs; i++) {
 		}
 	}
 for (;;) {
-	h = ListBox (TXT_SELECT_SONG, m, 1, NULL);
+	h = ListBox (TXT_SELECT_SONG, m);
 	if (h < 0)
 		return;
 	if (!strstr (m [h], ".hmp"))
@@ -325,67 +311,6 @@ for (;;) {
 			return;
 			}
 	}
-}
-
-//------------------------------------------------------------------------------
-
-int ExecMultiMenuOption (int nChoice)
-{
-	int	bUDP = 0, bStart = 0;
-
-gameStates.multi.bUseTracker = 0;
-if ((nChoice == multiOpts.nStartUdpTracker) ||(nChoice == multiOpts.nJoinUdpTracker)) {
-	if (gameStates.app.bNostalgia > 1)
-		return 0;
-	gameStates.multi.bUseTracker = 1;
-	bUDP = 1;
-	bStart = (nChoice == multiOpts.nStartUdpTracker);
-	}
-else if ((nChoice == multiOpts.nStartUdp) || (nChoice == multiOpts.nJoinUdp)) {
-	if (gameStates.app.bNostalgia > 1)
-		return 0;
-	bUDP = 1;
-	bStart = (nChoice == multiOpts.nStartUdp);
-	}
-else if ((nChoice == multiOpts.nStartIpx) || (nChoice == multiOpts.nStartKali) || (nChoice == multiOpts.nStartMCast4))
-	bStart = 1;
-else if ((nChoice != multiOpts.nJoinIpx) && (nChoice != multiOpts.nJoinKali) &&	(nChoice != multiOpts.nJoinMCast4))
-	return 0;
-gameOpts->app.bSinglePlayer = 0;
-LoadMission (gameData.missions.nLastMission);
-if (bUDP && !(bStart || InitAutoNetGame () || NetworkGetIpAddr ()))
-	return 0;
-gameStates.multi.bServer = (nChoice & 1) == 0;
-gameStates.app.bHaveExtraGameInfo [1] = gameStates.multi.bServer;
-if (bUDP) {
-	gameStates.multi.nGameType = UDP_GAME;
-	IpxSetDriver (IPX_DRIVER_UDP); 
-	if (nChoice == multiOpts.nStartUdpTracker) {
-		int n = ActiveTrackerCount (1);
-		if (n < -2) {
-			if (n == -4)
-				MsgBox (NULL, NULL, 1, TXT_OK, TXT_NO_TRACKERS);
-			gameStates.multi.bUseTracker = 0;
-			return 0;
-			}
-		}
-	}
-else if ((nChoice == multiOpts.nStartIpx) || (nChoice == multiOpts.nJoinIpx)) {
-	gameStates.multi.nGameType = IPX_GAME;
-	IpxSetDriver (IPX_DRIVER_IPX); 
-	}
-else if ((nChoice == multiOpts.nStartKali) || (nChoice == multiOpts.nJoinKali)) {
-	gameStates.multi.nGameType = IPX_GAME;
-	IpxSetDriver (IPX_DRIVER_KALI); 
-	}
-else if ((nChoice == multiOpts.nStartMCast4) || (nChoice == multiOpts.nJoinMCast4)) {
-	gameStates.multi.nGameType = IPX_GAME;
-	IpxSetDriver (IPX_DRIVER_MCAST4); 
-	}
-if (bStart ? NetworkStartGame () : NetworkBrowseGames ())
-	return 1;
-IpxClose ();
-return 0;
 }
 
 //------------------------------------------------------------------------------

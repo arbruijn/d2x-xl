@@ -462,7 +462,7 @@ while (!done) {
 				choice = ExecMessageBox1 (NULL, NetworkEndLevelPoll3, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
 				}
 			else
-				choice=ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
+				choice=MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
 				if (choice == 0) {
 					ScoreTableQuit (1, bNetwork);
 					return;

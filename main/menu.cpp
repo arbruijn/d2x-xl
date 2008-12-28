@@ -174,7 +174,7 @@ m.AddInput (1, szIP, 50, NULL);
 choice = m.Menu (NULL, TXT_JOIN_TCP);
 if ((choice == -1) || !*m [1].text)
 	return;
-ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INV_ADDRESS);
+MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INV_ADDRESS);
 }
 
 //------------------------------------------------------------------------------

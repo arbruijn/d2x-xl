@@ -213,11 +213,11 @@ if (screen.Width () && screen.Height ()) {
 	gameData.menu.warnColor = RED_RGBA;
 	gameData.menu.colorOverride = gameData.menu.warnColor;
 	if (!ps)
-		ExecMessageBox (TXT_WARNING, NULL, -3, s, " ", TXT_OK);
+		MsgBox (TXT_WARNING, NULL, -3, s, " ", TXT_OK);
 	else {
 		for (ps += 5; *ps && !isalnum (*ps); ps++)
 			;
-		ExecMessageBox (TXT_ERROR, NULL, -3, ps, " ", TXT_OK);
+		MsgBox (TXT_ERROR, NULL, -3, ps, " ", TXT_OK);
 		}
 	gameData.menu.colorOverride = 0;
 	if (!((gameData.app.nGameMode & GM_MULTI) && (gameStates.app.nFunctionMode == FMODE_GAME)))
@@ -1165,7 +1165,7 @@ for (;;) {
 		paletteManager.SaveEffect ();
 		paletteManager.ResetEffect ();
 		paletteManager.LoadEffect  ();
-		choice = ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_AUTODEMO);
+		choice = MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_AUTODEMO);
 		paletteManager.LoadEffect ();
 		SetFunctionMode (fmode);
 		if (choice)

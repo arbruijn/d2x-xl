@@ -73,35 +73,31 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void MovieOptionsMenu (void)
 {
-	CMenuItem m [5];
+	CMenu m;
 	int	i, choice = 0;
-	int	nOptions;
 	int	optMovieQual, optMovieSize, optSubTitles;
 
 do {
-	memset (m, 0, sizeof (m));
-	nOptions = 0;
-	m.AddCheck (nOptions, TXT_MOVIE_SUBTTL, gameOpts->movies.bSubTitles, KEY_O, HTX_RENDER_SUBTTL);
-	optSubTitles = nOptions++;
+	m.Destroy ();
+	m.Create (5);
+	optSubTitles = m.AddCheck (TXT_MOVIE_SUBTTL, gameOpts->movies.bSubTitles, KEY_O, HTX_RENDER_SUBTTL);
 	if (gameOpts->app.bExpertMode) {
-		m.AddCheck (nOptions, TXT_MOVIE_QUAL, gameOpts->movies.nQuality, KEY_Q, HTX_RENDER_MOVIEQUAL);
-		optMovieQual = nOptions++;
-		m.AddCheck (nOptions, TXT_MOVIE_FULLSCR, gameOpts->movies.bResize, KEY_U, HTX_RENDER_MOVIEFULL);
-		optMovieSize = nOptions++;
+		optMovieQual = m.AddCheck (TXT_MOVIE_QUAL, gameOpts->movies.nQuality, KEY_Q, HTX_RENDER_MOVIEQUAL);
+		optMovieSize = m.AddCheck (TXT_MOVIE_FULLSCR, gameOpts->movies.bResize, KEY_U, HTX_RENDER_MOVIEFULL);
 		}
 	else
 		optMovieQual = 
 		optMovieSize = -1;
 
 	for (;;) {
-		i = ExecMenu1 (NULL, TXT_MOVIE_OPTIONS, nOptions, m, NULL, &choice);
+		i = m.Menu (NULL, TXT_MOVIE_OPTIONS, NULL, &choice);
 		if (i < 0)
 			break;
 		} 
-	gameOpts->movies.bSubTitles = m [optSubTitles].value;
+	gameOpts->movies.bSubTitles = m [optSubTitles].m_value;
 	if (gameOpts->app.bExpertMode) {
-		gameOpts->movies.nQuality = m [optMovieQual].value;
-		gameOpts->movies.bResize = m [optMovieSize].value;
+		gameOpts->movies.nQuality = m [optMovieQual].m_value;
+		gameOpts->movies.bResize = m [optMovieSize].m_value;
 		}
 	} while (i == -2);
 }

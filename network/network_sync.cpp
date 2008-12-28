@@ -713,7 +713,7 @@ do_menu:
 choice = ExecMenu (NULL, TXT_WAIT, 1, m, NetworkRequestPoll, NULL);        
 if (choice == -1) {
 	// User aborted
-	choice = ExecMessageBox (NULL, NULL, 3, TXT_YES, TXT_NO, TXT_START_NOWAIT, TXT_QUITTING_NOW);
+	choice = MsgBox (NULL, NULL, 3, TXT_YES, TXT_NO, TXT_START_NOWAIT, TXT_QUITTING_NOW);
 	if (choice == 2)
 		return;
 	if (choice != 0)

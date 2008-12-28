@@ -1506,7 +1506,7 @@ for(i = 0; i < MAX_HOTKEY_CONTROLS; i++)
 KCSetControls (0);
 gameConfig.nControlType = choice;
 if (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS) {
-	i = ExecMessageBox (TXT_IMPORTANT_NOTE, NULL, 2, "Choose another", TXT_OK, TXT_FCS);
+	i = MsgBox (TXT_IMPORTANT_NOTE, NULL, 2, "Choose another", TXT_OK, TXT_FCS);
 	if (i == 0)
 		goto RetrySelection;
 	}
@@ -2042,7 +2042,7 @@ id = cf.ReadInt ();
 // SWAPINT added here because old versions of d2x
 // used the wrong byte order.
 if (nCFileError || ((id != SAVE_FILE_ID) && (id != SWAPINT (SAVE_FILE_ID)))) {
-	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, "Invalid player file");
+	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "Invalid player file");
 	cf.Close ();
 	return -1;
 	}
@@ -2060,7 +2060,7 @@ else
 if ((gameStates.input.nPlrFileVersion < COMPATIBLE_PLAYER_FILE_VERSION) ||
 	 ((gameStates.input.nPlrFileVersion > D2W95_PLAYER_FILE_VERSION) &&
 	  (gameStates.input.nPlrFileVersion < D2XW32_PLAYER_FILE_VERSION))) {
-	ExecMessageBox(TXT_ERROR, NULL, 1, TXT_OK, TXT_ERROR_PLR_VERSION);
+	MsgBox(TXT_ERROR, NULL, 1, TXT_OK, TXT_ERROR_PLR_VERSION);
 	cf.Close ();
 	return -1;
 	}
@@ -2158,7 +2158,7 @@ if (gameStates.input.nPlrFileVersion >= 23) {
 		networkData.nNetLifeKills =
 		networkData.nNetLifeKilled = 0;
 		gameData.app.nLifetimeChecksum = 0;
- 		ExecMessageBox (NULL, NULL, 1, TXT_PROFILE_DAMAGED, TXT_WARNING);
+ 		MsgBox (NULL, NULL, 1, TXT_PROFILE_DAMAGED, TXT_WARNING);
 		bRewriteIt = 1;
 		}
 	}
@@ -2653,7 +2653,7 @@ if (cf.Close ())
 	funcRes = errno;
 if (funcRes != EZERO) {
 	cf.Delete (filename, gameFolders.szProfDir);         //delete bogus &cf
-	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, "%s\n\n%s",TXT_ERROR_WRITING_PLR, strerror(funcRes));
+	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "%s\n\n%s",TXT_ERROR_WRITING_PLR, strerror(funcRes));
 	}
 return funcRes;
 }
@@ -2719,7 +2719,7 @@ sprintf (filename, "%s.plr", text);
 
 CFile cf;
 if (cf.Exist (filename,gameFolders.szProfDir, 0)) {
-	ExecMessageBox (NULL, NULL, 1, TXT_OK, "%s '%s' %s", TXT_PLAYER, text, TXT_ALREADY_EXISTS);
+	MsgBox (NULL, NULL, 1, TXT_OK, "%s '%s' %s", TXT_PLAYER, text, TXT_ALREADY_EXISTS);
 	goto try_again;
 	}
 if (!NewPlayerConfig ())

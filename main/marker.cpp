@@ -284,7 +284,7 @@ void DeleteMarker (int bForce)
 {
 if ((gameData.marker.nHighlight > -1) && (gameData.marker.objects [gameData.marker.nHighlight] != -1)) {
 	gameData.objs.viewerP = OBJECTS + gameData.marker.objects [gameData.marker.nHighlight];
-	if (bForce || !ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_DELETE_MARKER)) {
+	if (bForce || !MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_DELETE_MARKER)) {
 		int	h, i;
 		ReleaseObject (gameData.marker.objects [gameData.marker.nHighlight]);
 		i = LastMarker ();
@@ -321,7 +321,7 @@ if (!IsMultiGame || IsCoopGame) {
 #endif
 	if ((gameData.marker.nHighlight > -1) && (gameData.marker.objects [gameData.marker.nHighlight] != -1)) {
 		gameData.objs.viewerP = OBJECTS + gameData.marker.objects [gameData.marker.nHighlight];
-		if (!ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_JUMP_TO_MARKER)) {
+		if (!MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_JUMP_TO_MARKER)) {
 			CObject	*markerP = OBJECTS + gameData.marker.objects [gameData.marker.nHighlight];
 
 #if !DBG

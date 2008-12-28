@@ -1632,7 +1632,7 @@ if (Errors_in_mine) {
 		sprintf(ErrorMessage, TXT_MINE_ERRORS, Errors_in_mine, Level_being_loaded);
 		StopTime();
 		paletteManager.LoadEffect  ();
-		ExecMessageBox(NULL, 1, TXT_CONTINUE, ErrorMessage);
+		MsgBox(NULL, 1, TXT_CONTINUE, ErrorMessage);
 		StartTime();
 	} else {
 #if TRACE
@@ -1655,7 +1655,7 @@ if (!no_oldLevel_file_error && (gameStates.app.nFunctionMode == FMODE_EDITOR) &&
 
 	StopTime();
 	paletteManager.LoadEffect  ();
-	if (ExecMessageBox(NULL, 2, "Don't Save", "Save", ErrorMessage)==1)
+	if (MsgBox(NULL, 2, "Don't Save", "Save", ErrorMessage)==1)
 		SaveLevel(filename);
 	StartTime();
 }
@@ -1668,7 +1668,7 @@ if (gameStates.app.nFunctionMode == FMODE_EDITOR)
 
 #ifdef EDITOR
 if (CheckSegmentConnections())
-	ExecMessageBox("ERROR", 1, "Ok", 
+	MsgBox("ERROR", 1, "Ok", 
 			"Connectivity errors detected in\n"
 			"mine.  See monochrome screen for\n"
 			"details, and contact Matt or Mike.");
@@ -1893,7 +1893,7 @@ int saveLevel_sub(char * filename, int compiledVersion)
 				StopTime();
 				paletteManager.LoadEffect  ();
 	 
-				if (ExecMessageBox(NULL, 2, TXT_CANCEL_SAVE, TXT_DO_SAVE, ErrorMessage)!=1) {
+				if (MsgBox(NULL, 2, TXT_CANCEL_SAVE, TXT_DO_SAVE, ErrorMessage)!=1) {
 					StartTime();
 					return 1;
 				}
@@ -1920,7 +1920,7 @@ int saveLevel_sub(char * filename, int compiledVersion)
 			, temp_filename, fname);
 		StopTime();
 		paletteManager.LoadEffect  ();
-		ExecMessageBox(NULL, 1, "Ok", ErrorMessage);
+		MsgBox(NULL, 1, "Ok", ErrorMessage);
 		StartTime();
 		return 1;
 	}

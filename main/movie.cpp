@@ -539,12 +539,12 @@ int CMovieManager::RequestCD (void)
 
  try_again:;
 
-	ret = ExecMessageBox ("CD ERROR", 1, "Ok", "Please insert your Descent II CD");
+	ret = MsgBox ("CD ERROR", 1, "Ok", "Please insert your Descent II CD");
 
 	if (ret == -1) {
 		int ret2;
 
-		ret2 = ExecMessageBox ("CD ERROR", 2, "Try Again", "Leave Game", "You must insert your\nDescent II CD to Continue");
+		ret2 = MsgBox ("CD ERROR", 2, "Try Again", "Leave Game", "You must insert your\nDescent II CD to Continue");
 
 		if (ret2 == -1 || ret2 == 0)
 			goto try_again;

@@ -2471,7 +2471,7 @@ return exitValue;
 
 #define LB_ITEMS_ON_SCREEN 8
 
-int ListBox (const char* pszTitle, CStack<char*>& items, int bAllowAbort, int nDefaultItem, pListBoxCallback callback)
+int ListBox (const char* pszTitle, CStack<char*>& items, int nDefaultItem, int bAllowAbort, pListBoxCallback callback)
 {
 	int	i;
 	int	done, ocitem, nItem, nPrevItem, nFirstItem, key, redraw;

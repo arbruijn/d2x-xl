@@ -3026,7 +3026,7 @@ gameData.demo.nSize = GetDiskFree ();
 gameData.demo.nSize -= 100000;
 if ((gameData.demo.nSize+100000) <  2000000000) {
 	if (( (int) (gameData.demo.nSize)) < 500000) {
-		ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_DEMO_NO_SPACE);
+		MsgBox (NULL, NULL, 1, TXT_OK, TXT_DEMO_NO_SPACE);
 		return;
 		}
 	}
@@ -3045,7 +3045,7 @@ if (&ndOutFile.File ()) {                      //dir doesn't exist and no errno 
 	ndOutFile.Open (DEMO_FILENAME, gameFolders.szDemoDir, "wb", 0);
 	}
 if (!ndOutFile.File ()) {
-	ExecMessageBox (NULL, NULL, 1, TXT_OK, "Cannot open demo temp file");
+	MsgBox (NULL, NULL, 1, TXT_OK, "Cannot open demo temp file");
 	gameData.demo.nState = ND_STATE_NORMAL;
 	}
 else
@@ -3198,7 +3198,7 @@ if (filename [0]==0) //null string
 //check to make sure name is ok
 for (s=filename;*s;s++)
 	if (!isalnum (*s) && *s!='_') {
-		ExecMessageBox (NULL, NULL, 1, TXT_CONTINUE, TXT_DEMO_USE_LETTERS);
+		MsgBox (NULL, NULL, 1, TXT_CONTINUE, TXT_DEMO_USE_LETTERS);
 		goto try_again;
 		}
 if (gameData.demo.bNoSpace)

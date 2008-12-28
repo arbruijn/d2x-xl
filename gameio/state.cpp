@@ -422,7 +422,7 @@ for (i = 0; i < NUM_SAVES + 1; i++) {
 if (gameStates.app.bGameRunning) 
 	paletteManager.LoadEffect  ();
 if (nSaves < 1) {
-	ExecMessageBox (NULL, NULL, 1, "Ok", TXT_NO_SAVEGAMES);
+	MsgBox (NULL, NULL, 1, "Ok", TXT_NO_SAVEGAMES);
 	return 0;
 	}
 if (gameStates.video.nDisplayMode == 1)	//restore menu won't fit on 640x400
@@ -1213,7 +1213,7 @@ if (description)
 m_bSecret = bSecret;
 if (!m_cf.Open (m_filename, gameFolders.szSaveDir, "wb", 0)) {
 	if (!IsMultiGame)
-		ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_SAVE_ERROR2);
+		MsgBox (NULL, NULL, 1, TXT_OK, TXT_SAVE_ERROR2);
 	StartTime (1);
 	return 0;
 	}
@@ -1230,7 +1230,7 @@ SaveImage ();
 SaveGameData ();
 if (m_cf.Error ()) {
 	if (!IsMultiGame) {
-		ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_SAVE_ERROR);
+		MsgBox (NULL, NULL, 1, TXT_OK, TXT_SAVE_ERROR);
 		m_cf.Close ();
 		m_cf.Delete (m_filename, gameFolders.szSaveDir);
 		}
@@ -1316,7 +1316,7 @@ if (!m_bQuick) {
 	PopSecretSave (nSaveSlot);
 	AutoSave (nSaveSlot);
 	if (!m_bSecret && bInGame) {
-		int choice = ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_CONFIRM_LOAD);
+		int choice = MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_CONFIRM_LOAD);
 		if (choice != 0) {
 			gameData.app.bGamePaused = 0;
 			StartTime (1);
@@ -1368,7 +1368,7 @@ i = LoadMissionByName (szMission, -1);
 gameOpts->app.nVersionFilter = nVersionFilter;
 if (i)
 	return 1;
-ExecMessageBox (NULL, NULL, 1, "Ok", TXT_MSN_LOAD_ERROR, szMission);
+MsgBox (NULL, NULL, 1, "Ok", TXT_MSN_LOAD_ERROR, szMission);
 return 0;
 }
 

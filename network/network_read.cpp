@@ -146,7 +146,7 @@ if (netGame.nSegmentCheckSum != networkData.nSegmentCheckSum) {
 		short nInMenu = gameStates.menus.nInMenu;
 		gameStates.menus.nInMenu = 0;
 		networkData.nStatus = NETSTAT_MENU;
-		ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_NETLEVEL_MISMATCH);
+		MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_NETLEVEL_MISMATCH);
 		gameStates.menus.nInMenu = nInMenu;
 		}
 #if 1//!DBG
@@ -163,7 +163,7 @@ for (i = 0, playerP = tmpPlayersInfo->players; i < gameData.multiplayer.nPlayers
 	if (!CmpLocalPlayer (&playerP->network, playerP->callsign, szLocalCallSign)) {
 		if (gameData.multiplayer.nLocalPlayer != -1) {
 			Int3 (); // Hey, we've found ourselves twice
-			ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_DUPLICATE_PLAYERS);
+			MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_DUPLICATE_PLAYERS);
 			console.printf (CON_DBG, TXT_FOUND_TWICE);
 			networkData.nStatus = NETSTAT_MENU;
 			return;
@@ -202,7 +202,7 @@ for (i = 0, playerP = tmpPlayersInfo->players; i < gameData.multiplayer.nPlayers
 	}
 
 if (gameData.multiplayer.nLocalPlayer < 0) {
-	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_PLAYER_REJECTED);
+	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_PLAYER_REJECTED);
 	networkData.nStatus = NETSTAT_MENU;
 	return;
 	}
@@ -554,7 +554,7 @@ return !bHaveReactor;
 
 void NetworkAbortSync (void)
 {
-ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_NET_SYNC_FAILED);
+MsgBox (NULL, NULL, 1, TXT_OK, TXT_NET_SYNC_FAILED);
 networkData.nStatus = NETSTAT_MENU;
 }
 

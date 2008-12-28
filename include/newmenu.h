@@ -169,7 +169,7 @@ class CMenu : public CStack<CMenuItem> {
 
 // This function pops up a messagebox and returns which choice was selected...
 // Example:
-// ExecMessageBox( "Title", "Subtitle", 2, "Ok", "Cancel", "There are %d objects", nobjects );
+// MsgBox( "Title", "Subtitle", 2, "Ok", "Cancel", "There are %d objects", nobjects );
 // Returns 0 through nChoices-1.
 int _CDECL_ MsgBox (const char *pszTitle, char *filename, int nChoices, ...);
 
@@ -184,7 +184,7 @@ int FileList (const char *pszTitle, const char *filespec, char *filename);
 
 typedef int (*pListBoxCallback) (int* nItem, CArray<char*>& items, int* keypress);
 
-int ListBox (const char *pszTitle, CStack<char*>& items, int bAllowAbort, pListBoxCallback callBack);
+int ListBox (const char* pszTitle, CStack<char*>& items, int nDefaultItem = 0, int bAllowAbort = 1, pListBoxCallback callback = NULL);
 
 extern int Max_linear_depthObjects;
 
