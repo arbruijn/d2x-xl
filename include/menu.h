@@ -90,4 +90,7 @@ void ShipRenderOptionsMenu (void);
 void SmokeOptionsMenu (void);
 void SoundMenu (void);
 
+void IpxSetDriver (int ipx_driver);
+void DoNewIPAddress (void);
+
 #endif /* _MENU_H */

@@ -12,6 +12,10 @@ template < class _T > class CStack : public CArray<_T> {
 
 	public:
 		CStack () { Init (); }
+		CStack (uint nLength) { 
+			Init (); 
+			Create (nLength);
+			}
 		~CStack() { Destroy (); }
 
 		inline void Reset (void) { m_tos = 0; }

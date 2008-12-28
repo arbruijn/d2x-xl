@@ -89,8 +89,6 @@ const char *menuBgNames [4][2] = {
 #endif
 
 //------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
 //static int FirstTime = 1;
 
 static struct {
@@ -128,16 +126,9 @@ static struct {
 
 //------------------------------------------------------------------------------
 
-void SoundMenu (void);
-void MiscellaneousMenu (void);
-
 // Function Prototypes added after LINTING
 int ExecMainMenuOption (int nChoice);
 int ExecMultiMenuOption (int nChoice);
-void CustomDetailsMenu (void);
-void NewGameMenu (void);
-void MultiplayerMenu (void);
-void IpxSetDriver (int ipx_driver);
 
 //returns the number of demo files on the disk
 int NDCountDemos (void);
@@ -186,7 +177,7 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 //      Create the main menu.
-int CreateMainMenu (CMenu& m)
+int SetupMainMenu (CMenu& m)
 {
 	int nOptions = 0;
 
@@ -195,11 +186,11 @@ memset (&mainOpts, 0xff, sizeof (mainOpts));
 SetScreenMode (SCREEN_MENU);
 #if 1
 m.AddText ("", 0);
-m [m.m_opt - 1].bNoScroll = 1;
+m.Top ()->m_bNoScroll = 1;
 m.AddText ("", 0);
-m [m.m_opt - 1].bNoScroll = 1;
+m.Top ()->m_bNoScroll = 1;
 m.AddText ("", 0);
-m [m.m_opt - 1].bNoScroll = 1;
+m.Top ()->m_bNoScroll = 1;
 #endif
 mainOpts.nNew = m.AddMenu (TXT_NEW_GAME1, KEY_N, HTX_MAIN_NEW);
 if (!gameStates.app.bNostalgia)
@@ -223,7 +214,7 @@ if (!gameStates.app.bNostalgia)
 mainOpts.nCredits = m.AddMenu (TXT_CREDITS, KEY_C, HTX_MAIN_CREDITS);
 #endif
 mainOpts.nQuit = m.AddMenu (TXT_QUIT, KEY_Q, HTX_MAIN_QUIT);
-return m.m_opt;
+return m.ToS ();
 }
 
 //------------------------------------------------------------------------------
@@ -231,10 +222,9 @@ return m.m_opt;
 int MainMenu (void) 
 {
 	CMenu	m (25);
-	int				i, nChoice = 0, nOptions = 0;
+	int	i, nChoice = 0, nOptions = 0;
 
 IpxClose ();
-memset (m, 0, sizeof (m));
 //paletteManager.Load (MENU_PALETTE, NULL, 0, 1, 0);		//get correct palette
 
 if (!LOCALPLAYER.callsign [0]) {
@@ -251,7 +241,7 @@ if (gameData.multiplayer.autoNG.bValid) {
 	}
 PrintLog ("launching main menu\n");
 do {
-	nOptions = CreateMainMenu (m); // may have to change, eg, maybe selected pilot and no save games.
+	nOptions = SetupMainMenu (m); // may have to change, eg, maybe selected pilot and no save games.
 	gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds ();                // .. 20 seconds from now!
 	if (nChoice < 0)
 		nChoice = 0;
@@ -275,7 +265,7 @@ return mainOpts.nChoice;
 static void PlayMenuMovie (void)
 {
 	int				h, i, j;
-	CArray<char*>	m;
+	CStack<char*>	m;
 	char*				ps;
 
 i = movieManager.m_nLibs;
@@ -290,9 +280,9 @@ for (i = j = 0; i < h; i++)
 	if ((ps = movieManager.Cycle (i == 0, 0))) {
 		if (j && !strcmp (ps, m [0]))
 			break;
-		m [j++] = ps;
+		m.Push (ps);
 		}
-i = ExecMenuListBox (TXT_SELECT_MOVIE, j, m, 1, NULL);
+i = ListBox (TXT_SELECT_MOVIE, m, 1, NULL);
 if (i > -1) {
 	SDL_ShowCursor (0);
 	if (strstr (m [i], "intro"))
@@ -310,21 +300,21 @@ SongsPlayCurrentSong (1);
 static void PlayMenuSong (void)
 {
 	int				h, i, j = 0;
-	char*				m [MAX_NUM_SONGS + 2];
+	CStack<char*>	m (MAX_NUM_SONGS + 2);
 	CFile				cf;
 	char				szSongTitles [2][14] = {"- Descent 2 -", "- Descent 1 -"};
 
-m [j++] = szSongTitles [0];
+m.Push (szSongTitles [0]);
 for (i = 0; i < gameData.songs.nTotalSongs; i++) {
 	if (cf.Open (reinterpret_cast<char*> (gameData.songs.info [i].filename), gameFolders.szDataDir, "rb", i >= gameData.songs.nSongs [0])) {
 		cf.Close ();
 		if (i == gameData.songs.nSongs [0])
-			m [j++] = szSongTitles [1];
-		m [j++] = gameData.songs.info [i].filename;
+			m.Push (szSongTitles [1]);
+		m.Push (gameData.songs.info [i].filename);
 		}
 	}
 for (;;) {
-	h = ExecMenuListBox (TXT_SELECT_SONG, j, m, 1, NULL);
+	h = ListBox (TXT_SELECT_SONG, m, 1, NULL);
 	if (h < 0)
 		return;
 	if (!strstr (m [h], ".hmp"))
@@ -424,8 +414,8 @@ else if (nChoice == mainOpts.nLoadDirect) {
 	int				nLevel;
 
 	m.AddInput (szLevel, sizeof (szLevel), NULL);
-	m.Menu (NULL, "Enter level to load", 1, m, NULL, NULL);
-	nLevel = atoi (m [0].text);
+	m.Menu (NULL, "Enter level to load", NULL, NULL);
+	nLevel = atoi (m [0].m_text);
 	if (nLevel && (nLevel >= gameData.missions.nLastSecretLevel) && (nLevel <= gameData.missions.nLastLevel)) {
 		paletteManager.DisableEffect ();
 		StartNewGame (nLevel);
@@ -444,7 +434,7 @@ else if (nChoice == mainOpts.nDemo) {
 	char demoPath [FILENAME_LEN], demoFile [FILENAME_LEN];
 
 	sprintf (demoPath, "%s%s*.dem", gameFolders.szDemoDir, *gameFolders.szDemoDir ? "/" : ""); 
-	if (ExecMenuFileSelector (TXT_SELECT_DEMO, demoPath, demoFile, 1))
+	if (FileSelector (TXT_SELECT_DEMO, demoPath, demoFile, 1))
 		NDStartPlayback (demoFile);
 	}
 else if (nChoice == mainOpts.nScores) {

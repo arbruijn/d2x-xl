@@ -92,24 +92,18 @@ const char *menuBgNames [4][2] = {
 
 int QuitSaveLoadMenu (void)
 {
-	CMenuItem m [5];
-	int	i, choice = 0, nOptions, optQuit, optOptions, optLoad, optSave;
+	CMenu m (5);
+	int	i, choice = 0, optQuit, optOptions, optLoad, optSave;
 
-memset (m, 0, sizeof (m));
-nOptions = 0;
-m.AddMenu (nOptions, TXT_QUIT_GAME, KEY_Q, HTX_QUIT_GAME);
-optQuit = nOptions++;
-m.AddMenu (nOptions, TXT_GAME_OPTIONS, KEY_O, HTX_MAIN_CONF);
-optOptions = nOptions++;
-m.AddMenu (nOptions, TXT_LOAD_GAME2, KEY_L, HTX_LOAD_GAME);
-optLoad = nOptions++;
-m.AddMenu (nOptions, TXT_SAVE_GAME2, KEY_S, HTX_SAVE_GAME);
-optSave = nOptions++;
-i = ExecMenu1 (NULL, TXT_ABORT_GAME, nOptions, m, NULL, &choice);
+optQuit = m.AddMenu (TXT_QUIT_GAME, KEY_Q, HTX_QUIT_GAME);
+optOptions = m.AddMenu (TXT_GAME_OPTIONS, KEY_O, HTX_MAIN_CONF);
+optLoad = m.AddMenu (TXT_LOAD_GAME2, KEY_L, HTX_LOAD_GAME);
+optSave = m.AddMenu (TXT_SAVE_GAME2, KEY_S, HTX_SAVE_GAME);
+i = m.Menu (NULL, TXT_ABORT_GAME, NULL, &choice);
 if (!i)
 	return 0;
 if (i == optOptions)
-	ConfigMenu (void);
+	ConfigMenu ();
 else if (i == optLoad)
 	saveGameHandler.Load (1, 0, 0, NULL);
 else if (i == optSave)
@@ -169,16 +163,15 @@ else {
 
 //------------------------------------------------------------------------------
 
-void DoNewIPAddress ()
- {
-  CMenuItem m [2];
-  char		szIP [30];
-  int			choice;
+void DoNewIPAddress (void)
+{
+  CMenu	m (2);
+  char	szIP [30];
+  int		choice;
 
-memset (m, 0, sizeof (m));
 m.AddText (0, "Enter an address or hostname:", 0);
 m.AddInput (1, szIP, 50, NULL);
-choice = ExecMenu (NULL, TXT_JOIN_TCP, 2, m, NULL, NULL);
+choice = m.Menu (NULL, TXT_JOIN_TCP);
 if ((choice == -1) || !*m [1].text)
 	return;
 ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INV_ADDRESS);
