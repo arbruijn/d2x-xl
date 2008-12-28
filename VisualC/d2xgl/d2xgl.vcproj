@@ -4570,6 +4570,34 @@
 					Name="Source Files"
 					>
 					<File
+						RelativePath="..\..\main\cockpitmenu.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\main\configmenu.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\main\coronamenu.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\main\effectsmenu.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\main\gameplaymenu.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\main\lightningmenu.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\main\mainmenu.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\main\menu.cpp"
 						>
 						<FileConfiguration
@@ -4594,7 +4622,39 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\main\miscmenu.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\main\newgamemenu.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\main\newmenu.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\main\performancemenu.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\main\physicsmenu.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\main\rendermenu.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\main\screenresmenu.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\main\smokemenu.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\main\soundmenu.cpp"
 						>
 					</File>
 				</Filter>
