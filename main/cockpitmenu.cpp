@@ -78,34 +78,34 @@ static const char *szCWS [4];
 
 //------------------------------------------------------------------------------
 
-int TgtIndOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
+int TgtIndOptionsCallback (CMenu& menu, int& key, int nCurItem)
 {
 	CMenuItem	*m;
 	int			v, j;
 
-m = menus + optTgtInd;
-v = m->value;
+m = menu + optTgtInd;
+v = m->m_value;
 if (v != (extraGameInfo [0].bTargetIndicators == 0)) {
 	for (j = 0; j < 3; j++)
-		if (m [optTgtInd + j].value) {
+		if (m [optTgtInd + j].m_value) {
 			extraGameInfo [0].bTargetIndicators = j;
 			break;
 			}
-	*key = -2;
+	key = -2;
 	return nCurItem;
 	}
-m = menus + optDmgInd;
-v = m->value;
+m = menu + optDmgInd;
+v = m->m_value;
 if (v != extraGameInfo [0].bDamageIndicators) {
 	extraGameInfo [0].bDamageIndicators = v;
-	*key = -2;
+	key = -2;
 	return nCurItem;
 	}
-m = menus + optMslLockInd;
-v = m->value;
+m = menu + optMslLockInd;
+v = m->m_value;
 if (v != extraGameInfo [0].bMslLockIndicators) {
 	extraGameInfo [0].bMslLockIndicators = v;
-	*key = -2;
+	key = -2;
 	return nCurItem;
 	}
 return nCurItem;
@@ -113,52 +113,40 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-void TgtIndOptionsMenu ()
+void TgtIndOptionsMenu (void)
 {
-	CMenuItem m [15];
-	int	i, j, nOptions, choice = 0;
+	CMenu	m;
+	int	i, j, choice = 0;
 	int	optCloakedInd, optRotateInd;
 
 do {
-	memset (m, 0, sizeof (m));
-	nOptions = 0;
+	m.Destroy ();
+	m.Create (15);
 
-	m.AddRadio (nOptions, TXT_TGTIND_NONE, 0, KEY_A, 1, HTX_CPIT_TGTIND);
-	optTgtInd = nOptions++;
-	m.AddRadio (nOptions, TXT_TGTIND_SQUARE, 0, KEY_R, 1, HTX_CPIT_TGTIND);
-	nOptions++;
-	m.AddRadio (nOptions, TXT_TGTIND_TRIANGLE, 0, KEY_T, 1, HTX_CPIT_TGTIND);
-	nOptions++;
-	m [optTgtInd + extraGameInfo [0].bTargetIndicators].value = 1;
-	if (extraGameInfo [0].bTargetIndicators) {
-		m.AddCheck (nOptions, TXT_CLOAKED_INDICATOR, extraGameInfo [0].bCloakedIndicators, KEY_C, HTX_CLOAKED_INDICATOR);
-		optCloakedInd = nOptions++;
-		}
+	optTgtInd = m.AddRadio (TXT_TGTIND_NONE, 0, KEY_A, 1, HTX_CPIT_TGTIND);
+	m.AddRadio (TXT_TGTIND_SQUARE, 0, KEY_R, 1, HTX_CPIT_TGTIND);
+	m.AddRadio (TXT_TGTIND_TRIANGLE, 0, KEY_T, 1, HTX_CPIT_TGTIND);
+	m [optTgtInd + extraGameInfo [0].bTargetIndicators].m_value = 1;
+	if (extraGameInfo [0].bTargetIndicators)
+		optCloakedInd = m.AddCheck (TXT_CLOAKED_INDICATOR, extraGameInfo [0].bCloakedIndicators, KEY_C, HTX_CLOAKED_INDICATOR);
 	else
 		optCloakedInd = -1;
-	m.AddCheck (nOptions, TXT_DMG_INDICATOR, extraGameInfo [0].bDamageIndicators, KEY_D, HTX_CPIT_DMGIND);
-	optDmgInd = nOptions++;
-	if (extraGameInfo [0].bTargetIndicators || extraGameInfo [0].bDamageIndicators) {
-		m.AddCheck (nOptions, TXT_HIT_INDICATOR, extraGameInfo [0].bTagOnlyHitObjs, KEY_T, HTX_HIT_INDICATOR);
-		optHitInd = nOptions++;
-		}
+	optDmgInd = m.AddCheck (TXT_DMG_INDICATOR, extraGameInfo [0].bDamageIndicators, KEY_D, HTX_CPIT_DMGIND);
+	if (extraGameInfo [0].bTargetIndicators || extraGameInfo [0].bDamageIndicators)
+		optHitInd = m.AddCheck (TXT_HIT_INDICATOR, extraGameInfo [0].bTagOnlyHitObjs, KEY_T, HTX_HIT_INDICATOR);
 	else
 		optHitInd = -1;
-	m.AddCheck (nOptions, TXT_MSLLOCK_INDICATOR, extraGameInfo [0].bMslLockIndicators, KEY_M, HTX_CPIT_MSLLOCKIND);
-	optMslLockInd = nOptions++;
-	if (extraGameInfo [0].bMslLockIndicators) {
-		m.AddCheck (nOptions, TXT_ROTATE_MSLLOCKIND, gameOpts->render.cockpit.bRotateMslLockInd, KEY_R, HTX_ROTATE_MSLLOCKIND);
-		optRotateInd = nOptions++;
-		}
+	optMslLockInd = m.AddCheck (TXT_MSLLOCK_INDICATOR, extraGameInfo [0].bMslLockIndicators, KEY_M, HTX_CPIT_MSLLOCKIND);
+	if (extraGameInfo [0].bMslLockIndicators)
+		optRotateInd = m.AddCheck (TXT_ROTATE_MSLLOCKIND, gameOpts->render.cockpit.bRotateMslLockInd, KEY_R, HTX_ROTATE_MSLLOCKIND);
 	else
 		optRotateInd = -1;
-	Assert (sizeofa (m) >= (size_t) nOptions);
 	do {
-		i = ExecMenu1 (NULL, TXT_TGTIND_MENUTITLE, nOptions, m, &TgtIndOptionsCallback, &choice);
+		i = m.Menu (NULL, TXT_TGTIND_MENUTITLE, &TgtIndOptionsCallback, &choice);
 	} while (i >= 0);
 	if (optTgtInd >= 0) {
 		for (j = 0; j < 3; j++)
-			if (m [optTgtInd + j].value) {
+			if (m [optTgtInd + j].m_value) {
 				extraGameInfo [0].bTargetIndicators = j;
 				break;
 				}
@@ -173,16 +161,16 @@ do {
 
 //------------------------------------------------------------------------------
 
-int WeaponIconOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
+int WeaponIconOptionsCallback (CMenu& menu, int& key, int nCurItem)
 {
 	CMenuItem	*m;
 	int			v;
 
-m = menus + optWeaponIcons;
-v = m->value;
+m = menu + optWeaponIcons;
+v = m->m_value;
 if (v != bShowWeaponIcons) {
 	bShowWeaponIcons = v;
-	*key = -2;
+	key = -2;
 	return nCurItem;
 	}
 return nCurItem;
@@ -192,40 +180,27 @@ return nCurItem;
 
 void WeaponIconOptionsMenu (void)
 {
-	CMenuItem m [35];
-	int	i, j, nOptions, choice = 0;
+	CMenu m (35);
+	int	i, j, choice = 0;
 	int	optSmallIcons, optIconSort, optIconAmmo, optIconPos, optEquipIcons;
 
 bShowWeaponIcons = (extraGameInfo [0].nWeaponIcons != 0);
 do {
-	memset (m, 0, sizeof (m));
-	nOptions = 0;
-
-	m.AddCheck (nOptions, TXT_SHOW_WEAPONICONS, bShowWeaponIcons, KEY_W, HTX_CPIT_WPNICONS);
-	optWeaponIcons = nOptions++;
+	m.Destroy ();
+	m.Create (35);
+	optWeaponIcons = m.AddCheck (TXT_SHOW_WEAPONICONS, bShowWeaponIcons, KEY_W, HTX_CPIT_WPNICONS);
 	if (bShowWeaponIcons && gameOpts->app.bExpertMode) {
-		m.AddCheck (nOptions, TXT_SHOW_EQUIPICONS, gameOpts->render.weaponIcons.bEquipment, KEY_Q, HTX_CPIT_EQUIPICONS);
-		optEquipIcons = nOptions++;
-		m.AddCheck (nOptions, TXT_SMALL_WPNICONS, gameOpts->render.weaponIcons.bSmall, KEY_I, HTX_CPIT_SMALLICONS);
-		optSmallIcons = nOptions++;
-		m.AddCheck (nOptions, TXT_SORT_WPNICONS, gameOpts->render.weaponIcons.nSort, KEY_T, HTX_CPIT_SORTICONS);
-		optIconSort = nOptions++;
-		m.AddCheck (nOptions, TXT_AMMO_WPNICONS, gameOpts->render.weaponIcons.bShowAmmo, KEY_A, HTX_CPIT_ICONAMMO);
-		optIconAmmo = nOptions++;
-		optIconPos = nOptions;
-		m.AddRadio (nOptions, TXT_WPNICONS_TOP, 0, KEY_I, 3, HTX_CPIT_ICONPOS);
-		nOptions++;
-		m.AddRadio (nOptions, TXT_WPNICONS_BTM, 0, KEY_I, 3, HTX_CPIT_ICONPOS);
-		nOptions++;
-		m.AddRadio (nOptions, TXT_WPNICONS_LRB, 0, KEY_I, 3, HTX_CPIT_ICONPOS);
-		nOptions++;
-		m.AddRadio (nOptions, TXT_WPNICONS_LRT, 0, KEY_I, 3, HTX_CPIT_ICONPOS);
-		nOptions++;
-		m [optIconPos + NMCLAMP (extraGameInfo [0].nWeaponIcons - 1, 0, 3)].value = 1;
-		m.AddSlider (nOptions, TXT_ICON_DIM, gameOpts->render.weaponIcons.alpha, 0, 8, KEY_D, HTX_CPIT_ICONDIM);
-		optIconAlpha = nOptions++;
-		m.AddText (nOptions, "", 0);
-		nOptions++;
+		optEquipIcons = m.AddCheck (TXT_SHOW_EQUIPICONS, gameOpts->render.weaponIcons.bEquipment, KEY_Q, HTX_CPIT_EQUIPICONS);
+		optSmallIcons = m.AddCheck (TXT_SMALL_WPNICONS, gameOpts->render.weaponIcons.bSmall, KEY_I, HTX_CPIT_SMALLICONS);
+		optIconSort = m.AddCheck (TXT_SORT_WPNICONS, gameOpts->render.weaponIcons.nSort, KEY_T, HTX_CPIT_SORTICONS);
+		optIconAmmo = m.AddCheck (TXT_AMMO_WPNICONS, gameOpts->render.weaponIcons.bShowAmmo, KEY_A, HTX_CPIT_ICONAMMO);
+		optIconPos = m.AddRadio (TXT_WPNICONS_TOP, 0, KEY_I, 3, HTX_CPIT_ICONPOS);
+		m.AddRadio (TXT_WPNICONS_BTM, 0, KEY_I, 3, HTX_CPIT_ICONPOS);
+		m.AddRadio (TXT_WPNICONS_LRB, 0, KEY_I, 3, HTX_CPIT_ICONPOS);
+		m.AddRadio (TXT_WPNICONS_LRT, 0, KEY_I, 3, HTX_CPIT_ICONPOS);
+		m [optIconPos + NMCLAMP (extraGameInfo [0].nWeaponIcons - 1, 0, 3)].m_value = 1;
+		optIconAlpha = m.AddSlider (TXT_ICON_DIM, gameOpts->render.weaponIcons.alpha, 0, 8, KEY_D, HTX_CPIT_ICONDIM);
+		m.AddText ("", 0);
 		}
 	else
 		optEquipIcons =
@@ -234,9 +209,8 @@ do {
 		optIconPos =
 		optIconAmmo = 
 		optIconAlpha = -1;
-	Assert (sizeofa (m) >= (size_t) nOptions);
 	do {
-		i = ExecMenu1 (NULL, TXT_WPNICON_MENUTITLE, nOptions, m, &WeaponIconOptionsCallback, &choice);
+		i = m.Menu (NULL, TXT_WPNICON_MENUTITLE, &WeaponIconOptionsCallback, &choice);
 	} while (i >= 0);
 	if (bShowWeaponIcons) {
 		if (gameOpts->app.bExpertMode) {
@@ -246,7 +220,7 @@ do {
 			GET_VAL (gameOpts->render.weaponIcons.bShowAmmo, optIconAmmo);
 			if (optIconPos >= 0)
 				for (j = 0; j < 4; j++)
-					if (m [optIconPos + j].value) {
+					if (m [optIconPos + j].m_value) {
 						extraGameInfo [0].nWeaponIcons = j + 1;
 						break;
 						}
@@ -269,16 +243,16 @@ do {
 
 //------------------------------------------------------------------------------
 
-int GaugeOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
+int GaugeOptionsCallback (CMenu& menu, int& key, int nCurItem)
 {
 	CMenuItem	*m;
 	int			v;
 
-m = menus + optTextGauges;
-v = !m->value;
+m = menu + optTextGauges;
+v = !m->m_value;
 if (v != gameOpts->render.cockpit.bTextGauges) {
 	gameOpts->render.cockpit.bTextGauges = v;
-	*key = -2;
+	key = -2;
 	return nCurItem;
 	}
 return nCurItem;
@@ -288,34 +262,28 @@ return nCurItem;
 
 void GaugeOptionsMenu (void)
 {
-	CMenuItem m [10];
-	int	i, nOptions, choice = 0;
+	CMenu m;
+	int	i, choice = 0;
 	int	optScaleGauges, optFlashGauges, optShieldWarn, optObjectTally, optPlayerStats;
 
 do {
-	memset (m, 0, sizeof (m));
-	nOptions = 0;
-	m.AddCheck (nOptions, TXT_SHOW_GFXGAUGES, !gameOpts->render.cockpit.bTextGauges, KEY_P, HTX_CPIT_GFXGAUGES);
-	optTextGauges = nOptions++;
+	m.Destroy ();
+	m.Create (10);
+	optTextGauges = m.AddCheck (TXT_SHOW_GFXGAUGES, !gameOpts->render.cockpit.bTextGauges, KEY_P, HTX_CPIT_GFXGAUGES);
 	if (!gameOpts->render.cockpit.bTextGauges && gameOpts->app.bExpertMode) {
-		m.AddCheck (nOptions, TXT_SCALE_GAUGES, gameOpts->render.cockpit.bScaleGauges, KEY_C, HTX_CPIT_SCALEGAUGES);
-		optScaleGauges = nOptions++;
-		m.AddCheck (nOptions, TXT_FLASH_GAUGES, gameOpts->render.cockpit.bFlashGauges, KEY_F, HTX_CPIT_FLASHGAUGES);
-		optFlashGauges = nOptions++;
+		optScaleGauges = m.AddCheck (TXT_SCALE_GAUGES, gameOpts->render.cockpit.bScaleGauges, KEY_C, HTX_CPIT_SCALEGAUGES);
+		optFlashGauges = m.AddCheck (TXT_FLASH_GAUGES, gameOpts->render.cockpit.bFlashGauges, KEY_F, HTX_CPIT_FLASHGAUGES);
 		}
 	else
 		optScaleGauges =
 		optFlashGauges = -1;
-	m.AddCheck (nOptions, TXT_SHIELD_WARNING, gameOpts->gameplay.bShieldWarning, KEY_W, HTX_CPIT_SHIELDWARN);
-	optShieldWarn = nOptions++;
-	m.AddCheck (nOptions, TXT_OBJECT_TALLY, gameOpts->render.cockpit.bObjectTally, KEY_T, HTX_CPIT_OBJTALLY);
-	optObjectTally = nOptions++;
-	m.AddCheck (nOptions, TXT_PLAYER_STATS, gameOpts->render.cockpit.bPlayerStats, KEY_S, HTX_CPIT_PLAYERSTATS);
-	optPlayerStats = nOptions++;
+	optShieldWarn = m.AddCheck (TXT_SHIELD_WARNING, gameOpts->gameplay.bShieldWarning, KEY_W, HTX_CPIT_SHIELDWARN);
+	optObjectTally = m.AddCheck (TXT_OBJECT_TALLY, gameOpts->render.cockpit.bObjectTally, KEY_T, HTX_CPIT_OBJTALLY);
+	optPlayerStats = m.AddCheck (TXT_PLAYER_STATS, gameOpts->render.cockpit.bPlayerStats, KEY_S, HTX_CPIT_PLAYERSTATS);
 	do {
-		i = ExecMenu1 (NULL, TXT_GAUGES_MENUTITLE, nOptions, m, &GaugeOptionsCallback, &choice);
+		i = m.Menu (NULL, TXT_GAUGES_MENUTITLE, &GaugeOptionsCallback, &choice);
 	} while (i >= 0);
-	if (!(gameOpts->render.cockpit.bTextGauges = !m [optTextGauges].value)) {
+	if (!(gameOpts->render.cockpit.bTextGauges = !m [optTextGauges].m_value)) {
 		if (gameOpts->app.bExpertMode) {
 			GET_VAL (gameOpts->render.cockpit.bScaleGauges, optScaleGauges);
 			GET_VAL (gameOpts->render.cockpit.bFlashGauges, optFlashGauges);
@@ -338,26 +306,26 @@ do {
 
 //------------------------------------------------------------------------------
 
-int CockpitOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
+int CockpitOptionsCallback (CMenu& menu, int& key, int nCurItem)
 {
 	CMenuItem	*m;
 	int			v;
 
 if (gameOpts->app.bExpertMode) {
-	m = menus + nCWSopt;
-	v = m->value;
+	m = menu + nCWSopt;
+	v = m->m_value;
 	if (gameOpts->render.cockpit.nWindowSize != v) {
 		gameOpts->render.cockpit.nWindowSize = v;
-		m->text = const_cast<char*> (szCWS [v]);
-		m->rebuild = 1;
+		m->m_text = const_cast<char*> (szCWS [v]);
+		m->m_bRebuild = 1;
 		}
 
-	m = menus + nCWZopt;
-	v = m->value;
+	m = menu + nCWZopt;
+	v = m->m_value;
 	if (gameOpts->render.cockpit.nWindowZoom != v) {
 		gameOpts->render.cockpit.nWindowZoom = v;
-		sprintf (m->text, TXT_CW_ZOOM, gameOpts->render.cockpit.nWindowZoom + 1);
-		m->rebuild = 1;
+		sprintf (m->m_text, TXT_CW_ZOOM, gameOpts->render.cockpit.nWindowZoom + 1);
+		m->m_bRebuild = 1;
 		}
 	}
 return nCurItem;
@@ -367,8 +335,8 @@ return nCurItem;
 
 void CockpitOptionsMenu (void)
 {
-	CMenuItem m [30];
-	int	i, nOptions, 
+	CMenu m;
+	int	i, 
 			nPosition = gameOpts->render.cockpit.nWindowPos / 3, 
 			nAlignment = gameOpts->render.cockpit.nWindowPos % 3, 
 			choice = 0;
@@ -384,45 +352,28 @@ szCWS [3] = TXT_CWS_HUGE;
 optPosition = optAlignment = nCWSopt = nCWZopt = optTextGauges = optWeaponIcons = optIconAlpha = -1;
 bShowWeaponIcons = (extraGameInfo [0].nWeaponIcons != 0);
 do {
-	memset (m, 0, sizeof (m));
-	nOptions = 0;
+	m.Destroy ();
+	m.Create (30);
 
 	if (gameOpts->app.bExpertMode) {
-		m.AddSlider (nOptions, szCWS [gameOpts->render.cockpit.nWindowSize], gameOpts->render.cockpit.nWindowSize, 0, 3, KEY_S, HTX_CPIT_WINSIZE);
-		nCWSopt = nOptions++;
+		nCWSopt = m.AddSlider (szCWS [gameOpts->render.cockpit.nWindowSize], gameOpts->render.cockpit.nWindowSize, 0, 3, KEY_S, HTX_CPIT_WINSIZE);
 		sprintf (szCockpitWindowZoom, TXT_CW_ZOOM, gameOpts->render.cockpit.nWindowZoom + 1);
-		m.AddSlider (nOptions, szCockpitWindowZoom, gameOpts->render.cockpit.nWindowZoom, 0, 3, KEY_Z, HTX_CPIT_WINZOOM);
-		nCWZopt = nOptions++;
-		m.AddText (nOptions, "", 0);
-		nOptions++;
-		m.AddText (nOptions, TXT_AUXWIN_POSITION, 0);
-		nOptions++;
-		m.AddRadio (nOptions, TXT_POS_BOTTOM, nPosition == 0, KEY_B, 10, HTX_AUXWIN_POSITION);
-		optPosition = nOptions++;
-		m.AddRadio (nOptions, TXT_POS_TOP, nPosition == 1, KEY_T, 10, HTX_AUXWIN_POSITION);
-		nOptions++;
-		m.AddText (nOptions, "", 0);
-		nOptions++;
-		m.AddText (nOptions, TXT_AUXWIN_ALIGNMENT, 0);
-		nOptions++;
-		m.AddRadio (nOptions, TXT_ALIGN_CORNERS, nAlignment == 0, KEY_O, 11, HTX_AUXWIN_ALIGNMENT);
-		optAlignment = nOptions++;
-		m.AddRadio (nOptions, TXT_ALIGN_MIDDLE, nAlignment == 1, KEY_I, 11, HTX_AUXWIN_ALIGNMENT);
-		nOptions++;
-		m.AddRadio (nOptions, TXT_ALIGN_CENTER, nAlignment == 2, KEY_E, 11, HTX_AUXWIN_ALIGNMENT);
-		nOptions++;
-		m.AddText (nOptions, "", 0);
-		nOptions++;
-		m.AddCheck (nOptions, TXT_SHOW_HUD, gameOpts->render.cockpit.bHUD, KEY_U, HTX_CPIT_SHOWHUD);
-		optHUD = nOptions++;
-		m.AddCheck (nOptions, TXT_SHOW_HUDMSGS, gameOpts->render.cockpit.bHUDMsgs, KEY_M, HTX_CPIT_SHOWHUDMSGS);
-		optHUDMsgs = nOptions++;
-		m.AddCheck (nOptions, TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_R, HTX_CPIT_SHOWRETICLE);
-		optReticle = nOptions++;
-		if (gameOpts->input.mouse.bJoystick) {
-			m.AddCheck (nOptions, TXT_SHOW_MOUSEIND, gameOpts->render.cockpit.bMouseIndicator, KEY_O, HTX_CPIT_MOUSEIND);
-			optMouseInd = nOptions++;
-			}
+		nCWZopt = m.AddSlider (szCockpitWindowZoom, gameOpts->render.cockpit.nWindowZoom, 0, 3, KEY_Z, HTX_CPIT_WINZOOM);
+		m.AddText ("", 0);
+		m.AddText (TXT_AUXWIN_POSITION, 0);
+		optPosition = m.AddRadio (TXT_POS_BOTTOM, nPosition == 0, KEY_B, 10, HTX_AUXWIN_POSITION);
+		m.AddRadio (TXT_POS_TOP, nPosition == 1, KEY_T, 10, HTX_AUXWIN_POSITION);
+		m.AddText ("", 0);
+		m.AddText (TXT_AUXWIN_ALIGNMENT, 0);
+		optAlignment = m.AddRadio (TXT_ALIGN_CORNERS, nAlignment == 0, KEY_O, 11, HTX_AUXWIN_ALIGNMENT);
+		m.AddRadio (TXT_ALIGN_MIDDLE, nAlignment == 1, KEY_I, 11, HTX_AUXWIN_ALIGNMENT);
+		m.AddRadio (TXT_ALIGN_CENTER, nAlignment == 2, KEY_E, 11, HTX_AUXWIN_ALIGNMENT);
+		m.AddText ("", 0);
+		optHUD = m.AddCheck (TXT_SHOW_HUD, gameOpts->render.cockpit.bHUD, KEY_U, HTX_CPIT_SHOWHUD);
+		optHUDMsgs = m.AddCheck (TXT_SHOW_HUDMSGS, gameOpts->render.cockpit.bHUDMsgs, KEY_M, HTX_CPIT_SHOWHUDMSGS);
+		optReticle = m.AddCheck (TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_R, HTX_CPIT_SHOWRETICLE);
+		if (gameOpts->input.mouse.bJoystick)
+			optMouseInd = m.AddCheck (TXT_SHOW_MOUSEIND, gameOpts->render.cockpit.bMouseIndicator, KEY_O, HTX_CPIT_MOUSEIND);
 		else
 			optMouseInd = -1;
 		}
@@ -431,23 +382,15 @@ do {
 		optHUDMsgs =
 		optMouseInd = 
 		optReticle = -1;
-	m.AddCheck (nOptions, TXT_EXTRA_PLRMSGS, gameOpts->render.cockpit.bSplitHUDMsgs, KEY_P, HTX_CPIT_SPLITMSGS);
-	optSplitMsgs = nOptions++;
-	m.AddCheck (nOptions, TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_I, HTX_CPITMSLVIEW);
-	optMissileView = nOptions++;
-	m.AddCheck (nOptions, TXT_GUIDED_MAINVIEW, gameOpts->render.cockpit.bGuidedInMainView, KEY_F, HTX_CPIT_GUIDEDVIEW);
-	optGuided = nOptions++;
-	m.AddText (nOptions, "", 0);
-	nOptions++;
-	m.AddMenu (nOptions, TXT_TGTIND_MENUCALL, KEY_T, "");
-	optTgtInd = nOptions++;
-	m.AddMenu (nOptions, TXT_WPNICON_MENUCALL, KEY_W, "");
-	optWeaponIcons = nOptions++;
-	m.AddMenu (nOptions, TXT_GAUGES_MENUCALL, KEY_G, "");
-	optGauges = nOptions++;
-	Assert (sizeofa (m) >= (size_t) nOptions);
+	optSplitMsgs = m.AddCheck (TXT_EXTRA_PLRMSGS, gameOpts->render.cockpit.bSplitHUDMsgs, KEY_P, HTX_CPIT_SPLITMSGS);
+	optMissileView = m.AddCheck (TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_I, HTX_CPITMSLVIEW);
+	optGuided = m.AddCheck (TXT_GUIDED_MAINVIEW, gameOpts->render.cockpit.bGuidedInMainView, KEY_F, HTX_CPIT_GUIDEDVIEW);
+	m.AddText ("", 0);
+	optTgtInd = m.AddMenu (TXT_TGTIND_MENUCALL, KEY_T, "");
+	optWeaponIcons = m.AddMenu (TXT_WPNICON_MENUCALL, KEY_W, "");
+	optGauges = m.AddMenu (TXT_GAUGES_MENUCALL, KEY_G, "");
 	do {
-		i = ExecMenu1 (NULL, TXT_COCKPIT_OPTS, nOptions, m, &CockpitOptionsCallback, &choice);
+		i = m.Menu (NULL, TXT_COCKPIT_OPTS, &CockpitOptionsCallback, &choice);
 		if (i < 0)
 			break;
 		if ((optTgtInd >= 0) && (i == optTgtInd))
@@ -466,10 +409,10 @@ do {
 	GET_VAL (gameOpts->render.cockpit.bSplitHUDMsgs, optSplitMsgs);
 	if ((optAlignment >= 0) && (optPosition >= 0)) {
 		for (nPosition = 0; nPosition < 2; nPosition++)
-			if (m [optPosition + nPosition].value)
+			if (m [optPosition + nPosition].m_value)
 				break;
 		for (nAlignment = 0; nAlignment < 3; nAlignment++)
-			if (m [optAlignment + nAlignment].value)
+			if (m [optAlignment + nAlignment].m_value)
 				break;
 		gameOpts->render.cockpit.nWindowPos = nPosition * 3 + nAlignment;
 		}

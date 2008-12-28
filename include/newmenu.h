@@ -129,14 +129,14 @@ class CMenu : public CStack<CMenuItem> {
 			SetGrowth (10);
 			m_opt = 0; 
 			}
-		int AddCheck (char* szText, int nValue, int nKey = 0, const char* szHelp = NULL);
-		int AddRadio (char* szText, int nValue, int nGroup, int nKey = 0, const char* szHelp = NULL);
-		int AddMenu (char* szText, int nKey = 0, const char* szHelp = NULL);
-		int AddText (char* szText, int nKey = 0);
-		int AddSlider (char* szText, int nValue, int nMin, int nMax, int nKey = 0, const char* szHelp = NULL);
-		int AddInput (char* szText, int nLen, const char* szHelp = NULL);
-		int AddInputBox (char* szText, int nLen, int nKey = 0, const char* szHelp = NULL);
-		int AddGauge (char* szText, int nValue, int nMax);
+		int AddCheck (const char* szText, int nValue, int nKey = 0, const char* szHelp = NULL);
+		int AddRadio (const char* szText, int nValue, int nGroup, int nKey = 0, const char* szHelp = NULL);
+		int AddMenu (const char* szText, int nKey = 0, const char* szHelp = NULL);
+		int AddText (const char* szText, int nKey = 0);
+		int AddSlider (const char* szText, int nValue, int nMin, int nMax, int nKey = 0, const char* szHelp = NULL);
+		int AddInput (const char* szText, int nLen, const char* szHelp = NULL);
+		int AddInputBox (const char* szText, int nLen, int nKey = 0, const char* szHelp = NULL);
+		int AddGauge (const char* szText, int nValue, int nMax);
 		inline CMenuItem& Item (int i = -1) { return (i < 0) ? m_data.buffer [m_opt] : m_data.buffer [i]; }
 
 		int Menu (const char *pszTitle, const char *pszSubTitle, pMenuCallback callback = NULL, 

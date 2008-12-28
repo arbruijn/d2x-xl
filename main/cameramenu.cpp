@@ -79,35 +79,35 @@ static struct {
 
 //------------------------------------------------------------------------------
 
-int CameraOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
+int CameraOptionsCallback (CMenu& menu, int& key, int nCurItem)
 {
 	CMenuItem	*m;
 	int			v;
 
-m = menus + camOpts.nUse;
-v = m->value;
+m = menu + camOpts.nUse;
+v = m->m_value;
 if (v != extraGameInfo [0].bUseCameras) {
 	extraGameInfo [0].bUseCameras = v;
-	*key = -2;
+	key = -2;
 	return nCurItem;
 	}
 if (extraGameInfo [0].bUseCameras) {
 	if (camOpts.nFPS >= 0) {
-		m = menus + camOpts.nFPS;
-		v = m->value * 5;
+		m = menu + camOpts.nFPS;
+		v = m->m_value * 5;
 		if (gameOpts->render.cameras.nFPS != v) {
 			gameOpts->render.cameras.nFPS = v;
-			sprintf (m->text, TXT_CAM_REFRESH, gameOpts->render.cameras.nFPS);
-			m->rebuild = 1;
+			sprintf (m->m_text, TXT_CAM_REFRESH, gameOpts->render.cameras.nFPS);
+			m->m_bRebuild = 1;
 			}
 		}
 	if (gameOpts->app.bExpertMode && (camOpts.nSpeed >= 0)) {
-		m = menus + camOpts.nSpeed;
-		v = (m->value + 1) * 1000;
+		m = menu + camOpts.nSpeed;
+		v = (m->m_value + 1) * 1000;
 		if (gameOpts->render.cameras.nSpeed != v) {
 			gameOpts->render.cameras.nSpeed = v;
-			sprintf (m->text, TXT_CAM_SPEED, v / 1000);
-			m->rebuild = 1;
+			sprintf (m->m_text, TXT_CAM_SPEED, v / 1000);
+			m->m_bRebuild = 1;
 			}
 		}
 	}
@@ -118,9 +118,8 @@ return nCurItem;
 
 void CameraOptionsMenu (void)
 {
-	CMenuItem m [10];
+	CMenu	m;
 	int	i, choice = 0;
-	int	nOptions;
 	int	bFSCameras = gameOpts->render.cameras.bFitToWall;
 	int	optFSCameras, optTeleCams, optHiresCams;
 #if 0
@@ -131,31 +130,23 @@ void CameraOptionsMenu (void)
 	char szCameraSpeed [50];
 
 do {
-	memset (m, 0, sizeof (m));
-	nOptions = 0;
-	m.AddCheck (nOptions, TXT_USE_CAMS, extraGameInfo [0].bUseCameras, KEY_C, HTX_ADVRND_USECAMS);
-	camOpts.nUse = nOptions++;
+	m.Destroy ();
+	m.Create (10);
+	camOpts.nUse = m.AddCheck (TXT_USE_CAMS, extraGameInfo [0].bUseCameras, KEY_C, HTX_ADVRND_USECAMS);
 	if (extraGameInfo [0].bUseCameras && gameOpts->app.bExpertMode) {
 		if (gameStates.app.bGameRunning) 
 			optHiresCams = -1;
-		else {
-			m.AddCheck (nOptions, TXT_HIRES_CAMERAS, gameOpts->render.cameras.bHires, KEY_H, HTX_HIRES_CAMERAS);
-			optHiresCams = nOptions++;
-			}
-		m.AddCheck (nOptions, TXT_TELEPORTER_CAMS, extraGameInfo [0].bTeleporterCams, KEY_U, HTX_TELEPORTER_CAMS);
-		optTeleCams = nOptions++;
-		m.AddCheck (nOptions, TXT_ADJUST_CAMS, gameOpts->render.cameras.bFitToWall, KEY_A, HTX_ADVRND_ADJUSTCAMS);
-		optFSCameras = nOptions++;
+		else
+			optHiresCams = m.AddCheck (TXT_HIRES_CAMERAS, gameOpts->render.cameras.bHires, KEY_H, HTX_HIRES_CAMERAS);
+		optTeleCams = m.AddCheck (TXT_TELEPORTER_CAMS, extraGameInfo [0].bTeleporterCams, KEY_U, HTX_TELEPORTER_CAMS);
+		optFSCameras = m.AddCheck (TXT_ADJUST_CAMS, gameOpts->render.cameras.bFitToWall, KEY_A, HTX_ADVRND_ADJUSTCAMS);
 		sprintf (szCameraFps + 1, TXT_CAM_REFRESH, gameOpts->render.cameras.nFPS);
 		*szCameraFps = *(TXT_CAM_REFRESH - 1);
-		m.AddSlider (nOptions, szCameraFps + 1, gameOpts->render.cameras.nFPS / 5, 0, 6, KEY_A, HTX_ADVRND_CAMREFRESH);
-		camOpts.nFPS = nOptions++;
+		camOpts.nFPS = m.AddSlider (szCameraFps + 1, gameOpts->render.cameras.nFPS / 5, 0, 6, KEY_A, HTX_ADVRND_CAMREFRESH);
 		sprintf (szCameraSpeed + 1, TXT_CAM_SPEED, gameOpts->render.cameras.nSpeed / 1000);
 		*szCameraSpeed = *(TXT_CAM_SPEED - 1);
-		m.AddSlider (nOptions, szCameraSpeed + 1, (gameOpts->render.cameras.nSpeed / 1000) - 1, 0, 9, KEY_D, HTX_ADVRND_CAMSPEED);
-		camOpts.nSpeed = nOptions++;
-		m.AddText (nOptions, "", 0);
-		nOptions++;
+		camOpts.nSpeed = m.AddSlider (szCameraSpeed + 1, (gameOpts->render.cameras.nSpeed / 1000) - 1, 0, 9, KEY_D, HTX_ADVRND_CAMSPEED);
+		m.AddText ("", 0);
 		}
 	else {
 		optHiresCams = 
@@ -166,10 +157,10 @@ do {
 		}
 
 	do {
-		i = ExecMenu1 (NULL, TXT_CAMERA_MENUTITLE, nOptions, m, &CameraOptionsCallback, &choice);
+		i = m.Menu (NULL, TXT_CAMERA_MENUTITLE, &CameraOptionsCallback, &choice);
 	} while (i >= 0);
 
-	if ((extraGameInfo [0].bUseCameras = m [camOpts.nUse].value)) {
+	if ((extraGameInfo [0].bUseCameras = m [camOpts.nUse].m_value)) {
 		GET_VAL (extraGameInfo [0].bTeleporterCams, optTeleCams);
 		GET_VAL (gameOpts->render.cameras.bFitToWall, optFSCameras);
 		if (!gameStates.app.bGameRunning)

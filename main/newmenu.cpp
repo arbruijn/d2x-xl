@@ -2915,11 +2915,11 @@ gameStates.menus.nInMenu = nInMenu;
 // ------------------------------------------------------------------------------ 
 // ------------------------------------------------------------------------------ 
 
-int CMenu::AddCheck (char* szText, int nValue, int nKey, const char* szHelp)
+int CMenu::AddCheck (const char* szText, int nValue, int nKey, const char* szHelp)
 {
 CMenuItem& item = Item ();
 item.m_nType = NM_TYPE_CHECK;
-item.m_text = szText;
+item.m_text = (char*) (szText);
 item.m_value = NMBOOL (nValue);
 item.m_nKey = nKey;
 item.m_szHelp = szHelp;
@@ -2928,11 +2928,11 @@ return m_opt++;
 
 // ------------------------------------------------------------------------------ 
 
-int CMenu::AddRadio (char* szText, int nValue, int nGroup, int nKey, const char* szHelp)
+int CMenu::AddRadio (const char* szText, int nValue, int nGroup, int nKey, const char* szHelp)
 {
 CMenuItem& item = Item ();
 item.m_nType = NM_TYPE_RADIO;
-item.m_text = szText;
+item.m_text = (char*) (szText);
 item.m_value = nValue;
 item.m_nKey = nKey;
 item.m_group = nGroup;
@@ -2942,11 +2942,11 @@ return m_opt++;
 
 // ------------------------------------------------------------------------------ 
 
-int CMenu::AddMenu (char* szText, int nKey, const char* szHelp)
+int CMenu::AddMenu (const char* szText, int nKey, const char* szHelp)
 {
 CMenuItem& item = Item ();
 item.m_nType = NM_TYPE_MENU;
-item.m_text = szText;
+item.m_text = (char*) (szText);
 item.m_nKey = nKey;
 item.m_szHelp = szHelp;
 return m_opt++;
@@ -2954,22 +2954,22 @@ return m_opt++;
 
 // ------------------------------------------------------------------------------ 
 
-int CMenu::AddText (char* szText, int nKey)
+int CMenu::AddText (const char* szText, int nKey)
 {
 CMenuItem& item = Item ();
 item.m_nType = NM_TYPE_TEXT;
-item.m_text = szText;
+item.m_text = (char*) (szText);
 item.m_nKey = nKey;
 return m_opt++;
 }
 
 // ------------------------------------------------------------------------------ 
 
-int CMenu::AddSlider (char* szText, int nValue, int nMin, int nMax, int nKey, const char* szHelp)
+int CMenu::AddSlider (const char* szText, int nValue, int nMin, int nMax, int nKey, const char* szHelp)
 {
 CMenuItem& item = Item ();
 item.m_nType = NM_TYPE_SLIDER;
-item.m_text = szText;
+item.m_text = (char*) (szText);
 item.m_value = NMCLAMP (nValue, nMin, nMax);
 item.m_minValue = nMin;
 item.m_maxValue = nMax;
@@ -2980,11 +2980,11 @@ return m_opt++;
 
 // ------------------------------------------------------------------------------ 
 
-int CMenu::AddInput (char* szText, int nLen, const char* szHelp)
+int CMenu::AddInput (const char* szText, int nLen, const char* szHelp)
 {
 CMenuItem& item = Item ();
 item.m_nType = NM_TYPE_INPUT;
-item.m_text = szText;
+item.m_text = (char*) (szText);
 item.m_nTextLen = nLen;
 item.m_szHelp = szHelp;
 return m_opt++;
@@ -2992,11 +2992,11 @@ return m_opt++;
 
 // ------------------------------------------------------------------------------ 
 
-int CMenu::AddInputBox (char* szText, int nLen, int nKey, const char* szHelp)
+int CMenu::AddInputBox (const char* szText, int nLen, int nKey, const char* szHelp)
 {
 CMenuItem& item = Item ();
 item.m_nType = NM_TYPE_INPUT_MENU;
-item.m_text = szText;
+item.m_text = (char*) (szText);
 item.m_nTextLen = nLen;
 item.m_nKey = nKey;
 item.m_szHelp = szHelp;
@@ -3005,11 +3005,11 @@ return m_opt++;
 
 // ------------------------------------------------------------------------------ 
 
-int CMenu::AddGauge (char* szText, int nValue, int nMax)
+int CMenu::AddGauge (const char* szText, int nValue, int nMax)
 {
 CMenuItem& item = Item ();
 item.m_nType = NM_TYPE_GAUGE;
-item.m_text = szText;
+item.m_text = (char*) (szText);
 item.m_nTextLen = *szText ? (int) strlen (szText) : 20;
 item.m_value = NMCLAMP (nValue, 0, nMax);
 item.m_maxValue = nMax;

@@ -66,7 +66,7 @@ void CameraOptionsMenu (void);
 void CockpitOptionsMenu (void);
 void ConfigMenu (void);
 void CoronaOptionsMenu (void);
-void DetailLevelsMenu (void);
+void DetailLevelMenu (void);
 void CustomDetailsMenu (void);
 void EffectOptionsMenu (void);
 void GameplayOptionsMenu (void);
@@ -78,6 +78,9 @@ void MovieOptionsMenu (void);
 void MultiplayerMenu (void);
 void NewGameMenu (void);
 void LegacyNewGameMenu (void);
+void PhysicsOptionsMenu (void);
+void PowerupOptionsMenu (void);
+void PerformanceSettingsMenu (void);
 void PerformanceSettingsMenu (void);
 void RenderOptionsMenu (void);
 void AdvancedRenderOptionsMenu (void);
@@ -85,6 +88,6 @@ void ScreenResMenu (void);
 void ShadowOptionsMenu (void);
 void ShipRenderOptionsMenu (void);
 void SmokeOptionsMenu (void);
-void SoundOptionsMenu (void);
+void SoundMenu (void);
 
 #endif /* _MENU_H */
