@@ -61,4 +61,30 @@ int stoip (char *szServerIpAddr, ubyte *pIpAddr);
 int stoport (char *szPort, int *pPort, int *pSign);
 int SetCustomDisplayMode (int x, int y);
 
+void AutomapOptionsMenu (void);
+void CameraOptionsMenu (void);
+void CockpitOptionsMenu (void);
+void ConfigMenu (void);
+void CoronaOptionsMenu (void);
+void DetailLevelsMenu (void);
+void CustomDetailsMenu (void);
+void EffectOptionsMenu (void);
+void GameplayOptionsMenu (void);
+void LightOptionsMenu (void);
+void LightningOptionsMenu (void);
+void MainOptionsMenu (void);
+void MiscellaneousMenu (void);
+void MovieOptionsMenu (void);
+void MultiplayerMenu (void);
+void NewGameMenu (void);
+void LegacyNewGameMenu (void);
+void PerformanceSettingsMenu (void);
+void RenderOptionsMenu (void);
+void AdvancedRenderOptionsMenu (void);
+void ScreenResMenu (void);
+void ShadowOptionsMenu (void);
+void ShipRenderOptionsMenu (void);
+void SmokeOptionsMenu (void);
+void SoundOptionsMenu (void);
+
 #endif /* _MENU_H */
