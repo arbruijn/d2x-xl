@@ -378,21 +378,21 @@ int PerformanceSettingsCallback (CMenu& menu, int& key, int nCurItem)
 	CMenuItem * m;
 	int			v;
 
-m = menus + performanceOpts.nUseCompSpeed;
-v = m->value;
+m = menu + performanceOpts.nUseCompSpeed;
+v = m->m_value;
 if (gameStates.app.bUseDefaults != v) {
 	gameStates.app.bUseDefaults = v;
-	*key = -2;
+	key = -2;
 	return nCurItem;
 	}
 if (gameStates.app.bUseDefaults) {
-	m = menus + performanceOpts.nCompSpeed;
-	v = m->value;
+	m = menu + performanceOpts.nCompSpeed;
+	v = m->m_value;
 	if (gameStates.app.nCompSpeed != v) {
 		gameStates.app.nCompSpeed = v;
-		sprintf (m->text, TXT_COMP_SPEED, pszCompSpeeds [v]);
+		sprintf (m->m_text, TXT_COMP_SPEED, pszCompSpeeds [v]);
 		}
-	m->rebuild = 1;
+	m->m_bRebuild = 1;
 	}
 return nCurItem;
 }
@@ -401,9 +401,9 @@ return nCurItem;
 
 void PerformanceSettingsMenu (void)
 {
-	int		i, nOptions, choice = gameStates.app.nDetailLevel;
-	char		szCompSpeed [50];
-	CMenuItem m [10];
+	int	i, choice = gameStates.app.nDetailLevel;
+	char	szCompSpeed [50];
+	CMenu m;
 
 pszCompSpeeds [0] = TXT_VERY_SLOW;
 pszCompSpeeds [1] = TXT_SLOW;
@@ -412,21 +412,18 @@ pszCompSpeeds [3] = TXT_FAST;
 pszCompSpeeds [4] = TXT_VERY_FAST;
 
 do {
-	i = nOptions = 0;
-	memset (m, 0, sizeof (m));
-	m.AddText (nOptions, "", 0);
-	nOptions++;
-	m.AddCheck (nOptions, TXT_USE_DEFAULTS, gameStates.app.bUseDefaults, KEY_U, HTX_MISC_DEFAULTS);
-	performanceOpts.nUseCompSpeed = nOptions++;
+	i = 0;
+	m.Destroy ();
+	m.Create (10);
+	m.AddText ("", 0);
+	performanceOpts.nUseCompSpeed = m.AddCheck (TXT_USE_DEFAULTS, gameStates.app.bUseDefaults, KEY_U, HTX_MISC_DEFAULTS);
 	if (gameStates.app.bUseDefaults) {
 		sprintf (szCompSpeed + 1, TXT_COMP_SPEED, pszCompSpeeds [gameStates.app.nCompSpeed]);
 		*szCompSpeed = *(TXT_COMP_SPEED - 1);
-		m.AddSlider (nOptions, szCompSpeed + 1, gameStates.app.nCompSpeed, 0, 4, KEY_C, HTX_MISC_COMPSPEED);
-		performanceOpts.nCompSpeed = nOptions++;
+		performanceOpts.nCompSpeed = m.AddSlider (szCompSpeed + 1, gameStates.app.nCompSpeed, 0, 4, KEY_C, HTX_MISC_COMPSPEED);
 		}
-	Assert (sizeofa (m) >= (size_t) nOptions);
 	do {
-		i = ExecMenu1 (NULL, TXT_SETPERF_MENUTITLE, nOptions, m, PerformanceSettingsCallback, &choice);
+		i = m.Menu (NULL, TXT_SETPERF_MENUTITLE, PerformanceSettingsCallback, &choice);
 		} while (i >= 0);
 	} while (i == -2);
 UseDefaultPerformanceSettings ();

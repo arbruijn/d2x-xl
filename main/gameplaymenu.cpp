@@ -220,10 +220,6 @@ AddPlayerLoadout ();
 
 //------------------------------------------------------------------------------
 
-static const char *pszMslTurnSpeeds [3];
-static const char *pszMslStartSpeeds [4];
-static const char *pszAggressivities [5];
-
 int GameplayOptionsCallback (CMenu& menu, int& key, int nCurItem)
 {
 	CMenuItem	*m;

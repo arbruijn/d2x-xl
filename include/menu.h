@@ -68,6 +68,7 @@ void ConfigMenu (void);
 void CoronaOptionsMenu (void);
 void DetailLevelMenu (void);
 void CustomDetailsMenu (void);
+void SetMaxCustomDetails (void);
 void EffectOptionsMenu (void);
 void GameplayOptionsMenu (void);
 void LightOptionsMenu (void);
