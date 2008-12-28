@@ -2915,7 +2915,7 @@ gameStates.menus.nInMenu = nInMenu;
 // ------------------------------------------------------------------------------ 
 // ------------------------------------------------------------------------------ 
 
-int CMenu::AddCheck (char* szText, int nValue, int nKey, char* szHelp)
+int CMenu::AddCheck (char* szText, int nValue, int nKey, const char* szHelp)
 {
 CMenuItem& item = Item ();
 item.m_nType = NM_TYPE_CHECK;
@@ -2928,7 +2928,7 @@ return m_opt++;
 
 // ------------------------------------------------------------------------------ 
 
-int CMenu::AddRadio (char* szText, int nValue, int nGroup, int nKey, char* szHelp)
+int CMenu::AddRadio (char* szText, int nValue, int nGroup, int nKey, const char* szHelp)
 {
 CMenuItem& item = Item ();
 item.m_nType = NM_TYPE_RADIO;
@@ -2942,7 +2942,7 @@ return m_opt++;
 
 // ------------------------------------------------------------------------------ 
 
-int CMenu::AddMenu (char* szText, int nKey, char* szHelp)
+int CMenu::AddMenu (char* szText, int nKey, const char* szHelp)
 {
 CMenuItem& item = Item ();
 item.m_nType = NM_TYPE_MENU;
@@ -2965,7 +2965,7 @@ return m_opt++;
 
 // ------------------------------------------------------------------------------ 
 
-int CMenu::AddSlider (char* szText, int nValue, int nMin, int nMax, int nKey, char* szHelp)
+int CMenu::AddSlider (char* szText, int nValue, int nMin, int nMax, int nKey, const char* szHelp)
 {
 CMenuItem& item = Item ();
 item.m_nType = NM_TYPE_SLIDER;
@@ -2980,7 +2980,7 @@ return m_opt++;
 
 // ------------------------------------------------------------------------------ 
 
-int CMenu::AddInput (char* szText, int nLen, char* szHelp)
+int CMenu::AddInput (char* szText, int nLen, const char* szHelp)
 {
 CMenuItem& item = Item ();
 item.m_nType = NM_TYPE_INPUT;
@@ -2992,7 +2992,7 @@ return m_opt++;
 
 // ------------------------------------------------------------------------------ 
 
-int CMenu::AddInputBox (char* szText, int nLen, int nKey, char* szHelp)
+int CMenu::AddInputBox (char* szText, int nLen, int nKey, const char* szHelp)
 {
 CMenuItem& item = Item ();
 item.m_nType = NM_TYPE_INPUT_MENU;

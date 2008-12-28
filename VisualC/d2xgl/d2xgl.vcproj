@@ -4570,6 +4570,14 @@
 					Name="Source Files"
 					>
 					<File
+						RelativePath="..\..\main\automapmenu.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\main\cameramenu.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\main\cockpitmenu.cpp"
 						>
 					</File>
@@ -4582,11 +4590,19 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\main\detailsmenu.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\main\effectsmenu.cpp"
 						>
 					</File>
 					<File
 						RelativePath="..\..\main\gameplaymenu.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\main\lightmenu.cpp"
 						>
 					</File>
 					<File
@@ -4626,6 +4642,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\main\moviemenu.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\main\newgamemenu.cpp"
 						>
 					</File>
@@ -4642,11 +4662,23 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\main\powerupmenu.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\main\rendermenu.cpp"
 						>
 					</File>
 					<File
 						RelativePath="..\..\main\screenresmenu.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\main\shadowmenu.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\main\shiprendermenu.cpp"
 						>
 					</File>
 					<File

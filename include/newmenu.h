@@ -52,7 +52,7 @@ class CMenuItem {
 		ubyte			m_bCentered;
 		char			m_savedText [NM_MAX_TEXT_LEN+1];
 		CBitmap*		m_bmText [2];
-		char*			m_szHelp;
+		const char*	m_szHelp;
 
 	public:
 		CMenuItem () { memset (this, 0, sizeof (*this)); }
@@ -129,13 +129,13 @@ class CMenu : public CStack<CMenuItem> {
 			SetGrowth (10);
 			m_opt = 0; 
 			}
-		int AddCheck (char* szText, int nValue, int nKey = 0, char* szHelp = NULL);
-		int AddRadio (char* szText, int nValue, int nGroup, int nKey = 0, char* szHelp = NULL);
-		int AddMenu (char* szText, int nKey = 0, char* szHelp = NULL);
+		int AddCheck (char* szText, int nValue, int nKey = 0, const char* szHelp = NULL);
+		int AddRadio (char* szText, int nValue, int nGroup, int nKey = 0, const char* szHelp = NULL);
+		int AddMenu (char* szText, int nKey = 0, const char* szHelp = NULL);
 		int AddText (char* szText, int nKey = 0);
-		int AddSlider (char* szText, int nValue, int nMin, int nMax, int nKey = 0, char* szHelp = NULL);
-		int AddInput (char* szText, int nLen, char* szHelp = NULL);
-		int AddInputBox (char* szText, int nLen, int nKey = 0, char* szHelp = NULL);
+		int AddSlider (char* szText, int nValue, int nMin, int nMax, int nKey = 0, const char* szHelp = NULL);
+		int AddInput (char* szText, int nLen, const char* szHelp = NULL);
+		int AddInputBox (char* szText, int nLen, int nKey = 0, const char* szHelp = NULL);
 		int AddGauge (char* szText, int nValue, int nMax);
 		inline CMenuItem& Item (int i = -1) { return (i < 0) ? m_data.buffer [m_opt] : m_data.buffer [i]; }
 

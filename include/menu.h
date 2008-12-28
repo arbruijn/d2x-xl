@@ -39,7 +39,7 @@ extern int Cockpit_rearView;
 #define NMCLAMP(_v,_min,_max)	((_v) < (_min) ? (_min) : (_v) > (_max) ? (_max) : (_v))
 #define NMBOOL(_v) ((_v) != 0)
 
-#define GET_VAL(_v,_n)	if ((_n) >= 0) (_v) = m [_n].value
+#define GET_VAL(_v,_n)	if ((_n) >= 0) (_v) = m [_n].m_value
 
 #define MENU_KEY(_k,_d)	((_k) < 0) ? (_d) : ((_k) == 0) ? 0 : gameStates.app.bEnglish ? toupper (KeyToASCII (_k)) : (_k)
 
