@@ -78,12 +78,12 @@ int PowerupOptionsCallback (CMenu& menu, int& key, int nCurItem)
 	CMenuItem * m;
 	int			v;
 
-m = menus + nOpt3D;
-v = m->value;
+m = menu + nOpt3D;
+v = m->m_value;
 if (v != gameOpts->render.powerups.b3D) {
 	if ((gameOpts->render.powerups.b3D = v))
 		ConvertAllPowerupsToWeapons ();
-	*key = -2;
+	key = -2;
 	return nCurItem;
 	}
 return nCurItem;
@@ -93,39 +93,32 @@ return nCurItem;
 
 void PowerupOptionsMenu (void)
 {
-	CMenuItem m [10];
+	CMenu m;
 	int	i, j, choice = 0;
-	int	nOptions;
 	int	optSpin;
 
 do {
-	memset (m, 0, sizeof (m));
-	nOptions = 0;
-	m.AddCheck (nOptions, TXT_3D_POWERUPS, gameOpts->render.powerups.b3D, KEY_D, HTX_3D_POWERUPS);
-	nOpt3D = nOptions++;
+	m.Destroy ();
+	m.Create (10);
+	nOpt3D = m.AddCheck (TXT_3D_POWERUPS, gameOpts->render.powerups.b3D, KEY_D, HTX_3D_POWERUPS);
 	if (!gameOpts->render.powerups.b3D)
 		optSpin = -1;
 	else {
-		m.AddText (nOptions, "", 0);
-		nOptions++;
-		m.AddRadio (nOptions, TXT_SPIN_OFF, 0, KEY_O, 1, NULL);
-		optSpin = nOptions++;
-		m.AddRadio (nOptions, TXT_SPIN_SLOW, 0, KEY_S, 1, NULL);
-		nOptions++;
-		m.AddRadio (nOptions, TXT_SPIN_MEDIUM, 0, KEY_M, 1, NULL);
-		nOptions++;
-		m.AddRadio (nOptions, TXT_SPIN_FAST, 0, KEY_F, 1, NULL);
-		nOptions++;
-		m [optSpin + gameOpts->render.powerups.nSpin].value = 1;
+		m.AddText ("", 0);
+		optSpin = m.AddRadio (TXT_SPIN_OFF, 0, KEY_O, 1, NULL);
+		m.AddRadio (TXT_SPIN_SLOW, 0, KEY_S, 1, NULL);
+		m.AddRadio (TXT_SPIN_MEDIUM, 0, KEY_M, 1, NULL);
+		m.AddRadio (TXT_SPIN_FAST, 0, KEY_F, 1, NULL);
+		m [optSpin + gameOpts->render.powerups.nSpin].m_value = 1;
 		}
 	for (;;) {
-		i = ExecMenu1 (NULL, TXT_POWERUP_MENUTITLE, nOptions, m, PowerupOptionsCallback, &choice);
+		i = m.Menu (NULL, TXT_POWERUP_MENUTITLE, PowerupOptionsCallback, &choice);
 		if (i < 0)
 			break;
 		} 
 	if (gameOpts->render.powerups.b3D && (optSpin >= 0))
 		for (j = 0; j < 4; j++)
-			if (m [optSpin + j].value) {
+			if (m [optSpin + j].m_value) {
 				gameOpts->render.powerups.nSpin = j;
 				break;
 			}
