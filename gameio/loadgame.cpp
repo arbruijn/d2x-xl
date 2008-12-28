@@ -1073,7 +1073,7 @@ return result;
 //------------------------------------------------------------------------------
 
 #ifndef _NETWORK_H
-extern int NetworkEndLevelPoll2 (int nitems, CMenuItem * menus, int * key, int nCurItem); // network.c
+extern int NetworkEndLevelPoll2 (CMenu& menu, int& key, int nCurItem); // network.c
 #endif
 
 //	Does the bonus scoring.

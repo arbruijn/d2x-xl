@@ -378,7 +378,7 @@ SpecialResetObjects ();
 /* Polling loop waiting for sync packet to start game
  * after having sent request
  */
-int NetworkSyncPoll (int nitems, CMenuItem * menus, int * key, int nCurItem)
+int NetworkSyncPoll (CMenu& menu, int& key, int nCurItem)
 {
 	int	nPackets = NetworkListen ();
 
@@ -478,7 +478,7 @@ networkData.toWaitAllPoll = (time_t) SDL_GetTicks () + WaitAllPollTimeout ();
 
 //------------------------------------------------------------------------------
 
-int NetworkWaitAllPoll (int nitems, CMenuItem * menus, int * key, int nCurItem)
+int NetworkWaitAllPoll (CMenu& menu, int& key, int nCurItem)
 {
 if ((time_t) SDL_GetTicks () > networkData.toWaitAllPoll) {
 	NetworkSendAllInfoRequest (PID_SEND_ALL_GAMEINFO, networkData.nSecurityCheck);
@@ -676,7 +676,7 @@ while (0 < (size = IpxGetPacketData (packet))) {
 
 //------------------------------------------------------------------------------
 
-int NetworkRequestPoll (int nitems, CMenuItem * menus, int * key, int nCurItem)
+int NetworkRequestPoll (CMenu& menu, int& key, int nCurItem)
 {
 	// Polling loop for waiting-for-requests menu
 

@@ -9,6 +9,6 @@ int NetworkFindGame (void);
 int NetworkGetIpAddr (void);
 void ShowNetGameInfo (int choice);
 void ShowExtraNetGameInfo (int choice);
-int NetworkEndLevelPoll3 (int nitems, CMenuItem * menus, int * key, int nCurItem);
+int NetworkEndLevelPoll3 (CMenu& menu, int& key, int nCurItem);
 
 #endif //__NETMENU_H

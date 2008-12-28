@@ -83,40 +83,40 @@ static struct {
 static const char* pszLightningQuality [2];
 static const char* pszLightningStyle [3];
 
-int LightningOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
+int LightningOptionsCallback (CMenu& menu, int& key, int nCurItem)
 {
 	CMenuItem	*m;
 	int			v;
 
-m = menus + lightningOpts.nUse;
-v = m->value;
+m = menu + lightningOpts.nUse;
+v = m->m_value;
 if (v != extraGameInfo [0].bUseLightnings) {
 	if (!(extraGameInfo [0].bUseLightnings = v))
 		lightningManager.Shutdown (0);
-	*key = -2;
+	key = -2;
 	return nCurItem;
 	}
 if (extraGameInfo [0].bUseLightnings) {
-	m = menus + lightningOpts.nQuality;
-	v = m->value;
+	m = menu + lightningOpts.nQuality;
+	v = m->m_value;
 	if (gameOpts->render.lightnings.nQuality != v) {
 		gameOpts->render.lightnings.nQuality = v;
-		sprintf (m->text, TXT_LIGHTNING_QUALITY, pszLightningQuality [v]);
-		m->rebuild = 1;
+		sprintf (m->m_text, TXT_LIGHTNING_QUALITY, pszLightningQuality [v]);
+		m->m_bRebuild = 1;
 		lightningManager.Shutdown (0);
 		}
-	m = menus + lightningOpts.nStyle;
-	v = m->value;
+	m = menu + lightningOpts.nStyle;
+	v = m->m_value;
 	if (gameOpts->render.lightnings.nStyle != v) {
 		gameOpts->render.lightnings.nStyle = v;
-		sprintf (m->text, TXT_LIGHTNING_STYLE, pszLightningStyle [v]);
-		m->rebuild = 1;
+		sprintf (m->m_text, TXT_LIGHTNING_STYLE, pszLightningStyle [v]);
+		m->m_bRebuild = 1;
 		}
-	m = menus + lightningOpts.nOmega;
-	v = m->value;
+	m = menu + lightningOpts.nOmega;
+	v = m->m_value;
 	if (gameOpts->render.lightnings.bOmega != v) {
 		gameOpts->render.lightnings.bOmega = v;
-		m->rebuild = 1;
+		m->m_bRebuild = 1;
 		}
 	}
 return nCurItem;
@@ -126,9 +126,8 @@ return nCurItem;
 
 void LightningOptionsMenu (void)
 {
-	CMenuItem m [15];
+	CMenu m;
 	int	i, choice = 0;
-	int	nOptions;
 	int	optDamage, optExplosions, optPlayers, optRobots, optStatic, optRobotOmega, optPlasma, optAuxViews, optMonitors;
 	char	szQuality [50], szStyle [100];
 
@@ -139,8 +138,9 @@ void LightningOptionsMenu (void)
 	pszLightningStyle [2] = TXT_LIGHTNING_SMOOTH;
 
 do {
-	memset (m, 0, sizeof (m));
-	nOptions = 0;
+	m.Destroy ();
+	m.Create (15);
+
 	lightningOpts.nQuality = 
 	optDamage = 
 	optExplosions = 
@@ -152,45 +152,29 @@ do {
 	optAuxViews = 
 	optMonitors = -1;
 
-	m.AddCheck (nOptions, TXT_LIGHTNING_ENABLE, extraGameInfo [0].bUseLightnings, KEY_U, HTX_LIGHTNING_ENABLE);
-	lightningOpts.nUse = nOptions++;
+	lightningOpts.nUse = m.AddCheck (TXT_LIGHTNING_ENABLE, extraGameInfo [0].bUseLightnings, KEY_U, HTX_LIGHTNING_ENABLE);
 	if (extraGameInfo [0].bUseLightnings) {
 		sprintf (szQuality + 1, TXT_LIGHTNING_QUALITY, pszLightningQuality [gameOpts->render.lightnings.nQuality]);
 		*szQuality = *(TXT_LIGHTNING_QUALITY - 1);
-		m.AddSlider (nOptions, szQuality + 1, gameOpts->render.lightnings.nQuality, 0, 1, KEY_R, HTX_LIGHTNING_QUALITY);
-		lightningOpts.nQuality = nOptions++;
+		lightningOpts.nQuality = m.AddSlider (szQuality + 1, gameOpts->render.lightnings.nQuality, 0, 1, KEY_R, HTX_LIGHTNING_QUALITY);
 		sprintf (szStyle + 1, TXT_LIGHTNING_STYLE, pszLightningStyle [gameOpts->render.lightnings.nStyle]);
 		*szStyle = *(TXT_LIGHTNING_STYLE - 1);
-		m.AddSlider (nOptions, szStyle + 1, gameOpts->render.lightnings.nStyle, 0, 2, KEY_S, HTX_LIGHTNING_STYLE);
-		lightningOpts.nStyle = nOptions++;
-		m.AddText (nOptions, "", 0);
-		nOptions++;
-		m.AddCheck (nOptions, TXT_LIGHTNING_PLASMA, gameOpts->render.lightnings.bPlasma, KEY_L, HTX_LIGHTNING_PLASMA);
-		optPlasma = nOptions++;
-		m.AddCheck (nOptions, TXT_LIGHTNING_DAMAGE, gameOpts->render.lightnings.bDamage, KEY_D, HTX_LIGHTNING_DAMAGE);
-		optDamage = nOptions++;
-		m.AddCheck (nOptions, TXT_LIGHTNING_EXPLOSIONS, gameOpts->render.lightnings.bExplosions, KEY_E, HTX_LIGHTNING_EXPLOSIONS);
-		optExplosions = nOptions++;
-		m.AddCheck (nOptions, TXT_LIGHTNING_PLAYERS, gameOpts->render.lightnings.bPlayers, KEY_P, HTX_LIGHTNING_PLAYERS);
-		optPlayers = nOptions++;
-		m.AddCheck (nOptions, TXT_LIGHTNING_ROBOTS, gameOpts->render.lightnings.bRobots, KEY_R, HTX_LIGHTNING_ROBOTS);
-		optRobots = nOptions++;
-		m.AddCheck (nOptions, TXT_LIGHTNING_STATIC, gameOpts->render.lightnings.bStatic, KEY_T, HTX_LIGHTNING_STATIC);
-		optStatic = nOptions++;
-		m.AddCheck (nOptions, TXT_LIGHTNING_OMEGA, gameOpts->render.lightnings.bOmega, KEY_O, HTX_LIGHTNING_OMEGA);
-		lightningOpts.nOmega = nOptions++;
-		if (gameOpts->render.lightnings.bOmega) {
-			m.AddCheck (nOptions, TXT_LIGHTNING_ROBOT_OMEGA, gameOpts->render.lightnings.bRobotOmega, KEY_B, HTX_LIGHTNING_ROBOT_OMEGA);
-			optRobotOmega = nOptions++;
-			}
-		m.AddCheck (nOptions, TXT_LIGHTNING_AUXVIEWS, gameOpts->render.lightnings.bAuxViews, KEY_D, HTX_LIGHTNING_AUXVIEWS);
-		optAuxViews = nOptions++;
-		m.AddCheck (nOptions, TXT_LIGHTNING_MONITORS, gameOpts->render.lightnings.bMonitors, KEY_M, HTX_LIGHTNING_MONITORS);
-		optMonitors = nOptions++;
+		lightningOpts.nStyle = m.AddSlider (szStyle + 1, gameOpts->render.lightnings.nStyle, 0, 2, KEY_S, HTX_LIGHTNING_STYLE);
+		m.AddText ("", 0);
+		optPlasma = m.AddCheck (TXT_LIGHTNING_PLASMA, gameOpts->render.lightnings.bPlasma, KEY_L, HTX_LIGHTNING_PLASMA);
+		optDamage = m.AddCheck (TXT_LIGHTNING_DAMAGE, gameOpts->render.lightnings.bDamage, KEY_D, HTX_LIGHTNING_DAMAGE);
+		optExplosions = m.AddCheck (TXT_LIGHTNING_EXPLOSIONS, gameOpts->render.lightnings.bExplosions, KEY_E, HTX_LIGHTNING_EXPLOSIONS);
+		optPlayers = m.AddCheck (TXT_LIGHTNING_PLAYERS, gameOpts->render.lightnings.bPlayers, KEY_P, HTX_LIGHTNING_PLAYERS);
+		optRobots = m.AddCheck (TXT_LIGHTNING_ROBOTS, gameOpts->render.lightnings.bRobots, KEY_R, HTX_LIGHTNING_ROBOTS);
+		optStatic = m.AddCheck (TXT_LIGHTNING_STATIC, gameOpts->render.lightnings.bStatic, KEY_T, HTX_LIGHTNING_STATIC);
+		lightningOpts.nOmega = m.AddCheck (TXT_LIGHTNING_OMEGA, gameOpts->render.lightnings.bOmega, KEY_O, HTX_LIGHTNING_OMEGA);
+		if (gameOpts->render.lightnings.bOmega)
+			optRobotOmega = m.AddCheck (TXT_LIGHTNING_ROBOT_OMEGA, gameOpts->render.lightnings.bRobotOmega, KEY_B, HTX_LIGHTNING_ROBOT_OMEGA);
+		optAuxViews = m.AddCheck (TXT_LIGHTNING_AUXVIEWS, gameOpts->render.lightnings.bAuxViews, KEY_D, HTX_LIGHTNING_AUXVIEWS);
+		optMonitors = m.AddCheck (TXT_LIGHTNING_MONITORS, gameOpts->render.lightnings.bMonitors, KEY_M, HTX_LIGHTNING_MONITORS);
 		}
-	Assert (sizeofa (m) >= (size_t) nOptions);
 	for (;;) {
-		i = ExecMenu1 (NULL, TXT_LIGHTNING_MENUTITLE, nOptions, m, &LightningOptionsCallback, &choice);
+		i = m.Menu (NULL, TXT_LIGHTNING_MENUTITLE, LightningOptionsCallback, &choice);
 		if (i < 0)
 			break;
 		} 

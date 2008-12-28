@@ -221,7 +221,7 @@ WF (netGame.invul, 27);
 #define ENDLEVEL_SEND_INTERVAL  2000
 #define ENDLEVEL_IDLE_TIME      20000
 
-int NetworkEndLevelPoll2 (int nitems, CMenuItem * menus, int * key, int nCurItem)
+int NetworkEndLevelPoll2 (CMenu& menu, int& key, int nCurItem)
 {
 	// Polling loop for End-of-level menu
 
@@ -256,7 +256,7 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int NetworkEndLevelPoll3 (int nitems, CMenuItem * menus, int * key, int nCurItem)
+int NetworkEndLevelPoll3 (CMenu& menu, int& key, int nCurItem)
 {
 	// Polling loop for End-of-level menu
    int num_ready = 0, i;
@@ -276,7 +276,7 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int NetworkStartPoll (int nitems, CMenuItem * menus, int * key, int nCurItem)
+int NetworkStartPoll (CMenu& menu, int& key, int nCurItem)
 {
 	int i, n, nm;
 
@@ -358,7 +358,7 @@ return nCurItem;
 
 static int optGameTypes, nGameTypes, nGameItem;
 
-int NetworkGameParamPoll (int nitems, CMenuItem * menus, int * key, int nCurItem)
+int NetworkGameParamPoll (CMenu& menu, int& key, int nCurItem)
 {
 	static int oldmaxnet = 0;
 
@@ -423,7 +423,7 @@ int optMouseLook, optFastPitch, optSafeUDP, optTowFlags, optCompetition, optPena
 
 //------------------------------------------------------------------------------
 
-int NetworkMoreOptionsPoll (int nitems, CMenuItem * menus, int * key, int nCurItem)
+int NetworkMoreOptionsPoll (CMenu& menu, int& key, int nCurItem)
 {
 if (nLastReactorLife != menus [optReactorLife].value)   {
 	sprintf (menus [optReactorLife].text, "%s: %d %s", TXT_REACTOR_LIFE, menus [optReactorLife].value*5, TXT_MINUTES_ABBREV);
@@ -580,7 +580,7 @@ else
 
 //------------------------------------------------------------------------------
 
-int NetworkD2XOptionsPoll (int nitems, CMenuItem * menus, int * key, int nCurItem)
+int NetworkD2XOptionsPoll (CMenu& menu, int& key, int nCurItem)
 {
 	int	v, j;
 
@@ -859,7 +859,7 @@ do {
 
 //------------------------------------------------------------------------------
 
-int NetworkDummyCallback (int nitems, CMenuItem * menus, int * key, int nCurItem) { return nCurItem; }
+int NetworkDummyCallback (CMenu& menu, int& key, int nCurItem) { return nCurItem; }
   
 void NetworkEntropyToggleOptions ()
 {
@@ -993,7 +993,7 @@ extraGameInfo [0].entropy.nShieldDamageRate = (ushort) atol (m [optShieldDmg].te
 
 static int nBonusOpt, nSizeModOpt, nPyroForceOpt;
 
-int MonsterballMenuCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
+int MonsterballMenuCallback (CMenu& menu, int& key, int nCurItem)
 {
 	CMenuItem	*m;
 	int			v;
@@ -1880,7 +1880,7 @@ const char *szModeLetters []  =
 	 "ENTROPY",
 	 "MONSTER"};
 
-int NetworkJoinPoll (int nitems, CMenuItem * menus, int * key, int nCurItem)
+int NetworkJoinPoll (CMenu& menu, int& key, int nCurItem)
 {
 	// Polling loop for Join Game menu
 	static fix t1 = 0;
@@ -2325,7 +2325,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int IpAddrMenuCallBack (int nitems, CMenuItem * menus, int * key, int nCurItem)
+int IpAddrMenuCallBack (CMenu& menu, int& key, int nCurItem)
 {
 return nCurItem;
 }

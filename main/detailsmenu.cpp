@@ -136,7 +136,7 @@ for (i = 0; i < 5; i++) {
 m.AddText ("", 0);
 m.AddMenu (MENU_DETAIL_TEXT (5), KEY_C, HTX_ONLINE_MANUAL);
 m.AddCheck (TXT_HIRES_MOVIES, gameOpts->movies.bHires, KEY_S, HTX_ONLINE_MANUAL);
-i = m.Menu (NULL, TXT_DETAIL_LEVEL, NDL + 3, m, NULL, &choice);
+i = m.Menu (NULL, TXT_DETAIL_LEVEL, NULL, &choice);
 if (i > -1) {
 	switch (choice) {
 		case 0:
@@ -153,24 +153,22 @@ if (i > -1) {
 			break;
 		}
 	}
-gameOpts->movies.bHires = m [7].value;
+gameOpts->movies.bHires = m [7].m_value;
 }
 
 // -----------------------------------------------------------------------------
 
-int CustomDetailsCallback (CMenu& m, int *nLastKey, int nCurItem)
+int CustomDetailsCallback (CMenu& m, int& nLastKey, int nCurItem)
 {
-	nitems = nitems;
-	*nLastKey = *nLastKey;
 	nCurItem = nCurItem;
 
-gameStates.render.detail.nObjectComplexity = m [0].value;
-gameStates.render.detail.nObjectDetail = m [1].value;
-gameStates.render.detail.nWallDetail = m [2].value;
-gameStates.render.detail.nWallRenderDepth = m [3].value;
-gameStates.render.detail.nDebrisAmount = m [4].value;
+gameStates.render.detail.nObjectComplexity = m [0].m_value;
+gameStates.render.detail.nObjectDetail = m [1].m_value;
+gameStates.render.detail.nWallDetail = m [2].m_value;
+gameStates.render.detail.nWallRenderDepth = m [3].m_value;
+gameStates.render.detail.nDebrisAmount = m [4].m_value;
 if (!gameStates.app.bGameRunning)
-	gameStates.sound.nSoundChannels = m [5].value;
+	gameStates.sound.nSoundChannels = m [5].m_value;
 return nCurItem;
 }
 
@@ -207,31 +205,21 @@ DigiSetMaxChannels (detailData.nSoundChannels [gameStates.sound.nSoundChannels])
 
 void CustomDetailsMenu (void)
 {
-	int	nOptions;
 	int	i, choice = 0;
-	CMenuItem m [DL_MAX];
+	CMenu m;
 
 do {
-	nOptions = 0;
-	memset (m, 0, sizeof (m));
-	m.AddSlider (nOptions, TXT_OBJ_COMPLEXITY, gameStates.render.detail.nObjectComplexity, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
-	nOptions++;
-	m.AddSlider (nOptions, TXT_OBJ_DETAIL, gameStates.render.detail.nObjectDetail, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
-	nOptions++;
-	m.AddSlider (nOptions, TXT_WALL_DETAIL, gameStates.render.detail.nWallDetail, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
-	nOptions++;
-	m.AddSlider (nOptions, TXT_WALL_RENDER_DEPTH, gameStates.render.detail.nWallRenderDepth, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
-	nOptions++;
-	m.AddSlider (nOptions, TXT_DEBRIS_AMOUNT, gameStates.render.detail.nDebrisAmount, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
-	nOptions++;
-	if (!gameStates.app.bGameRunning) {
-		m.AddSlider (nOptions, TXT_SOUND_CHANNELS, gameStates.sound.nSoundChannels, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
-		nOptions++;
-		}
-	m.AddText (nOptions, TXT_LO_HI, 0);
-	nOptions++;
-	Assert (sizeofa (m) >= nOptions);
-	i = ExecMenu1 (NULL, TXT_DETAIL_CUSTOM, nOptions, m, CustomDetailsCallback, &choice);
+	m.Destroy ();
+	m.Create (DL_MAX);
+	m.AddSlider (TXT_OBJ_COMPLEXITY, gameStates.render.detail.nObjectComplexity, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
+	m.AddSlider (TXT_OBJ_DETAIL, gameStates.render.detail.nObjectDetail, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
+	m.AddSlider (TXT_WALL_DETAIL, gameStates.render.detail.nWallDetail, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
+	m.AddSlider (TXT_WALL_RENDER_DEPTH, gameStates.render.detail.nWallRenderDepth, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
+	m.AddSlider (TXT_DEBRIS_AMOUNT, gameStates.render.detail.nDebrisAmount, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
+	if (!gameStates.app.bGameRunning)
+		m.AddSlider (TXT_SOUND_CHANNELS, gameStates.sound.nSoundChannels, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
+	m.AddText (TXT_LO_HI, 0);
+	i = m.Menu (NULL, TXT_DETAIL_CUSTOM, CustomDetailsCallback, &choice);
 } while (i > -1);
 InitCustomDetails ();
 }

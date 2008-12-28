@@ -89,7 +89,7 @@ static struct {
 static const char *pszReach [4];
 static const char *pszClip [4];
 
-int ShadowOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
+int ShadowOptionsCallback (CMenu& menu, int& key, int nCurItem)
 {
 	CMenuItem	*m;
 	int			v;

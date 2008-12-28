@@ -373,7 +373,7 @@ else if (gameStates.app.nCompSpeed == 4) {
 
 static const char *pszCompSpeeds [5];
 
-int PerformanceSettingsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
+int PerformanceSettingsCallback (CMenu& menu, int& key, int nCurItem)
 {
 	CMenuItem * m;
 	int			v;

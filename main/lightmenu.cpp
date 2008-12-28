@@ -90,95 +90,95 @@ static const char *pszLMapQual [5];
 
 //------------------------------------------------------------------------------
 
-int LightOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
+int LightOptionsCallback (CMenu& menu, int& key, int nCurItem)
 {
 	CMenuItem	*m;
 	int			v;
 
 if (lightOpts.nMethod >= 0) {
 	for (v = 0; v < 3; v++)
-		if (menus [lightOpts.nMethod + v].value)
+		if (menu [lightOpts.nMethod + v].m_value)
 			break;
 	if (v > 2)
 		v = 0;
 	if (v != gameOpts->render.nLightingMethod) {
 		gameOpts->render.nLightingMethod = v;
-		*key = -2;
+		key = -2;
 		return nCurItem;
 		}
 	}
 if (lightOpts.nLightmapQual >= 0) {
-	m = menus + lightOpts.nLightmapQual;
-	v = m->value;
+	m = menu + lightOpts.nLightmapQual;
+	v = m->m_value;
 	if (gameOpts->render.nLightmapQuality != v) {
 		gameOpts->render.nLightmapQuality = v;
-		sprintf (m->text, TXT_LMAP_QUALITY, pszLMapQual [gameOpts->render.nLightmapQuality]);
-		m->rebuild = 1;
+		sprintf (m->m_text, TXT_LMAP_QUALITY, pszLMapQual [gameOpts->render.nLightmapQuality]);
+		m->m_bRebuild = 1;
 		}
 	}
 if (lightOpts.nLightmaps >= 0) {
-	m = menus + lightOpts.nLightmaps;
-	v = m->value;
+	m = menu + lightOpts.nLightmaps;
+	v = m->m_value;
 	if (v != gameOpts->render.bUseLightmaps) {
 		gameOpts->render.bUseLightmaps = v;
-		*key = -2;
+		key = -2;
 		return nCurItem;
 		}
 	}
 if (lightOpts.nHWObjLighting >= 0) {
-	m = menus + lightOpts.nHWObjLighting;
-	v = m->value;
+	m = menu + lightOpts.nHWObjLighting;
+	v = m->m_value;
 	if (v != gameOpts->ogl.bObjLighting) {
 		gameOpts->ogl.bObjLighting = v;
-		*key = -2;
+		key = -2;
 		return nCurItem;
 		}
 	}
 if (lightOpts.nGunColor >= 0) {
-	m = menus + lightOpts.nGunColor;
-	v = m->value;
+	m = menu + lightOpts.nGunColor;
+	v = m->m_value;
 	if (v != gameOpts->render.color.bGunLight) {
 		gameOpts->render.color.bGunLight = v;
-		*key = -2;
+		key = -2;
 		return nCurItem;
 		}
 	}
 if (lightOpts.nObjectLight >= 0) {
-	m = menus + lightOpts.nObjectLight;
-	v = m->value;
+	m = menu + lightOpts.nObjectLight;
+	v = m->m_value;
 	if (v != gameOpts->ogl.bLightObjects) {
 		gameOpts->ogl.bLightObjects = v;
-		*key = -2;
+		key = -2;
 		return nCurItem;
 		}
 	}
 if (lightOpts.nMaxLightsPerFace >= 0) {
-	m = menus + lightOpts.nMaxLightsPerFace;
-	v = m->value;
+	m = menu + lightOpts.nMaxLightsPerFace;
+	v = m->m_value;
 	if (v != gameOpts->ogl.nMaxLightsPerFace) {
 		gameOpts->ogl.nMaxLightsPerFace = v;
-		sprintf (m->text, TXT_MAX_LIGHTS_PER_FACE, nMaxLightsPerFaceTable [v]);
-		m->rebuild = 1;
+		sprintf (m->m_text, TXT_MAX_LIGHTS_PER_FACE, nMaxLightsPerFaceTable [v]);
+		m->m_bRebuild = 1;
 		return nCurItem;
 		}
 	}
 if (lightOpts.nMaxLightsPerObject >= 0) {
-	m = menus + lightOpts.nMaxLightsPerObject;
-	v = m->value;
+	m = menu + lightOpts.nMaxLightsPerObject;
+	v = m->m_value;
 	if (v != gameOpts->ogl.nMaxLightsPerObject) {
 		gameOpts->ogl.nMaxLightsPerObject = v;
-		sprintf (m->text, TXT_MAX_LIGHTS_PER_OBJECT, nMaxLightsPerFaceTable [v]);
-		m->rebuild = 1;
+		sprintf (m->m_text, TXT_MAX_LIGHTS_PER_OBJECT, nMaxLightsPerFaceTable [v]);
+		m->m_bRebuild = 1;
 		return nCurItem;
 		}
 	}
 if (lightOpts.nMaxLightsPerPass >= 0) {
-	m = menus + lightOpts.nMaxLightsPerPass;
-	v = m->value + 1;
+	m = menu + lightOpts.nMaxLightsPerPass;
+	v = m->m_value + 1;
 	if (v != gameOpts->ogl.nMaxLightsPerPass) {
 		gameOpts->ogl.nMaxLightsPerPass = v;
-		sprintf (m->text, TXT_MAX_LIGHTS_PER_PASS, v);
-		m->rebuild = 1;
+		sprintf (m->m_text, TXT_MAX_LIGHTS_PER_PASS, v);
+		m->m_bRebuild = 1;
 		return nCurItem;
 		}
 	}
@@ -201,9 +201,8 @@ return i ? i - 1 : 0;
 
 void LightOptionsMenu (void)
 {
-	CMenuItem m [30];
+	CMenu m;
 	int	i, choice = 0;
-	int	nOptions;
 	int	optColoredLight, optMixColors, optPowerupLights, optFlickerLights, optColorSat, optBrightObjects, nPowerupLight = -1;
 #if 0
 	int checks;
@@ -221,8 +220,8 @@ void LightOptionsMenu (void)
 	pszLMapQual [4] = TXT_EXTREME;
 
 do {
-	memset (m, 0, sizeof (m));
-	nOptions = 0;
+	m.Destroy ();
+	m.Create (30);
 	optColorSat = 
 	optColoredLight =
 	optMixColors = 
@@ -232,37 +231,27 @@ do {
 		if ((gameOpts->render.nLightingMethod == 2) && 
 			 !(gameStates.render.bUsePerPixelLighting && gameStates.ogl.bShadersOk && gameStates.ogl.bPerPixelLightingOk))
 			gameOpts->render.nLightingMethod = 1;
-		m.AddRadio (nOptions, TXT_STD_LIGHTING, gameOpts->render.nLightingMethod == 0, KEY_S, 1, NULL);
-		lightOpts.nMethod = nOptions++;
-		m.AddRadio (nOptions, TXT_VERTEX_LIGHTING, gameOpts->render.nLightingMethod == 1, KEY_V, 1, HTX_VERTEX_LIGHTING);
-		nOptions++;
-		if (gameStates.render.bUsePerPixelLighting && gameStates.ogl.bShadersOk && gameStates.ogl.bPerPixelLightingOk) {
-			m.AddRadio (nOptions, TXT_PER_PIXEL_LIGHTING, gameOpts->render.nLightingMethod == 2, KEY_P, 1, HTX_PER_PIXEL_LIGHTING);
-			nOptions++;
-			}	
-		m.AddText (nOptions, "", 0);
-		nOptions++;
+		lightOpts.nMethod = m.AddRadio (TXT_STD_LIGHTING, gameOpts->render.nLightingMethod == 0, KEY_S, 1, NULL);
+		m.AddRadio (TXT_VERTEX_LIGHTING, gameOpts->render.nLightingMethod == 1, KEY_V, 1, HTX_VERTEX_LIGHTING);
+		if (gameStates.render.bUsePerPixelLighting && gameStates.ogl.bShadersOk && gameStates.ogl.bPerPixelLightingOk)
+			m.AddRadio (TXT_PER_PIXEL_LIGHTING, gameOpts->render.nLightingMethod == 2, KEY_P, 1, HTX_PER_PIXEL_LIGHTING);
+		m.AddText ("", 0);
 		}
 	gameOpts->ogl.nMaxLightsPerObject = LightTableIndex (gameOpts->ogl.nMaxLightsPerObject);
 	gameOpts->ogl.nMaxLightsPerFace = LightTableIndex (gameOpts->ogl.nMaxLightsPerFace);
 	if (gameOpts->render.nLightingMethod) {
 #if 0
-		m.AddText (nOptions, "", 0);
+		m.AddText ("", 0);
 		nOptions++;
 #endif
 		if (gameOpts->render.nLightingMethod == 1) {
-			if (gameStates.ogl.bHeadlight) {
-				m.AddCheck (nOptions, TXT_HW_HEADLIGHT, gameOpts->ogl.bHeadlight, KEY_H, HTX_HW_HEADLIGHT);
-				lightOpts.nHWHeadlight = nOptions++;
-				}
-			m.AddCheck (nOptions, TXT_OBJECT_HWLIGHTING, gameOpts->ogl.bObjLighting, KEY_A, HTX_OBJECT_HWLIGHTING);
-			lightOpts.nHWObjLighting = nOptions++;
+			if (gameStates.ogl.bHeadlight)
+				lightOpts.nHWHeadlight = m.AddCheck (TXT_HW_HEADLIGHT, gameOpts->ogl.bHeadlight, KEY_H, HTX_HW_HEADLIGHT);
+			lightOpts.nHWObjLighting = m.AddCheck (TXT_OBJECT_HWLIGHTING, gameOpts->ogl.bObjLighting, KEY_A, HTX_OBJECT_HWLIGHTING);
 			if (!gameOpts->ogl.bObjLighting) {
-				m.AddCheck (nOptions, TXT_OBJECT_LIGHTING, gameOpts->ogl.bLightObjects, KEY_B, HTX_OBJECT_LIGHTING);
-				lightOpts.nObjectLight = nOptions++;
+				lightOpts.nObjectLight = m.AddCheck (TXT_OBJECT_LIGHTING, gameOpts->ogl.bLightObjects, KEY_B, HTX_OBJECT_LIGHTING);
 				if (gameOpts->ogl.bLightObjects) {
-					m.AddCheck (nOptions, TXT_POWERUP_LIGHTING, gameOpts->ogl.bLightPowerups, KEY_W, HTX_POWERUP_LIGHTING);
-					nPowerupLight = nOptions++;
+					nPowerupLight = m.AddCheck (TXT_POWERUP_LIGHTING, gameOpts->ogl.bLightPowerups, KEY_W, HTX_POWERUP_LIGHTING);
 					}
 				else
 					nPowerupLight = -1;
@@ -270,87 +259,66 @@ do {
 			}
 		sprintf (szMaxLightsPerObject + 1, TXT_MAX_LIGHTS_PER_OBJECT, nMaxLightsPerFaceTable [gameOpts->ogl.nMaxLightsPerObject]);
 		*szMaxLightsPerObject = *(TXT_MAX_LIGHTS_PER_OBJECT - 1);
-		m.AddSlider (nOptions, szMaxLightsPerObject + 1, gameOpts->ogl.nMaxLightsPerObject, 0, (int) sizeofa (nMaxLightsPerFaceTable) - 1, KEY_O, HTX_MAX_LIGHTS_PER_OBJECT);
-		lightOpts.nMaxLightsPerObject = nOptions++;
+		lightOpts.nMaxLightsPerObject = m.AddSlider (szMaxLightsPerObject + 1, gameOpts->ogl.nMaxLightsPerObject, 0, (int) sizeofa (nMaxLightsPerFaceTable) - 1, KEY_O, HTX_MAX_LIGHTS_PER_OBJECT);
 
 		if (gameOpts->render.nLightingMethod == 2) {
 			sprintf (szMaxLightsPerFace + 1, TXT_MAX_LIGHTS_PER_FACE, nMaxLightsPerFaceTable [gameOpts->ogl.nMaxLightsPerFace]);
 			*szMaxLightsPerFace = *(TXT_MAX_LIGHTS_PER_FACE - 1);
-			m.AddSlider (nOptions, szMaxLightsPerFace + 1, gameOpts->ogl.nMaxLightsPerFace, 0,  (int) sizeofa (nMaxLightsPerFaceTable) - 1, KEY_A, HTX_MAX_LIGHTS_PER_FACE);
-			lightOpts.nMaxLightsPerFace = nOptions++;
+			lightOpts.nMaxLightsPerFace = m.AddSlider (szMaxLightsPerFace + 1, gameOpts->ogl.nMaxLightsPerFace, 0,  (int) sizeofa (nMaxLightsPerFaceTable) - 1, KEY_A, HTX_MAX_LIGHTS_PER_FACE);
 			sprintf (szMaxLightsPerPass + 1, TXT_MAX_LIGHTS_PER_PASS, gameOpts->ogl.nMaxLightsPerPass);
 			*szMaxLightsPerPass = *(TXT_MAX_LIGHTS_PER_PASS - 1);
-			m.AddSlider (nOptions, szMaxLightsPerPass + 1, gameOpts->ogl.nMaxLightsPerPass - 1, 0, 7, KEY_S, HTX_MAX_LIGHTS_PER_PASS);
-			lightOpts.nMaxLightsPerPass = nOptions++;
+			lightOpts.nMaxLightsPerPass = m.AddSlider (szMaxLightsPerPass + 1, gameOpts->ogl.nMaxLightsPerPass - 1, 0, 7, KEY_S, HTX_MAX_LIGHTS_PER_PASS);
 			}
 		if (!gameStates.app.bGameRunning && 
 			 ((gameOpts->render.nLightingMethod == 2) || ((gameOpts->render.nLightingMethod == 1) && gameOpts->render.bUseLightmaps))) {
 			sprintf (szLightmapQual + 1, TXT_LMAP_QUALITY, pszLMapQual [gameOpts->render.nLightmapQuality]);
 			*szLightmapQual = *(TXT_LMAP_QUALITY + 1);
-			m.AddSlider (nOptions, szLightmapQual + 1, gameOpts->render.nLightmapQuality, 0, 4, KEY_Q, HTX_LMAP_QUALITY);
-			lightOpts.nLightmapQual = nOptions++;
+			lightOpts.nLightmapQual = m.AddSlider (szLightmapQual + 1, gameOpts->render.nLightmapQuality, 0, 4, KEY_Q, HTX_LMAP_QUALITY);
 			}
 
-		m.AddText (nOptions, "", 0);
-		nOptions++;
-		m.AddRadio (nOptions, TXT_FULL_COLORSAT, 0, KEY_F, 2, HTX_COLOR_SATURATION);
-		optColorSat = nOptions++;
-		m.AddRadio (nOptions, TXT_LIMIT_COLORSAT, 0, KEY_L, 2, HTX_COLOR_SATURATION);
-		nOptions++;
-		m.AddRadio (nOptions, TXT_NO_COLORSAT, 0, KEY_N, 2, HTX_COLOR_SATURATION);
-		nOptions++;
-		m [optColorSat + NMCLAMP (gameOpts->render.color.nSaturation, 0, 2)].value = 1;
-		m.AddText (nOptions, "", 0);
-		nOptions++;
+		m.AddText ("", 0);
+		optColorSat = m.AddRadio (TXT_FULL_COLORSAT, 0, KEY_F, 2, HTX_COLOR_SATURATION);
+		m.AddRadio (TXT_LIMIT_COLORSAT, 0, KEY_L, 2, HTX_COLOR_SATURATION);
+		m.AddRadio (TXT_NO_COLORSAT, 0, KEY_N, 2, HTX_COLOR_SATURATION);
+		m [optColorSat + NMCLAMP (gameOpts->render.color.nSaturation, 0, 2)].m_value = 1;
+		m.AddText ("", 0);
 		}
 	if (gameOpts->render.nLightingMethod != 1)
 		lightOpts.nLightmaps = -1;
-	else {
-		m.AddCheck (nOptions, TXT_USE_LIGHTMAPS, gameOpts->render.bUseLightmaps, KEY_G, HTX_USE_LIGHTMAPS);
-		lightOpts.nLightmaps = nOptions++;
-		}
-	if (gameOpts->render.nLightingMethod < 2) {
-		m.AddCheck (nOptions, TXT_USE_COLOR, gameOpts->render.color.bAmbientLight, KEY_C, HTX_RENDER_AMBICOLOR);
-		optColoredLight = nOptions++;
-		}
+	else
+		lightOpts.nLightmaps = m.AddCheck (TXT_USE_LIGHTMAPS, gameOpts->render.bUseLightmaps, KEY_G, HTX_USE_LIGHTMAPS);
+	if (gameOpts->render.nLightingMethod < 2)
+		optColoredLight = m.AddCheck (TXT_USE_COLOR, gameOpts->render.color.bAmbientLight, KEY_C, HTX_RENDER_AMBICOLOR);
 	if (!gameOpts->render.nLightingMethod) {
-		m.AddCheck (nOptions, TXT_USE_WPNCOLOR, gameOpts->render.color.bGunLight, KEY_W, HTX_RENDER_WPNCOLOR);
-		lightOpts.nGunColor = nOptions++;
+		lightOpts.nGunColor = m.AddCheck (TXT_USE_WPNCOLOR, gameOpts->render.color.bGunLight, KEY_W, HTX_RENDER_WPNCOLOR);
 		if (gameOpts->app.bExpertMode) {
-			if (!gameOpts->render.nLightingMethod && gameOpts->render.color.bGunLight) {
-				m.AddCheck (nOptions, TXT_MIX_COLOR, gameOpts->render.color.bMix, KEY_X, HTX_ADVRND_MIXCOLOR);
-				optMixColors = nOptions++;
-				}
+			if (!gameOpts->render.nLightingMethod && gameOpts->render.color.bGunLight)
+				optMixColors = m.AddCheck (TXT_MIX_COLOR, gameOpts->render.color.bMix, KEY_X, HTX_ADVRND_MIXCOLOR);
 			}
 		}
-	m.AddCheck (nOptions, TXT_POWERUPLIGHTS, !extraGameInfo [0].bPowerupLights, KEY_P, HTX_POWERUPLIGHTS);
-	optPowerupLights = nOptions++;
-	m.AddCheck (nOptions, TXT_FLICKERLIGHTS, extraGameInfo [0].bFlickerLights, KEY_F, HTX_FLICKERLIGHTS);
-	optFlickerLights = nOptions++;
-	if (gameOpts->render.bHiresModels) {
-		m.AddCheck (nOptions, TXT_BRIGHT_OBJECTS, extraGameInfo [0].bBrightObjects, KEY_B, HTX_BRIGHT_OBJECTS);
-		optBrightObjects = nOptions++;
-		}
+	optPowerupLights = m.AddCheck (TXT_POWERUPLIGHTS, !extraGameInfo [0].bPowerupLights, KEY_P, HTX_POWERUPLIGHTS);
+	optFlickerLights = m.AddCheck (TXT_FLICKERLIGHTS, extraGameInfo [0].bFlickerLights, KEY_F, HTX_FLICKERLIGHTS);
+	if (gameOpts->render.bHiresModels)
+		optBrightObjects = m.AddCheck (TXT_BRIGHT_OBJECTS, extraGameInfo [0].bBrightObjects, KEY_B, HTX_BRIGHT_OBJECTS);
 	else
 		optBrightObjects = -1;
-	Assert (sizeofa (m) >= (size_t) nOptions);
 	for (;;) {
-		i = ExecMenu1 (NULL, TXT_LIGHTING_MENUTITLE, nOptions, m, &LightOptionsCallback, &choice);
+		i = m.Menu (NULL, TXT_LIGHTING_MENUTITLE, LightOptionsCallback, &choice);
 		if (i < 0)
 			break;
 		} 
 	if (gameOpts->render.nLightingMethod == 1) {
 		if (lightOpts.nObjectLight >= 0) {
-			gameOpts->ogl.bLightObjects = m [lightOpts.nObjectLight].value;
+			gameOpts->ogl.bLightObjects = m [lightOpts.nObjectLight].m_value;
 			if (nPowerupLight >= 0)
-				gameOpts->ogl.bLightPowerups = m [nPowerupLight].value;
+				gameOpts->ogl.bLightPowerups = m [nPowerupLight].m_value;
 			}
 		}
 	if (gameOpts->render.nLightingMethod < 2) {
 		if (optColoredLight >= 0)
-			gameOpts->render.color.bAmbientLight = m [optColoredLight].value;
+			gameOpts->render.color.bAmbientLight = m [optColoredLight].m_value;
 		if (lightOpts.nGunColor >= 0)
-			gameOpts->render.color.bGunLight = m [lightOpts.nGunColor].value;
+			gameOpts->render.color.bGunLight = m [lightOpts.nGunColor].m_value;
 		if (gameOpts->app.bExpertMode) {
 			if (gameStates.render.color.bLightmapsOk && gameOpts->render.color.bUseLightmaps)
 			gameStates.ogl.nContrast = 8;
@@ -363,8 +331,8 @@ do {
 			}
 		}
 	if (optPowerupLights >= 0)
-		extraGameInfo [0].bPowerupLights = !m [optPowerupLights].value;
-	extraGameInfo [0].bFlickerLights = m [optFlickerLights].value;
+		extraGameInfo [0].bPowerupLights = !m [optPowerupLights].m_value;
+	extraGameInfo [0].bFlickerLights = m [optFlickerLights].m_value;
 	GET_VAL (gameOpts->ogl.bHeadlight, lightOpts.nHWHeadlight);
 	GET_VAL (extraGameInfo [0].bBrightObjects, optBrightObjects);
 	gameOpts->ogl.nMaxLightsPerFace = nMaxLightsPerFaceTable [gameOpts->ogl.nMaxLightsPerFace];
@@ -372,7 +340,7 @@ do {
 	} while (i == -2);
 if (optColorSat >= 0) {
 	for (i = 0; i < 3; i++)
-		if (m [optColorSat + i].value) {
+		if (m [optColorSat + i].m_value) {
 			gameOpts->render.color.nSaturation = i;
 			break;
 			}

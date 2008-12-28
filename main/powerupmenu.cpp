@@ -73,7 +73,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 static int nOpt3D;
 
-int PowerupOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
+int PowerupOptionsCallback (CMenu& menu, int& key, int nCurItem)
 {
 	CMenuItem * m;
 	int			v;

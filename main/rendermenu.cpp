@@ -112,7 +112,7 @@ return j;
 
 //------------------------------------------------------------------------------
 
-int AdvancedRenderOptionsCallback (int nitems, CMenuItem * menus, int * key, int nCurItem)
+int AdvancedRenderOptionsCallback (CMenu& menu, int& key, int nCurItem)
 {
 	CMenuItem	*m;
 	int			v;
