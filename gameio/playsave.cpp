@@ -1470,27 +1470,23 @@ for (i = sizeofa (defaultParams), pv = defaultParams; i; i--, pv++) {
 
 int NewPlayerConfig (void)
 {
-	int nitems;
-	int i,j,choice;
-	CMenuItem m[8];
-   int mct=CONTROL_MAX_TYPES;
+	int	nitems;
+	int	i, j, choice;
+	CMenu	m (8);
+   int	mct = CONTROL_MAX_TYPES;
 
 mct--;
 InitWeaponOrdering ();		//setup default weapon priorities
 
 RetrySelection:
 
-memset (m, 0, sizeof (m));
-for (i = 0; i < mct; i++ ) {
-	m [i].nType = NM_TYPE_MENU;
-	m [i].text = const_cast<char*> (CONTROL_TEXT(i));
-	m [i].key = -1;
-	}
+for (i = 0; i < mct; i++ )
+	m.AddMenu (const_cast<char*> (CONTROL_TEXT(i)), -1);
 nitems = i;
-m [0].text = const_cast<char*> (TXT_CONTROL_KEYBOARD);
+m [0].m_text = const_cast<char*> (TXT_CONTROL_KEYBOARD);
 choice = gameConfig.nControlType;				// Assume keyboard
 #ifndef APPLE_DEMO
-i = ExecMenu1( NULL, TXT_CHOOSE_INPUT, i, m, NULL, &choice );
+i = m.Menu (NULL, TXT_CHOOSE_INPUT, NULL, &choice);
 #else
 choice = 0;
 #endif
@@ -1501,7 +1497,7 @@ for (i = 0; i < CONTROL_MAX_TYPES; i++)
 		controlSettings.custom [i][j] = controlSettings.defaults [i][j];
 //added on 2/4/99 by Victor Rachels for new keys
 for(i = 0; i < MAX_HOTKEY_CONTROLS; i++)
-	controlSettings.d2xCustom[i] = controlSettings.d2xDefaults[i];
+	controlSettings.d2xCustom [i] = controlSettings.d2xDefaults[i];
 //end this section addition - VR
 KCSetControls (0);
 gameConfig.nControlType = choice;
@@ -2692,38 +2688,38 @@ char playername_allowed_chars [] = "azAZ09__--";
 
 int MakeNewPlayerFile (int bAllowAbort)
 {
-	int x;
-	char filename [FILENAME_LEN];
-	CMenuItem m;
-	char text [CALLSIGN_LEN+1]="";
+	CMenu	m;
+	CFile cf;
+	int	x;
+	char	filename [FILENAME_LEN];
+	char	text [CALLSIGN_LEN + 1] = "";
 
 strncpy (text, LOCALPLAYER.callsign,CALLSIGN_LEN);
 
-try_again:
+for (;;) {
+	m.Destroy ();
+	m.Create (1);
+	m.AddInput (text, 8);
 
-memset (&m, 0, sizeof (m));
-m.nType = NM_TYPE_INPUT;
-m.nTextLen = 8;
-m.text = text;
-
-nmAllowedChars = playername_allowed_chars;
-x = ExecMenu (NULL, TXT_ENTER_PILOT_NAME, 1, &m, NULL, NULL);
-nmAllowedChars = NULL;
-if (x < 0) {
-	if (bAllowAbort) return 0;
-	goto try_again;
+	nmAllowedChars = playername_allowed_chars;
+	x = m.Menu (NULL, TXT_ENTER_PILOT_NAME, NULL, NULL);
+	nmAllowedChars = NULL;
+	if (x < 0) {
+		if (bAllowAbort) 
+			return 0;
+		continue;
+		}
+	if (text [0] == 0)	//null string
+		continue;
+	sprintf (filename, "%s.plr", text);
+	if (cf.Exist (filename,gameFolders.szProfDir, 0)) {
+		MsgBox (NULL, NULL, 1, TXT_OK, "%s '%s' %s", TXT_PLAYER, text, TXT_ALREADY_EXISTS);
+		continue;
+		}
+	if (!NewPlayerConfig ())
+		continue;			// They hit Esc during New CPlayerData config
+	break;
 	}
-if (text [0] == 0)	//null string
-	goto try_again;
-sprintf (filename, "%s.plr", text);
-
-CFile cf;
-if (cf.Exist (filename,gameFolders.szProfDir, 0)) {
-	MsgBox (NULL, NULL, 1, TXT_OK, "%s '%s' %s", TXT_PLAYER, text, TXT_ALREADY_EXISTS);
-	goto try_again;
-	}
-if (!NewPlayerConfig ())
-	goto try_again;			// They hit Esc during New CPlayerData config
 strncpy (LOCALPLAYER.callsign, text, CALLSIGN_LEN);
 WritePlayerFile ();
 return 1;
@@ -2782,7 +2778,7 @@ callMenu:
 
 bStartup = 0;
 sprintf (filespec, "%s%s*.plr", gameFolders.szProfDir, *gameFolders.szProfDir ? "/" : "");
-if (!ExecMenuFileSelector (TXT_SELECT_PILOT, filespec, filename, bAllowAbort)) {
+if (!FileSelector (TXT_SELECT_PILOT, filespec, filename, bAllowAbort)) {
 	if (bAllowAbort) {
 		return 0;
 		}

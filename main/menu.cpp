@@ -169,10 +169,10 @@ void DoNewIPAddress (void)
   char	szIP [30];
   int		choice;
 
-m.AddText (0, "Enter an address or hostname:", 0);
-m.AddInput (1, szIP, 50, NULL);
+m.AddText ("Enter an address or hostname:", 0);
+m.AddInput (szIP, 50, NULL);
 choice = m.Menu (NULL, TXT_JOIN_TCP);
-if ((choice == -1) || !*m [1].text)
+if ((choice == -1) || !*m [1].m_text)
 	return;
 MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INV_ADDRESS);
 }

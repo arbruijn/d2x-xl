@@ -422,7 +422,7 @@ static int nTouchPowerup1 = 0;
 static int nTouchPowerup2 = 0;
 static int nTouchGauge = 0;
 
-static int LoadTexturesPoll (int nItems, CMenuItem *m, int *key, int nCurItem)
+static int LoadTexturesPoll (CMenu& menu, int& key, int nCurItem)
 {
 	int	i;
 
@@ -462,13 +462,13 @@ else if (nTouchGauge < MAX_GAUGE_BMS) {
 else {
 	LoadVClipTextures (&gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE], 0);
 	LoadVClipTextures (&gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE], 0);
-	*key = -2;
+	key = -2;
 	paletteManager.LoadEffect  ();
 	return nCurItem;
 	}
-m [0].value++;
-m [0].rebuild = 1;
-*key = 0;
+menu [0].m_value++;
+menu [0].m_bRebuild = 1;
+key = 0;
 paletteManager.LoadEffect  ();
 return nCurItem;
 }
@@ -486,7 +486,7 @@ if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 	nTouchPowerup1 = 0;
 	nTouchPowerup2 = 0;
 	nTouchGauge = 0;
-	NMProgressBar (TXT_PREP_DESCENT, i, i + PagingGaugeSize () + SortLightsGaugeSize (), LoadTexturesPoll); 
+	ProgressBar (TXT_PREP_DESCENT, i, i + PagingGaugeSize () + SortLightsGaugeSize (), LoadTexturesPoll); 
 	}
 else
 	LoadAllTextures ();

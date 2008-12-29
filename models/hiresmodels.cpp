@@ -326,7 +326,7 @@ return bCustom ? ++i : LoadLoresModel (i);
 static int loadIdx;
 static int loadOp = 0;
 
-static int LoadModelsPoll (int nItems, CMenuItem *m, int *key, int nCurItem)
+static int LoadModelsPoll (CMenu& menu, int& key, int nCurItem)
 {
 paletteManager.LoadEffect  ();
 if (loadOp == 0) {
@@ -339,14 +339,14 @@ if (loadOp == 0) {
 else if (loadOp == 1) {
 	loadIdx = LoadLoresModel (loadIdx);
 	if (loadIdx >= (int) sizeofa (replacementModels)) {
-		*key = -2;
+		key = -2;
 		paletteManager.LoadEffect  ();
 		return nCurItem;
 		}
 	}
-m [0].value++;
-m [0].rebuild = 1;
-*key = 0;
+menu [0].m_value++;
+menu [0].m_bRebuild = 1;
+key = 0;
 paletteManager.LoadEffect  ();
 return nCurItem;
 }
@@ -373,7 +373,7 @@ void LoadModelsGauge (void)
 {
 loadIdx = 0;
 loadOp = gameOpts->render.bHiresModels ? 0 : 1;
-NMProgressBar (TXT_LOADING_MODELS, 0, ModelsGaugeSize (), LoadModelsPoll); 
+ProgressBar (TXT_LOADING_MODELS, 0, ModelsGaugeSize (), LoadModelsPoll); 
 }
 
 // ----------------------------------------------------------------------------

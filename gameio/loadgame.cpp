@@ -1085,8 +1085,8 @@ void DoEndLevelScoreGlitz (int network)
 	int			nLevelPoints, nSkillPoints, nEnergyPoints, nShieldPoints, nHostagePoints, nAllHostagePoints, nEndGamePoints;
 	char			szAllHostages [64];
 	char			szEndGame [64];
-	char			szMenu [N_GLITZITEMS+1][40];
-	CMenuItem	m [N_GLITZITEMS+1];
+	char			szMenu [N_GLITZITEMS + 1][40];
+	CMenu			m (N_GLITZITEMS + 1);
 	int			i, c;
 	char			szTitle [128];
 	int			bIsLastLevel = 0;
@@ -1153,11 +1153,8 @@ if (bIsLastLevel)
 sprintf (szMenu [c++], "%s%i  ", TXT_TOTAL_BONUS,
 			nShieldPoints + nEnergyPoints + nHostagePoints + nSkillPoints + nAllHostagePoints + nEndGamePoints);
 sprintf (szMenu [c++], "%s%i  ", TXT_TOTAL_SCORE, LOCALPLAYER.score);
-memset (m, 0, sizeof (m));
-for (i = 0; i < c; i++) {
-	m [i].nType = NM_TYPE_TEXT;
-	m [i].text = szMenu [i];
-	}
+for (i = 0; i < c; i++)
+	m.AddText (szMenu [i]);
 sprintf (szTitle,
 			"%s%s %d %s\n%s %s",
 			gameOpts->menus.nStyle ? "" : bIsLastLevel ? "\n\n\n":"\n",
@@ -1169,11 +1166,11 @@ sprintf (szTitle,
 Assert (c <= N_GLITZITEMS);
 paletteManager.DisableEffect ();
 if (network && (gameData.app.nGameMode & GM_NETWORK))
-	ExecMenu2 (NULL, szTitle, c, m, NetworkEndLevelPoll2, 0, reinterpret_cast<char*> (STARS_BACKGROUND));
+	m.Menu (NULL, szTitle, NetworkEndLevelPoll2, NULL, reinterpret_cast<char*> (STARS_BACKGROUND));
 else
 // NOTE LINK TO ABOVE!!!
 gameStates.app.bGameRunning = 0;
-ExecMenu2 (NULL, szTitle, c, m, NULL, 0, reinterpret_cast<char*> (STARS_BACKGROUND));
+	m.Menu (NULL, szTitle, NULL, NULL, reinterpret_cast<char*> (STARS_BACKGROUND));
 }
 
 //	-----------------------------------------------------------------------------------------------------
@@ -1262,13 +1259,12 @@ paletteManager.ResetEffect ();
 //	robots, powerups, walls, doors, etc.
 int StartNewLevelSecret (int nLevel, int bPageInTextures)
 {
-	CMenuItem	m [1];
+	CMenu	m (1);
   //int i;
 
 gameStates.app.xThisLevelTime=0;
 
-m [0].nType = NM_TYPE_TEXT;
-m [0].text = reinterpret_cast<char*> (" ");
+m.AddText (" ");
 
 gameStates.render.cockpit.nLastDrawn [0] = -1;
 gameStates.render.cockpit.nLastDrawn [1] = -1;

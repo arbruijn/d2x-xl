@@ -385,7 +385,7 @@ int NetworkSyncPoll (CMenu& menu, int& key, int nCurItem)
 if (networkData.nStatus != NETSTAT_WAITING) { // Status changed to playing, exit the menu
 	if (NetworkVerifyPlayers ())
 		NetworkAbortSync ();
-	*key = -2;
+	key = -2;
 	return nCurItem;
 	}
 #if 1 //ndef _DEBUG
@@ -403,7 +403,7 @@ if ((time_t) SDL_GetTicks () > networkData.toSyncPoll) {	// Poll time expired, r
 #endif
 	ResetSyncTimeout ();
 	if (NetworkSendRequest () < 0)
-		*key = -2;
+		key = -2;
 	}
 return nCurItem;
 }
@@ -413,16 +413,13 @@ return nCurItem;
 int NetworkWaitForSync (void)
 {
 	char					text [60];
-	CMenuItem			m [2];
+	CMenu					m (2);
 	int					i, choice;
 	tSequencePacket	me;
 
 networkData.nStatus = NETSTAT_WAITING;
-memset (m, 0, sizeof (m));
-m [0].nType = NM_TYPE_TEXT; 
-m [0].text = text;
-m [1].nType = NM_TYPE_TEXT; 
-m [1].text = const_cast<char*> (TXT_NET_LEAVE);
+m.AddText (text);
+m.AddText (const_cast<char*> (TXT_NET_LEAVE));
 networkData.nJoinState = 0;
 i = NetworkSendRequest ();
 if (i < 0) {
@@ -431,10 +428,10 @@ if (i < 0) {
 #endif
 	return -1;
 	}
-sprintf (m [0].text, "%s\n'%s' %s", TXT_NET_WAITING, netPlayers.players [i].callsign, TXT_NET_TO_ENTER);
+sprintf (m [0].m_text, "%s\n'%s' %s", TXT_NET_WAITING, netPlayers.players [i].callsign, TXT_NET_TO_ENTER);
 networkData.toSyncPoll = 0;
 do {
-	choice = ExecMenu (NULL, TXT_WAIT, 2, m, NetworkSyncPoll, NULL);
+	choice = m.Menu (NULL, TXT_WAIT, NetworkSyncPoll);
 	} while (choice > -1);
 if (networkData.nStatus == NETSTAT_PLAYING)  
 	return 0;
@@ -486,7 +483,7 @@ if ((time_t) SDL_GetTicks () > networkData.toWaitAllPoll) {
 	}
 NetworkDoBigWait (networkData.bWaitAllChoice);  
 if (networkData.nSecurityCheck == -1)
-	*key = -2;
+	key = -2;
 return nCurItem;
 }
  
@@ -496,11 +493,9 @@ int NetworkWaitForAllInfo (int choice)
  {
   int pick;
   
-  CMenuItem m [2];
+  CMenu m (2);
 
-memset (m, 0, sizeof (m));
-m [0].nType = NM_TYPE_TEXT; 
-m [0].text = reinterpret_cast<char*> ("Press Escape to cancel");
+m.AddText (reinterpret_cast<char*> ("Press Escape to cancel"));
 networkData.bWaitAllChoice = choice;
 networkData.nStartWaitAllTime=TimerGetApproxSeconds ();
 networkData.nSecurityCheck = activeNetGames [choice].nSecurity;
@@ -508,7 +503,7 @@ networkData.nSecurityFlag = 0;
 
 networkData.toWaitAllPoll = 0;
 do {
-	pick = ExecMenu (NULL, TXT_CONNECTING, 1, m, NetworkWaitAllPoll, NULL);
+	pick = m.Menu (NULL, TXT_CONNECTING, NetworkWaitAllPoll);
 	} while ((pick > -1) && (networkData.nSecurityCheck != -1));
 if (networkData.nSecurityCheck == -1) {   
 	networkData.nSecurityCheck = 0;     
@@ -689,7 +684,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		nReady++;
 	}
 if (nReady == gameData.multiplayer.nPlayers) // All players have checked in or are disconnected
-	*key = -2;
+	key = -2;
 return nCurItem;
 }
 
@@ -698,38 +693,37 @@ return nCurItem;
 void NetworkWaitForRequests (void)
 {
 	// Wait for other players to load the level before we send the sync
-	int choice, i;
-	CMenuItem m [1];
+	int	choice, i;
+	CMenu	m (1);
 
 networkData.nStatus = NETSTAT_WAITING;
-memset (m, 0, sizeof (m));
-m [0].nType= NM_TYPE_TEXT; 
-m [0].text = const_cast<char*> (TXT_NET_LEAVE);
+m.AddText (const_cast<char*> (TXT_NET_LEAVE));
 NetworkFlush ();
 LOCALPLAYER.connected = 1;
 
-do_menu:
-
-choice = ExecMenu (NULL, TXT_WAIT, 1, m, NetworkRequestPoll, NULL);        
-if (choice == -1) {
-	// User aborted
-	choice = MsgBox (NULL, NULL, 3, TXT_YES, TXT_NO, TXT_START_NOWAIT, TXT_QUITTING_NOW);
-	if (choice == 2)
-		return;
-	if (choice != 0)
-		goto do_menu;
-	
-	// User confirmed abort
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-		if ((gameData.multiplayer.players [i].connected != 0) && (i != gameData.multiplayer.nLocalPlayer)) {
-			if (gameStates.multi.nGameType >= IPX_GAME)
-				NetworkDumpPlayer (netPlayers.players [i].network.ipx.server, netPlayers.players [i].network.ipx.node, DUMP_ABORTED);
+for (;;) {
+	choice = m.Menu (NULL, TXT_WAIT, NetworkRequestPoll);        
+	if (choice == -1) {
+		// User aborted
+		choice = MsgBox (NULL, NULL, 3, TXT_YES, TXT_NO, TXT_START_NOWAIT, TXT_QUITTING_NOW);
+		if (choice == 2)
+			return;
+		if (choice != 0)
+			continue;
+		
+		// User confirmed abort
+		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
+			if ((gameData.multiplayer.players [i].connected != 0) && (i != gameData.multiplayer.nLocalPlayer)) {
+				if (gameStates.multi.nGameType >= IPX_GAME)
+					NetworkDumpPlayer (netPlayers.players [i].network.ipx.server, netPlayers.players [i].network.ipx.node, DUMP_ABORTED);
+				}
 			}
+			longjmp (gameExitPoint, 0);  
 		}
-		longjmp (gameExitPoint, 0);  
+	else if (choice != -2)
+		continue;
+	break;
 	}
-else if (choice != -2)
-	goto do_menu;
 }
 
 //------------------------------------------------------------------------------

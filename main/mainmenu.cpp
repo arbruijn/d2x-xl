@@ -215,10 +215,6 @@ if (!LOCALPLAYER.callsign [0]) {
 	SelectPlayer ();
 	return 0;
 	}
-if ((gameData.app.nGameMode & GM_SERIAL) || (gameData.app.nGameMode & GM_MODEM)) {
-	ExecMultiMenuOption (multiOpts.nSerial);
-	return 0;
-	}
 if (gameData.multiplayer.autoNG.bValid) {
 	ExecMultiMenuOption (mainOpts.nMulti);
 	return 0;

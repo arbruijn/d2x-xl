@@ -276,32 +276,32 @@ CSaveGameInfo saveGameInfo [NUM_SAVES + 1];
 
 static int bShowTime = 1;
 
-int SaveStateMenuCallback (int nitems, CMenuItem *items, int *lastKey, int nCurItem)
+int SaveStateMenuCallback (CMenu& menu, int& key, int nCurItem)
 {
-	int			x, y, i = nCurItem - NM_IMG_SPACE;
-	char			c = KeyToASCII (*lastKey);
-	CBitmap	*image = saveGameInfo [i].Image ();
+	int		x, y, i = nCurItem - NM_IMG_SPACE;
+	char		c = KeyToASCII (key);
+	CBitmap*	image = saveGameInfo [i].Image ();
 
 if (nCurItem < 2)
 	return nCurItem;
 if ((c >= '1') && (c <= '9')) {
 	for (i = 0; i < NUM_SAVES; i++)
-		if (items [i + NM_IMG_SPACE].text [0] == c) {
-			*lastKey = -2;
+		if (menu [i + NM_IMG_SPACE].m_text [0] == c) {
+			key = -2;
 			return -(i + NM_IMG_SPACE) - 1;
 			}
 	}
-if (!items [NM_IMG_SPACE - 1].text || strcmp (items [NM_IMG_SPACE - 1].text, saveGameInfo [i].Time ())) {
-	items [NM_IMG_SPACE - 1].text = saveGameInfo [i].Time ();
-	items [NM_IMG_SPACE - 1].rebuild = 1;
+if (!menu [NM_IMG_SPACE - 1].m_text || strcmp (menu [NM_IMG_SPACE - 1].m_text, saveGameInfo [i].Time ())) {
+	menu [NM_IMG_SPACE - 1].m_text = saveGameInfo [i].Time ();
+	menu [NM_IMG_SPACE - 1].m_bRebuild = 1;
 	}
 if (!image)
 	return nCurItem;
 if (gameStates.menus.bHires) {
 	x = (CCanvas::Current ()->Width () - image->Width ()) / 2;
-	y = items [0].y - 16;
+	y = menu [0].m_y - 16;
 	if (gameStates.app.bGameRunning)
-		paletteManager.LoadEffect  ();
+		paletteManager.LoadEffect ();
 	GrBitmap (x, y, image);
 	if (gameOpts->menus.nStyle) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
@@ -309,24 +309,24 @@ if (gameStates.menus.bHires) {
 		}
 	}
 else {
-	GrBitmap ((CCanvas::Current ()->Width ()-THUMBNAIL_W) / 2, items [0].y - 5, saveGameInfo [nCurItem - 1].Image ());
+	GrBitmap ((CCanvas::Current ()->Width ()-THUMBNAIL_W) / 2, menu [0].m_y - 5, saveGameInfo [nCurItem - 1].Image ());
 	}
 return nCurItem;
 }
 
 //------------------------------------------------------------------------------
 
-int LoadStateMenuCallback (int nitems, CMenuItem *items, int *lastKey, int nCurItem)
+int LoadStateMenuCallback (int nitems, CMenuItem *menu, int key, int nCurItem)
 {
 	int	i = nCurItem - NM_IMG_SPACE;
-	char	c = KeyToASCII (*lastKey);
+	char	c = KeyToASCII (key);
 
 if (nCurItem < 2)
 	return nCurItem;
 if ((c >= '1') && (c <= '9')) {
 	for (i = 0; i < NUM_SAVES; i++)
-		if (items [i].text [0] == c) {
-			*lastKey = -2;
+		if (menu [i].m_text [0] == c) {
+			key = -2;
 			return -i - 1;
 			}
 	}
@@ -363,20 +363,19 @@ m_nLastSlot = 0;
 
 int CSaveGameHandler::GetSaveFile (int bMulti)
 {
-	int			i, menuRes, choice;
-	CMenuItem	m [NUM_SAVES + 2];
-	char			filename [NUM_SAVES + 1][30];
+	CMenu	m (NUM_SAVES + 2);
+	int	i, menuRes, choice;
+	char	filename [NUM_SAVES + 1][30];
 
-memset (m, 0, sizeof (m));
 for (i = 0; i < NUM_SAVES; i++) {
 	sprintf (filename [i], bMulti ? "%s.mg%x" : "%s.sg%x", LOCALPLAYER.callsign, i);
 	saveGameInfo [i].Load (filename [i], -1);
-	m.AddInputBox (i, saveGameInfo [i].Label (), DESC_LENGTH - 1, -1, NULL);
+	m.AddInputBox (saveGameInfo [i].Label (), DESC_LENGTH - 1, -1, NULL);
 	}
 
 m_nLastSlot = -1;
 choice = m_nDefaultSlot;
-menuRes = ExecMenu1 (NULL, TXT_SAVE_GAME_MENU, NUM_SAVES, m, NULL, &choice);
+menuRes = m.Menu (NULL, TXT_SAVE_GAME_MENU, NULL, &choice);
 
 if (menuRes >= 0) {
 	strcpy (m_filename, filename [choice]);
@@ -394,16 +393,14 @@ int bRestoringMenu = 0;
 
 int CSaveGameHandler::GetLoadFile (int bMulti)
 {
-	int			i, choice = -1, nSaves;
-	CMenuItem	m [NUM_SAVES + NM_IMG_SPACE + 1];
-	char			filename [NUM_SAVES + 1][30];
+	CMenu	m (NUM_SAVES + NM_IMG_SPACE + 1);
+	int	i, choice = -1, nSaves;
+	char	filename [NUM_SAVES + 1][30];
 
 nSaves = 0;
-memset (m, 0, sizeof (m));
 for (i = 0; i < NM_IMG_SPACE; i++) {
-	m [i].nType = NM_TYPE_TEXT; 
-	m [i].text = reinterpret_cast<char*> ("");
-	m [i].noscroll = 1;
+	m.AddText ("");
+	m.Top ()->m_bNoScroll = 1;
 	}
 if (gameStates.app.bGameRunning) {
 	paletteManager.LoadEffect  ();
@@ -411,12 +408,11 @@ if (gameStates.app.bGameRunning) {
 for (i = 0; i < NUM_SAVES + 1; i++) {
 	sprintf (filename [i], bMulti ? "%s.mg%x" : "%s.sg%x", LOCALPLAYER.callsign, i);
 	if (saveGameInfo [i].Load (filename [i], i)) {
-		m.AddMenu (i + NM_IMG_SPACE, saveGameInfo [i].Label (), (i < NUM_SAVES) ? -1 : 0, NULL);
+		m.AddMenu (saveGameInfo [i].Label (), (i < NUM_SAVES) ? -1 : 0, NULL);
 		nSaves++;
 		}
 	else {
-		m [i + NM_IMG_SPACE].nType = NM_TYPE_MENU; 
-		m [i + NM_IMG_SPACE].text = saveGameInfo [i].Label ();
+		m .AddMenu (saveGameInfo [i].Label ());
 		}
 	}
 if (gameStates.app.bGameRunning) 
@@ -430,8 +426,7 @@ if (gameStates.video.nDisplayMode == 1)	//restore menu won't fit on 640x400
 m_nLastSlot = -1;
 bRestoringMenu = 1;
 choice = m_nDefaultSlot + NM_IMG_SPACE;
-i = ExecMenu3 (NULL, TXT_LOAD_GAME_MENU, i + NM_IMG_SPACE, m, SaveStateMenuCallback, 
-				   &choice, NULL, 190, -1);
+i = m.Menu (NULL, TXT_LOAD_GAME_MENU, SaveStateMenuCallback, &choice, NULL, 190, -1);
 bRestoringMenu = 0;
 if (i < 0)
 	return 0;

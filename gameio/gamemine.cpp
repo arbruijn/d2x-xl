@@ -1097,7 +1097,7 @@ static int loadIdx = 0;
 static int loadOp = 0;
 static CFile *mineDataFile;
 
-static int LoadSegmentsPoll (int nItems, CMenuItem *m, int *key, int nCurItem)
+static int LoadSegmentsPoll (CMenu& menu, int& key, int nCurItem)
 {
 	int	bLightmaps = 0, bShadows = 0;
 
@@ -1160,13 +1160,13 @@ else if (loadOp == 6) {
 		}
 	}
 else {
-	*key = -2;
+	key = -2;
 	paletteManager.LoadEffect  ();
 	return nCurItem;
 	}
-m [0].value++;
-m [0].rebuild = 1;
-*key = 0;
+menu [0].m_value++;
+menu [0].m_bRebuild = 1;
+key = 0;
 paletteManager.LoadEffect  ();
 return nCurItem;
 }
@@ -1206,7 +1206,7 @@ void LoadSegmentsGauge (CFile& cf)
 loadOp = 0;
 loadIdx = 0;
 mineDataFile = &cf;
-NMProgressBar (TXT_PREP_DESCENT, 0, LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize (), LoadSegmentsPoll);
+ProgressBar (TXT_PREP_DESCENT, 0, LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize (), LoadSegmentsPoll);
 }
 
 //------------------------------------------------------------------------------
