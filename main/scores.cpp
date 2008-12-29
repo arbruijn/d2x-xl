@@ -25,7 +25,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "key.h"
 #include "gamefont.h"
 #include "u_mem.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "screens.h"
 #include "mouse.h"
 #include "joy.h"

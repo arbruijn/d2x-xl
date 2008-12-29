@@ -19,7 +19,7 @@
 #include "network.h"
 #include "network_lib.h"
 #include "menu.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "byteswap.h"
 #include "text.h"
 #include "strutil.h"

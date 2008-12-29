@@ -34,7 +34,7 @@
 #include "ogl_texture.h"
 #include "ogl_texcache.h"
 #include "texmerge.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "menu.h"
 
 //------------------------------------------------------------------------------

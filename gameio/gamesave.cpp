@@ -26,7 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "key.h"
 #include "gr.h"
 #include "palette.h"
-#include "newmenu.h"
+#include "menu.h"
 #ifdef EDITOR
 #	include "editor/editor.h"
 #endif

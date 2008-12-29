@@ -42,7 +42,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "game.h"
 #include "menu.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "createmesh.h"
 
 #ifdef EDITOR

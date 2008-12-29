@@ -38,7 +38,7 @@
 #include "particles.h"
 #include "glare.h"
 #include "lightmap.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "menubackground.h"
 
 #define DECLARE_VARS

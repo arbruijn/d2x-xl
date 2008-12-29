@@ -24,7 +24,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "key.h"
 #include "screens.h"
 #include "text.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "escort.h"
 #include "playsave.h"
 #include "network.h"

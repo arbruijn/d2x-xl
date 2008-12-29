@@ -31,7 +31,7 @@
 #include "render.h"
 #include "particles.h"
 #include "glare.h"
-#include "newmenu.h"
+#include "menu.h"
 
 //------------------------------------------------------------------------------
 

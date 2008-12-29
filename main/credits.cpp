@@ -38,7 +38,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "key.h"
 #include "gamepal.h"
 #include "timer.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "gamefont.h"
 #include "network.h"
 #include "iff.h"

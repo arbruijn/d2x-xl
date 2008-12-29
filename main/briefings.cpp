@@ -34,7 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "screens.h"
 #include "compbit.h"
 #include "text.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "movie.h"
 #include "mouse.h"
 #include "gamepal.h"

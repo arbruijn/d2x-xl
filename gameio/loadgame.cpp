@@ -77,7 +77,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "segment.h"
 #include "loadgame.h"
 #include "gamefont.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "endlevel.h"
 #include "interp.h"
 #include "multi.h"

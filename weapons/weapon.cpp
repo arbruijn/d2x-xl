@@ -24,7 +24,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "text.h"
 #include "newdemo.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "network.h"
 #include "u_mem.h"
 #include "input.h"

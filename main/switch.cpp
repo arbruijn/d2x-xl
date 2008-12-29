@@ -22,7 +22,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "inferno.h"
 #include "gauges.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "error.h"
 #include "gameseg.h"
 #include "texmap.h"

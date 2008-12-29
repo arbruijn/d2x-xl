@@ -24,7 +24,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "key.h"
 #include "u_mem.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "netmenu.h"
 #include "screens.h"
 #include "mouse.h"

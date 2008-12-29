@@ -9,7 +9,7 @@
 #include "error.h"
 #include "key.h"
 #include "ogl_bitmap.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "gamefont.h"
 #include "gamecntl.h"
 #include "text.h"

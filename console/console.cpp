@@ -22,7 +22,7 @@
 #include "gr.h"
 #include "timer.h"
 #include "gamefont.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "pcx.h"
 #include "cmd.h"
 #include "console.h"

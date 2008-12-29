@@ -28,7 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "inferno.h"
 #include "rle.h"
 #include "gamepal.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "texmerge.h"
 #include "strutil.h"
 

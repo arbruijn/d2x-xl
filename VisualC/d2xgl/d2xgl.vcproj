@@ -4541,10 +4541,6 @@
 						RelativePath="..\..\include\netmenu.h"
 						>
 					</File>
-					<File
-						RelativePath="..\..\include\newmenu.h"
-						>
-					</File>
 				</Filter>
 				<Filter
 					Name="Source Files"
@@ -4674,10 +4670,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\newmenu.cpp"
-						>
-					</File>
-					<File
 						RelativePath="..\..\main\performancemenu.cpp"
 						>
 					</File>
@@ -4733,11 +4725,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File

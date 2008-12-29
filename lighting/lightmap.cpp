@@ -39,7 +39,7 @@ there I just had it exit instead.
 #include "error.h"
 #include "u_mem.h"
 #include "menu.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "text.h"
 #include "gamepal.h"
 #include "gamemine.h"

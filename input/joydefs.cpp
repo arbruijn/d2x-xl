@@ -13,7 +13,7 @@
 #include "pstypes.h"
 #include "inferno.h"
 #include "menu.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "config.h"
 #include "text.h"
 #include "key.h"

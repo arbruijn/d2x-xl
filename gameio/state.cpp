@@ -58,7 +58,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "switch.h"
 #include "game.h"
 #include "screens.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "gamepal.h"
 #include "cfile.h"
 #include "fuelcen.h"

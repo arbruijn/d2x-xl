@@ -36,7 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "findfile.h"
 #include "polyobj.h"
 #include "robot.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "text.h"
 #ifndef __findfile_h
 #	error filefind missing!

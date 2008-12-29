@@ -6,7 +6,7 @@
 #include "color.h"
 #include "math.h"
 #include "gr.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "ogl_texture.h"
 
 //------------------------------------------------------------------------------

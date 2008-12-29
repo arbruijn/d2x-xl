@@ -16,7 +16,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "loadgame.h"
 #include "multi.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "ipx.h"
 
 #define NETWORK_OEM						0x10

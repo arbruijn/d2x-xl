@@ -19,7 +19,7 @@
 #include "timer.h"
 #include "ipx.h"
 #include "ipx_udp.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "key.h"
 #include "error.h"
 #include "network.h"

@@ -51,7 +51,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "fuelcen.h"
 #include "mission.h"
 #include "menu.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "gamesave.h"
 #include "gamepal.h"
 #include "sphere.h"

@@ -26,7 +26,7 @@
 #include "args.h"
 #include "error.h"
 #include "multi.h"
-#include "newmenu.h"
+#include "menu.h"
 
 //#define IPX_MCAST4DBG
 

@@ -7,7 +7,7 @@
 #include "error.h"
 #include "u_mem.h"
 #include "interp.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "hiresmodels.h"
 
 // ----------------------------------------------------------------------------
