@@ -189,8 +189,8 @@ do {
 
 	effectOpts.nLightTrails = m.AddCheck (TXT_RENDER_LGTTRAILS, extraGameInfo [0].bLightTrails, KEY_T, HTX_RENDER_LGTTRAILS);
 	if (extraGameInfo [0].bLightTrails) {
-		optTrailType = m.AddRadio (TXT_SOLID_LIGHTTRAILS, 0, KEY_S, 2, HTX_LIGHTTRAIL_TYPE);
-		m.AddRadio (TXT_PLASMA_LIGHTTRAILS, 0, KEY_P, 2, HTX_LIGHTTRAIL_TYPE);
+		optTrailType = m.AddRadio (TXT_SOLID_LIGHTTRAILS, 0, KEY_S, HTX_LIGHTTRAIL_TYPE);
+		m.AddRadio (TXT_PLASMA_LIGHTTRAILS, 0, KEY_P, HTX_LIGHTTRAIL_TYPE);
 		m [optTrailType + gameOpts->render.particles.bPlasmaTrails].m_value = 1;
 		}
 	else

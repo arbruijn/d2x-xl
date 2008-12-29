@@ -222,7 +222,7 @@ do {
 		m.AddText (TXT_CLIP_SHADOWS, 0);
 		optClipShadows = m.ToS ();
 		for (j = 0; j < 4; j++)
-			m.AddRadio (pszClip [j], gameOpts->render.shadows.nClip == j, 0, 1, HTX_CLIP_SHADOWS);
+			m.AddRadio (pszClip [j], gameOpts->render.shadows.nClip == j, 0, HTX_CLIP_SHADOWS);
 		m.AddText ("", 0);
 		optPlayerShadows = m.AddCheck (TXT_PLAYER_SHADOWS, gameOpts->render.shadows.bPlayers, KEY_P, HTX_PLAYER_SHADOWS);
 		optRobotShadows = m.AddCheck (TXT_ROBOT_SHADOWS, gameOpts->render.shadows.bRobots, KEY_O, HTX_ROBOT_SHADOWS);
