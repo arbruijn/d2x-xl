@@ -36,7 +36,7 @@ class CShrapnel {
 class CShrapnelCloud : private CStack<CShrapnel> {
 	public:
 		~CShrapnelCloud () { Destroy (); }
-		int Create (CObject* objP);
+		int Create (CObject* parentObjP, CObject* objP);
 		uint Update (void);
 		void Draw (void);
 		void Destroy (void);

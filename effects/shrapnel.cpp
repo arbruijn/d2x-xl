@@ -142,15 +142,9 @@ for (uint i = 0; i < m_tos; i++)
 
 // -----------------------------------------------------------------------------
 
-int CShrapnelCloud::Create (CObject* parentObjP)
+int CShrapnelCloud::Create (CObject* parentObjP, CObject* objP)
 {
-	short		nObject = CreateFireball (0, parentObjP->info.nSegment, parentObjP->info.position.vPos, 1, RT_SHRAPNELS);
-
-if (0 > nObject)
-	return 0;
-
 	int		i, h = (int) (X2F (parentObjP->info.xSize) * fShrapnelScale [gameOpts->render.effects.nShrapnels] + 0.5);
-	CObject*	objP = OBJECTS + nObject;
 
 objP->info.xLifeLeft = 0;
 objP->cType.explInfo.nSpawnTime = -1;
@@ -190,7 +184,7 @@ CArray<CShrapnelCloud>::Create (MAX_OBJECTS);
 
 // -----------------------------------------------------------------------------
 
-int CShrapnelManager::Create (CObject *objP)
+int CShrapnelManager::Create (CObject* objP)
 {
 if (!SHOW_SMOKE)
 	return 0;
@@ -200,19 +194,22 @@ if (objP->info.nFlags & OF_ARMAGEDDON)
 	return 0;
 if ((objP->info.nType != OBJ_PLAYER) && (objP->info.nType != OBJ_ROBOT))
 	return 0;
-return Create (objP);
+short nObject = CreateFireball (0, objP->info.nSegment, objP->info.position.vPos, 1, RT_SHRAPNELS);
+if (0 > nObject)
+	return 0;
+return m_data.buffer [nObject].Create (objP, OBJECTS + nObject);
 }
 
 // -----------------------------------------------------------------------------
 
-void CShrapnelManager::Draw (CObject *objP)
+void CShrapnelManager::Draw (CObject* objP)
 {
 m_data.buffer [objP->Index ()].Draw ();
 }
 
 // -----------------------------------------------------------------------------
 
-int CShrapnelManager::Update (CObject *objP)
+int CShrapnelManager::Update (CObject* objP)
 {
 if ((objP->LifeLeft () <= 0) || !m_data.buffer [objP->Index ()].Update ())
 	Destroy (objP);
@@ -221,7 +218,7 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
-void CShrapnelManager::Destroy (CObject *objP)
+void CShrapnelManager::Destroy (CObject* objP)
 {
 if ((objP->info.nType != OBJ_FIREBALL) || (objP->info.renderType != RT_SHRAPNELS))
 	return;
