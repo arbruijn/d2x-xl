@@ -861,7 +861,10 @@ if (transpItems.bDepthMask)
 if (transpItems.bDepthMask != item->bDepthMask)
 	glDepthMask (transpItems.bDepthMask = item->bDepthMask);
 #endif
-bmTop = faceP ? faceP->bmTop->Override (-1) : NULL;
+if (!faceP)
+	bmTop = NULL;
+else if ((bmTop = faceP->bmTop))
+	bmTop = bmTop->Override (-1);
 if (bmTop && !(bmTop->Flags () & (BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU))) {
 	bmBot = bmTop;
 	bmTop = mask = NULL;
