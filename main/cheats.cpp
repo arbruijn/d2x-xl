@@ -96,16 +96,13 @@ return 0;
 
 int MenuGetValues (const char *pszMsg, int *valueP, int nValues)
 {
-	CMenuItem	m;
-	char			text [20] = "", *psz;
-	int			i = 0;
+	CMenu	m;
+	char	text [20] = "", *psz;
+	int	i = 0;
 
-memset (&m, 0, sizeof (m));
-m.nType = NM_TYPE_INPUT; 
-m.nTextLen = 20; 
-m.text = text;
-if (ExecMenu (NULL, pszMsg, 1, &m, NULL, NULL) >= 0) {
-	valueP [0] = atoi (m.text);
+m.AddInput (text, 20);
+if (m.Menu (NULL, pszMsg) >= 0) {
+	valueP [0] = atoi (m.m_text);
 	for (i = 1, psz = m.text; --nValues && (psz = strchr (psz, ',')); i++)
 		valueP [i] = atoi (++psz);
 	}
@@ -1002,59 +999,32 @@ for (pCheat = cheats; pCheat->pszCheat && !Cheat (pCheat); pCheat++)
 #if DBG
 void DoCheatMenu ()
 {
-	int mmn;
-	CMenuItem mm[16];
-	char score_text[21];
+	int	mmn;
+	CMenu	m (16);
+	char	szScore[21];
 
-	sprintf ( score_text, "%d", LOCALPLAYER.score );
+	sprintf (szScore, "%d", LOCALPLAYER.score);
 
-	memset (mm, 0, sizeof (mm));
-	mm[0].nType = NM_TYPE_CHECK; 
-	mm[0].value = LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE; 
-	mm[0].text = "Invulnerability";
-	mm[1].nType = NM_TYPE_CHECK; 
-	mm[1].value = LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED; 
-	mm[1].text = "Cloaked";
-	mm[2].nType = NM_TYPE_CHECK; 
-	mm[2].value = 0; 
-	mm[2].text = "All keys";
-	mm[3].nType = NM_TYPE_NUMBER; 
-	mm[3].value = X2I (LOCALPLAYER.energy); 
-	mm[3].text = "% Energy"; mm[3].minValue = 0; 
-	mm[3].maxValue = 200;
-	mm[4].nType = NM_TYPE_NUMBER; 
-	mm[4].value = X2I (LOCALPLAYER.shields); 
-	mm[4].text = "% Shields"; mm[4].minValue = 0; 
-	mm[4].maxValue = 200;
-	mm[5].nType = NM_TYPE_TEXT; 
-	mm[5].text  =  "Score:";
-	mm[6].nType = NM_TYPE_INPUT; 
-	mm[6].nTextLen  =  10; 
-	mm[6].text  =  score_text;
-	//mm[7].nType = NM_TYPE_RADIO; mm[7].value =  (LOCALPLAYER.laserLevel =  = 0); mm[7].m_group = 0; mm[7].text = "Laser level 1";
-	//mm[8].nType = NM_TYPE_RADIO; mm[8].value =  (LOCALPLAYER.laserLevel =  = 1); mm[8].m_group = 0; mm[8].text = "Laser level 2";
-	//mm[9].nType = NM_TYPE_RADIO; mm[9].value =  (LOCALPLAYER.laserLevel =  = 2); mm[9].m_group = 0; mm[9].text = "Laser level 3";
-	//mm[10].nType = NM_TYPE_RADIO; mm[10].value =  (LOCALPLAYER.laserLevel =  = 3); mm[10].m_group = 0; mm[10].text = "Laser level 4";
+	memset (m, 0, sizeof (m));
+	m.AddCheck ("Invulnerability", LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE); 
+	m.AddCheck ("Cloaked";, LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED);
+	m.AddCheck ("All keys", 0);
+	m.AddNumber ("% Energy", X2I (LOCALPLAYER.energy), 0, 200);
+	m.AddNumber ("% Shields", X2I (LOCALPLAYER.shields), 0, 200);
+	m.AddText ("Score:");
+	m.AddInput (szScore, 10);
+	m.AddNumber ("Laser Level", LOCALPLAYER.laserLevel + 1, 0, MAX_SUPER_LASER_LEVEL + 1); 
+	m.AddNumber ("Missiles", LOCALPLAYER.secondaryAmmo [CONCUSSION_INDEX], 0, 200);
 
-	mm[7].nType = NM_TYPE_NUMBER; 
-	mm[7].value = LOCALPLAYER.laserLevel+1; 
-	mm[7].text = "Laser Level"; mm[7].minValue = 0; 
-	mm[7].maxValue = MAX_SUPER_LASER_LEVEL+1;
-	mm[8].nType = NM_TYPE_NUMBER; 
-	mm[8].value = LOCALPLAYER.secondaryAmmo [CONCUSSION_INDEX]; 
-	mm[8].text = "Missiles"; 
-	mm[8].minValue = 0; 
-	mm[8].maxValue = 200;
+	mmn = ExecMenu ("Wimp Menu", NULL);
 
-	mmn = ExecMenu ("Wimp Menu", NULL, 9, mm, NULL, NULL );
-
-	if (mmn > -1 )  {
-		if ( mm[0].value )  {
+	if (mmn > -1)  {
+		if (m [0].m_value)  {
 			LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
 			LOCALPLAYER.invulnerableTime = gameData.time.xGame+I2X (1000);
 		} else
 			LOCALPLAYER.flags &= ~PLAYER_FLAGS_INVULNERABLE;
-		if ( mm[1].value ) {
+		if (m [1].m_value) {
 			LOCALPLAYER.flags |= PLAYER_FLAGS_CLOAKED;
 			if (gameData.app.nGameMode & GM_MULTI)
 				MultiSendCloak ();
@@ -1064,16 +1034,16 @@ void DoCheatMenu ()
 		else
 			LOCALPLAYER.flags &= ~PLAYER_FLAGS_CLOAKED;
 
-		if (mm[2].value) LOCALPLAYER.flags |= PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY;
-		LOCALPLAYER.energy=I2X (mm[3].value);
-		LOCALPLAYER.shields=I2X (mm[4].value);
-		LOCALPLAYER.score = atoi (mm[6].text);
-		//if (mm[7].value) LOCALPLAYER.laserLevel=0;
-		//if (mm[8].value) LOCALPLAYER.laserLevel=1;
-		//if (mm[9].value) LOCALPLAYER.laserLevel=2;
-		//if (mm[10].value) LOCALPLAYER.laserLevel=3;
-		LOCALPLAYER.laserLevel = mm[7].value-1;
-		LOCALPLAYER.secondaryAmmo [CONCUSSION_INDEX] = mm[8].value;
+		if (m [2].m_value) LOCALPLAYER.flags |= PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY;
+		LOCALPLAYER.energy=I2X (m [3].m_value);
+		LOCALPLAYER.shields=I2X (m [4].m_value);
+		LOCALPLAYER.score = atoi (m [6].text);
+		//if (m [7].m_value) LOCALPLAYER.laserLevel=0;
+		//if (m [8].m_value) LOCALPLAYER.laserLevel=1;
+		//if (m [9].m_value) LOCALPLAYER.laserLevel=2;
+		//if (m [10].m_value) LOCALPLAYER.laserLevel=3;
+		LOCALPLAYER.laserLevel = m [7].m_value-1;
+		LOCALPLAYER.secondaryAmmo [CONCUSSION_INDEX] = m [8].m_value;
 		InitGauges ();
 	}
 }

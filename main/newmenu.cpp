@@ -558,11 +558,8 @@ switch (m_nType) {
 		break;
 
 	case NM_TYPE_NUMBER:
-		char text [10];
-		if (m_value < m_minValue) 
-			m_value = m_minValue;
-		if (m_value > m_maxValue) 
-			m_value = m_maxValue;
+		char text [20];
+		m_value = NMCLAMP (m_value, m_minValue, m_maxValue);
 		DrawString (bIsCurrent, bTiny);
 		sprintf (text, "%d", m_value);
 		DrawRightString (bIsCurrent, bTiny, text);
@@ -3022,6 +3019,20 @@ item.m_text = (char*) (szText);
 item.m_nTextLen = nLen;
 item.m_nKey = nKey;
 item.m_szHelp = szHelp;
+Push (item);
+return ToS () - 1;
+}
+
+// ------------------------------------------------------------------------------ 
+
+int CMenu::AddNumber (const char* szText, int nValue, int nMin, int nMax)
+{
+CMenuItem item;
+item.m_nType = NM_TYPE_NUMBER;
+item.m_text = (char*) (szText);
+item.m_value = NMCLAMP (nValue, nMin, nMax);
+item.m_minValue = nMin;
+item.m_maxValue = nMax;
 Push (item);
 return ToS () - 1;
 }
