@@ -96,14 +96,14 @@ return 0;
 
 int MenuGetValues (const char *pszMsg, int *valueP, int nValues)
 {
-	CMenu	m;
+	CMenu	m (1);
 	char	text [20] = "", *psz;
 	int	i = 0;
 
 m.AddInput (text, 20);
 if (m.Menu (NULL, pszMsg) >= 0) {
-	valueP [0] = atoi (m.m_text);
-	for (i = 1, psz = m.text; --nValues && (psz = strchr (psz, ',')); i++)
+	valueP [0] = atoi (m [0].m_text);
+	for (i = 1, psz = m [0].m_text; --nValues && (psz = strchr (psz, ',')); i++)
 		valueP [i] = atoi (++psz);
 	}
 return i;
@@ -1005,9 +1005,8 @@ void DoCheatMenu ()
 
 	sprintf (szScore, "%d", LOCALPLAYER.score);
 
-	memset (m, 0, sizeof (m));
 	m.AddCheck ("Invulnerability", LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE); 
-	m.AddCheck ("Cloaked";, LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED);
+	m.AddCheck ("Cloaked", LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED);
 	m.AddCheck ("All keys", 0);
 	m.AddNumber ("% Energy", X2I (LOCALPLAYER.energy), 0, 200);
 	m.AddNumber ("% Shields", X2I (LOCALPLAYER.shields), 0, 200);
@@ -1016,7 +1015,7 @@ void DoCheatMenu ()
 	m.AddNumber ("Laser Level", LOCALPLAYER.laserLevel + 1, 0, MAX_SUPER_LASER_LEVEL + 1); 
 	m.AddNumber ("Missiles", LOCALPLAYER.secondaryAmmo [CONCUSSION_INDEX], 0, 200);
 
-	mmn = ExecMenu ("Wimp Menu", NULL);
+	mmn = m.Menu ("Wimp Menu", NULL);
 
 	if (mmn > -1)  {
 		if (m [0].m_value)  {
@@ -1037,12 +1036,12 @@ void DoCheatMenu ()
 		if (m [2].m_value) LOCALPLAYER.flags |= PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY;
 		LOCALPLAYER.energy=I2X (m [3].m_value);
 		LOCALPLAYER.shields=I2X (m [4].m_value);
-		LOCALPLAYER.score = atoi (m [6].text);
+		LOCALPLAYER.score = atoi (m [6].m_text);
 		//if (m [7].m_value) LOCALPLAYER.laserLevel=0;
 		//if (m [8].m_value) LOCALPLAYER.laserLevel=1;
 		//if (m [9].m_value) LOCALPLAYER.laserLevel=2;
 		//if (m [10].m_value) LOCALPLAYER.laserLevel=3;
-		LOCALPLAYER.laserLevel = m [7].m_value-1;
+		LOCALPLAYER.laserLevel = m [7].m_value - 1;
 		LOCALPLAYER.secondaryAmmo [CONCUSSION_INDEX] = m [8].m_value;
 		InitGauges ();
 	}

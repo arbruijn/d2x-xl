@@ -73,7 +73,7 @@ class CFace {
 		void SetTexture (CBitmap* textureP);
 		int GatherVertices (CVertex* source, CVertex* dest, int nIndex);
 		
-		static int _CDECL_ CFace::Compare (CFace* pf, CFace* pm);
+		static int _CDECL_ CFace::Compare (const CFace* pf, const CFace* pm);
 
 		inline const bool operator< (CFace& other) { return m_nSubModel < other.m_nSubModel; }
 		inline const bool operator> (CFace& other) { return m_nSubModel > other.m_nSubModel; }
