@@ -235,20 +235,20 @@ do {
 		optFluidPhysics = m.AddCheck (TXT_FLUID_PHYS, extraGameInfo [0].bFluidPhysics, KEY_Y, HTX_GPLAY_FLUIDPHYS);
 		optHitAngles = m.AddCheck (TXT_USE_HITANGLES, extraGameInfo [0].bUseHitAngles, KEY_H, HTX_GPLAY_HITANGLES);
 		m.AddText ("", 0);
-		optKillMissiles = m.AddRadio (TXT_IMMUNE_MISSILES, 0, KEY_I, 1, HTX_KILL_MISSILES);
-		m.AddRadio (TXT_OMEGA_KILLS_MISSILES, 0, KEY_K, 1, HTX_KILL_MISSILES);
-		m.AddRadio (TXT_KILL_MISSILES, 0, KEY_A, 1, HTX_KILL_MISSILES);
+		optKillMissiles = m.AddRadio (TXT_IMMUNE_MISSILES, 0, KEY_I, HTX_KILL_MISSILES);
+		m.AddRadio (TXT_OMEGA_KILLS_MISSILES, 0, KEY_K, HTX_KILL_MISSILES);
+		m.AddRadio (TXT_KILL_MISSILES, 0, KEY_A, HTX_KILL_MISSILES);
 		m [optKillMissiles + extraGameInfo [0].bKillMissiles].m_value = 1;
 		m.AddText ("", 0);
-		optAutoLevel = m.AddRadio (TXT_AUTOLEVEL_NONE, 0, KEY_N, 2, HTX_AUTO_LEVELLING);
-		m.AddRadio (TXT_AUTOLEVEL_SIDE, 0, KEY_S, 2, HTX_AUTO_LEVELLING);
-		m.AddRadio (TXT_AUTOLEVEL_FLOOR, 0, KEY_F, 2, HTX_AUTO_LEVELLING);
-		m.AddRadio (TXT_AUTOLEVEL_GLOBAL, 0, KEY_M, 2, HTX_AUTO_LEVELLING);
+		optAutoLevel = m.AddRadio (TXT_AUTOLEVEL_NONE, 0, KEY_N, HTX_AUTO_LEVELLING);
+		m.AddRadio (TXT_AUTOLEVEL_SIDE, 0, KEY_S, HTX_AUTO_LEVELLING);
+		m.AddRadio (TXT_AUTOLEVEL_FLOOR, 0, KEY_F, HTX_AUTO_LEVELLING);
+		m.AddRadio (TXT_AUTOLEVEL_GLOBAL, 0, KEY_M, HTX_AUTO_LEVELLING);
 		m [optAutoLevel + NMCLAMP (gameOpts->gameplay.nAutoLeveling, 0, 3)].m_value = 1;
 		m.AddText ("", 0);
-		optHitboxes = m.AddRadio (TXT_HIT_SPHERES, 0, KEY_W, 3, HTX_GPLAY_HITBOXES);
-		m.AddRadio (TXT_SIMPLE_HITBOXES, 0, KEY_W, 3, HTX_GPLAY_HITBOXES);
-		m.AddRadio (TXT_COMPLEX_HITBOXES, 0, KEY_W, 3, HTX_GPLAY_HITBOXES);
+		optHitboxes = m.AddRadio (TXT_HIT_SPHERES, 0, KEY_W, HTX_GPLAY_HITBOXES);
+		m.AddRadio (TXT_SIMPLE_HITBOXES, 0, KEY_W, HTX_GPLAY_HITBOXES);
+		m.AddRadio (TXT_COMPLEX_HITBOXES, 0, KEY_W, HTX_GPLAY_HITBOXES);
 		m [optHitboxes + NMCLAMP (extraGameInfo [0].nHitboxes, 0, 2)].m_value = 1;
 		}
 	do {

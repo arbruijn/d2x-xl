@@ -157,6 +157,7 @@ typedef int (*pMenuCallback) (CMenu& m, int& lastKey, int nItem);
 class CMenu : public CStack<CMenuItem> {
 	private:
 		tMenuProps	m_props;
+		int			m_nGroup;
 
 	public:
 		CMenu () { Init (); }
@@ -166,9 +167,11 @@ class CMenu : public CStack<CMenuItem> {
 			}
 		inline void Init (void) { 
 			SetGrowth (10);
+			m_nGroup = 0;
 			}
+		inline int NewGroup (void) { return ++m_nGroup; }
 		int AddCheck (const char* szText, int nValue, int nKey = 0, const char* szHelp = NULL);
-		int AddRadio (const char* szText, int nValue, int nGroup, int nKey = 0, const char* szHelp = NULL);
+		int AddRadio (const char* szText, int nValue, int nKey = 0, const char* szHelp = NULL);
 		int AddMenu (const char* szText, int nKey = 0, const char* szHelp = NULL);
 		int AddText (const char* szText, int nKey = 0);
 		int AddSlider (const char* szText, int nValue, int nMin, int nMax, int nKey = 0, const char* szHelp = NULL);

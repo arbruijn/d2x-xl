@@ -2922,14 +2922,14 @@ void ProgressBar (const char* szCaption, int nCurProgress, int nMaxProgress, pMe
 	CMenu	mm;
 
 mm.Create (3);
-mm.AddGauge ("", 0, nMaxProgress); 
+mm.AddGauge ("                    ", 0, nMaxProgress); //the blank string denotes the screen width of the gauge
 mm.Item (0).m_bCentered = 1;
 mm.Item (0).m_value = nCurProgress;
 nInMenu = gameStates.menus.nInMenu;
 gameStates.menus.nInMenu = 0;
 gameData.app.bGamePaused = 1;
 do {
-	i = mm.Menu (NULL, szCaption, doProgress, 0, NULL);
+	i = mm.Menu (NULL, szCaption, doProgress);
 	} while (i >= 0);
 gameData.app.bGamePaused = 0;
 gameStates.menus.nInMenu = nInMenu;
@@ -2953,14 +2953,16 @@ return ToS () - 1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddRadio (const char* szText, int nValue, int nGroup, int nKey, const char* szHelp)
+int CMenu::AddRadio (const char* szText, int nValue, int nKey, const char* szHelp)
 {
 CMenuItem item;
+if (!ToS () || (Top ()->m_nType != NM_TYPE_RADIO))
+	NewGroup ();
 item.m_nType = NM_TYPE_RADIO;
 item.m_text = (char*) (szText);
 item.m_value = nValue;
 item.m_nKey = nKey;
-item.m_group = nGroup;
+item.m_group = m_nGroup;
 item.m_szHelp = szHelp;
 Push (item);
 return ToS () - 1;

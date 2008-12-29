@@ -231,10 +231,10 @@ do {
 		if ((gameOpts->render.nLightingMethod == 2) && 
 			 !(gameStates.render.bUsePerPixelLighting && gameStates.ogl.bShadersOk && gameStates.ogl.bPerPixelLightingOk))
 			gameOpts->render.nLightingMethod = 1;
-		lightOpts.nMethod = m.AddRadio (TXT_STD_LIGHTING, gameOpts->render.nLightingMethod == 0, KEY_S, 1, NULL);
-		m.AddRadio (TXT_VERTEX_LIGHTING, gameOpts->render.nLightingMethod == 1, KEY_V, 1, HTX_VERTEX_LIGHTING);
+		lightOpts.nMethod = m.AddRadio (TXT_STD_LIGHTING, gameOpts->render.nLightingMethod == 0, KEY_S, NULL);
+		m.AddRadio (TXT_VERTEX_LIGHTING, gameOpts->render.nLightingMethod == 1, KEY_V, HTX_VERTEX_LIGHTING);
 		if (gameStates.render.bUsePerPixelLighting && gameStates.ogl.bShadersOk && gameStates.ogl.bPerPixelLightingOk)
-			m.AddRadio (TXT_PER_PIXEL_LIGHTING, gameOpts->render.nLightingMethod == 2, KEY_P, 1, HTX_PER_PIXEL_LIGHTING);
+			m.AddRadio (TXT_PER_PIXEL_LIGHTING, gameOpts->render.nLightingMethod == 2, KEY_P, HTX_PER_PIXEL_LIGHTING);
 		m.AddText ("", 0);
 		}
 	gameOpts->ogl.nMaxLightsPerObject = LightTableIndex (gameOpts->ogl.nMaxLightsPerObject);
@@ -273,9 +273,9 @@ do {
 			}
 
 		m.AddText ("", 0);
-		optColorSat = m.AddRadio (TXT_FULL_COLORSAT, 0, KEY_F, 2, HTX_COLOR_SATURATION);
-		m.AddRadio (TXT_LIMIT_COLORSAT, 0, KEY_L, 2, HTX_COLOR_SATURATION);
-		m.AddRadio (TXT_NO_COLORSAT, 0, KEY_N, 2, HTX_COLOR_SATURATION);
+		optColorSat = m.AddRadio (TXT_FULL_COLORSAT, 0, KEY_F, HTX_COLOR_SATURATION);
+		m.AddRadio (TXT_LIMIT_COLORSAT, 0, KEY_L, HTX_COLOR_SATURATION);
+		m.AddRadio (TXT_NO_COLORSAT, 0, KEY_N, HTX_COLOR_SATURATION);
 		m [optColorSat + NMCLAMP (gameOpts->render.color.nSaturation, 0, 2)].m_value = 1;
 		m.AddText ("", 0);
 		}

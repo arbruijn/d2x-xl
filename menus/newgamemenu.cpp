@@ -303,9 +303,9 @@ for (;;) {
 	*szDifficulty = *(TXT_DIFFICULTY2 - 1);
 	nOptDifficulty = m.AddSlider (szDifficulty + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
 	m.AddText ("", 0);
-	nOptVerFilter = m.AddRadio (TXT_PLAY_D1MISSIONS, 0, KEY_1, 1, HTX_LEVEL_VERSION_FILTER);
-	m.AddRadio (TXT_PLAY_D2MISSIONS, 0, KEY_2, 1, HTX_LEVEL_VERSION_FILTER);
-	m.AddRadio (TXT_PLAY_ALL_MISSIONS, 0, KEY_A, 1, HTX_LEVEL_VERSION_FILTER);
+	nOptVerFilter = m.AddRadio (TXT_PLAY_D1MISSIONS, 0, KEY_1, HTX_LEVEL_VERSION_FILTER);
+	m.AddRadio (TXT_PLAY_D2MISSIONS, 0, KEY_2, HTX_LEVEL_VERSION_FILTER);
+	m.AddRadio (TXT_PLAY_ALL_MISSIONS, 0, KEY_A, HTX_LEVEL_VERSION_FILTER);
 	m [nOptVerFilter + gameOpts->app.nVersionFilter - 1].m_value = 1;
 	if (nMission >= 0) {
 		m.AddText ("", 0);
@@ -450,12 +450,12 @@ else {
 			optCreate = m.AddMenu (TXT_CREATE_GAME, KEY_S, HTX_NETWORK_SERVER);
 			optJoin = m.AddMenu (TXT_JOIN_GAME, KEY_J, HTX_NETWORK_CLIENT);
 			m.AddText ("", 0);
-			optConn = m.AddRadio (TXT_NGTYPE_IPX, 0, KEY_I, 0, HTX_NETWORK_IPX);
-			m.AddRadio (TXT_NGTYPE_UDP, 0, KEY_U, 0, HTX_NETWORK_UDP);
-			m.AddRadio (TXT_NGTYPE_TRACKER, 0, KEY_T, 0, HTX_NETWORK_TRACKER);
-			m.AddRadio (TXT_NGTYPE_MCAST4, 0, KEY_M, 0, HTX_NETWORK_MCAST);
+			optConn = m.AddRadio (TXT_NGTYPE_IPX, 0, KEY_I, HTX_NETWORK_IPX);
+			m.AddRadio (TXT_NGTYPE_UDP, 0, KEY_U, HTX_NETWORK_UDP);
+			m.AddRadio (TXT_NGTYPE_TRACKER, 0, KEY_T, HTX_NETWORK_TRACKER);
+			m.AddRadio (TXT_NGTYPE_MCAST4, 0, KEY_M, HTX_NETWORK_MCAST);
 #ifdef KALINIX
-			m.AddRadio (TXT_NGTYPE_KALI, 0, KEY_K, 0, HTX_NETWORK_KALI);
+			m.AddRadio (TXT_NGTYPE_KALI, 0, KEY_K, HTX_NETWORK_KALI);
 #endif
 			nConnections = m.ToS ();
 			m [optConn + NMCLAMP (gameStates.multi.nConnection, 0, nConnections - optConn)].m_value = 1;

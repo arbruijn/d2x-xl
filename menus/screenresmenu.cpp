@@ -196,9 +196,9 @@ do {
 			cShortCut = 'A';
 		else
 			cShortCut++;
-		m.AddRadio (szMode [i], 0, -1, 0, NULL);
+		m.AddRadio (szMode [i], 0, -1);
 		}
-	screenResOpts.nCustom = m.AddRadio (TXT_CUSTOM_SCRRES, 0, KEY_U, 0, HTX_CUSTOM_SCRRES);
+	screenResOpts.nCustom = m.AddRadio (TXT_CUSTOM_SCRRES, 0, KEY_U, HTX_CUSTOM_SCRRES);
 	*szCustX = *szCustY = '\0';
 	if (displayModeInfo [NUM_DISPLAY_MODES].w)
 		sprintf (szCustX, "%d", displayModeInfo [NUM_DISPLAY_MODES].w);

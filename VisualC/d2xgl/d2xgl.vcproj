@@ -1910,24 +1910,8 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\banlist.cpp"
+						RelativePath="..\..\network\banlist.cpp"
 						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\..\network\win32\ipx_mcast4.cpp"
@@ -3702,128 +3686,32 @@
 					Name="Source Files"
 					>
 					<File
-						RelativePath="..\..\main\hostage.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\main\marker.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\main\object.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\main\player.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\main\powerup.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\main\reactor.cpp"
+						RelativePath="..\..\objects\hostage.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\robot.cpp"
+						RelativePath="..\..\objects\marker.cpp"
 						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\objects\object.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\objects\player.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\objects\powerup.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\objects\reactor.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\objects\robot.cpp"
+						>
 					</File>
 				</Filter>
 			</Filter>
@@ -3962,84 +3850,20 @@
 					Name="Source Files"
 					>
 					<File
-						RelativePath="..\..\main\collide.cpp"
+						RelativePath="..\..\physics\collide.cpp"
 						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\main\fvi.cpp"
+						RelativePath="..\..\physics\fvi.cpp"
 						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\main\physics.cpp"
+						RelativePath="..\..\physics\physics.cpp"
 						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\main\slowmotion.cpp"
+						RelativePath="..\..\physics\slowmotion.cpp"
 						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
 					</File>
 				</Filter>
 			</Filter>
@@ -4546,163 +4370,131 @@
 					Name="Source Files"
 					>
 					<File
-						RelativePath="..\..\main\automapmenu.cpp"
+						RelativePath="..\..\menus\automapmenu.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\cameramenu.cpp"
+						RelativePath="..\..\menus\cameramenu.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\cockpitmenu.cpp"
+						RelativePath="..\..\menus\cockpitmenu.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\configmenu.cpp"
+						RelativePath="..\..\menus\configmenu.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\coronamenu.cpp"
+						RelativePath="..\..\menus\coronamenu.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\detailsmenu.cpp"
+						RelativePath="..\..\menus\detailsmenu.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\effectsmenu.cpp"
+						RelativePath="..\..\menus\effectsmenu.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\network\entropymenu.cpp"
+						RelativePath="..\..\menus\entropymenu.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\gameplaymenu.cpp"
+						RelativePath="..\..\menus\gameplaymenu.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\lightmenu.cpp"
+						RelativePath="..\..\menus\lightmenu.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\lightningmenu.cpp"
+						RelativePath="..\..\menus\lightningmenu.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\mainmenu.cpp"
+						RelativePath="..\..\menus\mainmenu.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\menu.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\main\menubackground.cpp"
+						RelativePath="..\..\menus\menu.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\miscmenu.cpp"
+						RelativePath="..\..\menus\menubackground.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\network\monsterballmenu.cpp"
+						RelativePath="..\..\menus\miscmenu.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\moviemenu.cpp"
+						RelativePath="..\..\menus\monsterballmenu.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\network\netgamebrowser.cpp"
+						RelativePath="..\..\menus\moviemenu.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\network\netgamehelp.cpp"
+						RelativePath="..\..\menus\netgamebrowser.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\network\netgameinfo.cpp"
+						RelativePath="..\..\menus\netgamehelp.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\network\netmenu.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\network\netplayerbrowser.cpp"
+						RelativePath="..\..\menus\netgameinfo.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\newgamemenu.cpp"
+						RelativePath="..\..\menus\netmenu.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\performancemenu.cpp"
+						RelativePath="..\..\menus\netplayerbrowser.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\physicsmenu.cpp"
+						RelativePath="..\..\menus\newgamemenu.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\powerupmenu.cpp"
+						RelativePath="..\..\menus\performancemenu.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\rendermenu.cpp"
+						RelativePath="..\..\menus\physicsmenu.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\screenresmenu.cpp"
+						RelativePath="..\..\menus\powerupmenu.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\shadowmenu.cpp"
+						RelativePath="..\..\menus\rendermenu.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\shiprendermenu.cpp"
+						RelativePath="..\..\menus\screenresmenu.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\smokemenu.cpp"
+						RelativePath="..\..\menus\shadowmenu.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\soundmenu.cpp"
+						RelativePath="..\..\menus\shiprendermenu.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\menus\smokemenu.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\menus\soundmenu.cpp"
 						>
 					</File>
 				</Filter>

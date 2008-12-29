@@ -123,9 +123,9 @@ do {
 	m.Destroy ();
 	m.Create (15);
 
-	optTgtInd = m.AddRadio (TXT_TGTIND_NONE, 0, KEY_A, 1, HTX_CPIT_TGTIND);
-	m.AddRadio (TXT_TGTIND_SQUARE, 0, KEY_R, 1, HTX_CPIT_TGTIND);
-	m.AddRadio (TXT_TGTIND_TRIANGLE, 0, KEY_T, 1, HTX_CPIT_TGTIND);
+	optTgtInd = m.AddRadio (TXT_TGTIND_NONE, 0, KEY_A, HTX_CPIT_TGTIND);
+	m.AddRadio (TXT_TGTIND_SQUARE, 0, KEY_R, HTX_CPIT_TGTIND);
+	m.AddRadio (TXT_TGTIND_TRIANGLE, 0, KEY_T, HTX_CPIT_TGTIND);
 	m [optTgtInd + extraGameInfo [0].bTargetIndicators].m_value = 1;
 	if (extraGameInfo [0].bTargetIndicators)
 		optCloakedInd = m.AddCheck (TXT_CLOAKED_INDICATOR, extraGameInfo [0].bCloakedIndicators, KEY_C, HTX_CLOAKED_INDICATOR);
@@ -194,10 +194,10 @@ do {
 		optSmallIcons = m.AddCheck (TXT_SMALL_WPNICONS, gameOpts->render.weaponIcons.bSmall, KEY_I, HTX_CPIT_SMALLICONS);
 		optIconSort = m.AddCheck (TXT_SORT_WPNICONS, gameOpts->render.weaponIcons.nSort, KEY_T, HTX_CPIT_SORTICONS);
 		optIconAmmo = m.AddCheck (TXT_AMMO_WPNICONS, gameOpts->render.weaponIcons.bShowAmmo, KEY_A, HTX_CPIT_ICONAMMO);
-		optIconPos = m.AddRadio (TXT_WPNICONS_TOP, 0, KEY_I, 3, HTX_CPIT_ICONPOS);
-		m.AddRadio (TXT_WPNICONS_BTM, 0, KEY_I, 3, HTX_CPIT_ICONPOS);
-		m.AddRadio (TXT_WPNICONS_LRB, 0, KEY_I, 3, HTX_CPIT_ICONPOS);
-		m.AddRadio (TXT_WPNICONS_LRT, 0, KEY_I, 3, HTX_CPIT_ICONPOS);
+		optIconPos = m.AddRadio (TXT_WPNICONS_TOP, 0, KEY_I, HTX_CPIT_ICONPOS);
+		m.AddRadio (TXT_WPNICONS_BTM, 0, KEY_I, HTX_CPIT_ICONPOS);
+		m.AddRadio (TXT_WPNICONS_LRB, 0, KEY_I, HTX_CPIT_ICONPOS);
+		m.AddRadio (TXT_WPNICONS_LRT, 0, KEY_I, HTX_CPIT_ICONPOS);
 		m [optIconPos + NMCLAMP (extraGameInfo [0].nWeaponIcons - 1, 0, 3)].m_value = 1;
 		optIconAlpha = m.AddSlider (TXT_ICON_DIM, gameOpts->render.weaponIcons.alpha, 0, 8, KEY_D, HTX_CPIT_ICONDIM);
 		m.AddText ("", 0);
@@ -361,13 +361,13 @@ do {
 		nCWZopt = m.AddSlider (szCockpitWindowZoom, gameOpts->render.cockpit.nWindowZoom, 0, 3, KEY_Z, HTX_CPIT_WINZOOM);
 		m.AddText ("", 0);
 		m.AddText (TXT_AUXWIN_POSITION, 0);
-		optPosition = m.AddRadio (TXT_POS_BOTTOM, nPosition == 0, KEY_B, 10, HTX_AUXWIN_POSITION);
-		m.AddRadio (TXT_POS_TOP, nPosition == 1, KEY_T, 10, HTX_AUXWIN_POSITION);
+		optPosition = m.AddRadio (TXT_POS_BOTTOM, nPosition == 0, KEY_B, HTX_AUXWIN_POSITION);
+		m.AddRadio (TXT_POS_TOP, nPosition == 1, KEY_T, HTX_AUXWIN_POSITION);
 		m.AddText ("", 0);
 		m.AddText (TXT_AUXWIN_ALIGNMENT, 0);
-		optAlignment = m.AddRadio (TXT_ALIGN_CORNERS, nAlignment == 0, KEY_O, 11, HTX_AUXWIN_ALIGNMENT);
-		m.AddRadio (TXT_ALIGN_MIDDLE, nAlignment == 1, KEY_I, 11, HTX_AUXWIN_ALIGNMENT);
-		m.AddRadio (TXT_ALIGN_CENTER, nAlignment == 2, KEY_E, 11, HTX_AUXWIN_ALIGNMENT);
+		optAlignment = m.AddRadio (TXT_ALIGN_CORNERS, nAlignment == 0, KEY_O, HTX_AUXWIN_ALIGNMENT);
+		m.AddRadio (TXT_ALIGN_MIDDLE, nAlignment == 1, KEY_I, HTX_AUXWIN_ALIGNMENT);
+		m.AddRadio (TXT_ALIGN_CENTER, nAlignment == 2, KEY_E, HTX_AUXWIN_ALIGNMENT);
 		m.AddText ("", 0);
 		optHUD = m.AddCheck (TXT_SHOW_HUD, gameOpts->render.cockpit.bHUD, KEY_U, HTX_CPIT_SHOWHUD);
 		optHUDMsgs = m.AddCheck (TXT_SHOW_HUDMSGS, gameOpts->render.cockpit.bHUDMsgs, KEY_M, HTX_CPIT_SHOWHUDMSGS);

@@ -130,9 +130,9 @@ do {
 	effectOpts.nExplShrapnels = m.AddSlider (szExplShrapnels + 1, gameOpts->render.effects.nShrapnels, 0, 4, KEY_P, HTX_EXPLOSION_SHRAPNELS);
 	optExplBlast = m.AddCheck (TXT_EXPLOSION_BLAST, gameOpts->render.effects.bExplBlasts, KEY_B, HTX_EXPLOSION_BLAST);
 	optDmgExpl = m.AddCheck (TXT_DMG_EXPL, extraGameInfo [0].bDamageExplosions, KEY_X, HTX_RENDER_DMGEXPL);
-	optThrusterFlame = m.AddRadio (TXT_NO_THRUSTER_FLAME, 0, KEY_F, 1, HTX_RENDER_THRUSTER);
-	m.AddRadio (TXT_2D_THRUSTER_FLAME, 0, KEY_2, 1, HTX_RENDER_THRUSTER);
-	m.AddRadio (TXT_3D_THRUSTER_FLAME, 0, KEY_3, 1, HTX_RENDER_THRUSTER);
+	optThrusterFlame = m.AddRadio (TXT_NO_THRUSTER_FLAME, 0, KEY_F, HTX_RENDER_THRUSTER);
+	m.AddRadio (TXT_2D_THRUSTER_FLAME, 0, KEY_2, HTX_RENDER_THRUSTER);
+	m.AddRadio (TXT_3D_THRUSTER_FLAME, 0, KEY_3, HTX_RENDER_THRUSTER);
 	m [optThrusterFlame + extraGameInfo [0].bThrusterFlames].m_value = 1;
 	effectOpts.nSparks = m.AddCheck (TXT_RENDER_SPARKS, gameOpts->render.effects.bEnergySparks, KEY_P, HTX_RENDER_SPARKS);
 	if (gameOpts->render.effects.bEnergySparks)

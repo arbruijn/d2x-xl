@@ -335,13 +335,13 @@ do {
 		}
 	m.AddText ("", 0);
 	optSmartWeaponSwitch = m.AddCheck (TXT_SMART_WPNSWITCH, extraGameInfo [0].bSmartWeaponSwitch, KEY_W, HTX_GPLAY_SMARTSWITCH);
-	optAutoSel = m.AddRadio (TXT_WPNSEL_NEVER, 0, KEY_N, 2, HTX_GPLAY_WSELNEVER);
-	m.AddRadio (TXT_WPNSEL_EMPTY, 0, KEY_Y, 2, HTX_GPLAY_WSELEMPTY);
-	m.AddRadio (TXT_WPNSEL_ALWAYS, 0, KEY_T, 2, HTX_GPLAY_WSELALWAYS);
+	optAutoSel = m.AddRadio (TXT_WPNSEL_NEVER, 0, KEY_N, HTX_GPLAY_WSELNEVER);
+	m.AddRadio (TXT_WPNSEL_EMPTY, 0, KEY_Y, HTX_GPLAY_WSELEMPTY);
+	m.AddRadio (TXT_WPNSEL_ALWAYS, 0, KEY_T, HTX_GPLAY_WSELALWAYS);
 	m.AddText ("", 0);
-	optSnipeMode = m.AddRadio (TXT_ZOOM_OFF, 0, KEY_D, 3, HTX_GPLAY_ZOOMOFF);
-	m.AddRadio (TXT_ZOOM_FIXED, 0, KEY_X, 3, HTX_GPLAY_ZOOMFIXED);
-	m.AddRadio (TXT_ZOOM_SMOOTH, 0, KEY_Z, 3, HTX_GPLAY_ZOOMSMOOTH);
+	optSnipeMode = m.AddRadio (TXT_ZOOM_OFF, 0, KEY_D, HTX_GPLAY_ZOOMOFF);
+	m.AddRadio (TXT_ZOOM_FIXED, 0, KEY_X, HTX_GPLAY_ZOOMFIXED);
+	m.AddRadio (TXT_ZOOM_SMOOTH, 0, KEY_Z, HTX_GPLAY_ZOOMSMOOTH);
 	m [optAutoSel + NMCLAMP (gameOpts->gameplay.nAutoSelectWeapon, 0, 2)].m_value = 1;
 	m [optSnipeMode + NMCLAMP (extraGameInfo [0].nZoomMode, 0, 2)].m_value = 1;
 	m.AddText ("", 0);

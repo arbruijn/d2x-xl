@@ -55,10 +55,10 @@ optConqWarn = m.AddCheck (TXT_ENT_CONQWARN, extraGameInfo [0].entropy.bDoConquer
 optRevRooms = m.AddCheck (TXT_ENT_REVERT, extraGameInfo [0].entropy.bRevertRooms, KEY_R, HTX_ONLINE_MANUAL);
 m.AddText ("");
 optVirStab = m.AddText (TXT_ENT_VIRSTAB);
-m.AddRadio (TXT_ENT_VIRSTAB_DROP, 0, 2, KEY_D);
-m.AddRadio (TXT_ENT_VIRSTAB_ENEMY, 0, 2, KEY_T);
-m.AddRadio (TXT_ENT_VIRSTAB_TOUCH, 0, 2, KEY_L);
-m.AddRadio (TXT_ENT_VIRSTAB_NEVER, 0, 2, KEY_N);
+m.AddRadio (TXT_ENT_VIRSTAB_DROP, 0, KEY_D);
+m.AddRadio (TXT_ENT_VIRSTAB_ENEMY, 0, KEY_T);
+m.AddRadio (TXT_ENT_VIRSTAB_TOUCH, 0, KEY_L);
+m.AddRadio (TXT_ENT_VIRSTAB_NEVER, 0, KEY_N);
 m [optVirStab + extraGameInfo [0].entropy.nVirusStability].m_value = 1;
 
 m.Menu (NULL, TXT_ENT_TOGGLES, NULL, 0);
@@ -79,9 +79,9 @@ void NetworkEntropyTextureOptions (void)
 {
 	CMenu	m (7);
 
-optOvrTex = m.AddRadio (TXT_ENT_TEX_KEEP, 0, 1, KEY_K, HTX_ONLINE_MANUAL);
-m.AddRadio (TXT_ENT_TEX_OVERRIDE, 0, 1, KEY_O, HTX_ONLINE_MANUAL);
-m.AddRadio (TXT_ENT_TEX_COLOR, 0, 1, KEY_C, HTX_ONLINE_MANUAL);
+optOvrTex = m.AddRadio (TXT_ENT_TEX_KEEP, 0, KEY_K, HTX_ONLINE_MANUAL);
+m.AddRadio (TXT_ENT_TEX_OVERRIDE, 0, KEY_O, HTX_ONLINE_MANUAL);
+m.AddRadio (TXT_ENT_TEX_COLOR, 0, KEY_C, HTX_ONLINE_MANUAL);
 m [optOvrTex + extraGameInfo [0].entropy.nOverrideTextures].m_value = 1;
 m.AddText ("");
 optBrRooms = m.AddCheck (TXT_ENT_TEX_BRIGHTEN, extraGameInfo [0].entropy.bBrightenRooms, KEY_B, HTX_ONLINE_MANUAL);

@@ -144,23 +144,23 @@ do {
 		optBright =
 		optSparks = -1;
 	optShowRobots = m.AddCheck (TXT_AUTOMAP_ROBOTS, extraGameInfo [0].bRobotsOnRadar, KEY_R, HTX_AUTOMAP_ROBOTS);
-	optShowPowerups = m.AddRadio (TXT_AUTOMAP_NO_POWERUPS, 0, KEY_D, 3, HTX_AUTOMAP_POWERUPS);
-	m.AddRadio (TXT_AUTOMAP_POWERUPS, 0, KEY_P, 3, HTX_AUTOMAP_POWERUPS);
+	optShowPowerups = m.AddRadio (TXT_AUTOMAP_NO_POWERUPS, 0, KEY_D, HTX_AUTOMAP_POWERUPS);
+	m.AddRadio (TXT_AUTOMAP_POWERUPS, 0, KEY_P, HTX_AUTOMAP_POWERUPS);
 	if (extraGameInfo [0].nRadar)
-		m.AddRadio (TXT_RADAR_POWERUPS, 0, KEY_A, 3, HTX_AUTOMAP_POWERUPS);
+		m.AddRadio (TXT_RADAR_POWERUPS, 0, KEY_A, HTX_AUTOMAP_POWERUPS);
 	m [optShowPowerups + extraGameInfo [0].bPowerupsOnRadar].m_value = 1;
 	m.AddText ("", 0);
-	automapOpts.nOptRadar = m.AddRadio (TXT_RADAR_OFF, 0, KEY_R, 1, HTX_AUTOMAP_RADAR);
-	m.AddRadio (TXT_RADAR_TOP, 0, KEY_T, 1, HTX_AUTOMAP_RADAR);
-	m.AddRadio (TXT_RADAR_BOTTOM, 0, KEY_O, 1, HTX_AUTOMAP_RADAR);
+	automapOpts.nOptRadar = m.AddRadio (TXT_RADAR_OFF, 0, KEY_R, HTX_AUTOMAP_RADAR);
+	m.AddRadio (TXT_RADAR_TOP, 0, KEY_T, HTX_AUTOMAP_RADAR);
+	m.AddRadio (TXT_RADAR_BOTTOM, 0, KEY_O, HTX_AUTOMAP_RADAR);
 	if (extraGameInfo [0].nRadar) {
 		m.AddText ("", 0);
 		sprintf (szRadarRange + 1, TXT_RADAR_RANGE, pszRadarRange [gameOpts->render.automap.nRange]);
 		*szRadarRange = *(TXT_RADAR_RANGE - 1);
 		automapOpts.nOptRadarRange = m.AddSlider (szRadarRange + 1, gameOpts->render.automap.nRange, 0, 2, KEY_A, HTX_RADAR_RANGE);
 		m.AddText ("", 0);
-		optColor = m.AddRadio (TXT_RADAR_WHITE, 0, KEY_W, 2, NULL);
-		m.AddRadio (TXT_RADAR_BLACK, 0, KEY_L, 2, NULL);
+		optColor = m.AddRadio (TXT_RADAR_WHITE, 0, KEY_W);
+		m.AddRadio (TXT_RADAR_BLACK, 0, KEY_L);
 		m [optColor + gameOpts->render.automap.nColor].m_value = 1;
 		m [automapOpts.nOptRadar + extraGameInfo [0].nRadar].m_value = 1;
 		}

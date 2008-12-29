@@ -697,9 +697,9 @@ do {
 			}
 		else
 			optPenalty = -1;
-		optTgtInd = m.AddRadio (TXT_TGTIND_NONE, 0, KEY_A, 1, HTX_CPIT_TGTIND);
-		m.AddRadio (TXT_TGTIND_SQUARE, 0, KEY_R, 1, HTX_CPIT_TGTIND);
-		m.AddRadio (TXT_TGTIND_TRIANGLE, 0, KEY_T, 1, HTX_CPIT_TGTIND);
+		optTgtInd = m.AddRadio (TXT_TGTIND_NONE, 0, KEY_A, HTX_CPIT_TGTIND);
+		m.AddRadio (TXT_TGTIND_SQUARE, 0, KEY_R, HTX_CPIT_TGTIND);
+		m.AddRadio (TXT_TGTIND_TRIANGLE, 0, KEY_T, HTX_CPIT_TGTIND);
 		m [optTgtInd + extraGameInfo [1].bTargetIndicators].m_value = 1;
 		if (extraGameInfo [1].bTargetIndicators)
 			optFriendlyIndicator = m.AddCheck (TXT_FRIENDLY_INDICATOR, extraGameInfo [1].bFriendlyIndicators, KEY_F, HTX_FRIENDLY_INDICATOR);
@@ -841,22 +841,22 @@ else
 	optLevelText = -1;
 m.AddText ("", 0); 
 optGameTypes = 
-optAnarchy = m.AddRadio (TXT_ANARCHY, 0, KEY_A, 0, HTX_MULTI_ANARCHY);
-optTeamAnarchy = m.AddRadio (TXT_TEAM_ANARCHY, 0, KEY_T, 0, HTX_MULTI_TEAMANA);
-optRobotAnarchy = m.AddRadio (TXT_ANARCHY_W_ROBOTS, 0, KEY_R, 0, HTX_MULTI_BOTANA);
-optCoop = m.AddRadio (TXT_COOP, 0, KEY_P, 0, HTX_MULTI_COOP);
-optCTF = m.AddRadio (TXT_CTF, 0, KEY_F, 0, HTX_MULTI_CTF);
+optAnarchy = m.AddRadio (TXT_ANARCHY, 0, KEY_A, HTX_MULTI_ANARCHY);
+optTeamAnarchy = m.AddRadio (TXT_TEAM_ANARCHY, 0, KEY_T, HTX_MULTI_TEAMANA);
+optRobotAnarchy = m.AddRadio (TXT_ANARCHY_W_ROBOTS, 0, KEY_R, HTX_MULTI_BOTANA);
+optCoop = m.AddRadio (TXT_COOP, 0, KEY_P, HTX_MULTI_COOP);
+optCTF = m.AddRadio (TXT_CTF, 0, KEY_F, HTX_MULTI_CTF);
 if (!gameStates.app.bNostalgia)
-	optEnhancedCTF = m.AddRadio (TXT_CTF_PLUS, 0, KEY_T, 0, HTX_MULTI_CTFPLUS);
+	optEnhancedCTF = m.AddRadio (TXT_CTF_PLUS, 0, KEY_T, HTX_MULTI_CTFPLUS);
 
 optEntropy =
 optMonsterball = -1;
 if (bHoard) {
-	optHoard = m.AddRadio (TXT_HOARD, 0, KEY_H, 0, HTX_MULTI_HOARD);
-	optTeamHoard = m.AddRadio (TXT_TEAM_HOARD, 0, KEY_H, 0, HTX_MULTI_TEAMHOARD);
+	optHoard = m.AddRadio (TXT_HOARD, 0, KEY_H, HTX_MULTI_HOARD);
+	optTeamHoard = m.AddRadio (TXT_TEAM_HOARD, 0, KEY_H, HTX_MULTI_TEAMHOARD);
 	if (!gameStates.app.bNostalgia) {
-		optEntropy = m.AddRadio (TXT_ENTROPY, 0, KEY_Y, 0, HTX_MULTI_ENTROPY);
-		optMonsterball = m.AddRadio (TXT_MONSTERBALL, 0, KEY_B, 0, HTX_MULTI_MONSTERBALL);
+		optEntropy = m.AddRadio (TXT_ENTROPY, 0, KEY_Y, HTX_MULTI_ENTROPY);
+		optMonsterball = m.AddRadio (TXT_MONSTERBALL, 0, KEY_B, HTX_MULTI_MONSTERBALL);
 		}
 	} 
 nGameTypes = m.ToS () - 1 - optGameTypes;
@@ -864,9 +864,9 @@ m [optGameTypes + NMCLAMP (mpParams.nGameType, 0, nGameTypes)].m_value = 1;
 
 m.AddText ("", 0); 
 
-optOpenGame = m.AddRadio (TXT_OPEN_GAME, 0, KEY_O, 1, HTX_MULTI_OPENGAME);
-optClosedGame = m.AddRadio (TXT_CLOSED_GAME, 0, KEY_C, 1, HTX_MULTI_CLOSEDGAME);
-optRestrictedGame = m.AddRadio (TXT_RESTR_GAME, 0, KEY_R, 1, HTX_MULTI_RESTRGAME);
+optOpenGame = m.AddRadio (TXT_OPEN_GAME, 0, KEY_O, HTX_MULTI_OPENGAME);
+optClosedGame = m.AddRadio (TXT_CLOSED_GAME, 0, KEY_C, HTX_MULTI_CLOSEDGAME);
+optRestrictedGame = m.AddRadio (TXT_RESTR_GAME, 0, KEY_R, HTX_MULTI_RESTRGAME);
 m [optOpenGame + NMCLAMP (mpParams.nGameAccess, 0, 2)].m_value = 1;
 m.AddText ("", 0);
 sprintf (szMaxNet + 1, TXT_MAX_PLAYERS, gameData.multiplayer.nMaxPlayers);

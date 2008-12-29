@@ -129,10 +129,10 @@ do {
 	if (extraGameInfo [0].bShowWeapons) {
 		optBullets = m.AddCheck (TXT_SHIP_BULLETS, gameOpts->render.ship.bBullets, KEY_B, HTX_SHIP_BULLETS);
 		m.AddText ("", 0);
-		optWingtips = m.AddRadio (TXT_SHIP_WINGTIP_LASER, 0, KEY_A, 1, HTX_SHIP_WINGTIPS);
-		m.AddRadio (TXT_SHIP_WINGTIP_SUPLAS, 0, KEY_U, 1, HTX_SHIP_WINGTIPS);
-		m.AddRadio (TXT_SHIP_WINGTIP_SHORT, 0, KEY_S, 1, HTX_SHIP_WINGTIPS);
-		m.AddRadio (TXT_SHIP_WINGTIP_LONG, 0, KEY_L, 1, HTX_SHIP_WINGTIPS);
+		optWingtips = m.AddRadio (TXT_SHIP_WINGTIP_LASER, 0, KEY_A, HTX_SHIP_WINGTIPS);
+		m.AddRadio (TXT_SHIP_WINGTIP_SUPLAS, 0, KEY_U, HTX_SHIP_WINGTIPS);
+		m.AddRadio (TXT_SHIP_WINGTIP_SHORT, 0, KEY_S, HTX_SHIP_WINGTIPS);
+		m.AddRadio (TXT_SHIP_WINGTIP_LONG, 0, KEY_L, HTX_SHIP_WINGTIPS);
 		m [optWingtips + gameOpts->render.ship.nWingtip].m_value = 1;
 		m.AddText ("", 0);
 		m.AddText (TXT_SHIPCOLOR_HEADER, 0);

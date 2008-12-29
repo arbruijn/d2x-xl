@@ -261,8 +261,8 @@ do {
 				if (gameOpts->input.mouse.bJoystick && gameOpts->app.bExpertMode)
 					mouseOpts.nDeadzone = AddDeadzoneControl (m, szMouseDeadzone, TXT_MOUSE_DEADZONE, HTX_MOUSE_DEADZONE, szDZoneSizes, gameOpts->input.mouse.nDeadzone, KEY_U);
 				m.AddText ("", 0);
-				nMouseTypeOpt = m.AddRadio (TXT_STD_MOUSE, 0, 0, 1, HTX_CONF_STDMOUSE);
-				m.AddRadio (TXT_CYBERMAN, 0, 0, 1, HTX_CONF_CYBERMAN);
+				nMouseTypeOpt = m.AddRadio (TXT_STD_MOUSE, 0, 0, HTX_CONF_STDMOUSE);
+				m.AddRadio (TXT_CYBERMAN, 0, 0, HTX_CONF_CYBERMAN);
 				m [nMouseTypeOpt + NMCLAMP (gameStates.input.nMouseType - CONTROL_MOUSE, 0, 1)].m_value = 1;
 				}
 			}
@@ -410,10 +410,10 @@ do {
 				joyOpts.nDeadzone = AddAxisControls (m, &szJoyDeadzone [0][0], TXT_JOY_DEADZONE, TXT_JOY_DEADZONE_N, szJoyAxis, HTX_CONF_JOYDZONE, 
 																 UNIQUE_JOY_AXES, gameOpts->input.joystick.deadzones, 16, nJoyDeadzones, KEY_S, joyHotkeys, gameOpts->input.joystick.bSyncAxes);
 				m.AddText ("", 0);
-				nJoyTypeOpt = m.AddRadio (TXT_STD_JOY, 0, 0, 2, HTX_CONF_STDJOY);
-				m.AddRadio (TXT_FSPRO_JOY, 0, 0, 2, HTX_CONF_FSPRO);
-				m.AddRadio (TXT_FCS_JOY, 0, 0, 2, HTX_CONF_FCS);
-				m.AddRadio (TXT_GRAVIS_JOY, 0, 0, 2, HTX_CONF_GRAVIS);
+				nJoyTypeOpt = m.AddRadio (TXT_STD_JOY, 0, 0, HTX_CONF_STDJOY);
+				m.AddRadio (TXT_FSPRO_JOY, 0, 0, HTX_CONF_FSPRO);
+				m.AddRadio (TXT_FCS_JOY, 0, 0, HTX_CONF_FCS);
+				m.AddRadio (TXT_GRAVIS_JOY, 0, 0, HTX_CONF_GRAVIS);
 				m [nJoyTypeOpt + NMCLAMP (gameStates.input.nJoyType - CONTROL_JOYSTICK, 0, 3)].m_value = 1;
 				}
 			}
@@ -538,9 +538,9 @@ do {
 
 	tirOpts.nUse = m.AddCheck (TXT_USE_TRACKIR, gameOpts->input.trackIR.bUse, KEY_M, HTX_USE_TRACKIR);
 	if (gameOpts->input.trackIR.bUse) {
-		tirOpts.nMode = m.AddRadio (TXT_TRACKIR_AIM, 0, KEY_A, 1, HTX_TRACKIR_AIM);
-		m.AddRadio (TXT_TRACKIR_STEER, 0, KEY_S, 1, HTX_TRACKIR_STEER);
-		m.AddRadio (TXT_TRACKIR_LOOK, 0, KEY_L, 1, HTX_TRACKIR_LOOK);
+		tirOpts.nMode = m.AddRadio (TXT_TRACKIR_AIM, 0, KEY_A, HTX_TRACKIR_AIM);
+		m.AddRadio (TXT_TRACKIR_STEER, 0, KEY_S, HTX_TRACKIR_STEER);
+		m.AddRadio (TXT_TRACKIR_LOOK, 0, KEY_L, HTX_TRACKIR_LOOK);
 		m [tirOpts.nMode + gameOpts->input.trackIR.nMode].m_value = 1;
 		m.AddText ("", 0);
 		tirOpts.nMove = m.ToS ();

@@ -105,10 +105,10 @@ do {
 		optSpin = -1;
 	else {
 		m.AddText ("", 0);
-		optSpin = m.AddRadio (TXT_SPIN_OFF, 0, KEY_O, 1, NULL);
-		m.AddRadio (TXT_SPIN_SLOW, 0, KEY_S, 1, NULL);
-		m.AddRadio (TXT_SPIN_MEDIUM, 0, KEY_M, 1, NULL);
-		m.AddRadio (TXT_SPIN_FAST, 0, KEY_F, 1, NULL);
+		optSpin = m.AddRadio (TXT_SPIN_OFF, 0, KEY_O);
+		m.AddRadio (TXT_SPIN_SLOW, 0, KEY_S);
+		m.AddRadio (TXT_SPIN_MEDIUM, 0, KEY_M);
+		m.AddRadio (TXT_SPIN_FAST, 0, KEY_F);
 		m [optSpin + gameOpts->render.powerups.nSpin].m_value = 1;
 		}
 	for (;;) {

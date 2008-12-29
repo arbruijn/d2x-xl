@@ -147,6 +147,8 @@ return nCurItem;
 int SetupMainMenu (CMenu& m)
 {
 memset (&mainOpts, 0xff, sizeof (mainOpts));
+m.Destroy ();
+m.Create (25);
 #ifndef DEMO_ONLY
 SetScreenMode (SCREEN_MENU);
 #if 1
@@ -186,7 +188,7 @@ return m.ToS ();
 //returns number of item chosen
 int MainMenu (void) 
 {
-	CMenu	m (25);
+	CMenu	m;
 	int	i, nChoice = 0, nOptions = 0;
 
 IpxClose ();
