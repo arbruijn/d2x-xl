@@ -288,22 +288,17 @@ if (bDetected) {
 
 void ChangeGuidebotName ()
 {
-	CMenuItem m;
-	char text [GUIDEBOT_NAME_LEN+1]="";
-	int item;
+	CMenu	m;
+	char	text [GUIDEBOT_NAME_LEN+1]="";
+	int	item;
 
-	strcpy (text,gameData.escort.szName);
-
-	memset (&m, 0, sizeof (m));
-	m.nType=NM_TYPE_INPUT;
-	m.nTextLen = GUIDEBOT_NAME_LEN;
-	m.text = text;
-	item = ExecMenu (NULL, "Enter Guide-bot name:", 1, &m, NULL, NULL);
-
-	if (item != -1) {
-		strcpy (gameData.escort.szName,text);
-		strcpy (gameData.escort.szRealName,text);
-		WritePlayerFile ();
+strcpy (text,gameData.escort.szName);
+m.AddInput (text, GUIDEBOT_NAME_LEN);
+item = m.Menu (NULL, "Enter Guide-bot name:");
+if (item != -1) {
+	strcpy (gameData.escort.szName,text);
+	strcpy (gameData.escort.szRealName,text);
+	WritePlayerFile ();
 	}
 }
 
@@ -1065,9 +1060,9 @@ void InvalidateEscortGoal (void)
 int ShowEscortHelp (char *pszGoal, char *tstr)
 {
 
-	int				nItems;
-	CMenuItem	m [12];
-	char szGoal		 [40], szMsgs [40];
+	int	nItems;
+	CMenu	m (12);
+	char	szGoal	[40], szMsgs [40];
 #if 0
 	static char *szEscortHelp [12] = {
 		"0.  Next Goal: %s",
@@ -1087,16 +1082,14 @@ int ShowEscortHelp (char *pszGoal, char *tstr)
 
 sprintf (szGoal, TXT_GOAL_NEXT, pszGoal);
 sprintf (szMsgs, TXT_GOAL_MESSAGES, tstr);
-memset (m, 0, sizeof (m));
+m.AddText (szGoal);
 for (nItems = 1; nItems < 10; nItems++) {
-	m [nItems].text = const_cast<char*> (GT (343 + nItems));
-	m [nItems].nType = *m [nItems].text ? NM_TYPE_MENU : NM_TYPE_TEXT;
-	m [nItems].key = -1;
+	m.AddText (const_cast<char*> (GT (343 + nItems)), -1);
+	if (*m.Top ()->m_text)
+		m.Top ()->m_nType = NM_TYPE_MENU;
 	}
-m [0].text = szGoal;
-m [10].text = szMsgs;
-m [10].key = KEY_T;
-return ExecMenutiny2 (NULL, "Guide-Bot Commands", 11, m, NULL);
+m.AddText (szMsgs, KEY_T);
+return m.TinyMenu (NULL, "Guide-Bot Commands");
 }
 
 // --------------------------------------------------------------------------------------------------------------

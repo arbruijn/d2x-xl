@@ -213,7 +213,7 @@ void RestartNetSearching (CMenu& menu)
 gameData.multiplayer.nPlayers = 0;
 networkData.nActiveGames = 0;
 memset (activeNetGames, 0, sizeof (tNetgameInfo) * MAX_ACTIVE_NETGAMES);
-InitNetgameMenu (m, 0);
+InitNetgameMenu (menu, 0);
 networkData.nNamesInfoSecurity = -1;
 networkData.bGamesChanged = 1;      
 }

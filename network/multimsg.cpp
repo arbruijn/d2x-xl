@@ -527,17 +527,14 @@ switch (key) {
 
 void MultiSendMsgDialog (void)
 {
-	CMenuItem m [1];
-	int choice;
+	CMenu	m (1);
+	int	choice;
 
 if (!(gameData.app.nGameMode & GM_MULTI))
 	return;
 gameData.multigame.msg.szMsg [0] = 0;             // Get rid of old contents
-memset (m, 0, sizeof (m));
-m [0].nType = NM_TYPE_INPUT; 
-m [0].text = gameData.multigame.msg.szMsg; 
-m [0].nTextLen = MAX_MESSAGE_LEN-1;
-choice = ExecMenu (NULL, TXT_SEND_MESSAGE, 1, m, NULL, NULL);
+m.AddInput (gameData.multigame.msg.szMsg, MAX_MESSAGE_LEN - 1);
+choice = m.Menu (NULL, TXT_SEND_MESSAGE);
 if ((choice > -1) && (strlen (gameData.multigame.msg.szMsg) > 0)) {
 	gameData.multigame.msg.nReceiver = 100;
 	HUDInitMessage ("%s '%s'", TXT_SENDING, gameData.multigame.msg.szMsg);

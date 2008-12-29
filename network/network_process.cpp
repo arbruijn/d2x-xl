@@ -270,9 +270,9 @@ MultiProcessBigData (reinterpret_cast<char*> (dataP + 2), len - 2);
 
 void NetworkProcessNamesReturn (char *dataP)
  {
-	CMenuItem m [15];
-   char mtext [15][50], temp [50];
-	int i, l, nInMenu, gnum, num = 0, count = 5, nPlayers;
+	CMenu	m (15);
+   char	mText [15][50], temp [50];
+	int	i, l, nInMenu, gnum, num = 0, count = 5, nPlayers;
    
 if (networkData.nNamesInfoSecurity != *reinterpret_cast<int*> (dataP + 1)) {
 #if 1			
@@ -290,11 +290,9 @@ if (nPlayers == 255) {
 	return;
 	}
 Assert ((nPlayers > 0) && (nPlayers < MAX_NUM_NET_PLAYERS));
-memset (m, 0, sizeof (m));
-for (i = 0; i < 12; i++) {
-	m [i].text = reinterpret_cast<char*> (mtext + i);
-	m [i].nType = NM_TYPE_TEXT;	
-	}
+for (i = 0; i < 12; i++) 
+	m.AddText (mText [i]);	
+
 #if SECURITY_CHECK
 for (gnum = -1, i = 0; i < networkData.nActiveGames; i++) {
 	if (networkData.nNamesInfoSecurity == activeNetGames [i].nSecurity) {
@@ -312,27 +310,27 @@ if (gnum == -1) {
 #else
 gnum = 0;
 #endif
-sprintf (mtext [num], TXT_GAME_PLRS, activeNetGames [gnum].szGameName); 
+sprintf (mText [num], TXT_GAME_PLRS, activeNetGames [gnum].szGameName); 
 num++;
 for (i = 0; i < nPlayers; i++) {
 	l = dataP [count++];
 	memcpy (temp, dataP + count, CALLSIGN_LEN + 1);
 	count += CALLSIGN_LEN + 1;
 	if (gameOpts->multi.bNoRankings)
-		sprintf (mtext [num], "%s", temp);
+		sprintf (mText [num], "%s", temp);
 	else
-		sprintf (mtext [num], "%s%s", pszRankStrings [l], temp);
+		sprintf (mText [num], "%s%s", pszRankStrings [l], temp);
 	num++;
 	}
 if (dataP [count] == 99) {
-	sprintf (mtext [num++], " ");
-	sprintf (mtext [num++], TXT_SHORT_PACKETS2, dataP [count+1] ? TXT_ON : TXT_OFF);
-	sprintf (mtext [num++], TXT_PPS2, dataP [count+2]);
+	sprintf (mText [num++], " ");
+	sprintf (mText [num++], TXT_SHORT_PACKETS2, dataP [count+1] ? TXT_ON : TXT_OFF);
+	sprintf (mText [num++], TXT_PPS2, dataP [count+2]);
 	}
 bAlreadyShowingInfo = 1;
 nInMenu = gameStates.menus.nInMenu;
 gameStates.menus.nInMenu = 0;
-ExecMenutiny2 (NULL, NULL, num, m, NULL);
+m.TinyMenu (NULL, NULL);
 gameStates.menus.nInMenu = nInMenu;
 bAlreadyShowingInfo = 0;
 }
