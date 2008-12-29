@@ -4666,6 +4666,10 @@
 						</FileConfiguration>
 					</File>
 					<File
+						RelativePath="..\..\network\netplayerbrowser.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\main\newgamemenu.cpp"
 						>
 					</File>

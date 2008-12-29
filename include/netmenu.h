@@ -2,6 +2,7 @@
 #define __NETMENU_H
 
 void NetworkEntropyOptions (void);
+void NetworkMonsterballOptions (void);
 int NetworkBrowseGames (void);
 int NetworkGetGameParams (int bAutoRun);
 int NetworkSelectPlayers (int bAutoRun);
@@ -10,6 +11,7 @@ int NetworkFindGame (void);
 int NetworkGetIpAddr (void);
 void ShowNetGameInfo (int choice);
 void ShowExtraNetGameInfo (int choice);
+int NetworkStartPoll (CMenu& menu, int& key, int nCurItem);
 int NetworkEndLevelPoll3 (CMenu& menu, int& key, int nCurItem);
 
 #define AGI	activeNetGames [choice]
