@@ -4626,6 +4626,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\network\monsterballmenu.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\main\moviemenu.cpp"
 						>
 					</File>

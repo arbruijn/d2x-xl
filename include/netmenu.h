@@ -1,6 +1,7 @@
 #ifndef __NETMENU_H
 #define __NETMENU_H
 
+void NetworkEntropyOptions (void);
 int NetworkBrowseGames (void);
 int NetworkGetGameParams (int bAutoRun);
 int NetworkSelectPlayers (int bAutoRun);
