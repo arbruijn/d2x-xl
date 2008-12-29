@@ -392,7 +392,7 @@ for (i = startI; i < endI; i++)
 
 //------------------------------------------------------------------------------
 
-static int SortLightsPoll (int nItems, CMenuItem *m, int *key, int nCurItem)
+static int SortLightsPoll (CMenu& menu, int& key, int nCurItem)
 {
 paletteManager.LoadEffect  ();
 if (loadOp == 0) {
@@ -420,13 +420,13 @@ else if (loadOp == 2) {
 		}
 	}
 if (loadOp == 3) {
-	*key = -2;
+	key = -2;
 	paletteManager.LoadEffect  ();
 	return nCurItem;
 	}
-m [0].value++;
-m [0].rebuild = 1;
-*key = 0;
+menu [0].m_value++;
+menu [0].m_bRebuild = 1;
+key = 0;
 paletteManager.LoadEffect  ();
 return nCurItem;
 }
@@ -612,9 +612,9 @@ else {
 	gameStates.app.bMultiThreaded = 0;
 #endif
 	if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
-		NMProgressBar (TXT_PREP_DESCENT,
-							LoadMineGaugeSize () + PagingGaugeSize (),
-							LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize (), SortLightsPoll);
+		ProgressBar (TXT_PREP_DESCENT,
+						 LoadMineGaugeSize () + PagingGaugeSize (),
+						 LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize (), SortLightsPoll);
 	else {
 		PrintLog ("Computing segment visibility\n");
 		ComputeSegmentVisibility (-1);

@@ -2998,19 +2998,6 @@ return ToS () - 1;
 
 // ------------------------------------------------------------------------------ 
 
-int CMenu::AddInput (const char* szText, int nLen, const char* szHelp)
-{
-CMenuItem item;
-item.m_nType = NM_TYPE_INPUT;
-item.m_text = (char*) (szText);
-item.m_nTextLen = nLen;
-item.m_szHelp = szHelp;
-Push (item);
-return ToS () - 1;
-}
-
-// ------------------------------------------------------------------------------ 
-
 int CMenu::AddInput (const char* szText, char* szValue, int nLen, const char* szHelp)
 {
 AddText (szText);

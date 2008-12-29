@@ -47,7 +47,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "texmap.h"
 #include "state.h"
 #include "movie.h"
-#include "gamepal.h"
+#include "game.h"
 #include "gauges.h"
 #include "strutil.h"
 #include "reorder.h"

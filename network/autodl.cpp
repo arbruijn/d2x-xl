@@ -518,15 +518,14 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-#define PROGRESS_ITEM	2
-#define PERCENT_ITEM		1
+static int nOptProgress, nOptPercentage;
 
-int DownloadPoll (int nItems, CMenuItem *m, int *key, int nCurItem)
+int DownloadPoll (CMenu& menu, int& key, int nCurItem)
 {
-if (*key == KEY_ESC) {
-	m [PERCENT_ITEM].text = reinterpret_cast<char*> ("download aborted");
-	m [1].redraw = 1;
-	*key = -2;
+if (key == KEY_ESC) {
+	menu [nOptPercentage].m_text = reinterpret_cast<char*> ("download aborted");
+	menu [1].m_bRedraw = 1;
+	key = -2;
 	return nCurItem;
 	}
 ResendRequest ();
@@ -534,13 +533,13 @@ NetworkListen ();
 if (nDlTimeout < 0)
 	SetDlTimeout (-1);
 if ((int) SDL_GetTicks () - nTimeout > nDlTimeout) {
-	strcpy (m [1].text, "download timed out");
-	m [1].redraw = 1;
-	*key = -2;
+	strcpy (menu [1].m_text, "download timed out");
+	menu [1].m_bRedraw = 1;
+	key = -2;
 	return nCurItem;
 	}
 if (dlResult == -1) {
-	*key = -3;
+	key = -3;
 	return nCurItem;
 	}
 if (dlResult == 1) {
@@ -549,22 +548,22 @@ if (dlResult == 1) {
 			int h = nDestLen * 100 / nSrcLen;
 			if (h != nPercent) {
 				nPercent = h;
-				sprintf (m [PERCENT_ITEM].text, TXT_PROGRESS, nPercent, '%');
-				m [PERCENT_ITEM].rebuild = 1;
+				sprintf (menu [nOptPercentage].m_text, TXT_PROGRESS, nPercent, '%');
+				menu [nOptPercentage].m_bRebuild = 1;
 				h = nPercent;
-				if (m [PROGRESS_ITEM].value != h) {
-					m [PROGRESS_ITEM].value = h;
-					m [PROGRESS_ITEM].rebuild = 1;
+				if (menu [nOptProgress].m_value != h) {
+					menu [nOptProgress].m_value = h;
+					menu [nOptProgress].m_bRebuild = 1;
 					}
 				}
 			}
 		}
-	*key = 0;
+	key = 0;
 	return nCurItem;
 	}
-m [PERCENT_ITEM].text = reinterpret_cast<char*> ("download failed");
-m [PERCENT_ITEM].redraw = 1;
-*key = -2;
+menu [nOptPercentage].m_text = reinterpret_cast<char*> ("download failed");
+menu [nOptPercentage].m_bRedraw = 1;
+key = -2;
 return nCurItem;
 }
 
@@ -572,22 +571,21 @@ return nCurItem;
 
 int DownloadMission (char *pszMission)
 {
-	CMenuItem	m [3];
-	char			szTitle [30];
-	char			szProgress [30];
-	int			i;
+	CMenu	m (3);
+	char	szTitle [30];
+	char	szProgress [30];
+	int	i;
 
 PrintLog ("   trying to download mission '%s'\n", pszMission);
 gameStates.multi.bTryAutoDL = 0;
 if (!(/*gameStates.app.bHaveExtraGameInfo [1] &&*/ extraGameInfo [0].bAutoDownload))
 	return 0;
-memset (m, 0, sizeof (m));
-m.AddText (0, "", 0);
-m.AddGauge (PROGRESS_ITEM, "                    ", 0, 100);
+m.AddText ("", 0);
 sprintf (szProgress, "0%c done", '%');
-m.AddText (PERCENT_ITEM, szProgress, 0);
-m [PERCENT_ITEM].x = (short) 0x8000;
-m [PERCENT_ITEM].centered = 1;
+nOptPercentage = m.AddText (szProgress, 0);
+m [nOptPercentage].m_x = (short) 0x8000;	//centered
+m [nOptPercentage].m_bCentered = 1;
+nOptProgress = m.AddGauge ("                    ", 0, 100);
 if (!RequestUpload (PID_DL_START, 0))
 	return 0;
 dlResult = 1;
@@ -596,7 +594,7 @@ nTimeout = SDL_GetTicks ();
 sprintf (szTitle, "Downloading <%s>", pszMission);
 *gameFolders.szMsnSubDir = '\0';
 do {
-	i = ExecMenu2 (NULL, szTitle, 3, m, DownloadPoll, 0, NULL);
+	i = m.Menu (NULL, szTitle, DownloadPoll);
 	} while (i >= 0);
 cf.Close ();
 dlState = PID_DL_END;

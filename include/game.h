@@ -89,6 +89,8 @@ typedef struct tDetailData {
 	sbyte		nSoundChannels [NUM_DETAIL_LEVELS - 1];
 } tDetailData;
 
+extern tDetailData detailData;
+
 //------------------------------------------------------------------------------
 
 extern int gauge_message_on;

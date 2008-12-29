@@ -134,19 +134,19 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 static int nCacheSeg = 0;
 static int nCacheObj = -3;
 
-static int TexCachePoll (int nItems, CMenuItem *m, int *key, int nCurItem)
+static int TexCachePoll (CMenu& menu, int& key, int nCurItem)
 {
 if (nCacheSeg < gameData.segs.nSegments)
 	CacheSideTextures (nCacheSeg++);
 else if (nCacheObj <= gameData.objs.nLastObject [0]) 
 	CacheSideTextures (nCacheObj++);
 else {
-	*key = -2;
+	key = -2;
 	return nCurItem;
 	}
-m [0].value++;
-m [0].rebuild = 1;
-*key = 0;
+menu [0].m_value++;
+menu [0].m_bRebuild = 1;
+key = 0;
 return nCurItem;
 }
 
@@ -154,16 +154,14 @@ return nCurItem;
 
 int OglCacheTextures (void)
 {
-	CMenuItem	m [3];
-	int i;
+	CMenu	m (3);
+	int	i;
 
-memset (m, 0, sizeof (m));
-m.AddGauge (0, "                    ", 0, gameData.segs.nSegments + gameData.objs.nLastObject [0] + 4); 
-m [2].centered = 1;
+m.AddGauge ("                    ", 0, gameData.segs.nSegments + gameData.objs.nLastObject [0] + 4); 
 nCacheSeg = 0;
 nCacheObj = -3;
 do {
-	i = ExecMenu2 (NULL, "Loading textures", 1, m, TexCachePoll, 0, NULL);
+	i = m.Menu (NULL, "Loading textures", TexCachePoll);
 	} while (i >= 0);
 return 1;
 }

@@ -211,7 +211,7 @@ void HandleDeathKey(int key)
 
 //------------------------------------------------------------------------------
 
-void HandleDemoKey(int key)
+void HandleDemoKey (int key)
 {
 if (gameOpts->demo.bRevertFormat && (gameData.demo.nVersion > DEMO_VERSION))
 	return;
@@ -306,30 +306,29 @@ switch (key) {
 		break;
 	case KEYDBGGED + KEY_K: {
 		int how_many, c;
-		char filename [FILENAME_LEN], num[16];
-		CMenuItem m[6];
+		char filename [FILENAME_LEN], num [16];
+		CMenu m (2);
 
 		filename [0] = '\0';
-		memset (m, 0, sizeof (m));
-		m[0].nType = NM_TYPE_TEXT; 
-		m[0].text = "output file name";
-		m[1].nType = NM_TYPE_INPUT;
-		m[1].nTextLen = 8; 
-		m[1].text = filename;
-		c = ExecMenu( NULL, NULL, 2, m, NULL, NULL );
+		m.AddText ("output file name");
+		m.AddInput (filename, 8);
+		c = m.Menu (NULL, NULL);
 		if (c == -2)
 			break;
+
+		m.Destroy ();
+		m.Create (2);
 		strcat(filename, ".dem");
-		num[0] = '\0';
-		m[ 0].nType = NM_TYPE_TEXT; m[ 0].text = "strip how many bytes";
-		m[ 1].nType = NM_TYPE_INPUT;m[ 1].nTextLen = 16; m[1].text = num;
-		c = ExecMenu( NULL, NULL, 2, m, NULL, NULL );
+		num [0] = '\0';
+		m.AddText ("strip how many bytes");
+		m.AddInput (num, 16);
+		c = m.Menu (NULL, NULL);
 		if (c == -2)
 			break;
 		how_many = atoi(num);
 		if (how_many <= 0)
 			break;
-		NDStripFrames(filename, how_many);
+		NDStripFrames (filename, how_many);
 
 		break;
 		}
@@ -1122,23 +1121,21 @@ void HandleTestKey(int key)
 		#endif
 
 		case KEYDBGGED+KEY_B: {
-			CMenuItem m;
-			char text[FILENAME_LEN]="";
+			CMenu	m (1);
+			char text [FILENAME_LEN] = "";
 			int item;
-			memset (&m, 0, sizeof (m));
-			m.nType=NM_TYPE_INPUT; 
-			m.nTextLen = FILENAME_LEN; 
-			m.text = text;
-			item = ExecMenu( NULL, "Briefing to play?", 1, &m, NULL, NULL );
+			
+			m.AddInput (text, FILENAME_LEN);
+			item = m.Menu (NULL, "Briefing to play?");
 			if (item != -1) {
-				DoBriefingScreens(text, 1);
-				ResetCockpit();
+				DoBriefingScreens (text, 1);
+				ResetCockpit ();
 			}
 			break;
 		}
 
 		case KEYDBGGED+KEY_F5:
-			toggle_movie_saving();
+			toggle_movie_saving ();
 			break;
 
 		case KEYDBGGED+KEY_SHIFTED+KEY_F5: {

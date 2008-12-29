@@ -512,7 +512,7 @@ for (m_data.faceP = FACES.faces + nFace; nFace < nLastFace; nFace++, m_data.face
 
 static int nFace = 0;
 
-static int _CDECL_ CreatePoll (int nItems, CMenuItem *m, int *key, int nCurItem)
+static int _CDECL_ CreatePoll (CMenu& menu, int& key, int nCurItem)
 {
 paletteManager.LoadEffect ();
 if (nFace < gameData.segs.nFaces) {
@@ -520,13 +520,13 @@ if (nFace < gameData.segs.nFaces) {
 	nFace += PROGRESS_INCR;
 	}
 else {
-	*key = -2;
+	key = -2;
 	paletteManager.LoadEffect ();
 	return nCurItem;
 	}
-m [0].value++;
-m [0].rebuild = 1;
-*key = 0;
+menu [0].m_value++;
+menu [0].m_bRebuild = 1;
+key = 0;
 paletteManager.LoadEffect ();
 return nCurItem;
 }
@@ -666,7 +666,7 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 	gameData.render.lights.dynamic.shader.index [0][0].nLast = 0;
 	if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 		nFace = 0;
-		NMProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (gameData.segs.nFaces), CreatePoll);
+		ProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (gameData.segs.nFaces), CreatePoll);
 		}
 	else
 		BuildAll (-1);

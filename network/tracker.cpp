@@ -239,23 +239,23 @@ return i;
 
 static time_t	nQueryTimeout;
 
-int TrackerPoll (int nItems, CMenuItem *m, int *key, int nCurItem)
+int TrackerPoll (CMenu& menu, int& key, int nCurItem)
 {
 	time_t t;
 
 if (NetworkListen () && CountActiveTrackers ())
-	*key = -2;
-else if (*key == KEY_ESC)
-	*key = -3;
+	key = -2;
+else if (key == KEY_ESC)
+	key = -3;
 else if ((t = SDL_GetTicks () - nQueryTimeout) > 60000)
-	*key = -4;
+	key = -4;
 else {
 	int v = (int) (t / 60);
-	if (m [0].value != v) {
-		m [0].value = v;
-		m [0].rebuild = 1;
+	if (menu [0].m_value != v) {
+		menu [0].m_value = v;
+		menu [0].m_bRebuild = 1;
 		}
-	*key = 0;
+	key = 0;
 	}
 return nCurItem;
 }
@@ -264,19 +264,18 @@ return nCurItem;
 
 int QueryTrackers (void)
 {
-	CMenuItem	m [3];
-	int i;
+	CMenu	m (3);
+	int	i;
 
 if (!RequestServerListFromTracker ())
 	return 0;
-memset (m, 0, sizeof (m));
-m.AddGauge (0, "                    ", 0, 1000); 
-m.AddText (1, "", 0);
-m.AddText (2, "(Press Escape to cancel)", 0);
-m [2].centered = 1;
+m.AddGauge ("                    ", 0, 1000); 
+m.AddText ("", 0);
+m.AddText ("(Press Escape to cancel)", 0);
+m [2].m_bCentered = 1;
 nQueryTimeout = SDL_GetTicks ();
 do {
-	i = ExecMenu2 (NULL, "Looking for Trackers", 3, m, TrackerPoll, 0, NULL);
+	i = m.Menu (NULL, "Looking for Trackers", TrackerPoll);
 	} while (i >= 0);
 return i;
 }
