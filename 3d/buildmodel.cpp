@@ -180,7 +180,7 @@ POFFreeAllPolyModelItems ();
 
 //------------------------------------------------------------------------------
 
-int _CDECL_ CFace::Compare (CFace* pf, CFace* pm)
+int _CDECL_ CFace::Compare (const CFace* pf, const CFace* pm)
 {
 if (pf == pm)
 	return 0;
@@ -451,7 +451,7 @@ for (i = 0, j = pm->m_nSubModels, psm = pm->m_subModels.Buffer (); i < j; i++, p
 
 //------------------------------------------------------------------------------
 
-int _CDECL_ CModel::CmpVerts (CFloatVector3* pv, CFloatVector3* pm)
+int _CDECL_ CModel::CmpVerts (const CFloatVector3* pv, const CFloatVector3* pm)
 {
 	float h;
 
