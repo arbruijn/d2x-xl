@@ -69,25 +69,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include "editor/editor.h"
 #endif
 
-#if DBG
-
-const char *menuBgNames [4][2] = {
- {"menu.pcx", "menub.pcx"},
- {"menuo.pcx", "menuob.pcx"},
- {"menud.pcx", "menud.pcx"},
- {"menub.pcx", "menub.pcx"}
-	};
-
-#else
-
-const char *menuBgNames [4][2] = {
- {"\x01menu.pcx", "\x01menub.pcx"},
- {"\x01menuo.pcx", "\x01menuob.pcx"},
- {"\x01menud.pcx", "\x01menud.pcx"},
- {"\x01menub.pcx", "\x01menub.pcx"}
-	};
-#endif
-
 //------------------------------------------------------------------------------
 //static int FirstTime = 1;
 
