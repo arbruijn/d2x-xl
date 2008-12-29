@@ -459,7 +459,7 @@ while (!done) {
 		case KEY_ESC:
 			if (gameData.app.nGameMode & GM_NETWORK) {
 				gameData.multiplayer.xStartAbortMenuTime = TimerGetApproxSeconds ();
-				choice = ExecMessageBox1 (NULL, NetworkEndLevelPoll3, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
+				choice = MsgBox (NULL, NetworkEndLevelPoll3, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
 				}
 			else
 				choice=MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
@@ -496,7 +496,9 @@ while (!done) {
 			NetworkSendEndLevelPacket ();
 		}
 	if (bNetwork && (gameData.app.nGameMode & GM_NETWORK)) {
-		NetworkEndLevelPoll2 (0, NULL, &key, 0);
+		CMenu m (1);
+		m.AddGauge ("", 0, 1000); //dummy for NetworkEndLevelPoll2()
+		NetworkEndLevelPoll2 (m, key, 0);
 		for (nEscaped = 0, nReady = 0, i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if (gameData.multiplayer.players [i].connected && i!=gameData.multiplayer.nLocalPlayer) {
 			// Check timeout for idle players

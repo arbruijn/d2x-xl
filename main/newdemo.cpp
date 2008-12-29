@@ -139,21 +139,14 @@ CFile ndOutFile;
 
 int NDErrorMsg (const char *pszMsg1, const char *pszMsg2, const char *pszMsg3)
 {
-	CMenuItem	m [3];
-	int			opt = 0;
+	CMenu	m (3);
 
-memset (m, 0, sizeof (m));
-m.AddText (opt, pszMsg1, 0);
-opt++;
-if (pszMsg2 && *pszMsg2) {
-	m.AddText (opt, pszMsg2, 0);
-	opt++;
-	}
-if (pszMsg3 && *pszMsg3) {
-	m.AddText (opt, pszMsg3, 0);
-	opt++;
-	}
-ExecMenu (NULL, NULL, opt, m, NULL, NULL);
+m.AddText (pszMsg1, 0);
+if (pszMsg2 && *pszMsg2) 
+	m.AddText (pszMsg2, 0);
+if (pszMsg3 && *pszMsg3)
+	m.AddText (pszMsg3, 0);
+m.Menu (NULL, NULL);
 return 1;
 }
 
@@ -3122,11 +3115,12 @@ ndOutFile.Close ();
 char demoname_allowed_chars [] = "azAZ09__--";
 void NDStopRecording (void)
 {
-	CMenuItem m [6];
-	int exit = 0;
 	static char filename [15] = "", *s;
 	static ubyte tmpcnt = 0;
-	char fullname [15+FILENAME_LEN] = "";
+
+	CMenu	m (6);
+	int	exit = 0;
+	char	fullname [15 + FILENAME_LEN] = "";
 
 NDFinishRecording ();
 gameData.demo.nState = ND_STATE_NORMAL;
@@ -3153,32 +3147,23 @@ try_again:
 	;
 
 nmAllowedChars = demoname_allowed_chars;
-memset (m, 0, sizeof (m));
 if (!gameData.demo.bNoSpace) {
-	m [0].nType = NM_TYPE_INPUT; 
-	m [0].nTextLen = 8; 
-	m [0].text = filename;
-	exit = ExecMenu (NULL, TXT_SAVE_DEMO_AS, 1, &(m [0]), NULL, NULL);
+	m.AddInput (filename, 8);
+	exit = m.Menu (NULL, TXT_SAVE_DEMO_AS);
 	}
 else if (gameData.demo.bNoSpace == 1) {
-	m [0].nType = NM_TYPE_TEXT; 
-	m [0].text = const_cast<char*> (TXT_DEMO_SAVE_BAD);
-	m [1].nType = NM_TYPE_INPUT;
-	m [1].nTextLen = 8; 
-	m [1].text = filename;
-	exit = ExecMenu (NULL, NULL, 2, m, NULL, NULL);
+	m.AddText (const_cast<char*> (TXT_DEMO_SAVE_BAD));
+	m.AddInput (filename, 8);
+	exit = m.Menu (NULL, NULL);
 	} 
 else if (gameData.demo.bNoSpace == 2) {
-	m [0].nType = NM_TYPE_TEXT; 
-	m [0].text = const_cast<char*> (TXT_DEMO_SAVE_NOSPACE);
-	m [1].nType = NM_TYPE_INPUT;
-	m [1].nTextLen = 8; 
-	m [1].text = filename;
-	exit = ExecMenu (NULL, NULL, 2, m, NULL, NULL);
+	m.AddText (const_cast<char*> (TXT_DEMO_SAVE_NOSPACE));
+	m.AddInput (filename, 8);
+	exit = m.Menu (NULL, NULL);
 	}
 nmAllowedChars = NULL;
 if (exit == -2) {                   // got bumped out from network menu
-	char save_file [7+FILENAME_LEN];
+	char save_file [7 + FILENAME_LEN];
 
 	if (filename [0] != '\0') {
 		strcpy (save_file, filename);
@@ -3201,10 +3186,7 @@ for (s=filename;*s;s++)
 		MsgBox (NULL, NULL, 1, TXT_CONTINUE, TXT_DEMO_USE_LETTERS);
 		goto try_again;
 		}
-if (gameData.demo.bNoSpace)
-	strcpy (fullname, m [1].text);
-else
-	strcpy (fullname, m [0].text);
+strcpy (fullname, m [gameData.demo.bNoSpace].m_text);
 strcat (fullname, ".dem");
 CFile::Delete (fullname, gameFolders.szDemoDir);
 CFile::Rename (DEMO_FILENAME, fullname, gameFolders.szDemoDir);

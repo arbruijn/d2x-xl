@@ -722,7 +722,7 @@ return 21;
 
 static int loadOp = 0;
 
-static int InitializePoll (int nItems, CMenuItem *m, int *key, int nCurItem)
+static int InitializePoll (CMenu& menu, int& key, int nCurItem)
 {
 paletteManager.LoadEffect  ();
 switch (loadOp) {
@@ -810,11 +810,11 @@ switch (loadOp) {
 loadOp++;
 if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 	if (loadOp == InitGaugeSize ())
-		*key = -2;
+		key = -2;
 	else {
-		m [0].value++;
-		m [0].rebuild = 1;
-		*key = 0;
+		menu [0].m_value++;
+		menu [0].m_bRebuild = 1;
+		key = 0;
 		}
 	}
 paletteManager.LoadEffect  ();
@@ -826,7 +826,7 @@ return nCurItem;
 void InitializeGauge (void)
 {
 loadOp = 0;
-NMProgressBar (TXT_INITIALIZING, 0, InitGaugeSize (), InitializePoll); 
+ProgressBar (TXT_INITIALIZING, 0, InitGaugeSize (), InitializePoll); 
 }
 
 // ----------------------------------------------------------------------------
@@ -895,9 +895,12 @@ console.Setup (SMALL_FONT, &screen, CON_NUM_LINES, 0, 0, screen.Width (), screen
 if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 	InitializeGauge ();
 else {
+	CMenu m (1);
+	int key = 0;
+	m.AddGauge ("", 0, 1000); // dummy for InitializePoll()
 	ShowBoxedMessage (TXT_INITIALIZING);
 	for (loadOp = 0; loadOp < InitGaugeSize (); )
-		InitializePoll (0, NULL, NULL, 0);
+		InitializePoll (m, key, 0);
 	}
 ClearBoxedMessage ();
 PrintBanner ();

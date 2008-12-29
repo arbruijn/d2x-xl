@@ -214,9 +214,9 @@ void scores_fill_struct (stats_info * stats)
 
 void MaybeAddPlayerScore (int abortFlag)
 {
-	char text1[COOL_MESSAGE_LEN+10];
-	CMenuItem m[10];
-	int i,position;
+	char	text1[COOL_MESSAGE_LEN+10];
+	CMenu	m (10);
+	int	i, position;
 
 	#ifdef APPLE_DEMO		// no high scores in apple oem version
 	return;
@@ -245,15 +245,11 @@ void MaybeAddPlayerScore (int abortFlag)
 //--			return;
 //--		}
 
-		memset (m, 0, sizeof (m));
-		if (position==0) {
+		if (position == 0) {
 			strcpy (text1,  "");
-			m [0].nType = NM_TYPE_TEXT; 
-			m [0].text = const_cast<char*> (TXT_COOL_SAYING);
-			m [1].nType = NM_TYPE_INPUT; 
-			m [1].text = text1; 
-			m [1].nTextLen = COOL_MESSAGE_LEN - 5;
-			ExecMenu (TXT_HIGH_SCORE, TXT_YOU_PLACED_1ST, 2, m, NULL, NULL);
+			m.AddText (const_cast<char*> (TXT_COOL_SAYING));
+			m.AddInput (text1, COOL_MESSAGE_LEN - 5);
+			m.Menu (TXT_HIGH_SCORE, TXT_YOU_PLACED_1ST);
 			strncpy (Scores.cool_saying, text1, COOL_MESSAGE_LEN);
 			if (strlen (Scores.cool_saying)<1)
 				sprintf (Scores.cool_saying, TXT_NO_COMMENT);

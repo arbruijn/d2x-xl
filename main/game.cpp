@@ -838,67 +838,64 @@ gameStates.gameplay.xLastAfterburnerCharge = gameData.physics.xAfterburnerCharge
 
 //------------------------------------------------------------------------------
 
-#define ADD_HELP_OPT(_text)	m [opt].nType = NM_TYPE_TEXT; m [opt++].text = const_cast<char*> (_text);
-
-void ShowHelp ()
+void ShowHelp (void)
 {
-	int nitems, opt = 0;
-	CMenuItem m [40];
-	#ifdef MACINTOSH
+	int	nitems, opt = 0;
+	CMenu	m (40);
+#ifdef MACINTOSH
 	char command_help[64], pixel_double_help[64], save_help[64], restore_help[64];
-	#endif
+#endif
 
-	memset (m, 0, sizeof (m));
-	ADD_HELP_OPT (TXT_HELP_ESC);
+	m.AddText (TXT_HELP_ESC);
 #ifndef MACINTOSH
-	ADD_HELP_OPT (TXT_HELP_ALT_F2);
-	ADD_HELP_OPT (TXT_HELP_ALT_F3);
+	m.AddText (TXT_HELP_ALT_F2);
+	m.AddText (TXT_HELP_ALT_F3);
 #else
 	sprintf (save_help, TXT_HLP_SAVE, 133);
 	sprintf (restore_help, TXT_HLP_LOAD, 133);
-	ADD_HELP_OPT (save_help);
-	ADD_HELP_OPT (restore_help);
+	m.AddText (save_help);
+	m.AddText (restore_help);
 #endif
-	ADD_HELP_OPT (TXT_HELP_QUICKSAVE);
-	ADD_HELP_OPT (TXT_HELP_QUICKLOAD);
-	ADD_HELP_OPT (TXT_HELP_F2);
-	ADD_HELP_OPT (TXT_HELP_F3);
-	ADD_HELP_OPT (TXT_HELP_F4);
-	ADD_HELP_OPT (TXT_HELP_F5);
+	m.AddText (TXT_HELP_QUICKSAVE);
+	m.AddText (TXT_HELP_QUICKLOAD);
+	m.AddText (TXT_HELP_F2);
+	m.AddText (TXT_HELP_F3);
+	m.AddText (TXT_HELP_F4);
+	m.AddText (TXT_HELP_F5);
 #ifndef MACINTOSH
-	ADD_HELP_OPT (TXT_HELP_PAUSE_D2X);
+	m.AddText (TXT_HELP_PAUSE_D2X);
 #else
-	ADD_HELP_OPT (TXT_HLP_PAUSE);
+	m.AddText (TXT_HLP_PAUSE);
 #endif
-	ADD_HELP_OPT (TXT_HELP_MINUSPLUS);
+	m.AddText (TXT_HELP_MINUSPLUS);
 #ifndef MACINTOSH
-	ADD_HELP_OPT (TXT_HELP_PRTSCN_D2X);
+	m.AddText (TXT_HELP_PRTSCN_D2X);
 #else
-	ADD_HELP_OPT (TXT_HLP_SCREENIE);
+	m.AddText (TXT_HLP_SCREENIE);
 #endif
-	ADD_HELP_OPT (TXT_HELP_1TO5);
-	ADD_HELP_OPT (TXT_HELP_6TO10);
-	ADD_HELP_OPT (TXT_HLP_CYCLE_LEFT_WIN);
-	ADD_HELP_OPT (TXT_HLP_CYCLE_RIGHT_WIN);
-	ADD_HELP_OPT (TXT_HLP_RESIZE_WIN);
-	ADD_HELP_OPT (TXT_HLP_REPOS_WIN);
-	ADD_HELP_OPT (TXT_HLP_ZOOM_WIN);
-	ADD_HELP_OPT (TXT_HLP_GUIDEBOT);
-	ADD_HELP_OPT (TXT_HLP_RENAMEGB);
-	ADD_HELP_OPT (TXT_HLP_DROP_PRIM);
-	ADD_HELP_OPT (TXT_HLP_DROP_SEC);
-	ADD_HELP_OPT (TXT_HLP_CHASECAM);
-	ADD_HELP_OPT (TXT_HLP_GBCMDS);
+	m.AddText (TXT_HELP_1TO5);
+	m.AddText (TXT_HELP_6TO10);
+	m.AddText (TXT_HLP_CYCLE_LEFT_WIN);
+	m.AddText (TXT_HLP_CYCLE_RIGHT_WIN);
+	m.AddText (TXT_HLP_RESIZE_WIN);
+	m.AddText (TXT_HLP_REPOS_WIN);
+	m.AddText (TXT_HLP_ZOOM_WIN);
+	m.AddText (TXT_HLP_GUIDEBOT);
+	m.AddText (TXT_HLP_RENAMEGB);
+	m.AddText (TXT_HLP_DROP_PRIM);
+	m.AddText (TXT_HLP_DROP_SEC);
+	m.AddText (TXT_HLP_CHASECAM);
+	m.AddText (TXT_HLP_GBCMDS);
 #ifdef MACINTOSH
 	sprintf (pixel_double_help, "%c-D\t  Toggle Pixel Double Mode", 133);
-	ADD_HELP_OPT (pixel_double_help);
-	ADD_HELP_OPT ("");
+	m.AddText (pixel_double_help);
+	m.AddText ("");
 	sprintf (command_help, " (Use %c-# for F#. i.e. %c-1 for F1)", 133, 133);
-	ADD_HELP_OPT (command_help);
+	m.AddText (command_help);
 #endif
 	nitems = opt;
 	paletteManager.SaveEffectAndReset ();
-	ExecMenutiny2 (NULL, TXT_KEYS, nitems, m, NULL);
+	m.TinyMenu (NULL, TXT_KEYS);
 	paletteManager.LoadEffect ();
 }
 
@@ -1377,7 +1374,7 @@ int __Movie_frame_num=0;
 
 ubyte *movieFrameBuffer;
 int nMovieFrames;
-char movie_path[50] = ".\\";
+char szMoviePath[50] = ".\\";
 
 CBitmap bmMovie;
 
@@ -1392,7 +1389,7 @@ StopTime ();
 #endif
 bmMovie.SetBuffer (movieFrameBuffer);
 for (f = 0;f < nMovieFrames; f++) {
-	sprintf (savename, "%sfrm%04d.pcx",movie_path,__Movie_frame_num);
+	sprintf (savename, "%sfrm%04d.pcx",szMoviePath,__Movie_frame_num);
 	__Movie_frame_num++;
 	pcx_write_bitmap (savename, &bmMovie);
 	bmMovie.SetBuffer (bmMovie.Buffer () + MOVIE_FRAME_SIZE);
@@ -1405,30 +1402,27 @@ StartTime (0);
 
 //-----------------------------------------------------------------------------
 
-void toggle_movie_saving ()
+void ToggleMovieSaving (void)
 {
 	int exit;
 
 	bSavingMovieFrames = !bSavingMovieFrames;
 
 	if (bSavingMovieFrames) {
-		CMenuItem m[1];
+		CMenu	m (1);
 
-		memset (m, 0, sizeof (m));
-		m[0].nType=NM_TYPE_INPUT;
-		m[0].nTextLen = 50;
-		m[0].text = movie_path;
-		exit = ExecMenu (NULL, "Directory for movie frames?" , 1, & (m[0]), NULL, NULL);
+		m.AddInput (szMoviePath, 50);
+		exit = m.Menu (NULL, "Directory for movie frames?");
 
 		if (exit==-1) {
 			bSavingMovieFrames = 0;
 			return;
 		}
 
-		while (::isspace (movie_path [strlen (movie_path)-1]))
-			movie_path[strlen (movie_path)-1] = 0;
-		if (movie_path[strlen (movie_path)-1]!='\\' && movie_path[strlen (movie_path)-1]!=':')
-			strcat (movie_path,"\\");
+		while (::isspace (szMoviePath [strlen (szMoviePath)-1]))
+			szMoviePath[strlen (szMoviePath)-1] = 0;
+		if (szMoviePath[strlen (szMoviePath)-1]!='\\' && szMoviePath[strlen (szMoviePath)-1]!=':')
+			strcat (szMoviePath,"\\");
 
 
 		if (!movieFrameBuffer) {

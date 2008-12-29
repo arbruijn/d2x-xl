@@ -874,7 +874,7 @@ void HandleGameKey(int key)
 
 //	--------------------------------------------------------------------------
 
-void toggle_movie_saving(void);
+void ToggleMovieSaving(void);
 
 #if DBG
 
@@ -1135,7 +1135,7 @@ void HandleTestKey(int key)
 		}
 
 		case KEYDBGGED+KEY_F5:
-			toggle_movie_saving ();
+			ToggleMovieSaving ();
 			break;
 
 		case KEYDBGGED+KEY_SHIFTED+KEY_F5: {
