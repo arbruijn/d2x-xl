@@ -246,22 +246,22 @@ template < class _T > class CArray : public CQuickSort < _T > {
 
 		inline void SortAscending (int left = 0, int right = 0) { 
 			if (m_data.buffer) 
-				CQuickSort<_T>::SortAscending (m_data.buffer, left, right ? right : m_data.length); 
+				CQuickSort<_T>::SortAscending (m_data.buffer, left, right ? right : m_data.length - 1); 
 				}
 
 		inline void SortDescending (int left = 0, int right = 0) {
 			if (m_data.buffer) 
-				CQuickSort<_T>::SortDescending (m_data.buffer, left, right ? right : m_data.length);
+				CQuickSort<_T>::SortDescending (m_data.buffer, left, right ? right : m_data.length - 1);
 			}
 
 		inline void SortAscending (comparator compare, int left = 0, int right = 0) {
 			if (m_data.buffer) 
-				CQuickSort<_T>::SortAscending (m_data.buffer, left, right ? right : m_data.length, compare);
+				CQuickSort<_T>::SortAscending (m_data.buffer, left, right ? right : m_data.length - 1, compare);
 			}
 
 		inline void SortDescending (comparator compare, int left = 0, int right = 0) {
 			if (m_data.buffer) 
-				CQuickSort<_T>::SortDescending (m_data.buffer, left, right ? right : m_data.length, compare);
+				CQuickSort<_T>::SortDescending (m_data.buffer, left, right ? right : m_data.length - 1, compare);
 			}
 	};
 
