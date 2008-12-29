@@ -76,7 +76,7 @@ int IpxSendGamePacket(ubyte *data, int datasize);
 void IpxInitNetGameAuxData(ubyte data[]);
 int IpxHandleNetGameAuxData(const ubyte data[]);
 // Handle disconnecting from the game
-void ipx_handle_leave_game();
+void IpxHandleLeaveGame();
 
 void IpxReadUserFile (const char * filename);
 void IpxReadNetworkFile (const char * filename);

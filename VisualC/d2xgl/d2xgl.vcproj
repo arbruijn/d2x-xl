@@ -2034,26 +2034,6 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\network\netmenu.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
 						RelativePath="..\..\network\netmisc.cpp"
 						>
 						<FileConfiguration
@@ -2315,10 +2295,6 @@
 					</File>
 					<File
 						RelativePath="..\..\include\multimsg.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\include\netmenu.h"
 						>
 					</File>
 					<File
@@ -4562,6 +4538,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\include\netmenu.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\include\newmenu.h"
 						>
 					</File>
@@ -4595,6 +4575,10 @@
 					</File>
 					<File
 						RelativePath="..\..\main\effectsmenu.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\network\entropymenu.cpp"
 						>
 					</File>
 					<File
@@ -4644,6 +4628,38 @@
 					<File
 						RelativePath="..\..\main\moviemenu.cpp"
 						>
+					</File>
+					<File
+						RelativePath="..\..\network\netgamebrowser.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\network\netgamehelp.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\network\netgameinfo.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\network\netmenu.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\..\main\newgamemenu.cpp"

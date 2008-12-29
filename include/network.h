@@ -497,7 +497,7 @@ int  NetworkWaitForAllInfo(int choice);
 void NetworkSetGameMode(int gameMode);
 void NetworkAdjustMaxDataSize();
 int CanJoinNetgame(tNetgameInfo *game,tAllNetPlayersInfo *people);
-void RestartNetSearching(CMenuItem * m);
+void RestartNetSearching(CMenu& menu);
 void DeleteTimedOutNetGames (void);
 void InitMonsterballSettings (tMonsterballInfo *monsterballP);
 void InitEntropySettings (int i);

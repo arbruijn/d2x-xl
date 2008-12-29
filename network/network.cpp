@@ -208,7 +208,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-void RestartNetSearching (CMenuItem * m)
+void RestartNetSearching (CMenu& menu)
 {
 gameData.multiplayer.nPlayers = 0;
 networkData.nActiveGames = 0;
@@ -252,7 +252,7 @@ NetworkSendEndLevelPacket ();
 ChangePlayerNumTo (0);
 gameData.app.nGameMode = GM_GAME_OVER;
 WritePlayerFile ();
-ipx_handle_leave_game ();
+IpxHandleLeaveGame ();
 NetworkFlush ();
 }
 

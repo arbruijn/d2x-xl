@@ -116,7 +116,6 @@ typedef int (*pMenuCallback) (CMenu& m, int& lastKey, int nItem);
 
 class CMenu : public CStack<CMenuItem> {
 	private:
-		int			m_opt;
 		tMenuProps	m_props;
 
 	public:
@@ -127,7 +126,6 @@ class CMenu : public CStack<CMenuItem> {
 			}
 		inline void Init (void) { 
 			SetGrowth (10);
-			m_opt = 0; 
 			}
 		int AddCheck (const char* szText, int nValue, int nKey = 0, const char* szHelp = NULL);
 		int AddRadio (const char* szText, int nValue, int nGroup, int nKey = 0, const char* szHelp = NULL);
@@ -135,14 +133,16 @@ class CMenu : public CStack<CMenuItem> {
 		int AddText (const char* szText, int nKey = 0);
 		int AddSlider (const char* szText, int nValue, int nMin, int nMax, int nKey = 0, const char* szHelp = NULL);
 		int AddInput (const char* szText, int nLen, const char* szHelp = NULL);
+		int AddInput (const char* szText, char* szValue, int nLen, const char* szHelp = NULL);
+		int AddInput (const char* szText, char* szValue, int nValue, int nLen, const char* szHelp = NULL);
 		int AddInputBox (const char* szText, int nLen, int nKey = 0, const char* szHelp = NULL);
 		int AddGauge (const char* szText, int nValue, int nMax);
-		inline CMenuItem& Item (int i = -1) { return (i < 0) ? m_data.buffer [m_opt] : m_data.buffer [i]; }
+		inline CMenuItem& Item (int i = -1) { return (i < 0) ? m_data.buffer [ToS () - 1] : m_data.buffer [i]; }
 
 		int Menu (const char *pszTitle, const char *pszSubTitle, pMenuCallback callback = NULL, 
 					 int *nCurItemP = NULL, char *filename = NULL, int width = -1, int height = -1, int bTinyMode = 0);
 
-		int TinyMenu (const char *pszTitle, const char *pszSubTitle, pMenuCallback callBack);
+		int TinyMenu (const char *pszTitle, const char *pszSubTitle, pMenuCallback callBack = NULL);
 
 		int FixedFontMenu (const char* pszTitle, const char* pszSubTitle, 
 								 pMenuCallback callback, int* nCurItemP, char* filename, int width, int height);
@@ -189,5 +189,7 @@ int ListBox (const char* pszTitle, CStack<char*>& items, int nDefaultItem = 0, i
 extern int Max_linear_depthObjects;
 
 extern char *nmAllowedChars;
+extern char bPauseableMenu;
+extern char bAlreadyShowingInfo;
 
 #endif /* _NEWMENU_H */

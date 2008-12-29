@@ -457,7 +457,7 @@ return 0;
 								/*---------------------------*/
 
 // Notifies the protocol that we're done with a particular game
-void ipx_handle_leave_game ()
+void IpxHandleLeaveGame ()
 {
 if (driver->HandleLeaveGame)
 	driver->HandleLeaveGame (&ipxSocketData);
