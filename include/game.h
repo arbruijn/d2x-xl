@@ -86,7 +86,7 @@ typedef struct tDetailData {
 	sbyte		maxDebrisObjects [NUM_DETAIL_LEVELS - 1];
 	sbyte		maxObjsOnScreenDetailed [NUM_DETAIL_LEVELS - 1];
 	sbyte		simpleModelThresholdScales [NUM_DETAIL_LEVELS - 1];
-	sbyte		nSoundChannels [NUM_DETAIL_LEVELS - 1];
+	ubyte		nSoundChannels [NUM_DETAIL_LEVELS - 1];
 } tDetailData;
 
 extern tDetailData detailData;
