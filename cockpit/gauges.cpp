@@ -608,14 +608,14 @@ if (gameStates.app.bEndLevelSequence || gameStates.app.bPlayerIsDead)
 	return;
 if (LOCALPLAYER.homingObjectDist >= 0) {
 	xBeepDelay = LOCALPLAYER.homingObjectDist/128;
-	if (xBeepDelay > F1_0)
-		xBeepDelay = F1_0;
-	else if (xBeepDelay < F1_0/8)
-		xBeepDelay = F1_0/8;
+	if (xBeepDelay > I2X (1))
+		xBeepDelay = I2X (1);
+	else if (xBeepDelay < I2X (1)/8)
+		xBeepDelay = I2X (1)/8;
 	if (lastWarningBeepTime [gameStates.render.vr.nCurrentPage] > gameData.time.xGame)
 		lastWarningBeepTime [gameStates.render.vr.nCurrentPage] = 0;
 	if (gameData.time.xGame - lastWarningBeepTime [gameStates.render.vr.nCurrentPage] > xBeepDelay/2) {
-		DigiPlaySample (SOUND_HOMING_WARNING, F1_0);
+		audio.PlaySound (SOUND_HOMING_WARNING);
 		lastWarningBeepTime [gameStates.render.vr.nCurrentPage] = gameData.time.xGame;
 		}
 	}
@@ -636,14 +636,14 @@ else {
 			PAGE_IN_GAUGE (GAUGE_HOMING_WARNING_ON);
 			HUDBitBlt (
 				HOMING_WARNING_X, HOMING_WARNING_Y,
-				gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_HOMING_WARNING_ON), F1_0, 0);
+				gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_HOMING_WARNING_ON), I2X (1), 0);
 				bLastHomingWarningShown [gameStates.render.vr.nCurrentPage] = 1;
 			}
 		else {
 			PAGE_IN_GAUGE (GAUGE_HOMING_WARNING_OFF);
 			HUDBitBlt (
 				HOMING_WARNING_X, HOMING_WARNING_Y,
-				gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_HOMING_WARNING_OFF), F1_0, 0);
+				gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_HOMING_WARNING_OFF), I2X (1), 0);
 			bLastHomingWarningShown [gameStates.render.vr.nCurrentPage] = 0;
 			}
 		}
@@ -651,7 +651,7 @@ else {
 		PAGE_IN_GAUGE (GAUGE_HOMING_WARNING_OFF);
 		HUDBitBlt (
 			HOMING_WARNING_X, HOMING_WARNING_Y,
-			gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_HOMING_WARNING_OFF), F1_0, 0);
+			gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_HOMING_WARNING_OFF), I2X (1), 0);
 		bLastHomingWarningShown [gameStates.render.vr.nCurrentPage] = 0;
 		}
 	}
@@ -1111,7 +1111,7 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 		y -= 7*nHUDLineSpacing;
 	else
 		y -= 4*nHUDLineSpacing;
-	if ((LOCALPLAYER.cloakTime+CLOAK_TIME_MAX - gameData.time.xGame > F1_0*3) || (gameData.time.xGame & 0x8000))
+	if ((LOCALPLAYER.cloakTime+CLOAK_TIME_MAX - gameData.time.xGame > I2X (3)) || (gameData.time.xGame & 0x8000))
 		nIdCloak = GrPrintF (&nIdCloak, 2, y, "%s", TXT_CLOAKED);
 	}
 if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) {
@@ -1121,7 +1121,7 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) {
 		y -= 10*nHUDLineSpacing;
 	else
 		y -= 5*nHUDLineSpacing;
-	if (((LOCALPLAYER.invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame) > F1_0*4) || (gameData.time.xGame & 0x8000))
+	if (((LOCALPLAYER.invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame) > I2X (4)) || (gameData.time.xGame & 0x8000))
 		nIdInvul = GrPrintF (&nIdInvul, 2, y, "%s", TXT_INVULNERABLE);
 	}
 }
@@ -1166,7 +1166,7 @@ if (gameStates.render.cockpit.nShieldFlash) {
 		if ((nBeep < 0) || (bLastFlash != gameStates.render.cockpit.nShieldFlash)) {
 			if (nBeep >= 0)
 				audio.StopSound ((int) nBeep);
-			nBeep = audio.StartSound (-1, F1_0 * 2 / 3, 0xFFFF / 2, -1, -1, -1, -1, F1_0,
+			nBeep = audio.StartSound (-1, I2X (2) / 3, 0xFFFF / 2, -1, -1, -1, -1, I2X (1),
 											AddonSoundName ((gameStates.render.cockpit.nShieldFlash == 1) ?
 											SND_ADDON_LOW_SHIELDS1 : SND_ADDON_LOW_SHIELDS2), NULL, 0);
 			}
@@ -1252,10 +1252,10 @@ void AddPointsToScore (int points)
 {
 	int prev_score;
 
-	scoreTime += f1_0*2;
+	scoreTime += I2X (1)*2;
 	scoreDisplay [0] += points;
 	scoreDisplay [1] += points;
-	if (scoreTime > f1_0*4) scoreTime = f1_0*4;
+	if (scoreTime > I2X (1)*4) scoreTime = I2X (1)*4;
 	if (points == 0 || gameStates.app.cheats.bEnabled)
 		return;
 	if (IsMultiGame && !IsCoopGame)
@@ -1273,7 +1273,7 @@ void AddPointsToScore (int points)
 		LOCALPLAYER.lives += LOCALPLAYER.score/EXTRA_SHIP_SCORE - prev_score/EXTRA_SHIP_SCORE;
 		PowerupBasic (20, 20, 20, 0, TXT_EXTRA_LIFE);
 		if ((snd=gameData.objs.pwrUp.info [POW_EXTRA_LIFE].hitSound) > -1)
-			DigiPlaySample (snd, F1_0);
+			audio.PlaySound (snd);
 	}
 }
 
@@ -1300,8 +1300,8 @@ void AddBonusPointsToScore (int points)
 	if (LOCALPLAYER.score/EXTRA_SHIP_SCORE != prev_score/EXTRA_SHIP_SCORE) {
 		short snd;
 		LOCALPLAYER.lives += LOCALPLAYER.score/EXTRA_SHIP_SCORE - prev_score/EXTRA_SHIP_SCORE;
-		if ((snd=gameData.objs.pwrUp.info [POW_EXTRA_LIFE].hitSound) > -1)
-			DigiPlaySample (snd, F1_0);
+		if ((snd = gameData.objs.pwrUp.info [POW_EXTRA_LIFE].hitSound) > -1)
+			audio.PlaySound (snd);
 	}
 }
 
@@ -1385,7 +1385,7 @@ void DrawEnergyBar (int energy)
 // Draw left energy bar
 PAGE_IN_GAUGE (GAUGE_ENERGY_LEFT);
 bmP = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_ENERGY_LEFT);
-HUDBitBlt (LEFT_ENERGY_GAUGE_X, LEFT_ENERGY_GAUGE_Y, bmP, F1_0, 0);
+HUDBitBlt (LEFT_ENERGY_GAUGE_X, LEFT_ENERGY_GAUGE_Y, bmP, I2X (1), 0);
 #if DBG
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (255, 255, 255));
 #else
@@ -1429,7 +1429,7 @@ HUDBitBlt (LEFT_ENERGY_GAUGE_X, LEFT_ENERGY_GAUGE_Y, bmP, F1_0, 0);
 	bmP = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_ENERGY_RIGHT);
 //	GrUBitmapM (0, 0, bmP);
 //	GrUBitmapM (RIGHT_ENERGY_GAUGE_X, RIGHT_ENERGY_GAUGE_Y, bmP);
-	HUDBitBlt (RIGHT_ENERGY_GAUGE_X, RIGHT_ENERGY_GAUGE_Y, bmP, F1_0, 0);
+	HUDBitBlt (RIGHT_ENERGY_GAUGE_X, RIGHT_ENERGY_GAUGE_Y, bmP, I2X (1), 0);
 #if DBG
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (255, 255, 255));
 #else
@@ -1595,9 +1595,9 @@ PAGE_IN_GAUGE (GAUGE_AFTERBURNER);
 bmP =  gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_AFTERBURNER);
 //	GrUBitmapM (0, 0, bmP);
 //	GrUBitmapM (AFTERBURNER_GAUGE_X, AFTERBURNER_GAUGE_Y, bmP);
-HUDBitBlt (AFTERBURNER_GAUGE_X, AFTERBURNER_GAUGE_Y, bmP, F1_0, 0);
+HUDBitBlt (AFTERBURNER_GAUGE_X, AFTERBURNER_GAUGE_Y, bmP, I2X (1), 0);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-not_afterburner = FixMul (f1_0 - afterburner, AFTERBURNER_GAUGE_H);
+not_afterburner = FixMul (I2X (1) - afterburner, AFTERBURNER_GAUGE_H);
 gameStates.render.grAlpha = FADE_LEVELS;
 yMax = HUD_SCALE_Y (not_afterburner);
 for (y = 0; y < not_afterburner; y++) {
@@ -1618,7 +1618,7 @@ void DrawShieldBar (int shield)
 	int bm_num = shield>=100?9: (shield / 10);
 
 PAGE_IN_GAUGE (GAUGE_SHIELDS+9-bm_num	);
-HUDBitBlt (SHIELD_GAUGE_X, SHIELD_GAUGE_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_SHIELDS+9-bm_num), F1_0, 0);
+HUDBitBlt (SHIELD_GAUGE_X, SHIELD_GAUGE_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_SHIELDS+9-bm_num), I2X (1), 0);
 }
 
 #define CLOAK_FADE_WAIT_TIME  0x400
@@ -1688,7 +1688,7 @@ if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT) {
 //if (nCloakFadeValue >= FADE_LEVELS - 1)
  {
 	gameStates.render.grAlpha = (float) nCloakFadeValue / (float) FADE_LEVELS;
-	HUDBitBlt (x, y, bmP, F1_0, 0);
+	HUDBitBlt (x, y, bmP, I2X (1), 0);
 	gameStates.render.grAlpha = FADE_LEVELS;
 	}
 //		gameStates.render.grAlpha = nCloakFadeValue;
@@ -1704,7 +1704,7 @@ GrBmUBitBltM (
 #endif
 }
 
-#define INV_FRAME_TIME	 (f1_0/10)		//how long for each frame
+#define INV_FRAME_TIME	 (I2X (1)/10)		//how long for each frame
 
 //	-----------------------------------------------------------------------------
 
@@ -1727,7 +1727,7 @@ void DrawNumericalDisplay (int shield, int energy)
 		CCanvas::SetCurrent (Canv_NumericalGauge);
 	PAGE_IN_GAUGE (GAUGE_NUMERICAL);
 //	gr_ubitmap (dx, dy, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_NUMERICAL));
-	HUDBitBlt (dx, dy, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_NUMERICAL), F1_0, 0);
+	HUDBitBlt (dx, dy, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_NUMERICAL), I2X (1), 0);
 	fontManager.SetCurrent (GAME_FONT);
 	fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
 	nIdShields = HUDPrintF (&nIdShields, NumDispX (shield), dy + (gameStates.video.nDisplayMode ? 36 : 16), "%d", shield);
@@ -1736,7 +1736,7 @@ void DrawNumericalDisplay (int shield, int energy)
 
 	if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT) {
 		CCanvas::SetCurrent (GetCurrentGameScreen ());
-		HUDBitBlt (NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y, Canv_NumericalGauge, F1_0, 0);
+		HUDBitBlt (NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y, Canv_NumericalGauge, I2X (1), 0);
 	}
 }
 
@@ -1749,27 +1749,27 @@ CCanvas::SetCurrent (GetCurrentGameScreen ());
 
 if (LOCALPLAYER.flags & PLAYER_FLAGS_BLUE_KEY) {
 	PAGE_IN_GAUGE (GAUGE_BLUE_KEY);
-	HUDBitBlt (GAUGE_BLUE_KEY_X, GAUGE_BLUE_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_BLUE_KEY), F1_0, 0);
+	HUDBitBlt (GAUGE_BLUE_KEY_X, GAUGE_BLUE_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_BLUE_KEY), I2X (1), 0);
 	}
 else {
 	PAGE_IN_GAUGE (GAUGE_BLUE_KEY_OFF);
-	HUDBitBlt (GAUGE_BLUE_KEY_X, GAUGE_BLUE_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_BLUE_KEY_OFF), F1_0, 0);
+	HUDBitBlt (GAUGE_BLUE_KEY_X, GAUGE_BLUE_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_BLUE_KEY_OFF), I2X (1), 0);
 	}
 if (LOCALPLAYER.flags & PLAYER_FLAGS_GOLD_KEY) {
 	PAGE_IN_GAUGE (GAUGE_GOLD_KEY);
-	HUDBitBlt (GAUGE_GOLD_KEY_X, GAUGE_GOLD_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_GOLD_KEY), F1_0, 0);
+	HUDBitBlt (GAUGE_GOLD_KEY_X, GAUGE_GOLD_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_GOLD_KEY), I2X (1), 0);
 	}
 else {
 	PAGE_IN_GAUGE (GAUGE_GOLD_KEY_OFF);
-	HUDBitBlt (GAUGE_GOLD_KEY_X, GAUGE_GOLD_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_GOLD_KEY_OFF), F1_0, 0);
+	HUDBitBlt (GAUGE_GOLD_KEY_X, GAUGE_GOLD_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_GOLD_KEY_OFF), I2X (1), 0);
 	}
 if (LOCALPLAYER.flags & PLAYER_FLAGS_RED_KEY) {
 	PAGE_IN_GAUGE (GAUGE_RED_KEY);
-	HUDBitBlt (GAUGE_RED_KEY_X,  GAUGE_RED_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_RED_KEY), F1_0, 0);
+	HUDBitBlt (GAUGE_RED_KEY_X,  GAUGE_RED_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_RED_KEY), I2X (1), 0);
 	}
 else {
 	PAGE_IN_GAUGE (GAUGE_RED_KEY_OFF);
-	HUDBitBlt (GAUGE_RED_KEY_X,  GAUGE_RED_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_RED_KEY_OFF), F1_0, 0);
+	HUDBitBlt (GAUGE_RED_KEY_X,  GAUGE_RED_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_RED_KEY_OFF), I2X (1), 0);
 	}
 }
 
@@ -1802,7 +1802,7 @@ void DrawWeaponInfoSub (int info_index, tGaugeBox *box, int pic_x, int pic_y, co
 		}
 	Assert (bmP != NULL);
 
-	HUDBitBlt (pic_x, pic_y, bmP, (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) ? 2 * F1_0 : F1_0, orient);
+	HUDBitBlt (pic_x, pic_y, bmP, (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) ? I2X (2) : I2X (1), orient);
 	if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)
 		return;
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
@@ -2015,7 +2015,7 @@ void DrawStatic (int win)
 	CCanvas::SetCurrent (&gameStates.render.vr.buffers.render [0]);
 	for (x=gaugeBoxes [boxofs+win].left;x<gaugeBoxes [boxofs+win].right;x+=bmp->Width ())
 		for (y=gaugeBoxes [boxofs+win].top;y<gaugeBoxes [boxofs+win].bot;y+=bmp->Height ())
-			/*GrBitmap*/HUDBitBlt (x, y, bmp, F1_0, 0);
+			/*GrBitmap*/HUDBitBlt (x, y, bmp, I2X (1), 0);
 	CCanvas::SetCurrent (GetCurrentGameScreen ());
 	CopyGaugeBox (&gaugeBoxes [boxofs+win], &gameStates.render.vr.buffers.render [0]);
 }
@@ -2082,14 +2082,14 @@ void DrawInvulnerableShip (void)
 
 CCanvas::SetCurrent (GetCurrentGameScreen ());
 if (tInvul > 0) {
-	if ((tInvul > F1_0 * 4) || (gameData.time.xGame & 0x8000)) {
+	if ((tInvul > I2X (4)) || (gameData.time.xGame & 0x8000)) {
 		if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
 			PAGE_IN_GAUGE (GAUGE_INVULNERABLE + nInvulnerableFrame);
-			HUDBitBlt (SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (GAUGE_INVULNERABLE + nInvulnerableFrame)], F1_0, 0);
+			HUDBitBlt (SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (GAUGE_INVULNERABLE + nInvulnerableFrame)], I2X (1), 0);
 			}
 		else {
 			PAGE_IN_GAUGE (GAUGE_INVULNERABLE + nInvulnerableFrame);
-			HUDBitBlt (SHIELD_GAUGE_X, SHIELD_GAUGE_Y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (GAUGE_INVULNERABLE + nInvulnerableFrame)], F1_0, 0);
+			HUDBitBlt (SHIELD_GAUGE_X, SHIELD_GAUGE_Y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (GAUGE_INVULNERABLE + nInvulnerableFrame)], I2X (1), 0);
 			}
 		time += gameData.time.xFrame;
 		while (time > INV_FRAME_TIME) {
@@ -2182,19 +2182,19 @@ else {
 	HUDBitBlt (
 		- (x + HUD_SCALE_X (cross_offsets [ofs].x)),
 		- (y + HUD_SCALE_Y (cross_offsets [ofs].y)),
-		gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (nGaugeIndex), F1_0, 0);
+		gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (nGaugeIndex), I2X (1), 0);
 	nGaugeIndex = (bSmallReticle ? SML_RETICLE_PRIMARY : RETICLE_PRIMARY) + nPrimaryBm;
 	PAGE_IN_GAUGE (nGaugeIndex);
 	HUDBitBlt (
 		- (x + HUD_SCALE_X (primary_offsets [ofs].x)),
 		- (y + HUD_SCALE_Y (primary_offsets [ofs].y)),
-		gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (nGaugeIndex), F1_0, 0);
+		gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (nGaugeIndex), I2X (1), 0);
 	nGaugeIndex = (bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondaryBm;
 	PAGE_IN_GAUGE (nGaugeIndex);
 	HUDBitBlt (
 		- (x + HUD_SCALE_X (secondary_offsets [ofs].x)),
 		- (y + HUD_SCALE_Y (secondary_offsets [ofs].y)),
-		gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (nGaugeIndex), F1_0, 0);
+		gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (nGaugeIndex), I2X (1), 0);
   }
 if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick && gameOpts->render.cockpit.bMouseIndicator)
 	OglDrawMouseIndicator ();
@@ -2464,7 +2464,7 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 		CFixVector	vPos;
 
 		vPos = OBJECTS [nObject].info.position.vPos;
-		vPos[Y] += 2 * F1_0;
+		vPos[Y] += I2X (2);
 		G3TransformAndEncodePoint(&vPlayerPos, vPos);
 		if (vPlayerPos.p3_codes == 0) {	//on screen
 			G3ProjectPoint (&vPlayerPos);
@@ -2835,7 +2835,7 @@ CCanvas::Push ();
 CCanvas::SetCurrent (&windowCanv);
 transformation.Push ();
 nZoomSave = gameStates.render.nZoomFactor;
-gameStates.render.nZoomFactor = F1_0 * (gameOpts->render.cockpit.nWindowZoom + 1);					//the CPlayerData's zoom factor
+gameStates.render.nZoomFactor = I2X (gameOpts->render.cockpit.nWindowZoom + 1);					//the CPlayerData's zoom factor
 if ((nUser == WBU_RADAR_TOPDOWN) || (nUser == WBU_RADAR_HEADSUP)) {
 	if (!IsMultiGame || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))
 		automap.DoFrame (0, 1 + (nUser == WBU_RADAR_TOPDOWN));
@@ -2949,7 +2949,7 @@ if (gameStates.render.bShowFrameRate) {
 		t = SDL_GetTicks ();
 		if ((t0 < 0) || (t - t0 >= 500)) {
 			t0 = t;
-			xRate = frameTimeTotal ? FixDiv (f1_0 * 8, frameTimeTotal) : 0;
+			xRate = frameTimeTotal ? FixDiv (I2X (1) * 8, frameTimeTotal) : 0;
 			}
 		sprintf (szItem, "FPS: %s", ftoa (szRate, xRate));
 		}

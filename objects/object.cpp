@@ -82,9 +82,9 @@ CObject	*dbgObjP = NULL;
 
 int dbgObjInstances = 0;
 
-#define	DEG90		 (F1_0 / 4)
-#define	DEG45		 (F1_0 / 8)
-#define	DEG1		 (F1_0 / (4 * 90))
+#define	DEG90		 (I2X (1) / 4)
+#define	DEG45		 (I2X (1) / 8)
+#define	DEG1		 (I2X (1) / (4 * 90))
 
 //------------------------------------------------------------------------------
 // CBitmap *robot_bms [MAX_ROBOT_BITMAPS];	//all bitmaps for all robots
@@ -176,7 +176,7 @@ void InitGateIntervals (void)
 	int	i;
 
 for (i = 0; i < MAX_BOSS_COUNT; i++)
-	gameData.boss [i].nGateInterval = F1_0 * 4 - gameStates.app.nDifficultyLevel * I2X (2) / 3;
+	gameData.boss [i].nGateInterval = I2X (4) - gameStates.app.nDifficultyLevel * I2X (2) / 3;
 }
 
 //------------------------------------------------------------------------------
@@ -327,7 +327,7 @@ vPos = objP->info.position.vPos;
 vRand = CFixVector::Random();
 vRand *= (objP->info.xSize / 2);
 vPos += vRand;
-size = FixMul (size_scale, F1_0 / 2 + d_rand () * 4 / 2);
+size = FixMul (size_scale, I2X (1) / 2 + d_rand () * 4 / 2);
 nSegment = FindSegByPos (vPos, objP->info.nSegment, 1, 0);
 if (nSegment != -1) {
 	CObject *explObjP = /*Object*/CreateExplosion (nSegment, vPos, size, VCLIP_SMALL_EXPLOSION);
@@ -335,11 +335,11 @@ if (nSegment != -1) {
 		return;
 	AttachObject (objP, explObjP);
 	if (d_rand () < 8192) {
-		fix	vol = F1_0 / 2;
+		fix	vol = I2X (1) / 2;
 		if (objP->info.nType == OBJ_ROBOT)
 			vol *= 2;
 		else if (bSound)
-			SetObjectSound (SOUND_EXPLODING_WALL, SOUNDCLASS_EXPLOSION, objP->Index (), 0, vol);
+			CreateObjectSound (SOUND_EXPLODING_WALL, SOUNDCLASS_EXPLOSION, objP->Index (), 0, vol);
 		}
 	}
 }
@@ -356,7 +356,7 @@ vPos = objP->info.position.vPos;
 vRand = CFixVector::Random();
 vRand *= (objP->info.xSize / 2);
 vPos += vRand;
-xSize = FixMul (xScale, F1_0 + d_rand ()*4);
+xSize = FixMul (xScale, I2X (1) + d_rand ()*4);
 nSegment = FindSegByPos (vPos, objP->info.nSegment, 1, 0);
 if (nSegment != -1) {
 	CObject *explObjP = /*Object*/CreateExplosion (nSegment, vPos, xSize, nVClip);
@@ -1249,7 +1249,7 @@ SetLifeLeft (
 	 ((gameData.app.nGameMode & GM_ENTROPY) &&  (nType == OBJ_POWERUP) &&  (nId == POW_HOARD_ORB) &&  (extraGameInfo [1].entropy.nVirusLifespan > 0)) ?
 		I2X (extraGameInfo [1].entropy.nVirusLifespan) : IMMORTAL_TIME);
 SetAttachedObj (-1);
-SetShields (20 * F1_0);
+SetShields (I2X (20));
 SetSegment (-1);					//set to zero by memset, above
 LinkToSeg (nSegment);
 }
@@ -1331,7 +1331,7 @@ if (GetType () == OBJ_WEAPON) {
 	CPhysicsInfo::SetFlags (CPhysInfo.GetFlags () | WI_persistent (m_info.nId) * PF_PERSISTENT);
 	CLaserInfo::SetCreationTime (gameData.time.xGame);
 	CLaserInfo::SetLastHitObj (0);
-	CLaserInfo::SetScale (F1_0);
+	CLaserInfo::SetScale (I2X (1));
 	}
 else if (GetType () == OBJ_DEBRIS)
 	nDebrisObjectCount++;
@@ -1438,7 +1438,7 @@ if (objP->info.nType == OBJ_WEAPON) {
 	objP->mType.physInfo.flags |= WI_persistent (objP->info.nId) * PF_PERSISTENT;
 	objP->cType.laserInfo.xCreationTime = gameData.time.xGame;
 	objP->cType.laserInfo.nLastHitObj = 0;
-	objP->cType.laserInfo.xScale = F1_0;
+	objP->cType.laserInfo.xScale = I2X (1);
 	}
 else if (objP->info.nType == OBJ_DEBRIS)
 	nDebrisObjectCount++;
@@ -1527,7 +1527,7 @@ if (rType == 255) {
 			break;
 		case WEAPON_RENDER_NONE:
 			rType = RT_NONE;
-			xSize = F1_0;
+			xSize = I2X (1);
 			break;
 		case WEAPON_RENDER_VCLIP:
 			rType = RT_WEAPON_VCLIP;
@@ -1640,11 +1640,11 @@ SpawnLeftoverPowerups (nObject);
 
 //------------------------------------------------------------------------------
 
-#define	DEATH_SEQUENCE_EXPLODE_TIME	 (F1_0*2)
+#define	DEATH_SEQUENCE_EXPLODE_TIME	 (I2X (2))
 
 CObject	*viewerSaveP;
 int		nPlayerFlagsSave;
-fix		xCameraToPlayerDistGoal=F1_0*4;
+fix		xCameraToPlayerDistGoal=I2X (4);
 ubyte		nControlTypeSave, nRenderTypeSave;
 
 //------------------------------------------------------------------------------
@@ -1691,10 +1691,10 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->info.xSize) {
 	CFixVector	local_p1;
 
 	if (vPlayerCameraOffs.IsZero())
-		vPlayerCameraOffs[X] += F1_0/16;
+		vPlayerCameraOffs[X] += I2X (1)/16;
 
 	hit_data.hit.nType = HIT_WALL;
-	xFarScale = F1_0;
+	xFarScale = I2X (1);
 
 	while ((hit_data.hit.nType != HIT_NONE) && (count++ < 6)) {
 		CFixVector	closer_p1;
@@ -1719,7 +1719,7 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->info.xSize) {
 			*vCameraPos = closer_p1;
 		else {
 			vPlayerCameraOffs = CFixVector::Random();
-			xFarScale = 3*F1_0 / 2;
+			xFarScale = I2X (3) / 2;
 			}
 		}
 	}
@@ -1749,7 +1749,7 @@ if (gameStates.app.bPlayerIsDead) {
 	h = DEATH_SEQUENCE_EXPLODE_TIME - xTimeDead;
 	h = max (0, h);
 	gameData.objs.consoleP->mType.physInfo.rotVel = CFixVector::Create(h / 4, h / 2, h / 3);
-	xCameraToPlayerDistGoal = min (xTimeDead * 8, F1_0 * 20) + gameData.objs.consoleP->info.xSize;
+	xCameraToPlayerDistGoal = min (xTimeDead * 8, I2X (20)) + gameData.objs.consoleP->info.xSize;
 	SetCameraPos (&gameData.objs.deadPlayerCamera->info.position.vPos, gameData.objs.consoleP);
 	fVec = gameData.objs.consoleP->info.position.vPos - gameData.objs.deadPlayerCamera->info.position.vPos;
 /*
@@ -1797,7 +1797,7 @@ if (gameStates.app.bPlayerIsDead) {
 		if (d_rand () < gameData.time.xFrame * 4) {
 			if (gameData.app.nGameMode & GM_MULTI)
 				MultiSendCreateExplosion (gameData.multiplayer.nLocalPlayer);
-			CreateSmallFireballOnObject (gameData.objs.consoleP, F1_0, 1);
+			CreateSmallFireballOnObject (gameData.objs.consoleP, I2X (1), 1);
 			}
 		}
 	if (gameStates.app.bDeathSequenceAborted) { //xTimeDead > DEATH_SEQUENCE_LENGTH) {
@@ -1901,7 +1901,7 @@ playerP->info.nFlags &= ~OF_SHOULD_BE_DEAD;
 //	LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
 playerP->info.controlType = CT_NONE;
 if (!gameStates.entropy.bExitSequence) {
-	playerP->info.xShields = F1_0*1000;
+	playerP->info.xShields = I2X (100)0;
 	MultiSendShields ();
 	}
 paletteManager.SetEffect (0, 0, 0);
@@ -2015,7 +2015,7 @@ void StopPlayerMovement (void)
 if (!gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted) {
 	StopObjectMovement (OBJECTS + LOCALPLAYER.nObject);
 	memset (&gameData.physics.playerThrust, 0, sizeof (gameData.physics.playerThrust));
-//	gameData.time.xFrame = F1_0;
+//	gameData.time.xFrame = I2X (1);
 	gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted = 0;
 	}
 }
@@ -2037,7 +2037,7 @@ if (EGI_FLAG (bRotateMarkers, 0, 1, 0) && gameStates.app.tick40fps.bTick) {
 	time_t t = (gameStates.app.nSDLTicks - t0) % 1000;
 	t0 = gameStates.app.nSDLTicks;
 	if (t) {
-		CAngleVector a = CAngleVector::Create(0, 0, (fixang) ((float) (F1_0 / 512) * t / 25.0f));
+		CAngleVector a = CAngleVector::Create(0, 0, (fixang) ((float) (I2X (1) / 512) * t / 25.0f));
 		CFixMatrix mRotate = CFixMatrix::Create(a);
 		CFixMatrix mOrient = mRotate * info.position.mOrient;
 		info.position.mOrient = mOrient;
@@ -2073,12 +2073,12 @@ if (!nType)
 if (nType) {
 	if (!bPlayingSound [info.nId]) {
 		short sound = (nType == 1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
-		SetObjectSound (sound, OBJ_IDX (this), SOUNDCLASS_GENERIC, 1);
+		CreateObjectSound (sound, OBJ_IDX (this), SOUNDCLASS_GENERIC, 1);
 		bPlayingSound [info.nId] = 1;
 		}
 	}
 else if (bPlayingSound [info.nId]) {
-	DigiKillSoundLinkedToObject (OBJ_IDX (this));
+	DigiDestroyObjectSound (OBJ_IDX (this));
 	bPlayingSound [info.nId] = 0;
 	}
 return nType;
@@ -2225,16 +2225,16 @@ if (nObject != LOCALPLAYER.nObject)
 	return;
 
 int nSpeed = nSpeed = mType.physInfo.velocity.Mag();
-nSpeed -= 2 * F1_0;
+nSpeed -= I2X (2);
 if (nSpeed < 0)
 	nSpeed = 0;
 if (gameData.multiplayer.bMoving == nSpeed)
 	return;
 
 if (gameData.multiplayer.bMoving < 0)
-	SetObjectSound (-1, OBJ_IDX (this), SOUNDCLASS_PLAYER, 1, F1_0 / 64 + nSpeed / 256, I2X (256), -1, -1, "missileflight-small.wav", 1);
+	CreateObjectSound (-1, OBJ_IDX (this), SOUNDCLASS_PLAYER, 1, I2X (1) / 64 + nSpeed / 256, I2X (256), -1, -1, "missileflight-small.wav", 1);
 else
-	DigiChangeSoundLinkedToObject (OBJ_IDX (this), F1_0 / 64 + nSpeed / 256);
+	DigiChangeSoundLinkedToObject (OBJ_IDX (this), I2X (1) / 64 + nSpeed / 256);
 gameData.multiplayer.bMoving = nSpeed;
 }
 
@@ -2335,16 +2335,16 @@ if ((info.nType == OBJ_WEAPON) && (gameData.weapons.info [info.nId].afterburner_
 			return;
 		}
 #endif
-	if ((vel = mType.physInfo.velocity.Mag()) > F1_0 * 200)
-		delay = F1_0 / 16;
-	else if (vel > F1_0 * 40)
-		delay = FixDiv (F1_0 * 13, vel);
+	if ((vel = mType.physInfo.velocity.Mag()) > I2X (200))
+		delay = I2X (1) / 16;
+	else if (vel > I2X (40))
+		delay = FixDiv (I2X (13), vel);
 	else
 		delay = DEG90;
 
 	if ((bSmoke = SHOW_SMOKE && gameOpts->render.particles.bMissiles)) {
-		nSize = F1_0 * 3;
-		lifetime = F1_0 / 12;
+		nSize = I2X (3);
+		lifetime = I2X (1) / 12;
 		delay = 0;
 		}
 	else {
@@ -2417,7 +2417,7 @@ info.vLastPos = info.position.vPos;			// Save the current position
 HandleSpecialSegment ();
 if ((info.xLifeLeft != IMMORTAL_TIME) &&
 	 (info.xLifeLeft != ONE_FRAME_TIME) &&
-	 (gameData.physics.xTime != F1_0))
+	 (gameData.physics.xTime != I2X (1)))
 	info.xLifeLeft -= (fix) (gameData.physics.xTime / gameStates.gameplay.slowmo [0].fSpeed);		//...inevitable countdown towards death
 gameStates.render.bDropAfterburnerBlob = 0;
 if (UpdateControl ()) {
@@ -2856,7 +2856,7 @@ nObject = CreateObject (OBJ_MARKER, nMarker, -1, nSegment, vPos, orient,
 if (nObject >= 0) {
 	CObject *objP = OBJECTS + nObject;
 	objP->rType.polyObjInfo.nModel = gameData.models.nMarkerModel;
-	objP->mType.spinRate = objP->info.position.mOrient.UVec () * (F1_0 / 2);
+	objP->mType.spinRate = objP->info.position.mOrient.UVec () * (I2X (1) / 2);
 	//	MK, 10/16/95: Using lifeleft to make it flash, thus able to trim lightlevel from all OBJECTS.
 	objP->info.xLifeLeft = IMMORTAL_TIME;
 	}
@@ -2889,12 +2889,12 @@ for (i = windowRenderedData [nWindow].nObjects; i; ) {
 	if ((nObject & 3) == frameFilter) {
 		objP = OBJECTS + nObject;
 		if (objP->info.nType == OBJ_ROBOT) {
-			if (CFixVector::Dist (viewerP->info.position.vPos, objP->info.position.vPos) < F1_0*100) {
+			if (CFixVector::Dist (viewerP->info.position.vPos, objP->info.position.vPos) < I2X (100)) {
 				ailP = gameData.ai.localInfo + nObject;
 				if (ailP->playerAwarenessType == 0) {
 					objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_CAMERA_AWAKE;
 					ailP->playerAwarenessType = WEAPON_ROBOT_COLLISION;
-					ailP->playerAwarenessTime = F1_0*3;
+					ailP->playerAwarenessTime = I2X (3);
 					ailP->nPrevVisibility = 2;
 					}
 				}
@@ -3179,7 +3179,7 @@ PrintLog ("   finished building optimized polygon model data (%d models converte
 
 void CObject::CreateSound (short nSound)
 {
-DigiLinkSoundToPos (nSound, info.nSegment, 0, info.position.vPos);
+audio.CreateSegmentSound (nSound, info.nSegment, 0, info.position.vPos);
 }
 
 //------------------------------------------------------------------------------

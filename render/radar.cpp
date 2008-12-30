@@ -34,7 +34,7 @@ int radarRanges [] = {100, 150, 200};
 #define RADAR_SLICES	40
 #define BLIP_SLICES	40
 
-static CAngleVector	aRadar = CAngleVector::Create(F1_0 / 4, 0, 0);
+static CAngleVector	aRadar = CAngleVector::Create(I2X (1) / 4, 0, 0);
 static CFixMatrix	mRadar;
 static float		yRadar = 20;
 
@@ -55,7 +55,7 @@ if (bInitSinCos) {
 	}
 n = objP->info.position.vPos;
 transformation.Transform (n, n, 0);
-if ((m = n.Mag()) > RADAR_RANGE * F1_0)
+if ((m = n.Mag()) > I2X (RADAR_RANGE))
 	return;
 if (m) {
 	//HUDMessage (0, "%1.2f", X2F (m));

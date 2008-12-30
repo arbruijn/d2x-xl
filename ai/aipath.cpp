@@ -181,8 +181,8 @@ for (i = 1, --j; i < j; i++) {
 	b = ptSegs [i + 1].point - ptSegs [i].point;
 	c = ptSegs [i + 1].point - ptSegs [i-1].point;
 	CFixVector::Normalize(b);
-	if (abs (CFixVector::Dot (a, b)) > 3*F1_0/4) {
-		if (abs (a[Z]) < F1_0/2) {
+	if (abs (CFixVector::Dot (a, b)) > I2X (3)/4) {
+		if (abs (a[Z]) < I2X (1)/2) {
 			if (bRandom) {
 				e [X] = (d_rand ()- 16384) / 2;
 				e [Y] = (d_rand ()- 16384) / 2;
@@ -192,7 +192,7 @@ for (i = 1, --j; i < j; i++) {
 			else {
 				e [X] =
 				e [Y] = 0;
-				e [Z] = F1_0;
+				e [Z] = I2X (1);
 				}
 			}
 		else {
@@ -203,7 +203,7 @@ for (i = 1, --j; i < j; i++) {
 				CFixVector::Normalize(e);
 				}
 			else {
-				e [X] = F1_0;
+				e [X] = I2X (1);
 				e [Y] =
 				e [Z] = 0;
 				}
@@ -215,13 +215,13 @@ for (i = 1, --j; i < j; i++) {
 		CFixVector::Normalize(e);
 		}
 #if DBG
-	if (e.Mag () < F1_0/2)
+	if (e.Mag () < I2X (1)/2)
 		Int3 ();
 #endif
 	xSegSize = CFixVector::Dist (gameData.segs.vertices [SEGMENTS [nSegment].m_verts [0]], 
 										 gameData.segs.vertices [SEGMENTS [nSegment].m_verts [6]]);
-	if (xSegSize > F1_0*40)
-		xSegSize = F1_0*40;
+	if (xSegSize > I2X (40))
+		xSegSize = I2X (40);
 	vGoalPos = ptSegs [i].point + e * (xSegSize/4);
 	count = 3;
 	while (count) {
@@ -950,8 +950,8 @@ if (gameStates.app.bPlayerIsDead)
 else
 	xDistToPlayer = CFixVector::Dist(objP->info.position.vPos, OBJPOS (gameData.objs.consoleP)->vPos);
 	//	Efficiency hack: If far away from CPlayerData, move in big quantized jumps.
-if (!(nPlayerVisibility || nPrevVisibility) && (xDistToPlayer > F1_0*200) && !IsMultiGame) {
-	if (xDistToGoal < F1_0*2) {
+if (!(nPlayerVisibility || nPrevVisibility) && (xDistToPlayer > I2X (200)) && !IsMultiGame) {
+	if (xDistToGoal < I2X (2)) {
 		MoveObjectToGoal (objP, &vGoalPoint, nGoalSeg);
 		return;
 		}
@@ -973,9 +973,9 @@ if (!(nPlayerVisibility || nPrevVisibility) && (xDistToPlayer > F1_0*200) && !Is
 //	If running from CPlayerData, only run until can't be seen.
 if (ailP->mode == AIM_RUN_FROM_OBJECT) {
 	if ((nPlayerVisibility == 0) && (ailP->playerAwarenessType == 0)) {
-		fix xVelScale = F1_0 - gameData.time.xFrame/2;
-		if (xVelScale < F1_0/2)
-			xVelScale = F1_0/2;
+		fix xVelScale = I2X (1) - gameData.time.xFrame/2;
+		if (xVelScale < I2X (1)/2)
+			xVelScale = I2X (1)/2;
 		objP->mType.physInfo.velocity *= xVelScale;
 		return;
 		}
@@ -995,7 +995,7 @@ if (ailP->mode == AIM_RUN_FROM_OBJECT) {
 			}
 		if (nPlayerVisibility) {
 			ailP->playerAwarenessType = 1;
-			ailP->playerAwarenessTime = F1_0;
+			ailP->playerAwarenessTime = I2X (1);
 			}
 		}
 	}
@@ -1017,7 +1017,7 @@ vGoalPoint = gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex].point;
 forced_break = 0;		//	Gets set for short paths.
 original_dir = aiP->PATH_DIR;
 original_index = aiP->nCurPathIndex;
-thresholdDistance = FixMul (objP->mType.physInfo.velocity.Mag(), gameData.time.xFrame)*2 + F1_0*2;
+thresholdDistance = FixMul (objP->mType.physInfo.velocity.Mag(), gameData.time.xFrame)*2 + I2X (2);
 new_vGoalPoint = gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex].point;
 while ((xDistToGoal < thresholdDistance) && !forced_break) {
 	//	Advance to next point on path.
@@ -1193,7 +1193,7 @@ vNormFwd = objP->info.position.mOrient.FVec ();
 CFixVector::Normalize(vNormFwd);
 dot = CFixVector::Dot (vNormToGoal, vNormFwd);
 //	If very close to facing opposite desired vector, perturb vector
-if (dot < -15*F1_0/16) {
+if (dot < -I2X (15)/16) {
 	vNormCurVel = vNormToGoal;
 	}
 else {
@@ -1204,14 +1204,14 @@ else {
 CFixVector::Normalize(vNormCurVel);
 //	Set speed based on this robot nType's maximum allowed speed and how hard it is turning.
 //	How hard it is turning is based on the dot product of (vector to goal) and (current velocity vector)
-//	Note that since 3*F1_0/4 is added to dot product, it is possible for the robot to back up.
+//	Note that since I2X (3)/4 is added to dot product, it is possible for the robot to back up.
 //	Set speed and orientation.
 if (dot < 0)
 	dot /= -4;
 
 //	If in snipe mode, can move fast even if not facing that direction.
-if ((objP->cType.aiInfo.behavior == AIB_SNIPE) && (dot < F1_0/2))
-	dot = (dot + F1_0) / 2;
+if ((objP->cType.aiInfo.behavior == AIB_SNIPE) && (dot < I2X (1)/2))
+	dot = (dot + I2X (1)) / 2;
 xSpeedScale = FixMul (xMaxSpeed, dot);
 vNormCurVel *= xSpeedScale;
 objP->mType.physInfo.velocity = vNormCurVel;
@@ -1536,7 +1536,7 @@ void player_path_set_orient_and_vel (CObject *objP, CFixVector *vGoalPoint)
 	}
 
 	//	If very close to facing opposite desired vector, perturb vector
-	if (dot < -15*F1_0/16) {
+	if (dot < -I2X (15)/16) {
 		vNormCurVel = vNormToGoal;
 	} else {
 		vNormCurVel[X] += vNormToGoal[X]/2;
@@ -1548,7 +1548,7 @@ void player_path_set_orient_and_vel (CObject *objP, CFixVector *vGoalPoint)
 
 	//	Set speed based on this robot nType's maximum allowed speed and how hard it is turning.
 	//	How hard it is turning is based on the dot product of (vector to goal) and (current velocity vector)
-	//	Note that since 3*F1_0/4 is added to dot product, it is possible for the robot to back up.
+	//	Note that since I2X (3)/4 is added to dot product, it is possible for the robot to back up.
 
 	//	Set speed and orientation.
 	if (dot < 0)
@@ -1557,7 +1557,7 @@ void player_path_set_orient_and_vel (CObject *objP, CFixVector *vGoalPoint)
 	xSpeedScale = FixMul (xMaxSpeed, dot);
 	VmVecScale (&vNormCurVel, xSpeedScale);
 	objP->mType.physInfo.velocity = vNormCurVel;
-	AITurnTowardsVector (&vNormToGoal, objP, F1_0);
+	AITurnTowardsVector (&vNormToGoal, objP, I2X (1));
 
 }
 
@@ -1598,7 +1598,7 @@ void player_follow_path (CObject *objP)
 	forced_break = 0;		//	Gets set for short paths.
 	//original_dir = 1;
 	original_index = Player_cur_path_index;
-	thresholdDistance = FixMul (VmVecMagQuick (&objP->mType.physInfo.velocity), gameData.time.xFrame)*2 + F1_0*2;
+	thresholdDistance = FixMul (VmVecMagQuick (&objP->mType.physInfo.velocity), gameData.time.xFrame)*2 + I2X (2);
 
 	while ((xDistToGoal < thresholdDistance) && !forced_break) {
 

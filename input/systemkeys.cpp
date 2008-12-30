@@ -112,9 +112,9 @@ if ((gameStates.input.keys.pressed[KEY_LSHIFT] || gameStates.input.keys.pressed[
 	gameData.demo.nVcrState = ND_STATE_FASTFORWARD;
 else if ((gameStates.input.keys.pressed[KEY_LSHIFT] || gameStates.input.keys.pressed[KEY_RSHIFT]) && gameStates.input.keys.pressed[KEY_LEFT])
 	gameData.demo.nVcrState = ND_STATE_REWINDING;
-else if (!(gameStates.input.keys.pressed[KEY_LCTRL] || gameStates.input.keys.pressed[KEY_RCTRL]) && gameStates.input.keys.pressed[KEY_RIGHT] && ((TimerGetFixedSeconds() - newdemo_single_frameTime) >= F1_0))
+else if (!(gameStates.input.keys.pressed[KEY_LCTRL] || gameStates.input.keys.pressed[KEY_RCTRL]) && gameStates.input.keys.pressed[KEY_RIGHT] && ((TimerGetFixedSeconds() - newdemo_single_frameTime) >= I2X (1)))
 	gameData.demo.nVcrState = ND_STATE_ONEFRAMEFORWARD;
-else if (!(gameStates.input.keys.pressed[KEY_LCTRL] || gameStates.input.keys.pressed[KEY_RCTRL]) && gameStates.input.keys.pressed[KEY_LEFT] && ((TimerGetFixedSeconds() - newdemo_single_frameTime) >= F1_0))
+else if (!(gameStates.input.keys.pressed[KEY_LCTRL] || gameStates.input.keys.pressed[KEY_RCTRL]) && gameStates.input.keys.pressed[KEY_LEFT] && ((TimerGetFixedSeconds() - newdemo_single_frameTime) >= I2X (1)))
 	gameData.demo.nVcrState = ND_STATE_ONEFRAMEBACKWARD;
 #if 0
 else if ((gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || (gameData.demo.nVcrState == ND_STATE_REWINDING))
@@ -687,7 +687,7 @@ void HandleVRKey(int key)
 			break;
 		case KEY_ALTED+KEY_F9:
 			if ( gameStates.render.vr.nRenderMode != VR_NONE ) {
-				gameStates.render.vr.xEyeWidth -= F1_0/10;
+				gameStates.render.vr.xEyeWidth -= I2X (1)/10;
 				if ( gameStates.render.vr.xEyeWidth < 0 ) gameStates.render.vr.xEyeWidth = 0;
 				HUDInitMessage( TXT_VR_SEPARATION, X2F(gameStates.render.vr.xEyeWidth) );
 				HUDInitMessage( TXT_VR_DEFAULT, X2F(VR_SEPARATION) );
@@ -695,8 +695,8 @@ void HandleVRKey(int key)
 			break;
 		case KEY_ALTED+KEY_F10:
 			if ( gameStates.render.vr.nRenderMode != VR_NONE ) {
-				gameStates.render.vr.xEyeWidth += F1_0/10;
-				if ( gameStates.render.vr.xEyeWidth > F1_0*4 )    gameStates.render.vr.xEyeWidth = F1_0*4;
+				gameStates.render.vr.xEyeWidth += I2X (1)/10;
+				if ( gameStates.render.vr.xEyeWidth > I2X (4) )    gameStates.render.vr.xEyeWidth = I2X (4);
 				HUDInitMessage( TXT_VR_SEPARATION, X2F(gameStates.render.vr.xEyeWidth) );
 				HUDInitMessage( TXT_VR_DEFAULT, X2F(VR_SEPARATION) );
 			}

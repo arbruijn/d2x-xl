@@ -120,12 +120,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define VF_MATRIX 1
 
 // Default size of a tSegment
-#define	DEFAULT_X_SIZE		F1_0*20
-#define	DEFAULT_Y_SIZE		F1_0*20
-#define	DEFAULT_Z_SIZE		F1_0*20
+#define	DEFAULT_X_SIZE		I2X (20)
+#define	DEFAULT_Y_SIZE		I2X (20)
+#define	DEFAULT_Z_SIZE		I2X (20)
 
 //	Scale factor from 3d units (integer portion) to uv coordinates (integer portion)
-#define	VMAG	(F1_0 / (DEFAULT_X_SIZE/F1_0))
+#define	VMAG	(I2X (1) / (DEFAULT_X_SIZE/I2X (1)))
 #define	UMAG	VMAG		// unused
 
 //	Number of segments which can be found (size of Found_segs[])
@@ -384,7 +384,7 @@ extern	vmsAngVec *vm_vec_to_angles(vmsAngVec *result, vmsVector *forvec);
 
 // Curves stuff.
 
-#define ACCURACY 0.1*F1_0
+#define ACCURACY F2X (0.1)
 
 typedef struct vms_equation {
     union {

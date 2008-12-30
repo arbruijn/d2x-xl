@@ -66,7 +66,7 @@ if (!slewObjP || slewObjP->info.controlType!=CT_SLEW)
 	return;
 slewObjP->info.position.mOrient.RVec ()[X] = 
 slewObjP->info.position.mOrient.UVec ()[Y] = 
-slewObjP->info.position.mOrient.FVec ()[Z] = f1_0;
+slewObjP->info.position.mOrient.FVec ()[Z] = I2X (1);
 slewObjP->info.position.mOrient.RVec ()[Y] = 
 slewObjP->info.position.mOrient.RVec ()[Z] = 
 slewObjP->info.position.mOrient.UVec ()[X] =

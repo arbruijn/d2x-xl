@@ -388,7 +388,7 @@ return 1;
 void GetThrusterPos (int nModel, CFixVector *vNormal, CFixVector *vOffset, CBitmap *bmP, int nPoints)
 {
 	int					h, i, nSize;
-	CFixVector			v, vForward = CFixVector::Create(0,0,F1_0);
+	CFixVector			v, vForward = CFixVector::Create(0,0,I2X (1));
 	tModelThrusters	*mtP = gameData.models.thrusters + nModel;
 
 if (mtP->nCount >= 2)
@@ -399,9 +399,9 @@ if (bmP) {
 		return;
 	}
 #if 1
-if (CFixVector::Dot (*vNormal, vForward) > -F1_0 / 3)
+if (CFixVector::Dot (*vNormal, vForward) > -I2X (1) / 3)
 #else
-if (vNormal->p.x || vNormal->p.y || (vNormal->p.z != -F1_0))
+if (vNormal->p.x || vNormal->p.y || (vNormal->p.z != -I2X (1)))
 #endif
 	return;
 for (i = 1, v = pointList [0]->p3_src; i < nPoints; i++)
@@ -409,7 +409,7 @@ for (i = 1, v = pointList [0]->p3_src; i < nPoints; i++)
 v[X] /= nPoints;
 v[Y] /= nPoints;
 v[Z] /= nPoints;
-v[Z] -= F1_0 / 8;
+v[Z] -= I2X (1) / 8;
 if (vOffset)
 	v += *vOffset;
 if (mtP->nCount && (v[X] == mtP->vPos [0][X]) && (v[Y] == mtP->vPos [0][Y]) && (v[Z] == mtP->vPos [0][Z]))
@@ -527,7 +527,7 @@ for (;;) {
 			//calculate light from surface Normal
 			if (nGlow < 0) {			//no glow
 				l = -CFixVector::Dot (transformation.m_info.view[0].FVec (), *VECPTR(p+16));
-				l = f1_0 / 4 + (l * 3) / 4;
+				l = I2X (1) / 4 + (l * 3) / 4;
 				l = FixMul (l, xModelLight);
 				}
 			else {				//yes glow
@@ -585,7 +585,7 @@ for (;;) {
 		g3sPoint rodBotP, rodTopP;
 		G3TransformAndEncodePoint (&rodBotP, *VECPTR (p+20));
 		G3TransformAndEncodePoint (&rodTopP, *VECPTR (p+4));
-		G3DrawRodTexPoly (modelBitmaps [WORDVAL (p+2)], &rodBotP, WORDVAL (p+16), &rodTopP, WORDVAL (p+32), f1_0, NULL);
+		G3DrawRodTexPoly (modelBitmaps [WORDVAL (p+2)], &rodBotP, WORDVAL (p+16), &rodTopP, WORDVAL (p+32), I2X (1), NULL);
 		p += 36;
 		}
 	else if (nTag == OP_SUBCALL) {
@@ -680,7 +680,7 @@ for (;;) {
 			//calculate light from surface Normal
 			if (nGlow < 0) {			//no glow
 				light = -CFixVector::Dot (transformation.m_info.view [0].FVec (), *VECPTR (p+16));
-				light = f1_0/4 + (light*3)/4;
+				light = I2X (1)/4 + (light*3)/4;
 				light = FixMul (light, xModelLight);
 				}
 			else {				//yes glow
@@ -728,7 +728,7 @@ for (;;) {
 			g3sPoint rodBotP, rodTopP;
 			G3TransformAndEncodePoint (&rodBotP, *VECPTR (p+20));
 			G3TransformAndEncodePoint (&rodTopP, *VECPTR (p+4));
-			G3DrawRodTexPoly (modelBitmaps [WORDVAL (p+2)], &rodBotP, WORDVAL (p+16), &rodTopP, WORDVAL (p+32), f1_0, NULL);
+			G3DrawRodTexPoly (modelBitmaps [WORDVAL (p+2)], &rodBotP, WORDVAL (p+16), &rodTopP, WORDVAL (p+32), I2X (1), NULL);
 			p += 36;
 			break;
 			}

@@ -38,9 +38,9 @@ void CShrapnel::Create (CObject* parentObjP, CObject* objP)
 m_info.vDir = CFixVector::Random ();
 m_info.vPos = objP->info.position.vPos + m_info.vDir * (parentObjP->info.xSize / 4 + rand () % (parentObjP->info.xSize / 2));
 m_info.nTurn = 1;
-m_info.xSpeed = 3 * (F1_0 / 20 + rand () % (F1_0 / 20)) / 4;
+m_info.xSpeed = 3 * (I2X (1) / 20 + rand () % (I2X (1) / 20)) / 4;
 m_info.xLife =
-m_info.xTTL = 3 * F1_0 / 2 + rand ();
+m_info.xTTL = I2X (3) / 2 + rand ();
 m_info.tUpdate = gameStates.app.nSDLTicks;
 m_info.nSmoke = 
 	particleManager.Create (&m_info.vPos, NULL, NULL, objP->info.nSegment, 1, -SHRAPNEL_MAX_PARTS,
@@ -64,7 +64,7 @@ m_info.xTTL = -1;
 
 void CShrapnel::Move (void)
 {
-	fix			xSpeed = FixDiv (m_info.xSpeed, 25 * F1_0 / 1000);
+	fix			xSpeed = FixDiv (m_info.xSpeed, I2X (25) / 1000);
 	CFixVector	vOffs;
 	time_t		nTicks;
 
@@ -75,7 +75,7 @@ for (; nTicks >= 25; nTicks -= 25) {
 	if (--(m_info.nTurn))
 		vOffs = m_info.vOffs;
 	else {
-		m_info.nTurn = ((m_info.xTTL > F1_0 / 2) ? 2 : 4) + d_rand () % 4;
+		m_info.nTurn = ((m_info.xTTL > I2X (1) / 2) ? 2 : 4) + d_rand () % 4;
 		vOffs = m_info.vDir;
 		vOffs [X] = FixMul (vOffs [X], 2 * d_rand ());
 		vOffs [Y] = FixMul (vOffs [Y], 2 * d_rand ());
@@ -95,7 +95,7 @@ m_info.tUpdate = gameStates.app.nSDLTicks - nTicks;
 void CShrapnel::Draw (void)
 {
 if ((m_info.xTTL > 0) && LoadExplBlast ()) {
-	fix	xSize = F1_0 / 2 + d_rand () % (F1_0 / 4);
+	fix	xSize = I2X (1) / 2 + d_rand () % (I2X (1) / 4);
 	G3DrawSprite (m_info.vPos, xSize, xSize, bmpExplBlast, NULL, X2F (m_info.xTTL) / X2F (m_info.xLife) / 2, 0, 0);
 	}
 }

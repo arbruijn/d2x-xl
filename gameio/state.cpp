@@ -50,7 +50,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "textures.h"
 #include "wall.h"
 #include "object.h"
-#include "digi.h"
+#include "audio.h"
 #include "gamemine.h"
 #include "error.h"
 #include "gameseg.h"
@@ -2087,7 +2087,7 @@ if (!m_bBetweenLevels) {
 	for (i = 0, wallP = WALLS.Buffer (); i < gameData.walls.nWalls; i++, wallP++) {
 		CSaveGameHandler::LoadWall (wallP);
 		if (wallP->nType == WALL_OPEN)
-			DigiKillSoundLinkedToSegment ((short) wallP->nSegment, (short) wallP->nSide, -1);	//-1 means kill any sound
+			audio.DestroySegmentSound ((short) wallP->nSegment, (short) wallP->nSide, -1);	//-1 means kill any sound
 		}
 	DBG (fPos = m_cf.Tell ());
 	//Restore exploding wall info
@@ -2366,7 +2366,7 @@ if (!m_bBetweenLevels) {
 	//walls that are now open
 	for (i = 0, wallP = WALLS.Buffer (); i < gameData.walls.nWalls; i++, wallP++)
 		if (wallP->nType == WALL_OPEN)
-			DigiKillSoundLinkedToSegment ((short) wallP->nSegment, (short) wallP->nSide, -1);	//-1 means kill any sound
+			audio.DestroySegmentSound ((short) wallP->nSegment, (short) wallP->nSide, -1);	//-1 means kill any sound
 	//Restore exploding wall info
 	if (m_nVersion >= 10) {
 		m_cf.Read (&i, sizeof (int), 1);

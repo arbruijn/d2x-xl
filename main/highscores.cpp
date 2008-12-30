@@ -396,7 +396,7 @@ gameStates.app.bGameRunning = 0;
 bNetwork = gameData.app.nGameMode & GM_NETWORK;
 
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
-	DigiKillSoundLinkedToObject (gameData.multiplayer.players [i].nObject);
+	DigiDestroyObjectSound (gameData.multiplayer.players [i].nObject);
 
 SetScreenMode (SCREEN_MENU);
 gameData.score.bWaitingForOthers = 0;

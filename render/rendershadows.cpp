@@ -364,7 +364,7 @@ FORALL_OBJS (objP, h) {
 		CFixVector::Normalize(vLightDir);
 		if (n) {
 			for (j = 0; j < n; j++)
-				if (abs (CFixVector::Dot (vLightDir, gameData.render.shadows.vLightDir[j])) > 2 * F1_0 / 3) // 60 deg
+				if (abs (CFixVector::Dot (vLightDir, gameData.render.shadows.vLightDir[j])) > I2X (2) / 3) // 60 deg
 					break;
 			if (j < n)
 				continue;

@@ -108,8 +108,8 @@ if (gameOpts->sound.bGatling != menu [soundOpts.nGatling].m_value) {
 	}
 if (gameConfig.nDigiVolume != menu [soundOpts.nDigiVol].m_value) {
 	gameConfig.nDigiVolume = menu [soundOpts.nDigiVol].m_value;
-	DigiSetFxVolume ((gameConfig.nDigiVolume*32768)/8);
-	audio.PlaySample (SOUND_DROP_BOMB, F1_0);
+	audio.SetFxVolume ((gameConfig.nDigiVolume * 32768) / 8);
+	audio.PlaySound (SOUND_DROP_BOMB);
 	}
 if ((soundOpts.nChannels >= 0) && (gameStates.sound.nSoundChannels != menu [soundOpts.nChannels].m_value)) {
 	gameStates.sound.nSoundChannels = menu [soundOpts.nChannels].m_value;
@@ -166,9 +166,9 @@ else {
 		if (gameConfig.nMidiVolume * menu [soundOpts.nMusicVol].m_value == 0) //=> midi gets either turned on or off
 			nKey = -2;
  		gameConfig.nMidiVolume = menu [soundOpts.nMusicVol].m_value;
-		DigiSetMidiVolume (128 * gameConfig.nMidiVolume / 8);
+		audio.SetMidiVolume (128 * gameConfig.nMidiVolume / 8);
 		if (gameConfig.nMidiVolume < 1)
-			DigiPlayMidiSong (NULL, NULL, NULL, 1, 0);
+			audio.PlayMidiSong (NULL, NULL, NULL, 1, 0);
 		else if (!bSongPlaying) {
 			//audio.StopAllSounds ();
 			if (gameStates.app.bGameRunning)
@@ -239,7 +239,7 @@ do {
 	gameConfig.bReverseChannels = m [optReverse].m_value;
 } while (i == -2);
 if (gameConfig.nMidiVolume < 1)
-	DigiPlayMidiSong (NULL, NULL, NULL, 0, 0);
+	audio.PlayMidiSong (NULL, NULL, NULL, 0, 0);
 else if (!bSongPlaying)
 	songManager.Play (m_info.nCurrent, 1);
 if (!gameStates.app.bNostalgia) {
@@ -249,7 +249,7 @@ if (!gameStates.app.bNostalgia) {
 	GET_VAL (gameOpts->sound.bGatling, soundOpts.nGatling);
 	GET_VAL (extraGameInfo [0].bGatlingSpeedUp, optSpeedUpSound);
 	if (gameStates.app.bGameRunning && !(gameOpts->sound.bShip && gameOpts->sound.bGatling))
-		DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
+		audio.DestroyObjectSound (LOCALPLAYER.nObject);
 	}
 }
 

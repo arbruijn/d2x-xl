@@ -139,12 +139,12 @@ if (!gameData.hoard.bInitialized) {
 	gameData.hoard.orb.nClip = gameData.eff.nClips [0]++;
 	Assert (gameData.eff.nClips [0] <= VCLIP_MAXNUM);
 	vcP = &gameData.eff.vClips [0][gameData.hoard.orb.nClip];
-	vcP->xTotalTime = F1_0/2;
+	vcP->xTotalTime = I2X (1)/2;
 	vcP->nFrameCount = gameData.hoard.orb.nFrames;
 	vcP->xFrameTime = vcP->xTotalTime / vcP->nFrameCount;
 	vcP->flags = 0;
 	vcP->nSound = -1;
-	vcP->lightValue = F1_0;
+	vcP->lightValue = I2X (1);
 	bmDataP = new ubyte [gameData.hoard.orb.nSize];
 	gameData.hoard.orb.bm.SetBuffer (bmDataP, false, gameData.hoard.orb.nSize);
 	for (i = 0; i < gameData.hoard.orb.nFrames; i++, nBitmap++) {

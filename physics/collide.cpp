@@ -55,7 +55,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "collide.h"
 #include "escort.h"
 
-#define STANDARD_EXPL_DELAY (f1_0/4)
+#define STANDARD_EXPL_DELAY (I2X (1)/4)
 
 //##void CollideFireballAndWall (CObject* fireball, fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector& vHitPt) {
 //##	return;
@@ -232,7 +232,7 @@ if (!(mType.physInfo.flags & PF_PERSISTENT)) {
 				}
 			else {
 				gameData.hoard.nLastHitter = otherObjP->cType.laserInfo.parent.nObject;
-				mq = (double) nMonsterballForces [otherObjP->info.nId] * ((double) F1_0 / (double) otherObjP->mType.physInfo.mass) / 40.0;
+				mq = (double) nMonsterballForces [otherObjP->info.nId] * ((double) I2X (1) / (double) otherObjP->mType.physInfo.mass) / 40.0;
 				}
 			vRotForce [X] = (fix) ((double) vForce [X] * mq);
 			vRotForce [Y] = (fix) ((double) vForce [Y] * mq);
@@ -357,7 +357,7 @@ HUDMessage (0, "%d %d", mag, (thisP->mType.physInfo.mass + otherP->mType.physInf
 if (EGI_FLAG (bUseHitAngles, 0, 0, 0)) {
 	// exert force in the direction of the hit point to the object's center
 	vh = vHitPt - otherP->info.position.vPos;
-	if (CFixVector::Normalize (vh) > F1_0 / 16) {
+	if (CFixVector::Normalize (vh) > I2X (1) / 16) {
 		vr = vh;
 		vh = -vh;
 		vh *= mag;
@@ -393,7 +393,7 @@ ApplyForce (vForce);
 //	-----------------------------------------------------------------------------
 
 #define DAMAGE_SCALE 		128	//	Was 32 before 8:55 am on Thursday, September 15, changed by MK, walls were hurting me more than robots!
-#define DAMAGE_THRESHOLD 	 (F1_0/3)
+#define DAMAGE_THRESHOLD 	 (I2X (1)/3)
 #define WALL_LOUDNESS_SCALE (20)
 
 fix force_force = I2X (50);
@@ -425,7 +425,7 @@ if (gameData.pig.tex.tMapInfoP [nBaseTex].flags & TMI_FORCE_FIELD) {
 	//make sound
 	DigiLinkSoundToPos (SOUND_FORCEFIELD_BOUNCE_PLAYER, nHitSeg, 0, vHitPt);
 	if (gameData.app.nGameMode & GM_MULTI)
-		MultiSendPlaySound (SOUND_FORCEFIELD_BOUNCE_PLAYER, f1_0);
+		MultiSendPlaySound (SOUND_FORCEFIELD_BOUNCE_PLAYER, I2X (1));
 	bForceFieldHit=1;
 	}
 else {
@@ -454,15 +454,15 @@ if ((gameData.pig.tex.tMapInfoP [nBaseTex].flags & (TMI_WATER|TMI_VOLATILE)) ||
 if (damage >= DAMAGE_THRESHOLD) {
 	int	volume = (xHitSpeed- (DAMAGE_SCALE*DAMAGE_THRESHOLD)) / WALL_LOUDNESS_SCALE ;
 	CreateAwarenessEvent (this, PA_WEAPON_WALL_COLLISION);
-	if (volume > F1_0)
-		volume = F1_0;
+	if (volume > I2X (1))
+		volume = I2X (1);
 	if (volume > 0 && !bForceFieldHit) {  // uhhhgly hack
 		DigiLinkSoundToPos (SOUND_PLAYER_HIT_WALL, nHitSeg, 0, vHitPt, 0, volume);
 		if (gameData.app.nGameMode & GM_MULTI)
 			MultiSendPlaySound (SOUND_PLAYER_HIT_WALL, volume);
 		}
 	if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
-		if (LOCALPLAYER.shields > f1_0*10 || bForceFieldHit)
+		if (LOCALPLAYER.shields > I2X (1)*10 || bForceFieldHit)
 			ApplyDamageToPlayer (this, damage);
 	}
 return;
@@ -557,19 +557,19 @@ if (info.nType == OBJ_PLAYER) {
 		if (nType != 0) {
 			CFixVector	vHit, vRand;
 
-			if ((gameData.time.xGame > xLastVolatileScrapeSoundTime + F1_0/4) ||
+			if ((gameData.time.xGame > xLastVolatileScrapeSoundTime + I2X (1)/4) ||
 					(gameData.time.xGame < xLastVolatileScrapeSoundTime)) {
 				short sound = (nType == 1) ? SOUND_VOLATILE_WALL_HISS : SOUND_SHIP_IN_WATER;
 				xLastVolatileScrapeSoundTime = gameData.time.xGame;
 				DigiLinkSoundToPos (sound, nHitSeg, 0, vHitPt);
 				if (IsMultiGame)
-					MultiSendPlaySound (sound, F1_0);
+					MultiSendPlaySound (sound, I2X (1));
 				}
 			vHit = SEGMENTS [nHitSeg].m_sides [nHitSide].m_normals [0];
 			vRand = CFixVector::Random();
-			vHit += vRand * (F1_0/8);
+			vHit += vRand * (I2X (1)/8);
 			CFixVector::Normalize (vHit);
-			Bump (vHit, F1_0*8);
+			Bump (vHit, I2X (8));
 			}
 		}
 	}
@@ -580,7 +580,7 @@ else if (info.nType == OBJ_DEBRIS)
 }
 
 //	Copied from laser.c!
-#define	DESIRED_OMEGA_DIST	 (F1_0*5)		//	This is the desired distance between blobs.  For distances > MIN_OMEGA_BLOBS*DESIRED_OMEGA_DIST, but not very large, this will apply.
+#define	DESIRED_OMEGA_DIST	 (I2X (5))		//	This is the desired distance between blobs.  For distances > MIN_OMEGA_BLOBS*DESIRED_OMEGA_DIST, but not very large, this will apply.
 #define	MAX_OMEGA_BLOBS		16				//	No matter how far away the obstruction, this is the maximum number of blobs.
 #define	MAX_OMEGA_DIST			 (MAX_OMEGA_BLOBS * DESIRED_OMEGA_DIST)		//	Maximum extent of lightning blobs.
 
@@ -649,7 +649,7 @@ if (info.nId == GUIDEDMSL_ID) {
 #if TRACE
 	console.printf (CON_DBG, "Guided missile dot = %7.3f \n", X2F (dot));
 #endif
-	if (dot < -F1_0/6) {
+	if (dot < -I2X (1)/6) {
 #if TRACE
 		console.printf (CON_DBG, "Guided missile loses bounciness. \n");
 #endif
@@ -674,7 +674,7 @@ if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_FORCE_FIELD) &&
 	//make sound
 	DigiLinkSoundToPos (SOUND_FORCEFIELD_BOUNCE_WEAPON, nHitSeg, 0, vHitPt);
 	if (IsMultiGame)
-		MultiSendPlaySound (SOUND_FORCEFIELD_BOUNCE_WEAPON, f1_0);
+		MultiSendPlaySound (SOUND_FORCEFIELD_BOUNCE_WEAPON, I2X (1));
 	return 1;	//bail here. physics code will bounce this CObject
 	}
 
@@ -745,7 +745,7 @@ else if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_WATER) ||
 	if (wInfoP->matter) {
 		DigiLinkSoundToPos (SOUNDMSL_HIT_WATER, nHitSeg, 0, vHitPt);
 		if (wInfoP->damage_radius) {
-			SetObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
+			CreateObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
 			//	MK: 09/13/95: Badass in water is 1/2 Normal intensity.
 			CreateBadassExplosion (this, nHitSeg, vHitPt, wInfoP->impact_size/2, wInfoP->robot_hit_vclip,
 										  nStrength / 4, wInfoP->damage_radius, nStrength / 2, cType.laserInfo.parent.nObject);
@@ -796,14 +796,14 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) || bEscort) {
 		switch (wallType) {
 			case WHP_NOT_SPECIAL:
 				//should be handled above
-				//DigiLinkSoundToPos (wInfoP->wall_hitSound, info.nSegment, 0, &info.position.vPos, 0, F1_0);
+				//DigiLinkSoundToPos (wInfoP->wall_hitSound, info.nSegment, 0, &info.position.vPos, 0, I2X (1));
 				break;
 
 			case WHP_NO_KEY:
 				//play special hit door sound (if/when we get it)
 				CreateSound (SOUND_WEAPON_HIT_DOOR);
 			   if (gameData.app.nGameMode & GM_MULTI)
-					MultiSendPlaySound (SOUND_WEAPON_HIT_DOOR, F1_0);
+					MultiSendPlaySound (SOUND_WEAPON_HIT_DOOR, I2X (1));
 				break;
 
 			case WHP_BLASTABLE:
@@ -841,7 +841,7 @@ if (gameOpts->render.nDebrisLife) {
 	CFixVector	vDir = mType.physInfo.velocity,
 					vNormal = SEGMENTS [nHitSeg].m_sides [nHitWall].m_normals [0];
 	mType.physInfo.velocity = CFixVector::Reflect(vDir, vNormal);
-	DigiLinkSoundToPos (SOUND_PLAYER_HIT_WALL, nHitSeg, 0, vHitPt, 0, F1_0 / 3);
+	DigiLinkSoundToPos (SOUND_PLAYER_HIT_WALL, nHitSeg, 0, vHitPt, 0, I2X (1) / 3);
 	}
 else
 	Explode (0);
@@ -941,7 +941,7 @@ if (playerObjP->info.nId == gameData.multiplayer.nLocalPlayer) {
 			AttemptToStealItem (this, playerObjP->info.nId);
 			bTheftAttempt = 1;
 			}
-		else if (gameData.time.xGame - xLastThiefHitTime < F1_0*2)
+		else if (gameData.time.xGame - xLastThiefHitTime < I2X (2))
 			return 1;	//	ZOUNDS! BRILLIANT! Thief not Collide with CPlayerData if not stealing!
 							// NO! VERY DUMB! makes thief look very stupid if CPlayerData hits him while cloaked!-AP
 		else
@@ -1071,7 +1071,7 @@ if (info.nId == gameData.multiplayer.nLocalPlayer) {
 		else
 			drawn = HUDInitMessage (TXT_MARKER_ID, markerP->info.nId+1);
 	if (drawn)
-		DigiPlaySample (SOUND_MARKER_HIT, F1_0);
+		audio.PlaySound (SOUND_MARKER_HIT);
 	DetectEscortGoalAccomplished (OBJ_IDX (markerP));
    }
 return 1;
@@ -1159,7 +1159,7 @@ if (!gameStates.gameplay.bFinalBossIsDead)
 if (!gameData.reactor.bDestroyed)
 	return;
 if (nFinalBossCountdownTime == 0)
-	nFinalBossCountdownTime = F1_0*2;
+	nFinalBossCountdownTime = I2X (2);
 nFinalBossCountdownTime -= gameData.time.xFrame;
 if (nFinalBossCountdownTime > 0)
 	return;
@@ -1204,7 +1204,7 @@ if (info.nFlags & OF_EXPLODING)
 	return 0;
 if (info.xShields < 0)
 	return 0;	//this already dead...
-if (gameData.time.xGame - CreationTime () < F1_0)
+if (gameData.time.xGame - CreationTime () < I2X (1))
 	return 0;
 if (!(gameStates.app.cheats.bRobotsKillRobots || EGI_FLAG (bRobotsHitRobots, 0, 0, 0))) {
 	// guidebot may kill other bots
@@ -1322,7 +1322,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 
 	//	Boss only vulnerable in back.  See if hit there.
 	tvec1 = vHitPt - robotP->info.position.vPos;
-	CFixVector::Normalize (tvec1);	//	Note, if BOSS_INVULNERABLE_DOT is close to F1_0 (in magnitude), then should probably use non-quick version.
+	CFixVector::Normalize (tvec1);	//	Note, if BOSS_INVULNERABLE_DOT is close to I2X (1) (in magnitude), then should probably use non-quick version.
 	dot = CFixVector::Dot (tvec1, robotP->info.position.mOrient.FVec ());
 #if TRACE
 	console.printf (CON_DBG, "Boss hit vec dot = %7.3f \n", X2F (dot));
@@ -1333,10 +1333,10 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 		bDamage = 0;
 
 		if (xLastTimeBuddyGameHint == 0)
-			xLastTimeBuddyGameHint = d_rand ()*32 + F1_0*16;
+			xLastTimeBuddyGameHint = d_rand ()*32 + I2X (16);
 
 		if (nBuddyGaveHintCount) {
-			if (xLastTimeBuddyGameHint + F1_0*20 < gameData.time.xGame) {
+			if (xLastTimeBuddyGameHint + I2X (20) < gameData.time.xGame) {
 				int	sval;
 
 				nBuddyGaveHintCount--;
@@ -1380,7 +1380,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 				CFixVector::Normalize (vImpulse);
 				CFixVector vWeapon = weaponP->mType.physInfo.velocity;
 				fix speed = CFixVector::Normalize (vWeapon);
-				vImpulse += vWeapon * (-F1_0 * 2);
+				vImpulse += vWeapon * (-I2X (2));
 				vImpulse *= (speed / 4);
 				cloneP->mType.physInfo.velocity = vImpulse;
 				cloneP->info.nFlags |= PF_HAS_BOUNCED;
@@ -1551,7 +1551,7 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
 		if (robotP && !(botInfoP->companion || botInfoP->bossFlag) && (info.nId == GAUSS_ID)) {
 			tAIStaticInfo	*aip = &robotP->cType.aiInfo;
 
-			if (aip->SKIP_AI_COUNT * gameData.time.xFrame < F1_0) {
+			if (aip->SKIP_AI_COUNT * gameData.time.xFrame < I2X (1)) {
 				aip->SKIP_AI_COUNT++;
 				robotP->mType.physInfo.rotThrust[X] = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
 				robotP->mType.physInfo.rotThrust[Y] = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
@@ -1658,7 +1658,7 @@ return 1;
 // -- removed, 09/06/95, MK --
 // -- removed, 09/06/95, MK -- }
 // -- removed, 09/06/95, MK --
-// -- removed, 09/06/95, MK -- #define	LOSE_WEAPON_THRESHOLD	 (F1_0*30)
+// -- removed, 09/06/95, MK -- #define	LOSE_WEAPON_THRESHOLD	 (I2X (30))
 
 //	-----------------------------------------------------------------------------
 
@@ -1761,12 +1761,12 @@ if (playerObjP->info.nId == gameData.multiplayer.nLocalPlayer) {
 	if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)) {
 		DigiLinkSoundToPos (SOUND_PLAYER_GOT_HIT, playerObjP->info.nSegment, 0, vHitPt);
 		if (IsMultiGame)
-			MultiSendPlaySound (SOUND_PLAYER_GOT_HIT, F1_0);
+			MultiSendPlaySound (SOUND_PLAYER_GOT_HIT, I2X (1));
 		}
 	else {
 		DigiLinkSoundToPos (SOUND_WEAPON_HIT_DOOR, playerObjP->info.nSegment, 0, vHitPt);
 		if (gameData.app.nGameMode & GM_MULTI)
-			MultiSendPlaySound (SOUND_WEAPON_HIT_DOOR, F1_0);
+			MultiSendPlaySound (SOUND_WEAPON_HIT_DOOR, I2X (1));
 		}
 	}
 /*Object*/CreateExplosion (playerObjP->info.nSegment, vHitPt, I2X (10)/2, VCLIP_PLAYER_HIT);
@@ -1789,7 +1789,7 @@ int CObject::CollidePlayerAndNastyRobot (CObject* robotP, CFixVector& vHitPt)
 /*Object*/CreateExplosion (info.nSegment, vHitPt, I2X (10) / 2, VCLIP_PLAYER_HIT);
 if (BumpTwoObjects (this, robotP, 0, vHitPt)) {//no damage from bump
 	DigiLinkSoundToPos (ROBOTINFO (robotP->info.nId).clawSound, info.nSegment, 0, vHitPt);
-	ApplyDamageToPlayer (robotP, F1_0* (gameStates.app.nDifficultyLevel+1));
+	ApplyDamageToPlayer (robotP, I2X (gameStates.app.nDifficultyLevel+1));
 	}
 return 1;
 }
@@ -1801,7 +1801,7 @@ int CObject::CollidePlayerAndMatCen (void)
 	CFixVector vExitDir;
 
 CreateSound (SOUND_PLAYER_GOT_HIT);
-//	DigiPlaySample (SOUND_PLAYER_GOT_HIT, F1_0);
+//	audio.PlaySound (SOUND_PLAYER_GOT_HIT);
 /*Object*/CreateExplosion (info.nSegment, info.position.vPos, I2X (10) / 2, VCLIP_PLAYER_HIT);
 if (info.nId != gameData.multiplayer.nLocalPlayer)
 	return 1;
@@ -1817,8 +1817,8 @@ for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++)
 		vExitDir += vRand;
 		CFixVector::Normalize (vExitDir);
 		}
-Bump (vExitDir, 64 * F1_0);
-ApplyDamageToPlayer (this, 4 * F1_0);	//	Changed, MK, 2/19/96, make killer the CPlayerData, so if you die in matcen, will say you killed yourself
+Bump (vExitDir, I2X (64));
+ApplyDamageToPlayer (this, I2X (4));	//	Changed, MK, 2/19/96, make killer the CPlayerData, so if you die in matcen, will say you killed yourself
 return 1;
 }
 
@@ -1830,7 +1830,7 @@ int CObject::CollideRobotAndMatCen (void)
 	CSegment*	segP = SEGMENTS + info.nSegment;
 
 CreateSound (SOUND_ROBOT_HIT);
-//	DigiPlaySample (SOUND_ROBOT_HIT, F1_0);
+//	audio.PlaySound (SOUND_ROBOT_HIT);
 
 if (ROBOTINFO (info.nId).nExp1VClip > -1)
 	/*Object*/CreateExplosion ((short) info.nSegment, info.position.vPos, (info.xSize/2*3)/4, (ubyte) ROBOTINFO (info.nId).nExp1VClip);
@@ -1839,8 +1839,8 @@ for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++)
 		vExitDir = segP->SideCenter (nSide) - info.position.vPos;
 		CFixVector::Normalize (vExitDir);
 		}
-Bump (vExitDir, 8 * F1_0);
-ApplyDamageToRobot (F1_0, -1);
+Bump (vExitDir, I2X (8));
+ApplyDamageToRobot (I2X (1), -1);
 return 1;
 }
 
@@ -1915,8 +1915,8 @@ int CObject::MaybeDetonateWeapon (CObject* otherP, CFixVector& vHitPt)
 if (!gameData.weapons.info [info.nId].damage_radius)
 	return 0;
 fix xDist = CFixVector::Dist (info.position.vPos, otherP->info.position.vPos);
-if (xDist >= F1_0*5)
-	info.xLifeLeft = min (xDist / 64, F1_0);
+if (xDist >= I2X (5))
+	info.xLifeLeft = min (xDist / 64, I2X (1));
 else {
 	MaybeKillWeapon (otherP);
 	if (info.nFlags & OF_SHOULD_BE_DEAD) {
@@ -2010,7 +2010,7 @@ int CObject::CollideWeaponAndDebris (CObject* debrisP, CFixVector& vHitPt)
 {
 //	Hack! Prevent debrisP from causing bombs spewed at CPlayerData death to detonate!
 if (WeaponIsMine (info.nId)) {
-	if (cType.laserInfo.xCreationTime + F1_0/2 > gameData.time.xGame)
+	if (cType.laserInfo.xCreationTime + I2X (1)/2 > gameData.time.xGame)
 		return 1;
 	}
 if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && !(debrisP->info.nFlags & OF_EXPLODING)) {

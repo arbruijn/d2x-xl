@@ -41,7 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "dropobject.h"
 
 //#define _DEBUG
-#define EXPLOSION_SCALE (F1_0*5/2)		//explosion is the obj size times this
+#define EXPLOSION_SCALE (I2X (5)/2)		//explosion is the obj size times this
 
 //--unused-- ubyte	Frame_processed [MAX_OBJECTS];
 
@@ -70,16 +70,16 @@ objP->info.xSize = info.xSize;
 objP->info.xSize /= 3;
 if ((info.nType == OBJ_WEAPON) && (gameData.objs.bIsMissile [id = info.nId])) {
 	if ((id == EARTHSHAKER_ID) || (id == ROBOT_EARTHSHAKER_ID)) {
-		objP->info.xSize = 5 * F1_0 / 2;
+		objP->info.xSize = I2X (5) / 2;
 //		objP->info.xLifeLeft = 3 * BLAST_LIFE / 2;
 		}
 	else if ((id == MEGAMSL_ID) || (id == ROBOT_MEGAMSL_ID) || (id == EARTHSHAKER_MEGA_ID))
-		objP->info.xSize = 2 * F1_0;
+		objP->info.xSize = I2X (2);
 	else if ((id == SMARTMSL_ID) || (id == ROBOT_SMARTMSL_ID))
-		objP->info.xSize = 3 * F1_0 / 2;
+		objP->info.xSize = I2X (3) / 2;
 	else {
 		//objP->info.xLifeLeft /= 2;
-		objP->info.xSize = F1_0;
+		objP->info.xSize = I2X (1);
 		}
 	}
 return objP;
@@ -190,7 +190,7 @@ FORALL_OBJS (objP, i) {
 			tAIStaticInfo	*aip = &objP->cType.aiInfo;
 			int				nForce = X2I (FixDiv (vForce.Mag () * flash, gameData.time.xFrame) / 128) + 2;
 
-			if (explObjP->cType.aiInfo.SKIP_AI_COUNT * gameData.time.xFrame >= F1_0)
+			if (explObjP->cType.aiInfo.SKIP_AI_COUNT * gameData.time.xFrame >= I2X (1))
 				aip->SKIP_AI_COUNT--;
 			else {
 				aip->SKIP_AI_COUNT += nForce;
@@ -226,12 +226,12 @@ FORALL_OBJS (objP, i) {
 
 		//	Hack!Warning!Test code!
 		if (flash && (objP->info.nId == gameData.multiplayer.nLocalPlayer)) {
-			int fe = min (F1_0*4, force * flash / 32);	//	For four seconds or less
+			int fe = min (I2X (4), force * flash / 32);	//	For four seconds or less
 			if (parentP->cType.laserInfo.parent.nSignature == gameData.objs.consoleP->info.nSignature) {
 				fe /= 2;
 				force /= 2;
 				}
-			if (force > F1_0) {
+			if (force > I2X (1)) {
 				paletteManager.SetEffectDuration (fe);
 				force = PK1 + X2I (PK2 * force);
 				paletteManager.BumpEffect (force, force, force);
@@ -285,12 +285,12 @@ CObject* CObject::ExplodeBadassWeapon (CFixVector& vPos)
 Assert (wi->damage_radius);
 if ((info.nId == EARTHSHAKER_ID) || (info.nId == ROBOT_EARTHSHAKER_ID))
 	ShakerRockStuff ();
-SetObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
+CreateObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
 CFixVector v;
 if (gameStates.render.bPerPixelLighting == 2) { //make sure explosion center is not behind some wall
 	v = info.vLastPos - info.position.vPos;
 	CFixVector::Normalize (v);
-//VmVecScale (&v, F1_0 * 10);
+//VmVecScale (&v, I2X (10));
 	v += vPos;
 	}
 else
@@ -309,7 +309,7 @@ CObject* CObject::ExplodeBadass (fix damage, fix distance, fix force)
 CObject* explObjP = CreateBadassExplosion (this, info.nSegment, info.position.vPos, info.xSize,
 													    (ubyte) GetExplosionVClip (this, 0), damage, distance, force, OBJ_IDX (this));
 if (explObjP)
-	SetObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (explObjP));
+	CreateObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (explObjP));
 return explObjP;
 }
 
@@ -318,7 +318,7 @@ return explObjP;
 //return the explosion CObject
 CObject* CObject::ExplodeBadassPlayer (void)
 {
-return ExplodeBadass (F1_0*50, F1_0*40, F1_0*150);
+return ExplodeBadass (I2X (5)0, I2X (40), I2X (150));
 }
 
 //------------------------------------------------------------------------------
@@ -358,7 +358,7 @@ return sqrt (size);
 
 //------------------------------------------------------------------------------
 
-#define DEBRIS_LIFE (f1_0 * 2)		//lifespan in seconds
+#define DEBRIS_LIFE (I2X (1) * 2)		//lifespan in seconds
 
 fix nDebrisLife [] = {2, 5, 10, 15, 30, 60, 120, 180, 300};
 
@@ -390,7 +390,7 @@ po = gameData.models.polyModels + debrisP->rType.polyObjInfo.nModel;
 debrisP->mType.physInfo.velocity[X] = RAND_MAX/2 - d_rand ();
 debrisP->mType.physInfo.velocity[Y] = RAND_MAX/2 - d_rand ();
 debrisP->mType.physInfo.velocity[Z] = RAND_MAX/2 - d_rand ();
-debrisP->mType.physInfo.velocity *= (F1_0 * 10);
+debrisP->mType.physInfo.velocity *= (I2X (10));
 CFixVector::Normalize (debrisP->mType.physInfo.velocity);
 debrisP->mType.physInfo.velocity *= (I2X (10 + (30 * d_rand () / RAND_MAX)));
 debrisP->mType.physInfo.velocity += mType.physInfo.velocity;
@@ -401,7 +401,7 @@ VmVecZero (&debrisP->mType.physInfo.rotVel);
 debrisP->mType.physInfo.rotVel = CFixVector::Create(d_rand () + 0x1000, d_rand ()*2 + 0x4000, d_rand ()*3 + 0x2000);
 #endif
 debrisP->mType.physInfo.rotThrust.SetZero();
-debrisP->info.xLifeLeft = nDebrisLife [gameOpts->render.nDebrisLife] * F1_0 + 3*DEBRIS_LIFE/4 + FixMul (d_rand (), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
+debrisP->info.xLifeLeft = I2X (nDebrisLife [gameOpts->render.nDebrisLife]) + 3 * DEBRIS_LIFE / 4 + FixMul (d_rand (), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
 debrisP->mType.physInfo.mass =
 #if 0
 	(fix) ((double) mType.physInfo.mass * ObjectVolume (debrisP) / ObjectVolume (this));
@@ -584,7 +584,7 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 	nVClip = (ubyte) GetExplosionVClip (delObjP, 1);
 	if ((delObjP->info.nType == OBJ_ROBOT) && xBadAss)
 		explObjP = CreateBadassExplosion (NULL, delObjP->info.nSegment, *vSpawnPos, FixMul (delObjP->info.xSize, EXPLOSION_SCALE),
-													 nVClip, F1_0 * xBadAss, I2X (4) * xBadAss, I2X (35) * xBadAss, -1);
+													 nVClip, I2X (xBadAss), I2X (4) * xBadAss, I2X (35) * xBadAss, -1);
 	else
 		explObjP = /*Object*/CreateExplosion (delObjP->info.nSegment, *vSpawnPos, FixMul (delObjP->info.xSize, EXPLOSION_SCALE), nVClip);
 	if ((delObjP->info.contains.nCount > 0) && !IsMultiGame) { // Multiplayer handled outside of this code!!
@@ -613,7 +613,7 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 #endif
 		}
 	if (ROBOTINFO (delObjP->info.nId).nExp2Sound > -1)
-		DigiLinkSoundToPos (ROBOTINFO (delObjP->info.nId).nExp2Sound, delObjP->info.nSegment, 0, *vSpawnPos, 0, F1_0);
+		DigiLinkSoundToPos (ROBOTINFO (delObjP->info.nId).nExp2Sound, delObjP->info.nSegment, 0, *vSpawnPos, 0, I2X (1));
 		//PLAY_SOUND_3D (ROBOTINFO (delObjP->info.nId).nExp2Sound, vSpawnPos, delObjP->info.nSegment);
 	cType.explInfo.nSpawnTime = -1;
 	//make debris

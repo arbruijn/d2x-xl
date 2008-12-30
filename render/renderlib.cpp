@@ -349,7 +349,7 @@ for (i = 0; i < nVertices; i++) {
 */
 	n.Assign (*nf);
 	transformation.Rotate(n, n, 0);
-	Normal.p3_vec = pointList[i]->p3_vec + n * (F1_0 * 10);
+	Normal.p3_vec = pointList[i]->p3_vec + n * (I2X (10));
 	G3DrawLine (pointList [i], &Normal);
 	}
 #if 0
@@ -358,7 +358,7 @@ VmVecNormal (&Normal.p3_vec,
 				 &pointList [1]->p3_vec,
 				 &pointList [2]->p3_vec);
 VmVecInc (&Normal.p3_vec, &center.p3_vec);
-VmVecScale (&Normal.p3_vec, F1_0 * 10);
+VmVecScale (&Normal.p3_vec, I2X (10));
 G3DrawLine (&center, &Normal);
 #endif
 glDepthFunc (depthFunc);
@@ -506,7 +506,7 @@ else {
 #if LMAP_LIGHTADJUST
 	if (USE_LIGHTMAPS) {
 		else {
-			light = F1_0 / 2 + gameData.render.lights.segDeltas [nSegment * 6 + nSide];
+			light = I2X (1) / 2 + gameData.render.lights.segDeltas [nSegment * 6 + nSide];
 			if (light < 0)
 				light = 0;
 			}
@@ -676,7 +676,7 @@ if (bCloaked || (widFlags & WID_TRANSPARENT_FLAG)) {
 	if (!gameOpts->render.color.bWalls)
 		c = 0;
 	if (WALLS [nWall].hps)
-		fAlpha = (float) fabs ((1.0f - (float) WALLS [nWall].hps / ((float) F1_0 * 100.0f)));
+		fAlpha = (float) fabs ((1.0f - (float) WALLS [nWall].hps / ((float) I2X (100))));
 	else if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1])
 		fAlpha = COMPETITION ? 0.5f : (float) (FADE_LEVELS - extraGameInfo [1].grWallTransparency) / (float) FADE_LEVELS;
 	else
@@ -934,7 +934,7 @@ BumpProcessedFlag ();
 gameData.render.mine.nSegRenderList [0] = nStartSeg;
 gameData.render.mine.bProcessed [nStartSeg] = gameData.render.mine.nProcessed;
 if (nMaxDist < 0)
-	nMaxDist = nRadius * 20 * F1_0;
+	nMaxDist = nRadius * I2X (20);
 for (i = 0, j = 1; nRadius; nRadius--) {
 	for (h = i, i = j; h < i; h++) {
 		nSegment = gameData.render.mine.nSegRenderList [h];

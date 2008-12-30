@@ -61,7 +61,7 @@ int CalcBestReactorGun (int nGunCount, CFixVector *vGunPos, CFixVector *vGunDir,
 	fix	xBestDot;
 	int	nBestGun;
 
-xBestDot = -F1_0*2;
+xBestDot = -I2X (2);
 nBestGun = -1;
 
 for (i = 0; i < nGunCount; i++) {
@@ -98,7 +98,7 @@ if (gameStates.gameplay.nReactorCount) {
 			 (OBJECTS [rStatP->nDeadObj].info.nType == OBJ_REACTOR) &&
 			 (gameData.reactor.countdown.nSecsLeft > 0))
 		if (d_rand () < gameData.time.xFrame * 4)
-			CreateSmallFireballOnObject (OBJECTS + rStatP->nDeadObj, F1_0, 1);
+			CreateSmallFireballOnObject (OBJECTS + rStatP->nDeadObj, I2X (1), 1);
 		}
 	}
 if (!gameStates.app.bEndLevelSequence)
@@ -142,7 +142,7 @@ if (fc > 16)
 xScale = 1;
 if (gameStates.app.nDifficultyLevel == 0)
 	xScale = 4;
-h = 3 * F1_0 / 16 + (F1_0 * (16 - fc)) / 32;
+h = I2X (3) / 16 + (I2X (16 - fc)) / 32;
 gameData.objs.consoleP->mType.physInfo.rotVel[X] += (FixMul (d_rand () - 16384, h)) / xScale;
 gameData.objs.consoleP->mType.physInfo.rotVel[Z] += (FixMul (d_rand () - 16384, h)) / xScale;
 //	Hook in the rumble sound effect here.
@@ -152,25 +152,25 @@ if (!TimeStopped ())
 if (IsMultiGame &&  NetworkIAmMaster ())
 	MultiSendCountdown ();
 cdtFrameTime = 0;
-gameData.reactor.countdown.nSecsLeft = X2I (gameData.reactor.countdown.nTimer + F1_0 * 7 / 8);
+gameData.reactor.countdown.nSecsLeft = X2I (gameData.reactor.countdown.nTimer + I2X (7) / 8);
 if ((oldTime > COUNTDOWN_VOICE_TIME) && (gameData.reactor.countdown.nTimer <= COUNTDOWN_VOICE_TIME)) 
-	DigiPlaySample (SOUND_COUNTDOWN_13_SECS, F3_0);
-if (X2I (oldTime + F1_0 * 7 / 8) != gameData.reactor.countdown.nSecsLeft) {
+	audio.PlaySound (SOUND_COUNTDOWN_13_SECS, SOUNDCLASS_GENERIC, I2X (3));
+if (X2I (oldTime + I2X (7) / 8) != gameData.reactor.countdown.nSecsLeft) {
 	if ((gameData.reactor.countdown.nSecsLeft >= 0) && (gameData.reactor.countdown.nSecsLeft < 10))
-		DigiPlaySample ((short) (SOUND_COUNTDOWN_0_SECS + gameData.reactor.countdown.nSecsLeft), F3_0);
+		audio.PlaySound ((short) (SOUND_COUNTDOWN_0_SECS + gameData.reactor.countdown.nSecsLeft), SOUNDCLASS_GENERIC, I2X (3));
 	if (gameData.reactor.countdown.nSecsLeft == gameData.reactor.countdown.nTotalTime - 1)
-		DigiPlaySample (SOUND_COUNTDOWN_29_SECS, F3_0);
+		audio.PlaySound (SOUND_COUNTDOWN_29_SECS, SOUNDCLASS_GENERIC, I2X (3));
 	}					
 if (gameData.reactor.countdown.nTimer > 0) {
 	fix size = (I2X (gameData.reactor.countdown.nTotalTime) - gameData.reactor.countdown.nTimer) / F2X (0.65);
 	fix oldSize = (I2X (gameData.reactor.countdown.nTotalTime) - oldTime) / F2X (0.65);
 	if ((size != oldSize) && (gameData.reactor.countdown.nSecsLeft < gameData.reactor.countdown.nTotalTime - 5))	// Every 2 seconds!
-		DigiPlaySample (SOUND_CONTROL_CENTER_WARNING_SIREN, F3_0);
+		audio.PlaySound (SOUND_CONTROL_CENTER_WARNING_SIREN, SOUNDCLASS_GENERIC, I2X (3));
 	}
 else {
 	int flashValue = X2I (-gameData.reactor.countdown.nTimer * (64 / 4));	// 4 seconds to total whiteness
 	if (oldTime > 0)
-		DigiPlaySample (SOUND_MINE_BLEW_UP, F1_0);
+		audio.PlaySound (SOUND_MINE_BLEW_UP);
 	paletteManager.SetEffect (flashValue, flashValue, flashValue);
 	if (paletteManager.BlueEffect () > 64) {
 		CCanvas::SetCurrent (NULL);
@@ -313,7 +313,7 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 
 		vecToPlayer = OBJPOS (gameData.objs.consoleP)->vPos - objP->info.position.vPos;
 		xDistToPlayer = CFixVector::Normalize(vecToPlayer);
-		if (xDistToPlayer < F1_0 * 200) {
+		if (xDistToPlayer < I2X (200)) {
 			rStatP->bSeenPlayer = ObjectCanSeePlayer (objP, &objP->info.position.vPos, 0, &vecToPlayer);
 			rStatP->nNextFireTime = 0;
 			}
@@ -323,7 +323,7 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 
 //	Periodically, make the reactor fall asleep if CPlayerData not visible.
 if (rStatP->bHit || rStatP->bSeenPlayer) {
-	if ((rStatP->xLastVisCheckTime + F1_0 * 5 < gameData.time.xGame) || 
+	if ((rStatP->xLastVisCheckTime + I2X (5) < gameData.time.xGame) || 
 		 (rStatP->xLastVisCheckTime > gameData.time.xGame)) {
 		CFixVector	vecToPlayer;
 		fix			xDistToPlayer;
@@ -331,7 +331,7 @@ if (rStatP->bHit || rStatP->bSeenPlayer) {
 		vecToPlayer = gameData.objs.consoleP->info.position.vPos - objP->info.position.vPos;
 		xDistToPlayer = CFixVector::Normalize (vecToPlayer);
 		rStatP->xLastVisCheckTime = gameData.time.xGame;
-		if (xDistToPlayer < F1_0 * 120) {
+		if (xDistToPlayer < I2X (120)) {
 			rStatP->bSeenPlayer = ObjectCanSeePlayer (objP, &objP->info.position.vPos, 0, &vecToPlayer);
 			if (!rStatP->bSeenPlayer)
 				rStatP->bHit = 0;
@@ -340,7 +340,7 @@ if (rStatP->bHit || rStatP->bSeenPlayer) {
 	}
 
 if ((rStatP->nNextFireTime < 0) && 
-	 !(gameStates.app.bPlayerIsDead && (gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath + F1_0 * 2))) {
+	 !(gameStates.app.bPlayerIsDead && (gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath + I2X (2)))) {
 	nBestGun = CalcBestReactorGun (gameData.reactor.props [objP->info.nId].nGuns, rStatP->vGunPos, rStatP->vGunDir, 
 											 (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) ? &gameData.ai.vBelievedPlayerPos : &gameData.objs.consoleP->info.position.vPos);
 	if (nBestGun != -1) {
@@ -357,7 +357,7 @@ if ((rStatP->nNextFireTime < 0) &&
 			vecToGoal = gameData.objs.consoleP->info.position.vPos - rStatP->vGunPos [nBestGun];
 			xDistToPlayer = CFixVector::Normalize(vecToGoal);
 			}
-		if (xDistToPlayer > F1_0 * 300) {
+		if (xDistToPlayer > I2X (300)) {
 			rStatP->bHit = 0;
 			rStatP->bSeenPlayer = 0;
 			return;
@@ -366,22 +366,22 @@ if ((rStatP->nNextFireTime < 0) &&
 			MultiSendCtrlcenFire (&vecToGoal, nBestGun, objP->Index ());
 		CreateNewLaserEasy (&vecToGoal, &rStatP->vGunPos [nBestGun], objP->Index (), CONTROLCEN_WEAPON_NUM, 1);
 		//	some of time, based on level, fire another thing, not directly at CPlayerData, so it might hit him if he's constantly moving.
-		nRandProb = F1_0 / (abs (gameData.missions.nCurrentLevel) / 4 + 2);
+		nRandProb = I2X (1) / (abs (gameData.missions.nCurrentLevel) / 4 + 2);
 		count = 0;
 		while ((d_rand () > nRandProb) && (count < 4)) {
 			CFixVector	vRand;
 
 			vRand = CFixVector::Random();
-			vecToGoal += vRand * (F1_0/6);
+			vecToGoal += vRand * (I2X (1)/6);
 			CFixVector::Normalize(vecToGoal);
 			if (IsMultiGame)
 				MultiSendCtrlcenFire (&vecToGoal, nBestGun, objP->Index ());
 			CreateNewLaserEasy (&vecToGoal, &rStatP->vGunPos [nBestGun], objP->Index (), CONTROLCEN_WEAPON_NUM, 0);
 			count++;
 			}
-		xDeltaFireTime = (NDL - gameStates.app.nDifficultyLevel) * F1_0/4;
+		xDeltaFireTime = I2X (NDL - gameStates.app.nDifficultyLevel) / 4;
 		if (gameStates.app.nDifficultyLevel == 0)
-			xDeltaFireTime += (fix) (F1_0 / 2 * gameStates.gameplay.slowmo [0].fSpeed);
+			xDeltaFireTime += (fix) (I2X (1) / 2 * gameStates.gameplay.slowmo [0].fSpeed);
 		if (IsMultiGame) // slow down rate of fire in multi player
 			xDeltaFireTime *= 2;
 		rStatP->nNextFireTime = xDeltaFireTime;
@@ -398,8 +398,8 @@ fix ReactorStrength (void)
 if (gameData.reactor.nStrength == -1) {		//use old defaults
 	//	Boost control center strength at higher levels.
 	if (gameData.missions.nCurrentLevel >= 0)
-		return F1_0 * 200 + F1_0 * 50 * gameData.missions.nCurrentLevel;
-	return F1_0 * 200 - gameData.missions.nCurrentLevel * F1_0 * 150;
+		return I2X (200) + I2X (5)0 * gameData.missions.nCurrentLevel;
+	return I2X (200) - gameData.missions.nCurrentLevel * I2X (150);
 	}
 return I2X (gameData.reactor.nStrength);
 }

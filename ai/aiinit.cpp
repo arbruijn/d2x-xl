@@ -115,7 +115,7 @@ if (botInfoP->attackType) {
 	ailP->mode = AIBehaviorToMode (aiP->behavior);
 	}
 objP->mType.physInfo.velocity.SetZero();
-// -- ailP->waitTime = F1_0*5;
+// -- ailP->waitTime = I2X (5);
 ailP->playerAwarenessTime = 0;
 ailP->playerAwarenessType = 0;
 aiP->GOAL_STATE = AIS_SEARCH;
@@ -231,7 +231,7 @@ gameData.ai.nOverallAgitation = 0;
 gameStates.gameplay.bFinalBossIsDead=0;
 gameData.escort.nObjNum = 0;
 gameData.escort.bMayTalk = 0;
-gameData.physics.xBossInvulDot = F1_0/4 - I2X (gameStates.app.nDifficultyLevel)/8;
+gameData.physics.xBossInvulDot = I2X (1)/4 - I2X (gameStates.app.nDifficultyLevel)/8;
 for (i = 0; i < MAX_BOSS_COUNT; i++)
 	gameData.boss [i].nDyingStartTime = 0;
 }
@@ -248,7 +248,7 @@ if (!gameData.ai.vLastPlayerPosFiredAt.IsZero())
 	gameData.ai.nDistToLastPlayerPosFiredAt =
 		CFixVector::Dist(gameData.ai.vLastPlayerPosFiredAt, gameData.ai.vBelievedPlayerPos);
 else
-	gameData.ai.nDistToLastPlayerPosFiredAt = F1_0 * 10000;
+	gameData.ai.nDistToLastPlayerPosFiredAt = I2X (10000);
 abState = gameData.physics.xAfterburnerCharge && Controls [0].afterburnerState &&
 			  (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER);
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) || HeadlightIsOn (-1) || abState)

@@ -349,7 +349,7 @@ void CPaletteManager::FadeEffect (void)
 
 	//	Diminish at FADE_RATE units/second.
 	//	For frame rates > FADE_RATE Hz, use randomness to achieve this.
-if (gameData.time.xFrame < F1_0/FADE_RATE) {
+if (gameData.time.xFrame < I2X (1)/FADE_RATE) {
 	if (d_rand () < gameData.time.xFrame * FADE_RATE / 2)	//	Note: d_rand () is in 0d:\temp\dm_test32767, and 8 Hz means decrement every frame
 		nDecAmount = 1;
 	}
@@ -367,8 +367,8 @@ if (m_data.xEffectDuration) {
 		m_data.effect.red ^= 1;	//	Very Tricky!  In paletteManager.SetEffect, if all stepups same as last time, won't do anything!
 		}
 
-	if ((m_data.xLastEffectTime + F1_0/8 < gameData.time.xGame) || (m_data.xLastEffectTime > gameData.time.xGame)) {
-		DigiPlaySample (SOUND_CLOAK_OFF, m_data.xEffectDuration/4);
+	if ((m_data.xLastEffectTime + I2X (1)/8 < gameData.time.xGame) || (m_data.xLastEffectTime > gameData.time.xGame)) {
+		audio.PlaySound (SOUND_CLOAK_OFF, SOUNDCLASS_GENERIC, m_data.xEffectDuration / 4);
 		m_data.xLastEffectTime = gameData.time.xGame;
 		}
 

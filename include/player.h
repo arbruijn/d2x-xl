@@ -52,12 +52,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define PLAYER_FLAGS_ALL_KEYS			(PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY)
 
-#define AFTERBURNER_MAX_TIME    (F1_0*5)    // Max time afterburner can be on.
+#define AFTERBURNER_MAX_TIME    		I2X (5)    // Max time afterburner can be on.
 #define CALLSIGN_LEN                8       // so can use as filename (was: 12)
 
 // Amount of time CPlayerData is cloaked.
-#define CLOAK_TIME_MAX          (F1_0*30)
-#define INVULNERABLE_TIME_MAX   (F1_0*30)
+#define CLOAK_TIME_MAX          I2X (30)
+#define INVULNERABLE_TIME_MAX   I2X (30)
 
 #define PLAYER_STRUCT_VERSION   17  // increment this every time CPlayerData struct changes
 

@@ -79,7 +79,7 @@ gameOpts->input.nMaxPitch = (int) ((MIN_TIME_360 * 10) / (nMinTurnRate ? nMinTur
 
 #define	PH_SCALE	1
 
-#define	JOYSTICK_READ_TIME	 (F1_0/40)		//	Read joystick at 40 Hz.
+#define	JOYSTICK_READ_TIME	 (I2X (1)/40)		//	Read joystick at 40 Hz.
 
 fix	LastReadTime = 0;
 fix	joyAxis [JOY_MAX_AXES];
@@ -92,9 +92,9 @@ int AllowToToggle (int i)
 {
 //used for keeping tabs of when its ok to toggle headlight,primary,and secondary
 if (Next_toggleTime [i] > gameData.time.xGame)
-	if (Next_toggleTime [i] < gameData.time.xGame + (F1_0/8))	//	In case time is bogus, never wait > 1 second.
+	if (Next_toggleTime [i] < gameData.time.xGame + (I2X (1)/8))	//	In case time is bogus, never wait > 1 second.
 		return 0;
-Next_toggleTime [i] = gameData.time.xGame + (F1_0/8);
+Next_toggleTime [i] = gameData.time.xGame + (I2X (1)/8);
 return 1;
 }
 
@@ -1314,11 +1314,11 @@ if (nBankSensMod > 2) {
 #endif
 
 //----------- Clamp values between -gameStates.input.kcPollTime and gameStates.input.kcPollTime
-if (gameStates.input.kcPollTime > F1_0) {
+if (gameStates.input.kcPollTime > I2X (1)) {
 #if TRACE
 	console.printf (1, "Bogus frame time of %.2f seconds\n", X2F (gameStates.input.kcPollTime));
 #endif
-	gameStates.input.kcPollTime = F1_0;
+	gameStates.input.kcPollTime = I2X (1);
 	}
 #if 0
 Controls [0].verticalThrustTime /= kcFrameCount;
@@ -1347,14 +1347,14 @@ else {
 	KCCLAMP (Controls [0].pitchTime, nMaxTurnRate / FASTPITCH);
 	KCCLAMP (Controls [0].bankTime, nMaxTurnRate);
 	}
-if (gameStates.render.nZoomFactor > F1_0) {
-		int r = (gameStates.render.nZoomFactor * 100) / F1_0;
+if (gameStates.render.nZoomFactor > I2X (1)) {
+		int r = (gameStates.render.nZoomFactor * 100) / I2X (1);
 
 	Controls [0].headingTime = (Controls [0].headingTime * 100) / r;
 	Controls [0].pitchTime = (Controls [0].pitchTime * 100) / r;
 	Controls [0].bankTime = (Controls [0].bankTime * 100) / r;
 #if DBG
-	r = (int) ((double) gameStates.render.nZoomFactor * 100.0 / (double) F1_0);
+	r = (int) ((double) gameStates.render.nZoomFactor * 100.0 / (double) I2X (1));
 	HUDMessage (0, "x %d.%02d", r / 100, r % 100);
 #endif
 	}

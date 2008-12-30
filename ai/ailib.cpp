@@ -76,7 +76,7 @@ else
 	fq.startSeg	= objP->info.nSegment;
 fq.p1					= &gameData.ai.vBelievedPlayerPos;
 fq.radP0				=
-fq.radP1				= F1_0 / 4;
+fq.radP1				= I2X (1) / 4;
 fq.thisObjNum		= objP->Index ();
 fq.ignoreObjList	= NULL;
 fq.flags				= FQ_TRANSWALL;
@@ -120,11 +120,11 @@ h = CFixVector::Dist (*vGun, *vPlayer);
 nModel = objP->rType.polyObjInfo.nModel;
 nSize = objP->info.xSize;
 objP->rType.polyObjInfo.nModel = -1;	//make sure sphere/hitbox and not hitbox/hitbox collisions get tested
-objP->info.xSize = F1_0 * 2;						//chose some meaningful small size to simulate a weapon
+objP->info.xSize = I2X (2);						//chose some meaningful small size to simulate a weapon
 fq.p0					= vGun;
 fq.p1					= vPlayer;
 fq.radP0				=
-fq.radP1				= F1_0;
+fq.radP1				= I2X (1);
 fq.thisObjNum		= objP->Index ();
 fq.ignoreObjList	= ignoreObjs;
 fq.flags				= FQ_CHECK_OBJS | FQ_ANY_OBJECT | FQ_IGNORE_POWERUPS;		//what about trans walls???
@@ -173,7 +173,7 @@ else {
 		int			cloak_index = (objP->Index ()) % MAX_AI_CLOAK_INFO;
 
 		deltaTime = gameData.time.xGame - gameData.ai.cloakInfo [cloak_index].lastTime;
-		if (deltaTime > F1_0*2) {
+		if (deltaTime > I2X (2)) {
 			CFixVector	vRand;
 
 			gameData.ai.cloakInfo [cloak_index].lastTime = gameData.time.xGame;
@@ -187,8 +187,8 @@ else {
 		if (gameData.ai.nPlayerVisibility == 2)
 			gameData.ai.nPlayerVisibility = gameData.ai.nPlayerVisibility;
 #endif
-		if ((ailP->nextMiscSoundTime < gameData.time.xGame) && ((ailP->nextPrimaryFire < F1_0) || (ailP->nextSecondaryFire < F1_0)) && (dist < F1_0*20)) {
-			ailP->nextMiscSoundTime = gameData.time.xGame + (d_rand () + F1_0) * (7 - gameStates.app.nDifficultyLevel) / 1;
+		if ((ailP->nextMiscSoundTime < gameData.time.xGame) && ((ailP->nextPrimaryFire < I2X (1)) || (ailP->nextSecondaryFire < I2X (1))) && (dist < I2X (20))) {
+			ailP->nextMiscSoundTime = gameData.time.xGame + (d_rand () + I2X (1)) * (7 - gameStates.app.nDifficultyLevel) / 1;
 			DigiLinkSoundToPos (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0 , nRobotSoundVolume);
 			}
 		}
@@ -196,7 +196,7 @@ else {
 		//	Compute expensive stuff -- gameData.ai.vVecToPlayer and gameData.ai.nPlayerVisibility
 		CFixVector::NormalizedDir(gameData.ai.vVecToPlayer, gameData.ai.vBelievedPlayerPos, *pos);
 		if (gameData.ai.vVecToPlayer.IsZero()) {
-			gameData.ai.vVecToPlayer[X] = F1_0;
+			gameData.ai.vVecToPlayer[X] = I2X (1);
 			}
 		gameData.ai.nPlayerVisibility = ObjectCanSeePlayer (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.vVecToPlayer);
 		LimitPlayerVisibility (xMaxVisibleDist, ailP);
@@ -217,16 +217,16 @@ else {
 
 		if ((ailP->nPrevVisibility != gameData.ai.nPlayerVisibility) && (gameData.ai.nPlayerVisibility == 2)) {
 			if (ailP->nPrevVisibility == 0) {
-				if (ailP->timePlayerSeen + F1_0/2 < gameData.time.xGame) {
+				if (ailP->timePlayerSeen + I2X (1)/2 < gameData.time.xGame) {
 					// -- if (gameStates.app.bPlayerExploded)
 					// -- 	DigiLinkSoundToPos (botInfoP->tauntSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
 					// -- else
 						DigiLinkSoundToPos (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0 , nRobotSoundVolume);
 					ailP->timePlayerSoundAttacked = gameData.time.xGame;
-					ailP->nextMiscSoundTime = gameData.time.xGame + F1_0 + d_rand ()*4;
+					ailP->nextMiscSoundTime = gameData.time.xGame + I2X (1) + d_rand ()*4;
 					}
 				}
-			else if (ailP->timePlayerSoundAttacked + F1_0/4 < gameData.time.xGame) {
+			else if (ailP->timePlayerSoundAttacked + I2X (1)/4 < gameData.time.xGame) {
 				// -- if (gameStates.app.bPlayerExploded)
 				// -- 	DigiLinkSoundToPos (botInfoP->tauntSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
 				// -- else
@@ -236,7 +236,7 @@ else {
 			}
 
 		if ((gameData.ai.nPlayerVisibility == 2) && (ailP->nextMiscSoundTime < gameData.time.xGame)) {
-			ailP->nextMiscSoundTime = gameData.time.xGame + (d_rand () + F1_0) * (7 - gameStates.app.nDifficultyLevel) / 2;
+			ailP->nextMiscSoundTime = gameData.time.xGame + (d_rand () + I2X (1)) * (7 - gameStates.app.nDifficultyLevel) / 2;
 			// -- if (gameStates.app.bPlayerExploded)
 			// -- 	DigiLinkSoundToPos (botInfoP->tauntSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
 			// -- else
@@ -449,7 +449,7 @@ return MultiCanRemoveRobot (objP->Index (), awarenessLevel);
 
 // --------------------------------------------------------------------------------------------------------------------
 
-#define	BOSS_TO_PLAYER_GATE_DISTANCE	 (F1_0*200)
+#define	BOSS_TO_PLAYER_GATE_DISTANCE	 (I2X (200))
 
 void AIMultiSendRobotPos (short nObject, int force)
 {

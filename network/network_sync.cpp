@@ -399,7 +399,7 @@ if ((time_t) SDL_GetTicks () > networkData.toSyncPoll) {	// Poll time expired, r
 	console.printf (CON_DBG, "Re-sending join request.\n");
 #endif
 #if DBG
-	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0 / 2);
+	audio.PlaySound (SOUND_HUD_MESSAGE, SOUNDCLASS_GENERIC, I2X (1) / 2);
 #endif
 	ResetSyncTimeout ();
 	if (NetworkSendRequest () < 0)

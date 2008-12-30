@@ -315,7 +315,7 @@ void TeleportToMarker (void)
 {
 if (!IsMultiGame || IsCoopGame) {
 #if !DBG
-	if (LOCALPLAYER.energy < F1_0 * 25)
+	if (LOCALPLAYER.energy < I2X (25))
 		HUDMessage (0, TXT_CANNOT_TELEPORT);
 	else
 #endif
@@ -325,7 +325,7 @@ if (!IsMultiGame || IsCoopGame) {
 			CObject	*markerP = OBJECTS + gameData.marker.objects [gameData.marker.nHighlight];
 
 #if !DBG
-			LOCALPLAYER.energy -= F1_0 * 25;
+			LOCALPLAYER.energy -= I2X (25);
 #endif
 			OBJECTS [LOCALPLAYER.nObject].info.position.vPos = markerP->info.position.vPos;
 			OBJECTS [LOCALPLAYER.nObject].RelinkToSeg (markerP->info.nSegment);

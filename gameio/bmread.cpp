@@ -1240,8 +1240,8 @@ void bm_readRobot()
 	int			nExp1Sound=-1;
 	int 			nExp2VClip=-1;
 	int			nExp2Sound=-1;
-	fix			lighting = F1_0/2;		// Default
-	fix			strength = F1_0*10;		// Default strength
+	fix			lighting = I2X (1)/2;		// Default
+	fix			strength = I2X (10);		// Default strength
 	fix			mass = f1_0*4;
 	fix			drag = f1_0/2;
 	short 		nWeaponType = 0, nSecWeaponType = -1;
@@ -1249,7 +1249,7 @@ void bm_readRobot()
 	char			name[ROBOT_NAME_LENGTH];
 	int			containsCount=0, containsId=0, containsProb=0, containsType=0, behavior=AIB_NORMAL;
 	int			companion = 0, smartBlobs=0, energyBlobs=0, badass=0, energyDrain=0, kamikaze=0, thief=0, pursuit=0, lightcast=0, bDeathRoll=0;
-	fix			glow=0, aim=F1_0;
+	fix			glow=0, aim=I2X (1);
 	int			deathrollSound = SOUND_BOSS_SHARE_DIE;	//default
 	int			scoreValue=1000;
 	int			cloakType=0;		//	Default = this robot does not cloak
@@ -1286,7 +1286,7 @@ void bm_readRobot()
 				nExp2Sound = atoi(equal_ptr);
 			} else if (!stricmp( arg, "lighting" ))	{
 				lighting = F2X(atof(equal_ptr);
-				if ( (lighting < 0) || (lighting > F1_0 )) {
+				if ( (lighting < 0) || (lighting > I2X (1) )) {
 #if TRACE
 					con_printf (1, "In bitmaps.tbl, lighting value of %.2f is out of range 0..1.\n", X2F(lighting));
 #endif
@@ -1489,7 +1489,7 @@ void bm_read_reactor()
 	short nModel;
 	short explosion_vclip_num = -1;
 	short explosionSound_num = SOUND_ROBOT_DESTROYED;
-	fix	lighting = F1_0/2;		// Default
+	fix	lighting = I2X (1)/2;		// Default
 	int nType=-1;
 	fix strength=0;
 
@@ -1530,7 +1530,7 @@ void bm_read_reactor()
 				explosionSound_num = atoi(equal_ptr);
 			} else if (!stricmp( arg, "lighting" ))	{
 				lighting = F2X(atof(equal_ptr);
-				if ( (lighting < 0) || (lighting > F1_0 )) {
+				if ( (lighting < 0) || (lighting > I2X (1) )) {
 #if TRACE
 					con_printf (1, "In bitmaps.tbl, lighting value of %.2f is out of range 0..1.\n", X2F(lighting));
 #endif
@@ -1862,17 +1862,17 @@ void bm_read_weapon(int unusedFlag)
 	Weapon_info[n].wall_hitSound = -1;
 	Weapon_info[n].impact_size = 0;
 	for (i=0; i<NDL; i++) {
-		Weapon_info[n].strength[i] = F1_0;
-		Weapon_info[n].speed[i] = F1_0*10;
+		Weapon_info[n].strength[i] = I2X (1);
+		Weapon_info[n].speed[i] = I2X (10);
 	}
-	Weapon_info[n].mass = F1_0;
+	Weapon_info[n].mass = I2X (1);
 	Weapon_info[n].thrust = 0;
 	Weapon_info[n].drag = 0;
 	Weapon_info[n].persistent = 0;
 
 	Weapon_info[n].energy_usage = 0;					//	How much fuel is consumed to fire this weapon.
 	Weapon_info[n].ammo_usage = 0;					//	How many units of ammunition it uses.
-	Weapon_info[n].fire_wait = F1_0/4;				//	Time until this weapon can be fired again.
+	Weapon_info[n].fire_wait = I2X (1)/4;				//	Time until this weapon can be fired again.
 	Weapon_info[n].fireCount = 1;					//	Number of bursts fired from EACH GUN per firing.  For weapons which fire from both sides, 3*fireCount shots will be fired.
 	Weapon_info[n].damage_radius = 0;				//	Radius of damage for missiles, not lasers.  Does damage to objects within this radius of hit point.
 //--01/19/95, mk--	Weapon_info[n].damage_force = 0;					//	Force (movement) due to explosion
@@ -1884,14 +1884,14 @@ void bm_read_weapon(int unusedFlag)
 
 	Weapon_info[n].lifetime = WEAPON_DEFAULT_LIFETIME;					//	Number of bursts fired from EACH GUN per firing.  For weapons which fire from both sides, 3*fireCount shots will be fired.
 
-	Weapon_info[n].po_len_to_width_ratio = F1_0*10;
+	Weapon_info[n].po_len_to_width_ratio = I2X (10);
 
 	Weapon_info[n].picture.index = 0;
 	Weapon_info[n].hires_picture.index = 0;
 	Weapon_info[n].homingFlag = 0;
 
 	Weapon_info[n].flash = 0;
-	Weapon_info[n].multi_damage_scale = F1_0;
+	Weapon_info[n].multi_damage_scale = I2X (1);
 	Weapon_info[n].afterburner_size = 0;
 	Weapon_info[n].children = -1;
 
@@ -2106,7 +2106,7 @@ void bm_read_powerup(int unusedFlag)
 	}
 
 	// Initialize powerup array
-	powerupInfo[n].light = F1_0/3;		//	Default lighting value.
+	powerupInfo[n].light = I2X (1)/3;		//	Default lighting value.
 	powerupInfo[n].nClipIndex = -1;
 	powerupInfo[n].hitSound = -1;
 	powerupInfo[n].size = DEFAULT_POWERUP_SIZE;

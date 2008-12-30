@@ -208,7 +208,7 @@ else if (gameOpts->render.particles.bSyncSizes)
 else
 	nRad = (int) nScale;
 if (!nRad)
-	nRad = F1_0;
+	nRad = I2X (1);
 m_nType = nType;
 m_bEmissive = (nParticleSystemType == LIGHT_PARTICLES);
 m_nClass = nClass;
@@ -262,21 +262,21 @@ else {
 		}
 #endif
 	}
-//nSpeed = (int) (sqrt (nSpeed) * (float) F1_0);
-nSpeed *= F1_0;
+//nSpeed = (int) (sqrt (nSpeed) * (float) I2X (1));
+nSpeed *= I2X (1);
 if (vDir) {
 	CAngleVector	a;
 	CFixMatrix	m;
 	float			d;
-	a [PA] = randN (F1_0 / 4) - F1_0 / 8;
-	a [BA] = randN (F1_0 / 4) - F1_0 / 8;
-	a [HA] = randN (F1_0 / 4) - F1_0 / 8;
+	a [PA] = randN (I2X (1) / 4) - I2X (1) / 8;
+	a [BA] = randN (I2X (1) / 4) - I2X (1) / 8;
+	a [HA] = randN (I2X (1) / 4) - I2X (1) / 8;
 	m = CFixMatrix::Create (a);
 	vDrift = m * (*vDir);
 	CFixVector::Normalize (vDrift);
 	d = (float) CFixVector::DeltaAngle (vDrift, *vDir, NULL);
 	if (d) {
-		d = (float) exp ((F1_0 / 8) / d);
+		d = (float) exp ((I2X (1) / 8) / d);
 		nSpeed = (fix) ((float) nSpeed / d);
 		}
 #if 0
@@ -286,7 +286,7 @@ if (vDir) {
 #endif
 	vDrift *= nSpeed;
 	if ((nType == SMOKE_PARTICLES) || (nType == BUBBLE_PARTICLES))
-		m_vDir = *vDir * (3 * F1_0 / 4 + randN (16) * F1_0 / 64);
+		m_vDir = *vDir * (I2X (3) / 4 + I2X (randN (16)) / 64);
 	else
 		m_vDir = *vDir;
 	m_bHaveDir = 1;
@@ -304,17 +304,17 @@ m_vDrift = vDrift;
 if (vEmittingFace)
 	m_vPos = *RandomPointOnQuad (vEmittingFace, vPos);
 else if (nType != BUBBLE_PARTICLES)
-	m_vPos = *vPos + vDrift * (F1_0 / 64);
+	m_vPos = *vPos + vDrift * (I2X (1) / 64);
 else {
-	//m_vPos = *vPos + vDrift * (F1_0 / 32);
+	//m_vPos = *vPos + vDrift * (I2X (1) / 32);
 	nSpeed = vDrift.Mag () / 16;
 	vDrift = CFixVector::Avg ((*mOrient).RVec() * (nSpeed - randN (2 * nSpeed)), (*mOrient).UVec() * (nSpeed - randN (2 * nSpeed)));
-	m_vPos = *vPos + vDrift + (*mOrient).FVec() * (F1_0 / 2 - randN (F1_0));
+	m_vPos = *vPos + vDrift + (*mOrient).FVec() * (I2X (1) / 2 - randN (I2X (1)));
 #if 1
 	m_vDrift.SetZero ();
 #else
 	CFixVector::Normalize (m_vDrift);
-	m_vDrift *= F1_0 * 32;
+	m_vDrift *= I2X (32);
 #endif
 	}
 if ((nType != BUBBLE_PARTICLES) && mOrient) {
@@ -469,7 +469,7 @@ int CParticle::Update (int nCurTime)
 	short			nSegment;
 	fix			t, dot;
 	CFixVector	vPos, drift;
-	fix			drag = (m_nType == BUBBLE_PARTICLES) ? F1_0 : F2X ((float) m_nLife / (float) m_nTTL);
+	fix			drag = (m_nType == BUBBLE_PARTICLES) ? I2X (1) : F2X ((float) m_nLife / (float) m_nTTL);
 
 if ((m_nLife <= 0) /*|| (m_color [0].alpha < 0.01f)*/)
 	return 0;
@@ -487,7 +487,7 @@ else {
 	for (j = 0; j < 2; j++) {
 		if (t < 0)
 			t = -t;
-		m_vPos = vPos + drift * t; //(t * F1_0 / 1000);
+		m_vPos = vPos + drift * t; //(I2X (t) / 1000);
 		if (m_bHaveDir) {
 			CFixVector vi = drift, vj = m_vDir;
 			CFixVector::Normalize (vi);
@@ -498,7 +498,7 @@ else {
 //				VmVecScaleInc (&drift, &m_vDir, drag);
 			m_vPos += m_vDir * drag;
 			}
-		if (m_nTTL - m_nLife > F1_0 / 16) {
+		if (m_nTTL - m_nLife > I2X (1) / 16) {
 			nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, 1);
 			if (nSegment < 0) {
 #if DBG
@@ -1552,7 +1552,7 @@ int CParticleSystem::Update (void)
 	int					i = 0;
 
 if ((m_nObject == 0x7fffffff) && (m_nType < 3) &&
-	 (gameStates.app.nSDLTicks - m_nBirth > (MAX_SHRAPNEL_LIFE / F1_0) * 1000))
+	 (gameStates.app.nSDLTicks - m_nBirth > (MAX_SHRAPNEL_LIFE / I2X (1)) * 1000))
 	SetLife (0);
 #if DBG
 if ((m_nObject < 0x70000000) && (OBJECTS [m_nObject].info.nType == 255))

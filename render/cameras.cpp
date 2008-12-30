@@ -365,7 +365,7 @@ else
 		uvlP [2].u = 
 		uvlP [3].u = F2X (xFlip ? du / nScale : duImage);
 		for (i = 0; i < 4; i++)
-			uvlP [i].l = F1_0;
+			uvlP [i].l = I2X (1);
 		if (rotRight) {
 			for (i = 1; i < 5; i++) {
 				m_info.uvlList [i - 1] = uvlP [i % 4];
@@ -566,9 +566,9 @@ return m_info.bValid;
 void CCamera::Rotate (void)
 {
 
-#define	DEG90		 (F1_0 / 4)
-#define	DEG45		 (F1_0 / 8)
-#define	DEG1		 (F1_0 / (4 * 90))
+#define	DEG90		 (I2X (1) / 4)
+#define	DEG45		 (I2X (1) / 8)
+#define	DEG1		 (I2X (1) / (4 * 90))
 
 if (!m_info.objP)
 	return;

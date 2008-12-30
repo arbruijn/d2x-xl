@@ -71,7 +71,7 @@ void AIInitBossForShip (void)
 	int	i;
 
 for (i = 0; i < MAX_BOSS_COUNT; i++)
-	gameData.boss [i].nHitTime = -F1_0 * 10;
+	gameData.boss [i].nHitTime = -I2X (10);
 }
 
 #define	QUEUE_SIZE	256
@@ -100,7 +100,7 @@ nSelectedSegs = 0;
 //	See if there is a boss.  If not, quick out.
 nSegments = 0;
 xBossSizeSave = bossObjP->info.xSize;
-// -- Causes problems!!	-- bossObjP->info.xSize = FixMul ((F1_0/4)*3, bossObjP->info.xSize);
+// -- Causes problems!!	-- bossObjP->info.xSize = FixMul (I2X (3) / 4, bossObjP->info.xSize);
 nBossHomeSeg = bossObjP->info.nSegment;
 vBossHomePos = bossObjP->info.position.vPos;
 nGroup = SEGMENTS [nBossHomeSeg].m_group;
@@ -176,16 +176,16 @@ if (gameData.boss [i].nTeleportSegs == 1)
 gameData.boss [i].bDyingSoundPlaying = 0;
 gameData.boss [i].nDying = 0;
 if (gameStates.app.bD1Mission)
-	gameData.boss [i].nGateInterval = F1_0 * 5 - gameStates.app.nDifficultyLevel * F1_0 / 2;
+	gameData.boss [i].nGateInterval = I2X (5) - I2X (gameStates.app.nDifficultyLevel) / 2;
 else
-	gameData.boss [i].nGateInterval = F1_0 * 4 - gameStates.app.nDifficultyLevel * I2X (2) / 3;
+	gameData.boss [i].nGateInterval = I2X (4) - gameStates.app.nDifficultyLevel * I2X (2) / 3;
 if (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) {
-	gameData.boss [i].nTeleportInterval = F1_0*10;
-	gameData.boss [i].nCloakInterval = F1_0*15;					//	Time between cloaks
+	gameData.boss [i].nTeleportInterval = I2X (10);
+	gameData.boss [i].nCloakInterval = I2X (15);					//	Time between cloaks
 	}
 else {
-	gameData.boss [i].nTeleportInterval = F1_0*7;
-	gameData.boss [i].nCloakInterval = F1_0*10;					//	Time between cloaks
+	gameData.boss [i].nTeleportInterval = I2X (7);
+	gameData.boss [i].nCloakInterval = I2X (10);					//	Time between cloaks
 	}
 }
 
@@ -269,7 +269,7 @@ if (nObject < 0) {
 // added lifetime increase depending on difficulty level 04/26/06 DM
 gameData.multigame.create.nObjNums [0] = nObject; // A convenient global to get nObject back to caller for multiplayer
 objP = OBJECTS + nObject;
-objP->info.xLifeLeft = F1_0 * 30 + F0_5 * (gameStates.app.nDifficultyLevel * 15);	//	Gated in robots only live 30 seconds.
+objP->info.xLifeLeft = I2X (30) + (I2X (1) / 2) * (gameStates.app.nDifficultyLevel * 15);	//	Gated in robots only live 30 seconds.
 //Set polygon-CObject-specific data
 objP->rType.polyObjInfo.nModel = botInfoP->nModel;
 objP->rType.polyObjInfo.nSubObjFlags = 0;
@@ -282,7 +282,7 @@ objP->info.nCreator = BOSS_GATE_MATCEN_NUM;	//	flag this robot as having been cr
 default_behavior = ROBOTINFO (objP->info.nId).behavior;
 InitAIObject (objP->Index (), default_behavior, -1);		//	Note, -1 = CSegment this robot goes to to hide, should probably be something useful
 /*Object*/CreateExplosion (nSegment, vObjPos, I2X (10), VCLIP_MORPHING_ROBOT);
-DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, vObjPos, 0 , F1_0);
+DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, vObjPos, 0 , I2X (1));
 objP->MorphStart ();
 gameData.boss [nBoss].nLastGateTime = gameData.time.xGame;
 LOCALPLAYER.numRobotsLevel++;
@@ -326,7 +326,7 @@ nObject = CreateGatedRobot (nSegment, (ubyte) objType, vPos);
 //	Make spewed robot come tumbling out as if blasted by a flash missile.
 if (nObject != -1) {
 	CObject	*newObjP = OBJECTS + nObject;
-	int		force_val = F1_0 / (gameData.time.xFrame ? gameData.time.xFrame : 1);
+	int		force_val = I2X (1) / (gameData.time.xFrame ? gameData.time.xFrame : 1);
 	if (force_val) {
 		newObjP->cType.aiInfo.SKIP_AI_COUNT += force_val;
 		newObjP->mType.physInfo.rotThrust[X] = ((d_rand () - 16384) * force_val)/16;
@@ -337,7 +337,7 @@ if (nObject != -1) {
 		//	Now, give a big initial velocity to get moving away from boss.
 		newObjP->mType.physInfo.velocity = *vPos - info.position.vPos;
 		CFixVector::Normalize (newObjP->mType.physInfo.velocity);
-		newObjP->mType.physInfo.velocity *= (F1_0*128);
+		newObjP->mType.physInfo.velocity *= I2X (128);
 		}
 	}
 return nObject;
@@ -436,9 +436,9 @@ gameData.boss [i].nLastTeleportTime = gameData.time.xGame;
 objP->info.position.vPos = vNewPos;
 vBossDir = OBJECTS [LOCALPLAYER.nObject].info.position.vPos - vNewPos;
 objP->info.position.mOrient = CFixMatrix::CreateF(vBossDir);
-DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nRandSeg, 0, objP->info.position.vPos, 0 , F1_0);
-DigiKillSoundLinkedToObject (nObject);
-SetObjectSound (ROBOTINFO (objP->info.nId).seeSound, SOUNDCLASS_ROBOT, objP->Index (), 1, F1_0, F1_0 * 512);	//	F1_0*512 means play twice as loud
+DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nRandSeg, 0, objP->info.position.vPos, 0 , I2X (1));
+DigiDestroyObjectSound (nObject);
+CreateObjectSound (ROBOTINFO (objP->info.nId).seeSound, SOUNDCLASS_ROBOT, objP->Index (), 1, I2X (1), I2X (512));	//	I2X (5)12 means play twice as loud
 //	After a teleport, boss can fire right away.
 gameData.ai.localInfo [nObject].nextPrimaryFire = 0;
 gameData.ai.localInfo [nObject].nextSecondaryFire = 0;
@@ -471,12 +471,12 @@ if (i < 0)
 	return;
 rval = DoRobotDyingFrame (objP, gameData.boss [i].nDyingStartTime, BOSS_DEATH_DURATION,
 								 &gameData.boss [i].bDyingSoundPlaying,
-								 ROBOTINFO (objP->info.nId).deathrollSound, F1_0*4, F1_0*4);
+								 ROBOTINFO (objP->info.nId).deathrollSound, I2X (4), I2X (4));
 if (rval) {
 	RemoveBoss (i);
 	DoReactorDestroyedStuff (NULL);
-	objP->Explode (F1_0/4);
-	SetObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, objP->Index (), 0, F2_0, F1_0 * 512);
+	objP->Explode (I2X (1)/4);
+	CreateObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, objP->Index (), 0, I2X (2), I2X (512));
 	}
 }
 
@@ -511,7 +511,7 @@ if (gameData.boss [i].nLastGateTime > gameData.time.xGame)
 //	@mk, 10/13/95:  Reason:
 //		Level 4 boss behind locked door.  But he's allowed to teleport out of there.  So he
 //		teleports out of there right away, and blasts CPlayerData right after first door.
-if (!gameData.ai.nPlayerVisibility && (gameData.time.xGame - gameData.boss [i].nHitTime > F1_0*2))
+if (!gameData.ai.nPlayerVisibility && (gameData.time.xGame - gameData.boss [i].nHitTime > I2X (2)))
 	return;
 
 if (bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
@@ -533,7 +533,7 @@ if (bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
 					}
 				}
 			}
-		else if (gameData.time.xGame - gameData.boss [i].nHitTime > F1_0*2) {
+		else if (gameData.time.xGame - gameData.boss [i].nHitTime > I2X (2)) {
 			gameData.boss [i].nLastTeleportTime -= gameData.boss [i].nTeleportInterval/4;
 			}
 	if (!gameData.boss [i].nCloakDuration)

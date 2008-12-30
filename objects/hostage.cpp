@@ -51,7 +51,7 @@ paletteManager.BumpEffect(0, 0, 25);		//small blue flash
 LOCALPLAYER.hostages.nOnBoard++;
 // Do an audio effect
 if (gameData.demo.nState != ND_STATE_PLAYBACK)
-	DigiPlaySample (SOUND_HOSTAGE_RESCUED, F1_0);
+	audio.PlaySound (SOUND_HOSTAGE_RESCUED, I2X (1));
 HUDInitMessage (TXT_HOSTAGE_RESCUED);
 }
 

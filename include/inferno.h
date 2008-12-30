@@ -130,7 +130,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define FMODE_GAME		2		// running the game
 #define FMODE_EDITOR		3		// running the editor
 
-#define FLASH_CYCLE_RATE f1_0
+#define FLASH_CYCLE_RATE I2X (1)
 
 #define AMBIENT_LIGHT	0.3f
 #define DIFFUSE_LIGHT	0.7f
@@ -1573,7 +1573,7 @@ class COglData {
 
 #define TERRAIN_GRID_MAX_SIZE   64
 #define TERRAIN_GRID_SCALE      I2X (2*20)
-#define TERRAIN_HEIGHT_SCALE    f1_0
+#define TERRAIN_HEIGHT_SCALE    I2X (1)
 
 class CTerrainRenderData {
 	public:
@@ -2696,8 +2696,8 @@ typedef struct tProfilerData {
 #define MAX_BOSS_COUNT				50
 #define MAX_BOSS_TELEPORT_SEGS	MAX_SEGS_VISITED
 #define NUM_D2_BOSSES				8
-#define BOSS_CLOAK_DURATION		(F1_0*7)
-#define BOSS_DEATH_DURATION		(F1_0*6)
+#define BOSS_CLOAK_DURATION		I2X (7)
+#define BOSS_DEATH_DURATION		I2X (6)
 
 class CBossData {
 	public:
@@ -3364,7 +3364,7 @@ return 1.0f - gameStates.render.grAlpha / (float) FADE_LEVELS;
 
 #define G3_INFINITY			fInfinity [gameOpts->render.shadows.nReach]
 
-#define MAX_LIGHT_RANGE	(125 * F1_0)
+#define MAX_LIGHT_RANGE	I2X (125)
 
 #define SEGVIS(_i,_j)	((gameData.segs.bSegVis [SEGVIS_FLAGS * (_i) + ((_j) >> 3)] & (1 << ((_j) & 7))) != 0)
 

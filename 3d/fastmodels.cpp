@@ -127,8 +127,8 @@ if (objP->Index () == nDbgObj)
 	objP = objP;
 #endif
 #if 0
-if (xModelLight > F1_0)
-	xModelLight = F1_0;
+if (xModelLight > I2X (1))
+	xModelLight = I2X (1);
 #endif
 if (SHOW_DYN_LIGHT && (gameOpts->ogl.bObjLighting ||
     (gameOpts->ogl.bLightObjects && (gameOpts->ogl.bLightPowerups || (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT))))) {
@@ -151,10 +151,10 @@ else {
 		if (pmf->m_bGlow)
 			l = xGlowValues [nGlow];
 		else if (bEmissive)
-			l = F1_0;
+			l = I2X (1);
 		else {
 			l = -CFixVector::Dot (transformation.m_info.view [0].FVec (), pmf->m_vNormal);
-			l = 3 * f1_0 / 4 + l / 4;
+			l = 3 * I2X (1) / 4 + l / 4;
 			l = FixMul (l, xModelLight);
 			}
 		fLight = X2F (l);
@@ -849,9 +849,9 @@ nBombId = EquippedPlayerBomb (objP);
 nMissileId = EquippedPlayerMissile (objP, &nMissiles);
 if (!bHires && (objP->info.nType == OBJ_POWERUP)) {
 	if ((objP->info.nId == POW_SMARTMINE) || (objP->info.nId == POW_PROXMINE))
-		gameData.models.vScale.Set (2 * F1_0, 2 * F1_0, 2 * F1_0);
+		gameData.models.vScale.Set (I2X (2), I2X (2), I2X (2));
 	else
-		gameData.models.vScale.Set (3 * F1_0 / 2, 3 * F1_0 / 2, 3 * F1_0 / 2);
+		gameData.models.vScale.Set (I2X (3) / 2, I2X (3) / 2, I2X (3) / 2);
 	}
 OglSetLibFlags (1);
 G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffsetP, bHires, bUseVBO, 0,

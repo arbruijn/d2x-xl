@@ -173,15 +173,15 @@ return dest;
 void CTransformation::ComputeAspect (void)
 {
 fix s = FixMulDiv (screen.Aspect (), nCanvasHeight, nCanvasWidth);
-if (s <= f1_0) {	   //scale x
+if (s <= I2X (1)) {	   //scale x
 	m_info.aspect [X] = s;
-	m_info.aspect [Y] = f1_0;
+	m_info.aspect [Y] = I2X (1);
 	}
 else {
-	m_info.aspect [Y] = FixDiv (f1_0, s);
-	m_info.aspect [X] = f1_0;
+	m_info.aspect [Y] = FixDiv (I2X (1), s);
+	m_info.aspect [X] = I2X (1);
 	}
-m_info.aspect [Z] = f1_0;		//always 1
+m_info.aspect [Z] = I2X (1);		//always 1
 }
 
 //------------------------------------------------------------------------------

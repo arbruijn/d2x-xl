@@ -8,7 +8,7 @@
 #define	SHOW_SMOKE	\
 			(!gameStates.app.bNostalgia && EGI_FLAG (bUseParticles, 1, 1, 0))
 
-#define MAX_SHRAPNEL_LIFE	(2 * F1_0)
+#define MAX_SHRAPNEL_LIFE			I2X (2)
 
 #define SHIP_MAX_PARTS				50
 #define PLR_PART_LIFE				-4000

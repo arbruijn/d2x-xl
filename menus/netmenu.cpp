@@ -252,7 +252,7 @@ int NetworkEndLevelPoll3 (CMenu& menu, int& key, int nCurItem)
 	// Polling loop for End-of-level menu
    int num_ready = 0, i;
  
-if (TimerGetApproxSeconds () > (gameData.multiplayer.xStartAbortMenuTime+ (F1_0 * 8)))
+if (TimerGetApproxSeconds () > (gameData.multiplayer.xStartAbortMenuTime+ (I2X (8))))
 	key = -2;
 NetworkListen ();
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
@@ -311,7 +311,7 @@ n = netGame.nNumPlayers;
 NetworkListen ();
 
 if (n < netGame.nNumPlayers) {
-	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
+	audio.PlaySound (SOUND_HUD_MESSAGE);
 	if (gameOpts->multi.bNoRankings)
 	   sprintf (menu [gameData.multiplayer.nPlayers - 1].m_text, "%d. %-20s", 
 					gameData.multiplayer.nPlayers, 
@@ -327,7 +327,7 @@ if (n < netGame.nNumPlayers) {
 	} 
 else if (n > netGame.nNumPlayers) {
 	// One got removed...
-   DigiPlaySample (SOUND_HUD_KILL, F1_0);
+   audio.PlaySound (SOUND_HUD_KILL);
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (gameOpts->multi.bNoRankings)
 			sprintf (menu [i].m_text, "%d. %-20s", i+1, netPlayers.players [i].callsign);
@@ -497,9 +497,9 @@ doMenu:
 	i = m.Menu (NULL, TXT_MORE_MPOPTIONS, NetworkMoreOptionsPoll, &choice);
 	} while (i == -2);
 
-   //mpParams.nReactorLife = atoi (szInvul)*60*F1_0;
+   //mpParams.nReactorLife = atoi (szInvul)*I2X (60);
 mpParams.nReactorLife = m [optReactorLife].m_value;
-netGame.controlInvulTime = mpParams.nReactorLife * 5 * F1_0 * 60;
+netGame.controlInvulTime = mpParams.nReactorLife * 5 * I2X (60);
 
 if (i == optSetPower) {
 	NetworkSetWeaponsAllowed ();
@@ -721,7 +721,7 @@ do {
 		optDmgIndicator =
 		optMslLockIndicator = -1;
 	i = m.Menu (NULL, TXT_D2XOPTIONS_TITLE, NetworkD2XOptionsPoll, &choice);
-  //mpParams.nReactorLife = atoi (szInvul)*60*F1_0;
+  //mpParams.nReactorLife = atoi (szInvul)*I2X (60);
 	extraGameInfo [1].bDarkness = (ubyte) m [optDarkness].m_value;
 	if (optDarkness >= 0) {
 		if ((mpParams.bDarkness = extraGameInfo [1].bDarkness)) {
@@ -1067,7 +1067,7 @@ if (gameStates.app.bNostalgia) {
 	}
 netGame.szMissionName [sizeof (netGame.szMissionName) - 1] = '\0';
 strcpy (netGame.szMissionTitle, gameData.missions.list [nNewMission].szMissionName + (gameOpts->menus.bShowLevelVersion ? 4 : 0));
-netGame.controlInvulTime = mpParams.nReactorLife * 5 * F1_0 * 60;
+netGame.controlInvulTime = mpParams.nReactorLife * 5 * I2X (60);
 IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nSocket));
 return key;
 }

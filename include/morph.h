@@ -43,7 +43,7 @@ typedef struct tMorphInfo {
 
 #define MAX_MORPH_OBJECTS 250
 
-#define MORPH_RATE (f1_0*3)
+#define MORPH_RATE (I2X (1)*3)
 
 //process the morphing CObject for one frame
 void DoMorphFrame(CObject *obj);

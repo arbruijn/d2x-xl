@@ -57,17 +57,17 @@ else {
 	if ((vOffs.Mag () > segP->MinRad ()) && segP->Masks (m_vPos, 0).m_center)
 		m_nProb = 1;
 	else {
-		m_xSize = F1_0 + 4 * d_rand ();
+		m_xSize = I2X (1) + 4 * d_rand ();
 		m_nFrame = 0;
 		m_tRender = -1;
 		m_bRendered = 0;
 		m_nProb = SPARK_MIN_PROB;
 		if (gameOpts->render.effects.bMovingSparks) {
-			m_vDir [X] = (F1_0 / 4) - d_rand ();
-			m_vDir [Y] = (F1_0 / 4) - d_rand ();
-			m_vDir [Z] = (F1_0 / 4) - d_rand ();
+			m_vDir [X] = (I2X (1) / 4) - d_rand ();
+			m_vDir [Y] = (I2X (1) / 4) - d_rand ();
+			m_vDir [Z] = (I2X (1) / 4) - d_rand ();
 			CFixVector::Normalize (m_vDir);
-			m_vDir *= ((F1_0 / (16 + d_rand () % 16)));
+			m_vDir *= ((I2X (1) / (16 + d_rand () % 16)));
 			}
 		else
 			m_vDir.SetZero ();

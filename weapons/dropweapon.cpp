@@ -70,7 +70,7 @@ if (nObject < 0) {
 objP = OBJECTS + nObject;
 objP->mType.physInfo.velocity = newVelocity;
 objP->mType.physInfo.drag = 512;	//1024;
-objP->mType.physInfo.mass = F1_0;
+objP->mType.physInfo.mass = I2X (1);
 objP->mType.physInfo.flags = PF_BOUNCE;
 objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
 objP->rType.vClipInfo.xFrameTime = gameData.eff.vClipP [objP->rType.vClipInfo.nClipIndex].xFrameTime;
@@ -82,13 +82,13 @@ switch (objP->info.nId) {
 	case POW_CONCUSSION_4:
 	case POW_SHIELD_BOOST:
 	case POW_ENERGY:
-		objP->info.xLifeLeft = (d_rand() + F1_0*3) * 64;		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
+		objP->info.xLifeLeft = (d_rand() + I2X (3)) * 64;		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
 		if (gameData.app.nGameMode & GM_MULTI)
 			objP->info.xLifeLeft /= 2;
 		break;
 	default:
 		//if (gameData.app.nGameMode & GM_MULTI)
-		//	objP->info.xLifeLeft = (d_rand() + F1_0*3) * 64;		//	Lives for 5 to 5.5 binary minutes (a binary minute is 64 seconds)
+		//	objP->info.xLifeLeft = (d_rand() + I2X (3)) * 64;		//	Lives for 5 to 5.5 binary minutes (a binary minute is 64 seconds)
 		break;
 	}
 MultiSendWeapons (1);
@@ -152,7 +152,7 @@ else {
 		}
 	HUDInitMessage (TXT_DROP_WEAPON, PRIMARY_WEAPON_NAMES (gameData.weapons.nPrimary));
 	}
-DigiPlaySample (SOUND_DROP_WEAPON,F1_0);
+audio.PlaySound (SOUND_DROP_WEAPON);
 if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {
 	//if it's one of these, drop some ammo with the weapon
 	ammo = LOCALPLAYER.primaryAmmo [VULCAN_INDEX];
@@ -215,7 +215,7 @@ if (nObject == -1) {
 	return;
 	}
 HUDInitMessage (TXT_DROP_WEAPON, SECONDARY_WEAPON_NAMES (gameData.weapons.nSecondary));
-DigiPlaySample (SOUND_DROP_WEAPON,F1_0);
+audio.PlaySound (SOUND_DROP_WEAPON);
 if (gameData.app.nGameMode & GM_MULTI) {
 	MultiSendDropWeapon (nObject, seed);
 	MultiSendWeapons (1);

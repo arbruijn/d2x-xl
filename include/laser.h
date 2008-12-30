@@ -82,7 +82,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SMINEPACK_ID						69
 #define PMINEPACK_ID						70
 
-#define OMEGA_MULTI_LIFELEFT    (F1_0/6)
+#define OMEGA_MULTI_LIFELEFT    (I2X (1)/6)
 
 // These are new defines for the value of 'flags' passed to LaserFireObject.
 // The purpose is to collect other flags like QUAD_LASER and Spreadfire_toggle
@@ -164,7 +164,7 @@ typedef struct tMuzzleInfo {
 } tMuzzleInfo;
 
 // Omega cannon stuff.
-#define DEFAULT_MAX_OMEGA_CHARGE    (F1_0)  //  Maximum charge level for omega cannonw
+#define DEFAULT_MAX_OMEGA_CHARGE    (I2X (1))  //  Maximum charge level for omega cannonw
 extern int nOmegaDuration [7];
 
 // NOTE: OMEGA_CHARGE_SCALE moved to laser.c to avoid long rebuilds if changed

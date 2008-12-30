@@ -118,14 +118,14 @@ static int		bRevertFormat = -1;
 #define ND_EVENT_START_GUIDED       46  // switch to guided view
 #define ND_EVENT_END_GUIDED         47  // stop guided view/return to ship
 #define ND_EVENT_SECRET_THINGY      48  // 0/1 = secret exit functional/non-functional
-#define ND_EVENT_LINK_SOUND_TO_OBJ  49  // record SetObjectSound
-#define ND_EVENT_KILL_SOUND_TO_OBJ  50  // record DigiKillSoundLinkedToObject
+#define ND_EVENT_LINK_SOUND_TO_OBJ  49  // record CreateObjectSound
+#define ND_EVENT_KILL_SOUND_TO_OBJ  50  // record DigiDestroyObjectSound
 
 
 #define NORMAL_PLAYBACK         0
 #define SKIP_PLAYBACK           1
 #define INTERPOLATE_PLAYBACK    2
-#define INTERPOL_FACTOR         (F1_0 + (F1_0/5))
+#define INTERPOL_FACTOR         (I2X (1) + (I2X (1)/5))
 
 #define DEMO_VERSION_D2X        17      // last D1 version was 13
 #define DEMO_GAME_TYPE          3       // 1 was shareware, 2 registered
@@ -1089,7 +1089,7 @@ StartTime (0);
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordLinkSoundToObject3 (int soundno, short nObject, fix maxVolume, fix  maxDistance, int loop_start, int loop_end)
+void NDRecordCreateObjectSound (int soundno, short nObject, fix maxVolume, fix  maxDistance, int loop_start, int loop_end)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_LINK_SOUND_TO_OBJ);
@@ -1104,7 +1104,7 @@ StartTime (0);
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordKillSoundLinkedToObject (int nObject)
+void NDRecordDestroyObjectSound (int nObject)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_KILL_SOUND_TO_OBJ);
@@ -1760,7 +1760,7 @@ nTag = 255;
 if (gameData.demo.nVcrState != ND_STATE_PAUSED)
 	ResetSegObjLists ();
 ResetObjects (1);
-LOCALPLAYER.homingObjectDist = -F1_0;
+LOCALPLAYER.homingObjectDist = -I2X (1);
 prevObjP = NULL;
 while (!bDone) {
 	nPrevTag = nTag;
@@ -1856,14 +1856,14 @@ while (!bDone) {
 			soundno = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState == ND_STATE_PLAYBACK)
-				DigiPlaySample ((short) soundno, F1_0);
+				audio.PlaySound ((short) soundno);
 			break;
 
 			//--unused		case ND_EVENT_SOUND_ONCE:
 			//--unused			NDReadInt (&soundno);
 			//--unused			if (bNDBadRead) { bDone = -1; break; }
 			//--unused			if (gameData.demo.nVcrState == ND_STATE_PLAYBACK)
-			//--unused				audio.PlaySample (soundno, F1_0);
+			//--unused				audio.PlaySound (soundno);
 			//--unused			break;
 
 		case ND_EVENT_SOUND_3D:
@@ -1872,7 +1872,7 @@ while (!bDone) {
 			volume = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState == ND_STATE_PLAYBACK)
-				audio.PlaySample ((short) soundno, volume, angle);
+				audio.PlaySound ((short) soundno, SOUNDCLASS_GENERIC, volume, angle);
 			break;
 
 		case ND_EVENT_SOUND_3D_ONCE:
@@ -1881,7 +1881,7 @@ while (!bDone) {
 			volume = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState == ND_STATE_PLAYBACK)
-				audio.PlaySample ((short) soundno, volume, angle, 1);
+				audio.PlaySound ((short) soundno, SOUNDCLASS_GENERIC, volume, angle, 1);
 			break;
 
 		case ND_EVENT_LINK_SOUND_TO_OBJ: {
@@ -1896,7 +1896,7 @@ while (!bDone) {
 			loop_end = NDReadInt ();
 			nObject = NDFindObject (nSignature);
 			if (nObject > -1)   //  @mk, 2/22/96, John told me to.
-				SetObjectSound ((short) soundno, ObjectSoundClass (OBJECTS + nObject), (short) nObject, 1, maxVolume, maxDistance, loop_start, loop_end);
+				CreateObjectSound ((short) soundno, ObjectSoundClass (OBJECTS + nObject), (short) nObject, 1, maxVolume, maxDistance, loop_start, loop_end);
 			}
 			break;
 
@@ -1906,7 +1906,7 @@ while (!bDone) {
 			nSignature = NDReadInt ();
 			nObject = NDFindObject (nSignature);
 			if (nObject > -1)   //  @mk, 2/22/96, John told me to.
-				DigiKillSoundLinkedToObject (nObject);
+				DigiDestroyObjectSound (nObject);
 			}
 			break;
 
@@ -2772,8 +2772,8 @@ void NDInterpolateFrame (fix d_play, fix d_recorded)
 	static CObject curObjs [MAX_OBJECTS_D2X];
 
 factor = FixDiv (d_play, d_recorded);
-if (factor > F1_0)
-	factor = F1_0;
+if (factor > I2X (1))
+	factor = I2X (1);
 nCurObjs = gameData.objs.nLastObject [0];
 #if 1
 memcpy (curObjs, OBJECTS.Buffer (), OBJECTS.Size ());
@@ -2803,14 +2803,14 @@ for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 					(renderType != RT_POWERUP)) {
 
 				fvec1 = curObjP->info.position.mOrient.FVec ();
-				fvec1 *= (F1_0-factor);
+				fvec1 *= (I2X (1)-factor);
 				fvec2 = objP->info.position.mOrient.FVec ();
 				fvec2 *= factor;
 				fvec1 += fvec2;
 				mag1 = CFixVector::Normalize(fvec1);
-				if (mag1 > F1_0/256) {
+				if (mag1 > I2X (1)/256) {
 					rvec1 = curObjP->info.position.mOrient.RVec ();
-					rvec1 *= (F1_0-factor);
+					rvec1 *= (I2X (1)-factor);
 					rvec2 = objP->info.position.mOrient.RVec ();
 					rvec2 *= factor;
 					rvec1 += rvec2;
@@ -3450,7 +3450,7 @@ gameData.demo.xJasonPlaybackTotal += gameData.time.xFrame;
 if (!gameData.demo.bFirstTimePlayback) {
 	// get the difference between the recorded time and the playback time
 	xDelay = (xRecordedTime - gameData.time.xFrame);
-	if (xDelay >= f0_0) {
+	if (xDelay >= 0) {
 		StopTime ();
 		TimerDelay (xDelay);
 		StartTime (0);
@@ -3462,7 +3462,7 @@ if (!gameData.demo.bFirstTimePlayback) {
 				return;
 				}
 		//xDelay = gameData.demo.xRecordedTotal - gameData.demo.xJasonPlaybackTotal;
-		//if (xDelay > f0_0)
+		//if (xDelay > 0)
 		//	TimerDelay (xDelay);
 		}
 	}

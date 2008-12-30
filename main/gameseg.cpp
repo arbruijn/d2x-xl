@@ -315,7 +315,7 @@ return nClosestSeg;
 
 #define	MAX_LOC_POINT_SEGS	64
 
-#define	MIN_CACHE_FCD_DIST	 (F1_0*80)	//	Must be this far apart for cache lookup to succeed.  Recognizes small changes in distance matter at small distances.
+#define	MIN_CACHE_FCD_DIST	 (I2X (80))	//	Must be this far apart for cache lookup to succeed.  Recognizes small changes in distance matter at small distances.
 //	----------------------------------------------------------------------------------------------------------
 
 void FlushFCDCache (void)
@@ -393,7 +393,7 @@ if ((nConnSide != -1) &&
 	return CFixVector::Dist (p0, p1);
 	}
 //	Periodically flush cache.
-if ((gameData.time.xGame - gameData.fcd.xLastFlushTime > F1_0*2) ||
+if ((gameData.time.xGame - gameData.fcd.xLastFlushTime > I2X (2)) ||
 	 (gameData.time.xGame < gameData.fcd.xLastFlushTime)) {
 	FlushFCDCache ();
 	gameData.fcd.xLastFlushTime = gameData.time.xGame;
@@ -431,7 +431,7 @@ while (nCurSeg != seg1) {
 				if (nMaxDepth != -1) {
 					if (nDepth [qTail - 1] == nMaxDepth) {
 						gameData.fcd.nConnSegDist = 1000;
-						AddToFCDCache (seg0, seg1, gameData.fcd.nConnSegDist, F1_0*1000);
+						AddToFCDCache (seg0, seg1, gameData.fcd.nConnSegDist, I2X (100)0);
 						return -1;
 						}
 					}
@@ -444,7 +444,7 @@ while (nCurSeg != seg1) {
 
 	if (qHead >= qTail) {
 		gameData.fcd.nConnSegDist = 1000;
-		AddToFCDCache (seg0, seg1, gameData.fcd.nConnSegDist, F1_0*1000);
+		AddToFCDCache (seg0, seg1, gameData.fcd.nConnSegDist, I2X (100)0);
 		return -1;
 		}
 	Assert ((qHead >= 0) && (qHead < MAX_SEGMENTS));
@@ -459,7 +459,7 @@ fcd_done1: ;
 while (segmentQ [--qTail].end != seg1)
 	if (qTail < 0) {
 		gameData.fcd.nConnSegDist = 1000;
-		AddToFCDCache (seg0, seg1, gameData.fcd.nConnSegDist, F1_0*1000);
+		AddToFCDCache (seg0, seg1, gameData.fcd.nConnSegDist, I2X (100)0);
 		return -1;
 		}
 
@@ -633,7 +633,7 @@ void extract_vector_from_segment (CSegment *segP, CFixVector *vp, int start, int
 	}
 
 	*vp = ve - vs;
-	*vp *= (F1_0/4);
+	*vp *= (I2X (1)/4);
 
 }
 

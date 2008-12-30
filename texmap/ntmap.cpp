@@ -40,7 +40,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define EDITOR_TMAP 1       //if in, include extra stuff
 #endif
 
-#define F15_5 (F1_0*15 + F0_5)
+#define F15_5 (I2X (15) + (I2X (1) / 2))
 
 // Temporary texture map, interface from Matt's 3d system to Mike's texture mapper.
 g3ds_tmap Tmap1;
@@ -89,10 +89,10 @@ void init_fix_recip_table(void)
 {
 	int	i;
 
-	fix_recip[0] = F1_0;
+	fix_recip[0] = I2X (1);
 
 	for (i=1; i<FIX_RECIP_TABLE_SIZE; i++)
-		fix_recip[i] = F1_0/i;
+		fix_recip[i] = I2X (1)/i;
 
 	bFixRecipTableComputed = 1;
 }
@@ -352,7 +352,7 @@ void ntmap_scanline_lighted(CBitmap *srcb, int y, fix xleft, fix xright, fix ule
 	if (dx < FIX_RECIP_TABLE_SIZE)
 		recip_dx = fix_recip[dx];
 	else
-		recip_dx = F1_0/dx;
+		recip_dx = I2X (1)/dx;
 
 	fx_u = uleft;
 	fx_v = vleft;
@@ -380,8 +380,8 @@ void ntmap_scanline_lighted(CBitmap *srcb, int y, fix xleft, fix xright, fix ule
 
 			if (lleft < 0) lleft = 0;
 			if (lright < 0) lright = 0;
-			if (lleft > (NUM_LIGHTING_LEVELS*F1_0-F1_0/2)) lleft = (NUM_LIGHTING_LEVELS*F1_0-F1_0/2);
-			if (lright > (NUM_LIGHTING_LEVELS*F1_0-F1_0/2)) lright = (NUM_LIGHTING_LEVELS*F1_0-F1_0/2);
+			if (lleft > (I2X (NUM_LIGHTING_LEVELS) - I2X (1) / 2)) lleft = (I2X (NUM_LIGHTING_LEVELS) - I2X (1) / 2);
+			if (lright > (I2X (NUM_LIGHTING_LEVELS) - I2X (1) / 2)) lright = (I2X (NUM_LIGHTING_LEVELS) - I2X (1) / 2);
 
 			fx_l = lleft;
 			fx_dl_dx = FixMul(lright - lleft,recip_dx);
@@ -390,7 +390,7 @@ void ntmap_scanline_lighted(CBitmap *srcb, int y, fix xleft, fix xright, fix ule
 			mul_thing = dx * fx_dl_dx;
 			if (lleft + mul_thing < 0)
 				fx_dl_dx += 12;
-			else if (lleft + mul_thing > (NUM_LIGHTING_LEVELS*F1_0-F1_0/2))
+			else if (lleft + mul_thing > (I2X (NUM_LIGHTING_LEVELS) - I2X (1) / 2))
 				fx_dl_dx -= 12;
 
 			//added 05/17/99 Matt Mueller - prevent writing before the buffer
@@ -442,10 +442,10 @@ void ntexture_map_lighted(CBitmap *srcb, g3ds_tmap *t)
      	g3ds_vertex *v3d;
 
         //remove stupid warnings in compile
-        dl_dy_left = F1_0;
-        dl_dy_right = F1_0;
-        lleft = F1_0;
-        lright = F1_0;
+        dl_dy_left = I2X (1);
+        dl_dy_right = I2X (1);
+        lleft = I2X (1);
+        lright = I2X (1);
 
 	v3d = t->verts;
 
@@ -465,7 +465,7 @@ void ntexture_map_lighted(CBitmap *srcb, g3ds_tmap *t)
 	if (dy < FIX_RECIP_TABLE_SIZE)
 		recip_dyl = fix_recip[dy];
 	else
-		recip_dyl = F1_0/dy;
+		recip_dyl = I2X (1)/dy;
 
 	dx_dy_left = compute_dx_dy(t,vlt,vlb, recip_dyl);
 	du_dy_left = compute_du_dy(t,vlt,vlb, recip_dyl);
@@ -476,7 +476,7 @@ void ntexture_map_lighted(CBitmap *srcb, g3ds_tmap *t)
 	if (dy < FIX_RECIP_TABLE_SIZE)
 		recip_dyr = fix_recip[dy];
 	else
-		recip_dyr = F1_0/dy;
+		recip_dyr = I2X (1)/dy;
 
 	du_dy_right = compute_du_dy(t,vrt,vrb, recip_dyr);
 	dx_dy_right = compute_dx_dy(t,vrt,vrb, recip_dyr);
@@ -527,7 +527,7 @@ void ntexture_map_lighted(CBitmap *srcb, g3ds_tmap *t)
 			if (dy < FIX_RECIP_TABLE_SIZE)
 				recip_dy = fix_recip[dy];
 			else
-				recip_dy = F1_0/dy;
+				recip_dy = I2X (1)/dy;
 
 			dx_dy_left = compute_dx_dy(t,vlt,vlb, recip_dy);
 
@@ -563,7 +563,7 @@ void ntexture_map_lighted(CBitmap *srcb, g3ds_tmap *t)
 			if (dy < FIX_RECIP_TABLE_SIZE)
 				recip_dy = fix_recip[dy];
 			else
-				recip_dy = F1_0/dy;
+				recip_dy = I2X (1)/dy;
 
 			dx_dy_right = compute_dx_dy(t,vrt,vrb, recip_dy);
 
@@ -634,7 +634,7 @@ void ntmap_scanline_lighted_linear(CBitmap *srcb, int y, fix xleft, fix xright, 
 		if (dx < FIX_RECIP_TABLE_SIZE)
 			recip_dx = fix_recip[dx];
 		else
-			recip_dx = F1_0/dx;
+			recip_dx = I2X (1)/dx;
 
 		du_dx = FixMul(uright - uleft,recip_dx);
 		dv_dx = FixMul(vright - vleft,recip_dx);
@@ -658,10 +658,10 @@ void ntmap_scanline_lighted_linear(CBitmap *srcb, int y, fix xleft, fix xright, 
 				cur_tmap_scanline_lin_nolight();
 				break;
 			case 1:
-				if (lleft < F1_0/2)
-					lleft = F1_0/2;
-				if (lright < F1_0/2)
-					lright = F1_0/2;
+				if (lleft < I2X (1)/2)
+					lleft = I2X (1)/2;
+				if (lright < I2X (1)/2)
+					lright = I2X (1)/2;
 
 				if (lleft > MAX_LIGHTING_VALUE*NUM_LIGHTING_LEVELS)
 					lleft = MAX_LIGHTING_VALUE*NUM_LIGHTING_LEVELS;
@@ -683,7 +683,7 @@ void ntmap_scanline_lighted_linear(CBitmap *srcb, int y, fix xleft, fix xright, 
 			mul_thing = dx * fx_dl_dx;
 			if (lleft + mul_thing < 0)
 				fx_dl_dx += 12;
-			else if (lleft + mul_thing > (NUM_LIGHTING_LEVELS*F1_0-F1_0/2))
+			else if (lleft + mul_thing > (I2X (NUM_LIGHTING_LEVELS) - I2X (1) / 2))
 				fx_dl_dx -= 12;
 }
 
@@ -724,10 +724,10 @@ void ntexture_map_lighted_linear(CBitmap *srcb, g3ds_tmap *t)
 	g3ds_vertex *v3d;
 
         //remove stupid warnings in compile
-        dl_dy_left = F1_0;
-        dl_dy_right = F1_0;
-        lleft = F1_0;
-        lright = F1_0;
+        dl_dy_left = I2X (1);
+        dl_dy_right = I2X (1);
+        lleft = I2X (1);
+        lright = I2X (1);
 
 	v3d = t->verts;
 
@@ -747,13 +747,13 @@ void ntexture_map_lighted_linear(CBitmap *srcb, g3ds_tmap *t)
 	if (dy < FIX_RECIP_TABLE_SIZE)
 		recip_dyl = fix_recip[dy];
 	else
-		recip_dyl = F1_0/dy;
+		recip_dyl = I2X (1)/dy;
 
 	dy = X2I(t->verts[vrb].y2d) - X2I(t->verts[vrt].y2d);
 	if (dy < FIX_RECIP_TABLE_SIZE)
 		recip_dyr = fix_recip[dy];
 	else
-		recip_dyr = F1_0/dy;
+		recip_dyr = I2X (1)/dy;
 
 	// Set amount to change x coordinate for each advance to next scanline.
 	dx_dy_left = compute_dx_dy(t,vlt,vlb, recip_dyl);
@@ -806,7 +806,7 @@ void ntexture_map_lighted_linear(CBitmap *srcb, g3ds_tmap *t)
 			if (dy < FIX_RECIP_TABLE_SIZE)
 				recip_dy = fix_recip[dy];
 			else
-				recip_dy = F1_0/dy;
+				recip_dy = I2X (1)/dy;
 
 			dx_dy_left = compute_dx_dy(t,vlt,vlb, recip_dy);
 
@@ -838,7 +838,7 @@ void ntexture_map_lighted_linear(CBitmap *srcb, g3ds_tmap *t)
 			if (dy < FIX_RECIP_TABLE_SIZE)
 				recip_dy = fix_recip[dy];
 			else
-				recip_dy = F1_0/dy;
+				recip_dy = I2X (1)/dy;
 
 			next_break_right = X2I(v3d[vrb].y2d);
 			dx_dy_right = compute_dx_dy(t,vrt,vrb, recip_dy);
@@ -880,7 +880,7 @@ void ntexture_map_lighted_linear(CBitmap *srcb, g3ds_tmap *t)
 	ntmap_scanline_lighted_linear(srcb,y,xleft,xright,uleft,uright,vleft,vright,lleft,lright);
 }
 
-// fix	DivNum = F1_0*12;
+// fix	DivNum = I2X (1)2;
 
 extern void DrawTexPolyFlat(CBitmap *bmP,int nverts,g3sPoint **vertbuf);
 
@@ -921,7 +921,7 @@ void draw_tmap(CBitmap *bmP,int nverts,g3sPoint **vertbuf)
 	// Setup texture map in Tmap1
 	Tmap1.nv = nverts;						// Initialize number of vertices
 
-// 	div_numerator = DivNum;	//f1_0*3;
+// 	div_numerator = DivNum;	//I2X (1)*3;
 
 	for (i=0; i<nverts; i++) {
 		g3ds_vertex	*tvp = &Tmap1.verts[i];
@@ -936,7 +936,7 @@ void draw_tmap(CBitmap *bmP,int nverts,g3sPoint **vertbuf)
 			// Int3();		// we would overflow if we divided!
 		}
 
-		tvp->z = FixDiv(F1_0*12, vp->p3_vec[Z]);
+		tvp->z = FixDiv(I2X (1)2, vp->p3_vec[Z]);
 		tvp->u = vp->p3_uvl.u << 6; //* bmP->Width ();
 		tvp->v = vp->p3_uvl.v << 6; //* bmP->Height ();
 

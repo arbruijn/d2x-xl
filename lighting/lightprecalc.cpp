@@ -215,8 +215,8 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 				continue;
 			if ((pl->info.nSegment >= 0) && (pl->info.nSide >= 0)) {
 				sideP = SEGMENTS [pl->info.nSegment].m_sides + pl->info.nSide;
-				if ((CFixVector::Dot (sideP->m_normals[0], vLightToVert) < -F1_0 / 6) &&
-					 ((sideP->m_nType == SIDE_IS_QUAD) || (CFixVector::Dot (sideP->m_normals[1], vLightToVert) < -F1_0 / 6)))
+				if ((CFixVector::Dot (sideP->m_normals[0], vLightToVert) < -I2X (1) / 6) &&
+					 ((sideP->m_nType == SIDE_IS_QUAD) || (CFixVector::Dot (sideP->m_normals[1], vLightToVert) < -I2X (1) / 6)))
 					continue;
 				}
 			}
@@ -339,7 +339,7 @@ for (sideP = segP->m_sides, nSide = 0; nSide < 6; nSide++, sideP++) {
 			}
 		}
 	vNormal = sideP->m_normals[0] + sideP->m_normals[1];
-	vNormal *= (-F1_0 / 2);
+	vNormal *= (-I2X (1) / 2);
 	vAngles = vNormal.ToAnglesVec();
 	viewer.info.position.mOrient = CFixMatrix::Create(vAngles);
 	G3StartFrame(0, 0);

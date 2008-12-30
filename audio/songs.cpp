@@ -59,7 +59,7 @@ char CDROM_dir[40] = ".";
 
 #define REDBOOK_VOLUME_SCALE  (255/3)		//255 is MAX
 
-#define FADE_TIME (f1_0/2)
+#define FADE_TIME (I2X (1)/2)
 
 //------------------------------------------------------------------------------
 
@@ -153,7 +153,7 @@ if (!m_bPlaying || (gameConfig.nRedbookVolume == 0))
 	return;
 
 currentTime = TimerGetFixedSeconds ();
-if (currentTime < m_xLastCheck || (currentTime - m_xLastCheck) >= F2_0) {
+if (currentTime < m_xLastCheck || (currentTime - m_xLastCheck) >= I2X (2)) {
 	if (!RBAPeekPlayStatus ()) {
 		StopTime ();
 		// if title ends, start credit music

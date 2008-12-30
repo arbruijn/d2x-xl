@@ -73,9 +73,9 @@ void DoPhysicsAlignObject (CObject * objP)
 {
 	CFixVector	desiredUpVec;
 	fixang		delta_ang, roll_ang;
-	//CFixVector forvec = {0, 0, f1_0};
+	//CFixVector forvec = {0, 0, I2X (1)};
 	CFixMatrix	temp_matrix;
-	fix			d, largest_d=-f1_0;
+	fix			d, largest_d=-I2X (1);
 	int			i, nBestSide;
 
 nBestSide = 0;
@@ -100,7 +100,7 @@ else if (gameOpts->gameplay.nAutoLeveling == 3)	// mine's up vector
 	desiredUpVec = (*PlayerSpawnOrient(gameData.multiplayer.nLocalPlayer)).UVec ();
 else
 	return;
-if (labs (CFixVector::Dot (desiredUpVec, objP->info.position.mOrient.FVec ())) < f1_0/2) {
+if (labs (CFixVector::Dot (desiredUpVec, objP->info.position.mOrient.FVec ())) < I2X (1)/2) {
 	fixang save_delta_ang;
 	CAngleVector turnAngles;
 
@@ -168,7 +168,7 @@ int	nTotalRetries=0, nTotalSims=0;
 int	bDontMoveAIObjects=0;
 #endif
 
-#define FT (f1_0/64)
+#define FT (I2X (1)/64)
 
 extern int bSimpleFVI;
 //	-----------------------------------------------------------------------------------------------------------
@@ -196,12 +196,12 @@ if (mType.physInfo.drag) {
 	fix			r = gameData.physics.xTime % FT;
 	fix			k = FixDiv (r, FT);
 	fix			xDrag = (mType.physInfo.drag * 5) / 2;
-	fix			xScale = f1_0 - xDrag;
+	fix			xScale = I2X (1) - xDrag;
 
 	if (this == gameData.objs.consoleP)
 		xDrag = EGI_FLAG (nDrag, 0, 0, 0) * xDrag / 10;
 	if (mType.physInfo.flags & PF_USES_THRUST) {
-		accel = mType.physInfo.rotThrust * FixDiv (f1_0, mType.physInfo.mass);
+		accel = mType.physInfo.rotThrust * FixDiv (I2X (1), mType.physInfo.mass);
 		while (nTries--) {
 			mType.physInfo.rotVel += accel;
 			mType.physInfo.rotVel *= xScale;
@@ -209,14 +209,14 @@ if (mType.physInfo.drag) {
 		//do linear scale on remaining bit of time
 		mType.physInfo.rotVel += accel * k;
 		if (xDrag)
-			mType.physInfo.rotVel *= (f1_0 - FixMul (k, xDrag));
+			mType.physInfo.rotVel *= (I2X (1) - FixMul (k, xDrag));
 		}
 	else if (xDrag && !(mType.physInfo.flags & PF_FREE_SPINNING)) {
-		fix xTotalDrag = f1_0;
+		fix xTotalDrag = I2X (1);
 		while (nTries--)
 			xTotalDrag = FixMul (xTotalDrag, xScale);
 		//do linear scale on remaining bit of time
-		xTotalDrag = FixMul (xTotalDrag, f1_0 - FixMul (k, xDrag));
+		xTotalDrag = FixMul (xTotalDrag, I2X (1) - FixMul (k, xDrag));
 		mType.physInfo.rotVel *= xTotalDrag;
 		}
 	}
@@ -487,13 +487,13 @@ if (mType.physInfo.drag) {
 	fix		xDrag = mType.physInfo.drag;
 	fix		r = xSimTime % FT;
 	fix		k = FixDiv (r, FT);
-	fix		d = f1_0 - xDrag;
+	fix		d = I2X (1) - xDrag;
 	fix		a;
 
 	if (this == gameData.objs.consoleP)
 		xDrag = EGI_FLAG (nDrag, 0, 0, 0) * xDrag / 10;
 	if (mType.physInfo.flags & PF_USES_THRUST) {
-		accel = mType.physInfo.thrust * FixDiv (f1_0, mType.physInfo.mass);
+		accel = mType.physInfo.thrust * FixDiv (I2X (1), mType.physInfo.mass);
 		a = !accel.IsZero();
 		if (bDoSpeedBoost && !(a || gameStates.input.bControlsSkipFrame))
 			vel = sbd.vVel;
@@ -506,7 +506,7 @@ if (mType.physInfo.drag) {
 			//do linear scale on remaining bit of time
 			vel += accel * k;
 			if (xDrag)
-				vel *= (f1_0 - FixMul (k, xDrag));
+				vel *= (I2X (1) - FixMul (k, xDrag));
 			if (bDoSpeedBoost) {
 				if (vel [X] < sbd.vMinVel [X])
 					vel [X] = sbd.vMinVel [X];
@@ -524,11 +524,11 @@ if (mType.physInfo.drag) {
 			}
 		}
 	else if (xDrag) {
-		fix xTotalDrag = f1_0;
+		fix xTotalDrag = I2X (1);
 		while (nTries--)
 			xTotalDrag = FixMul (xTotalDrag, d);
 		//do linear scale on remaining bit of time
-		xTotalDrag = FixMul (xTotalDrag, f1_0-FixMul (k, xDrag));
+		xTotalDrag = FixMul (xTotalDrag, I2X (1)-FixMul (k, xDrag));
 		mType.physInfo.velocity *= xTotalDrag;
 		}
 	}
@@ -570,7 +570,7 @@ do {
 	if (!IsMultiGame) {
 		int i = (this != gameData.objs.consoleP) ? 0 : 1;
 		if (gameStates.gameplay.slowmo [i].fSpeed != 1) {
-			vFrame *= (fix) (F1_0 / gameStates.gameplay.slowmo [i].fSpeed);
+			vFrame *= (fix) (I2X (1) / gameStates.gameplay.slowmo [i].fSpeed);
 			}
 		}
 	if (vFrame.IsZero())
@@ -654,7 +654,7 @@ retryMove:
 		if (gameStates.render.bHaveSkyBox && (info.nType == OBJ_WEAPON) && (hi.hit.nSegment >= 0)) {
 			if (SEGMENTS [hi.hit.nSegment].m_nType == SEGMENT_IS_SKYBOX) {
 				short nConnSeg = SEGMENTS [hi.hit.nSegment].m_children [hi.hit.nSide];
-				if ((nConnSeg < 0) && (info.xLifeLeft > F1_0)) {	//leaving the mine
+				if ((nConnSeg < 0) && (info.xLifeLeft > I2X (1))) {	//leaving the mine
 					info.xLifeLeft = 0;
 					info.nFlags |= OF_SHOULD_BE_DEAD;
 					}
@@ -731,7 +731,7 @@ retryMove:
 				CFixVector vCenter;
 				vCenter = SEGMENTS [info.nSegment].Center ();
 				vCenter -= info.position.vPos;
-				if (vCenter.Mag() > F1_0) {
+				if (vCenter.Mag() > I2X (1)) {
 					CFixVector::Normalize(vCenter);
 					vCenter /= 10;
 					}
@@ -950,11 +950,11 @@ if (info.controlType == CT_AI) {
 	if (((fviResult == HIT_WALL) || (fviResult == HIT_BAD_P0)) &&
 		 !(sbd.bBoosted || bObjStopped || bBounced)) {	//Set velocity from actual movement
 		CFixVector vMoved;
-		fix s = FixMulDiv (FixDiv (F1_0, gameData.physics.xTime), xTimeScale, 100);
+		fix s = FixMulDiv (FixDiv (I2X (1), gameData.physics.xTime), xTimeScale, 100);
 
 		vMoved = info.position.vPos - vStartPos;
 		s = vMoved.Mag();
-		vMoved *= (FixMulDiv (FixDiv (F1_0, gameData.physics.xTime), xTimeScale, 100));
+		vMoved *= (FixMulDiv (FixDiv (I2X (1), gameData.physics.xTime), xTimeScale, 100));
 #if 1
 		if (!bDoSpeedBoost)
 			mType.physInfo.velocity = vMoved;
@@ -1034,7 +1034,7 @@ if ((automap.m_bDisplay && (this == gameData.objs.consoleP)) || SPECTATOR (this)
 #endif
 //Add in acceleration due to force
 if (!gameData.objs.speedBoost [OBJ_IDX (this)].bBoosted || (this != gameData.objs.consoleP))
-	mType.physInfo.velocity += vForce * FixDiv (f1_0, mType.physInfo.mass);
+	mType.physInfo.velocity += vForce * FixDiv (I2X (1), mType.physInfo.mass);
 }
 
 //	----------------------------------------------------------------
@@ -1044,7 +1044,7 @@ if (!gameData.objs.speedBoost [OBJ_IDX (this)].bBoosted || (this != gameData.obj
 void PhysicsSetRotVelAndSaturate (fix *dest, fix delta)
 {
 if ((delta ^ *dest) < 0) {
-	if (abs (delta) < F1_0/8) {
+	if (abs (delta) < I2X (1)/8) {
 		*dest = delta/4;
 		}
 	else
@@ -1080,18 +1080,18 @@ dest_angles = vGoal.ToAnglesVec();
 cur_angles = info.position.mOrient.FVec ().ToAnglesVec();
 delta_p = (dest_angles [PA] - cur_angles [PA]);
 delta_h = (dest_angles [HA] - cur_angles [HA]);
-if (delta_p > F1_0/2)
-	delta_p = dest_angles [PA] - cur_angles [PA] - F1_0;
-if (delta_p < -F1_0/2)
-	delta_p = dest_angles [PA] - cur_angles [PA] + F1_0;
-if (delta_h > F1_0/2)
-	delta_h = dest_angles [HA] - cur_angles [HA] - F1_0;
-if (delta_h < -F1_0/2)
-	delta_h = dest_angles [HA] - cur_angles [HA] + F1_0;
+if (delta_p > I2X (1)/2)
+	delta_p = dest_angles [PA] - cur_angles [PA] - I2X (1);
+if (delta_p < -I2X (1)/2)
+	delta_p = dest_angles [PA] - cur_angles [PA] + I2X (1);
+if (delta_h > I2X (1)/2)
+	delta_h = dest_angles [HA] - cur_angles [HA] - I2X (1);
+if (delta_h < -I2X (1)/2)
+	delta_h = dest_angles [HA] - cur_angles [HA] + I2X (1);
 delta_p = FixDiv (delta_p, rate);
 delta_h = FixDiv (delta_h, rate);
-if (abs (delta_p) < F1_0/16) delta_p *= 4;
-if (abs (delta_h) < F1_0/16) delta_h *= 4;
+if (abs (delta_p) < I2X (1)/16) delta_p *= 4;
+if (abs (delta_h) < I2X (1)/16) delta_h *= 4;
 if (!IsMultiGame) {
 	int i = (this != gameData.objs.consoleP) ? 0 : 1;
 	if (gameStates.gameplay.slowmo [i].fSpeed != 1) {
@@ -1114,19 +1114,19 @@ void CObject::ApplyRotForce (CFixVector vForce)
 if (info.movementType != MT_PHYSICS)
 	return;
 xMag = vForce.Mag() / 8;
-if (xMag < F1_0 / 256)
-	xRate = 4 * F1_0;
+if (xMag < I2X (1) / 256)
+	xRate = I2X (4);
 else if (xMag < mType.physInfo.mass >> 14)
-	xRate = 4 * F1_0;
+	xRate = I2X (4);
 else {
 	xRate = FixDiv (mType.physInfo.mass, xMag);
 	if (info.nType == OBJ_ROBOT) {
-		if (xRate < F1_0/4)
-			xRate = F1_0/4;
+		if (xRate < I2X (1)/4)
+			xRate = I2X (1)/4;
 		//	Changed by mk, 10/24/95, claw guys should not slow down when attacking!
 		if (!(ROBOTINFO (info.nId).thief || ROBOTINFO (info.nId).attackType)) {
-			if (cType.aiInfo.SKIP_AI_COUNT * gameData.physics.xTime < 3*F1_0/4) {
-				fix	tval = FixDiv (F1_0, 8 * gameData.physics.xTime);
+			if (cType.aiInfo.SKIP_AI_COUNT * gameData.physics.xTime < I2X (3)/4) {
+				fix	tval = FixDiv (I2X (1), 8 * gameData.physics.xTime);
 				int	addval = X2I (tval);
 				if ((d_rand () * 2) < (tval & 0xffff))
 					addval++;
@@ -1135,8 +1135,8 @@ else {
 			}
 		}
 	else {
-		if (xRate < F1_0/2)
-			xRate = F1_0/2;
+		if (xRate < I2X (1)/2)
+			xRate = I2X (1)/2;
 		}
 	}
 //	Turn amount inversely proportional to mass.  Third parameter is seconds to do 360 turn.
@@ -1148,7 +1148,7 @@ TurnTowardsVector (vForce, xRate);
 // (hopefully) maintain the CObject's current velocity
 void CObject::SetThrustFromVelocity (void)
 {
-fix k = FixMulDiv (mType.physInfo.mass, mType.physInfo.drag, (f1_0 - mType.physInfo.drag));
+fix k = FixMulDiv (mType.physInfo.mass, mType.physInfo.drag, (I2X (1) - mType.physInfo.drag));
 mType.physInfo.thrust = mType.physInfo.velocity * k;
 
 }

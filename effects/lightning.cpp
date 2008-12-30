@@ -117,9 +117,9 @@ CFixVector *VmRandomVector (CFixVector *vRand)
 	CFixVector	vr;
 
 do {
-	vr [X] = F1_0 / 4 - d_rand ();
-	vr [Y] = F1_0 / 4 - d_rand ();
-	vr [Z] = F1_0 / 4 - d_rand ();
+	vr [X] = I2X (1) / 4 - d_rand ();
+	vr [Y] = I2X (1) / 4 - d_rand ();
+	vr [Z] = I2X (1) / 4 - d_rand ();
 } while (!(vr [X] && vr [Y] && vr [Z]));
 CFixVector::Normalize(vr);
 *vRand = vr;
@@ -220,7 +220,7 @@ if (m_child) {
 void CLightningNode::ComputeOffset (int nSteps)
 {
 m_vOffs = m_vNewPos - m_vPos;
-m_vOffs *= (F1_0 / nSteps);
+m_vOffs *= (I2X (1) / nSteps);
 }
 
 //------------------------------------------------------------------------------
@@ -247,11 +247,11 @@ int CLightningNode::ComputeAttractor (CFixVector *vAttract, CFixVector *vDest, C
 *vAttract = *vDest - *vPos;
 nDist = vAttract->Mag () / i;
 if (!nMinDist)
-	*vAttract *= (F1_0 / i * 2);	// scale attractor with inverse of remaining distance
+	*vAttract *= (I2X (1) / i * 2);	// scale attractor with inverse of remaining distance
 else {
 	if (nDist < nMinDist)
 		nDist = nMinDist;
-	*vAttract *= (F1_0 / i / 2);	// scale attractor with inverse of remaining distance
+	*vAttract *= (I2X (1) / i / 2);	// scale attractor with inverse of remaining distance
 	}
 return nDist;
 }
@@ -263,7 +263,7 @@ CFixVector *CLightningNode::Create (CFixVector *vOffs, CFixVector *vAttract, int
 	CFixVector	va = *vAttract;
 	int			nDot, i = 0;
 
-if (nDist < F1_0 / 16)
+if (nDist < I2X (1) / 16)
 	return VmRandomVector (vOffs);
 CFixVector::Normalize(va);
 if (!(va [X] && va [Y] && va [Z]))
@@ -275,7 +275,7 @@ do {
 	nDot = CFixVector::Dot (va, *vOffs);
 	if (++i > 100)
 		i = 0;
-	} while (abs (nDot) < F1_0 / 32);
+	} while (abs (nDot) < I2X (1) / 32);
 if (nDot < 0)
 	vOffs->Neg ();
 return vOffs;
@@ -327,16 +327,16 @@ Create (&vOffs, &vAttract, nDist);
 if (vPrevOffs)
 	Smoothe (&vOffs, vPrevOffs, nDist, nSmoothe);
 else if (m_vOffs [X] || m_vOffs [Z] || m_vOffs [Z]) {
-	vOffs += m_vOffs * (2 * F1_0);
+	vOffs += m_vOffs * (I2X (2));
 	vOffs /= 3;
 	}
-if (nDist > F1_0 / 16)
+if (nDist > I2X (1) / 16)
 	Attract (&vOffs, &vAttract, vPos, nDist, i, 0);
 if (bClamp)
 	Clamp (vPos, vBase, nAmplitude);
 m_vNewPos = *vPos;
 m_vOffs = m_vNewPos - m_vPos;
-m_vOffs *= (F1_0 / nSteps);
+m_vOffs *= (I2X (1) / nSteps);
 return vOffs;
 }
 
@@ -373,7 +373,7 @@ for (j = 0; j < 2 - bInPlane; j++) {
 	m_vNewPos += m_vDelta [j] * nDelta;
 	}
 m_vOffs = m_vNewPos - m_vPos;
-m_vOffs *= (F1_0 / nSteps);
+m_vOffs *= (I2X (1) / nSteps);
 if (bClamp)
 	Clamp (vPos, vBase, nAmplitude);
 return m_vOffs;
@@ -392,7 +392,7 @@ dy *= nAmplitude * phi;
 m_vNewPos = m_vBase + m_vDelta [0] * ((int)dx);
 m_vNewPos += m_vDelta [1] * ((int) dy);
 m_vOffs = m_vNewPos - m_vPos;
-m_vOffs *= (F1_0 / nSteps);
+m_vOffs *= (I2X (1) / nSteps);
 return m_vOffs;
 }
 
@@ -424,7 +424,7 @@ return true;
 int CLightning::ComputeChildEnd (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDir, CFixVector *vParentDir, int nLength)
 {
 nLength = 3 * nLength / 4 + (int) (dbl_rand () * nLength / 4);
-DirectedRandomVector (vDir, vParentDir, 3 * F1_0 / 4, 9 * F1_0 / 10);
+DirectedRandomVector (vDir, vParentDir, I2X (3) / 4, I2X (9) / 10);
 *vEnd = *vPos + *vDir * nLength;
 return nLength;
 }
@@ -441,7 +441,7 @@ if (m_bRandom) {
 	if (!m_nAngle)
 		VmRandomVector (&vDir);
 	else {
-		int nMinDot = F1_0 - m_nAngle * F1_0 / 90;
+		int nMinDot = I2X (1) - I2X (m_nAngle) / 90;
 		vRefDir = m_vRefEnd - m_vPos;
 		CFixVector::Normalize(vRefDir);
 		do {
@@ -469,12 +469,12 @@ if (m_bInPlane) {
 else {
 	do {
 		VmRandomVector(&vDelta [0]);
-	} while (abs (CFixVector::Dot (vDir, vDelta [0])) > 9 * F1_0 / 10);
+	} while (abs (CFixVector::Dot (vDir, vDelta [0])) > I2X (9) / 10);
 	vDelta [1] = CFixVector::Normal (vPos, m_vEnd, *vDelta);
 	v = vPos + vDelta [1];
 	vDelta [0] = CFixVector::Normal (vPos, m_vEnd, v);
 	}
-vDir *= FixDiv (m_nLength, (m_nNodes - 1) * F1_0);
+vDir *= FixDiv (m_nLength, I2X (m_nNodes - 1));
 m_nNodes = abs (m_nNodes);
 m_iStep = 0;
 if (m_parent) {
@@ -1168,7 +1168,7 @@ int CLightning::SetLight (void)
 if (!m_bLight)
 	return 0;
 if (0 < (j = m_nNodes)) {
-	if (!(nStride = (int) ((double) m_nLength / (F1_0 * 20) + 0.5)))
+	if (!(nStride = (int) ((double) m_nLength / (I2X (20)) + 0.5)))
 		nStride = 1;
 	if (!(nStep = (double) (j - 1) / (double) nStride))
 		nStep = (double) ((int) (j + 0.5));
@@ -1264,7 +1264,7 @@ else
 void CLightningSystem::DestroySound (void)
 {
 if ((m_bSound > 0) & (m_nObject >= 0))
-	DigiKillSoundLinkedToObject (m_nObject);
+	DigiDestroyObjectSound (m_nObject);
 }
 
 //------------------------------------------------------------------------------
@@ -1717,9 +1717,9 @@ FORALL_EFFECT_OBJS (objP, i) {
 	if (pli->bRandom && !pli->nAngle)
 		vEnd = NULL;
 	else if ((vEnd = FindTargetPos (objP, pli->nTarget)))
-		pli->nLength = CFixVector::Dist (objP->info.position.vPos, *vEnd) / F1_0;
+		pli->nLength = CFixVector::Dist (objP->info.position.vPos, *vEnd) / I2X (1);
 	else {
-		v = objP->info.position.vPos + objP->info.position.mOrient.FVec() * F1_0 * pli->nLength;
+		v = objP->info.position.vPos + objP->info.position.mOrient.FVec() * I2X (pli->nLength);
 		vEnd = &v;
 		}
 	color.red = (float) pli->color.red / 255.0f;
@@ -1727,8 +1727,8 @@ FORALL_EFFECT_OBJS (objP, i) {
 	color.blue = (float) pli->color.blue / 255.0f;
 	color.alpha = (float) pli->color.alpha / 255.0f;
 	vDelta = pli->bInPlane ? &objP->info.position.mOrient.RVec() : NULL;
-	h = Create (pli->nLightnings, &objP->info.position.vPos, vEnd, vDelta, i, -abs (pli->nLife), pli->nDelay, pli->nLength * F1_0,
-				   pli->nAmplitude * F1_0, pli->nAngle, pli->nOffset * F1_0, pli->nNodes, pli->nChildren, pli->nChildren > 0, pli->nSteps,
+	h = Create (pli->nLightnings, &objP->info.position.vPos, vEnd, vDelta, i, -abs (pli->nLife), pli->nDelay, I2X (pli->nLength),
+				   I2X (pli->nAmplitude), pli->nAngle, I2X (pli->nOffset), pli->nNodes, pli->nChildren, pli->nChildren > 0, pli->nSteps,
 				   pli->nSmoothe, pli->bClamp, pli->bPlasma, pli->bSound, 1, pli->nStyle, &color);
 	if (h >= 0)
 		m_objects [i] = h;
@@ -1861,7 +1861,7 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bExplosions) {
 	//m_objects [objP->Index ()] =
 		Create (
 			nRods, &objP->info.position.vPos, NULL, NULL, objP->Index (), nTTL, 0,
-			nRad, F1_0 * 4, 0, 2 * F1_0, 50, 5, 1, 3, 1, 1, 0, 0, 1, -1, colorP);
+			nRad, I2X (4), 0, I2X (2), 50, 5, 1, 3, 1, 1, 0, 0, 1, -1, colorP);
 	}
 }
 
@@ -1871,7 +1871,7 @@ void CLightningManager::CreateForShaker (CObject* objP)
 {
 static tRgbaColorf color = {0.1f, 0.1f, 0.8f, 0.2f};
 
-CreateForExplosion (objP, &color, 30, 20 * F1_0, 750);
+CreateForExplosion (objP, &color, 30, I2X (20), 750);
 }
 
 //------------------------------------------------------------------------------
@@ -1880,7 +1880,7 @@ void CLightningManager::CreateForShakerMega (CObject* objP)
 {
 static tRgbaColorf color = {0.1f, 0.1f, 0.6f, 0.2f};
 
-CreateForExplosion (objP, &color, 20, 15 * F1_0, 750);
+CreateForExplosion (objP, &color, 20, I2X (15), 750);
 }
 
 //------------------------------------------------------------------------------
@@ -1889,7 +1889,7 @@ void CLightningManager::CreateForMega (CObject* objP)
 {
 static tRgbaColorf color = {0.8f, 0.1f, 0.1f, 0.2f};
 
-CreateForExplosion (objP, &color, 30, 15 * F1_0, 750);
+CreateForExplosion (objP, &color, 30, I2X (15), 750);
 }
 
 //------------------------------------------------------------------------------
@@ -1918,7 +1918,7 @@ static tRgbaColorf color = {0.1f, 0.1f, 0.8f, 0.2f};
 
 int h = X2I (objP->info.xSize) * 2;
 
-CreateForExplosion (objP, &color, h + rand () % h, h * (F1_0 + F1_0 / 2), 500);
+CreateForExplosion (objP, &color, h + rand () % h, h * (I2X (1) + I2X (1) / 2), 500);
 }
 
 //------------------------------------------------------------------------------
@@ -1931,7 +1931,7 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bRobots && OBJECT_EXISTS (obj
 	if (0 <= m_objects [i])
 		MoveForObject (objP);
 	else {
-		h = Create (2 * objP->info.xSize / F1_0, &objP->info.position.vPos, NULL, NULL, objP->Index (), -1000, 100,
+		h = Create (2 * objP->info.xSize / I2X (1), &objP->info.position.vPos, NULL, NULL, objP->Index (), -1000, 100,
 						objP->info.xSize, objP->info.xSize / 8, 0, 0, 25, 3, 1, 3, 1, 1, 0, 0, 1, 0, colorP);
 		if (h >= 0)
 			m_objects [i] = h;
@@ -1949,7 +1949,7 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bPlayers && OBJECT_EXISTS (ob
 	if (0 <= m_objects [i])
 		MoveForObject (objP);
 	else {
-		h = Create (4 * objP->info.xSize / F1_0, &objP->info.position.vPos, NULL, NULL, objP->Index (), -5000, 1000,
+		h = Create (4 * objP->info.xSize / I2X (1), &objP->info.position.vPos, NULL, NULL, objP->Index (), -5000, 1000,
 						4 * objP->info.xSize, objP->info.xSize, 0, 2 * objP->info.xSize, 50, 5, 1, 5, 1, 1, 0, 1, 1, 1, colorP);
 		if (h >= 0)
 			m_objects [i] = h;
@@ -2055,8 +2055,8 @@ if (i < 0) {
 		vPos = pointList [0]->p3_src;
 		vEnd = pointList [1 + d_rand () % (nVertices - 1)]->p3_vec;
 		vNorm = CFixVector::Normal(vPos, pointList [1]->p3_vec, vEnd);
-		vPos += vNorm * (F1_0 / 64);
-		vEnd += vNorm * (F1_0 / 64);
+		vPos += vNorm * (I2X (1) / 64);
+		vEnd += vNorm * (I2X (1) / 64);
 		vDelta = CFixVector::Normal (vNorm, vPos, vEnd);
 		h = CFixVector::Dist (vPos, vEnd);
 		}
@@ -2238,7 +2238,7 @@ else {
 #endif
 	handleP->nLightning = 
 		lightningManager.Create (10, &vMuzzle, vTarget, NULL, -OBJSEG (parentObjP) - 1,
-										 -5000, 0, CFixVector::Dist(vMuzzle, *vTarget), F1_0 * 3, 0, 0, 100, 10, 1, 3, 1, 1,
+										 -5000, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (3), 0, 0, 100, 10, 1, 3, 1, 1,
 #if OMEGA_PLASMA
 										 (parentObjP != gameData.objs.viewerP) || gameStates.app.bFreeCam || gameStates.render.bExternalView,
 #else

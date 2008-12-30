@@ -56,8 +56,8 @@ if (gameOpts->gameplay.bIdleAnims) {
 	vVecToGoal = vGoal - objP->info.position.vPos; CFixVector::Normalize(vVecToGoal);
 	if (i == 8)
 		h = 1;
-	else if (AITurnTowardsVector (&vVecToGoal, objP, ROBOTINFO (objP->info.nId).turnTime [2]) < F1_0 - F1_0 / 5) {
-		if (CFixVector::Dot (vVecToGoal, objP->info.position.mOrient.FVec ()) > F1_0 - F1_0 / 5)
+	else if (AITurnTowardsVector (&vVecToGoal, objP, ROBOTINFO (objP->info.nId).turnTime [2]) < I2X (1) - I2X (1) / 5) {
+		if (CFixVector::Dot (vVecToGoal, objP->info.position.mOrient.FVec ()) > I2X (1) - I2X (1) / 5)
 			h = rand () % 2 == 0;
 		else
 			h = 0;
@@ -135,11 +135,11 @@ int DoSillyAnimation (CObject *objP)
 				gameData.ai.localInfo [nObject].goalAngles [jointnum][PA] = (*jp)[PA];
 
 				delta_angle = (*jp)[PA] - (*pObjP)[PA];
-				if (delta_angle >= F1_0/2)
+				if (delta_angle >= I2X (1)/2)
 					delta_2 = -ANIM_RATE;
 				else if (delta_angle >= 0)
 					delta_2 = ANIM_RATE;
-				else if (delta_angle >= -F1_0/2)
+				else if (delta_angle >= -I2X (1)/2)
 					delta_2 = -ANIM_RATE;
 				else
 					delta_2 = ANIM_RATE;
@@ -156,11 +156,11 @@ int DoSillyAnimation (CObject *objP)
 				gameData.ai.localInfo [nObject].goalAngles [jointnum][BA] = (*jp)[BA];
 
 				delta_angle = (*jp)[BA] - (*pObjP)[BA];
-				if (delta_angle >= F1_0/2)
+				if (delta_angle >= I2X (1)/2)
 					delta_2 = -ANIM_RATE;
 				else if (delta_angle >= 0)
 					delta_2 = ANIM_RATE;
-				else if (delta_angle >= -F1_0/2)
+				else if (delta_angle >= -I2X (1)/2)
 					delta_2 = -ANIM_RATE;
 				else
 					delta_2 = ANIM_RATE;
@@ -177,11 +177,11 @@ int DoSillyAnimation (CObject *objP)
 				gameData.ai.localInfo [nObject].goalAngles [jointnum][HA] = (*jp)[HA];
 
 				delta_angle = (*jp)[HA] - (*pObjP)[HA];
-				if (delta_angle >= F1_0/2)
+				if (delta_angle >= I2X (1)/2)
 					delta_2 = -ANIM_RATE;
 				else if (delta_angle >= 0)
 					delta_2 = ANIM_RATE;
-				else if (delta_angle >= -F1_0/2)
+				else if (delta_angle >= -I2X (1)/2)
 					delta_2 = -ANIM_RATE;
 				else
 					delta_2 = ANIM_RATE;
@@ -277,7 +277,7 @@ void AIFrameAnimation (CObject *objP)
 //	----------------------------------------------------------------------
 //	General purpose robot-dies-with-death-roll-and-groan code.
 //	Return true if CObject just died.
-//	scale: F1_0*4 for boss, much smaller for much smaller guys
+//	scale: I2X (4) for boss, much smaller for much smaller guys
 int DoRobotDyingFrame (CObject *objP, fix StartTime, fix xRollDuration, sbyte *bDyingSoundPlaying, short deathSound, fix xExplScale, fix xSoundScale)
 {
 	fix	xRollVal, temp;
@@ -285,13 +285,13 @@ int DoRobotDyingFrame (CObject *objP, fix StartTime, fix xRollDuration, sbyte *b
 	CDigiSound *soundP;
 
 if (!xRollDuration)
-	xRollDuration = F1_0/4;
+	xRollDuration = I2X (1)/4;
 
 xRollVal = FixDiv (gameData.time.xGame - StartTime, xRollDuration);
 
 FixSinCos (FixMul (xRollVal, xRollVal), &temp, &objP->mType.physInfo.rotVel[X]);
 FixSinCos (xRollVal, &temp, &objP->mType.physInfo.rotVel[Y]);
-FixSinCos (xRollVal-F1_0/8, &temp, &objP->mType.physInfo.rotVel[Z]);
+FixSinCos (xRollVal-I2X (1)/8, &temp, &objP->mType.physInfo.rotVel[Z]);
 
 temp = gameData.time.xGame - StartTime;
 objP->mType.physInfo.rotVel[X] = temp / 9;
@@ -303,7 +303,7 @@ if (gameOpts->sound.digiSampleRate) {
 	xSoundDuration = FixDiv (soundP->nLength [soundP->bHires], gameOpts->sound.digiSampleRate);
 	}
 else
-	xSoundDuration = F1_0;
+	xSoundDuration = I2X (1);
 
 if (StartTime + xRollDuration - xSoundDuration < gameData.time.xGame) {
 	if (!*bDyingSoundPlaying) {
@@ -311,13 +311,13 @@ if (StartTime + xRollDuration - xSoundDuration < gameData.time.xGame) {
 		console.printf (CON_DBG, "Starting death sound!\n");
 #endif
 		*bDyingSoundPlaying = 1;
-		SetObjectSound (deathSound, objP->Index (), SOUNDCLASS_ROBOT, 0, xSoundScale, xSoundScale * 256);	//	F1_0*512 means play twice as loud
+		CreateObjectSound (deathSound, objP->Index (), SOUNDCLASS_ROBOT, 0, xSoundScale, xSoundScale * 256);	//	I2X (5)12 means play twice as loud
 		}
 	else if (d_rand () < gameData.time.xFrame*16)
-		CreateSmallFireballOnObject (objP, (F1_0 + d_rand ()) * (16 * xExplScale/F1_0) / 8, 0);
+		CreateSmallFireballOnObject (objP, (I2X (1) + d_rand ()) * (16 * xExplScale/I2X (1)) / 8, 0);
 	}
 else if (d_rand () < gameData.time.xFrame * 8)
-	CreateSmallFireballOnObject (objP, (F1_0/2 + d_rand ()) * (16 * xExplScale / F1_0) / 8, 1);
+	CreateSmallFireballOnObject (objP, (I2X (1)/2 + d_rand ()) * (16 * xExplScale / I2X (1)) / 8, 1);
 
 return (StartTime + xRollDuration < gameData.time.xGame);
 }
@@ -338,12 +338,12 @@ int DoAnyRobotDyingFrame (CObject *objP)
 {
 if (objP->cType.aiInfo.xDyingStartTime) {
 	int bDeathRoll = ROBOTINFO (objP->info.nId).bDeathRoll;
-	int rval = DoRobotDyingFrame (objP, objP->cType.aiInfo.xDyingStartTime, min (bDeathRoll / 2 + 1, 6) * F1_0, 
+	int rval = DoRobotDyingFrame (objP, objP->cType.aiInfo.xDyingStartTime, I2X (min (bDeathRoll / 2 + 1, 6)), 
 											&objP->cType.aiInfo.bDyingSoundPlaying, ROBOTINFO (objP->info.nId).deathrollSound, 
-											bDeathRoll * F1_0 / 8, bDeathRoll * F1_0 / 2);
+											I2X (bDeathRoll) / 8, I2X (bDeathRoll) / 2);
 	if (rval) {
-		objP->Explode (F1_0/4);
-		SetObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, objP->Index (), 0, F2_0, F1_0 * 512);
+		objP->Explode (I2X (1)/4);
+		CreateObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, objP->Index (), 0, I2X (2), I2X (512));
 		if ((gameData.missions.nCurrentLevel < 0) && (ROBOTINFO (objP->info.nId).thief))
 			RecreateThief (objP);
 		}

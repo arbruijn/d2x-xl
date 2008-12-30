@@ -74,7 +74,7 @@ void ExitSecretLevel (void);
 int PSecretLevelDestroyed (void);
 
 #ifdef EDITOR
-fix triggerTimeCount=F1_0;
+fix triggerTimeCount=I2X (1);
 
 //-----------------------------------------------------------------
 // Initializes all the switches.
@@ -327,9 +327,9 @@ int CTrigger::DoPlaySound (short nObject)
 if (!indexP)
 	return 0;
 if (time < 0)
-	audio.StartSound (-1, F1_0, 0xffff / 2, -1, -1, -1, -1, F1_0, indexP->pszText, NULL, 0);
+	audio.StartSound (-1, I2X (1), 0xffff / 2, -1, -1, -1, -1, I2X (1), indexP->pszText, NULL, 0);
 else
-	audio.StartSound (-1, F1_0, 0xffff / 2, 0, 0, time - 1, -1, F1_0, indexP->pszText, NULL, 0);
+	audio.StartSound (-1, I2X (1), 0xffff / 2, 0, 0, time - 1, -1, I2X (1), indexP->pszText, NULL, 0);
 return 1;
 }
 
@@ -391,12 +391,12 @@ for (int i = 0; i < nLinks; i++) {
 				segP->StartCloak (nSide);
 			else {
 				CFixVector vPos = segP->SideCenter (nSide);
-				DigiLinkSoundToPos (SOUND_FORCEFIELD_OFF, segP->Index (), nSide, vPos, 0, F1_0);
+				DigiLinkSoundToPos (SOUND_FORCEFIELD_OFF, segP->Index (), nSide, vPos, 0, I2X (1));
 				wallP->nType = nNewWallType;
-				DigiKillSoundLinkedToSegment (segP->Index (), nSide, SOUND_FORCEFIELD_HUM);
+				audio.DestroySegmentSound (segP->Index (), nSide, SOUND_FORCEFIELD_HUM);
 				if (connWallP) {
 					connWallP->nType = nNewWallType;
-					DigiKillSoundLinkedToSegment (SEG_IDX (connSegP), nConnSide, SOUND_FORCEFIELD_HUM);
+					audio.DestroySegmentSound (SEG_IDX (connSegP), nConnSide, SOUND_FORCEFIELD_HUM);
 					}
 				}
 			break;
@@ -406,7 +406,7 @@ for (int i = 0; i < nLinks; i++) {
 				segP->StartDecloak (nSide);
 			else {
 				CFixVector vPos = segP->SideCenter (nSide);
-				DigiLinkSoundToPos (SOUND_FORCEFIELD_HUM, segP->Index (), nSide, vPos, 1, F1_0/2);
+				DigiLinkSoundToPos (SOUND_FORCEFIELD_HUM, segP->Index (), nSide, vPos, 1, I2X (1)/2);
 				wallP->nType = nNewWallType;
 				if (connWallP)
 					connWallP->nType = nNewWallType;
@@ -474,7 +474,7 @@ for (int i = 0; i < nLinks; i++) {
 	segP = SEGMENTS + segments [i];
 	nSide = sides [i];
 	segP->IllusionOff (nSide);
-	DigiLinkSoundToPos (SOUND_WALL_REMOVED, segP->Index (), nSide, segP->SideCenter (nSide), 0, F1_0);
+	DigiLinkSoundToPos (SOUND_WALL_REMOVED, segP->Index (), nSide, segP->SideCenter (nSide), 0, I2X (1));
   	}
 }
 
@@ -657,7 +657,7 @@ if (sbd.bBoosted) {
 	sbd.vVel [Y] = n [Y] * v;
 	sbd.vVel [Z] = n [Z] * v;
 #if 0
-	d = (double) (labs (n [X]) + labs (n [Y]) + labs (n [Z])) / ((double) F1_0 * 60.0);
+	d = (double) (labs (n [X]) + labs (n [Y]) + labs (n [Z])) / ((double) I2X (60));
 	h [X] = n [X] ? (fix) ((double) n [X] / d) : 0;
 	h [Y] = n [Y] ? (fix) ((double) n [Y] / d) : 0;
 	h [Z] = n [Z] ? (fix) ((double) n [Z] / d) : 0;
@@ -665,30 +665,30 @@ if (sbd.bBoosted) {
 #	if 1
 	h [X] =
 	h [Y] =
-	h [Z] = F1_0 * 60;
+	h [Z] = I2X (60);
 #	else
-	h [X] = (n [X] ? n [X] : F1_0) * 60;
-	h [Y] = (n [Y] ? n [Y] : F1_0) * 60;
-	h [Z] = (n [Z] ? n [Z] : F1_0) * 60;
+	h [X] = (n [X] ? n [X] : I2X (1)) * 60;
+	h [Y] = (n [Y] ? n [Y] : I2X (1)) * 60;
+	h [Z] = (n [Z] ? n [Z] : I2X (1)) * 60;
 #	endif
 #endif
 	sbd.vMinVel = sbd.vVel - h;
 /*
 	if (!sbd.vMinVel [X])
-		sbd.vMinVel [X] = F1_0 * -60;
+		sbd.vMinVel [X] = -I2X (60);
 	if (!sbd.vMinVel [Y])
-		sbd.vMinVel [Y] = F1_0 * -60;
+		sbd.vMinVel [Y] = -I2X (60);
 	if (!sbd.vMinVel [Z])
-		sbd.vMinVel [Z] = F1_0 * -60;
+		sbd.vMinVel [Z] = -I2X (60);
 */
 	sbd.vMaxVel = sbd.vVel + h;
 /*
 	if (!sbd.vMaxVel [X])
-		sbd.vMaxVel [X] = F1_0 * 60;
+		sbd.vMaxVel [X] = I2X (60);
 	if (!sbd.vMaxVel [Y])
-		sbd.vMaxVel [Y] = F1_0 * 60;
+		sbd.vMaxVel [Y] = I2X (60);
 	if (!sbd.vMaxVel [Z])
-		sbd.vMaxVel [Z] = F1_0 * 60;
+		sbd.vMaxVel [Z] = I2X (60);
 */
 	if (sbd.vMinVel [X] > sbd.vMaxVel [X]) {
 		fix h = sbd.vMinVel [X];
@@ -770,7 +770,7 @@ if ((LOCALPLAYER.shields < 0) || gameStates.app.bPlayerIsDead)
 	return false;
 if (gameData.app.nGameMode & GM_MULTI) {
 	HUDInitMessage (TXT_TELEPORT_MULTI);
-	DigiPlaySample (SOUND_BAD_SELECTION, F1_0);
+	audio.PlaySound (SOUND_BAD_SELECTION);
 	return false;
 	}
 
@@ -781,14 +781,14 @@ if (gameData.demo.nState == ND_STATE_RECORDING)			// record whether we're really
 
 if (bDisabled && (gameData.demo.nState != ND_STATE_PLAYBACK)) {
 	HUDInitMessage (TXT_SECRET_DESTROYED);
-	DigiPlaySample (SOUND_BAD_SELECTION, F1_0);
+	audio.PlaySound (SOUND_BAD_SELECTION);
 	return false;
 }
 
 if (gameData.demo.nState == ND_STATE_RECORDING)		// stop demo recording
 	gameData.demo.nState = ND_STATE_PAUSED;
 DigiStopAll ();		//kill the sounds
-DigiPlaySample (SOUND_SECRET_EXIT, F1_0);
+audio.PlaySound (SOUND_SECRET_EXIT);
 paletteManager.DisableEffect ();
 EnterSecretLevel ();
 gameData.reactor.bDestroyed = 0;
@@ -938,7 +938,7 @@ switch (nType) {
 						gameStates.app.bPlayerIsDead)
 					break;
 				}
-			DigiPlaySample (SOUND_SECRET_EXIT, F1_0);
+			audio.PlaySound (SOUND_SECRET_EXIT, I2X (1));
 			DoTeleport (nObject);
 			if (bIsPlayer)
 				PrintMessage (nPlayer, shot, "Teleport!");

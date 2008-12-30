@@ -99,7 +99,7 @@ if (pMsgs->xTimer < 0) {
 
 		//&pMsgs->szMsgs.szMsg [pMsgs->nFirst][0] is deing deleted...;
 		pMsgs->nFirst = (pMsgs->nFirst + 1) % HUD_MAX_MSGS;
-		pMsgs->xTimer = F1_0*2;
+		pMsgs->xTimer = I2X (2);
 		if (!--pMsgs->nMessages)
 			nModexHUDMsgs = 2;
 		temp = nLastMsgYCrd;
@@ -264,7 +264,7 @@ if (IsMultiGame) {
 if (pMsgs->nMessages > 1) {
 	pszLastMsg = pMsgs->szMsgs [((pMsgs->nLast - 1) ? pMsgs->nLast : HUD_MAX_MSGS) - 2];
 	if (pszLastMsg && (!strcmp (pszLastMsg, pszMsg))) {
-		pMsgs->xTimer = F1_0 * 3;		// 1 second per 5 characters
+		pMsgs->xTimer = I2X (3);		// 1 second per 5 characters
 		return 0;	// ignore since it is the same as the last one
 		}
 	}
@@ -276,7 +276,7 @@ if (temp == pMsgs->nFirst) { // If too many messages, remove oldest pszMsg to ma
 	pMsgs->nMessages--;
 	}
 if (pszLastMsg && (!strcmp (pszLastMsg, pszMsg))) {
-	pMsgs->xTimer = F1_0 * 3;		// 1 second per 5 characters
+	pMsgs->xTimer = I2X (3);		// 1 second per 5 characters
 	return 0;	// ignore since it is the same as the last one
 	}
 pMsgs->nLast = temp;
@@ -287,7 +287,7 @@ if (strlen (pszMsg) >= HUD_MESSAGE_LENGTH)
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordHUDMessage (pszMsg);
 #endif
-pMsgs->xTimer = F1_0*3;		// 1 second per 5 characters
+pMsgs->xTimer = I2X (3);		// 1 second per 5 characters
 pMsgs->nMessages++;
 return 1;
 }
@@ -330,7 +330,7 @@ if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
       GrString (0x8000, (CCanvas::Current ()->Height () - CCanvas::Current ()->Font ()->Height ())/2 + h/8, TXT_GAME_OVER, NULL);
 #if 0
       // Automatically exit death after 10 secs
-      if (gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath + F1_0*10) {
+      if (gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath + I2X (10)) {
                SetFunctionMode (FMODE_MENU);
                gameData.app.nGameMode = GM_GAME_OVER;
                __asm int 3; longjmp (gameExitPoint, 1);        // Exit out of game loop

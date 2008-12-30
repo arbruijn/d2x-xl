@@ -37,7 +37,7 @@ extern fix			VR_eye_width;
 extern int 			VR_eye_switch;
 
 //NEWVR (Add a bunch off lines)
-#define VR_SEPARATION F1_0*7/10
+#define VR_SEPARATION I2X (1)*7/10
 #define VR_PIXEL_SHIFT -6
 #define VR_WHITE_INDEX 255
 #define VR_BLACK_INDEX 0

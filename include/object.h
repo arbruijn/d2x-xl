@@ -126,7 +126,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define WEAPON_ID_CANNONBALL    2
 
 // Object Initial shields...
-#define OBJECT_INITIAL_SHIELDS F1_0/2
+#define OBJECT_INITIAL_SHIELDS I2X (1)/2
 
 // physics flags
 #define PF_TURNROLL         0x01    // roll when turning

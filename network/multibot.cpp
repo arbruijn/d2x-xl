@@ -42,9 +42,9 @@ void MultiSendRobotPositionSub (int nObject);
 // Code for controlling robots in multiplayer games
 //
 
-#define STANDARD_EXPL_DELAY	(F1_0/4)
-#define MIN_CONTROL_TIME		(F1_0*1)
-#define ROBOT_TIMEOUT			(F1_0*2)
+#define STANDARD_EXPL_DELAY	(I2X (1)/4)
+#define MIN_CONTROL_TIME		(I2X (1))
+#define ROBOT_TIMEOUT			(I2X (2))
 
 #define MIN_TO_ADD				60
 
@@ -108,7 +108,7 @@ void MultiCheckRobotTimeout (void)
 	static fix lastcheck = 0;
 	int i, nRemOwner;
 
-if (gameData.time.xGame > lastcheck + F1_0) {
+if (gameData.time.xGame > lastcheck + I2X (1)) {
 	lastcheck = gameData.time.xGame;
 	for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 		if ((gameData.multigame.robots.controlled [i] != -1) && 
@@ -772,7 +772,7 @@ objP = /*Object*/CreateExplosion ((short) robotcen->nSegment, vObjPos, I2X (10),
 if (objP)
 	ExtractOrientFromSegment (&objP->info.position.mOrient, &SEGMENTS [robotcen->nSegment]);
 if (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound > -1)
-	DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, (short) robotcen->nSegment, 0, vObjPos, 0, F1_0);
+	DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, (short) robotcen->nSegment, 0, vObjPos, 0, I2X (1));
 // Set robot center flags, in case we become the master for the next one
 robotcen->bFlag = 0;
 robotcen->xCapacity -= gameData.matCens.xEnergyToCreateOneRobot;
@@ -849,9 +849,9 @@ switch (action)  {
 		// TODO: MatrixCreateFCheck
 		bossObjP->info.position.mOrient = CFixMatrix::CreateF(vBossDir);
 
-		DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nTeleportSeg, 0, bossObjP->info.position.vPos, 0, F1_0);
-		DigiKillSoundLinkedToObject (OBJ_IDX (bossObjP));
-		SetObjectSound (SOUND_BOSS_SHARE_SEE, SOUNDCLASS_ROBOT, OBJ_IDX (bossObjP), 1, F1_0, F1_0 * 512);	//	F1_0*512 means play twice as loud
+		DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nTeleportSeg, 0, bossObjP->info.position.vPos, 0, I2X (1));
+		DigiDestroyObjectSound (OBJ_IDX (bossObjP));
+		CreateObjectSound (SOUND_BOSS_SHARE_SEE, SOUNDCLASS_ROBOT, OBJ_IDX (bossObjP), 1, I2X (1), I2X (512));	//	I2X (5)12 means play twice as loud
 		gameData.ai.localInfo [OBJ_IDX (bossObjP)].nextPrimaryFire = 0;
 		if (bossObjP->cType.aiInfo.REMOTE_OWNER == gameData.multiplayer.nLocalPlayer) {
 			MultiDeleteControlledRobot (nBossObj);
@@ -863,7 +863,7 @@ switch (action)  {
 		break;
 
 	case 2: // Cloak
-		gameData.boss [nBossIdx].nHitTime = -F1_0*10;
+		gameData.boss [nBossIdx].nHitTime = -I2X (10);
 		gameData.boss [nBossIdx].nCloakStartTime = gameData.time.xGame;
 		gameData.boss [nBossIdx].nCloakEndTime = gameData.time.xGame + gameData.boss [nBossIdx].nCloakDuration;
 		bossObjP->cType.aiInfo.CLOAKED = 1;

@@ -20,8 +20,8 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define	NUM_LIGHTING_LEVELS 32
 #define MAX_TMAP_VERTS 25
-#define MAX_LIGHTING_VALUE	((NUM_LIGHTING_LEVELS-1)*F1_0/NUM_LIGHTING_LEVELS)
-#define MIN_LIGHTING_VALUE	(F1_0/NUM_LIGHTING_LEVELS)
+#define MAX_LIGHTING_VALUE	((NUM_LIGHTING_LEVELS-1)*I2X (1)/NUM_LIGHTING_LEVELS)
+#define MIN_LIGHTING_VALUE	(I2X (1)/NUM_LIGHTING_LEVELS)
 
 #define FIX_RECIP_TABLE_SIZE	641 //increased from 321 to 641, since this res is now quite achievable.. slight fps boost -MM
 // -------------------------------------------------------------------------------------------------------
@@ -99,8 +99,8 @@ extern int nWindowClipLeft, nWindowClipBot, nWindowClipRight, nWindowClipTop;
 
 // for ugly hack put in to be sure we don't overflow render buffer
 
-#define FIX_XLIMIT	(639 * F1_0)
-#define FIX_YLIMIT	(479 * F1_0)
+#define FIX_XLIMIT	(639 * I2X (1))
+#define FIX_YLIMIT	(479 * I2X (1))
 
 extern void init_interface_vars_to_assembler(void);
 

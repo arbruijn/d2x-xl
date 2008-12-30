@@ -7,7 +7,7 @@
 
 #define MAX_PARTICLE_SYSTEMS 10000
 
-#define PARTICLE_RAD	(F1_0)
+#define PARTICLE_RAD	(I2X (1))
 
 #define SMOKE_PARTICLES		0
 #define BUBBLE_PARTICLES	1

@@ -28,7 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "render.h"
 #include "ogl_render.h"
 
-#define f0_4					0x4000
+#define (I2X (1) / 4)					0x4000
 
 #define GRID_SIZE				(gameData.render.terrain.nGridW * gameData.render.terrain.nGridH)
 #define GRID_OFFS(_i,_j)	((_i) * gameData.render.terrain.nGridW + (_j))
@@ -63,11 +63,11 @@ gameData.render.terrain.uvlList [0][1].l = LIGHTVAL (i, j + 1);
 gameData.render.terrain.uvlList [0][2].l = LIGHTVAL (i + 1, j);
 
 gameData.render.terrain.uvlList [0][0].u =
-gameData.render.terrain.uvlList [0][1].u = (i) * f0_4;
+gameData.render.terrain.uvlList [0][1].u = (i) * (I2X (1) / 4);
 gameData.render.terrain.uvlList [0][0].v =
-gameData.render.terrain.uvlList [0][2].v = (j) * f0_4;
-gameData.render.terrain.uvlList [0][1].v = (j + 1) * f0_4;
-gameData.render.terrain.uvlList [0][2].u = (i + 1) * f0_4;
+gameData.render.terrain.uvlList [0][2].v = (j) * (I2X (1) / 4);
+gameData.render.terrain.uvlList [0][1].v = (j + 1) * (I2X (1) / 4);
+gameData.render.terrain.uvlList [0][2].u = (i + 1) * (I2X (1) / 4);
 #if DBG
 G3DrawTexPoly (3, pointList, gameData.render.terrain.uvlList [0], gameData.render.terrain.bmP, NULL, 1, -1);
 #else
@@ -88,12 +88,12 @@ gameData.render.terrain.uvlList [1][0].l = LIGHTVAL (i, j + 1);
 gameData.render.terrain.uvlList [1][1].l = LIGHTVAL (i + 1, j + 1);
 gameData.render.terrain.uvlList [1][2].l = LIGHTVAL (i + 1, j);
 
-gameData.render.terrain.uvlList [1][0].u = (i) * f0_4;
+gameData.render.terrain.uvlList [1][0].u = (i) * (I2X (1) / 4);
 gameData.render.terrain.uvlList [1][1].u =
-gameData.render.terrain.uvlList [1][2].u = (i + 1) * f0_4;
+gameData.render.terrain.uvlList [1][2].u = (i + 1) * (I2X (1) / 4);
 gameData.render.terrain.uvlList [1][0].v =
-gameData.render.terrain.uvlList [1][1].v = (j + 1) * f0_4;
-gameData.render.terrain.uvlList [1][2].v = (j) * f0_4;
+gameData.render.terrain.uvlList [1][1].v = (j + 1) * (I2X (1) / 4);
+gameData.render.terrain.uvlList [1][2].v = (j) * (I2X (1) / 4);
 
 #if DBG
 G3DrawTexPoly (3, pointList, gameData.render.terrain.uvlList [1], gameData.render.terrain.bmP, NULL, 1, -1);
@@ -446,7 +446,7 @@ for (i = 0; i < gameData.render.terrain.nGridW; i++) {
 			LIGHT (i, j) = l;// >> 8;
 		else {
 			l2 = FixDiv ((l - lMin), (lMax - lMin));
-			if (l2 == f1_0)
+			if (l2 == I2X (1))
 				l2--;
 			LIGHT (i, j) = l2;// >> 8;
 			}

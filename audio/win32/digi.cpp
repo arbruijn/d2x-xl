@@ -35,7 +35,7 @@ hmp_file *hmp = NULL;
 
 
 //added/changed on 980905 by adb to make sfx volume work
-#define SOUND_MAX_VOLUME F1_0
+#define SOUND_MAX_VOLUME I2X (1)
 int gameStates.sound.digi.nVolume = SOUND_MAX_VOLUME;
 //end edit by adb
 
@@ -186,7 +186,7 @@ int D1vol2DSvol(fix d1v){
 		 return log(X2F(d1v))/log(2)*1000.0;
 }
 
-// Volume 0-F1_0
+// Volume 0-I2X (1)
 int DigiStartSound(short nSound, fix volume, int pan, int looping, int loop_start, int loop_end, int soundobj)
 {
  int ntries;
@@ -391,7 +391,7 @@ void DigiSetChannelVolume(int channel, int volume)
 	if (!SoundSlots[channel].playing)
 		return;
 
-	SoundSlots[channel].volume = FixMulDiv(volume, gameStates.sound.digi.nVolume, F1_0);
+	SoundSlots[channel].volume = FixMulDiv(volume, gameStates.sound.digi.nVolume, I2X (1));
 }
 
 void DigiSetChannelPan(int channel, int pan)

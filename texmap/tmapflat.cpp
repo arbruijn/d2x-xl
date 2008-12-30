@@ -100,7 +100,7 @@ void texture_map_flat(g3ds_tmap *t, int color)
 	if (dy < FIX_RECIP_TABLE_SIZE)
 		recip_dy = fix_recip[dy];
 	else
-		recip_dy = F1_0/dy;
+		recip_dy = I2X (1)/dy;
 
 	dx_dy_left = compute_dx_dy(t,vlt,vlb, recip_dy);
 
@@ -108,7 +108,7 @@ void texture_map_flat(g3ds_tmap *t, int color)
 	if (dy < FIX_RECIP_TABLE_SIZE)
 		recip_dy = fix_recip[dy];
 	else
-		recip_dy = F1_0/dy;
+		recip_dy = I2X (1)/dy;
 
 	dx_dy_right = compute_dx_dy(t,vrt,vrb, recip_dy);
 
@@ -135,7 +135,7 @@ void texture_map_flat(g3ds_tmap *t, int color)
 			if (dy < FIX_RECIP_TABLE_SIZE)
 				recip_dy = fix_recip[dy];
 			else
-				recip_dy = F1_0/dy;
+				recip_dy = I2X (1)/dy;
 
 			dx_dy_left = compute_dx_dy(t,vlt,vlb, recip_dy);
 
@@ -154,7 +154,7 @@ void texture_map_flat(g3ds_tmap *t, int color)
 			if (dy < FIX_RECIP_TABLE_SIZE)
 				recip_dy = fix_recip[dy];
 			else
-				recip_dy = F1_0/dy;
+				recip_dy = I2X (1)/dy;
 
 			dx_dy_right = compute_dx_dy(t,vrt,vrb, recip_dy);
 

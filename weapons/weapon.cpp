@@ -207,11 +207,11 @@ if (gameStates.app.bD2XLevel && (SEGMENTS [gameData.objs.consoleP->info.nSegment
 //	be a long while before laser can be fired, then there must be some mistake!
 if (!IsMultiGame && ((s = gameStates.gameplay.slowmo [0].fSpeed) > 1)) {
 	fix t = gameData.laser.xLastFiredTime + (fix) ((gameData.laser.xNextFireTime - gameData.laser.xLastFiredTime) * s);
-	if ((t > gameData.time.xGame) && (t < gameData.time.xGame + 2 * F1_0 * s))
+	if ((t > gameData.time.xGame) && (t < gameData.time.xGame + I2X (2) * s))
 		return 0;
 	}
 else {
-	if ((gameData.laser.xNextFireTime > gameData.time.xGame) &&  (gameData.laser.xNextFireTime < gameData.time.xGame + 2 * F1_0))
+	if ((gameData.laser.xNextFireTime > gameData.time.xGame) &&  (gameData.laser.xNextFireTime < gameData.time.xGame + I2X (2)))
 		return 0;
 	}
 return 1;
@@ -220,7 +220,7 @@ return 1;
 //------------------------------------------------------------------------------
 
 fix	xNextFlareFireTime = 0;
-#define	FLARE_BIG_DELAY	 (F1_0*2)
+#define	FLARE_BIG_DELAY	 (I2X (2))
 
 int AllowedToFireFlare (void)
 {
@@ -228,7 +228,7 @@ if ((xNextFlareFireTime > gameData.time.xGame) &&
 	 (xNextFlareFireTime < gameData.time.xGame + FLARE_BIG_DELAY))	//	In case time is bogus, never wait > 1 second.
 		return 0;
 if (LOCALPLAYER.energy >= WI_energy_usage (FLARE_ID))
-	xNextFlareFireTime = gameData.time.xGame + (fix) (gameStates.gameplay.slowmo [0].fSpeed * F1_0 / 4);
+	xNextFlareFireTime = gameData.time.xGame + F2X (gameStates.gameplay.slowmo [0].fSpeed) / 4);
 else
 	xNextFlareFireTime = gameData.time.xGame + (fix) (gameStates.gameplay.slowmo [0].fSpeed * FLARE_BIG_DELAY);
 return 1;
@@ -248,17 +248,17 @@ if (gameStates.app.bD2XLevel && bCheckSegment &&
 	return 0;
 if (!IsMultiGame && ((s = gameStates.gameplay.slowmo [0].fSpeed) > 1)) {
 	t = gameData.missiles.xLastFiredTime + (fix) ((gameData.missiles.xNextFireTime - gameData.missiles.xLastFiredTime) * s);
-	if ((t > gameData.time.xGame) && (t < gameData.time.xGame + 5 * F1_0 * s))
+	if ((t > gameData.time.xGame) && (t < gameData.time.xGame + I2X (5) * s))
 		return 0;
 	}
 else if (nPlayer < 0) {
 	if ((gameData.missiles.xNextFireTime > gameData.time.xGame) && 
-		 (gameData.missiles.xNextFireTime < gameData.time.xGame + 5 * F1_0))
+		 (gameData.missiles.xNextFireTime < gameData.time.xGame + I2X (5)))
 		return 0;
 	}
 else {
 	t = gameData.multiplayer.weaponStates [nPlayer].xMslFireTime;
-	if ((t > gameData.time.xGame) && (t < gameData.time.xGame + 5 * F1_0))
+	if ((t > gameData.time.xGame) && (t < gameData.time.xGame + I2X (5)))
 		return 0;
 	}
 return 1;
@@ -397,7 +397,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 if (!bSecondary) {
 	if (gameData.weapons.nPrimary != nWeaponNum) {
 		if (bWaitForRearm) 
-			audio.PlaySample (SOUND_GOOD_SELECTION_PRIMARY);
+			audio.PlaySound (SOUND_GOOD_SELECTION_PRIMARY);
 		if (IsMultiGame) {
 			if (bWaitForRearm) 
 				MultiSendPlaySound (SOUND_GOOD_SELECTION_PRIMARY);
@@ -409,9 +409,9 @@ if (!bSecondary) {
 		// Select super version if available.
 		if (bWaitForRearm) {
 			if (!bCycling)
-				; // -- MK, only plays when can't fire weapon anyway, fixes bug -- audio.PlaySample(SOUND_ALREADY_SELECTED);
+				; // -- MK, only plays when can't fire weapon anyway, fixes bug -- audio.PlaySound(SOUND_ALREADY_SELECTED);
 			else
-				audio.PlaySample(SOUND_BAD_SELECTION);
+				audio.PlaySound(SOUND_BAD_SELECTION);
 			}
 		}
 	gameData.weapons.nOverridden = nWeaponNum;
@@ -439,10 +439,10 @@ if (!bSecondary) {
 else {
 	if (gameData.weapons.nSecondary != nWeaponNum) {
 		if (bWaitForRearm) 
-			audio.PlaySample (SOUND_GOOD_SELECTION_SECONDARY);
+			audio.PlaySound (SOUND_GOOD_SELECTION_SECONDARY);
 		if (IsMultiGame) {
 			if (bWaitForRearm) 
-				MultiSendPlaySound (SOUND_GOOD_SELECTION_PRIMARY, F1_0);
+				MultiSendPlaySound (SOUND_GOOD_SELECTION_PRIMARY, I2X (1));
 			}
 		gameData.missiles.xNextFireTime = bWaitForRearm ? gameData.time.xGame + REARM_TIME : 0;
 		gameData.missiles.nGlobalFiringCount = 0;
@@ -450,9 +450,9 @@ else {
 	else {
 		if (bWaitForRearm) {
 		 if (!bCycling)
-			audio.PlaySample (SOUND_ALREADY_SELECTED);
+			audio.PlaySound (SOUND_ALREADY_SELECTED);
 		 else
-			audio.PlaySample (SOUND_BAD_SELECTION);
+			audio.PlaySound (SOUND_BAD_SELECTION);
 		}
 	}
 	//if (nWeaponNum % SUPER_WEAPON != PROXMINE_INDEX)
@@ -477,17 +477,17 @@ void ToggleBomb (void)
 int bomb = bLastSecondaryWasSuper [PROXMINE_INDEX] ? PROXMINE_INDEX : SMARTMINE_INDEX;
 if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) ||
 	 !(LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] || LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX])) {
-	audio.PlaySample (SOUND_BAD_SELECTION);
+	audio.PlaySound (SOUND_BAD_SELECTION);
 	HUDInitMessage (TXT_NOBOMBS);
 	}
 else if (!LOCALPLAYER.secondaryAmmo [bomb]) {
-	audio.PlaySample (SOUND_BAD_SELECTION);
+	audio.PlaySound (SOUND_BAD_SELECTION);
 	HUDInitMessage (TXT_NOBOMB_ANY, (bomb == SMARTMINE_INDEX)? TXT_SMART_MINES : 
 						 !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) ? TXT_SMOKE_GRENADES : TXT_PROX_BOMBS);
 	}
 else {
 	bLastSecondaryWasSuper [PROXMINE_INDEX] = !bLastSecondaryWasSuper [PROXMINE_INDEX];
-	audio.PlaySample (SOUND_GOOD_SELECTION_SECONDARY);
+	audio.PlaySound (SOUND_GOOD_SELECTION_SECONDARY);
 	}
 }
 
@@ -553,7 +553,7 @@ if ((nWeaponStatus & hasFlag) != hasFlag) {
 		}
 	else
 		HUDInitMessage ("%s %s%s",TXT_HAVE_NO, SECONDARY_WEAPON_NAMES (nWeapon), TXT_SX);
-	DigiPlaySample (SOUND_BAD_SELECTION, F1_0);
+	audio.PlaySound (SOUND_BAD_SELECTION);
 	return;
 	}
 //now actually select the weapon
@@ -753,7 +753,7 @@ FORALL_WEAPON_OBJS (bombP, i) {
 		continue;
 	nParentObj = bombP->cType.laserInfo.parent.nObject;
 	gameStates.gameplay.bHaveSmartMines = 1;
-	if (bombP->info.xLifeLeft + F1_0 * 2 >= gameData.weapons.info [SMARTMINE_ID].lifetime)
+	if (bombP->info.xLifeLeft + I2X (2) >= gameData.weapons.info [SMARTMINE_ID].lifetime)
 		continue;
 	vBombPos = &bombP->info.position.vPos;
 	i = OBJ_IDX (bombP);
@@ -762,7 +762,7 @@ FORALL_WEAPON_OBJS (bombP, i) {
 		if (j == nParentObj) 
 			continue;
 		dist = CFixVector::Dist (*vBombPos, actorP->info.position.vPos);
-		if (dist - actorP->info.xSize >= F1_0*20)
+		if (dist - actorP->info.xSize >= I2X (20))
 			continue;
 		if (bombP->info.nSegment == actorP->info.nSegment)
 			bombP->info.xLifeLeft = 1;
@@ -971,7 +971,7 @@ for (i = 0; i < n; i++, pwi++) {
 	if (fileVersion >= 3)
 		pwi->multi_damage_scale = cf.ReadFix ();
 	else /* FIXME: hack this to set the real values */
-		pwi->multi_damage_scale = F1_0;
+		pwi->multi_damage_scale = I2X (1);
 	ReadBitmapIndex (&pwi->bitmap, cf);
 	pwi->blob_size = cf.ReadFix ();
 	pwi->xFlashSize = cf.ReadFix ();
@@ -985,12 +985,12 @@ for (i = 0; i < n; i++, pwi++) {
 	pwi->thrust = cf.ReadFix ();
 	pwi->po_len_to_width_ratio = cf.ReadFix ();
 	if (gameData.objs.bIsMissile [i])
-		pwi->po_len_to_width_ratio = F1_0 * 10;
+		pwi->po_len_to_width_ratio = I2X (10);
 	pwi->light = cf.ReadFix ();
 	if (i == SPREADFIRE_ID)
-		pwi->light = F1_0;
+		pwi->light = I2X (1);
 	else if (i == HELIX_ID)
-		pwi->light = 3 * F1_0 / 2;
+		pwi->light = I2X (3) / 2;
 	pwi->lifetime = cf.ReadFix ();
 	pwi->damage_radius = cf.ReadFix ();
 	ReadBitmapIndex (&pwi->picture, cf);

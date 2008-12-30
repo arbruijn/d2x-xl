@@ -79,14 +79,14 @@ if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gam
 		int i = objP->info.nId - POW_KEY_BLUE;
 
 		color = keyColors [(((i < 0) || (i > 2)) ? 3 : i)];
-		xSize = 12 * F1_0;
+		xSize = I2X (12);
 		}
 	else {
 		float b = (float) sqrt ((red * 3 + green * 5 + blue * 2) / 10);
 		color.red = red / b;
 		color.green = green / b;
 		color.blue = blue / b;
-		xSize = 8 * F1_0;
+		xSize = I2X (8);
 		}
 	color.alpha = alpha;
 	if (bAdditive) {
@@ -211,7 +211,7 @@ if (gameStates.app.nSDLTicks - gameData.models.hitboxes [objP->rType.polyObjInfo
 
 	o.position.vPos = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].vHit;
 	o.position.mOrient = objP->info.position.mOrient;
-	o.size = F1_0 * 2;
+	o.size = I2X (2);
 	//SetRenderView (0, NULL);
 	DrawShieldSphere (&o, 1, 0, 0, 0.33f);
 	}
@@ -1366,7 +1366,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 	static tTexCoord2f	tcCorona [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 
 	CFixVector	vPos = objP->info.position.vPos;
-	xSize = (fix) (WeaponBlobSize (objP->info.nId) * fScale * F1_0);
+	xSize = (fix) (WeaponBlobSize (objP->info.nId) * F2X (fScale));
 	bDepthSort = bDepthSort && bSimple && (gameOpts->render.bDepthSort > 0);
 	if (xOffset) {
 		if (bViewerOffset) {
@@ -1377,8 +1377,8 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 		else
 			vPos += objP->info.position.mOrient.FVec() * xOffset;
 		}
-	if (xSize < F1_0)
-		xSize = F1_0;
+	if (xSize < I2X (1))
+		xSize = I2X (1);
 	color.alpha = alpha;
 	alpha = coronaIntensities [gameOpts->render.coronas.nObjIntensity] / 2;
 	color.red = colorP->red * alpha;
@@ -1551,7 +1551,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	objP->rType.polyObjInfo.nModel = gameData.weapons.info [SUPERLASER_ID + 1].nModel;
 	objP->info.xSize = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad,
 								gameData.weapons.info [objP->info.nId].po_len_to_width_ratio) / 4;
-	gameData.models.vScale.Set (F1_0 / 4, F1_0 / 4, F1_0 / 4);
+	gameData.models.vScale.Set (I2X (1) / 4, I2X (1) / 4, I2X (1) / 4);
 	DrawPolygonObject (objP, 0);
 	gameData.models.vScale.SetZero ();
 #else
@@ -1782,7 +1782,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 	RenderShockwave (objP);
 	}
 if ((objP->info.renderType != RT_POLYOBJ) || (objP->info.nId == FUSION_ID))
-	RenderWeaponCorona (objP, colorP, 0.5f, 0, 2.0f + X2F (d_rand() % (F1_0 / 8)), 1, 0, 1);
+	RenderWeaponCorona (objP, colorP, 0.5f, 0, 2.0f + X2F (d_rand() % (I2X (1) / 8)), 1, 0, 1);
 else
 	RenderWeaponCorona (objP, colorP, 0.75f, 0, bGatling ? 1.0f : 2.0f, 0, 0, 0);
 }
@@ -1809,8 +1809,8 @@ else if ((objP->info.nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 		h = (10 - h) / 20.0f;
 		if (gameStates.app.nSDLTicks - t0 > 50) {
 			t0 = gameStates.app.nSDLTicks;
-			debrisGlow.red = 0.5f + X2F (d_rand () % (F1_0 / 4));
-			debrisGlow.green = X2F (d_rand () % (F1_0 / 4));
+			debrisGlow.red = 0.5f + X2F (d_rand () % (I2X (1) / 4));
+			debrisGlow.green = X2F (d_rand () % (I2X (1) / 4));
 			}
 		RenderWeaponCorona (objP, &debrisGlow, h, 5 * objP->info.xSize, 1.5f, 1, 1, 0);
 		}
@@ -1834,7 +1834,7 @@ CObject* effectObjP = /*Object*/CreateExplosion (info.nSegment, vPos, info.xSize
 if (effectObjP) {
 	effectObjP->info.position.mOrient = info.position.mOrient;
 	if (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound > -1)
-		SetObjectSound (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound, SOUNDCLASS_PLAYER, OBJ_IDX (effectObjP));
+		CreateObjectSound (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound, SOUNDCLASS_PLAYER, OBJ_IDX (effectObjP));
 	}
 }
 

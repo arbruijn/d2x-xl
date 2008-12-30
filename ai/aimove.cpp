@@ -58,14 +58,14 @@ new_fvec = *vGoal;
 dot = CFixVector::Dot (*vGoal, objP->info.position.mOrient.FVec ());
 if (!IsMultiGame)
 	dot = (fix) (dot / gameStates.gameplay.slowmo [0].fSpeed);
-if (dot < (F1_0 - gameData.time.xFrame/2)) {
+if (dot < (I2X (1) - gameData.time.xFrame/2)) {
 	fix mag, new_scale = FixDiv (gameData.time.xFrame * AI_TURN_SCALE, rate);
 	if (!IsMultiGame)
 		new_scale = (fix) (new_scale / gameStates.gameplay.slowmo [0].fSpeed);
 	new_fvec *= new_scale;
 	new_fvec += objP->info.position.mOrient.FVec ();
 	mag = CFixVector::Normalize(new_fvec);
-	if (mag < F1_0/256) {
+	if (mag < I2X (1)/256) {
 #if TRACE
 		console.printf (1, "Degenerate vector in AITurnTowardsVector (mag = %7.3f)\n", X2F (mag));
 #endif
@@ -101,9 +101,9 @@ CFixVector::Normalize(vel);
 dot = CFixVector::Dot (vel, objP->info.position.mOrient.FVec ());
 
 if (botInfoP->thief)
-	dot = (F1_0+dot)/2;
+	dot = (I2X (1)+dot)/2;
 
-if (bDotBased && (dot < 3*F1_0/4)) {
+if (bDotBased && (dot < I2X (3)/4)) {
 	//	This funny code is supposed to slow down the robot and move his velocity towards his direction
 	//	more quickly than the general code
 	t = gameData.time.xFrame * 32;
@@ -163,7 +163,7 @@ if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP->info.nId).companion) {
 		}
 	if (nAvoidObjs) {
 		xAvoidRad /= nAvoidObjs;
-		vAvoidPos /= nAvoidObjs * F1_0;
+		vAvoidPos /= I2X (nAvoidObjs);
 		segP = SEGMENTS + nStartSeg;
 		for (nAvoidObjs = 5; nAvoidObjs; nAvoidObjs--) {
 			vNewPos = CFixVector::Random ();
@@ -224,11 +224,11 @@ void MoveAroundPlayer (CObject *objP, CFixVector *vVecToPlayer, int fastFlag)
 
 	dir_change = 48;
 	ft = gameData.time.xFrame;
-	if (ft < F1_0/32) {
+	if (ft < I2X (1)/32) {
 		dir_change *= 8;
 		count += 3;
 	} else
-		while (ft < F1_0/4) {
+		while (ft < I2X (1)/4) {
 			dir_change *= 2;
 			ft *= 2;
 			count++;
@@ -279,9 +279,9 @@ void MoveAroundPlayer (CObject *objP, CFixVector *vVecToPlayer, int fastFlag)
 			if (botInfoP->strength)
 				damage_scale = FixDiv (objP->info.xShields, botInfoP->strength);
 			else
-				damage_scale = F1_0;
-			if (damage_scale > F1_0)
-				damage_scale = F1_0;		//	Just in cased:\temp\dm_test.
+				damage_scale = I2X (1);
+			if (damage_scale > I2X (1))
+				damage_scale = I2X (1);		//	Just in cased:\temp\dm_test.
 			else if (damage_scale < 0)
 				damage_scale = 0;			//	Just in cased:\temp\dm_test.
 
@@ -389,7 +389,7 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 			CFixVector::Normalize(vLaserToRobot);
 			dotLaserRobot = CFixVector::Dot (fVecLaser, vLaserToRobot);
 
-			if ((dotLaserRobot > F1_0*7/8) && (xDistToLaser < F1_0*80)) {
+			if ((dotLaserRobot > I2X (7) / 8) && (xDistToLaser < I2X (80))) {
 				int evadeSpeed = ROBOTINFO (objP->info.nId).evadeSpeed [gameStates.app.nDifficultyLevel];
 				gameData.ai.bEvaded = 1;
 				MoveAroundPlayer (objP, &gameData.ai.vVecToPlayer, evadeSpeed);
@@ -409,7 +409,7 @@ objP->cType.aiInfo.nDangerLaser = -1;
 if (botInfoP->attackType == 1) {
 	if (!gameStates.app.bPlayerIsDead &&
 		 ((ailP->nextPrimaryFire <= botInfoP->primaryFiringWait [gameStates.app.nDifficultyLevel]/4) ||
-		  (gameData.ai.xDistToPlayer >= F1_0 * 30)))
+		  (gameData.ai.xDistToPlayer >= I2X (30))))
 		MoveTowardsPlayer (objP, &gameData.ai.vVecToPlayer);
 		//	1/4 of time, move around CPlayerData, 3/4 of time, move away from CPlayerData
 	else if (d_rand () < 8192)
@@ -427,10 +427,10 @@ else {
 		MoveTowardsPlayer (objP, &gameData.ai.vVecToPlayer);
 	else if (gameData.ai.xDistToPlayer < circleDistance)
 		MoveAwayFromPlayer (objP, &gameData.ai.vVecToPlayer, 0);
-	else if ((gameData.ai.xDistToPlayer < (3+objval)*circleDistance/2) && (ailP->nextPrimaryFire > -F1_0))
+	else if ((gameData.ai.xDistToPlayer < (3+objval)*circleDistance/2) && (ailP->nextPrimaryFire > -I2X (1)))
 		MoveAroundPlayer (objP, &gameData.ai.vVecToPlayer, -1);
 	else
-		if ((-ailP->nextPrimaryFire > F1_0 + (objval << 12)) && gameData.ai.nPlayerVisibility)
+		if ((-ailP->nextPrimaryFire > I2X (1) + (objval << 12)) && gameData.ai.nPlayerVisibility)
 			//	Usually move away, but sometimes move around player.
 			if ((((gameData.time.xGame >> 18) & 0x0f) ^ objval) > 4)
 				MoveAwayFromPlayer (objP, &gameData.ai.vVecToPlayer, 0);

@@ -59,7 +59,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ai.h"
 #include "fuelcen.h"
 #include "switch.h"
-#include "digi.h"
+#include "audio.h"
 #include "gamesave.h"
 #include "scores.h"
 #include "ibitblt.h"
@@ -423,14 +423,14 @@ if (!bSecret) {
 else if (gameStates.app.bD1Mission)
 	InitAmmoAndEnergy ();
 gameStates.app.bPlayerIsDead = 0; // Added by RH
-LOCALPLAYER.homingObjectDist = -F1_0; // Added by RH
+LOCALPLAYER.homingObjectDist = -I2X (1); // Added by RH
 gameData.laser.xLastFiredTime =
 gameData.laser.xNextFireTime =
 gameData.missiles.xLastFiredTime =
 gameData.missiles.xNextFireTime = gameData.time.xGame; // added by RH, solved demo playback bug
 Controls [0].afterburnerState = 0;
 gameStates.gameplay.bLastAfterburnerState = 0;
-DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
+DigiDestroyObjectSound (LOCALPLAYER.nObject);
 InitGauges ();
 #ifdef TACTILE
 if (TactileStick)
@@ -519,10 +519,10 @@ AddPlayerLoadout ();
 LOCALPLAYER.cloakTime = 0;
 LOCALPLAYER.invulnerableTime = 0;
 gameStates.app.bPlayerIsDead = 0;		//CPlayerData no longer dead
-LOCALPLAYER.homingObjectDist = -F1_0; // Added by RH
+LOCALPLAYER.homingObjectDist = -I2X (1); // Added by RH
 Controls [0].afterburnerState = 0;
 gameStates.gameplay.bLastAfterburnerState = 0;
-DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
+DigiDestroyObjectSound (LOCALPLAYER.nObject);
 gameData.objs.missileViewerP = NULL;		///reset missile camera if out there
 #ifdef TACTILE
 	if (TactileStick)
@@ -641,7 +641,7 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSeg
 			if (connSegP->m_sides [nConnSide].m_nOvlTex == segP->m_sides [nSide].m_nOvlTex)
 				continue;		//skip this one
 			}
-		DigiLinkSoundToPos (nSound, nSegment, nSide, segP->SideCenter (nSide), 1, F1_0 / 2);
+		DigiLinkSoundToPos (nSound, nSegment, nSide, segP->SideCenter (nSide), 1, I2X (1) / 2);
 		}
 
 if (0 <= (nSound = DigiGetSoundByName ("explode2"))) {
@@ -721,7 +721,7 @@ gameData.marker.nLast = -1;
 gameData.songs.tPos =
 gameData.songs.tSlowDown = 0;
 gameStates.gameplay.bKillBossCheat = 0;
-gameStates.render.nFlashScale = F1_0;
+gameStates.render.nFlashScale = I2X (1);
 gameOpts->app.nScreenShotInterval = 0;	//better reset this every time a level is loaded
 automap.m_bFull = 0;
 gameData.render.ogl.nHeadlights = -1;
@@ -735,7 +735,7 @@ transpItems.nMaxOffs = 0;
 #if PROFILING
 memset (&gameData.profiler, 0, sizeof (gameData.profiler));
 #endif
-DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
+DigiDestroyObjectSound (LOCALPLAYER.nObject);
 memset (gameData.stats.player, 0, sizeof (tPlayerStats));
 memset (gameData.render.mine.bObjectRendered, 0xff, sizeof (gameData.render.mine.bObjectRendered));
 memset (gameData.render.mine.bRenderSegment, 0xff, sizeof (gameData.render.mine.bRenderSegment));
@@ -1092,7 +1092,7 @@ void DoEndLevelScoreGlitz (int network)
 	int			bIsLastLevel = 0;
 	int			nMineLevel = 0;
 
-DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
+DigiDestroyObjectSound (LOCALPLAYER.nObject);
 audio.StopAllSounds ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
 if (gameStates.app.bHaveExtraData)

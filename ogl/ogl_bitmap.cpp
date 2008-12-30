@@ -154,7 +154,7 @@ else {
 	dy = (float) CCanvas::Current ()->Top () / (float) gameStates.ogl.nLastH;
 	}
 a = (float) screen.Width () / (float) screen.Height ();
-h = (float) scale / (float) F1_0;
+h = (float) scale / (float) I2X (1);
 xo = dx + x / ((float) gameStates.ogl.nLastW * h);
 xf = dx + (dw + x) / ((float) gameStates.ogl.nLastW * h);
 yo = 1.0f - dy - y / ((float) gameStates.ogl.nLastH * h);

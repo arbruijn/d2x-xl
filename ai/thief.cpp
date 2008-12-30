@@ -33,7 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 extern void MultiSendStolenItems();
 
-#define	THIEF_ATTACK_TIME		(F1_0*10)
+#define	THIEF_ATTACK_TIME		(I2X (10))
 
 //	-------------------------------------------------------------------------------------------------
 
@@ -98,7 +98,7 @@ nSegment = ChooseThiefRecreationSegment();
 vCenter = SEGMENTS [nSegment].Center ();
 newObjP = CreateMorphRobot( &SEGMENTS[nSegment], &vCenter, objP->info.nId);
 InitAIObject (OBJ_IDX (newObjP), AIB_SNIPE, -1);
-gameData.thief.xReInitTime = gameData.time.xGame + F1_0*10;		//	In 10 seconds, re-initialize thief.
+gameData.thief.xReInitTime = gameData.time.xGame + I2X (10);		//	In 10 seconds, re-initialize thief.
 }
 
 //	----------------------------------------------------------------------------
@@ -110,12 +110,12 @@ void DoThiefFrame(CObject *objP)
 	fix			connectedDistance;
 
 	if ((gameData.missions.nCurrentLevel < 0) && (gameData.thief.xReInitTime < gameData.time.xGame)) {
-		if (gameData.thief.xReInitTime > gameData.time.xGame - F1_0*2)
+		if (gameData.thief.xReInitTime > gameData.time.xGame - I2X (2))
 			InitThiefForLevel();
 		gameData.thief.xReInitTime = 0x3f000000;
 	}
 
-	if ((gameData.ai.xDistToPlayer > F1_0*500) && (ailp->nextActionTime > 0))
+	if ((gameData.ai.xDistToPlayer > I2X (5)00) && (ailp->nextActionTime > 0))
 		return;
 
 	if (gameStates.app.bPlayerIsDead)
@@ -135,14 +135,14 @@ void DoThiefFrame(CObject *objP)
 				return;
 			}
 
-			if ((gameData.ai.xDistToPlayer > F1_0*50) && (ailp->nextActionTime > 0))
+			if ((gameData.ai.xDistToPlayer > I2X (5)0) && (ailp->nextActionTime > 0))
 				return;
 
 			ailp->nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
 
 			connectedDistance = FindConnectedDistance (objP->info.position.vPos, objP->info.nSegment, gameData.ai.vBelievedPlayerPos, 
 																	 gameData.ai.nBelievedPlayerSeg, 30, WID_FLY_FLAG, 0);
-			if (connectedDistance < F1_0*500) {
+			if (connectedDistance < I2X (5)00) {
 				CreatePathToPlayer(objP, 30, 1);
 				ailp->mode = AIM_THIEF_ATTACK;
 				ailp->nextActionTime = THIEF_ATTACK_TIME;	//	have up to 10 seconds to find player.
@@ -154,9 +154,9 @@ void DoThiefFrame(CObject *objP)
 			if (ailp->nextActionTime < 0) {
 				ailp->mode = AIM_THIEF_WAIT;
 				ailp->nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel];
-			} else if ((gameData.ai.xDistToPlayer < F1_0*100) || gameData.ai.nPlayerVisibility || (ailp->playerAwarenessType >= PA_PLAYER_COLLISION)) {
+			} else if ((gameData.ai.xDistToPlayer < I2X (100)) || gameData.ai.nPlayerVisibility || (ailp->playerAwarenessType >= PA_PLAYER_COLLISION)) {
 				AIFollowPath(objP, gameData.ai.nPlayerVisibility, gameData.ai.nPlayerVisibility, &gameData.ai.vVecToPlayer);
-				if ((gameData.ai.xDistToPlayer < F1_0*100) || (ailp->playerAwarenessType >= PA_PLAYER_COLLISION)) {
+				if ((gameData.ai.xDistToPlayer < I2X (100)) || (ailp->playerAwarenessType >= PA_PLAYER_COLLISION)) {
 					tAIStaticInfo	*aip = &objP->cType.aiInfo;
 					if (((aip->nCurPathIndex <=1) && (aip->PATH_DIR == -1)) || ((aip->nCurPathIndex >= aip->nPathLength-1) && (aip->PATH_DIR == 1))) {
 						ailp->playerAwarenessType = 0;
@@ -194,22 +194,22 @@ void DoThiefFrame(CObject *objP)
 				}
 			} else if (ailp->nextActionTime < 0) {
 				//	This forces him to create a new path every second.
-				ailp->nextActionTime = F1_0;
+				ailp->nextActionTime = I2X (1);
 				CreatePathToPlayer(objP, 100, 0);
 				ailp->mode = AIM_THIEF_ATTACK;
 			} else {
-				if (gameData.ai.nPlayerVisibility && (gameData.ai.xDistToPlayer < F1_0*100)) {
+				if (gameData.ai.nPlayerVisibility && (gameData.ai.xDistToPlayer < I2X (100))) {
 					//	If the CPlayerData is close to looking at the thief, thief shall run away.
 					//	No more stupid thief trying to sneak up on you when you're looking right at him!
-					if (gameData.ai.xDistToPlayer > F1_0*60) {
+					if (gameData.ai.xDistToPlayer > I2X (6)0) {
 						fix dot = CFixVector::Dot (gameData.ai.vVecToPlayer, OBJPOS (gameData.objs.consoleP)->mOrient.FVec());
-						if (dot < -F1_0/2) {	//	Looking at least towards thief, so thief will run!
+						if (dot < -I2X (1)/2) {	//	Looking at least towards thief, so thief will run!
 							CreateNSegmentPath(objP, 10, gameData.objs.consoleP->info.nSegment);
 							gameData.ai.localInfo[objP->Index ()].nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
 							gameData.ai.localInfo[objP->Index ()].mode = AIM_THIEF_RETREAT;
 						}
 					}
-					AITurnTowardsVector(&gameData.ai.vVecToPlayer, objP, F1_0/4);
+					AITurnTowardsVector(&gameData.ai.vVecToPlayer, objP, I2X (1)/4);
 					MoveTowardsPlayer(objP, &gameData.ai.vVecToPlayer);
 				} else {
 					tAIStaticInfo	*aip = &objP->cType.aiInfo;
@@ -228,7 +228,7 @@ void DoThiefFrame(CObject *objP)
 #endif
 			// -- Int3();	//	Oops, illegal mode for thief behavior.
 			ailp->mode = AIM_THIEF_ATTACK;
-			ailp->nextActionTime = F1_0;
+			ailp->nextActionTime = I2X (1);
 			break;
 	}
 
@@ -281,7 +281,7 @@ int MaybeStealFlagItem(int nPlayer, int flagval)
 			Assert(powerup_index != -1);
 			gameData.thief.stolenItems[gameData.thief.nStolenItem] = powerup_index;
 
-			audio.PlaySample (SOUND_WEAPON_STOLEN);
+			audio.PlaySound (SOUND_WEAPON_STOLEN);
 			return 1;
 		}
 	}
@@ -306,7 +306,7 @@ if ((gameData.multiplayer.players[nPlayer].secondaryWeaponFlags & HAS_FLAG(nWeap
 		if (LOCALPLAYER.secondaryAmmo[nWeapon] == 0)
 			AutoSelectWeapon(1, 0);
 		// -- compress_stolen_items();
-		audio.PlaySample (SOUND_WEAPON_STOLEN);
+		audio.PlaySound (SOUND_WEAPON_STOLEN);
 		return 1;
 		}
 return 0;
@@ -326,7 +326,7 @@ int MaybeStealPrimaryWeapon(int nPlayer, int nWeapon)
 					}
 					ThiefMessage(TXT_LVL_DECREASED, baseGameTexts [104+nWeapon]);		//	Danger! Danger! Use of literal!  Danger!
 					gameData.multiplayer.players[nPlayer].laserLevel--;
-					audio.PlaySample(SOUND_WEAPON_STOLEN);
+					audio.PlaySound(SOUND_WEAPON_STOLEN);
 					return 1;
 				}
 			} else if (gameData.multiplayer.players[nPlayer].primaryWeaponFlags & (1 << nWeapon)) {
@@ -335,7 +335,7 @@ int MaybeStealPrimaryWeapon(int nPlayer, int nWeapon)
 
 				ThiefMessage(TXT_WPN_STOLEN, baseGameTexts [104+nWeapon]);		//	Danger! Danger! Use of literal!  Danger!
 				AutoSelectWeapon(0, 0);
-				audio.PlaySample(SOUND_WEAPON_STOLEN);
+				audio.PlaySound(SOUND_WEAPON_STOLEN);
 				return 1;
 			}
 		}

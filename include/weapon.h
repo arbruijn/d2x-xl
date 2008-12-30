@@ -50,7 +50,7 @@ typedef struct tWeaponInfo {
 	ubyte   flags;              // see values above
 
 	sbyte   flash;              // Flash effect
-	sbyte   afterburner_size;   // Size of blobs in F1_0/16 units, specify in bitmaps.tbl as floating point.  Player afterburner size = 2.5.
+	sbyte   afterburner_size;   // Size of blobs in I2X (1)/16 units, specify in bitmaps.tbl as floating point.  Player afterburner size = 2.5.
 
 	/* not present in shareware datafiles */
 	sbyte   children;           // ID of weapon to drop if this contains children.  -1 means no children.
@@ -59,7 +59,7 @@ typedef struct tWeaponInfo {
 	fix fire_wait;              // Time until this weapon can be fired again.
 
 	/* not present in shareware datafiles */
-	fix multi_damage_scale;     // Scale damage by this amount when applying to CPlayerData in multiplayer.  F1_0 means no change.
+	fix multi_damage_scale;     // Scale damage by this amount when applying to CPlayerData in multiplayer.  I2X (1) means no change.
 
 	tBitmapIndex bitmap;        // Pointer to bitmap if rendertype==0 or 1.
 
@@ -167,9 +167,9 @@ typedef struct D2D1_weapon_info {
 #define WI_lifetime(_i)			(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].lifetime : gameData.weapons.info [_i].lifetime)
 #define WI_damage_radius(_i)	(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].damage_radius : gameData.weapons.info [_i].damage_radius)
 
-#define REARM_TIME                  (F1_0)
+#define REARM_TIME                  (I2X (1))
 
-#define WEAPON_DEFAULT_LIFETIME     (F1_0*12)   // Lifetime of an CObject if a bozo forgets to define it.
+#define WEAPON_DEFAULT_LIFETIME     I2X (12)   // Lifetime of an CObject if a bozo forgets to define it.
 
 #define WEAPON_TYPE_WEAK_LASER      0
 #define WEAPON_TYPE_STRONG_LASER    1

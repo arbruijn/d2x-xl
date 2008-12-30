@@ -407,7 +407,7 @@ ReshowScores:
 		if (nCurItem > -1) {
 
 			t1	= TimerGetFixedSeconds ();
-			//if (t1 - t0 >= F1_0/128) 
+			//if (t1 - t0 >= I2X (1)/128) 
 		 {
 				t0 = t1;
 				//@@fontManager.SetColor (paletteManager.FadeTable ()[fades[looper]*256+BM_XRGB (28,28,28)], -1);

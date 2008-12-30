@@ -295,7 +295,7 @@ void scale_row_asm_transparent( ubyte * sbits, ubyte * dbits, int width, fix u, 
 	ubyte c;
 	ubyte *dbits_end = &dbits[width-1];
 
-	if ( du < F1_0 ) {
+	if ( du < I2X (1) ) {
 		// Scaling up.
 		fix next_u;
 		int next_u_int;

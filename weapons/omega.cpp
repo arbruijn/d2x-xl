@@ -19,7 +19,7 @@
 //	WARNING: If you change DESIRED_OMEGA_DIST and MAX_OMEGA_BLOBS, you don't merely change the look of the cannon,
 //	you change its range.  If you decrease DESIRED_OMEGA_DIST, you decrease how far the gun can fire.
 
-#define OMEGA_ENERGY_RATE		(F1_0 * 190 / 17)
+#define OMEGA_ENERGY_RATE		(I2X (190) / 17)
 //	Note, you don't need to change these constants.  You can control damage and energy consumption by changing the
 //	usual bitmaps.tbl parameters.
 #define	OMEGA_DAMAGE_SCALE			32				//	Controls how much damage is done.  This gets multiplied by gameData.time.xFrame and then again by the damage specified in bitmaps.tbl in the $WEAPON line.
@@ -125,29 +125,29 @@ if (xGoalDist < MIN_OMEGA_DIST * 4) {
 		xPerturbArray [i] = 0;
 	}
 else {
-	vBlobPos += vOmegaDelta * (F1_0/2);	//	Put first blob half way out.
+	vBlobPos += vOmegaDelta * (I2X (1)/2);	//	Put first blob half way out.
 	for (i = 0; i < nOmegaBlobs / 2; i++) {
-		xPerturbArray [i] = F1_0 * i + F1_0 / 4;
-		xPerturbArray [nOmegaBlobs - 1 - i] = F1_0 * i;
+		xPerturbArray [i] = I2X (i) + I2X (1) / 4;
+		xPerturbArray [nOmegaBlobs - 1 - i] = I2X (i);
 		}
 	}
 
 //	Create Random perturbation vector, but favor _not_ going up in CPlayerData's reference.
 vPerturb = CFixVector::Random();
-vPerturb += parentObjP->info.position.mOrient.UVec () * (-F1_0/2);
+vPerturb += parentObjP->info.position.mOrient.UVec () * (-I2X (1)/2);
 for (i = 0; i < nOmegaBlobs; i++) {
 	CFixVector	vTempPos;
 	short			nBlobObj, nSegment;
 
 	//	This will put the last blob right at the destination CObject, causing damage.
 	if (i == nOmegaBlobs-1)
-		vBlobPos += vOmegaDelta * (15*F1_0/32);	//	Move last blob another (almost) half section
+		vBlobPos += vOmegaDelta * (I2X (15)/32);	//	Move last blob another (almost) half section
 	//	Every so often, re-perturb blobs
 	if ((i % 4) == 3) {
 		CFixVector	vTemp;
 
 		vTemp = CFixVector::Random();
-		vPerturb += vTemp * (F1_0/4);
+		vPerturb += vTemp * (I2X (1)/4);
 		}
 	vTempPos = vBlobPos + vPerturb * xPerturbArray[i];
 	nSegment = FindSegByPos (vTempPos, nLastSeg, 1, 0);
@@ -163,7 +163,7 @@ for (i = 0; i < nOmegaBlobs; i++) {
 		objP->info.xLifeLeft = ONE_FRAME_TIME;
 		objP->mType.physInfo.velocity = vGoal;
 		//	Only make the last one move fast, else multiple blobs might collide with target.
-		objP->mType.physInfo.velocity *= (F1_0*4);
+		objP->mType.physInfo.velocity *= (I2X (4));
 		objP->info.xSize = gameData.weapons.info [objP->info.nId].blob_size;
 		objP->info.xShields = FixMul (OMEGA_DAMAGE_SCALE*gameData.time.xFrame, WI_strength (objP->info.nId,gameStates.app.nDifficultyLevel));
 		objP->cType.laserInfo.parent.nType = parentObjP->info.nType;
@@ -174,7 +174,7 @@ for (i = 0; i < nOmegaBlobs; i++) {
 	vBlobPos += vOmegaDelta;
 	}
 
-	//	Make last one move faster, but it's already moving at speed = F1_0*4.
+	//	Make last one move faster, but it's already moving at speed = I2X (4).
 if (nLastCreatedObj != -1) {
 	OBJECTS [nLastCreatedObj].mType.physInfo.velocity *=
 		gameData.weapons.info [OMEGA_ID].speed [gameStates.app.nDifficultyLevel]/4;
@@ -282,10 +282,10 @@ if (0 > (nFiringSeg = FindSegByPos (*vMuzzle, nParentSeg, 1, 0))) {
 	}
 //	Play sound.
 if (parentObjP == gameData.objs.viewerP)
-	DigiPlaySample (gameData.weapons.info [weaponObjP->info.nId].flashSound, F1_0);
+	audio.PlaySound (gameData.weapons.info [weaponObjP->info.nId].flashSound);
 else
 	DigiLinkSoundToPos (gameData.weapons.info [weaponObjP->info.nId].flashSound,
-							  weaponObjP->info.nSegment, 0, weaponObjP->info.position.vPos, 0, F1_0);
+							  weaponObjP->info.nSegment, 0, weaponObjP->info.position.vPos, 0, I2X (1));
 //	Delete the original CObject.  Its only purpose in life was to determine which CObject to home in on.
 ReleaseObject (OBJ_IDX (weaponObjP));
 if (nTargetObj != -1)
@@ -298,7 +298,7 @@ else {	//	If couldn't lock on anything, fire straight ahead.
 
 	vPerturb = CFixVector::Random();
 	perturbed_fvec = bSpectate ? gameStates.app.playerPos.mOrient.FVec () : parentObjP->info.position.mOrient.FVec ()
-	               + vPerturb * (F1_0/16);
+	               + vPerturb * (I2X (1)/16);
 	vTargetPos = *vMuzzle + perturbed_fvec * MAX_OMEGA_DIST;
 	fq.startSeg = nFiringSeg;
 	fq.p0 = vMuzzle;

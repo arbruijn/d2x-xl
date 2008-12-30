@@ -48,7 +48,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //door Doors [MAX_DOORS];
 
 
-#define CLOAKING_WALL_TIME f1_0
+#define CLOAKING_WALL_TIME I2X (1)
 
 //--unused-- CBitmap *wall_title_bms [MAX_WALL_ANIMS];
 
@@ -504,7 +504,7 @@ CSegment* segP = SEGMENTS + wallP->nSegment;
 //check for OBJECTS in doorway before closing
 if (wallP->flags & WALL_DOOR_AUTO)
 	if (segP->DoorIsBlocked (short (wallP->nSide))) {
-		DigiKillSoundLinkedToSegment (short (wallP->nSegment), short (wallP->nSide), -1);
+		audio.DestroySegmentSound (short (wallP->nSegment), short (wallP->nSide), -1);
 		segP->OpenDoor (short (wallP->nSide));		//re-open door
 		return;
 		}
@@ -533,7 +533,7 @@ for (i = 0; i < doorP->nPartCount; i++) {
 	if ((gameData.demo.nState != ND_STATE_PLAYBACK) && !(i || doorP->time)) {
 		if (gameData.walls.animP [wallP->nClip].closeSound  > -1)
 			DigiLinkSoundToPos ((short) gameData.walls.animP [segP->Wall (nSide)->nClip].closeSound,
-									  wallP->nSegment, nSide, SEGMENTS [wallP->nSegment].SideCenter (nSide), 0, F1_0);
+									  wallP->nSegment, nSide, SEGMENTS [wallP->nSegment].SideCenter (nSide), 0, I2X (1));
 		}
 	doorP->time += gameData.time.xFrame;
 	bFlags &= segP->AnimateClosingDoor (nSide, doorP->time);
@@ -917,7 +917,7 @@ if (IS_WALL (nWall) &&
 	 ((WALLS [nWall].state != WALL_DOOR_CLOSED) ||
 	  (objP->info.nSignature != stuckObjP->nSignature))) {
 	nStuckObjects--;
-	objP->info.xLifeLeft = F1_0/8;
+	objP->info.xLifeLeft = I2X (1)/8;
 	stuckObjP->nWall = NO_WALL;
 	}
 }
@@ -938,7 +938,7 @@ for (i = 0, stuckObjP = stuckObjects; i < MAX_STUCK_OBJECTS; i++, stuckObjP++)
 	if (stuckObjP->nWall == nWall) {
 		objP = OBJECTS + stuckObjP->nObject;
 		if (objP->info.nType == OBJ_WEAPON)
-			objP->info.xLifeLeft = F1_0/8;
+			objP->info.xLifeLeft = I2X (1)/8;
 		else {
 #if TRACE
 			console.printf (1,
@@ -976,7 +976,7 @@ for (int i = 0; i < MAX_STUCK_OBJECTS; i++, stuckObjP++) {
 	if (IS_WALL (stuckObjP->nWall)) {
 		objP = OBJECTS + stuckObjP->nObject;
 		if ((objP->info.nType == OBJ_WEAPON) && (objP->info.nId == FLARE_ID))
-			objP->info.xLifeLeft = F1_0/8;
+			objP->info.xLifeLeft = I2X (1)/8;
 		stuckObjP->nWall = NO_WALL;
 		nStuckObjects--;
 		}
@@ -1341,7 +1341,7 @@ cf.WriteFix (time);
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-#define EXPL_WALL_TIME					(f1_0)
+#define EXPL_WALL_TIME					(I2X (1))
 #define EXPL_WALL_TOTAL_FIREBALLS	32
 #define EXPL_WALL_FIREBALL_SIZE 		(0x48000*6/10)	//smallest size
 

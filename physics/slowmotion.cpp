@@ -37,7 +37,7 @@ void SlowMotionMessage (void)
 {
 if (gameStates.gameplay.slowmo [0].nState > 0) {
 	if (gameOpts->sound.bUseSDLMixer)
-		nSlowMotionChannel = DigiPlayWAV ("slowdown.wav", F1_0);
+		nSlowMotionChannel = audio.PlayWAV ("slowdown.wav");
 	HUDInitMessage (TXT_SLOWING_DOWN);
 	}
 else if ((gameStates.gameplay.slowmo [0].nState < 0) ||
@@ -45,12 +45,12 @@ else if ((gameStates.gameplay.slowmo [0].nState < 0) ||
 			(gameStates.gameplay.slowmo [1].nState < 0) || 
 			((gameStates.gameplay.slowmo [1].nState == 0) && (gameStates.gameplay.slowmo [1].fSpeed == 1))) {
 	if (gameOpts->sound.bUseSDLMixer)
-		nSlowMotionChannel = DigiPlayWAV ("speeduw()av", F1_0);
+		nSlowMotionChannel = audio.PlayWAV ("speedup.wav");
 	HUDInitMessage (TXT_SPEEDING_UP);
 	}
 else {
 	if (gameOpts->sound.bUseSDLMixer)
-		nSlowMotionChannel = DigiPlayWAV ("slowdown.wav", F1_0);
+		nSlowMotionChannel = audio.PlayWAV ("slowdown.wav");
 	HUDInitMessage (TXT_SLOWING_DOWN);
 	}
 }
@@ -115,7 +115,7 @@ SlowMotionMessage ();
 
 int ToggleSlowMotion (void)
 {
-	int	bSlowMotionOk = gameStates.app.cheats.bSpeed || ((LOCALPLAYER.energy > F1_0 * 10) && (LOCALPLAYER.flags & PLAYER_FLAGS_SLOWMOTION));
+	int	bSlowMotionOk = gameStates.app.cheats.bSpeed || ((LOCALPLAYER.energy > I2X (10)) && (LOCALPLAYER.flags & PLAYER_FLAGS_SLOWMOTION));
 	int	bBulletTimeOk = bSlowMotionOk && (gameStates.app.cheats.bSpeed || (LOCALPLAYER.flags & (PLAYER_FLAGS_SLOWMOTION | PLAYER_FLAGS_BULLETTIME)));
 	int	bSlowMotion = bSlowMotionOk && (Controls [0].slowMotionCount > 0);
 	int	bBulletTime = bBulletTimeOk && (Controls [0].bulletTimeCount > 0);

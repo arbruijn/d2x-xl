@@ -17,7 +17,7 @@ int OglUBitBltCopy (int w,int h,int dx,int dy, int sx, int sy, CBitmap * src, CB
 
 static inline int OglUBitMapM (int x, int y, CBitmap *bmP)
 {
-return OglUBitMapMC (x, y, 0, 0, bmP, NULL, F1_0, 0);
+return OglUBitMapMC (x, y, 0, 0, bmP, NULL, I2X (1), 0);
 }
 
 //------------------------------------------------------------------------------

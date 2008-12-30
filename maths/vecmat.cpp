@@ -51,9 +51,9 @@ const CFloatVector3 CFloatVector3::YVEC = CFloatVector3::Create (0,1,0);
 const CFloatVector3 CFloatVector3::ZVEC = CFloatVector3::Create (0,0,1);
 
 const CFixVector CFixVector::ZERO = CFixVector::Create (0,0,0);
-const CFixVector CFixVector::XVEC = CFixVector::Create (f1_0,0,0);
-const CFixVector CFixVector::YVEC = CFixVector::Create (0,f1_0,0);
-const CFixVector CFixVector::ZVEC = CFixVector::Create (0,0,f1_0);
+const CFixVector CFixVector::XVEC = CFixVector::Create (I2X (1),0,0);
+const CFixVector CFixVector::YVEC = CFixVector::Create (0,I2X (1),0);
+const CFixVector CFixVector::ZVEC = CFixVector::Create (0,0,I2X (1));
 
 const CAngleVector CAngleVector::ZERO = CAngleVector::Create (0,0,0);
 
@@ -291,8 +291,8 @@ const CFixMatrix CFixMatrix::CreateF (const CFixVector& fVec) {
 
 	//just forward vec
 	if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
-		m.m_data.mat [RVEC][X] = F1_0;
-		m.m_data.mat [UVEC][Z] = (zvec [Y] < 0) ? F1_0 : -F1_0;
+		m.m_data.mat [RVEC][X] = I2X (1);
+		m.m_data.mat [UVEC][Z] = (zvec [Y] < 0) ? I2X (1) : -I2X (1);
 		m.m_data.mat [RVEC][Y] = m.m_data.mat [RVEC][Z] = m.m_data.mat [UVEC][X] = m.m_data.mat [UVEC][Y] = 0;
 	}
 	else { 		//not straight up or down
@@ -321,8 +321,8 @@ const CFixMatrix CFixMatrix::CreateFU (const CFixVector& fVec, const CFixVector&
 	yvec = uVec;
 	if (CFixVector::Normalize (yvec) == 0) {
 		if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
-			m.m_data.mat [RVEC][X] = F1_0;
-			m.m_data.mat [UVEC][Z] = (zvec [Y] < 0) ? F1_0 : -F1_0;
+			m.m_data.mat [RVEC][X] = I2X (1);
+			m.m_data.mat [UVEC][Z] = (zvec [Y] < 0) ? I2X (1) : -I2X (1);
 			m.m_data.mat [RVEC][Y] = m.m_data.mat [RVEC][Z] = m.m_data.mat [UVEC][X] = m.m_data.mat [UVEC][Y] = 0;
 		}
 		else { 		//not straight up or down
@@ -338,8 +338,8 @@ const CFixMatrix CFixMatrix::CreateFU (const CFixVector& fVec, const CFixVector&
 	//Normalize new perpendicular vector
 	if (CFixVector::Normalize (xvec) == 0) {
 		if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
-			m.m_data.mat [RVEC][X] = F1_0;
-			m.m_data.mat [UVEC][Z] = (zvec [Y] < 0) ? F1_0 : -F1_0;
+			m.m_data.mat [RVEC][X] = I2X (1);
+			m.m_data.mat [UVEC][Z] = (zvec [Y] < 0) ? I2X (1) : -I2X (1);
 			m.m_data.mat [RVEC][Y] = m.m_data.mat [RVEC][Z] = m.m_data.mat [UVEC][X] = m.m_data.mat [UVEC][Y] = 0;
 		}
 		else { 		//not straight up or down
@@ -374,8 +374,8 @@ const CFixMatrix CFixMatrix::CreateFR (const CFixVector& fVec, const CFixVector&
 	xvec = rVec;
 	if (CFixVector::Normalize (xvec) == 0) {
 		if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
-			m.m_data.mat [RVEC][X] = F1_0;
-			m.m_data.mat [UVEC][Z] = (zvec [Y] < 0) ? F1_0 : -F1_0;
+			m.m_data.mat [RVEC][X] = I2X (1);
+			m.m_data.mat [UVEC][Z] = (zvec [Y] < 0) ? I2X (1) : -I2X (1);
 			m.m_data.mat [RVEC][Y] = m.m_data.mat [RVEC][Z] = m.m_data.mat [UVEC][X] = m.m_data.mat [UVEC][Y] = 0;
 		}
 		else { 		//not straight up or down
@@ -391,8 +391,8 @@ const CFixMatrix CFixMatrix::CreateFR (const CFixVector& fVec, const CFixVector&
 	//Normalize new perpendicular vector
 	if (CFixVector::Normalize (yvec) == 0) {
 		if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
-			m.m_data.mat [RVEC][X] = F1_0;
-			m.m_data.mat [UVEC][Z] = (zvec [Y] < 0) ? F1_0 : -F1_0;
+			m.m_data.mat [RVEC][X] = I2X (1);
+			m.m_data.mat [UVEC][Z] = (zvec [Y] < 0) ? I2X (1) : -I2X (1);
 			m.m_data.mat [RVEC][Y] = m.m_data.mat [RVEC][Z] = m.m_data.mat [UVEC][X] = m.m_data.mat [UVEC][Y] = 0;
 		}
 		else { 		//not straight up or down

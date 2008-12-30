@@ -74,7 +74,7 @@ void DoSnipeWait (CObject *objP, tAILocalInfo *ailP)
 {
 	fix xConnectedDist;
 
-if ((gameData.ai.xDistToPlayer > F1_0 * 50) && (ailP->nextActionTime > 0))
+if ((gameData.ai.xDistToPlayer > I2X (5)0) && (ailP->nextActionTime > 0))
 	return;
 ailP->nextActionTime = SNIPE_WAIT_TIME;
 xConnectedDist = FindConnectedDistance (objP->info.position.vPos, objP->info.nSegment, gameData.ai.vBelievedPlayerPos, 
@@ -161,7 +161,7 @@ if (gameData.ai.xDistToPlayer <= MAX_SNIPE_DIST) {
 	else {
 		Int3 ();	//	Oops, illegal mode for snipe behavior.
 		ailP->mode = AIM_SNIPE_ATTACK;
-		ailP->nextActionTime = F1_0;
+		ailP->nextActionTime = I2X (1);
 		}
 	}
 }

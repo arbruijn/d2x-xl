@@ -34,7 +34,7 @@ static tRgbaColorf smokeColors [3] = {
 void KillObjectSmoke (int nObject)
 {
 if ((nObject >= 0) && (particleManager.GetObjectSystem (nObject) >= 0)) {
-	DigiKillSoundLinkedToObject (nObject);
+	DigiDestroyObjectSound (nObject);
 	particleManager.SetLife (particleManager.GetObjectSystem (nObject), 0);
 	particleManager.SetObjectSystem (nObject, -1);
 	shrapnelManager.Destroy (OBJECTS + nObject);
@@ -95,7 +95,7 @@ if (EGI_FLAG (bDamageExplosions, 1, 0, 0) &&
 	 (gameStates.app.nSDLTicks - *particleManager.ObjExplTime (i) > 100)) {
 	*particleManager.ObjExplTime (i) = gameStates.app.nSDLTicks;
 	if (!RandN (11 - h))
-		CreateSmallFireballOnObject (OBJECTS + i, F1_0, 1);
+		CreateSmallFireballOnObject (OBJECTS + i, I2X (1), 1);
 	}
 }
 
@@ -251,10 +251,10 @@ if (bHires >= 0) {
 			vEmitter = *viewP * vGunPoints[nGun];
 			vEmitter += posP->vPos;
 			//vDir = posP->mOrient.FVec ();
-			vDir = posP->mOrient.FVec () * (F1_0 / 8);
+			vDir = posP->mOrient.FVec () * (I2X (1) / 8);
 			if (i < 0) {
 				gameData.multiplayer.gatlingSmoke [nPlayer] =
-					particleManager.Create (&vEmitter, &vDir, &posP->mOrient, objP->info.nSegment, 1, GATLING_MAX_PARTS, F1_0 / 2, 1,
+					particleManager.Create (&vEmitter, &vDir, &posP->mOrient, objP->info.nSegment, 1, GATLING_MAX_PARTS, I2X (1) / 2, 1,
 									 1, GATLING_PART_LIFE, GATLING_PART_SPEED, SMOKE_PARTICLES, 0x7ffffffe, smokeColors + 1, 0, -1);
 				}
 			else {
@@ -297,7 +297,7 @@ if (gameOpts->render.particles.bDecreaseLag && (i == gameData.multiplayer.nLocal
 	CFixVector::Normalize (fn);
 	CFixVector::Normalize (mn);
 	d = CFixVector::Dot (fn, mn);
-	if (d >= -F1_0 / 2)
+	if (d >= -I2X (1) / 2)
 		bForward = 1;
 	else {
 		if (bForward) {
@@ -313,8 +313,8 @@ if (gameOpts->render.particles.bDecreaseLag && (i == gameData.multiplayer.nLocal
 	}
 #if 0
 if (EGI_FLAG (bThrusterFlames, 1, 1, 0)) {
-	if ((a <= F1_0 / 4) && (a || !gameStates.input.bControlsSkipFrame))	//no thruster flames if moving backward
-		DropAfterburnerBlobs (objP, 2, I2X (1), -1, gameData.objs.consoleP, 1); //F1_0 / 4);
+	if ((a <= I2X (1) / 4) && (a || !gameStates.input.bControlsSkipFrame))	//no thruster flames if moving backward
+		DropAfterburnerBlobs (objP, 2, I2X (1), -1, gameData.objs.consoleP, 1); //I2X (1) / 4);
 	}
 #endif
 if ((gameData.app.nGameMode & GM_NETWORK) && !gameData.multiplayer.players [i].connected)
@@ -358,7 +358,7 @@ else {
 		else {	// if the ship is standing still, let the thruster smoke move away from it
 			nParts /= 2;
 			nScale /= 2;
-			vDir = OBJPOS (objP)->mOrient.FVec() * (F1_0 / 8);
+			vDir = OBJPOS (objP)->mOrient.FVec() * (I2X (1) / 8);
 			vDir = -vDir;
 			vDirP = &vDir;
 			}
@@ -479,9 +479,9 @@ if (nParts > 0) {
 	else {
 		particleManager.SetScale (particleManager.GetObjectSystem (i), F2X (-4.0));
 		particleManager.SetDensity (particleManager.GetObjectSystem (i), nParts, -1);
-		vDir[X] = d_rand () - F1_0 / 4;
-		vDir[Y] = d_rand () - F1_0 / 4;
-		vDir[Z] = d_rand () - F1_0 / 4;
+		vDir[X] = d_rand () - I2X (1) / 4;
+		vDir[Y] = d_rand () - I2X (1) / 4;
+		vDir[Z] = d_rand () - I2X (1) / 4;
 		CFixVector::Normalize(vDir);
 		vPos = objP->info.position.vPos + vDir * (-objP->info.xSize / 2);
 		particleManager.SetPos (particleManager.GetObjectSystem (i), &vPos, NULL, objP->info.nSegment);
@@ -555,7 +555,7 @@ if (!(SHOW_SMOKE && gameOpts->render.particles.bDebris)) {
 	return;
 	}
 if ((objP->info.xShields < 0) || (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)) ||
-	 (gameOpts->render.nDebrisLife && (nDebrisLife [gameOpts->render.nDebrisLife] * F1_0 - objP->info.xLifeLeft > 10 * F1_0)))
+	 (gameOpts->render.nDebrisLife && (I2X (nDebrisLife [gameOpts->render.nDebrisLife]) - objP->info.xLifeLeft > I2X (10))))
 	nParts = 0;
 else
 	nParts = DEBRIS_MAX_PARTS;
@@ -599,7 +599,7 @@ if (particleManager.GetObjectSystem (i) < 0) {
 	color.blue = (float) objP->rType.particleInfo.color.blue / 255.0f;
 	if ((bColor = (color.red + color.green + color.blue > 0)))
 		color.alpha = (float) -objP->rType.particleInfo.color.alpha / 255.0f;
-	dir = objP->info.position.mOrient.FVec() * (objP->rType.particleInfo.nSpeed * 2 * F1_0 / 55);
+	dir = objP->info.position.mOrient.FVec() * (objP->rType.particleInfo.nSpeed * I2X (2) / 55);
 	particleManager.SetObjectSystem (i, 
 		particleManager.Create (&objP->info.position.vPos, &dir, &objP->info.position.mOrient,
 									   objP->info.nSegment, 1, -objP->rType.particleInfo.nParts,
@@ -608,7 +608,7 @@ if (particleManager.GetObjectSystem (i) < 0) {
 									   objP->rType.particleInfo.nDrift, bBubbles ? BUBBLE_PARTICLES : SMOKE_PARTICLES, 
 									   i, bColor ? &color : defaultColors + bBubbles, 1, objP->rType.particleInfo.nSide - 1));
 	if (bBubbles)
-		DigiSetObjectSound (i, -1, AddonSoundName (SND_ADDON_AIRBUBBLES), F1_0 / 2);
+		DigiSetObjectSound (i, -1, AddonSoundName (SND_ADDON_AIRBUBBLES), I2X (1) / 2);
 	else
 		particleManager.SetBrightness (particleManager.GetObjectSystem (i), objP->rType.particleInfo.nBrightness);
 	}
@@ -619,9 +619,9 @@ if (objP->rType.particleInfo.nSide <= 0) {	//don't vary emitter position for smo
 	if (!(j = i - i / 2))
 		j = 2;
 	i /= 2;
-	offs [X] = (F1_0 / 4 - d_rand ()) * (d_rand () % j + i);
-	offs [Y] = (F1_0 / 4 - d_rand ()) * (d_rand () % j + i);
-	offs [Z] = (F1_0 / 4 - d_rand ()) * (d_rand () % j + i);
+	offs [X] = (I2X (1) / 4 - d_rand ()) * (d_rand () % j + i);
+	offs [Y] = (I2X (1) / 4 - d_rand ()) * (d_rand () % j + i);
+	offs [Z] = (I2X (1) / 4 - d_rand ()) * (d_rand () % j + i);
 	pos = objP->info.position.vPos + offs;
 	particleManager.SetPos (particleManager.GetObjectSystem (i), &pos, NULL, objP->info.nSegment);
 	}
@@ -646,9 +646,9 @@ if (nParts) {
 		particleManager.SetObjectSystem (i, particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts,
 												  -PARTICLE_SIZE (3, 0.5f), -1, 3, BOMB_PART_LIFE, BOMB_PART_SPEED, SMOKE_PARTICLES, i, NULL, 1, -1));
 		}
-	offs [X] = (F1_0 / 4 - d_rand ()) * ((d_rand () & 15) + 16);
-	offs [Y] = (F1_0 / 4 - d_rand ()) * ((d_rand () & 15) + 16);
-	offs [Z] = (F1_0 / 4 - d_rand ()) * ((d_rand () & 15) + 16);
+	offs [X] = (I2X (1) / 4 - d_rand ()) * ((d_rand () & 15) + 16);
+	offs [Y] = (I2X (1) / 4 - d_rand ()) * ((d_rand () & 15) + 16);
+	offs [Z] = (I2X (1) / 4 - d_rand ()) * ((d_rand () & 15) + 16);
 	pos = objP->info.position.vPos + offs;
 	particleManager.SetPos (particleManager.GetObjectSystem (i), &pos, NULL, objP->info.nSegment);
 	}
@@ -676,7 +676,7 @@ if (!(bGatling || gameOpts->render.particles.bPlasmaTrails)) {
 #if 1
 nParts = bGatling ? LASER_MAX_PARTS : 2 * LASER_MAX_PARTS / 3;
 #else
-nParts = gameData.weapons.info [objP->info.nId].speed [0] / F1_0;
+nParts = gameData.weapons.info [objP->info.nId].speed [0] / I2X (1);
 #endif
 if (bGatling) {
 	c.red = c.green = c.blue = 2.0f / 3.0f;

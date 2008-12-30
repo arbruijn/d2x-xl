@@ -55,7 +55,7 @@ char szCheatBuf[] = "AAAAAAAAAAAAAAA";
 void DoCheatPenalty ()
 {
 #if !DBG
-DigiPlaySampleClass (SOUND_CHEATER, NULL, F1_0, SOUNDCLASS_PLAYER);
+audio.PlaySampleClass (SOUND_CHEATER, NULL, I2X (1), SOUNDCLASS_PLAYER);
 gameStates.app.cheats.bEnabled = 1;
 LOCALPLAYER.score = 0;
 #endif
@@ -81,7 +81,7 @@ HUDInitMessage (TXT_TAKE_THAT);
 inline fix BoostVal (fix *curVal, fix maxVal)
 {
 if (*curVal < maxVal) {
-	fix boost = 3 * F1_0 + 3 * F1_0 * (NDL - gameStates.app.nDifficultyLevel);
+	fix boost = I2X (3) + I2X (3) * (NDL - gameStates.app.nDifficultyLevel);
 	if (gameStates.app.nDifficultyLevel == 0)
 		boost += boost / 2;
 	*curVal += boost;
@@ -300,7 +300,7 @@ if (!gameStates.app.bD1Mission) {
 		PLAYER_FLAGS_CONVERTER |
 		PLAYER_FLAGS_SLOWMOTION |
 		PLAYER_FLAGS_BULLETTIME;
-	gameData.physics.xAfterburnerCharge = f1_0;
+	gameData.physics.xAfterburnerCharge = I2X (1);
 	}
 if (bVerbose)
 	HUDInitMessage (TXT_ACCESSORIES);
@@ -775,7 +775,7 @@ if (gameStates.app.bD1Mission)
 else
 	LOCALPLAYER.laserLevel = MAX_SUPER_LASER_LEVEL;
 LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
-gameData.physics.xAfterburnerCharge = f1_0;
+gameData.physics.xAfterburnerCharge = I2X (1);
 SetMaxOmegaCharge ();
 UpdateLaserWeaponInfo ();
 if (bInitialize)

@@ -50,14 +50,14 @@ if (PlayerHasHeadlight (-1)) {
 #define HEADLIGHT_BOOST_SCALE		8		//how much to scale light when have headlight boost
 #define	MAX_HEADLIGHTS				8
 #define MAX_DIST_LOG					6							//log (MAX_DIST-expressed-as-integer)
-#define MAX_DIST						(f1_0<<MAX_DIST_LOG)	//no light beyond this dist
-#define	HEADLIGHT_CONE_DOT		(F1_0*9/10)
-#define	HEADLIGHT_SCALE			(F1_0*10)
+#define MAX_DIST						(I2X (1)<<MAX_DIST_LOG)	//no light beyond this dist
+#define	HEADLIGHT_CONE_DOT		(I2X (9)/10)
+#define	HEADLIGHT_SCALE			(I2X (10))
 
 //	Flag array of OBJECTS lit last frame.  Guaranteed to process this frame if lit last frame.
 CObject	*Headlights [MAX_HEADLIGHTS];
 int		nHeadlights;
-fix		xBeamBrightness = (F1_0/2);	//global saying how bright the light beam is
+fix		xBeamBrightness = (I2X (1)/2);	//global saying how bright the light beam is
 
 fix ComputeHeadlightLightOnObject (CObject *objP)
 {
@@ -76,7 +76,7 @@ for (i = 0; i < nHeadlights; i++) {
 	dist = CFixVector::Normalize(vecToObj);
 	if (dist > 0) {
 		dot = CFixVector::Dot (lightObjP->info.position.mOrient.FVec (), vecToObj);
-		if (dot < F1_0/2)
+		if (dot < I2X (1)/2)
 			light += FixDiv (HEADLIGHT_SCALE, FixMul (HEADLIGHT_SCALE, dist));	//	Do the Normal thing, but darken around headlight.
 		else
 			light += FixMul (FixMul (dot, dot), HEADLIGHT_SCALE)/8;
@@ -144,7 +144,7 @@ if (gameOpts->render.nLightingMethod && (gameData.render.lights.dynamic.nHeadlig
 		CDynLight	*pl;
 		int			nLight;
 
-	nLight = AddDynLight (NULL, &c, F1_0 * 200, -1, -1, -1, -1, NULL);
+	nLight = AddDynLight (NULL, &c, I2X (200), -1, -1, -1, -1, NULL);
 	if (nLight >= 0) {
 		gameData.render.lights.dynamic.nHeadlights [objP->info.nId] = nLight;
 		pl = gameData.render.lights.dynamic.lights + nLight;

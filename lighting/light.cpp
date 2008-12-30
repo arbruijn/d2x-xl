@@ -51,7 +51,7 @@ typedef struct {
 
 #define	NUM_LIGHTS_D1     49
 #define	NUM_LIGHTS_D2     85
-#define	MAX_BRIGHTNESS		F2_0
+#define	MAX_BRIGHTNESS		I2X (2)
 tTexBright texBrightD1 [NUM_LIGHTS_D1] = {
  {250, 0x00b333L}, {251, 0x008000L}, {252, 0x008000L}, {253, 0x008000L},
  {264, 0x01547aL}, {265, 0x014666L}, {268, 0x014666L}, {278, 0x014cccL},
@@ -258,7 +258,7 @@ if ((cache_frame == 0) || (cache_frame + nLightingFrameDelta <= gameData.app.nFr
 		bApplyLight = 1;
 	else if (hitType == HIT_WALL) {
 		fix distDist = CFixVector::Dist(hit_data.hit.vPoint, *vObjPos);
-		if (distDist < F1_0/4) {
+		if (distDist < I2X (1)/4) {
 			bApplyLight = 1;
 			// -- Int3 ();	//	Curious, did fvi detect intersection with CWall containing vertex?
 			}
@@ -397,7 +397,7 @@ if (xObjIntensity) {
 	bForceColor = objP && ((nObjType == OBJ_WEAPON) || (nObjType == OBJ_FIREBALL) || (nObjType == OBJ_EXPLOSION));
 	// for pretty dim sources, only process vertices in CObject's own CSegment.
 	//	12/04/95, MK, markers only cast light in own CSegment.
-	if (objP && ((abs (obji_64) <= F1_0 * 8) || (nObjType == OBJ_MARKER))) {
+	if (objP && ((abs (obji_64) <= I2X (8)) || (nObjType == OBJ_MARKER))) {
 		short *vp = SEGMENTS [nObjSeg].m_verts;
 		for (iVertex = 0; iVertex < MAX_VERTICES_PER_SEGMENT; iVertex++) {
 			nVertex = vp [iVertex];
@@ -420,7 +420,7 @@ if (xObjIntensity) {
 		}
 	else {
 		int	headlightShift = 0;
-		fix	maxHeadlightDist = F1_0 * 200;
+		fix	maxHeadlightDist = I2X (200);
 		if (objP && (nObjType == OBJ_PLAYER))
 			if ((gameStates.render.bHeadlightOn = HeadlightIsOn (objP->info.nId))) {
 				headlightShift = 3;
@@ -433,7 +433,7 @@ if (xObjIntensity) {
 					tFVIQuery	fq;
 					tFVIData		hit_data;
 					int			fate;
-					tvec = *vObjPos + objP->info.position.mOrient.FVec () * F1_0*200;
+					tvec = *vObjPos + objP->info.position.mOrient.FVec () * I2X (200);
 					fq.startSeg			= objP->info.nSegment;
 					fq.p0					= vObjPos;
 					fq.p1					= &tvec;
@@ -445,7 +445,7 @@ if (xObjIntensity) {
 					fate = FindVectorIntersection (&fq, &hit_data);
 					if (fate != HIT_NONE) {
 						tvec = hit_data.hit.vPoint - *vObjPos;
-						maxHeadlightDist = tvec.Mag() + F1_0*4;
+						maxHeadlightDist = tvec.Mag() + I2X (4);
 					}
 				}
 			}
@@ -483,9 +483,9 @@ if (xObjIntensity) {
 							CFixVector::Normalize(vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
 							dot = CFixVector::Dot (vecToPoint, objP->info.position.mOrient.FVec ());
 							if (gameData.render.vertColor.bDarkness)
-								maxDot = F1_0 / spotSize;
+								maxDot = I2X (1) / spotSize;
 							else
-								maxDot = F1_0 / 2;
+								maxDot = I2X (1) / 2;
 							if (dot < maxDot)
 								gameData.render.lights.dynamicLight [nVertex] += FixDiv (xOrigIntensity, FixMul (HEADLIGHT_SCALE, dist));	//	Do the Normal thing, but darken around headlight.
 							else if (!IsMultiGame || (dist < maxHeadlightDist))
@@ -501,8 +501,8 @@ if (xObjIntensity) {
 
 // ----------------------------------------------------------------------------------------------
 
-#define	FLASH_LEN_FIXED_SECONDS	 (F1_0/3)
-#define	FLASH_SCALE					 (3*F1_0/FLASH_LEN_FIXED_SECONDS)
+#define	FLASH_LEN_FIXED_SECONDS	 (I2X (1)/3)
+#define	FLASH_SCALE					 (I2X (3)/FLASH_LEN_FIXED_SECONDS)
 
 void CastMuzzleFlashLight (int nRenderVertices, CArray<short>& renderVertices)
 {
@@ -560,16 +560,16 @@ switch (nObjType) {
 		  	hoardlight = I2X (gameData.multiplayer.players [objP->info.nId].secondaryAmmo [PROXMINE_INDEX])/2; //I2X (12);
 			hoardlight++;
 		   FixSinCos ((gameData.time.xGame/2) & 0xFFFF,&s,NULL); // probably a bad way to do it
-			s+=F1_0;
+			s+=I2X (1);
 			s>>=1;
 			hoardlight = FixMul (s,hoardlight);
 		   return (hoardlight);
 		  }
 		else if (objP->info.nId == gameData.multiplayer.nLocalPlayer) {
-			return max (gameData.physics.playerThrust.Mag()/4, F1_0*2) + F1_0/2;
+			return max (gameData.physics.playerThrust.Mag()/4, I2X (2)) + I2X (1)/2;
 			}
 		else {
-			return max (objP->mType.physInfo.thrust.Mag()/4, F1_0*2) + F1_0/2;
+			return max (objP->mType.physInfo.thrust.Mag()/4, I2X (2)) + I2X (1)/2;
 			}
 		break;
 
@@ -627,7 +627,7 @@ switch (nObjType) {
 				colorP->green /= maxColor;
 				colorP->blue /= maxColor;
 				}
-			if (objP->info.xLifeLeft < F1_0*4)
+			if (objP->info.xLifeLeft < I2X (4))
 				return FixMul (FixDiv (objP->info.xLifeLeft,
 								   gameData.eff.vClips [0][objP->info.nId].xTotalTime), xLight);
 			else
@@ -640,7 +640,7 @@ switch (nObjType) {
 #if 0//def _DEBUG
 		return ROBOTINFO (objP->info.nId).lighting;
 #else
-		return ROBOTINFO (objP->info.nId).lightcast ? ROBOTINFO (objP->info.nId).lighting ? ROBOTINFO (objP->info.nId).lighting : F1_0 : 0;
+		return ROBOTINFO (objP->info.nId).lightcast ? ROBOTINFO (objP->info.nId).lighting ? ROBOTINFO (objP->info.nId).lighting : I2X (1) : 0;
 #endif
 		break;
 
@@ -665,9 +665,9 @@ switch (nObjType) {
 	case OBJ_MARKER: {
 		fix	lightval = objP->info.xLifeLeft;
 		lightval &= 0xffff;
-		lightval = 8 * abs (F1_0/2 - lightval);
-		if (objP->info.xLifeLeft < F1_0*1000)
-			objP->info.xLifeLeft += F1_0;	//	Make sure this CObject doesn't go out.
+		lightval = 8 * abs (I2X (1)/2 - lightval);
+		if (objP->info.xLifeLeft < I2X (100)0)
+			objP->info.xLifeLeft += I2X (1);	//	Make sure this CObject doesn't go out.
 		colorP->red = 0.1f;
 		colorP->green = 1.0f;
 		colorP->blue = 0.1f;
@@ -683,7 +683,7 @@ switch (nObjType) {
 		break;
 
 	case OBJ_DEBRIS:
-		return F1_0/4;
+		return I2X (1)/4;
 		break;
 
 	case OBJ_LIGHT:
@@ -857,13 +857,13 @@ fix ComputeObjectLight (CObject *objP, CFixVector *vRotated)
 	fix light;
 	int nObject = objP->Index ();
 	if (nObject < 0)
-		return F1_0;
+		return I2X (1);
 	if (nObject >= gameData.objs.nLastObject [0])
 		return 0;
 	//First, get static light for this CSegment
 if (gameOpts->render.nLightingMethod && !((RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects)) {
 	gameData.objs.color = *AvgSgmColor (objP->info.nSegment, &objP->info.position.vPos);
-	light = F1_0;
+	light = I2X (1);
 	}
 else
 	light = SEGMENTS [objP->info.nSegment].m_xAvgSegLight;
@@ -886,7 +886,7 @@ else {		//new CObject, initialize
 	gameData.objs.xLight [nObject] = light;
 	}
 //Next, add in headlight on this CObject
-// -- Matt code: light += ComputeHeadlight (vRotated,f1_0);
+// -- Matt code: light += ComputeHeadlight (vRotated,I2X (1));
 light += ComputeHeadlightLightOnObject (objP);
 //Finally, add in dynamic light for this CSegment
 light += ComputeSegDynamicLight (objP->info.nSegment);
@@ -897,7 +897,7 @@ return light;
 
 void ComputeEngineGlow (CObject *objP, fix *xEngineGlowValue)
 {
-xEngineGlowValue [0] = f1_0/5;
+xEngineGlowValue [0] = I2X (1)/5;
 if (objP->info.movementType == MT_PHYSICS) {
 	if ((objP->info.nType == OBJ_PLAYER) && (objP->mType.physInfo.flags & PF_USES_THRUST) && (objP->info.nId == gameData.multiplayer.nLocalPlayer)) {
 		fix thrust_mag = objP->mType.physInfo.thrust.Mag();
@@ -1029,8 +1029,8 @@ return gameData.pig.tex.brightness [tMapNum];
 //	------------------------------------------------------------------------------------------
 //cast static light from a CSegment to nearby segments
 //these constants should match the ones in seguvs
-#define	LIGHT_DISTANCE_THRESHOLD	 (F1_0*80)
-#define	MAGIC_LIGHT_CONSTANT			 (F1_0*16)
+#define	LIGHT_DISTANCE_THRESHOLD	 (I2X (80))
+#define	MAGIC_LIGHT_CONSTANT			 (I2X (16))
 
 #define MAX_CHANGED_SEGS 30
 short changedSegs [MAX_CHANGED_SEGS];
@@ -1052,16 +1052,16 @@ if (i == nChangedSegs) {
 	xDistToRSeg = CFixVector::Dist(rSegmentCenter, *vSegCenter);
 
 	if (xDistToRSeg <= LIGHT_DISTANCE_THRESHOLD) {
-		fix	xLightAtPoint = (xDistToRSeg > F1_0) ?
+		fix	xLightAtPoint = (xDistToRSeg > I2X (1)) ?
 									 FixDiv (MAGIC_LIGHT_CONSTANT, xDistToRSeg) :
 									 MAGIC_LIGHT_CONSTANT;
 
 		if (xLightAtPoint >= 0) {
 			xLightAtPoint = FixMul (xLightAtPoint, xBrightness);
-			if (xLightAtPoint >= F1_0)
-				xLightAtPoint = F1_0-1;
-			else if (xLightAtPoint <= -F1_0)
-				xLightAtPoint = - (F1_0-1);
+			if (xLightAtPoint >= I2X (1))
+				xLightAtPoint = I2X (1)-1;
+			else if (xLightAtPoint <= -I2X (1))
+				xLightAtPoint = - (I2X (1)-1);
 			segP->m_xAvgSegLight += xLightAtPoint;
 			if (segP->m_xAvgSegLight < 0)	// if it went negative, saturate
 				segP->m_xAvgSegLight = 0;

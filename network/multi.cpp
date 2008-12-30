@@ -222,7 +222,7 @@ void use_netplayer_stats (CPlayerData * ps, tNetPlayerStats *pd);
 CPlayerShip defaultPlayerShip;
 #if 0
  = {
-	108, 58, 262144, 2162, 511180, 0, 0, F1_0 / 2, 9175,
+	108, 58, 262144, 2162, 511180, 0, 0, I2X (1) / 2, 9175,
  {CFixVector::Create(146013, -59748, 35756),
 	 CFixVector::Create(-147477, -59892, 34430),
  	 CFixVector::Create(222008, -118473, 148201),
@@ -244,7 +244,7 @@ defaultPlayerShip.drag = 2162;
 defaultPlayerShip.maxThrust = 511180;
 defaultPlayerShip.reverseThrust = 0;
 defaultPlayerShip.brakes = 0;
-defaultPlayerShip.wiggle = F1_0 / 2;
+defaultPlayerShip.wiggle = I2X (1) / 2;
 defaultPlayerShip.maxRotThrust = 9175;
 defaultPlayerShip.gunPoints [0].Create (146013, -59748, 35756);
 defaultPlayerShip.gunPoints [0].Create (-147477, -59892, 34430);
@@ -841,7 +841,7 @@ else
 	sprintf (szKilled, "%s", pKilled->callsign);
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordMultiDeath (nKilledPlayer);
-DigiPlaySample (SOUND_HUD_KILL, F3_0);
+audio.PlaySound (SOUND_HUD_KILL, SOUNDCLASS_GENERIC, I2X (3));
 if (gameData.reactor.bDestroyed)
 	pKilled->connected = 3;
 if (killerType == OBJ_REACTOR) {
@@ -1079,7 +1079,7 @@ if (!(gameData.app.nGameMode & GM_MULTI) || (gameData.app.nGameMode & GM_MULTI_C
 	return;
 if (gameData.multigame.kills.bShowList)
 	return;
-gameData.multigame.kills.xShowListTimer = F1_0*5; // 5 second timer
+gameData.multigame.kills.xShowListTimer = I2X (5); // 5 second timer
 gameData.multigame.kills.bShowList = 1;
 }
 
@@ -1355,8 +1355,8 @@ void MultiDoEscape (char *buf)
 	int nObject;
 
 nObject = gameData.multiplayer.players [(int)buf [1]].nObject;
-DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
-DigiKillSoundLinkedToObject (nObject);
+audio.PlaySound (SOUND_HUD_MESSAGE);
+DigiDestroyObjectSound (nObject);
 if (buf [2] == 0) {
 	HUDInitMessage ("%s %s", gameData.multiplayer.players [(int)buf [1]].callsign, TXT_HAS_ESCAPED);
 	if (gameData.app.nGameMode & GM_NETWORK)
@@ -1424,7 +1424,7 @@ if (bMsgBox)
 else {
 	char szMsg [100];
 
-	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
+	audio.PlaySound (SOUND_HUD_MESSAGE);
 	sprintf (szMsg, "%c%c%c%c%s", 1, 127 + 128, 63 + 128, 128, TXT_ONLY_PLAYER);
 	HUDInitMessage (szMsg);
 	}
@@ -1437,7 +1437,7 @@ void MultiDoQuit (char *buf)
 if (gameData.app.nGameMode & GM_NETWORK) {
 	int i, n = 0;
 
-	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
+	audio.PlaySound (SOUND_HUD_MESSAGE);
 	HUDInitMessage ("%s %s", gameData.multiplayer.players [(int)buf [1]].callsign, TXT_HAS_LEFT_THE_GAME);
 	NetworkDisconnectPlayer (buf [1]);
 	if (gameData.multigame.menu.bInvoked || gameStates.menus.nInMenu)
@@ -1538,7 +1538,7 @@ else
 void MultiDoCreateExplosion (char *buf)
 {
 int nPlayer = buf [1];
-CreateSmallFireballOnObject (&OBJECTS [gameData.multiplayer.players [nPlayer].nObject], F1_0, 1);
+CreateSmallFireballOnObject (&OBJECTS [gameData.multiplayer.players [nPlayer].nObject], I2X (1), 1);
 }
 
 //-----------------------------------------------------------------------------
@@ -1628,7 +1628,7 @@ if (!gameData.multiplayer.players [nPlayer].connected)
 	return;
 Assert (gameData.multiplayer.players [nPlayer].nObject  >= 0);
 Assert (gameData.multiplayer.players [nPlayer].nObject <= gameData.objs.nLastObject [0]);
-SetObjectSound (nSound, SOUNDCLASS_PLAYER, (short) gameData.multiplayer.players [nPlayer].nObject, 0, volume);
+CreateObjectSound (nSound, SOUNDCLASS_PLAYER, (short) gameData.multiplayer.players [nPlayer].nObject, 0, volume);
 }
 
 //-----------------------------------------------------------------------------
@@ -1811,7 +1811,7 @@ use_netplayer_stats (gameData.multiplayer.players  + p->nLocalPlayer, p);
 void MultiResetStuff (void)
 {
 DeadPlayerEnd ();
-LOCALPLAYER.homingObjectDist = -F1_0; // Turn off homing sound.
+LOCALPLAYER.homingObjectDist = -I2X (1); // Turn off homing sound.
 gameData.objs.deadPlayerCamera = 0;
 gameStates.app.bEndLevelSequence = 0;
 ResetRearView ();
@@ -2567,8 +2567,8 @@ void MultiSendAudioTaunt (int taunt_num)
 
 	Assert (taunt_num  >= 0);
 	Assert (taunt_num < 4);
-	DigiPlaySample (audio_taunts [taunt_num], F1_0);
-	MultiSendPlaySound (audio_taunts [taunt_num], F1_0);
+	audio.PlaySound (audio_taunts [taunt_num]);
+	MultiSendPlaySound (audio_taunts [taunt_num], I2X (1));
 #endif
 }
 
@@ -2749,7 +2749,7 @@ FORALL_STATIC_OBJS (objP, i) {
 			objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
 			objP->rType.vClipInfo.nCurFrame = 0;
 			objP->mType.physInfo.drag = 512;     //1024;
-			objP->mType.physInfo.mass = F1_0;
+			objP->mType.physInfo.mass = I2X (1);
 			objP->mType.physInfo.velocity.SetZero();
 			}
 		continue;
@@ -3247,9 +3247,9 @@ if (nObject < 0)
 	return;
 objP = OBJECTS + nObject;
 ammoCount = objP->cType.powerupInfo.nCount;
-if (objP->info.nId == POW_OMEGA && ammoCount == F1_0)
-	ammoCount = F1_0 - 1; //make fit in short
-Assert (ammoCount < F1_0); //make sure fits in short
+if (objP->info.nId == POW_OMEGA && ammoCount == I2X (1))
+	ammoCount = I2X (1) - 1; //make fit in short
+Assert (ammoCount < I2X (1)); //make sure fits in short
 gameData.multigame.msg.buf [count++] = (char)MULTI_DROP_WEAPON;
 gameData.multigame.msg.buf [count++] = (char)objP->info.nId;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, gameData.multiplayer.nLocalPlayer);
@@ -3428,7 +3428,7 @@ WALLS [wallnum].nType = nType;
 WALLS [wallnum].flags = flag;
 WALLS [wallnum].state = state;
 if (WALLS [wallnum].nType == WALL_OPEN)
-	DigiKillSoundLinkedToSegment (
+	audio.DestroySegmentSound (
 		 (short) WALLS [wallnum].nSegment, (short)
 		 WALLS [wallnum].nSide, SOUND_FORCEFIELD_HUM);
 }
@@ -3586,7 +3586,7 @@ void MultiDoSeismic (char *buf)
 {
 gameStates.gameplay.seismic.nStartTime = GET_INTEL_INT (buf + 1);
 gameStates.gameplay.seismic.nEndTime = GET_INTEL_INT (buf + 5);
-DigiPlaySample (SOUND_SEISMIC_DISTURBANCE_START, F1_0);
+audio.PlaySound (SOUND_SEISMIC_DISTURBANCE_START);
 }
 
 //-----------------------------------------------------------------------------
@@ -3915,9 +3915,9 @@ nPlayer = (int) buf [1];
 whichfunc = (int) buf [2];
 sound = buf [3];
 if (whichfunc == 0)
-	DigiKillSoundLinkedToObject (gameData.multiplayer.players [nPlayer].nObject);
+	DigiDestroyObjectSound (gameData.multiplayer.players [nPlayer].nObject);
 else if (whichfunc == 3)
-	SetObjectSound (sound, SOUNDCLASS_PLAYER, (short) gameData.multiplayer.players [nPlayer].nObject, 1, F1_0, I2X (256), 
+	CreateObjectSound (sound, SOUNDCLASS_PLAYER, (short) gameData.multiplayer.players [nPlayer].nObject, 1, I2X (1), I2X (256), 
 						 AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
 }
 
@@ -3977,11 +3977,11 @@ else
 	HUDInitMessage (TXT_SCORED2, gameData.multiplayer.players [nPlayer].callsign);
 gameData.multigame.kills.nTeam [nTeam] += bonus;
 if (nPlayer == gameData.multiplayer.nLocalPlayer)
-	DigiPlaySample (SOUND_HUD_YOU_GOT_GOAL, F1_0*2);
+	audio.PlaySound (SOUND_HUD_YOU_GOT_GOAL, SOUNDCLASS_GENERIC, I2X (2));
 else if (GetTeam (nPlayer) == TEAM_RED)
-	DigiPlaySample (SOUND_HUD_RED_GOT_GOAL, F1_0*2);
+	audio.PlaySound (SOUND_HUD_RED_GOT_GOAL, SOUNDCLASS_GENERIC, I2X (2));
 else
-	DigiPlaySample (SOUND_HUD_BLUE_GOT_GOAL, F1_0*2);
+	audio.PlaySound (SOUND_HUD_BLUE_GOT_GOAL, SOUNDCLASS_GENERIC, I2X (2));
 gameData.multiplayer.players [nPlayer].flags &= ~(PLAYER_FLAGS_FLAG);  // Clear capture flag
 if (penalty) {
 #if 0
@@ -4045,21 +4045,21 @@ if (nPlayer == gameData.multiplayer.nLocalPlayer)
 else
 	HUDInitMessage (TXT_SCORED_ORBS2, gameData.multiplayer.players [nPlayer].callsign, buf [2]);
 if (nPlayer == gameData.multiplayer.nLocalPlayer)
-	DigiStartSoundQueued (SOUND_HUD_YOU_GOT_GOAL, F1_0*2);
+	DigiStartSoundQueued (SOUND_HUD_YOU_GOT_GOAL, SOUNDCLASS_GENERIC, I2X (2));
 else if (gameData.app.nGameMode & GM_TEAM) {
 	if (GetTeam (nPlayer) == TEAM_RED)
-		DigiPlaySample (SOUND_HUD_RED_GOT_GOAL, F1_0*2);
+		audio.PlaySound (SOUND_HUD_RED_GOT_GOAL, SOUNDCLASS_GENERIC, I2X (2));
 	else
-		DigiPlaySample (SOUND_HUD_BLUE_GOT_GOAL, F1_0*2);
+		audio.PlaySound (SOUND_HUD_BLUE_GOT_GOAL, SOUNDCLASS_GENERIC, I2X (2));
 	}
 else
-	DigiPlaySample (SOUND_OPPONENT_HAS_SCORED, F1_0*2);
+	audio.PlaySound (SOUND_OPPONENT_HAS_SCORED, SOUNDCLASS_GENERIC, I2X (2));
 if (bonus>gameData.score.nPhallicLimit) {
 	if (nPlayer == gameData.multiplayer.nLocalPlayer)
 		HUDInitMessage (TXT_RECORD, bonus);
 	else
 		HUDInitMessage (TXT_RECORD2, gameData.multiplayer.players [nPlayer].callsign, bonus);
-	DigiPlaySample (SOUND_BUDDY_MET_GOAL, F1_0*2);
+	audio.PlaySound (SOUND_BUDDY_MET_GOAL, SOUNDCLASS_GENERIC, I2X (2));
 	gameData.score.nPhallicMan = nPlayer;
 	gameData.score.nPhallicLimit = bonus;
 	}
@@ -4102,7 +4102,7 @@ MultiSendData (gameData.multigame.msg.buf, 6, 1);
 void MultiDoCheating (char *buf)
 {
 HUDInitMessage (TXT_PLAYER_CHEATED, gameData.multiplayer.players [(int) buf [1]].callsign);
-DigiPlaySampleLooped (SOUND_CONTROL_CENTER_WARNING_SIREN, F1_0, 3);
+audio.PlaySound (SOUND_CONTROL_CENTER_WARNING_SIREN, SOUNDCLASS_GENERIC, DEFAULT_VOLUME, DEFAULT_PAN, 0, 3);
 }
 
 //-----------------------------------------------------------------------------
@@ -4120,7 +4120,7 @@ void MultiSendGotFlag (char nPlayer)
 {
 gameData.multigame.msg.buf [0] = MULTI_GOT_FLAG;
 gameData.multigame.msg.buf [1] = nPlayer;
-DigiStartSoundQueued (SOUND_HUD_YOU_GOT_FLAG, F1_0*2);
+DigiStartSoundQueued (SOUND_HUD_YOU_GOT_FLAG, I2X (2));
 MultiSendData (gameData.multigame.msg.buf, 2, 1);
 MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);
 }
@@ -4134,7 +4134,7 @@ void MultiSendGotOrb (char nPlayer)
 {
 gameData.multigame.msg.buf [0] = MULTI_GOT_ORB;
 gameData.multigame.msg.buf [1] = nPlayer;
-DigiPlaySample (SOUND_YOU_GOT_ORB, F1_0*2);
+audio.PlaySound (SOUND_YOU_GOT_ORB, SOUNDCLASS_GENERIC, I2X (2));
 MultiSendData (gameData.multigame.msg.buf, 2, 1);
 MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);
 }
@@ -4146,11 +4146,11 @@ void MultiDoGotFlag (char *buf)
 	int nPlayer = (int) buf [1];
 
 if (nPlayer == gameData.multiplayer.nLocalPlayer)
-	DigiStartSoundQueued (SOUND_HUD_YOU_GOT_FLAG, F1_0*2);
+	DigiStartSoundQueued (SOUND_HUD_YOU_GOT_FLAG, I2X (2));
 else if (GetTeam (nPlayer) == TEAM_RED)
-	DigiStartSoundQueued (SOUND_HUD_RED_GOT_FLAG, F1_0*2);
+	DigiStartSoundQueued (SOUND_HUD_RED_GOT_FLAG, I2X (2));
 else
-	DigiStartSoundQueued (SOUND_HUD_BLUE_GOT_FLAG, F1_0*2);
+	DigiStartSoundQueued (SOUND_HUD_BLUE_GOT_FLAG, I2X (2));
 gameData.multiplayer.players [nPlayer].flags |= PLAYER_FLAGS_FLAG;
 gameData.pig.flags [!GetTeam (nPlayer)].path.Reset (10, -1);
 HUDInitMessage (TXT_PICKFLAG2, gameData.multiplayer.players [nPlayer].callsign);
@@ -4165,12 +4165,12 @@ void MultiDoGotOrb (char *buf)
 Assert (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY));
 if (gameData.app.nGameMode & GM_TEAM) {
 	if (GetTeam (nPlayer) == GetTeam (gameData.multiplayer.nLocalPlayer))
-		DigiPlaySample (SOUND_FRIEND_GOT_ORB, F1_0*2);
+		audio.PlaySound (SOUND_FRIEND_GOT_ORB, SOUNDCLASS_GENERIC, I2X (2));
 	else
-		DigiPlaySample (SOUND_OPPONENT_GOT_ORB, F1_0*2);
+		audio.PlaySound (SOUND_OPPONENT_GOT_ORB, SOUNDCLASS_GENERIC, I2X (2));
    }
 else
-	DigiPlaySample (SOUND_OPPONENT_GOT_ORB, F1_0*2);
+	audio.PlaySound (SOUND_OPPONENT_GOT_ORB, SOUNDCLASS_GENERIC, I2X (2));
 gameData.multiplayer.players [nPlayer].flags|= PLAYER_FLAGS_FLAG;
 if (gameData.app.nGameMode & GM_ENTROPY)
 	HUDInitMessage (TXT_PICKVIRUS2, gameData.multiplayer.players [nPlayer].callsign);
@@ -4195,7 +4195,7 @@ nObject = SpitPowerup (gameData.objs.consoleP, POW_HOARD_ORB, seed);
 if (nObject < 0)
 	return;
 HUDInitMessage ((gameData.app.nGameMode & GM_HOARD) ? TXT_DROP_ORB : TXT_DROP_VIRUS);
-DigiPlaySample (SOUND_DROP_WEAPON, F1_0);
+audio.PlaySound (SOUND_DROP_WEAPON);
 if (nObject > -1)
 	if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))
 		MultiSendDropFlag (nObject, seed);
@@ -4221,7 +4221,7 @@ if (!(LOCALPLAYER.flags & PLAYER_FLAGS_FLAG)) {
 	return;
 	}
 HUDInitMessage (TXT_DROP_FLAG);
-DigiPlaySample (SOUND_DROP_WEAPON, F1_0);
+audio.PlaySound (SOUND_DROP_WEAPON);
 seed = d_rand ();
 nObject = SpitPowerup (gameData.objs.consoleP, (ubyte) ((GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_RED) ? POW_BLUEFLAG : POW_REDFLAG), seed);
 if (nObject < 0)
@@ -4565,7 +4565,7 @@ if (oldrank!=GetMyNetRanking ()) {
 	MultiSendRanking ();
 	if (!gameOpts->multi.bNoRankings) {
 		HUDInitMessage (TXT_PROMOTED, pszRankStrings [GetMyNetRanking ()]);
-		DigiPlaySample (SOUND_BUDDY_MET_GOAL, F1_0*2);
+		audio.PlaySound (SOUND_BUDDY_MET_GOAL, SOUNDCLASS_GENERIC, I2X (2));
 		netPlayers.players [gameData.multiplayer.nLocalPlayer].rank = GetMyNetRanking ();
 		}
 	}
@@ -4745,7 +4745,7 @@ MultiSendData (gameData.multigame.msg.buf, 3, 0);
 
 void MultiDoConquerWarning (char *buf)
 {
-DigiPlaySample (SOUND_CONTROL_CENTER_WARNING_SIREN, F3_0);
+audio.PlaySound (SOUND_CONTROL_CENTER_WARNING_SIREN, SOUNDCLASS_GENERIC, I2X (3));
 }
 
 //-----------------------------------------------------------------------------

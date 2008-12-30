@@ -1162,7 +1162,7 @@ inline const CFixMatrix CFixMatrix::Create (CFixVector *v, fixang a) {
 
 	FixSinCos (a, &sinb, &cosb);
 	sinp = - (*v) [Y];
-	cosp = FixSqrt (f1_0 - FixMul (sinp, sinp));
+	cosp = FixSqrt (I2X (1) - FixMul (sinp, sinp));
 	return Create (sinp, cosp, sinb, cosb, FixDiv ( (*v) [X], cosp), FixDiv ( (*v) [Z], cosp));
 }
 

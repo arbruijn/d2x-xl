@@ -105,7 +105,7 @@ if (!InitAddonPowerup (objP)) {
 	}
 objP->info.controlType = CT_POWERUP;
 objP->info.renderType = RT_POWERUP;
-objP->mType.physInfo.mass = F1_0;
+objP->mType.physInfo.mass = I2X (1);
 objP->mType.physInfo.drag = 512;
 }
 
@@ -137,7 +137,7 @@ objP->rType.vClipInfo.nCurFrame = 0;
 objP->info.xSize = 289845;
 objP->info.controlType = CT_POWERUP;
 objP->info.renderType = RT_HOSTAGE;
-objP->mType.physInfo.mass = F1_0;
+objP->mType.physInfo.mass = I2X (1);
 objP->mType.physInfo.drag = 512;
 return 1;
 }
@@ -173,12 +173,12 @@ if (!bHasModel && ((info.nType != OBJ_WEAPON) || !gameData.objs.bIsMissile [info
 		return 0;
 
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-	a[PA] = (rand () % F1_0) - F1_0 / 2;
-	a[BA] = (rand () % F1_0) - F1_0 / 2;
-	a[HA] = (rand () % F1_0) - F1_0 / 2;
+	a[PA] = (rand () % I2X (1)) - I2X (1) / 2;
+	a[BA] = (rand () % I2X (1)) - I2X (1) / 2;
+	a[HA] = (rand () % I2X (1)) - I2X (1) / 2;
 	info.position.mOrient = CFixMatrix::Create(a);
 	}
-mType.physInfo.mass = F1_0;
+mType.physInfo.mass = I2X (1);
 mType.physInfo.drag = 512;
 mType.physInfo.brakes = 0;
 #if 0
@@ -187,13 +187,13 @@ if ((info.nType == OBJ_WEAPON) && gameData.objs.bIsMissile [info.nId])
  {
 	mType.physInfo.rotVel[X] = 0;
 	mType.physInfo.rotVel[Y] =
-	mType.physInfo.rotVel[Z] = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
+	mType.physInfo.rotVel[Z] = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
 	}
 #if 0
 else {
 	mType.physInfo.rotVel[X] =
 	mType.physInfo.rotVel[Z] = 0;
-	mType.physInfo.rotVel[Y] = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
+	mType.physInfo.rotVel[Y] = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
 	}
 #endif
 info.controlType = CT_WEAPON;
@@ -237,7 +237,7 @@ if (gameStates.app.bPlayerFiredLaserThisFrame != -1) {
 		return;
 	//the code below to check for CObject near the center of the screen
 	//completely ignores z, which may not be good
-	if ((abs (temp.p3_vec[X]) < F1_0 * 4) && (abs (temp.p3_vec[Y]) < F1_0 * 4)) {
+	if ((abs (temp.p3_vec[X]) < I2X (4)) && (abs (temp.p3_vec[Y]) < I2X (4))) {
 		objP->cType.aiInfo.nDangerLaser = gameStates.app.bPlayerFiredLaserThisFrame;
 		objP->cType.aiInfo.nDangerLaserSig = OBJECTS [gameStates.app.bPlayerFiredLaserThisFrame].info.nSignature;
 		}
@@ -251,9 +251,9 @@ fix CalcObjectLight (CObject *objP, fix *xEngineGlow)
 	fix xLight;
 
 if (gameStates.render.bBuildModels)
-	return F1_0;
+	return I2X (1);
 if (IsMultiGame && netGame.BrightPlayers && (objP->info.nType == OBJ_PLAYER)) {
-	xLight = F1_0; //	If option set for bright players in netgame, brighten them
+	xLight = I2X (1); //	If option set for bright players in netgame, brighten them
 	gameOpts->ogl.bLightObjects = 0;
 	}
 else
@@ -263,10 +263,10 @@ if (objP->info.nType == OBJ_ROBOT)
 	xLight += (ROBOTINFO (objP->info.nId).glow << 12);		//convert 4:4 to 16:16
 else if (objP->info.nType == OBJ_WEAPON) {
 	if (objP->info.nId == FLARE_ID)
-		xLight += F1_0 * 2;
+		xLight += I2X (2);
 	}
 else if (objP->info.nType == OBJ_MARKER)
- 	xLight += F1_0 * 2;
+ 	xLight += I2X (2);
 ComputeEngineGlow (objP, xEngineGlow);
 return xLight;
 }
@@ -439,12 +439,12 @@ G3TransformAndEncodePoint (&bot_p, bot_v);
 if (bLit)
 	light = ComputeObjectLight (objP, &top_p.p3_vec);
 else
-	light = f1_0;
+	light = I2X (1);
 #ifdef _3DFX
 _3dfx_rendering_poly_obj = 1;
 #endif
 #ifdef PA_3DFX_VOODOO
-light = f1_0;
+light = I2X (1);
 #endif
 G3DrawRodTexPoly (bmP, &bot_p, objP->info.xSize, &top_p, objP->info.xSize, light, NULL);
 #ifdef _3DFX
@@ -463,17 +463,17 @@ int	bLinearTMapPolyObjs = 1;
 //what darkening level to use when cloaked
 #define CLOAKED_FADE_LEVEL		28
 
-#define	CLOAK_FADEIN_DURATION_PLAYER	F2_0
-#define	CLOAK_FADEOUT_DURATION_PLAYER	F2_0
+#define	CLOAK_FADEIN_DURATION_PLAYER	I2X (2)
+#define	CLOAK_FADEOUT_DURATION_PLAYER	I2X (2)
 
-#define	CLOAK_FADEIN_DURATION_ROBOT	F1_0
-#define	CLOAK_FADEOUT_DURATION_ROBOT	F1_0
+#define	CLOAK_FADEIN_DURATION_ROBOT	I2X (1)
+#define	CLOAK_FADEOUT_DURATION_ROBOT	I2X (1)
 
 //------------------------------------------------------------------------------
 
 int GetCloakInfo (CObject *objP, fix xCloakStartTime, fix xCloakEndTime, tCloakInfo *ciP)
 {
-	tCloakInfo	ci = {0, CLOAKED_FADE_LEVEL, F1_0, F1_0, F1_0, 0, 0};
+	tCloakInfo	ci = {0, CLOAKED_FADE_LEVEL, I2X (1), I2X (1), I2X (1), 0, 0};
 	int			i;
 
 if (!(xCloakStartTime || xCloakEndTime)) {
@@ -483,8 +483,8 @@ if (!(xCloakStartTime || xCloakEndTime)) {
 		}
 	else if (objP->info.nType == OBJ_ROBOT) {
 		if (!ROBOTINFO (objP->info.nId).bossFlag) {
-			xCloakStartTime = gameData.time.xGame - F1_0 * 10;
-			xCloakEndTime = gameData.time.xGame + F1_0 * 10;
+			xCloakStartTime = gameData.time.xGame - I2X (10);
+			xCloakEndTime = gameData.time.xGame + I2X (10);
 			}
 		else if (0 <= (i = FindBoss (objP->Index ()))) {
 			xCloakStartTime = gameData.boss [i].nCloakStartTime;
@@ -678,7 +678,7 @@ if (!bForce && FAST_SHADOWS &&
 	return 1;
 #endif
 if (gameStates.render.bBuildModels)
-	xLight = F1_0;
+	xLight = I2X (1);
 else {
 	xLight = CalcObjectLight (objP, xEngineGlow);
 	if (bCloaked && bDepthSort && (gameStates.render.nShadowPass != 2)) {
@@ -722,7 +722,7 @@ else {
 											 gameData.multiplayer.players [id].cloakTime + CLOAK_TIME_MAX);
 		else if (objP->info.nType == OBJ_ROBOT) {
 			if (!ROBOTINFO (id).bossFlag)
-				bOk = DrawCloakedObject (objP, xLight, xEngineGlow, gameData.time.xGame - F1_0 * 10, gameData.time.xGame + F1_0 * 10);
+				bOk = DrawCloakedObject (objP, xLight, xEngineGlow, gameData.time.xGame - I2X (10), gameData.time.xGame + I2X (10));
 			else if (0 <= (i = FindBoss (objP->Index ())))
 				bOk = DrawCloakedObject (objP, xLight, xEngineGlow, gameData.boss [i].nCloakStartTime, gameData.boss [i].nCloakEndTime);
 			}
@@ -733,9 +733,9 @@ else {
 		//	Snipers get bright when they fire.
 		if (!gameStates.render.bBuildModels) {
 			if ((objP->info.nType == OBJ_ROBOT) &&
-				 (gameData.ai.localInfo [objP->Index ()].nextPrimaryFire < F1_0 / 8) &&
+				 (gameData.ai.localInfo [objP->Index ()].nextPrimaryFire < I2X (1) / 8) &&
 				 (objP->cType.aiInfo.behavior == AIB_SNIPE))
-				xLight = 2 * xLight + F1_0;
+				xLight = 2 * xLight + I2X (1);
 			bBlendPolys = bEnergyWeapon && (gameData.weapons.info [id].nInnerModel > -1);
 			bBrightPolys = bGatling || (bBlendPolys && WI_energy_usage (id));
 			if (bEnergyWeapon) {
@@ -746,14 +746,14 @@ else {
 			if (bBlendPolys) {
 #if 0
 				fix xDistToEye = CFixVector::Dist(gameData.objs.viewerP->info.position.vPos, objP->info.position.vPos);
-				if (xDistToEye < gameData.models.nSimpleModelThresholdScale * F1_0 * 2)
+				if (xDistToEye < gameData.models.nSimpleModelThresholdScale * I2X (2))
 #endif
 					bOk = DrawPolygonModel (
 						objP, &objP->info.position.vPos, &objP->info.position.mOrient,
 						reinterpret_cast<CAngleVector*> ( &objP->rType.polyObjInfo.animAngles),
 						gameData.weapons.info [id].nInnerModel,
 						objP->rType.polyObjInfo.nSubObjFlags,
-						bBrightPolys ? F1_0 : xLight,
+						bBrightPolys ? I2X (1) : xLight,
 						xEngineGlow,
 						bmiAltTex,
 						NULL);
@@ -768,7 +768,7 @@ else {
 			objP->rType.polyObjInfo.animAngles,
 			objP->rType.polyObjInfo.nModel,
 			objP->rType.polyObjInfo.nSubObjFlags,
-			(bGatling || bBrightPolys) ? F1_0 : xLight,
+			(bGatling || bBrightPolys) ? I2X (1) : xLight,
 			xEngineGlow,
 			bmiAltTex,
 			(bGatling || bEnergyWeapon) ? gameData.weapons.color + id : NULL);
@@ -953,7 +953,7 @@ switch (objP->info.renderType) {
 						float dt = X2F (gameData.time.xGame - objP->CreationTime ());
 
 						if (dt < 1) {
-							fix xScale = (fix) (F1_0 + F1_0 * dt * dt) / 2;
+							fix xScale = (fix) (I2X (1) + I2X (1) * dt * dt) / 2;
 							gameData.models.vScale.Set (xScale, xScale, xScale);
 							}
 						}
@@ -984,7 +984,7 @@ switch (objP->info.renderType) {
 					if (objP->info.nType == OBJ_WEAPON) {
 						//DoObjectSmoke (objP);
 						if ((objP->info.nId == VULCAN_ID) || (objP->info.nId == GAUSS_ID))
-							gameData.models.vScale.Set (F1_0 / 4, F1_0 / 4, F1_0 * 2);
+							gameData.models.vScale.Set (I2X (1) / 4, I2X (1) / 4, I2X (2));
 						DrawPolygonObject (objP, bDepthSort, 0);
 						gameData.models.vScale.SetZero ();
 						}
@@ -1007,12 +1007,12 @@ switch (objP->info.renderType) {
 				if (!DrawPolygonObject (objP, bDepthSort, 0))
 					ConvertWeaponToPowerup (objP);
 				else {
-					objP->mType.physInfo.mass = F1_0;
+					objP->mType.physInfo.mass = I2X (1);
 					objP->mType.physInfo.drag = 512;
 					if (gameOpts->render.powerups.nSpin !=
 						((objP->mType.physInfo.rotVel[Y] | objP->mType.physInfo.rotVel[Z]) != 0))
 						objP->mType.physInfo.rotVel[Y] =
-						objP->mType.physInfo.rotVel[Z] = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
+						objP->mType.physInfo.rotVel[Z] = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
 					}
 #if DBG
 				RenderRobotShield (objP);

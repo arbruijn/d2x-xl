@@ -130,7 +130,7 @@ if (!bFound)
 	strcat (szFeedbackResult, TXT_NOBODY);
 else
 	strcat (szFeedbackResult, ".");
-DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
+audio.PlaySound (SOUND_HUD_MESSAGE);
 Assert (strlen (szFeedbackResult) < 200);
 HUDInitMessage (szFeedbackResult);
 return 1;
@@ -631,8 +631,8 @@ msgBuf [t+3] = (char) (95 + 128);
 msgBuf [t+4] = (char) (63 + 128);
 msgBuf [t+5] = (char) (0 + 128);
 msgBuf [t+6] = (char) 0;
-DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
-HUDPlayerMessage ("%s %s", msgBuf, buf+2);
+audio.PlaySound (SOUND_HUD_MESSAGE);
+HUDPlayerMessage ("%s %s", msgBuf, buf + 2);
 }
 
 //-----------------------------------------------------------------------------

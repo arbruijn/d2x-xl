@@ -129,7 +129,7 @@ if (!IsMultiGame || IsCoopGame) {
 			bmH = bmObjTally [i].Width () / 2;
 			bmW = bmObjTally [i].Height () / 2;
 			x = x0 - bmW - HUD_LHX (2);
-			OglUBitMapMC (x, y, bmW, bmH, &bmObjTally [i], NULL, F1_0, 0);
+			OglUBitMapMC (x, y, bmW, bmH, &bmObjTally [i], NULL, I2X (1), 0);
 			sprintf (szInfo, "%d", objCounts [i]);
 			fontManager.Current ()->StringSize (szInfo, w, h, aw);
 			x -= w + HUD_LHY (2);
@@ -336,7 +336,7 @@ for (i = 0; i < 2; i++) {
 				continue;
 			}
 		HUDBitBlt (nIconScale * - (x + (w - bmP->Width ()) / (2 * nIconScale)), 
-					  nIconScale * - (y - hIcon), bmP, nIconScale * F1_0, 0);
+					  nIconScale * - (y - hIcon), bmP, I2X (nIconScale), 0);
 		*szAmmo = '\0';
 		nAmmoColor = GREEN_RGBA;
 		if (ammoType [i][l]) {
@@ -527,7 +527,7 @@ void HUDShowInventoryIcons (void)
 		PLAYER_FLAGS_SLOWMOTION,
 		PLAYER_FLAGS_BULLETTIME
 		};
-	static int nEnergyType [NUM_INV_ITEMS] = {F1_0, 100 * F1_0, 0, F1_0, 0, F1_0, 0, 0, F1_0, F1_0};
+	static int nEnergyType [NUM_INV_ITEMS] = {I2X (1), I2X (100), 0, I2X (1), 0, I2X (1), 0, 0, I2X (1), I2X (1)};
 	static int nIdItems [NUM_INV_ITEMS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 dy = (screen.Height () - CCanvas::Current ()->Height ());
@@ -541,7 +541,7 @@ x = (screen.Width () - (n - firstItem) * wIcon - (n - 1 - firstItem) * ox) / 2;
 for (j = firstItem; j < n; j++) {
 	int bHave, bArmed, bActive = HUDEquipmentActive (nInvFlags [j]);
 	bmP = bmInvItems + j;
-	HUDBitBlt (nIconScale * - (x + (w - bmP->Width ()) / (2 * nIconScale)), nIconScale * - (y - hIcon), bmP, nIconScale * F1_0, 0);
+	HUDBitBlt (nIconScale * - (x + (w - bmP->Width ()) / (2 * nIconScale)), nIconScale * - (y - hIcon), bmP, I2X (nIconScale), 0);
 	//m = 9 - j;
 	*szCount = '\0';
 	if (j == INV_ITEM_HEADLIGHT)

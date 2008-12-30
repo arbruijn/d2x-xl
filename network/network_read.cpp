@@ -344,7 +344,7 @@ if (!gameData.multiplayer.players [nTheirPlayer].connected) {
 		NDRecordMultiReconnect (nTheirPlayer);
 	MultiMakeGhostPlayer (nTheirPlayer);
 	OBJECTS [theirObjNum].CreateAppearanceEffect ();
-	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
+	audio.PlaySound (SOUND_HUD_MESSAGE);
 	ClipRank (reinterpret_cast<char*> (&netPlayers.players [nTheirPlayer].rank));
 	if (gameOpts->multi.bNoRankings)
 		HUDInitMessage ("'%s' %s", gameData.multiplayer.players [nTheirPlayer].callsign, TXT_REJOIN);
@@ -481,7 +481,7 @@ if (!gameData.multiplayer.players [nTheirPlayer].connected) {
 		NDRecordMultiReconnect (nTheirPlayer);
 	MultiMakeGhostPlayer (nTheirPlayer);
 	OBJECTS [theirObjNum].CreateAppearanceEffect ();
-	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
+	audio.PlaySound (SOUND_HUD_MESSAGE);
 	ClipRank (reinterpret_cast<char*> (&netPlayers.players [nTheirPlayer].rank));
 	if (gameOpts->multi.bNoRankings)
 		HUDInitMessage ("'%s' %s", gameData.multiplayer.players [nTheirPlayer].callsign, TXT_REJOIN);

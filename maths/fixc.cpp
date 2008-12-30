@@ -69,7 +69,7 @@ if (neg)
 
 // ------------------------------------------------------------------------
 
-#define EPSILON (F1_0/100)
+#define EPSILON (I2X (1)/100)
 
 // ------------------------------------------------------------------------
 //given cos & sin of an angle, return that angle.
@@ -303,11 +303,11 @@ return ((fix) LongSqrt (a)) << 8;
 void FixSinCos (fix a, fix *s, fix *c)
 {
 if (gameOpts->render.nMathFormat == 2) {
-	double d = (double) (a * 2.0 * Pi) / F1_0;
+	double d = (double) (a * 2.0 * Pi) / I2X (1);
 	if (s)
-		*s = (fix) (sin (d) * F1_0);
+		*s = (I2X (sin (d));
 	if (c)
-		*c = (fix) (cos (d) * F1_0);
+		*c = I2X (cos (d));
 	}
 else  {
 	int i = (a >> 8) & 0xff;
@@ -345,7 +345,7 @@ fixang FixASin (fix v)
 	fix	vv = labs(v);
 	int	i, f, aa;
 
-if (vv >= f1_0)		//check for out of range
+if (vv >= I2X (1))		//check for out of range
 	return 0x4000;
 i = (vv >> 8) & 0xff;
 f = vv & 0xff;
@@ -363,7 +363,7 @@ fixang FixACos(fix v)
 	fix	vv = labs (v);
 	int	i, f, aa;
 
-if (vv >= f1_0)		//check for out of range
+if (vv >= I2X (1))		//check for out of range
 	return 0;
 i = (vv >> 8) & 0xff;
 f = vv & 0xff;

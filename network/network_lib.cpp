@@ -181,7 +181,7 @@ for (i = networkData.nActiveGames; i > 0;)
 		bPlaySound = 1;
 		}
 if (bPlaySound)
-	DigiPlaySample (SOUND_HUD_MESSAGE,F1_0);
+	audio.PlaySound (SOUND_HUD_MESSAGE);
 }
 
 //------------------------------------------------------------------------------

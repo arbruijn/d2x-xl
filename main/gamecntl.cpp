@@ -101,7 +101,7 @@ void PlayTestSound(void);
 #define CONVERTER_RATE  20		//10 units per second xfer rate
 #define CONVERTER_SCALE  2		//2 units energy -> 1 unit shields
 
-#define CONVERTER_SOUND_DELAY (f1_0/2)		//play every half second
+#define CONVERTER_SOUND_DELAY (I2X (1)/2)		//play every half second
 
 void TransferEnergyToShield(fix time)
 {
@@ -128,7 +128,7 @@ void TransferEnergyToShield(fix time)
 		last_playTime = 0;
 
 	if (gameData.time.xGame > last_playTime+CONVERTER_SOUND_DELAY) {
-		audio.PlaySample(SOUND_CONVERT_ENERGY);
+		audio.PlaySound(SOUND_CONVERT_ENERGY);
 		last_playTime = gameData.time.xGame;
 	}
 }

@@ -255,7 +255,7 @@ if (wallP) {
 	}
 // get and check the corona emitting texture
 nBrightness = (nTexture = sideP->m_nOvlTex) ? IsLight (nTexture) : 0;
-if (nBrightness >= F1_0 / 8) {
+if (nBrightness >= I2X (1) / 8) {
 	bAdditive = gameOpts->render.coronas.bAdditive;
 	}
 else if ((nBrightness = IsLight (nTexture = sideP->m_nBaseTex))) {
@@ -271,7 +271,7 @@ if (gameOpts->render.nLightingMethod) {
 		return 0;
 	}
 #if 0
-if (fIntensityP && (nBrightness < F1_0))
+if (fIntensityP && (nBrightness < I2X (1)))
 	*fIntensityP *= X2F (nBrightness);
 #endif
 if (gameStates.app.bD1Mission) {

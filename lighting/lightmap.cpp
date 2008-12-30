@@ -226,7 +226,7 @@ for (i = 0; i < 4; i++) {
 dx = xMax - xMin;
 dy = yMax - yMin;
 dz = zMax - zMin;
-return sqrt (dx * dx + dy * dy + dz * dz) / (2 * (double) F1_0);
+return sqrt (dx * dx + dy * dy + dz * dz) / (2 * (double) I2X (1));
 }
 
 //------------------------------------------------------------------------------

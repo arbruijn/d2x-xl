@@ -131,21 +131,21 @@ tUVL [3].u = 0;
 tUVL [1].u =
 tUVL [2].u =
 tUVL [2].v =
-tUVL [3].v = F1_0;
+tUVL [3].v = I2X (1);
 
-v1 = gameData.objs.viewerP->info.position.vPos + gameData.objs.viewerP->info.position.mOrient.FVec() * (F1_0*4);
+v1 = gameData.objs.viewerP->info.position.vPos + gameData.objs.viewerP->info.position.mOrient.FVec() * (I2X (4));
 v1 += gameData.objs.viewerP->info.position.mOrient.RVec() * nEyeOffset;
-v2 = v1 + gameData.objs.viewerP->info.position.mOrient.RVec() * (-F1_0*1);
-v2 += gameData.objs.viewerP->info.position.mOrient.UVec() * (F1_0*1);
+v2 = v1 + gameData.objs.viewerP->info.position.mOrient.RVec() * (-I2X (1));
+v2 += gameData.objs.viewerP->info.position.mOrient.UVec() * (I2X (1));
 G3TransformAndEncodePoint(&reticlePoints [0], v2);
-v2 = v1 + gameData.objs.viewerP->info.position.mOrient.RVec() * (+F1_0*1);
-v2 += gameData.objs.viewerP->info.position.mOrient.UVec() * (F1_0*1);
+v2 = v1 + gameData.objs.viewerP->info.position.mOrient.RVec() * (+I2X (1));
+v2 += gameData.objs.viewerP->info.position.mOrient.UVec() * (I2X (1));
 G3TransformAndEncodePoint(&reticlePoints [1], v2);
-v2 = v1 + gameData.objs.viewerP->info.position.mOrient.RVec() * (+F1_0*1);
-v2 += gameData.objs.viewerP->info.position.mOrient.UVec() * (-F1_0*1);
+v2 = v1 + gameData.objs.viewerP->info.position.mOrient.RVec() * (+I2X (1));
+v2 += gameData.objs.viewerP->info.position.mOrient.UVec() * (-I2X (1));
 G3TransformAndEncodePoint(&reticlePoints [2], v2);
-v2 = v1 + gameData.objs.viewerP->info.position.mOrient.RVec() * (-F1_0*1);
-v2 += gameData.objs.viewerP->info.position.mOrient.UVec() * (-F1_0*1);
+v2 = v1 + gameData.objs.viewerP->info.position.mOrient.RVec() * (-I2X (1));
+v2 += gameData.objs.viewerP->info.position.mOrient.UVec() * (-I2X (1));
 G3TransformAndEncodePoint(&reticlePoints [3], v2);
 
 if ( reticleCanvas == NULL) {
@@ -177,7 +177,7 @@ void FlashFrame (void)
 	static fixang flash_ang = 0;
 
 if (!(gameData.reactor.bDestroyed || gameStates.gameplay.seismic.nMagnitude)) {
-	gameStates.render.nFlashScale = F1_0;
+	gameStates.render.nFlashScale = I2X (1);
 	return;
 	}
 if (gameStates.app.bEndLevelSequence)
@@ -187,18 +187,18 @@ if (paletteManager.BlueEffect () > 10)		//whiting out
 //	flash_ang += FixMul(FLASH_CYCLE_RATE, gameData.time.xFrame);
 if (gameStates.gameplay.seismic.nMagnitude) {
 	fix xAddedFlash = abs(gameStates.gameplay.seismic.nMagnitude);
-	if (xAddedFlash < F1_0)
+	if (xAddedFlash < I2X (1))
 		xAddedFlash *= 16;
-	flash_ang += (fixang) FixMul (gameStates.render.nFlashRate, FixMul(gameData.time.xFrame, xAddedFlash+F1_0));
+	flash_ang += (fixang) FixMul (gameStates.render.nFlashRate, FixMul(gameData.time.xFrame, xAddedFlash+I2X (1)));
 	FixFastSinCos (flash_ang, &gameStates.render.nFlashScale, NULL);
-	gameStates.render.nFlashScale = (gameStates.render.nFlashScale + F1_0*3)/4;	//	gets in range 0.5 to 1.0
+	gameStates.render.nFlashScale = (gameStates.render.nFlashScale + I2X (3))/4;	//	gets in range 0.5 to 1.0
 	}
 else {
 	flash_ang += (fixang) FixMul (gameStates.render.nFlashRate, gameData.time.xFrame);
 	FixFastSinCos (flash_ang, &gameStates.render.nFlashScale, NULL);
-	gameStates.render.nFlashScale = (gameStates.render.nFlashScale + f1_0)/2;
+	gameStates.render.nFlashScale = (gameStates.render.nFlashScale + I2X (1))/2;
 	if (gameStates.app.nDifficultyLevel == 0)
-		gameStates.render.nFlashScale = (gameStates.render.nFlashScale+F1_0*3)/4;
+		gameStates.render.nFlashScale = (gameStates.render.nFlashScale+I2X (3))/4;
 	}
 }
 
@@ -259,7 +259,7 @@ if (IS_WALL (nWallNum)) {
 					if (!gameOpts->render.color.bWalls)
 						c = 0;
 					if (WALLS [nWallNum].hps)
-						gameStates.render.grAlpha = (float) fabs ((1.0f - (float) WALLS [nWallNum].hps / ((float) F1_0 * 100.0f)) * FADE_LEVELS);
+						gameStates.render.grAlpha = (float) fabs ((1.0f - (float) WALLS [nWallNum].hps / ((float) I2X (100))) * FADE_LEVELS);
 					else if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1])
 						gameStates.render.grAlpha = COMPETITION ? FADE_LEVELS * 3.0f / 2.0f : (float) (FADE_LEVELS - extraGameInfo [1].grWallTransparency);
 					else
@@ -385,11 +385,11 @@ if (!(bHaveMonitorBg && gameOpts->render.cameras.bFitToWall)) {
 		props.uvls [0].u =
 		props.uvls [0].v =
 		props.uvls [1].v =
-		props.uvls [3].u = F1_0 / 4;
+		props.uvls [3].u = I2X (1) / 4;
 		props.uvls [1].u =
 		props.uvls [2].u =
 		props.uvls [2].v =
-		props.uvls [3].v = 3 * F1_0 / 4;
+		props.uvls [3].v = I2X (3) / 4;
 		}
 	else if (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk) {
 		bmBot = LoadFaceBitmap (props.nBaseTex, sideP->m_nFrame);
@@ -489,9 +489,9 @@ if (gameOpts->render.debug.bWireFrame && !IsMultiGame)
 	DrawOutline (props.nVertices, pointList);
 }
 
-fix	Tulate_min_dot = (F1_0/4);
-//--unused-- fix	Tulate_min_ratio = (2*F1_0);
-fix	Min_n0_n1_dot	= (F1_0*15/16);
+fix	Tulate_min_dot = (I2X (1)/4);
+//--unused-- fix	Tulate_min_ratio = (I2X (2));
+fix	Min_n0_n1_dot	= (I2X (15)/16);
 
 // -----------------------------------------------------------------------------------
 //	Render a side.
@@ -573,7 +573,7 @@ props.nOvlOrient = sideP->m_nOvlOrient;
 	if (gameStates.render.bDoLightmaps) {
 		memcpy (props.uvl_lMaps, uvl_lMaps, sizeof (tUVL) * 4);
 #if LMAP_LIGHTADJUST
-		props.uvls [0].l = props.uvls [1].l = props.uvls [2].l = props.uvls [3].l = F1_0 / 2;
+		props.uvls [0].l = props.uvls [1].l = props.uvls [2].l = props.uvls [3].l = I2X (1) / 2;
 #	endif
 		}
 #endif
@@ -608,7 +608,7 @@ else {
 	// non-planar faces are still passed as quads to the renderer as it will render triangles (GL_TRIANGLE_FAN) anyway
 	// just need to make sure the vertices come in the proper order depending of the the orientation of the two non-planar triangles
 	props.vNormal = sideP->m_normals [0] + sideP->m_normals [1];
-	props.vNormal *= (F1_0 / 2);
+	props.vNormal *= (I2X (1) / 2);
 	props.nVertices = 4;
 	if (sideP->m_nType == SIDE_IS_TRI_02) {
 		memcpy (props.uvls, sideP->m_uvls, sizeof (tUVL) * 4);
@@ -1161,10 +1161,10 @@ else {
 							  FixDiv (gameStates.render.xZoom, gameStates.render.nZoomFactor), bOglScale);
 		}
 	else if ((gameData.objs.viewerP == gameData.objs.consoleP) && (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1])) {
-		gameStates.render.nMinZoomFactor = (fix) (F1_0 * gameStates.render.glAspect); //(((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) ? 2 * F1_0  / 3 : F1_0) * glAspect);
+		gameStates.render.nMinZoomFactor = I2X (gameStates.render.glAspect); //(((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) ? I2X (2)  / 3 : I2X (1)) * glAspect);
 		gameStates.render.nMaxZoomFactor = gameStates.render.nMinZoomFactor * 5;
 		if ((gameData.weapons.nPrimary != VULCAN_INDEX) && (gameData.weapons.nPrimary != GAUSS_INDEX))
-			gameStates.render.nZoomFactor = gameStates.render.nMinZoomFactor; //(fix) (((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) ? 2 * F1_0  / 3 : F1_0) * glAspect);
+			gameStates.render.nZoomFactor = gameStates.render.nMinZoomFactor; //(fix) (((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) ? I2X (2)  / 3 : I2X (1)) * glAspect);
 		else {
 			switch (extraGameInfo [IsMultiGame].nZoomMode) {
 				case 0:

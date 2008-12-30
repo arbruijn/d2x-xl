@@ -182,9 +182,9 @@ void CObject::DoPowerupFrame (void)
 if (info.renderType != RT_POLYOBJ)
 	UpdatePowerupClip (vcP, vciP, i);
 if (info.xLifeLeft <= 0) {
-	/*Object*/CreateExplosion (info.nSegment, info.position.vPos, F1_0 * 7 / 2, VCLIP_POWERUP_DISAPPEARANCE);
+	/*Object*/CreateExplosion (info.nSegment, info.position.vPos, I2X (7) / 2, VCLIP_POWERUP_DISAPPEARANCE);
 	if (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].nSound > -1)
-		SetObjectSound (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].nSound, SOUNDCLASS_GENERIC, i);
+		CreateObjectSound (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].nSound, SOUNDCLASS_GENERIC, i);
 	}
 }
 
@@ -272,8 +272,8 @@ for (i = 3; i < MAX_SECONDARY_WEAPONS; i++)
 	LOCALPLAYER.secondaryAmmo[i] = quantity/5;
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordLaserLevel (LOCALPLAYER.laserLevel, MAX_LASER_LEVEL);
-LOCALPLAYER.energy = F1_0 * 200;
-LOCALPLAYER.shields = F1_0 * 200;
+LOCALPLAYER.energy = I2X (200);
+LOCALPLAYER.shields = I2X (200);
 MultiSendShields ();
 LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
 LOCALPLAYER.laserLevel = MAX_SUPER_LASER_LEVEL;
@@ -292,7 +292,7 @@ int PickupEnergyBoost (CObject *objP, int nPlayer)
 	CPlayerData	*playerP = gameData.multiplayer.players + nPlayer;
 
 if (playerP->energy < MAX_ENERGY) {
-	fix boost = 3 * F1_0 * (NDL - gameStates.app.nDifficultyLevel + 1);
+	fix boost = I2X (3) * (NDL - gameStates.app.nDifficultyLevel + 1);
 	if (gameStates.app.nDifficultyLevel == 0)
 		boost += boost / 2;
 	playerP->energy += boost;
@@ -315,7 +315,7 @@ int PickupShieldBoost (CObject *objP, int nPlayer)
 	CPlayerData	*playerP = gameData.multiplayer.players + nPlayer;
 
 if (playerP->shields < MAX_SHIELDS) {
-	fix boost = 3 * F1_0 * (NDL - gameStates.app.nDifficultyLevel + 1);
+	fix boost = I2X (3) * (NDL - gameStates.app.nDifficultyLevel + 1);
 	if (gameStates.app.nDifficultyLevel == 0)
 		boost += boost / 2;
 	playerP->shields += boost;
@@ -435,8 +435,8 @@ else {
 		id = objP->info.nId;
 		if (id >= MAX_POWERUP_TYPES_D2)
 			id = POW_AFTERBURNER;
-		MultiSendPlaySound (gameData.objs.pwrUp.info [id].hitSound, F1_0);
-		DigiPlaySample ((short) gameData.objs.pwrUp.info [id].hitSound, F1_0);
+		MultiSendPlaySound (gameData.objs.pwrUp.info [id].hitSound, I2X (1));
+		audio.PlaySound ((short) gameData.objs.pwrUp.info [id].hitSound);
 		PowerupBasic (15, 0, 15, 0, pszGot, nPlayer);
 		}
 	bUsed = -1;
@@ -499,7 +499,7 @@ int PickupAfterburner (CObject *objP, int nPlayer)
 	
 if (bUsed >= 0)
 	return bUsed;
-gameData.physics.xAfterburnerCharge = f1_0;
+gameData.physics.xAfterburnerCharge = I2X (1);
 return 1;
 }
 
@@ -526,8 +526,8 @@ if (ISLOCALPLAYER (nPlayer)) {
 
 	if (playerP->flags & nKey)
 		return 0;
-	MultiSendPlaySound (gameData.objs.pwrUp.info [objP->info.nId].hitSound, F1_0);
-	DigiPlaySample ((short) gameData.objs.pwrUp.info[objP->info.nId].hitSound, F1_0);
+	MultiSendPlaySound (gameData.objs.pwrUp.info [objP->info.nId].hitSound, I2X (1));
+	audio.PlaySound ((short) gameData.objs.pwrUp.info[objP->info.nId].hitSound);
 	playerP->flags |= nKey;
 	PowerupBasic (15, 0, 0, KEY_SCORE, "%s %s", pszKey, TXT_ACCESS_GRANTED);
 	InvalidateEscortGoal ();
@@ -572,8 +572,8 @@ if (gameData.objs.pwrUp.info [id].hitSound > -1) {
 	if (!bApply && (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) && ((id == POW_CLOAK) || (id == POW_INVUL)))
 		id = POW_SHIELD_BOOST;
 	if (IsMultiGame) // Added by Rob, take this out if it turns out to be not good for net games!
-		MultiSendPlaySound (gameData.objs.pwrUp.info [id].hitSound, F1_0);
-	DigiPlaySample ((short) gameData.objs.pwrUp.info [id].hitSound, F1_0);
+		MultiSendPlaySound (gameData.objs.pwrUp.info [id].hitSound, I2X (1));
+	audio.PlaySound ((short) gameData.objs.pwrUp.info [id].hitSound);
 	}
 MultiSendWeapons (1);
 }

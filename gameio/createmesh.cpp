@@ -964,7 +964,7 @@ void CQuadMeshBuilder::SetupFace (void)
 	CFloatVector3	vNormalf;
 
 vNormal = m_sideP->m_normals [0] + m_sideP->m_normals [1];
-vNormal *= F1_0 / 2;
+vNormal *= I2X (1) / 2;
 vNormalf.Assign (vNormal);
 for (i = 0; i < 4; i++) {
 	j = m_sideVerts [i];

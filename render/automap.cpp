@@ -129,7 +129,7 @@ m_bDisplay = false;
 m_data.bCheat = 0;
 m_data.bHires = 1;
 m_data.nViewDist = 0;
-m_data.nMaxDist = F1_0 * 2000;
+m_data.nMaxDist = I2X (2000);
 m_data.nZoom = 0x9000;
 m_data.viewPos.SetZero ();
 m_data.viewTarget.SetZero ();
@@ -910,7 +910,7 @@ for (i = 0; i < nbright; i++) {
 	if (edgeP->flags & EF_NO_FADE)
 		CCanvas::Current ()->SetColorRGBi (edgeP->color);
 	else {
-		dist = F1_0 - FixDiv (dist, m_data.nMaxDist);
+		dist = I2X (1) - FixDiv (dist, m_data.nMaxDist);
 		color = X2I (dist*31);
 		CCanvas::Current ()->SetColorRGBi (RGBA_FADE (edgeP->color, 32.0 / color));
 		}
@@ -1232,7 +1232,7 @@ else {
 			for (e2 = 1; e2 < e->nFaces; e2++) {
 				if ((e1 != e2) && (e->nSegment [e1] != e->nSegment [e2])) {
 					if (CFixVector::Dot (SEGMENTS [e->nSegment [e1]].m_sides [e->sides [e1]].m_normals [0], 
-												SEGMENTS [e->nSegment [e2]].m_sides [e->sides [e2]].m_normals [0]) > (F1_0- (F1_0/10))) {
+												SEGMENTS [e->nSegment [e2]].m_sides [e->sides [e2]].m_normals [0]) > (I2X (1)- (I2X (1)/10))) {
 						e->flags &= (~EF_DEFINING);
 						break;
 					}

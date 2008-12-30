@@ -116,7 +116,7 @@ else {
 		return 0;
 	}
 //do check for potential overflow
-if (labs (num) / (f1_0 / 2) >= labs (den))
+if (labs (num) / (I2X (1) / 2) >= labs (den))
 	return 0;
 d *= FixDiv(num, den);
 intersection = (*p0) + d;
@@ -144,7 +144,7 @@ if (!den)
 if (labs (num) > labs (den))
 	return 0;
 //do check for potential overflow
-if (labs (num) / (f1_0 / 2) >= labs (den))
+if (labs (num) / (I2X (1) / 2) >= labs (den))
 	return 0;
 d *= FixDiv(num, den);
 intersection = (*p0) + d;
@@ -1173,16 +1173,16 @@ if (nOrient == 0) {
 	bmy = ((unsigned) X2I (v * h)) % h;
 	}
 else if (nOrient == 1) {
-	bmx = ((unsigned) X2I ((F1_0 - v) * w)) % w;
+	bmx = ((unsigned) X2I ((I2X (1) - v) * w)) % w;
 	bmy = ((unsigned) X2I (u * h)) % h;
 	}
 else if (nOrient == 2) {
-	bmx = ((unsigned) X2I ((F1_0 - u) * w)) % w;
-	bmy = ((unsigned) X2I ((F1_0 - v) * h)) % h;
+	bmx = ((unsigned) X2I ((I2X (1) - u) * w)) % w;
+	bmy = ((unsigned) X2I ((I2X (1) - v) * h)) % h;
 	}
 else {
 	bmx = ((unsigned) X2I (v * w)) % w;
-	bmy = ((unsigned) X2I ((F1_0 - u) * h)) % h;
+	bmy = ((unsigned) X2I ((I2X (1) - u) * h)) % h;
 	}
 offs = bmy * w + bmx;
 if (bmP->Flags () & BM_FLAG_TGA) {

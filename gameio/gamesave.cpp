@@ -2027,7 +2027,7 @@ void dump_mine_info(void)
 	int	nSegment, nSide;
 	fix	min_u, max_u, min_v, max_v, min_l, max_l, max_sl;
 
-	min_u = F1_0*1000;
+	min_u = I2X (100)0;
 	min_v = min_u;
 	min_l = min_u;
 

@@ -643,9 +643,9 @@ if (!flags) {	//draw entire CObject
 #endif
 		if (objP && (objP->info.nType == OBJ_POWERUP)) {
 			if ((objP->info.nId == POW_SMARTMINE) || (objP->info.nId == POW_PROXMINE))
-				gameData.models.vScale.Set (2 * F1_0, 2 * F1_0, 2 * F1_0);
+				gameData.models.vScale.Set (I2X (2), I2X (2), I2X (2));
 			else
-				gameData.models.vScale.Set (3 * F1_0 / 2, 3 * F1_0 / 2, 3 * F1_0 / 2);
+				gameData.models.vScale.Set (I2X (3) / 2, I2X (3) / 2, I2X (3) / 2);
 			}
 		gameStates.ogl.bUseTransform = 
 			(gameStates.app.bEndLevelSequence < EL_OUTSIDE) && 
@@ -840,7 +840,7 @@ if (gameData.models.polyModels [nModel].rad != 0)
 else
 	p [Z] = DEFAULT_VIEW_DIST;
 o = CFixMatrix::Create (*orientAngles);
-DrawPolygonModel (NULL, &p, &o, NULL, nModel, 0, f1_0, NULL, NULL, NULL);
+DrawPolygonModel (NULL, &p, &o, NULL, nModel, 0, I2X (1), NULL, NULL, NULL);
 G3EndFrame ();
 if (gameStates.ogl.nDrawBuffer != GL_BACK)
 	GrUpdate (0);

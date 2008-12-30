@@ -219,7 +219,7 @@ objP->rType.vClipInfo.nCurFrame = 0;
 objP->info.xSize = gameData.objs.pwrUp.info [objP->info.nId].size;
 objP->info.controlType = CT_POWERUP;
 objP->info.renderType = RT_POWERUP;
-objP->mType.physInfo.mass = F1_0;
+objP->mType.physInfo.mass = I2X (1);
 objP->mType.physInfo.drag = 512;
 }
 
@@ -252,17 +252,17 @@ if (objP->info.renderType == RT_POLYOBJ)
 nModel = WeaponToModel (objP->info.nId);
 if (!(nModel && HaveReplacementModel (nModel)))
 	return 0;
-a[PA] = (rand () % F1_0) - F1_0 / 2;
-a[BA] = (rand () % F1_0) - F1_0 / 2;
-a[HA] = (rand () % F1_0) - F1_0 / 2;
+a[PA] = (rand () % I2X (1)) - I2X (1) / 2;
+a[BA] = (rand () % I2X (1)) - I2X (1) / 2;
+a[HA] = (rand () % I2X (1)) - I2X (1) / 2;
 objP->info.position.mOrient = CFixMatrix::Create(a);
 #if 0
-objP->mType.physInfo.mass = F1_0;
+objP->mType.physInfo.mass = I2X (1);
 objP->mType.physInfo.drag = 512;
 #endif
 objP->mType.physInfo.rotVel[Z] =
 objP->mType.physInfo.rotVel[Y] = 0;
-objP->mType.physInfo.rotVel[X] = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
+objP->mType.physInfo.rotVel[X] = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
 //objP->info.controlType = CT_WEAPON;
 objP->info.renderType = RT_POLYOBJ;
 objP->info.movementType = MT_PHYSICS;

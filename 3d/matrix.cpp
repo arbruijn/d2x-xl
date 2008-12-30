@@ -60,16 +60,16 @@ void ScaleMatrix (int bOglScale)
 	transformation.m_info.viewf [1] = transformation.m_info.viewf [0];		//so we can use unscaled if we want
 
 transformation.m_info.scale = transformation.m_info.aspect;
-if (transformation.m_info.zoom <= f1_0) 		//xZoom in by scaling z
+if (transformation.m_info.zoom <= I2X (1)) 		//xZoom in by scaling z
 	transformation.m_info.scale [Z] = FixMul (transformation.m_info.scale [Z], transformation.m_info.zoom);
 else {			//xZoom out by scaling x&y
-	fix s = FixDiv (f1_0, transformation.m_info.zoom);
+	fix s = FixDiv (I2X (1), transformation.m_info.zoom);
 
 	transformation.m_info.scale [X] = FixMul (transformation.m_info.scale [X], s);
 	transformation.m_info.scale [Y] = FixMul (transformation.m_info.scale [Y], s);
 	}
 transformation.m_info.scalef.Assign (transformation.m_info.scale);
-//transformation.m_info.scale [X] = transformation.m_info.scale [Y] = transformation.m_info.scale [Z] = F1_0;
+//transformation.m_info.scale [X] = transformation.m_info.scale [Y] = transformation.m_info.scale [Z] = I2X (1);
 //now scale matrix elements
 if (bOglScale) {
 	//glScalef (X2F (transformation.m_info.scale [X]), X2F (transformation.m_info.scale [Y]), -X2F (transformation.m_info.scale [Z]));
@@ -78,7 +78,7 @@ if (bOglScale) {
 else {
 	//VmVecScale (&transformation.m_info.view [0].rVec, transformation.m_info.scale [X]);
 	//VmVecScale (&transformation.m_info.view [0].uVec, transformation.m_info.scale [Y]);
-	//transformation.m_info.scale [X] = transformation.m_info.scale [Y] = transformation.m_info.scale [Z] = F1_0;
+	//transformation.m_info.scale [X] = transformation.m_info.scale [Y] = transformation.m_info.scale [Z] = I2X (1);
 	transformation.m_info.view [0].FVec () *= (-transformation.m_info.scale [Z]);
 	transformation.m_info.viewf [0].Assign (transformation.m_info.view [0]);
 	glScalef (1, 1, 1);

@@ -354,8 +354,8 @@ int AddDynLight (tFace *faceP, tRgbaColorf *pc, fix xBrightness, short nSegment,
 #endif
 
 #if 0
-if (xBrightness > F1_0)
-	xBrightness = F1_0;
+if (xBrightness > I2X (1))
+	xBrightness = I2X (1);
 #endif
 if (fBrightness <= 0)
 	return -1;
@@ -944,7 +944,7 @@ if (nVertex == nDbgVertex)
 #if 1
 		if (vNormalP) {
 			vLightDir /= xLightDist;
-			if(CFixVector::Dot (*vNormalP, vLightDir) > F1_0 / 2)
+			if(CFixVector::Dot (*vNormalP, vLightDir) > I2X (1) / 2)
 				continue;
 		}
 #endif
@@ -1006,7 +1006,7 @@ else {
 SetNearestSegmentLights (faceP->nSegment, faceP - FACES, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
 #endif
 vNormal = sideP->m_normals[0] + sideP->m_normals[1];
-vNormal *= (F1_0 / 2);
+vNormal *= (I2X (1) / 2);
 #if 1
 for (i = 0; i < 4; i++)
 	SetNearestVertexLights (faceP - FACES.faces, faceP->index [i], &vNormal, 0, 0, 1, 0);

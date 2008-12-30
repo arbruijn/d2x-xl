@@ -47,10 +47,10 @@ if (!gameStates.app.bNostalgia && (!EGI_FLAG (nDrag, 0, 0, 0) || !EGI_FLAG (bWig
 nParent = gameData.objs.parentObjs [objP->Index ()];
 pParent = (nParent < 0) ? NULL : OBJECTS + nParent;
 FixFastSinCos ((fix) (gameData.time.xGame / gameStates.gameplay.slowmo [1].fSpeed), &xWiggle, NULL);
-if (wiggleTime < F1_0)// Only scale wiggle if getting at least 1 FPS, to avoid causing the opposite problem.
+if (wiggleTime < I2X (1))// Only scale wiggle if getting at least 1 FPS, to avoid causing the opposite problem.
 	xWiggle = FixMul (xWiggle * 20, wiggleTime); //make wiggle fps-independent (based on pre-scaled amount of wiggle at 20 FPS)
 if (SPECTATOR (objP))
-	OBJPOS (objP)->vPos += (OBJPOS (objP)->mOrient.UVec() * FixMul (xWiggle, gameData.pig.ship.player->wiggle)) * (F1_0 / 20);
+	OBJPOS (objP)->vPos += (OBJPOS (objP)->mOrient.UVec() * FixMul (xWiggle, gameData.pig.ship.player->wiggle)) * (I2X (1) / 20);
 else if ((objP->info.nType == OBJ_PLAYER) || !pParent)
 	objP->mType.physInfo.velocity += objP->info.position.mOrient.UVec() * FixMul (xWiggle, gameData.pig.ship.player->wiggle);
 else {
@@ -64,7 +64,7 @@ else {
 //physics vars rotVel, velocity
 
 #define AFTERBURNER_USE_SECS	3				//use up in 3 seconds
-#define DROP_DELTA_TIME			(f1_0/15)	//drop 3 per second
+#define DROP_DELTA_TIME			(I2X (1)/15)	//drop 3 per second
 
 void ReadFlyingControls (CObject *objP)
 {
@@ -120,7 +120,7 @@ void ReadFlyingControls (CObject *objP)
 			Controls [0].headingTime = Controls [0].headingTime;
 #endif
 		objP->mType.physInfo.rotThrust = CFixVector::Create(Controls[0].pitchTime,
-		                                                   Controls[0].headingTime, //Controls [0].headingTime ? f1_0 / 4 : 0; //Controls [0].headingTime;
+		                                                   Controls[0].headingTime, //Controls [0].headingTime ? I2X (1) / 4 : 0; //Controls [0].headingTime;
 		                                                   Controls[0].bankTime);
 		}
 	forwardThrustTime = Controls [0].forwardThrustTime;
@@ -132,7 +132,7 @@ void ReadFlyingControls (CObject *objP)
 				int oldCount,newCount;
 
 				//add in value from 0..1
-				afterburner_scale = f1_0 + min(f1_0/2, gameData.physics.xAfterburnerCharge) * 2;
+				afterburner_scale = I2X (1) + min(I2X (1)/2, gameData.physics.xAfterburnerCharge) * 2;
 				forwardThrustTime = FixMul (gameData.time.xFrame, afterburner_scale);	//based on full thrust
 				oldCount = (gameData.physics.xAfterburnerCharge / (DROP_DELTA_TIME / AFTERBURNER_USE_SECS));
 				if (!gameStates.gameplay.bAfterburnerCheat)
@@ -148,7 +148,7 @@ void ReadFlyingControls (CObject *objP)
 			fix cur_energy,charge_up;
 
 			//charge up to full
-			charge_up = min(gameData.time.xFrame/8,f1_0 - gameData.physics.xAfterburnerCharge);	//recharge over 8 seconds
+			charge_up = min(gameData.time.xFrame/8,I2X (1) - gameData.physics.xAfterburnerCharge);	//recharge over 8 seconds
 			cur_energy = LOCALPLAYER.energy - I2X (10);
 			cur_energy = max(cur_energy, 0);	//don't drop below 10
 			//maybe limit charge up by energy
@@ -183,15 +183,15 @@ void ReadFlyingControls (CObject *objP)
  {
 		fix	ft = gameData.time.xFrame;
 
-		//	Note, you must check for ft < F1_0/2, else you can get an overflow  on the << 15.
-		if ((ft < F1_0/2) && ((ft << 15) <= gameData.pig.ship.player->maxThrust))
+		//	Note, you must check for ft < I2X (1)/2, else you can get an overflow  on the << 15.
+		if ((ft < I2X (1)/2) && ((ft << 15) <= gameData.pig.ship.player->maxThrust))
 			ft = (gameData.pig.ship.player->maxThrust >> 15) + 1;
 		if (objP->mType.physInfo.thrust.Mag() > 250)
 			objP = objP;
 		objP->mType.physInfo.thrust *= FixDiv (gameData.pig.ship.player->maxThrust, ft);
 		if (objP->mType.physInfo.thrust.Mag() > 250)
 			objP = objP;
-		if ((ft < F1_0/2) && ((ft << 15) <= gameData.pig.ship.player->maxRotThrust))
+		if ((ft < I2X (1)/2) && ((ft << 15) <= gameData.pig.ship.player->maxRotThrust))
 			ft = (gameData.pig.ship.player->maxThrust >> 15) + 1;
 		objP->mType.physInfo.rotThrust *= FixDiv (gameData.pig.ship.player->maxRotThrust, ft);
 	}

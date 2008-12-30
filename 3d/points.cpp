@@ -78,7 +78,7 @@ void G3Point2Vec (CFixVector *v,short sx,short sy)
 
 tempv [X] =  FixMulDiv (FixDiv ((sx<<16) - xCanvW2,xCanvW2),transformation.m_info.scale [Z], transformation.m_info.scale [X]);
 tempv [Y] = -FixMulDiv (FixDiv ((sy<<16) - xCanvH2,xCanvH2),transformation.m_info.scale [Z], transformation.m_info.scale [Y]);
-tempv [Z] = f1_0;
+tempv [Z] = I2X (1);
 CFixVector::Normalize(tempv);
 tempm = transformation.m_info.view [1].Transpose();
 *v = tempm * tempv;

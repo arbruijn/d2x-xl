@@ -148,7 +148,7 @@ ChangeSegmentTexture (h, newOwner);
 void StartConquerWarning (void)
 {
 if (extraGameInfo [1].entropy.bDoConquerWarning) {
-	gameStates.sound.nConquerWarningSoundChannel = DigiPlaySample (SOUND_CONTROL_CENTER_WARNING_SIREN, F3_0);
+	gameStates.sound.nConquerWarningSoundChannel = audio.PlaySound (SOUND_CONTROL_CENTER_WARNING_SIREN, SOUNDCLASS_GENERIC, I2X (3));
 	MultiSendConquerWarning ();
 	gameStates.entropy.bConquerWarning = 1;
 	}

@@ -42,23 +42,7 @@ typedef struct tQuadInt {// integer 64 bit, previously called "quad"
 #define F2X(_f) (static_cast<fix> ((_f) * 65536))
 
 //Some handy constants
-#define f0_0	0
-#define f1_0	0x10000
-#define f2_0	0x20000
-#define f3_0	0x30000
-#define f10_0	0xa0000
-
-#define f0_5	0x8000
-#define f0_1	0x199a
-
-#define F0_0	f0_0
-#define F1_0	f1_0
-#define F2_0	f2_0
-#define F3_0	f3_0
-#define F10_0	f10_0
-
-#define F0_5 	f0_5
-#define F0_1 	f0_1
+//#define F0_1	0x199a
 
 #ifdef _WIN32
 #	define QLONG __int64

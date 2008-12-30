@@ -560,9 +560,9 @@ switch (nType) {
 				}
 			else
 				rand_scale = 2;
-			new_velocity[X] += FixMul (old_mag+F1_0*32, d_rand ()*rand_scale - 16384*rand_scale);
-			new_velocity[Y] += FixMul (old_mag+F1_0*32, d_rand ()*rand_scale - 16384*rand_scale);
-			new_velocity[Z] += FixMul (old_mag+F1_0*32, d_rand ()*rand_scale - 16384*rand_scale);
+			new_velocity[X] += FixMul (old_mag+I2X (32), d_rand ()*rand_scale - 16384*rand_scale);
+			new_velocity[Y] += FixMul (old_mag+I2X (32), d_rand ()*rand_scale - 16384*rand_scale);
+			new_velocity[Z] += FixMul (old_mag+I2X (32), d_rand ()*rand_scale - 16384*rand_scale);
 			// Give keys zero velocity so they can be tracked better in multi
 			if ((gameData.app.nGameMode & GM_MULTI) &&
 				 (( (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD)) || (id == POW_MONSTERBALL)))
@@ -586,7 +586,7 @@ switch (nType) {
 			objP = OBJECTS + nObject;
 			objP->mType.physInfo.velocity = new_velocity;
 			objP->mType.physInfo.drag = 512;	//1024;
-			objP->mType.physInfo.mass = F1_0;
+			objP->mType.physInfo.mass = I2X (1);
 			objP->mType.physInfo.flags = PF_BOUNCE;
 			objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
 			objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
@@ -597,13 +597,13 @@ switch (nType) {
 				case POW_CONCUSSION_4:
 				case POW_SHIELD_BOOST:
 				case POW_ENERGY:
-					objP->info.xLifeLeft = (d_rand () + F1_0*3) * 64;		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
+					objP->info.xLifeLeft = (d_rand () + I2X (3)) * 64;		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
 					if (gameData.app.nGameMode & GM_MULTI)
 						objP->info.xLifeLeft /= 2;
 					break;
 				default:
 //						if (gameData.app.nGameMode & GM_MULTI)
-//							objP->info.xLifeLeft = (d_rand () + F1_0*3) * 64;		//	Lives for 5 to 5.5 binary minutes (a binary minute is 64 seconds)
+//							objP->info.xLifeLeft = (d_rand () + I2X (3)) * 64;		//	Lives for 5 to 5.5 binary minutes (a binary minute is 64 seconds)
 					break;
 				}
 			}
@@ -621,7 +621,7 @@ switch (nType) {
 			new_velocity[Y] += (d_rand ()-16384)*2;
 			new_velocity[Z] += (d_rand ()-16384)*2;
 			CFixVector::Normalize(new_velocity);
-			new_velocity *= ((F1_0*32 + old_mag) * rand_scale);
+			new_velocity *= ((I2X (32) + old_mag) * rand_scale);
 			vNewPos = pos;
 			//	This is dangerous, could be outside mine.
 //				vNewPos.x += (d_rand ()-16384)*8;
@@ -649,7 +649,7 @@ switch (nType) {
 			objP->info.xShields = ROBOTINFO (objP->info.nId).strength;
 			objP->cType.aiInfo.behavior = AIB_NORMAL;
 			gameData.ai.localInfo [nObject].playerAwarenessType = WEAPON_ROBOT_COLLISION;
-			gameData.ai.localInfo [nObject].playerAwarenessTime = F1_0*3;
+			gameData.ai.localInfo [nObject].playerAwarenessTime = I2X (3);
 			objP->cType.aiInfo.CURRENT_STATE = AIS_LOCK;
 			objP->cType.aiInfo.GOAL_STATE = AIS_LOCK;
 			objP->cType.aiInfo.REMOTE_OWNER = -1;
@@ -1038,7 +1038,7 @@ if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF) {
 		objP->info.position.mOrient = initObjP->info.position.mOrient;
 		objP->RelinkToSeg (initObjP->info.nSegment);
 		HUDInitMessage (TXT_FLAG_RETURN);
-		DigiPlaySample (SOUND_DROP_WEAPON, F1_0);
+		audio.PlaySound (SOUND_DROP_WEAPON);
 		MultiSendReturnFlagHome (objP->Index ());
 		}
 	}

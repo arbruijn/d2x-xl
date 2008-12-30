@@ -54,7 +54,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //normal everyday vertices
 
-#define DEFAULT_LIGHTING        0   // (F1_0/2)
+#define DEFAULT_LIGHTING        0   // (I2X (1)/2)
 
 #ifdef EDITOR   //verts for the new tSegment
 # define NUM_NEW_SEG_VERTICES   8

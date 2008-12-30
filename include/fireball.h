@@ -19,8 +19,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define ET_MULTI_START  1   //first part of multi-part explosion
 #define ET_MULTI_SECOND 2   //second part of multi-part explosion
 
-#define BLAST_LIFE	(2 * F1_0 / 5)
-#define BLAST_SCALE	(5 * F1_0 / BLAST_LIFE)
+#define BLAST_LIFE	(I2X (2) / 5)
+#define BLAST_SCALE	(I2X (5) / BLAST_LIFE)
 
 CObject *CreateBadassExplosion (CObject* parentObjP, short nSegment,
 										  CFixVector& position, fix size, ubyte vclipType,

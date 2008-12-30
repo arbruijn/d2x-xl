@@ -159,7 +159,7 @@ if (bLastHomingWarningShown [gameStates.render.vr.nCurrentPage] == 1) {
 	PAGE_IN_GAUGE (GAUGE_HOMING_WARNING_OFF);
 	HUDBitBlt (
 		HOMING_WARNING_X, HOMING_WARNING_Y, 
-		gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_HOMING_WARNING_OFF), F1_0, 0);
+		gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_HOMING_WARNING_OFF), I2X (1), 0);
 	bLastHomingWarningShown [gameStates.render.vr.nCurrentPage] = 0;
 	}
 }
@@ -222,7 +222,7 @@ if ((oldLives [gameStates.render.vr.nCurrentPage] == -1) ||
 		fontManager.SetCurrent (GAME_FONT);
 		fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 		PAGE_IN_GAUGE (GAUGE_LIVES);
-		HUDBitBlt (x, y, bmP, F1_0, 0);
+		HUDBitBlt (x, y, bmP, I2X (1), 0);
 		nIdLives [1] = HUDPrintF (&nIdLives [1], x + bmP->Width () + GAME_FONT->Width (), y, "x %d", LOCALPLAYER.lives - 1);
 		}
 	}
@@ -242,11 +242,11 @@ void SBDrawEnergyBar (int nEnergy)
 	PAGE_IN_GAUGE (SB_GAUGE_ENERGY);
 	if (gameStates.app.bD1Mission)
 	HUDStretchBlt (SB_ENERGY_GAUGE_X, SB_ENERGY_GAUGE_Y, 
-			         gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (SB_GAUGE_ENERGY), F1_0, 0, 
+			         gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (SB_GAUGE_ENERGY), I2X (1), 0, 
 						1.0, (double) SB_ENERGY_GAUGE_H / (double) (SB_ENERGY_GAUGE_H - SB_AFTERBURNER_GAUGE_H));
 	else
 	HUDBitBlt (SB_ENERGY_GAUGE_X, SB_ENERGY_GAUGE_Y, 
-									  gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (SB_GAUGE_ENERGY), F1_0, 0);
+									  gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (SB_GAUGE_ENERGY), I2X (1), 0);
 	erase_height = (100 - nEnergy) * SB_ENERGY_GAUGE_H / 100;
 	if (erase_height > 0) {
 		CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
@@ -285,8 +285,8 @@ void SBDrawAfterburner (void)
 		return;
 //	CCanvas::SetCurrent (Canv_SBAfterburnerGauge);
 	PAGE_IN_GAUGE (SB_GAUGE_AFTERBURNER);
-	HUDBitBlt (SB_AFTERBURNER_GAUGE_X, SB_AFTERBURNER_GAUGE_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (SB_GAUGE_AFTERBURNER), F1_0, 0);
-	erase_height = FixMul ((f1_0 - gameData.physics.xAfterburnerCharge), SB_AFTERBURNER_GAUGE_H);
+	HUDBitBlt (SB_AFTERBURNER_GAUGE_X, SB_AFTERBURNER_GAUGE_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (SB_GAUGE_AFTERBURNER), I2X (1), 0);
+	erase_height = FixMul ((I2X (1) - gameData.physics.xAfterburnerCharge), SB_AFTERBURNER_GAUGE_H);
 //	HUDMessage (0, "AB: %d", erase_height);
 
 	if (erase_height > 0) {
@@ -337,7 +337,7 @@ void SBDrawShieldBar (int shield)
 
 CCanvas::SetCurrent (GetCurrentGameScreen ());
 PAGE_IN_GAUGE (GAUGE_SHIELDS + 9 - bm_num);
-HUDBitBlt (SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (GAUGE_SHIELDS+9-bm_num)], F1_0, 0);
+HUDBitBlt (SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (GAUGE_SHIELDS+9-bm_num)], I2X (1), 0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -350,13 +350,13 @@ void SBDrawKeys (void)
 CCanvas::SetCurrent (GetCurrentGameScreen ());
 bmP = &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX ((flags&PLAYER_FLAGS_BLUE_KEY)?SB_GAUGE_BLUE_KEY:SB_GAUGE_BLUE_KEY_OFF)];
 PAGE_IN_GAUGE ((flags&PLAYER_FLAGS_BLUE_KEY)?SB_GAUGE_BLUE_KEY:SB_GAUGE_BLUE_KEY_OFF);
-HUDBitBlt (SB_GAUGE_KEYS_X, SB_GAUGE_BLUE_KEY_Y, bmP, F1_0, 0);
+HUDBitBlt (SB_GAUGE_KEYS_X, SB_GAUGE_BLUE_KEY_Y, bmP, I2X (1), 0);
 bmP = &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX ((flags&PLAYER_FLAGS_GOLD_KEY)?SB_GAUGE_GOLD_KEY:SB_GAUGE_GOLD_KEY_OFF)];
 PAGE_IN_GAUGE ((flags&PLAYER_FLAGS_GOLD_KEY)?SB_GAUGE_GOLD_KEY:SB_GAUGE_GOLD_KEY_OFF);
-HUDBitBlt (SB_GAUGE_KEYS_X, SB_GAUGE_GOLD_KEY_Y, bmP, F1_0, 0);
+HUDBitBlt (SB_GAUGE_KEYS_X, SB_GAUGE_GOLD_KEY_Y, bmP, I2X (1), 0);
 bmP = &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX ((flags&PLAYER_FLAGS_RED_KEY)?SB_GAUGE_RED_KEY:SB_GAUGE_RED_KEY_OFF)];
 PAGE_IN_GAUGE ((flags&PLAYER_FLAGS_RED_KEY)?SB_GAUGE_RED_KEY:SB_GAUGE_RED_KEY_OFF);
-HUDBitBlt (SB_GAUGE_KEYS_X, SB_GAUGE_RED_KEY_Y, bmP , F1_0, 0);
+HUDBitBlt (SB_GAUGE_KEYS_X, SB_GAUGE_RED_KEY_Y, bmP , I2X (1), 0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -369,9 +369,9 @@ void SBDrawInvulnerableShip (void)
 CCanvas::SetCurrent (GetCurrentGameScreen ());
 if (tInvul <= 0) 
 	SBDrawShieldBar (X2IR (LOCALPLAYER.shields));
-else if ((tInvul > F1_0 * 4) || (gameData.time.xGame & 0x8000)) {
+else if ((tInvul > I2X (4)) || (gameData.time.xGame & 0x8000)) {
 	PAGE_IN_GAUGE (GAUGE_INVULNERABLE + nInvulnerableFrame);
-	HUDBitBlt (SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (GAUGE_INVULNERABLE + nInvulnerableFrame)], F1_0, 0);
+	HUDBitBlt (SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (GAUGE_INVULNERABLE + nInvulnerableFrame)], I2X (1), 0);
 	}
 }
 

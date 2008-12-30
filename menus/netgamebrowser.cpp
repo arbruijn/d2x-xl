@@ -248,7 +248,7 @@ for (i = 3 + networkData.nActiveGames; i < MAX_ACTIVE_NETGAMES; i++, h++)
 		}
 #endif
 if (bPlaySound)
-	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
+	audio.PlaySound (SOUND_HUD_MESSAGE);
 return nCurItem;
 }
 
@@ -318,7 +318,7 @@ gameStates.app.nExtGameStatus = GAMESTAT_JOIN_NETGAME;
 if (bAutoRun) {
 	fix t, t0 = 0;
 	do {
-		if ((t = SDL_GetTicks ()) > t0 + F1_0) {
+		if ((t = SDL_GetTicks ()) > t0 + I2X (1)) {
 			t0 = t;
 			NetworkSendGameListRequest ();
 			}

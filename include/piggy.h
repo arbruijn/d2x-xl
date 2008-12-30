@@ -14,7 +14,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _PIGGY_H
 #define _PIGGY_H
 
-#include "digi.h"
+#include "audio.h"
 #include "sounds.h"
 #include "cfile.h"
 #include "tga.h"
@@ -169,7 +169,7 @@ void PiggyInitPigFile (char *filename);
 void _CDECL_ PiggyClose(void);
 void PiggyDumpAll (void);
 tBitmapIndex PiggyRegisterBitmap( CBitmap * bmp, const char * name, int in_file );
-int PiggyRegisterSound( CDigiSound * snd, char * name, int in_file );
+int PiggyRegisterSound (CDigiSound * snd, char * name, int in_file );
 tBitmapIndex PiggyFindBitmap (const char * name, int bD1Data );
 int PiggyFindSound (const char * name);
 int LoadSoundReplacements (const char *pszFileName);

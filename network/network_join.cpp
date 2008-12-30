@@ -221,7 +221,7 @@ if (nPlayer == gameData.multiplayer.nPlayers) {
 	gameData.multiplayer.nPlayers++;
 	netGame.nNumPlayers = gameData.multiplayer.nPlayers;
 	}
-DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
+audio.PlaySound (SOUND_HUD_MESSAGE);
 ClipRank (reinterpret_cast<char*> (&their->player.rank));
 if (gameOpts->multi.bNoRankings)
 	HUDInitMessage ("'%s' %s\n", their->player.callsign, TXT_JOINING);
@@ -443,7 +443,7 @@ else {
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordMultiReconnect (nPlayer);
 	networkData.bPlayerAdded = 0;
-	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
+	audio.PlaySound (SOUND_HUD_MESSAGE);
 	if (gameOpts->multi.bNoRankings)
 		HUDInitMessage ("'%s' %s", gameData.multiplayer.players [nPlayer].callsign, TXT_REJOIN);
 	else
@@ -540,7 +540,7 @@ for (i = 0; i < MAX_PLAYERS; i++)
 if (banList.Find (const_cast<char*>(their->player.callsign)))
 	return;
 if (!networkData.refuse.bWaitForAnswer) {
-	DigiPlaySample (SOUND_HUD_JOIN_REQUEST, F1_0*2);           
+	audio.PlaySound (SOUND_HUD_JOIN_REQUEST, SOUNDCLASS_GENERIC, I2X (2));           
 #if 0
 	if (IsTeamGame) {
 		if (gameOpts->multi.bNoRankings)

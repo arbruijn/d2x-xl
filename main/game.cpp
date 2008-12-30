@@ -511,7 +511,7 @@ fix 	timerValue,
 		xLastFrameTime = gameData.time.xFrame;
 GetSlowTicks ();
 #if 1
-	fix xMinFrameTime = (MAXFPS ? f1_0 / MAXFPS : 1);
+	fix xMinFrameTime = (MAXFPS ? I2X (1) / MAXFPS : 1);
 do {
 	timerValue = TimerGetFixedSeconds ();
    gameData.time.xFrame = timerValue - gameData.time.xLast;
@@ -559,14 +559,14 @@ gameData.time.xStops = gameData.time.xStarts = 0;
 //	The lower frametime is, the more likely that it can see its target.
 if (gameStates.limitFPS.bHomers)
 	xMinTrackableDot = MIN_TRACKABLE_DOT;
-else if (gameData.time.xFrame <= F1_0/64)
-	xMinTrackableDot = MIN_TRACKABLE_DOT;	// -- 3* (F1_0 - MIN_TRACKABLE_DOT)/4 + MIN_TRACKABLE_DOT;
-else if (gameData.time.xFrame < F1_0/32)
-	xMinTrackableDot = MIN_TRACKABLE_DOT + F1_0/64 - 2*gameData.time.xFrame;	// -- FixMul (F1_0 - MIN_TRACKABLE_DOT, F1_0-4*gameData.time.xFrame) + MIN_TRACKABLE_DOT;
-else if (gameData.time.xFrame < F1_0/4)
-	xMinTrackableDot = MIN_TRACKABLE_DOT + F1_0/64 - F1_0/16 - gameData.time.xFrame;	// -- FixMul (F1_0 - MIN_TRACKABLE_DOT, F1_0-4*gameData.time.xFrame) + MIN_TRACKABLE_DOT;
+else if (gameData.time.xFrame <= I2X (1)/64)
+	xMinTrackableDot = MIN_TRACKABLE_DOT;	// -- 3* (I2X (1) - MIN_TRACKABLE_DOT)/4 + MIN_TRACKABLE_DOT;
+else if (gameData.time.xFrame < I2X (1)/32)
+	xMinTrackableDot = MIN_TRACKABLE_DOT + I2X (1)/64 - 2*gameData.time.xFrame;	// -- FixMul (I2X (1) - MIN_TRACKABLE_DOT, I2X (1)-4*gameData.time.xFrame) + MIN_TRACKABLE_DOT;
+else if (gameData.time.xFrame < I2X (1)/4)
+	xMinTrackableDot = MIN_TRACKABLE_DOT + I2X (1)/64 - I2X (1)/16 - gameData.time.xFrame;	// -- FixMul (I2X (1) - MIN_TRACKABLE_DOT, I2X (1)-4*gameData.time.xFrame) + MIN_TRACKABLE_DOT;
 else
-	xMinTrackableDot = MIN_TRACKABLE_DOT + F1_0/64 - F1_0/8;
+	xMinTrackableDot = MIN_TRACKABLE_DOT + I2X (1)/64 - I2X (1)/8;
 }
 
 //------------------------------------------------------------------------------
@@ -738,10 +738,10 @@ void DoCloakStuff (void)
 			if (gameData.time.xGame - gameData.multiplayer.players[i].cloakTime > CLOAK_TIME_MAX) {
 				gameData.multiplayer.players[i].flags &= ~PLAYER_FLAGS_CLOAKED;
 				if (i == gameData.multiplayer.nLocalPlayer) {
-					DigiPlaySample (SOUND_CLOAK_OFF, F1_0);
+					audio.PlaySound (SOUND_CLOAK_OFF);
 					#ifdef NETWORK
 					if (gameData.app.nGameMode & GM_MULTI)
-						MultiSendPlaySound (SOUND_CLOAK_OFF, F1_0);
+						MultiSendPlaySound (SOUND_CLOAK_OFF, I2X (1));
 					MaybeDropNetPowerup (-1, POW_CLOAK, FORCE_DROP);
 					MultiSendDeCloak (); // For demo recording
 					#endif
@@ -761,10 +761,10 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 	if (gameData.time.xGame - LOCALPLAYER.invulnerableTime > INVULNERABLE_TIME_MAX) {
 		LOCALPLAYER.flags ^= PLAYER_FLAGS_INVULNERABLE;
 		if (!bFakingInvul) {
-			DigiPlaySample (SOUND_INVULNERABILITY_OFF, F1_0);
+			audio.PlaySound (SOUND_INVULNERABILITY_OFF);
 #ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI) {
-				MultiSendPlaySound (SOUND_INVULNERABILITY_OFF, F1_0);
+				MultiSendPlaySound (SOUND_INVULNERABILITY_OFF, I2X (1));
 				MaybeDropNetPowerup (-1, POW_INVUL, FORCE_DROP);
 				}
 #endif
@@ -787,8 +787,8 @@ int	Ab_scale = 4;
 //@@{
 //@@	int	rx, rz;
 //@@
-//@@	rx = (Ab_scale * FixMul (d_rand () - 16384, F1_0/8 + (((gameData.time.xGame + 0x4000)*4) & 0x3fff)))/16;
-//@@	rz = (Ab_scale * FixMul (d_rand () - 16384, F1_0/2 + ((gameData.time.xGame*4) & 0xffff)))/16;
+//@@	rx = (Ab_scale * FixMul (d_rand () - 16384, I2X (1)/8 + (((gameData.time.xGame + 0x4000)*4) & 0x3fff)))/16;
+//@@	rz = (Ab_scale * FixMul (d_rand () - 16384, I2X (1)/2 + ((gameData.time.xGame*4) & 0xffff)))/16;
 //@@
 //@@	gameData.objs.consoleP->mType.physInfo.rotVel.x += rx;
 //@@	gameData.objs.consoleP->mType.physInfo.rotVel.z += rz;
@@ -805,7 +805,7 @@ void DoAfterburnerStuff (void)
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 	gameData.physics.xAfterburnerCharge=0;
 if (gameStates.app.bEndLevelSequence || gameStates.app.bPlayerIsDead) {
-	if (DigiKillSoundLinkedToObject (LOCALPLAYER.nObject))
+	if (DigiDestroyObjectSound (LOCALPLAYER.nObject))
 #ifdef NETWORK
 		MultiSendSoundFunction (0,0)
 #endif
@@ -815,16 +815,16 @@ else if ((gameStates.gameplay.xLastAfterburnerCharge && (Controls [0].afterburne
 	 		(gameStates.gameplay.bLastAfterburnerState && (gameStates.gameplay.xLastAfterburnerCharge && !gameData.physics.xAfterburnerCharge))) {
 	if (gameData.physics.xAfterburnerCharge && Controls [0].afterburnerState && 
 		 (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)) {
-		SetObjectSound ((short) SOUND_AFTERBURNER_IGNITE, SOUNDCLASS_PLAYER, (short) LOCALPLAYER.nObject, 
-							 1, F1_0, I2X (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
+		CreateObjectSound ((short) SOUND_AFTERBURNER_IGNITE, SOUNDCLASS_PLAYER, (short) LOCALPLAYER.nObject, 
+							 1, I2X (1), I2X (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
 #ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
 			MultiSendSoundFunction (3, (char) SOUND_AFTERBURNER_IGNITE);
 #endif
 		}
 	else {
-		DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
-		SetObjectSound ((short) SOUND_AFTERBURNER_PLAY, SOUNDCLASS_PLAYER, (short) LOCALPLAYER.nObject);
+		DigiDestroyObjectSound (LOCALPLAYER.nObject);
+		CreateObjectSound ((short) SOUND_AFTERBURNER_PLAY, SOUNDCLASS_PLAYER, (short) LOCALPLAYER.nObject);
 #ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
 		 	MultiSendSoundFunction (0,0);
@@ -1484,7 +1484,7 @@ else if (bWater)						//just water
 else
 	return;
 if (((d_rand () << 3) < gameData.time.xFrame))	//play the nSound
-	DigiPlaySample (nSound, (fix) (d_rand () + f1_0 / 2));
+	audio.PlaySound (nSound, SOUNDCLASS_GENERIC, (fix) (d_rand () + I2X (1) / 2));
 }
 
 //-----------------------------------------------------------------------------
@@ -1528,8 +1528,8 @@ if (gameData.fusion.xAutoFireTime) {
 		gameData.objs.consoleP->mType.physInfo.rotVel[X] += (d_rand () - 16384)/8;
 		gameData.objs.consoleP->mType.physInfo.rotVel[Z] += (d_rand () - 16384)/8;
 		vRand = CFixVector::Random();
-		xBump = F1_0*4;
-		if (gameData.fusion.xCharge > F1_0*2)
+		xBump = I2X (4);
+		if (gameData.fusion.xCharge > I2X (2))
 			xBump = gameData.fusion.xCharge*4;
 		gameData.objs.consoleP->Bump (vRand, xBump);
 		}
@@ -1798,8 +1798,8 @@ else { // Note the link to above!
 		return 1;
 	if (gameData.laser.nGlobalFiringCount) {
 		//	Don't cap here, gets capped in CreateNewWeapon and is based on whether in multiplayer mode, MK, 3/27/95
-		// if (gameData.fusion.xCharge > F1_0*2)
-		// 	gameData.fusion.xCharge = F1_0*2;
+		// if (gameData.fusion.xCharge > I2X (2))
+		// 	gameData.fusion.xCharge = I2X (2);
 		gameData.laser.nGlobalFiringCount -= LocalPlayerFireLaser ();	//LaserFireObject (LOCALPLAYER.nObject, gameData.weapons.nPrimary);
 		}
 	if (gameData.laser.nGlobalFiringCount < 0)
@@ -1891,23 +1891,23 @@ for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 		for (i = 0, uvlP = sideP->m_uvls; i < 4; i++) {
 			uvlP [i].u += slideU;
 			if (uvlP [i].u > f2_0) {
-				xDelta = (uvlP [i].u / F1_0 - 1) * F1_0;
+				xDelta = I2X (uvlP [i].u / I2X (1) - 1);
 				for (j = 0; j < 4; j++)
 					uvlP [j].u -= xDelta;
 				}
 			else if (uvlP [i].u < -f2_0) {
-				xDelta = (-uvlP [i].u / F1_0 - 1) * F1_0;
+				xDelta = I2X (-uvlP [i].u / I2X (1) - 1);
 				for (j = 0; j < 4; j++)
 					uvlP [j].u += xDelta;
 				}
 			uvlP [i].v += slideV;
 			if (uvlP [i].v > f2_0) {
-				xDelta = (uvlP [i].v / F1_0 - 1) * F1_0;
+				xDelta = I2X (uvlP [i].v / I2X (1) - 1);
 				for (j = 0; j < 4; j++)
 					uvlP [j].v -= xDelta;
 				}
 			else if (uvlP [i].v < -f2_0) {
-				xDelta = (-uvlP [i].v / F1_0 - 1) * F1_0;
+				xDelta = I2X (-uvlP [i].v / I2X (1) - 1);
 				for (j = 0; j < 4; j++)
 					uvlP [j].v += xDelta;
 				}
@@ -1928,14 +1928,14 @@ void FireLaser ()
 if (gameData.weapons.firing [0].nDuration)
 	gameData.laser.nGlobalFiringCount += WI_fireCount (i);
 if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringCount) {
-	if ((LOCALPLAYER.energy < F1_0 * 2) &&
+	if ((LOCALPLAYER.energy < I2X (2)) &&
 		 (gameData.fusion.xAutoFireTime == 0)) {
 		gameData.laser.nGlobalFiringCount = 0;
 		}
 	else {
 		flFrameTime += gameData.time.xFrame;
 		if (gameData.fusion.xCharge == 0)
-			LOCALPLAYER.energy -= F1_0 * 2;
+			LOCALPLAYER.energy -= I2X (2);
 		h = (flFrameTime <= LOCALPLAYER.energy) ? flFrameTime : LOCALPLAYER.energy;
 		gameData.fusion.xCharge += h;
 		LOCALPLAYER.energy -= h;
@@ -1944,28 +1944,28 @@ if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringC
 			gameData.fusion.xAutoFireTime = gameData.time.xGame - 1;	//	Fire now!
 			}
 		else
-			gameData.fusion.xAutoFireTime = gameData.time.xGame + flFrameTime/2 + 1;
+			gameData.fusion.xAutoFireTime = gameData.time.xGame + flFrameTime / 2 + 1;
 		if (gameStates.limitFPS.bFusion && !gameStates.app.tick40fps.bTick)
 			return;
-		if (gameData.fusion.xCharge < F1_0*2)
+		if (gameData.fusion.xCharge < I2X (2))
 			paletteManager.BumpEffect (gameData.fusion.xCharge >> 11, 0, gameData.fusion.xCharge >> 11);
 		else
 			paletteManager.BumpEffect (gameData.fusion.xCharge >> 11, gameData.fusion.xCharge >> 11, 0);
 		if (gameData.time.xGame < gameData.fusion.xLastSoundTime)		//gametime has wrapped
 			gameData.fusion.xNextSoundTime = gameData.fusion.xLastSoundTime = gameData.time.xGame;
 		if (gameData.fusion.xNextSoundTime < gameData.time.xGame) {
-			if (gameData.fusion.xCharge > F1_0*2) {
-				DigiPlaySample (11, F1_0);
+			if (gameData.fusion.xCharge > I2X (2)) {
+				audio.PlaySound (11);
 				gameData.objs.consoleP->ApplyDamageToPlayer (gameData.objs.consoleP, d_rand () * 4);
 				}
 			else {
 				CreateAwarenessEvent (gameData.objs.consoleP, WEAPON_ROBOT_COLLISION);
-				DigiPlaySample (SOUND_FUSION_WARMUP, F1_0);
+				audio.PlaySound (SOUND_FUSION_WARMUP);
 				if (gameData.app.nGameMode & GM_MULTI)
-					MultiSendPlaySound (SOUND_FUSION_WARMUP, F1_0);
+					MultiSendPlaySound (SOUND_FUSION_WARMUP);
 					}
 			gameData.fusion.xLastSoundTime = gameData.time.xGame;
-			gameData.fusion.xNextSoundTime = gameData.time.xGame + F1_0/8 + d_rand ()/4;
+			gameData.fusion.xNextSoundTime = gameData.time.xGame + I2X (1) / 8 + d_rand () / 4;
 			}
 		flFrameTime = 0;
 		}
@@ -2061,7 +2061,7 @@ for (i = 1; i < player_path_length; i++) {
 	objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
 	objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
 	objP->rType.vClipInfo.nCurFrame = 0;
-	objP->info.xLifeLeft = F1_0*100 + d_rand () * 4;
+	objP->info.xLifeLeft = I2X (100) + d_rand () * 4;
 	}
 return 1;
 }

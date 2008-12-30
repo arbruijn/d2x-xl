@@ -17,20 +17,13 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  */
 
-#ifndef _DIGI_H
-#define _DIGI_H
+#ifndef _AUDIO_H
+#define _AUDIO_H
 
 #include "pstypes.h"
 #include "vecmat.h"
 #include "carray.h"
-
-#define USE_OPENAL	0
-
-#if USE_OPENAL
-#	include "al.h"
-#	include "alc.h"
-#	include "efx.h"
-#endif
+#include "cfile.h"
 
 #ifdef _MSC_VER
 #	if DBG
@@ -45,11 +38,29 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	endif
 #endif
 
+#ifdef __macosx__
+# include <SDL/SDL.h>
+#else
+#	include <SDL.h>
+#  include <SDL_mixer.h>
+#endif
+
+#define USE_OPENAL	0
+
+#if USE_OPENAL
+#	include "al.h"
+#	include "alc.h"
+#	include "efx.h"
+#endif
+
 #ifdef ALLEGRO
+
 #include "allg_snd.h"
 typedef SAMPLE 
 ;
-#else
+
+#else //!defined ALLEGRO
+
 class CDigiSound {
 	public:
 		ubyte			bHires;
@@ -66,9 +77,16 @@ class CDigiSound {
 			nLength [0] = nLength [1] = 0; 
 		}
 	};
-#endif
 
-#define SOUND_MAX_VOLUME (F1_0 / 2)
+#endif //!defined ALLEGRO
+
+//------------------------------------------------------------------------------
+
+#define SOUND_MAX_VOLUME			(I2X (1) / 2)
+
+#define DEFAULT_VOLUME				I2X (1)
+#define DEFAULT_PAN					(I2X (1) / 2 - 1)
+
 
 #define SAMPLE_RATE_11K				11025
 #define SAMPLE_RATE_22K				22050
@@ -85,130 +103,252 @@ class CDigiSound {
 extern int digi_sample_rate;
 extern int digiVolume;
 
-void audio.FadeoutMusic (void);
-void _CDECL_ audio.Shutdown (void);
-
-// Volume is max at F1_0.
-int DigiPlaySampleSpeed (short soundno, fix maxVolume, int nSpeed, int nLoops, const char *pszWAV, int nSoundClass);
-void audio.PlaySample (short nSound, fix maxVolume);
-int DigiLinkSoundToPos2 (short nSound, short nSegment, short nSide, CFixVector& vPos, int forever, fix maxVolume, fix maxDistance, const char *pszSound);
-int DigiLinkSoundToPos (short nSound, short nSegment, short nSide, CFixVector& vPos, int forever = 0, fix maxVolume = F1_0);
-// Same as above, but you pass the max distance sound can be heard.  The old way uses f1_0*256 for maxDistance.
-int DigiPlayMidiSong (char * filename, char * melodic_bank, char * drum_bank, int loop, int bD1Song);
-void DigiPlaySample3D (short nSound, int angle, int volume, int bNoDups, CFixVector *vPos, const char *pszSound); // Volume from 0-0x7fff
-void DigiInitSounds();
-void DigiSyncSounds();
-int DigiKillSoundLinkedToSegment (short nSegment, short nSide, short nSound);
-int DigiKillSoundLinkedToObject (int nObject);
-int DigiChangeSoundLinkedToObject (int nObject, fix volume);
-void DigiSetMidiVolume (int mvolume);
-void DigiSetFxVolume (int dvolume);
-void DigiMidiVolume (int dvolume, int mvolume);
-int DigiGetSoundByName (const char *pszSound);
-int DigiSetObjectSound (int nObject, int nSound, const char *pszSound, const fix xVolume = F1_0);
-
-int DigiIsSoundPlaying (short nSound);
-
-void DigiPauseAll ();
-void DigiResumeAll ();
-void DigiPauseDigiSounds ();
-void DigiResumeDigiSounds ();
-void DigiStopAll ();
-
-void DigiSetMaxChannels (int n);
-int DigiGetMaxChannels ();
-
-extern int digi_lomem;
-
-short DigiXlatSound (short nSound);
-int DigiUnXlatSound (int nSound);
-extern void audio.StopSound (int channel);
-
-// Returns the channel a sound number is playing on, or
-// -1 if none.
-extern int DigiFindChannel(short nSound);
-
-// Volume 0-F1_0
-int DigiStartSound (short nSound, fix xVolume, int xPan, int bLooping, 
-					     int nLoopStart, int nLoopEnd, int nSoundObj, int nSpeed, 
-						  const char *pszWAV, CFixVector *vPos, int nSoundClass);
-
-// Stops all sounds that are playing
-void audio.StopAllSounds();
-
-void audio.StopActiveSound (int channel);
-void DigiSetChannelPan (int channel, int pan);
-void DigiSetChannelVolume (int channel, int volume);
-int DigiIsChannelPlaying (int channel);
-void DigiPauseMidi ();
-void audio.Debug ();
-void DigiStopCurrentSong ();
-
-void DigiPlaySampleLooping (short nSound, fix maxVolume,int loop_start, int loop_end);
-void DigiChangeLoopingVolume (fix volume);
-void DigiStopLoopingSound ();
-void DigiFreeSoundBufs (void);
-
-void DigiStopDigiSounds (void);
-
-// Plays a queued voice sound.
-void DigiStartSoundQueued (short nSound, fix volume);
-
 //------------------------------------------------------------------------------
-
-typedef struct tSoundQueueEntry {
-	fix			time_added;
-	short			nSound;
-} tSoundQueueEntry;
 
 #define MAX_SOUND_QUEUE 32
-#define MAX_LIFE			F1_0*30		// After being queued for 30 seconds, don't play it
+#define MAX_LIFE			I2X (30)		// After being queued for 30 seconds, don't play it
 
-typedef struct tSoundQueue {
-	int	nHead;
-	int	nTail;
-	int	nSounds;
-	int	nChannel;
-	tSoundQueueEntry	queue [MAX_SOUND_QUEUE];
-} tSoundQueue;
+class CSoundQueue {
+	private:
+		typedef struct tSoundQueueEntry {
+			fix			timeAdded;
+			short			nSound;
+		} tSoundQueueEntry;
 
-extern tSoundQueue soundQueue;
+		typedef struct tSoundQueueData {
+			int	nHead;
+			int	nTail;
+			int	nSounds;
+			int	nChannel;
+			CArray<tSoundQueueEntry>	queue; // [MAX_SOUND_QUEUE];
+		} tSoundQueueData;
 
-//------------------------------------------------------------------------------
+		tSoundQueueData	m_data;
 
-static inline int DigiPlaySampleClass (short nSound, const char *pszSound, fix maxVolume, int nSoundClass)
-{
-return DigiPlaySampleSpeed (nSound, maxVolume, F1_0, 0, pszSound, nSoundClass);
-}
+	public:
+		CSoundQueue () { Init (); }
+		~CSoundQueue () { Destroy (); }
+		void Init (void);
+		void Destroy (void);
+		void Pause (void);
+		void End (void);
+		void Process (void);
+		void CStartSound (short nSound, fix nVolume);
+		inline int Channel (void) { return m_data.nChannel; }
+	};
 
-//------------------------------------------------------------------------------
-
-static inline int DigiPlaySample (short nSound, fix maxVolume)
-{
-return DigiPlaySampleSpeed (nSound, maxVolume, F1_0, 0, NULL, SOUNDCLASS_GENERIC);
-}
-
-//------------------------------------------------------------------------------
-
-static inline int DigiPlaySampleLooped (short nSound, fix maxVolume, int nLoops)
-{
-return DigiPlaySampleSpeed (nSound, maxVolume, F1_0, nLoops, NULL, SOUNDCLASS_GENERIC);
-}
-
-//------------------------------------------------------------------------------
-
-static inline int DigiPlayWAV (const char *pszWAV, fix maxVolume)
-{
-return DigiPlaySampleSpeed (-1, maxVolume, F1_0, 0, pszWAV, SOUNDCLASS_GENERIC);
-}
+extern CSoundQueue soundQueue;
 
 //------------------------------------------------------------------------------
 
-static inline int DigiPlayWAVLooped (const char *pszWAV, fix maxVolume, int nLoops)
-{
-return DigiPlaySampleSpeed (-1, maxVolume, F1_0, nLoops, pszWAV, SOUNDCLASS_GENERIC);
-}
+class CAudioChannel {
+	private:
+		typedef struct tChannelInfo {
+			public:
+				int				nSound;
+				fix				nPan;				// 0 = far left, 1 = far right
+				fix				nVolume;			// 0 = nothing, 1 = fully on
+				CByteArray		sample;
+				uint				nLength;			// Length of the sample
+				uint				nPosition;		// Position we are at at the moment.
+				int				nSoundObj;		// Which soundobject is on this nChannel
+				int				nSoundClass;
+				ubyte				bPlaying;		// Is there a sample playing on this nChannel?
+				ubyte				bLooped;			// Play this sample looped?
+				ubyte				bPersistent;	// This can't be pre-empted
+				ubyte				bResampled;
+				ubyte				bBuiltIn;
+#if USE_SDL_MIXER
+				Mix_Chunk*		mixChunkP;
+				int				nChannel;
+#endif
+#if USE_OPENAL
+				ALuint			source;
+				int				loops;
+#endif
+			} tChannelInfo;
+
+		tChannelInfo	m_info;
+
+	public:
+		CAudioChannel () { Init (); }
+		~CAudioChannel () { Destroy (); }
+		void Init (void);
+		void Destroy (void);
+		void SetVolume (int nVolume);
+		void SetPan (int nPan);
+		int Start (short nSound, int nSoundClass, fix nVolume, int nPan, int bLooping, 
+					  int nLoopStart, int nLoopEnd, int nSoundObj, int nSpeed, 
+					  const char *pszWAV, CFixVector* vPos);
+		void Stop (void);
+		void Mix (ubyte* stream, int len);
+		inline int Playing (void) { return m_info.bPlaying; }
+		inline void SetPlaying (int bPlaying) { m_info.bPlaying = bPlaying; }
+		inline int Sound (void) { return m_info.nSound; }
+		inline int SoundClass (void) { return m_info.nSoundClass; }
+		inline int Volume (void) { return m_info.nVolume; }
+		inline int Persistent (void) { return m_info.bPersistent; }
+		inline int Resampled (void) { return m_info.bResampled; }
+
+	private:
+		int Resample (CDigiSound *soundP, int bD1Sound, int bMP3);
+		int Speedup (CDigiSound *soundP, int speed);
+		int ReadWAV (void);
+		void Mix_VolPan (int nChannel, int nVolume, int nPan);
+	};
+
+//------------------------------------------------------------------------------
+
+class CAudio {
+	private:
+
+		//------------------------------------------------------------------------------
+
+		class CSoundObject {
+			public:
+				short			nSignature;		// A unique nSignature to this sound
+				ubyte			flags;			// Used to tell if this slot is used and/or currently playing, and how long.
+				ubyte			pad;				//	Keep alignment
+				fix			maxVolume;		// Max volume that this sound is playing at
+				fix			maxDistance;	// The max distance that this sound can be heard at...
+				int			soundClass;
+				short			nSound;			// The sound number that is playing
+				int			channel;			// What channel this is playing on, -1 if not playing
+				int			volume;			// Volume that this sound is playing at
+				int			pan;				// Pan value that this sound is playing at
+				int			nDecay;			// type of decay (0: linear, 1: quadratic, 2: cubic)
+				char			szSound [FILENAME_LEN];	// file name of custom sound to be played
+				int			nLoopStart;		// The start point of the loop. -1 means no loop
+				int			nLoopEnd;		// The end point of the loop
+				int			nMidiVolume;
+				union {
+					struct {
+						short			nSegment;				// Used if SOF_LINK_TO_POS field is used
+						short			nSide;
+						CFixVector	position;
+					} pos;
+					struct {
+						short			nObject;				// Used if SOF_LINK_TO_OBJ field is used
+						short			nObjSig;
+					} obj;
+				} linkType;
+			};
+
+		//------------------------------------------------------------------------------
+
+		class CAudioInfo {
+			public:
+				int		bInitialized;
+				int		bAvailable;
+				int		bNoObjects;
+				int		bLoMem;
+				int		nMaxChannels;
+				int		nFreeChannel;
+				int		nVolume;
+				int		nNextSignature;
+				int		nActiveObjects;
+				short		nLoopingSound;
+				short		nLoopingVolume;
+				short		nLoopingStart;
+				short		nLoopingEnd;
+				short		nLoopingChannel;
+			};
+
+	private:
+		CAudioInfo	m_info;
+		CArray<CAudioChannel>	m_channels;
+		CArray<CSoundObject>		m_objects;
+
+	public:
+		CAudio () { Init (); }
+		~CAudio () { Destroy (); }
+		void Init (void);
+		void Destroy (void);
+		int Setup (float fSlowDown);
+		void Shutdown (void);
+		void Close (void);
+		void Reset (void);
+		void FadeoutMusic (void);
+		void StopCurrentSong (void);
+		void DestroyBuffers (void);
+#if DBG
+		void Debug (void);
+#endif
+		int SoundClassCount (int nSoundClass);
+		void SetVolume (int nChannel, int nVolume);
+		void SetPan (int nChannel, int nPan);
+		int ChannelIsPlaying (int nChannel);
+		int SoundIsPlaying (short nSound);
+		void SetMaxChannels (int nChannels);
+		int GetMaxChannels (void);
+		int FindChannel (short nSound);
+		void SetMidiVolume (int nVolume);
+		void SetFxVolume (int nVolume);
+		void SetVolumes (int fxVolume, int midiVolume);
+
+		int StartSound (short nSound, int nSoundClass, fix nVolume, int nPan, int bLooping, int nLoopStart, int nLoopEnd, 
+							 int nSoundObj, int nSpeed, const char *pszWAV, CFixVector* vPos);
+		void StopSound (int channel);
+		void StopActiveSound (int nChannel);
+		void StopAllSounds (void);
+
+		int PlaySound (short nSound, int nSoundClass = SOUNDCLASS_GENERIC, fix nVolume = I2X (1), int nPan = I2X (1) / 2 - 1, 
+						   int bNoDups = 0, int nLoops = -1, const char* pszWAV = NULL, CFixVector* vPos = NULL);
+
+		inline int PlayWAV (const char *pszWAV) {
+			return PlaySound (-1, SOUNDCLASS_GENERIC, DEFAULT_VOLUME, DEFAULT_PAN, 0, -1, pszWAV);
+			}
+
+		int CreateObjectSound (short nSound, int nSoundClass, short nObject, int bForever = 0, fix maxVolume = I2X (1), fix maxDistance = I2X (256),
+									  int nLoopStart = -1, int nLoopEnd = -1, const char *pszSound = NULL, int nDecay = 0);
+		int ChangeObjectSound (int nObject, fix nVolume);
+		int DestroyObjectSound (int nObject);
+
+		int CreateSegmentSound (short nOrgSound, short nSegment, short nSide, CFixVector& vPos, int forever = 0, 
+										fix maxVolume = I2X (1), fix maxDistance = I2X (256), const char *pszSound = NULL);
+		int DestroySegmentSound (short nSegment, short nSide, short nSound);
+
+		void PlayLoopingSound (short nSound, fix nVolume, int nLoopStart, int nLoopEnd);
+		void ChangeLoopingVolume (fix nVolume);
+		void PauseLoopingSound (void);
+		void ResumeLoopingSound (void);
+		void StopLoopingSound (void);
+
+		void GetVolPan (CFixMatrix& mListener, CFixVector& vListenerPos, short nListenerSeg, 
+							 CFixVector& vSoundPos, short nSoundSeg, 
+							 fix maxVolume, int *volume, int *pan, fix maxDistance, int nDecay);
+
+		int PlayMidiSong (char * filename, char * melodic_bank, char * drum_bank, int loop, int bD1Song);
+		void InitSounds (void);
+		void SyncSounds (void);
+		int GetSoundByName (const char *pszSound);
+
+		int IsSoundPlaying (short nSound);
+
+		void EndSoundObject (int i);
+
+		void PauseAll (void);
+		void ResumeAll (void);
+		void PauseSounds (void);
+		void ResumeSounds (void);
+		void StopAll (void);
+
+		short XlatSound (short nSound);
+		int UnXlatSound (int nSound);
+
+		inline int Available (void) { return m_info.bAvailable; }
+		inline int FreeChannel (void) { return m_info.nFreeChannel; }
+		inline CAudioChannel* Channel (uint i = 0) { return m_channels + i; }
+
+		static void _CDECL_ MixCallback (void* userdata, ubyte* stream, int len);
+
+	private:
+		CAudioChannel* FindFreeChannel (int nSoundClass);
+	};
+
+extern CAudio audio;
 
 //------------------------------------------------------------------------------
 
 #endif
+

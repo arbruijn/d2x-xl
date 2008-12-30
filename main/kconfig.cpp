@@ -1699,10 +1699,10 @@ read_head_tracker ()
 		fix yaw1 = yaw;
 	
 		yaw1 = yaw;
-		if ((Last_angles_h < (F1_0/4)) && (yaw > ((F1_0*3)/4)))
-			yaw1 -= F1_0;
-		else if ((yaw < (F1_0/4)) && (Last_angles_h > ((F1_0*3)/4)))
-			yaw1 += F1_0;
+		if ((Last_angles_h < (I2X (1)/4)) && (yaw > ((I2X (3))/4)))
+			yaw1 -= I2X (1);
+		else if ((yaw < (I2X (1)/4)) && (Last_angles_h > ((I2X (3))/4)))
+			yaw1 += I2X (1);
 
 		Controls [0].pitchTime	+= FixMul ((pitch- Last_angles_p)*VR_sense_range [gameStates.render.vr.nSensitivity],gameData.time.xFrame);
 		Controls [0].headingTime+= FixMul ((yaw1 -  Last_angles_h)*VR_sense_range [gameStates.render.vr.nSensitivity],gameData.time.xFrame);

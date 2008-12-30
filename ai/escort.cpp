@@ -82,7 +82,7 @@ FORALL_ROBOT_OBJS (objP, i)
 		break;
 if (IS_OBJECT (objP, i))
 	gameData.escort.nObjNum = objP->Index ();
-gameData.escort.xSorryTime = -F1_0;
+gameData.escort.xSorryTime = -I2X (1);
 gameData.escort.bSearchingMarker = -1;
 gameData.escort.nLastKey = -1;
 }
@@ -276,7 +276,7 @@ if (gameData.escort.nSpecialGoal != -1) {
 dega_ok: ;
 if (bDetected) {
 	if (!BuddyMayTalk ())
-		audio.PlaySample (SOUND_BUDDY_MET_GOAL);
+		audio.PlaySound (SOUND_BUDDY_MET_GOAL);
 	gameData.escort.nGoalIndex = -1;
 	gameData.escort.nGoalObject = ESCORT_GOAL_UNSPECIFIED;
 	gameData.escort.nSpecialGoal = -1;
@@ -329,7 +329,7 @@ if (gameData.escort.bMsgsSuppressed)
 	return;
 if (gameData.app.nGameMode & GM_MULTI)
 	return;
-if ((gameData.escort.xLastMsgTime + F1_0 < gameData.time.xGame) ||
+if ((gameData.escort.xLastMsgTime + I2X (1) < gameData.time.xGame) ||
 	 (gameData.escort.xLastMsgTime > gameData.time.xGame)) {
 	if (BuddyMayTalk ()) {
 		char		szMsg [200];
@@ -451,7 +451,7 @@ else {
 			Int3 ();		//	Oops, called with illegal key value.
 		}
 	}
-gameData.escort.xLastMsgTime = gameData.time.xGame - 2*F1_0;	//	Allow next message to come through.
+gameData.escort.xLastMsgTime = gameData.time.xGame - I2X (2);	//	Allow next message to come through.
 SayEscortGoal (gameData.escort.nSpecialGoal);
 gameData.escort.nGoalObject = ESCORT_GOAL_UNSPECIFIED;
 }
@@ -819,7 +819,7 @@ else
 	return ESCORT_GOAL_EXIT;
 }
 
-#define	MAX_ESCORT_TIME_AWAY		 (F1_0*4)
+#define	MAX_ESCORT_TIME_AWAY		 (I2X (4))
 
 fix	xBuddyLastSeenPlayer = 0, Buddy_last_player_path_created;
 
@@ -830,7 +830,7 @@ int TimeToVisitPlayer (CObject *objP, tAILocalInfo *ailp, tAIStaticInfo *aip)
 	//	Note: This one has highest priority because, even if already going towards CPlayerData,
 	//	might be necessary to create a new path, as CPlayerData can move.
 if (gameData.time.xGame - xBuddyLastSeenPlayer > MAX_ESCORT_TIME_AWAY)
-	if (gameData.time.xGame - Buddy_last_player_path_created > F1_0)
+	if (gameData.time.xGame - Buddy_last_player_path_created > I2X (1))
 		return 1;
 if (ailp->mode == AIM_GOTO_PLAYER)
 	return 0;
@@ -868,10 +868,10 @@ int MaybeBuddyFireMega (short nObject)
 
 vVecToRobot = buddyObjP->info.position.vPos - objP->info.position.vPos;
 dist = CFixVector::Normalize(vVecToRobot);
-if (dist > F1_0*100)
+if (dist > I2X (100))
 	return 0;
 dot = CFixVector::Dot (vVecToRobot, buddyObjP->info.position.mOrient.FVec ());
-if (dot < F1_0/2)
+if (dot < I2X (1)/2)
 	return 0;
 if (!ObjectToObjectVisibility (buddyObjP, objP, FQ_TRANSWALL))
 	return 0;
@@ -902,7 +902,7 @@ int MaybeBuddyFireSmart (short nObject)
 	short		nWeaponObj;
 
 dist = CFixVector::Dist(buddyObjP->info.position.vPos, objP->info.position.vPos);
-if (dist > F1_0*80)
+if (dist > I2X (80))
 	return 0;
 if (!ObjectToObjectVisibility (buddyObjP, objP, FQ_TRANSWALL))
 	return 0;
@@ -929,7 +929,7 @@ if (!BuddyMayTalk ())
 if (Buddy_last_missileTime > gameData.time.xGame)
 	Buddy_last_missileTime = 0;
 
-if (Buddy_last_missileTime + F1_0*2 < gameData.time.xGame) {
+if (Buddy_last_missileTime + I2X (2) < gameData.time.xGame) {
 	//	See if a robot potentially in view cone
 	FORALL_ROBOT_OBJS (objP, i)
 		if (!ROBOTINFO (objP->info.nId).companion)
@@ -967,16 +967,16 @@ if (player_visibility) {
 	}
 if (gameStates.app.cheats.bMadBuddy)
 	DoBuddyDudeStuff ();
-if (gameData.escort.xSorryTime + F1_0 > gameData.time.xGame) {
+if (gameData.escort.xSorryTime + I2X (1) > gameData.time.xGame) {
 	gameData.escort.xLastMsgTime = 0;	//	Force this message to get through.
-	if (gameData.escort.xSorryTime < gameData.time.xGame + F1_0*2)
+	if (gameData.escort.xSorryTime < gameData.time.xGame + I2X (2))
 		BuddyMessage (TXT_BUDDY_SORRY);
-	gameData.escort.xSorryTime = -F1_0*2;
+	gameData.escort.xSorryTime = -I2X (2);
 	}
 //	If buddy not allowed to talk, then he is locked in his room.  Make him mostly do nothing unless you're nearby.
 if (!gameData.escort.bMayTalk)
-	if (xDistToPlayer > F1_0*100)
-		aip->SKIP_AI_COUNT = (sbyte) ((F1_0 / 4) / (gameData.time.xFrame ? gameData.time.xFrame : 1));
+	if (xDistToPlayer > I2X (100))
+		aip->SKIP_AI_COUNT = (sbyte) ((I2X (1) / 4) / (gameData.time.xFrame ? gameData.time.xFrame : 1));
 //	AIM_WANDER has been co-opted for buddy behavior (didn't want to modify aistruct.h)
 //	It means the CObject has been told to get lost and has come to the end of its path.
 //	If the CPlayerData is now visible, then create a path.
@@ -987,7 +987,7 @@ if (ailp->mode == AIM_WANDER)
 		}
 if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM) {
 	if (player_visibility)
-		if (gameData.escort.xLastPathCreated + F1_0*3 < gameData.time.xGame) {
+		if (gameData.escort.xLastPathCreated + I2X (3) < gameData.time.xGame) {
 #if TRACE
 			console.printf (CON_DBG, "Frame %i: Buddy creating new scram path.\n", gameData.app.nFrameCount);
 #endif
@@ -998,8 +998,8 @@ if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM) {
 	return;
 	}
 //	Force checking for new goal every 5 seconds, and create new path, if necessary.
-if (((gameData.escort.nSpecialGoal != ESCORT_GOAL_SCRAM) && ((gameData.escort.xLastPathCreated + F1_0*5) < gameData.time.xGame)) ||
-	 ((gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM) && ((gameData.escort.xLastPathCreated + F1_0*15) < gameData.time.xGame))) {
+if (((gameData.escort.nSpecialGoal != ESCORT_GOAL_SCRAM) && ((gameData.escort.xLastPathCreated + I2X (5)) < gameData.time.xGame)) ||
+	 ((gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM) && ((gameData.escort.xLastPathCreated + I2X (15)) < gameData.time.xGame))) {
 	gameData.escort.nGoalObject = ESCORT_GOAL_UNSPECIFIED;
 	gameData.escort.xLastPathCreated = gameData.time.xGame;
 	}
@@ -1009,7 +1009,7 @@ if ((gameData.escort.nSpecialGoal != ESCORT_GOAL_SCRAM) && TimeToVisitPlayer (ob
 	Buddy_last_player_path_created = gameData.time.xGame;
 	ailp->mode = AIM_GOTO_PLAYER;
 	if (!player_visibility) {
-		if ((Last_come_back_messageTime + F1_0 < gameData.time.xGame) || (Last_come_back_messageTime > gameData.time.xGame)) {
+		if ((Last_come_back_messageTime + I2X (1) < gameData.time.xGame) || (Last_come_back_messageTime > gameData.time.xGame)) {
 			BuddyMessage (TXT_COMING_BACK);
 			Last_come_back_messageTime = gameData.time.xGame;
 			}

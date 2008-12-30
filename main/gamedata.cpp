@@ -573,11 +573,11 @@ CBossData::CBossData ()
 nCloakStartTime = 0;
 nCloakEndTime = 0;
 nLastTeleportTime = 0;
-nTeleportInterval = F1_0 * 8;
-nCloakInterval = F1_0 * 10;
+nTeleportInterval = I2X (8);
+nCloakInterval = I2X (10);
 nCloakDuration = BOSS_CLOAK_DURATION;
 nLastGateTime = 0;
-nGateInterval = F1_0 * 6;
+nGateInterval = I2X (6);
 }
 
 // ----------------------------------------------------------------------------
@@ -601,7 +601,7 @@ CThiefData::CThiefData ()
 memset (this, 0, sizeof (*this));
 xReInitTime = 0x3f000000;
 for (int i = 0; i < NDL; i++)
-	xWaitTimes [i] = F1_0 * (30 - i * 5);
+	xWaitTimes [i] = I2X (30 - i * 5);
 }
 
 // ----------------------------------------------------------------------------
@@ -747,7 +747,7 @@ bCache = 1;
 CPhysicsData::CPhysicsData ()
 {
 xTime = 0;
-xAfterburnerCharge = f1_0;
+xAfterburnerCharge = I2X (1);
 xBossInvulDot = 0;
 playerThrust.SetZero ();
 }
@@ -894,12 +894,12 @@ xFrame = 0x1000;
 CTerrainRenderData::CTerrainRenderData ()
 {
 memset (this, 0, sizeof (*this));
-uvlList [0][1].u = f1_0;
-uvlList [0][2].v = f1_0;
-uvlList [1][0].u = f1_0;
-uvlList [1][1].u = f1_0;
-uvlList [1][1].v = f1_0;
-uvlList [1][2].v = f1_0;
+uvlList [0][1].u = I2X (1);
+uvlList [0][2].v = I2X (1);
+uvlList [1][0].u = I2X (1);
+uvlList [1][1].u = I2X (1);
+uvlList [1][1].v = I2X (1);
+uvlList [1][2].v = I2X (1);
 }
 
 // ----------------------------------------------------------------------------

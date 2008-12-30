@@ -281,7 +281,7 @@ Assert (nPlayer < gameData.multiplayer.nPlayers);
 Assert (nPlayer > -1);
 NetworkDisconnectPlayer (nPlayer);
 OBJECTS [gameData.multiplayer.players [nPlayer].nObject].CreateAppearanceEffect ();
-DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
+audio.PlaySound (SOUND_HUD_MESSAGE);
 HUDInitMessage ("%s %s", gameData.multiplayer.players [nPlayer].callsign, TXT_DISCONNECTING);
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if (gameData.multiplayer.players [i].connected) 
@@ -378,13 +378,13 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 		nakedData.nLength = 0;
 		nakedData.nDestPlayer = -1;
 		}
-	if (networkData.refuse.bWaitForAnswer && TimerGetApproxSeconds ()> (networkData.refuse.xTimeLimit+ (F1_0*12)))
+	if (networkData.refuse.bWaitForAnswer && TimerGetApproxSeconds ()> (networkData.refuse.xTimeLimit+ (I2X (1)2)))
 		networkData.refuse.bWaitForAnswer=0;
 	networkData.xLastSendTime += gameData.time.xFrame;
 	networkData.xLastTimeoutCheck += gameData.time.xFrame;
 
 	// Send out packet PacksPerSec times per second maximum... unless they fire, then send more often...
-	if ((networkData.xLastSendTime > F1_0 / PacketsPerSec ()) || 
+	if ((networkData.xLastSendTime > I2X (1) / PacketsPerSec ()) || 
 		(gameData.multigame.laser.bFired) || bForce || networkData.bPacketUrgent) {        
 		if (LOCALPLAYER.connected) {
 			int nObject = LOCALPLAYER.nObject;
@@ -452,7 +452,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 			if (gameData.reactor.bDestroyed) {
 				if (gameStates.app.bPlayerIsDead)
 					LOCALPLAYER.connected=3;
-				if (TimerGetApproxSeconds () > (xLastEndlevel+ (F1_0/2))) {
+				if (TimerGetApproxSeconds () > (xLastEndlevel+ (I2X (1)/2))) {
 					NetworkSendEndLevelPacket ();
 					xLastEndlevel = TimerGetApproxSeconds ();
 					}
@@ -463,7 +463,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 	if (!bListen)
 		return;
 
-	if ((networkData.xLastTimeoutCheck > F1_0) && !gameData.reactor.bDestroyed) {
+	if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) {
 		fix t = (fix) SDL_GetTicks ();
 	// Check for CPlayerData timeouts
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {

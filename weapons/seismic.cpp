@@ -26,7 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //	-----------------------------------------------------------------------------
 
-#define	ESHAKER_SHAKE_TIME		(F1_0*2)
+#define	ESHAKER_SHAKE_TIME		(I2X (2))
 #define	MAX_ESHAKER_DETONATES	4
 
 fix	eshakerDetonateTimes [MAX_ESHAKER_DETONATES];
@@ -51,7 +51,7 @@ for (i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 	if (eshakerDetonateTimes [i] != 0) {
 		fix	deltaTime = gameData.time.xGame - eshakerDetonateTimes [i];
 		if (!gameStates.gameplay.seismic.bSound) {
-			DigiPlaySampleLooping ((short) gameStates.gameplay.seismic.nSound, F1_0, -1, -1);
+			audio.PlaySampleLooping ((short) gameStates.gameplay.seismic.nSound, I2X (1), -1, -1);
 			gameStates.gameplay.seismic.bSound = 1;
 			gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + d_rand()/2;
 			}
@@ -67,7 +67,7 @@ for (i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 			else if (fc == 0)
 				fc = 1;
 			gameStates.gameplay.seismic.nVolume += fc;
-			h = 3 * F1_0 / 16 + (F1_0 * (16 - fc)) / 32;
+			h = I2X (3) / 16 + (I2X (16 - fc)) / 32;
 			rx = FixMul(d_rand() - 16384, h);
 			rz = FixMul(d_rand() - 16384, h);
 			gameData.objs.consoleP->mType.physInfo.rotVel[X] += rx;
@@ -89,7 +89,7 @@ for (i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 
 //	-----------------------------------------------------------------------------
 
-#define	SEISMIC_DISTURBANCE_DURATION	(F1_0*5)
+#define	SEISMIC_DISTURBANCE_DURATION	(I2X (5))
 
 int SeismicLevel (void)
 {
@@ -117,7 +117,7 @@ if (rval) {
 	gameStates.gameplay.seismic.nStartTime = gameData.time.xGame;
 	gameStates.gameplay.seismic.nEndTime = gameData.time.xGame + gameStates.gameplay.seismic.nShakeDuration;
 	if (!gameStates.gameplay.seismic.bSound) {
-		DigiPlaySampleLooping((short) gameStates.gameplay.seismic.nSound, F1_0, -1, -1);
+		audio.PlaySampleLooping((short) gameStates.gameplay.seismic.nSound, I2X (1), -1, -1);
 		gameStates.gameplay.seismic.bSound = 1;
 		gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + d_rand()/2;
 		}
@@ -139,13 +139,13 @@ if (gameStates.gameplay.seismic.nShakeFrequency) {
 		fix	h;
 
 		fc = abs(deltaTime - (gameStates.gameplay.seismic.nEndTime - gameStates.gameplay.seismic.nStartTime) / 2);
-		fc /= F1_0 / 16;
+		fc /= I2X (1) / 16;
 		if (fc > 16)
 			fc = 16;
 		else if (fc == 0)
 			fc = 1;
 		gameStates.gameplay.seismic.nVolume += fc;
-		h = 3 * F1_0 / 16 + (F1_0 * (16 - fc)) / 32;
+		h = I2X (3) / 16 + (I2X (16 - fc)) / 32;
 		rx = FixMul(d_rand() - 16384, h);
 		rz = FixMul(d_rand() - 16384, h);
 		gameData.objs.consoleP->mType.physInfo.rotVel[X] += rx;
@@ -202,8 +202,8 @@ if (stv_save != 0) {
 
 	if ((gameData.time.xGame > gameStates.gameplay.seismic.nNextSoundTime) && gameStates.gameplay.seismic.nVolume) {
 		int volume = gameStates.gameplay.seismic.nVolume * 2048;
-		if (volume > F1_0)
-			volume = F1_0;
+		if (volume > I2X (1))
+			volume = I2X (1);
 		DigiChangeLoopingVolume (volume);
 		gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + d_rand () / 4 + 8192;
 		}

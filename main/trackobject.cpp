@@ -9,7 +9,7 @@
 #include "omega.h"
 #include "trackobject.h"
 
-#define	OMEGA_MIN_TRACKABLE_DOT			 (15 * F1_0 / 16)		//	Larger values mean narrower cone.  F1_0 means damn near impossible.  0 means 180 degree field of view.
+#define	OMEGA_MIN_TRACKABLE_DOT			 (I2X (15) / 16)		//	Larger values mean narrower cone.  I2X (1) means damn near impossible.  0 means 180 degree field of view.
 #define	OMEGA_MAX_TRACKABLE_DIST		MAX_OMEGA_DIST	//	An CObject must be at least this close to be tracked.
 
 fix	xMinTrackableDot = MIN_TRACKABLE_DOT;
@@ -43,7 +43,7 @@ if (objP->info.nType == OBJ_ROBOT) {
 vGoal = objP->info.position.vPos - trackerP->info.position.vPos;
 CFixVector::Normalize(vGoal);
 *xDot = CFixVector::Dot (vGoal, trackerP->info.position.mOrient.FVec ());
-if ((*xDot < xMinTrackableDot) && (*xDot > 9 * F1_0 / 10)) {
+if ((*xDot < xMinTrackableDot) && (*xDot > I2X (9) / 10)) {
 	CFixVector::Normalize(vGoal);
 	*xDot = CFixVector::Dot (vGoal, trackerP->info.position.mOrient.FVec ());
 	}
@@ -81,7 +81,7 @@ return FindHomingObjectComplete (vCurPos, trackerP, OBJ_PLAYER, gameStates.app.c
 int FindHomingObject (CFixVector *vTrackerPos, CObject *trackerP)
 {
 	int	i, bOmega, bGuidedMslView;
-	fix	maxDot = -F1_0*2;
+	fix	maxDot = -I2X (2);
 	int	nBestObj = -1;
 	int	curMinTrackableDot;
 	int	bSpectate;
@@ -174,7 +174,7 @@ else {
 						}
 					}
 				} 
-			else if (dot > F1_0 - (F1_0 - curMinTrackableDot) * 2) {
+			else if (dot > I2X (1) - (I2X (1) - curMinTrackableDot) * 2) {
 				CFixVector::Normalize(vecToCurObj);
 				dot = CFixVector::Dot (vecToCurObj, trackerP->info.position.mOrient.FVec ());
 				if (dot > curMinTrackableDot) {
@@ -200,7 +200,7 @@ return nBestObj;
 //	Make homing OBJECTS not track parent's prox bombs.
 int FindHomingObjectComplete (CFixVector *vCurPos, CObject *trackerP, int trackObjType1, int trackObjType2)
 {
-	fix		maxDot = -F1_0*2;
+	fix		maxDot = -I2X (2);
 	int		nBestObj = -1;
 	fix		maxTrackableDist;
 	fix		minTrackableDot;
@@ -212,11 +212,11 @@ int FindHomingObjectComplete (CFixVector *vCurPos, CObject *trackerP, int trackO
 maxTrackableDist = MAX_TRACKABLE_DIST;
 if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (trackerP->info.nType == OBJ_WEAPON) && (trackerP->info.nId == EARTHSHAKER_MEGA_ID)) {
 	maxTrackableDist *= 2;
-	minTrackableDot = -F1_0;
+	minTrackableDot = -I2X (1);
 	}
 else
 #if 0//def _DEBUG
-	minTrackableDot = -F1_0;
+	minTrackableDot = -I2X (1);
 #else
 	minTrackableDot = MIN_TRACKABLE_DOT;
 #endif

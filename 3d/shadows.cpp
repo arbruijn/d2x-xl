@@ -940,7 +940,7 @@ if (0 > (nSegment = FindSegByPos (*vPos, nSegment, 1, 0)))
 	return G3_INFINITY;
 v = *vPos - vLightPos;
 CFixVector::Normalize(v);
-v *= ((fix) F1_0 * (fix) G3_INFINITY);
+v *= I2X (G3_INFINITY);
 if (!nVisited++)
 	memset (bVisited, 0, gameData.segs.nSegments * sizeof (uint));
 #if DBG
@@ -1032,7 +1032,7 @@ if (0 > (nSegment = FindSegByPos (vPos, nSegment, 1, 0)))
 fq.p0				  = vPos;
 VmVecSub (&v, fq.p0, &vLightPos);
 CFixVector::Normalize(v);
-VmVecScale (&v, (fix) F1_0 * (fix) G3_INFINITY);
+VmVecScale (&v, I2X (G3_INFINITY));
 fq.startSeg		  = nSegment;
 fq.p1				  = &v;
 fq.rad			  = 0;
@@ -1450,7 +1450,7 @@ if (FAST_SHADOWS) {
 		CFixVector::Normalize(vLightDir);
 		if (gameData.render.shadows.nLight) {
 			for (j = 0; j < gameData.render.shadows.nLight; j++)
-				if (abs (CFixVector::Dot (vLightDir, gameData.render.shadows.vLightDir[j])) > 2 * F1_0 / 3) // 60 deg
+				if (abs (CFixVector::Dot (vLightDir, gameData.render.shadows.vLightDir[j])) > I2X (2) / 3) // 60 deg
 					break;
 			if (j < gameData.render.shadows.nLight)
 				continue;

@@ -87,7 +87,7 @@ return 0;
 #if 0
 static inline int WIFireTicks (int nWeapon)
 {
-return 1000 * WI_fire_wait (nWeapon) / F1_0;
+return 1000 * WI_fire_wait (nWeapon) / I2X (1);
 }
 #endif
 
@@ -105,8 +105,8 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++, wsP++) {
 		bGatling = (wsP->nPrimary == VULCAN_INDEX) || (wsP->nPrimary == GAUSS_INDEX);
 		fP = wsP->firing;
 		if (bGatling && bGatlingSound && (fP->bSound == 1)) {
-			SetObjectSound (-1, SOUNDCLASS_PLAYER, (short) gameData.multiplayer.players [i].nObject, 0, 
-								 F1_0, 256 * F1_0, -1, -1, AddonSoundName (SND_ADDON_GATLING_SPIN), 0);
+			CreateObjectSound (-1, SOUNDCLASS_PLAYER, (short) gameData.multiplayer.players [i].nObject, 0, 
+								 I2X (1), I2X (256), -1, -1, AddonSoundName (SND_ADDON_GATLING_SPIN), 0);
 			fP->bSound = 0;
 			}
 		}

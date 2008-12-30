@@ -1005,7 +1005,7 @@ void check_joystick_calibration ()
 		) return;
 	JoyGetpos (&x1, &y1);
 	t1 = TimerGetFixedSeconds ();
-	while (TimerGetFixedSeconds () < t1 + F1_0/100)
+	while (TimerGetFixedSeconds () < t1 + I2X (1)/100)
 		;
 	JoyGetpos (&x2, &y2);
 	// If joystick hasn't moved...

@@ -17,7 +17,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "endlevel.h"
 
 #define MAX_LIGHT       0x10000     // max value
-#define MIN_LIGHT_DIST  (F1_0*4)
+#define MIN_LIGHT_DIST  (I2X (1)*4)
 
 extern fix xBeamBrightness;
 

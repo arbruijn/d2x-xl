@@ -94,9 +94,9 @@ void NDStopRecording (void);
 
 int NDGetPercentDone (void);
 
-void NDRecordLinkSoundToObject3 (int nSound, short nObject, fix maxVolume, fix maxDistance, int loop_start, int loop_end);
+void NDRecordCreateObjectSound (int nSound, short nObject, fix maxVolume, fix maxDistance, int loop_start, int loop_end);
 int NDFindObject (int nSignature);
-void NDRecordKillSoundLinkedToObject (int nObject);
+void NDRecordDestroyObjectSound (int nObject);
 void NDStripFrames (char* outname, int bytes_to_strip);
 
 #endif // NEWDEMO

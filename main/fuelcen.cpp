@@ -39,8 +39,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define	ROBOT_GEN_TIME (I2X (5))
 #define	EQUIP_GEN_TIME (I2X (3) * (gameStates.app.nDifficultyLevel + 1))
 
-#define MATCEN_HP_DEFAULT			F1_0*500; // Hitpoints
-#define MATCEN_INTERVAL_DEFAULT	F1_0*5;	//  5 seconds
+#define MATCEN_HP_DEFAULT			I2X (5)00; // Hitpoints
+#define MATCEN_INTERVAL_DEFAULT	I2X (5);	//  5 seconds
 
 #ifdef EDITOR
 char	Special_names [MAX_CENTER_TYPES][11] = {
@@ -300,7 +300,7 @@ if (!matCenP->nLives)
 if (gameStates.app.nDifficultyLevel + 1 < NDL)
 	matCenP->nLives--;
 
-matCenP->xTimer = F1_0*1000;	//	Make sure the first robot gets emitted right away.
+matCenP->xTimer = I2X (100)0;	//	Make sure the first robot gets emitted right away.
 matCenP->bEnabled = 1;			//	Say this center is enabled, it can create robots.
 matCenP->xCapacity = I2X (gameStates.app.nDifficultyLevel + 3);
 matCenP->xDisableTime = MATCEN_LIFE;
@@ -308,7 +308,7 @@ matCenP->xDisableTime = MATCEN_LIFE;
 //	Create a bright CObject in the CSegment.
 pos = matCenP->vCenter;
 delta = gameData.segs.vertices[SEGMENTS [nSegment].m_verts [0]] - matCenP->vCenter;
-pos += delta * (F1_0/2);
+pos += delta * (I2X (1)/2);
 nObject = CreateLight (SINGLE_LIGHT_ID, nSegment, pos);
 if (nObject != -1) {
 	OBJECTS [nObject].info.xLifeLeft = MATCEN_LIFE;
@@ -444,7 +444,7 @@ objP = /*Object*/CreateExplosion ((short) matCenP->nSegment, vPos, I2X (10), nVi
 if (objP) {
 	ExtractOrientFromSegment (&objP->info.position.mOrient, SEGMENTS + matCenP->nSegment);
 	if (gameData.eff.vClips [0][nVideoClip].nSound > -1)
-		DigiLinkSoundToPos (gameData.eff.vClips [0][nVideoClip].nSound, (short) matCenP->nSegment, 0, vPos, 0, F1_0);
+		DigiLinkSoundToPos (gameData.eff.vClips [0][nVideoClip].nSound, (short) matCenP->nSegment, 0, vPos, 0, I2X (1));
 	matCenP->bFlag	= 1;
 	matCenP->xTimer = 0;
 	}
@@ -670,11 +670,11 @@ if (!matCenP->bFlag) {
 		topTime = ROBOT_GEN_TIME;
 	else {
 		xDistToPlayer = CFixVector::Dist(gameData.objs.consoleP->info.position.vPos, matCenP->vCenter);
-		topTime = xDistToPlayer / 64 + d_rand () * 2 + F1_0*2;
+		topTime = xDistToPlayer / 64 + d_rand () * 2 + I2X (2);
 		if (topTime > ROBOT_GEN_TIME)
 			topTime = ROBOT_GEN_TIME + d_rand ();
-		if (topTime < F1_0*2)
-			topTime = F1_0*3/2 + d_rand ()*2;
+		if (topTime < I2X (2))
+			topTime = I2X (3)/2 + d_rand ()*2;
 		}
 	if (matCenP->xTimer < topTime)
 		return;
@@ -801,7 +801,7 @@ for (i = 0; i < gameData.matCens.nFuelCenters; i++, fuelCenP++) {
 //--unused--
 //--unused-- }
 
-#define FUELCEN_SOUND_DELAY (f1_0/4)		//play every half second
+#define FUELCEN_SOUND_DELAY (I2X (1)/4)		//play every half second
 
 //-------------------------------------------------------------
 
@@ -815,15 +815,15 @@ if (!(gameData.app.nGameMode & GM_ENTROPY))
 gameData.matCens.playerSegP = this;
 if ((m_owner < 1) || (m_owner == GetTeam (gameData.multiplayer.nLocalPlayer) + 1))
 	return 0;
-amount = FixMul (gameData.time.xFrame, extraGameInfo [1].entropy.nShieldDamageRate * F1_0);
+amount = FixMul (gameData.time.xFrame, I2X (extraGameInfo [1].entropy.nShieldDamageRate));
 if (amount > xMaxDamage)
 	amount = xMaxDamage;
 if (last_playTime > gameData.time.xGame)
 	last_playTime = 0;
 if (gameData.time.xGame > last_playTime + FUELCEN_SOUND_DELAY) {
-	DigiPlaySample (SOUND_PLAYER_GOT_HIT, F1_0/2);
+	audio.PlaySound (SOUND_PLAYER_GOT_HIT, SOUNDCLASS_GENERIC, I2X (1) / 2);
 	if (IsMultiGame)
-		MultiSendPlaySound (SOUND_PLAYER_GOT_HIT, F1_0/2);
+		MultiSendPlaySound (SOUND_PLAYER_GOT_HIT, I2X (1) / 2);
 	last_playTime = gameData.time.xGame;
 	}
 return amount;
@@ -858,7 +858,7 @@ if (gameData.matCens.fuelCenters [segP->value].xCapacity <= 0) {
 if (nMaxFuel <= 0)
 	return 0;
 if (gameData.app.nGameMode & GM_ENTROPY)
-	amount = FixMul (gameData.time.xFrame, gameData.matCens.xFuelGiveAmount * F1_0);
+	amount = FixMul (gameData.time.xFrame, I2X (gameData.matCens.xFuelGiveAmount));
 else
 	amount = FixMul (gameData.time.xFrame, gameData.matCens.xFuelGiveAmount);
 if (amount > nMaxFuel)
@@ -866,9 +866,9 @@ if (amount > nMaxFuel)
 if (last_playTime > gameData.time.xGame)
 	last_playTime = 0;
 if (gameData.time.xGame > last_playTime + FUELCEN_SOUND_DELAY) {
-	DigiPlaySample (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0 / 2);
+	audio.PlaySound (SOUND_REFUEL_STATION_GIVING_FUEL, SOUNDCLASS_GENERIC, I2X (1) / 2);
 	if (IsMultiGame)
-		MultiSendPlaySound (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0 / 2);
+		MultiSendPlaySound (SOUND_REFUEL_STATION_GIVING_FUEL, I2X (1) / 2);
 	last_playTime = gameData.time.xGame;
 	}
 //HUDInitMessage ("Fuelcen %d has %d/%d fuel", segP->value,X2I (gameData.matCens.fuelCenters [segP->value].xCapacity),X2I (gameData.matCens.fuelCenters [segP->value].xMaxCapacity));
@@ -905,15 +905,15 @@ if (m_nType != SEGMENT_IS_REPAIRCEN)
 if (nMaxShields <= 0) {
 	return 0;
 }
-amount = FixMul (gameData.time.xFrame, extraGameInfo [IsMultiGame].entropy.nShieldFillRate * F1_0);
+amount = FixMul (gameData.time.xFrame, I2X (extraGameInfo [IsMultiGame].entropy.nShieldFillRate));
 if (amount > nMaxShields)
 	amount = nMaxShields;
 if (last_playTime > gameData.time.xGame)
 	last_playTime = 0;
 if (gameData.time.xGame > last_playTime + FUELCEN_SOUND_DELAY) {
-	DigiPlaySample (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
+	audio.PlaySound (SOUND_REFUEL_STATION_GIVING_FUEL, SOUNDCLASS_GENERIC, I2X (1)/2);
 	if (IsMultiGame)
-		MultiSendPlaySound (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
+		MultiSendPlaySound (SOUND_REFUEL_STATION_GIVING_FUEL, I2X (1)/2);
 	last_playTime = gameData.time.xGame;
 	}
 return amount;
@@ -950,7 +950,7 @@ return amount;
 //--unused-- //--		}
 //--unused-- 		break;
 //--unused-- 	case SEGMENT_IS_FUELCEN:
-//--unused-- //--		DigiPlaySample (SOUND_REFUEL_STATION_HIT);
+//--unused-- //--		audio.PlaySound (SOUND_REFUEL_STATION_HIT);
 //--unused-- //--		if (gameData.matCens.fuelCenters [station_num].xMaxCapacity>0) {
 //--unused-- //--			gameData.matCens.fuelCenters [station_num].xMaxCapacity -= damage;
 //--unused-- //--			if (gameData.matCens.fuelCenters [station_num].xCapacity > gameData.matCens.fuelCenters [station_num].xMaxCapacity) {
@@ -958,7 +958,7 @@ return amount;
 //--unused-- //--			}
 //--unused-- //--			if (gameData.matCens.fuelCenters [station_num].xMaxCapacity <= 0) {
 //--unused-- //--				gameData.matCens.fuelCenters [station_num].xMaxCapacity = 0;
-//--unused-- //--				DigiPlaySample (SOUND_REFUEL_STATION_DESTROYED);
+//--unused-- //--				audio.PlaySound (SOUND_REFUEL_STATION_DESTROYED);
 //--unused-- //--			}
 //--unused-- //--		} else {
 //--unused-- //--			gameData.matCens.fuelCenters [station_num].xMaxCapacity = 0;
@@ -1028,7 +1028,7 @@ return amount;
 //--repair-- 	CFixMatrix goal_orient;
 //--repair--
 //--repair-- 	// Find time for this movement
-//--repair-- 	deltaTime = F1_0;		// one second...
+//--repair-- 	deltaTime = I2X (1);		// one second...
 //--repair--
 //--repair-- 	// Find start and goal position
 //--repair-- 	start_pos = objP->info.position.vPos;
@@ -1088,7 +1088,7 @@ return amount;
 //--repair-- 		int entry_side;
 //--repair-- 		currentTime = 0;
 //--repair--
-//--repair-- 		DigiPlaySample (SOUND_REPAIR_STATION_PLAYER_ENTERING, F1_0);
+//--repair-- 		audio.PlaySound (SOUND_REPAIR_STATION_PLAYER_ENTERING);
 //--repair--
 //--repair-- 		entry_side = john_find_connect_side (repair_seg,objP->info.nSegment);
 //--repair-- 		Assert (entry_side > -1);
@@ -1128,23 +1128,23 @@ return amount;
 //--repair-- 			return 1;		// Done being repaired...
 //--repair--
 //--repair-- 		if (Repairing==0)	 {
-//--repair-- 			//DigiPlaySample (SOUND_REPAIR_STATION_FIXING);
+//--repair-- 			//audio.PlaySound (SOUND_REPAIR_STATION_FIXING);
 //--repair-- 			Repairing=1;
 //--repair--
 //--repair-- 			switch (next_side) {
-//--repair-- 			case 0:	DigiPlaySample (SOUND_REPAIR_STATION_FIXING_1,F1_0); break;
-//--repair-- 			case 1:	DigiPlaySample (SOUND_REPAIR_STATION_FIXING_2,F1_0); break;
-//--repair-- 			case 2:	DigiPlaySample (SOUND_REPAIR_STATION_FIXING_3,F1_0); break;
-//--repair-- 			case 3:	DigiPlaySample (SOUND_REPAIR_STATION_FIXING_4,F1_0); break;
-//--repair-- 			case 4:	DigiPlaySample (SOUND_REPAIR_STATION_FIXING_1,F1_0); break;
-//--repair-- 			case 5:	DigiPlaySample (SOUND_REPAIR_STATION_FIXING_2,F1_0); break;
+//--repair-- 			case 0:	audio.PlaySound (SOUND_REPAIR_STATION_FIXING_1); break;
+//--repair-- 			case 1:	audio.PlaySound (SOUND_REPAIR_STATION_FIXING_2); break;
+//--repair-- 			case 2:	audio.PlaySound (SOUND_REPAIR_STATION_FIXING_3); break;
+//--repair-- 			case 3:	audio.PlaySound (SOUND_REPAIR_STATION_FIXING_4); break;
+//--repair-- 			case 4:	audio.PlaySound (SOUND_REPAIR_STATION_FIXING_1); break;
+//--repair-- 			case 5:	audio.PlaySound (SOUND_REPAIR_STATION_FIXING_2); break;
 //--repair-- 			}
 //--repair--
 //--repair-- 			repair_ship_damage ();
 //--repair--
 //--repair-- 		}
 //--repair--
-//--repair-- 		if (currentTime >= (deltaTime+ (F1_0/2))) {
+//--repair-- 		if (currentTime >= (deltaTime+ (I2X (1)/2))) {
 //--repair-- 			currentTime = 0;
 //--repair-- 			// Find next CSide...
 //--repair-- 			side_index++;

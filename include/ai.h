@@ -20,7 +20,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "fvi.h"
 #include "robot.h"
 
-#define PLAYER_AWARENESS_INITIAL_TIME   (3*F1_0)
+#define PLAYER_AWARENESS_INITIAL_TIME   (I2X (3))
 #define MAX_PATH_LENGTH                 30          // Maximum length of path in ai path following.
 #define MAX_DEPTH_TO_SEARCH_FOR_PLAYER  10
 #define BOSS_GATE_MATCEN_NUM            -1
@@ -112,7 +112,7 @@ extern int Boss_been_hit;
 extern fix AI_procTime;
 
 // Stuff moved from ai.c by MK on 05/25/95.
-#define ANIM_RATE       (F1_0/16)
+#define ANIM_RATE       (I2X ((1) / 16)
 #define DELTA_ANG_SCALE 16
 
 #define OVERALL_AGITATION_MAX   100
@@ -124,8 +124,8 @@ typedef struct {
 	CFixVector   vLastPos;
 } tAICloakInfo;
 
-#define CHASE_TIME_LENGTH   (F1_0*8)
-#define DEFAULT_ROBOT_SOUND_VOLUME F1_0
+#define CHASE_TIME_LENGTH   (I2X (8))
+#define DEFAULT_ROBOT_SOUND_VOLUME I2X (1)
 
 extern fix xDistToLastPlayerPosFiredAt;
 extern CFixVector vLastPlayerPosFiredAt;
@@ -172,8 +172,8 @@ typedef struct tAwarenessEvent {
 
 #define MAX_ESCORT_GOALS        25
 
-#define MAX_ESCORT_DISTANCE     (F1_0*80)
-#define MIN_ESCORT_DISTANCE     (F1_0*40)
+#define MAX_ESCORT_DISTANCE     I2X (80)
+#define MIN_ESCORT_DISTANCE     I2X (40)
 
 #define FUELCEN_CHECK           1000
 
@@ -182,11 +182,11 @@ extern int Escort_goalObject, Escort_special_goal, Escort_goal_index;
 
 #define GOAL_WIDTH 11
 
-#define SNIPE_RETREAT_TIME  (F1_0*5)
+#define SNIPE_RETREAT_TIME  I2X (5)
 #define SNIPE_ABORT_RETREAT_TIME (SNIPE_RETREAT_TIME/2) // Can abort a retreat with this amount of time left in retreat
-#define SNIPE_ATTACK_TIME   (F1_0*10)
-#define SNIPE_WAIT_TIME     (F1_0*5)
-#define SNIPE_FIRE_TIME     (F1_0*2)
+#define SNIPE_ATTACK_TIME   I2X (10)
+#define SNIPE_WAIT_TIME     I2X (5)
+#define SNIPE_FIRE_TIME     I2X (2)
 
 #define THIEF_PROBABILITY   16384   // 50% chance of stealing an item at each attempt
 #define MAX_STOLEN_ITEMS    10      // Maximum number kept track of, will keep stealing, causes stolen weapons to be lost!
@@ -300,29 +300,29 @@ static inline fix AIMaxDist (int i, tRobotInfo *botInfoP)
 if (gameOpts->gameplay.nAIAwareness) {
 	switch (i) {
 		case 0:
-			return F1_0 * (100 + gameStates.app.nDifficultyLevel * 100);
+			return I2X (100 + gameStates.app.nDifficultyLevel * 100);
 		case 1:
-			return F1_0 * 300;
+			return I2X (300);
 		case 2:
-			return F1_0 * 500;
+			return I2X (500);
 		case 3:
-			return F1_0 * 750;
+			return I2X (750);
 		case 4:
-			return F1_0 * (50 * (2 * gameStates.app.nDifficultyLevel + botInfoP->pursuit));
+			return I2X (50 * (2 * gameStates.app.nDifficultyLevel + botInfoP->pursuit));
 		}
 	}
 else {
 	switch (i) {
 		case 0:
-			return F1_0 * (120 + gameStates.app.nDifficultyLevel * 20);
+			return I2X (120 + gameStates.app.nDifficultyLevel * 20);
 		case 1:
-			return F1_0 * 80;
+			return I2X (80);
 		case 2:
-			return F1_0 * 200;
+			return I2X (200);
 		case 3:
-			return F1_0 * 200;
+			return I2X (200);
 		case 4:
-			return F1_0 * (20 * (2 * gameStates.app.nDifficultyLevel + botInfoP->pursuit));
+			return I2X (20 * (2 * gameStates.app.nDifficultyLevel + botInfoP->pursuit));
 		}
 	}
 return 0;

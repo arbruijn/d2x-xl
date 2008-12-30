@@ -49,7 +49,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 # include <GL/glu.h>
 #endif
 
-#define KEY_DELAY_DEFAULT       ((F1_0*20)/1000)
+#define KEY_DELAY_DEFAULT       ((I2X (20))/1000)
 
 typedef struct {
 	char    bs_name [14];                //  filename, eg merc01.  Assumes .lbm suffix.
@@ -253,7 +253,7 @@ int StartBriefingSound (int c, short nSound, fix nVolume, const char *pszWAV)
 if (c < 0) {
 	int b = gameStates.sound.bD1Sound;
 	gameStates.sound.bD1Sound = 0;
-	c = audio.StartSound (DigiXlatSound (nSound), nVolume, 0xFFFF / 2, 1, -1, -1, -1, F1_0, pszWAV, NULL, 0);
+	c = audio.StartSound (DigiXlatSound (nSound), nVolume, 0xFFFF / 2, 1, -1, -1, -1, I2X (1), pszWAV, NULL, 0);
 	gameStates.sound.bD1Sound = b;
 	}
 return c;
@@ -279,9 +279,9 @@ if (bExtraSounds && (nScreen > 3)) {	//only play for the mission directives on a
 	if (nLevel < 0)
 		nLevel = 27 - nLevel;
  	sprintf (szWAV, "brf%02d.wav", nLevel);
-	return StartBriefingSound (nChannel, SOUND_BRIEFING_HUM, F1_0 * 4, szWAV);
+	return StartBriefingSound (nChannel, SOUND_BRIEFING_HUM, I2X (4), szWAV);
 	}
-return StartBriefingSound (nChannel, SOUND_BRIEFING_HUM, F1_0 / 2, NULL);
+return StartBriefingSound (nChannel, SOUND_BRIEFING_HUM, I2X (1) / 2, NULL);
 }
 
 //-----------------------------------------------------------------------------
@@ -310,7 +310,7 @@ if (!gameStates.app.bHaveExtraData)
 	return -1;
 if (!(p = FindExtraBotSound (nLevel, nBotSig)))
 	return -1;
-return StartBriefingSound (nChannel, -1, 8 * F1_0, p->pszName);
+return StartBriefingSound (nChannel, -1, I2X (8), p->pszName);
 }
 
 //-----------------------------------------------------------------------------
@@ -542,10 +542,10 @@ if (*szBitmapName) {
 	GLint	depthFunc;
 	G3StartFrame (1, 0);
 	G3SetViewMatrix (p, CFixMatrix::IDENTITY, gameStates.render.xZoom, 1);
-	p[Z] = 2 * w * F1_0;
+	p[Z] = 2 * I2X (w);
 	glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 	glDepthFunc (GL_ALWAYS);
-	G3DrawBitmap (p, w * F1_0, h * F1_0, bmP, NULL, 1.0, 3);
+	G3DrawBitmap (p, I2X (w), I2X (h), bmP, NULL, 1.0, 3);
 	glDepthFunc (depthFunc);
 	G3EndFrame ();
 	if (!gameOpts->menus.nStyle)
@@ -814,7 +814,7 @@ void FlashCursor (int cursorFlag)
 {
 if (cursorFlag == 0)
 	return;
-if ((TimerGetFixedSeconds () % (F1_0/2)) > (F1_0/4))
+if ((TimerGetFixedSeconds () % (I2X (1)/2)) > (I2X (1)/4))
 	fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
 else
 	fontManager.SetColorRGB (&eraseColorRgb, NULL);
@@ -1161,7 +1161,7 @@ if (!bi.bGotZ)
 bi.prevCh = bi.ch;
 bi.bRedraw = !bi.nDelayCount || (bi.message <= bi.pj);
 if (!bi.bRedraw) {
-	bi.nPrintingChannel = StartBriefingSound (bi.nPrintingChannel, SOUND_BRIEFING_PRINTING, F1_0, NULL);
+	bi.nPrintingChannel = StartBriefingSound (bi.nPrintingChannel, SOUND_BRIEFING_PRINTING, I2X (1), NULL);
 	bi.bChattering = 1;
 	}
 briefingTextX += PrintCharDelayed ((char) bi.ch, bi.nDelayCount, bi.nRobot, bi.bFlashingCursor, bi.bRedraw);

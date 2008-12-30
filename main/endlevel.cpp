@@ -96,8 +96,8 @@ char movieTable [2][30] = {
 
 #define FLY_ACCEL I2X (5)
 
-//static tUVL satUVL [4] = {{0,0,F1_0},{F1_0,0,F1_0},{F1_0,F1_0,F1_0},{0,F1_0,F1_0}};
-static tUVL satUVL [4] = {{0,0,F1_0},{F1_0,0,F1_0},{F1_0,F1_0,F1_0},{0,F1_0,F1_0}};
+//static tUVL satUVL [4] = {{0,0,I2X (1)},{I2X (1),0,I2X (1)},{I2X (1),I2X (1),I2X (1)},{0,I2X (1),I2X (1)}};
+static tUVL satUVL [4] = {{0,0,I2X (1)},{I2X (1),0,I2X (1)},{I2X (1),I2X (1),I2X (1)},{0,I2X (1),I2X (1)}};
 
 extern int ELFindConnectedSide (int seg0, int seg1);
 
@@ -239,10 +239,10 @@ if (gameStates.app.bPlayerIsDead || (gameData.objs.consoleP->info.nFlags & OF_SH
 //	Dematerialize Buddy!
 FORALL_ROBOT_OBJS (objP, i)
 	if (IS_GUIDEBOT (objP)) {
-			/*Object*/CreateExplosion (objP->info.nSegment, objP->info.position.vPos, F1_0*7/2, VCLIP_POWERUP_DISAPPEARANCE);
+			/*Object*/CreateExplosion (objP->info.nSegment, objP->info.position.vPos, I2X (7)/2, VCLIP_POWERUP_DISAPPEARANCE);
 			objP->Die ();
 		}
-LOCALPLAYER.homingObjectDist = -F1_0; // Turn off homing sound.
+LOCALPLAYER.homingObjectDist = -I2X (1); // Turn off homing sound.
 ResetRearView ();		//turn off rear view if set
 if (IsMultiGame) {
 	MultiSendEndLevelStart (0);
@@ -320,7 +320,7 @@ gameData.endLevel.xCurFlightSpeed = gameData.endLevel.xDesiredFlightSpeed = FLY_
 StartEndLevelFlyThrough (0, gameData.objs.consoleP, gameData.endLevel.xCurFlightSpeed);		//initialize
 HUDInitMessage (TXT_EXIT_SEQUENCE);
 gameStates.render.bOutsideMine = gameStates.render.bExtExplPlaying = 0;
-gameStates.render.nFlashScale = f1_0;
+gameStates.render.nFlashScale = I2X (1);
 gameStates.gameplay.bMineDestroyed = 0;
 }
 
@@ -344,9 +344,9 @@ delta_angs [HA] = (*desired_angles) [HA] - (*cur_angles) [HA];
 delta_angs [BA] = (*desired_angles) [BA] - (*cur_angles) [BA];
 total_delta = abs (delta_angs [PA]) + abs (delta_angs [BA]) + abs (delta_angs [HA]);
 
-alt_angles [PA] = f1_0/2 - (*cur_angles) [PA];
-alt_angles [BA] = (*cur_angles) [BA] + f1_0/2;
-alt_angles [HA] = (*cur_angles) [HA] + f1_0/2;
+alt_angles [PA] = I2X (1)/2 - (*cur_angles) [PA];
+alt_angles [BA] = (*cur_angles) [BA] + I2X (1)/2;
+alt_angles [HA] = (*cur_angles) [HA] + I2X (1)/2;
 
 alt_delta_angs [PA] = (*desired_angles) [PA] - alt_angles [PA];
 alt_delta_angs [HA] = (*desired_angles) [HA] - alt_angles [HA];
@@ -412,7 +412,7 @@ PlayerFinishedLevel (0);
 
 #define VCLIP_BIG_PLAYER_EXPLOSION	58
 
-//--unused-- CFixVector upvec = {0, f1_0, 0};
+//--unused-- CFixVector upvec = {0, I2X (1), 0};
 
 //find the angle between the CPlayerData's heading & the station
 inline void GetAnglesToObject (CAngleVector *av, CFixVector *targ_pos, CFixVector *cur_pos)
@@ -492,7 +492,7 @@ if (!gameStates.render.bOutsideMine) {
 		if (nSegment != -1) {
 			expl = /*Object*/CreateExplosion (nSegment, tpnt, I2X (20), VCLIP_BIG_PLAYER_EXPLOSION);
 			if (d_rand ()<10000 || ++soundCount==7) {		//pseudo-random
-				DigiLinkSoundToPos (SOUND_TUNNEL_EXPLOSION, nSegment, 0, tpnt, 0, F1_0);
+				DigiLinkSoundToPos (SOUND_TUNNEL_EXPLOSION, nSegment, 0, tpnt, 0, I2X (1));
 				soundCount=0;
 				}
 			}
@@ -682,8 +682,8 @@ switch (gameStates.app.bEndLevelSequence) {
 #endif
 		d = VmVecDistQuick (&gameData.objs.consoleP->info.position.vPos, &gameData.objs.endLevelCamera->info.position.vPos);
 		speed_scale = FixDiv (d, I2X (0x20);
-		if (d < f1_0)
-			d = f1_0;
+		if (d < I2X (1))
+			d = I2X (1);
 		GetAnglesToObject (&vPlayerDestAngles, &gameData.endLevel.station.vPos, &gameData.objs.consoleP->info.position.vPos);
 		ChaseAngles (&vPlayerAngles, &vPlayerDestAngles);
 		VmAngles2Matrix (&gameData.objs.consoleP->info.position.mOrient, &vPlayerAngles);
@@ -744,7 +744,7 @@ vModelPos += gameData.endLevel.exit.mOrient.UVec() * (I2X (u));
 gameStates.app.bD1Model = gameStates.app.bD1Mission && gameStates.app.bD1Data;
 DrawPolygonModel (NULL, &vModelPos, &gameData.endLevel.exit.mOrient, NULL,
 						gameStates.gameplay.bMineDestroyed ? gameData.endLevel.exit.nDestroyedModel : gameData.endLevel.exit.nModel,
-						0, f1_0, NULL, NULL, NULL);
+						0, I2X (1), NULL, NULL, NULL);
 gameStates.app.bD1Model = 0;
 }
 
@@ -779,12 +779,12 @@ if (!(p.p3_codes & CC_BEHIND)&& !(p.p3_flags & PF_OVERFLOW)) {
 	int imSave = gameStates.render.nInterpolationMethod;
 	gameStates.render.nInterpolationMethod = 0;
 	if (!gameData.endLevel.satellite.bmP->Bind (1, 0))
-		G3DrawRodTexPoly (gameData.endLevel.satellite.bmP, &p, SATELLITE_WIDTH, &pTop, SATELLITE_WIDTH, f1_0, satUVL);
+		G3DrawRodTexPoly (gameData.endLevel.satellite.bmP, &p, SATELLITE_WIDTH, &pTop, SATELLITE_WIDTH, I2X (1), satUVL);
 	gameStates.render.nInterpolationMethod = imSave;
 	}
 #ifdef STATION_ENABLED
 DrawPolygonModel (NULL, &gameData.endLevel.station.vPos, &vmdIdentityMatrix, NULL,
-						gameData.endLevel.station.nModel, 0, f1_0, NULL, NULL);
+						gameData.endLevel.station.nModel, 0, I2X (1), NULL, NULL);
 #endif
 RenderTerrain (&gameData.endLevel.exit.vGroundExit, nExitPointBmX, nExitPointBmY);
 DrawExitModel ();
@@ -964,7 +964,7 @@ if (UpdateObjectSeg (objP, false)) {
 			}
 		if (exitFlightDataP->firstTime || nEntrySide==-1 || segP->m_children [nExitSide]==-1)
 			nExitSide = FindExitSide (objP);
-		fix d, dLargest = -f1_0;
+		fix d, dLargest = -I2X (1);
 		for (int i = 0; i < 6; i++) {
 			d = CFixVector::Dot (segP->m_sides [i].m_normals [0], exitFlightDataP->objP->info.position.mOrient.UVec());
 			if (d > dLargest) {

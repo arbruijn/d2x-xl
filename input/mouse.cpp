@@ -83,7 +83,7 @@ else {
 	mb->pressed = 0;
 	mb->xTimeHeldDown += xCurTime - mb->xTimeWentDown;
 	mb->numUps++;
-	mouseData.bDoubleClick = xCurTime - mb->xPrevTimeWentDown < F1_0 / 2;
+	mouseData.bDoubleClick = xCurTime - mb->xPrevTimeWentDown < I2X (1) / 2;
 	}
 }
 
