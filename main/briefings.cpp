@@ -264,7 +264,7 @@ return c;
 void StopBriefingSound (int *c)
 {
 if (*c > -1) {
-	DigiStopSound (*c);
+	audio.StopSound (*c);
 	*c = -1;
 	}
 }
@@ -1642,7 +1642,7 @@ if (!LoadScreenText (fnBriefing, &szBriefingText)) {
 	gameStates.render.bBriefing = 0;
 	return;
 	}
-DigiStopAllChannels ();
+audio.StopAllSounds ();
 songManager.Play (SONG_BRIEFING, 1);
 SetScreenMode (SCREEN_MENU);
 CCanvas::SetCurrent (NULL);

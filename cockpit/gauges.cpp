@@ -1165,14 +1165,14 @@ if (gameStates.render.cockpit.nShieldFlash) {
 	if (gameOpts->gameplay.bShieldWarning && gameOpts->sound.bUseSDLMixer) {
 		if ((nBeep < 0) || (bLastFlash != gameStates.render.cockpit.nShieldFlash)) {
 			if (nBeep >= 0)
-				DigiStopSound ((int) nBeep);
+				audio.StopSound ((int) nBeep);
 			nBeep = DigiStartSound (-1, F1_0 * 2 / 3, 0xFFFF / 2, -1, -1, -1, -1, F1_0,
 											AddonSoundName ((gameStates.render.cockpit.nShieldFlash == 1) ?
 											SND_ADDON_LOW_SHIELDS1 : SND_ADDON_LOW_SHIELDS2), NULL, 0);
 			}
 		}
 	else if (nBeep >= 0) {
-		DigiStopSound ((int) nBeep);
+		audio.StopSound ((int) nBeep);
 		nBeep = -1;
 		}
 	if (!bShow)
@@ -1182,7 +1182,7 @@ if (gameStates.render.cockpit.nShieldFlash) {
 else {
 	bShow = 1;
 	if (nBeep >= 0) {
-		DigiStopSound ((int) nBeep);
+		audio.StopSound ((int) nBeep);
 		nBeep = -1;
 		}
 	}

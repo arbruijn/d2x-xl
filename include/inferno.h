@@ -1010,9 +1010,6 @@ typedef struct tDigiStates {
 //------------------------------------------------------------------------------
 
 typedef struct tSoundStates {
-	int nCurrentSong;
-	int bRedbookEnabled;
-	int bRedbookPlaying;
 	int bWasRecording;
 	int bDontStartObjects;
 	int nConquerWarningSoundChannel;

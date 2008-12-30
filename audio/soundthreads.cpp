@@ -20,15 +20,15 @@ do {
 			return 0;
 		}
 	if (tiSound.nTask == stOpenAudio) {
-		DigiInit (tiSound.fSlowDown);
+		audio.Setup (tiSound.fSlowDown);
 		}
 	else if (tiSound.nTask == stCloseAudio) {
-		DigiExit ();
+		audio.Shutdown ();
 		}
 	else if (tiSound.nTask == stReconfigureAudio) {
 		FreeAddonSounds ();
-		DigiExit ();
-		DigiInit (tiSound.fSlowDown);
+		audio.Shutdown ();
+		audio.Setup (tiSound.fSlowDown);
 		if (tiSound.fSlowDown == 1.0f) {
 			gameData.songs.tPos = gameData.songs.tSlowDown - gameData.songs.tStart + 
 										 2 * (SDL_GetTicks () - gameData.songs.tSlowDown) / gameOpts->gameplay.nSlowMotionSpeedup;

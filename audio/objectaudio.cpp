@@ -166,7 +166,7 @@ if (nSound < 0)
 	return;
 channel = DigiFindChannel (nSound);
 if (channel > -1)
-	DigiStopSound (channel);
+	audio.StopSound (channel);
 // start the sample playing
 DigiStartSound (nSound, maxVolume, 0xffff/2, 0, -1, -1, -1, F1_0, NULL, NULL, 0);
 }
@@ -226,7 +226,7 @@ void DigiInitSounds ()
 	int i;
 
 SoundQInit ();
-DigiStopAllChannels ();
+audio.StopAllSounds ();
 DigiStopLoopingSound ();
 for (i = 0; i < MAX_SOUND_OBJECTS; i++) {
 	soundObjects [i].channel = -1;
@@ -268,7 +268,7 @@ nSound = DigiXlatSound (nSound);
 if (nSound < 0)
 	return;
 if (gameStates.sound.digi.nLoopingChannel>-1)
-	DigiStopSound (gameStates.sound.digi.nLoopingChannel);
+	audio.StopSound (gameStates.sound.digi.nLoopingChannel);
 gameStates.sound.digi.nLoopingSound = (short) nSound;
 gameStates.sound.digi.nLoopingVolume = (short) maxVolume;
 gameStates.sound.digi.nLoopingStart = (short) nLoopStart;
@@ -290,7 +290,7 @@ gameStates.sound.digi.nLoopingVolume = (short) volume;
 void DigiStopLoopingSound ()
 {
 if (gameStates.sound.digi.nLoopingChannel > -1)
-	DigiStopSound (gameStates.sound.digi.nLoopingChannel);
+	audio.StopSound (gameStates.sound.digi.nLoopingChannel);
 gameStates.sound.digi.nLoopingChannel = -1;
 gameStates.sound.digi.nLoopingSound = -1;
 }
@@ -300,7 +300,7 @@ gameStates.sound.digi.nLoopingSound = -1;
 void DigiPauseLoopingSound ()
 {
 if (gameStates.sound.digi.nLoopingChannel > -1)
-	DigiStopSound (gameStates.sound.digi.nLoopingChannel);
+	audio.StopSound (gameStates.sound.digi.nLoopingChannel);
 gameStates.sound.digi.nLoopingChannel = -1;
 }
 
@@ -538,7 +538,7 @@ for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++) {
 		if ((soP->linkType.pos.nSegment == nSegment) && (soP->linkType.pos.nSide==nSide) &&
 			 ((nSound == -1) || (soP->nSound == nSound))) {
 			if (soP->channel > -1) {
-				DigiStopSound (soP->channel);
+				audio.StopSound (soP->channel);
 				gameStates.sound.digi.nActiveObjects--;
 				}
 			soP->channel = -1;
@@ -572,7 +572,7 @@ for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++) {
 	if ((soP->flags & (SOF_USED | SOF_LINK_TO_OBJ)) == (SOF_USED | SOF_LINK_TO_OBJ)) {
 		if (soP->linkType.obj.nObject == nObject) {
 			if (soP->channel > -1) {
-				DigiStopSound (soP->channel);
+				audio.StopSound (soP->channel);
 				gameStates.sound.digi.nActiveObjects--;
 				}
 			soP->channel = -1;
@@ -652,7 +652,7 @@ for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++) {
 		oldpan = soP->pan;
 		// Check if its done.
 		if (!(soP->flags & SOF_PLAY_FOREVER) && (soP->channel > -1) && !DigiIsChannelPlaying (soP->channel)) {
-			DigiEndSound (soP->channel);
+			audio.StopActiveSound (soP->channel);
 			soP->flags = 0;	// Mark as dead, so some other sound can use this sound
 			gameStates.sound.digi.nActiveObjects--;
 			continue;		// Go on to next sound...
@@ -678,9 +678,9 @@ for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++) {
 			// The CObject that this is linked to is dead, so just end this sound if it is looping.
 				if (soP->channel > -1) {
 					if (soP->flags & SOF_PLAY_FOREVER)
-						DigiStopSound (soP->channel);
+						audio.StopSound (soP->channel);
 					else
-						DigiEndSound (soP->channel);
+						audio.StopActiveSound (soP->channel);
 					gameStates.sound.digi.nActiveObjects--;
 					}
 				soP->flags = 0;	// Mark as dead, so some other sound can use this sound
@@ -702,9 +702,9 @@ for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++) {
 			// Sound is too far away, so stop it from playing.
 				if (soP->channel > -1) {
 					if (soP->flags & SOF_PLAY_FOREVER)
-						DigiStopSound (soP->channel);
+						audio.StopSound (soP->channel);
 					else
-						DigiEndSound (soP->channel);
+						audio.StopActiveSound (soP->channel);
 					gameStates.sound.digi.nActiveObjects--;
 					soP->channel = -1;
 					}
@@ -739,14 +739,14 @@ void DigiPauseDigiSounds ()
 DigiPauseLoopingSound ();
 for (i = 0; i < MAX_SOUND_OBJECTS; i++) {
 	if ((soundObjects [i].flags & SOF_USED) && (soundObjects [i].channel > -1)) {
-		DigiStopSound (soundObjects [i].channel);
+		audio.StopSound (soundObjects [i].channel);
 		if (!(soundObjects [i].flags & SOF_PLAY_FOREVER))
 			soundObjects [i].flags = 0;	// Mark as dead, so some other sound can use this sound
 		gameStates.sound.digi.nActiveObjects--;
 		soundObjects [i].channel = -1;
 		}
 	}
-DigiStopAllChannels ();
+audio.StopAllSounds ();
 SoundQPause ();
 }
 
@@ -797,13 +797,13 @@ DigiStopLoopingSound ();
 for (i = 0; i < MAX_SOUND_OBJECTS; i++) {
 	if (soundObjects [i].flags & SOF_USED) {
 		if (soundObjects [i].channel > -1) {
-			DigiStopSound (soundObjects [i].channel);
+			audio.StopSound (soundObjects [i].channel);
 			gameStates.sound.digi.nActiveObjects--;
 			}
 		soundObjects [i].flags = 0;	// Mark as dead, so some other sound can use this sound
 		}
 	}
-DigiStopAllChannels ();
+audio.StopAllSounds ();
 SoundQInit ();
 }
 
@@ -847,7 +847,7 @@ for (i = 0; i < MAX_SOUND_OBJECTS; i++) {
 			n_activeSound_objs++;
 		}
 	}
-DigiDebug ();
+audio.Debug ();
 }
 #endif
 

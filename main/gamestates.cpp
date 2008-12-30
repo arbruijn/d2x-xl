@@ -304,7 +304,7 @@ gameStates.render.nMaxLightsPerFace = 16;
 
 void InitSoundStates (void)
 {
-gameStates.sound.nCurrentSong = 0;
+m_info.nCurrent = 0;
 gameStates.sound.bRedbookEnabled = 1;
 gameStates.sound.bRedbookPlaying = 0;
 gameStates.sound.bWasRecording = 0;

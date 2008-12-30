@@ -48,7 +48,7 @@ void DigiStopCurrentSong ()
 	int h;
 
 if (gameData.songs.bPlaying) {
-	DigiFadeoutMusic ();
+	audio.FadeoutMusic ();
 	h = midiVolume;	// preserve it for another song being started
 #if USE_SDL_MIXER
 	if (!gameOpts->sound.bUseSDLMixer)
@@ -92,17 +92,17 @@ if (gameOpts->sound.bUseSDLMixer) {
 
 	if (bCustom) {
 		pfnSong = pszSong;
-		if (strstr (pszSong, ".mp3") && !gameData.songs.user.bMP3) {
-			DigiExit ();
-			gameData.songs.user.bMP3 = 1;
-			DigiInit (1);
+		if (strstr (pszSong, ".mp3") && !songManager.MP3 ()) {
+			audio.Shutdown ();
+			songManager.MP3 () = 1;
+			audio.Setup (1);
 			}
 		}
 	else {
-		if (!strstr (pszSong, ".mp3") && gameData.songs.user.bMP3) {
-			DigiExit ();
-			gameData.songs.user.bMP3 = 0;
-			DigiInit (1);
+		if (!strstr (pszSong, ".mp3") && songManager.MP3 ()) {
+			audio.Shutdown ();
+			songManager.MP3 () = 0;
+			audio.Setup (1);
 			}
 		sprintf (fnSong, "%s/d2x-temp.mid", *gameFolders.szCacheDir ? gameFolders.szCacheDir : gameFolders.szHomeDir);
 		if (!hmp_to_midi (hmp, fnSong)) {

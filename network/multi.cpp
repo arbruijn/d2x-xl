@@ -4762,7 +4762,7 @@ MultiSendData (gameData.multigame.msg.buf, 3, 0);
 
 void MultiDoStopConquerWarning (char *buf)
 {
-DigiStopSound (SOUND_CONTROL_CENTER_WARNING_SIREN);
+audio.StopSound (SOUND_CONTROL_CENTER_WARNING_SIREN);
 }
 
 //-----------------------------------------------------------------------------

@@ -93,7 +93,7 @@ int SoundChannelIndex (void)
 	int	h, i;
 
 for (h = (int) sizeofa (detailData.nSoundChannels), i = 0; i < h; i++)
-	if (gameStates.sound.digi.nMaxChannels < detailData.nSoundChannels [i])
+	if (m_info.nMaxChannels < detailData.nSoundChannels [i])
 		break;
 return i - 1;
 }
@@ -113,8 +113,8 @@ if (gameConfig.nDigiVolume != menu [soundOpts.nDigiVol].m_value) {
 	}
 if ((soundOpts.nChannels >= 0) && (gameStates.sound.nSoundChannels != menu [soundOpts.nChannels].m_value)) {
 	gameStates.sound.nSoundChannels = menu [soundOpts.nChannels].m_value;
-	gameStates.sound.digi.nMaxChannels = detailData.nSoundChannels [gameStates.sound.nSoundChannels];
-	sprintf (menu [soundOpts.nChannels].m_text, TXT_SOUND_CHANNEL_COUNT, gameStates.sound.digi.nMaxChannels);
+	m_info.nMaxChannels = detailData.nSoundChannels [gameStates.sound.nSoundChannels];
+	sprintf (menu [soundOpts.nChannels].m_text, TXT_SOUND_CHANNEL_COUNT, m_info.nMaxChannels);
 	menu [soundOpts.nChannels].m_bRebuild = 1;
 	}
 if ((soundOpts.nVolume >= 0) && (gameOpts->sound.xCustomSoundVolume != menu [soundOpts.nVolume].m_value)) {
@@ -170,7 +170,7 @@ else {
 		if (gameConfig.nMidiVolume < 1)
 			DigiPlayMidiSong (NULL, NULL, NULL, 1, 0);
 		else if (!bSongPlaying) {
-			//DigiStopAllChannels ();
+			//audio.StopAllSounds ();
 			if (gameStates.app.bGameRunning)
 				songManager.PlayLevel (gameData.missions.nCurrentLevel ? gameData.missions.nCurrentLevel : 1, 1);
 			else
@@ -204,7 +204,7 @@ do {
 	if (gameStates.app.bGameRunning || gameStates.app.bNostalgia)
 		soundOpts.nChannels = -1;
 	else {
-		sprintf (szChannels + 1, TXT_SOUND_CHANNEL_COUNT, gameStates.sound.digi.nMaxChannels);
+		sprintf (szChannels + 1, TXT_SOUND_CHANNEL_COUNT, m_info.nMaxChannels);
 		*szChannels = *(TXT_SOUND_CHANNEL_COUNT - 1);
 		soundOpts.nChannels = m.AddSlider (szChannels + 1, gameStates.sound.nSoundChannels, 0, 
 													  (int) sizeofa (detailData.nSoundChannels) - 1, KEY_C, HTX_SOUND_CHANNEL_COUNT);  
@@ -241,7 +241,7 @@ do {
 if (gameConfig.nMidiVolume < 1)
 	DigiPlayMidiSong (NULL, NULL, NULL, 0, 0);
 else if (!bSongPlaying)
-	songManager.Play (gameStates.sound.nCurrentSong, 1);
+	songManager.Play (m_info.nCurrent, 1);
 if (!gameStates.app.bNostalgia) {
 	GET_VAL (gameOpts->sound.bFadeMusic, optFadeMusic);
 	GET_VAL (gameOpts->sound.bShip, optShipSound);

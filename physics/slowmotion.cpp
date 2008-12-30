@@ -18,7 +18,7 @@ void SetSlowMotionState (int i)
 if (gameStates.gameplay.slowmo [i].nState) {
 	gameStates.gameplay.slowmo [i].nState = -gameStates.gameplay.slowmo [i].nState;
 	if (nSlowMotionChannel >= 0) {
-		DigiStopSound (nSlowMotionChannel);
+		audio.StopSound (nSlowMotionChannel);
 		nSlowMotionChannel = -1;
 		}
 	}
@@ -190,8 +190,8 @@ if (gameData.app.bUseMultiThreading [rtSound]) {
 	RunSoundThread (stReconfigureAudio);
 	}
 else {
-	DigiExit ();
-	DigiInit (1);
+	audio.Shutdown ();
+	audio.Setup (1);
 	gameData.songs.tPos = gameData.songs.tSlowDown - gameData.songs.tStart + 
 								 2 * (SDL_GetTicks () - gameData.songs.tSlowDown) / gameOpts->gameplay.nSlowMotionSpeedup;
 	songManager.PlayLevel (gameData.missions.nCurrentLevel, 1);
@@ -207,8 +207,8 @@ if (gameData.app.bUseMultiThreading [rtSound]) {
 	RunSoundThread (stReconfigureAudio);
 	}
 else {
-	DigiExit ();
-	DigiInit ((float) gameOpts->gameplay.nSlowMotionSpeedup / 2);
+	audio.Shutdown ();
+	audio.Setup ((float) gameOpts->gameplay.nSlowMotionSpeedup / 2);
 	gameData.songs.tSlowDown = SDL_GetTicks ();
 	gameData.songs.tPos = gameData.songs.tSlowDown - gameData.songs.tStart;
 	songManager.PlayLevel (gameData.missions.nCurrentLevel, 1);

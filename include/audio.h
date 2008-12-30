@@ -85,12 +85,8 @@ class CDigiSound {
 extern int digi_sample_rate;
 extern int digiVolume;
 
-int digi_get_settings();
-int DigiInit (float fSlowDown);
-void DigiExit ();
-void DigiReset ();
-void DigiFadeoutMusic (void);
-void _CDECL_ DigiClose (void);
+void audio.FadeoutMusic (void);
+void _CDECL_ audio.Shutdown (void);
 
 // Volume is max at F1_0.
 int DigiPlaySampleSpeed (short soundno, fix maxVolume, int nSpeed, int nLoops, const char *pszWAV, int nSoundClass);
@@ -130,7 +126,7 @@ extern int digi_lomem;
 
 short DigiXlatSound (short nSound);
 int DigiUnXlatSound (int nSound);
-extern void DigiStopSound (int channel);
+extern void audio.StopSound (int channel);
 
 // Returns the channel a sound number is playing on, or
 // -1 if none.
@@ -142,14 +138,14 @@ int DigiStartSound (short nSound, fix xVolume, int xPan, int bLooping,
 						  const char *pszWAV, CFixVector *vPos, int nSoundClass);
 
 // Stops all sounds that are playing
-void DigiStopAllChannels();
+void audio.StopAllSounds();
 
-void DigiEndSound (int channel);
+void audio.StopActiveSound (int channel);
 void DigiSetChannelPan (int channel, int pan);
 void DigiSetChannelVolume (int channel, int volume);
 int DigiIsChannelPlaying (int channel);
 void DigiPauseMidi ();
-void DigiDebug ();
+void audio.Debug ();
 void DigiStopCurrentSong ();
 
 void DigiPlaySampleLooping (short nSound, fix maxVolume,int loop_start, int loop_end);

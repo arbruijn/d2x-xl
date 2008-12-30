@@ -1208,8 +1208,8 @@ ProfilerSetStatus (0);
 DigiStopAll ();
 if (gameStates.sound.bD1Sound) {
 	gameStates.sound.bD1Sound = 0;
-	//DigiClose ();
-	//DigiInit ();
+	//audio.Shutdown ();
+	//audio.Setup ();
 	}
 if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
 	NDStopRecording ();
@@ -1257,7 +1257,7 @@ EndSoundThread ();
 GrClose ();
 PrintLog ("unloading addon sounds\n");
 FreeAddonSounds ();
-DigiClose ();
+audio.Shutdown ();
 songManager.FreeUserSongs ();
 RLECacheClose ();
 BMFreeExtraObjBitmaps ();

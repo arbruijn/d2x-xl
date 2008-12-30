@@ -3062,28 +3062,8 @@
 					Name="Source Files"
 					>
 					<File
-						RelativePath="..\..\audio\digi.cpp"
+						RelativePath="..\..\audio\audio.cpp"
 						>
-					</File>
-					<File
-						RelativePath="..\..\audio\digiobj.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\..\audio\win32\hmpfile.cpp"
@@ -3124,6 +3104,10 @@
 								ObjectFile="$(IntDir)/$(InputName)1.obj"
 							/>
 						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\audio\objectaudio.cpp"
+						>
 					</File>
 					<File
 						RelativePath="..\..\audio\rbaudio.cpp"
@@ -4517,11 +4501,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

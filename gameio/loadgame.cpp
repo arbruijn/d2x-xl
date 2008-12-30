@@ -763,7 +763,7 @@ gameData.multiplayer.bMoving = -1;
 /*---*/PrintLog ("   stopping music\n");
 songManager.StopAll ();
 /*---*/PrintLog ("   stopping sounds\n");
-DigiStopAllChannels ();
+audio.StopAllSounds ();
 /*---*/PrintLog ("   reconfiguring audio\n");
 gameData.missions.nCurrentLevel = nLevel;
 if (!bRestore) {
@@ -1093,7 +1093,7 @@ void DoEndLevelScoreGlitz (int network)
 	int			nMineLevel = 0;
 
 DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
-DigiStopAllChannels ();
+audio.StopAllSounds ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
 if (gameStates.app.bHaveExtraData)
 

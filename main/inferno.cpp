@@ -553,7 +553,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 			if (gameData.multiplayer.autoNG.bValid)
 				gameStates.app.nFunctionMode = FMODE_EXIT;
 			if (gameStates.app.nFunctionMode == FMODE_MENU) {
-				DigiStopAllChannels ();
+				audio.StopAllSounds ();
 				songManager.Play (SONG_TITLE, 1);
 				}
 			RestoreDefaultRobots ();
@@ -770,7 +770,7 @@ switch (loadOp) {
 		break;
 	case 9:
 		/*---*/PrintLog ("Initializing sound\n");
-		DigiInit (1);
+		audio.Setup (1);
 		break;
 	case 10:
 		/*---*/PrintLog ("Loading hoard data\n");

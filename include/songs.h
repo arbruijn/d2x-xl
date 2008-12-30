@@ -49,6 +49,7 @@ class CRedbook {
 		int HaveD2CD (void);
 		inline void ForceRegister (void) { m_bForceRegister = 1; }
 		inline int Enabled (void) { return m_bEnabled; }
+		inline int Playing (void) { return m_bPlaying; }
 };
 
 extern CRedbook redbook;
@@ -112,6 +113,8 @@ class CSongManager {
 		void Next (void);
 		int LoadPlayList (char *pszPlayList);
 		void FreeUserSongs (void);
+		inline int Current (void) { return m_info.nCurrent; }
+		inline int MP3 (void) { return m_user.bMP3; }
 	};
 
 extern CSongManager songManager;

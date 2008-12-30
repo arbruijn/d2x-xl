@@ -160,7 +160,7 @@ void StopConquerWarning (void)
 {
 if (gameStates.entropy.bConquerWarning) {
 	if (gameStates.sound.nConquerWarningSoundChannel >= 0)
-		DigiStopSound (gameStates.sound.nConquerWarningSoundChannel);
+		audio.StopSound (gameStates.sound.nConquerWarningSoundChannel);
 	MultiSendStopConquerWarning ();
 	gameStates.entropy.bConquerWarning = 0;
 	}

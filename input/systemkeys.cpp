@@ -917,7 +917,7 @@ void HandleTestKey(int key)
 			break;
 
 		case KEYDBGGED+KEY_S:			
-			DigiReset(); 
+			audio.Reset(); 
 			break;
 
 		case KEYDBGGED+KEY_P:

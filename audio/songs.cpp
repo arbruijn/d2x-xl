@@ -349,7 +349,7 @@ if (!(redbook.Enabled () ? gameConfig.nRedbookVolume : gameConfig.nMidiVolume))
 	return;
 StopAll ();
 //do we want any of these to be redbook songs?
-gameStates.sound.nCurrentSong = nSong;
+m_info.nCurrent = nSong;
 if (nSong == SONG_TITLE) {
 	if (*m_user.szIntroSong && DigiPlayMidiSong (m_user.szIntroSong, NULL, NULL, repeat, 0))
 		return;
@@ -377,7 +377,7 @@ if (!m_info.bPlaying) {		//not playing redbook, so play midi
 
 void CSongManager::PlayCurrent (int repeat)
 {
-songManager.Play (gameStates.sound.nCurrentSong, repeat);
+songManager.Play (m_info.nCurrent, repeat);
 }
 
 //------------------------------------------------------------------------------
@@ -419,7 +419,7 @@ if (redbook.Enabled () && RBAEnabled () && (nTracks = RBAGetNumberOfTracks ()) >
 	redbook.PlayTrack (REDBOOK_FIRST_LEVEL_TRACK + (nSong % (nTracks - REDBOOK_FIRST_LEVEL_TRACK + 1)) , 1);
 if (!gameStates.sound.bRedbookPlaying) {			//not playing redbook, so play midi
 	nSong = m_info.nLevelSongs [bD1Song] ? m_info.nFirstLevelSong [bD1Song] + (nSong % m_info.nLevelSongs [bD1Song]) : 0;
-	gameStates.sound.nCurrentSong = nSong;
+	m_info.nCurrent = nSong;
 		DigiPlayMidiSong (
 			m_info.data [nSong].filename,
 			m_info.data [nSong].melodicBankFile,
