@@ -74,7 +74,7 @@ void DoSnipeWait (CObject *objP, tAILocalInfo *ailP)
 {
 	fix xConnectedDist;
 
-if ((gameData.ai.xDistToPlayer > I2X (5)0) && (ailP->nextActionTime > 0))
+if ((gameData.ai.xDistToPlayer > I2X (50)) && (ailP->nextActionTime > 0))
 	return;
 ailP->nextActionTime = SNIPE_WAIT_TIME;
 xConnectedDist = FindConnectedDistance (objP->info.position.vPos, objP->info.nSegment, gameData.ai.vBelievedPlayerPos, 

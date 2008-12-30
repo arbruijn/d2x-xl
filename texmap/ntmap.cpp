@@ -936,7 +936,7 @@ void draw_tmap(CBitmap *bmP,int nverts,g3sPoint **vertbuf)
 			// Int3();		// we would overflow if we divided!
 		}
 
-		tvp->z = FixDiv(I2X (1)2, vp->p3_vec[Z]);
+		tvp->z = FixDiv(I2X (12), vp->p3_vec[Z]);
 		tvp->u = vp->p3_uvl.u << 6; //* bmP->Width ();
 		tvp->v = vp->p3_uvl.v << 6; //* bmP->Height ();
 

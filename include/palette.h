@@ -210,5 +210,6 @@ class CPaletteManager {
 	};
 
 extern CPaletteManager paletteManager;
+extern char szCurrentLevelPalette [SHORT_FILENAME_LEN];
 
 #endif //_PALETTE_H

@@ -39,8 +39,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define	ROBOT_GEN_TIME (I2X (5))
 #define	EQUIP_GEN_TIME (I2X (3) * (gameStates.app.nDifficultyLevel + 1))
 
-#define MATCEN_HP_DEFAULT			I2X (5)00; // Hitpoints
-#define MATCEN_INTERVAL_DEFAULT	I2X (5);	//  5 seconds
+#define MATCEN_HP_DEFAULT			I2X (500) // Hitpoints
+#define MATCEN_INTERVAL_DEFAULT	I2X (5)	//  5 seconds
 
 #ifdef EDITOR
 char	Special_names [MAX_CENTER_TYPES][11] = {
@@ -300,7 +300,7 @@ if (!matCenP->nLives)
 if (gameStates.app.nDifficultyLevel + 1 < NDL)
 	matCenP->nLives--;
 
-matCenP->xTimer = I2X (100)0;	//	Make sure the first robot gets emitted right away.
+matCenP->xTimer = I2X (1000);	//	Make sure the first robot gets emitted right away.
 matCenP->bEnabled = 1;			//	Say this center is enabled, it can create robots.
 matCenP->xCapacity = I2X (gameStates.app.nDifficultyLevel + 3);
 matCenP->xDisableTime = MATCEN_LIFE;

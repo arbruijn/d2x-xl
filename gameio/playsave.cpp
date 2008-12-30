@@ -253,7 +253,7 @@ for (i = 0; i < 2; i++) {
 
 		RP (gameStates.render.bShowFrameRate, 0, 0);
 		RP (gameStates.render.bShowTime, 0, 1);
-		RP (gameStates.sound.digi.nMaxChannels, 0, 16);
+		RP (audio.MaxChannels (), 0, 16);
 		RP (gameStates.render.cockpit.nMode, 0, 0);
 		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
 		RP (gameStates.video.nDefaultDisplayMode, 0, 0);

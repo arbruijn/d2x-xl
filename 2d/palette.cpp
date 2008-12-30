@@ -39,6 +39,8 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 CPaletteManager paletteManager;
 
+char szCurrentLevelPalette [SHORT_FILENAME_LEN];
+
 //	-----------------------------------------------------------------------------
 
 inline int Sqr (int i)
@@ -505,7 +507,6 @@ if (bForce || pszLevelName || stricmp(paletteManager.LastLoaded (), pszPaletteNa
 	palette = paletteManager.Load (pszPaletteName, pszLevelName);
 	if (!paletteManager.FadedOut () && !bNoScreenChange)
 		LoadEffect ();
-	//RemapFontsAndMenus (0);
 	gameData.hud.msgs [0].nColor = -1;
 	LoadBackgroundBitmap ();
 	}

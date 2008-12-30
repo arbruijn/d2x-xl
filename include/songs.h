@@ -14,6 +14,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _SONGS_H
 #define _SONGS_H
 
+#include "maths.h"
+#include "carray.h"
+#include "cfile.h"
+
 #define MAX_NUM_SONGS         100
 
 #define SONG_TITLE            0
@@ -110,7 +114,7 @@ class CSongManager {
 		void StopAll (void);
 		void Play (int nSong, int repeat);
 		void PlayLevel (int nLevel, int bFromHog);
-		void PlayCurrent (int repeat);
+		void PlayCurrent (int repeat = 0);
 		void Prev (void);
 		void Next (void);
 		int LoadPlayList (char *pszPlayList);

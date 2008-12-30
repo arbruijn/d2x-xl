@@ -37,6 +37,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network.h"
 #include "network_lib.h"
 #include "menubackground.h"
+#include "songs.h"
 
 #define CENTERING_OFFSET(x) ((300 - (70 + (x)*25))/2)
 #define CENTERSCREEN (gameStates.menus.bHires?320:160)
@@ -396,7 +397,7 @@ gameStates.app.bGameRunning = 0;
 bNetwork = gameData.app.nGameMode & GM_NETWORK;
 
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
-	DigiDestroyObjectSound (gameData.multiplayer.players [i].nObject);
+	audio.DestroyObjectSound (gameData.multiplayer.players [i].nObject);
 
 SetScreenMode (SCREEN_MENU);
 gameData.score.bWaitingForOthers = 0;

@@ -1166,9 +1166,8 @@ if (gameStates.render.cockpit.nShieldFlash) {
 		if ((nBeep < 0) || (bLastFlash != gameStates.render.cockpit.nShieldFlash)) {
 			if (nBeep >= 0)
 				audio.StopSound ((int) nBeep);
-			nBeep = audio.StartSound (-1, I2X (2) / 3, 0xFFFF / 2, -1, -1, -1, -1, I2X (1),
-											AddonSoundName ((gameStates.render.cockpit.nShieldFlash == 1) ?
-											SND_ADDON_LOW_SHIELDS1 : SND_ADDON_LOW_SHIELDS2), NULL, 0);
+			nBeep = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (2) / 3, 0xFFFF / 2, -1, -1, -1, -1, I2X (1),
+											  AddonSoundName ((gameStates.render.cockpit.nShieldFlash == 1) ? SND_ADDON_LOW_SHIELDS1 : SND_ADDON_LOW_SHIELDS2));
 			}
 		}
 	else if (nBeep >= 0) {

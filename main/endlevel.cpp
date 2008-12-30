@@ -48,6 +48,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gameseg.h"
 #include "key.h"
 #include "joy.h"
+#include "songs.h"
 
 //------------------------------------------------------------------------------
 
@@ -707,7 +708,7 @@ switch (gameStates.app.bEndLevelSequence) {
 int FindExitSide (CObject *objP)
 {
 	CFixVector	vPreferred, vSegCenter, vSide;
-	fix			d, xBestVal = -f2_0;
+	fix			d, xBestVal = -I2X (2);
 	int			nBestSide, i;
 	CSegment		*segP = SEGMENTS + objP->info.nSegment;
 

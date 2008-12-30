@@ -378,7 +378,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 		nakedData.nLength = 0;
 		nakedData.nDestPlayer = -1;
 		}
-	if (networkData.refuse.bWaitForAnswer && TimerGetApproxSeconds ()> (networkData.refuse.xTimeLimit+ (I2X (1)2)))
+	if (networkData.refuse.bWaitForAnswer && TimerGetApproxSeconds ()> (networkData.refuse.xTimeLimit+ (I2X (12))))
 		networkData.refuse.bWaitForAnswer=0;
 	networkData.xLastSendTime += gameData.time.xFrame;
 	networkData.xLastTimeoutCheck += gameData.time.xFrame;

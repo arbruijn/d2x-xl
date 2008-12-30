@@ -28,6 +28,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "findfile.h"
 #include "crypt.h"
 #include "strutil.h"
+#include "midi.h"
+#include "songs.h"
 #include "error.h"
 
 static const char *pszDigiVolume = "DigiVolume";
@@ -316,7 +318,7 @@ while (!cf.EoF ()) {
 		else if (!strcmp (token, pszMidiVolume))
 			gameConfig.nMidiVolume = (ubyte) strtol (value, NULL, 10);
 		else if (!strcmp (token, pszRedbookEnabled))
-			redbook.Enabled () = bRedbookEnabledSave = strtol (value, NULL, 10);
+			redbook.Enable (bRedbookEnabledSave = strtol (value, NULL, 10));
 		else if (!strcmp (token, pszRedbookVolume))
 			gameConfig.nRedbookVolume = (ubyte) strtol (value, NULL, 10);
 		else if (!strcmp (token, pszStereoRev))
@@ -392,7 +394,7 @@ if (gameConfig.nMidiVolume > 8)
 	gameConfig.nMidiVolume = 8;
 if (gameConfig.nRedbookVolume > 8) 
 	gameConfig.nRedbookVolume = 8;
-DigiMidiVolume ((gameConfig.nDigiVolume * 32768) / 8, (gameConfig.nMidiVolume * 128) / 8);
+audio.SetVolumes ((gameConfig.nDigiVolume * 32768) / 8, (gameConfig.nMidiVolume * 128) / 8);
 if (cf.Open ("descentw.cfg", gameFolders.szConfigDir, "rt", 0)) {
 	while (!cf.EoF ()) {
 		memset (line, 0, 80);

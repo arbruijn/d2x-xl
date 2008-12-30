@@ -51,7 +51,7 @@ for (i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 	if (eshakerDetonateTimes [i] != 0) {
 		fix	deltaTime = gameData.time.xGame - eshakerDetonateTimes [i];
 		if (!gameStates.gameplay.seismic.bSound) {
-			audio.PlaySampleLooping ((short) gameStates.gameplay.seismic.nSound, I2X (1), -1, -1);
+			audio.PlayLoopingSound ((short) gameStates.gameplay.seismic.nSound, I2X (1), -1, -1);
 			gameStates.gameplay.seismic.bSound = 1;
 			gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + d_rand()/2;
 			}
@@ -117,7 +117,7 @@ if (rval) {
 	gameStates.gameplay.seismic.nStartTime = gameData.time.xGame;
 	gameStates.gameplay.seismic.nEndTime = gameData.time.xGame + gameStates.gameplay.seismic.nShakeDuration;
 	if (!gameStates.gameplay.seismic.bSound) {
-		audio.PlaySampleLooping((short) gameStates.gameplay.seismic.nSound, I2X (1), -1, -1);
+		audio.PlayLoopingSound ((short) gameStates.gameplay.seismic.nSound, I2X (1), -1, -1);
 		gameStates.gameplay.seismic.bSound = 1;
 		gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + d_rand()/2;
 		}
@@ -196,7 +196,7 @@ RockTheMineFrame();
 SeismicDisturbanceFrame();
 if (stv_save != 0) {
 	if (gameStates.gameplay.seismic.nVolume == 0) {
-		DigiStopLoopingSound();
+		audio.StopLoopingSound ();
 		gameStates.gameplay.seismic.bSound = 0;
 		}
 
@@ -204,7 +204,7 @@ if (stv_save != 0) {
 		int volume = gameStates.gameplay.seismic.nVolume * 2048;
 		if (volume > I2X (1))
 			volume = I2X (1);
-		DigiChangeLoopingVolume (volume);
+		audio.ChangeLoopingVolume (volume);
 		gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + d_rand () / 4 + 8192;
 		}
 	}

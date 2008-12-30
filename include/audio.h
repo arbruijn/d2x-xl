@@ -204,7 +204,6 @@ class CAudioChannel {
 		int Resample (CDigiSound *soundP, int bD1Sound, int bMP3);
 		int Speedup (CDigiSound *soundP, int speed);
 		int ReadWAV (void);
-		void Mix_VolPan (int nChannel, int nVolume, int nPan);
 	};
 
 //------------------------------------------------------------------------------
@@ -348,7 +347,7 @@ class CAudio {
 		int UnXlatSound (int nSound);
 
 		inline int Available (void) { return m_info.bAvailable; }
-		inline int MaxChannels (void) { return m_info.nMaxChannels; }
+		inline int& MaxChannels (void) { return m_info.nMaxChannels; }
 		inline int FreeChannel (void) { return m_info.nFreeChannel; }
 		inline CAudioChannel* Channel (uint i = 0) { return m_channels + i; }
 
@@ -364,6 +363,8 @@ class CAudio {
 	};
 
 extern CAudio audio;
+
+void Mix_VolPan (int nChannel, int nVolume, int nPan);
 
 //------------------------------------------------------------------------------
 

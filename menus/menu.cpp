@@ -1141,7 +1141,6 @@ while (!done) {
 		backgroundManager.Remove (); //bDontRestore?
 		SetScreenMode (SCREEN_MENU);
 		SaveScreen (&gameCanvasP);
-//		RemapFontsAndMenus (1);
 		memset (&m_props, 0, sizeof (m_props));
 		m_props.width = width;
 		m_props.height = height;
@@ -1416,7 +1415,6 @@ radioOption:
 			GrabMouse (0, 0);
 			SetScreenMode (SCREEN_MENU);
 			SaveScreen (&gameCanvasP);
-			RemapFontsAndMenus (1);
 			memset (&m_props, 0, sizeof (m_props));
 			m_props.width = width;
 			m_props.height = height;

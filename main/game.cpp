@@ -79,6 +79,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "renderthreads.h"
 #include "fvi.h"
 #include "banlist.h"
+#include "songs.h"
 
 u_int32_t nCurrentVGAMode;
 
@@ -805,7 +806,7 @@ void DoAfterburnerStuff (void)
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 	gameData.physics.xAfterburnerCharge=0;
 if (gameStates.app.bEndLevelSequence || gameStates.app.bPlayerIsDead) {
-	if (DigiDestroyObjectSound (LOCALPLAYER.nObject))
+	if (audio.DestroyObjectSound (LOCALPLAYER.nObject))
 #ifdef NETWORK
 		MultiSendSoundFunction (0,0)
 #endif
@@ -823,7 +824,7 @@ else if ((gameStates.gameplay.xLastAfterburnerCharge && (Controls [0].afterburne
 #endif
 		}
 	else {
-		DigiDestroyObjectSound (LOCALPLAYER.nObject);
+		audio.DestroyObjectSound (LOCALPLAYER.nObject);
 		audio.CreateObjectSound ((short) SOUND_AFTERBURNER_PLAY, SOUNDCLASS_PLAYER, (short) LOCALPLAYER.nObject);
 #ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
@@ -1204,7 +1205,7 @@ for (;;) {
 #ifdef MWPROFILE
 ProfilerSetStatus (0);
 #endif
-DigiStopAll ();
+audio.StopAll ();
 if (gameStates.sound.bD1Sound) {
 	gameStates.sound.bD1Sound = 0;
 	//audio.Shutdown ();
@@ -1257,7 +1258,6 @@ GrClose ();
 PrintLog ("unloading addon sounds\n");
 FreeAddonSounds ();
 audio.Shutdown ();
-songManager.FreeUserSongs ();
 RLECacheClose ();
 BMFreeExtraObjBitmaps ();
 BMFreeExtraModels ();
@@ -1272,7 +1272,6 @@ PrintLog ("unloading hires animations\n");
 PiggyFreeHiresAnimations ();
 PiggyBitmapPageOutAll (0);
 PrintLog ("freeing sound buffers\n");
-DigiFreeSoundBufs ();
 FreeSoundReplacements ();
 PrintLog ("unloading hoard data\n");
 FreeHoardData ();
@@ -1745,7 +1744,7 @@ if (gameData.time.xGame < 0 || gameData.time.xGame > I2X (0x7fff - 600)) {
 if (IsMultiGame && netGame.xPlayTimeAllowed)
    gameStates.app.xThisLevelTime +=gameData.time.xFrame;
 //PrintLog ("DigiSyncSounds\n");
-DigiSyncSounds ();
+audio.SyncSounds ();
 if (gameStates.app.bEndLevelSequence) {
 	DoEndLevelFrame ();
 	PowerupGrabCheatAll ();
@@ -1890,23 +1889,23 @@ for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 		slideV = FixMul (gameData.time.xFrame, slideV << i);
 		for (i = 0, uvlP = sideP->m_uvls; i < 4; i++) {
 			uvlP [i].u += slideU;
-			if (uvlP [i].u > f2_0) {
+			if (uvlP [i].u > I2X (2)) {
 				xDelta = I2X (uvlP [i].u / I2X (1) - 1);
 				for (j = 0; j < 4; j++)
 					uvlP [j].u -= xDelta;
 				}
-			else if (uvlP [i].u < -f2_0) {
+			else if (uvlP [i].u < -I2X (2)) {
 				xDelta = I2X (-uvlP [i].u / I2X (1) - 1);
 				for (j = 0; j < 4; j++)
 					uvlP [j].u += xDelta;
 				}
 			uvlP [i].v += slideV;
-			if (uvlP [i].v > f2_0) {
+			if (uvlP [i].v > I2X (2)) {
 				xDelta = I2X (uvlP [i].v / I2X (1) - 1);
 				for (j = 0; j < 4; j++)
 					uvlP [j].v -= xDelta;
 				}
-			else if (uvlP [i].v < -f2_0) {
+			else if (uvlP [i].v < -I2X (2)) {
 				xDelta = I2X (-uvlP [i].v / I2X (1) - 1);
 				for (j = 0; j < 4; j++)
 					uvlP [j].v += xDelta;
@@ -1962,7 +1961,7 @@ if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringC
 				CreateAwarenessEvent (gameData.objs.consoleP, WEAPON_ROBOT_COLLISION);
 				audio.PlaySound (SOUND_FUSION_WARMUP);
 				if (gameData.app.nGameMode & GM_MULTI)
-					MultiSendPlaySound (SOUND_FUSION_WARMUP);
+					MultiSendPlaySound (SOUND_FUSION_WARMUP, I2X (1));
 					}
 			gameData.fusion.xLastSoundTime = gameData.time.xGame;
 			gameData.fusion.xNextSoundTime = gameData.time.xGame + I2X (1) / 8 + d_rand () / 4;

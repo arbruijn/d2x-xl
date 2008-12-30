@@ -439,8 +439,8 @@ if (bMakeSound && (weaponInfoP->flashSound > -1)) {
 	int bGatling = (nWeaponType == VULCAN_ID) || (nWeaponType == GAUSS_ID);
 	if (nParent != nViewer) {
 		if (bGatling && (parentP->info.nType == OBJ_PLAYER) && (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling)
-			DigiLinkSoundToPos2 (weaponInfoP->flashSound, objP->info.nSegment, 0, objP->info.position.vPos, 0, volume, I2X (256),
-										AddonSoundName (nGatlingSounds [nWeaponType == GAUSS_ID]));
+			audio.CreateSegmentSound (weaponInfoP->flashSound, objP->info.nSegment, 0, objP->info.position.vPos, 0, volume, I2X (256),
+											  AddonSoundName (nGatlingSounds [nWeaponType == GAUSS_ID]));
 		else
 			audio.CreateSegmentSound (weaponInfoP->flashSound, objP->info.nSegment, 0, objP->info.position.vPos, 0, volume);
 		}
@@ -449,7 +449,7 @@ if (bMakeSound && (weaponInfoP->flashSound > -1)) {
 			volume = I2X (1) / 2;
 		if (bGatling && (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling)
 			audio.PlaySound (-1, (nParent == nViewer) ? SOUNDCLASS_PLAYER : SOUNDCLASS_LASER, volume, DEFAULT_PAN, 0, -1, 
-									AddonSoundName (nGatlingSounds [nWeaponType == GAUSS_ID]));
+								  AddonSoundName (nGatlingSounds [nWeaponType == GAUSS_ID]));
 		else
 			audio.PlaySound (weaponInfoP->flashSound, (nParent == nViewer) ? SOUNDCLASS_PLAYER : SOUNDCLASS_LASER, volume);
 		}
@@ -464,7 +464,7 @@ if (bMakeSound && (weaponInfoP->flashSound > -1)) {
 							AddonSoundName (nMslSounds [bBigMsl]), 1);
 		}
 	else if (nWeaponType == FLARE_ID)
-		DigiSetObjectSound (nObject, -1, AddonSoundName (SND_ADDON_FLARE));
+		audio.CreateObjectSound (nObject, SOUNDCLASS_GENERIC, -1, 0, I2X (1), I2X (256), -1, -1, AddonSoundName (SND_ADDON_FLARE));
 	}
 //	Fire the laser from the gun tip so that the back end of the laser bolt is at the gun tip.
 // Move 1 frame, so that the end-tip of the laser is touching the gun barrel.

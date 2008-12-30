@@ -1356,7 +1356,7 @@ void MultiDoEscape (char *buf)
 
 nObject = gameData.multiplayer.players [(int)buf [1]].nObject;
 audio.PlaySound (SOUND_HUD_MESSAGE);
-DigiDestroyObjectSound (nObject);
+audio.DestroyObjectSound (nObject);
 if (buf [2] == 0) {
 	HUDInitMessage ("%s %s", gameData.multiplayer.players [(int)buf [1]].callsign, TXT_HAS_ESCAPED);
 	if (gameData.app.nGameMode & GM_NETWORK)
@@ -3915,7 +3915,7 @@ nPlayer = (int) buf [1];
 whichfunc = (int) buf [2];
 sound = buf [3];
 if (whichfunc == 0)
-	DigiDestroyObjectSound (gameData.multiplayer.players [nPlayer].nObject);
+	audio.DestroyObjectSound (gameData.multiplayer.players [nPlayer].nObject);
 else if (whichfunc == 3)
 	audio.CreateObjectSound (sound, SOUNDCLASS_PLAYER, (short) gameData.multiplayer.players [nPlayer].nObject, 1, I2X (1), I2X (256), 
 						 AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
@@ -4045,7 +4045,7 @@ if (nPlayer == gameData.multiplayer.nLocalPlayer)
 else
 	HUDInitMessage (TXT_SCORED_ORBS2, gameData.multiplayer.players [nPlayer].callsign, buf [2]);
 if (nPlayer == gameData.multiplayer.nLocalPlayer)
-	DigiStartSoundQueued (SOUND_HUD_YOU_GOT_GOAL, SOUNDCLASS_GENERIC, I2X (2));
+	soundQueue.StartSound (SOUND_HUD_YOU_GOT_GOAL, I2X (2));
 else if (gameData.app.nGameMode & GM_TEAM) {
 	if (GetTeam (nPlayer) == TEAM_RED)
 		audio.PlaySound (SOUND_HUD_RED_GOT_GOAL, SOUNDCLASS_GENERIC, I2X (2));
@@ -4120,7 +4120,7 @@ void MultiSendGotFlag (char nPlayer)
 {
 gameData.multigame.msg.buf [0] = MULTI_GOT_FLAG;
 gameData.multigame.msg.buf [1] = nPlayer;
-DigiStartSoundQueued (SOUND_HUD_YOU_GOT_FLAG, I2X (2));
+soundQueue.StartSound (SOUND_HUD_YOU_GOT_FLAG, I2X (2));
 MultiSendData (gameData.multigame.msg.buf, 2, 1);
 MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);
 }
@@ -4146,11 +4146,11 @@ void MultiDoGotFlag (char *buf)
 	int nPlayer = (int) buf [1];
 
 if (nPlayer == gameData.multiplayer.nLocalPlayer)
-	DigiStartSoundQueued (SOUND_HUD_YOU_GOT_FLAG, I2X (2));
+	soundQueue.StartSound (SOUND_HUD_YOU_GOT_FLAG, I2X (2));
 else if (GetTeam (nPlayer) == TEAM_RED)
-	DigiStartSoundQueued (SOUND_HUD_RED_GOT_FLAG, I2X (2));
+	soundQueue.StartSound (SOUND_HUD_RED_GOT_FLAG, I2X (2));
 else
-	DigiStartSoundQueued (SOUND_HUD_BLUE_GOT_FLAG, I2X (2));
+	soundQueue.StartSound (SOUND_HUD_BLUE_GOT_FLAG, I2X (2));
 gameData.multiplayer.players [nPlayer].flags |= PLAYER_FLAGS_FLAG;
 gameData.pig.flags [!GetTeam (nPlayer)].path.Reset (10, -1);
 HUDInitMessage (TXT_PICKFLAG2, gameData.multiplayer.players [nPlayer].callsign);
@@ -4660,14 +4660,14 @@ pingStats [0].launchTime = 0;
 void MultiQuickSoundHack (int nSound)
 {
 	int			l, i, j;
-	CDigiSound	*dsP = gameData.pig.sound.sounds [gameStates.sound.bD1Sound] + nSound;
+	CDigiSound	*soundP = gameData.pig.sound.sounds [gameStates.sound.bD1Sound] + nSound;
 	ubyte			*dataP;
 
-nSound = DigiXlatSound ((short) nSound);
-l = dsP->nLength [dsP->bDTX];
+nSound = audio.XlatSound ((short) nSound);
+l = soundP->nLength [soundP->bDTX];
 if (reversedSound.data [0].Create (l)) {
 	reversedSound.nLength [0] = l;
-	dataP = dsP->data [dsP->bDTX] + l;
+	dataP = soundP->data [soundP->bDTX] + l;
 	for (i = 0, j = l; i < l; i++)
 		reversedSound.data [0][i] = *(--dataP);
 	bSoundHacked = 1;

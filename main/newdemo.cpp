@@ -119,7 +119,7 @@ static int		bRevertFormat = -1;
 #define ND_EVENT_END_GUIDED         47  // stop guided view/return to ship
 #define ND_EVENT_SECRET_THINGY      48  // 0/1 = secret exit functional/non-functional
 #define ND_EVENT_LINK_SOUND_TO_OBJ  49  // record audio.CreateObjectSound
-#define ND_EVENT_KILL_SOUND_TO_OBJ  50  // record DigiDestroyObjectSound
+#define ND_EVENT_KILL_SOUND_TO_OBJ  50  // record audio.DestroyObjectSound
 
 
 #define NORMAL_PLAYBACK         0
@@ -1906,7 +1906,7 @@ while (!bDone) {
 			nSignature = NDReadInt ();
 			nObject = NDFindObject (nSignature);
 			if (nObject > -1)   //  @mk, 2/22/96, John told me to.
-				DigiDestroyObjectSound (nObject);
+				audio.DestroyObjectSound (nObject);
 			}
 			break;
 

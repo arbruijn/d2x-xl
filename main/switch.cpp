@@ -327,9 +327,9 @@ int CTrigger::DoPlaySound (short nObject)
 if (!indexP)
 	return 0;
 if (time < 0)
-	audio.StartSound (-1, I2X (1), 0xffff / 2, -1, -1, -1, -1, I2X (1), indexP->pszText, NULL, 0);
+	audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xffff / 2, -1, -1, -1, -1, I2X (1), indexP->pszText);
 else
-	audio.StartSound (-1, I2X (1), 0xffff / 2, 0, 0, time - 1, -1, I2X (1), indexP->pszText, NULL, 0);
+	audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xffff / 2, 0, 0, time - 1, -1, I2X (1), indexP->pszText);
 return 1;
 }
 
@@ -746,7 +746,7 @@ bool CTrigger::DoExit (int nPlayer)
 {
 if (nPlayer != gameData.multiplayer.nLocalPlayer)
 	return false;
-DigiStopAll ();		//kill the sounds
+audio.StopAll ();		//kill the sounds
 if ((gameData.missions.nCurrentLevel > 0) || gameStates.app.bD1Mission) {
 	StartEndLevelSequence (0);
 	return true;
@@ -787,7 +787,7 @@ if (bDisabled && (gameData.demo.nState != ND_STATE_PLAYBACK)) {
 
 if (gameData.demo.nState == ND_STATE_RECORDING)		// stop demo recording
 	gameData.demo.nState = ND_STATE_PAUSED;
-DigiStopAll ();		//kill the sounds
+audio.StopAll ();		//kill the sounds
 audio.PlaySound (SOUND_SECRET_EXIT);
 paletteManager.DisableEffect ();
 EnterSecretLevel ();

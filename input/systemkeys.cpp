@@ -61,6 +61,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "cheats.h"
 #include "input.h"
 #include "marker.h"
+#include "songs.h"
 
 #if defined (TACTILE)
 #	include "tactile.h"
@@ -338,13 +339,6 @@ switch (key) {
 }
 
 //------------------------------------------------------------------------------
-
-
-void SongsGotoNextSong();
-void SongsGotoPrevSong();
-
-//------------------------------------------------------------------------------
-
 //this is for system-level keys, such as help, etc.
 //returns 1 if screen changed
 int HandleSystemKey(int key)
@@ -587,11 +581,11 @@ switch (key) {
 		break;
 
 	case KEY_MINUS + KEY_ALTED:     
-		SongsGotoPrevSong(); 
+		songManager.Prev (); 
 		break;
 
 	case KEY_EQUAL + KEY_ALTED:     
-		SongsGotoNextSong(); 
+		songManager.Next (); 
 		break;
 
 //added 8/23/99 by Matt Mueller for hot key res/fullscreen changing, and menu access

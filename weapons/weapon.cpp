@@ -228,7 +228,7 @@ if ((xNextFlareFireTime > gameData.time.xGame) &&
 	 (xNextFlareFireTime < gameData.time.xGame + FLARE_BIG_DELAY))	//	In case time is bogus, never wait > 1 second.
 		return 0;
 if (LOCALPLAYER.energy >= WI_energy_usage (FLARE_ID))
-	xNextFlareFireTime = gameData.time.xGame + F2X (gameStates.gameplay.slowmo [0].fSpeed) / 4);
+	xNextFlareFireTime = gameData.time.xGame + F2X (gameStates.gameplay.slowmo [0].fSpeed) / 4;
 else
 	xNextFlareFireTime = gameData.time.xGame + (fix) (gameStates.gameplay.slowmo [0].fSpeed * FLARE_BIG_DELAY);
 return 1;
@@ -400,7 +400,7 @@ if (!bSecondary) {
 			audio.PlaySound (SOUND_GOOD_SELECTION_PRIMARY);
 		if (IsMultiGame) {
 			if (bWaitForRearm) 
-				MultiSendPlaySound (SOUND_GOOD_SELECTION_PRIMARY);
+				MultiSendPlaySound (SOUND_GOOD_SELECTION_PRIMARY, I2X (1));
 			}
 		gameData.laser.xNextFireTime = bWaitForRearm ? gameData.time.xGame + (fix) (gameStates.gameplay.slowmo [1].fSpeed * REARM_TIME) : 0;
 		gameData.laser.nGlobalFiringCount = 0;

@@ -430,7 +430,7 @@ gameData.missiles.xLastFiredTime =
 gameData.missiles.xNextFireTime = gameData.time.xGame; // added by RH, solved demo playback bug
 Controls [0].afterburnerState = 0;
 gameStates.gameplay.bLastAfterburnerState = 0;
-DigiDestroyObjectSound (LOCALPLAYER.nObject);
+audio.DestroyObjectSound (LOCALPLAYER.nObject);
 InitGauges ();
 #ifdef TACTILE
 if (TactileStick)
@@ -522,7 +522,7 @@ gameStates.app.bPlayerIsDead = 0;		//CPlayerData no longer dead
 LOCALPLAYER.homingObjectDist = -I2X (1); // Added by RH
 Controls [0].afterburnerState = 0;
 gameStates.gameplay.bLastAfterburnerState = 0;
-DigiDestroyObjectSound (LOCALPLAYER.nObject);
+audio.DestroyObjectSound (LOCALPLAYER.nObject);
 gameData.objs.missileViewerP = NULL;		///reset missile camera if out there
 #ifdef TACTILE
 	if (TactileStick)
@@ -614,7 +614,7 @@ void SetSoundSources (void)
 	//int			i;
 
 gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires;
-DigiInitSounds ();		//clear old sounds
+audio.InitSounds ();		//clear old sounds
 gameStates.sound.bDontStartObjects = 1;
 for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSegment; segP++, nSegment++)
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
@@ -644,12 +644,12 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSeg
 		audio.CreateSegmentSound (nSound, nSegment, nSide, segP->SideCenter (nSide), 1, I2X (1) / 2);
 		}
 
-if (0 <= (nSound = DigiGetSoundByName ("explode2"))) {
+if (0 <= (nSound = audio.GetSoundByName ("explode2"))) {
 	FORALL_STATIC_OBJS (objP, i)
 		if (objP->info.nType == OBJ_EXPLOSION) {
 			objP->info.renderType = RT_POWERUP;
 			objP->rType.vClipInfo.nClipIndex = objP->info.nId;
-			DigiSetObjectSound (objP->Index (), nSound, NULL);
+			audio.CreateObjectSound (nSound, SOUNDCLASS_GENERIC, objP->Index ());
 			}
 	}
 //gameStates.sound.bD1Sound = 0;
@@ -718,8 +718,6 @@ gameData.physics.side.nSegment = -1;
 gameData.physics.side.nSide = -1;
 memset (&gameData.marker, 0, sizeof (gameData.marker));
 gameData.marker.nLast = -1;
-gameData.songs.tPos =
-gameData.songs.tSlowDown = 0;
 gameStates.gameplay.bKillBossCheat = 0;
 gameStates.render.nFlashScale = I2X (1);
 gameOpts->app.nScreenShotInterval = 0;	//better reset this every time a level is loaded
@@ -735,7 +733,7 @@ transpItems.nMaxOffs = 0;
 #if PROFILING
 memset (&gameData.profiler, 0, sizeof (gameData.profiler));
 #endif
-DigiDestroyObjectSound (LOCALPLAYER.nObject);
+audio.DestroyObjectSound (LOCALPLAYER.nObject);
 memset (gameData.stats.player, 0, sizeof (tPlayerStats));
 memset (gameData.render.mine.bObjectRendered, 0xff, sizeof (gameData.render.mine.bObjectRendered));
 memset (gameData.render.mine.bRenderSegment, 0xff, sizeof (gameData.render.mine.bRenderSegment));
@@ -791,8 +789,6 @@ BMFreeExtraObjBitmaps ();
 PiggyFreeHiresAnimations ();
 /*---*/PrintLog ("   freeing spark effect buffers\n");
 sparkManager.Destroy ();
-/*---*/PrintLog ("   freeing sound buffers\n");
-DigiFreeSoundBufs ();
 /*---*/PrintLog ("   freeing auxiliary poly model data\n");
 G3FreeAllPolyModelItems ();
 /*---*/PrintLog ("   restoring default robot settings\n");
@@ -1092,7 +1088,7 @@ void DoEndLevelScoreGlitz (int network)
 	int			bIsLastLevel = 0;
 	int			nMineLevel = 0;
 
-DigiDestroyObjectSound (LOCALPLAYER.nObject);
+audio.DestroyObjectSound (LOCALPLAYER.nObject);
 audio.StopAllSounds ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
 if (gameStates.app.bHaveExtraData)
@@ -1686,7 +1682,7 @@ void DoPlayerDead (void)
 gameStates.app.bGameRunning = 0;
 paletteManager.ResetEffect ();
 paletteManager.LoadEffect  ();
-DigiStopDigiSounds ();		//kill any continuing sounds (eg. forcefield hum)
+audio.StopAll ();		//kill any continuing sounds (eg. forcefield hum)
 DeadPlayerEnd ();		//terminate death sequence (if playing)
 if (IsCoopGame && gameStates.app.bHaveExtraGameInfo [1])
 	LOCALPLAYER.score =
@@ -1743,7 +1739,7 @@ else {
 		}
 	}
 SetSoundSources ();
-DigiSyncSounds ();
+audio.SyncSounds ();
 }
 
 //------------------------------------------------------------------------------

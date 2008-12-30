@@ -5,6 +5,9 @@
 #	include <unistd.h>
 #endif
 
+#include "pstypes.h"
+#include "maths.h"
+#include "songs.h"
 #include "soundthreads.h"
 
 tSoundThreadInfo tiSound;
@@ -30,12 +33,12 @@ do {
 		audio.Shutdown ();
 		audio.Setup (tiSound.fSlowDown);
 		if (tiSound.fSlowDown == 1.0f) {
-			gameData.songs.tPos = gameData.songs.tSlowDown - gameData.songs.tStart + 
-										 2 * (SDL_GetTicks () - gameData.songs.tSlowDown) / gameOpts->gameplay.nSlowMotionSpeedup;
+			songManager.SetPos (songManager.SlowDown () - songManager.Start () + 
+									  2 * (SDL_GetTicks () - songManager.SlowDown ()) / gameOpts->gameplay.nSlowMotionSpeedup);
 			}
 		else {
-			gameData.songs.tSlowDown = SDL_GetTicks ();
-			gameData.songs.tPos = gameData.songs.tSlowDown - gameData.songs.tStart;
+			songManager.SetSlowDown (SDL_GetTicks ());
+			songManager.SetPos (songManager.SlowDown () - songManager.Start ());
 			}
 		songManager.PlayLevel (gameData.missions.nCurrentLevel, 1);
 		}

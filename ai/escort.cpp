@@ -1130,7 +1130,7 @@ if (!IS_OBJECT (objP, i)) {
 		return;
 	}
 
-	DigiPauseDigiSounds ();
+	audio.PauseSounds ();
 	if (!gameOpts->menus.nStyle)
 		StopTime ();
 
@@ -1216,7 +1216,7 @@ if (!IS_OBJECT (objP, i)) {
 	paletteManager.LoadEffect ();
 	if (!gameOpts->menus.nStyle)
 		StartTime (0);
-	DigiResumeDigiSounds ();
+	audio.ResumeSounds ();
 }
 
 // --------------------------------------------------------------------------------------------------------------------

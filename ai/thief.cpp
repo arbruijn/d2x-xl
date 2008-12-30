@@ -115,7 +115,7 @@ void DoThiefFrame(CObject *objP)
 		gameData.thief.xReInitTime = 0x3f000000;
 	}
 
-	if ((gameData.ai.xDistToPlayer > I2X (5)00) && (ailp->nextActionTime > 0))
+	if ((gameData.ai.xDistToPlayer > I2X (500)) && (ailp->nextActionTime > 0))
 		return;
 
 	if (gameStates.app.bPlayerIsDead)
@@ -135,14 +135,14 @@ void DoThiefFrame(CObject *objP)
 				return;
 			}
 
-			if ((gameData.ai.xDistToPlayer > I2X (5)0) && (ailp->nextActionTime > 0))
+			if ((gameData.ai.xDistToPlayer > I2X (50)) && (ailp->nextActionTime > 0))
 				return;
 
 			ailp->nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
 
 			connectedDistance = FindConnectedDistance (objP->info.position.vPos, objP->info.nSegment, gameData.ai.vBelievedPlayerPos, 
 																	 gameData.ai.nBelievedPlayerSeg, 30, WID_FLY_FLAG, 0);
-			if (connectedDistance < I2X (5)00) {
+			if (connectedDistance < I2X (500)) {
 				CreatePathToPlayer(objP, 30, 1);
 				ailp->mode = AIM_THIEF_ATTACK;
 				ailp->nextActionTime = THIEF_ATTACK_TIME;	//	have up to 10 seconds to find player.
@@ -201,7 +201,7 @@ void DoThiefFrame(CObject *objP)
 				if (gameData.ai.nPlayerVisibility && (gameData.ai.xDistToPlayer < I2X (100))) {
 					//	If the CPlayerData is close to looking at the thief, thief shall run away.
 					//	No more stupid thief trying to sneak up on you when you're looking right at him!
-					if (gameData.ai.xDistToPlayer > I2X (6)0) {
+					if (gameData.ai.xDistToPlayer > I2X (60)) {
 						fix dot = CFixVector::Dot (gameData.ai.vVecToPlayer, OBJPOS (gameData.objs.consoleP)->mOrient.FVec());
 						if (dot < -I2X (1)/2) {	//	Looking at least towards thief, so thief will run!
 							CreateNSegmentPath(objP, 10, gameData.objs.consoleP->info.nSegment);

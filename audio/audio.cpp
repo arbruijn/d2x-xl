@@ -100,6 +100,29 @@ audio.Channel (nChannel)->SetPlaying (0);
 }
 
 //------------------------------------------------------------------------------
+
+void Mix_VolPan (int nChannel, int nVolume, int nPan)
+{
+#if USE_SDL_MIXER
+if (!audio.Available ()) 
+	return;
+if (gameOpts->sound.bUseSDLMixer && (nChannel >= 0)) {
+	CAudioChannel* channelP = audio.Channel (nChannel);
+	if (nVolume) {
+		nVolume = (FixMul (nVolume, channelP->Volume ()) + (SOUND_MAX_VOLUME / MIX_MAX_VOLUME) / 2) / (SOUND_MAX_VOLUME / MIX_MAX_VOLUME);
+		if (!nVolume)
+			nVolume = 1;
+		Mix_Volume (nChannel, nVolume);
+		if (nPan >= 0) {
+			nPan /= (32767 / 127);
+			Mix_SetPanning (nChannel, (ubyte) nPan, (ubyte) (254 - nPan));
+			}
+		}
+	}
+#endif
+}
+
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
@@ -133,28 +156,6 @@ void CAudioChannel::Destroy (void)
 {
 m_info.sample.Destroy ();
 m_info.bResampled = 0;
-}
-
-//------------------------------------------------------------------------------
-
-void CAudioChannel::Mix_VolPan (int nChannel, int nVolume, int nPan)
-{
-#if USE_SDL_MIXER
-if (!audio.Available ()) 
-	return;
-if (gameOpts->sound.bUseSDLMixer && (nChannel >= 0)) {
-	if (nVolume) {
-		nVolume = (FixMul (nVolume, m_info.nVolume) + (SOUND_MAX_VOLUME / MIX_MAX_VOLUME) / 2) / (SOUND_MAX_VOLUME / MIX_MAX_VOLUME);
-		if (!nVolume)
-			nVolume = 1;
-		Mix_Volume (nChannel, nVolume);
-		if (nPan >= 0) {
-			nPan /= (32767 / 127);
-			Mix_SetPanning (nChannel, (ubyte) nPan, (ubyte) (254 - nPan));
-			}
-		}
-	}
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -571,6 +572,7 @@ m_info.nLoopingEnd = -1;
 m_info.nLoopingChannel = -1;
 m_channels.Create (MAX_SOUND_CHANNELS);
 m_objects.Create (MAX_SOUND_OBJECTS);
+InitSounds ();
 }
 
 //------------------------------------------------------------------------------

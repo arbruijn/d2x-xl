@@ -161,11 +161,9 @@ return StartSound (nSound, nSoundClass, nVolume, nPan, 0, (nLoops > 0) ? nLoops 
 
 void CAudio::InitSounds (void)
 {
-	int i;
-
 soundQueue.Init ();
 StopAllSounds ();
-for (i = 0; i < MAX_SOUND_OBJECTS; i++) {
+for (int i = 0; i < MAX_SOUND_OBJECTS; i++) {
 	m_objects [i].channel = -1;
 	m_objects [i].flags = 0;	// Mark as dead, so some other sound can use this sound
 	}
@@ -537,8 +535,6 @@ for (i = 0; i < MAX_SOUND_OBJECTS; i++) {
 }
 
 //------------------------------------------------------------------------------
-
-void Mix_VolPan (int channel, int vol, int pan);
 
 void CAudio::SyncSounds (void)
 {

@@ -82,6 +82,7 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "automap.h"
 #include "banlist.h"
 #include "menubackground.h"
+#include "songs.h"
 
 #include "../texmap/scanline.h" //for select_tmap -MM
 
@@ -304,7 +305,6 @@ if (!gameData.demo.bAuto)  {
 	//get our current palette into the 2d's array, so the remapping will
 	//work.  Second, we need to remap the fonts.  Third, we need to fill
 	//in part of the fade tables so the darkening of the menu edges works
-	RemapFontsAndMenus (1);
 	SelectPlayer ();		//get player's name
 	}
 }
@@ -927,7 +927,7 @@ if (gameStates.input.bHaveTrackIR) {
 	TIRUnload ();
 	}
 songManager.StopAll ();
-DigiStopCurrentSong ();
+audio.StopCurrentSong ();
 SaveModelData ();
 /*---*/PrintLog ("Saving configuration file\n");
 WriteConfigFile ();

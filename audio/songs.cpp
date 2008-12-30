@@ -31,6 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "kconfig.h"
 #include "timer.h"
 #include "hogfile.h"
+#include "midi.h"
 #include "songs.h"
 
 char CDROM_dir[40] = ".";
@@ -161,7 +162,6 @@ if (currentTime < m_xLastCheck || (currentTime - m_xLastCheck) >= I2X (2)) {
 		if (m_bPlaying == REDBOOK_TITLE_TRACK || m_bPlaying == REDBOOK_CREDITS_TRACK)
 			PlayTrack (REDBOOK_CREDITS_TRACK, 0);
 		else {
-			//SongsGotoNextSong ();
 
 			//new code plays all tracks to end of disk, so if disk has
 			//stopped we must be at end.  So start again with level 1 song.
@@ -316,7 +316,7 @@ for (i = 0, bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 	m_info.bInitialized = 1;
 	//	RBA Hook
 	if (!gameOpts->sound.bUseRedbook)
-		redbook.Enabled () = 0;
+		redbook.Enable (0);
 	else {	// use redbook
 			RBAInit ();
 		if (RBAEnabled ()) {
@@ -333,7 +333,7 @@ for (i = 0, bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 
 void CSongManager::StopAll (void)
 {
-DigiStopCurrentSong ();	// Stop midi song, if playing
+audio.StopCurrentSong ();	// Stop midi song, if playing
 redbook.Stop ();			// Stop CD, if playing
 }
 
@@ -351,21 +351,21 @@ StopAll ();
 //do we want any of these to be redbook songs?
 m_info.nCurrent = nSong;
 if (nSong == SONG_TITLE) {
-	if (*m_user.szIntroSong && DigiPlayMidiSong (m_user.szIntroSong, NULL, NULL, repeat, 0))
+	if (*m_user.szIntroSong && midi.PlaySong (m_user.szIntroSong, NULL, NULL, repeat, 0))
 		return;
 	redbook.PlayTrack (REDBOOK_TITLE_TRACK, 0);
 	}
 else if (nSong == SONG_CREDITS) {
-	if (*m_user.szCreditsSong && DigiPlayMidiSong (m_user.szCreditsSong, NULL, NULL, repeat, 0))
+	if (*m_user.szCreditsSong && midi.PlaySong (m_user.szCreditsSong, NULL, NULL, repeat, 0))
 		return;
 	redbook.PlayTrack (REDBOOK_CREDITS_TRACK, 0);
 	}
 else if (nSong == SONG_BRIEFING) {
-	if (*m_user.szBriefingSong && DigiPlayMidiSong (m_user.szBriefingSong, NULL, NULL, repeat, 0))
+	if (*m_user.szBriefingSong && midi.PlaySong (m_user.szBriefingSong, NULL, NULL, repeat, 0))
 		return;
 	}
 if (!m_info.bPlaying) {		//not playing redbook, so play midi
-	DigiPlayMidiSong (
+	midi.PlaySong (
 		m_info.data [nSong].filename,
 		m_info.data [nSong].melodicBankFile,
 		m_info.data [nSong].drumBankFile,
@@ -407,12 +407,12 @@ if (bFromHog) {
 		char	szSong [FILENAME_LEN];
 
 		sprintf (szSong, "%s%s%s", gameFolders.szCacheDir, *gameFolders.szCacheDir ? "/" : "", szFilename);
-		if (DigiPlayMidiSong (szSong, NULL, NULL, 1, 0))
+		if (midi.PlaySong (szSong, NULL, NULL, 1, 0))
 			return;
 		}
 	}
 if ((nLevel > 0) && m_user.nLevelSongs) {
-	if (DigiPlayMidiSong (m_user.levelSongs [(nLevel - 1) % m_user.nLevelSongs], NULL, NULL, 1, 0))
+	if (midi.PlaySong (m_user.levelSongs [(nLevel - 1) % m_user.nLevelSongs], NULL, NULL, 1, 0))
 		return;
 	}
 if (redbook.Enabled () && RBAEnabled () && (nTracks = RBAGetNumberOfTracks ()) > 1)	//try to play redbook
@@ -420,7 +420,7 @@ if (redbook.Enabled () && RBAEnabled () && (nTracks = RBAGetNumberOfTracks ()) >
 if (!redbook.Playing ()) {			//not playing redbook, so play midi
 	nSong = m_info.nLevelSongs [bD1Song] ? m_info.nFirstLevelSong [bD1Song] + (nSong % m_info.nLevelSongs [bD1Song]) : 0;
 	m_info.nCurrent = nSong;
-		DigiPlayMidiSong (
+		midi.PlaySong (
 			m_info.data [nSong].filename,
 			m_info.data [nSong].melodicBankFile,
 			m_info.data [nSong].drumBankFile,

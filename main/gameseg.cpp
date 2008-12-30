@@ -431,7 +431,7 @@ while (nCurSeg != seg1) {
 				if (nMaxDepth != -1) {
 					if (nDepth [qTail - 1] == nMaxDepth) {
 						gameData.fcd.nConnSegDist = 1000;
-						AddToFCDCache (seg0, seg1, gameData.fcd.nConnSegDist, I2X (100)0);
+						AddToFCDCache (seg0, seg1, gameData.fcd.nConnSegDist, I2X (1000));
 						return -1;
 						}
 					}
@@ -444,7 +444,7 @@ while (nCurSeg != seg1) {
 
 	if (qHead >= qTail) {
 		gameData.fcd.nConnSegDist = 1000;
-		AddToFCDCache (seg0, seg1, gameData.fcd.nConnSegDist, I2X (100)0);
+		AddToFCDCache (seg0, seg1, gameData.fcd.nConnSegDist, I2X (1000));
 		return -1;
 		}
 	Assert ((qHead >= 0) && (qHead < MAX_SEGMENTS));
@@ -459,7 +459,7 @@ fcd_done1: ;
 while (segmentQ [--qTail].end != seg1)
 	if (qTail < 0) {
 		gameData.fcd.nConnSegDist = 1000;
-		AddToFCDCache (seg0, seg1, gameData.fcd.nConnSegDist, I2X (100)0);
+		AddToFCDCache (seg0, seg1, gameData.fcd.nConnSegDist, I2X (1000));
 		return -1;
 		}
 

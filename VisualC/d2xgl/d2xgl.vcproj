@@ -2318,10 +2318,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\render\gamepal.cpp"
-						>
-					</File>
-					<File
 						RelativePath="..\..\render\gamerend.cpp"
 						>
 					</File>

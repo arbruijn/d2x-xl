@@ -61,6 +61,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "render.h"
 #include "marker.h"
 #include "systemkeys.h"
+#include "songs.h"
 
 #if defined (TACTILE)
 #	include "tactile.h"
@@ -152,12 +153,12 @@ void PauseGame (void)
 {
 if (!gameData.app.bGamePaused) {
 	gameData.app.bGamePaused = 1;
-	DigiPauseAll();
-	RBAPause();
-	StopTime();
-	paletteManager.SaveEffect();
-	paletteManager.ResetEffect();
-	GameFlushInputs();
+	audio.PauseAll ();
+	RBAPause ();
+	StopTime ();
+	paletteManager.SaveEffect ();
+	paletteManager.ResetEffect ();
+	GameFlushInputs ();
 #if defined (TACTILE)
 	if (TactileStick)
 		DisableForces();
@@ -175,7 +176,7 @@ paletteManager.LoadEffect ();
 StartTime (0);
 if (redbook.Playing ())
 	RBAResume ();
-DigiResumeAll ();
+audio.ResumeAll ();
 gameData.app.bGamePaused = 0;
 }
 
@@ -238,7 +239,6 @@ while (gameData.app.bGamePaused) {
 		while (!(key = KeyInKey ())) {
 			GameRenderFrame ();
 			paletteManager.LoadEffect (NULL);
-			RemapFontsAndMenus (1);
 			ShowBoxedMessage(msg);
 			G3_SLEEP (0);
 			}

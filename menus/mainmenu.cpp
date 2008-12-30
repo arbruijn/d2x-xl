@@ -283,7 +283,7 @@ for (;;) {
 		return;
 	if (!strstr (m [h], ".hmp"))
 		continue;
-	for (i = 0; i < songManager.Count (); i++)
+	for (i = 0; i < songManager.TotalCount (); i++)
 		if (songManager.SongData (i).filename == m [h]) {
 			songManager.Play (i, 0);
 			return;

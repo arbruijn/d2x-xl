@@ -36,6 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "text.h"
 #include "menu.h"
 #include "movie.h"
+#include "songs.h"
 #include "mouse.h"
 #include "gamepal.h"
 #include "strutil.h"
@@ -253,7 +254,7 @@ int StartBriefingSound (int c, short nSound, fix nVolume, const char *pszWAV)
 if (c < 0) {
 	int b = gameStates.sound.bD1Sound;
 	gameStates.sound.bD1Sound = 0;
-	c = audio.StartSound (DigiXlatSound (nSound), nVolume, 0xFFFF / 2, 1, -1, -1, -1, I2X (1), pszWAV, NULL, 0);
+	c = audio.StartSound (audio.XlatSound (nSound), SOUNDCLASS_GENERIC, nVolume, 0xFFFF / 2, 1, -1, -1, -1, I2X (1), pszWAV);
 	gameStates.sound.bD1Sound = b;
 	}
 return c;
@@ -1011,7 +1012,7 @@ if (bi.message > bi.pj) {
 		bRobotPlaying = 0;
 		}
 	InitSpinningRobot ();
-	if (!gameData.songs.bPlaying) {
+	if (!songManager.Playing ()) {
 		bi.nBotChannel = StartExtraBotSound (bi.nBotChannel, (short) bi.nLevel, bi.nBotSig++);
 		if (bi.nBotChannel >= 0)
 			StopBriefingSound (&bi.nHumChannel);
@@ -1322,7 +1323,7 @@ if (gameStates.app.bNostalgia)
 bi.bExtraSounds = gameStates.app.bHaveExtraData && gameStates.app.bD1Mission && 
 				  (gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission);
 bi.bOnlyRobots = movieManager.m_bHaveExtras && bi.bExtraSounds && (bi.nLevel == 1) && (bi.nScreen < 4);
-if (!gameData.songs.bPlaying)
+if (!songManager.Playing ())
 	bi.nHumChannel = StartBriefingHum (bi.nHumChannel, bi.nLevel, bi.nScreen, bi.bExtraSounds);
 
 fontManager.SetCurrent (GAME_FONT);
@@ -1414,7 +1415,7 @@ if (robotCanvP != NULL) {
 	delete robotCanvP;
 	robotCanvP = NULL;
 	}
-if (!gameData.songs.bPlaying)
+if (!songManager.Playing ())
 	StopBriefingSound (&bi.nHumChannel);
 StopBriefingSound (&bi.nPrintingChannel);
 StopBriefingSound (&bi.nBotChannel);

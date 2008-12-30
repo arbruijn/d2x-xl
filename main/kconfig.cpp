@@ -40,6 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #include "input.h"
 #include "collide.h"
 #include "menubackground.h"
+#include "songs.h"
 #if defined (TACTILE)
 #	include "tactile.h"
 #endif

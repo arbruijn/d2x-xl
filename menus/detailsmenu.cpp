@@ -85,7 +85,7 @@ if (nDetailLevel < NUM_DETAIL_LEVELS - 1) {
 	gameStates.render.detail.nMaxDebrisObjects = detailData.maxDebrisObjects [nDetailLevel];
 	gameStates.render.detail.nMaxObjectsOnScreenDetailed = detailData.maxObjsOnScreenDetailed [nDetailLevel];
 	gameData.models.nSimpleModelThresholdScale = detailData.simpleModelThresholdScales [nDetailLevel];
-	DigiSetMaxChannels (detailData.nSoundChannels [nDetailLevel]);
+	audio.SetMaxChannels (detailData.nSoundChannels [nDetailLevel]);
 	//      Set custom menu defaults.
 	gameStates.render.detail.nObjectComplexity = nDetailLevel;
 	gameStates.render.detail.nWallRenderDepth = nDetailLevel;
@@ -173,7 +173,7 @@ gameStates.render.detail.nMaxDebrisObjects = detailData.maxDebrisObjects [gameSt
 gameStates.render.detail.nMaxObjectsOnScreenDetailed = detailData.maxObjsOnScreenDetailed [gameStates.render.detail.nObjectComplexity];
 gameData.models.nSimpleModelThresholdScale = detailData.simpleModelThresholdScales [gameStates.render.detail.nObjectComplexity];
 gameStates.render.detail.nMaxLinearDepthObjects = detailData.maxLinearDepthObjects [gameStates.render.detail.nObjectDetail];
-DigiSetMaxChannels (detailData.nSoundChannels [gameStates.sound.nSoundChannels]);
+audio.SetMaxChannels (detailData.nSoundChannels [gameStates.sound.nSoundChannels]);
 }
 
 #define	DL_MAX	10
