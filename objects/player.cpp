@@ -105,8 +105,8 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++, wsP++) {
 		bGatling = (wsP->nPrimary == VULCAN_INDEX) || (wsP->nPrimary == GAUSS_INDEX);
 		fP = wsP->firing;
 		if (bGatling && bGatlingSound && (fP->bSound == 1)) {
-			DigiLinkSoundToObject3 (-1, (short) gameData.multiplayer.players [i].nObject, 0, 
-											F1_0, 256 * F1_0, -1, -1, AddonSoundName (SND_ADDON_GATLING_SPIN), 0, SOUNDCLASS_PLAYER);
+			SetObjectSound (-1, SOUNDCLASS_PLAYER, (short) gameData.multiplayer.players [i].nObject, 0, 
+								 F1_0, 256 * F1_0, -1, -1, AddonSoundName (SND_ADDON_GATLING_SPIN), 0);
 			fP->bSound = 0;
 			}
 		}

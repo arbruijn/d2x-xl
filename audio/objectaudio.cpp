@@ -72,7 +72,7 @@ tSoundObject soundObjects [MAX_SOUND_OBJECTS];
 
 //------------------------------------------------------------------------------
 /* Find the sound which actually equates to a sound number */
-short DigiXlatSound (short nSound)
+short CAudio::XlatSound (short nSound)
 {
 if (nSound < 0)
 	return -1;
@@ -89,7 +89,7 @@ return Sounds [gameStates.sound.bD1Sound][nSound];
 
 //------------------------------------------------------------------------------
 
-int DigiUnXlatSound (int nSound)
+int CAudio::UnXlatSound (int nSound)
 {
 	int i;
 	ubyte *table = (gameStates.sound.digi.bLoMem ? AltSounds [gameStates.sound.bD1Sound] :Sounds [gameStates.sound.bD1Sound]);
@@ -105,7 +105,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void DigiGetSoundLoc (
+void CAudio::GetSoundLoc (
 	CFixMatrix& mListener, CFixVector& vListenerPos, short nListenerSeg, CFixVector& vSoundPos,
 	short nSoundSeg, fix maxVolume, int *volume, int *pan, fix maxDistance, int nDecay)
 {
@@ -153,7 +153,7 @@ if (distance < maxDistance) {
 
 //------------------------------------------------------------------------------
 
-void DigiPlaySampleOnce (short nSound, fix maxVolume)
+void CAudio::PlaySampleOnce (short nSound, fix maxVolume)
 {
 	int channel;
 
@@ -161,58 +161,62 @@ void DigiPlaySampleOnce (short nSound, fix maxVolume)
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordSound (nSound);
 #endif
-nSound = DigiXlatSound (nSound);
+nSound = CAudio::XlatSound (nSound);
 if (nSound < 0)
 	return;
-channel = DigiFindChannel (nSound);
+channel = CAudio::FindChannel (nSound);
 if (channel > -1)
 	audio.StopSound (channel);
 // start the sample playing
-DigiStartSound (nSound, maxVolume, 0xffff/2, 0, -1, -1, -1, F1_0, NULL, NULL, 0);
+audio.StartSound (nSound, maxVolume, 0xffff/2, 0, -1, -1, -1, F1_0, NULL, NULL, 0);
 }
 
 //------------------------------------------------------------------------------
 
-int DigiPlaySampleSpeed (short nSound, fix maxVolume, int nSpeed, int nLoops, const char *pszWAV, int nSoundClass)
+int CAudio::PlaySample (short nSound, fix nVolume, int nPan, int bNoDups, const char* pszWAV, CFixVector* vPos)
 {
+#if 0
+if (vPos && (volume < 10))
+	return;
+#endif
 if (!pszWAV) {
 #ifdef NEWDEMO
 	if (gameData.demo.nState == ND_STATE_RECORDING)
-		NDRecordSound (nSound);
+		if (bNoDups)
+			NDRecordSound3DOnce (nSound, angle, volume);
+		else
+			NDRecordSound3D (nSound, angle, volume);
 #endif
-	nSound = (nSound < 0) ? - nSound : DigiXlatSound (nSound);
+	nSound = (nSound < 0) ? -nSound : CAudio::XlatSound (nSound);
 	if (nSound < 0)
-		return -1;
+		return;
+	int nChannel = FindChannel (nSound);
+	if (nChannel > -1)
+		audio.StopSound (nChannel);
 	}
 // start the sample playing
-if (nLoops > 0)
-	return DigiStartSound (nSound, maxVolume, 0xffff / 2, 0, 0, nLoops - 1, -1, nSpeed, pszWAV, NULL, nSoundClass);
-else
-	return DigiStartSound (nSound, maxVolume, 0xffff / 2, 0, -1, -1, -1, nSpeed, pszWAV, NULL, nSoundClass);
+return audio.StartSound (nSound, 0, nVolume, nPan, 0, -1, -1, -1, F1_0, pszWAV, vPos);
 }
 
 //------------------------------------------------------------------------------
 
-void DigiPlaySample3D (short nSound, int angle, int volume, int no_dups, CFixVector* vPos, const char *pszSound)
+void CAudio::PlaySample3D (short nSound, int angle, int volume, int bNoDups, CFixVector* vPos, const char* pszSound)
 {
 
-	no_dups = 1;
+	bNoDups = 1;
 
 #ifdef NEWDEMO
 if (gameData.demo.nState == ND_STATE_RECORDING) {
-	if (no_dups)
-		NDRecordSound3DOnce (nSound, angle, volume);
-	else
-		NDRecordSound3D (nSound, angle, volume);
 	}
 #endif
-nSound = DigiXlatSound (nSound);
+nSound = CAudio::XlatSound (nSound);
 if ((nSound < 0) && !(pszSound && *pszSound))
 	return;
 if (volume < 10)
 	return;
 // start the sample playing
-DigiStartSound (nSound, volume, angle, 0, -1, -1, -1, F1_0, pszSound, vPos, 0);
+audio.StartSound (nSound, 0, volume, angle, 0, -1, -1, -1, F1_0, pszSound, vPos);
+PlaySample (
 }
 
 //------------------------------------------------------------------------------
@@ -221,7 +225,7 @@ void SoundQInit ();
 void SoundQProcess ();
 void SoundQPause ();
 
-void DigiInitSounds ()
+void CAudio::InitSounds (void)
 {
 	int i;
 
@@ -240,16 +244,16 @@ gameStates.sound.digi.bSoundsInitialized = 1;
 
 // plays a sample that loops bForever.
 // Call digi_stop_channe (channel) to stop it.
-// Call DigiSetChannelVolume (channel, volume) to change volume.
+// Call CAudio::SetChannelVolume (channel, volume) to change volume.
 // if nLoopStart is -1, entire sample loops
 // Returns the channel that sound is playing on, or -1 if can't play.
 // This could happen because of no sound drivers loaded or not enough channels.
 
-void DigiPlaySampleLoopingSub (void)
+void CAudio::PlaySampleLoopingSub (void)
 {
 if (gameStates.sound.digi.nLoopingSound > -1)
 	gameStates.sound.digi.nLoopingChannel  =
-		DigiStartSound (gameStates.sound.digi.nLoopingSound,
+		audio.StartSound (gameStates.sound.digi.nLoopingSound,
 							 gameStates.sound.digi.nLoopingVolume,
 							 0xFFFF/2,
 							 1,
@@ -262,9 +266,9 @@ if (gameStates.sound.digi.nLoopingSound > -1)
 
 //------------------------------------------------------------------------------
 
-void DigiPlaySampleLooping (short nSound, fix maxVolume,int nLoopStart, int nLoopEnd)
+void CAudio::PlaySampleLooping (short nSound, fix maxVolume,int nLoopStart, int nLoopEnd)
 {
-nSound = DigiXlatSound (nSound);
+nSound = CAudio::XlatSound (nSound);
 if (nSound < 0)
 	return;
 if (gameStates.sound.digi.nLoopingChannel>-1)
@@ -278,7 +282,7 @@ DigiPlaySampleLoopingSub ();
 
 //------------------------------------------------------------------------------
 
-void DigiChangeLoopingVolume (fix volume)
+void CAudio::ChangeLoopingVolume (fix volume)
 {
 if (gameStates.sound.digi.nLoopingChannel > -1)
 	DigiSetChannelVolume (gameStates.sound.digi.nLoopingChannel, volume);
@@ -287,7 +291,7 @@ gameStates.sound.digi.nLoopingVolume = (short) volume;
 
 //------------------------------------------------------------------------------
 
-void DigiStopLoopingSound ()
+void CAudio::StopLoopingSound ()
 {
 if (gameStates.sound.digi.nLoopingChannel > -1)
 	audio.StopSound (gameStates.sound.digi.nLoopingChannel);
@@ -297,7 +301,7 @@ gameStates.sound.digi.nLoopingSound = -1;
 
 //------------------------------------------------------------------------------
 
-void DigiPauseLoopingSound ()
+void CAudio::PauseLoopingSound ()
 {
 if (gameStates.sound.digi.nLoopingChannel > -1)
 	audio.StopSound (gameStates.sound.digi.nLoopingChannel);
@@ -306,7 +310,7 @@ gameStates.sound.digi.nLoopingChannel = -1;
 
 //------------------------------------------------------------------------------
 
-void DigiResumeLoopingSound ()
+void CAudio::ResumeLoopingSound ()
 {
 DigiPlaySampleLoopingSub ();
 }
@@ -314,7 +318,7 @@ DigiPlaySampleLoopingSub ();
 //------------------------------------------------------------------------------
 //hack to not start CObject when loading level
 
-void DigiStartSoundObject (int i)
+void CAudio::StartSoundObject (int i)
 {
 	tSoundObject	*soP = soundObjects + i;
 	// start sample structures
@@ -327,11 +331,11 @@ if (gameStates.sound.bDontStartObjects)
 // -- MK, 2/22/96 -- 		NDRecordSound3DOnce (DigiUnXlatSound (soP->nSound), soP->pan, soP->volume);
 // only use up to half the sound channels for "permanent" sounts
 if ((soP->flags & SOF_PERMANENT) &&
-	 (gameStates.sound.digi.nActiveObjects >= max (1, DigiGetMaxChannels () / 4)))
+	 (gameStates.sound.digi.nActiveObjects >= max (1, CAudio::GetMaxChannels () / 4)))
 	return;
 // start the sample playing
 soP->channel =
-	DigiStartSound (
+	audio.StartSound (
 		soP->nSound,
 		soP->volume,
 		soP->pan,
@@ -349,12 +353,12 @@ if (soP->channel > -1)
 //sounds longer than this get their 3d aspects updated
 //#define SOUND_3D_THRESHHOLD  (gameOpts->sound.digiSampleRate * 3 / 2)	//1.5 seconds
 
-int DigiLinkSoundToObject3 (
-	short nOrgSound, short nObject, int bForever, fix maxVolume, fix maxDistance,
-	int nLoopStart, int nLoopEnd, const char *pszSound, int nDecay, int nSoundClass)
+int SetObjectSound (
+	short nOrgSound, int nSoundClass, short nObject, int bForever, fix maxVolume, fix maxDistance,
+	int nLoopStart, int nLoopEnd, const char* pszSound, int nDecay)
 {
-	CObject			*objP;
-	tSoundObject 	*soP;
+	CObject*			objP;
+	tSoundObject*	soP;
 	int				i, volume, pan;
 	short				nSound = 0;
 
@@ -363,7 +367,7 @@ if (maxVolume < 0)
 if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
 	return -1;
 if (!(pszSound && *pszSound)) {
-	nSound = DigiXlatSound (nOrgSound);
+	nSound = CAudio::XlatSound (nOrgSound);
 	if (nSound < 0)
 		return -1;
 	if (!gameData.pig.sound.sounds [gameStates.sound.bD1Sound][nSound].data) {
@@ -377,7 +381,7 @@ if (!bForever) { 	// Hack to keep sounds from building up...
 		gameData.objs.viewerP->info.position.mOrient, gameData.objs.viewerP->info.position.vPos,
 		gameData.objs.viewerP->info.nSegment, objP->info.position.vPos, objP->info.nSegment, maxVolume, &volume, &pan,
 		maxDistance, nDecay);
-	DigiPlaySample3D (nOrgSound, pan, volume, 0, &objP->info.position.vPos, pszSound);
+	DigiPlaySample (nOrgSound, pan, volume, &objP->info.position.vPos, pszSound);
 	return -1;
 	}
 #ifdef NEWDEMO
@@ -429,31 +433,16 @@ return soP->nSignature;
 
 //------------------------------------------------------------------------------
 
-int DigiLinkSoundToObject2 (
-	short nOrgSound, short nObject, int bForever, fix maxVolume, fix maxDistance, int nSoundClass)
-{
-return DigiLinkSoundToObject3 (nOrgSound, nObject, bForever, maxVolume, maxDistance, -1, -1, NULL, 0, nSoundClass);
-}
-
-//------------------------------------------------------------------------------
-
-int DigiLinkSoundToObject (short nSound, short nObject, int bForever, fix maxVolume, int nSoundClass)
-{
-return DigiLinkSoundToObject2 (nSound, nObject, bForever, maxVolume, 256 * F1_0, nSoundClass);
-}
-
-//------------------------------------------------------------------------------
-
-int DigiLinkSoundToPos2 (
+int CAudio::SetSegmentSound (
 	short nOrgSound, short nSegment, short nSide, CFixVector& vPos, int bForever,
-	fix maxVolume, fix maxDistance, const char *pszSound)
+	fix maxVolume, fix maxDistance, const char* pszSound)
 {
 
 	int i, volume, pan;
 	int nSound;
 	tSoundObject *soP;
 
-nSound = DigiXlatSound (nOrgSound);
+nSound = CAudio::XlatSound (nOrgSound);
 if (maxVolume < 0)
 	return -1;
 //	if (maxVolume > F1_0) maxVolume = F1_0;
@@ -469,7 +458,7 @@ if (!bForever) { 	//&& gameData.pig.sound.sounds [nSound - SOUND_OFFSET].length 
 	// Hack to keep sounds from building up...
 	DigiGetSoundLoc (gameData.objs.viewerP->info.position.mOrient, gameData.objs.viewerP->info.position.vPos, gameData.objs.viewerP->info.nSegment,
 						  vPos, nSegment, maxVolume, &volume, &pan, maxDistance, 0);
-	DigiPlaySample3D (nOrgSound, pan, volume, 0, &vPos, pszSound);
+	DigiPlaySample (nOrgSound, volume, pan, &vPos, pszSound);
 	return -1;
 	}
 for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++)
@@ -518,20 +507,20 @@ return soP->nSignature;
 
 //------------------------------------------------------------------------------
 
-int DigiLinkSoundToPos (short nSound, short nSegment, short nSide, CFixVector& vPos, int bForever, fix maxVolume)
+int CAudio::SetSegmentSound (short nSound, short nSegment, short nSide, CFixVector& vPos, int bForever, fix maxVolume)
 {
-return DigiLinkSoundToPos2 (nSound, nSegment, nSide, vPos, bForever, maxVolume, F1_0 * 256, NULL);
+return CAudio::SetSegmentSound (nSound, nSegment, nSide, vPos, bForever, maxVolume, F1_0 * 256, NULL);
 }
 
 //------------------------------------------------------------------------------
 //if nSound==-1, kill any sound
-int DigiKillSoundLinkedToSegment (short nSegment, short nSide, short nSound)
+int CAudio::KillSoundLinkedToSegment (short nSegment, short nSide, short nSound)
 {
 	int				i, nKilled;
 	tSoundObject	*soP;
 
 if (nSound != -1)
-	nSound = DigiXlatSound (nSound);
+	nSound = CAudio::XlatSound (nSound);
 nKilled = 0;
 for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++) {
 	if ((soP->flags & (SOF_USED | SOF_LINK_TO_POS)) == (SOF_USED | SOF_LINK_TO_POS)) {
@@ -552,7 +541,7 @@ return (nKilled > 0);
 
 //------------------------------------------------------------------------------
 
-int DigiKillSoundLinkedToObject (int nObject)
+int CAudio::KillSoundLinkedToObject (int nObject)
 {
 
 	int				i, nKilled;
@@ -586,7 +575,7 @@ return (nKilled > 0);
 
 //------------------------------------------------------------------------------
 
-int DigiChangeSoundLinkedToObject (int nObject, fix volume)
+int CAudio::ChangeSoundLinkedToObject (int nObject, fix volume)
 {
 
 	int				i, nKilled;
@@ -614,7 +603,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 //	John's new function, 2/22/96.
-void DigiRecordsoundObjects ()
+void CAudio::RecordsoundObjects (void)
 {
 	int i;
 
@@ -632,7 +621,7 @@ for (i = 0; i < MAX_SOUND_OBJECTS; i++) {
 
 void Mix_VolPan (int channel, int vol, int pan);
 
-void DigiSyncSounds ()
+void CAudio::SyncSounds (void)
 {
 	int				i, oldvolume, oldpan;
 	tSoundObject	*soP;
@@ -732,7 +721,7 @@ for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++) {
 #endif
 }
 
-void DigiPauseDigiSounds ()
+void CAudio::PauseDigiSounds ()
 {
 	int i;
 
@@ -752,7 +741,7 @@ SoundQPause ();
 
 //------------------------------------------------------------------------------
 
-void DigiPauseAll ()
+void CAudio::PauseAll ()
 {
 DigiPauseMidi ();
 DigiPauseDigiSounds ();
@@ -760,7 +749,7 @@ DigiPauseDigiSounds ();
 
 //------------------------------------------------------------------------------
 
-void DigiResumeDigiSounds ()
+void CAudio::ResumeDigiSounds ()
 {
 DigiSyncSounds ();	//don't think we really need to do this, but can't hurt
 DigiResumeLoopingSound ();
@@ -768,9 +757,9 @@ DigiResumeLoopingSound ();
 
 //------------------------------------------------------------------------------
 
-extern void DigiResumeMidi ();
+extern void CAudio::ResumeMidi ();
 
-void DigiResumeAll ()
+void CAudio::ResumeAll ()
 {
 DigiResumeMidi ();
 DigiResumeLoopingSound ();
@@ -779,7 +768,7 @@ DigiResumeLoopingSound ();
 //------------------------------------------------------------------------------
 // Called by the code in digi.c when another sound takes this sound CObject's
 // slot because the sound was done playing.
-void DigiEndSoundObj (int i)
+void CAudio::EndSoundObj (int i)
 {
 Assert (soundObjects [i].flags & SOF_USED);
 Assert (soundObjects [i].channel > -1);
@@ -789,7 +778,7 @@ soundObjects [i].channel = -1;
 
 //------------------------------------------------------------------------------
 
-void DigiStopDigiSounds (void)
+void CAudio::StopDigiSounds (void)
 {
 	int i;
 
@@ -809,7 +798,7 @@ SoundQInit ();
 
 //------------------------------------------------------------------------------
 
-void DigiStopAll (void)
+void CAudio::StopAll (void)
 {
 DigiStopCurrentSong ();
 DigiStopDigiSounds ();
@@ -834,7 +823,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void DigiSoundDebug ()
+void CAudio::SoundDebug (void)
 {
 	int i;
 	int n_activeSound_objs=0;
@@ -855,7 +844,7 @@ audio.Debug ();
 
 tSoundQueue soundQueue;
 
-void SoundQInit ()
+void SoundQInit (void)
 {
 soundQueue.nHead =
 soundQueue.nTail =
@@ -865,14 +854,14 @@ soundQueue.nChannel = -1;
 
 //------------------------------------------------------------------------------
 
-void SoundQPause ()
+void SoundQPause (void)
 {
 soundQueue.nChannel = -1;
 }
 
 //------------------------------------------------------------------------------
 
-void SoundQEnd ()
+void SoundQEnd (void)
 {
 	// Current playing sound is stopped, so take it off the Queue
 if (++soundQueue.nHead >= MAX_SOUND_QUEUE)
@@ -883,7 +872,7 @@ soundQueue.nChannel = -1;
 
 //------------------------------------------------------------------------------
 
-void SoundQProcess ()
+void SoundQProcess (void)
 {
 	fix curtime = TimerGetApproxSeconds ();
 	tSoundQueueEntry *q;
@@ -896,7 +885,7 @@ if (soundQueue.nChannel > -1) {
 while (soundQueue.nHead != soundQueue.nTail) {
 	q = soundQueue.queue + soundQueue.nHead;
 	if (q->time_added + MAX_LIFE > curtime) {
-		soundQueue.nChannel = DigiStartSound (q->nSound, F1_0+1, 0xFFFF/2, 0, -1, -1, -1, F1_0, NULL, NULL, 0);
+		soundQueue.nChannel = audio.StartSound (q->nSound, F1_0+1, 0xFFFF/2, 0, -1, -1, -1, F1_0, NULL, NULL, 0);
 		return;
 		}
 	SoundQEnd ();
@@ -905,12 +894,12 @@ while (soundQueue.nHead != soundQueue.nTail) {
 
 //------------------------------------------------------------------------------
 
-void DigiStartSoundQueued (short nSound, fix volume)
+void CAudio::StartSoundQueued (short nSound, fix volume)
 {
 	int					i;
 	tSoundQueueEntry *q;
 
-nSound = DigiXlatSound (nSound);
+nSound = CAudio::XlatSound (nSound);
 if (nSound < 0)
 	return;
 i = soundQueue.nTail+1;
@@ -931,21 +920,14 @@ SoundQProcess ();
 
 //------------------------------------------------------------------------------
 
-int DigiGetSoundByName (const char *pszSound)
+int CAudio::GetSoundByName (const char* pszSound)
 {
 	char	szSound [FILENAME_LEN];
 	int	nSound;
 
 strcpy (szSound, pszSound);
 nSound = PiggyFindSound (szSound);
-return (nSound == 255) ? -1 : DigiUnXlatSound (nSound);
-}
-
-//------------------------------------------------------------------------------
-
-int DigiSetObjectSound (int nObject, int nSound, const char *pszSound, const fix xVolume)
-{
-return (nObject < 0) ? -1 : DigiLinkSoundToObject3 (nSound, nObject, 1, xVolume, I2X (256), -1, -1, pszSound, 0, SOUNDCLASS_GENERIC);
+return (nSound == 255) ? -1 : CAudio::UnXlatSound (nSound);
 }
 
 //------------------------------------------------------------------------------

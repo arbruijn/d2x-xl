@@ -745,7 +745,7 @@ else if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_WATER) ||
 	if (wInfoP->matter) {
 		DigiLinkSoundToPos (SOUNDMSL_HIT_WATER, nHitSeg, 0, vHitPt);
 		if (wInfoP->damage_radius) {
-			DigiLinkSoundToObject (SOUND_BADASS_EXPLOSION, OBJ_IDX (this), 0, F1_0, SOUNDCLASS_EXPLOSION);
+			SetObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
 			//	MK: 09/13/95: Badass in water is 1/2 Normal intensity.
 			CreateBadassExplosion (this, nHitSeg, vHitPt, wInfoP->impact_size/2, wInfoP->robot_hit_vclip,
 										  nStrength / 4, wInfoP->damage_radius, nStrength / 2, cType.laserInfo.parent.nObject);

@@ -496,7 +496,7 @@ void DigiPlaySampleOnce(int soundno, fix maxVolume)
 
 }
 
-void DigiPlaySample3D(int soundno, int angle, int volume, int no_dups) // Volume from 0-0x7fff
+void DigiPlaySample (int soundno, int volume, int angle, int no_dups) // Volume from 0-0x7fff
 {
 	no_dups = 1;
 
@@ -586,7 +586,7 @@ int DigiLinkSoundToObject2(int orgSoundnum, short nObject, int forever, fix maxV
 		DigiGetSoundLoc(&gameData.objs.viewerP->info.position.mOrient, &gameData.objs.viewerP->info.position.vPos, gameData.objs.viewerP->info.nSegment, 
 							 &OBJECTS[nObject].info.position.vPos, OBJECTS[nObject].nSegment, maxVolume,&volume, &pan, 
 							 maxDistance, 0);
-		DigiPlaySample3D(orgSoundnum, pan, volume, 0);
+		DigiPlaySample (orgSoundnum, volume, pan);
 		return -1;
 		}
 
@@ -648,9 +648,9 @@ int DigiLinkSoundToPos2(int orgSoundnum, short nSegment, short nSide, vmsVector 
 
 	if (!forever)	{
 		// Hack to keep sounds from building up...
-		DigiGetSoundLoc(&gameData.objs.viewerP->info.position.mOrient, &gameData.objs.viewerP->info.position.vPos, gameData.objs.viewerP->info.nSegment, 
-							 pos, nSegment, maxVolume, &volume, &pan, maxDistance, nDecay);
-		DigiPlaySample3D(orgSoundnum, pan, volume, 0);
+		audio.GetSoundLoc (&gameData.objs.viewerP->info.position.mOrient, &gameData.objs.viewerP->info.position.vPos, gameData.objs.viewerP->info.nSegment, 
+							 	 pos, nSegment, maxVolume, &volume, &pan, maxDistance, nDecay);
+		audio.PlaySample (orgSoundnum, volume, pan);
 		return -1;
 	}
 

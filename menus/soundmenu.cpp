@@ -109,7 +109,7 @@ if (gameOpts->sound.bGatling != menu [soundOpts.nGatling].m_value) {
 if (gameConfig.nDigiVolume != menu [soundOpts.nDigiVol].m_value) {
 	gameConfig.nDigiVolume = menu [soundOpts.nDigiVol].m_value;
 	DigiSetFxVolume ((gameConfig.nDigiVolume*32768)/8);
-	DigiPlaySampleOnce (SOUND_DROP_BOMB, F1_0);
+	audio.PlaySample (SOUND_DROP_BOMB, F1_0);
 	}
 if ((soundOpts.nChannels >= 0) && (gameStates.sound.nSoundChannels != menu [soundOpts.nChannels].m_value)) {
 	gameStates.sound.nSoundChannels = menu [soundOpts.nChannels].m_value;

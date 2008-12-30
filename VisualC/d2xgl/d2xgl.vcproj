@@ -3158,7 +3158,7 @@
 					Name="Header Files"
 					>
 					<File
-						RelativePath="..\..\include\digi.h"
+						RelativePath="..\..\include\audio.h"
 						>
 					</File>
 					<File

@@ -849,9 +849,9 @@ switch (action)  {
 		// TODO: MatrixCreateFCheck
 		bossObjP->info.position.mOrient = CFixMatrix::CreateF(vBossDir);
 
-		DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nTeleportSeg, 0, bossObjP->info.position.vPos, 0 , F1_0);
+		DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nTeleportSeg, 0, bossObjP->info.position.vPos, 0, F1_0);
 		DigiKillSoundLinkedToObject (OBJ_IDX (bossObjP));
-		DigiLinkSoundToObject2 (SOUND_BOSS_SHARE_SEE, OBJ_IDX (bossObjP), 1, F1_0, F1_0*512, SOUNDCLASS_ROBOT);	//	F1_0*512 means play twice as loud
+		SetObjectSound (SOUND_BOSS_SHARE_SEE, SOUNDCLASS_ROBOT, OBJ_IDX (bossObjP), 1, F1_0, F1_0 * 512);	//	F1_0*512 means play twice as loud
 		gameData.ai.localInfo [OBJ_IDX (bossObjP)].nextPrimaryFire = 0;
 		if (bossObjP->cType.aiInfo.REMOTE_OWNER == gameData.multiplayer.nLocalPlayer) {
 			MultiDeleteControlledRobot (nBossObj);

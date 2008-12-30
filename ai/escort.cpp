@@ -276,7 +276,7 @@ if (gameData.escort.nSpecialGoal != -1) {
 dega_ok: ;
 if (bDetected) {
 	if (!BuddyMayTalk ())
-		DigiPlaySampleOnce (SOUND_BUDDY_MET_GOAL, F1_0);
+		audio.PlaySample (SOUND_BUDDY_MET_GOAL);
 	gameData.escort.nGoalIndex = -1;
 	gameData.escort.nGoalObject = ESCORT_GOAL_UNSPECIFIED;
 	gameData.escort.nSpecialGoal = -1;

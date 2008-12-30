@@ -281,7 +281,7 @@ int MaybeStealFlagItem(int nPlayer, int flagval)
 			Assert(powerup_index != -1);
 			gameData.thief.stolenItems[gameData.thief.nStolenItem] = powerup_index;
 
-			DigiPlaySampleOnce (SOUND_WEAPON_STOLEN, F1_0);
+			audio.PlaySample (SOUND_WEAPON_STOLEN);
 			return 1;
 		}
 	}
@@ -306,7 +306,7 @@ if ((gameData.multiplayer.players[nPlayer].secondaryWeaponFlags & HAS_FLAG(nWeap
 		if (LOCALPLAYER.secondaryAmmo[nWeapon] == 0)
 			AutoSelectWeapon(1, 0);
 		// -- compress_stolen_items();
-		DigiPlaySampleOnce (SOUND_WEAPON_STOLEN, F1_0);
+		audio.PlaySample (SOUND_WEAPON_STOLEN);
 		return 1;
 		}
 return 0;
@@ -326,7 +326,7 @@ int MaybeStealPrimaryWeapon(int nPlayer, int nWeapon)
 					}
 					ThiefMessage(TXT_LVL_DECREASED, baseGameTexts [104+nWeapon]);		//	Danger! Danger! Use of literal!  Danger!
 					gameData.multiplayer.players[nPlayer].laserLevel--;
-					DigiPlaySampleOnce(SOUND_WEAPON_STOLEN, F1_0);
+					audio.PlaySample(SOUND_WEAPON_STOLEN);
 					return 1;
 				}
 			} else if (gameData.multiplayer.players[nPlayer].primaryWeaponFlags & (1 << nWeapon)) {
@@ -335,7 +335,7 @@ int MaybeStealPrimaryWeapon(int nPlayer, int nWeapon)
 
 				ThiefMessage(TXT_WPN_STOLEN, baseGameTexts [104+nWeapon]);		//	Danger! Danger! Use of literal!  Danger!
 				AutoSelectWeapon(0, 0);
-				DigiPlaySampleOnce(SOUND_WEAPON_STOLEN, F1_0);
+				audio.PlaySample(SOUND_WEAPON_STOLEN);
 				return 1;
 			}
 		}

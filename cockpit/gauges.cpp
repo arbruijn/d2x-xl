@@ -1166,7 +1166,7 @@ if (gameStates.render.cockpit.nShieldFlash) {
 		if ((nBeep < 0) || (bLastFlash != gameStates.render.cockpit.nShieldFlash)) {
 			if (nBeep >= 0)
 				audio.StopSound ((int) nBeep);
-			nBeep = DigiStartSound (-1, F1_0 * 2 / 3, 0xFFFF / 2, -1, -1, -1, -1, F1_0,
+			nBeep = audio.StartSound (-1, F1_0 * 2 / 3, 0xFFFF / 2, -1, -1, -1, -1, F1_0,
 											AddonSoundName ((gameStates.render.cockpit.nShieldFlash == 1) ?
 											SND_ADDON_LOW_SHIELDS1 : SND_ADDON_LOW_SHIELDS2), NULL, 0);
 			}

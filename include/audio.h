@@ -90,16 +90,12 @@ void _CDECL_ audio.Shutdown (void);
 
 // Volume is max at F1_0.
 int DigiPlaySampleSpeed (short soundno, fix maxVolume, int nSpeed, int nLoops, const char *pszWAV, int nSoundClass);
-void DigiPlaySampleOnce (short nSound, fix maxVolume);
-int DigiLinkSoundToObject (short nSound, short nObject, int forever, fix maxVolume, int nSoundClass);
+void audio.PlaySample (short nSound, fix maxVolume);
+int DigiLinkSoundToPos2 (short nSound, short nSegment, short nSide, CFixVector& vPos, int forever, fix maxVolume, fix maxDistance, const char *pszSound);
 int DigiLinkSoundToPos (short nSound, short nSegment, short nSide, CFixVector& vPos, int forever = 0, fix maxVolume = F1_0);
 // Same as above, but you pass the max distance sound can be heard.  The old way uses f1_0*256 for maxDistance.
-int DigiLinkSoundToObject2 (short nSound, short nObject, int forever, fix maxVolume, fix  maxDistance, int nSoundClass);
-int DigiLinkSoundToPos2 (short nSound, short nSegment, short nSide, CFixVector& vPos, int forever, fix maxVolume, fix maxDistance, const char *pszSound);
-int DigiLinkSoundToObject3 (short orgSoundnum, short nObject, int forever, fix maxVolume, fix maxDistance, 
-									 int nLoopStart, int nLoopEnd, const char *pszSound, int nDecay, int nSoundClass);
 int DigiPlayMidiSong (char * filename, char * melodic_bank, char * drum_bank, int loop, int bD1Song);
-void DigiPlaySample3D (short nSound, int angle, int volume, int no_dups, CFixVector *vPos, const char *pszSound); // Volume from 0-0x7fff
+void DigiPlaySample3D (short nSound, int angle, int volume, int bNoDups, CFixVector *vPos, const char *pszSound); // Volume from 0-0x7fff
 void DigiInitSounds();
 void DigiSyncSounds();
 int DigiKillSoundLinkedToSegment (short nSegment, short nSide, short nSound);

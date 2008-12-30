@@ -311,7 +311,7 @@ if (StartTime + xRollDuration - xSoundDuration < gameData.time.xGame) {
 		console.printf (CON_DBG, "Starting death sound!\n");
 #endif
 		*bDyingSoundPlaying = 1;
-		DigiLinkSoundToObject2 (deathSound, objP->Index (), 0, xSoundScale, xSoundScale * 256, SOUNDCLASS_ROBOT);	//	F1_0*512 means play twice as loud
+		SetObjectSound (deathSound, objP->Index (), SOUNDCLASS_ROBOT, 0, xSoundScale, xSoundScale * 256);	//	F1_0*512 means play twice as loud
 		}
 	else if (d_rand () < gameData.time.xFrame*16)
 		CreateSmallFireballOnObject (objP, (F1_0 + d_rand ()) * (16 * xExplScale/F1_0) / 8, 0);
@@ -343,7 +343,7 @@ if (objP->cType.aiInfo.xDyingStartTime) {
 											bDeathRoll * F1_0 / 8, bDeathRoll * F1_0 / 2);
 	if (rval) {
 		objP->Explode (F1_0/4);
-		DigiLinkSoundToObject2 (SOUND_BADASS_EXPLOSION, objP->Index (), 0, F2_0, F1_0*512, SOUNDCLASS_EXPLOSION);
+		SetObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, objP->Index (), 0, F2_0, F1_0 * 512);
 		if ((gameData.missions.nCurrentLevel < 0) && (ROBOTINFO (objP->info.nId).thief))
 			RecreateThief (objP);
 		}

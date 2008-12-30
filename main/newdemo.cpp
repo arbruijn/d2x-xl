@@ -118,7 +118,7 @@ static int		bRevertFormat = -1;
 #define ND_EVENT_START_GUIDED       46  // switch to guided view
 #define ND_EVENT_END_GUIDED         47  // stop guided view/return to ship
 #define ND_EVENT_SECRET_THINGY      48  // 0/1 = secret exit functional/non-functional
-#define ND_EVENT_LINK_SOUND_TO_OBJ  49  // record DigiLinkSoundToObject3
+#define ND_EVENT_LINK_SOUND_TO_OBJ  49  // record SetObjectSound
 #define ND_EVENT_KILL_SOUND_TO_OBJ  50  // record DigiKillSoundLinkedToObject
 
 
@@ -1863,7 +1863,7 @@ while (!bDone) {
 			//--unused			NDReadInt (&soundno);
 			//--unused			if (bNDBadRead) { bDone = -1; break; }
 			//--unused			if (gameData.demo.nVcrState == ND_STATE_PLAYBACK)
-			//--unused				DigiPlaySampleOnce (soundno, F1_0);
+			//--unused				audio.PlaySample (soundno, F1_0);
 			//--unused			break;
 
 		case ND_EVENT_SOUND_3D:
@@ -1872,7 +1872,7 @@ while (!bDone) {
 			volume = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState == ND_STATE_PLAYBACK)
-				DigiPlaySample3D ((short) soundno, angle, volume, 0, NULL, NULL);
+				audio.PlaySample ((short) soundno, volume, angle);
 			break;
 
 		case ND_EVENT_SOUND_3D_ONCE:
@@ -1881,7 +1881,7 @@ while (!bDone) {
 			volume = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState == ND_STATE_PLAYBACK)
-				DigiPlaySample3D ((short) soundno, angle, volume, 1, NULL, NULL);
+				audio.PlaySample ((short) soundno, volume, angle, 1);
 			break;
 
 		case ND_EVENT_LINK_SOUND_TO_OBJ: {
@@ -1896,7 +1896,7 @@ while (!bDone) {
 			loop_end = NDReadInt ();
 			nObject = NDFindObject (nSignature);
 			if (nObject > -1)   //  @mk, 2/22/96, John told me to.
-				DigiLinkSoundToObject3 ((short) soundno, (short) nObject, 1, maxVolume, maxDistance, loop_start, loop_end, NULL, 0, ObjectSoundClass (OBJECTS + nObject));
+				SetObjectSound ((short) soundno, ObjectSoundClass (OBJECTS + nObject), (short) nObject, 1, maxVolume, maxDistance, loop_start, loop_end);
 			}
 			break;
 

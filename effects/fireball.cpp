@@ -285,7 +285,7 @@ CObject* CObject::ExplodeBadassWeapon (CFixVector& vPos)
 Assert (wi->damage_radius);
 if ((info.nId == EARTHSHAKER_ID) || (info.nId == ROBOT_EARTHSHAKER_ID))
 	ShakerRockStuff ();
-DigiLinkSoundToObject (SOUND_BADASS_EXPLOSION, OBJ_IDX (this), 0, F1_0, SOUNDCLASS_EXPLOSION);
+SetObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
 CFixVector v;
 if (gameStates.render.bPerPixelLighting == 2) { //make sure explosion center is not behind some wall
 	v = info.vLastPos - info.position.vPos;
@@ -309,7 +309,7 @@ CObject* CObject::ExplodeBadass (fix damage, fix distance, fix force)
 CObject* explObjP = CreateBadassExplosion (this, info.nSegment, info.position.vPos, info.xSize,
 													    (ubyte) GetExplosionVClip (this, 0), damage, distance, force, OBJ_IDX (this));
 if (explObjP)
-	DigiLinkSoundToObject (SOUND_BADASS_EXPLOSION, OBJ_IDX (explObjP), 0, F1_0, SOUNDCLASS_EXPLOSION);
+	SetObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (explObjP));
 return explObjP;
 }
 

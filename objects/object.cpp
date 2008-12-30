@@ -339,7 +339,7 @@ if (nSegment != -1) {
 		if (objP->info.nType == OBJ_ROBOT)
 			vol *= 2;
 		else if (bSound)
-			DigiLinkSoundToObject (SOUND_EXPLODING_WALL, objP->Index (), 0, vol, SOUNDCLASS_EXPLOSION);
+			SetObjectSound (SOUND_EXPLODING_WALL, SOUNDCLASS_EXPLOSION, objP->Index (), 0, vol);
 		}
 	}
 }
@@ -2073,7 +2073,7 @@ if (!nType)
 if (nType) {
 	if (!bPlayingSound [info.nId]) {
 		short sound = (nType == 1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
-		DigiLinkSoundToObject3 (sound, OBJ_IDX (this), 1, F1_0, I2X (256), -1, -1, NULL, 0, SOUNDCLASS_GENERIC);
+		SetObjectSound (sound, OBJ_IDX (this), SOUNDCLASS_GENERIC, 1);
 		bPlayingSound [info.nId] = 1;
 		}
 	}
@@ -2232,7 +2232,7 @@ if (gameData.multiplayer.bMoving == nSpeed)
 	return;
 
 if (gameData.multiplayer.bMoving < 0)
-	DigiLinkSoundToObject3 (-1, OBJ_IDX (this), 1, F1_0 / 64 + nSpeed / 256, I2X (256), -1, -1, "missileflight-small.wav", 1, SOUNDCLASS_PLAYER);
+	SetObjectSound (-1, OBJ_IDX (this), SOUNDCLASS_PLAYER, 1, F1_0 / 64 + nSpeed / 256, I2X (256), -1, -1, "missileflight-small.wav", 1);
 else
 	DigiChangeSoundLinkedToObject (OBJ_IDX (this), F1_0 / 64 + nSpeed / 256);
 gameData.multiplayer.bMoving = nSpeed;

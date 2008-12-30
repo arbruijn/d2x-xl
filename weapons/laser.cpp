@@ -459,8 +459,8 @@ if (bMakeSound && (weaponInfoP->flashSound > -1)) {
 					 (nWeaponType == ROBOT_SMARTMSL_ID) ||
 					 (nWeaponType == ROBOT_MEGAMSL_ID) ||
 					 (nWeaponType == ROBOT_EARTHSHAKER_ID);
-		DigiLinkSoundToObject3 (-1, nObject, 1, (gameOpts->sound.xCustomSoundVolume * F1_0) / 10, I2X (256), -1, -1, 
-										AddonSoundName (nMslSounds [bBigMsl]), 1, SOUNDCLASS_MISSILE);
+		SetObjectSound (-1, SOUNDCLASS_MISSILE, nObject, 1, (gameOpts->sound.xCustomSoundVolume * F1_0) / 10, I2X (256), -1, -1, 
+							AddonSoundName (nMslSounds [bBigMsl]), 1);
 		}
 	else if (nWeaponType == FLARE_ID)
 		DigiSetObjectSound (nObject, -1, AddonSoundName (SND_ADDON_FLARE));

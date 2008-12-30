@@ -253,7 +253,7 @@ int StartBriefingSound (int c, short nSound, fix nVolume, const char *pszWAV)
 if (c < 0) {
 	int b = gameStates.sound.bD1Sound;
 	gameStates.sound.bD1Sound = 0;
-	c = DigiStartSound (DigiXlatSound (nSound), nVolume, 0xFFFF / 2, 1, -1, -1, -1, F1_0, pszWAV, NULL, 0);
+	c = audio.StartSound (DigiXlatSound (nSound), nVolume, 0xFFFF / 2, 1, -1, -1, -1, F1_0, pszWAV, NULL, 0);
 	gameStates.sound.bD1Sound = b;
 	}
 return c;

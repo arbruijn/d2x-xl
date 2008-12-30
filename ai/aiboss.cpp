@@ -438,7 +438,7 @@ vBossDir = OBJECTS [LOCALPLAYER.nObject].info.position.vPos - vNewPos;
 objP->info.position.mOrient = CFixMatrix::CreateF(vBossDir);
 DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nRandSeg, 0, objP->info.position.vPos, 0 , F1_0);
 DigiKillSoundLinkedToObject (nObject);
-DigiLinkSoundToObject2 (ROBOTINFO (objP->info.nId).seeSound, objP->Index (), 1, F1_0, F1_0*512, SOUNDCLASS_ROBOT);	//	F1_0*512 means play twice as loud
+SetObjectSound (ROBOTINFO (objP->info.nId).seeSound, SOUNDCLASS_ROBOT, objP->Index (), 1, F1_0, F1_0 * 512);	//	F1_0*512 means play twice as loud
 //	After a teleport, boss can fire right away.
 gameData.ai.localInfo [nObject].nextPrimaryFire = 0;
 gameData.ai.localInfo [nObject].nextSecondaryFire = 0;
@@ -476,7 +476,7 @@ if (rval) {
 	RemoveBoss (i);
 	DoReactorDestroyedStuff (NULL);
 	objP->Explode (F1_0/4);
-	DigiLinkSoundToObject2 (SOUND_BADASS_EXPLOSION, objP->Index (), 0, F2_0, F1_0*512, SOUNDCLASS_EXPLOSION);
+	SetObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, objP->Index (), 0, F2_0, F1_0 * 512);
 	}
 }
 

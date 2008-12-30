@@ -128,7 +128,7 @@ void TransferEnergyToShield(fix time)
 		last_playTime = 0;
 
 	if (gameData.time.xGame > last_playTime+CONVERTER_SOUND_DELAY) {
-		DigiPlaySampleOnce(SOUND_CONVERT_ENERGY, F1_0);
+		audio.PlaySample(SOUND_CONVERT_ENERGY);
 		last_playTime = gameData.time.xGame;
 	}
 }

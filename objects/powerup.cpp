@@ -184,7 +184,7 @@ if (info.renderType != RT_POLYOBJ)
 if (info.xLifeLeft <= 0) {
 	/*Object*/CreateExplosion (info.nSegment, info.position.vPos, F1_0 * 7 / 2, VCLIP_POWERUP_DISAPPEARANCE);
 	if (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].nSound > -1)
-		DigiLinkSoundToObject (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].nSound, i, 0, F1_0, SOUNDCLASS_GENERIC);
+		SetObjectSound (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].nSound, SOUNDCLASS_GENERIC, i);
 	}
 }
 

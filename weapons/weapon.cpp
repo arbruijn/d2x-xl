@@ -397,10 +397,10 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 if (!bSecondary) {
 	if (gameData.weapons.nPrimary != nWeaponNum) {
 		if (bWaitForRearm) 
-			DigiPlaySampleOnce (SOUND_GOOD_SELECTION_PRIMARY, F1_0);
+			audio.PlaySample (SOUND_GOOD_SELECTION_PRIMARY);
 		if (IsMultiGame) {
 			if (bWaitForRearm) 
-				MultiSendPlaySound (SOUND_GOOD_SELECTION_PRIMARY, F1_0);
+				MultiSendPlaySound (SOUND_GOOD_SELECTION_PRIMARY);
 			}
 		gameData.laser.xNextFireTime = bWaitForRearm ? gameData.time.xGame + (fix) (gameStates.gameplay.slowmo [1].fSpeed * REARM_TIME) : 0;
 		gameData.laser.nGlobalFiringCount = 0;
@@ -409,9 +409,9 @@ if (!bSecondary) {
 		// Select super version if available.
 		if (bWaitForRearm) {
 			if (!bCycling)
-				; // -- MK, only plays when can't fire weapon anyway, fixes bug -- DigiPlaySampleOnce(SOUND_ALREADY_SELECTED, F1_0);
+				; // -- MK, only plays when can't fire weapon anyway, fixes bug -- audio.PlaySample(SOUND_ALREADY_SELECTED);
 			else
-				DigiPlaySampleOnce(SOUND_BAD_SELECTION, F1_0);
+				audio.PlaySample(SOUND_BAD_SELECTION);
 			}
 		}
 	gameData.weapons.nOverridden = nWeaponNum;
@@ -439,7 +439,7 @@ if (!bSecondary) {
 else {
 	if (gameData.weapons.nSecondary != nWeaponNum) {
 		if (bWaitForRearm) 
-			DigiPlaySampleOnce (SOUND_GOOD_SELECTION_SECONDARY, F1_0);
+			audio.PlaySample (SOUND_GOOD_SELECTION_SECONDARY);
 		if (IsMultiGame) {
 			if (bWaitForRearm) 
 				MultiSendPlaySound (SOUND_GOOD_SELECTION_PRIMARY, F1_0);
@@ -450,9 +450,9 @@ else {
 	else {
 		if (bWaitForRearm) {
 		 if (!bCycling)
-			DigiPlaySampleOnce (SOUND_ALREADY_SELECTED, F1_0);
+			audio.PlaySample (SOUND_ALREADY_SELECTED);
 		 else
-			DigiPlaySampleOnce (SOUND_BAD_SELECTION, F1_0);
+			audio.PlaySample (SOUND_BAD_SELECTION);
 		}
 	}
 	//if (nWeaponNum % SUPER_WEAPON != PROXMINE_INDEX)
@@ -477,17 +477,17 @@ void ToggleBomb (void)
 int bomb = bLastSecondaryWasSuper [PROXMINE_INDEX] ? PROXMINE_INDEX : SMARTMINE_INDEX;
 if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) ||
 	 !(LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] || LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX])) {
-	DigiPlaySampleOnce (SOUND_BAD_SELECTION, F1_0);
+	audio.PlaySample (SOUND_BAD_SELECTION);
 	HUDInitMessage (TXT_NOBOMBS);
 	}
 else if (!LOCALPLAYER.secondaryAmmo [bomb]) {
-	DigiPlaySampleOnce (SOUND_BAD_SELECTION, F1_0);
+	audio.PlaySample (SOUND_BAD_SELECTION);
 	HUDInitMessage (TXT_NOBOMB_ANY, (bomb == SMARTMINE_INDEX)? TXT_SMART_MINES : 
 						 !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) ? TXT_SMOKE_GRENADES : TXT_PROX_BOMBS);
 	}
 else {
 	bLastSecondaryWasSuper [PROXMINE_INDEX] = !bLastSecondaryWasSuper [PROXMINE_INDEX];
-	DigiPlaySampleOnce (SOUND_GOOD_SELECTION_SECONDARY, F1_0);
+	audio.PlaySample (SOUND_GOOD_SELECTION_SECONDARY);
 	}
 }
 
