@@ -100,11 +100,11 @@ return i - 1;
 
 //------------------------------------------------------------------------------
 
-int SoundMenuCallback (CMenu& menu, int& nLastKey, int nCurItem)
+int SoundMenuCallback (CMenu& menu, int& nKey, int nCurItem)
 {
 if (gameOpts->sound.bGatling != menu [soundOpts.nGatling].m_value) {
 	gameOpts->sound.bGatling = menu [soundOpts.nGatling].m_value;
-	nLastKey = -2;
+	nKey = -2;
 	}
 if (gameConfig.nDigiVolume != menu [soundOpts.nDigiVol].m_value) {
 	gameConfig.nDigiVolume = menu [soundOpts.nDigiVol].m_value;
@@ -119,7 +119,7 @@ if ((soundOpts.nChannels >= 0) && (gameStates.sound.nSoundChannels != menu [soun
 	}
 if ((soundOpts.nVolume >= 0) && (gameOpts->sound.xCustomSoundVolume != menu [soundOpts.nVolume].m_value)) {
 	if (!gameOpts->sound.xCustomSoundVolume || !menu [soundOpts.nVolume].m_value)
-		nLastKey = -2;
+		nKey = -2;
 	else
 		menu [soundOpts.nVolume].m_bRebuild = 1;
 	gameOpts->sound.xCustomSoundVolume = menu [soundOpts.nVolume].m_value;
@@ -164,7 +164,7 @@ else {
 		int bSongPlaying = (gameConfig.nMidiVolume > 0);
 
 		if (gameConfig.nMidiVolume * menu [soundOpts.nMusicVol].m_value == 0) //=> midi gets either turned on or off
-			nLastKey = -2;
+			nKey = -2;
  		gameConfig.nMidiVolume = menu [soundOpts.nMusicVol].m_value;
 		DigiSetMidiVolume (128 * gameConfig.nMidiVolume / 8);
 		if (gameConfig.nMidiVolume < 1)
@@ -238,10 +238,8 @@ do {
 	gameStates.sound.bRedbookEnabled = m [soundOpts.nRedbook].m_value;
 	gameConfig.bReverseChannels = m [optReverse].m_value;
 } while (i == -2);
-
-if (gameConfig.nMidiVolume < 1)   {
-		DigiPlayMidiSong (NULL, NULL, NULL, 0, 0);
-	}
+if (gameConfig.nMidiVolume < 1)
+	DigiPlayMidiSong (NULL, NULL, NULL, 0, 0);
 else if (!bSongPlaying)
 	SongsPlaySong (gameStates.sound.nCurrentSong, 1);
 if (!gameStates.app.bNostalgia) {
@@ -250,7 +248,7 @@ if (!gameStates.app.bNostalgia) {
 	GET_VAL (gameOpts->sound.bMissiles, optMissileSound);
 	GET_VAL (gameOpts->sound.bGatling, soundOpts.nGatling);
 	GET_VAL (extraGameInfo [0].bGatlingSpeedUp, optSpeedUpSound);
-	if (!(gameOpts->sound.bShip && gameOpts->sound.bGatling))
+	if (gameStates.app.bGameRunning && !(gameOpts->sound.bShip && gameOpts->sound.bGatling))
 		DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
 	}
 }

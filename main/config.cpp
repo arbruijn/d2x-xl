@@ -255,7 +255,7 @@ void CrystalLakeSetSB()
 	CrystalLakeWriteMCP(CL_MC1, tmp);
 }
 
-void CrystalLakeSetWSS()
+void CrystalLakeSetWSS ()
 {
 	ubyte tmp;
 	tmp = CrystalLakeReadMCP(CL_MC1);
@@ -446,19 +446,19 @@ JoyGetCalVals(cal, sizeofa (cal));
 if (!cf.Open ("descent.cfg", gameFolders.szConfigDir, "wt", 0))
 	return 1;
 sprintf (str, "%s=%u\n", pszCfgDataHash, gameConfig.cfgDataHash);
-cf.PutS(str);
+cf.PutS (str);
 sprintf (str, "%s=%d\n", pszDigiVolume, gameConfig.nDigiVolume);
-cf.PutS(str);
+cf.PutS (str);
 sprintf (str, "%s=%d\n", pszMidiVolume, gameConfig.nMidiVolume);
-cf.PutS(str);
+cf.PutS (str);
 sprintf (str, "%s=%d\n", pszRedbookEnabled, FindArg("-noredbook")?bRedbookEnabledSave:gameStates.sound.bRedbookEnabled);
-cf.PutS(str);
+cf.PutS (str);
 sprintf (str, "%s=%d\n", pszRedbookVolume, gameConfig.nRedbookVolume);
-cf.PutS(str);
+cf.PutS (str);
 sprintf (str, "%s=%d\n", pszStereoRev, gameConfig.bReverseChannels);
-cf.PutS(str);
+cf.PutS (str);
 sprintf (str, "%s=%d\n", pszGammaLevel, gamma);
-cf.PutS(str);
+cf.PutS (str);
 if (gameStates.app.nDetailLevel == NUM_DETAIL_LEVELS-1)
 	sprintf (str, "%s=%d,%d,%d,%d,%d,%d,%d\n", 
 				pszDetailLevel, 
@@ -471,17 +471,17 @@ if (gameStates.app.nDetailLevel == NUM_DETAIL_LEVELS-1)
 				gameStates.sound.nSoundChannels);
 else
 	sprintf (str, "%s=%d\n", pszDetailLevel, gameStates.app.nDetailLevel);
-cf.PutS(str);
+cf.PutS (str);
 
 sprintf (str, "%s=%d,%d,%d,%d\n", pszJoystickMin, cal [0].nMin, cal [1].nMin, cal [2].nMin, cal [3].nMin);
-cf.PutS(str);
+cf.PutS (str);
 sprintf (str, "%s=%d,%d,%d,%d\n", pszJoystickCen, cal [0].nCenter, cal [1].nCenter, cal [2].nCenter, cal [3].nCenter);
-cf.PutS(str);
+cf.PutS (str);
 sprintf (str, "%s=%d,%d,%d,%d\n", pszJoystickMax, cal [0].nMax, cal [1].nMax, cal [2].nMax, cal [3].nMax);
-cf.PutS(str);
+cf.PutS (str);
 
 sprintf (str, "%s=%s\n", pszLastPlayer, LOCALPLAYER.callsign);
-cf.PutS(str);
+cf.PutS (str);
 for (i = 0; gameConfig.szLastMission [i]; i++)
 	if (!isprint (gameConfig.szLastMission [i])) {
 		*gameConfig.szLastMission = '\0';
@@ -489,17 +489,17 @@ for (i = 0; gameConfig.szLastMission [i]; i++)
 		}
 j = MsnHasGameVer (gameConfig.szLastMission) ? 4 : 0;
 sprintf (str, "%s=%s\n", pszLastMission, gameConfig.szLastMission + j);
-cf.PutS(str);
+cf.PutS (str);
 sprintf (str, "%s=%d\n", pszVrType, gameConfig.vrType);
-cf.PutS(str);
+cf.PutS (str);
 sprintf (str, "%s=%d\n", pszVrResolution, gameConfig.vrResolution);
-cf.PutS(str);
+cf.PutS (str);
 sprintf (str, "%s=%d\n", pszVrTracking, gameConfig.vrTracking);
-cf.PutS(str);
+cf.PutS (str);
 sprintf (str, "%s=%d\n", pszHiresMovies, (FindArg("-nohires") || FindArg("-nohighres") || FindArg("-lowresmovies"))
 			? bHiresMoviesSave
 			: gameOpts->movies.bHires);
-cf.PutS(str);
+cf.PutS (str);
 cf.Close ();
 return 0;
 }	

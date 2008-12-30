@@ -33,7 +33,7 @@
 #define SDL_MIXER_CHANNELS	2
 
 //changed on 980905 by adb to increase number of concurrent sounds
-#define MAX_SOUND_SLOTS 64
+#define MAX_SOUND_SLOTS 128
 //end changes by adb
 #define SOUND_BUFFER_SIZE 512
 

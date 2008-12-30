@@ -977,7 +977,8 @@ void CMenu::RestoreScreen (char* filename, int bDontRestore)
 backgroundManager.Remove ();
 if (gameStates.app.bGameRunning)
 	backgroundManager.Remove ();
-GrUpdate (0);
+else
+	GrUpdate (0);
 CCanvas::SetCurrent (NULL);		
 CCanvas::Pop ();
 GrabMouse (1, 0);

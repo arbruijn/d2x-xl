@@ -116,19 +116,19 @@ return item;
 
 //------------------------------------------------------------------------------
 
-int ScreenResCallback (CMenu& m, int& nLastKey, int nCurItem)
+int ScreenResCallback (CMenu& menu, int& nKey, int nCurItem)
 {
 	int	i, j;
 
-if (m [screenResOpts.nCustom].m_value != (nDisplayMode == NUM_DISPLAY_MODES)) 
-	nLastKey = -2;
+if (menu [screenResOpts.nCustom].m_value != (nDisplayMode == NUM_DISPLAY_MODES)) 
+	nKey = -2;
 for (i = 0; i < screenResOpts.nCustom; i++)
-	if (m [i].m_value) {
-		j = ScreenResMenuItemToMode(i);
+	if (menu [i].m_value) {
+		j = ScreenResMenuItemToMode (i);
 		if ((j < NUM_DISPLAY_MODES) && (j != nDisplayMode)) {
 			SetDisplayMode (j, 0);
 			nDisplayMode = gameStates.video.nDisplayMode;
-			nLastKey = -2;
+			nKey = -2;
 			}
 		break;
 		}
@@ -188,6 +188,7 @@ do {
 				continue;
 		if (displayModeInfo [i].isWideScreen && !displayModeInfo [i-1].isWideScreen) {
 			m.AddText (TXT_WIDESCREEN_RES, 0);
+			m.NewGroup (-1);
 			if (screenResOpts.nWideScreen < 0)
 				screenResOpts.nWideScreen = m.ToS () - 1;
 			}
@@ -210,7 +211,7 @@ do {
 		*szCustY = '\0';
 	nCustWOpt = m.AddInput (szCustX, 4, NULL);
 	nCustHOpt = m.AddInput (szCustY, 4, NULL);
-	choice = ScreenResModeToMenuItem(nDisplayMode);
+	choice = ScreenResModeToMenuItem (nDisplayMode);
 	m [choice].m_value = 1;
 
 	key = m.Menu (NULL, TXT_SELECT_SCRMODE, ScreenResCallback, &choice);

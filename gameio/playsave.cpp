@@ -2027,7 +2027,7 @@ int ReadPlayerFile (int bOnlyWindowSizes)
 	int		id, bRewriteIt = 0, nMaxControls;
 	uint i;
 
-Assert(gameData.multiplayer.nLocalPlayer>=0 && gameData.multiplayer.nLocalPlayer<MAX_PLAYERS);
+Assert (gameData.multiplayer.nLocalPlayer>=0 && gameData.multiplayer.nLocalPlayer<MAX_PLAYERS);
 
 sprintf(filename, "%.8s.plr", LOCALPLAYER.callsign);
 if (!cf.Open (filename, gameFolders.szProfDir, "rb", 0)) {
@@ -2081,7 +2081,7 @@ if (gameStates.input.nPlrFileVersion >= 19)
 	cf.ReadByte ();	//skip obsolete byte value
 //read new highest level info
 nHighestLevels = cf.ReadShort ();
-Assert(nHighestLevels <= MAX_MISSIONS);
+Assert (nHighestLevels <= MAX_MISSIONS);
 if (cf.Read (highestLevels, sizeof (hli), nHighestLevels) != (size_t) nHighestLevels) {
 	funcRes = errno;
 	cf.Close ();
@@ -2359,9 +2359,9 @@ for (i = 0; i < 2; i++) {
 		cf.WriteByte ((sbyte) extraGameInfo [0].entropy.nVirusGenTime);
 		cf.WriteByte ((sbyte) extraGameInfo [0].entropy.nVirusLifespan);
 		cf.WriteByte ((sbyte) extraGameInfo [0].entropy.nVirusStability);
-		cf.WriteShort((short) extraGameInfo [0].entropy.nEnergyFillRate);
-		cf.WriteShort((short) extraGameInfo [0].entropy.nShieldFillRate);
-		cf.WriteShort((short) extraGameInfo [0].entropy.nShieldDamageRate);
+		cf.WriteShort ((short) extraGameInfo [0].entropy.nEnergyFillRate);
+		cf.WriteShort ((short) extraGameInfo [0].entropy.nShieldFillRate);
+		cf.WriteShort ((short) extraGameInfo [0].entropy.nShieldDamageRate);
 		cf.WriteByte ((sbyte) extraGameInfo [0].entropy.bRevertRooms);
 		cf.WriteByte ((sbyte) extraGameInfo [0].entropy.bDoConquerWarning);
 		cf.WriteByte ((sbyte) extraGameInfo [0].entropy.nOverrideTextures);
@@ -2374,8 +2374,8 @@ for (i = 0; i < 2; i++) {
 		cf.WriteByte ((sbyte) mpParams.nGameAccess);
 		cf.WriteByte ((sbyte) mpParams.bShowPlayersOnAutomap);
 		cf.WriteByte ((sbyte) mpParams.nDifficulty);
-		cf.WriteInt(mpParams.nWeaponFilter);
-		cf.WriteInt(mpParams.nReactorLife);
+		cf.WriteInt (mpParams.nWeaponFilter);
+		cf.WriteInt (mpParams.nReactorLife);
 		cf.WriteByte ((sbyte) mpParams.nMaxTime);
 		cf.WriteByte ((sbyte) mpParams.nKillGoal);
 		cf.WriteByte ((sbyte) mpParams.bInvul);
@@ -2385,7 +2385,7 @@ for (i = 0; i < 2; i++) {
 		cf.WriteByte ((sbyte) mpParams.bShowAllNames);
 		cf.WriteByte ((sbyte) mpParams.bShortPackets);
 		cf.WriteByte ((sbyte) mpParams.nPPS);
-		cf.WriteInt(mpParams.udpClientPort);
+		cf.WriteInt (mpParams.udpClientPort);
 		cf.Write(mpParams.szServerIpAddr, 16, 1);
 		}
 	cf.WriteByte ((sbyte) gameOptions [i].render.nMeshQuality);
@@ -2565,7 +2565,7 @@ int WritePlayerFile (void)
 	int	funcRes, i;
 
 funcRes = WriteConfigFile ();
-sprintf (filename,"%s.plr",LOCALPLAYER.callsign);
+sprintf (filename, "%s.plr", LOCALPLAYER.callsign);
 cf.Open (filename, gameFolders.szProfDir, "wb", 0);
 #if 0
 //check filename
@@ -2587,14 +2587,16 @@ cf.WriteShort ((short) gameData.render.window.h);
 cf.WriteByte ((sbyte) gameStates.app.nDifficultyLevel);
 cf.WriteByte ((sbyte) gameOptions [0].gameplay.nAutoLeveling);
 cf.WriteByte ((sbyte) gameOptions [0].render.cockpit.bReticle);
-cf.WriteByte ((sbyte) ((gameStates.render.cockpit.nModeSave != -1)?gameStates.render.cockpit.nModeSave:gameStates.render.cockpit.nMode));   //if have saved mode, write it instead of letterbox/rear view
+cf.WriteByte ((sbyte) ((gameStates.render.cockpit.nModeSave != -1) 
+							  ? gameStates.render.cockpit.nModeSave
+							  : gameStates.render.cockpit.nMode));   //if have saved mode, write it instead of letterbox/rear view
 cf.WriteByte ((sbyte) gameStates.video.nDefaultDisplayMode);
 cf.WriteByte ((sbyte) gameOptions [0].render.cockpit.bMissileView);
 cf.WriteByte ((sbyte) extraGameInfo [0].headlight.bAvailable);
 cf.WriteByte ((sbyte) gameOptions [0].render.cockpit.bGuidedInMainView);
 cf.WriteByte ((sbyte) 0);	//place holder for an obsolete value
 //write higest level info
-Assert(nHighestLevels <= MAX_MISSIONS);
+Assert (nHighestLevels <= MAX_MISSIONS);
 cf.WriteShort (nHighestLevels);
 if ((cf.Write (highestLevels, sizeof (hli), nHighestLevels) != nHighestLevels)) {
 	funcRes = errno;
@@ -2612,30 +2614,30 @@ if ((cf.Write(gameData.multigame.msg.szMacro, MAX_MESSAGE_LEN, 4) != 4)) {
 dosControlType = gameConfig.nControlType;
 if (cf.Write(controlSettings.custom, MAX_CONTROLS * CONTROL_MAX_TYPES, 1) != 1)
 	funcRes = errno;
-else if (cf.Write(&dosControlType, sizeof(ubyte), 1) != 1)
+else if (cf.Write (&dosControlType, sizeof(ubyte), 1) != 1)
 	funcRes = errno;
-else if (cf.Write(&winControlType, sizeof(ubyte), 1) != 1)
+else if (cf.Write (&winControlType, sizeof(ubyte), 1) != 1)
 	funcRes = errno;
-else if (cf.Write(gameOptions [0].input.joystick.sensitivity, sizeof(ubyte), 1) != 1)
+else if (cf.Write (gameOptions [0].input.joystick.sensitivity, sizeof(ubyte), 1) != 1)
 	funcRes = errno;
 
 for (i = 0; i < 11; i++) {
 	cf.Write (primaryOrder + i, sizeof(ubyte), 1);
 	cf.Write (secondaryOrder + i, sizeof(ubyte), 1);
 	}
-cf.WriteInt(gameStates.render.cockpit.n3DView [0]);
-cf.WriteInt(gameStates.render.cockpit.n3DView [1]);
-cf.WriteInt(networkData.nNetLifeKills);
-cf.WriteInt(networkData.nNetLifeKilled);
+cf.WriteInt (gameStates.render.cockpit.n3DView [0]);
+cf.WriteInt (gameStates.render.cockpit.n3DView [1]);
+cf.WriteInt (networkData.nNetLifeKills);
+cf.WriteInt (networkData.nNetLifeKilled);
 i = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
 #if TRACE
 console.printf (CON_DBG,"Writing: Lifetime checksum is %d\n",i);
 #endif
 cf.WriteInt (i);
 //write guidebot name
-cf.WriteString(gameData.escort.szRealName);
-strcpy(buf, "DOS joystick");
-cf.WriteString(buf);  // Write out current joystick for player.
+cf.WriteString (gameData.escort.szRealName);
+strcpy (buf, "DOS joystick");
+cf.WriteString (buf);  // Write out current joystick for player.
 
 cf.Write(controlSettings.d2xCustom, MAX_HOTKEY_CONTROLS, 1);
 // write D2X-XL stuff
@@ -2649,7 +2651,7 @@ if (cf.Close ())
 	funcRes = errno;
 if (funcRes != EZERO) {
 	cf.Delete (filename, gameFolders.szProfDir);         //delete bogus &cf
-	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "%s\n\n%s",TXT_ERROR_WRITING_PLR, strerror(funcRes));
+	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "%s\n\n%s", TXT_ERROR_WRITING_PLR, strerror (funcRes));
 	}
 return funcRes;
 }
@@ -2658,7 +2660,7 @@ return funcRes;
 //update the CPlayerData's highest level.  returns errno (0 == no error)
 int UpdatePlayerFile()
 {
-	int ret = ReadPlayerFile(0);
+	int ret = ReadPlayerFile (0);
 
 if ((ret != EZERO) && (ret != ENOENT))		//if file doesn't exist, that's ok
 	return ret;

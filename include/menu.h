@@ -169,7 +169,15 @@ class CMenu : public CStack<CMenuItem> {
 			SetGrowth (10);
 			m_nGroup = 0;
 			}
-		inline int NewGroup (void) { return ++m_nGroup; }
+		inline int NewGroup (int nGroup = 0) { 
+			if (!nGroup)
+				m_nGroup++; 
+			else if (nGroup > 0) 
+				m_nGroup = nGroup;
+			else 
+				m_nGroup--;
+			return m_nGroup;
+			}
 		int AddCheck (const char* szText, int nValue, int nKey = 0, const char* szHelp = NULL);
 		int AddRadio (const char* szText, int nValue, int nKey = 0, const char* szHelp = NULL);
 		int AddMenu (const char* szText, int nKey = 0, const char* szHelp = NULL);
