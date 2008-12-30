@@ -1834,7 +1834,7 @@ CObject* effectObjP = /*Object*/CreateExplosion (info.nSegment, vPos, info.xSize
 if (effectObjP) {
 	effectObjP->info.position.mOrient = info.position.mOrient;
 	if (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound > -1)
-		CreateObjectSound (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound, SOUNDCLASS_PLAYER, OBJ_IDX (effectObjP));
+		audio.CreateObjectSound (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound, SOUNDCLASS_PLAYER, OBJ_IDX (effectObjP));
 	}
 }
 

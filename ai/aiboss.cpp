@@ -282,7 +282,7 @@ objP->info.nCreator = BOSS_GATE_MATCEN_NUM;	//	flag this robot as having been cr
 default_behavior = ROBOTINFO (objP->info.nId).behavior;
 InitAIObject (objP->Index (), default_behavior, -1);		//	Note, -1 = CSegment this robot goes to to hide, should probably be something useful
 /*Object*/CreateExplosion (nSegment, vObjPos, I2X (10), VCLIP_MORPHING_ROBOT);
-DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, vObjPos, 0 , I2X (1));
+audio.CreateSegmentSound (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, vObjPos, 0 , I2X (1));
 objP->MorphStart ();
 gameData.boss [nBoss].nLastGateTime = gameData.time.xGame;
 LOCALPLAYER.numRobotsLevel++;
@@ -436,9 +436,9 @@ gameData.boss [i].nLastTeleportTime = gameData.time.xGame;
 objP->info.position.vPos = vNewPos;
 vBossDir = OBJECTS [LOCALPLAYER.nObject].info.position.vPos - vNewPos;
 objP->info.position.mOrient = CFixMatrix::CreateF(vBossDir);
-DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nRandSeg, 0, objP->info.position.vPos, 0 , I2X (1));
+audio.CreateSegmentSound (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nRandSeg, 0, objP->info.position.vPos, 0 , I2X (1));
 DigiDestroyObjectSound (nObject);
-CreateObjectSound (ROBOTINFO (objP->info.nId).seeSound, SOUNDCLASS_ROBOT, objP->Index (), 1, I2X (1), I2X (512));	//	I2X (5)12 means play twice as loud
+audio.CreateObjectSound (ROBOTINFO (objP->info.nId).seeSound, SOUNDCLASS_ROBOT, objP->Index (), 1, I2X (1), I2X (512));	//	I2X (5)12 means play twice as loud
 //	After a teleport, boss can fire right away.
 gameData.ai.localInfo [nObject].nextPrimaryFire = 0;
 gameData.ai.localInfo [nObject].nextSecondaryFire = 0;
@@ -476,7 +476,7 @@ if (rval) {
 	RemoveBoss (i);
 	DoReactorDestroyedStuff (NULL);
 	objP->Explode (I2X (1)/4);
-	CreateObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, objP->Index (), 0, I2X (2), I2X (512));
+	audio.CreateObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, objP->Index (), 0, I2X (2), I2X (512));
 	}
 }
 

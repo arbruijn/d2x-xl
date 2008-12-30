@@ -304,26 +304,12 @@ gameStates.render.nMaxLightsPerFace = 16;
 
 void InitSoundStates (void)
 {
-m_info.nCurrent = 0;
-gameStates.sound.bRedbookEnabled = 1;
-gameStates.sound.bRedbookPlaying = 0;
 gameStates.sound.bWasRecording = 0;
 gameStates.sound.bDontStartObjects = 0;
 gameStates.sound.nConquerWarningSoundChannel = -1;
 gameStates.sound.nSoundChannels = 2;
-gameStates.sound.digi.nMaxChannels = 16;
-gameStates.sound.digi.nFreeChannel = 0;
-gameStates.sound.digi.nVolume = SOUND_MAX_VOLUME;
-gameStates.sound.digi.bInitialized = 0;
-gameStates.sound.digi.nNextSignature = 0;
-gameStates.sound.digi.nActiveObjects = 0;
 gameStates.sound.digi.bSoundsInitialized = 0;
 gameStates.sound.digi.bLoMem = 0;
-gameStates.sound.digi.nLoopingSound = -1;
-gameStates.sound.digi.nLoopingVolume = 0;
-gameStates.sound.digi.nLoopingStart = -1;
-gameStates.sound.digi.nLoopingEnd = -1;
-gameStates.sound.digi.nLoopingChannel = -1;
 }
 
 // ----------------------------------------------------------------------------

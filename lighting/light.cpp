@@ -666,7 +666,7 @@ switch (nObjType) {
 		fix	lightval = objP->info.xLifeLeft;
 		lightval &= 0xffff;
 		lightval = 8 * abs (I2X (1)/2 - lightval);
-		if (objP->info.xLifeLeft < I2X (100)0)
+		if (objP->info.xLifeLeft < I2X (1000))
 			objP->info.xLifeLeft += I2X (1);	//	Make sure this CObject doesn't go out.
 		colorP->red = 0.1f;
 		colorP->green = 1.0f;

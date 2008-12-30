@@ -339,7 +339,7 @@ if (nSegment != -1) {
 		if (objP->info.nType == OBJ_ROBOT)
 			vol *= 2;
 		else if (bSound)
-			CreateObjectSound (SOUND_EXPLODING_WALL, SOUNDCLASS_EXPLOSION, objP->Index (), 0, vol);
+			audio.CreateObjectSound (SOUND_EXPLODING_WALL, SOUNDCLASS_EXPLOSION, objP->Index (), 0, vol);
 		}
 	}
 }
@@ -1901,7 +1901,7 @@ playerP->info.nFlags &= ~OF_SHOULD_BE_DEAD;
 //	LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
 playerP->info.controlType = CT_NONE;
 if (!gameStates.entropy.bExitSequence) {
-	playerP->info.xShields = I2X (100)0;
+	playerP->info.xShields = I2X (1000);
 	MultiSendShields ();
 	}
 paletteManager.SetEffect (0, 0, 0);
@@ -2073,12 +2073,12 @@ if (!nType)
 if (nType) {
 	if (!bPlayingSound [info.nId]) {
 		short sound = (nType == 1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
-		CreateObjectSound (sound, OBJ_IDX (this), SOUNDCLASS_GENERIC, 1);
+		audio.CreateObjectSound (sound, OBJ_IDX (this), SOUNDCLASS_GENERIC, 1);
 		bPlayingSound [info.nId] = 1;
 		}
 	}
 else if (bPlayingSound [info.nId]) {
-	DigiDestroyObjectSound (OBJ_IDX (this));
+	audio.DestroyObjectSound (OBJ_IDX (this));
 	bPlayingSound [info.nId] = 0;
 	}
 return nType;
@@ -2232,9 +2232,9 @@ if (gameData.multiplayer.bMoving == nSpeed)
 	return;
 
 if (gameData.multiplayer.bMoving < 0)
-	CreateObjectSound (-1, OBJ_IDX (this), SOUNDCLASS_PLAYER, 1, I2X (1) / 64 + nSpeed / 256, I2X (256), -1, -1, "missileflight-small.wav", 1);
+	audio.CreateObjectSound (-1, OBJ_IDX (this), SOUNDCLASS_PLAYER, 1, I2X (1) / 64 + nSpeed / 256, I2X (256), -1, -1, "missileflight-small.wav", 1);
 else
-	DigiChangeSoundLinkedToObject (OBJ_IDX (this), I2X (1) / 64 + nSpeed / 256);
+	audio.ChangeObjectSound (OBJ_IDX (this), I2X (1) / 64 + nSpeed / 256);
 gameData.multiplayer.bMoving = nSpeed;
 }
 

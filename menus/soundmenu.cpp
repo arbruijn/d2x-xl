@@ -65,6 +65,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "renderthreads.h"
 #include "soundthreads.h"
 #include "menubackground.h"
+#include "songs.h"
 #ifdef EDITOR
 #	include "editor/editor.h"
 #endif
@@ -93,7 +94,7 @@ int SoundChannelIndex (void)
 	int	h, i;
 
 for (h = (int) sizeofa (detailData.nSoundChannels), i = 0; i < h; i++)
-	if (m_info.nMaxChannels < detailData.nSoundChannels [i])
+	if (audio.MaxChannels () < detailData.nSoundChannels [i])
 		break;
 return i - 1;
 }
@@ -113,8 +114,8 @@ if (gameConfig.nDigiVolume != menu [soundOpts.nDigiVol].m_value) {
 	}
 if ((soundOpts.nChannels >= 0) && (gameStates.sound.nSoundChannels != menu [soundOpts.nChannels].m_value)) {
 	gameStates.sound.nSoundChannels = menu [soundOpts.nChannels].m_value;
-	m_info.nMaxChannels = detailData.nSoundChannels [gameStates.sound.nSoundChannels];
-	sprintf (menu [soundOpts.nChannels].m_text, TXT_SOUND_CHANNEL_COUNT, m_info.nMaxChannels);
+	audio.SetMaxChannels (detailData.nSoundChannels [gameStates.sound.nSoundChannels]);
+	sprintf (menu [soundOpts.nChannels].m_text, TXT_SOUND_CHANNEL_COUNT, audio.MaxChannels ());
 	menu [soundOpts.nChannels].m_bRebuild = 1;
 	}
 if ((soundOpts.nVolume >= 0) && (gameOpts->sound.xCustomSoundVolume != menu [soundOpts.nVolume].m_value)) {
@@ -126,13 +127,13 @@ if ((soundOpts.nVolume >= 0) && (gameOpts->sound.xCustomSoundVolume != menu [sou
 	sprintf (menu [soundOpts.nVolume].m_text, TXT_CUSTOM_SOUNDVOL, gameOpts->sound.xCustomSoundVolume * 10, '%');
 	return nCurItem;
 	}
-if (menu [soundOpts.nRedbook].m_value != gameStates.sound.bRedbookEnabled) {
+if (menu [soundOpts.nRedbook].m_value != redbook.Enabled ()) {
 	if (menu [soundOpts.nRedbook].m_value && !gameOpts->sound.bUseRedbook) {
 		MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_REDBOOK_DISABLED);
 		menu [soundOpts.nRedbook].m_value = 0;
 		menu [soundOpts.nRedbook].m_bRebuild = 1;
 		}
-	else if ((gameStates.sound.bRedbookEnabled = menu [soundOpts.nRedbook].m_value)) {
+	else if ((redbook.Enabled () = menu [soundOpts.nRedbook].m_value)) {
 		if (gameStates.app.nFunctionMode == FMODE_MENU)
 			songManager.Play (SONG_TITLE, 1);
 		else if (gameStates.app.nFunctionMode == FMODE_GAME)
@@ -140,8 +141,8 @@ if (menu [soundOpts.nRedbook].m_value != gameStates.sound.bRedbookEnabled) {
 		else
 			Int3 ();
 
-		if (menu [soundOpts.nRedbook].m_value && !gameStates.sound.bRedbookPlaying) {
-			gameStates.sound.bRedbookEnabled = 0;
+		if (menu [soundOpts.nRedbook].m_value && !redbook.Playing ()) {
+			redbook.Enable (0);
 			gameStates.menus.nInMenu = 0;
 			MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_MUSIC_NOCD);
 			gameStates.menus.nInMenu = 1;
@@ -149,11 +150,11 @@ if (menu [soundOpts.nRedbook].m_value != gameStates.sound.bRedbookEnabled) {
 			menu [soundOpts.nRedbook].m_bRebuild = 1;
 			}
 		}
-	menu [soundOpts.nMusicVol].m_text = gameStates.sound.bRedbookEnabled ? const_cast<char*> (TXT_CD_VOLUME) : const_cast<char*> (TXT_MIDI_VOLUME);
+	menu [soundOpts.nMusicVol].m_text = redbook.Enabled () ? const_cast<char*> (TXT_CD_VOLUME) : const_cast<char*> (TXT_MIDI_VOLUME);
 	menu [soundOpts.nMusicVol].m_bRebuild = 1;
 	}
 
-if (gameStates.sound.bRedbookEnabled) {
+if (redbook.Enabled ()) {
 	if (gameConfig.nRedbookVolume != menu [soundOpts.nMusicVol].m_value)   {
 		gameConfig.nRedbookVolume = menu [soundOpts.nMusicVol].m_value;
 		SetRedbookVolume (gameConfig.nRedbookVolume);
@@ -166,9 +167,9 @@ else {
 		if (gameConfig.nMidiVolume * menu [soundOpts.nMusicVol].m_value == 0) //=> midi gets either turned on or off
 			nKey = -2;
  		gameConfig.nMidiVolume = menu [soundOpts.nMusicVol].m_value;
-		audio.SetMidiVolume (128 * gameConfig.nMidiVolume / 8);
+		midi.SetVolume (128 * gameConfig.nMidiVolume / 8);
 		if (gameConfig.nMidiVolume < 1)
-			audio.PlayMidiSong (NULL, NULL, NULL, 1, 0);
+			midi.PlaySong (NULL, NULL, NULL, 1, 0);
 		else if (!bSongPlaying) {
 			//audio.StopAllSounds ();
 			if (gameStates.app.bGameRunning)
@@ -198,8 +199,8 @@ do {
 	m.Create (20);
 	soundOpts.nGatling = -1;
 	soundOpts.nDigiVol = m.AddSlider (TXT_FX_VOLUME, gameConfig.nDigiVolume, 0, 8, KEY_F, HTX_ONLINE_MANUAL);
-	soundOpts.nMusicVol = m.AddSlider (gameStates.sound.bRedbookEnabled ? TXT_CD_VOLUME : TXT_MIDI_VOLUME, 
-												  gameStates.sound.bRedbookEnabled ? gameConfig.nRedbookVolume : gameConfig.nMidiVolume, 
+	soundOpts.nMusicVol = m.AddSlider (redbook.Enabled () ? TXT_CD_VOLUME : TXT_MIDI_VOLUME, 
+												  redbook.Enabled () ? gameConfig.nRedbookVolume : gameConfig.nMidiVolume, 
 												  0, 8, KEY_M, HTX_ONLINE_MANUAL);
 	if (gameStates.app.bGameRunning || gameStates.app.bNostalgia)
 		soundOpts.nChannels = -1;
@@ -228,14 +229,14 @@ do {
 			optSpeedUpSound = m.AddCheck (TXT_SPINUP_SOUND, extraGameInfo [0].bGatlingSpeedUp, KEY_U, HTX_SPINUP_SOUND);
 		}
 	m.AddText ("", 0);
-	soundOpts.nRedbook = m.AddCheck (TXT_REDBOOK_ENABLED, gameStates.sound.bRedbookPlaying, KEY_C, HTX_ONLINE_MANUAL);
+	soundOpts.nRedbook = m.AddCheck (TXT_REDBOOK_ENABLED, redbook.Playing (), KEY_C, HTX_ONLINE_MANUAL);
 	optReverse = m.AddCheck (TXT_REVERSE_STEREO, gameConfig.bReverseChannels, KEY_R, HTX_ONLINE_MANUAL);
-	if (gameStates.sound.bRedbookEnabled || !gameConfig.nMidiVolume)
+	if (redbook.Enabled () || !gameConfig.nMidiVolume)
 		optFadeMusic = -1;
 	else
 		optFadeMusic = m.AddCheck (TXT_FADE_MUSIC, gameOpts->sound.bFadeMusic, KEY_F, HTX_FADE_MUSIC);
 	i = m.Menu (NULL, TXT_SOUND_OPTS, SoundMenuCallback, &choice);
-	gameStates.sound.bRedbookEnabled = m [soundOpts.nRedbook].m_value;
+	redbook.Enabled () = m [soundOpts.nRedbook].m_value;
 	gameConfig.bReverseChannels = m [optReverse].m_value;
 } while (i == -2);
 if (gameConfig.nMidiVolume < 1)

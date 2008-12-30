@@ -1628,7 +1628,7 @@ if (!gameData.multiplayer.players [nPlayer].connected)
 	return;
 Assert (gameData.multiplayer.players [nPlayer].nObject  >= 0);
 Assert (gameData.multiplayer.players [nPlayer].nObject <= gameData.objs.nLastObject [0]);
-CreateObjectSound (nSound, SOUNDCLASS_PLAYER, (short) gameData.multiplayer.players [nPlayer].nObject, 0, volume);
+audio.CreateObjectSound (nSound, SOUNDCLASS_PLAYER, (short) gameData.multiplayer.players [nPlayer].nObject, 0, volume);
 }
 
 //-----------------------------------------------------------------------------
@@ -3917,7 +3917,7 @@ sound = buf [3];
 if (whichfunc == 0)
 	DigiDestroyObjectSound (gameData.multiplayer.players [nPlayer].nObject);
 else if (whichfunc == 3)
-	CreateObjectSound (sound, SOUNDCLASS_PLAYER, (short) gameData.multiplayer.players [nPlayer].nObject, 1, I2X (1), I2X (256), 
+	audio.CreateObjectSound (sound, SOUNDCLASS_PLAYER, (short) gameData.multiplayer.players [nPlayer].nObject, 1, I2X (1), I2X (256), 
 						 AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
 }
 

@@ -250,7 +250,7 @@ return numDowns;
 
 fix JoyGetButtonDownTime(int nButton)
 {
-	fix time = F0_0;
+	fix time = 0;
 
 if (!gameStates.input.nJoysticks)
 	return 0;

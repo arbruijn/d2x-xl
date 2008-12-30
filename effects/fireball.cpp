@@ -285,7 +285,7 @@ CObject* CObject::ExplodeBadassWeapon (CFixVector& vPos)
 Assert (wi->damage_radius);
 if ((info.nId == EARTHSHAKER_ID) || (info.nId == ROBOT_EARTHSHAKER_ID))
 	ShakerRockStuff ();
-CreateObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
+audio.CreateObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
 CFixVector v;
 if (gameStates.render.bPerPixelLighting == 2) { //make sure explosion center is not behind some wall
 	v = info.vLastPos - info.position.vPos;
@@ -309,7 +309,7 @@ CObject* CObject::ExplodeBadass (fix damage, fix distance, fix force)
 CObject* explObjP = CreateBadassExplosion (this, info.nSegment, info.position.vPos, info.xSize,
 													    (ubyte) GetExplosionVClip (this, 0), damage, distance, force, OBJ_IDX (this));
 if (explObjP)
-	CreateObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (explObjP));
+	audio.CreateObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (explObjP));
 return explObjP;
 }
 
@@ -318,7 +318,7 @@ return explObjP;
 //return the explosion CObject
 CObject* CObject::ExplodeBadassPlayer (void)
 {
-return ExplodeBadass (I2X (5)0, I2X (40), I2X (150));
+return ExplodeBadass (I2X (50), I2X (40), I2X (150));
 }
 
 //------------------------------------------------------------------------------
@@ -613,7 +613,7 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 #endif
 		}
 	if (ROBOTINFO (delObjP->info.nId).nExp2Sound > -1)
-		DigiLinkSoundToPos (ROBOTINFO (delObjP->info.nId).nExp2Sound, delObjP->info.nSegment, 0, *vSpawnPos, 0, I2X (1));
+		audio.CreateSegmentSound (ROBOTINFO (delObjP->info.nId).nExp2Sound, delObjP->info.nSegment, 0, *vSpawnPos, 0, I2X (1));
 		//PLAY_SOUND_3D (ROBOTINFO (delObjP->info.nId).nExp2Sound, vSpawnPos, delObjP->info.nSegment);
 	cType.explInfo.nSpawnTime = -1;
 	//make debris

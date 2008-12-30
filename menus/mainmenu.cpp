@@ -65,6 +65,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "renderthreads.h"
 #include "soundthreads.h"
 #include "menubackground.h"
+#include "songs.h"
 #ifdef EDITOR
 #	include "editor/editor.h"
 #endif
@@ -268,12 +269,12 @@ static void PlayMenuSong (void)
 	char				szSongTitles [2][14] = {"- Descent 2 -", "- Descent 1 -"};
 
 m.Push (szSongTitles [0]);
-for (i = 0; i < gameData.songs.nTotalSongs; i++) {
-	if (cf.Open (reinterpret_cast<char*> (gameData.songs.info [i].filename), gameFolders.szDataDir, "rb", i >= gameData.songs.nSongs [0])) {
+for (i = 0; i < songManager.TotalCount (); i++) {
+	if (cf.Open (reinterpret_cast<char*> (songManager.SongData (i).filename), gameFolders.szDataDir, "rb", i >= songManager.Count (0))) {
 		cf.Close ();
-		if (i == gameData.songs.nSongs [0])
+		if (i == songManager.Count (0))
 			m.Push (szSongTitles [1]);
-		m.Push (gameData.songs.info [i].filename);
+		m.Push (songManager.SongData (i).filename);
 		}
 	}
 for (;;) {
@@ -282,8 +283,8 @@ for (;;) {
 		return;
 	if (!strstr (m [h], ".hmp"))
 		continue;
-	for (i = 0; i < gameData.songs.nTotalSongs; i++)
-		if (gameData.songs.info [i].filename == m [h]) {
+	for (i = 0; i < songManager.Count (); i++)
+		if (songManager.SongData (i).filename == m [h]) {
 			songManager.Play (i, 0);
 			return;
 			}

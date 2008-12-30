@@ -17,7 +17,9 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "object.h"
 #include "d1_aistruct.h"
 
+#ifndef PLAYER_AWARENESS_INITIAL_TIME
 #define	PLAYER_AWARENESS_INITIAL_TIME		I2X (3)
+#endif
 #define	MAX_PATH_LENGTH						30			//	Maximum length of path in ai path following.
 #define	MAX_DEPTH_TO_SEARCH_FOR_PLAYER	10
 #define	BOSS_GATE_MATCEN_NUM					-1

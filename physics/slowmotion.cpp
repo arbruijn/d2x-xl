@@ -6,6 +6,7 @@
 #include "error.h"
 #include "input.h"
 #include "text.h"
+#include "songs.h"
 #include "slowmotion.h"
 #include "soundthreads.h"
 
@@ -192,8 +193,8 @@ if (gameData.app.bUseMultiThreading [rtSound]) {
 else {
 	audio.Shutdown ();
 	audio.Setup (1);
-	gameData.songs.tPos = gameData.songs.tSlowDown - gameData.songs.tStart + 
-								 2 * (SDL_GetTicks () - gameData.songs.tSlowDown) / gameOpts->gameplay.nSlowMotionSpeedup;
+	songManager.SetPos (songManager.SlowDown () - songManager.Start () + 
+							  2 * (SDL_GetTicks () - songManager.SlowDown ()) / gameOpts->gameplay.nSlowMotionSpeedup);
 	songManager.PlayLevel (gameData.missions.nCurrentLevel, 1);
 	}
 }
@@ -209,8 +210,8 @@ if (gameData.app.bUseMultiThreading [rtSound]) {
 else {
 	audio.Shutdown ();
 	audio.Setup ((float) gameOpts->gameplay.nSlowMotionSpeedup / 2);
-	gameData.songs.tSlowDown = SDL_GetTicks ();
-	gameData.songs.tPos = gameData.songs.tSlowDown - gameData.songs.tStart;
+	songManager.SetSlowDown (SDL_GetTicks ());
+	songManager.SetPos (songManager.SlowDown () - songManager.Start ());
 	songManager.PlayLevel (gameData.missions.nCurrentLevel, 1);
 	}
 }

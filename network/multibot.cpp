@@ -772,7 +772,7 @@ objP = /*Object*/CreateExplosion ((short) robotcen->nSegment, vObjPos, I2X (10),
 if (objP)
 	ExtractOrientFromSegment (&objP->info.position.mOrient, &SEGMENTS [robotcen->nSegment]);
 if (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound > -1)
-	DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, (short) robotcen->nSegment, 0, vObjPos, 0, I2X (1));
+	audio.CreateSegmentSound (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, (short) robotcen->nSegment, 0, vObjPos, 0, I2X (1));
 // Set robot center flags, in case we become the master for the next one
 robotcen->bFlag = 0;
 robotcen->xCapacity -= gameData.matCens.xEnergyToCreateOneRobot;
@@ -849,9 +849,9 @@ switch (action)  {
 		// TODO: MatrixCreateFCheck
 		bossObjP->info.position.mOrient = CFixMatrix::CreateF(vBossDir);
 
-		DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nTeleportSeg, 0, bossObjP->info.position.vPos, 0, I2X (1));
+		audio.CreateSegmentSound (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nTeleportSeg, 0, bossObjP->info.position.vPos, 0, I2X (1));
 		DigiDestroyObjectSound (OBJ_IDX (bossObjP));
-		CreateObjectSound (SOUND_BOSS_SHARE_SEE, SOUNDCLASS_ROBOT, OBJ_IDX (bossObjP), 1, I2X (1), I2X (512));	//	I2X (5)12 means play twice as loud
+		audio.CreateObjectSound (SOUND_BOSS_SHARE_SEE, SOUNDCLASS_ROBOT, OBJ_IDX (bossObjP), 1, I2X (1), I2X (512));	//	I2X (5)12 means play twice as loud
 		gameData.ai.localInfo [OBJ_IDX (bossObjP)].nextPrimaryFire = 0;
 		if (bossObjP->cType.aiInfo.REMOTE_OWNER == gameData.multiplayer.nLocalPlayer) {
 			MultiDeleteControlledRobot (nBossObj);

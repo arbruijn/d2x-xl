@@ -34,7 +34,7 @@ static tRgbaColorf smokeColors [3] = {
 void KillObjectSmoke (int nObject)
 {
 if ((nObject >= 0) && (particleManager.GetObjectSystem (nObject) >= 0)) {
-	DigiDestroyObjectSound (nObject);
+	audio.DestroyObjectSound (nObject);
 	particleManager.SetLife (particleManager.GetObjectSystem (nObject), 0);
 	particleManager.SetObjectSystem (nObject, -1);
 	shrapnelManager.Destroy (OBJECTS + nObject);
@@ -608,7 +608,7 @@ if (particleManager.GetObjectSystem (i) < 0) {
 									   objP->rType.particleInfo.nDrift, bBubbles ? BUBBLE_PARTICLES : SMOKE_PARTICLES, 
 									   i, bColor ? &color : defaultColors + bBubbles, 1, objP->rType.particleInfo.nSide - 1));
 	if (bBubbles)
-		DigiSetObjectSound (i, -1, AddonSoundName (SND_ADDON_AIRBUBBLES), I2X (1) / 2);
+		audio.CreateObjectSound (-1, SOUNDCLASS_GENERIC, i, 1, I2X (1) / 2, I2X (256), -1, -1, AddonSoundName (SND_ADDON_AIRBUBBLES));
 	else
 		particleManager.SetBrightness (particleManager.GetObjectSystem (i), objP->rType.particleInfo.nBrightness);
 	}

@@ -442,7 +442,7 @@ if (bMakeSound && (weaponInfoP->flashSound > -1)) {
 			DigiLinkSoundToPos2 (weaponInfoP->flashSound, objP->info.nSegment, 0, objP->info.position.vPos, 0, volume, I2X (256),
 										AddonSoundName (nGatlingSounds [nWeaponType == GAUSS_ID]));
 		else
-			DigiLinkSoundToPos (weaponInfoP->flashSound, objP->info.nSegment, 0, objP->info.position.vPos, 0, volume);
+			audio.CreateSegmentSound (weaponInfoP->flashSound, objP->info.nSegment, 0, objP->info.position.vPos, 0, volume);
 		}
 	else {
 		if (nWeaponType == VULCAN_ID)	// Make your own vulcan gun  1/2 as loud.
@@ -460,7 +460,7 @@ if (bMakeSound && (weaponInfoP->flashSound > -1)) {
 					 (nWeaponType == ROBOT_SMARTMSL_ID) ||
 					 (nWeaponType == ROBOT_MEGAMSL_ID) ||
 					 (nWeaponType == ROBOT_EARTHSHAKER_ID);
-		CreateObjectSound (-1, SOUNDCLASS_MISSILE, nObject, 1, I2X (gameOpts->sound.xCustomSoundVolume) / 10, I2X (256), -1, -1, 
+		audio.CreateObjectSound (-1, SOUNDCLASS_MISSILE, nObject, 1, I2X (gameOpts->sound.xCustomSoundVolume) / 10, I2X (256), -1, -1, 
 							AddonSoundName (nMslSounds [bBigMsl]), 1);
 		}
 	else if (nWeaponType == FLARE_ID)

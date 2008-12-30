@@ -952,7 +952,7 @@ else {
 /*Object*/CreateExplosion (short (Index ()), vHit, xDestSize, vc);
 if (nSwitchType) {
 	if ((nSound = gameData.eff.vClipP [vc].nSound) != -1)
-		DigiLinkSoundToPos (nSound, Index (), 0, vHit);
+		audio.CreateSegmentSound (nSound, Index (), 0, vHit);
 	if ((nSound = ecP->nSound) != -1)		//kill sound
 		audio.DestroySegmentSound (Index (), nSide, nSound);
 	if (!bPermaTrigger && (ecP->dest_eclip != -1) && (gameData.eff.effectP [ecP->dest_eclip].nSegment == -1)) {
@@ -978,7 +978,7 @@ else {
 	if (!bPermaTrigger)
 		m_sides [nSide].m_nOvlTex = gameData.pig.tex.tMapInfoP [tm].destroyed;
 	//assume this is a light, and play light sound
-	DigiLinkSoundToPos (SOUND_LIGHT_BLOWNUP, Index (), 0, vHit);
+	audio.CreateSegmentSound (SOUND_LIGHT_BLOWNUP, Index (), 0, vHit);
 	}
 return 1;		//blew up!
 }
@@ -987,7 +987,7 @@ return 1;		//blew up!
 
 void CSegment::CreateSound (int nSide, short nSound)
 {
-DigiLinkSoundToPos (nSound, Index (), nSide, SideCenter (nSide));
+audio.CreateSegmentSound (nSound, Index (), nSide, SideCenter (nSide));
 }
 
 //------------------------------------------------------------------------------

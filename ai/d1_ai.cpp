@@ -83,7 +83,11 @@ ubyte	john_cheats_1 [JOHN_CHEATS_SIZE_1] = { 	KEY_P ^ 0x00 ^ 0x34,
 
 int	Flinch_scale = 4;
 int	Attack_scale = 24;
-#define	ANIM_RATE		(I2X (1)/16)
+
+#ifndef ANIM_RATE
+#	define	ANIM_RATE		(I2X (1)/16)
+#endif
+
 #define	DELTA_ANG_SCALE	16
 
 ubyte D1_Mike_to_matt_xlate [] = {AS_REST, AS_REST, AS_ALERT, AS_ALERT, AS_FLINCH, AS_FIRE, AS_RECOIL, AS_REST};
@@ -101,8 +105,12 @@ extern int nRobotSoundVolume;
 
 #define		D1_MAX_AI_CLOAK_INFO	8	//	Must be a power of 2!
 
-#define	BOSS_CLOAK_DURATION	(I2X (7))
-#define	BOSS_DEATH_DURATION	(I2X (6))
+#ifndef BOSS_CLOAK_DURATION
+#	define	BOSS_CLOAK_DURATION	(I2X (7))
+#endif
+#ifndef BOSS_DEATH_DURATION
+#	define	BOSS_DEATH_DURATION	(I2X (6))
+#endif
 #define	BOSS_DEATH_SOUND_DURATION	0x2ae14		//	2.68 seconds
 
 //	Amount of time since the current robotP was last processed for things such as movement.
@@ -1317,7 +1325,7 @@ void compute_vis_and_vec(CObject *objP, CFixVector *pos, tAILocalInfo *ailP, CFi
 
 			if ((ailP->nextMiscSoundTime < gameData.time.xGame) && (ailP->nextPrimaryFire < I2X (1)) && (dist < I2X (20))) {
 				ailP->nextMiscSoundTime = gameData.time.xGame + (rand() + I2X (1)) * (7 - gameStates.app.nDifficultyLevel) / 1;
-				DigiLinkSoundToPos (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
+				audio.CreateSegmentSound (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
 			}
 		} else {
 			//	Compute expensive stuff -- vec_to_player and player_visibility
@@ -1341,19 +1349,19 @@ void compute_vis_and_vec(CObject *objP, CFixVector *pos, tAILocalInfo *ailP, CFi
 			if (!gameStates.app.bPlayerExploded && (ailP->nPrevVisibility != *player_visibility) && (*player_visibility == 2)) {
 				if (ailP->nPrevVisibility == 0) {
 					if (ailP->timePlayerSeen + I2X (1)/2 < gameData.time.xGame) {
-						DigiLinkSoundToPos (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
+						audio.CreateSegmentSound (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
 						ailP->timePlayerSoundAttacked = gameData.time.xGame;
 						ailP->nextMiscSoundTime = gameData.time.xGame + I2X (1) + rand()*4;
 					}
 				} else if (ailP->timePlayerSoundAttacked + I2X (1)/4 < gameData.time.xGame) {
-					DigiLinkSoundToPos (botInfoP->attackSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
+					audio.CreateSegmentSound (botInfoP->attackSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
 					ailP->timePlayerSoundAttacked = gameData.time.xGame;
 				}
 			}
 
 			if ((*player_visibility == 2) && (ailP->nextMiscSoundTime < gameData.time.xGame)) {
 				ailP->nextMiscSoundTime = gameData.time.xGame + (rand() + I2X (1)) * (7 - gameStates.app.nDifficultyLevel) / 2;
-				DigiLinkSoundToPos (botInfoP->attackSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
+				audio.CreateSegmentSound (botInfoP->attackSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
 			}
 			ailP->nPrevVisibility = *player_visibility;
 		}
@@ -1557,7 +1565,7 @@ int CreateGatedRobot (int nSegment, int nObjId)
 	InitAIObject (objP->Index (), default_behavior, -1 );		//	Note, -1 = CSegment this robotP goes to to hide, should probably be something useful
 
 	/*Object*/CreateExplosion (nSegment, vObjPos, I2X(10), VCLIP_MORPHING_ROBOT);
-	DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, vObjPos, 0, I2X (1));
+	audio.CreateSegmentSound (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, vObjPos, 0, I2X (1));
 	objP->MorphStart ();
 
 	gameData.boss [0].nLastGateTime = gameData.time.xGame;
@@ -2168,7 +2176,7 @@ if (nObject == nDbgObj)
 			if (gameData.time.xGame - ailP->timePlayerSeen > CHASE_TIME_LENGTH) {
 
 				if (IsMultiGame)
-					if (!player_visibility && (dist_to_player > I2X (7)0)) {
+					if (!player_visibility && (dist_to_player > I2X (70))) {
 						ailP->mode = D1_AIM_STILL;
 						return;
 					}
@@ -2269,7 +2277,7 @@ if (nObject == nDbgObj)
 			compute_vis_and_vec(objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
 
 			if (gameData.app.nGameMode & (GM_MODEM | GM_SERIAL))
-				if (!player_visibility && (dist_to_player > I2X (7)0)) {
+				if (!player_visibility && (dist_to_player > I2X (70))) {
 					ailP->mode = D1_AIM_STILL;
 					return;
 				}
@@ -2328,7 +2336,7 @@ if (nObject == nDbgObj)
 			break;
 
 		case D1_AIM_STILL:
-			if ((dist_to_player < I2X (1)20+gameStates.app.nDifficultyLevel*I2X (20)) || (ailP->playerAwarenessType >= D1_PA_WEAPON_ROBOT_COLLISION-1)) {
+			if ((dist_to_player < I2X (120) + gameStates.app.nDifficultyLevel * I2X (20)) || (ailP->playerAwarenessType >= D1_PA_WEAPON_ROBOT_COLLISION - 1)) {
 				compute_vis_and_vec(objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
 
 				//	turn towards vector if visible this time or last time, or rand

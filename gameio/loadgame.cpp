@@ -641,7 +641,7 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSeg
 			if (connSegP->m_sides [nConnSide].m_nOvlTex == segP->m_sides [nSide].m_nOvlTex)
 				continue;		//skip this one
 			}
-		DigiLinkSoundToPos (nSound, nSegment, nSide, segP->SideCenter (nSide), 1, I2X (1) / 2);
+		audio.CreateSegmentSound (nSound, nSegment, nSide, segP->SideCenter (nSide), 1, I2X (1) / 2);
 		}
 
 if (0 <= (nSound = DigiGetSoundByName ("explode2"))) {

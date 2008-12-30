@@ -47,13 +47,6 @@ if (PlayerHasHeadlight (-1)) {
 
 // ---------------------------------------------------------
 
-#define HEADLIGHT_BOOST_SCALE		8		//how much to scale light when have headlight boost
-#define	MAX_HEADLIGHTS				8
-#define MAX_DIST_LOG					6							//log (MAX_DIST-expressed-as-integer)
-#define MAX_DIST						(I2X (1)<<MAX_DIST_LOG)	//no light beyond this dist
-#define	HEADLIGHT_CONE_DOT		(I2X (9)/10)
-#define	HEADLIGHT_SCALE			(I2X (10))
-
 //	Flag array of OBJECTS lit last frame.  Guaranteed to process this frame if lit last frame.
 CObject	*Headlights [MAX_HEADLIGHTS];
 int		nHeadlights;

@@ -474,7 +474,7 @@ if (!gameStates.render.bOutsideMine) {
 				ext_expl_halflife = objP->info.xLifeLeft;
 				gameStates.render.bExtExplPlaying = 1;
 				}
-			DigiLinkSoundToPos (SOUND_BIG_ENDLEVEL_EXPLOSION, gameData.endLevel.exit.nSegNum, 0, gameData.endLevel.exit.vSideExit, 0, I2X (3)/4);
+			audio.CreateSegmentSound (SOUND_BIG_ENDLEVEL_EXPLOSION, gameData.endLevel.exit.nSegNum, 0, gameData.endLevel.exit.vSideExit, 0, I2X (3)/4);
 			}
 		}
 
@@ -492,7 +492,7 @@ if (!gameStates.render.bOutsideMine) {
 		if (nSegment != -1) {
 			expl = /*Object*/CreateExplosion (nSegment, tpnt, I2X (20), VCLIP_BIG_PLAYER_EXPLOSION);
 			if (d_rand ()<10000 || ++soundCount==7) {		//pseudo-random
-				DigiLinkSoundToPos (SOUND_TUNNEL_EXPLOSION, nSegment, 0, tpnt, 0, I2X (1));
+				audio.CreateSegmentSound (SOUND_TUNNEL_EXPLOSION, nSegment, 0, tpnt, 0, I2X (1));
 				soundCount=0;
 				}
 			}

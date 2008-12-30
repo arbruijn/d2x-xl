@@ -558,6 +558,17 @@ if (m_info.bPlaying && m_info.sample.Buffer () && m_info.nLength) {
 void CAudio::Init (void)
 {
 memset (&m_info, 0, sizeof (m_info));
+m_info.nMaxChannels = 16;
+m_info.nFreeChannel = 0;
+m_info.nVolume = SOUND_MAX_VOLUME;
+m_info.bInitialized = 0;
+m_info.nNextSignature = 0;
+m_info.nActiveObjects = 0;
+m_info.nLoopingSound = -1;
+m_info.nLoopingVolume = 0;
+m_info.nLoopingStart = -1;
+m_info.nLoopingEnd = -1;
+m_info.nLoopingChannel = -1;
 m_channels.Create (MAX_SOUND_CHANNELS);
 m_objects.Create (MAX_SOUND_OBJECTS);
 }

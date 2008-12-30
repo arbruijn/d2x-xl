@@ -49,6 +49,7 @@ class CRedbook {
 		int HaveD2CD (void);
 		inline void ForceRegister (void) { m_bForceRegister = 1; }
 		inline int Enabled (void) { return m_bEnabled; }
+		inline void Enable (int bEnabled) { m_bEnabled = bEnabled; }
 		inline int Playing (void) { return m_bPlaying; }
 		inline void SetPlaying (int bPlaying) { m_bPlaying = bPlaying; }
 };
@@ -120,8 +121,18 @@ class CSongManager {
 		inline int MP3 (void) { return m_user.bMP3; }
 		inline void SetMP3 (int bMP3) { m_user.bMP3 = bMP3; }
 		inline time_t Pos (void) { return m_info.tPos; }
+		inline time_t Start (void) { return m_info.tStart; }
+		inline time_t SlowDown (void) { return m_info.tSlowDown; }
 		inline void SetPos (time_t t) { m_info.tPos = t; }
 		inline void SetStart (time_t t) { m_info.tStart = t; }
+		inline void SetSlowDown (time_t t) { m_info.tSlowDown = t; }
+		inline char* IntroSong (void) { return m_user.szIntroSong; }
+		inline char* BriefingSong (void) { return m_user.szBriefingSong; }
+		inline char* CreditsSong (void) { return m_user.szCreditsSong; }
+		inline char* MenuSong (void) { return m_user.szMenuSong; }
+		inline int TotalCount (void) { return m_info.nTotalSongs; }
+		inline int Count (uint i) { return m_info.nSongs [i]; }
+		inline CSongData& SongData (uint i = 0) { return m_info.data [i]; }
 	};
 
 extern CSongManager songManager;

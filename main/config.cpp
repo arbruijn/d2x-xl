@@ -292,7 +292,7 @@ gameConfig.cfgDataHash = (uint) -1;
 
 //set these here in case no cfg file
 bHiresMoviesSave = gameOpts->movies.bHires;
-bRedbookEnabledSave = gameStates.sound.bRedbookEnabled;
+bRedbookEnabledSave = redbook.Enabled ();
 
 if (!cf.Open ("descent.cfg", gameFolders.szConfigDir, "rt", 0))
 	return 1;
@@ -316,7 +316,7 @@ while (!cf.EoF ()) {
 		else if (!strcmp (token, pszMidiVolume))
 			gameConfig.nMidiVolume = (ubyte) strtol (value, NULL, 10);
 		else if (!strcmp (token, pszRedbookEnabled))
-			gameStates.sound.bRedbookEnabled = bRedbookEnabledSave = strtol (value, NULL, 10);
+			redbook.Enabled () = bRedbookEnabledSave = strtol (value, NULL, 10);
 		else if (!strcmp (token, pszRedbookVolume))
 			gameConfig.nRedbookVolume = (ubyte) strtol (value, NULL, 10);
 		else if (!strcmp (token, pszStereoRev))
@@ -451,7 +451,7 @@ sprintf (str, "%s=%d\n", pszDigiVolume, gameConfig.nDigiVolume);
 cf.PutS (str);
 sprintf (str, "%s=%d\n", pszMidiVolume, gameConfig.nMidiVolume);
 cf.PutS (str);
-sprintf (str, "%s=%d\n", pszRedbookEnabled, FindArg("-noredbook")?bRedbookEnabledSave:gameStates.sound.bRedbookEnabled);
+sprintf (str, "%s=%d\n", pszRedbookEnabled, FindArg("-noredbook")?bRedbookEnabledSave:redbook.Enabled ());
 cf.PutS (str);
 sprintf (str, "%s=%d\n", pszRedbookVolume, gameConfig.nRedbookVolume);
 cf.PutS (str);

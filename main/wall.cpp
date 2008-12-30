@@ -532,7 +532,7 @@ for (i = 0; i < doorP->nPartCount; i++) {
 		}
 	if ((gameData.demo.nState != ND_STATE_PLAYBACK) && !(i || doorP->time)) {
 		if (gameData.walls.animP [wallP->nClip].closeSound  > -1)
-			DigiLinkSoundToPos ((short) gameData.walls.animP [segP->Wall (nSide)->nClip].closeSound,
+			audio.CreateSegmentSound ((short) gameData.walls.animP [segP->Wall (nSide)->nClip].closeSound,
 									  wallP->nSegment, nSide, SEGMENTS [wallP->nSegment].SideCenter (nSide), 0, I2X (1));
 		}
 	doorP->time += gameData.time.xFrame;

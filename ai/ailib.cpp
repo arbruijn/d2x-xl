@@ -189,7 +189,7 @@ else {
 #endif
 		if ((ailP->nextMiscSoundTime < gameData.time.xGame) && ((ailP->nextPrimaryFire < I2X (1)) || (ailP->nextSecondaryFire < I2X (1))) && (dist < I2X (20))) {
 			ailP->nextMiscSoundTime = gameData.time.xGame + (d_rand () + I2X (1)) * (7 - gameStates.app.nDifficultyLevel) / 1;
-			DigiLinkSoundToPos (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0 , nRobotSoundVolume);
+			audio.CreateSegmentSound (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0 , nRobotSoundVolume);
 			}
 		}
 	else {
@@ -219,18 +219,18 @@ else {
 			if (ailP->nPrevVisibility == 0) {
 				if (ailP->timePlayerSeen + I2X (1)/2 < gameData.time.xGame) {
 					// -- if (gameStates.app.bPlayerExploded)
-					// -- 	DigiLinkSoundToPos (botInfoP->tauntSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
+					// -- 	audio.CreateSegmentSound (botInfoP->tauntSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
 					// -- else
-						DigiLinkSoundToPos (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0 , nRobotSoundVolume);
+						audio.CreateSegmentSound (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0 , nRobotSoundVolume);
 					ailP->timePlayerSoundAttacked = gameData.time.xGame;
 					ailP->nextMiscSoundTime = gameData.time.xGame + I2X (1) + d_rand ()*4;
 					}
 				}
 			else if (ailP->timePlayerSoundAttacked + I2X (1)/4 < gameData.time.xGame) {
 				// -- if (gameStates.app.bPlayerExploded)
-				// -- 	DigiLinkSoundToPos (botInfoP->tauntSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
+				// -- 	audio.CreateSegmentSound (botInfoP->tauntSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
 				// -- else
-					DigiLinkSoundToPos (botInfoP->attackSound, objP->info.nSegment, 0, *pos, 0 , nRobotSoundVolume);
+					audio.CreateSegmentSound (botInfoP->attackSound, objP->info.nSegment, 0, *pos, 0 , nRobotSoundVolume);
 				ailP->timePlayerSoundAttacked = gameData.time.xGame;
 				}
 			}
@@ -238,9 +238,9 @@ else {
 		if ((gameData.ai.nPlayerVisibility == 2) && (ailP->nextMiscSoundTime < gameData.time.xGame)) {
 			ailP->nextMiscSoundTime = gameData.time.xGame + (d_rand () + I2X (1)) * (7 - gameStates.app.nDifficultyLevel) / 2;
 			// -- if (gameStates.app.bPlayerExploded)
-			// -- 	DigiLinkSoundToPos (botInfoP->tauntSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
+			// -- 	audio.CreateSegmentSound (botInfoP->tauntSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
 			// -- else
-				DigiLinkSoundToPos (botInfoP->attackSound, objP->info.nSegment, 0, *pos, 0 , nRobotSoundVolume);
+				audio.CreateSegmentSound (botInfoP->attackSound, objP->info.nSegment, 0, *pos, 0 , nRobotSoundVolume);
 			}
 		ailP->nPrevVisibility = gameData.ai.nPlayerVisibility;
 		}

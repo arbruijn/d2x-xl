@@ -348,6 +348,7 @@ class CAudio {
 		int UnXlatSound (int nSound);
 
 		inline int Available (void) { return m_info.bAvailable; }
+		inline int MaxChannels (void) { return m_info.nMaxChannels; }
 		inline int FreeChannel (void) { return m_info.nFreeChannel; }
 		inline CAudioChannel* Channel (uint i = 0) { return m_channels + i; }
 

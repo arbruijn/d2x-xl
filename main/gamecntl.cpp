@@ -173,7 +173,7 @@ GameFlushInputs ();
 ResetCockpit ();
 paletteManager.LoadEffect ();
 StartTime (0);
-if (gameStates.sound.bRedbookPlaying)
+if (redbook.Playing ())
 	RBAResume ();
 DigiResumeAll ();
 gameData.app.bGamePaused = 0;

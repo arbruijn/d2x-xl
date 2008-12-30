@@ -77,6 +77,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "autodl.h"
 #include "hiresmodels.h"
 #include "soundthreads.h"
+#include "songs.h"
 
 void SetMaxPitch (int nMinTurnRate);
 void select_tmap(const char *nType);
@@ -280,13 +281,13 @@ void EvalMusicArgs (void)
 if ((t = FindArg ("-playlist")) && (p = pszArgList [t+1]))
 	songManager.LoadPlayList (p);
 if ((t = FindArg ("-introsong")) && (p = pszArgList [t+1]))
-	strncpy (gameData.songs.user.szIntroSong, p, FILENAME_LEN);
+	strncpy (songManager.IntroSong (), p, FILENAME_LEN);
 if ((t = FindArg ("-briefingsong")) && (p = pszArgList [t+1]))
-	strncpy (gameData.songs.user.szBriefingSong, p, FILENAME_LEN);
+	strncpy (songManager.BriefingSong (), p, FILENAME_LEN);
 if ((t = FindArg ("-creditssong")) && (p = pszArgList [t+1]))
-	strncpy (gameData.songs.user.szCreditsSong, p, FILENAME_LEN);
+	strncpy (songManager.CreditsSong (), p, FILENAME_LEN);
 if ((t = FindArg ("-menusong")) && (p = pszArgList [t+1]))
-	strncpy (gameData.songs.user.szMenuSong, p, FILENAME_LEN);
+	strncpy (songManager.MenuSong (), p, FILENAME_LEN);
 }
 
 // ----------------------------------------------------------------------------

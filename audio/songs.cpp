@@ -75,7 +75,7 @@ CSongManager songManager;
 void CRedbook::Init (void)
 {
 m_bForceRegister = 0;
-m_bEnabled = 0;
+m_bEnabled = 1;
 m_bPlaying = 0;
 m_xLastCheck = 0;
 }
@@ -316,7 +316,7 @@ for (i = 0, bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 	m_info.bInitialized = 1;
 	//	RBA Hook
 	if (!gameOpts->sound.bUseRedbook)
-		gameStates.sound.bRedbookEnabled = 0;
+		redbook.Enabled () = 0;
 	else {	// use redbook
 			RBAInit ();
 		if (RBAEnabled ()) {
@@ -417,7 +417,7 @@ if ((nLevel > 0) && m_user.nLevelSongs) {
 	}
 if (redbook.Enabled () && RBAEnabled () && (nTracks = RBAGetNumberOfTracks ()) > 1)	//try to play redbook
 	redbook.PlayTrack (REDBOOK_FIRST_LEVEL_TRACK + (nSong % (nTracks - REDBOOK_FIRST_LEVEL_TRACK + 1)) , 1);
-if (!gameStates.sound.bRedbookPlaying) {			//not playing redbook, so play midi
+if (!redbook.Playing ()) {			//not playing redbook, so play midi
 	nSong = m_info.nLevelSongs [bD1Song] ? m_info.nFirstLevelSong [bD1Song] + (nSong % m_info.nLevelSongs [bD1Song]) : 0;
 	m_info.nCurrent = nSong;
 		DigiPlayMidiSong (

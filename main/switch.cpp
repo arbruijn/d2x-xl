@@ -391,7 +391,7 @@ for (int i = 0; i < nLinks; i++) {
 				segP->StartCloak (nSide);
 			else {
 				CFixVector vPos = segP->SideCenter (nSide);
-				DigiLinkSoundToPos (SOUND_FORCEFIELD_OFF, segP->Index (), nSide, vPos, 0, I2X (1));
+				audio.CreateSegmentSound (SOUND_FORCEFIELD_OFF, segP->Index (), nSide, vPos, 0, I2X (1));
 				wallP->nType = nNewWallType;
 				audio.DestroySegmentSound (segP->Index (), nSide, SOUND_FORCEFIELD_HUM);
 				if (connWallP) {
@@ -406,7 +406,7 @@ for (int i = 0; i < nLinks; i++) {
 				segP->StartDecloak (nSide);
 			else {
 				CFixVector vPos = segP->SideCenter (nSide);
-				DigiLinkSoundToPos (SOUND_FORCEFIELD_HUM, segP->Index (), nSide, vPos, 1, I2X (1)/2);
+				audio.CreateSegmentSound (SOUND_FORCEFIELD_HUM, segP->Index (), nSide, vPos, 1, I2X (1)/2);
 				wallP->nType = nNewWallType;
 				if (connWallP)
 					connWallP->nType = nNewWallType;
@@ -474,7 +474,7 @@ for (int i = 0; i < nLinks; i++) {
 	segP = SEGMENTS + segments [i];
 	nSide = sides [i];
 	segP->IllusionOff (nSide);
-	DigiLinkSoundToPos (SOUND_WALL_REMOVED, segP->Index (), nSide, segP->SideCenter (nSide), 0, I2X (1));
+	audio.CreateSegmentSound (SOUND_WALL_REMOVED, segP->Index (), nSide, segP->SideCenter (nSide), 0, I2X (1));
   	}
 }
 

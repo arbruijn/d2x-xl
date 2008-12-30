@@ -1249,10 +1249,10 @@ if ((m_nObject >= 0) && (lightningManager.GetObjectSystem (m_nObject) == m_nId))
 void CLightningSystem::CreateSound (int bSound)
 {
 if ((m_bSound = bSound)) {
-	DigiSetObjectSound (m_nObject, -1, AddonSoundName (SND_ADDON_LIGHTNING));
+	audio.CreateObjectSound (-1, SOUNDCLASS_GENERIC, m_nObject, 1, I2X (1), I2X (256), -1, -1, AddonSoundName (SND_ADDON_LIGHTNING));
 	if (m_bForcefield) {
-		if (0 <= (m_nSound = DigiGetSoundByName ("ff_amb_1")))
-			DigiSetObjectSound (m_nObject, m_nSound, NULL);
+		if (0 <= (m_nSound = audio.GetSoundByName ("ff_amb_1")))
+			audio.CreateObjectSound (m_nSound, SOUNDCLASS_GENERIC, m_nObject, 1);
 		}
 	}
 else
@@ -1264,7 +1264,7 @@ else
 void CLightningSystem::DestroySound (void)
 {
 if ((m_bSound > 0) & (m_nObject >= 0))
-	DigiDestroyObjectSound (m_nObject);
+	audio.DestroyObjectSound (m_nObject);
 }
 
 //------------------------------------------------------------------------------

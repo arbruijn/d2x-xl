@@ -423,7 +423,7 @@ if (gameData.pig.tex.tMapInfoP [nBaseTex].flags & TMI_FORCE_FIELD) {
 		Tactile_apply_force (&vForce, &info.position.mOrient);
 #endif
 	//make sound
-	DigiLinkSoundToPos (SOUND_FORCEFIELD_BOUNCE_PLAYER, nHitSeg, 0, vHitPt);
+	audio.CreateSegmentSound (SOUND_FORCEFIELD_BOUNCE_PLAYER, nHitSeg, 0, vHitPt);
 	if (gameData.app.nGameMode & GM_MULTI)
 		MultiSendPlaySound (SOUND_FORCEFIELD_BOUNCE_PLAYER, I2X (1));
 	bForceFieldHit=1;
@@ -457,7 +457,7 @@ if (damage >= DAMAGE_THRESHOLD) {
 	if (volume > I2X (1))
 		volume = I2X (1);
 	if (volume > 0 && !bForceFieldHit) {  // uhhhgly hack
-		DigiLinkSoundToPos (SOUND_PLAYER_HIT_WALL, nHitSeg, 0, vHitPt, 0, volume);
+		audio.CreateSegmentSound (SOUND_PLAYER_HIT_WALL, nHitSeg, 0, vHitPt, 0, volume);
 		if (gameData.app.nGameMode & GM_MULTI)
 			MultiSendPlaySound (SOUND_PLAYER_HIT_WALL, volume);
 		}
@@ -561,7 +561,7 @@ if (info.nType == OBJ_PLAYER) {
 					(gameData.time.xGame < xLastVolatileScrapeSoundTime)) {
 				short sound = (nType == 1) ? SOUND_VOLATILE_WALL_HISS : SOUND_SHIP_IN_WATER;
 				xLastVolatileScrapeSoundTime = gameData.time.xGame;
-				DigiLinkSoundToPos (sound, nHitSeg, 0, vHitPt);
+				audio.CreateSegmentSound (sound, nHitSeg, 0, vHitPt);
 				if (IsMultiGame)
 					MultiSendPlaySound (sound, I2X (1));
 				}
@@ -672,7 +672,7 @@ if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_FORCE_FIELD) &&
 	 ((info.nType != OBJ_WEAPON) || wInfoP->energy_usage)) {
 
 	//make sound
-	DigiLinkSoundToPos (SOUND_FORCEFIELD_BOUNCE_WEAPON, nHitSeg, 0, vHitPt);
+	audio.CreateSegmentSound (SOUND_FORCEFIELD_BOUNCE_WEAPON, nHitSeg, 0, vHitPt);
 	if (IsMultiGame)
 		MultiSendPlaySound (SOUND_FORCEFIELD_BOUNCE_WEAPON, I2X (1));
 	return 1;	//bail here. physics code will bounce this CObject
@@ -726,7 +726,7 @@ if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_VOLATILE) ||
 	 (sideP->m_nOvlTex && (gameData.pig.tex.tMapInfoP [sideP->m_nOvlTex].flags & TMI_VOLATILE))) {
 	ubyte tVideoClip;
 	//we've hit a volatile CWall
-	DigiLinkSoundToPos (SOUND_VOLATILE_WALL_HIT, nHitSeg, 0, vHitPt);
+	audio.CreateSegmentSound (SOUND_VOLATILE_WALL_HIT, nHitSeg, 0, vHitPt);
 	//for most weapons, use volatile CWall hit.  For mega, use its special tVideoClip
 	tVideoClip = (info.nId == MEGAMSL_ID) ? wInfoP->robot_hit_vclip : VCLIP_VOLATILE_WALL_HIT;
 	//	New by MK: If powerful badass, explode as badass, not due to lava, fixes megas being wimpy in lava.
@@ -743,9 +743,9 @@ else if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_WATER) ||
 	//we've hit water
 	//	MK: 09/13/95: Badass in water is 1/2 Normal intensity.
 	if (wInfoP->matter) {
-		DigiLinkSoundToPos (SOUNDMSL_HIT_WATER, nHitSeg, 0, vHitPt);
+		audio.CreateSegmentSound (SOUNDMSL_HIT_WATER, nHitSeg, 0, vHitPt);
 		if (wInfoP->damage_radius) {
-			CreateObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
+			audio.CreateObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
 			//	MK: 09/13/95: Badass in water is 1/2 Normal intensity.
 			CreateBadassExplosion (this, nHitSeg, vHitPt, wInfoP->impact_size/2, wInfoP->robot_hit_vclip,
 										  nStrength / 4, wInfoP->damage_radius, nStrength / 2, cType.laserInfo.parent.nObject);
@@ -754,7 +754,7 @@ else if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_WATER) ||
 			/*Object*/CreateExplosion (info.nSegment, info.position.vPos, wInfoP->impact_size, wInfoP->wall_hit_vclip);
 		}
 	else {
-		DigiLinkSoundToPos (SOUND_LASER_HIT_WATER, nHitSeg, 0, vHitPt);
+		audio.CreateSegmentSound (SOUND_LASER_HIT_WATER, nHitSeg, 0, vHitPt);
 		/*Object*/CreateExplosion (info.nSegment, info.position.vPos, wInfoP->impact_size, VCLIP_WATER_HIT);
 		}
 	Die ();		//make flares die in water
@@ -796,7 +796,7 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) || bEscort) {
 		switch (wallType) {
 			case WHP_NOT_SPECIAL:
 				//should be handled above
-				//DigiLinkSoundToPos (wInfoP->wall_hitSound, info.nSegment, 0, &info.position.vPos, 0, I2X (1));
+				//audio.CreateSegmentSound (wInfoP->wall_hitSound, info.nSegment, 0, &info.position.vPos, 0, I2X (1));
 				break;
 
 			case WHP_NO_KEY:
@@ -841,7 +841,7 @@ if (gameOpts->render.nDebrisLife) {
 	CFixVector	vDir = mType.physInfo.velocity,
 					vNormal = SEGMENTS [nHitSeg].m_sides [nHitWall].m_normals [0];
 	mType.physInfo.velocity = CFixVector::Reflect(vDir, vNormal);
-	DigiLinkSoundToPos (SOUND_PLAYER_HIT_WALL, nHitSeg, 0, vHitPt, 0, I2X (1) / 3);
+	audio.CreateSegmentSound (SOUND_PLAYER_HIT_WALL, nHitSeg, 0, vHitPt, 0, I2X (1) / 3);
 	}
 else
 	Explode (0);
@@ -963,7 +963,7 @@ else
 // A "steal" sound was added and it was getting obscured by the bump. -AP 10/3/95
 //	Changed by MK to make this sound unless the this stole.
 if (!(bTheftAttempt || ROBOTINFO (info.nId).energyDrain))
-	DigiLinkSoundToPos (SOUND_ROBOT_HIT_PLAYER, playerObjP->info.nSegment, 0, vHitPt);
+	audio.CreateSegmentSound (SOUND_ROBOT_HIT_PLAYER, playerObjP->info.nSegment, 0, vHitPt);
 BumpTwoObjects (this, playerObjP, 1, vHitPt);
 return 1;
 }
@@ -980,7 +980,7 @@ if (extraGameInfo [0].nBossCount && !gameData.reactor.bDestroyed) {
 	extraGameInfo [0].nBossCount--;
 	DoReactorDestroyedStuff (reactorP);
 	if (reactorP && !(reactorP->info.nFlags & (OF_EXPLODING|OF_DESTROYED))) {
-		DigiLinkSoundToPos (SOUND_CONTROL_CENTER_DESTROYED, reactorP->info.nSegment, 0, reactorP->info.position.vPos);
+		audio.CreateSegmentSound (SOUND_CONTROL_CENTER_DESTROYED, reactorP->info.nSegment, 0, reactorP->info.position.vPos);
 		reactorP->Explode (0);
 		}
 	return 1;
@@ -1049,7 +1049,7 @@ if (info.nId == gameData.multiplayer.nLocalPlayer) {
 	AIDoCloakStuff ();				//	In case CPlayerData cloaked, make control center know where he is.
 	}
 if (BumpTwoObjects (reactorP, this, 1, vHitPt))
-	DigiLinkSoundToPos (SOUND_ROBOT_HIT_PLAYER, info.nSegment, 0, vHitPt);
+	audio.CreateSegmentSound (SOUND_ROBOT_HIT_PLAYER, info.nSegment, 0, vHitPt);
 return 1;
 }
 
@@ -1119,7 +1119,7 @@ if (cType.laserInfo.parent.nType == OBJ_PLAYER) {
 		ExplodeBadassWeapon (vHitPt);
 	else
 		/*Object*/CreateExplosion (reactorP->info.nSegment, vHitPt, 3 * reactorP->info.xSize / 20, VCLIP_SMALL_EXPLOSION);
-	DigiLinkSoundToPos (SOUND_CONTROL_CENTER_HIT, reactorP->info.nSegment, 0, vHitPt);
+	audio.CreateSegmentSound (SOUND_CONTROL_CENTER_HIT, reactorP->info.nSegment, 0, vHitPt);
 	damage = FixMul (damage, cType.laserInfo.xScale);
 	reactorP->ApplyDamageToReactor (damage, cType.laserInfo.parent.nObject);
 	MaybeKillWeapon (reactorP);
@@ -1138,7 +1138,7 @@ int CObject::CollideWeaponAndClutter (CObject* clutterP, CFixVector& vHitPt)
 ubyte exp_vclip = VCLIP_SMALL_EXPLOSION;
 if (clutterP->info.xShields >= 0)
 	clutterP->info.xShields -= info.xShields;
-DigiLinkSoundToPos (SOUND_LASER_HIT_CLUTTER, (short) info.nSegment, 0, vHitPt);
+audio.CreateSegmentSound (SOUND_LASER_HIT_CLUTTER, (short) info.nSegment, 0, vHitPt);
 /*Object*/CreateExplosion ((short) clutterP->info.nSegment, vHitPt, ((clutterP->info.xSize / 3) * 3) / 4, exp_vclip);
 if ((clutterP->info.xShields < 0) && !(clutterP->info.nFlags & (OF_EXPLODING | OF_DESTROYED)))
 	clutterP->Explode (STANDARD_EXPL_DELAY);
@@ -1329,7 +1329,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 #endif
 	if (dot > gameData.physics.xBossInvulDot) {
 		short	nSegment = FindSegByPos (vHitPt, robotP->info.nSegment, 1, 0);
-		DigiLinkSoundToPos (SOUND_WEAPON_HIT_DOOR, nSegment, 0, vHitPt);
+		audio.CreateSegmentSound (SOUND_WEAPON_HIT_DOOR, nSegment, 0, vHitPt);
 		bDamage = 0;
 
 		if (xLastTimeBuddyGameHint == 0)
@@ -1393,7 +1393,7 @@ else if ((bKinetic && bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulK
 	short	nSegment;
 
 	nSegment = FindSegByPos (vHitPt, robotP->info.nSegment, 1, 0);
-	DigiLinkSoundToPos (SOUND_WEAPON_HIT_DOOR, nSegment, 0, vHitPt);
+	audio.CreateSegmentSound (SOUND_WEAPON_HIT_DOOR, nSegment, 0, vHitPt);
 	bDamage = 0;
 	}
 return bDamage;
@@ -1529,7 +1529,7 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
 		if (explObjP)
 			AttachObject (robotP, explObjP);
 		if (bDamage && (botInfoP->nExp1Sound > -1))
-			DigiLinkSoundToPos (botInfoP->nExp1Sound, robotP->info.nSegment, 0, vHitPt);
+			audio.CreateSegmentSound (botInfoP->nExp1Sound, robotP->info.nSegment, 0, vHitPt);
 		if (!(info.nFlags & OF_HARMLESS)) {
 			fix xDamage = bDamage ? FixMul (info.xShields, cType.laserInfo.xScale) : 0;
 			//	Cut Gauss xDamage on bosses because it just breaks the game.  Bosses are so easy to
@@ -1589,7 +1589,7 @@ return 1;
 //--unused-- 	CreateAwarenessEvent (weaponP, WEAPON_ROBOT_COLLISION);			// CObject "weapon" can attract attention to CPlayerData
 //--unused--
 //--unused-- 	//PLAY_SOUND_3D (SOUND_HOSTAGE_KILLED, vHitPt, hostage->info.nSegment);
-//--unused-- 	DigiLinkSoundToPos (SOUND_HOSTAGE_KILLED, hostage->info.nSegment, 0, vHitPt);
+//--unused-- 	audio.CreateSegmentSound (SOUND_HOSTAGE_KILLED, hostage->info.nSegment, 0, vHitPt);
 //--unused--
 //--unused--
 //--unused-- 	if (hostage->info.xShields <= 0) {
@@ -1624,7 +1624,7 @@ if (gameStates.app.bD2XLevel &&
 	 (SEGMENTS [info.nSegment].m_nType == SEGMENT_IS_NODAMAGE))
 	return 1;
 if (BumpTwoObjects (this, otherP, 1, vHitPt))
-	DigiLinkSoundToPos (SOUND_ROBOT_HIT_PLAYER, info.nSegment, 0, vHitPt);
+	audio.CreateSegmentSound (SOUND_ROBOT_HIT_PLAYER, info.nSegment, 0, vHitPt);
 return 1;
 }
 
@@ -1759,12 +1759,12 @@ if (mType.physInfo.flags & PF_PERSISTENT) {
 }
 if (playerObjP->info.nId == gameData.multiplayer.nLocalPlayer) {
 	if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)) {
-		DigiLinkSoundToPos (SOUND_PLAYER_GOT_HIT, playerObjP->info.nSegment, 0, vHitPt);
+		audio.CreateSegmentSound (SOUND_PLAYER_GOT_HIT, playerObjP->info.nSegment, 0, vHitPt);
 		if (IsMultiGame)
 			MultiSendPlaySound (SOUND_PLAYER_GOT_HIT, I2X (1));
 		}
 	else {
-		DigiLinkSoundToPos (SOUND_WEAPON_HIT_DOOR, playerObjP->info.nSegment, 0, vHitPt);
+		audio.CreateSegmentSound (SOUND_WEAPON_HIT_DOOR, playerObjP->info.nSegment, 0, vHitPt);
 		if (gameData.app.nGameMode & GM_MULTI)
 			MultiSendPlaySound (SOUND_WEAPON_HIT_DOOR, I2X (1));
 		}
@@ -1788,7 +1788,7 @@ int CObject::CollidePlayerAndNastyRobot (CObject* robotP, CFixVector& vHitPt)
 //	if (!(ROBOTINFO (objP->info.nId).energyDrain && gameData.multiplayer.players [info.nId].energy))
 /*Object*/CreateExplosion (info.nSegment, vHitPt, I2X (10) / 2, VCLIP_PLAYER_HIT);
 if (BumpTwoObjects (this, robotP, 0, vHitPt)) {//no damage from bump
-	DigiLinkSoundToPos (ROBOTINFO (robotP->info.nId).clawSound, info.nSegment, 0, vHitPt);
+	audio.CreateSegmentSound (ROBOTINFO (robotP->info.nId).clawSound, info.nSegment, 0, vHitPt);
 	ApplyDamageToPlayer (robotP, I2X (gameStates.app.nDifficultyLevel+1));
 	}
 return 1;
@@ -1887,7 +1887,7 @@ int CObject::CollidePlayerAndMonsterball (CObject* monsterball, CFixVector& vHit
 if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead &&
 	(info.nId == gameData.multiplayer.nLocalPlayer)) {
 	if (BumpTwoObjects (this, monsterball, 0, vHitPt))
-		DigiLinkSoundToPos (SOUND_ROBOT_HIT_PLAYER, info.nSegment, 0, vHitPt);
+		audio.CreateSegmentSound (SOUND_ROBOT_HIT_PLAYER, info.nSegment, 0, vHitPt);
 	}
 return 1;
 }
@@ -1903,7 +1903,7 @@ if (gameStates.app.bD2XLevel &&
 	 (SEGMENTS [info.nSegment].m_nType == SEGMENT_IS_NODAMAGE))
 	return 1;
 if (!(info.nFlags & OF_EXPLODING) && BumpTwoObjects (clutter, this, 1, vHitPt))
-	DigiLinkSoundToPos (SOUND_ROBOT_HIT_PLAYER, info.nSegment, 0, vHitPt);
+	audio.CreateSegmentSound (SOUND_ROBOT_HIT_PLAYER, info.nSegment, 0, vHitPt);
 return 1;
 }
 
@@ -1922,7 +1922,7 @@ else {
 	if (info.nFlags & OF_SHOULD_BE_DEAD) {
 		CreateWeaponEffects (0);
 		ExplodeBadassWeapon (vHitPt);
-		DigiLinkSoundToPos (gameData.weapons.info [info.nId].robot_hitSound, info.nSegment, 0, vHitPt);
+		audio.CreateSegmentSound (gameData.weapons.info [info.nId].robot_hitSound, info.nSegment, 0, vHitPt);
 		}
 	}
 return 1;
@@ -1983,7 +1983,7 @@ return 1;
 int CObject::CollideWeaponAndMonsterball (CObject* mBallP, CFixVector& vHitPt)
 {
 if (cType.laserInfo.parent.nType == OBJ_PLAYER) {
-	DigiLinkSoundToPos (SOUND_ROBOT_HIT, info.nSegment, 0, vHitPt);
+	audio.CreateSegmentSound (SOUND_ROBOT_HIT, info.nSegment, 0, vHitPt);
 	if (info.nId == EARTHSHAKER_ID)
 		ShakerRockStuff ();
 	if (mType.physInfo.flags & PF_PERSISTENT) {
@@ -2014,7 +2014,7 @@ if (WeaponIsMine (info.nId)) {
 		return 1;
 	}
 if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && !(debrisP->info.nFlags & OF_EXPLODING)) {
-	DigiLinkSoundToPos (SOUND_ROBOT_HIT, info.nSegment, 0, vHitPt);
+	audio.CreateSegmentSound (SOUND_ROBOT_HIT, info.nSegment, 0, vHitPt);
 	debrisP->Explode (0);
 	if (WI_damage_radius (info.nId))
 		ExplodeBadassWeapon (vHitPt);

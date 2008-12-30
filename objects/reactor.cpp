@@ -398,7 +398,7 @@ fix ReactorStrength (void)
 if (gameData.reactor.nStrength == -1) {		//use old defaults
 	//	Boost control center strength at higher levels.
 	if (gameData.missions.nCurrentLevel >= 0)
-		return I2X (200) + I2X (5)0 * gameData.missions.nCurrentLevel;
+		return I2X (200) + I2X (50) * gameData.missions.nCurrentLevel;
 	return I2X (200) - gameData.missions.nCurrentLevel * I2X (150);
 	}
 return I2X (gameData.reactor.nStrength);

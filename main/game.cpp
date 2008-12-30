@@ -815,7 +815,7 @@ else if ((gameStates.gameplay.xLastAfterburnerCharge && (Controls [0].afterburne
 	 		(gameStates.gameplay.bLastAfterburnerState && (gameStates.gameplay.xLastAfterburnerCharge && !gameData.physics.xAfterburnerCharge))) {
 	if (gameData.physics.xAfterburnerCharge && Controls [0].afterburnerState && 
 		 (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)) {
-		CreateObjectSound ((short) SOUND_AFTERBURNER_IGNITE, SOUNDCLASS_PLAYER, (short) LOCALPLAYER.nObject, 
+		audio.CreateObjectSound ((short) SOUND_AFTERBURNER_IGNITE, SOUNDCLASS_PLAYER, (short) LOCALPLAYER.nObject, 
 							 1, I2X (1), I2X (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
 #ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
@@ -824,7 +824,7 @@ else if ((gameStates.gameplay.xLastAfterburnerCharge && (Controls [0].afterburne
 		}
 	else {
 		DigiDestroyObjectSound (LOCALPLAYER.nObject);
-		CreateObjectSound ((short) SOUND_AFTERBURNER_PLAY, SOUNDCLASS_PLAYER, (short) LOCALPLAYER.nObject);
+		audio.CreateObjectSound ((short) SOUND_AFTERBURNER_PLAY, SOUNDCLASS_PLAYER, (short) LOCALPLAYER.nObject);
 #ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
 		 	MultiSendSoundFunction (0,0);

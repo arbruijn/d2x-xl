@@ -14,13 +14,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _HEADLIGHT_H
 #define _HEADLIGHT_H
 
-#define HEADLIGHT_BOOST_SCALE		8		//how much to scale light when have headlight boost
-#define	MAX_HEADLIGHTS				8
-#define MAX_DIST_LOG					6							//log (MAX_DIST-expressed-as-integer)
-#define MAX_DIST						(I2X (1)<<MAX_DIST_LOG)	//no light beyond this dist
-#define	HEADLIGHT_CONE_DOT		(I2X (9) / 10)
-#define	HEADLIGHT_SCALE			(I2X (10))
-#define HEADLIGHT_TRANSFORMATION	2
+#define	HEADLIGHT_BOOST_SCALE		8		//how much to scale light when have headlight boost
+#define	MAX_HEADLIGHTS					8
+#define	MAX_DIST_LOG					6							//log (MAX_DIST-expressed-as-integer)
+#define	MAX_DIST							(I2X (1) << MAX_DIST_LOG)	//no light beyond this dist
+#define	HEADLIGHT_CONE_DOT			(I2X (9) / 10)
+#define	HEADLIGHT_SCALE				(I2X (10))
+#define	HEADLIGHT_TRANSFORMATION	2
 
 extern CObject	*Headlights [MAX_HEADLIGHTS];
 extern int		nHeadlights;

@@ -67,6 +67,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "renderthreads.h"
 #include "soundthreads.h"
 #include "menubackground.h"
+#include "songs.h"
 #ifdef EDITOR
 #	include "editor/editor.h"
 #endif
@@ -1029,7 +1030,7 @@ SDL_ShowCursor (0);
 SDL_EnableKeyRepeat(60, 30);
 gameStates.menus.nInMenu++;
 if (!gameOpts->menus.nStyle && (gameStates.app.nFunctionMode == FMODE_GAME) && !(gameData.app.nGameMode & GM_MULTI)) {
-	DigiPauseDigiSounds ();
+	audio.PauseSounds ();
 	sound_stopped = 1;
 	}
 
@@ -1902,7 +1903,7 @@ if (time_stopped) {
 #endif
  }
 if (sound_stopped)
-	DigiResumeDigiSounds ();
+	audio.ResumeSounds ();
 gameStates.menus.nInMenu--;
 paletteManager.SetEffect (0, 0, 0);
 SDL_EnableKeyRepeat (0, 0);

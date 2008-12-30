@@ -112,7 +112,7 @@ extern int Boss_been_hit;
 extern fix AI_procTime;
 
 // Stuff moved from ai.c by MK on 05/25/95.
-#define ANIM_RATE       (I2X ((1) / 16)
+#define ANIM_RATE       (I2X (1) / 16)
 #define DELTA_ANG_SCALE 16
 
 #define OVERALL_AGITATION_MAX   100

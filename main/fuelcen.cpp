@@ -444,7 +444,7 @@ objP = /*Object*/CreateExplosion ((short) matCenP->nSegment, vPos, I2X (10), nVi
 if (objP) {
 	ExtractOrientFromSegment (&objP->info.position.mOrient, SEGMENTS + matCenP->nSegment);
 	if (gameData.eff.vClips [0][nVideoClip].nSound > -1)
-		DigiLinkSoundToPos (gameData.eff.vClips [0][nVideoClip].nSound, (short) matCenP->nSegment, 0, vPos, 0, I2X (1));
+		audio.CreateSegmentSound (gameData.eff.vClips [0][nVideoClip].nSound, (short) matCenP->nSegment, 0, vPos, 0, I2X (1));
 	matCenP->bFlag	= 1;
 	matCenP->xTimer = 0;
 	}

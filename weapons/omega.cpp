@@ -284,7 +284,7 @@ if (0 > (nFiringSeg = FindSegByPos (*vMuzzle, nParentSeg, 1, 0))) {
 if (parentObjP == gameData.objs.viewerP)
 	audio.PlaySound (gameData.weapons.info [weaponObjP->info.nId].flashSound);
 else
-	DigiLinkSoundToPos (gameData.weapons.info [weaponObjP->info.nId].flashSound,
+	audio.CreateSegmentSound (gameData.weapons.info [weaponObjP->info.nId].flashSound,
 							  weaponObjP->info.nSegment, 0, weaponObjP->info.position.vPos, 0, I2X (1));
 //	Delete the original CObject.  Its only purpose in life was to determine which CObject to home in on.
 ReleaseObject (OBJ_IDX (weaponObjP));
