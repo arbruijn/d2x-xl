@@ -27,7 +27,7 @@ template < class _T > class CDataPool {
 		CDataPool () { Init (); }
 		~CDataPool() { Destroy (); }
 
-		_T& operator[] (uint i) { return m_buffer [i].data; }
+		//_T& operator[] (uint i) { return m_buffer [i].data; }
 
 		inline void Init (void) { 
 			m_buffer.Init ();
@@ -105,6 +105,9 @@ template < class _T > class CDataPool {
 
 		inline int UsedList (void) { return m_used; }
 		inline int FreeList (void) { return m_free; }
+
+		inline _T& operator[] (uint i) { return m_buffer [i].data; }
+		inline _T* operator+ (uint i) { return &m_buffer [i].data; }
 	};
 
 

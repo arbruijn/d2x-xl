@@ -4,7 +4,7 @@
 #include "inferno.h"
 #include "u_mem.h"
 
-#define MAX_LIGHTNINGS	1000
+#define MAX_LIGHTNING_SYSTEMS	1000
 #define MAX_LIGHTNING_NODES	1000
 
 //------------------------------------------------------------------------------
@@ -53,39 +53,39 @@ class CLightningNode : public tLightningNode {
 //------------------------------------------------------------------------------
 
 typedef struct tLightning {
-	CLightning			*m_parent;
-	CFixVector			m_vBase;
-	CFixVector			m_vPos;
-	CFixVector			m_vEnd;
-	CFixVector			m_vDir;
-	CFixVector			m_vRefEnd;
-	CFixVector			m_vDelta;
-	CLightningNode		*m_nodes;
-	tRgbaColorf			m_color;
-	int					m_nNext;
-	int					m_nLife;
-	int					m_nTTL;
-	int					m_nDelay;
-	int					m_nLength;
-	int					m_nOffset;
-	int					m_nAmplitude;
-	short					m_nSegment;
-	short					m_nSmoothe;
-	short					m_nSteps;
-	short					m_iStep;
-	short					m_nNodes;
-	short					m_nChildren;
-	short					m_nObject;
-	short					nSegment;
-	short					m_nNode;
-	char					m_nStyle;
-	char					m_nAngle;
-	char					m_nDepth;
-	char					m_bClamp;
-	char					m_bPlasma;
-	char					m_bRandom;
-	char					m_bLight;
-	char					m_bInPlane;
+	CLightning*					m_parent;
+	CFixVector					m_vBase;
+	CFixVector					m_vPos;
+	CFixVector					m_vEnd;
+	CFixVector					m_vDir;
+	CFixVector					m_vRefEnd;
+	CFixVector					m_vDelta;
+	CArray<CLightningNode>	m_nodes;
+	tRgbaColorf					m_color;
+	int							m_nNext;
+	int							m_nLife;
+	int							m_nTTL;
+	int							m_nDelay;
+	int							m_nLength;
+	int							m_nOffset;
+	int							m_nAmplitude;
+	short							m_nSegment;
+	short							m_nSmoothe;
+	short							m_nSteps;
+	short							m_iStep;
+	short							m_nNodes;
+	short							m_nChildren;
+	short							m_nObject;
+	short							nSegment;
+	short							m_nNode;
+	char							m_nStyle;
+	char							m_nAngle;
+	char							m_nDepth;
+	char							m_bClamp;
+	char							m_bPlasma;
+	char							m_bRandom;
+	char							m_bLight;
+	char							m_bInPlane;
 } tLightning;
 
 class CLightning : public tLightning {
@@ -129,24 +129,25 @@ class CLightning : public tLightning {
 //------------------------------------------------------------------------------
 
 typedef struct tLightningSystem {
-	int				m_nId;
-	int				m_nNext;
-	CLightning		*m_lightnings;
-	int				m_nLightnings;
-	short				m_nObject;
-	int				m_nKey [2];
-	time_t			m_tUpdate;
-	int				m_nSound;
-	char				m_bSound;
-	char				m_bForcefield;
-	char				m_bDestroy;
+	int						m_nId;
+	int						m_nNext;
+	CArray<CLightning>	m_lightnings;
+	int						m_nLightnings;
+	short						m_nObject;
+	int						m_nKey [2];
+	time_t					m_tUpdate;
+	int						m_nSound;
+	char						m_bSound;
+	char						m_bForcefield;
+	char						m_bDestroy;
 } tLightningSystem;
 
 class CLightningSystem : public tLightningSystem {
 	public:
 		CLightningSystem () { m_lightnings = NULL, m_nLightnings = 0, m_nObject = -1; };
 		~CLightningSystem () { Destroy (); };
-		bool Create (int m_nId, int nLightnings, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
+		void Init (int nId);
+		bool Create (int nLightnings, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 						 short nObject, int nLife, int nDelay, int nLength, int nAmplitude, char nAngle, int nOffset,
 						 short nNodeC, short nChildC, char nDepth, short nSteps, short nSmoothe, 
 						 char bClamp, char bPlasma, char bSound, char bLight, char nStyle, tRgbaColorf *colorP);
@@ -157,9 +158,8 @@ class CLightningSystem : public tLightningSystem {
 		void Move (CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd);
 		int SetLife (void);
 		int SetLight (void);
-		inline CLightning* Lightnings (void) { return m_lightnings; }
-		inline int GetNext (void) { return m_nNext; }
-		inline void SetNext (int nNext) { m_nNext = nNext; }
+		inline CLightning* Lightnings (void) { return m_lightnings.Buffer (); }
+		inline int Id (void) { return m_nId; }
 	private:
 		void CreateSound (int bSound);
 		void DestroySound (void);
@@ -183,14 +183,14 @@ typedef struct tLightningLight {
 
 
 typedef struct tLightningData {
-	short					*m_objects;
-	tLightningLight	*m_lights;
-	CLightningSystem	m_systems [MAX_LIGHTNINGS];
-	int					m_nFree;
-	int					m_nUsed;
-	int					m_nNext;
-	int					m_bDestroy;
-	int					m_nFirstLight;
+	CArray<short>						m_objects;
+	CArray<tLightningLight>			m_lights;
+	CDataPool<CLightningSystem>	m_systems; // [MAX_LIGHTNINGS];
+	int									m_nFree;
+	int									m_nUsed;
+	int									m_nNext;
+	int									m_bDestroy;
+	int									m_nFirstLight;
 } tLightningData;
 
 class CLightningManager : public tLightningData {
@@ -205,7 +205,7 @@ class CLightningManager : public tLightningData {
 						short nObject, int nLife, int nDelay, int nLength, int nAmplitude, char nAngle, int nOffset,
 						short nNodeC, short nChildC, char nDepth, short nSteps, short nSmoothe, 
 						char bClamp, char bPlasma, char bSound, char bLight, char nStyle, tRgbaColorf *colorP);
-		void Destroy (int iLightning, CLightning *pl, bool bDestroy);
+		void Destroy (CLightningSystem* systemP, CLightning *lightningP, bool bDestroy);
 		int Shutdown (bool bForce);
 		void Render (void);
 		void Update (void);
@@ -237,12 +237,11 @@ class CLightningManager : public tLightningData {
 		int FindDamageLightning (short nObject, int *pKey);
 		void SetSegmentLight (short nSegment, CFixVector *vPosP, tRgbaColorf *colorP);
 		tRgbaColorf *LightningColor (CObject *objP);
-		inline short GetObjectSystem (short nObject) { return (m_objects && (nObject >= 0)) ? m_objects [nObject] : -1; }
-		inline void SetObjectSystem (short nObject, int i) { if (m_objects && (nObject >= 0)) m_objects [nObject] = i; }
+		inline short GetObjectSystem (short nObject) { return (m_objects.Buffer () && (nObject >= 0)) ? m_objects [nObject] : -1; }
+		inline void SetObjectSystem (short nObject, int i) { if (m_objects.Buffer () && (nObject >= 0)) m_objects [nObject] = i; }
 		inline tLightningLight* GetLight (short nSegment) { return m_lights + nSegment; }
+
 	private:
-		int IsUsed (int iLightning);
-		CLightningSystem *PrevSystem (int iLightning);
 		CFixVector *FindTargetPos (CObject *emitterP, short nTarget);
 
 };
