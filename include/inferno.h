@@ -991,20 +991,10 @@ typedef struct tRenderStates {
 //------------------------------------------------------------------------------
 
 typedef struct tDigiStates {
-	int bInitialized;
-	int bAvailable;
 	int bSoundsInitialized;
 	int bLoMem;
-	int nMaxChannels;
-	int nFreeChannel;
-	int nVolume;
 	int nNextSignature;
 	int nActiveObjects;
-	short nLoopingSound;
-	short nLoopingVolume;
-	short nLoopingStart;
-	short nLoopingEnd;
-	short nLoopingChannel;
 } tDigiStates;
 
 //------------------------------------------------------------------------------

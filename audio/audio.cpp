@@ -956,19 +956,26 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void CAudio::StopCurrentSong (void)
+void CAudio::StopCurrentSong ()
 {
-#ifdef HMIPLAY
-	char buf [10];
-    
-   sprintf (buf, "s");
-   send_ipc (buf);
+if (songManager.Playing ()) {
+	audio.FadeoutMusic ();
+#if USE_SDL_MIXER
+	if (!gameOpts->sound.bUseSDLMixer)
 #endif
+	m_info.nMidiVolume = midi.SetVolume (0);
+#if defined (_WIN32)
+#	if USE_SDL_MIXER
+if (!gameOpts->sound.bUseSDLMixer)
+#	endif
+	 {
+		hmp_close (hmp);
+		hmp = NULL;
+		songManager.SetPlaying (0);
+		}
+#endif
+	}
 }
-
-void DigiPauseMidi () {}
-void DigiResumeMidi () {}
-#endif
 
 //------------------------------------------------------------------------------
 

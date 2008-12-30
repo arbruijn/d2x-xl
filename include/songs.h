@@ -50,6 +50,7 @@ class CRedbook {
 		inline void ForceRegister (void) { m_bForceRegister = 1; }
 		inline int Enabled (void) { return m_bEnabled; }
 		inline int Playing (void) { return m_bPlaying; }
+		inline void SetPlaying (int bPlaying) { m_bPlaying = bPlaying; }
 };
 
 extern CRedbook redbook;
@@ -114,7 +115,13 @@ class CSongManager {
 		int LoadPlayList (char *pszPlayList);
 		void FreeUserSongs (void);
 		inline int Current (void) { return m_info.nCurrent; }
+		inline int Playing (void) { return m_info.bPlaying; }
+		inline void SetPlaying (int bPlaying) { m_info.bPlaying = bPlaying; }
 		inline int MP3 (void) { return m_user.bMP3; }
+		inline void SetMP3 (int bMP3) { m_user.bMP3 = bMP3; }
+		inline time_t Pos (void) { return m_info.tPos; }
+		inline void SetPos (time_t t) { m_info.tPos = t; }
+		inline void SetStart (time_t t) { m_info.tStart = t; }
 	};
 
 extern CSongManager songManager;
