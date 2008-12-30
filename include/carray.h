@@ -109,7 +109,7 @@ template < class _T > class CArray : public CQuickSort < _T > {
 				else 
 #endif
 				if (!m_data.bChild)
-					delete [] m_data.buffer;
+					delete[] m_data.buffer;
 				Init ();
 				}
 			}

@@ -31,12 +31,12 @@ CShrapnelManager shrapnelManager;
 
 static float fShrapnelScale [5] = {0, 5.0f / 3.0f, 2.5f, 10.0f / 3.0f, 5};
 
-void CShrapnel::Create (CObject* objP)
+void CShrapnel::Create (CObject* parentObjP, CObject* objP)
 {
 	static tRgbaColorf color = {1,1,1,0.5};
 
 m_info.vDir = CFixVector::Random ();
-m_info.vPos = objP->info.position.vPos + m_info.vDir * (objP->info.xSize / 4 + rand () % (objP->info.xSize / 2));
+m_info.vPos = objP->info.position.vPos + m_info.vDir * (parentObjP->info.xSize / 4 + rand () % (parentObjP->info.xSize / 2));
 m_info.nTurn = 1;
 m_info.xSpeed = 3 * (F1_0 / 20 + rand () % (F1_0 / 20)) / 4;
 m_info.xLife =
@@ -155,7 +155,9 @@ if (!CStack<CShrapnel>::Create (h))
 	return 0;
 srand (gameStates.app.nSDLTicks);
 for (i = 0; i < h; i++) {
-	m_data.buffer [i].Create (parentObjP);
+	if (!Push ())
+		break;
+	Top ()->Create (parentObjP, objP);
 	}
 objP->info.xLifeLeft *= 2;
 objP->cType.explInfo.nSpawnTime = -1;

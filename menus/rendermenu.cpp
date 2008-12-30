@@ -275,7 +275,7 @@ void RenderOptionsMenu (void)
 
 do {
 	m.Destroy ();
-	m.Create (40);
+	m.Create (50);
 	optPowerupOpts = optAutomapOpts = -1;
 	if (!gameStates.app.bNostalgia) {
 		renderOpts.nBrightness = m.AddSlider (TXT_BRIGHTNESS, paletteManager.GetGamma (), 0, 16, KEY_B, HTX_RENDER_BRIGHTNESS);

@@ -285,7 +285,7 @@ pszSmokeAlpha [4] = TXT_EXTREME;
 
 do {
 	m.Destroy ();
-	m.Create (40);
+	m.Create (50);
 	memset (&smokeOpts, 0xff, sizeof (smokeOpts));
 	nOptSmokeLag = optStaticParticles = optCollisions = optDisperse = -1;
 

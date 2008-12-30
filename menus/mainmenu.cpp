@@ -312,8 +312,8 @@ else if (nChoice == mainOpts.nLoad) {
 #if DBG
 else if (nChoice == mainOpts.nLoadDirect) {
 	CMenu	m (1);
-	char				szLevel [10] = "";
-	int				nLevel;
+	char	szLevel [10] = "";
+	int	nLevel;
 
 	m.AddInput (szLevel, sizeof (szLevel), NULL);
 	m.Menu (NULL, "Enter level to load", NULL, NULL);

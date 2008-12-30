@@ -212,7 +212,7 @@ if (!m_filename) {
 	}
 paletteManager.LoadEffect ();
 CCanvas::Pop ();
-if (bUpdate)
+if (bUpdate && !gameStates.app.bGameRunning)
 	GrUpdate (0);
 }
 
@@ -264,12 +264,14 @@ gameStates.render.grAlpha = FADE_LEVELS;
 
 void CBackground::Restore (void)
 {
-CCanvas::SetCurrent (m_canvas [0]);
-if (gameOpts->menus.nStyle) 
-	m_background->Stretch ();
-else if (m_saved [1]) {
-	m_saved [1]->Blit ();
-	GrUpdate (0);
+if (!gameStates.app.bGameRunning) {
+	CCanvas::SetCurrent (m_canvas [0]);
+	if (gameOpts->menus.nStyle) 
+		m_background->Stretch ();
+	else if (m_saved [1]) {
+		m_saved [1]->Blit ();
+		GrUpdate (0);
+		}
 	}
 }
 

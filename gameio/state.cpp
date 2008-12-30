@@ -302,7 +302,8 @@ if (gameStates.menus.bHires) {
 	y = menu [0].m_y - 16;
 	if (gameStates.app.bGameRunning)
 		paletteManager.LoadEffect ();
-	GrBitmap (x, y, image);
+	//GrBitmap (x, y, image);
+	image->Blit (NULL, x, y);
 	if (gameOpts->menus.nStyle) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
 		GrUBox (x - 1, y - 1, x + image->Width () + 1, y + image->Height () + 1);
