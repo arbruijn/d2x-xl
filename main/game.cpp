@@ -1136,7 +1136,7 @@ for (;;) {
 	if (LOCALPLAYER.shields != playerShields)
 		ReleaseGuidedMissile (gameData.multiplayer.nLocalPlayer);
 	//see if redbook song needs to be restarted
-	SongsCheckRedbookRepeat ();	// Handle RedBook Audio Repeating.
+	redbook.CheckRepeat ();	// Handle RedBook Audio Repeating.
 	if (gameStates.app.bConfigMenu) {
 		int double_save = bScanlineDouble;
 		if (!IsMultiGame) {
@@ -1258,7 +1258,7 @@ GrClose ();
 PrintLog ("unloading addon sounds\n");
 FreeAddonSounds ();
 DigiClose ();
-FreeUserSongs ();
+songManager.FreeUserSongs ();
 RLECacheClose ();
 BMFreeExtraObjBitmaps ();
 BMFreeExtraModels ();

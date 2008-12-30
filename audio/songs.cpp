@@ -65,94 +65,7 @@ char CDROM_dir[40] = ".";
 
 int CD_blast_mixer (void);
 
-//------------------------------------------------------------------------------
-
-class CRedbook {
-	private:
-		int	m_bForceRegister;
-		int	m_bEnabled;
-		int	m_bPlaying;
-		fix	m_xLastCheck;
-
-	public:
-		CRedbook () { Init (); }
-		~CRedbook () { Destroy (); }
-		void Init (void);
-		void Destroy (void);
-		void Register (void);
-		void SetVolume (int volume);
-		int PlayTrack (int nTrack, int bKeepPlaying);
-		void CheckRepeat (void);
-		void ReInit (void);
-		void Stop (void);
-		int HaveD2CD (void);
-		inline void ForceRegister (void) { m_bForceRegister = 1; }
-		inline int Enabled (void) { return m_bEnabled; }
-};
-
 CRedbook redbook;
-
-//------------------------------------------------------------------------------
-
-class CUserMusicInfo {
-	public:
-		int					nLevelSongs;
-		int					nCurrentSong;
-		int					bMP3;
-		CArray<char*>		levelSongs;
-		char					szIntroSong [FILENAME_LEN];
-		char					szBriefingSong [FILENAME_LEN];
-		char					szCreditsSong [FILENAME_LEN];
-		char					szMenuSong [FILENAME_LEN];
-	};
-
-class CSongData {
-	public:
-		char    filename [16];
-		char    melodicBankFile [16];
-		char    drumBankFile [16];
-	};
-
-class CSongInfo {
-	public:
-		CSongData			data [MAX_NUM_SONGS];
-		int					bInitialized;
-		int					bPlaying;
-		int					bMP3;
-		int					nTotalSongs;
-		int					nSongs [2];
-		int					nFirstLevelSong [2];
-		int					nLevelSongs [2];
-		int					nCurrent;
-		int					nLevel;
-		int					nD1EndLevelSong;
-		time_t				tStart;
-		time_t				tSlowDown;
-		time_t				tPos;
-	};
-
-class CSongManager {
-	private:
-		CSongInfo		m_info;
-		CUserMusicInfo	m_user;
-
-	public:
-		CSongManager () { Init (); }
-		~CSongManager () { Destroy (); }
-		void Init (void);
-		void Destroy (void);
-		void Setup (void);
-		void CheckRepeat (void);
-		void StopAll (void);
-		void Play (int nSong, int repeat);
-		void PlayLevel (int nLevel, int bFromHog);
-		void PlayCurrent (int repeat);
-		void Prev (void);
-		void Next (void);
-		int LoadPlayList (char *pszPlayList);
-		void FreeUserSongs (void);
-	};
-
 CSongManager songManager;
 
 //------------------------------------------------------------------------------
@@ -253,7 +166,7 @@ if (currentTime < m_xLastCheck || (currentTime - m_xLastCheck) >= F2_0) {
 			//new code plays all tracks to end of disk, so if disk has
 			//stopped we must be at end.  So start again with level 1 song.
 
-			PlayLevelSong (1, 0);
+			songManager.PlayLevel (1, 0);
 			}
 		StartTime (0);
 		}
@@ -352,7 +265,7 @@ m_user.bMP3 = 0;
 
 void CSongManager::Destroy (void)
 {
-FreeUserSongs ();
+songManager.FreeUserSongs ();
 }
 
 //------------------------------------------------------------------------------
@@ -464,7 +377,7 @@ if (!m_info.bPlaying) {		//not playing redbook, so play midi
 
 void CSongManager::PlayCurrent (int repeat)
 {
-SongsPlaySong (gameStates.sound.nCurrentSong, repeat);
+songManager.Play (gameStates.sound.nCurrentSong, repeat);
 }
 
 //------------------------------------------------------------------------------
@@ -532,7 +445,7 @@ void CSongManager::Prev (void)
 if (m_info.bPlaying) 		//get correct track
 	m_info.nLevel = RBAGetTrackNum () - REDBOOK_FIRST_LEVEL_TRACK + 1;
 if (m_info.nLevel > 1)
-	PlayLevelSong(m_info.nLevel - 1, 0);
+	songManager.PlayLevel(m_info.nLevel - 1, 0);
 }
 
 //------------------------------------------------------------------------------

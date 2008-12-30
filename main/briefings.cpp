@@ -1643,7 +1643,7 @@ if (!LoadScreenText (fnBriefing, &szBriefingText)) {
 	return;
 	}
 DigiStopAllChannels ();
-SongsPlaySong (SONG_BRIEFING, 1);
+songManager.Play (SONG_BRIEFING, 1);
 SetScreenMode (SCREEN_MENU);
 CCanvas::SetCurrent (NULL);
 gameStates.render.nShadowPass = 0;

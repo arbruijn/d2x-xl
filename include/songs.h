@@ -26,17 +26,94 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 extern int Num_songs, nD1SongNum, nD2SongNum;   //how many MIDI songs
 
-//whether or not redbook audio should be played
-void SongsPlaySong (int songnum, int repeat);
-void PlayLevelSong (int nLevel, int bFromHog);
-// stop the redbook, so we can read off the CD
-void SongsStopRedbook(void);
-// stop any songs - midi or redbook - that are currently playing
-void SongsStopAll(void);
-// this should be called regularly to check for redbook restart
-void SongsCheckRedbookRepeat(void);
-void SongsPlayCurrentSong(int repeat);
-int LoadPlayList (char *pszPlayList);
-void FreeUserSongs (void);
+//------------------------------------------------------------------------------
+
+class CRedbook {
+	private:
+		int	m_bForceRegister;
+		int	m_bEnabled;
+		int	m_bPlaying;
+		fix	m_xLastCheck;
+
+	public:
+		CRedbook () { Init (); }
+		~CRedbook () { Destroy (); }
+		void Init (void);
+		void Destroy (void);
+		void Register (void);
+		void SetVolume (int volume);
+		int PlayTrack (int nTrack, int bKeepPlaying);
+		void CheckRepeat (void);
+		void ReInit (void);
+		void Stop (void);
+		int HaveD2CD (void);
+		inline void ForceRegister (void) { m_bForceRegister = 1; }
+		inline int Enabled (void) { return m_bEnabled; }
+};
+
+extern CRedbook redbook;
+
+//------------------------------------------------------------------------------
+
+class CUserMusicInfo {
+	public:
+		int					nLevelSongs;
+		int					nCurrentSong;
+		int					bMP3;
+		CArray<char*>		levelSongs;
+		char					szIntroSong [FILENAME_LEN];
+		char					szBriefingSong [FILENAME_LEN];
+		char					szCreditsSong [FILENAME_LEN];
+		char					szMenuSong [FILENAME_LEN];
+	};
+
+class CSongData {
+	public:
+		char    filename [16];
+		char    melodicBankFile [16];
+		char    drumBankFile [16];
+	};
+
+class CSongInfo {
+	public:
+		CSongData			data [MAX_NUM_SONGS];
+		int					bInitialized;
+		int					bPlaying;
+		int					bMP3;
+		int					nTotalSongs;
+		int					nSongs [2];
+		int					nFirstLevelSong [2];
+		int					nLevelSongs [2];
+		int					nCurrent;
+		int					nLevel;
+		int					nD1EndLevelSong;
+		time_t				tStart;
+		time_t				tSlowDown;
+		time_t				tPos;
+	};
+
+class CSongManager {
+	private:
+		CSongInfo		m_info;
+		CUserMusicInfo	m_user;
+
+	public:
+		CSongManager () { Init (); }
+		~CSongManager () { Destroy (); }
+		void Init (void);
+		void Destroy (void);
+		void Setup (void);
+		void CheckRepeat (void);
+		void StopAll (void);
+		void Play (int nSong, int repeat);
+		void PlayLevel (int nLevel, int bFromHog);
+		void PlayCurrent (int repeat);
+		void Prev (void);
+		void Next (void);
+		int LoadPlayList (char *pszPlayList);
+		void FreeUserSongs (void);
+	};
+
+extern CSongManager songManager;
 
 #endif /* _SONGS_H */

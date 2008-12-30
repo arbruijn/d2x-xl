@@ -757,7 +757,7 @@ while (!bDone) {
 	if (!Controls [0].automapState && (nLeaveMode == 1))
 		bDone = 1;
 	bDone = GameFrame (bPauseGame, bDone);
-	SongsCheckRedbookRepeat ();
+	redbook.CheckRepeat ();
 	bDone = ReadControls (nLeaveMode, bDone, bPauseGame);
 	Update (vTAngles);
 	Draw ();

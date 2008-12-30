@@ -363,7 +363,7 @@ int ShowTitleScreens (void)
 	int nPlayed = MOVIE_NOT_PLAYED;	//default is not nPlayed
 #if DBG
 if (FindArg ("-notitles"))
-	SongsPlaySong (SONG_TITLE, 1);
+	songManager.Play (SONG_TITLE, 1);
 else
 #endif
  {	//NOTE LINK TO ABOVE!
@@ -380,7 +380,7 @@ else
 		}
 
 	if (!bSongPlaying)
-		SongsPlaySong (SONG_TITLE, 1);
+		songManager.Play (SONG_TITLE, 1);
 	}
 return (nPlayed != MOVIE_NOT_PLAYED);	//default is not nPlayed
 }
@@ -554,7 +554,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 				gameStates.app.nFunctionMode = FMODE_EXIT;
 			if (gameStates.app.nFunctionMode == FMODE_MENU) {
 				DigiStopAllChannels ();
-				SongsPlaySong (SONG_TITLE, 1);
+				songManager.Play (SONG_TITLE, 1);
 				}
 			RestoreDefaultRobots ();
 			break;
@@ -926,7 +926,7 @@ if (gameStates.input.bHaveTrackIR) {
 	pfnTIRExit ();
 	TIRUnload ();
 	}
-SongsStopAll ();
+songManager.StopAll ();
 DigiStopCurrentSong ();
 SaveModelData ();
 /*---*/PrintLog ("Saving configuration file\n");

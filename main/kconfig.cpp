@@ -1282,7 +1282,7 @@ for (;;) {
 		GrUpdate (0);
 		} while (nChangeMode != BT_NONE);
 		//see if redbook song needs to be restarted
-	SongsCheckRedbookRepeat ();
+	redbook.CheckRepeat ();
 
 	k = KeyInKey ();
 	MultiDoFrame();

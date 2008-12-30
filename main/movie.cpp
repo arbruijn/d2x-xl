@@ -474,7 +474,7 @@ CMovie* CMovieLib::Open (char* filename, int bRequired)
 for (i = 0; i < m_nMovies; i++)
 	if (!stricmp (filename, m_movies [i].m_name)) {	//found the movie in a library 
 		if ((bFromCD = (m_flags & MLF_ON_CD)))
-			SongsStopRedbook ();		//ready to read from CD
+			redbook.Stop ();		//ready to read from CD
 		do {		//keep trying until we get the file handle
 			m_movies [i].m_cf.Open (m_name, gameFolders.szMovieDir, "rb", 0);
 			if (bRequired && bFromCD && !m_movies [i].m_cf.File ()) {   //didn't get file!

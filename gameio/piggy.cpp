@@ -251,7 +251,7 @@ if (!FFF ("*.pig", &ffs, 0)) {
 	FFC (&ffs);
 }
 //Now, copy over new pig
-SongsStopRedbook ();           //so we can read off the cd
+redbook.Stop ();           //so we can read off the cd
 //new code to unarj file
 strcpy (name, CDROM_dir);
 strcat (name, "descent2.sow");

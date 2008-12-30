@@ -306,7 +306,7 @@ switch (location) {
 		break;
 
 	case ML_CDROM:
-		SongsStopRedbook();		//so we can read from the CD
+		redbook.Stop();		//so we can read from the CD
 		strcpy(filename2,CDROM_dir);
 		break;
 

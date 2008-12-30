@@ -358,7 +358,7 @@ void DigiExit (void)
 {
 if (gameStates.sound.digi.bAvailable) {
 	DigiStopAll ();
-	SongsStopAll ();
+	songManager.StopAll ();
 	gameStates.sound.digi.bAvailable = 0;
 	DigiClose ();
 	}

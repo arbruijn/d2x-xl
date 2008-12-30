@@ -255,7 +255,7 @@ else if ((k == KEY_ESC) || (m_bDone > uint (NUM_LINES))) {
 	paletteManager.DisableEffect ();
 	paletteManager.Load (D2_DEFAULT_PALETTE, NULL);
 	CCanvas::Pop ();
-	SongsPlaySong (SONG_TITLE, 1);
+	songManager.Play (SONG_TITLE, 1);
 #if 0
 	if (creditsOffscreenBuf != gameStates.render.vr.buffers.offscreen)
 		creditsOffscreenBuf->Destroy ();
@@ -381,7 +381,7 @@ if (nPcxError != PCX_ERROR_NONE) {
 	CCanvas::Pop ();
 	return;
 	}
-SongsPlaySong (SONG_CREDITS, 1);
+songManager.Play (SONG_CREDITS, 1);
 m_bmBackdrop.Remap (NULL, -1, -1);
 
 paletteManager.EnableEffect ();
@@ -393,7 +393,7 @@ gameStates.menus.nInMenu = 1;
 for (;;) {
 	Read ();
 	Render ();
-	SongsCheckRedbookRepeat();
+	redbook.CheckRepeat();
 	if (!HandleInput ())
 		break;
 

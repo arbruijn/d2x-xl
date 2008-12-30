@@ -1118,7 +1118,7 @@ while (!done) {
 	bWheelUp = MouseButtonState (3);
 	bWheelDown = MouseButtonState (4);
 	//see if redbook song needs to be restarted
-	SongsCheckRedbookRepeat ();
+	redbook.CheckRepeat ();
 	//NetworkListen ();
 	if (bWheelUp)
 		k = KEY_UP;
@@ -2185,7 +2185,7 @@ while (!done) {
 	bWheelUp = MouseButtonState (3);
 	bWheelDown = MouseButtonState (4);
 	//see if redbook song needs to be restarted
-	SongsCheckRedbookRepeat ();
+	redbook.CheckRepeat ();
 	if (bWheelUp)
 		key = KEY_UP;
 	else if (bWheelDown)
@@ -2577,7 +2577,7 @@ while (!done) {
 	bWheelUp = MouseButtonState (3);
 	bWheelDown = MouseButtonState (4);
 	//see if redbook song needs to be restarted
-	SongsCheckRedbookRepeat ();
+	redbook.CheckRepeat ();
 
 	if (bWheelUp)
 		key = KEY_UP;

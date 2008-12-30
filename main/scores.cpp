@@ -429,7 +429,7 @@ ReshowScores:
 			if (MouseButtonDownCount (i)>0) done=1;
 
 		//see if redbook song needs to be restarted
-		SongsCheckRedbookRepeat ();
+		redbook.CheckRepeat ();
 
 		k = KeyInKey ();
 		switch (k) {

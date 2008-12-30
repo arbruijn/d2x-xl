@@ -438,7 +438,7 @@ while (!done) {
 			break;
 			}		
 	//see if redbook song needs to be restarted
-	SongsCheckRedbookRepeat ();
+	redbook.CheckRepeat ();
 	k = KeyInKey ();
 	switch (k) {
 		case KEY_ENTER:

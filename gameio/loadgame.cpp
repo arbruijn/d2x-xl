@@ -761,7 +761,7 @@ omegaLightnings.Init ();
 gameData.multiplayer.bMoving = -1;
 #if 1
 /*---*/PrintLog ("   stopping music\n");
-SongsStopAll ();
+songManager.StopAll ();
 /*---*/PrintLog ("   stopping sounds\n");
 DigiStopAllChannels ();
 /*---*/PrintLog ("   reconfiguring audio\n");
@@ -970,7 +970,7 @@ gameData.hoard.nMonsterballSeg = -1;
 SetSoundSources ();
 if (!IsMultiGame)
 	InitEntropySettings (0);	//required for repair centers
-PlayLevelSong (gameData.missions.nCurrentLevel, 1);
+songManager.PlayLevel (gameData.missions.nCurrentLevel, 1);
 ClearBoxedMessage ();		//remove message before new palette loaded
 paletteManager.LoadEffect  ();		//actually load the palette
 /*---*/PrintLog ("   rebuilding OpenGL texture data\n");
@@ -1297,7 +1297,7 @@ if (gameStates.app.bFirstSecretVisit || (gameData.demo.nState == ND_STATE_PLAYBA
 	InitSecretLevel (nLevel);
 	if (!gameStates.app.bAutoRunMission && gameStates.app.bD1Mission)
 		ShowLevelIntro (nLevel);
-	PlayLevelSong (gameData.missions.nCurrentLevel, 0);
+	songManager.PlayLevel (gameData.missions.nCurrentLevel, 0);
 	InitRobotsForLevel ();
 	InitAIObjects ();
 	InitShakerDetonates ();
@@ -1503,11 +1503,11 @@ if (!IsMultiGame) {
 			}
 		if (!bPlayed) {
 			if (IS_D2_OEM) {
-				SongsPlaySong (SONG_TITLE, 0);
+				songManager.Play (SONG_TITLE, 0);
 				DoBriefingScreens (reinterpret_cast<char*> ("end2oem.tex"), 1);
 				}
 			else {
-				SongsPlaySong (SONG_ENDGAME, 0);
+				songManager.Play (SONG_ENDGAME, 0);
 				DoBriefingScreens (gameStates.app.bD1Mission ? reinterpret_cast<char*> ("endreg.tex") : reinterpret_cast<char*> ("ending2.tex"), 
 										 gameStates.app.bD1Mission ? 0x7e : 1);
 				}

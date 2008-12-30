@@ -311,7 +311,7 @@ if (IsMultiGame) {
 	}
 Assert (nLastSeg == gameData.endLevel.exit.nSegNum);
 if (gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1)
-	SongsPlaySong (SONG_ENDLEVEL, 0);
+	songManager.Play (SONG_ENDLEVEL, 0);
 gameStates.app.bEndLevelSequence = EL_FLYTHROUGH;
 gameData.objs.consoleP->info.movementType = MT_NONE;			//movement handled by flythrough
 gameData.objs.consoleP->info.controlType = CT_NONE;
@@ -904,7 +904,7 @@ exitFlightDataP->objP = objP;
 exitFlightDataP->firstTime = 1;
 exitFlightDataP->speed = speed ? speed : DEFAULT_SPEED;
 exitFlightDataP->offset_frac = 0;
-SongsPlaySong (SONG_INTER, 0);
+songManager.Play (SONG_INTER, 0);
 }
 
 //------------------------------------------------------------------------------

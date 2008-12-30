@@ -37,7 +37,7 @@ do {
 			gameData.songs.tSlowDown = SDL_GetTicks ();
 			gameData.songs.tPos = gameData.songs.tSlowDown - gameData.songs.tStart;
 			}
-		PlayLevelSong (gameData.missions.nCurrentLevel, 1);
+		songManager.PlayLevel (gameData.missions.nCurrentLevel, 1);
 		}
 	tiSound.ti.bExec = 0;
 	} while (!tiSound.ti.bDone);

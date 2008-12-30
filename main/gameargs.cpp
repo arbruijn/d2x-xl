@@ -278,7 +278,7 @@ void EvalMusicArgs (void)
 	char	*p;
 
 if ((t = FindArg ("-playlist")) && (p = pszArgList [t+1]))
-	LoadPlayList (p);
+	songManager.LoadPlayList (p);
 if ((t = FindArg ("-introsong")) && (p = pszArgList [t+1]))
 	strncpy (gameData.songs.user.szIntroSong, p, FILENAME_LEN);
 if ((t = FindArg ("-briefingsong")) && (p = pszArgList [t+1]))

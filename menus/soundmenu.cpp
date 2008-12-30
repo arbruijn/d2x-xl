@@ -134,9 +134,9 @@ if (menu [soundOpts.nRedbook].m_value != gameStates.sound.bRedbookEnabled) {
 		}
 	else if ((gameStates.sound.bRedbookEnabled = menu [soundOpts.nRedbook].m_value)) {
 		if (gameStates.app.nFunctionMode == FMODE_MENU)
-			SongsPlaySong (SONG_TITLE, 1);
+			songManager.Play (SONG_TITLE, 1);
 		else if (gameStates.app.nFunctionMode == FMODE_GAME)
-			PlayLevelSong (gameData.missions.nCurrentLevel, gameStates.app.bGameRunning);
+			songManager.PlayLevel (gameData.missions.nCurrentLevel, gameStates.app.bGameRunning);
 		else
 			Int3 ();
 
@@ -172,9 +172,9 @@ else {
 		else if (!bSongPlaying) {
 			//DigiStopAllChannels ();
 			if (gameStates.app.bGameRunning)
-				PlayLevelSong (gameData.missions.nCurrentLevel ? gameData.missions.nCurrentLevel : 1, 1);
+				songManager.PlayLevel (gameData.missions.nCurrentLevel ? gameData.missions.nCurrentLevel : 1, 1);
 			else
-				SongsPlaySong (SONG_TITLE, 1);
+				songManager.Play (SONG_TITLE, 1);
 			}
 		}
 	}
@@ -241,7 +241,7 @@ do {
 if (gameConfig.nMidiVolume < 1)
 	DigiPlayMidiSong (NULL, NULL, NULL, 0, 0);
 else if (!bSongPlaying)
-	SongsPlaySong (gameStates.sound.nCurrentSong, 1);
+	songManager.Play (gameStates.sound.nCurrentSong, 1);
 if (!gameStates.app.bNostalgia) {
 	GET_VAL (gameOpts->sound.bFadeMusic, optFadeMusic);
 	GET_VAL (gameOpts->sound.bShip, optShipSound);

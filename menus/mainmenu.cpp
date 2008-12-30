@@ -122,7 +122,7 @@ if (gameStates.app.bAutoDemos) {
 			if ((d_rand () % (nDemos+1)) == 0) {
 				gameStates.video.nScreenMode = -1;
 				movieManager.PlayIntro ();
-				SongsPlaySong (SONG_TITLE, 1);
+				songManager.Play (SONG_TITLE, 1);
 				nLastKey = -3; //exit menu to force rebuild even if not going to game mode. -3 tells menu system not to restore
 				SetScreenMode (SCREEN_MENU);
 				break;
@@ -255,7 +255,7 @@ if (i > -1) {
 	movieManager.Play (m [i], 1, 1, gameOpts->movies.bResize);
 	SDL_ShowCursor (1);
 	}
-SongsPlayCurrentSong (1);
+songManager.PlayCurrent (1);
 }
 
 //------------------------------------------------------------------------------
@@ -284,7 +284,7 @@ for (;;) {
 		continue;
 	for (i = 0; i < gameData.songs.nTotalSongs; i++)
 		if (gameData.songs.info [i].filename == m [h]) {
-			SongsPlaySong (i, 0);
+			songManager.Play (i, 0);
 			return;
 			}
 	}
@@ -349,7 +349,7 @@ else if (nChoice == mainOpts.nSongs)
 	PlayMenuSong ();
 else if (nChoice == mainOpts.nCredits) {
 	paletteManager.DisableEffect ();
-	SongsStopAll ();
+	songManager.StopAll ();
 	creditsManager.Show (NULL); 
 	}
 #ifdef EDITOR
