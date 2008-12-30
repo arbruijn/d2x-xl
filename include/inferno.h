@@ -2850,39 +2850,6 @@ class CEndLevelData {
 
 //------------------------------------------------------------------------------
 
-#include "songs.h"
-
-typedef struct tUserMusicData {
-	int					nLevelSongs;
-	int					nCurrentSong;
-	int					bMP3;
-	CArray<char*>		pszLevelSongs;
-	char					szIntroSong [FILENAME_LEN];
-	char					szBriefingSong [FILENAME_LEN];
-	char					szCreditsSong [FILENAME_LEN];
-	char					szMenuSong [FILENAME_LEN];
-} tUserMusicData;
-
-//------------------------------------------------------------------------------
-
-class CSongData {
-	public:
-		tSongInfo			info [MAX_NUM_SONGS];
-		int					bInitialized;
-		int					nTotalSongs;
-		int					nSongs [2];
-		int					nFirstLevelSong [2];
-		int					nLevelSongs [2];
-		int					nD1EndLevelSong;
-		int					bPlaying;
-		time_t				tStart;
-		time_t				tSlowDown;
-		time_t				tPos;
-		tUserMusicData		user;
-};
-
-//------------------------------------------------------------------------------
-
 class CMenuData {
 	public:
 		int		bValid;
@@ -3261,7 +3228,6 @@ class CGameData {
 		CMarkerData			marker;
 		CBossData			boss [MAX_BOSS_COUNT];
 		CAIData				ai;
-		CSongData			songs;
 		CEndLevelData		endLevel;
 		CMenuData			menu;
 		CMatCenData			matCens;

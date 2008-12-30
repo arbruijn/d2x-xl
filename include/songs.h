@@ -14,15 +14,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _SONGS_H
 #define _SONGS_H
 
-#define MAX_NUM_SONGS           100
-
-typedef struct tSongInfo {
-	char    filename [16];
-	char    melodicBankFile [16];
-	char    drumBankFile [16];
-} tSongInfo;
-
-extern tSongInfo Songs[MAX_NUM_SONGS];
+#define MAX_NUM_SONGS         100
 
 #define SONG_TITLE            0
 #define SONG_BRIEFING         1
