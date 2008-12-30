@@ -1194,8 +1194,6 @@ else
 				vDeltaf [Y] /= (float) h;
 				vDeltaf [Z] /= (float) h;
 				}
-			else if (/*(m_nType == LIGHT_PARTICLES) ||*/ (m_nType == BULLET_PARTICLES))
-				goto funcExit;
 			else {
 #if 1
 				vPosf.Assign (m_vPrevPos);
@@ -1222,6 +1220,8 @@ else
 				m_particles [j].Create (&vPos, vDir, &mOrient, m_nSegment, m_nLife,
 												m_nSpeed, m_nType, m_nClass, m_fScale, m_bHaveColor ? &m_color : NULL,
 												nCurTime, m_bBlowUpParts, fBrightness, vEmittingFace);
+			if ((m_nType == LIGHT_PARTICLES) || (m_nType == BULLET_PARTICLES))
+				goto funcExit;
 				}
 			}
 		}
