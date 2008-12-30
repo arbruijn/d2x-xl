@@ -22,8 +22,42 @@ m_hmp = NULL;
 
 //------------------------------------------------------------------------------
 
+void CMidi::Shutdown (void)
+{
+if (m_hmp) {
+	hmp_close (m_hmp);
+	m_hmp = NULL;
+	songManager.SetPlaying (0);
+	}
+Fadeout ();
+}
+
+//------------------------------------------------------------------------------
+
+void CMidi::Fadeout (void)
+{
+#if USE_SDL_MIXER
+if (!audio.Available ()) 
+	return;
+if (gameOpts->sound.bUseSDLMixer) {
+	if (gameOpts->sound.bFadeMusic) {
+		while (!Mix_FadeOutMusic (250) && Mix_PlayingMusic ())
+			SDL_Delay (50);		
+		while (Mix_PlayingMusic ())
+			SDL_Delay (1);		
+		}
+	Mix_HaltMusic ();
+	Mix_FreeMusic (m_music);
+	m_music = NULL;
+	}
+#endif
+}
+
+//------------------------------------------------------------------------------
+
 int CMidi::SetVolume (int nVolume)
 {
+#if (defined (_WIN32) || USE_SDL_MIXER)
 	int nLastVolume = m_nVolume;
 
 if (nVolume < 0)
@@ -33,11 +67,11 @@ else if (nVolume > 127)
 else
 	m_nVolume = nVolume;
 
-#if USE_SDL_MIXER
+#	if USE_SDL_MIXER
 if (gameOpts->sound.bUseSDLMixer)
 	Mix_VolumeMusic (m_nVolume);
-#endif
-#if defined (_WIN32)
+#	endif
+#	if defined (_WIN32)
 #	if USE_SDL_MIXER
 else 
 #	endif
@@ -49,19 +83,20 @@ if (m_hmp) {
 	mmVolume |= (mmVolume << 8);
 	nVolume = midiOutSetVolume ((HMIDIOUT)m_hmp->hmidi, mmVolume | (mmVolume << 16));
 	}
-#endif
+#	endif
 return nLastVolume;
+#else
+return 0;
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 int CMidi::PlaySong (char* pszSong, char* melodicBank, char* drumBank, int bLoop, int bD1Song)
 {
+#if (defined (_WIN32) || USE_SDL_MIXER)
 	int	bCustom;
-#if 0
-if (!gameStates.sound.digi.bInitialized)
-	return 0;
-#endif
+
 PrintLog ("DigiPlayMidiSong (%s)\n", pszSong);
 audio.StopCurrentSong ();
 if (!(pszSong && *pszSong))
@@ -71,7 +106,7 @@ if (m_nVolume < 1)
 bCustom = ((strstr (pszSong, ".mp3") != NULL) || (strstr (pszSong, ".ogg") != NULL));
 if (!(bCustom || (m_hmp = hmp_open (pszSong, bD1Song))))
 	return 0;
-#if USE_SDL_MIXER
+#	if USE_SDL_MIXER
 if (gameOpts->sound.bUseSDLMixer) {
 	char	fnSong [FILENAME_LEN], *pfnSong;
 
@@ -115,8 +150,8 @@ if (gameOpts->sound.bUseSDLMixer) {
 	SetVolume (m_nVolume);
 	return 1;
 	}
-#endif
-#if defined (_WIN32)
+#	endif
+#	if defined (_WIN32)
 if (bCustom) {
 	PrintLog ("Cannot play %s - enable SDL_mixer\n", pszSong);
 	return 0;
@@ -124,6 +159,7 @@ if (bCustom) {
 hmp_play (m_hmp, bLoop);
 songManager.SetPlaying (1);
 SetVolume (m_nVolume);
+#	endif
 #endif
 return 1;
 }

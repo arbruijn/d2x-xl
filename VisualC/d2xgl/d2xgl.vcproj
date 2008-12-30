@@ -3162,6 +3162,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\include\midi.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\include\songs.h"
 						>
 					</File>
@@ -4501,11 +4505,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File

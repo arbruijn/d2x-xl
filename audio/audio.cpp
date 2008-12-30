@@ -19,13 +19,10 @@
 #include "error.h"
 #include "text.h"
 #include "songs.h"
+#include "midi.h"
 #include "audio.h"
 
 #define SDL_MIXER_CHANNELS	2
-
-//changed on 980905 by adb to increase number of concurrent sounds
-#define MAX_SOUND_CHANNELS 128
-#define MAX_SOUND_OBJECTS	150
 
 //end changes by adb
 #define SOUND_BUFFER_SIZE 512
@@ -88,13 +85,6 @@ static const ubyte mix8[] =
 };
 
 //------------------------------------------------------------------------------
-
-#define SOF_USED				1 		// Set if this sample is used
-#define SOF_PLAYING			2		// Set if this sample is playing on a channel
-#define SOF_LINK_TO_OBJ		4		// Sound is linked to a moving CObject. If CObject dies, then finishes play and quits.
-#define SOF_LINK_TO_POS		8		// Sound is linked to CSegment, pos
-#define SOF_PLAY_FOREVER	16		// Play bForever (or until level is stopped), otherwise plays once
-#define SOF_PERMANENT		32		// Part of the level, like a waterfall or fan
 
 CAudio audio;
 
@@ -685,28 +675,6 @@ else
 
 //------------------------------------------------------------------------------
 
-void CAudio::FadeoutMusic (void)
-{
-#if USE_SDL_MIXER
-extern Mix_Music *mixMusic;
-if (!m_info.bAvailable) 
-	return;
-if (gameOpts->sound.bUseSDLMixer) {
-	if (gameOpts->sound.bFadeMusic) {
-		while (!Mix_FadeOutMusic (250) && Mix_PlayingMusic ())
-			SDL_Delay (50);		
-		while (Mix_PlayingMusic ())
-			SDL_Delay (1);		
-		}
-	Mix_HaltMusic ();
-	Mix_FreeMusic (mixMusic);
-	mixMusic = NULL;
-	}
-#endif
-}
-
-//------------------------------------------------------------------------------
-
 void CAudio::Shutdown (void)
 {
 if (m_info.bAvailable) {
@@ -731,19 +699,14 @@ audio.Setup (1);
 
 void CAudio::StopAllSounds (void)
 {
-	int i;
-
-for (i = 0; i < MAX_SOUND_CHANNELS; i++)
+StopLoopingSound ();
+StopObjectSounds ();
+for (int i = 0; i < MAX_SOUND_CHANNELS; i++)
 	audio.StopSound (i);
 gameData.multiplayer.bMoving = -1;
 gameData.weapons.firing [0].bSound = 0;
+soundQueue.Init ();
 }
-
-//------------------------------------------------------------------------------
-
-void DigiEndSoundObj (int nChannel);
-void SoundQEnd ();
-int VerifySoundChannelFree (int nChannel);
 
 //------------------------------------------------------------------------------
 
@@ -848,7 +811,7 @@ void CAudio::SetVolumes (int fxVolume, int midiVolume)
 if (!gameStates.app.bUseSound)
 	return;
 SetFxVolume (fxVolume);
-SetMidiVolume (midiVolume);
+midi.SetVolume (midiVolume);
 }
 
 //------------------------------------------------------------------------------
@@ -945,21 +908,10 @@ audio.StopSound (nChannel);
 
 //------------------------------------------------------------------------------
 
-#if !(defined (_WIN32) || USE_SDL_MIXER)
-// MIDI stuff follows.
-void DigiSetMidiVolume (int mvolume) { }
-
-int DigiPlayMidiSong (char * filename, char * melodic_bank, char * drum_bank, int loop, int bD1Song) 
-{
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
 void CAudio::StopCurrentSong ()
 {
 if (songManager.Playing ()) {
-	audio.FadeoutMusic ();
+	midi.Fadeout ();
 #if USE_SDL_MIXER
 	if (!gameOpts->sound.bUseSDLMixer)
 #endif
@@ -968,11 +920,7 @@ if (songManager.Playing ()) {
 #	if USE_SDL_MIXER
 if (!gameOpts->sound.bUseSDLMixer)
 #	endif
-	 {
-		hmp_close (hmp);
-		hmp = NULL;
-		songManager.SetPlaying (0);
-		}
+	midi.Shutdown ();
 #endif
 	}
 }

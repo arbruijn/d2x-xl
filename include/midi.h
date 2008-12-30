@@ -24,6 +24,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "vecmat.h"
 #include "carray.h"
 #include "cfile.h"
+#include "hmpfile.h"
 
 //------------------------------------------------------------------------------
 
@@ -36,13 +37,14 @@ class CMidi {
 
 	public:
 		CMidi () { Init (); }
-		~CMidi () { Destroy (); }
+		~CMidi () { Shutdown (); }
 		void Init (void);
-		void Destroy (void);
+		void Shutdown (void);
 		int SetVolume (int nVolume);
 		int PlaySong (char* pszSong, char* melodicBank, char* drumBank, int bLoop, int bD1Song);
 		void Pause (void);
 		void Resume (void);
+		void Fadeout (void);
 	};
 
 extern CMidi midi;
