@@ -931,7 +931,7 @@ if (gameFileInfo.objects.offset > -1) {
 		gameData.objs.init [i] = *objP;
 		}
 	}
-for (i = 0; i < MAX_OBJECTS - 1; i++)
+for (i = 0; i < LEVEL_OBJECTS - 1; i++)
 	gameData.objs.dropInfo [i].nNextPowerup = i + 1;
 gameData.objs.dropInfo [i].nNextPowerup = -1;
 gameData.objs.nFirstDropped =

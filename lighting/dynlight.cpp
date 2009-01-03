@@ -80,7 +80,7 @@ unsigned GetDynLightHandle (void)
 {
 #if USE_OGL_LIGHTS
 	GLint	nMaxLights;
-if (gameData.render.lights.dynamic.nLights >= MAX_SEGMENTS)
+if (gameData.render.lights.dynamic.nLights >= LEVEL_SEGMENTS)
 	return 0xffffffff;
 glGetIntegerv (GL_MAX_LIGHTS, &nMaxLights);
 if (gameData.render.lights.dynamic.nLights >= nMaxLights)
@@ -662,10 +662,8 @@ if (gameStates.app.bD1Mission)
 #endif
 gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 memset (&gameData.render.lights.dynamic.headlights, 0, sizeof (gameData.render.lights.dynamic.headlights));
-//glEnable (GL_LIGHTING);
 if (gameOpts->render.nLightingMethod)
 	gameData.render.color.vertices.Clear ();
-//memset (gameData.render.color.ambient, 0, sizeof (*gameData.render.color.ambient) * MAX_VERTICES);
 gameData.render.lights.dynamic.Init ();
 for (nFace = gameData.segs.nFaces, faceP = FACES.faces.Buffer (); nFace; nFace--, faceP++) {
 	nSegment = faceP->nSegment;

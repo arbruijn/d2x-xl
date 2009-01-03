@@ -632,9 +632,9 @@ int CCameraManager::Create (void)
 if (!gameStates.app.bD2XLevel)
 	return 0;
 PrintLog ("   creating cameras\n");
-if (!(m_faceCameras.Buffer() || m_faceCameras.Create (2 * MAX_SEGMENTS * 6)))
+if (!(m_faceCameras.Buffer() || m_faceCameras.Create (2 * LEVEL_SEGMENTS * 6)))
 	return 0;
-if (!(m_objectCameras.Buffer() || m_objectCameras.Create (MAX_OBJECTS)))
+if (!(m_objectCameras.Buffer() || m_objectCameras.Create (LEVEL_OBJECTS)))
 	return 0;
 m_faceCameras.Clear (0xFF);
 m_objectCameras.Clear (0xFF);
@@ -739,7 +739,7 @@ return 0;
 
 inline int CCameraManager::GetObjectCamera (int nObject) 
 {
-if (!(m_cameras && m_objectCameras.Buffer ()) || (nObject < 0) || (nObject >= MAX_OBJECTS))
+if (!(m_cameras && m_objectCameras.Buffer ()) || (nObject < 0) || (nObject >= LEVEL_OBJECTS))
 	return -1;
 return m_objectCameras [nObject];
 }
@@ -748,7 +748,7 @@ return m_objectCameras [nObject];
 
 inline void CCameraManager::SetObjectCamera (int nObject, int i) 
 {
-if (m_objectCameras.Buffer () && (nObject >= 0) && (nObject < MAX_OBJECTS))
+if (m_objectCameras.Buffer () && (nObject >= 0) && (nObject < LEVEL_OBJECTS))
 	m_objectCameras [nObject] = i;
 }
 

@@ -672,7 +672,7 @@ void DoRenderObject (int nObject, int nWindow)
 
 if (!(IsMultiGame || gameOpts->render.debug.bObjects))
 	return;
-Assert(nObject < MAX_OBJECTS);
+Assert(nObject < LEVEL_OBJECTS);
 #if 0
 if (!(nWindow || gameStates.render.cameras.bActive) && (gameStates.render.nShadowPass < 2) &&
     (gameData.render.mine.bObjectRendered [nObject] == gameStates.render.nFrameFlipFlop))	//already rendered this...
@@ -700,7 +700,7 @@ if ((nType == OBJ_ROBOT) || (nType == OBJ_PLAYER) ||
 		}
 	wrd->renderedObjects [wrd->nObjects++] = nObject;
 	}
-if ((count++ > MAX_OBJECTS) || (objP->info.nNextInSeg == nObject)) {
+if ((count++ > LEVEL_OBJECTS) || (objP->info.nNextInSeg == nObject)) {
 	Int3();					// infinite loop detected
 	objP->info.nNextInSeg = -1;		// won't this clean things up?
 	return;					// get out of this infinite loop!

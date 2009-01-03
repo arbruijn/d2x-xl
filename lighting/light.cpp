@@ -734,7 +734,7 @@ if (!gameOpts->render.nLightingMethod) {
 					continue;	//ignore it, and go on to next one
 					}
 				if (!gameData.render.lights.vertexFlags [nv]) {
-					Assert (nRenderVertices < MAX_VERTICES);
+					Assert (nRenderVertices < LEVEL_VERTICES);
 					gameData.render.lights.vertexFlags [nv] = 1;
 					gameData.render.lights.vertices [nRenderVertices++] = nv;
 					}
@@ -1194,7 +1194,7 @@ for (dliP = gameData.render.lights.deltaIndices + i; i < gameData.render.lights.
 		return;
 #endif
 	if ((iSeg == nSegment) && (iSide == nSide)) {
-		if (dliP->d2.index >= MAX_DELTA_LIGHTS)
+		if (dliP->d2.index >= LEVEL_DELTA_LIGHTS)
 			continue;	//ouch - bogus data!
 		dlP = gameData.render.lights.deltas + dliP->d2.index;
 		for (j = (gameStates.render.bD2XLights ? dliP->d2x.count : dliP->d2.count); j; j--, dlP++) {

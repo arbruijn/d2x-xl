@@ -697,7 +697,7 @@ if (!matCenP->bFlag) {
 	nSegment = matCenP->nSegment;
 	for (nObject = SEGMENTS [nSegment].m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
 		nCount++;
-		if (nCount > MAX_OBJECTS) {
+		if (nCount > LEVEL_OBJECTS) {
 #if TRACE
 			console.printf (CON_DBG, "Object list in CSegment %d is circular.", nSegment);
 #endif

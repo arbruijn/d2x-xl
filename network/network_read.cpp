@@ -684,7 +684,7 @@ else if (i < 0)
 				Int3 (); // SEE ROB
 			}
 		if (nObject != -1) {
-			Assert (nObject < MAX_OBJECTS);
+			Assert (nObject < LEVEL_OBJECTS);
 			objP = OBJECTS + nObject;
 #if 1//def _DEBUG
 			if (objP->info.nSegment >= 0)

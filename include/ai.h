@@ -211,10 +211,10 @@ extern int	 boss_obj_num [MAX_BOSS_COUNT];
 // --------- John: These variables must be saved as part of gamesave. ---------
 extern int              Ai_initialized;
 extern int              nOverallAgitation;
-extern tAILocalInfo         aiLocalInfo [MAX_OBJECTS];
-extern tPointSeg        Point_segs [MAX_POINT_SEGS];
+//extern tAILocalInfo     aiLocalInfo [MAX_OBJECTS];
+//extern tPointSeg        Point_segs [MAX_POINT_SEGS];
 extern tPointSeg        *Point_segs_free_ptr;
-extern tAICloakInfo    aiCloakInfo [MAX_AI_CLOAK_INFO];
+//extern tAICloakInfo     aiCloakInfo [MAX_AI_CLOAK_INFO];
 
 #endif
 

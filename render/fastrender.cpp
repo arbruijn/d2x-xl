@@ -83,7 +83,7 @@ for (int i = 0, h = flxP->nUsedKeys; i < h; i++)
 	tails [usedKeys [i]] = -1;
 #	endif
 #endif
-flxP->nUsedFaces = nThread ? MAX_FACES : 0;
+flxP->nUsedFaces = nThread ? LEVEL_FACES : 0;
 flxP->nUsedKeys = 0;
 PROF_END(ptFaceList)
 }

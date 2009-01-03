@@ -1796,7 +1796,7 @@ if (SHOW_LIGHTNINGS || bForce) {
 		int					i;
 
 	for (i = m_nFirstLight; i >= 0; ) {
-		if ((i < 0) || (i >= MAX_SEGMENTS))
+		if ((i < 0) || (i >= LEVEL_SEGMENTS))
 			continue;
 		llP = m_lights + i;
 		i = llP->nNext;
@@ -1834,7 +1834,7 @@ if (SHOW_LIGHTNINGS) {
 		return;
 	nLights = 0;
 	for (i = m_nFirstLight; i >= 0; i = llP->nNext) {
-		if ((i < 0) || (i >= MAX_SEGMENTS))
+		if ((i < 0) || (i >= LEVEL_SEGMENTS))
 			continue;
 		llP = m_lights + i;
 #if DBG

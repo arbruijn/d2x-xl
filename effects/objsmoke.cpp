@@ -73,7 +73,7 @@ void ResetObjectSmoke (void)
 {
 	int	i;
 
-for (i = 0; i < MAX_OBJECTS; i++)
+for (i = 0; i < LEVEL_OBJECTS; i++)
 	KillObjectSmoke (i);
 InitObjectSmoke ();
 }

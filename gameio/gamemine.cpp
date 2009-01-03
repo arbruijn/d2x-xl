@@ -835,24 +835,6 @@ int load_mine_data (CFile& cf)
 
 	ResetObjects (1);		//one CObject, the CPlayerData
 
-	#ifdef EDITOR
-	gameData.segs.nLastVertex = MAX_SEGMENT_VERTICES-1;
-	gameData.segs.nLastSegment = MAX_SEGMENTS-1;
-	set_vertexCounts ();
-	gameData.segs.nLastVertex = gameData.segs.nVertices-1;
-	gameData.segs.nLastSegment = gameData.segs.nSegments-1;
-
-	warn_if_concave_segments ();
-	#endif
-
-	#ifdef EDITOR
-		SetupSegments ();
-	#endif
-
-	//create_local_segment_data ();
-
-	//gamemine_find_textures ();
-
 	if (mine_top_fileinfo.fileinfoVersion < MINE_VERSION )
 		return 1;		//old version
 	else
@@ -1237,7 +1219,6 @@ for (i = 0; i < MAX_TEXTURES; i++)
 	tmap_xlate_table [i] = i;
 #endif
 
-//	memset ( SEGMENTS, 0, sizeof (CSegment)*MAX_SEGMENTS );
 //=============================== Reading part ==============================
 nCompiledVersion = cf.ReadByte ();
 //Assert ( nCompiledVersion==COMPILED_MINE_VERSION );

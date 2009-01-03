@@ -293,9 +293,9 @@ if ((nOwner >= gameData.multiplayer.nPlayers) || (nOwner < -1)) {
 	}
 if (nOwner == -1)
 	return (nRemoteObj);
-if ((nRemoteObj < 0) || (nRemoteObj  >= MAX_OBJECTS))
+if ((nRemoteObj < 0) || (nRemoteObj  >= LEVEL_OBJECTS))
 	return -1;
-result = gameData.multigame.remoteToLocal [nOwner * MAX_OBJECTS + nRemoteObj];
+result = gameData.multigame.remoteToLocal [nOwner * LEVEL_OBJECTS + nRemoteObj];
 if (result < 0)
 	return -1;
 return (result);
@@ -347,13 +347,13 @@ if (nLocalObj != nRemoteObj)
 void MapObjnumLocalToRemote (int nLocalObj, int nRemoteObj, int nOwner)
 {
 Assert (nLocalObj > -1);
-Assert (nLocalObj < MAX_OBJECTS);
+Assert (nLocalObj < LEVEL_OBJECTS);
 Assert (nRemoteObj > -1);
-Assert (nRemoteObj < MAX_OBJECTS);
+Assert (nRemoteObj < LEVEL_OBJECTS);
 Assert (nOwner > -1);
 Assert (nOwner != gameData.multiplayer.nLocalPlayer);
 gameData.multigame.nObjOwner [nLocalObj] = nOwner;
-gameData.multigame.remoteToLocal [nOwner * MAX_OBJECTS + nRemoteObj] = nLocalObj;
+gameData.multigame.remoteToLocal [nOwner * LEVEL_OBJECTS + nRemoteObj] = nLocalObj;
 gameData.multigame.localToRemote [nLocalObj] = nRemoteObj;
 return;
 }
@@ -364,9 +364,9 @@ return;
 void MapObjnumLocalToLocal (int nLocalObj)
 {
 Assert (nLocalObj > -1);
-Assert (nLocalObj < MAX_OBJECTS);
+Assert (nLocalObj < LEVEL_OBJECTS);
 gameData.multigame.nObjOwner [nLocalObj] = gameData.multiplayer.nLocalPlayer;
-gameData.multigame.remoteToLocal [gameData.multiplayer.nLocalPlayer * MAX_OBJECTS + nLocalObj] = nLocalObj;
+gameData.multigame.remoteToLocal [gameData.multiplayer.nLocalPlayer * LEVEL_OBJECTS + nLocalObj] = nLocalObj;
 gameData.multigame.localToRemote [nLocalObj] = nLocalObj;
 }
 

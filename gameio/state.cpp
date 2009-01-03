@@ -106,7 +106,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define DBG(_expr)
 #endif
 
-#define STATE_VERSION				39
+#define STATE_VERSION				40
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) nId at tof.
 // 1 - Added Difficulty level save
@@ -1107,7 +1107,7 @@ if (!m_bBetweenLevels) {
 
 	DBG (fPos = m_cf.Tell ());
 // Save the automap visited info
-	for (i = 0; i < MAX_SEGMENTS; i++)
+	for (i = 0; i < LEVEL_SEGMENTS; i++)
 		m_cf.WriteShort (automap.m_visited [0][i]);
 	DBG (fPos = m_cf.Tell ());
 	}
@@ -1130,7 +1130,7 @@ m_cf.WriteFix (paletteManager.LastEffectTime ());
 m_cf.WriteShort (paletteManager.RedEffect ());
 m_cf.WriteShort (paletteManager.GreenEffect ());
 m_cf.WriteShort (paletteManager.BlueEffect ());
-m_cf.Write (gameData.render.lights.subtracted.Buffer (), sizeof (gameData.render.lights.subtracted [0]), MAX_SEGMENTS);
+m_cf.Write (gameData.render.lights.subtracted.Buffer (), sizeof (gameData.render.lights.subtracted [0]), LEVEL_SEGMENTS);
 m_cf.WriteInt (gameStates.app.bFirstSecretVisit);
 m_cf.WriteFix (gameData.omega.xCharge [0]);
 m_cf.WriteShort (gameData.missions.nEnteredFromLevel);
@@ -2195,6 +2195,10 @@ if (!m_bBetweenLevels) {
 	DBG (fPos = m_cf.Tell ());
 	FixObjects ();
 	SpecialResetObjects ();
+	if (m_nVersion > 39) {
+		for (i = 0; i < LEVEL_SEGMENTS; i++)
+			automap.m_visited [0][i] = (ushort) m_cf.ReadShort ();
+		}
 	if (m_nVersion > 37) {
 		for (i = 0; i < MAX_SEGMENTS; i++)
 			automap.m_visited [0][i] = (ushort) m_cf.ReadShort ();
@@ -2242,7 +2246,7 @@ paletteManager.SetGreenEffect ((ubyte) m_cf.ReadShort ());
 paletteManager.SetBlueEffect ((ubyte) m_cf.ReadShort ());
 m_cf.Read (gameData.render.lights.subtracted.Buffer (), 
 			  sizeof (gameData.render.lights.subtracted [0]), 
-			  (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2);
+			  (m_nVersion > 39) ? LEVEL_SEGMENTS : (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2);
 ApplyAllChangedLight ();
 gameStates.app.bFirstSecretVisit = m_cf.ReadInt ();
 if (m_bSecret) 
@@ -2395,7 +2399,7 @@ if (!m_bBetweenLevels) {
 			m_cf.Read (gameData.trigs.firstObjTrigger.Buffer (), sizeof (short), 700);
 			}
 		else
-			m_cf.Seek ((m_nVersion < 35) ? 700 : MAX_OBJECTS_D2X * sizeof (short), SEEK_CUR);
+			m_cf.Seek (((m_nVersion > 39) ? LEVEL_OBJECTS : (m_nVersion > 34) ? MAX_OBJECTS_D2X : 700) * sizeof (short), SEEK_CUR);
 		}
 	//Restore tmap info
 	CSegment* segP = SEGMENTS.Buffer ();
@@ -2434,6 +2438,8 @@ if (!m_bBetweenLevels) {
 	// Restore the AI state
 	LoadAIBinFormat ();
 	// Restore the automap visited info
+	if (m_nVersion > 39)
+		m_cf.Read (automap.m_visited [0].Buffer (), sizeof (ushort), LEVEL_SEGMENTS);
 	if (m_nVersion > 37)
 		m_cf.Read (automap.m_visited [0].Buffer (), sizeof (ushort), MAX_SEGMENTS);
 	else {
@@ -2501,7 +2507,7 @@ else {
 //	Load gameData.render.lights.subtracted
 if (m_nVersion >= 16) {
 	m_cf.Read (gameData.render.lights.subtracted.Buffer (), sizeof (gameData.render.lights.subtracted [0]), 
-				  (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2);
+				  (m_nVersion > 39) ? LEVEL_SEGMENTS : (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2);
 	ApplyAllChangedLight ();
 	//ComputeAllStaticLight ();	//	set xAvgSegLight field in CSegment struct.  See note at that function.
 	}

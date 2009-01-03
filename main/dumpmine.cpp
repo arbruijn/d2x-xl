@@ -862,12 +862,11 @@ sayTotals(FILE *my_file, char *level_name)
 	int	totalRobots = 0;
 	int	objects_processed = 0;
 
-	int	usedObjects[MAX_OBJECTS];
+	int	usedObjects [MAX_OBJECTS];
 
 	fprintf(my_file, "\nLevel %s\n", level_name);
 
-	for (i=0; i<MAX_OBJECTS; i++)
-		usedObjects[i] = 0;
+	memset (usedObjects, 0, sizeof (usedObjects));
 
 	while (objects_processed < gameData.objs.nLastObject [0]+1) {
 		int	j, objtype, objid, objcount, cur_obj_val, min_obj_val, min_objnum;

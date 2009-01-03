@@ -754,7 +754,7 @@ memset (gameData.objs.bWantEffect, 0, sizeof (gameData.objs.bWantEffect));
 memset (gameData.objs.guidedMissile, 0, sizeof (gameData.objs.guidedMissile));
 gameData.render.faceIndex [0].nUsedFaces = 0;
 gameData.render.faceIndex [0].nUsedKeys = 0;
-gameData.render.faceIndex [1].nUsedFaces = MAX_FACES;
+gameData.render.faceIndex [1].nUsedFaces = LEVEL_FACES;
 gameData.render.faceIndex [1].nUsedKeys = 0;
 omegaLightnings.Init ();
 gameData.multiplayer.bMoving = -1;

@@ -421,8 +421,8 @@ while (nCurSeg != seg1) {
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		if (segP->IsDoorWay (nSide, NULL) & widFlag) {
 			nThisSeg = segP->m_children [nSide];
-			Assert ((nThisSeg >= 0) && (nThisSeg < MAX_SEGMENTS));
-			Assert ((qTail >= 0) && (qTail < MAX_SEGMENTS - 1));
+			Assert ((nThisSeg >= 0) && (nThisSeg < LEVEL_SEGMENTS));
+			Assert ((qTail >= 0) && (qTail < LEVEL_SEGMENTS - 1));
 			if (!visited [nThisSeg]) {
 				segmentQ [qTail].start = nCurSeg;
 				segmentQ [qTail].end = nThisSeg;
@@ -447,7 +447,7 @@ while (nCurSeg != seg1) {
 		AddToFCDCache (seg0, seg1, gameData.fcd.nConnSegDist, I2X (1000));
 		return -1;
 		}
-	Assert ((qHead >= 0) && (qHead < MAX_SEGMENTS));
+	Assert ((qHead >= 0) && (qHead < LEVEL_SEGMENTS));
 	nCurSeg = segmentQ [qHead].end;
 	nCurDepth = nDepth [qHead];
 	qHead++;
@@ -738,7 +738,7 @@ for (int i = 0; i <= gameData.segs.nLastSegment; i++)
 #ifdef EDITOR
  {
 	int said = 0;
-	for (s = gameData.segs.nLastSegment + 1; s < MAX_SEGMENTS; s++)
+	for (s = gameData.segs.nLastSegment + 1; s < LEVEL_SEGMENTS; s++)
 		if (SEGMENTS [s].nSegment != -1) {
 			if (!said) {
 #if TRACE

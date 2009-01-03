@@ -163,8 +163,8 @@ void MoveTowardsOutside (tPointSeg *ptSegs, int *nPoints, CObject *objP, int bRa
 	int			nHitType;
 
 j = *nPoints;
-if (j > MAX_SEGMENTS)
-	j = MAX_SEGMENTS;
+if (j > LEVEL_SEGMENTS)
+	j = LEVEL_SEGMENTS;
 for (i = 1, --j; i < j; i++) {
 	nTempSeg = FindSegByPos (ptSegs [i].point, ptSegs [i].nSegment, 1, 0);
 	if (nTempSeg < 0)
@@ -400,7 +400,7 @@ for (i = qTail; i >= 0; ) {
 		Assert (i >= 0);
 	}
 
-if (bSafeMode && ((pointSegP - gameData.ai.pointSegs) + 2 * lNumPoints + 1 >= MAX_POINT_SEGS)) {
+if (bSafeMode && ((pointSegP - gameData.ai.pointSegs) + 2 * lNumPoints + 1 >= LEVEL_POINT_SEGS)) {
 	//	Ouch! Cannot insert center points in path.  So return unsafe path.
 #if TRACE
 	console.printf (CON_DBG, "Resetting all paths because of bSafeMode.p.\n");
@@ -613,7 +613,7 @@ FORALL_ROBOT_OBJS (objP, i) {
 // -- 		ValidatePath (5, gameData.ai.freePointSegs, aiP->nPathLength);
 // -- #endif
 // -- 		gameData.ai.freePointSegs += aiP->nPathLength;
-// -- 		if (gameData.ai.freePointSegs - gameData.ai.pointSegs + MAX_PATH_LENGTH*2 > MAX_POINT_SEGS) {
+// -- 		if (gameData.ai.freePointSegs - gameData.ai.pointSegs + MAX_PATH_LENGTH*2 > LEVEL_POINT_SEGS) {
 // -- 			//Int3 ();	//	Contact Mike: This is curious, though not deadly. /eip++;g
 // -- 			//force_dump_aiObjects_all ("Error in create_path");
 // -- 			AIResetAllPaths ();
@@ -655,7 +655,7 @@ if (nEndSeg != -1) {
 	aiP->nHideIndex = (int) (gameData.ai.freePointSegs - gameData.ai.pointSegs);
 	aiP->nCurPathIndex = 0;
 	gameData.ai.freePointSegs += aiP->nPathLength;
-	if (gameData.ai.freePointSegs - gameData.ai.pointSegs + MAX_PATH_LENGTH*2 > MAX_POINT_SEGS) {
+	if (gameData.ai.freePointSegs - gameData.ai.pointSegs + MAX_PATH_LENGTH*2 > LEVEL_POINT_SEGS) {
 		AIResetAllPaths ();
 		return;
 		}
@@ -687,7 +687,7 @@ if (nEndSeg != -1) {
 	aiP->nHideIndex = (int) (gameData.ai.freePointSegs - gameData.ai.pointSegs);
 	aiP->nCurPathIndex = 0;
 	gameData.ai.freePointSegs += aiP->nPathLength;
-	if (gameData.ai.freePointSegs - gameData.ai.pointSegs + MAX_PATH_LENGTH*2 > MAX_POINT_SEGS) {
+	if (gameData.ai.freePointSegs - gameData.ai.pointSegs + MAX_PATH_LENGTH*2 > LEVEL_POINT_SEGS) {
 		AIResetAllPaths ();
 		return;
 		}
@@ -726,7 +726,7 @@ if (nEndSeg != -1) {
 	aiP->nHideIndex = (int) (gameData.ai.freePointSegs - gameData.ai.pointSegs);
 	aiP->nCurPathIndex = 0;
 	gameData.ai.freePointSegs += aiP->nPathLength;
-	if (gameData.ai.freePointSegs - gameData.ai.pointSegs + MAX_PATH_LENGTH*2 > MAX_POINT_SEGS) {
+	if (gameData.ai.freePointSegs - gameData.ai.pointSegs + MAX_PATH_LENGTH*2 > LEVEL_POINT_SEGS) {
 		AIResetAllPaths ();
 		return;
 		}
@@ -762,7 +762,7 @@ aiP->nCurPathIndex = 0;
 ValidatePath (8, gameData.ai.freePointSegs, aiP->nPathLength);
 #endif
 gameData.ai.freePointSegs += aiP->nPathLength;
-if (gameData.ai.freePointSegs - gameData.ai.pointSegs + MAX_PATH_LENGTH*2 > MAX_POINT_SEGS) {
+if (gameData.ai.freePointSegs - gameData.ai.pointSegs + MAX_PATH_LENGTH*2 > LEVEL_POINT_SEGS) {
 	AIResetAllPaths ();
 	}
 aiP->PATH_DIR = 1;		//	Initialize to moving forward.
@@ -1292,7 +1292,7 @@ ValidateAllPaths ();
 //	Do garbage collection if not been done for awhile, or things getting really critical.
 void MaybeAIPathGarbageCollect (void)
 {
-if (gameData.ai.freePointSegs - gameData.ai.pointSegs > MAX_POINT_SEGS - MAX_PATH_LENGTH) {
+if (gameData.ai.freePointSegs - gameData.ai.pointSegs > LEVEL_POINT_SEGS - MAX_PATH_LENGTH) {
 	if (nLastFrameGarbageCollected + 1 >= gameData.app.nFrameCount) {
 		//	This is kind of bad.  Garbage collected last frame or this frame.p.
 		//	Just destroy all paths.  Too bad for the robots.  They are memory wasteful.
@@ -1308,16 +1308,16 @@ if (gameData.ai.freePointSegs - gameData.ai.pointSegs > MAX_POINT_SEGS - MAX_PAT
 #endif
 		AIPathGarbageCollect ();
 #if TRACE
-		console.printf (1, "Free records = %i/%i\n", MAX_POINT_SEGS - (gameData.ai.freePointSegs - gameData.ai.pointSegs), MAX_POINT_SEGS);
+		console.printf (1, "Free records = %i/%i\n", LEVEL_POINT_SEGS - (gameData.ai.freePointSegs - gameData.ai.pointSegs), LEVEL_POINT_SEGS);
 #endif
 		}
 	}
-else if (gameData.ai.freePointSegs - gameData.ai.pointSegs > 3*MAX_POINT_SEGS/4) {
+else if (gameData.ai.freePointSegs - gameData.ai.pointSegs > 3*LEVEL_POINT_SEGS/4) {
 	if (nLastFrameGarbageCollected + 16 < gameData.app.nFrameCount) {
 		AIPathGarbageCollect ();
 		}
 	}
-else if (gameData.ai.freePointSegs - gameData.ai.pointSegs > MAX_POINT_SEGS/2) {
+else if (gameData.ai.freePointSegs - gameData.ai.pointSegs > LEVEL_POINT_SEGS/2) {
 	if (nLastFrameGarbageCollected + 256 < gameData.app.nFrameCount) {
 		AIPathGarbageCollect ();
 		}
@@ -1441,7 +1441,7 @@ void test_create_all_paths (void)
 //--anchor--int	Num_anchors;
 //--anchor--int	AnchorDistance = 3;
 //--anchor--int	EndDistance = 1;
-//--anchor--int	Anchors [MAX_SEGMENTS];
+//--anchor--int	Anchors [LEVEL_SEGMENTS];
 
 //--anchor--int get_nearest_anchorDistance (int nSegment)
 //--anchor--{
@@ -1661,7 +1661,7 @@ void create_player_path_to_segment (int nSegment)
 	Player_hide_index = gameData.ai.freePointSegs - gameData.ai.pointSegs;
 	Player_cur_path_index = 0;
 	gameData.ai.freePointSegs += Player_path_length;
-	if (gameData.ai.freePointSegs - gameData.ai.pointSegs + MAX_PATH_LENGTH*2 > MAX_POINT_SEGS) {
+	if (gameData.ai.freePointSegs - gameData.ai.pointSegs + MAX_PATH_LENGTH*2 > LEVEL_POINT_SEGS) {
 		//Int3 ();	//	Contact Mike: This is curious, though not deadly. /eip++;g
 		AIResetAllPaths ();
 	}

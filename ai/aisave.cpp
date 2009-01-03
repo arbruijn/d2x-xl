@@ -50,8 +50,8 @@ gameData.ai.localInfo.Clear ();
 gameData.ai.pointSegs.Clear ();
 m_cf.Read (&gameData.ai.bInitialized, sizeof (int), 1);
 m_cf.Read (&gameData.ai.nOverallAgitation, sizeof (int), 1);
-m_cf.Read (gameData.ai.localInfo.Buffer (), sizeof (tAILocalInfo), (m_nVersion > 22) ? MAX_OBJECTS : MAX_OBJECTS_D2);
-m_cf.Read (gameData.ai.pointSegs.Buffer (), sizeof (tPointSeg), (m_nVersion > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2);
+m_cf.Read (gameData.ai.localInfo.Buffer (), sizeof (tAILocalInfo), (m_nVersion > 39) ? LEVEL_OBJECTS : (m_nVersion > 22) ? MAX_OBJECTS : MAX_OBJECTS_D2);
+m_cf.Read (gameData.ai.pointSegs.Buffer (), sizeof (tPointSeg), (m_nVersion > 39) ? LEVEL_POINT_SEGS : (m_nVersion > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2);
 m_cf.Read (gameData.ai.cloakInfo.Buffer (), sizeof (tAICloakInfo), MAX_AI_CLOAK_INFO);
 if (m_nVersion < 29) {
 	m_cf.Read (&gameData.boss [0].nCloakStartTime, sizeof (fix), 1);
@@ -218,9 +218,9 @@ int CSaveGameHandler::SaveAI (void)
 
 m_cf.WriteInt (gameData.ai.bInitialized);
 m_cf.WriteInt (gameData.ai.nOverallAgitation);
-for (i = 0; i < MAX_OBJECTS; i++)
+for (i = 0; i < LEVEL_OBJECTS; i++)
 	SaveAILocalInfo (gameData.ai.localInfo + i);
-for (i = 0; i < MAX_POINT_SEGS; i++)
+for (i = 0; i < LEVEL_POINT_SEGS; i++)
 	SaveAIPointSeg (gameData.ai.pointSegs + i);
 for (i = 0; i < MAX_AI_CLOAK_INFO; i++)
 	SaveAICloakInfo (gameData.ai.cloakInfo + i);
@@ -319,7 +319,7 @@ int CSaveGameHandler::LoadAIUniFormat (void)
 gameData.ai.localInfo.Clear ();
 gameData.ai.bInitialized = m_cf.ReadInt ();
 gameData.ai.nOverallAgitation = m_cf.ReadInt ();
-h = (m_nVersion > 22) ? MAX_OBJECTS : MAX_OBJECTS_D2;
+h = (m_nVersion > 39) ? LEVEL_OBJECTS : (m_nVersion > 22) ? MAX_OBJECTS : MAX_OBJECTS_D2;
 DBG (i = CFTell (fp));
 for (i = 0; i < h; i++)
 	LoadAILocalInfo (gameData.ai.localInfo + i);

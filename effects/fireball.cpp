@@ -43,8 +43,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //#define _DEBUG
 #define EXPLOSION_SCALE (I2X (5)/2)		//explosion is the obj size times this
 
-//--unused-- ubyte	Frame_processed [MAX_OBJECTS];
-
 int	PK1=1, PK2=8;
 
 void DropStolenItems (CObject *objP);
@@ -370,7 +368,7 @@ CObject* CObject::CreateDebris (int nSubObj)
 
 Assert ((info.nType == OBJ_ROBOT) || (info.nType == OBJ_PLAYER));
 nObject = ::CreateDebris (this, nSubObj);
-if ((nObject < 0) && (gameData.objs.nLastObject [0] >= MAX_OBJECTS - 1)) {
+if ((nObject < 0) && (gameData.objs.nLastObject [0] >= LEVEL_OBJECTS - 1)) {
 #if TRACE
 	console.printf (1, "Can't create CObject in ObjectCreateDebris.\n");
 #endif

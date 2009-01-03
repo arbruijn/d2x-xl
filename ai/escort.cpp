@@ -98,7 +98,7 @@ return AIDoorIsOpenable (NULL, SEGMENTS + curseg, nSide);
 
 //	-----------------------------------------------------------------------------
 //	Create a breadth-first list of segments reachable from current CSegment.
-//	max_segs is maximum number of segments to search.  Use MAX_SEGMENTS to search all.
+//	max_segs is maximum number of segments to search.  Use LEVEL_SEGMENTS to search all.
 //	On exit, *length <= max_segs.
 //	Input:
 //		start_seg
@@ -110,7 +110,7 @@ void CreateBfsList (int start_seg, short bfs_list [], int *length, int max_segs)
 	int		head, tail;
 	sbyte		bVisited [MAX_SEGMENTS_D2X];
 
-	memset (bVisited, 0, MAX_SEGMENTS * sizeof (sbyte));
+	memset (bVisited, 0, LEVEL_SEGMENTS * sizeof (sbyte));
 	head = 0;
 	tail = 0;
 
@@ -137,7 +137,7 @@ while ((head != tail) && (head < max_segs)) {
 		if (head >= max_segs)
 			break;
 		bVisited [connected_seg] = 1;
-		Assert (head < MAX_SEGMENTS);
+		Assert (head < LEVEL_SEGMENTS);
 		}
 	}
 *length = head;
@@ -525,7 +525,7 @@ int ExistsInMine (int start_seg, int objtype, int objid, int special)
 	int	length;
 	int	nObject;
 
-CreateBfsList (start_seg, bfs_list, &length, MAX_SEGMENTS);
+CreateBfsList (start_seg, bfs_list, &length, LEVEL_SEGMENTS);
 if (objtype == FUELCEN_CHECK) {
 	for (nSegIdx = 0; nSegIdx < length; nSegIdx++) {
 		nSegment = bfs_list [nSegIdx];

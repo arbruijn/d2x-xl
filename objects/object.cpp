@@ -475,11 +475,11 @@ void SpecialResetObjects (void)
 	CObject	*objP;
 	int		i;
 
-gameData.objs.nObjects = MAX_OBJECTS;
+gameData.objs.nObjects = LEVEL_OBJECTS;
 gameData.objs.nLastObject [0] = 0;
 memset (&gameData.objs.lists, 0, sizeof (gameData.objs.lists));
 Assert (OBJECTS [0].info.nType != OBJ_NONE);		//0 should be used
-for (objP = OBJECTS.Buffer () + MAX_OBJECTS, i = MAX_OBJECTS; i; ) {
+for (objP = OBJECTS.Buffer () + LEVEL_OBJECTS, i = LEVEL_OBJECTS; i; ) {
 	objP--, i--;
 #if DBG
 	if (i == nDbgObj) {
@@ -506,7 +506,7 @@ int IsObjectInSeg (int nSegment, int objn)
 	short nObject, count = 0;
 
 for (nObject = SEGMENTS [nSegment].m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
-	if (count > MAX_OBJECTS) {
+	if (count > LEVEL_OBJECTS) {
 		Int3 ();
 		return count;
 		}
@@ -555,7 +555,7 @@ for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
 	for (nObject = SEGMENTS [nSegment].m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
 		count++;
 		#if DBG
-		if (count > MAX_OBJECTS) {
+		if (count > LEVEL_OBJECTS) {
 #if TRACE
 			console.printf (1, "Object list in CSegment %d is circular.\n", nSegment);
 #endif
@@ -621,7 +621,7 @@ void ListSegObjects (int nSegment)
 
 for (nObject = SEGMENTS [nSegment].m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
 	count++;
-	if (count > MAX_OBJECTS)  {
+	if (count > LEVEL_OBJECTS)  {
 		Int3 ();
 		return;
 		}
@@ -771,7 +771,7 @@ objP->rType.particleInfo = *CSmokeInfo::GetInfo ();
 
 int InsertObject (int nObject)
 {
-for (int i = gameData.objs.nObjects; i < MAX_OBJECTS; i++)
+for (int i = gameData.objs.nObjects; i < LEVEL_OBJECTS; i++)
 	if (gameData.objs.freeList [i] == nObject) {
 		gameData.objs.freeList [i] = gameData.objs.freeList [gameData.objs.nObjects++];
 		if (nObject > gameData.objs.nLastObject [0]) {
@@ -798,11 +798,11 @@ int AllocObject (void)
 	CObject *objP;
 	int		nObject;
 
-if (gameData.objs.nObjects >= MAX_OBJECTS - 2) {
-	FreeObjectSlots (MAX_OBJECTS - 10);
+if (gameData.objs.nObjects >= LEVEL_OBJECTS - 2) {
+	FreeObjectSlots (LEVEL_OBJECTS - 10);
 	CleanupObjects ();
 	}
-if (gameData.objs.nObjects >= MAX_OBJECTS)
+if (gameData.objs.nObjects >= LEVEL_OBJECTS)
 	return -1;
 nObject = gameData.objs.freeList [gameData.objs.nObjects++];
 #if DBG
@@ -1119,22 +1119,22 @@ int FreeObjectSlots (int nRequested)
 	int		candidates [MAX_OBJECTS_D2X];
 	int		nAlreadyFree, nToFree, nOrgNumToFree;
 
-nAlreadyFree = MAX_OBJECTS - gameData.objs.nLastObject [0] - 1;
+nAlreadyFree = LEVEL_OBJECTS - gameData.objs.nLastObject [0] - 1;
 
-if (MAX_OBJECTS - nAlreadyFree < nRequested)
+if (LEVEL_OBJECTS - nAlreadyFree < nRequested)
 	return 0;
 
 for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
 	if (OBJECTS [i].info.nFlags & OF_SHOULD_BE_DEAD) {
 		nAlreadyFree++;
-		if (MAX_OBJECTS - nAlreadyFree < nRequested)
+		if (LEVEL_OBJECTS - nAlreadyFree < nRequested)
 			return nAlreadyFree;
 		}
 	else
 		switch (OBJECTS [i].info.nType) {
 			case OBJ_NONE:
 				nAlreadyFree++;
-				if (MAX_OBJECTS - nAlreadyFree < nRequested)
+				if (LEVEL_OBJECTS - nAlreadyFree < nRequested)
 					return 0;
 				break;
 			case OBJ_FIREBALL:
@@ -1165,7 +1165,7 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
 			}
 	}
 
-nToFree = MAX_OBJECTS - nRequested - nAlreadyFree;
+nToFree = LEVEL_OBJECTS - nRequested - nAlreadyFree;
 nOrgNumToFree = nToFree;
 if (nToFree > nCandidates) {
 #if TRACE
@@ -2494,7 +2494,7 @@ void compressObjects (void)
 {
 	int start_i;	//, last_i;
 
-	//last_i = find_last_obj (MAX_OBJECTS);
+	//last_i = find_last_obj (LEVEL_OBJECTS);
 
 	//	Note: It's proper to do < (rather than <=) gameData.objs.nLastObject [0] here because we
 	//	are just removing gaps, and the last CObject can't be a gap.
@@ -2663,7 +2663,7 @@ gameData.objs.nObjects = nObjects;
 for (i = 0, objP = OBJECTS.Buffer (); i < nObjects; i++, objP++)
 	if (objP->info.nType != OBJ_DEBRIS)
 		objP->rType.polyObjInfo.nSubObjFlags = 0;
-for (; i < MAX_OBJECTS; i++, objP++) {
+for (; i < LEVEL_OBJECTS; i++, objP++) {
 	gameData.objs.freeList [i] = i;
 	objP->info.nType = OBJ_NONE;
 	objP->info.nSegment =
@@ -2900,7 +2900,7 @@ void ResetChildObjects (void)
 {
 	int	i;
 
-for (i = 0; i < MAX_OBJECTS; i++) {
+for (i = 0; i < LEVEL_OBJECTS; i++) {
 	gameData.objs.childObjs [i].objIndex = -1;
 	gameData.objs.childObjs [i].nextObj = i + 1;
 	}

@@ -871,7 +871,7 @@ switch (action)  {
 
 	case 3: // Gate in robots!
 		// Do some validity checking
-		if ((nRemoteObj >= MAX_OBJECTS) || (nRemoteObj < 0) || (nSegment < 0) || 
+		if ((nRemoteObj >= LEVEL_OBJECTS) || (nRemoteObj < 0) || (nSegment < 0) || 
 				(nSegment > gameData.segs.nLastSegment)) {
 			Int3 (); // See Rob, bad data in boss gate action message
 			return;

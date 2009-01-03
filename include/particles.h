@@ -279,7 +279,7 @@ class CParticleManager {
 			}
 
 		inline int SetObjectSystem (int nObject, int i) {
-			if ((nObject < 0) || (nObject >= MAX_OBJECTS))
+			if ((nObject < 0) || (nObject >= LEVEL_OBJECTS))
 				return -1;
 			return m_objectSystems [nObject] = i;
 			}
