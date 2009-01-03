@@ -790,7 +790,8 @@ switch (loadOp) {
 		InitPowerupTables ();
 		break;
 	case 15:
-		InitGame ();
+		LoadBackgroundBitmap ();
+		atexit (CloseGame);
 		break;
 	case 16:
 		InitThreads ();

@@ -88,7 +88,6 @@ void CGameData::Init (void)
 memset (&irrData, 0, sizeof (irrData));
 #endif
 particleManager.SetLastType (-1);
-lightningManager.Init ();
 InitEndLevelData ();
 InitStringPool ();
 SetDataVersion (-1);
@@ -496,6 +495,8 @@ CREATE (gameData.segs.sideCenters, LEVEL_SEGMENTS * 6, 0);
 CREATE (gameData.segs.bSegVis, LEVEL_SEGMENTS * LEVEL_SEGVIS_FLAGS, 0);
 CREATE (gameData.segs.slideSegs, LEVEL_SEGMENTS, 0);
 CREATE (gameData.segs.segFaces, LEVEL_SEGMENTS, 0);
+for (int i = 0; i < LEVEL_SEGMENTS; i++)
+	SEGMENTS [i].m_objects = -1;
 return faces.Create ();
 }
 
@@ -788,8 +789,11 @@ CREATE (gameData.objs.xLight, LEVEL_OBJECTS, 0);
 CREATE (gameData.objs.nLightSig, LEVEL_OBJECTS, 0);
 CREATE (gameData.objs.nHitObjects, LEVEL_OBJECTS * MAX_HIT_OBJECTS, 0);
 CREATE (gameData.objs.viewData, LEVEL_OBJECTS, (char) 0xFF);
-shrapnelManager.Init ();
-return true;
+for (int i = 0; i < LEVEL_OBJECTS; i++) {
+	gameData.objs.freeList [i] = i;
+	OBJECTS [i].Init ();
+	}
+return shrapnelManager.Init ();
 }
 
 // ----------------------------------------------------------------------------
@@ -1098,19 +1102,21 @@ nGameMode = GM_GAME_OVER;
 bool CGameData::Create (void)
 {
 Destroy ();
-return
-	gameData.segs.Create () &&
-	gameData.objs.Create () &&
-	gameData.render.color.Create () &&
-	gameData.render.lights.Create () &&
-	gameData.render.shadows.Create () &&
-	gameData.render.Create () &&
-	gameData.weapons.Create () &&
-	gameData.physics.Create () &&
-	gameData.ai.Create () &&
-	gameData.multiplayer.Create () &&
-	gameData.multigame.Create () &&
-	gameData.demo.Create ();
+if (!(gameData.segs.Create () &&
+		gameData.objs.Create () &&
+		gameData.render.color.Create () &&
+		gameData.render.lights.Create () &&
+		gameData.render.shadows.Create () &&
+		gameData.render.Create () &&
+		gameData.weapons.Create () &&
+		gameData.physics.Create () &&
+		gameData.ai.Create () &&
+		gameData.multiplayer.Create () &&
+		gameData.multigame.Create () &&
+		gameData.demo.Create ()))
+	return false;
+lightningManager.Init ();
+return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -1129,6 +1135,8 @@ gameData.ai.Destroy ();
 gameData.multiplayer.Destroy ();
 gameData.multigame.Destroy ();
 gameData.demo.Destroy ();
+particleManager.Shutdown ();
+lightningManager.Shutdown (1);
 }
 
 // ----------------------------------------------------------------------------

@@ -178,7 +178,6 @@ tDetailData	detailData = {
 //this is called once per game
 void InitGame (void)
 {
-atexit (CloseGame);             //for cleanup
 /*---*/PrintLog ("Initializing game data\n  Objects ...\n");
 InitObjects ();
 /*---*/PrintLog ("  Special effects...\n");
@@ -190,7 +189,6 @@ InitAISystem ();
 /*---*/PrintLog ("  exploding walls...\n");
 InitExplodingWalls ();
 /*---*/PrintLog ("  particle systems...\n");
-particleManager.Shutdown ();
 particleManager.Init ();
 /*---*/PrintLog ("  loading background bitmap...\n");
 LoadBackgroundBitmap ();

@@ -826,11 +826,7 @@ if (gameData.missions.nEnhancedMission) {
 #endif
 /*---*/PrintLog ("   Destroying camera objects\n");
 cameraManager.Destroy ();
-/*---*/PrintLog ("   Destroying particle data\n");
-particleManager.Shutdown ();
-/*---*/PrintLog ("   Destroying lightning data\n");
 omegaLightnings.Destroy (-1);
-lightningManager.Shutdown (1);
 /*---*/PrintLog ("   Initializing smoke manager\n");
 InitObjectSmoke ();
 gameData.pig.tex.bitmapColors.Clear ();
@@ -1050,8 +1046,6 @@ int StartNewGame (int nStartLevel)
 gameData.app.nGameMode = GM_NORMAL;
 SetFunctionMode (FMODE_GAME);
 gameData.missions.nNextLevel = 0;
-InitMultiPlayerObject ();				//make sure CPlayerData's CObject set up
-InitPlayerStatsGame ();		//clear all stats
 gameData.multiplayer.nPlayers = 1;
 gameData.objs.nLastObject [0] = 0;
 networkData.bNewGame = 0;
@@ -1060,6 +1054,8 @@ if (nStartLevel < 0)
 else
 	result = StartNewLevel (nStartLevel, 0);
 if (result) {
+	InitMultiPlayerObject ();	
+	InitPlayerStatsGame ();		
 	LOCALPLAYER.startingLevel = nStartLevel;		// Mark where they started
 	GameDisableCheats ();
 	InitSeismicDisturbances ();

@@ -1413,16 +1413,25 @@ m_lights.Destroy ();
 
 void CLightningManager::Init (void)
 {
-if (!m_objects.Buffer ())
-	m_objects.Create (MAX_OBJECTS);
-m_objects.Clear (0xff);
-if (!m_lights.Buffer ())
-	m_lights.Create (2 * MAX_SEGMENTS);
-if (m_systems.Create (MAX_LIGHTNING_SYSTEMS)) {
-	int i = 0;
-	for (CLightningSystem* systemP = m_systems.GetFirst (m_systems.FreeList ()); systemP; systemP = m_systems.GetNext ())
-		systemP->Init (i++);
+if (!m_objects.Buffer () || m_objects.Create (LEVEL_OBJECTS)) {
+	Shutdown (1);
+	extraGameInfo [0].bUseLightnings = 0;
+	return;
 	}
+m_objects.Clear (0xff);
+if (!m_lights.Buffer () || m_lights.Create (2 * LEVEL_SEGMENTS)) {
+	Shutdown (1);
+	extraGameInfo [0].bUseLightnings = 0;
+	return;
+	}
+if (!m_systems.Create (MAX_LIGHTNING_SYSTEMS)) {
+	Shutdown (1);
+	extraGameInfo [0].bUseLightnings = 0;
+	return;
+	}	
+int i = 0;
+for (CLightningSystem* systemP = m_systems.GetFirst (m_systems.FreeList ()); systemP; systemP = m_systems.GetNext ())
+	systemP->Init (i++);
 m_bDestroy = 0;
 }
 

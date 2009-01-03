@@ -455,14 +455,7 @@ m_vStartVel.SetZero ();
 //sets up the free list & init CPlayerData & whatever else
 void InitObjects (void)
 {
-	CObject	*objP;
-	int		i;
-
 CollideInit ();
-for (i = 0, objP = OBJECTS.Buffer (); i < MAX_OBJECTS; i++, objP++) {
-	gameData.objs.freeList [i] = i;
-	objP->Init ();
-	}
 ResetSegObjLists ();
 gameData.objs.consoleP =
 gameData.objs.viewerP = OBJECTS.Buffer ();
@@ -641,9 +634,7 @@ return;
 
 void ResetSegObjLists (void)
 {
-	int	i, j = gameData.segs.nSegments ? gameData.segs.nSegments : MAX_SEGMENTS;
-
-for (i = 0; i < j; i++)
+for (int i = 0; i < LEVEL_SEGMENTS; i++)
 	SEGMENTS [i].m_objects = -1;
 }
 
