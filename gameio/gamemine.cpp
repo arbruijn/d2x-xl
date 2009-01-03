@@ -1238,7 +1238,6 @@ for (i = 0; i < MAX_TEXTURES; i++)
 #endif
 
 //	memset ( SEGMENTS, 0, sizeof (CSegment)*MAX_SEGMENTS );
-ResetGenerators ();
 //=============================== Reading part ==============================
 nCompiledVersion = cf.ReadByte ();
 //Assert ( nCompiledVersion==COMPILED_MINE_VERSION );
@@ -1257,9 +1256,8 @@ if (gameData.segs.nSegments >= MAX_SEGMENTS) {
 	Warning (TXT_LEVEL_TOO_LARGE);
 	return -1;
 	}
-if (!gameData.Create ())
+if (!InitGame ())
 	return -1;
-InitGame ();
 #if TRACE
 console.printf (CON_DBG, "   %d segments\n", gameData.segs.nSegments);
 #endif

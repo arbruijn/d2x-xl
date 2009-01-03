@@ -875,7 +875,6 @@ error_init (NULL, NULL);
 EvalArgs ();
 InitGameOptions (1);
 gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
-gameData.Create ();
 /*---*/PrintLog ("Loading text resources\n");
 /*---*/PrintLog ("Loading main hog file\n");
 if (!(hogFileManager.Init ("descent2.hog", gameFolders.szDataDir) || 

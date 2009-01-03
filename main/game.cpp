@@ -176,8 +176,10 @@ tDetailData	detailData = {
 //	==============================================================================================
 
 //this is called once per game
-void InitGame (void)
+bool InitGame (void)
 {
+if (!gameData.Create ())
+	return false;
 /*---*/PrintLog ("Initializing game data\n  Objects ...\n");
 InitObjects ();
 /*---*/PrintLog ("  Special effects...\n");
@@ -188,8 +190,7 @@ InitAISystem ();
 //	InitGaugeCanvases ();
 /*---*/PrintLog ("  exploding walls...\n");
 InitExplodingWalls ();
-/*---*/PrintLog ("  particle systems...\n");
-particleManager.Init ();
+ResetGenerators ();
 /*---*/PrintLog ("  loading background bitmap...\n");
 LoadBackgroundBitmap ();
 automap.Init ();
@@ -204,6 +205,7 @@ gameStates.ogl.bGlTexMerge =
 	gameOpts->ogl.bGlTexMerge &&
 	gameStates.render.textures.bGlsTexMergeOk;
 fpDrawTexPolyMulti = gameStates.render.color.bRenderLightmaps ? G3DrawTexPolyLightmap : G3DrawTexPolyMulti;
+return true;
 }
 
 //------------------------------------------------------------------------------

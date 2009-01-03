@@ -119,7 +119,7 @@ extern int bGameDoubleBuffer;      // double buffering?
 extern int Game_suspended;          // if non-zero, nothing moves but CPlayerData
 
 // from game.c
-void InitGame(void);
+bool InitGame(void);
 void RunGame (void);
 void _CDECL_ CloseGame(void);
 void InitCockpit(void);
