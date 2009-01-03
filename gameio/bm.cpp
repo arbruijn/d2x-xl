@@ -116,14 +116,8 @@ return i;
 // Read data from piggy.
 // This is called when the editor is OUT.
 // If editor is in, bm_init_use_table () is called.
-int BMInit ()
+int BMInit (void)
 {
-	int	i;
-
-for (i = 0; i < MAX_OBJECTS; i++)
-	gameData.weapons.color [i].red =
-	gameData.weapons.color [i].green =
-	gameData.weapons.color [i].blue = 1.0;
 InitPolygonModels ();
 if (!PiggyInit ())				// This calls BMReadAll
 	Error ("Cannot open pig and/or ham file");

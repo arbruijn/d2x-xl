@@ -890,7 +890,18 @@ DESTROY (gameData.physics.ignoreObjs);
 bool CWeaponData::Create (void)
 {
 CREATE (color, LEVEL_OBJECTS, 0);
+for (int i = 0; i < MAX_OBJECTS; i++)
+	color [i].red =
+	color [i].green =
+	color [i].blue = 1.0;
 return true;
+}
+
+// ----------------------------------------------------------------------------
+
+void CWeaponData::Destroy (void)
+{
+color.Destroy ();
 }
 
 // ----------------------------------------------------------------------------
@@ -1086,23 +1097,15 @@ nGameMode = GM_GAME_OVER;
 
 bool CGameData::Create (void)
 {
-return 
-	gameData.render.Create () &&
-	gameData.weapons.Create ();
-}
-
-// ----------------------------------------------------------------------------
-
-bool CGameData::CreateLevel (void)
-{
-DestroyLevel ();
+Destroy ();
 return
 	gameData.segs.Create () &&
 	gameData.objs.Create () &&
 	gameData.render.color.Create () &&
 	gameData.render.lights.Create () &&
-	gameData.render.Create () &&
 	gameData.render.shadows.Create () &&
+	gameData.render.Create () &&
+	gameData.weapons.Create () &&
 	gameData.physics.Create () &&
 	gameData.ai.Create () &&
 	gameData.multiplayer.Create () &&
@@ -1112,14 +1115,15 @@ return
 
 // ----------------------------------------------------------------------------
 
-void CGameData::DestroyLevel (void)
+void CGameData::Destroy (void)
 {
 gameData.segs.Destroy ();
 gameData.objs.Destroy ();
 gameData.render.color.Destroy ();
 gameData.render.lights.Destroy ();
-gameData.render.Destroy ();
 gameData.render.shadows.Destroy ();
+gameData.render.Destroy ();
+gameData.weapons.Destroy ();
 gameData.physics.Destroy ();
 gameData.ai.Destroy ();
 gameData.multiplayer.Destroy ();

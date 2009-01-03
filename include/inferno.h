@@ -2277,6 +2277,7 @@ class CWeaponData {
 	public:
 		CWeaponData () { memset (this, 0, sizeof (*this)); }
 		bool Create (void);
+		void Destroy (void);
 };
 
 #define bLastPrimaryWasSuper (gameData.weapons.bLastWasSuper [0])
@@ -3263,8 +3264,7 @@ class CGameData {
 	public:
 		void Init (void);
 		bool Create (void);
-		bool CreateLevel (void);
-		void DestroyLevel (void);
+		void Destroy (void);
 };
 
 extern CGameData gameData;
