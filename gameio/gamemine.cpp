@@ -1257,7 +1257,7 @@ if (gameData.segs.nSegments >= MAX_SEGMENTS) {
 	Warning (TXT_LEVEL_TOO_LARGE);
 	return -1;
 	}
-gameData.CreateLevel ();
+gameData.Create ();
 #if TRACE
 console.printf (CON_DBG, "   %d segments\n", gameData.segs.nSegments);
 #endif
