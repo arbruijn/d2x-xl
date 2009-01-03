@@ -1584,7 +1584,6 @@ return i;
 
 void CParticleManager::Init (void)
 {
-	int i;
 #if OGL_VERTEX_BUFFERS
 	GLfloat	pf = colorBuffer;
 
@@ -1594,15 +1593,30 @@ for (i = 0; i < VERT_BUFFER_SIZE; i++, pf++) {
 	*pf++ = 1.0f;
 	}
 #endif
-if (!m_objectSystems.Buffer ())
-	CREATE (m_objectSystems, MAX_OBJECTS, (char) 0xff);
-if (!m_objExplTime.Buffer ())
-	CREATE (m_objExplTime, MAX_OBJECTS, 0);
-if (m_systems.Create (MAX_PARTICLE_SYSTEMS)) {
-	i = 0;
-	for (CParticleSystem* systemP = m_systems.GetFirst (m_systems.FreeList ()); systemP; systemP = GetNext ())
-		systemP->Init (i++);
+if (!m_objectSystems.Buffer ()) {
+	if (!m_objectSystems.Create (LEVEL_OBJECTS)) {
+		Shutdown ();
+		extraGameInfo [0].bUseParticles = 0;
+		return;
+		}
+	m_objectSystems.Clear (0xff);
 	}
+if (!m_objExplTime.Buffer ()) {
+	if (!m_objExplTime.Create (LEVEL_OBJECTS)) {
+		Shutdown ();
+		extraGameInfo [0].bUseParticles = 0;
+		return;
+		}
+	m_objExplTime.Clear (0);
+	}
+if (!m_systems.Create (MAX_PARTICLE_SYSTEMS)) {
+	Shutdown ();
+	extraGameInfo [0].bUseParticles = 0;
+	return;
+	}
+int i = 0;
+for (CParticleSystem* systemP = m_systems.GetFirst (m_systems.FreeList ()); systemP; systemP = GetNext ())
+	systemP->Init (i++);
 }
 
 //------------------------------------------------------------------------------
@@ -1726,13 +1740,13 @@ void CParticleImageManager::Animate (int nType)
 if (nFrames > 1) {
 	static time_t t0 [PARTICLE_TYPES] = {0, 0, 0, 0};
 
-	time_t		t = gameStates.app.nSDLTicks;
-	int			iFrame = iParticleFrames [bPointSprites][nType];
+	time_t	t = gameStates.app.nSDLTicks;
+	int		iFrame = iParticleFrames [bPointSprites][nType];
 #if 0
-	int			iFrameIncr = iPartFrameIncr [bPointSprites][nType];
+	int		iFrameIncr = iPartFrameIncr [bPointSprites][nType];
 #endif
-	int			bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.particles.bSort;
-	CBitmap	*bmP = bmpParticle [bPointSprites][GetType (nType)];
+	int		bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.particles.bSort;
+	CBitmap*	bmP = bmpParticle [bPointSprites][GetType (nType)];
 
 	if (!bmP->Frames ())
 		return;
@@ -1760,9 +1774,9 @@ if (nFrames > 1) {
 
 void CParticleImageManager::AdjustBrightness (CBitmap *bmP)
 {
-	CBitmap	*bmfP;
-	int			i, j = bmP->FrameCount ();
-	float			*fFrameBright, fAvgBright = 0, fMaxBright = 0;
+	CBitmap*	bmfP;
+	int		i, j = bmP->FrameCount ();
+	float*	fFrameBright, fAvgBright = 0, fMaxBright = 0;
 
 if (j < 2)
 	return;

@@ -178,9 +178,9 @@ CStack::Destroy ();
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
-void CShrapnelManager::Init (void)
+bool CShrapnelManager::Init (void)
 {
-return CArray<CShrapnelCloud>::Create (LEVEL_OBJECTS);
+return CArray<CShrapnelCloud>::Create (LEVEL_OBJECTS) != NULL;
 }
 
 // -----------------------------------------------------------------------------
