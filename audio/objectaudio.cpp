@@ -624,7 +624,7 @@ for (uint i = 0; i < MAX_SOUND_OBJECTS; i++, soundObjP++) {
 				}
 			else {
 				if (soundObjP->m_channel < 0)
-					StartSoundObject (i);
+					soundObjP->Start ();
 				else
 					SetVolume (soundObjP->m_channel, soundObjP->m_volume);
 				}
