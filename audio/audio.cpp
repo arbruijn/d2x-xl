@@ -743,6 +743,7 @@ CAudioChannel* CAudio::FindFreeChannel (int nSoundClass)
 	int				bUseClass = SoundClassCount (nSoundClass) >= m_info.nMaxChannels / 2;
 
 nStartChannel = m_info.nFreeChannel;
+DestroyObjectSound (-1); // destroy all 
 do {
 	channelP = audio.m_channels + m_info.nFreeChannel;
 	if (!channelP->Playing ())

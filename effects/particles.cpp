@@ -1373,7 +1373,6 @@ if (nSide >= 0)
 nMaxParts = MAX_PARTICLES (nMaxParts, gameOpts->render.particles.nDens [0]);
 if (gameStates.render.bPointSprites)
 	nMaxParts *= 2;
-srand (SDL_GetTicks ());
 if (!m_emitters.Create (nMaxEmitters)) {
 	//PrintLog ("cannot create m_systems\n");
 	return 0;

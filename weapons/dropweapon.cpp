@@ -47,7 +47,6 @@ if ((gameData.app.nGameMode & GM_NETWORK) &&
 	  gameData.multiplayer.maxPowerupsAllowed [id]))
 	return -1;
 #endif
-d_srand(seed);
 newVelocity = spitterP->mType.physInfo.velocity + spitterP->info.position.mOrient.FVec() * I2X (SPIT_SPEED);
 newVelocity[X] += (d_rand() - 16384) * SPIT_SPEED * 2;
 newVelocity[Y] += (d_rand() - 16384) * SPIT_SPEED * 2;

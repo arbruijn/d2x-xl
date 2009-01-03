@@ -56,7 +56,6 @@ CObject *FindInitObject (CObject *objP)
 // of this nType had initially been placed in the level.
 if (!objCount)		//no OBJECTS of this nType had initially been placed in the mine.
 	return NULL;	//can happen with missile packs
-d_srand (TimerGetFixedSeconds ());
 if ((bUseFree = (objCount < 0)))
 	objCount = -objCount;
 h = d_rand () % objCount + 1;
@@ -187,7 +186,6 @@ if (bUseInitSgm) {
 	}
 if (pbFixedPos)
 	*pbFixedPos = 0;
-d_srand (TimerGetFixedSeconds ());
 nDepth = BASE_NET_DROP_DEPTH + ((d_rand () * BASE_NET_DROP_DEPTH*2) >> 15);
 vPlayerPos = &OBJECTS [LOCALPLAYER.nObject].info.position.vPos;
 nPlayerSeg = OBJECTS [LOCALPLAYER.nObject].info.nSegment;
@@ -866,7 +864,6 @@ if ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHO
 	// drop the same way
 	if (IsMultiGame) {
 		gameData.multigame.create.nLoc = 0;
-		d_srand (5483L);
 	}
 
 	//	If the CPlayerData had smart mines, maybe arm one of them.

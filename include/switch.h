@@ -148,6 +148,7 @@ class CTrigger {
 		void DoIllusionOn (void);
 		void DoIllusionOff (void);
 		void DoSpeedBoost (short nObject);
+		void StopSpeedBoost (short nObject);
 		bool TargetsWall (int nWall);
 		inline int Index (void);
 		inline int HasTarget (short nSegment, short nSide);

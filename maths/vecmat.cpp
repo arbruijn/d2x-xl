@@ -765,4 +765,30 @@ else
 }
 
 // ------------------------------------------------------------------------
+
+const CFixVector CFixVector::Random (void) 
+{
+	CFixVector v;
+	int i = d_rand () % 3;
+
+if (i == 2) {
+	v [X] = (16384 - d_rand ()) | 1;	// make sure we don't create null vector
+	v [Y] = 16384 - d_rand ();
+	v [Z] = 16384 - d_rand ();
+	}
+else if (i == 1) {
+	v [Y] = (16384 - d_rand ()) | 1;
+	v [Z] = 16384 - d_rand ();
+	v [X] = 16384 - d_rand ();	// make sure we don't create null vector
+	}
+else {
+	v [Z] = (16384 - d_rand ()) | 1;
+	v [X] = 16384 - d_rand ();	// make sure we don't create null vector
+	v [Y] = 16384 - d_rand ();
+	}
+Normalize (v);
+return v;
+}
+
+// ------------------------------------------------------------------------
 // eof

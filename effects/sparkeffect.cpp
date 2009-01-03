@@ -228,7 +228,6 @@ SEM_ENTER (SEM_SPARKS)
 if ((gameStates.render.bHaveSparks = gameOpts->render.effects.bEnergySparks) && bmpSparks && (BuildSegList () > 0)) {
 	for (short i = 0; i < m_nSegments; i++)
 		SetupSparks (i);
-	d_srand ((uint) gameStates.app.nSDLTicks);
 	}	
 SEM_LEAVE (SEM_SPARKS)
 }

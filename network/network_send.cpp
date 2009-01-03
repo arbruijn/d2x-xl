@@ -521,7 +521,6 @@ void NetworkSendSync (void)
 	int i, j, np;
 
 	// Randomize their starting locations...
-d_srand (TimerGetFixedSeconds ());
 for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 	if (gameData.multiplayer.players [i].connected)
 		gameData.multiplayer.players [i].connected = 1; // Get rid of endlevel connect statuses

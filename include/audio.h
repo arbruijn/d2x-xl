@@ -210,21 +210,21 @@ class CAudioChannel {
 
 class CSoundObject {
 	public:
-		short			nSignature;		// A unique nSignature to this sound
-		ubyte			flags;			// Used to tell if this slot is used and/or currently playing, and how long.
-		ubyte			pad;				//	Keep alignment
-		fix			maxVolume;		// Max volume that this sound is playing at
-		fix			maxDistance;	// The max distance that this sound can be heard at...
-		int			soundClass;
-		short			nSound;			// The sound number that is playing
-		int			channel;			// What channel this is playing on, -1 if not playing
-		int			volume;			// Volume that this sound is playing at
-		int			pan;				// Pan value that this sound is playing at
-		int			nDecay;			// type of decay (0: linear, 1: quadratic, 2: cubic)
-		char			szSound [FILENAME_LEN];	// file name of custom sound to be played
-		int			nLoopStart;		// The start point of the loop. -1 means no loop
-		int			nLoopEnd;		// The end point of the loop
-		int			nMidiVolume;
+		short			m_nSignature;		// A unique nSignature to this sound
+		ubyte			m_flags;			// Used to tell if this slot is used and/or currently playing, and how long.
+		ubyte			m_pad;				//	Keep alignment
+		fix			m_maxVolume;		// Max volume that this sound is playing at
+		fix			m_maxDistance;	// The max distance that this sound can be heard at...
+		int			m_soundClass;
+		short			m_nSound;			// The sound number that is playing
+		int			m_channel;			// What channel this is playing on, -1 if not playing
+		int			m_volume;			// Volume that this sound is playing at
+		int			m_pan;				// Pan value that this sound is playing at
+		int			m_nDecay;			// type of decay (0: linear, 1: quadratic, 2: cubic)
+		char			m_szSound [FILENAME_LEN];	// file name of custom sound to be played
+		int			m_nLoopStart;		// The start point of the loop. -1 means no loop
+		int			m_nLoopEnd;		// The end point of the loop
+		int			m_nMidiVolume;
 		union {
 			struct {
 				short			nSegment;				// Used if SOF_LINK_TO_POS field is used
@@ -235,7 +235,10 @@ class CSoundObject {
 				short			nObject;				// Used if SOF_LINK_TO_OBJ field is used
 				short			nObjSig;
 			} obj;
-		} linkType;
+		} m_linkType;
+
+	public:
+		bool Start (void);
 	};
 
 //------------------------------------------------------------------------------
@@ -263,9 +266,9 @@ class CAudio {
 			};
 
 	private:
-		CAudioInfo	m_info;
+		CAudioInfo					m_info;
 		CArray<CAudioChannel>	m_channels;
-		CArray<CSoundObject>		m_objects;
+		CStack<CSoundObject>		m_objects;
 
 	public:
 		CAudio () { Init (); }
@@ -347,9 +350,11 @@ class CAudio {
 		int UnXlatSound (int nSound);
 
 		inline int Available (void) { return m_info.bAvailable; }
+		inline int ActiveObjects (void) { return m_info.nActiveObjects; }
 		inline int& MaxChannels (void) { return m_info.nMaxChannels; }
 		inline int FreeChannel (void) { return m_info.nFreeChannel; }
 		inline CAudioChannel* Channel (uint i = 0) { return m_channels + i; }
+		inline CStack<CSoundObject>& Objects (void) { return m_objects; }
 
 		void RecordSoundObjects (void);
 #if DBG
@@ -359,7 +364,6 @@ class CAudio {
 
 	private:
 		CAudioChannel* FindFreeChannel (int nSoundClass);
-		void StartSoundObject (int i);
 	};
 
 extern CAudio audio;

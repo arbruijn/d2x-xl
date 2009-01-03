@@ -1441,7 +1441,6 @@ if (!nLightnings)
 if (m_nFree < 0)
 	return -1;
 SEM_ENTER (SEM_LIGHTNINGS)
-srand (gameStates.app.nSDLTicks);
 CLightningSystem* systemP = m_systems.Pop ();
 if (!(systemP->Create (nLightnings, vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
 							  nAngle, nOffset, nNodes, nChildren, nDepth, nSteps, nSmoothe, bClamp, bPlasma, bSound, bLight,

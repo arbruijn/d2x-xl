@@ -918,7 +918,6 @@ delObjP.info.position.vPos [Z] = (fix) INTEL_INT ((int) delObjP.info.position.vP
 Assert ((nPlayer >= 0) && (nPlayer < gameData.multiplayer.nPlayers));
 Assert (nPlayer != gameData.multiplayer.nLocalPlayer); // What? How'd we send ourselves this?
 gameData.multigame.create.nLoc = 0;
-d_srand (1245L);
 nEggObj = ObjectCreateEgg (&delObjP);
 if (nEggObj == -1)
 	return; // Object buffer full
@@ -966,14 +965,12 @@ if (delObjP->info.contains.nCount > 0) {
 				delObjP->info.contains.nCount = 0;
 			}
 		}
-	d_srand (1245L);
 	if (delObjP->info.contains.nCount > 0)
 		nEggObj = ObjectCreateEgg (delObjP);
 	}
 else if (delObjP->cType.aiInfo.REMOTE_OWNER == -1) // No Random goodies for robots we weren't in control of
 	return;
 else if (robotP->containsCount) {
-	d_srand (TimerGetApproxSeconds ());
 	if (((d_rand () * 16) >> 15) < robotP->containsProb) {
 		delObjP->info.contains.nCount = ((d_rand () * robotP->containsCount) >> 15) + 1;
 		delObjP->info.contains.nType = robotP->containsType;
@@ -983,7 +980,6 @@ else if (robotP->containsCount) {
 			if (!MultiPowerupIsAllowed (delObjP->info.contains.nId))
 				delObjP->info.contains.nId=POW_SHIELD_BOOST;
 			 }
-		d_srand (1245L);
 		if (delObjP->info.contains.nCount > 0)
 			nEggObj = ObjectCreateEgg (delObjP);
 		}

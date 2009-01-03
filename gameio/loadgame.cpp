@@ -709,6 +709,7 @@ int LoadLevel (int nLevel, int bPageInTextures, int bRestore)
 	int		nRooms, bRetry = 0, nLoadRes, nCurrentLevel = gameData.missions.nCurrentLevel;
 
 /*---*/PrintLog ("Loading level...\n");
+srand (SDL_GetTicks ());
 lightmapManager.Destroy ();
 gameStates.app.bBetweenLevels = 1;
 gameStates.app.bFreeCam = 0;
@@ -2082,7 +2083,6 @@ nSpawnSegs = gameData.multiplayer.nPlayerPositions;
 SortSpawnMap (spawnMap, 0, nSpawnSegs - 1);
 bRandom = (spawnMap [0].xDist >= SPAWN_MIN_DIST);
 
-d_srand (SDL_GetTicks ());
 j = 0;
 for (;;) {
 	i = bRandom ? d_rand () % nSpawnSegs : j++;

@@ -816,29 +816,6 @@ inline const CFixVector CFixVector::Normal (const CFixVector& p0, const CFixVect
 	return v;
 }
 
-inline const CFixVector CFixVector::Random (void) {
-	CFixVector v;
-	int i = d_rand () % 3;
-
-	if (i == 2) {
-		v [X] = (d_rand () - 16384) | 1;	// make sure we don't create null vector
-		v [Y] = d_rand () - 16384;
-		v [Z] = d_rand () - 16384;
-		}
-	else if (i == 1) {
-		v [Y] = d_rand () - 16384;
-		v [Z] = d_rand () - 16384;
-		v [X] = (d_rand () - 16384) | 1;	// make sure we don't create null vector
-		}
-	else {
-		v [Z] = d_rand () - 16384;
-		v [X] = (d_rand () - 16384) | 1;	// make sure we don't create null vector
-		v [Y] = d_rand () - 16384;
-	}
-	Normalize (v);
-	return v;
-}
-
 inline const CFixVector CFixVector::Reflect (const CFixVector& d, const CFixVector& n) {
 	fix k = Dot (d, n) * 2;
 	CFixVector r = n;

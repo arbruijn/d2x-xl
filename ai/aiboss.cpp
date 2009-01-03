@@ -417,6 +417,8 @@ if (i < 0)
 //Assert (gameData.boss [i].nTeleportSegs > 0);
 if (gameData.boss [i].nTeleportSegs <= 0)
 	return;
+if (gameData.boss [i].nDyingStartTime > 0)
+	return;
 do {
 	nRandIndex = (d_rand () * gameData.boss [i].nTeleportSegs) >> 15;
 	nRandSeg = gameData.boss [i].teleportSegs [nRandIndex];

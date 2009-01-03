@@ -10,7 +10,7 @@ static long randSeed = 0;
 double Noise1D (long x)			 
 {
 #if 1
-srand (randSeed * (x + 2));
+//srand (randSeed * (x + 2));
 x = rand ();
 return (double) (x - (((long) RAND_MAX + 1) / 2)) / (double) (((long) RAND_MAX + 1) / 2);
 #else

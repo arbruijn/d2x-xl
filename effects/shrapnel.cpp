@@ -153,7 +153,6 @@ objP->cType.explInfo.nDeleteTime = -1;
 h += d_rand () % h;
 if (!CStack<CShrapnel>::Create (h))
 	return 0;
-srand (gameStates.app.nSDLTicks);
 for (i = 0; i < h; i++) {
 	if (!Push ())
 		break;

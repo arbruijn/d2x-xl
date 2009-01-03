@@ -574,7 +574,7 @@ if (nLinks > 0) {
 		int		i;
 		short		nSegment, nSide;
 
-	d_srand (TimerGetFixedSeconds ());
+	StopSpeedBoost (nObject);
 	i = d_rand () % nLinks;
 	nSegment = segments [i];
 	nSide = sides [i];
@@ -729,6 +729,14 @@ if (gameStates.app.tick40fps.bTick && gameStates.gameplay.nDirSteps)
 
 //------------------------------------------------------------------------------
 
+void CTrigger::StopSpeedBoost (short nObject)
+{
+gameData.objs.speedBoost [nObject].bBoosted = 0;
+SetSpeedBoostVelocity ((short) nObject, -1, -1, -1, -1, -1, NULL, NULL, 0);
+}
+
+//------------------------------------------------------------------------------
+
 void CTrigger::DoSpeedBoost (short nObject)
 {
 if (!(COMPETITION || IsCoopGame) || extraGameInfo [IsMultiGame].nSpeedBoost) {
@@ -747,6 +755,7 @@ bool CTrigger::DoExit (int nPlayer)
 if (nPlayer != gameData.multiplayer.nLocalPlayer)
 	return false;
 audio.StopAll ();		//kill the sounds
+StopSpeedBoost (gameData.multiplayer.players [nPlayer].nObject);
 if ((gameData.missions.nCurrentLevel > 0) || gameStates.app.bD1Mission) {
 	StartEndLevelSequence (0);
 	return true;
