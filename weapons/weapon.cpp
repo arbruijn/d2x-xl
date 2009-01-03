@@ -917,9 +917,6 @@ int ReadWeaponInfos (tWeaponInfo *pwi, int n, CFile& cf, int fileVersion)
 	int i, j;
 
 for (i = 0; i < n; i++, pwi++) {
-	gameData.weapons.color [i].red =
-	gameData.weapons.color [i].green =
-	gameData.weapons.color [i].blue = 1.0;
 	pwi->renderType = cf.ReadByte ();
 	pwi->persistent = cf.ReadByte ();
 	pwi->nModel = cf.ReadShort ();

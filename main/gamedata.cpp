@@ -890,7 +890,7 @@ DESTROY (gameData.physics.ignoreObjs);
 bool CWeaponData::Create (void)
 {
 CREATE (color, LEVEL_OBJECTS, 0);
-for (int i = 0; i < MAX_OBJECTS; i++)
+for (int i = 0; i < LEVEL_OBJECTS; i++)
 	color [i].red =
 	color [i].green =
 	color [i].blue = 1.0;
