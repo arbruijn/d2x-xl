@@ -45,8 +45,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_SEGMENTS_D2					900
 #define MAX_SEGMENTS_D2X				6000
 #define MAX_SEGMENTS						gameData.segs.nMaxSegments
-#define MAX_SEGMENT_VERTICES			65536 
-#define MAX_SEGMENT_VERTICES_D2X		65536
+#define MAX_SEGMENT_VERTICES			(8 * MAX_SEGMENTS) 
+#define MAX_SEGMENT_VERTICES_D2X		(8 * MAX_SEGMENTS_D2X)
 
 #define MAX_SIDES			(MAX_SEGMENTS * 6)
 #define MAX_FACES			(MAX_SIDES * 2)
@@ -69,7 +69,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Returns true if nSegment references a child, else returns false.
 // Note that -1 means no connection, -2 means a connection to the outside world.
 #define IS_CHILD(nSegment) (nSegment > -1)
-
 
 extern int sideVertIndex [MAX_SIDES_PER_SEGMENT][4];
 extern char sideOpposite [MAX_SIDES_PER_SEGMENT];

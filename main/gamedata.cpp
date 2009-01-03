@@ -191,12 +191,23 @@ gameData.render.lights.dynamic.material.bValid = 0;
 
 // ----------------------------------------------------------------------------
 
-void CDynLightData::Create (void)
+bool CDynLightData::Create (void)
 {
-CREATE (nearestSegLights, MAX_SEGMENTS * MAX_NEAREST_LIGHTS, 0);
-CREATE (nearestVertLights, MAX_VERTICES * MAX_NEAREST_LIGHTS, 0);
-CREATE (variableVertLights, MAX_VERTICES, 0);
-CREATE (owners, MAX_OBJECTS, (char) 0xff);
+CREATE (nearestSegLights, LEVEL_SEGMENTS * MAX_NEAREST_LIGHTS, 0);
+CREATE (nearestVertLights, LEVEL_VERTICES * MAX_NEAREST_LIGHTS, 0);
+CREATE (variableVertLights, LEVEL_VERTICES, 0);
+CREATE (owners, LEVEL_OBJECTS, (char) 0xff);
+return true;
+}
+
+// ----------------------------------------------------------------------------
+
+void CDynLightData::Destroy (void)
+{
+DESTROY (nearestSegLights);
+DESTROY (nearestVertLights);
+DESTROY (variableVertLights);
+DESTROY (owners);
 }
 
 // ----------------------------------------------------------------------------
@@ -213,23 +224,43 @@ memset (&globalDynColor, 0, sizeof (globalDynColor));
 
 // ----------------------------------------------------------------------------
 
-void CLightData::Create (void)
+bool CLightData::Create (void)
 {
 if (!gameStates.app.bNostalgia)
 	dynamic.Create ();
-CREATE (segDeltas, MAX_SEGMENTS * 6, 0);
-CREATE (deltaIndices, MAX_DL_INDICES, 0);
-CREATE (deltas, MAX_DELTA_LIGHTS, 0);
-CREATE (subtracted, MAX_SEGMENTS, 0);
-CREATE (dynamicLight, MAX_VERTICES, 0);
-CREATE (dynamicColor, MAX_VERTICES, 0);
-CREATE (bGotDynColor, MAX_VERTICES, 0);
-CREATE (vertices, MAX_VERTICES, 0);
-CREATE (vertexFlags, MAX_VERTICES, 0);
-CREATE (newObjects, MAX_OBJECTS, 0);
-CREATE (objects, MAX_OBJECTS, 0);
+CREATE (segDeltas, LEVEL_SEGMENTS * 6, 0);
+CREATE (deltaIndices, LEVEL_DL_INDICES, 0);
+CREATE (deltas, LEVEL_DELTA_LIGHTS, 0);
+CREATE (subtracted, LEVEL_SEGMENTS, 0);
+CREATE (dynamicLight, LEVEL_VERTICES, 0);
+CREATE (dynamicColor, LEVEL_VERTICES, 0);
+CREATE (bGotDynColor, LEVEL_VERTICES, 0);
+CREATE (vertices, LEVEL_VERTICES, 0);
+CREATE (vertexFlags, LEVEL_VERTICES, 0);
+CREATE (newObjects, LEVEL_OBJECTS, 0);
+CREATE (objects, LEVEL_OBJECTS, 0);
 CREATE (coronaQueries, MAX_OGL_LIGHTS, 0);
 CREATE (coronaSamples, MAX_OGL_LIGHTS, 0);
+return true;
+}
+
+// ----------------------------------------------------------------------------
+
+void CLightData::Destroy (void)
+{
+DESTROY (segDeltas);
+DESTROY (deltaIndices);
+DESTROY (deltas);
+DESTROY (subtracted);
+DESTROY (dynamicLight);
+DESTROY (dynamicColor);
+DESTROY (bGotDynColor);
+DESTROY (vertices);
+DESTROY (vertexFlags);
+DESTROY (newObjects);
+DESTROY (objects);
+DESTROY (coronaQueries);
+DESTROY (coronaSamples);
 }
 
 //------------------------------------------------------------------------------
@@ -248,10 +279,18 @@ nFrame = 0;
 
 // ----------------------------------------------------------------------------
 
-void CShadowData::Create (void)
+bool CShadowData::Create (void)
 {
 if (!gameStates.app.bNostalgia && gameStates.app.bEnableShadows)
-	CREATE (objLights, MAX_OBJECTS * MAX_SHADOW_LIGHTS, 0);
+	CREATE (objLights, LEVEL_OBJECTS * MAX_SHADOW_LIGHTS, 0);
+return true;
+}
+
+// ----------------------------------------------------------------------------
+
+void CShadowData::Destroy (void)
+{
+DESTROY (objLights);
 }
 
 // ----------------------------------------------------------------------------
@@ -336,9 +375,17 @@ bPlayerMessage = 1;
 
 // ----------------------------------------------------------------------------
 
-void CRenderData::Create (void)
+bool CRenderData::Create (void)
 {
-CREATE (gameData.render.faceList, MAX_FACES, 0);
+CREATE (gameData.render.faceList, LEVEL_FACES, 0);
+return true;
+}
+
+// ----------------------------------------------------------------------------
+
+void CRenderData::Destroy (void)
+{
+DESTROY (gameData.render.faceList);
 }
 
 //------------------------------------------------------------------------------
@@ -361,21 +408,42 @@ iLMapTexCoord = 0;
 
 // ----------------------------------------------------------------------------
 
-void CFaceData::Create (void)
+bool CFaceData::Create (void)
 {
-CREATE (faces, MAX_FACES, 0);
-CREATE ( tris, MAX_TRIANGLES, 0);
-CREATE (vertices, MAX_TRIANGLES * 3, 0);
+CREATE (faces, LEVEL_FACES, 0);
+CREATE ( tris, LEVEL_TRIANGLES, 0);
+CREATE (vertices, LEVEL_TRIANGLES * 3, 0);
 #if USE_RANGE_ELEMENTS
-CREATE (vertIndex, MAX_TRIANGLES * 3, 0);
+CREATE (vertIndex, LEVEL_TRIANGLES * 3, 0);
 #endif
-CREATE (faceVerts, MAX_FACES * 16, 0);
-CREATE (normals, MAX_TRIANGLES * 3 * 2, 0);
-CREATE (color, MAX_TRIANGLES * 3, 0);
-CREATE (texCoord, MAX_TRIANGLES * 2 * 2, 0);
-CREATE (ovlTexCoord, MAX_TRIANGLES * 2, 0);
-CREATE (lMapTexCoord, MAX_FACES * 2, 0);
+CREATE (faceVerts, LEVEL_FACES * 16, 0);
+CREATE (normals, LEVEL_TRIANGLES * 3 * 2, 0);
+CREATE (color, LEVEL_TRIANGLES * 3, 0);
+CREATE (texCoord, LEVEL_TRIANGLES * 2 * 2, 0);
+CREATE (ovlTexCoord, LEVEL_TRIANGLES * 2, 0);
+CREATE (lMapTexCoord, LEVEL_FACES * 2, 0);
+return true;
 }
+
+// ----------------------------------------------------------------------------
+
+void CFaceData::Destroy (void)
+{
+DESTROY (faces);
+DESTROY ( tris);
+DESTROY (vertices);
+#if USE_RANGE_ELEMENTS
+DESTROY (vertIndex);
+#endif
+DESTROY (faceVerts);
+DESTROY (normals);
+DESTROY (color);
+DESTROY (texCoord);
+DESTROY (ovlTexCoord);
+DESTROY (lMapTexCoord);
+}
+
+//------------------------------------------------------------------------------
 
 CFaceListIndex::CFaceListIndex () 
 { 
@@ -409,26 +477,50 @@ CLEAR (szLevelFilename);
 
 // ----------------------------------------------------------------------------
 
-void CSegmentData::Create (void)
+bool CSegmentData::Create (void)
 {
-CREATE (gameData.segs.vertices, 65536, 0);
-CREATE (gameData.segs.fVertices, 65536, 0);
-CREATE (SEGMENTS, MAX_SEGMENTS, 0);
-CREATE (SEGMENTS, MAX_SEGMENTS, 0);
-CREATE (SEGMENTS, MAX_SEGMENTS, 0);
-CREATE (gameData.segs.points, 65536, 0);
+CREATE (gameData.segs.vertices, LEVEL_VERTICES, 0);
+CREATE (gameData.segs.fVertices, LEVEL_VERTICES, 0);
+CREATE (SEGMENTS, LEVEL_SEGMENTS, 0);
+CREATE (SEGMENTS, LEVEL_SEGMENTS, 0);
+CREATE (SEGMENTS, LEVEL_SEGMENTS, 0);
+CREATE (gameData.segs.points, LEVEL_VERTICES, 0);
 #if CALC_SEGRADS
-CREATE (gameData.segs.segRads [0], MAX_SEGMENTS, 0);
-CREATE (gameData.segs.segRads [1], MAX_SEGMENTS, 0);
-CREATE (gameData.segs.extent, MAX_SEGMENTS, 0);
+CREATE (gameData.segs.segRads [0], LEVEL_SEGMENTS, 0);
+CREATE (gameData.segs.segRads [1], LEVEL_SEGMENTS, 0);
+CREATE (gameData.segs.extent, LEVEL_SEGMENTS, 0);
 #endif
-CREATE (gameData.segs.segCenters [0], MAX_SEGMENTS, 0);
-CREATE (gameData.segs.segCenters [1], MAX_SEGMENTS, 0);
-CREATE (gameData.segs.sideCenters, MAX_SEGMENTS * 6, 0);
-CREATE (gameData.segs.bSegVis, MAX_SEGMENTS * MAX_SEGVIS_FLAGS, 0);
-CREATE (gameData.segs.slideSegs, MAX_SEGMENTS, 0);
-CREATE (gameData.segs.segFaces, MAX_SEGMENTS, 0);
-faces.Create ();
+CREATE (gameData.segs.segCenters [0], LEVEL_SEGMENTS, 0);
+CREATE (gameData.segs.segCenters [1], LEVEL_SEGMENTS, 0);
+CREATE (gameData.segs.sideCenters, LEVEL_SEGMENTS * 6, 0);
+CREATE (gameData.segs.bSegVis, LEVEL_SEGMENTS * LEVEL_SEGVIS_FLAGS, 0);
+CREATE (gameData.segs.slideSegs, LEVEL_SEGMENTS, 0);
+CREATE (gameData.segs.segFaces, LEVEL_SEGMENTS, 0);
+return faces.Create ();
+}
+
+// ----------------------------------------------------------------------------
+
+void CSegmentData::Destroy (void)
+{
+DESTROY (gameData.segs.vertices);
+DESTROY (gameData.segs.fVertices);
+DESTROY (SEGMENTS);
+DESTROY (SEGMENTS);
+DESTROY (SEGMENTS);
+DESTROY (gameData.segs.points);
+#if CALC_SEGRADS
+DESTROY (gameData.segs.segRads [0]);
+DESTROY (gameData.segs.segRads [1]);
+DESTROY (gameData.segs.extent);
+#endif
+DESTROY (gameData.segs.segCenters [0]);
+DESTROY (gameData.segs.segCenters [1]);
+DESTROY (gameData.segs.sideCenters);
+DESTROY (gameData.segs.bSegVis);
+DESTROY (gameData.segs.slideSegs);
+DESTROY (gameData.segs.segFaces);
+faces.Destroy ();
 }
 
 // ----------------------------------------------------------------------------
@@ -455,7 +547,7 @@ CTriggerData::CTriggerData ()
 triggers.Create (MAX_TRIGGERS);
 objTriggers.Create (MAX_TRIGGERS);
 objTriggerRefs.Create (MAX_OBJ_TRIGGERS);
-firstObjTrigger.Create (MAX_OBJECTS_D2X);
+firstObjTrigger.Create (LEVEL_OBJECTS);
 delay.Create (MAX_TRIGGERS);
 nTriggers = 0;
 nObjTriggers = 0;
@@ -662,7 +754,7 @@ nFreeDropped = 0;
 nDropped = 0;
 nObjects = 0;
 nObjectLimit = 0;
-nMaxUsedObjects = MAX_OBJECTS - 20;
+nMaxUsedObjects = LEVEL_OBJECTS - 20;
 nNextSignature = 1;
 nChildFreeList = 0;
 nDrops = 0;
@@ -679,46 +771,72 @@ CLEAR (bWantEffect);
 
 // ----------------------------------------------------------------------------
 
-void CObjectData::Create (void)
+bool CObjectData::Create (void)
 {
-CREATE (gameData.objs.objects, MAX_OBJECTS, 0);
-CREATE (gameData.objs.freeList, MAX_OBJECTS, 0);
-CREATE (gameData.objs.lightObjs, MAX_OBJECTS, (char) 0xff);
-CREATE (gameData.objs.parentObjs, MAX_OBJECTS, (char) 0xff);
-CREATE (gameData.objs.childObjs, MAX_OBJECTS, 0);
-CREATE (gameData.objs.firstChild, MAX_OBJECTS, (char) 0xff);
-CREATE (gameData.objs.init, MAX_OBJECTS, 0);
-CREATE (gameData.objs.dropInfo, MAX_OBJECTS, 0);
-CREATE (gameData.objs.speedBoost, MAX_OBJECTS, 0);
-CREATE (gameData.objs.vRobotGoals, MAX_OBJECTS, 0);
-CREATE (gameData.objs.xLastAfterburnerTime, MAX_OBJECTS, 0);
-CREATE (gameData.objs.xLight, MAX_OBJECTS, 0);
-CREATE (gameData.objs.nLightSig, MAX_OBJECTS, 0);
-CREATE (gameData.objs.nHitObjects, MAX_OBJECTS * MAX_HIT_OBJECTS, 0);
-CREATE (gameData.objs.viewData, MAX_OBJECTS, (char) 0xFF);
+CREATE (gameData.objs.objects, LEVEL_OBJECTS, 0);
+CREATE (gameData.objs.freeList, LEVEL_OBJECTS, 0);
+CREATE (gameData.objs.lightObjs, LEVEL_OBJECTS, (char) 0xff);
+CREATE (gameData.objs.parentObjs, LEVEL_OBJECTS, (char) 0xff);
+CREATE (gameData.objs.childObjs, LEVEL_OBJECTS, 0);
+CREATE (gameData.objs.firstChild, LEVEL_OBJECTS, (char) 0xff);
+CREATE (gameData.objs.init, LEVEL_OBJECTS, 0);
+CREATE (gameData.objs.dropInfo, LEVEL_OBJECTS, 0);
+CREATE (gameData.objs.speedBoost, LEVEL_OBJECTS, 0);
+CREATE (gameData.objs.vRobotGoals, LEVEL_OBJECTS, 0);
+CREATE (gameData.objs.xLastAfterburnerTime, LEVEL_OBJECTS, 0);
+CREATE (gameData.objs.xLight, LEVEL_OBJECTS, 0);
+CREATE (gameData.objs.nLightSig, LEVEL_OBJECTS, 0);
+CREATE (gameData.objs.nHitObjects, LEVEL_OBJECTS * MAX_HIT_OBJECTS, 0);
+CREATE (gameData.objs.viewData, LEVEL_OBJECTS, (char) 0xFF);
 shrapnelManager.Init ();
+return true;
+}
+
+// ----------------------------------------------------------------------------
+
+void CObjectData::Destroy (void)
+{
+DESTROY (gameData.objs.objects);
+DESTROY (gameData.objs.freeList);
+DESTROY (gameData.objs.lightObjs);
+DESTROY (gameData.objs.parentObjs);
+DESTROY (gameData.objs.childObjs);
+DESTROY (gameData.objs.firstChild);
+DESTROY (gameData.objs.init);
+DESTROY (gameData.objs.dropInfo);
+DESTROY (gameData.objs.speedBoost);
+DESTROY (gameData.objs.vRobotGoals);
+DESTROY (gameData.objs.xLastAfterburnerTime);
+DESTROY (gameData.objs.xLight);
+DESTROY (gameData.objs.nLightSig);
+DESTROY (gameData.objs.nHitObjects);
+DESTROY (gameData.objs.viewData);
+shrapnelManager.Reset ();
 }
 
 // ----------------------------------------------------------------------------
 
 CColorData::CColorData ()
 {
-CREATE (textures, MAX_WALL_TEXTURES, 0);
+if (textures.Create (MAX_WALL_TEXTURES))
+	textures.Clear ();
 for (int i = 0; i < 2; i++)
-	CREATE (defaultTextures [i], MAX_WALL_TEXTURES, 0);
+	if (defaultTextures [i].Create (MAX_WALL_TEXTURES))
+		defaultTextures [i].Clear ();
 }
 
 // ----------------------------------------------------------------------------
 
-void CColorData::Create (void)
+bool CColorData::Create (void)
 {
-CREATE (lights, MAX_SEGMENTS * 6, 0);
-CREATE (sides, MAX_SEGMENTS * 6, 0);
-CREATE (segments, MAX_SEGMENTS, 0);
-CREATE (vertices, MAX_VERTICES, 0);
-CREATE (vertBright, MAX_VERTICES, 0);
-CREATE (ambient, MAX_VERTICES, 0);	//static light values
-CREATE (visibleLights, MAX_SEGMENTS * 6, 0);
+CREATE (lights, LEVEL_SEGMENTS * 6, 0);
+CREATE (sides, LEVEL_SEGMENTS * 6, 0);
+CREATE (segments, LEVEL_SEGMENTS, 0);
+CREATE (vertices, LEVEL_VERTICES, 0);
+CREATE (vertBright, LEVEL_VERTICES, 0);
+CREATE (ambient, LEVEL_VERTICES, 0);	//static light values
+CREATE (visibleLights, LEVEL_SEGMENTS * 6, 0);
+return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -754,16 +872,25 @@ playerThrust.SetZero ();
 
 // ----------------------------------------------------------------------------
 
-void CPhysicsData::Create (void)
+bool CPhysicsData::Create (void)
 {
-CREATE (gameData.physics.ignoreObjs, MAX_OBJECTS, 0);
+CREATE (gameData.physics.ignoreObjs, LEVEL_OBJECTS, 0);
+return true;
 }
 
 // ----------------------------------------------------------------------------
 
-void CWeaponData::Create (void)
+void CPhysicsData::Destroy (void)
 {
-CREATE (color, MAX_OBJECTS, 0);
+DESTROY (gameData.physics.ignoreObjs);
+}
+
+// ----------------------------------------------------------------------------
+
+bool CWeaponData::Create (void)
+{
+CREATE (color, LEVEL_OBJECTS, 0);
+return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -799,9 +926,17 @@ CLEAR (maxPowerupsAllowed);
 
 // ----------------------------------------------------------------------------
 
-void CMultiplayerData::Create (void)
+bool CMultiplayerData::Create (void)
 {
-CREATE (gameData.multiplayer.leftoverPowerups, MAX_OBJECTS, 0);
+CREATE (gameData.multiplayer.leftoverPowerups, LEVEL_OBJECTS, 0);
+return true;
+}
+
+// ----------------------------------------------------------------------------
+
+void CMultiplayerData::Destroy (void)
+{
+DESTROY (gameData.multiplayer.leftoverPowerups);
 }
 
 // ----------------------------------------------------------------------------
@@ -818,11 +953,21 @@ nTypingTimeout = 0;
 
 // ----------------------------------------------------------------------------
 
-void CMultiGameData::Create (void)
+bool CMultiGameData::Create (void)
 {
-CREATE (gameData.multigame.remoteToLocal, MAX_NUM_NET_PLAYERS * MAX_OBJECTS, 0);  // Remote CObject number for each local CObject
-CREATE (gameData.multigame.localToRemote, MAX_OBJECTS, 0);
-CREATE (gameData.multigame.nObjOwner, MAX_OBJECTS, 0);   // Who created each CObject in my universe, -1 = loaded at start
+CREATE (gameData.multigame.remoteToLocal, MAX_NUM_NET_PLAYERS * LEVEL_OBJECTS, 0);  // Remote CObject number for each local CObject
+CREATE (gameData.multigame.localToRemote, LEVEL_OBJECTS, 0);
+CREATE (gameData.multigame.nObjOwner, LEVEL_OBJECTS, 0);   // Who created each CObject in my universe, -1 = loaded at start
+return true;
+}
+
+// ----------------------------------------------------------------------------
+
+void CMultiGameData::Destroy (void)
+{
+DESTROY (gameData.multigame.remoteToLocal);  // Remote CObject number for each local CObject
+DESTROY (gameData.multigame.localToRemote);
+DESTROY (gameData.multigame.nObjOwner);   // Who created each CObject in my universe, -1 = loaded at start
 }
 
 // ----------------------------------------------------------------------------
@@ -836,24 +981,42 @@ gameData.ai.bInfoEnabled = 0;
 gameData.ai.nAwarenessEvents = 0;
 gameData.ai.nDistToLastPlayerPosFiredAt = 0;
 cloakInfo.Create (MAX_AI_CLOAK_INFO);
-pointSegs.Create (MAX_POINT_SEGS);
 awarenessEvents.Create (MAX_AWARENESS_EVENTS);
 gameData.ai.freePointSegs = gameData.ai.pointSegs.Buffer ();
 }
 
 // ----------------------------------------------------------------------------
 
-void CAIData::Create (void)
+bool CAIData::Create (void)
 {
-CREATE (gameData.ai.localInfo, MAX_OBJECTS, 0);
+CREATE (gameData.ai.localInfo, LEVEL_OBJECTS, 0);
+CREATE (pointSegs, LEVEL_POINT_SEGS, 0);
+return true;
 }
 
 // ----------------------------------------------------------------------------
 
-void CDemoData::Create (void)
+void CAIData::Destroy (void)
 {
-CREATE (gameData.demo.bWasRecorded,  MAX_OBJECTS, 0);
-CREATE (gameData.demo.bViewWasRecorded, MAX_OBJECTS, 0);
+DESTROY (gameData.ai.localInfo);
+DESTROY (pointSegs);
+}
+
+// ----------------------------------------------------------------------------
+
+bool CDemoData::Create (void)
+{
+CREATE (gameData.demo.bWasRecorded,  LEVEL_OBJECTS, 0);
+CREATE (gameData.demo.bViewWasRecorded, LEVEL_OBJECTS, 0);
+return true;
+}
+
+// ----------------------------------------------------------------------------
+
+void CDemoData::Destroy (void)
+{
+DESTROY (gameData.demo.bWasRecorded);
+DESTROY (gameData.demo.bViewWasRecorded);
 }
 
 // ----------------------------------------------------------------------------
@@ -921,20 +1084,47 @@ nGameMode = GM_GAME_OVER;
 
 // ----------------------------------------------------------------------------
 
-void CGameData::Create (void)
+bool CGameData::Create (void)
 {
-gameData.segs.Create ();
-gameData.objs.Create ();
-gameData.render.color.Create ();
-gameData.render.lights.Create ();
-gameData.render.Create ();
-gameData.render.shadows.Create ();
-gameData.physics.Create ();
-gameData.weapons.Create ();
-gameData.ai.Create ();
-gameData.multiplayer.Create ();
-gameData.multigame.Create ();
-gameData.demo.Create ();
+return 
+	gameData.render.Create () &&
+	gameData.weapons.Create ();
+}
+
+// ----------------------------------------------------------------------------
+
+bool CGameData::CreateLevel (void)
+{
+DestroyLevel ();
+return
+	gameData.segs.Create () &&
+	gameData.objs.Create () &&
+	gameData.render.color.Create () &&
+	gameData.render.lights.Create () &&
+	gameData.render.Create () &&
+	gameData.render.shadows.Create () &&
+	gameData.physics.Create () &&
+	gameData.ai.Create () &&
+	gameData.multiplayer.Create () &&
+	gameData.multigame.Create () &&
+	gameData.demo.Create ();
+}
+
+// ----------------------------------------------------------------------------
+
+void CGameData::DestroyLevel (void)
+{
+gameData.segs.Destroy ();
+gameData.objs.Destroy ();
+gameData.render.color.Destroy ();
+gameData.render.lights.Destroy ();
+gameData.render.Destroy ();
+gameData.render.shadows.Destroy ();
+gameData.physics.Destroy ();
+gameData.ai.Destroy ();
+gameData.multiplayer.Destroy ();
+gameData.multigame.Destroy ();
+gameData.demo.Destroy ();
 }
 
 // ----------------------------------------------------------------------------

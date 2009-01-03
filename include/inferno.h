@@ -1259,7 +1259,7 @@ class CColorData {
 		tRgbColorf				flagTag;
 	public:
 		CColorData ();
-		void Create (void);
+		bool Create (void);
 		void Destroy (void);
 };
 
@@ -1439,8 +1439,9 @@ class CDynLightData {
 		CFBO					fbo;
 	public:
 		CDynLightData ();
-		void Create (void);
+		bool Create (void);
 		void Init (void);
+		void Destroy (void);
 };
 
 extern int nMaxNearestLights [21];
@@ -1493,7 +1494,8 @@ class CLightData {
 		CArray<GLuint>					coronaSamples;
 	public:
 		CLightData ();
-		void Create (void);
+		bool Create (void);
+		void Destroy (void);
 };
 
 inline int operator- (tLightDeltaIndex* o, CArray<tLightDeltaIndex>& a) { return a.Index (o); }
@@ -1515,7 +1517,8 @@ class CShadowData {
 		ubyte						nFrame;	//flipflop for testing whether a light source's view has been rendered the current frame
 	public:
 		CShadowData ();
-		void Create (void);
+		bool Create (void);
+		void Destroy (void);
 };
 
 //------------------------------------------------------------------------------
@@ -1733,7 +1736,8 @@ class CRenderData {
 
 	public:
 		CRenderData ();
-		void Create (void);
+		bool Create (void);
+		void Destroy (void);
 };
 
 //------------------------------------------------------------------------------
@@ -1775,33 +1779,34 @@ typedef struct tFaceRenderVertex {
 
 class CFaceData {
 	public:
-		CArray<tFace>			faces;
-		CArray<grsTriangle>	tris;
-		CArray<CFloatVector3>		vertices;
-		CArray<CFloatVector3>		normals;
-		CArray<tTexCoord2f>	texCoord;
-		CArray<tTexCoord2f>	ovlTexCoord;
-		CArray<tTexCoord2f>	lMapTexCoord;
-		CArray<tRgbaColorf>	color;
-		CArray<ushort>			faceVerts;
-		tFace*					slidingFaces;
+		CArray<tFace>				faces;
+		CArray<grsTriangle>		tris;
+		CArray<CFloatVector3>	vertices;
+		CArray<CFloatVector3>	normals;
+		CArray<tTexCoord2f>		texCoord;
+		CArray<tTexCoord2f>		ovlTexCoord;
+		CArray<tTexCoord2f>		lMapTexCoord;
+		CArray<tRgbaColorf>		color;
+		CArray<ushort>				faceVerts;
+		tFace*						slidingFaces;
 #if USE_RANGE_ELEMENTS
-		CArray<GLuint>			vertIndex;
-#endif
-		GLuint					vboDataHandle;
-		GLuint					vboIndexHandle;
-		ubyte						*vertexP;
-		ushort					*indexP;
-		int						nVertices;
-		int						iVertices;
-		int						iNormals;
-		int						iColor;
-		int						iTexCoord;
-		int						iOvlTexCoord;
-		int						iLMapTexCoord;
+		CArray<GLuint>				vertIndex;
+#endif	
+		GLuint						vboDataHandle;
+		GLuint						vboIndexHandle;
+		ubyte*						vertexP;
+		ushort*						indexP;
+		int							nVertices;
+		int							iVertices;
+		int							iNormals;
+		int							iColor;
+		int							iTexCoord;
+		int							iOvlTexCoord;
+		int							iLMapTexCoord;
 	public:
 		CFaceData ();
-		void Create (void);
+		bool Create (void);
+		void Destroy (void);
 };
 
 inline int operator- (grsTriangle* o, CArray<grsTriangle>& a) { return a.Index (o); }
@@ -1861,7 +1866,8 @@ class CSegmentData {
 		CFaceData				faces;
 	public:
 		CSegmentData ();
-		void Create (void);
+		bool Create (void);
+		void Destroy (void);
 };
 
 //------------------------------------------------------------------------------
@@ -2041,7 +2047,8 @@ class CObjectData {
 
 	public:
 		CObjectData ();
-		void Create (void);
+		bool Create (void);
+		void Destroy (void);
 };
 
 #define PLAYER_LIGHTNINGS	1
@@ -2078,7 +2085,8 @@ class CPhysicsData {
 
 	public:
 		CPhysicsData ();
-		void Create (void);
+		bool Create (void);
+		void Destroy (void);
 };
 
 //------------------------------------------------------------------------------
@@ -2268,7 +2276,7 @@ class CWeaponData {
 
 	public:
 		CWeaponData () { memset (this, 0, sizeof (*this)); }
-		void Create (void);
+		bool Create (void);
 };
 
 #define bLastPrimaryWasSuper (gameData.weapons.bLastWasSuper [0])
@@ -2419,7 +2427,8 @@ class CMultiplayerData {
 
 	public:
 		CMultiplayerData ();
-		void Create (void);
+		bool Create (void);
+		void Destroy (void);
 };
 
 #include "multi.h"
@@ -2504,7 +2513,8 @@ class CMultiGameData {
 
 	public:
 		CMultiGameData ();
-		void Create (void);
+		bool Create (void);
+		void Destroy (void);
 };
 
 //------------------------------------------------------------------------------
@@ -2781,11 +2791,12 @@ class CAIData {
 		int							nPlayerVisibility;
 		int							bObjAnimates;
 		int							nLastMissileCamera;
-		CArray<tAwarenessEvent>	awarenessEvents ; //[MAX_AWARENESS_EVENTS];
+		CArray<tAwarenessEvent>	awarenessEvents; //[MAX_AWARENESS_EVENTS];
 
 	public:
 		CAIData ();
-		void Create (void);
+		bool Create (void);
+		void Destroy (void);
 };
 
 inline int operator- (tAILocalInfo* o, CArray<tAILocalInfo>& a) { return a.Index (o); }
@@ -2919,7 +2930,8 @@ class CDemoData {
 
 	public:
 		CDemoData () {memset (this, 0, sizeof (*this)); }
-		void Create (void);
+		bool Create (void);
+		void Destroy (void);
 };
 
 //------------------------------------------------------------------------------
@@ -3250,7 +3262,9 @@ class CGameData {
 
 	public:
 		void Init (void);
-		void Create (void);
+		bool Create (void);
+		bool CreateLevel (void);
+		void DestroyLevel (void);
 };
 
 extern CGameData gameData;
@@ -3548,6 +3562,20 @@ inline void Swap (_T& a, _T& b) { _T h = a; a = b; b = h; }
 #endif
 
 void CheckEndian (void);
+
+//	-----------------------------------------------------------------------------------------------------------
+
+#define LEVEL_SEGMENTS			gameData.segs.nSegments
+#define LEVEL_OBJECTS			gameData.segs.nSegments
+#define LEVEL_VERTICES			(gameData.segs.nVertices)
+#define LEVEL_POINT_SEGS		(gameData.segs.nSegments * 4)
+#define LEVEL_SIDES				(LEVEL_SEGMENTS * 6)
+#define LEVEL_FACES				(LEVEL_SIDES * 2)
+#define LEVEL_TRIANGLES			(LEVEL_FACES * 16)
+#define LEVEL_DL_INDICES		(LEVEL_SEGMENTS / 2)
+#define LEVEL_DELTA_LIGHTS		(LEVEL_SEGMENTS * 10)
+#define LEVEL_SEGVIS_FLAGS		((LEVEL_SEGMENTS + 7) >> 3)
+#define LEVEL_VERTVIS_FLAGS	((LEVEL_VERTICES + 7) >> 3)
 
 //	-----------------------------------------------------------------------------------------------------------
 

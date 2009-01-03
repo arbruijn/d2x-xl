@@ -116,7 +116,7 @@ extern fix AI_procTime;
 #define DELTA_ANG_SCALE 16
 
 #define OVERALL_AGITATION_MAX   100
-#define MAX_AI_CLOAK_INFO       8   // Must be a power of 2!
+#define MAX_AI_CLOAK_INFO       32   // Must be a power of 2!
 
 typedef struct {
 	fix         lastTime;

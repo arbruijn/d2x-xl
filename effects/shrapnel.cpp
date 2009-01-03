@@ -180,7 +180,14 @@ CStack::Destroy ();
 
 void CShrapnelManager::Init (void)
 {
-CArray<CShrapnelCloud>::Create (MAX_OBJECTS);
+return CArray<CShrapnelCloud>::Create (LEVEL_OBJECTS);
+}
+
+// -----------------------------------------------------------------------------
+
+void CShrapnelManager::Reset (void)
+{
+CArray<CShrapnelCloud>::Destroy ();
 }
 
 // -----------------------------------------------------------------------------

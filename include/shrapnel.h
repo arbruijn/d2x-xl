@@ -44,7 +44,8 @@ class CShrapnelCloud : private CStack<CShrapnel> {
 
 class CShrapnelManager : private CArray<CShrapnelCloud> {
 	public:
-		void Init (void);
+		bool Init (void);
+		void Reset (void);
 		int Create (CObject *objP);
 		void Draw (CObject *objP);
 		int Update (CObject *objP);
