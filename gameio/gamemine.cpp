@@ -1249,19 +1249,19 @@ for (i = 0; i < gameData.segs.nVertices; i++) {
 	gameData.segs.fVertices [i][Y] = X2F (gameData.segs.vertices [i][Y]);
 	gameData.segs.fVertices [i][Z] = X2F (gameData.segs.vertices [i][Z]);
 #endif
+	if (gameData.segs.vMin [X] > gameData.segs.vertices [i][X])
+		gameData.segs.vMin [X] = gameData.segs.vertices [i][X];
+	if (gameData.segs.vMin [Y] > gameData.segs.vertices [i][Y])
+		gameData.segs.vMin [Y] = gameData.segs.vertices [i][Y];
+	if (gameData.segs.vMin [Z] > gameData.segs.vertices [i][Z])
+		gameData.segs.vMin [Z] = gameData.segs.vertices [i][Z];
+	if (gameData.segs.vMax [X] < gameData.segs.vertices [i][X])
+		gameData.segs.vMax [X] = gameData.segs.vertices [i][X];
+	if (gameData.segs.vMax [Y] < gameData.segs.vertices [i][Y])
+		gameData.segs.vMax [Y] = gameData.segs.vertices [i][Y];
+	if (gameData.segs.vMax [Z] < gameData.segs.vertices [i][Z])
+		gameData.segs.vMax [Z] = gameData.segs.vertices [i][Z];
 	}
-if (gameData.segs.vMin [X] > gameData.segs.vertices [i][X])
-	gameData.segs.vMin [X] = gameData.segs.vertices [i][X];
-if (gameData.segs.vMin [Y] > gameData.segs.vertices [i][Y])
-	gameData.segs.vMin [Y] = gameData.segs.vertices [i][Y];
-if (gameData.segs.vMin [Z] > gameData.segs.vertices [i][Z])
-	gameData.segs.vMin [Z] = gameData.segs.vertices [i][Z];
-if (gameData.segs.vMax [X] < gameData.segs.vertices [i][X])
-	gameData.segs.vMax [X] = gameData.segs.vertices [i][X];
-if (gameData.segs.vMax [Y] < gameData.segs.vertices [i][Y])
-	gameData.segs.vMax [Y] = gameData.segs.vertices [i][Y];
-if (gameData.segs.vMax [Z] < gameData.segs.vertices [i][Z])
-	gameData.segs.vMax [Z] = gameData.segs.vertices [i][Z];
 SEGMENTS.Clear ();
 #if TRACE
 console.printf (CON_DBG, "   loading segments ...\n");

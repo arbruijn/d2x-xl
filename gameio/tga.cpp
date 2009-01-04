@@ -757,11 +757,13 @@ int CModelTextures::Read (int nType, int bCustom)
 for (i = 0; i < m_nBitmaps; i++) {
 	if (!ReadModelTGA (m_names [i].Buffer (), bmP = m_bitmaps + i, nType, bCustom))
 		return 0;
-	bmP = bmP->Override (-1);
-	if (bmP->Frames ())
-		bmP = bmP->CurFrame ();
-	bmP->Bind (1, 3);
-	m_bitmaps [i].SetTeam (m_nTeam.Buffer () ? m_nTeam [i] : 0);
+	if (bmP->Buffer ()) {
+		bmP = bmP->Override (-1);
+		if (bmP->Frames ())
+			bmP = bmP->CurFrame ();
+		bmP->Bind (1, 3);
+		m_bitmaps [i].SetTeam (m_nTeam.Buffer () ? m_nTeam [i] : 0);
+		}
 	}
 return 1;
 }
@@ -772,12 +774,21 @@ void CModelTextures::Release (void)
 {
 	int		i;
 
-if ((m_bitmaps.Buffer ())) {
-	for (i = 0; i < m_nBitmaps; i++) {
-		UseBitmapCache (&m_bitmaps [i], -static_cast<int> (m_bitmaps [i].Size ()));
+if ((m_bitmaps.Buffer ()))
+	for (i = 0; i < m_nBitmaps; i++)
 		m_bitmaps [i].ReleaseTexture ();
-		}
-	}
+}
+
+//------------------------------------------------------------------------------
+
+void CModelTextures::Bind (void)
+{
+	int		i;
+
+if ((m_bitmaps.Buffer ()))
+	for (i = 0; i < m_nBitmaps; i++)
+		if (m_bitmaps [i].Buffer ())
+			m_bitmaps [i].Bind (1, 3);
 }
 
 //------------------------------------------------------------------------------
@@ -790,8 +801,10 @@ if (m_names.Buffer ()) {
 	for (i = 0; i < m_nBitmaps; i++) 
 		m_names [i].Destroy ();
 if (m_bitmaps.Buffer ())
-	for (i = 0; i < m_nBitmaps; i++)
+	for (i = 0; i < m_nBitmaps; i++) {
+		UseBitmapCache (&m_bitmaps [i], -static_cast<int> (m_bitmaps [i].Size ()));
 		m_bitmaps [i].Destroy ();
+		}
 	m_nTeam.Destroy ();
 	m_names.Destroy ();
 	m_bitmaps.Destroy ();

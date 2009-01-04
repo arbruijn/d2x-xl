@@ -149,7 +149,7 @@ int ASE_ReloadTextures (void)
 PrintLog ("reloading ASE model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
 	for (i = gameData.models.nHiresModels, pm = gameData.models.aseModels [bCustom]; i; i--, pm++)
-		if (!pm->ReloadTextures (bCustom)) {
+		if (!pm->BindTextures (bCustom)) {
 			return 0;
 			}
 return 1;

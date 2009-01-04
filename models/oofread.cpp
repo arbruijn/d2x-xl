@@ -1747,7 +1747,7 @@ int OOF_ReloadTextures (void)
 PrintLog ("reloading OOF model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
 	for (i = gameData.models.nHiresModels, po = gameData.models.oofModels [bCustom]; i; i--, po++)
-		if (!po->ReloadTextures (bCustom))
+		if (!po->BindTextures (bCustom))
 			return 0;
 return 1;
 }

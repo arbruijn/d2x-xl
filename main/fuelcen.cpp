@@ -60,7 +60,7 @@ void ResetGenerators (void)
 {
 	int i;
 
-for (i = 0; i < MAX_SEGMENTS; i++)
+for (i = 0; i < LEVEL_SEGMENTS; i++)
 	SEGMENTS [i].m_nType = SEGMENT_IS_NOTHING;
 gameData.matCens.nFuelCenters = 0;
 gameData.matCens.nBotCenters = 0;

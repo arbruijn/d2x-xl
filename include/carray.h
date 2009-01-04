@@ -127,13 +127,16 @@ template < class _T > class CArray : public CQuickSort < _T > {
 		
 		inline void SetBuffer (_T *buffer, bool bChild = false, uint length = 0xffffffff) {
 			if (m_data.buffer != buffer) {
-				m_data.buffer = buffer;
-				m_data.length = length;
-				m_data.bChild = bChild;
-				if (buffer)
-					m_data.bExternal = true;
-				else
-					m_data.bExternal = false;
+				if (!(m_data.buffer = buffer))
+					Init ();
+				else {
+					m_data.length = length;
+					m_data.bChild = bChild;
+					if (buffer)
+						m_data.bExternal = true;
+					else
+						m_data.bExternal = false;
+					}
 				}
 			}
 			
