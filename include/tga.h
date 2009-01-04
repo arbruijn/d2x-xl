@@ -32,7 +32,7 @@ class CModelTextures {
 	public:
 		CModelTextures () { Init (); } 
 		void Init (void) { m_nBitmaps = 0; }
-		void Bind (void);
+		int Bind (int nType, int bCustom);
 		void Release (void);
 		int Read (int nType, int bCustom);
 		bool Create (int nBitmaps);

@@ -545,8 +545,7 @@ return 0;
 
 int CModel::ReloadTextures (int bCustom)
 {
-m_textures.Bind (); 
-	return 1;
+return m_textures.Bind (m_nType, bCustom); 
 }
 
 //------------------------------------------------------------------------------

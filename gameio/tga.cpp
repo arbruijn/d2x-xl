@@ -781,14 +781,17 @@ if ((m_bitmaps.Buffer ()))
 
 //------------------------------------------------------------------------------
 
-void CModelTextures::Bind (void)
+int CModelTextures::Bind (int nType, int bCustom)
 {
 	int		i;
 
 if ((m_bitmaps.Buffer ()))
-	for (i = 0; i < m_nBitmaps; i++)
-		if (m_bitmaps [i].Buffer ())
-			m_bitmaps [i].Bind (1, 3);
+	for (i = 0; i < m_nBitmaps; i++) {
+		if (!(m_bitmaps [i].Buffer () || Read (nType, bCustom)))
+			return 0;
+		m_bitmaps [i].Bind (1, 3);
+		}
+return 1;
 }
 
 //------------------------------------------------------------------------------
