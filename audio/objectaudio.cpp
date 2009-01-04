@@ -688,7 +688,7 @@ m_objects [i].m_channel = -1;
 
 void CAudio::StopObjectSounds (void)
 {
-for (int i = 0; i < MAX_SOUND_OBJECTS; i++) {
+for (uint i = 0; i < m_objects.ToS (); i++) {
 	if (m_objects [i].m_flags & SOF_USED) {
 		if (m_objects [i].m_channel > -1) {
 			StopSound (m_objects [i].m_channel);

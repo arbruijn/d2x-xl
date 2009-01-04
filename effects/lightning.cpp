@@ -1406,21 +1406,19 @@ m_nFirstLight = -1;
 CLightningManager::~CLightningManager () 
 { 
 Shutdown (true);
-m_objects.Destroy ();
-m_lights.Destroy ();
 }
 
 //------------------------------------------------------------------------------
 
 void CLightningManager::Init (void)
 {
-if (!m_objects.Buffer () || m_objects.Create (LEVEL_OBJECTS)) {
+if (!(m_objects.Buffer () || m_objects.Create (LEVEL_OBJECTS))) {
 	Shutdown (1);
 	extraGameInfo [0].bUseLightnings = 0;
 	return;
 	}
 m_objects.Clear (0xff);
-if (!m_lights.Buffer () || m_lights.Create (2 * LEVEL_SEGMENTS)) {
+if (!(m_lights.Buffer () || m_lights.Create (2 * LEVEL_SEGMENTS))) {
 	Shutdown (1);
 	extraGameInfo [0].bUseLightnings = 0;
 	return;
@@ -1496,6 +1494,9 @@ else {
 		m_systems.Push (systemP->Id ());
 		}
 	ResetLights (1);
+	m_systems.Destroy ();
+	m_objects.Destroy ();
+	m_lights.Destroy ();
 	if (!bSem)
 		SEM_LEAVE (SEM_LIGHTNINGS)
 	}

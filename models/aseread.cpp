@@ -398,10 +398,10 @@ while ((pszToken = ReadLine (cf))) {
 	else if (!strcmp (pszToken, "*MESH_NUMFACES")) {
 		if (m_faces.Buffer ())
 			return CModel::Error ("no faces found");
-		nFaces = IntTok (" \t");
+		m_nFaces = IntTok (" \t");
 		if (!m_nFaces)
 			return CModel::Error ("no faces specified");
-		m_nFaces += m_nFaces;
+		nFaces += m_nFaces;
 		if (!(m_faces.Create (m_nFaces)))
 			return CModel::Error ("out of memory");
 		m_faces.Clear ();
