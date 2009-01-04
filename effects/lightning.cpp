@@ -1398,6 +1398,7 @@ CLightningManager::CLightningManager ()
 {
 m_objects = NULL;
 m_lights = NULL; 
+m_nFirstLight = -1;
 }
 
 //------------------------------------------------------------------------------
@@ -1432,6 +1433,7 @@ if (!m_systems.Create (MAX_LIGHTNING_SYSTEMS)) {
 int i = 0;
 for (CLightningSystem* systemP = m_systems.GetFirst (m_systems.FreeList ()); systemP; systemP = m_systems.GetNext ())
 	systemP->Init (i++);
+m_nFirstLight = -1;
 m_bDestroy = 0;
 }
 
@@ -1791,7 +1793,7 @@ else {
 
 void CLightningManager::ResetLights (int bForce)
 {
-if (SHOW_LIGHTNINGS || bForce) {
+if ((SHOW_LIGHTNINGS || bForce) && m_lights.Buffer ()) {
 		tLightningLight	*llP;
 		int					i;
 
