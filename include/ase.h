@@ -51,7 +51,7 @@ class CSubModel {
 		~CSubModel () { Destroy (); }
 		void Init (void);
 		void Destroy (void);
-		int Read (CFile& cf);
+		int Read (CFile& cf, int& nVerts, int& nFaces);
 
 	private:
 		int ReadNode (CFile& cf);
@@ -60,7 +60,7 @@ class CSubModel {
 		int ReadVertexTexCoord (CFile& cf);
 		int ReadFaceTexCoord (CFile& cf);
 		int ReadMeshNormals (CFile& cf);
-		int ReadMesh (CFile& cf);
+		int ReadMesh (CFile& cf, int& nVerts, int& nFaces);
 	};
 
 class CModel {

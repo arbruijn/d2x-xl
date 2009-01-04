@@ -368,7 +368,7 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int CSubModel::ReadMesh (CFile& cf)
+int CSubModel::ReadMesh (CFile& cf, int& nFaces, int& nVerts)
 {
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
@@ -381,7 +381,7 @@ while ((pszToken = ReadLine (cf))) {
 		m_nVerts = IntTok (" \t");
 		if (!m_nVerts)
 			return CModel::Error ("no vertices found");
-		m_nVerts += m_nVerts;
+		nVerts += m_nVerts;
 		if (!(m_verts.Create (m_nVerts)))
 			return CModel::Error ("out of memory");
 		m_verts.Clear ();
@@ -398,7 +398,7 @@ while ((pszToken = ReadLine (cf))) {
 	else if (!strcmp (pszToken, "*MESH_NUMFACES")) {
 		if (m_faces.Buffer ())
 			return CModel::Error ("no faces found");
-		m_nFaces = IntTok (" \t");
+		nFaces = IntTok (" \t");
 		if (!m_nFaces)
 			return CModel::Error ("no faces specified");
 		m_nFaces += m_nFaces;
@@ -432,7 +432,7 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int CSubModel::Read (CFile& cf)
+int CSubModel::Read (CFile& cf, int& nFaces, int& nVerts)
 {
 while ((pszToken = ReadLine (cf))) {
 	if (*pszToken == '}')
@@ -493,7 +493,7 @@ while ((pszToken = ReadLine (cf))) {
 			return CModel::Error (NULL);
 		}
 	else if (!strcmp (pszToken, "*MESH")) {
-		if (!ReadMesh (cf))
+		if (!ReadMesh (cf, nFaces, nVerts))
 			return CModel::Error (NULL);
 		}
 	else if (!strcmp (pszToken, "*MATERIAL_REF")) {
@@ -663,7 +663,7 @@ if (!(psm = new CSubModel))
 psm->m_nSubModel = m_nSubModels++;
 psm->m_next = m_subModels;
 m_subModels = psm;
-return psm->Read (cf);
+return psm->Read (cf, m_nFaces, m_nVerts);
 }
 
 //------------------------------------------------------------------------------
