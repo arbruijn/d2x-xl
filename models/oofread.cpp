@@ -1270,10 +1270,8 @@ return 0;
 
 int CModel::ReloadTextures (int bCustom)
 {
-if (m_textures.Read (m_nType, bCustom)) 
-	return 1;
-Destroy ();
-return 0;
+m_textures.Bind ();
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -1747,7 +1745,7 @@ int OOF_ReloadTextures (void)
 PrintLog ("reloading OOF model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
 	for (i = gameData.models.nHiresModels, po = gameData.models.oofModels [bCustom]; i; i--, po++)
-		if (!po->BindTextures (bCustom))
+		if (!po->ReloadTextures (bCustom))
 			return 0;
 return 1;
 }
