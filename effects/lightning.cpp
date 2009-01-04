@@ -1517,7 +1517,10 @@ if (SHOW_LIGHTNINGS)
 
 void CLightningManager::MoveForObject (CObject* objP)
 {
-Move (m_objects [objP->Index ()], &OBJPOS (objP)->vPos, objP->info.nSegment, 0, 0);
+	int i = objP->Index ();
+
+if (m_objects [i] >= 0)
+	Move (m_objects [i], &OBJPOS (objP)->vPos, objP->info.nSegment, 0, 0);
 }
 
 //------------------------------------------------------------------------------
