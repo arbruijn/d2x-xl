@@ -1496,7 +1496,6 @@ else {
 		m_systems.Push (systemP->Id ());
 		}
 	ResetLights (1);
-	Init ();
 	if (!bSem)
 		SEM_LEAVE (SEM_LIGHTNINGS)
 	}

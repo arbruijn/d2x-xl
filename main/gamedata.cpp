@@ -1115,6 +1115,7 @@ if (!(gameData.segs.Create () &&
 		gameData.multigame.Create () &&
 		gameData.demo.Create ()))
 	return false;
+particleManager.Init ();
 lightningManager.Init ();
 return true;
 }
