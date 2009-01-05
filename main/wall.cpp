@@ -477,10 +477,10 @@ for (i = 0; i < doorP->nPartCount; i++) {
 	if (connSegP->IsWall (nConnSide))
 		bFlags &= connSegP->AnimateOpeningDoor (nConnSide, doorP->time);
 	}
-if (bFlags & 2)
-	gameData.walls.activeDoors [nDoor].time = 0;	//counts up
 if (bFlags & 1)
 	DeleteActiveDoor (nDoor);
+else if (bFlags & 2)
+	doorP->time = 0;	//counts up
 }
 
 //------------------------------------------------------------------------------
@@ -539,8 +539,8 @@ for (i = 0; i < doorP->nPartCount; i++) {
 	}
 if (bFlags & 1)
 	CloseDoor (nDoor);
-else
-	gameData.walls.activeDoors [nDoor].time = 0;		//counts up
+else if (bFlags & 2)
+	doorP->time = 0;		//counts up
 }
 
 //	-----------------------------------------------------------------------------

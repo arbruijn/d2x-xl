@@ -459,13 +459,13 @@ return 0;
 
 int G3DrawTexPolyMulti (
 	int			nVertices,
-	g3sPoint		**pointList,
-	tUVL			*uvlList,
-	tUVL			*uvlLMap,
-	CBitmap	*bmBot,
-	CBitmap	*bmTop,
-	tLightmap	*lightmap,
-	CFixVector	*pvNormal,
+	g3sPoint**	pointList,
+	tUVL*			uvlList,
+	tUVL*			uvlLMap,
+	CBitmap*		bmBot,
+	CBitmap*		bmTop,
+	tLightmap*	lightmap,
+	CFixVector*	pvNormal,
 	int			orient,
 	int			bBlend,
 	short			nSegment)
@@ -518,7 +518,7 @@ bmBot = bmBot->Override (-1);
 bDepthSort = (!bmTop && (gameOpts->render.bDepthSort > 0) &&
 				  ((gameStates.render.grAlpha < FADE_LEVELS) ||
 				   (bmBot->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU | BM_FLAG_TGA)) == (BM_FLAG_TRANSPARENT | BM_FLAG_TGA)));
-if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
+if (bmTop && (bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
 	nFrame = (int) (bmTop->CurFrame () - bmTop->Frames ());
 	bmP = bmTop;
 	bmTop = bmTop->CurFrame ();
