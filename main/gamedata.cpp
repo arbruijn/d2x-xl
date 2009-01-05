@@ -348,13 +348,13 @@ nVisible = 255;
 
 CRenderData::CRenderData ()
 {
+transpColor = DEFAULT_TRANSPARENCY_COLOR; //transparency color bitmap index
 }
 
 //------------------------------------------------------------------------------
 
 void CRenderData::Init (void)
 {
-transpColor = DEFAULT_TRANSPARENCY_COLOR; //transparency color bitmap index
 xFlashEffect = 0;
 xTimeFlashLastPlayed = 0;
 vertP = NULL;
