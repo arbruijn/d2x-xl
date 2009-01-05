@@ -846,11 +846,15 @@ if (siP->botInfoP->companion) {
 
 		if (objP->OpenableDoorsInSegment () != -1)
 			bDoStuff = 1;
-		else if ((aiP->nHideIndex >= 0) && SEGMENTS [gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex + aiP->PATH_DIR].nSegment].HasOpenableDoor () != -1)
-			bDoStuff = 1;
-		else if ((aiP->nHideIndex >= 0) && SEGMENTS [gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex + 2 * aiP->PATH_DIR].nSegment].HasOpenableDoor () != -1)
-			bDoStuff = 1;
-		else if ((siP->ailP->mode == AIM_GOTO_PLAYER) && (gameData.ai.xDistToPlayer < 3 * MIN_ESCORT_DISTANCE / 2) ) {
+		else if (aiP->nHideIndex >= 0) {
+			short nSegment;
+			int i = aiP->nHideIndex + aiP->nCurPathIndex;
+			if (((nSegment = gameData.ai.pointSegs [i + aiP->PATH_DIR].nSegment) >= 0) && (SEGMENTS [nSegment].HasOpenableDoor () != -1))
+				bDoStuff = 1;
+			else if (((nSegment = gameData.ai.pointSegs [i + 2 * aiP->PATH_DIR].nSegment) >= 0) && (SEGMENTS [nSegment].HasOpenableDoor () != -1))
+				bDoStuff = 1;
+			}
+		if (!bDoStuff && (siP->ailP->mode == AIM_GOTO_PLAYER) && (gameData.ai.xDistToPlayer < 3 * MIN_ESCORT_DISTANCE / 2)) {
 			bDoStuff = 1;
 			}
 		else
@@ -880,10 +884,14 @@ if (siP->botInfoP->thief) {
 		int bDoStuff = 0;
 		if (objP->OpenableDoorsInSegment () != -1)
 			bDoStuff = 1;
-		else if ((aiP->nHideIndex >= 0) && SEGMENTS [gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex + aiP->PATH_DIR].nSegment].HasOpenableDoor () != -1)
-			bDoStuff = 1;
-		else if ((aiP->nHideIndex >= 0) && SEGMENTS [gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex + 2*aiP->PATH_DIR].nSegment].HasOpenableDoor () != -1)
-			bDoStuff = 1;
+		else if (aiP->nHideIndex >= 0) {
+			short nSegment;
+			int i = aiP->nHideIndex + aiP->nCurPathIndex;
+			if (((nSegment = gameData.ai.pointSegs [i + aiP->PATH_DIR].nSegment) >= 0) && (SEGMENTS [nSegment].HasOpenableDoor () != -1))
+				bDoStuff = 1;
+			else if (((nSegment = gameData.ai.pointSegs [i + 2 * aiP->PATH_DIR].nSegment) >= 0) && (SEGMENTS [nSegment].HasOpenableDoor () != -1))
+				bDoStuff = 1;
+			}
 		if (bDoStuff) {
 			// @mk, 05/08/95: Firing flare from center of CObject, this is dumb...
 			CreateNewLaserEasy (&objP->info.position.mOrient.FVec (), &objP->info.position.vPos, objP->Index (), FLARE_ID, 1);
