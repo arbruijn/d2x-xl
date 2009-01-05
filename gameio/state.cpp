@@ -1033,16 +1033,16 @@ if (!m_bBetweenLevels) {
 	i = MAX_EXPLODING_WALLS;
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
-		SaveExplWall (gameData.walls.explWalls + j);
+		SaveExplWall (gameData.walls.exploding + j);
 	DBG (fPos = m_cf.Tell ());
 //Save door info
-	i = gameData.walls.nOpenDoors;
+	i = gameData.walls.activeDoors.ToS ();
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
 		SaveActiveDoor (gameData.walls.activeDoors + j);
 	DBG (fPos = m_cf.Tell ());
 //Save cloaking CWall info
-	i = gameData.walls.nCloaking;
+	i = gameData.walls.cloaking.ToS ();
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
 		SaveCloakingWall (gameData.walls.cloaking + j);
@@ -1520,7 +1520,7 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 		}
 	objP->info.nNextInSeg = objP->info.nPrevInSeg = objP->info.nSegment = -1;
 	if (objP->info.nType != OBJ_NONE) {
-		OBJECTS [i].LinkToSeg (nSegment);
+		objP->LinkToSeg (nSegment);
 		if (objP->info.nSignature > gameData.objs.nNextSignature)
 			gameData.objs.nNextSignature = objP->info.nSignature;
 		}
@@ -1861,16 +1861,18 @@ wallP->LoadState (m_cf);
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::LoadCloakingWall (CCloakingWall *wallP)
+void CSaveGameHandler::LoadCloakingWall (void)
 {
-wallP->LoadState (m_cf);
+gameData.walls.cloaking.Push ();
+gameData.walls.cloaking.Top ()->LoadState (m_cf);
 }
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::LoadActiveDoor (CActiveDoor *doorP)
+void CSaveGameHandler::LoadActiveDoor (void)
 {
-doorP->LoadState (m_cf);
+gameData.walls.activeDoors.Push ();
+gameData.walls.activeDoors.Top ()->LoadState (m_cf);
 }
 
 //------------------------------------------------------------------------------
@@ -2100,18 +2102,18 @@ if (!m_bBetweenLevels) {
 	if (ReadBoundedInt (MAX_EXPLODING_WALLS, &h))
 		return 0;
 	for (i = 0; i < h; i++)
-		CSaveGameHandler::LoadExplWall (gameData.walls.explWalls + i);
+		CSaveGameHandler::LoadExplWall (gameData.walls.exploding + i);
 	DBG (fPos = m_cf.Tell ());
 	//Restore door info
-	if (ReadBoundedInt (MAX_DOORS, &gameData.walls.nOpenDoors))
+	if (ReadBoundedInt (MAX_DOORS, &i))
 		return 0;
-	for (i = 0; i < gameData.walls.nOpenDoors; i++)
-		CSaveGameHandler::LoadActiveDoor (gameData.walls.activeDoors + i);
+	for (; i; i--)
+		CSaveGameHandler::LoadActiveDoor ();
 	DBG (fPos = m_cf.Tell ());
-	if (ReadBoundedInt (MAX_WALLS, &gameData.walls.nCloaking))
+	if (ReadBoundedInt (MAX_CLOAKING_WALLS, &i))
 		return 0;
-	for (i = 0; i < gameData.walls.nCloaking; i++)
-		CSaveGameHandler::LoadCloakingWall (gameData.walls.cloaking + i);
+	for (; i; i--)
+		CSaveGameHandler::LoadCloakingWall ();
 	DBG (fPos = m_cf.Tell ());
 	//Restore CTrigger info
 	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nTriggers))
@@ -2380,16 +2382,18 @@ if (!m_bBetweenLevels) {
 	//Restore exploding wall info
 	if (m_nVersion >= 10) {
 		m_cf.Read (&i, sizeof (int), 1);
-		m_cf.Read (gameData.walls.explWalls.Buffer (), sizeof (gameData.walls.explWalls [0]), i);
+		m_cf.Read (gameData.walls.exploding.Buffer (), sizeof (gameData.walls.exploding [0]), i);
 		}
 	//Restore door info
-	if (ReadBoundedInt (MAX_DOORS, &gameData.walls.nOpenDoors))
+	if (ReadBoundedInt (MAX_DOORS, &i))
 		return 0;
-	m_cf.Read (gameData.walls.activeDoors.Buffer (), sizeof (CActiveDoor), gameData.walls.nOpenDoors);
+	gameData.walls.activeDoors.Push (static_cast<uint> (i));
+	m_cf.Read (gameData.walls.activeDoors.Buffer (), sizeof (CActiveDoor), gameData.walls.activeDoors.ToS ());
 	if (m_nVersion >= 14) {		//Restore cloaking CWall info
-		if (ReadBoundedInt (MAX_WALLS, &gameData.walls.nCloaking))
+		if (ReadBoundedInt (MAX_WALLS, &i))
 			return 0;
-		m_cf.Read (gameData.walls.cloaking.Buffer (), sizeof (CCloakingWall), gameData.walls.nCloaking);
+		gameData.walls.cloaking.Push (static_cast<uint> (i));
+		m_cf.Read (gameData.walls.cloaking.Buffer (), sizeof (CCloakingWall), gameData.walls.cloaking.ToS ());
 		}
 	//Restore CTrigger info
 	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nTriggers))

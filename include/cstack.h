@@ -25,10 +25,10 @@ template < class _T > class CStack : public CArray<_T> {
 			CArray<_T>::Init ();
 			}
 
-		inline bool Push (void) {
-			if ((m_tos >= m_data.length) && (!(m_growth && Resize (m_data.length + m_growth))))
+		inline bool Push (uint i = 1) {
+			if ((m_tos + i > m_data.length) && (!(m_growth && Resize (m_data.length + m_growth))))
 				return false;
-			m_tos++;
+			m_tos += i;
 			return true;
 			}
 

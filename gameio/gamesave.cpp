@@ -1300,7 +1300,7 @@ static void CheckAndLinkObjects (void)
 	CObject	*objP = OBJECTS.Buffer ();
 
 for (i = 0; i < gameFileInfo.objects.count; i++, objP++) {
-	objP->info.nNextInSeg = OBJECTS [i].info.nPrevInSeg = -1;
+	objP->info.nNextInSeg = objP->info.nPrevInSeg = -1;
 	if (objP->info.nType != OBJ_NONE) {
 		nObjSeg = objP->info.nSegment;
 		if ((nObjSeg < 0) || (nObjSeg > gameData.segs.nLastSegment))	

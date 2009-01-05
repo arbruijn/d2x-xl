@@ -90,8 +90,8 @@ class CSaveGameHandler {
 		void LoadObject (CObject *objP);
 		void LoadWall (CWall *wallP);
 		void LoadExplWall (CExplodingWall *wallP);
-		void LoadCloakingWall (CCloakingWall *wallP);
-		void LoadActiveDoor (CActiveDoor *doorP);
+		void LoadCloakingWall (void);
+		void LoadActiveDoor (void);
 		void LoadTrigger (CTrigger *triggerP);
 		void LoadObjTriggerRef (tObjTriggerRef *refP);
 		void LoadMatCen (tMatCenInfo *matcenP);

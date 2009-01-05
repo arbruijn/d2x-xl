@@ -561,15 +561,13 @@ faces.Destroy ();
 
 CWallData::CWallData ()
 {
-explWalls.Create (MAX_EXPLODING_WALLS);
+exploding.Create (MAX_EXPLODING_WALLS);
 activeDoors.Create (MAX_DOORS);
 cloaking.Create (MAX_CLOAKING_WALLS);
 for (int i = 0; i < 2; i++)
 	anims [i].Create (MAX_WALL_ANIMS);
 bitmaps.Create (MAX_WALL_ANIMS);
 nWalls = 0;
-nOpenDoors = 0; 
-nCloaking = 0;
 CLEAR (nAnims);
 }
 
