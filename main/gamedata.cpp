@@ -752,7 +752,7 @@ for (int i = 0; i < 2; i++)
 
 // ----------------------------------------------------------------------------
 
-CObjectData::CObjectData ()
+void CObjectData::Init (void)
 {
 memset (&color, 0, sizeof (color));
 CLEAR (nLastObject);
@@ -769,7 +769,6 @@ nFreeDropped = 0;
 nDropped = 0;
 nObjects = 0;
 nObjectLimit = 0;
-nMaxUsedObjects = LEVEL_OBJECTS - 20;
 nNextSignature = 1;
 nChildFreeList = 0;
 nDrops = 0;

@@ -2048,7 +2048,8 @@ class CObjectData {
 		int							nFrameCount;
 
 	public:
-		CObjectData ();
+		CObjectData () {}
+		void Init (void);
 		bool Create (void);
 		void Destroy (void);
 };

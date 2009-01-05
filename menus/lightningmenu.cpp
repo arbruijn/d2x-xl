@@ -190,12 +190,14 @@ do {
 		GET_VAL (gameOpts->render.lightnings.bMonitors, optMonitors);
 		}
 	} while (i == -2);
-if (!gameOpts->render.lightnings.bPlayers)
-	lightningManager.DestroyForPlayers ();
-if (!gameOpts->render.lightnings.bRobots)
-	lightningManager.DestroyForRobots ();
-if (!gameOpts->render.lightnings.bStatic)
-	lightningManager.DestroyStatic ();
+if (gameStates.app.bGameRunning) {
+	if (!gameOpts->render.lightnings.bPlayers)
+		lightningManager.DestroyForPlayers ();
+	if (!gameOpts->render.lightnings.bRobots)
+		lightningManager.DestroyForRobots ();
+	if (!gameOpts->render.lightnings.bStatic)
+		lightningManager.DestroyStatic ();
+	}
 }
 
 //------------------------------------------------------------------------------
