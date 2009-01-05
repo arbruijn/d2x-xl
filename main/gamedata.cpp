@@ -485,13 +485,13 @@ usedKeys.Create ((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
 
 CSegmentData::CSegmentData ()
 {
+nMaxSegments = MAX_SEGMENTS_D2X;
 }
 
 //------------------------------------------------------------------------------
 
 void CSegmentData::Init (void)
 {
-nMaxSegments = MAX_SEGMENTS_D2X;
 fRad = 0;
 nVertices = 0;
 nFaceVerts = 0;
