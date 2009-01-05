@@ -1105,101 +1105,101 @@ ProfilerSetStatus (1);
 if (pfnTIRStart)
 	pfnTIRStart ();
 if (!setjmp (gameExitPoint)) {
-for (;;) {
-	PROF_START
-	int playerShields;
-		// GAME LOOP!
+	for (;;) {
+		PROF_START
+		int playerShields;
+			// GAME LOOP!
 #if DBG
-	if (automap.m_bDisplay)
+		if (automap.m_bDisplay)
 #endif
-	automap.m_bDisplay = 0;
-	gameStates.app.bConfigMenu = 0;
-	if (gameData.objs.consoleP != OBJECTS + LOCALPLAYER.nObject) {
+		automap.m_bDisplay = 0;
+		gameStates.app.bConfigMenu = 0;
+		if (gameData.objs.consoleP != OBJECTS + LOCALPLAYER.nObject) {
 #if TRACE
-	    //console.printf (CON_DBG,"gameData.multiplayer.nLocalPlayer=%d nObject=%d",gameData.multiplayer.nLocalPlayer,LOCALPLAYER.nObject);
+			 //console.printf (CON_DBG,"gameData.multiplayer.nLocalPlayer=%d nObject=%d",gameData.multiplayer.nLocalPlayer,LOCALPLAYER.nObject);
 #endif
-	    //Assert (gameData.objs.consoleP == &OBJECTS[LOCALPLAYER.nObject]);
-		}
-	playerShields = LOCALPLAYER.shields;
-	gameStates.app.nExtGameStatus = GAMESTAT_RUNNING;
-	if (!GameLoop (1, 1)) {		// Do game loop with rendering and reading controls.
-		PROF_END(ptFrame);
-		continue;
-		}
-	if (gameStates.app.bSingleStep) {
-		while (!(c = KeyInKey ()))
-			;
-		if (c == KEY_ALTED + KEY_CTRLED + KEY_ESC)
-			gameStates.app.bSingleStep = 0;
-		}
-	//if the CPlayerData is taking damage, give up guided missile control
-	if (LOCALPLAYER.shields != playerShields)
-		ReleaseGuidedMissile (gameData.multiplayer.nLocalPlayer);
-	//see if redbook song needs to be restarted
-	redbook.CheckRepeat ();	// Handle RedBook Audio Repeating.
-	if (gameStates.app.bConfigMenu) {
-		int double_save = bScanlineDouble;
-		if (!IsMultiGame) {
+			 //Assert (gameData.objs.consoleP == &OBJECTS[LOCALPLAYER.nObject]);
+			}
+		playerShields = LOCALPLAYER.shields;
+		gameStates.app.nExtGameStatus = GAMESTAT_RUNNING;
+		if (!GameLoop (1, 1)) {		// Do game loop with rendering and reading controls.
+			PROF_END(ptFrame);
+			continue;
+			}
+		if (gameStates.app.bSingleStep) {
+			while (!(c = KeyInKey ()))
+				;
+			if (c == KEY_ALTED + KEY_CTRLED + KEY_ESC)
+				gameStates.app.bSingleStep = 0;
+			}
+		//if the CPlayerData is taking damage, give up guided missile control
+		if (LOCALPLAYER.shields != playerShields)
+			ReleaseGuidedMissile (gameData.multiplayer.nLocalPlayer);
+		//see if redbook song needs to be restarted
+		redbook.CheckRepeat ();	// Handle RedBook Audio Repeating.
+		if (gameStates.app.bConfigMenu) {
+			int double_save = bScanlineDouble;
+			if (!IsMultiGame) {
+				paletteManager.SaveEffect ();
+				paletteManager.ResetEffect ();
+				paletteManager.LoadEffect  ();
+				}
+			ConfigMenu ();
+			if (bScanlineDouble != double_save)
+				InitCockpit ();
+			if (!IsMultiGame)
+				paletteManager.LoadEffect ();
+			}
+		if (automap.m_bDisplay) {
+			int	save_w = gameData.render.window.w,
+					save_h = gameData.render.window.h;
+			automap.DoFrame (0, 0);
+			gameStates.app.bEnterGame = 1;
+			//	FlushInput ();
+			//	StopPlayerMovement ();
+			gameStates.video.nScreenMode = -1;
+			SetScreenMode (SCREEN_GAME);
+			gameData.render.window.w = save_w;
+			gameData.render.window.h = save_h;
+			InitCockpit ();
+			gameStates.render.cockpit.nLastDrawn [0] =
+			gameStates.render.cockpit.nLastDrawn [1] = -1;
+			}
+		if ((gameStates.app.nFunctionMode != FMODE_GAME) &&
+			 gameData.demo.bAuto && !gameOpts->demo.bRevertFormat &&
+			 (gameData.demo.nState != ND_STATE_NORMAL)) {
+			int choice, fmode;
+			fmode = gameStates.app.nFunctionMode;
+			SetFunctionMode (FMODE_GAME);
 			paletteManager.SaveEffect ();
 			paletteManager.ResetEffect ();
 			paletteManager.LoadEffect  ();
-			}
-		ConfigMenu ();
-		if (bScanlineDouble != double_save)
-			InitCockpit ();
-		if (!IsMultiGame)
+			choice = MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_AUTODEMO);
 			paletteManager.LoadEffect ();
-		}
-	if (automap.m_bDisplay) {
-		int	save_w = gameData.render.window.w,
-				save_h = gameData.render.window.h;
-		automap.DoFrame (0, 0);
-		gameStates.app.bEnterGame = 1;
-		//	FlushInput ();
-		//	StopPlayerMovement ();
-		gameStates.video.nScreenMode = -1;
-		SetScreenMode (SCREEN_GAME);
-		gameData.render.window.w = save_w;
-		gameData.render.window.h = save_h;
-		InitCockpit ();
-		gameStates.render.cockpit.nLastDrawn [0] =
-		gameStates.render.cockpit.nLastDrawn [1] = -1;
-		}
-	if ((gameStates.app.nFunctionMode != FMODE_GAME) &&
-		 gameData.demo.bAuto && !gameOpts->demo.bRevertFormat &&
-		 (gameData.demo.nState != ND_STATE_NORMAL)) {
-		int choice, fmode;
-		fmode = gameStates.app.nFunctionMode;
-		SetFunctionMode (FMODE_GAME);
-		paletteManager.SaveEffect ();
-		paletteManager.ResetEffect ();
-		paletteManager.LoadEffect  ();
-		choice = MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_AUTODEMO);
-		paletteManager.LoadEffect ();
-		SetFunctionMode (fmode);
-		if (choice)
-			SetFunctionMode (FMODE_GAME);
-		else {
-			gameData.demo.bAuto = 0;
-			NDStopPlayback ();
-			SetFunctionMode (FMODE_MENU);
+			SetFunctionMode (fmode);
+			if (choice)
+				SetFunctionMode (FMODE_GAME);
+			else {
+				gameData.demo.bAuto = 0;
+				NDStopPlayback ();
+				SetFunctionMode (FMODE_MENU);
+				}
 			}
-		}
-	if ((gameStates.app.nFunctionMode != FMODE_GAME) &&
-		 (gameData.demo.nState != ND_STATE_PLAYBACK) &&
-		 (gameStates.app.nFunctionMode != FMODE_EDITOR) &&
-		 !gameStates.multi.bIWasKicked) {
-		if (QuitSaveLoadMenu ())
-			SetFunctionMode (FMODE_GAME);
-		}
-	gameStates.multi.bIWasKicked = 0;
-	PROF_END(ptFrame);
+		if ((gameStates.app.nFunctionMode != FMODE_GAME) &&
+			 (gameData.demo.nState != ND_STATE_PLAYBACK) &&
+			 (gameStates.app.nFunctionMode != FMODE_EDITOR) &&
+			 !gameStates.multi.bIWasKicked) {
+			if (QuitSaveLoadMenu ())
+				SetFunctionMode (FMODE_GAME);
+			}
+		gameStates.multi.bIWasKicked = 0;
+		PROF_END(ptFrame);
 #if PROFILING
-	if (gameData.app.nFrameCount % 10000 == 0)
-		memset (&gameData.profiler, 0, sizeof (gameData.profiler));
+		if (gameData.app.nFrameCount % 10000 == 0)
+			memset (&gameData.profiler, 0, sizeof (gameData.profiler));
 #endif
-	if (gameStates.app.nFunctionMode != FMODE_GAME)
-		longjmp (gameExitPoint, 0);
+		if (gameStates.app.nFunctionMode != FMODE_GAME)
+			break; //longjmp (gameExitPoint, 0);
 		}
 	}
 #ifdef MWPROFILE

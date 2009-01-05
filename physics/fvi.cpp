@@ -865,6 +865,10 @@ segP = SEGMENTS + nStartSeg;
 if ((nThisObject > -1) && (gameData.objs.collisionResult [nThisType][OBJ_WALL] == RESULT_NOTHING))
 	radP1 = 0;		//HACK - ignore when edges hit walls
 //now, check segment walls
+#if DBG
+if (nStartSeg == nDbgSeg)
+	nDbgSeg = nDbgSeg;
+#endif
 startMask = SEGMENTS [nStartSeg].Masks (*p0, radP0).m_face;
 masks = SEGMENTS [nStartSeg].Masks (*p1, radP1);    //on back of which faces?
 if (!(centerMask = masks.m_center))
@@ -890,6 +894,10 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 #if 0
 			if (!nFaceHitType)
 				continue;
+#endif
+#if DBG
+			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nDbgSide == nSide)))
+				nDbgSeg = nDbgSeg;
 #endif
 			widResult = segP->IsDoorWay (nSide, (nThisObject < 0) ? NULL : OBJECTS + nThisObject);
 			//PrintLog ("done\n");

@@ -2053,7 +2053,7 @@ if (!nType)
 if (nType) {
 	if (!bPlayingSound [info.nId]) {
 		short sound = (nType == 1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
-		audio.CreateObjectSound (sound, OBJ_IDX (this), SOUNDCLASS_GENERIC, 1);
+		audio.CreateObjectSound (sound, SOUNDCLASS_GENERIC, OBJ_IDX (this), 1);
 		bPlayingSound [info.nId] = 1;
 		}
 	}
