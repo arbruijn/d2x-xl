@@ -231,10 +231,16 @@ m_textureP = (textureP && (m_nBitmap >= 0)) ? textureP + m_nBitmap : NULL;
 
 //------------------------------------------------------------------------------
 
-int CFace::GatherVertices (CVertex* source, CVertex* dest, int nIndex)
+int CFace::GatherVertices (CArray<CVertex>& source, CArray<CVertex>& dest, int nIndex)
 {
-memcpy (dest, source + m_nIndex, m_nVerts * sizeof (CVertex));
-m_nIndex = nIndex;
+#if DBG
+if (uint (nIndex + m_nVerts) > source.Length ())
+	return 0;
+if (uint (nIndex + m_nVerts) > dest.Length ())
+	return 0;
+#endif
+memcpy (dest + nIndex, source + nIndex, m_nVerts * sizeof (CVertex));
+m_nIndex = nIndex;	//set this face's index of its first vertex in the model's vertex buffer
 return m_nVerts;
 }
 
@@ -286,15 +292,13 @@ qs.SortAscending (m_faces, 0, static_cast<uint> (m_nFaces - 1), &RenderModel::CF
 
 //------------------------------------------------------------------------------
 
-void CSubModel::GatherVertices (CVertex* source, CVertex* dest)
+void CSubModel::GatherVertices (CArray<CVertex>& source, CArray<CVertex>& dest)
 {
-	int	nVerts;
+	int nIndex = m_nIndex;	//this submodels vertices start at m_nIndex in the models vertex buffer
 
-dest += m_nIndex;
-for (int i = 0; i < m_nFaces; i++, dest += nVerts) {
-	nVerts = m_faces [i].GatherVertices (source, dest, m_nIndex);
-	m_nIndex += nVerts;
-	}
+// copy vertices face by face
+for (int i = 0; i < m_nFaces; i++)
+	nIndex += m_faces [i].GatherVertices (source, dest, nIndex);
 }
 
 //------------------------------------------------------------------------------
@@ -322,7 +326,7 @@ for (i = 0; i < m_nSubModels; i++) {
 	if (bSort) {
 		psm = &m_subModels [i];
 		psm->SortFaces (textureP);
-		psm->GatherVertices (m_faceVerts.Buffer (), sortedVerts);
+		psm->GatherVertices (m_faceVerts, m_sortedVerts);
 		}
 	pfi = psm->m_faces;
 	pfi->SetTexture (textureP);

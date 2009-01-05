@@ -71,7 +71,7 @@ class CFace {
 
 	public:
 		void SetTexture (CBitmap* textureP);
-		int GatherVertices (CVertex* source, CVertex* dest, int nIndex);
+		int GatherVertices (CArray<CVertex>&, CArray<CVertex>&, int nIndex);
 		
 		static int _CDECL_ CFace::Compare (const CFace* pf, const CFace* pm);
 
@@ -124,7 +124,7 @@ class CSubModel {
 		void InitMinMax (void);
 		void SetMinMax (CFloatVector3 *vertexP);
 		void SortFaces (CBitmap* textureP);
-		void GatherVertices (CVertex* source, CVertex* dest);
+		void GatherVertices (CArray<CVertex>& source, CArray<CVertex>& dest);
 		void Size (CModel* pm, CObject* objP, CFixVector* vOffset);
 	};
 
