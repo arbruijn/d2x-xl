@@ -412,7 +412,7 @@ int AIMFollowPathHandler2 (CObject *objP, tAIStateInfo *siP)
 	int angerLevel = 65;
 
 if (aiP->behavior == AIB_STATION)
-	if (gameData.ai.pointSegs [aiP->nHideIndex + aiP->nPathLength - 1].nSegment == aiP->nHideSegment) {
+	if ((aiP->nHideIndex >= 0) && (gameData.ai.pointSegs [aiP->nHideIndex + aiP->nPathLength - 1].nSegment == aiP->nHideSegment)) {
 		angerLevel = 64;
 	}
 ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_WAKEUP_DIST);
@@ -846,11 +846,11 @@ if (siP->botInfoP->companion) {
 
 		if (objP->OpenableDoorsInSegment () != -1)
 			bDoStuff = 1;
-		else if (SEGMENTS [gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex + aiP->PATH_DIR].nSegment].HasOpenableDoor () != -1)
+		else if ((aiP->nHideIndex >= 0) && SEGMENTS [gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex + aiP->PATH_DIR].nSegment].HasOpenableDoor () != -1)
 			bDoStuff = 1;
-		else if (SEGMENTS [gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex + 2*aiP->PATH_DIR].nSegment].HasOpenableDoor () != -1)
+		else if ((aiP->nHideIndex >= 0) && SEGMENTS [gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex + 2 * aiP->PATH_DIR].nSegment].HasOpenableDoor () != -1)
 			bDoStuff = 1;
-		else if ((siP->ailP->mode == AIM_GOTO_PLAYER) && (gameData.ai.xDistToPlayer < 3*MIN_ESCORT_DISTANCE/2) ) {
+		else if ((siP->ailP->mode == AIM_GOTO_PLAYER) && (gameData.ai.xDistToPlayer < 3 * MIN_ESCORT_DISTANCE / 2) ) {
 			bDoStuff = 1;
 			}
 		else
@@ -880,9 +880,9 @@ if (siP->botInfoP->thief) {
 		int bDoStuff = 0;
 		if (objP->OpenableDoorsInSegment () != -1)
 			bDoStuff = 1;
-		else if (SEGMENTS [gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex + aiP->PATH_DIR].nSegment].HasOpenableDoor () != -1)
+		else if ((aiP->nHideIndex >= 0) && SEGMENTS [gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex + aiP->PATH_DIR].nSegment].HasOpenableDoor () != -1)
 			bDoStuff = 1;
-		else if (SEGMENTS [gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex + 2*aiP->PATH_DIR].nSegment].HasOpenableDoor () != -1)
+		else if ((aiP->nHideIndex >= 0) && SEGMENTS [gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex + 2*aiP->PATH_DIR].nSegment].HasOpenableDoor () != -1)
 			bDoStuff = 1;
 		if (bDoStuff) {
 			// @mk, 05/08/95: Firing flare from center of CObject, this is dumb...
