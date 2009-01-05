@@ -519,7 +519,7 @@ if (vertices.Create (m_nFaceVerts)) {
 			}
 		}
 	h = (short) (pv - vertices.Buffer ()) - 1;
-	vertices.SortAscending (&RenderModel::CModel::CmpVerts);
+	vertices.SortAscending (&RenderModel::CModel::CmpVerts, 0, h);
 	//G3SortModelVerts (vertices, 0, h);
 	h = FilterVertices (vertices, h);
 	for (i = 0, pvi = vertices.Buffer (); i < h - 1; i++, pvi++)
