@@ -234,12 +234,12 @@ m_textureP = (textureP && (m_nBitmap >= 0)) ? textureP + m_nBitmap : NULL;
 int CFace::GatherVertices (CArray<CVertex>& source, CArray<CVertex>& dest, int nIndex)
 {
 #if DBG
-if (uint (nIndex + m_nVerts) > source.Length ())
+if (uint (m_nIndex + m_nVerts) > source.Length ())
 	return 0;
 if (uint (nIndex + m_nVerts) > dest.Length ())
 	return 0;
 #endif
-memcpy (dest + nIndex, source + nIndex, m_nVerts * sizeof (CVertex));
+memcpy (dest + nIndex, source + m_nIndex, m_nVerts * sizeof (CVertex));
 m_nIndex = nIndex;	//set this face's index of its first vertex in the model's vertex buffer
 return m_nVerts;
 }
@@ -309,7 +309,7 @@ void CModel::Setup (int bHires, int bSort)
 {
 	CSubModel*		psm;
 	CFace*			pfi, * pfj;
-	CVertex*			pmv, * sortedVerts;
+	CVertex*			pmv;
 	CFloatVector3*	pv, * pn;
 	tTexCoord2f*	pt;
 	tRgbaColorf*	pc;
@@ -318,7 +318,6 @@ void CModel::Setup (int bHires, int bSort)
 	short				nId;
 
 m_fScale = 1;
-sortedVerts = m_sortedVerts.Buffer ();
 for (i = 0, j = m_nFaceVerts; i < j; i++)
 	m_index [0][i] = i;
 //sort each submodel's faces
@@ -351,7 +350,7 @@ pv = m_vbVerts.Buffer ();
 pn = m_vbNormals.Buffer ();
 pt = m_vbTexCoord.Buffer ();
 pc = m_vbColor.Buffer ();
-pmv = bSort ? sortedVerts : m_faceVerts.Buffer ();
+pmv = bSort ? m_sortedVerts.Buffer () : m_faceVerts.Buffer ();
 for (i = 0, j = m_nFaceVerts; i < j; i++, pmv++) {
 	pv [i] = pmv->m_vertex;
 	pn [i] = pmv->m_normal;
