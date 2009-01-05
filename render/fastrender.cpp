@@ -126,7 +126,8 @@ flxP->roots [nKey] = i;
 #else
 j = flxP->tails [nKey];
 if (j < 0) {
-	flxP->usedKeys [flxP->nUsedKeys++] = nKey;
+	flxP->usedKeys [flxP->nUsedKeys] = nKey;
+	flxP->nUsedKeys++;
 	flxP->roots [nKey] = i;
 	}
 else
@@ -725,11 +726,10 @@ return nFaces;
 
 //------------------------------------------------------------------------------
 
-void RenderCoronaFaceList (CFaceListIndex *flxP, int nPass)
+void RenderCoronaFaceList (CFaceListIndex& flx, int nPass)
 {
-	CFaceListIndex	flx = *flxP;
-	tFaceListItem	*fliP;
-	tFace			*faceP;
+	tFaceListItem*	fliP;
+	tFace*			faceP;
 	short				i, j, nSegment;
 
 for (i = 0; i < flx.nUsedKeys; i++) {
@@ -795,20 +795,20 @@ glColorMask (1,1,1,1);
 if (nPass == 1) {	//find out how many total fragments each corona has
 	gameStates.render.bQueryCoronas = 1;
 	// first just render all coronas (happens before any geometry gets rendered)
-	RenderCoronaFaceList (gameData.render.faceIndex, 0);
+	RenderCoronaFaceList (gameData.render.faceIndex [0], 0);
 	if (gameStates.app.bMultiThreaded)
-		RenderCoronaFaceList (gameData.render.faceIndex + 1, 0);
+		RenderCoronaFaceList (gameData.render.faceIndex [1], 0);
 	glFlush ();
 	// then query how many samples (pixels) were rendered for each corona
-	RenderCoronaFaceList (gameData.render.faceIndex, 1);
+	RenderCoronaFaceList (gameData.render.faceIndex [0], 1);
 	if (gameStates.app.bMultiThreaded)
-		RenderCoronaFaceList (gameData.render.faceIndex + 1, 1);
+		RenderCoronaFaceList (gameData.render.faceIndex [1], 1);
 	}
 else { //now find out how many fragments are rendered for each corona if geometry interferes
 	gameStates.render.bQueryCoronas = 2;
-	RenderCoronaFaceList (gameData.render.faceIndex, 2);
+	RenderCoronaFaceList (gameData.render.faceIndex [0], 2);
 	if (gameStates.app.bMultiThreaded)
-		RenderCoronaFaceList (gameData.render.faceIndex + 1, 2);
+		RenderCoronaFaceList (gameData.render.faceIndex [1], 2);
 	glFlush ();
 	}
 glDepthMask (1);

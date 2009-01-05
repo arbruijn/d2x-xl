@@ -78,7 +78,7 @@ template < class _T > class CArray : public CQuickSort < _T > {
 				memset (m_data.buffer, filler, sizeof (_T) * ((count < m_data.length) ? count : m_data.length)); 
 			}
 		
-#ifdef _DEBUG
+#if DBG
 		inline int Index (_T* elem) { 
 			if (!m_data.buffer || (elem < m_data.buffer) || (elem >= m_data.buffer + m_data.length))
 				return -1;	// no buffer or element out of buffer
@@ -91,7 +91,7 @@ template < class _T > class CArray : public CQuickSort < _T > {
 		inline uint Index (_T* elem) { return elem - m_data.buffer; }
 #endif
 
-#ifdef _DEBUG
+#if DBG
 		inline _T* Pointer (uint i) { 
 			if (!m_data.buffer || (i >= m_data.length))
 				return NULL;
