@@ -3863,10 +3863,8 @@ MultiSendData (gameData.multigame.msg.buf, count, 1);
 
 void MultiDoActiveDoor (char *buf)
 {
-	char i = gameData.multigame.msg.buf [1];
-
-gameData.walls.nOpenDoors = buf [2];
-memcpy (&gameData.walls.activeDoors [(int)i], buf+3, sizeof (CActiveDoor));
+if (!FindActiveDoor (reinterpret_cast<CActiveDoor*> (&buf [3])->nFrontWall [0]))
+	gameData.walls.activeDoors.Push (*reinterpret_cast<CActiveDoor*> (&buf [3]));
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 {
 CActiveDoor *ad = gameData.walls.activeDoors + i;

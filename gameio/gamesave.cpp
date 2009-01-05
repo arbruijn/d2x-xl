@@ -1459,8 +1459,8 @@ ResetObjects (gameFileInfo.objects.count);
 CheckAndLinkObjects ();
 ClearTransientObjects (1);		//1 means clear proximity bombs
 CheckAndFixDoors ();
-gameData.walls.nOpenDoors = gameFileInfo.doors.count;
-gameData.trigs.nTriggers = gameFileInfo.triggers.count;
+//gameData.walls.nOpenDoors = gameFileInfo.doors.count;
+//gameData.trigs.nTriggers = gameFileInfo.triggers.count;
 CheckAndFixWalls ();
 CheckAndFixTriggers ();
 gameData.matCens.nBotCenters = gameFileInfo.botGen.count;
