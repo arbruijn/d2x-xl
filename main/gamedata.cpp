@@ -561,7 +561,6 @@ faces.Destroy ();
 
 CWallData::CWallData ()
 {
-walls.Create (MAX_WALLS);
 explWalls.Create (MAX_EXPLODING_WALLS);
 activeDoors.Create (MAX_DOORS);
 cloaking.Create (MAX_CLOAKING_WALLS);
@@ -572,6 +571,13 @@ nWalls = 0;
 nOpenDoors = 0; 
 nCloaking = 0;
 CLEAR (nAnims);
+}
+
+//------------------------------------------------------------------------------
+
+void CWallData::Destroy (void)
+{
+walls.Destroy ();
 }
 
 //------------------------------------------------------------------------------
@@ -1272,6 +1278,7 @@ void CGameData::Destroy (void)
 {
 gameData.segs.Destroy ();
 gameData.objs.Destroy ();
+gameData.walls.Destroy ();
 gameData.trigs.Destroy ();
 gameData.render.color.Destroy ();
 gameData.render.lights.Destroy ();

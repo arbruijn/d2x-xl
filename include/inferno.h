@@ -1880,7 +1880,7 @@ class CSegmentData {
 class CWallData {
 	public:
 		CArray<CWall>				walls ; //[MAX_WALLS];
-		CArray<CExplodingWall>			explWalls ; //[MAX_EXPLODING_WALLS];
+		CArray<CExplodingWall>	explWalls ; //[MAX_EXPLODING_WALLS];
 		CArray<CActiveDoor>		activeDoors ; //[MAX_DOORS];
 		CArray<CCloakingWall>	cloaking ; //[MAX_CLOAKING_WALLS];
 		CArray<tWallClip>			anims [2]; //[MAX_WALL_ANIMS];
@@ -1893,6 +1893,7 @@ class CWallData {
 
 	public:
 		CWallData ();
+		void Destroy (void);
 };
 
 //------------------------------------------------------------------------------

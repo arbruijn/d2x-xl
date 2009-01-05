@@ -946,11 +946,16 @@ static int ReadWallInfo (CFile& cf)
 {
 if (gameFileInfo.walls.offset > -1) {
 	int	i;
+
+	if (!gameData.walls.walls.Resize (gameFileInfo.walls.count)) {
+		Error ("Not enough memory for wall data\n");
+		return -1;
+		}
 	if (cf.Seek (gameFileInfo.walls.offset, SEEK_SET)) {
 		Error ("Error seeking to wall data\n(file damaged or invalid)");
 		return -1;
 		}
-	for (i = 0; i <gameFileInfo.walls.count; i++) {
+	for (i = 0; i < gameFileInfo.walls.count; i++) {
 		if (gameTopFileInfo.fileinfoVersion >= 20)
 			WALLS [i].Read (cf); // v20 walls and up.
 		else if (gameTopFileInfo.fileinfoVersion >= 17) {
@@ -1454,8 +1459,6 @@ ResetObjects (gameFileInfo.objects.count);
 CheckAndLinkObjects ();
 ClearTransientObjects (1);		//1 means clear proximity bombs
 CheckAndFixDoors ();
-gameData.walls.nWalls = gameFileInfo.walls.count;
-ResetWalls ();
 gameData.walls.nOpenDoors = gameFileInfo.doors.count;
 gameData.trigs.nTriggers = gameFileInfo.triggers.count;
 CheckAndFixWalls ();
