@@ -237,7 +237,7 @@ return WID_WALL; // There are children behind the door.
 
 CActiveDoor* CWall::OpenDoor (void)
 {
-	CActiveDoor* doorP;
+	CActiveDoor* doorP = NULL;
 
 if ((state == WALL_DOOR_OPENING) ||	//already opening
 	 (state == WALL_DOOR_WAITING) ||	//open, waiting to close
