@@ -1903,6 +1903,8 @@ class CTriggerData {
 		int							nObjTriggers;
 	public:
 		CTriggerData ();
+		bool Create (void);
+		void Destroy (void);
 };
 
 //------------------------------------------------------------------------------

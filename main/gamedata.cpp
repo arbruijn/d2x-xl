@@ -548,10 +548,24 @@ CTriggerData::CTriggerData ()
 triggers.Create (MAX_TRIGGERS);
 objTriggers.Create (MAX_TRIGGERS);
 objTriggerRefs.Create (MAX_OBJ_TRIGGERS);
-firstObjTrigger.Create (LEVEL_OBJECTS);
 delay.Create (MAX_TRIGGERS);
 nTriggers = 0;
 nObjTriggers = 0;
+}
+
+// ----------------------------------------------------------------------------
+
+bool CTriggerData::Create (void)
+{
+CREATE (firstObjTrigger, LEVEL_OBJECTS, 0xff);
+return true;
+}
+
+// ----------------------------------------------------------------------------
+
+void CTriggerData::Destroy (void)
+{
+firstObjTrigger.Destroy ();
 }
 
 // ----------------------------------------------------------------------------
@@ -1104,6 +1118,7 @@ bool CGameData::Create (void)
 Destroy ();
 if (!(gameData.segs.Create () &&
 		gameData.objs.Create () &&
+		gameData.trigs.Create () &&
 		gameData.render.color.Create () &&
 		gameData.render.lights.Create () &&
 		gameData.render.shadows.Create () &&
@@ -1126,6 +1141,7 @@ void CGameData::Destroy (void)
 {
 gameData.segs.Destroy ();
 gameData.objs.Destroy ();
+gameData.trigs.Destroy ();
 gameData.render.color.Destroy ();
 gameData.render.lights.Destroy ();
 gameData.render.shadows.Destroy ();
