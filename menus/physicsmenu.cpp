@@ -226,7 +226,6 @@ do {
 		*szDrag = *(TXT_PLAYER_DRAG - 1);
 		physOpts.nDrag = m.AddSlider (szDrag + 1, extraGameInfo [0].nDrag, 0, 10, KEY_G, HTX_PLAYER_DRAG);
 		m.AddText ("", 0);
-		m [optAutoLevel + gameOpts->gameplay.nAutoLeveling].m_value = 1;
 		if (!extraGameInfo [0].nDrag)
 			optWiggle = -1;
 		else
