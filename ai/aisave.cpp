@@ -47,11 +47,11 @@ int CSaveGameHandler::LoadAIBinFormat (void)
 	int	i;
 
 gameData.ai.localInfo.Clear ();
-gameData.ai.pointSegs.Clear ();
+gameData.ai.routeSegs.Clear ();
 m_cf.Read (&gameData.ai.bInitialized, sizeof (int), 1);
 m_cf.Read (&gameData.ai.nOverallAgitation, sizeof (int), 1);
 m_cf.Read (gameData.ai.localInfo.Buffer (), sizeof (tAILocalInfo), (m_nVersion > 39) ? LEVEL_OBJECTS : (m_nVersion > 22) ? MAX_OBJECTS : MAX_OBJECTS_D2);
-m_cf.Read (gameData.ai.pointSegs.Buffer (), sizeof (tPointSeg), (m_nVersion > 39) ? LEVEL_POINT_SEGS : (m_nVersion > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2);
+m_cf.Read (gameData.ai.routeSegs.Buffer (), sizeof (tPointSeg), (m_nVersion > 39) ? LEVEL_POINT_SEGS : (m_nVersion > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2);
 m_cf.Read (gameData.ai.cloakInfo.Buffer (), sizeof (tAICloakInfo), MAX_AI_CLOAK_INFO);
 if (m_nVersion < 29) {
 	m_cf.Read (&gameData.boss [0].nCloakStartTime, sizeof (fix), 1);
@@ -122,7 +122,7 @@ else {
 if (m_nVersion >= 15) {
 	int temp;
 	m_cf.Read (&temp, sizeof (int), 1);
-	gameData.ai.freePointSegs = gameData.ai.pointSegs + temp;
+	gameData.ai.freePointSegs = gameData.ai.routeSegs + temp;
 	}
 else
 	AIResetAllPaths ();
@@ -221,7 +221,7 @@ m_cf.WriteInt (gameData.ai.nOverallAgitation);
 for (i = 0; i < LEVEL_OBJECTS; i++)
 	SaveAILocalInfo (gameData.ai.localInfo + i);
 for (i = 0; i < LEVEL_POINT_SEGS; i++)
-	SaveAIPointSeg (gameData.ai.pointSegs + i);
+	SaveAIPointSeg (gameData.ai.routeSegs + i);
 for (i = 0; i < MAX_AI_CLOAK_INFO; i++)
 	SaveAICloakInfo (gameData.ai.cloakInfo + i);
 for (i = 0; i < MAX_BOSS_COUNT; i++) {
@@ -248,7 +248,7 @@ m_cf.Write (gameData.thief.stolenItems, sizeof (gameData.thief.stolenItems [0]),
 #if DBG
 i = CFTell ();
 #endif
-m_cf.WriteInt ((int) (gameData.ai.freePointSegs - gameData.ai.pointSegs));
+m_cf.WriteInt ((int) (gameData.ai.freePointSegs - gameData.ai.routeSegs));
 for (i = 0; i < MAX_BOSS_COUNT; i++) {
 	m_cf.WriteShort (gameData.boss [i].nTeleportSegs);
 	m_cf.WriteShort (gameData.boss [i].nGateSegs);
@@ -324,10 +324,10 @@ DBG (i = CFTell (fp));
 for (i = 0; i < h; i++)
 	LoadAILocalInfo (gameData.ai.localInfo + i);
 nMaxPointSegs = (m_nVersion > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2;
-gameData.ai.pointSegs.Clear ();
+gameData.ai.routeSegs.Clear ();
 DBG (i = CFTell (fp));
 for (i = 0; i < nMaxPointSegs; i++)
-	LoadAIPointSeg (gameData.ai.pointSegs + i);
+	LoadAIPointSeg (gameData.ai.routeSegs + i);
 DBG (i = CFTell (fp));
 for (i = 0; i < MAX_AI_CLOAK_INFO; i++)
 	LoadAICloakInfo (gameData.ai.cloakInfo + i);
@@ -399,7 +399,7 @@ if (m_nVersion >= 15) {
 	DBG (i = CFTell (fp));
 	i = m_cf.ReadInt ();
 	if ((i >= 0) && (i < nMaxPointSegs))
-		gameData.ai.freePointSegs = gameData.ai.pointSegs + i;
+		gameData.ai.freePointSegs = gameData.ai.routeSegs + i;
 	else
 		AIResetAllPaths ();
 	}

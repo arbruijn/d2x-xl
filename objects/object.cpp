@@ -1385,8 +1385,6 @@ if (nType == OBJ_DEBRIS) {
 // Find next free object
 if (0 > (nObject = AllocObject ()))
 	return -1;
-if (!nObject)
-	nObject = nObject;
 objP = OBJECTS + nObject;
 // Zero out object structure to keep weird bugs from happening in uninitialized fields.
 objP->info.nSignature = gameData.objs.nNextSignature++;

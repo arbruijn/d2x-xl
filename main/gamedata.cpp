@@ -1146,7 +1146,7 @@ gameData.ai.nAwarenessEvents = 0;
 gameData.ai.nDistToLastPlayerPosFiredAt = 0;
 cloakInfo.Create (MAX_AI_CLOAK_INFO);
 awarenessEvents.Create (MAX_AWARENESS_EVENTS);
-gameData.ai.freePointSegs = gameData.ai.pointSegs.Buffer ();
+gameData.ai.freePointSegs = gameData.ai.routeSegs.Buffer ();
 }
 
 // ----------------------------------------------------------------------------
@@ -1154,7 +1154,7 @@ gameData.ai.freePointSegs = gameData.ai.pointSegs.Buffer ();
 bool CAIData::Create (void)
 {
 CREATE (gameData.ai.localInfo, LEVEL_OBJECTS, 0);
-CREATE (pointSegs, LEVEL_POINT_SEGS, 0);
+CREATE (routeSegs, LEVEL_POINT_SEGS, 0);
 return true;
 }
 
@@ -1163,7 +1163,7 @@ return true;
 void CAIData::Destroy (void)
 {
 DESTROY (gameData.ai.localInfo);
-DESTROY (pointSegs);
+DESTROY (routeSegs);
 }
 
 // ----------------------------------------------------------------------------

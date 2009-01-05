@@ -145,7 +145,7 @@ void InitAIObjects (void)
 	short		h, i, j;
 	CObject	*objP;
 
-gameData.ai.freePointSegs = gameData.ai.pointSegs.Buffer ();
+gameData.ai.freePointSegs = gameData.ai.routeSegs.Buffer ();
 for (i = 0; i < MAX_BOSS_COUNT; i++) {
 	gameData.boss [i].nObject = -1;
 #if DBG

@@ -2792,7 +2792,7 @@ class CAIData {
 		fix							nDistToLastPlayerPosFiredAt;
 		CArray<tAILocalInfo>		localInfo;
 		CArray<tAICloakInfo>		cloakInfo; // [MAX_AI_CLOAK_INFO];
-		CArray<tPointSeg>			pointSegs; // [MAX_POINT_SEGS];
+		CArray<tPointSeg>			routeSegs; // [MAX_POINT_SEGS];
 		tPointSeg*					freePointSegs;
 		int							nAwarenessEvents;
 		int							nMaxAwareness;

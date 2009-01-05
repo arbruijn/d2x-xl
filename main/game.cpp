@@ -2032,9 +2032,9 @@ if (CreatePathPoints (objP, objP->info.nSegment, nSegment, gameData.ai.freePoint
 #endif
 	return 0;
 	}
-player_hide_index = (int) (gameData.ai.freePointSegs - gameData.ai.pointSegs);
+player_hide_index = (int) (gameData.ai.freePointSegs - gameData.ai.routeSegs);
 gameData.ai.freePointSegs += player_path_length;
-if ((int) (gameData.ai.freePointSegs - gameData.ai.pointSegs) + MAX_PATH_LENGTH*2 > MAX_POINT_SEGS) {
+if ((int) (gameData.ai.freePointSegs - gameData.ai.routeSegs) + MAX_PATH_LENGTH*2 > MAX_POINT_SEGS) {
 #if TRACE
 	//console.printf (1, "Can't create path.  Not enough tPointSegs.\n");
 #endif
@@ -2046,11 +2046,11 @@ for (i = 1; i < player_path_length; i++) {
 	CFixVector	vSegCenter;
 	CObject		*objP;
 
-	nSegment = gameData.ai.pointSegs [player_hide_index + i].nSegment;
+	nSegment = gameData.ai.routeSegs [player_hide_index + i].nSegment;
 #if TRACE
 	//console.printf (CON_DBG, "%3i ", nSegment);
 #endif
-	vSegCenter = gameData.ai.pointSegs[player_hide_index+i].point;
+	vSegCenter = gameData.ai.routeSegs[player_hide_index+i].point;
 	nObject = CreatePowerup (POW_ENERGY, -1, nSegment, vSegCenter, 1);
 	if (nObject == -1) {
 		Int3 ();		//	Unable to drop energy powerup for path

@@ -370,12 +370,12 @@ fix FindConnectedDistance (CFixVector& p0, short seg0, CFixVector& p1, short seg
 	sbyte				visited [MAX_SEGMENTS_D2X];
 	segQueueEntry	segmentQ [MAX_SEGMENTS_D2X];
 	short				nDepth [MAX_SEGMENTS_D2X];
-	tPointSeg		pointSegs [MAX_LOC_POINT_SEGS];
+	tPointSeg		routeSegs [MAX_LOC_POINT_SEGS];
 	fix				dist;
 	CSegment			*segP;
 	tFCDCacheData	*pc;
 
-	//	If > this, will overrun pointSegs buffer
+	//	If > this, will overrun routeSegs buffer
 if (nMaxDepth > MAX_LOC_POINT_SEGS-2) {
 #if TRACE
 	console.printf (1, "Warning: In FindConnectedDistance, nMaxDepth = %i, limited to %i\n", nMaxDepth, MAX_LOC_POINT_SEGS-2);
@@ -466,16 +466,16 @@ while (segmentQ [--qTail].end != seg1)
 while (qTail >= 0) {
 	nThisSeg = segmentQ [qTail].end;
 	nParentSeg = segmentQ [qTail].start;
-	pointSegs [nPoints].nSegment = nThisSeg;
-	pointSegs [nPoints].point = SEGMENTS [nThisSeg].Center ();
+	routeSegs [nPoints].nSegment = nThisSeg;
+	routeSegs [nPoints].point = SEGMENTS [nThisSeg].Center ();
 	nPoints++;
 	if (nParentSeg == seg0)
 		break;
 	while (segmentQ [--qTail].end != nParentSeg)
 		Assert (qTail >= 0);
 	}
-pointSegs [nPoints].nSegment = seg0;
-pointSegs [nPoints].point = SEGMENTS [seg0].Center ();
+routeSegs [nPoints].nSegment = seg0;
+routeSegs [nPoints].point = SEGMENTS [seg0].Center ();
 nPoints++;
 if (nPoints == 1) {
 	gameData.fcd.nConnSegDist = nPoints;
@@ -483,10 +483,10 @@ if (nPoints == 1) {
 	}
 else {
 	fix	ndist;
-	dist = CFixVector::Dist (p1, pointSegs [1].point);
-	dist += CFixVector::Dist (p0, pointSegs [nPoints-2].point);
+	dist = CFixVector::Dist (p1, routeSegs [1].point);
+	dist += CFixVector::Dist (p0, routeSegs [nPoints-2].point);
 	for (i = 1; i < nPoints - 2; i++) {
-		ndist = CFixVector::Dist(pointSegs [i].point, pointSegs [i+1].point);
+		ndist = CFixVector::Dist(routeSegs [i].point, routeSegs [i+1].point);
 		dist += ndist;
 		}
 	}

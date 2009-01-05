@@ -764,13 +764,13 @@ if ((gameData.escort.nGoalIndex < 0) && (gameData.escort.nGoalIndex != -3)) {	//
 else {
 	if (nGoalSeg == -3) {
 		CreateNSegmentPath (objP, 16 + d_rand () * 16, -1);
-		aip->nPathLength = SmoothPath (objP, gameData.ai.pointSegs + aip->nHideIndex, aip->nPathLength);
+		aip->nPathLength = SmoothPath (objP, gameData.ai.routeSegs + aip->nHideIndex, aip->nPathLength);
 		}
 	else {
 		CreatePathToSegment (objP, nGoalSeg, gameData.escort.nMaxLength, 1);	//	MK!: Last parm (safetyFlag) used to be 1!!
 		if (aip->nPathLength > 3)
-			aip->nPathLength = SmoothPath (objP, gameData.ai.pointSegs + aip->nHideIndex, aip->nPathLength);
-		if ((aip->nPathLength > 0) && (gameData.ai.pointSegs [aip->nHideIndex + aip->nPathLength - 1].nSegment != nGoalSeg)) {
+			aip->nPathLength = SmoothPath (objP, gameData.ai.routeSegs + aip->nHideIndex, aip->nPathLength);
+		if ((aip->nPathLength > 0) && (gameData.ai.routeSegs [aip->nHideIndex + aip->nPathLength - 1].nSegment != nGoalSeg)) {
 			fix	xDistToPlayer;
 			gameData.escort.xLastMsgTime = 0;	//	Force this message to get through.
 			BuddyMessage (TXT_CANT_REACH, GT (nEscortGoalText [gameData.escort.nGoalObject-1]));
@@ -782,7 +782,7 @@ else {
 				CreatePathToPlayer (objP, gameData.escort.nMaxLength, 1);	//	MK!: Last parm used to be 1!
 			else {
 				CreateNSegmentPath (objP, 8 + d_rand () * 8, -1);
-				aip->nPathLength = SmoothPath (objP, gameData.ai.pointSegs + aip->nHideIndex, aip->nPathLength);
+				aip->nPathLength = SmoothPath (objP, gameData.ai.routeSegs + aip->nHideIndex, aip->nPathLength);
 				}
 			}
 		}
@@ -983,7 +983,7 @@ if (!gameData.escort.bMayTalk)
 if (ailp->mode == AIM_WANDER)
 	if (player_visibility) {
 		CreateNSegmentPath (objP, 16 + d_rand () * 16, -1);
-		aip->nPathLength = SmoothPath (objP, gameData.ai.pointSegs + aip->nHideIndex, aip->nPathLength);
+		aip->nPathLength = SmoothPath (objP, gameData.ai.routeSegs + aip->nHideIndex, aip->nPathLength);
 		}
 if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM) {
 	if (player_visibility)
@@ -1019,7 +1019,7 @@ if ((gameData.escort.nSpecialGoal != ESCORT_GOAL_SCRAM) && TimeToVisitPlayer (ob
 	if (!gameData.escort.bMayTalk)
 		nMaxLen = 3;
 	CreatePathToPlayer (objP, nMaxLen, 1);	//	MK!: Last parm used to be 1!
-	aip->nPathLength = SmoothPath (objP, gameData.ai.pointSegs + aip->nHideIndex, aip->nPathLength);
+	aip->nPathLength = SmoothPath (objP, gameData.ai.routeSegs + aip->nHideIndex, aip->nPathLength);
 	ailp->mode = AIM_GOTO_PLAYER;
 	}
 else if (gameData.time.xGame - xBuddyLastSeenPlayer > MAX_ESCORT_TIME_AWAY) {
@@ -1030,7 +1030,7 @@ else if ((ailp->mode == AIM_GOTO_PLAYER) && (xDistToPlayer < MIN_ESCORT_DISTANCE
 	gameData.escort.nGoalObject = EscortSetGoalObject ();
 	ailp->mode = AIM_GOTO_OBJECT;		//	May look stupid to be before path creation, but AIDoorIsOpenable uses mode to determine what doors can be got through
 	EscortCreatePathToGoal (objP);
-	aip->nPathLength = SmoothPath (objP, gameData.ai.pointSegs + aip->nHideIndex, aip->nPathLength);
+	aip->nPathLength = SmoothPath (objP, gameData.ai.routeSegs + aip->nHideIndex, aip->nPathLength);
 	if (aip->nPathLength < 3)
 		CreateNSegmentPath (objP, 5, gameData.ai.nBelievedPlayerSeg);
 	ailp->mode = AIM_GOTO_OBJECT;
@@ -1040,7 +1040,7 @@ else if (gameData.escort.nGoalObject == ESCORT_GOAL_UNSPECIFIED) {
 		gameData.escort.nGoalObject = EscortSetGoalObject ();
 		ailp->mode = AIM_GOTO_OBJECT;		//	May look stupid to be before path creation, but AIDoorIsOpenable uses mode to determine what doors can be got through
 		EscortCreatePathToGoal (objP);
-		aip->nPathLength = SmoothPath (objP, gameData.ai.pointSegs + aip->nHideIndex, aip->nPathLength);
+		aip->nPathLength = SmoothPath (objP, gameData.ai.routeSegs + aip->nHideIndex, aip->nPathLength);
 		if (aip->nPathLength < 3)
 			CreateNSegmentPath (objP, 5, gameData.ai.nBelievedPlayerSeg);
 		ailp->mode = AIM_GOTO_OBJECT;

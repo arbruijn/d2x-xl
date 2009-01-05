@@ -115,8 +115,10 @@ if (!(ps->bmP = CreateStringBitmap (s, 0, 0, 0, 0, w, 1))) {
 	return NULL;
 	}
 l = (int) strlen (s) + 1;
-if (ps->pszText && (ps->nLength < l))
+if (ps->pszText && (ps->nLength < l)) {
 	delete [] ps->pszText;
+	ps->pszText = NULL;
+	}
 if (!ps->pszText) {
 	ps->nLength = 3 * l / 2;
 	if (!(ps->pszText = new char [ps->nLength])) {

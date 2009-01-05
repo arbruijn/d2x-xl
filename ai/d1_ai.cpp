@@ -2270,7 +2270,7 @@ if (nObject == nDbgObj)
 			int	anger_level = 65;
 
 			if (aiP->behavior == D1_AIB_STATION)
-				if (gameData.ai.pointSegs [aiP->nHideIndex + aiP->nPathLength - 1].nSegment == aiP->nHideSegment) {
+				if (gameData.ai.routeSegs [aiP->nHideIndex + aiP->nPathLength - 1].nSegment == aiP->nHideSegment) {
 					anger_level = 64;
 				}
 

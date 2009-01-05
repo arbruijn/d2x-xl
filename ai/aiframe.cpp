@@ -412,7 +412,7 @@ int AIMFollowPathHandler2 (CObject *objP, tAIStateInfo *siP)
 	int angerLevel = 65;
 
 if (aiP->behavior == AIB_STATION)
-	if ((aiP->nHideIndex >= 0) && (gameData.ai.pointSegs [aiP->nHideIndex + aiP->nPathLength - 1].nSegment == aiP->nHideSegment)) {
+	if ((aiP->nHideIndex >= 0) && (gameData.ai.routeSegs [aiP->nHideIndex + aiP->nPathLength - 1].nSegment == aiP->nHideSegment)) {
 		angerLevel = 64;
 	}
 ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_WAKEUP_DIST);
@@ -849,9 +849,9 @@ if (siP->botInfoP->companion) {
 		else if (aiP->nHideIndex >= 0) {
 			short nSegment;
 			int i = aiP->nHideIndex + aiP->nCurPathIndex;
-			if (((nSegment = gameData.ai.pointSegs [i + aiP->PATH_DIR].nSegment) >= 0) && (SEGMENTS [nSegment].HasOpenableDoor () != -1))
+			if (((nSegment = gameData.ai.routeSegs [i + aiP->PATH_DIR].nSegment) >= 0) && (SEGMENTS [nSegment].HasOpenableDoor () != -1))
 				bDoStuff = 1;
-			else if (((nSegment = gameData.ai.pointSegs [i + 2 * aiP->PATH_DIR].nSegment) >= 0) && (SEGMENTS [nSegment].HasOpenableDoor () != -1))
+			else if (((nSegment = gameData.ai.routeSegs [i + 2 * aiP->PATH_DIR].nSegment) >= 0) && (SEGMENTS [nSegment].HasOpenableDoor () != -1))
 				bDoStuff = 1;
 			}
 		if (!bDoStuff && (siP->ailP->mode == AIM_GOTO_PLAYER) && (gameData.ai.xDistToPlayer < 3 * MIN_ESCORT_DISTANCE / 2)) {
@@ -887,9 +887,9 @@ if (siP->botInfoP->thief) {
 		else if (aiP->nHideIndex >= 0) {
 			short nSegment;
 			int i = aiP->nHideIndex + aiP->nCurPathIndex;
-			if (((nSegment = gameData.ai.pointSegs [i + aiP->PATH_DIR].nSegment) >= 0) && (SEGMENTS [nSegment].HasOpenableDoor () != -1))
+			if (((nSegment = gameData.ai.routeSegs [i + aiP->PATH_DIR].nSegment) >= 0) && (SEGMENTS [nSegment].HasOpenableDoor () != -1))
 				bDoStuff = 1;
-			else if (((nSegment = gameData.ai.pointSegs [i + 2 * aiP->PATH_DIR].nSegment) >= 0) && (SEGMENTS [nSegment].HasOpenableDoor () != -1))
+			else if (((nSegment = gameData.ai.routeSegs [i + 2 * aiP->PATH_DIR].nSegment) >= 0) && (SEGMENTS [nSegment].HasOpenableDoor () != -1))
 				bDoStuff = 1;
 			}
 		if (bDoStuff) {
