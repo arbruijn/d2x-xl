@@ -1863,7 +1863,7 @@ wallP->LoadState (m_cf);
 
 void CSaveGameHandler::LoadCloakingWall (void)
 {
-gameData.walls.cloaking.Push ();
+gameData.walls.cloaking.Grow ();
 gameData.walls.cloaking.Top ()->LoadState (m_cf);
 }
 
@@ -1871,7 +1871,7 @@ gameData.walls.cloaking.Top ()->LoadState (m_cf);
 
 void CSaveGameHandler::LoadActiveDoor (void)
 {
-gameData.walls.activeDoors.Push ();
+gameData.walls.activeDoors.Grow ();
 gameData.walls.activeDoors.Top ()->LoadState (m_cf);
 }
 
@@ -2387,12 +2387,12 @@ if (!m_bBetweenLevels) {
 	//Restore door info
 	if (ReadBoundedInt (MAX_DOORS, &i))
 		return 0;
-	gameData.walls.activeDoors.Push (static_cast<uint> (i));
+	gameData.walls.activeDoors.Grow (static_cast<uint> (i));
 	m_cf.Read (gameData.walls.activeDoors.Buffer (), sizeof (CActiveDoor), gameData.walls.activeDoors.ToS ());
 	if (m_nVersion >= 14) {		//Restore cloaking CWall info
 		if (ReadBoundedInt (MAX_WALLS, &i))
 			return 0;
-		gameData.walls.cloaking.Push (static_cast<uint> (i));
+		gameData.walls.cloaking.Grow (static_cast<uint> (i));
 		m_cf.Read (gameData.walls.cloaking.Buffer (), sizeof (CCloakingWall), gameData.walls.cloaking.ToS ());
 		}
 	//Restore CTrigger info

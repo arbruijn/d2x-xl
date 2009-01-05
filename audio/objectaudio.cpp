@@ -302,7 +302,7 @@ if (!bForever) { 	// Hack to keep sounds from building up...
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordCreateObjectSound (nOrgSound, nObject, maxVolume, maxDistance, nLoopStart, nLoopEnd);
 #endif
-if (!m_objects.Push ())
+if (!m_objects.Grow ())
 	return -1;
 soundObjP = m_objects.Top ();
 soundObjP->m_nSignature = m_info.nNextSignature++;
@@ -442,7 +442,7 @@ if (!bForever) { 	//&& gameData.pig.sound.sounds [nSound - SOUND_OFFSET].length 
 	PlaySound (nOrgSound, SOUNDCLASS_GENERIC, nVolume, nPan, 0, -1, pszSound, &vPos);
 	return -1;
 	}
-if (!m_objects.Push ())
+if (!m_objects.Grow ())
 	return -1;
 soundObjP = m_objects.Top ();
 soundObjP->m_nSignature = m_info.nNextSignature++;

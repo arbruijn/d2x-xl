@@ -255,7 +255,7 @@ if (state == WALL_DOOR_CLOSING) {		//closing, so reuse door
 else if (state != WALL_DOOR_CLOSED)
 	return NULL;
 if (!doorP) {
-	if (!gameData.walls.ativeDoors.Push ())
+	if (!gameData.walls.ativeDoors.Grow ())
 		return NULL;
 	doorP = gameData.walls.activeDoors.Top ();
 	doorP->time = 0;
@@ -308,7 +308,7 @@ if (state == WALL_DOOR_DECLOAKING) {	//decloaking, so reuse door
 	cloakWallP->time = (fix) (CLOAKING_WALL_TIME * gameStates.gameplay.slowmo [0].fSpeed) - cloakWallP->time;
 	}
 else if (state == WALL_DOOR_CLOSED) {	//create new door
-	if (!gameData.walls.cloaking.Push ()) 
+	if (!gameData.walls.cloaking.Grow ()) 
 		return NULL;
 	cloakWallP = gameData.walls.cloaking.Top ();
 	cloakWallP->time = 0;
@@ -331,7 +331,7 @@ if (state == WALL_DOOR_CLOAKING) {	//cloaking, so reuse door
 	cloakWallP->time = (fix) (CLOAKING_WALL_TIME * gameStates.gameplay.slowmo [0].fSpeed) - cloakWallP->time;
 	}
 else if (state == WALL_DOOR_CLOSED) {	//create new door
-	if (!gameData.walls.cloaking.Push ())
+	if (!gameData.walls.cloaking.Grow ())
 		return NULL;
 	cloakWallP = gameData.walls.cloaking.Top ();
 	cloakWallP->time = 0;
@@ -376,7 +376,7 @@ if (state == WALL_DOOR_OPENING) {	//reuse door
 else if (state != WALL_DOOR_OPEN)
 	return NULL;
 if (!doorP) {
-	if (!gameData.walls.activeDoor.Push ())
+	if (!gameData.walls.activeDoor.Grow ())
 		return NULL;
 	doorP = gameData.walls.activeDoors.Top ();
 	doorP->time = 0;

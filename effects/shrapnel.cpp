@@ -154,7 +154,7 @@ h += d_rand () % h;
 if (!CStack<CShrapnel>::Create (h))
 	return 0;
 for (i = 0; i < h; i++) {
-	if (!Push ())
+	if (!Grow ())
 		break;
 	Top ()->Create (parentObjP, objP);
 	}
