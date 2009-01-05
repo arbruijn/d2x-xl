@@ -1494,6 +1494,7 @@ class CLightData {
 		CArray<GLuint>					coronaSamples;
 	public:
 		CLightData ();
+		void Init (void);
 		bool Create (void);
 		void Destroy (void);
 };
@@ -1517,6 +1518,7 @@ class CShadowData {
 		ubyte						nFrame;	//flipflop for testing whether a light source's view has been rendered the current frame
 	public:
 		CShadowData ();
+		void Init (void);
 		bool Create (void);
 		void Destroy (void);
 };
@@ -1736,6 +1738,7 @@ class CRenderData {
 
 	public:
 		CRenderData ();
+		void Init (void);
 		bool Create (void);
 		void Destroy (void);
 };
@@ -1805,6 +1808,7 @@ class CFaceData {
 		int							iLMapTexCoord;
 	public:
 		CFaceData ();
+		void Init (void);
 		bool Create (void);
 		void Destroy (void);
 };
@@ -1866,6 +1870,7 @@ class CSegmentData {
 		CFaceData				faces;
 	public:
 		CSegmentData ();
+		void Init (void);
 		bool Create (void);
 		void Destroy (void);
 };
@@ -2048,7 +2053,7 @@ class CObjectData {
 		int							nFrameCount;
 
 	public:
-		CObjectData () {}
+		CObjectData ();
 		void Init (void);
 		bool Create (void);
 		void Destroy (void);
@@ -2601,6 +2606,7 @@ class CMarkerData {
 
 	public:
 		CMarkerData ();
+		void Init (void);
 };
 
 //------------------------------------------------------------------------------

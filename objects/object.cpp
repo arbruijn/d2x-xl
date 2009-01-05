@@ -413,14 +413,6 @@ ResetPlayerObject ();
 
 //------------------------------------------------------------------------------
 
-void InitIdToOOF (void)
-{
-memset (gameData.objs.idToOOF, 0, sizeof (gameData.objs.idToOOF));
-gameData.objs.idToOOF [MEGAMSL_ID] = OOF_MEGA;
-}
-
-//------------------------------------------------------------------------------
-
 inline void CObject::Die (void)
 {
 info.nFlags |= OF_SHOULD_BE_DEAD;
@@ -463,7 +455,6 @@ InitPlayerObject ();
 gameData.objs.consoleP->LinkToSeg (0);	//put in the world in segment 0
 gameData.objs.nObjects = 1;						//just the CPlayerData
 gameData.objs.nLastObject [0] = 0;
-InitIdToOOF ();
 }
 
 //------------------------------------------------------------------------------
@@ -3185,83 +3176,6 @@ return SEGMENTS [info.nSegment].HasOpenableDoor ();
 inline int CObject::Index (void)
 { 
 return OBJ_IDX (this); 
-}
-
-//------------------------------------------------------------------------------
-
-void InitWeaponFlags (void)
-{
-memset (gameData.objs.bIsMissile, 0, sizeof (gameData.objs.bIsMissile));
-gameData.objs.bIsMissile [CONCUSSION_ID] =
-gameData.objs.bIsMissile [HOMINGMSL_ID] =
-gameData.objs.bIsMissile [SMARTMSL_ID] =
-gameData.objs.bIsMissile [MEGAMSL_ID] =
-gameData.objs.bIsMissile [FLASHMSL_ID] =
-gameData.objs.bIsMissile [GUIDEDMSL_ID] =
-gameData.objs.bIsMissile [MERCURYMSL_ID] =
-gameData.objs.bIsMissile [EARTHSHAKER_ID] =
-gameData.objs.bIsMissile [EARTHSHAKER_MEGA_ID] =
-gameData.objs.bIsMissile [ROBOT_CONCUSSION_ID] =
-gameData.objs.bIsMissile [ROBOT_HOMINGMSL_ID] =
-gameData.objs.bIsMissile [ROBOT_FLASHMSL_ID] =
-gameData.objs.bIsMissile [ROBOT_MERCURYMSL_ID] =
-gameData.objs.bIsMissile [ROBOT_MEGA_FLASHMSL_ID] =
-gameData.objs.bIsMissile [ROBOT_SMARTMSL_ID] =
-gameData.objs.bIsMissile [ROBOT_MEGAMSL_ID] =
-gameData.objs.bIsMissile [ROBOT_EARTHSHAKER_ID] =
-gameData.objs.bIsMissile [ROBOT_SHAKER_MEGA_ID] = 1;
-
-memset (gameData.objs.bIsWeapon, 0, sizeof (gameData.objs.bIsWeapon));
-gameData.objs.bIsWeapon [VULCAN_ID] =
-gameData.objs.bIsWeapon [GAUSS_ID] =
-gameData.objs.bIsWeapon [ROBOT_VULCAN_ID] = 1;
-gameData.objs.bIsWeapon [LASER_ID] =
-gameData.objs.bIsWeapon [LASER_ID + 1] =
-gameData.objs.bIsWeapon [LASER_ID + 2] =
-gameData.objs.bIsWeapon [LASER_ID + 3] =
-gameData.objs.bIsWeapon [REACTOR_BLOB_ID] =
-gameData.objs.bIsWeapon [ROBOT_LIGHT_FIREBALL_ID] =
-gameData.objs.bIsWeapon [SMARTMSL_BLOB_ID] =
-gameData.objs.bIsWeapon [SMARTMINE_BLOB_ID] =
-gameData.objs.bIsWeapon [ROBOT_SMARTMINE_BLOB_ID] =
-gameData.objs.bIsWeapon [FLARE_ID] =
-gameData.objs.bIsWeapon [SPREADFIRE_ID] =
-gameData.objs.bIsWeapon [PLASMA_ID] =
-gameData.objs.bIsWeapon [FUSION_ID] =
-gameData.objs.bIsWeapon [SUPERLASER_ID] =
-gameData.objs.bIsWeapon [SUPERLASER_ID + 1] =
-gameData.objs.bIsWeapon [HELIX_ID] =
-gameData.objs.bIsWeapon [PHOENIX_ID] =
-gameData.objs.bIsWeapon [OMEGA_ID] =
-gameData.objs.bIsWeapon [ROBOT_PLASMA_ID] =
-gameData.objs.bIsWeapon [ROBOT_MEDIUM_FIREBALL_ID] =
-gameData.objs.bIsWeapon [ROBOT_SMARTMSL_BLOB_ID] =
-gameData.objs.bIsWeapon [ROBOT_TI_STREAM_ID] =
-gameData.objs.bIsWeapon [ROBOT_PHOENIX_ID] =
-gameData.objs.bIsWeapon [ROBOT_FAST_PHOENIX_ID] =
-gameData.objs.bIsWeapon [ROBOT_PHASE_ENERGY_ID] =
-gameData.objs.bIsWeapon [ROBOT_MEGA_FLASHMSL_ID] =
-gameData.objs.bIsWeapon [ROBOT_MEGA_FLASHMSL_ID + 1] =
-gameData.objs.bIsWeapon [ROBOT_VERTIGO_FIREBALL_ID] =
-gameData.objs.bIsWeapon [ROBOT_VERTIGO_PHOENIX_ID] =
-gameData.objs.bIsWeapon [ROBOT_HELIX_ID] =
-gameData.objs.bIsWeapon [ROBOT_BLUE_ENERGY_ID] =
-gameData.objs.bIsWeapon [ROBOT_WHITE_ENERGY_ID] =
-gameData.objs.bIsWeapon [ROBOT_BLUE_LASER_ID] =
-gameData.objs.bIsWeapon [ROBOT_RED_LASER_ID] =
-gameData.objs.bIsWeapon [ROBOT_GREEN_LASER_ID] =
-gameData.objs.bIsWeapon [ROBOT_WHITE_LASER_ID] = 1;
-
-memset (gameData.objs.bIsSlowWeapon, 0, sizeof (gameData.objs.bIsSlowWeapon));
-gameData.objs.bIsSlowWeapon [VULCAN_ID] =
-gameData.objs.bIsSlowWeapon [GAUSS_ID] =
-gameData.objs.bIsSlowWeapon [ROBOT_VULCAN_ID] = 1;
-gameData.objs.bIsSlowWeapon [REACTOR_BLOB_ID] =
-gameData.objs.bIsSlowWeapon [ROBOT_TI_STREAM_ID] =
-gameData.objs.bIsSlowWeapon [SMARTMINE_BLOB_ID] =
-gameData.objs.bIsSlowWeapon [ROBOT_SMARTMINE_BLOB_ID] =
-gameData.objs.bIsSlowWeapon [SMARTMSL_BLOB_ID] =
-gameData.objs.bIsSlowWeapon [ROBOT_SMARTMSL_BLOB_ID] = 1;
 }
 
 //------------------------------------------------------------------------------

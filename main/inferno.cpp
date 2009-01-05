@@ -715,7 +715,7 @@ return 1;
 
 static inline int InitGaugeSize (void)
 {
-return 21;
+return 19;
 }
 
 //------------------------------------------------------------------------------
@@ -762,48 +762,44 @@ switch (loadOp) {
 		movieManager.InitLibs ();		//init movie libraries
 		break;
 	case 7:
-		/*---*/PrintLog ("Initializing game data\n");
-		InitWeaponFlags ();
-		break;
-	case 8:
 		BMInit ();
 		break;
-	case 9:
+	case 8:
 		/*---*/PrintLog ("Initializing sound\n");
 		audio.Setup (1);
 		break;
-	case 10:
+	case 9:
 		/*---*/PrintLog ("Loading hoard data\n");
 		LoadHoardData ();
 		break;
-	case 11:
+	case 10:
 		error_init (ShowInGameWarning, NULL);
 		break;
-	case 12:
+	case 11:
 		break;
 		g3_init ();
-	case 13:
+	case 12:
 		/*---*/PrintLog ("Initializing texture merge buffer\n");
 		TexMergeInit (100); // 100 cache bitmaps
 		break;
-	case 14:
+	case 13:
 		InitPowerupTables ();
 		break;
-	case 15:
+	case 14:
 		LoadBackgroundBitmap ();
 		atexit (CloseGame);
 		break;
-	case 16:
+	case 15:
 		InitThreads ();
 		break;
-	case 17:
+	case 16:
 		PiggyInitMemory ();
 		break;
-	case 18:
+	case 17:
 		if (!FindArg("-nomouse"))
 			MouseInit ();
 		break;
-	case 19:
+	case 18:
 		/*---*/PrintLog ("Enabling TrackIR support\n");
 		TIRLoad ();
 		break;

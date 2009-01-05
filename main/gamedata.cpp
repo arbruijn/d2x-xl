@@ -79,6 +79,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "soundthreads.h"
 #include "gameargs.h"
 #include "shrapnel.h"
+#include "collide.h"
 
 // ----------------------------------------------------------------------------
 
@@ -87,7 +88,6 @@ void CGameData::Init (void)
 #if USE_IRRLICHT
 memset (&irrData, 0, sizeof (irrData));
 #endif
-particleManager.SetLastType (-1);
 InitEndLevelData ();
 InitStringPool ();
 SetDataVersion (-1);
@@ -192,9 +192,9 @@ gameData.render.lights.dynamic.material.bValid = 0;
 
 bool CDynLightData::Create (void)
 {
-CREATE (nearestSegLights, LEVEL_SEGMENTS * MAX_NEAREST_LIGHTS, 0);
-CREATE (nearestVertLights, LEVEL_VERTICES * MAX_NEAREST_LIGHTS, 0);
-CREATE (variableVertLights, LEVEL_VERTICES, 0);
+CREATE (nearestSegLights, LEVEL_SEGMENTS * MAX_NEAREST_LIGHTS, 0xff);
+CREATE (nearestVertLights, LEVEL_VERTICES * MAX_NEAREST_LIGHTS, 0xff);
+CREATE (variableVertLights, LEVEL_VERTICES, 0xff);
 CREATE (owners, LEVEL_OBJECTS, (char) 0xff);
 return true;
 }
@@ -212,6 +212,12 @@ DESTROY (owners);
 // ----------------------------------------------------------------------------
 
 CLightData::CLightData ()
+{
+}
+
+// ----------------------------------------------------------------------------
+
+void CLightData::Init (void)
 {
 nStatic = 0;
 nCoronas = 0;
@@ -240,6 +246,7 @@ CREATE (newObjects, LEVEL_OBJECTS, 0);
 CREATE (objects, LEVEL_OBJECTS, 0);
 CREATE (coronaQueries, MAX_OGL_LIGHTS, 0);
 CREATE (coronaSamples, MAX_OGL_LIGHTS, 0);
+Init ();
 return true;
 }
 
@@ -266,6 +273,12 @@ DESTROY (coronaSamples);
 
 CShadowData::CShadowData ()
 {
+}
+
+// ----------------------------------------------------------------------------
+
+void CShadowData::Init (void)
+{
 nLight = 0;
 nLights = 0;
 lights = NULL;
@@ -282,6 +295,7 @@ bool CShadowData::Create (void)
 {
 if (!gameStates.app.bNostalgia && gameStates.app.bEnableShadows)
 	CREATE (objLights, LEVEL_OBJECTS * MAX_SHADOW_LIGHTS, 0);
+Init ();
 return true;
 }
 
@@ -334,6 +348,12 @@ nVisible = 255;
 
 CRenderData::CRenderData ()
 {
+}
+
+//------------------------------------------------------------------------------
+
+void CRenderData::Init (void)
+{
 transpColor = DEFAULT_TRANSPARENCY_COLOR; //transparency color bitmap index
 xFlashEffect = 0;
 xTimeFlashLastPlayed = 0;
@@ -377,6 +397,7 @@ bPlayerMessage = 1;
 bool CRenderData::Create (void)
 {
 CREATE (gameData.render.faceList, LEVEL_FACES, 0);
+Init ();
 return true;
 }
 
@@ -390,6 +411,12 @@ DESTROY (gameData.render.faceList);
 //------------------------------------------------------------------------------
 
 CFaceData::CFaceData ()
+{
+}
+
+//------------------------------------------------------------------------------
+
+void CFaceData::Init (void)
 {
 slidingFaces = NULL;
 vboDataHandle = 0;
@@ -421,6 +448,7 @@ CREATE (color, LEVEL_TRIANGLES * 3, 0);
 CREATE (texCoord, LEVEL_TRIANGLES * 2 * 2, 0);
 CREATE (ovlTexCoord, LEVEL_TRIANGLES * 2, 0);
 CREATE (lMapTexCoord, LEVEL_FACES * 2, 0);
+Init ();
 return true;
 }
 
@@ -456,6 +484,12 @@ usedKeys.Create ((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
 //------------------------------------------------------------------------------
 
 CSegmentData::CSegmentData ()
+{
+}
+
+//------------------------------------------------------------------------------
+
+void CSegmentData::Init (void)
 {
 nMaxSegments = MAX_SEGMENTS_D2X;
 fRad = 0;
@@ -497,6 +531,7 @@ CREATE (gameData.segs.slideSegs, LEVEL_SEGMENTS, 0);
 CREATE (gameData.segs.segFaces, LEVEL_SEGMENTS, 0);
 for (int i = 0; i < LEVEL_SEGMENTS; i++)
 	SEGMENTS [i].m_objects = -1;
+Init ();
 return faces.Create ();
 }
 
@@ -549,8 +584,6 @@ triggers.Create (MAX_TRIGGERS);
 objTriggers.Create (MAX_TRIGGERS);
 objTriggerRefs.Create (MAX_OBJ_TRIGGERS);
 delay.Create (MAX_TRIGGERS);
-nTriggers = 0;
-nObjTriggers = 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -558,6 +591,8 @@ nObjTriggers = 0;
 bool CTriggerData::Create (void)
 {
 CREATE (firstObjTrigger, LEVEL_OBJECTS, 0xff);
+nTriggers = 0;
+nObjTriggers = 0;
 return true;
 }
 
@@ -716,6 +751,12 @@ for (int i = 0; i < NDL; i++)
 CMarkerData::CMarkerData ()
 {
 memset (this, 0, sizeof (*this));
+}
+
+// ----------------------------------------------------------------------------
+
+void CMarkerData::Init (void)
+{
 gameData.marker.nHighlight = -1;
 gameData.marker.viewers [0] =
 gameData.marker.viewers [1] = -1;
@@ -750,6 +791,100 @@ for (int i = 0; i < 2; i++)
 		gauges [i].Clear (0xff);
 }
 
+//------------------------------------------------------------------------------
+
+void InitWeaponFlags (void)
+{
+memset (gameData.objs.bIsMissile, 0, sizeof (gameData.objs.bIsMissile));
+gameData.objs.bIsMissile [CONCUSSION_ID] =
+gameData.objs.bIsMissile [HOMINGMSL_ID] =
+gameData.objs.bIsMissile [SMARTMSL_ID] =
+gameData.objs.bIsMissile [MEGAMSL_ID] =
+gameData.objs.bIsMissile [FLASHMSL_ID] =
+gameData.objs.bIsMissile [GUIDEDMSL_ID] =
+gameData.objs.bIsMissile [MERCURYMSL_ID] =
+gameData.objs.bIsMissile [EARTHSHAKER_ID] =
+gameData.objs.bIsMissile [EARTHSHAKER_MEGA_ID] =
+gameData.objs.bIsMissile [ROBOT_CONCUSSION_ID] =
+gameData.objs.bIsMissile [ROBOT_HOMINGMSL_ID] =
+gameData.objs.bIsMissile [ROBOT_FLASHMSL_ID] =
+gameData.objs.bIsMissile [ROBOT_MERCURYMSL_ID] =
+gameData.objs.bIsMissile [ROBOT_MEGA_FLASHMSL_ID] =
+gameData.objs.bIsMissile [ROBOT_SMARTMSL_ID] =
+gameData.objs.bIsMissile [ROBOT_MEGAMSL_ID] =
+gameData.objs.bIsMissile [ROBOT_EARTHSHAKER_ID] =
+gameData.objs.bIsMissile [ROBOT_SHAKER_MEGA_ID] = 1;
+
+memset (gameData.objs.bIsWeapon, 0, sizeof (gameData.objs.bIsWeapon));
+gameData.objs.bIsWeapon [VULCAN_ID] =
+gameData.objs.bIsWeapon [GAUSS_ID] =
+gameData.objs.bIsWeapon [ROBOT_VULCAN_ID] = 1;
+gameData.objs.bIsWeapon [LASER_ID] =
+gameData.objs.bIsWeapon [LASER_ID + 1] =
+gameData.objs.bIsWeapon [LASER_ID + 2] =
+gameData.objs.bIsWeapon [LASER_ID + 3] =
+gameData.objs.bIsWeapon [REACTOR_BLOB_ID] =
+gameData.objs.bIsWeapon [ROBOT_LIGHT_FIREBALL_ID] =
+gameData.objs.bIsWeapon [SMARTMSL_BLOB_ID] =
+gameData.objs.bIsWeapon [SMARTMINE_BLOB_ID] =
+gameData.objs.bIsWeapon [ROBOT_SMARTMINE_BLOB_ID] =
+gameData.objs.bIsWeapon [FLARE_ID] =
+gameData.objs.bIsWeapon [SPREADFIRE_ID] =
+gameData.objs.bIsWeapon [PLASMA_ID] =
+gameData.objs.bIsWeapon [FUSION_ID] =
+gameData.objs.bIsWeapon [SUPERLASER_ID] =
+gameData.objs.bIsWeapon [SUPERLASER_ID + 1] =
+gameData.objs.bIsWeapon [HELIX_ID] =
+gameData.objs.bIsWeapon [PHOENIX_ID] =
+gameData.objs.bIsWeapon [OMEGA_ID] =
+gameData.objs.bIsWeapon [ROBOT_PLASMA_ID] =
+gameData.objs.bIsWeapon [ROBOT_MEDIUM_FIREBALL_ID] =
+gameData.objs.bIsWeapon [ROBOT_SMARTMSL_BLOB_ID] =
+gameData.objs.bIsWeapon [ROBOT_TI_STREAM_ID] =
+gameData.objs.bIsWeapon [ROBOT_PHOENIX_ID] =
+gameData.objs.bIsWeapon [ROBOT_FAST_PHOENIX_ID] =
+gameData.objs.bIsWeapon [ROBOT_PHASE_ENERGY_ID] =
+gameData.objs.bIsWeapon [ROBOT_MEGA_FLASHMSL_ID] =
+gameData.objs.bIsWeapon [ROBOT_MEGA_FLASHMSL_ID + 1] =
+gameData.objs.bIsWeapon [ROBOT_VERTIGO_FIREBALL_ID] =
+gameData.objs.bIsWeapon [ROBOT_VERTIGO_PHOENIX_ID] =
+gameData.objs.bIsWeapon [ROBOT_HELIX_ID] =
+gameData.objs.bIsWeapon [ROBOT_BLUE_ENERGY_ID] =
+gameData.objs.bIsWeapon [ROBOT_WHITE_ENERGY_ID] =
+gameData.objs.bIsWeapon [ROBOT_BLUE_LASER_ID] =
+gameData.objs.bIsWeapon [ROBOT_RED_LASER_ID] =
+gameData.objs.bIsWeapon [ROBOT_GREEN_LASER_ID] =
+gameData.objs.bIsWeapon [ROBOT_WHITE_LASER_ID] = 1;
+
+memset (gameData.objs.bIsSlowWeapon, 0, sizeof (gameData.objs.bIsSlowWeapon));
+gameData.objs.bIsSlowWeapon [VULCAN_ID] =
+gameData.objs.bIsSlowWeapon [GAUSS_ID] =
+gameData.objs.bIsSlowWeapon [ROBOT_VULCAN_ID] = 1;
+gameData.objs.bIsSlowWeapon [REACTOR_BLOB_ID] =
+gameData.objs.bIsSlowWeapon [ROBOT_TI_STREAM_ID] =
+gameData.objs.bIsSlowWeapon [SMARTMINE_BLOB_ID] =
+gameData.objs.bIsSlowWeapon [ROBOT_SMARTMINE_BLOB_ID] =
+gameData.objs.bIsSlowWeapon [SMARTMSL_BLOB_ID] =
+gameData.objs.bIsSlowWeapon [ROBOT_SMARTMSL_BLOB_ID] = 1;
+}
+
+//------------------------------------------------------------------------------
+
+void InitIdToOOF (void)
+{
+memset (gameData.objs.idToOOF, 0, sizeof (gameData.objs.idToOOF));
+gameData.objs.idToOOF [MEGAMSL_ID] = OOF_MEGA;
+}
+
+// ----------------------------------------------------------------------------
+
+CObjectData::CObjectData ()
+{
+InitWeaponFlags ();
+CollideInit ();
+InitIdToOOF ();
+}
+
 // ----------------------------------------------------------------------------
 
 void CObjectData::Init (void)
@@ -758,6 +893,7 @@ memset (&color, 0, sizeof (color));
 CLEAR (nLastObject);
 CLEAR (guidedMissile);
 CLEAR (trackGoals);
+CLEAR (bWantEffect);
 consoleP = NULL;
 viewerP = NULL;
 missileViewerP = NULL;
@@ -775,18 +911,13 @@ nDrops = 0;
 nDeadControlCenter = 0;
 nVertigoBotFlags = 0;
 nFrameCount = 0;
-CLEAR (collisionResult);
-CLEAR (bIsMissile);
-CLEAR (bIsWeapon);
-CLEAR (bIsSlowWeapon);
-CLEAR (idToOOF);
-CLEAR (bWantEffect);
 }
 
 // ----------------------------------------------------------------------------
 
 bool CObjectData::Create (void)
 {
+Init ();
 CREATE (gameData.objs.objects, LEVEL_OBJECTS, 0);
 CREATE (gameData.objs.freeList, LEVEL_OBJECTS, 0);
 CREATE (gameData.objs.lightObjs, LEVEL_OBJECTS, (char) 0xff);
@@ -1130,7 +1261,9 @@ if (!(gameData.segs.Create () &&
 		gameData.demo.Create ()))
 	return false;
 particleManager.Init ();
+particleManager.SetLastType (-1);
 lightningManager.Init ();
+gameData.marker.Init ();
 return true;
 }
 
