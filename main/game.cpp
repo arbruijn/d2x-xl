@@ -1236,6 +1236,7 @@ SetFunctionMode (FMODE_EXIT);		// get out of game in Apple OEM version
 if (pfnTIRStop)
 	pfnTIRStop ();
 meshBuilder.DestroyVBOs ();
+gameData.Destroy ();
 }
 
 //-----------------------------------------------------------------------------
