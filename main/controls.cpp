@@ -119,9 +119,9 @@ void ReadFlyingControls (CObject *objP)
 		if (Controls [0].headingTime)
 			Controls [0].headingTime = Controls [0].headingTime;
 #endif
-		objP->mType.physInfo.rotThrust = CFixVector::Create(Controls[0].pitchTime,
-		                                                   Controls[0].headingTime, //Controls [0].headingTime ? I2X (1) / 4 : 0; //Controls [0].headingTime;
-		                                                   Controls[0].bankTime);
+		objP->mType.physInfo.rotThrust = CFixVector::Create (Controls[0].pitchTime,
+		                                                     Controls[0].headingTime, //Controls [0].headingTime ? I2X (1) / 4 : 0; //Controls [0].headingTime;
+		                                                     Controls[0].bankTime);
 		}
 	forwardThrustTime = Controls [0].forwardThrustTime;
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) {
@@ -186,11 +186,7 @@ void ReadFlyingControls (CObject *objP)
 		//	Note, you must check for ft < I2X (1)/2, else you can get an overflow  on the << 15.
 		if ((ft < I2X (1)/2) && ((ft << 15) <= gameData.pig.ship.player->maxThrust))
 			ft = (gameData.pig.ship.player->maxThrust >> 15) + 1;
-		if (objP->mType.physInfo.thrust.Mag() > 250)
-			objP = objP;
 		objP->mType.physInfo.thrust *= FixDiv (gameData.pig.ship.player->maxThrust, ft);
-		if (objP->mType.physInfo.thrust.Mag() > 250)
-			objP = objP;
 		if ((ft < I2X (1)/2) && ((ft << 15) <= gameData.pig.ship.player->maxRotThrust))
 			ft = (gameData.pig.ship.player->maxThrust >> 15) + 1;
 		objP->mType.physInfo.rotThrust *= FixDiv (gameData.pig.ship.player->maxRotThrust, ft);

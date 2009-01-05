@@ -1380,10 +1380,12 @@ else {
 	ChangePlayerNumTo (0);
 	strcpy (pszOrgCallSign, gameData.multiplayer.players [0].callsign);
 	gameData.multiplayer.nPlayers = 1;
+#if 0
 	if (!m_bSecret) {
 		InitMultiPlayerObject ();	//make sure CPlayerData's CObject set up
 		InitPlayerStatsGame ();		//clear all stats
 		}
+#endif
 	}
 }
 
@@ -2014,6 +2016,10 @@ if (IsMultiGame) {
 if (!StartNewLevelSub (nCurrentLevel, 1, m_bSecret, 1)) {
 	m_cf.Close ();
 	return 0;
+	}
+if (!m_bSecret) {
+	InitMultiPlayerObject ();	//make sure CPlayerData's CObject set up
+	InitPlayerStatsGame ();		//clear all stats
 	}
 nLocalObjNum = LOCALPLAYER.nObject;
 if (m_bSecret != 1)	//either no secret restore, or CPlayerData died in scret level

@@ -3054,7 +3054,7 @@ if (markerP) {
 else {
 	if ((gameData.multiplayer.playerInit [nSpawnPos].nSegment < 0) || 
 		 (gameData.multiplayer.playerInit [nSpawnPos].nSegment >= gameData.segs.nSegments))
-	GameStartInitNetworkPlayers ();
+		GameStartInitNetworkPlayers ();
 	objP->info.position = gameData.multiplayer.playerInit [nSpawnPos].position;
  	objP->RelinkToSeg (gameData.multiplayer.playerInit [nSpawnPos].nSegment);
 	}

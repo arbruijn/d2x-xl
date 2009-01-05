@@ -305,9 +305,9 @@ void FixSinCos (fix a, fix *s, fix *c)
 if (gameOpts->render.nMathFormat == 2) {
 	double d = (double) (a * 2.0 * Pi) / I2X (1);
 	if (s)
-		*s = I2X (sin (d));
+		*s = (fix) F2X (sin (d));
 	if (c)
-		*c = I2X (cos (d));
+		*c = (fix) F2X (cos (d));
 	}
 else  {
 	int i = (a >> 8) & 0xff;

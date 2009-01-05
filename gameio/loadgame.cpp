@@ -1031,7 +1031,7 @@ LOCALPLAYER.nCloaks = 0;
 gameData.objs.consoleP = OBJECTS + LOCALPLAYER.nObject;
 gameData.objs.consoleP->SetType (OBJ_PLAYER);
 gameData.objs.consoleP->info.nId = gameData.multiplayer.nLocalPlayer;
-gameData.objs.consoleP->info.controlType	= CT_FLYING;
+gameData.objs.consoleP->info.controlType = CT_FLYING;
 gameData.objs.consoleP->info.movementType = MT_PHYSICS;
 gameStates.entropy.nTimeLastMoved = -1;
 }
@@ -1046,6 +1046,10 @@ int StartNewGame (int nStartLevel)
 gameData.app.nGameMode = GM_NORMAL;
 SetFunctionMode (FMODE_GAME);
 gameData.missions.nNextLevel = 0;
+#if 0
+InitMultiPlayerObject ();	
+InitPlayerStatsGame ();		
+#endif
 gameData.multiplayer.nPlayers = 1;
 gameData.objs.nLastObject [0] = 0;
 networkData.bNewGame = 0;
