@@ -768,7 +768,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 			}
 		else {
 #if DBG
-			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+			if ((nDbgSeg >= 0) && (nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 			else
 				continue;
