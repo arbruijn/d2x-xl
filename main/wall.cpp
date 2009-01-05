@@ -153,7 +153,7 @@ CActiveDoor* FindActiveDoor (short nWall)
 {
 	CActiveDoor* doorP = gameData.walls.activeDoors.Buffer ();
 
-for (uint i = gameData.walls.openDoors.ToS (); i; i--, doorP++) {		//find door
+for (uint i = gameData.walls.activeDoors.ToS (); i; i--, doorP++) {		//find door
 	for (int j = 0; j < doorP->nPartCount; j++)
 		if ((doorP->nFrontWall [j] == nWall) || (doorP->nBackWall [j] == nWall))
 			return doorP;
@@ -255,7 +255,7 @@ if (state == WALL_DOOR_CLOSING) {		//closing, so reuse door
 else if (state != WALL_DOOR_CLOSED)
 	return NULL;
 if (!doorP) {
-	if (!gameData.walls.ativeDoors.Grow ())
+	if (!gameData.walls.activeDoors.Grow ())
 		return NULL;
 	doorP = gameData.walls.activeDoors.Top ();
 	doorP->time = 0;
@@ -281,7 +281,7 @@ return NULL;
 
 void DeleteActiveDoor (int nDoor)
 {
-gameData.walls.openDoors.Delete (static_cast<uint> nDoor);
+gameData.walls.activeDoors.Delete (static_cast<uint> (nDoor));
 }
 
 //------------------------------------------------------------------------------
@@ -376,7 +376,7 @@ if (state == WALL_DOOR_OPENING) {	//reuse door
 else if (state != WALL_DOOR_OPEN)
 	return NULL;
 if (!doorP) {
-	if (!gameData.walls.activeDoor.Grow ())
+	if (!gameData.walls.activeDoors.Grow ())
 		return NULL;
 	doorP = gameData.walls.activeDoors.Top ();
 	doorP->time = 0;
@@ -804,7 +804,7 @@ void WallFrameProcess (void)
 	CActiveDoor		*doorP = gameData.walls.activeDoors.Buffer ();
 	CWall				*wallP, *backWallP;
 
-for (uint i = 0; i < gameData.walls.openDoors.ToS (); i++, doorP++) {
+for (uint i = 0; i < gameData.walls.activeDoors.ToS (); i++, doorP++) {
 	backWallP = NULL,
 	wallP = WALLS + doorP->nFrontWall [0];
 	if (wallP->state == WALL_DOOR_OPENING)
@@ -834,12 +834,12 @@ for (uint i = 0; i < gameData.walls.openDoors.ToS (); i++, doorP++) {
 		//this shouldn't happen.  if the CWall is in one of these states,
 		//there shouldn't be an activedoor entry for it.  So we'll kill
 		//the activedoor entry.  Tres simple.
-		gameData.walls.openDoors.Delete (i);
+		gameData.walls.activeDoors.Delete (i);
 		}
 	}
 
 cloakWallP = gameData.walls.cloaking.Buffer ();
-for (i = 0; i < gameData.walls.cloaking.ToS (); i++, cloakWallP++) {
+for (uint i = 0; i < gameData.walls.cloaking.ToS (); i++, cloakWallP++) {
 	ubyte s = WALLS [cloakWallP->nFrontWall].state;
 	if (s == WALL_DOOR_CLOAKING)
 		DoCloakingWallFrame (i);
