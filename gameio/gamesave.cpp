@@ -1229,6 +1229,10 @@ static int ReadlightDeltaIndexInfo (CFile& cf)
 if (gameFileInfo.lightDeltaIndices.offset > -1) {
 	int	i;
 
+	if (!gameData.render.lights.deltaIndices.Resize (gameFileInfo.lightDeltaIndices.count)) {
+		Error ("Not enough memory for light delta index data");
+		return -1;
+		}
 	if (cf.Seek (gameFileInfo.lightDeltaIndices.offset, SEEK_SET)) {
 		Error ("Error seeking to light delta index data\n(file damaged or invalid)");
 		return -1;
@@ -1262,6 +1266,10 @@ if (gameFileInfo.lightDeltas.offset > -1) {
 #if TRACE
 	console.printf(CON_DBG, "   loading light data ...\n");
 #endif
+	if (!gameData.render.lights.deltas.Resize (gameFileInfo.lightDeltas.count)) {
+		Error ("Not enough memory for light delta data");
+		return -1;
+		}
 	if (cf.Seek (gameFileInfo.lightDeltas.offset, SEEK_SET)) {
 		Error ("Error seeking to light delta data\n(file damaged or invalid)");
 		return -1;

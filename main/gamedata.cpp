@@ -234,8 +234,6 @@ bool CLightData::Create (void)
 if (!gameStates.app.bNostalgia)
 	dynamic.Create ();
 CREATE (segDeltas, LEVEL_SEGMENTS * 6, 0);
-CREATE (deltaIndices, LEVEL_DL_INDICES, 0);
-CREATE (deltas, LEVEL_DELTA_LIGHTS, 0);
 CREATE (subtracted, LEVEL_SEGMENTS, 0);
 CREATE (dynamicLight, LEVEL_VERTICES, 0);
 CREATE (dynamicColor, LEVEL_VERTICES, 0);
