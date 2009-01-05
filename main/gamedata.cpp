@@ -486,6 +486,12 @@ usedKeys.Create ((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
 CSegmentData::CSegmentData ()
 {
 nMaxSegments = MAX_SEGMENTS_D2X;
+nLevelVersion = 0;
+nVertices = 0;
+nSegments = 0;
+vMin.SetZero ();
+vMax.SetZero ();
+CLEAR (szLevelFilename);
 }
 
 //------------------------------------------------------------------------------
@@ -493,19 +499,13 @@ nMaxSegments = MAX_SEGMENTS_D2X;
 void CSegmentData::Init (void)
 {
 fRad = 0;
-nVertices = 0;
 nFaceVerts = 0;
 nLastVertex = 0;
-nSegments = 0;
 nLastSegment = 0;
 nFaces = 0;
 nTris = 0;
-nLevelVersion = 0;
 bHaveSlideSegs = 0;
 nSlideSegs = 0;
-vMin.SetZero ();
-vMax.SetZero ();
-CLEAR (szLevelFilename);
 }
 
 // ----------------------------------------------------------------------------
@@ -905,6 +905,7 @@ nFreeDropped = 0;
 nDropped = 0;
 nObjects = 0;
 nObjectLimit = 0;
+nMaxUsedObjects = LEVEL_OBJECTS - 20;
 nNextSignature = 1;
 nChildFreeList = 0;
 nDrops = 0;

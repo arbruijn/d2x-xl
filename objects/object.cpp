@@ -2214,7 +2214,7 @@ if (gameData.multiplayer.bMoving == nSpeed)
 	return;
 
 if (gameData.multiplayer.bMoving < 0)
-	audio.CreateObjectSound (-1, OBJ_IDX (this), SOUNDCLASS_PLAYER, 1, I2X (1) / 64 + nSpeed / 256, I2X (256), -1, -1, "missileflight-small.wav", 1);
+	audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, OBJ_IDX (this), 1, I2X (1) / 64 + nSpeed / 256, I2X (256), -1, -1, "missileflight-small.wav", 1);
 else
 	audio.ChangeObjectSound (OBJ_IDX (this), I2X (1) / 64 + nSpeed / 256);
 gameData.multiplayer.bMoving = nSpeed;
