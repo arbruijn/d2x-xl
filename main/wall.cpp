@@ -530,7 +530,7 @@ for (i = 0; i < doorP->nPartCount; i++) {
 	if ((gameData.demo.nState != ND_STATE_PLAYBACK) && !(i || doorP->time)) {
 		if (gameData.walls.animP [wallP->nClip].closeSound  > -1)
 			audio.CreateSegmentSound ((short) gameData.walls.animP [segP->Wall (nSide)->nClip].closeSound,
-									  wallP->nSegment, nSide, SEGMENTS [wallP->nSegment].SideCenter (nSide), 0, I2X (1));
+											  wallP->nSegment, nSide, SEGMENTS [wallP->nSegment].SideCenter (nSide), 0, I2X (1));
 		}
 	doorP->time += gameData.time.xFrame;
 	bFlags &= segP->AnimateClosingDoor (nSide, doorP->time);

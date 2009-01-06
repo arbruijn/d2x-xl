@@ -246,7 +246,7 @@ class CSegment {
 		int ProcessWallHit (int nSide, fix damage, int nPlayer, CObject *objP);
 		int DoorIsBlocked (int nSide);
 		int CheckEffectBlowup (int nSide, CFixVector& vHit, CObject* blower, int bForceBlowup);
-		void CreateSound (int nSide, short nSound);
+		void CreateSound (short nSound, int nSide);
 
 		fix Refuel (fix xMaxFuel);
 		fix Repair (fix xMaxShields);

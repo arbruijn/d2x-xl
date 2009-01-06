@@ -985,7 +985,7 @@ return 1;		//blew up!
 
 //------------------------------------------------------------------------------
 
-void CSegment::CreateSound (int nSide, short nSound)
+void CSegment::CreateSound (short nSound, int nSide)
 {
 audio.CreateSegmentSound (nSound, Index (), nSide, SideCenter (nSide));
 }
