@@ -1783,7 +1783,7 @@ typedef struct tFaceRenderVertex {
 class CFaceData {
 	public:
 		CArray<tFace>				faces;
-		CArray<grsTriangle>		tris;
+		CArray<tFaceTriangle>		tris;
 		CArray<CFloatVector3>	vertices;
 		CArray<CFloatVector3>	normals;
 		CArray<tTexCoord2f>		texCoord;
@@ -1813,7 +1813,7 @@ class CFaceData {
 		void Destroy (void);
 };
 
-inline int operator- (grsTriangle* o, CArray<grsTriangle>& a) { return a.Index (o); }
+inline int operator- (tFaceTriangle* o, CArray<tFaceTriangle>& a) { return a.Index (o); }
 inline int operator- (CFloatVector3* o, CArray<CFloatVector3>& a) { return a.Index (o); }
 inline int operator- (tTexCoord2f* o, CArray<tTexCoord2f>& a) { return a.Index (o); }
 

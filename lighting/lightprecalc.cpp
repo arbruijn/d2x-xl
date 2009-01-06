@@ -275,12 +275,12 @@ if (SEGVIS (nStartSeg, nSegment))
 while (!SetSegVis (nStartSeg, nSegment))
 	;
 
-	tSegFaces	*segFaceP = SEGFACES + nSegment;
-	tFace		*faceP;
-	grsTriangle	*triP;
-	int			i, nFaces, nTris;
+	tSegFaces*		segFaceP = SEGFACES + nSegment;
+	tFace*			faceP;
+	tFaceTriangle*	triP;
+	int				i, nFaces, nTris;
 
-for (nFaces = segFaceP->nFaces, faceP = segFaceP->pFaces; nFaces; nFaces--, faceP++) {
+for (nFaces = segFaceP->nFaces, faceP = segFaceP->faceP; nFaces; nFaces--, faceP++) {
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nSegment = nSegment;

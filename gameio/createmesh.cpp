@@ -221,7 +221,7 @@ return triP;
 
 //------------------------------------------------------------------------------
 
-tTriangle *CTriMeshBuilder::AddTriangle (tTriangle *triP, ushort index [], grsTriangle *grsTriP)
+tTriangle *CTriMeshBuilder::AddTriangle (tTriangle *triP, ushort index [], tFaceTriangle *grsTriP)
 {
 return CreateTriangle (triP, index, grsTriP->nFace, grsTriP - TRIANGLES);
 }
@@ -283,7 +283,7 @@ if (!AllocData ())
 	return 0;
 
 tFace *faceP;
-grsTriangle *grsTriP;
+tFaceTriangle *grsTriP;
 tTriangle *triP;
 int i, nFace = -1;
 short nId = 0;
@@ -527,7 +527,7 @@ if (left < r)
 
 void CTriMeshBuilder::SetupVertexNormals (void)
 {
-	grsTriangle		*triP;
+	tFaceTriangle		*triP;
 	g3sPoint			*pointP;
 	int				h, i, nVertex;
 
@@ -560,7 +560,7 @@ ComputeVertexNormals ();
 int CTriMeshBuilder::InsertTriangles (void)
 {
 	tTriangle	*triP = &m_triangles [0];
-	grsTriangle	*grsTriP = TRIANGLES.Buffer ();
+	tFaceTriangle	*grsTriP = TRIANGLES.Buffer ();
 	tFace			*m_faceP = NULL;
 	CFixVector	vNormal;
 	int			h, i, nFace = -1;
@@ -656,11 +656,24 @@ if (left < r)
 
 //------------------------------------------------------------------------------
 
+void CTriMeshBuilder::CreateSegFaceList (void)
+{
+	int			h = 0;
+	tSegFaces*	segFaceP = SEGFACES;
+
+for (int i = gameData.segs.nSegments; i; i--, segFaceP++) {
+	segFaceP->faceP = &FACES.faces [h];
+	h += segFaceP->nFaces;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void CTriMeshBuilder::CreateFaceVertLists (void)
 {
 	int			*bTags = new int [gameData.segs.nVertices];
 	tFace		*faceP;
-	grsTriangle	*triP;
+	tFaceTriangle	*triP;
 	int			h, i, j, k, nFace;
 
 //count the vertices of each face
@@ -744,7 +757,7 @@ if (bOk)
 		 sizeof (FACES.texCoord [0]) +
 		 sizeof (FACES.ovlTexCoord [0]) +
 		 sizeof (FACES.color [0])) * mdh.nTris * 3 +
-		 sizeof (FACES.lMapTexCoord [0]) * mdh.nFaces * 2 +
+		 sizeof (FACES.lMapTexCoord [0]) * mdh.nTris * 3 +
 		 sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts;
 if (bOk)
 	bOk = ((ioBuffer = new char [nSize]) != NULL);
@@ -796,6 +809,7 @@ if (bOk) {
 	SetupVertexNormals ();
 	}
 cf.Close ();
+CreateSegFaceList ();
 CreateFaceVertLists ();
 return bOk;
 }
@@ -855,7 +869,7 @@ if (!InsertTriangles ()) {
 	return 0;
 	}
 Save (nLevel);
-return 1;
+return Load (nLevel); //Load will rebuild all face data buffers, reducing their memory footprint
 }
 
 //------------------------------------------------------------------------------
@@ -870,7 +884,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-CFloatVector3 *CQuadMeshBuilder::SetTriNormals (grsTriangle *triP, CFloatVector3 *m_normalP)
+CFloatVector3 *CQuadMeshBuilder::SetTriNormals (tFaceTriangle *triP, CFloatVector3 *m_normalP)
 {
 	CFloatVector	vNormalf;
 
@@ -1331,7 +1345,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 				m_faceP = m_faceP;
 #endif
 			if (!m_segFaceP->nFaces++)
-				m_segFaceP->pFaces = m_faceP;
+				m_segFaceP->faceP = m_faceP;
 			m_faceP++;
 			gameData.segs.nFaces++;
 			}

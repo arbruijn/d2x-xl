@@ -299,7 +299,7 @@ return AddTranspItem (tiObject, &item, sizeof (item), vPos [Z], vPos [Z]);
 
 //------------------------------------------------------------------------------
 
-int TIAddPoly (tFace *faceP, grsTriangle *triP, CBitmap *bmP,
+int TIAddPoly (tFace *faceP, tFaceTriangle *triP, CBitmap *bmP,
 					CFloatVector *vertices, char nVertices, tTexCoord2f *texCoord, tRgbaColorf *color,
 					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive,
 					short nSegment)
@@ -383,7 +383,7 @@ else
 
 int TIAddFaceTris (tFace *faceP)
 {
-	grsTriangle	*triP;
+	tFaceTriangle	*triP;
 	CFloatVector		vertices [3];
 	int			h, i, j, bAdditive = FaceIsAdditive (faceP);
 	CBitmap	*bmP = faceP->bTextured ? /*faceP->bmTop ? faceP->bmTop :*/ faceP->bmBot : NULL;
@@ -815,7 +815,7 @@ void TIRenderPoly (tTranspPoly *item)
 {
 PROF_START
 	tFace		*faceP;
-	grsTriangle	*triP;
+	tFaceTriangle	*triP;
 	CBitmap		*bmBot = item->bmP, *bmTop = NULL, *mask;
 	int			i, j, nIndex, bLightmaps, bDecal, bSoftBlend = 0;
 

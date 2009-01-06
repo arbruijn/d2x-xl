@@ -247,11 +247,11 @@ typedef union tTexCoord3f {
 		} v;
 	} tTexCoord3f;
 
-typedef struct grsTriangle {
+typedef struct tFaceTriangle {
 	ushort				nFace;
 	ushort				index [3];
 	int					nIndex;
-	} grsTriangle;
+	} tFaceTriangle;
 
 typedef struct tFace {
 	ushort				index [4];

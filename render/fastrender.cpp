@@ -218,7 +218,7 @@ if (faceP->bSolid)
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-newFaceP = segFaceP->pFaces + segFaceP->nFaces++;
+newFaceP = segFaceP->faceP + segFaceP->nFaces++;
 *newFaceP = *faceP;
 newFaceP->nIndex = (newFaceP - 1)->nIndex + (newFaceP - 1)->nTris * 3;
 memcpy (newFaceP->index, faceP->index, sizeof (faceP->index));
@@ -446,7 +446,7 @@ for (h = i = 0, ph = faceRef [0]; i < gameData.render.mine.nRenderSegs; i++) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 		continue;
 	segFaceP = SEGFACES + nSegment;
-	for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++, h++, ph++) {
+	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++, h++, ph++) {
 		ph->nSegment = nSegment;
 		ph->faceP = faceP;
 		}
@@ -657,7 +657,7 @@ if (gameStates.render.bHaveSkyBox) {
 	for (i = gameData.segs.skybox.ToS (), segP = gameData.segs.skybox.Buffer (); i; i--, segP++) {
 		nSegment = *segP;
 		segFaceP = SEGFACES + nSegment;
-		for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
+		for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++) {
 			if (!(faceP->bVisible = FaceIsVisible (nSegment, faceP->nSide)))
 				continue;
 			RenderMineFace (SEGMENTS + nSegment, faceP, 4, 0);
@@ -841,7 +841,7 @@ for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
-	for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++)
+	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++)
 		if (faceP->bVisible && (faceP->widFlags & WID_RENDER_FLAG) && faceP->bIsLight && (faceP->nCamera < 0) &&
 			 FaceHasCorona (nSegment, faceP->nSide, NULL, NULL))
 			faceP->nCorona = ++gameData.render.lights.nCoronas;
@@ -875,7 +875,7 @@ if (nSegment == nDbgSeg)
 #endif
 if (gameStates.render.bPerPixelLighting == 2)
 	gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
-for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++) {
+for (i = segFaceP->nFaces, faceP = segFaceP->faceP; i; i--, faceP++) {
 #if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		nSegment = nSegment;
@@ -1596,7 +1596,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 #endif
 	if (bVertexLight && !gameStates.render.bFullBright)
 		nLights = SetNearestSegmentLights (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
-	for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
+	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++) {
 		nSide = faceP->nSide;
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
@@ -1697,7 +1697,7 @@ PROF_START
 	CSegment		*segP;
 	tSegFaces	*segFaceP;
 	tFace		*faceP;
-	grsTriangle	*triP;
+	tFaceTriangle	*triP;
 	tRgbaColorf	*pc;
 	tFaceColor	c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
 #if 0
@@ -1736,7 +1736,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 #endif
 	if (bNeedLight)
 		nLights = SetNearestSegmentLights (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
-	for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
+	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++) {
 		nSide = faceP->nSide;
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
@@ -1862,7 +1862,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 		gameData.render.mine.nSegRenderList [i] = -gameData.render.mine.nSegRenderList [i] - 1;
 		continue;
 		}
-	for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
+	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++) {
 		nSide = faceP->nSide;
 		if (!(faceP->bVisible = FaceIsVisible (nSegment, nSide)))
 			continue;
@@ -1959,7 +1959,7 @@ for (h = i = 0; h < gameData.render.mine.nRenderSegs; h++) {
 	if (!SegmentIsVisible (SEGMENTS + nSegment)) 
 		gameData.render.mine.nSegRenderList [h] = -gameData.render.mine.nSegRenderList [i];
 	else {
-		for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++) {
+		for (i = segFaceP->nFaces, faceP = segFaceP->faceP; i; i--, faceP++) {
 			for (j = 0; j < 4; j++) {
 				n = faceP->index [j];
 				if (bIsRenderVertex [n] != gameStates.render.nFrameFlipFlop + 1) {
@@ -1986,7 +1986,7 @@ for (h = 0; h < gameData.render.mine.nRenderSegs; h++) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [h]))
 		continue;
 	segFaceP = SEGFACES + gameData.render.mine.nSegRenderList [h];
-	for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++)
+	for (i = segFaceP->nFaces, faceP = segFaceP->faceP; i; i--, faceP++)
 		for (j = 0; j < 4; j++)
 			FACES.color [j] = gameData.render.color.vertices [faceP->index [j]].color;
 	}

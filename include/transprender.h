@@ -24,7 +24,7 @@ typedef enum tTranspItemType {
 
 typedef struct tTranspPoly {
 	tFace				*faceP;
-	grsTriangle			*triP;
+	tFaceTriangle			*triP;
 	CBitmap				*bmP;
 	CFloatVector				vertices [4];
 	tTexCoord2f			texCoord [4];
@@ -154,7 +154,7 @@ void ResetTranspItemBuffer (void);
 void InitTranspItemBuffer (int zMin, int zMax);
 int AddTranspItem (tTranspItemType nType, void *itemData, int itemSize, int nDepth, int nIndex);
 int TIAddFace (tFace *faceP);
-int TIAddPoly (tFace *faceP, grsTriangle *triP, CBitmap *bmP,
+int TIAddPoly (tFace *faceP, tFaceTriangle *triP, CBitmap *bmP,
 					CFloatVector *vertices, char nVertices, tTexCoord2f *texCoord, tRgbaColorf *color,
 					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive,
 					short nSegment);

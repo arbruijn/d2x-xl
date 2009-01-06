@@ -42,7 +42,7 @@ class CTriMeshBuilder {
 		tEdge *FindEdge (ushort nVert1, ushort nVert2, int i);
 		int AddEdge (int nTri, ushort nVert1, ushort nVert2);
 		tTriangle *CreateTriangle (tTriangle *mtP, ushort index [], int nFace, int nIndex);
-		tTriangle *AddTriangle (tTriangle *mtP, ushort index [], grsTriangle *triP);
+		tTriangle *AddTriangle (tTriangle *mtP, ushort index [], tFaceTriangle *triP);
 		void DeleteEdge (tEdge *mlP);
 		void DeleteTriangle (tTriangle *mtP);
 		int CreateTriangles (void);
@@ -52,6 +52,7 @@ class CTriMeshBuilder {
 		int SplitTriangle (tTriangle *mtP, short nPass);
 		int SplitTriangles (void);
 		void QSortTriangles (int left, int right);
+		void CreateSegFaceList (void);
 		void SetupVertexNormals (void);
 		int InsertTriangles (void);
 		void CreateFaceVertLists (void);
@@ -69,7 +70,7 @@ class CTriMeshBuilder {
 class CQuadMeshBuilder {
 	private:
 		tFace				*m_faceP;
-		grsTriangle		*m_triP;
+		tFaceTriangle		*m_triP;
 		CFloatVector3	*m_vertexP;
 		CFloatVector3	*m_normalP;
 		tTexCoord2f		*m_texCoordP;
@@ -99,7 +100,7 @@ class CQuadMeshBuilder {
 		void SplitIn4Tris (void);
 		void BuildSlidingFaceList (void);
 		int IsBigFace (ushort* sideVerts);
-		CFloatVector3 *SetTriNormals (grsTriangle *triP, CFloatVector3 *m_normalP);
+		CFloatVector3 *SetTriNormals (tFaceTriangle *triP, CFloatVector3 *m_normalP);
 
 	public:
 		CQuadMeshBuilder (void) {};

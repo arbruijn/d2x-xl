@@ -186,7 +186,7 @@ void RenderWireFrame (tFace *faceP, int bTextured)
 {
 if (gameOpts->render.debug.bWireFrame) {
 	if ((nDbgFace < 0) || (faceP - FACES.faces == nDbgFace)) {
-		grsTriangle	*triP = FACES.tris + faceP->nTriIndex;
+		tFaceTriangle	*triP = FACES.tris + faceP->nTriIndex;
 		glDisableClientState (GL_COLOR_ARRAY);
 		if (bTextured)
 			glDisable (GL_TEXTURE_2D);
