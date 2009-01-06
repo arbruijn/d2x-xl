@@ -1372,7 +1372,7 @@ CheckAndLinkObjects ();
 ClearTransientObjects (1);		//1 means clear proximity bombs
 CheckAndFixDoors ();
 //gameData.walls.nOpenDoors = gameFileInfo.doors.count;
-//gameData.trigs.nTriggers = gameFileInfo.triggers.count;
+gameData.trigs.nTriggers = gameFileInfo.triggers.count;
 gameData.walls.nWalls = gameFileInfo.walls.count;
 CheckAndFixWalls ();
 CheckAndFixTriggers ();

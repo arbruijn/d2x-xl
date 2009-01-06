@@ -1237,10 +1237,9 @@ if (m_lightnings.Buffer ()) {
 	m_lightnings.Destroy ();
 	m_nLightnings = 0;
 	}
-if ((m_nObject >= 0) && (lightningManager.GetObjectSystem (m_nObject) == m_nId)) {
+if ((m_nObject >= 0) && (lightningManager.GetObjectSystem (m_nObject) == m_nId))
 	lightningManager.SetObjectSystem (m_nObject, -1);
-	m_nObject = -1;
-	}
+m_nObject = -1;
 }
 
 //------------------------------------------------------------------------------

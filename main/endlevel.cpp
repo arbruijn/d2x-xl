@@ -963,59 +963,61 @@ if (UpdateObjectSeg (objP, false)) {
 			nEntrySide = ELFindConnectedSide (objP->info.nSegment, nOldPlayerSeg);
 			nExitSide = sideOpposite [nEntrySide];
 			}
-		if (exitFlightDataP->firstTime || nEntrySide==-1 || segP->m_children [nExitSide]==-1)
+		if (exitFlightDataP->firstTime || (nEntrySide == -1) || (segP->m_children [nExitSide] == -1))
 			nExitSide = FindExitSide (objP);
-		fix d, dLargest = -I2X (1);
-		for (int i = 0; i < 6; i++) {
-			d = CFixVector::Dot (segP->m_sides [i].m_normals [0], exitFlightDataP->objP->info.position.mOrient.UVec());
-			if (d > dLargest) {
-				dLargest = d; 
-				nUpSide = i;
-				}
-			}
-		//update target point & angles
-		vDest = segP->SideCenter (nExitSide);
-		//update target point and movement points
-		//offset CObject sideways
-		if (exitFlightDataP->offset_frac) {
-			int s0=-1, s1=0, i;
-			CFixVector s0p, s1p;
-			fix dist;
-
-			for (i = 0; i < 6; i++)
-				if (i!=nEntrySide && i!=nExitSide && i!=nUpSide && i!=sideOpposite [nUpSide]) {
-					if (s0==-1)
-						s0 = i;
-					else
-						s1 = i;
+		if (nExitSide >= 0) {
+			fix d, dLargest = -I2X (1);
+			for (int i = 0; i < 6; i++) {
+				d = CFixVector::Dot (segP->m_sides [i].m_normals [0], exitFlightDataP->objP->info.position.mOrient.UVec());
+				if (d > dLargest) {
+					dLargest = d; 
+					nUpSide = i;
 					}
-			s0p = segP->SideCenter (s0);
-			s1p = segP->SideCenter (s1);
-			dist = FixMul (CFixVector::Dist (s0p, s1p), exitFlightDataP->offset_frac);
-			if (dist-exitFlightDataP->offsetDist > MAX_SLIDE_PER_SEGMENT)
-				dist = exitFlightDataP->offsetDist + MAX_SLIDE_PER_SEGMENT;
-			exitFlightDataP->offsetDist = dist;
-			vDest += objP->info.position.mOrient.RVec() * dist;
-			}
-		exitFlightDataP->step = vDest - objP->info.position.vPos;
-		xStepSize = CFixVector::Normalize (exitFlightDataP->step);
-		exitFlightDataP->step *= exitFlightDataP->speed;
-		curcenter = segP->Center ();
-		nextcenter = SEGMENTS [segP->m_children [nExitSide]].Center ();
-		exitFlightDataP->headvec = nextcenter - curcenter;
-		mDest = CFixMatrix::CreateFU (exitFlightDataP->headvec, segP->m_sides [nUpSide].m_normals [0]);
-		aDest = mDest.ExtractAnglesVec();
-		if (exitFlightDataP->firstTime)
-			exitFlightDataP->angles = objP->info.position.mOrient.ExtractAnglesVec();
-		xSegTime = FixDiv (xStepSize, exitFlightDataP->speed);	//how long through seg
-		if (xSegTime) {
-			exitFlightDataP->angstep [X] = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles [PA], aDest [PA]), xSegTime)));
-			exitFlightDataP->angstep [Z] = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles [BA], aDest [BA]), xSegTime)));
-			exitFlightDataP->angstep [Y] = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles [HA], aDest [HA]), xSegTime)));
-			}
-		else {
-			exitFlightDataP->angles = aDest;
-			exitFlightDataP->angstep.SetZero();
+				}
+			//update target point & angles
+			vDest = segP->SideCenter (nExitSide);
+			//update target point and movement points
+			//offset CObject sideways
+			if (exitFlightDataP->offset_frac) {
+				int s0 = -1, s1 = 0, i;
+				CFixVector s0p, s1p;
+				fix dist;
+
+				for (i = 0; i < 6; i++)
+					if (i != nEntrySide && i != nExitSide && i != nUpSide && i != sideOpposite [nUpSide]) {
+						if (s0 == -1)
+							s0 = i;
+						else
+							s1 = i;
+						}
+				s0p = segP->SideCenter (s0);
+				s1p = segP->SideCenter (s1);
+				dist = FixMul (CFixVector::Dist (s0p, s1p), exitFlightDataP->offset_frac);
+				if (dist-exitFlightDataP->offsetDist > MAX_SLIDE_PER_SEGMENT)
+					dist = exitFlightDataP->offsetDist + MAX_SLIDE_PER_SEGMENT;
+				exitFlightDataP->offsetDist = dist;
+				vDest += objP->info.position.mOrient.RVec() * dist;
+				}
+			exitFlightDataP->step = vDest - objP->info.position.vPos;
+			xStepSize = CFixVector::Normalize (exitFlightDataP->step);
+			exitFlightDataP->step *= exitFlightDataP->speed;
+			curcenter = segP->Center ();
+			nextcenter = SEGMENTS [segP->m_children [nExitSide]].Center ();
+			exitFlightDataP->headvec = nextcenter - curcenter;
+			mDest = CFixMatrix::CreateFU (exitFlightDataP->headvec, segP->m_sides [nUpSide].m_normals [0]);
+			aDest = mDest.ExtractAnglesVec();
+			if (exitFlightDataP->firstTime)
+				exitFlightDataP->angles = objP->info.position.mOrient.ExtractAnglesVec();
+			xSegTime = FixDiv (xStepSize, exitFlightDataP->speed);	//how long through seg
+			if (xSegTime) {
+				exitFlightDataP->angstep [X] = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles [PA], aDest [PA]), xSegTime)));
+				exitFlightDataP->angstep [Z] = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles [BA], aDest [BA]), xSegTime)));
+				exitFlightDataP->angstep [Y] = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles [HA], aDest [HA]), xSegTime)));
+				}
+			else {
+				exitFlightDataP->angles = aDest;
+				exitFlightDataP->angstep.SetZero();
+				}
 			}
 		}
 	}

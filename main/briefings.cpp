@@ -1604,8 +1604,6 @@ void DoBriefingScreens (const char *filename, int nLevel)
 
 PrintLog ("Starting the briefing\n");
 gameStates.render.bBriefing = 1;
-SetRenderQuality (0);
-RebuildRenderContext (1);
 if (gameStates.app.bNostalgia)
 	OglSetDrawBuffer (GL_FRONT, 0);
 if (gameOpts->gameplay.bSkipBriefingScreens) {
@@ -1644,6 +1642,8 @@ if (!LoadScreenText (fnBriefing, &szBriefingText)) {
 	return;
 	}
 audio.StopAllSounds ();
+SetRenderQuality (0);
+RebuildRenderContext (1);
 songManager.Play (SONG_BRIEFING, 1);
 SetScreenMode (SCREEN_MENU);
 CCanvas::SetCurrent (NULL);
@@ -1676,6 +1676,7 @@ gameStates.render.bBriefing = 0;
 delete[] szBriefingText;
 szBriefingText = NULL;
 KeyFlush ();
+SetRenderQuality ();
 return;
 }
 

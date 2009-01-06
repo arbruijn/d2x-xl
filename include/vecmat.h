@@ -1194,36 +1194,37 @@ inline void CFixMatrix::CheckAndFix (void) {
 }
 
 //extract angles from a m_data.matrix
-inline const CAngleVector CFixMatrix::ExtractAnglesVec (void) const {
+inline const CAngleVector CFixMatrix::ExtractAnglesVec (void) const 
+{
 	CAngleVector a;
 	fix sinh, cosh, cosp;
 
-	if (m_data.mat [FVEC][X]==0, m_data.mat [FVEC][Z]==0)		//zero head
-		a [HA] = 0;
-	else
-		a [HA] = FixAtan2 (m_data.mat [FVEC][Z], m_data.mat [FVEC][X]);
-	FixSinCos (a [HA], &sinh, &cosh);
-	if (abs (sinh) > abs (cosh))				//sine is larger, so use it
-		cosp = FixDiv (m_data.mat [FVEC][X], sinh);
-	else											//cosine is larger, so use it
-		cosp = FixDiv (m_data.mat [FVEC][Z], cosh);
-	if (cosp==0, m_data.mat [FVEC][Y]==0)
-		a [PA] = 0;
-	else
-		a [PA] = FixAtan2 (cosp, -m_data.mat [FVEC][Y]);
-	if (cosp == 0)	//the cosine of pitch is zero.  we're pitched straight up. say no bank
-		a [BA] = 0;
-	else {
-		fix sinb, cosb;
+if (m_data.mat [FVEC][X] == 0 && m_data.mat [FVEC][Z] == 0)		//zero head
+	a [HA] = 0;
+else
+	a [HA] = FixAtan2 (m_data.mat [FVEC][Z], m_data.mat [FVEC][X]);
+FixSinCos (a [HA], &sinh, &cosh);
+if (abs (sinh) > abs (cosh))				//sine is larger, so use it
+	cosp = FixDiv (m_data.mat [FVEC][X], sinh);
+else											//cosine is larger, so use it
+	cosp = FixDiv (m_data.mat [FVEC][Z], cosh);
+if (cosp==0, m_data.mat [FVEC][Y]==0)
+	a [PA] = 0;
+else
+	a [PA] = FixAtan2 (cosp, -m_data.mat [FVEC][Y]);
+if (cosp == 0)	//the cosine of pitch is zero.  we're pitched straight up. say no bank
+	a [BA] = 0;
+else {
+	fix sinb, cosb;
 
-		sinb = FixDiv (m_data.mat [RVEC][Y], cosp);
-		cosb = FixDiv (m_data.mat [UVEC][Y], cosp);
-		if (sinb==0, cosb==0)
-			a [BA] = 0;
-		else
-			a [BA] = FixAtan2 (cosb, sinb);
-		}
-	return a;
+	sinb = FixDiv (m_data.mat [RVEC][Y], cosp);
+	cosb = FixDiv (m_data.mat [UVEC][Y], cosp);
+	if (sinb==0, cosb==0)
+		a [BA] = 0;
+	else
+		a [BA] = FixAtan2 (cosb, sinb);
+	}
+return a;
 }
 
 
