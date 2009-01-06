@@ -1769,8 +1769,11 @@ if (!m_bBetweenLevels) {
 	h = m_cf.ReadInt ();
 	gameData.objs.nLastObject [0] = h - 1;
 	extraGameInfo [0].nBossCount = 0;
-	for (i = 0; i < h; i++)
+	for (i = 0; i < h; i++) {
 		OBJECTS [i].LoadState (m_cf);
+		if ((m_nVersion < 32) && IS_BOSS (OBJECTS + i))
+			gameData.boss [(int) extraGameInfo [0].nBossCount++].nObject = i;
+		}
 	DBG (fPos = m_cf.Tell ());
 	FixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);
 	gameData.objs.nNextSignature = 0;

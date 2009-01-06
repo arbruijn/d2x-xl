@@ -3187,8 +3187,6 @@ if (info.nType == OBJ_REACTOR)
 	info.nType = info.nType;
 else 
 #endif
-if ((m_nVersion < 32) && IS_BOSS (objP))
-	gameData.boss [(int) extraGameInfo [0].nBossCount++].nObject = Index ();
 info.nId = (ubyte) cf.ReadByte ();
 info.nNextInSeg = cf.ReadShort ();
 info.nPrevInSeg = cf.ReadShort ();
@@ -3313,8 +3311,8 @@ cf.WriteByte ((sbyte) info.renderType);
 cf.WriteByte ((sbyte) info.nFlags);
 cf.WriteShort (info.nSegment);
 cf.WriteShort (info.nAttachedObj);
-cf.WriteVector (OBJPOS (objP)->vPos);     
-cf.WriteMatrix (OBJPOS (objP)->mOrient);  
+cf.WriteVector (OBJPOS (this)->vPos);     
+cf.WriteMatrix (OBJPOS (this)->mOrient);  
 cf.WriteFix (info.xSize); 
 cf.WriteFix (info.xShields);
 cf.WriteVector (info.vLastPos);  
