@@ -1168,8 +1168,7 @@ if (gameFileInfo.lightDeltaIndices.offset > -1) {
 			ReadLightDeltaIndex (gameData.render.lights.deltaIndices + i, cf);
 			}
 		}
-	gameFileInfo.lightDeltaIndices.SortAscending ();
-	SortDLIndex ();
+	gameData.render.lights.deltaIndices.SortAscending ();
 	}
 return 0;
 }
