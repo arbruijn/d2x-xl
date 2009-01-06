@@ -461,8 +461,8 @@ void AddSegmentToGroup (int nSegment, int nGroup);
 // Verify that all vertices are legal.
 void med_check_all_vertices();
 
-void ReadLightDelta(CLightDelta *dl, CFile& cf);
-void ReadLightDeltaIndex (CLightDeltaIndex *di, CFile& cf);
+void ReadLightDelta (CLightDelta *dl, CFile& cf);
+void ReadLightDeltaIndex (CLightDeltaIndex& di, CFile& cf);
 
 void FreeSkyBoxSegList (void);
 int BuildSkyBoxSegList (void);

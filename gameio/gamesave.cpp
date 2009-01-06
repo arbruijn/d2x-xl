@@ -1165,7 +1165,7 @@ if (gameFileInfo.lightDeltaIndices.offset > -1) {
 	else {
 		for (i = 0; i < gameFileInfo.lightDeltaIndices.count; i++) {
 			//PrintLog ("reading DL index %d\n", i);
-			ReadLightDeltaIndex (gameData.render.lights.deltaIndices + i, cf);
+			ReadLightDeltaIndex (gameData.render.lights.deltaIndices [i], cf);
 			}
 		}
 	gameData.render.lights.deltaIndices.SortAscending ();
