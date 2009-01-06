@@ -880,11 +880,11 @@ tFace *FindDupFace (short nSegment, short nSide)
 	tFace		*faceP0, *faceP1;
 	int			i, j;
 
-for (i = segFaceP->nFaces, faceP0 = segFaceP->pFaces; i; faceP0++, i--)
+for (i = segFaceP->nFaces, faceP0 = segFaceP->faceP; i; faceP0++, i--)
 	if (faceP0->nSide == nSide)
 		break;
 for (i = 0, segFaceP = SEGFACES.Buffer (); i < gameData.segs.nSegments; i++, segFaceP++) {
-	for (j = segFaceP->nFaces, faceP1 = segFaceP->pFaces; j; faceP1++, j--) {
+	for (j = segFaceP->nFaces, faceP1 = segFaceP->faceP; j; faceP1++, j--) {
 		if (faceP1 == faceP0)
 			continue;
 		if ((faceP1->nIndex == faceP0->nIndex) || !memcmp (faceP1->index, faceP0->index, sizeof (faceP0->index)))
