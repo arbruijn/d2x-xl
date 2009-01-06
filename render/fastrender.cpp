@@ -768,9 +768,9 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 			}
 		else {
 #if DBG
-			if ((nDbgSeg >= 0) && (nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
-			else
+			else if (nDbgSeg >= 0)
 				continue;
 #endif
 			glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->nCorona - 1]);
