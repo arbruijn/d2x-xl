@@ -1205,10 +1205,14 @@ if (SEGMENTS [nSegment].m_objects == nObject)
 	return;
 #endif
 SetNextInSeg (SEGMENTS [nSegment].m_objects);
+#if DBG
+if ((info.nNextInSeg < -1) || (info.nNextInSeg >= LEVEL_OBJECTS))
+	SetNextInSeg (-1);
+#endif
 SetPrevInSeg (-1);
-SEGMENTS [nSegment].m_objects = OBJ_IDX (this);
+SEGMENTS [nSegment].m_objects = Index ();
 if (info.nNextInSeg != -1)
-	OBJECTS [info.nNextInSeg].info.nPrevInSeg = OBJ_IDX (this);
+	OBJECTS [info.nNextInSeg].SetPrevInSeg (Index ());
 }
 
 //------------------------------------------------------------------------------
