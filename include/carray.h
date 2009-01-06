@@ -56,7 +56,10 @@ template < class _T > class CArray : public CQuickSort < _T > {
 				_T* End (void) { m_p = m_start = m_a.End (); m_end = m_a.Start (); }
 			};
 
-		CArray () { Init (); }
+		CArray () { 
+			memset (&m_data.null, 0, sizeof (m_data.null));
+			Init (); 
+			}
 		
 		CArray (uint nLength) { 
 			Init (); 

@@ -66,12 +66,6 @@ class CSaveGameHandler {
 		void SaveFuelCen (tFuelCenInfo *fuelcenP);
 		void SaveMatCen (tMatCenInfo *matcenP);
 		void SaveObjTriggerRef (tObjTriggerRef *refP);
-		void SaveTrigger (CTrigger *triggerP);
-		void SaveActiveDoor (CActiveDoor *doorP);
-		void SaveCloakingWall (CCloakingWall *wallP);
-		void SaveExplWall (CExplodingWall *wallP);
-		void SaveWall (CWall *wallP);
-		void SaveObject (CObject *objP);
 		void SavePlayer (CPlayerData *playerP);
 		void SaveNetPlayers (void);
 		void SaveNetGame (void);
@@ -87,12 +81,6 @@ class CSaveGameHandler {
 		void LoadNetGame (void);
 		void LoadNetPlayers (void);
 		void LoadPlayer (CPlayerData *playerP);
-		void LoadObject (CObject *objP);
-		void LoadWall (CWall *wallP);
-		void LoadExplWall (CExplodingWall *wallP);
-		void LoadCloakingWall (void);
-		void LoadActiveDoor (void);
-		void LoadTrigger (CTrigger *triggerP);
 		void LoadObjTriggerRef (tObjTriggerRef *refP);
 		void LoadMatCen (tMatCenInfo *matcenP);
 		void LoadFuelCen (tFuelCenInfo *fuelcenP);

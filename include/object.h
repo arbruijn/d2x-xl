@@ -752,6 +752,8 @@ class CObject : public CObjectInfo {
 		inline void InitLinks (void) { memset (m_links, 0, sizeof (m_links)); }
 
 		void Read (CFile& cf);
+		void LoadState (CFile& cf);
+		void SaveState (CFile& cf);
 		void LoadTextures (void);
 		int PowerupToWeapon (void);
 		void HandleSpecialSegment (void);

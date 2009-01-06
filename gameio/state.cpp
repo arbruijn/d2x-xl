@@ -722,153 +722,6 @@ m_cf.WriteByte (playerP->hoursTotal);            // Hours played (since timeTota
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::SaveObject (CObject *objP)
-{
-m_cf.WriteInt (objP->info.nSignature);      
-m_cf.WriteByte ((sbyte) objP->info.nType); 
-m_cf.WriteByte ((sbyte) objP->info.nId);
-m_cf.WriteShort (objP->info.nNextInSeg);
-m_cf.WriteShort (objP->info.nPrevInSeg);
-m_cf.WriteByte ((sbyte) objP->info.controlType);
-m_cf.WriteByte ((sbyte) objP->info.movementType);
-m_cf.WriteByte ((sbyte) objP->info.renderType);
-m_cf.WriteByte ((sbyte) objP->info.nFlags);
-m_cf.WriteShort (objP->info.nSegment);
-m_cf.WriteShort (objP->info.nAttachedObj);
-m_cf.WriteVector (OBJPOS (objP)->vPos);     
-m_cf.WriteMatrix (OBJPOS (objP)->mOrient);  
-m_cf.WriteFix (objP->info.xSize); 
-m_cf.WriteFix (objP->info.xShields);
-m_cf.WriteVector (objP->info.vLastPos);  
-m_cf.WriteByte (objP->info.contains.nType); 
-m_cf.WriteByte (objP->info.contains.nId);   
-m_cf.WriteByte (objP->info.contains.nCount);
-m_cf.WriteByte (objP->info.nCreator);
-m_cf.WriteFix (objP->info.xLifeLeft);   
-if (objP->info.movementType == MT_PHYSICS) {
-	m_cf.WriteVector (objP->mType.physInfo.velocity);   
-	m_cf.WriteVector (objP->mType.physInfo.thrust);     
-	m_cf.WriteFix (objP->mType.physInfo.mass);       
-	m_cf.WriteFix (objP->mType.physInfo.drag);       
-	m_cf.WriteFix (objP->mType.physInfo.brakes);     
-	m_cf.WriteVector (objP->mType.physInfo.rotVel);     
-	m_cf.WriteVector (objP->mType.physInfo.rotThrust);  
-	m_cf.WriteFixAng (objP->mType.physInfo.turnRoll);   
-	m_cf.WriteShort ((short) objP->mType.physInfo.flags);      
-	}
-else if (objP->info.movementType == MT_SPINNING) {
-	m_cf.WriteVector(objP->mType.spinRate);  
-	}
-switch (objP->info.controlType) {
-	case CT_WEAPON:
-		m_cf.WriteShort (objP->cType.laserInfo.parent.nType);
-		m_cf.WriteShort (objP->cType.laserInfo.parent.nObject);
-		m_cf.WriteInt (objP->cType.laserInfo.parent.nSignature);
-		m_cf.WriteFix (objP->cType.laserInfo.xCreationTime);
-		if (objP->cType.laserInfo.nLastHitObj)
-			m_cf.WriteShort (gameData.objs.nHitObjects [objP->Index () * MAX_HIT_OBJECTS + objP->cType.laserInfo.nLastHitObj - 1]);
-		else
-			m_cf.WriteShort (-1);
-		m_cf.WriteShort (objP->cType.laserInfo.nHomingTarget);
-		m_cf.WriteFix (objP->cType.laserInfo.xScale);
-		break;
-
-	case CT_EXPLOSION:
-		m_cf.WriteFix (objP->cType.explInfo.nSpawnTime);
-		m_cf.WriteFix (objP->cType.explInfo.nDeleteTime);
-		m_cf.WriteShort (objP->cType.explInfo.nDeleteObj);
-		m_cf.WriteShort (objP->cType.explInfo.attached.nParent);
-		m_cf.WriteShort (objP->cType.explInfo.attached.nPrev);
-		m_cf.WriteShort (objP->cType.explInfo.attached.nNext);
-		break;
-
-	case CT_AI:
-		m_cf.WriteByte ((sbyte) objP->cType.aiInfo.behavior);
-		m_cf.Write (objP->cType.aiInfo.flags, 1, MAX_AI_FLAGS);
-		m_cf.WriteShort (objP->cType.aiInfo.nHideSegment);
-		m_cf.WriteShort (objP->cType.aiInfo.nHideIndex);
-		m_cf.WriteShort (objP->cType.aiInfo.nPathLength);
-		m_cf.WriteByte (objP->cType.aiInfo.nCurPathIndex);
-		m_cf.WriteByte (objP->cType.aiInfo.bDyingSoundPlaying);
-		m_cf.WriteShort (objP->cType.aiInfo.nDangerLaser);
-		m_cf.WriteInt (objP->cType.aiInfo.nDangerLaserSig);
-		m_cf.WriteFix (objP->cType.aiInfo.xDyingStartTime);
-		break;
-
-	case CT_LIGHT:
-		m_cf.WriteFix (objP->cType.lightInfo.intensity);
-		break;
-
-	case CT_POWERUP:
-		m_cf.WriteInt (objP->cType.powerupInfo.nCount);
-		m_cf.WriteFix (objP->cType.powerupInfo.xCreationTime);
-		m_cf.WriteInt (objP->cType.powerupInfo.nFlags);
-		break;
-	}
-switch (objP->info.renderType) {
-	case RT_MORPH:
-	case RT_POLYOBJ: {
-		int i;
-		m_cf.WriteInt (objP->rType.polyObjInfo.nModel);
-		for (i = 0; i < MAX_SUBMODELS; i++)
-			m_cf.WriteAngVec (objP->rType.polyObjInfo.animAngles [i]);
-		m_cf.WriteInt (objP->rType.polyObjInfo.nSubObjFlags);
-		m_cf.WriteInt (objP->rType.polyObjInfo.nTexOverride);
-		m_cf.WriteInt (objP->rType.polyObjInfo.nAltTextures);
-		break;
-		}
-	case RT_WEAPON_VCLIP:
-	case RT_HOSTAGE:
-	case RT_POWERUP:
-	case RT_FIREBALL:
-	case RT_THRUSTER:
-		m_cf.WriteInt (objP->rType.vClipInfo.nClipIndex);
-		m_cf.WriteFix (objP->rType.vClipInfo.xFrameTime);
-		m_cf.WriteByte (objP->rType.vClipInfo.nCurFrame);
-		break;
-
-	case RT_LASER:
-		break;
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void CSaveGameHandler::SaveWall (CWall *wallP)
-{
-wallP->SaveState (m_cf);
-}
-
-//------------------------------------------------------------------------------
-
-void CSaveGameHandler::SaveExplWall (CExplodingWall *wallP)
-{
-wallP->SaveState (m_cf);
-}
-
-//------------------------------------------------------------------------------
-
-void CSaveGameHandler::SaveCloakingWall (CCloakingWall *wallP)
-{
-wallP->SaveState (m_cf);
-}
-
-//------------------------------------------------------------------------------
-
-void CSaveGameHandler::SaveActiveDoor (CActiveDoor *doorP)
-{
-doorP->SaveState (m_cf);
-}
-
-//------------------------------------------------------------------------------
-
-void CSaveGameHandler::SaveTrigger (CTrigger *triggerP)
-{
-triggerP->SaveState (m_cf);
-}
-
-//------------------------------------------------------------------------------
-
 void CSaveGameHandler::SaveObjTriggerRef (tObjTriggerRef *refP)
 {
 m_cf.WriteShort (refP->prev);
@@ -1021,43 +874,43 @@ if (!m_bBetweenLevels) {
 	i = gameData.objs.nLastObject [0] + 1;
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
-		SaveObject (OBJECTS + j);
+		OBJECTS [j].SaveState (m_cf);
 	DBG (fPos = m_cf.Tell ());
 //Save CWall info
 	i = gameData.walls.nWalls;
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
-		SaveWall (WALLS + j);
+		WALLS [j].SaveState (m_cf);
 	DBG (fPos = m_cf.Tell ());
 //Save exploding wall info
 	i = MAX_EXPLODING_WALLS;
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
-		SaveExplWall (gameData.walls.exploding + j);
+		gameData.walls.exploding [j].SaveState (m_cf);
 	DBG (fPos = m_cf.Tell ());
 //Save door info
 	i = gameData.walls.activeDoors.ToS ();
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
-		SaveActiveDoor (gameData.walls.activeDoors + j);
+		gameData.walls.activeDoors [j].SaveState (m_cf);
 	DBG (fPos = m_cf.Tell ());
 //Save cloaking CWall info
 	i = gameData.walls.cloaking.ToS ();
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
-		SaveCloakingWall (gameData.walls.cloaking + j);
+		gameData.walls.cloaking [j].SaveState (m_cf);
 	DBG (fPos = m_cf.Tell ());
 //Save CTrigger info
 	m_cf.WriteInt (gameData.trigs.nTriggers);
 	for (i = 0; i < gameData.trigs.nTriggers; i++)
-		SaveTrigger (TRIGGERS + i);
+		TRIGGERS  [i].SaveState (m_cf);
 	DBG (fPos = m_cf.Tell ());
 	m_cf.WriteInt (gameData.trigs.nObjTriggers);
 	if (!gameData.trigs.nObjTriggers)
 		m_cf.WriteShort (0);
 	else {
 		for (i = 0; i < gameData.trigs.nObjTriggers; i++)
-			SaveTrigger (OBJTRIGGERS + i);
+			OBJTRIGGERS [i].SaveState (m_cf);
 		for (i = 0; i < gameData.trigs.nObjTriggers; i++)
 			SaveObjTriggerRef (gameData.trigs.objTriggerRefs + i);
 		nObjsWithTrigger = 0;
@@ -1725,165 +1578,6 @@ playerP->hoursTotal = m_cf.ReadByte ();            // Hours played (since timeTo
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::LoadObject (CObject *objP)
-{
-objP->info.nSignature = m_cf.ReadInt ();      
-objP->info.nType = (ubyte) m_cf.ReadByte (); 
-#if DBG
-if (objP->info.nType == OBJ_REACTOR)
-	objP->info.nType = objP->info.nType;
-else 
-#endif
-if ((m_nVersion < 32) && IS_BOSS (objP))
-	gameData.boss [(int) extraGameInfo [0].nBossCount++].nObject = objP->Index ();
-objP->info.nId = (ubyte) m_cf.ReadByte ();
-objP->info.nNextInSeg = m_cf.ReadShort ();
-objP->info.nPrevInSeg = m_cf.ReadShort ();
-objP->info.controlType = (ubyte) m_cf.ReadByte ();
-objP->info.movementType = (ubyte) m_cf.ReadByte ();
-objP->info.renderType = (ubyte) m_cf.ReadByte ();
-objP->info.nFlags = (ubyte) m_cf.ReadByte ();
-objP->info.nSegment = m_cf.ReadShort ();
-objP->info.nAttachedObj = m_cf.ReadShort ();
-m_cf.ReadVector (objP->info.position.vPos);     
-m_cf.ReadMatrix (objP->info.position.mOrient);  
-objP->info.xSize = m_cf.ReadFix (); 
-objP->info.xShields = m_cf.ReadFix ();
-m_cf.ReadVector (objP->info.vLastPos);  
-objP->info.contains.nType = m_cf.ReadByte (); 
-objP->info.contains.nId = m_cf.ReadByte ();   
-objP->info.contains.nCount = m_cf.ReadByte ();
-objP->info.nCreator = m_cf.ReadByte ();
-objP->info.xLifeLeft = m_cf.ReadFix ();   
-if (objP->info.movementType == MT_PHYSICS) {
-	m_cf.ReadVector (objP->mType.physInfo.velocity);   
-	m_cf.ReadVector (objP->mType.physInfo.thrust);     
-	objP->mType.physInfo.mass = m_cf.ReadFix ();       
-	objP->mType.physInfo.drag = m_cf.ReadFix ();       
-	objP->mType.physInfo.brakes = m_cf.ReadFix ();     
-	m_cf.ReadVector (objP->mType.physInfo.rotVel);     
-	m_cf.ReadVector (objP->mType.physInfo.rotThrust);  
-	objP->mType.physInfo.turnRoll = m_cf.ReadFixAng ();   
-	objP->mType.physInfo.flags = (ushort) m_cf.ReadShort ();      
-	}
-else if (objP->info.movementType == MT_SPINNING) {
-	m_cf.ReadVector (objP->mType.spinRate);  
-	}
-switch (objP->info.controlType) {
-	case CT_WEAPON:
-		objP->cType.laserInfo.parent.nType = m_cf.ReadShort ();
-		objP->cType.laserInfo.parent.nObject = m_cf.ReadShort ();
-		objP->cType.laserInfo.parent.nSignature = m_cf.ReadInt ();
-		objP->cType.laserInfo.xCreationTime = m_cf.ReadFix ();
-		objP->cType.laserInfo.nLastHitObj = m_cf.ReadShort ();
-		if (objP->cType.laserInfo.nLastHitObj < 0)
-			objP->cType.laserInfo.nLastHitObj = 0;
-		else {
-			gameData.objs.nHitObjects [objP->Index () * MAX_HIT_OBJECTS] = objP->cType.laserInfo.nLastHitObj;
-			objP->cType.laserInfo.nLastHitObj = 1;
-			}
-		objP->cType.laserInfo.nHomingTarget = m_cf.ReadShort ();
-		objP->cType.laserInfo.xScale = m_cf.ReadFix ();
-		break;
-
-	case CT_EXPLOSION:
-		objP->cType.explInfo.nSpawnTime = m_cf.ReadFix ();
-		objP->cType.explInfo.nDeleteTime = m_cf.ReadFix ();
-		objP->cType.explInfo.nDeleteObj = m_cf.ReadShort ();
-		objP->cType.explInfo.attached.nParent = m_cf.ReadShort ();
-		objP->cType.explInfo.attached.nPrev = m_cf.ReadShort ();
-		objP->cType.explInfo.attached.nNext = m_cf.ReadShort ();
-		break;
-
-	case CT_AI:
-		objP->cType.aiInfo.behavior = (ubyte) m_cf.ReadByte ();
-		m_cf.Read (objP->cType.aiInfo.flags, 1, MAX_AI_FLAGS);
-		objP->cType.aiInfo.nHideSegment = m_cf.ReadShort ();
-		objP->cType.aiInfo.nHideIndex = m_cf.ReadShort ();
-		objP->cType.aiInfo.nPathLength = m_cf.ReadShort ();
-		objP->cType.aiInfo.nCurPathIndex = m_cf.ReadByte ();
-		objP->cType.aiInfo.bDyingSoundPlaying = m_cf.ReadByte ();
-		objP->cType.aiInfo.nDangerLaser = m_cf.ReadShort ();
-		objP->cType.aiInfo.nDangerLaserSig = m_cf.ReadInt ();
-		objP->cType.aiInfo.xDyingStartTime = m_cf.ReadFix ();
-		break;
-
-	case CT_LIGHT:
-		objP->cType.lightInfo.intensity = m_cf.ReadFix ();
-		break;
-
-	case CT_POWERUP:
-		objP->cType.powerupInfo.nCount = m_cf.ReadInt ();
-		objP->cType.powerupInfo.xCreationTime = m_cf.ReadFix ();
-		objP->cType.powerupInfo.nFlags = m_cf.ReadInt ();
-		break;
-	}
-switch (objP->info.renderType) {
-	case RT_MORPH:
-	case RT_POLYOBJ: {
-		int i;
-		objP->rType.polyObjInfo.nModel = m_cf.ReadInt ();
-		for (i = 0; i < MAX_SUBMODELS; i++)
-			m_cf.ReadAngVec (objP->rType.polyObjInfo.animAngles [i]);
-		objP->rType.polyObjInfo.nSubObjFlags = m_cf.ReadInt ();
-		objP->rType.polyObjInfo.nTexOverride = m_cf.ReadInt ();
-		objP->rType.polyObjInfo.nAltTextures = m_cf.ReadInt ();
-		break;
-		}
-	case RT_WEAPON_VCLIP:
-	case RT_HOSTAGE:
-	case RT_POWERUP:
-	case RT_FIREBALL:
-	case RT_THRUSTER:
-		objP->rType.vClipInfo.nClipIndex = m_cf.ReadInt ();
-		objP->rType.vClipInfo.xFrameTime = m_cf.ReadFix ();
-		objP->rType.vClipInfo.nCurFrame = m_cf.ReadByte ();
-		break;
-
-	case RT_LASER:
-		break;
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void CSaveGameHandler::LoadWall (CWall *wallP)
-{
-wallP->LoadState (m_cf);
-}
-
-//------------------------------------------------------------------------------
-
-void CSaveGameHandler::LoadExplWall (CExplodingWall *wallP)
-{
-wallP->LoadState (m_cf);
-}
-
-//------------------------------------------------------------------------------
-
-void CSaveGameHandler::LoadCloakingWall (void)
-{
-gameData.walls.cloaking.Grow ();
-gameData.walls.cloaking.Top ()->LoadState (m_cf);
-}
-
-//------------------------------------------------------------------------------
-
-void CSaveGameHandler::LoadActiveDoor (void)
-{
-gameData.walls.activeDoors.Grow ();
-gameData.walls.activeDoors.Top ()->LoadState (m_cf);
-}
-
-//------------------------------------------------------------------------------
-
-void CSaveGameHandler::LoadTrigger (CTrigger *triggerP)
-{
-triggerP->LoadState (m_cf);
-}
-
-//------------------------------------------------------------------------------
-
 void CSaveGameHandler::LoadObjTriggerRef (tObjTriggerRef *refP)
 {
 refP->prev = m_cf.ReadShort ();
@@ -2076,7 +1770,7 @@ if (!m_bBetweenLevels) {
 	gameData.objs.nLastObject [0] = h - 1;
 	extraGameInfo [0].nBossCount = 0;
 	for (i = 0; i < h; i++)
-		LoadObject (OBJECTS + i);
+		OBJECTS [i].LoadState (m_cf);
 	DBG (fPos = m_cf.Tell ());
 	FixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);
 	gameData.objs.nNextSignature = 0;
@@ -2093,7 +1787,7 @@ if (!m_bBetweenLevels) {
 	if (ReadBoundedInt (MAX_WALLS, &gameData.walls.nWalls))
 		return 0;
 	for (i = 0, wallP = WALLS.Buffer (); i < gameData.walls.nWalls; i++, wallP++) {
-		CSaveGameHandler::LoadWall (wallP);
+		wallP->LoadState (m_cf);
 		if (wallP->nType == WALL_OPEN)
 			audio.DestroySegmentSound ((short) wallP->nSegment, (short) wallP->nSide, -1);	//-1 means kill any sound
 		}
@@ -2102,31 +1796,35 @@ if (!m_bBetweenLevels) {
 	if (ReadBoundedInt (MAX_EXPLODING_WALLS, &h))
 		return 0;
 	for (i = 0; i < h; i++)
-		CSaveGameHandler::LoadExplWall (gameData.walls.exploding + i);
+		gameData.walls.exploding [i].LoadState (m_cf);
 	DBG (fPos = m_cf.Tell ());
 	//Restore door info
 	if (ReadBoundedInt (MAX_DOORS, &i))
 		return 0;
-	for (; i; i--)
-		CSaveGameHandler::LoadActiveDoor ();
+	for (; i; i--) {
+		gameData.walls.activeDoors.Grow ();
+		gameData.walls.activeDoors.Top ()->LoadState (m_cf);
+		}
 	DBG (fPos = m_cf.Tell ());
 	if (ReadBoundedInt (MAX_CLOAKING_WALLS, &i))
 		return 0;
-	for (; i; i--)
-		CSaveGameHandler::LoadCloakingWall ();
+	for (; i; i--) {
+		gameData.walls.cloaking.Grow ();
+		gameData.walls.cloaking.Top ()->LoadState (m_cf);
+		}
 	DBG (fPos = m_cf.Tell ());
 	//Restore CTrigger info
 	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nTriggers))
 		return 0;
 	for (i = 0; i < gameData.trigs.nTriggers; i++)
-		CSaveGameHandler::LoadTrigger (TRIGGERS + i);
+		TRIGGERS [i].LoadState (m_cf);
 	DBG (fPos = m_cf.Tell ());
 	//Restore CObject CTrigger info
 	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nObjTriggers))
 		return 0;
 	if (gameData.trigs.nObjTriggers > 0) {
 		for (i = 0; i < gameData.trigs.nObjTriggers; i++)
-			CSaveGameHandler::LoadTrigger (OBJTRIGGERS + i);
+			OBJTRIGGERS [i].LoadState (m_cf);
 		for (i = 0; i < gameData.trigs.nObjTriggers; i++)
 			CSaveGameHandler::LoadObjTriggerRef (gameData.trigs.objTriggerRefs + i);
 		if (m_nVersion < 36) {
