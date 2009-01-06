@@ -99,11 +99,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ipx.h"
 #include "gr.h"
 
-#undef DBG
 #if DBG
-#	define DBG(_expr)	_expr
+#	define IFDBG(_expr)	_expr
 #else
-#	define DBG(_expr)
+#	define IFDBG(_expr)
 #endif
 
 #define STATE_VERSION				40
@@ -788,7 +787,7 @@ m_cf.WriteInt (stateP->nDeadObj);
 void CSaveGameHandler::SaveSpawnPoint (int i)
 {
 #if DBG
-i = m_cf.Tell;
+i = m_cf.Tell ();
 #endif
 m_cf.WriteVector (gameData.multiplayer.playerInit [i].position.vPos);     
 m_cf.WriteMatrix (gameData.multiplayer.playerInit [i].position.mOrient);  
@@ -798,7 +797,7 @@ m_cf.WriteShort (gameData.multiplayer.playerInit [i].nSegType);
 
 //------------------------------------------------------------------------------
 
-DBG (static int fPos);
+IFDBG (static int fPos);
 
 void CSaveGameHandler::SaveGameData (void)
 {
@@ -820,14 +819,14 @@ m_cf.WriteFix (gameData.time.xGame);
 if (IsCoopGame) {
 	m_cf.WriteInt (gameData.app.nStateGameId);
 	SaveNetGame ();
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 	SaveNetPlayers ();
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 	m_cf.WriteInt (gameData.multiplayer.nPlayers);
 	m_cf.WriteInt (gameData.multiplayer.nLocalPlayer);
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		SavePlayer (gameData.multiplayer.players + i);
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 	}
 //Save CPlayerData info
 SavePlayer (gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer);
@@ -869,42 +868,42 @@ if (!m_bBetweenLevels) {
 				}
 			}
 		}
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 //Save CObject info
 	i = gameData.objs.nLastObject [0] + 1;
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
 		OBJECTS [j].SaveState (m_cf);
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 //Save CWall info
 	i = gameData.walls.nWalls;
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
 		WALLS [j].SaveState (m_cf);
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 //Save exploding wall info
 	i = MAX_EXPLODING_WALLS;
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
 		gameData.walls.exploding [j].SaveState (m_cf);
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 //Save door info
 	i = gameData.walls.activeDoors.ToS ();
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
 		gameData.walls.activeDoors [j].SaveState (m_cf);
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 //Save cloaking CWall info
 	i = gameData.walls.cloaking.ToS ();
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
 		gameData.walls.cloaking [j].SaveState (m_cf);
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 //Save CTrigger info
 	m_cf.WriteInt (gameData.trigs.nTriggers);
 	for (i = 0; i < gameData.trigs.nTriggers; i++)
 		TRIGGERS  [i].SaveState (m_cf);
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 	m_cf.WriteInt (gameData.trigs.nObjTriggers);
 	if (!gameData.trigs.nObjTriggers)
 		m_cf.WriteShort (0);
@@ -930,15 +929,15 @@ if (!m_bBetweenLevels) {
 				}
 			}
 		}
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 //Save tmap info
 	for (i = 0; i <= gameData.segs.nLastSegment; i++)
 		SEGMENTS [i].SaveState (m_cf);
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 // Save the fuelcen info
 	m_cf.WriteInt (gameData.reactor.bDestroyed);
 	m_cf.WriteFix (gameData.reactor.countdown.nTimer);
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 	m_cf.WriteInt (gameData.matCens.nBotCenters);
 	for (i = 0; i < gameData.matCens.nBotCenters; i++)
 		SaveMatCen (gameData.matCens.botGens + i);
@@ -949,20 +948,20 @@ if (!m_bBetweenLevels) {
 	m_cf.WriteInt (gameData.matCens.nFuelCenters);
 	for (i = 0; i < gameData.matCens.nFuelCenters; i++)
 		SaveFuelCen (gameData.matCens.fuelCenters + i);
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 // Save the control cen info
 	m_cf.WriteInt (gameData.reactor.bPresent);
 	for (i = 0; i < MAX_BOSS_COUNT; i++)
 		SaveReactorState (gameData.reactor.states + i);
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 // Save the AI state
 	SaveAI ();
 
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 // Save the automap visited info
 	for (i = 0; i < LEVEL_SEGMENTS; i++)
 		m_cf.WriteShort (automap.m_visited [0][i]);
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 	}
 m_cf.WriteInt ((int) gameData.app.nStateGameId);
 m_cf.WriteInt (gameStates.app.cheats.bLaserRapidFire);
@@ -1643,7 +1642,7 @@ stateP->nDeadObj = m_cf.ReadInt ();
 
 int CSaveGameHandler::LoadSpawnPoint (int i)
 {
-DBG (i = m_cf.Tell ());
+IFDBG (i = m_cf.Tell ());
 m_cf.ReadVector (gameData.multiplayer.playerInit [i].position.vPos);     
 m_cf.ReadMatrix (gameData.multiplayer.playerInit [i].position.mOrient);  
 gameData.multiplayer.playerInit [i].nSegment = m_cf.ReadShort ();
@@ -1693,9 +1692,9 @@ if (IsMultiGame) {
 	strcpy (szServerCallSign, netPlayers.players [0].callsign);
 	gameData.app.nStateGameId = m_cf.ReadInt ();
 	CSaveGameHandler::LoadNetGame ();
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 	CSaveGameHandler::LoadNetPlayers ();
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 	nPlayers = m_cf.ReadInt ();
 	nSavedLocalPlayer = gameData.multiplayer.nLocalPlayer;
 	gameData.multiplayer.nLocalPlayer = m_cf.ReadInt ();
@@ -1703,7 +1702,7 @@ if (IsMultiGame) {
 		CSaveGameHandler::LoadPlayer (restoredPlayers + i);
 		restoredPlayers [i].connected = 0;
 		}
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 	// make sure the current game host is in CPlayerData slot #0
 	nServerPlayer = SetServerPlayer (restoredPlayers, nPlayers, szServerCallSign, &nOtherObjNum, &nServerObjNum);
 	GetConnectedPlayers (restoredPlayers, nPlayers);
@@ -1719,10 +1718,10 @@ if (!m_bSecret) {
 	}
 nLocalObjNum = LOCALPLAYER.nObject;
 if (m_bSecret != 1)	//either no secret restore, or CPlayerData died in scret level
-	CSaveGameHandler::LoadPlayer (gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer);
+	LoadPlayer (gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer);
 else {
 	CPlayerData	retPlayer;
-	CSaveGameHandler::LoadPlayer (&retPlayer);
+	LoadPlayer (&retPlayer);
 	AwardReturningPlayer (&retPlayer, xOldGameTime);
 	}
 LOCALPLAYER.nObject = nLocalObjNum;
@@ -1765,7 +1764,7 @@ if (!m_bBetweenLevels) {
 	ResetObjects (1);
 
 	//Read objects, and pop 'em into their respective segments.
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 	h = m_cf.ReadInt ();
 	gameData.objs.nLastObject [0] = h - 1;
 	extraGameInfo [0].nBossCount = 0;
@@ -1774,7 +1773,7 @@ if (!m_bBetweenLevels) {
 		if ((m_nVersion < 32) && IS_BOSS (OBJECTS + i))
 			gameData.boss [(int) extraGameInfo [0].nBossCount++].nObject = i;
 		}
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 	FixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);
 	gameData.objs.nNextSignature = 0;
 	InitCamBots (1);
@@ -1794,13 +1793,13 @@ if (!m_bBetweenLevels) {
 		if (wallP->nType == WALL_OPEN)
 			audio.DestroySegmentSound ((short) wallP->nSegment, (short) wallP->nSide, -1);	//-1 means kill any sound
 		}
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 	//Restore exploding wall info
 	if (ReadBoundedInt (MAX_EXPLODING_WALLS, &h))
 		return 0;
 	for (i = 0; i < h; i++)
 		gameData.walls.exploding [i].LoadState (m_cf);
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 	//Restore door info
 	if (ReadBoundedInt (MAX_DOORS, &i))
 		return 0;
@@ -1808,20 +1807,20 @@ if (!m_bBetweenLevels) {
 		gameData.walls.activeDoors.Grow ();
 		gameData.walls.activeDoors.Top ()->LoadState (m_cf);
 		}
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 	if (ReadBoundedInt (MAX_CLOAKING_WALLS, &i))
 		return 0;
 	for (; i; i--) {
 		gameData.walls.cloaking.Grow ();
 		gameData.walls.cloaking.Top ()->LoadState (m_cf);
 		}
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 	//Restore CTrigger info
 	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nTriggers))
 		return 0;
 	for (i = 0; i < gameData.trigs.nTriggers; i++)
 		TRIGGERS [i].LoadState (m_cf);
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 	//Restore CObject CTrigger info
 	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nObjTriggers))
 		return 0;
@@ -1847,11 +1846,11 @@ if (!m_bBetweenLevels) {
 		m_cf.Seek (((m_nVersion < 35) ? 700 : MAX_OBJECTS_D2X) * sizeof (short), SEEK_CUR);
 	else
 		m_cf.ReadShort ();
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 	//Restore tmap info
 	for (i = 0; i <= gameData.segs.nLastSegment; i++)
 		SEGMENTS [i].LoadState (m_cf);
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 	//Restore the fuelcen info
 	for (i = 0, wallP = WALLS.Buffer (); i < gameData.walls.nWalls; i++, wallP++) {
 		if ((wallP->nType == WALL_DOOR) && (wallP->flags & WALL_DOOR_OPENED))
@@ -1861,27 +1860,27 @@ if (!m_bBetweenLevels) {
 		}
 	gameData.reactor.bDestroyed = m_cf.ReadInt ();
 	gameData.reactor.countdown.nTimer = m_cf.ReadFix ();
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 	if (ReadBoundedInt (MAX_ROBOT_CENTERS, &gameData.matCens.nBotCenters))
 		return 0;
 	for (i = 0; i < gameData.matCens.nBotCenters; i++)
-		CSaveGameHandler::LoadMatCen (gameData.matCens.botGens + i);
+		LoadMatCen (gameData.matCens.botGens + i);
 	if (m_nVersion >= 30) {
 		if (ReadBoundedInt (MAX_EQUIP_CENTERS, &gameData.matCens.nEquipCenters))
 			return 0;
 		for (i = 0; i < gameData.matCens.nEquipCenters; i++)
-			CSaveGameHandler::LoadMatCen (gameData.matCens.equipGens + i);
+			LoadMatCen (gameData.matCens.equipGens + i);
 		}
 	else {
 		gameData.matCens.nBotCenters = 0;
 		memset (gameData.matCens.botGens, 0, sizeof (gameData.matCens.botGens));
 		}
-	CSaveGameHandler::LoadReactorTrigger (&gameData.reactor.triggers);
+	LoadReactorTrigger (&gameData.reactor.triggers);
 	if (ReadBoundedInt (MAX_FUEL_CENTERS, &gameData.matCens.nFuelCenters))
 		return 0;
 	for (i = 0; i < gameData.matCens.nFuelCenters; i++)
-		CSaveGameHandler::LoadFuelCen (gameData.matCens.fuelCenters + i);
-	DBG (fPos = m_cf.Tell ());
+		LoadFuelCen (gameData.matCens.fuelCenters + i);
+	IFDBG (fPos = m_cf.Tell ());
 	// Restore the control cen info
 	if (m_nVersion < 31) {
 		gameData.reactor.states [0].bHit = m_cf.ReadInt ();
@@ -1897,11 +1896,11 @@ if (!m_bBetweenLevels) {
 		for (i = 0; i < MAX_BOSS_COUNT; i++)
 			LoadReactorState (gameData.reactor.states + i);
 		}
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 	// Restore the AI state
 	LoadAIUniFormat ();
 	// Restore the automap visited info
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 	FixObjects ();
 	SpecialResetObjects ();
 	if (m_nVersion > 39) {
@@ -1917,7 +1916,7 @@ if (!m_bBetweenLevels) {
 		for (i = 0; i < j; i++)
 			automap.m_visited [0][i] = (ushort) m_cf.ReadByte ();
 		}
-	DBG (fPos = m_cf.Tell ());
+	IFDBG (fPos = m_cf.Tell ());
 	//	Restore hacked up weapon system stuff.
 	gameData.fusion.xNextSoundTime = gameData.time.xGame;
 	gameData.fusion.xAutoFireTime = 0;
@@ -1934,7 +1933,7 @@ gameStates.app.bLunacy = m_cf.ReadInt ();
 if (gameStates.app.bLunacy)
 	DoLunacyOn ();
 
-DBG (fPos = m_cf.Tell ());
+IFDBG (fPos = m_cf.Tell ());
 for (i = 0; i < NUM_MARKERS; i++)
 	gameData.marker.objects [i] = m_cf.ReadShort ();
 m_cf.Read (gameData.marker.nOwner, sizeof (gameData.marker.nOwner), 1);

@@ -323,7 +323,7 @@ h = (m_nVersion > 39) ? LEVEL_OBJECTS : (m_nVersion > 22) ? MAX_OBJECTS : MAX_OB
 DBG (i = CFTell (fp));
 for (i = 0; i < h; i++)
 	LoadAILocalInfo (gameData.ai.localInfo + i);
-nMaxPointSegs = (m_nVersion > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2;
+nMaxPointSegs = (m_nVersion > 39) ? LEVEL_POINT_SEGS : (m_nVersion > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2;
 gameData.ai.routeSegs.Clear ();
 DBG (i = CFTell (fp));
 for (i = 0; i < nMaxPointSegs; i++)

@@ -3186,11 +3186,6 @@ void CObject::LoadState (CFile& cf)
 {
 info.nSignature = cf.ReadInt ();      
 info.nType = (ubyte) cf.ReadByte (); 
-#if DBG
-if (info.nType == OBJ_REACTOR)
-	info.nType = info.nType;
-else 
-#endif
 info.nId = (ubyte) cf.ReadByte ();
 info.nNextInSeg = cf.ReadShort ();
 info.nPrevInSeg = cf.ReadShort ();
