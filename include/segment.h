@@ -389,32 +389,29 @@ extern char sideOpposite [];                                // sideOpposite [my_
 
 // New stuff, 10/14/95: For shooting out lights and monitors.
 // Light cast upon vertLight vertices in nSegment:nSide by some light
-typedef struct {
-	short   nSegment;
-	sbyte   nSide;
-	sbyte   bValid;
-	ubyte   vertLight [4];
-} tLightDelta;
+class CLightDelta {
+	public:
+		short   nSegment;
+		sbyte   nSide;
+		sbyte   bValid;
+		ubyte   vertLight [4];
+	};
 
-// Light at nSegment:nSide casts light on count sides beginning at index (in array gameData.render.lightDeltas)
-typedef struct {
-	short   nSegment;
-	ubyte   nSide;
-	ubyte   count;
-	ushort   index;
-} tDlIndexD2;
+class CLightDeltaIndex {
+	public:
+		short		nSegment;
+		ushort	nSide :3;
+		ushort	count :13;
+		ushort	index;
 
-typedef struct {
-	short   nSegment;
-	ushort nSide :3;
-	ushort count :13;
-	ushort index;
-} tDlIndexD2X;
-
-typedef union {
-	tDlIndexD2X		d2x;
-	tDlIndexD2		d2;
-} tLightDeltaIndex;
+	public:
+		inline bool operator< (CLightDeltaIndex& other) {
+			return (nSegment < other.nSegment) || ((nSegment == other.nSegment) && (nSide < other.nSide));
+			}
+		inline bool operator> (CLightDeltaIndex& other) {
+			return (nSegment > other.nSegment) || ((nSegment == other.nSegment) && (nSide > other.nSide));
+			}
+	};
 
 #define MAX_DL_INDICES_D2    500
 #define MAX_DELTA_LIGHTS_D2  10000
@@ -464,8 +461,8 @@ void AddSegmentToGroup (int nSegment, int nGroup);
 // Verify that all vertices are legal.
 void med_check_all_vertices();
 
-void ReadlightDelta(tLightDelta *dl, CFile& cf);
-void ReadlightDeltaIndex (tLightDeltaIndex *di, CFile& cf);
+void ReadLightDelta(CLightDelta *dl, CFile& cf);
+void ReadLightDeltaIndex (CLightDeltaIndex *di, CFile& cf);
 
 void FreeSkyBoxSegList (void);
 int BuildSkyBoxSegList (void);

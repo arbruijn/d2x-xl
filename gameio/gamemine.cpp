@@ -473,11 +473,11 @@ int load_mine_data (CFile& cf)
 //	if (mine_top_fileinfo.fileinfoVersion >= 19) {
 		mine_fileinfo.gameData.render.lights.deltaIndices.offset		=	-1;
 		mine_fileinfo.gameData.render.lights.deltaIndices.count		=	0;
-		mine_fileinfo.gameData.render.lights.deltaIndices.size		=	sizeof (tLightDeltaIndex);
+		mine_fileinfo.gameData.render.lights.deltaIndices.size		=	sizeof (CLightDeltaIndex);
 
 		mine_fileinfo.deltaLight.offset		=	-1;
 		mine_fileinfo.deltaLight.count		=	0;
-		mine_fileinfo.deltaLight.size		=	sizeof (tLightDelta);
+		mine_fileinfo.deltaLight.size		=	sizeof (CLightDelta);
 
 //	}
 

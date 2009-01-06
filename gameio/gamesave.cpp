@@ -690,94 +690,6 @@ extern int RemoveTriggerNum (int trigger_num);
 
 // -----------------------------------------------------------------------------
 
-#define	DLIndex(_i)	(gameData.render.lights.deltaIndices + (_i))
-
-void SortDLIndexD2X (int left, int right)
-{
-	int	l = left,
-			r = right,
-			m = (left + right) / 2;
-	short	mSeg = DLIndex (m)->d2x.nSegment, 
-			mSide = DLIndex (m)->d2x.nSide;
-	tLightDeltaIndex	*pl, *pr;
-
-do {
-	pl = DLIndex (l);
-	while ((pl->d2x.nSegment < mSeg) || ((pl->d2x.nSegment == mSeg) && (pl->d2x.nSide < mSide))) {
-		pl++;
-		l++;
-		}
-	pr = DLIndex (r);
-	while ((pr->d2x.nSegment > mSeg) || ((pr->d2x.nSegment == mSeg) && (pr->d2x.nSide > mSide))) {
-		pr--;
-		r--;
-		}
-	if (l <= r) {
-		if (l < r) {
-			tLightDeltaIndex	h = *pl;
-			*pl = *pr;
-			*pr = h;
-			}
-		l++;
-		r--;
-		}
-	} while (l <= r);
-if (right > l)
-   SortDLIndexD2X (l, right);
-if (r > left)
-   SortDLIndexD2X (left, r);
-}
-
-// -----------------------------------------------------------------------------
-
-void SortDLIndexD2 (int left, int right)
-{
-	int	l = left,
-			r = right,
-			m = (left + right) / 2;
-	short	mSeg = DLIndex (m)->d2.nSegment, 
-			mSide = DLIndex (m)->d2.nSide;
-	tLightDeltaIndex	*pl, *pr;
-
-do {
-	pl = DLIndex (l);
-	while ((pl->d2.nSegment < mSeg) || ((pl->d2.nSegment == mSeg) && (pl->d2.nSide < mSide))) {
-		pl++;
-		l++;
-		}
-	pr = DLIndex (r);
-	while ((pr->d2.nSegment > mSeg) || ((pr->d2.nSegment == mSeg) && (pr->d2.nSide > mSide))) {
-		pr--;
-		r--;
-		}
-	if (l <= r) {
-		if (l < r) {
-			tLightDeltaIndex	h = *pl;
-			*pl = *pr;
-			*pr = h;
-			}
-		l++;
-		r--;
-		}
-	} while (l <= r);
-if (right > l)
-   SortDLIndexD2 (l, right);
-if (r > left)
-   SortDLIndexD2 (left, r);
-}
-
-// -----------------------------------------------------------------------------
-
-void SortDLIndex (void)
-{
-if (gameStates.render.bD2XLights)
-	SortDLIndexD2X (0, gameFileInfo.lightDeltaIndices.count - 1);
-else
-	SortDLIndexD2 (0, gameFileInfo.lightDeltaIndices.count - 1);
-}
-
-// -----------------------------------------------------------------------------
-
 static void InitGameFileInfo (void)
 {
 gameFileInfo.level				=	-1;
@@ -806,10 +718,10 @@ gameFileInfo.equipGen.count	=	0;
 gameFileInfo.equipGen.size		=	sizeof(tMatCenInfo);
 gameFileInfo.lightDeltaIndices.offset = -1;
 gameFileInfo.lightDeltaIndices.count =	0;
-gameFileInfo.lightDeltaIndices.size =	sizeof(tLightDeltaIndex);
+gameFileInfo.lightDeltaIndices.size =	sizeof(CLightDeltaIndex);
 gameFileInfo.lightDeltas.offset	=	-1;
 gameFileInfo.lightDeltas.count	=	0;
-gameFileInfo.lightDeltas.size		=	sizeof(tLightDelta);
+gameFileInfo.lightDeltas.size		=	sizeof(CLightDelta);
 }
 
 // -----------------------------------------------------------------------------
@@ -1229,7 +1141,7 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
-static int ReadlightDeltaIndexInfo (CFile& cf)
+static int ReadLightDeltaIndexInfo (CFile& cf)
 {
 if (gameFileInfo.lightDeltaIndices.offset > -1) {
 	int	i;
@@ -1253,17 +1165,18 @@ if (gameFileInfo.lightDeltaIndices.offset > -1) {
 	else {
 		for (i = 0; i < gameFileInfo.lightDeltaIndices.count; i++) {
 			//PrintLog ("reading DL index %d\n", i);
-			ReadlightDeltaIndex (gameData.render.lights.deltaIndices + i, cf);
+			ReadLightDeltaIndex (gameData.render.lights.deltaIndices + i, cf);
 			}
 		}
+	gameFileInfo.lightDeltaIndices.SortAscending ();
+	SortDLIndex ();
 	}
-SortDLIndex ();
 return 0;
 }
 
 // -----------------------------------------------------------------------------
 
-static int ReadlightDeltaInfo (CFile& cf)
+static int ReadLightDeltaInfo (CFile& cf)
 {
 if (gameFileInfo.lightDeltas.offset > -1) {
 	int	i;
@@ -1281,7 +1194,7 @@ if (gameFileInfo.lightDeltas.offset > -1) {
 		}
 	for (i = 0; i < gameFileInfo.lightDeltas.count; i++) {
 		if (gameTopFileInfo.fileinfoVersion >= 29) 
-			ReadlightDelta (gameData.render.lights.deltas + i, cf);
+			ReadLightDelta (gameData.render.lights.deltas + i, cf);
 		else {
 #if TRACE
 			console.printf (CON_DBG, "Warning: Old mine version.  Not reading delta light info.\n");
@@ -1450,9 +1363,9 @@ if (ReadBotGenInfo (cf))
 	return -1;
 if (ReadEquipGenInfo (cf))
 	return -1;
-if (ReadlightDeltaIndexInfo (cf))
+if (ReadLightDeltaIndexInfo (cf))
 	return -1;
-if (ReadlightDeltaInfo (cf))
+if (ReadLightDeltaInfo (cf))
 	return -1;
 ClearLightSubtracted ();
 ResetObjects (gameFileInfo.objects.count);
@@ -1794,11 +1707,11 @@ int SaveGameData(FILE * SaveFile)
 
  	gameFileInfo.lightDeltaIndices.offset		=	-1;
 	gameFileInfo.lightDeltaIndices.count		=	gameData.render.lights.nStatic;
-	gameFileInfo.lightDeltaIndices.size		=	sizeof(tLightDeltaIndex);
+	gameFileInfo.lightDeltaIndices.size		=	sizeof(CLightDeltaIndex);
 
  	gameFileInfo.lightDeltas.offset		=	-1;
 	gameFileInfo.lightDeltas.count	=	CountDeltaLightRecords();
-	gameFileInfo.lightDeltas.size		=	sizeof(tLightDelta);
+	gameFileInfo.lightDeltas.size		=	sizeof(CLightDelta);
 
 	// Write the fileinfo
 	fwrite(&gameFileInfo, sizeof(gameFileInfo), 1, SaveFile);
@@ -1852,10 +1765,10 @@ int SaveGameData(FILE * SaveFile)
 
 	//================ SAVE DELTA LIGHT INFO ===============
 	gameData.render.lights.deltaIndices.offset = ftell(SaveFile);
-	fwrite(gameData.render.lights.deltaIndices, sizeof(tLightDeltaIndex), gameFileInfo.lightDeltaIndices.count, SaveFile);
+	fwrite(gameData.render.lights.deltaIndices, sizeof(CLightDeltaIndex), gameFileInfo.lightDeltaIndices.count, SaveFile);
 
 	deltaLight.offset = ftell(SaveFile);
-	fwrite(gameData.render.lights.deltas, sizeof(tLightDelta), gameFileInfo.lightDeltas.count, SaveFile);
+	fwrite(gameData.render.lights.deltas, sizeof(CLightDelta), gameFileInfo.lightDeltas.count, SaveFile);
 
 	//============= REWRITE FILE INFO, TO SAVE OFFSETS ===============
 

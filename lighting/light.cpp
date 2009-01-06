@@ -1105,21 +1105,22 @@ oldViewer = NULL;
 
 //	------------------------------------------------------------------------------------------
 
-int FindDLIndexD2X (short nSegment, short nSide)
+int FindDLIndex (short nSegment, short nSide)
 {
 int	m,
 		l = 0,
 		r = gameData.render.lights.nStatic;
-tLightDeltaIndex	*p;
+
+CLightDeltaIndex	*p;
 do {
 	m = (l + r) / 2;
 	p = gameData.render.lights.deltaIndices + m;
-	if ((nSegment < p->d2x.nSegment) || ((nSegment == p->d2x.nSegment) && (nSide < p->d2x.nSide)))
+	if ((nSegment < p->nSegment) || ((nSegment == p->nSegment) && (nSide < p->nSide)))
 		r = m - 1;
-	else if ((nSegment > p->d2x.nSegment) || ((nSegment == p->d2x.nSegment) && (nSide > p->d2x.nSide)))
+	else if ((nSegment > p->nSegment) || ((nSegment == p->nSegment) && (nSide > p->nSide)))
 		l = m + 1;
 	else {
-		while ((p->d2x.nSegment == nSegment) && (p->d2x.nSide == nSide))
+		while ((p->nSegment == nSegment) && (p->nSide == nSide))
 			p--;
 		return (int) ((p + 1) - gameData.render.lights.deltaIndices);
 		}
@@ -1135,7 +1136,7 @@ int	m,
 		l = 0,
 		r = gameData.render.lights.nStatic;
 
-tLightDeltaIndex	*p;
+CLightDeltaIndex	*p;
 do {
 	m = (l + r) / 2;
 	p = gameData.render.lights.deltaIndices + m;
@@ -1171,8 +1172,8 @@ void ChangeLight (short nSegment, short nSide, int dir)
 	int					i, j, k;
 	fix					dl, lNew, *pSegLightDelta;
 	tUVL					*uvlP;
-	tLightDeltaIndex	*dliP;
-	tLightDelta			*dlP;
+	CLightDeltaIndex	*dliP;
+	CLightDelta			*dlP;
 	short					iSeg, iSide;
 
 if ((dir < 0) && RemoveDynLight (nSegment, nSide, -1))
@@ -1294,9 +1295,9 @@ for (i = 0, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, seg
 }
 
 //------------------------------------------------------------------------------
-// reads a tLightDelta structure from a CFile
+// reads a CLightDelta structure from a CFile
 
-void ReadlightDelta (tLightDelta *dlP, CFile& cf)
+void ReadLightDelta (CLightDelta *dlP, CFile& cf)
 {
 dlP->nSegment = cf.ReadShort ();
 dlP->nSide = cf.ReadByte ();
@@ -1308,24 +1309,24 @@ cf.Read (dlP->vertLight, sizeof (dlP->vertLight [0]), sizeofa (dlP->vertLight));
 
 
 //------------------------------------------------------------------------------
-// reads a tLightDeltaIndex structure from a CFile
+// reads a CLightDeltaIndex structure from a CFile
 
-void ReadlightDeltaIndex (tLightDeltaIndex *di, CFile& cf)
+void ReadLightDeltaIndex (CLightDeltaIndex& di, CFile& cf)
 {
 if (gameStates.render.bD2XLights) {
 	short	i, j;
-	di->d2x.nSegment = cf.ReadShort ();
-	i = (short) cf.ReadByte ();
+	di.nSegment = cf.ReadShort ();
+	i = (short) cf.ReadByte ();	// these two bytes contain the side in the lower 3 and the count in the upper 13 bits
 	j = (short) cf.ReadByte ();
-	di->d2x.nSide = i;
-	di->d2x.count = (j << 5) + ((i >> 3) & 63);
-	di->d2x.index = cf.ReadShort ();
+	di.nSide = i & 7;
+	di.count = (j << 5) + ((i >> 3) & 63);
+	di.index = cf.ReadShort ();
 	}
 else {
-	di->d2.nSegment = cf.ReadShort ();
-	di->d2.nSide = cf.ReadByte ();
-	di->d2.count = cf.ReadByte ();
-	di->d2.index = cf.ReadShort ();
+	di.nSegment = cf.ReadShort ();
+	di.nSide = cf.ReadByte ();
+	di.count = cf.ReadByte ();
+	di.index = cf.ReadShort ();
 	}
 }
 

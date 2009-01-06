@@ -1474,8 +1474,8 @@ class CLightData {
 		int								nStatic;
 		int								nCoronas;
 		CArray<fix>						segDeltas;
-		CArray<tLightDeltaIndex>	deltaIndices;
-		CArray<tLightDelta>			deltas;
+		CArray<CLightDeltaIndex>	deltaIndices;
+		CArray<CLightDelta>			deltas;
 		CArray<ubyte>					subtracted;
 		CDynLightData					dynamic;
 		CFlickerLightData				flicker;
@@ -1499,8 +1499,8 @@ class CLightData {
 		void Destroy (void);
 };
 
-inline int operator- (tLightDeltaIndex* o, CArray<tLightDeltaIndex>& a) { return a.Index (o); }
-inline int operator- (tLightDelta* o, CArray<tLightDelta>& a) { return a.Index (o); }
+inline int operator- (CLightDeltaIndex* o, CArray<CLightDeltaIndex>& a) { return a.Index (o); }
+inline int operator- (CLightDelta* o, CArray<CLightDelta>& a) { return a.Index (o); }
 
 //------------------------------------------------------------------------------
 
