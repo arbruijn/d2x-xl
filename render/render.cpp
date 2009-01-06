@@ -406,7 +406,7 @@ if (!(bHaveMonitorBg && gameOpts->render.cameras.bFitToWall)) {
 			}
 		else {
 			bmBot = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [props.nBaseTex].index;
-			PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [props.nBaseTex].index, gameStates.app.bD1Mission);
+			LoadBitmap (gameData.pig.tex.bmIndexP [props.nBaseTex].index, gameStates.app.bD1Mission);
 			}
 		}
 	}

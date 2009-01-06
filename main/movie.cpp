@@ -124,7 +124,7 @@ readCount = (int) cf.Read (m_rawDataP, 1, size);
 cf.Close ();
 m_rawDataP [size] = 0;
 if (readCount != size) {
-	delete [] m_rawDataP;
+	delete[] m_rawDataP;
 	return 0;
 	}
 p = m_rawDataP;
@@ -232,7 +232,7 @@ return reinterpret_cast<void*> (new ubyte [size]);
 
 void CMovie::Free (void* p)
 {
-delete [] reinterpret_cast<ubyte*> (p);
+delete[] reinterpret_cast<ubyte*> (p);
 }
 
 

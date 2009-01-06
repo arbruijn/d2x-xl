@@ -28,7 +28,7 @@ for (i = 0; (c != splitchar) && !cf.EoF (); i++) {
 		char* newBuf = new char [mem + 256];
 		memcpy (newBuf, buf, mem);
 		mem += 256;
-		delete [] buf;
+		delete[] buf;
 		buf = newBuf;
 		}
 	buf [i] = c;

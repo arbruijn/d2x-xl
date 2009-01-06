@@ -350,7 +350,7 @@ if (bmi < 0) {
 #endif
 	}
 else {
-	PIGGY_PAGE_IN (bmi, 0);
+	LoadBitmap (bmi, 0);
 	bmP = gameData.pig.tex.bitmaps [0] + bmi;
 	}
 if ((bmi < 0) || ((bmP->Type () == BM_TYPE_STD) && bmP->Override ())) {
@@ -426,7 +426,7 @@ void DrawObjectRodTexPoly (CObject *objP, tBitmapIndex bmi, int bLit, int iFrame
 	CFixVector delta, top_v, bot_v;
 	g3sPoint top_p, bot_p;
 
-PIGGY_PAGE_IN (bmi.index, 0);
+LoadBitmap (bmi.index, 0);
 if ((bmP->Type () == BM_TYPE_STD) && bmP->Override ()) {
 	bmP->SetupTexture (1, -1, gameOpts->render.bDepthSort <= 0);
 	bmP = bmP->Override (iFrame);

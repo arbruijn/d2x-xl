@@ -75,7 +75,7 @@ using namespace Mesh;
 
 #define	MAX_EDGE_LEN	fMaxEdgeLen [gameOpts->render.nMeshQuality]
 
-#define MESH_DATA_VERSION 4
+#define MESH_DATA_VERSION 5
 
 //------------------------------------------------------------------------------
 
@@ -752,30 +752,42 @@ if (bOk)
 	bOk = cf.Read (ioBuffer, nSize, 1) == 1;
 if (bOk) {
 	bufP = ioBuffer;
+	FACES.Destroy ();
+	gameData.segs.vertices.Create (mdh.nVertices);
 	memcpy (gameData.segs.vertices.Buffer (), bufP, sizeof (gameData.segs.vertices [0]) * mdh.nVertices);
 	bufP += sizeof (gameData.segs.vertices [0]) * mdh.nVertices;
+	gameData.segs.fVertices.Create (mdh.nVertices);
 	memcpy (gameData.segs.fVertices.Buffer (), bufP, sizeof (gameData.segs.fVertices [0]) * mdh.nVertices);
 	bufP += sizeof (gameData.segs.fVertices [0]) * mdh.nVertices;
+	FACES.faces.Create (mdh.nFaces);
 	memcpy (FACES.faces.Buffer (), bufP, sizeof (FACES.faces [0]) * mdh.nFaces);
 	bufP += sizeof (FACES.faces [0]) * mdh.nFaces;
+	FACES.tris.Create (mdh.nTris);
 	memcpy (FACES.tris.Buffer (), bufP, sizeof (FACES.tris [0]) * mdh.nTris);
 	bufP += sizeof (FACES.tris [0]) * mdh.nTris;
+	FACES.vertices.Create (mdh.nTris * 3);
 	memcpy (FACES.vertices.Buffer (), bufP, sizeof (FACES.vertices [0]) * mdh.nTris * 3);
 	bufP +=  sizeof (FACES.vertices [0]) * mdh.nTris * 3;
+	FACES.normals.Create (mdh.nTris * 3);
 	memcpy (FACES.normals.Buffer (), bufP, sizeof (FACES.normals [0]) * mdh.nTris * 3);
 	bufP += sizeof (FACES.normals [0]) * mdh.nTris * 3;
+	FACES.texCoord.Create (mdh.nTris * 3);
 	memcpy (FACES.texCoord.Buffer (), bufP, sizeof (FACES.texCoord [0]) * mdh.nTris * 3);
 	bufP += sizeof (FACES.texCoord [0]) * mdh.nTris * 3;
+	FACES.ovlTexCoord.Create (mdh.nTris * 3);
 	memcpy (FACES.ovlTexCoord.Buffer (), bufP, sizeof (FACES.ovlTexCoord [0]) * mdh.nTris * 3);
 	bufP += sizeof (FACES.ovlTexCoord [0]) * mdh.nTris * 3;
+	FACES.color.Create (mdh.nTris * 3);
 	memcpy (FACES.color.Buffer (), bufP, sizeof (FACES.color [0]) * mdh.nTris * 3);
 	bufP += sizeof (FACES.color [0]) * mdh.nTris * 3;
-	memcpy (FACES.lMapTexCoord.Buffer (), bufP, sizeof (FACES.lMapTexCoord [0]) * mdh.nFaces * 2);
+	FACES.lMapTexCoord.Create (mdh.nTris * 3);
+	memcpy (FACES.lMapTexCoord.Buffer (), bufP, sizeof (FACES.lMapTexCoord [0]) * mdh.nTris * 3);
 	bufP += sizeof (FACES.lMapTexCoord [0]) * mdh.nFaces * 2;
+	FACES.faceVerts.Create (mdh.nFaceVerts);
 	memcpy (FACES.faceVerts.Buffer (), bufP, sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts);
 	}
 if (ioBuffer) {
-	delete [] ioBuffer;
+	delete[] ioBuffer;
 	ioBuffer = NULL;
 	}
 if (bOk) {
@@ -817,7 +829,7 @@ bOk = (cf.Write (&mdh, sizeof (mdh), 1) == 1) &&
 		(cf.Write (FACES.texCoord.Buffer (), sizeof (FACES.texCoord [0]) * mdh.nTris, 3) == 3) &&
 		(cf.Write (FACES.ovlTexCoord.Buffer (), sizeof (FACES.ovlTexCoord [0]) * mdh.nTris, 3) == 3) &&
 		(cf.Write (FACES.color.Buffer (), sizeof (FACES.color [0]) * mdh.nTris, 3) == 3) &&
-		(cf.Write (FACES.lMapTexCoord.Buffer (), sizeof (FACES.lMapTexCoord [0]) * mdh.nFaces, 2) == 2) &&
+		(cf.Write (FACES.lMapTexCoord.Buffer (), sizeof (FACES.lMapTexCoord [0]) * mdh.nTris, 3) == 3) &&
 		(cf.Write (FACES.faceVerts.Buffer (), sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts, 1) == 1);
 cf.Close ();
 return bOk;
@@ -942,6 +954,10 @@ void CQuadMeshBuilder::SetupLMapTexCoord (tTexCoord2f *texCoordP)
 	 {{LMAP_SIZE, 1.0f - LMAP_SIZE}}
 	};
 #endif
+#if DBG
+if (texCoordP >= FACES.lMapTexCoord.Buffer () + FACES.lMapTexCoord.Length ())
+	return;
+#endif
 int i = m_faceP->nLightmap % LIGHTMAP_BUFSIZE;
 float x = (float) (i % LIGHTMAP_ROWSIZE);
 float y = (float) (i / LIGHTMAP_ROWSIZE);
@@ -973,6 +989,12 @@ for (i = 0; i < 4; i++) {
 	m_texCoordP->v.u = X2F (m_sideP->m_uvls [i].u);
 	m_texCoordP->v.v = X2F (m_sideP->m_uvls [i].v);
 	RotateTexCoord2f (*m_ovlTexCoordP, *m_texCoordP, (ubyte) m_sideP->m_nOvlOrient);
+#if DBG
+	if (m_texCoordP > FACES.texCoord.Buffer () + FACES.texCoord.Length ())
+		return;
+	if (m_ovlTexCoordP > FACES.ovlTexCoord.Buffer () + FACES.ovlTexCoord.Length ())
+		return;
+#endif
 	m_texCoordP++;
 	m_ovlTexCoordP++;
 	if (!gameStates.app.bNostalgia)
@@ -1266,6 +1288,12 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 #if DBG
 	if (nSegment == nDbgSeg)
 		m_faceP = m_faceP;
+	if (m_faceP >= FACES.faces.Buffer () + FACES.faces.Length ())
+		return 0;
+	if (m_segFaceP >= SEGFACES.Buffer () + SEGFACES.Length ())
+		return 0;
+//	if (nSegment == nDbgSeg)
+//		FACES.Destroy ();
 #endif
 	m_faceP->nSegment = nSegment;
 	m_nOvlTexCount = 0;

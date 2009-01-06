@@ -109,7 +109,7 @@ if (cf.Read (psz + lPrefix, l, 1)) {
 	OOF_PrintLog ("      %s = '%s'\n", pszIdent, psz);
 	return psz;
 	}
-delete [] psz;
+delete[] psz;
 return NULL;
 }
 
@@ -441,9 +441,9 @@ memset (this, 0, sizeof (*this));
 
 void CSpecialPoint::Destroy (void)
 {
-delete [] m_pszName;
+delete[] m_pszName;
 m_pszName = NULL;
-delete [] m_pszProps;
+delete[] m_pszProps;
 m_pszProps = NULL;
 }
 
@@ -844,9 +844,9 @@ void CSubModel::Destroy (void)
 	int	i;
 #endif
 
-delete [] m_pszName;
+delete[] m_pszName;
 m_pszName = NULL;
-delete [] m_pszProps;
+delete[] m_pszProps;
 m_pszProps = NULL;
 m_verts.Destroy ();
 m_rotVerts.Destroy ();
@@ -1317,7 +1317,7 @@ if (!i)	//cube.oof only contains one texture
 	m_textures.m_names [i] = szId;
 #if OOF_TEST_CUBE
 if (!i) {
-	delete [] m_textures.m_names [i];
+	delete[] m_textures.m_names [i];
 	m_textures.m_names [i] = NULL;
 	}
 m_textures.m_names [i] = new char [20];

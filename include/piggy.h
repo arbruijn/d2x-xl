@@ -279,6 +279,9 @@ void FreeAddonSounds (void);
 
 #define BM_ADDON(_i)	(gameData.pig.tex.addonBitmaps + (_i))
 
+bool BitmapLoaded (int bmi, int bD1);
+void LoadBitmap (int bmi, int bD1);
+
 //------------------------------------------------------------------------------
 
 #endif //_PIGGY_H

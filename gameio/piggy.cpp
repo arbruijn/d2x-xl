@@ -313,7 +313,7 @@ if (bLowMemory)
 // for other parts of the program
 for (;;) {
 	if ((bitmapBits [0] = new ubyte (bitmapCacheSize))) {
-		delete [] bitmapBits [0];
+		delete[] bitmapBits [0];
 		break;
 		}
 	bitmapCacheSize = (bitmapCacheSize / 10) * PIGGY_MEM_QUOTA;
@@ -625,7 +625,7 @@ void _CDECL_ FreeD1TMapNums (void)
 {
 if (d1_tmap_nums) {
 	PrintLog ("unloading D1 texture ids\n");
-	delete [] d1_tmap_nums;
+	delete[] d1_tmap_nums;
 	d1_tmap_nums = NULL;
 	}
 }

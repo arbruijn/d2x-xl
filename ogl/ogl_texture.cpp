@@ -718,7 +718,7 @@ OGL_BINDTEX  (m_info.handle);
 glTexImage2D (GL_TEXTURE_2D, 0, 4, w, h, 0, gameStates.ogl.nRGBAFormat, GL_UNSIGNED_BYTE, data); 			// Build Texture Using Information In data
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
-delete [] data; 							
+delete[] data; 							
 return m_info.handle; 						
 }
 
@@ -889,7 +889,7 @@ CBitmap *LoadFaceBitmap (short nTexture, short nFrameIdx)
 	CBitmap	*bmP;
 	int		nFrames;
 
-PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [nTexture].index, gameStates.app.bD1Mission);
+LoadBitmap (gameData.pig.tex.bmIndexP [nTexture].index, gameStates.app.bD1Mission);
 bmP = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [nTexture].index;
 if (bmP->Override ()) {
 	bmP = bmP->Override ();

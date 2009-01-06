@@ -481,7 +481,7 @@ if (FindArg ("-hoarddata")) {
 		fread (buf, 1, size, cf);
 		fwrite (&size, sizeof (size), 1, ofile);
 		fwrite (buf, 1, size, ofile);
-		delete [] buf;
+		delete[] buf;
 		fclose (cf);
 		}
 	fclose (ofile);

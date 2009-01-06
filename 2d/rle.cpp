@@ -311,7 +311,7 @@ int CBitmap::RLECompress (void)
 	for (y=0; y<m_info.props.h; y++) {
 		d1 = gr_rle_getsize (m_info.props.w, &Buffer ()[m_info.props.w*y]);
 		if (( (doffset+d1) > m_info.props.w*m_info.props.h) || (d1 > (large_rle?32767:255))) {
-			delete [] rle_data;
+			delete[] rle_data;
 			return 0;
 		}
 		d = gr_rle_encode (m_info.props.w, &Buffer ()[m_info.props.w*y], &rle_data[doffset]);
@@ -324,7 +324,7 @@ int CBitmap::RLECompress (void)
 	}
 	memcpy (rle_data, &doffset, 4);
 	memcpy (Buffer (), rle_data, doffset);
-	delete [] rle_data;
+	delete[] rle_data;
 	m_info.props.flags |= BM_FLAG_RLE;
 	if (large_rle)
 		m_info.props.flags |= BM_FLAG_RLE_BIG;
@@ -650,7 +650,7 @@ for (i = 0; i < m_info.props.h; i++) {
 len = (int) (ptr2 - temp);
 *reinterpret_cast<int*> (temp) = len;           // set total size
 memcpy (Buffer (), temp, len);
-delete [] temp;
+delete[] temp;
 }
 
 //------------------------------------------------------------------------------
@@ -702,7 +702,7 @@ len = (int) (destP - remapBuf);
 Assert (len <= m_info.props.w * m_info.props.rowSize);
 *reinterpret_cast<int*> (remapBuf) = len;           // set total size
 memcpy (Buffer (), remapBuf, len);
-delete [] remapBuf;
+delete[] remapBuf;
 return len;
 }
 

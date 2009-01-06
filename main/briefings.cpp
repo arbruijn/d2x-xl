@@ -538,7 +538,7 @@ if (*szBitmapName) {
 	if (bmi.index < 0)
 		return;
 	bmP = gameData.pig.tex.bitmaps [gameStates.app.bD1Mission] + bmi.index;
-	PIGGY_PAGE_IN (bmi.index, gameStates.app.bD1Mission);
+	LoadBitmap (bmi.index, gameStates.app.bD1Mission);
 
 	GLint	depthFunc;
 	G3StartFrame (1, 0);
@@ -1673,7 +1673,7 @@ if (gameStates.app.bD1Mission) {
 else
 	ShowBriefingScreen (nLevel, 0, (short) nLevel);
 gameStates.render.bBriefing = 0;
-delete [] szBriefingText;
+delete[] szBriefingText;
 szBriefingText = NULL;
 KeyFlush ();
 return;

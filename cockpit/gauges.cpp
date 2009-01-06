@@ -1793,11 +1793,11 @@ void DrawWeaponInfoSub (int info_index, tGaugeBox *box, int pic_x, int pic_y, co
 #endif
 	if ((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) {
 		bmP = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [info_index].hires_picture.index;
-		PIGGY_PAGE_IN (gameData.weapons.info [info_index].hires_picture.index, 0);
+		LoadBitmap (gameData.weapons.info [info_index].hires_picture.index, 0);
 		}
 	else {
 		bmP = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [info_index].picture.index;
-		PIGGY_PAGE_IN (gameData.weapons.info [info_index].picture.index, 0);
+		LoadBitmap (gameData.weapons.info [info_index].picture.index, 0);
 		}
 	Assert (bmP != NULL);
 
@@ -2009,7 +2009,7 @@ void DrawStatic (int win)
 		return;
 		}
 	framenum = staticTime [win] * vc->nFrameCount / vc->xTotalTime;
-	PIGGY_PAGE_IN (vc->frames [framenum].index, 0);
+	LoadBitmap (vc->frames [framenum].index, 0);
 	bmp = gameData.pig.tex.bitmaps [0] + vc->frames [framenum].index;
 	CCanvas::SetCurrent (&gameStates.render.vr.buffers.render [0]);
 	for (x=gaugeBoxes [boxofs+win].left;x<gaugeBoxes [boxofs+win].right;x+=bmp->Width ())

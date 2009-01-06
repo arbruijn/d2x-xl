@@ -608,7 +608,7 @@ else {
 		ns[s2-s]='\0';
 		if (!queryhost(ns)) 
 			msg ("Ignored broadcast-destination \"%s\" as being invalid", ns);
-		delete [] ns;
+		delete[] ns;
 		sin = &destList [destAddrNum].addr;
 		sin->sin_family = AF_INET;
 		memcpy(&sin->sin_addr, qhbuf, 4);

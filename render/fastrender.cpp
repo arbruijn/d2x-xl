@@ -188,7 +188,7 @@ else {
 		}
 	else {
 		faceP->bmBot = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [faceP->nBaseTex].index;
-		PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [faceP->nBaseTex].index, gameStates.app.bD1Mission);
+		LoadBitmap (gameData.pig.tex.bmIndexP [faceP->nBaseTex].index, gameStates.app.bD1Mission);
 		}
 	}
 }

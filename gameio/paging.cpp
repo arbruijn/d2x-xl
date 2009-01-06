@@ -63,7 +63,7 @@ void LoadVClipTextures (tVideoClip * vc, int bD1)
 	int i;
 
 for (i = 0; i < vc->nFrameCount; i++)
-	PIGGY_PAGE_IN (vc->frames [i].index, bD1);
+	LoadBitmap (vc->frames [i].index, bD1);
 }
 
 //------------------------------------------------------------------------------
@@ -77,7 +77,7 @@ for (i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++) {
 	if (ecP->changingWallTexture == nTexture) {
 		LoadVClipTextures (&ecP->vc, gameStates.app.bD1Data);
 		if (ecP->nDestBm > -1)
-			PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [ecP->nDestBm].index, gameStates.app.bD1Data);	//use this bitmap when monitor destroyed
+			LoadBitmap (gameData.pig.tex.bmIndexP [ecP->nDestBm].index, gameStates.app.bD1Data);	//use this bitmap when monitor destroyed
 		if (ecP->dest_vclip > -1)
 			LoadVClipTextures (&gameData.eff.vClipP [ecP->dest_vclip], gameStates.app.bD1Data);		  //what tVideoClip to play when exploding
 		if (ecP->dest_eclip > -1)
@@ -110,7 +110,7 @@ void PagingTouchModel (int nModel)
 
 for (i = pm->nTextures, pi = gameData.pig.tex.objBmIndexP + pm->nFirstTexture; i; i--, pi++) {
 	j = *pi;
-	PIGGY_PAGE_IN (gameData.pig.tex.objBmIndex [j].index, 0);
+	LoadBitmap (gameData.pig.tex.objBmIndex [j].index, 0);
 	PagingTouchObjectEffects (j);
 	}
 }
@@ -124,7 +124,7 @@ void LoadWeaponTextures (int nWeaponType)
 if ((nWeaponType < 0) || (nWeaponType > gameData.weapons.nTypes [0])) 
 	return;
 if (gameData.weapons.info [nWeaponType].picture.index)
-	PIGGY_PAGE_IN (gameData.weapons.info [nWeaponType].picture.index, 0);
+	LoadBitmap (gameData.weapons.info [nWeaponType].picture.index, 0);
 if (gameData.weapons.info [nWeaponType].nFlashVClip > -1)
 	LoadVClipTextures (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].nFlashVClip], 0);
 if (gameData.weapons.info [nWeaponType].wall_hit_vclip > -1)
@@ -148,7 +148,7 @@ switch (gameData.weapons.info [nWeaponType].renderType) {
 		break;
 
 	case WEAPON_RENDER_BLOB:
-		PIGGY_PAGE_IN (gameData.weapons.info [nWeaponType].bitmap.index, 0);
+		LoadBitmap (gameData.weapons.info [nWeaponType].bitmap.index, 0);
 		break;
 	}
 }
@@ -191,7 +191,7 @@ switch (info.renderType) {
 		if (rType.polyObjInfo.nTexOverride == -1)
 			PagingTouchModel (rType.polyObjInfo.nModel);
 		else
-			PIGGY_PAGE_IN (gameData.pig.tex.bmIndex [0][rType.polyObjInfo.nTexOverride].index, 0);
+			LoadBitmap (gameData.pig.tex.bmIndex [0][rType.polyObjInfo.nTexOverride].index, 0);
 		break;
 
 	case RT_POWERUP:
@@ -238,12 +238,16 @@ switch (info.nType) {
 
 void CSide::LoadTextures (void)
 {
+#if DBG
+if (m_nBaseTex == nDbgTexture)
+	nDbgTexture = nDbgTexture;
+#endif
 LoadWallEffectTextures (m_nBaseTex);
 if (m_nOvlTex) {
-	PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [m_nOvlTex].index, gameStates.app.bD1Data);
+	LoadBitmap (gameData.pig.tex.bmIndexP [m_nOvlTex].index, gameStates.app.bD1Data);
 	LoadWallEffectTextures (m_nOvlTex);
 	}
-PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [m_nBaseTex].index, gameStates.app.bD1Data);
+LoadBitmap (gameData.pig.tex.bmIndexP [m_nBaseTex].index, gameStates.app.bD1Data);
 }
 
 //------------------------------------------------------------------------------
@@ -316,7 +320,7 @@ void CWall::LoadTextures (void)
 if (nClip > -1) {
 	tWallClip* anim = gameData.walls.animP + nClip;
 	for (int j = 0; j < anim->nFrameCount; j++)
-		PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [anim->frames [j]].index, gameStates.app.bD1Data);
+		LoadBitmap (gameData.pig.tex.bmIndexP [anim->frames [j]].index, gameStates.app.bD1Data);
 	}
 }
 
@@ -359,7 +363,7 @@ void LoadGaugeTextures (void)
 {
 for (int i = 0; i < MAX_GAUGE_BMS; i++)
 	if (gameData.cockpit.gauges [1][i].index)
-		PIGGY_PAGE_IN (gameData.cockpit.gauges [1][i].index, 0);
+		LoadBitmap (gameData.cockpit.gauges [1][i].index, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -457,7 +461,7 @@ else if (nTouchPowerup2 < gameData.objs.pwrUp.nTypes) {
 else if (nTouchGauge < MAX_GAUGE_BMS) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchGauge < MAX_GAUGE_BMS); i++, nTouchGauge++)
 		if (gameData.cockpit.gauges [1][nTouchGauge].index)
-			PIGGY_PAGE_IN (gameData.cockpit.gauges [1][nTouchGauge].index, 0);
+			LoadBitmap (gameData.cockpit.gauges [1][nTouchGauge].index, 0);
 	}
 else {
 	LoadVClipTextures (&gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE], 0);

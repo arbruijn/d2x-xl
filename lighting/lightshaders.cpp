@@ -1157,8 +1157,8 @@ for (h = 0; h <= 3; h++) {
 					CreateShaderProg (perPixelLightingShaderProgs [i] + h) &&
 					CreateShaderFunc (perPixelLightingShaderProgs [i] + h, ppLfs [i] + h, ppLvs [i] + h, pszFS, pszVS, 1) &&
 					LinkShaderProg (perPixelLightingShaderProgs [i] + h);
-			delete [] pszFS;
-			delete [] pszVS;
+			delete[] pszFS;
+			delete[] pszVS;
 			if (!bOk) {
 				gameStates.ogl.bPerPixelLightingOk =
 				gameStates.render.bPerPixelLighting = 0;

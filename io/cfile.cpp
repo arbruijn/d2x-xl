@@ -814,7 +814,7 @@ nSize = Length ();
 if (!(pData = new char [nSize]))
 	return NULL;
 if (!Read (pData, nSize, 1)) {
-	delete [] pData;
+	delete[] pData;
 	pData = NULL;
 	}
 Close ();

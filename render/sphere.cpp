@@ -215,16 +215,16 @@ for (i = 0; i < m_nTessDepth; i++)
 for (i = 0; i < 2; i++) {
 	if (!(buf [i] = new CFloatVector [nFaces * (m_nFaceNodes + 1)])) {
 		if (i)
-			delete [] buf [i - 1];
+			delete[] buf [i - 1];
 		return -1;
 		}
 	}
 j = (m_nFaceNodes == 3) ?
 	 BuildSphereTri (reinterpret_cast<OOF::CTriangle **> (buf), &nFaces, m_nTessDepth) :
 	 BuildSphereQuad (reinterpret_cast<OOF::CQuad **> (buf), &nFaces, m_nTessDepth);
-delete [] buf [!j];
+delete[] buf [!j];
 if (!m_texCoord.Create (nFaces * m_nFaceNodes)) {
-	delete [] buf [j];
+	delete[] buf [j];
 	return -1;
 	}
 m_vertices.SetBuffer (buf [j]);
@@ -586,7 +586,7 @@ else {
 			}
 	glEnd ();
 	}
-delete [] rotSphereP;
+delete[] rotSphereP;
 }
 
 #endif

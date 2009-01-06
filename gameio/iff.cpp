@@ -486,7 +486,7 @@ for (y=0;y<bmHeader->h;y++) {
 		if ((checkmask >>= 1) == 0) checkmask=0x80;
 		}
 	}
-delete [] bmHeader->raw_data;
+delete[] bmHeader->raw_data;
 bmHeader->raw_data = new_data;
 bmHeader->nType = TYPE_PBM;
 return IFF_NO_ERROR;
@@ -543,7 +543,7 @@ return ret;
 void CIFF::Close (void)
 {
 if (Data ()) {
-	delete [] Data ();
+	delete[] Data ();
 	Data () = NULL;
 	}
 SetPos (0);
@@ -587,7 +587,7 @@ else
 	ret = IFF_UNKNOWN_FORM;
 if (ret != IFF_NO_ERROR) {		//got an error parsing
 	if (bmHeader.raw_data) 
-		delete [] bmHeader.raw_data;
+		delete[] bmHeader.raw_data;
 	return ret;
 	}
 //If IFF file is ILBM, convert to PPB
@@ -769,7 +769,7 @@ if (bCompression) {		//write actual data length
 	Assert(fseek(fp, total_len, SEEK_CUR)==0);
 	if (total_len&1) fputc(0, fp);		//pad to even
 	}
-delete [] new_span;
+delete[] new_span;
 return ((bCompression) ? (EVEN(total_len)+8) : (len+8));
 }
 

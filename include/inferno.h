@@ -3322,19 +3322,6 @@ return gameData.objs.objects.Index (objP);
 #define TRIG_IDX(_triggerP)	((short) ((_triggerP) - TRIGGERS))
 #define FACE_IDX(_faceP)		((int) ((_faceP) - FACES.faces))
 
-#ifdef PIGGY_USE_PAGING
-
-static inline void PIGGY_PAGE_IN (int bmi, int bD1) 
-{
-CBitmap *bmP = gameData.pig.tex.bitmaps [bD1] + bmi;
-if (!bmP->Buffer () || (bmP->Flags () & BM_FLAG_PAGED_OUT))
-	PiggyBitmapPageIn (bmi, bD1);
-}
-
-#else //!PIGGY_USE_PAGING
-#	define PIGGY_PAGE_IN(bmp)
-#endif //!PIGGY_USE_PAGING
-
 void GrabMouse (int bGrab, int bForce);
 void InitGameOptions (int i);
 void SetDataVersion (int v);

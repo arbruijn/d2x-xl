@@ -48,16 +48,16 @@ void _CDECL_ free_text(void)
 	PrintLog ("unloading game texts\n");
 	if (pszGameTexts && pszGameTexts [0]) {
 		p = pszGameTexts [0] - 1;
-		delete [] text;
-		delete [] p;
-		delete [] pszGameTexts;
+		delete[] text;
+		delete[] p;
+		delete[] pszGameTexts;
 		pszGameTexts = NULL;
 	}
 	if (pszHelpTexts && pszHelpTexts [0]) {
 		p = pszHelpTexts [0] - 1;
-		delete [] text;
-		delete [] p;
-		delete [] pszHelpTexts;
+		delete[] text;
+		delete[] p;
+		delete[] pszHelpTexts;
 		pszHelpTexts = NULL;
 	}
 }
@@ -2545,7 +2545,7 @@ if (!(pszTexts = new char * [j + 1]))
 	return NULL;
 h = GameTextSize ();
 if (!(*pszTexts = new char [h])) {
-	delete [] pszTexts;
+	delete[] pszTexts;
 	return NULL;
 	}
 for (i = 0; i < j; i++) {

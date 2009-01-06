@@ -1790,7 +1790,7 @@ fAvgBright /= j;
 for (i = 0, bmfP = bmP->Frames (); i < j; i++, bmfP++) {
 	TGAChangeBrightness (bmfP, 0, 1, 2 * (int) (255 * fFrameBright [i] * (fAvgBright - fFrameBright [i])), 0);
 	}
-delete [] fFrameBright;
+delete[] fFrameBright;
 }
 
 //	-----------------------------------------------------------------------------

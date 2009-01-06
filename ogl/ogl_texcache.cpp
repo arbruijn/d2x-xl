@@ -53,7 +53,7 @@ void OglCacheVClipTextures (tVideoClip *vc, int nTransp)
 	int i;
 
 for (i = 0; i < vc->nFrameCount; i++) {
-	PIGGY_PAGE_IN (vc->frames [i].index, 0);
+	LoadBitmap (vc->frames [i].index, 0);
 	gameData.pig.tex.bitmaps [0][vc->frames [i].index].SetupTexture (1, nTransp, 1);
 	}
 }
@@ -80,7 +80,7 @@ CBitmap *OglLoadFaceBitmap (short nTexture, short nFrameIdx)
 	CBitmap	*bmP;
 	int			nFrames;
 
-PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [nTexture].index, gameStates.app.bD1Mission);
+LoadBitmap (gameData.pig.tex.bmIndexP [nTexture].index, gameStates.app.bD1Mission);
 bmP = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [nTexture].index;
 if (bmP->Override ()) {
 	bmP = bmP->Override ();
@@ -258,7 +258,7 @@ PrintLog ("   caching explision sprites\n");
 for (i = 0; i < 2; i++)
 	for (j = 0; j < MAX_GAUGE_BMS; j++)
 		if (gameData.cockpit.gauges [i][j].index != 0xffff)
-			PIGGY_PAGE_IN (gameData.cockpit.gauges [i][j].index, 0);
+			LoadBitmap (gameData.cockpit.gauges [i][j].index, 0);
 for (i = 0; i < gameData.eff.nClips [0]; i++)
 	OglCacheVClipTexturesN (i, 1);
 return 0;

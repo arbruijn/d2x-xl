@@ -367,12 +367,12 @@ void SBRenderGauges (void);
 #define PAGE_IN_GAUGE(x) _page_in_gauge (x)
 static inline void _page_in_gauge (int x)
 {
-PIGGY_PAGE_IN (gameStates.render.fonts.bHires ? gameData.cockpit.gauges [0][x].index : gameData.cockpit.gauges [1][x].index, 0);
+LoadBitmap (gameStates.render.fonts.bHires ? gameData.cockpit.gauges [0][x].index : gameData.cockpit.gauges [1][x].index, 0);
 }
 
 #else
 
-#define PAGE_IN_GAUGE(x)	PIGGY_PAGE_IN (gameStates.render.fonts.bHires ? gameData.cockpit.gauges [0][x].index : gameData.cockpit.gauges [1][x].index, 0);
+#define PAGE_IN_GAUGE(x)	LoadBitmap (gameStates.render.fonts.bHires ? gameData.cockpit.gauges [0][x].index : gameData.cockpit.gauges [1][x].index, 0);
 
 #endif
 

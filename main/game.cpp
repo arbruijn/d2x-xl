@@ -265,7 +265,7 @@ CCanvas::SetCurrent (NULL);
 fontManager.SetCurrent (GAME_FONT);
 
 if (bGameCockpitCopyCode) {
-	delete [] bGameCockpitCopyCode;
+	delete[] bGameCockpitCopyCode;
 	bGameCockpitCopyCode  = NULL;
 	}
 switch (gameStates.render.cockpit.nMode) {
@@ -1307,7 +1307,7 @@ CloseGaugeCanvases ();
 PrintLog ("restoring effect bitmaps\n");
 RestoreEffectBitmapIcons ();
 if (bGameCockpitCopyCode) {
-	delete [] bGameCockpitCopyCode;
+	delete[] bGameCockpitCopyCode;
 	bGameCockpitCopyCode = NULL;
 }
 if (bmBackground.Buffer ()) {

@@ -302,11 +302,11 @@ for (i = 0; i < 2; i++) {
 		m = i ? secondaryWeaponToWeaponInfo [l] : primaryWeaponToWeaponInfo [l];
 		if ((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) {
 			bmP = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [m].hires_picture.index;
-			PIGGY_PAGE_IN (gameData.weapons.info [m].hires_picture.index, 0);
+			LoadBitmap (gameData.weapons.info [m].hires_picture.index, 0);
 			}
 		else {
 			bmP = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [m].picture.index;
-			PIGGY_PAGE_IN (gameData.weapons.info [m].picture.index, 0);
+			LoadBitmap (gameData.weapons.info [m].picture.index, 0);
 			}
 		Assert (bmP != NULL);
 		if (w < bmP->Width ())

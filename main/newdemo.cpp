@@ -2960,12 +2960,12 @@ else {
 				memcpy (curObjs, OBJECTS.Buffer (), (nObjects + 1) * sizeof (CObject));
 				nLevel = gameData.missions.nCurrentLevel;
 				if (NDReadFrameInfo () == -1) {
-					delete [] curObjs;
+					delete[] curObjs;
 					NDStopPlayback ();
 					return;
 					}
 				if (nLevel != gameData.missions.nCurrentLevel) {
-					delete [] curObjs;
+					delete[] curObjs;
 					if (NDReadFrameInfo () == -1)
 						NDStopPlayback ();
 					break;
@@ -2985,7 +2985,7 @@ else {
 							}
 						}
 					}
-				delete [] curObjs;
+				delete[] curObjs;
 				d_recorded += gameData.demo.xRecordedTime;
 				base_interpolTime = gameData.demo.xPlaybackTotal - gameData.time.xFrame;
 				}
@@ -3331,7 +3331,7 @@ if (bRevertFormat > 0) {
 		//PrintLog ("%4d %4d %d\n", gameData.demo.nFrameCount, gameData.demo.nFrameBytesWritten - 1, CFTell (&ndOutFile);
 		NDWriteShort ((short) (gameData.demo.nFrameBytesWritten - 1));
 		NDWrite (p + 3, h - 3, 1);
-		delete [] p;
+		delete[] p;
 		}
 	ndOutFile.Close ();
 	bRevertFormat = -1;
