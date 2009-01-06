@@ -130,10 +130,10 @@ Init ();
 CBitmap* CBackground::Load (char* filename, int width, int height)
 {
 m_filename = filename;
-if (gameOpts->menus.nStyle)
-	return backgroundManager.Background (0);
 if (!m_filename)
-	return backgroundManager.Background (1)->CreateChild (0, 0, width, height);
+	return gameOpts->menus.nStyle 
+			 ? backgroundManager.Background (0) 
+			 : backgroundManager.Background (1)->CreateChild (0, 0, width, height);
 else if (backgroundManager.IsDefault (filename) || !(m_background = backgroundManager.LoadBackground (filename)))
 	return backgroundManager.Background (0);
 return m_background;
@@ -201,7 +201,7 @@ if (!(gameStates.menus.bNoBackground || gameStates.app.bGameRunning)) {
 		PrintVersionInfo ();
 		}
 	}
-if (!m_filename) {
+if (!backgroundManager.IsDefault (m_filename)) {
 	if (m_bMenuBox)
 		backgroundManager.DrawBox (m_canvas [1]->Left (), m_canvas [1]->Top (), m_canvas [1]->Right (), m_canvas [1]->Bottom (), 
 											gameData.menu.nLineWidth, 1.0f, 0);
@@ -374,7 +374,7 @@ if (bForce || (gameOpts->menus.nStyle == 1)) {
 
 bool CBackgroundManager::IsDefault (char* filename)
 {
-return !strcmp (filename, m_filename [0]);
+return filename && !strcmp (filename, m_filename [0]);
 }
 
 //------------------------------------------------------------------------------

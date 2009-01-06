@@ -965,7 +965,7 @@ if (UpdateObjectSeg (objP, false)) {
 			}
 		if (exitFlightDataP->firstTime || (nEntrySide == -1) || (segP->m_children [nExitSide] == -1))
 			nExitSide = FindExitSide (objP);
-		if (nExitSide >= 0) {
+		if ((nExitSide >= 0) && (segP->m_children [nExitSide] >= 0)) {
 			fix d, dLargest = -I2X (1);
 			for (int i = 0; i < 6; i++) {
 				d = CFixVector::Dot (segP->m_sides [i].m_normals [0], exitFlightDataP->objP->info.position.mOrient.UVec());

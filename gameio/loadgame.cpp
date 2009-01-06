@@ -1102,7 +1102,7 @@ if (TactileStick)
 	//	Compute level CPlayerData is on, deal with secret levels (negative numbers)
 nMineLevel = LOCALPLAYER.level;
 if (nMineLevel < 0)
-	nMineLevel *= - (gameData.missions.nLastLevel / gameData.missions.nSecretLevels);
+	nMineLevel *= -(gameData.missions.nLastLevel / gameData.missions.nSecretLevels);
 else if (nMineLevel == 0)
 	nMineLevel = 1;
 nEndGamePoints =
@@ -1167,7 +1167,7 @@ if (network && (gameData.app.nGameMode & GM_NETWORK))
 else
 // NOTE LINK TO ABOVE!!!
 gameStates.app.bGameRunning = 0;
-	m.Menu (NULL, szTitle, NULL, NULL, reinterpret_cast<char*> (STARS_BACKGROUND));
+m.Menu (NULL, szTitle, NULL, NULL, reinterpret_cast<char*> (STARS_BACKGROUND));
 }
 
 //	-----------------------------------------------------------------------------------------------------
