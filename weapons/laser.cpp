@@ -461,7 +461,7 @@ if (bMakeSound && (weaponInfoP->flashSound > -1)) {
 					 (nWeaponType == ROBOT_MEGAMSL_ID) ||
 					 (nWeaponType == ROBOT_EARTHSHAKER_ID);
 		audio.CreateObjectSound (-1, SOUNDCLASS_MISSILE, nObject, 1, I2X (gameOpts->sound.xCustomSoundVolume) / 10, I2X (256), -1, -1, 
-							AddonSoundName (nMslSounds [bBigMsl]), 1);
+										 AddonSoundName (nMslSounds [bBigMsl]), 1);
 		}
 	else if (nWeaponType == FLARE_ID)
 		audio.CreateObjectSound (nObject, SOUNDCLASS_GENERIC, -1, 0, I2X (1), I2X (256), -1, -1, AddonSoundName (SND_ADDON_FLARE));
@@ -490,8 +490,7 @@ if (!WeaponIsMine (nWeaponType))
 	xParentSpeed = 0;
 else {
 	xParentSpeed = parentP->mType.physInfo.velocity.Mag();
-	if (CFixVector::Dot (parentP->mType.physInfo.velocity,
-						parentP->info.position.mOrient.FVec ()) < 0)
+	if (CFixVector::Dot (parentP->mType.physInfo.velocity, parentP->info.position.mOrient.FVec ()) < 0)
 		xParentSpeed = -xParentSpeed;
 	}
 

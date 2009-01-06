@@ -296,6 +296,7 @@ class CAudio {
 		void SetMidiVolume (int nVolume);
 		void SetFxVolume (int nVolume);
 		void SetVolumes (int fxVolume, int midiVolume);
+		inline int Volume (void) { return m_info.nVolume; }
 
 		int StartSound (short nSound, int nSoundClass = SOUNDCLASS_GENERIC, fix nVolume = DEFAULT_VOLUME, int nPan = DEFAULT_PAN, 
 							 int bLooping = 0, int nLoopStart = -1, int nLoopEnd = -1, int nSoundObj = -1, int nSpeed = I2X (1), 

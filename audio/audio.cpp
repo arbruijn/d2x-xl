@@ -109,7 +109,7 @@ if (!audio.Available ())
 if (gameOpts->sound.bUseSDLMixer && (nChannel >= 0)) {
 	CAudioChannel* channelP = audio.Channel (nChannel);
 	if (nVolume) {
-		nVolume = (FixMul (nVolume, channelP->Volume ()) + (SOUND_MAX_VOLUME / MIX_MAX_VOLUME) / 2) / (SOUND_MAX_VOLUME / MIX_MAX_VOLUME);
+		nVolume = (FixMul (nVolume, audio.Volume ()) + (SOUND_MAX_VOLUME / MIX_MAX_VOLUME) / 2) / (SOUND_MAX_VOLUME / MIX_MAX_VOLUME);
 		if (!nVolume)
 			nVolume = 1;
 		Mix_Volume (nChannel, nVolume);
