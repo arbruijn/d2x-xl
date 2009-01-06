@@ -1129,40 +1129,6 @@ return 0;
 }
 
 //	------------------------------------------------------------------------------------------
-
-int FindDLIndexD2 (short nSegment, short nSide)
-{
-int	m,
-		l = 0,
-		r = gameData.render.lights.nStatic;
-
-CLightDeltaIndex	*p;
-do {
-	m = (l + r) / 2;
-	p = gameData.render.lights.deltaIndices + m;
-	if ((nSegment < p->d2.nSegment) || ((nSegment == p->d2.nSegment) && (nSide < p->d2.nSide)))
-		r = m - 1;
-	else if ((nSegment > p->d2.nSegment) || ((nSegment == p->d2.nSegment) && (nSide > p->d2.nSide)))
-		l = m + 1;
-	else {
-		while ((p->d2.nSegment == nSegment) && (p->d2.nSide == nSide))
-			p--;
-		return (int) ((p + 1) - gameData.render.lights.deltaIndices);
-		}
-	} while (l <= r);
-return 0;
-}
-
-//	------------------------------------------------------------------------------------------
-
-int FindDLIndex (short nSegment, short nSide)
-{
-return gameStates.render.bD2XLights ?
-		 FindDLIndexD2X (nSegment, nSide) :
-		 FindDLIndexD2 (nSegment, nSide);
-}
-
-//	------------------------------------------------------------------------------------------
 //	dir = +1 -> add light
 //	dir = -1 -> subtract light
 //	dir = 17 -> add 17x light
@@ -1182,23 +1148,17 @@ if (ToggleDynLight (nSegment, nSide, -1, dir >= 0) >= 0)
 	return;
 i = FindDLIndex (nSegment, nSide);
 for (dliP = gameData.render.lights.deltaIndices + i; i < gameData.render.lights.nStatic; i++, dliP++) {
-	if (gameStates.render.bD2XLights) {
-		iSeg = dliP->d2x.nSegment;
-		iSide = dliP->d2x.nSide;
-		}
-	else {
-		iSeg = dliP->d2.nSegment;
-		iSide = dliP->d2.nSide;
-		}
+	iSeg = dliP->nSegment;
+	iSide = dliP->nSide;
 #if !DBG
 	if ((iSeg > nSegment) || ((iSeg == nSegment) && (iSide > nSide)))
 		return;
 #endif
 	if ((iSeg == nSegment) && (iSide == nSide)) {
-		if (dliP->d2.index >= LEVEL_DELTA_LIGHTS)
+		if (dliP->index >= LEVEL_DELTA_LIGHTS)
 			continue;	//ouch - bogus data!
-		dlP = gameData.render.lights.deltas + dliP->d2.index;
-		for (j = (gameStates.render.bD2XLights ? dliP->d2x.count : dliP->d2.count); j; j--, dlP++) {
+		dlP = gameData.render.lights.deltas + dliP->index;
+		for (j = dliP->count; j; j--, dlP++) {
 			if (!dlP->bValid)
 				continue;	//bogus data!
 			uvlP = SEGMENTS [dlP->nSegment].m_sides [dlP->nSide].m_uvls;
