@@ -659,7 +659,7 @@ if (left < r)
 void CTriMeshBuilder::CreateSegFaceList (void)
 {
 	int			h = 0;
-	tSegFaces*	segFaceP = SEGFACES;
+	tSegFaces*	segFaceP = SEGFACES.Buffer ();
 
 for (int i = gameData.segs.nSegments; i; i--, segFaceP++) {
 	segFaceP->faceP = &FACES.faces [h];
