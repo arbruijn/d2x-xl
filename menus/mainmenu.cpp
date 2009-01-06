@@ -220,7 +220,6 @@ do {
 if (gameStates.app.nFunctionMode == FMODE_GAME)
 	paletteManager.DisableEffect ();
 FlushInput ();
-StopPlayerMovement ();
 return mainOpts.nChoice;
 }
 

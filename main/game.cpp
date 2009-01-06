@@ -1228,6 +1228,7 @@ if (gameStates.app.nFunctionMode != FMODE_EDITOR)
 //@@		MaybeAddPlayerScore (gameStates.app.bGameAborted);
 //@@	}
 ClearWarnFunc (ShowInGameWarning);     //don't use this func anymore
+StopPlayerMovement ();
 GameDisableCheats ();
 UnloadCamBot ();
 #ifdef APPLE_DEMO
