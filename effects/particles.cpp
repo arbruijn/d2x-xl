@@ -1640,7 +1640,6 @@ for (CParticleSystem* systemP = GetFirst (); systemP; systemP = GetNext ()) {
 	m_systems.Push (systemP->Id ());
 	}
 particleImageManager.FreeAll ();
-Init ();
 SEM_LEAVE (SEM_SMOKE)
 return 1;
 }
