@@ -186,9 +186,6 @@ typedef struct tLightningData {
 	CArray<short>						m_objects;
 	CArray<tLightningLight>			m_lights;
 	CDataPool<CLightningSystem>	m_systems; // [MAX_LIGHTNINGS];
-	int									m_nFree;
-	int									m_nUsed;
-	int									m_nNext;
 	int									m_bDestroy;
 	int									m_nFirstLight;
 } tLightningData;

@@ -534,7 +534,6 @@ m_color = *colorP;
 m_vBase = *vPos;
 m_bLight = bLight;
 m_nStyle = nStyle;
-m_nNext = -1;
 }
 
 //------------------------------------------------------------------------------
@@ -1447,10 +1446,10 @@ if (!(SHOW_LIGHTNINGS && colorP))
 	return -1;
 if (!nLightnings)
 	return -1;
-if (m_nFree < 0)
-	return -1;
 SEM_ENTER (SEM_LIGHTNINGS)
 CLightningSystem* systemP = m_systems.Pop ();
+if (!systemP)
+	return -1;
 if (!(systemP->Create (nLightnings, vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
 							  nAngle, nOffset, nNodes, nChildren, nDepth, nSteps, nSmoothe, bClamp, bPlasma, bSound, bLight,
 							  nStyle, colorP))) {
@@ -2000,14 +1999,9 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage && OBJECT_EXISTS (obj
 
 int CLightningManager::FindDamageLightning (short nObject, int *pKey)
 {
-		CLightningSystem	*systemP;
-		int					i;
-
-for (i = m_nUsed; i >= 0; i = systemP->m_nNext) {
-	systemP = m_systems + i;
+for (CLightningSystem* systemP = m_systems.GetFirst (); systemP; systemP = m_systems.GetNext ())
 	if ((systemP->m_nObject == nObject) && (systemP->m_nKey [0] == pKey [0]) && (systemP->m_nKey [1] == pKey [1]))
-		return i;
-	}
+		return systemP->Id ();
 return -1;
 }
 
@@ -2020,8 +2014,8 @@ typedef union tPolyKey {
 
 void CLightningManager::RenderForDamage (CObject* objP, g3sPoint **pointList, RenderModel::CVertex *vertP, int nVertices)
 {
-	CLightningSystem	*systemP;
-	CFloatVector				v, vPosf, vEndf, vNormf, vDeltaf;
+	CLightningSystem*	systemP;
+	CFloatVector		v, vPosf, vEndf, vNormf, vDeltaf;
 	CFixVector			vPos, vEnd, vNorm, vDelta;
 	int					h, i, j, bUpdate = 0;
 	short					nObject;
