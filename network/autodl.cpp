@@ -585,7 +585,7 @@ sprintf (szProgress, "0%c done", '%');
 nOptPercentage = m.AddText (szProgress, 0);
 m [nOptPercentage].m_x = (short) 0x8000;	//centered
 m [nOptPercentage].m_bCentered = 1;
-nOptProgress = m.AddGauge ("                    ", 0, 100);
+nOptProgress = m.AddGauge ("                    ", -1, 100);
 if (!RequestUpload (PID_DL_START, 0))
 	return 0;
 dlResult = 1;

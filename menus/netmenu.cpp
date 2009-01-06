@@ -1111,7 +1111,7 @@ networkData.nStatus = NETSTAT_BROWSING;
 networkData.nActiveGames = 0;
 NetworkSendGameListRequest ();
 
-m.AddGauge ("                    ", 0, 1000); 
+m.AddGauge ("                    ", -1, 1000); 
 m.AddText ("");
 m.AddText (TXT_PRESS_ESC);
 m [2].m_bCentered = 1;

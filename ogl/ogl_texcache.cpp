@@ -157,7 +157,7 @@ int OglCacheTextures (void)
 	CMenu	m (3);
 	int	i;
 
-m.AddGauge ("                    ", 0, gameData.segs.nSegments + gameData.objs.nLastObject [0] + 4); 
+m.AddGauge ("                    ", -1, gameData.segs.nSegments + gameData.objs.nLastObject [0] + 4); 
 nCacheSeg = 0;
 nCacheObj = -3;
 do {

@@ -893,7 +893,7 @@ if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 else {
 	CMenu m (1);
 	int key = 0;
-	m.AddGauge ("", 0, 1000); // dummy for InitializePoll()
+	m.AddGauge ("", -1, 1000); // dummy for InitializePoll()
 	ShowBoxedMessage (TXT_INITIALIZING);
 	for (loadOp = 0; loadOp < InitGaugeSize (); )
 		InitializePoll (m, key, 0);

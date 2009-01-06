@@ -2922,7 +2922,7 @@ void ProgressBar (const char* szCaption, int nCurProgress, int nMaxProgress, pMe
 	CMenu	mm;
 
 mm.Create (3);
-mm.AddGauge ("                    ", 0, nMaxProgress); //the blank string denotes the screen width of the gauge
+mm.AddGauge ("                    ", -1, nMaxProgress); //the blank string denotes the screen width of the gauge
 mm.Item (0).m_bCentered = 1;
 mm.Item (0).m_value = nCurProgress;
 nInMenu = gameStates.menus.nInMenu;

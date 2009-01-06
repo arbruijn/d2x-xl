@@ -269,7 +269,7 @@ int QueryTrackers (void)
 
 if (!RequestServerListFromTracker ())
 	return 0;
-m.AddGauge ("                    ", 0, 1000); 
+m.AddGauge ("                    ", -1, 1000); 
 m.AddText ("", 0);
 m.AddText ("(Press Escape to cancel)", 0);
 m [2].m_bCentered = 1;
