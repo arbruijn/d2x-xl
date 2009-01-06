@@ -1112,11 +1112,11 @@ else if (loadOp == 2) {
 		loadOp++;
 		}
 	}
-else if (loadOp == 4) {
+else if (loadOp == 3) {
 	LoadExtSegmentsCompiled (*mineDataFile);
 	loadOp++;
 	}
-else if (loadOp == 5) {
+else if (loadOp == 4) {
 	LoadVertLightsCompiled (loadIdx, *mineDataFile);
 	loadIdx += PROGRESS_INCR;
 	if (!gameStates.app.bD2XLevel || (loadIdx >= gameData.segs.nVertices)) {
@@ -1124,7 +1124,7 @@ else if (loadOp == 5) {
 		loadOp++;
 		}
 	}
-else if (loadOp == 6) {
+else if (loadOp == 5) {
 	LoadSideLightsCompiled (loadIdx, *mineDataFile);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= (gameStates.app.bD2XLevel ?
