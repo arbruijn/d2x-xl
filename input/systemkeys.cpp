@@ -980,7 +980,7 @@ void HandleTestKey(int key)
 			SetScreenMode(SCREEN_GAME);
 			ResetCockpit();
 			memcpy(grPalette, pal_save, 768);
-			paletteManager.LoadEffect  ();
+			paletteManager.LoadEffect ();
 			break;
 		}
 		case KEY_C + KEY_SHIFTED + KEYDBGGED:

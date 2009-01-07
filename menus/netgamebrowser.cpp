@@ -331,7 +331,7 @@ if (bAutoRun) {
 else {
 	gameStates.multi.bSurfingNet = 1;
 //	NMLoadBackground (MenuPCXName (), &bg, 0);             //load this here so if we abort after loading level, we restore the palette
-//	paletteManager.LoadEffect  ();
+//	paletteManager.LoadEffect ();
 	choice = m.Menu (TXT_NETGAMES, NULL, NetworkJoinPoll, NULL, NULL, LHX (340), -1, 1);
 //	backgroundManager.Remove ();
 	gameStates.multi.bSurfingNet = 0;

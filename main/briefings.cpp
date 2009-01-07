@@ -70,7 +70,7 @@ extern unsigned RobSX, RobSY, RobDX, RobDY; // Robot movie coords
 //static ubyte brief_palette [256*3];
 //static ubyte robot_palette [256*3];
 static int	brief_palette_254_bash;
-static int  bInitRobot;
+static int  bInitAnimate;
 
 char	curBriefScreenName [15] = "";
 char	*szBriefingText = NULL;
@@ -237,6 +237,7 @@ typedef struct tBriefingInfo {
 	int					nLineAdjustment;
 	int					nDelayCount;
 	int					nRobot;
+	int					tAnimate;
 	int					nBotSig;
 	int					x;
 	int					y;
@@ -350,7 +351,7 @@ return funcRes;
 
 //-----------------------------------------------------------------------------
 
-int LoadBriefImg (char *pszImg, CBitmap *bmP, int bFullScr)
+int RenderBriefingImage (char *pszImg)
 {
 	char	*ps, c = '0';
 	char	szImg [FILENAME_LEN+1];
@@ -366,21 +367,17 @@ else if ((ps = strstr (szImg, ".pcx"))) {
 	*ps = c;
 	}
 
+
 if (strstr (szImg, ".tga")) {
 	CBitmap bm;
 	if (!ReadTGA (szImg, gameFolders.szDataDir, &bm, -1, 1.0, 0, 0))
 		return PCX_ERROR_OPENING;
-	if (bFullScr) {
-		bm.RenderFullScreen ();
-		bm.Destroy ();
-		}
+	bm.RenderFullScreen ();
 	return PCX_ERROR_NONE;
 	}
 else {
 	for (;;) {
-		pcxErr = bFullScr ?
-			PcxReadFullScrImage (szImg, gameStates.app.bD1Mission) :
-			PCXReadBitmap (szImg, bmP, BM_LINEAR, gameStates.app.bD1Mission);
+		pcxErr = PcxReadFullScrImage (szImg, gameStates.app.bD1Mission);
 		if (pcxErr == PCX_ERROR_NONE)
 			break;
 		if (!ps)
@@ -395,46 +392,52 @@ return pcxErr;
 
 //-----------------------------------------------------------------------------
 
-int ShowBriefingImage (char * filename, int bAllowKeys, int from_hog_only)
+#if 0
+
+int ShowBriefingImage (char* filename, int bAllowKeys, int bFromHog)
 {
-	fix timer;
-	int pcxResult;
-	CBitmap title_bm;
-	char new_filename [FILENAME_LEN+1] = "";
+	fix		timer;
+	int		pcxResult;
+	CBitmap	bmTitle;
+	char		newFilename [FILENAME_LEN+1] = "";
 
 #if !DBG
-if (from_hog_only)
-	strcpy (new_filename, "\x01");	//only read from hog file
+if (bFromHog)
+	strcpy (newFilename, "\x01");	//only read from hog file
 #endif
 
-strcat (new_filename, filename);
-filename = new_filename;
+strcat (newFilename, filename);
+filename = newFilename;
 
-title_bm.SetBuffer (NULL);
-if ((pcxResult = LoadBriefImg (filename, &title_bm, 0)) != PCX_ERROR_NONE) {
+bmTitle.SetBuffer (NULL);
+if ((pcxResult = RenderBriefingImage (filename, &bmTitle, 1)) != PCX_ERROR_NONE) {
 #if TRACE
 	console.printf (CON_DBG, "File '%s', PCX load error: %s (%i)\n  (No big deal, just no title screen.)\n", filename, pcx_errormsg (pcxResult), pcxResult);
 #endif
 	Error ("Error loading briefing screen <%s>, PCX load error: %s (%i)\n", filename, pcx_errormsg (pcxResult), pcxResult);
-}
-//vfx_set_palette_sub (brief_palette);
-paletteManager.LoadEffect  ();
+	}
+#if 0
+paletteManager.LoadEffect ();
 CCanvas::SetCurrent (NULL);
-title_bm.RenderFullScreen ();
+bmTitle.RenderFullScreen ();
 if (paletteManager.EnableEffect ())
 	return 1;
-
-paletteManager.LoadEffect  ();
+#endif
+paletteManager.LoadEffect ();
 timer	= TimerGetFixedSeconds () + I2X (3);
-while (1) {
-	if (BriefingInKey () && bAllowKeys) break;
-	if (TimerGetFixedSeconds () > timer) break;
-}
+for (;;) {
+	if (BriefingInKey () && bAllowKeys) 
+		break;
+	if (TimerGetFixedSeconds () > timer) 
+		break;
+	}
 if (paletteManager.DisableEffect ())
 	return 1;
-title_bm.DestroyBuffer ();
+bmTitle.DestroyBuffer ();
 return 0;
 }
+
+#endif
 
 //-----------------------------------------------------------------------------
 
@@ -452,8 +455,13 @@ briefingTextY = gameStates.app.bD1Mission ? bsP->text_uly : bsP->text_uly - (8 *
 
 //-----------------------------------------------------------------------------
 
-void ShowBitmapFrame (int bRedraw)
+void ShowBitmapFrame (tBriefingInfo& bi, int bRedraw)
 {
+int t = SDL_GetTicks ();
+if (t - bi.tAnimate < 5)
+	return;
+bi.tAnimate = t;
+
 	CCanvas *curCanvSave, *bitmapCanv=0;
 	CFixVector p = CFixVector::ZERO;
 
@@ -551,7 +559,7 @@ if (*szBitmapName) {
 	G3EndFrame ();
 	if (!gameOpts->menus.nStyle)
 		GrUpdate (0);
-	paletteManager.LoadEffect  ();
+	paletteManager.LoadEffect ();
 	CCanvas::SetCurrent (curCanvSave);
 	delete bitmapCanv;
 	bitmapCanv = NULL;
@@ -582,9 +590,7 @@ if (*szBitmapName) {
 
 void ShowBriefingBitmap (CBitmap *bmp)
 {
-	CCanvas	*bitmapCanv;
-
-bitmapCanv = CCanvas::Current ()->CreatePane (220, 45, bmp->Width (), bmp->Height ());
+CCanvas* bitmapCanv = CCanvas::Current ()->CreatePane (220, 45, bmp->Width (), bmp->Height ());
 CCanvas::Push ();
 CCanvas::SetCurrent (bitmapCanv);
 GrBitmapM (0, 0, bmp, 0);
@@ -594,29 +600,33 @@ bitmapCanv->Destroy ();
 
 //-----------------------------------------------------------------------------
 
-void ShowSpinningRobotFrame (int nRobot)
+void ShowSpinningRobotFrame (tBriefingInfo& bi)
 {
-if (nRobot != -1) {
-	vRobotAngles [HA] += 150;
+if (bi.nRobot == -1)
+	return;
+int t = SDL_GetTicks ();
+if (t - bi.tAnimate < 1)
+	return;
 
-	CCanvas::Push ();
-	CCanvas::SetCurrent (robotCanvP);
-	Assert (ROBOTINFO (nRobot).nModel != -1);
-	if (bInitRobot) {
-		paletteManager.Load ("", "", 0, 0, 1);
-		OglCachePolyModelTextures (ROBOTINFO (nRobot).nModel);
-		paletteManager.LoadEffect ();
-		bInitRobot = 0;
-		}
-	gameStates.render.bFullBright	= 1;
-
-	CCanvas::Current ()->Clear (0);
-	gameStates.ogl.bEnableScissor = 1;
-	DrawModelPicture (ROBOTINFO (nRobot).nModel, &vRobotAngles);
-	gameStates.ogl.bEnableScissor = 0;
-	gameStates.render.bFullBright = 0;
-	CCanvas::Pop ();
+CCanvas::Push ();
+CCanvas::SetCurrent (robotCanvP);
+Assert (ROBOTINFO (bi.nRobot).nModel != -1);
+if (bInitAnimate) {
+	paletteManager.Load ("", "", 0, 0, 1);
+	OglCachePolyModelTextures (ROBOTINFO (bi.nRobot).nModel);
+	paletteManager.LoadEffect ();
+	bInitAnimate = 0;
 	}
+gameStates.render.bFullBright	= 1;
+
+CCanvas::Current ()->Clear (0);
+gameStates.ogl.bEnableScissor = 1;
+DrawModelPicture (ROBOTINFO (bi.nRobot).nModel, &vRobotAngles);
+gameStates.ogl.bEnableScissor = 0;
+gameStates.render.bFullBright = 0;
+CCanvas::Pop ();
+vRobotAngles [HA] += 15 * (t - bi.tAnimate);
+bi.tAnimate = t;
 }
 
 //-----------------------------------------------------------------------------
@@ -631,12 +641,20 @@ CCanvas::Pop ();
 
 //-----------------------------------------------------------------------------
 
-void InitSpinningRobot (void) // (int x, int y, int w, int h)
+void AnimateBriefing (tBriefingInfo& bi)
 {
-	//vRobotAngles[PA] += 0;
-	//vRobotAngles[BA] += 0;
-	//vRobotAngles[HA] += 0;
+if (bRobotPlaying)
+	RotateBriefingRobot ();
+else if (bi.nRobot != -1)
+	ShowSpinningRobotFrame (bi);
+else if (*szBitmapName)
+	ShowBitmapFrame (bi, 0);
+}
 
+//-----------------------------------------------------------------------------
+
+void InitSpinningRobot (tBriefingInfo& bi) // (int x, int y, int w, int h)
+{
 int x = RescaleX (138);
 int y = RescaleY (55);
 int w = RescaleX (163);
@@ -644,34 +662,30 @@ int h = RescaleY (136);
 if (robotCanvP)
 	delete robotCanvP;
 robotCanvP = CCanvas::Current ()->CreatePane (x, y, w, h);
-bInitRobot = 1;
-	// 138, 55, 166, 138
+bInitAnimate = 1;
+bi.tAnimate = 0;
 }
 
 //---------------------------------------------------------------------------
 // Returns char width.
 // If showRobotFlag set, then show a frame of the spinning robot.
-int PrintCharDelayed (char the_char, int delay, int nRobot, int cursorFlag, int bRedraw)
+int PrintCharDelayed (tBriefingInfo& bi, int delay)
 {
 	int w, h, aw;
 	char message [2];
-	static fix	t, tText = 0, tImage = 0;
+	static fix	t, tText = 0;
 
-	message [0] = the_char;
+	message [0] = char (bi.ch);
 	message [1] = 0;
 
 if (!tText)
 	tText = SDL_GetTicks ();
-if ((nRobot < 0) && !*szBitmapName)
-	tImage = 0;
-else if (!tImage)
-	tImage = SDL_GetTicks ();
 
 fontManager.Current ()->StringSize (message, w, h, aw);
 Assert ((nCurrentColor >= 0) && (nCurrentColor < MAX_BRIEFING_COLORS));
 
 //	Draw cursor if there is some delay and caller says to draw cursor
-if (cursorFlag && !bRedraw) {
+if (bi.bFlashingCursor && !bi.bRedraw) {
 	fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
 	GrPrintF (NULL, briefingTextX+1, briefingTextY, "_");
 	if (!gameOpts->menus.nStyle)
@@ -681,28 +695,19 @@ if (cursorFlag && !bRedraw) {
 if (delay > 0)
 	delay = 1000 / 15;
 
-if ((delay > 0) && !bRedraw) {
-	if (*szBitmapName)
-		ShowBitmapFrame (0);
+AnimateBriefing (bi);
+if ((delay > 0) && !bi.bRedraw) {
+//	if (*szBitmapName)
+//		ShowBitmapFrame (0);
 	do {
-		if (bRobotPlaying)
-			RotateBriefingRobot ();
-		else {
-			if (tImage && (t - tImage >= 10)) {
-				if (nRobot != -1)
-					ShowSpinningRobotFrame (nRobot);
-				else if (*szBitmapName && (delay != 0))
-					ShowBitmapFrame (0);
-				tImage = t;
-				}
-			}
+		AnimateBriefing (bi);
 		} while ((t = SDL_GetTicks ()) < (tText + delay));
 	}
 
 tText = SDL_GetTicks ();
 
 //	Erase cursor
-if (cursorFlag && (delay > 0) && !bRedraw) {
+if (bi.bFlashingCursor && (delay > 0) && !bi.bRedraw) {
 	fontManager.SetColorRGBi (nEraseColor, 1, 0, 0);
 	GrPrintF (NULL, briefingTextX+1, briefingTextY, "_");
 	//	erase the character
@@ -713,46 +718,23 @@ if (cursorFlag && (delay > 0) && !bRedraw) {
 fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
 GrPrintF (NULL, briefingTextX+1, briefingTextY, message);
 
-if (!(bRedraw || gameOpts->menus.nStyle)) 
+if (!(bi.bRedraw || gameOpts->menus.nStyle)) 
 	GrUpdate (0);
 return w;
 }
 
 //-----------------------------------------------------------------------------
 
-int LoadBriefingScreen (int nScreen)
+int LoadBriefingImage (char *szBriefScreen)
 {
-	int	pcxResult;
-	char *szBriefScreen;
-
-if (gameStates.app.bD1Mission)
-	szBriefScreen = briefingScreens [nScreen % MAX_BRIEFING_SCREENS].bs_name;
-else
-	szBriefScreen = curBriefScreenName;
-if (*szBriefScreen) {
-	glClear (GL_COLOR_BUFFER_BIT);
-	if ((pcxResult = PcxReadFullScrImage (szBriefScreen, gameStates.app.bD1Mission)) != PCX_ERROR_NONE) {
-#if DBG
-		Error ("Error loading briefing screen <%s>, \nPCX load error: %s (%i)\n", szBriefScreen, pcx_errormsg (pcxResult), pcxResult);
-#endif
-		}
-	}
-return 0;
-}
-
-//-----------------------------------------------------------------------------
-
-int LoadNewBriefingScreen (char *szBriefScreen, int bRedraw)
-{
-	int pcxResult;
-
 #if TRACE
 console.printf (CON_DBG, "Loading new briefing <%s>\n", szBriefScreen);
 #endif
 strcpy (curBriefScreenName, szBriefScreen);
 if (paletteManager.DisableEffect ())
 	return 0;
-if ((pcxResult = LoadBriefImg (szBriefScreen, NULL, 1)) != PCX_ERROR_NONE) {
+int pcxResult = RenderBriefingImage (szBriefScreen);
+if (pcxResult != PCX_ERROR_NONE) {
 #if DBG
 	static char szErrScreen [15] = "";
 
@@ -767,6 +749,21 @@ if (paletteManager.EnableEffect ())
 	return 0;
 DoBriefingColorStuff ();
 return 1;
+}
+
+//-----------------------------------------------------------------------------
+
+int LoadBriefingScreen (int nScreen)
+{
+	char*	szBriefScreen;
+
+szBriefScreen = gameStates.app.bD1Mission 
+					 ? briefingScreens [nScreen % MAX_BRIEFING_SCREENS].bs_name
+					 : curBriefScreenName;
+if (!*szBriefScreen)
+	return 0;
+glClear (GL_COLOR_BUFFER_BIT);
+return LoadBriefingImage (szBriefScreen);
 }
 
 //-----------------------------------------------------------------------------
@@ -862,12 +859,7 @@ do {		//	Wait for a key
 	while ((t = SDL_GetTicks ()) - bi.t0 < 10)
 		;
 	FlashCursor (bi.bFlashingCursor);
-	if (bRobotPlaying)
-		RotateBriefingRobot ();
-	else if (bi.nRobot != -1)
-		ShowSpinningRobotFrame (bi.nRobot);
-	else if (*szBitmapName)
-		ShowBitmapFrame (0);
+	AnimateBriefing (bi);
 	bi.t0 = t;
 	keypress = BriefingInKey ();
 	if (gameStates.ogl.nDrawBuffer == GL_BACK)
@@ -889,10 +881,10 @@ return 1;
 
 int _B (tBriefingInfo& bi)
 {
-	char        szBitmap [32];
-	CBitmap   guy_bitmap;
-	CIFF			iff;
-	int         iff_error;
+	char     szBitmap [32];
+	CBitmap  bmGuy;
+	CIFF		iff;
+	int      iff_error;
 
 if (bi.message > bi.pj) {
 	if (robotCanvP != NULL) {
@@ -902,12 +894,13 @@ if (bi.message > bi.pj) {
 	}
 GetMessageName (&bi.message, szBitmap);
 strcat (szBitmap, ".bbm");
-memset (&guy_bitmap, 0, sizeof (guy_bitmap));
-iff_error = iff.ReadBitmap (szBitmap, &guy_bitmap, BM_LINEAR);
+memset (&bmGuy, 0, sizeof (bmGuy));
+iff_error = iff.ReadBitmap (szBitmap, &bmGuy, BM_LINEAR);
 if (iff_error != IFF_NO_ERROR)
 	return 0;
-ShowBriefingBitmap (&guy_bitmap);
-guy_bitmap.DestroyBuffer ();
+bi.tAnimate = 0;
+ShowBriefingBitmap (&bmGuy);
+bmGuy.DestroyBuffer ();
 bi.prevCh = 10;
 return 1;
 }
@@ -959,6 +952,7 @@ if (bi.message > bi.pj) {
 	GetMessageName (&bi.message, szBitmapName);
 	strcat (szBitmapName, "#0");
 	nAnimatingBitmapType = 0;
+	bi.tAnimate = 0;
 	}
 bi.prevCh = 10;
 return 1;
@@ -976,6 +970,7 @@ if (bi.message > bi.pj) {
 	GetMessageName (&bi.message, szBitmapName);
 	strcat (szBitmapName, "#0");
 	nAnimatingBitmapType = 1;
+	bi.tAnimate = 0;
 	}
 bi.prevCh = 10;
 return 1;
@@ -987,7 +982,7 @@ int _P (tBriefingInfo& bi)
 {
 if (!bi.bGotZ) {
 	Int3 (); // Hey ryan!!!!You gotta load a screen before you start printing to it!You know, $Z !!!
-	LoadNewBriefingScreen (gameStates.menus.bHires ? reinterpret_cast<char*> ("end01b.pcx") : reinterpret_cast<char*> ("end01.pcx"), bi.message <= bi.pj);
+	LoadBriefingImage (gameStates.menus.bHires ? reinterpret_cast<char*> ("end01b.pcx") : reinterpret_cast<char*> ("end01.pcx"));
 	bi.bHaveScreen = 1;
 	}
 bi.bNewPage = 1;
@@ -1011,15 +1006,16 @@ if (bi.message > bi.pj) {
 		movieManager.StopRobot ();
 		bRobotPlaying = 0;
 		}
-	InitSpinningRobot ();
+	InitSpinningRobot (bi);
 	if (!songManager.Playing ()) {
 		bi.nBotChannel = StartExtraBotSound (bi.nBotChannel, (short) bi.nLevel, bi.nBotSig++);
 		if (bi.nBotChannel >= 0)
 			StopBriefingSound (&bi.nHumChannel);
 		}
 	}
-if (gameStates.app.bD1Mission)
+if (gameStates.app.bD1Mission) {
 	bi.nRobot = GetMessageNum (&bi.message);
+	}
 else {
 	bi.szSpinningRobot [2] = *bi.message++; // ugly but proud
 	if (bi.message > bi.pj) {
@@ -1094,9 +1090,9 @@ memcpy (bi.szBriefScreenB + i, "b.pcx", sizeof ("b.pcx"));
 i += sizeof ("b.pcx");
 if ((gameStates.menus.bHires && CFile::Exist (bi.szBriefScreenB, gameFolders.szDataDir, 0)) || 
 	 !CFile::Exist (bi.szBriefScreen, gameFolders.szDataDir, 0))
-	LoadNewBriefingScreen (bi.szBriefScreenB, bi.message <= bi.pj);
+	LoadBriefingImage (bi.szBriefScreenB);
 else
-	LoadNewBriefingScreen (bi.szBriefScreen, bi.message <= bi.pj);
+	LoadBriefingImage (bi.szBriefScreen);
 bi.bHaveScreen = 1;
 return 1;
 }
@@ -1158,14 +1154,14 @@ return 1;
 int _ANY (tBriefingInfo& bi)
 {
 if (!bi.bGotZ) 
-	LoadNewBriefingScreen (gameStates.menus.bHires ? reinterpret_cast<char*> ("end01b.pcx") : reinterpret_cast<char*> ("end01.pcx"), bi.message <= bi.pj);
+	LoadBriefingImage (gameStates.menus.bHires ? reinterpret_cast<char*> ("end01b.pcx") : reinterpret_cast<char*> ("end01.pcx"));
 bi.prevCh = bi.ch;
 bi.bRedraw = !bi.nDelayCount || (bi.message <= bi.pj);
 if (!bi.bRedraw) {
 	bi.nPrintingChannel = StartBriefingSound (bi.nPrintingChannel, SOUND_BRIEFING_PRINTING, I2X (1), NULL);
 	bi.bChattering = 1;
 	}
-briefingTextX += PrintCharDelayed ((char) bi.ch, bi.nDelayCount, bi.nRobot, bi.bFlashingCursor, bi.bRedraw);
+briefingTextX += PrintCharDelayed (bi, bi.nDelayCount);
 return 1;
 }
 
@@ -1309,7 +1305,7 @@ int ShowBriefingMessage (int nScreen, char *message, int nLevel)
 {
 	tBriefingInfo			bi = {message, nScreen, nLevel, {"", 0, 0, 0, 0, 0, 0}, NULL, NULL, NULL, 
 										-1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, 1, 
-										KEY_DELAY_DEFAULT, -1, 0, 0, 0, "rba.mve", "", "", 0, 0};
+										KEY_DELAY_DEFAULT, -1, 0, 0, 0, 0, "rba.mve", "", "", 0, 0};
 	tBriefingHandlerInfo	*bhP;
 	int						h, i;
 
@@ -1424,7 +1420,7 @@ return bi.nFuncRes;
 
 //-----------------------------------------------------------------------------
 // Return a pointer to the start of text for screen #nScreen.
-char * GetBriefingMessage (int nScreen)
+char* GetBriefingMessage (int nScreen)
 {
 	char *tptr = szBriefingText;
 	int	nCurScreen = 0;
@@ -1514,10 +1510,38 @@ return i;
 }
 
 //-----------------------------------------------------------------------------
+// Return true if screen got aborted by user, else return false.
+int LoadLevelScreen (int nScreen, short nLevel)
+{
+brief_palette_254_bash = 0;
+if (gameOpts->gameplay.bSkipBriefingScreens) {
+	console.printf (CON_DBG, "Skipping briefing screen [%s]\n", &briefingScreens [nScreen % MAX_BRIEFING_SCREENS].bs_name);
+	return 0;
+	}
+if (gameStates.app.bD1Mission) {
+	int pcxResult = RenderBriefingImage (briefingScreens [nScreen % MAX_BRIEFING_SCREENS].bs_name);
+	if (pcxResult != PCX_ERROR_NONE) {
+		console.printf (CON_DBG, "File '%s', PCX load error: %s (%i)\n  (It's a briefing screen.  Does this cause you pain?)\n", 
+							 briefingScreens [nScreen % MAX_BRIEFING_SCREENS].bs_name, pcx_errormsg (pcxResult), pcxResult);
+		Int3 ();
+		return 0;
+		}
+	GrUpdate (0);
+	if (paletteManager.EnableEffect ())
+		return 1;
+	}
+if (!ShowBriefingText (nScreen, nLevel))
+	return 0;
+if (paletteManager.DisableEffect ())
+	return 1;
+return 1;
+}
+
+//-----------------------------------------------------------------------------
 
 void DoBriefingColorStuff ()
 {
-paletteManager.LoadEffect  ();
+paletteManager.LoadEffect ();
 
 if (gameStates.app.bD1Mission) {
   //green
@@ -1552,45 +1576,6 @@ briefBgColorIndex [5] = paletteManager.ClosestColor (19, 19, 0);
 briefFgColorIndex [6] = paletteManager.ClosestColor (0, 54, 54);
 briefBgColorIndex [6] = paletteManager.ClosestColor (0, 19, 19);
 //End D1X addition
-}
-
-//-----------------------------------------------------------------------------
-// Return true if screen got aborted by user, else return false.
-int ShowBriefingScreen (int nScreen, int bAllowKeys, short nLevel)
-{
-brief_palette_254_bash = 0;
-if (gameOpts->gameplay.bSkipBriefingScreens) {
-	console.printf (CON_DBG, "Skipping briefing screen [%s]\n", &briefingScreens [nScreen % MAX_BRIEFING_SCREENS].bs_name);
-	return 0;
-	}
-if (gameStates.app.bD1Mission) {
-	int pcxResult;
-#if 1
-	CBitmap bmBriefing;
-
-	bmBriefing.Init ();
-	if ((pcxResult = LoadBriefImg (briefingScreens [nScreen % MAX_BRIEFING_SCREENS].bs_name, &bmBriefing, 0)) != PCX_ERROR_NONE) {
-#else
-	if ((pcxResult = PcxReadFullScrImage (briefingScreens [nScreen % MAX_BRIEFING_SCREENS].bs_name, 1)) != PCX_ERROR_NONE) {
-#endif
-		console.printf (CON_DBG, "File '%s', PCX load error: %s (%i)\n  (It's a briefing screen.  Does this cause you pain?)\n", 
-						briefingScreens [nScreen % MAX_BRIEFING_SCREENS].bs_name, pcx_errormsg (pcxResult), pcxResult);
-		Int3 ();
-		return 0;
-		}
-	paletteManager.LoadEffect (bmBriefing.Palette ());
-	CCanvas::SetCurrent (NULL);
-	bmBriefing.RenderFullScreen ();
-	GrUpdate (0);
-	bmBriefing.Destroy ();
-	if (paletteManager.EnableEffect ())
-		return 1;
-	}
-if (!ShowBriefingText (nScreen, nLevel))
-	return 0;
-if (paletteManager.DisableEffect ())
-	return 1;
-return 1;
 }
 
 //-----------------------------------------------------------------------------
@@ -1642,7 +1627,6 @@ if (!LoadScreenText (fnBriefing, &szBriefingText)) {
 	return;
 	}
 audio.StopAllSounds ();
-SetRenderQuality (0);
 RebuildRenderContext (1);
 songManager.Play (SONG_BRIEFING, 1);
 SetScreenMode (SCREEN_MENU);
@@ -1657,7 +1641,7 @@ if (gameStates.app.bD1Mission) {
 		while (!bAbortBriefing && 
 				 (nCurBriefingScreen < MAX_BRIEFING_SCREENS) && 
 				 (briefingScreens [nCurBriefingScreen].nLevel == ((gameStates.app.bD1Mission && bEnding) ? nLevel : 0))) {
-			bAbortBriefing = ShowBriefingScreen (nCurBriefingScreen, 0, (short) nLevel);
+			bAbortBriefing = LoadLevelScreen (nCurBriefingScreen, (short) nLevel);
 			nCurBriefingScreen++;
 			if (gameStates.app.bD1Mission && bEnding)
 				break;
@@ -1666,17 +1650,16 @@ if (gameStates.app.bD1Mission) {
 	if (!bAbortBriefing) {
 		for (nCurBriefingScreen = 0; nCurBriefingScreen < MAX_BRIEFING_SCREENS; nCurBriefingScreen++)
 			if (briefingScreens [nCurBriefingScreen].nLevel == nLevel)
-				if (ShowBriefingScreen (nCurBriefingScreen, 0, (short) nLevel))
+				if (LoadLevelScreen (nCurBriefingScreen, (short) nLevel))
 					break;
 		}
 	}
 else
-	ShowBriefingScreen (nLevel, 0, (short) nLevel);
+	LoadLevelScreen (nLevel, (short) nLevel);
 gameStates.render.bBriefing = 0;
 delete[] szBriefingText;
 szBriefingText = NULL;
 KeyFlush ();
-SetRenderQuality ();
 return;
 }
 

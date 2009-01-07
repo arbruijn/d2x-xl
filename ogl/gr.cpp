@@ -500,7 +500,7 @@ if (screen.scMode != SM (800,600)) {
 		return 0;
 		}
 	}
-paletteManager.LoadEffect  ();
+paletteManager.LoadEffect ();
 GrInitSubCanvas (&gameStates.render.vr.buffers.editorCanvas, screen.Canvas (), 0, 0, screen.Width (), screen.Height ());
 Canv_editor = &gameStates.render.vr.buffers.editorCanvas;
 GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[0], Canv_editor, 0, 0, Canv_editor->bm.Width (), Canv_editor->bm.Height ());

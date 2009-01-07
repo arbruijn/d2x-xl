@@ -3124,7 +3124,7 @@ void NDStopRecording (void)
 
 NDFinishRecording ();
 gameData.demo.nState = ND_STATE_NORMAL;
-paletteManager.LoadEffect  ();
+paletteManager.LoadEffect ();
 if (filename [0] != '\0') {
 	int num, i = (int) strlen (filename) - 1;
 	char newfile [15];

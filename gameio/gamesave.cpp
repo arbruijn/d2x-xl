@@ -1555,7 +1555,7 @@ if (Errors_in_mine) {
 
 		sprintf(ErrorMessage, TXT_MINE_ERRORS, Errors_in_mine, Level_being_loaded);
 		StopTime();
-		paletteManager.LoadEffect  ();
+		paletteManager.LoadEffect ();
 		MsgBox(NULL, 1, TXT_CONTINUE, ErrorMessage);
 		StartTime();
 	} else {
@@ -1578,7 +1578,7 @@ if (!no_oldLevel_file_error && (gameStates.app.nFunctionMode == FMODE_EDITOR) &&
 				"it as a current version level?");
 
 	StopTime();
-	paletteManager.LoadEffect  ();
+	paletteManager.LoadEffect ();
 	if (MsgBox(NULL, 2, "Don't Save", "Save", ErrorMessage)==1)
 		SaveLevel(filename);
 	StartTime();
@@ -1815,7 +1815,7 @@ int saveLevel_sub(char * filename, int compiledVersion)
 
 				sprintf(ErrorMessage, TXT_MINE_ERRORS2, Errors_in_mine);
 				StopTime();
-				paletteManager.LoadEffect  ();
+				paletteManager.LoadEffect ();
 	 
 				if (MsgBox(NULL, 2, TXT_CANCEL_SAVE, TXT_DO_SAVE, ErrorMessage)!=1) {
 					StartTime();
@@ -1843,7 +1843,7 @@ int saveLevel_sub(char * filename, int compiledVersion)
 			"ERROR: Cannot write to '%s'.\nYou probably need to check out a locked\nversion of the file. You should save\nthis under a different filename, and then\ncheck out a locked copy by typing\n\'co -l %s.lvl'\nat the DOS prompt.\n" 
 			, temp_filename, fname);
 		StopTime();
-		paletteManager.LoadEffect  ();
+		paletteManager.LoadEffect ();
 		MsgBox(NULL, 1, "Ok", ErrorMessage);
 		StartTime();
 		return 1;

@@ -326,7 +326,7 @@ for (i=0; i<gameData.multiplayer.nPlayers; i++) {
 	}
 ScoreTableDrawDeaths (sorted);
 GrUpdate (0);
-paletteManager.LoadEffect  ();
+paletteManager.LoadEffect ();
 }
 
 //-----------------------------------------------------------------------------
@@ -352,7 +352,7 @@ for (i=0; i<gameData.multiplayer.nPlayers; i++) {
 	}
 ScoreTableDrawDeaths (sorted);
 CCanvas::SetCurrent (NULL);
-paletteManager.LoadEffect  ();
+paletteManager.LoadEffect ();
 GrUpdate (0);
 }
 

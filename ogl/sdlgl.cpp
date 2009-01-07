@@ -209,7 +209,7 @@ gameStates.ogl.bCurFullScreen = gameStates.ogl.bFullScreen;
 if (gameStates.ogl.bInitialized && bRebuild) {
 	OglViewport (0, 0, w, h);
 	if (gameStates.app.bGameRunning) {
-		paletteManager.LoadEffect  ();
+		paletteManager.LoadEffect ();
 		RebuildRenderContext (1);
 		}
 	else

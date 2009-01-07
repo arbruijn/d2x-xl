@@ -242,7 +242,7 @@ return cf.Open (filename, gameFolders.szDataDir, "rb", 0);
 	int ret;
 
 ShowBoxedMessage ("Copying bitmap data from CD...");
-paletteManager.LoadEffect  ();    //I don't think this line is really needed
+paletteManager.LoadEffect ();    //I don't think this line is really needed
 //First, delete all PIG files currently in the directory
 if (!FFF ("*.pig", &ffs, 0)) {
 	do {
@@ -522,7 +522,7 @@ const char * szCriticalErrors [13] = {
 void PiggyCriticalError (void)
 {
 CCanvas::Push ();
-paletteManager.LoadEffect  ();
+paletteManager.LoadEffect ();
 int i = MsgBox ("Disk Error", NULL, 2, "Retry", "Exit", "%s\non drive %c:", szCriticalErrors [descent_critical_errcode&0xf], (descent_critical_deverror&0xf)+'A');
 CCanvas::Pop ();
 if (i == 1)

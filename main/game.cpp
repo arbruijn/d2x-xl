@@ -1032,7 +1032,7 @@ gameStates.app.bGameAborted = 0;
 gameStates.render.cockpit.nLastDrawn[0] = -1;				// Force cockpit to redraw next time a frame renders.
 gameStates.render.cockpit.nLastDrawn[1] = -1;				// Force cockpit to redraw next time a frame renders.
 gameStates.app.bEndLevelSequence = 0;
-paletteManager.LoadEffect  ();
+paletteManager.LoadEffect ();
 SetScreenMode (SCREEN_GAME);
 paletteManager.ResetEffect ();
 SetWarnFunc (ShowInGameWarning);
@@ -1142,7 +1142,7 @@ if (!setjmp (gameExitPoint)) {
 			if (!IsMultiGame) {
 				paletteManager.SaveEffect ();
 				paletteManager.ResetEffect ();
-				paletteManager.LoadEffect  ();
+				paletteManager.LoadEffect ();
 				}
 			ConfigMenu ();
 			if (bScanlineDouble != double_save)
@@ -1173,7 +1173,7 @@ if (!setjmp (gameExitPoint)) {
 			SetFunctionMode (FMODE_GAME);
 			paletteManager.SaveEffect ();
 			paletteManager.ResetEffect ();
-			paletteManager.LoadEffect  ();
+			paletteManager.LoadEffect ();
 			choice = MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_AUTODEMO);
 			paletteManager.LoadEffect ();
 			SetFunctionMode (fmode);

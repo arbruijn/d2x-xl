@@ -292,11 +292,11 @@ if (nSmoothe) {
 		*vOffs *= FixDiv (nSmoothe * nDist, nMag);	//scale offset vector with distance to attractor (the closer, the smaller)
 	else
 		*vOffs *= FixDiv (nDist, nSmoothe * nMag);	//scale offset vector with distance to attractor (the closer, the smaller)
-	nMag = vPrevOffs->Mag  ();
+	nMag = vPrevOffs->Mag ();
 	*vOffs += *vPrevOffs;
-	nMag = vOffs->Mag  ();
+	nMag = vOffs->Mag ();
 	*vOffs *= FixDiv(nDist, nMag);
-	nMag = vOffs->Mag  ();
+	nMag = vOffs->Mag ();
 	}
 return vOffs;
 }
