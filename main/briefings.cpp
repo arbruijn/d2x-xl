@@ -458,7 +458,7 @@ briefingTextY = gameStates.app.bD1Mission ? bsP->text_uly : bsP->text_uly - (8 *
 void ShowBitmapFrame (tBriefingInfo& bi, int bRedraw)
 {
 int t = SDL_GetTicks ();
-if (t - bi.tAnimate < 5)
+if (t - bi.tAnimate < 10)
 	return;
 bi.tAnimate = t;
 
@@ -605,7 +605,7 @@ void ShowSpinningRobotFrame (tBriefingInfo& bi)
 if (bi.nRobot == -1)
 	return;
 int t = SDL_GetTicks ();
-if (t - bi.tAnimate < 1)
+if (t - bi.tAnimate < 10)
 	return;
 
 CCanvas::Push ();
@@ -615,7 +615,7 @@ if (bInitAnimate) {
 	paletteManager.Load ("", "", 0, 0, 1);
 	OglCachePolyModelTextures (ROBOTINFO (bi.nRobot).nModel);
 	paletteManager.LoadEffect ();
-	bInitAnimate = 0;
+	bInitAnimate = SDL_GetTicks ();
 	}
 gameStates.render.bFullBright	= 1;
 
@@ -663,7 +663,7 @@ if (robotCanvP)
 	delete robotCanvP;
 robotCanvP = CCanvas::Current ()->CreatePane (x, y, w, h);
 bInitAnimate = 1;
-bi.tAnimate = 0;
+bi.tAnimate = SDL_GetTicks ();
 }
 
 //---------------------------------------------------------------------------
@@ -697,14 +697,12 @@ if (delay > 0)
 
 AnimateBriefing (bi);
 if ((delay > 0) && !bi.bRedraw) {
-//	if (*szBitmapName)
-//		ShowBitmapFrame (0);
 	do {
 		AnimateBriefing (bi);
 		} while ((t = SDL_GetTicks ()) < (tText + delay));
 	}
 
-tText = SDL_GetTicks ();
+tText = t;
 
 //	Erase cursor
 if (bi.bFlashingCursor && (delay > 0) && !bi.bRedraw) {
@@ -898,7 +896,7 @@ memset (&bmGuy, 0, sizeof (bmGuy));
 iff_error = iff.ReadBitmap (szBitmap, &bmGuy, BM_LINEAR);
 if (iff_error != IFF_NO_ERROR)
 	return 0;
-bi.tAnimate = 0;
+bi.tAnimate = SDL_GetTicks ();
 ShowBriefingBitmap (&bmGuy);
 bmGuy.DestroyBuffer ();
 bi.prevCh = 10;
@@ -952,7 +950,7 @@ if (bi.message > bi.pj) {
 	GetMessageName (&bi.message, szBitmapName);
 	strcat (szBitmapName, "#0");
 	nAnimatingBitmapType = 0;
-	bi.tAnimate = 0;
+	bi.tAnimate = SDL_GetTicks ();
 	}
 bi.prevCh = 10;
 return 1;
@@ -970,7 +968,7 @@ if (bi.message > bi.pj) {
 	GetMessageName (&bi.message, szBitmapName);
 	strcat (szBitmapName, "#0");
 	nAnimatingBitmapType = 1;
-	bi.tAnimate = 0;
+	bi.tAnimate = SDL_GetTicks ();
 	}
 bi.prevCh = 10;
 return 1;
