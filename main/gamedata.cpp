@@ -687,11 +687,16 @@ xEnergyToCreateOneRobot = I2X (1);
 
 CRobotData::CRobotData () 
 {
-for (int i = 0; i < 2; i++)
+for (int i = 0; i < 2; i++) {
 	info [i].Create (MAX_ROBOT_TYPES);
+	info [i].Clear (0xff);
+	}
 defaultInfo.Create (MAX_ROBOT_TYPES);
-joints .Create (MAX_ROBOT_JOINTS);
+defaultInfo.Clear (0xff);
+joints.Create (MAX_ROBOT_JOINTS);
+joints.Clear (0xff);
 defaultJoints.Create (MAX_ROBOT_JOINTS);
+defaultJoints.Clear (0xff);
 CLEAR (robotNames);
 nJoints = 0;
 nDefaultJoints = 0;

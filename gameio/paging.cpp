@@ -90,7 +90,7 @@ for (i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++) {
 
 //------------------------------------------------------------------------------
 
-void PagingTouchObjectEffects (int nTexture)
+void LoadObjectEffectTextures (int nTexture)
 {
 	int	i;
 	tEffectClip *ecP = gameData.eff.effectP.Buffer ();
@@ -102,7 +102,7 @@ for (i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++)
 
 //------------------------------------------------------------------------------
 
-void PagingTouchModel (int nModel)
+void LoadModelTextures (int nModel)
 {
 	int			i, j;
 	ushort		*pi;
@@ -111,7 +111,7 @@ void PagingTouchModel (int nModel)
 for (i = pm->nTextures, pi = gameData.pig.tex.objBmIndexP + pm->nFirstTexture; i; i--, pi++) {
 	j = *pi;
 	LoadBitmap (gameData.pig.tex.objBmIndex [j].index, 0);
-	PagingTouchObjectEffects (j);
+	LoadObjectEffectTextures (j);
 	}
 }
 
@@ -144,7 +144,7 @@ switch (gameData.weapons.info [nWeaponType].renderType) {
 		break;
 
 	case WEAPON_RENDER_POLYMODEL:
-		PagingTouchModel (gameData.weapons.info [nWeaponType].nModel);
+		LoadModelTextures (gameData.weapons.info [nWeaponType].nModel);
 		break;
 
 	case WEAPON_RENDER_BLOB:
@@ -157,12 +157,12 @@ switch (gameData.weapons.info [nWeaponType].renderType) {
 
 sbyte superBossGateTypeList [13] = {0, 1, 8, 9, 10, 11, 12, 15, 16, 18, 19, 20, 22};
 
-void PagingTouchRobot (int robotIndex)
+void LoadRobotTextures (int robotIndex)
 {
 	int i;
 
 // Page in robotIndex
-PagingTouchModel (ROBOTINFO (robotIndex).nModel);
+LoadModelTextures (ROBOTINFO (robotIndex).nModel);
 if (ROBOTINFO (robotIndex).nExp1VClip>-1)
 	LoadVClipTextures (&gameData.eff.vClips [0][ROBOTINFO (robotIndex).nExp1VClip], 0);
 if (ROBOTINFO (robotIndex).nExp2VClip>-1)
@@ -172,7 +172,7 @@ LoadWeaponTextures (ROBOTINFO (robotIndex).nWeaponType);
 // A super-boss can gate in robots...
 if (ROBOTINFO (robotIndex).bossFlag == 2) {
 	for (i = 0; i < 13; i++)
-		PagingTouchRobot (superBossGateTypeList [i]);
+		LoadRobotTextures (superBossGateTypeList [i]);
 	LoadVClipTextures (&gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT], 0);
 	}
 }
@@ -189,7 +189,7 @@ switch (info.renderType) {
 
 	case RT_POLYOBJ:
 		if (rType.polyObjInfo.nTexOverride == -1)
-			PagingTouchModel (rType.polyObjInfo.nModel);
+			LoadModelTextures (rType.polyObjInfo.nModel);
 		else
 			LoadBitmap (gameData.pig.tex.bmIndex [0][rType.polyObjInfo.nTexOverride].index, 0);
 		break;
@@ -223,13 +223,13 @@ switch (info.nType) {
 		break;
 
 	case OBJ_ROBOT:
-		PagingTouchRobot (info.nId);
+		LoadRobotTextures (info.nId);
 		break;
 
 	case OBJ_REACTOR:
 		LoadWeaponTextures (CONTROLCEN_WEAPON_NUM);
 		if (gameData.models.nDeadModels [rType.polyObjInfo.nModel] != -1)
-			PagingTouchModel (gameData.models.nDeadModels [rType.polyObjInfo.nModel]);
+			LoadModelTextures (gameData.models.nDeadModels [rType.polyObjInfo.nModel]);
 		break;
 	}
 }
@@ -276,16 +276,17 @@ if (m_nType != SEGMENT_IS_ROBOTMAKER)
 LoadVClipTextures (&gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT], 0);
 if (!gameData.matCens.botGens [m_nMatCen].objFlags)
 	return;
-for (i = 0, robotIndex = 0; i < 2; i++, robotIndex += 32)
+for (i = 0; i < 2; i++, robotIndex += 32) {
+	robotIndex = i * 32;
 	for (flags = gameData.matCens.botGens [m_nMatCen].objFlags [i]; flags; flags >>= 1, robotIndex++)
 		if (flags & 1)
-			PagingTouchRobot (robotIndex);
+			LoadRobotTextures (robotIndex);
+	}
 }
-
 
 //------------------------------------------------------------------------------
 
-void PagingTouchObjects (int nType)
+void LoadObjectTextures (int nType)
 {
 	//int		i;
 	CObject	*objP;
