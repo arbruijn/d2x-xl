@@ -68,7 +68,7 @@ void DoPlayerDead (void);
 void SetPosFromReturnSegment (int bRelink);
 // load a level off disk. level numbers start at 1.
 // Secret levels are -1,-2,-3
-void UnloadLevelData (void);
+void UnloadLevelData (int bRestore = 0);
 int LoadLevel (int nLevel, int bPageInTextures, int bRestore);
 void AddPlayerLoadout (void);
 

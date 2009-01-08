@@ -698,7 +698,7 @@ return gameStates.app.bAutoRunMission ? 0 :
 
 //------------------------------------------------------------------------------
 
-void UnloadLevelData (void)
+void UnloadLevelData (int bRestore)
 {
 audio.DestroyObjectSound (LOCALPLAYER.nObject);
 /*---*/PrintLog ("   stopping music\n");
@@ -706,7 +706,6 @@ songManager.StopAll ();
 /*---*/PrintLog ("   stopping sounds\n");
 audio.StopAllSounds ();
 /*---*/PrintLog ("   reconfiguring audio\n");
-gameData.missions.nCurrentLevel = nLevel;
 if (!bRestore) {
 	gameStates.gameplay.slowmo [0].fSpeed =
 	gameStates.gameplay.slowmo [1].fSpeed = 1;
@@ -802,7 +801,8 @@ gameData.render.faceIndex [1].nUsedFaces = LEVEL_FACES;
 gameData.render.faceIndex [1].nUsedKeys = 0;
 omegaLightnings.Init ();
 gameData.multiplayer.bMoving = -1;
-UnloadLevelData ();
+gameData.missions.nCurrentLevel = nLevel;
+UnloadLevelData (bRestore);
 /*---*/PrintLog ("   restoring default robot settings\n");
 RestoreDefaultRobots ();
 if (gameData.bots.bReplacementsLoaded) {
