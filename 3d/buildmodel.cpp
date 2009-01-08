@@ -873,7 +873,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-int G3BuildModel (CObject* objP, int nModel, tPolyModel* pp, CBitmap** modelBitmaps, tRgbaColorf* pObjColor, int bHires)
+int G3BuildModel (CObject* objP, int nModel, CPolyModel* pp, CBitmap** modelBitmaps, tRgbaColorf* pObjColor, int bHires)
 {
 	RenderModel::CModel*	pm = gameData.models.renderModels [bHires] + nModel;
 

@@ -1738,7 +1738,7 @@ void bm_read_player_ship()
 	//calc tPlayer gun positions
 
 	{
-		tPolyModel *pm;
+		CPolyModel *pm;
 		tRobotInfo *r;
 		vmsVector pnt;
 		int mn;				//submodel number
@@ -2276,9 +2276,9 @@ fprintf(tfile,"N_powerupTypes = %d, powerupInfo array = %d\n",N_powerupTypes,siz
 
 	t = N_D2_POLYGON_MODELS;
 	fwrite( &t, sizeof(int), 1, fp );
-	fwrite( gameData.models.polyModels, sizeof(tPolyModel), t, fp );
+	fwrite( gameData.models.polyModels, sizeof(CPolyModel), t, fp );
 
-fprintf(tfile,"gameData.models.nPolyModels = %d, gameData.models.polyModels array = %d\n",t,sizeof(tPolyModel)*t);
+fprintf(tfile,"gameData.models.nPolyModels = %d, gameData.models.polyModels array = %d\n",t,sizeof(CPolyModel)*t);
 
 	for (i=0; i<t; i++ )	{
 		g3_uninit_polygon_model(gameData.models.polyModels[i].modelData);	//get RGB colors
@@ -2371,7 +2371,7 @@ void bm_write_extraRobots()
 
 	t = gameData.models.nPolyModels - N_D2_POLYGON_MODELS;
 	fwrite( &t, sizeof(int), 1, fp );
-	fwrite( &gameData.models.polyModels[N_D2_POLYGON_MODELS], sizeof(tPolyModel), t, fp );
+	fwrite( &gameData.models.polyModels[N_D2_POLYGON_MODELS], sizeof(CPolyModel), t, fp );
 
 	for (i=N_D2_POLYGON_MODELS; i<gameData.models.nPolyModels; i++ )	{
 		g3_uninit_polygon_model(gameData.models.polyModels[i].modelData);	//get RGB colors

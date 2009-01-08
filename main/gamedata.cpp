@@ -774,11 +774,39 @@ gameData.marker.fScale = 2.0f;
 
 CModelData::CModelData ()
 {
-memset (this, 0, sizeof (*this)); 
+nLoresModels = 0;
+nHiresModels = 0;
+nPolyModels = 0;
+nDefPolyModels = 0;
+nCockpits = 0;
 nSimpleModelThresholdScale = 5;
 nMarkerModel = -1;
-memset (nDyingModels, 0xff, sizeof (nDyingModels));
-memset (nDeadModels, 0xff, sizeof (nDeadModels));
+vScale.SetZero ();
+
+for (int i = 0; i < 2; i++) {
+	CREATE (aseModels.[i], MAX_POLYGON_MODELS, 0xff);
+	CREATE (oofModels.[i], MAX_POLYGON_MODELS, 0xff);
+	CREATE (pofData.[i], 2, 0xff), MAX_POLYGON_MODELS, 0xff);
+	CREATE (modelToOOF.[i], MAX_POLYGON_MODELS, 0xff);
+	CREATE (modelToASE.[i], MAX_POLYGON_MODELS, 0xff);
+	CREATE (renderModels.[i], MAX_POLYGON_MODELS, 0xff);
+	}
+CREATE (bHaveHiresModel, MAX_POLYGON_MODELS, 0);
+CREATE (polyModels, MAX_POLYGON_MODELS, 0xff);
+CREATE (defPolyModels, MAX_POLYGON_MODELS, 0xff);
+CREATE (altPolyModels, MAX_POLYGON_MODELS, 0xff);
+CREATE (modelToPOL, MAX_POLYGON_MODELS, 0xff);
+CREATE (polyModelPoints, MAX_POLYGON_VERTS, 0xff);
+CREATE (fPolyModelVerts, MAX_POLYGON_VERTS, 0xff);
+CREATE (textures, MAX_POLYOBJ_TEXTURES, 0xff);
+CREATE (textureIndex, MAX_POLYOBJ_TEXTURES, 0xff);
+CREATE (nDyingModels, MAX_POLYGON_MODELS, 0xff);
+CREATE (nDeadModels, MAX_POLYGON_MODELS, 0xff);
+CREATE (hitboxes, MAX_POLYGON_MODELS, 0xff);
+CREATE (thrusters, MAX_POLYGON_MODELS, 0xff);
+CREATE (offsets, MAX_POLYGON_MODELS, 0xff);
+CREATE (gunInfo, MAX_POLYGON_MODELS, 0xff);
+CREATE (spheres, MAX_POLYGON_MODELS, 0xff);
 }
  
 // ----------------------------------------------------------------------------

@@ -197,7 +197,7 @@ class CModel {
 
 		int BuildFromASE (CObject *objP, int nModel);
 		int BuildFromOOF (CObject *objP, int nModel);
-		int BuildFromPOF (CObject* objP, int nModel, tPolyModel* pp, CBitmap** modelBitmaps, tRgbaColorf* objColorP);
+		int BuildFromPOF (CObject* objP, int nModel, CPolyModel* pp, CBitmap** modelBitmaps, tRgbaColorf* objColorP);
 
 	private:
 		void CountASEModelItems (ASE::CModel *pa);

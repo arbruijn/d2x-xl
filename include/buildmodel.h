@@ -12,18 +12,18 @@ void G3SetupModel (RenderModel::CModel *pm, int bHires, int bSort);
 int G3ShiftModel (CObject *objP, int nModel, int bHires);
 fix G3ModelSize (CObject *objP, RenderModel::CModel *pm, int nModel, int bHires);
 void G3SetGunPoints (CObject *objP, RenderModel::CModel *pm, int nModel, int bASE);
-int G3BuildModel (CObject *objP, int nModel, tPolyModel *pp, CBitmap **modelBitmaps, tRgbaColorf *pObjColor, int bHires);
+int G3BuildModel (CObject *objP, int nModel, CPolyModel *pp, CBitmap **modelBitmaps, tRgbaColorf *pObjColor, int bHires);
 int G3ModelMinMax (int nModel, tHitbox *phb);
 
 int G3BuildModelFromASE (CObject *objP, int nModel);
 int G3BuildModelFromOOF (CObject *objP, int nModel);
-int G3BuildModelFromPOF (CObject *objP, int nModel, tPolyModel *pp, CBitmap **modelBitmaps, tRgbaColorf *pObjColor);
+int G3BuildModelFromPOF (CObject *objP, int nModel, CPolyModel *pp, CBitmap **modelBitmaps, tRgbaColorf *pObjColor);
 
 //------------------------------------------------------------------------------
 
 static inline int IsDefaultModel (int nModel)
 {
-return gameData.models.polyModels [nModel].nDataSize == gameData.models.defPolyModels [nModel].nDataSize;
+return gameData.models.polyModels [nModel].DataSize () == gameData.models.defPolyModels [nModel].DataSize ();
 }
 
 //------------------------------------------------------------------------------

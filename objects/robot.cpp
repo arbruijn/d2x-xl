@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //fills in gun_point
 int CalcGunPoint (CFixVector *vGunPoint, CObject *objP, int nGun)
 {
-	tPolyModel	*pm = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
+	CPolyModel	*pm = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
 	tRobotInfo	*botInfoP;
 	CFixVector	*vGunPoints, vGunPos, vRot;
 	CFixMatrix	m;
@@ -104,7 +104,7 @@ void setRobotState (CObject *objP, int state)
 //	-----------------------------------------------------------------------------------------------------------
 //set the animation angles for this robot.  Gun fields of robot info must
 //be filled in.
-void SetRobotAngles (tRobotInfo *r, tPolyModel *pm, CAngleVector angs [N_ANIM_STATES][MAX_SUBMODELS])
+void SetRobotAngles (tRobotInfo *r, CPolyModel* pm, CAngleVector angs [N_ANIM_STATES][MAX_SUBMODELS])
 {
 	int m,g,state;
 	int nGunCounts [MAX_SUBMODELS];			//which gun each submodel is part of

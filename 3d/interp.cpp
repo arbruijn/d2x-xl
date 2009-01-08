@@ -158,93 +158,92 @@ PROF_END(ptTransform)
 
 //------------------------------------------------------------------------------
 
-void G3SwapPolyModelData (ubyte *data)
+void G3SwapPolyModelData (ubyte *dataP)
 {
-	int i;
+	int	i;
 	short n;
-	tUVL *uvl_val;
-	ubyte *p = data;
+	tUVL*	uvl_val;
 
 for (;;) {
-	ShortSwap (WORDPTR (p));
-	switch (WORDVAL (p)) {
+	ShortSwap (WORDPTR (dataP));
+	switch (WORDVAL (dataP)) {
 		case OP_EOF:
 			return;
 
 		case OP_DEFPOINTS:
-			ShortSwap (WORDPTR (p + 2));
-			n = WORDVAL (p+2);
+			ShortSwap (WORDPTR (dataP + 2));
+			n = WORDVAL (dataP + 2);
 			for (i = 0; i < n; i++)
-				VmsVectorSwap(*VECPTR ((p + 4) + (i * sizeof (CFixVector))));
-			p += n*sizeof (CFixVector) + 4;
+				VmsVectorSwap (*VECPTR ((dataP + 4) + (i * sizeof (CFixVector))));
+			dataP += n*sizeof (CFixVector) + 4;
 			break;
 
 		case OP_DEFP_START:
-			ShortSwap (WORDPTR (p + 2));
-			ShortSwap (WORDPTR (p + 4));
-			n = WORDVAL (p+2);
+			ShortSwap (WORDPTR (dataP + 2));
+			ShortSwap (WORDPTR (dataP + 4));
+			n = WORDVAL (dataP + 2);
 			for (i = 0; i < n; i++)
-				VmsVectorSwap(*VECPTR ((p + 8) + (i * sizeof (CFixVector))));
-			p += n*sizeof (CFixVector) + 8;
+				VmsVectorSwap (*VECPTR ((dataP + 8) + (i * sizeof (CFixVector))));
+			dataP += n*sizeof (CFixVector) + 8;
 			break;
 
 		case OP_FLATPOLY:
-			ShortSwap (WORDPTR (p+2));
-			n = WORDVAL (p+2);
-			VmsVectorSwap(*VECPTR (p + 4));
-			VmsVectorSwap(*VECPTR (p + 16));
-			ShortSwap (WORDPTR (p+28));
+			ShortSwap (WORDPTR (dataP + 2));
+			n = WORDVAL (dataP + 2);
+			VmsVectorSwap (*VECPTR (dataP + 4));
+			VmsVectorSwap (*VECPTR (dataP + 16));
+			ShortSwap (WORDPTR (dataP + 28));
 			for (i=0; i < n; i++)
-				ShortSwap (WORDPTR (p + 30 + (i * 2)));
-			p += 30 + ((n&~1)+1)*2;
+				ShortSwap (WORDPTR (dataP + 30 + (i * 2)));
+			dataP += 30 + ((n & ~1) + 1) * 2;
 			break;
 
 		case OP_TMAPPOLY:
-			ShortSwap (WORDPTR (p+2));
-			n = WORDVAL (p+2);
-			VmsVectorSwap(*VECPTR (p + 4));
-			VmsVectorSwap(*VECPTR (p + 16));
+			ShortSwap (WORDPTR (dataP + 2));
+			n = WORDVAL (dataP + 2);
+			VmsVectorSwap (*VECPTR (dataP + 4));
+			VmsVectorSwap (*VECPTR (dataP + 16));
 			for (i = 0; i < n; i++) {
-				uvl_val = reinterpret_cast<tUVL*> (((p+30+ ((n&~1)+1)*2))) + i;
+				uvl_val = reinterpret_cast<tUVL*> (((dataP + 30 + ((n & ~1) + 1) * 2))) + i;
 				FixSwap (&uvl_val->u);
 				FixSwap (&uvl_val->v);
 			}
-			ShortSwap (WORDPTR (p+28));
+			ShortSwap (WORDPTR (dataP + 28));
 			for (i=0;i<n;i++)
-				ShortSwap (WORDPTR (p + 30 + (i * 2)));
-			p += 30 + ((n&~1)+1)*2 + n*12;
+				ShortSwap (WORDPTR (dataP + 30 + (i * 2)));
+			dataP += 30 + ((n & ~1) + 1) * 2 + n*12;
 			break;
 
 		case OP_SORTNORM:
-			VmsVectorSwap(*VECPTR (p + 4));
-			VmsVectorSwap(*VECPTR (p + 16));
-			ShortSwap (WORDPTR (p + 28));
-			ShortSwap (WORDPTR (p + 30));
-			G3SwapPolyModelData (p + WORDVAL (p+28));
-			G3SwapPolyModelData (p + WORDVAL (p+30));
-			p += 32;
+			VmsVectorSwap (*VECPTR (dataP + 4));
+			VmsVectorSwap (*VECPTR (dataP + 16));
+			ShortSwap (WORDPTR (dataP + 28));
+			ShortSwap (WORDPTR (dataP + 30));
+			G3SwapPolyModelData (dataP + WORDVAL (dataP + 28));
+			G3SwapPolyModelData (dataP + WORDVAL (dataP + 30));
+			dataP += 32;
 			break;
 
 		case OP_RODBM:
-			VmsVectorSwap(*VECPTR (p + 20));
-			VmsVectorSwap(*VECPTR (p + 4));
-			ShortSwap (WORDPTR (p+2));
-			FixSwap (FIXPTR (p + 16));
-			FixSwap (FIXPTR (p + 32));
-			p+=36;
+			VmsVectorSwap (*VECPTR (dataP + 20));
+			VmsVectorSwap (*VECPTR (dataP + 4));
+			ShortSwap (WORDPTR (dataP + 2));
+			FixSwap (FIXPTR (dataP + 16));
+			FixSwap (FIXPTR (dataP + 32));
+			dataP + =36;
 			break;
 
 		case OP_SUBCALL:
-			ShortSwap (WORDPTR (p+2));
-			VmsVectorSwap(*VECPTR (p+4));
-			ShortSwap (WORDPTR (p+16));
-			G3SwapPolyModelData (p + WORDVAL (p+16));
-			p += 20;
+			ShortSwap (WORDPTR (dataP + 2));
+			VmsVectorSwap (*VECPTR (dataP + 4));
+			ShortSwap (WORDPTR (dataP + 16));
+			G3SwapPolyModelData (dataP + WORDVAL (dataP + 16));
+			dataP += 20;
 			break;
 
 		case OP_GLOW:
-			ShortSwap (WORDPTR (p + 2));
-			p += 4;
+			ShortSwap (WORDPTR (dataP + 2));
+			dataP += 4;
 			break;
 
 		default:
@@ -256,111 +255,56 @@ for (;;) {
 //------------------------------------------------------------------------------
 
 #ifdef WORDS_NEED_ALIGNMENT
-void G3AddPolyModelChunk (ubyte *old_base, ubyte *new_base, int offset,
-	       chunk *chunk_list, int *no_chunks)
+void G3AddPolyModelChunk (ubyte *old_base, ubyte *new_base, int offset, chunk *chunk_list, int *no_chunks)
 {
-	Assert (*no_chunks + 1 < MAX_CHUNKS); //increase MAX_CHUNKS if you get this
-	chunk_list [*no_chunks].old_base = old_base;
-	chunk_list [*no_chunks].new_base = new_base;
-	chunk_list [*no_chunks].offset = offset;
-	chunk_list [*no_chunks].correction = 0;
-	 (*no_chunks)++;
+Assert (*no_chunks + 1 < MAX_CHUNKS); //increase MAX_CHUNKS if you get this
+chunk_list [*no_chunks].old_base = old_base;
+chunk_list [*no_chunks].new_base = new_base;
+chunk_list [*no_chunks].offset = offset;
+chunk_list [*no_chunks].correction = 0;
+(*no_chunks)++;
 }
 
 //------------------------------------------------------------------------------
-/*
- * finds what chunks the data points to, adds them to the chunk_list,
- * and returns the length of the current chunk
- */
-int G3GetPolyModelChunks (ubyte *data, ubyte *new_data, chunk *list, int *no)
+
+void G3PolyModelVerify (ubyte *dataP)
 {
 	short n;
-	ubyte *p = data;
 
 for (;;) {
-	switch (INTEL_SHORT (WORDVAL (p))) {
-		case OP_EOF:
-			return p + 2 - data;
-		case OP_DEFPOINTS:
-			n = INTEL_SHORT (WORDVAL (p+2));
-			p += n*sizeof (CFixVector) + 4;
-			break;
-		case OP_DEFP_START:
-			n = INTEL_SHORT (WORDVAL (p+2));
-			p += n*sizeof (CFixVector) + 8;
-			break;
-		case OP_FLATPOLY:
-			n = INTEL_SHORT (WORDVAL (p+2));
-			p += 30 + ((n&~1)+1)*2;
-			break;
-		case OP_TMAPPOLY:
-			n = INTEL_SHORT (WORDVAL (p+2));
-			p += 30 + ((n&~1)+1)*2 + n*12;
-			break;
-		case OP_SORTNORM:
-			G3AddPolyModelChunk (p, p - data + new_data, 28, list, no);
-			G3AddPolyModelChunk (p, p - data + new_data, 30, list, no);
-			p += 32;
-			break;
-		case OP_RODBM:
-			p+=36;
-			break;
-		case OP_SUBCALL:
-			G3AddPolyModelChunk (p, p - data + new_data, 16, list, no);
-			p+=20;
-			break;
-		case OP_GLOW:
-			p += 4;
-			break;
-		default:
-			Error ("invalid polygon model\n");
-		}
-	}
-return p + 2 - data;
-}
-#endif //def WORDS_NEED_ALIGNMENT
-
-//------------------------------------------------------------------------------
-
-void G3PolyModelVerify (ubyte *data)
-{
-	short n;
-	ubyte *p = data;
-
-for (;;) {
-	switch (WORDVAL (p)) {
+	switch (WORDVAL (dataP)) {
 		case OP_EOF:
 			return;
 		case OP_DEFPOINTS:
-			n = (WORDVAL (p+2));
-			p += n*sizeof (CFixVector) + 4;
+			n = (WORDVAL (dataP + 2));
+			dataP += n*sizeof (CFixVector) + 4;
 			break;
 		case OP_DEFP_START:
-			n = (WORDVAL (p+2));
-			p += n*sizeof (CFixVector) + 8;
+			n = (WORDVAL (dataP + 2));
+			dataP += n*sizeof (CFixVector) + 8;
 			break;
 		case OP_FLATPOLY:
-			n = (WORDVAL (p+2));
-			p += 30 + ((n&~1)+1)*2;
+			n = (WORDVAL (dataP + 2));
+			dataP += 30 + ((n & ~1) + 1) * 2;
 			break;
 		case OP_TMAPPOLY:
-			n = (WORDVAL (p+2));
-			p += 30 + ((n&~1)+1)*2 + n*12;
+			n = (WORDVAL (dataP + 2));
+			dataP += 30 + ((n & ~1) + 1) * 2 + n*12;
 			break;
 		case OP_SORTNORM:
-			G3PolyModelVerify (p + WORDVAL (p + 28));
-			G3PolyModelVerify (p + WORDVAL (p + 30));
-			p += 32;
+			G3PolyModelVerify (dataP + WORDVAL (dataP + 28));
+			G3PolyModelVerify (dataP + WORDVAL (dataP + 30));
+			dataP += 32;
 			break;
 		case OP_RODBM:
-			p+=36;
+			dataP + =36;
 			break;
 		case OP_SUBCALL:
-			G3PolyModelVerify (p + WORDVAL (p + 16));
-			p+=20;
+			G3PolyModelVerify (dataP + WORDVAL (dataP + 16));
+			dataP + =20;
 			break;
 		case OP_GLOW:
-			p += 4;
+			dataP += 4;
 			break;
 		default:
 			Error ("invalid polygon model\n");
@@ -370,16 +314,16 @@ for (;;) {
 
 //------------------------------------------------------------------------------
 
-int G3CheckAndSwap (void *modelP)
+int G3CheckAndSwap (void *dataP)
 {
-	short	h = WORDVAL (modelP);
+	short	h = WORDVAL (dataP);
 
 if ((h >= 0) && (h <= OP_GLOW))
 	return 1;
 ShortSwap (&h);
 if ((h < 0) || (h > OP_GLOW))
 	return 0;
-G3SwapPolyModelData (reinterpret_cast<ubyte*> (modelP));
+G3SwapPolyModelData (reinterpret_cast<ubyte*> (dataP));
 return 1;
 }
 
@@ -667,7 +611,7 @@ for (;;) {
 				G3CheckAndDrawPoly (3, pointList, NULL, NULL);
 				pointList [1] = pointList [2];
 				}
-			p += 30 + ((nVerts&~1)+1)*2;
+			p += 30 + ((nVerts & ~1) + 1) * 2;
 			break;
 			}
 
@@ -688,7 +632,7 @@ for (;;) {
 				nGlow = -1;
 				}
 			//now poke light into l values
-			uvlList = reinterpret_cast<tUVL*> (p+30+ ((nVerts&~1)+1)*2);
+			uvlList = reinterpret_cast<tUVL*> (p+30+ ((nVerts & ~1) + 1) * 2);
 			for (i = 0; i < 3; i++)
 				morph_uvls [i].l = light;
 			for (i = 0; i < 2; i++) {
@@ -706,7 +650,7 @@ for (;;) {
 				morph_uvls [1].u = morph_uvls [2].u;
 				morph_uvls [1].v = morph_uvls [2].v;
 				}
-			p += 30 + ((nVerts&~1)+1)*2 + nVerts*12;
+			p += 30 + ((nVerts & ~1) + 1) * 2 + nVerts*12;
 			break;
 			}
 
@@ -755,86 +699,6 @@ for (;;) {
 		}
 	}
 return 1;
-}
-
-//------------------------------------------------------------------------------
-
-void InitSubModel (ubyte *p)
-{
-#if DBG
-Assert (++nestCount < 1000);
-#endif
-for (;;) {
-	switch (WORDVAL (p)) {
-		case OP_EOF:
-			return;
-
-		case OP_DEFPOINTS: {
-			int n = WORDVAL (p+2);
-			p += n*sizeof (CFixVector) + 4;
-			break;
-			}
-
-		case OP_DEFP_START: {
-			int n = WORDVAL (p+2);
-			p += n*sizeof (CFixVector) + 8;
-			break;
-			}
-
-		case OP_FLATPOLY: {
-			int nVerts = WORDVAL (p+2);
-			Assert (nVerts > 2);		//must have 3 or more points
-			p += 30 + ((nVerts&~1)+1)*2;
-			break;
-			}
-
-		case OP_TMAPPOLY: {
-			int nVerts = WORDVAL (p+2);
-			Assert (nVerts > 2);		//must have 3 or more points
-			if (WORDVAL (p+28) > nHighestTexture)
-				nHighestTexture = WORDVAL (p+28);
-			p += 30 + ((nVerts&~1)+1)*2 + nVerts*12;
-			break;
-			}
-
-		case OP_SORTNORM:
-			InitSubModel (p + WORDVAL (p+28));
-			InitSubModel (p + WORDVAL (p+30));
-			p += 32;
-			break;
-
-		case OP_RODBM:
-			p += 36;
-			break;
-
-		case OP_SUBCALL: {
-			InitSubModel (p + WORDVAL (p+16));
-			p += 20;
-			break;
-			}
-
-		case OP_GLOW:
-			p += 4;
-			break;
-
-		default:
-			Error ("invalid polygon model\n");
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-//init code for bitmap models
-void G3InitPolyModel (tPolyModel *pm, int nModel)
-{
-#if DBG
-	nestCount = 0;
-#endif
-
-nHighestTexture = -1;
-G3CheckAndSwap (pm->modelData.Buffer ());
-InitSubModel (pm->modelData.Buffer ());
-G3PolyModelSize (pm, nModel);
 }
 
 //------------------------------------------------------------------------------

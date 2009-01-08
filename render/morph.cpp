@@ -46,7 +46,7 @@ return NULL;
 
 //-------------------------------------------------------------
 //takes pmP, fills in min& max
-void MorphFindModelBounds (tPolyModel *pmP, int nSubModel, CFixVector& minv, CFixVector& maxv)
+void MorphFindModelBounds (CPolyModel* pmP, int nSubModel, CFixVector& minv, CFixVector& maxv)
 {
 	ushort nVerts;
 	CFixVector *vp;
@@ -80,7 +80,7 @@ void MorphFindModelBounds (tPolyModel *pmP, int nSubModel, CFixVector& minv, CFi
 
 //-------------------------------------------------------------
 
-int MorphInitPoints (tPolyModel *pmP, CFixVector *vBoxSize, int nSubModel, tMorphInfo *mdP)
+int MorphInitPoints (CPolyModel* pmP, CFixVector *vBoxSize, int nSubModel, tMorphInfo *mdP)
 {
 	ushort		nVerts;
 	CFixVector	*vp, v;
@@ -139,7 +139,7 @@ return 1;
 
 //-------------------------------------------------------------
 
-int MorphUpdatePoints (tPolyModel *pmP, int nSubModel, tMorphInfo *mdP)
+int MorphUpdatePoints (CPolyModel* pmP, int nSubModel, tMorphInfo *mdP)
 {
 	ushort nVerts;
 	CFixVector *vp;
@@ -185,7 +185,7 @@ return 1;
 void CObject::DoMorphFrame (void)
 {
 	int			i, t;
-	tPolyModel	*pmP;
+	CPolyModel	*pmP;
 	tMorphInfo	*mdP;
 
 if (!(mdP = MorphFindData (this))) {	//maybe loaded half-morphed from disk
@@ -234,7 +234,7 @@ for (i = 0; i < MAX_MORPH_OBJECTS; i++)
 //make the CObject morph
 void CObject::MorphStart (void)
 {
-	tPolyModel *pmP;
+	CPolyModel* pmP;
 	CFixVector pmmin, pmmax;
 	CFixVector vBoxSize;
 	int i;
@@ -278,7 +278,7 @@ MorphInitPoints (pmP, &vBoxSize, 0, mdP);
 
 //-------------------------------------------------------------
 
-void MorphDrawModel (tPolyModel *pmP, int nSubModel, CAngleVector *animAngles, fix light, tMorphInfo *mdP, int nModel)
+void MorphDrawModel (CPolyModel* pmP, int nSubModel, CAngleVector *animAngles, fix light, tMorphInfo *mdP, int nModel)
 {
 	int i, mn;
 	int facing;
@@ -348,7 +348,7 @@ for (i = 0; i < sort_n; i++) {
 void CObject::MorphDraw (void)
 {
 //	int save_light;
-	tPolyModel *pmP;
+	CPolyModel* pmP;
 	fix light;
 	tMorphInfo *mdP;
 

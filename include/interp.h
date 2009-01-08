@@ -35,22 +35,20 @@
 
 //Object functions:
 
-fix G3PolyModelSize (tPolyModel *pm, int nModel);
-
 //gives the interpreter an array of points to use
-void G3SetModelPoints(g3sPoint *pointlist);
+void G3SetModelPoints (g3sPoint *pointlist);
 
 //calls the CObject interpreter to render an CObject.  The CObject renderer
 //is really a seperate pipeline. returns true if drew
 int G3DrawPolyModel (CObject *objP, void *modelDataP, CBitmap **modelBitmaps, CAngleVector *animAngles, CFixVector *vOffset,
-							 fix light, fix *glowValues, tRgbaColorf *obj_colors, POF::CModel *po, int nModel);
+							fix light, fix *glowValues, tRgbaColorf *obj_colors, POF::CModel *modelP, int nModel);
 
 int G3DrawPolyModelShadow (CObject *objP, void *modelDataP, CAngleVector *pAnimAngles, int nModel);
 
-int G3FreePolyModelItems (POF::CModel *po);
+int G3FreePolyModelItems (POF::CModel *modelP);
 
 //init code for bitmap models
-void G3InitPolyModel(tPolyModel *pm, int nModel);
+void G3InitPolyModel (CPolyModel* modelP, int nModel);
 
 //un-initialize, i.e., convert color entries back to RGB15
 void g3_uninit_polygon_model(void *model_ptr);
@@ -98,10 +96,10 @@ int get_chunks(ubyte *data, ubyte *new_data, chunk *list, int *no);
 
 void G3SwapPolyModelData (ubyte *data);
 
-int G3RenderModel (CObject *objP, short nModel, short nSubModel, tPolyModel *pp, CBitmap **modelBitmaps,
+int G3RenderModel (CObject *objP, short nModel, short nSubModel, CPolyModel* pp, CBitmap **modelBitmaps,
 						 CAngleVector *pAnimAngles, CFixVector *pOffs, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor);
 
-void G3DynLightModel (CObject *objP, RenderModel::CModel* pm, short iVerts, short nVerts, short iFaceVerts, short nFaceVerts);
+void G3DynLightModel (CObject *objP, RenderModel::CModel* modelP, short iVerts, short nVerts, short iFaceVerts, short nFaceVerts);
 
 int G3ModelMinMax (int nModel, tHitbox *phb);
 

@@ -18,8 +18,8 @@
 #define OOF_PMF_TIMED			2			// Uses new timed animation
 #define OOF_PMF_ALPHA			4			// Has alpha per vertex qualities
 #define OOF_PMF_FACING			8			// Has a submodel that is always facing
-#define OOF_PMF_NOT_RESIDENT	16			// This tPolyModel is not in memory
-#define OOF_PMF_SIZE_COMPUTED	32			// This tPolyModel's size is computed
+#define OOF_PMF_NOT_RESIDENT	16			// This CPolyModel is not in memory
+#define OOF_PMF_SIZE_COMPUTED	32			// This CPolyModel's size is computed
 
 #define OOF_SOF_ROTATE		0x01			// This subobject is a rotator
 #define OOF_SOF_TURRET		0x02			//	This subobject is a turret that tracks

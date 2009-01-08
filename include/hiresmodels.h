@@ -45,7 +45,7 @@ return NULL;
 
 // ----------------------------------------------------------------------------
 
-static inline tPolyModel* GetPOLModel (int nModel)
+static inline CPolyModel* GetPOLModel (int nModel)
 {
 if (gameData.models.modelToPOL [nModel])
 	return gameData.models.modelToPOL [nModel];

@@ -33,6 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "light.h"
 #include "dynlight.h"
 #include "buildmodel.h"
+#include "hitbox.h"
 
 #ifdef _3DFX
 #include "3dfx_des.h"
@@ -144,8 +145,8 @@ void POF_ReadVecs (CFixVector *vecs, int n, ubyte *bufp)
 {
 //	cf.Read (vecs, sizeof (CFixVector), n, f);
 
-memcpy (vecs, &bufp [Pof_addr], n*sizeof (*vecs));
-Pof_addr += n*sizeof (*vecs);
+memcpy (vecs, &bufp [Pof_addr], n * sizeof (*vecs));
+Pof_addr += n * sizeof (*vecs);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 while (n > 0)
 	VmsVectorSwap (vecs [--n]);
@@ -156,8 +157,8 @@ while (n > 0)
 
 void POF_ReadAngs (CAngleVector *angs, int n, ubyte *bufp)
 {
-memcpy (angs, &bufp [Pof_addr], n*sizeof (*angs));
-Pof_addr += n*sizeof (*angs);
+memcpy (angs, &bufp [Pof_addr], n * sizeof (*angs));
+Pof_addr += n * sizeof (*angs);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 while (n > 0)
 	VmsAngVecSwap (angs [--n]);
@@ -171,7 +172,7 @@ CAngleVector animAngles [N_ANIM_STATES][MAX_SUBMODELS];
 
 //set the animation angles for this robot.  Gun fields of robot info must
 //be filled in.
-void SetRobotAngles (tRobotInfo *r, tPolyModel *pm, CAngleVector angs [N_ANIM_STATES][MAX_SUBMODELS]);
+void SetRobotAngles (tRobotInfo *r, CPolyModel* modelP, CAngleVector angs [N_ANIM_STATES][MAX_SUBMODELS]);
 #endif
 
 #ifdef WORDS_NEED_ALIGNMENT
@@ -206,7 +207,7 @@ int get_first_chunks_index (chunk *chunk_list, int no_chunks)
 
 //------------------------------------------------------------------------------
 
-void AlignPolyModelData (tPolyModel *pm)
+void AlignPolyModelData (CPolyModel* modelP)
 {
 	int i, chunk_len;
 	int total_correction = 0;
@@ -214,12 +215,12 @@ void AlignPolyModelData (tPolyModel *pm)
 	chunk cur_ch;
 	chunk ch_list [MAX_CHUNKS];
 	int no_chunks = 0;
-	int tmp_size = pm->nDataSize + SHIFT_SPACE;
-	ubyte *tmp = new ubyte [tmp_size]; // where we build the aligned version of pm->modelData
+	int tmp_size = modelP->nDataSize + SHIFT_SPACE;
+	ubyte *tmp = new ubyte [tmp_size]; // where we build the aligned version of modelP->Data ()
 
 	Assert (tmp != NULL);
 	//start with first chunk (is always aligned!)
-	cur_old = pm->modelData;
+	cur_old = modelP->Data ();
 	cur_new = tmp;
 	chunk_len = get_chunks (cur_old, cur_new, ch_list, &no_chunks);
 	memcpy (cur_new, cur_old, chunk_len);
@@ -251,24 +252,24 @@ void AlignPolyModelData (tPolyModel *pm)
 		cur_new = new_dest (cur_ch);
 		chunk_len = get_chunks (cur_old, cur_new, ch_list, &no_chunks);
 		memcpy (cur_new, cur_old, chunk_len);
-		//correct submodel_ptr's for pm, too
+		//correct submodel_ptr's for modelP, too
 		for (i = 0; i < MAX_SUBMODELS; i++)
-			if (pm->modelData + pm->subModels.ptrs [i] >= cur_old
-			    && pm->modelData + pm->subModels.ptrs [i] < cur_old + chunk_len)
-				pm->subModels.ptrs [i] += (cur_new - tmp) - (cur_old - pm->modelData);
+			if (modelP->Data () + modelP->SubModels ().ptrs [i] >= cur_old
+			    && modelP->Data () + modelP->SubModels ().ptrs [i] < cur_old + chunk_len)
+				modelP->SubModels ().ptrs [i] += (cur_new - tmp) - (cur_old - modelP->Data ());
  	}
-	pm->modelData.Destroy ();
-	pm->nDataSize += total_correction;
-	if (!pm->modelData.Create (pm->nDataSize))
+	modelP->Data ().Destroy ();
+	modelP->nDataSize += total_correction;
+	if (!modelP->Data ().Create (modelP->nDataSize))
 		Error ("Not enough memory for game models.");
-	pm->modelData = tmp;
-	delete[] tmp;
+	modelP->Data () = tmp;
+	delete [] tmp;
 }
 #endif //def WORDS_NEED_ALIGNMENT
 
 //------------------------------------------------------------------------------
 //reads a binary file containing a 3d model
-tPolyModel *ReadModelFile (tPolyModel *pm, const char *filename, tRobotInfo *r)
+void CPolyModel::Parse (const char *filename, tRobotInfo *botInfoP)
 {
 	CFile cf;
 	short version;
@@ -283,7 +284,7 @@ Pof_addr = 0;
 Pof_file_end = (int) cf.Read (modelBuf, 1, cf.Length ());
 cf.Close ();
 id = POF_ReadInt (modelBuf);
-if (id!=0x4f505350) /* 'OPSP' */
+if (id != 0x4f505350) /* 'OPSP' */
 	Error ("Bad ID in model file <%s>", filename);
 version = POF_ReadShort (modelBuf);
 if (version < PM_COMPATIBLE_VERSION || version > PM_OBJFILE_VERSION)
@@ -298,18 +299,18 @@ while (POF_ReadIntNew (id, modelBuf) == 1) {
 	switch (id) {
 		case ID_OHDR: {		//Object header
 			CFixVector pmmin, pmmax;
-			pm->nModels = POF_ReadInt (modelBuf);
-			pm->rad = POF_ReadInt (modelBuf);
-			Assert (pm->nModels <= MAX_SUBMODELS);
+			m_info.nModels = POF_ReadInt (modelBuf);
+			m_info.rad = POF_ReadInt (modelBuf);
+			Assert (m_info.nModels <= MAX_SUBMODELS);
 			POF_ReadVecs (&pmmin, 1, modelBuf);
 			POF_ReadVecs (&pmmax, 1, modelBuf);
 			if (FindArg ("-bspgen")) {
 				CFixVector v = pmmax - pmmin;
-				fix l = v[X];
-				if (v[Y] > l)
-					l = v[Y];
-				if (v[Z] > l)
-					l = v[Z];
+				fix l = v [X];
+				if (v [Y] > l)
+					l = v [Y];
+				if (v [Z] > l)
+					l = v [Z];
 				//printf (" -l%.3f", X2F (l));
 				}
 			break;
@@ -319,35 +320,34 @@ while (POF_ReadIntNew (id, modelBuf) == 1) {
 			int n = POF_ReadShort (modelBuf);
 			Assert (n < MAX_SUBMODELS);
 			animFlag++;
-			pm->subModels.parents [n] = (char) POF_ReadShort (modelBuf);
-			POF_ReadVecs (&pm->subModels.norms [n], 1, modelBuf);
-			POF_ReadVecs (&pm->subModels.pnts [n], 1, modelBuf);
-			POF_ReadVecs (&pm->subModels.offsets [n], 1, modelBuf);
-			pm->subModels.rads [n] = POF_ReadInt (modelBuf);		//radius
-			pm->subModels.ptrs [n] = POF_ReadInt (modelBuf);	//offset
+			m_info.subModels.parents [n] = (char) POF_ReadShort (modelBuf);
+			POF_ReadVecs (&m_info.subModels.norms [n], 1, modelBuf);
+			POF_ReadVecs (&m_info.subModels.pnts [n], 1, modelBuf);
+			POF_ReadVecs (&m_info.subModels.offsets [n], 1, modelBuf);
+			m_info.subModels.rads [n] = POF_ReadInt (modelBuf);		//radius
+			m_info.subModels.ptrs [n] = POF_ReadInt (modelBuf);	//offset
 			break;
 			}
 
-#ifndef DRIVE
 		case ID_GUNS: {		//List of guns on this CObject
-			if (r) {
+			if (botInfoP) {
 				int i;
 				CFixVector gun_dir;
 				ubyte gun_used [MAX_GUNS];
-				r->nGuns = POF_ReadInt (modelBuf);
-				if (r->nGuns)
+				botInfoP->nGuns = POF_ReadInt (modelBuf);
+				if (botInfoP->nGuns)
 					animFlag++;
-				Assert (r->nGuns <= MAX_GUNS);
-				for (i = 0; i < r->nGuns; i++)
+				Assert (botInfoP->nGuns <= MAX_GUNS);
+				for (i = 0; i < botInfoP->nGuns; i++)
 					gun_used [i] = 0;
-				for (i = 0; i < r->nGuns; i++) {
+				for (i = 0; i < botInfoP->nGuns; i++) {
 					int id = POF_ReadShort (modelBuf);
-					Assert (id < r->nGuns);
+					Assert (id < botInfoP->nGuns);
 					Assert (gun_used [id] == 0);
 					gun_used [id] = 1;
-					r->gunSubModels [id] = (char) POF_ReadShort (modelBuf);
-					Assert (r->gunSubModels [id] != 0xff);
-					POF_ReadVecs (&r->gunPoints [id], 1, modelBuf);
+					botInfoP->gunSubModels [id] = (char) POF_ReadShort (modelBuf);
+					Assert (botInfoP->gunSubModels [id] != 0xff);
+					POF_ReadVecs (&botInfoP->gunPoints [id], 1, modelBuf);
 					if (version >= 7)
 						POF_ReadVecs (&gun_dir, 1, modelBuf);
 					}
@@ -359,18 +359,17 @@ while (POF_ReadIntNew (id, modelBuf) == 1) {
 
 		case ID_ANIM:		//Animation data
 			animFlag++;
-			if (r) {
+			if (botInfoP) {
 				int f, m, n_frames = POF_ReadShort (modelBuf);
 				Assert (n_frames == N_ANIM_STATES);
-				for (m = 0; m <pm->nModels; m++)
+				for (m = 0; m <m_info.nModels; m++)
 					for (f = 0; f < n_frames; f++)
 						POF_ReadAngs (&animAngles [f][m], 1, modelBuf);
-							SetRobotAngles (r, pm, animAngles);
+							SetRobotAngles (botInfoP, this, animAngles);
 				}
 			else
 				POF_CFSeek (modelBuf, len, SEEK_CUR);
 			break;
-#endif
 
 		case ID_TXTR: {		//Texture filename list
 			char name_buf [128];
@@ -381,10 +380,10 @@ while (POF_ReadIntNew (id, modelBuf) == 1) {
 			}
 
 		case ID_IDTA:		//Interpreter data
-			if (!pm->modelData.Create (len))
+			if (!m_info.data.Create (len))
 				Error ("Not enough memory for game models.");
-			pm->nDataSize = len;
-			POF_Read (pm->modelData.Buffer (), 1, len, modelBuf);
+			m_info.nDataSize = len;
+			POF_Read (m_info.data.Buffer (), 1, len, modelBuf);
 			break;
 
 		default:
@@ -394,16 +393,15 @@ while (POF_ReadIntNew (id, modelBuf) == 1) {
 	if (version >= 8)		// Version 8 needs 4-byte alignment!!!
 		POF_CFSeek (modelBuf, next_chunk, SEEK_SET);
 	}
-//	for (i=0;i<pm->nModels;i++)
-//		pm->subModels.ptrs [i] += (int) pm->modelData;
+//	for (i=0;i<m_info.nModels;i++)
+//		m_info.subModels.ptrs [i] += (int) m_info.data;
 #ifdef WORDS_NEED_ALIGNMENT
-G3AlignPolyModelData (pm);
+G3AlignPolyModelData (modelP);
 #endif
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-G3SwapPolyModelData (pm->modelData);
+G3SwapPolyModelData (m_info.data);
 #endif
-	//verify (pm->modelData);
-return pm;
+	//verify (m_info.data);
 }
 
 //------------------------------------------------------------------------------
@@ -455,13 +453,6 @@ return nGuns;
 }
 
 //------------------------------------------------------------------------------
-//free up a model, getting rid of all its memory
-void FreeModel (tPolyModel *po)
-{
-po->modelData.Destroy ();
-}
-
-//------------------------------------------------------------------------------
 
 int ObjectHasShadow (CObject *objP)
 {
@@ -498,9 +489,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-tPolyModel *GetPolyModel (CObject *objP, CFixVector *pos, int nModel, int flags)
+CPolyModel* GetPolyModel (CObject *objP, CFixVector *pos, int nModel, int flags)
 {
-	tPolyModel	*po = NULL;
+	CPolyModel	*modelP = NULL;
 	int			bHaveAltModel, bIsDefModel;
 
 if (gameStates.app.bEndLevelSequence && 
@@ -509,52 +500,422 @@ if (gameStates.app.bEndLevelSequence &&
 	bIsDefModel = 1;
 	}
 else {
-	bHaveAltModel = gameData.models.altPolyModels [nModel].modelData.Buffer () != NULL;
+	bHaveAltModel = gameData.models.altPolyModels [nModel].Data ().Buffer () != NULL;
 	bIsDefModel = IsDefaultModel (nModel);
 	}
 #if DBG
 if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
-if ((nModel >= gameData.models.nPolyModels) && !(po = gameData.models.modelToPOL [nModel]))
+if ((nModel >= gameData.models.nPolyModels) && !(modelP = gameData.models.modelToPOL [nModel]))
 	return NULL;
 // only render shadows for custom models and for standard models with a shadow proof alternative model
 if (!objP)
-	po = ((gameStates.app.bAltModels && bIsDefModel && bHaveAltModel) ? gameData.models.altPolyModels : gameData.models.polyModels) + nModel;
-else if (!po) {
+	modelP = ((gameStates.app.bAltModels && bIsDefModel && bHaveAltModel) ? gameData.models.altPolyModels : gameData.models.polyModels) + nModel;
+else if (!modelP) {
 	if (!(bIsDefModel && bHaveAltModel)) {
 		if (gameStates.app.bFixModels && (objP->info.nType == OBJ_ROBOT) && (gameStates.render.nShadowPass == 2))
 			return NULL;
-		po = gameData.models.polyModels + nModel;
+		modelP = gameData.models.polyModels + nModel;
 		}
 	else if (gameStates.render.nShadowPass != 2) {
 		if ((gameStates.app.bAltModels || (objP->info.nType == OBJ_PLAYER)) && bHaveAltModel)
-			po = gameData.models.altPolyModels + nModel;
+			modelP = gameData.models.altPolyModels + nModel;
 		else
-			po = gameData.models.polyModels + nModel;
+			modelP = gameData.models.polyModels + nModel;
 		}
 	else if (bHaveAltModel)
-		po = gameData.models.altPolyModels + nModel;
+		modelP = gameData.models.altPolyModels + nModel;
 	else
 		return NULL;
 	if ((gameStates.render.nShadowPass == 2) && (objP->info.nType == OBJ_REACTOR) && !(nModel & 1))	// use the working reactor model for rendering destroyed reactors' shadows
-		po--;
+		modelP--;
 	}
 //check if should use simple model (depending on detail level chosen)
-if (!(SHOW_DYN_LIGHT || SHOW_SHADOWS) && po->nSimplerModel && !flags && pos) {
+if (!(SHOW_DYN_LIGHT || SHOW_SHADOWS) && modelP->SimplerModel () && !flags && pos) {
 	int	cnt = 1;
 	fix depth = G3CalcPointDepth (*pos);		//gets 3d depth
-	while (po->nSimplerModel && (depth > cnt++ * gameData.models.nSimpleModelThresholdScale * po->rad))
-		po = gameData.models.polyModels + po->nSimplerModel - 1;
+	while (modelP->SimplerModel () && (depth > cnt++ * gameData.models.nSimpleModelThresholdScale * modelP->Rad ()))
+		modelP = gameData.models.polyModels + modelP->SimplerModel () - 1;
 	}
-return po;
+return modelP;
 }
 
 //------------------------------------------------------------------------------
 
-int LoadModelTextures (tPolyModel *po, tBitmapIndex *altTextures)
+//draw a polygon model
+int DrawPolyModel (
+	CObject*			objP,
+	CFixVector*		pos,
+	CFixMatrix*		orient,
+	CAngleVector*	animAngles,
+	int				nModel,
+	int				flags,
+	fix				light,
+	fix*				glowValues,
+	tBitmapIndex	altTextures [],
+	tRgbaColorf*	colorP)
 {
-	int	i, j, nTextures = po->nTextures;
+	CPolyModel*	modelP;
+	int			nTextures, bHires = 0;
+
+if ((gameStates.render.nShadowPass == 2) && !ObjectHasShadow (objP))
+	return 1;
+if (!(modelP = GetPolyModel (objP, pos, nModel, flags))) {
+	if (!flags && (gameStates.render.nShadowPass != 2) && HaveHiresModel (nModel))
+		bHires = 1;
+	else
+		return gameStates.render.nShadowPass == 2;
+	}
+if (gameStates.render.nShadowPass == 2) {
+	if (!bHires) {
+		G3SetModelPoints (gameData.models.polyModelPoints.Buffer ());
+		G3DrawPolyModelShadow (objP, modelP->Data ().Buffer (), animAngles, nModel);
+		}
+	return 1;
+	}
+#if 1//def _DEBUG
+if (nModel == nDbgModel)
+	nDbgModel = nDbgModel;
+#endif
+nTextures = bHires ? 0 : LoadModelTextures (modelP, altTextures);
+gameStates.ogl.bUseTransform = 1;
+G3SetModelPoints (gameData.models.polyModelPoints.Buffer ());
+gameData.render.vertP = gameData.models.fPolyModelVerts.Buffer ();
+if (!flags) {	//draw entire CObject
+	if (!G3RenderModel (objP, nModel, -1, modelP, gameData.models.textures.Buffer (), animAngles, NULL, light, glowValues, colorP)) {
+		if (bHires)
+			return 0;
+#if 0//def _DEBUG
+		if (objP && (objP->info.nType == OBJ_ROBOT))
+			G3RenderModel (objP, nModel, -1, modelP, gameData.models.textures.Buffer (), animAngles, NULL, light, glowValues, colorP);
+#endif
+		if (objP && (objP->info.nType == OBJ_POWERUP)) {
+			if ((objP->info.nId == POW_SMARTMINE) || (objP->info.nId == POW_PROXMINE))
+				gameData.models.vScale.Set (I2X (2), I2X (2), I2X (2));
+			else
+				gameData.models.vScale.Set (I2X (3) / 2, I2X (3) / 2, I2X (3) / 2);
+			}
+		gameStates.ogl.bUseTransform = 
+			(gameStates.app.bEndLevelSequence < EL_OUTSIDE) && 
+			!(SHOW_DYN_LIGHT && ((RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects));
+		transformation.Begin (*pos, *orient);
+		G3DrawPolyModel (objP, modelP->Data ().Buffer (), gameData.models.textures.Buffer (), animAngles, NULL, light, glowValues, colorP, NULL, nModel);
+		transformation.End ();
+		}
+	}
+else {
+	int i;
+
+	//transformation.Begin (pos, orient);
+	for (i = 0; flags > 0; flags >>= 1, i++)
+		if (flags & 1) {
+			CFixVector vOffset;
+
+			//Assert (i < modelP->nModels);
+			if (i < modelP->ModelCount ()) {
+			//if submodel, rotate around its center point, not pivot point
+				vOffset = CFixVector::Avg (modelP->SubModels ().mins [i], modelP->SubModels ().maxs [i]);
+				vOffset.Neg();
+				if (!G3RenderModel (objP, nModel, i, modelP, gameData.models.textures.Buffer (), animAngles, &vOffset, light, glowValues, colorP)) {
+					if (bHires)
+						return 0;
+#if DBG
+					G3RenderModel (objP, nModel, i, modelP, gameData.models.textures.Buffer (), animAngles, &vOffset, light, glowValues, colorP);
+#endif
+					transformation.Begin (vOffset);
+					G3DrawPolyModel (objP, modelP->Data () + modelP->SubModels ().ptrs [i], gameData.models.textures.Buffer (),
+										  animAngles, NULL, light, glowValues, colorP, NULL, nModel);
+					transformation.End ();
+					}
+				}
+			}
+	//transformation.End ();
+	}
+gameStates.ogl.bUseTransform = 0;
+gameData.render.vertP = NULL;
+#if 0
+{
+	g3sPoint p0, p1;
+
+transformation.Transform (&p0.p3_vec, &objP->info.position.vPos);
+VmVecSub (&p1.p3_vec, &objP->info.position.vPos, &objP->mType.physInfo.velocity);
+transformation.Transform (&p1.p3_vec, &p1.p3_vec);
+glLineWidth (20);
+glDisable (GL_TEXTURE_2D);
+glBegin (GL_LINES);
+glColor4d (1.0, 0.5, 0.0, 0.3);
+OglVertex3x (p0.p3_vec [X], p0.p3_vec [Y], p0.p3_vec [Z]);
+glColor4d (1.0, 0.5, 0.0, 0.1);
+OglVertex3x (p1.p3_vec [X], p1.p3_vec [Y], p1.p3_vec [Z]);
+glEnd ();
+glLineWidth (1);
+}
+#endif
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void CPolyModel::FindMinMax (void)
+{
+	ushort		nVerts;
+	CFixVector*	vp;
+	ushort*		dataP, nType;
+
+CFixVector& big_mn = m_info.mins;
+CFixVector& big_mx = m_info.maxs;
+
+for (int i = 0; i < m_info.nModels; i++) {
+	CFixVector& mn = m_info.subModels.mins [i];
+	CFixVector& mx = m_info.subModels.maxs [i];
+	CFixVector& ofs = m_info.subModels.offsets [i];
+	dataP = reinterpret_cast<ushort*> (m_info.data + m_info.subModels.ptrs [i]);
+	nType = *dataP++;
+	Assert (nType == 7 || nType == 1);
+	nVerts = *dataP++;
+	if (nType==7)
+		dataP+=2;		//skip start & pad
+	vp = reinterpret_cast<CFixVector*> (dataP);
+	mn = mx = *vp++;
+	nVerts--;
+	if (i == 0)
+		big_mn = big_mx = mn;
+	while (nVerts--) {
+		if ((*vp) [X] > mx [X]) mx [X] = (*vp) [X];
+		if ((*vp) [Y] > mx [Y]) mx [Y] = (*vp) [Y];
+		if ((*vp) [Z] > mx [Z]) mx [Z] = (*vp) [Z];
+		if ((*vp) [X] < mn [X]) mn [X] = (*vp) [X];
+		if ((*vp) [Y] < mn [Y]) mn [Y] = (*vp) [Y];
+		if ((*vp) [Z] < mn [Z]) mn [Z] = (*vp) [Z];
+		if ((*vp) [X] + ofs [X] > big_mx [X]) big_mx [X] = (*vp) [X] + ofs [X];
+		if ((*vp) [Y] + ofs [Y] > big_mx [Y]) big_mx [Y] = (*vp) [Y] + ofs [Y];
+		if ((*vp) [Z] + ofs [Z] > big_mx [Z]) big_mx [Z] = (*vp) [Z] + ofs [Z];
+		if ((*vp) [X] + ofs [X] < big_mn [X]) big_mn [X] = (*vp) [X] + ofs [X];
+		if ((*vp) [Y] + ofs [Y] < big_mn [Y]) big_mn [Y] = (*vp) [Y] + ofs [Y];
+		if ((*vp) [Z] + ofs [Z] < big_mn [Z]) big_mn [Z] = (*vp) [Z] + ofs [Z];
+		vp++;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+extern short nHighestTexture;	//from interp.c
+
+char pofNames [MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
+
+//returns the number of this model
+void CPolyModel::Load (const char *filename, int nTextures, int nFirstTexture, tRobotInfo *botInfoP)
+{
+FindMinMax ();
+Setup ();
+if (nHighestTexture + 1 != nTextures)
+	Error ("Model <%s> references %d textures but specifies %d.", filename, nHighestTexture+1, nTextures);
+m_info.nTextures = nTextures;
+m_info.nFirstTexture = nFirstTexture;
+m_info.nSimplerModel = 0;
+}
+
+//------------------------------------------------------------------------------
+//walks through all submodels of a polymodel and determines the coordinate extremes
+fix CPolyModel::Size (void)
+{
+	int			nModel = this - gameData.models.polyModels.Buffer (), nSubModels = 1;
+	int			i;
+	tHitbox		*phb = gameData.models.hitboxes [nModel].hitboxes;
+	CFixVector	hv;
+	double		dx, dy, dz;
+
+for (i = 0; i <= MAX_HITBOXES; i++) {
+	phb [i].vMin [X] = phb [i].vMin [Y] = phb [i].vMin [Z] = 0x7fffffff;
+	phb [i].vMax [X] = phb [i].vMax [Y] = phb [i].vMax [Z] = -0x7fffffff;
+	phb [i].vOffset [X] = phb [i].vOffset [Y] = phb [i].vOffset [Z] = 0;
+	}
+if (!(nSubModels = G3ModelMinMax (nModel, phb + 1)))
+	nSubModels = GetPolyModelMinMax (reinterpret_cast<void*> (m_info.data.Buffer ()), phb + 1, 0) + 1;
+for (i = 1; i <= nSubModels; i++) {
+	dx = (phb [i].vMax [X] - phb [i].vMin [X]) / 2;
+	dy = (phb [i].vMax [Y] - phb [i].vMin [Y]) / 2;
+	dz = (phb [i].vMax [Z] - phb [i].vMin [Z]) / 2;
+	phb [i].vSize [X] = (fix) dx;
+	phb [i].vSize [Y] = (fix) dy;
+	phb [i].vSize [Z] = (fix) dz;
+	hv = phb [i].vMin + phb [i].vOffset;
+	if (phb [0].vMin [X] > hv [X])
+		phb [0].vMin [X] = hv [X];
+	if (phb [0].vMin [Y] > hv [Y])
+		phb [0].vMin [Y] = hv [Y];
+	if (phb [0].vMin [Z] > hv [Z])
+		phb [0].vMin [Z] = hv [Z];
+	hv = phb [i].vMax + phb [i].vOffset;
+	if (phb [0].vMax [X] < hv [X])
+		phb [0].vMax [X] = hv [X];
+	if (phb [0].vMax [Y] < hv [Y])
+		phb [0].vMax [Y] = hv [Y];
+	if (phb [0].vMax [Z] < hv [Z])
+		phb [0].vMax [Z] = hv [Z];
+	}
+dx = (phb [0].vMax [X] - phb [0].vMin [X]) / 2;
+dy = (phb [0].vMax [Y] - phb [0].vMin [Y]) / 2;
+dz = (phb [0].vMax [Z] - phb [0].vMin [Z]) / 2;
+phb [0].vSize [X] = (fix) dx;
+phb [0].vSize [Y] = (fix) dy;
+phb [0].vSize [Z] = (fix) dz;
+gameData.models.hitboxes [nModel].nHitboxes = nSubModels;
+for (i = 0; i <= nSubModels; i++)
+	ComputeHitbox (nModel, i);
+return (fix) (sqrt (dx * dx + dy * dy + dz + dz) /** 1.33*/);
+}
+
+//------------------------------------------------------------------------------
+
+void CPolyModel::Check (ubyte *dataP)
+{
+for (;;) {
+	switch (WORDVAL (dataP)) {
+		case OP_EOF:
+			return;
+
+		case OP_DEFPOINTS: {
+			int n = WORDVAL (dataP + 2);
+			dataP += n * sizeof (CFixVector) + 4;
+			break;
+			}
+
+		case OP_DEFP_START: {
+			int n = WORDVAL (dataP + 2);
+			dataP += n * sizeof (CFixVector) + 8;
+			break;
+			}
+
+		case OP_FLATPOLY: {
+			int nVerts = WORDVAL (dataP + 2);
+			Assert (nVerts > 2);		//must have 3 or more points
+			dataP += 30 + ((nVerts & ~1) + 1) * 2;
+			break;
+			}
+
+		case OP_TMAPPOLY: {
+			int nVerts = WORDVAL (dataP + 2);
+			Assert (nVerts > 2);		//must have 3 or more points
+			if (WORDVAL (dataP + 28) > nHighestTexture)
+				nHighestTexture = WORDVAL (dataP + 28);
+			dataP += 30 + ((nVerts & ~1) + 1) * 2 + nVerts * 12;
+			break;
+			}
+
+		case OP_SORTNORM:
+			Check (dataP + WORDVAL (dataP + 28));
+			Check (dataP + WORDVAL (dataP + 30));
+			dataP += 32;
+			break;
+
+		case OP_RODBM:
+			dataP += 36;
+			break;
+
+		case OP_SUBCALL: {
+			Check (dataP + WORDVAL (dataP + 16));
+			dataP += 20;
+			break;
+			}
+
+		case OP_GLOW:
+			dataP += 4;
+			break;
+
+		default:
+			Error ("invalid polygon model\n");
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CPolyModel::Setup (void)
+{
+nHighestTexture = -1;
+G3CheckAndSwap (m_info.data.Buffer ());
+Check (m_info.data.Buffer ());
+Size ();
+}
+
+//------------------------------------------------------------------------------
+
+void CPolyModel::ReadData (CPolyModel* defModelP, CFile& cf)
+{
+if (!m_info.data.Create (m_info.nDataSize))
+	Error ("Not enough memory for game models.");
+cf.Read (m_info.data.Buffer (), sizeof (ubyte), m_info.nDataSize);
+if (defModelP) {
+	defModelP->Data ().Destroy ();
+	defModelP->Data () = m_info.data;
+	if (!defModelP->Data ().Buffer ())
+		Error ("Not enough memory for game models.");
+	}
+#ifdef WORDS_NEED_ALIGNMENT
+AlignPolyModelData (modelP);
+#endif
+G3CheckAndSwap (m_info.data.Buffer ());
+//verify (m_info.data);
+Setup ();
+}
+
+//------------------------------------------------------------------------------
+
+int CPolyModel::Read (int bHMEL, CFile& cf)
+{
+	int	i;
+
+if (bHMEL) {
+	char	szId [4];
+	int	nElement, nBlocks;
+
+	cf.Read (szId, sizeof (szId), 1);
+	if (strnicmp (szId, "HMEL", 4))
+		return 0;
+	if (cf.ReadInt () != 1)
+		return 0;
+	nElement = cf.ReadInt ();
+	nBlocks = cf.ReadInt ();
+	m_info.nModels = 1;
+	}
+else
+	m_info.nModels = cf.ReadInt ();
+m_info.nDataSize = cf.ReadInt ();
+cf.ReadInt ();
+m_info.data = NULL;
+for (i = 0; i < MAX_SUBMODELS; i++)
+	m_info.subModels.ptrs [i] = cf.ReadInt ();
+for (i = 0; i < MAX_SUBMODELS; i++)
+	cf.ReadVector (m_info.subModels.offsets [i]);
+for (i = 0; i < MAX_SUBMODELS; i++)
+	cf.ReadVector (m_info.subModels.norms [i]);
+for (i = 0; i < MAX_SUBMODELS; i++)
+	cf.ReadVector (m_info.subModels.pnts [i]);
+for (i = 0; i < MAX_SUBMODELS; i++)
+	m_info.subModels.rads [i] = cf.ReadFix ();
+cf.Read (m_info.subModels.parents.Buffer (), MAX_SUBMODELS, 1);
+for (i = 0; i < MAX_SUBMODELS; i++)
+	cf.ReadVector (m_info.subModels.mins [i]);
+for (i = 0; i < MAX_SUBMODELS; i++)
+	cf.ReadVector (m_info.subModels.maxs [i]);
+cf.ReadVector (m_info.mins);
+cf.ReadVector (m_info.maxs);
+m_info.rad = cf.ReadFix ();
+m_info.nTextures = cf.ReadByte ();
+m_info.nFirstTexture = cf.ReadShort ();
+m_info.nSimplerModel = cf.ReadByte ();
+m_info.nType = 0;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CPolyModel::LoadTextures (tBitmapIndex*	altTextures)
+{
+	int	i, j, nTextures = m_info.nTextures;
 
 if (altTextures) {
 	for (i = 0; i < nTextures; i++) {
@@ -566,7 +927,7 @@ if (altTextures) {
 		}
 	}
 else {
-	for (i = 0, j = po->nFirstTexture; i < nTextures; i++, j++) {
+	for (i = 0, j = m_info.nFirstTexture; i < nTextures; i++, j++) {
 		gameData.models.textureIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [j]];
 		gameData.models.textures [i] = gameData.pig.tex.bitmaps [gameStates.app.bD1Model] + gameData.models.textureIndex [i].index;
 #ifdef _3DFX
@@ -594,229 +955,78 @@ return nTextures;
 
 //------------------------------------------------------------------------------
 
-//draw a polygon model
-int DrawPolygonModel (
-	CObject			*objP,
-	CFixVector		*pos,
-	CFixMatrix		*orient,
-	CAngleVector		*animAngles,
-	int				nModel,
-	int				flags,
-	fix				light,
-	fix				*glowValues,
-	tBitmapIndex	altTextures [],
-	tRgbaColorf		*colorP)
+void CPolyModel::Destroy (void)
 {
-	tPolyModel	*po;
-	int			nTextures, bHires = 0;
+m_info.data.Destroy ();
+}
 
-if ((gameStates.render.nShadowPass == 2) && !ObjectHasShadow (objP))
-	return 1;
-if (!(po = GetPolyModel (objP, pos, nModel, flags))) {
-	if (!flags && (gameStates.render.nShadowPass != 2) && HaveHiresModel (nModel))
-		bHires = 1;
-	else
-		return gameStates.render.nShadowPass == 2;
-	}
-if (gameStates.render.nShadowPass == 2) {
-	if (!bHires) {
-		G3SetModelPoints (gameData.models.polyModelPoints);
-		G3DrawPolyModelShadow (objP, po->modelData.Buffer (), animAngles, nModel);
-		}
-	return 1;
-	}
-#if 1//def _DEBUG
-if (nModel == nDbgModel)
-	nDbgModel = nDbgModel;
-#endif
-nTextures = bHires ? 0 : LoadModelTextures (po, altTextures);
-gameStates.ogl.bUseTransform = 1;
-G3SetModelPoints (gameData.models.polyModelPoints);
-gameData.render.vertP = gameData.models.fPolyModelVerts;
-if (!flags) {	//draw entire CObject
-	if (!G3RenderModel (objP, nModel, -1, po, gameData.models.textures, animAngles, NULL, light, glowValues, colorP)) {
-		if (bHires)
-			return 0;
-#if 0//def _DEBUG
-		if (objP && (objP->info.nType == OBJ_ROBOT))
-			G3RenderModel (objP, nModel, -1, po, gameData.models.textures, animAngles, NULL, light, glowValues, colorP);
-#endif
-		if (objP && (objP->info.nType == OBJ_POWERUP)) {
-			if ((objP->info.nId == POW_SMARTMINE) || (objP->info.nId == POW_PROXMINE))
-				gameData.models.vScale.Set (I2X (2), I2X (2), I2X (2));
-			else
-				gameData.models.vScale.Set (I2X (3) / 2, I2X (3) / 2, I2X (3) / 2);
-			}
-		gameStates.ogl.bUseTransform = 
-			(gameStates.app.bEndLevelSequence < EL_OUTSIDE) && 
-			!(SHOW_DYN_LIGHT && ((RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects));
-		transformation.Begin (*pos, *orient);
-		G3DrawPolyModel (objP, po->modelData.Buffer (), gameData.models.textures, animAngles, NULL, light, glowValues, colorP, NULL, nModel);
-		transformation.End ();
-		}
-	}
-else {
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+void CSubModelData::Create (void)
+{
+ptrs.Create (MAX_SUBMODELS);
+offsets.Create (MAX_SUBMODELS);
+norms.Create (MAX_SUBMODELS);   
+pnts.Create (MAX_SUBMODELS);    
+rads.Create (MAX_SUBMODELS);       
+parents.Create (MAX_SUBMODELS);    
+mins.Create (MAX_SUBMODELS);
+maxs.Create (MAX_SUBMODELS);
+
+ptrs.Clear ();
+offsets.Clear ();
+norms.Clear ();   
+pnts.Clear ();    
+rads.Clear ();    
+parents.Clear (); 
+mins.Clear ();
+maxs.Clear ();
+}
+
+//------------------------------------------------------------------------------
+
+void CSubModelData::Destroy (void)
+{
+ptrs.Destroy ();
+offsets.Destroy ();
+norms.Destroy ();   
+pnts.Destroy ();    
+rads.Destroy ();       
+parents.Destroy ();    
+mins.Destroy ();
+maxs.Destroy ();
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+int ReadPolyModels (CPolyModel* modelP, int n, CFile& cf)
+{
 	int i;
 
-	//transformation.Begin (pos, orient);
-	for (i = 0; flags > 0; flags >>= 1, i++)
-		if (flags & 1) {
-			CFixVector vOffset;
-
-			//Assert (i < po->nModels);
-			if (i < po->nModels) {
-			//if submodel, rotate around its center point, not pivot point
-				vOffset = CFixVector::Avg(po->subModels.mins[i], po->subModels.maxs[i]);
-				vOffset.Neg();
-				if (!G3RenderModel (objP, nModel, i, po, gameData.models.textures, animAngles, &vOffset, light, glowValues, colorP)) {
-					if (bHires)
-						return 0;
-#if DBG
-					G3RenderModel (objP, nModel, i, po, gameData.models.textures, animAngles, &vOffset, light, glowValues, colorP);
-#endif
-					transformation.Begin (vOffset);
-					G3DrawPolyModel (objP, po->modelData + po->subModels.ptrs [i], gameData.models.textures,
-										  animAngles, NULL, light, glowValues, colorP, NULL, nModel);
-					transformation.End ();
-					}
-				}
-			}
-	//transformation.End ();
-	}
-gameStates.ogl.bUseTransform = 0;
-gameData.render.vertP = NULL;
-#if 0
-{
-	g3sPoint p0, p1;
-
-transformation.Transform (&p0.p3_vec, &objP->info.position.vPos);
-VmVecSub (&p1.p3_vec, &objP->info.position.vPos, &objP->mType.physInfo.velocity);
-transformation.Transform (&p1.p3_vec, &p1.p3_vec);
-glLineWidth (20);
-glDisable (GL_TEXTURE_2D);
-glBegin (GL_LINES);
-glColor4d (1.0, 0.5, 0.0, 0.3);
-OglVertex3x (p0.p3_vec[X], p0.p3_vec[Y], p0.p3_vec[Z]);
-glColor4d (1.0, 0.5, 0.0, 0.1);
-OglVertex3x (p1.p3_vec[X], p1.p3_vec[Y], p1.p3_vec[Z]);
-glEnd ();
-glLineWidth (1);
-}
-#endif
-return 1;
+for (i = 0; i < n; i++)
+	if (!modelP [i].Read (0, cf))
+		break;
+return i;
 }
 
 //------------------------------------------------------------------------------
 
-void PolyObjFindMinMax (tPolyModel *pm)
+int LoadPolyModel (const char* filename, int nTextures, int nFirstTexture, tRobotInfo *botInfoP)
 {
-	ushort nverts;
-	CFixVector *vp;
-	ushort *data, nType;
-	int m;
-
-	CFixVector& big_mn = pm->mins;
-	CFixVector& big_mx = pm->maxs;
-
-	for (m = 0; m < pm->nModels; m++) {
-
-		CFixVector& mn = pm->subModels.mins[m];
-		CFixVector& mx = pm->subModels.maxs[m];
-		CFixVector& ofs= pm->subModels.offsets[m];
-		data = reinterpret_cast<ushort*> (pm->modelData + pm->subModels.ptrs [m]);
-		nType = *data++;
-		Assert (nType == 7 || nType == 1);
-		nverts = *data++;
-		if (nType==7)
-			data+=2;		//skip start & pad
-		vp = reinterpret_cast<CFixVector*> (data);
-		mn = mx = *vp++;
-		nverts--;
-		if (m == 0)
-			big_mn = big_mx = mn;
-		while (nverts--) {
-			if ((*vp)[X] > mx[X]) mx[X] = (*vp)[X];
-			if ((*vp)[Y] > mx[Y]) mx[Y] = (*vp)[Y];
-			if ((*vp)[Z] > mx[Z]) mx[Z] = (*vp)[Z];
-			if ((*vp)[X] < mn[X]) mn[X] = (*vp)[X];
-			if ((*vp)[Y] < mn[Y]) mn[Y] = (*vp)[Y];
-			if ((*vp)[Z] < mn[Z]) mn[Z] = (*vp)[Z];
-			if ((*vp)[X] + ofs[X] > big_mx[X]) big_mx[X] = (*vp)[X] + ofs[X];
-			if ((*vp)[Y] + ofs[Y] > big_mx[Y]) big_mx[Y] = (*vp)[Y] + ofs[Y];
-			if ((*vp)[Z] + ofs[Z] > big_mx[Z]) big_mx[Z] = (*vp)[Z] + ofs[Z];
-			if ((*vp)[X] + ofs[X] < big_mn[X]) big_mn[X] = (*vp)[X] + ofs[X];
-			if ((*vp)[Y] + ofs[Y] < big_mn[Y]) big_mn[Y] = (*vp)[Y] + ofs[Y];
-			if ((*vp)[Z] + ofs[Z] < big_mn[Z]) big_mn[Z] = (*vp)[Z] + ofs[Z];
-			vp++;
-		}
-
-	//printf ("Submodel %d:  (%8x, %8x) (%8x, %8x) (%8x, %8x)\n", m, mn->x, mx->x, mn->y, mx->y, mn->z, mx->z);
-	}
-
-//printf ("Whole model: (%8x, %8x) (%8x, %8x) (%8x, %8x)\n", big_mn->x, big_mx->x, big_mn->y, big_mx->y, big_mn->z, big_mx->z);
-
-}
-
-//------------------------------------------------------------------------------
-
-extern short nHighestTexture;	//from interp.c
-
-char Pof_names [MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
-
-//returns the number of this model
-#ifndef DRIVE
-int LoadPolygonModel (const char *filename, int nTextures, int nFirstTexture, tRobotInfo *r)
-#else
-int LoadPolygonModel (const char *filename, int nTextures, CBitmap ***textures)
-#endif
-{
-	#ifdef DRIVE
-	#define r NULL
-	#endif
-
-	Assert (gameData.models.nPolyModels < MAX_POLYGON_MODELS);
-	Assert (nTextures < MAX_POLYOBJ_TEXTURES);
-
-	//	MK was real tired of those useless, slow mprintfs...
+Assert (gameData.models.nPolyModels < MAX_POLYGON_MODELS);
+Assert (nTextures < MAX_POLYOBJ_TEXTURES);
 #if TRACE
-	if (gameData.models.nPolyModels > MAX_POLYGON_MODELS - 10)
-		console.printf (CON_VERBOSE, "Used %d/%d polygon model slots\n", gameData.models.nPolyModels+1, MAX_POLYGON_MODELS);
+if (gameData.models.nPolyModels > MAX_POLYGON_MODELS - 10)
+	console.printf (CON_VERBOSE, "Used %d/%d polygon model slots\n", gameData.models.nPolyModels+1, MAX_POLYGON_MODELS);
 #endif
-	Assert (strlen (filename) <= 12);
-	strcpy (Pof_names [gameData.models.nPolyModels], filename);
-	ReadModelFile (gameData.models.polyModels + gameData.models.nPolyModels, filename, r);
-	PolyObjFindMinMax (gameData.models.polyModels + gameData.models.nPolyModels);
-	G3InitPolyModel (gameData.models.polyModels + gameData.models.nPolyModels, gameData.models.nPolyModels);
-	if (nHighestTexture + 1 != nTextures)
-		Error ("Model <%s> references %d textures but specifies %d.", filename, nHighestTexture+1, nTextures);
-	gameData.models.polyModels [gameData.models.nPolyModels].nTextures = nTextures;
-	gameData.models.polyModels [gameData.models.nPolyModels].nFirstTexture = nFirstTexture;
-	gameData.models.polyModels [gameData.models.nPolyModels].nSimplerModel = 0;
-//	Assert (polygon_models [gameData.models.nPolyModels]!=NULL);
-	gameData.models.nPolyModels++;
-	return gameData.models.nPolyModels-1;
-}
-
-//------------------------------------------------------------------------------
-
-void _CDECL_ FreePolygonModels (void)
-{
-	int i;
-
-PrintLog ("unloading poly models\n");
-for (i = 0; i < MAX_POLYGON_MODELS; i++) {
-	FreeModel (gameData.models.polyModels + i);
-	FreeModel (gameData.models.defPolyModels + i);
-	FreeModel (gameData.models.altPolyModels + i);
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void InitPolygonModels ()
-{
-gameData.models.nPolyModels = 0;
-atexit (FreePolygonModels);
+Assert (strlen (filename) <= 12);
+strcpy (pofNames [gameData.models.nPolyModels], filename);
+gameData.models.polyModels [gameData.models.nPolyModels++].Load (filename, nTextures, nFirstTexture, botInfoP);
+return gameData.models.nPolyModels - 1;
 }
 
 //------------------------------------------------------------------------------
@@ -835,104 +1045,15 @@ Assert ((nModel >= 0) && (nModel < gameData.models.nPolyModels));
 G3StartFrame (0, 0);
 glDisable (GL_BLEND);
 G3SetViewMatrix (p, o, gameStates.render.xZoom, 1);
-if (gameData.models.polyModels [nModel].rad != 0)
-	p [Z] = FixMulDiv (DEFAULT_VIEW_DIST, gameData.models.polyModels [nModel].rad, BASE_MODEL_SIZE);
+if (gameData.models.polyModels [nModel].Rad ())
+	p [Z] = FixMulDiv (DEFAULT_VIEW_DIST, gameData.models.polyModels [nModel].Rad (), BASE_MODEL_SIZE);
 else
 	p [Z] = DEFAULT_VIEW_DIST;
 o = CFixMatrix::Create (*orientAngles);
-DrawPolygonModel (NULL, &p, &o, NULL, nModel, 0, I2X (1), NULL, NULL, NULL);
+DrawPolyModel (NULL, &p, &o, NULL, nModel, 0, I2X (1), NULL, NULL, NULL);
 G3EndFrame ();
 if (gameStates.ogl.nDrawBuffer != GL_BACK)
 	GrUpdate (0);
-}
-
-//------------------------------------------------------------------------------
-
-/*
- * reads a tPolyModel structure from a CFile
- */
-int ReadPolyModel (tPolyModel* pm, int bHMEL, CFile& cf)
-{
-	int	i;
-
-if (bHMEL) {
-	char	szId [4];
-	int	nElement, nBlocks;
-
-	cf.Read (szId, sizeof (szId), 1);
-	if (strnicmp (szId, "HMEL", 4))
-		return 0;
-	if (cf.ReadInt () != 1)
-		return 0;
-	nElement = cf.ReadInt ();
-	nBlocks = cf.ReadInt ();
-	pm->nModels = 1;
-	}
-else
-	pm->nModels = cf.ReadInt ();
-pm->nDataSize = cf.ReadInt ();
-cf.ReadInt ();
-pm->modelData = NULL;
-for (i = 0; i < MAX_SUBMODELS; i++)
-	pm->subModels.ptrs [i] = cf.ReadInt ();
-for (i = 0; i < MAX_SUBMODELS; i++)
-	cf.ReadVector (pm->subModels.offsets[i]);
-for (i = 0; i < MAX_SUBMODELS; i++)
-	cf.ReadVector (pm->subModels.norms[i]);
-for (i = 0; i < MAX_SUBMODELS; i++)
-	cf.ReadVector (pm->subModels.pnts[i]);
-for (i = 0; i < MAX_SUBMODELS; i++)
-	pm->subModels.rads [i] = cf.ReadFix ();
-cf.Read (pm->subModels.parents, MAX_SUBMODELS, 1);
-for (i = 0; i < MAX_SUBMODELS; i++)
-	cf.ReadVector (pm->subModels.mins[i]);
-for (i = 0; i < MAX_SUBMODELS; i++)
-	cf.ReadVector (pm->subModels.maxs[i]);
-cf.ReadVector (pm->mins);
-cf.ReadVector (pm->maxs);
-pm->rad = cf.ReadFix ();
-pm->nTextures = cf.ReadByte ();
-pm->nFirstTexture = cf.ReadShort ();
-pm->nSimplerModel = cf.ReadByte ();
-pm->nType = 0;
-return 1;
-}
-
-//------------------------------------------------------------------------------
-/*
- * reads n tPolyModel structs from a CFile
- */
-int ReadPolyModels (tPolyModel *pm, int n, CFile& cf)
-{
-	int i;
-
-for (i = 0; i < n; i++)
-	if (!ReadPolyModel (pm + i, 0, cf))
-		break;
-return i;
-}
-
-//------------------------------------------------------------------------------
-/*
- * routine which allocates, reads, and inits a tPolyModel's modelData
- */
-void ReadPolyModelData (tPolyModel *pm, int nModel, tPolyModel *pdm, CFile& cf)
-{
-if (!pm->modelData.Create (pm->nDataSize))
-	Error ("Not enough memory for game models.");
-cf.Read (pm->modelData.Buffer (), sizeof (ubyte), pm->nDataSize);
-if (pdm) {
-	pdm->modelData.Destroy ();
-	pdm->modelData = pm->modelData;
-	if (!pdm->modelData.Buffer ())
-		Error ("Not enough memory for game models.");
-	}
-#ifdef WORDS_NEED_ALIGNMENT
-AlignPolyModelData (pm);
-#endif
-G3CheckAndSwap (pm->modelData.Buffer ());
-//verify (pm->modelData);
-G3InitPolyModel (pm, nModel);
 }
 
 //------------------------------------------------------------------------------

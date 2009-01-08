@@ -9,6 +9,7 @@
 
 void ComputeHitbox (int nModel, int iSubObj);
 void TransformHitboxes (CObject *objP, CFixVector *vPos, tBox *phb);
+int GetPolyModelMinMax (void *modelP, tHitbox *phb, int nSubModels);
 
 #endif //_HITBOX_H
 

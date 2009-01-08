@@ -738,7 +738,7 @@ if (vOffsetP)
 
 //------------------------------------------------------------------------------
 
-int G3RenderModel (CObject *objP, short nModel, short nSubModel, tPolyModel *pp, CBitmap **modelBitmaps,
+int G3RenderModel (CObject *objP, short nModel, short nSubModel, CPolyModel* pp, CBitmap **modelBitmaps,
 						 CAngleVector *pAnimAngles, CFixVector *vOffsetP, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor)
 {
 	RenderModel::CModel	*pm = gameData.models.renderModels [1] + nModel;

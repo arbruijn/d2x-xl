@@ -225,7 +225,7 @@ memset (gameData.models.modelToPOL, 0, sizeof (gameData.models.modelToPOL));
 short LoadLoresModel (short i)
 {
 	CFile			cf;
-	tPolyModel	*pm;
+	CPolyModel	*pm;
 	short			nModel, j = sizeofa (replacementModels);
 	char			szModel [FILENAME_LEN];
 

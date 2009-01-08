@@ -332,7 +332,7 @@ return fabs (X2F (vMax[X] - vMin[X])) *
 
 double ObjectVolume (CObject *objP)
 {
-	tPolyModel	*pm;
+	CPolyModel	*pm;
 	int			i, j;
 	double		size;
 
@@ -364,7 +364,7 @@ CObject* CObject::CreateDebris (int nSubObj)
 {
 	int 			nObject;
 	CObject 		*debrisP;
-	tPolyModel 	*po;
+	CPolyModel 	*po;
 
 Assert ((info.nType == OBJ_ROBOT) || (info.nType == OBJ_PLAYER));
 nObject = ::CreateDebris (this, nSubObj);

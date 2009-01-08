@@ -155,7 +155,7 @@ else {		//Robots taken care of above
 	if (objP->info.renderType == RT_POLYOBJ) {
 		char *name = szSavePOFNames [objP->rType.polyObjInfo.nModel];
 		for (int i = 0; i < gameData.models.nPolyModels; i++)
-			if (!stricmp (Pof_names [i], name)) {		//found it!
+			if (!stricmp (pofNames [i], name)) {		//found it!
 				objP->rType.polyObjInfo.nModel = i;
 				break;
 				}
@@ -1719,7 +1719,7 @@ int SaveGameData(FILE * SaveFile)
 	fprintf(SaveFile,"%s\n",gameData.missions.szCurrentLevel);
 
 	fwrite(&gameData.models.nPolyModels,2,1,SaveFile);
-	fwrite(Pof_names,gameData.models.nPolyModels,sizeof(*Pof_names),SaveFile);
+	fwrite(pofNames,gameData.models.nPolyModels,sizeof(*pofNames),SaveFile);
 
 	//==================== SAVE PLAYER INFO ===========================
 

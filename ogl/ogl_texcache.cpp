@@ -41,9 +41,10 @@
 
 void OglCachePolyModelTextures (int nModel)
 {
-	tPolyModel *po;
-if ((po = GetPolyModel (NULL, NULL, nModel, 0)))
-	LoadModelTextures (po, NULL);
+	CPolyModel* modelP = GetPolyModel (NULL, NULL, nModel, 0);
+
+if (modelP)
+	modelP->LoadTextures (NULL);
 }
 
 //------------------------------------------------------------------------------

@@ -18,45 +18,85 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gr.h"
 #include "3d.h"
 
-#ifndef DRIVE
 #include "robot.h"
-#endif
 #include "piggy.h"
 
-#define MAX_POLYGON_MODELS 500
+//------------------------------------------------------------------------------
+
+#define MAX_POLYGON_MODELS		500
 #define D1_MAX_POLYGON_MODELS 300
 
-#define SLOWMOTION_MODEL (MAX_POLYGON_MODELS - 33)
-#define BULLETTIME_MODEL (MAX_POLYGON_MODELS - 34)
-#define HOSTAGE_MODEL (MAX_POLYGON_MODELS - 35)
-#define BULLET_MODEL (MAX_POLYGON_MODELS - 36)
+#define SLOWMOTION_MODEL		(MAX_POLYGON_MODELS - 33)
+#define BULLETTIME_MODEL		(MAX_POLYGON_MODELS - 34)
+#define HOSTAGE_MODEL			(MAX_POLYGON_MODELS - 35)
+#define BULLET_MODEL				(MAX_POLYGON_MODELS - 36)
 
-typedef struct tSubModelData {
-	int			ptrs [MAX_SUBMODELS];
-	CFixVector	offsets [MAX_SUBMODELS];
-	CFixVector	norms [MAX_SUBMODELS];   // norm for sep plane
-	CFixVector	pnts [MAX_SUBMODELS];    // point on sep plane
-	fix			rads [MAX_SUBMODELS];       // radius for each submodel
-	ubyte			parents [MAX_SUBMODELS];    // what is parent for each submodel
-	CFixVector	mins [MAX_SUBMODELS];
-	CFixVector	maxs [MAX_SUBMODELS];
-} tSubModelData;
+//------------------------------------------------------------------------------
 
+class CSubModelData {
+	public:
+		CArray<int>				ptrs ;//[MAX_SUBMODELS];
+		CArray<CFixVector>	offsets ;//[MAX_SUBMODELS];
+		CArray<CFixVector>	norms ;//[MAX_SUBMODELS];   // norm for sep plane
+		CArray<CFixVector>	pnts ;//[MAX_SUBMODELS];    // point on sep plane
+		CArray<fix>				rads ;//[MAX_SUBMODELS];       // radius for each submodel
+		CArray<ubyte>			parents ;//[MAX_SUBMODELS];    // what is parent for each submodel
+		CArray<CFixVector>	mins ;//[MAX_SUBMODELS];
+		CArray<CFixVector>	maxs ;//[MAX_SUBMODELS];
+
+	public:
+		CSubModelData () { Create (); }
+		void Create (void);
+		void Setup (ubyte* dataP);
+		void Destroy (void);
+	};
+
+//------------------------------------------------------------------------------
 //used to describe a polygon model
-typedef struct tPolyModel {
-	short				nType;
-	int				nModels;
-	int				nDataSize;
-	CArray<ubyte>	modelData;
-	tSubModelData	subModels;
-	CFixVector		mins,maxs;                       // min,max for whole model
-	fix				rad;
-	ubyte				nTextures;
-	ushort			nFirstTexture;
-	ubyte				nSimplerModel;                      // alternate model with less detail (0 if none, nModel+1 else)
-	//CFixVector min,max;
-} tPolyModel;
 
+typedef struct tPolyModelInfo {
+		//short				nId;
+		short				nType;
+		int				nModels;
+		int				nDataSize;
+		CArray<ubyte>	data;
+		CSubModelData	subModels;
+		CFixVector		mins,maxs;                       // min,max for whole model
+		fix				rad;
+		ubyte				nTextures;
+		ushort			nFirstTexture;
+		ubyte				nSimplerModel;                      // alternate model with less detail (0 if none, nModel+1 else)
+} tPolyModelInfo;
+
+class CPolyModel {
+	private:
+		tPolyModelInfo	m_info;
+
+	public:
+		CPolyModel () { Init (); }
+		~CPolyModel () { Destroy (); }
+		void Init (void);
+		int Read (int bHMEL, CFile& cf);
+		void ReadData (CPolyModel* defModelP, CFile& cf);
+		void Load (const char *filename, int nTextures, int nFirstTexture, tRobotInfo *botInfoP);
+		int LoadTextures (tBitmapIndex*	altTextures);
+		void FindMinMax (void);
+		inline int DataSize (void) { return m_info.nDataSize; }
+		inline ubyte SimplerModel (void) { return m_info.nSimplerModel; }
+		inline fix Rad (void) { return m_info.rad; }
+		inline CArray<ubyte>& Data (void) { return m_info.data; }
+		inline int ModelCount (void) { return m_info.nModels; }
+		inline CSubModelData& SubModels (void) { return m_info.subModels; }
+
+	private:
+		void Parse (const char *filename, tRobotInfo *botInfoP);
+		fix Size (void);
+		void Check (ubyte* dataP);
+		void Setup (void);
+		void Destroy (void);
+	};
+
+//------------------------------------------------------------------------------
 // array of pointers to polygon objects
 // switch to simpler model when the CObject has depth
 // greater than this value times its radius.
@@ -64,50 +104,32 @@ extern int nSimpleModelThresholdScale;
 
 // how many polygon objects there are
 // array of names of currently-loaded models
-extern char Pof_names[MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
+extern char pofNames [MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
 
-void InitPolygonModels();
-
-#ifndef DRIVE
-int LoadPolygonModel(const char *filename,int n_textures,int first_texture,tRobotInfo *r);
-#else
-int LoadPolygonModel(const char *filename,int n_textures,CBitmap ***textures);
-#endif
+int LoadPolyModel (const char* filename, int nTextures, int nFirstTexture, tRobotInfo* botInfoP);
 
 // draw a polygon model
-int DrawPolygonModel (CObject *objP, CFixVector *pos,CFixMatrix *orient,CAngleVector *animAngles, int nModel, int flags, fix light, 
-							 fix *glowValues, tBitmapIndex nAltTextures[], tRgbaColorf *obj_color);
+int DrawPolyModel (CObject* objP, CFixVector* pos, CFixMatrix* orient, CAngleVector* animAngles, int nModel, int flags, fix light, 
+							 fix* glowValues, tBitmapIndex nAltTextures[], tRgbaColorf* obj_color);
 
 // fills in arrays gunPoints & gunDirs, returns the number of guns read
-int ReadModelGuns (const char *filename,CFixVector *gunPoints, CFixVector *gunDirs, int *gunSubModels);
+int ReadModelGuns (const char* filename,CFixVector* gunPoints, CFixVector* gunDirs, int* gunSubModels);
 
 // draws the given model in the current canvas.  The distance is set to
 // more-or-less fill the canvas.  Note that this routine actually renders
 // into an off-screen canvas that it creates, then copies to the current
 // canvas.
-void DrawModelPicture (int mn,CAngleVector *orient_angles);
+void DrawModelPicture (int mn,CAngleVector* orient_angles);
 
 // free up a model, getting rid of all its memory
-void FreeModel (tPolyModel *po);
-
 #define MAX_POLYOBJ_TEXTURES 100
 
-int ReadPolyModel (tPolyModel *pm, int bHMEL, CFile &cf);
+int ReadPolyModels (CPolyModel* pm, int n, CFile& cf);
 
-/*
- * reads n tPolyModel structs from a CFILE
- */
-int ReadPolyModels (tPolyModel *pm, int n, CFile& cf);
+CPolyModel* GetPolyModel (CObject* objP, CFixVector* pos, int nModel, int flags);
 
-/*
- * routine which allocates, reads, and inits a tPolyModel's modelData
- */
-void ReadPolyModelData (tPolyModel *pm, int nModel, tPolyModel *pdm, CFile& cf);
-
-tPolyModel *GetPolyModel (CObject *objP, CFixVector *pos, int nModel, int flags);
-
-int LoadModelTextures (tPolyModel *po, tBitmapIndex *altTextures);
+int LoadModelTextures (CPolyModel* po, tBitmapIndex* altTextures);
 
 //	-----------------------------------------------------------------------------
 
-#endif /* _POLYOBJ_H */
+#endif // _POLYOBJ_H

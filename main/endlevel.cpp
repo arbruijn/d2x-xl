@@ -203,7 +203,7 @@ void InitEndLevel (void)
 	gameData.endLevel.station.bmP = bm_load ("steel3.bbm");
 	gameData.endLevel.station.bmList [0] = &gameData.endLevel.station.bmP;
 
-	gameData.endLevel.station.nModel = LoadPolygonModel ("station.pof", 1, gameData.endLevel.station.bmList, NULL);
+	gameData.endLevel.station.nModel = LoadPolyModel ("station.pof", 1, gameData.endLevel.station.bmList, NULL);
 #endif
 GenerateStarfield ();
 atexit (FreeEndLevelData);
@@ -743,7 +743,7 @@ void DrawExitModel (void)
 vModelPos = gameData.endLevel.exit.vMineExit + gameData.endLevel.exit.mOrient.FVec() * (I2X (f));
 vModelPos += gameData.endLevel.exit.mOrient.UVec() * (I2X (u));
 gameStates.app.bD1Model = gameStates.app.bD1Mission && gameStates.app.bD1Data;
-DrawPolygonModel (NULL, &vModelPos, &gameData.endLevel.exit.mOrient, NULL,
+DrawPolyModel (NULL, &vModelPos, &gameData.endLevel.exit.mOrient, NULL,
 						gameStates.gameplay.bMineDestroyed ? gameData.endLevel.exit.nDestroyedModel : gameData.endLevel.exit.nModel,
 						0, I2X (1), NULL, NULL, NULL);
 gameStates.app.bD1Model = 0;
@@ -784,7 +784,7 @@ if (!(p.p3_codes & CC_BEHIND)&& !(p.p3_flags & PF_OVERFLOW)) {
 	gameStates.render.nInterpolationMethod = imSave;
 	}
 #ifdef STATION_ENABLED
-DrawPolygonModel (NULL, &gameData.endLevel.station.vPos, &vmdIdentityMatrix, NULL,
+DrawPolyModel (NULL, &gameData.endLevel.station.vPos, &vmdIdentityMatrix, NULL,
 						gameData.endLevel.station.nModel, 0, I2X (1), NULL, NULL);
 #endif
 RenderTerrain (&gameData.endLevel.exit.vGroundExit, nExitPointBmX, nExitPointBmY);

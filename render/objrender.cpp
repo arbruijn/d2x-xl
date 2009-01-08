@@ -573,7 +573,7 @@ if (ci.bFading < 0) {
 	xSaveGlow = glow [0];
 	glow [0] = FixMul (glow [0], ci.xLightScale);
 	gameData.models.nLightScale = ci.xLightScale;
-	bOk = DrawPolygonModel (objP, &posP->vPos, &posP->mOrient,
+	bOk = DrawPolyModel (objP, &posP->vPos, &posP->mOrient,
 									reinterpret_cast<CAngleVector*> (&objP->rType.polyObjInfo.animAngles),
 									objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags,
 									xNewLight, glow, altTextures, NULL);
@@ -585,7 +585,7 @@ else {
 	gameStates.render.grAlpha = (float) ci.nFadeValue;
 	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);	//set to black (matters for s3)
 	G3SetSpecialRender (DrawTexPolyFlat, NULL, NULL);		//use special flat drawer
-	bOk = DrawPolygonModel (objP, &posP->vPos, &posP->mOrient,
+	bOk = DrawPolyModel (objP, &posP->vPos, &posP->mOrient,
 									reinterpret_cast<CAngleVector*> (&objP->rType.polyObjInfo.animAngles),
 									objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags,
 									light, glow, NULL, NULL);
@@ -695,7 +695,7 @@ else {
 	}
 if (objP->rType.polyObjInfo.nTexOverride != -1) {
 #if DBG
-	tPolyModel *pm = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
+	CPolyModel* pm = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
 #endif
 	tBitmapIndex	bm = gameData.pig.tex.bmIndex [0][objP->rType.polyObjInfo.nTexOverride],
 						bmiP [MAX_MODEL_TEXTURES];
@@ -705,7 +705,7 @@ if (objP->rType.polyObjInfo.nTexOverride != -1) {
 #endif
 	for (i = 0; i < MAX_MODEL_TEXTURES; i++)		//fill whole array, in case simple model needs more
 		bmiP [i] = bm;
-	bOk = DrawPolygonModel (objP, &objP->info.position.vPos,
+	bOk = DrawPolyModel (objP, &objP->info.position.vPos,
 									&objP->info.position.mOrient,
 									reinterpret_cast<CAngleVector*> ( &objP->rType.polyObjInfo.animAngles),
 									objP->rType.polyObjInfo.nModel,
@@ -748,7 +748,7 @@ else {
 				fix xDistToEye = CFixVector::Dist(gameData.objs.viewerP->info.position.vPos, objP->info.position.vPos);
 				if (xDistToEye < gameData.models.nSimpleModelThresholdScale * I2X (2))
 #endif
-					bOk = DrawPolygonModel (
+					bOk = DrawPolyModel (
 						objP, &objP->info.position.vPos, &objP->info.position.mOrient,
 						reinterpret_cast<CAngleVector*> ( &objP->rType.polyObjInfo.animAngles),
 						gameData.weapons.info [id].nInnerModel,
@@ -763,7 +763,7 @@ else {
 			else if (!bBlendPolys)
 				gameStates.render.grAlpha = (float) FADE_LEVELS;
 			}
-		bOk = DrawPolygonModel (
+		bOk = DrawPolyModel (
 			objP, &objP->info.position.vPos, &objP->info.position.mOrient,
 			objP->rType.polyObjInfo.animAngles,
 			objP->rType.polyObjInfo.nModel,

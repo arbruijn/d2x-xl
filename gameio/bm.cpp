@@ -250,7 +250,7 @@ gameData.objs.pwrUp.nTypes = cf.ReadInt ();
 ReadPowerupTypeInfos (gameData.objs.pwrUp.info, gameData.objs.pwrUp.nTypes, cf);
 
 gameData.models.nPolyModels = cf.ReadInt ();
-/*---*/PrintLog ("      Loading %d tPolyModel descriptions\n", gameData.models.nPolyModels);
+/*---*/PrintLog ("      Loading %d CPolyModel descriptions\n", gameData.models.nPolyModels);
 ReadPolyModels (gameData.models.polyModels, gameData.models.nPolyModels, cf);
 gameData.models.nDefPolyModels = gameData.models.nPolyModels;
 memcpy (gameData.models.defPolyModels, gameData.models.polyModels, gameData.models.nPolyModels * sizeof (*gameData.models.defPolyModels));
@@ -550,7 +550,7 @@ void BMReadGameDataD1 (CFile& cf)
 	tWallClip				*pw;
 	tTexMapInfo		*pt;
 	tRobotInfo		*pr;
-	tPolyModel		pm;
+	CPolyModel		pm;
 	ubyte				tmpSounds [D1_MAX_SOUNDS];
 
 cf.Seek (sizeof (int), SEEK_CUR);
@@ -862,7 +862,7 @@ void BMReadWeaponInfoD1 (CFile& cf)
 	cf.Read (gameData.objs.pwrUp.info, sizeof (tPowerupTypeInfo), MAX_POWERUP_TYPES, cf);
 
 	cf.Read (&gameData.models.nPolyModels, sizeof (int), 1, cf);
-	cf.Read (gameData.models.polyModels, sizeof (tPolyModel), gameData.models.nPolyModels, cf);
+	cf.Read (gameData.models.polyModels, sizeof (CPolyModel), gameData.models.nPolyModels, cf);
 
 	for (i=0;i<gameData.models.nPolyModels;i++) {
 		gameData.models.polyModels [i].modelData.Create (gameData.models.polyModels [i].nDataSize);
@@ -1213,7 +1213,7 @@ return 1;
 int LoadRobotReplacements (const char *szLevelName, int bAddBots, int bAltModels)
 {
 	CFile			cf;
-	tPolyModel	*pm;
+	CPolyModel	*pm;
 	int			t, i, j;
 	int			nBotTypeSave = gameData.bots.nTypes [0], 
 					nBotJointSave = gameData.bots.nJoints, 
@@ -1482,8 +1482,8 @@ int LoadExitModels (void)
 		}
 	else if (cf.Exist ("exit01.pof", gameFolders.szDataDir, 0) && 
 				cf.Exist ("exit01d.pof", gameFolders.szDataDir, 0)) {
-		gameData.endLevel.exit.nModel = LoadPolygonModel ("exit01.pof", 3, start_num, NULL);
-		gameData.endLevel.exit.nDestroyedModel = LoadPolygonModel ("exit01d.pof", 3, start_num + 3, NULL);
+		gameData.endLevel.exit.nModel = LoadPolyModel ("exit01.pof", 3, start_num, NULL);
+		gameData.endLevel.exit.nDestroyedModel = LoadPolyModel ("exit01d.pof", 3, start_num + 3, NULL);
 		OglCachePolyModelTextures (gameData.endLevel.exit.nModel);
 		OglCachePolyModelTextures (gameData.endLevel.exit.nDestroyedModel);
 	}
