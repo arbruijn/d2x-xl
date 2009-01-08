@@ -31,7 +31,7 @@ class CBriefingInfo {
 		char*					message;
 		int					nScreen;
 		int					nLevel;
-		tBriefingScreen	briefBuf;
+		tBriefingScreen	curScreen;
 		tBriefingScreen*	bsP;
 		char*					pi;
 		char*					pj;
@@ -102,39 +102,7 @@ class CBriefing {
 	public:
 		CBriefing () { Init (); }
 		void Init (void);
-		void CBriefing::Run (const char* filename, int nLevel);
-
-	private:
-		int StartSound (int nChannel, short nSound, fix nVolume, const char* pszWAV);
-		void StopSound (int& nChannel);
-		int StartHum (int nChannel, int nLevel, int nScreen, int bExtraSounds);
-		tD1ExtraBotSound* FindExtraBotSound (short nLevel, short nBotSig);
-		int StartExtraBotSound (int nChannel, short nLevel, short nBotSig);
-
-		int RenderImage (char* pszImg);
-		void RenderBitmapFrame (int bRedraw);
-		void RenderBitmap (CBitmap* bmp);
-		void RenderRobotFrame (void);
-		void RenderRobotMovie (void);
-		void InitSpinningRobot (void); 
-		void Animate (void);
-
-		int LoadImage (char* szBriefScreen);
-		int LoadImage (int nScreen);
-		int GetMessageNum (int& i);
-		void GetMessageName (char** message, char* result);
-		const char* NextPage (const char* message);
-		int PageHasRobot (const char* message);
-
-		void InitCharPos (tBriefingScreen* bsP, int bRescale);
-		int PrintCharDelayed (int delay);
-		void FlashCursor (int bCursor);
-
-		int InKey (void);
-		int WaitForKeyPress (void);
-
-		int GetNewMessageNum (char** message);
-		int DefineBox (char** buf, tBriefingScreen* briefBufP);
+		void Run (const char* filename, int nLevel);
 
 		int HandleA (void);
 		int HandleB (void);
@@ -154,6 +122,37 @@ class CBriefing {
 		int HandleNEWL (void);
 		int HandleSEMI (void);
 		int HandleANY (void);
+
+	private:
+		int StartSound (int nChannel, short nSound, fix nVolume, const char* pszWAV);
+		void StopSound (int& nChannel);
+		int StartHum (int nChannel, int nLevel, int nScreen, int bExtraSounds);
+		tD1ExtraBotSound* FindExtraBotSound (short nLevel, short nBotSig);
+		int StartExtraBotSound (int nChannel, short nLevel, short nBotSig);
+
+		int RenderImage (char* pszImg);
+		void RenderBitmapFrame (int bRedraw);
+		void RenderBitmap (CBitmap* bmp);
+		void RenderRobotFrame (void);
+		void RenderRobotMovie (void);
+		void InitSpinningRobot (void); 
+		void Animate (void);
+
+		int LoadImage (char* szBriefScreen);
+		int LoadImage (int nScreen);
+		int ParseMessageInt (char*& pszMsg, bool bSkip = false);
+		void ParseMessageText (char* pszName);
+		const char* NextPage (const char* message);
+		int PageHasRobot (const char* message);
+
+		void InitCharPos (tBriefingScreen* bsP, int bRescale);
+		int PrintCharDelayed (int delay);
+		void FlashCursor (int bCursor);
+
+		int InKey (void);
+		int WaitForKeyPress (void);
+
+		int DefineBox (void);
 
 		int HandleInput (void);
 		int HandleNewPage (void);
