@@ -1122,7 +1122,7 @@ void HandleTestKey(int key)
 			m.AddInput (text, FILENAME_LEN);
 			item = m.Menu (NULL, "Briefing to play?");
 			if (item != -1) {
-				DoBriefingScreens (text, 1);
+				briefing.Run (text, 1);
 				ResetCockpit ();
 			}
 			break;

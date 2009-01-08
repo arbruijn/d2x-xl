@@ -174,14 +174,4 @@ extern CBriefing briefing;
 
 //-----------------------------------------------------------------------------
 
-// Descent 1 briefings
-
-extern int ShowTitleScreen (const char* filename, int bAllowKeys, int from_hog_only);
-extern int ShowBriefingScreen (const char* filename, int bAllowKeys);
-extern void ShowTitleFlick (const char* name, int bAllowKeys);
-extern void DoBriefingScreens(const char* filename,int nLevel);
-extern char* GetBriefingScreen (int nLevel);
-
-extern void show_endgame_briefing(void);
-
 #endif

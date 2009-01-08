@@ -1500,12 +1500,12 @@ if (!IsMultiGame) {
 		if (!bPlayed) {
 			if (IS_D2_OEM) {
 				songManager.Play (SONG_TITLE, 0);
-				DoBriefingScreens (reinterpret_cast<char*> ("end2oem.tex"), 1);
+				briefing.Run (reinterpret_cast<char*> ("end2oem.tex"), 1);
 				}
 			else {
 				songManager.Play (SONG_ENDGAME, 0);
-				DoBriefingScreens (gameStates.app.bD1Mission ? reinterpret_cast<char*> ("endreg.tex") : reinterpret_cast<char*> ("ending2.tex"), 
-										 gameStates.app.bD1Mission ? 0x7e : 1);
+				briefing.Run (gameStates.app.bD1Mission ? reinterpret_cast<char*> ("endreg.tex") : reinterpret_cast<char*> ("ending2.tex"), 
+								  gameStates.app.bD1Mission ? 0x7e : 1);
 				}
 			}
 		}
@@ -1513,7 +1513,7 @@ if (!IsMultiGame) {
 		char szBriefing [FILENAME_LEN];
 		PlayLevelExtroMovie (gameData.missions.nCurrentLevel);
 		sprintf (szBriefing, "%s.tex", gameStates.app.szCurrentMissionFile);
-		DoBriefingScreens (szBriefing, gameData.missions.nLastLevel + 1);   //level past last is endgame breifing
+		briefing.Run (szBriefing, gameData.missions.nLastLevel + 1);   //level past last is endgame breifing
 
 		//try doing special credits
 		sprintf (szBriefing,"%s.ctb",gameStates.app.szCurrentMissionFile);
@@ -1934,11 +1934,11 @@ if (!IsMultiGame) {
 	if (!gameStates.app.bD1Mission && (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission)) {
 		if (IS_SHAREWARE) {
 			if (nLevel == 1)
-				DoBriefingScreens (reinterpret_cast<char*> ("brief2.tex"), 1);
+				briefing.Run (reinterpret_cast<char*> ("brief2.tex"), 1);
 			}
 		else if (IS_D2_OEM) {
 			if ((nLevel == 1) && !gameStates.movies.bIntroPlayed)
-				DoBriefingScreens (reinterpret_cast<char*> ("brief2o.tex"), 1);
+				briefing.Run (reinterpret_cast<char*> ("brief2o.tex"), 1);
 			}
 		else { // full version
 			if (movieManager.m_bHaveExtras && (nLevel == 1)) {
@@ -1959,7 +1959,7 @@ if (!IsMultiGame) {
 					if (hires_save != gameStates.menus.bHiresAvailable)
 						gameStates.video.nScreenMode = -1;		//force reset
 					}
-				DoBriefingScreens (reinterpret_cast<char*> ("robot.tex"), nLevel);
+				briefing.Run (reinterpret_cast<char*> ("robot.tex"), nLevel);
 				gameStates.menus.bHiresAvailable = hires_save;
 				}
 			}
@@ -1971,12 +1971,12 @@ if (!IsMultiGame) {
 				if (movieManager.Play ("briefa.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize) != MOVIE_ABORTED)
 					 movieManager.Play ("briefb.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
 				}
-			DoBriefingScreens (gameData.missions.szBriefingFilename, nLevel);
+			briefing.Run (gameData.missions.szBriefingFilename, nLevel);
 			}
 		else {
 			char szBriefing [FILENAME_LEN];
 			sprintf (szBriefing, "%s.tex", gameStates.app.szCurrentMissionFile);
-			DoBriefingScreens (szBriefing, nLevel);
+			briefing.Run (szBriefing, nLevel);
 			}
 		}
 	}
