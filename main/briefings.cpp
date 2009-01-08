@@ -43,6 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "interp.h"
 #include "ogl_lib.h"
 #include "ogl_texcache.h"
+#include "briefings.h"
 #ifdef __macosx__
 # include <OpenGL/glu.h>
 # undef GL_ARB_multitexture // hack!
@@ -66,6 +67,8 @@ int NMCheckButtonPress ();
 //	Can be set by -noscreens command line option.  Causes bypassing of all briefing screens.
 int	briefFgColorIndex [MAX_BRIEFING_COLORS], 
 		briefBgColorIndex [MAX_BRIEFING_COLORS];
+
+CBriefing briefing;
 
 //-----------------------------------------------------------------------------
 
@@ -222,11 +225,11 @@ strcpy (szSpinningRobot, "rba.mve");
 
 //-----------------------------------------------------------------------------
 
-void CBriefingInfo::Setup (char* _message, int CBriefing::HandlenLevel, int CBriefing::HandlenScreen)
+void CBriefingInfo::Setup (char* _message, int _nLevel, int _nScreen)
 {
-message = message;
-nLevel = nLevel;
-nScreen = nScreen;
+message = _message;
+nLevel = _nLevel;
+nScreen = _nScreen;
 }
 
 //-----------------------------------------------------------------------------
@@ -249,7 +252,7 @@ return nChannel;
 void CBriefing::StopSound (int& nChannel)
 {
 if (nChannel > -1) {
-	audio.StopSound (*nChannel);
+	audio.StopSound (nChannel);
 	nChannel = -1;
 	}
 }
@@ -290,7 +293,7 @@ int CBriefing::StartExtraBotSound (int nChannel, short nLevel, short nBotSig)
 {
 	tD1ExtraBotSound*	p;
 
-StopSound (&nChannel);
+StopSound (nChannel);
 if (!gameStates.app.bHaveExtraData)
 	return -1;
 if (!(p = FindExtraBotSound (nLevel, nBotSig)))
@@ -349,8 +352,8 @@ if (bRescale) {
 	bsP->textWidth = RescaleX (bsP->textWidth);
 	bsP->textHeight = RescaleY (bsP->textHeight);
 	}
-briefingTextX = bsP->textLeft;
-briefingTextY = gameStates.app.bD1Mission ? bsP->textTop : bsP->textTop - (8 *(1 + gameStates.menus.bHires));
+m_info.briefingTextX = bsP->textLeft;
+m_info.briefingTextY = gameStates.app.bD1Mission ? bsP->textTop : bsP->textTop - (8 *(1 + gameStates.menus.bHires));
 }
 
 //-----------------------------------------------------------------------------
@@ -372,8 +375,8 @@ m_info.tAnimate = t;
 	int h = RescaleY (138);
 
 	//	Only plot every nth frame.
-if (!bRedraw && nDoorDivCount) {
-	nDoorDivCount--;
+if (!bRedraw && m_info.nDoorDivCount) {
+	m_info.nDoorDivCount--;
 	if (!gameOpts->menus.nStyle)
 		return;
 	}
@@ -382,7 +385,7 @@ if (*m_info.szBitmapName) {
 	char		*poundSignP;
 	int		nFrame, dig1, dig2;
 	//	Set supertransparency color to black
-	switch (nAnimatingBitmapType) {
+	switch (m_info.nAnimatingBitmapType) {
 		case 0: 
 			bitmapCanv = CCanvas::Current ()->CreatePane (x, y, w, h);
 			break;
@@ -391,7 +394,7 @@ if (*m_info.szBitmapName) {
 			break;
 		// Adam: Change here for your new animating bitmap thing. 94, 94 are bitmap size.
 		default:
-			Int3 (); // Impossible, illegal value for nAnimatingBitmapType
+			Int3 (); // Impossible, illegal value for m_info.nAnimatingBitmapType
 		}
 	curCanvSave = CCanvas::Current (); 
 	CCanvas::SetCurrent (bitmapCanv);
@@ -407,22 +410,22 @@ if (*m_info.szBitmapName) {
 		else
 			nFrame = (dig1-'0')*10 + (dig2-'0');
 
-		switch (nAnimatingBitmapType) {
+		switch (m_info.nAnimatingBitmapType) {
 			case 0:
-				if (!nDoorDivCount) {
-					nFrame += nDoorDir;
+				if (!m_info.nDoorDivCount) {
+					nFrame += m_info.nDoorDir;
 					if (nFrame > EXIT_DOOR_MAX) {
 						nFrame = EXIT_DOOR_MAX;
-						nDoorDir = -1;
+						m_info.nDoorDir = -1;
 						}
 					else if (nFrame < 0) {
 						nFrame = 0;
-						nDoorDir = 1;
+						m_info.nDoorDir = 1;
 					}
 				}
 				break;
 			case 1:
-				if (!nDoorDivCount)
+				if (!m_info.nDoorDivCount)
 					nFrame++;
 				if (nFrame > OTHER_THING_MAX)
 					nFrame = 0;
@@ -463,19 +466,19 @@ if (*m_info.szBitmapName) {
 	CCanvas::SetCurrent (curCanvSave);
 	delete bitmapCanv;
 	bitmapCanv = NULL;
-	if (!(bRedraw || nDoorDivCount)) {
+	if (!(bRedraw || m_info.nDoorDivCount)) {
 #if 1
-	nDoorDivCount = DOOR_DIV_INIT;
+	m_info.nDoorDivCount = DOOR_DIV_INIT;
 #else
-	switch (nAnimatingBitmapType) {
+	switch (m_info.nAnimatingBitmapType) {
 		case 0:
 			if (nFrame == EXIT_DOOR_MAX) {
-				nDoorDir = -1;
-				nDoorDivCount = DOOR_DIV_INIT;
+				m_info.nDoorDir = -1;
+				m_info.nDoorDivCount = DOOR_DIV_INIT;
 				} 
 			else if (nFrame == 0) {
-				nDoorDir = 1;
-				nDoorDivCount = DOOR_DIV_INIT;
+				m_info.nDoorDir = 1;
+				m_info.nDoorDivCount = DOOR_DIV_INIT;
 			}
 			break;
 		case 1:
@@ -509,23 +512,23 @@ if (t - m_info.tAnimate < 10)
 	return;
 
 CCanvas::Push ();
-CCanvas::SetCurrent (robotCanvP);
+CCanvas::SetCurrent (m_info.robotCanvP);
 Assert (ROBOTINFO (m_info.nRobot).nModel != -1);
-if (bInitAnimate) {
+if (m_info.bInitAnimate) {
 	paletteManager.Load ("", "", 0, 0, 1);
 	OglCachePolyModelTextures (ROBOTINFO (m_info.nRobot).nModel);
 	paletteManager.LoadEffect ();
-	bInitAnimate = SDL_GetTicks ();
+	m_info.bInitAnimate = SDL_GetTicks ();
 	}
 gameStates.render.bFullBright	= 1;
 
 CCanvas::Current ()->Clear (0);
 gameStates.ogl.bEnableScissor = 1;
-DrawModelPicture (ROBOTINFO (m_info.nRobot).nModel, &vRobotAngles);
+DrawModelPicture (ROBOTINFO (m_info.nRobot).nModel, &m_info.vRobotAngles);
 gameStates.ogl.bEnableScissor = 0;
 gameStates.render.bFullBright = 0;
 CCanvas::Pop ();
-vRobotAngles [HA] += 15 * (t - m_info.tAnimate);
+m_info.vRobotAngles [HA] += 15 * (t - m_info.tAnimate);
 m_info.tAnimate = t;
 }
 
@@ -534,7 +537,7 @@ m_info.tAnimate = t;
 void CBriefing::RenderRobotMovie (void)
 {
 CCanvas::Push ();
-CCanvas::SetCurrent (robotCanvP);
+CCanvas::SetCurrent (m_info.robotCanvP);
 movieManager.RotateRobot ();
 CCanvas::Pop ();
 }
@@ -559,10 +562,10 @@ int x = RescaleX (138);
 int y = RescaleY (55);
 int w = RescaleX (163);
 int h = RescaleY (136);
-if (robotCanvP)
-	delete robotCanvP;
-robotCanvP = CCanvas::Current ()->CreatePane (x, y, w, h);
-bInitAnimate = 1;
+if (m_info.robotCanvP)
+	delete m_info.robotCanvP;
+m_info.robotCanvP = CCanvas::Current ()->CreatePane (x, y, w, h);
+m_info.bInitAnimate = 1;
 m_info.tAnimate = SDL_GetTicks ();
 }
 
@@ -587,7 +590,7 @@ Assert ((m_info.nCurrentColor >= 0) && (m_info.nCurrentColor < MAX_BRIEFING_COLO
 //	Draw cursor if there is some delay and caller says to draw cursor
 if (m_info.bFlashingCursor && !m_info.bRedraw) {
 	fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
-	GrPrintF (NULL, briefingTextX+1, briefingTextY, "_");
+	GrPrintF (NULL, m_info.briefingTextX+1, m_info.briefingTextY, "_");
 	if (!gameOpts->menus.nStyle)
 		GrUpdate (0);
 }
@@ -598,7 +601,7 @@ if (delay > 0)
 Animate ();
 if ((delay > 0) && !m_info.bRedraw) {
 	do {
-		AnimateBriefing ();
+		Animate ();
 		} while ((t = SDL_GetTicks ()) < (tText + delay));
 	}
 
@@ -606,15 +609,15 @@ tText = t;
 
 //	Erase cursor
 if (m_info.bFlashingCursor && (delay > 0) && !m_info.bRedraw) {
-	fontManager.SetColorRGBi (nEraseColor, 1, 0, 0);
-	GrPrintF (NULL, briefingTextX+1, briefingTextY, "_");
+	fontManager.SetColorRGBi (m_info.nEraseColor, 1, 0, 0);
+	GrPrintF (NULL, m_info.briefingTextX+1, m_info.briefingTextY, "_");
 	//	erase the character
 	fontManager.SetColorRGB (briefBgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
-	GrPrintF (NULL, briefingTextX, briefingTextY, message);
+	GrPrintF (NULL, m_info.briefingTextX, m_info.briefingTextY, message);
 }
 //draw the character
 fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
-GrPrintF (NULL, briefingTextX+1, briefingTextY, message);
+GrPrintF (NULL, m_info.briefingTextX+1, m_info.briefingTextY, message);
 
 if (!(m_info.bRedraw || gameOpts->menus.nStyle)) 
 	GrUpdate (0);
@@ -628,7 +631,7 @@ int CBriefing::LoadImage (char* szBriefScreen)
 #if TRACE
 console.printf (CON_DBG, "Loading new briefing <%s>\n", szBriefScreen);
 #endif
-strcpy (curBriefScreenName, szBriefScreen);
+strcpy (m_info.szCurImage, szBriefScreen);
 if (paletteManager.DisableEffect ())
 	return 0;
 int pcxResult = RenderImage (szBriefScreen);
@@ -657,7 +660,7 @@ int CBriefing::LoadImage (int nScreen)
 
 szBriefScreen = gameStates.app.bD1Mission 
 					 ? briefingScreens [nScreen % MAX_BRIEFING_SCREENS].szName
-					 : curBriefScreenName;
+					 : m_info.szCurImage;
 if (!*szBriefScreen)
 	return 0;
 glClear (GL_COLOR_BUFFER_BIT);
@@ -666,20 +669,18 @@ return LoadImage (szBriefScreen);
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::GetMessageNum (char** message)
+int CBriefing::GetMessageNum (int& i)
 {
 	int	n = 0;
-	char	*psz = *message;
 
-while (*psz && (*psz == ' '))
-	psz++;
-while ((*psz >= '0') && (*psz <= '9')) {
-	n = 10 * n + (*psz - '0');
-	psz++;
+while (m_info.briefingText [i] && (m_info.briefingText [i] == ' '))
+	i++;
+while ((m_info.briefingText [i] >= '0') && (m_info.briefingText [i] <= '9')) {
+	n = 10 * n + (m_info.briefingText [i] - '0');
+	i++;
 	}
-while (*psz && (*psz++ != 10))		//	Get and drop eoln
+while (m_info.briefingText [i] && (m_info.briefingText [i++] != 10))		//	Get and drop eoln
 	;
-*message = psz;
 return n;
 }
 
@@ -714,7 +715,7 @@ if ((TimerGetFixedSeconds () % (I2X (1)/2)) > (I2X (1)/4))
 	fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
 else
 	fontManager.SetColorRGB (&eraseColorRgb, NULL);
-GrPrintF (NULL, briefingTextX+1, briefingTextY, "_");
+GrPrintF (NULL, m_info.briefingTextX+1, m_info.briefingTextY, "_");
 if (gameStates.ogl.nDrawBuffer == GL_FRONT)
 	GrUpdate (0);
 }
@@ -767,7 +768,7 @@ int CBriefing::WaitForKeyPress (void)
 	int keypress = 0;
 
 m_info.bChattering = 0;
-StopSound (&m_info.nPrintingChannel);
+StopSound (m_info.nPrintingChannel);
 if (!m_info.t0)
 	m_info.t0 = SDL_GetTicks ();
 do {		//	Wait for a key
@@ -842,9 +843,9 @@ int CBriefing::HandleB (void)
 	int      iff_error;
 
 if (m_info.message > m_info.pj) {
-	if (robotCanvP != NULL) {
-		delete robotCanvP;
-		robotCanvP = NULL;
+	if (m_info.robotCanvP != NULL) {
+		delete m_info.robotCanvP;
+		m_info.robotCanvP = NULL;
 		}
 	}
 GetMessageName (&m_info.message, szBitmap);
@@ -876,8 +877,8 @@ int CBriefing::HandleD (void)
 {
 m_info.nScreen = DefineBox (&m_info.message, &m_info.briefBuf);
 m_info.bsP = &m_info.briefBuf;
-m_info.x = briefingTextX;
-m_info.y = briefingTextY;
+m_info.x = m_info.briefingTextX;
+m_info.y = m_info.briefingTextY;
 m_info.nLineAdjustment = 0;
 m_info.prevCh = 10;                                   // read to eoln
 return 1;
@@ -899,14 +900,14 @@ return 1;
 int CBriefing::HandleN (void)
 {
 if (m_info.message > m_info.pj) {
-	if (robotCanvP != NULL) {
-		delete robotCanvP;
-		robotCanvP = NULL;
+	if (m_info.robotCanvP != NULL) {
+		delete m_info.robotCanvP;
+		m_info.robotCanvP = NULL;
 		}
-	StopSound (&m_info.nBotChannel);
+	StopSound (m_info.nBotChannel);
 	GetMessageName (&m_info.message, m_info.szBitmapName);
 	strcat (m_info.szBitmapName, "#0");
-	nAnimatingBitmapType = 0;
+	m_info.nAnimatingBitmapType = 0;
 	m_info.tAnimate = SDL_GetTicks ();
 	}
 m_info.prevCh = 10;
@@ -918,13 +919,13 @@ return 1;
 int CBriefing::HandleO (void)
 {
 if (m_info.message > m_info.pj) {
-	if (robotCanvP != NULL) {
-		delete robotCanvP;
-		robotCanvP = NULL;
+	if (m_info.robotCanvP != NULL) {
+		delete m_info.robotCanvP;
+		m_info.robotCanvP = NULL;
 		}
 	GetMessageName (&m_info.message, m_info.szBitmapName);
 	strcat (m_info.szBitmapName, "#0");
-	nAnimatingBitmapType = 1;
+	m_info.nAnimatingBitmapType = 1;
 	m_info.tAnimate = SDL_GetTicks ();
 	}
 m_info.prevCh = 10;
@@ -953,9 +954,9 @@ return 1;
 int CBriefing::HandleR (void)
 {
 if (m_info.message > m_info.pj) {
-	if (robotCanvP != NULL) {
-		delete robotCanvP;
-		robotCanvP = NULL;
+	if (m_info.robotCanvP != NULL) {
+		delete m_info.robotCanvP;
+		m_info.robotCanvP = NULL;
 		}
 	if (m_info.bRobotPlaying) {
 		movieManager.StopRobot ();
@@ -965,7 +966,7 @@ if (m_info.message > m_info.pj) {
 	if (!songManager.Playing ()) {
 		m_info.nBotChannel = StartExtraBotSound (m_info.nBotChannel, (short) m_info.nLevel, m_info.nBotSig++);
 		if (m_info.nBotChannel >= 0)
-			StopSound (&m_info.nHumChannel);
+			StopSound (m_info.nHumChannel);
 		}
 	}
 if (gameStates.app.bD1Mission) {
@@ -975,7 +976,7 @@ else {
 	m_info.szSpinningRobot [2] = *m_info.message++; // ugly but proud
 	if (m_info.message > m_info.pj) {
 		CCanvas::Push ();
-		CCanvas::SetCurrent (robotCanvP);
+		CCanvas::SetCurrent (m_info.robotCanvP);
 		m_info.bRobotPlaying = movieManager.StartRobot (m_info.szSpinningRobot);
 		CCanvas::Pop ();
 		if (m_info.bRobotPlaying) {
@@ -1006,7 +1007,7 @@ return 0;
 
 int CBriefing::HandleT (void)
 {
-nTabStop = GetMessageNum (&m_info.message) * (1 + gameStates.menus.bHires);
+m_info.nTabStop = GetMessageNum (&m_info.message) * (1 + gameStates.menus.bHires);
 m_info.prevCh = 10;							//	read to eoln
 return 1;
 }
@@ -1019,8 +1020,8 @@ m_info.nScreen = GetMessageNum (&m_info.message);
 m_info.briefBuf = briefingScreens [m_info.nScreen % MAX_BRIEFING_SCREENS];
 m_info.bsP = &m_info.briefBuf;
 InitCharPos (m_info.bsP, 1);
-m_info.x = briefingTextX;
-m_info.y = briefingTextY;
+m_info.x = m_info.briefingTextX;
+m_info.y = m_info.briefingTextY;
 m_info.prevCh = 10;                                   // read to eoln
 return 1;
 }
@@ -1056,8 +1057,8 @@ return 1;
 
 int CBriefing::HandleTAB (void)
 {
-if (briefingTextX - m_info.bsP->textLeft < nTabStop)
-	briefingTextX = m_info.bsP->textLeft + nTabStop;
+if (m_info.briefingTextX - m_info.bsP->textLeft < m_info.nTabStop)
+	m_info.briefingTextX = m_info.bsP->textLeft + m_info.nTabStop;
 return 1;
 }
 
@@ -1076,14 +1077,14 @@ int CBriefing::HandleNEWL (void)
 if (m_info.prevCh != '\\') {
 	m_info.prevCh = m_info.ch;
 	if (m_info.bDumbAdjust == 0)
-		briefingTextY += (8*(gameStates.menus.bHires+1));
+		m_info.briefingTextY += (8*(gameStates.menus.bHires+1));
 	else
 		m_info.bDumbAdjust--;
-	briefingTextX = m_info.bsP->textLeft;
-	if (briefingTextY > m_info.bsP->textTop + m_info.bsP->textHeight) {
+	m_info.briefingTextX = m_info.bsP->textLeft;
+	if (m_info.briefingTextY > m_info.bsP->textTop + m_info.bsP->textHeight) {
 		LoadImage (m_info.nScreen);
-		briefingTextX = m_info.bsP->textLeft;
-		briefingTextY = m_info.bsP->textTop;
+		m_info.briefingTextX = m_info.bsP->textLeft;
+		m_info.briefingTextY = m_info.bsP->textTop;
 		}
 	}
 else {
@@ -1116,7 +1117,7 @@ if (!m_info.bRedraw) {
 	m_info.nPrintingChannel = StartSound (m_info.nPrintingChannel, SOUND_BRIEFING_PRINTING, I2X (1), NULL);
 	m_info.bChattering = 1;
 	}
-briefingTextX += PrintCharDelayed (m_info.nDelayCount);
+m_info.briefingTextX += PrintCharDelayed (m_info.nDelayCount);
 return 1;
 }
 
@@ -1133,15 +1134,15 @@ while (*m_info.message && (!pEnd || (m_info.message < pEnd))) {
 		ch = *m_info.message++;
 		if (ch == 'D') {
 			m_info.nScreen = DefineBox (&m_info.message, &m_info.briefBuf);
-			m_info.x = briefingTextX;
-			m_info.y = briefingTextY;
+			m_info.x = m_info.briefingTextX;
+			m_info.y = m_info.briefingTextY;
 			}
 		else if (ch == 'U') {
 			m_info.nScreen = GetMessageNum (&m_info.message);
 			m_info.briefBuf = briefingScreens [m_info.nScreen % MAX_BRIEFING_SCREENS];
 			InitCharPos (&m_info.briefBuf, 1);
-			m_info.x = briefingTextX;
-			m_info.y = briefingTextY;
+			m_info.x = m_info.briefingTextX;
+			m_info.y = m_info.briefingTextY;
 			}
 		}
 	}
@@ -1170,7 +1171,7 @@ if (!m_info.bRedraw && m_info.nDelayCount) {
 	if (keypress == KEY_ESC)
 		return 0;
 	if ((keypress == KEY_SPACEBAR) || (keypress == KEY_ENTER)) {
-		StopSound (&m_info.nBotChannel);
+		StopSound (m_info.nBotChannel);
 		m_info.nDelayCount = 0;
 		m_info.bRedraw = 1;
 		}
@@ -1185,7 +1186,7 @@ return 1;
 
 int CBriefing::HandleNewPage (void)
 {
-if (!m_info.bNewPage && (briefingTextY <= m_info.bsP->textTop + m_info.bsP->textHeight))
+if (!m_info.bNewPage && (m_info.briefingTextY <= m_info.bsP->textTop + m_info.bsP->textHeight))
 	return 1;
 m_info.bNewPage = 0;
 int keypress = WaitForKeyPress ();
@@ -1209,8 +1210,8 @@ if (gameStates.ogl.nDrawBuffer == GL_FRONT) {
 	LoadImage (m_info.nScreen);
 	GrUpdate (0);
 	}
-briefingTextX = m_info.bsP->textLeft;
-briefingTextY = m_info.bsP->textTop;
+m_info.briefingTextX = m_info.bsP->textLeft;
+m_info.briefingTextY = m_info.bsP->textTop;
 m_info.nDelayCount = KEY_DELAY_DEFAULT;
 return -1;
 }
@@ -1230,27 +1231,27 @@ typedef struct tBriefingHandlerInfo {
 	} tBriefingHandlerInfo;
 
 static tBriefingHandlerInfo briefingHandlers1 [] = {
- {'A', 0, HandleA},
- {'B', 0, HandleB},
- {'C', 0, HandleC},
- {'D', 0, HandleD},
- {'F', 0, HandleF},
- {'N', 0, HandleN},
- {'O', 0, HandleO},
- {'P', 0, HandleP},
- {'R', 0, HandleR},
- {'S', 0, HandleS},
- {'T', 0, HandleT},
- {'U', 0, HandleU},
- {'Z', 0, HandleZ}
+	{'A', 0, CBriefing::HandleA},
+	{'B', 0, CBriefing::HandleB},
+	{'C', 0, CBriefing::HandleC},
+	{'D', 0, CBriefing::HandleD},
+	{'F', 0, CBriefing::HandleF},
+	{'N', 0, CBriefing::HandleN},
+	{'O', 0, CBriefing::HandleO},
+	{'P', 0, CBriefing::HandleP},
+	{'R', 0, CBriefing::HandleR},
+	{'S', 0, CBriefing::HandleS},
+	{'T', 0, CBriefing::HandleT},
+	{'U', 0, CBriefing::HandleU},
+	{'Z', 0, CBriefing::HandleZ}
 	};
 
 static tBriefingHandlerInfo briefingHandlers2 [] = {
- {'\t', 0, HandleTAB},
- {'\\', 0, HandleBS},
- {10, 0, HandleNEWL},
- {';', 10, HandleSEMI},
- {0, 0, HandleANY}
+	{'\t', 0, CBriefing::HandleTAB},
+	{'\\', 0, CBriefing::HandleBS},
+	{10, 0, CBriefing::HandleNEWL},
+	{';', 10, CBriefing::HandleSEMI},
+	{0, 0, CBriefing::HandleANY}
 	};
 
 //-----------------------------------------------------------------------------
@@ -1258,9 +1259,6 @@ static tBriefingHandlerInfo briefingHandlers2 [] = {
 
 int CBriefing::ShowMessage (int nScreen, char* message, int nLevel)
 {
-	tBriefingInfo			bi = {message, nScreen, nLevel, {"", 0, 0, 0, 0, 0, 0}, NULL, NULL, NULL, 
-										-1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, 1, 
-										KEY_DELAY_DEFAULT, -1, 0, 0, 0, 0, "rba.mve", "", "", 0, 0};
 	tBriefingHandlerInfo	*bhP;
 	int						h, i;
 
@@ -1270,7 +1268,7 @@ if (gameStates.app.bNostalgia)
 	OglSetDrawBuffer (GL_FRONT, 0);
 
 m_info.bExtraSounds = gameStates.app.bHaveExtraData && gameStates.app.bD1Mission && 
-				  (gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission);
+							 (gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission);
 m_info.bOnlyRobots = movieManager.m_bHaveExtras && m_info.bExtraSounds && (m_info.nLevel == 1) && (m_info.nScreen < 4);
 if (!songManager.Playing ())
 	m_info.nHumChannel = StartHum (m_info.nHumChannel, m_info.nLevel, m_info.nScreen, m_info.bExtraSounds);
@@ -1283,8 +1281,8 @@ if (gameStates.app.bD1Mission)
 	m_info.bGotZ = 1;
 InitCharPos (m_info.bsP, gameStates.app.bD1Mission);
 
-m_info.x = briefingTextX;
-m_info.y = briefingTextY;
+m_info.x = m_info.briefingTextX;
+m_info.y = m_info.briefingTextY;
 *m_info.szBriefScreen = *m_info.szBriefScreenB = '\0';
 if (m_info.bOnlyRobots) {
 	while (m_info.message && !PageHasRobot (m_info.message))
@@ -1303,8 +1301,8 @@ for (;;) {
 		m_info.pi = m_info.message;
 	else {
 		m_info.message = m_info.pi;
-		briefingTextX = m_info.x;
-		briefingTextY = m_info.y;
+		m_info.briefingTextX = m_info.x;
+		m_info.briefingTextY = m_info.y;
 		LoadImage (m_info.nScreen);
 		m_info.briefBuf = briefingScreens [m_info.nScreen % MAX_BRIEFING_SCREENS];
 		m_info.bsP = &m_info.briefBuf;
@@ -1339,9 +1337,9 @@ for (;;) {
 			goto done;
 			}
 
-		if (briefingTextX > m_info.bsP->textLeft + m_info.bsP->textWidth) {
-			briefingTextX = m_info.bsP->textLeft;
-			briefingTextY += m_info.bsP->textTop;
+		if (m_info.briefingTextX > m_info.bsP->textLeft + m_info.bsP->textWidth) {
+			m_info.briefingTextX = m_info.bsP->textLeft;
+			m_info.briefingTextY += m_info.bsP->textTop;
 			}
 
 		h = HandleNewPage ();
@@ -1360,14 +1358,14 @@ if (m_info.bRobotPlaying) {
 	movieManager.StopRobot ();
 	m_info.bRobotPlaying = 0;
 	}
-if (robotCanvP != NULL) {
-	delete robotCanvP;
-	robotCanvP = NULL;
+if (m_info.robotCanvP != NULL) {
+	delete m_info.robotCanvP;
+	m_info.robotCanvP = NULL;
 	}
 if (!songManager.Playing ())
-	StopSound (&m_info.nHumChannel);
-StopSound (&m_info.nPrintingChannel);
-StopSound (&m_info.nBotChannel);
+	StopSound (m_info.nHumChannel);
+StopSound (m_info.nPrintingChannel);
+StopSound (m_info.nBotChannel);
 return m_info.nFuncRes;
 }
 
@@ -1387,9 +1385,9 @@ for (i = 0; i < m_info.nBriefingTextLen; ) {
 	ch = m_info.briefingText [i++];
 	if (ch != 'S')
 		continue;
-	nCurScreen = GetMessageNum (m_info.briefingText + i);
+	nCurScreen = GetMessageNum (i);
 	if (nCurScreen == nScreen)
-		return tptr;
+		return m_info.briefingText + i;
 	}
 return (NULL);
 }
@@ -1575,7 +1573,7 @@ if (gameStates.app.bD1Mission && (gameData.missions.nCurrentMission != gameData.
 		return;
 		}
 	}
-if (!LoadImageText (fnBriefing, &m_info.briefingText [0])) {
+if (!LoadImageText (fnBriefing, m_info.briefingText)) {
 	gameStates.render.bBriefing = 0;
 	return;
 	}
@@ -1609,8 +1607,7 @@ if (gameStates.app.bD1Mission) {
 else
 	LoadLevelScreen (nLevel, (short) nLevel);
 gameStates.render.bBriefing = 0;
-delete[] m_info.szBriefingText;
-m_info.szBriefingText = NULL;
+m_info.briefingText.Destroy ();
 KeyFlush ();
 return;
 }

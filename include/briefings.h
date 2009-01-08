@@ -60,6 +60,8 @@ class CBriefingInfo {
 		int					nDoorDir;
 		int					nDoorDivCount; 
 		int					nAnimatingBitmapType;
+		int					tAnimate;
+		int					bInitAnimate;
 		int					x;
 		int					y;
 		int					briefingTextX;
@@ -75,7 +77,7 @@ class CBriefingInfo {
 		int					nBriefingTextLen;
 		int					nTabStop;
 		CCanvas*				robotCanvP;
-		CAnglesVector		vRobotAngles;
+		CAngleVector		vRobotAngles;
 		time_t				t0;
 		int					nFuncRes;
 
@@ -100,7 +102,7 @@ class CBriefing {
 	public:
 		CBriefing () { Init (); }
 		void Init (void);
-		void CBriefing::Run (const char* filename, int nLevel)
+		void CBriefing::Run (const char* filename, int nLevel);
 
 	private:
 		int StartSound (int nChannel, short nSound, fix nVolume, const char* pszWAV);
@@ -119,7 +121,7 @@ class CBriefing {
 
 		int LoadImage (char* szBriefScreen);
 		int LoadImage (int nScreen);
-		int GetMessageNum (char** message);
+		int GetMessageNum (int& i);
 		void GetMessageName (char** message, char* result);
 		const char* NextPage (const char* message);
 		int PageHasRobot (const char* message);
@@ -168,6 +170,8 @@ class CBriefing {
 		inline int RescaleX (int x) { return x*  CCanvas::Current ()->Width () / 320; }
 		inline int RescaleY (int y) { return y*  CCanvas::Current ()->Height () / 200; }
 	};
+
+extern CBriefing briefing;
 
 //-----------------------------------------------------------------------------
 
