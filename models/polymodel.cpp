@@ -348,10 +348,10 @@ while (POF_Read (&id, sizeof (id), 1, modelBuf) == 1) {
 			}
 
 		case ID_IDTA:		//Interpreter data
-			if (!m_info.data.Create (len))
+			if (!Create (len))
 				Error ("Not enough memory for game models.");
 			m_info.nDataSize = len;
-			POF_Read (m_info.data.Buffer (), 1, len, modelBuf);
+			POF_Read (Buffer (), 1, len, modelBuf);
 			break;
 
 		default:
@@ -361,15 +361,12 @@ while (POF_Read (&id, sizeof (id), 1, modelBuf) == 1) {
 	if (version >= 8)		// Version 8 needs 4-byte alignment!!!
 		POF_Seek (next_chunk, SEEK_SET);
 	}
-//	for (i=0;i<m_info.nModels;i++)
-//		m_info.subModels.ptrs [i] += (int) m_info.data;
 #ifdef WORDS_NEED_ALIGNMENT
 G3AlignPolyModelData (modelP);
 #endif
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-G3SwapPolyModelData (m_info.data);
+G3SwapPolyModelData (Buffer ());
 #endif
-	//verify (m_info.data);
 }
 
 //------------------------------------------------------------------------------
@@ -387,12 +384,12 @@ for (int i = 0; i < m_info.nModels; i++) {
 	CFixVector& mn = m_info.subModels.mins [i];
 	CFixVector& mx = m_info.subModels.maxs [i];
 	CFixVector& ofs = m_info.subModels.offsets [i];
-	dataP = reinterpret_cast<ushort*> (m_info.data + m_info.subModels.ptrs [i]);
+	dataP = reinterpret_cast<ushort*> (Buffer () + m_info.subModels.ptrs [i]);
 	nType = *dataP++;
 	Assert (nType == 7 || nType == 1);
 	nVerts = *dataP++;
-	if (nType==7)
-		dataP+=2;		//skip start & pad
+	if (nType == 7)
+		dataP += 2;		//skip start & pad
 	vp = reinterpret_cast<CFixVector*> (dataP);
 	mn = mx = *vp++;
 	nVerts--;
@@ -450,7 +447,7 @@ for (i = 0; i <= MAX_HITBOXES; i++) {
 	phb [i].vOffset [X] = phb [i].vOffset [Y] = phb [i].vOffset [Z] = 0;
 	}
 if (!(nSubModels = G3ModelMinMax (nModel, phb + 1)))
-	nSubModels = GetPolyModelMinMax (reinterpret_cast<void*> (m_info.data.Buffer ()), phb + 1, 0) + 1;
+	nSubModels = GetPolyModelMinMax (reinterpret_cast<void*> (Buffer ()), phb + 1, 0) + 1;
 for (i = 1; i <= nSubModels; i++) {
 	dx = (phb [i].vMax [X] - phb [i].vMin [X]) / 2;
 	dy = (phb [i].vMax [Y] - phb [i].vMin [Y]) / 2;
@@ -553,8 +550,8 @@ for (;;) {
 void CPolyModel::Setup (void)
 {
 nHighestTexture = -1;
-G3CheckAndSwap (m_info.data.Buffer ());
-Check (m_info.data.Buffer ());
+G3CheckAndSwap (Buffer ());
+Check (Buffer ());
 Size ();
 }
 
@@ -562,9 +559,9 @@ Size ();
 
 void CPolyModel::ReadData (CPolyModel* defModelP, CFile& cf)
 {
-if (!m_info.data.Create (m_info.nDataSize))
+if (!Create (m_info.nDataSize))
 	Error ("Not enough memory for game models.");
-cf.Read (m_info.data.Buffer (), sizeof (ubyte), m_info.nDataSize);
+cf.Read (Buffer (), sizeof (ubyte), m_info.nDataSize);
 if (defModelP) {
 	defModelP->Destroy ();
 	*defModelP = *this;
@@ -574,8 +571,7 @@ if (defModelP) {
 #ifdef WORDS_NEED_ALIGNMENT
 AlignPolyModelData (modelP);
 #endif
-G3CheckAndSwap (m_info.data.Buffer ());
-//verify (m_info.data);
+G3CheckAndSwap (Buffer ());
 Setup ();
 }
 
@@ -602,7 +598,7 @@ else
 	m_info.nModels = cf.ReadInt ();
 m_info.nDataSize = cf.ReadInt ();
 cf.ReadInt ();
-m_info.data = NULL;
+Destroy ();
 for (i = 0; i < MAX_SUBMODELS; i++)
 	m_info.subModels.ptrs [i] = cf.ReadInt ();
 for (i = 0; i < MAX_SUBMODELS; i++)
@@ -668,13 +664,6 @@ if (gameData.pig.tex.bPageFlushed) {
 Assert (gameData.pig.tex.bPageFlushed == 0);
 #endif
 return nTextures;
-}
-
-//------------------------------------------------------------------------------
-
-void CPolyModel::Destroy (void)
-{
-m_info.data.Destroy ();
 }
 
 //------------------------------------------------------------------------------

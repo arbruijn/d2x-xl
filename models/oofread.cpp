@@ -1716,7 +1716,7 @@ AssignChildren ();
 LinkBatteries ();
 BuildPosTickRemapList ();
 BuildRotTickRemapList ();
-gameData.models.bHaveHiresModel [this - gameData.models.oofModels [bCustom]] = 1;
+gameData.models.bHaveHiresModel [this - gameData.models.oofModels [bCustom].Buffer ()] = 1;
 return 1;
 }
 
@@ -1724,13 +1724,13 @@ return 1;
 
 int OOF_ReleaseTextures (void)
 {
-	CModel	*po;
-	int			bCustom, i;
+	CModel*	modelP;
+	int		bCustom, i;
 
 PrintLog ("releasing OOF model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
-	for (i = gameData.models.nHiresModels, po = gameData.models.oofModels [bCustom]; i; i--, po++)
-		po->ReleaseTextures ();
+	for (i = gameData.models.nHiresModels, modelP = gameData.models.oofModels [bCustom].Buffer (); i; i--, modelP++)
+		modelP->ReleaseTextures ();
 return 0;
 }
 
@@ -1738,13 +1738,13 @@ return 0;
 
 int OOF_ReloadTextures (void)
 {
-	CModel* po;
-	int			bCustom, i;
+	CModel*	modelP;
+	int		bCustom, i;
 
 PrintLog ("reloading OOF model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
-	for (i = gameData.models.nHiresModels, po = gameData.models.oofModels [bCustom]; i; i--, po++)
-		if (!po->ReloadTextures (bCustom))
+	for (i = gameData.models.nHiresModels, modelP = gameData.models.oofModels [bCustom].Buffer (); i; i--, modelP++)
+		if (!modelP->ReloadTextures (bCustom))
 			return 0;
 return 1;
 }

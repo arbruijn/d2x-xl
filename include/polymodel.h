@@ -58,7 +58,6 @@ typedef struct tPolyModelInfo {
 		short				nType;
 		int				nModels;
 		int				nDataSize;
-		CArray<ubyte>	data;
 		CSubModelData	subModels;
 		CFixVector		mins, maxs;                       // min,max for whole model
 		fix				rad;
@@ -67,33 +66,36 @@ typedef struct tPolyModelInfo {
 		ubyte				nSimplerModel;                      // alternate model with less detail (0 if none, nModel+1 else)
 } tPolyModelInfo;
 
-class CPolyModel {
+class CPolyModel : public CByteArray {
 	private:
 		tPolyModelInfo	m_info;
 
 	public:
 		CPolyModel () { Init (); }
-		~CPolyModel () { Destroy (); }
 		void Init (void);
 		int Read (int bHMEL, CFile& cf);
 		void ReadData (CPolyModel* defModelP, CFile& cf);
 		void Load (const char *filename, int nTextures, int nFirstTexture, tRobotInfo *botInfoP);
 		int LoadTextures (tBitmapIndex*	altTextures);
 		void FindMinMax (void);
+		fix Size (void);
+
 		inline int DataSize (void) { return m_info.nDataSize; }
 		inline ubyte SimplerModel (void) { return m_info.nSimplerModel; }
 		inline fix Rad (void) { return m_info.rad; }
-		inline ubyte* Data (void) { return m_info.data.Buffer (); }
+		inline void SetRad (fix rad) { m_info.rad = rad; }
+		inline ubyte* Data (void) { return Buffer (); }
 		inline int ModelCount (void) { return m_info.nModels; }
 		inline CSubModelData& SubModels (void) { return m_info.subModels; }
 		inline ushort FirstTexture (void) { return m_info.nFirstTexture; }
 		inline ubyte TextureCount (void) { return m_info.nTextures; }
 		inline tPolyModelInfo& Info (void) { return m_info; }
-
+#if 0
 		inline CPolyModel& operator= (CPolyModel& other) { 
 			m_info.data = other.m_info.data; 
 			return *this;
 			}
+#endif
 
 	private:
 		int	m_fileEnd;
@@ -108,10 +110,8 @@ class CPolyModel {
 		void POF_ReadAngs (CAngleVector *angs, int n, ubyte *bufP);
 
 		void Parse (const char *filename, tRobotInfo *botInfoP);
-		fix Size (void);
 		void Check (ubyte* dataP);
 		void Setup (void);
-		void Destroy (void);
 	};
 
 //------------------------------------------------------------------------------

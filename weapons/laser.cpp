@@ -235,14 +235,14 @@ nObject = CreateWeapon (nWeaponType, nParent, nSegment, *vPosition, 0, 255);
 objP = OBJECTS + nObject;
 if (gameData.weapons.info [nWeaponType].renderType == WEAPON_RENDER_POLYMODEL) {
 	objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->info.nId].nModel;
-	objP->info.xSize = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad,
+	objP->info.xSize = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].Rad (),
 								gameData.weapons.info [objP->info.nId].po_len_to_width_ratio);
 	}
 else if (EGI_FLAG (bTracers, 0, 1, 0) && (objP->info.nId == VULCAN_ID) || (objP->info.nId == GAUSS_ID)) {
 	objP->rType.polyObjInfo.nModel = gameData.weapons.info [SUPERLASER_ID + 1].nModel;
 	objP->rType.polyObjInfo.nTexOverride = -1;
 	objP->rType.polyObjInfo.nAltTextures = 0;
-	objP->info.xSize = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad,
+	objP->info.xSize = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].Rad (),
 								gameData.weapons.info [SUPERLASER_ID].po_len_to_width_ratio);
 	objP->info.renderType = RT_POLYOBJ;
 	}
@@ -393,7 +393,7 @@ if ((nWeaponType == SMARTMSL_BLOB_ID) ||
 	 (nWeaponType == EARTHSHAKER_MEGA_ID))
 	objP->mType.physInfo.flags |= PF_BOUNCE;
 if (weaponInfoP->renderType == WEAPON_RENDER_POLYMODEL)
-	xLaserLength = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad * 2;
+	xLaserLength = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].Rad () * 2;
 if (nWeaponType == FLARE_ID)
 	objP->mType.physInfo.flags |= PF_STICK;		//this obj sticks to walls
 objP->info.xShields = WI_strength (nWeaponType, gameStates.app.nDifficultyLevel);
@@ -1133,7 +1133,7 @@ return rVal;
 // -- 	fq.p0						= start_pos;
 // -- 	fq.startSeg				= start_segnum;
 // -- 	fq.p1						= &vEndPos;
-// -- 	fq.rad					= 0;
+// -- 	fq.Rad ()					= 0;
 // -- 	fq.thisObjNum			= parent;
 // -- 	fq.ignoreObjList	= NULL;
 // -- 	fq.flags					= FQ_TRANSWALL | FQ_CHECK_OBJS;

@@ -215,9 +215,11 @@ return sizeofa (replacementModels);
 
 void InitReplacementModels (void)
 {
-memset (gameData.models.modelToOOF, 0, sizeof (gameData.models.modelToOOF));
-memset (gameData.models.modelToASE, 0, sizeof (gameData.models.modelToASE));
-memset (gameData.models.modelToPOL, 0, sizeof (gameData.models.modelToPOL));
+for (int i = 0; i < 2; i++) {
+	gameData.models.modelToOOF [i].Clear ();
+	gameData.models.modelToASE [i].Clear ();
+	}
+gameData.models.modelToPOL.Clear ();
 }
 
 // ----------------------------------------------------------------------------
@@ -225,7 +227,7 @@ memset (gameData.models.modelToPOL, 0, sizeof (gameData.models.modelToPOL));
 short LoadLoresModel (short i)
 {
 	CFile			cf;
-	CPolyModel	*pm;
+	CPolyModel*	modelP;
 	short			nModel, j = sizeofa (replacementModels);
 	char			szModel [FILENAME_LEN];
 
@@ -235,18 +237,17 @@ if (!(replacementModels [i].pszLores &&
 	   cf.Open (szModel, gameFolders.szDataDir, "rb", 0))))
 	return ++i;
 nModel = replacementModels [i].nModel;
-pm = ((gameStates.app.bFixModels && gameStates.app.bAltModels) ? gameData.models.altPolyModels : gameData.models.polyModels) + nModel;
-if (!ReadPolyModel (pm, 1, cf)) {
+modelP = ((gameStates.app.bFixModels && gameStates.app.bAltModels) ? gameData.models.altPolyModels : gameData.models.polyModels) + nModel;
+modelP->Destroy ();
+if (!modelP->Read (1, cf)) {
 	cf.Close ();
 	return ++i;
 	}
-pm->modelData.SetBuffer (NULL); 
-pm->modelData.SetBuffer (NULL);
-ReadPolyModelData (pm, nModel, gameData.models.defPolyModels + nModel, cf);
+modelP->ReadData (gameData.models.defPolyModels + nModel, cf);
 cf.Close ();
-pm->rad = G3PolyModelSize (pm, nModel);
+modelP->SetRad (modelP->Size ());
 do {
-	gameData.models.modelToPOL [nModel] = pm;
+	gameData.models.modelToPOL [nModel] = modelP;
 	} while ((++i < j) && !replacementModels [i].pszHires);
 gameData.models.nLoresModels++;
 return i;

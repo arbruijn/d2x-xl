@@ -793,7 +793,8 @@ bool CModelData::Create (void)
 for (int i = 0; i < 2; i++) {
 	CREATE (aseModels [i], MAX_POLYGON_MODELS, 0xff);
 	CREATE (oofModels [i], MAX_POLYGON_MODELS, 0xff);
-	CREATE (pofData [i], MAX_POLYGON_MODELS, 0xff);
+	for (int j = 0; j < 2; j++)
+		CREATE (pofData [i][j], MAX_POLYGON_MODELS, 0xff);
 	CREATE (modelToOOF [i], MAX_POLYGON_MODELS, 0xff);
 	CREATE (modelToASE [i], MAX_POLYGON_MODELS, 0xff);
 	CREATE (renderModels [i], MAX_POLYGON_MODELS, 0xff);
