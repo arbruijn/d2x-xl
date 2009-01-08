@@ -1205,6 +1205,7 @@ if (!setjmp (gameExitPoint)) {
 #ifdef MWPROFILE
 ProfilerSetStatus (0);
 #endif
+UnloadLevelData ();
 audio.StopAll ();
 if (gameStates.sound.bD1Sound) {
 	gameStates.sound.bD1Sound = 0;

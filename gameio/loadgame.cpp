@@ -697,6 +697,52 @@ return gameStates.app.bAutoRunMission ? 0 :
 }
 
 //------------------------------------------------------------------------------
+
+void UnloadLevelData (void)
+{
+audio.DestroyObjectSound (LOCALPLAYER.nObject);
+/*---*/PrintLog ("   stopping music\n");
+songManager.StopAll ();
+/*---*/PrintLog ("   stopping sounds\n");
+audio.StopAllSounds ();
+/*---*/PrintLog ("   reconfiguring audio\n");
+gameData.missions.nCurrentLevel = nLevel;
+if (!bRestore) {
+	gameStates.gameplay.slowmo [0].fSpeed =
+	gameStates.gameplay.slowmo [1].fSpeed = 1;
+	gameStates.gameplay.slowmo [0].nState =
+	gameStates.gameplay.slowmo [1].nState = 0;
+	SpeedupSound ();
+	}
+/*---*/PrintLog ("   unloading lightmaps\n");
+lightmapManager.Destroy ();
+/*---*/PrintLog ("   unloading textures\n");
+PiggyBitmapPageOutAll (0);
+/*---*/PrintLog ("   unloading custom sounds\n");
+FreeSoundReplacements ();
+/*---*/PrintLog ("   unloading hardware lights\n");
+RemoveDynLights ();
+/*---*/PrintLog ("   unloading hires models\n");
+FreeHiresModels (1);
+/*---*/PrintLog ("   unloading cambot\n");
+UnloadCamBot ();
+/*---*/PrintLog ("   unloading additional models\n");
+BMFreeExtraModels ();
+/*---*/PrintLog ("   unloading additional model textures\n");
+BMFreeExtraObjBitmaps ();
+/*---*/PrintLog ("   unloading additional model textures\n");
+PiggyFreeHiresAnimations ();
+/*---*/PrintLog ("   freeing spark effect buffers\n");
+sparkManager.Destroy ();
+/*---*/PrintLog ("   freeing auxiliary poly model data\n");
+G3FreeAllPolyModelItems ();
+/*---*/PrintLog ("   Destroying camera objects\n");
+cameraManager.Destroy ();
+/*---*/PrintLog ("   Destroying omega lightnings\n");
+omegaLightnings.Destroy (-1);
+}
+
+//------------------------------------------------------------------------------
 //load a level off disk. level numbers start at 1.  Secret levels are -1,-2,-3
 
 extern char szAutoMission [255];
@@ -710,7 +756,6 @@ int LoadLevel (int nLevel, int bPageInTextures, int bRestore)
 
 /*---*/PrintLog ("Loading level...\n");
 srand (SDL_GetTicks ());
-lightmapManager.Destroy ();
 gameStates.app.bBetweenLevels = 1;
 gameStates.app.bFreeCam = 0;
 gameStates.app.bGameRunning = 0;
@@ -734,7 +779,6 @@ transpItems.nMaxOffs = 0;
 #if PROFILING
 memset (&gameData.profiler, 0, sizeof (gameData.profiler));
 #endif
-audio.DestroyObjectSound (LOCALPLAYER.nObject);
 memset (gameData.stats.player, 0, sizeof (tPlayerStats));
 memset (gameData.render.mine.bObjectRendered, 0xff, sizeof (gameData.render.mine.bObjectRendered));
 memset (gameData.render.mine.bRenderSegment, 0xff, sizeof (gameData.render.mine.bRenderSegment));
@@ -758,40 +802,7 @@ gameData.render.faceIndex [1].nUsedFaces = LEVEL_FACES;
 gameData.render.faceIndex [1].nUsedKeys = 0;
 omegaLightnings.Init ();
 gameData.multiplayer.bMoving = -1;
-#if 1
-/*---*/PrintLog ("   stopping music\n");
-songManager.StopAll ();
-/*---*/PrintLog ("   stopping sounds\n");
-audio.StopAllSounds ();
-/*---*/PrintLog ("   reconfiguring audio\n");
-gameData.missions.nCurrentLevel = nLevel;
-if (!bRestore) {
-	gameStates.gameplay.slowmo [0].fSpeed =
-	gameStates.gameplay.slowmo [1].fSpeed = 1;
-	gameStates.gameplay.slowmo [0].nState =
-	gameStates.gameplay.slowmo [1].nState = 0;
-	SpeedupSound ();
-	}
-/*---*/PrintLog ("   unloading textures\n");
-PiggyBitmapPageOutAll (0);
-/*---*/PrintLog ("   unloading custom sounds\n");
-FreeSoundReplacements ();
-/*---*/PrintLog ("   unloading hardware lights\n");
-RemoveDynLights ();
-/*---*/PrintLog ("   unloading hires models\n");
-FreeHiresModels (1);
-/*---*/PrintLog ("   unloading cambot\n");
-UnloadCamBot ();
-/*---*/PrintLog ("   unloading additional models\n");
-BMFreeExtraModels ();
-/*---*/PrintLog ("   unloading additional model textures\n");
-BMFreeExtraObjBitmaps ();
-/*---*/PrintLog ("   unloading additional model textures\n");
-PiggyFreeHiresAnimations ();
-/*---*/PrintLog ("   freeing spark effect buffers\n");
-sparkManager.Destroy ();
-/*---*/PrintLog ("   freeing auxiliary poly model data\n");
-G3FreeAllPolyModelItems ();
+UnloadLevelData ();
 /*---*/PrintLog ("   restoring default robot settings\n");
 RestoreDefaultRobots ();
 if (gameData.bots.bReplacementsLoaded) {
@@ -823,10 +834,7 @@ if (gameData.missions.nEnhancedMission) {
 	/*---*/PrintLog ("   initializing additional robot movies\n");
 	movieManager.InitExtraRobotLib (t);
 	}
-#endif
-/*---*/PrintLog ("   Destroying camera objects\n");
-cameraManager.Destroy ();
-omegaLightnings.Destroy (-1);
+
 /*---*/PrintLog ("   Initializing smoke manager\n");
 InitObjectSmoke ();
 gameData.pig.tex.bitmapColors.Clear ();
