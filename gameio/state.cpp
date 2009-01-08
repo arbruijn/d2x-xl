@@ -1179,6 +1179,7 @@ gameData.app.bGamePaused = 0;
 /*---*/PrintLog ("      rebuilding effects\n");
 if (i) {
 	RebuildRenderContext (1);
+	SetRenderQuality ();
 	if (bQuick)
 		HUDInitMessage (TXT_QUICKLOAD);
 	}

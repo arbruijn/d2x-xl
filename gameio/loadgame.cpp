@@ -970,6 +970,7 @@ paletteManager.LoadEffect ();		//actually load the palette
 /*---*/PrintLog ("      rebuilding effects\n");
 if (!bRestore) {
 	RebuildRenderContext (1);
+	SetRenderQuality ();
 	}
 ResetPingStats ();
 gameStates.gameplay.nDirSteps = 0;

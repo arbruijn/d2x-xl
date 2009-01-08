@@ -1558,7 +1558,6 @@ for (i = 0; i < gameData.models.nDefPolyModels; i++) {
 		gameData.models.polyModels [0][i].Destroy ();
 		p = NULL;
 		}
-	memcpy (gameData.models.polyModels [0] + i, gameData.models.polyModels [1] + i, sizeof (CPolyModel));
 	if (gameData.models.polyModels [1][i].Buffer ()) {
 		gameData.models.polyModels [0][i].Destroy ();
 		gameData.models.polyModels [0][i] = gameData.models.polyModels [1][i];
