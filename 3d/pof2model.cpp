@@ -309,6 +309,7 @@ int CModel::BuildFromPOF (CObject* objP, int nModel, CPolyModel* pp, CBitmap** m
 
 if (!pp->Buffer ())
 	return 0;
+m_nModel = nModel;
 m_nSubModels = 1;
 #if DBG
 HUDMessage (0, "optimizing model");
