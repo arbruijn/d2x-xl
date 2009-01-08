@@ -54,99 +54,80 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define	MODEL_BUF_SIZE	32768
 
-#define POF_CFSeek(_buf, _len, Type) POF_Seek ((_len), (Type))
-#define POF_ReadIntNew(i, f) POF_Read (& (i), sizeof (i), 1, (f))
+#define POF_ReadIntNew(i, f) POF_Read (&(i), sizeof (i), 1, (f))
 
-int	Pof_file_end;
-int	Pof_addr;
+CAngleVector animAngles [N_ANIM_STATES][MAX_SUBMODELS];
+
+//set the animation angles for this robot.  Gun fields of robot info must
+//be filled in.
+void SetRobotAngles (tRobotInfo* botInfoP, CPolyModel* modelP, CAngleVector angs [N_ANIM_STATES][MAX_SUBMODELS]);
 
 //------------------------------------------------------------------------------
 
-void POF_Seek (int len, int nType)
+void CPolyModel::POF_Seek (int len, int nType)
 {
 switch (nType) {
 	case SEEK_SET:	
-		Pof_addr = len;	
+		m_filePos = len;	
 		break;
 	case SEEK_CUR:	
-		Pof_addr += len;	
+		m_filePos += len;	
 		break;
 	case SEEK_END:
 		Assert (len <= 0);	//	seeking from end, better be moving back.
-		Pof_addr = Pof_file_end + len;
+		m_filePos = m_fileEnd + len;
 		break;
 	}
-if (Pof_addr > MODEL_BUF_SIZE)
+if (m_filePos > MODEL_BUF_SIZE)
 	return;
 }
 
 //------------------------------------------------------------------------------
 
-int POF_ReadInt (ubyte *bufp)
+int CPolyModel::POF_ReadInt (ubyte *bufP)
 {
-	int i;
-
-	i = * (reinterpret_cast<int*> (&bufp [Pof_addr]));
-	Pof_addr += 4;
-	return INTEL_INT (i);
-
-//	if (cf.Read (&i, sizeof (i), 1, f) != 1)
-//		Error ("Unexpected end-of-file while reading CObject");
-//
-//	return i;
+int i = *(reinterpret_cast<int*> (&bufP [m_filePos]));
+m_filePos += 4;
+return INTEL_INT (i);
 }
 
 //------------------------------------------------------------------------------
 
-size_t POF_Read (void *dst, size_t elsize, size_t nelem, ubyte *bufp)
+size_t CPolyModel::POF_Read (void *dst, size_t elsize, size_t nelem, ubyte *bufP)
 {
-if (nelem*elsize + (size_t) Pof_addr > (size_t) Pof_file_end)
+if (nelem * elsize + (size_t) m_filePos > (size_t) m_fileEnd)
 	return 0;
-memcpy (dst, &bufp [Pof_addr], elsize*nelem);
-Pof_addr += (int) (elsize * nelem);
-if (Pof_addr > MODEL_BUF_SIZE)
+memcpy (dst, &bufP [m_filePos], elsize*nelem);
+m_filePos += (int) (elsize * nelem);
+if (m_filePos > MODEL_BUF_SIZE)
 	return 0;
 return nelem;
 }
 
 //------------------------------------------------------------------------------
 
-short POF_ReadShort (ubyte *bufp)
+short CPolyModel::POF_ReadShort (ubyte *bufP)
 {
-	short s;
-
-	s = * (reinterpret_cast<short*> (&bufp [Pof_addr]));
-	Pof_addr += 2;
-	return INTEL_SHORT (s);
-//	if (cf.Read (&s, sizeof (s), 1, f) != 1)
-//		Error ("Unexpected end-of-file while reading CObject");
-//
-//	return s;
+short s = * (reinterpret_cast<short*> (&bufP [m_filePos]));
+m_filePos += 2;
+return INTEL_SHORT (s);
 }
 
 //------------------------------------------------------------------------------
 
-void POF_ReadString (char *buf, int max_char, ubyte *bufp)
+void CPolyModel::POF_ReadString (char *buf, int max_char, ubyte *bufP)
 {
-	int	i;
-
-	for (i=0; i<max_char; i++) {
-		if ((*buf++ = bufp [Pof_addr++]) == 0)
-			break;
-	}
-
-//	while (max_char-- && (*buf=CFGetC (f)) != 0) buf++;
-
+for (int i = 0; i < max_char; i++)
+	if ((*buf++ = bufP [m_filePos++]) == 0)
+		break;
 }
 
 //------------------------------------------------------------------------------
 
-void POF_ReadVecs (CFixVector *vecs, int n, ubyte *bufp)
+void CPolyModel::POF_ReadVecs (CFixVector *vecs, int n, ubyte *bufP)
 {
-//	cf.Read (vecs, sizeof (CFixVector), n, f);
-
-memcpy (vecs, &bufp [Pof_addr], n * sizeof (*vecs));
-Pof_addr += n * sizeof (*vecs);
+memcpy (vecs, &bufP [m_filePos], n * sizeof (*vecs));
+m_filePos += n * sizeof (*vecs);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 while (n > 0)
 	VmsVectorSwap (vecs [--n]);
@@ -155,25 +136,15 @@ while (n > 0)
 
 //------------------------------------------------------------------------------
 
-void POF_ReadAngs (CAngleVector *angs, int n, ubyte *bufp)
+void CPolyModel::POF_ReadAngs (CAngleVector *angs, int n, ubyte *bufP)
 {
-memcpy (angs, &bufp [Pof_addr], n * sizeof (*angs));
-Pof_addr += n * sizeof (*angs);
+memcpy (angs, &bufP [m_filePos], n * sizeof (*angs));
+m_filePos += n * sizeof (*angs);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 while (n > 0)
 	VmsAngVecSwap (angs [--n]);
 #endif
 }
-
-#ifdef DRIVE
-#define tRobotInfo void
-#else
-CAngleVector animAngles [N_ANIM_STATES][MAX_SUBMODELS];
-
-//set the animation angles for this robot.  Gun fields of robot info must
-//be filled in.
-void SetRobotAngles (tRobotInfo *r, CPolyModel* modelP, CAngleVector angs [N_ANIM_STATES][MAX_SUBMODELS]);
-#endif
 
 #ifdef WORDS_NEED_ALIGNMENT
 
@@ -280,8 +251,8 @@ void CPolyModel::Parse (const char *filename, tRobotInfo *botInfoP)
 if (!cf.Open (filename, gameFolders.szDataDir, "rb", 0))
 	Error ("Can't open file <%s>", filename);
 Assert (cf.Length () <= MODEL_BUF_SIZE);
-Pof_addr = 0;
-Pof_file_end = (int) cf.Read (modelBuf, 1, cf.Length ());
+m_filePos = 0;
+m_fileEnd = (int) cf.Read (modelBuf, 1, cf.Length ());
 cf.Close ();
 id = POF_ReadInt (modelBuf);
 if (id != 0x4f505350) /* 'OPSP' */
@@ -291,11 +262,11 @@ if (version < PM_COMPATIBLE_VERSION || version > PM_OBJFILE_VERSION)
 	Error ("Bad version (%d) in model file <%s>", version, filename);
 //if (FindArg ("-bspgen"))
 //printf ("bspgen -c1");
-while (POF_ReadIntNew (id, modelBuf) == 1) {
+while (POF_Read (&id, sizeof (id), 1, modelBuf) == 1) {
 	id = INTEL_INT (id);
 	//id  = POF_ReadInt (modelBuf);
 	len = POF_ReadInt (modelBuf);
-	next_chunk = Pof_addr + len;
+	next_chunk = m_filePos + len;
 	switch (id) {
 		case ID_OHDR: {		//Object header
 			CFixVector pmmin, pmmax;
@@ -353,7 +324,7 @@ while (POF_ReadIntNew (id, modelBuf) == 1) {
 					}
 				}
 			else
-				POF_CFSeek (modelBuf, len, SEEK_CUR);
+				POF_Seek (len, SEEK_CUR);
 			break;
 			}
 
@@ -368,7 +339,7 @@ while (POF_ReadIntNew (id, modelBuf) == 1) {
 							SetRobotAngles (botInfoP, this, animAngles);
 				}
 			else
-				POF_CFSeek (modelBuf, len, SEEK_CUR);
+				POF_Seek (len, SEEK_CUR);
 			break;
 
 		case ID_TXTR: {		//Texture filename list
@@ -387,11 +358,11 @@ while (POF_ReadIntNew (id, modelBuf) == 1) {
 			break;
 
 		default:
-			POF_CFSeek (modelBuf, len, SEEK_CUR);
+			POF_Seek (len, SEEK_CUR);
 			break;
 		}
 	if (version >= 8)		// Version 8 needs 4-byte alignment!!!
-		POF_CFSeek (modelBuf, next_chunk, SEEK_SET);
+		POF_Seek (next_chunk, SEEK_SET);
 	}
 //	for (i=0;i<m_info.nModels;i++)
 //		m_info.subModels.ptrs [i] += (int) m_info.data;
@@ -402,54 +373,6 @@ G3AlignPolyModelData (modelP);
 G3SwapPolyModelData (m_info.data);
 #endif
 	//verify (m_info.data);
-}
-
-//------------------------------------------------------------------------------
-//reads the gun information for a model
-//fills in arrays gunPoints & gunDirs, returns the number of guns read
-int ReadModelGuns (const char *filename, CFixVector *gunPoints, CFixVector *gunDirs, int *gunSubModels)
-{
-	CFile cf;
-	short version;
-	int	id, len;
-	int	nGuns=0;
-	ubyte	modelBuf [MODEL_BUF_SIZE];
-
-if (!cf.Open (filename, gameFolders.szDataDir, "rb", 0))
-	Error ("Can't open file <%s>", filename);
-Assert (cf.Length () <= MODEL_BUF_SIZE);
-Pof_addr = 0;
-Pof_file_end = (int) cf.Read (modelBuf, 1, cf.Length ());
-cf.Close ();
-id = POF_ReadInt (modelBuf);
-if (id!=0x4f505350) /* 'OPSP' */
-	Error ("Bad ID in model file <%s>", filename);
-version = POF_ReadShort (modelBuf);
-Assert (version >= 7);		//must be 7 or higher for this data
-if (version < PM_COMPATIBLE_VERSION || version > PM_OBJFILE_VERSION)
-	Error ("Bad version (%d) in model file <%s>", version, filename);
-while (POF_ReadIntNew (id, modelBuf) == 1) {
-	id = INTEL_INT (id);
-	//id  = POF_ReadInt (modelBuf);
-	len = POF_ReadInt (modelBuf);
-	if (id == ID_GUNS) {		//List of guns on this CObject
-		nGuns = POF_ReadInt (modelBuf);
-		for (int i = 0; i < nGuns; i++) {
-			int id = POF_ReadShort (modelBuf);
-			int sm = POF_ReadShort (modelBuf);
-			if (gunSubModels)
-				gunSubModels [id] = sm;
-			else if (sm!=0)
-				Error ("Invalid gun submodel in file <%s>", filename);
-			POF_ReadVecs (&gunPoints [id], 1, modelBuf);
-
-			POF_ReadVecs (&gunDirs [id], 1, modelBuf);
-			}
-		}
-		else
-			POF_CFSeek (modelBuf, len, SEEK_CUR);
-	}
-return nGuns;
 }
 
 //------------------------------------------------------------------------------

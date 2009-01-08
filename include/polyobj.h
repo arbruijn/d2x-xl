@@ -89,6 +89,17 @@ class CPolyModel {
 		inline CSubModelData& SubModels (void) { return m_info.subModels; }
 
 	private:
+		int	m_fileEnd;
+		int	m_filePos;
+
+		void POF_Seek (int len, int nType);
+		size_t POF_Read (void *dst, size_t elsize, size_t nelem, ubyte *bufP);
+		int POF_ReadInt (ubyte *bufP);
+		short POF_ReadShort (ubyte *bufP);
+		void POF_ReadString (char *buf, int max_char, ubyte *bufP);
+		void POF_ReadVecs (CFixVector *vecs, int n, ubyte *bufP);
+		void POF_ReadAngs (CAngleVector *angs, int n, ubyte *bufP);
+
 		void Parse (const char *filename, tRobotInfo *botInfoP);
 		fix Size (void);
 		void Check (ubyte* dataP);
@@ -112,9 +123,6 @@ int LoadPolyModel (const char* filename, int nTextures, int nFirstTexture, tRobo
 int DrawPolyModel (CObject* objP, CFixVector* pos, CFixMatrix* orient, CAngleVector* animAngles, int nModel, int flags, fix light, 
 							 fix* glowValues, tBitmapIndex nAltTextures[], tRgbaColorf* obj_color);
 
-// fills in arrays gunPoints & gunDirs, returns the number of guns read
-int ReadModelGuns (const char* filename,CFixVector* gunPoints, CFixVector* gunDirs, int* gunSubModels);
-
 // draws the given model in the current canvas.  The distance is set to
 // more-or-less fill the canvas.  Note that this routine actually renders
 // into an off-screen canvas that it creates, then copies to the current
@@ -127,8 +135,6 @@ void DrawModelPicture (int mn,CAngleVector* orient_angles);
 int ReadPolyModels (CPolyModel* pm, int n, CFile& cf);
 
 CPolyModel* GetPolyModel (CObject* objP, CFixVector* pos, int nModel, int flags);
-
-int LoadModelTextures (CPolyModel* po, tBitmapIndex* altTextures);
 
 //	-----------------------------------------------------------------------------
 
