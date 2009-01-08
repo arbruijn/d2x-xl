@@ -203,7 +203,7 @@ mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
 rType.polyObjInfo.nModel = nModel;
 #if 1
 if (bHasModel)
-	info.xSize = gameData.models.polyModels [rType.polyObjInfo.nModel].Rad ();
+	info.xSize = gameData.models.polyModels [0] [rType.polyObjInfo.nModel].Rad ();
 #endif
 rType.polyObjInfo.nTexOverride = -1;
 info.xLifeLeft = IMMORTAL_TIME;
@@ -695,7 +695,7 @@ else {
 	}
 if (objP->rType.polyObjInfo.nTexOverride != -1) {
 #if DBG
-	CPolyModel* pm = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
+	CPolyModel* pm = gameData.models.polyModels [0] + objP->rType.polyObjInfo.nModel;
 #endif
 	tBitmapIndex	bm = gameData.pig.tex.bmIndex [0][objP->rType.polyObjInfo.nTexOverride],
 						bmiP [MAX_MODEL_TEXTURES];

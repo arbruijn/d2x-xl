@@ -1549,7 +1549,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	 /*&& !OBJECTS [objP->cType.laserInfo.parent.nObject].nTracers*/)) {
 #if 0
 	objP->rType.polyObjInfo.nModel = gameData.weapons.info [SUPERLASER_ID + 1].nModel;
-	objP->info.xSize = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad,
+	objP->info.xSize = FixDiv (gameData.models.polyModels [0] [objP->rType.polyObjInfo.nModel].rad,
 								gameData.weapons.info [objP->info.nId].po_len_to_width_ratio) / 4;
 	gameData.models.vScale.Set (I2X (1) / 4, I2X (1) / 4, I2X (1) / 4);
 	DrawPolygonObject (objP, 0);
@@ -1615,7 +1615,7 @@ void Laser_draw_one (int nObject, CBitmap * bmp)
 	g3sPoint p1, p2;
 	CObject *objP = OBJECTS + nObject;
 	CFixVector start_pos,vEndPos;
-	fix Laser_length = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad * 2;
+	fix Laser_length = gameData.models.polyModels [0] [objP->rType.polyObjInfo.nModel].rad * 2;
 	fix Laser_width = Laser_length / 8;
 
 	start_pos = objP->info.position.vPos;

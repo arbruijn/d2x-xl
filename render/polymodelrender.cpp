@@ -93,7 +93,7 @@ if (gameStates.app.bEndLevelSequence &&
 	bIsDefModel = 1;
 	}
 else {
-	bHaveAltModel = gameData.models.altPolyModels [nModel].Data () != NULL;
+	bHaveAltModel = gameData.models.polyModels [2] [nModel].Data () != NULL;
 	bIsDefModel = IsDefaultModel (nModel);
 	}
 #if DBG
@@ -104,21 +104,21 @@ if ((nModel >= gameData.models.nPolyModels) && !(modelP = gameData.models.modelT
 	return NULL;
 // only render shadows for custom models and for standard models with a shadow proof alternative model
 if (!objP)
-	modelP = ((gameStates.app.bAltModels && bIsDefModel && bHaveAltModel) ? gameData.models.altPolyModels : gameData.models.polyModels) + nModel;
+	modelP = ((gameStates.app.bAltModels && bIsDefModel && bHaveAltModel) ? gameData.models.polyModels [2] : gameData.models.polyModels [0]) + nModel;
 else if (!modelP) {
 	if (!(bIsDefModel && bHaveAltModel)) {
 		if (gameStates.app.bFixModels && (objP->info.nType == OBJ_ROBOT) && (gameStates.render.nShadowPass == 2))
 			return NULL;
-		modelP = gameData.models.polyModels + nModel;
+		modelP = gameData.models.polyModels [0] + nModel;
 		}
 	else if (gameStates.render.nShadowPass != 2) {
 		if ((gameStates.app.bAltModels || (objP->info.nType == OBJ_PLAYER)) && bHaveAltModel)
-			modelP = gameData.models.altPolyModels + nModel;
+			modelP = gameData.models.polyModels [2] + nModel;
 		else
-			modelP = gameData.models.polyModels + nModel;
+			modelP = gameData.models.polyModels [0] + nModel;
 		}
 	else if (bHaveAltModel)
-		modelP = gameData.models.altPolyModels + nModel;
+		modelP = gameData.models.polyModels [2] + nModel;
 	else
 		return NULL;
 	if ((gameStates.render.nShadowPass == 2) && (objP->info.nType == OBJ_REACTOR) && !(nModel & 1))	// use the working reactor model for rendering destroyed reactors' shadows
@@ -129,7 +129,7 @@ if (!(SHOW_DYN_LIGHT || SHOW_SHADOWS) && modelP->SimplerModel () && !flags && po
 	int	cnt = 1;
 	fix depth = G3CalcPointDepth (*pos);		//gets 3d depth
 	while (modelP->SimplerModel () && (depth > cnt++ * gameData.models.nSimpleModelThresholdScale * modelP->Rad ()))
-		modelP = gameData.models.polyModels + modelP->SimplerModel () - 1;
+		modelP = gameData.models.polyModels [0] + modelP->SimplerModel () - 1;
 	}
 return modelP;
 }
@@ -264,8 +264,8 @@ Assert ((nModel >= 0) && (nModel < gameData.models.nPolyModels));
 G3StartFrame (0, 0);
 glDisable (GL_BLEND);
 G3SetViewMatrix (p, o, gameStates.render.xZoom, 1);
-if (gameData.models.polyModels [nModel].Rad ())
-	p [Z] = FixMulDiv (DEFAULT_VIEW_DIST, gameData.models.polyModels [nModel].Rad (), BASE_MODEL_SIZE);
+if (gameData.models.polyModels [0] [nModel].Rad ())
+	p [Z] = FixMulDiv (DEFAULT_VIEW_DIST, gameData.models.polyModels [0] [nModel].Rad (), BASE_MODEL_SIZE);
 else
 	p [Z] = DEFAULT_VIEW_DIST;
 o = CFixMatrix::Create (*orientAngles);

@@ -106,7 +106,7 @@ void LoadModelTextures (int nModel)
 {
 	int			i, j;
 	ushort*		pi;
-	CPolyModel*	modelP = gameData.models.polyModels + nModel;
+	CPolyModel*	modelP = gameData.models.polyModels [0] + nModel;
 
 for (i = modelP->TextureCount (), pi = gameData.pig.tex.objBmIndexP + modelP->FirstTexture (); i; i--, pi++) {
 	j = *pi;

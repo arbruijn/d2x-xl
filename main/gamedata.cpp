@@ -791,22 +791,24 @@ Create ();
 bool CModelData::Create (void)
 {
 for (int i = 0; i < 2; i++) {
-	CREATE (aseModels [i], MAX_POLYGON_MODELS, 0xff);
-	CREATE (oofModels [i], MAX_POLYGON_MODELS, 0xff);
+	aseModels [i].Create (MAX_POLYGON_MODELS);
+	oofModels [i].Create (MAX_POLYGON_MODELS);
 	for (int j = 0; j < 2; j++)
-		CREATE (pofData [i][j], MAX_POLYGON_MODELS, 0xff);
-	CREATE (modelToOOF [i], MAX_POLYGON_MODELS, 0xff);
-	CREATE (modelToASE [i], MAX_POLYGON_MODELS, 0xff);
-	CREATE (renderModels [i], MAX_POLYGON_MODELS, 0xff);
+		pofData [i][j].Create (MAX_POLYGON_MODELS);
+	CREATE (modelToOOF [i], MAX_POLYGON_MODELS, 0);
+	CREATE (modelToASE [i], MAX_POLYGON_MODELS, 0);
+	renderModels [i].Create (MAX_POLYGON_MODELS);
 	}
 CREATE (bHaveHiresModel, MAX_POLYGON_MODELS, 0);
-CREATE (polyModels, MAX_POLYGON_MODELS, 0);
-CREATE (defPolyModels, MAX_POLYGON_MODELS, 0);
-CREATE (altPolyModels, MAX_POLYGON_MODELS, 0);
+for (int i = 0; i < 3; i++) {
+	polyModels [i].Create (MAX_POLYGON_MODELS);
+	for (int j = 0; j < MAX_POLYGON_MODELS; j++)
+		polyModels [i][j].SetId (j);
+	}
 CREATE (modelToPOL, MAX_POLYGON_MODELS, 0);
 CREATE (polyModelPoints, MAX_POLYGON_VERTS, 0);
 CREATE (fPolyModelVerts, MAX_POLYGON_VERTS, 0);
-CREATE (textures, MAX_POLYOBJ_TEXTURES, 0);
+textures.Create (MAX_POLYOBJ_TEXTURES);
 CREATE (textureIndex, MAX_POLYOBJ_TEXTURES, 0xff);
 CREATE (nDyingModels, MAX_POLYGON_MODELS, 0xff);
 CREATE (nDeadModels, MAX_POLYGON_MODELS, 0xff);

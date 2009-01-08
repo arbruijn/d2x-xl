@@ -450,9 +450,8 @@ m_info.nSimplerModel = 0;
 //walks through all submodels of a polymodel and determines the coordinate extremes
 fix CPolyModel::Size (void)
 {
-	int			nModel = this - gameData.models.polyModels.Buffer (), nSubModels = 1;
-	int			i;
-	tHitbox		*phb = gameData.models.hitboxes [nModel].hitboxes;
+	int			i, nSubModels;
+	tHitbox		*phb = gameData.models.hitboxes [m_info.nId].hitboxes;
 	CFixVector	hv;
 	double		dx, dy, dz;
 
@@ -461,7 +460,7 @@ for (i = 0; i <= MAX_HITBOXES; i++) {
 	phb [i].vMax [X] = phb [i].vMax [Y] = phb [i].vMax [Z] = -0x7fffffff;
 	phb [i].vOffset [X] = phb [i].vOffset [Y] = phb [i].vOffset [Z] = 0;
 	}
-if (!(nSubModels = G3ModelMinMax (nModel, phb + 1)))
+if (!(nSubModels = G3ModelMinMax (m_info.nId, phb + 1)))
 	nSubModels = GetPolyModelMinMax (reinterpret_cast<void*> (Buffer ()), phb + 1, 0) + 1;
 for (i = 1; i <= nSubModels; i++) {
 	dx = (phb [i].vMax [X] - phb [i].vMin [X]) / 2;
@@ -491,9 +490,9 @@ dz = (phb [0].vMax [Z] - phb [0].vMin [Z]) / 2;
 phb [0].vSize [X] = (fix) dx;
 phb [0].vSize [Y] = (fix) dy;
 phb [0].vSize [Z] = (fix) dz;
-gameData.models.hitboxes [nModel].nHitboxes = nSubModels;
+gameData.models.hitboxes [m_info.nId].nHitboxes = nSubModels;
 for (i = 0; i <= nSubModels; i++)
-	ComputeHitbox (nModel, i);
+	ComputeHitbox (m_info.nId, i);
 return (fix) (sqrt (dx * dx + dy * dy + dz + dz) /** 1.33*/);
 }
 
@@ -624,7 +623,7 @@ for (i = 0; i < MAX_SUBMODELS; i++)
 	cf.ReadVector (m_info.subModels.pnts [i]);
 for (i = 0; i < MAX_SUBMODELS; i++)
 	m_info.subModels.rads [i] = cf.ReadFix ();
-cf.Read (m_info.subModels.parents.Buffer (), MAX_SUBMODELS, 1);
+cf.Read (&m_info.subModels.parents [0], MAX_SUBMODELS, 1);
 for (i = 0; i < MAX_SUBMODELS; i++)
 	cf.ReadVector (m_info.subModels.mins [i]);
 for (i = 0; i < MAX_SUBMODELS; i++)
@@ -687,6 +686,9 @@ return nTextures;
 
 void CSubModelData::Create (void)
 {
+#if 1
+memset (this, 0, sizeof (*this));
+#else
 ptrs.Create (MAX_SUBMODELS);
 offsets.Create (MAX_SUBMODELS);
 norms.Create (MAX_SUBMODELS);   
@@ -704,12 +706,14 @@ rads.Clear ();
 parents.Clear (); 
 mins.Clear ();
 maxs.Clear ();
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void CSubModelData::Destroy (void)
 {
+#if 0
 ptrs.Destroy ();
 offsets.Destroy ();
 norms.Destroy ();   
@@ -718,6 +722,7 @@ rads.Destroy ();
 parents.Destroy ();    
 mins.Destroy ();
 maxs.Destroy ();
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -746,7 +751,7 @@ if (gameData.models.nPolyModels > MAX_POLYGON_MODELS - 10)
 #endif
 Assert (strlen (filename) <= 12);
 strcpy (pofNames [gameData.models.nPolyModels], filename);
-gameData.models.polyModels [gameData.models.nPolyModels++].Load (filename, nTextures, nFirstTexture, botInfoP);
+gameData.models.polyModels [0] [gameData.models.nPolyModels++].Load (filename, nTextures, nFirstTexture, botInfoP);
 return gameData.models.nPolyModels - 1;
 }
 

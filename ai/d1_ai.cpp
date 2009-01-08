@@ -635,7 +635,7 @@ int do_silly_animation(CObject *objP)
 			CAngleVector	*jp = &jp_list [joint].angles;
 			CAngleVector	*pobjp = &polyObjInfo->animAngles [nJoint];
 
-			if (nJoint >= gameData.models.polyModels [objP->rType.polyObjInfo.nModel].ModelCount ()) {
+			if (nJoint >= gameData.models.polyModels [0] [objP->rType.polyObjInfo.nModel].ModelCount ()) {
 				Int3();		// Contact Mike: incompatible data, illegal nJoint, problem in pof file?
 				continue;
 			}
@@ -733,7 +733,7 @@ void ai_frame_animation (CObject *objP)
 	int	joint;
 	int	num_joints;
 
-	num_joints = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].ModelCount ();
+	num_joints = gameData.models.polyModels [0] [objP->rType.polyObjInfo.nModel].ModelCount ();
 
 	for (joint=1; joint<num_joints; joint++) {
 		fix			delta_to_goal;
@@ -1514,7 +1514,7 @@ int CreateGatedRobot (int nSegment, int nObjId)
 	tRobotInfo	*botInfoP = &gameData.bots.info [1][nObjId];
 	int			count = 0;
 	//int			i;
-	fix			objsize = gameData.models.polyModels [botInfoP->nModel].Rad ();
+	fix			objsize = gameData.models.polyModels [0] [botInfoP->nModel].Rad ();
 	int			default_behavior;
 
 	FORALL_ROBOT_OBJS (objP, i) {

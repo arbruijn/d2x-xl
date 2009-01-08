@@ -340,7 +340,7 @@ if (objP->info.renderType != RT_POLYOBJ)
 	size = 4 * Pi * pow (X2F (objP->info.xSize), 3) / 3;
 else {
 	size = 0;
-	modelP = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
+	modelP = gameData.models.polyModels [0] + objP->rType.polyObjInfo.nModel;
 	if ((i = objP->rType.polyObjInfo.nSubObjFlags)) {
 		for (j = 0; i && (j < modelP->ModelCount ()); i >>= 1, j++)
 			if (i & 1)
@@ -384,7 +384,7 @@ debrisP->rType.polyObjInfo.nModel = rType.polyObjInfo.nModel;
 debrisP->rType.polyObjInfo.nSubObjFlags = 1 << nSubObj;
 debrisP->rType.polyObjInfo.nTexOverride = rType.polyObjInfo.nTexOverride;
 //Set physics data for this CObject
-po = gameData.models.polyModels + debrisP->rType.polyObjInfo.nModel;
+po = gameData.models.polyModels [0] + debrisP->rType.polyObjInfo.nModel;
 debrisP->mType.physInfo.velocity[X] = RAND_MAX/2 - d_rand ();
 debrisP->mType.physInfo.velocity[Y] = RAND_MAX/2 - d_rand ();
 debrisP->mType.physInfo.velocity[Z] = RAND_MAX/2 - d_rand ();
@@ -446,8 +446,8 @@ CreateExplBlast ();
 RequestEffects (EXPL_LIGHTNINGS | SHRAPNEL_SMOKE);
 if (gameData.models.nDyingModels [rType.polyObjInfo.nModel] != -1)
 	rType.polyObjInfo.nModel = gameData.models.nDyingModels [rType.polyObjInfo.nModel];
-if (gameData.models.polyModels [rType.polyObjInfo.nModel].ModelCount () > 1) {
-	for (int i = 1; i < gameData.models.polyModels [rType.polyObjInfo.nModel].ModelCount (); i++)
+if (gameData.models.polyModels [0] [rType.polyObjInfo.nModel].ModelCount () > 1) {
+	for (int i = 1; i < gameData.models.polyModels [0] [rType.polyObjInfo.nModel].ModelCount (); i++)
 		if ((info.nType != OBJ_ROBOT) || (info.nId != 44) || (i != 5)) 	//energy sucker energy part
 			CreateDebris (i);
 	//make parent CObject only draw center part

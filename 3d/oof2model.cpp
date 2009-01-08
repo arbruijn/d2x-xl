@@ -151,7 +151,7 @@ GetOOFModelItems (nModel, po, /*((nModel == 108) || (nModel == 110)) ? 0.805f :*
 m_textures = po->m_textures.m_bitmaps;
 memset (m_teamTextures, 0xFF, sizeof (m_teamTextures));
 m_nType = -1;
-gameData.models.polyModels [nModel].SetRad (Size (objP, 1));
+gameData.models.polyModels [0] [nModel].SetRad (Size (objP, 1));
 Setup (1, 1);
 #if 1
 SetGunPoints (objP, 0);

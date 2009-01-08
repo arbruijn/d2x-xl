@@ -226,7 +226,7 @@ int CObject::CreateGatedRobot (short nSegment, ubyte nObjId, CFixVector* vPos)
 	tRobotInfo	*botInfoP = &ROBOTINFO (nObjId);
 	int			nBoss, count = 0;
 	//int			i;
-	fix			objsize = gameData.models.polyModels [botInfoP->nModel].Rad ();
+	fix			objsize = gameData.models.polyModels [0] [botInfoP->nModel].Rad ();
 	ubyte			default_behavior;
 
 if (gameStates.gameplay.bNoBotAI)

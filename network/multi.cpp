@@ -1856,7 +1856,7 @@ if (objP->info.nType == OBJ_GHOST)
 void MultiResetObjectTexture (CObject *objP)
 {
 	int				id, i, j;
-	CPolyModel*		modelP = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
+	CPolyModel*		modelP = gameData.models.polyModels [0] + objP->rType.polyObjInfo.nModel;
 	tBitmapIndex*	bmiP;
 
 if (IsTeamGame)

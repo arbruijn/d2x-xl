@@ -35,6 +35,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 class CSubModelData {
 	public:
+#if 1
+		int			ptrs [MAX_SUBMODELS];
+		CFixVector	offsets [MAX_SUBMODELS];
+		CFixVector	norms [MAX_SUBMODELS];   // norm for sep plane
+		CFixVector	pnts [MAX_SUBMODELS];    // point on sep plane
+		fix			rads [MAX_SUBMODELS];       // radius for each submodel
+		ubyte			parents [MAX_SUBMODELS];    // what is parent for each submodel
+		CFixVector	mins [MAX_SUBMODELS];
+		CFixVector	maxs [MAX_SUBMODELS];
+#else
 		CArray<int>				ptrs ;//[MAX_SUBMODELS];
 		CArray<CFixVector>	offsets ;//[MAX_SUBMODELS];
 		CArray<CFixVector>	norms ;//[MAX_SUBMODELS];   // norm for sep plane
@@ -43,6 +53,7 @@ class CSubModelData {
 		CArray<ubyte>			parents ;//[MAX_SUBMODELS];    // what is parent for each submodel
 		CArray<CFixVector>	mins ;//[MAX_SUBMODELS];
 		CArray<CFixVector>	maxs ;//[MAX_SUBMODELS];
+#endif
 
 	public:
 		CSubModelData () { Create (); }
@@ -55,6 +66,7 @@ class CSubModelData {
 //used to describe a polygon model
 
 typedef struct tPolyModelInfo {
+		ushort			nId;
 		short				nType;
 		int				nModels;
 		int				nDataSize;
@@ -80,6 +92,8 @@ class CPolyModel : public CByteArray {
 		void FindMinMax (void);
 		fix Size (void);
 
+		inline ushort Id (void) { return m_info.nId; }
+		inline void SetId (ushort nId) { m_info.nId = nId; }
 		inline short Type (void) { return m_info.nType; }
 		inline void SetType (short nType) { m_info.nType = nType; }
 		inline int DataSize (void) { return m_info.nDataSize; }

@@ -2346,9 +2346,7 @@ class CModelData {
 		CArray<OOF::CModel>				oofModels [2]; //[MAX_POLYGON_MODELS];
 		CArray<POF::CModel>				pofData [2][2]; //[MAX_POLYGON_MODELS];
 		CArray<ubyte>						bHaveHiresModel ; //[MAX_POLYGON_MODELS];
-		CArray<CPolyModel>				polyModels ; //[MAX_POLYGON_MODELS];
-		CArray<CPolyModel>				defPolyModels ; //[MAX_POLYGON_MODELS];
-		CArray<CPolyModel>				altPolyModels ; //[MAX_POLYGON_MODELS];
+		CArray<CPolyModel>				polyModels [3] ; //[MAX_POLYGON_MODELS];
 		CArray<OOF::CModel*>				modelToOOF [2]; //[MAX_POLYGON_MODELS];
 		CArray<ASE::CModel*>				modelToASE [2]; //[MAX_POLYGON_MODELS];
 		CArray<CPolyModel*>				modelToPOL ; //[MAX_POLYGON_MODELS];

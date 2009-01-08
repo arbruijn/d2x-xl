@@ -270,7 +270,7 @@ objP->mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
 if (0 > (objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->info.nId].nModel))
 	objP->rType.polyObjInfo.nModel = nModel;
 #if 0
-objP->info.xSize = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad,
+objP->info.xSize = FixDiv (gameData.models.polyModels [0] [objP->rType.polyObjInfo.nModel].rad,
 							gameData.weapons.info [objP->info.nId].po_len_to_width_ratio);
 #endif
 objP->rType.polyObjInfo.nTexOverride = -1;

@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //fills in gun_point
 int CalcGunPoint (CFixVector *vGunPoint, CObject *objP, int nGun)
 {
-	CPolyModel	*pm = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
+	CPolyModel	*pm = gameData.models.polyModels [0] + objP->rType.polyObjInfo.nModel;
 	tRobotInfo	*botInfoP;
 	CFixVector	*vGunPoints, vGunPos, vRot;
 	CFixMatrix	m;
@@ -170,7 +170,7 @@ memset (camBotInfo.nRapidFireCount, 0, sizeof (camBotInfo.nRapidFireCount));
 FORALL_STATIC_OBJS (objP, i) 
 	if (objP->info.nType == OBJ_CAMBOT) {
 		objP->info.nId	= gameData.bots.nCamBotId;
-		objP->info.xSize = gameData.models.polyModels [gameData.bots.nCamBotModel].Size ();
+		objP->info.xSize = gameData.models.polyModels [0] [gameData.bots.nCamBotModel].Size ();
 		objP->info.xLifeLeft = IMMORTAL_TIME;
 		objP->info.controlType = CT_CAMERA;
 		objP->info.movementType = MT_NONE;

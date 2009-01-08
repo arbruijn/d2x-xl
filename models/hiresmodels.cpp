@@ -237,13 +237,13 @@ if (!(replacementModels [i].pszLores &&
 	   cf.Open (szModel, gameFolders.szDataDir, "rb", 0))))
 	return ++i;
 nModel = replacementModels [i].nModel;
-modelP = ((gameStates.app.bFixModels && gameStates.app.bAltModels) ? gameData.models.altPolyModels : gameData.models.polyModels) + nModel;
+modelP = ((gameStates.app.bFixModels && gameStates.app.bAltModels) ? gameData.models.polyModels [2] : gameData.models.polyModels [0]) + nModel;
 modelP->Destroy ();
 if (!modelP->Read (1, cf)) {
 	cf.Close ();
 	return ++i;
 	}
-modelP->ReadData (gameData.models.defPolyModels + nModel, cf);
+modelP->ReadData (gameData.models.polyModels [1] + nModel, cf);
 cf.Close ();
 modelP->SetRad (modelP->Size ());
 do {

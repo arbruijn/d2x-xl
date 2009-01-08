@@ -23,7 +23,7 @@ int G3BuildModelFromPOF (CObject *objP, int nModel, CPolyModel *pp, CBitmap **mo
 
 static inline int IsDefaultModel (int nModel)
 {
-return gameData.models.polyModels [nModel].DataSize () == gameData.models.defPolyModels [nModel].DataSize ();
+return gameData.models.polyModels [0][nModel].DataSize () == gameData.models.polyModels [1][nModel].DataSize ();
 }
 
 //------------------------------------------------------------------------------
