@@ -52,7 +52,7 @@ void MorphFindModelBounds (CPolyModel* pmP, int nSubModel, CFixVector& minv, CFi
 	CFixVector *vp;
 	ushort *data, nType;
 
-	data = reinterpret_cast<ushort*> (pmP->modelData + pmP->subModels.ptrs [nSubModel]);
+	data = reinterpret_cast<ushort*> (pmP->Data () + pmP->SubModels ().ptrs [nSubModel]);
 	nType = *data++;
 	Assert (nType == 7 || nType == 1);
 	nVerts = *data++;
@@ -88,7 +88,7 @@ int MorphInitPoints (CPolyModel* pmP, CFixVector *vBoxSize, int nSubModel, tMorp
 	int			i;
 
 //printf ("initing %d ", nSubModel);
-data = reinterpret_cast<ushort*> (pmP->modelData + pmP->subModels.ptrs [nSubModel]);
+data = reinterpret_cast<ushort*> (pmP->Data () + pmP->SubModels ().ptrs [nSubModel]);
 nType = *data++;
 #if DBG
 //Assert (nType == 7 || nType == 1);
@@ -147,7 +147,7 @@ int MorphUpdatePoints (CPolyModel* pmP, int nSubModel, tMorphInfo *mdP)
 	int i;
 
 	////printf ("updating %d ", nSubModel);
-data = reinterpret_cast<ushort*> (pmP->modelData + pmP->subModels.ptrs [nSubModel]);
+data = reinterpret_cast<ushort*> (pmP->Data () + pmP->SubModels ().ptrs [nSubModel]);
 nType = *data++;
 #if DBG
 //Assert (nType == 7 || nType == 1);
@@ -193,16 +193,16 @@ if (!(mdP = MorphFindData (this))) {	//maybe loaded half-morphed from disk
 	return;
 	}
 pmP = gameData.models.polyModels + mdP->objP->rType.polyObjInfo.nModel;
-G3CheckAndSwap (reinterpret_cast<void*> (pmP->modelData.Buffer ()));
-for (i = 0; i < pmP->nModels; i++)
+G3CheckAndSwap (reinterpret_cast<void*> (pmP->Data ()));
+for (i = 0; i < pmP->ModelCount (); i++)
 	if (mdP->submodelActive [i] == 1) {
 		if (!MorphUpdatePoints (pmP, i, mdP))
 			mdP->submodelActive [i] = 0;
       else if (mdP->nMorphingPoints [i] == 0) {		//maybe start submodel
 			mdP->submodelActive [i] = 2;		//not animating, just visible
 			mdP->nSubmodelsActive--;		//this one done animating
-			for (t = 0; t < pmP->nModels; t++)
-				if (pmP->subModels.parents [t] == i) 		//start this one
+			for (t = 0; t < pmP->ModelCount (); t++)
+				if (pmP->SubModels ().parents [t] == i) 		//start this one
 					if ((mdP->submodelActive [t] = MorphInitPoints (pmP, NULL, t, mdP)))
 						mdP->nSubmodelsActive++;
 			}
@@ -261,7 +261,7 @@ info.renderType = RT_MORPH;
 info.movementType = MT_PHYSICS;		//RT_NONE;
 mType.physInfo.rotVel = morph_rotvel;
 pmP = gameData.models.polyModels + rType.polyObjInfo.nModel;
-G3CheckAndSwap (reinterpret_cast<void*> (pmP->modelData.Buffer ()));
+G3CheckAndSwap (reinterpret_cast<void*> (pmP->Data ()));
 MorphFindModelBounds (pmP, 0, pmmin, pmmax);
 vBoxSize [X] = max (-pmmin [X], pmmax [X]) / 2;
 vBoxSize [Y] = max (-pmmin [Y], pmmax [Y]) / 2;
@@ -278,7 +278,7 @@ MorphInitPoints (pmP, &vBoxSize, 0, mdP);
 
 //-------------------------------------------------------------
 
-void MorphDrawModel (CPolyModel* pmP, int nSubModel, CAngleVector *animAngles, fix light, tMorphInfo *mdP, int nModel)
+void MorphDrawModel (CPolyModel* modelP, int nSubModel, CAngleVector *animAngles, fix light, tMorphInfo *mdP, int nModel)
 {
 	int i, mn;
 	int facing;
@@ -287,9 +287,9 @@ void MorphDrawModel (CPolyModel* pmP, int nSubModel, CAngleVector *animAngles, f
 
 sort_list [0] = nSubModel;
 sort_n = 1;
-for (i = 0; i < pmP->nModels; i++) {
-	if (mdP->submodelActive [i] && pmP->subModels.parents [i]==nSubModel) {
-		facing = G3CheckNormalFacing(pmP->subModels.pnts[i], pmP->subModels.norms[i]);
+for (i = 0; i < modelP->ModelCount (); i++) {
+	if (mdP->submodelActive [i] && modelP->SubModels ().parents [i]==nSubModel) {
+		facing = G3CheckNormalFacing(modelP->SubModels ().pnts[i], modelP->SubModels ().norms[i]);
 		if (!facing)
 			sort_list [sort_n++] = i;
 		else {		//put at start
@@ -306,38 +306,37 @@ for (i = 0; i < pmP->nModels; i++) {
 for (i = 0; i < sort_n; i++) {
 	mn = sort_list [i];
 	if (mn == nSubModel) {
- 		int i;
-		for (i=0;i<pmP->nTextures;i++) {
-			gameData.models.textureIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [pmP->nFirstTexture+i]];
-			gameData.models.textures [i] = gameData.pig.tex.bitmaps [0] + /*gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [pmP->nFirstTexture+i]]*/gameData.models.textureIndex [i].index;
+		for (int j = 0; j < modelP->TextureCount (); j++) {
+			gameData.models.textureIndex [j] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [modelP->FirstTexture () + j]];
+			gameData.models.textures [j] = gameData.pig.tex.bitmaps [0] + /*gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [modelP->FirstTexture ()+j]]*/gameData.models.textureIndex [j].index;
 			}
 
 #ifdef PIGGY_USE_PAGING
 		// Make sure the textures for this CObject are paged in..
 		gameData.pig.tex.bPageFlushed = 0;
-		for (i = 0; i < pmP->nTextures;i++)
-			LoadBitmap (gameData.models.textureIndex [i].index, 0);
+		for (int j = 0; j < modelP->TextureCount (); j++)
+			LoadBitmap (gameData.models.textureIndex [j].index, 0);
 		// Hmmm.. cache got flushed in the middle of paging all these in,
 		// so we need to reread them all in.
 		if (gameData.pig.tex.bPageFlushed) {
 			gameData.pig.tex.bPageFlushed = 0;
-			for (i=0;i<pmP->nTextures;i++)
-				LoadBitmap (gameData.models.textureIndex [i].index, 0);
+			for (int j = 0; j < modelP->TextureCount (); j++)
+				LoadBitmap (gameData.models.textureIndex [j].index, 0);
 			}
 			// Make sure that they can all fit in memory.
 		Assert ( gameData.pig.tex.bPageFlushed == 0);
 #endif
 		G3DrawMorphingModel (
-			pmP->modelData + pmP->subModels.ptrs [nSubModel],
-			gameData.models.textures,
+			modelP->Data () + modelP->SubModels ().ptrs [nSubModel],
+			gameData.models.textures.Buffer (),
 			animAngles, NULL, light,
 			mdP->vecs + mdP->submodelStartPoints [nSubModel], nModel);
 		}
 	else {
 		CFixMatrix orient;
 		orient = CFixMatrix::Create(animAngles[mn]);
-		transformation.Begin(pmP->subModels.offsets[mn], orient);
-		MorphDrawModel (pmP, mn, animAngles, light, mdP, nModel);
+		transformation.Begin(modelP->SubModels ().offsets[mn], orient);
+		MorphDrawModel (modelP, mn, animAngles, light, mdP, nModel);
 		transformation.End ();
 		}
 	}
@@ -358,8 +357,8 @@ Assert (rType.polyObjInfo.nModel < gameData.models.nPolyModels);
 pmP = gameData.models.polyModels+rType.polyObjInfo.nModel;
 light = ComputeObjectLight (this, NULL);
 transformation.Begin(info.position.vPos, info.position.mOrient);
-G3SetModelPoints (gameData.models.polyModelPoints);
-gameData.render.vertP = gameData.models.fPolyModelVerts;
+G3SetModelPoints (gameData.models.polyModelPoints.Buffer ());
+gameData.render.vertP = gameData.models.fPolyModelVerts.Buffer ();
 MorphDrawModel (pmP, 0, rType.polyObjInfo.animAngles, light, mdP, rType.polyObjInfo.nModel);
 gameData.render.vertP = NULL;
 transformation.End ();

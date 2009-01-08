@@ -34,10 +34,18 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "dynlight.h"
 #include "buildmodel.h"
 #include "hitbox.h"
+#include "paging.h"
 
 #ifdef _3DFX
 #include "3dfx_des.h"
 #endif
+
+//------------------------------------------------------------------------------
+
+#define BASE_MODEL_SIZE		0x28000
+#define DEFAULT_VIEW_DIST	0x60000
+
+//------------------------------------------------------------------------------
 
 CAngleVector animAngles [N_ANIM_STATES][MAX_SUBMODELS];
 
@@ -93,7 +101,7 @@ if (gameStates.app.bEndLevelSequence &&
 	bIsDefModel = 1;
 	}
 else {
-	bHaveAltModel = gameData.models.altPolyModels [nModel].Data ().Buffer () != NULL;
+	bHaveAltModel = gameData.models.altPolyModels [nModel].Data () != NULL;
 	bIsDefModel = IsDefaultModel (nModel);
 	}
 #if DBG
@@ -163,7 +171,7 @@ if (!(modelP = GetPolyModel (objP, pos, nModel, flags))) {
 if (gameStates.render.nShadowPass == 2) {
 	if (!bHires) {
 		G3SetModelPoints (gameData.models.polyModelPoints.Buffer ());
-		G3DrawPolyModelShadow (objP, modelP->Data ().Buffer (), animAngles, nModel);
+		G3DrawPolyModelShadow (objP, modelP->Data (), animAngles, nModel);
 		}
 	return 1;
 	}
@@ -193,7 +201,7 @@ if (!flags) {	//draw entire CObject
 			(gameStates.app.bEndLevelSequence < EL_OUTSIDE) && 
 			!(SHOW_DYN_LIGHT && ((RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects));
 		transformation.Begin (*pos, *orient);
-		G3DrawPolyModel (objP, modelP->Data ().Buffer (), gameData.models.textures.Buffer (), animAngles, NULL, light, glowValues, colorP, NULL, nModel);
+		G3DrawPolyModel (objP, modelP->Data (), gameData.models.textures.Buffer (), animAngles, NULL, light, glowValues, colorP, NULL, nModel);
 		transformation.End ();
 		}
 	}

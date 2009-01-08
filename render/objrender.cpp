@@ -203,7 +203,7 @@ mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
 rType.polyObjInfo.nModel = nModel;
 #if 1
 if (bHasModel)
-	info.xSize = gameData.models.polyModels [rType.polyObjInfo.nModel].rad;
+	info.xSize = gameData.models.polyModels [rType.polyObjInfo.nModel].Rad ();
 #endif
 rType.polyObjInfo.nTexOverride = -1;
 info.xLifeLeft = IMMORTAL_TIME;
@@ -701,7 +701,7 @@ if (objP->rType.polyObjInfo.nTexOverride != -1) {
 						bmiP [MAX_MODEL_TEXTURES];
 
 #if DBG
-	Assert (pm->nTextures <= 12);
+	Assert (pm->TextureCount () <= 12);
 #endif
 	for (i = 0; i < MAX_MODEL_TEXTURES; i++)		//fill whole array, in case simple model needs more
 		bmiP [i] = bm;

@@ -2339,9 +2339,9 @@ class CModelData {
 		int									nSimpleModelThresholdScale;
 		int									nMarkerModel;
 		int									nCockpits;
+		int									nLightScale;
 		CArray<int>							nDyingModels ; //[MAX_POLYGON_MODELS];
 		CArray<int>							nDeadModels ; //[MAX_POLYGON_MODELS];
-		CArray<int>							nLightScale;
 		CArray<ASE::CModel>				aseModels [2]; //[MAX_POLYGON_MODELS];
 		CArray<OOF::CModel>				oofModels [2]; //[MAX_POLYGON_MODELS];
 		CArray<POF::CModel>				pofData [2][2]; //[MAX_POLYGON_MODELS];
@@ -2366,6 +2366,7 @@ class CModelData {
 
 	public:
 		CModelData ();
+		bool Create (void);
 };
 
 //------------------------------------------------------------------------------

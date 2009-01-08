@@ -332,7 +332,7 @@ return fabs (X2F (vMax[X] - vMin[X])) *
 
 double ObjectVolume (CObject *objP)
 {
-	CPolyModel	*pm;
+	CPolyModel	*modelP;
 	int			i, j;
 	double		size;
 
@@ -340,15 +340,15 @@ if (objP->info.renderType != RT_POLYOBJ)
 	size = 4 * Pi * pow (X2F (objP->info.xSize), 3) / 3;
 else {
 	size = 0;
-	pm = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
+	modelP = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
 	if ((i = objP->rType.polyObjInfo.nSubObjFlags)) {
-		for (j = 0; i && (j < pm->nModels); i >>= 1, j++)
+		for (j = 0; i && (j < modelP->ModelCount ()); i >>= 1, j++)
 			if (i & 1)
-				size += VectorVolume(pm->subModels.mins[j], pm->subModels.maxs[j]);
+				size += VectorVolume(modelP->SubModels ().mins [j], modelP->SubModels ().maxs [j]);
 		}
 	else {
-		for (j = 0; j < pm->nModels; j++)
-			size += VectorVolume (pm->subModels.mins[j], pm->subModels.maxs[j]);
+		for (j = 0; j < modelP->ModelCount (); j++)
+			size += VectorVolume (modelP->SubModels ().mins [j], modelP->SubModels ().maxs [j]);
 		}
 	}
 return sqrt (size);
@@ -446,8 +446,8 @@ CreateExplBlast ();
 RequestEffects (EXPL_LIGHTNINGS | SHRAPNEL_SMOKE);
 if (gameData.models.nDyingModels [rType.polyObjInfo.nModel] != -1)
 	rType.polyObjInfo.nModel = gameData.models.nDyingModels [rType.polyObjInfo.nModel];
-if (gameData.models.polyModels [rType.polyObjInfo.nModel].nModels > 1) {
-	for (int i = 1; i < gameData.models.polyModels [rType.polyObjInfo.nModel].nModels; i++)
+if (gameData.models.polyModels [rType.polyObjInfo.nModel].ModelCount () > 1) {
+	for (int i = 1; i < gameData.models.polyModels [rType.polyObjInfo.nModel].ModelCount (); i++)
 		if ((info.nType != OBJ_ROBOT) || (info.nId != 44) || (i != 5)) 	//energy sucker energy part
 			CreateDebris (i);
 	//make parent CObject only draw center part

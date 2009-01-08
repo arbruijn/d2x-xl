@@ -42,9 +42,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define PM_COMPATIBLE_VERSION 6
 #define PM_OBJFILE_VERSION 8
 
-#define BASE_MODEL_SIZE 0x28000
-#define DEFAULT_VIEW_DIST 0x60000
-
 #define ID_OHDR 0x5244484f // 'RDHO'  //Object header
 #define ID_SOBJ 0x4a424f53 // 'JBOS'  //Subobject header
 #define ID_GUNS 0x534e5547 // 'SNUG'  //List of guns on this CObject
@@ -569,9 +566,9 @@ if (!m_info.data.Create (m_info.nDataSize))
 	Error ("Not enough memory for game models.");
 cf.Read (m_info.data.Buffer (), sizeof (ubyte), m_info.nDataSize);
 if (defModelP) {
-	defModelP->Data ().Destroy ();
-	defModelP->Data () = m_info.data;
-	if (!defModelP->Data ().Buffer ())
+	defModelP->Destroy ();
+	*defModelP = *this;
+	if (!defModelP->Data ())
 		Error ("Not enough memory for game models.");
 	}
 #ifdef WORDS_NEED_ALIGNMENT

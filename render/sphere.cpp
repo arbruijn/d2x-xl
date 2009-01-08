@@ -694,7 +694,7 @@ if (gameData.render.shield.nFaces > 0)
 	if ((gameOpts->render.bDepthSort > 0) || (RENDERPATH && !gameOpts->render.bDepthSort))
 		TIAddSphere (riSphereShield, red, green, blue, alpha, objP);
 	else {
-		fix nSize = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
+		fix nSize = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].Rad ();
 		float	fScale, r = X2F (nSize) /** 1.05f*/;
 		tObjTransformation *posP = OBJPOS (objP);
 		CFixVector vPos;

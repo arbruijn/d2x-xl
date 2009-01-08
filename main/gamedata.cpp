@@ -779,17 +779,24 @@ nHiresModels = 0;
 nPolyModels = 0;
 nDefPolyModels = 0;
 nCockpits = 0;
+nLightScale = 0;
 nSimpleModelThresholdScale = 5;
 nMarkerModel = -1;
 vScale.SetZero ();
+Create ();
+}
+ 
+// ----------------------------------------------------------------------------
 
+bool CModelData::Create (void)
+{
 for (int i = 0; i < 2; i++) {
-	CREATE (aseModels.[i], MAX_POLYGON_MODELS, 0xff);
-	CREATE (oofModels.[i], MAX_POLYGON_MODELS, 0xff);
-	CREATE (pofData.[i], 2, 0xff), MAX_POLYGON_MODELS, 0xff);
-	CREATE (modelToOOF.[i], MAX_POLYGON_MODELS, 0xff);
-	CREATE (modelToASE.[i], MAX_POLYGON_MODELS, 0xff);
-	CREATE (renderModels.[i], MAX_POLYGON_MODELS, 0xff);
+	CREATE (aseModels [i], MAX_POLYGON_MODELS, 0xff);
+	CREATE (oofModels [i], MAX_POLYGON_MODELS, 0xff);
+	CREATE (pofData [i], MAX_POLYGON_MODELS, 0xff);
+	CREATE (modelToOOF [i], MAX_POLYGON_MODELS, 0xff);
+	CREATE (modelToASE [i], MAX_POLYGON_MODELS, 0xff);
+	CREATE (renderModels [i], MAX_POLYGON_MODELS, 0xff);
 	}
 CREATE (bHaveHiresModel, MAX_POLYGON_MODELS, 0);
 CREATE (polyModels, MAX_POLYGON_MODELS, 0xff);
@@ -807,8 +814,9 @@ CREATE (thrusters, MAX_POLYGON_MODELS, 0xff);
 CREATE (offsets, MAX_POLYGON_MODELS, 0xff);
 CREATE (gunInfo, MAX_POLYGON_MODELS, 0xff);
 CREATE (spheres, MAX_POLYGON_MODELS, 0xff);
+return true;
 }
- 
+
 // ----------------------------------------------------------------------------
 
 CMorphData::CMorphData ()

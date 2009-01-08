@@ -55,13 +55,12 @@ class CSubModelData {
 //used to describe a polygon model
 
 typedef struct tPolyModelInfo {
-		//short				nId;
 		short				nType;
 		int				nModels;
 		int				nDataSize;
 		CArray<ubyte>	data;
 		CSubModelData	subModels;
-		CFixVector		mins,maxs;                       // min,max for whole model
+		CFixVector		mins, maxs;                       // min,max for whole model
 		fix				rad;
 		ubyte				nTextures;
 		ushort			nFirstTexture;
@@ -84,9 +83,17 @@ class CPolyModel {
 		inline int DataSize (void) { return m_info.nDataSize; }
 		inline ubyte SimplerModel (void) { return m_info.nSimplerModel; }
 		inline fix Rad (void) { return m_info.rad; }
-		inline CArray<ubyte>& Data (void) { return m_info.data; }
+		inline ubyte* Data (void) { return m_info.data.Buffer (); }
 		inline int ModelCount (void) { return m_info.nModels; }
 		inline CSubModelData& SubModels (void) { return m_info.subModels; }
+		inline ushort FirstTexture (void) { return m_info.nFirstTexture; }
+		inline ubyte TextureCount (void) { return m_info.nTextures; }
+		inline tPolyModelInfo& Info (void) { return m_info; }
+
+		inline CPolyModel& operator= (CPolyModel& other) { 
+			m_info.data = other.m_info.data; 
+			return *this;
+			}
 
 	private:
 		int	m_fileEnd;
