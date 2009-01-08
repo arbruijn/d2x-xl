@@ -140,6 +140,8 @@ GetASEModelItems (nModel, pa, 1.0f); //(nModel == 108) || (nModel == 110)) ? 1.1
 m_nModel = nModel;
 m_textures = pa->m_textures.m_bitmaps;
 m_nTextures = pa->m_textures.m_nBitmaps;
+for (i = 0; i < m_nTextures; i++)
+	pa->m_textures.m_bitmaps [i].ShareBuffer (m_textures [i]);
 memset (m_teamTextures, 0xFF, sizeof (m_teamTextures));
 for (i = 0; i < m_nTextures; i++)
 	if ((j = (int) m_textures [i].Team ()))

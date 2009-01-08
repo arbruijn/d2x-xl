@@ -50,6 +50,7 @@ void CModel::Init (void)
 {
 memset (m_teamTextures, 0, sizeof (m_teamTextures));
 memset (m_nGunSubModels, 0xFF, sizeof (m_nGunSubModels));
+m_nModel = -1;
 m_fScale = 0;
 m_nType = 0; //-1: custom mode, 0: default model, 1: alternative model, 2: hires model
 m_nFaces = 0;
@@ -133,6 +134,12 @@ return true;
 
 void CModel::Destroy (void)
 {
+#if DBG
+if (m_nModel > -1)
+	m_nModel = m_nModel;
+if (m_nModel == nDbgModel)
+	nDbgModel = nDbgModel;
+#endif
 m_faces.Destroy ();
 m_subModels.Destroy ();
 if (gameStates.ogl.bHaveVBOs && m_vboDataHandle)
@@ -144,6 +151,7 @@ m_color.Destroy ();
 m_vertNorms.Destroy ();
 m_verts.Destroy ();
 m_sortedVerts.Destroy ();
+m_textures.Destroy ();
 if (gameStates.ogl.bHaveVBOs && m_vboIndexHandle)
 	glDeleteBuffersARB (1, &m_vboIndexHandle);
 m_index [0].Destroy ();

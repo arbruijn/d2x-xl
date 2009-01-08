@@ -782,7 +782,7 @@ if ((nOglTransformCalls > 0) && !--nOglTransformCalls && (gameStates.ogl.bUseTra
 
 void RebuildRenderContext (int bGame)
 {
-ShowBoxedMessage ("Setting up renderer");
+ShowBoxedMessage ("Setting up renderer...");
 ResetTextures (1, bGame);
 G3FreeAllPolyModelItems ();
 InitShaders ();
