@@ -129,13 +129,13 @@ return NULL;
 
 int ASE_ReleaseTextures (void)
 {
-	CModel	*pm;
-	int			bCustom, i;
+	CModel*	modelP;
+	int		bCustom, i;
 
 PrintLog ("releasing ASE model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
-	for (i = gameData.models.nHiresModels, pm = gameData.models.aseModels [bCustom]; i; i--, pm++)
-		pm->ReleaseTextures ();
+	for (i = gameData.models.nHiresModels, modelP = gameData.models.aseModels [bCustom].Buffer (); i; i--, modelP++)
+		modelP->ReleaseTextures ();
 return 0;
 }
 
@@ -143,13 +143,13 @@ return 0;
 
 int ASE_ReloadTextures (void)
 {
-	CModel	*pm;
+	CModel*	modelP;
 	int		bCustom, i;
 
 PrintLog ("reloading ASE model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
-	for (i = gameData.models.nHiresModels, pm = gameData.models.aseModels [bCustom]; i; i--, pm++)
-		if (!pm->ReloadTextures (bCustom)) {
+	for (i = gameData.models.nHiresModels, modelP = gameData.models.aseModels [bCustom].Buffer (); i; i--, modelP++)
+		if (!modelP->ReloadTextures (bCustom)) {
 			return 0;
 			}
 return 1;
@@ -720,7 +720,7 @@ if (!nResult)
 	Destroy ();
 else {
 	LinkSubModels ();
-	gameData.models.bHaveHiresModel [this - gameData.models.aseModels [bCustom]] = 1;
+	gameData.models.bHaveHiresModel [this - gameData.models.aseModels [bCustom].Buffer ()] = 1;
 	}
 aseFile = NULL;
 return nResult;

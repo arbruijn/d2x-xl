@@ -105,10 +105,10 @@ for (i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++)
 void LoadModelTextures (int nModel)
 {
 	int			i, j;
-	ushort		*pi;
-	CPolyModel	*pm = gameData.models.polyModels + nModel;
+	ushort*		pi;
+	CPolyModel*	modelP = gameData.models.polyModels + nModel;
 
-for (i = pm->nTextures, pi = gameData.pig.tex.objBmIndexP + pm->nFirstTexture; i; i--, pi++) {
+for (i = modelP->TextureCount (), pi = gameData.pig.tex.objBmIndexP + modelP->FirstTexture (); i; i--, pi++) {
 	j = *pi;
 	LoadBitmap (gameData.pig.tex.objBmIndex [j].index, 0);
 	LoadObjectEffectTextures (j);

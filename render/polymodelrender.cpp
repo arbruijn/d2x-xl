@@ -47,14 +47,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-CAngleVector animAngles [N_ANIM_STATES][MAX_SUBMODELS];
-
-//set the animation angles for this robot.  Gun fields of robot info must
-//be filled in.
-void SetRobotAngles (tRobotInfo* botInfoP, CPolyModel* modelP, CAngleVector angs [N_ANIM_STATES][MAX_SUBMODELS]);
-
-//------------------------------------------------------------------------------
-
 int ObjectHasShadow (CObject *objP)
 {
 if (objP->info.nType == OBJ_ROBOT) {
@@ -179,7 +171,7 @@ if (gameStates.render.nShadowPass == 2) {
 if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
-nTextures = bHires ? 0 : LoadModelTextures (modelP, altTextures);
+nTextures = bHires ? 0 : modelP->LoadTextures (altTextures);
 gameStates.ogl.bUseTransform = 1;
 G3SetModelPoints (gameData.models.polyModelPoints.Buffer ());
 gameData.render.vertP = gameData.models.fPolyModelVerts.Buffer ();

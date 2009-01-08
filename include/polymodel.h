@@ -80,7 +80,10 @@ class CPolyModel : public CByteArray {
 		void FindMinMax (void);
 		fix Size (void);
 
+		inline short Type (void) { return m_info.nType; }
+		inline void SetType (short nType) { m_info.nType = nType; }
 		inline int DataSize (void) { return m_info.nDataSize; }
+		inline void SetDataSize (int nDataSize) { m_info.nDataSize = nDataSize; }
 		inline ubyte SimplerModel (void) { return m_info.nSimplerModel; }
 		inline fix Rad (void) { return m_info.rad; }
 		inline void SetRad (fix rad) { m_info.rad = rad; }
@@ -88,6 +91,7 @@ class CPolyModel : public CByteArray {
 		inline int ModelCount (void) { return m_info.nModels; }
 		inline CSubModelData& SubModels (void) { return m_info.subModels; }
 		inline ushort FirstTexture (void) { return m_info.nFirstTexture; }
+		inline void SetFirstTexture (ushort nFirstTexture) { m_info.nFirstTexture = nFirstTexture; }
 		inline ubyte TextureCount (void) { return m_info.nTextures; }
 		inline tPolyModelInfo& Info (void) { return m_info; }
 #if 0

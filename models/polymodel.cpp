@@ -51,7 +51,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define	MODEL_BUF_SIZE	32768
 
-#define POF_ReadIntNew(i, f) POF_Read (&(i), sizeof (i), 1, (f))
+//------------------------------------------------------------------------------
 
 CAngleVector animAngles [N_ANIM_STATES][MAX_SUBMODELS];
 
@@ -236,6 +236,21 @@ void AlignPolyModelData (CPolyModel* modelP)
 #endif //def WORDS_NEED_ALIGNMENT
 
 //------------------------------------------------------------------------------
+
+void CPolyModel::Init (void)
+{
+m_info.nType = 0;
+m_info.nModels = 0;
+m_info.nDataSize = 0;
+m_info.rad = 0;
+m_info.nTextures = 0;
+m_info.nFirstTexture = 0;
+m_info.nSimplerModel = 0;
+m_info.mins.SetZero ();
+m_info.maxs.SetZero ();
+}
+
+//------------------------------------------------------------------------------
 //reads a binary file containing a 3d model
 void CPolyModel::Parse (const char *filename, tRobotInfo *botInfoP)
 {
@@ -333,7 +348,7 @@ while (POF_Read (&id, sizeof (id), 1, modelBuf) == 1) {
 				for (m = 0; m <m_info.nModels; m++)
 					for (f = 0; f < n_frames; f++)
 						POF_ReadAngs (&animAngles [f][m], 1, modelBuf);
-							SetRobotAngles (botInfoP, this, animAngles);
+				SetRobotAngles (botInfoP, this, animAngles);
 				}
 			else
 				POF_Seek (len, SEEK_CUR);

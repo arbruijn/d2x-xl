@@ -830,7 +830,7 @@ omegaLightnings.Destroy (-1);
 /*---*/PrintLog ("   Initializing smoke manager\n");
 InitObjectSmoke ();
 gameData.pig.tex.bitmapColors.Clear ();
-memset (gameData.models.thrusters, 0, sizeof (gameData.models.thrusters));
+gameData.models.thrusters.Clear ();
 gameData.render.lights.flicker.nLights = 0;
 save_player = LOCALPLAYER;
 #if 0

@@ -145,7 +145,7 @@ for (i = 0; i < m_nTextures; i++)
 	if ((j = (int) m_textures [i].Team ()))
 		m_teamTextures [j - 1] = i;
 m_nType = 2;
-gameData.models.polyModels [nModel].rad = Size (objP, 1);
+gameData.models.polyModels [nModel].SetRad (Size (objP, 1));
 Setup (1, 1);
 #if 1
 SetGunPoints (objP, 1);

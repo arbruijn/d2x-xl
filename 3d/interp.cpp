@@ -230,7 +230,7 @@ for (;;) {
 			ShortSwap (WORDPTR (dataP + 2));
 			FixSwap (FIXPTR (dataP + 16));
 			FixSwap (FIXPTR (dataP + 32));
-			dataP + =36;
+			dataP += 36;
 			break;
 
 		case OP_SUBCALL:
@@ -264,6 +264,7 @@ chunk_list [*no_chunks].offset = offset;
 chunk_list [*no_chunks].correction = 0;
 (*no_chunks)++;
 }
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -297,11 +298,11 @@ for (;;) {
 			dataP += 32;
 			break;
 		case OP_RODBM:
-			dataP + =36;
+			dataP += 36;
 			break;
 		case OP_SUBCALL:
 			G3PolyModelVerify (dataP + WORDVAL (dataP + 16));
-			dataP + =20;
+			dataP += 20;
 			break;
 		case OP_GLOW:
 			dataP += 4;
@@ -565,10 +566,6 @@ for (;;) {
 nDepth--;
 return 1;
 }
-
-#if DBG
-int nestCount;
-#endif
 
 //------------------------------------------------------------------------------
 //alternate interpreter for morphing CObject

@@ -604,7 +604,7 @@ switch (objP->info.nType) {
 			objP->info.movementType = MT_PHYSICS;
 		else
 			objP->info.movementType = MT_NONE;
-		objP->info.xSize = gameData.models.polyModels [ROBOTINFO (objP->info.nId).nModel].rad;
+		objP->info.xSize = gameData.models.polyModels [ROBOTINFO (objP->info.nId).nModel].Rad ();
 		objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->info.nId).nModel;
 		objP->rType.polyObjInfo.nSubObjFlags = 0;
 		objP->cType.aiInfo.CLOAKED = (ROBOTINFO (objP->info.nId).cloakType?1:0);
@@ -619,7 +619,7 @@ switch (objP->info.nType) {
 	case OBJ_PLAYER:
 		objP->info.controlType = CT_NONE;
 		objP->info.movementType = MT_PHYSICS;
-		objP->info.xSize = gameData.models.polyModels [gameData.pig.ship.player->nModel].rad;
+		objP->info.xSize = gameData.models.polyModels [gameData.pig.ship.player->nModel].Rad ();
 		objP->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;
 		objP->rType.polyObjInfo.nSubObjFlags = 0;
 		break;
@@ -627,7 +627,7 @@ switch (objP->info.nType) {
 	case OBJ_CLUTTER:
 		objP->info.controlType = CT_NONE;
 		objP->info.movementType = MT_NONE;
-		objP->info.xSize = gameData.models.polyModels [objP->info.nId].rad;
+		objP->info.xSize = gameData.models.polyModels [objP->info.nId].Rad ();
 		objP->rType.polyObjInfo.nModel = objP->info.nId;
 		objP->rType.polyObjInfo.nSubObjFlags = 0;
 		break;
@@ -727,7 +727,7 @@ switch (objP->info.renderType) {
 			objP->rType.polyObjInfo.nSubObjFlags = NDReadInt ();
 			}
 		if ((objP->info.nType != OBJ_PLAYER) && (objP->info.nType != OBJ_DEBRIS))
-		for (i = 0; i < gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nModels; i++)
+		for (i = 0; i < gameData.models.polyModels [objP->rType.polyObjInfo.nModel].ModelCount (); i++)
 			NDReadAngVec (objP->rType.polyObjInfo.animAngles[i]);
 		tmo = NDReadInt ();
 #ifndef EDITOR
@@ -904,7 +904,7 @@ switch (o.info.renderType) {
 			for (i = 0; i < MAX_SUBMODELS; i++)
 				NDWriteAngVec (o.polyObjInfo.animAngles + i);
 #endif
-		for (i = 0; i < gameData.models.polyModels [o.rType.polyObjInfo.nModel].nModels; i++)
+		for (i = 0; i < gameData.models.polyModels [o.rType.polyObjInfo.nModel].ModelCount (); i++)
 			NDWriteAngVec (o.rType.polyObjInfo.animAngles[i]);
 		NDWriteInt (o.rType.polyObjInfo.nTexOverride);
 		break;
@@ -1839,15 +1839,15 @@ while (!bDone) {
 					break;
 				objP->LinkToSeg (nSegment);
 				if ((objP->info.nType == OBJ_PLAYER) && IsMultiGame) {
-					int CPlayerData = IsTeamGame ? GetTeam (objP->info.nId) : objP->info.nId;
-					if (CPlayerData == 0)
+					int nPlayerData = IsTeamGame ? GetTeam (objP->info.nId) : objP->info.nId;
+					if (nPlayerData == 0)
 						break;
-					CPlayerData--;
+					nPlayerData--;
 					for (i = 0; i < N_PLAYER_SHIP_TEXTURES; i++)
-						mpTextureIndex [CPlayerData][i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nFirstTexture+i]];
-					mpTextureIndex [CPlayerData][4] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap+ (CPlayerData)*2]];
-					mpTextureIndex [CPlayerData][5] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap+ (CPlayerData)*2+1]];
-					objP->rType.polyObjInfo.nAltTextures = CPlayerData+1;
+						mpTextureIndex [nPlayerData][i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.models.polyModels [objP->rType.polyObjInfo.nModel].FirstTexture () + i]];
+					mpTextureIndex [nPlayerData][4] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap + nPlayerData * 2]];
+					mpTextureIndex [nPlayerData][5] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap + nPlayerData * 2 + 1]];
+					objP->rType.polyObjInfo.nAltTextures = nPlayerData+1;
 					}
 				}
 			break;

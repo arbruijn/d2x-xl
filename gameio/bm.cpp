@@ -118,7 +118,6 @@ return i;
 // If editor is in, bm_init_use_table () is called.
 int BMInit (void)
 {
-InitPolygonModels ();
 if (!PiggyInit ())				// This calls BMReadAll
 	Error ("Cannot open pig and/or ham file");
 /*---*/PrintLog ("   Loading sound data\n");
@@ -251,15 +250,15 @@ ReadPowerupTypeInfos (gameData.objs.pwrUp.info, gameData.objs.pwrUp.nTypes, cf);
 
 gameData.models.nPolyModels = cf.ReadInt ();
 /*---*/PrintLog ("      Loading %d CPolyModel descriptions\n", gameData.models.nPolyModels);
-ReadPolyModels (gameData.models.polyModels, gameData.models.nPolyModels, cf);
+ReadPolyModels (gameData.models.polyModels.Buffer (), gameData.models.nPolyModels, cf);
 gameData.models.nDefPolyModels = gameData.models.nPolyModels;
-memcpy (gameData.models.defPolyModels, gameData.models.polyModels, gameData.models.nPolyModels * sizeof (*gameData.models.defPolyModels));
+memcpy (gameData.models.defPolyModels.Buffer (), gameData.models.polyModels.Buffer (), gameData.models.nPolyModels * sizeof (CPolyModel));
 
 /*---*/PrintLog ("      Loading poly model data\n");
 for (i = 0; i < gameData.models.nPolyModels; i++) {
-	gameData.models.polyModels [i].modelData.SetBuffer (NULL);
-	gameData.models.defPolyModels [i].modelData.SetBuffer (NULL);
-	ReadPolyModelData (gameData.models.polyModels + i, i, gameData.models.defPolyModels + i, cf);
+	gameData.models.polyModels [i].SetBuffer (NULL);
+	gameData.models.defPolyModels [i].SetBuffer (NULL);
+	gameData.models.polyModels [i].ReadData (gameData.models.defPolyModels + i, cf);
 	}
 
 for (i = 0; i < gameData.models.nPolyModels; i++)
@@ -547,10 +546,10 @@ void BMReadGameDataD1 (CFile& cf)
 	D1_tmap_info	t;
 	//D1Robot_info	r;
 #endif
-	tWallClip				*pw;
+	tWallClip		*pw;
 	tTexMapInfo		*pt;
 	tRobotInfo		*pr;
-	CPolyModel		pm;
+	CPolyModel		model;
 	ubyte				tmpSounds [D1_MAX_SOUNDS];
 
 cf.Seek (sizeof (int), SEEK_CUR);
@@ -698,8 +697,8 @@ i = cf.ReadInt ();
 /*---*/PrintLog ("         Acquiring model data size of %d polymodels\n", i);
 for (h = 0; i; i--) {
 	cf.Seek (MODEL_DATA_SIZE_OFFS, SEEK_CUR);
-	pm.nDataSize = cf.ReadInt ();
-	h += pm.nDataSize;
+	model.SetDataSize (cf.ReadInt ());
+	h += model.DataSize ();
 	cf.Seek (POLYMODEL_SIZE - MODEL_DATA_SIZE_OFFS - sizeof (int), SEEK_CUR);
 	}
 cf.Seek (
@@ -865,9 +864,9 @@ void BMReadWeaponInfoD1 (CFile& cf)
 	cf.Read (gameData.models.polyModels, sizeof (CPolyModel), gameData.models.nPolyModels, cf);
 
 	for (i=0;i<gameData.models.nPolyModels;i++) {
-		gameData.models.polyModels [i].modelData.Create (gameData.models.polyModels [i].nDataSize);
-		Assert (gameData.models.polyModels [i].modelData.Buffer () != NULL);
-		cf.Read (gameData.models.polyModels [i].modelData, sizeof (ubyte), gameData.models.polyModels [i].nDataSize, cf);
+		gameData.models.polyModels [i].Create (gameData.models.polyModels [i].DataSize ());
+		Assert (gameData.models.polyModels [i].Buffer () != NULL);
+		cf.Read (gameData.models.polyModels [i].modelData, sizeof (ubyte), gameData.models.polyModels [i].DataSize (), cf);
 	}
 
 	cf.Read (gameData.cockpit.gauges [1], sizeof (tBitmapIndex), MAX_GAUGE_BMS, cf);
@@ -1090,13 +1089,13 @@ void BMFreeExtraModels ()
 	//return;
 PrintLog ("unloading extra poly models\n");
 while (gameData.models.nPolyModels > N_D2_POLYGON_MODELS) {
-	FreeModel (gameData.models.polyModels + --gameData.models.nPolyModels);
-	FreeModel (gameData.models.defPolyModels + gameData.models.nPolyModels);
+	gameData.models.polyModels [--gameData.models.nPolyModels].Destroy ();
+	gameData.models.defPolyModels [gameData.models.nPolyModels].Destroy ();
 	}
 if (!gameStates.app.bDemoData)
 	while (gameData.models.nPolyModels > gameData.endLevel.exit.nModel) {
-		FreeModel (gameData.models.polyModels + --gameData.models.nPolyModels);
-		FreeModel (gameData.models.defPolyModels + gameData.models.nPolyModels);
+		gameData.models.polyModels [--gameData.models.nPolyModels].Destroy ();
+		gameData.models.defPolyModels [gameData.models.nPolyModels].Destroy ();
 		}
 }
 
@@ -1178,12 +1177,12 @@ if (gameData.models.nPolyModels >= MAX_POLYGON_MODELS) {
 ReadPolyModels (gameData.models.polyModels + j, t, cf);
 if (bVertigoData) {
 	gameData.models.nDefPolyModels = gameData.models.nPolyModels;
-	memcpy (gameData.models.defPolyModels + j, gameData.models.polyModels + j, sizeof (*gameData.models.polyModels) * t);
+	memcpy (gameData.models.defPolyModels + j, gameData.models.polyModels + j, sizeof (CPolyModel) * t);
 	}
 for (i = j; i < gameData.models.nPolyModels; i++) {
-	gameData.models.defPolyModels [i].modelData.SetBuffer (NULL);
-	gameData.models.polyModels [i].modelData.SetBuffer (NULL);
-	ReadPolyModelData (gameData.models.polyModels + i, i, bVertigoData ? gameData.models.defPolyModels + i : NULL, cf);
+	gameData.models.defPolyModels [i].SetBuffer (NULL);
+	gameData.models.polyModels [i].SetBuffer (NULL);
+	gameData.models.polyModels [i].ReadData (bVertigoData ? gameData.models.defPolyModels + i : NULL, cf);
 	}
 for (i = j; i < gameData.models.nPolyModels; i++)
 	gameData.models.nDyingModels [i] = cf.ReadInt ();
@@ -1192,7 +1191,7 @@ for (i = j; i < gameData.models.nPolyModels; i++)
 
 t = cf.ReadInt ();
 if (N_D2_OBJBITMAPS + t >= MAX_OBJ_BITMAPS) {
-	Warning ("Too many CObject bitmaps (%d) in <%s>.  Max is %d.",t,fname,MAX_OBJ_BITMAPS-N_D2_OBJBITMAPS);
+	Warning ("Too many CObject bitmaps (%d) in <%s>.  Max is %d.", t, fname, MAX_OBJ_BITMAPS - N_D2_OBJBITMAPS);
 	return -1;
 	}
 ReadBitmapIndices (gameData.pig.tex.objBmIndex, t, cf, N_D2_OBJBITMAPS);
@@ -1213,7 +1212,7 @@ return 1;
 int LoadRobotReplacements (const char *szLevelName, int bAddBots, int bAltModels)
 {
 	CFile			cf;
-	CPolyModel	*pm;
+	CPolyModel*	modelP;
 	int			t, i, j;
 	int			nBotTypeSave = gameData.bots.nTypes [0], 
 					nBotJointSave = gameData.bots.nJoints, 
@@ -1316,13 +1315,13 @@ for (j = 0; j < t; j++) {
 			return -1;
 			}
 		}
-	pm = bAltModels ? gameData.models.altPolyModels + i : gameData.models.polyModels + i;
-	FreeModel (pm);
-	if (!ReadPolyModel (pm, 0, cf))
+	modelP = bAltModels ? gameData.models.altPolyModels + i : gameData.models.polyModels + i;
+	modelP->Destroy ();
+	if (!modelP->Read (0, cf))
 		return -1;
-	ReadPolyModelData (pm, i, NULL, cf);
-	pm->nType = bAltModels ? 1 : -1;
-	pm->rad = G3PolyModelSize (pm, i);
+	modelP->ReadData (NULL, cf);
+	modelP->SetType (bAltModels ? 1 : -1);
+	modelP->SetRad (modelP->Size ());
 	if (bAltModels) {
 #if 0
 		ubyte	*p = gameData.models.defPolyModels [i].modelData;
@@ -1468,16 +1467,18 @@ int LoadExitModels (void)
 	if (cf.Open ("exit.ham", gameFolders.szDataDir, "rb", 0)) {
 		gameData.endLevel.exit.nModel = gameData.models.nPolyModels++;
 		gameData.endLevel.exit.nDestroyedModel = gameData.models.nPolyModels++;
-		if (!ReadPolyModel (gameData.models.polyModels + gameData.endLevel.exit.nModel, 0, cf))
+		CPolyModel& exitModel = gameData.models.polyModels [gameData.endLevel.exit.nModel];
+		CPolyModel& destrModel = gameData.models.polyModels [gameData.endLevel.exit.nDestroyedModel];
+		if (!exitModel.Read (0, cf))
 			return 0;
-		if (!ReadPolyModel (gameData.models.polyModels + gameData.endLevel.exit.nDestroyedModel, 0, cf))
+		if (!destrModel.Read (0, cf))
 			return 0;
-		gameData.models.polyModels [gameData.endLevel.exit.nModel].nFirstTexture = start_num;
-		gameData.models.polyModels [gameData.endLevel.exit.nDestroyedModel].nFirstTexture = start_num + 3;
-		gameData.models.polyModels [gameData.endLevel.exit.nModel].modelData = NULL;
-		gameData.models.polyModels [gameData.endLevel.exit.nDestroyedModel].modelData = NULL;
-		ReadPolyModelData (gameData.models.polyModels + gameData.endLevel.exit.nModel, gameData.endLevel.exit.nModel, NULL, cf);
-		ReadPolyModelData (gameData.models.polyModels + gameData.endLevel.exit.nDestroyedModel, gameData.endLevel.exit.nDestroyedModel, NULL, cf);
+		exitModel.SetFirstTexture (start_num);
+		exitModel.SetBuffer (NULL);
+		destrModel.SetFirstTexture (start_num + 3);
+		destrModel.SetBuffer (NULL);
+		exitModel.ReadData (NULL, cf);
+		destrModel.ReadData (NULL, cf);
 		cf.Close ();
 		}
 	else if (cf.Exist ("exit01.pof", gameFolders.szDataDir, 0) && 
@@ -1514,17 +1515,19 @@ int LoadExitModels (void)
 		cf.Seek (offset, SEEK_SET);
 		gameData.endLevel.exit.nModel = gameData.models.nPolyModels++;
 		gameData.endLevel.exit.nDestroyedModel = gameData.models.nPolyModels++;
-		if (!ReadPolyModel (gameData.models.polyModels + gameData.endLevel.exit.nModel, 0, cf))
+		CPolyModel& exitModel = gameData.models.polyModels [gameData.endLevel.exit.nModel];
+		CPolyModel& destrModel = gameData.models.polyModels [gameData.endLevel.exit.nDestroyedModel];
+		if (!exitModel.Read (0, cf))
 			return 0;
-		if (!ReadPolyModel (gameData.models.polyModels + gameData.endLevel.exit.nDestroyedModel, 0, cf))
+		if (!destrModel.Read (0, cf))
 			return 0;
-		gameData.models.polyModels [gameData.endLevel.exit.nModel].nFirstTexture = start_num;
-		gameData.models.polyModels [gameData.endLevel.exit.nDestroyedModel].nFirstTexture = start_num+3;
+		exitModel.SetFirstTexture (start_num);
+		destrModel.SetFirstTexture (start_num+3);
 		cf.Seek (offset2, SEEK_SET);
-		gameData.models.polyModels [gameData.endLevel.exit.nModel].modelData = NULL;
-		gameData.models.polyModels [gameData.endLevel.exit.nDestroyedModel].modelData = NULL;
-		ReadPolyModelData (gameData.models.polyModels + gameData.endLevel.exit.nModel, gameData.endLevel.exit.nModel, NULL, cf);
-		ReadPolyModelData (gameData.models.polyModels + gameData.endLevel.exit.nDestroyedModel, gameData.endLevel.exit.nDestroyedModel, NULL, cf);
+		exitModel.SetBuffer (NULL);
+		destrModel.SetBuffer (NULL);
+		exitModel.ReadData (NULL, cf);
+		destrModel.ReadData (NULL, cf);
 		cf.Close ();
 	} else {
 #if TRACE
@@ -1550,24 +1553,22 @@ void RestoreDefaultRobots (void)
 gameData.bots.info [0] = gameData.bots.defaultInfo;
 gameData.bots.joints = gameData.bots.defaultJoints;
 for (i = 0; i < gameData.models.nDefPolyModels; i++) {
-	p = gameData.models.polyModels [i].modelData.Buffer ();
-	if (gameData.models.defPolyModels [i].nDataSize != gameData.models.polyModels [i].nDataSize) {
-		gameData.models.polyModels [i].modelData.Destroy ();
+	p = gameData.models.polyModels [i].Buffer ();
+	if (gameData.models.defPolyModels [i].DataSize () != gameData.models.polyModels [i].DataSize ()) {
+		gameData.models.polyModels [i].Destroy ();
 		p = NULL;
 		}
-	memcpy (gameData.models.polyModels + i, gameData.models.defPolyModels + i, sizeof (gameData.models.polyModels [0]));
-	if (gameData.models.defPolyModels [i].modelData.Buffer ()) {
-		if (!p)
-			p = new ubyte [gameData.models.defPolyModels [i].nDataSize];
-		memcpy (p, gameData.models.defPolyModels [i].modelData.Buffer (), gameData.models.defPolyModels [i].nDataSize);
-		gameData.models.polyModels [i].modelData.SetBuffer (p);
+	memcpy (gameData.models.polyModels + i, gameData.models.defPolyModels + i, sizeof (CPolyModel));
+	if (gameData.models.defPolyModels [i].Buffer ()) {
+		gameData.models.polyModels [i].Destroy ();
+		gameData.models.polyModels [i] = gameData.models.defPolyModels [i];
 		}
 	else if (p) {
-		gameData.models.polyModels [i].modelData.Destroy ();
+		gameData.models.polyModels [i].Destroy ();
 		}
 	}
 for (;i < gameData.models.nPolyModels; i++)
-	FreeModel (gameData.models.polyModels + i);
+	gameData.models.polyModels [i].Destroy ();
 gameData.bots.nTypes [0] = gameData.bots.nDefaultTypes;
 gameData.bots.nJoints = gameData.bots.nDefaultJoints;
 }
@@ -1613,9 +1614,9 @@ bOk = (cf.Read (&mdh, sizeof (mdh), 1) == 1);
 if (bOk)
 	bOk = (mdh.nVersion == MODEL_DATA_VERSION);
 if (bOk)
-	bOk = (cf.Read (gameData.models.spheres, sizeof (gameData.models.spheres), 1) == 1);
+	bOk = (cf.Read (gameData.models.spheres.Buffer (), sizeof (gameData.models.spheres), 1) == 1);
 if (!bOk)
-	memset (gameData.models.spheres, 0, sizeof (gameData.models.spheres));
+	gameData.models.spheres.Clear ();
 cf.Close ();
 return bOk;
 }
@@ -1633,7 +1634,7 @@ if (!gameStates.app.bCacheModelData)
 if (!cf.Open ("modeldata.d2x", gameFolders.szCacheDir, "wb", 0))
 	return 0;
 bOk = (cf.Write (&mdh, sizeof (mdh), 1) == 1) &&
-		(cf.Write (gameData.models.spheres, sizeof (gameData.models.spheres), 1) == 1) &&
+		(cf.Write (gameData.models.spheres.Buffer (), gameData.models.spheres.Size (), 1) == 1) &&
 cf.Close ();
 return bOk;
 }

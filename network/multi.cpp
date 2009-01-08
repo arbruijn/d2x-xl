@@ -1856,8 +1856,8 @@ if (objP->info.nType == OBJ_GHOST)
 void MultiResetObjectTexture (CObject *objP)
 {
 	int				id, i, j;
-	CPolyModel		*po = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
-	tBitmapIndex	*bmiP;
+	CPolyModel*		modelP = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
+	tBitmapIndex*	bmiP;
 
 if (IsTeamGame)
 	id = GetTeam (objP->info.nId);
@@ -1866,9 +1866,9 @@ else
 if (!id)
 	objP->rType.polyObjInfo.nAltTextures = 0;
 else {
-	//Assert (N_PLAYER_SHIP_TEXTURES == po->nTextures);
+	//Assert (N_PLAYER_SHIP_TEXTURES == modelP->nTextures);
 	bmiP = mpTextureIndex [--id];
-	for (i = 0, j = po->nFirstTexture; i < N_PLAYER_SHIP_TEXTURES; i++, j++)
+	for (i = 0, j = modelP->FirstTexture (); i < N_PLAYER_SHIP_TEXTURES; i++, j++)
 		bmiP [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [j]];
 	bmiP [4] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap + id * 2]];
 	bmiP [5] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap + id * 2 + 1]];
