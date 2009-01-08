@@ -142,7 +142,7 @@ if (objP->info.nType == OBJ_ROBOT) {
 			//it's marked as non-shareware.  To see what robot number,
 			//print objP->info.nId.
 		objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->info.nId).nModel;
-		objP->info.xSize = gameData.models.polyModels [0] [objP->rType.polyObjInfo.nModel].Rad ();
+		objP->info.xSize = gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].Rad ();
 		}
 	if (objP->info.nId == 65)						//special "reactor" robots
 		objP->info.movementType = MT_NONE;
@@ -199,7 +199,7 @@ else if (objP->info.nType == OBJ_WEAPON) {
 		// Make sure model number & size are correct...	
 		Assert(objP->info.renderType == RT_POLYOBJ);
 		objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->info.nId].nModel;
-		objP->info.xSize = gameData.models.polyModels [0] [objP->rType.polyObjInfo.nModel].Rad ();
+		objP->info.xSize = gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].Rad ();
 		}
 	}
 else if (objP->info.nType == OBJ_REACTOR) {

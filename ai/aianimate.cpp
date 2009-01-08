@@ -125,7 +125,7 @@ int DoSillyAnimation (CObject *objP)
 			CAngleVector*	jp = &jp_list [nJoint].angles;
 			CAngleVector*	pObjP = &polyObjInfo->animAngles [jointnum];
 
-			if (jointnum >= gameData.models.polyModels [0] [objP->rType.polyObjInfo.nModel].ModelCount ()) {
+			if (jointnum >= gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].ModelCount ()) {
 				Int3 ();		// Contact Mike: incompatible data, illegal jointnum, problem in pof file?
 				continue;
 			}
@@ -221,7 +221,7 @@ void AIFrameAnimation (CObject *objP)
 {
 	int	nObject = objP->Index ();
 	int	nJoint;
-	int	nJoints = gameData.models.polyModels [0] [objP->rType.polyObjInfo.nModel].ModelCount ();
+	int	nJoints = gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].ModelCount ();
 
 	for (nJoint=1; nJoint<nJoints; nJoint++) {
 		fix			delta_to_goal;

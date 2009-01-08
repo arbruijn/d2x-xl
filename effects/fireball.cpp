@@ -446,8 +446,8 @@ CreateExplBlast ();
 RequestEffects (EXPL_LIGHTNINGS | SHRAPNEL_SMOKE);
 if (gameData.models.nDyingModels [rType.polyObjInfo.nModel] != -1)
 	rType.polyObjInfo.nModel = gameData.models.nDyingModels [rType.polyObjInfo.nModel];
-if (gameData.models.polyModels [0] [rType.polyObjInfo.nModel].ModelCount () > 1) {
-	for (int i = 1; i < gameData.models.polyModels [0] [rType.polyObjInfo.nModel].ModelCount (); i++)
+if (gameData.models.polyModels [0][rType.polyObjInfo.nModel].ModelCount () > 1) {
+	for (int i = 1; i < gameData.models.polyModels [0][rType.polyObjInfo.nModel].ModelCount (); i++)
 		if ((info.nType != OBJ_ROBOT) || (info.nId != 44) || (i != 5)) 	//energy sucker energy part
 			CreateDebris (i);
 	//make parent CObject only draw center part

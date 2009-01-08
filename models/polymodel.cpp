@@ -573,6 +573,10 @@ Size ();
 
 void CPolyModel::ReadData (CPolyModel* defModelP, CFile& cf)
 {
+#if DBG
+if (m_info.nId == nDbgModel)
+	nDbgModel = nDbgModel;
+#endif
 if (!Create (m_info.nDataSize))
 	Error ("Not enough memory for game models.");
 cf.Read (Buffer (), sizeof (ubyte), m_info.nDataSize);
@@ -595,6 +599,10 @@ int CPolyModel::Read (int bHMEL, CFile& cf)
 {
 	int	i;
 
+#if DBG
+if (m_info.nId == nDbgModel)
+	nDbgModel = nDbgModel;
+#endif
 if (bHMEL) {
 	char	szId [4];
 	int	nElement, nBlocks;
@@ -751,7 +759,7 @@ if (gameData.models.nPolyModels > MAX_POLYGON_MODELS - 10)
 #endif
 Assert (strlen (filename) <= 12);
 strcpy (pofNames [gameData.models.nPolyModels], filename);
-gameData.models.polyModels [0] [gameData.models.nPolyModels++].Load (filename, nTextures, nFirstTexture, botInfoP);
+gameData.models.polyModels [0][gameData.models.nPolyModels++].Load (filename, nTextures, nFirstTexture, botInfoP);
 return gameData.models.nPolyModels - 1;
 }
 

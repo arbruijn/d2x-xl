@@ -331,7 +331,7 @@ m_faces.SortAscending ();
 AssignPOFFaces ();
 memset (m_teamTextures, 0xFF, sizeof (m_teamTextures));
 m_nType = pp->Type ();
-gameData.models.polyModels [0] [nModel].SetRad (Size (objP, 0));
+gameData.models.polyModels [0][nModel].SetRad (Size (objP, 0));
 Setup (0, 1);
 m_iSubModel = 0;
 return -1;

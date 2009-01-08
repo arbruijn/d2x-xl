@@ -403,7 +403,7 @@ void InitPlayerObject ()
 gameData.objs.consoleP->SetType (OBJ_PLAYER);
 gameData.objs.consoleP->info.nId = 0;					//no sub-types for CPlayerData
 gameData.objs.consoleP->info.nSignature = 0;			//CPlayerData has zero, others start at 1
-gameData.objs.consoleP->info.xSize = gameData.models.polyModels [0] [gameData.pig.ship.player->nModel].Rad ();
+gameData.objs.consoleP->info.xSize = gameData.models.polyModels [0][gameData.pig.ship.player->nModel].Rad ();
 gameData.objs.consoleP->info.controlType = CT_SLEW;			//default is CPlayerData slewing
 gameData.objs.consoleP->info.movementType = MT_PHYSICS;		//change this sometime
 gameData.objs.consoleP->info.xLifeLeft = IMMORTAL_TIME;
@@ -1470,7 +1470,7 @@ return nObject;
 
 int CreateRobot (ubyte nId, short nSegment, const CFixVector& vPos)
 {
-return CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, gameData.models.polyModels [0] [ROBOTINFO (nId).nModel].Rad (), 
+return CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, gameData.models.polyModels [0][ROBOTINFO (nId).nModel].Rad (), 
 							CT_AI, MT_PHYSICS, RT_POLYOBJ);
 }
 
@@ -1537,7 +1537,7 @@ return CreateObject (OBJ_FIREBALL, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY
 int CreateDebris (CObject *parentP, short nSubModel)
 {
 return CreateObject (OBJ_DEBRIS, 0, -1, parentP->info.nSegment, parentP->info.position.vPos, parentP->info.position.mOrient,
-							gameData.models.polyModels [0] [parentP->rType.polyObjInfo.nModel].SubModels ().rads [nSubModel],
+							gameData.models.polyModels [0][parentP->rType.polyObjInfo.nModel].SubModels ().rads [nSubModel],
 							CT_DEBRIS, MT_PHYSICS, RT_POLYOBJ);
 }
 
@@ -2738,7 +2738,7 @@ void FixObjectSizes (void)
 	CObject	*objP = OBJECTS.Buffer ();
 
 FORALL_ROBOT_OBJS (objP, i)
-	objP->info.xSize = gameData.models.polyModels [0] [objP->rType.polyObjInfo.nModel].Rad ();
+	objP->info.xSize = gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].Rad ();
 }
 
 //------------------------------------------------------------------------------
@@ -2836,7 +2836,7 @@ int DropMarkerObject (CFixVector& vPos, short nSegment, CFixMatrix& orient, ubyt
 
 Assert (gameData.models.nMarkerModel != -1);
 nObject = CreateObject (OBJ_MARKER, nMarker, -1, nSegment, vPos, orient,
-								gameData.models.polyModels [0] [gameData.models.nMarkerModel].Rad (), CT_NONE, MT_NONE, RT_POLYOBJ);
+								gameData.models.polyModels [0][gameData.models.nMarkerModel].Rad (), CT_NONE, MT_NONE, RT_POLYOBJ);
 if (nObject >= 0) {
 	CObject *objP = OBJECTS + nObject;
 	objP->rType.polyObjInfo.nModel = gameData.models.nMarkerModel;

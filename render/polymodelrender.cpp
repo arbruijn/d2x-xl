@@ -87,13 +87,17 @@ CPolyModel* GetPolyModel (CObject *objP, CFixVector *pos, int nModel, int flags)
 	CPolyModel	*modelP = NULL;
 	int			bHaveAltModel, bIsDefModel;
 
+#if DBG
+if (nModel == nDbgModel)
+	nDbgModel = nDbgModel;
+#endif
 if (gameStates.app.bEndLevelSequence && 
 	 ((nModel == gameData.endLevel.exit.nModel) || (nModel == gameData.endLevel.exit.nDestroyedModel))) {
 	bHaveAltModel = 0;
 	bIsDefModel = 1;
 	}
 else {
-	bHaveAltModel = gameData.models.polyModels [2] [nModel].Data () != NULL;
+	bHaveAltModel = gameData.models.polyModels [2][nModel].Data () != NULL;
 	bIsDefModel = IsDefaultModel (nModel);
 	}
 #if DBG
@@ -264,8 +268,8 @@ Assert ((nModel >= 0) && (nModel < gameData.models.nPolyModels));
 G3StartFrame (0, 0);
 glDisable (GL_BLEND);
 G3SetViewMatrix (p, o, gameStates.render.xZoom, 1);
-if (gameData.models.polyModels [0] [nModel].Rad ())
-	p [Z] = FixMulDiv (DEFAULT_VIEW_DIST, gameData.models.polyModels [0] [nModel].Rad (), BASE_MODEL_SIZE);
+if (gameData.models.polyModels [0][nModel].Rad ())
+	p [Z] = FixMulDiv (DEFAULT_VIEW_DIST, gameData.models.polyModels [0][nModel].Rad (), BASE_MODEL_SIZE);
 else
 	p [Z] = DEFAULT_VIEW_DIST;
 o = CFixMatrix::Create (*orientAngles);
