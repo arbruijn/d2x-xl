@@ -2342,7 +2342,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\render\polyobj.cpp"
+						RelativePath="..\..\render\polymodelrender.cpp"
 						>
 					</File>
 					<File
@@ -2403,10 +2403,6 @@
 					</File>
 					<File
 						RelativePath="..\..\include\objrender.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\include\polyobj.h"
 						>
 					</File>
 					<File
@@ -2973,6 +2969,10 @@
 						RelativePath="..\..\models\pof.cpp"
 						>
 					</File>
+					<File
+						RelativePath="..\..\models\polymodel.cpp"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="Header Files"
@@ -2991,6 +2991,10 @@
 					</File>
 					<File
 						RelativePath="..\..\include\pof.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\polymodel.h"
 						>
 					</File>
 				</Filter>
@@ -4505,11 +4509,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File

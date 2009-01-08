@@ -15,7 +15,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define _D1_AISTRUCT_H
 
 #include "inferno.h"
-//#include "polyobj.h"
+//#include "polymodel.h"
 
 #define	GREEN_GUY	1
 

@@ -109,7 +109,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "credits.h"
 #include "gamemine.h"
 #include "lightmap.h"
-#include "polyobj.h"
+#include "polymodel.h"
 #include "movie.h"
 #include "particles.h"
 #include "interp.h"

@@ -37,7 +37,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "game.h"
 #include "piggy.h"
 #include "texmerge.h"
-#include "polyobj.h"
+#include "polymodel.h"
 #include "vclip.h"
 #include "effects.h"
 #include "fireball.h"

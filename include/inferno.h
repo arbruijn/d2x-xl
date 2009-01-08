@@ -2292,7 +2292,7 @@ class CWeaponData {
 
 //------------------------------------------------------------------------------
 
-#include "polyobj.h"
+#include "polymodel.h"
 
 #define OOF_PYRO			0
 #define OOF_MEGA			1

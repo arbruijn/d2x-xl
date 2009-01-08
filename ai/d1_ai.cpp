@@ -29,7 +29,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "d1_ai.h"
 #include "laser.h"
 #include "fvi.h"
-#include "polyobj.h"
+#include "polymodel.h"
 #include "bm.h"
 #include "weapon.h"
 #include "physics.h"

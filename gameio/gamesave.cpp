@@ -51,7 +51,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "newdemo.h"
 #include "loadgame.h"
 #include "automap.h"
-#include "polyobj.h"
+#include "polymodel.h"
 #include "text.h"
 #include "gamefont.h"
 #include "gamesave.h"
