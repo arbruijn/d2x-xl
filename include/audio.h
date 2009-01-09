@@ -110,8 +110,13 @@ class CDigiSound {
 #define SOF_PLAY_FOREVER	16		// Play bForever (or until level is stopped), otherwise plays once
 #define SOF_PERMANENT		32		// Part of the level, like a waterfall or fan
 
-extern int digi_sample_rate;
-extern int digiVolume;
+#ifdef _WIN32
+#	define LOCK		
+#	define UNLOCK		
+#else
+#	define LOCK		pthread_mutex_lock (&mutex);
+#	define UNLOCK	pthread_mutex_unlock (&mutex);
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -274,6 +279,9 @@ class CAudio {
 		CAudio () { Init (); }
 		~CAudio () { Destroy (); }
 		void Init (void);
+#ifndef _WIN32
+		int InitThread (void);
+#endif
 		void Destroy (void);
 		int Setup (float fSlowDown);
 		void Shutdown (void);

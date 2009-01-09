@@ -55,6 +55,8 @@ m_channel =
 	audio.StartSound (m_nSound, m_soundClass, m_volume, m_pan, m_flags & SOF_PLAY_FOREVER, m_nLoopStart, m_nLoopEnd, 
 							this - audio.Objects ().Buffer (), I2X (1), m_szSound,
 							(m_flags & SOF_LINK_TO_OBJ) ? &OBJECTS [m_linkType.obj.nObject].info.position.vPos : &m_linkType.pos.position);
+if (m_channel < 0)
+	return false;
 return true;
 }
 
@@ -174,9 +176,11 @@ if (!pszWAV) {
 	nSound = (nSound < 0) ? -nSound : CAudio::XlatSound (nSound);
 	if (nSound < 0)
 		return -1;
+	LOCK
 	int nChannel = FindChannel (nSound);
 	if (nChannel > -1)
 		StopSound (nChannel);
+	UNLOCK
 	}
 // start the sample playing
 return StartSound (nSound, nSoundClass, nVolume, nPan, 0, (nLoops > 0) ? nLoops - 1 : -1, -1, -1, I2X (1), pszWAV, vPos);

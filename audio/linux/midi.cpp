@@ -30,14 +30,14 @@ int midiVolume = 255;
 
 //------------------------------------------------------------------------------
 
-void DigiSetMidiVolume(int n)
+int CMidi::SetVolume (int nVolume)
 {
-if (n < 0)
+if (nVolume < 0)
 	midiVolume = 0;
-else if (n > 127)
+else if (nVolume > 127)
 	midiVolume = 127;
 else
-	midiVolume = n;
+	midiVolume = nVolume;
 
 #if USE_SDL_MIXER
 if (gameOpts->sound.bUseSDLMixer)
@@ -53,7 +53,7 @@ if (hmp) {
 	// scale up from 0-127 to 0-0xffff
 	mmVolume = (midiVolume << 1) | (midiVolume & 1);
 	mmVolume |= (mmVolume << 8);
-	n = midiOutSetVolume((HMIDIOUT)hmp->hmidi, mmVolume | (mmVolume << 16));
+	nVolume = midiOutSetVolume((HMIDIOUT)hmp->hmidi, mmVolume | (mmVolume << 16));
 	}
 #endif
 }

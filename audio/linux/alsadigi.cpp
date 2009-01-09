@@ -232,8 +232,8 @@ static void AudioMixCallback(void *userdata, ubyte *stream, int len)
      sldata = sl->samples;
     }
     v = *(sldata++) - 0x80;
-    *(sp++) = mix8[ *sp + FixMul(v, vl) + 0x80 ];
-    *(sp++) = mix8[ *sp + FixMul(v, vr) + 0x80 ];
+    *(sp++) = mix8 [*sp + FixMul(v, vl) + 0x80];
+    *(sp++) = mix8 [*sp + FixMul(v, vr) + 0x80];
    }
    sl->position.vPosition = sldata - sl->samples;
   }
@@ -241,9 +241,9 @@ static void AudioMixCallback(void *userdata, ubyte *stream, int len)
 }
 //end changes by adb
 
-void *mixer_thread(void *data) {
-// int i=0;
- ubyte buffer[512];
+void *MixerThread (void *data) 
+{
+	ubyte buffer [512];
  /* Allow ourselves to be asynchronously cancelled */
  pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
  while (1) {
@@ -313,7 +313,7 @@ int DigiInit()
 
  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
- pthread_create(&thread_id,&attr,mixer_thread,NULL);
+ pthread_create(&thread_id,&attr,MixerThread,NULL);
  pthread_attr_destroy(&attr);
 
  //atexit(DigiClose);
