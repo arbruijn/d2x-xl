@@ -763,8 +763,8 @@ void InitSpheres (void)
 {
 PrintLog ("   creating spheres\n");
 CreateShieldSphere ();
-gameData.shield.SetupPulse (0.02f, 0.5f);
-gameData.shield.SetPulse (shield.Pulse ());
+gameData.render.shield.SetupPulse (0.02f, 0.5f);
+gameData.render.shield.SetPulse (gameData.render.shield.Pulse ());
 }
 
 //------------------------------------------------------------------------------
