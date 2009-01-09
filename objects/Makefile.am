@@ -1,6 +1,11 @@
-noinst_LIBRARIES = libinput.a
+EXTRA_SUBDIRS = include
+
+noinst_LIBRARIES = libobjects.a
 
 INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/input/include -I $(top_srcdir)/network/linux/include -I $(top_srcdir)/audio/linux/include -I /usr/local/include/SDL
 
-libinput_a_SOURCES = \
-	event.cpp input.cpp joy.cpp joydefs.cpp key.cpp mouse.cpp systemkeys.cpp
+
+libobjects_a_SOURCES = \
+	hostage.cpp marker.cpp object.cpp player.cpp powerup.cpp reactor.cpp robot.cpp 
+	
+

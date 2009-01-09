@@ -15,7 +15,7 @@ endif
 endif
 
 libnetwork_a_SOURCES = ${NETWORK_SRCS} ${IPX_SRCS} ${KALI_SRCS} \
-	autodl.cpp multi.cpp multibot.cpp multimsg.cpp netmenu.cpp netmisc.cpp \
+	autodl.cpp banlist.cpp multi.cpp multibot.cpp multimsg.cpp netmisc.cpp \
 	network.cpp network_init.cpp network_join.cpp network_lib.cpp \
 	network_phandler.cpp network_process.cpp network_read.cpp network_send.cpp \
 	network_sync.cpp tracker.cpp

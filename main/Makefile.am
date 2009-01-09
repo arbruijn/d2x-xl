@@ -9,17 +9,11 @@ noinst_LIBRARIES = libmain.a
 INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/input/include -I $(top_srcdir)/network/linux/include -I $(top_srcdir)/audio/linux/include -I /usr/local/include/SDL
 
 libmain_a_SOURCES = ${EDITOR_SRCS} ${NETWORK_SRCS} \
-	cmd.cpp collide.cpp config.cpp console.cpp controls.cpp credits.cpp \
-	crypt.cpp effects.cpp fuelcen.cpp fvi.cpp game.cpp gamecntl.cpp highscores.cpp \
-	gamefont.cpp gameseg.cpp hostage.cpp inferno.cpp kconfig.cpp \
-	menu.cpp mglobal.cpp movie.cpp marker.cpp slowmotion.cpp dropobject.cpp \
-	newdemo.cpp newmenu.cpp object.cpp physics.cpp player.cpp powerup.cpp reactor.cpp \
-	robot.cpp scores.cpp segment.cpp slew.cpp switch.cpp terrain.cpp texmerge.cpp \
-	text.cpp briefings.cpp vclip.cpp wall.cpp cheats.cpp banlist.cpp endlevel.cpp \
-	flightpath.cpp textdata.cpp trackobject.cpp briefings.cpp gamedata.cpp gameoptions.cpp \
-	gameargs.cpp gamefolders.cpp gamestates.cpp
+	briefings.cpp cheats.cpp cmd.cpp controls.cpp credits.cpp dropobject.cpp effects.cpp endlevel.cpp flightpath.cpp fuelcen.cpp \
+	game.cpp gameargs.cpp gamecntl.cpp gamedata.cpp gamefolders.cpp gameoptions.cpp gameseg.cpp gamestates.cpp highscores.cpp \
+	inferno.cpp kconfig.cpp mglobal.cpp movie.cpp newdemo.cpp scores.cpp segment.cpp side.cpp skybox.cpp slew.cpp switch.cpp terrain.cpp \
+	texmerge.cpp text.cpp textdata.cpp trackobject.cpp vclip.cpp wall.cpp 
 	
-
 EXTRA_DIST = ${EXTRA_SUBDIRS} \
 	ai.h aistruct.h automap.h bm.h bmread.h collide.h reactor.h \
 	config.h controls.h credits.h desc_id.h desw.h digi.h effects.h \

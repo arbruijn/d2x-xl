@@ -9,8 +9,6 @@ TRANSPARENCY_COLOR = 255
 endif
 
 lib2d_a_SOURCES = \
-	2dsline.cpp box.cpp disc.cpp ibitblt.cpp pcx.cpp rect.cpp scalec.cpp \
-	bitblt.cpp canvas.cpp font.cpp line.cpp pixel.cpp rle.cpp \
-	bitmap.cpp circle.cpp gpixel.cpp palette.cpp poly.cpp tmerge.cpp \
-	string.cpp
-
+	2dsline.cpp bitblt.cpp bitmap.cpp box.cpp canvas.cpp circle.cpp disc.cpp font.cpp gpixel.cpp \
+	ibitblt.cpp line.cpp palette.cpp pcx.cpp pixel.cpp poly.cpp rect.cpp rle.cpp scalec.cpp string.cpp \
+	tmerge.cpp
