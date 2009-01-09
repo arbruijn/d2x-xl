@@ -455,10 +455,13 @@ AC_OUTPUT(
     main/Makefile
     maths/Makefile
     mem/Makefile
+    menus/Makefile
     misc/Makefile
     models/Makefile
     network/Makefile
+    objects/Makefile
     ogl/Makefile
+    physics/Makefile
     texmap/Makefile
     render/Makefile
     weapons/Makefile
