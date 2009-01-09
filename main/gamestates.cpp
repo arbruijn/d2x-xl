@@ -144,7 +144,6 @@ gameStates.menus.bReordering = 0;
 
 void InitMovieStates (void)
 {
-gameStates.movies.nRobots = 0;
 gameStates.movies.bIntroPlayed = 0;
 gameStates.movies.bMac = 0;
 }
