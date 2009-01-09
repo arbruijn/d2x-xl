@@ -1886,7 +1886,7 @@ if (nObject == nDbgObj)
 		}
 	else {
 		vVisVecPos = objP->info.position.vPos;
-		vGunPoint.SetZero();
+		vGunPoint.SetZero ();
 	}
 
 	//	- -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -

@@ -376,7 +376,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	if (nObject < 0)
 		return 0;
 	nSegment = ChooseDropSegment (OBJECTS + nObject, &bFixedPos, nDropState);
-	OBJECTS [nObject].mType.physInfo.velocity.SetZero();
+	OBJECTS [nObject].mType.physInfo.velocity.SetZero ();
 	if (bFixedPos)
 		vNewPos = OBJECTS [nObject].info.position.vPos;
 	else
@@ -564,7 +564,7 @@ switch (nType) {
 			// Give keys zero velocity so they can be tracked better in multi
 			if ((gameData.app.nGameMode & GM_MULTI) &&
 				 (( (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD)) || (id == POW_MONSTERBALL)))
-				new_velocity.SetZero();
+				new_velocity.SetZero ();
 			vNewPos = pos;
 
 			if (IsMultiGame) {

@@ -1016,7 +1016,7 @@ if (UpdateObjectSeg (objP, false)) {
 				}
 			else {
 				exitFlightDataP->angles = aDest;
-				exitFlightDataP->angstep.SetZero();
+				exitFlightDataP->angstep.SetZero ();
 				}
 			}
 		}

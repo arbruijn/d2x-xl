@@ -707,7 +707,7 @@ if (gameData.render.shield.nFaces > 0)
 		gameStates.ogl.bUseTransform = 0;
 		fScale = gameData.render.shield.Pulse ()->fScale;
 		transformation.Begin (vPos, posP->mOrient);
-		vPos.SetZero();
+		vPos.SetZero ();
 		RenderObjectHalo (&vPos, 3 * nSize / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
 		transformation.End ();
 		}
@@ -763,6 +763,8 @@ void InitSpheres (void)
 {
 PrintLog ("   creating spheres\n");
 CreateShieldSphere ();
+gameData.shield.SetupPulse (0.02f, 0.5f);
+gameData.shield.SetPulse (shield.Pulse ());
 }
 
 //------------------------------------------------------------------------------

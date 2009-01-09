@@ -1044,8 +1044,8 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 					}
 				else {
 					ailP->mode = AIM_WANDER;	//	Special buddy mode.p.
-					objP->mType.physInfo.velocity.SetZero();
-					objP->mType.physInfo.rotVel.SetZero();
+					objP->mType.physInfo.velocity.SetZero ();
+					objP->mType.physInfo.rotVel.SetZero ();
 					//!!Assert ((aiP->nCurPathIndex >= 0) && (aiP->nCurPathIndex < aiP->nPathLength);
 					return;
 					}

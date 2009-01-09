@@ -251,7 +251,7 @@ if (pmf) {
 	v[Z] /= j;
 	}
 else
-	v.SetZero();
+	v.SetZero ();
 v[Z] -= 1.0f / 16.0f;
 #if 0
 transformation.Transform (&v, &v, 0);

@@ -248,7 +248,7 @@ else if (EGI_FLAG (bTracers, 0, 1, 0) && (objP->info.nId == VULCAN_ID) || (objP-
 	}
 objP->mType.physInfo.mass = WI_mass (nWeaponType);
 objP->mType.physInfo.drag = WI_drag (nWeaponType);
-objP->mType.physInfo.thrust.SetZero();
+objP->mType.physInfo.thrust.SetZero ();
 if (gameData.weapons.info [nWeaponType].bounce == 1)
 	objP->mType.physInfo.flags |= PF_BOUNCE;
 if ((gameData.weapons.info [nWeaponType].bounce == 2) || gameStates.app.cheats.bBouncingWeapons)

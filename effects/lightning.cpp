@@ -464,7 +464,7 @@ if (m_nOffset) {
 vPos = m_vPos;
 if (m_bInPlane) {
 	vDelta [0] = m_vDelta;
-	vDelta [i].SetZero();
+	vDelta [i].SetZero ();
 	}
 else {
 	do {
@@ -710,7 +710,7 @@ if ((nDepth > 1) || m_bRandom) {
 else {
 	plh = m_nodes + m_nNodes - 1;
 	plh->m_vNewPos = plh->m_vPos;
-	plh->m_vOffs.SetZero();
+	plh->m_vOffs.SetZero ();
 	if (nStyle == 2) {
 		nAmplitude = 5 * nAmplitude / 3;
 		for (h = m_nNodes, i = 0, plh = m_nodes.Buffer (); i < h; i++, plh++) {

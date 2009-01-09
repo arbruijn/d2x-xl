@@ -56,7 +56,7 @@ int slew_stop()
 {
 	if (!slewObjP || slewObjP->info.controlType!=CT_SLEW) return 0;
 
-	slewObjP->mType.physInfo.velocity.SetZero();
+	slewObjP->mType.physInfo.velocity.SetZero ();
 	return 1;
 }
 

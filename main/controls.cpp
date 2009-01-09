@@ -102,7 +102,7 @@ void ReadFlyingControls (CObject *objP)
 
 		//this is a horrible hack.  guided missile stuff should not be
 		//handled in the middle of a routine that is dealing with the CPlayerData
-		objP->mType.physInfo.rotThrust.SetZero();
+		objP->mType.physInfo.rotThrust.SetZero ();
 		rotangs[PA] = Controls [0].pitchTime / 2 + gameStates.gameplay.seismic.nMagnitude/64;
 		rotangs[BA] = Controls [0].bankTime / 2 + gameStates.gameplay.seismic.nMagnitude/16;
 		rotangs[HA] = Controls [0].headingTime / 2 + gameStates.gameplay.seismic.nMagnitude/64;

@@ -173,7 +173,7 @@ headPoint.p3_index =
 arrowPoint.p3_index =
 spherePoint.p3_index = -1;
 // Draw Console CPlayerData -- shaped like a ellipse with an arrow.
-spherePoint.p3_vec.SetZero();
+spherePoint.p3_vec.SetZero ();
 G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
 //transformation.Rotate (&spherePoint.p3_vec, &objP->info.position.vPos, 0);
 G3DrawSphere (&spherePoint, gameStates.render.automap.bRadar ? objP->info.xSize * 2 : objP->info.xSize, !gameStates.render.automap.bRadar);

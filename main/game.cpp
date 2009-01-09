@@ -712,10 +712,10 @@ void FlyInit (CObject *objP)
 	objP->info.controlType = CT_FLYING;
 	objP->info.movementType = MT_PHYSICS;
 
-	objP->mType.physInfo.velocity.SetZero();
-	objP->mType.physInfo.thrust.SetZero();
-	objP->mType.physInfo.rotVel.SetZero();
-	objP->mType.physInfo.rotThrust.SetZero();
+	objP->mType.physInfo.velocity.SetZero ();
+	objP->mType.physInfo.thrust.SetZero ();
+	objP->mType.physInfo.rotVel.SetZero ();
+	objP->mType.physInfo.rotThrust.SetZero ();
 }
 
 //void morph_test (), morph_step ();

@@ -337,7 +337,7 @@ if (gameStates.render.bQueryOcclusion) {
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 glDepthFunc (GL_ALWAYS);
 CCanvas::Current ()->SetColorRGB (255, 255, 255, 255);
-center.p3_vec.SetZero();
+center.p3_vec.SetZero ();
 for (i = 0; i < nVertices; i++) {
 	G3DrawLine (pointList [i], pointList [(i + 1) % nVertices]);
 	center.p3_vec += pointList [i]->p3_vec;

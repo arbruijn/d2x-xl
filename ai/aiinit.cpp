@@ -114,7 +114,7 @@ if (botInfoP->attackType) {
 	aiP->behavior = AIB_NORMAL;
 	ailP->mode = AIBehaviorToMode (aiP->behavior);
 	}
-objP->mType.physInfo.velocity.SetZero();
+objP->mType.physInfo.velocity.SetZero ();
 // -- ailP->waitTime = I2X (5);
 ailP->playerAwarenessTime = 0;
 ailP->playerAwarenessType = 0;
@@ -243,7 +243,7 @@ void InitAIFrame (void)
 	int abState;
 
 if (gameData.ai.nMaxAwareness < PA_PLAYER_COLLISION)
-	gameData.ai.vLastPlayerPosFiredAt.SetZero();
+	gameData.ai.vLastPlayerPosFiredAt.SetZero ();
 if (!gameData.ai.vLastPlayerPosFiredAt.IsZero())
 	gameData.ai.nDistToLastPlayerPosFiredAt =
 		CFixVector::Dist(gameData.ai.vLastPlayerPosFiredAt, gameData.ai.vBelievedPlayerPos);

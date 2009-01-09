@@ -1077,7 +1077,7 @@ int FindVectorIntersection (tFVIQuery *fq, tFVIData *hitData)
 	CSegMasks	masks;
 
 Assert(fq->ignoreObjList != reinterpret_cast<short*> (-1));
-gameData.collisions.hitData.vNormal.SetZero();
+gameData.collisions.hitData.vNormal.SetZero ();
 gameData.collisions.hitData.nNormals = 0;
 Assert((fq->startSeg <= gameData.segs.nLastSegment) && (fq->startSeg >= 0));
 

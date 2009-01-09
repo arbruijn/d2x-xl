@@ -1373,7 +1373,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 					cloneP->info.xSize = FixDiv (gameData.models.polyModels [0][cloneP->rType.polyObjInfo.nModel].Rad (), 
 															gameData.weapons.info [cloneP->info.nId].po_len_to_width_ratio);
 					}
-				cloneP->mType.physInfo.thrust.SetZero();
+				cloneP->mType.physInfo.thrust.SetZero ();
 				cloneP->mType.physInfo.mass = WI_mass (weaponP->info.nType);
 				cloneP->mType.physInfo.drag = WI_drag (weaponP->info.nType);
 				CFixVector vImpulse = vHitPt - robotP->info.position.vPos;

@@ -822,7 +822,7 @@ retryMove:
 			bForceFieldBounce = (gameData.pig.tex.tMapInfoP [SEGMENTS [nWallHitSeg].m_sides [nWallHitSide].m_nBaseTex].flags & TMI_FORCE_FIELD);
 			if (!bForceFieldBounce && (mType.physInfo.flags & PF_STICK)) {		//stop moving
 				AddStuckObject (this, nWallHitSeg, nWallHitSide);
-				mType.physInfo.velocity.SetZero();
+				mType.physInfo.velocity.SetZero ();
 				bObjStopped = 1;
 				bRetry = 0;
 				}

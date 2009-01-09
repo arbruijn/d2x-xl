@@ -253,7 +253,7 @@ return 0;
 int AIMRunFromObjectHandler1 (CObject *objP, tAIStateInfo *siP)
 {
 MoveTowardsSegmentCenter (objP);
-objP->mType.physInfo.velocity.SetZero();
+objP->mType.physInfo.velocity.SetZero ();
 CreateNSegmentPath (objP, 5, -1);
 siP->ailP->mode = AIM_RUN_FROM_OBJECT;
 return 0;
@@ -263,7 +263,7 @@ return 0;
 int AIMBehindHandler1 (CObject *objP, tAIStateInfo *siP)
 {
 MoveTowardsSegmentCenter (objP);
-objP->mType.physInfo.velocity.SetZero();
+objP->mType.physInfo.velocity.SetZero ();
 return 0;
 }
 
@@ -1118,7 +1118,7 @@ if ((siP->nPrevVisibility || !(siP->nObjRef & 3)) && ReadyToFire (siP->botInfoP,
 	}
 else {
 	siP->vVisPos = objP->info.position.vPos;
-	gameData.ai.vGunPoint.SetZero();
+	gameData.ai.vGunPoint.SetZero ();
 	}
 return 0;
 }

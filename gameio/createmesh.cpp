@@ -537,7 +537,7 @@ for (i = gameData.segs.nVertices, pointP = gameData.segs.points.Buffer (); i; i-
 	(*pointP->p3_normal.vNormal.V3()) [Y] =
 	(*pointP->p3_normal.vNormal.V3()) [Z] = 0;
 */
-	pointP->p3_normal.vNormal.V3()->SetZero();
+	pointP->p3_normal.vNormal.V3()->SetZero ();
 
 	pointP->p3_normal.nFaces = 0;
 	}

@@ -122,7 +122,7 @@ if (!HaveReplacementModel (HOSTAGE_MODEL))
 objP->info.renderType = RT_POLYOBJ;
 objP->rType.polyObjInfo.nModel = HOSTAGE_MODEL;
 objP->rType.polyObjInfo.nTexOverride = -1;
-objP->mType.physInfo.rotVel.SetZero();
+objP->mType.physInfo.rotVel.SetZero ();
 memset (objP->rType.polyObjInfo.animAngles, 0, sizeof (objP->rType.polyObjInfo.animAngles));
 return 1;
 }

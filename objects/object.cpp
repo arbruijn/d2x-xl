@@ -377,10 +377,10 @@ void ResetPlayerObject (void)
 	int i;
 
 //Init physics
-gameData.objs.consoleP->mType.physInfo.velocity.SetZero();
-gameData.objs.consoleP->mType.physInfo.thrust.SetZero();
-gameData.objs.consoleP->mType.physInfo.rotVel.SetZero();
-gameData.objs.consoleP->mType.physInfo.rotThrust.SetZero();
+gameData.objs.consoleP->mType.physInfo.velocity.SetZero ();
+gameData.objs.consoleP->mType.physInfo.thrust.SetZero ();
+gameData.objs.consoleP->mType.physInfo.rotVel.SetZero ();
+gameData.objs.consoleP->mType.physInfo.rotThrust.SetZero ();
 gameData.objs.consoleP->mType.physInfo.brakes = gameData.objs.consoleP->mType.physInfo.turnRoll = 0;
 gameData.objs.consoleP->mType.physInfo.mass = gameData.pig.ship.player->mass;
 gameData.objs.consoleP->mType.physInfo.drag = gameData.pig.ship.player->drag;
@@ -391,7 +391,7 @@ gameData.objs.consoleP->rType.polyObjInfo.nModel = gameData.pig.ship.player->nMo
 gameData.objs.consoleP->rType.polyObjInfo.nSubObjFlags = 0;		//zero the flags
 gameData.objs.consoleP->rType.polyObjInfo.nTexOverride = -1;		//no tmap override!
 for (i = 0; i < MAX_SUBMODELS; i++)
-	gameData.objs.consoleP->rType.polyObjInfo.animAngles[i].SetZero();
+	gameData.objs.consoleP->rType.polyObjInfo.animAngles[i].SetZero ();
 // Clear misc
 gameData.objs.consoleP->info.nFlags = 0;
 }
@@ -1309,7 +1309,7 @@ if (GetControlType () == CT_POWERUP)
 	CPowerupInfo::SetCount (1);
 // Init physics info for this CObject
 if (GetMovementType () == MT_PHYSICS)
-	m_vStartVel.SetZero();
+	m_vStartVel.SetZero ();
 if (GetRenderType () == RT_POLYOBJ)
 	CPolyObjInfo::SetTexOverride (-1);
 
@@ -1453,7 +1453,7 @@ nSignature = cloneP->info.nSignature;
 memcpy (cloneP, objP, sizeof (CObject));
 cloneP->info.nSignature = nSignature;
 cloneP->info.nCreator = -1;
-cloneP->mType.physInfo.thrust.SetZero();
+cloneP->mType.physInfo.thrust.SetZero ();
 cloneP->SetCreationTime (gameData.time.xGame);
 nSegment = objP->info.nSegment;
 cloneP->info.nSegment = 
@@ -1862,8 +1862,8 @@ gameStates.app.bPlayerIsDead = 1;
 	Buffeting (70);
 #endif
 //LOCALPLAYER.flags &= ~ (PLAYER_FLAGS_AFTERBURNER);
-playerP->mType.physInfo.rotThrust.SetZero();
-playerP->mType.physInfo.thrust.SetZero();
+playerP->mType.physInfo.rotThrust.SetZero ();
+playerP->mType.physInfo.thrust.SetZero ();
 gameStates.app.nPlayerTimeOfDeath = gameData.time.xGame;
 nObject = CreateCamera (playerP);
 viewerSaveP = gameData.objs.viewerP;
@@ -1986,10 +1986,10 @@ Controls [0].bankTime = 0;
 Controls [0].verticalThrustTime = 0;
 Controls [0].sidewaysThrustTime = 0;
 Controls [0].forwardThrustTime = 0;
-objP->mType.physInfo.rotThrust.SetZero();
-objP->mType.physInfo.thrust.SetZero();
-objP->mType.physInfo.velocity.SetZero();
-objP->mType.physInfo.rotVel.SetZero();
+objP->mType.physInfo.rotThrust.SetZero ();
+objP->mType.physInfo.thrust.SetZero ();
+objP->mType.physInfo.velocity.SetZero ();
+objP->mType.physInfo.rotVel.SetZero ();
 }
 
 //--------------------------------------------------------------------
@@ -2142,9 +2142,9 @@ switch (info.controlType) {
 	case CT_AI:
 		//NOTE LINK TO CT_MORPH ABOVE!!!
 		if (gameStates.gameplay.bNoBotAI || (gameStates.app.bGameSuspended & SUSP_ROBOTS)) {
-			mType.physInfo.velocity.SetZero();
-			mType.physInfo.thrust.SetZero();
-			mType.physInfo.rotThrust.SetZero();
+			mType.physInfo.velocity.SetZero ();
+			mType.physInfo.thrust.SetZero ();
+			mType.physInfo.rotThrust.SetZero ();
 			DoAnyRobotDyingFrame (this);
 #if 1//ndef _DEBUG
 			return 1;

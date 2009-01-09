@@ -624,8 +624,8 @@ void extract_vector_from_segment (CSegment *segP, CFixVector *vp, int start, int
 	int			i;
 	CFixVector	vs, ve;
 
-	vs.SetZero();
-	ve.SetZero();
+	vs.SetZero ();
+	ve.SetZero ();
 
 	for (i=0; i<4; i++) {
 		vs += gameData.segs.vertices [segP->m_verts [sideVertIndex [start][i]]];
@@ -949,7 +949,7 @@ void ResetVertexNormals (void)
 	g3sPoint	*pp;
 
 for (i = gameData.segs.nVertices, pp = gameData.segs.points.Buffer (); i; i--, pp++) {
-	pp->p3_normal.vNormal.SetZero();
+	pp->p3_normal.vNormal.SetZero ();
 	pp->p3_normal.nFaces = 0;
 	}
 }

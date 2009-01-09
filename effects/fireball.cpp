@@ -398,7 +398,7 @@ VmVecZero (&debrisP->mType.physInfo.rotVel);
 #else
 debrisP->mType.physInfo.rotVel = CFixVector::Create(d_rand () + 0x1000, d_rand ()*2 + 0x4000, d_rand ()*3 + 0x2000);
 #endif
-debrisP->mType.physInfo.rotThrust.SetZero();
+debrisP->mType.physInfo.rotThrust.SetZero ();
 debrisP->info.xLifeLeft = I2X (nDebrisLife [gameOpts->render.nDebrisLife]) + 3 * DEBRIS_LIFE / 4 + FixMul (d_rand (), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
 debrisP->mType.physInfo.mass =
 #if 0

@@ -369,10 +369,6 @@ nStateChanges = 0;
 nShaderChanges = 0;
 fAttScale = 0;
 nPowerupFilter = 0;
-shield.SetupPulse (0.02f, 0.5f);
-shield.SetPulse (shield.Pulse ());
-monsterball.SetupPulse (0.005f, 0.9f);
-monsterball.SetPulse (monsterball.Pulse ());
 }
 
 // ----------------------------------------------------------------------------

@@ -1338,7 +1338,7 @@ else if (gameStates.render.bPerPixelLighting) {
 		vcd.vertNorm[X] =
 		vcd.vertNorm[Y] =
 		vcd.vertNorm[Z] = 0;
-		vcd.vertNorm.SetZero();
+		vcd.vertNorm.SetZero ();
 		if (vPosP)
 			vcd.vertPos.Assign (*vPosP);
 		else {

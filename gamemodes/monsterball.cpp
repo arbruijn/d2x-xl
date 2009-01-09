@@ -56,12 +56,14 @@ else {
 if (nDropSeg >= 0) {
 	nObject = DropPowerup (OBJ_POWERUP, POW_MONSTERBALL, -1, 1, CFixVector::ZERO, gameData.hoard.vMonsterballPos, nDropSeg);
 	if (nObject >= 0) {
+		monsterball.SetupPulse (0.005f, 0.9f);
+		monsterball.SetPulse (monsterball.Pulse ());
 		gameData.hoard.monsterballP = OBJECTS + nObject;
 		gameData.hoard.monsterballP->SetType (OBJ_MONSTERBALL);
 		gameData.hoard.monsterballP->mType.physInfo.mass = I2X (10);
-		gameData.hoard.monsterballP->mType.physInfo.thrust.SetZero();
-		gameData.hoard.monsterballP->mType.physInfo.rotThrust.SetZero();
-		gameData.hoard.monsterballP->mType.physInfo.velocity.SetZero();
+		gameData.hoard.monsterballP->mType.physInfo.thrust.SetZero ();
+		gameData.hoard.monsterballP->mType.physInfo.rotThrust.SetZero ();
+		gameData.hoard.monsterballP->mType.physInfo.velocity.SetZero ();
 		gameData.hoard.nLastHitter = -1;
 		gameData.hoard.monsterballP->CreateAppearanceEffect ();
 		return 1;

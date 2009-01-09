@@ -192,7 +192,7 @@ for (; iBox <= nBoxes; iBox++) {
 	glLineWidth (2);
 	for (i = 0; i < 6; i++) {
 		glBegin (GL_LINES);
-		v.SetZero();
+		v.SetZero ();
 		for (j = 0; j < 4; j++) {
 			glVertex3fv (reinterpret_cast<GLfloat*> (vertList + hitboxFaceVerts [i][j]));
 			v += vertList [hitboxFaceVerts [i][j]];
@@ -1412,7 +1412,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 		transformation.Begin (vPos, objP->info.position.mOrient);
 		TransformHitboxf (objP, verts, 0);
 		for (i = 0; i < 6; i++) {
-			vCenter.SetZero();
+			vCenter.SetZero ();
 			for (j = 0; j < 4; j++) {
 				quad [j] = verts [hitboxFaceVerts [i][j]];
 				vCenter += quad [j];
