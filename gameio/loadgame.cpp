@@ -1946,8 +1946,10 @@ if (!IsMultiGame) {
 				briefing.Run (reinterpret_cast<char*> ("brief2.tex"), 1);
 			}
 		else if (IS_D2_OEM) {
-			if ((nLevel == 1) && !gameStates.movies.bIntroPlayed)
+			if ((nLevel == 1) && !gameStates.movies.bIntroPlayed) {
+				gameStates.movies.bIntroPlayed = 1;
 				briefing.Run (reinterpret_cast<char*> ("brief2o.tex"), 1);
+				}
 			}
 		else { // full version
 			if (movieManager.m_bHaveExtras && (nLevel == 1)) {
@@ -1963,7 +1965,7 @@ if (!IsMultiGame) {
 				}
 			if (gameStates.movies.nRobots) {
 				int hires_save = gameStates.menus.bHiresAvailable;
-				if (gameStates.movies.nRobots == 1) {		//lowres only
+				if (movieManager.m_nRobots == 1) {		//lowres only
 					gameStates.menus.bHiresAvailable = 0;		//pretend we can't do highres
 					if (hires_save != gameStates.menus.bHiresAvailable)
 						gameStates.video.nScreenMode = -1;		//force reset
