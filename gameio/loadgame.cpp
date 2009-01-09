@@ -1963,7 +1963,7 @@ if (!IsMultiGame) {
 					break;
 					}
 				}
-			if (gameStates.movies.nRobots) {
+			if (movieManager.m_nRobots) {
 				int hires_save = gameStates.menus.bHiresAvailable;
 				if (movieManager.m_nRobots == 1) {		//lowres only
 					gameStates.menus.bHiresAvailable = 0;		//pretend we can't do highres
