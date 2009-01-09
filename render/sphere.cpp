@@ -441,7 +441,7 @@ void CSphere::RenderRing (CFloatVector *vertexP, tTexCoord2f *texCoordP, int nIt
 if (G3EnableClientStates (bTextured, 0, 0, GL_TEXTURE0)) {
 	if (bTextured)
 		glTexCoordPointer (2, GL_FLOAT, 0, texCoordP);
-	glVertexPointer (3, GL_FLOAT, 0, vertexP);
+	glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vertexP);
 	glDrawArrays (nPrimitive, 0, nItems);
 	G3DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 	}
@@ -503,7 +503,7 @@ else {
 		for (j = 0; j < h; j++) {
 			for (i = 0; i < nQuads; i++, svP [0]++) {
 				p [i] = svP [0]->vPos * fRadius;
-				transformation.Transform (p[i], p[i], 0);
+				transformation.Transform (p [i], p [i], 0);
 				if (bTextured)
 					tc [i] = svP [0]->uv;
 				}
@@ -678,6 +678,8 @@ if (gameData.render.shield.nTessDepth != gameOpts->render.textures.nQuality + 2)
 if (!gameData.render.shield.sphereP)
 	gameData.render.shield.nFaces = gameData.render.shield.Create ();
 #endif
+gameData.render.shield.SetupPulse (0.02f, 0.5f);
+gameData.render.shield.SetPulse (gameData.render.shield.Pulse ());
 return 1;
 }
 
@@ -702,6 +704,7 @@ if (gameData.render.shield.nFaces > 0)
 		glBlendFunc (GL_ONE, GL_ONE);
 		transformation.Begin (*PolyObjPos (objP, &vPos), posP->mOrient);
 		CFloatVector p;
+		p.SetZero ();
 		gameData.render.shield.Render (&p, r, r, r, red, green, blue, alpha, bmpShield, 1, 1);
 		transformation.End ();
 		gameStates.ogl.bUseTransform = 0;
@@ -763,8 +766,6 @@ void InitSpheres (void)
 {
 PrintLog ("   creating spheres\n");
 CreateShieldSphere ();
-gameData.render.shield.SetupPulse (0.02f, 0.5f);
-gameData.render.shield.SetPulse (gameData.render.shield.Pulse ());
 }
 
 //------------------------------------------------------------------------------
