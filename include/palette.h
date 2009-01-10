@@ -95,7 +95,7 @@ typedef struct tPaletteList {
 //------------------------------------------------------------------------------
 
 typedef struct tPaletteData {
-		CPalette			*default;
+		CPalette			*deflt;
 		CPalette			*fade;
 		CPalette			*game;
 		CPalette			*last;
@@ -188,12 +188,12 @@ class CPaletteManager {
 		inline void SetTexture (CPalette* palette) { m_data.texture = palette; }
 		inline void SetD1 (CPalette* palette) { m_data.D1 = palette; }
 
-		inline CPalette* Default (void) { return m_data.default; }
-		inline CPalette* Current (void) { return m_data.current ? m_data.current : m_data.default; }
+		inline CPalette* Default (void) { return m_data.deflt; }
+		inline CPalette* Current (void) { return m_data.current ? m_data.current : m_data.deflt; }
 		inline CPalette* Game (void) { return m_data.game ? m_data.game : Current (); }
 		CPalette* Texture (void) { return m_data.texture ? m_data.texture : Current (); };
 		inline CPalette* D1 (void) { return m_data.D1 ? m_data.D1 : Current (); }
-		inline void SetDefault (CPalette* defPal) { m_data.default = defPal; }
+		inline void SetDefault (CPalette* defPal) { m_data.deflt = defPal; }
 		inline CPalette* Fade (CPalette* fadePal) { m_data.fade = fadePal; }
 		inline CPalette* GetFade (void) { return m_data.fade; }
 		inline ubyte* FadeTable (void) { return m_data.fadeTable; }

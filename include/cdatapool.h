@@ -5,20 +5,22 @@
 
 //-----------------------------------------------------------------------------
 
-template < class _T > class CDataPool {
+template < class _T > 
+class CDataPool {
 
-	template < class _T > class CPoolElem {
+	template < class _U > 
+	class CPoolElem {
 		public:
 			int	prev;
 			int	next;
-			_T		data;
+			_U	data;
 		};
 
 	class CPoolBuffer : public CArray< CPoolElem <_T> > {};
 
 	private:
 		CPoolBuffer		m_buffer;
-		_T					*m_null;
+		//_T*				m_null;
 		int				m_free;
 		int				m_used;
 		int				m_current;

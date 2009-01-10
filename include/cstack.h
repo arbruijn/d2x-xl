@@ -5,7 +5,8 @@
 
 //-----------------------------------------------------------------------------
 
-template < class _T > class CStack : public CArray<_T> {
+template < class _T > 
+class CStack : public template < class _T > CArray<_T> {
 	protected:
 		uint	m_tos;
 		uint	m_growth;

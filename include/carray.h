@@ -6,12 +6,14 @@
 
 //-----------------------------------------------------------------------------
 
-template < class _T > class CArray : public CQuickSort < _T > {
+template < class _T > 
+class CArray : public CQuickSort < _T > {
 
-	template < class _T > class CArrayData {
+	template < class _U > 
+	class CArrayData {
 		public:
-			_T		*buffer;
-			_T		null;
+			_U		*buffer;
+			_U		null;
 			uint	length;
 			uint	pos;
 			bool	bExternal;
@@ -19,21 +21,21 @@ template < class _T > class CArray : public CQuickSort < _T > {
 			bool	bWrap;
 			};
 
-	protected:
+	public: //protected:
 		CArrayData<_T>	m_data;
 
 	public:
-		template < class _T >
+		template < class _V >
 		class Iterator {
 			private:
-				_T*			m_start;
-				_T*			m_end;
-				_T*			m_p;
-				CArray<_T>&	m_a;
+				_V*			m_start;
+				_V*			m_end;
+				_V*			m_p;
+				CArray<_V>&	m_a;
 			public:
-				Iterator (CArray<_T>& a) { m_a = a, m_p = NULL; }
+				Iterator (CArray<_V>& a) { m_a = a, m_p = NULL; }
 				operator bool() const { return m_p != NULL; }
-				_T* operator*() const { return m_p; }
+				_V* operator*() const { return m_p; }
 				Iterator& operator++() { 
 					if (m_p) {
 						if (m_p < m_end)
@@ -52,8 +54,8 @@ template < class _T > class CArray : public CQuickSort < _T > {
 						}
 					return *this;
 					}
-				_T* Start (void) { m_p = m_start = m_a.Start (); m_end = m_a.End (); }
-				_T* End (void) { m_p = m_start = m_a.End (); m_end = m_a.Start (); }
+				_V* Start (void) { m_p = m_start = m_a.Start (); m_end = m_a.End (); }
+				_V* End (void) { m_p = m_start = m_a.End (); m_end = m_a.Start (); }
 			};
 
 		CArray () { 
@@ -223,10 +225,10 @@ template < class _T > class CArray : public CQuickSort < _T > {
 		inline _T* operator-- (void) { 
 			if (!m_data.buffer)
 				return NULL;
-			if (m_pos > 0)
+			if (m_data.pos > 0)
 				m_data.pos--;
-			else if (bWrap)
-				m_pos = m_data.length - 1;
+			else if (m_data.bWrap)
+				m_data.pos = m_data.length - 1;
 			else
 				return NULL;
 			return m_data.buffer + m_data.pos;
@@ -259,16 +261,17 @@ template < class _T > class CArray : public CQuickSort < _T > {
 			if (m_data.buffer) 
 				CQuickSort<_T>::SortDescending (m_data.buffer, left, right ? right : m_data.length - 1);
 			}
-
-		inline void SortAscending (comparator compare, int left = 0, int right = 0) {
+#ifdef _WIN32
+		inline void SortAscending (CQuickSort<_T>::comparator compare, int left = 0, int right = 0) {
 			if (m_data.buffer) 
 				CQuickSort<_T>::SortAscending (m_data.buffer, left, right ? right : m_data.length - 1, compare);
 			}
 
-		inline void SortDescending (comparator compare, int left = 0, int right = 0) {
+		inline void SortDescending (CQuickSort<_T>::comparator compare, int left = 0, int right = 0) {
 			if (m_data.buffer) 
 				CQuickSort<_T>::SortDescending (m_data.buffer, left, right ? right : m_data.length - 1, compare);
 			}
+#endif
 	};
 
 inline int operator- (char* v, CArray<char>& a) { return a.Index (v); }
