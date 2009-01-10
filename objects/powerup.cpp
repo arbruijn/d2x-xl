@@ -544,7 +544,7 @@ if (ISLOCALPLAYER (nPlayer)) {
 	CPlayerData	*playerP = gameData.multiplayer.players + nPlayer;
 	if (gameData.app.nGameMode & GM_CAPTURE) {
 		if (GetTeam ((char) gameData.multiplayer.nLocalPlayer) == nOtherTeam) {
-			PowerupBasic (15, 0, 15, 0, nOtherTeam ? reinterpret_cast<char*> ("RED FLAG!") : reinterpret_cast<char*> ("BLUE FLAG!"), nPlayer);
+			PowerupBasic (15, 0, 15, 0, nOtherTeam ? "RED FLAG!" : "BLUE FLAG!", nPlayer);
 			playerP->flags |= PLAYER_FLAGS_FLAG;
 			gameData.pig.flags [nThisTeam].path.Reset (10, -1);
 			MultiSendGotFlag ((char) gameData.multiplayer.nLocalPlayer);

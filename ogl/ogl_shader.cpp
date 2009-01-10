@@ -381,9 +381,9 @@ else {
 	gameStates.ogl.bShadersOk = 1;
 #endif
 	}
-PrintLog (gameStates.ogl.bShadersOk ? 
-			 reinterpret_cast<char*> ("Shaders are available\n") : 
-			 reinterpret_cast<char*> ("No shaders available\n"));
+PrintLog (gameStates.ogl.bShadersOk 
+		  ? "Shaders are available\n" 
+		  : "No shaders available\n");
 }
 
 //------------------------------------------------------------------------------

@@ -495,7 +495,7 @@ int NetworkWaitForAllInfo (int choice)
   
   CMenu m (2);
 
-m.AddText (reinterpret_cast<char*> ("Press Escape to cancel"));
+m.AddText ("Press Escape to cancel");
 networkData.bWaitAllChoice = choice;
 networkData.nStartWaitAllTime=TimerGetApproxSeconds ();
 networkData.nSecurityCheck = activeNetGames [choice].nSecurity;

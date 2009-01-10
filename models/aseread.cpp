@@ -86,7 +86,7 @@ static char *StrTok (const char *delims)
 pszToken = strtok (NULL, delims);
 if (!(pszToken && *pszToken))
 	CModel::Error ("missing data");
-return pszToken ? pszToken : reinterpret_cast<char*> ("");
+return pszToken ? pszToken : "";
 }
 
 //------------------------------------------------------------------------------

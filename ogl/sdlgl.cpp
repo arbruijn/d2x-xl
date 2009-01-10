@@ -181,7 +181,7 @@ OglInitAttributes ();
 if (!IrrInit (w, h, (bool) gameStates.ogl.bFullScreen))
 	return 0;
 #else
-SDL_putenv (reinterpret_cast<char*> ("SDL_VIDEO_CENTERED=1"));
+SDL_putenv ("SDL_VIDEO_CENTERED=1");
 /***/PrintLog ("setting SDL video mode (%dx%dx%d, %s)\n",
 				 w, h, gameStates.ogl.nColorBits, gameStates.ogl.bFullScreen ? "fullscreen" : "windowed");
 if (!OglVideoModeOK (w, h) ||

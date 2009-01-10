@@ -261,20 +261,28 @@ return 1;
 
 bool CPBO::Bind (void)
 {
+#ifdef _WIN32
 if (!Handle ())
 	return false;
 if (m_info.bBound)
 	return true;
 return m_info.bBound = (Handle () > 0) && wglBindTexImageARB (Handle (), WGL_FRONT_LEFT_ARB);
+#else
+return false;
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void CPBO::Release (void)
 {
+#ifdef _WIN32
 if (Handle () > 0) 
 	wglReleaseTexImageARB (Handle (), WGL_FRONT_LEFT_ARB);
 m_info.bBound = false;
+#else
+return false;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -312,9 +320,9 @@ if (gameStates.ogl.bUseRender2Texture) {
   hGlRC = glXGetCurrentContext ();
 #endif
   
-PrintLog ((gameStates.ogl.bRender2TextureOk == 1) ? 
-		reinterpret_cast<char*> ("Rendering to pixel buffers is available\n") : 
-		reinterpret_cast<char*> ("No rendering to pixel buffers available\n"));
+PrintLog ((gameStates.ogl.bRender2TextureOk == 1)  
+		  ? "Rendering to pixel buffers is available\n" 
+		  : "No rendering to pixel buffers available\n");
 
 }
 

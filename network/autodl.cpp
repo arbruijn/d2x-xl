@@ -523,7 +523,7 @@ static int nOptProgress, nOptPercentage;
 int DownloadPoll (CMenu& menu, int& key, int nCurItem)
 {
 if (key == KEY_ESC) {
-	menu [nOptPercentage].m_text = reinterpret_cast<char*> ("download aborted");
+	menu [nOptPercentage].m_text = "download aborted";
 	menu [1].m_bRedraw = 1;
 	key = -2;
 	return nCurItem;
@@ -561,7 +561,7 @@ if (dlResult == 1) {
 	key = 0;
 	return nCurItem;
 	}
-menu [nOptPercentage].m_text = reinterpret_cast<char*> ("download failed");
+menu [nOptPercentage].m_text = "download failed";
 menu [nOptPercentage].m_bRedraw = 1;
 key = -2;
 return nCurItem;

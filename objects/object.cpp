@@ -1201,7 +1201,7 @@ SetSegment (nSegment);
 if (IsLinkedToSeg (nSegment))
 	UnlinkFromSeg ();
 #else
-if (SEGMENTS [nSegment].m_objects == nObject)
+if (SEGMENTS [nSegment].m_objects == Index ())
 	return;
 #endif
 SetNextInSeg (SEGMENTS [nSegment].m_objects);

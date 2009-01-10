@@ -190,7 +190,7 @@ while (driver->PacketReady (&ipxSocketData)) {
 		continue;
 	if (size > MAX_DATASIZE - 4)
 		continue;
-	offs = IsTracker (*reinterpret_cast<uint*> (ipx_udpSrc.src_node), *reinterpret_cast<ushort*> (ipx_udpSrc.src_node + 4))) ? 0 : 4;
+	offs = IsTracker (*reinterpret_cast<uint*> (ipx_udpSrc.src_node), *reinterpret_cast<ushort*> (ipx_udpSrc.src_node + 4)) ? 0 : 4;
 	memcpy (data, buf + offs, size - offs);
 	return size - offs;
 	}
@@ -281,7 +281,7 @@ if (gameStates.multi.nGameType > IPX_GAME)
 else {
 	for (i = 0; i < nIpxNetworks; i++)	{
 		if (memcmp (ipxNetworks + i, &ipxNetwork, 4))	{
-			IpxGetLocalTarget (reinterpret_cast<ubyte*> ((ipxNetworks + i), broadcast, local_address);
+			IpxGetLocalTarget (reinterpret_cast<ubyte*> (ipxNetworks + i), broadcast, local_address);
 			IPXSendPacketData (data, datasize, reinterpret_cast<ubyte*> (ipxNetworks + i), broadcast, local_address);
 			} 
 		else {

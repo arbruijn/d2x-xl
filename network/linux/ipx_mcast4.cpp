@@ -27,7 +27,7 @@
 #include "ipx_mcast4.h"
 #include "args.h"
 #include "error.h"
-#include "newmenu.h"
+#include "menu.h"
 #include "multi.h"
 
 //#define IPX_MCAST4DBG
@@ -80,7 +80,7 @@ int Fail (const char *fmt, ...)
 va_start (argP, fmt);
 vsprintf (szFailMsg, fmt, argP);
 va_end (argP);   
-ExecMessageBox (NULL, NULL, 1, "OK", "UDP Error\n\n%s", szFailMsg);
+MsgBox (NULL, NULL, 1, "OK", "UDP Error\n\n%s", szFailMsg);
 return 1;
 }
 

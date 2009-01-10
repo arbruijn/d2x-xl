@@ -331,7 +331,7 @@ typedef struct tDestListEntry {
 
 static tDestListEntry *destList = NULL;
 
-static struct sockaddr_in* broadmasks [MAX_BRDINTERFACES];
+static struct sockaddr_in broadmasks [MAX_BRDINTERFACES];
 static int	destAddrNum = 0,
 				masksNum = 0,
 				destListSize = 0;
@@ -395,7 +395,7 @@ if (!broadSize)
 else
 	broads.Resize (broadSize = broadSize * 2);
 chk (broads.Buffer ());
-3}
+}
 
 //------------------------------------------------------------------------------
 // We'll check whether the "destList" array of destination addresses is now

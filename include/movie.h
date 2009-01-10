@@ -121,7 +121,7 @@ class CMovieManager {
 		void StopRobot (void);
 
 	private:
-		void CMovieManager::InitLib (const char* pszFilename, int nLibrary, int bRobotMovie, int bRequired);
+		void InitLib (const char* pszFilename, int nLibrary, int bRobotMovie, int bRequired);
 };
 
 //-----------------------------------------------------------------------
