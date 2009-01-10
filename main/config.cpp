@@ -127,7 +127,7 @@ static uint cfgHashs [] = {
 
 int CfgLoadHashs (char *pszFilter, char *pszFolder)
 {
-	static ubyte szDefaultHash [] = {'m'm '4', 'd', '1'};
+	static ubyte szDefaultHash [] = {'m', '4', 'd', '1'};
 	
 nDefaultHash = Crc32 (0, szDefaultHash, 4);
 if (hashList.nHashs)
@@ -136,11 +136,14 @@ if (!CfgCountHashs (pszFilter, pszFolder))
 	return 0;
 hashList.hashs.Create (hashList.nHashs);
 
-	FFS	fs;
+	FFS	f;
 	char	szTag [FILENAME_LEN];
 
 sprintf (szTag, "%s/%s", pszFolder, pszFilter);
-for (int i = 0; i ? !FFN (&f, 0) : !FFF (szTag, &f, 0); i++) {
+
+	int i;
+
+for (i = 0; i ? !FFN (&f, 0) : !FFF (szTag, &f, 0); i++) {
 	f.name [4] = '\0';
 	strlwr (f.name);
 	strcompress (f.name);

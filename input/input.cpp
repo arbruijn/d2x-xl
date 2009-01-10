@@ -1263,8 +1263,10 @@ SetControlType ();
 bUseJoystick = gameOpts->input.joystick.bUse && ControlsReadJoystick (reinterpret_cast<int*> (&joyAxis [0]));
 if (gameOpts->input.mouse.bUse)
 	if (gameStates.input.bCybermouseActive) {
-//		ReadOWL (kc_external_control);
-//		CybermouseAdjust ();
+#if 0
+		ReadOWL (externalControls.m_info);
+		CybermouseAdjust ();
+#endif
 		} 
 	else if (gameStates.input.nMouseType == CONTROL_CYBERMAN)
 		bUseMouse = ControlsReadCyberman (reinterpret_cast<int*> (&mouseAxis [0]), &nMouseButtons);
@@ -1390,7 +1392,7 @@ void CybermouseAdjust ()
 			CAngleVector * Kconfig_abs_movement;
 			char * oem_message;
 
-			Kconfig_abs_movement = reinterpret_cast<CAngleVector*> (((uint)kc_external_control + sizeof (tControlInfo));
+			Kconfig_abs_movement = reinterpret_cast<CAngleVector*> (((uint)externalControls.m_info + sizeof (tControlInfo));
 
 			if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h) {
 				VmAngles2Matrix (&tempm,Kconfig_abs_movement);
@@ -1403,22 +1405,22 @@ void CybermouseAdjust ()
 		}
 	}*/
 
-	Controls [0].pitchTime += FixMul (kc_external_control->pitchTime,gameData.time.xFrame);					
-	Controls [0].verticalThrustTime += FixMul (kc_external_control->verticalThrustTime,gameData.time.xFrame);
-	Controls [0].headingTime += FixMul (kc_external_control->headingTime,gameData.time.xFrame);
-	Controls [0].sidewaysThrustTime += FixMul (kc_external_control->sidewaysThrustTime ,gameData.time.xFrame);
-	Controls [0].bankTime += FixMul (kc_external_control->bankTime ,gameData.time.xFrame);
-	Controls [0].forwardThrustTime += FixMul (kc_external_control->forwardThrustTime ,gameData.time.xFrame);
-//	Controls [0].rearViewDownCount += kc_external_control->rearViewDownCount;
-//	Controls [0].rearViewDownState |= kc_external_control->rearViewDownState;
-	Controls [0].firePrimaryDownCount += kc_external_control->firePrimaryDownCount;
-	Controls [0].firePrimaryState |= kc_external_control->firePrimaryState;
-	Controls [0].fireSecondaryState |= kc_external_control->fireSecondaryState;
-	Controls [0].fireSecondaryDownCount += kc_external_control->fireSecondaryDownCount;
-	Controls [0].fireFlareDownCount += kc_external_control->fireFlareDownCount;
-	Controls [0].dropBombDownCount += kc_external_control->dropBombDownCount;
-//	Controls [0].automapDownCount += kc_external_control->automapDownCount;
-// 	Controls [0].automapState |= kc_external_control->automapState;
+	Controls [0].pitchTime += FixMul (externalControls.m_info->pitchTime,gameData.time.xFrame);					
+	Controls [0].verticalThrustTime += FixMul (externalControls.m_info->verticalThrustTime,gameData.time.xFrame);
+	Controls [0].headingTime += FixMul (externalControls.m_info->headingTime,gameData.time.xFrame);
+	Controls [0].sidewaysThrustTime += FixMul (externalControls.m_info->sidewaysThrustTime ,gameData.time.xFrame);
+	Controls [0].bankTime += FixMul (externalControls.m_info->bankTime ,gameData.time.xFrame);
+	Controls [0].forwardThrustTime += FixMul (externalControls.m_info->forwardThrustTime ,gameData.time.xFrame);
+//	Controls [0].rearViewDownCount += externalControls.m_info->rearViewDownCount;
+//	Controls [0].rearViewDownState |= externalControls.m_info->rearViewDownState;
+	Controls [0].firePrimaryDownCount += externalControls.m_info->firePrimaryDownCount;
+	Controls [0].firePrimaryState |= externalControls.m_info->firePrimaryState;
+	Controls [0].fireSecondaryState |= externalControls.m_info->fireSecondaryState;
+	Controls [0].fireSecondaryDownCount += externalControls.m_info->fireSecondaryDownCount;
+	Controls [0].fireFlareDownCount += externalControls.m_info->fireFlareDownCount;
+	Controls [0].dropBombDownCount += externalControls.m_info->dropBombDownCount;
+//	Controls [0].automapDownCount += externalControls.m_info->automapDownCount;
+// 	Controls [0].automapState |= externalControls.m_info->automapState;
   } 
 
 //------------------------------------------------------------------------------

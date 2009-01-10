@@ -322,12 +322,12 @@ if (m_nDepth >= 0) {
 
 void CBackgroundManager::Init (void)
 {
-	static char szBackgrounds [2][11] = {MENU_BACKGROUND_BITMAP_LORES, MENU_BACKGROUND_BITMAP_HIRES};
+	static char szBackgrounds [2][12] = {"scores.pcx", "scoresb.pcx"};
 	
 m_background [0] = NULL;
 m_background [1] = NULL;
 m_filename [0] = MenuPCXName ();
-m_filename [1] = szBackgrounds [gameStates.menu.bHires];
+m_filename [1] = szBackgrounds [gameStates.menus.bHires];
 m_nDepth = -1; 
 m_bShadow = true;
 m_bValid = false;

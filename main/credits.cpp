@@ -361,7 +361,7 @@ void CCreditsManager::Show (char *creditsFilename)
 		{"font1-3h.fnt", "font1-3.fnt"}
 	};
 	
-	static char szStars [2][] = {"\0x1stars.pcx", "\0x1starsb.pcx"};
+	static char szStars [2][15] = {"\0x1stars.pcx", "\0x1starsb.pcx"};
 	
 if (!Open (creditsFilename))
 	return;
@@ -384,7 +384,7 @@ m_fonts [2] = fontManager.Load (fontNames [0][gameStates.menus.bHires]);
 m_bmBackdrop.SetBuffer (NULL);
 m_bmBackdrop.SetPalette (NULL);
 
-int nPcxError = PCXReadBitmap (szStars [gameStates.menu.bHires], &m_bmBackdrop, BM_LINEAR, 0);
+int nPcxError = PCXReadBitmap (szStars [gameStates.menus.bHires], &m_bmBackdrop, BM_LINEAR, 0);
 if (nPcxError != PCX_ERROR_NONE) {
 	m_cf.Close ();
 	CCanvas::Pop ();

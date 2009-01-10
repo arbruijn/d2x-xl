@@ -235,7 +235,7 @@ int bHaveThruster [2] = {0, 0};
 
 int LoadThruster (void)
 {
-	static char szThruster [2][13] = {"thrust3d.tga" : "thrust2d.tga"};
+	static char szThruster [2][13] = {"thrust3d.tga", "thrust2d.tga"};
 	
 	int nStyle = EGI_FLAG (bThrusterFlames, 1, 1, 0);
 	int b3D = (nStyle == 2);

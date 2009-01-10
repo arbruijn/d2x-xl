@@ -399,6 +399,8 @@ static int xOffs = 0, yOffs = 0;
 
 static int startAxis [JOY_MAX_AXES];
 
+CExternalControls externalControls;
+
 CFixVector ExtForceVec;
 CFixMatrix ExtApplyForceMatrix;
 
@@ -417,7 +419,6 @@ typedef struct tKCItemPos {
 void KCDrawItemExt (kcItem *item, int is_current, int bRedraw);
 int KCChangeInvert (kcItem * item);
 void ControlsReadFCS (int raw_axis);
-void KCReadExternalControls (void);
 
 //------------------------------------------------------------------------------
 
@@ -1718,152 +1719,66 @@ read_head_tracker ()
 
 //------------------------------------------------------------------------------
 
-ubyte 			kc_use_external_control = 0;
-ubyte				kc_enable_external_control = 0;
-ubyte 			kc_external_intno = 0;
-ext_control_info	*kc_external_control = NULL;
-ubyte				*kc_external_name = NULL;
-ubyte				kc_externalVersion = 0;
-
-void KCInitExternalControls (int intno, int address)
+void CExternalControls::Init (int intno, int address)
 {
 	int i;
-	kc_external_intno = intno;
-	kc_external_control = reinterpret_cast<ext_control_info*> ((size_t) address);
-	kc_use_external_control = 1;
-	kc_enable_external_control  = 1;
+	m_intno = intno;
+	m_info = reinterpret_cast<ext_control_info*> ((size_t) address);
+	m_bUse = 1;
+	m_bEnable  = 1;
 
 	i = FindArg ("-xname");
 	if (i)
-		kc_external_name = reinterpret_cast<ubyte*> (pszArgList [i+1]);
+		m_name = pszArgList [i + 1];
 	else
-		kc_external_name = "External Controller";
+		m_name = "External Controller";
  
-   for (i = 0; i < (int) strlen (reinterpret_cast<char*> (kc_external_name)); i++)
-    if (kc_external_name [i]=='_')
-	  kc_external_name [i]=' '; 
+   for (i = 0; i < (int) strlen (reinterpret_cast<char*> (m_name)); i++)
+    if (m_name [i]=='_')
+	  m_name [i]=' '; 
 
 	i = FindArg ("-xver");
 	if (i)
-		kc_externalVersion = atoi (pszArgList [i+1]);
+		m_version = atoi (pszArgList [i+1]);
 }
-
-/*void KCReadExternalControls ()
-{
-	union REGS r;
-
-	if (!kc_enable_external_control && !gameStates.input.bCybermouseActive) 
-		return;
-
-	if (kc_externalVersion == 0) 
-		memset (kc_external_control, 0, sizeof (tControlInfo);
-	else if (kc_externalVersion > 0)  {
-		memset (kc_external_control, 0, sizeof (tControlInfo)+sizeof (CAngleVector) + 64);
-		if (kc_externalVersion > 1) {
-			// Write ship pos and angles to external controls...
-			ubyte *temp_ptr = reinterpret_cast<ubyte*> (kc_external_control);
-			CFixVector *ship_pos;
-			CFixMatrix *ship_orient;
-			memset (kc_external_control, 0, sizeof (tControlInfo)+sizeof (CAngleVector) + 64 + sizeof (CFixVector)+sizeof (CFixMatrix);
-			temp_ptr += sizeof (tControlInfo)+sizeof (CAngleVector) + 64;
-			ship_pos = reinterpret_cast<CFixVector*> (temp_ptr);
-			temp_ptr += sizeof (CFixVector);
-			ship_orient = reinterpret_cast<CFixMatrix*> (temp_ptr);
-			// Fill in ship postion...
-			*ship_pos = OBJECTS [LOCALPLAYER.nObject].info.position.vPos;
-			// Fill in ship orientation...
-			*ship_orient = OBJECTS [LOCALPLAYER.nObject].info.position.mOrient;
-		}
-	}
-
-        if (automap.m_bDisplay)                    // (If in automap...)
-		kc_external_control->automapState = 1;
-	memset (&r,0,sizeof (r);
-
-   if (!gameStates.input.bCybermouseActive)
-   	int386 (kc_external_intno, &r, &r);		// Read external info...
-//	else
-  //		ReadOWL (kc_external_control);
-
-	if (gameData.multiplayer.nLocalPlayer > -1) {
-		OBJECTS [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_TURNROLL);	// Turn off roll when turning
-		OBJECTS [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest CSide.
-		gameOpts->gameplay.nAutoLeveling = 0;
-
-		if (kc_externalVersion > 0) {	
-			CFixMatrix tempm, ViewMatrix;
-			CAngleVector * Kconfig_abs_movement;
-			char * oem_message;
-
-			Kconfig_abs_movement = reinterpret_cast<CAngleVector*> ((uint)kc_external_control) + sizeof (tControlInfo);
-
-			if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h) {
-				VmAngles2Matrix (&tempm,Kconfig_abs_movement);
-				VmMatMul (&ViewMatrix,&OBJECTS [LOCALPLAYER.nObject].info.position.mOrient,&tempm);
-				OBJECTS [LOCALPLAYER.nObject].info.position.mOrient = ViewMatrix;	
-			}
-			oem_message = reinterpret_cast<char*> ((uint)Kconfig_abs_movement) + sizeof (CAngleVector);
-			if (oem_message [0] != '\0')
-				HUDInitMessage (oem_message);
-		}
-	}
-
-	Controls [0].pitchTime += FixMul (kc_external_control->pitchTime,gameData.time.xFrame);					
-	Controls [0].verticalThrustTime += FixMul (kc_external_control->verticalThrustTime,gameData.time.xFrame);
-	Controls [0].headingTime += FixMul (kc_external_control->headingTime,gameData.time.xFrame);
-	Controls [0].sidewaysThrustTime += FixMul (kc_external_control->sidewaysThrustTime ,gameData.time.xFrame);
-	Controls [0].bankTime += FixMul (kc_external_control->bankTime ,gameData.time.xFrame);
-	Controls [0].forwardThrustTime += FixMul (kc_external_control->forwardThrustTime ,gameData.time.xFrame);
-	Controls [0].rearViewDownCount += kc_external_control->rearViewDownCount;
-	Controls [0].rearViewDownState |= kc_external_control->rearViewDownState;
-	Controls [0].firePrimaryDownCount += kc_external_control->firePrimaryDownCount;
-	Controls [0].firePrimaryState |= kc_external_control->firePrimaryState;
-	Controls [0].fireSecondaryState |= kc_external_control->fireSecondaryState;
-	Controls [0].fireSecondaryDownCount += kc_external_control->fireSecondaryDownCount;
-	Controls [0].fireFlareDownCount += kc_external_control->fireFlareDownCount;
-	Controls [0].dropBombDownCount += kc_external_control->dropBombDownCount;
-	Controls [0].automapDownCount += kc_external_control->automapDownCount;
-	Controls [0].automapState |= kc_external_control->automapState;
-} */
 
 //------------------------------------------------------------------------------
 
-void KCReadExternalControls ()
+void CExternalControls::Read (void)
 {
 	//union REGS r;
    int i;
 
-	if (!kc_enable_external_control) return;
+	if (!m_bEnable) return;
 
-	if (kc_externalVersion == 0) 
-		memset (kc_external_control, 0, sizeof (ext_control_info));
-	else if (kc_externalVersion > 0)  {
-    
-		if (kc_externalVersion>=4)
-			memset (kc_external_control, 0, sizeof (advanced_ext_control_info));
-      else if (kc_externalVersion>0)     
-			memset (kc_external_control, 0, sizeof (ext_control_info)+sizeof (CAngleVector) + 64);
-		else if (kc_externalVersion>2)
-			memset (kc_external_control, 0, sizeof (ext_control_info)+sizeof (CAngleVector) + 64 + sizeof (CFixVector) + sizeof (CFixMatrix) +4);
+if (m_version == 0) 
+	memset (m_info, 0, sizeof (ext_control_info));
+else if (m_version > 0)  {
 
-		if (kc_externalVersion > 1) {
-			// Write ship pos and angles to external controls...
-			ubyte *temp_ptr = reinterpret_cast<ubyte*> (kc_external_control);
-			CFixVector *ship_pos;
-			CFixMatrix *ship_orient;
-			memset (kc_external_control, 0, sizeof (ext_control_info)+sizeof (CAngleVector) + 64 + sizeof (CFixVector)+sizeof (CFixMatrix));
-			temp_ptr += sizeof (ext_control_info) + sizeof (CAngleVector) + 64;
-			ship_pos = reinterpret_cast<CFixVector*> (temp_ptr);
-			temp_ptr += sizeof (CFixVector);
-			ship_orient = reinterpret_cast<CFixMatrix*> (temp_ptr);
-			// Fill in ship postion...
-			*ship_pos = OBJECTS [LOCALPLAYER.nObject].info.position.vPos;
-			// Fill in ship orientation...
-			*ship_orient = OBJECTS [LOCALPLAYER.nObject].info.position.mOrient;
+	if (m_version>=4)
+		memset (m_info, 0, sizeof (advanced_ext_control_info));
+   else if (m_version>0)     
+		memset (m_info, 0, sizeof (ext_control_info)+sizeof (CAngleVector) + 64);
+	else if (m_version>2)
+		memset (m_info, 0, sizeof (ext_control_info)+sizeof (CAngleVector) + 64 + sizeof (CFixVector) + sizeof (CFixMatrix) +4);
+
+	if (m_version > 1) {
+		// Write ship pos and angles to external controls...
+		ubyte *temp_ptr = reinterpret_cast<ubyte*> (m_info);
+		CFixVector *ship_pos;
+		CFixMatrix *ship_orient;
+		memset (m_info, 0, sizeof (ext_control_info)+sizeof (CAngleVector) + 64 + sizeof (CFixVector)+sizeof (CFixMatrix));
+		temp_ptr += sizeof (ext_control_info) + sizeof (CAngleVector) + 64;
+		ship_pos = reinterpret_cast<CFixVector*> (temp_ptr);
+		temp_ptr += sizeof (CFixVector);
+		ship_orient = reinterpret_cast<CFixMatrix*> (temp_ptr);
+		// Fill in ship postion...
+		*ship_pos = OBJECTS [LOCALPLAYER.nObject].info.position.vPos;
+		// Fill in ship orientation...
+		*ship_orient = OBJECTS [LOCALPLAYER.nObject].info.position.mOrient;
 		}
-    if (kc_externalVersion>=4)
-	  {
-	   advanced_ext_control_info *temp_ptr = reinterpret_cast<advanced_ext_control_info*> (kc_external_control);
+    if (m_version>=4) {
+	   advanced_ext_control_info *temp_ptr = reinterpret_cast<advanced_ext_control_info*> (m_info);
  
       temp_ptr->headlightState = PlayerHasHeadlight (-1);
 		temp_ptr->primaryWeaponFlags = LOCALPLAYER.primaryWeaponFlags;
@@ -1888,30 +1803,24 @@ void KCReadExternalControls ()
       for (i=0;i<2;i++)
 		 ExtXVibrateInfo [i]=0;
       ExtXVibrateClear=0;
-     }
+		}
 	}
 
 	if (automap.m_bDisplay)			// (If in automap...)
-		kc_external_control->automapState = 1;
+		m_info->automapState = 1;
 	//memset (&r,0,sizeof (r);
-
-  #if 0
- 
-	int386 (kc_external_intno, &r, &r);		// Read external info...
-
-  #endif 
 
 	if (gameData.multiplayer.nLocalPlayer > -1) {
 		OBJECTS [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_TURNROLL);	// Turn off roll when turning
 		OBJECTS [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest CSide.
 		gameOpts->gameplay.nAutoLeveling = 0;
 
-		if (kc_externalVersion > 0) {	
+		if (m_version > 0) {	
 			CFixMatrix tempm, ViewMatrix;
 			CAngleVector * Kconfig_abs_movement;
 			char * oem_message;
 
-			Kconfig_abs_movement = reinterpret_cast<CAngleVector*> ((size_t) kc_external_control + sizeof (ext_control_info));
+			Kconfig_abs_movement = reinterpret_cast<CAngleVector*> ((size_t) m_info + sizeof (ext_control_info));
 
 			if (!Kconfig_abs_movement->IsZero()) {
 				tempm = CFixMatrix::Create(*Kconfig_abs_movement);
@@ -1924,26 +1833,26 @@ void KCReadExternalControls ()
 		}
 	}
 
-	Controls [0].pitchTime += FixMul (kc_external_control->pitchTime,gameData.time.xFrame);					
-	Controls [0].verticalThrustTime += FixMul (kc_external_control->verticalThrustTime,gameData.time.xFrame);
-	Controls [0].headingTime += FixMul (kc_external_control->headingTime,gameData.time.xFrame);
-	Controls [0].sidewaysThrustTime += FixMul (kc_external_control->sidewaysThrustTime ,gameData.time.xFrame);
-	Controls [0].bankTime += FixMul (kc_external_control->bankTime ,gameData.time.xFrame);
-	Controls [0].forwardThrustTime += FixMul (kc_external_control->forwardThrustTime ,gameData.time.xFrame);
-	Controls [0].rearViewDownCount += kc_external_control->rearViewDownCount;
-	Controls [0].rearViewDownState |= kc_external_control->rearViewDownState;
-	Controls [0].firePrimaryDownCount += kc_external_control->firePrimaryDownCount;
-	Controls [0].firePrimaryState |= kc_external_control->firePrimaryState;
-	Controls [0].fireSecondaryState |= kc_external_control->fireSecondaryState;
-	Controls [0].fireSecondaryDownCount += kc_external_control->fireSecondaryDownCount;
-	Controls [0].fireFlareDownCount += kc_external_control->fireFlareDownCount;
-	Controls [0].dropBombDownCount += kc_external_control->dropBombDownCount;
-	Controls [0].automapDownCount += kc_external_control->automapDownCount;
-	Controls [0].automapState |= kc_external_control->automapState;
+	Controls [0].pitchTime += FixMul (m_info->pitchTime,gameData.time.xFrame);					
+	Controls [0].verticalThrustTime += FixMul (m_info->verticalThrustTime,gameData.time.xFrame);
+	Controls [0].headingTime += FixMul (m_info->headingTime,gameData.time.xFrame);
+	Controls [0].sidewaysThrustTime += FixMul (m_info->sidewaysThrustTime ,gameData.time.xFrame);
+	Controls [0].bankTime += FixMul (m_info->bankTime ,gameData.time.xFrame);
+	Controls [0].forwardThrustTime += FixMul (m_info->forwardThrustTime ,gameData.time.xFrame);
+	Controls [0].rearViewDownCount += m_info->rearViewDownCount;
+	Controls [0].rearViewDownState |= m_info->rearViewDownState;
+	Controls [0].firePrimaryDownCount += m_info->firePrimaryDownCount;
+	Controls [0].firePrimaryState |= m_info->firePrimaryState;
+	Controls [0].fireSecondaryState |= m_info->fireSecondaryState;
+	Controls [0].fireSecondaryDownCount += m_info->fireSecondaryDownCount;
+	Controls [0].fireFlareDownCount += m_info->fireFlareDownCount;
+	Controls [0].dropBombDownCount += m_info->dropBombDownCount;
+	Controls [0].automapDownCount += m_info->automapDownCount;
+	Controls [0].automapState |= m_info->automapState;
 
-   if (kc_externalVersion>=3)
+   if (m_version>=3)
 	 {
-		ubyte *temp_ptr = reinterpret_cast<ubyte*> (kc_external_control);
+		ubyte *temp_ptr = reinterpret_cast<ubyte*> (m_info);
 		temp_ptr += (sizeof (ext_control_info) + sizeof (CAngleVector) + 64 + sizeof (CFixVector) + sizeof (CFixMatrix));
   
 	   if (* (temp_ptr))
@@ -1956,9 +1865,9 @@ void KCReadExternalControls ()
 		if (* (temp_ptr+3))
 		 Controls [0].headlightCount= (* (temp_ptr+3));
   	 }
-   if (kc_externalVersion>=4)
+   if (m_version>=4)
 	 {
-	  advanced_ext_control_info *temp_ptr = reinterpret_cast<advanced_ext_control_info*> (kc_external_control);
+	  advanced_ext_control_info *temp_ptr = reinterpret_cast<advanced_ext_control_info*> (m_info);
      
      if (temp_ptr->Reactor_blown)
       {
@@ -1967,8 +1876,7 @@ void KCReadExternalControls ()
 		 else
 			 DoReactorDestroyedStuff (ObjFindFirstOfType (OBJ_REACTOR));
 	   }
-    }
-  
+	}
 }
 
 //------------------------------------------------------------------------------

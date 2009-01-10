@@ -183,6 +183,24 @@ typedef struct advanced_ext_control_info {
 } advanced_ext_control_info;
 
 
+class CExternalControls {
+	public:
+		ubyte					m_bUse;
+		ubyte					m_bEnable;
+		ubyte					m_intno;
+		ext_control_info*	m_info;
+		char*					m_name;
+		ubyte					m_version;
+
+	public:
+		CExternalControls () { memset (this, 0, sizeof (*this)); }
+		void Init (int intno, int address);
+		void Read (void);
+};
+
+extern CExternalControls externalControls;
+
+
 typedef struct kcItem {
 	short id;				// The id of this item
 	short x, y;			
@@ -227,8 +245,6 @@ void kconfig_sense_init();
 
 extern int kconfig_is_axes_used(int axis);
 
-extern void KCInitExternalControls(int intno, int address);
-
 extern ubyte nExtGameStatus;
 void KConfig(int n, const char *pszTitle);
 void SetControlType (void);
@@ -242,7 +258,6 @@ extern kcItem kcJoystick []; //NUM_JOY_CONTROLS];
 extern kcItem kcMouse [];	//NUM_MOUSE_CONTROLS];
 extern kcItem kcHotkeys [];	//NUM_HOTKEY_CONTROLS];
 extern kcItem kcSuperJoy []; //NUM_JOY_CONTROLS];
-extern ext_control_info	*kc_external_control;
 
 #define BT_NONE				-1
 #define BT_KEY 				0
