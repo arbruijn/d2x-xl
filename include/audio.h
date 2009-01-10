@@ -110,14 +110,6 @@ class CDigiSound {
 #define SOF_PLAY_FOREVER	16		// Play bForever (or until level is stopped), otherwise plays once
 #define SOF_PERMANENT		32		// Part of the level, like a waterfall or fan
 
-#ifdef _WIN32
-#	define LOCK		
-#	define UNLOCK		
-#else
-#	define LOCK		pthread_mutex_lock (&mutex);
-#	define UNLOCK	pthread_mutex_unlock (&mutex);
-#endif
-
 //------------------------------------------------------------------------------
 
 #define MAX_SOUND_QUEUE 32

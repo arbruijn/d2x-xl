@@ -14,11 +14,6 @@
 #include <string.h>
 #include <math.h>
 
-#ifndef _WIN32
-#	include <sys/asoundlib.h>
-#	include <pthread.h>
-#endif
-
 #include "inferno.h"
 #include "u_mem.h"
 #include "error.h"
@@ -103,27 +98,6 @@ static SDL_AudioSpec waveSpec;
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-
-#ifndef _WIN32
-
-void *MixerThread (void *data) 
-{
-	ubyte buffer [512];
-// Allow ourselves to be asynchronously cancelled */
-pthread_setcanceltype (PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
-for (;;) {
-   memset (buffer, 0x80, sizeof (buffer));
-   LOCK
-   audio.MixCallback (NULL,buffer,512);
-   UNLOCK
-   snd_pcm_write (sndDevHandle, buffer, 512);
-	} 
-return 0;
-}
-
-#endif
-
 //------------------------------------------------------------------------------
 /* Audio mixing callback */
 //changed on 980905 by adb to cleanup, add nPan support and optimize mixer
@@ -210,7 +184,6 @@ m_info.bResampled = 0;
 
 void CAudioChannel::SetVolume (int nVolume)
 {
-LOCK
 if (m_info.bPlaying) {
 	m_info.nVolume = FixMulDiv (nVolume, m_info.nVolume, I2X (1));
 #if USE_SDL_MIXER
@@ -218,14 +191,12 @@ if (m_info.bPlaying) {
 		Mix_VolPan (this - audio.Channel (), m_info.nVolume, -1);
 #endif
 	}
-UNLOCK
 }
 
 //------------------------------------------------------------------------------
 
 void CAudioChannel::SetPan (int nPan)
 {
-LOCK
 if (m_info.bPlaying) {
 	m_info.nPan = nPan;
 #if USE_SDL_MIXER
@@ -235,14 +206,12 @@ if (m_info.bPlaying) {
 		}
 #endif
 	}
-UNLOCK
 }
 
 //------------------------------------------------------------------------------
 
 void CAudioChannel::Stop (void)
 {
-LOCK
 m_info.bPlaying = 0;
 m_info.nSoundObj = -1;
 m_info.bPersistent = 0;
@@ -269,7 +238,6 @@ if (m_info.bResampled) {
 	m_info.sample.Destroy ();
 	m_info.bResampled = 0;
 	}
-UNLOCK
 }
 
 //------------------------------------------------------------------------------
@@ -634,67 +602,6 @@ InitThread ();
 
 //------------------------------------------------------------------------------
 
-#ifndef _WIN32
-
-int CAudio::InitThread (void)
-{
-	int								card = 0, device = 0, err;
-	snd_pcm_format_t				format;
-	snd_pcm_playback_params_t	params;
-	pthread_attr_t					attr;
-	pthread_mutexattr_t			mutexattr;
-
- //added on 980905 by adb to init sound kill system
-//end edit by adb
-
-// Open the ALSA sound device
-if (0 > (err = snd_pcm_open (&sndDevHandle, card, device, SND_PCM_OPEN_PLAYBACK))) {  
-	fprintf(stderr, "open failed: %s\n", snd_strerror(err);  
-	return -1; 
-	} 
-
-memset (&format, 0, sizeof (format));
-format.format = SND_PCM_SFMT_U8;
-format.rate = 11025;
-format.channels = 2;
-if (0 > (err = snd_pcm_playback_format (sndDevHandle, &format))) { 
-	fprintf(stderr, "format setup failed: %s\n", snd_strerror(err);
-	snd_pcm_close (sndDevHandle); 
-	return -1; 
-	} 
-
-memset (&params, 0, sizeof (params));
-params.fragment_size = 512;
-params.fragments_max = 2;
-params.fragments_room = 1;
-if (0 > (err = snd_pcm_playback_params (sndDevHandle, &params))) { 
-	fprintf (stderr, "params setup failed: %s\n", snd_strerror (err);
-	snd_pcm_close (sndDevHandle); 
-	return -1; 
-}	
-
-// Start the mixer thread
-// We really should check the results of these
-pthread_mutexattr_init (&mutexattr);
-pthread_mutex_init (&mutex,&mutexattr);
-pthread_mutexattr_destroy (&mutexattr);
-
-if (pthread_attr_init (&attr)) {
-	fprintf (stderr, "failed to init attr\n");
-	snd_pcm_close (sndDevHandle); 
-	return -1;
-	}
-
-pthread_attr_setdetachstate (&attr, PTHREAD_CREATE_DETACHED);
-pthread_create (&threadId,&attr,MixerThread,NULL);
-pthread_attr_destroy (&attr);
-return 0;
-}
-
-#endif
-
-//------------------------------------------------------------------------------
-
 void CAudio::Destroy (void)
 {
 Close ();
@@ -896,12 +803,10 @@ if (((nSoundObj > -1) || bLooping || (nVolume > I2X (1))) && !nSoundClass)
 	nSoundClass = -1;
 if (!(channelP = FindFreeChannel (nSoundClass)))
 	return -1;
-LOCK
 if (0 > channelP->Start (nSound, nSoundClass, nVolume, nPan, bLooping, nLoopStart, nLoopEnd, nSoundObj, nSpeed, pszWAV, vPos)) {
 	UNLOCK
 	return -1;
 	}
-UNLOCK
 int i = m_info.nFreeChannel;
 if (++m_info.nFreeChannel >= m_info.nMaxChannels)
 	m_info.nFreeChannel = 0;
@@ -962,7 +867,6 @@ int CAudio::SoundIsPlaying (short nSound)
 	int i;
 
 nSound = XlatSound (nSound);
-LOCK
 for (i = 0; i < MAX_SOUND_CHANNELS; i++)
   //changed on 980905 by adb: added audio.m_channels[i].bPlaying &&
   if (audio.m_channels [i].Playing () && (audio.m_channels [i].Sound () == nSound)) {
@@ -970,7 +874,6 @@ for (i = 0; i < MAX_SOUND_CHANNELS; i++)
   //end changes by adb
 	return 1;
 	}
-UNLOCK
 return 0;
 }
 
@@ -1007,9 +910,7 @@ if (!m_info.bAvailable)
 #ifdef _WIN32
 return audio.m_channels [nChannel].Playing ();
 #else
-LOCK
 bool b = audio.m_channels [nChannel].Playing ();
-UNLOCK
 return b;
 #endif
 }
@@ -1042,9 +943,7 @@ void CAudio::StopSound (int nChannel)
 {
 if (!gameStates.app.bUseSound)
 	return;
-LOCK
 m_channels [nChannel].Stop ();
-UNLOCK
 }
 
 //------------------------------------------------------------------------------

@@ -181,11 +181,9 @@ if (!pszWAV) {
 	nSound = (nSound < 0) ? -nSound : CAudio::XlatSound (nSound);
 	if (nSound < 0)
 		return -1;
-	LOCK
 	int nChannel = FindChannel (nSound);
 	if (nChannel > -1)
 		StopSound (nChannel);
-	UNLOCK
 	}
 // start the sample playing
 return StartSound (nSound, nSoundClass, nVolume, nPan, 0, (nLoops > 0) ? nLoops - 1 : -1, -1, -1, I2X (1), pszWAV, vPos);
