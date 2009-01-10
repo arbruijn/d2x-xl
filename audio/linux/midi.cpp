@@ -64,7 +64,7 @@ void DigiStopCurrentSong ()
 {
 	int h;
 
-if (gameData.songs.bPlaying) {
+if (songManager.Playing ()) {
 	DigiFadeoutMusic ();
 	h = midiVolume;	// preserve it for another song being started
 #if USE_SDL_MIXER

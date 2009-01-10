@@ -21,6 +21,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "inferno.h"
 #include "pstypes.h"
+#include "strutil.h"
 #include "u_mem.h"
 #include "gr.h"
 #include "grdef.h"
@@ -502,7 +503,7 @@ if (nUsedForLevel && stricmp (paletteManager.LastPig (), pszPaletteName) != 0) {
 		PiggyInitPigFile (szPigName);
 		}
 	}
-if (bForce || pszLevelName || stricmp(paletteManager.LastLoaded (), pszPaletteName)) {
+if (bForce || pszLevelName || stricmp (paletteManager.LastLoaded (), pszPaletteName)) {
 	strncpy (paletteManager.LastLoaded (), pszPaletteName, sizeof (paletteManager.LastLoaded ()));
 	palette = paletteManager.Load (pszPaletteName, pszLevelName);
 	if (!paletteManager.FadedOut () && !bNoScreenChange)

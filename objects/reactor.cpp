@@ -538,7 +538,7 @@ for (i = 0; i < MAX_CONTROLCEN_GUNS; i++)
 /*
  * reads n reactor structs from a CFile
  */
-extern int ReadReactors (CFile& cf)
+int ReadReactors (CFile& cf)
 {
 	int i;
 
@@ -549,7 +549,7 @@ return gameData.reactor.nReactors;
 
 //------------------------------------------------------------------------------
 
-INT ReadReactorTriggers (CFile& cf)
+int ReadReactorTriggers (CFile& cf)
 {
 	int i, j;
 

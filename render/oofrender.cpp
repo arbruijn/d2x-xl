@@ -382,7 +382,7 @@ for (i = m_faces.m_nFaces, pf = m_faces.m_list.Buffer (); i; i--, pf++) {
 		fl = 0.75f + 0.25f * fl;
 		fl = fl * *fLight;
 #else
-		fl = *fLight * (0.75f - 0.25f * (pf->m_vNormal * mView.f);
+		fl = *fLight * (0.75f - 0.25f * (pf->m_vNormal * mView.FVec ());
 #endif
 		if (fl > 1)
 			fl = 1;

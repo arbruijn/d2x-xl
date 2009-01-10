@@ -60,7 +60,7 @@ bool CTransformation::Push (void)
 {
 if (m_save.Length () >= MAX_INSTANCE_DEPTH)
 	return false;
-m_save.push (m_info);
+m_save.Push (m_info);
 glMatrixMode (GL_MODELVIEW);
 glPushMatrix ();
 return true;
@@ -87,7 +87,7 @@ void CTransformation::Begin (const CFixVector& vPos, CFixMatrix& mOrient)
 	CFixMatrix	mTrans, mRot;
 
 //Assert (nInstanceDepth < MAX_INSTANCE_DEPTH);
-if (!G3PushMatrix ())
+if (!Push ())
 	return;
 if (gameStates.ogl.bUseTransform) {
 	CFixVector	h;

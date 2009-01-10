@@ -35,7 +35,7 @@ if ((ecP->changingWallTexture < 0) && (ecP->changingObjectTexture < 0))
 	return ecP->vc.xFrameTime;
 else {
 	CBitmap	*bmP = gameData.pig.tex.bitmapP + ecP->vc.frames [0].index;
-	return (fix) ((((bmP->Type () == Bm_TYPE_ALT) && bmP->Frames ()) ? 
+	return (fix) ((((bmP->Type () == BM_TYPE_ALT) && bmP->Frames ()) ? 
 					  (ecP->vc.xFrameTime * ecP->vc.nFrameCount) / bmP->FrameCount () : 
 					  ecP->vc.xFrameTime) /  gameStates.gameplay.slowmo [0].fSpeed);
 	}

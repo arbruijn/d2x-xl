@@ -13,6 +13,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <netinet/in.h> /* for htons & co. */
+#include "pstypes.h"
 #include "ipx_drv.h"
 #include "ukali.h"
 

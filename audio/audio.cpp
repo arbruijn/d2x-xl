@@ -22,6 +22,11 @@
 #include "midi.h"
 #include "audio.h"
 
+#ifndef _WIN32
+#	include <sys/asoundlib.h>
+#	include <pthread.h>
+#endif
+
 #define SDL_MIXER_CHANNELS	2
 
 //end changes by adb
@@ -110,7 +115,7 @@ pthread_setcanceltype (PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 for (;;) {
    memset (buffer, 0x80, sizeof (buffer));
    LOCK
-   AudioMixCallback (NULL,buffer,512);
+   audio.MixCallback (NULL,buffer,512);
    UNLOCK
    snd_pcm_write (sndDevHandle, buffer, 512);
 	} 

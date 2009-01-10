@@ -55,7 +55,7 @@ char szCheatBuf[] = "AAAAAAAAAAAAAAA";
 void DoCheatPenalty ()
 {
 #if !DBG
-audio.PlaySampleClass (SOUND_CHEATER, NULL, I2X (1), SOUNDCLASS_PLAYER);
+audio.PlaySound (SOUND_CHEATER, SOUNDCLASS_PLAYER, I2X (1));
 gameStates.app.cheats.bEnabled = 1;
 LOCALPLAYER.score = 0;
 #endif
