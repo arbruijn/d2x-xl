@@ -1171,11 +1171,11 @@ sprintf (szTitle,
 Assert (c <= N_GLITZITEMS);
 paletteManager.DisableEffect ();
 if (network && (gameData.app.nGameMode & GM_NETWORK))
-	m.Menu (NULL, szTitle, NetworkEndLevelPoll2, NULL, reinterpret_cast<char*> (STARS_BACKGROUND));
+	m.Menu (NULL, szTitle, NetworkEndLevelPoll2, NULL, STARS_BACKGROUND);
 else
 // NOTE LINK TO ABOVE!!!
 gameStates.app.bGameRunning = 0;
-m.Menu (NULL, szTitle, NULL, NULL, reinterpret_cast<char*> (STARS_BACKGROUND));
+m.Menu (NULL, szTitle, NULL, NULL, STARS_BACKGROUND);
 }
 
 //	-----------------------------------------------------------------------------------------------------
@@ -1234,7 +1234,7 @@ void DoSecretMessage (const char *msg)
 
 StopTime ();
 SetFunctionMode (FMODE_MENU);
-MsgBox (NULL, reinterpret_cast<char*> (STARS_BACKGROUND), 1, TXT_OK, msg);
+MsgBox (NULL, STARS_BACKGROUND, 1, TXT_OK, msg);
 SetFunctionMode (fMode);
 StartTime (0);
 }
@@ -1509,12 +1509,11 @@ if (!IsMultiGame) {
 		if (!bPlayed) {
 			if (IS_D2_OEM) {
 				songManager.Play (SONG_TITLE, 0);
-				briefing.Run (reinterpret_cast<char*> ("end2oem.tex"), 1);
+				briefing.Run ("end2oem.tex", 1);
 				}
 			else {
 				songManager.Play (SONG_ENDGAME, 0);
-				briefing.Run (gameStates.app.bD1Mission ? reinterpret_cast<char*> ("endreg.tex") : reinterpret_cast<char*> ("ending2.tex"), 
-								  gameStates.app.bD1Mission ? 0x7e : 1);
+				briefing.Run (gameStates.app.bD1Mission ? "endreg.tex" : "ending2.tex", gameStates.app.bD1Mission ? 0x7e : 1);
 				}
 			}
 		}
@@ -1618,7 +1617,7 @@ SetScreenMode (SCREEN_MENU);		//go into menu mode
 CCanvas::SetCurrent (NULL);
 old_fmode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
-MsgBox (NULL, reinterpret_cast<char*> (STARS_BACKGROUND), 1, TXT_OK, TXT_DIED_IN_MINE);
+MsgBox (NULL, STARS_BACKGROUND, 1, TXT_OK, TXT_DIED_IN_MINE);
 SetFunctionMode (old_fmode);
 }
 
@@ -1642,7 +1641,7 @@ if (gameData.missions.nEnteredFromLevel < 0)
 	sprintf (msg, TXT_SECRET_LEVEL_RETURN);
 else
 	sprintf (msg, TXT_RETURN_LVL, gameData.missions.nEnteredFromLevel);
-MsgBox (NULL, reinterpret_cast<char*> (STARS_BACKGROUND), 1, TXT_OK, msg);
+MsgBox (NULL, STARS_BACKGROUND, 1, TXT_OK, msg);
 SetFunctionMode (old_fmode);
 StartTime (0);
 }
@@ -1665,7 +1664,7 @@ CCanvas::SetCurrent (NULL);
 old_fmode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
 sprintf (msg, "Base level destroyed.\nAdvancing to level %i", gameData.missions.nEnteredFromLevel + 1);
-MsgBox (NULL, reinterpret_cast<char*> (STARS_BACKGROUND), 1, TXT_OK, msg);
+MsgBox (NULL, STARS_BACKGROUND, 1, TXT_OK, msg);
 SetFunctionMode (old_fmode);
 }
 
@@ -1943,12 +1942,12 @@ if (!IsMultiGame) {
 	if (!gameStates.app.bD1Mission && (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission)) {
 		if (IS_SHAREWARE) {
 			if (nLevel == 1)
-				briefing.Run (reinterpret_cast<char*> ("brief2.tex"), 1);
+				briefing.Run ("brief2.tex", 1);
 			}
 		else if (IS_D2_OEM) {
 			if ((nLevel == 1) && !gameStates.movies.bIntroPlayed) {
 				gameStates.movies.bIntroPlayed = 1;
-				briefing.Run (reinterpret_cast<char*> ("brief2o.tex"), 1);
+				briefing.Run ("brief2o.tex", 1);
 				}
 			}
 		else { // full version
@@ -1970,7 +1969,7 @@ if (!IsMultiGame) {
 					if (hires_save != gameStates.menus.bHiresAvailable)
 						gameStates.video.nScreenMode = -1;		//force reset
 					}
-				briefing.Run (reinterpret_cast<char*> ("robot.tex"), nLevel);
+				briefing.Run ("robot.tex", nLevel);
 				gameStates.menus.bHiresAvailable = hires_save;
 				}
 			}

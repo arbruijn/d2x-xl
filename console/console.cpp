@@ -469,7 +469,7 @@ m_InsMode = 1;
 m_CursorPos = 0;
 m_CommandScrollBack = 0;
 m_output = output;
-m_Prompt = reinterpret_cast<char*> (CON_DEFAULT_PROMPT);
+m_Prompt = CON_DEFAULT_PROMPT;
 m_HideKey = CON_DEFAULT_HIDEKEY;
 
 SetExecuteFunction (&CConsole::DefaultCmdFunction);

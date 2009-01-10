@@ -15,7 +15,7 @@
 #include <math.h>
 
 #ifndef _WIN32
-#	include <alsa/soundlib.h>
+#	include <sys/asoundlib.h>
 #	include <pthread.h>
 #endif
 

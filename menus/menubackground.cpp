@@ -469,7 +469,9 @@ GrUpdate (0);
 
 void CBackgroundManager::LoadStars (void)
 {
-Setup (STARS_BACKGROUND, 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+	static char szStars [2][12] = {"stars.pcx", "starsb.pcx"};
+	
+Setup (szStars [gameStates.menus.bHires], 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 }
 
 //------------------------------------------------------------------------------

@@ -282,7 +282,7 @@ int ReadSoundFile (void)
 	int		nSoundStart;
 	int		size, length;
 
-if (!cf.Open (reinterpret_cast<char*> (DEFAULT_SNDFILE), gameFolders.szDataDir, "rb", 0))
+if (!cf.Open (DEFAULT_SNDFILE, gameFolders.szDataDir, "rb", 0))
 	return 0;
 
 //make sure soundfile is valid nType file & is up-to-date
@@ -357,8 +357,7 @@ void PiggyReadSounds (void)
 
 ptr = gameData.pig.sound.data [gameStates.app.bD1Data].Buffer ();
 sbytes = 0;
-if (!cf.Open (gameStates.app.bD1Mission ? reinterpret_cast<char*> ("descent.pig") : reinterpret_cast<char*> (DEFAULT_SNDFILE), 
-				  gameFolders.szDataDir, "rb", 0))
+if (!cf.Open (gameStates.app.bD1Mission ? "descent.pig" : DEFAULT_SNDFILE, gameFolders.szDataDir, "rb", 0))
 	return;
 for (i = 0, j = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]; i < j; i++, soundP++) {
 	if (soundOffset [gameStates.app.bD1Data][i] > 0) {
@@ -412,7 +411,7 @@ tAddonSound addonSounds [MAX_ADDON_SOUND_FILES] = {
 
 const char *AddonSoundName (int nSound)
 {
-return ((nSound < 0) || (nSound >= MAX_ADDON_SOUND_FILES)) ? reinterpret_cast<char*> ("") : addonSounds [nSound].szSoundFile;
+return ((nSound < 0) || (nSound >= MAX_ADDON_SOUND_FILES)) ? "" : addonSounds [nSound].szSoundFile;
 }
 
 //------------------------------------------------------------------------------

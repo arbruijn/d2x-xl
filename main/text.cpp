@@ -2621,7 +2621,9 @@ return pszTexts;
 
 void InitGameTexts (void)
 {
-pszGameTexts = InitTexts (gameStates.app.bEnglish ? reinterpret_cast<char*> ("descent.tex.eng") : reinterpret_cast<char*> ("descent.tex.ger"), 1);
+	static char szTextFiles [2][16] = {"descent.tex.ger", "descent.tex.eng"};
+	
+pszGameTexts = InitTexts (szTextFiles [gameStates.app.bEnglish], 1);
 }
 
 //------------------------------------------------------------------------------

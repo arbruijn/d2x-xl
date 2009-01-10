@@ -453,7 +453,7 @@ if (!m_override) {
 
 		sprintf (newname, "%s.sg%x", LOCALPLAYER.callsign, NUM_SAVES);
 		cf.Seek (DESC_OFFSET, SEEK_SET);
-		cf.Write (reinterpret_cast<char*> (" [autosave backup]"), sizeof (char) * DESC_LENGTH, 1);
+		cf.Write (" [autosave backup]", sizeof (char) * DESC_LENGTH, 1);
 		cf.Close ();
 		cf.Delete (newname, gameFolders.szSaveDir);
 		cf.Rename (m_filename, newname, gameFolders.szSaveDir);

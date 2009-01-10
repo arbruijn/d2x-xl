@@ -400,7 +400,7 @@ int ReadHamFile (void)
 	int nHAMId;
 	int nSoundOffset = 0;
 
-if (!cf.Open (reinterpret_cast<char*> (DEFAULT_HAMFILE), gameFolders.szDataDir, "rb", 0)) {
+if (!cf.Open (DEFAULT_HAMFILE, gameFolders.szDataDir, "rb", 0)) {
 	bMustWriteHamFile = 1;
 	return 0;
 	}
@@ -492,7 +492,7 @@ if (bLowMemory)
 	gameStates.sound.digi.bLoMem = 1;
 /*---*/PrintLog ("   Loading game data\n");
 #if 1 //def EDITOR //need for d1 mission briefings
-PiggyInitPigFile (reinterpret_cast<char*> (DEFAULT_PIGFILE));
+PiggyInitPigFile (DEFAULT_PIGFILE);
 #endif
 /*---*/PrintLog ("   Loading main ham file\n");
 bSoundOk = bHamOk = ReadHamFile ();
