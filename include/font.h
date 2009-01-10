@@ -144,7 +144,7 @@ class CFontManager {
 		void Unload (CFont* font);
 		inline CFont* Current (void) { return m_current; }
 		inline CFont* GameFont (int i) { return ((i >= 0) && (i < MAX_FONTS)) ? m_gameFonts [i] : NULL; }
-		inline void SetCurrent (CFont* fontP);
+		void SetCurrent (CFont* fontP);
 		void SetColor (int fgColor, int bgColor);
 		void SetColorRGB (tRgbaColorb *fgColor, tRgbaColorb *bgColor);
 		void SetColorRGBi (uint fgColor, int bSetFG, uint bgColor, int bSetBG);

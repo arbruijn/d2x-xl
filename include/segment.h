@@ -213,7 +213,7 @@ class CSegment {
 		CFixVector	m_extents [2];
 
 	public:
-		inline int Index (void);
+		int Index (void);
 		void Read (CFile& cf);
 		void ReadType (CFile& cf, ubyte flags);
 		void ReadVerts (CFile& cf);
