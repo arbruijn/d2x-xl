@@ -44,7 +44,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 typedef struct tJointPos {
 	short jointnum;
 	CAngleVector angles;
-} __pack__ tJointPos;
+} tJointPos;
 
 //describes a list of joint positions
 typedef struct jointlist {
