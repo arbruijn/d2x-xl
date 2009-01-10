@@ -18,7 +18,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // returns number of item chosen
 
 extern char *menu_difficulty_text[];
-extern const char *menuBgNames [4][2];
 extern int Max_debrisObjects;
 extern int MissileView_enabled;
 extern int EscortView_enabled;

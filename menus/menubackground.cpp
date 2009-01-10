@@ -64,17 +64,45 @@ CPalette* menuPalette;
 
 CBackgroundManager backgroundManager;
 
-#define MENU_BACKGROUND_BITMAP_HIRES (CFile::Exist ("scoresb.pcx", gameFolders.szDataDir, 0)? "scoresb.pcx": "scores.pcx")
-#define MENU_BACKGROUND_BITMAP_LORES (CFile::Exist ("scores.pcx", gameFolders.szDataDir, 0) ? "scores.pcx": "scoresb.pcx") // Mac datafiles only have scoresb.pcx
-
-#define MENU_BACKGROUND_BITMAP (gameStates.menus.bHires ? MENU_BACKGROUND_BITMAP_HIRES : MENU_BACKGROUND_BITMAP_LORES)
-
 #define MENU_PCX_FULL		menuBgNames [0][gameStates.menus.bHires]
 #define MENU_PCX_OEM			menuBgNames [1][gameStates.menus.bHires]
 #define MENU_PCX_SHAREWARE	menuBgNames [2][gameStates.menus.bHires]
 #define MENU_PCX_MAC_SHARE	menuBgNames [3][gameStates.menus.bHires]
 
 int bHiresBackground;
+
+//------------------------------------------------------------------------------ 
+
+#if DBG
+
+char *menuBgNames [4][2] = {
+	{"menu.pcx", "menub.pcx"},
+	{"menuo.pcx", "menuob.pcx"},
+	{"menud.pcx", "menud.pcx"},
+	{"menub.pcx", "menub.pcx"}
+	};
+
+#else
+
+const char *menuBgNames [4][2] = {
+ {"\x01menu.pcx", "\x01menub.pcx"},
+ {"\x01menuo.pcx", "\x01menuob.pcx"},
+ {"\x01menud.pcx", "\x01menud.pcx"},
+ {"\x01menub.pcx", "\x01menub.pcx"}
+	};
+#endif
+
+	static char szBackgrounds [2][2][12] = {
+		{"stars.pcx", "starsb.pcx"},
+		{"scores.pcx", "scoresb.pcx"}
+		};
+
+//------------------------------------------------------------------------------
+
+char *BackgroundName (int nType, int bHires)
+{
+return nType ? szBackgrounds [nType - 1][(bHires < 0) ? gameStates.menus.bHires : bHires] : BackgroundName (BG_MENU);
+}
 
 //------------------------------------------------------------------------------
 
@@ -322,12 +350,11 @@ if (m_nDepth >= 0) {
 
 void CBackgroundManager::Init (void)
 {
-	static char szBackgrounds [2][12] = {"scores.pcx", "scoresb.pcx"};
-	
 m_background [0] = NULL;
 m_background [1] = NULL;
-m_filename [0] = MenuPCXName ();
-m_filename [1] = szBackgrounds [gameStates.menus.bHires];
+m_filename [0] = BackgroundName (BG_MENU);
+m_filename [1] = BackgroundName (BG_SCORES);
+szBackgrounds [gameStates.menus.bHires];
 m_nDepth = -1; 
 m_bShadow = true;
 m_bValid = false;
@@ -461,7 +488,7 @@ return m_bg [++m_nDepth].Create (filename, x, y, width, height);
 void CBackgroundManager::Rebuild (void)
 {
 Destroy ();
-Setup (MenuPCXName (), 0, 0, screen.Width (), screen.Height ());
+Setup (BackgroundName (BG_MENU), 0, 0, screen.Width (), screen.Height ());
 GrUpdate (0);
 }
 
@@ -469,9 +496,7 @@ GrUpdate (0);
 
 void CBackgroundManager::LoadStars (void)
 {
-	static char szStars [2][12] = {"stars.pcx", "starsb.pcx"};
-	
-Setup (szStars [gameStates.menus.bHires], 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+Setup (BackgroundName (BG_STARS), 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 }
 
 //------------------------------------------------------------------------------

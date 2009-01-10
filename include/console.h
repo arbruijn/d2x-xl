@@ -206,9 +206,7 @@ class CConsole {
 		void _CDECL_ printf (int priority, const char *fmt, ...);
 	};
 
-#define CON_BG_HIRES (CFile::Exist ("scoresb.pcx", gameFolders.szDataDir, 0) ? "scoresb.pcx" : "scores.pcx")
-#define CON_BG_LORES (CFile::Exist ("scores.pcx", gameFolders.szDataDir, 0) ? "scores.pcx" : "scoresb.pcx") // Mac datafiles only have scoresb.pcx
-#define CON_BG ((screen.Width () >= 640) ? CON_BG_HIRES : CON_BG_LORES)
+#define CON_BG BackgroundName (BG_SCORES, screen.Width () >= 640)
 
 extern CConsole console;
 

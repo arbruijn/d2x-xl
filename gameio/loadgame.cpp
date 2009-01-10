@@ -1171,11 +1171,11 @@ sprintf (szTitle,
 Assert (c <= N_GLITZITEMS);
 paletteManager.DisableEffect ();
 if (network && (gameData.app.nGameMode & GM_NETWORK))
-	m.Menu (NULL, szTitle, NetworkEndLevelPoll2, NULL, STARS_BACKGROUND);
+	m.Menu (NULL, szTitle, NetworkEndLevelPoll2, NULL, BackgroundName (BG_STARS));
 else
 // NOTE LINK TO ABOVE!!!
 gameStates.app.bGameRunning = 0;
-m.Menu (NULL, szTitle, NULL, NULL, STARS_BACKGROUND);
+m.Menu (NULL, szTitle, NULL, NULL, BackgroundName (BG_STARS));
 }
 
 //	-----------------------------------------------------------------------------------------------------
@@ -1234,7 +1234,7 @@ void DoSecretMessage (const char *msg)
 
 StopTime ();
 SetFunctionMode (FMODE_MENU);
-MsgBox (NULL, STARS_BACKGROUND, 1, TXT_OK, msg);
+MsgBox (NULL, BackgroundName (BG_STARS), 1, TXT_OK, msg);
 SetFunctionMode (fMode);
 StartTime (0);
 }
@@ -1617,7 +1617,7 @@ SetScreenMode (SCREEN_MENU);		//go into menu mode
 CCanvas::SetCurrent (NULL);
 old_fmode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
-MsgBox (NULL, STARS_BACKGROUND, 1, TXT_OK, TXT_DIED_IN_MINE);
+MsgBox (NULL, BackgroundName (BG_STARS), 1, TXT_OK, TXT_DIED_IN_MINE);
 SetFunctionMode (old_fmode);
 }
 
@@ -1641,7 +1641,7 @@ if (gameData.missions.nEnteredFromLevel < 0)
 	sprintf (msg, TXT_SECRET_LEVEL_RETURN);
 else
 	sprintf (msg, TXT_RETURN_LVL, gameData.missions.nEnteredFromLevel);
-MsgBox (NULL, STARS_BACKGROUND, 1, TXT_OK, msg);
+MsgBox (NULL, BackgroundName (BG_STARS), 1, TXT_OK, msg);
 SetFunctionMode (old_fmode);
 StartTime (0);
 }
@@ -1664,7 +1664,7 @@ CCanvas::SetCurrent (NULL);
 old_fmode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
 sprintf (msg, "Base level destroyed.\nAdvancing to level %i", gameData.missions.nEnteredFromLevel + 1);
-MsgBox (NULL, STARS_BACKGROUND, 1, TXT_OK, msg);
+MsgBox (NULL, BackgroundName (BG_STARS), 1, TXT_OK, msg);
 SetFunctionMode (old_fmode);
 }
 

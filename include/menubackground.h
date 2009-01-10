@@ -19,13 +19,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-#define STARS_BACKGROUND \
-			((gameStates.menus.bHires && CFile::Exist ("starsb.pcx", gameFolders.szDataDir, 0)) ? "starsb.pcx":\
-			CFile::Exist ("stars.pcx", gameFolders.szDataDir, 0) ? "stars.pcx" : "starsb.pcx")
+#define BG_MENU		0
+#define BG_STARS		1
+#define BG_SCORES		2
 
 //------------------------------------------------------------------------------
 
-char *MenuPCXName (void);
+char* BackgroundName (int nType, int bHires = -1);
 
 //------------------------------------------------------------------------------
 
