@@ -14,6 +14,11 @@
 #include <string.h>
 #include <math.h>
 
+#ifndef _WIN32
+#	include <alsa/soundlib.h>
+#	include <pthread.h>
+#endif
+
 #include "inferno.h"
 #include "u_mem.h"
 #include "error.h"
@@ -21,11 +26,6 @@
 #include "songs.h"
 #include "midi.h"
 #include "audio.h"
-
-#ifndef _WIN32
-#	include <sys/asoundlib.h>
-#	include <pthread.h>
-#endif
 
 #define SDL_MIXER_CHANNELS	2
 

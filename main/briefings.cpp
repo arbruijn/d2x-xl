@@ -1005,7 +1005,7 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-static char szEndScreens [2][] = {"end01b.pcx", "end01.pcx"};
+static char szEndScreens [2][11] = {"end01b.pcx", "end01.pcx"};
 
 int CBriefing::HandleP (void)
 {
@@ -1426,7 +1426,7 @@ int CBriefing::LoadImageText (char* filename, CCharArray& textBuffer)
 	int	bHaveBinary;
 	char	*bufP;
 	
-	static char fileModes [2][] = {"rt", "rb"};
+	static char fileModes [2][3] = {"rt", "rb"};
 
 if (!strstr (filename, ".t"))
 	strcat (filename, ".tex");

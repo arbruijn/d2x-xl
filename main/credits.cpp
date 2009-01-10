@@ -355,10 +355,10 @@ m_bmBackdrop.DestroyBuffer ();
 //if filename passed is NULL, show Normal credits
 void CCreditsManager::Show (char *creditsFilename)
 {
-	static char fontNames [3][2][] = {
-		{"font1-1.h.fnt", "font1-1.fnt"},
-		{"font1-2.h.fnt", "font1-2.fnt"},
-		{"font1-3.h.fnt", "font1-3.fnt"}
+	static char fontNames [3][2][13] = {
+		{"font1-1h.fnt", "font1-1.fnt"},
+		{"font1-2h.fnt", "font1-2.fnt"},
+		{"font1-3h.fnt", "font1-3.fnt"}
 	};
 	
 	static char szStars [2][] = {"\0x1stars.pcx", "\0x1starsb.pcx"};

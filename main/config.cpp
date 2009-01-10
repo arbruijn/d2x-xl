@@ -136,16 +136,15 @@ if (!CfgCountHashs (pszFilter, pszFolder))
 	return 0;
 hashList.hashs.Create (hashList.nHashs);
 
-	FFS	ffs;
+	FFS	fs;
 	char	szTag [FILENAME_LEN];
-	int	i = 0;
 
 sprintf (szTag, "%s/%s", pszFolder, pszFilter);
-for (i = 0; i ? !FFN (&ffs, 0) : !FFF (szTag, &ffs, 0); i++) {
-	ffs.name [4] = '\0';
-	strlwr (ffs.name);
-	strcompress (ffs.name);
-	hashList.hashs [i] = Crc16 (0, reinterpret_cast<const ubyte*> (&ffs.name [0]), 4);
+for (int i = 0; i ? !FFN (&f, 0) : !FFF (szTag, &f, 0); i++) {
+	f.name [4] = '\0';
+	strlwr (f.name);
+	strcompress (f.name);
+	hashList.hashs [i] = Crc16 (0, reinterpret_cast<const ubyte*> (&f.name [0]), 4);
 	}
 return i;
 }

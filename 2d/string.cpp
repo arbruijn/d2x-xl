@@ -515,7 +515,7 @@ while (nextRowP) {
 	else
 		x = 0;
 #else
-	x = bCentered ? (w - GetLineWidth (textP)) / 2 : 0;
+	x = bCentered ? (w - fontManager.Current ()->GetLineWidth (textP)) / 2 : 0;
 #endif
 	while ((c = *textP)) {
 		if (c == '\n') {

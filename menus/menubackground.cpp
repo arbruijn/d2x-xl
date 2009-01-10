@@ -322,7 +322,7 @@ if (m_nDepth >= 0) {
 
 void CBackgroundManager::Init (void)
 {
-	static char szBackgrounds [2][] = {MENU_BACKGROUND_BITMAP_LORES, MENU_BACKGROUND_BITMAP_HIRES};
+	static char szBackgrounds [2][11] = {MENU_BACKGROUND_BITMAP_LORES, MENU_BACKGROUND_BITMAP_HIRES};
 	
 m_background [0] = NULL;
 m_background [1] = NULL;

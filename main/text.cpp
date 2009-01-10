@@ -2628,7 +2628,7 @@ pszGameTexts = InitTexts (gameStates.app.bEnglish ? reinterpret_cast<char*> ("de
 
 void InitHelpTexts (void)
 {
-	static char szHelpFiles [2][] = {"descent.hlp.ger", "descent.hlp.eng"};
+	static char szHelpFiles [2][16] = {"descent.hlp.ger", "descent.hlp.eng"};
 	
 pszHelpTexts = InitTexts (szHelpFiles [gameStates.app.bEnglish], 0);
 }

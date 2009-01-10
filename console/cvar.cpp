@@ -137,8 +137,10 @@ return ((ptr = Find (name))) ? ptr->m_value : 0.0;
 char* CCvar::Text (const char* name)
 {
 	CCvar *ptr;
+	
+	static char szZero [] = "0.0";
 
-return ((ptr = Find (name))) ? ptr->m_text : "0.0";
+return ((ptr = Find (name))) ? ptr->m_text : szZero;
 }
 
 //------------------------------------------------------------------------------

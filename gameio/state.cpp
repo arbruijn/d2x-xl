@@ -273,8 +273,6 @@ CSaveGameInfo saveGameInfo [NUM_SAVES + 1];
 
 #define NM_IMG_SPACE	6
 
-static int bShowTime = 1;
-
 int SaveStateMenuCallback (CMenu& menu, int& key, int nCurItem)
 {
 	int		x, y, i = nCurItem - NM_IMG_SPACE;

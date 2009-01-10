@@ -171,7 +171,7 @@ void CShrapnelCloud::Destroy (void)
 {
 for (uint i = 0; i < m_tos; i++)
 	m_data.buffer [i].Destroy ();
-CStack::Destroy ();
+CStack<CShrapnel>::Destroy ();
 }
 
 // -----------------------------------------------------------------------------
