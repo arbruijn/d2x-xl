@@ -709,11 +709,6 @@ if (gameOpts->sound.bUseSDLMixer) {
 else
 #endif
 	SDL_CloseAudio ();
-#ifndef _WIN32
-snd_pcm_close (sndDevHandle);
-pthread_mutex_destroy (&mutex);
-pthread_cancel (threadId);
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -804,7 +799,6 @@ if (((nSoundObj > -1) || bLooping || (nVolume > I2X (1))) && !nSoundClass)
 if (!(channelP = FindFreeChannel (nSoundClass)))
 	return -1;
 if (0 > channelP->Start (nSound, nSoundClass, nVolume, nPan, bLooping, nLoopStart, nLoopEnd, nSoundObj, nSpeed, pszWAV, vPos)) {
-	UNLOCK
 	return -1;
 	}
 int i = m_info.nFreeChannel;
@@ -870,7 +864,6 @@ nSound = XlatSound (nSound);
 for (i = 0; i < MAX_SOUND_CHANNELS; i++)
   //changed on 980905 by adb: added audio.m_channels[i].bPlaying &&
   if (audio.m_channels [i].Playing () && (audio.m_channels [i].Sound () == nSound)) {
-	  UNLOCK
   //end changes by adb
 	return 1;
 	}
