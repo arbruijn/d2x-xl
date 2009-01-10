@@ -83,9 +83,8 @@ for (int i = 0; i < TEXTURE_LIST_SIZE; i++)
 
 void CTextureManager::Destroy (void)
 {
-	CBitmap	*bmP;
-	CTexture	*texP;
-	int		i, j;
+	CTexture*	texP;
+	int		i;
 
 OglDestroyDrawBuffer ();
 cameraManager.Destroy ();

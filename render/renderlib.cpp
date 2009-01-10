@@ -867,7 +867,6 @@ for (i = 0; i < nVertices; i++) {
 void RotateSideNorms (void)
 {
 	int			i, j;
-	CSegment		*segP = SEGMENTS.Buffer ();
 	CSide			*sideP;
 
 for (i = 0; i < gameData.segs.nSegments; i++)

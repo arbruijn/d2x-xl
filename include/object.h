@@ -826,7 +826,7 @@ class CObject : public CObjectInfo {
 		int BossSpewRobot (CFixVector* vPos, short objType, int bObjTrigger);
 		int CreateGatedRobot (short nSegment, ubyte nObjId, CFixVector* vPos);
 
-		inline int FindSegment (void);
+		int FindSegment (void);
 		void SetTurnRoll (void);
 		void DoPhysicsSimRot (void);
 		void DoPhysicsSim (void);
@@ -838,7 +838,7 @@ class CObject : public CObjectInfo {
 		void MorphDraw (void);
 		void DoMorphFrame (void);
 		void DoPowerupFrame (void);
-		inline void RotateCamera (void);
+		void RotateCamera (void);
 		void RotateMarker (void);
 
 	private:

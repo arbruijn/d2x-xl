@@ -1726,7 +1726,6 @@ if (info.nId == gameData.multiplayer.nLocalPlayer) {		//is this the local CPlaye
 int CObject::CollideWeaponAndPlayer (CObject* playerObjP, CFixVector& vHitPt)
 {
 	fix		damage = info.xShields;
-	CObject* killer = NULL;
 
 	//	In multiplayer games, only do damage to another CPlayerData if in first frame.
 	//	This is necessary because in multiplayer, due to varying framerates, omega blobs actually
