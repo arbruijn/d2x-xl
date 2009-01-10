@@ -1107,13 +1107,13 @@ if (nThrusters > 1) {
 	}
 glEnable (GL_BLEND);
 if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
-		static tTexCoord2f	tcThruster [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
-		static tTexCoord2f	tcFlame [3] = {{{0,0}},{{1,1}},{{1,0}}};
+//		static tTexCoord2f	tcThruster [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
+//		static tTexCoord2f	tcFlame [3] = {{{0,0}},{{1,1}},{{1,0}}};
 		static tRgbaColorf	tcColor = {0.75f, 0.75f, 0.75f, 1.0f};
 		static CFloatVector	vEye = CFloatVector::ZERO;
 
 		CFloatVector	/*vPosf, vNormf, vFlame [3], vThruster [4],*/ fVecf;
-		float		c = 1/*0.7f + 0.03f * fPulse, dotFlame, dotThruster*/;
+//		float		c = 1/*0.7f + 0.03f * fPulse, dotFlame, dotThruster*/;
 
 	if (!gameData.models.vScale.IsZero ())
 		ti.fSize *= X2F (gameData.models.vScale [Z]);
@@ -1656,7 +1656,7 @@ static CFloatVector vTrailOffs [2][4] = {{{{0,0,0}},{{0,-10,-5}},{{0,-10,-50}},{
 void RenderLightTrail (CObject *objP)
 {
 	tRgbaColorf		color, *colorP;
-	int				nTrailItem = -1, nCoronaItem = -1, bGatling = 0, bAdditive = 1; //gameOpts->render.coronas.bAdditiveObjs;
+	int				nTrailItem = -1, /*nCoronaItem = -1,*/ bGatling = 0, bAdditive = 1; //gameOpts->render.coronas.bAdditiveObjs;
 
 if (!SHOW_OBJ_FX)
 	return;

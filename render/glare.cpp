@@ -82,9 +82,9 @@ if (gameStates.ogl.hDepthBuffer || (gameStates.ogl.hDepthBuffer = OglCreateDepth
 #else
 		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
 #endif
-		if (nError = glGetError ()) {
+		if ((nError = glGetError ())) {
 			glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
-			if (nError = glGetError ()) {
+			if ((nError = glGetError ())) {
 				DestroyGlareDepthTexture ();
 				return gameStates.ogl.hDepthBuffer = 0;
 				}
