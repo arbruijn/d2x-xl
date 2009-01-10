@@ -2208,7 +2208,7 @@ int nObject = OBJ_IDX (this);
 if (nObject != LOCALPLAYER.nObject)
 	return;
 
-int nSpeed = nSpeed = mType.physInfo.velocity.Mag();
+int nSpeed = mType.physInfo.velocity.Mag();
 nSpeed -= I2X (2);
 if (nSpeed < 0)
 	nSpeed = 0;

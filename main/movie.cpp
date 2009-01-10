@@ -758,7 +758,10 @@ while ((result = MVE_rmStepMovie ()) == 0) {
 	}
 Assert (aborted || result == MVE_ERR_EOF);	 ///movie should be over
 MVE_rmEndMovie ();
-movieP ? movieP->Close () : cf.Close ();                           // Close Movie File
+if (movieP)
+	movieP->Close ();
+else
+	cf.Close ();                           // Close Movie File
 // Restore old graphic state
 gameStates.video.nScreenMode = -1;  //force reset of screen mode
 paletteManager.LoadEffect ();

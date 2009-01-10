@@ -5,6 +5,7 @@
 #	include <windows.h>
 #	include <mmsystem.h>
 #endif
+#include "pstypes.h"
 
 #define HMP_TRACKS 32
 #define HMP_BUFFERS 4

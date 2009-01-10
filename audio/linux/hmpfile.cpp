@@ -11,7 +11,7 @@
 #include "hmpfile.h"
 #include "inferno.h"
 #include "cfile.h"
-#include "digi.h"
+#include "audio.h"
 #include "cfile.h"
 #include "u_mem.h"
 #include "error.h"

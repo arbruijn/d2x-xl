@@ -1,6 +1,8 @@
 #ifndef __BANLIST_H
 #define __BANLIST_H
 
+#include "strutil.h"
+
 //-----------------------------------------------------------------------------
 
 typedef char tBanListEntry [CALLSIGN_LEN + 1];
