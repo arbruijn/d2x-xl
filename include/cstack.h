@@ -6,7 +6,7 @@
 //-----------------------------------------------------------------------------
 
 template < class _T > 
-class CStack : public template < class _T > CArray<_T> {
+class CStack : public CArray<_T> {
 	protected:
 		uint	m_tos;
 		uint	m_growth;
@@ -27,38 +27,38 @@ class CStack : public template < class _T > CArray<_T> {
 			}
 
 		inline bool Grow (const uint i = 1) {
-			if ((m_tos + i > m_data.length) && (!(m_growth && Resize (m_data.length + m_growth))))
+			if ((m_tos + i > this->m_data.length) && (!(m_growth && this->Resize (this->m_data.length + m_growth))))
 				return false;
 			m_tos += i;
 			return true;
 			}
 
 		inline bool Push (const _T elem) { 
-			if ((m_tos >= m_data.length) && (!(m_growth && Resize (m_data.length + m_growth))))
+			if ((m_tos >= this->m_data.length) && (!(m_growth && this->Resize (this->m_data.length + m_growth))))
 				return false;
-			m_data.buffer [m_tos++] = elem;
+			this->m_data.buffer [m_tos++] = elem;
 			return true;
 			}
 	
-		inline _T* Top (void) { return (m_data.buffer && m_tos) ? m_data.buffer + m_tos - 1 : NULL; }
+		inline _T* Top (void) { return (this->m_data.buffer && m_tos) ? this->m_data.buffer + m_tos - 1 : NULL; }
 
 		inline uint ToS (void) { return m_tos; }
 
 		inline _T& Pop (void) {
 			if (m_tos)
 				m_tos--;
-			return m_data.buffer [m_tos];
+			return this->m_data.buffer [m_tos];
 			}
 
 		inline void Delete (uint i) {
 			if (i < m_tos)
 				if (i < --m_tos)
-					m_data.buffer [i] = m_data.buffer [m_tos];
+					this->m_data.buffer [i] = this->m_data.buffer [m_tos];
 			}
 
 		inline _T& Pull (_T& elem, uint i) {
 			if (i < m_tos) {
-				elem = m_data.buffer [i];
+				elem = this->m_data.buffer [i];
 				Delete (i);
 				}
 			return elem;

@@ -243,6 +243,8 @@ class CSoundObject {
 		} m_linkType;
 
 	public:
+		CSoundObject () {}
+		~CSoundObject () {}
 		bool Start (void);
 	};
 

@@ -96,11 +96,11 @@ class CTransformation {
 			return dest = m_info.viewf [bUnscaled] * vTrans;
 			}
 
-		CFixVector CTransformation::RotateScaledX (CFixVector& dest, fix scale);
-		CFixVector CTransformation::RotateScaledY (CFixVector& dest, fix scale);
-		CFixVector CTransformation::RotateScaledZ (CFixVector& dest, fix scale);
+		CFixVector RotateScaledX (CFixVector& dest, fix scale);
+		CFixVector RotateScaledY (CFixVector& dest, fix scale);
+		CFixVector RotateScaledZ (CFixVector& dest, fix scale);
 
-		const CFixVector& CTransformation::RotateScaled (CFixVector& dest, const CFixVector& src);
+		const CFixVector& RotateScaled (CFixVector& dest, const CFixVector& src);
 
 		inline ubyte Codes (CFixVector& v) {
 			ubyte codes = 0;

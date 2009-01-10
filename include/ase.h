@@ -84,7 +84,7 @@ class CModel {
 		int ReleaseTextures (void);
 		int FreeTextures (void);
 
-		static int CModel::Error (const char *pszMsg);
+		static int Error (const char *pszMsg);
 
 	private:
 		int ReadTexture (CFile& cf, int nBitmap, int nType, int bCustom);

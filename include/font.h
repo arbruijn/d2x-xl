@@ -58,7 +58,7 @@ class CFont {
 		tFont		m_info;
 
 	public:
-		CFont () { Init (); };
+		CFont () { Init (); }
 		~CFont () { Destroy (); }
 		void Init (void) { memset (&m_info, 0, sizeof (m_info)); }
 		void Destroy (void);

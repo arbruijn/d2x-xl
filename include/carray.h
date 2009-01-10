@@ -1,6 +1,7 @@
 #ifndef _CARRAY_H
 #define _CARRAY_H
 
+#include <string.h>
 #include "pstypes.h"
 #include "cquicksort.h"
 
@@ -21,7 +22,7 @@ class CArray : public CQuickSort < _T > {
 			bool	bWrap;
 			};
 
-	public: //protected:
+	protected:
 		CArrayData<_T>	m_data;
 
 	public:
@@ -70,7 +71,7 @@ class CArray : public CQuickSort < _T > {
 		
 		~CArray() { Destroy (); }
 		
-		inline void Init (void) { 
+		void Init (void) { 
 			m_data.buffer = reinterpret_cast<_T *> (NULL); 
 			m_data.length = 0;
 			m_data.pos = 0;
@@ -78,7 +79,7 @@ class CArray : public CQuickSort < _T > {
 			memset (&m_data.null, 0, sizeof (_T));
 			}
 
-		inline void Clear (ubyte filler = 0, uint count = 0xffffffff) { 
+		void Clear (ubyte filler = 0, uint count = 0xffffffff) { 
 			if (m_data.buffer) 
 				memset (m_data.buffer, filler, sizeof (_T) * ((count < m_data.length) ? count : m_data.length)); 
 			}
@@ -106,7 +107,7 @@ class CArray : public CQuickSort < _T > {
 		inline _T* Pointer (uint i) { return m_data.buffer + i; }
 #endif
 
-		inline void Destroy (void) { 
+		void Destroy (void) { 
 			if (m_data.buffer) {
 #if 0
 				if (m_data.bExternal)
@@ -119,7 +120,7 @@ class CArray : public CQuickSort < _T > {
 				}
 			}
 			
-		inline _T *Create (uint length) {
+		_T *Create (uint length) {
 			if (m_data.length != length) {
 				Destroy ();
 				if ((m_data.buffer = new _T [length]))
@@ -130,7 +131,7 @@ class CArray : public CQuickSort < _T > {
 			
 		inline _T* Buffer (uint i = 0) { return m_data.buffer + i; }
 		
-		inline void SetBuffer (_T *buffer, bool bChild = false, uint length = 0xffffffff) {
+		void SetBuffer (_T *buffer, bool bChild = false, uint length = 0xffffffff) {
 			if (m_data.buffer != buffer) {
 				if (!(m_data.buffer = buffer))
 					Init ();
@@ -145,7 +146,7 @@ class CArray : public CQuickSort < _T > {
 				}
 			}
 			
-		inline _T* Resize (unsigned int length, bool bCopy = true) {
+		_T* Resize (unsigned int length, bool bCopy = true) {
 			if (!m_data.buffer)
 				return Create (length);
 			_T* p = new _T [length];
@@ -182,7 +183,7 @@ class CArray : public CQuickSort < _T > {
 			return m_data.buffer [0];
 			}
 
-		inline _T& Copy (CArray<_T>& source, uint offset = 0) { 
+		_T& Copy (CArray<_T>& source, uint offset = 0) { 
 			if (((static_cast<int> (m_data.length)) >= 0) && (static_cast<int> (source.m_data.length) > 0)) {
 				if ((m_data.buffer && (m_data.length >= source.m_data.length + offset)) || Resize (source.m_data.length + offset, false)) {
 					memcpy (m_data.buffer + offset, source.m_data.buffer, ((m_data.length - offset < source.m_data.length) ? m_data.length - offset : source.m_data.length) * sizeof (_T)); 
@@ -285,10 +286,10 @@ class CCharArray : public CArray<char> {
 	public:
 		inline char* operator= (const char* source) { 
 			uint l = strlen (source) + 1;
-			if ((l > m_data.length) && !Resize (m_data.length + l))
+			if ((l > this->m_data.length) && !this->Resize (this->m_data.length + l))
 				return NULL;
-			memcpy (m_data.buffer, source, l);
-			return m_data.buffer;
+			memcpy (this->m_data.buffer, source, l);
+			return this->m_data.buffer;
 		}
 };
 
