@@ -355,6 +355,14 @@ m_bmBackdrop.DestroyBuffer ();
 //if filename passed is NULL, show Normal credits
 void CCreditsManager::Show (char *creditsFilename)
 {
+	static char fontNames [3][2][] = {
+		{"font1-1.h.fnt", "font1-1.fnt"},
+		{"font1-2.h.fnt", "font1-2.fnt"},
+		{"font1-3.h.fnt", "font1-3.fnt"}
+	};
+	
+	static char szStars [2][] = {"\0x1stars.pcx", "\0x1starsb.pcx"};
+	
 if (!Open (creditsFilename))
 	return;
 
@@ -370,13 +378,13 @@ if (m_yOffs < 0)
 	m_yOffs = 0;
 creditsPalette = paletteManager.Load ("credits.256", NULL);
 paletteManager.LoadEffect ();
-m_fonts [0] = fontManager.Load (gameStates.menus.bHires ? reinterpret_cast<char*> ("font1-1h.fnt") : reinterpret_cast<char*> ("font1-1.fnt"));
-m_fonts [1] = fontManager.Load (gameStates.menus.bHires ? reinterpret_cast<char*> ("font2-3h.fnt") : reinterpret_cast<char*> ("font2-3.fnt"));
-m_fonts [2] = fontManager.Load (gameStates.menus.bHires ? reinterpret_cast<char*> ("font2-2h.fnt") : reinterpret_cast<char*> ("font2-2.fnt"));
+m_fonts [0] = fontManager.Load (fontNames [0][gameStates.menus.bHires]);
+m_fonts [1] = fontManager.Load (fontNames [0][gameStates.menus.bHires]);
+m_fonts [2] = fontManager.Load (fontNames [0][gameStates.menus.bHires]);
 m_bmBackdrop.SetBuffer (NULL);
 m_bmBackdrop.SetPalette (NULL);
 
-int nPcxError = PCXReadBitmap (reinterpret_cast<char*> (CREDITS_BACKGROUND_FILENAME), &m_bmBackdrop, BM_LINEAR, 0);
+int nPcxError = PCXReadBitmap (szStars [gameStates.menu.bHires], &m_bmBackdrop, BM_LINEAR, 0);
 if (nPcxError != PCX_ERROR_NONE) {
 	m_cf.Close ();
 	CCanvas::Pop ();

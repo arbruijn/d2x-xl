@@ -322,10 +322,12 @@ if (m_nDepth >= 0) {
 
 void CBackgroundManager::Init (void)
 {
+	static char szBackgrounds [2][] = {MENU_BACKGROUND_BITMAP_LORES, MENU_BACKGROUND_BITMAP_HIRES};
+	
 m_background [0] = NULL;
 m_background [1] = NULL;
 m_filename [0] = MenuPCXName ();
-m_filename [1] = MENU_BACKGROUND_BITMAP;
+m_filename [1] = szBackgrounds [gameStates.menu.bHires];
 m_nDepth = -1; 
 m_bShadow = true;
 m_bValid = false;
@@ -467,7 +469,7 @@ GrUpdate (0);
 
 void CBackgroundManager::LoadStars (void)
 {
-Setup (reinterpret_cast<char*> (STARS_BACKGROUND), 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+Setup (STARS_BACKGROUND, 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 }
 
 //------------------------------------------------------------------------------

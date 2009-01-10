@@ -127,7 +127,9 @@ static uint cfgHashs [] = {
 
 int CfgLoadHashs (char *pszFilter, char *pszFolder)
 {
-nDefaultHash = Crc32 (0, reinterpret_cast<ubyte*> ("m4d1"), 4);
+	static ubyte szDefaultHash [] = {'m'm '4', 'd', '1'};
+	
+nDefaultHash = Crc32 (0, szDefaultHash, 4);
 if (hashList.nHashs)
 	return hashList.nHashs;
 if (!CfgCountHashs (pszFilter, pszFolder))

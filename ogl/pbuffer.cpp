@@ -280,8 +280,6 @@ void CPBO::Release (void)
 if (Handle () > 0) 
 	wglReleaseTexImageARB (Handle (), WGL_FRONT_LEFT_ARB);
 m_info.bBound = false;
-#else
-return false;
 #endif
 }
 

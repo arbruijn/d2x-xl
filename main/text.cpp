@@ -2628,7 +2628,9 @@ pszGameTexts = InitTexts (gameStates.app.bEnglish ? reinterpret_cast<char*> ("de
 
 void InitHelpTexts (void)
 {
-pszHelpTexts = InitTexts (gameStates.app.bEnglish ? reinterpret_cast<char*> ("descent.hlp.eng") : reinterpret_cast<char*> ("descent.hlp.ger"), 0);
+	static char szHelpFiles [2][] = {"descent.hlp.ger", "descent.hlp.eng"};
+	
+pszHelpTexts = InitTexts (szHelpFiles [gameStates.app.bEnglish], 0);
 }
 
 //------------------------------------------------------------------------------
@@ -2800,13 +2802,13 @@ if (i == 644) {
 		baseGameTexts[172] = baseGameTexts[171];
 		baseGameTexts[171] = baseGameTexts[170];
 		baseGameTexts[170] = baseGameTexts[169];
-		baseGameTexts[169] = reinterpret_cast<char*> ("Windows Joystick");
+		baseGameTexts[169] = "Windows Joystick";
 		}
-	baseGameTexts[644] = reinterpret_cast<char*> ("Z1");
-	baseGameTexts[645] = reinterpret_cast<char*> ("UN");
-	baseGameTexts[646] = reinterpret_cast<char*> ("P1");
-	baseGameTexts[647] = reinterpret_cast<char*> ("R1");
-	baseGameTexts[648] = reinterpret_cast<char*> ("Y1");
+	baseGameTexts[644] = "Z1";
+	baseGameTexts[645] = "UN";
+	baseGameTexts[646] = "P1";
+	baseGameTexts[647] = "R1";
+	baseGameTexts[648] = "Y1";
 	}
 #if DUMP_TEXTS 
 fclose (fTxt);

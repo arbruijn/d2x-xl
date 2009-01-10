@@ -430,12 +430,11 @@ return bChanged;
 
 void CTrigger::PrintMessage (int nPlayer, int shot, const char *message)
 {
-	char		*pl;		//points to 's' or nothing for plural word
+	static char	pl [2][] = {"", "s"};		//points to 's' or nothing for plural word
 
 if ((nPlayer < 0) || (nPlayer == gameData.multiplayer.nLocalPlayer)) {
-	pl = (nLinks > 1) ? reinterpret_cast<char*> ("s") : reinterpret_cast<char*> ("");
 	if (!(flags & TF_NO_MESSAGE) && shot)
-		HUDInitMessage (message, pl);
+		HUDInitMessage (message, pl [nLinks > 1]);
 	}
 }
 

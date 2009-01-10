@@ -1737,7 +1737,7 @@ void KCInitExternalControls (int intno, int address)
 	if (i)
 		kc_external_name = reinterpret_cast<ubyte*> (pszArgList [i+1]);
 	else
-		kc_external_name = reinterpret_cast<ubyte*> ("External Controller");
+		kc_external_name = "External Controller";
  
    for (i = 0; i < (int) strlen (reinterpret_cast<char*> (kc_external_name)); i++)
     if (kc_external_name [i]=='_')

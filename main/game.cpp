@@ -2139,10 +2139,11 @@ fl->delay = cf.ReadFix ();
 void LoadBackgroundBitmap (void)
 {
 	int pcx_error;
+	
+	static char szBackground [2][] = {"statback.pcx", "johnhead.pcx"};
 
 bmBackground.DestroyBuffer ();
-pcx_error = PCXReadBitmap (gameStates.app.cheats.bJohnHeadOn ? reinterpret_cast<char*> ("johnhead.pcx") : reinterpret_cast<char*> (BACKGROUND_NAME),
-									&bmBackground, BM_LINEAR,0);
+pcx_error = PCXReadBitmap (szBackground [gameStates.app.cheats.bJohnHeadOn], BM_LINEAR,0);
 if (pcx_error != PCX_ERROR_NONE)
 	Error ("File %s - PCX error: %s",BACKGROUND_NAME,pcx_errormsg (pcx_error));
 bmBackground.Remap (NULL, -1, -1);

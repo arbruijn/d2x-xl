@@ -1005,11 +1005,13 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
+static char szEndScreens [2][] = {"end01b.pcx", "end01.pcx"};
+
 int CBriefing::HandleP (void)
 {
 if (!m_info.bGotZ) {
 	Int3 (); // Hey ryan!!!!You gotta load a screen before you start printing to it!You know, $Z !!!
-	LoadImage (gameStates.menus.bHires ? reinterpret_cast<char*> ("end01b.pcx") : reinterpret_cast<char*> ("end01.pcx"));
+	LoadImage (szEndScreens [gameStates.menus.bHires]);
 	m_info.bHaveScreen = 1;
 	}
 m_info.bNewPage = 1;
@@ -1181,7 +1183,7 @@ return 1;
 int CBriefing::HandleANY (void)
 {
 if (!m_info.bGotZ) 
-	LoadImage (gameStates.menus.bHires ? reinterpret_cast<char*> ("end01b.pcx") : reinterpret_cast<char*> ("end01.pcx"));
+	LoadImage (szEndScreens [gameStates.menus.bHires]);
 m_info.prevCh = m_info.ch;
 m_info.bRedraw = !m_info.nDelayCount || (m_info.message <= m_info.pj);
 if (!m_info.bRedraw) {
@@ -1423,14 +1425,16 @@ int CBriefing::LoadImageText (char* filename, CCharArray& textBuffer)
 	int	len, i;
 	int	bHaveBinary;
 	char	*bufP;
+	
+	static char fileModes [2][] = {"rt", "rb"};
 
 if (!strstr (filename, ".t"))
 	strcat (filename, ".tex");
 bHaveBinary = (strstr (filename, ".txb") != NULL);
-if (!cf.Open (filename, gameFolders.szDataDir, bHaveBinary ? reinterpret_cast<char*> ("rb") : reinterpret_cast<char*> ("rt"), gameStates.app.bD1Mission)) {
+if (!cf.Open (filename, gameFolders.szDataDir, fileModes [bHaveBinary], gameStates.app.bD1Mission)) {
 	bHaveBinary = !bHaveBinary;
 	strcpy (strstr (filename, ".t"), bHaveBinary ? ".txb" : ".tex");
-	if (!cf.Open (filename, gameFolders.szDataDir, bHaveBinary ? reinterpret_cast<char*> ("rb") : reinterpret_cast<char*> ("rt"), gameStates.app.bD1Mission)) {
+	if (!cf.Open (filename, gameFolders.szDataDir, fileModes [bHaveBinary], gameStates.app.bD1Mission)) {
 		PrintLog ("can't open briefing '%s'!\n", filename);
 		return 0;
 		}

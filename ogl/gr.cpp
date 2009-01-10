@@ -574,10 +574,11 @@ return gameStates.ogl.bFullScreen;
 
 int GrToggleFullScreenGame (void)
 {
+	static char szFullscreeen [2][] = {"toggling fullscreen mode off", "toggling fullscreen mode on"};
 int i = GrToggleFullScreen ();
 FlushInput ();
 if (gameStates.app.bGameRunning) {
-	HUDMessage (MSGC_GAME_FEEDBACK, i ? reinterpret_cast<char*> ("toggling fullscreen mode on") : reinterpret_cast<char*> ("toggling fullscreen mode off"));
+	HUDMessage (MSGC_GAME_FEEDBACK, szFullscreen [i]);
 	StopPlayerMovement ();
 	}
 return i;

@@ -24,7 +24,7 @@ return nSegments;
 
 void CSkyBox::Destroy (void)
 {
-CStack::Destroy ();
+CStack<short>::Destroy ();
 gameStates.render.bHaveSkyBox = 0;
 }
 
