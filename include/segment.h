@@ -170,11 +170,11 @@ class CSide {
 			}
 		CFixVector* GetCorners (CFixVector* vertices);
 		inline short* Corners (void) { return m_corners; }
-		inline CFixVector& Vertex (int nVertex);
-		inline CFixVector& MinVertex (void);
-		inline CFixVector& Normal (int nFace);
-		inline fix Height (void);
-		inline bool IsPlanar (void);
+		CFixVector& Vertex (int nVertex);
+		CFixVector& MinVertex (void);
+		CFixVector& Normal (int nFace);
+		fix Height (void);
+		bool IsPlanar (void);
 		ubyte Dist (const CFixVector& point, fix& xSideDist, int bBehind, short sideBit);
 		CSegMasks Masks (const CFixVector& refP, fix xRad, short sideBit, short& faceBit);
 		void HitPointUV (fix *u, fix *v, fix *l, CFixVector& intersection, int iFace);

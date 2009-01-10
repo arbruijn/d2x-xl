@@ -832,7 +832,7 @@ class CObject : public CObjectInfo {
 		void DoPhysicsSim (void);
 		void Spin (void);
 		int Update (void);
-		inline int Index (void);
+		int Index (void);
 
 		void MorphStart (void);
 		void MorphDraw (void);

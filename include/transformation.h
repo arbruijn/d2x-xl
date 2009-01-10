@@ -52,10 +52,14 @@ class CTransformation {
 		bool Push (void);
 		bool Pop (void);
 		void Begin (const CFixVector& vPos, CFixMatrix& mOrient);
-		inline void Begin (const CFixVector& pos, const CAngleVector& angles) 
-		 { Begin (pos, CFixMatrix (CFixMatrix::Create (angles))); }
-		inline void Begin (const CFixVector& pos) 
-		 { Begin (pos, CFixMatrix (CFixMatrix::IDENTITY)); }
+		inline void Begin (const CFixVector& pos, const CAngleVector& angles) {
+			CFixMatrix m = CFixMatrix::Create (angles);
+			Begin (pos, m); 
+			}
+		inline void Begin (const CFixVector& pos) {
+			CFixMatrix m = CFixMatrix::IDENTITY;
+			Begin (pos, m); 
+			}
 		inline void End (void) { Pop (); }
 		inline void Move (CFloatVector& v) { glTranslatef (-v [X], -v [Y], -v [Z]); }
 		inline void Rotate (CFloatMatrix& m) { glMultMatrixf (m.Vec ()); }

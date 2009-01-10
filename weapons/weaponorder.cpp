@@ -74,6 +74,8 @@ for (i = 0; i <= n; i++)
 
 //	-----------------------------------------------------------------------------
 
+char szSeparator [] = "\x88\x88\x88\x88\x88\x88\x88 Never autoselect \x88\x88\x88\x88\x88\x88\x88";
+
 void ReorderPrimary (void)
 {
 	CMenu	m (MAX_PRIMARY_WEAPONS + 2);
@@ -82,7 +84,7 @@ void ReorderPrimary (void)
 ValidatePrios (primaryOrder, defaultPrimaryOrder, MAX_PRIMARY_WEAPONS);
 for (i = 0; i < MAX_PRIMARY_WEAPONS + 1; i++) {
 	if (primaryOrder [i] == 255)
-		m.AddMenu (reinterpret_cast<char*> ("\x88\x88\x88\x88\x88\x88\x88 Never autoselect \x88\x88\x88\x88\x88\x88\x88"));
+		m.AddMenu (szSeparator);
 	else
 		m.AddMenu (const_cast<char*> (PRIMARY_WEAPON_NAMES (primaryOrder [i])));
 	m [i].m_value = primaryOrder [i];
@@ -104,7 +106,7 @@ void ReorderSecondary (void)
 ValidatePrios (secondaryOrder, defaultSecondaryOrder, MAX_SECONDARY_WEAPONS);
 for (i = 0; i < MAX_SECONDARY_WEAPONS + 1; i++) {
 	if (secondaryOrder [i] == 255)
-		m.AddMenu (reinterpret_cast<char*> ("\x88\x88\x88\x88\x88\x88\x88 Never autoselect \x88\x88\x88\x88\x88\x88\x88"));
+		m.AddMenu (szSeparator);
 	else
 		m.AddMenu (const_cast<char*> (SECONDARY_WEAPON_NAMES (secondaryOrder [i])));
 	m [i].m_value = secondaryOrder [i];
