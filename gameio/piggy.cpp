@@ -121,6 +121,30 @@ ubyte bBigPig = 0;
 extern char szLastPalettePig [];
 extern char CDROM_dir [];
 
+//------------------------------------------------------------------------------
+
+static char* szPigFiles [2][11] = {"groupa.pig", "d2demo.pig"}
+
+char* DefaultPigFile (int bDemoData)
+{
+return szPigFiles [(bDemoData < 0) ? gameStates.app.bDemoData : bDemoData];
+
+//------------------------------------------------------------------------------
+
+static char* szHamFiles [2][13] = {"descent2.ham", "d2demo.ham"}
+
+char* DefaultHamFile (int bDemoData)
+{
+return szHamFiles [(bDemoData < 0) ? gameStates.app.bDemoData : bDemoData];
+
+//------------------------------------------------------------------------------
+
+static char* szSndFiles [3][13] = {"descent2.s22", "descent2.s11", "d2demo.ham"}
+
+char* DefaultHamFile (void)
+{
+return (gameData.pig.tex.nHamFileVersion < 3) ? szSndFiles [2] : szSndFiles [gameOpts->sound.digiSampleRate == SAMPLE_RATE_22K];
+}
 
 //------------------------------------------------------------------------------
 /*
@@ -343,9 +367,9 @@ void PiggyInitPigFile (char *filename)
 PiggyCloseFile ();             //close old pig if still open
 strcpy (szPigName, filename);
 //rename pigfile for shareware
-if (!stricmp (DEFAULT_PIGFILE, DEFAULT_PIGFILE_SHAREWARE) && 
+if (!stricmp (DefaultPigFile (), DefaultPigFile (1)) && 
 	 !CFile::Exist (szPigName, gameFolders.szDataDir, 0))
-	strcpy (szPigName, DEFAULT_PIGFILE_SHAREWARE);
+	strcpy (szPigName, DefaultPigFile (1));
 strlwr (szPigName);
 if (!cfP->Open (szPigName, gameFolders.szDataDir, "rb", 0)) {
 #ifdef EDITOR
@@ -400,7 +424,7 @@ int ReadHamFile (void)
 	int nHAMId;
 	int nSoundOffset = 0;
 
-if (!cf.Open (DEFAULT_HAMFILE, gameFolders.szDataDir, "rb", 0)) {
+if (!cf.Open (DefaultHamFile (), gameFolders.szDataDir, "rb", 0)) {
 	bMustWriteHamFile = 1;
 	return 0;
 	}
@@ -408,7 +432,7 @@ if (!cf.Open (DEFAULT_HAMFILE, gameFolders.szDataDir, "rb", 0)) {
 nHAMId = cf.ReadInt ();
 gameData.pig.tex.nHamFileVersion = cf.ReadInt ();
 if (nHAMId != HAMFILE_ID)
-	Error ("Cannot open ham file %s\n", DEFAULT_HAMFILE);
+	Error ("Cannot open ham file %s\n", DefaultHamFile ());
 if (gameData.pig.tex.nHamFileVersion < 3) // hamfile contains sound info
 	nSoundOffset = cf.ReadInt ();
 #ifndef EDITOR
@@ -492,7 +516,7 @@ if (bLowMemory)
 	gameStates.sound.digi.bLoMem = 1;
 /*---*/PrintLog ("   Loading game data\n");
 #if 1 //def EDITOR //need for d1 mission briefings
-PiggyInitPigFile (DEFAULT_PIGFILE);
+PiggyInitPigFile (DefaultPigFile ());
 #endif
 /*---*/PrintLog ("   Loading main ham file\n");
 bSoundOk = bHamOk = ReadHamFile ();

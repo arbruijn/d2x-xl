@@ -22,20 +22,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-#define DEFAULT_PIGFILE_REGISTERED      "groupa.pig"
-#define DEFAULT_PIGFILE_SHAREWARE       "d2demo.pig"
-#define DEFAULT_HAMFILE_REGISTERED      "descent2.ham"
-#define DEFAULT_HAMFILE_SHAREWARE       "d2demo.ham"
-
-#define DEFAULT_PIGFILE \
-		  (gameStates.app.bDemoData ? DEFAULT_PIGFILE_SHAREWARE : DEFAULT_PIGFILE_REGISTERED)
-#define DEFAULT_HAMFILE \
-		  (gameStates.app.bDemoData ? DEFAULT_HAMFILE_SHAREWARE : DEFAULT_HAMFILE_REGISTERED)
-
-#define DEFAULT_SNDFILE \
-		  ((gameData.pig.tex.nHamFileVersion < 3) ? DEFAULT_HAMFILE_SHAREWARE : \
-			(gameOpts->sound.digiSampleRate == SAMPLE_RATE_22K) ? "descent2.s22" : "descent2.s11")
-
 #define PIGFILE_ID					MAKE_SIG ('G','I','P','P') //PPIG
 #define PIGFILE_VERSION				2
 
@@ -281,6 +267,10 @@ void FreeAddonSounds (void);
 
 bool BitmapLoaded (int bmi, int bD1);
 void LoadBitmap (int bmi, int bD1);
+
+char* DefaultPigFile (int bDemoData = 0);
+char* DefaultHamFile (int bDemoData = 0);
+char* DefaultSndFile (void);
 
 //------------------------------------------------------------------------------
 
