@@ -123,25 +123,27 @@ extern char CDROM_dir [];
 
 //------------------------------------------------------------------------------
 
-static char* szPigFiles [2][11] = {"groupa.pig", "d2demo.pig"}
+static char szPigFiles [2][11] = {"groupa.pig", "d2demo.pig"};
 
 char* DefaultPigFile (int bDemoData)
 {
 return szPigFiles [(bDemoData < 0) ? gameStates.app.bDemoData : bDemoData];
+}
 
 //------------------------------------------------------------------------------
 
-static char* szHamFiles [2][13] = {"descent2.ham", "d2demo.ham"}
-
-char* DefaultHamFile (int bDemoData)
-{
-return szHamFiles [(bDemoData < 0) ? gameStates.app.bDemoData : bDemoData];
-
-//------------------------------------------------------------------------------
-
-static char* szSndFiles [3][13] = {"descent2.s22", "descent2.s11", "d2demo.ham"}
+static char szHamFiles [2][13] = {"descent2.ham", "d2demo.ham"};
 
 char* DefaultHamFile (void)
+{
+return szHamFiles [gameStates.app.bDemoData];
+}
+
+//------------------------------------------------------------------------------
+
+static char szSndFiles [3][13] = {"descent2.s22", "descent2.s11", "d2demo.ham"};
+
+char* DefaultSndFile (void)
 {
 return (gameData.pig.tex.nHamFileVersion < 3) ? szSndFiles [2] : szSndFiles [gameOpts->sound.digiSampleRate == SAMPLE_RATE_22K];
 }
