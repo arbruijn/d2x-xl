@@ -926,7 +926,7 @@ cmd_parse (command);
 
 //------------------------------------------------------------------------------
 
-void CConsole::SetTabCompletion (char* (*TabFunction) (char* command)) 
+void CConsole::SetTabCompletion (char* (_CDECL_ *TabFunction) (char* command)) 
 {
 m_TabFunction = TabFunction;
 }

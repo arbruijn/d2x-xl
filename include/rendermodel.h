@@ -73,7 +73,7 @@ class CFace {
 		void SetTexture (CBitmap* textureP);
 		int GatherVertices (CArray<CVertex>&, CArray<CVertex>&, int nIndex);
 		
-		static int _CDECL_ Compare (const CFace* pf, const CFace* pm);
+		static int Compare (const CFace* pf, const CFace* pm);
 
 		inline const bool operator< (CFace& other) { return m_nSubModel < other.m_nSubModel; }
 		inline const bool operator> (CFace& other) { return m_nSubModel > other.m_nSubModel; }
@@ -193,7 +193,7 @@ class CModel {
 		void SetShipGunPoints (OOF::CModel *po);
 		void SetRobotGunPoints (OOF::CModel *po);
 
-		static int _CDECL_ CmpVerts (const CFloatVector3* pv, const CFloatVector3* pm);
+		static int CmpVerts (const CFloatVector3* pv, const CFloatVector3* pm);
 
 		int BuildFromASE (CObject *objP, int nModel);
 		int BuildFromOOF (CObject *objP, int nModel);
