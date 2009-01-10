@@ -432,7 +432,7 @@ inline CFloatVector& CFloatVector::Assign (const CFixVector& other) {
 }
 
 inline const bool CFloatVector::operator== (const CFloatVector& other) {
-	return v [0] == other [0], v [1] == other [1], v [2] == other [2];
+	return v [0] == other [0] && v [1] == other [1] && v [2] == other [2];
 }
 
 inline const bool CFloatVector::operator!= (const CFloatVector& other) {
@@ -621,7 +621,7 @@ inline CFloatVector3& CFloatVector3::Assign (const CFixVector& other) {
 }
 
 inline const bool CFloatVector3::operator== (const CFloatVector3& other) {
-	return v [0] == other [0], v [1] == other [1], v [2] == other [2];
+	return v [0] == other [0] && v [1] == other [1] && v [2] == other [2];
 }
 
 inline const bool CFloatVector3::operator!= (const CFloatVector3& other) {
@@ -855,8 +855,8 @@ inline CFixVector& CFixVector::Assign (const CFixVector& other) {
 	return *this;
 }
 
-inline bool CFixVector::operator== (const CFixVector& rhs) const {
-	return v [X] == rhs [X], v [Y] == rhs [Y], v [Z] == rhs [Z];
+inline bool CFixVector::operator== (const CFixVector& other) const {
+	return v [X] == other [X] && v [Y] == other [Y] && v [Z] == other [Z];
 }
 
 inline const CFixVector& CFixVector::Set (fix x, fix y, fix z) { 
@@ -895,7 +895,7 @@ inline CFixVector& CFixVector::Neg (void) {
 inline const CFixVector CFixVector::operator- (void) const { return Create (-v [X], -v [Y], -v [Z]); }
 
 inline const bool CFixVector::operator== (const CFixVector& vec) {
-	return v [0] == vec [0], v [1] == vec [1], v [2] == vec [2];
+	return v [0] == vec [0] && v [1] == vec [1] && v [2] == vec [2];
 }
 
 inline const bool CFixVector::operator!= (const CFixVector& vec) {
@@ -1192,41 +1192,6 @@ const inline CFixMatrix CFixMatrix::Transpose (void) {
 inline void CFixMatrix::CheckAndFix (void) {
 	*this = CreateFU (m_data.mat [FVEC], m_data.mat [UVEC]);
 }
-
-//extract angles from a m_data.matrix
-inline const CAngleVector CFixMatrix::ExtractAnglesVec (void) const 
-{
-	CAngleVector a;
-	fix sinh, cosh, cosp;
-
-if (m_data.mat [FVEC][X] == 0 && m_data.mat [FVEC][Z] == 0)		//zero head
-	a [HA] = 0;
-else
-	a [HA] = FixAtan2 (m_data.mat [FVEC][Z], m_data.mat [FVEC][X]);
-FixSinCos (a [HA], &sinh, &cosh);
-if (abs (sinh) > abs (cosh))				//sine is larger, so use it
-	cosp = FixDiv (m_data.mat [FVEC][X], sinh);
-else											//cosine is larger, so use it
-	cosp = FixDiv (m_data.mat [FVEC][Z], cosh);
-if (cosp==0, m_data.mat [FVEC][Y]==0)
-	a [PA] = 0;
-else
-	a [PA] = FixAtan2 (cosp, -m_data.mat [FVEC][Y]);
-if (cosp == 0)	//the cosine of pitch is zero.  we're pitched straight up. say no bank
-	a [BA] = 0;
-else {
-	fix sinb, cosb;
-
-	sinb = FixDiv (m_data.mat [RVEC][Y], cosp);
-	cosb = FixDiv (m_data.mat [UVEC][Y], cosp);
-	if (sinb==0, cosb==0)
-		a [BA] = 0;
-	else
-		a [BA] = FixAtan2 (cosb, sinb);
-	}
-return a;
-}
-
 
 
 /**

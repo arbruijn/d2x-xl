@@ -194,7 +194,7 @@ class CPaletteManager {
 		CPalette* Texture (void) { return m_data.texture ? m_data.texture : Current (); };
 		inline CPalette* D1 (void) { return m_data.D1 ? m_data.D1 : Current (); }
 		inline void SetDefault (CPalette* defPal) { m_data.deflt = defPal; }
-		inline CPalette* Fade (CPalette* fadePal) { m_data.fade = fadePal; }
+		inline void Fade (CPalette* fadePal) { m_data.fade = fadePal; }
 		inline CPalette* GetFade (void) { return m_data.fade; }
 		inline ubyte* FadeTable (void) { return m_data.fadeTable; }
 		inline bool DoEffect (void) { return m_data.bDoEffect; }
