@@ -765,7 +765,7 @@ class CObject : public CObjectInfo {
 		void ScrapeOnWall (short nHitSeg, short nHitSide, CFixVector& vHitPt);
 		void CreateSound (short nSound);
 
-		inline void Die (void);
+		void Die (void);
 		void MaybeDelete (void);
 
 		void TurnTowardsVector (CFixVector vGoal, fix rate);
