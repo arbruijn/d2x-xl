@@ -81,7 +81,7 @@ return pszToken ? *pszToken : '\0';
 
 //------------------------------------------------------------------------------
 
-static char* szEmpty [1] = "";
+static char szEmpty [1] = "";
 
 static char *StrTok (const char *delims)
 {
