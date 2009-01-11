@@ -21,11 +21,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 #include <math.h>
 
-#ifndef _WIN32
-#	include <alsa/soundlib.h>
-#	include <pthread.h>
-#endif
-
 #include "inferno.h"
 #include "fix.h"
 #include "mono.h"

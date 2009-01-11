@@ -861,7 +861,7 @@ int CBriefing::DefineBox (void)
 	int i = 0, nScreen = ParseMessageInt (m_info.message);
 	char name [20];
 
-while (*m_info.message && (*m_info.message != ' ') && (i < sizeof (name) - 1)) {
+while (*m_info.message && (*m_info.message != ' ') && (i < int (sizeof (name)) - 1)) {
 	name [i++] = *m_info.message;
 	m_info.message++;
 	}
@@ -1616,7 +1616,7 @@ if (gameStates.app.bD1Mission) {
 	LoadD1BitmapReplacements ();
 	if (nLevel == 1) {
 		while (!bAbortBriefing && 
-				 (nCurBriefingScreen < MAX_BRIEFING_SCREENS) && 
+				 (nCurBriefingScreen < int (MAX_BRIEFING_SCREENS)) && 
 				 (briefingScreens [nCurBriefingScreen].nLevel == ((gameStates.app.bD1Mission && bEnding) ? nLevel : 0))) {
 			bAbortBriefing = LoadLevelScreen (nCurBriefingScreen, (short) nLevel);
 			nCurBriefingScreen++;
@@ -1625,7 +1625,7 @@ if (gameStates.app.bD1Mission) {
 			}
 		}
 	if (!bAbortBriefing) {
-		for (nCurBriefingScreen = 0; nCurBriefingScreen < MAX_BRIEFING_SCREENS; nCurBriefingScreen++)
+		for (nCurBriefingScreen = 0; nCurBriefingScreen < int (MAX_BRIEFING_SCREENS); nCurBriefingScreen++)
 			if (briefingScreens [nCurBriefingScreen].nLevel == nLevel)
 				if (LoadLevelScreen (nCurBriefingScreen, (short) nLevel))
 					break;

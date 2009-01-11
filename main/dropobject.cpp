@@ -961,7 +961,7 @@ if ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHO
 			if (nVulcanAmmo < 0)
 				nVulcanAmmo = 0;
 			}
-		if (((playerP->primaryWeaponFlags & nFlag) == nFlag) && ((extraGameInfo [IsMultiGame].loadout.nGuns & nFlag) != nFlag))
+		if ((int (playerP->primaryWeaponFlags & nFlag) == nFlag) && (int (extraGameInfo [IsMultiGame].loadout.nGuns & nFlag) != nFlag))
 			nVulcanAmmo /= 2;		//if both vulcan & gauss, each gets half
 		if ((nVulcanAmmo < VULCAN_AMMO_AMOUNT) && !(extraGameInfo [IsMultiGame].loadout.nGuns & nFlag))
 			nVulcanAmmo = VULCAN_AMMO_AMOUNT;	//make sure gun has at least as much as a powerup

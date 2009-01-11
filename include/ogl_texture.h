@@ -72,7 +72,7 @@ class CTexture {
 
 		inline int Index (void) { return m_info.index; }
 		inline void SetIndex (int index) { m_info.index = index; }
-		inline GLint Handle (void) { return (GLint) m_info.handle; }
+		inline GLint Handle (void) { return GLint (m_info.handle); }
 		inline GLenum Format (void) { return m_info.format; }
 		inline GLint InternalFormat (void) { return m_info.internalFormat; }
 		inline GLfloat U (void) { return m_info.u; }

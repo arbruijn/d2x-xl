@@ -126,7 +126,7 @@
 #define USE_SDL_MIXER 1
 
 /* Version number of package */
-#define VERSION "1.13.127"
+#define VERSION "1.14.0"
 
 /* Define to 1 if your processor stores words with the most significant byte
    first (like Motorola and SPARC, unlike Intel and VAX). */
@@ -141,7 +141,7 @@
 
         /* General defines */
 #ifndef PACKAGE_STRING
-#define PACKAGE_STRING "d2x-xl 1.13.127"
+#define PACKAGE_STRING "d2x-xl 1.14.0"
 #endif
 #define VERSION_NAME PACKAGE_STRING
 #define NMONO 1

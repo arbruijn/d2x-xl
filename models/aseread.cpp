@@ -81,12 +81,14 @@ return pszToken ? *pszToken : '\0';
 
 //------------------------------------------------------------------------------
 
+static char* szEmpty [1] = "";
+
 static char *StrTok (const char *delims)
 {
 pszToken = strtok (NULL, delims);
 if (!(pszToken && *pszToken))
 	CModel::Error ("missing data");
-return pszToken ? pszToken : "";
+return pszToken ? pszToken : szEmpty;
 }
 
 //------------------------------------------------------------------------------

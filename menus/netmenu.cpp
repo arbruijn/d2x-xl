@@ -121,7 +121,7 @@ void NetworkSetWeaponsAllowed (void)
 
 //------------------------------------------------------------------------------
 
-static int optFF, optSuicide, optPlrHand, optTogglesMenu, optTextureMenu;
+static int optFF, optSuicide, optTextureMenu;
 
 int nLastReactorLife = 0;
 int optReactorLife, optAnarchy, optTeamAnarchy, optRobotAnarchy, optCoop;

@@ -813,7 +813,7 @@ int CMenu::GetSize (int& w, int& h, int& aw, int& nMenus, int& nOthers)
 if ((gameOpts->menus.nHotKeys > 0) && !gameStates.app.bEnglish)
 	gameOpts->menus.nHotKeys = -1;
 #endif
-for (uint i = 0; i < int (ToS ()); i++) {
+for (uint i = 0; i < ToS (); i++) {
 	Item (i).GetSize (h, aw, nStringWidth, nStringHeight, nAverageWidth, nMenus, nOthers);
 	if (w < nStringWidth)
 		w = nStringWidth;		// Save maximum width
@@ -840,7 +840,7 @@ for (uint i = 0; i < int (ToS ()); i++) {
 	Item (i).m_ySave = Item (i).m_y;
 	if (Item (i).m_nType == NM_TYPE_RADIO) {
 		int fm = -1;	// ffs first marked one
-		for (uint j = 0; j < int (ToS ()); j++) {
+		for (uint j = 0; j < ToS (); j++) {
 			if ((Item (j).m_nType == NM_TYPE_RADIO) && (Item (j).m_group == Item (i).m_group)) {
 				if ((fm == -1) && Item (j).m_value)
 					fm = j;

@@ -79,7 +79,7 @@ for (;;) {
 
 	choice = m.Menu (NULL, TXT_TEAM_SELECTION, NULL, NULL);
 
-	if (choice == m.ToS () - 1) {
+	if (choice == int (m.ToS ()) - 1) {
 		if ((m.ToS () - 2 - opt_team_b < 2) || (opt_team_b == 1)) 
 			MsgBox (NULL, NULL, 1, TXT_OK, TXT_TEAM_MUST_ONE);
 		netGame.teamVector = teamVector;

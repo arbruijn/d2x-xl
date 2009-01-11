@@ -845,7 +845,7 @@ return 0;
 
 void CBitmap::UnlinkTexture (void)
 {
-if (Texture () && (Texture ()->Handle () == (GLuint) -1)) {
+if (Texture () && (Texture ()->Handle () == -1)) {
 	Texture ()->SetHandle (0);
 	SetTexture (NULL);
 	}

@@ -530,7 +530,10 @@ if (vertices.Create (m_nFaceVerts)) {
 			}
 		}
 	h = (short) (pv - vertices.Buffer ()) - 1;
-	vertices.SortAscending (&RenderModel::CModel::CmpVerts, 0, h);
+	
+	CQuickSort<CFloatVector3>	qs;
+		qs.SortAscending (vertices.Buffer (), 0, h, &RenderModel::CModel::CmpVerts);
+		
 	//G3SortModelVerts (vertices, 0, h);
 	h = FilterVertices (vertices, h);
 	for (i = 0, pvi = vertices.Buffer (); i < h - 1; i++, pvi++)

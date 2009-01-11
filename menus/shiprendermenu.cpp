@@ -76,8 +76,6 @@ static struct {
 	int	nColor;
 } shipRenderOpts;
 
-static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250};
-
 //------------------------------------------------------------------------------
 
 static const char *pszShipColors [8];
