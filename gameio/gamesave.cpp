@@ -1143,7 +1143,8 @@ return 0;
 
 static int ReadLightDeltaIndexInfo (CFile& cf)
 {
-if (gameFileInfo.lightDeltaIndices.offset > -1) {
+gameData.render.lights.nStatic = 0;
+if ((gameFileInfo.lightDeltaIndices.offset > -1) && gameFileInfo.lightDeltaIndices.count) {
 	int	i;
 
 	if (!gameData.render.lights.deltaIndices.Resize (gameFileInfo.lightDeltaIndices.count)) {
@@ -1177,7 +1178,7 @@ return 0;
 
 static int ReadLightDeltaInfo (CFile& cf)
 {
-if (gameFileInfo.lightDeltas.offset > -1) {
+if ((gameFileInfo.lightDeltas.offset > -1) && gameFileInfo.lightDeltas.count) {
 	int	i;
 
 #if TRACE
