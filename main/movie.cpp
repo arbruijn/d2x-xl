@@ -373,7 +373,7 @@ Init ();
 int CMovieLib::SetupMVL (CFile& cf)
 {
 	int			nFiles, offset;
-	int			i, len, bLittleEndian = gameStates.app.bLittleEndian;
+	int			i, len;
 
 	//read movie file header
 
