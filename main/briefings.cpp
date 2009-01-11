@@ -660,6 +660,10 @@ m_info.tAnimate = SDL_GetTicks ();
 //---------------------------------------------------------------------------
 // Returns char width.
 // If showRobotFlag set, then show a frame of the spinning robot.
+// When delay is zero, the briefing rendering code is rebuilding the entire
+// briefing screen up to the last currently visible character (required when
+// dual buffering is enabled). In that case there is no delay.
+
 int CBriefing::PrintCharDelayed (int delay)
 {
 	int w, h, aw;
@@ -683,11 +687,9 @@ if (m_info.bFlashingCursor && !m_info.bRedraw) {
 		GrUpdate (0);
 }
 
-if (delay > 0)
-	delay = 1000 / 15;
-
-Animate ();
 if ((delay > 0) && !m_info.bRedraw) {
+	delay = 1000 / 15;
+	Animate ();
 	do {
 		Animate ();
 		} while ((t = SDL_GetTicks ()) < (tText + delay));

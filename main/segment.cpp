@@ -296,7 +296,7 @@ CWall* wallP = m_sides [nSide].Wall ();
 CSegment* childP = SEGMENTS + nChild;
 
 #if DBG
-if (objP->Index () == nDbgObj)
+if (objP && (objP->Index () == nDbgObj))
 	nDbgObj = nDbgObj;
 #endif
 
