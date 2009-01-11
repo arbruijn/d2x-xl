@@ -287,6 +287,7 @@ strcpy (szSpinningRobot, "rba.mve");
 
 void CBriefingInfo::Setup (char* _message, int _nLevel, int _nScreen)
 {
+Init ();
 message = _message;
 nLevel = _nLevel;
 nScreen = _nScreen;

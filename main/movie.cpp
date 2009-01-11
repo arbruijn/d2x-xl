@@ -316,8 +316,10 @@ return numread == count;
 //sets the file position to the start of this already-open file
 void CMovie::Rewind (void)
 {
-if (m_cf.File ())
+if (m_cf.File ()) {
 	m_cf.Seek (m_offset, SEEK_SET);
+	m_pos = m_cf.Tell ();
+	}
 }
 
 //-----------------------------------------------------------------------
@@ -876,7 +878,6 @@ if (MVE_rmPrepMovie (reinterpret_cast<void*> (&cf),
 	Int3 ();
 	return 0;
 	}
-m_robotP->m_pos = m_robotP->m_cf.Tell ();
 return 1;
 }
 
