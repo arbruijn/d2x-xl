@@ -595,9 +595,6 @@ m_info.nLoopingChannel = -1;
 m_channels.Create (MAX_SOUND_CHANNELS);
 m_objects.Create (MAX_SOUND_OBJECTS);
 InitSounds ();
-#ifndef _WIN32
-InitThread ();
-#endif
 }
 
 //------------------------------------------------------------------------------

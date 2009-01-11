@@ -634,15 +634,14 @@ int j = (m_bHaveExtras = !gameStates.app.bNostalgia)
 		  ? N_BUILTIN_MOVIE_LIBS 
 		  : FIRST_EXTRA_MOVIE_LIB;
 
-for (int i = 0; i < int (N_BUILTIN_MOVIE_LIBS); i++) {
+for (int i = 0; i < j; i++) {
 	bRobotMovie = !strnicmp (pszMovieLibs [i], "robot", 5);
 	InitLib (pszMovieLibs [i], m_nLibs, bRobotMovie, 1);
 	if (m_libs [m_nLibs].m_nMovies) {
 		m_nLibs++;
 		PrintLog ("   found movie lib '%s'\n", pszMovieLibs [i]);
 		}
-	else if ((i >= FIRST_EXTRA_MOVIE_LIB) && 
-				(i < FIRST_EXTRA_MOVIE_LIB + N_EXTRA_MOVIE_LIBS))
+	else if ((i >= FIRST_EXTRA_MOVIE_LIB) && (i < FIRST_EXTRA_MOVIE_LIB + N_EXTRA_MOVIE_LIBS))
 		m_bHaveExtras = 0;
 	}
 
