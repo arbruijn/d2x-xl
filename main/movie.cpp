@@ -850,7 +850,6 @@ if (m_bHaveIntro) {
 int CMovieManager::StartRobot (char* filename)
 {
 	CMovieLib*	libP = movieManager.Find (filename);
-	CFile			cf;
 
 if (gameOpts->movies.nLevel < 1)
 	return 0;
@@ -871,7 +870,7 @@ MVE_memCallbacks (CMovie::Alloc, CMovie::Free);
 MVE_ioCallbacks (CMovie::Read);
 MVE_sfCallbacks (CMovie::ShowFrame);
 MVE_palCallbacks (CMovie::SetPalette);
-if (MVE_rmPrepMovie (reinterpret_cast<void*> (&cf), 
+if (MVE_rmPrepMovie (reinterpret_cast<void*> (&m_robotP->m_cf), 
 							gameStates.menus.bHires ? 280 : 140, 
 							gameStates.menus.bHires ? 200 : 80, 0,
 							m_robotP->m_bLittleEndian)) {
