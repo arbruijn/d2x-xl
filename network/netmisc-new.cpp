@@ -22,10 +22,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "inferno.h"
 #include "pstypes.h"
 #include "mono.h"
+#include "byteswap.h"
 
 #if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
 
-#include "byteswap.h"
 #include "segment.h"
 #include "gameseg.h"
 #include "network.h"
@@ -38,6 +38,27 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "powerup.h"
 #include "netmisc.h"
 #include "error.h"
+
+#endif
+
+//------------------------------------------------------------------------------
+// routine to calculate the checksum of the segments.  We add these specialized routines
+// since the current way is byte order dependent.
+
+ubyte* CalcCheckSum (ubyte* bufP, int len, uint& sum1, uint& sum2)
+{
+while(len--) {
+	sum1 += *bufP++;
+	if (sum1 >= 255) 
+		sum1 -= 255;
+	sum2 += sum1;
+	}
+return bufP;
+}
+
+//------------------------------------------------------------------------------
+
+#if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
 
 static ubyte nmDataBuf [MAX_PACKETSIZE];    // used for tmp netgame packets as well as sending CObject data
 static ubyte *nmBufP = NULL;
@@ -55,21 +76,6 @@ static ubyte *nmBufP = NULL;
 #define	BE_GET_SHORT(_dest)					(_dest) = INTEL_SHORT (*(reinterpret_cast<short*> (nmBufP + nmBufI))); nmBufI += 2
 #define	BE_GET_BYTE(_dest)					(_dest) = nmBufP [nmBufI++]
 #define	BE_GET_BYTES(_dest,_destSize)		memcpy (_dest, nmBufP + nmBufI, _destSize); nmBufI += (_destSize)
-
-//------------------------------------------------------------------------------
-// routine to calculate the checksum of the segments.  We add these specialized routines
-// since the current way is byte order dependent.
-
-ubyte* CalcCheckSum (ubyte* bufP, int len, uint& sum1, uint& sum2)
-{
-while(len--) {
-	sum1 += *bufP++;
-	if (sum1 >= 255) 
-		sum1 -= 255;
-	sum2 += sum1;
-	}
-return bufP;
-}
 
 //------------------------------------------------------------------------------
 
