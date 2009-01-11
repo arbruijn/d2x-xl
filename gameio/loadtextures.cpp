@@ -829,7 +829,7 @@ if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 			continue;
 		bm.SetAvgColorIndex (bmh [i].avgColor);
 		bm.SetType (BM_TYPE_ALT);
-		if (bm.CreateBuffer ())
+		if (!bm.CreateBuffer ())
 			break;
 		cf.Seek (bmDataOffset + bmOffset, SEEK_SET);
 		if (bTGA) {
@@ -886,6 +886,8 @@ if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 			sprintf (szName, "POG#%04d", j);
 		bm.SetName (szName);
 		gameData.pig.tex.altBitmapP [j] = bm;
+		gameData.pig.tex.altBitmapP [j].SetBuffer (bm.Buffer (), false, bm.Length ());
+		bm.SetBuffer (NULL);
 		gameData.pig.tex.bitmapP [j].SetOverride (gameData.pig.tex.altBitmapP + j);
 		CBitmap* bmP = gameData.pig.tex.altBitmapP + j;
 		tRgbColorf color;
