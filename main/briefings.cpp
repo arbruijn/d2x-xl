@@ -689,7 +689,6 @@ if (m_info.bFlashingCursor && !m_info.bRedraw) {
 
 if ((delay > 0) && !m_info.bRedraw) {
 	delay = 1000 / 15;
-	Animate ();
 	do {
 		Animate ();
 		} while ((t = SDL_GetTicks ()) < (tText + delay));
