@@ -331,15 +331,14 @@ int CBitmap::AvgColor (tRgbColorf* colorP)
 	
 if (!(bufP = Buffer ()))
 	return -1;
-h = (int) (this - gameData.pig.tex.bitmapP);
-if ((h < 0) || (h >= MAX_BITMAP_FILES)) {
-	h = (int) (this - gameData.pig.tex.altBitmapP);
-	if ((h < 0) || (h >= MAX_BITMAP_FILES)) {
-		h = (int) (this - gameData.pig.tex.bitmaps [0]);
-		if ((h < 0) || (h >= MAX_BITMAP_FILES))
-			return -1;
-		}
-	}
+if (gameData.pig.tex.bitmapP.IsElement (this))
+	h = int (this - gameData.pig.tex.bitmapP);
+else if (gameData.pig.tex.altBitmapP.IsElement (this))
+	h = int (this - gameData.pig.tex.altBitmapP);
+else if (gameData.pig.tex.bitmaps [0].IsElement (this))
+	h = int (this - gameData.pig.tex.bitmaps [0]);
+else
+	return -1;
 color = gameData.pig.tex.bitmapColors + h;
 if (!(h = (int) ((color->red + color->green + color->blue) * 255.0f))) {
 	if (!(palette = m_info.palette))

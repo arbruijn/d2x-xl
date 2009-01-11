@@ -99,13 +99,6 @@ const char *menuBgNames [4][2] = {
 
 //------------------------------------------------------------------------------
 
-char *BackgroundName (int nType, int bHires)
-{
-return nType ? szBackgrounds [nType - 1][(bHires < 0) ? gameStates.menus.bHires : bHires] : BackgroundName (BG_MENU);
-}
-
-//------------------------------------------------------------------------------
-
 char* MenuPCXName (void)
 {
 if (CFile::Exist (MENU_PCX_FULL, gameFolders.szDataDir, 0))
@@ -115,6 +108,13 @@ if (CFile::Exist (MENU_PCX_OEM, gameFolders.szDataDir, 0))
 if (CFile::Exist (MENU_PCX_SHAREWARE, gameFolders.szDataDir, 0))
 	return const_cast<char*> (MENU_PCX_SHAREWARE);
 return const_cast<char*> (MENU_PCX_MAC_SHARE);
+}
+
+//------------------------------------------------------------------------------
+
+char *BackgroundName (int nType, int bHires)
+{
+return nType ? szBackgrounds [nType - 1][(bHires < 0) ? gameStates.menus.bHires : bHires] : MenuPCXName ();
 }
 
 //------------------------------------------------------------------------------
