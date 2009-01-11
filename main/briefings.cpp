@@ -666,12 +666,14 @@ m_info.tAnimate = SDL_GetTicks ();
 
 int CBriefing::PrintCharDelayed (int delay)
 {
-	int w, h, aw;
-	char message [2];
-	static fix	t, tText = 0;
+	int	w, h, aw;
+	char	message [2];
+	fix	t;
 
-	message [0] = char (m_info.ch);
-	message [1] = 0;
+	static fix tText = 0;
+
+message [0] = char (m_info.ch);
+message [1] = 0;
 
 if (!tText)
 	tText = SDL_GetTicks ();
@@ -688,13 +690,12 @@ if (m_info.bFlashingCursor && !m_info.bRedraw) {
 }
 
 if ((delay > 0) && !m_info.bRedraw) {
-	delay = 1000 / 15;
+	delay = tText + 1000 / 15;
 	do {
 		Animate ();
-		} while ((t = SDL_GetTicks ()) < (tText + delay));
+		} while ((t = SDL_GetTicks ()) < delay);
+	tText = t;
 	}
-
-tText = t;
 
 //	Erase cursor
 if (m_info.bFlashingCursor && (delay > 0) && !m_info.bRedraw) {
