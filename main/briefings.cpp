@@ -1467,7 +1467,7 @@ else {
 	*bufP = 0;
 	cf.Close ();
 	}
-m_info.nBriefingTextLen = (int) (bufP - textBuffer);
+m_info.nBriefingTextLen = (int) (bufP - textBuffer.Buffer ());
 return (1);
 }
 
