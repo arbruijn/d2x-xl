@@ -354,7 +354,6 @@ m_background [0] = NULL;
 m_background [1] = NULL;
 m_filename [0] = BackgroundName (BG_MENU);
 m_filename [1] = BackgroundName (BG_SCORES);
-szBackgrounds [gameStates.menus.bHires];
 m_nDepth = -1; 
 m_bShadow = true;
 m_bValid = false;
@@ -447,7 +446,7 @@ if (PCXGetDimensions (filename, &width, &height) != PCX_ERROR_NONE) {
 	}
 CBitmap* bmP;
 if (!(bmP = CBitmap::Create (0, width, height, 1))) {
-	Error ("Not enough memory for menu backgroun\n", filename);
+	Error ("Not enough memory for menu backgroun\n");
 	return NULL;
 	}
 if (PCXReadBitmap (filename, bmP, bmP->Mode (), 0) != PCX_ERROR_NONE) {

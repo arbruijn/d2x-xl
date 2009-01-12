@@ -169,7 +169,7 @@ if ((*filename != '/') && (strstr (filename, "./") != filename) && *folder) {
  
 fp = fopen (pfn, mode);
 if (!fp && gameFolders.bAltHogDirInited && strcmp (folder, gameFolders.szAltHogDir)) {
-   sprintf (fn, "%s/%s", gameFolders.szAltHogDir);
+   sprintf (fn, "%s/%s", gameFolders.szAltHogDir, filename);
    pfn = fn;
    fp = fopen (pfn, mode);
 	}

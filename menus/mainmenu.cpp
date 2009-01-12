@@ -262,7 +262,7 @@ songManager.PlayCurrent (1);
 
 static void PlayMenuSong (void)
 {
-	int				h, i, j = 0;
+	int				h, i;
 	CStack<char*>	m (MAX_NUM_SONGS + 2);
 	CFile				cf;
 	char				szSongTitles [2][14] = {"- Descent 2 -", "- Descent 1 -"};

@@ -59,7 +59,7 @@ m_vCenter [Z] /= 4;
 
 void CSide::ComputeRads (void)
 {
-	fix 			d, rMin = 0x7fffffff, rMax = 0;
+	fix 			d;
 	CFixVector	v;
 
 m_rads [0] = 0x7fffffff;

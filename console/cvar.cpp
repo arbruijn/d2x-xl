@@ -62,7 +62,6 @@ CCvar* CCvar::Register (const char* name, char* value)
 if (!(ptr = Find (name))) {
 	if (!(ptr = new CCvar))
 		return NULL;
-	int l = strlen (name) + 1;
 	if (!(ptr->m_name = StrDup (name))) {
 		delete ptr;
 		return NULL;

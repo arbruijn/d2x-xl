@@ -305,8 +305,6 @@ for (pmf = m_faces.Buffer (), i = m_nFaces; i; i--, pmf++)
 
 int CModel::BuildFromPOF (CObject* objP, int nModel, CPolyModel* pp, CBitmap** modelBitmaps, tRgbaColorf* objColorP)
 {
-	CModel	*pm = gameData.models.renderModels [0] + nModel;
-
 if (!pp->Buffer ())
 	return 0;
 m_nModel = nModel;

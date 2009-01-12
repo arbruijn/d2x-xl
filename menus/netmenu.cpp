@@ -121,7 +121,7 @@ void NetworkSetWeaponsAllowed (void)
 
 //------------------------------------------------------------------------------
 
-static int optFF, optSuicide, optTextureMenu;
+static int optFF, optSuicide;
 
 int nLastReactorLife = 0;
 int optReactorLife, optAnarchy, optTeamAnarchy, optRobotAnarchy, optCoop;
@@ -1006,8 +1006,6 @@ int NetworkGetGameParams (int bAutoRun)
 	char	szLevel [5];
 
 	int nNewMission = gameData.missions.nLastMission;
-	int bAnarchyOnly = 0;
-	int bHoard = HoardEquipped ();
 
 SetAllAllowablesTo (mpParams.nWeaponFilter);
 networkData.nNamesInfoSecurity = -1;
@@ -1232,7 +1230,7 @@ int NetworkGetIpAddr (void)
 {
 	CMenu	m (9);
 	int	i, choice = 0;
-	int	opt = 0, optServer = -1, optPort = -1;
+	int	optServer = -1, optPort = -1;
 
 	static char szClientPort [7] = {'\0'};
 	static int nClientPortSign = 0;

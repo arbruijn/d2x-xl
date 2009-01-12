@@ -304,7 +304,6 @@ int GrInternalString0m (int x, int y, const char *s)
 	char				c;
 	int				origColor;
 	uint				videoOffset, videoOffset1;
-	CPalette*		palette = paletteManager.Game ();
 	ubyte*			videoBuffer = CCanvas::Current ()->Buffer ();
 	int				rowSize = CCanvas::Current ()->RowSize ();
 	tFont				font;

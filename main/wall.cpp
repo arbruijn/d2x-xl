@@ -245,7 +245,6 @@ if ((state == WALL_DOOR_OPENING) ||	//already opening
 	return NULL;
 
 if (state == WALL_DOOR_CLOSING) {		//closing, so reuse door
-	short nWall = this - WALLS;
 	if ((doorP = FindActiveDoor (this - WALLS))) {
 		doorP->time = (fix) (gameData.walls.animP [nClip].xTotalTime * gameStates.gameplay.slowmo [0].fSpeed) - doorP->time;
 		if (doorP->time < 0)

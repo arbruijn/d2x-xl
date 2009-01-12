@@ -2976,7 +2976,6 @@ else {
 				//  interpolated position and orientation can be preserved.
 				for (i = 0; i <= nObjects; i++) {
 					nSig = curObjs [i].info.nSignature;
-					objP;
 					FORALL_OBJSi (objP, j) {
 						if (nSig == objP->info.nSignature) {
 							objP->info.position.mOrient = curObjs [i].info.position.mOrient;

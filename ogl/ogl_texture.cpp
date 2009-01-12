@@ -1133,7 +1133,7 @@ nDepth++;
 if (!strcmp (m_info.szName, "sparks.tga"))
 	nDbgSeg = nDbgSeg;
 #endif
-if (bmP = HasOverride ()) {
+if ((bmP = HasOverride ())) {
 	int i = bmP->Bind (bMipMaps, nTransp);
 #if DBG
 	nDepth--;

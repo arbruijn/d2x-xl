@@ -480,9 +480,6 @@ for (i = m_nFaces, pf = m_faces; i; i--, pf++) {
 
 CFloatVector* CModel::VertsToFloat (void)
 {
-	CFixVector*		pv = m_verts.Buffer ();
-	CFloatVector*	pvf = m_vertsf.Buffer ();
-
 for (int i = 0; i < m_nVerts; i++)
 	m_vertsf [i].Assign (m_verts [i]);
 return m_vertsf.Buffer ();

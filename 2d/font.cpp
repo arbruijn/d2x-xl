@@ -378,8 +378,6 @@ Create (fontname);
 
 ubyte* CFont::Load (const char *fontname, ubyte* fontData)
 {
-	static int bFirstTime = 1;
-	
 	CFile 	cf;
 	CPalette	palette;
 	char 		fileId [4];

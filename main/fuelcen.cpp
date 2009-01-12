@@ -833,8 +833,7 @@ return amount;
 
 fix CSegment::Refuel (fix nMaxFuel)
 {
-	short			nSegment = Index ();
-	fix			amount;
+	fix	amount;
 
 	static fix last_playTime = 0;
 

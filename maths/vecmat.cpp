@@ -435,7 +435,7 @@ else {
 
 	sinb = FixDiv (m_data.mat [RVEC][Y], cosp);
 	cosb = FixDiv (m_data.mat [UVEC][Y], cosp);
-	if (sinb==0, cosb==0)
+	if (sinb==0 && cosb==0)
 		a [BA] = 0;
 	else
 		a [BA] = FixAtan2 (cosb, sinb);

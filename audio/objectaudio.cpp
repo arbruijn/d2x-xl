@@ -353,7 +353,6 @@ int CAudio::ChangeObjectSound (int nObject, fix nVolume)
 {
 
 	CSoundObject*	soundObjP = m_objects.Buffer ();
-	int				nKilled = 0;
 
 #ifdef NEWDEMO
 if (gameData.demo.nState == ND_STATE_RECORDING)

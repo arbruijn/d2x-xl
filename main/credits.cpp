@@ -292,7 +292,6 @@ for (int i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
 			} 
 		else
 			fontManager.SetCurrent (m_fonts [2]);
-		char* pszTemp = strchr (s, '\t');
 		if (*s) {
 			int w, h, aw;
 

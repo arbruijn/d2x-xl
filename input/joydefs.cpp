@@ -613,7 +613,7 @@ return nCurItem;
 void KeyboardConfigMenu (void)
 {
 	CMenu	m;
-	int	i, opt = 0, choice = 0;
+	int	i, choice = 0;
 	int	nCustKbdOpt, nCustHotKeysOpt;
 	char	szKeyRampScale [50];
 

@@ -2113,7 +2113,7 @@ if (!m_bBetweenLevels) {
 	//Restore tmap info
 	CSegment* segP = SEGMENTS.Buffer ();
 	CSide* sideP;
-	for (i = 0; i <= gameData.segs.nLastSegment; i++, segP) {
+	for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 		sideP = segP->m_sides;
 		for (j = 0; j < 6; j++, sideP++) {
 			sideP->m_nWall = m_cf.ReadShort ();

@@ -1634,7 +1634,6 @@ int CParticleManager::Shutdown (void)
 {
 SEM_ENTER (SEM_SMOKE)
 
-int i = 0;
 for (CParticleSystem* systemP = GetFirst (); systemP; systemP = GetNext ()) {
 	systemP->Destroy ();
 	m_systems.Push (systemP->Id ());

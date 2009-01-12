@@ -570,7 +570,7 @@ int CIFF::ParseBitmap (CBitmap *bmP, int bitmapType, CBitmap *prevBmP)
 	int					formType;
 
 memset (&bmHeader, 0, sizeof (bmHeader));
-if (bmHeader.raw_data = bmP->Buffer ()) {
+if ((bmHeader.raw_data = bmP->Buffer ())) {
 	bmHeader.w = bmP->Width ();
 	bmHeader.h = bmP->Height ();
 	}
