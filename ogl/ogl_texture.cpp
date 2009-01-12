@@ -103,7 +103,7 @@ if (!(texP = GetFirst ()))
 	return;
 do {
 	Push (texP);
-	texP->SetHandle ((GLuint) -1);
+	texP->SetHandle (0); //(GLuint) -1);
 	} while ((texP = GetNext ()));
 
 for (i = 0; i < MAX_ADDON_BITMAP_FILES; i++)
@@ -680,7 +680,7 @@ else
 
 void CTexture::Destroy (void)
 {
-if (m_info.handle && (m_info.handle != (GLuint) -1)) {
+if (m_info.handle && (m_info.handle != GLuint (-1))) {
 	OglDeleteTextures (1, reinterpret_cast<GLuint*> (&m_info.handle));
 	m_info.handle = 0;
 	Unlink ();
