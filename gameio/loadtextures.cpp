@@ -843,7 +843,6 @@ if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 				bm.DestroyBuffer ();
 				break;
 				}
-			bm.SetRowSize (bm.RowSize () * bm.BPP ());
 			bm.SetFrameCount ((ubyte) nFrames);
 			if (nFrames > 1) {
 				tEffectClip	*ecP = NULL;
