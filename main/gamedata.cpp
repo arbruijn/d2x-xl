@@ -947,7 +947,6 @@ nFreeDropped = 0;
 nDropped = 0;
 nObjects = 0;
 nObjectLimit = 0;
-nMaxUsedObjects = LEVEL_OBJECTS - 20;
 nNextSignature = 1;
 nChildFreeList = 0;
 nDrops = 0;
@@ -955,6 +954,7 @@ nDeadControlCenter = 0;
 nVertigoBotFlags = 0;
 nFrameCount = 0;
 nMaxObjects = max (gameFileInfo.objects.count + 1000, gameFileInfo.objects.count * 2);
+nMaxUsedObjects = LEVEL_OBJECTS - 20;
 }
 
 // ----------------------------------------------------------------------------

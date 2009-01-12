@@ -629,7 +629,7 @@ int CCameraManager::Create (void)
 	CObject	*objP;
 	CTrigger	*triggerP;
 
-if (!gameStates.app.bD2XLevel)
+if (!(gameStates.app.bD2XLevel && SEGMENTS.Buffer () && OBJECTS.Buffer ()))
 	return 0;
 PrintLog ("   creating cameras\n");
 if (!(m_faceCameras.Buffer() || m_faceCameras.Create (2 * LEVEL_SEGMENTS * 6)))
