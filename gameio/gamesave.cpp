@@ -829,7 +829,6 @@ if ((gameFileInfo.objects.offset > -1) && gameFileInfo.objects.count) {
 		Error ("Not enough memory for object data");
 		return -1;
 		}
-		)
 	CObject	*objP = OBJECTS.Buffer ();
 	if (cf.Seek (gameFileInfo.objects.offset, SEEK_SET)) {
 		Error ("Error seeking to object data\n(file damaged or invalid)");
