@@ -269,7 +269,6 @@ static tBriefingHandlerInfo briefingHandlers2 [] = {
 
 void CBriefingInfo::Init (void)
 { 
-memset (this, 0, sizeof (*this)); 
 ch = -1;
 prevCh = -1;
 nHumChannel = -1;
@@ -700,7 +699,7 @@ if ((delay > 0) && !m_info.bRedraw) {
 //	Erase cursor
 if (m_info.bFlashingCursor && (delay > 0) && !m_info.bRedraw) {
 	fontManager.SetColorRGBi (m_info.nEraseColor, 1, 0, 0);
-	GrPrintF (NULL, m_info.briefingTextX+1, m_info.briefingTextY, "_");
+	GrPrintF (NULL, m_info.briefingTextX + 1, m_info.briefingTextY, "_");
 	//	erase the character
 	fontManager.SetColorRGB (briefBgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
 	GrPrintF (NULL, m_info.briefingTextX, m_info.briefingTextY, message);
@@ -1613,6 +1612,7 @@ SetScreenMode (SCREEN_MENU);
 CCanvas::SetCurrent (NULL);
 gameStates.render.nShadowPass = 0;
 console.printf (CON_DBG, "Playing briefing screen <%s>, level %d\n", fnBriefing, nLevel);
+m_info.Init ();
 KeyFlush ();
 if (gameStates.app.bD1Mission) {
 	paletteManager.SetGame (paletteManager.Load (NULL, NULL, 1, 1, 1));

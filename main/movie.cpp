@@ -245,7 +245,7 @@ void CMovie::ShowFrame (ubyte* buf, uint bufw, uint bufh, uint sx, uint sy, uint
 bmFrame.Init (BM_LINEAR, 0, 0, bufw, bufh, 1, buf);
 bmFrame.SetPalette (movieManager.m_palette);
 
-TRANSPARENCY_COLOR = -1;
+TRANSPARENCY_COLOR = 0;
 if (gameOpts->menus.nStyle) {
 	//memset (grPalette, 0, 768);
 	//paletteManager.LoadEffect ();

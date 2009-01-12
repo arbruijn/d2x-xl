@@ -254,7 +254,11 @@ return 0;
 }
 
 //------------------------------------------------------------------------------
-//GLubyte gameData.render.ogl.buffer [512*512*4];
+// Create an image buffer for the renderer from a palettized bitmap.
+// The image buffer has power of two dimensions; the image will be stored
+// in its upper left area and u and v coordinates of lower right image corner
+// will be computed so that only the part of the buffer containing the image
+// is rendered.
 
 ubyte* CTexture::Convert (
 //	GLubyte		*buffer,
@@ -272,9 +276,9 @@ ubyte* CTexture::Convert (
 	ubyte			*rawData = bmP->Buffer ();
 	GLubyte		*bufP;
 	tRgbColorb	*colorP;
-	int			x, y, c, i, l;
+	int			x, y, c;
 	ushort		r, g, b, a;
-	int			bTransp;
+	int			bTransp, bpp;
 
 #if DBG
 if (strstr (bmP->Name (), "phoenix"))
@@ -283,8 +287,6 @@ if (strstr (bmP->Name (), "phoenix"))
 paletteManager.SetTexture (bmP->Parent () ? bmP->Parent ()->Palette () : bmP->Palette ());
 if (!paletteManager.Texture ())
 	return NULL;
-if (m_info.tw * m_info.th * 4 > (int) sizeof (gameData.render.ogl.buffer))//shouldn'texP happen, descent never uses textures that big.
-	Error ("texture too big %i %i", m_info.tw, m_info.th);
 bTransp = (nTransp || bSuperTransp) && bmP->HasTransparency ();
 if (!bTransp)
 	m_info.format = GL_RGB;
@@ -296,17 +298,38 @@ colorP = paletteManager.Texture ()->Color ();
 
 restart:
 
-i = 0;
-l = bmP->Size ();
+switch (m_info.format) {
+	case GL_LUMINANCE:
+		bpp = 1;
+		break;
+
+	case GL_LUMINANCE_ALPHA:
+	case GL_RGB5:
+	case GL_RGBA4:
+		bpp = 2; 
+		break;
+
+	case GL_RGB:
+		bpp = 3; 
+		break;
+
+	default:
+		bpp = 4;
+		break;
+	}
+
+if (m_info.tw * m_info.th * bpp > (int) sizeof (gameData.render.ogl.buffer))//shouldn'texP happen, descent never uses textures that big.
+	Error ("texture too big %i %i", m_info.tw, m_info.th);
+
 bufP = gameData.render.ogl.buffer;
 //bmP->Flags () &= ~(BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
-for (y = 0; y < m_info.th; y++) {
-	i = dxo + m_info.lw *(y + dyo);
-	for (x = 0; x < m_info.tw; x++) {
-		if ((i < l) && (x < m_info.w) && (y < m_info.h))
-			c = rawData [i++];
-		else
-			c = TRANSPARENCY_COLOR;	//fill the pad space with transparancy
+for (y = 0; y < m_info.h; y++) {
+	for (x = 0; x < m_info.w; x++) {
+#if DBG
+		if (!bmP->IsElement (rawData))
+			break;
+#endif
+		c = *rawData++;
 		if (nTransp && (c == TRANSPARENCY_COLOR)) {
 			//bmP->Flags () |= BM_FLAG_TRANSPARENT;
 			switch (m_info.format) {
@@ -417,7 +440,7 @@ for (y = 0; y < m_info.th; y++) {
 						(*(bufP++)) = (GLubyte) a;
 						}
 					else {
-						*reinterpret_cast<GLushort*> ( bufP) = (r >> 4) + ((g >> 4) << 4) + ((b >> 4) << 8) + ((a >> 4) << 12);
+						*reinterpret_cast<GLushort*> (bufP) = (r >> 4) + ((g >> 4) << 4) + ((b >> 4) << 8) + ((a >> 4) << 12);
 						bufP += 2;
 						}
 					break;
@@ -425,7 +448,18 @@ for (y = 0; y < m_info.th; y++) {
 				}
 			}
 		}
+#if DBG
+memset (bufP, 0, (m_info.tw - m_info.w) * bpp);	//erase the entire unused rightmost part of the line
+#else
+memset (bufP, 0, bpp); //erase one pixel to compensate for rounding problems with the u coordinate
+#endif
+	bufP += (m_info.tw - m_info.w) * bpp;
 	}
+#if DBG
+memset (bufP, 0, (m_info.th - m_info.h) * m_info.tw * bpp);
+#else
+memset (bufP, 0, m_info.tw * bpp);
+#endif
 if (m_info.format == GL_RGB)
 	m_info.internalFormat = 3;
 else if (m_info.format == GL_RGBA)
