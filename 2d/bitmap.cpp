@@ -90,9 +90,8 @@ DestroyMask ();
 
 void CBitmap::DestroyFrames (void)
 {
-if (m_info.frames.bmP) {
-	delete[] m_info.frames.bmP;
-	m_info.frames.bmP =
+if (m_info.frames.bms) {
+	m_info.frames.bms.Destroy ();
 	m_info.frames.currentP = NULL;
 	m_info.frames.nCount = 0;
 	}
@@ -149,7 +148,7 @@ return child;
 
 //------------------------------------------------------------------------------
 
-void CBitmap::InitChild (CBitmap *parent, int x, int y, int w, int h)
+bool CBitmap::InitChild (CBitmap *parent, int x, int y, int w, int h)
 {
 *this = *parent;
 m_info.parentP =
@@ -170,7 +169,13 @@ if (h > parent->Height () - m_info.props.y)
 	h = parent->Height () - m_info.props.y;
 m_info.props.h = h;
 SetParent (parent ? parent : this);
-SetBuffer (parent->Buffer () + (uint) ((m_info.props.y * m_info.props.rowSize) + m_info.props.x * m_info.nBPP), true);
+SetBuffer (NULL);	//force buffer to being a child even if identical with parent buffer
+uint nOffset = uint ((m_info.props.y * m_info.props.rowSize) + m_info.props.x * m_info.nBPP);
+uint nSize = uint (h * m_info.props.rowSize);
+if (nOffset + nSize > parent->CByteArray::Size ())
+	return false;
+SetBuffer (parent->Buffer () + nOffset, true, nSize);
+return true;
 }
 
 //------------------------------------------------------------------------------

@@ -220,6 +220,10 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segs.nSegments
 		nBaseTex = sideP->m_nBaseTex;
 		if ((nBaseTex < 0) || (nBaseTex >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]))
 			continue;
+#if DBG
+		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+			nDbgSeg = nDbgSeg;
+#endif
 		bmBot = OglLoadFaceBitmap (nBaseTex, sideP->m_nFrame);
 		if ((nOvlTex = sideP->m_nOvlTex)) {
 			bmTop = OglLoadFaceBitmap (nOvlTex, sideP->m_nFrame);

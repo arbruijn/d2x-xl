@@ -877,6 +877,10 @@ if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 			*bm.Props () = *gameData.pig.tex.bitmapP [j].Props ();
 			bm.Remap (paletteManager.Game (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 			}
+#if DBG
+		if (j == nDbgTexture)
+			nDbgTexture = nDbgTexture;
+#endif
 		PiggyFreeBitmap (NULL, j, 0);
 		bm.SetFromPog (1);
 		char szName [20];
