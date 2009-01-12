@@ -110,10 +110,6 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	memcpy (networkData.thisPlayer.player.network.ipx.server, IpxGetMyServerAddress (), 4);
 }
 networkData.thisPlayer.player.computerType = DOS;
-for (gameData.multiplayer.nLocalPlayer = 0; 
-	  gameData.multiplayer.nLocalPlayer < MAX_NUM_NET_PLAYERS; 
-	  gameData.multiplayer.nLocalPlayer++)
-	InitPlayerStatsGame ();
 gameData.multiplayer.nLocalPlayer = nPlayerSave;         
 MultiNewGame ();
 networkData.bNewGame = 1;

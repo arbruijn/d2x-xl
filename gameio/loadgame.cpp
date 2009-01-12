@@ -139,8 +139,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
+void InitStuckObjects (void);
+void ClearStuckObjects (void);
+void InitAIForShip (void);
 void ShowLevelIntro (int nLevel);
-int StartNewLevelSecret (int nLevel, int bPageInTextures);
 void InitPlayerPosition (int bRandom);
 void ReturningToLevelMessage (void);
 void AdvancingToLevelMessage (void);
@@ -161,7 +163,7 @@ void FilterObjectsFromLevel (void);
 // Global variables telling what sort of game we have
 
 //	Extra prototypes declared for the sake of LINT
-void InitPlayerStatsNewShip (void);
+void ResetShipData (void);
 void CopyDefaultsToRobotsAll (void);
 
 //	HUDClearMessages external, declared in gauges.h
@@ -341,40 +343,6 @@ else {		// Note link to above if!!!
 
 //------------------------------------------------------------------------------
 
-// Setup CPlayerData for new game
-void InitPlayerStatsGame (void)
-{
-LOCALPLAYER.score = 0;
-LOCALPLAYER.lastScore = 0;
-LOCALPLAYER.lives = INITIAL_LIVES;
-LOCALPLAYER.level = 1;
-LOCALPLAYER.timeLevel = 0;
-LOCALPLAYER.timeTotal = 0;
-LOCALPLAYER.hoursLevel = 0;
-LOCALPLAYER.hoursTotal = 0;
-LOCALPLAYER.energy = INITIAL_ENERGY;
-LOCALPLAYER.shields = gameStates.gameplay.xStartingShields;
-LOCALPLAYER.nKillerObj = -1;
-LOCALPLAYER.netKilledTotal = 0;
-LOCALPLAYER.netKillsTotal = 0;
-LOCALPLAYER.numKillsLevel = 0;
-LOCALPLAYER.numKillsTotal = 0;
-LOCALPLAYER.numRobotsLevel = 0;
-LOCALPLAYER.numRobotsTotal = 0;
-LOCALPLAYER.nKillGoalCount = 0;
-LOCALPLAYER.hostages.nRescued = 0;
-LOCALPLAYER.hostages.nLevel = 0;
-LOCALPLAYER.hostages.nTotal = 0;
-LOCALPLAYER.laserLevel = 0;
-LOCALPLAYER.flags = 0;
-LOCALPLAYER.nCloaks =
-LOCALPLAYER.nInvuls = 0;
-InitPlayerStatsNewShip ();
-gameStates.app.bFirstSecretVisit = 1;
-}
-
-//------------------------------------------------------------------------------
-
 #define TEAMKEY(_p)	((GetTeam (_p) == TEAM_RED) ? KEY_RED : KEY_BLUE)
 
 void InitAmmoAndEnergy (void)
@@ -391,57 +359,110 @@ if (LOCALPLAYER.secondaryAmmo [0] < 2 + NDL - gameStates.app.nDifficultyLevel)
 
 //------------------------------------------------------------------------------
 
-// Setup CPlayerData for new level (After completion of previous level)
-void InitPlayerStatsLevel (int bSecret)
+//sets up gameData.multiplayer.nLocalPlayer & gameData.objs.consoleP
+void InitMultiPlayerObject (void)
 {
-LOCALPLAYER.lastScore = LOCALPLAYER.score;
-LOCALPLAYER.level = gameData.missions.nCurrentLevel;
-if (!networkData.nJoinState) {
-	LOCALPLAYER.timeLevel = 0;
-	LOCALPLAYER.hoursLevel = 0;
+Assert ((gameData.multiplayer.nLocalPlayer >= 0) && (gameData.multiplayer.nLocalPlayer < MAX_PLAYERS));
+if (gameData.multiplayer.nLocalPlayer != 0) {
+	gameData.multiplayer.players [0] = LOCALPLAYER;
+	gameData.multiplayer.nLocalPlayer = 0;
 	}
-LOCALPLAYER.nKillerObj = -1;
-LOCALPLAYER.numKillsLevel = 0;
-LOCALPLAYER.numRobotsLevel = CountRobotsInLevel ();
-LOCALPLAYER.numRobotsTotal += LOCALPLAYER.numRobotsLevel;
-LOCALPLAYER.hostages.nLevel = CountHostagesInLevel ();
-LOCALPLAYER.hostages.nTotal += LOCALPLAYER.hostages.nLevel;
-LOCALPLAYER.hostages.nOnBoard = 0;
-if (!bSecret) {
-	InitAmmoAndEnergy ();
-	LOCALPLAYER.flags &=
-		~(PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED | PLAYER_FLAGS_FULLMAP | KEY_BLUE | KEY_RED | KEY_GOLD);
-	LOCALPLAYER.cloakTime = 0;
-	LOCALPLAYER.invulnerableTime = 0;
-	if (IsMultiGame && !IsCoopGame) {
-		if (IsTeamGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bTeamDoors)
-			LOCALPLAYER.flags |= KEY_GOLD | TEAMKEY (gameData.multiplayer.nLocalPlayer);
-		else
-			LOCALPLAYER.flags |= (KEY_BLUE | KEY_RED | KEY_GOLD);
-		}
-	}
-else if (gameStates.app.bD1Mission)
-	InitAmmoAndEnergy ();
-gameStates.app.bPlayerIsDead = 0; // Added by RH
-LOCALPLAYER.homingObjectDist = -I2X (1); // Added by RH
-gameData.laser.xLastFiredTime =
-gameData.laser.xNextFireTime =
-gameData.missiles.xLastFiredTime =
-gameData.missiles.xNextFireTime = gameData.time.xGame; // added by RH, solved demo playback bug
-Controls [0].afterburnerState = 0;
-gameStates.gameplay.bLastAfterburnerState = 0;
-audio.DestroyObjectSound (LOCALPLAYER.nObject);
-InitGauges ();
-#ifdef TACTILE
-if (TactileStick)
-	tactile_set_button_jolt ();
-#endif
-gameData.objs.missileViewerP = NULL;
+LOCALPLAYER.nObject = 0;
+LOCALPLAYER.nInvuls =
+LOCALPLAYER.nCloaks = 0;
+gameData.objs.consoleP = OBJECTS + LOCALPLAYER.nObject;
+gameData.objs.consoleP->SetType (OBJ_PLAYER);
+gameData.objs.consoleP->info.nId = gameData.multiplayer.nLocalPlayer;
+gameData.objs.consoleP->info.controlType = CT_FLYING;
+gameData.objs.consoleP->info.movementType = MT_PHYSICS;
+gameStates.entropy.nTimeLastMoved = -1;
 }
 
 //------------------------------------------------------------------------------
 
-void InitAIForShip (void);
+// Setup CPlayerData for new game
+void ResetPlayerData (bool bNewGame, bool bSecret, int nPlayer)
+{
+CPlayerData* playerP = gameData.multiplayer.players + ((nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer);
+
+if (bNewGame) {
+	playerP->score = 0;
+	playerP->lastScore = 0;
+	playerP->lives = INITIAL_LIVES;
+	playerP->level = 1;
+	playerP->timeLevel = 0;
+	playerP->timeTotal = 0;
+	playerP->hoursLevel = 0;
+	playerP->hoursTotal = 0;
+	playerP->energy = INITIAL_ENERGY;
+	playerP->shields = gameStates.gameplay.xStartingShields;
+	playerP->nKillerObj = -1;
+	playerP->netKilledTotal = 0;
+	playerP->netKillsTotal = 0;
+	playerP->numKillsLevel = 0;
+	playerP->numKillsTotal = 0;
+	playerP->numRobotsLevel = 0;
+	playerP->numRobotsTotal = 0;
+	playerP->nKillGoalCount = 0;
+	playerP->hostages.nRescued = 0;
+	playerP->hostages.nLevel = 0;
+	playerP->hostages.nTotal = 0;
+	playerP->laserLevel = 0;
+	playerP->flags = 0;
+	playerP->nCloaks =
+	playerP->nInvuls = 0;
+	if ((nPlayer < 0) || (nPlayer == gameData.multiplayer.nLocalPlayer))
+		InitMultiPlayerObject ();	//make sure player's object set up
+
+	ResetShipData ();
+	gameStates.app.bFirstSecretVisit = 1;
+	}
+else {
+	playerP->lastScore = playerP->score;
+	playerP->level = gameData.missions.nCurrentLevel;
+	if (!networkData.nJoinState) {
+		playerP->timeLevel = 0;
+		playerP->hoursLevel = 0;
+		}
+	playerP->nKillerObj = -1;
+	playerP->numKillsLevel = 0;
+	playerP->numRobotsLevel = CountRobotsInLevel ();
+	playerP->numRobotsTotal += playerP->numRobotsLevel;
+	playerP->hostages.nLevel = CountHostagesInLevel ();
+	playerP->hostages.nTotal += playerP->hostages.nLevel;
+	playerP->hostages.nOnBoard = 0;
+	if (!bSecret) {
+		InitAmmoAndEnergy ();
+		playerP->flags &=
+			~(PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED | PLAYER_FLAGS_FULLMAP | KEY_BLUE | KEY_RED | KEY_GOLD);
+		playerP->cloakTime = 0;
+		playerP->invulnerableTime = 0;
+		if (IsMultiGame && !IsCoopGame) {
+			if (IsTeamGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bTeamDoors)
+				playerP->flags |= KEY_GOLD | TEAMKEY (gameData.multiplayer.nLocalPlayer);
+			else
+				playerP->flags |= (KEY_BLUE | KEY_RED | KEY_GOLD);
+			}
+		}
+	else if (gameStates.app.bD1Mission)
+		InitAmmoAndEnergy ();
+	gameStates.app.bPlayerIsDead = 0; // Added by RH
+	playerP->homingObjectDist = -I2X (1); // Added by RH
+	gameData.laser.xLastFiredTime =
+	gameData.laser.xNextFireTime =
+	gameData.missiles.xLastFiredTime =
+	gameData.missiles.xNextFireTime = gameData.time.xGame; // added by RH, solved demo playback bug
+	Controls [0].afterburnerState = 0;
+	gameStates.gameplay.bLastAfterburnerState = 0;
+	audio.DestroyObjectSound (playerP->nObject);
+	InitGauges ();
+#ifdef TACTILE
+	if (TactileStick)
+		tactile_set_button_jolt ();
+#endif
+	gameData.objs.missileViewerP = NULL;
+	}
+}
 
 //------------------------------------------------------------------------------
 
@@ -472,7 +493,7 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame])
 //------------------------------------------------------------------------------
 
 // Setup CPlayerData for a brand-new ship
-void InitPlayerStatsNewShip (void)
+void ResetShipData (void)
 {
 	int	i;
 
@@ -532,44 +553,6 @@ gameData.objs.missileViewerP = NULL;		///reset missile camera if out there
 #endif
 InitAIForShip ();
 }
-
-//------------------------------------------------------------------------------
-
-void InitStuckObjects (void);
-
-#ifdef EDITOR
-
-extern int gameData.segs.bHaveSlideSegs;
-
-//reset stuff so game is semi-Normal when playing from editor
-void editor_reset_stuff_onLevel ()
-{
-	GameStartInitNetworkPlayers ();
-	InitPlayerStatsLevel (0);
-	gameData.objs.viewerP = gameData.objs.consoleP;
-	gameData.objs.consoleP = gameData.objs.viewerP = OBJECTS + LOCALPLAYER.nObject;
-	gameData.objs.consoleP->id=gameData.multiplayer.nLocalPlayer;
-	gameData.objs.consoleP->controlType = CT_FLYING;
-	gameData.objs.consoleP->movementType = MT_PHYSICS;
-	gameStates.app.bGameSuspended = 0;
-	VerifyConsoleObject ();
-	gameData.reactor.bDestroyed = 0;
-	if (gameData.demo.nState != ND_STATE_PLAYBACK)
-		GameStartRemoveUnusedPlayers ();
-	InitCockpit ();
-	InitRobotsForLevel ();
-	InitAIObjects ();
-	MorphInit ();
-	InitAllMatCens ();
-	InitPlayerStatsNewShip ();
-	InitReactorForLevel (0);
-	automap.ClearVisited ();
-	InitStuckObjects ();
-	InitThiefForLevel ();
-
-	gameData.segs.bHaveSlideSegs = 0;
-}
-#endif
 
 //------------------------------------------------------------------------------
 
@@ -746,7 +729,7 @@ omegaLightnings.Destroy (-1);
 
 extern char szAutoMission [255];
 
-int LoadLevel (int nLevel, int bPageInTextures, int bRestore)
+int LoadLevel (int nLevel, bool bLoadTextures, bool bRestore)
 {
 	char		*pszLevelName;
 	char		szHogName [FILENAME_LEN];
@@ -913,11 +896,11 @@ ResetPogEffects ();
 if (gameStates.app.bD1Mission) {
 	/*---*/PrintLog ("   loading Descent 1 textures\n");
 	LoadD1BitmapReplacements ();
-	if (bPageInTextures)
+	if (bLoadTextures)
 		PiggyLoadLevelData ();
 	}
 else {
-	if (bPageInTextures)
+	if (bLoadTextures)
 		PiggyLoadLevelData ();
 	LoadTextData (pszLevelName, ".msg", gameData.messages);
 	LoadTextData (pszLevelName, ".snd", &gameData.sounds);
@@ -1025,54 +1008,21 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-//sets up gameData.multiplayer.nLocalPlayer & gameData.objs.consoleP
-void InitMultiPlayerObject (void)
-{
-Assert ((gameData.multiplayer.nLocalPlayer >= 0) && (gameData.multiplayer.nLocalPlayer < MAX_PLAYERS));
-if (gameData.multiplayer.nLocalPlayer != 0) {
-	gameData.multiplayer.players [0] = LOCALPLAYER;
-	gameData.multiplayer.nLocalPlayer = 0;
-	}
-LOCALPLAYER.nObject = 0;
-LOCALPLAYER.nInvuls =
-LOCALPLAYER.nCloaks = 0;
-gameData.objs.consoleP = OBJECTS + LOCALPLAYER.nObject;
-gameData.objs.consoleP->SetType (OBJ_PLAYER);
-gameData.objs.consoleP->info.nId = gameData.multiplayer.nLocalPlayer;
-gameData.objs.consoleP->info.controlType = CT_FLYING;
-gameData.objs.consoleP->info.movementType = MT_PHYSICS;
-gameStates.entropy.nTimeLastMoved = -1;
-}
-
-//------------------------------------------------------------------------------
-
 //starts a new game on the given level
-int StartNewGame (int nStartLevel)
+int StartNewGame (int nLevel)
 {
-	int result;
-
 gameData.app.nGameMode = GM_NORMAL;
 SetFunctionMode (FMODE_GAME);
 gameData.missions.nNextLevel = 0;
-#if 0
-InitMultiPlayerObject ();	
-InitPlayerStatsGame ();		
-#endif
 gameData.multiplayer.nPlayers = 1;
 gameData.objs.nLastObject [0] = 0;
 networkData.bNewGame = 0;
-if (nStartLevel < 0)
-	result = StartNewLevelSecret (nStartLevel, 0);
-else
-	result = StartNewLevel (nStartLevel, 0);
-if (result) {
-	InitMultiPlayerObject ();	
-	InitPlayerStatsGame ();		
-	LOCALPLAYER.startingLevel = nStartLevel;		// Mark where they started
-	GameDisableCheats ();
-	InitSeismicDisturbances ();
-	}
-return result;
+if (!StartNewLevel (nLevel, true))
+	return 0;
+LOCALPLAYER.startingLevel = nLevel;		// Mark where they started
+GameDisableCheats ();
+InitSeismicDisturbances ();
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -1186,34 +1136,6 @@ void DoEndlevelMenu ()
 //No between level saves......!!!	StateSaveAll (1);
 }
 
-//	-----------------------------------------------------------------------------------------------------
-//called when the CPlayerData is starting a level (new game or new ship)
-void StartSecretLevel (void)
-{
-Assert (!gameStates.app.bPlayerIsDead);
-InitPlayerPosition (0);
-VerifyConsoleObject ();
-gameData.objs.consoleP->info.controlType = CT_FLYING;
-gameData.objs.consoleP->info.movementType = MT_PHYSICS;
-// -- WHY? -- DisableMatCens ();
-ClearTransientObjects (0);		//0 means leave proximity bombs
-// gameData.objs.consoleP->CreateAppearanceEffect ();
-gameStates.render.bDoAppearanceEffect = 1;
-AIResetAllPaths ();
-ResetTime ();
-ResetRearView ();
-gameData.fusion.xAutoFireTime = 0;
-gameData.fusion.xCharge = 0;
-gameStates.app.cheats.bRobotsFiring = 1;
-gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires;
-if (gameStates.app.bD1Mission) {
-	if (LOCALPLAYER.energy < INITIAL_ENERGY)
-		LOCALPLAYER.energy = INITIAL_ENERGY;
-	if (LOCALPLAYER.shields < INITIAL_SHIELDS)
-		LOCALPLAYER.shields = INITIAL_SHIELDS;
-	}
-}
-
 //------------------------------------------------------------------------------
 
 //	Returns true if secret level has been destroyed.
@@ -1248,109 +1170,13 @@ Assert (gameStates.app.nFunctionMode == FMODE_GAME);
 GameStartInitNetworkPlayers (); // Initialize the gameData.multiplayer.players array for this level
 HUDClearMessages ();
 automap.ClearVisited ();
-InitPlayerStatsLevel (1);
+ResetPlayerData (false, true);
 gameData.objs.viewerP = OBJECTS + LOCALPLAYER.nObject;
 GameStartRemoveUnusedPlayers ();
 gameStates.app.bGameSuspended = 0;
 gameData.reactor.bDestroyed = 0;
 InitCockpit ();
 paletteManager.ResetEffect ();
-}
-
-//	-----------------------------------------------------------------------------------------------------
-// called when the CPlayerData is starting a new level for Normal game mode and restore state
-//	Need to deal with whether this is the first time coming to this level or not.  If not the
-//	first time, instead of initializing various things, need to do a game restore for all the
-//	robots, powerups, walls, doors, etc.
-int StartNewLevelSecret (int nLevel, int bPageInTextures)
-{
-	CMenu	m (1);
-  //int i;
-
-gameStates.app.xThisLevelTime=0;
-
-m.AddText (" ");
-
-gameStates.render.cockpit.nLastDrawn [0] = -1;
-gameStates.render.cockpit.nLastDrawn [1] = -1;
-
-if (gameData.demo.nState == ND_STATE_PAUSED)
-	gameData.demo.nState = ND_STATE_RECORDING;
-
-if (gameData.demo.nState == ND_STATE_RECORDING) {
-	NDSetNewLevel (nLevel);
-	NDRecordStartFrame (gameData.app.nFrameCount, gameData.time.xFrame);
-	}
-else if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-	paletteManager.DisableEffect ();
-	SetScreenMode (SCREEN_MENU);		//go into menu mode
-	if (gameStates.app.bFirstSecretVisit)
-		DoSecretMessage (gameStates.app.bD1Mission ? TXT_ALTERNATE_EXIT : TXT_SECRET_EXIT);
-	else if (CFile::Exist (SECRETC_FILENAME,gameFolders.szSaveDir,0))
-		DoSecretMessage (gameStates.app.bD1Mission ? TXT_ALTERNATE_EXIT : TXT_SECRET_EXIT);
-	else {
-		char	text_str [128];
-
-		sprintf (text_str, TXT_ADVANCE_LVL, gameData.missions.nCurrentLevel+1);
-		DoSecretMessage (text_str);
-		}
-	}
-
-if (gameStates.app.bFirstSecretVisit || (gameData.demo.nState == ND_STATE_PLAYBACK)) {
-	if (!LoadLevel (nLevel, bPageInTextures, 0))
-		return 0;
-	InitSecretLevel (nLevel);
-	if (!gameStates.app.bAutoRunMission && gameStates.app.bD1Mission)
-		ShowLevelIntro (nLevel);
-	songManager.PlayLevel (gameData.missions.nCurrentLevel, 0);
-	InitRobotsForLevel ();
-	InitAIObjects ();
-	InitShakerDetonates ();
-	MorphInit ();
-	InitAllMatCens ();
-	ResetSpecialEffects ();
-	StartSecretLevel ();
-	LOCALPLAYER.flags &= ~PLAYER_FLAGS_ALL_KEYS;
-	}
-else {
-	if (CFile::Exist (SECRETC_FILENAME, gameFolders.szSaveDir, 0)) {
-		int	pw_save, sw_save, nCurrentLevel;
-
-		pw_save = gameData.weapons.nPrimary;
-		sw_save = gameData.weapons.nSecondary;
-		nCurrentLevel = gameData.missions.nCurrentLevel;
-		saveGameHandler.Load (1, 1, 0, SECRETC_FILENAME);
-		gameData.missions.nEnteredFromLevel = nCurrentLevel;
-		gameData.weapons.nPrimary = pw_save;
-		gameData.weapons.nSecondary = sw_save;
-		ResetSpecialEffects ();
-		StartSecretLevel ();
-		}
-	else {
-		char	text_str [128];
-
-		sprintf (text_str, TXT_ADVANCE_LVL, gameData.missions.nCurrentLevel+1);
-		DoSecretMessage (text_str);
-		if (!LoadLevel (nLevel, bPageInTextures, 0))
-			return 0;
-		InitSecretLevel (nLevel);
-		return 1;
-
-		// -- //	If file doesn't exist, it's because reactor was destroyed.
-		// -- // -- StartNewLevel (gameData.missions.secretLevelTable [-gameData.missions.nCurrentLevel-1]+1, 0);
-		// -- StartNewLevel (gameData.missions.secretLevelTable [-gameData.missions.nCurrentLevel-1]+1, 0);
-		// -- return;
-		}
-	}
-
-if (gameStates.app.bFirstSecretVisit)
-	CopyDefaultsToRobotsAll ();
-TurnCheatsOff ();
-InitReactorForLevel (0);
-//	Say CPlayerData can use FLASH cheat to mark path to exit.
-nLastLevelPathCreated = -1;
-gameStates.app.bFirstSecretVisit = 0;
-return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -1375,13 +1201,13 @@ if (!gameStates.app.bD1Mission && CFile::Exist (SECRETB_FILENAME, gameFolders.sz
 	}
 else {
 	// File doesn't exist, so can't return to base level.  Advance to next one.
-	if (gameData.missions.nEnteredFromLevel == gameData.missions.nLastLevel)
+	if (gameData.missions.nEntryLevel == gameData.missions.nLastLevel)
 		DoEndGame ();
 	else {
 		if (!gameStates.app.bD1Mission)
 			AdvancingToLevelMessage ();
 		DoEndLevelScoreGlitz (0);
-		StartNewLevel (gameData.missions.nEnteredFromLevel + 1, 0);
+		StartNewLevel (gameData.missions.nEntryLevel + 1, false);
 		}
 	}
 }
@@ -1404,38 +1230,6 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 	time_used = xOldGameTime - LOCALPLAYER.cloakTime;
 	LOCALPLAYER.cloakTime = gameData.time.xGame - time_used;
 	}
-}
-
-//------------------------------------------------------------------------------
-//	Called from switch.c when CPlayerData passes through secret exit.  That means he was on a non-secret level and he
-//	is passing to the secret level.
-//	Do a savegame.
-void EnterSecretLevel (void)
-{
-	fix	xOldGameTime;
-	int	i;
-
-Assert (!IsMultiGame);
-gameData.missions.nEnteredFromLevel = gameData.missions.nCurrentLevel;
-if (gameData.reactor.bDestroyed)
-	DoEndLevelScoreGlitz (0);
-if (gameData.demo.nState != ND_STATE_PLAYBACK)
-	saveGameHandler.Save (0, 1, 0, NULL);	//	Not between levels (ie, save all), IS a secret level, NO filename override
-//	Find secret level number to go to, stuff in gameData.missions.nNextLevel.
-for (i = 0; i < -gameData.missions.nLastSecretLevel; i++)
-	if (gameData.missions.secretLevelTable [i] == gameData.missions.nCurrentLevel) {
-		gameData.missions.nNextLevel = -i - 1;
-		break;
-		}
-	else if (gameData.missions.secretLevelTable [i] > gameData.missions.nCurrentLevel) {	//	Allows multiple exits in same group.
-		gameData.missions.nNextLevel = -i;
-		break;
-		}
-if (i >= -gameData.missions.nLastSecretLevel)		//didn't find level, so must be last
-	gameData.missions.nNextLevel = gameData.missions.nLastSecretLevel;
-xOldGameTime = gameData.time.xGame;
-StartNewLevelSecret (gameData.missions.nNextLevel, 1);
-// do_cloak_invul_stuff ();
 }
 
 //------------------------------------------------------------------------------
@@ -1562,8 +1356,7 @@ void AdvanceLevel (int bSecret, int bFromSecret)
 
 gameStates.app.bBetweenLevels = 1;
 Assert (!bSecret);
-if ((!bFromSecret/* && gameStates.app.bD1Mission*/) &&
-	 ((gameData.missions.nCurrentLevel != gameData.missions.nLastLevel) ||
+if (!bFromSecret && ((gameData.missions.nCurrentLevel != gameData.missions.nLastLevel) ||
 	  extraGameInfo [IsMultiGame].bRotateLevels)) {
 	if (IsMultiGame)
 		MultiEndLevelScore ();
@@ -1573,10 +1366,6 @@ if ((!bFromSecret/* && gameStates.app.bD1Mission*/) &&
 		}
 	}
 gameData.reactor.bDestroyed = 0;
-#ifdef EDITOR
-if (gameData.missions.nCurrentLevel == 0)
-	return;		//not a real level
-#endif
 if (IsMultiGame) {
 	if ((result = MultiEndLevel (&bSecret))) { // Wait for other players to reach this point
 		gameStates.app.bBetweenLevels = 0;
@@ -1598,7 +1387,7 @@ else {
 		}
 	if (!IsMultiGame)
 		DoEndlevelMenu (); // Let user save their game
-	StartNewLevel (gameData.missions.nNextLevel, 0);
+	StartNewLevel (gameData.missions.nNextLevel, false);
 	}
 gameStates.app.bBetweenLevels = 0;
 }
@@ -1637,10 +1426,10 @@ SetScreenMode (SCREEN_MENU);		//go into menu mode
 CCanvas::SetCurrent (NULL);
 old_fmode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
-if (gameData.missions.nEnteredFromLevel < 0)
+if (gameData.missions.nEntryLevel < 0)
 	sprintf (msg, TXT_SECRET_LEVEL_RETURN);
 else
-	sprintf (msg, TXT_RETURN_LVL, gameData.missions.nEnteredFromLevel);
+	sprintf (msg, TXT_RETURN_LVL, gameData.missions.nEntryLevel);
 MsgBox (NULL, BackgroundName (BG_STARS), 1, TXT_OK, msg);
 SetFunctionMode (old_fmode);
 StartTime (0);
@@ -1663,7 +1452,7 @@ SetScreenMode (SCREEN_MENU);		//go into menu mode
 CCanvas::SetCurrent (NULL);
 old_fmode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
-sprintf (msg, "Base level destroyed.\nAdvancing to level %i", gameData.missions.nEnteredFromLevel + 1);
+sprintf (msg, "Base level destroyed.\nAdvancing to level %i", gameData.missions.nEntryLevel + 1);
 MsgBox (NULL, BackgroundName (BG_STARS), 1, TXT_OK, msg);
 SetFunctionMode (old_fmode);
 }
@@ -1682,83 +1471,50 @@ OBJECTS [nPlayerObj].info.position.mOrient = gameData.segs.secret.returnOrient;
 }
 
 //------------------------------------------------------------------------------
-
-void DoPlayerDead (void)
+//called when the CPlayerData is starting a level (new game or new ship)
+void StartLevel (int bRandom)
 {
-	int bSecret = (gameData.missions.nCurrentLevel < 0);
-
-gameStates.app.bGameRunning = 0;
-paletteManager.ResetEffect ();
-paletteManager.LoadEffect ();
-audio.StopAll ();		//kill any continuing sounds (eg. forcefield hum)
-DeadPlayerEnd ();		//terminate death sequence (if playing)
-if (IsCoopGame && gameStates.app.bHaveExtraGameInfo [1])
-	LOCALPLAYER.score =
-	(LOCALPLAYER.score * (100 - nCoopPenalties [(int) extraGameInfo [1].nCoopPenalty])) / 100;
-if (gameStates.multi.bPlayerIsTyping [gameData.multiplayer.nLocalPlayer] && (gameData.app.nGameMode & GM_MULTI))
-	MultiSendMsgQuit ();
-gameStates.entropy.bConquering = 0;
-#ifdef EDITOR
-if (gameData.app.nGameMode == GM_EDITOR) {			//test mine, not real level
-	CObject * playerobj = OBJECTS + LOCALPLAYER.nObject;
-	//MsgBox ("You're Dead!", 1, "Continue", "Not a real game, though.");
-	LoadLevelSub ("gamesave.lvl");
-	InitPlayerStatsNewShip ();
-	playerobjP->info.nFlags &= ~OF_SHOULD_BE_DEAD;
-	StartLevel (0);
-	return;
-}
-#endif
-
-if (gameData.app.nGameMode & GM_MULTI)
-	MultiDoDeath (LOCALPLAYER.nObject);
-else {				//Note link to above else!
-	if (!--LOCALPLAYER.lives) {
-		DoGameOver ();
-		return;
-		}
+Assert (!gameStates.app.bPlayerIsDead);
+VerifyConsoleObject ();
+InitPlayerPosition (bRandom);
+gameData.objs.consoleP->info.controlType = CT_FLYING;
+gameData.objs.consoleP->info.movementType = MT_PHYSICS;
+MultiSendShields ();
+DisableMatCens ();
+ClearTransientObjects (0);		//0 means leave proximity bombs
+// gameData.objs.consoleP->CreateAppearanceEffect ();
+gameStates.render.bDoAppearanceEffect = 1;
+if (IsMultiGame) {
+	if (IsCoopGame)
+		MultiSendScore ();
+	MultiSendPosition (LOCALPLAYER.nObject);
+	MultiSendReappear ();
 	}
-if (gameData.reactor.bDestroyed) {
-	//clear out stuff so no bonus
-	LOCALPLAYER.hostages.nOnBoard = 0;
-	LOCALPLAYER.energy = 0;
-	LOCALPLAYER.shields = 0;
-	LOCALPLAYER.connected = 3;
-	DiedInMineMessage (); // Give them some indication of what happened
-	}
-if (bSecret && !gameStates.app.bD1Mission) {
-	ExitSecretLevel ();
-	SetPosFromReturnSegment (1);
-	LOCALPLAYER.lives--;	//	re-lose the life, LOCALPLAYER.lives got written over in restore.
-	InitPlayerStatsNewShip ();
-	gameStates.render.cockpit.nLastDrawn [0] =
-	gameStates.render.cockpit.nLastDrawn [1] = -1;
-	}
-else {
-	if (gameData.reactor.bDestroyed) {
-		//AdvancingToLevelMessage ();
-		AdvanceLevel (0, bSecret);
-		//StartNewLevel (gameData.missions.nCurrentLevel + 1, 0);
-		InitPlayerStatsNewShip ();
-		}
-	else if (!gameStates.entropy.bExitSequence) {
-		InitPlayerStatsNewShip ();
-		StartLevel (1);
-		}
-	}
-SetSoundSources ();
-audio.SyncSounds ();
+if (gameData.app.nGameMode & GM_NETWORK)
+	NetworkDoFrame (1, 1);
+AIResetAllPaths ();
+AIInitBossForShip ();
+ClearStuckObjects ();
+ResetTime ();
+ResetRearView ();
+gameData.fusion.xAutoFireTime = 0;
+gameData.fusion.xCharge = 0;
+gameStates.app.cheats.bRobotsFiring = 1;
+gameStates.app.cheats.bD1CheatsEnabled = 0;
+gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires;
+SetDataVersion (-1);
 }
 
 //------------------------------------------------------------------------------
 
 //called when the CPlayerData is starting a new level for Normal game mode and restore state
 //	bSecret set if came from a secret level
-int StartNewLevelSub (int nLevel, int bPageInTextures, int bSecret, int bRestore)
+
+int PrepareLevel (int nLevel, bool bLoadTextures, bool bSecret, bool bRestore, bool bNewGame)
 {
 	int funcRes;
 
-	gameStates.multi.bTryAutoDL = 1;
+gameStates.multi.bTryAutoDL = 1;
 
 reloadLevel:
 
@@ -1776,11 +1532,12 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 if (IsMultiGame)
 	SetFunctionMode (FMODE_MENU); // Cheap fix to prevent problems with errror dialogs in loadlevel.
 SetWarnFunc (ShowInGameWarning);
-funcRes = LoadLevel (nLevel, bPageInTextures, bRestore);
+funcRes = LoadLevel (nLevel, bLoadTextures, bRestore);
 ClearWarnFunc (ShowInGameWarning);
 if (!funcRes)
 	return 0;
 Assert (gameStates.app.bAutoRunMission || (gameData.missions.nCurrentLevel == nLevel));	//make sure level set right
+
 GameStartInitNetworkPlayers (); // Initialize the gameData.multiplayer.players array for
 #if DBG										  // this level
 InitHoardData ();
@@ -1811,15 +1568,14 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 Assert (gameStates.app.nFunctionMode == FMODE_GAME);
 HUDClearMessages ();
 automap.ClearVisited ();
-if (networkData.bNewGame == 1) {
-	networkData.bNewGame = 0;
-	InitPlayerStatsNewShip ();
-	}
-InitPlayerStatsLevel (bSecret);
+
+for (int i = 0; i < MAX_NUM_NET_PLAYERS; i++)
+	ResetPlayerData (bNewGame, bSecret, i);
 if (IsCoopGame && networkData.nJoinState) {
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
 		gameData.multiplayer.players [i].flags |= netGame.playerFlags [i];
 	}
+
 if (IsMultiGame)
 	MultiPrepLevel (); // Removes robots from level if necessary
 else
@@ -1866,6 +1622,152 @@ LOCALPLAYER.nCloaks = 0;
 //	Say CPlayerData can use FLASH cheat to mark path to exit.
 nLastLevelPathCreated = -1;
 return 1;
+}
+
+//	-----------------------------------------------------------------------------------------------------
+//called when the CPlayerData is starting a level (new game or new ship)
+
+static void StartSecretLevel (void)
+{
+Assert (!gameStates.app.bPlayerIsDead);
+InitPlayerPosition (0);
+VerifyConsoleObject ();
+gameData.objs.consoleP->info.controlType = CT_FLYING;
+gameData.objs.consoleP->info.movementType = MT_PHYSICS;
+// -- WHY? -- DisableMatCens ();
+ClearTransientObjects (0);		//0 means leave proximity bombs
+// gameData.objs.consoleP->CreateAppearanceEffect ();
+gameStates.render.bDoAppearanceEffect = 1;
+AIResetAllPaths ();
+ResetTime ();
+ResetRearView ();
+gameData.fusion.xAutoFireTime = 0;
+gameData.fusion.xCharge = 0;
+gameStates.app.cheats.bRobotsFiring = 1;
+gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires;
+if (gameStates.app.bD1Mission) {
+	if (LOCALPLAYER.energy < INITIAL_ENERGY)
+		LOCALPLAYER.energy = INITIAL_ENERGY;
+	if (LOCALPLAYER.shields < INITIAL_SHIELDS)
+		LOCALPLAYER.shields = INITIAL_SHIELDS;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+static int PrepareSecretLevel (int nLevel, bool bLoadTextures)
+{
+	CMenu	menu (1);
+
+gameStates.app.xThisLevelTime = 0;
+menu.AddText (" ");
+gameStates.render.cockpit.nLastDrawn [0] = -1;
+gameStates.render.cockpit.nLastDrawn [1] = -1;
+
+if (gameData.demo.nState == ND_STATE_PAUSED)
+	gameData.demo.nState = ND_STATE_RECORDING;
+
+if (gameData.demo.nState == ND_STATE_RECORDING) {
+	NDSetNewLevel (nLevel);
+	NDRecordStartFrame (gameData.app.nFrameCount, gameData.time.xFrame);
+	}
+else if (gameData.demo.nState != ND_STATE_PLAYBACK) {
+	paletteManager.DisableEffect ();
+	SetScreenMode (SCREEN_MENU);		//go into menu mode
+	if (gameStates.app.bFirstSecretVisit)
+		DoSecretMessage (gameStates.app.bD1Mission ? TXT_ALTERNATE_EXIT : TXT_SECRET_EXIT);
+	else if (CFile::Exist (SECRETC_FILENAME,gameFolders.szSaveDir,0))
+		DoSecretMessage (gameStates.app.bD1Mission ? TXT_ALTERNATE_EXIT : TXT_SECRET_EXIT);
+	else {
+		char	text_str [128];
+
+		sprintf (text_str, TXT_ADVANCE_LVL, gameData.missions.nCurrentLevel+1);
+		DoSecretMessage (text_str);
+		}
+	}
+
+if (gameStates.app.bFirstSecretVisit || (gameData.demo.nState == ND_STATE_PLAYBACK)) {
+	if (!LoadLevel (nLevel, bLoadTextures, false))
+		return 0;
+	InitSecretLevel (nLevel);
+	if (!gameStates.app.bAutoRunMission && gameStates.app.bD1Mission)
+		ShowLevelIntro (nLevel);
+	songManager.PlayLevel (gameData.missions.nCurrentLevel, 0);
+	InitRobotsForLevel ();
+	InitAIObjects ();
+	InitShakerDetonates ();
+	MorphInit ();
+	InitAllMatCens ();
+	ResetSpecialEffects ();
+	StartSecretLevel ();
+	LOCALPLAYER.flags &= ~PLAYER_FLAGS_ALL_KEYS;
+	}
+else {
+	if (CFile::Exist (SECRETC_FILENAME, gameFolders.szSaveDir, 0)) {
+		int	pw_save, sw_save, nCurrentLevel;
+
+		pw_save = gameData.weapons.nPrimary;
+		sw_save = gameData.weapons.nSecondary;
+		nCurrentLevel = gameData.missions.nCurrentLevel;
+		saveGameHandler.Load (1, 1, 0, SECRETC_FILENAME);
+		gameData.missions.nEntryLevel = nCurrentLevel;
+		gameData.weapons.nPrimary = pw_save;
+		gameData.weapons.nSecondary = sw_save;
+		ResetSpecialEffects ();
+		StartSecretLevel ();
+		}
+	else {
+		char	text_str [128];
+
+		sprintf (text_str, TXT_ADVANCE_LVL, gameData.missions.nCurrentLevel+1);
+		DoSecretMessage (text_str);
+		if (!LoadLevel (nLevel, bLoadTextures, false))
+			return 0;
+		InitSecretLevel (nLevel);
+		return 1;
+		}
+	}
+
+if (gameStates.app.bFirstSecretVisit)
+	CopyDefaultsToRobotsAll ();
+TurnCheatsOff ();
+InitReactorForLevel (0);
+//	Say CPlayerData can use FLASH cheat to mark path to exit.
+nLastLevelPathCreated = -1;
+gameStates.app.bFirstSecretVisit = 0;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+//	Called from switch.c when CPlayerData passes through secret exit.  That means he was on a non-secret level and he
+//	is passing to the secret level.
+//	Do a savegame.
+void EnterSecretLevel (void)
+{
+	fix	xOldGameTime;
+	int	i;
+
+Assert (!IsMultiGame);
+gameData.missions.nEntryLevel = gameData.missions.nCurrentLevel;
+if (gameData.reactor.bDestroyed)
+	DoEndLevelScoreGlitz (0);
+if (gameData.demo.nState != ND_STATE_PLAYBACK)
+	saveGameHandler.Save (0, 1, 0, NULL);	//	Not between levels (ie, save all), IS a secret level, NO filename override
+//	Find secret level number to go to, stuff in gameData.missions.nNextLevel.
+for (i = 0; i < -gameData.missions.nLastSecretLevel; i++)
+	if (gameData.missions.secretLevelTable [i] == gameData.missions.nCurrentLevel) {
+		gameData.missions.nNextLevel = -i - 1;
+		break;
+		}
+	else if (gameData.missions.secretLevelTable [i] > gameData.missions.nCurrentLevel) {	//	Allows multiple exits in same group.
+		gameData.missions.nNextLevel = -i;
+		break;
+		}
+if (i >= -gameData.missions.nLastSecretLevel)		//didn't find level, so must be last
+	gameData.missions.nNextLevel = gameData.missions.nLastSecretLevel;
+xOldGameTime = gameData.time.xGame;
+PrepareSecretLevel (gameData.missions.nNextLevel, true);
+// do_cloak_invul_stuff ();
 }
 
 //------------------------------------------------------------------------------
@@ -1993,15 +1895,14 @@ if (!IsMultiGame) {
 }
 
 //	---------------------------------------------------------------------------
-//	If starting a level which appears in the gameData.missions.secretLevelTable, then set gameStates.app.bFirstSecretVisit.
-//	Reason: On this level, if CPlayerData goes to a secret level, he will be going to a different
-//	secret level than he's ever been to before.
-//	Sets the global gameStates.app.bFirstSecretVisit if necessary.  Otherwise leaves it unchanged.
+// If a player enters a level listed in the mission's secret level table,
+// all secret levels he can reach from now on are ones he hasn't been able 
+// to reach before (in other words: No secret exits yet to come lead to 
+// secret levels he's been to before), so set the proper flag.
+
 void MaybeSetFirstSecretVisit (int nLevel)
 {
-	int	i;
-
-for (i = 0; i < gameData.missions.nSecretLevels; i++) {
+for (int i = 0; i < gameData.missions.nSecretLevels; i++) {
 	if (gameData.missions.secretLevelTable [i] == nLevel) {
 		gameStates.app.bFirstSecretVisit = 1;
 		}
@@ -2011,15 +1912,16 @@ for (i = 0; i < gameData.missions.nSecretLevels; i++) {
 //------------------------------------------------------------------------------
 //called when the CPlayerData is starting a new level for Normal game model
 //	bSecret if came from a secret level
-int StartNewLevel (int nLevel, int bSecret)
+int StartNewLevel (int nLevel, bool bNewGame)
 {
 	gameStates.app.xThisLevelTime = 0;
 
-if ((nLevel > 0) && !bSecret)
-	MaybeSetFirstSecretVisit (nLevel);
+if (nLevel < 0)
+	return PrepareSecretLevel (nLevel, false);
+MaybeSetFirstSecretVisit (nLevel);
 if (!gameStates.app.bAutoRunMission)
 	ShowLevelIntro (nLevel);
-return StartNewLevelSub (nLevel, 1, bSecret, 0);
+return PrepareLevel (nLevel, 1, false, false, bNewGame);
 }
 
 //------------------------------------------------------------------------------
@@ -2210,48 +2112,61 @@ FORALL_ROBOT_OBJS (objP, i)
 
 }
 
-extern void ClearStuckObjects (void);
-
 //------------------------------------------------------------------------------
-//called when the CPlayerData is starting a level (new game or new ship)
-void StartLevel (int bRandom)
+
+void DoPlayerDead (void)
 {
-Assert (!gameStates.app.bPlayerIsDead);
-VerifyConsoleObject ();
-InitPlayerPosition (bRandom);
-gameData.objs.consoleP->info.controlType = CT_FLYING;
-gameData.objs.consoleP->info.movementType = MT_PHYSICS;
-MultiSendShields ();
-DisableMatCens ();
-ClearTransientObjects (0);		//0 means leave proximity bombs
-// gameData.objs.consoleP->CreateAppearanceEffect ();
-gameStates.render.bDoAppearanceEffect = 1;
-if (IsMultiGame) {
-	if (IsCoopGame)
-		MultiSendScore ();
-	MultiSendPosition (LOCALPLAYER.nObject);
-	MultiSendReappear ();
+	int bSecret = (gameData.missions.nCurrentLevel < 0);
+
+gameStates.app.bGameRunning = 0;
+paletteManager.ResetEffect ();
+paletteManager.LoadEffect ();
+audio.StopAll ();		//kill any continuing sounds (eg. forcefield hum)
+DeadPlayerEnd ();		//terminate death sequence (if playing)
+if (IsCoopGame && gameStates.app.bHaveExtraGameInfo [1])
+	LOCALPLAYER.score =
+	(LOCALPLAYER.score * (100 - nCoopPenalties [(int) extraGameInfo [1].nCoopPenalty])) / 100;
+if (gameStates.multi.bPlayerIsTyping [gameData.multiplayer.nLocalPlayer] && (gameData.app.nGameMode & GM_MULTI))
+	MultiSendMsgQuit ();
+gameStates.entropy.bConquering = 0;
+
+if (IsMultiGame)
+	MultiDoDeath (LOCALPLAYER.nObject);
+else {
+	if (!--LOCALPLAYER.lives) {
+		DoGameOver ();
+		return;
+		}
 	}
-if (gameData.app.nGameMode & GM_NETWORK)
-	NetworkDoFrame (1, 1);
-AIResetAllPaths ();
-AIInitBossForShip ();
-ClearStuckObjects ();
-#ifdef EDITOR
-//	Note, this is only done if editor builtin.  Calling this from here
-//	will cause it to be called after the CPlayerData dies, resetting the
-//	hits for the buddy and thief.  This is ok, since it will work ok
-//	in a shipped version.
-InitAIObjects ();
-#endif
-ResetTime ();
-ResetRearView ();
-gameData.fusion.xAutoFireTime = 0;
-gameData.fusion.xCharge = 0;
-gameStates.app.cheats.bRobotsFiring = 1;
-gameStates.app.cheats.bD1CheatsEnabled = 0;
-gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires;
-SetDataVersion (-1);
+if (gameData.reactor.bDestroyed) {
+	//clear out stuff so no bonus
+	LOCALPLAYER.hostages.nOnBoard = 0;
+	LOCALPLAYER.energy = 0;
+	LOCALPLAYER.shields = 0;
+	LOCALPLAYER.connected = 3;
+	DiedInMineMessage (); // Give them some indication of what happened
+	}
+if (bSecret && !gameStates.app.bD1Mission) {
+	ExitSecretLevel ();
+	SetPosFromReturnSegment (1);
+	LOCALPLAYER.lives--;	//	re-lose the life, LOCALPLAYER.lives got written over in restore.
+	ResetShipData ();
+	gameStates.render.cockpit.nLastDrawn [0] =
+	gameStates.render.cockpit.nLastDrawn [1] = -1;
+	}
+else {
+	if (gameData.reactor.bDestroyed) {
+		//AdvancingToLevelMessage ();
+		AdvanceLevel (0, bSecret);
+		ResetShipData ();
+		}
+	else if (!gameStates.entropy.bExitSequence) {
+		ResetShipData ();
+		StartLevel (1);
+		}
+	}
+SetSoundSources ();
+audio.SyncSounds ();
 }
 
 //------------------------------------------------------------------------------

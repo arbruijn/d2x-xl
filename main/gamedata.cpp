@@ -1230,7 +1230,7 @@ nCurrentLevel = 0;
 nLastMission = -1;
 nLastLevel = -1;
 nLastSecretLevel = -1;
-nEnteredFromLevel = -1;
+nEntryLevel = -1;
 strcpy (szEndingFilename, "endreg.txt");
 strcpy (szBriefingFilename, "briefing.txt");
 }

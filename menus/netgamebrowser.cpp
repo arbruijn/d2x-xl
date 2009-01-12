@@ -44,11 +44,9 @@ char szGameList [MAX_ACTIVE_NETGAMES + 5][100];
 
 void InitNetgameMenuOption (CMenu& menu, int j)
 {
+if (j >= int (menu.ToS ()))
+	menu.AddMenu (szGameList [j]);
 CMenuItem* m = menu + j;
-if (!m->m_text) {
-	m->m_text = szGameList [j];
-	m->m_nType = NM_TYPE_MENU;
-	}
 sprintf (m->m_text, "%2d.                                                     ", j - 1 - gameStates.multi.bUseTracker);
 m->m_value = 0;
 m->m_bRebuild = 1;
@@ -257,8 +255,8 @@ return nCurItem;
 
 int NetworkBrowseGames (void)
 {
-	CMenu	m (MAX_ACTIVE_NETGAMES + 5);
-	int	choice, i, bAutoRun = gameData.multiplayer.autoNG.bValid;
+	CMenu	menu (MAX_ACTIVE_NETGAMES + 5);
+	int	choice, bAutoRun = gameData.multiplayer.autoNG.bValid;
 	char	callsign [CALLSIGN_LEN+1];
 
 //PrintLog ("launching netgame browser\n");
@@ -289,26 +287,25 @@ memset (activeNetGames, 0, sizeof (activeNetGames));
 memset (activeNetPlayers, 0, sizeof (activeNetPlayers));
 if (!bAutoRun) {
 	fontManager.SetColorRGBi (RGBA_PAL (15, 15, 23), 1, 0, 0);
-	m.AddText (szGameList [0]);
-	m.Top ()->m_bNoScroll = 1;
-	m.Top ()->m_x = (short) 0x8000;	//centered
+	menu.AddText (szGameList [0]);
+	menu.Top ()->m_bNoScroll = 1;
+	menu.Top ()->m_x = (short) 0x8000;	//centered
 	if (gameStates.multi.nGameType >= IPX_GAME) {
 		if (networkData.bAllowSocketChanges)
-			sprintf (m.Top ()->m_text, TXT_CURR_SOCK, (gameStates.multi.nGameType == IPX_GAME) ? "IPX" : "UDP", networkData.nSocket);
+			sprintf (menu.Top ()->m_text, TXT_CURR_SOCK, (gameStates.multi.nGameType == IPX_GAME) ? "IPX" : "UDP", networkData.nSocket);
 		else
-			*m.Top ()->m_text = '\0';
+			*menu.Top ()->m_text = '\0';
 		}
-	i = 1;
 	if (gameStates.multi.bUseTracker) {
-		m.AddText (szGameList [i]);
-		strcpy (m.Top ()->m_text, TXT_0TRACKERS);
-		m.Top ()->m_x = (short) 0x8000;
-		m.Top ()->m_bNoScroll = 1;
+		menu.AddText (szGameList [1]);
+		strcpy (menu.Top ()->m_text, TXT_0TRACKERS);
+		menu.Top ()->m_x = (short) 0x8000;
+		menu.Top ()->m_bNoScroll = 1;
 		}
-	m.AddText (szGameList [i]);
-	strcpy (m.Top ()->m_text, TXT_GAME_BROWSER);
-	m.Top ()->m_bNoScroll = 1;
-	InitNetgameMenu (m, 0);
+	menu.AddText (szGameList [1 + gameStates.multi.bUseTracker]);
+	strcpy (menu.Top ()->m_text, TXT_GAME_BROWSER);
+	menu.Top ()->m_bNoScroll = 1;
+	InitNetgameMenu (menu, 0);
 	}
 networkData.bGamesChanged = 1;    
 
@@ -332,7 +329,7 @@ else {
 	gameStates.multi.bSurfingNet = 1;
 //	NMLoadBackground (BackgroundName (BG_MENU), &bg, 0);             //load this here so if we abort after loading level, we restore the palette
 //	paletteManager.LoadEffect ();
-	choice = m.Menu (TXT_NETGAMES, NULL, NetworkJoinPoll, NULL, NULL, LHX (340), -1, 1);
+	choice = menu.Menu (TXT_NETGAMES, NULL, NetworkJoinPoll, NULL, NULL, LHX (340), -1, 1);
 //	backgroundManager.Remove ();
 	gameStates.multi.bSurfingNet = 0;
 	}

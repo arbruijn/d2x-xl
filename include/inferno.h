@@ -2539,7 +2539,7 @@ class CMissionData {
 		int					nNextLevel;
 		int					nLastSecretLevel;
 		int					nLastMission;
-		int					nEnteredFromLevel;
+		int					nEntryLevel;
 		int					nEnhancedMission;
 		int					nCurrentMission;
 		int					nBuiltinMission;

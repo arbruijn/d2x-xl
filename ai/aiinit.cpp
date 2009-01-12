@@ -212,9 +212,7 @@ gameStates.app.nDifficultyLevel = nDiffSave;
 //	Call this each time the CPlayerData starts a new ship.
 void InitAIForShip (void)
 {
-	int	i;
-
-for (i = 0; i < MAX_AI_CLOAK_INFO; i++) {
+for (int i = 0; i < MAX_AI_CLOAK_INFO; i++) {
 	gameData.ai.cloakInfo [i].lastTime = gameData.time.xGame;
 	gameData.ai.cloakInfo [i].nLastSeg = OBJSEG (gameData.objs.consoleP);
 	gameData.ai.cloakInfo [i].vLastPos = OBJPOS (gameData.objs.consoleP)->vPos;
@@ -225,14 +223,12 @@ for (i = 0; i < MAX_AI_CLOAK_INFO; i++) {
 // Initializations to be performed for all robots for a new level.
 void InitRobotsForLevel (void)
 {
-	int	i;
-
 gameData.ai.nOverallAgitation = 0;
 gameStates.gameplay.bFinalBossIsDead=0;
 gameData.escort.nObjNum = 0;
 gameData.escort.bMayTalk = 0;
 gameData.physics.xBossInvulDot = I2X (1)/4 - I2X (gameStates.app.nDifficultyLevel)/8;
-for (i = 0; i < MAX_BOSS_COUNT; i++)
+for (int i = 0; i < MAX_BOSS_COUNT; i++)
 	gameData.boss [i].nDyingStartTime = 0;
 }
 

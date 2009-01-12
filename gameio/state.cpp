@@ -129,7 +129,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // 22- gameData.omega.xCharge
 
 void SetFunctionMode (int);
-void InitPlayerStatsNewShip (void);
+void ResetShipData (void);
 void ShowLevelIntro (int level_num);
 void DoCloakInvulSecretStuff (fix xOldGameTime);
 void CopyDefaultsToRobot (CObject *objP);
@@ -983,7 +983,7 @@ m_cf.WriteShort (paletteManager.BlueEffect ());
 m_cf.Write (gameData.render.lights.subtracted.Buffer (), sizeof (gameData.render.lights.subtracted [0]), LEVEL_SEGMENTS);
 m_cf.WriteInt (gameStates.app.bFirstSecretVisit);
 m_cf.WriteFix (gameData.omega.xCharge [0]);
-m_cf.WriteShort (gameData.missions.nEnteredFromLevel);
+m_cf.WriteShort (gameData.missions.nEntryLevel);
 for (i = 0; i < MAX_PLAYERS; i++)
 	SaveSpawnPoint (i);
 }
@@ -1234,7 +1234,7 @@ else {
 #if 0
 	if (!m_bSecret) {
 		InitMultiPlayerObject ();	//make sure CPlayerData's CObject set up
-		InitPlayerStatsGame ();		//clear all stats
+		ResetPlayerData (true, false);		//clear all stats
 		}
 #endif
 	}
@@ -1707,16 +1707,12 @@ if (IsMultiGame) {
 	GetConnectedPlayers (restoredPlayers, nPlayers);
 	}
 //Read CPlayerData info
-if (!StartNewLevelSub (nCurrentLevel, 1, m_bSecret, 1)) {
+if (!PrepareLevel (nCurrentLevel, true, m_bSecret == 1, true, m_bSecret == 0)) {
 	m_cf.Close ();
 	return 0;
 	}
-if (!m_bSecret) {
-	InitMultiPlayerObject ();	//make sure CPlayerData's CObject set up
-	InitPlayerStatsGame ();		//clear all stats
-	}
 nLocalObjNum = LOCALPLAYER.nObject;
-if (m_bSecret != 1)	//either no secret restore, or CPlayerData died in scret level
+if (m_bSecret != 1)	//either no secret restore, or player died in scret level
 	LoadPlayer (gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer);
 else {
 	CPlayerData	retPlayer;
@@ -1782,7 +1778,7 @@ if (!m_bBetweenLevels) {
 	if (m_bSecret && (gameData.missions.nCurrentLevel >= 0)) {
 		SetPosFromReturnSegment (0);
 		if (m_bSecret == 2)
-			InitPlayerStatsNewShip ();
+			ResetShipData ();
 		}
 	//Restore CWall info
 	if (ReadBoundedInt (MAX_WALLS, &gameData.walls.nWalls))
@@ -1965,7 +1961,7 @@ if (m_bSecret != 1)
 else
 	m_cf.ReadFix ();
 if (m_nVersion > 27)
-	gameData.missions.nEnteredFromLevel = m_cf.ReadShort ();
+	gameData.missions.nEntryLevel = m_cf.ReadShort ();
 *nLevel = nCurrentLevel;
 if (m_nVersion >= 37) {
 	tObjPosition playerInitSave [MAX_PLAYERS];
@@ -2022,7 +2018,7 @@ if (gameData.app.nGameMode & GM_MULTI) {
 	}
 
 //Read CPlayerData info
-if (!StartNewLevelSub (nCurrentLevel, 1, m_bSecret, 1)) {
+if (!PrepareLevel (nCurrentLevel, true, m_bSecret == 1, true, false)) {
 	m_cf.Close ();
 	return 0;
 	}
@@ -2067,7 +2063,7 @@ if (!m_bBetweenLevels) {
 	if (m_bSecret && (gameData.missions.nCurrentLevel >= 0)) {
 		SetPosFromReturnSegment (0);
 		if (m_bSecret == 2)
-			InitPlayerStatsNewShip ();
+			ResetShipData ();
 		}
 	//Restore CWall info
 	if (ReadBoundedInt (MAX_WALLS, &gameData.walls.nWalls))

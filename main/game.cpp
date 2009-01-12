@@ -1062,12 +1062,6 @@ FlyInit (gameData.objs.consoleP);
 gameStates.app.bGameSuspended = 0;
 ResetTime ();
 gameData.time.xFrame = 0;			//make first frame zero
-#ifdef EDITOR
-if (gameData.missions.nCurrentLevel == 0) {			//not a real level
-	InitPlayerStatsGame ();
-	InitAIObjects ();
-}
-#endif
 #if TRACE
 //console.printf (CON_DBG, "   FixObjectSegs d:\temp\dm_test.\n");
 #endif

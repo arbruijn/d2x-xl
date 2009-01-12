@@ -42,25 +42,26 @@ extern int Player_highestLevel;
 //
 
 // starts a new game on the given level
-int StartNewGame(int startLevel);
+int StartNewGame (int nStartLevel);
 
 // starts the next level
-int StartNewLevel(int level_num, int secretFlag);
-void StartLevel(int randomFlag);
+int StartNewLevel (int nLevel, bool bNewGame);
 
 // Actually does the work to start new level
-int StartNewLevelSub(int nLevel, int bPageInTextures, int bSecret, int bRestore);
+void ResetPlayerData (bool bNewGame, bool bSecret, int nPlayer = -1);      //clear all stats
 
-void InitMultiPlayerObject (void);            //make sure CPlayerData's CObject set up
-void InitPlayerStatsGame (void);      //clear all stats
+int PrepareLevel (int nLevel, bool bLoadTextures, bool bSecret, bool bRestore, bool bNewGame);
+void StartLevel (int bRandom);
+int LoadLevel (int nLevel, bool bLoadTextures, bool bRestore);
+
 void GameStartInitNetworkPlayers (void);
 
 // starts a resumed game loaded from disk
-void ResumeSavedGame(int startLevel);
+void ResumeSavedGame (int startLevel);
 
 // called when the CPlayerData has finished a level
 // if secret flag is true, advance to secret level, else next normal level
-void PlayerFinishedLevel(int secretFlag);
+void PlayerFinishedLevel (int secretFlag);
 
 // called when the CPlayerData has died
 void DoPlayerDead (void);
@@ -69,7 +70,6 @@ void SetPosFromReturnSegment (int bRelink);
 // load a level off disk. level numbers start at 1.
 // Secret levels are -1,-2,-3
 void UnloadLevelData (int bRestore = 0);
-int LoadLevel (int nLevel, int bPageInTextures, int bRestore);
 void AddPlayerLoadout (void);
 
 void GameStartRemoveUnusedPlayers ();
@@ -84,7 +84,6 @@ void draw_high_scores(int place);
 int add_player_to_high_scores(CPlayerData *playerP);
 void input_name (int place);
 int reset_high_scores();
-void InitPlayerStatsLevel(int secretFlag);
 
 void open_message_window(void);
 void close_message_window(void);

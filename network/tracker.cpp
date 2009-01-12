@@ -247,13 +247,14 @@ if (NetworkListen () && CountActiveTrackers ())
 	key = -2;
 else if (key == KEY_ESC)
 	key = -3;
-else if ((t = SDL_GetTicks () - nQueryTimeout) > 60000)
+else if (((t = SDL_GetTicks ()) - nQueryTimeout) > 60000)
 	key = -4;
 else {
 	int v = (int) (t / 60);
 	if (menu [0].m_value != v) {
 		menu [0].m_value = v;
 		menu [0].m_bRebuild = 1;
+		RequestServerListFromTracker ();
 		}
 	key = 0;
 	}
@@ -264,18 +265,19 @@ return nCurItem;
 
 int QueryTrackers (void)
 {
-	CMenu	m (3);
+	CMenu	menu (3);
 	int	i;
 
+NetworkInit ();
 if (!RequestServerListFromTracker ())
 	return 0;
-m.AddGauge ("                    ", -1, 1000); 
-m.AddText ("", 0);
-m.AddText ("(Press Escape to cancel)", 0);
-m [2].m_bCentered = 1;
+menu.AddGauge ("                    ", -1, 1000); 
+menu.AddText ("", 0);
+menu.AddText ("(Press Escape to cancel)", 0);
+menu.Top ()->m_bCentered = 1;
 nQueryTimeout = SDL_GetTicks ();
 do {
-	i = m.Menu (NULL, "Looking for Trackers", TrackerPoll);
+	i = menu.Menu (NULL, "Looking for Trackers", TrackerPoll);
 	} while (i >= 0);
 return i;
 }

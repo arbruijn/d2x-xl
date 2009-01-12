@@ -508,13 +508,17 @@ while (nextRowP) {
 	text_ptr1 = nextRowP;
 	nextRowP = NULL;
 	textP = text_ptr1;
-#if DBG
+#if 0
+#	if DBG
 	if (bCentered)
 		x = (w - fontManager.Current ()->GetLineWidth (textP)) / 2;
 	else
 		x = 0;
-#else
+#	else
 	x = bCentered ? (w - fontManager.Current ()->GetLineWidth (textP)) / 2 : 0;
+#	endif
+#else
+x = 0;
 #endif
 	while ((c = *textP)) {
 		if (c == '\n') {

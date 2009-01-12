@@ -829,7 +829,7 @@ return nStringHeight;
 void CMenu::SetItemPos (int twidth, int xOffs, int yOffs, int m_rightOffset)
 {
 for (uint i = 0; i < ToS (); i++) {
-	if (gameOpts->menus.nStyle && ((Item (i).m_x == (short) 0x8000) || Item (i).m_bCentered)) {
+	if (gameOpts->menus.nStyle && ((Item (i).m_x == short (0x8000)) || Item (i).m_bCentered)) {
 		Item (i).m_bCentered = 1;
 		Item (i).m_x = fontManager.Current ()->GetCenteredX (Item (i).m_text);
 		}
