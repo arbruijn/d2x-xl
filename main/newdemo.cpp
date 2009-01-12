@@ -2573,7 +2573,7 @@ while (!bDone) {
 				NDErrorMsg (TXT_CANT_PLAYBACK, TXT_LEVEL_CANT_LOAD, TXT_DEMO_OLD_CORRUPT);
 				return -1;
 				}
-			LoadLevel ((int) loadedLevel, 1, 0);
+			LoadLevel ((int) loadedLevel, true, false);
 			gameData.demo.bCtrlcenDestroyed = 0;
 			if (bJustStartedPlayback) {
 				gameData.walls.nWalls = NDReadInt ();
