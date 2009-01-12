@@ -28,12 +28,6 @@ typedef struct {
 	int     fileinfo_sizeof;
 } game_top_fileinfo;    // Should be same as first two fields below...
 
-typedef struct tGameItemInfo {
-	int		offset;
-	int		count;
-	int		size;
-} tGameItemInfo;
-
 void LoadGame(void);
 void SaveGame(void);
 void getLevel_name(void);

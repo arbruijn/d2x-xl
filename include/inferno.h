@@ -3305,6 +3305,12 @@ static inline ushort WallNumI (short nSegment, short nSide) { return WallNumP(SE
 
 //-----------------------------------------------------------------------------
 
+typedef struct tGameItemInfo {
+	int		offset;
+	int		count;
+	int		size;
+} tGameItemInfo;
+
 typedef struct {
 	ushort  fileinfo_signature;
 	ushort  fileinfoVersion;
