@@ -880,7 +880,6 @@ return amount;
 // use same values as fuel centers
 fix CSegment::Repair (fix nMaxShields)
 {
-	short		nSegment =Index ();
 	static fix last_playTime=0;
 	fix amount;
 
