@@ -824,11 +824,6 @@ static int ReadObjectInfo (CFile& cf)
 	int	i;
 
 if ((gameFileInfo.objects.offset > -1) && gameFileInfo.objects.count) {
-	gameData.objs.nMaxObjects = max (gameFileInfo.objects.count + 500, gameFileInfo.objects.count * 2);
-	if (!gameData.objs.Create ()) {
-		Error ("Not enough memory for object data");
-		return -1;
-		}
 	CObject	*objP = OBJECTS.Buffer ();
 	if (cf.Seek (gameFileInfo.objects.offset, SEEK_SET)) {
 		Error ("Error seeking to object data\n(file damaged or invalid)");

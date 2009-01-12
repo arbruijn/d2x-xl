@@ -954,6 +954,7 @@ nDrops = 0;
 nDeadControlCenter = 0;
 nVertigoBotFlags = 0;
 nFrameCount = 0;
+nMaxObjects = max (gameFileInfo.objects.count + 1000, gameFileInfo.objects.count * 2);
 }
 
 // ----------------------------------------------------------------------------
@@ -1290,6 +1291,7 @@ bool CGameData::Create (void)
 {
 Destroy ();
 if (!(gameData.segs.Create () &&
+		gameData.objs.Create () &&
 		gameData.trigs.Create () &&
 		gameData.render.color.Create () &&
 		gameData.render.lights.Create () &&
