@@ -430,7 +430,7 @@ m_Offset = 0;
 m_InsMode = 0;	
 m_DispX = 0;
 m_DispY = 0;	
-m_CommandScrollBack;		
+m_CommandScrollBack = 0;		
 m_Prompt= NULL;			
 m_surface = NULL;	
 m_output= NULL;	
