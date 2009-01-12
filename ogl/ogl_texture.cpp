@@ -1031,14 +1031,11 @@ else {
 	if (!strcmp (m_info.szName, "sparks.tga"))
 		nDbgSeg = nDbgSeg;
 #endif
-	if (!m_info.frames.bms.Create (nFrames))
-		return 0;
+	m_info.frames.bmP = new CBitmap [nFrames];
 
-	CBitmap	*bmfP = &m_info.frames.bms [0];
 	int		i, w = m_info.props.w;
+	CBitmap* bmfP = m_info.frames.currentP = m_info.frames.bmP;
 
-	//memset (bmfP, 0, nFrames * sizeof (CBitmap));
-	m_info.frames.currentP = bmfP;
 	for (i = 0; i < nFrames; i++, bmfP++) {
 		bmfP->InitChild (this, 0, i * w, w, w);
 		bmfP->SetType (BM_TYPE_FRAME);
@@ -1105,7 +1102,7 @@ int CBitmap::CreateMasks (void)
 
 if (!gameStates.render.textures.bHaveMaskShader)
 	return 0;
-if ((m_info.nType != BM_TYPE_ALT) || !m_info.frames.bms.Buffer ()) {
+if ((m_info.nType != BM_TYPE_ALT) || !m_info.frames.bmP) {
 	if (m_info.props.flags & BM_FLAG_SUPER_TRANSPARENT)
 		return CreateMask () != NULL;
 	return 0;
@@ -1113,7 +1110,7 @@ if ((m_info.nType != BM_TYPE_ALT) || !m_info.frames.bms.Buffer ()) {
 nFrames = FrameCount ();
 for (nMasks = i = 0; i < nFrames; i++)
 	if (m_info.supertranspFrames [i / 32] & (1 << (i % 32)))
-		if (m_info.frames.bms [i].CreateMask ())
+		if (m_info.frames.bmP [i].CreateMask ())
 			nMasks++;
 return nMasks;
 }

@@ -63,9 +63,9 @@ typedef struct tBmProps {
 
 class CFrameInfo {
 	public:
-		CArray<CBitmap>	bms;
-		CBitmap*				currentP;
-		uint					nCount;
+		CBitmap*	bmP;
+		CBitmap*	currentP;
+		uint		nCount;
 	};
 
 //-----------------------------------------------------------------------------
@@ -102,7 +102,7 @@ class CBitmapInfo {
 
 //-----------------------------------------------------------------------------
 
-class CBitmap : public CByteArray {
+class CBitmap : public CArray< ubyte > {
 	private:
 		CBitmapInfo	m_info;
 
@@ -125,8 +125,8 @@ class CBitmap : public CByteArray {
 
 		inline CBitmap *NextFrame (void) {
 			m_info.frames.currentP++;
-			if (++m_info.frames.currentP >= m_info.frames.bms + m_info.frames.nCount)
-				m_info.frames.currentP = m_info.frames.bms.Buffer ();
+			if (++m_info.frames.currentP >= m_info.frames.bmP + m_info.frames.nCount)
+				m_info.frames.currentP = m_info.frames.bmP;
 			return m_info.frames.currentP;
 			}
 
@@ -135,7 +135,7 @@ class CBitmap : public CByteArray {
 				return this;
 			if (iFrame < 0)
 				return m_info.frames.currentP ? m_info.frames.currentP : this;
-			return m_info.frames.bms.Buffer () ? m_info.frames.currentP = m_info.frames.bms + iFrame % m_info.frames.nCount : this;
+			return m_info.frames.bmP ? m_info.frames.currentP = m_info.frames.bmP + iFrame % m_info.frames.nCount : this;
 			}
 
 		inline CBitmap* HasParent (void)
@@ -178,7 +178,7 @@ class CBitmap : public CByteArray {
 		void ExpandTo (CBitmap *destP);
 	
 		inline ubyte FrameCount (void) { return ((Type () != BM_TYPE_ALT) && Parent ()) ? Parent ()->FrameCount () : m_info.frames.nCount; }
-		inline CBitmap *Frames (void) { return (m_info.nType == BM_TYPE_ALT) ? m_info.frames.bms.Buffer () : NULL; }
+		inline CBitmap *Frames (void) { return (m_info.nType == BM_TYPE_ALT) ? m_info.frames.bmP : NULL; }
 		inline CBitmap *CurFrame (void) { return m_info.frames.currentP; }
 		inline CBitmap *Override (void) { return m_info.overrideP; }
 		inline CBitmap *Mask (void) { return m_info.maskP; }
@@ -192,7 +192,7 @@ class CBitmap : public CByteArray {
 		void SetMask (CBitmap *maskP) { m_info.maskP = maskP; }
 		void SetOverride (CBitmap *override) { m_info.overrideP = override; }
 		void SetCurFrame (CBitmap *frame) { m_info.frames.currentP = frame; }
-		void SetCurFrame (int nFrame) { m_info.frames.currentP = m_info.frames.bms + nFrame; }
+		void SetCurFrame (int nFrame) { m_info.frames.currentP = m_info.frames.bmP + nFrame; }
 
 		inline short Width (void) { return m_info.props.w; }
 		inline short Height (void) { return m_info.props.h; }
