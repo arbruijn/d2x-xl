@@ -2030,6 +2030,7 @@ class CObjectData {
 		CObject*						missileViewerP;
 		CObject*						deadPlayerCamera;
 		CObject*						endLevelCamera;
+		int							nMaxObjects;
 		int							nObjects;
 		int							nLastObject [2];
 		int							nObjectLimit;
@@ -3304,6 +3305,29 @@ static inline ushort WallNumI (short nSegment, short nSide) { return WallNumP(SE
 
 //-----------------------------------------------------------------------------
 
+typedef struct {
+	ushort  fileinfo_signature;
+	ushort  fileinfoVersion;
+	int     fileinfo_sizeof;
+	char    mine_filename [15];
+	int     level;
+	tGameItemInfo	player;
+	tGameItemInfo	objects;
+	tGameItemInfo	walls;
+	tGameItemInfo	doors;
+	tGameItemInfo	triggers;
+	tGameItemInfo	links;
+	tGameItemInfo	control;
+	tGameItemInfo	botGen;
+	tGameItemInfo	lightDeltaIndices;
+	tGameItemInfo	lightDeltas;
+	tGameItemInfo	equipGen;
+} tGameFileInfo;
+
+extern tGameFileInfo gameFileInfo;
+
+//-----------------------------------------------------------------------------
+
 static inline short ObjIdx (CObject *objP)
 {
 return gameData.objs.objects.Index (objP);
@@ -3560,7 +3584,7 @@ void CheckEndian (void);
 //	-----------------------------------------------------------------------------------------------------------
 
 #define LEVEL_SEGMENTS			gameData.segs.nSegments
-#define LEVEL_OBJECTS			gameData.segs.nSegments
+#define LEVEL_OBJECTS			(gameData.objs.nMaxObjects)
 #define LEVEL_VERTICES			(gameData.segs.nVertices)
 #define LEVEL_POINT_SEGS		(gameData.segs.nSegments * 4)
 #define LEVEL_SIDES				(LEVEL_SEGMENTS * 6)

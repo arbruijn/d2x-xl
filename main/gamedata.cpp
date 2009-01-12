@@ -1290,7 +1290,6 @@ bool CGameData::Create (void)
 {
 Destroy ();
 if (!(gameData.segs.Create () &&
-		gameData.objs.Create () &&
 		gameData.trigs.Create () &&
 		gameData.render.color.Create () &&
 		gameData.render.lights.Create () &&

@@ -34,25 +34,6 @@ typedef struct tGameItemInfo {
 	int		size;
 } tGameItemInfo;
 
-typedef struct {
-	ushort  fileinfo_signature;
-	ushort  fileinfoVersion;
-	int     fileinfo_sizeof;
-	char    mine_filename [15];
-	int     level;
-	tGameItemInfo	player;
-	tGameItemInfo	objects;
-	tGameItemInfo	walls;
-	tGameItemInfo	doors;
-	tGameItemInfo	triggers;
-	tGameItemInfo	links;
-	tGameItemInfo	control;
-	tGameItemInfo	botGen;
-	tGameItemInfo	lightDeltaIndices;
-	tGameItemInfo	lightDeltas;
-	tGameItemInfo	equipGen;
-} tGameFileInfo;
-
 void LoadGame(void);
 void SaveGame(void);
 void getLevel_name(void);
