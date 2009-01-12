@@ -527,9 +527,31 @@ return INTEL_INT (i);
 
 // ----------------------------------------------------------------------------
 
+uint CFile::ReadUInt (void)
+{
+	uint32_t i;
+
+Read (&i, sizeof (i), 1);
+//Error ("Error reading int in CFile::ReadInt ()");
+return INTEL_INT (i);
+}
+
+// ----------------------------------------------------------------------------
+
 short CFile::ReadShort (void)
 {
 	int16_t s;
+
+Read (&s, sizeof (s), 1);
+//Error ("Error reading short in CFile::ReadShort ()");
+return INTEL_SHORT (s);
+}
+
+// ----------------------------------------------------------------------------
+
+ushort CFile::ReadUShort (void)
+{
+	uint16_t s;
 
 Read (&s, sizeof (s), 1);
 //Error ("Error reading short in CFile::ReadShort ()");

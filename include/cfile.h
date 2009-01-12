@@ -90,7 +90,9 @@ class CFile {
 
 		// prototypes for reading basic types from fp
 		int ReadInt (void);
+		uint ReadUInt (void);
 		short ReadShort (void);
+		ushort ReadUShort (void);
 		sbyte ReadByte (void);
 		fix ReadFix (void);
 		fixang ReadFixAng (void);

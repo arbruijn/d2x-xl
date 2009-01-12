@@ -903,7 +903,7 @@ else {
 	for (int i = 0; i < 4; i++) {
 		m_uvls [i].u = fix (cf.ReadShort ()) << 5;
 		m_uvls [i].v = fix (cf.ReadShort ()) << 5;
-		m_uvls [i].l = fix (cf.ReadShort ()) << 1;
+		m_uvls [i].l = fix (cf.ReadUShort ()) << 1;
 		gameData.render.color.vertBright [sideVerts [i]] = X2F (m_uvls [i].l);
 		}
 	}
