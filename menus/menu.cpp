@@ -1800,7 +1800,7 @@ launchOption:
 		bRedraw = 0;
 		if (bRedrawAll && !MODERN_STYLE) {
 			int t;
-			backgroundManager.Draw ();
+			backgroundManager.Redraw ();
 			t = DrawTitle (pszTitle, TITLE_FONT, RGBA_PAL (31, 31, 31), m_props.yOffs);
 			DrawTitle (pszSubTitle, SUBTITLE_FONT, RGBA_PAL (21, 21, 21), t);
 			bRedrawAll = 0;
@@ -2388,7 +2388,7 @@ while (!done) {
 	if ((nPrevItem != nFirstItem) || MODERN_STYLE) {
 		if (!MODERN_STYLE) 
 			SDL_ShowCursor (0);
-		backgroundManager.Draw ();
+		backgroundManager.Redraw ();
 		fontManager.SetCurrent (NORMAL_FONT);
 		GrString (0x8000, w_y + 10, pszTitle, NULL);
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
@@ -2737,7 +2737,7 @@ while (!done) {
 
 		if ((nPrevItem != nFirstItem) || redraw || MODERN_STYLE) {
 			if (MODERN_STYLE) 
-				backgroundManager.Draw ();
+				backgroundManager.Redraw ();
 				//NMDrawBackground (wx - border_size, wy - nTitleHeight - border_size, wx + width + border_size - 1, wy + height + border_size - 1,1);
 			else
 				SDL_ShowCursor (0);

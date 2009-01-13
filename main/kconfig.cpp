@@ -1240,7 +1240,7 @@ for (;;) {
 			if (gameOpts->menus.nStyle && gameStates.app.bGameRunning)
 				GameRenderFrame ();
 			CCanvas::SetCurrent (backgroundManager.Canvas ());
-			backgroundManager.Draw ();
+			backgroundManager.Redraw ();
 			CCanvas::SetCurrent (NULL);
 			KCDrawTitle (pszTitle);
 			close_x = close_y = gameStates.menus.bHires ? 15 : 7;

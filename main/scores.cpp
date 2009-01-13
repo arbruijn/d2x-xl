@@ -371,7 +371,7 @@ ReshowScores:
 
 	while (!done) {
 		if (!bRedraw || gameOpts->menus.nStyle) {
-			backgroundManager.Draw ();
+			backgroundManager.Redraw ();
 			fontManager.SetCurrent (MEDIUM3_FONT);
 
 			GrString (0x8000, yOffs + LHY (15), TXT_HIGH_SCORES, NULL);

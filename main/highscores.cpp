@@ -411,7 +411,7 @@ if (bNetwork)
 backgroundManager.LoadStars ();
 while (!done) {
 	if (!bRedraw || (gameStates.ogl.nDrawBuffer == GL_BACK)) {
-		backgroundManager.Draw ();
+		backgroundManager.Redraw ();
 		ScoreTableRedraw ();
 		bRedraw = 1;
 		}

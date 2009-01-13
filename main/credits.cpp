@@ -414,5 +414,5 @@ for (;;) {
 		}
 	}
 CCanvas::Pop ();
-backgroundManager.Draw (true);
+backgroundManager.Redraw (true);
 }
