@@ -55,6 +55,7 @@ class CBackground {
 
 		inline CCanvas* Canvas (uint i = 0) { return m_canvas [i]; }
 		inline CBitmap* Background (void) { return m_saved [0]; }
+		inline CBitmap* Saved (int i) { return m_saved [i]; }
 
 	private:
 		CBitmap* Load (char* filename, int width, int height);
@@ -64,7 +65,7 @@ class CBackground {
 
 //------------------------------------------------------------------------------
 
-class CBackgroundManager : private CStack<CBackground> {
+class CBackgroundManager : public CStack<CBackground> {
 	private:
 		CBackground				m_bg [3];
 		CBitmap*					m_background [2];
@@ -99,6 +100,7 @@ class CBackgroundManager : private CStack<CBackground> {
 		inline CBitmap* Current (void) { return m_bg [m_nDepth].Background (); }
 		inline CCanvas* Canvas (uint i = 0) { return m_bg [m_nDepth].Canvas (i); }
 
+		void Redraw (bool bUpdate = false);
 		void DrawBox (int left, int top, int right, int bottom, int nLineWidth, float fAlpha, int bForce);
 		inline void DrawBox (int nLineWidth, float fAlpha, int bForce) {
 			DrawBox (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), 

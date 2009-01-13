@@ -694,84 +694,84 @@ inside:
 
 //------------------------------------------------------------------------------
 // GrBmBitBlt 
-void CBitmap::RenderClipped (CBitmap* dest, int dx, int dy, int w, int h, int sx, int sy)
+void CBitmap::RenderClipped (CBitmap* dest, int destLeft, int destTop, int w, int h, int srcLeft, int srcTop)
 {
 if (!dest)
 	dest = CCanvas::Current ();
 
-	int	dx2 = dx + w - 1;
-	int	dy2 = dy + h - 1;
-	int	sx2 = sx + w - 1;
-	int	sy2 = sy + h - 1;
+	int	destRight = destLeft + w - 1;
+	int	destBottom = destTop + h - 1;
+	int	srcRight = srcLeft + w - 1;
+	int	srcBottom = srcTop + h - 1;
 
-if ((dx >= dest->Width ()) || (dx2 < 0)) 
+if ((destLeft >= dest->Width ()) || (destRight < 0)) 
 	return;
-if ((dy >= dest->Height ()) || (dy2 < 0)) 
+if ((destTop >= dest->Height ()) || (destBottom < 0)) 
 	return;
-if (dx < 0) { 
-	sx -= dx; 
-	dx = 0; 
+if (destLeft < 0) { 
+	srcLeft -= destLeft; 
+	destLeft = 0; 
 	}
-if (dy < 0) { 
-	sy -= dy; 
-	dy = 0; 
+if (destTop < 0) { 
+	srcTop -= destTop; 
+	destTop = 0; 
 	}
-if (dx2 >= dest->Width ()) { 
-	dx2 = dest->Width () - 1; 
+if (destRight >= dest->Width ()) { 
+	destRight = dest->Width () - 1; 
 	}
-if (dy2 >= dest->Height ()) { 
-	dy2 = dest->Height () - 1; 
-	}
-
-if ((sx >= Width ()) || (sx2 < 0)) 
-	return;
-if ((sy >= Height ()) || (sy2 < 0)) 
-	return;
-if (sx < 0) { 
-	dx += -sx; 
-	sx = 0; 
-	}
-if (sy < 0) { 
-	dy += -sy; 
-	sy = 0; 
-	}
-if (sx2 >= Width ()) { 
-	sx2 = Width () - 1; 
-	}
-if (sy2 >= Height ()) { 
-	sy2 = Height () - 1; 
+if (destBottom >= dest->Height ()) { 
+	destBottom = dest->Height () - 1; 
 	}
 
-// Draw bitmap bmP[x,y] into (dx,dy)-(dx2,dy2)
+if ((srcLeft >= Width ()) || (srcRight < 0)) 
+	return;
+if ((srcTop >= Height ()) || (srcBottom < 0)) 
+	return;
+if (srcLeft < 0) { 
+	destLeft += -srcLeft; 
+	srcLeft = 0; 
+	}
+if (srcTop < 0) { 
+	destTop += -srcTop; 
+	srcTop = 0; 
+	}
+if (srcRight >= Width ()) { 
+	srcRight = Width () - 1; 
+	}
+if (srcBottom >= Height ()) { 
+	srcBottom = Height () - 1; 
+	}
+
+// Draw bitmap bmP[x,y] into (destLeft,destTop)-(destRight,destBottom)
 if (w < 0)
 	w = Width ();
 if (h < 0)
 	h = Height ();
 #if 0
-int dw = dx2 - dx + 1;
+int dw = destRight - destLeft + 1;
 if (dw > w)
 	dw = w;
-int dh = dy2 - dy + 1;
+int dh = destBottom - destTop + 1;
 if (dh > h)
 	dh = h;
-int sw = sx2 - sx + 1;
+int sw = srcRight - srcLeft + 1;
 if (sw > w)
 	sw = w;
-int sh = sy2 - sy + 1;
+int sh = srcBottom - srcTop + 1;
 if (sh > h)
 	sh = h;
-Render (CCanvas::Current (), dx, dy, dw, dh, sx, sy, sw, sh, 1);
+Render (CCanvas::Current (), destLeft, destTop, dw, dh, srcLeft, srcTop, sw, sh, 1);
 #else
-if (dx2 - dx + 1 < w)
-	w = dx2 - dx + 1;
-if (dy2 - dy + 1 < h)
-	h = dy2 - dy + 1;
-if (sx2 - sx + 1 < w)
-	w = sx2 - sx + 1;
-if (sy2 - sy + 1 < h)
-	h = sy2 - sy + 1;
+if (destRight - destLeft + 1 < w)
+	w = destRight - destLeft + 1;
+if (destBottom - destTop + 1 < h)
+	h = destBottom - destTop + 1;
+if (srcRight - srcLeft + 1 < w)
+	w = srcRight - srcLeft + 1;
+if (srcBottom - srcTop + 1 < h)
+	h = srcBottom - srcTop + 1;
 #endif
-GrBmUBitBlt (dest, dx, dy, w, h, this, sx, sy, 1);
+GrBmUBitBlt (dest, destLeft, destTop, w, h, this, srcLeft, srcTop, 1);
 }
 
 //------------------------------------------------------------------------------

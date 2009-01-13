@@ -225,33 +225,46 @@ void CBitmap::Render (CBitmap *dest,
 							 int bTransp, int bMipMaps, float fAlpha, tRgbaColorf* colorP)
 {
 	GLfloat xo, yo, xs, ys;
-	GLfloat u1, v1;//, u2, v2;
+	GLfloat u1, v1, u2, v2;
 	CTexture tex, *texP;
 	GLint curFunc; 
 	int nTransp = (Flags () & BM_FLAG_TGA) ? -1 : HasTransparency () ? 2 : 0;
 
 //	ubyte *oldpal;
-u1 = v1 = 0;
 xDest += dest->Left ();
 yDest += dest->Top ();
-xo = xDest / (float) gameStates.ogl.nLastW;
-xs = wDest / (float) gameStates.ogl.nLastW;
-yo = 1.0f - yDest / (float) gameStates.ogl.nLastH;
-ys = hDest / (float) gameStates.ogl.nLastH;
-
+xo = xDest / float (gameStates.ogl.nLastW);
+xs = wDest / float (gameStates.ogl.nLastW);
+yo = 1.0f - yDest / float (gameStates.ogl.nLastH);
+ys = hDest / float (gameStates.ogl.nLastH);
 glActiveTexture (GL_TEXTURE0);
 glEnable (GL_TEXTURE_2D);
 if (!(texP = Texture ())) {
 	texP = &tex;
 	texP->Init ();
-	texP->Setup (wSrc, hSrc, RowSize (), BPP (), 0, bMipMaps, this);
+	texP->Setup (Width (), Height (), RowSize (), BPP (), 0, bMipMaps, this);
 	SetTexture (texP);
 	LoadTexture (xSrc, ySrc, nTransp, 0);
 	}
 else
 	SetupTexture (0, bTransp, 1);
 texP->Bind ();
-texP->Wrap (GL_CLAMP);
+texP->Wrap (GL_REPEAT);
+
+u1 = v1 = 0;
+u2 = texP->U ();
+u2 = float (wSrc) / float (Width ());
+if (u2 < 1.0f)
+	u2 *= texP->U ();
+else
+	u2 = texP->U ();
+v2 = texP->V ();
+v2 = float (hSrc) / float (Height ());
+if (v2 < 1.0f)
+	v2 *= texP->V ();
+else
+	v2 = texP->V ();
+
 glGetIntegerv (GL_DEPTH_FUNC, &curFunc);
 glDepthFunc (GL_ALWAYS); 
 if (bTransp && nTransp) {
@@ -270,15 +283,15 @@ glTexCoord2f (u1, v1);
 glVertex2f (xo, yo);
 if (colorP)
 	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 1));
-glTexCoord2f (texP->U (), v1); 
+glTexCoord2f (u2, v1); 
 glVertex2f (xo + xs, yo);
 if (colorP)
 	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 2));
-glTexCoord2f (texP->U (), texP->V ()); 
-glVertex2f (xo + xs, yo-ys);
+glTexCoord2f (u2, v2); 
+glVertex2f (xo + xs, yo - ys);
 if (colorP)
 	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 3));
-glTexCoord2f (u1, texP->V ()); 
+glTexCoord2f (u1, v2); 
 glVertex2f (xo, yo - ys);
 glEnd ();
 if (bTransp && nTransp)

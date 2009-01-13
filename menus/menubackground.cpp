@@ -57,6 +57,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  #include "tactile.height"
 #endif
 
+#define MODERN_STYLE	1 //gameOpts->menus.nStyle
+
 #define LHX(x)      (gameStates.menus.bHires? 2 * (x) : x)
 #define LHY(y)      (gameStates.menus.bHires? (24 * (y)) / 10 : y)
 
@@ -148,7 +150,7 @@ if (m_saved [1])
 	delete m_saved [1];
 if (m_canvas [0])
 	m_canvas [0]->Destroy ();
-if (gameOpts->menus.nStyle && m_canvas [1])
+if (MODERN_STYLE && m_canvas [1])
 	m_canvas [1]->Destroy ();
 Init ();
 }
@@ -159,9 +161,9 @@ CBitmap* CBackground::Load (char* filename, int width, int height)
 {
 m_filename = filename;
 if (!m_filename)
-	return gameOpts->menus.nStyle 
+	return (gameOpts->menus.nStyle && !backgroundManager.IsDefault (backgroundManager.Filename ()))
 			 ? backgroundManager.Background (0) 
-			 : backgroundManager.Background (1)->CreateChild (0, 0, width, height);
+			 : backgroundManager.Background (1); //->CreateChild (0, 0, width, height);
 else if (backgroundManager.IsDefault (filename) || !(m_background = backgroundManager.LoadBackground (filename)))
 	return backgroundManager.Background (0);
 return m_background;
@@ -174,7 +176,7 @@ void CBackground::Setup (int x, int y, int width, int height)
 if (m_canvas [1])
 	m_canvas [1]->Destroy ();
 m_canvas [1] = screen.Canvas ()->CreatePane (x, y, width, height);
-if (gameOpts->menus.nStyle)
+if (MODERN_STYLE)
 	m_canvas [0] = screen.Canvas ()->CreatePane (0, 0, screen.Width (), screen.Height ());
 else
 	m_canvas [0] = m_canvas [1];
@@ -184,7 +186,7 @@ else
 
 void CBackground::Save (int i, int width, int height)
 {
-if (!gameOpts->menus.nStyle) {
+if (!MODERN_STYLE) {
 	if (m_saved [i])
 		delete m_saved [i];
 	if ((m_saved [i] = CBitmap::Create (0, width, height, 1))) {
@@ -204,14 +206,14 @@ bool CBackground::Create (char* filename, int x, int y, int width, int height)
 {
 Destroy ();
 m_bTopMenu = (backgroundManager.Depth () == 0);
-m_bMenuBox = gameOpts->menus.nStyle && (gameOpts->menus.altBg.bHave > 0);
+m_bMenuBox = MODERN_STYLE && (gameOpts->menus.altBg.bHave > 0);
 if (!(m_background = Load (filename, width, height)))
 	return false;
 Setup (x, y, width, height);
-if (!gameOpts->menus.nStyle)
+if (!MODERN_STYLE)
 	Save (1, width, height);
 Draw (true);
-if (!gameOpts->menus.nStyle)
+if (!MODERN_STYLE)
 	Save (0, width, height);
 return true;
 }
@@ -221,25 +223,28 @@ return true;
 void CBackground::Draw (bool bUpdate)
 {
 paletteManager.SetEffect (0, 0, 0);
-CCanvas::Push ();
-CCanvas::SetCurrent (m_canvas [0]);
 if (!(gameStates.menus.bNoBackground || gameStates.app.bGameRunning)) {
-	if (gameOpts->menus.nStyle || m_bTopMenu) {
+	if (m_filename&& (MODERN_STYLE || m_bTopMenu)) {
+		CCanvas::Push ();
+		CCanvas::SetCurrent (m_canvas [0]);
 		m_background->Stretch ();
 		PrintVersionInfo ();
+		CCanvas::Pop ();
 		}
 	}
 if (!backgroundManager.IsDefault (m_filename)) {
+	CCanvas::Push ();
+	CCanvas::SetCurrent (m_canvas [1]);
 	if (m_bMenuBox)
-		backgroundManager.DrawBox (m_canvas [1]->Left (), m_canvas [1]->Top (), m_canvas [1]->Right (), m_canvas [1]->Bottom (), 
-											gameData.menu.nLineWidth, 1.0f, 0);
-	else
-		DrawArea (0, 0, CCanvas::Current ()->Right (), CCanvas::Current ()->Bottom ());
+		backgroundManager.DrawBox (0, 0, m_canvas [1]->Width (), m_canvas [1]->Height (), gameData.menu.nLineWidth, 1.0f, 0);
+	else 
+		DrawArea (0, 0, m_canvas [1]->Width (), m_canvas [1]->Height ());
+		CCanvas::Pop ();
+					//0, 0, CCanvas::Current ()->Right (), CCanvas::Current ()->Bottom ());
 		//CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), 
 		//			 CCanvas::Current ()->Right (), CCanvas::Current ()->Bottom ());
 	}
 paletteManager.LoadEffect ();
-CCanvas::Pop ();
 if (bUpdate && !gameStates.app.bGameRunning)
 	GrUpdate (0);
 }
@@ -249,9 +254,12 @@ if (bUpdate && !gameStates.app.bGameRunning)
 
 void CBackground::DrawArea (int left, int top, int right, int bottom)
 {
-if (gameOpts->menus.nStyle) 
+#if 0
+if (MODERN_STYLE) 
 	Draw ();
-else {
+else 
+#endif
+	{
 	if (left < 0) 
 		left = 0;
 	if (top < 0)
@@ -263,12 +271,17 @@ else {
 	right = left + width - 1;
 	bottom = top + height - 1;
 	glDisable (GL_BLEND);
-	if (!backgroundManager.Shadow ())
-		m_background->RenderClipped (CCanvas::Current (), left, top, width, height, LHX (10), LHY (10));
+	if (!backgroundManager.Shadow ()) {
+		CCanvas::Current ()->SetLeft (CCanvas::Current ()->Left () + LHX (10));
+		CCanvas::Current ()->SetTop (CCanvas::Current ()->Top () + LHX (10));
+		m_background->Blit (NULL, left, top, width, height); //, LHX (10), LHY (10));
+		}
 	else {
-		m_background->RenderClipped (CCanvas::Current (), left, top, width, height, 0, 0);
+		m_background->Blit (NULL, left, top, width, height); //, 0, 0);
 		gameStates.render.grAlpha = 2 * 7;
-		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
+		glEnable (GL_BLEND);
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		CCanvas::Current ()->SetColorRGB (0, 0, 0, 200);
 		GrURect (right - 5, top + 5, right - 6, bottom - 5);
 		GrURect (right - 4, top + 4, right - 5, bottom - 5);
 		GrURect (right - 3, top + 3, right - 4, bottom - 5);
@@ -280,10 +293,24 @@ else {
 		GrURect (left + 3, bottom - 3, right, bottom - 4);
 		GrURect (left + 2, bottom - 2, right, bottom - 3);
 		GrURect (left + 1, bottom - 1, right, bottom - 2);
-		GrURect (left + 0, bottom, right, bottom - 1);
+		GrURect (left + 0, bottom - 0, right, bottom - 1);
+
+		CCanvas::Current ()->SetColorRGB (255, 255, 255, 50);
+		GrURect (left, top + 0, right - 1, top + 1);
+		GrURect (left, top + 1, right - 2, top + 2);
+		GrURect (left, top + 2, right - 3, top + 3);
+		GrURect (left, top + 3, right - 4, top + 4);
+		GrURect (left, top + 4, right - 5, top + 5);
+		GrURect (left, top + 5, right - 6, top + 6);
+		GrURect (left + 0, top + 6, left + 1, bottom - 1);
+		GrURect (left + 1, top + 6, left + 2, bottom - 2);
+		GrURect (left + 2, top + 6, left + 3, bottom - 3);
+		GrURect (left + 3, top + 6, left + 4, bottom - 4);
+		GrURect (left + 4, top + 6, left + 5, bottom - 5);
+		GrURect (left + 5, top + 6, left + 6, bottom - 6);
+		glDisable (GL_BLEND);
 		}
-	glEnable (GL_BLEND);
-	GrUpdate (0);
+	//GrUpdate (0);
 	}
 gameStates.render.grAlpha = FADE_LEVELS;
 }
@@ -294,7 +321,7 @@ void CBackground::Restore (void)
 {
 if (!gameStates.app.bGameRunning) {
 	CCanvas::SetCurrent (m_canvas [0]);
-	if (gameOpts->menus.nStyle) 
+	if (MODERN_STYLE) 
 		m_background->Stretch ();
 	else if (m_saved [1]) {
 		m_saved [1]->Blit ();
@@ -377,7 +404,7 @@ Init ();
 void CBackgroundManager::DrawBox (int left, int top, int right, int bottom, int nLineWidth, float fAlpha, int bForce)
 {
 gameStates.render.nFlashScale = 0;
-if (bForce || (gameOpts->menus.nStyle == 1)) {
+if (bForce || (MODERN_STYLE == 1)) {
 	if (left <= 0)
 		left = 1;
 	if (top <= 0)
@@ -400,6 +427,16 @@ if (bForce || (gameOpts->menus.nStyle == 1)) {
 
 //------------------------------------------------------------------------------
 
+void CBackgroundManager::Redraw (bool bUpdate)
+{
+for (int i = 0; i <= m_nDepth; i++)
+	m_background [i]->Draw ();
+if (bUpdate && !gameStates.app.bGameRunning)
+	GrUpdate (0);
+}
+
+//------------------------------------------------------------------------------
+
 bool CBackgroundManager::IsDefault (char* filename)
 {
 return filename && !strcmp (filename, m_filename [0]);
@@ -409,7 +446,7 @@ return filename && !strcmp (filename, m_filename [0]);
 
 CBitmap* CBackgroundManager::LoadCustomBackground (void)
 {
-if (m_background [0]|| (gameStates.app.bNostalgia || !gameOpts->menus.nStyle))
+if (m_background [0]|| (gameStates.app.bNostalgia || !MODERN_STYLE))
 	return m_background [0];
 
 CBitmap* bmP;

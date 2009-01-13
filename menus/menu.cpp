@@ -74,6 +74,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------ 
 
+#define RETRO_STYLE	0 //gameStates.ogl.nDrawBuffer != GL_BACK
+#define MODERN_STYLE	1 //gameOpts->menus.nStyle
+#define FAST_MENUS	1 //gameOpts->menus.bFastMenus
+
 #define LHX(x) (gameStates.menus.bHires? 2 * (x) : x)
 #define LHY(y) (gameStates.menus.bHires? (24 * (y)) / 10 : y)
 
@@ -170,7 +174,7 @@ if (m_color)
 	fontManager.SetColorRGBi (m_color, 1, 0, 0);
 else
 	SetColor (bIsCurrent, bTiny);
-if (bCreateTextBms && gameOpts->menus.bFastMenus && 
+if (bCreateTextBms && FAST_MENUS && 
 	 (bmP || (bmP = CreateStringBitmap (m_text, MENU_KEY (m_nKey, - 1), gameData.menu.keyColor, nTabs, m_bCentered, m_w, 0)))) {
 	bmP->Render (CCanvas::Current (), m_x, m_y, bmP->Width (), bmP->Height (), 0, 0, bmP->Width (), bmP->Height (), 1, 0);
 	m_bmText [bIsCurrent] = bmP;
@@ -292,8 +296,8 @@ if (w1 > 0)
 	w = w1;
 fontManager.Current ()->StringSize (s2, w, h, aw);
 // CHANGED
-if (gameStates.ogl.nDrawBuffer != GL_BACK)
-	backgroundManager.Current ()->RenderClipped (CCanvas::Current (), 5, y - 1, backgroundManager.Current ()->Width () - 15, h + 2, 5, y - 1);
+if (RETRO_STYLE)
+	backgroundManager.Top ()->Saved (1)->RenderClipped (CCanvas::Current (), 5, y - 1, backgroundManager.Current ()->Width () - 15, h + 2, 5, y - 1);
 if (0 && gameStates.multi.bSurfingNet) {
 	for (i = 0;i < l;i++) {
 		if (s2 [i] == '\t' && gameStates.multi.bSurfingNet) {
@@ -334,7 +338,7 @@ int w, h, aw;
 fontManager.Current ()->StringSize (m_savedText, w, h, aw);
 
 int y = m_y;
-if (gameStates.ogl.nDrawBuffer != GL_BACK)
+if (RETRO_STYLE)
 	backgroundManager.Current ()->RenderClipped (CCanvas::Current (), 5, y, backgroundManager.Current ()->Width () - 15, h, 5, y);
 char* t = m_text;
 m_text = m_savedText;
@@ -343,7 +347,7 @@ m_text = t;
 if (p) {
 	fontManager.Current ()->StringSize (s1, w, h, aw);
 	int x = m_x + m_w - w;
-	if (gameStates.ogl.nDrawBuffer != GL_BACK) {
+	if (RETRO_STYLE) {
 		backgroundManager.Current ()->RenderClipped (CCanvas::Current (), x, y, w, 1, x, y);
 		backgroundManager.Current ()->RenderClipped (CCanvas::Current (), x, y + h - 1, w, 1, x, y);
 		}
@@ -366,7 +370,7 @@ fontManager.Current ()->StringSize (s, w, h, aw);
 x -= 3;
 if (w1 == 0) 
 	w1 = w;
-if (gameStates.ogl.nDrawBuffer != GL_BACK)
+if (RETRO_STYLE)
 	backgroundManager.Current ()->RenderClipped (CCanvas::Current (), x - w1, y, w1, h, x - w1, y);
 hs = m_text;
 m_text = s;
@@ -444,14 +448,11 @@ void CMenuItem::ShowHelp (void)
 {
 if (m_szHelp && *m_szHelp) {
 	int nInMenu = gameStates.menus.nInMenu;
-	int bFastMenus = gameOpts->menus.bFastMenus;
 	gameStates.menus.nInMenu = 0;
-	//gameOpts->menus.bFastMenus = 0;
 	gameData.menu.helpColor = RGBA_PAL (47, 47, 47);
 	gameData.menu.colorOverride = gameData.menu.helpColor;
 	MsgBox ("D2X - XL online help", NULL, - 3, m_szHelp, " ", TXT_CLOSE);
 	gameData.menu.colorOverride = 0;
-	gameOpts->menus.bFastMenus = bFastMenus;
 	gameStates.menus.nInMenu = nInMenu;
 	}
 }
@@ -677,7 +678,7 @@ fontManager.Current ()->StringSize (s, w, h, aw);
 x -= 3;
 if (w1 == 0) 
 	w1 = w;
-if (gameStates.ogl.nDrawBuffer != GL_BACK)
+if (RETRO_STYLE)
 	backgroundManager.Current ()->RenderClipped (CCanvas::Current (), x - w1, y, w1, h, x - w1, y);
 GrString (x - w, y, s, NULL);
 }
@@ -829,7 +830,7 @@ return nStringHeight;
 void CMenu::SetItemPos (int twidth, int xOffs, int yOffs, int m_rightOffset)
 {
 for (uint i = 0; i < ToS (); i++) {
-	if (gameOpts->menus.nStyle && ((Item (i).m_x == short (0x8000)) || Item (i).m_bCentered)) {
+	if (MODERN_STYLE && ((Item (i).m_x == short (0x8000)) || Item (i).m_bCentered)) {
 		Item (i).m_bCentered = 1;
 		Item (i).m_x = fontManager.Current ()->GetCenteredX (Item (i).m_text);
 		}
@@ -878,7 +879,7 @@ fontManager.SetCurrent (m_props.bTinyMode ? SMALL_FONT : NORMAL_FONT);
 m_props.h = m_props.th;
 m_props.nMenus = m_props.nOthers = 0;
 m_props.nStringHeight = GetSize (m_props.w, m_props.h, m_props.aw, m_props.nMenus, m_props.nOthers);
-m_props.nMaxOnMenu = (((gameOpts->menus.nStyle && (m_props.scHeight > 480)) ? m_props.scHeight * 4 / 5 : 480) - m_props.th - LHY (8)) / m_props.nStringHeight - 2;
+m_props.nMaxOnMenu = (((MODERN_STYLE && (m_props.scHeight > 480)) ? m_props.scHeight * 4 / 5 : 480) - m_props.th - LHY (8)) / m_props.nStringHeight - 2;
 if (/*!m_props.bTinyMode && */ (m_props.h > (m_props.nMaxOnMenu * (m_props.nStringHeight + 1)) + gap)) {
  m_props.bIsScrollBox = 1;
  m_props.h = (m_props.nMaxOnMenu * (m_props.nStringHeight + haveTitle) + haveTitle * LHY (m_props.bTinyMode ? 12 : 8));
@@ -931,7 +932,7 @@ m_props.w += 2 * m_props.xOffs;
 m_props.h += 2 * m_props.yOffs;
 m_props.x = (m_props.scWidth - m_props.w) / 2;
 m_props.y = (m_props.scHeight - m_props.h) / 2;
-if (gameOpts->menus.nStyle) {
+if (MODERN_STYLE) {
 	m_props.xOffs += m_props.x;
 	m_props.yOffs += m_props.y;
 	}
@@ -1008,12 +1009,12 @@ if (gameStates.app.bGameRunning)
 SDL_ShowCursor (0);
 SDL_EnableKeyRepeat(60, 30);
 gameStates.menus.nInMenu++;
-if (!gameOpts->menus.nStyle && (gameStates.app.nFunctionMode == FMODE_GAME) && !(gameData.app.nGameMode & GM_MULTI)) {
+if (!MODERN_STYLE && (gameStates.app.nFunctionMode == FMODE_GAME) && !(gameData.app.nGameMode & GM_MULTI)) {
 	audio.PauseSounds ();
 	sound_stopped = 1;
 	}
 
-if (!(gameOpts->menus.nStyle || (IsMultiGame && (gameStates.app.nFunctionMode == FMODE_GAME) && (!gameStates.app.bEndLevelSequence)))) {
+if (!(MODERN_STYLE || (IsMultiGame && (gameStates.app.nFunctionMode == FMODE_GAME) && (!gameStates.app.bEndLevelSequence)))) {
 	time_stopped = 1;
 	StopTime ();
 	#ifdef TACTILE 
@@ -1026,13 +1027,15 @@ if (gameStates.app.bGameRunning && IsMultiGame)
 	gameData.multigame.nTypingTimeout = 0;
 
 SetPopupScreenMode ();
-if (!gameOpts->menus.nStyle) {
+#if 0
+if (!MODERN_STYLE) {
 	OglSetDrawBuffer (GL_FRONT, 1);
 	if (gameStates.menus.bNoBackground || gameStates.app.bGameRunning) {
 		//NMLoadBackground (NULL, NULL, 0);
 		GrUpdate (0);
 		}
 	}
+#endif
 SaveScreen (&gameCanvasP);
 bKeyRepeat = gameStates.input.keys.bRepeat;
 gameStates.input.keys.bRepeat = 1;
@@ -1128,7 +1131,7 @@ while (!done) {
 #endif
 	if (InitProps (pszTitle, pszSubTitle)) {
 		backgroundManager.Setup (filename, m_props.x, m_props.y, m_props.w, m_props.h);
-		if (!gameOpts->menus.nStyle)
+		if (!MODERN_STYLE)
 			CCanvas::SetCurrent (backgroundManager.Canvas ());
 		bRedraw = 0;
 		m_props.ty = m_props.yOffs;
@@ -1159,9 +1162,9 @@ while (!done) {
 			}
 		}
 
-	if (!bRedraw || gameOpts->menus.nStyle) {
+	if (!bRedraw || MODERN_STYLE) {
 		int t;
-		backgroundManager.Draw ();
+		backgroundManager.Redraw ();
 		if (!gameStates.app.bGameRunning)
 			console.Draw ();
 		if (callback)
@@ -1651,9 +1654,9 @@ launchOption:
 	
 		if (!done && !nMouseState && nOldMouseState && bCloseBox) {
 			MouseGetPos (&mx, &my);
-			x1 = (gameOpts->menus.nStyle ? m_props.x : CCanvas::Current ()->Left ()) + CLOSE_X;
+			x1 = (MODERN_STYLE ? m_props.x : CCanvas::Current ()->Left ()) + CLOSE_X;
 			x2 = x1 + CLOSE_SIZE;
-			y1 = (gameOpts->menus.nStyle ? m_props.y : CCanvas::Current ()->Top ()) + CLOSE_Y;
+			y1 = (MODERN_STYLE ? m_props.y : CCanvas::Current ()->Top ()) + CLOSE_Y;
 			y2 = y1 + CLOSE_SIZE;
 			if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 				if (nCurItemP)
@@ -1795,28 +1798,28 @@ launchOption:
 	// Redraw everything...
 #if 1
 		bRedraw = 0;
-		if (bRedrawAll && !gameOpts->menus.nStyle) {
+		if (bRedrawAll && !MODERN_STYLE) {
 			int t;
 			backgroundManager.Draw ();
 			t = DrawTitle (pszTitle, TITLE_FONT, RGBA_PAL (31, 31, 31), m_props.yOffs);
 			DrawTitle (pszSubTitle, SUBTITLE_FONT, RGBA_PAL (21, 21, 21), t);
 			bRedrawAll = 0;
 			}
-		if (!gameOpts->menus.nStyle)
+		if (!MODERN_STYLE)
 			CCanvas::SetCurrent (backgroundManager.Canvas ());
 		fontManager.SetCurrent (m_props.bTinyMode ? SMALL_FONT : NORMAL_FONT);
 	 	for (i = 0; i < m_props.nMaxDisplayable + m_props.nScrollOffset - m_props.nMaxNoScroll; i++) {
 			if ((i >= m_props.nMaxNoScroll) && (i < m_props.nScrollOffset))
 				continue;
-			if (!(gameOpts->menus.nStyle || (Item (i).m_text && *Item (i).m_text)))
+			if (!(MODERN_STYLE || (Item (i).m_text && *Item (i).m_text)))
 				continue;
-			if (bStart || (gameStates.ogl.nDrawBuffer == GL_BACK) || Item (i).m_bRedraw || Item (i).m_bRebuild) {// warning! ugly hack below 
+			if (bStart || MODERN_STYLE || Item (i).m_bRedraw || Item (i).m_bRebuild) {// warning! ugly hack below 
 				bRedraw = 1;
 				if (Item (i).m_bRebuild && Item (i).m_bCentered)
 					Item (i).m_x = fontManager.Current ()->GetCenteredX (Item (i).m_text);
 				if (i >= m_props.nScrollOffset)
  				Item (i).m_y -= ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
-				if (!gameOpts->menus.nStyle) 
+				if (!MODERN_STYLE) 
 					SDL_ShowCursor (0);
 				Item (i).Draw ((i == choice) && !bAllText, bTinyMode);
 				Item (i).m_bRedraw = 0;
@@ -1851,14 +1854,14 @@ launchOption:
 		DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, " ");
 			}
  		}
-		if (bCloseBox && (bStart || gameOpts->menus.nStyle)) {
-			if (gameOpts->menus.nStyle)
+		if (bCloseBox && (bStart || MODERN_STYLE)) {
+			if (MODERN_STYLE)
 				DrawCloseBox (m_props.x, m_props.y);
 			else
 				DrawCloseBox (m_props.x - CCanvas::Current ()->Left (), m_props.y - CCanvas::Current ()->Top ());
 			bCloseBox = 1;
 			}
-		if (bRedraw || !gameOpts->menus.nStyle)
+		if (bRedraw || !MODERN_STYLE)
 			GrUpdate (0);
 		bRedraw = 1;
 		bStart = 0;
@@ -2382,8 +2385,8 @@ while (!done) {
 			}
 		}
 
-	if ((nPrevItem != nFirstItem) || gameOpts->menus.nStyle) {
-		if (!gameOpts->menus.nStyle) 
+	if ((nPrevItem != nFirstItem) || MODERN_STYLE) {
+		if (!MODERN_STYLE) 
 			SDL_ShowCursor (0);
 		backgroundManager.Draw ();
 		fontManager.SetCurrent (NORMAL_FONT);
@@ -2421,7 +2424,7 @@ while (!done) {
 	else if (nItem != ocitem) {
 		int w, h, aw, y;
 
-		if (!gameOpts->menus.nStyle) 
+		if (!MODERN_STYLE) 
 			SDL_ShowCursor (0);
 		i = ocitem;
 		if ((i >= 0) && (i < nFileCount)) {
@@ -2732,13 +2735,13 @@ while (!done) {
 			}
 		}
 
-		if ((nPrevItem != nFirstItem) || redraw || gameOpts->menus.nStyle) {
-			if (gameOpts->menus.nStyle) 
+		if ((nPrevItem != nFirstItem) || redraw || MODERN_STYLE) {
+			if (MODERN_STYLE) 
 				backgroundManager.Draw ();
 				//NMDrawBackground (wx - border_size, wy - nTitleHeight - border_size, wx + width + border_size - 1, wy + height + border_size - 1,1);
 			else
 				SDL_ShowCursor (0);
-			if (gameOpts->menus.nStyle) {
+			if (MODERN_STYLE) {
 				fontManager.SetCurrent (NORMAL_FONT);
 				GrString (0x8000, wy - nTitleHeight, pszTitle, NULL);
 				}
@@ -2768,7 +2771,7 @@ while (!done) {
 		} else if (nItem != ocitem) {
 			int w, h, aw, y;
 
-			if (!gameOpts->menus.nStyle) 
+			if (!MODERN_STYLE) 
 				SDL_ShowCursor (0);
 
 			i = ocitem;
