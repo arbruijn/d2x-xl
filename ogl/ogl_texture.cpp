@@ -273,8 +273,6 @@ ubyte* CTexture::Convert (
 	int			nTransp,
 	int			bSuperTransp)
 {
-	ubyte			*rawData = bmP->Buffer ();
-	GLubyte		*bufP;
 	tRgbColorb	*colorP;
 	int			x, y, c;
 	ushort		r, g, b, a;
@@ -321,7 +319,8 @@ switch (m_info.format) {
 if (m_info.tw * m_info.th * bpp > (int) sizeof (gameData.render.ogl.buffer))//shouldn'texP happen, descent never uses textures that big.
 	Error ("texture too big %i %i", m_info.tw, m_info.th);
 
-bufP = gameData.render.ogl.buffer;
+ubyte* rawData = bmP->Buffer ();
+GLubyte* bufP = gameData.render.ogl.buffer;
 //bmP->Flags () &= ~(BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 for (y = 0; y < m_info.h; y++) {
 	for (x = 0; x < m_info.w; x++) {
