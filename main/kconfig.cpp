@@ -596,7 +596,7 @@ if (item->value == 255)
 else {
 	switch (item->nType) {
 		case BT_KEY:
-			strncpy (szText, (item->value < sizeofa (pszKeyText)) ? pszKeyText [item->value] : "", sizeof (szText)); 
+			strncpy (szText, (size_t (item->value) < sizeofa (pszKeyText)) ? pszKeyText [item->value] : "", sizeof (szText)); 
 			break;
 
 		case BT_MOUSE_BUTTON:
@@ -1516,7 +1516,7 @@ if (bRedraw && gameOpts->menus.nStyle)
 	if (item->value != 255) {
 		switch (item->nType) {
 			case BT_KEY:
-				if (item->value < sizeofa (pszKeyText))
+				if (size_t (item->value) < sizeofa (pszKeyText))
 					strncat (szText, pszKeyText [item->value], 10); 
 				break;
 
