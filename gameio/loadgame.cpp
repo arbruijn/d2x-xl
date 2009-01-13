@@ -890,6 +890,7 @@ if (nLoadRes) {
 	return 0;
 	}
 
+ShowBoxedMessage (TXT_LOADING);
 paletteManager.SetGame (paletteManager.Load (szCurrentLevelPalette, pszLevelName, 1, 1, 1));		//don't change screen
 InitGaugeCanvases ();
 ResetPogEffects ();

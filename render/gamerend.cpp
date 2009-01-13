@@ -1264,6 +1264,8 @@ if (!gameOpts->menus.nStyle) {
 	CCanvas::Current ()->RenderToBitmap (bg.bmP, 0, 0, w + BOX_BORDER, h + BOX_BORDER, x - BOX_BORDER / 2, y - BOX_BORDER / 2); 
 	}
 */
+int nDrawBuffer = gameStates.ogl.nDrawBuffer;
+OglSetDrawBuffer (GL_FRONT, 0);
 backgroundManager.Setup (NULL, x - BOX_BORDER / 2, y - BOX_BORDER / 2, w + BOX_BORDER, h + BOX_BORDER);
 CCanvas::SetCurrent (backgroundManager.Canvas (1));
 fontManager.SetColorRGBi (DKGRAY_RGBA, 1, 0, 0);
@@ -1271,14 +1273,17 @@ fontManager.SetCurrent (MEDIUM1_FONT);
 GrPrintF (NULL, 0x8000, (h / 2 + BOX_BORDER) / 2, pszMsg);
 gameStates.app.bClearMessage = 1;
 GrUpdate (0);
+OglSetDrawBuffer (nDrawBuffer, 0);
 }
 
 //------------------------------------------------------------------------------
 
 void ClearBoxedMessage ()
 {
-backgroundManager.Remove ();
-gameStates.app.bClearMessage = 0;
+if (gameStates.app.bClearMessage) {
+	backgroundManager.Remove ();
+	gameStates.app.bClearMessage = 0;
+	}
 #if 0
 	CBitmap* bmP = backgroundManager.Current ();
 

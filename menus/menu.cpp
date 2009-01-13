@@ -956,6 +956,8 @@ void CMenu::RestoreScreen (char* filename, int bDontRestore)
 {
 //CCanvas::SetCurrent (bg->menu_canvas);
 backgroundManager.Remove ();
+if (gameStates.app.bGameRunning && !gameOpts->menus.nStyle)
+	backgroundManager.Remove ();	// remove the stars background loaded for old style menus
 CCanvas::SetCurrent (NULL);		
 CCanvas::Pop ();
 GrabMouse (1, 0);
@@ -992,6 +994,7 @@ int CMenu::Menu (const char* pszTitle, const char* pszSubTitle,
 
 if (gameStates.menus.nInMenu)
 	return - 1;
+ClearBoxedMessage ();
 memset (&m_props, 0, sizeof (m_props));
 m_props.width = width;
 m_props.height = height;
@@ -1000,7 +1003,7 @@ FlushInput ();
 
 if (int (ToS ()) < 1)
 	return - 1;
-if (gameStates.app.bGameRunning)
+if (gameStates.app.bGameRunning && !gameOpts->menus.nStyle)
 	backgroundManager.LoadStars ();
 SDL_ShowCursor (0);
 SDL_EnableKeyRepeat(60, 30);

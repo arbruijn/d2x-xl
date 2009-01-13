@@ -44,6 +44,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_lib.h"
 #include "ogl_texcache.h"
 #include "briefings.h"
+#include "menubackground.h"
 #ifdef __macosx__
 # include <OpenGL/glu.h>
 # undef GL_ARB_multitexture // hack!
@@ -1639,6 +1640,7 @@ else
 gameStates.render.bBriefing = 0;
 m_info.briefingText.Destroy ();
 KeyFlush ();
+backgroundManager.Redraw (true);
 return;
 }
 

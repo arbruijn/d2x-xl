@@ -134,6 +134,7 @@ m_filename = NULL;
 m_bIgnoreCanv = false;
 m_bIgnoreBg = false;
 m_bSetup = false;
+gameStates.app.bClearMessage = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -429,10 +430,20 @@ if (bForce || (MODERN_STYLE == 1)) {
 
 void CBackgroundManager::Redraw (bool bUpdate)
 {
-for (int i = 0; i <= m_nDepth; i++)
-	m_bg [i].Draw ();
-if (bUpdate && !gameStates.app.bGameRunning)
-	GrUpdate (0);
+if (gameStates.app.bGameRunning) {
+	if (gameOpts->menus.nStyle)
+		Draw ();
+	else { // skip the first background image when the game is running and use the stars background image instead (has been loaded by the menu code)
+		for (int i = 1; i <= m_nDepth; i++)
+			m_bg [i].Draw ();
+		}
+	}
+else {
+	for (int i = 0; i <= m_nDepth; i++)
+		m_bg [i].Draw ();
+	if (bUpdate)
+		GrUpdate (0);
+	}
 }
 
 //------------------------------------------------------------------------------
