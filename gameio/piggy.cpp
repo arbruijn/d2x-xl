@@ -239,7 +239,7 @@ for (i = 0; i < gameData.pig.tex.nAliases; i++)
 		}
 i = bitmapNames [bD1Data].Search (pszName);
 Assert (i != 0);
-bi.index = i;
+bi.index = ushort (i);
 return bi;
 }
 

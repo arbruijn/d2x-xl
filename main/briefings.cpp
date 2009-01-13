@@ -533,7 +533,7 @@ if (*m_info.szBitmapName) {
 
 	paletteManager.Load ("", "", 0, 0, 1);
 	tBitmapIndex bmi = PiggyFindBitmap (m_info.szBitmapName, gameStates.app.bD1Mission);
-	if (bmi.index < 0)
+	if (0 > short (bmi.index))
 		return;
 	bmP = gameData.pig.tex.bitmaps [gameStates.app.bD1Mission] + bmi.index;
 	LoadBitmap (bmi.index, gameStates.app.bD1Mission);
