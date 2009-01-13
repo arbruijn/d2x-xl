@@ -366,8 +366,8 @@ Init ();
 void CBackgroundManager::Remove (void) 
 {
 if (m_nDepth >= 0) {
-	m_bg [m_nDepth].Restore ();
 	m_bg [m_nDepth--].Destroy ();
+	Redraw (true);
 	if (gameStates.app.bGameRunning) 
 		paletteManager.LoadEffect ();
 	}

@@ -814,7 +814,7 @@ if ((gameStates.video.nLastScreenMode == gameStates.video.nScreenMode) &&
 if (gameStates.video.nScreenMode == SCREEN_GAME)
 	OglSetDrawBuffer (GL_BACK, 1);
 else {
-	OglSetDrawBuffer (gameOpts->menus.nStyle ? GL_BACK : GL_FRONT, 1);
+	OglSetDrawBuffer (GL_BACK, 1);
 	if (!(gameStates.app.bGameRunning && gameOpts->menus.nStyle)) {
 		glClearColor (0,0,0,0);
 		glClear (GL_COLOR_BUFFER_BIT);

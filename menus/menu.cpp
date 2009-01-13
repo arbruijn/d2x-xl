@@ -956,10 +956,6 @@ void CMenu::RestoreScreen (char* filename, int bDontRestore)
 {
 //CCanvas::SetCurrent (bg->menu_canvas);
 backgroundManager.Remove ();
-if (gameStates.app.bGameRunning)
-	backgroundManager.Remove ();
-else
-	GrUpdate (0);
 CCanvas::SetCurrent (NULL);		
 CCanvas::Pop ();
 GrabMouse (1, 0);

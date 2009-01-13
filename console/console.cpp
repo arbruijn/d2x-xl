@@ -287,18 +287,18 @@ void CConsole::Update (void)
 if (!IsVisible ())
 	return;
 Screenlines = m_surface->Height () / (CON_LINE_SPACE + m_surface->Font ()->Height ());
+#if 0
 if (!gameOpts->menus.nStyle) {
 	CCanvas::Push ();
 	CCanvas::SetCurrent (m_surface);
-#if 0
 	SDL_FillRect (m_surface, NULL, SDL_MapRGBA (m_surface->format, 0, 0, 0, m_ConsoleAlpha);
 	if (m_output->flags & SDL_OPENGLBLIT)
 		SDL_SetAlpha (m_surface, 0, SDL_ALPHA_OPAQUE);
-#endif
 /* draw the background image if there is one */
 	if (m_background)
 		m_background->Stretch ();
 	}
+#endif
 /* Draw the text from the back buffers, calculate in the scrollback from the user
  * this is a Normal SDL software-mode blit, so we need to temporarily set the ColorKey
  * for the font, and then clear it when we're done.
@@ -307,7 +307,7 @@ if (!gameOpts->menus.nStyle) {
 if ((m_output->flags & SDL_OPENGLBLIT) && (m_output->format->BytesPerPixel > 2)) {
 	uint *pix = reinterpret_cast<uint*> (CurrentFont->FontSurface->pixels);
 	SDL_SetColorKey (CurrentFont->FontSurface, SDL_SRCCOLORKEY, *pix);
-}
+	}
 #endif
 
 orig_color = CCanvas::Current ()->FontColor (0);
@@ -328,10 +328,9 @@ for (loop = 0; loop < Screenlines-1 && loop < m_LineBuffer - m_ConsoleScrollBack
 		}
 	}
 CCanvas::Current ()->FontColor (0) = orig_color;
+#if 0
 if (!gameOpts->menus.nStyle)
 	CCanvas::Pop ();
-
-#if 0
 if (m_output->flags & SDL_OPENGLBLIT)
 	SDL_SetColorKey (CurrentFont->FontSurface, 0, 0);
 #endif
@@ -666,6 +665,7 @@ if (m_output->flags & SDL_OPENGLBLIT) {
 #endif
 
 //first of all restore input
+#if 0
 if (!gameOpts->menus.nStyle) {
 	CCanvas::Push ();
 	CCanvas::SetCurrent (m_surface);
@@ -678,6 +678,7 @@ if (!gameOpts->menus.nStyle) {
 	else
 		GrBitmap (0, m_surface->Height () - m_surface->Font ()->Height (), m_input);
 	}
+#endif
 //now add the text
 orig_color = CCanvas::Current ()->FontColor (0);
 fontManager.SetCurrent (SMALL_FONT);
@@ -715,10 +716,10 @@ if (bBlink) {
 		GrString (x, m_surface->Height () - m_surface->Font ()->Height (), CON_OVR_CURSOR, NULL);
 	}
 CCanvas::Current ()->FontColor (0) = orig_color;
-if (!gameOpts->menus.nStyle)
-	CCanvas::Pop ();
 
 #if 0
+if (!gameOpts->menus.nStyle)
+	CCanvas::Pop ();
 if (m_output->flags & SDL_OPENGLBLIT) {
 	SDL_SetColorKey (CurrentFont->FontSurface, 0, 0);
 }

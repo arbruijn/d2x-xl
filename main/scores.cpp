@@ -370,7 +370,8 @@ ReshowScores:
 	looper = 0;
 
 	while (!done) {
-		if (!bRedraw || gameOpts->menus.nStyle) {
+		//if (!bRedraw || gameOpts->menus.nStyle) 
+			{
 			backgroundManager.Redraw ();
 			fontManager.SetCurrent (MEDIUM3_FONT);
 

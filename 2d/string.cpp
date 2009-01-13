@@ -478,8 +478,10 @@ CBitmap *CreateStringBitmap (
 	int			letter;
 	CFont*		fontP = fontManager.Current ();
 
+#if 0
 if (!(bForce || (gameOpts->menus.nStyle && gameOpts->menus.bFastMenus)))
 	return NULL;
+#endif
 fontP->StringSizeTabbed (s, w, h, aw, nTabs, nMaxWidth);
 if (!(w && h))
 	return NULL;

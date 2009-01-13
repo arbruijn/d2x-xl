@@ -300,7 +300,7 @@ if (!gameStates.app.bNostalgia)
 	if ((t = FindArg ("-menustyle")))
 		gameOptions [0].menus.nStyle = NumArg (t, 1);
 if ((t = FindArg ("-fastmenus")))
-	gameOptions [0].menus.bFastMenus = NumArg (t, 1);
+	gameOptions [0].menus.bFastMenus = 1; //NumArg (t, 1);
 if ((t = FindArg ("-altbg_alpha")) && *pszArgList [t+1]) {
 	gameOptions [0].menus.altBg.alpha = atof (pszArgList [t+1]);
 	if (gameOptions [0].menus.altBg.alpha < 0)

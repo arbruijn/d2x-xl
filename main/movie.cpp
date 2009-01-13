@@ -246,10 +246,6 @@ bmFrame.Init (BM_LINEAR, 0, 0, bufw, bufh, 1, buf);
 bmFrame.SetPalette (movieManager.m_palette);
 
 TRANSPARENCY_COLOR = 0;
-if (gameOpts->menus.nStyle) {
-	//memset (grPalette, 0, 768);
-	//paletteManager.LoadEffect ();
-	}
 if (gameOpts->movies.bFullScreen) {
 	double r = (double) bufh / (double) bufw;
 	int dh = (int) (CCanvas::Current ()->Width () * r);

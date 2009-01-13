@@ -606,7 +606,7 @@ void InitMenuOptions (int i)
 {
 if (i) {
 	gameOptions [1].menus.nStyle = 0;
-	gameOptions [1].menus.bFastMenus = 0;
+	gameOptions [1].menus.bFastMenus = 1;
 	gameOptions [1].menus.bSmartFileSearch = 0;
 	gameOptions [1].menus.bShowLevelVersion = 0;
 	gameOptions [1].menus.altBg.alpha = 0;
@@ -617,7 +617,7 @@ if (i) {
 	}
 else {
 	gameOptions [0].menus.nStyle = 0;
-	gameOptions [0].menus.bFastMenus = 0;
+	gameOptions [0].menus.bFastMenus = 1;
 	gameOptions [0].menus.bSmartFileSearch = 1;
 	gameOptions [0].menus.bShowLevelVersion = 0;
 	gameOptions [0].menus.altBg.alpha = 0.75;
