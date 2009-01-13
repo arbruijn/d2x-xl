@@ -430,7 +430,7 @@ if (bForce || (MODERN_STYLE == 1)) {
 void CBackgroundManager::Redraw (bool bUpdate)
 {
 for (int i = 0; i <= m_nDepth; i++)
-	m_background [i]->Draw ();
+	m_bg [i].Draw ();
 if (bUpdate && !gameStates.app.bGameRunning)
 	GrUpdate (0);
 }
