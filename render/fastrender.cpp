@@ -2030,14 +2030,14 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 #endif
 		if (gameStates.render.bUseDynLight && !gameStates.render.bQueryCoronas) {
 			nSegLights = lightManager.SetNearestToSegment (nSegment, -1, 0, 1, 0);
-			SetNearestStaticLights (nSegment, 1, 1, 0);
+			lightManager.SetNearestStatic (nSegment, 1, 1, 0);
 			gameStates.render.bApplyDynLight = gameOpts->ogl.bLightObjects;
 			}
 		else
 			gameStates.render.bApplyDynLight = 0;
 		RenderObjList (nListPos, gameStates.render.nWindow);
 		if (gameStates.render.bUseDynLight && !gameStates.render.bQueryCoronas) {
-			ResetNearestStaticLights (nSegment, 0);
+			lightManager.ResetNearestStatic (nSegment, 0);
 			}
 		gameStates.render.bApplyDynLight = gameStates.render.nLightingMethod != 0;
 		//lightManager.Index (0)[0].nActive = gameData.render.lights.dynamic.shader.iStaticLights [0];

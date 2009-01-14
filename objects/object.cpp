@@ -2230,7 +2230,7 @@ switch (info.movementType) {
 
 	case MT_PHYSICS:
 		DoPhysicsSim ();
-		SetDynLightPos (OBJ_IDX (this));
+		lightManager.SetPos (OBJ_IDX (this));
 		lightningManager.MoveForObject (this);
 		if (info.nType == OBJ_PLAYER)
 			UpdateShipSound ();

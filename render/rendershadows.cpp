@@ -342,25 +342,25 @@ int GatherShadowLightSources (void)
 	int				h, i, j, k, l, n, m = gameOpts->render.shadows.nLights;
 	short				*pnl;
 //	CDynLight		*pl;
-	CDynLight*		psl;
+	CDynLight*		prl;
 	CFixVector		vLightDir;
 
-psl = lightManager.Lights (1);
-for (h = 0, l = lightManager.LightCount (0); l; l--, psl++)
-	psl->render.bShadow =
-	psl->bExclusive = 0;
+prl = lightManager.Lights (1);
+for (h = 0, l = lightManager.LightCount (0); l; l--, prl++)
+	prl->render.bShadow =
+	prl->render.bExclusive = 0;
 FORALL_OBJS (objP, h) {
 	if (gameData.render.mine.bObjectRendered [h] != gameStates.render.nFrameFlipFlop)
 		continue;
 	pnl = lightManager.NearestSegLights  () + objP->info.nSegment * MAX_NEAREST_LIGHTS;
 	k = h * MAX_SHADOW_LIGHTS;
 	for (i = n = 0; (n < m) && (*pnl >= 0); i++, pnl++) {
-		psl = lightManager.Lights (1) + *pnl;
-		if (!psl->info.bState)
+		prl = lightManager.Lights (1) + *pnl;
+		if (!prl->info.bState)
 			continue;
-		if (!CanSeePoint (objP, &objP->info.position.vPos, &psl->info.vPos, objP->info.nSegment))
+		if (!CanSeePoint (objP, &objP->info.position.vPos, &prl->info.vPos, objP->info.nSegment))
 			continue;
-		vLightDir = objP->info.position.vPos - psl->info.vPos;
+		vLightDir = objP->info.position.vPos - prl->info.vPos;
 		CFixVector::Normalize(vLightDir);
 		if (n) {
 			for (j = 0; j < n; j++)
@@ -371,13 +371,13 @@ FORALL_OBJS (objP, h) {
 			}
 		gameData.render.shadows.vLightDir [n] = vLightDir;
 		gameData.render.shadows.objLights [k + n++] = *pnl;
-		psl->render.bShadow = 1;
+		prl->render.bShadow = 1;
 		}
 	gameData.render.shadows.objLights [k + n] = -1;
 	}
-psl = lightManager.Lights (1);
-for (h = 0, i = lightManager.LightCount (0); i; i--, psl++)
-	if (psl->render.bShadow)
+prl = lightManager.Lights (1);
+for (h = 0, i = lightManager.LightCount (0); i; i--, prl++)
+	if (prl->render.bShadow)
 		h++;
 return h;
 }
@@ -430,18 +430,18 @@ if (!bShadowTest)
 void RenderNeatShadows (fix nEyeOffset, int nWindow, short nStartSeg)
 {
 	short				i;
-	CDynLight	*psl = lightManager.Lights (1);
+	CDynLight	*prl = lightManager.Lights (1);
 
 gameData.render.shadows.nLights = GatherShadowLightSources ();
-for (i = 0; i < lightManager.LightCount (0); i++, psl++) {
-	if (!psl->render.bShadow)
+for (i = 0; i < lightManager.LightCount (0); i++, prl++) {
+	if (!prl->render.bShadow)
 		continue;
-	gameData.render.shadows.lights = psl;
-	psl->bExclusive = 1;
+	gameData.render.shadows.lights = prl;
+	prl->render.bExclusive = 1;
 #if 1
 	gameStates.render.nShadowPass = 2;
 	OglStartFrame (0, 0);
-	memcpy (&gameData.render.shadows.vLightPos, psl->render.vPosf + 1, sizeof (CFloatVector));
+	memcpy (&gameData.render.shadows.vLightPos, prl->render.vPosf + 1, sizeof (CFloatVector));
 	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
 	RenderMine (nStartSeg, nEyeOffset, nWindow);
 #endif
@@ -449,7 +449,7 @@ for (i = 0; i < lightManager.LightCount (0); i++, psl++) {
 	OglStartFrame (0, 0);
 	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
 	RenderMine (nStartSeg, nEyeOffset, nWindow);
-	psl->render.bExclusive = 0;
+	prl->render.bExclusive = 0;
 	}
 #if 0
 gameStates.render.nShadowPass = 4;

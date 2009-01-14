@@ -282,11 +282,11 @@ return i * i;
 
 #if CHECK_LIGHT_VERT
 
-static inline int IsLightVert (int nVertex, CDynLight *psl)
+static inline int IsLightVert (int nVertex, CDynLight *prl)
 {
-if ((nVertex >= 0) && psl->info.faceP) {
-	ushort *pv = gameStates.render.bTriangleMesh ? psl->info.faceP->triIndex : psl->info.faceP->index;
-	for (int i = psl->info.faceP->nVerts; i; i--, pv++)
+if ((nVertex >= 0) && prl->info.faceP) {
+	ushort *pv = gameStates.render.bTriangleMesh ? prl->info.faceP->triIndex : prl->info.faceP->index;
+	for (int i = prl->info.faceP->nVerts; i; i--, pv++)
 		if (*pv == (ushort) nVertex)
 			return 1;
 	}
@@ -313,8 +313,8 @@ int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcd
 	float					fLightDist, fAttenuation, spotEffect, NdotL, RdotE, nMinDot;
 	CFloatVector3		spotDir, lightDir, lightPos, vertPos, vReflect;
 	CFloatVector3		lightColor, colorSum, vertColor = CFloatVector3::Create(0.0f, 0.0f, 0.0f);
-	CDynLight*			psl;
-	CDynLightIndex*	sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
+	CDynLight*			prl;
+	CDynLightIndex*	sliP = &lightManager.Index (0)[nThread];
 	CActiveDynLight*	activeLightsP = lightManager.Active (nThread) + sliP->nFirst;
 	CVertColorData		vcd = *vcdP;
 
@@ -338,13 +338,13 @@ if (nVertex == nDbgVertex)
 #endif
 for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #if 1
-	if (!(psl = activeLightsP->psl))
+	if (!(prl = activeLightsP->pl))
 #else
-	if (!(psl = GetActiveRenderLight (activeLightsP, nThread)))
+	if (!(prl = GetActiveRenderLight (activeLightsP, nThread)))
 #endif
 		continue;
 #if DBG
-	if ((nDbgSeg >= 0) && (psl->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (psl->info.nSide == nDbgSide)))
+	if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (prl->info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
 	nLights--;
@@ -352,17 +352,17 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if (i == vcd.nMatLight)
 		continue;
 #endif
-	nType = psl->info.nType;
+	nType = prl->info.nType;
 	if (bSkipHeadlight && (nType == 3))
 		continue;
 #if ONLY_HEADLIGHT
 	if (nType != 3)
 		continue;
 #endif
-	if (psl->info.bVariable && gameData.render.vertColor.bDarkness)
+	if (prl->info.bVariable && gameData.render.vertColor.bDarkness)
 		continue;
-	lightColor = *(reinterpret_cast<CFloatVector3*> (&psl->info.color));
-	lightPos = *psl->vPosf [bTransform].V3();
+	lightColor = *(reinterpret_cast<CFloatVector3*> (&prl->info.color));
+	lightPos = *prl->render.vPosf [bTransform].V3();
 	lightDir = lightPos - *vcd.vertPosP;
 	bInRad = 0;
 	fLightDist = lightDir.Mag() * gameStates.ogl.fLightRange;
@@ -374,23 +374,23 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	nMinDot = -0.1f;
 	if (gameStates.render.nState || (nType < 2)) {
 #if CHECK_LIGHT_VERT == 2
-		if (IsLightVert (nVertex, psl))
+		if (IsLightVert (nVertex, prl))
 			fLightDist = 0;
 		else
 #endif
-			fLightDist -= psl->info.fRad * gameStates.ogl.fLightRange; //make light brighter close to light source
+			fLightDist -= prl->info.fRad * gameStates.ogl.fLightRange; //make light brighter close to light source
 		if (fLightDist < 0)
 			fLightDist = 0;
 #if 1 //don't directly light faces turning their back side towards the light source
-		if ((NdotL < 0) && (CFloatVector3::Dot (lightDir, *psl->info.vDirf.V3()) <= 0))
+		if ((NdotL < 0) && (CFloatVector3::Dot (lightDir, *prl->info.vDirf.V3()) <= 0))
 			nMinDot = 0;
 #endif
 		}
-	if	(((NdotL >= nMinDot) && (fLightDist <= 0.0f)) || IsLightVert (nVertex, psl)) {
+	if	(((NdotL >= nMinDot) && (fLightDist <= 0.0f)) || IsLightVert (nVertex, prl)) {
 		bInRad = 1;
 		NdotL = 1;
 		fLightDist = 0;
-		fAttenuation = 1.0f / psl->info.fBrightness;
+		fAttenuation = 1.0f / prl->info.fBrightness;
 		}
 	else {	//make it decay faster
 #if BRIGHT_SHOTS
@@ -402,14 +402,14 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #if 0
 		NdotL = 1 - ((1 - NdotL) * 0.9f);
 #endif
-		if ((NdotL >= nMinDot) && (psl->info.fRad > 0))
+		if ((NdotL >= nMinDot) && (prl->info.fRad > 0))
 			NdotL += (1.0f - NdotL) / (0.5f + fAttenuation / 2.0f);
-		fAttenuation /= psl->info.fBrightness;
+		fAttenuation /= prl->info.fBrightness;
 		}
-	if (psl->info.bSpot) {
+	if (prl->info.bSpot) {
 		if (NdotL <= 0)
 			continue;
-		spotDir = *psl->info.vDirf.V3(); CFloatVector3::Normalize(spotDir);
+		spotDir = *prl->info.vDirf.V3(); CFloatVector3::Normalize(spotDir);
 		lightDir = -lightDir;
 		/*
 		lightDir[Y] = -lightDir[Y];
@@ -418,10 +418,10 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		//spotEffect = G3_DOTF (spotDir, lightDir);
 		spotEffect = CFloatVector3::Dot (spotDir, lightDir);
 
-		if (spotEffect <= psl->info.fSpotAngle)
+		if (spotEffect <= prl->info.fSpotAngle)
 			continue;
-		if (psl->info.fSpotExponent)
-			spotEffect = (float) pow (spotEffect, psl->info.fSpotExponent);
+		if (prl->info.fSpotExponent)
+			spotEffect = (float) pow (spotEffect, prl->info.fSpotExponent);
 		fAttenuation /= spotEffect * gameStates.ogl.fLightRange;
 		vertColor = *gameData.render.vertColor.matAmbient.V3() + (*gameData.render.vertColor.matDiffuse.V3() * NdotL);
 		}
@@ -437,7 +437,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	vertColor[B] *= lightColor[B];
 	if ((NdotL > 0.0) && (vcd.fMatShininess > 0) /* && vcd.bMatSpecular */) {
 		//RdotV = max (dot (Reflect (-Normalize (lightDir), Normal), Normalize (-vertPos)), 0.0);
-		if (!psl->info.bSpot)	//need direction from light to vertex now
+		if (!prl->info.bSpot)	//need direction from light to vertex now
 			lightDir.Neg();
 		vReflect = CFloatVector3::Reflect(lightDir, vcd.vertNorm);
 		CFloatVector3::Normalize(vReflect);
@@ -507,8 +507,8 @@ int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcd
 	float						fLightDist, fAttenuation, spotEffect, fMag, NdotL, RdotE;
 	CFloatVector3					spotDir, lightDir, lightPos, vertPos, vReflect;
 	CFloatVector3					lightColor, colorSum, vertColor = {{0.0f, 0.0f, 0.0f}};
-	CDynLight			*psl;
-	CDynLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
+	CDynLight			*prl;
+	CDynLightIndex		*sliP = &lightManager.Index (0)[nThread];
 	CActiveDynLight	*activeLightsP = lightManager.Active [nThread] + sliP->nFirst;
 	CVertColorData			vcd = *vcdP;
 
@@ -520,20 +520,20 @@ if (nLights > lightManager.LightCount (0))
 	nLights = lightManager.LightCount (0);
 i = sliP->nLast - sliP->nFirst + 1;
 for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
-	if (!(psl = activeLightsP->psl))
+	if (!(prl = activeLightsP->prl))
 		continue;
 	nLights--;
-	nType = psl->info.nType;
+	nType = prl->info.nType;
 	if (bSkipHeadlight && (nType == 3))
 		continue;
 #if ONLY_HEADLIGHT
 	if (nType != 3)
 		continue;
 #endif
-	if (psl->info.bVariable && gameData.render.vertColor.bDarkness)
+	if (prl->info.bVariable && gameData.render.vertColor.bDarkness)
 		continue;
-	lightColor = *(reinterpret_cast<CFloatVector3*> (&psl->info.color));
-	lightPos = psl->vPosf [gameStates.render.nState && !gameStates.ogl.bUseTransform].V3;
+	lightColor = *(reinterpret_cast<CFloatVector3*> (&prl->info.color));
+	lightPos = prl->vPosf [gameStates.render.nState && !gameStates.ogl.bUseTransform].V3;
 #if VECMAT_CALLS
 	VmVecSub (&lightDir, &lightPos, vcd.vertPosP);
 #else
@@ -554,7 +554,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		}
 #endif
 #if 0
-	if (psl->info.fBrightness < 0)
+	if (prl->info.fBrightness < 0)
 		fAttenuation = 0.01f;
 	else
 #endif
@@ -566,21 +566,21 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #endif
 		if (gameStates.render.nState || (nType < 2)) {
 #if CHECK_LIGHT_VERT
-			if (IsLightVert (nVertex, psl))
+			if (IsLightVert (nVertex, prl))
 				fLightDist = 0;
 			else
 #endif
-				fLightDist -= psl->info.fRad / gameStates.ogl.fLightRange;	//make light brighter close to light source
+				fLightDist -= prl->info.fRad / gameStates.ogl.fLightRange;	//make light brighter close to light source
 			}
 		if (fLightDist < 0.0f) {
 			bInRad = 1;
 			fLightDist = 0;
-			fAttenuation = 1.0f / psl->info.fBrightness;
+			fAttenuation = 1.0f / prl->info.fBrightness;
 			}
-		else if (IsLightVert (nVertex, psl)) {
+		else if (IsLightVert (nVertex, prl)) {
 			bInRad = 1;
 			fLightDist = 0;
-			fAttenuation = 1.0f / psl->info.fBrightness;
+			fAttenuation = 1.0f / prl->info.fBrightness;
 			}
 		else {	//make it decay faster
 #if BRIGHT_SHOTS
@@ -593,32 +593,32 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #if 0
 			NdotL = 1 - ((1 - NdotL) * 0.9f);
 #endif
-			if (psl->info.fRad > 0)
+			if (prl->info.fRad > 0)
 				NdotL += (1.0f - NdotL) / (0.5f + fAttenuation / 2.0f);
-			fAttenuation /= psl->info.fBrightness;
+			fAttenuation /= prl->info.fBrightness;
 			}
 		}
-	if (psl->info.bSpot) {
+	if (prl->info.bSpot) {
 		if (NdotL <= 0)
 			continue;
 #if VECMAT_CALLS
-		CFloatVector::Normalize(&spotDir, &psl->vDirf);
+		CFloatVector::Normalize(&spotDir, &prl->vDirf);
 #else
-		fMag = VmVecMag (&psl->info.vDirf);
-		spotDir.p.x = psl->info.vDirf.p.x / fMag;
-		spotDir.p.y = psl->info.vDirf.p.y / fMag;
-		spotDir.p.z = psl->info.vDirf.p.z / fMag;
+		fMag = VmVecMag (&prl->info.vDirf);
+		spotDir.p.x = prl->info.vDirf.p.x / fMag;
+		spotDir.p.y = prl->info.vDirf.p.y / fMag;
+		spotDir.p.z = prl->info.vDirf.p.z / fMag;
 #endif
 		lightDir[X] = -lightDir[X];
 		lightDir[Y] = -lightDir[Y];
 		lightDir[Z] = -lightDir[Z];
 		spotEffect = G3_DOTF (spotDir, lightDir);
 #if 1
-		if (spotEffect <= psl->info.fSpotAngle)
+		if (spotEffect <= prl->info.fSpotAngle)
 			continue;
 #endif
-		if (psl->info.fSpotExponent)
-			spotEffect = (float) pow (spotEffect, psl->info.fSpotExponent);
+		if (prl->info.fSpotExponent)
+			spotEffect = (float) pow (spotEffect, prl->info.fSpotExponent);
 		fAttenuation /= spotEffect * gameStates.ogl.fLightRange;
 #if VECMAT_CALLS
 		VmVecScaleAdd (&vertColor, &gameData.render.vertColor.matAmbient, &gameData.render.vertColor.matDiffuse, NdotL);
@@ -649,7 +649,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if ((NdotL > 0) && (vcd.fMatShininess > 0)/* && vcd.bMatSpecular */) {
 		//spec = pow (Reflect dot lightToEye, matShininess) * matSpecular * lightSpecular
 		//RdotV = max (dot (Reflect (-Normalize (lightDir), Normal), Normalize (-vertPos)), 0.0);
-		if (!psl->info.bSpot) {	//need direction from light to vertex now
+		if (!prl->info.bSpot) {	//need direction from light to vertex now
 			lightDir[X] = -lightDir[X];
 			lightDir[Y] = -lightDir[Y];
 			lightDir[Z] = -lightDir[Z];
@@ -870,7 +870,7 @@ if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE) {
 else
 #endif
  {
-	if (gameData.render.lights.dynamic.shader.index [0][nThread].nActive) {
+	if (lightManager.Index (0)[nThread].nActive) {
 		if (pBaseColor)
 			memcpy (&colorSum, &pBaseColor->color, sizeof (colorSum));
 #if DBG
@@ -923,7 +923,7 @@ if (!gameStates.render.nState && (nVertex == nDbgVertex))
 #endif
 #if 0
 if (bVertexLights)
-	gameData.render.lights.dynamic.shader.index [0][nThread].nActive = gameData.render.lights.dynamic.shader.index [0][nThread].iVertex;
+	lightManager.Index (0)[nThread].nActive = lightManager.Index (0)[nThread].iVertex;
 #endif
 PROF_END(ptVertexColor)
 }

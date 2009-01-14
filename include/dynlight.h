@@ -216,6 +216,11 @@ class CLightManager {
 		tFaceColor* AvgSgmColor (int nSegment, CFixVector *vPosP);
 		void GatherStaticLights (int nLevel);
 		void GatherStaticVertexLights (int nVertex, int nMax, int nThread);
+		int SetActive (CActiveDynLight* activeLightsP, CDynLight* prl, short nType, int nThread);
+		CDynLight* GetActive (CActiveDynLight* activeLightsP, int nThread);
+		void ResetUsed (CDynLight* prl, int nThread);
+		void ResetActive (int nThread, int nActive);
+		void ResetAllUsed (int bVariable, int nThread);
 
 		inline CDynLight* Lights (uint i) { return m_data.lights [i]; }
 		inline int LightCount (uint i) { return m_data.nLights [i]; }
@@ -234,15 +239,8 @@ class CLightManager {
 		static int IsFlickering (short nSegment, short nSide);
 		int IsDestructible (short nTexture);
 		void DeleteFromList (CDynLight* pl, short nLight);
-
-		int SetActive (CActiveDynLight* activeLightsP, CDynLight* prl, short nType, int nThread);
-		CDynLight* GetActive (CActiveDynLight* activeLightsP, int nThread);
-
-		void ResetUsed (CDynLight* prl, int nThread);
-		void ResetActive (int nThread, int nActive);
-		void ResetAllUsed (int bVariable, int nThread);
 		void Sort (void);
-};
+	};
 
 //------------------------------------------------------------------------------
 

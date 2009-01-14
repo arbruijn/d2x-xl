@@ -364,7 +364,7 @@ glEnable (GL_CULL_FACE);
 OglCullFace (0);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 if (!bDynLighting) {
-	sc = *AvgSgmColor (objP->info.nSegment, &objP->info.position.vPos);
+	sc = *lightManager.AvgSgmColor (objP->info.nSegment, &objP->info.position.vPos);
 	if (sc.index != gameStates.render.nFrameFlipFlop + 1)
 		sc.color.red = sc.color.green = sc.color.blue = 1;
 	}

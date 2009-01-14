@@ -1252,7 +1252,7 @@ PROF_START
 	GLenum				hLight;
 	CActiveDynLight*	activeLightsP;
 	CDynLight*			psl;
-	CDynLightIndex*	sliP = &gameData.render.lights.dynamic.shader.index [0][0];
+	CDynLightIndex*	sliP = &lightManager.Index (0)[0];
 
 #if DBG
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
