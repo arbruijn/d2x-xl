@@ -1126,7 +1126,9 @@ if (network && (gameData.app.nGameMode & GM_NETWORK))
 else
 // NOTE LINK TO ABOVE!!!
 gameStates.app.bGameRunning = 0;
+backgroundManager.SetShadow (false);
 m.Menu (NULL, szTitle, NULL, NULL, BackgroundName (BG_STARS));
+backgroundManager.SetShadow (true);
 }
 
 //	-----------------------------------------------------------------------------------------------------

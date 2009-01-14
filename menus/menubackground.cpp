@@ -203,11 +203,11 @@ if (!MODERN_STYLE) {
 
 //------------------------------------------------------------------------------
 
-bool CBackground::Create (char* filename, int x, int y, int width, int height)
+bool CBackground::Create (char* filename, int x, int y, int width, int height, bool bTop)
 {
 Destroy ();
-m_bTopMenu = (backgroundManager.Depth () == 0);
-m_bMenuBox = MODERN_STYLE; // && (gameOpts->menus.altBg.bHave > 0);
+m_bTopMenu = (backgroundManager.Depth () == 0) || bTop;
+m_bMenuBox = MODERN_STYLE && !gameStates.app.bNostalgia; // && (gameOpts->menus.altBg.bHave > 0);
 if (!(m_background = Load (filename, width, height)))
 	return false;
 Setup (x, y, width, height);
@@ -522,12 +522,12 @@ if (!m_bValid) {
 
 //------------------------------------------------------------------------------
 
-bool CBackgroundManager::Setup (char *filename, int x, int y, int width, int height)
+bool CBackgroundManager::Setup (char *filename, int x, int y, int width, int height, bool bTop)
 {
 Create ();
 if (m_nDepth >= 2)
 	return false;
-return m_bg [++m_nDepth].Create (filename, x, y, width, height);
+return m_bg [++m_nDepth].Create (filename, x, y, width, height, bTop);
 }
 
 //------------------------------------------------------------------------------
@@ -541,9 +541,9 @@ GrUpdate (0);
 
 //------------------------------------------------------------------------------
 
-void CBackgroundManager::LoadStars (void)
+void CBackgroundManager::LoadStars (bool bTop)
 {
-Setup (BackgroundName (BG_STARS), 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+Setup (BackgroundName (BG_STARS), 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height (), bTop);
 }
 
 //------------------------------------------------------------------------------

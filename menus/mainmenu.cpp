@@ -381,14 +381,14 @@ return 1;
 
 int QuitSaveLoadMenu (void)
 {
-	CMenu m (5);
+	CMenu menu (5);
 	int	i, choice = 0, optQuit, optOptions, optLoad, optSave;
 
-optQuit = m.AddMenu (TXT_QUIT_GAME, KEY_Q, HTX_QUIT_GAME);
-optOptions = m.AddMenu (TXT_GAME_OPTIONS, KEY_O, HTX_MAIN_CONF);
-optLoad = m.AddMenu (TXT_LOAD_GAME2, KEY_L, HTX_LOAD_GAME);
-optSave = m.AddMenu (TXT_SAVE_GAME2, KEY_S, HTX_SAVE_GAME);
-i = m.Menu (NULL, TXT_ABORT_GAME, NULL, &choice);
+optQuit = menu.AddMenu (TXT_QUIT_GAME, KEY_Q, HTX_QUIT_GAME);
+optOptions = menu.AddMenu (TXT_GAME_OPTIONS, KEY_O, HTX_MAIN_CONF);
+optLoad = menu.AddMenu (TXT_LOAD_GAME2, KEY_L, HTX_LOAD_GAME);
+optSave = menu.AddMenu (TXT_SAVE_GAME2, KEY_S, HTX_SAVE_GAME);
+i = menu.Menu (NULL, TXT_ABORT_GAME, NULL, &choice);
 if (!i)
 	return 0;
 if (i == optOptions)

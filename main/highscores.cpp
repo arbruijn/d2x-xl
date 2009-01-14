@@ -408,7 +408,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	oldstates  [i] = gameData.multiplayer.players [i].connected;
 if (bNetwork)
 	NetworkEndLevel (&key);
-backgroundManager.LoadStars ();
+backgroundManager.LoadStars (true);
 while (!done) {
 	if (!bRedraw || (gameStates.ogl.nDrawBuffer == GL_BACK)) {
 		backgroundManager.Redraw ();

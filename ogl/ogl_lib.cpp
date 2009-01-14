@@ -801,7 +801,7 @@ BuildObjectModels ();
 OglSetDrawBuffer (gameStates.ogl.nDrawBuffer, 1);
 if (!gameStates.app.bGameRunning)
 	ClearBoxedMessage ();
-//backgroundManager.Rebuild ();
+backgroundManager.Rebuild ();
 gameStates.ogl.bRebuilding = 0;
 }
 

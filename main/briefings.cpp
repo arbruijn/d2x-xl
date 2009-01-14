@@ -1570,8 +1570,6 @@ void CBriefing::Run (const char* filename, int nLevel)
 
 PrintLog ("Starting the briefing\n");
 gameStates.render.bBriefing = 1;
-if (gameStates.app.bNostalgia)
-	OglSetDrawBuffer (GL_FRONT, 0);
 if (gameOpts->gameplay.bSkipBriefingScreens) {
 	console.printf (CON_DBG, "Skipping all briefing screens.\n");
 	gameStates.render.bBriefing = 0;
@@ -1584,6 +1582,10 @@ if (!*fnBriefing) {
 	gameStates.render.bBriefing = 0;
 	return;
 	}
+
+if (gameStates.app.bNostalgia)
+	OglSetDrawBuffer (GL_FRONT, 0);
+
 if (gameStates.app.bD1Mission && (gameData.missions.nCurrentMission != gameData.missions.nD1BuiltinMission)) {
 	FILE	*fp;
 	int	i;
@@ -1640,8 +1642,9 @@ else
 gameStates.render.bBriefing = 0;
 m_info.briefingText.Destroy ();
 KeyFlush ();
+if (gameStates.app.bNostalgia)
+	OglSetDrawBuffer (GL_BACK, 0);
 backgroundManager.Redraw (true);
-return;
 }
 
 //-----------------------------------------------------------------------------

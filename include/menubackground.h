@@ -46,7 +46,7 @@ class CBackground {
 		~CBackground () { Destroy (); }
 		void Init (void);
 		void Destroy (void);
-		bool Create (char* filename, int x, int y, int width, int height);
+		bool Create (char* filename, int x, int y, int width, int height, bool bTop = false);
 		void Restore (void);
 		void Restore (int dx, int dy, int w, int h, int sx, int sy);
 		void Draw (bool bUpdate = false);
@@ -79,7 +79,7 @@ class CBackgroundManager : public CStack<CBackground> {
 		void Init (void);
 		void Destroy (void);
 		void Create (void);
-		bool Setup (char *filename, int x, int y, int width, int height);
+		bool Setup (char *filename, int x, int y, int width, int height, bool bTop = false);
 		void Load (void);
 		inline void Restore (void) { m_bg [m_nDepth].Restore (); }
 		inline void Restore (int dx, int dy, int w, int h, int sx, int sy) { m_bg [m_nDepth].Restore (dx, dy, w, h, sy, sy); }
@@ -108,7 +108,7 @@ class CBackgroundManager : public CStack<CBackground> {
 						nLineWidth, fAlpha, bForce);
 			}
 
-		void LoadStars (void);
+		void LoadStars (bool bTop = false);
 
 	private:
 		CBitmap* LoadCustomBackground (void);

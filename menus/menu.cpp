@@ -1004,7 +1004,7 @@ FlushInput ();
 if (int (ToS ()) < 1)
 	return - 1;
 if (gameStates.app.bGameRunning && !gameOpts->menus.nStyle)
-	backgroundManager.LoadStars ();
+	backgroundManager.LoadStars (true);
 SDL_ShowCursor (0);
 SDL_EnableKeyRepeat(60, 30);
 gameStates.menus.nInMenu++;

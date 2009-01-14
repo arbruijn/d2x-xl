@@ -363,6 +363,7 @@ ReshowScores:
 	if (yOffs < 0)
 		yOffs = 0; 
 
+	backgroundManager.SetShadow (false);
 	backgroundManager.Setup (NULL, xOffs, yOffs, xOffs + 640, xOffs + 480);
 	GameFlushInputs ();
 
@@ -466,6 +467,7 @@ paletteManager.DisableEffect ();
 CCanvas::SetCurrent (NULL);
 GameFlushInputs ();
 backgroundManager.Remove ();
+backgroundManager.SetShadow (true);
 }
 
 //------------------------------------------------------------------------------
