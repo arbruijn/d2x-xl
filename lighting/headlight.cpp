@@ -121,7 +121,8 @@ for (i = 0; i < nLights; i++) {
 
 void CHeadlightManager::Setup (CDynLight* pl)
 {
-lights [nLights++] = pl;
+if (nLights < MAX_PLAYERS)
+	lights [nLights++] = pl;
 }
 
 //------------------------------------------------------------------------------
@@ -133,22 +134,20 @@ int CHeadlightManager::Add (CObject *objP)
 	static float spotAngles [] = {0.9f, 0.5f, 0.5f};
 #endif
 
-if (gameStates.render.nLightingMethod && (lightIds [objP->info.nId] < 0)) {
+if (lightIds [objP->info.nId] < 0) {
 	if (gameStates.render.nLightingMethod) {
-			tRgbaColorf	c = {1.0f, 1.0f, 1.0f, 1.0f};
-			CDynLight*	pl;
-			int			nLight;
+			static tRgbaColorf c = {1.0f, 1.0f, 1.0f, 1.0f};
+			int nLight = lightManager.Add (NULL, &c, I2X (200), -1, -1, -1, -1, NULL);
 
-		nLight = lightManager.Add (NULL, &c, I2X (200), -1, -1, -1, -1, NULL);
-		if (nLight >= 0) {
-			lightIds [objP->info.nId] = nLight;
-			pl = lightManager.Lights (0) + nLight;
+		if (0 <= nLight) {
+			CDynLight* pl = lightManager.Lights (0) + nLight;
 			pl->info.nPlayer = (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : 1;
 			pl->info.fRad = 0;
 			pl->info.bSpot = 1;
 			pl->info.fSpotAngle = 0.9f; //spotAngles [extraGameInfo [IsMultiGame].nSpotSize];
 			pl->info.fSpotExponent = 12.0f; //spotExps [extraGameInfo [IsMultiGame].nSpotStrength];
 			pl->bTransform = 0;
+			lightIds [objP->info.nId] = nLight;
 			}
 		return nLight;
 		}
@@ -181,7 +180,7 @@ void CHeadlightManager::Update (void)
 for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 	if (lightIds [nPlayer] < 0)
 		continue;
-	pl = lights [lightIds [nPlayer]];
+	pl = lightManager.Lights (0) + lightIds [nPlayer];
 	objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
 	pl->info.vPos = OBJPOS (objP)->vPos;
 	pl->vDir = OBJPOS (objP)->mOrient.FVec ();

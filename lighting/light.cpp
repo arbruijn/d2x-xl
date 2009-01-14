@@ -604,7 +604,6 @@ void SetDynamicLight (void)
 	fix			xObjIntensity;
 	tRgbaColorf	color;
 	
-lightManager.Headlights ().Init ();
 if (!gameOpts->render.debug.bDynamicLight)
 	return;
 gameData.render.lights.vertexFlags.Clear ();
@@ -613,6 +612,7 @@ gameData.render.lights.bStartDynColoring = 1;
 if (gameData.render.lights.bInitDynColoring) {
 	InitDynColoring ();
 	}
+lightManager.Headlights ().Reset ();
 lightClusterManager.Reset ();
 //	Create list of vertices that need to be looked at for setting of ambient light.
 nRenderVertices = 0;
