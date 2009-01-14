@@ -2287,7 +2287,7 @@ if (!i) {
 FixObjectSegs ();
 FixObjectSizes ();
 //ComputeNearestLights (nLevel);
-ComputeStaticDynLighting (nLevel);
+lightManager.GatherStaticLights (nLevel);
 SetupEffects ();
 InitReactorForLevel (1);
 AddPlayerLoadout ();

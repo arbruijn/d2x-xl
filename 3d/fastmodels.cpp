@@ -561,18 +561,20 @@ void G3DrawModel (CObject *objP, short nModel, short nSubModel, CBitmap **modelB
 						CAngleVector *pAnimAngles, CFixVector *vOffsetP, int bHires, int bUseVBO, int bTransparency,
 						int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
-	RenderModel::CModel					*pm;
-	CDynLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][0];
-	CActiveDynLight	*activeLightsP = lightManager.Active (0) + sliP->nFirst;
-	CDynLight			*psl;
+	RenderModel::CModel*	pm;
+	CDynLightIndex*		sliP = &lightManager.Index (0)[0];
+	CActiveDynLight*		activeLightsP = lightManager.Active (0) + sliP->nFirst;
+	CDynLight*				prl;
 	int						nPass, iLight, nLights, nLightRange;
 	int						bBright = objP && (objP->info.nType == OBJ_MARKER);
-	int						bEmissive = objP && (objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId];
-	int						bLighting = SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && !(gameStates.render.bQueryCoronas || gameStates.render.bCloaked || bEmissive || bBright);
+	int						bEmissive = objP && (objP->info.nType == OBJ_WEAPON) && 
+												gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId];
+	int						bLighting = SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && 
+												!(gameStates.render.bQueryCoronas || gameStates.render.bCloaked || bEmissive || bBright);
 	GLenum					hLight;
 	float						fBrightness, fLightScale = gameData.models.nLightScale ? X2F (gameData.models.nLightScale) : 1.0f;
-	CFloatVector					color;
-	tObjTransformation		*posP = OBJPOS (objP);
+	CFloatVector			color;
+	tObjTransformation*	posP = OBJPOS (objP);
 
 OglSetupTransform (1);
 if (bLighting) {
@@ -613,7 +615,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 				break;
 #endif
 			if (nLights < 0) {
-				tFaceColor *psc = AvgSgmColor (objP->info.nSegment, NULL);
+				tFaceColor *psc = lightManager.AvgSgmColor (objP->info.nSegment, NULL);
 				CFloatVector3 vPos;
 				hLight = GL_LIGHT0 + iLight++;
 				glEnable (hLight);
@@ -626,25 +628,25 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 				glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f);
 				nLights = 0;
 				}
-			else if ((psl = GetActiveRenderLight (activeLightsP, 0))) {
+			else if ((prl = lightManager.GetActive (activeLightsP, 0))) {
 				hLight = GL_LIGHT0 + iLight++;
 				glEnable (hLight);
-	//			sprintf (szLightSources + strlen (szLightSources), "%d ", (psl->nObject >= 0) ? -psl->nObject : psl->nSegment);
-				fBrightness = psl->info.fBrightness * fLightScale;
-				color = *(reinterpret_cast<CFloatVector*> (&psl->info.color));
+	//			sprintf (szLightSources + strlen (szLightSources), "%d ", (prl->nObject >= 0) ? -prl->nObject : prl->nSegment);
+				fBrightness = prl->info.fBrightness * fLightScale;
+				color = *(reinterpret_cast<CFloatVector*> (&prl->info.color));
 				color[R] *= fLightScale;
 				color[G] *= fLightScale;
 				color[B] *= fLightScale;
-				glLightfv (hLight, GL_POSITION, reinterpret_cast<GLfloat*> (psl->vPosf));
+				glLightfv (hLight, GL_POSITION, reinterpret_cast<GLfloat*> (prl->render.vPosf));
 				glLightfv (hLight, GL_DIFFUSE, reinterpret_cast<GLfloat*> (&color));
 				glLightfv (hLight, GL_SPECULAR, reinterpret_cast<GLfloat*> (&color));
-				if (psl->info.bSpot) {
+				if (prl->info.bSpot) {
 #if 0
-					psl = psl;
+					prl = prl;
 #else
 					glLighti (hLight, GL_SPOT_EXPONENT, 12);
 					glLighti (hLight, GL_SPOT_CUTOFF, 25);
-					glLightfv (hLight, GL_SPOT_DIRECTION, reinterpret_cast<GLfloat*> (&psl->info.vDirf));
+					glLightfv (hLight, GL_SPOT_DIRECTION, reinterpret_cast<GLfloat*> (&prl->info.vDirf));
 #endif
 					glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.1f / fBrightness);
 					glLightf (hLight, GL_LINEAR_ATTENUATION, 0.01f / fBrightness);

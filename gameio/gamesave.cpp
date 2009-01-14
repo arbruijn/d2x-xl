@@ -1535,7 +1535,7 @@ if (!gameStates.app.bNostalgia) {
 	if (SHOW_DYN_LIGHT || !gameStates.app.bD2XLevel)
 #endif
 	 {
-		AddDynGeometryLights ();
+		lightManager.AddFromGeometry ();
 		ComputeNearestLights (nLevel);
 		if (gameStates.render.bPerPixelLighting) {
 			lightmapManager.Create (nLevel);

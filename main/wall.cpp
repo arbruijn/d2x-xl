@@ -692,12 +692,12 @@ cloakWallP->time += gameData.time.xFrame;
 if (cloakWallP->time > CLOAKING_WALL_TIME) {
 	frontWallP->nType = WALL_OPEN;
 	if (SHOW_DYN_LIGHT)
-		ToggleDynLight (frontWallP->nSegment, frontWallP->nSide, -1, 0);
+		lightManager.Toggle (frontWallP->nSegment, frontWallP->nSide, -1, 0);
 	frontWallP->state = WALL_DOOR_CLOSED;		//why closed? why not?
 	if (backWallP) {
 		backWallP->nType = WALL_OPEN;
 		if (SHOW_DYN_LIGHT)
-			ToggleDynLight (backWallP->nSegment, backWallP->nSide, -1, 0);
+			lightManager.Toggle (backWallP->nSegment, backWallP->nSide, -1, 0);
 		backWallP->state = WALL_DOOR_CLOSED;		//why closed? why not?
 		}
 	gameData.walls.cloaking.Delete (nCloakingWall);
@@ -767,11 +767,11 @@ if (cloakWallP->time > CLOAKING_WALL_TIME) {
 else if (cloakWallP->time > CLOAKING_WALL_TIME/2) {		//fading in
 	frontWallP->nType = WALL_CLOSED;
 	if (SHOW_DYN_LIGHT)
-		ToggleDynLight (frontWallP->nSegment, frontWallP->nSide, -1, 0);
+		lightManager.Toggle (frontWallP->nSegment, frontWallP->nSide, -1, 0);
 	if (backWallP) {
 		backWallP->nType = WALL_CLOSED;
 		if (SHOW_DYN_LIGHT)
-			ToggleDynLight (backWallP->nSegment, backWallP->nSide, -1, 0);
+			lightManager.Toggle (backWallP->nSegment, backWallP->nSide, -1, 0);
 		}
 	fix xLightScale = FixDiv(cloakWallP->time-CLOAKING_WALL_TIME/2,CLOAKING_WALL_TIME/2);
 	for (int i = 0; i < 4; i++) {

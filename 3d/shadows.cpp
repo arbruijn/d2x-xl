@@ -1438,7 +1438,7 @@ pnl = lightManager.NearestSegLights  () + objP->info.nSegment * MAX_NEAREST_LIGH
 gameData.render.shadows.nLight = 0;
 if (FAST_SHADOWS) {
 	for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {
-		gameData.render.shadows.lights = gameData.render.lights.dynamic.shader.lights + *pnl;
+		gameData.render.shadows.lights = lightManager.Lights (1) + *pnl;
 		if (!gameData.render.shadows.lights->info.bState)
 			continue;
 		if (!CanSeePoint (objP, &objP->info.position.vPos, &gameData.render.shadows.lights->info.vPos, objP->info.nSegment))
@@ -1454,7 +1454,7 @@ if (FAST_SHADOWS) {
 			}
 		gameData.render.shadows.vLightDir [gameData.render.shadows.nLight++] = vLightDir;
 		if (gameStates.render.bShadowMaps)
-			RenderShadowMap (gameData.render.lights.dynamic.lights + (gameData.render.shadows.lights - gameData.render.lights.dynamic.shader.lights));
+			RenderShadowMap (lightManager.Lights (0) + (gameData.render.shadows.lights - lightManager.Lights (1)));
 		else {
 			gameStates.render.bRendering = 1;
 			transformation.Transform (vLightPos, gameData.render.shadows.lights->info.vPos, 0);
@@ -1479,7 +1479,7 @@ if (FAST_SHADOWS) {
 	}
 else {
 	h = objP->Index ();
-	j = (int) (gameData.render.shadows.lights - gameData.render.lights.dynamic.shader.lights);
+	j = (int) (gameData.render.shadows.lights - lightManager.Lights (1));
 	pnl = gameData.render.shadows.objLights + h * MAX_SHADOW_LIGHTS;
 	for (i = 0; i < gameOpts->render.shadows.nLights; i++, pnl++) {
 		if (*pnl < 0)

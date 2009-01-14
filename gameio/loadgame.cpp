@@ -109,6 +109,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "credits.h"
 #include "gamemine.h"
 #include "lightmap.h"
+#include "lightcluster.h"
 #include "polymodel.h"
 #include "movie.h"
 #include "particles.h"
@@ -771,12 +772,12 @@ memset (gameData.multiplayer.bWasHit, 0, sizeof (gameData.multiplayer.bWasHit));
 memset (gameData.multiplayer.nLastHitTime, 0, sizeof (gameData.multiplayer.nLastHitTime));
 memset (gameData.weapons.firing, 0, sizeof (gameData.weapons.firing));
 gameData.objs.objects.Clear ();
-gameData.objs.lightObjs.Clear (0xff);
+lightClusterManager.Init ();
 gameData.render.faceIndex [0].roots.Clear (0xff);
 gameData.render.faceIndex [1].roots.Clear (0xff);
 gameData.render.faceIndex [0].tails.Clear (0xff);
 gameData.render.faceIndex [1].tails.Clear (0xff);
-memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
+lightManager.ResetIndex ();
 memset (gameData.objs.bWantEffect, 0, sizeof (gameData.objs.bWantEffect));
 memset (gameData.objs.guidedMissile, 0, sizeof (gameData.objs.guidedMissile));
 gameData.render.faceIndex [0].nUsedFaces = 0;
@@ -986,7 +987,7 @@ if (!bRestore) {
 	gameData.omega.xCharge [IsMultiGame] = MAX_OMEGA_CHARGE;
 	SetMaxOmegaCharge ();
 	ConvertObjects ();
-	ComputeStaticDynLighting (nLevel);
+	lightManager.GatherStaticLights (nLevel);
 	SetEquipGenStates ();
 	SetupEffects ();
 	gameData.time.nPaused = 0;
