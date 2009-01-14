@@ -118,8 +118,6 @@ class CDynLightIndex {
 
 //------------------------------------------------------------------------------
 
-#define MAX_NEAREST_LIGHTS 32
-
 class CHeadlightManager {
 	public:
 		CDynLight*			lights [MAX_PLAYERS];
@@ -136,12 +134,16 @@ class CHeadlightManager {
 		void Transform (void);
 		fix ComputeLightOnObject (CObject *objP);
 		void Toggle (void);
-		void SetupHeadlight (CDynLight* pl);
+		void Setup (CDynLight* pl);
 		int Add (CObject* objP);
 		void Remove (CObject* objP);
 		void Update (void);
 		int SetupShader (int nType, int bLightmaps, tRgbaColorf *colorP);
 };
+
+//------------------------------------------------------------------------------
+
+#define MAX_NEAREST_LIGHTS 32
 
 class CDynLightData {
 	public:

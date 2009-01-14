@@ -165,7 +165,7 @@ if (!bColored && gameOpts->render.automap.bGrayOut)
 else if ((gameStates.render.nType != 4) && faceP && (gameStates.render.bPerPixelLighting == 2))
 	nShader = G3SetupPerPixelShader (faceP, bDepthOnly, nType, false);
 else if (gameStates.render.bHeadlights && !bDepthOnly)
-	nShader = G3SetupHeadlightShader (nType, lightmapManager.HaveLightmaps (), colorP);
+	nShader = lightManager.Headlights ().SetupShader (nType, lightmapManager.HaveLightmaps (), colorP);
 else if (bColorKey || bMultiTexture) 
 	nShader = G3SetupTexMergeShader (bColorKey, bColored, nType);
 else if (gameStates.render.history.nShader >= 0) {
@@ -654,7 +654,7 @@ else {
 			bAdditive = true;
 			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 			}
-		G3SetupHeadlightShader (gameStates.render.history.nType, 1, bmBot ? NULL : &faceP->color);
+		lightManager.Headlights ().SetupShader (gameStates.render.history.nType, 1, bmBot ? NULL : &faceP->color);
 		glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
 		}
 #endif
@@ -795,7 +795,7 @@ G3SetRenderStates (faceP, bmBot, bmTop, 0, 1, bColorKey, 1);
 if (bMonitor)
 	G3SetupMonitor (faceP, bmTop, bTextured, 1);
 gameData.render.nTotalFaces++;
-G3SetupHeadlightShader (gameStates.render.history.nType, 1, bmBot ? NULL : &faceP->color);
+lightManager.Headlights ().SetupShader (gameStates.render.history.nType, 1, bmBot ? NULL : &faceP->color);
 RenderFacePP (faceP);
 
 if (bMonitor)
@@ -833,7 +833,7 @@ G3SetRenderStatesLM (faceP, bmBot, bmTop, 0, 1, bColorKey, 1);
 if (bMonitor)
 	G3SetupMonitor (faceP, bmTop, bTextured, 1);
 gameData.render.nTotalFaces++;
-G3SetupHeadlightShader (gameStates.render.history.nType, 1, bmBot ? NULL : &faceP->color);
+lightManager.Headlights ().SetupShader (gameStates.render.history.nType, 1, bmBot ? NULL : &faceP->color);
 glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
 if (bMonitor)
 	G3ResetMonitor (bmTop, 1);

@@ -119,7 +119,7 @@ for (i = 0; i < nLights; i++) {
 // To achive that, the direction is added to the original position and transformed,
 // and the transformed headlight position is subtracted from that.
 
-void CHeadlightManager::SetupHeadlight (CDynLight* pl)
+void CHeadlightManager::Setup (CDynLight* pl)
 {
 lights [nLights++] = pl;
 }
@@ -134,22 +134,27 @@ int CHeadlightManager::Add (CObject *objP)
 #endif
 
 if (gameStates.render.nLightingMethod && (lightIds [objP->info.nId] < 0)) {
-		tRgbaColorf	c = {1.0f, 1.0f, 1.0f, 1.0f};
-		CDynLight*	pl;
-		int			nLight;
+	if (gameStates.render.nLightingMethod) {
+			tRgbaColorf	c = {1.0f, 1.0f, 1.0f, 1.0f};
+			CDynLight*	pl;
+			int			nLight;
 
-	nLight = lightManager.Add (NULL, &c, I2X (200), -1, -1, -1, -1, NULL);
-	if (nLight >= 0) {
-		lightIds [objP->info.nId] = nLight;
-		pl = lights [nLight];
-		pl->info.nPlayer = (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : 1;
-		pl->info.fRad = 0;
-		pl->info.bSpot = 1;
-		pl->info.fSpotAngle = 0.9f; //spotAngles [extraGameInfo [IsMultiGame].nSpotSize];
-		pl->info.fSpotExponent = 12.0f; //spotExps [extraGameInfo [IsMultiGame].nSpotStrength];
-		pl->bTransform = 0;
+		nLight = lightManager.Add (NULL, &c, I2X (200), -1, -1, -1, -1, NULL);
+		if (nLight >= 0) {
+			lightIds [objP->info.nId] = nLight;
+			pl = lights [nLight];
+			pl->info.nPlayer = (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : 1;
+			pl->info.fRad = 0;
+			pl->info.bSpot = 1;
+			pl->info.fSpotAngle = 0.9f; //spotAngles [extraGameInfo [IsMultiGame].nSpotSize];
+			pl->info.fSpotExponent = 12.0f; //spotExps [extraGameInfo [IsMultiGame].nSpotStrength];
+			pl->bTransform = 0;
+			}
+		return nLight;
 		}
-	return nLight;
+	else {
+		objects [nLights++] = objP;
+		}
 	}
 return -1;
 }

@@ -943,7 +943,7 @@ if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 
 			bool bAdditive = false;
 #if 0
 			if (gameData.render.lights.dynamic.headlights.nLights && !automap.m_bDisplay) {
-				G3SetupHeadlightShader (transpItems.bTextured, 1, transpItems.bTextured ? NULL : &faceP->color);
+				lightManager.Headlights ().SetupShader (transpItems.bTextured, 1, transpItems.bTextured ? NULL : &faceP->color);
 				glDrawArrays (item->nPrimitive, 0, item->nVertices);
 				bAdditive = true;
 				glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
@@ -987,7 +987,7 @@ if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 
 					if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 						nDbgSeg = nDbgSeg;
 					}
-				G3SetupHeadlightShader (transpItems.bTextured, 1, transpItems.bTextured ? NULL : &faceP->color);
+				lightManager.Headlights ().SetupShader (transpItems.bTextured, 1, transpItems.bTextured ? NULL : &faceP->color);
 				if (!bAdditive) {
 					bAdditive = true;
 					//if (i)

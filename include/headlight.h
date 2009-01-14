@@ -22,27 +22,23 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define	HEADLIGHT_SCALE				(I2X (10))
 #define	HEADLIGHT_TRANSFORMATION	2
 
-extern CObject	*Headlights [MAX_HEADLIGHTS];
-extern int		nHeadlights;
 extern fix		xBeamBrightness;
 
-extern void SetDynamicLight (void);
+void SetDynamicLight (void);
 
 int LightingMethod (void);
 
-// Compute the lighting from the headlight for a given vertex on a face.
-// Takes:
-//  point - the 3d coords of the point
-//  face_light - a scale factor derived from the surface normal of the face
-// If no surface normal effect is wanted, pass I2X (1) for face_light
+#if 0
 fix ComputeHeadlight (CFixVector *point, fix xFaceLight);
 fix ComputeHeadlightLightOnObject (CObject *objP);
 void ToggleHeadlight (void);
-void InitHeadlightShaders (int nLights);
 void SetupHeadlight (CDynLight *pl, CDynLight *prl);
 void TransformHeadlights (void);
 int AddOglHeadlight (CObject *objP);
 void RemoveOglHeadlight (CObject *objP);
 void UpdateOglHeadlight (void);
+#endif
+
+void InitHeadlightShaders (int nLights);
 
 #endif //_HEADLIGHT_H 

@@ -444,8 +444,7 @@ switch (nObjType) {
 	case OBJ_PLAYER:
 		*pbGotColor = 1;
 		 if (HeadlightIsOn (objP->info.nId)) {
-			if (nHeadlights < MAX_HEADLIGHTS)
-				Headlights [nHeadlights++] = objP;
+			 lightManager.Headlights ().Add (objP);
 			return HEADLIGHT_SCALE;
 			}
 		 else if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) && gameData.multiplayer.players [objP->info.nId].secondaryAmmo [PROXMINE_INDEX]) {
@@ -605,7 +604,7 @@ void SetDynamicLight (void)
 	fix			xObjIntensity;
 	tRgbaColorf	color;
 	
-nHeadlights = 0;
+lightManager.Headlights ().Init ();
 if (!gameOpts->render.debug.bDynamicLight)
 	return;
 gameData.render.lights.vertexFlags.Clear ();
@@ -782,7 +781,7 @@ else {		//new CObject, initialize
 	}
 //Next, add in headlight on this CObject
 // -- Matt code: light += ComputeHeadlight (vRotated,I2X (1));
-light += ComputeHeadlightLightOnObject (objP);
+light += lightManager.Headlights ().ComputeLightOnObject (objP);
 //Finally, add in dynamic light for this CSegment
 light += ComputeSegDynamicLight (objP->info.nSegment);
 return light;

@@ -22,7 +22,7 @@ int G3DrawFaceArraysLM (tFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend
 void G3FlushFaceBuffer (int bForce);
 int G3SetupPerPixelShader (tFace *faceP, int bDepthOnly, int nType, bool bHeadlight);
 int G3SetupLightmapShader (tFace *faceP, int bDepthOnly, int nType, bool bHeadlight);
-int G3SetupHeadlightShader (int nType, int bLightmaps, tRgbaColorf *colorP);
+//int G3SetupHeadlightShader (int nType, int bLightmaps, tRgbaColorf *colorP);
 int G3SetupTexMergeShader (int bColorKey, int bColored, int nType);
 int G3SetupGrayScaleShader (int nType, tRgbaColorf *colorP);
 int G3SetupShader (tFace *faceP, int bDepthOnly, int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP);

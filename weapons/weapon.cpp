@@ -847,7 +847,7 @@ if (Controls [0].cycleSecondaryCount) {
 	}
 if (Controls [0].headlightCount) {
 	for (i = 0; i < Controls [0].headlightCount; i++)
-	ToggleHeadlight ();
+	lightManager.Headlights ().Toggle ();
 	}
 if (gameData.missiles.nGlobalFiringCount < 0)
 	gameData.missiles.nGlobalFiringCount = 0;

@@ -889,7 +889,7 @@ if (iBuffer) {
 				return;
 #endif
 			if (lightManager.Headlights ().nLights && !(automap.m_bDisplay || particleManager.LastType ()))
-				G3SetupHeadlightShader (1, 0, &color);
+				lightManager.Headlights ().SetupShader (1, 0, &color);
 			else if ((gameOpts->render.effects.bSoftParticles & 4) && (particleManager.LastType () <= BUBBLE_PARTICLES))
 				LoadGlareShader (10);
 			else if (gameStates.render.history.nShader >= 0) {

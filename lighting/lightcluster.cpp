@@ -98,6 +98,18 @@ FORALL_LIGHT_OBJS (objP, i) {
 
 //--------------------------------------------------------------------------
 
+short CLightClusterManager::Create (CObject *objP)
+{
+if (!m_bUse)
+	return -1;
+short nObject = CreateLight (CLUSTER_LIGHT_ID, objP->info.nSegment, OBJPOS (objP)->vPos);
+if (nObject >= 0)
+	OBJECTS [nObject].info.xLifeLeft = IMMORTAL_TIME;
+return nObject;
+}
+
+//--------------------------------------------------------------------------
+
 int CLightClusterManager::Add (short nObject, tRgbaColorf *color, fix xObjIntensity)
 {
 if (!m_bUse)
