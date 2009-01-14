@@ -2898,18 +2898,18 @@ delete[] tbuf;
 
 void ProgressBar (const char* szCaption, int nCurProgress, int nMaxProgress, pMenuCallback doProgress)
 {
-	int				i, nInMenu;
-	CMenu	mm;
+	int	i, nInMenu;
+	CMenu	menu;
 
-mm.Create (3);
-mm.AddGauge ("                    ", -1, nMaxProgress); //the blank string denotes the screen width of the gauge
-mm.Item (0).m_bCentered = 1;
-mm.Item (0).m_value = nCurProgress;
+menu.Create (3);
+menu.AddGauge ("                    ", -1, nMaxProgress); //the blank string denotes the screen width of the gauge
+menu.Item (0).m_bCentered = 1;
+menu.Item (0).m_value = nCurProgress;
 nInMenu = gameStates.menus.nInMenu;
 gameStates.menus.nInMenu = 0;
 gameData.app.bGamePaused = 1;
 do {
-	i = mm.Menu (NULL, szCaption, doProgress);
+	i = menu.Menu (NULL, szCaption, doProgress);
 	} while (i >= 0);
 gameData.app.bGamePaused = 0;
 gameStates.menus.nInMenu = nInMenu;
