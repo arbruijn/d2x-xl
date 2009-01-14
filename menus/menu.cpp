@@ -1119,7 +1119,6 @@ while (!done) {
 #if 1
 	if (m_props.bValid && (m_props.nDisplayMode != gameStates.video.nDisplayMode)) {
 		FreeTextBms ();
-		backgroundManager.Remove (); //bDontRestore?
 		SetScreenMode (SCREEN_MENU);
 		SaveScreen (&gameCanvasP);
 		memset (&m_props, 0, sizeof (m_props));
