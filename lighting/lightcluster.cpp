@@ -146,6 +146,17 @@ return 1;
 
 // --------------------------------------------------------------------------------------------------------------------
 
+void CLightClusterManager::Add (short nObject, short nLightObj)
+{
+m_objects [nObject].nObject = nLightObj;
+if (nLightObj >= 0) {
+	m_objects [nObject].nSignature = OBJECTS [nLightObj].info.nSignature;
+	OBJECTS [nLightObj].cType.lightInfo.nObjects++;
+	}
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
 void CLightClusterManager::AddForAI (CObject *objP, short nObject, short nShot)
 {
 if (!m_bUse)

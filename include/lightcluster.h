@@ -23,6 +23,7 @@ class CLightClusterManager {
 		void Destroy (void);
 		void Reset (void);
 		int Add (short nObject, tRgbaColorf *color, fix xObjIntensity);
+		void Add (short nObject, short nLightObj);
 		void AddForAI (CObject *objP, short nObject, short nShot);
 		short Create (CObject *objP);
 		inline bool Use (void) { return m_bUse; }
