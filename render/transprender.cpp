@@ -965,7 +965,7 @@ if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 
 				}
 			else {
 				gameStates.ogl.iLight = 0;
-				gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
+				lightManager.Index (0)[0].nActive = -1;
 				for (;;) {
 					G3SetupPerPixelShader (faceP, 0, faceP->nRenderType, false);
 					glDrawArrays (item->nPrimitive, 0, item->nVertices);
@@ -1279,7 +1279,7 @@ o.info.nType = OBJ_POWERUP;
 o.info.position.vPos = pParticle->m_vPos;
 o.info.position.mOrient = pParticle->m_mOrient;
 if (0 <= (o.info.nSegment = FindSegByPos (o.info.position.vPos, pParticle->m_nSegment, 0, 0))) {
-	gameData.render.lights.dynamic.shader.index [0][0].nActive = 0;
+	lightManager.Index (0)[0].nActive = 0;
 	o.info.renderType = RT_POLYOBJ;
 	o.rType.polyObjInfo.nModel = BULLET_MODEL;
 	o.rType.polyObjInfo.nTexOverride = -1;

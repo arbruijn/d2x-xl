@@ -339,14 +339,14 @@ DestroyShadowMaps ();
 int GatherShadowLightSources (void)
 {
 	CObject			*objP;
-	int				h, i, j, k, n, m = gameOpts->render.shadows.nLights;
+	int				h, i, j, k, l, n, m = gameOpts->render.shadows.nLights;
 	short				*pnl;
 //	CDynLight		*pl;
 	CLightRenderData	*psl;
 	CFixVector		vLightDir;
 
-psl = gameData.render.lights.dynamic.shader.lights;
-for (h = 0, i = gameData.render.lights.dynamic.nLights; i; i--, psl++)
+psl = lightManager.Lights (1);
+for (h = 0, l = lightManager.LightCount (0); l; l--, psl++)
 	psl->bShadow =
 	psl->bExclusive = 0;
 FORALL_OBJS (objP, h) {
@@ -355,7 +355,7 @@ FORALL_OBJS (objP, h) {
 	pnl = gameData.render.lights.dynamic.nearestSegLights + objP->info.nSegment * MAX_NEAREST_LIGHTS;
 	k = h * MAX_SHADOW_LIGHTS;
 	for (i = n = 0; (n < m) && (*pnl >= 0); i++, pnl++) {
-		psl = gameData.render.lights.dynamic.shader.lights + *pnl;
+		psl = lightManager.Lights (1) + *pnl;
 		if (!psl->info.bState)
 			continue;
 		if (!CanSeePoint (objP, &objP->info.position.vPos, &psl->info.vPos, objP->info.nSegment))
@@ -375,7 +375,7 @@ FORALL_OBJS (objP, h) {
 		}
 	gameData.render.shadows.objLights [k + n] = -1;
 	}
-psl = gameData.render.lights.dynamic.shader.lights;
+psl = lightManager.Lights (1);
 for (h = 0, i = gameData.render.lights.dynamic.nLights; i; i--, psl++)
 	if (psl->bShadow)
 		h++;
@@ -430,7 +430,7 @@ if (!bShadowTest)
 void RenderNeatShadows (fix nEyeOffset, int nWindow, short nStartSeg)
 {
 	short				i;
-	CLightRenderData	*psl = gameData.render.lights.dynamic.shader.lights;
+	CLightRenderData	*psl = lightManager.Lights (1);
 
 gameData.render.shadows.nLights = GatherShadowLightSources ();
 for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, psl++) {

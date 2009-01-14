@@ -133,15 +133,27 @@ class CDynLightIndex {
 
 #define MAX_NEAREST_LIGHTS 32
 
-class CHeadlightData {
+class CHeadlightManager {
 	public:
-		CDynLight*			pl [MAX_PLAYERS];
+		CDynLight*			lights [MAX_PLAYERS];
 		CFloatVector		pos [MAX_PLAYERS];
 		CFloatVector3		dir [MAX_PLAYERS];
 		float					brightness [MAX_PLAYERS];
+		CObject*				objects [MAX_PLAYERS];
+		int					lightIds [MAX_PLAYERS];
 		int					nLights;
+
 	public:
-		CHeadlightData () { memset (this, 0, sizeof (*this)); }
+		CHeadlightManager () { Init (); }
+		void Init (void);
+		void Transform (void);
+		fix ComputeLightOnObject (CObject *objP);
+		void Toggle (void);
+		void SetupHeadlight (CDynLight* pl);
+		int Add (CObject* objP);
+		void Remove (CObject* objP);
+		void Update (void);
+		int SetupShader (int nType, int bLightmaps, tRgbaColorf *colorP);
 };
 
 class CDynLightData {
@@ -149,11 +161,11 @@ class CDynLightData {
 		CDynLight			lights [2][MAX_OGL_LIGHTS];
 		CActiveDynLight	active [MAX_THREADS][MAX_OGL_LIGHTS];
 		CDynLightIndex		index [2][MAX_THREADS];
-		CArray<short>		nearestSegLights;		//the 8 nearest static lights for every segment
-		CArray<short>		nearestVertLights;	//the 8 nearest static lights for every vertex
-		CArray<ubyte>		variableVertLights;	//the 8 nearest veriable lights for every vertex
-		CArray<short>		owners;
-		CHeadlightData		headlights;
+		CShortArray			nearestSegLights;		//the 8 nearest static lights for every segment
+		CShortArray			nearestVertLights;	//the 8 nearest static lights for every vertex
+		CByteArray			variableVertLights;	//the 8 nearest veriable lights for every vertex
+		CShortArray			owners;
+		CHeadlightManager	headlights;
 		COglMaterial		material;
 		CFBO					fbo;
 		short					nLights [2];
@@ -169,6 +181,8 @@ class CDynLightData {
 		bool Create (void);
 		void Init (void);
 		void Destroy (void);
+		inline void ResetIndex (void) { memset (index, 0, sizeof (index)); }
+
 };
 
 //------------------------------------------------------------------------------
@@ -216,10 +230,18 @@ class CLightManager {
 		void GatherStaticLights (int nLevel);
 		void GatherStaticVertexLights (int nVertex, int nMax, int nThread);
 
-		inline CDynLightIndex* Active (uint i) { return m_data.active [i]; }
+		inline CDynLight* Lights (uint i) { return m_data.lights [i]; }
+		inline int LightCount (uint i) { return m_data.nLights [i]; }
+		inline CActiveDynLight* Active (uint i) { return m_data.active [i]; }
 		inline CDynLightIndex* Index (uint i) { return m_data.index [i]; }
 		inline CFBO& FBO (void) { return m_data.fbo; }
-		inline CHeadlightData& Headlights (void) { return m_data.headlights; }
+		inline CHeadlightManager& Headlights (void) { return m_data.headlights; }
+		inline CShortArray& NearestSegLights (void) { return m_data.nearestSegLights; }
+		inline CShortArray& NearestVertLights (void) { return m_data.nearestVertLights; }
+		inline CByteArray& VariableVertLights (void) { return m_data.variableVertLights; }
+		inline COglMaterial& Material (void) { return m_data.material; }
+		inline void ResetIndex (void) { m_data.ResetIndex (); }
+
 
 	private:
 		static int IsFlickering (short nSegment, short nSide);

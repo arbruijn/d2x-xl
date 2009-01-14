@@ -713,7 +713,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 				if (!bHeadlight)
 					VisitSegment (nSegment, bAutomap);
 				if (gameStates.render.bPerPixelLighting == 2)
-					lightManager.Index (0) [0].nActive = -1;
+					lightManager.Index (0)[0].nActive = -1;
 				}
 			}
 		faceP = fliP->faceP;
@@ -1382,7 +1382,7 @@ else if (nState == 1) {
 						vNormal = gameData.segs.points [nVertex].p3_normal.vNormal;
 		
 	lightManager.SetNearestToVertex (-1, nVertex, NULL, 1, 0, 1, 0);
-	if (!(h = lightManager.Index (0) [0].nActive))
+	if (!(h = lightManager.Index (0)[0].nActive))
 		return 1;
 	if (h > VLBUF_SIZE)
 		h = VLBUF_SIZE;
@@ -1415,7 +1415,7 @@ else if (nState == 1) {
 		vld.nVertices++;
 		vld.nLights += nLights;
 		}
-	//lightManager.Index (0) [0].nActive = gameData.render.lights.dynamic.shader.iVertexLights [0];
+	//lightManager.Index (0)[0].nActive = gameData.render.lights.dynamic.shader.iVertexLights [0];
 	}	
 else if (nState == 2) {
 	RenderVertLightBuffers ();
@@ -1524,7 +1524,7 @@ for (i = nStart, nStep = (nStart > nEnd) ? -1 : 1; i != nEnd; i += nStep) {
 							G3VertexColor(gameData.segs.points[nVertex].p3_normal.vNormal.V3(), 
 							              gameData.segs.fVertices[nVertex].V3(), nVertex, 
 							              NULL, &c, 1, 0, nThread);
-							lightManager.Index (0) [nThread] = gameData.render.lights.dynamic.shader.index [1][nThread];
+							lightManager.Index (0)[nThread] = lightManager.Index (1)[nThread];
 							ResetNearestVertexLights (nVertex, nThread);
 							}
 #if DBG
@@ -1601,7 +1601,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
 			nSegment = nSegment;
-			if (lightManager.Index (0) [nThread].nActive)
+			if (lightManager.Index (0)[nThread].nActive)
 				nSegment = nSegment;
 			}
 #endif
@@ -1644,7 +1644,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 							if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) 
 								nSegment = nSegment;
 #endif
-							if (nLights + gameData.render.lights.dynamic.variableVertLights [nVertex] == 0) {
+							if (nLights + lightManager.VariableVertLights ()[nVertex] == 0) {
 								pvc->color.red = c.color.red + gameData.render.color.ambient [nVertex].color.red;
 								pvc->color.green = c.color.green + gameData.render.color.ambient [nVertex].color.green;
 								pvc->color.blue = c.color.blue + gameData.render.color.ambient [nVertex].color.blue;
@@ -1658,7 +1658,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 								G3VertexColor (gameData.segs.points [nVertex].p3_normal.vNormal.V3(), 
 													gameData.segs.fVertices [nVertex].V3(), nVertex, 
 													NULL, &c, 1, 0, nThread);
-								lightManager.Index (0) [nThread] = gameData.render.lights.dynamic.shader.index [1][nThread];
+								lightManager.Index (0)[nThread] = lightManager.Index (1)[nThread];
 								ResetNearestVertexLights (nVertex, nThread);
 								}
 #if DBG
@@ -1714,7 +1714,7 @@ PROF_START
 #if SORT_FACES > 1
 ResetFaceList (nThread);
 #endif
-memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
+lightManager.ResetIndex ();
 gameStates.ogl.bUseTransform = 1;
 gameStates.render.nState = 0;
 #	if SHADER_VERTEX_LIGHTING
@@ -1741,7 +1741,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
 			nSegment = nSegment;
-			if (lightManager.Index (0) [nThread].nActive)
+			if (lightManager.Index (0)[nThread].nActive)
 				nSegment = nSegment;
 			}
 #endif
@@ -1796,7 +1796,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 								G3VertexColor (FACES.normals + nIndex, 
 													FACES.vertices + nIndex, nVertex, 
 													NULL, &c, 1, 0, nThread);
-								lightManager.Index (0) [nThread] = gameData.render.lights.dynamic.shader.index [1][nThread];
+								lightManager.Index (0)[nThread] = lightManager.Index (1)[nThread];
 								ResetNearestVertexLights (nVertex, nThread);
 								}
 #if DBG
@@ -1816,7 +1816,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 					}
 				}
 			}
-		gameData.render.lights.dynamic.material.bValid = 0;
+		lightManager.Material ().bValid = 0;
 		}
 	}
 #	if SHADER_VERTEX_LIGHTING
@@ -2040,7 +2040,7 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 			ResetNearestStaticLights (nSegment, 0);
 			}
 		gameStates.render.bApplyDynLight = gameStates.render.nLightingMethod != 0;
-		//lightManager.Index (0) [0].nActive = gameData.render.lights.dynamic.shader.iStaticLights [0];
+		//lightManager.Index (0)[0].nActive = gameData.render.lights.dynamic.shader.iStaticLights [0];
 		}
 	else if (nType == 2)	// render objects containing transparency, like explosions
 		RenderObjList (nListPos, gameStates.render.nWindow);

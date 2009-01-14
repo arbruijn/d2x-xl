@@ -2201,7 +2201,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 
 		//PrintLog  ("InitTranspItemBuffer\n");
 		InitTranspItemBuffer (gameData.render.zMin, gameData.render.zMax);
-		gameStates.render.bHeadlights = gameOpts->ogl.bHeadlight && gameData.render.lights.dynamic.headlights.nLights && 
+		gameStates.render.bHeadlights = gameOpts->ogl.bHeadlight && lightManager.Headlights ().nLights && 
 												  !(gameStates.render.bFullBright || automap.m_bDisplay);
 		}
 	}

@@ -266,8 +266,8 @@ else if ((nBrightness = IsLight (nTexture = sideP->m_nBaseTex))) {
 else
 	return 0;
 if (gameStates.render.nLightingMethod) {
-	i = FindDynLight (nSegment, nSide, -1);
-	if ((i < 0) || !gameData.render.lights.dynamic.lights [i].info.bOn)
+	i = lightManager.Find (nSegment, nSide, -1);
+	if ((i < 0) || !lightManager.Lights (0)[i].info.bOn)
 		return 0;
 	}
 #if 0

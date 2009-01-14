@@ -484,7 +484,6 @@ void CLightManager::Reset (void)
 {
 for (short i = 0; i < m_data.nLights [0]; i++)
 	Delete (i);
-m_objects.Destroy ();
 }
 
 //------------------------------------------------------------------------------

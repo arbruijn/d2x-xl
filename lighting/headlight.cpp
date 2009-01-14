@@ -34,9 +34,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "headlight.h"
 #include "automap.h"
 
-// ---------------------------------------------------------
+//------------------------------------------------------------------------------
 
-void ToggleHeadlight (void)
+void CHeadlightManager::Init (void)
+{
+memset (this, 0, sizeof (*this)); 
+memset (lightIds, 0xff, sizeof (lightIds));
+}
+
+//------------------------------------------------------------------------------
+
+void CHeadlightManager::Toggle (void)
 {
 if (PlayerHasHeadlight (-1)) {
 	LOCALPLAYER.flags ^= PLAYER_FLAGS_HEADLIGHT_ON;
@@ -45,28 +53,28 @@ if (PlayerHasHeadlight (-1)) {
 	}
 }
 
-// ---------------------------------------------------------
+//------------------------------------------------------------------------------
 
 //	Flag array of OBJECTS lit last frame.  Guaranteed to process this frame if lit last frame.
-CObject	*Headlights [MAX_HEADLIGHTS];
-int		nHeadlights;
-fix		xBeamBrightness = (I2X (1)/2);	//global saying how bright the light beam is
+fix	xBeamBrightness = (I2X (1)/2);	//global saying how bright the light beam is
 
-fix ComputeHeadlightLightOnObject (CObject *objP)
+fix CHeadlightManager::ComputeLightOnObject (CObject *objP)
 {
 	int	i;
 	fix	light;
 	//	Let's just illuminate players and robots for speed reasons, ok?
 if ((objP->info.nType != OBJ_ROBOT) && (objP->info.nType	!= OBJ_PLAYER))
 	return 0;
-light = 0;
-for (i = 0; i < nHeadlights; i++) {
+
 	fix			dot, dist;
 	CFixVector	vecToObj;
-	CObject		*lightObjP;
-	lightObjP = Headlights [i];
+	CObject*		lightObjP;
+
+light = 0;
+for (i = 0; i < nLights; i++) {
+	lightObjP = objects [i];
 	vecToObj = objP->info.position.vPos - lightObjP->info.position.vPos;
-	dist = CFixVector::Normalize(vecToObj);
+	dist = CFixVector::Normalize (vecToObj);
 	if (dist > 0) {
 		dot = CFixVector::Dot (lightObjP->info.position.mOrient.FVec (), vecToObj);
 		if (dot < I2X (1)/2)
@@ -83,23 +91,23 @@ return light;
 // To achive that, the direction is added to the original position and transformed,
 // and the transformed headlight position is subtracted from that.
 
-void TransformHeadlights (void)
+void CHeadlightManager::Transform (void)
 {
-if (!m_data.headlights.nLights || automap.m_bDisplay)
+if (!nLights || automap.m_bDisplay)
 	return;
 
-	CDynLight	*pl;
-	int				i;
-	bool				bHWHeadlight = (gameStates.render.bPerPixelLighting == 2) || (gameStates.ogl.bHeadlight && gameOpts->ogl.bHeadlight);
+	CDynLight*	pl;
+	int			i;
+	bool			bHWHeadlight = (gameStates.render.bPerPixelLighting == 2) || (gameStates.ogl.bHeadlight && gameOpts->ogl.bHeadlight);
 
-for (i = 0; i < m_data.headlights.nLights; i++) {
-	pl = m_data.headlights.pl [i];
+for (i = 0; i < nLights; i++) {
+	pl = lights [i];
 	pl->info.bSpot = 1;
 	pl->info.vDirf.Assign (pl->vDir);
 	if (bHWHeadlight) {
-		m_data.headlights.pos [i] = pl->vPosf [0];
-		m_data.headlights.dir [i] = *pl->info.vDirf.V3 ();
-		m_data.headlights.brightness [i] = 100.0f;
+		pos [i] = pl->render.vPosf [0];
+		dir [i] = *pl->info.vDirf.V3 ();
+		brightness [i] = 100.0f;
 		}
 	else if (pl->bTransform && !gameStates.ogl.bUseTransform)
 		transformation.Rotate (pl->info.vDirf, pl->info.vDirf, 0);
@@ -111,29 +119,29 @@ for (i = 0; i < m_data.headlights.nLights; i++) {
 // To achive that, the direction is added to the original position and transformed,
 // and the transformed headlight position is subtracted from that.
 
-void CLightManager::SetupHeadlight (CDynLight* pl)
+void CHeadlightManager::SetupHeadlight (CDynLight* pl)
 {
-m_data.headlights.pl [m_data.headlights.nLights++] = pl;
+lights [nLights++] = pl;
 }
 
 //------------------------------------------------------------------------------
 
-int AddOglHeadlight (CObject *objP)
+int CHeadlightManager::Add (CObject *objP)
 {
 #if 0
 	static float spotExps [] = {12.0f, 5.0f, 0.0f};
 	static float spotAngles [] = {0.9f, 0.5f, 0.5f};
 #endif
 
-if (gameStates.render.nLightingMethod && (m_data.nHeadlights [objP->info.nId] < 0)) {
+if (gameStates.render.nLightingMethod && (lightIds [objP->info.nId] < 0)) {
 		tRgbaColorf	c = {1.0f, 1.0f, 1.0f, 1.0f};
 		CDynLight*	pl;
 		int			nLight;
 
 	nLight = AddDynLight (NULL, &c, I2X (200), -1, -1, -1, -1, NULL);
 	if (nLight >= 0) {
-		m_data.nHeadlights [objP->info.nId] = nLight;
-		pl = m_data.lights + nLight;
+		lightIds [objP->info.nId] = nLight;
+		pl = lights [nLight];
 		pl->info.nPlayer = (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : 1;
 		pl->info.fRad = 0;
 		pl->info.bSpot = 1;
@@ -148,27 +156,27 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-void RemoveOglHeadlight (CObject *objP)
+void CHeadlightManager::Remove (CObject *objP)
 {
-if (gameStates.render.nLightingMethod && (m_data.nHeadlights [objP->info.nId] >= 0)) {
-	DeleteDynLight (m_data.nHeadlights [objP->info.nId]);
-	m_data.nHeadlights [objP->info.nId] = -1;
-	m_data.headlights.nLights--;
+if (gameStates.render.nLightingMethod && (lightIds [objP->info.nId] >= 0)) {
+	DeleteDynLight (lightIds [objP->info.nId]);
+	lightIds [objP->info.nId] = -1;
+	nLights--;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void UpdateOglHeadlight (void)
+void CHeadlightManager::Update (void)
 {
 	CDynLight	*pl;
 	CObject		*objP;
 	short			nPlayer;
 
 for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
-	if (m_data.nHeadlights [nPlayer] < 0)
+	if (lightIds [nPlayer] < 0)
 		continue;
-	pl = m_data.lights + m_data.nHeadlights [nPlayer];
+	pl = lights [lightIds [nPlayer]];
 	objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
 	pl->info.vPos = OBJPOS (objP)->vPos;
 	pl->vDir = OBJPOS (objP)->mOrient.FVec ();
@@ -811,14 +819,14 @@ gameData.render.ogl.nHeadlights = nLights;
 
 extern int nOglTransformCalls;
 
-int G3SetupHeadlightShader (int nType, int bLightmaps, tRgbaColorf *colorP)
+int CHeadlightManager::SetupShader (int nType, int bLightmaps, tRgbaColorf *colorP)
 {
-	int			nLights, nShader, bTransform;
+	int			nShader, bTransform;
 	tRgbaColorf	color;
 
 //headlights
-nLights = IsMultiGame ? m_data.headlights.nLights : 1;
-InitHeadlightShaders (nLights);
+int h = IsMultiGame ? nLights : 1;
+InitHeadlightShaders (h);
 nShader = 10 + bLightmaps * 4 + nType;
 if (nShader != gameStates.render.history.nShader) {
 	//glUseProgramObject (0);
@@ -832,33 +840,17 @@ if (nShader != gameStates.render.history.nShader) {
 				glUniform1i (glGetUniformLocation (activeShaderProg, "maskTex"), 2 + bLightmaps);
 			}
 		}
-#if 1
-#	if 0
-	glUniform1f (glGetUniformLocation (activeShaderProg, "cutOff"), 0.5f);
-	glUniform1f (glGetUniformLocation (activeShaderProg, "spotExp"), 8.0f);
-	glUniform1f (glGetUniformLocation (activeShaderProg, "grAlpha"), 1.0f);
-	glUniform1fv (glGetUniformLocation (activeShaderProg, "brightness"), nLights,
-					  reinterpret_cast<GLfloat*> (m_data.headlights.brightness));
-#	endif
 	//glUniform1f (glGetUniformLocation (activeShaderProg, "aspect"), (float) screen.Width () / (float) screen.Height ());
 	//glUniform1f (glGetUniformLocation (activeShaderProg, "zoom"), 65536.0f / (float) gameStates.render.xZoom);
-#if 1
 	if ((bTransform = !nOglTransformCalls))
 		OglSetupTransform (1);
-	for (int i = 0; i < nLights; i++) {
+	for (int i = 0; i < h; i++) {
 		glEnable (GL_LIGHT0 + i);
-		glLightfv (GL_LIGHT0 + i, GL_POSITION, reinterpret_cast<GLfloat*> (m_data.headlights.pos + i));
-		glLightfv (GL_LIGHT0 + i, GL_SPOT_DIRECTION, reinterpret_cast<GLfloat*> (m_data.headlights.dir + i));
+		glLightfv (GL_LIGHT0 + i, GL_POSITION, reinterpret_cast<GLfloat*> (pos + i));
+		glLightfv (GL_LIGHT0 + i, GL_SPOT_DIRECTION, reinterpret_cast<GLfloat*> (dir + i));
 		}
 	if (bTransform)
 		OglResetTransform (1);
-#else
-	glUniform3fv (glGetUniformLocation (activeShaderProg, "lightPosWorld"), nLights,
-					  reinterpret_cast<GLfloat*> (m_data.headlights.pos));
-	glUniform3fv (glGetUniformLocation (activeShaderProg, "lightDirWorld"), nLights,
-					  reinterpret_cast<GLfloat*> (m_data.headlights.dir));
-#endif
-#endif
 	if (colorP) {
 		color.red = colorP->red * 1.1f;
 		color.green = colorP->green * 1.1f;

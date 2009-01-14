@@ -727,7 +727,7 @@ if (pc.alpha < 1.0 / 255.0) {
 	return 0;
 	}
 #if 0
-if (!gameData.render.lights.dynamic.headlights.nLights && (pc.red + pc.green + pc.blue < 0.001)) {
+if (!lightManager.Headlights ().nLights && (pc.red + pc.green + pc.blue < 0.001)) {
 	m_nLife = 0;
 	return 0;
 	}
@@ -888,7 +888,7 @@ if (iBuffer) {
 			if (bmP->Bind (0, 1))
 				return;
 #endif
-			if (gameData.render.lights.dynamic.headlights.nLights && !(automap.m_bDisplay || particleManager.LastType ()))
+			if (lightManager.Headlights ().nLights && !(automap.m_bDisplay || particleManager.LastType ()))
 				G3SetupHeadlightShader (1, 0, &color);
 			else if ((gameOpts->render.effects.bSoftParticles & 4) && (particleManager.LastType () <= BUBBLE_PARTICLES))
 				LoadGlareShader (10);
