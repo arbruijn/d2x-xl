@@ -1137,11 +1137,14 @@ while (!done) {
 		if (choice > m_props.nScrollOffset + m_props.nMaxOnMenu - 1)
 			m_props.nScrollOffset = choice - m_props.nMaxOnMenu + 1;
 		}
+#if 0
 	if (!gameOpts->menus.nStyle) {
 		if (callback)
 			(*callback) (*this, k, choice);
 		}
-	else {
+	else 
+#endif
+		{
 		if (gameStates.app.bGameRunning) {
 			CCanvas::Push ();
 			CCanvas::SetCurrent (gameCanvasP);

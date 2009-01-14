@@ -431,7 +431,7 @@ if (bForce || (MODERN_STYLE == 1)) {
 void CBackgroundManager::Redraw (bool bUpdate)
 {
 if (gameStates.app.bGameRunning) {
-	if (gameOpts->menus.nStyle)
+	if (1) //gameOpts->menus.nStyle)
 		Draw ();
 	else { // skip the first background image when the game is running and use the stars background image instead (has been loaded by the menu code)
 		for (int i = 1; i <= m_nDepth; i++)
