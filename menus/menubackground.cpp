@@ -224,8 +224,8 @@ return true;
 void CBackground::Draw (bool bUpdate)
 {
 paletteManager.SetEffect (0, 0, 0);
-if (!(gameStates.menus.bNoBackground || gameStates.app.bGameRunning)) {
-	if (m_filename&& (MODERN_STYLE || m_bTopMenu)) {
+if (!(gameStates.menus.bNoBackground || (gameStates.app.bGameRunning && !gameStates.app.bNostalgia))) {
+	if (m_filename && (MODERN_STYLE || m_bTopMenu)) {
 		CCanvas::Push ();
 		CCanvas::SetCurrent (m_canvas [0]);
 		m_background->Stretch ();
@@ -233,7 +233,7 @@ if (!(gameStates.menus.bNoBackground || gameStates.app.bGameRunning)) {
 		CCanvas::Pop ();
 		}
 	}
-if (!backgroundManager.IsDefault (m_filename)) {
+if (!((gameStates.app.bNostalgia && m_bTopMenu) || backgroundManager.IsDefault (m_filename))) {
 	CCanvas::Push ();
 	CCanvas::SetCurrent (m_canvas [1]);
 	if (m_bMenuBox)
