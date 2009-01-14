@@ -412,14 +412,10 @@ else {
 			: SM (320, 200));
 	SetScreenMode (SCREEN_MENU);
 	gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
-	int pcxError = PcxReadFullScrImage (filename, 0);
-	if (pcxError == PCX_ERROR_NONE) {
-		paletteManager.ClearEffect ();
-		paletteManager.EnableEffect ();
-		GrUpdate (0);
-		} 
-	else
-		Error ("Couldn't load pcx file '%s', \nPCX load error: %s\n", filename, pcx_errormsg (pcxError));
+	backgroundManager.Setup (filename, 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+	paletteManager.ClearEffect ();
+	paletteManager.EnableEffect ();
+	GrUpdate (0);
 	}
 }
 
