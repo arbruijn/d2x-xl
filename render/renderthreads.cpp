@@ -118,9 +118,9 @@ do {
 		}
 	else if (tiRender.nTask == rtStaticVertLight) {
 		if (nId)
-			ComputeStaticVertexLights (gameData.segs.nVertices / 2, gameData.segs.nVertices, nId);
+			lightManager.GatherStaticVertexLights (gameData.segs.nVertices / 2, gameData.segs.nVertices, nId);
 		else
-			ComputeStaticVertexLights (0, gameData.segs.nVertices / 2, nId);
+			lightManager.GatherStaticVertexLights (0, gameData.segs.nVertices / 2, nId);
 		}
 	else if (tiRender.nTask == rtComputeFaceLight) {
 		if (gameData.render.mine.nRenderSegs < 0) {

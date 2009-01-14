@@ -172,7 +172,7 @@ void CLightmapManager::RestoreLights (int bVariable)
 	CDynLight	*pl;
 	int			i;
 
-for (pl = gameData.render.lights.dynamic.lights, i = lightManager.LightCount (0); i; i--, pl++)
+for (pl = lightManager.Lights (0), i = lightManager.LightCount (0); i; i--, pl++)
 	if (!(pl->info.nType || (pl->info.bVariable && !bVariable)))
 		pl->info.bOn = 1;
 }
@@ -186,7 +186,7 @@ int CLightmapManager::CountLights (int bVariable)
 
 if (!gameStates.render.bPerPixelLighting)
 	return 0;
-for (pl = gameData.render.lights.dynamic.lights, i = lightManager.LightCount (0); i; i--, pl++)
+for (pl = lightManager.Lights (0), i = lightManager.LightCount (0); i; i--, pl++)
 	if (!(pl->info.nType || (pl->info.bVariable && !bVariable)))
 		nLights++;
 return nLights; 
@@ -255,7 +255,7 @@ m_list.info.Clear ();
 m_list.nLights = 0; 
 //first lightmap is dummy lightmap for multi pass lighting
 lmiP = m_list.info.Buffer (); 
-for (pl = gameData.render.lights.dynamic.lights, i = lightManager.LightCount (0); i; i--, pl++) {
+for (pl = lightManager.Lights (0), i = lightManager.LightCount (0); i; i--, pl++) {
 	if (pl->info.nType || (pl->info.bVariable && !bVariable))
 		continue;
 	if (faceP == pl->info.faceP)
@@ -656,14 +656,14 @@ if (!Init (0))
 	return 0;
 if (Load (nLevel))
 	return 1;
-TransformDynLights (1, 0);
+lightManager.Transform (1, 0);
 if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 	int nSaturation = gameOpts->render.color.nSaturation;
 	gameOpts->render.color.nSaturation = 1;
 	gameStates.render.bLightmaps = 1;
 	gameData.render.fAttScale = 2.0f;
-	gameData.render.lights.dynamic.shader.index [0][0].nFirst = MAX_SHADER_LIGHTS;
-	gameData.render.lights.dynamic.shader.index [0][0].nLast = 0;
+	lightManager.Index (0)[0].nFirst = MAX_SHADER_LIGHTS;
+	lightManager.Index (0)[0].nLast = 0;
 	if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 		nFace = 0;
 		ProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (gameData.segs.nFaces), CreatePoll);

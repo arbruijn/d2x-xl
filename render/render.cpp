@@ -1939,7 +1939,7 @@ else if ((gameStates.render.nType == 1) && (gameData.render.mine.renderObjs.ref 
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
-	SetNearestStaticLights (nSegment, 1, 1, 0);
+	lightManager.SetNearestStatic (nSegment, 1, 1, 0);
 	gameStates.render.bApplyDynLight = (gameStates.render.nLightingMethod != 0) && ((RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects);
 	RenderObjList (nListPos, gameStates.render.nWindow);
 	gameStates.render.bApplyDynLight = gameStates.render.nLightingMethod != 0;
@@ -2008,8 +2008,8 @@ if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)
 #endif
 		}
 	gameStates.ogl.bUseTransform = 0;
-	TransformDynLights (0, 1);
-	TransformHeadlights ();
+	lightManager.Transform (0, 1);
+	lightManager.Headlights ().Transform ();
 	}
 if (nClearWindow == 2) {
 	if (nFirstTerminalSeg < gameData.render.mine.nRenderSegs) {
@@ -2104,9 +2104,9 @@ if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.
 	OglClearError (0);
 	}
 RenderMineObjects (nType);
-ResetUsedLights (1, 0);
+lightManager.ResetAllUsed (1, 0);
 if (gameStates.app.bMultiThreaded)
-	ResetUsedLights (1, 1);
+	lightManager.ResetAllUsed (1, 1);
 OglClearError (0);
 PROF_END(ptRenderPass)
 return 1;
@@ -2180,7 +2180,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 	gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
 	if (RENDERPATH) {
 	//PrintLog  ("ResetSegmentLights\n");
-		ResetSegmentLights ();
+		lightManager.ResetSegmentLights ();
 #if 1
 		if (!gameStates.app.bMultiThreaded || gameStates.render.bPerPixelLighting ||
 			 (CountRenderFaces () < 16) || !RunRenderThreads (rtComputeFaceLight))

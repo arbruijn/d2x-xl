@@ -1,16 +1,3 @@
-/*
-THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
-SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
-END-USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
-ROYALTY-FREE, PERPETUAL LICENSE TO SUCH END-USERS FOR USE BY SUCH END-USERS
-IN USING, DISPLAYING,  AND CREATING DERIVATIVE WORKS THEREOF, SO LONG AS
-SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
-FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
-CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
-AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
-COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
-*/
-
 #ifndef _DYNLIGHT_H
 #define _DYNLIGHT_H
 
@@ -43,7 +30,7 @@ class COglMaterial {
 
 class CActiveDynLight;
 
-class CDynLight {
+class CLightRenderData {
 	public:
 		CFloatVector		vPosf [2];
 		fix					xDistance;
@@ -57,7 +44,7 @@ class CDynLight {
 		CActiveDynLight*	activeLightsP [MAX_THREADS];
 
 	public:
-		CDynLight ();
+		CLightRenderData ();
 	};
 
 //------------------------------------------------------------------------------
@@ -97,7 +84,7 @@ class CDynLight {
 		CFloatVector		fEmissive;
 		ubyte					bTransform;
 		CDynLightInfo		info;
-		CDynLight			render;
+		CLightRenderData	render;
 		CShadowLightData	shadow;
 
 	public:
@@ -265,6 +252,8 @@ extern CLightManager lightManager;
 
 //------------------------------------------------------------------------------
 
+#if 0
+
 void RegisterLight (tFaceColor *pc, short nSegment, short nSide);
 int lightManager.Add (tFace *faceP, tRgbaColorf *pc, fix xBrightness, 
 					  short nSegment, short nSide, short nOwner, short nTexture, CFixVector *vPos);
@@ -284,25 +273,28 @@ int SetNearestFaceLights (tFace *faceP, int bTextured);
 short SetNearestPixelLights (short nSegment, short nSide, CFixVector *vNormal, CFixVector *vPixelPos, float fLightRad, int nThread);
 void SetNearestStaticLights (int nSegment, int bStatic, ubyte nType, int nThread);
 void ResetNearestStaticLights (int nSegment, int nThread);
-void ResetNearestVertexLights (int nVertex, int nThread);
+void lightManager.ResetNearestToVertex (int nVertex, int nThread);
 short SetNearestSegmentLights (int nSegment, int nFace, int bVariable, int nType, int nThread);
 void ComputeStaticVertexLights (int nVertex, int nMax, int nThread);
 void ComputeStaticDynLighting (int nLevel);
 CDynLight *GetActiveRenderLight (CActiveDynLight *activeLightsP, int nThread);
-int CreatePerPixelLightingShader (int nType, int nLights);
-void InitPerPixelLightingShaders (void);
-void ResetPerPixelLightingShaders (void);
-int CreateLightmapShader (int nType);
-void InitLightmapShaders (void);
-void ResetLightmapShaders (void);
-void InitHeadlightShaders (int nLights);
-char *BuildLightingShader (const char *pszTemplate, int nLights);
 tFaceColor *AvgSgmColor (int nSegment, CFixVector *vPos);
 void ResetSegmentLights (void);
 int IsLight (int tMapNum);
 void ResetUsedLight (CDynLight *prl, int nThread);
 void ResetUsedLights (int bVariable, int nThread);
 void ResetActiveLights (int nThread, int nActive);
+
+#endif
+
+int CreatePerPixelLightingShader (int nType, int nLights);
+void InitPerPixelLightingShaders (void);
+void ResetPerPixelLightingShaders (void);
+void InitHeadlightShaders (int nLights);
+char *BuildLightingShader (const char *pszTemplate, int nLights);
+int CreateLightmapShader (int nType);
+void InitLightmapShaders (void);
+void ResetLightmapShaders (void);
 
 #define	SHOW_DYN_LIGHT \
 			(!(gameStates.app.bNostalgia || gameStates.render.bBriefing || (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)) && \

@@ -562,7 +562,7 @@ void G3DrawModel (CObject *objP, short nModel, short nSubModel, CBitmap **modelB
 						int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
 	RenderModel::CModel					*pm;
-	tRenderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][0];
+	CDynLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][0];
 	CActiveDynLight	*activeLightsP = lightManager.Active (0) + sliP->nFirst;
 	CDynLight			*psl;
 	int						nPass, iLight, nLights, nLightRange;

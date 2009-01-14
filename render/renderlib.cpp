@@ -478,7 +478,7 @@ int SetVertexColors (tFaceProps *propsP)
 {
 if (SHOW_DYN_LIGHT) {
 	// set material properties specific for certain textures here
-	SetDynLightMaterial (propsP->segNum, propsP->sideNum, -1);
+	lightManager.SetMaterial (propsP->segNum, propsP->sideNum, -1);
 	return 0;
 	}
 memset (vertColors, 0, sizeof (vertColors));

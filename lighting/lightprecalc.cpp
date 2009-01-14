@@ -136,7 +136,7 @@ else
 	INIT_PROGRESS_LOOP (i, j, gameData.segs.nSegments);
 for (segP = SEGMENTS + i; i < j; i++, segP++) {
 	center = segP->Center ();
-	pl = gameData.render.lights.dynamic.lights;
+	pl = lightManager.Lights (0);
 	for (l = n = 0; l < lightManager.LightCount (0); l++, pl++) {
 		m = (pl->info.nSegment < 0) ? OBJECTS [pl->info.nObject].info.nSegment : pl->info.nSegment;
 		if (!SEGVIS (m, i))
@@ -152,9 +152,9 @@ for (segP = SEGMENTS + i; i < j; i++, segP++) {
 	h = (nMaxLights < n) ? nMaxLights : n;
 	k = i * MAX_NEAREST_LIGHTS;
 	for (l = 0; l < h; l++)
-		lightManager.NearestSegLights  () [k + l] = pDists [l].nIndex;
+		lightManager.NearestSegLights  ()[k + l] = pDists [l].nIndex;
 	for (; l < MAX_NEAREST_LIGHTS; l++)
-		lightManager.NearestSegLights  () [k + l] = -1;
+		lightManager.NearestSegLights  ()[k + l] = -1;
 	}
 delete[] pDists;
 return 1;
@@ -197,7 +197,7 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 	if (nVertex == nDbgVertex)
 		nVertex = nVertex;
 #endif
-	pl = gameData.render.lights.dynamic.lights;
+	pl = lightManager.Lights (0);
 	for (l = n = 0; l < lightManager.LightCount (0); l++, pl++) {
 #if DBG
 		if (pl->info.nSegment == nDbgSeg)
@@ -229,9 +229,9 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 	h = (nMaxLights < n) ? nMaxLights : n;
 	k = nVertex * MAX_NEAREST_LIGHTS;
 	for (l = 0; l < h; l++)
-		gameData.render.lights.dynamic.nearestVertLights [k + l] = pDists [l].nIndex;
+		lightManager.NearestVertLights ()[k + l] = pDists [l].nIndex;
 	for (; l < MAX_NEAREST_LIGHTS; l++)
-		gameData.render.lights.dynamic.nearestVertLights [k + l] = -1;
+		lightManager.NearestVertLights ()[k + l] = -1;
 	}
 delete[] pDists;
 return 1;
@@ -488,7 +488,7 @@ if (bOk)
 			(cf.Read (gameData.segs.bVertVis.Buffer (), sizeof (ubyte) * ldh.nVertices * VERTVIS_FLAGS, 1) == 1) &&
 #endif
 			(cf.Read (lightManager.NearestSegLights  ().Buffer (), sizeof (short) * ldh.nSegments * MAX_NEAREST_LIGHTS, 1) == 1) &&
-			(cf.Read (gameData.render.lights.dynamic.nearestVertLights.Buffer (), sizeof (short) * ldh.nVertices * MAX_NEAREST_LIGHTS, 1) == 1);
+			(cf.Read (lightManager.NearestVertLights ().Buffer (), sizeof (short) * ldh.nVertices * MAX_NEAREST_LIGHTS, 1) == 1);
 cf.Close ();
 return bOk;
 }
@@ -518,7 +518,7 @@ bOk = (cf.Write (&ldh, sizeof (ldh), 1) == 1) &&
 		(cf.Write (gameData.segs.bVertVis.Buffer (), sizeof (ubyte) * ldh.nVertices * VERTVIS_FLAGS, 1) == 1) &&
 #endif
 		(cf.Write (lightManager.NearestSegLights  ().Buffer (), sizeof (short) * ldh.nSegments * MAX_NEAREST_LIGHTS, 1) == 1) &&
-		(cf.Write (gameData.render.lights.dynamic.nearestVertLights.Buffer (), sizeof (short) * ldh.nVertices * MAX_NEAREST_LIGHTS, 1) == 1);
+		(cf.Write (lightManager.NearestVertLights ().Buffer (), sizeof (short) * ldh.nVertices * MAX_NEAREST_LIGHTS, 1) == 1);
 cf.Close ();
 return bOk;
 }

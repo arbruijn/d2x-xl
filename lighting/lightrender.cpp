@@ -390,8 +390,8 @@ if (gameStates.render.nLightingMethod) {
 	CActiveDynLight*		activeLightsP = m_data.active [nThread];
 
 	c = SEGMENTS [nSegment].Center ();
-	ResetUsedLights (1, nThread);
-	ResetActiveLights (nThread, 0);
+	lightManager.ResetAllUsed (1, nThread);
+	lightManager.ResetActive (nThread, 0);
 	while (i--) {
 #if DBG
 		if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg))
@@ -584,7 +584,7 @@ else if (gameStates.render.bPerPixelLighting) {
 	if (psc->color.red + psc->color.green + psc->color.blue == 0)
 		psc = psc;
 #endif
-	ResetUsedLights (0, 0);
+	lightManager.ResetAllUsed (0, 0);
 	m_data.index [0][0].nActive = -1;
 	}
 else {

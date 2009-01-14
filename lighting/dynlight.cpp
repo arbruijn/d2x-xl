@@ -623,8 +623,8 @@ for (; nVertex < nMax; nVertex++, pf++) {
 		nVertex = nVertex;
 #endif
 	vVertex.Assign (gameData.segs.vertices [nVertex]);
-	ResetActiveLights (nThread, 0);
-	ResetUsedLights (0, nThread);
+	lightManager.ResetActive (nThread, 0);
+	lightManager.ResetAllUsed (0, nThread);
 	lightManager.SetNearestToVertex (-1, nVertex, NULL, 1, 1, bColorize, nThread);
 	gameData.render.color.vertices [nVertex].index = 0;
 	G3VertexColor (gameData.segs.points [nVertex].p3_normal.vNormal.V3(), vVertex.V3(), nVertex, pf, NULL, 1, 0, nThread);
@@ -660,7 +660,7 @@ if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !ga
 
 	memset (pf, 0, gameData.segs.nVertices * sizeof (*pf));
 	if (!RunRenderThreads (rtStaticVertLight))
-		ComputeStaticVertexLights (0, gameData.segs.nVertices, 0);
+		lightManager.GatherStaticVertexLights (0, gameData.segs.nVertices, 0);
 	pf = gameData.render.color.ambient.Buffer ();
 	for (i = 0, segP = SEGMENTS.Buffer (); i < gameData.segs.nSegments; i++, segP++) {
 		if (segP->m_nType == SEGMENT_IS_SKYBOX) {

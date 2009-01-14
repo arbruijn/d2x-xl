@@ -159,7 +159,7 @@ return -1;
 void CHeadlightManager::Remove (CObject *objP)
 {
 if (gameStates.render.nLightingMethod && (lightIds [objP->info.nId] >= 0)) {
-	DeleteDynLight (lightIds [objP->info.nId]);
+	lightManager.Delete (lightIds [objP->info.nId]);
 	lightIds [objP->info.nId] = -1;
 	nLights--;
 	}

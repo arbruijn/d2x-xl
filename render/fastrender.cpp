@@ -1395,12 +1395,12 @@ else if (nState == 1) {
 		nDbgVertex = nDbgVertex;
 #endif
 	for (nLights = 0, i = vld.nLights, j = 0; j < h; i++, j++) {
-		psl = lightManager.Active (0)[j].psl;
+		psl = lightManager.Active (0)[j].pl;
 		if (bSkipHeadlight && (psl->info.nType == 3))
 			continue;
 		vld.buffers [0][i] = vPos;
 		vld.buffers [1][i] = vNormal;
-		vld.buffers [2][i] = psl->vPosf [0];
+		vld.buffers [2][i] = psl->render.vPosf [0];
 		vld.buffers [3][i] = *(reinterpret_cast<CFloatVector*> (&psl->info.color));
 		vld.buffers [0][i][W] = 1.0f;
 		vld.buffers [1][i][W] = (psl->info.nType < 2) ? 1.0f : 0.0f;
@@ -1525,7 +1525,7 @@ for (i = nStart, nStep = (nStart > nEnd) ? -1 : 1; i != nEnd; i += nStep) {
 							              gameData.segs.fVertices[nVertex].V3(), nVertex, 
 							              NULL, &c, 1, 0, nThread);
 							lightManager.Index (0)[nThread] = lightManager.Index (1)[nThread];
-							ResetNearestVertexLights (nVertex, nThread);
+							lightManager.ResetNearestToVertex (nVertex, nThread);
 							}
 #if DBG
 						if (nVertex == nDbgVertex)
@@ -1659,7 +1659,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 													gameData.segs.fVertices [nVertex].V3(), nVertex, 
 													NULL, &c, 1, 0, nThread);
 								lightManager.Index (0)[nThread] = lightManager.Index (1)[nThread];
-								ResetNearestVertexLights (nVertex, nThread);
+								lightManager.ResetNearestToVertex (nVertex, nThread);
 								}
 #if DBG
 							if (nVertex == nDbgVertex)
@@ -1797,7 +1797,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 													FACES.vertices + nIndex, nVertex, 
 													NULL, &c, 1, 0, nThread);
 								lightManager.Index (0)[nThread] = lightManager.Index (1)[nThread];
-								ResetNearestVertexLights (nVertex, nThread);
+								lightManager.ResetNearestToVertex (nVertex, nThread);
 								}
 #if DBG
 							if (nVertex == nDbgVertex)

@@ -705,7 +705,7 @@ FORALL_OBJS (objP, nObject) {
 			}
 		}
 	}
-SetClusterLights ();
+lightClusterManager.Set ();
 if (!bKeepDynColoring)
 	InitDynColoring ();
 }
@@ -757,7 +757,7 @@ fix ComputeObjectLight (CObject *objP, CFixVector *vRotated)
 		return 0;
 	//First, get static light for this CSegment
 if (gameStates.render.nLightingMethod && !((RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects)) {
-	gameData.objs.color = *AvgSgmColor (objP->info.nSegment, &objP->info.position.vPos);
+	gameData.objs.color = *lightManager.AvgSgmColor (objP->info.nSegment, &objP->info.position.vPos);
 	light = I2X (1);
 	}
 else
@@ -1039,7 +1039,7 @@ void ChangeLight (short nSegment, short nSide, int dir)
 
 if ((dir < 0) && lightManager.Delete (nSegment, nSide, -1))
 	return;
-if (ToggleDynLight (nSegment, nSide, -1, dir >= 0) >= 0)
+if (lightManager.Toggle (nSegment, nSide, -1, dir >= 0) >= 0)
 	return;
 i = FindDLIndex (nSegment, nSide);
 for (dliP = gameData.render.lights.deltaIndices + i; i < gameData.render.lights.nStatic; i++, dliP++) {

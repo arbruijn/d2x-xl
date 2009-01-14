@@ -347,7 +347,7 @@ int GatherShadowLightSources (void)
 
 psl = lightManager.Lights (1);
 for (h = 0, l = lightManager.LightCount (0); l; l--, psl++)
-	psl->bShadow =
+	psl->render.bShadow =
 	psl->bExclusive = 0;
 FORALL_OBJS (objP, h) {
 	if (gameData.render.mine.bObjectRendered [h] != gameStates.render.nFrameFlipFlop)
@@ -371,13 +371,13 @@ FORALL_OBJS (objP, h) {
 			}
 		gameData.render.shadows.vLightDir [n] = vLightDir;
 		gameData.render.shadows.objLights [k + n++] = *pnl;
-		psl->bShadow = 1;
+		psl->render.bShadow = 1;
 		}
 	gameData.render.shadows.objLights [k + n] = -1;
 	}
 psl = lightManager.Lights (1);
 for (h = 0, i = lightManager.LightCount (0); i; i--, psl++)
-	if (psl->bShadow)
+	if (psl->render.bShadow)
 		h++;
 return h;
 }
@@ -434,14 +434,14 @@ void RenderNeatShadows (fix nEyeOffset, int nWindow, short nStartSeg)
 
 gameData.render.shadows.nLights = GatherShadowLightSources ();
 for (i = 0; i < lightManager.LightCount (0); i++, psl++) {
-	if (!psl->bShadow)
+	if (!psl->render.bShadow)
 		continue;
 	gameData.render.shadows.lights = psl;
 	psl->bExclusive = 1;
 #if 1
 	gameStates.render.nShadowPass = 2;
 	OglStartFrame (0, 0);
-	memcpy (&gameData.render.shadows.vLightPos, psl->vPosf + 1, sizeof (CFloatVector));
+	memcpy (&gameData.render.shadows.vLightPos, psl->render.vPosf + 1, sizeof (CFloatVector));
 	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
 	RenderMine (nStartSeg, nEyeOffset, nWindow);
 #endif
@@ -449,7 +449,7 @@ for (i = 0; i < lightManager.LightCount (0); i++, psl++) {
 	OglStartFrame (0, 0);
 	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
 	RenderMine (nStartSeg, nEyeOffset, nWindow);
-	psl->bExclusive = 0;
+	psl->render.bExclusive = 0;
 	}
 #if 0
 gameStates.render.nShadowPass = 4;

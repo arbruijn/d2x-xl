@@ -305,18 +305,18 @@ float fLightRanges [5] = {0.5f, 0.7071f, 1.0f, 1.4142f, 2.0f};
 
 int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcdP, int nThread)
 {
-	int						i, j, nLights, nType, bInRad,
-								bSkipHeadlight = gameOpts->ogl.bHeadlight && !gameStates.render.nState,
-								bTransform = gameStates.render.nState && !gameStates.ogl.bUseTransform,
-								nSaturation = gameOpts->render.color.nSaturation;
-	int						nBrightness, nMaxBrightness = 0;
-	float						fLightDist, fAttenuation, spotEffect, NdotL, RdotE, nMinDot;
-	CFloatVector3			spotDir, lightDir, lightPos, vertPos, vReflect;
-	CFloatVector3			lightColor, colorSum, vertColor = CFloatVector3::Create(0.0f, 0.0f, 0.0f);
-	CDynLight			*psl;
-	tRenderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
-	CActiveDynLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread] + sliP->nFirst;
-	CVertColorData			vcd = *vcdP;
+	int					i, j, nLights, nType, bInRad,
+							bSkipHeadlight = gameOpts->ogl.bHeadlight && !gameStates.render.nState,
+							bTransform = gameStates.render.nState && !gameStates.ogl.bUseTransform,
+							nSaturation = gameOpts->render.color.nSaturation;
+	int					nBrightness, nMaxBrightness = 0;
+	float					fLightDist, fAttenuation, spotEffect, NdotL, RdotE, nMinDot;
+	CFloatVector3		spotDir, lightDir, lightPos, vertPos, vReflect;
+	CFloatVector3		lightColor, colorSum, vertColor = CFloatVector3::Create(0.0f, 0.0f, 0.0f);
+	CDynLight*			psl;
+	CDynLightIndex*	sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
+	CActiveDynLight*	activeLightsP = lightManager.Active (nThread) + sliP->nFirst;
+	CVertColorData		vcd = *vcdP;
 
 #if DBG
 if (nThread == 0)
@@ -492,7 +492,7 @@ if (nLights)
 	nLights = 0;
 #endif
 if (!RENDERPATH)
-	ResetNearestVertexLights (nVertex, nThread);
+	lightManager.ResetNearestToVertex (nVertex, nThread);
 return j;
 }
 
@@ -508,8 +508,8 @@ int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcd
 	CFloatVector3					spotDir, lightDir, lightPos, vertPos, vReflect;
 	CFloatVector3					lightColor, colorSum, vertColor = {{0.0f, 0.0f, 0.0f}};
 	CDynLight			*psl;
-	tRenderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
-	CActiveDynLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread] + sliP->nFirst;
+	CDynLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
+	CActiveDynLight	*activeLightsP = lightManager.Active [nThread] + sliP->nFirst;
 	CVertColorData			vcd = *vcdP;
 
 colorSum = *pColorSum;

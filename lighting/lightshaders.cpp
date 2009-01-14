@@ -1,15 +1,3 @@
-/*
-THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
-SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
-END-USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
-ROYALTY-FREE, PERPETUAL LICENSE TO SUCH END-USERS FOR USE BY SUCH END-USERS
-IN USING, DISPLAYING,  AND CREATING DERIVATIVE WORKS THEREOF, SO LONG AS
-SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
-FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
-CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
-AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
-COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
-*/
 #ifdef HAVE_CONFIG_H
 #	include <conf.h>
 #endif
@@ -1253,18 +1241,18 @@ int CheckUsedLights2 (void);
 int SetupHardwareLighting (tFace *faceP, int nType)
 {
 PROF_START
-	int						nLightRange, nLights;
-	float						fBrightness;
-	tRgbaColorf				ambient, diffuse;
+	int					nLightRange, nLights;
+	float					fBrightness;
+	tRgbaColorf			ambient, diffuse;
 #if 0
-	tRgbaColorf				black = {0,0,0,0};
+	tRgbaColorf			black = {0,0,0,0};
 #endif
-	tRgbaColorf				specular = {0.5f,0.5f,0.5f,0.5f};
-	//CFloatVector					vPos = CFloatVector::Create(0,0,0,1);
-	GLenum					hLight;
-	CActiveDynLight	*activeLightsP;
-	CDynLight			*psl;
-	tRenderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][0];
+	tRgbaColorf			specular = {0.5f,0.5f,0.5f,0.5f};
+	//CFloatVector			vPos = CFloatVector::Create(0,0,0,1);
+	GLenum				hLight;
+	CActiveDynLight*	activeLightsP;
+	CDynLight*			psl;
+	CDynLightIndex*	sliP = &gameData.render.lights.dynamic.shader.index [0][0];
 
 #if DBG
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -1300,7 +1288,7 @@ nLightRange = sliP->nLast - gameStates.ogl.nFirstLight + 1;
 for (nLights = 0;
 	  (gameStates.ogl.iLight < gameStates.ogl.nLights) & (nLightRange > 0) && (nLights < gameStates.render.nMaxLightsPerPass);
 	  activeLightsP++, nLightRange--) {
-	if (!(psl = GetActiveRenderLight (activeLightsP, 0)))
+	if (!(psl = lightManager.GetActive (activeLightsP, 0)))
 		continue;
 #if 0//def _DEBUG
 	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -1314,8 +1302,8 @@ for (nLights = 0;
 	if (!psl->nTarget)
 		psl = psl;
 #endif
-	if (psl->bUsed [0] == 2) {//nearest vertex light
-		ResetUsedLight (psl, 0);
+	if (psl->render.bUsed [0] == 2) {//nearest vertex light
+		lightManager.ResetUsed (psl, 0);
 		sliP->nActive--;
 		}
 	hLight = GL_LIGHT0 + nLights++;
@@ -1359,7 +1347,7 @@ for (nLights = 0;
 	glLightfv (hLight, GL_DIFFUSE, reinterpret_cast<GLfloat*> (&diffuse));
 	glLightfv (hLight, GL_SPECULAR, reinterpret_cast<GLfloat*> (&specular));
 	glLightfv (hLight, GL_AMBIENT, reinterpret_cast<GLfloat*> (&ambient));
-	glLightfv (hLight, GL_POSITION, reinterpret_cast<GLfloat*> (psl->vPosf));
+	glLightfv (hLight, GL_POSITION, reinterpret_cast<GLfloat*> (psl->render.vPosf));
 	gameStates.ogl.iLight++;
 	}
 if (nLightRange <= 0) {
