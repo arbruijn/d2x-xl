@@ -738,6 +738,7 @@ int LoadLevel (int nLevel, bool bLoadTextures, bool bRestore)
 
 /*---*/PrintLog ("Loading level...\n");
 srand (SDL_GetTicks ());
+gameStates.render.nLightingMethod = gameOpts->render.nLightingMethod && !gameStates.app.bNostalgia;
 gameStates.app.bBetweenLevels = 1;
 gameStates.app.bFreeCam = 0;
 gameStates.app.bGameRunning = 0;

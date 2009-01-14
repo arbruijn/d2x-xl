@@ -1283,7 +1283,7 @@ FACES.slidingFaces = NULL;
 if (gameOpts->render.nMeshQuality > 2)
 	gameOpts->render.nMeshQuality = 2;
 #endif
-if (RENDERPATH && gameOpts->render.nLightingMethod)
+if (RENDERPATH && gameStates.render.nLightingMethod)
 	gameStates.render.bTriangleMesh = gameStates.render.bPerPixelLighting ? -1 : gameStates.render.nMeshQuality;
 else
 	gameStates.render.bTriangleMesh = 0;

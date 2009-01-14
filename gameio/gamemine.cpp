@@ -999,7 +999,7 @@ if (gameStates.app.bD2XLevel) {
 	INIT_PROGRESS_LOOP (i, j, MAX_WALL_TEXTURES);
 	for (; i < j; i++)
 		ReadColor (cf, gameData.render.color.textures + i, gameData.segs.nLevelVersion <= 15,
-					  gameOpts->render.nLightingMethod);
+					  gameStates.render.nLightingMethod);
 	}
 }
 

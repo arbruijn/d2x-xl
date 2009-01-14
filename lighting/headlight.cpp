@@ -132,7 +132,7 @@ int AddOglHeadlight (CObject *objP)
 	static float spotAngles [] = {0.9f, 0.5f, 0.5f};
 #endif
 
-if (gameOpts->render.nLightingMethod && (gameData.render.lights.dynamic.nHeadlights [objP->info.nId] < 0)) {
+if (gameStates.render.nLightingMethod && (gameData.render.lights.dynamic.nHeadlights [objP->info.nId] < 0)) {
 		tRgbaColorf	c = {1.0f, 1.0f, 1.0f, 1.0f};
 		CDynLight	*pl;
 		int			nLight;
@@ -157,7 +157,7 @@ return -1;
 
 void RemoveOglHeadlight (CObject *objP)
 {
-if (gameOpts->render.nLightingMethod && (gameData.render.lights.dynamic.nHeadlights [objP->info.nId] >= 0)) {
+if (gameStates.render.nLightingMethod && (gameData.render.lights.dynamic.nHeadlights [objP->info.nId] >= 0)) {
 	DeleteDynLight (gameData.render.lights.dynamic.nHeadlights [objP->info.nId]);
 	gameData.render.lights.dynamic.nHeadlights [objP->info.nId] = -1;
 	gameData.render.lights.dynamic.headlights.nLights--;

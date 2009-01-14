@@ -210,9 +210,9 @@ return 1;
 
 int LightingMethod (void)
 {
-if (gameOpts->render.nLightingMethod == 1)
+if (gameStates.render.nLightingMethod == 1)
 	return 2 + gameStates.render.bAmbientColor;
-else if (gameOpts->render.nLightingMethod == 2)
+else if (gameStates.render.nLightingMethod == 2)
 	return 4;
 return gameStates.render.bAmbientColor;
 }
@@ -274,7 +274,7 @@ return cache_vis;
 
 void InitDynColoring (void)
 {
-if (!gameOpts->render.nLightingMethod && gameData.render.lights.bInitDynColoring) {
+if (!gameStates.render.nLightingMethod && gameData.render.lights.bInitDynColoring) {
 	gameData.render.lights.bInitDynColoring = 0;
 	gameData.render.lights.bGotDynColor.Clear ();
 	}
@@ -722,7 +722,7 @@ if (gameData.render.lights.bInitDynColoring) {
 ResetClusterLights ();
 //	Create list of vertices that need to be looked at for setting of ambient light.
 nRenderVertices = 0;
-if (!gameOpts->render.nLightingMethod) {
+if (!gameStates.render.nLightingMethod) {
 	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs; iRenderSeg++) {
 		nSegment = gameData.render.mine.nSegRenderList [iRenderSeg];
 		if (nSegment != -1) {
@@ -756,7 +756,7 @@ if (!gameOpts->render.nLightingMethod) {
 	}
 CastMuzzleFlashLight (nRenderVertices, gameData.render.lights.vertices);
 gameData.render.lights.newObjects.Clear ();
-if (EGI_FLAG (bUseLightnings, 0, 0, 1) && !gameOpts->render.nLightingMethod) {
+if (EGI_FLAG (bUseLightnings, 0, 0, 1) && !gameStates.render.nLightingMethod) {
 	tLightningLight	*pll;
 	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs; iRenderSeg++) {
 		nSegment = gameData.render.mine.nSegRenderList [iRenderSeg];
@@ -861,7 +861,7 @@ fix ComputeObjectLight (CObject *objP, CFixVector *vRotated)
 	if (nObject >= gameData.objs.nLastObject [0])
 		return 0;
 	//First, get static light for this CSegment
-if (gameOpts->render.nLightingMethod && !((RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects)) {
+if (gameStates.render.nLightingMethod && !((RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects)) {
 	gameData.objs.color = *AvgSgmColor (objP->info.nSegment, &objP->info.position.vPos);
 	light = I2X (1);
 	}

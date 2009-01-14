@@ -265,7 +265,7 @@ else if ((nBrightness = IsLight (nTexture = sideP->m_nBaseTex))) {
 	}
 else
 	return 0;
-if (gameOpts->render.nLightingMethod) {
+if (gameStates.render.nLightingMethod) {
 	i = FindDynLight (nSegment, nSide, -1);
 	if ((i < 0) || !gameData.render.lights.dynamic.lights [i].info.bOn)
 		return 0;

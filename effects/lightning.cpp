@@ -1828,7 +1828,7 @@ void CLightningManager::SetLights (void)
 ResetLights (0);
 if (SHOW_LIGHTNINGS) {
 		tLightningLight	*llP = NULL;
-		int					i, n, bDynLighting = gameOpts->render.nLightingMethod;
+		int					i, n, bDynLighting = gameStates.render.nLightingMethod;
 
 	m_nFirstLight = -1;
 	for (CLightningSystem* systemP = m_systems.GetFirst (); systemP; systemP = m_systems.GetNext ())

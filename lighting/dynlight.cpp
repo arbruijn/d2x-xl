@@ -147,7 +147,7 @@ if (SHOW_DYN_LIGHT) {
 
 short FindDynLight (short nSegment, short nSide, short nObject)
 {
-if (gameOpts->render.nLightingMethod) {
+if (gameStates.render.nLightingMethod && !gameStates.app.bNostalgia) {
 		CDynLight	*pl = gameData.render.lights.dynamic.lights;
 		short			i;
 
@@ -367,7 +367,7 @@ if ((nDbgObj >= 0) && (nObject == nDbgObj))
 if (pc && ((pc->red > 1) || (pc->green > 1) || (pc->blue > 1)))
 	pc = pc;
 #endif
-if (gameOpts->render.nLightingMethod && (nSegment >= 0) && (nSide >= 0)) {
+if (gameStates.render.nLightingMethod && (nSegment >= 0) && (nSide >= 0)) {
 #if 1
 	fBrightness /= Intensity (pc->red, pc->green, pc->blue);
 #else
@@ -662,7 +662,7 @@ if (gameStates.app.bD1Mission)
 #endif
 gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 memset (&gameData.render.lights.dynamic.headlights, 0, sizeof (gameData.render.lights.dynamic.headlights));
-if (gameOpts->render.nLightingMethod)
+if (gameStates.render.nLightingMethod)
 	gameData.render.color.vertices.Clear ();
 gameData.render.lights.dynamic.Init ();
 for (nFace = gameData.segs.nFaces, faceP = FACES.faces.Buffer (); nFace; nFace--, faceP++) {
@@ -1019,7 +1019,7 @@ void SetNearestStaticLights (int nSegment, int bStatic, ubyte nType, int nThread
 {
 	static short nActiveLights [4] = {-1, -1, -1, -1};
 
-if (gameOpts->render.nLightingMethod) {
+if (gameStates.render.nLightingMethod) {
 	short						*pnl = gameData.render.lights.dynamic.nearestSegLights + nSegment * MAX_NEAREST_LIGHTS;
 	short						i, j;
 	CShaderLight			*psl;
@@ -1051,7 +1051,7 @@ nActiveLights [nThread] = gameData.render.lights.dynamic.shader.index [0][nThrea
 
 void ResetNearestStaticLights (int nSegment, int nThread)
 {
-if (gameOpts->render.nLightingMethod) {
+if (gameStates.render.nLightingMethod) {
 	short				*pnl = gameData.render.lights.dynamic.nearestSegLights + nSegment * MAX_NEAREST_LIGHTS;
 	short				i, j;
 	CShaderLight	*psl;
@@ -1070,7 +1070,7 @@ if (gameOpts->render.nLightingMethod) {
 
 void ResetNearestVertexLights (int nVertex, int nThread)
 {
-//if (gameOpts->render.nLightingMethod)
+//if (gameStates.render.nLightingMethod)
  {
 	short				*pnl = gameData.render.lights.dynamic.nearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
 	short				i, j;
@@ -1146,7 +1146,7 @@ PROF_START
 if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 	nDbgSeg = nDbgSeg;
 #endif
-if (gameOpts->render.nLightingMethod) {
+if (gameStates.render.nLightingMethod) {
 	ubyte						nType;
 	short						i = gameData.render.lights.dynamic.shader.nLights,
 								nLightSeg;
@@ -1237,7 +1237,7 @@ short SetNearestPixelLights (short nSegment, short nSide, CFixVector *vNormal, C
 if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 	nDbgSeg = nDbgSeg;
 #endif
-if (gameOpts->render.nLightingMethod) {
+if (gameStates.render.nLightingMethod) {
 	int						nLightSeg;
 	short						i = gameData.render.lights.dynamic.shader.nLights;
 	fix						xLightDist, xMaxLightRange = F2X (fLightRad) + ((gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 : MAX_LIGHT_RANGE);
@@ -1451,7 +1451,7 @@ void ComputeStaticVertexLights (int nVertex, int nMax, int nThread)
 {
 	tFaceColor*		pf = gameData.render.color.ambient + nVertex;
 	CFloatVector	vVertex;
-	int				bColorize = !gameOpts->render.nLightingMethod;
+	int				bColorize = !gameStates.render.nLightingMethod;
 
 for (; nVertex < nMax; nVertex++, pf++) {
 #if DBG
@@ -1478,7 +1478,7 @@ void ComputeStaticDynLighting (int nLevel)
 if (gameStates.app.bNostalgia)
 	return;
 
-int i, j, bColorize = !gameOpts->render.nLightingMethod;
+int i, j, bColorize = !gameStates.render.nLightingMethod;
 
 PrintLog ("Computing static lighting\n");
 gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
@@ -1490,7 +1490,7 @@ if (RENDERPATH && gameStates.render.bPerPixelLighting && lightmapManager.HaveLig
 	gameData.render.color.ambient.Clear ();
 	return;
 	}
-if (gameOpts->render.nLightingMethod || (gameStates.render.bAmbientColor && !gameStates.render.bColored)) {
+if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !gameStates.render.bColored)) {
 		tFaceColor*	pfh, *pf = gameData.render.color.ambient.Buffer ();
 		CSegment*	segP;
 

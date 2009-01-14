@@ -86,7 +86,7 @@ void CPaletteManager::SetEffect (int r, int g, int b)
 if (!m_data.bAllowEffect)
 	return;
 #if 0
-if (!gameOpts->render.nLightingMethod || gameStates.menus.nInMenu || !gameStates.app.bGameRunning) 
+if (!gameStates.render.nLightingMethod || gameStates.menus.nInMenu || !gameStates.app.bGameRunning) 
 #endif
  {
 	r += m_data.nGamma;

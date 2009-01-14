@@ -341,7 +341,7 @@ if (optColorSat >= 0) {
 			break;
 			}
 	}
-gameStates.render.nLightingMethod = gameOpts->render.nLightingMethod;
+gameStates.render.nLightingMethod = gameOpts->render.nLightingMethod && !gameStates.app.bNostalgia;
 if (gameStates.render.nLightingMethod == 2)
 	gameStates.render.bPerPixelLighting = 2;
 else if ((gameStates.render.nLightingMethod == 1) && gameOpts->render.bUseLightmaps)

@@ -439,7 +439,7 @@ if (gameStates.app.bNostalgia)
 	return 0;
 if (gameStates.app.bMultiThreaded)
 	return 0;
-if (!(gameOpts->render.nLightingMethod ||
+if (!(gameStates.render.nLightingMethod ||
 	  (gameStates.render.bAmbientColor && !gameStates.render.bColored) ||
 	   gameStates.app.bEnableShadows))
 	return 0;
