@@ -443,8 +443,8 @@ colorP->blue = 1.0;
 switch (nObjType) {
 	case OBJ_PLAYER:
 		*pbGotColor = 1;
-		 if (HeadlightIsOn (objP->info.nId)) {
-			 lightManager.Headlights ().Add (objP);
+		if (!gameStates.render.nLightingMethod && HeadlightIsOn (objP->info.nId)) {
+			lightManager.Headlights ().Add (objP);
 			return HEADLIGHT_SCALE;
 			}
 		 else if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) && gameData.multiplayer.players [objP->info.nId].secondaryAmmo [PROXMINE_INDEX]) {
