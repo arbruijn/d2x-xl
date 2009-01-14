@@ -142,7 +142,7 @@ if (gameStates.render.nLightingMethod && (lightIds [objP->info.nId] < 0)) {
 		nLight = lightManager.Add (NULL, &c, I2X (200), -1, -1, -1, -1, NULL);
 		if (nLight >= 0) {
 			lightIds [objP->info.nId] = nLight;
-			pl = lightManager.Lights (0)[nLight];
+			pl = lightManager.Lights (0) + nLight;
 			pl->info.nPlayer = (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : 1;
 			pl->info.fRad = 0;
 			pl->info.bSpot = 1;
