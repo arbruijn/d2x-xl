@@ -130,8 +130,8 @@ typedef struct tOpenFont {
 class CFontManager {
 	private:
 		tOpenFont		m_fonts [MAX_OPEN_FONTS];
-		CFont*				m_gameFonts [MAX_FONTS];
-		CFont*				m_current;
+		CFont*			m_gameFonts [MAX_FONTS];
+		CFont*			m_current;
 		CStack<CFont*>	m_save;
 
 	public:

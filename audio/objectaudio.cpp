@@ -165,6 +165,8 @@ int CAudio::PlaySound (short nSound, int nSoundClass, fix nVolume, int nPan, int
 if (vPos && (nVolume < 10))
 	return;
 #endif
+if (!nVolume)
+	return -1;
 if (!pszWAV) {
 #ifdef NEWDEMO
 	if (gameData.demo.nState == ND_STATE_RECORDING)

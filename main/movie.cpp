@@ -204,12 +204,12 @@ while (nNextSubTitle < m_nCaptions && nFrame >= m_captions [nNextSubTitle].first
 	}
 
 //find y coordinate for first line of subtitles
-y = CCanvas::Current ()->Height () - ((nLineSpacing+1)*MAX_ACTIVE_SUBTITLES+2);
+y = CCanvas::Current ()->Height () - ((nLineSpacing + 1) * MAX_ACTIVE_SUBTITLES + 2);
 
 //erase old subtitles if necessary
 if (bMustErase) {
 	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-	GrRect (0, y, CCanvas::Current ()->Width ()-1, CCanvas::Current ()->Height ()-1);
+	GrRect (0, y, CCanvas::Current ()->Width () - 1, CCanvas::Current ()->Height () - 1);
 	}
 //now draw the current subtitles
 for (t = 0; t < nActiveSubTitles; t++)
