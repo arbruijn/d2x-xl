@@ -154,7 +154,6 @@ class CDynLightData {
 		CShortArray			nearestVertLights;	//the 8 nearest static lights for every vertex
 		CByteArray			variableVertLights;	//the 8 nearest veriable lights for every vertex
 		CShortArray			owners;
-		CHeadlightManager	headlights;
 		COglMaterial		material;
 		CFBO					fbo;
 		short					nLights [2];
@@ -178,7 +177,8 @@ class CDynLightData {
 
 class CLightManager {
 	private:
-		CDynLightData	m_data;
+		CDynLightData		m_data;
+		CHeadlightManager	m_headlights;
 
 	public:
 		CLightManager () { Init (); }
@@ -229,7 +229,7 @@ class CLightManager {
 		inline CActiveDynLight* Active (uint i) { return m_data.active [i]; }
 		inline CDynLightIndex* Index (uint i) { return m_data.index [i]; }
 		inline CFBO& FBO (void) { return m_data.fbo; }
-		inline CHeadlightManager& Headlights (void) { return m_data.headlights; }
+		inline CHeadlightManager& Headlights (void) { return m_headlights; }
 		inline CShortArray& NearestSegLights (void) { return m_data.nearestSegLights; }
 		inline CShortArray& NearestVertLights (void) { return m_data.nearestVertLights; }
 		inline CByteArray& VariableVertLights (void) { return m_data.variableVertLights; }

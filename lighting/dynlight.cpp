@@ -60,6 +60,7 @@ m_data.Destroy ();
 
 bool CLightManager::Create (void)
 {
+m_headlights.Init ();
 return m_data.Create ();
 }
 
@@ -562,7 +563,7 @@ if (gameStates.app.bD1Mission)
 	gameData.render.fAttScale *= 2;
 #endif
 gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
-memset (&m_data.headlights, 0, sizeof (m_data.headlights));
+m_headlights.Init ();
 if (gameStates.render.nLightingMethod)
 	gameData.render.color.vertices.Clear ();
 m_data.Init ();

@@ -46,7 +46,7 @@ void CLightManager::Transform (int bStatic, int bVariable)
 	CDynLight*	prl = m_data.lights [1];
 
 m_data.nLights [1] = 0;
-memset (&m_data.headlights, 0, sizeof (m_data.headlights));
+m_headlights.Init ();
 lightManager.Headlights ().Update ();
 for (i = 0; i < m_data.nLights [0]; i++, pl++) {
 #if DBG
