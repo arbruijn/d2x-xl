@@ -244,6 +244,8 @@ void CMovie::ShowFrame (ubyte* buf, uint bufw, uint bufh, uint sx, uint sy, uint
 
 bmFrame.Init (BM_LINEAR, 0, 0, bufw, bufh, 1, buf);
 bmFrame.SetPalette (movieManager.m_palette);
+paletteManager.Push ();
+paletteManager.SetCurrent (movieManager.m_palette);
 
 TRANSPARENCY_COLOR = 0;
 if (gameOpts->movies.bFullScreen) {
@@ -273,6 +275,7 @@ else {
 	}
 TRANSPARENCY_COLOR = DEFAULT_TRANSPARENCY_COLOR;
 bmFrame.SetBuffer (NULL);
+paletteManager.Pop ();
 }
 
 //-----------------------------------------------------------------------

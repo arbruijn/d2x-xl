@@ -423,6 +423,7 @@ void CPaletteManager::Init (void)
 {
 memset (&m_data, 0, sizeof (m_data));
 SetGamma (-1);
+m_save.Create (10);
 }
 
 //------------------------------------------------------------------------------

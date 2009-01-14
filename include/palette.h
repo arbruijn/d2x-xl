@@ -19,6 +19,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "color.h"
 #include "cfile.h"
+#include "cstack.h"
 
 #define PALETTE_SIZE				256
 #define MAX_COMPUTED_COLORS	64
@@ -94,16 +95,17 @@ typedef struct tPaletteList {
 
 //------------------------------------------------------------------------------
 
-typedef struct tPaletteData {
-		CPalette			*deflt;
-		CPalette			*fade;
-		CPalette			*game;
-		CPalette			*last;
-		CPalette			*D1;
-		CPalette			*texture;
-		CPalette			*current;
-		CPalette			*prev;
-		tPaletteList	*list;
+class CPaletteData {
+	public:
+		CPalette*		deflt;
+		CPalette*		fade;
+		CPalette*		game;
+		CPalette*		last;
+		CPalette*		D1;
+		CPalette*		texture;
+		CPalette*		current;
+		CPalette*		prev;
+		tPaletteList*	list;
 		char				szLastLoaded [FILENAME_LEN];
 		char				szLastPig [FILENAME_LEN];
 		int				nPalettes;
@@ -119,11 +121,16 @@ typedef struct tPaletteData {
 		tRgbColors		lastEffect;
 		bool				bDoEffect;
 		bool				bAllowEffect;
-} tPaletteData;
+	};
+
+
+class CPalette;
 
 class CPaletteManager {
 	private:
-		tPaletteData	m_data;
+		CPaletteData	m_data;
+
+		CStack< CPalette* > m_save;
 
 	public:
 		CPaletteManager () { Init (); };
@@ -164,6 +171,14 @@ class CPaletteManager {
 		bool EffectDisabled (void) { return !m_data.bAllowEffect; }
 		inline bool FadedOut (void) { return m_data.bAllowEffect; }
 		void SetPrev (CPalette *palette) { m_data.prev = palette; }
+
+		 void Push (void) { 
+			m_save.Push (m_data.current); 
+			}
+		 void Pop (void) { 
+			m_data.current = m_save.Pop (); 
+			}
+
 		inline CPalette* Activate (CPalette* palette) {
 			if (palette && (m_data.current != palette)) {
 				m_data.current = palette;
@@ -183,6 +198,8 @@ class CPaletteManager {
 		inline fix EffectDuration (void) { return m_data.xEffectDuration; }
 		inline fix LastEffectTime (void) { return m_data.xLastEffectTime; }
 
+		inline void SetDefault (CPalette* palette) { m_data.deflt = palette; }
+		inline void SetCurrent (CPalette* palette) { m_data.current = palette; }
 		inline void SetGame (CPalette* palette) { m_data.game = palette; }
 		inline void SetFade (CPalette* palette) { m_data.fade = palette; }
 		inline void SetTexture (CPalette* palette) { m_data.texture = palette; }
@@ -191,11 +208,9 @@ class CPaletteManager {
 		inline CPalette* Default (void) { return m_data.deflt; }
 		inline CPalette* Current (void) { return m_data.current ? m_data.current : m_data.deflt; }
 		inline CPalette* Game (void) { return m_data.game ? m_data.game : Current (); }
-		CPalette* Texture (void) { return m_data.texture ? m_data.texture : Current (); };
+		inline CPalette* Texture (void) { return m_data.texture ? m_data.texture : Current (); };
 		inline CPalette* D1 (void) { return m_data.D1 ? m_data.D1 : Current (); }
-		inline void SetDefault (CPalette* defPal) { m_data.deflt = defPal; }
-		inline void Fade (CPalette* fadePal) { m_data.fade = fadePal; }
-		inline CPalette* GetFade (void) { return m_data.fade; }
+		inline CPalette* Fade (void) { return m_data.fade; }
 		inline ubyte* FadeTable (void) { return m_data.fadeTable; }
 		inline bool DoEffect (void) { return m_data.bDoEffect; }
 
@@ -203,7 +218,6 @@ class CPaletteManager {
 		inline char* LastPig (void) { return m_data.szLastPig; }
 		inline void SetLastLoaded (const char *name) { strncpy (m_data.szLastLoaded, name, sizeof (m_data.szLastLoaded)); }
 		inline void SetLastPig (const char *name) { strncpy (m_data.szLastPig, name, sizeof (m_data.szLastPig)); }
-
 
 		inline int ClosestColor (int r, int g, int b)
 		 { return m_data.current ? m_data.current->ClosestColor (r, g, b) : 0; }
