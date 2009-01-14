@@ -605,7 +605,6 @@ if ((t0 < 0) || (t - t0 >= 1000 / 90))
 	a [HA] = curAngle;
 	a [BA] = a [PA] = 0;
 	r = CFixMatrix::Create (a);
-	// TODO MM
 	m_info.objP->info.position.mOrient = m_info.orient * r;
 	m_info.curAngle = curAngle;
 	m_info.curDelta = curDelta;

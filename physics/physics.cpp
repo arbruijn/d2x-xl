@@ -120,7 +120,6 @@ if (labs (CFixVector::Dot (desiredUpVec, objP->info.position.mOrient.FVec ())) <
 		turnAngles [PA] = turnAngles [HA] = 0;
 		turnAngles [BA] = roll_ang;
 		mRotate = CFixMatrix::Create(turnAngles);
-		// TODO MM
 		new_pm = objP->info.position.mOrient * mRotate;
 		objP->info.position.mOrient = new_pm;
 		}
@@ -243,7 +242,6 @@ if (!IsMultiGame) {
 		}
 	}
 mRotate = CFixMatrix::Create(turnAngles);
-// TODO MM
 mNewOrient = info.position.mOrient * mRotate;
 info.position.mOrient = mNewOrient;
 if (mType.physInfo.flags & PF_TURNROLL)
@@ -255,7 +253,6 @@ if (mType.physInfo.turnRoll) {
 	turnAngles [PA] = turnAngles [HA] = 0;
 	turnAngles [BA] = mType.physInfo.turnRoll;
 	mRotate = CFixMatrix::Create(turnAngles);
-	// TODO MM
 	m = info.position.mOrient * mRotate;
 	info.position.mOrient = m;
 	}
@@ -830,8 +827,6 @@ retryMove:
 				int bCheckVel = 0;
 				//We're constrained by a wall, so subtract wall part from velocity vector
 
-				// TODO: fix this with new dot product method, without bouncing off walls
-				// THIS IS DELICATE!!
 				xWallPart = CFixVector::Dot (hi.hit.vNormal, mType.physInfo.velocity);
 				if (bForceFieldBounce || (mType.physInfo.flags & PF_BOUNCE)) {		//bounce off CWall
 					xWallPart *= 2;	//Subtract out wall part twice to achieve bounce

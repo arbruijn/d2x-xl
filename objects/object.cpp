@@ -1736,10 +1736,6 @@ if (gameStates.app.bPlayerIsDead) {
 	xCameraToPlayerDistGoal = min (xTimeDead * 8, I2X (20)) + gameData.objs.consoleP->info.xSize;
 	SetCameraPos (&gameData.objs.deadPlayerCamera->info.position.vPos, gameData.objs.consoleP);
 	fVec = gameData.objs.consoleP->info.position.vPos - gameData.objs.deadPlayerCamera->info.position.vPos;
-/*
-	gameData.objs.deadPlayerCamera->position.mOrient = CFixMatrix::Create(fVec, NULL, NULL);
-*/
-	// TODO: MatrixCreateFCheck
 	gameData.objs.deadPlayerCamera->info.position.mOrient = CFixMatrix::CreateF(fVec);
 
 	if (xTimeDead > DEATH_SEQUENCE_EXPLODE_TIME) {
@@ -1958,7 +1954,6 @@ rotangs = CAngleVector::Create((fixang) FixMul (mType.spinRate [X], gameData.tim
 										 (fixang) FixMul (mType.spinRate [Y], gameData.time.xFrame),
 										 (fixang) FixMul (mType.spinRate [Z], gameData.time.xFrame));
 rotmat = CFixMatrix::Create (rotangs);
-// TODO MM
 new_pm = info.position.mOrient * rotmat;
 info.position.mOrient = new_pm;
 info.position.mOrient.CheckAndFix();

@@ -325,9 +325,7 @@ if ((nType != BUBBLE_PARTICLES) && mOrient) {
 	vRot [PA] = 2048 - ((d_rand () % 9) * 512);
 	vRot [HA] = 2048 - ((d_rand () % 9) * 512);
 	mRot = CFixMatrix::Create (vRot);
-	//TODO: MM
 	m_mOrient = *mOrient * mRot;
-	//m_mOrient = *mOrient;
 	}
 if (nLife < 0)
 	nLife = -nLife;

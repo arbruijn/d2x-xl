@@ -583,7 +583,6 @@ vp = segP->SideCenter (nSide) - gameData.objs.consoleP->info.position.vPos;
 /*
 gameData.objs.consoleP->info.position.mOrient = CFixMatrix::Create(vp, NULL, NULL);
 */
-// TODO: MatrixCreateFCheck
 gameData.objs.consoleP->info.position.mOrient = CFixMatrix::CreateF (vp);
 gameData.objs.consoleP->RelinkToSeg (segP->Index ());
 }

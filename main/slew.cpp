@@ -145,7 +145,6 @@ int do_slew_movement(CObject *objP, int check_keys, int check_joy )
 	moved = rotang[PA] | rotang[BA] | rotang[HA];
 
 	rotmat = CFixMatrix::Create(rotang);
-	// TODO MM
 	new_pm = objP->info.position.mOrient * rotmat;
 	objP->info.position.mOrient = new_pm;
 	CFixMatrix::Transpose(new_pm);		//make those columns rows

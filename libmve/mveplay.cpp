@@ -456,8 +456,6 @@ count = (minor > 0) ? get_short (data+4) : 1;
 truecolor = (minor > 1) ? get_short (data+6) : 0;
 g_width = w << 3;
 g_height = h << 3;
-/* TODO: * 4 causes crashes on some files */
-/* only D2_ALLOC once */
 if (g_vBuffers == NULL)
 	g_vBackBuf1 = g_vBuffers = mve_alloc (g_width * g_height * 8);
 if (truecolor)

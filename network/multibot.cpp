@@ -843,10 +843,6 @@ switch (action)  {
 		OBJECTS [nBossObj].RelinkToSeg (nTeleportSeg);
 		gameData.boss [nBossIdx].nLastTeleportTime = gameData.time.xGame;
 		vBossDir = OBJECTS [gameData.multiplayer.players [nPlayer].nObject].info.position.vPos - bossObjP->info.position.vPos;
-/*
-		bossObjP->info.position.mOrient = CFixMatrix::Create(vBossDir, NULL, NULL);
-*/
-		// TODO: MatrixCreateFCheck
 		bossObjP->info.position.mOrient = CFixMatrix::CreateF(vBossDir);
 
 		audio.CreateSegmentSound (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nTeleportSeg, 0, bossObjP->info.position.vPos, 0, I2X (1));

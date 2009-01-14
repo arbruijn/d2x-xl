@@ -115,7 +115,6 @@ static void dumpaddr(struct sockaddr_in *sin)
 #endif
 
 // The multicast address for Descent 2 game announcements.
-// TODO: Pick a better address for this
 #define DESCENT2_ANNOUNCE_ADDR inet_addr("239.255.1.2")
 
 /* Open the socket and subscribe to the multicast session */
@@ -231,7 +230,6 @@ if (size < 0)
 	// We have the packet, now fill out the receive data.
 	memset(rd, 0, sizeof(*rd));
 	memcpy(rd->src_node, &fromaddr.sin_addr, 4);
-	// TODO: Include the port like in ipx_udp.c
 	rd->pktType = 0;
 
 	return size;

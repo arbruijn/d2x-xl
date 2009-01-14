@@ -36,7 +36,6 @@ if (m_nSize && ((m_tUpdate < 0) || (t >= m_tRefresh))) {
 	m_path [m_nEnd].vOrgPos = objP->info.position.vPos;
 	m_path [m_nEnd].vPos = objP->info.position.vPos;
 	m_path [m_nEnd].mOrient = objP->info.position.mOrient;
-	// TODO: WTF??
 	m_path [m_nEnd].vPos += objP->info.position.mOrient.FVec () * 0;
 	m_path [m_nEnd].vPos += objP->info.position.mOrient.UVec () * 0;
 //	if (!memcmp (m_path + h, m_path + m_nEnd, sizeof (tMovementPath)))

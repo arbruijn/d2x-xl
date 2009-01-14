@@ -551,12 +551,10 @@ vTAngles [BA] += (fixang) FixDiv (Controls [0].bankTime, ROT_SPEED_DIVISOR*2);
 
 m = CFixMatrix::Create(vTAngles);
 if (Controls [0].verticalThrustTime || Controls [0].sidewaysThrustTime) {
-	// TODO MM
 	m_data.viewMatrix = playerP->info.position.mOrient * m;
 	m_data.viewTarget += m_data.viewMatrix.UVec () * (Controls [0].verticalThrustTime * SLIDE_SPEED);
 	m_data.viewTarget += m_data.viewMatrix.RVec () * (Controls [0].sidewaysThrustTime * SLIDE_SPEED);
 	}
-// TODO MM
 m_data.viewMatrix = playerP->info.position.mOrient * m;
 if (m_data.nViewDist < ZOOM_MIN_VALUE) 
 	m_data.nViewDist = ZOOM_MIN_VALUE;

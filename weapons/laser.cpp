@@ -825,10 +825,6 @@ vNewDir = *vNormVel;
 vNewDir *= ((fix) (frameTime * 16 / gameStates.gameplay.slowmo [0].fSpeed));
 vNewDir += objP->info.position.mOrient.FVec ();
 CFixVector::Normalize(vNewDir);
-/*
-objP->info.position.mOrient = CFixMatrix::Create(vNewDir, NULL, NULL);
-*/
-// TODO: MatrixCreateFCheck
 objP->info.position.mOrient = CFixMatrix::CreateF(vNewDir);
 }
 

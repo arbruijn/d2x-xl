@@ -1,6 +1,10 @@
 #ifndef _CARRAY_H
 #define _CARRAY_H
 
+#ifdef HAVE_CONFIG_H
+#include <conf.h>
+#endif
+
 #include <string.h>
 #include "pstypes.h"
 #include "cquicksort.h"

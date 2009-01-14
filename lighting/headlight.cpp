@@ -179,7 +179,6 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 	objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
 	pl->info.vPos = OBJPOS (objP)->vPos;
 	pl->vDir = OBJPOS (objP)->mOrient.FVec ();
-	//TODO ScaleFrac check
 	pl->info.vPos += pl->vDir * (objP->info.xSize / 4);
 	}
 }

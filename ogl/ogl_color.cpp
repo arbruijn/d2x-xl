@@ -432,7 +432,6 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		else
 			vertColor += (*gameData.render.vertColor.matDiffuse.V3() * NdotL);
 		}
-	//TODO: Color Klasse
 	vertColor[R] *= lightColor[R];
 	vertColor[G] *= lightColor[G];
 	vertColor[B] *= lightColor[B];

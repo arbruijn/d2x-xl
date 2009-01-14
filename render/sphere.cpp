@@ -25,7 +25,7 @@
 
 #if !RINGED_SPHERE
 
-// Todo: Create a c-tor for the two tables
+// TODO: Create a c-tor for the two tables
 
 OOF::CTriangle baseSphereOcta [8] = {
  {{{-1,0,1},{1,0,1},{0,1,0}},{0,0,0}},

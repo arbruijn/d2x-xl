@@ -1137,7 +1137,6 @@ else {
 	if ((gameData.objs.viewerP == gameData.objs.consoleP) && transformation.m_info.bUsePlayerHeadAngles) {
 		CFixMatrix mHead, mView;
 		mHead = CFixMatrix::Create(transformation.m_info.playerHeadAngles);
-		// TODO MM
 		mView = gameData.objs.viewerP->info.position.mOrient * mHead;
 		G3SetViewMatrix (gameData.render.mine.viewerEye, mView, gameStates.render.xZoom, bOglScale);
 		}

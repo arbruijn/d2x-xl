@@ -270,8 +270,6 @@ if (!(va [X] && va [Y] && va [Z]))
 	i = 0;
 do {
 	VmRandomVector (vOffs);
-	// TODO: Use new vector dot prod method
-	// right now it hangs/crashes
 	nDot = CFixVector::Dot (va, *vOffs);
 	if (++i > 100)
 		i = 0;

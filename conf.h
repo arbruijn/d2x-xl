@@ -180,3 +180,9 @@
 # endif
 #endif
         
+#ifdef _DEBUG
+#	define DBG 1
+#else
+#	define DBG 0
+#endif
+
