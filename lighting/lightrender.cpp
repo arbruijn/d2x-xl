@@ -47,7 +47,7 @@ void CLightManager::Transform (int bStatic, int bVariable)
 
 m_data.nLights [1] = 0;
 m_headlights.Reset ();
-lightManager.Headlights ().Update ();
+m_headlights.Update ();
 for (i = 0; i < m_data.nLights [0]; i++, pl++) {
 #if DBG
 	if ((nDbgSeg >= 0) && (nDbgSeg == pl->info.nSegment) && ((nDbgSide < 0) || (nDbgSide == pl->info.nSide)))
@@ -64,7 +64,7 @@ for (i = 0; i < m_data.nLights [0]; i++, pl++) {
 	prl->render.vPosf [0][W] = 1;
 #if 1
 	if (prl->info.bSpot)
-		lightManager.Headlights ().Setup (prl);
+		m_headlights.Setup (prl);
 #endif
 	prl->info.bState = pl->info.bState && (pl->info.color.red + pl->info.color.green + pl->info.color.blue > 0.0);
 	prl->render.bLightning = (pl->info.nObject < 0) && (pl->info.nSide < 0);

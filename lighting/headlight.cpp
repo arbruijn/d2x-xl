@@ -134,8 +134,8 @@ int CHeadlightManager::Add (CObject *objP)
 	static float spotAngles [] = {0.9f, 0.5f, 0.5f};
 #endif
 
-if (lightIds [objP->info.nId] < 0) {
-	if (gameStates.render.nLightingMethod) {
+if (gameStates.render.nLightingMethod) {
+	if (lightIds [objP->info.nId] < 0) {
 			static tRgbaColorf c = {1.0f, 1.0f, 1.0f, 1.0f};
 			int nLight = lightManager.Add (NULL, &c, I2X (200), -1, -1, -1, -1, NULL);
 
@@ -151,9 +151,9 @@ if (lightIds [objP->info.nId] < 0) {
 			}
 		return nLight;
 		}
-	else {
-		objects [nLights++] = objP;
-		}
+	}
+else {
+	objects [nLights++] = objP;
 	}
 return -1;
 }
@@ -178,13 +178,13 @@ void CHeadlightManager::Update (void)
 	short			nPlayer;
 
 for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
-	if (lightIds [nPlayer] < 0)
-		continue;
-	pl = lightManager.Lights (0) + lightIds [nPlayer];
-	objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
-	pl->info.vPos = OBJPOS (objP)->vPos;
-	pl->vDir = OBJPOS (objP)->mOrient.FVec ();
-	pl->info.vPos += pl->vDir * (objP->info.xSize / 4);
+	if (lightIds [nPlayer] >= 0) {
+		pl = lightManager.Lights (0) + lightIds [nPlayer];
+		objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
+		pl->info.vPos = OBJPOS (objP)->vPos;
+		pl->vDir = OBJPOS (objP)->mOrient.FVec ();
+		pl->info.vPos += pl->vDir * (objP->info.xSize / 4);
+		}
 	}
 }
 
