@@ -29,6 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "dynlight.h"
 #include "headlight.h"
 #include "light.h"
+#include "lightcluster.h"
 #include "lightning.h"
 #include "network.h"
 
@@ -228,24 +229,24 @@ return false;
 void ApplyLight (fix xObjIntensity, int nObjSeg, CFixVector *vObjPos, int nRenderVertices,
 					  CArray<short>& renderVertices,	int nObject, tRgbaColorf *color)
 {
-	int			iVertex, bUseColor, bForceColor;
-	int			nVertex;
-	int			bApplyLight;
-	short			nLightObj;
-	ubyte			nObjType;
-	CFixVector	*vVertPos;
-	fix			dist, xOrigIntensity = xObjIntensity;
-	CObject		*lightObjP, *objP = (nObject < 0) ? NULL : OBJECTS + nObject;
-	CPlayerData		*playerP = objP ? gameData.multiplayer.players + objP->info.nId : NULL;
+	int				iVertex, bUseColor, bForceColor;
+	int				nVertex;
+	int				bApplyLight;
+	short				nLightObj;
+	ubyte				nObjType;
+	CFixVector		*vVertPos;
+	fix				dist, xOrigIntensity = xObjIntensity;
+	CObject*			lightObjP, *objP = (nObject < 0) ? NULL : OBJECTS + nObject;
+	CPlayerData*	playerP = objP ? gameData.multiplayer.players + objP->info.nId : NULL;
 
 nObjType = objP ? objP->info.nType : OBJ_NONE;
 if (objP && SHOW_DYN_LIGHT) {
 	if (nObjType == OBJ_PLAYER) {
 		if (EGI_FLAG (headlight.bAvailable, 0, 0, 0)) {
 			if (!HeadlightIsOn (objP->info.nId))
-				RemoveOglHeadlight (objP);
-			else if (gameData.render.lights.dynamic.nHeadlights [objP->info.nId] < 0)
-				gameData.render.lights.dynamic.nHeadlights [objP->info.nId] = AddOglHeadlight (objP);
+				lightManager.Headlights ().Remove (objP);
+			else 
+				lightManager.Headlights ().Add (objP);
 			}
 		else {
 			if (HeadlightIsOn (objP->info.nId)) {
@@ -269,12 +270,12 @@ if (objP && SHOW_DYN_LIGHT) {
 	if (nObject == nDbgObj)
 		nDbgObj = nDbgObj;
 #endif
-	if (0 > (nLightObj = gameData.objs.lightObjs [nObject].nObject))
+	if (0 > (nLightObj = lightClusterManager.Object (nObject).nObject))
 		lightObjP = NULL;
 	else
 		lightObjP = OBJECTS + nLightObj;
 	if (!lightClusterManager.Add (nObject, color, xObjIntensity))
-		AddDynLight (NULL, color, xObjIntensity, -1, -1, nObject, -1, NULL);
+		lightManager.Add (NULL, color, xObjIntensity, -1, -1, nObject, -1, NULL);
 	return;
 	}
 

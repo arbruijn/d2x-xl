@@ -27,6 +27,7 @@ class CLightClusterManager {
 		short Create (CObject *objP);
 		inline bool Use (void) { return m_bUse; }
 		inline void SetUsage (bool bUse) { m_bUse = bUse; }
+		inline CLightObjId& Object (uint i) { return m_objects [i]; }
 
 	private:
 		void Set (void);

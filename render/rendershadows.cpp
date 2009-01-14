@@ -342,7 +342,7 @@ int GatherShadowLightSources (void)
 	int				h, i, j, k, l, n, m = gameOpts->render.shadows.nLights;
 	short				*pnl;
 //	CDynLight		*pl;
-	CLightRenderData	*psl;
+	CDynLight*		psl;
 	CFixVector		vLightDir;
 
 psl = lightManager.Lights (1);
@@ -352,7 +352,7 @@ for (h = 0, l = lightManager.LightCount (0); l; l--, psl++)
 FORALL_OBJS (objP, h) {
 	if (gameData.render.mine.bObjectRendered [h] != gameStates.render.nFrameFlipFlop)
 		continue;
-	pnl = gameData.render.lights.dynamic.nearestSegLights + objP->info.nSegment * MAX_NEAREST_LIGHTS;
+	pnl = lightManager.NearestSegLights  () + objP->info.nSegment * MAX_NEAREST_LIGHTS;
 	k = h * MAX_SHADOW_LIGHTS;
 	for (i = n = 0; (n < m) && (*pnl >= 0); i++, pnl++) {
 		psl = lightManager.Lights (1) + *pnl;
@@ -376,7 +376,7 @@ FORALL_OBJS (objP, h) {
 	gameData.render.shadows.objLights [k + n] = -1;
 	}
 psl = lightManager.Lights (1);
-for (h = 0, i = gameData.render.lights.dynamic.nLights; i; i--, psl++)
+for (h = 0, i = lightManager.LightCount (0); i; i--, psl++)
 	if (psl->bShadow)
 		h++;
 return h;
@@ -430,10 +430,10 @@ if (!bShadowTest)
 void RenderNeatShadows (fix nEyeOffset, int nWindow, short nStartSeg)
 {
 	short				i;
-	CLightRenderData	*psl = lightManager.Lights (1);
+	CDynLight	*psl = lightManager.Lights (1);
 
 gameData.render.shadows.nLights = GatherShadowLightSources ();
-for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, psl++) {
+for (i = 0; i < lightManager.LightCount (0); i++, psl++) {
 	if (!psl->bShadow)
 		continue;
 	gameData.render.shadows.lights = psl;

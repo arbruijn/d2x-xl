@@ -1395,7 +1395,7 @@ else if (nState == 1) {
 		nDbgVertex = nDbgVertex;
 #endif
 	for (nLights = 0, i = vld.nLights, j = 0; j < h; i++, j++) {
-		psl = gameData.render.lights.dynamic.shader.activeLights [0][j].psl;
+		psl = lightManager.Active (0)[j].psl;
 		if (bSkipHeadlight && (psl->info.nType == 3))
 			continue;
 		vld.buffers [0][i] = vPos;
@@ -1512,7 +1512,7 @@ for (i = nStart, nStep = (nStart > nEnd) ? -1 : 1; i != nEnd; i += nStep) {
 					c.color = gameData.render.color.ambient [nVertex].color;
 					tFaceColor *pvc = gameData.render.color.vertices + nVertex;
 					if (pvc->index != gameStates.render.nFrameFlipFlop + 1) {
-						if (nLights + gameData.render.lights.dynamic.variableVertLights [nVertex] == 0) {
+						if (nLights + lightManager.VariableVertLights () [nVertex] == 0) {
 							pvc->color = c.color;
 							pvc->index = gameStates.render.nFrameFlipFlop + 1;
 							}
@@ -1544,7 +1544,7 @@ for (i = nStart, nStep = (nStart > nEnd) ? -1 : 1; i != nEnd; i += nStep) {
 			pc->alpha = fAlpha;
 			}
 			}
-	gameData.render.lights.dynamic.material.bValid = 0;
+	lightManager.Material ().bValid = 0;
 	}
 PROF_END(ptLighting)
 gameStates.ogl.bUseTransform = 0;
@@ -1678,7 +1678,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 				pc->alpha = fAlpha;
 				}
 			}
-		gameData.render.lights.dynamic.material.bValid = 0;
+		lightManager.Material ().bValid = 0;
 		}
 	}
 #	if SHADER_VERTEX_LIGHTING
@@ -1786,7 +1786,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 					else {
 						tFaceColor *pvc = gameData.render.color.vertices + nVertex;
 						if (pvc->index != gameStates.render.nFrameFlipFlop + 1) {
-							if (nLights + gameData.render.lights.dynamic.variableVertLights [nVertex] == 0) {
+							if (nLights + lightManager.VariableVertLights () [nVertex] == 0) {
 								pvc->color.red = c.color.red + gameData.render.color.ambient [nVertex].color.red;
 								pvc->color.green = c.color.green + gameData.render.color.ambient [nVertex].color.green;
 								pvc->color.blue = c.color.blue + gameData.render.color.ambient [nVertex].color.blue;

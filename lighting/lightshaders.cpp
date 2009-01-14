@@ -1263,7 +1263,7 @@ PROF_START
 	//CFloatVector					vPos = CFloatVector::Create(0,0,0,1);
 	GLenum					hLight;
 	CActiveDynLight	*activeLightsP;
-	CLightRenderData			*psl;
+	CDynLight			*psl;
 	tRenderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][0];
 
 #if DBG
@@ -1295,7 +1295,7 @@ if (!gameStates.ogl.iLight) {
 		HUDMessage (0, "%d lights", gameStates.ogl.nLights);
 #endif
 	}
-activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + gameStates.ogl.nFirstLight;
+activeLightsP = lightManager.Active (0) + gameStates.ogl.nFirstLight;
 nLightRange = sliP->nLast - gameStates.ogl.nFirstLight + 1;
 for (nLights = 0;
 	  (gameStates.ogl.iLight < gameStates.ogl.nLights) & (nLightRange > 0) && (nLights < gameStates.render.nMaxLightsPerPass);
@@ -1365,7 +1365,7 @@ for (nLights = 0;
 if (nLightRange <= 0) {
 	gameStates.ogl.iLight = gameStates.ogl.nLights;
 	}
-gameStates.ogl.nFirstLight = activeLightsP - gameData.render.lights.dynamic.shader.activeLights [0];
+gameStates.ogl.nFirstLight = activeLightsP - lightManager.Active (0);
 #if DBG
 if ((gameStates.ogl.iLight < gameStates.ogl.nLights) && !nLightRange)
 	nDbgSeg = nDbgSeg;

@@ -563,8 +563,8 @@ void G3DrawModel (CObject *objP, short nModel, short nSubModel, CBitmap **modelB
 {
 	RenderModel::CModel					*pm;
 	tRenderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][0];
-	CActiveDynLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + sliP->nFirst;
-	CLightRenderData			*psl;
+	CActiveDynLight	*activeLightsP = lightManager.Active (0) + sliP->nFirst;
+	CDynLight			*psl;
 	int						nPass, iLight, nLights, nLightRange;
 	int						bBright = objP && (objP->info.nType == OBJ_MARKER);
 	int						bEmissive = objP && (objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId];
@@ -607,9 +607,9 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 			}
 		for (iLight = 0; (nLightRange > 0) && (iLight < 8) && nLights; activeLightsP++, nLightRange--) {
 #if DBG
-			if (activeLightsP - gameData.render.lights.dynamic.shader.activeLights [0] >= MAX_SHADER_LIGHTS)
+			if (activeLightsP - lightManager.Active (0) >= MAX_SHADER_LIGHTS)
 				break;
-			if (activeLightsP < gameData.render.lights.dynamic.shader.activeLights [0])
+			if (activeLightsP < lightManager.Active (0))
 				break;
 #endif
 			if (nLights < 0) {

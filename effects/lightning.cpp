@@ -1855,7 +1855,7 @@ if (SHOW_LIGHTNINGS) {
 		else
 			llP->nBrightness = F2X ((llP->color.red * 3 + llP->color.green * 5 + llP->color.blue * 2) * llP->color.alpha);
 		if (bDynLighting) {
-			llP->nDynLight = AddDynLight (NULL, &llP->color, llP->nBrightness, llP->nSegment, -1, -1, -1, &llP->vPos);
+			llP->nDynLight = lightManager.Add (NULL, &llP->color, llP->nBrightness, llP->nSegment, -1, -1, -1, &llP->vPos);
 			nLights++;
 			}
 		}

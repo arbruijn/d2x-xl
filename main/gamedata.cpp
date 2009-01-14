@@ -137,7 +137,7 @@ nLight = -1;
 
 // ----------------------------------------------------------------------------
 
-CLightRenderData::CLightRenderData ()
+CDynLight::CDynLight ()
 {
 CLEAR (vPosf);
 xDistance = 0;

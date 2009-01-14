@@ -1,15 +1,3 @@
-/*
-THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
-SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
-END-USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
-ROYALTY-FREE, PERPETUAL LICENSE TO SUCH END-USERS FOR USE BY SUCH END-USERS
-IN USING, DISPLAYING,  AND CREATING DERIVATIVE WORKS THEREOF, SO LONG AS
-SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
-FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
-CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
-AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
-COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
-*/
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -102,7 +90,7 @@ FORALL_LIGHT_OBJS (objP, i) {
 				}
 			if (objP->info.nSegment != objP->cType.lightInfo.nSegment)
 				OBJECTS [i].RelinkToSeg (objP->cType.lightInfo.nSegment);
-			AddDynLight (NULL, &objP->cType.lightInfo.color, objP->cType.lightInfo.intensity, -1, -1, i, -1, NULL);
+			lightManager.Add (NULL, &objP->cType.lightInfo.color, objP->cType.lightInfo.intensity, -1, -1, i, -1, NULL);
 			}
 		}
 	}
@@ -173,29 +161,29 @@ if (nPrevShot >= 0) {
 	CObject *prevShotP = OBJECTS + nPrevShot;
 	if (prevShotP->info.nSignature == objP->Shots ().nSignature) {
 		CObject *lightP, *shotP = OBJECTS + nShot;
-		short nLight = gameData.objs.lightObjs [nPrevShot].nObject;
+		short nLight = m_objects [nPrevShot].nObject;
 		if (nLight < 0)
 			lightP = prevShotP;
 		else {
 			lightP = OBJECTS + nLight;
-			if (lightP->info.nSignature != gameData.objs.lightObjs [nPrevShot].nSignature) {
+			if (lightP->info.nSignature != m_objects [nPrevShot].nSignature) {
 				lightP = prevShotP;
 				nLight = -1;
 				}
 			}
 		if (CFixVector::Dist (shotP->info.position.vPos, lightP->info.position.vPos) < I2X (10)) {
 			if (nLight >= 0) {
-				gameData.objs.lightObjs [nShot].nObject = nLight;
+				m_objects [nShot].nObject = nLight;
 				lightP->cType.lightInfo.nObjects++;
 				}
 			else {
 				nLight = Create (prevShotP);
-				gameData.objs.lightObjs [nShot].nObject =
-				gameData.objs.lightObjs [nPrevShot].nObject = nLight;
+				m_objects [nShot].nObject =
+				m_objects [nPrevShot].nObject = nLight;
 				if (nLight >= 0) {
 					lightP = OBJECTS + nLight;
-					gameData.objs.lightObjs [nShot].nSignature =
-					gameData.objs.lightObjs [nPrevShot].nSignature = lightP->info.nSignature;
+					m_objects [nShot].nSignature =
+					m_objects [nPrevShot].nSignature = lightP->info.nSignature;
 					lightP->cType.lightInfo.nObjects = 2;
 					}
 				}

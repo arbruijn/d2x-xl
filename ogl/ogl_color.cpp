@@ -282,7 +282,7 @@ return i * i;
 
 #if CHECK_LIGHT_VERT
 
-static inline int IsLightVert (int nVertex, CLightRenderData *psl)
+static inline int IsLightVert (int nVertex, CDynLight *psl)
 {
 if ((nVertex >= 0) && psl->info.faceP) {
 	ushort *pv = gameStates.render.bTriangleMesh ? psl->info.faceP->triIndex : psl->info.faceP->index;
@@ -313,7 +313,7 @@ int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcd
 	float						fLightDist, fAttenuation, spotEffect, NdotL, RdotE, nMinDot;
 	CFloatVector3			spotDir, lightDir, lightPos, vertPos, vReflect;
 	CFloatVector3			lightColor, colorSum, vertColor = CFloatVector3::Create(0.0f, 0.0f, 0.0f);
-	CLightRenderData			*psl;
+	CDynLight			*psl;
 	tRenderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
 	CActiveDynLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread] + sliP->nFirst;
 	CVertColorData			vcd = *vcdP;
@@ -329,8 +329,8 @@ vertPos = *vcd.vertPosP - *transformation.m_info.posf [1].V3 ();
 vertPos.Neg();
 CFloatVector3::Normalize(vertPos);
 nLights = sliP->nActive;
-if (nLights > gameData.render.lights.dynamic.nLights)
-	nLights = gameData.render.lights.dynamic.nLights;
+if (nLights > lightManager.LightCount (0))
+	nLights = lightManager.LightCount (0);
 i = sliP->nLast - sliP->nFirst + 1;
 #if DBG
 if (nVertex == nDbgVertex)
@@ -507,7 +507,7 @@ int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcd
 	float						fLightDist, fAttenuation, spotEffect, fMag, NdotL, RdotE;
 	CFloatVector3					spotDir, lightDir, lightPos, vertPos, vReflect;
 	CFloatVector3					lightColor, colorSum, vertColor = {{0.0f, 0.0f, 0.0f}};
-	CLightRenderData			*psl;
+	CDynLight			*psl;
 	tRenderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
 	CActiveDynLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread] + sliP->nFirst;
 	CVertColorData			vcd = *vcdP;
@@ -516,8 +516,8 @@ colorSum = *pColorSum;
 VmVecSub (&vertPos, vcd.vertPosP, reinterpret_cast<CFloatVector3*> (&transformation.m_info.glPosf));
 CFixVector::Normalize(vertPos, VmVecNegate (&vertPos));
 nLights = sliP->nActive;
-if (nLights > gameData.render.lights.dynamic.nLights)
-	nLights = gameData.render.lights.dynamic.nLights;
+if (nLights > lightManager.LightCount (0))
+	nLights = lightManager.LightCount (0);
 i = sliP->nLast - sliP->nFirst + 1;
 for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if (!(psl = activeLightsP->psl))
@@ -744,23 +744,23 @@ vcd.fMatShininess = 0;
 vcd.bMatSpecular = 0;
 vcd.bMatEmissive = 0;
 vcd.nMatLight = -1;
-if (gameData.render.lights.dynamic.material.bValid) {
+if (lightManager.Material ().bValid) {
 #if 0
-	if (gameData.render.lights.dynamic.material.emissive [R] ||
-		 gameData.render.lights.dynamic.material.emissive [G] ||
-		 gameData.render.lights.dynamic.material.emissive [B]) {
+	if (lightManager.Material ().emissive [R] ||
+		 lightManager.Material ().emissive [G] ||
+		 lightManager.Material ().emissive [B]) {
 		vcd.bMatEmissive = 1;
-		vcd.nMatLight = gameData.render.lights.dynamic.material.nLight;
-		colorSum = gameData.render.lights.dynamic.material.emissive;
+		vcd.nMatLight = lightManager.Material ().nLight;
+		colorSum = lightManager.Material ().emissive;
 		}
 #endif
 	vcd.bMatSpecular =
-		gameData.render.lights.dynamic.material.specular[R] ||
-		gameData.render.lights.dynamic.material.specular[G] ||
-		gameData.render.lights.dynamic.material.specular[B];
+		lightManager.Material ().specular[R] ||
+		lightManager.Material ().specular[G] ||
+		lightManager.Material ().specular[B];
 	if (vcd.bMatSpecular) {
-		vcd.matSpecular = gameData.render.lights.dynamic.material.specular;
-		vcd.fMatShininess = (float) gameData.render.lights.dynamic.material.shininess;
+		vcd.matSpecular = lightManager.Material ().specular;
+		vcd.fMatShininess = (float) lightManager.Material ().shininess;
 		}
 	else
 		vcd.matSpecular = matSpecular;

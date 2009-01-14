@@ -172,7 +172,7 @@ void CLightmapManager::RestoreLights (int bVariable)
 	CDynLight	*pl;
 	int			i;
 
-for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++)
+for (pl = gameData.render.lights.dynamic.lights, i = lightManager.LightCount (0); i; i--, pl++)
 	if (!(pl->info.nType || (pl->info.bVariable && !bVariable)))
 		pl->info.bOn = 1;
 }
@@ -186,7 +186,7 @@ int CLightmapManager::CountLights (int bVariable)
 
 if (!gameStates.render.bPerPixelLighting)
 	return 0;
-for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++)
+for (pl = gameData.render.lights.dynamic.lights, i = lightManager.LightCount (0); i; i--, pl++)
 	if (!(pl->info.nType || (pl->info.bVariable && !bVariable)))
 		nLights++;
 return nLights; 
@@ -255,7 +255,7 @@ m_list.info.Clear ();
 m_list.nLights = 0; 
 //first lightmap is dummy lightmap for multi pass lighting
 lmiP = m_list.info.Buffer (); 
-for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++) {
+for (pl = gameData.render.lights.dynamic.lights, i = lightManager.LightCount (0); i; i--, pl++) {
 	if (pl->info.nType || (pl->info.bVariable && !bVariable))
 		continue;
 	if (faceP == pl->info.faceP)

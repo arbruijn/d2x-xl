@@ -43,7 +43,7 @@ class COglMaterial {
 
 class CActiveDynLight;
 
-class CLightRenderData {
+class CDynLight {
 	public:
 		CFloatVector		vPosf [2];
 		fix					xDistance;
@@ -57,7 +57,7 @@ class CLightRenderData {
 		CActiveDynLight*	activeLightsP [MAX_THREADS];
 
 	public:
-		CLightRenderData ();
+		CDynLight ();
 	};
 
 //------------------------------------------------------------------------------
@@ -97,7 +97,7 @@ class CDynLight {
 		CFloatVector		fEmissive;
 		ubyte					bTransform;
 		CDynLightInfo		info;
-		CLightRenderData	render;
+		CDynLight			render;
 		CShadowLightData	shadow;
 
 	public:
@@ -266,7 +266,7 @@ extern CLightManager lightManager;
 //------------------------------------------------------------------------------
 
 void RegisterLight (tFaceColor *pc, short nSegment, short nSide);
-int AddDynLight (tFace *faceP, tRgbaColorf *pc, fix xBrightness, 
+int lightManager.Add (tFace *faceP, tRgbaColorf *pc, fix xBrightness, 
 					  short nSegment, short nSide, short nOwner, short nTexture, CFixVector *vPos);
 int RemoveDynLight (short nSegment, short nSide, short nObject);
 void AddDynGeometryLights (void);
@@ -288,7 +288,7 @@ void ResetNearestVertexLights (int nVertex, int nThread);
 short SetNearestSegmentLights (int nSegment, int nFace, int bVariable, int nType, int nThread);
 void ComputeStaticVertexLights (int nVertex, int nMax, int nThread);
 void ComputeStaticDynLighting (int nLevel);
-CLightRenderData *GetActiveRenderLight (CActiveDynLight *activeLightsP, int nThread);
+CDynLight *GetActiveRenderLight (CActiveDynLight *activeLightsP, int nThread);
 int CreatePerPixelLightingShader (int nType, int nLights);
 void InitPerPixelLightingShaders (void);
 void ResetPerPixelLightingShaders (void);
@@ -300,7 +300,7 @@ char *BuildLightingShader (const char *pszTemplate, int nLights);
 tFaceColor *AvgSgmColor (int nSegment, CFixVector *vPos);
 void ResetSegmentLights (void);
 int IsLight (int tMapNum);
-void ResetUsedLight (CLightRenderData *prl, int nThread);
+void ResetUsedLight (CDynLight *prl, int nThread);
 void ResetUsedLights (int bVariable, int nThread);
 void ResetActiveLights (int nThread, int nActive);
 

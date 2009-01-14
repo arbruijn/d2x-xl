@@ -138,7 +138,7 @@ if (gameStates.render.nLightingMethod && (lightIds [objP->info.nId] < 0)) {
 		CDynLight*	pl;
 		int			nLight;
 
-	nLight = AddDynLight (NULL, &c, I2X (200), -1, -1, -1, -1, NULL);
+	nLight = lightManager.Add (NULL, &c, I2X (200), -1, -1, -1, -1, NULL);
 	if (nLight >= 0) {
 		lightIds [objP->info.nId] = nLight;
 		pl = lights [nLight];
