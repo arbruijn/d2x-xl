@@ -180,7 +180,8 @@ if (nFrame == 0) {
 	nNextSubTitle = 0;
 	fontManager.SetCurrent (GAME_FONT);
 	nLineSpacing = CCanvas::Current ()->Font ()->Height () + (CCanvas::Current ()->Font ()->Height () / 4);
-	fontManager.SetColor (255, -1);
+	paletteManager.SetCurrent (paletteManager.Game ());
+	fontManager.SetColor (paletteManager.Current ()->ClosestColor (255, 255, 255), -1);
 	}
 
 //get rid of any subtitles that have expired
@@ -215,7 +216,7 @@ if (bMustErase) {
 for (t = 0; t < nActiveSubTitles; t++)
 	if (activeSubTitleList [t] != -1) {
 		GrString (0x8000, y, m_captions [activeSubTitleList [t]].msg, NULL);
-		y += nLineSpacing+1;
+		y += nLineSpacing + 1;
 	}
 }
 
@@ -244,8 +245,10 @@ void CMovie::ShowFrame (ubyte* buf, uint bufw, uint bufh, uint sx, uint sy, uint
 
 bmFrame.Init (BM_LINEAR, 0, 0, bufw, bufh, 1, buf);
 bmFrame.SetPalette (movieManager.m_palette);
+#if 0
 paletteManager.Push ();
 paletteManager.SetCurrent (movieManager.m_palette);
+#endif
 
 TRANSPARENCY_COLOR = 0;
 if (gameOpts->movies.bFullScreen) {
@@ -275,7 +278,9 @@ else {
 	}
 TRANSPARENCY_COLOR = DEFAULT_TRANSPARENCY_COLOR;
 bmFrame.SetBuffer (NULL);
+#if 0
 paletteManager.Pop ();
+#endif
 }
 
 //-----------------------------------------------------------------------

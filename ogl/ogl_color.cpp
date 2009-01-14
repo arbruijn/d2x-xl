@@ -69,7 +69,7 @@ if (c < 0)
 else {
 	if (!palette)
 		palette = paletteManager.Game ();
-	palette->ToRgbaf (c * 3, color);
+	palette->ToRgbaf (c, color);
 	if (gameStates.render.grAlpha >= FADE_LEVELS)
 		color.alpha = 1.0f;
 	else {

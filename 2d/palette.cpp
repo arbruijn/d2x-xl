@@ -77,9 +77,9 @@ return cf.File () && (cf.Write (&m_data, sizeof (m_data), 1) == 1);
 
 void CPalette::ToRgbaf (ubyte nIndex, tRgbaColorf& color)
 {
-color.red = (float) m_data.rgb [nIndex].red / 63.0f;
-color.green = (float) m_data.rgb [nIndex].green / 63.0f;
-color.blue = (float) m_data.rgb [nIndex].blue / 63.0f;
+color.red = float (m_data.rgb [nIndex].red) / 63.0f;
+color.green = float (m_data.rgb [nIndex].green) / 63.0f;
+color.blue = float (m_data.rgb [nIndex].blue) / 63.0f;
 color.alpha = -1;
 }
 
@@ -159,7 +159,7 @@ if (!(nBestValue = ColorDelta (m_data.raw, r, g, b, 0))) {
 
 nBestIndex = 0;
 // only go to 255, 'cause we dont want to check the transparent color.
-for (i = 1, j = 0; i < 255; i++) {
+for (i = 0, j = 0; i < 255; i++) {
 	j += 3;
 	if (!(value = ColorDelta (m_data.raw, r, g, b, j))) {
 		AddComputedColor (r, g, b, i);
