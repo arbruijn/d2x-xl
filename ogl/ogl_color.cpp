@@ -282,7 +282,7 @@ return i * i;
 
 #if CHECK_LIGHT_VERT
 
-static inline int IsLightVert (int nVertex, CShaderLight *psl)
+static inline int IsLightVert (int nVertex, CLightRenderData *psl)
 {
 if ((nVertex >= 0) && psl->info.faceP) {
 	ushort *pv = gameStates.render.bTriangleMesh ? psl->info.faceP->triIndex : psl->info.faceP->index;
@@ -313,9 +313,9 @@ int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcd
 	float						fLightDist, fAttenuation, spotEffect, NdotL, RdotE, nMinDot;
 	CFloatVector3			spotDir, lightDir, lightPos, vertPos, vReflect;
 	CFloatVector3			lightColor, colorSum, vertColor = CFloatVector3::Create(0.0f, 0.0f, 0.0f);
-	CShaderLight			*psl;
-	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
-	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread] + sliP->nFirst;
+	CLightRenderData			*psl;
+	tRenderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
+	CActiveDynLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread] + sliP->nFirst;
 	CVertColorData			vcd = *vcdP;
 
 #if DBG
@@ -340,7 +340,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #if 1
 	if (!(psl = activeLightsP->psl))
 #else
-	if (!(psl = GetActiveShaderLight (activeLightsP, nThread)))
+	if (!(psl = GetActiveRenderLight (activeLightsP, nThread)))
 #endif
 		continue;
 #if DBG
@@ -507,9 +507,9 @@ int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcd
 	float						fLightDist, fAttenuation, spotEffect, fMag, NdotL, RdotE;
 	CFloatVector3					spotDir, lightDir, lightPos, vertPos, vReflect;
 	CFloatVector3					lightColor, colorSum, vertColor = {{0.0f, 0.0f, 0.0f}};
-	CShaderLight			*psl;
-	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
-	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread] + sliP->nFirst;
+	CLightRenderData			*psl;
+	tRenderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
+	CActiveDynLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread] + sliP->nFirst;
 	CVertColorData			vcd = *vcdP;
 
 colorSum = *pColorSum;

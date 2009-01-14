@@ -1262,9 +1262,9 @@ PROF_START
 	tRgbaColorf				specular = {0.5f,0.5f,0.5f,0.5f};
 	//CFloatVector					vPos = CFloatVector::Create(0,0,0,1);
 	GLenum					hLight;
-	tActiveShaderLight	*activeLightsP;
-	CShaderLight			*psl;
-	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][0];
+	CActiveDynLight	*activeLightsP;
+	CLightRenderData			*psl;
+	tRenderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][0];
 
 #if DBG
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -1300,7 +1300,7 @@ nLightRange = sliP->nLast - gameStates.ogl.nFirstLight + 1;
 for (nLights = 0;
 	  (gameStates.ogl.iLight < gameStates.ogl.nLights) & (nLightRange > 0) && (nLights < gameStates.render.nMaxLightsPerPass);
 	  activeLightsP++, nLightRange--) {
-	if (!(psl = GetActiveShaderLight (activeLightsP, 0)))
+	if (!(psl = GetActiveRenderLight (activeLightsP, 0)))
 		continue;
 #if 0//def _DEBUG
 	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))

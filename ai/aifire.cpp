@@ -27,6 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network.h"
 #include "multibot.h"
 #include "collide.h"
+#include "lightcluster.h"
 
 #ifdef EDITOR
 #include "editor/editor.h"
@@ -182,54 +183,6 @@ return 1;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-
-void AICreateClusterLight (CObject *objP, short nObject, short nShot)
-{
-if (!gameStates.render.bClusterLights)
-	return;
-
-short nPrevShot = objP->Shots ().nObject;
-
-#if DBG
-if (nObject == nDbgObj)
-	nObject = nDbgObj;
-#endif
-if (nPrevShot >= 0) {
-	CObject *prevShotP = OBJECTS + nPrevShot;
-	if (prevShotP->info.nSignature == objP->Shots ().nSignature) {
-		CObject *lightP, *shotP = OBJECTS + nShot;
-		short nLight = gameData.objs.lightObjs [nPrevShot].nObject;
-		if (nLight < 0)
-			lightP = prevShotP;
-		else {
-			lightP = OBJECTS + nLight;
-			if (lightP->info.nSignature != gameData.objs.lightObjs [nPrevShot].nSignature) {
-				lightP = prevShotP;
-				nLight = -1;
-				}
-			}
-		if (CFixVector::Dist (shotP->info.position.vPos, lightP->info.position.vPos) < I2X (10)) {
-			if (nLight >= 0) {
-				gameData.objs.lightObjs [nShot].nObject = nLight;
-				lightP->cType.lightInfo.nObjects++;
-				}
-			else {
-				nLight = CreateClusterLight (prevShotP);
-				gameData.objs.lightObjs [nShot].nObject =
-				gameData.objs.lightObjs [nPrevShot].nObject = nLight;
-				if (nLight >= 0) {
-					lightP = OBJECTS + nLight;
-					gameData.objs.lightObjs [nShot].nSignature =
-					gameData.objs.lightObjs [nPrevShot].nSignature = lightP->info.nSignature;
-					lightP->cType.lightInfo.nObjects = 2;
-					}
-				}
-			}
-		}
-	}
-}
-
-// --------------------------------------------------------------------------------------------------------------------
 //	Note: Parameter gameData.ai.vVecToPlayer is only passed now because guns which aren't on the forward vector from the
 //	center of the robot will not fire right at the player.  We need to aim the guns at the player.  Barring that, we cheat.
 //	When this routine is complete, the parameter gameData.ai.vVecToPlayer should not be necessary.
@@ -353,7 +306,7 @@ if (nWeaponType < 0)
 if (0 > (nShot = CreateNewLaserEasy (&vFire, vFirePoint, objP->Index (), (ubyte) nWeaponType, 1)))
 	return;
 
-AICreateClusterLight (objP, nObject, nShot);
+lightClusterManager.AddForAI (objP, nObject, nShot);
 objP->Shots ().nObject = nShot;
 objP->Shots ().nSignature = OBJECTS [nShot].info.nSignature;
 

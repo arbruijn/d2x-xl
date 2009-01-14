@@ -80,6 +80,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gameargs.h"
 #include "shrapnel.h"
 #include "collide.h"
+#include "lightcluster.h"
 
 // ----------------------------------------------------------------------------
 
@@ -136,7 +137,7 @@ nLight = -1;
 
 // ----------------------------------------------------------------------------
 
-CShaderLight::CShaderLight ()
+CLightRenderData::CLightRenderData ()
 {
 CLEAR (vPosf);
 xDistance = 0;
@@ -152,16 +153,6 @@ CLEAR (activeLightsP);
 
 // ----------------------------------------------------------------------------
 
-void CShaderLightData::Init ()
-{
-nLights = 0;
-CLEAR (activeLights);
-CLEAR (index);
-nTexHandle = 0;
-}
-
-// ----------------------------------------------------------------------------
-
 CDynLightData::CDynLightData ()
 {
 Init ();
@@ -171,21 +162,19 @@ Init ();
 
 void CDynLightData::Init (void)
 {
-nLights = 0;
+nLights [0] =
+nLights [1] = 0;
 nVariable = 0;
 nDynLights = 0;
 nVertLights = 0;
 nSegment = -1;
-memset (nHeadlights, 0xff, sizeof (nHeadlights));
-nearestSegLights.Clear (0xff);
-nearestVertLights.Clear (0xff);
-variableVertLights.Clear (0xff);
-owners.Clear (0xff);
-shader.Init ();
+nTexHandle = 0;
 gameData.render.lights.dynamic.nLights =
 gameData.render.lights.dynamic.nVariable = 0;
 gameData.render.lights.dynamic.material.bValid = 0;
-
+memset (nHeadlights, 0xff, sizeof (nHeadlights));
+CLEAR (active);
+CLEAR (index);
 }
 
 // ----------------------------------------------------------------------------
@@ -213,6 +202,7 @@ DESTROY (owners);
 
 CLightData::CLightData ()
 {
+Init ();
 }
 
 // ----------------------------------------------------------------------------
@@ -231,8 +221,8 @@ memset (&globalDynColor, 0, sizeof (globalDynColor));
 
 bool CLightData::Create (void)
 {
-if (!gameStates.app.bNostalgia)
-	dynamic.Create ();
+if (!(gameStates.app.bNostalgia || lightManager.Create ())
+	return false;
 CREATE (segDeltas, LEVEL_SEGMENTS * 6, 0);
 CREATE (subtracted, LEVEL_SEGMENTS, 0);
 CREATE (dynamicLight, LEVEL_VERTICES, 0);
@@ -964,7 +954,6 @@ bool CObjectData::Create (void)
 Init ();
 CREATE (gameData.objs.objects, LEVEL_OBJECTS, 0);
 CREATE (gameData.objs.freeList, LEVEL_OBJECTS, 0);
-CREATE (gameData.objs.lightObjs, LEVEL_OBJECTS, (char) 0xff);
 CREATE (gameData.objs.parentObjs, LEVEL_OBJECTS, (char) 0xff);
 CREATE (gameData.objs.childObjs, LEVEL_OBJECTS, 0);
 CREATE (gameData.objs.firstChild, LEVEL_OBJECTS, (char) 0xff);
@@ -981,7 +970,7 @@ for (int i = 0; i < LEVEL_OBJECTS; i++) {
 	gameData.objs.freeList [i] = i;
 	OBJECTS [i].Init ();
 	}
-return shrapnelManager.Init ();
+return lightClusterManager.Init () && shrapnelManager.Init ();
 }
 
 // ----------------------------------------------------------------------------

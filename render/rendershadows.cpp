@@ -342,7 +342,7 @@ int GatherShadowLightSources (void)
 	int				h, i, j, k, n, m = gameOpts->render.shadows.nLights;
 	short				*pnl;
 //	CDynLight		*pl;
-	CShaderLight	*psl;
+	CLightRenderData	*psl;
 	CFixVector		vLightDir;
 
 psl = gameData.render.lights.dynamic.shader.lights;
@@ -430,7 +430,7 @@ if (!bShadowTest)
 void RenderNeatShadows (fix nEyeOffset, int nWindow, short nStartSeg)
 {
 	short				i;
-	CShaderLight	*psl = gameData.render.lights.dynamic.shader.lights;
+	CLightRenderData	*psl = gameData.render.lights.dynamic.shader.lights;
 
 gameData.render.shadows.nLights = GatherShadowLightSources ();
 for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, psl++) {

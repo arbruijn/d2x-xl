@@ -703,7 +703,7 @@ PiggyBitmapPageOutAll (0);
 /*---*/PrintLog ("   unloading custom sounds\n");
 FreeSoundReplacements ();
 /*---*/PrintLog ("   unloading hardware lights\n");
-RemoveDynLights ();
+lightManager.Reset ();
 /*---*/PrintLog ("   unloading hires models\n");
 FreeHiresModels (1);
 /*---*/PrintLog ("   unloading cambot\n");
@@ -854,7 +854,6 @@ ShowBoxedMessage (TXT_LOADING);
 /*---*/PrintLog ("   loading level data\n");
 gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
 									 (gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1);
-SEGMENTS.Clear (0xff);
 /*---*/PrintLog ("   loading texture brightness info\n");
 SetDataVersion (-1);
 

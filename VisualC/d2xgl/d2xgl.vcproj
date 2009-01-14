@@ -2526,11 +2526,19 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\lighting\lightcluster.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\lighting\lightmap.cpp"
 						>
 					</File>
 					<File
 						RelativePath="..\..\lighting\lightprecalc.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\lighting\lightrender.cpp"
 						>
 					</File>
 					<File
@@ -2551,6 +2559,10 @@
 					</File>
 					<File
 						RelativePath="..\..\include\light.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\lightcluster.h"
 						>
 					</File>
 					<File
@@ -4509,11 +4521,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File

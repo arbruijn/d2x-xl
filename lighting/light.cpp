@@ -102,112 +102,6 @@ tTexBright texBrightD2 [NUM_LIGHTS_D2] = {
 
 //--------------------------------------------------------------------------
 
-static void ResetClusterLights (void)
-{
-if (!gameStates.render.bClusterLights)
-	return;
-
-	CObject	*objP;
-	//int		i;
-
-FORALL_LIGHT_OBJS (objP, i)
-	if ((objP->info.nType == OBJ_LIGHT) && (objP->info.nId == CLUSTER_LIGHT_ID)) {
-		objP->info.xLifeLeft = 0;
-		memset (&objP->cType.lightInfo, 0, sizeof (objP->cType.lightInfo));
-		}
-}
-
-//--------------------------------------------------------------------------
-
-static void SetClusterLights (void)
-{
-if (!gameStates.render.bClusterLights)
-	return;
-
-	CObject	*objP;
-	int		h, i;
-
-FORALL_LIGHT_OBJS (objP, i) {
-	if ((objP->info.nType == OBJ_LIGHT) && (objP->info.nId == CLUSTER_LIGHT_ID)) {
-		i = objP->Index ();
-		if (!(h = objP->cType.lightInfo.nObjects)) {
-			RemoveDynLight (-1, -1, i);
-			objP->Die ();
-			}
-		else {
-			if (h > 1) {
-				objP->info.position.vPos[X] /= h;
-				objP->info.position.vPos[Y] /= h;
-				objP->info.position.vPos[Z] /= h;
-#if 1
-				objP->cType.lightInfo.color.red /= h;
-				objP->cType.lightInfo.color.green /= h;
-				objP->cType.lightInfo.color.blue /= h;
-				objP->cType.lightInfo.color.alpha /= h;
-#endif
-				}
-			if (1 || (objP->cType.lightInfo.nSegment < 0)) {
-				short nSegment = FindSegByPos (objP->info.position.vPos, abs (objP->cType.lightInfo.nSegment), 0, 0);
-				objP->cType.lightInfo.nSegment = (nSegment < 0) ? abs (objP->cType.lightInfo.nSegment) : nSegment;
-				}
-			if (objP->info.nSegment != objP->cType.lightInfo.nSegment)
-				OBJECTS [i].RelinkToSeg (objP->cType.lightInfo.nSegment);
-			AddDynLight (NULL, &objP->cType.lightInfo.color, objP->cType.lightInfo.intensity, -1, -1, i, -1, NULL);
-			}
-		}
-	}
-}
-
-//--------------------------------------------------------------------------
-
-int InitClusterLight (short nObject, tRgbaColorf *color, fix xObjIntensity)
-{
-if (!gameStates.render.bClusterLights)
-	return 0;
-
-short nLightObj = gameData.objs.lightObjs [nObject].nObject;
-
-if (0 > nLightObj)
-	return 0;
-#if DBG
-if (nDbgObj == nLightObj)
-	nDbgObj = nDbgObj;
-#endif
-CObject *lightObjP = OBJECTS + nLightObj;
-if (lightObjP->info.nSignature != gameData.objs.lightObjs [nObject].nSignature) {
-	gameData.objs.lightObjs [nObject].nObject = -1;
-	return 0;
-	}
-CObject *objP = OBJECTS + nObject;
-if (lightObjP->info.xLifeLeft < objP->info.xLifeLeft)
-	lightObjP->info.xLifeLeft = objP->info.xLifeLeft;
-if (!lightObjP->cType.lightInfo.nObjects++) {
-	lightObjP->info.position.vPos = objP->info.position.vPos;
-	lightObjP->cType.lightInfo.nSegment = objP->info.nSegment;
-	}
-else {
-	lightObjP->info.position.vPos += objP->info.position.vPos;
-	if (lightObjP->cType.lightInfo.nSegment != objP->info.nSegment)
-		lightObjP->cType.lightInfo.nSegment = -lightObjP->info.nSegment;
-	}
-lightObjP->cType.lightInfo.intensity += xObjIntensity;
-if (color) {
-	lightObjP->cType.lightInfo.color.red += color->red;
-	lightObjP->cType.lightInfo.color.green += color->green;
-	lightObjP->cType.lightInfo.color.blue += color->blue;
-	lightObjP->cType.lightInfo.color.alpha += color->alpha;
-	}
-else {
-	lightObjP->cType.lightInfo.color.red += 1;
-	lightObjP->cType.lightInfo.color.green += 1;
-	lightObjP->cType.lightInfo.color.blue += 1;
-	lightObjP->cType.lightInfo.color.alpha += 1;
-	}
-return 1;
-}
-
-//--------------------------------------------------------------------------
-
 int LightingMethod (void)
 {
 if (gameStates.render.nLightingMethod == 1)
@@ -379,7 +273,7 @@ if (objP && SHOW_DYN_LIGHT) {
 		lightObjP = NULL;
 	else
 		lightObjP = OBJECTS + nLightObj;
-	if (!InitClusterLight (nObject, color, xObjIntensity))
+	if (!lightClusterManager.Add (nObject, color, xObjIntensity))
 		AddDynLight (NULL, color, xObjIntensity, -1, -1, nObject, -1, NULL);
 	return;
 	}
@@ -719,7 +613,7 @@ gameData.render.lights.bStartDynColoring = 1;
 if (gameData.render.lights.bInitDynColoring) {
 	InitDynColoring ();
 	}
-ResetClusterLights ();
+lightClusterManager.Reset ();
 //	Create list of vertices that need to be looked at for setting of ambient light.
 nRenderVertices = 0;
 if (!gameStates.render.nLightingMethod) {
@@ -1142,7 +1036,7 @@ void ChangeLight (short nSegment, short nSide, int dir)
 	CLightDelta			*dlP;
 	short					iSeg, iSide;
 
-if ((dir < 0) && RemoveDynLight (nSegment, nSide, -1))
+if ((dir < 0) && lightManager.Delete (nSegment, nSide, -1))
 	return;
 if (ToggleDynLight (nSegment, nSide, -1, dir >= 0) >= 0)
 	return;

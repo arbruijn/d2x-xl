@@ -39,6 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gameseg.h"
 #include "input.h"
 #include "dropobject.h"
+#include "lightcluster.h"
 
 #ifdef TACTILE
 #include "tactile.h"
@@ -1204,9 +1205,9 @@ return rVal;
 
 //	-----------------------------------------------------------------------------------------------------------
 
-short CreateClusterLight (CObject *objP)
+short lightClusterManager.Add (CObject *objP)
 {
-if (!gameStates.render.bClusterLights)
+if (!lightClusterManager.Use ())
 	return -1;
 short nObject = CreateLight (CLUSTER_LIGHT_ID, objP->info.nSegment, OBJPOS (objP)->vPos);
 if (nObject >= 0)
@@ -1227,7 +1228,7 @@ typedef int (* pWeaponHandler) (CObject *, int, int, int);
 int LaserHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 	ubyte	nLaser = (nLevel <= MAX_LASER_LEVEL) ? LASER_ID + nLevel : SUPERLASER_ID + (nLevel - MAX_LASER_LEVEL - 1);
-	short	nLightObj = CreateClusterLight (objP);
+	short	nLightObj = lightClusterManager.Add (objP);
 
 gameData.laser.nOffset = (I2X (2) * (d_rand () % 8)) / 8;
 LaserPlayerFire (objP, nLaser, 0, 1, 0, nLightObj);
@@ -1264,7 +1265,7 @@ return nRoundsPerShot;
 
 int SpreadfireHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
-	short	nLightObj = CreateClusterLight (objP);
+	short	nLightObj = lightClusterManager.Add (objP);
 
 if (nFlags & LASER_SPREADFIRE_TOGGLED) {
 	LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, I2X (1)/16, 0, 0, 0, nLightObj);
@@ -1282,12 +1283,12 @@ return nRoundsPerShot;
 
 int PlasmaHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
-	short	nLightObj = CreateClusterLight (objP);
+	short	nLightObj = lightClusterManager.Add (objP);
 
 LaserPlayerFire (objP, PLASMA_ID, 0, 1, 0, nLightObj);
 LaserPlayerFire (objP, PLASMA_ID, 1, 0, 0, nLightObj);
 if (nRoundsPerShot > 1) {
-	nLightObj = CreateClusterLight (objP);
+	nLightObj = lightClusterManager.Add (objP);
 
 	LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0, nLightObj);
 	LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0, nLightObj);
@@ -1300,7 +1301,7 @@ return nRoundsPerShot;
 int FusionHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 	CFixVector	vForce;
-	short			nLightObj = CreateClusterLight (objP);
+	short			nLightObj = lightClusterManager.Add (objP);
 
 LaserPlayerFire (objP, FUSION_ID, 0, 1, 0, nLightObj);
 LaserPlayerFire (objP, FUSION_ID, 1, 1, 0, nLightObj);
@@ -1328,7 +1329,7 @@ return nRoundsPerShot;
 int SuperlaserHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 	ubyte nSuperLevel = 3;		//make some new kind of laser eventually
-	short	nLightObj = CreateClusterLight (objP);
+	short	nLightObj = lightClusterManager.Add (objP);
 
 LaserPlayerFire (objP, nSuperLevel, 0, 1, 0, nLightObj);
 LaserPlayerFire (objP, nSuperLevel, 1, 0, 0, nLightObj);
@@ -1384,7 +1385,7 @@ int HelixHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 		};
 
 	tSpread	spread = spreadTable [(nFlags >> LASER_HELIX_SHIFT) & LASER_HELIX_MASK];
-	short		nLightObj = CreateClusterLight (objP);
+	short		nLightObj = lightClusterManager.Add (objP);
 
 LaserPlayerFireSpread (objP, HELIX_ID, 6,  0,  0, 1, 0, nLightObj);
 LaserPlayerFireSpread (objP, HELIX_ID, 6,  spread.r,  spread.u, 0, 0, nLightObj);
@@ -1398,12 +1399,12 @@ return nRoundsPerShot;
 
 int PhoenixHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
-	short	nLightObj = CreateClusterLight (objP);
+	short	nLightObj = lightClusterManager.Add (objP);
 
 LaserPlayerFire (objP, PHOENIX_ID, 0, 1, 0, nLightObj);
 LaserPlayerFire (objP, PHOENIX_ID, 1, 0, 0, nLightObj);
 if (nRoundsPerShot > 1) {
-	nLightObj = CreateClusterLight (objP);
+	nLightObj = lightClusterManager.Add (objP);
 	LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0, nLightObj);
 	LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0, nLightObj);
 	}

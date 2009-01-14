@@ -1220,7 +1220,7 @@ class CBase {
 
 #include "cameras.h"
 
-class CShadowLightInfo {
+class CShadowLightData {
 	public:
 		CFloatVector	vPosf;
 		short				nMap;
@@ -1229,7 +1229,7 @@ class CShadowLightInfo {
 		CFixMatrix	orient;
 #endif
 	public:
-		CShadowLightInfo () { Init (); }
+		CShadowLightData () { Init (); }
 		void Init (void) { memset (this, 0, sizeof (*this)); }
 };
 
@@ -1277,177 +1277,6 @@ class CPulseData {
 
 //------------------------------------------------------------------------------
 
-#define USE_OGL_LIGHTS	0
-#define MAX_OGL_LIGHTS  (64 * 64) //MUST be a power of 2!
-#define MAX_SHADER_LIGHTS	1000
-
-class CDynLightInfo {
-	public:
-		tFace*			faceP;
-		CFixVector		vPos;
-		CFloatVector	vDirf;
-		tRgbaColorf		color;
-		float				fBrightness;
-		float				fBoost;
-		float				fRange;
-		float				fRad;
-		float				fSpotAngle;
-		float				fSpotExponent;
-		short				nSegment;
-		short				nSide;
-		short				nObject;
-		ubyte				nPlayer;
-		ubyte				nType;
-		ubyte				bState;
-		ubyte				bOn;
-		ubyte				bSpot;
-		ubyte				bVariable;
-		ubyte				bPowerup;
-	public:
-		CDynLightInfo () { Init (); }
-		void Init (void) { memset (this, 0, sizeof (*this)); }
-};
-
-class CDynLight {
-	public:
-		CFixVector			vDir;
-		CFloatVector		color;
-#if USE_OGL_LIGHTS
-		unsigned				handle;
-		CFloatVector		fAttenuation;	// constant, linear quadratic
-		CFloatVector		fAmbient;
-		CFloatVector		fDiffuse;
-#endif
-		CFloatVector		fSpecular;
-		CFloatVector		fEmissive;
-		ubyte					bTransform;
-		CDynLightInfo		info;
-		CShadowLightInfo	shadow;
-
-	public:
-		CDynLight ();
-		void Init (void);
-		int Compare (CDynLight& other);
-		inline bool operator< (CDynLight& other)
-		 { return Compare (other) < 0; }
-		inline bool operator> (CDynLight& other)
-		 { return Compare (other) > 0; }
-		inline bool operator== (CDynLight& other)
-		 { return Compare (other) == 0; }
-};
-
-//------------------------------------------------------------------------------
-
-class COglMaterial {
-	public:
-#if 0 //using global default values instead
-		CFloatVector	diffuse;
-		CFloatVector	ambient;
-#endif
-		CFloatVector	specular;
-		CFloatVector	emissive;
-		ubyte				shininess;
-		ubyte				bValid;
-		short				nLight;
-	public:
-		COglMaterial () { Init (); }
-		void Init (void);
-};
-
-//------------------------------------------------------------------------------
-
-struct tActiveShaderLight;
-
-class CShaderLight {
-	public:
-		CFloatVector	vPosf [2];
-		fix				xDistance;
-		short				nVerts [4];
-		int				nTarget;	//lit segment/face
-		int				nFrame;
-		ubyte				bShadow;
-		ubyte				bLightning;
-		ubyte				bExclusive;
-		ubyte				bUsed [MAX_THREADS];
-		CDynLightInfo	info;
-		struct tActiveShaderLight* activeLightsP [MAX_THREADS];
-
-	public:
-		CShaderLight ();
-
-};
-
-//------------------------------------------------------------------------------
-
-typedef struct tActiveShaderLight {
-	short				nType;
-	CShaderLight	*psl;
-} tActiveShaderLight;
-
-typedef struct tShaderLightIndex {
-	short	nFirst;
-	short	nLast;
-	short	nActive;
-	short	iVertex;
-	short	iStatic;
-	} tShaderLightIndex;
-
-class CShaderLightData {
-	public:
-		CShaderLight			lights [MAX_OGL_LIGHTS];
-		int						nLights;
-		tActiveShaderLight	activeLights [MAX_THREADS][MAX_OGL_LIGHTS];
-		tShaderLightIndex		index [2][MAX_THREADS];
-		GLuint					nTexHandle;
-	public:
-		CShaderLightData () { Init (); }
-		void Init (void);
-};
-
-//------------------------------------------------------------------------------
-
-#define MAX_NEAREST_LIGHTS 32
-
-class CHeadlightData {
-	public:
-		CDynLight*			pl [MAX_PLAYERS];
-		CShaderLight*		psl [MAX_PLAYERS];
-		CFloatVector		pos [MAX_PLAYERS];
-		CFloatVector3				dir [MAX_PLAYERS];
-		float					brightness [MAX_PLAYERS];
-		int					nLights;
-	public:
-		CHeadlightData () { memset (this, 0, sizeof (*this)); }
-};
-
-class CDynLightData {
-	public:
-		CDynLight			lights [MAX_OGL_LIGHTS];
-		CArray<short>		nearestSegLights;		//the 8 nearest static lights for every CSegment
-		CArray<short>		nearestVertLights;		//the 8 nearest static lights for every CSegment
-		CArray<ubyte>		variableVertLights;	//the 8 nearest static lights for every CSegment
-		CArray<short>		owners;
-		short					nLights;
-		short					nVariable;
-		short					nDynLights;
-		short					nVertLights;
-		short					nHeadlights [MAX_PLAYERS];
-		short					nSegment;
-		CShaderLightData	shader;
-		CHeadlightData		headlights;
-		COglMaterial		material;
-		CFBO					fbo;
-	public:
-		CDynLightData ();
-		bool Create (void);
-		void Init (void);
-		void Destroy (void);
-};
-
-extern int nMaxNearestLights [21];
-
-//------------------------------------------------------------------------------
-
 //Flickering light system
 typedef struct tVariableLight {
 	short				nSegment;
@@ -1469,6 +1298,8 @@ class CFlickerLightData {
 
 //------------------------------------------------------------------------------
 
+#include "dynlight.h"
+
 class CLightData {
 	public:
 		int								nStatic;
@@ -1477,7 +1308,6 @@ class CLightData {
 		CArray<CLightDeltaIndex>	deltaIndices;
 		CArray<CLightDelta>			deltas;
 		CArray<ubyte>					subtracted;
-		CDynLightData					dynamic;
 		CFlickerLightData				flicker;
 		CArray<fix>						dynamicLight;
 		CArray<tRgbColorf>			dynamicColor;
@@ -1506,16 +1336,16 @@ inline int operator- (CLightDelta* o, CArray<CLightDelta>& a) { return a.Index (
 
 class CShadowData {
 	public:
-		short						nLight;
-		short						nLights;
-		CShaderLight*			lights;
-		short						nShadowMaps;
-		CCamera					shadowMaps [MAX_SHADOW_MAPS];
-		CObject					lightSource;
-		CFloatVector				vLightPos;
-		CFixVector				vLightDir [MAX_SHADOW_LIGHTS];
-		CArray<short>			objLights;
-		ubyte						nFrame;	//flipflop for testing whether a light source's view has been rendered the current frame
+		short					nLight;
+		short					nLights;
+		CDynLight*			lights;
+		short					nShadowMaps;
+		CCamera				shadowMaps [MAX_SHADOW_MAPS];
+		CObject				lightSource;
+		CFloatVector		vLightPos;
+		CFixVector			vLightDir [MAX_SHADOW_LIGHTS];
+		CArray<short>		objLights;
+		ubyte					nFrame;	//flipflop for testing whether a light source's view has been rendered the current frame
 	public:
 		CShadowData ();
 		void Init (void);
@@ -1980,11 +1810,6 @@ typedef struct tObjectViewData {
 	int					nFrame;
 } tObjectViewData;
 
-typedef struct tLightObjId {
-	short					nObject;
-	int					nSignature;
-} tLightObjId;
-
 typedef struct tGuidedMissileInfo {
 	CObject				*objP;
 	int					nSignature;
@@ -2011,7 +1836,6 @@ class CObjectData {
 		CArray<short>				parentObjs;
 		CArray<tObjectRef>		childObjs;
 		CArray<short>				firstChild;
-		CArray<tLightObjId>		lightObjs;
 		CArray<CObject>			init;
 		CArray<tObjDropInfo>		dropInfo;
 		CArray<tSpeedBoostData>	speedBoost;

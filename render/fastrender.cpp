@@ -1376,7 +1376,7 @@ if (nState == 0) {
 	glDepthMask (0);
 	}
 else if (nState == 1) {
-	CShaderLight	*psl;
+	CLightRenderData	*psl;
 	int				bSkipHeadlight = gameStates.ogl.bHeadlight && (gameData.render.lights.dynamic.headlights.nLights > 0) && !gameStates.render.nState;
 	CFloatVector			vPos = gameData.segs.fVertices [nVertex],
 						vNormal = gameData.segs.points [nVertex].p3_normal.vNormal;

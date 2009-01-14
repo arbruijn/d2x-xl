@@ -1813,7 +1813,7 @@ if ((SHOW_LIGHTNINGS || bForce) && m_lights.Buffer ()) {
 			}
 		}
 	m_nFirstLight = -1;
-	DeleteLightningLights ();
+	lightManager.DeleteLightnings ();
 	}
 }
 

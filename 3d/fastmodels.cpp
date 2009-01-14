@@ -562,9 +562,9 @@ void G3DrawModel (CObject *objP, short nModel, short nSubModel, CBitmap **modelB
 						int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
 	RenderModel::CModel					*pm;
-	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][0];
-	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + sliP->nFirst;
-	CShaderLight			*psl;
+	tRenderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][0];
+	CActiveDynLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + sliP->nFirst;
+	CLightRenderData			*psl;
 	int						nPass, iLight, nLights, nLightRange;
 	int						bBright = objP && (objP->info.nType == OBJ_MARKER);
 	int						bEmissive = objP && (objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId];
@@ -626,7 +626,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 				glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f);
 				nLights = 0;
 				}
-			else if ((psl = GetActiveShaderLight (activeLightsP, 0))) {
+			else if ((psl = GetActiveRenderLight (activeLightsP, 0))) {
 				hLight = GL_LIGHT0 + iLight++;
 				glEnable (hLight);
 	//			sprintf (szLightSources + strlen (szLightSources), "%d ", (psl->nObject >= 0) ? -psl->nObject : psl->nSegment);

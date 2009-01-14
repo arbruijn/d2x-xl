@@ -490,7 +490,7 @@ if ((t = FindArg ("-renderpath")))
 if ((t = FindArg ("-split_polys")))
 	gameStates.render.bSplitPolys = NumArg (t, 1);
 if ((t = FindArg ("-cluster_lights")))
-	gameStates.render.bClusterLights = NumArg (t, 1);
+	lightClusterManager.SetUsage (NumArg (t, 1) != 0);
 }
 
 // ----------------------------------------------------------------------------

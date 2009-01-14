@@ -1032,7 +1032,7 @@ SEM_ENTER (SEM_LIGHTNINGS)
 lightningManager.DestroyForObject (OBJECTS + nObject);
 SEM_LEAVE (SEM_LIGHTNINGS)
 #endif
-RemoveDynLight (-1, -1, nObject);
+lightManager.Delete (-1, -1, nObject);
 gameData.objs.freeList [--gameData.objs.nObjects] = nObject;
 Assert (gameData.objs.nObjects >= 0);
 if (nObject == gameData.objs.nLastObject [0])
