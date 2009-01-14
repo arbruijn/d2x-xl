@@ -265,11 +265,11 @@ else {
 		yOffs = 0;
 	dstx += xOffs;
 	dsty += yOffs;
+	GrBmUBitBlt (CCanvas::Current (), dstx, dsty, bufw, bufh, &bmFrame, sx, sy, 1);
 	if ((CCanvas::Current ()->Width () > 640) || (CCanvas::Current ()->Height () > 480)) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
-		GrUBox (dstx-1, dsty, dstx+w-1, dsty+h+1);
+		GrUBox (dstx - 1, dsty, dstx + w, dsty + h + 1);
 		}
-	GrBmUBitBlt (CCanvas::Current (), dstx, dsty, bufw, bufh, &bmFrame, sx, sy, 1);
 	}
 TRANSPARENCY_COLOR = DEFAULT_TRANSPARENCY_COLOR;
 bmFrame.SetBuffer (NULL);

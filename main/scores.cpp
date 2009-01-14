@@ -299,47 +299,37 @@ void _CDECL_ scores_rprintf (int x, int y, const char * format, ...)
 void scores_draw_item (int  i, stats_info * stats)
 {
 	char buffer[20];
+	int y = 7+70+i*9;
 
-		int y;
+if (i == 0) 
+	y -= 8;
+if (i == MAX_HIGH_SCORES) 
+	y += 8;
+else
+	scores_rprintf (17+33+XX, y+YY, "%d.", i+1);
 
-		y = 7+70+i*9;
-		if (i==0) y -= 8;
-		if (i==MAX_HIGH_SCORES)  {
-			y += 8;
-			//scores_rprintf (17+33+XX, y+YY, "");
-			} 
-		else {
-			scores_rprintf (17+33+XX, y+YY, "%d.", i+1);
-			}
+if (strlen (stats->name)==0) {
+	GrPrintF (NULL, LHX (26+33+XX)+xOffs, LHY (y+YY)+yOffs, TXT_EMPTY);
+	return;
+	}
+GrPrintF (NULL, LHX (26+33+XX)+xOffs, LHY (y+YY)+yOffs, "%s", stats->name);
+int_to_string (stats->score, buffer);
+scores_rprintf (109+33+XX, y+YY, "%s", buffer);
+GrPrintF (NULL, LHX (125+33+XX)+xOffs, LHY (y+YY)+yOffs, "%s", MENU_DIFFICULTY_TEXT (stats->diffLevel));
+if ((stats->startingLevel > 0) && (stats->endingLevel > 0))
+	scores_rprintf (192+33+XX, y+YY, "%d-%d", stats->startingLevel, stats->endingLevel);
+else if ((stats->startingLevel < 0) && (stats->endingLevel > 0))
+	scores_rprintf (192+33+XX, y+YY, "S%d-%d", -stats->startingLevel, stats->endingLevel);
+else if ((stats->startingLevel < 0) && (stats->endingLevel < 0))
+	scores_rprintf (192+33+XX, y+YY, "S%d-S%d", -stats->startingLevel, -stats->endingLevel);
+else if ((stats->startingLevel > 0) && (stats->endingLevel < 0))
+	scores_rprintf (192+33+XX, y+YY, "%d-S%d", stats->startingLevel, -stats->endingLevel);
 
-		if (strlen (stats->name)==0) {
-			GrPrintF (NULL, LHX (26+33+XX)+xOffs, LHY (y+YY)+yOffs, TXT_EMPTY);
-			return;
-		}
-		GrPrintF (NULL, LHX (26+33+XX)+xOffs, LHY (y+YY)+yOffs, "%s", stats->name);
-		int_to_string (stats->score, buffer);
-		scores_rprintf (109+33+XX, y+YY, "%s", buffer);
-
-		GrPrintF (NULL, LHX (125+33+XX)+xOffs, LHY (y+YY)+yOffs, "%s", MENU_DIFFICULTY_TEXT (stats->diffLevel));
-
-		if ((stats->startingLevel > 0) && (stats->endingLevel > 0))
-			scores_rprintf (192+33+XX, y+YY, "%d-%d", stats->startingLevel, stats->endingLevel);
-		else if ((stats->startingLevel < 0) && (stats->endingLevel > 0))
-			scores_rprintf (192+33+XX, y+YY, "S%d-%d", -stats->startingLevel, stats->endingLevel);
-		else if ((stats->startingLevel < 0) && (stats->endingLevel < 0))
-			scores_rprintf (192+33+XX, y+YY, "S%d-S%d", -stats->startingLevel, -stats->endingLevel);
-		else if ((stats->startingLevel > 0) && (stats->endingLevel < 0))
-			scores_rprintf (192+33+XX, y+YY, "%d-S%d", stats->startingLevel, -stats->endingLevel);
-
-	 {
-			int h, m, s;
-			h = stats->seconds/3600;
-			s = stats->seconds%3600;
-			m = s / 60;
-			s = s % 60;
-			scores_rprintf (311-
-+XX, y+YY, "%d:%02d:%02d", h, m, s);
-		}
+int h = stats->seconds/3600;
+int s = stats->seconds%3600;
+int m = s / 60;
+s = s % 60;
+scores_rprintf (311 - 42 + XX, y + YY, "%d:%02d:%02d", h, m, s);
 }
 
 //------------------------------------------------------------------------------
@@ -363,8 +353,8 @@ ReshowScores:
 	if (yOffs < 0)
 		yOffs = 0; 
 
-	backgroundManager.SetShadow (false);
-	backgroundManager.Setup (NULL, xOffs, yOffs, xOffs + 640, xOffs + 480);
+	//backgroundManager.SetShadow (false);
+	backgroundManager.Setup (NULL, xOffs, yOffs, 640, 480);
 	GameFlushInputs ();
 
 	done = 0;
@@ -467,7 +457,7 @@ paletteManager.DisableEffect ();
 CCanvas::SetCurrent (NULL);
 GameFlushInputs ();
 backgroundManager.Remove ();
-backgroundManager.SetShadow (true);
+//backgroundManager.SetShadow (true);
 }
 
 //------------------------------------------------------------------------------
