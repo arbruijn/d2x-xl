@@ -846,7 +846,7 @@ else {
 if ((bVertexLights = !(gameStates.render.nState || pVertColor))) {
 	vertPos.Assign (gameData.segs.vertices [nVertex]);
 	pVertPos = &vertPos;
-	SetNearestVertexLights (-1, nVertex, NULL, 1, 0, 1, nThread);
+	lightManager.SetNearestToVertex (-1, nVertex, NULL, 1, 0, 1, nThread);
 	}
 vcd.vertPosP = pVertPos;
 //VmVecNegate (&vertNorm);

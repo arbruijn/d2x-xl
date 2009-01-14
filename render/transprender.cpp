@@ -953,7 +953,7 @@ if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 
 #if 1
 #	if 0
 			if (faceP)
-				SetNearestFaceLights (faceP, transpItems.bTextured);
+				lightManager.SetNearestToFace (faceP, transpItems.bTextured);
 #	endif
 			if (gameStates.render.bPerPixelLighting == 1) {
 #	if RENDER_TRANSP_DECALS

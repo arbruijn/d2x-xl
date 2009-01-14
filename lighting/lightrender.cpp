@@ -312,7 +312,7 @@ if (faceP - FACES.faces == nDbgFace)
 #endif
 #if 1//!DBG
 if (m_data.index [0][0].nActive < 0)
-	SetNearestSegmentLights (faceP->nSegment, faceP - FACES.faces, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
+	lightManager.SetNearestToSegment (faceP->nSegment, faceP - FACES.faces, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
 else {
 #if 0//def _DEBUG
 	CheckUsedLights2 ();
@@ -320,13 +320,13 @@ else {
 	m_data.index [0][0] = m_data.index [1][0];
 	}
 #else
-SetNearestSegmentLights (faceP->nSegment, faceP - FACES, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
+lightManager.SetNearestToSegment (faceP->nSegment, faceP - FACES, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
 #endif
 vNormal = sideP->m_normals[0] + sideP->m_normals[1];
 vNormal *= (I2X (1) / 2);
 #if 1
 for (i = 0; i < 4; i++)
-	SetNearestVertexLights (faceP - FACES.faces, faceP->index [i], &vNormal, 0, 0, 1, 0);
+	lightManager.SetNearestToVertex (faceP - FACES.faces, faceP->index [i], &vNormal, 0, 0, 1, 0);
 #endif
 PROF_END(ptPerPixelLighting)
 return m_data.index [0][0].nActive;
@@ -527,10 +527,10 @@ int CLightManager::SetNearestToSgmAvg (short nSegment)
 if (nSegment == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-SetNearestSegmentLights (nSegment, -1, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
+lightManager.SetNearestToSegment (nSegment, -1, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
 #if 1
 for (i = 0; i < 8; i++)
-	SetNearestVertexLights (-1, segP->m_verts [i], NULL, 0, 1, 1, 0);
+	lightManager.SetNearestToVertex (-1, segP->m_verts [i], NULL, 0, 1, 1, 0);
 #endif
 return m_data.index [0][0].nActive;
 }
@@ -623,7 +623,7 @@ else {
 	psc->color.green = c.color.green / 8.0f;
 	psc->color.blue = c.color.blue / 8.0f;
 #if 0
-	if (SetNearestSegmentLights (nSegment, 1)) {
+	if (lightManager.SetNearestToSegment (nSegment, 1)) {
 		short				nLights = m_data.nLights [1];
 		CDynLight*		prl = m_data.lights [1] + nLights;
 		float				fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightfRange];

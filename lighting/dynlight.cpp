@@ -484,6 +484,7 @@ void CLightManager::Reset (void)
 {
 for (short i = 0; i < m_data.nLights [0]; i++)
 	Delete (i);
+m_objects.Destroy ();
 }
 
 //------------------------------------------------------------------------------
@@ -625,7 +626,7 @@ for (; nVertex < nMax; nVertex++, pf++) {
 	vVertex.Assign (gameData.segs.vertices [nVertex]);
 	ResetActiveLights (nThread, 0);
 	ResetUsedLights (0, nThread);
-	SetNearestVertexLights (-1, nVertex, NULL, 1, 1, bColorize, nThread);
+	lightManager.SetNearestToVertex (-1, nVertex, NULL, 1, 1, bColorize, nThread);
 	gameData.render.color.vertices [nVertex].index = 0;
 	G3VertexColor (gameData.segs.points [nVertex].p3_normal.vNormal.V3(), vVertex.V3(), nVertex, pf, NULL, 1, 0, nThread);
 	}

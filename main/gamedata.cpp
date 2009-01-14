@@ -169,9 +169,8 @@ nDynLights = 0;
 nVertLights = 0;
 nSegment = -1;
 nTexHandle = 0;
-gameData.render.lights.dynamic.nLights =
-gameData.render.lights.dynamic.nVariable = 0;
-gameData.render.lights.dynamic.material.bValid = 0;
+nVariable = 0;
+material.bValid = 0;
 memset (nHeadlights, 0xff, sizeof (nHeadlights));
 CLEAR (active);
 CLEAR (index);
@@ -221,7 +220,7 @@ memset (&globalDynColor, 0, sizeof (globalDynColor));
 
 bool CLightData::Create (void)
 {
-if (!(gameStates.app.bNostalgia || lightManager.Create ())
+if (!(gameStates.app.bNostalgia || lightManager.Create ()))
 	return false;
 CREATE (segDeltas, LEVEL_SEGMENTS * 6, 0);
 CREATE (subtracted, LEVEL_SEGMENTS, 0);
@@ -979,7 +978,6 @@ void CObjectData::Destroy (void)
 {
 DESTROY (gameData.objs.objects);
 DESTROY (gameData.objs.freeList);
-DESTROY (gameData.objs.lightObjs);
 DESTROY (gameData.objs.parentObjs);
 DESTROY (gameData.objs.childObjs);
 DESTROY (gameData.objs.firstChild);
@@ -992,6 +990,7 @@ DESTROY (gameData.objs.xLight);
 DESTROY (gameData.objs.nLightSig);
 DESTROY (gameData.objs.nHitObjects);
 DESTROY (gameData.objs.viewData);
+lightManager.Reset ();
 shrapnelManager.Reset ();
 }
 

@@ -78,6 +78,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hiresmodels.h"
 #include "soundthreads.h"
 #include "songs.h"
+#include "lightcluster.h"
 
 void SetMaxPitch (int nMinTurnRate);
 void select_tmap(const char *nType);

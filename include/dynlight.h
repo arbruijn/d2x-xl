@@ -216,6 +216,11 @@ class CLightManager {
 		void GatherStaticLights (int nLevel);
 		void GatherStaticVertexLights (int nVertex, int nMax, int nThread);
 
+		inline CDynLightIndex* Active (uint i) { return m_data.active [i]; }
+		inline CDynLightIndex* Index (uint i) { return m_data.index [i]; }
+		inline CFBO& FBO (void) { return m_data.fbo; }
+		inline CHeadlightData& Headlights (void) { return m_data.headlights; }
+
 	private:
 		static int IsFlickering (short nSegment, short nSide);
 		int IsDestructible (short nTexture);

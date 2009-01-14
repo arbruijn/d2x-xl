@@ -411,7 +411,7 @@ for (x = xMin; x < xMax; x++) {
 		if ((m_data.faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;
 #endif
-		if (0 < SetNearestPixelLights (m_data.faceP->nSegment, m_data.faceP->nSide, &m_data.vNormal, 
+		if (0 < lightManager.SetNearestToPixel (m_data.faceP->nSegment, m_data.faceP->nSide, &m_data.vNormal, 
 												 pixelPosP, m_data.faceP->fRads [1] / 10.0f, nThread)) {
 			vcd.vertPos.Assign (*pixelPosP);
 			color.SetZero ();

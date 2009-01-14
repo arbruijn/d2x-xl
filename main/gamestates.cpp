@@ -260,7 +260,6 @@ gameStates.render.nInterpolationMethod = 0;
 gameStates.render.bTMapFlat = 0;
 gameStates.render.nLighting = 1;
 gameStates.render.bTransparency = 0;
-lightClusterManager.Use () = 1;
 gameStates.render.bSplitPolys = 1;
 gameStates.render.bHaveStencilBuffer = 0;
 gameStates.render.nRenderPass = -1;

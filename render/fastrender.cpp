@@ -713,7 +713,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 				if (!bHeadlight)
 					VisitSegment (nSegment, bAutomap);
 				if (gameStates.render.bPerPixelLighting == 2)
-					gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
+					lightManager.Index (0) [0].nActive = -1;
 				}
 			}
 		faceP = fliP->faceP;
@@ -874,7 +874,7 @@ if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
 if (gameStates.render.bPerPixelLighting == 2)
-	gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
+	lightManager.Index (0)[0].nActive = -1;
 for (i = segFaceP->nFaces, faceP = segFaceP->faceP; i; i--, faceP++) {
 #if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -1092,8 +1092,8 @@ typedef struct tVertLightIndex {
 typedef struct tVertLightData {
 	short					nVertices;
 	short					nLights;
-	CFloatVector				buffers [VERTLIGHT_BUFFERS][VLBUF_SIZE];
-	CFloatVector				colors [VLBUF_SIZE];
+	CFloatVector		buffers [VERTLIGHT_BUFFERS][VLBUF_SIZE];
+	CFloatVector		colors [VLBUF_SIZE];
 	tVertLightIndex	index [VLBUF_SIZE];
 } tVertLightData;
 
@@ -1104,7 +1104,7 @@ static tVertLightData vld;
 void InitDynLighting (void)
 {
 if (gameStates.ogl.bVertexLighting)
-	gameStates.ogl.bVertexLighting = gameData.render.lights.dynamic.fbo.Create (VLBUF_WIDTH, VLBUF_WIDTH, 2);
+	gameStates.ogl.bVertexLighting = lightManager.FBO ().Create (VLBUF_WIDTH, VLBUF_WIDTH, 2);
 }
 
 //------------------------------------------------------------------------------
@@ -1113,7 +1113,7 @@ void CloseDynLighting (void)
 {
 if (gameStates.ogl.bVertexLighting) {
 	PrintLog ("unloading dynamic lighting buffers\n");
-	gameData.render.lights.dynamic.fbo.Destroy ();
+	lightManager.FBO ().Destroy ();
 	}
 }
 
@@ -1337,7 +1337,7 @@ if (nState == 0) {
 	glLoadIdentity ();
 	glPushAttrib (GL_VIEWPORT_BIT);
    glViewport (0, 0, VLBUF_WIDTH, VLBUF_WIDTH);
-	gameData.render.lights.dynamic.fbo.Enable ();
+	lightManager.FBO ().Enable ();
 #if 1
 	glUseProgramObject (hVertLightShader);
 	for (i = 0; i < VL_SHADER_BUFFERS; i++) {
@@ -1376,13 +1376,13 @@ if (nState == 0) {
 	glDepthMask (0);
 	}
 else if (nState == 1) {
-	CLightRenderData	*psl;
-	int				bSkipHeadlight = gameStates.ogl.bHeadlight && (gameData.render.lights.dynamic.headlights.nLights > 0) && !gameStates.render.nState;
-	CFloatVector			vPos = gameData.segs.fVertices [nVertex],
+	CDynLight*		psl;
+	int				bSkipHeadlight = gameStates.ogl.bHeadlight && (lightManager.Headlights ().nLights > 0) && !gameStates.render.nState;
+	CFloatVector	vPos = gameData.segs.fVertices [nVertex],
 						vNormal = gameData.segs.points [nVertex].p3_normal.vNormal;
 		
-	SetNearestVertexLights (-1, nVertex, NULL, 1, 0, 1, 0);
-	if (!(h = gameData.render.lights.dynamic.shader.index [0][0].nActive))
+	lightManager.SetNearestToVertex (-1, nVertex, NULL, 1, 0, 1, 0);
+	if (!(h = lightManager.Index (0) [0].nActive))
 		return 1;
 	if (h > VLBUF_SIZE)
 		h = VLBUF_SIZE;
@@ -1415,12 +1415,12 @@ else if (nState == 1) {
 		vld.nVertices++;
 		vld.nLights += nLights;
 		}
-	//gameData.render.lights.dynamic.shader.index [0][0].nActive = gameData.render.lights.dynamic.shader.iVertexLights [0];
+	//lightManager.Index (0) [0].nActive = gameData.render.lights.dynamic.shader.iVertexLights [0];
 	}	
 else if (nState == 2) {
 	RenderVertLightBuffers ();
 	glUseProgramObject (0);
-	gameData.render.lights.dynamic.fbo.Disable ();
+	lightManager.FBO ().Disable ();
 	glMatrixMode (GL_PROJECTION);    
 	glPopMatrix ();
 	glMatrixMode (GL_MODELVIEW);                         
@@ -1475,7 +1475,7 @@ for (i = nStart, nStep = (nStart > nEnd) ? -1 : 1; i != nEnd; i += nStep) {
 	nSegment = faceP->nSegment;
 	nSide = faceP->nSide;
 	if (bVertexLight && !gameStates.render.bFullBright)
-		nLights = SetNearestSegmentLights (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
+		nLights = lightManager.SetNearestToSegment (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
 	if (faceP->bSparks && gameOpts->render.effects.bEnergySparks) {
 		faceP->bVisible = 0;
 		continue;
@@ -1524,7 +1524,7 @@ for (i = nStart, nStep = (nStart > nEnd) ? -1 : 1; i != nEnd; i += nStep) {
 							G3VertexColor(gameData.segs.points[nVertex].p3_normal.vNormal.V3(), 
 							              gameData.segs.fVertices[nVertex].V3(), nVertex, 
 							              NULL, &c, 1, 0, nThread);
-							gameData.render.lights.dynamic.shader.index [0][nThread] = gameData.render.lights.dynamic.shader.index [1][nThread];
+							lightManager.Index (0) [nThread] = gameData.render.lights.dynamic.shader.index [1][nThread];
 							ResetNearestVertexLights (nVertex, nThread);
 							}
 #if DBG
@@ -1595,13 +1595,13 @@ for (i = nStart; i != nEnd; i += nStep) {
 		nSegment = nSegment;
 #endif
 	if (bVertexLight && !gameStates.render.bFullBright)
-		nLights = SetNearestSegmentLights (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
+		nLights = lightManager.SetNearestToSegment (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
 	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++) {
 		nSide = faceP->nSide;
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
 			nSegment = nSegment;
-			if (gameData.render.lights.dynamic.shader.index [0][nThread].nActive)
+			if (lightManager.Index (0) [nThread].nActive)
 				nSegment = nSegment;
 			}
 #endif
@@ -1658,7 +1658,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 								G3VertexColor (gameData.segs.points [nVertex].p3_normal.vNormal.V3(), 
 													gameData.segs.fVertices [nVertex].V3(), nVertex, 
 													NULL, &c, 1, 0, nThread);
-								gameData.render.lights.dynamic.shader.index [0][nThread] = gameData.render.lights.dynamic.shader.index [1][nThread];
+								lightManager.Index (0) [nThread] = gameData.render.lights.dynamic.shader.index [1][nThread];
 								ResetNearestVertexLights (nVertex, nThread);
 								}
 #if DBG
@@ -1735,13 +1735,13 @@ for (i = nStart; i != nEnd; i += nStep) {
 		nSegment = nSegment;
 #endif
 	if (bNeedLight)
-		nLights = SetNearestSegmentLights (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
+		nLights = lightManager.SetNearestToSegment (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
 	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++) {
 		nSide = faceP->nSide;
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
 			nSegment = nSegment;
-			if (gameData.render.lights.dynamic.shader.index [0][nThread].nActive)
+			if (lightManager.Index (0) [nThread].nActive)
 				nSegment = nSegment;
 			}
 #endif
@@ -1796,7 +1796,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 								G3VertexColor (FACES.normals + nIndex, 
 													FACES.vertices + nIndex, nVertex, 
 													NULL, &c, 1, 0, nThread);
-								gameData.render.lights.dynamic.shader.index [0][nThread] = gameData.render.lights.dynamic.shader.index [1][nThread];
+								lightManager.Index (0) [nThread] = gameData.render.lights.dynamic.shader.index [1][nThread];
 								ResetNearestVertexLights (nVertex, nThread);
 								}
 #if DBG
@@ -2029,7 +2029,7 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 			nSegment = nSegment;
 #endif
 		if (gameStates.render.bUseDynLight && !gameStates.render.bQueryCoronas) {
-			nSegLights = SetNearestSegmentLights (nSegment, -1, 0, 1, 0);
+			nSegLights = lightManager.SetNearestToSegment (nSegment, -1, 0, 1, 0);
 			SetNearestStaticLights (nSegment, 1, 1, 0);
 			gameStates.render.bApplyDynLight = gameOpts->ogl.bLightObjects;
 			}
@@ -2040,7 +2040,7 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 			ResetNearestStaticLights (nSegment, 0);
 			}
 		gameStates.render.bApplyDynLight = gameStates.render.nLightingMethod != 0;
-		//gameData.render.lights.dynamic.shader.index [0][0].nActive = gameData.render.lights.dynamic.shader.iStaticLights [0];
+		//lightManager.Index (0) [0].nActive = gameData.render.lights.dynamic.shader.iStaticLights [0];
 		}
 	else if (nType == 2)	// render objects containing transparency, like explosions
 		RenderObjList (nListPos, gameStates.render.nWindow);

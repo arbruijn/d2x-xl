@@ -1282,7 +1282,7 @@ if (!gameStates.ogl.iLight) {
 #if ONLY_LIGHTMAPS == 2
 	gameStates.ogl.nLights = 0;
 #else
-	gameStates.ogl.nLights = SetNearestFaceLights (faceP, nType != 0);
+	gameStates.ogl.nLights = lightManager.SetNearestToFace (faceP, nType != 0);
 #endif
 	if (gameStates.ogl.nLights > gameStates.render.nMaxLightsPerFace)
 		gameStates.ogl.nLights = gameStates.render.nMaxLightsPerFace;
