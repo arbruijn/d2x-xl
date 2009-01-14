@@ -1129,6 +1129,7 @@ while (!done) {
 #endif
 	if (InitProps (pszTitle, pszSubTitle)) {
 		backgroundManager.Setup (filename, m_props.x, m_props.y, m_props.w, m_props.h);
+		backgroundManager.Redraw (true);
 		if (!MODERN_STYLE)
 			CCanvas::SetCurrent (backgroundManager.Canvas ());
 		bRedraw = 0;

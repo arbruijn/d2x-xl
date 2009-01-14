@@ -705,6 +705,7 @@ typedef struct tGfxStates {
 
 typedef struct tOglStates {
 	int bInitialized;
+	int bRebuilding;
 	int bShadersOk;
 	int bMultiTexturingOk;
 	int bRender2TextureOk;
