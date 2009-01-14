@@ -141,7 +141,7 @@ return szHamFiles [gameStates.app.bDemoData];
 
 //------------------------------------------------------------------------------
 
-static char szSndFiles [3][13] = {"descent2.s22", "descent2.s11", "d2demo.ham"};
+static char szSndFiles [3][13] = {"descent2.s11", "descent2.s22", "d2demo.ham"};
 
 char* DefaultSndFile (void)
 {

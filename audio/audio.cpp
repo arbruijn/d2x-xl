@@ -607,7 +607,7 @@ m_objects.Destroy ();
 
 //------------------------------------------------------------------------------
 /* Initialise audio devices. */
-int CAudio::Setup (float fchannelPowDown)
+int CAudio::Setup (float fSlowDown)
 {
 if (!gameStates.app.bUseSound)
 	return 1;
@@ -616,6 +616,8 @@ if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0) {
 	Error (TXT_SDL_INIT_AUDIO, SDL_GetError ());
 	return 1;
 	}
+if (gameStates.app.bNostalgia)
+	gameOpts->sound.bHires = 0;
 audio.m_channels.Clear ();
 if (gameStates.app.bDemoData)
 	gameOpts->sound.digiSampleRate = SAMPLE_RATE_11K;
@@ -635,16 +637,16 @@ if (!gameOpts->sound.bUseOpenAL)
 #if USE_SDL_MIXER
 if (gameOpts->sound.bUseSDLMixer) {
 	int h;
-	if (fchannelPowDown <= 0)
-		fchannelPowDown = 1.0f;
+	if (fSlowDown <= 0)
+		fSlowDown = 1.0f;
 	if (gameOpts->sound.bHires == 1)
-		h = Mix_OpenAudio ((int) (SAMPLE_RATE_22K / fchannelPowDown), AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE);
+		h = Mix_OpenAudio ((int) (SAMPLE_RATE_22K / fSlowDown), AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE);
 	else if (gameOpts->sound.bHires == 2)
-		h = Mix_OpenAudio ((int) (SAMPLE_RATE_44K / fchannelPowDown), AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE);
+		h = Mix_OpenAudio ((int) (SAMPLE_RATE_44K / fSlowDown), AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE);
 	else if (songManager.MP3 ())
 		h = Mix_OpenAudio (32000, AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE * 10);
 	else 
-		h = Mix_OpenAudio ((int) (gameOpts->sound.digiSampleRate / fchannelPowDown), D2_SOUND_FORMAT, SDL_MIXER_CHANNELS, 
+		h = Mix_OpenAudio ((int) (gameOpts->sound.digiSampleRate / fSlowDown), D2_SOUND_FORMAT, SDL_MIXER_CHANNELS, 
 								SOUND_BUFFER_SIZE);
 	if (h < 0) {
 		PrintLog (TXT_SDL_OPEN_AUDIO, SDL_GetError ()); PrintLog ("\n");
@@ -659,7 +661,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 else 
 #endif
  {
-	waveSpec.freq = (int) (gameOpts->sound.digiSampleRate / fchannelPowDown);
+	waveSpec.freq = (int) (gameOpts->sound.digiSampleRate / fSlowDown);
 	//added/changed by Sam Lantinga on 12/01/98 for new SDL version
 	waveSpec.format = AUDIO_U8;
 	waveSpec.channels = 2;

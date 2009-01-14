@@ -238,8 +238,9 @@ int LoadSounds (CFile& cf, int nSoundNum, int nSoundStart)
 	int 					nHeaderSize = nSoundNum * sizeof (tPIGSoundHeader);
 	char					szSoundName [16];
 
-
 /*---*/PrintLog ("      Loading sound data (%d sounds)\n", nSoundNum);
+if (gameStates.app.bNostalgia)
+	gameOpts->sound.bHires = 0;
 cf.Seek (nSoundStart, SEEK_SET);
 memset (&sound, 0, sizeof (sound));
 #if USE_OPENAL
