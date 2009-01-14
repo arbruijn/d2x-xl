@@ -670,7 +670,7 @@ return psc;
 
 void CLightManager::ResetSegmentLights (void)
 {
-for (short i = gameData.segs.nSegments; i; i--)
+for (short i = 0; i < gameData.segs.nSegments; i++)
 	gameData.render.color.segments [i].index = -1;
 }
 
