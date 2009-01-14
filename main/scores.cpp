@@ -403,7 +403,7 @@ ReshowScores:
 			paletteManager.EnableEffect ();
 
 			if (nCurItem < 0)
-				GrUpdate (0);
+				GrUpdate (1);
 			bRedraw = 1;
 			}
 		if (nCurItem > -1) {
@@ -422,7 +422,7 @@ ReshowScores:
 				else
 					scores_draw_item (nCurItem, Scores.stats + nCurItem);
 				}
-			GrUpdate (0);
+			GrUpdate (1);
 		}
 
 		for (i=0; i<4; i++)

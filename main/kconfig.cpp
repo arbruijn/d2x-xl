@@ -819,7 +819,7 @@ void KCDrawQuestion (kcItem *item)
 	x = LHX (item->w1+item->x)+ ((LHX (item->w2)-w)/2)+xOffs;
 	GrString (x, KC_LHY (item->y), "?", NULL);
 if (gameStates.ogl.nDrawBuffer != GL_BACK)
-	GrUpdate (0);
+	GrUpdate (1);
 }
 
 //------------------------------------------------------------------------------
@@ -1281,7 +1281,7 @@ for (;;) {
 			}
 		nPrevMode = nChangeMode;
 		SDL_ShowCursor (1);
-		GrUpdate (0);
+		GrUpdate (1);
 		} while (nChangeMode != BT_NONE);
 		//see if redbook song needs to be restarted
 	redbook.CheckRepeat ();

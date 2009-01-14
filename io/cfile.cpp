@@ -572,6 +572,18 @@ return b;
 
 // ----------------------------------------------------------------------------
 
+ubyte CFile::ReadUByte (void)
+{
+	ubyte b;
+
+if (Read (&b, sizeof (b), 1) != 1)
+	return nCFileError;
+//Error ("Error reading byte in CFile::ReadByte ()");
+return b;
+}
+
+// ----------------------------------------------------------------------------
+
 float CFile::ReadFloat (void)
 {
 	float f;

@@ -94,6 +94,7 @@ class CFile {
 		short ReadShort (void);
 		ushort ReadUShort (void);
 		sbyte ReadByte (void);
+		ubyte ReadUByte (void);
 		fix ReadFix (void);
 		fixang ReadFixAng (void);
 		void ReadVector (CFixVector& v);

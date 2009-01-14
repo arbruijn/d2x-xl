@@ -207,7 +207,7 @@ bool CBackground::Create (char* filename, int x, int y, int width, int height)
 {
 Destroy ();
 m_bTopMenu = (backgroundManager.Depth () == 0);
-m_bMenuBox = MODERN_STYLE && (gameOpts->menus.altBg.bHave > 0);
+m_bMenuBox = MODERN_STYLE; // && (gameOpts->menus.altBg.bHave > 0);
 if (!(m_background = Load (filename, width, height)))
 	return false;
 Setup (x, y, width, height);
@@ -442,7 +442,7 @@ else {
 	for (int i = 0; i <= m_nDepth; i++)
 		m_bg [i].Draw ();
 	if (bUpdate)
-		GrUpdate (0);
+		GrUpdate (1);
 	}
 }
 

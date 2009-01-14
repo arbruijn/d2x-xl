@@ -270,7 +270,7 @@ strcpy (reinterpret_cast<char*> (&oldmessage), message);
 
 //-----------------------------------------------------------------------------
 
-void ScoreTablePhallic ()
+void ScoreTablePhallic (void)
  {
   int sw, sh, aw;
   char message [80];
@@ -292,7 +292,7 @@ GrPrintF (NULL, CENTERSCREEN- (sw/2), LHY (55+72+3), message);
 
 //-----------------------------------------------------------------------------
 
-void ScoreTableRedraw ()
+void ScoreTableRedraw (void)
 {
 	int i, color;
 	int sorted [MAX_NUM_NET_PLAYERS];
@@ -325,13 +325,13 @@ for (i=0; i<gameData.multiplayer.nPlayers; i++) {
 	ScoreTableDrawItem (i, sorted);
 	}
 ScoreTableDrawDeaths (sorted);
-GrUpdate (0);
+GrUpdate (1);
 paletteManager.LoadEffect ();
 }
 
 //-----------------------------------------------------------------------------
 
-void ScoreTableDrawCoop ()
+void ScoreTableDrawCoop (void)
 {
 	int i, color;
 	int sorted [MAX_NUM_NET_PLAYERS];
@@ -353,7 +353,7 @@ for (i=0; i<gameData.multiplayer.nPlayers; i++) {
 ScoreTableDrawDeaths (sorted);
 CCanvas::SetCurrent (NULL);
 paletteManager.LoadEffect ();
-GrUpdate (0);
+GrUpdate (1);
 }
 
 //-----------------------------------------------------------------------------
@@ -489,7 +489,7 @@ while (!done) {
 			return;
 			}
 		if ((gameData.app.nGameMode & GM_SERIAL) || (gameData.app.nGameMode & GM_MODEM)) {
-			done=1;
+			done = 1;
 			break;
 			}
 		LOCALPLAYER.connected = 7;

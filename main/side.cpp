@@ -879,7 +879,7 @@ else {
 	// Read short sideP->m_nBaseTex;
 	ushort nTexture;
 	if (bNewFileFormat) {
-		nTexture = ushort (cf.ReadShort ());
+		nTexture = cf.ReadUShort ();
 		m_nBaseTex = nTexture & 0x7fff;
 		}
 	else {
@@ -913,7 +913,7 @@ else {
 
 void CSide::ReadWallNum (CFile& cf, bool bWall)
 {
-m_nWall = ushort (bWall ? (gameData.segs.nLevelVersion >= 13) ? cf.ReadShort () : cf.ReadByte () : -1);
+m_nWall = ushort (bWall ? (gameData.segs.nLevelVersion >= 13) ? cf.ReadUShort () : cf.ReadUByte () : -1);
 }
 
 //------------------------------------------------------------------------------
