@@ -127,7 +127,7 @@ class CArray : public CQuickSort < _T > {
 		inline _T* Pointer (uint i) { return m_data.buffer + i; }
 #endif
 
-		virtual void Destroy (void) { 
+		void Destroy (void) { 
 			if (m_data.buffer) {
 				if (!m_data.nMode)
 					delete[] m_data.buffer;
@@ -135,7 +135,7 @@ class CArray : public CQuickSort < _T > {
 				}
 			}
 			
-		virtual _T *Create (uint length) {
+		_T *Create (uint length) {
 			if (m_data.length != length) {
 				Destroy ();
 				if ((m_data.buffer = new _T [length]))
@@ -355,11 +355,11 @@ class CStaticArray : public CArray < _T > {
 		CStaticArrayData< _T, length > m_data;
 
 	public:
-		virtual _T *Create (uint _length) { 
+		_T *Create (uint _length) { 
 			this->SetBuffer (m_data.buffer, 2, _length); 
 			return m_data.buffer;
 			}
-		virtual void Destroy (void) { }
+		void Destroy (void) { }
 	};
 
 //-----------------------------------------------------------------------------

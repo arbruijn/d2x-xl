@@ -69,12 +69,12 @@ class CStack : public CArray< _T > {
 			return Pull (v, i);
 			}
 
-		virtual void Destroy (void) { 
+		inline void Destroy (void) { 
 			CArray<_T>::Destroy ();
 			Init ();
 			}
 
-		virtual _T *Create (uint length) {
+		inline _T *Create (uint length) {
 			Destroy ();
 			return CArray<_T>::Create (length);
 			}
