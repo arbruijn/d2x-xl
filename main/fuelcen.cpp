@@ -626,8 +626,7 @@ if (matCenP->xDisableTime > 0) {
 	matCenP->xDisableTime -= gameData.time.xFrame;
 	if (matCenP->xDisableTime <= 0) {
 #if TRACE
-		console.printf (CON_DBG, "Robot center #%i gets disabled due to time running out.\n",
-						FUELCEN_IDX (matCenP));
+		console.printf (CON_DBG, "Robot center #%i gets disabled due to time running out.\n",FUELCEN_IDX (matCenP));
 #endif
 		matCenP->bEnabled = 0;
 		}

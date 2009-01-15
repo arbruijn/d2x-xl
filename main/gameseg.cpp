@@ -401,7 +401,7 @@ if ((gameData.time.xGame - gameData.fcd.xLastFlushTime > I2X (2)) ||
 
 //	Can't quickly get distance, so see if in gameData.fcd.cache.
 if (bUseCache) {
-	for (i = MAX_FCD_CACHE, pc = gameData.fcd.cache; i; i--, pc++)
+	for (i = gameData.fcd.cache.Length (), pc = gameData.fcd.cache.Buffer (); i; i--, pc++)
 		if ((pc->seg0 == seg0) && (pc->seg1 == seg1)) {
 			gameData.fcd.nConnSegDist = pc->csd;
 			return pc->dist;
