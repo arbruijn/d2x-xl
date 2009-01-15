@@ -155,6 +155,7 @@ m_info.tw =
 m_info.th = 0;
 m_info.lw = 0;
 m_info.bMipMaps = 0;
+m_info.bSmoothe = 0;
 m_info.u = 
 m_info.v = 0;
 m_info.bRenderBuffer = 0;
@@ -163,7 +164,7 @@ m_info.bmP = NULL;
 
 //------------------------------------------------------------------------------
 
-void CTexture::Setup (int w, int h, int lw, int bpp, int bMask, int bMipMap, CBitmap *bmP)
+void CTexture::Setup (int w, int h, int lw, int bpp, int bMask, int bMipMap, int bSmoothe, CBitmap *bmP)
 {
 m_info.w = w;
 m_info.h = h;
@@ -183,6 +184,7 @@ else {
 	m_info.internalFormat = 4;
 	}
 m_info.bMipMaps = bMipMap && !bMask;
+m_info.bSmoothe = bSmoothe || m_info.bMipMaps;
 m_info.bmP = bmP;
 }
 
@@ -1029,14 +1031,14 @@ if (!(texP = Texture ())) {
 	if (!(texP = textureManager.Get (this)))
 		return 1;
 	SetTexture (texP);
-	texP->Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP, bMask, bMipMap, this);
+	texP->Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP, bMask, bMipMap, 0, this);
 	texP->SetRenderBuffer (renderBuffer);
 	}
 else {
 	if (texP->Handle () > 0)
 		return 0;
 	if (!texP->Width ())
-		texP->Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP, bMask, bMipMap, this);
+		texP->Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP, bMask, bMipMap, 0, this);
 	}
 if (Flags () & BM_FLAG_RLE)
 	RLEExpand (NULL, 0);

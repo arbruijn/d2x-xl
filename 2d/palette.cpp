@@ -113,16 +113,16 @@ memset (m_computedColors, 0xff, sizeof (m_computedColors));
 
 //	-----------------------------------------------------------------------------
 
-static inline int ColorDelta (ubyte *palette, int r, int g, int b, int j)
+static inline int ColorDelta (tRgbColorb& palette, int r, int g, int b)
 {
-return Sqr (r - palette [j]) + Sqr (g - palette [j + 1]) + Sqr (b - palette [j + 2]);
+return Sqr (r - palette.red) + Sqr (g - palette.green) + Sqr (b - palette.blue);
 }
 
 //	-----------------------------------------------------------------------------
 
 int CPalette::ClosestColor (int r, int g, int b)
 {
-	int				i, j, n;
+	int				i, n;
 	int				nBestValue, nBestIndex, value;
 	tComputedColor	*pci, *pcj;
 
@@ -152,16 +152,11 @@ for (i = 0; i < n; i++, pci++)
 			}
 		}
 
-if (!(nBestValue = ColorDelta (m_data.raw, r, g, b, 0))) {
-	AddComputedColor (r, g, b, 0);
-	return 0;
-	}
-
+nBestValue = 3 * Sqr (255) + 1;	// max. possible value + 1
 nBestIndex = 0;
-// only go to 255, 'cause we dont want to check the transparent color.
-for (i = 0, j = 0; i < 255; i++) {
-	j += 3;
-	if (!(value = ColorDelta (m_data.raw, r, g, b, j))) {
+// only go to 254, 'cause we dont want to check the transparent color.
+for (i = 0; i < 255; i++) {
+	if (!(value = ColorDelta (m_data.rgb [i], r, g, b))) {
 		AddComputedColor (r, g, b, i);
 		return i;
 		}

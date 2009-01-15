@@ -31,6 +31,7 @@ typedef struct tTexture {
 //	int 				bytes;
 	GLfloat			u, v;
 	ubyte				bMipMaps;
+	ubyte				bSmoothe;
 	ubyte				bRenderBuffer;
 #if RENDER2TEXTURE == 1
 	CPBO				pbo;
@@ -51,7 +52,7 @@ class CTexture {
 		~CTexture () { Destroy (); }
 		GLuint Create (int w, int h);
 		void Init (void);
-		void Setup (int w, int h, int lw, int bpp  = 0, int bMask = 0, int bMipMap = 0, CBitmap *bmP = NULL);
+		void Setup (int w, int h, int lw, int bpp  = 0, int bMask = 0, int bMipMap = 0, int bSmoothe = 0, CBitmap *bmP = NULL);
 		int Prepare (bool bCompressed = false);
 #if TEXTURE_COMPRESSION
 		int Load (ubyte *buffer, int nBufSize = 0, int nFormat = 0, bool bCompressed = false);

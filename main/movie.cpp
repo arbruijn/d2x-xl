@@ -244,12 +244,9 @@ void CMovie::ShowFrame (ubyte* buf, uint bufw, uint bufh, uint sx, uint sy, uint
 
 bmFrame.Init (BM_LINEAR, 0, 0, bufw, bufh, 1, buf);
 bmFrame.SetPalette (movieManager.m_palette);
-#if 0
-paletteManager.Push ();
-paletteManager.SetCurrent (movieManager.m_palette);
-#endif
 
 TRANSPARENCY_COLOR = 0;
+SetRenderQuality (4);
 if (gameOpts->movies.bFullScreen) {
 	double r = (double) bufh / (double) bufw;
 	int dh = (int) (CCanvas::Current ()->Width () * r);
@@ -277,9 +274,7 @@ else {
 	}
 TRANSPARENCY_COLOR = DEFAULT_TRANSPARENCY_COLOR;
 bmFrame.SetBuffer (NULL);
-#if 0
-paletteManager.Pop ();
-#endif
+SetRenderQuality ();
 }
 
 //-----------------------------------------------------------------------
