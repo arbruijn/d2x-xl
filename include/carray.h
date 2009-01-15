@@ -273,7 +273,7 @@ class CArray : public CQuickSort < _T > {
 			if (!nCount)
 				nCount = m_data.length - nOffset;
 			else if (nCount > m_data.length - nOffset)
-				nCount = m_data.length - nOffset,
+				nCount = m_data.length - nOffset;
 			return cf.Read (m_data.buffer + nOffset, sizeof (_T), nCount);
 			}
 
@@ -285,7 +285,7 @@ class CArray : public CQuickSort < _T > {
 			if (!nCount)
 				nCount = m_data.length - nOffset;
 			else if (nCount > m_data.length - nOffset)
-				nCount = m_data.length - nOffset,
+				nCount = m_data.length - nOffset;
 			return cf.Write (m_data.buffer + nOffset, sizeof (_T), nCount);
 			}
 
