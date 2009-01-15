@@ -1360,7 +1360,7 @@ class CShadowData {
 
 class CMorphData {
 	public:
-		tMorphInfo	objects [MAX_MORPH_OBJECTS];
+		CStaticArray< tMorphInfo, MAX_MORPH_OBJECTS >	objects; // [MAX_MORPH_OBJECTS];
 		fix			xRate;
 	public:
 		CMorphData ();
@@ -1407,7 +1407,7 @@ class CTerrainRenderData {
 		CArray<fix>				lightmap;
 		CArray<CFixVector>	points;
 		CBitmap					*bmP;
-		g3sPoint					saveRow [TERRAIN_GRID_MAX_SIZE];
+		CStaticArray< g3sPoint, TERRAIN_GRID_MAX_SIZE >		saveRow; // [TERRAIN_GRID_MAX_SIZE];
 		CFixVector				vStartPoint;
 		tUVL						uvlList [2][3];
 		int						bOutline;
@@ -1444,40 +1444,43 @@ typedef struct tObjRenderListItem {
 } tObjRenderListItem;
 
 typedef struct tObjRenderList {
-	short 					ref [MAX_SEGMENTS_D2X];	//points to each segment's first render object list entry in renderObjs
-	tObjRenderListItem	objs [MAX_OBJECTS_D2X];
+	CStaticArray< short, MAX_SEGMENTS_D2X >	ref; // [MAX_SEGMENTS_D2X];	//points to each segment's first render object list entry in renderObjs
+	CStaticArray< tObjRenderListItem, MAX_OBJECTS_D2X >	objs; // [MAX_OBJECTS_D2X];
 	int						nUsed;
 } tObjRenderList;
 
 class CMineRenderData {
 	public:
 		CFixVector				viewerEye;
-		short 					nSegRenderList [MAX_SEGMENTS_D2X];
-		tFace*					pFaceRenderList [MAX_SEGMENTS_D2X * 6];
+		CShortArray				nSegRenderList; //[MAX_SEGMENTS_D2X];
+		CArray< tFace* >		pFaceRenderList; //[MAX_SEGMENTS_D2X * 6];
 		tObjRenderList			renderObjs;
 		int						nRenderSegs;
-		ubyte 					bVisited [MAX_SEGMENTS_D2X];
-		ubyte 					bVisible [MAX_SEGMENTS_D2X];
-		ubyte 					bProcessed [MAX_SEGMENTS_D2X];		//whether each entry has been nProcessed
+		CByteArray				bVisited; //[MAX_SEGMENTS_D2X];
+		CByteArray				bVisible; //[MAX_SEGMENTS_D2X];
+		CByteArray				bProcessed; //[MAX_SEGMENTS_D2X];		//whether each entry has been nProcessed
 		ubyte 					nVisited;
 		ubyte						nProcessed;
 		ubyte						nVisible;
-		short 					nSegDepth [MAX_SEGMENTS_D2X];		//depth for each seg in nRenderList
+		CShortArray				nSegDepth; //[MAX_SEGMENTS_D2X];		//depth for each seg in nRenderList
 		int						lCntSave;
 		int						sCntSave;
-		ubyte						bObjectRendered [MAX_OBJECTS_D2X];
-		ubyte						bRenderSegment [MAX_SEGMENTS_D2X];
-		short						nRenderObjList [MAX_SEGMENTS_D2X+N_EXTRA_OBJ_LISTS][OBJS_PER_SEG];
-		short						nRenderPos [MAX_SEGMENTS_D2X];
-		int						nRotatedLast [MAX_VERTICES_D2X];
-		ubyte						bCalcVertexColor [MAX_VERTICES_D2X];
-		ushort					bAutomapVisited [MAX_SEGMENTS_D2X];
-		ushort					bAutomapVisible [MAX_SEGMENTS_D2X];
-		ushort					bRadarVisited [MAX_SEGMENTS_D2X];
+		CByteArray				bObjectRendered; //[MAX_OBJECTS_D2X];
+		CByteArray				bRenderSegment; //[MAX_SEGMENTS_D2X];
+		CShortArray				nRenderObjList; //[MAX_SEGMENTS_D2X+N_EXTRA_OBJ_LISTS][OBJS_PER_SEG];
+		CShortArray				nRenderPos; //[MAX_SEGMENTS_D2X];
+		CIntArray				nRotatedLast; //[MAX_VERTICES_D2X];
+		CByteArray				bCalcVertexColor; //[MAX_VERTICES_D2X];
+		CUShortArray			bAutomapVisited; //[MAX_SEGMENTS_D2X];
+		CUShortArray			bAutomapVisible; //[MAX_SEGMENTS_D2X];
+		CUShortArray			bRadarVisited; //[MAX_SEGMENTS_D2X];
 		ubyte						bSetAutomapVisited;
 
 	public:
 		CMineRenderData ();
+		~CMineRenderData () { Destroy (); }
+		bool Create (void);
+		void Destroy (void);
 };
 
 //------------------------------------------------------------------------------
@@ -1603,8 +1606,8 @@ typedef struct tSlideSegs {
 //------------------------------------------------------------------------------
 
 typedef struct tFaceRenderVertex {
-	CFloatVector3				vertex;
-	CFloatVector3				normal;
+	CFloatVector3		vertex;
+	CFloatVector3		normal;
 	tRgbaColorf			color;
 	tTexCoord2f			texCoord;
 	tTexCoord2f			ovlTexCoord;

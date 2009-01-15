@@ -684,6 +684,8 @@ return gameStates.app.bAutoRunMission ? 0 :
 
 void UnloadLevelData (int bRestore)
 {
+/*---*/PrintLog ("   unloading mine rendering data\n");
+gameData.render.mine.Destroy ();
 audio.DestroyObjectSound (LOCALPLAYER.nObject);
 /*---*/PrintLog ("   stopping music\n");
 songManager.StopAll ();
@@ -1002,6 +1004,9 @@ PrintLog ("   initializing debris collision handlers\n");
 SetDebrisCollisions ();
 PrintLog ("   building sky box segment list\n");
 BuildSkyBoxSegList ();
+/*---*/PrintLog ("   allocating mine rendering data\n");
+if (!gameData.render.mine.Create ())
+	return 0;
 if (RENDERPATH)
 	gameOpts->render.bDepthSort = 1;
 gameStates.app.bBetweenLevels = 0;

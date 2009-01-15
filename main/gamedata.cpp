@@ -325,12 +325,53 @@ tPulse = 0;
 
 CMineRenderData::CMineRenderData ()
 {
-memset (this, 0, sizeof (*this));
+}
+ 
+//------------------------------------------------------------------------------
+
+bool CMineRenderData::Create (void)
+{
 nVisited = 255;
 nProcessed = 255;
 nVisible = 255;
+CREATE (nSegRenderList, gameData.segs.nSegments, 0);
+CREATE (pFaceRenderList, gameData.segs.nFaces, 0);
+CREATE (bVisited, gameData.segs.nSegments, 0);
+CREATE (bVisible, gameData.segs.nSegments, 0);
+CREATE (bProcessed, gameData.segs.nSegments, 0);
+CREATE (nSegDepth, gameData.segs.nSegments, 0); 
+CREATE (bObjectRendered, gameData.objs.nMaxObjects, 0); 
+CREATE (bRenderSegment, gameData.segs.nSegments, 0); 
+CREATE (nRenderObjList, gameData.objs.nMaxObjects, 0);
+CREATE (nRenderPos, gameData.segs.nSegments, 0); 
+CREATE (nRotatedLast, gameData.segs.Vertices, 0); 
+CREATE (bCalcVertexColor, gameData.segs.Vertices, 0); 
+CREATE (bAutomapVisited, gameData.segs.nSegments, 0); 
+CREATE (bAutomapVisible, gameData.segs.nSegments, 0); 
+CREATE (bRadarVisited, gameData.segs.nSegments, 0); 
 }
- 
+
+//------------------------------------------------------------------------------
+
+void CMineRenderData::Destroy (void)
+{
+DESTROY (nSegRenderList);
+DESTROY (pFaceRenderList);
+DESTROY (bVisited);
+DESTROY (bVisible);
+DESTROY (bProcessed);
+DESTROY (nSegDepth); 
+DESTROY (bObjectRendered); 
+DESTROY (bRenderSegment); 
+DESTROY (nRenderObjList);
+DESTROY (nRenderPos); 
+DESTROY (nRotatedLast); 
+DESTROY (bCalcVertexColor); 
+DESTROY (bAutomapVisited); 
+DESTROY (bAutomapVisible); 
+DESTROY (bRadarVisited); 
+}
+
 //------------------------------------------------------------------------------
 
 CRenderData::CRenderData ()
