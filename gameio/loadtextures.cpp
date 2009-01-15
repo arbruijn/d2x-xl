@@ -640,7 +640,7 @@ if (bmP->Flags () & BM_FLAG_RLE) {
 		goto reloadTextures;
 		}
 #if DBG
-	if (zSize > bmP->Size ())
+	if (zSize > int (bmP->Size ()))
 		bmP->Resize (zSize);
 #endif
 #if 1
@@ -664,7 +664,7 @@ else
 	nDescentCriticalError = 0;
 	if (bDefault) {
 #if DBG
-		if (nSize > bmP->Size ())
+		if (nSize > int (bmP->Size ()))
 			bmP->Resize (nSize);
 #endif
 #if 1

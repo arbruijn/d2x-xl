@@ -384,8 +384,10 @@ else if (nParticleSystemType == BUBBLE_PARTICLES)
 	m_color [0].alpha /= 2;
 else if (nParticleSystemType == LIGHT_PARTICLES)
 	m_color [0].alpha /= 5;
+#	if 0
 else if (nParticleSystemType == GATLING_PARTICLES)
 	;//m_color [0].alpha /= 6;
+#	endif
 #endif
 return 1;
 }
