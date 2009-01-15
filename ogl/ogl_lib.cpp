@@ -123,9 +123,9 @@ gameStates.ogl.texMinFilter = renderQualities [nQuality].texMinFilter;
 gameStates.ogl.bNeedMipMaps = renderQualities [nQuality].bNeedMipmap;
 gameStates.ogl.bAntiAliasing = renderQualities [nQuality].bAntiAliasing;
 if (gameStates.ogl.bAntiAliasingOk && gameStates.ogl.bAntiAliasing)
-	glEnable (GL_MULTISAMPLE_ARB);
+	glEnable (GL_MULTISAMPLE);
 else
-	glDisable (GL_MULTISAMPLE_ARB);
+	glDisable (GL_MULTISAMPLE);
 ResetTextures (1, gameStates.app.bGameRunning);
 }
 
