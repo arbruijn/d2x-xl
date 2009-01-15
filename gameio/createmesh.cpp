@@ -834,17 +834,17 @@ if (!(gameStates.render.bTriangleMesh && gameStates.app.bCacheMeshes))
 if (!cf.Open (DataFilename (szFilename, nLevel), gameFolders.szCacheDir, "wb", 0))
 	return 0;
 bOk = (cf.Write (&mdh, sizeof (mdh), 1) == 1) &&
-		(cf.Write (gameData.segs.vertices.Buffer (), sizeof (gameData.segs.vertices [0]) * mdh.nVertices, 1) == 1) &&
-		(cf.Write (gameData.segs.fVertices.Buffer (), sizeof (gameData.segs.fVertices [0]) * mdh.nVertices, 1) == 1) &&
-		(cf.Write (FACES.faces.Buffer (), sizeof (FACES.faces [0]) * mdh.nFaces, 1) == 1) &&
-		(cf.Write (FACES.tris.Buffer (), sizeof (FACES.tris [0]) * mdh.nTris, 1) == 1) &&
-		(cf.Write (FACES.vertices.Buffer (), sizeof (FACES.vertices [0]) * mdh.nTris, 3) == 3) &&
-		(cf.Write (FACES.normals.Buffer (), sizeof (FACES.normals [0]) * mdh.nTris, 3) == 3) &&
-		(cf.Write (FACES.texCoord.Buffer (), sizeof (FACES.texCoord [0]) * mdh.nTris, 3) == 3) &&
-		(cf.Write (FACES.ovlTexCoord.Buffer (), sizeof (FACES.ovlTexCoord [0]) * mdh.nTris, 3) == 3) &&
-		(cf.Write (FACES.color.Buffer (), sizeof (FACES.color [0]) * mdh.nTris, 3) == 3) &&
-		(cf.Write (FACES.lMapTexCoord.Buffer (), sizeof (FACES.lMapTexCoord [0]) * mdh.nTris, 3) == 3) &&
-		(cf.Write (FACES.faceVerts.Buffer (), sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts, 1) == 1);
+		(gameData.segs.vertices.Write (cf, mdh.nVertices) == mdh.nVertices) &&
+		(gameData.segs.fVertices.Write (cf, mdh.nVertices) == mdh.nVertices) &&
+		(FACES.faces.Write (cf, mdh.nFaces) == mdh.nFaces) &&
+		(FACES.tris.Write (cf, mdh.nTris) == mdh.nTris) &&
+		(FACES.vertices.Write (cf, mdh.nTris * 3) == mdh.nTris * 3) &&
+		(FACES.normals.Write (cf, mdh.nTris * 3) == mdh.nTris * 3) &&
+		(FACES.texCoord.Write (cf, mdh.nTris * 3) == mdh.nTris * 3) &&
+		(FACES.ovlTexCoord.Write (cf, mdh.nTris * 3) == mdh.nTris * 3) &&
+		(FACES.color.Write (cf, mdh.nTris * 3) == mdh.nTris * 3) &&
+		(FACES.lMapTexCoord.Write (cf, mdh.nTris * 3) == mdh.nTris * 3) &&
+		(FACES.faceVerts.Write (cf, mdh.nFaceVerts) == mdh.nFaceVerts);
 cf.Close ();
 return bOk;
 }

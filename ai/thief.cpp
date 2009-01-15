@@ -463,7 +463,7 @@ void InitThiefForLevel(void)
 	int	i;
 
 #if 1
-memset (gameData.thief.stolenItems, 255, sizeof (gameData.thief.stolenItems));
+gameData.thief.stolenItems.Clear (char (0xff));
 #else
 	for (i=0; i<MAX_STOLEN_ITEMS; i++)
 		gameData.thief.stolenItems[i] = 255;

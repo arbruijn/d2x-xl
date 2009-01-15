@@ -454,8 +454,8 @@ for (i = 0; i < gameData.multiplayer.nMaxPlayers; i++)
 
 for (i = 0; i < MAX_PLAYERS; i++)
 	gameData.multiplayer.players [i].nKillGoalCount = 0;
-memset (gameData.multiplayer.maxPowerupsAllowed, 0, sizeof (gameData.multiplayer.maxPowerupsAllowed));
-memset (gameData.multiplayer.powerupsInMine, 0, sizeof (gameData.multiplayer.powerupsInMine));
+gameData.multiplayer.maxPowerupsAllowed.Clear (0);
+gameData.multiplayer.powerupsInMine.Clear (0);
 }
 
 //-----------------------------------------------------------------------------

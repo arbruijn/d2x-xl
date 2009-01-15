@@ -265,7 +265,29 @@ class CArray : public CQuickSort < _T > {
 
 		inline void Pos (uint pos) { m_data.pos = pos % m_data.length; }
 
-		inline bool Read (CFile& cf) { return m_data.buffer ? cf.Read (m_data.buffer, sizeof (_T), m_data.length) == m_data.length : false; }
+		size_t Read (CFile& cf, uint nCount = 0, uint nOffset = 0) { 
+			if (!m_data.buffer)
+				return -1;
+			if (nOffset >= m_data.length)
+				return -1;
+			if (!nCount)
+				nCount = m_data.length - nOffset;
+			else if (nCount > m_data.length - nOffset)
+				nCount = m_data.length - nOffset,
+			return cf.Read (m_data.buffer + nOffset, sizeof (_T), nCount);
+			}
+
+		size_t Write (CFile& cf, uint nCount = 0, uint nOffset = 0) { 
+			if (!m_data.buffer)
+				return -1;
+			if (nOffset >= m_data.length)
+				return -1;
+			if (!nCount)
+				nCount = m_data.length - nOffset;
+			else if (nCount > m_data.length - nOffset)
+				nCount = m_data.length - nOffset,
+			return cf.Write (m_data.buffer + nOffset, sizeof (_T), nCount);
+			}
 
 		inline void SetWrap (bool bWrap) { m_data.bWrap = bWrap; }
 

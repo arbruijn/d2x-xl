@@ -581,7 +581,7 @@ if (m_info.nId == nDbgModel)
 #endif
 if (!Create (m_info.nDataSize))
 	Error ("Not enough memory for game models.");
-cf.Read (Buffer (), sizeof (ubyte), m_info.nDataSize);
+Read (cf, m_info.nDataSize);
 if (defModelP) {
 	defModelP->Destroy ();
 	*defModelP = *this;

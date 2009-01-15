@@ -357,7 +357,7 @@ if (0 >= (l = cf.Length ()))
 	l = -1;
 else if (!m_info.sample.Create (l))
 	l = -1;
-else if (cf.Read (m_info.sample.Buffer (), 1, l) != (size_t) l)
+else if (m_info.sample.Read (cf, l) != (size_t) l)
 	l = -1;
 cf.Close ();
 if ((l < 0) && m_info.sample.Buffer ()) {

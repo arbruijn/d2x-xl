@@ -208,7 +208,7 @@ for (i = 0; i < gameData.hoard.orb.nFrames; i++) {
 	CBitmap* bmP = &gameData.pig.tex.bitmaps [0][vcP->frames [i].index];
 	InitHoardBitmap (bmP, gameData.hoard.goal.nWidth, gameData.hoard.goal.nHeight, 0, bmDataP);
 	bmDataP += gameData.hoard.goal.nFrameSize;
-	cf.Read (bmP->Buffer (), 1, gameData.hoard.orb.nFrameSize);
+	bmP->Read (cf, gameData.hoard.orb.nFrameSize);
 	bmP->Remap (gameData.hoard.orb.palette, 255, -1);
 	}
 
@@ -222,7 +222,7 @@ for (i = 0; i < gameData.hoard.goal.nFrames; i++) {
 	CBitmap* bmP = gameData.pig.tex.bitmaps [0] + ecP->vc.frames [i].index;
 	InitHoardBitmap (bmP, gameData.hoard.goal.nWidth, gameData.hoard.goal.nHeight, 0, bmDataP);
 	bmDataP += gameData.hoard.goal.nFrameSize;
-	cf.Read (bmP->Buffer (), 1, gameData.hoard.goal.nFrameSize);
+	bmP->Read (cf, gameData.hoard.goal.nFrameSize);
 	bmP->Remap (gameData.hoard.goal.palette, 255, -1);
 	}
 
@@ -242,7 +242,7 @@ for (i = 0; i < 2; i++) {
 		}
 	palette.Read (cf);
 	gameData.hoard.icon [i].palette = paletteManager.Add (palette);
-	cf.Read (gameData.hoard.icon [i].bm.Buffer (), 1, gameData.hoard.icon [i].nFrameSize);
+	gameData.hoard.icon [i].bm.Read (cf, gameData.hoard.icon [i].nFrameSize);
 	gameData.hoard.icon [i].bm.Remap (gameData.hoard.icon [i].palette, 255, -1);
 	}
 
@@ -256,7 +256,7 @@ if (!gameData.hoard.bInitialized) {
 			}
 		gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].nLength [0] = len;
 		gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].data [0].Create (len);
-		cf.Read (gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].data [0].Buffer (), 1, len);
+		gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].Read (cf, len);
 		if (gameOpts->sound.digiSampleRate == SAMPLE_RATE_11K) {
 			len = cf.ReadInt ();    //get 22k len
 			cf.Seek (len, SEEK_CUR);     //skip over 22k sample

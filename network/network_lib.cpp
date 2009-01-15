@@ -314,7 +314,7 @@ void NetworkCountPowerupsInMine (void)
  //int 		i;
   CObject	*objP;
 
-memset (gameData.multiplayer.powerupsInMine, 0, sizeof (gameData.multiplayer.powerupsInMine));
+gameData.multiplayer.powerupsInMine.Clear (0);
 FORALL_POWERUP_OBJS (objP, i) {
 	gameData.multiplayer.powerupsInMine [objP->info.nId]++;
 	if (MultiPowerupIs4Pack (objP->info.nId))

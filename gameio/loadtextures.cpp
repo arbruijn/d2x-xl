@@ -178,7 +178,7 @@ if ((cf.Write (&bmP->Width (), sizeof (bmP->Width ()), 1) != 1) ||
 	 (cf.Write (&bmP->Width (), sizeof (bmP->Width ()), 1) != 1) ||
 	 (cf.Write (&bmP->bmFormat, sizeof (bmP->bmFormat), 1) != 1) ||
     (cf.Write (&bmP->bmBufSize, sizeof (bmP->bmBufSize), 1) != 1) ||
-    (cf.Write (bmP->Buffer (), bmP->bmBufSize, 1) != 1)) {
+    (bmP->Write (cf, bmP->bmBufSize) != bmP->bmBufSize)) {
 	cf.Close ();
 	return 0;
 	}
@@ -213,7 +213,7 @@ if (!(bmP->SetBuffer (new ubyte [bmP->bmBufSize])) {
 	cf.Close ();
 	return 0;
 	}
-if (cf.Read (bmP->Buffer (), bmP->bmBufSize, 1) != 1) {
+if (bmP->Read (cf, bmP->bmBufSize) != bmP->bmBufSize) {
 	cf.Close ();
 	return 0;
 	}
@@ -644,7 +644,7 @@ if (bmP->Flags () & BM_FLAG_RLE) {
 		bmP->Resize (zSize);
 #endif
 #if 1
-	cfP->Read (bmP->Buffer () + 4, 1, zSize - 4);
+	bmP->Read (cf, zSize - 4, 4);
 	if (nDescentCriticalError) {
 		PiggyCriticalError ();
 		goto reloadTextures;
@@ -668,7 +668,7 @@ else
 			bmP->Resize (nSize);
 #endif
 #if 1
-		cfP->Read (bmP->Buffer (), 1, nSize);
+		bmP->Read (cf, nSize);
 		if (bD1)
 			bmP->Remap (paletteManager.D1 (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 		else
@@ -867,7 +867,7 @@ if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 			}
 		else {
 			int nSize = (int) bm.Width () * (int) bm.Width ();
-			cf.Read (bm.Buffer (), 1, nSize);
+			bm.Read (cf, nSize);
 			bm.SetPalette (paletteManager.Game ());
 			j = indices [i];
 			bm.SetId (j);

@@ -779,7 +779,7 @@ robotcen->xCapacity -= gameData.matCens.xEnergyToCreateOneRobot;
 robotcen->xTimer = 0;
 if (! (objP = CreateMorphRobot (SEGMENTS + robotcen->nSegment, &vObjPos, nType)))
 	return; // Cannot create CObject!
-objP->info.nCreator = ((short) (robotcen - gameData.matCens.fuelCenters)) | 0x80;
+objP->info.nCreator = ((short) (robotcen - gameData.matCens.fuelCenters.Buffer ())) | 0x80;
 //	ExtractOrientFromSegment (&objP->info.position.mOrient, &SEGMENTS [robotcen->nSegment]);
 direction = gameData.objs.consoleP->info.position.vPos - objP->info.position.vPos;
 objP->info.position.mOrient = CFixMatrix::CreateFU(direction, objP->info.position.mOrient.UVec ());

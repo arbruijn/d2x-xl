@@ -50,9 +50,9 @@ gameData.ai.localInfo.Clear ();
 gameData.ai.routeSegs.Clear ();
 m_cf.Read (&gameData.ai.bInitialized, sizeof (int), 1);
 m_cf.Read (&gameData.ai.nOverallAgitation, sizeof (int), 1);
-m_cf.Read (gameData.ai.localInfo.Buffer (), sizeof (tAILocalInfo), (m_nVersion > 39) ? LEVEL_OBJECTS : (m_nVersion > 22) ? MAX_OBJECTS : MAX_OBJECTS_D2);
-m_cf.Read (gameData.ai.routeSegs.Buffer (), sizeof (tPointSeg), (m_nVersion > 39) ? LEVEL_POINT_SEGS : (m_nVersion > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2);
-m_cf.Read (gameData.ai.cloakInfo.Buffer (), sizeof (tAICloakInfo), MAX_AI_CLOAK_INFO);
+gameData.ai.localInfo.Read (m_cf, (m_nVersion > 39) ? LEVEL_OBJECTS : (m_nVersion > 22) ? MAX_OBJECTS : MAX_OBJECTS_D2);
+gameData.ai.routeSegs.Read (m_cf, (m_nVersion > 39) ? LEVEL_POINT_SEGS : (m_nVersion > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2);
+gameData.ai.cloakInfo.Read (m_cf);
 if (m_nVersion < 29) {
 	m_cf.Read (&gameData.boss [0].nCloakStartTime, sizeof (fix), 1);
 	m_cf.Read (&gameData.boss [0].nCloakEndTime , sizeof (fix), 1);
@@ -133,9 +133,9 @@ if (m_nVersion >= 24) {
 		m_cf.Read (&gameData.boss [i].nGateSegs, sizeof (gameData.boss [i].nGateSegs), 1);
 	for (i = 0; i < MAX_BOSS_COUNT; i++) {
 		if (gameData.boss [i].nGateSegs)
-			m_cf.Read (gameData.boss [i].gateSegs, sizeof (gameData.boss [i].gateSegs [0]), gameData.boss [i].nGateSegs);
+			m_cf.Read (gameData.boss [i].gateSegs.Buffer (), sizeof (gameData.boss [i].gateSegs [0]), gameData.boss [i].nGateSegs);
 		if (gameData.boss [i].nTeleportSegs)
-			m_cf.Read (gameData.boss [i].teleportSegs, sizeof (gameData.boss [i].teleportSegs [0]), gameData.boss [i].nTeleportSegs);
+			m_cf.Read (gameData.boss [i].teleportSegs.Buffer (), sizeof (gameData.boss [i].teleportSegs [0]), gameData.boss [i].nTeleportSegs);
 		}
 	}
 else if (m_nVersion >= 21) {
@@ -146,11 +146,11 @@ else if (m_nVersion >= 21) {
 
 	if (nGateSegs) {
 		gameData.boss [0].nGateSegs = nGateSegs;
-		m_cf.Read (gameData.boss [0].gateSegs, sizeof (gameData.boss [0].gateSegs [0]), nGateSegs);
+		m_cf.Read (gameData.boss [0].gateSegs.Buffer (), sizeof (gameData.boss [0].gateSegs [0]), nGateSegs);
 		}
 	if (nTeleportSegs) {
 		gameData.boss [0].nTeleportSegs = nTeleportSegs;
-		m_cf.Read (gameData.boss [0].teleportSegs, sizeof (gameData.boss [0].teleportSegs [0]), nTeleportSegs);
+		m_cf.Read (gameData.boss [0].teleportSegs.Buffer (), sizeof (gameData.boss [0].teleportSegs [0]), nTeleportSegs);
 		}
 } else {
 	// -- gameData.boss.nTeleportSegs = 1;
@@ -244,7 +244,7 @@ m_cf.WriteFix (gameData.escort.xLastPathCreated);
 m_cf.WriteInt (gameData.escort.nGoalObject);
 m_cf.WriteInt (gameData.escort.nSpecialGoal);
 m_cf.WriteInt (gameData.escort.nGoalIndex);
-m_cf.Write (gameData.thief.stolenItems, sizeof (gameData.thief.stolenItems [0]), MAX_STOLEN_ITEMS);
+m_cf.Write (gameData.thief.stolenItems.Write (m_cf);
 #if DBG
 i = CFTell ();
 #endif
@@ -392,7 +392,7 @@ else {
 	gameData.escort.nGoalObject = ESCORT_GOAL_UNSPECIFIED;
 	gameData.escort.nSpecialGoal = -1;
 	gameData.escort.nGoalIndex = -1;
-	memset (gameData.thief.stolenItems, 255, sizeof (gameData.thief.stolenItems));
+	gameData.thief.stolenItems.Clear (char (0xff));
 	}
 
 if (m_nVersion >= 15) {

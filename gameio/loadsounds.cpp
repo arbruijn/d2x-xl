@@ -186,7 +186,7 @@ for (i = b11K ? 0 : nSounds / 2; i < nSounds; i++) {
 	if (!dsP->data [1].Create (l))
 		continue;
 	cf.Seek ((long) (nDataOffs + dsh.offset), SEEK_SET);
-	if (cf.Read (dsP->data [1].Buffer (), 1, l) != (uint) l) {
+	if (dsP->data [1].Read (cf, l) != (size_t) l) {
 		cf.Close ();
 		dsP->data [1].Destroy ();
 		return -1;
@@ -218,7 +218,7 @@ if (!soundP->data [0].Create (soundP->nLength [0])) {
 	cf.Close ();
 	return 0;
 	}
-if (cf.Read (soundP->data [0].Buffer (), soundP->nLength [0], 1) != 1) {
+if (soundP->data [0].Read (cf, soundP->nLength [0]) != 1) {
 	cf.Close ();
 	return 0;
 	}
@@ -367,7 +367,7 @@ for (i = 0, j = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]; i < j; 
 			soundP->data [0].SetBuffer (ptr, true, soundP->nLength [0]);
 			ptr += soundP->nLength [0];
 			sbytes += soundP->nLength [0];
-			cf.Read (soundP->data [0].Buffer (), soundP->nLength [0], 1);
+			soundP->data [0].Read (cf, soundP->nLength [0]);
 #if USE_OPENAL
 			PiggyBufferSound (soundP);
 #endif

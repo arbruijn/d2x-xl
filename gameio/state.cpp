@@ -233,11 +233,11 @@ else {
 	cf.Read (m_info.szLabel + 3, DESC_LENGTH, 1);
 	if (nVersion < 26) {
 		m_info.image = CBitmap::Create (0, THUMBNAIL_W, THUMBNAIL_H, 1);
-		cf.Read (m_info.image->Buffer (), THUMBNAIL_W * THUMBNAIL_H, 1);
+		m_info.image->Read (cf, THUMBNAIL_W * THUMBNAIL_H);
 		}
 	else {
 		m_info.image = CBitmap::Create (0, THUMBNAIL_LW, THUMBNAIL_LH, 1);
-		cf.Read (m_info.image->Buffer (), THUMBNAIL_LW * THUMBNAIL_LH, 1);
+		m_info.image->Read (cf, THUMBNAIL_LW * THUMBNAIL_LH);
 		}
 	if (nVersion >= 9) {
 		CPalette palette;
@@ -980,7 +980,7 @@ m_cf.WriteFix (paletteManager.LastEffectTime ());
 m_cf.WriteShort (paletteManager.RedEffect ());
 m_cf.WriteShort (paletteManager.GreenEffect ());
 m_cf.WriteShort (paletteManager.BlueEffect ());
-m_cf.Write (gameData.render.lights.subtracted.Buffer (), sizeof (gameData.render.lights.subtracted [0]), LEVEL_SEGMENTS);
+gameData.render.lights.subtracted.Write (cf, LEVEL_SEGMENTS);
 m_cf.WriteInt (gameStates.app.bFirstSecretVisit);
 m_cf.WriteFix (gameData.omega.xCharge [0]);
 m_cf.WriteShort (gameData.missions.nEntryLevel);
@@ -1033,7 +1033,7 @@ if (thumbCanv) {
 			}
 	paletteManager.LoadEffect ();
 	bm.DestroyBuffer ();
-	m_cf.Write (thumbCanv->Buffer (), THUMBNAIL_LW * THUMBNAIL_LH, 1);
+	thumbCanv->Write (cf, THUMBNAIL_LW * THUMBNAIL_LH);
 	CCanvas::Pop ();
 	thumbCanv->Destroy ();
 	m_cf.Write (paletteManager.Game (), 3, 256);
@@ -1947,9 +1947,7 @@ paletteManager.SetLastEffectTime (m_cf.ReadFix ());
 paletteManager.SetRedEffect ((ubyte) m_cf.ReadShort ());
 paletteManager.SetGreenEffect ((ubyte) m_cf.ReadShort ());
 paletteManager.SetBlueEffect ((ubyte) m_cf.ReadShort ());
-m_cf.Read (gameData.render.lights.subtracted.Buffer (), 
-			  sizeof (gameData.render.lights.subtracted [0]), 
-			  (m_nVersion > 39) ? LEVEL_SEGMENTS : (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2);
+gameData.render.lights.subtracted.Read (cf, (m_nVersion > 39) ? LEVEL_SEGMENTS : (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2);
 ApplyAllChangedLight ();
 gameStates.app.bFirstSecretVisit = m_cf.ReadInt ();
 if (m_bSecret) 
@@ -2052,7 +2050,7 @@ if (!m_bBetweenLevels) {
 	//Read objects, and pop 'em into their respective segments.
 	m_cf.Read (&i, sizeof (int), 1);
 	gameData.objs.nLastObject [0] = i - 1;
-	m_cf.Read (OBJECTS.Buffer (), sizeof (CObject), i);
+	OBJECTS.Read (m_cf, i);
 	FixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);
 	FixObjects ();
 	SpecialResetObjects ();
@@ -2068,7 +2066,7 @@ if (!m_bBetweenLevels) {
 	//Restore CWall info
 	if (ReadBoundedInt (MAX_WALLS, &gameData.walls.nWalls))
 		return 0;
-	m_cf.Read (WALLS.Buffer (), sizeof (CWall), gameData.walls.nWalls);
+	WALLS.Read (m_cf, gameData.walls.nWalls);
 	//now that we have the walls, check if any sounds are linked to
 	//walls that are now open
 	for (i = 0, wallP = WALLS.Buffer (); i < gameData.walls.nWalls; i++, wallP++)
@@ -2077,31 +2075,31 @@ if (!m_bBetweenLevels) {
 	//Restore exploding wall info
 	if (m_nVersion >= 10) {
 		m_cf.Read (&i, sizeof (int), 1);
-		m_cf.Read (gameData.walls.exploding.Buffer (), sizeof (gameData.walls.exploding [0]), i);
+		gameData.walls.exploding.Read (m_cf, i);
 		}
 	//Restore door info
 	if (ReadBoundedInt (MAX_DOORS, &i))
 		return 0;
 	gameData.walls.activeDoors.Grow (static_cast<uint> (i));
-	m_cf.Read (gameData.walls.activeDoors.Buffer (), sizeof (CActiveDoor), gameData.walls.activeDoors.ToS ());
+	gameData.walls.activeDoors.Read (m_cf, gameData.walls.activeDoors.ToS ());
 	if (m_nVersion >= 14) {		//Restore cloaking CWall info
 		if (ReadBoundedInt (MAX_WALLS, &i))
 			return 0;
 		gameData.walls.cloaking.Grow (static_cast<uint> (i));
-		m_cf.Read (gameData.walls.cloaking.Buffer (), sizeof (CCloakingWall), gameData.walls.cloaking.ToS ());
+		gameData.walls.cloaking.Read (m_cf, gameData.walls.cloaking.ToS ());
 		}
 	//Restore CTrigger info
 	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nTriggers))
 		return 0;
-	m_cf.Read (TRIGGERS.Buffer (), sizeof (CTrigger), gameData.trigs.nTriggers);
+	TRIGGERS.Read (m_cf, gameData.trigs.nTriggers);
 	if (m_nVersion >= 26) {
 		//Restore CObject CTrigger info
 
 		m_cf.Read (&gameData.trigs.nObjTriggers, sizeof (gameData.trigs.nObjTriggers), 1);
 		if (gameData.trigs.nObjTriggers > 0) {
-			m_cf.Read (OBJTRIGGERS.Buffer (), sizeof (CTrigger), gameData.trigs.nObjTriggers);
-			m_cf.Read (gameData.trigs.objTriggerRefs.Buffer (), sizeof (tObjTriggerRef), gameData.trigs.nObjTriggers);
-			m_cf.Read (gameData.trigs.firstObjTrigger.Buffer (), sizeof (short), 700);
+			OBJTRIGGERS.Read (m_cf, gameData.trigs.nObjTriggers);
+			gameData.trigs.objTriggerRefs.Read (m_cf, gameData.trigs.nObjTriggers);
+			gameData.trigs.firstObjTrigger.Read (m_cf, 700);
 			}
 		else
 			m_cf.Seek (((m_nVersion > 39) ? LEVEL_OBJECTS : (m_nVersion > 34) ? MAX_OBJECTS_D2X : 700) * sizeof (short), SEEK_CUR);
@@ -2132,7 +2130,7 @@ if (!m_bBetweenLevels) {
 	m_cf.Read (&gameData.reactor.triggers, sizeof (tReactorTriggers), 1);
 	if (ReadBoundedInt (MAX_FUEL_CENTERS, &gameData.matCens.nFuelCenters))
 		return 0;
-	m_cf.Read (gameData.matCens.fuelCenters.Buffer (), sizeof (tFuelCenInfo), gameData.matCens.nFuelCenters);
+	gameData.matCens.fuelCenters..Read (m_cf, gameData.matCens.nFuelCenters);
 
 	// Restore the control cen info
 	gameData.reactor.states [0].bHit = m_cf.ReadInt ();
@@ -2144,9 +2142,9 @@ if (!m_bBetweenLevels) {
 	LoadAIBinFormat ();
 	// Restore the automap visited info
 	if (m_nVersion > 39)
-		m_cf.Read (automap.m_visited [0].Buffer (), sizeof (ushort), LEVEL_SEGMENTS);
+		automap.m_visited [0].Read (m_cf, LEVEL_SEGMENTS);
 	if (m_nVersion > 37)
-		m_cf.Read (automap.m_visited [0].Buffer (), sizeof (ushort), MAX_SEGMENTS);
+		automap.m_visited [0].Read (m_cf, MAX_SEGMENTS);
 	else {
 		int	i, j = (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2;
 		for (i = 0; i < j; i++)
@@ -2211,8 +2209,7 @@ else {
 
 //	Load gameData.render.lights.subtracted
 if (m_nVersion >= 16) {
-	m_cf.Read (gameData.render.lights.subtracted.Buffer (), sizeof (gameData.render.lights.subtracted [0]), 
-				  (m_nVersion > 39) ? LEVEL_SEGMENTS : (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2);
+	gameData.render.lights.subtracted.Read (m_cf, (m_nVersion > 39) ? LEVEL_SEGMENTS : (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2);
 	ApplyAllChangedLight ();
 	//ComputeAllStaticLight ();	//	set xAvgSegLight field in CSegment struct.  See note at that function.
 	}

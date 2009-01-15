@@ -440,7 +440,7 @@ if (gameData.pig.tex.nHamFileVersion < 3) // hamfile contains sound info
 #ifndef EDITOR
 	BMReadAll (cf);
 /*---*/PrintLog ("      Loading bitmap index translation table\n");
-	cf.Read (gameData.pig.tex.bitmapXlat.Buffer (), sizeof (ushort)*MAX_BITMAP_FILES, 1);
+	gameData.pig.tex.bitmapXlat.Read (cf, MAX_BITMAP_FILES);
 #endif
 if (gameData.pig.tex.nHamFileVersion < 3) {
 	cf.Seek (nSoundOffset, SEEK_SET);
@@ -624,7 +624,7 @@ else {
 	else
 		return;
 	}
-cf.Read (bmP->Buffer (), 1, zSize);
+bmP->Read (cf, zSize);
 bSwap0255 = 0;
 switch (cf.Length ()) {
 	case D1_MAC_PIGSIZE:
@@ -934,7 +934,7 @@ if (!(bmP = CBitmap::Create (0, bih.biWidth, bih.biHeight, 1))) {
 	return NULL;
 	}
 cf.Seek (bfh.bfOffBits, SEEK_SET);
-if (cf.Read (bmP->Buffer (), bih.biWidth * bih.biHeight, 1) != 1) {
+if (bmP->Read (cf, bih.biWidth * bih.biHeight) != bih.biWidth * bih.biHeight) {
 	delete bmP;
 	return NULL;
 	}

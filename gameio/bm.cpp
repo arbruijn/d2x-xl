@@ -1613,7 +1613,7 @@ bOk = (cf.Read (&mdh, sizeof (mdh), 1) == 1);
 if (bOk)
 	bOk = (mdh.nVersion == MODEL_DATA_VERSION);
 if (bOk)
-	bOk = (cf.Read (gameData.models.spheres.Buffer (), sizeof (gameData.models.spheres), 1) == 1);
+	bOk = gameData.models.spheres.Read (cf, 1) == 1;
 if (!bOk)
 	gameData.models.spheres.Clear ();
 cf.Close ();
@@ -1633,7 +1633,7 @@ if (!gameStates.app.bCacheModelData)
 if (!cf.Open ("modeldata.d2x", gameFolders.szCacheDir, "wb", 0))
 	return 0;
 bOk = (cf.Write (&mdh, sizeof (mdh), 1) == 1) &&
-		(cf.Write (gameData.models.spheres.Buffer (), gameData.models.spheres.Size (), 1) == 1) &&
+		(gameData.models.spheres.Write (cf) == gameData.models.spheres.Length ()) &&
 cf.Close ();
 return bOk;
 }

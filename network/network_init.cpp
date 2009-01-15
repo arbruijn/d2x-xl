@@ -89,8 +89,8 @@ OpenReceiveLog ();
 #endif
 InitAddressFilter ();
 InitPacketHandlers ();
-memset (gameData.multiplayer.maxPowerupsAllowed, 0, sizeof (gameData.multiplayer.maxPowerupsAllowed));
-memset (gameData.multiplayer.powerupsInMine, 0, sizeof (gameData.multiplayer.powerupsInMine));
+gameData.multiplayer.maxPowerupsAllowed.Clear (0);
+gameData.multiplayer.powerupsInMine.Clear (0);
 networkData.nTotalMissedPackets = 0; 
 networkData.nTotalPacketsGot = 0;
 memset (&netGame, 0, sizeof (tNetgameInfo));
