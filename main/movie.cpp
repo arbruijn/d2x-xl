@@ -180,7 +180,7 @@ if (nFrame == 0) {
 	nNextSubTitle = 0;
 	fontManager.SetCurrent (GAME_FONT);
 	nLineSpacing = CCanvas::Current ()->Font ()->Height () + (CCanvas::Current ()->Font ()->Height () / 4);
-	fontManager.SetColor (paletteManager.Current ()->ClosestColor (255, 255, 255), -1);
+	fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
 	}
 
 //get rid of any subtitles that have expired
