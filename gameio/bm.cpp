@@ -246,7 +246,7 @@ BMSetAfterburnerSizes ();
 
 gameData.objs.pwrUp.nTypes = cf.ReadInt ();
 /*---*/PrintLog ("      Loading %d powerup descriptions\n", gameData.objs.pwrUp.nTypes);
-ReadPowerupTypeInfos (gameData.objs.pwrUp.info, gameData.objs.pwrUp.nTypes, cf);
+ReadPowerupTypeInfos (gameData.objs.pwrUp.info.Buffer (), gameData.objs.pwrUp.nTypes, cf);
 
 gameData.models.nPolyModels = cf.ReadInt ();
 /*---*/PrintLog ("      Loading %d CPolyModel descriptions\n", gameData.models.nPolyModels);
@@ -479,7 +479,7 @@ cf.Close (&infoFile);
 
 void BMReadWeaponInfoD1N (CFile& cf, int i)
 {
-	CD1WeaponInfo	*wiP = gameData.weapons.infoD1 + i;
+	CD1WeaponInfo* wiP = gameData.weapons.infoD1 + i;
 
 wiP->renderType = cf.ReadByte ();
 wiP->nModel = cf.ReadByte ();
