@@ -546,9 +546,9 @@ if (*bmName && ((nIndex < 0) || (gameOpts->render.textures.bUseHires && (!gameOp
 		PrintLog ("loading hires texture '%s' (quality: %d)\n", fn, gameOpts->render.nTextureQuality);
 		bTGA = 1;
 		if (nIndex < 0)
-			altBmP = gameData.pig.tex.addonBitmaps - nIndex - 1;
+			altBmP = &gameData.pig.tex.addonBitmaps [-nIndex - 1];
 		else
-			altBmP = gameData.pig.tex.altBitmaps [bD1] + nIndex;
+			altBmP = &gameData.pig.tex.altBitmaps [bD1][nIndex];
 		altBmP->SetType (BM_TYPE_ALT);
 		bmP->SetOverride (altBmP);
 		bmP = altBmP;
