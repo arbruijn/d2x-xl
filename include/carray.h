@@ -345,18 +345,18 @@ class CFloatArray : public CArray<float> {};
 template < class _T, uint length > 
 class CStaticArray : public CArray < _T > {
 
-	template < class _U, uint length > 
+	template < class _U, uint _length > 
 	class CStaticArrayData {
 		public:
-			_U		buffer [length];
+			_U		buffer [_length];
 			};
 
 	protected:
 		CStaticArrayData< _T, length > m_data;
 
 	public:
-		virtual _T *Create (uint length) { 
-			this->SetBuffer (m_data.buffer, 2, length); 
+		virtual _T *Create (uint _length) { 
+			this->SetBuffer (m_data.buffer, 2, _length); 
 			return m_data.buffer;
 			}
 		virtual void Destroy (void) { }
