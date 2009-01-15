@@ -303,7 +303,7 @@ for (int i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
 					colors [0].alpha = colors [1].alpha = dy / float (FADE_DIST);
 					dy = float ((y + h < FADE_DIST) ? y + h : (480 - y - 2 * h < FADE_DIST) ? 480 - y - 2 * h : FADE_DIST);
 					colors [2].alpha = colors [3].alpha = dy / float (FADE_DIST);
-					bmP->Render (CCanvas::Current (), (screen.Width () - w) / 2, m_yOffs + y, w, h, 0, 0, w, h, 1, 0, 1, colors);
+					bmP->Render (CCanvas::Current (), (screen.Width () - w) / 2, m_yOffs + y, w, h, 0, 0, w, h, 1, 0, 0, 1, colors);
 					delete bmP;
 					}
 				}

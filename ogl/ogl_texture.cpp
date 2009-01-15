@@ -843,7 +843,7 @@ int i;
 i = glGetError ();
 glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 i = glGetError ();
-if (m_info.bMipMaps) {
+if (m_info.bSmoothe) {
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gameStates.ogl.texMagFilter);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gameStates.ogl.texMinFilter);
 	}

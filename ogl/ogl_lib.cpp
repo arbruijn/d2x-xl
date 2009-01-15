@@ -99,11 +99,12 @@ int gr_badtexture = 0;
 //------------------------------------------------------------------------------
 
 tRenderQuality renderQualities [] = {
- {GL_NEAREST, GL_NEAREST, 0, 0},	// no smoothing
- {GL_NEAREST, GL_LINEAR, 0, 0},	// smooth close textures, don't smooth distant textures
- {GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR, 1, 0},	// smooth close textures, use non-smoothed mipmaps distant textures
- {GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1, 0},	//smooth close textures, use smoothed mipmaps for distant ones
- {GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1, 1}	//smooth close textures, use smoothed mipmaps for distant ones, anti-aliasing
+	{GL_NEAREST, GL_NEAREST, 0, 0},	// no smoothing
+	{GL_LINEAR, GL_LINEAR, 0, 0},	// smooth textures
+	{GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR, 1, 0},	// smooth close textures, use non-smoothed mipmaps distant textures
+	{GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1, 0},	//smooth close textures, use smoothed mipmaps for distant ones
+	{GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1, 1},	//smooth close textures, use smoothed mipmaps for distant ones, anti-aliasing
+	{GL_LINEAR, GL_LINEAR, 0, 1},	// special mode for high quality movie rendering: smooth textures + anti aliasing
 	};
 
 //------------------------------------------------------------------------------
@@ -121,6 +122,10 @@ gameStates.ogl.texMagFilter = renderQualities [nQuality].texMagFilter;
 gameStates.ogl.texMinFilter = renderQualities [nQuality].texMinFilter;
 gameStates.ogl.bNeedMipMaps = renderQualities [nQuality].bNeedMipmap;
 gameStates.ogl.bAntiAliasing = renderQualities [nQuality].bAntiAliasing;
+if (gameStates.ogl.bAntiAliasingOk && gameStates.ogl.bAntiAliasing)
+	glEnable (GL_MULTISAMPLE_ARB);
+else
+	glDisable (GL_MULTISAMPLE_ARB);
 ResetTextures (1, gameStates.app.bGameRunning);
 }
 
