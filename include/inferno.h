@@ -2187,8 +2187,8 @@ class CModelData {
 		CArray<CFloatVector>				fPolyModelVerts ; //[MAX_POLYGON_VERTS];
 		CArray<CBitmap*>					textures ; //[MAX_POLYOBJ_TEXTURES];
 		CArray<tBitmapIndex>				textureIndex ; //[MAX_POLYOBJ_TEXTURES];
-		CArray<CModelHitboxes>			hitboxes ; //[MAX_POLYGON_MODELS];
-		CArray<CModelThrusters>			thrusters ; //[MAX_POLYGON_MODELS];
+		CStaticArray< CModelHitboxes,MAX_POLYGON_MODELS >	hitboxes ; //[MAX_POLYGON_MODELS];
+		CStaticArray< CModelThrusters,MAX_POLYGON_MODELS >	thrusters ; //[MAX_POLYGON_MODELS];
 		CArray<RenderModel::CModel>	renderModels [2]; //[MAX_POLYGON_MODELS];
 		CArray<CFixVector>				offsets ; //[MAX_POLYGON_MODELS];
 		CArray<tGunInfo>					gunInfo ; //[MAX_POLYGON_MODELS];
