@@ -898,7 +898,7 @@ if (gameOpts->render.bHiresModels && (objP->info.nType == OBJ_PLAYER) && !GetASE
 	ti.mtP = NULL;
 	}
 else if (bAfterburnerBlob || (bMissile && !nThrusters)) {
-		tHitbox	*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
+		tHitbox	*phb = &gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes [0];
 		fix		nObjRad = RENDERPATH ? (phb->vMax [Z] - phb->vMin [Z]) / 2 : 2 * (phb->vMax [Z] - phb->vMin [Z]) / 3;
 
 	if (bAfterburnerBlob)
@@ -1213,13 +1213,13 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 #endif
 if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ())) {
 	int			bStencil, bDrawArrays, i;
-	float			a1, a2;
-	CFloatVector		vCorona [4], vh [5], vPos, vNorm, vDir;
-	tHitbox		*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
-	float			fLength = X2F (phb->vMax [Z] - phb->vMin [Z]) / 2;
-	float			dx = X2F (phb->vMax [X] - phb->vMin [X]);
-	float			dy = X2F (phb->vMax [Y] - phb->vMin [Y]);
-	float			fRad = (float) (sqrt (dx * dx + dy * dy) / 2);
+	float				a1, a2;
+	CFloatVector	vCorona [4], vh [5], vPos, vNorm, vDir;
+	tHitbox*			phb = &gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes [0];
+	float				fLength = X2F (phb->vMax [Z] - phb->vMin [Z]) / 2;
+	float				dx = X2F (phb->vMax [X] - phb->vMin [X]);
+	float				dy = X2F (phb->vMax [Y] - phb->vMin [Y]);
+	float				fRad = (float) (sqrt (dx * dx + dy * dy) / 2);
 	CBitmap	*bmP;
 	tRgbaColorf	color;
 
@@ -1696,7 +1696,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 			static tTexCoord2f	tTexCoordTrail [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 
 		if (objP->info.renderType == RT_POLYOBJ) {
-			tHitbox	*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
+			tHitbox*	phb = &gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes [0];
 			l = X2F (phb->vMax [Z] - phb->vMin [Z]);
 			dx = X2F (phb->vMax [X] - phb->vMin [X]);
 			dy = X2F (phb->vMax [Y] - phb->vMin [Y]);

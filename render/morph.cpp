@@ -238,7 +238,7 @@ void CObject::MorphStart (void)
 	CFixVector pmmin, pmmax;
 	CFixVector vBoxSize;
 	int i;
-	tMorphInfo *mdP = gameData.render.morph.objects;
+	tMorphInfo *mdP = &gameData.render.morph.objects [0];
 
 for (i = 0; i < MAX_MORPH_OBJECTS; i++, mdP++)
 	if (mdP->objP == NULL ||

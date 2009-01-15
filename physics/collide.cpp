@@ -1259,14 +1259,14 @@ if (info.xShields >= 0) {
 if (IsMultiGame) {
 	bIsThief = (ROBOTINFO (info.nId).thief != 0);
 	if (bIsThief)
-		memcpy (tempStolen, gameData.thief.stolenItems, sizeof (*tempStolen) * MAX_STOLEN_ITEMS);
+		memcpy (tempStolen, &gameData.thief.stolenItems [0], gameData.thief.stolenItems.Size ());
 	if (!MultiExplodeRobotSub (OBJ_IDX (this), nKillerObj, ROBOTINFO (info.nId).thief)) 
 		return 0;
 	if (bIsThief)
-		memcpy (gameData.thief.stolenItems, tempStolen, sizeof (*tempStolen) * MAX_STOLEN_ITEMS);
+		memcpy (&gameData.thief.stolenItems [0], tempStolen, gameData.thief.stolenItems.Size ());
 	MultiSendRobotExplode (OBJ_IDX (this), nKillerObj, ROBOTINFO (info.nId).thief);
 	if (bIsThief)
-		memset (gameData.thief.stolenItems, 255, sizeof (gameData.thief.stolenItems));
+		gameData.thief.stolenItems.Clear (char (0xff));
 	return 1;
 	}
 

@@ -91,7 +91,7 @@ void DoReactorDeadFrame (void)
 {
 if (gameStates.gameplay.nReactorCount) {
 	int	i;
-	tReactorStates	*rStatP = gameData.reactor.states;
+	tReactorStates*	rStatP = &gameData.reactor.states [0];
 
 	for (i = 0; i < gameStates.gameplay.nReactorCount; i++, rStatP++) {
 		if ((rStatP->nDeadObj != -1) && 
@@ -413,7 +413,7 @@ void InitReactorForLevel (int bRestore)
 	int		i, j = 0, nGuns, bNew;
 	CObject	*objP;
 	short		nBossObj = -1;
-	tReactorStates	*rStatP = gameData.reactor.states;
+	tReactorStates*	rStatP = &gameData.reactor.states [0];
 
 gameStates.gameplay.bMultiBosses = gameStates.app.bD2XLevel && EGI_FLAG (bMultiBosses, 0, 0, 0);
 extraGameInfo [0].nBossCount = 0;
@@ -428,7 +428,7 @@ if (bRestore) {
 	}
 else {
 	gameStates.gameplay.nLastReactor = -1;
-	memset (gameData.reactor.states, 0xff, sizeof (gameData.reactor.states));
+	gameData.reactor.states.Clear (char (0xff));
 	}
 FORALL_ACTOR_OBJS (objP, i) {
 	if (objP->info.nType == OBJ_REACTOR) {

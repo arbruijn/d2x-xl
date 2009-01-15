@@ -897,7 +897,7 @@ for (i = 0; i < gameData.segs.nSegments; i++)
 void BumpVisitedFlag (void)
 {
 if (!++gameData.render.mine.nVisited) {
-	memset (gameData.render.mine.bVisited, 0, sizeof (gameData.render.mine.bVisited));
+	gameData.render.mine.bVisited.Clear (0);
 	gameData.render.mine.nVisited = 1;
 	}
 }
@@ -907,7 +907,7 @@ if (!++gameData.render.mine.nVisited) {
 void BumpProcessedFlag (void)
 {
 if (!++gameData.render.mine.nProcessed) {
-	memset (gameData.render.mine.bProcessed, 0, sizeof (gameData.render.mine.bProcessed));
+	gameData.render.mine.bProcessed.Clear (0);
 	gameData.render.mine.nProcessed = 1;
 	}
 }
@@ -917,7 +917,7 @@ if (!++gameData.render.mine.nProcessed) {
 void BumpVisibleFlag (void)
 {
 if (!++gameData.render.mine.nVisible) {
-	memset (gameData.render.mine.bVisible, 0, sizeof (gameData.render.mine.bVisible));
+	gameData.render.mine.bVisible.Clear (0);
 	gameData.render.mine.nVisible = 1;
 	}
 }

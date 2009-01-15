@@ -738,7 +738,7 @@ if (gameStates.app.nFunctionMode == FMODE_EDITOR && nObject == CurObject_index)
 void RenderStartFrame (void)
 {
 if (!++gameStates.render.nFrameCount) {		//wrap!
-	memset (gameData.render.mine.nRotatedLast, 0, sizeof (gameData.render.mine.nRotatedLast));		//clear all to zero
+	gameData.render.mine.nRotatedLast.Clear (0);		//clear all to zero
 	gameStates.render.nFrameCount = 1;											//and set this frame to 1
 	}
 }
@@ -1427,7 +1427,7 @@ PROF_START
 	int			nListPos;
 	short			nObject;
 
-memset (gameData.render.mine.renderObjs.ref, 0xff, gameData.segs.nSegments * sizeof (gameData.render.mine.renderObjs.ref [0]));
+gameData.render.mine.renderObjs.ref.Clear (char (0xff));
 gameData.render.mine.renderObjs.nUsed = 0;
 
 for (nListPos = 0; nListPos < nSegCount; nListPos++) {
@@ -1608,7 +1608,7 @@ void BuildRenderSegList (short nStartSeg, int nWindow)
 gameData.render.zMin = 0x7fffffff;
 gameData.render.zMax = -0x7fffffff;
 bCullIfBehind = !SHOW_SHADOWS || (gameStates.render.nShadowPass == 1);
-memset (gameData.render.mine.nRenderPos, -1, sizeof (gameData.render.mine.nRenderPos [0]) * (gameData.segs.nSegments));
+gameData.render.mine.nRenderPos.Clear (char (0xff));
 BumpVisitedFlag ();
 BumpProcessedFlag ();
 BumpVisibleFlag ();

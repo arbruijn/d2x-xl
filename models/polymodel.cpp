@@ -453,7 +453,7 @@ m_info.nSimplerModel = 0;
 fix CPolyModel::Size (void)
 {
 	int			i, nSubModels;
-	tHitbox		*phb = gameData.models.hitboxes [m_info.nId].hitboxes;
+	tHitbox*		phb = &gameData.models.hitboxes [m_info.nId].hitboxes [0];
 	CFixVector	hv;
 	double		dx, dy, dz;
 

@@ -344,8 +344,8 @@ CREATE (bObjectRendered, gameData.objs.nMaxObjects, 0);
 CREATE (bRenderSegment, gameData.segs.nSegments, 0); 
 CREATE (nRenderObjList, gameData.objs.nMaxObjects, 0);
 CREATE (nRenderPos, gameData.segs.nSegments, 0); 
-CREATE (nRotatedLast, gameData.segs.Vertices, 0); 
-CREATE (bCalcVertexColor, gameData.segs.Vertices, 0); 
+CREATE (nRotatedLast, gameData.segs.nVertices, 0); 
+CREATE (bCalcVertexColor, gameData.segs.nVertices, 0); 
 CREATE (bAutomapVisited, gameData.segs.nSegments, 0); 
 CREATE (bAutomapVisible, gameData.segs.nSegments, 0); 
 CREATE (bRadarVisited, gameData.segs.nSegments, 0); 
@@ -867,7 +867,7 @@ for (int i = 0; i < 2; i++)
 
 void InitWeaponFlags (void)
 {
-memset (gameData.objs.bIsMissile, 0, sizeof (gameData.objs.bIsMissile));
+gameData.objs.bIsMissile.Clear (0);
 gameData.objs.bIsMissile [CONCUSSION_ID] =
 gameData.objs.bIsMissile [HOMINGMSL_ID] =
 gameData.objs.bIsMissile [SMARTMSL_ID] =
@@ -887,7 +887,7 @@ gameData.objs.bIsMissile [ROBOT_MEGAMSL_ID] =
 gameData.objs.bIsMissile [ROBOT_EARTHSHAKER_ID] =
 gameData.objs.bIsMissile [ROBOT_SHAKER_MEGA_ID] = 1;
 
-memset (gameData.objs.bIsWeapon, 0, sizeof (gameData.objs.bIsWeapon));
+gameData.objs.bIsWeapon.Clear (0);
 gameData.objs.bIsWeapon [VULCAN_ID] =
 gameData.objs.bIsWeapon [GAUSS_ID] =
 gameData.objs.bIsWeapon [ROBOT_VULCAN_ID] = 1;
@@ -928,7 +928,7 @@ gameData.objs.bIsWeapon [ROBOT_RED_LASER_ID] =
 gameData.objs.bIsWeapon [ROBOT_GREEN_LASER_ID] =
 gameData.objs.bIsWeapon [ROBOT_WHITE_LASER_ID] = 1;
 
-memset (gameData.objs.bIsSlowWeapon, 0, sizeof (gameData.objs.bIsSlowWeapon));
+gameData.objs.bIsSlowWeapon.Clear (0);
 gameData.objs.bIsSlowWeapon [VULCAN_ID] =
 gameData.objs.bIsSlowWeapon [GAUSS_ID] =
 gameData.objs.bIsSlowWeapon [ROBOT_VULCAN_ID] = 1;
@@ -965,7 +965,7 @@ memset (&color, 0, sizeof (color));
 CLEAR (nLastObject);
 CLEAR (guidedMissile);
 CLEAR (trackGoals);
-CLEAR (bWantEffect);
+bWantEffect.Clear ();
 consoleP = NULL;
 viewerP = NULL;
 missileViewerP = NULL;
@@ -1153,9 +1153,9 @@ CLEAR (nLastHitTime);
 CLEAR (bWasHit);
 CLEAR (bulletEmitters);
 CLEAR (gatlingSmoke);
-CLEAR (powerupsInMine);
-CLEAR (powerupsOnShip);
-CLEAR (maxPowerupsAllowed);
+powerupsInMine.Clear ();
+powerupsOnShip.Clear ();
+maxPowerupsAllowed.Clear ();
 }
 
 // ----------------------------------------------------------------------------
