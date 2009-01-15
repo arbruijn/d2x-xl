@@ -503,16 +503,14 @@ nSize = (int) bmP->FrameSize ();
 if (nIndex >= 0)
 	GetFlagData (bmName, nIndex);
 #if DBG
-if (strstr (bmName, "misc066")) {
-	sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], 
-				*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
+if (strstr (bmName, "door52")) {
+	sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], *gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
 	}
 #endif
 if (gameStates.app.bNostalgia)
 	gameOpts->render.textures.bUseHires = 0;
 else {
-	sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], 
-				*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
+	sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], *gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
 	tBase = cfP->Date (fn, "", 0);
 	if (tBase < 0) 
 		*fnShrunk = '\0';
