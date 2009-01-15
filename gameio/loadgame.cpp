@@ -779,7 +779,6 @@ gameData.render.faceIndex [1].roots.Clear (0xff);
 gameData.render.faceIndex [0].tails.Clear (0xff);
 gameData.render.faceIndex [1].tails.Clear (0xff);
 lightManager.ResetIndex ();
-gameData.objs.bWantEffect.Clear (0);
 memset (gameData.objs.guidedMissile, 0, sizeof (gameData.objs.guidedMissile));
 gameData.render.faceIndex [0].nUsedFaces = 0;
 gameData.render.faceIndex [0].nUsedKeys = 0;

@@ -1019,7 +1019,7 @@ CREATE (gameData.objs.xLight, LEVEL_OBJECTS, 0);
 CREATE (gameData.objs.nLightSig, LEVEL_OBJECTS, 0);
 CREATE (gameData.objs.nHitObjects, LEVEL_OBJECTS * MAX_HIT_OBJECTS, 0);
 CREATE (gameData.objs.viewData, LEVEL_OBJECTS, (char) 0xFF);
-CREATE (gameData.objs.bWantEffect, LEVEL_OBJECTS, (char) 0xFF);
+CREATE (gameData.objs.bWantEffect, LEVEL_OBJECTS, (char) 0);
 for (int i = 0; i < LEVEL_OBJECTS; i++) {
 	gameData.objs.freeList [i] = i;
 	OBJECTS [i].Init ();
