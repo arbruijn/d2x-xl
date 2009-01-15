@@ -60,27 +60,25 @@ fix	xBeamBrightness = (I2X (1)/2);	//global saying how bright the light beam is
 
 fix CHeadlightManager::ComputeLightOnObject (CObject *objP)
 {
-	int	i;
-	fix	light;
 	//	Let's just illuminate players and robots for speed reasons, ok?
 if ((objP->info.nType != OBJ_ROBOT) && (objP->info.nType	!= OBJ_PLAYER))
 	return 0;
 
-	fix			dot, dist;
+	fix			dot, dist, light = 0;
 	CFixVector	vecToObj;
 	CObject*		lightObjP;
 
-light = 0;
-for (i = 0; i < nLights; i++) {
-	lightObjP = objects [i];
-	vecToObj = objP->info.position.vPos - lightObjP->info.position.vPos;
-	dist = CFixVector::Normalize (vecToObj);
-	if (dist > 0) {
-		dot = CFixVector::Dot (lightObjP->info.position.mOrient.FVec (), vecToObj);
-		if (dot < I2X (1)/2)
-			light += FixDiv (HEADLIGHT_SCALE, FixMul (HEADLIGHT_SCALE, dist));	//	Do the Normal thing, but darken around headlight.
-		else
-			light += FixMul (FixMul (dot, dot), HEADLIGHT_SCALE)/8;
+for (int nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
+	if (lightObjP = objects [nPlayer]) {
+		vecToObj = objP->info.position.vPos - lightObjP->info.position.vPos;
+		dist = CFixVector::Normalize (vecToObj);
+		if (dist > 0) {
+			dot = CFixVector::Dot (lightObjP->info.position.mOrient.FVec (), vecToObj);
+			if (dot < I2X (1)/2)
+				light += FixDiv (HEADLIGHT_SCALE, FixMul (HEADLIGHT_SCALE, dist));	//	Do the Normal thing, but darken around headlight.
+			else
+				light += FixMul (FixMul (dot, dot), HEADLIGHT_SCALE)/8;
+			}
 		}
 	}
 return light;
@@ -149,11 +147,12 @@ if (gameStates.render.nLightingMethod) {
 			pl->bTransform = 0;
 			lightIds [objP->info.nId] = nLight;
 			}
-		return nLight;
+		return lightIds [objP->info.nId];
 		}
 	}
 else {
-	objects [nLights++] = objP;
+	objects [objP->info.nId] = objP;
+	return 0;
 	}
 return -1;
 }
