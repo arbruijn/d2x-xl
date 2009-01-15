@@ -703,11 +703,14 @@ player = &only;
 
 CMatCenData::CMatCenData ()
 {
-memset (this, 0, sizeof (*this));
 xFuelRefillSpeed = I2X (1);
 xFuelGiveAmount = I2X (25);
 xFuelMaxAmount = I2X (100);
 xEnergyToCreateOneRobot = I2X (1);
+nFuelCenters = 0;
+nBotCenters = 0;
+nEquipCenters = 0;
+nRepairCenters = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -774,7 +777,7 @@ strcpy (szRealName, "GUIDE-BOT");
 
 CThiefData::CThiefData ()
 {
-memset (this, 0, sizeof (*this));
+nStolenItem = 0;
 xReInitTime = 0x3f000000;
 for (int i = 0; i < NDL; i++)
 	xWaitTimes [i] = I2X (30 - i * 5);
@@ -784,7 +787,16 @@ for (int i = 0; i < NDL; i++)
 
 CMarkerData::CMarkerData ()
 {
-memset (this, 0, sizeof (*this));
+CLEAR (szMessage);
+CLEAR (nOwner);
+CLEAR (viewers);
+CLEAR (szInput);
+nHighlight = 0;
+nIndex = 0;
+nCurrent = 0;
+nLast = 0;
+fScale = 0;
+nDefiningMsg = 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -851,7 +863,6 @@ return true;
 
 CMorphData::CMorphData ()
 {
-memset (this, 0, sizeof (*this));
 gameData.render.morph.xRate = MORPH_RATE;
 }
 
@@ -1111,6 +1122,18 @@ DESTROY (gameData.physics.ignoreObjs);
 
 // ----------------------------------------------------------------------------
 
+CWeaponData::CWeaponData ()
+{
+nPrimary = 0;
+nSecondary = 0;
+nOverridden = 0;
+bTripleFusion = 0;
+CLEAR (firing);
+CLEAR (nTypes);
+}
+
+// ----------------------------------------------------------------------------
+
 bool CWeaponData::Create (void)
 {
 CREATE (color, LEVEL_OBJECTS, 0);
@@ -1291,12 +1314,17 @@ xFrame = 0x1000;
 
 CTerrainRenderData::CTerrainRenderData ()
 {
-memset (this, 0, sizeof (*this));
-uvlList [0][1].u = I2X (1);
-uvlList [0][2].v = I2X (1);
-uvlList [1][0].u = I2X (1);
-uvlList [1][1].u = I2X (1);
-uvlList [1][1].v = I2X (1);
+bOutline = 0;
+nGridW = nGridH = 0;
+orgI = orgJ = 0;
+nMineTilesDrawn = 0;
+bmP = NULL;
+CLEAR (uvlList);
+uvlList [0][1].u =
+uvlList [0][2].v =
+uvlList [1][0].u =
+uvlList [1][1].u =
+uvlList [1][1].v =
 uvlList [1][2].v = I2X (1);
 }
 

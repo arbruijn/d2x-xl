@@ -355,6 +355,8 @@ class CStaticArray : public CArray < _T > {
 		CStaticArrayData< _T, length > m_data;
 
 	public:
+		CStaticArray () { Create (length); }
+
 		_T *Create (uint _length) { 
 			this->SetBuffer (m_data.buffer, 2, _length); 
 			return m_data.buffer;

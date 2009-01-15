@@ -1294,7 +1294,7 @@ class CFlickerLightData {
 		CStaticArray< tVariableLight, MAX_FLICKERING_LIGHTS >	lights; // [MAX_FLICKERING_LIGHTS];
 		int				nLights;
 	public:
-		CFlickerLightData () { memset (this, 0, sizeof (*this)); }
+		CFlickerLightData () { nLights = 0; }
 };
 
 //------------------------------------------------------------------------------
@@ -1406,7 +1406,7 @@ class CTerrainRenderData {
 		CArray<ubyte>			heightmap;
 		CArray<fix>				lightmap;
 		CArray<CFixVector>	points;
-		CBitmap					*bmP;
+		CBitmap*					bmP;
 		CStaticArray< g3sPoint, TERRAIN_GRID_MAX_SIZE >		saveRow; // [TERRAIN_GRID_MAX_SIZE];
 		CFixVector				vStartPoint;
 		tUVL						uvlList [2][3];
@@ -1443,18 +1443,19 @@ typedef struct tObjRenderListItem {
 	fix	xDist;
 } tObjRenderListItem;
 
-typedef struct tObjRenderList {
-	CStaticArray< short, MAX_SEGMENTS_D2X >	ref; // [MAX_SEGMENTS_D2X];	//points to each segment's first render object list entry in renderObjs
-	CStaticArray< tObjRenderListItem, MAX_OBJECTS_D2X >	objs; // [MAX_OBJECTS_D2X];
-	int						nUsed;
-} tObjRenderList;
+class CObjRenderList {
+	public:
+		CStaticArray< short, MAX_SEGMENTS_D2X >	ref; // [MAX_SEGMENTS_D2X];	//points to each segment's first render object list entry in renderObjs
+		CStaticArray< tObjRenderListItem, MAX_OBJECTS_D2X >	objs; // [MAX_OBJECTS_D2X];
+		int						nUsed;
+	};
 
 class CMineRenderData {
 	public:
 		CFixVector				viewerEye;
 		CShortArray				nSegRenderList; //[MAX_SEGMENTS_D2X];
 		CArray< tFace* >		pFaceRenderList; //[MAX_SEGMENTS_D2X * 6];
-		tObjRenderList			renderObjs;
+		CObjRenderList			renderObjs;
 		int						nRenderSegs;
 		CByteArray				bVisited; //[MAX_SEGMENTS_D2X];
 		CByteArray				bVisible; //[MAX_SEGMENTS_D2X];
@@ -1753,17 +1754,18 @@ class CPowerupData {
 		int						nTypes;
 
 	public:
-		CPowerupData () { memset (this, 0, sizeof (*this)); }
+		CPowerupData () { nTypes = 0; }
 } ;
 
 //------------------------------------------------------------------------------
 
-typedef struct tObjTypeData {
-	int						nTypes;
-	CStaticArray< sbyte, MAX_OBJTYPE >	nType; //[MAX_OBJTYPE];
-	CStaticArray< sbyte, MAX_OBJTYPE >	nId; //[MAX_OBJTYPE];  
-	CStaticArray< fix, MAX_OBJTYPE >		nStrength; //[MAX_OBJTYPE];   
-} tObjTypeData;
+class CObjTypeData {
+	public:
+		int						nTypes;
+		CStaticArray< sbyte, MAX_OBJTYPE >	nType; //[MAX_OBJTYPE];
+		CStaticArray< sbyte, MAX_OBJTYPE >	nId; //[MAX_OBJTYPE];  
+		CStaticArray< fix, MAX_OBJTYPE >		nStrength; //[MAX_OBJTYPE];   
+};
 
 //------------------------------------------------------------------------------
 
@@ -1833,7 +1835,7 @@ typedef struct tObjLists {
 
 class CObjectData {
 	public:
-		CArray<tObjTypeData>		types;
+		CArray<CObjTypeData>		types;
 		CArray<CObject>			objects;
 		tObjLists					lists;
 		CArray<short>				freeList;
@@ -1869,6 +1871,7 @@ class CObjectData {
 		int							nDrops;
 		int							nDeadControlCenter;
 		int							nVertigoBotFlags;
+		int							nFrameCount;
 		CArray<short>				nHitObjects;
 		CPowerupData				pwrUp;
 		ubyte							collisionResult [MAX_OBJECT_TYPES][MAX_OBJECT_TYPES];
@@ -1878,7 +1881,6 @@ class CObjectData {
 		CStaticArray< ubyte, MAX_WEAPONS >	bIsSlowWeapon; //[MAX_WEAPONS];
 		CStaticArray< short, MAX_WEAPONS >	idToOOF; //[MAX_WEAPONS];
 		CByteArray				bWantEffect; //[MAX_OBJECTS_D2X];
-		int							nFrameCount;
 
 	public:
 		CObjectData ();
@@ -2111,7 +2113,7 @@ class CWeaponData {
 		ubyte						bLastWasSuper [2][MAX_PRIMARY_WEAPONS];
 
 	public:
-		CWeaponData () { memset (this, 0, sizeof (*this)); }
+		CWeaponData ();
 		bool Create (void);
 		void Destroy (void);
 };
@@ -2128,21 +2130,23 @@ class CWeaponData {
 
 #define MAX_HITBOXES		100
 
-typedef struct tModelHitboxes {
-	ubyte					nHitboxes;
-	CStaticArray< tHitbox, MAX_HITBOXES + 1 >	hitboxes; // [MAX_HITBOXES + 1];
+class CModelHitboxes {
+	public:
+		ubyte			nHitboxes;
+		CStaticArray< tHitbox, MAX_HITBOXES + 1 >	hitboxes; // [MAX_HITBOXES + 1];
 #if DBG
-	CFixVector			vHit;
-	time_t				tHit;
+		CFixVector	vHit;
+		time_t		tHit;
 #endif
-} tModelHitboxes;
+	};
 
-typedef struct tModelThrusters {
-	CFixVector			vPos [2];
-	CFixVector			vDir [2];
-	float					fSize;
-	ushort				nCount;
-	} tModelThrusters;
+class CModelThrusters {
+	public:
+		CFixVector	vPos [2];
+		CFixVector	vDir [2];
+		float			fSize;
+		ushort		nCount;
+	};
 
 typedef struct tGunInfo {
 	int					nGuns;
@@ -2183,8 +2187,8 @@ class CModelData {
 		CArray<CFloatVector>				fPolyModelVerts ; //[MAX_POLYGON_VERTS];
 		CArray<CBitmap*>					textures ; //[MAX_POLYOBJ_TEXTURES];
 		CArray<tBitmapIndex>				textureIndex ; //[MAX_POLYOBJ_TEXTURES];
-		CArray<tModelHitboxes>			hitboxes ; //[MAX_POLYGON_MODELS];
-		CArray<tModelThrusters>			thrusters ; //[MAX_POLYGON_MODELS];
+		CArray<CModelHitboxes>			hitboxes ; //[MAX_POLYGON_MODELS];
+		CArray<CModelThrusters>			thrusters ; //[MAX_POLYGON_MODELS];
 		CArray<RenderModel::CModel>	renderModels [2]; //[MAX_POLYGON_MODELS];
 		CArray<CFixVector>				offsets ; //[MAX_POLYGON_MODELS];
 		CArray<tGunInfo>					gunInfo ; //[MAX_POLYGON_MODELS];
@@ -2278,7 +2282,7 @@ class CMultiCreateData {
 		int					nLoc;
 
 	public:
-		CMultiCreateData () { memset (this, 0, sizeof (*this)); }
+		CMultiCreateData () { nLoc = 0; }
 };
 
 class CMultiLaserData {

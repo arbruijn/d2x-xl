@@ -7,7 +7,7 @@ typedef struct tThrusterInfo {
 	float					fSize;
 	float					fLength;
 	tPathPoint			*pp;
-	tModelThrusters	*mtP;
+	CModelThrusters	*mtP;
 } tThrusterInfo;
 
 void TransformHitboxf (CObject *objP, CFloatVector *vertList, int iSubObj);

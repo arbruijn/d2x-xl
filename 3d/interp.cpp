@@ -334,7 +334,7 @@ void GetThrusterPos (int nModel, CFixVector *vNormal, CFixVector *vOffset, CBitm
 {
 	int					h, i, nSize;
 	CFixVector			v, vForward = CFixVector::Create(0,0,I2X (1));
-	tModelThrusters	*mtP = gameData.models.thrusters + nModel;
+	CModelThrusters	*mtP = gameData.models.thrusters + nModel;
 
 if (mtP->nCount >= 2)
 	return;

@@ -230,7 +230,7 @@ void G3GetThrusterPos (CObject *objP, short nModel, RenderModel::CFace *pmf, CFi
 	RenderModel::CModel				*pm = gameData.models.renderModels [bHires] + nModel;
 	RenderModel::CVertex		*pmv = NULL;
 	CFloatVector3				v = CFloatVector3::ZERO, vn, vo, vForward = CFloatVector3::Create(0,0,1);
-	tModelThrusters	*mtP = gameData.models.thrusters + nModel;
+	CModelThrusters	*mtP = gameData.models.thrusters + nModel;
 	int					i, j = 0;
 	float					h, nSize;
 
