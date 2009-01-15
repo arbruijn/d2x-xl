@@ -203,6 +203,7 @@ gameStates.ogl.nLastH = 1;
 gameStates.ogl.nCurWidth =
 gameStates.ogl.nCurHeight = -1;
 gameStates.ogl.bCurFullScreen = -1;
+gameStates.ogl.bFSAA = 0;
 gameStates.ogl.bAntiAliasing = 0;
 gameStates.ogl.bAntiAliasingOk = 0;
 gameStates.ogl.bpp = 32;

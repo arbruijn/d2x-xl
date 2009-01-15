@@ -725,6 +725,7 @@ typedef struct tOglStates {
 	int bEnableTexClamp;
 	int bEnableScissor;
 	int bNeedMipMaps;
+	int bFSAA;
 	int bAntiAliasing;
 	int bAntiAliasingOk;
 	int bVoodooHack;

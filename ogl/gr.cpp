@@ -215,7 +215,7 @@ if (gameStates.gfx.bInstalled)
 	return -1;
 
 #ifdef OGL_RUNTIME_LOAD
-OglInitLoadLibrary();
+OglInitLoadLibrary ();
 #endif
 /***/PrintLog ("   initializing SDL\n");
 #if !USE_IRRLICHT
@@ -231,7 +231,7 @@ if ((t = FindArg("-fullscreen"))) {
 	}
 SetRenderQuality ();
 if ((t=FindArg ("-gl_reticle")))
-	gameStates.ogl.nReticle=atoi(pszArgList[t+1]);
+	gameStates.ogl.nReticle = atoi (pszArgList [t + 1]);
 /***/PrintLog ("   initializing internal texture list\n");
 textureManager.Init ();
 /***/PrintLog ("   allocating screen buffer\n");
