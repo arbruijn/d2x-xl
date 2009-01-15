@@ -153,12 +153,12 @@ else {
 	dx = (float) CCanvas::Current ()->Left () / (float) gameStates.ogl.nLastW;
 	dy = (float) CCanvas::Current ()->Top () / (float) gameStates.ogl.nLastH;
 	}
-a = (float) screen.Width () / (float) screen.Height ();
-h = (float) scale / (float) I2X (1);
-xo = dx + x / ((float) gameStates.ogl.nLastW * h);
-xf = dx + (dw + x) / ((float) gameStates.ogl.nLastW * h);
-yo = 1.0f - dy - y / ((float) gameStates.ogl.nLastH * h);
-yf = 1.0f - dy - (dh + y) / ((float) gameStates.ogl.nLastH * h);
+a = float (screen.Width ()) / float (screen.Height ());
+h = float (scale) / float (I2X (1));
+xo = dx + x / float (gameStates.ogl.nLastW * h);
+xf = dx + (dw + x) / float (gameStates.ogl.nLastW * h);
+yo = 1.0f - dy - y / float (gameStates.ogl.nLastH * h);
+yf = 1.0f - dy - (dh + y) / float (gameStates.ogl.nLastH * h);
 
 glActiveTexture (GL_TEXTURE0);
 glEnable (GL_TEXTURE_2D);
@@ -173,28 +173,37 @@ if (!(bBlend = glIsEnabled (GL_BLEND)))
 	glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-if (bmP->Left () == 0) {
+#if 1
+h = float (texP->TW ());
+u1 = float (bmP->Left ()) / h;
+u2 = float (bmP->Right ()) / h;
+h = float (texP->TH ());
+v1 = float (bmP->Top ()) / h;
+v2 = float (bmP->Bottom ()) / h;
+#else
+if (bmP->Left ()) == 0) {
 	u1 = 0;
-	if (bmP->Width () == texP->Width ())
-		u2 = texP->U ();
+	if (bmP->Width ()) == texP->Width ()))
+		u2 = texP->U ());
 	else
-		u2 = (float) bmP->Right () / (float) texP->TW ();
+		u2 = float (bmP->Right ()) / float (texP->TW ());
 	}
 else {
-	u1 = (float) bmP->Left () / (float) texP->TW ();
-	u2 = (float) bmP->Right () / (float) texP->TW ();
+	u1 = float (bmP->Left ()) / float (texP->TW ());
+	u2 = float (bmP->Right ()) / float (texP->TW ());
 	}
-if (bmP->Top () == 0) {
+if (bmP->Top ()) == 0) {
 	v1 = 0;
-	if (bmP->Height () == texP->Height ())
-		v2 = texP->V ();
+	if (bmP->Height ()) == texP->Height ()))
+		v2 = texP->V ());
 	else
-		v2 = (float) bmP->Bottom () / (float) texP->TH ();
+		v2 = float (bmP->Bottom ()) / float (texP->TH ());
 	}
 else{
-	v1 = bmP->Top () / (float) texP->TH ();
-	v2 = (float) bmP->Bottom () / (float) texP->TH ();
+	v1 = float (bmP->Top ()) / float (texP->TH ());
+	v2 = float (bmP->Bottom ()) / float (texP->TH ());
 	}
+#endif
 
 OglCanvasColor (colorP);
 glBegin (GL_QUADS);
