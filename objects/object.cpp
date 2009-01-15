@@ -2300,7 +2300,7 @@ if (gameStates.render.bDropAfterburnerBlob) {
 	gameStates.render.bDropAfterburnerBlob = 0;
 	}
 
-if ((info.nType == OBJ_WEAPON) && (gameData.weapons.info [info.nId].afterburner_size)) {
+if ((info.nType == OBJ_WEAPON) && (gameData.weapons.info [info.nId].nAfterburnerSize)) {
 	int	nObject, bSmoke;
 	fix	vel;
 	fix	delay, lifetime, nSize;
@@ -2327,7 +2327,7 @@ if ((info.nType == OBJ_WEAPON) && (gameData.weapons.info [info.nId].afterburner_
 		delay = 0;
 		}
 	else {
-		nSize = I2X (gameData.weapons.info [info.nId].afterburner_size) / 16;
+		nSize = I2X (gameData.weapons.info [info.nId].nAfterburnerSize) / 16;
 		lifetime = 3 * delay / 2;
 		if (!IsMultiGame) {
 			delay /= 2;

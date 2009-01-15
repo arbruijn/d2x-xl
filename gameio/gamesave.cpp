@@ -1166,7 +1166,7 @@ if ((gameFileInfo.lightDeltaIndices.offset > -1) && gameFileInfo.lightDeltaIndic
 	else {
 		for (i = 0; i < gameFileInfo.lightDeltaIndices.count; i++) {
 			//PrintLog ("reading DL index %d\n", i);
-			ReadLightDeltaIndex (gameData.render.lights.deltaIndices [i], cf);
+			gameData.render.lights.deltaIndices [i].Read (cf);
 			}
 		}
 	gameData.render.lights.deltaIndices.SortAscending ();
@@ -1194,7 +1194,7 @@ if ((gameFileInfo.lightDeltas.offset > -1) && gameFileInfo.lightDeltas.count) {
 		}
 	for (i = 0; i < gameFileInfo.lightDeltas.count; i++) {
 		if (gameTopFileInfo.fileinfoVersion >= 29) 
-			ReadLightDelta (gameData.render.lights.deltas + i, cf);
+			gameData.render.lights.deltas [i].Read (cf);
 		else {
 #if TRACE
 			console.printf (CON_DBG, "Warning: Old mine version.  Not reading delta light info.\n");

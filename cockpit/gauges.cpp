@@ -1792,8 +1792,8 @@ void DrawWeaponInfoSub (int info_index, tGaugeBox *box, int pic_x, int pic_y, co
 		}
 #endif
 	if ((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) {
-		bmP = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [info_index].hires_picture.index;
-		LoadBitmap (gameData.weapons.info [info_index].hires_picture.index, 0);
+		bmP = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [info_index].hiresPicture.index;
+		LoadBitmap (gameData.weapons.info [info_index].hiresPicture.index, 0);
 		}
 	else {
 		bmP = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [info_index].picture.index;

@@ -109,6 +109,9 @@ return objP;
 CObject* CreateExplosion (CObject* parentP, short nSegment, CFixVector& vPos, fix xSize,
 								  ubyte nVClip, fix xMaxDamage, fix xMaxDistance, fix xMaxForce, short nParent)
 {
+if (nVClip < 0)
+	return NULL;
+
 	short			nObject;
 	CObject		*explObjP, *objP;
 	fix			dist, force, damage;
@@ -278,9 +281,9 @@ return explObjP;
 //return the explosion CObject
 CObject* CObject::ExplodeBadassWeapon (CFixVector& vPos)
 {
-	tWeaponInfo *wi = &gameData.weapons.info [info.nId];
+	CWeaponInfo *wi = &gameData.weapons.info [info.nId];
 
-Assert (wi->damage_radius);
+Assert (wi->xDamageRadius);
 if ((info.nId == EARTHSHAKER_ID) || (info.nId == ROBOT_EARTHSHAKER_ID))
 	ShakerRockStuff ();
 audio.CreateObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
@@ -293,9 +296,9 @@ if (gameStates.render.bPerPixelLighting == 2) { //make sure explosion center is 
 	}
 else
 	v = vPos;
-return CreateBadassExplosion (this, info.nSegment, v, wi->impact_size, wi->robot_hit_vclip,
+return CreateBadassExplosion (this, info.nSegment, v, wi->xImpactSize, wi->nRobotHitVClip,
                               wi->strength [gameStates.app.nDifficultyLevel], 
-										wi->damage_radius, wi->strength [gameStates.app.nDifficultyLevel],
+										wi->xDamageRadius, wi->strength [gameStates.app.nDifficultyLevel],
                               cType.laserInfo.parent.nObject);
 }
 

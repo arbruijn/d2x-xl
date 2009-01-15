@@ -89,7 +89,7 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
 		ecP->nSegment = -1;					//clear any active one-shots
 		ecP->flags &= ~(EF_STOPPED | EF_ONE_SHOT | EF_INITIALIZED);	//restart any stopped effects
 		bmi = ecP->vc.frames [ecP->nCurFrame = 0];
-		//reset bitmap, which could have been changed by a crit_clip
+		//reset bitmap, which could have been changed by a nCritClip
 		if (ecP->changingWallTexture != -1)
 			gameData.pig.tex.bmIndex [bD1][ecP->changingWallTexture] = bmi;
 		if (ecP->changingObjectTexture != -1)
@@ -255,8 +255,8 @@ xEffectTime += gameData.time.xFrame;
 			}
 		if (ecP->flags & EF_CRITICAL)
 			continue;
-		if ((ecP->crit_clip != -1) && gameData.reactor.bDestroyed) {
-			int n = ecP->crit_clip;
+		if ((ecP->nCritClip != -1) && gameData.reactor.bDestroyed) {
+			int n = ecP->nCritClip;
 			bmi = gameData.eff.effectP [n].vc.frames [gameData.eff.effectP [n].nCurFrame];
 			gameData.pig.tex.bmIndexP [t] = bmi;
 			}
@@ -316,8 +316,8 @@ xEffectTime += gameData.time.xFrame;
 			}
 		if (ecP->flags & EF_CRITICAL)
 			continue;
-		if ((ecP->crit_clip != -1) && gameData.reactor.bDestroyed) {
-			int n = ecP->crit_clip;
+		if ((ecP->nCritClip != -1) && gameData.reactor.bDestroyed) {
+			int n = ecP->nCritClip;
 			bmi = gameData.eff.effects [0][n].vc.frames [gameData.eff.effects [0][n].nCurFrame];
 			gameData.pig.tex.objBmIndex [t] = bmi;
 			}
@@ -405,10 +405,10 @@ ec.nCurFrame = cf.ReadInt ();
 ec.changingWallTexture = cf.ReadShort ();
 ec.changingObjectTexture = cf.ReadShort ();
 ec.flags = cf.ReadInt ();
-ec.crit_clip = cf.ReadInt ();
+ec.nCritClip = cf.ReadInt ();
 ec.nDestBm = cf.ReadInt ();
-ec.dest_vclip = cf.ReadInt ();
-ec.dest_eclip = cf.ReadInt ();
+ec.nDestVClip = cf.ReadInt ();
+ec.nDestEClip = cf.ReadInt ();
 ec.dest_size = cf.ReadFix ();
 ec.nSound = cf.ReadInt ();
 ec.nSegment = cf.ReadInt ();

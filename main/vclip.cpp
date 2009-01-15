@@ -271,7 +271,7 @@ if (0 > (objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->info.nId]
 	objP->rType.polyObjInfo.nModel = nModel;
 #if 0
 objP->info.xSize = FixDiv (gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].rad,
-							gameData.weapons.info [objP->info.nId].po_len_to_width_ratio);
+							gameData.weapons.info [objP->info.nId].poLenToWidthRatio);
 #endif
 objP->rType.polyObjInfo.nTexOverride = -1;
 if (objP->info.nType == OBJ_POWERUP)

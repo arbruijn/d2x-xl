@@ -301,8 +301,8 @@ for (i = 0; i < 2; i++) {
 			l = nLvlMap [gameStates.app.bD1Mission][j];
 		m = i ? secondaryWeaponToWeaponInfo [l] : primaryWeaponToWeaponInfo [l];
 		if ((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) {
-			bmP = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [m].hires_picture.index;
-			LoadBitmap (gameData.weapons.info [m].hires_picture.index, 0);
+			bmP = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [m].hiresPicture.index;
+			LoadBitmap (gameData.weapons.info [m].hiresPicture.index, 0);
 			}
 		else {
 			bmP = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [m].picture.index;
@@ -364,7 +364,7 @@ for (i = 0; i < 2; i++) {
 				}
 			}
 		else {
-			bLoaded = (LOCALPLAYER.energy > gameData.weapons.info [l].energy_usage);
+			bLoaded = (LOCALPLAYER.energy > gameData.weapons.info [l].xEnergyUsage);
 			if (l == 0) {//Lasers
 				sprintf (szAmmo, "%d", (ll > MAX_LASER_LEVEL) ? MAX_LASER_LEVEL + 1 : ll + 1);
 				fontManager.Current ()->StringSize (szAmmo, fw, fh, faw);

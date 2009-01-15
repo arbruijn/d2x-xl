@@ -1005,7 +1005,7 @@ int	m,
 		l = 0,
 		r = gameData.render.lights.nStatic;
 
-CLightDeltaIndex	*p;
+CLightDeltaIndex* p;
 do {
 	m = (l + r) / 2;
 	p = gameData.render.lights.deltaIndices + m;
@@ -1031,9 +1031,9 @@ void ChangeLight (short nSegment, short nSide, int dir)
 {
 	int					i, j, k;
 	fix					dl, lNew, *pSegLightDelta;
-	tUVL					*uvlP;
-	CLightDeltaIndex	*dliP;
-	CLightDelta			*dlP;
+	tUVL*					uvlP;
+	CLightDeltaIndex*	dliP;
+	CLightDelta*		dlP;
 	short					iSeg, iSide;
 
 if ((dir < 0) && lightManager.Delete (nSegment, nSide, -1))
@@ -1151,36 +1151,35 @@ for (i = 0, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, seg
 //------------------------------------------------------------------------------
 // reads a CLightDelta structure from a CFile
 
-void ReadLightDelta (CLightDelta *dlP, CFile& cf)
+void CLightDelta::Read (CFile& cf)
 {
-dlP->nSegment = cf.ReadShort ();
-dlP->nSide = cf.ReadByte ();
+nSegment = cf.ReadShort ();
+nSide = cf.ReadByte ();
 cf.ReadByte ();
-if (!(dlP->bValid = (dlP->nSegment >= 0) && (dlP->nSegment < gameData.segs.nSegments) && (dlP->nSide >= 0) && (dlP->nSide < 6)))
-	PrintLog ("Invalid delta light data %d (%d,%d)\n", dlP - gameData.render.lights.deltas, dlP->nSegment, dlP->nSide);
-cf.Read (dlP->vertLight, sizeof (dlP->vertLight [0]), sizeofa (dlP->vertLight));
+if (!(bValid = (nSegment >= 0) && (nSegment < gameData.segs.nSegments) && (nSide >= 0) && (nSide < 6)))
+	PrintLog ("Invalid delta light data %d (%d,%d)\n", this - gameData.render.lights.deltas, nSegment, nSide);
+cf.Read (vertLight, sizeof (vertLight [0]), sizeofa (vertLight));
 }
 
 
 //------------------------------------------------------------------------------
 // reads a CLightDeltaIndex structure from a CFile
 
-void ReadLightDeltaIndex (CLightDeltaIndex& di, CFile& cf)
+void CLightDeltaIndex::Read (CFile& cf)
 {
 if (gameStates.render.bD2XLights) {
-	short	i, j;
-	di.nSegment = cf.ReadShort ();
-	i = (short) cf.ReadByte ();	// these two bytes contain the side in the lower 3 and the count in the upper 13 bits
-	j = (short) cf.ReadByte ();
-	di.nSide = i & 7;
-	di.count = (j << 5) + ((i >> 3) & 63);
-	di.index = cf.ReadShort ();
+	nSegment = cf.ReadShort ();
+	short i = (short) cf.ReadByte ();	// these two bytes contain the side in the lower 3 and the count in the upper 13 bits
+	short j = (short) cf.ReadByte ();
+	nSide = i & 7;
+	count = (j << 5) + ((i >> 3) & 63);
+	index = cf.ReadShort ();
 	}
 else {
-	di.nSegment = cf.ReadShort ();
-	di.nSide = cf.ReadByte ();
-	di.count = cf.ReadByte ();
-	di.index = cf.ReadShort ();
+	nSegment = cf.ReadShort ();
+	nSide = cf.ReadByte ();
+	count = cf.ReadByte ();
+	index = cf.ReadShort ();
 	}
 }
 

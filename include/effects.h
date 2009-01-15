@@ -35,10 +35,10 @@ typedef struct tEffectClip {
 	short   changingWallTexture;      //Which element of Textures array to replace.
 	short   changingObjectTexture;    //Which element of ObjBitmapPtrs array to replace.
 	int     flags;          //see above
-	int     crit_clip;      //use this clip instead of above one when mine critical
+	int     nCritClip;      //use this clip instead of above one when mine critical
 	int     nDestBm;    //use this bitmap when monitor destroyed
-	int     dest_vclip;     //what tVideoClip to play when exploding
-	int     dest_eclip;     //what tEffectClip to play when exploding
+	int     nDestVClip;     //what tVideoClip to play when exploding
+	int     nDestEClip;     //what tEffectClip to play when exploding
 	fix     dest_size;      //3d size of explosion
 	int     nSound;      //what sound this makes
 	int     nSegment,nSide; //what seg & CSide, for one-shot clips

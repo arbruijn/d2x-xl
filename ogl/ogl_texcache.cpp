@@ -49,7 +49,7 @@ if (modelP)
 
 //------------------------------------------------------------------------------
 
-void OglCacheVClipTextures (tVideoClip *vc, int nTransp)
+void OglCacheVClipTextures (tVideoClip* vc, int nTransp)
 {
 for (int i = 0; i < vc->nFrameCount; i++) {
 	LoadBitmap (vc->frames [i].index, 0);
@@ -59,17 +59,23 @@ for (int i = 0; i < vc->nFrameCount; i++) {
 
 //------------------------------------------------------------------------------
 
-#define OglCacheVClipTexturesN(i,t) if (i >= 0) OglCacheVClipTextures (&gameData.eff.vClips [0][i], t)
-
-void OglCacheWeaponTextures (tWeaponInfo *w)
+void OglCacheVClipTextures (int i, int nTransp)
 {
-OglCacheVClipTexturesN (w->nFlashVClip, 1);
-OglCacheVClipTexturesN (w->robot_hit_vclip, 1);
-OglCacheVClipTexturesN (w->wall_hit_vclip, 1);
-if (w->renderType == WEAPON_RENDER_VCLIP)
-	OglCacheVClipTexturesN (w->nVClipIndex, 3);
-else if (w->renderType == WEAPON_RENDER_POLYMODEL)
-	OglCachePolyModelTextures (w->nModel);
+if (i >= 0) 
+	OglCacheVClipTextures (&gameData.eff.vClips [0][i], nTransp);
+}
+
+//------------------------------------------------------------------------------
+
+void OglCacheWeaponTextures (CWeaponInfo* wi)
+{
+OglCacheVClipTextures (wi->nFlashVClip, 1);
+OglCacheVClipTextures (wi->nRobotHitVClip, 1);
+OglCacheVClipTextures (wi->nWallHitVClip, 1);
+if (wi->renderType == WEAPON_RENDER_VCLIP)
+	OglCacheVClipTextures (wi->nVClipIndex, 3);
+else if (wi->renderType == WEAPON_RENDER_POLYMODEL)
+	OglCachePolyModelTextures (wi->nModel);
 }
 
 //------------------------------------------------------------------------------
@@ -249,13 +255,13 @@ for (i = 0; i < EXTRA_OBJ_IDS; i++)
 	OglCacheWeaponTextures (gameData.weapons.info + i);
 for (i = 0; i < MAX_POWERUP_TYPES; i++)
 	if (i != 9)
-		OglCacheVClipTexturesN (gameData.objs.pwrUp.info [i].nClipIndex, 3);
+		OglCacheVClipTextures (gameData.objs.pwrUp.info [i].nClipIndex, 3);
 FORALL_OBJS (objP, i)
 	if (objP->info.renderType == RT_POLYOBJ)
 		OglCachePolyModelTextures (objP->rType.polyObjInfo.nModel);
 // cache the hostage clip frame textures
 PrintLog ("   caching hostage sprites\n");
-OglCacheVClipTexturesN (33, 2);    
+OglCacheVClipTextures (33, 2);    
 // cache all clip frame textures incl. explosions and effects
 PrintLog ("   caching explision sprites\n");
 for (i = 0; i < 2; i++)
@@ -263,7 +269,7 @@ for (i = 0; i < 2; i++)
 		if (gameData.cockpit.gauges [i][j].index != 0xffff)
 			LoadBitmap (gameData.cockpit.gauges [i][j].index, 0);
 for (i = 0; i < gameData.eff.nClips [0]; i++)
-	OglCacheVClipTexturesN (i, 1);
+	OglCacheVClipTextures (i, 1);
 return 0;
 }
 

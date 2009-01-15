@@ -1550,7 +1550,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 #if 0
 	objP->rType.polyObjInfo.nModel = gameData.weapons.info [SUPERLASER_ID + 1].nModel;
 	objP->info.xSize = FixDiv (gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].rad,
-								gameData.weapons.info [objP->info.nId].po_len_to_width_ratio) / 4;
+								gameData.weapons.info [objP->info.nId].poLenToWidthRatio) / 4;
 	gameData.models.vScale.Set (I2X (1) / 4, I2X (1) / 4, I2X (1) / 4);
 	DrawPolygonObject (objP, 0);
 	gameData.models.vScale.SetZero ();

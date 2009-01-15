@@ -131,7 +131,7 @@ int LeadPlayer (CObject *objP, CFixVector *vFirePoint, CFixVector *vBelievedPlay
 	fix			dot, xPlayerSpeed, xDistToPlayer, xMaxWeaponSpeed, xProjectedTime;
 	CFixVector	vPlayerMovementDir, vVecToPlayer;
 	int			nWeaponType;
-	tWeaponInfo	*wiP;
+	CWeaponInfo	*wiP;
 	tRobotInfo	*botInfoP;
 
 if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)

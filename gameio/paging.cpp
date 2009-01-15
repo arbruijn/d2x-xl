@@ -58,11 +58,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-void LoadVClipTextures (tVideoClip * vc, int bD1)
+void LoadVClipTextures (tVideoClip* vc, int bD1)
 {
-	int i;
-
-for (i = 0; i < vc->nFrameCount; i++)
+for (int i = 0; i < vc->nFrameCount; i++)
 	LoadBitmap (vc->frames [i].index, bD1);
 }
 
@@ -70,20 +68,19 @@ for (i = 0; i < vc->nFrameCount; i++)
 
 void LoadWallEffectTextures (int nTexture)
 {
-	int	i;
-	tEffectClip *ecP = gameData.eff.effectP.Buffer ();
+	tEffectClip*	ecP = gameData.eff.effectP.Buffer ();
 
-for (i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++) {
+for (int i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++) {
 	if (ecP->changingWallTexture == nTexture) {
 		LoadVClipTextures (&ecP->vc, gameStates.app.bD1Data);
-		if (ecP->nDestBm > -1)
+		if (ecP->nDestBm>= 0)
 			LoadBitmap (gameData.pig.tex.bmIndexP [ecP->nDestBm].index, gameStates.app.bD1Data);	//use this bitmap when monitor destroyed
-		if (ecP->dest_vclip > -1)
-			LoadVClipTextures (&gameData.eff.vClipP [ecP->dest_vclip], gameStates.app.bD1Data);		  //what tVideoClip to play when exploding
-		if (ecP->dest_eclip > -1)
-			LoadVClipTextures (&gameData.eff.effectP [ecP->dest_eclip].vc, gameStates.app.bD1Data); //what tEffectClip to play when exploding
-		if (ecP->crit_clip > -1)
-			LoadVClipTextures (&gameData.eff.effectP [ecP->crit_clip].vc, gameStates.app.bD1Data); //what tEffectClip to play when mine critical
+		if (ecP->nDestVClip>= 0)
+			LoadVClipTextures (&gameData.eff.vClipP [ecP->nDestVClip], gameStates.app.bD1Data);		  //what tVideoClip to play when exploding
+		if (ecP->nDestEClip>= 0)
+			LoadVClipTextures (&gameData.eff.effectP [ecP->nDestEClip].vc, gameStates.app.bD1Data); //what tEffectClip to play when exploding
+		if (ecP->nCritClip>= 0)
+			LoadVClipTextures (&gameData.eff.effectP [ecP->nCritClip].vc, gameStates.app.bD1Data); //what tEffectClip to play when mine critical
 		}
 	}
 }
@@ -92,10 +89,9 @@ for (i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++) {
 
 void LoadObjectEffectTextures (int nTexture)
 {
-	int	i;
 	tEffectClip *ecP = gameData.eff.effectP.Buffer ();
 
-for (i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++)
+for (int i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++)
 	if (ecP->changingObjectTexture == nTexture)
 		LoadVClipTextures (&ecP->vc, 0);
 }
@@ -104,11 +100,11 @@ for (i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++)
 
 void LoadModelTextures (int nModel)
 {
-	int			i, j;
-	ushort*		pi;
+	int			j;
+	ushort*		pi = gameData.pig.tex.objBmIndexP + modelP->FirstTexture ();
 	CPolyModel*	modelP = gameData.models.polyModels [0] + nModel;
 
-for (i = modelP->TextureCount (), pi = gameData.pig.tex.objBmIndexP + modelP->FirstTexture (); i; i--, pi++) {
+for (int i = modelP->TextureCount (); i; i--, pi++) {
 	j = *pi;
 	LoadBitmap (gameData.pig.tex.objBmIndex [j].index, 0);
 	LoadObjectEffectTextures (j);
@@ -119,24 +115,22 @@ for (i = modelP->TextureCount (), pi = gameData.pig.tex.objBmIndexP + modelP->Fi
 
 void LoadWeaponTextures (int nWeaponType)
 {
-// Page in the robot's weapons.
-
 if ((nWeaponType < 0) || (nWeaponType > gameData.weapons.nTypes [0])) 
 	return;
 if (gameData.weapons.info [nWeaponType].picture.index)
 	LoadBitmap (gameData.weapons.info [nWeaponType].picture.index, 0);
-if (gameData.weapons.info [nWeaponType].nFlashVClip > -1)
+if (gameData.weapons.info [nWeaponType].nFlashVClip >= 0)
 	LoadVClipTextures (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].nFlashVClip], 0);
-if (gameData.weapons.info [nWeaponType].wall_hit_vclip > -1)
-	LoadVClipTextures (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].wall_hit_vclip], 0);
+if (gameData.weapons.info [nWeaponType].nWallHitVClip >= 0)
+	LoadVClipTextures (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].nWallHitVClip], 0);
 if (WI_damage_radius (nWeaponType)) {
 	// Robot_hit_vclips are actually badass_vclips
-	if (gameData.weapons.info [nWeaponType].robot_hit_vclip > -1)
-		LoadVClipTextures (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].robot_hit_vclip], 0);
+	if (gameData.weapons.info [nWeaponType].nRobotHitVClip >= 0)
+		LoadVClipTextures (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].nRobotHitVClip], 0);
 	}
 switch (gameData.weapons.info [nWeaponType].renderType) {
 	case WEAPON_RENDER_VCLIP:
-		if (gameData.weapons.info [nWeaponType].nVClipIndex > -1)
+		if (gameData.weapons.info [nWeaponType].nVClipIndex >= 0)
 			LoadVClipTextures (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].nVClipIndex], 0);
 		break;
 
@@ -163,9 +157,9 @@ void LoadRobotTextures (int robotIndex)
 
 // Page in robotIndex
 LoadModelTextures (ROBOTINFO (robotIndex).nModel);
-if (ROBOTINFO (robotIndex).nExp1VClip>-1)
+if (ROBOTINFO (robotIndex).nExp1VClip >= 0)
 	LoadVClipTextures (&gameData.eff.vClips [0][ROBOTINFO (robotIndex).nExp1VClip], 0);
-if (ROBOTINFO (robotIndex).nExp2VClip>-1)
+if (ROBOTINFO (robotIndex).nExp2VClip >= 0)
 	LoadVClipTextures (&gameData.eff.vClips [0][ROBOTINFO (robotIndex).nExp2VClip], 0);
 // Page in his weapons
 LoadWeaponTextures (ROBOTINFO (robotIndex).nWeaponType);
@@ -218,7 +212,7 @@ switch (info.renderType) {
 switch (info.nType) {
 	case OBJ_PLAYER:
 		v = GetExplosionVClip (this, 0);
-		if (v > -1)
+		if (v>= 0)
 			LoadVClipTextures (gameData.eff.vClips [0] + v, 0);
 		break;
 
@@ -318,7 +312,7 @@ for (nObject = m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextI
 
 void CWall::LoadTextures (void)
 {
-if (nClip > -1) {
+if (nClip>= 0) {
 	tWallClip* anim = gameData.walls.animP + nClip;
 	for (int j = 0; j < anim->nFrameCount; j++)
 		LoadBitmap (gameData.pig.tex.bmIndexP [anim->frames [j]].index, gameStates.app.bD1Data);
@@ -346,7 +340,7 @@ for (int i = 0; i < gameData.segs.nSegments; i++)
 void LoadPowerupTextures (void)
 {
 for (int i = 0; i < gameData.objs.pwrUp.nTypes; i++)
-	if (gameData.objs.pwrUp.info [i].nClipIndex > -1)
+	if (gameData.objs.pwrUp.info [i].nClipIndex>= 0)
 		LoadVClipTextures (&gameData.eff.vClips [0][gameData.objs.pwrUp.info [i].nClipIndex], 0);
 }
 
@@ -453,7 +447,7 @@ else if (nTouchWall < gameData.walls.nWalls) {
 	}
 else if (nTouchPowerup1 < gameData.objs.pwrUp.nTypes) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchPowerup1 < gameData.objs.pwrUp.nTypes); i++, nTouchPowerup1++)
-		if (gameData.objs.pwrUp.info [nTouchPowerup1].nClipIndex > -1)
+		if (gameData.objs.pwrUp.info [nTouchPowerup1].nClipIndex>= 0)
 			LoadVClipTextures (&gameData.eff.vClips [0][gameData.objs.pwrUp.info [nTouchPowerup1].nClipIndex], 0);
 	}
 else if (nTouchWeapon < gameData.weapons.nTypes [0]) {
@@ -462,7 +456,7 @@ else if (nTouchWeapon < gameData.weapons.nTypes [0]) {
 	}
 else if (nTouchPowerup2 < gameData.objs.pwrUp.nTypes) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchPowerup2 < gameData.objs.pwrUp.nTypes); i++, nTouchPowerup2++)
-		if (gameData.objs.pwrUp.info [nTouchPowerup2].nClipIndex > -1)
+		if (gameData.objs.pwrUp.info [nTouchPowerup2].nClipIndex>= 0)
 			LoadVClipTextures (&gameData.eff.vClips [0][gameData.objs.pwrUp.info [nTouchPowerup2].nClipIndex], 0);
 	}
 else if (nTouchGauge < MAX_GAUGE_BMS) {

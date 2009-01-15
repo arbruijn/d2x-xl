@@ -2102,8 +2102,8 @@ class CWeaponData {
 		sbyte						bTripleFusion;
 		tFiringData				firing [2];
 		int						nTypes [2];
-		tWeaponInfo				info [MAX_WEAPON_TYPES];
-		tD1WeaponInfo			infoD1 [D1_MAX_WEAPON_TYPES];
+		CWeaponInfo				info [MAX_WEAPON_TYPES];
+		CD1WeaponInfo			infoD1 [D1_MAX_WEAPON_TYPES];
 		CArray<tRgbaColorf>	color;
 		ubyte						bLastWasSuper [2][MAX_PRIMARY_WEAPONS];
 

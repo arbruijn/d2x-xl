@@ -943,7 +943,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordEffectBlowup (Index (), nSide, vHit);
 if (nSwitchType) {
 	xDestSize = ecP->dest_size;
-	vc = ecP->dest_vclip;
+	vc = ecP->nDestVClip;
 	}
 else {
 	xDestSize = I2X (20);
@@ -955,8 +955,8 @@ if (nSwitchType) {
 		audio.CreateSegmentSound (nSound, Index (), 0, vHit);
 	if ((nSound = ecP->nSound) != -1)		//kill sound
 		audio.DestroySegmentSound (Index (), nSide, nSound);
-	if (!bPermaTrigger && (ecP->dest_eclip != -1) && (gameData.eff.effectP [ecP->dest_eclip].nSegment == -1)) {
-		tEffectClip	*newEcP = gameData.eff.effectP + ecP->dest_eclip;
+	if (!bPermaTrigger && (ecP->nDestEClip != -1) && (gameData.eff.effectP [ecP->nDestEClip].nSegment == -1)) {
+		tEffectClip	*newEcP = gameData.eff.effectP + ecP->nDestEClip;
 		int nNewBm = newEcP->changingWallTexture;
 		newEcP->time_left = EffectFrameTime (newEcP);
 		newEcP->nCurFrame = 0;

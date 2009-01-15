@@ -131,26 +131,26 @@ return 0;
 
 void BMSetAfterburnerSizes (void)
 {
-	sbyte	nSize = gameData.weapons.info [MERCURYMSL_ID].afterburner_size;
+	sbyte	nSize = gameData.weapons.info [MERCURYMSL_ID].nAfterburnerSize;
 
-//gameData.weapons.info [VULCAN_ID].afterburner_size = 
-//gameData.weapons.info [GAUSS_ID].afterburner_size = nSize / 8;
-gameData.weapons.info [CONCUSSION_ID].afterburner_size =
-gameData.weapons.info [HOMINGMSL_ID].afterburner_size =
-gameData.weapons.info [ROBOT_CONCUSSION_ID].afterburner_size =
-gameData.weapons.info [FLASHMSL_ID].afterburner_size =
-gameData.weapons.info [GUIDEDMSL_ID].afterburner_size =
-gameData.weapons.info [ROBOT_FLASHMSL_ID].afterburner_size =
-gameData.weapons.info [ROBOT_MEGA_FLASHMSL_ID].afterburner_size =
-gameData.weapons.info [ROBOT_MERCURYMSL_ID].afterburner_size = nSize;
-gameData.weapons.info [ROBOT_HOMINGMSL_ID].afterburner_size =
-gameData.weapons.info [SMARTMSL_ID].afterburner_size = 2 * nSize;
-gameData.weapons.info [MEGAMSL_ID].afterburner_size =
-gameData.weapons.info [ROBOT_MEGAMSL_ID].afterburner_size =
-gameData.weapons.info [ROBOT_SHAKER_MEGA_ID].afterburner_size =
-gameData.weapons.info [EARTHSHAKER_MEGA_ID].afterburner_size = 3 * nSize;
-gameData.weapons.info [EARTHSHAKER_ID].afterburner_size =
-gameData.weapons.info [ROBOT_EARTHSHAKER_ID].afterburner_size = 4 * nSize;
+//gameData.weapons.info [VULCAN_ID].nAfterburnerSize = 
+//gameData.weapons.info [GAUSS_ID].nAfterburnerSize = nSize / 8;
+gameData.weapons.info [CONCUSSION_ID].nAfterburnerSize =
+gameData.weapons.info [HOMINGMSL_ID].nAfterburnerSize =
+gameData.weapons.info [ROBOT_CONCUSSION_ID].nAfterburnerSize =
+gameData.weapons.info [FLASHMSL_ID].nAfterburnerSize =
+gameData.weapons.info [GUIDEDMSL_ID].nAfterburnerSize =
+gameData.weapons.info [ROBOT_FLASHMSL_ID].nAfterburnerSize =
+gameData.weapons.info [ROBOT_MEGA_FLASHMSL_ID].nAfterburnerSize =
+gameData.weapons.info [ROBOT_MERCURYMSL_ID].nAfterburnerSize = nSize;
+gameData.weapons.info [ROBOT_HOMINGMSL_ID].nAfterburnerSize =
+gameData.weapons.info [SMARTMSL_ID].nAfterburnerSize = 2 * nSize;
+gameData.weapons.info [MEGAMSL_ID].nAfterburnerSize =
+gameData.weapons.info [ROBOT_MEGAMSL_ID].nAfterburnerSize =
+gameData.weapons.info [ROBOT_SHAKER_MEGA_ID].nAfterburnerSize =
+gameData.weapons.info [EARTHSHAKER_MEGA_ID].nAfterburnerSize = 3 * nSize;
+gameData.weapons.info [EARTHSHAKER_ID].nAfterburnerSize =
+gameData.weapons.info [ROBOT_EARTHSHAKER_ID].nAfterburnerSize = 4 * nSize;
 }
 
 //------------------------------------------------------------------------------
@@ -241,7 +241,7 @@ gameData.bots.defaultJoints = gameData.bots.joints;
 
 gameData.weapons.nTypes [0] = cf.ReadInt ();
 /*---*/PrintLog ("      Loading %d weapon descriptions\n", gameData.weapons.nTypes [0]);
-ReadWeaponInfos (gameData.weapons.info, gameData.weapons.nTypes [0], cf, gameData.pig.tex.nHamFileVersion);
+ReadWeaponInfos (0, gameData.weapons.nTypes [0], cf, gameData.pig.tex.nHamFileVersion);
 BMSetAfterburnerSizes ();
 
 gameData.objs.pwrUp.nTypes = cf.ReadInt ();
@@ -392,7 +392,7 @@ while (CFGetS (szInput, LINEBUF_SIZE, &infoFile)) {
 		else IFTOK ("$WALL_ANIMS")	bmFlag = BM_WALL_ANIMS;
 		else IFTOK ("$TEXTURES") 	bmFlag = BM_TEXTURES;
 		else IFTOK ("$VCLIP")		 {bmFlag = BM_VCLIP;		vlighting = 0;	clipCount = 0;}
-		else IFTOK ("$ECLIP")		 {bmFlag = BM_ECLIP;		vlighting = 0;	clipCount = 0; obj_eclip=0; dest_bm=NULL; dest_vclip=-1; dest_eclip=-1; dest_size=-1; crit_clip=-1; critFlag=0; nSound=-1;}
+		else IFTOK ("$ECLIP")		 {bmFlag = BM_ECLIP;		vlighting = 0;	clipCount = 0; obj_eclip=0; dest_bm=NULL; nDestVClip=-1; nDestEClip=-1; dest_size=-1; nCritClip=-1; critFlag=0; nSound=-1;}
 		else IFTOK ("$WCLIP")		 {bmFlag = BM_WCLIP;		vlighting = 0;	clipCount = 0; wall_explodes = wall_blastable = 0; wall_openSound=wall_closeSound=-1; tmap1Flag=0; wall_hidden=0;}
 
 		else IFTOK ("$EFFECTS")	 {bmFlag = BM_EFFECTS;	nClip = 0;}
@@ -411,10 +411,10 @@ while (CFGetS (szInput, LINEBUF_SIZE, &infoFile)) {
 		else IFTOK ("gameData.walls.nAnims")	gameData.walls.nAnims = get_int ();
 		else IFTOK ("nClip")			nClip = get_int ();
 		else IFTOK ("dest_bm")			dest_bm = strtok (NULL, space);
-		else IFTOK ("dest_vclip")		dest_vclip = get_int ();
-		else IFTOK ("dest_eclip")		dest_eclip = get_int ();
+		else IFTOK ("nDestVClip")		nDestVClip = get_int ();
+		else IFTOK ("nDestEClip")		nDestEClip = get_int ();
 		else IFTOK ("dest_size")			dest_size = F2X (get_float ();
-		else IFTOK ("crit_clip")			crit_clip = get_int ();
+		else IFTOK ("nCritClip")			nCritClip = get_int ();
 		else IFTOK ("critFlag")			critFlag = get_int ();
 		else IFTOK ("nSound") 		nSound = get_int ();
 		else IFTOK ("frames") 			frames = get_int ();
@@ -479,7 +479,7 @@ cf.Close (&infoFile);
 
 void BMReadWeaponInfoD1N (CFile& cf, int i)
 {
-	tD1WeaponInfo	*wiP = gameData.weapons.infoD1 + i;
+	CD1WeaponInfo	*wiP = gameData.weapons.infoD1 + i;
 
 wiP->renderType = cf.ReadByte ();
 wiP->nModel = cf.ReadByte ();
@@ -487,26 +487,26 @@ wiP->nInnerModel = cf.ReadByte ();
 wiP->persistent = cf.ReadByte ();
 wiP->nFlashVClip = cf.ReadByte ();
 wiP->flashSound = cf.ReadShort ();
-wiP->robot_hit_vclip = cf.ReadByte ();
-wiP->robot_hitSound = cf.ReadShort ();
-wiP->wall_hit_vclip = cf.ReadByte ();
-wiP->wall_hitSound = cf.ReadShort ();
+wiP->nRobotHitVClip = cf.ReadByte ();
+wiP->nRobotHitSound = cf.ReadShort ();
+wiP->nWallHitVClip = cf.ReadByte ();
+wiP->nWallHitSound = cf.ReadShort ();
 wiP->fireCount = cf.ReadByte ();
-wiP->ammo_usage = cf.ReadByte ();
+wiP->nAmmoUsage = cf.ReadByte ();
 wiP->nVClipIndex = cf.ReadByte ();
-wiP->destroyable = cf.ReadByte ();
+wiP->destructible = cf.ReadByte ();
 wiP->matter = cf.ReadByte ();
 wiP->bounce = cf.ReadByte ();
 wiP->homingFlag = cf.ReadByte ();
 wiP->dum1 = cf.ReadByte (); 
 wiP->dum2 = cf.ReadByte ();
 wiP->dum3 = cf.ReadByte ();
-wiP->energy_usage = cf.ReadFix ();
-wiP->fire_wait = cf.ReadFix ();
+wiP->xEnergyUsage = cf.ReadFix ();
+wiP->xFireWait = cf.ReadFix ();
 wiP->bitmap.index = cf.ReadShort ();
 wiP->blob_size = cf.ReadFix ();
 wiP->xFlashSize = cf.ReadFix ();
-wiP->impact_size = cf.ReadFix ();
+wiP->xImpactSize = cf.ReadFix ();
 for (i = 0; i < NDL; i++)
 	wiP->strength [i] = cf.ReadFix ();
 for (i = 0; i < NDL; i++)
@@ -514,10 +514,10 @@ for (i = 0; i < NDL; i++)
 wiP->mass = cf.ReadFix ();
 wiP->drag = cf.ReadFix ();
 wiP->thrust = cf.ReadFix ();
-wiP->po_len_to_width_ratio = cf.ReadFix ();
+wiP->poLenToWidthRatio = cf.ReadFix ();
 wiP->light = cf.ReadFix ();
 wiP->lifetime = cf.ReadFix ();
-wiP->damage_radius = cf.ReadFix ();
+wiP->xDamageRadius = cf.ReadFix ();
 wiP->picture.index = cf.ReadShort ();
 
 }
@@ -800,18 +800,18 @@ void BMReadWeaponInfoD1 (CFile& cf)
 	FILE	*f;
 
 	f = fopen ("d:/projekte/d2x-w32/d2d1-weaponinfo.c", "wt");
-	fprintf (f, "D2D1_weapon_info weaponInfoD2D1 [D1_MAX_WEAPON_TYPES] = {\r\n");
+	fprintf (f, "CD2D1WeaponInfo weaponInfoD2D1 [D1_MAX_WEAPON_TYPES] = {\r\n");
 	for (i = 0;i < D1_MAX_WEAPON_TYPES;i++) {
 		fprintf (f, "{%d,%d,%d,%d,%d,%d,%d,%d,%d,{",
 			gameData.weapons.infoD1 [i].persistent,
 			gameData.weapons.infoD1 [i].fireCount,
-			gameData.weapons.infoD1 [i].ammo_usage,
-			gameData.weapons.infoD1 [i].destroyable,
+			gameData.weapons.infoD1 [i].nAmmoUsage,
+			gameData.weapons.infoD1 [i].destructible,
 			gameData.weapons.infoD1 [i].matter,	
 			gameData.weapons.infoD1 [i].bounce,	
 			gameData.weapons.infoD1 [i].homingFlag,
-			gameData.weapons.infoD1 [i].energy_usage,
-			gameData.weapons.infoD1 [i].fire_wait);
+			gameData.weapons.infoD1 [i].xEnergyUsage,
+			gameData.weapons.infoD1 [i].xFireWait);
 		for (j = 0;j < NDL;j++)
 			fprintf (f, "%s%d", j ? "," : "", 
 				gameData.weapons.infoD1 [i].strength [j]);
@@ -825,7 +825,7 @@ void BMReadWeaponInfoD1 (CFile& cf)
 			gameData.weapons.infoD1 [i].thrust,
 			gameData.weapons.infoD1 [i].light,
 			gameData.weapons.infoD1 [i].lifetime,
-			gameData.weapons.infoD1 [i].damage_radius,
+			gameData.weapons.infoD1 [i].xDamageRadius,
 			 (i < D1_MAX_WEAPON_TYPES - 1) ? ",\r\n" : "};\r\n");
 		}
 	fclose (f);
@@ -855,7 +855,7 @@ void BMReadWeaponInfoD1 (CFile& cf)
 	cf.Read (gameData.bots.joints, sizeof (tJointPos), MAX_ROBOT_JOINTS, cf);
 
 	cf.Read (&gameData.weapons.nTypes [0], sizeof (int), 1, cf);
-	cf.Read (gameData.weapons.info, sizeof (tWeaponInfo), MAX_WEAPON_TYPES, cf);
+	cf.Read (gameData.weapons.info, sizeof (CWeaponInfo), MAX_WEAPON_TYPES, cf);
 
 	cf.Read (&gameData.objs.pwrUp.nTypes, sizeof (int), 1, cf);
 	cf.Read (gameData.objs.pwrUp.info, sizeof (tPowerupTypeInfo), MAX_POWERUP_TYPES, cf);
@@ -990,7 +990,7 @@ void BMReadAllD1 (CFile& cf)
 	ReadJointPositions (gameData.bots.joints, D1_MAX_ROBOT_JOINTS, cf);
 
 	gameData.weapons.nTypes [0] = cf.ReadInt ();
-	//ReadWeaponInfos (gameData.weapons.info, D1_MAX_WEAPON_TYPES, fp, gameData.pig.tex.nHamFileVersion);
+	//ReadWeaponInfos (0, D1_MAX_WEAPON_TYPES, fp, gameData.pig.tex.nHamFileVersion);
 	cf.Seek (fp, D1_MAX_WEAPON_TYPES * D1_WEAPON_INFO_SIZE, SEEK_CUR);
 
 	gameData.objs.pwrUp.nTypes = cf.ReadInt ();
@@ -1138,7 +1138,7 @@ if (gameData.weapons.nTypes [0] >= MAX_WEAPON_TYPES) {
 	Warning ("Too many weapons (%d) in <%s>.  Max is %d.",t,fname,MAX_WEAPON_TYPES-N_D2_WEAPON_TYPES);
 	return -1;
 	}
-ReadWeaponInfos (gameData.weapons.info + N_D2_WEAPON_TYPES, t, cf, 3);
+ReadWeaponInfos (0, N_D2_WEAPON_TYPES, t, cf, 3);
 
 //now read robot info
 

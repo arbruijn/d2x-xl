@@ -61,7 +61,7 @@ typedef struct tKeyProps {
 } tKeyProps;
 
 tKeyProps keyProperties [256] = {
-{ "",       255,    255,    (SDLKey) -1                 },
+{ "",       255,    255,    (SDLKey) -1        },
 { "ESC",    255,    255,    SDLK_ESCAPE        },
 { "1",      '1',    '!',    SDLK_1             },
 { "2",      '2',    '@',    SDLK_2             },
