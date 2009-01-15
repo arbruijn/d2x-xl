@@ -1529,6 +1529,8 @@ cf.Close ();
 
 if (!meshBuilder.Build (nLevel))
 	goto reloadLevel;
+if (!gameData.render.mine.Create ())
+	return 4;
 
 if (!gameStates.app.bNostalgia) {
 #if !SHADOWS
