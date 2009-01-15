@@ -1617,7 +1617,7 @@ typedef struct tFaceRenderVertex {
 class CFaceData {
 	public:
 		CArray<tFace>				faces;
-		CArray<tFaceTriangle>		tris;
+		CArray<tFaceTriangle>	tris;
 		CArray<CFloatVector3>	vertices;
 		CArray<CFloatVector3>	normals;
 		CArray<tTexCoord2f>		texCoord;
@@ -1749,7 +1749,7 @@ class CTriggerData {
 
 class CPowerupData {
 	public:
-		tPowerupTypeInfo		info [MAX_POWERUP_TYPES];
+		CStaticArray< tPowerupTypeInfo, MAX_POWERUP_TYPES >	info; // [MAX_POWERUP_TYPES];
 		int						nTypes;
 
 	public:
@@ -1760,9 +1760,9 @@ class CPowerupData {
 
 typedef struct tObjTypeData {
 	int						nTypes;
-	sbyte						nType [MAX_OBJTYPE];
-	sbyte						nId [MAX_OBJTYPE];  
-	fix						nStrength [MAX_OBJTYPE];   
+	CStaticArray< sbyte, MAX_OBJTYPE >	nType; //[MAX_OBJTYPE];
+	CStaticArray< sbyte, MAX_OBJTYPE >	nId; //[MAX_OBJTYPE];  
+	CStaticArray< fix, MAX_OBJTYPE >		nStrength; //[MAX_OBJTYPE];   
 } tObjTypeData;
 
 //------------------------------------------------------------------------------
@@ -1801,7 +1801,7 @@ typedef struct tHitbox {
 	CFixVector			vSize;
 	CFixVector			vOffset;
 	tBox					box;
-	CAngleVector			angles;			//rotation angles
+	CAngleVector		angles;			//rotation angles
 	short					nParent;			//parent hitbox
 } tHitbox;
 
@@ -1873,11 +1873,11 @@ class CObjectData {
 		CPowerupData				pwrUp;
 		ubyte							collisionResult [MAX_OBJECT_TYPES][MAX_OBJECT_TYPES];
 		CArray<tObjectViewData>	viewData;
-		ubyte							bIsMissile [MAX_WEAPONS];
-		ubyte							bIsWeapon [MAX_WEAPONS];
-		ubyte							bIsSlowWeapon [MAX_WEAPONS];
-		short							idToOOF [MAX_WEAPONS];
-		ubyte							bWantEffect [MAX_OBJECTS_D2X];
+		CStaticArray< ubyte, MAX_WEAPONS >	bIsMissile; //[MAX_WEAPONS];
+		CStaticArray< ubyte, MAX_WEAPONS >	bIsWeapon; //[MAX_WEAPONS];
+		CStaticArray< ubyte, MAX_WEAPONS >	bIsSlowWeapon; //[MAX_WEAPONS];
+		CStaticArray< short, MAX_WEAPONS >	idToOOF; //[MAX_WEAPONS];
+		CByteArray				bWantEffect; //[MAX_OBJECTS_D2X];
 		int							nFrameCount;
 
 	public:
@@ -2105,8 +2105,8 @@ class CWeaponData {
 		sbyte						bTripleFusion;
 		tFiringData				firing [2];
 		int						nTypes [2];
-		CWeaponInfo				info [MAX_WEAPON_TYPES];
-		CD1WeaponInfo			infoD1 [D1_MAX_WEAPON_TYPES];
+		CStaticArray< CWeaponInfo, MAX_WEAPON_TYPES >	info; // [MAX_WEAPON_TYPES];
+		CStaticArray< CWeaponInfo, MAX_WEAPON_TYPES >	infoD1; // [D1_MAX_WEAPON_TYPES];
 		CArray<tRgbaColorf>	color;
 		ubyte						bLastWasSuper [2][MAX_PRIMARY_WEAPONS];
 
@@ -2130,7 +2130,7 @@ class CWeaponData {
 
 typedef struct tModelHitboxes {
 	ubyte					nHitboxes;
-	tHitbox				hitboxes [MAX_HITBOXES + 1];
+	CStaticArray< tHitbox, MAX_HITBOXES + 1 >	hitboxes; // [MAX_HITBOXES + 1];
 #if DBG
 	CFixVector			vHit;
 	time_t				tHit;
@@ -2253,11 +2253,11 @@ class CMultiplayerData {
 		CWeaponState					weaponStates [MAX_PLAYERS];
 		char								bWasHit [MAX_PLAYERS];
 		int								bulletEmitters [MAX_PLAYERS];
-		int								gatlingSmoke [MAX_PLAYERS];
+		int					 			gatlingSmoke [MAX_PLAYERS];
 		CPulseData						spherePulse [MAX_PLAYERS];
-		ubyte								powerupsInMine [MAX_POWERUP_TYPES];
-		ubyte								powerupsOnShip [MAX_POWERUP_TYPES];
-		ubyte								maxPowerupsAllowed [MAX_POWERUP_TYPES];
+		CStaticArray< ubyte, MAX_POWERUP_TYPES >	powerupsInMine; //[MAX_POWERUP_TYPES];
+		CStaticArray< ubyte, MAX_POWERUP_TYPES >	powerupsOnShip; //[MAX_POWERUP_TYPES];
+		CStaticArray< ubyte, MAX_POWERUP_TYPES >	maxPowerupsAllowed; //[MAX_POWERUP_TYPES];
 		CArray<tLeftoverPowerup>	leftoverPowerups;
 		CAutoNetGame					autoNG;
 		fix								xStartAbortMenuTime;
@@ -2274,7 +2274,7 @@ class CMultiplayerData {
 
 class CMultiCreateData {
 	public:
-		int					nObjNums [MAX_NET_CREATE_OBJECTS];
+		CStaticArray< int, MAX_NET_CREATE_OBJECTS >	nObjNums; // [MAX_NET_CREATE_OBJECTS];
 		int					nLoc;
 
 	public:
@@ -2419,10 +2419,10 @@ typedef struct tCountdownData {
 
 class CMarkerData {
 	public:
-		CFixVector			point [NUM_MARKERS];		//these are only used in multi.c, and I'd get rid of them there, but when I tried to do that once, I caused some horrible bug. -MT
+		CStaticArray< CFixVector, NUM_MARKERS >	point; // [NUM_MARKERS];		//these are only used in multi.c, and I'd get rid of them there, but when I tried to do that once, I caused some horrible bug. -MT
 		char					szMessage [NUM_MARKERS][MARKER_MESSAGE_LEN];
 		char					nOwner [NUM_MARKERS][CALLSIGN_LEN+1];
-		short					objects [NUM_MARKERS];
+		CStaticArray< short, NUM_MARKERS >			objects; // [NUM_MARKERS];
 		short					viewers [2];
 		int					nHighlight;
 		float					fScale;
@@ -2540,9 +2540,9 @@ typedef struct tProfilerData {
 class CBossData {
 	public:
 		short					nTeleportSegs;
-		short					teleportSegs [MAX_BOSS_TELEPORT_SEGS];
+		CStaticArray< short, MAX_BOSS_TELEPORT_SEGS >	teleportSegs; // [MAX_BOSS_TELEPORT_SEGS];
 		short					nGateSegs;
-		short					gateSegs [MAX_BOSS_TELEPORT_SEGS];
+		CStaticArray< short, MAX_BOSS_TELEPORT_SEGS >	gateSegs; // [MAX_BOSS_TELEPORT_SEGS];
 		fix					nDyingStartTime;
 		fix					nHitTime;
 		fix					nCloakStartTime;
@@ -2584,9 +2584,9 @@ typedef struct tReactorStates {
 
 class CReactorData {
 	public:
-		tReactorProps		props [MAX_REACTORS];
+		CStaticArray< tReactorProps, MAX_REACTORS >	props; // [MAX_REACTORS];
 		tReactorTriggers	triggers;
-		tReactorStates		states [MAX_BOSS_COUNT];
+		CStaticArray< tReactorStates, MAX_BOSS_COUNT >	states; // [MAX_BOSS_COUNT];
 		tCountdownData		countdown;
 		int					nReactors;
 		int					nStrength;
@@ -2715,15 +2715,15 @@ class CMatCenData {
 		fix				xFuelRefillSpeed;
 		fix				xFuelGiveAmount;
 		fix				xFuelMaxAmount;
-		tFuelCenInfo	fuelCenters [MAX_FUEL_CENTERS];
-		tMatCenInfo		botGens [MAX_ROBOT_CENTERS];
-		tMatCenInfo		equipGens [MAX_EQUIP_CENTERS];
+		CStaticArray< tFuelCenInfo, MAX_FUEL_CENTERS >	fuelCenters; //[MAX_FUEL_CENTERS];
+		CStaticArray< tMatCenInfo, MAX_ROBOT_CENTERS >	botGens; //[MAX_ROBOT_CENTERS];
+		CStaticArray< tMatCenInfo, MAX_EQUIP_CENTERS >	equipGens; //[MAX_EQUIP_CENTERS];
 		int				nFuelCenters;
 		int				nBotCenters;
 		int				nEquipCenters;
 		int				nRepairCenters;
 		fix				xEnergyToCreateOneRobot;
-		int				origStationTypes [MAX_FUEL_CENTERS];
+		CStaticArray< int, MAX_FUEL_CENTERS >				origStationTypes; // [MAX_FUEL_CENTERS];
 		CSegment*		playerSegP;
 
 	public:
@@ -2739,7 +2739,7 @@ class CDemoData {
 		CArray<sbyte>	bWasRecorded;
 		CArray<sbyte>	bViewWasRecorded;
 		sbyte				bRenderingWasRecorded [32];
-		char				callSignSave [CALLSIGN_LEN+1];
+		char				callSignSave [CALLSIGN_LEN + 1];
 		int				nVersion;
 		int				nState;
 		int				nVcrState;
@@ -2802,7 +2802,7 @@ class CEscortData {
 
 class CThiefData {
 	public:
-		ubyte				stolenItems [MAX_STOLEN_ITEMS];
+		CStaticArray< ubyte, MAX_STOLEN_ITEMS >	stolenItems; // [MAX_STOLEN_ITEMS];
 		int				nStolenItem;
 		fix				xReInitTime;
 		fix				xWaitTimes [NDL];
@@ -2877,7 +2877,7 @@ typedef struct {
 class CFCDData {
 	public:	
 		int				nIndex;
-		tFCDCacheData	cache [MAX_FCD_CACHE];
+		CStaticArray< tFCDCacheData, MAX_FCD_CACHE >	cache; // [MAX_FCD_CACHE];
 		fix				xLastFlushTime;
 		int				nConnSegDist;
 };
@@ -2987,7 +2987,7 @@ class CStatsData {
 class CCollisionData {
 	public:
 		int			nSegsVisited;
-		short			segsVisited [MAX_SEGS_VISITED];
+		CStaticArray< short, MAX_SEGS_VISITED >	segsVisited; // [MAX_SEGS_VISITED];
 		tFVIHitInfo hitData;
 };
 
@@ -3063,7 +3063,7 @@ class CGameData {
 		CEntropyData		entropy;
 		CReactorData		reactor;
 		CMarkerData			marker;
-		CBossData			boss [MAX_BOSS_COUNT];
+		CStaticArray< CBossData, MAX_BOSS_COUNT >		boss; [MAX_BOSS_COUNT];
 		CAIData				ai;
 		CEndLevelData		endLevel;
 		CMenuData			menu;

@@ -1006,6 +1006,7 @@ CREATE (gameData.objs.xLight, LEVEL_OBJECTS, 0);
 CREATE (gameData.objs.nLightSig, LEVEL_OBJECTS, 0);
 CREATE (gameData.objs.nHitObjects, LEVEL_OBJECTS * MAX_HIT_OBJECTS, 0);
 CREATE (gameData.objs.viewData, LEVEL_OBJECTS, (char) 0xFF);
+CREATE (gameData.objs.bWantEffect, LEVEL_OBJECTS, (char) 0xFF);
 for (int i = 0; i < LEVEL_OBJECTS; i++) {
 	gameData.objs.freeList [i] = i;
 	OBJECTS [i].Init ();
@@ -1031,6 +1032,7 @@ DESTROY (gameData.objs.xLight);
 DESTROY (gameData.objs.nLightSig);
 DESTROY (gameData.objs.nHitObjects);
 DESTROY (gameData.objs.viewData);
+DESTROY (gameData.objs.bWantEffect);
 lightManager.Reset ();
 shrapnelManager.Reset ();
 }
