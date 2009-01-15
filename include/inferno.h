@@ -3063,7 +3063,7 @@ class CGameData {
 		CEntropyData		entropy;
 		CReactorData		reactor;
 		CMarkerData			marker;
-		CStaticArray< CBossData, MAX_BOSS_COUNT >		boss; [MAX_BOSS_COUNT];
+		CStaticArray< CBossData, MAX_BOSS_COUNT >		boss; // [MAX_BOSS_COUNT];
 		CAIData				ai;
 		CEndLevelData		endLevel;
 		CMenuData			menu;
