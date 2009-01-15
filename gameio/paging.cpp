@@ -369,11 +369,17 @@ for (int i = 0; i < MAX_GAUGE_BMS; i++)
 
 //------------------------------------------------------------------------------
 
+void PageInAddonBitmap (int bmi)
+{
+if ((bmi < 0) && (bmi >= -MAX_ADDON_BITMAP_FILES))
+	PageInBitmap (&gameData.pig.tex.addonBitmaps [-bmi - 1], szAddonTextures [-bmi - 1], bmi, 0);}
+}
+
+//------------------------------------------------------------------------------
+
 void LoadAddonTextures (void)
 {
-	int	i;
-
-for (i = 0; i < MAX_ADDON_BITMAP_FILES; i++)
+for (int i = 0; i < MAX_ADDON_BITMAP_FILES; i++)
 	PageInAddonBitmap (-i - 1);
 }
 
@@ -467,6 +473,7 @@ else if (nTouchGauge < MAX_GAUGE_BMS) {
 else {
 	LoadVClipTextures (&gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE], 0);
 	LoadVClipTextures (&gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE], 0);
+	LoadAddonTextures ();
 	key = -2;
 	paletteManager.LoadEffect ();
 	return nCurItem;
