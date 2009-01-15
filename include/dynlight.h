@@ -139,7 +139,6 @@ class CHeadlightManager {
 		void Remove (CObject* objP);
 		void Update (void);
 		int SetupShader (int nType, int bLightmaps, tRgbaColorf *colorP);
-		inline void Reset (void) { nLights = 0; }
 };
 
 //------------------------------------------------------------------------------

@@ -91,7 +91,7 @@ return light;
 
 void CHeadlightManager::Transform (void)
 {
-if (!nLights || automap.m_bDisplay)
+if (automap.m_bDisplay)
 	return;
 
 	CDynLight*	pl;
@@ -121,10 +121,10 @@ for (int i = 0; i < MAX_PLAYERS; i++) {
 
 void CHeadlightManager::Setup (CDynLight* pl)
 {
-#if 0
-if (nLights < MAX_PLAYERS)
-	lights [nLights++] = pl;
-#endif
+nLights = 0;
+for (int i = 0; i < MAX_PLAYERS; i++)
+	if (lightIds [i] >= 0)
+		lights [nLights++] = lightManager.Lights (0) + lightIds [i];
 }
 
 //------------------------------------------------------------------------------
