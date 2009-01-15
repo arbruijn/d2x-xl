@@ -61,7 +61,7 @@ for (i = 0; i < vc->nFrameCount; i++) {
 
 //------------------------------------------------------------------------------
 
-#define OglCacheVClipTexturesN(i,t) OglCacheVClipTextures (gameData.eff.vClips [0] + i, t)
+#define OglCacheVClipTexturesN(i,t) if (i >= 0) OglCacheVClipTextures (&gameData.eff.vClips [0][i], t)
 
 void OglCacheWeaponTextures (tWeaponInfo *w)
 {
