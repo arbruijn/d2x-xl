@@ -95,20 +95,22 @@ if (!nLights || automap.m_bDisplay)
 	return;
 
 	CDynLight*	pl;
-	int			i;
 	bool			bHWHeadlight = (gameStates.render.bPerPixelLighting == 2) || (gameStates.ogl.bHeadlight && gameOpts->ogl.bHeadlight);
 
-for (i = 0; i < nLights; i++) {
-	pl = lights [i];
-	pl->info.bSpot = 1;
-	pl->info.vDirf.Assign (pl->vDir);
-	if (bHWHeadlight) {
-		pos [i] = pl->render.vPosf [0];
-		dir [i] = *pl->info.vDirf.V3 ();
-		brightness [i] = 100.0f;
+for (int i = 0; i < MAX_PLAYERS; i++) {
+	if (lightIds [i] >= 0) {
+		pl = lightManager.Lights (0) + lightIds [i];
+		pl->info.bSpot = 1;
+		pl->info.vDirf.Assign (pl->vDir);
+		if (bHWHeadlight) {
+			pos [i] = pl->render.vPosf [0];
+			dir [i] = *pl->info.vDirf.V3 ();
+			brightness [i] = 100.0f;
+			}
+		else if (pl->bTransform && !gameStates.ogl.bUseTransform)
+			transformation.Rotate (pl->info.vDirf, pl->info.vDirf, 0);
+
 		}
-	else if (pl->bTransform && !gameStates.ogl.bUseTransform)
-		transformation.Rotate (pl->info.vDirf, pl->info.vDirf, 0);
 	}
 }
 
@@ -119,8 +121,10 @@ for (i = 0; i < nLights; i++) {
 
 void CHeadlightManager::Setup (CDynLight* pl)
 {
+#if 0
 if (nLights < MAX_PLAYERS)
 	lights [nLights++] = pl;
+#endif
 }
 
 //------------------------------------------------------------------------------
