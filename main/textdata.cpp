@@ -207,7 +207,7 @@ else if (!gameStates.render.nWindow) {
 		else
 			fAlpha = 1.0f;
 		backgroundManager.DrawBox (x - 8, y - 8, x + w + 4, y + h + 4, 3, fAlpha, 1);
-		msgP->bmP->Render (CCanvas::Current (), x, y, w, h, 0, 0, w, h, 1, 0, fAlpha);
+		msgP->bmP->Render (CCanvas::Current (), x, y, w, h, 0, 0, w, h, 1, 0, 0, fAlpha);
 		}
 	}
 return 1;

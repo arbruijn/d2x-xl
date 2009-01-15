@@ -244,7 +244,7 @@ m_cf.WriteFix (gameData.escort.xLastPathCreated);
 m_cf.WriteInt (gameData.escort.nGoalObject);
 m_cf.WriteInt (gameData.escort.nSpecialGoal);
 m_cf.WriteInt (gameData.escort.nGoalIndex);
-m_cf.Write (gameData.thief.stolenItems.Write (m_cf);
+gameData.thief.stolenItems.Write (m_cf);
 #if DBG
 i = CFTell ();
 #endif

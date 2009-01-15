@@ -112,7 +112,7 @@ segListP [nSegments++] = nBossHomeSeg;
 Selected_segs [nSelectedSegs++] = nBossHomeSeg;
 #endif
 
-memset (gameData.render.mine.bVisited, 0, gameData.segs.nSegments);
+gameData.render.mine.bVisited.Clear ();
 
 while (tail != head) {
 	segP = SEGMENTS + seqQueue [tail++];
@@ -169,10 +169,10 @@ if (nObject >= 0)
 	gameData.boss [i].nObject = nObject;
 else if (gameData.boss [i].nObject < 0)
 	return;
-InitBossSegments (gameData.boss [i].nObject, gameData.boss [i].gateSegs, &gameData.boss [i].nGateSegs, 0, 0);
-InitBossSegments (gameData.boss [i].nObject, gameData.boss [i].teleportSegs, &gameData.boss [i].nTeleportSegs, 1, 0);
+InitBossSegments (gameData.boss [i].nObject, gameData.boss [i].gateSegs.Buffer (), &gameData.boss [i].nGateSegs, 0, 0);
+InitBossSegments (gameData.boss [i].nObject, gameData.boss [i].teleportSegs.Buffer (), &gameData.boss [i].nTeleportSegs, 1, 0);
 if (gameData.boss [i].nTeleportSegs == 1)
-	InitBossSegments (gameData.boss [i].nObject, gameData.boss [i].teleportSegs, &gameData.boss [i].nTeleportSegs, 1, 1);
+	InitBossSegments (gameData.boss [i].nObject, gameData.boss [i].teleportSegs.Buffer (), &gameData.boss [i].nTeleportSegs, 1, 1);
 gameData.boss [i].bDyingSoundPlaying = 0;
 gameData.boss [i].nDying = 0;
 if (gameStates.app.bD1Mission)
