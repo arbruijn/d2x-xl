@@ -132,6 +132,7 @@ int CHeadlightManager::Add (CObject *objP)
 	static float spotAngles [] = {0.9f, 0.5f, 0.5f};
 #endif
 
+objects [objP->info.nId] = objP;
 if (gameStates.render.nLightingMethod) {
 	if (lightIds [objP->info.nId] < 0) {
 			static tRgbaColorf c = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -149,10 +150,6 @@ if (gameStates.render.nLightingMethod) {
 			}
 		return lightIds [objP->info.nId];
 		}
-	}
-else {
-	objects [objP->info.nId] = objP;
-	return 0;
 	}
 return -1;
 }

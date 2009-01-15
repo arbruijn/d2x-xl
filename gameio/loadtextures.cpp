@@ -598,18 +598,19 @@ if (!altBmP) {
 reloadTextures:
 
 if (bRedone) {
-	Error ("Not enough memory for textures.\nTry to decrease texture quality\nin the advanced render options menu.");
-#if !DBG
+	if (bRedone == 1)
+		Error ("Not enough memory for textures.\nTry to decrease texture quality\nin the advanced render options menu.");
+	else
+		Error ("Cannot read textures.\nCheck your Descent installation.");
 	StartTime (0);
 	if (!bDefault)
 		cfP->Close ();
 	return 0;
-#endif
 	}
 
 bRedone = 1;
 if (cfP->Seek (nOffset, SEEK_SET)) {
-	PiggyCriticalError ();
+	bRedone = 2;
 	goto reloadTextures;
 	}
 #if 1//def _DEBUG
@@ -644,9 +645,8 @@ if (bmP->Flags () & BM_FLAG_RLE) {
 		bmP->Resize (zSize);
 #endif
 #if 1
-	bmP->Read (cf, zSize - 4, 4);
-	if (nDescentCriticalError) {
-		PiggyCriticalError ();
+	if (bmP->Read (*cfP, zSize - 4, 4) != zSize - 4) {
+		bRedone = 2;
 		goto reloadTextures;
 		}
 	zSize = bmP->RLEExpand (NULL, 0);

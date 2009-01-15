@@ -173,7 +173,7 @@ if (!(bBlend = glIsEnabled (GL_BLEND)))
 	glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-#if 1
+#if 0
 h = float (texP->TW ());
 u1 = float (bmP->Left ()) / h;
 u2 = float (bmP->Right ()) / h;
@@ -181,10 +181,10 @@ h = float (texP->TH ());
 v1 = float (bmP->Top ()) / h;
 v2 = float (bmP->Bottom ()) / h;
 #else
-if (bmP->Left ()) == 0) {
+if (bmP->Left () == 0) {
 	u1 = 0;
-	if (bmP->Width ()) == texP->Width ()))
-		u2 = texP->U ());
+	if (bmP->Width () == texP->Width ())
+		u2 = texP->U ();
 	else
 		u2 = float (bmP->Right ()) / float (texP->TW ());
 	}
@@ -192,10 +192,10 @@ else {
 	u1 = float (bmP->Left ()) / float (texP->TW ());
 	u2 = float (bmP->Right ()) / float (texP->TW ());
 	}
-if (bmP->Top ()) == 0) {
+if (bmP->Top () == 0) {
 	v1 = 0;
-	if (bmP->Height ()) == texP->Height ()))
-		v2 = texP->V ());
+	if (bmP->Height () == texP->Height ())
+		v2 = texP->V ();
 	else
 		v2 = float (bmP->Bottom ()) / float (texP->TH ());
 	}
