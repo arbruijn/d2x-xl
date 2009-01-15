@@ -17,6 +17,7 @@
 
 #include "pstypes.h"
 #include "cquicksort.h"
+#include "cfile.h"
 
 //-----------------------------------------------------------------------------
 
@@ -263,6 +264,8 @@ class CArray : public CQuickSort < _T > {
 		inline uint Pos (void) { return m_data.pos; }
 
 		inline void Pos (uint pos) { m_data.pos = pos % m_data.length; }
+
+		inline bool Read (CFile& cf) { return m_data.buffer ? cf.Read (m_data.buffer, sizeof (_T), m_data.length) == m_data.length : false; }
 
 		inline void SetWrap (bool bWrap) { m_data.bWrap = bWrap; }
 

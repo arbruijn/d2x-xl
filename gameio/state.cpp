@@ -1868,7 +1868,7 @@ if (!m_bBetweenLevels) {
 		}
 	else {
 		gameData.matCens.nBotCenters = 0;
-		memset (gameData.matCens.botGens, 0, sizeof (gameData.matCens.botGens));
+		gameData.matCens.botGens.Clear (0);
 		}
 	LoadReactorTrigger (&gameData.reactor.triggers);
 	if (ReadBoundedInt (MAX_FUEL_CENTERS, &gameData.matCens.nFuelCenters))
@@ -2132,7 +2132,7 @@ if (!m_bBetweenLevels) {
 	m_cf.Read (&gameData.reactor.triggers, sizeof (tReactorTriggers), 1);
 	if (ReadBoundedInt (MAX_FUEL_CENTERS, &gameData.matCens.nFuelCenters))
 		return 0;
-	m_cf.Read (gameData.matCens.fuelCenters, sizeof (tFuelCenInfo), gameData.matCens.nFuelCenters);
+	m_cf.Read (gameData.matCens.fuelCenters.Buffer (), sizeof (tFuelCenInfo), gameData.matCens.nFuelCenters);
 
 	// Restore the control cen info
 	gameData.reactor.states [0].bHit = m_cf.ReadInt ();
@@ -2172,7 +2172,7 @@ if (m_nVersion >= 7) {
 }
 
 if (m_nVersion >= 17) {
-	m_cf.Read (gameData.marker.objects, sizeof (gameData.marker.objects), 1);
+	gameData.marker.objects.Read (m_cf);
 	m_cf.Read (gameData.marker.nOwner, sizeof (gameData.marker.nOwner), 1);
 	m_cf.Read (gameData.marker.szMessage, sizeof (gameData.marker.szMessage), 1);
 }
