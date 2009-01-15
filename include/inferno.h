@@ -1291,7 +1291,7 @@ typedef struct tVariableLight {
 
 class CFlickerLightData {
 	public:
-		tVariableLight	lights [MAX_FLICKERING_LIGHTS];
+		CStaticArray< tVariableLight, MAX_FLICKERING_LIGHTS >	lights; // [MAX_FLICKERING_LIGHTS];
 		int				nLights;
 	public:
 		CFlickerLightData () { memset (this, 0, sizeof (*this)); }

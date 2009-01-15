@@ -815,7 +815,7 @@ if (objP->info.nType == OBJ_PLAYER) {
 
 void FlickerLights (void)
 {
-	tVariableLight	*flP = gameData.render.lights.flicker.lights;
+	tVariableLight	*flP = &gameData.render.lights.flicker.lights [0];
 	int				l;
 	CSide				*sideP;
 	short				nSegment, nSide;
@@ -847,7 +847,7 @@ for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++) {
 //returns ptr to flickering light structure, or NULL if can't find
 tVariableLight *FindVariableLight (int nSegment,int nSide)
 {
-	tVariableLight *flP = gameData.render.lights.flicker.lights;
+	tVariableLight *flP = &gameData.render.lights.flicker.lights [0];
 
 for (int l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++)
 	if ((flP->nSegment == nSegment) && (flP->nSide == nSide))	//found it!

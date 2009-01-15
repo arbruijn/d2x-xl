@@ -330,7 +330,10 @@ class CStaticArray : public CArray < _T > {
 		CStaticArrayData< _T, length > m_data;
 
 	public:
-		virtual _T *Create (uint length) { this->SetBuffer (m_data.buffer, 2, length); }
+		virtual _T *Create (uint length) { 
+			this->SetBuffer (m_data.buffer, 2, length); 
+			return m_data.buffer;
+			}
 		virtual void Destroy (void) { }
 	};
 
