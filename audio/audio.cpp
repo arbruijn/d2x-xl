@@ -389,7 +389,7 @@ if (m_info.bResampled)
 	m_info.sample.Destroy ();
 else
 	m_info.bResampled = 1;
-m_info.sample.SetBuffer (pDest, false, j);
+m_info.sample.SetBuffer (pDest, 0, j);
 return m_info.nLength = j;
 }
 
@@ -478,7 +478,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 		int l;
 		if (soundP->bHires) {
 			l = soundP->nLength [0];
-			m_info.sample.SetBuffer (soundP->data [0].Buffer (), true, l);
+			m_info.sample.SetBuffer (soundP->data [0].Buffer (), 1, l);
 			}
 		else {
 			if (gameOpts->sound.bHires)
@@ -507,7 +507,7 @@ if (pszWAV && *pszWAV)
 		m_info.nLength = l;
 		}
 	else {
-		m_info.sample.SetBuffer (soundP->data [soundP->bDTX].Buffer (), true, m_info.nLength = soundP->nLength [soundP->bDTX]);
+		m_info.sample.SetBuffer (soundP->data [soundP->bDTX].Buffer (), 1, m_info.nLength = soundP->nLength [soundP->bDTX]);
 		}
 	if (nSpeed < I2X (1))
 		Speedup (soundP, nSpeed);

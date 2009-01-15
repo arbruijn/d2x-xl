@@ -373,7 +373,7 @@ for (i = 0, j = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]; i < j; 
 #endif
 			}
 		else
-			soundP->data [0].SetBuffer (reinterpret_cast<ubyte*> (-1), true);
+			soundP->data [0].SetBuffer (reinterpret_cast<ubyte*> (-1), 1);
 		}
 	}
 cf.Close ();

@@ -30,8 +30,7 @@ class CArray : public CQuickSort < _T > {
 			_U		null;
 			uint	length;
 			uint	pos;
-			bool	bExternal;
-			bool	bChild;
+			int	nMode;
 			bool	bWrap;
 			};
 
@@ -88,7 +87,8 @@ class CArray : public CQuickSort < _T > {
 			m_data.buffer = reinterpret_cast<_T *> (NULL); 
 			m_data.length = 0;
 			m_data.pos = 0;
-			m_data.bExternal = m_data.bChild = m_data.bWrap = false;
+			m_data.nMode = 0;
+			m_data.bWrap = false;
 			memset (&m_data.null, 0, sizeof (_T));
 			}
 
@@ -126,20 +126,15 @@ class CArray : public CQuickSort < _T > {
 		inline _T* Pointer (uint i) { return m_data.buffer + i; }
 #endif
 
-		void Destroy (void) { 
+		virtual void Destroy (void) { 
 			if (m_data.buffer) {
-#if 0
-				if (m_data.bExternal)
-					m_data.buffer = NULL;
-				else 
-#endif
-				if (!m_data.bChild)
+				if (!m_data.nMode)
 					delete[] m_data.buffer;
 				Init ();
 				}
 			}
 			
-		_T *Create (uint length) {
+		virtual _T *Create (uint length) {
 			if (m_data.length != length) {
 				Destroy ();
 				if ((m_data.buffer = new _T [length]))
@@ -150,22 +145,20 @@ class CArray : public CQuickSort < _T > {
 			
 		inline _T* Buffer (uint i = 0) { return m_data.buffer + i; }
 		
-		void SetBuffer (_T *buffer, bool bChild = false, uint length = 0xffffffff) {
+		void SetBuffer (_T *buffer, int nMode = 0, uint length = 0xffffffff) {
 			if (m_data.buffer != buffer) {
 				if (!(m_data.buffer = buffer))
 					Init ();
 				else {
 					m_data.length = length;
-					m_data.bChild = bChild;
-					if (buffer)
-						m_data.bExternal = true;
-					else
-						m_data.bExternal = false;
+					m_data.nMode = nMode;
 					}
 				}
 			}
 			
 		_T* Resize (unsigned int length, bool bCopy = true) {
+			if (m_data.nMode == 2)
+				return m_data.buffer;
 			if (!m_data.buffer)
 				return Create (length);
 			_T* p = new _T [length];
@@ -260,7 +253,8 @@ class CArray : public CQuickSort < _T > {
 
 		CArray<_T>& ShareBuffer (CArray<_T>& child) {
 			memcpy (&child.m_data, &m_data, sizeof (m_data));
-			child.m_data.bChild = true;
+			if (!child.m_data.nMode)
+				child.m_data.nMode = 1;
 			return child;
 			}
 
@@ -294,6 +288,8 @@ class CArray : public CQuickSort < _T > {
 #endif
 	};
 
+//-----------------------------------------------------------------------------
+
 inline int operator- (char* v, CArray<char>& a) { return a.Index (v); }
 inline int operator- (ubyte* v, CArray<ubyte>& a) { return a.Index (v); }
 inline int operator- (short* v, CArray<short>& a) { return a.Index (v); }
@@ -320,5 +316,25 @@ class CUIntArray : public CArray<uint> {};
 class CFloatArray : public CArray<float> {};
 
 //-----------------------------------------------------------------------------
+
+template < class _T, uint length > 
+class CStaticArray : public CArray < _T > {
+
+	template < class _U, uint length > 
+	class CStaticArrayData {
+		public:
+			_U		buffer [length];
+			};
+
+	protected:
+		CStaticArrayData< _T, length > m_data;
+
+	public:
+		virtual _T *Create (uint length) { this->SetBuffer (m_data.buffer, 2, length); }
+		virtual void Destroy (void) { }
+	};
+
+//-----------------------------------------------------------------------------
+
 
 #endif //_CARRAY_H

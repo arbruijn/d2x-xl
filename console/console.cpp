@@ -587,7 +587,7 @@ void CConsole::NewLineConsole (void)
 
 temp = m_ConsoleLines [m_LineBuffer - 1].Buffer ();
 for (loop = m_LineBuffer - 1; loop > 0; loop--)
-	m_ConsoleLines [loop].SetBuffer (m_ConsoleLines [loop - 1].Buffer (), false, CON_CHARS_PER_LINE);
+	m_ConsoleLines [loop].SetBuffer (m_ConsoleLines [loop - 1].Buffer (), 0, CON_CHARS_PER_LINE);
 m_ConsoleLines [0].SetBuffer (temp, false, CON_CHARS_PER_LINE);
 m_ConsoleLines [0].Clear ();
 if (m_TotalConsoleLines < m_LineBuffer - 1)
@@ -611,7 +611,7 @@ void CConsole::NewLineCommand (void)
 
 temp = m_CommandLines [m_LineBuffer - 1].Buffer ();
 for (loop = m_LineBuffer - 1; loop > 0; loop--)
-	m_CommandLines [loop].SetBuffer (m_CommandLines [loop - 1].Buffer (), false, CON_CHARS_PER_LINE);
+	m_CommandLines [loop].SetBuffer (m_CommandLines [loop - 1].Buffer (), 0, CON_CHARS_PER_LINE);
 m_CommandLines [0].SetBuffer (temp, false, CON_CHARS_PER_LINE);
 m_CommandLines [0].Clear ();
 if (m_TotalCommands < m_LineBuffer - 1)

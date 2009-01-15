@@ -1138,7 +1138,7 @@ if (gameData.weapons.nTypes [0] >= MAX_WEAPON_TYPES) {
 	Warning ("Too many weapons (%d) in <%s>.  Max is %d.",t,fname,MAX_WEAPON_TYPES-N_D2_WEAPON_TYPES);
 	return -1;
 	}
-ReadWeaponInfos (0, N_D2_WEAPON_TYPES, t, cf, 3);
+ReadWeaponInfos (N_D2_WEAPON_TYPES, t, cf, 3);
 
 //now read robot info
 

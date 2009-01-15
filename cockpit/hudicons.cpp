@@ -451,7 +451,7 @@ for (i = 0; i < NUM_INV_ITEMS; i++) {
 	bmInvItems [i] = *bmpInventory;
 	bmInvItems [i].SetName ("Inventory");
 	bmInvItems [i].SetHeight (bmInvItems [i].Width ());
-	bmInvItems [i].SetBuffer (buffer + h * i, true, h);
+	bmInvItems [i].SetBuffer (buffer + h * i, 1, h);
 	bmInvItems [i].SetPalette (paletteManager.Game ());
 	}
 return bHaveInvBms = 1;

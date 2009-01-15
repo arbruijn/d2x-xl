@@ -102,13 +102,13 @@ if (gameStates.ogl.bHaveVBOs) {
 		return false;
 		}
 	glBufferDataARB (GL_ARRAY_BUFFER, m_nFaceVerts * sizeof (CRenderVertex), NULL, GL_STATIC_DRAW_ARB);
-	m_vertBuf [1].SetBuffer (reinterpret_cast<CRenderVertex*> (glMapBufferARB (GL_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB)), true, m_nFaceVerts);
+	m_vertBuf [1].SetBuffer (reinterpret_cast<CRenderVertex*> (glMapBufferARB (GL_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB)), 1, m_nFaceVerts);
 	m_vboIndexHandle = 0;
 	glGenBuffersARB (1, &m_vboIndexHandle);
 	if (m_vboIndexHandle) {
 		glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, m_vboIndexHandle);
 		glBufferDataARB (GL_ELEMENT_ARRAY_BUFFER_ARB, m_nFaceVerts * sizeof (short), NULL, GL_STATIC_DRAW_ARB);
-		m_index [1].SetBuffer (reinterpret_cast<short*> (glMapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB)), true, m_nFaceVerts);
+		m_index [1].SetBuffer (reinterpret_cast<short*> (glMapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB)), 1, m_nFaceVerts);
 		}
 	}
 m_vertBuf [0].Create (m_nFaceVerts);
@@ -350,10 +350,10 @@ for (i = 0; i < m_nSubModels; i++) {
 		}
 	pfi->m_nId = nId;
 	}
-m_vbVerts.SetBuffer (reinterpret_cast<CFloatVector3*> (m_vertBuf [0].Buffer ()), true, m_vertBuf [0].Length ());
+m_vbVerts.SetBuffer (reinterpret_cast<CFloatVector3*> (m_vertBuf [0].Buffer ()), 1, m_vertBuf [0].Length ());
 m_vbNormals.SetBuffer (m_vbVerts + m_nFaceVerts, true, m_vertBuf [0].Length ());
-m_vbColor.SetBuffer (reinterpret_cast<tRgbaColorf*> (m_vbNormals + m_nFaceVerts), true, m_vertBuf [0].Length ());
-m_vbTexCoord.SetBuffer (reinterpret_cast<tTexCoord2f*> (m_vbColor + m_nFaceVerts), true, m_vertBuf [0].Length ());
+m_vbColor.SetBuffer (reinterpret_cast<tRgbaColorf*> (m_vbNormals + m_nFaceVerts), 1, m_vertBuf [0].Length ());
+m_vbTexCoord.SetBuffer (reinterpret_cast<tTexCoord2f*> (m_vbColor + m_nFaceVerts), 1, m_vertBuf [0].Length ());
 pv = m_vbVerts.Buffer ();
 pn = m_vbNormals.Buffer ();
 pt = m_vbTexCoord.Buffer ();

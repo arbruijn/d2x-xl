@@ -888,7 +888,7 @@ if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 			sprintf (szName, "POG#%04d", j);
 		bm.SetName (szName);
 		gameData.pig.tex.altBitmapP [j] = bm;
-		gameData.pig.tex.altBitmapP [j].SetBuffer (bm.Buffer (), false, bm.Length ());
+		gameData.pig.tex.altBitmapP [j].SetBuffer (bm.Buffer (), 0, bm.Length ());
 		bm.SetBuffer (NULL);
 		gameData.pig.tex.bitmapP [j].SetOverride (gameData.pig.tex.altBitmapP + j);
 		CBitmap* bmP = gameData.pig.tex.altBitmapP + j;

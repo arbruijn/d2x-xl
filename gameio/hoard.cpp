@@ -146,7 +146,7 @@ if (!gameData.hoard.bInitialized) {
 	vcP->nSound = -1;
 	vcP->lightValue = I2X (1);
 	bmDataP = new ubyte [gameData.hoard.orb.nSize];
-	gameData.hoard.orb.bm.SetBuffer (bmDataP, false, gameData.hoard.orb.nSize);
+	gameData.hoard.orb.bm.SetBuffer (bmDataP, 0, gameData.hoard.orb.nSize);
 	for (i = 0; i < gameData.hoard.orb.nFrames; i++, nBitmap++) {
 		Assert (nBitmap < MAX_BITMAP_FILES);
 		vcP->frames [i].index = nBitmap;
@@ -180,7 +180,7 @@ if (!gameData.hoard.bInitialized) {
 	gameData.pig.tex.nTextures [0]++;
 	Assert (gameData.pig.tex.nTextures [0] < MAX_TEXTURES);
 	bmDataP = new ubyte [gameData.hoard.goal.nSize];
-	gameData.hoard.goal.bm.SetBuffer (bmDataP, false, gameData.hoard.goal.nSize);
+	gameData.hoard.goal.bm.SetBuffer (bmDataP, 0, gameData.hoard.goal.nSize);
 	for (i = 0; i < gameData.hoard.goal.nFrames; i++, nBitmap++) {
 		Assert (nBitmap < MAX_BITMAP_FILES);
 		ecP->vc.frames [i].index = nBitmap;
