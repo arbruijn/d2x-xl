@@ -231,7 +231,8 @@ return 0;
 void CBitmap::Render (CBitmap *dest, 
 							 int xDest, int yDest, int wDest, int hDest, 
 							 int xSrc, int ySrc, int wSrc, int hSrc, 
-							 int bTransp, int bMipMaps, float fAlpha, tRgbaColorf* colorP)
+							 int bTransp, int bMipMaps, int bSmoothe,
+							 float fAlpha, tRgbaColorf* colorP)
 {
 	GLfloat xo, yo, xs, ys;
 	GLfloat u1, v1, u2, v2;
@@ -251,7 +252,7 @@ glEnable (GL_TEXTURE_2D);
 if (!(texP = Texture ())) {
 	texP = &tex;
 	texP->Init ();
-	texP->Setup (Width (), Height (), RowSize (), BPP (), 0, bMipMaps, this);
+	texP->Setup (Width (), Height (), RowSize (), BPP (), 0, bMipMaps, bSmoothe, this);
 	SetTexture (texP);
 	LoadTexture (xSrc, ySrc, nTransp, 0);
 	}

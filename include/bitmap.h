@@ -238,8 +238,8 @@ class CBitmap : public CArray< ubyte > {
 
 		CBitmap *CreateMask (void);
 		int CreateMasks (void);
-		int SetupFrames (int bDoMipMap, int nTransp, int bLoad);
-		CBitmap* SetupTexture (int bDoMipMap, int nTransp, int bLoad);
+		int SetupFrames (int bMipMaps, int nTransp, int bLoad);
+		CBitmap* SetupTexture (int bMipMaps, int nTransp, int bLoad);
 		int LoadTexture (int dxo, int dyo, int nTransp, int superTransp);
 #if RENDER2TEXTURE == 1
 		int PrepareTexture (int bMipMap, int nTransp, int bMask, CBO *renderBuffer = NULL);
@@ -267,9 +267,10 @@ class CBitmap : public CArray< ubyte > {
 		void Render (CBitmap *dest, 
 						 int xDest, int yDest, int wDest, int hDest, 
 						 int xSrc, int ySrc, int wSrc, int hSrc, 
-						 int bTransp = 0, int bMipMaps = 0, float fAlpha = 1.0f, tRgbaColorf* colorP = NULL);
-		inline void Render (CBitmap* dest, int bTransp = 0, int bMipMaps = 0, float fAlpha = 1.0f)
-		 { Render (dest, 0, 0, dest->Width (), dest->Height (), 0, 0, Width (), Height (), bTransp, bMipMaps, fAlpha); }
+						 int bTransp = 0, int bMipMaps = 0, int bSmoothe = 0, 
+						 float fAlpha = 1.0f, tRgbaColorf* colorP = NULL);
+		inline void Render (CBitmap* dest, int bTransp = 0, int bMipMaps = 0, int bSmoothe = 0, float fAlpha = 1.0f)
+		 { Render (dest, 0, 0, dest->Width (), dest->Height (), 0, 0, Width (), Height (), bTransp, bMipMaps, bSmoothe, fAlpha); }
 		void Stretch (CBitmap* dest = NULL, int x = 0, int y = 0);
 		void Blit (CBitmap* dest = NULL, int x = 0, int y = 0, int w = 0, int h = 0);
 		void RenderClipped (CBitmap* dest = NULL, int dx = 0, int dy = 0, int w = -1, int h = -1, int sx = 0, int sy = 0);

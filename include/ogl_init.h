@@ -320,7 +320,7 @@ int OglLoadBmTexture (CBitmap *bm, int bMipMap, int nTransp, int bLoad);
 int OglLoadTexture (CBitmap *bmP, int dxo,int dyo, CTexture *tex, int nTransp, int bSuperTransp);
 void OglFreeTexture (CTexture *glTexture);
 void OglFreeBmTexture (CBitmap *bm);
-int OglSetupBmFrames (CBitmap *bmP, int bDoMipMap, int nTransp, int bLoad);
+int OglSetupBmFrames (CBitmap *bmP, int bMipMaps, int nTransp, int bLoad);
 void OglDoPalFx (void);
 void OglStartFrame (int bFlat, int bResetColorBuf);
 void OglEndFrame (void);

@@ -1054,7 +1054,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int CBitmap::SetupFrames (int bDoMipMap, int nTransp, int bLoad)
+int CBitmap::SetupFrames (int bMipMaps, int nTransp, int bLoad)
 {
 	int	nFrames = (m_info.nType == BM_TYPE_ALT) ? m_info.frames.nCount : 0;
 	ubyte	nFlags;
@@ -1084,7 +1084,7 @@ else {
 			nFlags |= BM_FLAG_SEE_THRU;
 		bmfP->SetFlags (nFlags);
 		if (bLoad)
-			bmfP->PrepareTexture (bDoMipMap, nTransp, 0, NULL);
+			bmfP->PrepareTexture (bMipMaps, nTransp, 0, NULL);
 		}
 	}
 return 1;
@@ -1213,12 +1213,12 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-CBitmap *CBitmap::SetupTexture (int bDoMipMap, int nTransp, int bLoad)
+CBitmap *CBitmap::SetupTexture (int bMipMaps, int nTransp, int bLoad)
 {
 	CBitmap *bmP;
 
 if ((bmP = HasOverride ()))
-	return bmP->SetupTexture (bDoMipMap, nTransp, bLoad);
+	return bmP->SetupTexture (bMipMaps, nTransp, bLoad);
 
 int	i, h, w, nFrames;
 
@@ -1228,7 +1228,7 @@ if (!(h * w))
 	return NULL;
 nFrames = (m_info.nType == BM_TYPE_ALT) ? FrameCount () : 0;
 if (!(m_info.props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
-	if (bLoad && PrepareTexture (bDoMipMap, nTransp, 0, NULL))
+	if (bLoad && PrepareTexture (bMipMaps, nTransp, 0, NULL))
 		return NULL;
 	if (CreateMasks () && Mask ()->PrepareTexture (0, -1, 1, NULL))
 		return NULL;
@@ -1236,11 +1236,11 @@ if (!(m_info.props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
 else if (!Frames ()) {
 	CBitmap	*bmfP;
 
-	SetupFrames (bDoMipMap, nTransp, bLoad);
+	SetupFrames (bMipMaps, nTransp, bLoad);
 	if ((i = CreateMasks ()))
 		for (i = nFrames, bmfP = Frames (); i; i--, bmfP++)
 			if (bLoad) {
-				if (bmfP->PrepareTexture (bDoMipMap, nTransp, 1))
+				if (bmfP->PrepareTexture (bMipMaps, nTransp, 1))
 					return NULL;
 				if (bmfP->Mask () && (bmfP->Mask ()->PrepareTexture (0, -1, 1, NULL)))
 					return NULL;
