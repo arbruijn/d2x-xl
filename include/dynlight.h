@@ -134,7 +134,7 @@ class CHeadlightManager {
 		void Transform (void);
 		fix ComputeLightOnObject (CObject *objP);
 		void Toggle (void);
-		void Setup (CDynLight* pl);
+		void Prepare (void);
 		int Add (CObject* objP);
 		void Remove (CObject* objP);
 		void Update (void);

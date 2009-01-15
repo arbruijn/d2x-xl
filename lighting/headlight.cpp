@@ -119,7 +119,7 @@ for (int i = 0; i < MAX_PLAYERS; i++) {
 // To achive that, the direction is added to the original position and transformed,
 // and the transformed headlight position is subtracted from that.
 
-void CHeadlightManager::Setup (CDynLight* pl)
+void CHeadlightManager::Prepare (void)
 {
 nLights = 0;
 for (int i = 0; i < MAX_PLAYERS; i++)

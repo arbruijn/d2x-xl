@@ -77,7 +77,7 @@ for (i = 0; i < m_data.nLights [0]; i++, pl++) {
 	m_data.nLights [1]++;
 	prl++;
 	}
-m_headlights.Setup ();
+m_headlights.Prepare ();
 }
 
 //------------------------------------------------------------------------------
