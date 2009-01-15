@@ -594,9 +594,9 @@ return F2X (fRad);
 
 fix CModel::Size (CObject *objP, int bHires)
 {
-	CSubModel		*psm;
+	CSubModel*		psm;
 	int				i, j;
-	tHitbox			*phb = gameData.models.hitboxes [m_nModel].hitboxes;
+	tHitbox*			phb = &gameData.models.hitboxes [m_nModel].hitboxes [0];
 	CFixVector		hv;
 	CFloatVector3	vOffset;
 	double			dx, dy, dz, r;

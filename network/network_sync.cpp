@@ -142,8 +142,10 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 		NW_SET_BYTE (objBuf, bufI, owner);                                 
 		NW_SET_SHORT (objBuf, bufI, nRemoteObj); 
 		NW_SET_BYTES (objBuf, bufI, objP, sizeof (CObject));
+#if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
 		if (gameStates.multi.nGameType >= IPX_GAME)
 			SwapObject (reinterpret_cast<CObject*> (objBuf + bufI - sizeof (tBaseObject)));
+#endif
 		}
 	if (nObjFrames) {	// Send any objects we've buffered
 		syncP->objs.nCurrent = i;	

@@ -695,8 +695,10 @@ else if (i < 0)
 				objP->UnlinkFromSeg ();
 			NW_GET_BYTES (dataP, bufI, objP, sizeof (CObject));
 			if (objP->info.nType != OBJ_NONE) {
+#if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
 				if (gameStates.multi.nGameType >= IPX_GAME)
 					SwapObject (objP);
+#endif
 				nSegment = objP->info.nSegment;
 				PrintLog ("receiving object %d (type: %d, segment: %d)\n", nObject, objP->info.nType, nSegment);
 				objP->info.nNextInSeg = objP->info.nPrevInSeg = objP->info.nSegment = -1;

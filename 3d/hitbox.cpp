@@ -267,10 +267,10 @@ transformation.End ();
 
 void TransformHitboxes (CObject *objP, CFixVector *vPos, tBox *phb)
 {
-	tHitbox		*pmhb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
-	tQuad			*pf;
+	tHitbox*		pmhb = &gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes [0];
+	tQuad*		pf;
 	CFixVector	rotVerts [8];
-	CFixMatrix	*viewP = ObjectView (objP);
+	CFixMatrix*	viewP = ObjectView (objP);
 	int			i, j, iBox, nBoxes;
 
 if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
