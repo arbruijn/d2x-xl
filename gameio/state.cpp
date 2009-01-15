@@ -980,7 +980,7 @@ m_cf.WriteFix (paletteManager.LastEffectTime ());
 m_cf.WriteShort (paletteManager.RedEffect ());
 m_cf.WriteShort (paletteManager.GreenEffect ());
 m_cf.WriteShort (paletteManager.BlueEffect ());
-gameData.render.lights.subtracted.Write (cf, LEVEL_SEGMENTS);
+gameData.render.lights.subtracted.Write (m_cf, LEVEL_SEGMENTS);
 m_cf.WriteInt (gameStates.app.bFirstSecretVisit);
 m_cf.WriteFix (gameData.omega.xCharge [0]);
 m_cf.WriteShort (gameData.missions.nEntryLevel);
@@ -1033,7 +1033,7 @@ if (thumbCanv) {
 			}
 	paletteManager.LoadEffect ();
 	bm.DestroyBuffer ();
-	thumbCanv->Write (cf, THUMBNAIL_LW * THUMBNAIL_LH);
+	thumbCanv->Write (m_cf, THUMBNAIL_LW * THUMBNAIL_LH);
 	CCanvas::Pop ();
 	thumbCanv->Destroy ();
 	m_cf.Write (paletteManager.Game (), 3, 256);
@@ -1947,7 +1947,7 @@ paletteManager.SetLastEffectTime (m_cf.ReadFix ());
 paletteManager.SetRedEffect ((ubyte) m_cf.ReadShort ());
 paletteManager.SetGreenEffect ((ubyte) m_cf.ReadShort ());
 paletteManager.SetBlueEffect ((ubyte) m_cf.ReadShort ());
-gameData.render.lights.subtracted.Read (cf, (m_nVersion > 39) ? LEVEL_SEGMENTS : (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2);
+gameData.render.lights.subtracted.Read (m_cf, (m_nVersion > 39) ? LEVEL_SEGMENTS : (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2);
 ApplyAllChangedLight ();
 gameStates.app.bFirstSecretVisit = m_cf.ReadInt ();
 if (m_bSecret) 
@@ -2130,7 +2130,7 @@ if (!m_bBetweenLevels) {
 	m_cf.Read (&gameData.reactor.triggers, sizeof (tReactorTriggers), 1);
 	if (ReadBoundedInt (MAX_FUEL_CENTERS, &gameData.matCens.nFuelCenters))
 		return 0;
-	gameData.matCens.fuelCenters..Read (m_cf, gameData.matCens.nFuelCenters);
+	gameData.matCens.fuelCenters.Read (m_cf, gameData.matCens.nFuelCenters);
 
 	// Restore the control cen info
 	gameData.reactor.states [0].bHit = m_cf.ReadInt ();
