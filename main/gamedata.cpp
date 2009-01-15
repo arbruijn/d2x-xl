@@ -349,6 +349,7 @@ CREATE (bCalcVertexColor, gameData.segs.nVertices, 0);
 CREATE (bAutomapVisited, gameData.segs.nSegments, 0); 
 CREATE (bAutomapVisible, gameData.segs.nSegments, 0); 
 CREATE (bRadarVisited, gameData.segs.nSegments, 0); 
+return true;
 }
 
 //------------------------------------------------------------------------------
@@ -944,7 +945,7 @@ gameData.objs.bIsSlowWeapon [ROBOT_SMARTMSL_BLOB_ID] = 1;
 
 void InitIdToOOF (void)
 {
-memset (gameData.objs.idToOOF, 0, sizeof (gameData.objs.idToOOF));
+gameData.objs.idToOOF.Clear (0);
 gameData.objs.idToOOF [MEGAMSL_ID] = OOF_MEGA;
 }
 

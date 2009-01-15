@@ -940,7 +940,7 @@ if (fileVersion >= 3)
 else
 	// Set the nType of children correctly when using old datafiles.  
 	// In earlier descent versions this was simply hard-coded in CreateSmartChildren ().
-	switch (this - gameData.weapons.info) {
+	switch (this - gameData.weapons.info.Buffer ()) {
 		case SMARTMSL_ID:
 			children = SMARTMSL_BLOB_ID;
 			break;
