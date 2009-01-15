@@ -1427,8 +1427,8 @@ int LoadLevelSub (char * pszFilename, int nLevel)
 SetDataVersion (-1);
 gameData.segs.bHaveSlideSegs = 0;
 if (gameData.app.nGameMode & GM_NETWORK) {
-	memset (gameData.multiplayer.maxPowerupsAllowed, 0, sizeof (gameData.multiplayer.maxPowerupsAllowed));
-	memset (gameData.multiplayer.powerupsInMine, 0, sizeof (gameData.multiplayer.powerupsInMine));
+	gameData.multiplayer.maxPowerupsAllowed.Clear (0);
+	gameData.multiplayer.powerupsInMine.Clear (0);
 	}
 #if DBG
 Level_being_loaded = pszFilename;
