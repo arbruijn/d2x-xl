@@ -380,14 +380,15 @@ if (gameStates.render.nLightingMethod) {
 								nLightSeg;
 	int						bSkipHeadlight = !gameStates.render.nState && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bHeadlight);
 	fix						xMaxLightRange = SEGMENTS [nSegment].AvgRad () + ((gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 : MAX_LIGHT_RANGE);
-	CDynLight*				prl = RenderLights (i);
+	CDynLight*				prl;
 	CFixVector				c;
 	CActiveDynLight*		activeLightsP = m_data.active [nThread];
 
 	c = SEGMENTS [nSegment].Center ();
 	lightManager.ResetAllUsed (1, nThread);
 	lightManager.ResetActive (nThread, 0);
-	while (i--) {
+	while (i) {
+		prl = RenderLights (--i);
 #if DBG
 		if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg))
 			prl = prl;
@@ -620,11 +621,10 @@ else {
 	psc->color.blue = c.color.blue / 8.0f;
 #if 0
 	if (lightManager.SetNearestToSegment (nSegment, 1)) {
-		short				nLights = m_data.nLights [1];
-		CDynLight*		prl = RenderLights (nLights);
+		CDynLight*		prl;
 		float				fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightfRange];
 		float				fLightDist, fAttenuation;
-		CFloatVector			vPosf;
+		CFloatVector	vPosf;
 		if (vPosP)
 			vPosf.Assign (vPosP);
 		for (i = 0; i < m_data.nActiveLights; i++) {
