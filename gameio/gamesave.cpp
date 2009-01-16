@@ -1520,6 +1520,7 @@ if (nError == -1) {   //error!!
 	return 2;
 	}
 cf.Seek (nGameDataOffset, SEEK_SET);
+gameData.objs.lists.Init ();
 nError = LoadMineDataCompiled (cf, 0);
 if (nError == -1) {   //error!!
 	cf.Close ();
