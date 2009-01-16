@@ -17,6 +17,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pstypes.h"
 // returns number of item chosen
 
+//------------------------------------------------------------------------------
+
 extern char *menu_difficulty_text[];
 extern int Max_debrisObjects;
 extern int MissileView_enabled;
@@ -26,6 +28,29 @@ extern char *nmAllowedChars;
 extern char bPauseableMenu;
 extern char bAlreadyShowingInfo;
 
+extern char NORMAL_RADIO_BOX [2];
+extern char CHECKED_RADIO_BOX [2];
+extern char NORMAL_CHECK_BOX [2];
+extern char CHECKED_CHECK_BOX [2];
+extern char CURSOR_STRING [2];
+extern char SLIDER_LEFT [2];
+extern char SLIDER_RIGHT [2];
+extern char SLIDER_MIDDLE [2];
+extern char SLIDER_MARKER [2];
+extern char UP_ARROW_MARKER [2];
+extern char DOWN_ARROW_MARKER [2];
+
+//------------------------------------------------------------------------------
+
+#define RETRO_STYLE			0 //gameStates.ogl.nDrawBuffer != GL_BACK
+#define MODERN_STYLE			1 //gameOpts->menus.nStyle
+#define FAST_MENUS			1 //gameOpts->menus.bFastMenus
+
+#define MENU_CLOSE_X			(gameStates.menus.bHires?15:7)
+#define MENU_CLOSE_Y			(gameStates.menus.bHires?15:7)
+#define MENU_CLOSE_SIZE		(gameStates.menus.bHires?10:5)
+#define MENU_MAX_FILES		300
+#define MSGBOX_TEXT_SIZE	10000		// How many characters in messagebox
 
 //------------------------------------------------------------------------------
 

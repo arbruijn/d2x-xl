@@ -94,7 +94,10 @@ class CBackgroundManager : public CStack<CBackground> {
 		inline int Depth (void) { return m_nDepth; }
 		inline bool Shadow (void) { return m_bShadow; }
 		inline void SetShadow (bool bShadow) { m_bShadow = bShadow; }
-		inline void Draw (bool bUpdate = false) { m_bg [m_nDepth].Draw (bUpdate); }
+		inline void Draw (bool bUpdate = false) { 
+			if (m_nDepth >= 0) 
+				m_bg [m_nDepth].Draw (bUpdate); 
+			}
 		inline void DrawArea (int left, int top, int right, int bottom)
 		 { return m_bg [m_nDepth].DrawArea (left, top, right, bottom); }
 		inline CBitmap* Current (void) { return m_bg [m_nDepth].Background (); }

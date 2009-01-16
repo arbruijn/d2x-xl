@@ -418,9 +418,9 @@ if (IpxHandleNetGameAuxData (netGame.AuxData) < 0) {
 NetworkSetGameMode (netGame.gameMode);
 NetworkAdjustMaxDataSize ();
 //PrintLog ("loading level\n");
-StartNewLevel (netGame.nLevel, 0);
+StartNewLevel (netGame.nLevel, true);
 //PrintLog ("exiting netgame browser\n");
-backgroundManager.Remove ();
+//backgroundManager.Remove ();
 return 1;         // look ma, we're in a game!!!
 }
 

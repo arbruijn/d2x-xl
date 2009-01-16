@@ -826,11 +826,11 @@ extern int nOglTransformCalls;
 
 int CHeadlightManager::SetupShader (int nType, int bLightmaps, tRgbaColorf *colorP)
 {
-	int			nShader, bTransform;
+	int			h, i, nShader, bTransform;
 	tRgbaColorf	color;
 
 //headlights
-int h = IsMultiGame ? nLights : 1;
+h = IsMultiGame ? nLights : 1;
 InitHeadlightShaders (h);
 nShader = 10 + bLightmaps * 4 + nType;
 if (nShader != gameStates.render.history.nShader) {
@@ -849,10 +849,13 @@ if (nShader != gameStates.render.history.nShader) {
 	//glUniform1f (glGetUniformLocation (activeShaderProg, "zoom"), 65536.0f / (float) gameStates.render.xZoom);
 	if ((bTransform = !nOglTransformCalls))
 		OglSetupTransform (1);
-	for (int i = 0; i < h; i++) {
-		glEnable (GL_LIGHT0 + i);
-		glLightfv (GL_LIGHT0 + i, GL_POSITION, reinterpret_cast<GLfloat*> (pos + i));
-		glLightfv (GL_LIGHT0 + i, GL_SPOT_DIRECTION, reinterpret_cast<GLfloat*> (dir + i));
+	for (h = i = 0; i < MAX_PLAYERS; i++) {
+		if (lightIds [i] >= 0) {
+			glEnable (GL_LIGHT0 + h);
+			glLightfv (GL_LIGHT0 + h, GL_POSITION, reinterpret_cast<GLfloat*> (pos + i));
+			glLightfv (GL_LIGHT0 + h, GL_SPOT_DIRECTION, reinterpret_cast<GLfloat*> (dir + i));
+			h++;
+			}
 		}
 	if (bTransform)
 		OglResetTransform (1);

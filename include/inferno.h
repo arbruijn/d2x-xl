@@ -1841,6 +1841,7 @@ class CObjectData {
 	public:
 		CArray<CObjTypeData>		types;
 		CArray<CObject>			objects;
+		CArray<tBaseObject>		effects;
 		CObjLists					lists;
 		CArray<short>				freeList;
 		CArray<short>				parentObjs;
@@ -1870,6 +1871,7 @@ class CObjectData {
 		int							nLastObject [2];
 		int							nObjectLimit;
 		int							nMaxUsedObjects;
+		int							nEffects;
 		int							nNextSignature;
 		int							nChildFreeList;
 		int							nDrops;
@@ -1891,6 +1893,9 @@ class CObjectData {
 		void Init (void);
 		bool Create (void);
 		void Destroy (void);
+		void InitFreeList (void);
+		void GatherEffects (void);
+		int RebuildEffects (void);
 };
 
 #define PLAYER_LIGHTNINGS	1

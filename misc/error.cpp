@@ -46,7 +46,7 @@ static void (*ErrorPrintFunc) (const char *);
 char szExitMsg[MAX_MSG_LEN]="";
 char szWarnMsg[MAX_MSG_LEN];
 
-extern void ShowInGameWarning(const char *s);
+void ShowInGameWarning (const char *s);
 
 //------------------------------------------------------------------------------
 //takes string in register, calls //printf with string on stack

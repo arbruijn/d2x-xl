@@ -996,8 +996,19 @@ nDrops = 0;
 nDeadControlCenter = 0;
 nVertigoBotFlags = 0;
 nFrameCount = 0;
+nEffects = 0;
 nMaxObjects = max (gameFileInfo.objects.count + 1000, gameFileInfo.objects.count * 2);
 nMaxUsedObjects = LEVEL_OBJECTS - 20;
+}
+
+// ----------------------------------------------------------------------------
+
+void CObjectData::InitFreeList (void)
+{
+for (int i = 0; i < LEVEL_OBJECTS; i++) {
+	gameData.objs.freeList [i] = i;
+	OBJECTS [i].Init ();
+	}
 }
 
 // ----------------------------------------------------------------------------
@@ -1020,10 +1031,7 @@ CREATE (gameData.objs.nLightSig, LEVEL_OBJECTS, 0);
 CREATE (gameData.objs.nHitObjects, LEVEL_OBJECTS * MAX_HIT_OBJECTS, 0);
 CREATE (gameData.objs.viewData, LEVEL_OBJECTS, (char) 0xFF);
 CREATE (gameData.objs.bWantEffect, LEVEL_OBJECTS, (char) 0);
-for (int i = 0; i < LEVEL_OBJECTS; i++) {
-	gameData.objs.freeList [i] = i;
-	OBJECTS [i].Init ();
-	}
+InitFreeList ();
 return lightClusterManager.Init () && shrapnelManager.Init ();
 }
 
@@ -1032,6 +1040,7 @@ return lightClusterManager.Init () && shrapnelManager.Init ();
 void CObjectData::Destroy (void)
 {
 DESTROY (gameData.objs.objects);
+DESTROY (gameData.objs.effects);
 DESTROY (gameData.objs.freeList);
 DESTROY (gameData.objs.parentObjs);
 DESTROY (gameData.objs.childObjs);
@@ -1048,6 +1057,49 @@ DESTROY (gameData.objs.viewData);
 DESTROY (gameData.objs.bWantEffect);
 lightManager.Reset ();
 shrapnelManager.Reset ();
+}
+
+//------------------------------------------------------------------------------
+
+void CObjectData::GatherEffects (void)
+{
+if (nEffects && effects.Create (nEffects)) {
+	int i, j;
+	for (i = j = 0; i < gameFileInfo.objects.count; i++) {
+		if (OBJECTS [i].info.nType == OBJ_EFFECT) {
+			effects [j] = OBJECTS [i];
+			effects [j].info.nPrevInSeg = effects [j].info.nNextInSeg = -1;
+			j++;
+			}
+		}
+	nEffects = j;
+	}
+else
+	nEffects = 0;
+}
+
+//------------------------------------------------------------------------------
+
+int CObjectData::RebuildEffects (void)
+{
+	int j = 0;
+
+if (nEffects && effects.Buffer ()) {
+	for (int i = 0; i < nEffects; i++) {
+		tBaseObject& bo = effects [i];
+		int nObject = CreateObject (bo.info.nType, bo.info.nId, -1, 
+											 -bo.info.nSegment - 2, bo.info.position.vPos, bo.info.position.mOrient, 
+											 bo.info.xSize, bo.info.controlType, bo.info.movementType, bo.info.renderType);
+		if (nObject >= 0) {
+			OBJECTS [nObject].info = bo.info;
+			OBJECTS [nObject].mType = bo.mType;
+			OBJECTS [nObject].cType = bo.cType;
+			OBJECTS [nObject].rType = bo.rType;
+			j++;
+			}
+		}
+	}
+return j;
 }
 
 // ----------------------------------------------------------------------------
@@ -1214,9 +1266,9 @@ nTypingTimeout = 0;
 
 bool CMultiGameData::Create (void)
 {
-CREATE (gameData.multigame.remoteToLocal, MAX_NUM_NET_PLAYERS * LEVEL_OBJECTS, 0);  // Remote CObject number for each local CObject
-CREATE (gameData.multigame.localToRemote, LEVEL_OBJECTS, 0);
-CREATE (gameData.multigame.nObjOwner, LEVEL_OBJECTS, 0);   // Who created each CObject in my universe, -1 = loaded at start
+CREATE (gameData.multigame.remoteToLocal, MAX_NUM_NET_PLAYERS * LEVEL_OBJECTS, 0xff);  // Remote CObject number for each local CObject
+CREATE (gameData.multigame.localToRemote, LEVEL_OBJECTS, 0xff);
+CREATE (gameData.multigame.nObjOwner, LEVEL_OBJECTS, 0xff);   // Who created each CObject in my universe, -1 = loaded at start
 return true;
 }
 

@@ -151,6 +151,9 @@ if (objP->info.nType == OBJ_ROBOT) {
 		objP->mType.physInfo.drag = ROBOTINFO (objP->info.nId).drag;
 		}
 	}
+else if (objP->info.nType == OBJ_EFFECT) {
+	gameData.objs.nEffects++;
+	}
 else {		//Robots taken care of above
 	if (objP->info.renderType == RT_POLYOBJ) {
 		char *name = szSavePOFNames [objP->rType.polyObjInfo.nModel];
@@ -843,6 +846,7 @@ if ((gameFileInfo.objects.offset > -1) && gameFileInfo.objects.count) {
 		gameData.objs.init [i] = *objP;
 		}
 	}
+gameData.objs.GatherEffects ();
 for (i = 0; i < LEVEL_OBJECTS - 1; i++)
 	gameData.objs.dropInfo [i].nNextPowerup = i + 1;
 gameData.objs.dropInfo [i].nNextPowerup = -1;

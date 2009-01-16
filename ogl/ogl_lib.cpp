@@ -788,6 +788,7 @@ if ((nOglTransformCalls > 0) && !--nOglTransformCalls && (gameStates.ogl.bUseTra
 void RebuildRenderContext (int bGame)
 {
 gameStates.ogl.bRebuilding = 1;
+backgroundManager.Rebuild ();
 if (!gameStates.app.bGameRunning)
 	ShowBoxedMessage ("Setting up renderer...");
 ResetTextures (1, bGame);
@@ -806,7 +807,6 @@ BuildObjectModels ();
 OglSetDrawBuffer (gameStates.ogl.nDrawBuffer, 1);
 if (!gameStates.app.bGameRunning)
 	ClearBoxedMessage ();
-backgroundManager.Rebuild ();
 gameStates.ogl.bRebuilding = 0;
 }
 

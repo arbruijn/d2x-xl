@@ -381,7 +381,7 @@ int CAudio::DestroyObjectSound (int nObject)
 	int				nKilled = 0;
 
 #ifdef NEWDEMO
-if (gameData.demo.nState == ND_STATE_RECORDING)
+if ((nObject >= 0) && (gameData.demo.nState == ND_STATE_RECORDING))
 	NDRecordDestroyObjectSound (nObject);
 #endif
 

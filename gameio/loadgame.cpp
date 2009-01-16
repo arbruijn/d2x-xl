@@ -360,27 +360,6 @@ if (LOCALPLAYER.secondaryAmmo [0] < 2 + NDL - gameStates.app.nDifficultyLevel)
 
 //------------------------------------------------------------------------------
 
-//sets up gameData.multiplayer.nLocalPlayer & gameData.objs.consoleP
-void InitMultiPlayerObject (void)
-{
-Assert ((gameData.multiplayer.nLocalPlayer >= 0) && (gameData.multiplayer.nLocalPlayer < MAX_PLAYERS));
-if (gameData.multiplayer.nLocalPlayer != 0) {
-	gameData.multiplayer.players [0] = LOCALPLAYER;
-	gameData.multiplayer.nLocalPlayer = 0;
-	}
-LOCALPLAYER.nObject = 0;
-LOCALPLAYER.nInvuls =
-LOCALPLAYER.nCloaks = 0;
-gameData.objs.consoleP = OBJECTS + LOCALPLAYER.nObject;
-gameData.objs.consoleP->SetType (OBJ_PLAYER);
-gameData.objs.consoleP->info.nId = gameData.multiplayer.nLocalPlayer;
-gameData.objs.consoleP->info.controlType = CT_FLYING;
-gameData.objs.consoleP->info.movementType = MT_PHYSICS;
-gameStates.entropy.nTimeLastMoved = -1;
-}
-
-//------------------------------------------------------------------------------
-
 // Setup CPlayerData for new game
 void ResetPlayerData (bool bNewGame, bool bSecret, int nPlayer)
 {
@@ -412,9 +391,6 @@ if (bNewGame) {
 	playerP->flags = 0;
 	playerP->nCloaks =
 	playerP->nInvuls = 0;
-	if ((nPlayer < 0) || (nPlayer == gameData.multiplayer.nLocalPlayer))
-		InitMultiPlayerObject ();	//make sure player's object set up
-
 	ResetShipData ();
 	gameStates.app.bFirstSecretVisit = 1;
 	}
@@ -851,7 +827,8 @@ paletteManager.LoadEffect ();
  //paletteManager.Load ("groupa.256", NULL, 0, 0, 1);		//don't change screen
 //if (!gameOpts->menus.nStyle)
 //	NMLoadBackground (NULL, NULL, 0);
-ShowBoxedMessage (TXT_LOADING);
+if (!gameStates.app.bProgressBars)
+	ShowBoxedMessage (TXT_LOADING);
 /*---*/PrintLog ("   loading level data\n");
 gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
 									 (gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1);
@@ -891,7 +868,8 @@ if (nLoadRes) {
 	return 0;
 	}
 
-ShowBoxedMessage (TXT_LOADING);
+if (!gameStates.app.bProgressBars)
+	ShowBoxedMessage (TXT_LOADING);
 paletteManager.SetGame (paletteManager.Load (szCurrentLevelPalette, pszLevelName, 1, 1, 1));		//don't change screen
 InitGaugeCanvases ();
 ResetPogEffects ();
@@ -957,7 +935,8 @@ SetSoundSources ();
 if (!IsMultiGame)
 	InitEntropySettings (0);	//required for repair centers
 songManager.PlayLevel (gameData.missions.nCurrentLevel, 1);
-ClearBoxedMessage ();		//remove message before new palette loaded
+if (!gameStates.app.bProgressBars)
+	ClearBoxedMessage ();		//remove message before new palette loaded
 paletteManager.LoadEffect ();		//actually load the palette
 /*---*/PrintLog ("   rebuilding OpenGL texture data\n");
 /*---*/PrintLog ("      rebuilding effects\n");
@@ -1777,38 +1756,33 @@ PrepareSecretLevel (gameData.missions.nNextLevel, true);
 
 //------------------------------------------------------------------------------
 
-void BashToShield (int i, const char *s)
+void CObject::Bash (ubyte nId)
 {
-	CObject *objP = OBJECTS + i;
-	int id = objP->info.nId;
-
-gameData.multiplayer.powerupsInMine [id] =
-gameData.multiplayer.maxPowerupsAllowed [id] = 0;
-objP->SetType (OBJ_POWERUP);
-objP->info.nId = POW_SHIELD_BOOST;
-objP->info.renderType = RT_POWERUP;
-objP->info.controlType = CT_POWERUP;
-objP->info.xSize = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size;
-objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].nClipIndex;
-objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
+gameData.multiplayer.powerupsInMine [info.nId] =
+gameData.multiplayer.maxPowerupsAllowed [info.nId] = 0;
+SetType (OBJ_POWERUP);
+info.nId = nId;
+info.renderType = RT_POWERUP;
+info.controlType = CT_POWERUP;
+info.xSize = gameData.objs.pwrUp.info [nId].size;
+rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [nId].nClipIndex;
+rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][rType.vClipInfo.nClipIndex].xFrameTime;
 }
 
 //------------------------------------------------------------------------------
 
-void BashToEnergy (int i, const char *s)
-{
-	CObject *objP = OBJECTS + i;
-	int id = objP->info.nId;
+void CObject::BashToShield (bool bBash) 
+{ 
+if (bBash) 
+	Bash (POW_SHIELD_BOOST); 
+}
 
-gameData.multiplayer.powerupsInMine [id] =
-gameData.multiplayer.maxPowerupsAllowed [id] = 0;
-objP->SetType (OBJ_POWERUP);
-objP->info.nId = POW_ENERGY;
-objP->info.renderType = RT_POWERUP;
-objP->info.controlType = CT_POWERUP;
-objP->info.xSize = gameData.objs.pwrUp.info [POW_ENERGY].size;
-objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [POW_ENERGY].nClipIndex;
-objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
+//------------------------------------------------------------------------------
+
+void CObject::BashToEnergy (bool bBash) 
+{ 
+if (bBash) 
+	Bash (POW_ENERGY); 
 }
 
 //------------------------------------------------------------------------------
@@ -1818,10 +1792,8 @@ void FilterObjectsFromLevel (void)
   //int 		i;
 	CObject	*objP;
 
-FORALL_POWERUP_OBJS (objP, i) {
-	if ((objP->info.nId == POW_REDFLAG) || (objP->info.nId == POW_BLUEFLAG))
-		BashToShield (objP->Index (), "Flag!!!!");
-  }
+FORALL_POWERUP_OBJS (objP, i)
+	objP->BashToShield ((objP->info.nId == POW_REDFLAG) || (objP->info.nId == POW_BLUEFLAG));
 }
 
 //------------------------------------------------------------------------------

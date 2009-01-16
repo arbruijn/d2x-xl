@@ -4406,6 +4406,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\menus\fileselector.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\menus\gameplaymenu.cpp"
 						>
 					</File>
@@ -4415,6 +4419,10 @@
 					</File>
 					<File
 						RelativePath="..\..\menus\lightningmenu.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\menus\listbox.cpp"
 						>
 					</File>
 					<File
@@ -4430,6 +4438,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\menus\menuitem.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\menus\miscmenu.cpp"
 						>
 					</File>
@@ -4439,6 +4451,10 @@
 					</File>
 					<File
 						RelativePath="..\..\menus\moviemenu.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\menus\msgbox.cpp"
 						>
 					</File>
 					<File
@@ -4521,11 +4537,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File

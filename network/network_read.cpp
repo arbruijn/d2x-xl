@@ -280,7 +280,7 @@ if (nTheirPlayer < 0) {
 if ((networkData.sync [0].nPlayer != -1) && (nTheirPlayer == networkData.sync [0].nPlayer))
 	networkData.sync [0].nPlayer = -1;
 if (!gameData.multigame.bQuitGame && (nTheirPlayer >= gameData.multiplayer.nPlayers)) {
-	if (networkData.nStatus!=NETSTAT_WAITING) {
+	if (networkData.nStatus != NETSTAT_WAITING) {
 		Int3 (); // We missed an important packet!
 		NetworkConsistencyError ();
 		}
@@ -578,7 +578,7 @@ inline bool ObjectIsLinked (CObject *objP, short nSegment)
 {
 if (nSegment != -1) {
 	short nObject = objP->Index ();
-	for (short i = SEGMENTS [objP->info.nSegment].m_objects, j = -1; i >= 0; j = i, i = OBJECTS [i].info.nNextInSeg) {
+	for (short i = SEGMENTS [nSegment].m_objects, j = -1; i >= 0; j = i, i = OBJECTS [i].info.nNextInSeg) {
 		if (i == nObject) {
 			objP->info.nPrevInSeg = j;
 			return true;
@@ -594,7 +594,6 @@ void NetworkReadObjectPacket (ubyte *dataP)
 {
 	static int		nPlayer = 0;
 	static int		nMode = 0;
-	static short	objectCount = 0;
 
 	// Object from another net CPlayerData we need to sync with
 	CObject	*objP;
@@ -625,6 +624,7 @@ else if (i < 0)
 //PrintLog ("Receiving object packet %d (prev: %d)\n", networkData.nPrevFrame, networkData.sync [0].objs.nFrame);
 #endif
  for (i = 0; i < nObjects; i++) {
+	objP = NULL;
 	NW_GET_SHORT (dataP, bufI, nObject);
 	NW_GET_BYTE (dataP, bufI, nObjOwner);
 	NW_GET_SHORT (dataP, bufI, nRemoteObj);
@@ -633,7 +633,6 @@ else if (i < 0)
 		nPlayer = nObjOwner;
 		ChangePlayerNumTo (nPlayer);
 		nMode = 1;
-		objectCount = 0;
 		networkData.nPrevFrame = networkData.sync [0].objs.nFrame - 1;
 		if (nObject == -3) {
 			if (networkData.nJoinState != 2)
@@ -647,15 +646,17 @@ else if (i < 0)
 			if (networkData.nJoinState)
 				return;
 			InitObjects ();
+			gameData.objs.nObjects = 0;
 			networkData.nJoinState = 1;
 			}
 		networkData.sync [0].objs.missingFrames.nFrame = 0;
 		}
 	else if ((nObject == -2) || (nObject == -4)) {	// Special debug checksum marker for entire send
- 		if (!nMode && NetworkVerifyObjects (nRemoteObj, objectCount)) {
+ 		if (!nMode && NetworkVerifyObjects (nRemoteObj, gameData.objs.nObjects)) {
 			NetworkAbortSync ();
 			return;
 			}
+		gameData.objs.RebuildEffects ();
 		networkData.sync [0].objs.nFrame = 0;
 		nMode = 0;
 		if (networkData.bHaveSync)
@@ -666,7 +667,6 @@ else if (i < 0)
 #if 1
 		console.printf (CON_DBG, "Got a type 3 object packet!\n");
 #endif
-		objectCount++;
 		nObject = nRemoteObj;
 		if (!InsertObject (nObject)) {
 			if (networkData.nJoinState == 3) {
@@ -690,7 +690,7 @@ else if (i < 0)
 			if (objP->info.nSegment >= 0)
 				nDbgObj = objP->Index ();
 #endif
-			objP->Unlink ();
+			objP->Unlink (true);
 			while (ObjectIsLinked (objP, objP->info.nSegment))
 				objP->UnlinkFromSeg ();
 			NW_GET_BYTES (dataP, bufI, objP, sizeof (CObject));
@@ -701,7 +701,8 @@ else if (i < 0)
 #endif
 				nSegment = objP->info.nSegment;
 				PrintLog ("receiving object %d (type: %d, segment: %d)\n", nObject, objP->info.nType, nSegment);
-				objP->info.nNextInSeg = objP->info.nPrevInSeg = objP->info.nSegment = -1;
+				objP->ResetSgmLinks ();
+				objP->ResetLinks ();
 				objP->info.nAttachedObj = -1;
 				objP->Link ();
 				if (nSegment < 0)
@@ -720,7 +721,6 @@ else if (i < 0)
 			}
 		} // For a standard onbject
 	} // For each CObject in packet
-gameData.objs.nObjects = objectCount;
 //gameData.objs.nLastObject [0] = gameData.objs.nObjects - 1;
 }
 

@@ -714,13 +714,14 @@ class CObject : public CObjectInfo {
 		// unlinks an CObject from a CSegment's list of objects
 		void Init (void);
 		void Link (void);
-		void Unlink (void);
+		void Unlink (bool bForce = false);
 		void Link (tObjListRef& ref, int nLink);
 		void Unlink (tObjListRef& ref, int nLink);
 #if DBG
 		bool IsInList (tObjListRef& ref, int nLink);
 #endif
-		void SetType (ubyte nNewType);
+		void SetType (ubyte nNewType, bool bLink = true);
+		void ResetSgmLinks (void) { info.nNextInSeg = info.nPrevInSeg = info.nSegment = -1; }
 		void LinkToSeg (int nSegment);
 		void UnlinkFromSeg (void);
 		void RelinkToSeg (int nNewSeg);
@@ -732,6 +733,10 @@ class CObject : public CObjectInfo {
 		inline short Id (void) { return m_nId; }
 		inline CObject* Prev (void) { return m_prev; }
 		inline CObject* Next (void) { return m_next; }
+		inline void ResetLinks (void) { 
+			memset (m_links, 0, sizeof (m_links)); 
+			m_nLinkedType = OBJ_NONE;
+			}
 		inline CObjListLink& Links (uint i) { return m_links [i]; }
 		inline ubyte LinkedType (void) { return m_nLinkedType; }
 		inline ubyte Tracers (void) { return m_nTracers; }
@@ -840,6 +845,10 @@ class CObject : public CObjectInfo {
 		void DoPowerupFrame (void);
 		void RotateCamera (void);
 		void RotateMarker (void);
+
+		void Bash (ubyte nId);
+		void BashToShield (bool bBash);
+		void BashToEnergy (bool bBash);
 
 	private:
 		void CheckGuidedMissileThroughExit (short nPrevSegment);

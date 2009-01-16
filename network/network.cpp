@@ -195,7 +195,7 @@ IpxInitNetGameAuxData (netGame.AuxData);
 NetworkSetGameMode (netGame.gameMode);
 netGame.nSecurity = d_rand ();  // For syncing Netgames with CPlayerData packets
 if (NetworkSelectPlayers (bAutoRun)) {
-	StartNewLevel (netGame.nLevel, 0);
+	StartNewLevel (netGame.nLevel, true);
 	ResetAllPlayerTimeouts ();
 	return 1;
 	}

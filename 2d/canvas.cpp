@@ -94,6 +94,8 @@ paneP->CBitmap::InitChild (this, x, y, w, h);
 
 void CCanvas::Destroy (void)
 {
+if (CCanvas::Current () == this)
+	CCanvas::SetCurrent (NULL);
 delete this;
 }
 

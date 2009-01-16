@@ -397,10 +397,31 @@ gameData.objs.consoleP->info.nFlags = 0;
 }
 
 //------------------------------------------------------------------------------
+
+//sets up gameData.multiplayer.nLocalPlayer & gameData.objs.consoleP
+void InitMultiPlayerObject (void)
+{
+Assert ((gameData.multiplayer.nLocalPlayer >= 0) && (gameData.multiplayer.nLocalPlayer < MAX_PLAYERS));
+if (gameData.multiplayer.nLocalPlayer != 0) {
+	gameData.multiplayer.players [0] = LOCALPLAYER;
+	gameData.multiplayer.nLocalPlayer = 0;
+	}
+LOCALPLAYER.nObject = 0;
+LOCALPLAYER.nInvuls =
+LOCALPLAYER.nCloaks = 0;
+gameData.objs.consoleP = OBJECTS + LOCALPLAYER.nObject;
+gameData.objs.consoleP->SetType (OBJ_PLAYER);
+gameData.objs.consoleP->info.nId = gameData.multiplayer.nLocalPlayer;
+gameData.objs.consoleP->info.controlType = CT_FLYING;
+gameData.objs.consoleP->info.movementType = MT_PHYSICS;
+gameStates.entropy.nTimeLastMoved = -1;
+}
+
+//------------------------------------------------------------------------------
 //make object0 the CPlayerData, setting all relevant fields
 void InitPlayerObject (void)
 {
-gameData.objs.consoleP->SetType (OBJ_PLAYER);
+gameData.objs.consoleP->SetType (OBJ_PLAYER, false);
 gameData.objs.consoleP->info.nId = 0;					//no sub-types for CPlayerData
 gameData.objs.consoleP->info.nSignature = 0;			//CPlayerData has zero, others start at 1
 gameData.objs.consoleP->info.xSize = gameData.models.polyModels [0][gameData.pig.ship.player->nModel].Rad ();
@@ -409,6 +430,7 @@ gameData.objs.consoleP->info.movementType = MT_PHYSICS;		//change this sometime
 gameData.objs.consoleP->info.xLifeLeft = IMMORTAL_TIME;
 gameData.objs.consoleP->info.nAttachedObj = -1;
 ResetPlayerObject ();
+InitMultiPlayerObject ();
 }
 
 //------------------------------------------------------------------------------
@@ -427,15 +449,13 @@ if (this == dbgObjP)
 void CObject::Init (void)
 {
 info.nType = OBJ_NONE;
-info.nSegment =
-info.nPrevInSeg =
-info.nNextInSeg =
 cType.explInfo.attached.nNext =
 cType.explInfo.attached.nPrev =
 cType.explInfo.attached.nParent =
 info.nAttachedObj = -1;
 info.nFlags = 0;
-memset (m_links, 0, sizeof (m_links));
+ResetSgmLinks ();
+ResetLinks ();
 m_shots.nObject = -1;
 m_shots.nSignature = -1;
 m_xCreationTime =
@@ -450,6 +470,7 @@ void InitObjects (void)
 CollideInit ();
 ResetSegObjLists ();
 gameData.objs.lists.Init ();
+gameData.objs.InitFreeList ();
 for (int i = 0; i < LEVEL_OBJECTS; i++)
 	OBJECTS [i].Init ();
 gameData.objs.consoleP =
@@ -884,7 +905,6 @@ if (link.prev || link.next) {
 		link.prev->m_links [nLink].next = link.next;
 	else
 		ref.head = link.next;
-	link.prev = link.next = NULL;
 	ref.nObjects--;
 	}
 else if ((ref.head == this) && (ref.tail == this))
@@ -903,6 +923,7 @@ else if (ref.tail == this) { //this actually means the list is corrupted
 		for (ref.tail = ref.head; ref.tail->m_links [nLink].next; ref.tail = ref.tail->m_links [nLink].next)
 			;
 	}
+link.prev = link.next = NULL;
 #if DBG
 if (IsInList (ref, nLink)) {
 	PrintLog ("object %d, type %d, link %d is still linked\n", this - gameData.objs.objects, info.nType);
@@ -930,7 +951,7 @@ if (this - gameData.objs.objects == nDbgObj) {
 	//PrintLog ("linking object #%d, type %d\n", objP - gameData.objs.objects, nType);
 	}
 #endif
-Unlink ();
+Unlink (true);
 m_nLinkedType = nType;
 Link (gameData.objs.lists.all, 0);
 if (nType == OBJ_PLAYER)
@@ -960,11 +981,11 @@ Link (gameData.objs.lists.actors, 2);
 
 //------------------------------------------------------------------------------
 
-void CObject::Unlink (void)
+void CObject::Unlink (bool bForce)
 {
 	ubyte nType = m_nLinkedType;
 
-if (nType != OBJ_NONE) {
+if (bForce || (nType != OBJ_NONE)) {
 #if DBG
 	if (this - gameData.objs.objects == nDbgObj) {
 		nDbgObj = nDbgObj;
@@ -995,12 +1016,14 @@ if (nType != OBJ_NONE) {
 
 //------------------------------------------------------------------------------
 
-void CObject::SetType (ubyte nNewType)
+void CObject::SetType (ubyte nNewType, bool bLink)
 {
 if (info.nType != nNewType) {
-	Unlink ();
+	if (bLink)
+		Unlink ();
 	info.nType = nNewType;
-	Link ();
+	if (bLink)
+		Link ();
 	}
 }
 
@@ -1381,7 +1404,10 @@ else if (nType == OBJ_POWERUP)
 #endif
 
 //if (GetSegMasks (vPos, nSegment, 0).m_center))
-nSegment = FindSegByPos (vPos, nSegment, 1, 0);
+if (nSegment < -1)
+	nSegment = -nSegment - 2;
+else
+	nSegment = FindSegByPos (vPos, nSegment, 1, 0);
 if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment))
 	return -1;
 

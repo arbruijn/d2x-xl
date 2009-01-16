@@ -13,7 +13,7 @@ menus_a_SOURCES = \
 	gameplaymenu.cpp lightmenu.cpp lightningmenu.cpp mainmenu.cpp miscmenu.cpp monsterballmenu.cpp moviemenu.cpp menu.cpp \
 	menubackground.cpp netgamebrowser.cpp netgamehelp.cpp netgameinfo.cpp netmenu.cpp netplayerbrowser.cpp newgamemenu.cpp \
 	performancemenu.cpp physicsmenu.cpp poweripmenu.cpp rendermenu.cpp screenresmenu.cpp shadowmenu.cpp shiprendermenu.cpp \
-	smokemenu.cpp soundmenu.cpp
+	smokemenu.cpp soundmenu.cpp menuitem.cpp fileselector.cpp listbox.cpp msgbox.cpp
 
 	
 	

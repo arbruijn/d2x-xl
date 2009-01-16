@@ -145,14 +145,22 @@ if (m_background &&
 	 (m_background != backgroundManager.Background (0)) && 
 	 (m_background != backgroundManager.Background (1)))
 	delete m_background;
-if (m_saved [0])
+if (m_saved [0]) {
 	delete m_saved [0];
-if (m_saved [1])
+	m_saved [0] = NULL;
+	}
+if (m_saved [1]) {
 	delete m_saved [1];
-if (m_canvas [0])
+	m_saved [1] = NULL;
+	}
+if (m_canvas [0]) {
 	m_canvas [0]->Destroy ();
-if (MODERN_STYLE && m_canvas [1])
+	m_canvas [0] = NULL;
+	}
+if (MODERN_STYLE && m_canvas [1]) {
 	m_canvas [1]->Destroy ();
+	m_canvas [1] = NULL;
+	}
 Init ();
 }
 
@@ -213,7 +221,7 @@ if (!(m_background = Load (filename, width, height)))
 Setup (x, y, width, height);
 if (!MODERN_STYLE)
 	Save (1, width, height);
-Draw (true);
+Draw (false);
 if (!MODERN_STYLE)
 	Save (0, width, height);
 return true;
@@ -430,6 +438,8 @@ if (bForce || (MODERN_STYLE == 1)) {
 
 void CBackgroundManager::Redraw (bool bUpdate)
 {
+if (m_nDepth < 0)
+	return;
 if (gameStates.app.bGameRunning) {
 	if (1) //gameOpts->menus.nStyle)
 		Draw ();
@@ -527,7 +537,10 @@ bool CBackgroundManager::Setup (char *filename, int x, int y, int width, int hei
 Create ();
 if (m_nDepth >= 2)
 	return false;
-return m_bg [++m_nDepth].Create (filename, x, y, width, height, bTop);
+if (!m_bg [++m_nDepth].Create (filename, x, y, width, height, bTop))
+	return false;
+Redraw ();
+return true;
 }
 
 //------------------------------------------------------------------------------

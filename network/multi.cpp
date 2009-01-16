@@ -327,16 +327,12 @@ return nRemoteObj = gameData.multigame.localToRemote [nLocalObj];
 
 void RemapLocalPlayerObject (int nLocalObj, int nRemoteObj)
 {
-	int	i, nConsole = OBJ_IDX (gameData.objs.consoleP);
-
 if (nLocalObj != nRemoteObj)
-	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++)
+	for (int i = 0; i < gameData.multiplayer.nPlayerPositions; i++)
 		if (gameData.multiplayer.players [i].nObject == nRemoteObj) {
 			gameData.multiplayer.players [i].nObject = nLocalObj;
-			if (nConsole == nRemoteObj) {
-				OBJECTS [nLocalObj] = *gameData.objs.consoleP;
+			if (i == gameData.multiplayer.nLocalPlayer)
 				gameData.objs.consoleP = OBJECTS + nLocalObj;
-				}
 			break;
 			}
 }
@@ -2703,7 +2699,7 @@ void MultiPrepLevel (void)
 	// since the resulting checksum with depend on the value of gameData.multiplayer.nLocalPlayer
 	// at the time this is called.
 
-	int		i, ng = 0, nObject;
+	int		i, nObject;
 	int		cloakCount, invCount;
 	CObject	*objP;
 
@@ -2736,28 +2732,27 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 	MultiAdjustCapForPlayer (gameData.multiplayer.nLocalPlayer);
 	MultiSendPowerupUpdate ();
 	}
-ng = 1;
 invCount = 0;
 cloakCount = 0;
 FORALL_STATIC_OBJS (objP, i) {
-	if (!IsCoopGame) {
-		i = objP->Index ();
-		nObject = CreatePowerup (POW_SHIELD_BOOST, -1, objP->info.nSegment, objP->info.position.vPos, 1);
-		ReleaseObject (short (i));
-		if (nObject != -1) {
-			CObject	*objP = OBJECTS + nObject;
-			objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].nClipIndex;
-			objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
-			objP->rType.vClipInfo.nCurFrame = 0;
-			objP->mType.physInfo.drag = 512;     //1024;
-			objP->mType.physInfo.mass = I2X (1);
-			objP->mType.physInfo.velocity.SetZero ();
+	if (objP->info.nType == OBJ_HOSTAGE) {
+		if (!IsCoopGame) {
+			nObject = CreatePowerup (POW_SHIELD_BOOST, -1, objP->info.nSegment, objP->info.position.vPos, 1);
+			ReleaseObject (objP->Index ());
+			if (nObject != -1) {
+				CObject	*objP = OBJECTS + nObject;
+				objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].nClipIndex;
+				objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
+				objP->rType.vClipInfo.nCurFrame = 0;
+				objP->mType.physInfo.drag = 512;     //1024;
+				objP->mType.physInfo.mass = I2X (1);
+				objP->mType.physInfo.velocity.SetZero ();
+				}
 			}
-		continue;
 		}
-	if (objP->info.nType == OBJ_POWERUP) {
+	else if (objP->info.nType == OBJ_POWERUP) {
 		if (objP->info.nId == POW_EXTRA_LIFE) {
-			if (ng && !netGame.DoInvulnerability) {
+			if (!netGame.DoInvulnerability) {
 				objP->info.nId = POW_SHIELD_BOOST;
 				objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
 				objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
@@ -2776,7 +2771,7 @@ FORALL_STATIC_OBJS (objP, i) {
 				objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
 				}
 		if (objP->info.nId == POW_INVUL) {
-			if (invCount  >= 3 || (ng && !netGame.DoInvulnerability)) {
+			if (invCount  >= 3 || (!netGame.DoInvulnerability)) {
 				objP->info.nId = POW_SHIELD_BOOST;
 				objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
 				objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
@@ -2785,7 +2780,7 @@ FORALL_STATIC_OBJS (objP, i) {
 				invCount++;
 			}
 		if (objP->info.nId == POW_CLOAK) {
-			if (cloakCount  >= 3 || (ng && !netGame.DoCloak)) {
+			if (cloakCount  >= 3 || (!netGame.DoCloak)) {
 				objP->info.nId = POW_SHIELD_BOOST;
 				objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
 				objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
@@ -2793,76 +2788,102 @@ FORALL_STATIC_OBJS (objP, i) {
 			else
 				cloakCount++;
 			}
-		if (objP->info.nId == POW_AFTERBURNER && ng && !netGame.DoAfterburner)
-			BashToShield (i, "afterburner");
-		if (objP->info.nId == POW_FUSION && ng && !netGame.DoFusions)
-			BashToShield (i, "fusion");
-		if (objP->info.nId == POW_PHOENIX && ng && !netGame.DoPhoenix)
-			BashToShield (i, "phoenix");
-		if (objP->info.nId == POW_HELIX && ng && !netGame.DoHelix)
-			BashToShield (i, "helix");
-		if (objP->info.nId == POW_MEGAMSL && ng && !netGame.DoMegas)
-			BashToShield (i, "mega");
-		if (objP->info.nId == POW_SMARTMSL && ng && !netGame.DoSmarts)
-			BashToShield (i, "smartmissile");
-		if (objP->info.nId == POW_GAUSS && ng && !netGame.DoGauss)
-			BashToShield (i, "gauss");
-		if (objP->info.nId == POW_VULCAN && ng && !netGame.DoVulcan)
-			BashToShield (i, "vulcan");
-		if (objP->info.nId == POW_PLASMA && ng && !netGame.DoPlasma)
-			BashToShield (i, "plasma");
-		if (objP->info.nId == POW_OMEGA && ng && !netGame.DoOmega)
-			BashToShield (i, "omega");
-		if (objP->info.nId == POW_SUPERLASER && ng && !netGame.DoSuperLaser)
-			BashToShield (i, "superlaser");
-		if (objP->info.nId == POW_PROXMINE && ng && !netGame.DoProximity)
-			BashToShield (i, "proximity");
-		// Special: Make all proximity bombs into shields if in
-		// hoard mode because we use the proximity slot in the
-		// CPlayerData struct to signify how many orbs the CPlayerData has.
-		if (objP->info.nId == POW_PROXMINE && ng && (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))
-			BashToShield (i, "proximity");
-		if (objP->info.nId == POW_SMARTMINE && ng && (gameData.app.nGameMode & GM_ENTROPY))
-			BashToShield (i, "smart mine");
-		if (objP->info.nId == POW_VULCAN_AMMO && ng && (!netGame.DoVulcan && !netGame.DoGauss))
-			BashToShield (i, "vulcan ammo");
-		if (objP->info.nId == POW_SPREADFIRE && ng && !netGame.DoSpread)
-			BashToShield (i, "spread");
-		if (objP->info.nId == POW_SMARTMINE && ng && !netGame.DoSmartMine)
-			BashToShield (i, "smartmine");
-		if (objP->info.nId == POW_FLASHMSL_1 && ng && !netGame.DoFlash)
-			BashToShield (i, "flash");
-		if (objP->info.nId == POW_FLASHMSL_4 && ng && !netGame.DoFlash)
-			BashToShield (i, "flash");
-		if (objP->info.nId == POW_GUIDEDMSL_1 && ng && !netGame.DoGuided)
-			BashToShield (i, "guided");
-		if (objP->info.nId == POW_GUIDEDMSL_4 && ng && !netGame.DoGuided)
-			BashToShield (i, "guided");
-		if (objP->info.nId == POW_EARTHSHAKER && ng && !netGame.DoEarthShaker)
-			BashToShield (i, "earth");
-		if (objP->info.nId == POW_MERCURYMSL_1 && ng && !netGame.DoMercury)
-			BashToShield (i, "Mercury");
-		if (objP->info.nId == POW_MERCURYMSL_4 && ng && !netGame.DoMercury)
-			BashToShield (i, "Mercury");
-		if (objP->info.nId == POW_CONVERTER && ng && !netGame.DoConverter)
-			BashToShield (i, "Converter");
-		if (objP->info.nId == POW_AMMORACK && ng && !netGame.DoAmmoRack)
-			BashToShield (i, "Ammo rack");
-		if (objP->info.nId == POW_HEADLIGHT && ng &&
-			 (!netGame.DoHeadlight || (EGI_FLAG (bDarkness, 0, 0, 0) && !EGI_FLAG (headlight.bAvailable, 0, 1, 0))))
-			BashToShield (i, "Headlight");
-		if (objP->info.nId == POW_LASER && ng && !netGame.DoLaserUpgrade)
-			BashToShield (i, "Laser powerup");
-		if (objP->info.nId == POW_HOMINGMSL_1 && ng && !netGame.DoHoming)
-			BashToShield (i, "Homing");
-		if (objP->info.nId == POW_HOMINGMSL_4 && ng && !netGame.DoHoming)
-			BashToShield (i, "Homing");
-		if (objP->info.nId == POW_QUADLASER && ng && !netGame.DoQuadLasers)
-			BashToShield (i, "Quad Lasers");
-		if (objP->info.nId == POW_BLUEFLAG && !(gameData.app.nGameMode & GM_CAPTURE))
-			BashToShield (i, "Blue flag");
-		if (objP->info.nId == POW_REDFLAG && !(gameData.app.nGameMode & GM_CAPTURE))
-			BashToShield (i, "Red flag");
+
+		switch (objP->info.nId) {
+				break;
+			case POW_AFTERBURNER:
+				objP->BashToShield (!netGame.DoAfterburner);
+				break;
+			case POW_FUSION:
+				objP->BashToShield (!netGame.DoFusions);
+				break;
+			case POW_PHOENIX:
+				objP->BashToShield (!netGame.DoPhoenix);
+				break;
+			case POW_HELIX:
+				objP->BashToShield (!netGame.DoHelix);
+				break;
+			case POW_MEGAMSL:
+				objP->BashToShield (!netGame.DoMegas);
+				break;
+			case POW_SMARTMSL:
+				objP->BashToShield (!netGame.DoSmarts);
+				break;
+			case POW_GAUSS:
+				objP->BashToShield (!netGame.DoGauss);
+				break;
+			case POW_VULCAN:
+				objP->BashToShield (!netGame.DoVulcan);
+				break;
+			case POW_PLASMA:
+				objP->BashToShield (!netGame.DoPlasma);
+				break;
+			case POW_OMEGA:
+				objP->BashToShield (!netGame.DoOmega);
+				break;
+			case POW_SUPERLASER:
+				objP->BashToShield (!netGame.DoSuperLaser);
+				break;
+			case POW_PROXMINE:
+				objP->BashToShield (!netGame.DoProximity || (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)));
+				break;
+			case POW_SMARTMINE:
+				objP->BashToShield (!netGame.DoSmartMine || (gameData.app.nGameMode & GM_ENTROPY));
+				break;
+			case POW_VULCAN_AMMO:
+				objP->BashToShield (!(netGame.DoVulcan || netGame.DoGauss));
+				break;
+			case POW_SPREADFIRE:
+				objP->BashToShield (!netGame.DoSpread);
+				break;
+			case POW_FLASHMSL_1:
+				objP->BashToShield (!netGame.DoFlash);
+				break;
+			case POW_FLASHMSL_4:
+				objP->BashToShield (!netGame.DoFlash);
+				break;
+			case POW_GUIDEDMSL_1:
+				objP->BashToShield (!netGame.DoGuided);
+				break;
+			case POW_GUIDEDMSL_4:
+				objP->BashToShield (!netGame.DoGuided);
+				break;
+			case POW_EARTHSHAKER:
+				objP->BashToShield (!netGame.DoEarthShaker);
+				break;
+			case POW_MERCURYMSL_1:
+				objP->BashToShield (!netGame.DoMercury);
+				break;
+			case POW_MERCURYMSL_4:
+				objP->BashToShield (!netGame.DoMercury);
+				break;
+			case POW_CONVERTER:
+				objP->BashToShield (!netGame.DoConverter);
+				break;
+			case POW_AMMORACK:
+				objP->BashToShield (!netGame.DoAmmoRack);
+				break;
+			case POW_HEADLIGHT:
+				 objP->BashToShield (!netGame.DoHeadlight || (EGI_FLAG (bDarkness, 0, 0, 0) && !EGI_FLAG (headlight.bAvailable, 0, 1, 0)));
+				break;
+			case POW_LASER:
+				objP->BashToShield (!netGame.DoLaserUpgrade);
+				break;
+			case POW_HOMINGMSL_1:
+				objP->BashToShield (!netGame.DoHoming);
+				break;
+			case POW_HOMINGMSL_4:
+				objP->BashToShield (!netGame.DoHoming);
+				break;
+			case POW_QUADLASER:
+				objP->BashToShield (!netGame.DoQuadLasers);
+				break;
+			case POW_BLUEFLAG:
+				objP->BashToShield (!(gameData.app.nGameMode & GM_CAPTURE));
+				break;
+			case POW_REDFLAG:
+				objP->BashToShield (!(gameData.app.nGameMode & GM_CAPTURE));
+			}
 		}
 	}
 #if !DBG
@@ -3020,7 +3041,7 @@ int MultiDeleteExtraObjects ()
 
 FORALL_OBJS (objP, i) {
 	nType = objP->info.nType;
-	if ((nType == OBJ_PLAYER) || (nType == OBJ_GHOST) || (nType == OBJ_CAMBOT))
+	if ((nType == OBJ_PLAYER) || (nType == OBJ_GHOST) || (nType == OBJ_CAMBOT) || (nType == OBJ_EFFECT))
 		nnp++;
 	else if ((nType == OBJ_ROBOT) && (gameData.app.nGameMode & GM_MULTI_ROBOTS))
 		;
