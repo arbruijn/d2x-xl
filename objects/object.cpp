@@ -2611,12 +2611,15 @@ FORALL_STATIC_OBJS (objP, i)
 
 //------------------------------------------------------------------------------
 
-void SetupSmokeEffect (CObject *objP)
+void CObject::SetupSmoke (void)
 {
-	tParticleInfo	*psi = &objP->rType.particleInfo;
-	int			nLife, nSpeed, nParts, nSize;
+if ((info.nType != OBJ_EFFECT) || (info.nId != SMOKE_ID))
+	return;
 
-objP->info.renderType = RT_SMOKE;
+	tParticleInfo*	psi = &rType.particleInfo;
+	int				nLife, nSpeed, nParts, nSize;
+
+info.renderType = RT_SMOKE;
 nLife = psi->nLife ? psi->nLife : 5;
 #if 1
 psi->nLife = (nLife * (nLife + 1)) / 2;
@@ -2639,13 +2642,13 @@ psi->nSize [0] = nSize + 1;
 psi->nSize [1] = (nSize * (nSize + 1)) / 2;
 psi->nParts = 90 + (nParts * psi->nLife * 3 * (1 << nSpeed)) / (11 - nParts);
 if (psi->nSide > 0) {
-	float faceSize = FaceSize (objP->info.nSegment, psi->nSide - 1);
+	float faceSize = FaceSize (info.nSegment, psi->nSide - 1);
 	psi->nParts = (int) (psi->nParts * ((faceSize < 1) ? sqrt (faceSize) : faceSize));
 	if (gameData.segs.nLevelVersion >= 18) {
 		if (psi->nType == SMOKE_TYPE_SPRAY)
 			psi->nParts *= 4;
 		}
-	else if ((gameData.segs.nLevelVersion < 18) && IsWaterTexture (SEGMENTS [objP->info.nSegment].m_sides [psi->nSide - 1].m_nBaseTex)) {
+	else if ((gameData.segs.nLevelVersion < 18) && IsWaterTexture (SEGMENTS [info.nSegment].m_sides [psi->nSide - 1].m_nBaseTex)) {
 		psi->nParts *= 4;
 		//psi->nSize [1] /= 2;
 		}
@@ -2667,7 +2670,7 @@ void SetupEffects (void)
 PrintLog ("   setting up effects\n");
 FORALL_EFFECT_OBJS (objP, i) 
 	if (objP->info.nId == SMOKE_ID)
-		SetupSmokeEffect (objP);
+		objP->SetupSmoke ();
 }
 
 //------------------------------------------------------------------------------

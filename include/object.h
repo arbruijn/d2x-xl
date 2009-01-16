@@ -762,6 +762,7 @@ class CObject : public CObjectInfo {
 		void LoadTextures (void);
 		int PowerupToWeapon (void);
 		void HandleSpecialSegment (void);
+		void SetupSmoke (void);
 
 		int OpenableDoorsInSegment (void);
 		int CheckSegmentPhysics (void);
