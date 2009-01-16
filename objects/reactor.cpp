@@ -435,7 +435,7 @@ FORALL_ACTOR_OBJS (objP, i) {
 		if (gameStates.gameplay.nReactorCount && !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)) {
 #if TRACE
 			console.printf (1, "Warning: Two or more control centers including %i and %i\n", 
-							gameData.reactor.states [0].nObject, i);
+							gameData.reactor.states [0].nObject, objP->Index ());
 #endif
 			}			
 		//else 

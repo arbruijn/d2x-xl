@@ -1073,7 +1073,7 @@ if (gameStates.app.cheats.bRobotsKillRobots) {
 		CObject *robotP;
 		
 		FORALL_ROBOT_OBJS (robotP, j) {
-			j = OBJ_IDX (robotP);
+			j = robotP->Index ();
 			if (j == siP->nObject)
 				continue;
 			curDist = CFixVector::Dist(objP->info.position.vPos, OBJECTS [j].info.position.vPos);

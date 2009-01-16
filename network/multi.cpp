@@ -2741,8 +2741,9 @@ invCount = 0;
 cloakCount = 0;
 FORALL_STATIC_OBJS (objP, i) {
 	if (!IsCoopGame) {
+		i = objP->Index ();
 		nObject = CreatePowerup (POW_SHIELD_BOOST, -1, objP->info.nSegment, objP->info.position.vPos, 1);
-		ReleaseObject ((short) i);
+		ReleaseObject (short (i));
 		if (nObject != -1) {
 			CObject	*objP = OBJECTS + nObject;
 			objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].nClipIndex;

@@ -756,9 +756,9 @@ FORALL_WEAPON_OBJS (bombP, i) {
 	if (bombP->info.xLifeLeft + I2X (2) >= gameData.weapons.info [SMARTMINE_ID].lifetime)
 		continue;
 	vBombPos = &bombP->info.position.vPos;
-	i = OBJ_IDX (bombP);
+	i = bombP->Index ();
 	FORALL_ACTOR_OBJS (actorP, j) {
-		j = OBJ_IDX (actorP);
+		j = actorP->Index ();
 		if (j == nParentObj) 
 			continue;
 		dist = CFixVector::Dist (*vBombPos, actorP->info.position.vPos);

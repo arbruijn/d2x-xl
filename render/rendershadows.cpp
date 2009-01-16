@@ -350,6 +350,7 @@ for (h = 0, l = lightManager.LightCount (0); l; l--, prl++)
 	prl->render.bShadow =
 	prl->render.bExclusive = 0;
 FORALL_OBJS (objP, h) {
+	h = objP->Index ();
 	if (gameData.render.mine.bObjectRendered [h] != gameStates.render.nFrameFlipFlop)
 		continue;
 	pnl = lightManager.NearestSegLights  () + objP->info.nSegment * MAX_NEAREST_LIGHTS;

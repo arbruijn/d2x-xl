@@ -444,17 +444,19 @@ m_vStartVel.SetZero ();
 }
 
 //------------------------------------------------------------------------------
-//sets up the free list & init CPlayerData & whatever else
+//sets up the free list, init player data etc.
 void InitObjects (void)
 {
 CollideInit ();
 ResetSegObjLists ();
 gameData.objs.lists.Init ();
+for (int i = 0; i < LEVEL_OBJECTS; i++)
+	OBJECTS [i].Init ();
 gameData.objs.consoleP =
 gameData.objs.viewerP = OBJECTS.Buffer ();
 InitPlayerObject ();
 gameData.objs.consoleP->LinkToSeg (0);	//put in the world in segment 0
-gameData.objs.consoleP->Link ();
+//gameData.objs.consoleP->Link ();
 gameData.objs.nObjects = 1;				//just the player
 gameData.objs.nLastObject [0] = 0;
 }
@@ -1392,6 +1394,7 @@ if (nType == OBJ_DEBRIS) {
 if (0 > (nObject = AllocObject ()))
 	return -1;
 objP = OBJECTS + nObject;
+objP->SetId (nObject);
 // Zero out object structure to keep weird bugs from happening in uninitialized fields.
 objP->info.nSignature = gameData.objs.nNextSignature++;
 objP->info.nType = nType;
