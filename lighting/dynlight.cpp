@@ -68,7 +68,7 @@ return m_data.Create ();
 
 void CLightManager::SetColor (short nLight, float red, float green, float blue, float fBrightness)
 {
-	CDynLight*	pl = m_data.lights [0] + nLight;
+	CDynLight*	pl = m_data.lights + nLight;
 	int			i;
 
 if ((pl->info.nType == 1) ? gameOpts->render.color.bGunLight : gameStates.render.bAmbientColor) {
@@ -112,7 +112,7 @@ void CLightManager::SetPos (short nObject)
 if (SHOW_DYN_LIGHT) {
 	int	nLight = m_data.owners [nObject];
 	if (nLight >= 0)
-		m_data.lights [0][nLight].info.vPos = OBJECTS [nObject].info.position.vPos;
+		m_data.lights [nLight].info.vPos = OBJECTS [nObject].info.position.vPos;
 	}
 }
 
@@ -121,7 +121,7 @@ if (SHOW_DYN_LIGHT) {
 short CLightManager::Find (short nSegment, short nSide, short nObject)
 {
 if (gameStates.render.nLightingMethod && !gameStates.app.bNostalgia) {
-	CDynLight*	pl = m_data.lights [0];
+	CDynLight*	pl = m_data.lights;
 
 	if (nObject >= 0)
 		return m_data.owners [nObject];
@@ -140,7 +140,7 @@ short CLightManager::Update (tRgbaColorf *colorP, float fBrightness, short nSegm
 	short	nLight = Find (nSegment, nSide, nObject);
 
 if (nLight >= 0) {
-	CDynLight* pl = m_data.lights [0] + nLight;
+	CDynLight* pl = m_data.lights + nLight;
 	if (!colorP)
 		colorP = &pl->info.color;
 	if (nObject >= 0)
@@ -160,7 +160,7 @@ int CLightManager::LastEnabled (void)
 	short	i = m_data.nLights [0];
 
 while (i)
-	if (m_data.lights [0][--i].info.bState)
+	if (m_data.lights [--i].info.bState)
 		return i;
 return -1;
 }
@@ -179,10 +179,10 @@ if (pl1 != pl2) {
 #endif
 	if (pl1->info.nObject >= 0)
 		m_data.owners [pl1->info.nObject] =
-			(short) (pl1 - m_data.lights [0]);
+			(short) (pl1 - m_data.lights);
 	if (pl2->info.nObject >= 0)
 		m_data.owners [pl2->info.nObject] =
-			(short) (pl2 - m_data.lights [0]);
+			(short) (pl2 - m_data.lights);
 	}
 }
 
@@ -193,7 +193,7 @@ int CLightManager::Toggle (short nSegment, short nSide, short nObject, int bStat
 	short nLight = Find (nSegment, nSide, nObject);
 
 if (nLight >= 0) {
-	CDynLight* pl = m_data.lights [0] + nLight;
+	CDynLight* pl = m_data.lights + nLight;
 	pl->info.bOn = bState;
 	}
 return nLight;
@@ -327,7 +327,7 @@ if (m_data.nLights [0] >= MAX_OGL_LIGHTS) {
 	return -1;	//too many lights
 	}
 i = m_data.nLights [0]; //LastEnabledDynLight () + 1;
-pl = m_data.lights [0] + i;
+pl = m_data.lights + i;
 pl->info.faceP = faceP;
 pl->info.nSegment = nSegment;
 pl->info.nSide = nSide;
@@ -407,8 +407,7 @@ else {
 	pl->info.bVariable = 0;
 	}
 #if 0
-PrintLog ("adding light %d,%d\n",
-		  m_data.nLights [0], pl - m_data.lights [0]);
+PrintLog ("adding light %d,%d\n", m_data.nLights [0], pl - m_data.lights [0]);
 #endif
 pl->info.bOn = 1;
 pl->bTransform = 1;
@@ -424,7 +423,7 @@ void CLightManager::DeleteFromList (CDynLight* pl, short nLight)
 // if not removing last light in list, move last light down to the now free list entry
 // and keep the freed light handle thus avoiding gaps in used handles
 if (nLight < --m_data.nLights [0]) {
-	*pl = m_data.lights [0][m_data.nLights [0]];
+	*pl = m_data.lights [m_data.nLights [0]];
 	if (pl->info.nObject >= 0)
 		m_data.owners [pl->info.nObject] = nLight;
 	if (pl->info.nPlayer < MAX_PLAYERS)
@@ -437,7 +436,7 @@ if (nLight < --m_data.nLights [0]) {
 void CLightManager::Delete (short nLight)
 {
 if ((nLight >= 0) && (nLight < m_data.nLights [0])) {
-	CDynLight* pl = m_data.lights [0] + nLight;
+	CDynLight* pl = m_data.lights + nLight;
 #if DBG
 	if ((nDbgSeg >= 0) && (nDbgSeg == pl->info.nSegment) && ((nDbgSide < 0) || (nDbgSide == pl->info.nSide)))
 		nDbgSeg = nDbgSeg;
@@ -469,7 +468,7 @@ return 1;
 
 void CLightManager::DeleteLightnings (void)
 {
-	CDynLight* pl = m_data.lights [0];
+	CDynLight* pl = m_data.lights;
 
 for (short i = 0; i < m_data.nLights [0]; )
 	if ((pl->info.nSegment >= 0) && (pl->info.nSide < 0)) {
@@ -497,7 +496,7 @@ void CLightManager::SetMaterial (short nSegment, short nSide, short nObject)
 	int nLight = Find (nSegment, nSide, nObject);
 
 if (nLight >= 0) {
-	CDynLight* pl = m_data.lights [0] + nLight;
+	CDynLight* pl = m_data.lights + nLight;
 	if (pl->info.bState) {
 		m_data.material.emissive = *reinterpret_cast<CFloatVector*> (&pl->fEmissive);
 		m_data.material.specular = *reinterpret_cast<CFloatVector*> (&pl->fEmissive);
@@ -542,7 +541,7 @@ return 0;
 void CLightManager::Sort (void)
 {
 CQuickSort<CDynLight> qs;
-qs.SortAscending (m_data.lights [0], 0, m_data.nLights [0] - 1);
+qs.SortAscending (m_data.lights, 0, m_data.nLights [0] - 1);
 }
 
 //------------------------------------------------------------------------------
@@ -595,7 +594,7 @@ for (nFace = gameData.segs.nFaces, faceP = FACES.faces.Buffer (); nFace; nFace--
 		colorP = gameData.render.color.textures + nTexture;
 		Add (faceP, &colorP->color, nLight, (short) nSegment, (short) nSide, -1, nTexture, NULL);
 		}
-	//if (m_data.nLights)
+	//if (m_data.nLights [0])
 	//	return;
 	if (!gameStates.render.bHaveDynLights) {
 		Reset ();

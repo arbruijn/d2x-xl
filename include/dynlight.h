@@ -28,6 +28,7 @@ class COglMaterial {
 
 //------------------------------------------------------------------------------
 
+class CDynLight;
 class CActiveDynLight;
 
 class CLightRenderData {
@@ -147,7 +148,8 @@ class CHeadlightManager {
 
 class CDynLightData {
 	public:
-		CDynLight			lights [2][MAX_OGL_LIGHTS];
+		CDynLight			lights [MAX_OGL_LIGHTS];
+		CDynLight*			renderLights [MAX_OGL_LIGHTS];
 		CActiveDynLight	active [MAX_THREADS][MAX_OGL_LIGHTS];
 		CDynLightIndex		index [2][MAX_THREADS];
 		CShortArray			nearestSegLights;		//the 8 nearest static lights for every segment
@@ -202,7 +204,6 @@ class CLightManager {
 		int Delete (short nSegment, short nSide, short nObject);
 		void Reset (void);
 		void SetMaterial (short nSegment, short nSide, short nObject);
-		void Lights (void);
 		void AddFromGeometry (void);
 		void Transform (int bStatic, int bVariable);
 		ubyte VariableVertexLights (int nVertex);
@@ -224,7 +225,9 @@ class CLightManager {
 		void ResetActive (int nThread, int nActive);
 		void ResetAllUsed (int bVariable, int nThread);
 
-		inline CDynLight* Lights (uint i) { return m_data.lights [i]; }
+		inline CDynLight* Lights (void) { return m_data.lights; }
+		inline CDynLight* RenderLights (uint i) { return m_data.renderLights [i]; }
+		inline CDynLight** RenderLights (void) { return m_data.renderLights; }
 		inline int LightCount (uint i) { return m_data.nLights [i]; }
 		inline CActiveDynLight* Active (uint i) { return m_data.active [i]; }
 		inline CDynLightIndex* Index (uint i) { return m_data.index [i]; }

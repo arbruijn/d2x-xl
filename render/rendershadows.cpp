@@ -345,18 +345,21 @@ int GatherShadowLightSources (void)
 	CDynLight*		prl;
 	CFixVector		vLightDir;
 
-prl = lightManager.Lights (1);
-for (h = 0, l = lightManager.LightCount (0); l; l--, prl++)
+n = lightManager.LightCount (1);
+for (h = l = 0; l < n; l++) {
+	prl = lightManager.RenderLights (h);
 	prl->render.bShadow =
 	prl->render.bExclusive = 0;
+	}
+
 FORALL_OBJS (objP, h) {
 	h = objP->Index ();
 	if (gameData.render.mine.bObjectRendered [h] != gameStates.render.nFrameFlipFlop)
 		continue;
-	pnl = lightManager.NearestSegLights  () + objP->info.nSegment * MAX_NEAREST_LIGHTS;
+	pnl = lightManager.NearestSegLights () + objP->info.nSegment * MAX_NEAREST_LIGHTS;
 	k = h * MAX_SHADOW_LIGHTS;
 	for (i = n = 0; (n < m) && (*pnl >= 0); i++, pnl++) {
-		prl = lightManager.Lights (1) + *pnl;
+		prl = lightManager.RenderLights (*pnl);
 		if (!prl->info.bState)
 			continue;
 		if (!CanSeePoint (objP, &objP->info.position.vPos, &prl->info.vPos, objP->info.nSegment))
@@ -376,9 +379,9 @@ FORALL_OBJS (objP, h) {
 		}
 	gameData.render.shadows.objLights [k + n] = -1;
 	}
-prl = lightManager.Lights (1);
-for (h = 0, i = lightManager.LightCount (0); i; i--, prl++)
-	if (prl->render.bShadow)
+n = lightManager.LightCount (1);
+for (h = i = 0; i < h; i++)
+	if (lightManager.RenderLights (i)->render.bShadow)
 		h++;
 return h;
 }
@@ -430,11 +433,13 @@ if (!bShadowTest)
 
 void RenderNeatShadows (fix nEyeOffset, int nWindow, short nStartSeg)
 {
-	short				i;
-	CDynLight	*prl = lightManager.Lights (1);
+	short			i, n;
+	CDynLight*	prl;
 
 gameData.render.shadows.nLights = GatherShadowLightSources ();
-for (i = 0; i < lightManager.LightCount (0); i++, prl++) {
+n = lightManager.LightCount (1);
+for (i = 0; i < n; i++) {
+	prl = lightManager.RenderLights (i);
 	if (!prl->render.bShadow)
 		continue;
 	gameData.render.shadows.lights = prl;

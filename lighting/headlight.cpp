@@ -99,7 +99,7 @@ if (automap.m_bDisplay)
 
 for (int i = 0; i < MAX_PLAYERS; i++) {
 	if (lightIds [i] >= 0) {
-		pl = lightManager.Lights (0) + lightIds [i];
+		pl = lightManager.Lights () + lightIds [i];
 		pl->info.bSpot = 1;
 		pl->info.vDirf.Assign (pl->vDir);
 		if (bHWHeadlight) {
@@ -124,7 +124,7 @@ void CHeadlightManager::Prepare (void)
 nLights = 0;
 for (int i = 0; i < MAX_PLAYERS; i++)
 	if (lightIds [i] >= 0)
-		lights [nLights++] = lightManager.Lights (0) + lightIds [i];
+		lights [nLights++] = lightManager.Lights () + lightIds [i];
 }
 
 //------------------------------------------------------------------------------
@@ -143,7 +143,7 @@ if (gameStates.render.nLightingMethod) {
 			int nLight = lightManager.Add (NULL, &c, I2X (200), -1, -1, -1, -1, NULL);
 
 		if (0 <= nLight) {
-			CDynLight* pl = lightManager.Lights (0) + nLight;
+			CDynLight* pl = lightManager.Lights () + nLight;
 			pl->info.nPlayer = (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : 1;
 			pl->info.fRad = 0;
 			pl->info.bSpot = 1;
@@ -180,7 +180,7 @@ void CHeadlightManager::Update (void)
 
 for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 	if (lightIds [nPlayer] >= 0) {
-		pl = lightManager.Lights (0) + lightIds [nPlayer];
+		pl = lightManager.Lights () + lightIds [nPlayer];
 		objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
 		pl->info.vPos = OBJPOS (objP)->vPos;
 		pl->vDir = OBJPOS (objP)->mOrient.FVec ();

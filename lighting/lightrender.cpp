@@ -42,8 +42,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void CLightManager::Transform (int bStatic, int bVariable)
 {
 	int			i;
-	CDynLight*	pl = m_data.lights [0];
-	CDynLight*	prl = m_data.lights [1];
+	CDynLight*	pl = m_data.lights;
 
 m_data.nLights [1] = 0;
 m_headlights.Update ();
@@ -52,30 +51,28 @@ for (i = 0; i < m_data.nLights [0]; i++, pl++) {
 	if ((nDbgSeg >= 0) && (nDbgSeg == pl->info.nSegment) && ((nDbgSide < 0) || (nDbgSide == pl->info.nSide)))
 		nDbgSeg = nDbgSeg;
 #endif
-	*prl = *pl;
-	prl->render.vPosf [0].Assign (prl->info.vPos);
+	pl->render.vPosf [0].Assign (pl->info.vPos);
 	if (gameStates.ogl.bUseTransform)
-		prl->render.vPosf [1] = prl->render.vPosf [0];
+		pl->render.vPosf [1] = pl->render.vPosf [0];
 	else {
-		transformation.Transform (prl->render.vPosf [1], prl->render.vPosf [0], 0);
-		prl->render.vPosf [1][W] = 1;
+		transformation.Transform (pl->render.vPosf [1], pl->render.vPosf [0], 0);
+		pl->render.vPosf [1][W] = 1;
 		}
-	prl->render.vPosf [0][W] = 1;
-	prl->info.bState = pl->info.bState && (pl->info.color.red + pl->info.color.green + pl->info.color.blue > 0.0);
-	prl->render.bLightning = (pl->info.nObject < 0) && (pl->info.nSide < 0);
-	ResetUsed (prl, 0);
+	pl->render.vPosf [0][W] = 1;
+	pl->info.bState = pl->info.bState && (pl->info.color.red + pl->info.color.green + pl->info.color.blue > 0.0);
+	pl->render.bLightning = (pl->info.nObject < 0) && (pl->info.nSide < 0);
+	ResetUsed (pl, 0);
 	if (gameStates.app.bMultiThreaded)
-		ResetUsed (prl, 1);
-	prl->render.bShadow =
-	prl->render.bExclusive = 0;
-	if (prl->info.bState) {
+		ResetUsed (pl, 1);
+	pl->render.bShadow =
+	pl->render.bExclusive = 0;
+	if (pl->info.bState) {
 		if (!bStatic && (pl->info.nType == 1) && !pl->info.bVariable)
-			prl->info.bState = 0;
+			pl->info.bState = 0;
 		if (!bVariable && ((pl->info.nType > 1) || pl->info.bVariable))
-			prl->info.bState = 0;
+			pl->info.bState = 0;
 		}
-	m_data.nLights [1]++;
-	prl++;
+	m_data.renderLights [m_data.nLights [1]++] = pl;
 	}
 m_headlights.Prepare ();
 }
@@ -202,7 +199,7 @@ if (nVertex == nDbgVertex)
 for (h = 0, i = MAX_NEAREST_LIGHTS; i; i--, pnl++) {
 	if ((j = *pnl) < 0)
 		break;
-	h += m_data.lights [1][j].info.bVariable;
+	h += RenderLights (j)->info.bVariable;
 	}
 return h;
 }
@@ -233,7 +230,7 @@ if (nVertex == nDbgVertex)
 		if (j >= m_data.nLights [1])
 			break;
 #endif
-		prl = m_data.lights [1] + j;
+		prl = RenderLights (j);
 #if DBG
 		if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg))
 			nDbgSeg = nDbgSeg;
@@ -347,9 +344,9 @@ if (gameStates.render.nLightingMethod) {
 		if ((j = *pnl) < 0)
 			break;
 		//m_data.lights [j].info.nType = nType;
-		if (gameData.threads.vertColor.data.bNoShadow && m_data.lights [1][j].render.bShadow)
+		prl = RenderLights (j);
+		if (gameData.threads.vertColor.data.bNoShadow && prl->render.bShadow)
 			continue;
-		prl = m_data.lights [1] + j;
 		if (prl->info.bVariable) {
 			if (!prl->info.bOn)
 				continue;
@@ -383,7 +380,7 @@ if (gameStates.render.nLightingMethod) {
 								nLightSeg;
 	int						bSkipHeadlight = !gameStates.render.nState && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bHeadlight);
 	fix						xMaxLightRange = SEGMENTS [nSegment].AvgRad () + ((gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 : MAX_LIGHT_RANGE);
-	CDynLight*				prl = m_data.lights [1] + i;
+	CDynLight*				prl = RenderLights (i);
 	CFixVector				c;
 	CActiveDynLight*		activeLightsP = m_data.active [nThread];
 
@@ -470,15 +467,16 @@ if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 #endif
 if (gameStates.render.nLightingMethod) {
 	int						nLightSeg;
-	short						i = m_data.nLights [1];
+	short						i, n = m_data.nLights [1];
 	fix						xLightDist, xMaxLightRange = F2X (fLightRad) + ((gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 : MAX_LIGHT_RANGE);
-	CDynLight*				prl = m_data.lights [1];
+	CDynLight*				prl;
 	CFixVector				vLightDir;
 	CActiveDynLight*		activeLightsP = m_data.active [nThread];
 
 	ResetActive (nThread, 0);
 	ResetAllUsed (0, nThread);
-	for (; i; i--, prl++) {
+	for (i = 0; i < n; i++) {
+		prl = RenderLights (i);
 #if DBG
 		if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg))
 			prl = prl;
@@ -623,7 +621,7 @@ else {
 #if 0
 	if (lightManager.SetNearestToSegment (nSegment, 1)) {
 		short				nLights = m_data.nLights [1];
-		CDynLight*		prl = m_data.lights [1] + nLights;
+		CDynLight*		prl = RenderLights (nLights);
 		float				fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightfRange];
 		float				fLightDist, fAttenuation;
 		CFloatVector			vPosf;
@@ -684,7 +682,7 @@ if (gameStates.render.nLightingMethod) {
 	for (i = gameStates.render.nMaxLightsPerFace; i; i--, pnl++) {
 		if ((j = *pnl) < 0)
 			break;
-		prl = m_data.lights [1] + j;
+		prl = RenderLights (j);
 		if (prl->render.bUsed [nThread] == 3)
 			ResetUsed (prl, nThread);
 		}
@@ -708,7 +706,7 @@ void CLightManager::ResetNearestToVertex (int nVertex, int nThread)
 	for (i = MAX_NEAREST_LIGHTS; i; i--, pnl++) {
 		if ((j = *pnl) < 0)
 			break;
-		prl = m_data.lights [1] + j;
+		prl = RenderLights (j);
 		if (prl->render.bUsed [nThread] == 2)
 			ResetUsed (prl, nThread);
 		}
@@ -734,10 +732,10 @@ prl->render.bUsed [nThread] = 0;
 void CLightManager::ResetAllUsed (int bVariable, int nThread)
 {
 	int			i = m_data.nLights [1];
-	CDynLight*	prl = m_data.lights [1] + i;
+	CDynLight*	prl;
 
-for (; i; i--) {
-	--prl;
+while (i) {
+	prl = RenderLights (--i);
 	if (bVariable && (prl->info.nType < 2))
 		break;
 	ResetUsed (prl, nThread);

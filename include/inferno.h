@@ -1382,7 +1382,7 @@ class COglData {
 		GLenum			nDestBlend;
 		float				zNear;
 		float				zFar;
-		CFloatVector3			depthScale;
+		CFloatVector3	depthScale;
 		tScreenScale	screenScale;
 		CFBO				drawBuffer;
 		CFBO				glowBuffer;

@@ -136,7 +136,7 @@ else
 	INIT_PROGRESS_LOOP (i, j, gameData.segs.nSegments);
 for (segP = SEGMENTS + i; i < j; i++, segP++) {
 	center = segP->Center ();
-	pl = lightManager.Lights (0);
+	pl = lightManager.Lights ();
 	for (l = n = 0; l < lightManager.LightCount (0); l++, pl++) {
 		m = (pl->info.nSegment < 0) ? OBJECTS [pl->info.nObject].info.nSegment : pl->info.nSegment;
 		if (!SEGVIS (m, i))
@@ -197,7 +197,7 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 	if (nVertex == nDbgVertex)
 		nVertex = nVertex;
 #endif
-	pl = lightManager.Lights (0);
+	pl = lightManager.Lights ();
 	for (l = n = 0; l < lightManager.LightCount (0); l++, pl++) {
 #if DBG
 		if (pl->info.nSegment == nDbgSeg)

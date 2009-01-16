@@ -1421,10 +1421,10 @@ return 1;
 int G3DrawPolyModelShadow (CObject *objP, void *modelDataP, CAngleVector *animAngleP, int nModel)
 {
 #if SHADOWS
-	CFixVector		v, vLightDir;
-	short				*pnl;
-	int				h, i, j;
-	CModel		*po = gameData.models.pofData [gameStates.app.bD1Mission][1] + nModel;
+	CFixVector	v, vLightDir;
+	short*		pnl;
+	int			h, i, j;
+	CModel*		po = gameData.models.pofData [gameStates.app.bD1Mission][1] + nModel;
 
 Assert (objP->info.nId < MAX_ROBOT_TYPES);
 if (!gameStates.render.bShadowMaps) {
@@ -1438,7 +1438,7 @@ pnl = lightManager.NearestSegLights  () + objP->info.nSegment * MAX_NEAREST_LIGH
 gameData.render.shadows.nLight = 0;
 if (FAST_SHADOWS) {
 	for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {
-		gameData.render.shadows.lights = lightManager.Lights (1) + *pnl;
+		gameData.render.shadows.lights = lightManager.RenderLights (*pnl);
 		if (!gameData.render.shadows.lights->info.bState)
 			continue;
 		if (!CanSeePoint (objP, &objP->info.position.vPos, &gameData.render.shadows.lights->info.vPos, objP->info.nSegment))
@@ -1454,7 +1454,7 @@ if (FAST_SHADOWS) {
 			}
 		gameData.render.shadows.vLightDir [gameData.render.shadows.nLight++] = vLightDir;
 		if (gameStates.render.bShadowMaps)
-			RenderShadowMap (lightManager.Lights (0) + (gameData.render.shadows.lights - lightManager.Lights (1)));
+			RenderShadowMap (gameData.render.shadows.lights);
 		else {
 			gameStates.render.bRendering = 1;
 			transformation.Transform (vLightPos, gameData.render.shadows.lights->info.vPos, 0);
@@ -1479,7 +1479,7 @@ if (FAST_SHADOWS) {
 	}
 else {
 	h = objP->Index ();
-	j = (int) (gameData.render.shadows.lights - lightManager.Lights (1));
+	j = int (gameData.render.shadows.lights - lightManager.Lights ());
 	pnl = gameData.render.shadows.objLights + h * MAX_SHADOW_LIGHTS;
 	for (i = 0; i < gameOpts->render.shadows.nLights; i++, pnl++) {
 		if (*pnl < 0)
