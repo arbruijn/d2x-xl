@@ -1821,23 +1821,27 @@ typedef struct tGuidedMissileInfo {
 	int					nSignature;
 } tGuidedMissileInfo;
 
-typedef struct tObjLists {
-	tObjListRef				all;
-	tObjListRef				players;
-	tObjListRef				robots;
-	tObjListRef				powerups;
-	tObjListRef				weapons;
-	tObjListRef				effects;
-	tObjListRef				lights;
-	tObjListRef				actors;
-	tObjListRef				statics;
-} tObjLists;
+class CObjLists {
+public:
+		tObjListRef				all;
+		tObjListRef				players;
+		tObjListRef				robots;
+		tObjListRef				powerups;
+		tObjListRef				weapons;
+		tObjListRef				effects;
+		tObjListRef				lights;
+		tObjListRef				actors;
+		tObjListRef				statics;
+
+	CObjLists () { Init (); }
+	void Init (void) { memset (this, 0, sizeof (*this)); }
+	};
 
 class CObjectData {
 	public:
 		CArray<CObjTypeData>		types;
 		CArray<CObject>			objects;
-		tObjLists					lists;
+		CObjLists					lists;
 		CArray<short>				freeList;
 		CArray<short>				parentObjs;
 		CArray<tObjectRef>		childObjs;

@@ -757,7 +757,7 @@ gameData.render.ogl.nHeadlights = -1;
 gameData.render.nColoredFaces = 0;
 gameData.app.nFrameCount = 0;
 gameData.app.nMineRenderCount = 0;
-memset (&gameData.objs.lists, 0, sizeof (gameData.objs.lists));
+gameData.objs.lists.Init ();
 memset (gameData.app.semaphores, 0, sizeof (gameData.app.semaphores));
 transpItems.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
 transpItems.nMaxOffs = 0;

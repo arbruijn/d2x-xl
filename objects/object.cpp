@@ -398,7 +398,7 @@ gameData.objs.consoleP->info.nFlags = 0;
 
 //------------------------------------------------------------------------------
 //make object0 the CPlayerData, setting all relevant fields
-void InitPlayerObject ()
+void InitPlayerObject (void)
 {
 gameData.objs.consoleP->SetType (OBJ_PLAYER);
 gameData.objs.consoleP->info.nId = 0;					//no sub-types for CPlayerData
@@ -449,11 +449,13 @@ void InitObjects (void)
 {
 CollideInit ();
 ResetSegObjLists ();
+gameData.objs.lists.Init ();
 gameData.objs.consoleP =
 gameData.objs.viewerP = OBJECTS.Buffer ();
 InitPlayerObject ();
 gameData.objs.consoleP->LinkToSeg (0);	//put in the world in segment 0
-gameData.objs.nObjects = 1;						//just the CPlayerData
+gameData.objs.consoleP->Link ();
+gameData.objs.nObjects = 1;				//just the player
 gameData.objs.nLastObject [0] = 0;
 }
 
@@ -468,7 +470,7 @@ void SpecialResetObjects (void)
 
 gameData.objs.nObjects = LEVEL_OBJECTS;
 gameData.objs.nLastObject [0] = 0;
-memset (&gameData.objs.lists, 0, sizeof (gameData.objs.lists));
+gameData.objs.lists.Init ();
 Assert (OBJECTS [0].info.nType != OBJ_NONE);		//0 should be used
 for (objP = OBJECTS.Buffer () + LEVEL_OBJECTS, i = LEVEL_OBJECTS; i; ) {
 	objP--, i--;
@@ -2454,7 +2456,7 @@ UpdatePlayerOrient ();
 i = 0;
 for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 	nextObjP = objP->Links (0).next;
-	if ((objP->info.nType != OBJ_NONE) && !(objP->info.nFlags & OF_SHOULD_BE_DEAD) && !objP->Update ())
+	if ((objP->info.nType != OBJ_NONE) && (objP->info.nType != OBJ_GHOST) && !(objP->info.nFlags & OF_SHOULD_BE_DEAD) && !objP->Update ())
 		return 0;
 	i++;
 	}

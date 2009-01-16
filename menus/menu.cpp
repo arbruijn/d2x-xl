@@ -1864,7 +1864,7 @@ launchOption:
 			bCloseBox = 1;
 			}
 		if (bRedraw || !MODERN_STYLE)
-			GrUpdate (1);
+			GrUpdate (0);
 		bRedraw = 1;
 		bStart = 0;
 		if (!bDontRestore && paletteManager.EffectDisabled ()) {
@@ -2160,7 +2160,7 @@ SDL_EnableKeyRepeat(60, 30);
 while (!done) {
 	ocitem = nItem;
 	nPrevItem = nFirstItem;
-	GrUpdate (1);
+	GrUpdate (0);
 	nOldMouseState = nMouseState;
 	omouse2State = mouse2State;
 	nMouseState = MouseButtonState (0);
@@ -2450,7 +2450,7 @@ while (!done) {
 			GrRect (box_x, y - 1, box_x + box_w - 1, y + h + 1);
 			GrString (box_x + 5, y, reinterpret_cast<char*> (&filenames [i]) + (bPlayerMode && filenames [i][0] == '$'), NULL);
 			}
-		GrUpdate (1);
+		GrUpdate (0);
 		SDL_ShowCursor (1);
 		}
 	}
@@ -2468,7 +2468,7 @@ gameStates.input.keys.bRepeat = bKeyRepeat;
 
 if (bInitialized) {
 	backgroundManager.Remove ();
-	GrUpdate (1);
+	GrUpdate (0);
 	}
 
 SDL_EnableKeyRepeat(0, 0);
@@ -2533,7 +2533,7 @@ total_height = height + 2*border_size + nTitleHeight;
 CCanvas::Push ();
 backgroundManager.Setup (NULL, wx - border_size, wy - nTitleHeight - border_size, 
 								 width + border_size * 2, height + nTitleHeight + border_size * 2);
-GrUpdate (1);
+GrUpdate (0);
 CCanvas::Pop ();
 GrString (0x8000, wy - nTitleHeight, pszTitle, NULL);
 done = 0;
@@ -2769,7 +2769,7 @@ while (!done) {
 			
 			// If Win95 port, draw up/down arrows on left CSide of menu
 			SDL_ShowCursor (1);
-			GrUpdate (1);
+			GrUpdate (0);
 		} else if (nItem != ocitem) {
 			int w, h, aw, y;
 
@@ -2800,13 +2800,13 @@ while (!done) {
 				GrString (wx + 5, y, items [i], NULL);
 			}
 			SDL_ShowCursor (1);
-			GrUpdate (1);
+			GrUpdate (0);
 		}
 	}
 
 gameStates.input.keys.bRepeat = bKeyRepeat;
 backgroundManager.Remove ();
-GrUpdate (1);
+GrUpdate (0);
 SDL_EnableKeyRepeat(0, 0);
 return nItem;
 }
