@@ -50,7 +50,7 @@ COPYTIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL TIGHTS RESERVED.
 static int nDbgPoly = -1, nDbgItem = -1;
 #endif
 
-extern CTransparencyRenderer transparencyRenderer;
+CTransparencyRenderer transparencyRenderer;
 
 //------------------------------------------------------------------------------
 
