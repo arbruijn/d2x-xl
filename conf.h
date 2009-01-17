@@ -8,10 +8,10 @@
 #define D2XMAJOR 1
 
 /* d2x micro version */
-#define D2XMICRO 127
+#define D2XMICRO 0
 
 /* d2x minor version */
-#define D2XMINOR 13
+#define D2XMINOR 14
 
 /* Define if you want to build the editor */
 /* #undef EDITOR */
@@ -99,13 +99,13 @@
 #define PACKAGE_NAME "d2x-xl"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "d2x-xl 1.13.127"
+#define PACKAGE_STRING "d2x-xl 1.14.0"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "d2x-xl"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.13.127"
+#define PACKAGE_VERSION "1.14.0"
 
 /* Define for a "release" build */
 #define RELEASE 
@@ -180,9 +180,3 @@
 # endif
 #endif
         
-#ifdef _DEBUG
-#	define DBG 1
-#else
-#	define DBG 0
-#endif
-
