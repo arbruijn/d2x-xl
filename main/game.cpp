@@ -1725,12 +1725,8 @@ else { // Note the link to above!
 		}
 	if (!FusionBump ())
 		return 1;
-	if (gameData.laser.nGlobalFiringCount) {
-		//	Don't cap here, gets capped in CreateNewWeapon and is based on whether in multiplayer mode, MK, 3/27/95
-		// if (gameData.fusion.xCharge > I2X (2))
-		// 	gameData.fusion.xCharge = I2X (2);
+	if (gameData.laser.nGlobalFiringCount)
 		gameData.laser.nGlobalFiringCount -= LocalPlayerFireLaser ();	//LaserFireObject (LOCALPLAYER.nObject, gameData.weapons.nPrimary);
-		}
 	if (gameData.laser.nGlobalFiringCount < 0)
 		gameData.laser.nGlobalFiringCount = 0;
 	}
