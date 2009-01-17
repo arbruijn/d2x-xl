@@ -2039,7 +2039,7 @@ gameStates.ogl.bScaleLight = EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.
 gameStates.ogl.bScaleLight = 0;
 #endif
 gameStates.render.bUseCameras = USE_CAMERAS;
-transpItems.nItems = 0;
+transparencyRenderer.Reset ();
 PROF_END(ptAux);
 return !gameStates.render.cameras.bActive && (gameData.objs.viewerP->info.nType != OBJ_ROBOT);
 }
@@ -2199,8 +2199,8 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 		if ((gameStates.render.bPerPixelLighting == 2) && !gameData.app.nFrameCount)
 			meshBuilder.BuildVBOs ();
 
-		//PrintLog  ("InitTranspItemBuffer\n");
-		InitTranspItemBuffer (gameData.render.zMin, gameData.render.zMax);
+		//PrintLog  ("transparencyRenderer.InitBuffer\n");
+		transparencyRenderer.InitBuffer (gameData.render.zMin, gameData.render.zMax);
 		gameStates.render.bHeadlights = gameOpts->ogl.bHeadlight && lightManager.Headlights ().nLights && 
 												  !(gameStates.render.bFullBright || automap.m_bDisplay);
 		}

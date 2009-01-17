@@ -159,6 +159,12 @@ class CTransparencyRenderer {
 		void FreeBuffers (void);
 		void ResetBuffers (void);
 		void InitBuffer (int zMin, int zMax);
+		inline void Init (void) {
+			m_data.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
+			m_data.nMaxOffs = 0;
+			}
+		inline void Reset (void) { m_data.nItems = 0; }
+		inline int ItemCount (void) { return m_data.nItems; }
 		int Add (tTranspItemType nType, void *itemData, int itemSize, int nDepth, int nIndex);
 		int AddMT (tTranspItemType nType, void *itemData, int itemSize, int nDepth, int nIndex, int nThread);
 		int AddFace (tFace *faceP);

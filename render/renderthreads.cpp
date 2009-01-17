@@ -176,11 +176,11 @@ do {
 		G3_SLEEP (0);
 	for (i = 0; i < 2; i++) {
 		if (tiTranspItems.ti [i].bExec) {
-			AddTranspItem ((tTranspItemType) tiTranspItems.itemData [i].nType, 
-								&tiTranspItems.itemData [i].item, 
-								tiTranspItems.itemData [i].nSize, 
-								tiTranspItems.itemData [i].nDepth, 
-								tiTranspItems.itemData [i].nIndex);
+			transparencyRenderer.Add ((tTranspItemType) tiTranspItems.itemData [i].nType, 
+											  &tiTranspItems.itemData [i].item, 
+											  tiTranspItems.itemData [i].nSize, 
+											  tiTranspItems.itemData [i].nDepth, 
+											  tiTranspItems.itemData [i].nIndex);
 			tiTranspItems.ti [i].bExec = 0;
 			}
 		}
