@@ -70,7 +70,7 @@ class CTriMeshBuilder {
 class CQuadMeshBuilder {
 	private:
 		tFace				*m_faceP;
-		tFaceTriangle		*m_triP;
+		tFaceTriangle	*m_triP;
 		CFloatVector3	*m_vertexP;
 		CFloatVector3	*m_normalP;
 		tTexCoord2f		*m_texCoordP;
