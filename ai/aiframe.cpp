@@ -23,6 +23,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "gameseg.h"
 #include "multibot.h"
+#include "headlight.h"
 
 #ifdef EDITOR
 #include "editor/editor.h"

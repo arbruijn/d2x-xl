@@ -14,6 +14,7 @@
 #include "objeffects.h"
 #include "fireball.h"
 #include "dropobject.h"
+#include "headlight.h"
 
 #define	BASE_NET_DROP_DEPTH	8
 

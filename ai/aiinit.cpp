@@ -26,6 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network.h"
 #include "multibot.h"
 #include "escort.h"
+#include "headlight.h"
 
 #ifdef EDITOR
 #include "editor/editor.h"

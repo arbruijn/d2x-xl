@@ -38,6 +38,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "timer.h"
 #include "newdemo.h"
 #include "text.h"
+#include "headlight.h"
 #include "highscores.h"
 #include "multibot.h"
 #include "gameseg.h"

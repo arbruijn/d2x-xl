@@ -29,6 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "playsave.h"
 #include "network.h"
 #include "gameseg.h"
+#include "headlight.h"
 
 #ifdef EDITOR
 #include "editor/editor.h"
