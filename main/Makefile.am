@@ -9,7 +9,7 @@ noinst_LIBRARIES = libmain.a
 INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/input/include -I $(top_srcdir)/network/linux/include -I $(top_srcdir)/audio/linux/include -I /usr/local/include/SDL
 
 libmain_a_SOURCES = ${EDITOR_SRCS} ${NETWORK_SRCS} \
-	briefings.cpp cheats.cpp cmd.cpp controls.cpp credits.cpp dropobject.cpp effects.cpp endlevel.cpp flightpath.cpp fuelcen.cpp \
+	briefings.cpp cheats.cpp cmd.cpp config.cpp controls.cpp credits.cpp dropobject.cpp effects.cpp endlevel.cpp flightpath.cpp fuelcen.cpp \
 	game.cpp gameargs.cpp gamecntl.cpp gamedata.cpp gamefolders.cpp gameoptions.cpp gameseg.cpp gamestates.cpp highscores.cpp \
 	inferno.cpp kconfig.cpp mglobal.cpp movie.cpp newdemo.cpp scores.cpp segment.cpp side.cpp skybox.cpp slew.cpp switch.cpp terrain.cpp \
 	texmerge.cpp text.cpp textdata.cpp trackobject.cpp vclip.cpp wall.cpp 
