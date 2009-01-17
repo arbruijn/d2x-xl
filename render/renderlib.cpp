@@ -945,7 +945,7 @@ for (i = 0, j = 1; nRadius; nRadius--) {
 		segP = SEGMENTS + nSegment;
 		for (nChild = 0; nChild < 6; nChild++) {
 			nChildSeg = segP->m_children [nChild];
-			if ((nChildSeg >= 0) && (segP->IsDoorWay (nChild, NULL) == WID_RENDPAST_FLAG))
+			if ((nChildSeg >= 0) && (segP->IsDoorWay (nChild, NULL) & WID_RENDPAST_FLAG))
 				gameData.render.mine.nSegRenderList [j++] = nChildSeg;
 			}
 		}

@@ -1114,9 +1114,10 @@ else
 		int			nParts = m_nParts, h, i, j,
 						nFirstPart = m_nFirstPart,
 						nPartLimit = m_nPartLimit;
+		int			bVisible = MayBeVisible ();
 
 	for (h = 0, i = nParts, j = nFirstPart; i; i--, j = (j + 1) % nPartLimit)
-		if (m_particles [j].IsVisible () && TIAddParticle (m_particles + j, brightness, nThread))
+		if ((bVisible || m_particles [j].IsVisible ()) && TIAddParticle (m_particles + j, brightness, nThread))
 			h++;
 	return h;
 	}
