@@ -165,8 +165,8 @@ m_info.nId = nId;
 m_info.bShadowMap = bShadowMap;
 m_info.buffer.SetWidth (Pow2ize (screen.Width () / (2 - gameOpts->render.cameras.bHires)));
 m_info.buffer.SetHeight (Pow2ize (screen.Height () / (2 - gameOpts->render.cameras.bHires)));
-m_info.buffer.SetRowSize (max (CCanvas::Current ()->Width (), m_info.buffer.Width ()));
 m_info.buffer.SetBPP (4);
+//m_info.buffer.SetRowSize (max (CCanvas::Current ()->Width (), m_info.buffer.Width ()));
 #if RENDER2TEXTURE
 if (!CreateBuffer ()) 
 #endif
