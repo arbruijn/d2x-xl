@@ -149,11 +149,12 @@ memset (&m_info, 0, sizeof (m_info));
 
 //------------------------------------------------------------------------------
 
+int Pow2ize (int x);//from ogl.c
+
 int CCamera::Create (short nId, short srcSeg, short srcSide, short tgtSeg, short tgtSide, 
 							CObject *objP, int bShadowMap, int bTeleport)
 {
 	CAngleVector	a;
-	int			h, i;
 #if 0
 	short*		corners;
 	CFixVector	*pv;
@@ -162,14 +163,8 @@ int CCamera::Create (short nId, short srcSeg, short srcSide, short tgtSeg, short
 Init ();
 m_info.nId = nId;
 m_info.bShadowMap = bShadowMap;
-h = CCanvas::Current ()->Width () / (2 - gameOpts->render.cameras.bHires);
-for (i = 1; i < h; i <<= 1)
-	;
-m_info.buffer.SetWidth (i);
-h = CCanvas::Current ()->Height () / (2 - gameOpts->render.cameras.bHires);
-for (i = 1; i < h; i <<= 1)
-	;
-m_info.buffer.SetHeight (i);
+m_info.buffer.SetWidth (Pow2ize (screen.Width () / (2 - gameOpts->render.cameras.bHires)));
+m_info.buffer.SetHeight (Pow2ize (screen.Height () / (2 - gameOpts->render.cameras.bHires)));
 m_info.buffer.SetRowSize (max (CCanvas::Current ()->Width (), m_info.buffer.Width ()));
 m_info.buffer.SetBPP (4);
 #if RENDER2TEXTURE
@@ -611,6 +606,8 @@ if ((t0 < 0) || (t - t0 >= 1000 / 90))
 	}
 }
 
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 CCameraManager::~CCameraManager ()
