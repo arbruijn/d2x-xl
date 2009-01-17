@@ -669,5 +669,14 @@ void CMenuItem::RestoreText (void)
 SetText (m_savedText);
 }
 
+//------------------------------------------------------------------------------ 
+
+char* CMenuItem::GetInput (void)
+{
+if (m_pszText)
+	strcpy (m_pszText, m_text);
+return m_pszText;
+}
+
 //------------------------------------------------------------------------------
 //eof

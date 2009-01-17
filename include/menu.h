@@ -116,6 +116,7 @@ class CMenuItem {
 		ubyte			m_bCentered;
 		char			m_text [MENU_MAX_TEXTLEN + 1];
 		char			m_savedText [MENU_MAX_TEXTLEN + 1];
+		char*			m_pszText;
 		CBitmap*		m_bmText [2];
 		const char*	m_szHelp;
 
@@ -211,13 +212,14 @@ class CMenu : public CStack<CMenuItem> {
 		int AddMenu (const char* szText, int nKey = 0, const char* szHelp = NULL);
 		int AddText (const char* szText, int nKey = 0);
 		int AddSlider (const char* szText, int nValue, int nMin, int nMax, int nKey = 0, const char* szHelp = NULL);
-		int AddInput (const char* szText, int nLen, const char* szHelp = NULL);
-		int AddInput (const char* szText, char* szValue, int nLen, const char* szHelp = NULL);
-		int AddInput (const char* szText, char* szValue, int nValue, int nLen, const char* szHelp = NULL);
-		int AddInputBox (const char* szText, int nLen, int nKey = 0, const char* szHelp = NULL);
+		int AddInput (char* szText, int nLen, const char* szHelp = NULL);
+		int AddInput (char* szText, char* szValue, int nLen, const char* szHelp = NULL);
+		int AddInput (char* szText, char* szValue, int nValue, int nLen, const char* szHelp = NULL);
+		int AddInputBox (char* szText, int nLen, int nKey = 0, const char* szHelp = NULL);
 		int AddNumber (const char* szText, int nValue, int nMin, int nMax);
 		int AddGauge (const char* szText, int nValue, int nMax);
 		inline CMenuItem& Item (int i = -1) { return (i < 0) ? m_data.buffer [ToS () - 1] : m_data.buffer [i]; }
+		char* GetInput (void);
 
 		int Menu (const char *pszTitle, const char *pszSubTitle, pMenuCallback callback = NULL, 
 					 int *nCurItemP = NULL, char *filename = NULL, int width = -1, int height = -1, int bTinyMode = 0);

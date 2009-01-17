@@ -1313,6 +1313,10 @@ paletteManager.SetEffect (0, 0, 0);
 SDL_EnableKeyRepeat (0, 0);
 if (gameStates.app.bGameRunning && IsMultiGame)
 	MultiSendMsgQuit();
+
+for (i = 0; i < int (ToS ()); i++)
+	Item (i)->GetInput ();
+
 return choice;
 }
 
@@ -1324,6 +1328,7 @@ int CMenu::AddCheck (const char* szText, int nValue, int nKey, const char* szHel
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_CHECK;
+item.m_pszText = NULL;
 strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
 item.m_value = NMBOOL (nValue);
 item.m_nKey = nKey;
@@ -1340,6 +1345,7 @@ CMenuItem item;
 if (!ToS () || (Top ()->m_nType != NM_TYPE_RADIO))
 	NewGroup ();
 item.m_nType = NM_TYPE_RADIO;
+item.m_pszText = NULL;
 strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
 item.m_value = nValue;
 item.m_nKey = nKey;
@@ -1355,6 +1361,7 @@ int CMenu::AddMenu (const char* szText, int nKey, const char* szHelp)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_MENU;
+item.m_pszText = NULL;
 strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
 item.m_nKey = nKey;
 item.m_szHelp = szHelp;
@@ -1368,6 +1375,7 @@ int CMenu::AddText (const char* szText, int nKey)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_TEXT;
+item.m_pszText = NULL;
 strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
 item.m_nKey = nKey;
 Push (item);
@@ -1380,6 +1388,7 @@ int CMenu::AddSlider (const char* szText, int nValue, int nMin, int nMax, int nK
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_SLIDER;
+item.m_pszText = NULL;
 strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
 item.m_value = NMCLAMP (nValue, nMin, nMax);
 item.m_minValue = nMin;
@@ -1392,10 +1401,11 @@ return ToS () - 1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddInput (const char* szText, int nLen, const char* szHelp)
+int CMenu::AddInput (char* szText, int nLen, const char* szHelp)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_INPUT;
+item.m_pszText = szText;
 strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
 item.m_nTextLen = nLen;
 item.m_szHelp = szHelp;
@@ -1405,7 +1415,7 @@ return ToS () - 1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddInput (const char* szText, char* szValue, int nLen, const char* szHelp)
+int CMenu::AddInput (char* szText, char* szValue, int nLen, const char* szHelp)
 {
 AddText (szText);
 return AddInput (szValue, nLen, szHelp);
@@ -1413,7 +1423,7 @@ return AddInput (szValue, nLen, szHelp);
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddInput (const char* szText, char* szValue, int nValue, int nLen, const char* szHelp)
+int CMenu::AddInput (char* szText, char* szValue, int nValue, int nLen, const char* szHelp)
 {
 sprintf (szValue, "%d", nValue);
 return AddInput (szText, szValue, nLen, szHelp);
@@ -1421,10 +1431,11 @@ return AddInput (szText, szValue, nLen, szHelp);
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddInputBox (const char* szText, int nLen, int nKey, const char* szHelp)
+int CMenu::AddInputBox (char* szText, int nLen, int nKey, const char* szHelp)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_INPUT_MENU;
+item.m_pszText = szText;
 strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
 item.m_nTextLen = nLen;
 item.m_nKey = nKey;
@@ -1435,10 +1446,11 @@ return ToS () - 1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddNumber (const char* szText, int nValue, int nMin, int nMax)
+int CMenu::AddNumber (char* szText, int nValue, int nMin, int nMax)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_NUMBER;
+item.m_pszText = szText;
 strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
 item.m_value = NMCLAMP (nValue, nMin, nMax);
 item.m_minValue = nMin;
@@ -1453,6 +1465,7 @@ int CMenu::AddGauge (const char* szText, int nValue, int nMax)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_GAUGE;
+item.m_pszText = NULL;
 strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
 item.m_nTextLen = *szText ? (int) strlen (szText) : 20;
 item.m_value = NMCLAMP (nValue, 0, nMax);
