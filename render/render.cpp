@@ -1260,10 +1260,10 @@ if (bLightnings) {
 	//PrintLog ("RenderLightnings\n");
 	lightningManager.Render ();
 	}
-//PrintLog ("RenderTranspItems\n");
+//PrintLog ("transparencyRenderer.Render\n");
 if (bLightnings)
 	SEM_LEAVE (SEM_LIGHTNINGS)
-RenderTranspItems ();
+transparencyRenderer.Render ();
 #if 1
 if (bParticles)
 	SEM_LEAVE (SEM_SMOKE)

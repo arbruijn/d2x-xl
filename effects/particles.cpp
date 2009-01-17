@@ -1117,7 +1117,7 @@ else
 		int			bVisible = MayBeVisible ();
 
 	for (h = 0, i = nParts, j = nFirstPart; i; i--, j = (j + 1) % nPartLimit)
-		if ((bVisible || m_particles [j].IsVisible ()) && TIAddParticle (m_particles + j, brightness, nThread))
+		if ((bVisible || m_particles [j].IsVisible ()) && transparencyRenderer.AddParticle (m_particles + j, brightness, nThread))
 			h++;
 	return h;
 	}

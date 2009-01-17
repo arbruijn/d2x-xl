@@ -1124,7 +1124,7 @@ if (bDepthSort > 0) {
 		return;
 	if (!MayBeVisible ())
 		return;
-	TIAddLightning (this, nDepth);
+	transparencyRenderer.AddLightning (this, nDepth);
 	if (gameOpts->render.lightnings.nQuality)
 		for (i = 0; i < m_nNodes; i++)
 			if (m_nodes [i].GetChild ())

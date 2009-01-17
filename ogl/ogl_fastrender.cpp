@@ -450,7 +450,7 @@ else {
 	if (bTransparent && (gameStates.render.nType < 4) && !bMonitor) {
 		faceP->nRenderType = gameStates.render.history.nType;
 		faceP->bColored = bColored;
-		TIAddFace (faceP);
+		transparencyRenderer.AddFace (faceP);
 		return 0;
 		}
 	}
@@ -593,7 +593,7 @@ else {
 	if (bTransparent && (gameStates.render.nType < 4) && !bMonitor) {
 		faceP->nRenderType = gameStates.render.history.nType;
 		faceP->bColored = bColored;
-		TIAddFace (faceP);
+		transparencyRenderer.AddFace (faceP);
 		return 0;
 		}
 	}
@@ -717,7 +717,7 @@ else {
 	if (bTransparent && (gameStates.render.nType < 4) && !bMonitor) {
 		faceP->nRenderType = gameStates.render.history.nType;
 		faceP->bColored = bColored;
-		TIAddFace (faceP);
+		transparencyRenderer.AddFace (faceP);
 		return 0;
 		}
 	}

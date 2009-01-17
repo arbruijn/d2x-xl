@@ -400,10 +400,10 @@ if ((gameOpts->render.bDepthSort > 0) && (fAlpha < 1)) {
 		color.blue = 1;
 	color.alpha = fAlpha;
 	if (bmP->Width () > bmP->Height ())
-		TIAddSprite (bmP, objP->info.position.vPos, &color, xSize, FixMulDiv (xSize, bmP->Height (), bmP->Width ()), 
+		transparencyRenderer.AddSprite (bmP, objP->info.position.vPos, &color, xSize, FixMulDiv (xSize, bmP->Height (), bmP->Width ()), 
 						 iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
 	else
-		TIAddSprite (bmP, objP->info.position.vPos, &color, FixMulDiv (xSize, bmP->Width (), bmP->Height ()), xSize, 
+		transparencyRenderer.AddSprite (bmP, objP->info.position.vPos, &color, FixMulDiv (xSize, bmP->Width (), bmP->Height ()), xSize, 
 						 iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
 	}
 else {
@@ -682,7 +682,7 @@ if (gameStates.render.bBuildModels)
 else {
 	xLight = CalcObjectLight (objP, xEngineGlow);
 	if (bCloaked && bDepthSort && (gameStates.render.nShadowPass != 2)) {
-		TIAddObject (objP);
+		transparencyRenderer.AddObject (objP);
 		return 1;
 		}
 	if (DrawHiresObject (objP, xLight, xEngineGlow))

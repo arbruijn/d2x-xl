@@ -997,7 +997,7 @@ v = *vCorona;
 CFloatVector::Normalize (v);
 dotCorona = CFloatVector::Dot (vPosf, v);
 if (gameOpts->render.bDepthSort > 0)
-	TIAddLightTrail (bmP, vCorona, tcCorona, (dotTrail < dotCorona) ? vTrail : NULL, tcTrail, colorP);
+	transparencyRenderer.AddLightTrail (bmP, vCorona, tcCorona, (dotTrail < dotCorona) ? vTrail : NULL, tcTrail, colorP);
 else {
 	glDisable (GL_CULL_FACE);
 	glColor3f (c, c, c);
@@ -1390,7 +1390,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 	color.blue *= color.blue;
 #endif
 	if (bDepthSort)
-		return TIAddSprite (bmpCorona, vPos, &color, FixMulDiv (xSize, bmpCorona->Width (), bmpCorona->Height ()), xSize, 0, 1, 3);
+		return transparencyRenderer.AddSprite (bmpCorona, vPos, &color, FixMulDiv (xSize, bmpCorona->Width (), bmpCorona->Height ()), xSize, 0, 1, 3);
 	bStencil = StencilOff ();
 	glDepthMask (0);
 	glBlendFunc (GL_ONE, GL_ONE);
@@ -1733,7 +1733,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 		vTrailVerts [3] = vTrailVerts [0] - vNormf;
 		vTrailVerts [3] += vOffsf;
 		if (bDepthSort) {
-			nTrailItem = TIAddPoly (NULL, NULL, bmP, vTrailVerts, 4, tTexCoordTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP, bAdditive, -1);
+			nTrailItem = transparencyRenderer.AddPoly (NULL, NULL, bmP, vTrailVerts, 4, tTexCoordTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP, bAdditive, -1);
 			}
 		else {
 			glEnable (GL_BLEND);

@@ -793,7 +793,7 @@ if (gameStates.render.bExtExplPlaying)
 	DrawFireball (&externalExplosion);
 gameStates.render.nLighting = 0;
 RenderObject (gameData.objs.consoleP, 0, 0);
-RenderTranspItems ();
+transparencyRenderer.Render ();
 gameStates.render.nLighting = 1;
 }
 
@@ -870,7 +870,7 @@ if (gameStates.app.bEndLevelSequence == EL_LOOKBACK) {
 else
 	G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, 1);
 RenderMine (nStartSeg, xEyeOffset, nWindowNum);
-RenderTranspItems ();
+transparencyRenderer.Render ();
 }
 
 //-----------------------------------------------------------------------------

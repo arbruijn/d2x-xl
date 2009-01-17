@@ -102,7 +102,7 @@ if (m_tRender) {
 	if (m_nFrame > 31)
 		m_tRender = 0;
 	else
-		TIAddSpark (m_vPos, (char) m_nType, m_xSize, (char) m_nFrame);
+		transparencyRenderer.AddSpark (m_vPos, (char) m_nType, m_xSize, (char) m_nFrame);
 	}
 }
 

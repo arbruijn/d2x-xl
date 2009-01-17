@@ -207,6 +207,8 @@ class CTransparencyRenderer {
 		int RenderItem (struct tTranspItem *pl);
 	};
 
+extern CTransparencyRenderer transparencyRenderer;
+
 //------------------------------------------------------------------------------
 
 #endif /* _TRANSPRENDER_H */

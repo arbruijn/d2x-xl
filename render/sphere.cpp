@@ -694,7 +694,7 @@ if (gameData.render.shield.nFaces > 0)
 #endif
  {
 	if ((gameOpts->render.bDepthSort > 0) || (RENDERPATH && !gameOpts->render.bDepthSort))
-		TIAddSphere (riSphereShield, red, green, blue, alpha, objP);
+		transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, objP);
 	else {
 		fix nSize = gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].Rad ();
 		float	fScale, r = X2F (nSize) /** 1.05f*/;
@@ -730,7 +730,7 @@ if (gameData.render.monsterball.nFaces > 0)
 #endif
  {
 	if ((gameOpts->render.bDepthSort > 0) || (RENDERPATH && !gameOpts->render.bDepthSort))
-		TIAddSphere (riMonsterball, red, green, blue, alpha, objP);
+		transparencyRenderer.AddSphere (riMonsterball, red, green, blue, alpha, objP);
 	else {
 		float r = X2F (objP->info.xSize);
 		gameStates.ogl.bUseTransform = 1;
