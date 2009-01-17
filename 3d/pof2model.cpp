@@ -113,7 +113,6 @@ CFace* CModel::AddPOFFace (CSubModel* psm, CFace* pmf, CFixVector* pn, ubyte* p,
 	CVertex*				pmv;
 	short*				pfv;
 	tUVL*					uvl;
-	CBitmap*				bmP;
 	tRgbaColorf			baseColor;
 	CFloatVector3		n, * pvn;
 	short					i, j;
@@ -126,9 +125,17 @@ Assert (pmf - m_faces < m_nFaces);
 if (modelBitmaps && *modelBitmaps) {
 	bTextured = 1;
 	pmf->m_nBitmap = WORDVAL (p+28);
-	bmP = modelBitmaps [pmf->m_nBitmap];
-	if (objColorP)
-		paletteManager.Game ()->ToRgbaf (bmP->AvgColorIndex (), *objColorP);
+	CBitmap* bmP = modelBitmaps [pmf->m_nBitmap];
+	if (objColorP) {
+		if (bmP->Override (-1))
+			bmP->Override (-1)->GetAvgColor (objColorP);
+		else if (bmP->Buffer ()) {	//don't set color if bitmap not loaded
+			if (bmP->Palette ())
+				bmP->Palette ()->ToRgbaf (bmP->AvgColorIndex (), *objColorP);
+			else
+				paletteManager.Game ()->ToRgbaf (bmP->AvgColorIndex (), *objColorP);
+			}
+		}
 	baseColor.red = baseColor.green = baseColor.blue = baseColor.alpha = 1;
 	i = (int) (bmP - gameData.pig.tex.bitmaps [0]);
 	pmf->m_bThruster = (i == 24) || ((i >= 1741) && (i <= 1745));

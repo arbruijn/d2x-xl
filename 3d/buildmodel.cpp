@@ -898,11 +898,11 @@ if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
 pm->Init ();
-return bHires ?
-			GetASEModel (nModel) ?
-				pm->BuildFromASE (objP, nModel) :
-				pm->BuildFromOOF (objP, nModel) :
-			pm->BuildFromPOF (objP, nModel, pp, modelBitmaps, pObjColor);
+return bHires 
+		 ? GetASEModel (nModel) 
+			? pm->BuildFromASE (objP, nModel) 
+			: pm->BuildFromOOF (objP, nModel) 
+		 : pm->BuildFromPOF (objP, nModel, pp, modelBitmaps, pObjColor);
 }
 
 //------------------------------------------------------------------------------

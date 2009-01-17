@@ -658,6 +658,8 @@ if (altTextures) {
 	for (i = 0; i < nTextures; i++) {
 		gameData.models.textureIndex [i] = altTextures [i];
 		gameData.models.textures [i] = gameData.pig.tex.bitmaps [gameStates.app.bD1Model] + altTextures [i].index;
+		if (gameStates.render.bBuildModels)
+			LoadBitmap (altTextures [i].index, gameStates.app.bD1Model);
 #ifdef _3DFX
       gameData.models.textures [i]->nId = gameData.models.textureIndex [i].index;
 #endif
@@ -667,6 +669,8 @@ else {
 	for (i = 0, j = m_info.nFirstTexture; i < nTextures; i++, j++) {
 		gameData.models.textureIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [j]];
 		gameData.models.textures [i] = gameData.pig.tex.bitmaps [gameStates.app.bD1Model] + gameData.models.textureIndex [i].index;
+		if (gameStates.render.bBuildModels)
+			LoadBitmap (gameData.models.textureIndex [i].index, gameStates.app.bD1Model);
 #ifdef _3DFX
       gameData.models.textures [i]->nId = gameData.models.textureIndex [i].index;
 #endif

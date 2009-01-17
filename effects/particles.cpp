@@ -396,7 +396,17 @@ return 1;
 
 inline bool CParticle::IsVisible (void)
 {
+#if 0
 return gameData.render.mine.bVisible [m_nSegment] == gameData.render.mine.nVisible;
+#else
+if (gameData.render.mine.bVisible [m_nSegment] == gameData.render.mine.nVisible)
+	return true;
+short* childP = SEGMENTS [m_nSegment].m_children;
+for (int i = 6; i; i--, childP++)
+	if ((*childP >= 0) && (gameData.render.mine.bVisible [*childP] == gameData.render.mine.nVisible))
+		return true;
+#endif
+return false;
 }
 
 //------------------------------------------------------------------------------
@@ -840,159 +850,9 @@ if (gameOpts->render.bDepthSort > 0)
 return 1;
 }
 
-//------------------------------------------------------------------------------
-
-int CParticleManager::InitBuffer (int bLightmaps)
-{
-if (gameStates.render.bVertexArrays) {
-	G3DisableClientStates (1, 1, 1, GL_TEXTURE2);
-	G3DisableClientStates (1, 1, 1, GL_TEXTURE1);
-	if (bLightmaps) {
-		OGL_BINDTEX (0);
-		glDisable (GL_TEXTURE_2D);
-		G3DisableClientStates (1, 1, 1, GL_TEXTURE3);
-		}
-	G3EnableClientStates (1, 1, 0, GL_TEXTURE0/* + bLightmaps*/);
-	}
-if (gameStates.render.bVertexArrays) {
-	glTexCoordPointer (2, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].texCoord);
-	glColorPointer (4, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].color);
-	glVertexPointer (3, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].vertex);
-	}
-return gameStates.render.bVertexArrays;
-}
-
-//------------------------------------------------------------------------------
-
-void CParticleManager::FlushBuffer (float brightness)
-{
-if (bufferBrightness < 0)
-	bufferBrightness = brightness;
-if (iBuffer) {
-	tRgbaColorf	color = {bufferBrightness, bufferBrightness, bufferBrightness, 1};
-	int bLightmaps = lightmapManager.HaveLightmaps ();
-	bufferBrightness = brightness;
-	glEnable (GL_BLEND);
-	//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDepthFunc (GL_LEQUAL);
-	glDepthMask (0);
-	if (gameStates.ogl.bShadersOk) {
-		if (InitBuffer (bLightmaps)) { //gameStates.render.bVertexArrays) {
-#if 1
-			CBitmap *bmP = bmpParticle [0][particleManager.LastType ()];
-			if (!bmP)
-				return;
-			glActiveTexture (GL_TEXTURE0);
-			glClientActiveTexture (GL_TEXTURE0);
-			glEnable (GL_TEXTURE_2D);
-			if (bmP->CurFrame ())
-				bmP = bmP->CurFrame ();
-			if (bmP->Bind (0, 1))
-				return;
-#endif
-			if (lightManager.Headlights ().nLights && !(automap.m_bDisplay || particleManager.LastType ()))
-				lightManager.Headlights ().SetupShader (1, 0, &color);
-			else if ((gameOpts->render.effects.bSoftParticles & 4) && (particleManager.LastType () <= BUBBLE_PARTICLES))
-				LoadGlareShader (10);
-			else if (gameStates.render.history.nShader >= 0) {
-				glUseProgramObject (0);
-				gameStates.render.history.nShader = -1;
-				}
-#if 0
-			else if (!bLightmaps)
-				G3SetupShader (NULL, 0, 0, 1, 1, &color);
-#endif
-			}
-		glNormal3f (0, 0, 0);
-		glDrawArrays (GL_QUADS, 0, iBuffer);
-		}
-	else {
-		tParticleVertex *pb;
-		glEnd ();
-		glNormal3f (0, 0, 0);
-		glBegin (GL_QUADS);
-		for (pb = particleBuffer; iBuffer; iBuffer--, pb++) {
-			glTexCoord2fv (reinterpret_cast<GLfloat*> (&pb->texCoord));
-			glColor4fv (reinterpret_cast<GLfloat*> (&pb->color));
-			glVertex3fv (reinterpret_cast<GLfloat*> (&pb->vertex));
-			}
-		glEnd ();
-		}
-	iBuffer = 0;
-	glEnable (GL_DEPTH_TEST);
-	if ((gameStates.ogl.bShadersOk && !particleManager.LastType ()) && (gameStates.render.history.nShader != 999)) {
-		glUseProgramObject (0);
-		gameStates.render.history.nShader = -1;
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-
-int CParticleManager::CloseBuffer (void)
-{
-if (!gameStates.render.bVertexArrays)
-	return 0;
-FlushBuffer (-1);
-G3DisableClientStates (1, 1, 0, GL_TEXTURE0 + lightmapManager.HaveLightmaps ());
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int CParticleManager::BeginRender (int nType, float nScale)
-{
-	CBitmap	*bmP;
-	int			bLightmaps = lightmapManager.HaveLightmaps ();
-	static time_t	t0 = 0;
-
-if (gameOpts->render.bDepthSort <= 0) {
-	nType = (nType % PARTICLE_TYPES);
-	if ((nType >= 0) && !gameOpts->render.particles.bSort)
-		particleImageManager.Animate (nType);
-	bmP = bmpParticle [0][nType];
-	particleManager.SetStencil (StencilOff ());
-	InitBuffer (bLightmaps);
-	glActiveTexture (GL_TEXTURE0);
-	glClientActiveTexture (GL_TEXTURE0);
-	glDisable (GL_CULL_FACE);
-	glEnable (GL_BLEND);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable (GL_TEXTURE_2D);
-	if ((nType >= 0) && bmP->Bind (0, 1))
-		return 0;
-	glDepthFunc (GL_LESS);
-	glDepthMask (0);
-	iBuffer = 0;
-	if (!gameStates.render.bVertexArrays)
-		glBegin (GL_QUADS);
-	}
-particleManager.SetLastType (-1);
-if (gameStates.app.nSDLTicks - t0 < 33)
-	particleManager.m_bAnimate = 0;
-else {
-	t0 = gameStates.app.nSDLTicks;
-	particleManager.m_bAnimate = 1;
-	}
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int CParticleManager::EndRender (void)
-{
-if (gameOpts->render.bDepthSort <= 0) {
-	if (!CloseBuffer ())
-		glEnd ();
-	OGL_BINDTEX (0);
-	glDisable (GL_TEXTURE_2D);
-	glDepthMask (1);
-	StencilOn (particleManager.Stencil ());
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-return 1;
-}
-
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 char CParticleEmitter::ObjectClass (int nObject)
@@ -1358,6 +1218,8 @@ void CParticleEmitter::SetScale (float fScale)
 m_fScale = fScale;
 }
 
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 int CParticleSystem::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
@@ -1581,6 +1443,8 @@ return i;
 }
 
 //	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
 
 void CParticleManager::Init (void)
 {
@@ -1699,6 +1563,159 @@ for (CParticleSystem* systemP = GetFirst (); systemP; systemP = GetNext ())
 
 //------------------------------------------------------------------------------
 
+int CParticleManager::InitBuffer (int bLightmaps)
+{
+if (gameStates.render.bVertexArrays) {
+	G3DisableClientStates (1, 1, 1, GL_TEXTURE2);
+	G3DisableClientStates (1, 1, 1, GL_TEXTURE1);
+	if (bLightmaps) {
+		OGL_BINDTEX (0);
+		glDisable (GL_TEXTURE_2D);
+		G3DisableClientStates (1, 1, 1, GL_TEXTURE3);
+		}
+	G3EnableClientStates (1, 1, 0, GL_TEXTURE0/* + bLightmaps*/);
+	}
+if (gameStates.render.bVertexArrays) {
+	glTexCoordPointer (2, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].texCoord);
+	glColorPointer (4, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].color);
+	glVertexPointer (3, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].vertex);
+	}
+return gameStates.render.bVertexArrays;
+}
+
+//------------------------------------------------------------------------------
+
+void CParticleManager::FlushBuffer (float brightness)
+{
+if (bufferBrightness < 0)
+	bufferBrightness = brightness;
+if (iBuffer) {
+	tRgbaColorf	color = {bufferBrightness, bufferBrightness, bufferBrightness, 1};
+	int bLightmaps = lightmapManager.HaveLightmaps ();
+	bufferBrightness = brightness;
+	glEnable (GL_BLEND);
+	//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDepthFunc (GL_LEQUAL);
+	glDepthMask (0);
+	if (gameStates.ogl.bShadersOk) {
+		if (InitBuffer (bLightmaps)) { //gameStates.render.bVertexArrays) {
+#if 1
+			CBitmap *bmP = bmpParticle [0][particleManager.LastType ()];
+			if (!bmP)
+				return;
+			glActiveTexture (GL_TEXTURE0);
+			glClientActiveTexture (GL_TEXTURE0);
+			glEnable (GL_TEXTURE_2D);
+			if (bmP->CurFrame ())
+				bmP = bmP->CurFrame ();
+			if (bmP->Bind (0, 1))
+				return;
+#endif
+			if (lightManager.Headlights ().nLights && !(automap.m_bDisplay || particleManager.LastType ()))
+				lightManager.Headlights ().SetupShader (1, 0, &color);
+			else if ((gameOpts->render.effects.bSoftParticles & 4) && (particleManager.LastType () <= BUBBLE_PARTICLES))
+				LoadGlareShader (10);
+			else if (gameStates.render.history.nShader >= 0) {
+				glUseProgramObject (0);
+				gameStates.render.history.nShader = -1;
+				}
+#if 0
+			else if (!bLightmaps)
+				G3SetupShader (NULL, 0, 0, 1, 1, &color);
+#endif
+			}
+		glNormal3f (0, 0, 0);
+		glDrawArrays (GL_QUADS, 0, iBuffer);
+		}
+	else {
+		tParticleVertex *pb;
+		glEnd ();
+		glNormal3f (0, 0, 0);
+		glBegin (GL_QUADS);
+		for (pb = particleBuffer; iBuffer; iBuffer--, pb++) {
+			glTexCoord2fv (reinterpret_cast<GLfloat*> (&pb->texCoord));
+			glColor4fv (reinterpret_cast<GLfloat*> (&pb->color));
+			glVertex3fv (reinterpret_cast<GLfloat*> (&pb->vertex));
+			}
+		glEnd ();
+		}
+	iBuffer = 0;
+	glEnable (GL_DEPTH_TEST);
+	if ((gameStates.ogl.bShadersOk && !particleManager.LastType ()) && (gameStates.render.history.nShader != 999)) {
+		glUseProgramObject (0);
+		gameStates.render.history.nShader = -1;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+int CParticleManager::CloseBuffer (void)
+{
+if (!gameStates.render.bVertexArrays)
+	return 0;
+FlushBuffer (-1);
+G3DisableClientStates (1, 1, 0, GL_TEXTURE0 + lightmapManager.HaveLightmaps ());
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CParticleManager::BeginRender (int nType, float nScale)
+{
+	CBitmap	*bmP;
+	int			bLightmaps = lightmapManager.HaveLightmaps ();
+	static time_t	t0 = 0;
+
+if (gameOpts->render.bDepthSort <= 0) {
+	nType = (nType % PARTICLE_TYPES);
+	if ((nType >= 0) && !gameOpts->render.particles.bSort)
+		particleImageManager.Animate (nType);
+	bmP = bmpParticle [0][nType];
+	particleManager.SetStencil (StencilOff ());
+	InitBuffer (bLightmaps);
+	glActiveTexture (GL_TEXTURE0);
+	glClientActiveTexture (GL_TEXTURE0);
+	glDisable (GL_CULL_FACE);
+	glEnable (GL_BLEND);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable (GL_TEXTURE_2D);
+	if ((nType >= 0) && bmP->Bind (0, 1))
+		return 0;
+	glDepthFunc (GL_LESS);
+	glDepthMask (0);
+	iBuffer = 0;
+	if (!gameStates.render.bVertexArrays)
+		glBegin (GL_QUADS);
+	}
+particleManager.SetLastType (-1);
+if (gameStates.app.nSDLTicks - t0 < 33)
+	particleManager.m_bAnimate = 0;
+else {
+	t0 = gameStates.app.nSDLTicks;
+	particleManager.m_bAnimate = 1;
+	}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CParticleManager::EndRender (void)
+{
+if (gameOpts->render.bDepthSort <= 0) {
+	if (!CloseBuffer ())
+		glEnd ();
+	OGL_BINDTEX (0);
+	glDisable (GL_TEXTURE_2D);
+	glDepthMask (1);
+	StencilOn (particleManager.Stencil ());
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
 CParticleManager::~CParticleManager ()
 {
 Shutdown ();
@@ -1708,6 +1725,8 @@ m_objectSystems.Destroy ();
 m_objExplTime.Destroy ();
 }
 
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 // 4: gatling projectile trail
 // 3: air bubbles

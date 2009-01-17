@@ -3169,6 +3169,10 @@ for (tReplacementModel *rmP = replacementModels + i; i < j; i++, rmP++) {
 			o.info.nType = OBJ_HOSTAGE;
 		}
 	o.info.nId = (ubyte) rmP->nId;
+#if DBG
+	if (o.info.nId == nDbgObjId)
+		nDbgObjId = nDbgObjId;
+#endif
 	o.rType.polyObjInfo.nModel = rmP->nModel;
 	if (!G3HaveModel (o.rType.polyObjInfo.nModel)) {
 #if DBG
