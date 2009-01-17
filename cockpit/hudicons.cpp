@@ -32,6 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "slowmotion.h"
 #include "network.h"
 #include "gauges.h"
+#include "headlight.h"
 #include "hudicons.h"
 
 //	-----------------------------------------------------------------------------
