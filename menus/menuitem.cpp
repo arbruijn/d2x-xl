@@ -336,9 +336,7 @@ fontManager.Current ()->StringSize (m_text, w, h, aw);
 int y = m_y;
 if (RETRO_STYLE)
 	backgroundManager.Current ()->RenderClipped (CCanvas::Current (), 5, y, backgroundManager.Current ()->Width () - 15, h, 5, y);
-SaveText ();
 DrawHotKeyString (bIsCurrent, bTiny, 1, 0);
-RestoreText ();
 if (p) {
 	fontManager.Current ()->StringSize (s1, w, h, aw);
 	int x = m_x + m_w - w;
@@ -359,7 +357,6 @@ void CMenuItem::DrawRightString (int bIsCurrent, int bTiny, char* s)
 	int	w1 = m_rightOffset, 
 			x = m_x, 
 			y = m_y;
-	char	*hs;
 
 fontManager.Current ()->StringSize (s, w, h, aw);
 x -= 3;
@@ -367,12 +364,12 @@ if (w1 == 0)
 	w1 = w;
 if (RETRO_STYLE)
 	backgroundManager.Current ()->RenderClipped (CCanvas::Current (), x - w1, y, w1, h, x - w1, y);
-hs = m_text;
+SaveText ();
 SetText (s);
 h = m_x;
 m_x = x - w;
 DrawHotKeyString (bIsCurrent, bTiny, 0, 0);
-SetText (hs);
+RestoreText ();
 m_x = h;
 }
 
@@ -590,7 +587,7 @@ if (m_nType == NM_TYPE_SLIDER) {
 	nOthers++;
 	m_savedText [0] = '\t';
 	m_savedText [1] = SLIDER_LEFT [0];
-	memset (m_savedText + 2, (m_maxValue - m_minValue + 1), SLIDER_MIDDLE [0]);
+	memset (m_savedText + 2, SLIDER_MIDDLE [0], (m_maxValue - m_minValue + 1));
 	m_savedText [m_maxValue - m_minValue + 2] = SLIDER_RIGHT [0];
 	fontManager.Current ()->StringSize (m_savedText, w1, h1, aw1);
 	nStringWidth += w1 + aw;

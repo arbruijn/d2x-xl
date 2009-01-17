@@ -462,8 +462,8 @@ AC_OUTPUT(
     objects/Makefile
     ogl/Makefile
     physics/Makefile
-    texmap/Makefile
     render/Makefile
+    texmap/Makefile
     weapons/Makefile
 )
 
