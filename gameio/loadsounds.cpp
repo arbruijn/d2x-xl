@@ -218,7 +218,7 @@ if (!soundP->data [0].Create (soundP->nLength [0])) {
 	cf.Close ();
 	return 0;
 	}
-if (soundP->data [0].Read (cf, soundP->nLength [0]) != 1) {
+if (soundP->data [0].Read (cf, soundP->nLength [0]) != soundP->nLength [0]) {
 	cf.Close ();
 	return 0;
 	}

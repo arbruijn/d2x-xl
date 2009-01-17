@@ -23,10 +23,10 @@ typedef enum tTranspItemType {
 } tTranspItemType;
 
 typedef struct tTranspPoly {
-	tFace				*faceP;
-	tFaceTriangle			*triP;
+	tFace					*faceP;
+	tFaceTriangle		*triP;
 	CBitmap				*bmP;
-	CFloatVector				vertices [4];
+	CFloatVector		vertices [4];
 	tTexCoord2f			texCoord [4];
 	tRgbaColorf			color [4];
 	short					sideLength [4];
@@ -45,7 +45,7 @@ typedef struct tTranspObject {
 
 typedef struct tTranspSprite {
 	CBitmap				*bmP;
-	CFloatVector				position;
+	CFloatVector		position;
 	tRgbaColorf			color;
 	int					nWidth;
 	int					nHeight;
