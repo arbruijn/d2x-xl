@@ -206,8 +206,6 @@ int GrToggleFullScreenGame(void);
 
 void ShowInGameWarning (const char *s);
 
-int PlayerHasHeadlight (int nPlayer);
-int HeadlightIsOn (int nPlayer);
 int MarkPathToExit ();
 void CheckRearView ();
 

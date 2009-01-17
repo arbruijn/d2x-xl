@@ -40,5 +40,9 @@ void UpdateOglHeadlight (void);
 #endif
 
 void InitHeadlightShaders (int nLights);
+void SetPlayerHeadlight (int nPlayer, int bOn);
+int PlayerHasHeadlight (int nPlayer);
+int HeadlightIsOn (int nPlayer);
+void DrainHeadlightPower (void);
 
 #endif //_HEADLIGHT_H 

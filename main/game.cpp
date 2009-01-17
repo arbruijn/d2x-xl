@@ -1511,21 +1511,19 @@ if (gameData.fusion.xAutoFireTime) {
 		gameData.laser.nGlobalFiringCount = 1;
 		}
 	else {
-		fix			xBump;
-		CFixVector	vRand;
-
 		static time_t t0 = 0;
+
 		time_t t = gameStates.app.nSDLTicks;
 		if (t - t0 < 30)
 			return 0;
 		t0 = t;
 		gameData.laser.nGlobalFiringCount = 0;
-		gameData.objs.consoleP->mType.physInfo.rotVel[X] += (d_rand () - 16384)/8;
-		gameData.objs.consoleP->mType.physInfo.rotVel[Z] += (d_rand () - 16384)/8;
-		vRand = CFixVector::Random();
-		xBump = I2X (4);
+		gameData.objs.consoleP->mType.physInfo.rotVel[X] += (d_rand () - 16384) / 8;
+		gameData.objs.consoleP->mType.physInfo.rotVel[Z] += (d_rand () - 16384) / 8;
+		CFixVector vRand = CFixVector::Random ();
+		fix xBump = I2X (4);
 		if (gameData.fusion.xCharge > I2X (2))
-			xBump = gameData.fusion.xCharge*4;
+			xBump = gameData.fusion.xCharge * 4;
 		gameData.objs.consoleP->Bump (vRand, xBump);
 		}
 	}
@@ -1551,70 +1549,6 @@ if (gameStates.app.nSDLTicks - t0 < h * 1000)
 t0 = gameStates.app.nSDLTicks;
 gameStates.app.bSaveScreenshot = 1;
 SaveScreenShot (0, 0);
-}
-
-//-----------------------------------------------------------------------------
-
-int PlayerHasHeadlight (int nPlayer)
-{
-return EGI_FLAG (headlight.bAvailable, 0, 0, 0) &&
-		 (EGI_FLAG (headlight.bBuiltIn, 0, 1, 0) ||
-		  ((gameData.multiplayer.players [(nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer].flags & PLAYER_FLAGS_HEADLIGHT) != 0));
-}
-
-//-----------------------------------------------------------------------------
-
-int HeadlightIsOn (int nPlayer)
-{
-#if DBG
-if (!PlayerHasHeadlight (nPlayer))
-	return 0;
-if (!(gameData.multiplayer.players [(nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON))
-	return 0;
-return 1;
-#else
-return PlayerHasHeadlight (nPlayer) && ((gameData.multiplayer.players [(nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON) != 0);
-#endif
-}
-
-//-----------------------------------------------------------------------------
-
-void SetPlayerHeadlight (int nPlayer, int bOn)
-{
-if (bOn)
-	gameData.multiplayer.players [(nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer].flags |= PLAYER_FLAGS_HEADLIGHT_ON;
-else
-	gameData.multiplayer.players [(nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer].flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
-}
-
-//-----------------------------------------------------------------------------
-
-void DrainHeadlightPower (void)
-{
-	static int bTurnedOff = 0;
-
-if (!EGI_FLAG (headlight.bDrainPower, 0, 0, 1))
-	return;
-if (!HeadlightIsOn (-1))
-	return;
-
-LOCALPLAYER.energy -= (gameData.time.xFrame * 3 / 8);
-if (LOCALPLAYER.energy < I2X (10)) {
-	if (!bTurnedOff) {
-		LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
-		bTurnedOff = 1;
-		if (IsMultiGame)
-			MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);
-		}
-	}
-else
-	bTurnedOff = 0;
-if (LOCALPLAYER.energy <= 0) {
-	LOCALPLAYER.energy = 0;
-	LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
-	if (IsMultiGame)
-		MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);
-	}
 }
 
 //-----------------------------------------------------------------------------
