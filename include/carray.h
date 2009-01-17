@@ -98,12 +98,14 @@ class CArray : public CQuickSort < _T > {
 				memset (m_data.buffer, filler, sizeof (_T) * ((count < m_data.length) ? count : m_data.length)); 
 			}
 		
-		inline bool IsElement (_T* elem) {
+		inline bool IsElement (_T* elem, bool bDiligent = false) {
 			if (!m_data.buffer || (elem < m_data.buffer) || (elem >= m_data.buffer + m_data.length))
 				return false;	// no buffer or element out of buffer
-			uint i = static_cast<uint> (reinterpret_cast<ubyte*> (elem) - reinterpret_cast<ubyte*> (m_data.buffer));
-			if (i % sizeof (_T))	
-				return false;	// elem in the buffer, but not properly aligned
+			if (bDiligent) {
+				uint i = static_cast<uint> (reinterpret_cast<ubyte*> (elem) - reinterpret_cast<ubyte*> (m_data.buffer));
+				if (i % sizeof (_T))	
+					return false;	// elem in the buffer, but not properly aligned
+				}
 			return true;
 			}
 
