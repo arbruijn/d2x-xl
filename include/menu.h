@@ -139,7 +139,9 @@ class CMenuItem {
 
 		void UpdateCursor (void);
 		void TrimWhitespace (void);
-		void SetText (const char* pszText);
+		void SetText (const char* pszSrc, char* pszDest = NULL);
+		void SaveText (void);
+		void RestoreText (void);
 	};
 
 //------------------------------------------------------------------------------

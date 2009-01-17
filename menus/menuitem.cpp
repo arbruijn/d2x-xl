@@ -324,22 +324,21 @@ if (!gameStates.multi.bSurfingNet && p && (w1 > 0)) {
 void CMenuItem::DrawSlider (int bIsCurrent, int bTiny)
 {
 char* s1 = NULL;
-char* p = strchr (m_savedText, '\t');
+char* p = strchr (m_text, '\t');
 if (p) {
 	*p = '\0';
 	s1 = p + 1;
 	}
 
 int w, h, aw;
-fontManager.Current ()->StringSize (m_savedText, w, h, aw);
+fontManager.Current ()->StringSize (m_text, w, h, aw);
 
 int y = m_y;
 if (RETRO_STYLE)
 	backgroundManager.Current ()->RenderClipped (CCanvas::Current (), 5, y, backgroundManager.Current ()->Width () - 15, h, 5, y);
-char* t = m_text;
-SetText (m_savedText);
+SaveText ();
 DrawHotKeyString (bIsCurrent, bTiny, 1, 0);
-SetText (t);
+RestoreText ();
 if (p) {
 	fontManager.Current ()->StringSize (s1, w, h, aw);
 	int x = m_x + m_w - w;
@@ -505,28 +504,20 @@ switch (m_nType) {
 		break;
 
 	case NM_TYPE_SLIDER: {
-		int h, l;
-		char* psz = m_savedText;
-
+		SaveText ();
 		if (m_value < m_minValue) 
 			m_value = m_minValue;
 		else if (m_value > m_maxValue) 
 			m_value = m_maxValue;
-		sprintf (psz, "%s\t%s", m_text, SLIDER_LEFT);
-#if 1
-		l = (int) strlen (psz);
-		h = m_maxValue - m_minValue + 1;
-		memset (psz + l, SLIDER_MIDDLE [0], h);
-		psz [l + h] = SLIDER_RIGHT [0];
-		psz [l + h + 1] = '\0';
-#else
-		for (j = 0; j < (m_maxValue - m_minValue + 1); j++) {
-			sprintf (psz, "%s%s", psz, SLIDER_MIDDLE);
-			}
-		sprintf (m_savedText, "%s%s", m_savedText, SLIDER_RIGHT);
-#endif
-		psz [m_value + 1 + strlen (m_text) + 1] = SLIDER_MARKER [0];
+		sprintf (m_text, "%s\t%s", m_savedText, SLIDER_LEFT);
+		int l = int (strlen (m_text));
+		int h = m_maxValue - m_minValue + 1;
+		memset (m_text + l, SLIDER_MIDDLE [0], h);
+		m_text [l + h] = SLIDER_RIGHT [0];
+		m_text [l + h + 1] = '\0';
+		m_text [m_value + 1 + strlen (m_savedText) + 1] = SLIDER_MARKER [0];
 		DrawSlider (bIsCurrent, bTiny);
+		RestoreText ();
 		}
 		break;
 
@@ -575,8 +566,6 @@ switch (m_nType) {
 
 int CMenuItem::GetSize (int h, int aw, int& nStringWidth, int& nStringHeight, int& nAverageWidth, int& nMenus, int& nOthers)
 {
-	int	j;
-
 if (!gameStates.app.bEnglish)
 	m_nKey = *(m_text - 1);
 if (m_nKey) {
@@ -599,11 +588,10 @@ m_savedText [0] = '\0';
 if (m_nType == NM_TYPE_SLIDER) {
 	int w1, h1, aw1;
 	nOthers++;
-	sprintf (m_savedText, "%s", SLIDER_LEFT);
-	for (j = 0; j< (m_maxValue - m_minValue + 1); j++) {
-		sprintf (m_savedText, "%s%s", m_savedText, SLIDER_MIDDLE);
-		}
-	sprintf (m_savedText, "%s%s", m_savedText, SLIDER_RIGHT);
+	m_savedText [0] = '\t';
+	m_savedText [1] = SLIDER_LEFT [0];
+	memset (m_savedText + 2, (m_maxValue - m_minValue + 1), SLIDER_MIDDLE [0]);
+	m_savedText [m_maxValue - m_minValue + 2] = SLIDER_RIGHT [0];
 	fontManager.Current ()->StringSize (m_savedText, w1, h1, aw1);
 	nStringWidth += w1 + aw;
 	}
@@ -630,30 +618,28 @@ else if (m_nType == NM_TYPE_RADIO) {
 	}
 else if (m_nType == NM_TYPE_NUMBER) {
 	int w1, h1, aw1;
-	char test_text [20];
+	char szValue [20];
 	nOthers++;
-	sprintf (test_text, "%d", m_maxValue);
-	fontManager.Current ()->StringSize (test_text, w1, h1, aw1);
+	sprintf (szValue, "%d", m_maxValue);
+	fontManager.Current ()->StringSize (szValue, w1, h1, aw1);
 	m_rightOffset = w1;
-	sprintf (test_text, "%d", m_minValue);
-	fontManager.Current ()->StringSize (test_text, w1, h1, aw1);
+	sprintf (szValue, "%d", m_minValue);
+	fontManager.Current ()->StringSize (szValue, w1, h1, aw1);
 	if (w1 > m_rightOffset)
 		m_rightOffset = w1;
 	}
 else if (m_nType == NM_TYPE_INPUT) {
-	Assert (strlen (m_text) < MENU_MAX_TEXTLEN);
-	strncpy (m_savedText, m_text, MENU_MAX_TEXTLEN);
+	SetText (m_text, m_savedText);
 	nOthers++;
-	nStringWidth = m_nTextLen*CCanvas::Current ()->Font ()->Width () + ((gameStates.menus.bHires?3:1)*m_nTextLen);
+	nStringWidth = m_nTextLen * CCanvas::Current ()->Font ()->Width () + ((gameStates.menus.bHires ? 3 : 1) * m_nTextLen);
 	if (nStringWidth > MAX_TEXT_WIDTH) 
 		nStringWidth = MAX_TEXT_WIDTH;
 	m_value = -1;
 	}
 else if (m_nType == NM_TYPE_INPUT_MENU) {
-	Assert (strlen (m_text) < MENU_MAX_TEXTLEN);
-	strncpy (m_savedText, m_text, MENU_MAX_TEXTLEN);
+	SetText (m_text, m_savedText);
 	nMenus++;
-	nStringWidth = m_nTextLen*CCanvas::Current ()->Font ()->Width () + ((gameStates.menus.bHires?3:1)*m_nTextLen);
+	nStringWidth = m_nTextLen * CCanvas::Current ()->Font ()->Width () + ((gameStates.menus.bHires ? 3 : 1) * m_nTextLen);
 	m_value = -1;
 	m_group = 0;
 	}
@@ -664,10 +650,26 @@ return nStringHeight;
 
 //------------------------------------------------------------------------------
 
-void CMenuItem::SetText (const char* pszText)
+void CMenuItem::SetText (const char* pszSrc, char* pszDest)
 {
-strncpy (m_text, pszText, sizeof (m_text) - 1);
-m_text [sizeof (m_text) - 1] = '\0';
+if (!pszDest)
+	pszDest = m_text;
+strncpy (pszDest, pszSrc, MENU_MAX_TEXTLEN);
+pszDest [MENU_MAX_TEXTLEN] = '\0';
+}
+
+//------------------------------------------------------------------------------
+
+void CMenuItem::SaveText (void)
+{
+SetText (m_text, m_savedText);
+}
+
+//------------------------------------------------------------------------------
+
+void CMenuItem::RestoreText (void)
+{
+SetText (m_savedText);
 }
 
 //------------------------------------------------------------------------------
