@@ -1315,7 +1315,7 @@ if (gameStates.app.bGameRunning && IsMultiGame)
 	MultiSendMsgQuit();
 
 for (i = 0; i < int (ToS ()); i++)
-	Item (i)->GetInput ();
+	Item (i).GetInput ();
 
 return choice;
 }
@@ -1401,11 +1401,11 @@ return ToS () - 1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddInput (char* szText, int nLen, const char* szHelp)
+int CMenu::AddInput (const char* szText, int nLen, const char* szHelp)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_INPUT;
-item.m_pszText = szText;
+item.m_pszText = (char*) (szText);
 strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
 item.m_nTextLen = nLen;
 item.m_szHelp = szHelp;
@@ -1415,7 +1415,7 @@ return ToS () - 1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddInput (char* szText, char* szValue, int nLen, const char* szHelp)
+int CMenu::AddInput (const char* szText, char* szValue, int nLen, const char* szHelp)
 {
 AddText (szText);
 return AddInput (szValue, nLen, szHelp);
@@ -1423,7 +1423,7 @@ return AddInput (szValue, nLen, szHelp);
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddInput (char* szText, char* szValue, int nValue, int nLen, const char* szHelp)
+int CMenu::AddInput (const char* szText, char* szValue, int nValue, int nLen, const char* szHelp)
 {
 sprintf (szValue, "%d", nValue);
 return AddInput (szText, szValue, nLen, szHelp);
@@ -1431,11 +1431,11 @@ return AddInput (szText, szValue, nLen, szHelp);
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddInputBox (char* szText, int nLen, int nKey, const char* szHelp)
+int CMenu::AddInputBox (const char* szText, int nLen, int nKey, const char* szHelp)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_INPUT_MENU;
-item.m_pszText = szText;
+item.m_pszText = (char*) (szText);
 strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
 item.m_nTextLen = nLen;
 item.m_nKey = nKey;
@@ -1446,11 +1446,11 @@ return ToS () - 1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddNumber (char* szText, int nValue, int nMin, int nMax)
+int CMenu::AddNumber (const char* szText, int nValue, int nMin, int nMax)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_NUMBER;
-item.m_pszText = szText;
+item.m_pszText = (char*) (szText);
 strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
 item.m_value = NMCLAMP (nValue, nMin, nMax);
 item.m_minValue = nMin;
