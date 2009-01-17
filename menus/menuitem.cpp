@@ -149,7 +149,7 @@ int i, l = (int) strlen (m_text);
 
 for (i = l - 1; i >= 0; i--) {
 	if (::isspace (m_text [i]))
-		m_text [i] = 0;
+		m_text [i] = '\0';
 	else
 		return;
 	}
@@ -180,11 +180,11 @@ else {
 		int	w, h, aw, l, i, 
 				x = m_x, 
 				y = m_y;
-		char	*t, *ps = m_text, s [256], ch = 0, ch2;
+		char	*t, *ps = m_text, s [MENU_MAX_TEXTLEN], ch = 0, ch2;
 
 	if ((t = strchr (ps, '\n'))) {
 		strncpy (s, ps, sizeof (s));
-		m_text = s;
+		SetText (s);
 		fontManager.Current ()->StringSize (s, w, h, aw);
 		do {
 			if ((t = strchr (m_text, '\n')))
@@ -192,7 +192,7 @@ else {
 			DrawHotKeyString (0, bTiny, 0, nDepth + 1);
 			if (!t)
 				break;
-			m_text = t + 1;
+			SetText (t + 1);
 			m_y += h / 2;
 			m_x = m_xSave;
 			nTabIndex = -1;
@@ -200,7 +200,7 @@ else {
 		}
 	else if ((t = strchr (ps, '\t'))) {
 		strncpy (s, ps, sizeof (s));
-		m_text = s;
+		SetText (s);
 		fontManager.Current ()->StringSize (s, w, h, aw);
 		do {
 			if ((t = strchr (m_text, '\t')))
@@ -208,11 +208,11 @@ else {
 			DrawHotKeyString (0, bTiny, 0, nDepth + 1);
 			if (!t)
 				break;
-			m_text = t + 1;
+			SetText (t + 1);
 			nTabIndex++;
 		} while (*(m_text));
 		nTabIndex = -1;
-		m_text = ps;
+		SetText (ps);
 		m_y = y;
 		}
 	else {
@@ -337,9 +337,9 @@ int y = m_y;
 if (RETRO_STYLE)
 	backgroundManager.Current ()->RenderClipped (CCanvas::Current (), 5, y, backgroundManager.Current ()->Width () - 15, h, 5, y);
 char* t = m_text;
-m_text = m_savedText;
+SetText (m_savedText);
 DrawHotKeyString (bIsCurrent, bTiny, 1, 0);
-m_text = t;
+SetText (t);
 if (p) {
 	fontManager.Current ()->StringSize (s1, w, h, aw);
 	int x = m_x + m_w - w;
@@ -369,11 +369,11 @@ if (w1 == 0)
 if (RETRO_STYLE)
 	backgroundManager.Current ()->RenderClipped (CCanvas::Current (), x - w1, y, w1, h, x - w1, y);
 hs = m_text;
-m_text = s;
+SetText (s);
 h = m_x;
 m_x = x - w;
 DrawHotKeyString (bIsCurrent, bTiny, 0, 0);
-m_text = hs;
+SetText (hs);
 m_x = h;
 }
 
@@ -641,8 +641,8 @@ else if (m_nType == NM_TYPE_NUMBER) {
 		m_rightOffset = w1;
 	}
 else if (m_nType == NM_TYPE_INPUT) {
-	Assert (strlen (m_text) < NM_MAX_TEXT_LEN);
-	strncpy (m_savedText, m_text, NM_MAX_TEXT_LEN);
+	Assert (strlen (m_text) < MENU_MAX_TEXTLEN);
+	strncpy (m_savedText, m_text, MENU_MAX_TEXTLEN);
 	nOthers++;
 	nStringWidth = m_nTextLen*CCanvas::Current ()->Font ()->Width () + ((gameStates.menus.bHires?3:1)*m_nTextLen);
 	if (nStringWidth > MAX_TEXT_WIDTH) 
@@ -650,8 +650,8 @@ else if (m_nType == NM_TYPE_INPUT) {
 	m_value = -1;
 	}
 else if (m_nType == NM_TYPE_INPUT_MENU) {
-	Assert (strlen (m_text) < NM_MAX_TEXT_LEN);
-	strncpy (m_savedText, m_text, NM_MAX_TEXT_LEN);
+	Assert (strlen (m_text) < MENU_MAX_TEXTLEN);
+	strncpy (m_savedText, m_text, MENU_MAX_TEXTLEN);
 	nMenus++;
 	nStringWidth = m_nTextLen*CCanvas::Current ()->Font ()->Width () + ((gameStates.menus.bHires?3:1)*m_nTextLen);
 	m_value = -1;
@@ -660,6 +660,14 @@ else if (m_nType == NM_TYPE_INPUT_MENU) {
 m_w = nStringWidth;
 m_h = nStringHeight;
 return nStringHeight;
+}
+
+//------------------------------------------------------------------------------
+
+void CMenuItem::SetText (const char* pszText)
+{
+strncpy (m_text, pszText, sizeof (m_text) - 1);
+m_text [sizeof (m_text) - 1] = '\0';
 }
 
 //------------------------------------------------------------------------------

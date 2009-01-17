@@ -154,7 +154,7 @@ if (menu [soundOpts.nRedbook].m_value != redbook.Enabled ()) {
 				}
 			}
 		}
-	menu [soundOpts.nMusicVol].m_text = redbook.Enabled () ? const_cast<char*> (TXT_CD_VOLUME) : const_cast<char*> (TXT_MIDI_VOLUME);
+	menu [soundOpts.nMusicVol].SetText (redbook.Enabled () ? const_cast<char*> (TXT_CD_VOLUME) : const_cast<char*> (TXT_MIDI_VOLUME));
 	menu [soundOpts.nMusicVol].m_bRebuild = 1;
 	}
 

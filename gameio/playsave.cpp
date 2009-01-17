@@ -1483,7 +1483,7 @@ RetrySelection:
 for (i = 0; i < mct; i++ )
 	m.AddMenu (const_cast<char*> (CONTROL_TEXT(i)), -1);
 nitems = i;
-m [0].m_text = const_cast<char*> (TXT_CONTROL_KEYBOARD);
+m [0].SetText (const_cast<char*> (TXT_CONTROL_KEYBOARD));
 choice = gameConfig.nControlType;				// Assume keyboard
 #ifndef APPLE_DEMO
 i = m.Menu (NULL, TXT_CHOOSE_INPUT, NULL, &choice);

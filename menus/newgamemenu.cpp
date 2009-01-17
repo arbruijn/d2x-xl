@@ -216,7 +216,7 @@ try_again:
 		return;
 	nNewLevel = atoi (m [1].m_text);
 	if ((nNewLevel <= 0) || (nNewLevel > nHighestPlayerLevel)) {
-		m [0].m_text = const_cast<char*> (TXT_ENTER_TO_CONT);
+		m [0].SetText (const_cast<char*> (TXT_ENTER_TO_CONT));
 		MsgBox (NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
 		goto try_again;
 	}

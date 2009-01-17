@@ -899,7 +899,7 @@ if (m [optMissionName].m_bRebuild) {
 	strncpy (netGame.szMissionName, 
 				(nNewMission < 0) ? "" : gameData.missions.list [nNewMission].filename, 
 				sizeof (netGame.szMissionName) - 1);
-	m [optMissionName].m_text = (nNewMission < 0) ? const_cast<char*> (TXT_NONE_SELECTED) : const_cast<char*> (gameData.missions.list [nNewMission].szMissionName);
+	m [optMissionName].SetText ((nNewMission < 0) ? const_cast<char*> (TXT_NONE_SELECTED) : const_cast<char*> (gameData.missions.list [nNewMission].szMissionName));
 	if ((nNewMission >= 0) && (gameData.missions.nLastLevel > 1)) {
 		sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, gameData.missions.nLastLevel);
 		Assert (strlen (szLevelText) < 32);
@@ -1252,8 +1252,6 @@ if (!gameStates.multi.bUseTracker) {
 	}
 if (!gameStates.multi.bUseTracker) {
 	m.AddText (TXT_HOST_IP, 0);
-	//IP [\":\"<port> | {{\"+\" | \"-\"} <offset>]\n\n (e.g. 127.0.0.1 for an arbitrary port, \nor 127.0.0.1:28342 for a fixed port, \nor 127.0.0.1:+1 for host port + offset)\n";       
-	//m [opt].m_text = "Enter the game host' IP address.\nYou can specify a port to use\nby entering a colon followed by the port number.\nYou can use an 
 	optServer = m.AddInput (mpParams.szServerIpAddr, sizeof (mpParams.szServerIpAddr) - 1, HTX_GETIP_SERVER);
 	m.AddText (TXT_CLIENT_PORT, 0);
 	}

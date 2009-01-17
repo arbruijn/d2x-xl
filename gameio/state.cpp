@@ -289,7 +289,7 @@ if ((c >= '1') && (c <= '9')) {
 			}
 	}
 if (!menu [NM_IMG_SPACE - 1].m_text || strcmp (menu [NM_IMG_SPACE - 1].m_text, saveGameInfo [i].Time ())) {
-	menu [NM_IMG_SPACE - 1].m_text = saveGameInfo [i].Time ();
+	menu [NM_IMG_SPACE - 1].SetText (saveGameInfo [i].Time ());
 	menu [NM_IMG_SPACE - 1].m_bRebuild = 1;
 	}
 if (!image)

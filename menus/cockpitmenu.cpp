@@ -316,7 +316,7 @@ if (gameOpts->app.bExpertMode) {
 	v = m->m_value;
 	if (gameOpts->render.cockpit.nWindowSize != v) {
 		gameOpts->render.cockpit.nWindowSize = v;
-		m->m_text = const_cast<char*> (szCWS [v]);
+		m->SetText (szCWS [v]);
 		m->m_bRebuild = 1;
 		}
 

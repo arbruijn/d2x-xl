@@ -90,9 +90,11 @@ extern char DOWN_ARROW_MARKER [2];
 #define NM_TYPE_SLIDER      7   // A slider from minValue to maxValue. Draws with nTextLen chars.
 #define NM_TYPE_GAUGE       8   // A slider from minValue to maxValue. Draws with nTextLen chars.
 
-#define NM_MAX_TEXT_LEN     50
+#define MENU_MAX_TEXTLEN    100
 
 //------------------------------------------------------------------------------
+
+typedef char tMenuText [MENU_MAX_TEXTLEN];
 
 class CMenuItem {
 	public:
@@ -101,7 +103,6 @@ class CMenuItem {
 		int			m_minValue, m_maxValue;   // For sliders and number bars.
 		int			m_group;          // What group this belongs to for radio buttons.
 		int			m_nTextLen;       // The maximum length of characters that can be entered by this inputboxes
-		char*			m_text;          // The text associated with this item.
 		uint			m_color;
 		short			m_nKey;
 		// The rest of these are used internally by by the menu system, so don't set 'em!!
@@ -113,7 +114,8 @@ class CMenuItem {
 		ubyte			m_bNoScroll;
 		ubyte			m_bUnavailable;
 		ubyte			m_bCentered;
-		char			m_savedText [NM_MAX_TEXT_LEN+1];
+		char			m_text [MENU_MAX_TEXTLEN + 1];
+		char			m_savedText [MENU_MAX_TEXTLEN + 1];
 		CBitmap*		m_bmText [2];
 		const char*	m_szHelp;
 
@@ -137,7 +139,7 @@ class CMenuItem {
 
 		void UpdateCursor (void);
 		void TrimWhitespace (void);
-
+		void SetText (const char* pszText);
 	};
 
 //------------------------------------------------------------------------------
@@ -239,6 +241,7 @@ class CMenu : public CStack<CMenuItem> {
 		void SaveScreen (CCanvas **gameCanvasP);
 		void RestoreScreen (char* filename, int bDontRestore);
 		void FreeTextBms (void);
+		void SwapText (int i, int j);
 	};
 
 //------------------------------------------------------------------------------

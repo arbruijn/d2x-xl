@@ -385,6 +385,17 @@ for (int i = 0; i < int (ToS ()); i++)
 
 //------------------------------------------------------------------------------ 
 
+void CMenu::SwapText (int i, int j)
+{
+	char h [MENU_MAX_TEXTLEN + 1];
+
+memcpy (h, Item (i).m_text, MENU_MAX_TEXTLEN + 1);
+memcpy (Item (i).m_text, Item (j).m_text, MENU_MAX_TEXTLEN + 1);
+memcpy (Item (j).m_text, h, MENU_MAX_TEXTLEN + 1);
+}
+
+//------------------------------------------------------------------------------ 
+
 #define REDRAW_ALL	for (i = 0; i < int (ToS ()); i++) Item (i).m_bRedraw = 1; bRedrawAll = 1
 
 int CMenu::Menu (const char* pszTitle, const char* pszSubTitle, 
@@ -783,7 +794,7 @@ radioOption:
 
 		case KEY_SHIFTED + KEY_UP:
 			if (gameStates.menus.bReordering && choice != topChoice) {
-				::Swap (Item (choice).m_text, Item (choice - 1).m_text);
+				SwapText (choice, choice - 1);
 				::Swap (Item (choice).m_value, Item (choice - 1).m_value);
 				Item (choice).m_bRebuild = 
 				Item (choice - 1).m_bRebuild = 1;
@@ -793,7 +804,7 @@ radioOption:
 
 		case KEY_SHIFTED + KEY_DOWN:
 			if (gameStates.menus.bReordering && choice !=(int (ToS ()) - 1)) {
-				::Swap (Item (choice).m_text, Item (choice + 1).m_text);
+				SwapText (choice, choice + 1);
 				::Swap (Item (choice).m_value, Item (choice + 1).m_value);
 				Item (choice).m_bRebuild = 
 				Item (choice + 1).m_bRebuild = 1;
@@ -824,7 +835,7 @@ launchOption:
 				Item (choice).m_group = 1;
 				Item (choice).m_bRedraw = 1;
 				if (!strnicmp (Item (choice).m_savedText, TXT_EMPTY, strlen (TXT_EMPTY))) {
-					Item (choice).m_text [0] = 0;
+					Item (choice).m_text [0] = '\0';
 					Item (choice).m_value = -1;
 					}
 				else {
@@ -973,7 +984,7 @@ launchOption:
 					choice = i/* + m_props.nScrollOffset - m_props.nMaxNoScroll*/;
 
 					if (Item (choice).m_nType == NM_TYPE_SLIDER) {
-						char slider_text [NM_MAX_TEXT_LEN + 1], *p, *s1;
+						char slider_text [MENU_MAX_TEXTLEN + 1], *p, *s1;
 						int slider_width, height, aw, sleft_width, sright_width, smiddle_width;
 					
 						strcpy (slider_text, Item (choice).m_savedText);
@@ -1058,7 +1069,7 @@ launchOption:
 			Item (choice).m_group = 1;
 			Item (choice).m_bRedraw = 1;
 			if (!strnicmp (Item (choice).m_savedText, TXT_EMPTY, strlen (TXT_EMPTY))) {
-				Item (choice).m_text [0] = 0;
+				Item (choice).m_text [0] = '\0';
 				Item (choice).m_value = -1;
 			} else {
 				Item (choice).TrimWhitespace ();
@@ -1093,7 +1104,7 @@ launchOption:
 						Item (choice).m_value = (int) strlen (Item (choice).m_text);
 					if (Item (choice).m_value > 0)
 						Item (choice).m_value--;
-					Item (choice).m_text [Item (choice).m_value] = 0;
+					Item (choice).m_text [Item (choice).m_value] = '\0';
 					Item (choice).m_bRedraw = 1;
 					}
 				else {
@@ -1110,7 +1121,7 @@ launchOption:
 							}
 						if (bAllowed) {
 							Item (choice).m_text [Item (choice).m_value++] = ascii;
-							Item (choice).m_text [Item (choice).m_value] = 0;
+							Item (choice).m_text [Item (choice).m_value] = '\0';
 							Item (choice).m_bRedraw = 1;
 							}
 						}
@@ -1313,7 +1324,7 @@ int CMenu::AddCheck (const char* szText, int nValue, int nKey, const char* szHel
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_CHECK;
-item.m_text = (char*) (szText);
+strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
 item.m_value = NMBOOL (nValue);
 item.m_nKey = nKey;
 item.m_szHelp = szHelp;
@@ -1329,7 +1340,7 @@ CMenuItem item;
 if (!ToS () || (Top ()->m_nType != NM_TYPE_RADIO))
 	NewGroup ();
 item.m_nType = NM_TYPE_RADIO;
-item.m_text = (char*) (szText);
+strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
 item.m_value = nValue;
 item.m_nKey = nKey;
 item.m_group = m_nGroup;
@@ -1344,7 +1355,7 @@ int CMenu::AddMenu (const char* szText, int nKey, const char* szHelp)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_MENU;
-item.m_text = (char*) (szText);
+strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
 item.m_nKey = nKey;
 item.m_szHelp = szHelp;
 Push (item);
@@ -1357,7 +1368,7 @@ int CMenu::AddText (const char* szText, int nKey)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_TEXT;
-item.m_text = (char*) (szText);
+strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
 item.m_nKey = nKey;
 Push (item);
 return ToS () - 1;
@@ -1369,7 +1380,7 @@ int CMenu::AddSlider (const char* szText, int nValue, int nMin, int nMax, int nK
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_SLIDER;
-item.m_text = (char*) (szText);
+strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
 item.m_value = NMCLAMP (nValue, nMin, nMax);
 item.m_minValue = nMin;
 item.m_maxValue = nMax;
@@ -1385,7 +1396,7 @@ int CMenu::AddInput (const char* szText, int nLen, const char* szHelp)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_INPUT;
-item.m_text = (char*) (szText);
+strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
 item.m_nTextLen = nLen;
 item.m_szHelp = szHelp;
 Push (item);
@@ -1414,7 +1425,7 @@ int CMenu::AddInputBox (const char* szText, int nLen, int nKey, const char* szHe
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_INPUT_MENU;
-item.m_text = (char*) (szText);
+strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
 item.m_nTextLen = nLen;
 item.m_nKey = nKey;
 item.m_szHelp = szHelp;
@@ -1428,7 +1439,7 @@ int CMenu::AddNumber (const char* szText, int nValue, int nMin, int nMax)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_NUMBER;
-item.m_text = (char*) (szText);
+strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
 item.m_value = NMCLAMP (nValue, nMin, nMax);
 item.m_minValue = nMin;
 item.m_maxValue = nMax;
@@ -1442,7 +1453,7 @@ int CMenu::AddGauge (const char* szText, int nValue, int nMax)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_GAUGE;
-item.m_text = (char*) (szText);
+strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
 item.m_nTextLen = *szText ? (int) strlen (szText) : 20;
 item.m_value = NMCLAMP (nValue, 0, nMax);
 item.m_maxValue = nMax;
