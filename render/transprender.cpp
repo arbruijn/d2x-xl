@@ -52,96 +52,91 @@ static int nDbgPoly = -1, nDbgItem = -1;
 
 //------------------------------------------------------------------------------
 
-tTranspItemBuffer	transpItems;
-
 static tTexCoord2f tcDefault [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 
-inline int AllocTranspItems (void)
+inline int CTransparencyRenderer::AllocBuffers (void)
 {
-if (transpItems.depthBufP)
+if (m_data.depthBuffer.Buffer ())
 	return 1;
-if (!(transpItems.depthBufP = new tTranspItem* [ITEM_DEPTHBUFFER_SIZE]))
+if (!m_data.depthBuffer.Create (ITEM_DEPTHBUFFER_SIZE))
 	return 0;
-if (!(transpItems.itemListP = new tTranspItem [ITEM_BUFFER_SIZE])) {
-	delete[] transpItems.depthBufP;
-	transpItems.depthBufP = NULL;
+if (!m_data.itemLists.Create (ITEM_BUFFER_SIZE)) {
+	m_data.depthBuffer.Destroy ();
 	return 0;
 	}
-transpItems.nFreeItems = 0;
-ResetTranspItemBuffer ();
+m_data.nFreeItems = 0;
+ResetBuffers ();
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-void FreeTranspItems (void)
+void CTransparencyRenderer::FreeBuffers (void)
 {
-delete[] transpItems.itemListP;
-transpItems.itemListP = NULL;
-delete[] transpItems.depthBufP;
-transpItems.depthBufP = NULL;
+m_data.itemLists.Destroy ();
+m_data.depthBuffer.Destroy ();
 }
 
 //------------------------------------------------------------------------------
 
-void ResetTranspItemBuffer (void)
+void CTransparencyRenderer::ResetBuffers (void)
 {
-memset (transpItems.depthBufP, 0, ITEM_DEPTHBUFFER_SIZE * sizeof (struct tTranspItem **));
-memset (transpItems.itemListP, 0, (ITEM_BUFFER_SIZE - transpItems.nFreeItems) * sizeof (struct tTranspItem));
-transpItems.nFreeItems = ITEM_BUFFER_SIZE;
+m_data.depthBuffer.Clear ();
+memset (m_data.itemLists.Buffer (), 0, (ITEM_BUFFER_SIZE - m_data.nFreeItems) * sizeof (struct tTranspItem));
+m_data.nFreeItems = ITEM_BUFFER_SIZE;
 }
 
 
 //------------------------------------------------------------------------------
 
-void InitTranspItemBuffer (int zMin, int zMax)
+void CTransparencyRenderer::InitBuffer (int zMin, int zMax)
 {
-transpItems.zMin = 0;
-transpItems.zMax = zMax - transpItems.zMin;
-transpItems.zScale = (double) (ITEM_DEPTHBUFFER_SIZE - 1) / (double) (zMax - transpItems.zMin);
-if (transpItems.zScale < 0)
-	transpItems.zScale = 1;
-else if (transpItems.zScale > 1)
-	transpItems.zScale = 1;
+m_data.zMin = 0;
+m_data.zMax = zMax - m_data.zMin;
+m_data.zScale = (double) (ITEM_DEPTHBUFFER_SIZE - 1) / (double) (zMax - m_data.zMin);
+if (m_data.zScale < 0)
+	m_data.zScale = 1;
+else if (m_data.zScale > 1)
+	m_data.zScale = 1;
 }
 
 //------------------------------------------------------------------------------
 
-int AddTranspItem (tTranspItemType nType, void *itemData, int itemSize, int nDepth, int nIndex)
+int CTransparencyRenderer::Add (tTranspItemType nType, void *itemData, int itemSize, int nDepth, int nIndex)
 {
 #if RENDER_TRANSPARENCY
 	tTranspItem *ph, *pi, *pj, **pd;
 	int			nOffset;
 
 #if DBG
-if (nDepth < transpItems.zMin)
-	return transpItems.nFreeItems;
-if (nDepth > transpItems.zMax) {
+if (nDepth < m_data.zMin)
+	return m_data.nFreeItems;
+if (nDepth > m_data.zMax) {
 	//if (nType != riParticle)
-		return transpItems.nFreeItems;
-	nDepth = transpItems.zMax;
+		return m_data.nFreeItems;
+	nDepth = m_data.zMax;
 	}
 #else
-if ((nDepth < transpItems.zMin) || (nDepth > transpItems.zMax))
-	return transpItems.nFreeItems;
+if ((nDepth < m_data.zMin) || (nDepth > m_data.zMax))
+	return m_data.nFreeItems;
 #endif
-AllocTranspItems ();
-if (!transpItems.nFreeItems)
+AllocBuffers ();
+if (!m_data.nFreeItems)
 	return 0;
 #if 1
-	nOffset = (int) ((double) (nDepth - transpItems.zMin) * transpItems.zScale);
+	nOffset = (int) ((double) (nDepth - m_data.zMin) * m_data.zScale);
 #else
-if (nIndex < transpItems.zMin)
+if (nIndex < m_data.zMin)
 	nOffset = 0;
 else
-	nOffset = (int) ((double) (nIndex - transpItems.zMin) * transpItems.zScale);
+	nOffset = (int) ((double) (nIndex - m_data.zMin) * m_data.zScale);
 #endif
 if (nOffset >= ITEM_DEPTHBUFFER_SIZE)
 	return 0;
-pd = transpItems.depthBufP + nOffset;
+pd = m_data.depthBuffer + nOffset;
 // find the first particle to insert the new one *before* and place in pj; pi will be it's predecessor (NULL if to insert at list start)
-ph = transpItems.itemListP + --transpItems.nFreeItems;
-ph->nItem = transpItems.nItems++;
+ph = m_data.itemLists + --m_data.nFreeItems;
+ph->nItem = m_data.nItems++;
 ph->nType = nType;
 ph->bRendered = 0;
 ph->parentP = NULL;
@@ -160,11 +155,11 @@ else {
 	ph->pNextItem = *pd;
 	*pd = ph;
 	}
-if (transpItems.nMinOffs > nOffset)
-	transpItems.nMinOffs = nOffset;
-if (transpItems.nMaxOffs < nOffset)
-	transpItems.nMaxOffs = nOffset;
-return transpItems.nFreeItems;
+if (m_data.nMinOffs > nOffset)
+	m_data.nMinOffs = nOffset;
+if (m_data.nMaxOffs < nOffset)
+	m_data.nMaxOffs = nOffset;
+return m_data.nFreeItems;
 #else
 return 0;
 #endif
@@ -172,10 +167,10 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int AddTranspItemMT (tTranspItemType nType, void *itemData, int itemSize, int nDepth, int nIndex, int nThread)
+int CTransparencyRenderer::AddMT (tTranspItemType nType, void *itemData, int itemSize, int nDepth, int nIndex, int nThread)
 {
 if (!gameStates.app.bMultiThreaded || (nThread < 0) || !gameData.app.bUseMultiThreading [rtTransparency])
-	return AddTranspItem (nType, itemData, itemSize, nDepth, nIndex);
+	return Add (nType, itemData, itemSize, nDepth, nIndex);
 while (tiTranspItems.ti [nThread].bExec)
 	G3_SLEEP (0);
 tiTranspItems.itemData [nThread].nType = nType;
@@ -191,7 +186,7 @@ return 1;
 
 #if TI_SPLIT_POLYS
 
-int TISplitPoly (tTranspPoly *item, int nDepth)
+int CTransparencyRenderer::SplitPoly (tTranspPoly *item, int nDepth)
 {
 	tTranspPoly		split [2];
 	CFloatVector		vSplit;
@@ -218,9 +213,9 @@ if ((nDepth > 1) || !nMaxLen || (nMaxLen < 10) || ((nMaxLen <= 30) && ((split [0
 			zMin = z;
 		}
 #if TI_POLY_CENTER
-	return AddTranspItem (item->bmP ? riTexPoly : riFlatPoly, item, sizeof (*item), F2X (zMax), F2X ((zMax + zMin) / 2));
+	return Add (item->bmP ? riTexPoly : riFlatPoly, item, sizeof (*item), F2X (zMax), F2X ((zMax + zMin) / 2));
 #else
-	return AddTranspItem (item->bmP ? riTexPoly : riFlatPoly, item, sizeof (*item), F2X (zMax), F2X (zMin));
+	return Add (item->bmP ? riTexPoly : riFlatPoly, item, sizeof (*item), F2X (zMax), F2X (zMin));
 #endif
 	}
 if (split [0].nVertices == 3) {
@@ -278,14 +273,14 @@ else {
 	split [0].sideLength [i2] =
 	split [1].sideLength [i2] = nMaxLen / 2;
 	}
-return TISplitPoly (split, nDepth + 1) && TISplitPoly (split + 1, nDepth + 1);
+return SplitPoly (split, nDepth + 1) && SplitPoly (split + 1, nDepth + 1);
 }
 
 #endif
 
 //------------------------------------------------------------------------------
 
-int TIAddObject (CObject *objP)
+int CTransparencyRenderer::AddObject (CObject *objP)
 {
 	tTranspObject	item;
 	CFixVector		vPos;
@@ -294,15 +289,15 @@ if (objP->info.nType == 255)
 	return 0;
 item.objP = objP;
 transformation.Transform(vPos, OBJPOS (objP)->vPos, 0);
-return AddTranspItem (tiObject, &item, sizeof (item), vPos [Z], vPos [Z]);
+return Add (tiObject, &item, sizeof (item), vPos [Z], vPos [Z]);
 }
 
 //------------------------------------------------------------------------------
 
-int TIAddPoly (tFace *faceP, tFaceTriangle *triP, CBitmap *bmP,
-					CFloatVector *vertices, char nVertices, tTexCoord2f *texCoord, tRgbaColorf *color,
-					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive,
-					short nSegment)
+int CTransparencyRenderer::AddPoly (tFace *faceP, tFaceTriangle *triP, CBitmap *bmP,
+												CFloatVector *vertices, char nVertices, tTexCoord2f *texCoord, tRgbaColorf *color,
+												tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive,
+												short nSegment)
 {
 	tTranspPoly	item;
 	int			i;
@@ -344,10 +339,10 @@ if ((item.nColors = nColors)) {
 	}
 memcpy (item.vertices, vertices, nVertices * sizeof (CFloatVector));
 #if TI_SPLIT_POLYS
-if (bDepthMask && transpItems.bSplitPolys) {
+if (bDepthMask && m_data.bSplitPolys) {
 	for (i = 0; i < nVertices; i++)
 		item.sideLength [i] = (short) (CFloatVector::Dist(vertices [i], vertices [(i + 1) % nVertices]) + 0.5f);
-	return TISplitPoly (&item, 0);
+	return SplitPoly (&item, 0);
 	}
 else
 #endif
@@ -364,24 +359,24 @@ else
 		if (zMaxf < z)
 			zMaxf = z;
 		}
-	if ((F2X (zMaxf) < transpItems.zMin) || (F2X (zMinf) > transpItems.zMax))
+	if ((F2X (zMaxf) < m_data.zMin) || (F2X (zMinf) > m_data.zMax))
 		return -1;
 #if TI_POLY_CENTER
 	zCenter = F2X ((zMinf + zMaxf) / 2);
 #else
 	zCenter = F2X (zMaxf);
 #endif
-	if (zCenter < transpItems.zMin)
-		return AddTranspItem (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), transpItems.zMin, transpItems.zMin);
-	if (zCenter > transpItems.zMax)
-		return AddTranspItem (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), transpItems.zMax, transpItems.zMax);
-	return AddTranspItem (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), zCenter, zCenter);
+	if (zCenter < m_data.zMin)
+		return Add (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), m_data.zMin, m_data.zMin);
+	if (zCenter > m_data.zMax)
+		return Add (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), m_data.zMax, m_data.zMax);
+	return Add (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), zCenter, zCenter);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-int TIAddFaceTris (tFace *faceP)
+int CTransparencyRenderer::AddFaceTris (tFace *faceP)
 {
 	tFaceTriangle	*triP;
 	CFloatVector		vertices [3];
@@ -406,10 +401,10 @@ for (h = faceP->nTris; h; h--, triP++) {
 			vertices [i].Assign (gameData.segs.points [triP->index [i]].p3_vec);
 #endif
 		}
-	if (!TIAddPoly (faceP, triP, bmP, vertices, 3, FACES.texCoord + triP->nIndex,
-						 FACES.color + triP->nIndex,
-						 NULL, 3, 1, GL_TRIANGLES, GL_REPEAT,
-						 bAdditive, faceP->nSegment))
+	if (!AddPoly (faceP, triP, bmP, vertices, 3, FACES.texCoord + triP->nIndex,
+					  FACES.color + triP->nIndex,
+					  NULL, 3, 1, GL_TRIANGLES, GL_REPEAT,
+					  bAdditive, faceP->nSegment))
 		return 0;
 	}
 return 1;
@@ -417,10 +412,10 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int TIAddFace (tFace *faceP)
+int CTransparencyRenderer::AddFace (tFace *faceP)
 {
 if (gameStates.render.bTriangleMesh)
-	return TIAddFaceTris (faceP);
+	return AddFaceTris (faceP);
 
 	CFloatVector		vertices [4];
 	int			i, j;
@@ -442,7 +437,7 @@ for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
 		vertices [i].Assign (gameData.segs.points [faceP->index [i]].p3_vec);
 #endif
 	}
-return TIAddPoly (faceP, NULL, bmP,
+return AddPoly (faceP, NULL, bmP,
 						vertices, 4, FACES.texCoord + faceP->nIndex,
 						FACES.color + faceP->nIndex,
 						NULL, 4, 1, GL_TRIANGLE_FAN, GL_REPEAT,
@@ -451,7 +446,7 @@ return TIAddPoly (faceP, NULL, bmP,
 
 //------------------------------------------------------------------------------
 
-int TIAddSprite (CBitmap *bmP, const CFixVector& position, tRgbaColorf *color,
+int CTransparencyRenderer::AddSprite (CBitmap *bmP, const CFixVector& position, tRgbaColorf *color,
 					  int nWidth, int nHeight, char nFrame, char bAdditive, float fSoftRad)
 {
 	tTranspSprite	item;
@@ -467,12 +462,12 @@ item.bAdditive = bAdditive;
 item.fSoftRad = fSoftRad;
 transformation.Transform (vPos, position, 0);
 item.position.Assign (vPos);
-return AddTranspItem (tiSprite, &item, sizeof (item), vPos [Z], vPos [Z]);
+return Add (tiSprite, &item, sizeof (item), vPos [Z], vPos [Z]);
 }
 
 //------------------------------------------------------------------------------
 
-int TIAddSpark (const CFixVector& position, char nType, int nSize, char nFrame)
+int CTransparencyRenderer::AddSpark (const CFixVector& position, char nType, int nSize, char nFrame)
 {
 	tTranspSpark	item;
 	CFixVector		vPos;
@@ -482,12 +477,12 @@ item.nFrame = nFrame;
 item.nType = nType;
 transformation.Transform (vPos, position, 0);
 item.position.Assign (vPos);
-return AddTranspItem (tiSpark, &item, sizeof (item), vPos [Z], vPos [Z]);
+return Add (tiSpark, &item, sizeof (item), vPos [Z], vPos [Z]);
 }
 
 //------------------------------------------------------------------------------
 
-int TIAddSphere (tTranspSphereType nType, float red, float green, float blue, float alpha, CObject *objP)
+int CTransparencyRenderer::AddSphere (tTranspSphereType nType, float red, float green, float blue, float alpha, CObject *objP)
 {
 	tTranspSphere	item;
 	CFixVector		vPos;
@@ -499,12 +494,12 @@ item.color.blue = blue;
 item.color.alpha = alpha;
 item.objP = objP;
 transformation.Transform(vPos, objP->info.position.vPos, 0);
-return AddTranspItem (tiSphere, &item, sizeof (item), vPos [Z], vPos [Z]);
+return Add (tiSphere, &item, sizeof (item), vPos [Z], vPos [Z]);
 }
 
 //------------------------------------------------------------------------------
 
-int TIAddParticle (CParticle *particle, float fBrightness, int nThread)
+int CTransparencyRenderer::AddParticle (CParticle *particle, float fBrightness, int nThread)
 {
 	tTranspParticle	item;
 	fix					z;
@@ -513,14 +508,14 @@ item.particle = particle;
 item.fBrightness = fBrightness;
 z = particle->Transform (gameStates.render.bPerPixelLighting == 2);
 if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtTransparency])
-	return AddTranspItemMT (tiParticle, &item, sizeof (item), z, z, nThread);
+	return AddMT (tiParticle, &item, sizeof (item), z, z, nThread);
 else
-	return AddTranspItem (tiParticle, &item, sizeof (item), z, z);
+	return Add (tiParticle, &item, sizeof (item), z, z);
 }
 
 //------------------------------------------------------------------------------
 
-int TIAddLightning (CLightning *lightningP, short nDepth)
+int CTransparencyRenderer::AddLightning (CLightning *lightningP, short nDepth)
 {
 	tTranspLightning	item;
 	CFixVector			vPos;
@@ -533,14 +528,14 @@ z = vPos [Z];
 transformation.Transform (vPos, lightningP->m_vEnd, 0);
 if (z < vPos [Z])
 	z = vPos [Z];
-if (!AddTranspItem (tiLightning, &item, sizeof (item), z, z))
+if (!Add (tiLightning, &item, sizeof (item), z, z))
 	return 0;
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int TIAddLightTrail (CBitmap *bmP, CFloatVector *vThruster, tTexCoord2f *tcThruster, CFloatVector *vFlame, tTexCoord2f *tcFlame, tRgbaColorf *colorP)
+int CTransparencyRenderer::AddLightTrail (CBitmap *bmP, CFloatVector *vThruster, tTexCoord2f *tcThruster, CFloatVector *vFlame, tTexCoord2f *tcFlame, tRgbaColorf *colorP)
 {
 	tTranspLightTrail	item;
 	int					i, j;
@@ -560,35 +555,35 @@ else
 for (i = 0; i < j; i++)
 	if (z < item.vertices [i][Z])
 		z = item.vertices [i][Z];
-return AddTranspItem (tiThruster, &item, sizeof (item), F2X (z), F2X (z));
+return Add (tiThruster, &item, sizeof (item), F2X (z), F2X (z));
 }
 
 //------------------------------------------------------------------------------
 
-void TIEnableClientState (char bClientState, char bTexCoord, char bColor, char bDecal, int nTMU)
+void CTransparencyRenderer::EnableClientState (char bClientState, char bTexCoord, char bColor, char bDecal, int nTMU)
 {
 glActiveTexture (nTMU);
 glClientActiveTexture (nTMU);
-if (!bDecal && (bColor != transpItems.bClientColor)) {
-	if ((transpItems.bClientColor = bColor))
+if (!bDecal && (bColor != m_data.bClientColor)) {
+	if ((m_data.bClientColor = bColor))
 		glEnableClientState (GL_COLOR_ARRAY);
 	else
 		glDisableClientState (GL_COLOR_ARRAY);
 	}
-if (bDecal || (bTexCoord != transpItems.bClientTexCoord)) {
-	if ((transpItems.bClientTexCoord = bTexCoord))
+if (bDecal || (bTexCoord != m_data.bClientTexCoord)) {
+	if ((m_data.bClientTexCoord = bTexCoord))
 		glEnableClientState (GL_TEXTURE_COORD_ARRAY);
 	else
 		glDisableClientState (GL_TEXTURE_COORD_ARRAY);
 	}
-if (!transpItems.bLightmaps)
+if (!m_data.bLightmaps)
 	glEnableClientState (GL_NORMAL_ARRAY);
 glEnableClientState (GL_VERTEX_ARRAY);
 }
 
 //------------------------------------------------------------------------------
 
-void TIDisableClientState (int nTMU, char bDecal, char bFull)
+void CTransparencyRenderer::DisableClientState (int nTMU, char bDecal, char bFull)
 {
 #if DBG
 if (nTMU == GL_TEXTURE0)
@@ -601,18 +596,18 @@ if (bFull) {
 	if (bDecal) {
 		glDisableClientState (GL_TEXTURE_COORD_ARRAY);
 		glDisableClientState (GL_COLOR_ARRAY);
-			transpItems.bClientTexCoord = 0;
-			transpItems.bClientColor = 0;
+			m_data.bClientTexCoord = 0;
+			m_data.bClientColor = 0;
 		}
 	else {
-		transpItems.bClientState = 0;
-		if (transpItems.bClientTexCoord) {
+		m_data.bClientState = 0;
+		if (m_data.bClientTexCoord) {
 			glDisableClientState (GL_TEXTURE_COORD_ARRAY);
-			transpItems.bClientTexCoord = 0;
+			m_data.bClientTexCoord = 0;
 			}
-		if (bDecal || transpItems.bClientColor) {
+		if (bDecal || m_data.bClientColor) {
 			glDisableClientState (GL_COLOR_ARRAY);
-			transpItems.bClientColor = 0;
+			m_data.bClientColor = 0;
 			}
 		}
 	glDisableClientState (GL_VERTEX_ARRAY);
@@ -625,24 +620,24 @@ else {
 
 //------------------------------------------------------------------------------
 
-inline void TIResetBitmaps (void)
+inline void CTransparencyRenderer::ResetBitmaps (void)
 {
-transpItems.bmP [0] =
-transpItems.bmP [1] =
-transpItems.bmP [2] = NULL;
-transpItems.bDecal = 0;
-transpItems.bTextured = 0;
-transpItems.nFrame = -1;
-transpItems.bUseLightmaps = 0;
+m_data.bmP [0] =
+m_data.bmP [1] =
+m_data.bmP [2] = NULL;
+m_data.bDecal = 0;
+m_data.bTextured = 0;
+m_data.nFrame = -1;
+m_data.bUseLightmaps = 0;
 }
 
 //------------------------------------------------------------------------------
 
-int TISetClientState (char bClientState, char bTexCoord, char bColor, char bUseLightmaps, char bDecal)
+int CTransparencyRenderer::SetClientState (char bClientState, char bTexCoord, char bColor, char bUseLightmaps, char bDecal)
 {
 PROF_START
 #if 1
-if (transpItems.bUseLightmaps != bUseLightmaps) {
+if (m_data.bUseLightmaps != bUseLightmaps) {
 	glActiveTexture (GL_TEXTURE0);
 	glClientActiveTexture (GL_TEXTURE0);
 	OglClearError (0);
@@ -652,38 +647,38 @@ if (transpItems.bUseLightmaps != bUseLightmaps) {
 		glEnableClientState (GL_TEXTURE_COORD_ARRAY);
 		glEnableClientState (GL_COLOR_ARRAY);
 		glEnableClientState (GL_VERTEX_ARRAY);
-		transpItems.bClientTexCoord =
-		transpItems.bClientColor = 0;
+		m_data.bClientTexCoord =
+		m_data.bClientColor = 0;
 		}
 	else {
 		glDisableClientState (GL_NORMAL_ARRAY);
-		TIDisableClientState (GL_TEXTURE1, 0, 0);
-		if (transpItems.bDecal) {
-			TIDisableClientState (GL_TEXTURE2, 1, 0);
-			if (transpItems.bDecal == 2)
-				TIDisableClientState (GL_TEXTURE3, 1, 0);
-			transpItems.bDecal = 0;
+		DisableClientState (GL_TEXTURE1, 0, 0);
+		if (m_data.bDecal) {
+			DisableClientState (GL_TEXTURE2, 1, 0);
+			if (m_data.bDecal == 2)
+				DisableClientState (GL_TEXTURE3, 1, 0);
+			m_data.bDecal = 0;
 			}
-		transpItems.bClientTexCoord =
-		transpItems.bClientColor = 1;
+		m_data.bClientTexCoord =
+		m_data.bClientColor = 1;
 		}
-	TIResetBitmaps ();
-	transpItems.bUseLightmaps = bUseLightmaps;
+	ResetBitmaps ();
+	m_data.bUseLightmaps = bUseLightmaps;
 	}
 #endif
 #if 0
-if (transpItems.bClientState == bClientState) {
+if (m_data.bClientState == bClientState) {
 	if (bClientState) {
 		glActiveTexture (GL_TEXTURE0 + bUseLightmaps);
 		glClientActiveTexture (GL_TEXTURE0 + bUseLightmaps);
-		if (transpItems.bClientColor != bColor) {
-			if ((transpItems.bClientColor = bColor))
+		if (m_data.bClientColor != bColor) {
+			if ((m_data.bClientColor = bColor))
 				glEnableClientState (GL_COLOR_ARRAY);
 			else
 				glDisableClientState (GL_COLOR_ARRAY);
 			}
-		if (transpItems.bClientTexCoord != bTexCoord) {
-			if ((transpItems.bClientTexCoord = bTexCoord))
+		if (m_data.bClientTexCoord != bTexCoord) {
+			if ((m_data.bClientTexCoord = bTexCoord))
 				glEnableClientState (GL_TEXTURE_COORD_ARRAY);
 			else
 				glDisableClientState (GL_TEXTURE_COORD_ARRAY);
@@ -696,51 +691,51 @@ if (transpItems.bClientState == bClientState) {
 else
 #endif
 if (bClientState) {
-	transpItems.bClientState = 1;
+	m_data.bClientState = 1;
 #if RENDER_TRANSP_DECALS
 	if (bDecal) {
 		if (bDecal == 2) {
-			TIEnableClientState (bClientState, bTexCoord, 0, 1, GL_TEXTURE2 + bUseLightmaps);
+			EnableClientState (bClientState, bTexCoord, 0, 1, GL_TEXTURE2 + bUseLightmaps);
 			}
-		TIEnableClientState (bClientState, bTexCoord, bColor, 1, GL_TEXTURE1 + bUseLightmaps);
-		transpItems.bDecal = bDecal;
+		EnableClientState (bClientState, bTexCoord, bColor, 1, GL_TEXTURE1 + bUseLightmaps);
+		m_data.bDecal = bDecal;
 		}
-	else /*if (transpItems.bDecal)*/ {
-		if (transpItems.bDecal == 2) {
-			TIDisableClientState (GL_TEXTURE2 + bUseLightmaps, 1, 1);
+	else /*if (m_data.bDecal)*/ {
+		if (m_data.bDecal == 2) {
+			DisableClientState (GL_TEXTURE2 + bUseLightmaps, 1, 1);
 			OGL_BINDTEX (0);
 			glDisable (GL_TEXTURE_2D);
-			transpItems.bmP [2] = NULL;
+			m_data.bmP [2] = NULL;
 			}
-		TIDisableClientState (GL_TEXTURE1 + bUseLightmaps, 1, 1);
+		DisableClientState (GL_TEXTURE1 + bUseLightmaps, 1, 1);
 		OGL_BINDTEX (0);
 		glDisable (GL_TEXTURE_2D);
-		transpItems.bmP [1] = NULL;
-		transpItems.bDecal = 0;
+		m_data.bmP [1] = NULL;
+		m_data.bDecal = 0;
 		}
 #endif
-	TIEnableClientState (bClientState, bTexCoord, bColor, 0, GL_TEXTURE0 + bUseLightmaps);
+	EnableClientState (bClientState, bTexCoord, bColor, 0, GL_TEXTURE0 + bUseLightmaps);
 	}
 else {
 #if RENDER_TRANSP_DECALS
-	if (transpItems.bDecal) {
-		if (transpItems.bDecal == 2)
-			TIDisableClientState (GL_TEXTURE2 + bUseLightmaps, 1, 1);
-		TIDisableClientState (GL_TEXTURE1 + bUseLightmaps, 1, 1);
-		transpItems.bDecal = 0;
+	if (m_data.bDecal) {
+		if (m_data.bDecal == 2)
+			DisableClientState (GL_TEXTURE2 + bUseLightmaps, 1, 1);
+		DisableClientState (GL_TEXTURE1 + bUseLightmaps, 1, 1);
+		m_data.bDecal = 0;
 		}
 #endif
-	TIDisableClientState (GL_TEXTURE0 + bUseLightmaps, 0, 1);
+	DisableClientState (GL_TEXTURE0 + bUseLightmaps, 0, 1);
 	glActiveTexture (GL_TEXTURE0);
 	}
-//transpItems.bmP = NULL;
+//m_data.bmP = NULL;
 PROF_END(ptRenderStates)
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-void TIResetShader (void)
+void CTransparencyRenderer::ResetShader (void)
 {
 if (gameStates.ogl.bShadersOk && (gameStates.render.history.nShader >= 0)) {
 	gameData.render.nShaderChanges++;
@@ -754,64 +749,64 @@ if (gameStates.ogl.bShadersOk && (gameStates.render.history.nShader >= 0)) {
 
 //------------------------------------------------------------------------------
 
-int LoadTranspItemImage (CBitmap *bmP, char nColors, char nFrame, int nWrap,
-								 int bClientState, int nTransp, int bShader, int bUseLightmaps,
-								 int bHaveDecal, int bDecal)
+int CTransparencyRenderer::LoadImage (CBitmap *bmP, char nColors, char nFrame, int nWrap,
+												  int bClientState, int nTransp, int bShader, int bUseLightmaps,
+												  int bHaveDecal, int bDecal)
 {
 if (bmP) {
 	glEnable (GL_TEXTURE_2D);
-	if (bDecal || TISetClientState (bClientState, 1, nColors > 1, bUseLightmaps, bHaveDecal) || (transpItems.bTextured < 1)) {
+	if (bDecal ||SetClientState (bClientState, 1, nColors > 1, bUseLightmaps, bHaveDecal) || (m_data.bTextured < 1)) {
 		glActiveTexture (GL_TEXTURE0 + bUseLightmaps + bDecal);
 		glClientActiveTexture (GL_TEXTURE0 + bUseLightmaps + bDecal);
 		//glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		transpItems.bTextured = 1;
+		m_data.bTextured = 1;
 		}
 	if (bDecal == 1)
 		bmP = bmP->Override (-1);
-	if ((bmP != transpItems.bmP [bDecal]) || (nFrame != transpItems.nFrame) || (nWrap != transpItems.nWrap)) {
+	if ((bmP != m_data.bmP [bDecal]) || (nFrame != m_data.nFrame) || (nWrap != m_data.nWrap)) {
 		gameData.render.nStateChanges++;
 		if (bmP) {
 			if (bmP->Bind (1, nTransp)) {
-				transpItems.bmP [bDecal] = NULL;
+				m_data.bmP [bDecal] = NULL;
 				return 0;
 				}
 			if (bDecal != 2)
 				bmP = bmP->Override (nFrame);
 			bmP->Texture ()->Wrap (nWrap);
-			transpItems.nWrap = nWrap;
-			transpItems.nFrame = nFrame;
+			m_data.nWrap = nWrap;
+			m_data.nFrame = nFrame;
 			}
 		else
 			OGL_BINDTEX (0);
-		transpItems.bmP [bDecal] = bmP;
+		m_data.bmP [bDecal] = bmP;
 		}
 	}
-else if (TISetClientState (bClientState, 0, /*!transpItems.bLightmaps &&*/ (nColors > 1), bUseLightmaps, 0) || transpItems.bTextured) {
-	if (transpItems.bTextured) {
+else if (SetClientState (bClientState, 0, /*!m_data.bLightmaps &&*/ (nColors > 1), bUseLightmaps, 0) || m_data.bTextured) {
+	if (m_data.bTextured) {
 		OGL_BINDTEX (0);
 		glDisable (GL_TEXTURE_2D);
-		TIResetBitmaps ();
+		ResetBitmaps ();
 		}
 	}
 if (!bShader)
-	TIResetShader ();
-return (transpItems.bClientState == bClientState);
+	ResetShader ();
+return (m_data.bClientState == bClientState);
 }
 
 //------------------------------------------------------------------------------
 
-inline void TISetRenderPointers (int nTMU, int nIndex, int bDecal)
+void CTransparencyRenderer::SetRenderPointers (int nTMU, int nIndex, int bDecal)
 {
 glActiveTexture (nTMU);
 glClientActiveTexture (nTMU);
-if (transpItems.bTextured)
+if (m_data.bTextured)
 	glTexCoordPointer (2, GL_FLOAT, 0, (bDecal ? FACES.ovlTexCoord : FACES.texCoord) + nIndex);
 glVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
 }
 
 //------------------------------------------------------------------------------
 
-void TIRenderPoly (tTranspPoly *item)
+void CTransparencyRenderer::RenderPoly (tTranspPoly *item)
 {
 PROF_START
 	tFace		*faceP;
@@ -833,7 +828,7 @@ if (bmBot && strstr (bmBot->Name (), "glare.tga"))
 #if 1
 faceP = item->faceP;
 triP = item->triP;
-bLightmaps = transpItems.bLightmaps && (faceP != NULL);
+bLightmaps = m_data.bLightmaps && (faceP != NULL);
 #if DBG
 if (!bLightmaps)
 	bLightmaps = bLightmaps;
@@ -852,14 +847,14 @@ if (faceP) {
 	}
 else
 	bSoftBlend = (gameOpts->render.effects.bSoftParticles & 1) != 0;
-//transpItems.bUseLightmaps = 0;
+//m_data.bUseLightmaps = 0;
 #endif
 #if 0
-if (transpItems.bDepthMask)
-	glDepthMask (transpItems.bDepthMask = 0);
+if (m_data.bDepthMask)
+	glDepthMask (m_data.bDepthMask = 0);
 #else
-if (transpItems.bDepthMask != item->bDepthMask)
-	glDepthMask (transpItems.bDepthMask = item->bDepthMask);
+if (m_data.bDepthMask != item->bDepthMask)
+	glDepthMask (m_data.bDepthMask = item->bDepthMask);
 #endif
 if (!faceP)
 	bmTop = NULL;
@@ -879,25 +874,25 @@ else {
 bDecal = 0;
 mask = NULL;
 #endif
-if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 1, 3,
+if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 1, 3,
 	 (faceP != NULL) || bSoftBlend, bLightmaps, mask ? 2 : bDecal > 0, 0) &&
-	 ((bDecal < 1) || LoadTranspItemImage (bmTop, 0, 0, item->nWrap, 1, 3, 1, bLightmaps, 0, 1)) &&
-	 (!mask || LoadTranspItemImage (mask, 0, 0, item->nWrap, 1, 3, 1, bLightmaps, 0, 2))) {
+	 ((bDecal < 1) || LoadImage (bmTop, 0, 0, item->nWrap, 1, 3, 1, bLightmaps, 0, 1)) &&
+	 (!mask || LoadImage (mask, 0, 0, item->nWrap, 1, 3, 1, bLightmaps, 0, 2))) {
 	nIndex = triP ? triP->nIndex : faceP ? faceP->nIndex : 0;
 	if (triP || faceP) {
-		TISetRenderPointers (GL_TEXTURE0 + bLightmaps, nIndex, bDecal < 0);
+		SetRenderPointers (GL_TEXTURE0 + bLightmaps, nIndex, bDecal < 0);
 		if (!bLightmaps)
 			glNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
 		if (bDecal > 0) {
-			TISetRenderPointers (GL_TEXTURE1 + bLightmaps, nIndex, 1);
+			SetRenderPointers (GL_TEXTURE1 + bLightmaps, nIndex, 1);
 			if (mask)
-				TISetRenderPointers (GL_TEXTURE2 + bLightmaps, nIndex, 1);
+				SetRenderPointers (GL_TEXTURE2 + bLightmaps, nIndex, 1);
 			}
 		}
 	else {
 		glActiveTexture (GL_TEXTURE0);
 		glClientActiveTexture (GL_TEXTURE0);
-		if (transpItems.bTextured)
+		if (m_data.bTextured)
 			glTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
 		glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), item->vertices);
 		}
@@ -943,7 +938,7 @@ if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 
 			bool bAdditive = false;
 #if 0
 			if (gameData.render.lights.dynamic.headlights.nLights && !automap.m_bDisplay) {
-				lightManager.Headlights ().SetupShader (transpItems.bTextured, 1, transpItems.bTextured ? NULL : &faceP->color);
+				lightManager.Headlights ().SetupShader (m_data.bTextured, 1, m_data.bTextured ? NULL : &faceP->color);
 				glDrawArrays (item->nPrimitive, 0, item->nVertices);
 				bAdditive = true;
 				glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
@@ -953,7 +948,7 @@ if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 
 #if 1
 #	if 0
 			if (faceP)
-				lightManager.SetNearestToFace (faceP, transpItems.bTextured);
+				lightManager.SetNearestToFace (faceP, m_data.bTextured);
 #	endif
 			if (gameStates.render.bPerPixelLighting == 1) {
 #	if RENDER_TRANSP_DECALS
@@ -987,7 +982,7 @@ if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 
 					if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 						nDbgSeg = nDbgSeg;
 					}
-				lightManager.Headlights ().SetupShader (transpItems.bTextured, 1, transpItems.bTextured ? NULL : &faceP->color);
+				lightManager.Headlights ().SetupShader (m_data.bTextured, 1, m_data.bTextured ? NULL : &faceP->color);
 				if (!bAdditive) {
 					bAdditive = true;
 					//if (i)
@@ -1006,12 +1001,12 @@ if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 
 			if (bSoftBlend)
 				LoadGlareShader (5);
 			else
-				TIResetShader ();
+				ResetShader ();
 			}
 		else
 			G3SetupShader (faceP, 0, 0, bDecal > 0, bmBot != NULL,
 								(item->nSegment < 0) || !automap.m_bDisplay || automap.m_visited [0][item->nSegment],
-								transpItems.bTextured ? NULL : faceP ? &faceP->color : item->color);
+								m_data.bTextured ? NULL : faceP ? &faceP->color : item->color);
 #if 0
 		if (triP)
 			glNormal3fv (reinterpret_cast<GLfloat*> (FACES.normals + triP->nIndex));
@@ -1026,13 +1021,13 @@ if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 
 	}
 else
 #endif
-if (LoadTranspItemImage (bmBot, item->nColors, 0, item->nWrap, 0, 3, 1, lightmapManager.HaveLightmaps () && (faceP != NULL), 0, 0)) {
+if (LoadImage (bmBot, item->nColors, 0, item->nWrap, 0, 3, 1, lightmapManager.HaveLightmaps () && (faceP != NULL), 0, 0)) {
 	if (item->bAdditive == 1) {
-		TIResetShader ();
+		ResetShader ();
 		glBlendFunc (GL_ONE, GL_ONE);
 		}
 	else if (item->bAdditive == 2) {
-		TIResetShader ();
+		ResetShader ();
 		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 		}
 	else {
@@ -1092,27 +1087,27 @@ PROF_END(ptRenderFaces)
 
 //------------------------------------------------------------------------------
 
-void TIRenderObject (tTranspObject *item)
+void CTransparencyRenderer::RenderObject (tTranspObject *item)
 {
 //SEM_LEAVE (SEM_LIGHTNINGS)	//might lockup otherwise when creating damage lightnings on cloaked objects
 //SEM_LEAVE (SEM_SPARKS)
 DrawPolygonObject (item->objP, 0, 1);
 glDisable (GL_TEXTURE_2D);
-transpItems.bTextured = 0;
-transpItems.bClientState = 0;
-transpItems.bClientTexCoord = 0;
-transpItems.bClientColor = 0;
+m_data.bTextured = 0;
+m_data.bClientState = 0;
+m_data.bClientTexCoord = 0;
+m_data.bClientColor = 0;
 //SEM_ENTER (SEM_LIGHTNINGS)
 //SEM_ENTER (SEM_SPARKS)
 }
 
 //------------------------------------------------------------------------------
 
-void TIRenderSprite (tTranspSprite *item)
+void CTransparencyRenderer::RenderSprite (tTranspSprite *item)
 {
 	int bSoftBlend = ((gameOpts->render.effects.bSoftParticles & 1) != 0) && (item->fSoftRad > 0);
 
-if (LoadTranspItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1,
+if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1,
 								 bSoftBlend, 0, 0, 0)) {
 	float		h, w, u, v;
 	CFloatVector	fPos = item->position;
@@ -1133,8 +1128,8 @@ if (LoadTranspItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1,
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	if (bSoftBlend)
 		LoadGlareShader (item->fSoftRad);
-	else if (transpItems.bDepthMask)
-		glDepthMask (transpItems.bDepthMask = 0); 
+	else if (m_data.bDepthMask)
+		glDepthMask (m_data.bDepthMask = 0); 
 	glBegin (GL_QUADS);
 	glTexCoord2f (0, 0);
 	fPos [X] -= w;
@@ -1175,20 +1170,20 @@ tSparkBuffer sparkBuffer;
 
 //------------------------------------------------------------------------------
 
-void TIFlushSparkBuffer (void)
+void CTransparencyRenderer::FlushSparkBuffer (void)
 {
 	int bSoftSparks = (gameOpts->render.effects.bSoftParticles & 2) != 0;
 
-if (sparkBuffer.nSparks && LoadTranspItemImage (bmpSparks, 0, 0, GL_CLAMP, 1, 1, bSoftSparks, 0, 0, 0)) {
+if (sparkBuffer.nSparks && LoadImage (bmpSparks, 0, 0, GL_CLAMP, 1, 1, bSoftSparks, 0, 0, 0)) {
 	G3EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	glEnable (GL_TEXTURE_2D);
 	bmpSparks->Texture ()->Bind ();
 	if (bSoftSparks)
 		LoadGlareShader (3);
 	else {
-		TIResetShader ();
-		if (transpItems.bDepthMask)
-			glDepthMask (transpItems.bDepthMask = 0);
+		ResetShader ();
+		if (m_data.bDepthMask)
+			glDepthMask (m_data.bDepthMask = 0);
 		}
 	glBlendFunc (GL_ONE, GL_ONE);
 	glColor3f (1, 1, 1);
@@ -1198,17 +1193,17 @@ if (sparkBuffer.nSparks && LoadTranspItemImage (bmpSparks, 0, 0, GL_CLAMP, 1, 1,
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	if (bSoftSparks)
 		glEnable (GL_DEPTH_TEST);
-	transpItems.bClientColor = 0;
+	m_data.bClientColor = 0;
 	sparkBuffer.nSparks = 0;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void TIRenderSpark (tTranspSpark *item)
+void CTransparencyRenderer::RenderSpark (tTranspSpark *item)
 {
 if (sparkBuffer.nSparks >= SPARK_BUF_SIZE)
-	TIFlushSparkBuffer ();
+	FlushSparkBuffer ();
 
 	tSparkVertex	*infoP = sparkBuffer.info + 4 * sparkBuffer.nSparks;
 	CFloatVector			vPos = item->position;
@@ -1246,31 +1241,31 @@ sparkBuffer.nSparks++;
 
 //------------------------------------------------------------------------------
 
-void TIRenderSphere (tTranspSphere *item)
+void CTransparencyRenderer::RenderSphere (tTranspSphere *item)
 {
 	int bDepthSort = gameOpts->render.bDepthSort;
 
 gameOpts->render.bDepthSort = -1;
-TISetClientState (0, 0, 0, 0, 0);
-TIResetShader ();
+SetClientState (0, 0, 0, 0, 0);
+ResetShader ();
 if (item->nType == riSphereShield)
 	DrawShieldSphere (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
 if (item->nType == riMonsterball)
 	DrawMonsterball (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
-TIResetBitmaps ();
-glActiveTexture (GL_TEXTURE0 + transpItems.bLightmaps);
-glClientActiveTexture (GL_TEXTURE0 + transpItems.bLightmaps);
+ResetBitmaps ();
+glActiveTexture (GL_TEXTURE0 + m_data.bLightmaps);
+glClientActiveTexture (GL_TEXTURE0 + m_data.bLightmaps);
 OGL_BINDTEX (0);
 glDisable (GL_TEXTURE_2D);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-glDepthMask (transpItems.bDepthMask = 0);
+glDepthMask (m_data.bDepthMask = 0);
 glEnable (GL_BLEND);
 gameOpts->render.bDepthSort = bDepthSort;
 }
 
 //------------------------------------------------------------------------------
 
-void TIRenderBullet (CParticle *pParticle)
+void CTransparencyRenderer::RenderBullet (CParticle *pParticle)
 {
 	CObject	o;
 
@@ -1285,66 +1280,66 @@ if (0 <= (o.info.nSegment = FindSegByPos (o.info.position.vPos, pParticle->m_nSe
 	o.rType.polyObjInfo.nTexOverride = -1;
 	DrawPolygonObject (&o, 0, 1);
 	glDisable (GL_TEXTURE_2D);
-	transpItems.bTextured = 0;
-	transpItems.bClientState = 0;
+	m_data.bTextured = 0;
+	m_data.bClientState = 0;
 	gameData.models.vScale.SetZero ();
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void TIRenderParticle (tTranspParticle *item)
+void CTransparencyRenderer::RenderParticle (tTranspParticle *item)
 {
 if (item->particle->m_nType == 2)
-	TIRenderBullet (item->particle);
+	CTransparencyRenderer::RenderBullet (item->particle);
 else {
 	int bSoftSmoke = (gameOpts->render.effects.bSoftParticles & 4) != 0;
 
-	TISetClientState (0, 0, 0, 0, 0);
+	SetClientState (0, 0, 0, 0, 0);
 	if (!bSoftSmoke || (gameStates.render.history.nShader != 999))
-		TIResetShader ();
-	if (transpItems.nPrevType != tiParticle) {
+		ResetShader ();
+	if (m_data.nPrevType != tiParticle) {
 		glEnable (GL_TEXTURE_2D);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		particleManager.SetLastType (-1);
-		transpItems.bTextured = 1;
-		//InitParticleBuffer (transpItems.bLightmaps);
+		m_data.bTextured = 1;
+		//InitParticleBuffer (m_data.bLightmaps);
 		}
 	item->particle->Render (item->fBrightness);
-	TIResetBitmaps ();
-	transpItems.bDepthMask = 1;
+	ResetBitmaps ();
+	m_data.bDepthMask = 1;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void TIRenderLightning (tTranspLightning *item)
+void CTransparencyRenderer::RenderLightning (tTranspLightning *item)
 {
-if (transpItems.nPrevType != transpItems.nCurType) {
-	if (transpItems.bDepthMask)
-		glDepthMask (transpItems.bDepthMask = 0);
-	TIDisableClientState (GL_TEXTURE2, 1, 0);
-	TISetClientState (1, 0, 0, 0, 0);
-	TIResetShader ();
+if (m_data.nPrevType != m_data.nCurType) {
+	if (m_data.bDepthMask)
+		glDepthMask (m_data.bDepthMask = 0);
+	DisableClientState (GL_TEXTURE2, 1, 0);
+	SetClientState (1, 0, 0, 0, 0);
+	ResetShader ();
 	}
 item->lightning->Render (item->nDepth, 0, 0);
-TISetClientState (0, 0, 0, 0, 0);
-TIResetBitmaps ();
-transpItems.bDepthMask = 1;
+SetClientState (0, 0, 0, 0, 0);
+ResetBitmaps ();
+m_data.bDepthMask = 1;
 }
 
 //------------------------------------------------------------------------------
 
-void TIRenderLightTrail (tTranspLightTrail *item)
+void CTransparencyRenderer::RenderLightTrail (tTranspLightTrail *item)
 {
-if (!transpItems.bDepthMask)
-	glDepthMask (transpItems.bDepthMask = 1);
+if (!m_data.bDepthMask)
+	glDepthMask (m_data.bDepthMask = 1);
 glEnable (GL_BLEND);
 glBlendFunc (GL_ONE, GL_ONE);
 glDisable (GL_CULL_FACE);
 glColor4fv (reinterpret_cast<GLfloat*> (&item->color));
 #if 1
-if (LoadTranspItemImage (item->bmP, 1, 0, GL_CLAMP, 1, 1, 0, 0, 0, 0)) {
+if (LoadImage (item->bmP, 1, 0, GL_CLAMP, 1, 1, 0, 0, 0, 0)) {
 	glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), item->vertices);
 	glTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
 	if (item->bTrail)
@@ -1353,7 +1348,7 @@ if (LoadTranspItemImage (item->bmP, 1, 0, GL_CLAMP, 1, 1, 0, 0, 0, 0)) {
 	}
 else
 #endif
-if (LoadTranspItemImage (item->bmP, 0, 0, GL_CLAMP, 0, 1, 0, 0, 0, 0)) {
+if (LoadImage (item->bmP, 0, 0, GL_CLAMP, 0, 1, 0, 0, 0, 0)) {
 	int i;
 	if (item->bTrail) {
 		glBegin (GL_TRIANGLES);
@@ -1376,42 +1371,42 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 //------------------------------------------------------------------------------
 
-void TIFlushParticleBuffer (int nType)
+void CTransparencyRenderer::FlushParticleBuffer (int nType)
 {
 if ((nType < 0) || ((nType != tiParticle) && (particleManager.LastType () >= 0))) {
 	particleManager.FlushBuffer (-1.0f);
 	if (nType < 0)
 		particleManager.CloseBuffer ();
 #if 1
-	TIResetBitmaps ();
+	ResetBitmaps ();
 #endif
 	particleManager.SetLastType (-1);
-	transpItems.bClientColor = 1;
-	transpItems.bUseLightmaps = 0;
+	m_data.bClientColor = 1;
+	m_data.bUseLightmaps = 0;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-static inline void TIFlushBuffers (int nType)
+void CTransparencyRenderer::FlushBuffers (int nType)
 {
 if (nType != tiSpark)
-	TIFlushSparkBuffer ();
-TIFlushParticleBuffer (nType);
+	FlushSparkBuffer ();
+FlushParticleBuffer (nType);
 }
 
 //------------------------------------------------------------------------------
 
-tTranspItem *TISetParent (int nChild, int nParent)
+tTranspItem* CTransparencyRenderer::SetParent (int nChild, int nParent)
 {
 if (nChild < 0)
 	return NULL;
-tTranspItem	*childP = transpItems.itemListP + nChild;
+tTranspItem	*childP = m_data.itemLists + nChild;
 if (!childP->bValid)
 	return NULL;
 if (nParent < 0)
 	return NULL;
-tTranspItem	*parentP = transpItems.itemListP + nParent;
+tTranspItem	*parentP = m_data.itemLists + nParent;
 if (!parentP->bValid)
 	return NULL;
 childP->parentP = parentP;
@@ -1420,92 +1415,92 @@ return parentP;
 
 //------------------------------------------------------------------------------
 
-int RenderTranspItem (struct tTranspItem *pl)
+int CTransparencyRenderer::RenderItem (struct tTranspItem *pl)
 {
 if (!pl->bRendered) {
 	pl->bRendered = true;
-	transpItems.nPrevType = transpItems.nCurType;
-	transpItems.nCurType = pl->nType;
-	TIFlushBuffers (transpItems.nCurType);
-	if ((transpItems.nCurType == tiTexPoly) || (transpItems.nCurType == tiFlatPoly)) {
-		TIRenderPoly (&pl->item.poly);
+	m_data.nPrevType = m_data.nCurType;
+	m_data.nCurType = pl->nType;
+	FlushBuffers (m_data.nCurType);
+	if ((m_data.nCurType == tiTexPoly) || (m_data.nCurType == tiFlatPoly)) {
+		RenderPoly (&pl->item.poly);
 		}
-	else if (transpItems.nCurType == tiObject) {
-		TIRenderObject (&pl->item.object);
+	else if (m_data.nCurType == tiObject) {
+		RenderObject (&pl->item.object);
 		}
-	else if (transpItems.nCurType == tiSprite) {
-		TIRenderSprite (&pl->item.sprite);
+	else if (m_data.nCurType == tiSprite) {
+		RenderSprite (&pl->item.sprite);
 		}
-	else if (transpItems.nCurType == tiSpark) {
-		TIRenderSpark (&pl->item.spark);
+	else if (m_data.nCurType == tiSpark) {
+		RenderSpark (&pl->item.spark);
 		}
-	else if (transpItems.nCurType == tiSphere) {
-		TIRenderSphere (&pl->item.sphere);
+	else if (m_data.nCurType == tiSphere) {
+		RenderSphere (&pl->item.sphere);
 		}
-	else if (transpItems.nCurType == tiParticle) {
-		if (transpItems.bHaveParticles)
-			TIRenderParticle (&pl->item.particle);
+	else if (m_data.nCurType == tiParticle) {
+		if (m_data.bHaveParticles)
+			RenderParticle (&pl->item.particle);
 		}
-	else if (transpItems.nCurType == tiLightning) {
-		TIRenderLightning (&pl->item.lightning);
+	else if (m_data.nCurType == tiLightning) {
+		RenderLightning (&pl->item.lightning);
 		}
-	else if (transpItems.nCurType == tiThruster) {
-		TIRenderLightTrail (&pl->item.thruster);
+	else if (m_data.nCurType == tiThruster) {
+		RenderLightTrail (&pl->item.thruster);
 		}
 	if (pl->parentP)
-		RenderTranspItem (pl->parentP);
+		RenderItem (pl->parentP);
 	}
-return transpItems.nCurType;
+return m_data.nCurType;
 }
 
 //------------------------------------------------------------------------------
 
 extern int bLog;
 
-void RenderTranspItems (void)
+void CTransparencyRenderer::Render (void)
 {
 #if RENDER_TRANSPARENCY
 	struct tTranspItem	**pd, *pl, *pn;
 	int						nDepth, nItems, bStencil;
 
-if (!(gameOpts->render.bDepthSort && transpItems.depthBufP && (transpItems.nFreeItems < ITEM_BUFFER_SIZE))) {
+if (!(gameOpts->render.bDepthSort && m_data.depthBuffer.Buffer () && (m_data.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;
 	}
 PROF_START
 gameStates.render.nType = 5;
 OglSetLibFlags (1);
-TIResetShader ();
+ResetShader ();
 bStencil = StencilOff ();
-transpItems.bTextured = -1;
-transpItems.bClientState = -1;
-transpItems.bClientTexCoord = 0;
-transpItems.bClientColor = 0;
-transpItems.bDepthMask = 0;
-transpItems.bUseLightmaps = 0;
-transpItems.bDecal = 0;
-transpItems.bLightmaps = lightmapManager.HaveLightmaps ();
-transpItems.bSplitPolys = (gameStates.render.bPerPixelLighting != 2) && (gameStates.render.bSplitPolys > 0);
-transpItems.nWrap = 0;
-transpItems.nFrame = -1;
-transpItems.bmP [0] =
-transpItems.bmP [1] = NULL;
+m_data.bTextured = -1;
+m_data.bClientState = -1;
+m_data.bClientTexCoord = 0;
+m_data.bClientColor = 0;
+m_data.bDepthMask = 0;
+m_data.bUseLightmaps = 0;
+m_data.bDecal = 0;
+m_data.bLightmaps = lightmapManager.HaveLightmaps ();
+m_data.bSplitPolys = (gameStates.render.bPerPixelLighting != 2) && (gameStates.render.bSplitPolys > 0);
+m_data.nWrap = 0;
+m_data.nFrame = -1;
+m_data.bmP [0] =
+m_data.bmP [1] = NULL;
 sparkBuffer.nSparks = 0;
 OglDisableLighting ();
-G3DisableClientStates (1, 1, 0, GL_TEXTURE2 + transpItems.bLightmaps);
-G3DisableClientStates (1, 1, 0, GL_TEXTURE1 + transpItems.bLightmaps);
-G3DisableClientStates (1, 1, 0, GL_TEXTURE0 + transpItems.bLightmaps);
+G3DisableClientStates (1, 1, 0, GL_TEXTURE2 + m_data.bLightmaps);
+G3DisableClientStates (1, 1, 0, GL_TEXTURE1 + m_data.bLightmaps);
+G3DisableClientStates (1, 1, 0, GL_TEXTURE0 + m_data.bLightmaps);
 G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
-pl = transpItems.itemListP + ITEM_BUFFER_SIZE - 1;
-transpItems.bHaveParticles = particleImageManager.LoadAll ();
+pl = m_data.itemLists + ITEM_BUFFER_SIZE - 1;
+m_data.bHaveParticles = particleImageManager.LoadAll ();
 glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDepthFunc (GL_LEQUAL);
 glDepthMask (0);
 glEnable (GL_CULL_FACE);
 particleManager.BeginRender (-1, 1);
-transpItems.nCurType = -1;
-for (pd = transpItems.depthBufP + transpItems.nMaxOffs /*ITEM_DEPTHBUFFER_SIZE - 1*/, nItems = transpItems.nItems;
-	  (pd >= transpItems.depthBufP) && nItems;
+m_data.nCurType = -1;
+for (pd = m_data.depthBuffer + m_data.nMaxOffs /*ITEM_DEPTHBUFFER_SIZE - 1*/, nItems = m_data.nItems;
+	  (pd >= m_data.depthBuffer.Buffer ()) && nItems;
 	  pd--) {
 	if ((pl = *pd)) {
 		nDepth = 0;
@@ -1515,7 +1510,7 @@ for (pd = transpItems.depthBufP + transpItems.nMaxOffs /*ITEM_DEPTHBUFFER_SIZE -
 				nDbgItem = nDbgItem;
 #endif
 			nItems--;
-			RenderTranspItem (pl);
+			RenderItem (pl);
 			pn = pl->pNextItem;
 			pl->pNextItem = NULL;
 			pl = pn;
@@ -1524,9 +1519,9 @@ for (pd = transpItems.depthBufP + transpItems.nMaxOffs /*ITEM_DEPTHBUFFER_SIZE -
 		*pd = NULL;
 		}
 	}
-TIFlushBuffers (-1);
+FlushBuffers (-1);
 particleManager.EndRender ();
-TIResetShader ();
+ResetShader ();
 G3DisableClientStates (1, 1, 1, GL_TEXTURE0);
 OGL_BINDTEX (0);
 G3DisableClientStates (1, 1, 1, GL_TEXTURE1);
@@ -1539,9 +1534,9 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDepthFunc (GL_LEQUAL);
 glDepthMask (1);
 StencilOn (bStencil);
-transpItems.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
-transpItems.nMaxOffs = 0;
-transpItems.nFreeItems = ITEM_BUFFER_SIZE;
+m_data.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
+m_data.nMaxOffs = 0;
+m_data.nFreeItems = ITEM_BUFFER_SIZE;
 PROF_END(ptTranspPolys)
 #endif
 }
