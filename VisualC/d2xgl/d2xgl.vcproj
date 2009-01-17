@@ -2446,7 +2446,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\render\glare.cpp"
+						RelativePath="..\..\effects\glare.cpp"
 						>
 					</File>
 					<File
@@ -4537,11 +4537,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File
