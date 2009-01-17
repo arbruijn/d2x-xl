@@ -308,6 +308,7 @@ if (bMemInited)
 	return 1;
 if (gameStates.app.bUseSwapFile) {
 	bitmapCacheSize = 0xFFFFFFFF;
+	gameStates.render.nMaxTextureQuality = 3;
 	return bMemInited = 1;
 	}
 #ifdef EDITOR
