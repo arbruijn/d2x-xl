@@ -52,6 +52,7 @@ class CSaveGameHandler {
 		int GetGameId (char *filename);
 		inline char* Filename (void) { return m_filename; }
 		inline char* Description (void) { return m_description; }
+		inline int Version (void) { return m_nVersion; }
 
 	private:
 		void Backup (void);

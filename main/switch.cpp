@@ -1031,7 +1031,7 @@ return 0;
 void CTrigger::LoadState (CFile& cf, bool bObjTrigger)
 {
 nType = (ubyte) cf.ReadByte (); 
-if (bObjTrigger)
+if (bObjTrigger && (saveGameHandler.Version () >= 41))
 	flags = cf.ReadShort (); 
 else
 	flags = short (cf.ReadByte ()); 
@@ -1048,7 +1048,7 @@ for (int i = 0; i < MAX_TRIGGER_TARGETS; i++) {
 
 void CTrigger::SaveState (CFile& cf, bool bObjTrigger)
 {
-cf.WriteByte (sbyte (nType); 
+cf.WriteByte (sbyte (nType)); 
 if (bObjTrigger)
 	cf.WriteShort (flags); 
 else
