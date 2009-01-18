@@ -1097,7 +1097,7 @@ while ((i >= 0) && (j < 256)) {
 
 //------------------------------------------------------------------------------
 
-void TriggersFrameProcess ()
+void TriggersFrameProcess (void)
 {
 	int		i;
 	CTrigger	*trigP = TRIGGERS.Buffer ();

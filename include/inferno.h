@@ -1925,15 +1925,18 @@ class CFVISideData {
 
 class CPhysicsData {
 	public:
+		CStaticArray< short, MAX_FVI_SEGS >	segments;
 		CArray<short>		ignoreObjs;
 		CFVISideData		side;
 		fix					xTime;
 		fix					xAfterburnerCharge;
 		fix					xBossInvulDot;
 		CFixVector			playerThrust;
+		int					nSegments;
 
 	public:
 		CPhysicsData ();
+		void Init (void);
 		bool Create (void);
 		void Destroy (void);
 };

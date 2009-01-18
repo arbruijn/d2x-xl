@@ -152,7 +152,7 @@ void CObject::SetTurnRoll (void)
 }
 
 //list of segments went through
-short physSegList [MAX_FVI_SEGS], nPhysSegs;
+short gameData.physics.segments [MAX_FVI_SEGS], gameData.physics.nSegments;
 
 #if DBG
 #define EXTRADBG 1		//no extra debug when NDEBUG is on
@@ -454,7 +454,7 @@ if (bDontMoveAIObjects)
 CATCH_OBJ (this, mType.physInfo.velocity [Y] == 0);
 DoPhysicsSimRot ();
 pi = &mType.physInfo;
-nPhysSegs = 0;
+gameData.physics.nSegments = 0;
 nIgnoreObjs = 0;
 xSimTime = gameData.physics.xTime;
 bSimpleFVI = (info.nType != OBJ_PLAYER);
@@ -678,25 +678,25 @@ retryMove:
 		}
 
 	if (bGetPhysSegs) {
-		if (nPhysSegs && (physSegList [nPhysSegs-1] == hi.segList [0]))
-			nPhysSegs--;
+		if (gameData.physics.nSegments && (gameData.physics.segments [gameData.physics.nSegments-1] == hi.segList [0]))
+			gameData.physics.nSegments--;
 #if !DBG
-		i = MAX_FVI_SEGS - nPhysSegs - 1;
+		i = MAX_FVI_SEGS - gameData.physics.nSegments - 1;
 		if (i > 0) {
 			if (i > hi.nSegments)
 				i = hi.nSegments;
 			if (i < 0)
 				FindVectorIntersection (&fq, &hi);
-			memcpy (physSegList + nPhysSegs, hi.segList, i * sizeof (*physSegList));
-			nPhysSegs += i;
+			memcpy (gameData.physics.segments + gameData.physics.nSegments, hi.segList, i * sizeof (*gameData.physics.segments));
+			gameData.physics.nSegments += i;
 			}
 		else
 			i = i;
 #else
-		for (i = 0; (i < hi.nSegments) && (nPhysSegs < MAX_FVI_SEGS-1); ) {
+		for (i = 0; (i < hi.nSegments) && (gameData.physics.nSegments < MAX_FVI_SEGS-1); ) {
 			if (hi.segList [i] > gameData.segs.nLastSegment)
 				PrintLog ("Invalid segment in segment list #1\n");
-			physSegList [nPhysSegs++] = hi.segList [i++];
+			gameData.physics.segments [gameData.physics.nSegments++] = hi.segList [i++];
 			}
 #endif
 		}

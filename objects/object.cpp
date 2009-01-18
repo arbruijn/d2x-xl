@@ -2283,17 +2283,17 @@ int CObject::CheckTriggerHits (short nPrevSegment)
 if ((info.movementType != MT_PHYSICS) || (nPrevSegment == info.nSegment))
 	return 0;
 nOldLevel = gameData.missions.nCurrentLevel;
-for (i = 0; i < nPhysSegs - 1; i++) {
+for (i = 0; i < gameData.physics.nSegments - 1; i++) {
 #if DBG
-	if (physSegList [i] > gameData.segs.nLastSegment)
-		PrintLog ("invalid segment in physSegList\n");
+	if (gameData.physics.segments [i] > gameData.segs.nLastSegment)
+		PrintLog ("invalid segment in gameData.physics.segments\n");
 #endif
-	nConnSide = SEGMENTS [physSegList [i+1]].ConnectedSide (SEGMENTS + physSegList [i]);
+	nConnSide = SEGMENTS [gameData.physics.segments [i+1]].ConnectedSide (SEGMENTS + gameData.physics.segments [i]);
 	if (nConnSide != -1)
-		SEGMENTS [physSegList [i]].OperateTrigger (nConnSide, this, 0);
+		SEGMENTS [gameData.physics.segments [i]].OperateTrigger (nConnSide, this, 0);
 #if DBG
 	else	// segments are not directly connected, so do binary subdivision until you find connected segments.
-		PrintLog ("UNCONNECTED SEGMENTS %d, %d\n", physSegList [i+1], physSegList [i]);
+		PrintLog ("UNCONNECTED SEGMENTS %d, %d\n", gameData.physics.segments [i+1], gameData.physics.segments [i]);
 #endif
 	//maybe we've gone on to the next level.  if so, bail!
 	if (gameData.missions.nCurrentLevel != nOldLevel)

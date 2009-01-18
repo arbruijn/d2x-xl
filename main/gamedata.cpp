@@ -1154,10 +1154,19 @@ bCache = 1;
 
 CPhysicsData::CPhysicsData ()
 {
+Init ();
+}
+
+// ----------------------------------------------------------------------------
+
+void CPhysicsData::Init (void)
+{
 xTime = 0;
 xAfterburnerCharge = I2X (1);
 xBossInvulDot = 0;
 playerThrust.SetZero ();
+segments.Clear (0xff);
+nSegments = 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -1424,6 +1433,7 @@ particleManager.Init ();
 particleManager.SetLastType (-1);
 lightningManager.Init ();
 gameData.marker.Init ();
+gameData.physics.Init ();
 return true;
 }
 
