@@ -45,7 +45,6 @@ void CLightManager::Transform (int bStatic, int bVariable)
 	CDynLight*	pl = m_data.lights;
 
 m_data.nLights [1] = 0;
-m_headlights.Update ();
 for (i = 0; i < m_data.nLights [0]; i++, pl++) {
 #if DBG
 	if ((nDbgSeg >= 0) && (nDbgSeg == pl->info.nSegment) && ((nDbgSide < 0) || (nDbgSide == pl->info.nSide)))
@@ -75,6 +74,8 @@ for (i = 0; i < m_data.nLights [0]; i++, pl++) {
 	m_data.renderLights [m_data.nLights [1]++] = pl;
 	}
 m_headlights.Prepare ();
+m_headlights.Update ();
+m_headlights.Transform ();
 }
 
 //------------------------------------------------------------------------------
@@ -393,7 +394,7 @@ if (gameStates.render.nLightingMethod) {
 		if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg))
 			prl = prl;
 #endif
-		nType = (--prl)->info.nType;
+		nType = prl->info.nType;
 		if (nType == 3) {
 			if (bSkipHeadlight)
 				continue;

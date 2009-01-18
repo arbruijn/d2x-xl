@@ -427,7 +427,7 @@ if (nLight < --m_data.nLights [0]) {
 	if (pl->info.nObject >= 0)
 		m_data.owners [pl->info.nObject] = nLight;
 	if (pl->info.nPlayer < MAX_PLAYERS)
-		m_data.nHeadlights [pl->info.nPlayer] = nLight;
+		m_headlights.lightIds [pl->info.nPlayer] = nLight;
 	}
 }
 

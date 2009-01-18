@@ -281,7 +281,7 @@ ubyte* CTexture::Convert (
 	int			bTransp, bpp;
 
 #if DBG
-if (strstr (bmP->Name (), "phoenix"))
+if (strstr (bmP->Name (), "rock313"))
 	bmP = bmP;
 #endif
 paletteManager.SetTexture (bmP->Parent () ? bmP->Parent ()->Palette () : bmP->Palette ());

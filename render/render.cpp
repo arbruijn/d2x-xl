@@ -2009,7 +2009,6 @@ if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)
 		}
 	gameStates.ogl.bUseTransform = 0;
 	lightManager.Transform (0, 1);
-	lightManager.Headlights ().Transform ();
 	}
 if (nClearWindow == 2) {
 	if (nFirstTerminalSeg < gameData.render.mine.nRenderSegs) {

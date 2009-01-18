@@ -503,7 +503,7 @@ nSize = (int) bmP->FrameSize ();
 if (nIndex >= 0)
 	GetFlagData (bmName, nIndex);
 #if DBG
-if (strstr (bmName, "door52")) {
+if (strstr (bmName, "rock313")) {
 	sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], *gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
 	}
 #endif
@@ -631,6 +631,10 @@ if (!bmP->Buffer () || (bitmapCacheUsed > bitmapCacheSize)) {
 if (nIndex >= 0)
 	bmP->SetFlags (gameData.pig.tex.bitmapFlags [bD1][nIndex]);
 bmP->SetId (nIndex);
+#if DBG
+if (nIndex == nDbgTexture)
+	nDbgTexture = nDbgTexture;
+#endif
 if (bmP->Flags () & BM_FLAG_RLE) {
 	nDescentCriticalError = 0;
 	int zSize = cfP->ReadInt ();
@@ -666,7 +670,7 @@ else
 			bmP->Resize (nSize);
 #endif
 #if 1
-		bmP->Read (cf, nSize);
+		bmP->Read (*cfP, nSize);
 		if (bD1)
 			bmP->Remap (paletteManager.D1 (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 		else
