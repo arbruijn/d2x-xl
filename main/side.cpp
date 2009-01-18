@@ -36,7 +36,7 @@ extern bool bNewFileFormat;
 
 // ------------------------------------------------------------------------------------------
 
-inline CFixVector& CSide::Normal (int nFace)
+CFixVector& CSide::Normal (int nFace)
 { 
 return gameStates.render.bRendering ? m_rotNorms [nFace] : m_normals [nFace]; 
 }
@@ -332,14 +332,14 @@ else {
 
 // -------------------------------------------------------------------------------
 
-inline CFixVector& CSide::Vertex (int nVertex)
+CFixVector& CSide::Vertex (int nVertex)
 {
 return gameStates.render.bRendering ? gameData.segs.points [nVertex].p3_vec : gameData.segs.vertices [nVertex];
 }
 
 // -------------------------------------------------------------------------------
 
-inline CFixVector& CSide::MinVertex (void)
+CFixVector& CSide::MinVertex (void)
 {
 return Vertex (m_nMinVertex [0]);
 }
@@ -347,14 +347,14 @@ return Vertex (m_nMinVertex [0]);
 // -------------------------------------------------------------------------------
 // height of a two faced, non-planar side
 
-inline fix CSide::Height (void)
+fix CSide::Height (void)
 {
 return Vertex (m_nMinVertex [1]).DistToPlane (Normal (m_vertices [4] >= m_vertices [1]), Vertex (m_nMinVertex [0]));
 }
 
 // -------------------------------------------------------------------------------
 
-inline bool CSide::IsPlanar (void)
+bool CSide::IsPlanar (void)
 {
 return (m_nFaces < 2) || (Height () <= PLANE_DIST_TOLERANCE);
 }

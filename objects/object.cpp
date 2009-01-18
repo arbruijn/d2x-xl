@@ -435,7 +435,7 @@ InitMultiPlayerObject ();
 
 //------------------------------------------------------------------------------
 
-inline void CObject::Die (void)
+void CObject::Die (void)
 {
 info.nFlags |= OF_SHOULD_BE_DEAD;
 #if DBG
@@ -2032,7 +2032,7 @@ if (!gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted) {
 
 //--------------------------------------------------------------------
 
-inline void CObject::RotateCamera (void)
+void CObject::RotateCamera (void)
 {
 cameraManager.Rotate (this);
 }
@@ -2702,7 +2702,7 @@ nDebrisObjectCount = 0;
 
 //------------------------------------------------------------------------------
 //Tries to find a CSegment for an CObject, using FindSegByPos ()
-inline int CObject::FindSegment (void)
+int CObject::FindSegment (void)
 {
 return FindSegByPos (info.position.vPos, info.nSegment, 1, 0);
 }
