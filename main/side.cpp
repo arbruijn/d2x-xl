@@ -454,7 +454,7 @@ return mask;
 
 //	-----------------------------------------------------------------------------
 
-inline CWall* CSide::Wall (void) 
+CWall* CSide::Wall (void) 
 { 
 return IS_WALL (m_nWall) ? WALLS + m_nWall : NULL; 
 }

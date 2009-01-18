@@ -709,7 +709,7 @@ for (int i = 0; i < MAX_OPEN_FONTS; i++)
 
  //------------------------------------------------------------------------------
 
-inline void CFontManager::SetCurrent (CFont* fontP)
+void CFontManager::SetCurrent (CFont* fontP)
 {
 CCanvas::Current ()->SetFont (m_current = fontP); 
 }

@@ -61,6 +61,7 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "objrender.h"
 #include "renderthreads.h"
 #include "network.h"
+#include "font.h"
 #include "gamefont.h"
 #include "kconfig.h"
 #include "mouse.h"

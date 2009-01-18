@@ -3208,7 +3208,7 @@ return SEGMENTS [info.nSegment].HasOpenableDoor ();
 
 //------------------------------------------------------------------------------
 
-inline int CObject::Index (void)
+int CObject::Index (void)
 { 
 return OBJ_IDX (this); 
 }
