@@ -1676,7 +1676,7 @@ if (m_nVersion >= 39) {
 	m_cf.ReadInt ();	// ignore the value
 	if (gameData.segs.nSegments > gameData.segs.nMaxSegments) {
 #endif
-		Warning (TXT_MAX_SEGS_WARNING, h);
+		Warning (TXT_MAX_SEGS_WARNING, gameData.segs.nSegments);
 		return 0;
 		}
 	}
