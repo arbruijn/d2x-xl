@@ -24,8 +24,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // these global vars are set after a call to DoPhysicsSim().  Ugly, I know.
 // list of segments went through
-extern short gameData.physics.segments [MAX_FVI_SEGS], gameData.physics.nSegments;
-
 // Read contrls and set physics vars
 void ReadFlyingControls(CObject *obj);
 
