@@ -1669,17 +1669,15 @@ int CSaveGameHandler::LoadUniFormat (int bMulti, fix xOldGameTime, int *nLevel)
 	int		h, i, j;
 
 if (m_nVersion >= 39) {
-#if 0
 	h = m_cf.ReadInt ();
+#if 0
 	if (h != gameData.segs.nMaxSegments) {
-#else
-	m_cf.ReadInt ();	// ignore the value
-	if (gameData.segs.nSegments > gameData.segs.nMaxSegments) {
-#endif
-		Warning (TXT_MAX_SEGS_WARNING, gameData.segs.nSegments);
+		Warning (TXT_MAX_SEGS_WARNING, h);
 		return 0;
 		}
+#endif
 	}
+
 m_bBetweenLevels = m_cf.ReadInt ();
 Assert (m_bBetweenLevels == 0);	//between levels save ripped out
 // Read the mission info...
@@ -1718,6 +1716,16 @@ if (!PrepareLevel (nCurrentLevel, true, m_bSecret == 1, true, m_bSecret == 0)) {
 	m_cf.Close ();
 	return 0;
 	}
+
+#if 1
+if (m_nVersion >= 39) {
+	if (gameData.segs.nSegments > gameData.segs.nMaxSegments) {
+		Warning (TXT_MAX_SEGS_WARNING, gameData.segs.nSegments);
+		return 0;
+		}
+	}
+#endif
+
 nLocalObjNum = LOCALPLAYER.nObject;
 if (m_bSecret != 1)	//either no secret restore, or player died in scret level
 	LoadPlayer (gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer);
