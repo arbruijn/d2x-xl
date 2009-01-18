@@ -383,7 +383,7 @@ m_fonts [2] = fontManager.Load (fontNames [0][gameStates.menus.bHires]);
 m_bmBackdrop.SetBuffer (NULL);
 m_bmBackdrop.SetPalette (NULL);
 
-int nPcxError = PCXReadBitmap (szStars [gameStates.menus.bHires], &m_bmBackdrop, BM_LINEAR, 0);
+int nPcxError = PCXReadBitmap (BackgroundName (BG_STARS), &m_bmBackdrop, BM_LINEAR, 0);
 if (nPcxError != PCX_ERROR_NONE) {
 	m_cf.Close ();
 	CCanvas::Pop ();
