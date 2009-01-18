@@ -248,7 +248,7 @@ gameData.thief.stolenItems.Write (m_cf);
 #if DBG
 i = CFTell ();
 #endif
-m_cf.WriteInt ((int) (gameData.ai.freePointSegs - gameData.ai.routeSegs));
+m_cf.WriteInt ((int) (gameData.ai.freePointSegs - gameData.ai.routeSegs.Buffer ()));
 for (i = 0; i < MAX_BOSS_COUNT; i++) {
 	m_cf.WriteShort (gameData.boss [i].nTeleportSegs);
 	m_cf.WriteShort (gameData.boss [i].nGateSegs);
