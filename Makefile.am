@@ -1,6 +1,6 @@
 DIST_SUBDIRS = \
 	2d 3d ai audio cockpit console effects gameio gamemodes input io libmve lighting \
-	main maths mem misc models network ogl render texmap weapons
+	main maths mem menus misc models network ogl physics render texmap weapons
 
 SUBDIRS = ${DIST_SUBDIRS} @D2X_SUBDIRS@
 
@@ -26,10 +26,10 @@ d2x_xl_SOURCES =
 
 d2x_LDADD = \
 	${LD_KLUDGE} \
-	main/libmain.a audio/libaudio.a cockpit/libcockpit.a \
+	main/libmain.a audio/libaudio.a console/libconsole.a menus/libmenus.a cockpit/libcockpit.a \
 	effects/libeffects.a gameio/libgameio.a gamemodes/libgamemodes.a input/libinput.a io/libio.a \
 	libmve/libmve.a lighting/liblighting.a maths/libmaths.a mem/libmem.a misc/libmisc.a \
-	models/libmodels.a network/libnetwork.a ogl/libogl.a texmap/libtexmap.a render/librender.a \
+	models/libmodels.a network/libnetwork.a ogl/libogl.a physics/libphysics.a texmap/libtexmap.a render/librender.a \
 	weapons/libweapons.a 2d/lib2d.a 3d/lib3d.a ai/libai.a main/libmain.a ogl/libogl.a \
 	${CONSOLE_LIBS}
 

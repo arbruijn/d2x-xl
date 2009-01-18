@@ -54,13 +54,15 @@ PROGRAMS = $(bin_PROGRAMS)
 am_d2x_xl_OBJECTS =
 d2x_xl_OBJECTS = $(am_d2x_xl_OBJECTS)
 am__DEPENDENCIES_1 = $(LD_KLUDGE) main/libmain.a audio/libaudio.a \
-	cockpit/libcockpit.a effects/libeffects.a gameio/libgameio.a \
+	console/libconsole.a menus/libmenus.a cockpit/libcockpit.a \
+	effects/libeffects.a gameio/libgameio.a \
 	gamemodes/libgamemodes.a input/libinput.a io/libio.a \
 	libmve/libmve.a lighting/liblighting.a maths/libmaths.a \
 	mem/libmem.a misc/libmisc.a models/libmodels.a \
-	network/libnetwork.a ogl/libogl.a texmap/libtexmap.a \
-	render/librender.a weapons/libweapons.a 2d/lib2d.a 3d/lib3d.a \
-	ai/libai.a main/libmain.a ogl/libogl.a $(CONSOLE_LIBS)
+	network/libnetwork.a ogl/libogl.a physics/libphysics.a \
+	texmap/libtexmap.a render/librender.a weapons/libweapons.a \
+	2d/lib2d.a 3d/lib3d.a ai/libai.a main/libmain.a ogl/libogl.a \
+	$(CONSOLE_LIBS)
 @MINGW32_FALSE@am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
 @MINGW32_TRUE@@USE_NETWORK_FALSE@am__DEPENDENCIES_2 =  \
 @MINGW32_TRUE@@USE_NETWORK_FALSE@	$(am__DEPENDENCIES_1)
@@ -220,7 +222,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 DIST_SUBDIRS = \
 	2d 3d ai audio cockpit console effects gameio gamemodes input io libmve lighting \
-	main maths mem misc models network ogl render texmap weapons
+	main maths mem menus misc models network ogl physics render texmap weapons
 
 SUBDIRS = ${DIST_SUBDIRS} @D2X_SUBDIRS@
 EXTRA_SUBDIRS = include
@@ -231,10 +233,10 @@ bin_PROGRAMS = @TARGETS@
 d2x_xl_SOURCES = 
 d2x_LDADD = \
 	${LD_KLUDGE} \
-	main/libmain.a audio/libaudio.a cockpit/libcockpit.a \
+	main/libmain.a audio/libaudio.a console/libconsole.a menus/libmenus.a cockpit/libcockpit.a \
 	effects/libeffects.a gameio/libgameio.a gamemodes/libgamemodes.a input/libinput.a io/libio.a \
 	libmve/libmve.a lighting/liblighting.a maths/libmaths.a mem/libmem.a misc/libmisc.a \
-	models/libmodels.a network/libnetwork.a ogl/libogl.a texmap/libtexmap.a render/librender.a \
+	models/libmodels.a network/libnetwork.a ogl/libogl.a physics/libphysics.a texmap/libtexmap.a render/librender.a \
 	weapons/libweapons.a 2d/lib2d.a 3d/lib3d.a ai/libai.a main/libmain.a ogl/libogl.a \
 	${CONSOLE_LIBS}
 
