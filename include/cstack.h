@@ -22,6 +22,7 @@ class CStack : public CArray< _T > {
 		inline void Reset (void) { m_tos = 0; }
 
 		inline void Init (void) { 
+			m_growth = 0;
 			Reset ();
 			CArray<_T>::Init ();
 			}
