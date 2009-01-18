@@ -173,7 +173,7 @@ if (!(bBlend = glIsEnabled (GL_BLEND)))
 	glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-#if 0
+#if 1
 h = float (texP->TW ());
 u1 = float (bmP->Left ()) / h;
 u2 = float (bmP->Right ()) / h;

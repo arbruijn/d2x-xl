@@ -451,15 +451,15 @@ if (!m_override) {
 	CFile cf;
 	
 	if (cf.Open (m_filename, gameFolders.szSaveDir, "wb", 0)) {
-		char	newname [FILENAME_LEN];
+		char	newName [FILENAME_LEN];
 
-		sprintf (newname, "%s.sg%x", LOCALPLAYER.callsign, NUM_SAVES);
+		sprintf (newName, "%s.sg%x", LOCALPLAYER.callsign, NUM_SAVES);
 		cf.Seek (DESC_OFFSET, SEEK_SET);
-		cf.Write (szBackup, DESC_LENGTH, 1);
+		int nWritten = cf.Write (szBackup, DESC_LENGTH, 1);
 		cf.Close ();
-		if (!cf.Error ()) {
-			cf.Delete (newname, gameFolders.szSaveDir);
-			cf.Rename (m_filename, newname, gameFolders.szSaveDir);
+		if (nWritten == DESC_LENGTH) {
+			cf.Delete (newName, gameFolders.szSaveDir);
+			cf.Rename (m_filename, newName, gameFolders.szSaveDir);
 			}
 		}
 	}

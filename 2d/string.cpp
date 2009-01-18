@@ -275,10 +275,10 @@ if ((c >= 1) && (c <= 3)) {
 	if (textP [1]) {
 		if (grMsgColorLevel >= c) {
 			CCanvas::Current ()->FontColor (0).rgb = 1;
-			CCanvas::Current ()->FontColor (0).color.red = (textP [0] - nOffset) * nScale;
-			CCanvas::Current ()->FontColor (0).color.green = (textP [1] - nOffset) * nScale;
-			CCanvas::Current ()->FontColor (0).color.blue = (textP [2] - nOffset) * nScale;
-			CCanvas::Current ()->FontColor (0).color.alpha = 0;
+			CCanvas::Current ()->FontColor (0).color.red = (textP [1] - nOffset) * nScale;
+			CCanvas::Current ()->FontColor (0).color.green = (textP [2] - nOffset) * nScale;
+			CCanvas::Current ()->FontColor (0).color.blue = (textP [3] - nOffset) * nScale;
+			CCanvas::Current ()->FontColor (0).color.alpha = 255;
 			}
 		return textP + 4;
 		}
