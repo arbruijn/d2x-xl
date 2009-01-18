@@ -9,7 +9,7 @@ TRANSPARENCY_COLOR = 255
 endif
 
 libmenus_a_SOURCES = \
-	automapmenu.cpp cameramenu.cpp cockitmenu.cpp configmenu.cpp coronamenu.cpp detailsmenu.cpp effectsmenu.cpp entropymenu.cpp \
+	automapmenu.cpp cameramenu.cpp cockpitmenu.cpp configmenu.cpp coronamenu.cpp detailsmenu.cpp effectsmenu.cpp entropymenu.cpp \
 	gameplaymenu.cpp lightmenu.cpp lightningmenu.cpp mainmenu.cpp miscmenu.cpp monsterballmenu.cpp moviemenu.cpp menu.cpp \
 	menubackground.cpp netgamebrowser.cpp netgamehelp.cpp netgameinfo.cpp netmenu.cpp netplayerbrowser.cpp newgamemenu.cpp \
 	performancemenu.cpp physicsmenu.cpp poweripmenu.cpp rendermenu.cpp screenresmenu.cpp shadowmenu.cpp shiprendermenu.cpp \

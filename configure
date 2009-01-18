@@ -8272,7 +8272,7 @@ fi
 
 
 
-ac_config_files="$ac_config_files Makefile 2d/Makefile 3d/Makefile ai/Makefile audio/Makefile cockpit/Makefile console/Makefile effects/Makefile gameio/Makefile gamemodes/Makefile input/Makefile io/Makefile lighting/Makefile libmve/Makefile main/Makefile maths/Makefile mem/Makefile menus/Makefile misc/Makefile models/Makefile network/Makefile objects/Makefile ogl/Makefile physics/Makefile texmap/Makefile render/Makefile weapons/Makefile"
+ac_config_files="$ac_config_files Makefile 2d/Makefile 3d/Makefile ai/Makefile audio/Makefile cockpit/Makefile console/Makefile effects/Makefile gameio/Makefile gamemodes/Makefile input/Makefile io/Makefile lighting/Makefile libmve/Makefile main/Makefile maths/Makefile mem/Makefile menus/Makefile misc/Makefile models/Makefile network/Makefile objects/Makefile ogl/Makefile physics/Makefile render/Makefile texmap/Makefile weapons/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -9003,8 +9003,8 @@ do
     "objects/Makefile") CONFIG_FILES="$CONFIG_FILES objects/Makefile" ;;
     "ogl/Makefile") CONFIG_FILES="$CONFIG_FILES ogl/Makefile" ;;
     "physics/Makefile") CONFIG_FILES="$CONFIG_FILES physics/Makefile" ;;
-    "texmap/Makefile") CONFIG_FILES="$CONFIG_FILES texmap/Makefile" ;;
     "render/Makefile") CONFIG_FILES="$CONFIG_FILES render/Makefile" ;;
+    "texmap/Makefile") CONFIG_FILES="$CONFIG_FILES texmap/Makefile" ;;
     "weapons/Makefile") CONFIG_FILES="$CONFIG_FILES weapons/Makefile" ;;
 
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5

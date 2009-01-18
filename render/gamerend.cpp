@@ -141,7 +141,7 @@ if (ShowView_textTimer > 0) {
 	ShowView_textTimer -= gameData.time.xFrame;
 	fontManager.SetCurrent (GAME_FONT);
 
-	viewer_id = reinterpret_cast<char*> ("");
+	viewer_id = "";
 	switch (gameData.objs.viewerP->info.nType) {
 		case OBJ_FIREBALL:
 			viewer_name = "Fireball";
