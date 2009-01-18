@@ -1329,7 +1329,7 @@ int CMenu::AddCheck (const char* szText, int nValue, int nKey, const char* szHel
 CMenuItem item;
 item.m_nType = NM_TYPE_CHECK;
 item.m_pszText = NULL;
-strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
+item.SetText (szText);
 item.m_value = NMBOOL (nValue);
 item.m_nKey = nKey;
 item.m_szHelp = szHelp;
@@ -1346,7 +1346,7 @@ if (!ToS () || (Top ()->m_nType != NM_TYPE_RADIO))
 	NewGroup ();
 item.m_nType = NM_TYPE_RADIO;
 item.m_pszText = NULL;
-strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
+item.SetText (szText);
 item.m_value = nValue;
 item.m_nKey = nKey;
 item.m_group = m_nGroup;
@@ -1362,7 +1362,7 @@ int CMenu::AddMenu (const char* szText, int nKey, const char* szHelp)
 CMenuItem item;
 item.m_nType = NM_TYPE_MENU;
 item.m_pszText = NULL;
-strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
+item.SetText (szText);
 item.m_nKey = nKey;
 item.m_szHelp = szHelp;
 Push (item);
@@ -1376,7 +1376,7 @@ int CMenu::AddText (const char* szText, int nKey)
 CMenuItem item;
 item.m_nType = NM_TYPE_TEXT;
 item.m_pszText = NULL;
-strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
+item.SetText (szText);
 item.m_nKey = nKey;
 Push (item);
 return ToS () - 1;
@@ -1389,7 +1389,7 @@ int CMenu::AddSlider (const char* szText, int nValue, int nMin, int nMax, int nK
 CMenuItem item;
 item.m_nType = NM_TYPE_SLIDER;
 item.m_pszText = NULL;
-strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
+item.SetText (szText);
 item.m_value = NMCLAMP (nValue, nMin, nMax);
 item.m_minValue = nMin;
 item.m_maxValue = nMax;
@@ -1406,7 +1406,7 @@ int CMenu::AddInput (const char* szText, int nLen, const char* szHelp)
 CMenuItem item;
 item.m_nType = NM_TYPE_INPUT;
 item.m_pszText = (char*) (szText);
-strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
+item.SetText (szText);
 item.m_nTextLen = nLen;
 item.m_szHelp = szHelp;
 Push (item);
@@ -1436,7 +1436,7 @@ int CMenu::AddInputBox (const char* szText, int nLen, int nKey, const char* szHe
 CMenuItem item;
 item.m_nType = NM_TYPE_INPUT_MENU;
 item.m_pszText = (char*) (szText);
-strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
+item.SetText (szText);
 item.m_nTextLen = nLen;
 item.m_nKey = nKey;
 item.m_szHelp = szHelp;
@@ -1451,7 +1451,7 @@ int CMenu::AddNumber (const char* szText, int nValue, int nMin, int nMax)
 CMenuItem item;
 item.m_nType = NM_TYPE_NUMBER;
 item.m_pszText = (char*) (szText);
-strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
+item.SetText (szText);
 item.m_value = NMCLAMP (nValue, nMin, nMax);
 item.m_minValue = nMin;
 item.m_maxValue = nMax;
@@ -1466,7 +1466,7 @@ int CMenu::AddGauge (const char* szText, int nValue, int nMax)
 CMenuItem item;
 item.m_nType = NM_TYPE_GAUGE;
 item.m_pszText = NULL;
-strncpy (item.m_text, szText, MENU_MAX_TEXTLEN);
+item.SetText (szText);
 item.m_nTextLen = *szText ? (int) strlen (szText) : 20;
 item.m_value = NMCLAMP (nValue, 0, nMax);
 item.m_maxValue = nMax;

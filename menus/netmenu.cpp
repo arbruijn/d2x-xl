@@ -1025,6 +1025,11 @@ if (bAutoRun)
 
 nGameItem = -1;
 
+*szLevelText = 
+*szMaxNet =
+*szIpAddr =
+*szLevel = '\0';
+
 do {
 	BuildGameParamsMenu (m, szName, szLevelText, szLevel, szIpAddr, szMaxNet, nNewMission);
 	do {

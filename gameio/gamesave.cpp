@@ -860,7 +860,7 @@ return 0;
 
 static int ReadWallInfo (CFile& cf)
 {
-if (gameFileInfo.walls.offset > -1) {
+if (gameFileInfo.walls.count && (gameFileInfo.walls.offset > -1)) {
 	int	i;
 
 	if (!gameData.walls.walls.Resize (gameFileInfo.walls.count)) {
