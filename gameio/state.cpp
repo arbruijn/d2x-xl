@@ -455,7 +455,7 @@ if (!m_override) {
 
 		sprintf (newName, "%s.sg%x", LOCALPLAYER.callsign, NUM_SAVES);
 		cf.Seek (DESC_OFFSET, SEEK_SET);
-		int nWritten = cf.Write (szBackup, DESC_LENGTH, 1);
+		int nWritten = cf.Write (szBackup, 1, DESC_LENGTH);
 		cf.Close ();
 		if (nWritten == DESC_LENGTH) {
 			cf.Delete (newName, gameFolders.szSaveDir);
