@@ -450,12 +450,12 @@ void CSaveGameHandler::Backup (void)
 if (!m_override) {
 	CFile cf;
 	
-	if (cf.Open (m_filename, gameFolders.szSaveDir, "rb", 0)) {
+	if (cf.Open (m_filename, gameFolders.szSaveDir, "wb", 0)) {
 		char	newname [FILENAME_LEN];
 
 		sprintf (newname, "%s.sg%x", LOCALPLAYER.callsign, NUM_SAVES);
 		cf.Seek (DESC_OFFSET, SEEK_SET);
-		cf.Write (szBackup, sizeof (char) * DESC_LENGTH, 1);
+		cf.Write (szBackup, DESC_LENGTH, 1);
 		cf.Close ();
 		cf.Delete (newname, gameFolders.szSaveDir);
 		cf.Rename (m_filename, newname, gameFolders.szSaveDir);
@@ -1792,25 +1792,33 @@ if (!m_bBetweenLevels) {
 		}
 	IFDBG (fPos = m_cf.Tell ());
 	//Restore exploding wall info
-	if (ReadBoundedInt (MAX_EXPLODING_WALLS, &h))
+	if (ReadBoundedInt (MAX_EXPLODING_WALLS, &i))
 		return 0;
-	for (i = 0; i < h; i++)
-		gameData.walls.exploding [i].LoadState (m_cf);
+	gameData.walls.exploding.Reset ();
+	for (; i; i--)
+		if (gameData.walls.exploding.Grow ())
+			gameData.walls.exploding.Top ()->LoadState (m_cf);
+		else
+			return 0;
 	IFDBG (fPos = m_cf.Tell ());
 	//Restore door info
 	if (ReadBoundedInt (MAX_DOORS, &i))
 		return 0;
-	for (; i; i--) {
-		gameData.walls.activeDoors.Grow ();
-		gameData.walls.activeDoors.Top ()->LoadState (m_cf);
-		}
+	gameData.walls.activeDoors.Reset ();
+	for (; i; i--)
+		if (gameData.walls.activeDoors.Grow ())
+			gameData.walls.activeDoors.Top ()->LoadState (m_cf);
+		else
+			return 0;
 	IFDBG (fPos = m_cf.Tell ());
 	if (ReadBoundedInt (MAX_CLOAKING_WALLS, &i))
 		return 0;
-	for (; i; i--) {
-		gameData.walls.cloaking.Grow ();
-		gameData.walls.cloaking.Top ()->LoadState (m_cf);
-		}
+	gameData.walls.cloaking.Reset ();
+	for (; i; i--)
+		if (gameData.walls.cloaking.Grow ())
+			gameData.walls.cloaking.Top ()->LoadState (m_cf);
+		else
+			return 0;
 	IFDBG (fPos = m_cf.Tell ());
 	//Restore CTrigger info
 	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nTriggers))
