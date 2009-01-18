@@ -11,7 +11,7 @@
 #	ifdef _DEBUG
 #		define DBG 1
 #	else
-#		define DBG 1
+#		define DBG 0
 #	endif
 #endif
 
