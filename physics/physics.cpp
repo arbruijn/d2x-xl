@@ -682,8 +682,16 @@ retryMove:
 		if (i > 0) {
 			if (i > hi.nSegments)
 				i = hi.nSegments;
+#	if DBG
 			if (i <= 0)
 				FindVectorIntersection (&fq, &hi);
+#	endif
+			if (!Index () && (i > 1)) {
+				PrintLog ("SEGS:");
+				for (int j = 0; j < i; j++)
+					PrintLog (" %d", hi.segList [j]);
+				PrintLog ("\n");
+				}
 			if (i > 0)
 				memcpy (gameData.physics.segments + gameData.physics.nSegments, hi.segList, i * sizeof (gameData.physics.segments [0]));
 			gameData.physics.nSegments += i;

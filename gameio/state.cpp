@@ -904,14 +904,14 @@ if (!m_bBetweenLevels) {
 //Save CTrigger info
 	m_cf.WriteInt (gameData.trigs.nTriggers);
 	for (i = 0; i < gameData.trigs.nTriggers; i++)
-		TRIGGERS  [i].SaveState (m_cf);
+		TRIGGERS [i].SaveState (m_cf);
 	IFDBG (fPos = m_cf.Tell ());
 	m_cf.WriteInt (gameData.trigs.nObjTriggers);
 	if (!gameData.trigs.nObjTriggers)
 		m_cf.WriteShort (0);
 	else {
 		for (i = 0; i < gameData.trigs.nObjTriggers; i++)
-			OBJTRIGGERS [i].SaveState (m_cf);
+			OBJTRIGGERS [i].SaveState (m_cf, true);
 		for (i = 0; i < gameData.trigs.nObjTriggers; i++)
 			SaveObjTriggerRef (gameData.trigs.objTriggerRefs + i);
 		nObjsWithTrigger = 0;
@@ -1846,7 +1846,7 @@ if (!m_bBetweenLevels) {
 		return 0;
 	if (gameData.trigs.nObjTriggers > 0) {
 		for (i = 0; i < gameData.trigs.nObjTriggers; i++)
-			OBJTRIGGERS [i].LoadState (m_cf);
+			OBJTRIGGERS [i].LoadState (m_cf, true);
 		for (i = 0; i < gameData.trigs.nObjTriggers; i++)
 			CSaveGameHandler::LoadObjTriggerRef (gameData.trigs.objTriggerRefs + i);
 		if (m_nVersion < 36) {

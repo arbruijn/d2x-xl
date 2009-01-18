@@ -231,7 +231,9 @@ return (m_cf.rawPosition >= m_cf.size);
 
 int CFile::Error (void)
 {
-return ferror (m_cf.file);
+if (nCFileError = ferror (m_cf.file))
+	PrintLog ("error %d during file operation\n", nCFileError);
+return nCFileError;
 }
 
 // ----------------------------------------------------------------------------
@@ -372,8 +374,10 @@ if (!(nElemSize * nElemCount))
 	return 0;
 nWritten = (int) fwrite (buf, nElemSize, nElemCount, m_cf.file);
 m_cf.rawPosition = ftell (m_cf.file);
-if (Error ())
+if (Error ()) {
+	PrintLog ("file write error!\n");
 	return 0;
+	}
 return nWritten;
 }
 

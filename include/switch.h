@@ -152,8 +152,8 @@ class CTrigger {
 		bool TargetsWall (int nWall);
 		inline int Index (void);
 		inline int HasTarget (short nSegment, short nSide);
-		void LoadState (CFile& cf);
-		void SaveState (CFile& cf);
+		void LoadState (CFile& cf, bool bObjTrigger = false);
+		void SaveState (CFile& cf, bool bObjTrigger = false);
 
 	private:
 		int WallIsForceField (void);

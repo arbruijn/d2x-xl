@@ -2288,7 +2288,7 @@ for (i = 0; i < gameData.physics.nSegments - 1; i++) {
 	if (gameData.physics.segments [i] > gameData.segs.nLastSegment)
 		PrintLog ("invalid segment in gameData.physics.segments\n");
 #endif
-	nConnSide = SEGMENTS [gameData.physics.segments [i+1]].ConnectedSide (SEGMENTS + gameData.physics.segments [i]);
+	nConnSide = SEGMENTS [gameData.physics.segments [i + 1]].ConnectedSide (SEGMENTS + gameData.physics.segments [i]);
 	if (nConnSide != -1)
 		SEGMENTS [gameData.physics.segments [i]].OperateTrigger (nConnSide, this, 0);
 #if DBG

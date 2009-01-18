@@ -1028,10 +1028,13 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void CTrigger::LoadState (CFile& cf)
+void CTrigger::LoadState (CFile& cf, bool bObjTrigger)
 {
 nType = (ubyte) cf.ReadByte (); 
-flags = (ubyte) cf.ReadByte (); 
+if (bObjTrigger)
+	flags = cf.ReadShort (); 
+else
+	flags = short (cf.ReadByte ()); 
 nLinks = cf.ReadByte ();
 value = cf.ReadFix ();
 time = cf.ReadFix ();
@@ -1043,10 +1046,13 @@ for (int i = 0; i < MAX_TRIGGER_TARGETS; i++) {
 
 //------------------------------------------------------------------------------
 
-void CTrigger::SaveState (CFile& cf)
+void CTrigger::SaveState (CFile& cf, bool bObjTrigger)
 {
-cf.WriteByte ((sbyte) nType); 
-cf.WriteByte ((sbyte) flags); 
+cf.WriteByte (sbyte (nType); 
+if (bObjTrigger)
+	cf.WriteShort (flags); 
+else
+	cf.WriteByte (sbyte (flags)); 
 cf.WriteByte (nLinks);
 cf.WriteFix (value);
 cf.WriteFix (time);
@@ -1281,9 +1287,9 @@ void CTrigger::Read (CFile& cf, int bObjTrigger)
 
 nType = cf.ReadByte ();
 if (bObjTrigger)
-	flags = (short) cf.ReadShort ();
+	flags = cf.ReadShort ();
 else
-	flags = (short) cf.ReadByte ();
+	flags = short (cf.ReadByte ());
 nLinks = cf.ReadByte ();
 cf.ReadByte ();
 value = cf.ReadFix ();
