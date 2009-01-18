@@ -151,9 +151,6 @@ void CObject::SetTurnRoll (void)
 	}
 }
 
-//list of segments went through
-short gameData.physics.segments [MAX_FVI_SEGS], gameData.physics.nSegments;
-
 #if DBG
 #define EXTRADBG 1		//no extra debug when NDEBUG is on
 #endif
@@ -687,7 +684,7 @@ retryMove:
 				i = hi.nSegments;
 			if (i < 0)
 				FindVectorIntersection (&fq, &hi);
-			memcpy (gameData.physics.segments + gameData.physics.nSegments, hi.segList, i * sizeof (*gameData.physics.segments));
+			memcpy (gameData.physics.segments + gameData.physics.nSegments, hi.segList, i * sizeof (gameData.physics.segments [0]));
 			gameData.physics.nSegments += i;
 			}
 		else
