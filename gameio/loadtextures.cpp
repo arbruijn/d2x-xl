@@ -540,7 +540,7 @@ if (*bmName && ((nIndex < 0) || (gameOpts->render.textures.bUseHires && (!gameOp
 #endif
 	if ((gameStates.app.bCacheTextures && (nShrinkFactor > 1) && *fnShrunk && cfP->Open (fnShrunk, "", "rb", 0)) || 
 		 cfP->Open (fn, "", "rb", 0)) {
-		PrintLog ("loading hires texture '%s' (quality: %d)\n", fn, gameOpts->render.nTextureQuality);
+		PrintLog ("loading hires texture '%s' (quality: %d)\n", fn, min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality));
 		bTGA = 1;
 		if (nIndex < 0)
 			altBmP = &gameData.pig.tex.addonBitmaps [-nIndex - 1];
