@@ -928,6 +928,7 @@ int SegmentMayBeVisible (short nStartSeg, short nRadius, int nMaxDist)
 {
 	CSegment	*segP;
 	int		nSegment, nChildSeg, nChild, h, i, j;
+	ubyte		bVisited [MAX_SEGMENTS_D2X];
 
 if (gameData.render.mine.bVisible [nStartSeg] == gameData.render.mine.nVisible)
 	return 1;
@@ -936,6 +937,8 @@ gameData.render.mine.nSegRenderList [0] = nStartSeg;
 gameData.render.mine.bProcessed [nStartSeg] = gameData.render.mine.nProcessed;
 if (nMaxDist < 0)
 	nMaxDist = nRadius * I2X (20);
+memset (bVisited, 0, gameData.segs.nSegments);
+bVisited [nStartSeg] = 1;
 for (i = 0, j = 1; nRadius; nRadius--) {
 	for (h = i, i = j; h < i; h++) {
 		nSegment = gameData.render.mine.nSegRenderList [h];
@@ -945,8 +948,10 @@ for (i = 0, j = 1; nRadius; nRadius--) {
 		segP = SEGMENTS + nSegment;
 		for (nChild = 0; nChild < 6; nChild++) {
 			nChildSeg = segP->m_children [nChild];
-			if ((nChildSeg >= 0) && (segP->IsDoorWay (nChild, NULL) & WID_RENDPAST_FLAG))
+			if (!bVisited [nChildSeg] && (nChildSeg >= 0) && (segP->IsDoorWay (nChild, NULL) & WID_RENDPAST_FLAG)) {
 				gameData.render.mine.nSegRenderList [j++] = nChildSeg;
+				bVisited [nChildSeg] = 1;
+				}
 			}
 		}
 	}

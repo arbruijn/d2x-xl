@@ -100,6 +100,7 @@ int SelectAndLoadMission (int bMulti, int *bAnarchyOnly)
 if (bAnarchyOnly)
 	*bAnarchyOnly = 0;
 do {
+	msnNames.Reset ();
 	nMissions = BuildMissionList (1, nNewMission);
 	if (nMissions < 1)
 		return -1;
