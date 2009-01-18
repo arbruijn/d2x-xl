@@ -1330,24 +1330,19 @@ cf.WriteFix (time);
 
 void InitExplodingWalls (void)
 {
-	int i;
-
-for (i = 0; i < MAX_EXPLODING_WALLS; i++)
-	gameData.walls.exploding [i].nSegment = -1;
+gameData.walls.exploding.Reset ();
 }
 
 //------------------------------------------------------------------------------
 //explode the given CWall
 void ExplodeWall (short nSegment, short nSide)
 {
-for (int i = 0; (i < MAX_EXPLODING_WALLS); i++)
-	if (gameData.walls.exploding [i].nSegment != -1) {
-		gameData.walls.exploding [i].nSegment = nSegment;
-		gameData.walls.exploding [i].nSide = nSide;
-		gameData.walls.exploding [i].time = 0;
-		SEGMENTS [nSegment].CreateSound (SOUND_EXPLODING_WALL, nSide);
-		return;
-		}
+if (gameData.walls.exploding.Grow ()) {
+	gameData.walls.exploding.Top ()->nSegment = nSegment;
+	gameData.walls.exploding.Top ()->nSide = nSide;
+	gameData.walls.exploding.Top ()->time = 0;
+	SEGMENTS [nSegment].CreateSound (SOUND_EXPLODING_WALL, nSide);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -1355,60 +1350,60 @@ for (int i = 0; (i < MAX_EXPLODING_WALLS); i++)
 //note: this CWall code assumes the CWall is not triangulated
 void DoExplodingWallFrame (void)
 {
-for (int i = 0; i < MAX_EXPLODING_WALLS; i++) {
+for (uint i = 0; i < gameData.walls.exploding.ToS (); ) {
 	short nSegment = gameData.walls.exploding [i].nSegment;
-	if (nSegment != -1) {
-		short nSide = gameData.walls.exploding [i].nSide;
-		fix oldfrac, newfrac;
-		int oldCount, newCount, e;		//n,
-		oldfrac = FixDiv (gameData.walls.exploding [i].time, EXPL_WALL_TIME);
-		gameData.walls.exploding [i].time += gameData.time.xFrame;
-		if (gameData.walls.exploding [i].time > EXPL_WALL_TIME)
-			gameData.walls.exploding [i].time = EXPL_WALL_TIME;
-		if (gameData.walls.exploding [i].time> (EXPL_WALL_TIME*3)/4) {
-			CSegment *segP = SEGMENTS + nSegment,
-						*connSegP = SEGMENTS + segP->m_children [nSide];
-			ubyte	a = (ubyte) segP->Wall (nSide)->nClip;
-			short n = AnimFrameCount (gameData.walls.animP + a);
-			short nConnSide = segP->ConnectedSide (connSegP);
-			segP->SetTexture (nSide, connSegP, nConnSide, a, n - 1);
-			segP->Wall (nSide)->flags |= WALL_BLASTED;
-			if (nConnSide >= 0)
-				connSegP->Wall (nConnSide)->flags |= WALL_BLASTED;
-			}
-		newfrac = FixDiv (gameData.walls.exploding [i].time, EXPL_WALL_TIME);
-		oldCount = X2I (EXPL_WALL_TOTAL_FIREBALLS * FixMul (oldfrac, oldfrac));
-		newCount = X2I (EXPL_WALL_TOTAL_FIREBALLS * FixMul (newfrac, newfrac));
-		//n = newCount - oldCount;
-		//now create all the next explosions
-		for (e = oldCount; e < newCount; e++) {
-			short*		corners;
-			CFixVector	*v0, *v1, *v2;
-			CFixVector	vv0, vv1, vPos;
-			fix			size;
-
-			//calc expl position
-
-			corners = SEGMENTS [nSegment].Corners (nSide);
-			v0 = gameData.segs.vertices + corners [0];
-			v1 = gameData.segs.vertices + corners [1];
-			v2 = gameData.segs.vertices + corners [2];
-			vv0 = *v0 - *v1;
-			vv1 = *v2 - *v1;
-			vPos = *v1 + vv0 * (d_rand ()*2);
-			vPos += vv1 * (d_rand ()*2);
-			size = EXPL_WALL_FIREBALL_SIZE + (2*EXPL_WALL_FIREBALL_SIZE * e / EXPL_WALL_TOTAL_FIREBALLS);
-			//fireballs start away from door, with subsequent ones getting closer
-			vPos += SEGMENTS [nSegment].m_sides [nSide].m_normals[0] * (size* (EXPL_WALL_TOTAL_FIREBALLS-e)/EXPL_WALL_TOTAL_FIREBALLS);
-			if (e & 3)		//3 of 4 are Normal
-				/*Object*/CreateExplosion ((short) gameData.walls.exploding [i].nSegment, vPos, size, (ubyte) VCLIP_SMALL_EXPLOSION);
-			else
-				CreateBadassExplosion (NULL, (short) gameData.walls.exploding [i].nSegment, vPos,
-											  size, (ubyte) VCLIP_SMALL_EXPLOSION, I2X (4), I2X (20), I2X (50), -1);
-			}
-		if (gameData.walls.exploding [i].time >= EXPL_WALL_TIME)
-			gameData.walls.exploding [i].nSegment = -1;	//flag this slot as free
+	short nSide = gameData.walls.exploding [i].nSide;
+	fix oldfrac, newfrac;
+	int oldCount, newCount, e;		//n,
+	oldfrac = FixDiv (gameData.walls.exploding [i].time, EXPL_WALL_TIME);
+	gameData.walls.exploding [i].time += gameData.time.xFrame;
+	if (gameData.walls.exploding [i].time > EXPL_WALL_TIME)
+		gameData.walls.exploding [i].time = EXPL_WALL_TIME;
+	else if (gameData.walls.exploding [i].time > 3 * EXPL_WALL_TIME / 4) {
+		CSegment *segP = SEGMENTS + nSegment,
+					*connSegP = SEGMENTS + segP->m_children [nSide];
+		ubyte	a = (ubyte) segP->Wall (nSide)->nClip;
+		short n = AnimFrameCount (gameData.walls.animP + a);
+		short nConnSide = segP->ConnectedSide (connSegP);
+		segP->SetTexture (nSide, connSegP, nConnSide, a, n - 1);
+		segP->Wall (nSide)->flags |= WALL_BLASTED;
+		if (nConnSide >= 0)
+			connSegP->Wall (nConnSide)->flags |= WALL_BLASTED;
 		}
+	newfrac = FixDiv (gameData.walls.exploding [i].time, EXPL_WALL_TIME);
+	oldCount = X2I (EXPL_WALL_TOTAL_FIREBALLS * FixMul (oldfrac, oldfrac));
+	newCount = X2I (EXPL_WALL_TOTAL_FIREBALLS * FixMul (newfrac, newfrac));
+	//n = newCount - oldCount;
+	//now create all the next explosions
+	for (e = oldCount; e < newCount; e++) {
+		short*		corners;
+		CFixVector	*v0, *v1, *v2;
+		CFixVector	vv0, vv1, vPos;
+		fix			size;
+
+		//calc expl position
+
+		corners = SEGMENTS [nSegment].Corners (nSide);
+		v0 = gameData.segs.vertices + corners [0];
+		v1 = gameData.segs.vertices + corners [1];
+		v2 = gameData.segs.vertices + corners [2];
+		vv0 = *v0 - *v1;
+		vv1 = *v2 - *v1;
+		vPos = *v1 + vv0 * (d_rand () * 2);
+		vPos += vv1 * (d_rand ()*2);
+		size = EXPL_WALL_FIREBALL_SIZE + (2*EXPL_WALL_FIREBALL_SIZE * e / EXPL_WALL_TOTAL_FIREBALLS);
+		//fireballs start away from door, with subsequent ones getting closer
+		vPos += SEGMENTS [nSegment].m_sides [nSide].m_normals [0] * (size * (EXPL_WALL_TOTAL_FIREBALLS - e) / EXPL_WALL_TOTAL_FIREBALLS);
+		if (e & 3)		//3 of 4 are Normal
+			/*Object*/CreateExplosion ((short) gameData.walls.exploding [i].nSegment, vPos, size, (ubyte) VCLIP_SMALL_EXPLOSION);
+		else
+			CreateBadassExplosion (NULL, (short) gameData.walls.exploding [i].nSegment, vPos,
+										  size, (ubyte) VCLIP_SMALL_EXPLOSION, I2X (4), I2X (20), I2X (50), -1);
+		}
+	if (gameData.walls.exploding [i].time >= EXPL_WALL_TIME)
+		gameData.walls.exploding.Delete (i);
+	else
+		i++;
 	}
 }
 
