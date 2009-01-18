@@ -28,7 +28,7 @@ extern bool bNewFileFormat;
 
 //------------------------------------------------------------------------------
 
-inline int CSegment::Index (void)
+int CSegment::Index (void)
 {
 return this - SEGMENTS;
 }
@@ -319,7 +319,7 @@ return wallP->IsDoorWay (objP);
 
 //------------------------------------------------------------------------------
 
-inline bool CSegment::IsVertex (int nVertex)
+bool CSegment::IsVertex (int nVertex)
 {
 for (int i = 0; i < 8; i++)
 	if (nVertex == m_verts [i])
@@ -399,7 +399,7 @@ if (connSegP)
 
 //-----------------------------------------------------------------
 
-inline int CSegment::PokesThrough (int nObject, int nSide)
+int CSegment::PokesThrough (int nObject, int nSide)
 {
 	CObject *objP = OBJECTS + nObject;
 
