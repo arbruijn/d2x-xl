@@ -1910,6 +1910,8 @@ class CObjectData {
 
 //------------------------------------------------------------------------------
 
+#define MAX_FVI_SEGS 200
+
 class CFVISideData {
 	public:
 		int					bCache;
