@@ -716,6 +716,7 @@ int LoadLevel (int nLevel, bool bLoadTextures, bool bRestore)
 	int		nRooms, bRetry = 0, nLoadRes, nCurrentLevel = gameData.missions.nCurrentLevel;
 
 /*---*/PrintLog ("Loading level...\n");
+gameData.Destroy ();
 srand (SDL_GetTicks ());
 gameStates.render.nLightingMethod = gameOpts->render.nLightingMethod && !gameStates.app.bNostalgia;
 gameStates.app.bBetweenLevels = 1;

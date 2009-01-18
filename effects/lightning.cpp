@@ -1785,7 +1785,7 @@ if ((SHOW_LIGHTNINGS || bForce) && m_lights.Buffer ()) {
 
 	for (i = m_nFirstLight; i >= 0; ) {
 		if ((i < 0) || (i >= LEVEL_SEGMENTS))
-			continue;
+			break;
 		llP = m_lights + i;
 		i = llP->nNext;
 		llP->nLights = 0;
