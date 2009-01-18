@@ -36,6 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "light.h"
 #include "textdata.h"
 #include "marker.h"
+#include "state.h"
 
 #ifdef EDITOR
 #include "editor/editor.h"
