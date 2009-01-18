@@ -450,7 +450,7 @@ void CSaveGameHandler::Backup (void)
 if (!m_override) {
 	CFile cf;
 	
-	if (cf.Open (m_filename, gameFolders.szSaveDir, "wb", 0)) {
+	if (cf.Exist (m_filename, gameFolders.szSaveDir, 0) && cf.Open (m_filename, gameFolders.szSaveDir, "wb", 0)) {
 		char	newName [FILENAME_LEN];
 
 		sprintf (newName, "%s.sg%x", LOCALPLAYER.callsign, NUM_SAVES);
