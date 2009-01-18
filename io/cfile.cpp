@@ -167,8 +167,13 @@ if ((*filename != '/') && (strstr (filename, "./") != filename) && *folder) {
  else
  	pfn = filename;
  
-fp = fopen (pfn, mode);
-if (!fp && gameFolders.bAltHogDirInited && strcmp (folder, gameFolders.szAltHogDir)) {
+if ((fp = fopen (pfn, mode))) {
+	if (ferror (fp)) {
+		fclose (fp);
+		fp = NULL;
+		}
+	}
+else if (gameFolders.bAltHogDirInited && strcmp (folder, gameFolders.szAltHogDir)) {
    sprintf (fn, "%s/%s", gameFolders.szAltHogDir, filename);
    pfn = fn;
    fp = fopen (pfn, mode);
@@ -361,11 +366,14 @@ int CFile::Write (const void *buf, int nElemSize, int nElemCount)
 {
 	int nWritten;
 
-if (!m_cf.file) {
+if (!m_cf.file)
 	return 0;
-	}
+if (!(nElemSize * nElemCount))
+	return 0;
 nWritten = (int) fwrite (buf, nElemSize, nElemCount, m_cf.file);
 m_cf.rawPosition = ftell (m_cf.file);
+if (Error ())
+	return 0;
 return nWritten;
 }
 

@@ -443,6 +443,8 @@ return 0;
 //	-----------------------------------------------------------------------------------
 //	Save file we're going to save over in last slot and call " [autosave backup]"
 
+static char szBackup [DESC_LENGTH] = " [autosave backup]";
+
 void CSaveGameHandler::Backup (void)
 {
 if (!m_override) {
@@ -453,7 +455,7 @@ if (!m_override) {
 
 		sprintf (newname, "%s.sg%x", LOCALPLAYER.callsign, NUM_SAVES);
 		cf.Seek (DESC_OFFSET, SEEK_SET);
-		cf.Write (" [autosave backup]", sizeof (char) * DESC_LENGTH, 1);
+		cf.Write (szBackup, sizeof (char) * DESC_LENGTH, 1);
 		cf.Close ();
 		cf.Delete (newname, gameFolders.szSaveDir);
 		cf.Rename (m_filename, newname, gameFolders.szSaveDir);
@@ -880,7 +882,7 @@ if (!m_bBetweenLevels) {
 		WALLS [j].SaveState (m_cf);
 	IFDBG (fPos = m_cf.Tell ());
 //Save exploding wall info
-	i = MAX_EXPLODING_WALLS;
+	i = int (gameData.walls.exploding.ToS ());
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
 		gameData.walls.exploding [j].SaveState (m_cf);
