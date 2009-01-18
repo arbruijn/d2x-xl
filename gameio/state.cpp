@@ -1669,8 +1669,13 @@ int CSaveGameHandler::LoadUniFormat (int bMulti, fix xOldGameTime, int *nLevel)
 	int		h, i, j;
 
 if (m_nVersion >= 39) {
+#if 0
 	h = m_cf.ReadInt ();
 	if (h != gameData.segs.nMaxSegments) {
+#else
+	m_cf.ReadInt ();	// ignore the value
+	if (gameData.segs.nSegments > gameData.segs.nMaxSegments) {
+#endif
 		Warning (TXT_MAX_SEGS_WARNING, h);
 		return 0;
 		}
