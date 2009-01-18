@@ -457,8 +457,10 @@ if (!m_override) {
 		cf.Seek (DESC_OFFSET, SEEK_SET);
 		cf.Write (szBackup, DESC_LENGTH, 1);
 		cf.Close ();
-		cf.Delete (newname, gameFolders.szSaveDir);
-		cf.Rename (m_filename, newname, gameFolders.szSaveDir);
+		if (!cf.Error ()) {
+			cf.Delete (newname, gameFolders.szSaveDir);
+			cf.Rename (m_filename, newname, gameFolders.szSaveDir);
+			}
 		}
 	}
 }

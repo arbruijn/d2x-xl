@@ -677,18 +677,17 @@ retryMove:
 	if (bGetPhysSegs) {
 		if (gameData.physics.nSegments && (gameData.physics.segments [gameData.physics.nSegments-1] == hi.segList [0]))
 			gameData.physics.nSegments--;
-#if !DBG
+#if 1 //!DBG
 		i = MAX_FVI_SEGS - gameData.physics.nSegments - 1;
 		if (i > 0) {
 			if (i > hi.nSegments)
 				i = hi.nSegments;
-			if (i < 0)
+			if (i <= 0)
 				FindVectorIntersection (&fq, &hi);
-			memcpy (gameData.physics.segments + gameData.physics.nSegments, hi.segList, i * sizeof (gameData.physics.segments [0]));
+			if (i > 0)
+				memcpy (gameData.physics.segments + gameData.physics.nSegments, hi.segList, i * sizeof (gameData.physics.segments [0]));
 			gameData.physics.nSegments += i;
 			}
-		else
-			i = i;
 #else
 		for (i = 0; (i < hi.nSegments) && (gameData.physics.nSegments < MAX_FVI_SEGS-1); ) {
 			if (hi.segList [i] > gameData.segs.nLastSegment)
