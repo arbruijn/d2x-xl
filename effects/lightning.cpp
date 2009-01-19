@@ -94,7 +94,7 @@ for (; i > 0; i--, lightningP++)
 
 inline double dbl_rand (void)
 {
-return (double) rand () / (double) RAND_MAX;
+return double (rand ()) / double (RAND_MAX);
 }
 
 //------------------------------------------------------------------------------
@@ -176,7 +176,7 @@ else if (m_child)
 void CLightningNode::Destroy (void)
 {
 if (m_child) {
-	if ((int) (size_t) m_child == (int) 0xffffffff)
+	if (int (size_t (m_child)) == int (0xffffffff))
 		m_child = NULL;
 	else {
 		m_child->DestroyNodes ();
@@ -334,7 +334,7 @@ CFixVector CLightningNode::CreateErratic (CFixVector *vPos, CFixVector *vBase, i
 
 m_vNewPos = m_vBase;
 for (j = 0; j < 2 - bInPlane; j++) {
-	nDelta = nAmplitude / 2 - (int) (dbl_rand () * nAmplitude);
+	nDelta = nAmplitude / 2 - int (dbl_rand () * nAmplitude);
 	if (!bRandom) {
 		i -= bFromEnd;
 		nDelta *= 3;
@@ -374,8 +374,8 @@ phi = sin (phi * Pi);
 phi = sqrt (phi);
 dx *= nAmplitude * phi;
 dy *= nAmplitude * phi;
-m_vNewPos = m_vBase + m_vDelta [0] * ((int)dx);
-m_vNewPos += m_vDelta [1] * ((int) dy);
+m_vNewPos = m_vBase + m_vDelta [0] * int (dx);
+m_vNewPos += m_vDelta [1] * int (dy);
 m_vOffs = m_vNewPos - m_vPos;
 m_vOffs *= (I2X (1) / nSteps);
 return m_vOffs;
@@ -408,7 +408,7 @@ return true;
 
 int CLightning::ComputeChildEnd (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDir, CFixVector *vParentDir, int nLength)
 {
-nLength = 3 * nLength / 4 + (int) (dbl_rand () * nLength / 4);
+nLength = 3 * nLength / 4 + int (dbl_rand () * nLength / 4);
 DirectedRandomVector (vDir, vParentDir, I2X (3) / 4, I2X (9) / 10);
 *vEnd = *vPos + *vDir * nLength;
 return nLength;
@@ -442,7 +442,7 @@ else {
 	}
 m_vDir = vDir;
 if (m_nOffset) {
-	i = m_nOffset / 2 + (int) (dbl_rand () * m_nOffset / 2);
+	i = m_nOffset / 2 + int (dbl_rand () * m_nOffset / 2);
 	m_vPos += vDir * i;
 	m_vEnd += vDir * i;
 	}
@@ -532,8 +532,8 @@ if (!m_nodes.Create (m_nNodes))
 	return false;
 m_nodes.Clear ();
 if (m_bRandom) {
-	m_nTTL = 3 * m_nTTL / 4 + (int) (dbl_rand () * m_nTTL / 2);
-	m_nLength = 3 * m_nLength / 4 + (int) (dbl_rand () * m_nLength / 2);
+	m_nTTL = 3 * m_nTTL / 4 + int (dbl_rand () * m_nTTL / 2);
+	m_nLength = 3 * m_nLength / 4 + int (dbl_rand () * m_nLength / 2);
 	}
 if (m_nAmplitude < 0)
 	m_nAmplitude = m_nLength / 6;
@@ -543,12 +543,12 @@ if (gameOpts->render.lightnings.nQuality && nDepth && m_nChildren) {
 	double		nStep, j;
 
 	n = m_nChildren + 1 + (m_nChildren < 2);
-	nStep = (double) m_nNodes / (double) m_nChildren;
+	nStep = double (m_nNodes) / double (m_nChildren);
 	l = m_nLength / n;
-	for (h = m_nNodes - (int) nStep, j = nStep / 2; j < h; j += nStep) {
-		nNode = (int) j + 2 - d_rand () % 5;
+	for (h = m_nNodes - int (nStep), j = nStep / 2; j < h; j += nStep) {
+		nNode = int (j) + 2 - d_rand () % 5;
 		if (nNode < 1)
-			nNode = (int) j;
+			nNode = int (j);
 		if (!m_nodes [nNode].CreateChild (&m_vEnd, &m_vDelta, m_nLife, l, m_nAmplitude / n * 2, m_nAngle,
 													 2 * m_nNodes / n, m_nChildren / 5, nDepth - 1, m_nSteps / 2, m_nSmoothe, m_bClamp, m_bPlasma, m_bLight,
 													 m_nStyle, &m_color, this, nNode))
@@ -672,7 +672,7 @@ if ((nDepth > 1) || m_bRandom) {
 		if (nDepth > 1)
 			nAmplitude *= 4;
 		for (i = 0; i < m_nNodes; i++) {
-			phi = bClamp ? (double) i / (double) (m_nNodes - 1) : 1;
+			phi = bClamp ? double (i) / double (m_nNodes - 1) : 1;
 			m_nodes [i].CreatePerlin (nSteps, nAmplitude, nSeed, 2 * phi / 3, phi * 7.5);
 			}
 		}
@@ -701,7 +701,7 @@ else {
 	if (nStyle == 2) {
 		nAmplitude = 5 * nAmplitude / 3;
 		for (h = m_nNodes, i = 0, plh = m_nodes.Buffer (); i < h; i++, plh++) {
-			phi = bClamp ? (double) i / (double) (h - 1) : 1;
+			phi = bClamp ? double (i) / double (h - 1) : 1;
 			plh->CreatePerlin (nSteps, nAmplitude, nSeed, phi, phi * 10);
 			}
 		}
@@ -780,12 +780,12 @@ if (m_nTTL <= 0) {
 	if (m_nLife < 0) {
 		if ((m_nDelay > 1) && (0 > (m_nNodes = -m_nNodes))) {
 			h = m_nDelay / 2;
-			m_nTTL = h + (int) (dbl_rand () * h);
+			m_nTTL = h + int (dbl_rand () * h);
 			}
 		else {
 			if (m_bRandom) {
 				h = -m_nLife;
-				m_nTTL = 3 * h / 4 + (int) (dbl_rand () * h / 2);
+				m_nTTL = 3 * h / 4 + int (dbl_rand () * h / 2);
 				Setup (0);
 				}
 			else {
@@ -854,12 +854,12 @@ if (0 < (h = m_nNodes)) {
 		if (bStretch) {
 			vDelta = vOffs;
 			if (bFromEnd)
-				fStep = (double) (h - j + 1) / (double) h;
+				fStep = double (h - j + 1) / double (h);
 			else
-				fStep = (double) j / (double) h;
-			vDelta [X] = (int) (vOffs [X] * fStep + 0.5);
-			vDelta [Y] = (int) (vOffs [Y] * fStep + 0.5);
-			vDelta [Z] = (int) (vOffs [Z] * fStep + 0.5);
+				fStep = double (j) / double (h);
+			vDelta [X] = int (vOffs [X] * fStep + 0.5);
+			vDelta [Y] = int (vOffs [Y] * fStep + 0.5);
+			vDelta [Z] = int (vOffs [Z] * fStep + 0.5);
 			}
 		nodeP->Move (vDelta, nSegment);
 		}
@@ -1154,16 +1154,16 @@ int CLightning::SetLight (void)
 if (!m_bLight)
 	return 0;
 if (0 < (j = m_nNodes)) {
-	if (!(nStride = (int) ((double) m_nLength / (I2X (20)) + 0.5)))
+	if (!(nStride = int ((double (m_nLength) / I2X (20) + 0.5))))
 		nStride = 1;
-	if (!(nStep = (double) (j - 1) / (double) nStride))
-		nStep = (double) ((int) (j + 0.5));
+	if (!(nStep = double (j - 1) / double (nStride)))
+		nStep = double (int (j + 0.5));
 #if DBG
 	if (m_nSegment == nDbgSeg)
 		nDbgSeg = nDbgSeg;
 #endif
 	for (h = nStep / 2; h < j; h += nStep) {
-		if (!m_nodes [(int) h].SetLight (m_nSegment, &m_color))
+		if (!m_nodes [int (h)].SetLight (m_nSegment, &m_color))
 			break;
 		nLights++;
 		}
@@ -1556,7 +1556,7 @@ if (SHOW_LIGHTNINGS) {
 
 	if (t / gameStates.gameplay.slowmo [0].fSpeed < 25)
 		return;
-	t0 = gameStates.app.nSDLTicks + 25 - (int) (gameStates.gameplay.slowmo [0].fSpeed * 25);
+	t0 = gameStates.app.nSDLTicks + 25 - int (gameStates.gameplay.slowmo [0].fSpeed * 25);
 #	else
 	if (!gameStates.app.tick40fps.bTick)
 		return 0;
