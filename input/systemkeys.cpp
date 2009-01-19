@@ -481,11 +481,11 @@ switch (key) {
 		break;
 		
 	case KEY_CTRLED+KEY_F5:
-		saveGameHandler.Save (0, 0, 1, 0);
+		saveGameManager.Save (0, 0, 1, 0);
 		break;
 
 	case KEY_CTRLED+KEY_F9:
-		saveGameHandler.Load (0, 0, 1, 0);
+		saveGameManager.Load (0, 0, 1, 0);
 		break;
 
 #if 1//ndef _DEBUG
@@ -556,7 +556,7 @@ switch (key) {
 		if (!gameStates.app.bPlayerIsDead && !(IsMultiGame && !IsCoopGame)) {
 			paletteManager.SaveEffectAndReset ();
 			paletteManager.SetEffect (); // get only the effect color back
-			saveGameHandler.Save (0, 0, 0, NULL);
+			saveGameManager.Save (0, 0, 0, NULL);
 			paletteManager.LoadEffect ();
 		}
 		break;  // 0 means not between levels.
@@ -564,7 +564,7 @@ switch (key) {
 	case KEY_ALTED+KEY_F3:
 		if (!gameStates.app.bPlayerIsDead && (!IsMultiGame || IsCoopGame)) {
 			paletteManager.SaveEffectAndReset ();
-			saveGameHandler.Load (1, 0, 0, NULL);
+			saveGameManager.Load (1, 0, 0, NULL);
 			if (gameData.app.bGamePaused)
 				DoGamePause();
 		}

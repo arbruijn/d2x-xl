@@ -1171,13 +1171,13 @@ void ExitSecretLevel (void)
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	return;
 if (!(gameStates.app.bD1Mission || gameData.reactor.bDestroyed))
-	saveGameHandler.Save (0, 2, 0, SECRETC_FILENAME);
+	saveGameManager.Save (0, 2, 0, SECRETC_FILENAME);
 if (!gameStates.app.bD1Mission && CFile::Exist (SECRETB_FILENAME, gameFolders.szSaveDir, 0)) {
 	int pw_save = gameData.weapons.nPrimary;
 	int sw_save = gameData.weapons.nSecondary;
 
 	ReturningToLevelMessage ();
-	saveGameHandler.Load (1, 1, 0, SECRETB_FILENAME);
+	saveGameManager.Load (1, 1, 0, SECRETB_FILENAME);
 	gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires;
 	SetDataVersion (-1);
 	gameData.weapons.nPrimary = pw_save;
@@ -1693,7 +1693,7 @@ else {
 		pw_save = gameData.weapons.nPrimary;
 		sw_save = gameData.weapons.nSecondary;
 		nCurrentLevel = gameData.missions.nCurrentLevel;
-		saveGameHandler.Load (1, 1, 0, SECRETC_FILENAME);
+		saveGameManager.Load (1, 1, 0, SECRETC_FILENAME);
 		gameData.missions.nEntryLevel = nCurrentLevel;
 		gameData.weapons.nPrimary = pw_save;
 		gameData.weapons.nSecondary = sw_save;
@@ -1736,7 +1736,7 @@ gameData.missions.nEntryLevel = gameData.missions.nCurrentLevel;
 if (gameData.reactor.bDestroyed)
 	DoEndLevelScoreGlitz (0);
 if (gameData.demo.nState != ND_STATE_PLAYBACK)
-	saveGameHandler.Save (0, 1, 0, NULL);	//	Not between levels (ie, save all), IS a secret level, NO filename override
+	saveGameManager.Save (0, 1, 0, NULL);	//	Not between levels (ie, save all), IS a secret level, NO filename override
 //	Find secret level number to go to, stuff in gameData.missions.nNextLevel.
 for (i = 0; i < -gameData.missions.nLastSecretLevel; i++)
 	if (gameData.missions.secretLevelTable [i] == gameData.missions.nCurrentLevel) {

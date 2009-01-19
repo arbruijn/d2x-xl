@@ -306,7 +306,7 @@ else if (nChoice == mainOpts.nSingle) {
 	NewGameMenu ();
 	}
 else if (nChoice == mainOpts.nLoad) {
-	if (!saveGameHandler.Load (0, 0, 0, NULL))
+	if (!saveGameManager.Load (0, 0, 0, NULL))
 		SetFunctionMode (FMODE_MENU);
 	}
 #if DBG
@@ -394,9 +394,9 @@ if (!i)
 if (i == optOptions)
 	ConfigMenu ();
 else if (i == optLoad)
-	saveGameHandler.Load (1, 0, 0, NULL);
+	saveGameManager.Load (1, 0, 0, NULL);
 else if (i == optSave)
-	saveGameHandler.Save (0, 0, 0, NULL);
+	saveGameManager.Save (0, 0, 0, NULL);
 return 1;
 }
 

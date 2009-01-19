@@ -899,7 +899,7 @@ if ((m_nObjType == OBJ_WEAPON) && (m_nObjId == PROXMINE_ID))
 objP = OBJECTS + m_nObject;
 if ((objP->info.nType != m_nObjType) || (objP->info.nFlags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED | OF_ARMAGEDDON)))
 	return m_fBrightness;
-return m_fBrightness = (float) ObjectDamage (objP) * 0.5f + 0.1f;
+return m_fBrightness = (float) objP->Damage () * 0.5f + 0.1f;
 }
 
 //------------------------------------------------------------------------------

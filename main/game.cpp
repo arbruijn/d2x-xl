@@ -1519,8 +1519,8 @@ if (gameData.fusion.xAutoFireTime) {
 			return 0;
 		t0 = t;
 		gameData.laser.nGlobalFiringCount = 0;
-		gameData.objs.consoleP->mType.physInfo.rotVel[X] += (d_rand () - 16384) / 8;
-		gameData.objs.consoleP->mType.physInfo.rotVel[Z] += (d_rand () - 16384) / 8;
+		gameData.objs.consoleP->mType.physInfo.rotVel [X] += (d_rand () - 16384) / 8;
+		gameData.objs.consoleP->mType.physInfo.rotVel [Z] += (d_rand () - 16384) / 8;
 		CFixVector vRand = CFixVector::Random ();
 		fix xBump = I2X (4);
 		if (gameData.fusion.xCharge > I2X (2))
@@ -1860,7 +1860,7 @@ if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringC
 		}
 	else {
 		flFrameTime += gameData.time.xFrame;
-		if (gameData.fusion.xCharge == 0)
+		if (!gameData.fusion.xCharge)
 			LOCALPLAYER.energy -= I2X (2);
 		h = (flFrameTime <= LOCALPLAYER.energy) ? flFrameTime : LOCALPLAYER.energy;
 		gameData.fusion.xCharge += h;
@@ -1873,10 +1873,13 @@ if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringC
 			gameData.fusion.xAutoFireTime = gameData.time.xGame + flFrameTime / 2 + 1;
 		if (gameStates.limitFPS.bFusion && !gameStates.app.tick40fps.bTick)
 			return;
-		if (gameData.fusion.xCharge < I2X (2))
-			paletteManager.BumpEffect (gameData.fusion.xCharge >> 11, 0, gameData.fusion.xCharge >> 11);
+		if (gameData.fusion.xCharge < I2X (2)) {
+			int nScale = (gameData.fusion.xCharge >> 11) * 255;
+			tRgbaColorf* colorP = gameData.weapons.color + FUSION_ID;
+			paletteManager.BumpEffect (int (colorP->red * nScale), int (colorP->green * nScale), int (colorP->blue * nScale));
+			}
 		else
-			paletteManager.BumpEffect (gameData.fusion.xCharge >> 11, gameData.fusion.xCharge >> 11, 0);
+			paletteManager.BumpEffect (int (colorP->blue * nScale), int (colorP->red * nScale), int (colorP->green * nScale));
 		if (gameData.time.xGame < gameData.fusion.xLastSoundTime)		//gametime has wrapped
 			gameData.fusion.xNextSoundTime = gameData.fusion.xLastSoundTime = gameData.time.xGame;
 		if (gameData.fusion.xNextSoundTime < gameData.time.xGame) {

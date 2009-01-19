@@ -391,7 +391,7 @@ int G3DrawPolyModel (
 	ubyte *p = reinterpret_cast<ubyte*> (modelDataP);
 	short	nTag;
 	short bGetThrusterPos = !objP || ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->info.nId]));
-	short bLightnings = SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage && objP && (ObjectDamage (objP) < 0.5f);
+	short bLightnings = SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage && objP && (objP->Damage () < 0.5f);
 
 	static int nDepth = -1;
 

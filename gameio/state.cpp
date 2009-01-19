@@ -157,7 +157,7 @@ void GameRenderFrame (void);
 #define SECRETB_FILENAME	"secret.sgb"
 #define SECRETC_FILENAME	"secret.sgc"
 
-CSaveGameHandler saveGameHandler;
+CSaveGameManager saveGameManager;
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -351,7 +351,7 @@ return str;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::Init (void)
+void CSaveGameManager::Init (void)
 {
 m_nDefaultSlot = 0;
 m_nLastSlot = 0;
@@ -359,7 +359,7 @@ m_nLastSlot = 0;
 
 //------------------------------------------------------------------------------
 
-int CSaveGameHandler::GetSaveFile (int bMulti)
+int CSaveGameManager::GetSaveFile (int bMulti)
 {
 	CMenu	m (NUM_SAVES + 2);
 	int	i, menuRes, choice;
@@ -389,7 +389,7 @@ return (menuRes < 0) ? 0 : choice + 1;
 
 int bRestoringMenu = 0;
 
-int CSaveGameHandler::GetLoadFile (int bMulti)
+int CSaveGameManager::GetLoadFile (int bMulti)
 {
 	CMenu	m (NUM_SAVES + NM_IMG_SPACE + 1);
 	int	i, choice = -1, nSaves;
@@ -445,7 +445,7 @@ return 0;
 
 static char szBackup [DESC_LENGTH] = " [autosave backup]";
 
-void CSaveGameHandler::Backup (void)
+void CSaveGameManager::Backup (void)
 {
 if (!m_override) {
 	CFile cf;
@@ -470,7 +470,7 @@ if (!m_override) {
 //	If secret.sgc exists, then copy it to Nsecret.sgc (where N = nSaveSlot).
 //	If it doesn't exist, then delete Nsecret.sgc
 
-void CSaveGameHandler::PushSecretSave (int nSaveSlot)
+void CSaveGameManager::PushSecretSave (int nSaveSlot)
 {
 if ((nSaveSlot != -1) && !(m_bSecret || IsMultiGame)) {
 	int	rval;
@@ -496,7 +496,7 @@ if ((nSaveSlot != -1) && !(m_bSecret || IsMultiGame)) {
 //	-----------------------------------------------------------------------------------
 //	blind_save means don't prompt user for any info.
 
-int CSaveGameHandler::Save (int bBetweenLevels, int bSecret, int bQuick, const char *pszFilenameOverride)
+int CSaveGameManager::Save (int bBetweenLevels, int bSecret, int bQuick, const char *pszFilenameOverride)
 {
 	int	rval, nSaveSlot = -1;
 
@@ -558,7 +558,7 @@ return rval;
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::SaveNetGame (void)
+void CSaveGameManager::SaveNetGame (void)
 {
 	int	i, j;
 
@@ -644,7 +644,7 @@ m_cf.Write (netGame.AuxData, NETGAME_AUX_SIZE, 1);  // Storage for protocol-spec
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::SaveNetPlayers (void)
+void CSaveGameManager::SaveNetPlayers (void)
 {
 	int	i;
 
@@ -665,7 +665,7 @@ for (i = 0; i < MAX_PLAYERS + 4; i++) {
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::SavePlayer (CPlayerData *playerP)
+void CSaveGameManager::SavePlayer (CPlayerData *playerP)
 {
 	int	i;
 
@@ -723,7 +723,7 @@ m_cf.WriteByte (playerP->hoursTotal);            // Hours played (since timeTota
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::SaveObjTriggerRef (tObjTriggerRef *refP)
+void CSaveGameManager::SaveObjTriggerRef (tObjTriggerRef *refP)
 {
 m_cf.WriteShort (refP->prev);
 m_cf.WriteShort (refP->next);
@@ -732,7 +732,7 @@ m_cf.WriteShort (refP->nObject);
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::SaveMatCen (tMatCenInfo *matcenP)
+void CSaveGameManager::SaveMatCen (tMatCenInfo *matcenP)
 {
 	int	i;
 
@@ -746,7 +746,7 @@ m_cf.WriteShort (matcenP->nFuelCen);
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::SaveFuelCen (tFuelCenInfo *fuelcenP)
+void CSaveGameManager::SaveFuelCen (tFuelCenInfo *fuelcenP)
 {
 m_cf.WriteInt (fuelcenP->nType);
 m_cf.WriteInt (fuelcenP->nSegment);
@@ -762,7 +762,7 @@ m_cf.WriteVector(fuelcenP->vCenter);
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::SaveReactorTrigger (tReactorTriggers *triggerP)
+void CSaveGameManager::SaveReactorTrigger (tReactorTriggers *triggerP)
 {
 	int	i;
 
@@ -775,7 +775,7 @@ for (i = 0; i < MAX_CONTROLCEN_LINKS; i++) {
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::SaveReactorState (tReactorStates *stateP)
+void CSaveGameManager::SaveReactorState (tReactorStates *stateP)
 {
 m_cf.WriteInt (stateP->nObject);
 m_cf.WriteInt (stateP->bHit);
@@ -786,7 +786,7 @@ m_cf.WriteInt (stateP->nDeadObj);
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::SaveSpawnPoint (int i)
+void CSaveGameManager::SaveSpawnPoint (int i)
 {
 #if DBG
 i = m_cf.Tell ();
@@ -801,7 +801,7 @@ m_cf.WriteShort (gameData.multiplayer.playerInit [i].nSegType);
 
 IFDBG (static int fPos);
 
-void CSaveGameHandler::SaveGameData (void)
+void CSaveGameManager::SaveGameData (void)
 {
 	int		i, j;
 	short		nObjsWithTrigger, nObject, nFirstTrigger;
@@ -994,7 +994,7 @@ for (i = 0; i < MAX_PLAYERS; i++)
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::SaveImage (void)
+void CSaveGameManager::SaveImage (void)
 {
 	CCanvas	*thumbCanv = CCanvas::Create (THUMBNAIL_LW, THUMBNAIL_LH);
 
@@ -1051,7 +1051,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-int CSaveGameHandler::SaveState (int bSecret, char *filename, char *description)
+int CSaveGameManager::SaveState (int bSecret, char *filename, char *description)
 {
 	int			i;
 
@@ -1093,7 +1093,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------------
 
-void CSaveGameHandler::AutoSave (int nSaveSlot)
+void CSaveGameManager::AutoSave (int nSaveSlot)
 {
 if ((nSaveSlot != (NUM_SAVES + 1)) && m_bInGame) {
 	char	filename [FILENAME_LEN];
@@ -1108,7 +1108,7 @@ if ((nSaveSlot != (NUM_SAVES + 1)) && m_bInGame) {
 
 //	-----------------------------------------------------------------------------------
 
-void CSaveGameHandler::PopSecretSave (int nSaveSlot)
+void CSaveGameManager::PopSecretSave (int nSaveSlot)
 {
 if ((nSaveSlot != -1) && !(m_bSecret || IsMultiGame)) {
 	int	rval;
@@ -1130,7 +1130,7 @@ if ((nSaveSlot != -1) && !(m_bSecret || IsMultiGame)) {
 
 //	-----------------------------------------------------------------------------------
 
-int CSaveGameHandler::Load (int bInGame, int bSecret, int bQuick, const char *pszFilenameOverride)
+int CSaveGameManager::Load (int bInGame, int bSecret, int bQuick, const char *pszFilenameOverride)
 {
 	int	i, nSaveSlot = -1;
 
@@ -1191,7 +1191,7 @@ return i;
 
 //------------------------------------------------------------------------------
 
-int CSaveGameHandler::ReadBoundedInt (int nMax, int *nVal)
+int CSaveGameManager::ReadBoundedInt (int nMax, int *nVal)
 {
 	int	i;
 
@@ -1207,7 +1207,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int CSaveGameHandler::LoadMission (void)
+int CSaveGameManager::LoadMission (void)
 {
 	char	szMission [16];
 	int	i, nVersionFilter = gameOpts->app.nVersionFilter;
@@ -1225,7 +1225,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::LoadMulti (char *pszOrgCallSign, int bMulti)
+void CSaveGameManager::LoadMulti (char *pszOrgCallSign, int bMulti)
 {
 if (bMulti)
 	strcpy (pszOrgCallSign, LOCALPLAYER.callsign);
@@ -1246,7 +1246,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-int CSaveGameHandler::SetServerPlayer (
+int CSaveGameManager::SetServerPlayer (
 	CPlayerData *restoredPlayers, int nPlayers, const char *pszServerCallSign, int *pnOtherObjNum, int *pnServerObjNum)
 {
 	int	i,
@@ -1297,7 +1297,7 @@ return nServerPlayer;
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::GetConnectedPlayers (CPlayerData *restoredPlayers, int nPlayers)
+void CSaveGameManager::GetConnectedPlayers (CPlayerData *restoredPlayers, int nPlayers)
 {
 	int	i, j;
 
@@ -1336,7 +1336,7 @@ if (NetworkIAmMaster ()) {
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::FixNetworkObjects (int nServerPlayer, int nOtherObjNum, int nServerObjNum)
+void CSaveGameManager::FixNetworkObjects (int nServerPlayer, int nOtherObjNum, int nServerObjNum)
 {
 if (IsMultiGame && (gameStates.multi.nGameType >= IPX_GAME) && (nServerPlayer > 0)) {
 	CObject h = OBJECTS [nServerObjNum];
@@ -1357,7 +1357,7 @@ if (IsMultiGame && (gameStates.multi.nGameType >= IPX_GAME) && (nServerPlayer > 
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::FixObjects (void)
+void CSaveGameManager::FixObjects (void)
 {
 	CObject	*objP = OBJECTS.Buffer ();
 	int		i, j, nSegment;
@@ -1394,7 +1394,7 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::AwardReturningPlayer (CPlayerData *retPlayerP, fix xOldGameTime)
+void CSaveGameManager::AwardReturningPlayer (CPlayerData *retPlayerP, fix xOldGameTime)
 {
 CPlayerData *playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
 playerP->level = retPlayerP->level;
@@ -1417,7 +1417,7 @@ DoCloakInvulSecretStuff (xOldGameTime);
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::LoadNetGame (void)
+void CSaveGameManager::LoadNetGame (void)
 {
 	int	i, j;
 
@@ -1503,7 +1503,7 @@ m_cf.Read (netGame.AuxData, NETGAME_AUX_SIZE, 1);  // Storage for protocol-speci
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::LoadNetPlayers (void)
+void CSaveGameManager::LoadNetPlayers (void)
 {
 	int	i;
 
@@ -1524,7 +1524,7 @@ for (i = 0; i < MAX_PLAYERS + 4; i++) {
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::LoadPlayer (CPlayerData *playerP)
+void CSaveGameManager::LoadPlayer (CPlayerData *playerP)
 {
 	int	i;
 
@@ -1580,7 +1580,7 @@ playerP->hoursTotal = m_cf.ReadByte ();            // Hours played (since timeTo
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::LoadObjTriggerRef (tObjTriggerRef *refP)
+void CSaveGameManager::LoadObjTriggerRef (tObjTriggerRef *refP)
 {
 refP->prev = m_cf.ReadShort ();
 refP->next = m_cf.ReadShort ();
@@ -1589,7 +1589,7 @@ refP->nObject = m_cf.ReadShort ();
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::LoadMatCen (tMatCenInfo *matcenP)
+void CSaveGameManager::LoadMatCen (tMatCenInfo *matcenP)
 {
 	int	i;
 
@@ -1603,7 +1603,7 @@ matcenP->nFuelCen = m_cf.ReadShort ();
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::LoadFuelCen (tFuelCenInfo *fuelcenP)
+void CSaveGameManager::LoadFuelCen (tFuelCenInfo *fuelcenP)
 {
 fuelcenP->nType = m_cf.ReadInt ();
 fuelcenP->nSegment = m_cf.ReadInt ();
@@ -1619,7 +1619,7 @@ m_cf.ReadVector (fuelcenP->vCenter);
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::LoadReactorTrigger (tReactorTriggers *triggerP)
+void CSaveGameManager::LoadReactorTrigger (tReactorTriggers *triggerP)
 {
 	int	i;
 
@@ -1632,7 +1632,7 @@ for (i = 0; i < MAX_CONTROLCEN_LINKS; i++) {
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::LoadReactorState (tReactorStates *stateP)
+void CSaveGameManager::LoadReactorState (tReactorStates *stateP)
 {
 stateP->nObject = m_cf.ReadInt ();
 stateP->bHit = m_cf.ReadInt ();
@@ -1643,7 +1643,7 @@ stateP->nDeadObj = m_cf.ReadInt ();
 
 //------------------------------------------------------------------------------
 
-int CSaveGameHandler::LoadSpawnPoint (int i)
+int CSaveGameManager::LoadSpawnPoint (int i)
 {
 IFDBG (i = m_cf.Tell ());
 m_cf.ReadVector (gameData.multiplayer.playerInit [i].position.vPos);     
@@ -1660,7 +1660,7 @@ return (gameData.multiplayer.playerInit [i].nSegment >= 0) &&
 
 //------------------------------------------------------------------------------
 
-int CSaveGameHandler::LoadUniFormat (int bMulti, fix xOldGameTime, int *nLevel)
+int CSaveGameManager::LoadUniFormat (int bMulti, fix xOldGameTime, int *nLevel)
 {
 	CPlayerData	restoredPlayers [MAX_PLAYERS];
 	int		nPlayers, nServerPlayer = -1;
@@ -1691,21 +1691,21 @@ nNextLevel = m_cf.ReadInt ();
 //Restore gameData.time.xGame
 gameData.time.xGame = m_cf.ReadFix ();
 // Start new game....
-CSaveGameHandler::LoadMulti (szOrgCallSign, bMulti);
+CSaveGameManager::LoadMulti (szOrgCallSign, bMulti);
 if (IsMultiGame) {
 		char szServerCallSign [CALLSIGN_LEN + 1];
 
 	strcpy (szServerCallSign, netPlayers.players [0].callsign);
 	gameData.app.nStateGameId = m_cf.ReadInt ();
-	CSaveGameHandler::LoadNetGame ();
+	CSaveGameManager::LoadNetGame ();
 	IFDBG (fPos = m_cf.Tell ());
-	CSaveGameHandler::LoadNetPlayers ();
+	CSaveGameManager::LoadNetPlayers ();
 	IFDBG (fPos = m_cf.Tell ());
 	nPlayers = m_cf.ReadInt ();
 	nSavedLocalPlayer = gameData.multiplayer.nLocalPlayer;
 	gameData.multiplayer.nLocalPlayer = m_cf.ReadInt ();
 	for (i = 0; i < nPlayers; i++) {
-		CSaveGameHandler::LoadPlayer (restoredPlayers + i);
+		CSaveGameManager::LoadPlayer (restoredPlayers + i);
 		restoredPlayers [i].connected = 0;
 		}
 	IFDBG (fPos = m_cf.Tell ());
@@ -1848,7 +1848,7 @@ if (!m_bBetweenLevels) {
 		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
 			OBJTRIGGERS [i].LoadState (m_cf, true);
 		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
-			CSaveGameHandler::LoadObjTriggerRef (gameData.trigs.objTriggerRefs + i);
+			CSaveGameManager::LoadObjTriggerRef (gameData.trigs.objTriggerRefs + i);
 		if (m_nVersion < 36) {
 			j = (m_nVersion < 35) ? 700 : MAX_OBJECTS_D2X;
 			for (i = 0; i < j; i++)
@@ -1991,7 +1991,7 @@ if (m_nVersion >= 37) {
 
 	memcpy (playerInitSave, gameData.multiplayer.playerInit, sizeof (playerInitSave));
 	for (h = 1, i = 0; i < MAX_PLAYERS; i++)
-		if (!CSaveGameHandler::LoadSpawnPoint (i))
+		if (!CSaveGameManager::LoadSpawnPoint (i))
 			h = 0;
 	if (!h)
 		memcpy (gameData.multiplayer.playerInit, playerInitSave, sizeof (playerInitSave));
@@ -2001,7 +2001,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CSaveGameHandler::LoadBinFormat (int bMulti, fix xOldGameTime, int *nLevel)
+int CSaveGameManager::LoadBinFormat (int bMulti, fix xOldGameTime, int *nLevel)
 {
 	CPlayerData	restoredPlayers [MAX_PLAYERS];
 	int		nPlayers, nServerPlayer = -1;
@@ -2023,7 +2023,7 @@ m_cf.Read (&nNextLevel, sizeof (int), 1);
 //Restore gameData.time.xGame
 m_cf.Read (&gameData.time.xGame, sizeof (fix), 1);
 // Start new game....
-CSaveGameHandler::LoadMulti (szOrgCallSign, bMulti);
+CSaveGameManager::LoadMulti (szOrgCallSign, bMulti);
 if (gameData.app.nGameMode & GM_MULTI) {
 		char szServerCallSign [CALLSIGN_LEN + 1];
 
@@ -2262,7 +2262,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CSaveGameHandler::LoadState (int bMulti, int bSecret, char *filename)
+int CSaveGameManager::LoadState (int bMulti, int bSecret, char *filename)
 {
 	char		szDescription [DESC_LENGTH + 1];
 	char		nId [5];
@@ -2335,7 +2335,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CSaveGameHandler::GetGameId (char *filename)
+int CSaveGameManager::GetGameId (char *filename)
 {
 	int	nId;
 

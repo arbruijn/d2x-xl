@@ -42,7 +42,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //	-------------------------------------------------------------------------------------------------
 
-int CSaveGameHandler::LoadAIBinFormat (void)
+int CSaveGameManager::LoadAIBinFormat (void)
 {
 	int	i;
 
@@ -162,7 +162,7 @@ return 1;
 }
 //	-------------------------------------------------------------------------------------------------
 
-void CSaveGameHandler::SaveAILocalInfo (tAILocalInfo *ailP)
+void CSaveGameManager::SaveAILocalInfo (tAILocalInfo *ailP)
 {
 	int	i;
 
@@ -191,7 +191,7 @@ m_cf.Write (ailP->achievedState, sizeof (ailP->achievedState [0]), 1);
 
 //	-------------------------------------------------------------------------------------------------
 
-void CSaveGameHandler::SaveAIPointSeg (tPointSeg *psegP)
+void CSaveGameManager::SaveAIPointSeg (tPointSeg *psegP)
 {
 m_cf.WriteInt (psegP->nSegment);
 m_cf.WriteVector (psegP->point);
@@ -199,7 +199,7 @@ m_cf.WriteVector (psegP->point);
 
 //	-------------------------------------------------------------------------------------------------
 
-void CSaveGameHandler::SaveAICloakInfo (tAICloakInfo *ciP)
+void CSaveGameManager::SaveAICloakInfo (tAICloakInfo *ciP)
 {
 m_cf.WriteFix (ciP->lastTime);
 m_cf.WriteInt (ciP->nLastSeg);
@@ -208,7 +208,7 @@ m_cf.WriteVector (ciP->vLastPos);
 
 //	-------------------------------------------------------------------------------------------------
 
-int CSaveGameHandler::SaveAI (void)
+int CSaveGameManager::SaveAI (void)
 {
 	int	h, i, j;
 
@@ -262,7 +262,7 @@ return 1;
 
 //	-------------------------------------------------------------------------------------------------
 
-void CSaveGameHandler::LoadAILocalInfo (tAILocalInfo *ailP)
+void CSaveGameManager::LoadAILocalInfo (tAILocalInfo *ailP)
 {
 	int	i;
 
@@ -291,7 +291,7 @@ m_cf.Read (ailP->achievedState, sizeof (ailP->achievedState [0]), 1);
 
 //	-------------------------------------------------------------------------------------------------
 
-void CSaveGameHandler::LoadAIPointSeg (tPointSeg *psegP)
+void CSaveGameManager::LoadAIPointSeg (tPointSeg *psegP)
 {
 psegP->nSegment = m_cf.ReadInt ();
 m_cf.ReadVector (psegP->point);
@@ -299,7 +299,7 @@ m_cf.ReadVector (psegP->point);
 
 //	-------------------------------------------------------------------------------------------------
 
-void CSaveGameHandler::LoadAICloakInfo (tAICloakInfo *ciP)
+void CSaveGameManager::LoadAICloakInfo (tAICloakInfo *ciP)
 {
 ciP->lastTime = m_cf.ReadFix ();
 ciP->nLastSeg = m_cf.ReadInt ();
@@ -308,7 +308,7 @@ m_cf.ReadVector (ciP->vLastPos);
 
 //	-------------------------------------------------------------------------------------------------
 
-int CSaveGameHandler::LoadAIUniFormat (void)
+int CSaveGameManager::LoadAIUniFormat (void)
 {
 	int	h, i, j, nMaxBossCount, nMaxPointSegs;
 

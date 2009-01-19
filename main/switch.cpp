@@ -136,7 +136,7 @@ if (!bDamage)
 	return 1;
 if (v >= 10)
 	return 0;
-if ((fix) (ObjectDamage (OBJECTS + nObject) * 100) > v * 10)
+if ((fix) (OBJECTS [nObject].Damage () * 100) > v * 10)
 	return 0;
 if (!(flags & TF_PERMANENT))
 	value = 0;
@@ -1034,7 +1034,7 @@ return 0;
 void CTrigger::LoadState (CFile& cf, bool bObjTrigger)
 {
 nType = (ubyte) cf.ReadByte (); 
-if (bObjTrigger && (saveGameHandler.Version () >= 41))
+if (bObjTrigger && (saveGameManager.Version () >= 41))
 	flags = cf.ReadShort (); 
 else
 	flags = short (cf.ReadByte ()); 

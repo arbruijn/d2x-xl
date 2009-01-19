@@ -317,9 +317,9 @@ if (dt < 300) {
 	}
 else if (!gameOpts->render.effects.bOnlyShieldHits) {
 	if ((objP->info.nType != OBJ_ROBOT) || ROBOTINFO (objP->info.nId).companion)
-		DrawShieldSphere (objP, 0.0f, 0.5f * scale, 1.0f * scale, ObjectDamage (objP) / 2 * scale);
+		DrawShieldSphere (objP, 0.0f, 0.5f * scale, 1.0f * scale, objP->Damage () / 2 * scale);
 	else
-		DrawShieldSphere (objP, 0.75f * scale, 0.0f, 0.75f * scale, ObjectDamage (objP) / 2 * scale);
+		DrawShieldSphere (objP, 0.75f * scale, 0.0f, 0.75f * scale, objP->Damage () / 2 * scale);
 	}
 #endif
 }
@@ -382,7 +382,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	w = 2 * r;
 	fPos [X] -= r;
 	fPos [Y] += r;
-	w *= ObjectDamage (objP);
+	w *= objP->Damage ();
 	fVerts [0][X] = fVerts [3][X] = fPos [X];
 	fVerts [1][X] = fVerts [2][X] = fPos [X] + w;
 	fVerts [0][Y] = fVerts [1][Y] = fPos [Y];
@@ -553,7 +553,7 @@ else {
 	fVerts [2][X] = fPos [X];
 	glVertexPointer (4, GL_FLOAT, 0, fVerts);
 	nTgtInd = extraGameInfo [IsMultiGame].bTargetIndicators;
-	bHasDmg = !EGI_FLAG (bTagOnlyHitObjs, 0, 1, 0) | (ObjectDamage (objP) < 1);
+	bHasDmg = !EGI_FLAG (bTagOnlyHitObjs, 0, 1, 0) | (objP->Damage () < 1);
 	if (!nTgtInd ||
 		 ((nTgtInd == 1) && (!EGI_FLAG (bDamageIndicators, 0, 1, 0) || !bHasDmg)) ||
 		 ((nTgtInd == 2) && !bHasDmg)) {
@@ -620,7 +620,7 @@ if (IsTeamGame && EGI_FLAG (bFriendlyIndicators, 0, 1, 0)) {
 		}
 	}
 RenderMslLockIndicator (objP);
-if (EGI_FLAG (bTagOnlyHitObjs, 0, 1, 0) && (ObjectDamage (objP) >= 1.0f))
+if (EGI_FLAG (bTagOnlyHitObjs, 0, 1, 0) && (objP->Damage () >= 1.0f))
 	return;
 if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	bStencil = StencilOff ();
@@ -686,7 +686,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 			glEnd ();
 			}
 		if (EGI_FLAG (bDamageIndicators, 0, 1, 0)) {
-			r3 = ObjectDamage (objP);
+			r3 = objP->Damage ();
 			if (r3 < 1.0f) {
 				if (r3 < 0.0f)
 					r3 = 0.0f;
@@ -1466,7 +1466,7 @@ if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]
 	bStencil = StencilOff ();
 	if (EGI_FLAG (bShockwaves, 1, 1, 0) &&
 		 (objP->mType.physInfo.velocity [X] || objP->mType.physInfo.velocity [Y] || objP->mType.physInfo.velocity [Z])) {
-			CFloatVector			vPosf;
+			CFloatVector	vPosf;
 			int				h, i, j, k, n;
 			float				r [4], l [4], alpha;
 			tRgbaColorf		*pc = gameData.weapons.color + objP->info.nId;

@@ -133,7 +133,7 @@ char	szObjectTypeNames [MAX_OBJECT_TYPES][10] = {
 
 // -----------------------------------------------------------------------------
 
-float ObjectDamage (CObject *objP)
+float CObject::Damage (void)
 {
 	float	fDmg;
 	fix	xMaxShields;

@@ -3096,7 +3096,7 @@ if (!MultiAllPlayersAlive ()) {
 	HUDInitMessage (TXT_SAVE_DEADPLRS);
 	return;
  }
-slot = saveGameHandler.GetSaveFile (1);
+slot = saveGameManager.GetSaveFile (1);
 if (!slot)
 	return;
 slot--;
@@ -3107,9 +3107,9 @@ for (i = 0; i<gameData.multiplayer.nPlayers; i++)
 	game_id ^= *reinterpret_cast<uint*> (gameData.multiplayer.players [i].callsign);
 if (game_id == 0)
 	game_id = 1; // 0 is invalid
-MultiSendSaveGame (slot, game_id, saveGameHandler.Description ());
+MultiSendSaveGame (slot, game_id, saveGameManager.Description ());
 MultiDoFrame ();
-MultiSaveGame (slot, game_id, saveGameHandler.Description ());
+MultiSaveGame (slot, game_id, saveGameManager.Description ());
 }
 
 //-----------------------------------------------------------------------------
@@ -3127,12 +3127,12 @@ if (!MultiAllPlayersAlive ()) {
 	return;
 	}
 //StopTime ();
-slot = saveGameHandler.GetLoadFile (1);
+slot = saveGameManager.GetLoadFile (1);
 if (!slot) {
 	//StartTime (0);
 	return;
 	}
-gameData.app.nStateGameId = saveGameHandler.GetGameId (saveGameHandler.Filename ());
+gameData.app.nStateGameId = saveGameManager.GetGameId (saveGameManager.Filename ());
 if (!gameData.app.nStateGameId)
 	return;
 slot--;
@@ -3154,7 +3154,7 @@ sprintf (filename, "%s.mg%d", LOCALPLAYER.callsign, slot);
 HUDInitMessage (TXT_SAVEGAME_NO, slot, description);
 StopTime ();
 gameData.app.nStateGameId = id;
-saveGameHandler.SaveState (0, filename, description);
+saveGameManager.SaveState (0, filename, description);
 }
 
 //-----------------------------------------------------------------------------
@@ -3175,13 +3175,13 @@ sprintf (filename, "%s.mg%d", LOCALPLAYER.callsign, slot);
 gameData.app.bGamePaused = 1;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	MultiStripRobots (i);
-thisid = saveGameHandler.GetGameId (filename);
+thisid = saveGameManager.GetGameId (filename);
 if (thisid != id) {
 	MultiBadRestore ();
 	gameData.app.bGamePaused = 0;
 	return;
 	}
-saveGameHandler.LoadState (1, 0, filename);
+saveGameManager.LoadState (1, 0, filename);
 RebuildRenderContext (1);
 gameData.app.bGamePaused = 0;
 }

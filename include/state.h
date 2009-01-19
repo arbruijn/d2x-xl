@@ -24,7 +24,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define THUMBNAIL_LH 120
 
 
-class CSaveGameHandler {
+class CSaveGameManager {
 	private:
 		CFile			m_cf;
 		int			m_bInGame;
@@ -40,8 +40,8 @@ class CSaveGameHandler {
 		const char*	m_override;
 
 	public:
-		CSaveGameHandler () {};
-		~CSaveGameHandler () {};
+		CSaveGameManager () {};
+		~CSaveGameManager () {};
 		void Init (void);
 		int Save (int bBetweenLevels, int bSecret, int bQuick, const char *pszFilenameOverride);
 		int Load (int bInGame, int bSecret, int bQuick, const char *pszFilenameOverride);
@@ -105,6 +105,6 @@ class CSaveGameHandler {
 		inline int ImageSize (void) { return (m_nVersion < 26) ? THUMBNAIL_W * THUMBNAIL_H : THUMBNAIL_LW * THUMBNAIL_LH; }
 };
 
-extern CSaveGameHandler saveGameHandler;
+extern CSaveGameManager saveGameManager;
 
 #endif /* _STATE_H */

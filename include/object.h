@@ -839,6 +839,7 @@ class CObject : public CObjectInfo {
 		void Spin (void);
 		int Update (void);
 		int Index (void);
+		float Damage (void);
 
 		void MorphStart (void);
 		void MorphDraw (void);
@@ -1190,7 +1191,6 @@ tObjectRef *GetChildObjP (CObject *pParent, tObjectRef *pChildRef);
 
 CObject *ObjFindFirstOfType (int nType);
 void InitWeaponFlags (void);
-float ObjectDamage (CObject *objP);
 int FindBoss (int nObject);
 void InitGateIntervals (void);
 int CountPlayerObjects (int nPlayer, int nType, int nId);

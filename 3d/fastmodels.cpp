@@ -717,7 +717,7 @@ psm = pm->m_subModels + nSubModel;
 va = pAnimAngles ? pAnimAngles + psm->m_nAngles : &CAngleVector::ZERO;
 if (!(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage))
 	return;
-if (!objP || (ObjectDamage (objP) > 0.5f))
+if (!objP || (objP->Damage () > 0.5f))
 	return;
 // set the translation
 vo = psm->m_vOffset;
