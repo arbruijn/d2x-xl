@@ -130,7 +130,6 @@ class CLightning : public tLightning {
 
 typedef struct tLightningSystem {
 	int						m_nId;
-	int						m_nNext;
 	CArray<CLightning>	m_lightnings;
 	int						m_nLightnings;
 	short						m_nObject;

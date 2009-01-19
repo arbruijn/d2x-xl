@@ -485,6 +485,7 @@ void CLightning::Init (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 {
 	int	bRandom = (vEnd == NULL) || (nAngle > 0);
 
+memset (this, 0, sizeof (*this));
 if (nObject < 0) {
 	m_nObject = -1;
 	m_nSegment = -nObject - 1;
@@ -529,6 +530,7 @@ if ((m_nObject >= 0) && (0 > (m_nSegment = OBJECTS [m_nObject].info.nSegment)))
 	return NULL;
 if (!m_nodes.Create (m_nNodes)) 
 	return false;
+m_nodes.Clear ();
 if (m_bRandom) {
 	m_nTTL = 3 * m_nTTL / 4 + (int) (dbl_rand () * m_nTTL / 2);
 	m_nLength = 3 * m_nLength / 4 + (int) (dbl_rand () * m_nLength / 2);
@@ -1194,6 +1196,7 @@ m_nLightnings = nLightnings;
 m_bForcefield = !nDelay && (vEnd || (nAngle <= 0));
 if (!m_lightnings.Create (nLightnings))
 	return false;
+m_lightnings.Clear ();
 CLightning l;
 l.Init (vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude, 
 		  nAngle, nOffset, nNodes, nChildren, nSteps,
@@ -1276,6 +1279,7 @@ for (i = 0; i < m_nLightnings; ) {
 			return 0;
 		if (i < m_nLightnings) {
 			*lightningP = m_lightnings [m_nLightnings];
+			memset (m_lightnings + m_nLightnings, 0, sizeof (m_lightnings [m_nLightnings]));
 			continue;
 			}
 		}
@@ -1456,8 +1460,8 @@ else {
 	if (!bDestroy)
 		systemP->m_bDestroy = 1;
 	else {
-		m_systems.Push (systemP->Id ());
 		systemP->Destroy ();
+		m_systems.Push (systemP->Id ());
 		}
 	}
 }
