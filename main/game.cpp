@@ -1877,14 +1877,10 @@ if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringC
 		float fScale = float (gameData.fusion.xCharge >> 11) / 64.0f;
 		tRgbaColorf* colorP = gameData.weapons.color + FUSION_ID;
 
-		if (gameData.fusion.xCharge < I2X (2)) {
-			HUDMessage (0, "Charging %d", nScale);
-			paletteManager.BumpEffect (colorP->red * nScale, colorP->green * nScale, colorP->blue * nScale);
-			}
-		else {
-			HUDMessage (0, "Overcharging %d", nScale);
-			paletteManager.BumpEffect (colorP->blue * nScale, colorP->red * nScale, colorP->green * nScale);
-			}
+		if (gameData.fusion.xCharge < I2X (2)) 
+			paletteManager.BumpEffect (colorP->red * fScale, colorP->green * fScale, colorP->blue * fScale);
+		else 
+			paletteManager.BumpEffect (colorP->blue * fScale, colorP->red * fScale, colorP->green * fScale);
 		if (gameData.time.xGame < gameData.fusion.xLastSoundTime)		//gametime has wrapped
 			gameData.fusion.xNextSoundTime = gameData.fusion.xLastSoundTime = gameData.time.xGame;
 		if (gameData.fusion.xNextSoundTime < gameData.time.xGame) {
