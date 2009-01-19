@@ -1931,17 +1931,19 @@ while (!bDone) {
 			shot = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
-				if (TRIGGERS [SEGMENTS [nSegment].Wall (nSide)->nTrigger].nType == TT_SECRET_EXIT) {
+				CSegment*	segP = SEGMENTS + nSegment;
+				CTrigger*	trigP = segP->Trigger (nSide);
+				if (trigP && (trigP->nType == TT_SECRET_EXIT)) {
 					int truth;
 
 					nTag = NDReadByte ();
 					Assert (nTag == ND_EVENT_SECRET_THINGY);
 					truth = NDReadInt ();
 					if (!truth)
-						SEGMENTS [nSegment].OperateTrigger ((short) nSide, OBJECTS + nObject, shot);
+						segP->OperateTrigger ((short) nSide, OBJECTS + nObject, shot);
 					} 
 				else
-					SEGMENTS [nSegment].OperateTrigger ((short) nSide, OBJECTS + nObject, shot);
+					segP->OperateTrigger ((short) nSide, OBJECTS + nObject, shot);
 				}
 			break;
 
