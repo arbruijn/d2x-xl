@@ -1708,7 +1708,7 @@ class CSegmentData {
 	public:
 		CSegmentData ();
 		void Init (void);
-		bool Create (void);
+		bool Create (int nSegments, int nVertices);
 		void Destroy (void);
 };
 
@@ -3120,7 +3120,7 @@ class CGameData {
 
 	public:
 		void Init (void);
-		bool Create (void);
+		bool Create (int nSegments, int nVertices);
 		void Destroy (void);
 };
 

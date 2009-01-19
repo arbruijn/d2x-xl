@@ -535,8 +535,10 @@ nSlideSegs = 0;
 
 // ----------------------------------------------------------------------------
 
-bool CSegmentData::Create (void)
+bool CSegmentData::Create (int nSegments, int nVertices)
 {
+gameData.segs.nSegments = nSegments;
+gameData.segs.nVertices = nVertices;
 CREATE (gameData.segs.vertices, LEVEL_VERTICES, 0);
 CREATE (gameData.segs.fVertices, LEVEL_VERTICES, 0);
 CREATE (SEGMENTS, LEVEL_SEGMENTS, 0);
@@ -1424,10 +1426,10 @@ nGameMode = GM_GAME_OVER;
 
 // ----------------------------------------------------------------------------
 
-bool CGameData::Create (void)
+bool CGameData::Create (int nSegments, int nVertices)
 {
 Destroy ();
-if (!(gameData.segs.Create () &&
+if (!(gameData.segs.Create (nSegments, nVertices) &&
 		gameData.objs.Create () &&
 		gameData.render.color.Create () &&
 		gameData.render.lights.Create () &&

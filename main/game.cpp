@@ -177,9 +177,9 @@ tDetailData	detailData = {
 //	==============================================================================================
 
 //this is called once per game
-bool InitGame (void)
+bool InitGame (int nSegments, int nVertices)
 {
-if (!gameData.Create ())
+if (!gameData.Create (nSegments, nVertices))
 	return false;
 /*---*/PrintLog ("Initializing game data\n  Objects ...\n");
 InitObjects ();

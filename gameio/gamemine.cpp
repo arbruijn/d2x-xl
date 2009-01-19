@@ -755,7 +755,7 @@ ProgressBar (TXT_PREP_DESCENT, 0, LoadMineGaugeSize () + PagingGaugeSize () + So
 
 int LoadMineSegmentsCompiled (CFile& cf)
 {
-	int			i;
+	int			i, nSegments, nVertices;
 	ubyte			nCompiledVersion;
 	char			*psz;
 
@@ -787,17 +787,17 @@ if (nCompiledVersion != COMPILED_MINE_VERSION)
 	console.printf (CON_DBG, "compiled mine version=%i\n", nCompiledVersion); //many levels have "wrong" versions.  Theres no point in aborting because of it, I think.
 console.printf (CON_DBG, "   compiled mine version = %d\n", nCompiledVersion);
 #endif
-gameData.segs.nVertices = bNewFileFormat ? cf.ReadShort () : cf.ReadInt ();
-Assert (gameData.segs.nVertices <= MAX_VERTICES);
+nVertices = bNewFileFormat ? cf.ReadShort () : cf.ReadInt ();
+Assert (nVertices <= MAX_VERTICES);
 #if TRACE
 console.printf (CON_DBG, "   %d vertices\n", gameData.segs.nVertices);
 #endif
-gameData.segs.nSegments = bNewFileFormat ? cf.ReadShort () : cf.ReadInt ();
-if (gameData.segs.nSegments >= MAX_SEGMENTS) {
+nSegments = bNewFileFormat ? cf.ReadShort () : cf.ReadInt ();
+if (nSegments >= MAX_SEGMENTS) {
 	Warning (TXT_LEVEL_TOO_LARGE);
 	return -1;
 	}
-if (!InitGame ())
+if (!InitGame (nSegments, nVertices))
 	return -1;
 #if TRACE
 console.printf (CON_DBG, "   %d segments\n", gameData.segs.nSegments);
