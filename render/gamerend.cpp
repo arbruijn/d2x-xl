@@ -1252,7 +1252,7 @@ void ShowBoxedMessage (const char *pszMsg)
 {
 	int w, h, aw;
 	int x, y;
-	//ubyte save_pal [256*3];
+	int nDrawBuffer = gameStates.ogl.nDrawBuffer;
 
 ClearBoxedMessage ();
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
@@ -1260,23 +1260,17 @@ fontManager.SetCurrent (MEDIUM1_FONT);
 fontManager.Current ()->StringSize (pszMsg, w, h, aw);
 x = (screen.Width () - w) / 2;
 y = (screen.Height () - h) / 2;
-// Save the background of the display
-/*
-if (!gameOpts->menus.nStyle) {
-	bg.bmP = CBitmap::Create (0, w + BOX_BORDER, h + BOX_BORDER, 1);
-	CCanvas::Current ()->RenderToBitmap (bg.bmP, 0, 0, w + BOX_BORDER, h + BOX_BORDER, x - BOX_BORDER / 2, y - BOX_BORDER / 2); 
-	}
-*/
-int nDrawBuffer = gameStates.ogl.nDrawBuffer;
-OglSetDrawBuffer (GL_FRONT, 0);
+if (!gameStates.app.bGameRunning)
+	OglSetDrawBuffer (GL_FRONT, 0);
 backgroundManager.Setup (NULL, x - BOX_BORDER / 2, y - BOX_BORDER / 2, w + BOX_BORDER, h + BOX_BORDER);
 CCanvas::SetCurrent (backgroundManager.Canvas (1));
 fontManager.SetColorRGBi (DKGRAY_RGBA, 1, 0, 0);
 fontManager.SetCurrent (MEDIUM1_FONT);
-GrPrintF (NULL, 0x8000, (h / 2 + BOX_BORDER) / 2, pszMsg);
+GrPrintF (NULL, 0x8000, BOX_BORDER / 2, pszMsg); //(h / 2 + BOX_BORDER) / 2
 gameStates.app.bClearMessage = 1;
 GrUpdate (0);
-OglSetDrawBuffer (nDrawBuffer, 0);
+if (!gameStates.app.bGameRunning)
+	OglSetDrawBuffer (nDrawBuffer, 0);
 }
 
 //------------------------------------------------------------------------------
