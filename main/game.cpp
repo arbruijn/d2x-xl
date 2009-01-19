@@ -1847,7 +1847,7 @@ for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 //				    cannon.
 int flFrameTime = 0;
 
-void FireLaser ()
+void FireLaser (void)
 {
 	int h, i = primaryWeaponToWeaponInfo [gameData.weapons.nPrimary];
 
@@ -1874,14 +1874,17 @@ if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringC
 		if (gameStates.limitFPS.bFusion && !gameStates.app.tick40fps.bTick)
 			return;
 
-		int nScale = (gameData.fusion.xCharge >> 11) * 255;
+		float fScale = float (gameData.fusion.xCharge >> 11) / 64.0f;
 		tRgbaColorf* colorP = gameData.weapons.color + FUSION_ID;
 
 		if (gameData.fusion.xCharge < I2X (2)) {
-			paletteManager.BumpEffect (int (colorP->red * nScale), int (colorP->green * nScale), int (colorP->blue * nScale));
+			HUDMessage (0, "Charging %d", nScale);
+			paletteManager.BumpEffect (colorP->red * nScale, colorP->green * nScale, colorP->blue * nScale);
 			}
-		else
-			paletteManager.BumpEffect (int (colorP->blue * nScale), int (colorP->red * nScale), int (colorP->green * nScale));
+		else {
+			HUDMessage (0, "Overcharging %d", nScale);
+			paletteManager.BumpEffect (colorP->blue * nScale, colorP->red * nScale, colorP->green * nScale);
+			}
 		if (gameData.time.xGame < gameData.fusion.xLastSoundTime)		//gametime has wrapped
 			gameData.fusion.xNextSoundTime = gameData.fusion.xLastSoundTime = gameData.time.xGame;
 		if (gameData.fusion.xNextSoundTime < gameData.time.xGame) {

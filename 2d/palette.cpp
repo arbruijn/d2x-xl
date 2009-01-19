@@ -258,28 +258,35 @@ m_data.nPalettes = 0;
 
 //------------------------------------------------------------------------------
 
-void CPaletteManager::SetEffect (void)
+void CPaletteManager::SetEffect (bool bForce)
 {
 if (gameStates.render.vr.bUseRegCode)
 	;//GrPaletteStepUpVR (r, g, b, VR_WHITE_INDEX, VR_BLACK_INDEX);
 else
-	SetEffect (m_data.effect.red, m_data.effect.green, m_data.effect.blue);
+	SetEffect (m_data.effect.red, m_data.effect.green, m_data.effect.blue, bForce);
 }
 
 //	------------------------------------------------------------------------------------
 
 #define MAX_PALETTE_ADD 30
 
-void CPaletteManager::BumpEffect (int dr, int dg, int db)
+void CPaletteManager::BumpEffect (int red, int green, int blue)
 {
-	int	maxVal = paletteManager.EffectDuration () ? 60 : MAX_PALETTE_ADD;
+BumpEffect (float (red) / 64.0f, float (green) / 64.0f, float (blue) / 64.0f);
+}
 
-m_data.effect.red = dr;
-m_data.effect.green = dg;
-m_data.effect.blue = db;
-CLAMP (m_data.effect.red, -maxVal, maxVal);
-CLAMP (m_data.effect.green, -maxVal, maxVal);
-CLAMP (m_data.effect.blue, -maxVal, maxVal);
+//	------------------------------------------------------------------------------------
+
+void CPaletteManager::BumpEffect (float red, float green, float blue)
+{
+	float	maxVal = (paletteManager.EffectDuration () ? 60 : MAX_PALETTE_ADD) / 64.0f;
+
+CLAMP (red, -maxVal, maxVal);
+CLAMP (green, -maxVal, maxVal);
+CLAMP (blue, -maxVal, maxVal);
+m_data.effect.red = red;
+m_data.effect.green = green;
+m_data.effect.blue = blue;
 }
 
 //------------------------------------------------------------------------------
@@ -323,7 +330,7 @@ SetEffect (0, 0, 0);
 
 //	------------------------------------------------------------------------------------
 
-static inline sbyte UpdateEffect (sbyte nColor, int nChange)
+static inline float UpdateEffect (float nColor, float nChange)
 {
 if (nColor > 0) {
 	nColor -= nChange;
@@ -343,27 +350,25 @@ return nColor;
 
 void CPaletteManager::FadeEffect (void)
 {
-	int	nDecAmount = 0;
+	float	nDecAmount = 0;
+	bool	bForce = false;
 
 	//	Diminish at FADE_RATE units/second.
 	//	For frame rates > FADE_RATE Hz, use randomness to achieve this.
-if (gameData.time.xFrame < I2X (1)/FADE_RATE) {
-	if (d_rand () < gameData.time.xFrame * FADE_RATE / 2)	//	Note: d_rand () is in 0d:\temp\dm_test32767, and 8 Hz means decrement every frame
+if (gameData.time.xFrame < I2X (1) / FADE_RATE) {
+	if (d_rand () < gameData.time.xFrame * FADE_RATE / 2)	
 		nDecAmount = 1;
 	}
 else {
-	if (!(nDecAmount = X2I (gameData.time.xFrame * FADE_RATE)))		// one second = FADE_RATE counts
-		nDecAmount++;						// make sure we decrement by something
+	if (!(nDecAmount = X2F (gameData.time.xFrame * FADE_RATE)))		// one second = FADE_RATE counts
+		nDecAmount = 1;						// make sure we decrement by something
 	}
+nDecAmount /= 64.0f;
 
 if (m_data.xEffectDuration) {
-	int	bForce = 0;
-
 	//	Part of hack system to force update of palette after exiting a menu.
-	if (m_data.xLastEffectTime) {
-		bForce = 1;
-		m_data.effect.red ^= 1;	//	Very Tricky!  In paletteManager.SetEffect, if all stepups same as last time, won't do anything!
-		}
+	if (m_data.xLastEffectTime)
+		bForce = true;
 
 	if ((m_data.xLastEffectTime + I2X (1)/8 < gameData.time.xGame) || (m_data.xLastEffectTime > gameData.time.xGame)) {
 		audio.PlaySound (SOUND_CLOAK_OFF, SOUNDCLASS_GENERIC, m_data.xEffectDuration / 4);
@@ -376,7 +381,7 @@ if (m_data.xEffectDuration) {
 
 	if (bForce || (d_rand () > 4096)) {
       if ((gameData.demo.nState == ND_STATE_RECORDING) && (m_data.effect.red || m_data.effect.green || m_data.effect.blue))
-	      NDRecordPaletteEffect (m_data.effect.red, m_data.effect.green, m_data.effect.blue);
+	      NDRecordPaletteEffect (short (m_data.effect.red * 64), short (m_data.effect.green * 64), short (m_data.effect.blue * 64));
 		paletteManager.SetEffect ();
 		return;
 		}
@@ -387,8 +392,8 @@ m_data.effect.green = UpdateEffect (m_data.effect.green, nDecAmount);
 m_data.effect.blue = UpdateEffect (m_data.effect.blue, nDecAmount);
 
 if ((gameData.demo.nState == ND_STATE_RECORDING) && (m_data.effect.red || m_data.effect.green || m_data.effect.blue))
-	NDRecordPaletteEffect (m_data.effect.red, m_data.effect.green, m_data.effect.blue);
-SetEffect ();
+     NDRecordPaletteEffect (short (m_data.effect.red * 64), short (m_data.effect.green * 64), short (m_data.effect.blue * 64));
+SetEffect (bForce);
 }
 
 //------------------------------------------------------------------------------

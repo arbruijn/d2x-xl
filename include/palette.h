@@ -115,10 +115,9 @@ class CPaletteData {
 		fix				xLastEffectTime;
 
 		ubyte				fadeTable [PALETTE_SIZE * MAX_FADE_LEVELS];
-		tRgbColorb		flash;
-		tRgbColorf		fflash;
-		tRgbColors		effect;
-		tRgbColors		lastEffect;
+		tRgbColorf		flash;
+		tRgbColorf		effect;
+		tRgbColorf		lastEffect;
 		bool				bDoEffect;
 		bool				bAllowEffect;
 	};
@@ -157,12 +156,14 @@ class CPaletteManager {
 		void SaveEffect (void);
 		void SaveEffectAndReset (void);
 		void LoadEffect (CPalette* palette = NULL);
-		void SetEffect (int r, int g, int b);
-		void BumpEffect (int dr, int dg, int db);
-		inline void SetRedEffect (int color) { m_data.effect.red = color; }
-		inline void SetGreenEffect (int color) { m_data.effect.green = color; }
-		inline void SetBlueEffect (int color) { m_data.effect.blue = color; }
-		void SetEffect (void);
+		void SetEffect (int red, int green, int blue, bool bForce = false);
+		void SetEffect (float red, float green, float blue, bool bForce = false);
+		void BumpEffect (int red, int green, int blue);
+		void BumpEffect (float red, float green, float blue);
+		inline void SetRedEffect (int color) { m_data.effect.red = float (color) / 64.0f; }
+		inline void SetGreenEffect (int color) { m_data.effect.green = float (color) / 64.0f; }
+		inline void SetBlueEffect (int color) { m_data.effect.blue = float (color) / 64.0f; }
+		void SetEffect (bool bForce = false);
 		void ClearEffect (void);
 		int ClearEffect (CPalette* palette);
 		int EnableEffect (void);
@@ -187,12 +188,12 @@ class CPaletteManager {
 			return m_data.current;
 			}
 
-		inline sbyte RedEffect (void) { return m_data.effect.red; }
-		inline sbyte GreenEffect (void) { return m_data.effect.green; }
-		inline sbyte BlueEffect (void) { return m_data.effect.blue; }
-		inline void SetRedEffect (sbyte color) {  m_data.effect.red = color; }
-		inline void SetGreenEffect (sbyte color) {  m_data.effect.green = color; }
-		inline void SetBlueEffect (sbyte color) {  m_data.effect.blue = color; }
+		inline sbyte RedEffect (void) { return sbyte (m_data.effect.red * 64.0f); }
+		inline sbyte GreenEffect (void) { return sbyte (m_data.effect.green * 64.0f); }
+		inline sbyte BlueEffect (void) { return sbyte (m_data.effect.blue * 64.0f); }
+		inline void SetRedEffect (sbyte color) {  m_data.effect.red = float (color) / 64.0f; }
+		inline void SetGreenEffect (sbyte color) {  m_data.effect.green = float (color) / 64.0f; }
+		inline void SetBlueEffect (sbyte color) {  m_data.effect.blue = float (color) / 64.0f; }
 		inline void SetEffectDuration (fix xDuration) { m_data.xEffectDuration = xDuration; }
 		inline void SetLastEffectTime (fix xTime) { m_data.xLastEffectTime = xTime; }
 		inline fix EffectDuration (void) { return m_data.xEffectDuration; }

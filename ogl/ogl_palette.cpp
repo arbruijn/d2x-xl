@@ -58,7 +58,7 @@ else if (m_data.bDoEffect) {
 	else
 		glEnable (GL_BLEND);
 	glBlendFunc (GL_ONE,GL_ONE);
-	glColor3fv (reinterpret_cast<GLfloat*> (&m_data.fflash));
+	glColor3fv (reinterpret_cast<GLfloat*> (&m_data.flash));
 	}
 else
 	return;
@@ -81,7 +81,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void CPaletteManager::SetEffect (int r, int g, int b)
+void CPaletteManager::SetEffect (float red, float green, float blue, bool bForce)
 {
 if (!m_data.bAllowEffect)
 	return;
@@ -89,28 +89,32 @@ if (!m_data.bAllowEffect)
 if (!gameStates.render.nLightingMethod || gameStates.menus.nInMenu || !gameStates.app.bGameRunning) 
 #endif
  {
-	r += m_data.nGamma;
-	g += m_data.nGamma;
-	b += m_data.nGamma;
+	red += m_data.nGamma;
+	green += m_data.nGamma;
+	blue += m_data.nGamma;
 	}
-CLAMP (r, 0, 64);
-CLAMP (g, 0, 64);
-CLAMP (b, 0, 64);
-if ((m_data.flash.red == r) && (m_data.flash.green == g) && (m_data.flash.blue == b))
+CLAMP (red, 0, 1);
+CLAMP (green, 0, 1);
+CLAMP (blue, 0, 1);
+if (!bForce && (m_data.flash.red == red) && (m_data.flash.green == green) && (m_data.flash.blue == blue))
 	return;
-m_data.flash.red = r;
-m_data.flash.green = g;
-m_data.flash.blue = b;
+m_data.flash.red = red;
+m_data.flash.green = green;
+m_data.flash.blue = blue;
 if (gameOpts->ogl.bSetGammaRamp && gameStates.ogl.bBrightness) {
 	gameStates.ogl.bBrightness = !OglSetBrightnessInternal ();
 	m_data.bDoEffect = 0;
 	}
 else {
-	m_data.fflash.red = m_data.flash.red / 64.0f;
-	m_data.fflash.green = m_data.flash.green / 64.0f;
-	m_data.fflash.blue = m_data.flash.blue / 64.0f;
-	m_data.bDoEffect = (r || g || b); //if we arrive here, brightness needs adjustment
+	m_data.bDoEffect = ((red != 0) || (green != 0) || (blue != 0)); //if we arrive here, brightness needs adjustment
 	}
+}
+
+//------------------------------------------------------------------------------
+
+void CPaletteManager::SetEffect (int r, int g, int b, bool bForce)
+{
+SetEffect (float (r) / 64.0f, float (g) / 64.0f, float (b) / 64.0f, bForce);
 }
 
 //------------------------------------------------------------------------------
