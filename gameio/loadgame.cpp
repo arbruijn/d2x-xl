@@ -941,7 +941,6 @@ paletteManager.LoadEffect ();		//actually load the palette
 /*---*/PrintLog ("   rebuilding OpenGL texture data\n");
 /*---*/PrintLog ("      rebuilding effects\n");
 if (!bRestore) {
-	lightManager.Setup (nLevel);
 	RebuildRenderContext (1);
 	SetRenderQuality ();
 	}
@@ -967,9 +966,10 @@ if (!bRestore) {
 	gameData.omega.xCharge [IsMultiGame] = MAX_OMEGA_CHARGE;
 	SetMaxOmegaCharge ();
 	ConvertObjects ();
-	lightManager.GatherStaticLights (nLevel);
+//	lightManager.Setup (nLevel);
 	SetEquipGenStates ();
 	SetupEffects ();
+	lightManager.Setup (nLevel);
 	gameData.time.nPaused = 0;
 	}
 LoadExtraImages ();

@@ -1540,6 +1540,7 @@ if (!meshBuilder.Build (nLevel))
 	goto reloadLevel;
 if (!gameData.render.mine.Create ())
 	return 4;
+//lightManager.Setup (nLevel); moved to loadgame.cpp::LoadLevel()
 
 SetAmbientSoundFlags ();
 #ifdef EDITOR

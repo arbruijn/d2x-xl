@@ -2310,7 +2310,6 @@ FixObjectSegs ();
 FixObjectSizes ();
 //ComputeNearestLights (nLevel);
 lightManager.Setup (nLevel);
-lightManager.GatherStaticLights (nLevel);
 SetupEffects ();
 InitReactorForLevel (1);
 AddPlayerLoadout ();
