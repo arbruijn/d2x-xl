@@ -1219,12 +1219,17 @@ return true;
 void CLightningSystem::Destroy (void)
 {
 DestroySound ();
+#if 0
 if (m_lightnings.Buffer ()) {
 	for (int i = 0; i < m_nLightnings; i++)
 		m_lightnings [i].Destroy ();
 	m_lightnings.Destroy ();
 	m_nLightnings = 0;
 	}
+#else
+m_lightnings.Destroy ();	//class and d-tors will handle everything gracefully
+m_nLightnings = 0;
+#endif
 if ((m_nObject >= 0) && (lightningManager.GetObjectSystem (m_nObject) == m_nId))
 	lightningManager.SetObjectSystem (m_nObject, -1);
 m_nObject = -1;
