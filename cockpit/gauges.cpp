@@ -2451,9 +2451,11 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 		//if this is a demo, the nObject in the CPlayerData struct is wrong,
 		//so we search the CObject list for the nObject
 		CObject *objP;
-		FORALL_PLAYER_OBJS (objP, nObject)
-			if (objP->info.nId == p)
+		FORALL_PLAYER_OBJS (objP, nObject) 
+			if (objP->info.nId == p) {
+				nObject = objP->Index ();
 				break;
+				}
 		if (IS_OBJECT (objP, nObject))		//not in list, thus not visible
 			bShowName = !bHasFlag;				//..so don't show name
 		}
