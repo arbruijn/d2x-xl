@@ -138,19 +138,19 @@ float CObject::Damage (void)
 	float	fDmg;
 	fix	xMaxShields;
 
-if (objP->info.nType == OBJ_PLAYER)
-	fDmg = X2F (gameData.multiplayer.players [objP->info.nId].shields) / 100;
-else if (objP->info.nType == OBJ_ROBOT) {
-	xMaxShields = RobotDefaultShields (objP);
-	fDmg = X2F (objP->info.xShields) / X2F (xMaxShields);
+if (info.nType == OBJ_PLAYER)
+	fDmg = X2F (gameData.multiplayer.players [info.nId].shields) / 100;
+else if (info.nType == OBJ_ROBOT) {
+	xMaxShields = RobotDefaultShields (this);
+	fDmg = X2F (info.xShields) / X2F (xMaxShields);
 #if 0
-	if (gameData.bots.info [0][objP->info.nId].companion)
+	if (gameData.bots.info [0][info.nId].companion)
 		fDmg /= 2;
 #endif
 	}
-else if (objP->info.nType == OBJ_REACTOR)
-	fDmg = X2F (objP->info.xShields) / X2F (ReactorStrength ());
-else if ((objP->info.nType == 255) || (objP->info.nFlags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED | OF_ARMAGEDDON)))
+else if (info.nType == OBJ_REACTOR)
+	fDmg = X2F (info.xShields) / X2F (ReactorStrength ());
+else if ((info.nType == 255) || (info.nFlags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED | OF_ARMAGEDDON)))
 	fDmg = 0.0f;
 else
 	fDmg = 1.0f;
