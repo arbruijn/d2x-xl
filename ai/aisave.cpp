@@ -105,19 +105,15 @@ if (m_nVersion >= 8) {
 	m_cf.Read (&gameData.escort.nGoalObject, sizeof (gameData.escort.nGoalObject), 1);
 	m_cf.Read (&gameData.escort.nSpecialGoal, sizeof (gameData.escort.nSpecialGoal), 1);
 	m_cf.Read (&gameData.escort.nGoalIndex, sizeof (gameData.escort.nGoalIndex), 1);
-	m_cf.Read (&gameData.thief.stolenItems, sizeof (gameData.thief.stolenItems [0]), MAX_STOLEN_ITEMS);
+	gameData.thief.stolenItems.Read (m_cf);
 	}
 else {
-	int i;
-
 	gameData.escort.nKillObject = -1;
 	gameData.escort.xLastPathCreated = 0;
 	gameData.escort.nGoalObject = ESCORT_GOAL_UNSPECIFIED;
 	gameData.escort.nSpecialGoal = -1;
 	gameData.escort.nGoalIndex = -1;
-	for (i=0; i<MAX_STOLEN_ITEMS; i++) {
-		gameData.thief.stolenItems [i] = 255;
-		}
+	gameData.thief.stolenItems.Clear (0xff);
 	}
 if (m_nVersion >= 15) {
 	int temp;
@@ -384,7 +380,7 @@ if (m_nVersion >= 8) {
 	gameData.escort.nGoalObject = m_cf.ReadInt ();
 	gameData.escort.nSpecialGoal = m_cf.ReadInt ();
 	gameData.escort.nGoalIndex = m_cf.ReadInt ();
-	m_cf.Read (&gameData.thief.stolenItems, sizeof (gameData.thief.stolenItems [0]), MAX_STOLEN_ITEMS);
+	gameData.thief.stolenItems.Read (m_cf);
 	}
 else {
 	gameData.escort.nKillObject = -1;
