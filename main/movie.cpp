@@ -246,7 +246,6 @@ bmFrame.Init (BM_LINEAR, 0, 0, bufw, bufh, 1, buf);
 bmFrame.SetPalette (movieManager.m_palette);
 
 TRANSPARENCY_COLOR = 0;
-SetRenderQuality (gameOpts->movies.nQuality ? 5 : 0);
 if (gameOpts->movies.bFullScreen) {
 	double r = (double) bufh / (double) bufw;
 	int dh = (int) (CCanvas::Current ()->Width () * r);
@@ -274,7 +273,6 @@ else {
 	}
 TRANSPARENCY_COLOR = DEFAULT_TRANSPARENCY_COLOR;
 bmFrame.SetBuffer (NULL);
-SetRenderQuality ();
 }
 
 //-----------------------------------------------------------------------
@@ -731,7 +729,7 @@ if (MVE_rmPrepMovie (reinterpret_cast<void*> (movieP ? &movieP->m_cf: &cf), dx, 
 	}
 nFrame = 0;
 gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && bHires;
-SetRenderQuality (0);
+SetRenderQuality (gameOpts->movies.nQuality ? 5 : 0);
 while ((result = MVE_rmStepMovie ()) == 0) {
 	subTitles.Draw (nFrame);
 	paletteManager.LoadEffect (); // moved this here because of flashing
@@ -761,6 +759,7 @@ if (movieP)
 else
 	cf.Close ();                           // Close Movie File
 // Restore old graphic state
+SetRenderQuality ();
 gameStates.video.nScreenMode = -1;  //force reset of screen mode
 paletteManager.LoadEffect ();
 return (aborted ? MOVIE_ABORTED : MOVIE_PLAYED_FULL);
