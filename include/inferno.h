@@ -1740,11 +1740,11 @@ class CTriggerData {
 		CArray<tObjTriggerRef>	objTriggerRefs; // [MAX_OBJ_TRIGGERS];
 		CArray<short>				firstObjTrigger; // [MAX_OBJECTS_D2X];
 		CArray<int>					delay; // [MAX_TRIGGERS];
-		int							nTriggers;
-		int							nObjTriggers;
+		int							m_nTriggers;
+		int							m_nObjTriggers;
 	public:
 		CTriggerData ();
-		bool Create (void);
+		bool Create (int nTriggers);
 		void Destroy (void);
 };
 

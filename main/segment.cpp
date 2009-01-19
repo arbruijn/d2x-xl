@@ -862,6 +862,9 @@ return wallP->ProcessHit (nPlayer, objP);
 void CSegment::OperateTrigger (int nSide, CObject *objP, int shot)
 {
 CTrigger* trigP = Trigger (nSide);
+
+PrintLog ("segment %d operating trigger %d on side %d\n", this - gameData.segs.segments.Buffer (), trigP ? trigP - gameData.trigs.triggers.Buffer () : -1, nSide);
+
 if (!trigP)
 	return;
 
@@ -895,7 +898,7 @@ if (blower->cType.laserInfo.parent.nType == OBJ_ROBOT)
 		bOkToBlow = 1;
 
 if (!(bOkToBlow || (blower->cType.laserInfo.parent.nType == OBJ_PLAYER))) {
-	if ((wallP = Wall (nSide)) && (wallP->nTrigger < gameData.trigs.nTriggers))
+	if ((wallP = Wall (nSide)) && (wallP->nTrigger < gameData.trigs.m_nTriggers))
 		return 0;
 	}
 

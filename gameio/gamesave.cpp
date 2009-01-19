@@ -946,10 +946,14 @@ static int ReadTriggerInfo (CFile& cf)
 	int		h, i, j;
 	CTrigger	*trigP;
 
-if (gameFileInfo.triggers.offset > -1) {
+if (gameFileInfo.triggers.count && (gameFileInfo.triggers.offset > -1)) {
 #if TRACE
 	console.printf(CON_DBG, "   loading CTrigger data ...\n");
 #endif
+	if (!gameData.trigs.Create (gameFileInfo.triggers.count)) {
+		Error ("Not enough memory for trigger data");
+		return -1;
+		}
 	if (cf.Seek (gameFileInfo.triggers.offset, SEEK_SET)) {
 		Error ("Error seeking to trigger data\n(file damaged or invalid)");
 		return -1;
@@ -1032,11 +1036,11 @@ if (gameFileInfo.triggers.offset > -1) {
 		trigP->nLinks = h;
 		}
 	if (gameTopFileInfo.fileinfoVersion >= 33) {
-		gameData.trigs.nObjTriggers = cf.ReadInt ();
-		if (gameData.trigs.nObjTriggers) {
-			for (i = 0; i < gameData.trigs.nObjTriggers; i++)
+		gameData.trigs.m_nObjTriggers = cf.ReadInt ();
+		if (gameData.trigs.m_nObjTriggers) {
+			for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
 				OBJTRIGGERS [i].Read (cf, 1);
-			for (i = 0; i < gameData.trigs.nObjTriggers; i++) {
+			for (i = 0; i < gameData.trigs.m_nObjTriggers; i++) {
 				gameData.trigs.objTriggerRefs [i].prev = cf.ReadShort ();
 				gameData.trigs.objTriggerRefs [i].next = cf.ReadShort ();
 				gameData.trigs.objTriggerRefs [i].nObject = cf.ReadShort ();
@@ -1055,7 +1059,7 @@ if (gameFileInfo.triggers.offset > -1) {
 			}
 		}
 	else {
-		gameData.trigs.nObjTriggers = 0;
+		gameData.trigs.m_nObjTriggers = 0;
 		OBJTRIGGERS.Clear ();
 		gameData.trigs.objTriggerRefs.Clear (0xff);
 		gameData.trigs.firstObjTrigger.Clear (0xff);
@@ -1260,7 +1264,7 @@ static void CheckAndFixWalls (void)
 	CWall*	wallP;
 
 for (i = 0; i < gameData.walls.nWalls; i++)
-	if (WALLS [i].nTrigger >= gameData.trigs.nTriggers) {
+	if (WALLS [i].nTrigger >= gameData.trigs.m_nTriggers) {
 #if TRACE
 		console.printf (CON_DBG,"Removing reference to invalid CTrigger %d from CWall %d\n",WALLS [i].nTrigger,i);
 #endif
@@ -1283,7 +1287,7 @@ static void CheckAndFixTriggers (void)
 	int	i, j;
 	short	nSegment, nSide, nWall;
 
-for (i = 0; i < gameData.trigs.nTriggers; ) {
+for (i = 0; i < gameData.trigs.m_nTriggers; ) {
 	//	Find which CWall this CTrigger is connected to.
 	for (j = 0; j < gameData.walls.nWalls; j++)
 		if (WALLS [j].nTrigger == i)
@@ -1307,7 +1311,7 @@ for (i = 0; i < gameData.walls.nWalls; i++)
 //	Go through all triggers, stuffing controllingTrigger field in WALLS.
 
 CTrigger* trigP = TRIGGERS.Buffer ();
-for (i = 0; i < gameData.trigs.nTriggers; i++, trigP++) {
+for (i = 0; i < gameData.trigs.m_nTriggers; i++, trigP++) {
 	for (j = 0; j < trigP->nLinks; j++) {
 		nSegment = trigP->segments [j];
 		nSide = trigP->sides [j];
@@ -1377,7 +1381,7 @@ CheckAndLinkObjects ();
 ClearTransientObjects (1);		//1 means clear proximity bombs
 CheckAndFixDoors ();
 //gameData.walls.nOpenDoors = gameFileInfo.doors.count;
-gameData.trigs.nTriggers = gameFileInfo.triggers.count;
+gameData.trigs.m_nTriggers = gameFileInfo.triggers.count;
 gameData.walls.nWalls = gameFileInfo.walls.count;
 CheckAndFixWalls ();
 CheckAndFixTriggers ();
@@ -1703,7 +1707,7 @@ int SaveGameData(FILE * SaveFile)
 	gameFileInfo.doors.count		=	gameData.walls.nOpenDoors;
 	gameFileInfo.doors.size			=	sizeof(CActiveDoor);
 	gameFileInfo.triggers.offset		=	-1;
-	gameFileInfo.triggers.count	=	gameData.trigs.nTriggers;
+	gameFileInfo.triggers.count	=	gameData.trigs.m_nTriggers;
 	gameFileInfo.triggers.size		=	sizeof(CTrigger);
 	gameFileInfo.control.offset		=	-1;
 	gameFileInfo.control.count		=  1;

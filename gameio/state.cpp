@@ -105,7 +105,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define IFDBG(_expr)
 #endif
 
-#define STATE_VERSION				40
+#define STATE_VERSION				41
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) nId at tof.
 // 1 - Added Difficulty level save
@@ -902,30 +902,30 @@ if (!m_bBetweenLevels) {
 		gameData.walls.cloaking [j].SaveState (m_cf);
 	IFDBG (fPos = m_cf.Tell ());
 //Save CTrigger info
-	m_cf.WriteInt (gameData.trigs.nTriggers);
-	for (i = 0; i < gameData.trigs.nTriggers; i++)
+	m_cf.WriteInt (gameData.trigs.m_nTriggers);
+	for (i = 0; i < gameData.trigs.m_nTriggers; i++)
 		TRIGGERS [i].SaveState (m_cf);
 	IFDBG (fPos = m_cf.Tell ());
-	m_cf.WriteInt (gameData.trigs.nObjTriggers);
-	if (!gameData.trigs.nObjTriggers)
+	m_cf.WriteInt (gameData.trigs.m_nObjTriggers);
+	if (!gameData.trigs.m_nObjTriggers)
 		m_cf.WriteShort (0);
 	else {
-		for (i = 0; i < gameData.trigs.nObjTriggers; i++)
+		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
 			OBJTRIGGERS [i].SaveState (m_cf, true);
-		for (i = 0; i < gameData.trigs.nObjTriggers; i++)
+		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
 			SaveObjTriggerRef (gameData.trigs.objTriggerRefs + i);
 		nObjsWithTrigger = 0;
 		FORALL_OBJS (objP, nObject) {
 			nObject = objP->Index ();
 			nFirstTrigger = gameData.trigs.firstObjTrigger [nObject];
-			if ((nFirstTrigger >= 0) && (nFirstTrigger < gameData.trigs.nObjTriggers))
+			if ((nFirstTrigger >= 0) && (nFirstTrigger < gameData.trigs.m_nObjTriggers))
 				nObjsWithTrigger++;
 			}
 		m_cf.WriteShort (nObjsWithTrigger);
 		FORALL_OBJS (objP, nObject) {
 			nObject = objP->Index ();
 			nFirstTrigger = gameData.trigs.firstObjTrigger [nObject];
-			if ((nFirstTrigger >= 0) && (nFirstTrigger < gameData.trigs.nObjTriggers)) {
+			if ((nFirstTrigger >= 0) && (nFirstTrigger < gameData.trigs.m_nObjTriggers)) {
 				m_cf.WriteShort (nObject);
 				m_cf.WriteShort (nFirstTrigger);
 				}
@@ -1836,18 +1836,18 @@ if (!m_bBetweenLevels) {
 			return 0;
 	IFDBG (fPos = m_cf.Tell ());
 	//Restore CTrigger info
-	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nTriggers))
+	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.m_nTriggers))
 		return 0;
-	for (i = 0; i < gameData.trigs.nTriggers; i++)
+	for (i = 0; i < gameData.trigs.m_nTriggers; i++)
 		TRIGGERS [i].LoadState (m_cf);
 	IFDBG (fPos = m_cf.Tell ());
 	//Restore CObject CTrigger info
-	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nObjTriggers))
+	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.m_nObjTriggers))
 		return 0;
-	if (gameData.trigs.nObjTriggers > 0) {
-		for (i = 0; i < gameData.trigs.nObjTriggers; i++)
+	if (gameData.trigs.m_nObjTriggers > 0) {
+		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
 			OBJTRIGGERS [i].LoadState (m_cf, true);
-		for (i = 0; i < gameData.trigs.nObjTriggers; i++)
+		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
 			CSaveGameHandler::LoadObjTriggerRef (gameData.trigs.objTriggerRefs + i);
 		if (m_nVersion < 36) {
 			j = (m_nVersion < 35) ? 700 : MAX_OBJECTS_D2X;
@@ -2114,16 +2114,16 @@ if (!m_bBetweenLevels) {
 		gameData.walls.cloaking.Read (m_cf, gameData.walls.cloaking.ToS ());
 		}
 	//Restore CTrigger info
-	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nTriggers))
+	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.m_nTriggers))
 		return 0;
-	TRIGGERS.Read (m_cf, gameData.trigs.nTriggers);
+	TRIGGERS.Read (m_cf, gameData.trigs.m_nTriggers);
 	if (m_nVersion >= 26) {
 		//Restore CObject CTrigger info
 
-		m_cf.Read (&gameData.trigs.nObjTriggers, sizeof (gameData.trigs.nObjTriggers), 1);
-		if (gameData.trigs.nObjTriggers > 0) {
-			OBJTRIGGERS.Read (m_cf, gameData.trigs.nObjTriggers);
-			gameData.trigs.objTriggerRefs.Read (m_cf, gameData.trigs.nObjTriggers);
+		m_cf.Read (&gameData.trigs.m_nObjTriggers, sizeof (gameData.trigs.m_nObjTriggers), 1);
+		if (gameData.trigs.m_nObjTriggers > 0) {
+			OBJTRIGGERS.Read (m_cf, gameData.trigs.m_nObjTriggers);
+			gameData.trigs.objTriggerRefs.Read (m_cf, gameData.trigs.m_nObjTriggers);
 			gameData.trigs.firstObjTrigger.Read (m_cf, 700);
 			}
 		else

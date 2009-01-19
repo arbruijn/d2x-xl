@@ -633,7 +633,7 @@ void NetworkSendFlyThruTriggers (int nPlayer)
   // send the fly thru triggers that have been disabled
   int i;
 
-for (i = 0; i < gameData.trigs.nTriggers; i++)
+for (i = 0; i < gameData.trigs.m_nTriggers; i++)
 	if (TRIGGERS [i].flags & TF_DISABLED)
 		MultiSendTriggerSpecific ((char) nPlayer, (ubyte) i);
  }

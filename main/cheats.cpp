@@ -212,7 +212,7 @@ FORALL_OBJS (objP, i) {
 extraGameInfo [0].nBossCount =
 extraGameInfo [1].nBossCount = 0;
 DoReactorDestroyedStuff (NULL);
-for (i = 0; i < gameData.trigs.nTriggers; i++) {
+for (i = 0; i < gameData.trigs.m_nTriggers; i++) {
 	if (TRIGGERS [i].nType == TT_EXIT) {
 		for (j = 0; j < gameData.walls.nWalls; j++) {
 			if (WALLS [j].nTrigger == i) {

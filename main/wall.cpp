@@ -1023,7 +1023,7 @@ for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 bool CWall::IsTriggerTarget (void)
 {
 CTrigger *triggerP = TRIGGERS.Buffer ();
-for (int i = gameData.trigs.nTriggers; i; i--, triggerP++) {
+for (int i = gameData.trigs.m_nTriggers; i; i--, triggerP++) {
 	short *nSegP = triggerP->segments;
 	short *nSideP = triggerP->sides;
 	for (int j = triggerP->nLinks; j; j--, nSegP++, nSideP++)
@@ -1243,7 +1243,8 @@ return (nType == WALL_DOOR) && (keys == KEY_NONE) && (state == WALL_DOOR_CLOSED)
 
 CTrigger* CWall::Trigger (void)
 {
-return ((nTrigger == NO_TRIGGER) || (nTrigger >= gameData.trigs.nTriggers)) ? NULL : &TRIGGERS [nTrigger];
+//PrintLog ("wall %d has trigger %d (of %d)\n", this - gameData.walls.walls.Buffer (), nTrigger, gameData.trigs.m_nTriggers);
+return ((nTrigger == NO_TRIGGER) || (nTrigger >= gameData.trigs.m_nTriggers)) ? NULL : &TRIGGERS [nTrigger];
 }
 
 //------------------------------------------------------------------------------

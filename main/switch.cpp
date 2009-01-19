@@ -83,7 +83,7 @@ void TriggerInit ()
 {
 	int i;
 
-	gameData.trigs.nTriggers = 0;
+	gameData.trigs.m_nTriggers = 0;
 
 for (i = 0; i < MAX_TRIGGERS; i++) {
 	TRIGGERS [i].nType = 0;
@@ -248,7 +248,7 @@ return false;
 // Return trigger number if door is controlled by a Wall switch, else return -1.
 int DoorSwitch (int nWall)
 {
-for (int i = 0; i < gameData.trigs.nTriggers; i++)
+for (int i = 0; i < gameData.trigs.m_nTriggers; i++)
 	if (TRIGGERS [i].TargetsWall (nWall))
 		return i;
 return -1;
@@ -818,15 +818,19 @@ return 0;
 
 int CTrigger::Operate (short nObject, int nPlayer, int shot, bool bObjTrigger)
 {
-if (flags & TF_DISABLED)
+if (flags & TF_DISABLED) {
+	PrintLog ("trigger %d has been disabled\n", this - gameData.trigs.triggers.Buffer ());
 	return 1;		//1 means don't send trigger hit to other players
+	}
 
 CObject*	objP = OBJECTS + nObject;
 bool bIsPlayer = (objP->info.nType == OBJ_PLAYER);
 
 if (bIsPlayer) {
-	if (!IsMultiGame && (nObject != LOCALPLAYER.nObject))
+	if (!IsMultiGame && (nObject != LOCALPLAYER.nObject)) {
+		PrintLog ("trigger %d object error (%d <-> %d)\n", this - gameData.trigs.triggers.Buffer (), nObject, LOCALPLAYER.nObject);
 		return 1;
+		}
 	}
 else {
 	nPlayer = -1;
@@ -845,13 +849,17 @@ int nTrigger = Index ();
 
 if (!bObjTrigger && (nType != TT_TELEPORT) && (nType != TT_SPEEDBOOST)) {
 	int t = gameStates.app.nSDLTicks;
-	if ((gameData.trigs.delay [nTrigger] >= 0) && (t - gameData.trigs.delay [nTrigger] < 750))
+	if ((gameData.trigs.delay [nTrigger] >= 0) && (t - gameData.trigs.delay [nTrigger] < 750)) {
+		PrintLog ("trigger %d has been delayed\n", this - gameData.trigs.triggers.Buffer ());
 		return 1;
+		}
 	gameData.trigs.delay [nTrigger] = t;
 	}
 
 if (flags & TF_ONE_SHOT)		//if this is a one-shot...
 	flags |= TF_DISABLED;		//..then don't let it happen again
+
+PrintLog ("operating trigger %d (%d)\n", this - gameData.trigs.triggers.Buffer ());
 
 switch (nType) {
 
@@ -1109,7 +1117,7 @@ void TriggersFrameProcess (void)
 	int		i;
 	CTrigger	*trigP = TRIGGERS.Buffer ();
 
-for (i = gameData.trigs.nTriggers; i > 0; i--, trigP++)
+for (i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++)
 	if ((trigP->nType != TT_COUNTDOWN) && (trigP->nType != TT_MESSAGE) && (trigP->nType != TT_SOUND) && (trigP->time >= 0))
 		trigP->time -= gameData.time.xFrame;
 }
@@ -1176,7 +1184,7 @@ int FindTriggerTarget (short nSegment, short nSide)
 {
 	int	i, nSegSide, nOvlTex, ec;
 
-for (i = 0; i < gameData.trigs.nTriggers; i++) {
+for (i = 0; i < gameData.trigs.m_nTriggers; i++) {
 	nSegSide = FindTriggerSegSide (i);
 	if (nSegSide == -1)
 		continue;
@@ -1198,7 +1206,7 @@ for (i = 0; i < gameData.trigs.nTriggers; i++) {
 	if (TRIGGERS [i].HasTarget (nSegment, nSide))
 		return i + 1;
 	}
-for (i = 0; i < gameData.trigs.nObjTriggers; i++) {
+for (i = 0; i < gameData.trigs.m_nObjTriggers; i++) {
 	if (!OBJTRIGGERS [i].HasTarget (nSegment, nSide))
 		continue;
 	if (!ObjTriggerIsValid (i))
@@ -1309,7 +1317,7 @@ int OpenExits (void)
 	CWall		*wallP;
 	int		nExits = 0;
 
-for (int i = 0; i < gameData.trigs.nTriggers; i++, trigP++) {
+for (int i = 0; i < gameData.trigs.m_nTriggers; i++, trigP++) {
 	if (trigP->nType == TT_EXIT) {
 		wallP = FindTriggerWall (i);
 		if (wallP) {

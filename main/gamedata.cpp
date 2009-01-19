@@ -609,19 +609,21 @@ walls.Destroy ();
 
 CTriggerData::CTriggerData ()
 {
-triggers.Create (MAX_TRIGGERS);
-objTriggers.Create (MAX_TRIGGERS);
-objTriggerRefs.Create (MAX_OBJ_TRIGGERS);
-delay.Create (MAX_TRIGGERS);
 }
 
 // ----------------------------------------------------------------------------
 
-bool CTriggerData::Create (void)
+bool CTriggerData::Create (int nTriggers)
 {
 CREATE (firstObjTrigger, LEVEL_OBJECTS, 0xff);
-nTriggers = 0;
-nObjTriggers = 0;
+triggers.Create (nTriggers);
+objTriggers.Create (nTriggers);
+objTriggerRefs.Create (MAX_OBJ_TRIGGERS);
+objTriggerRefs.Clear (0xff);
+delay.Create (nTriggers);
+delay.Clear (0xff);
+m_nTriggers = nTriggers;
+m_nObjTriggers = 0;
 return true;
 }
 
@@ -630,6 +632,10 @@ return true;
 void CTriggerData::Destroy (void)
 {
 firstObjTrigger.Destroy ();
+triggers.Destroy ();
+objTriggers.Destroy ();
+objTriggerRefs.Destroy ();
+delay.Destroy ();
 }
 
 // ----------------------------------------------------------------------------
@@ -1417,7 +1423,6 @@ bool CGameData::Create (void)
 Destroy ();
 if (!(gameData.segs.Create () &&
 		gameData.objs.Create () &&
-		gameData.trigs.Create () &&
 		gameData.render.color.Create () &&
 		gameData.render.lights.Create () &&
 		gameData.render.shadows.Create () &&

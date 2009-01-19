@@ -1658,7 +1658,7 @@ if ((nPlayer < 0) || (nPlayer  >= gameData.multiplayer.nPlayers) || (nPlayer == 
 	Int3 (); // Got nTrigger from illegal nPlayer
 	return;
 	}
-if ((nTrigger < 0) || (nTrigger  >= gameData.trigs.nTriggers)) {
+if ((nTrigger < 0) || (nTrigger  >= gameData.trigs.m_nTriggers)) {
 	Int3 (); // Illegal nTrigger number in multiplayer
 	return;
 	}
@@ -1695,7 +1695,7 @@ if ((nPlayer < 0) || (nPlayer  >= gameData.multiplayer.nPlayers) || (nPlayer == 
 	Int3 (); // Got nTrigger from illegal nPlayer
 	return;
 	}
-if ((nTrigger < 0) || (nTrigger  >= gameData.trigs.nObjTriggers)) {
+if ((nTrigger < 0) || (nTrigger  >= gameData.trigs.m_nObjTriggers)) {
 	Int3 (); // Illegal nTrigger number in multiplayer
 	return;
 	}
