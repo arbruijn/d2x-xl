@@ -355,9 +355,9 @@ m_bmBackdrop.DestroyBuffer ();
 void CCreditsManager::Show (char *creditsFilename)
 {
 	static char fontNames [3][2][13] = {
-		{"font1-1h.fnt", "font1-1.fnt"},
-		{"font1-2h.fnt", "font1-2.fnt"},
-		{"font1-3h.fnt", "font1-3.fnt"}
+		{"font1-1.fnt", "font1-1h.fnt"},
+		{"font2-3.fnt", "font2-3h.fnt"},
+		{"font2-2.fnt", "font2-2h.fnt"}
 	};
 	
 	static char szStars [2][15] = {"\0x1stars.pcx", "\0x1starsb.pcx"};
@@ -378,8 +378,8 @@ if (m_yOffs < 0)
 creditsPalette = paletteManager.Load ("credits.256", NULL);
 paletteManager.LoadEffect ();
 m_fonts [0] = fontManager.Load (fontNames [0][gameStates.menus.bHires]);
-m_fonts [1] = fontManager.Load (fontNames [0][gameStates.menus.bHires]);
-m_fonts [2] = fontManager.Load (fontNames [0][gameStates.menus.bHires]);
+m_fonts [1] = fontManager.Load (fontNames [1][gameStates.menus.bHires]);
+m_fonts [2] = fontManager.Load (fontNames [2][gameStates.menus.bHires]);
 m_bmBackdrop.SetBuffer (NULL);
 m_bmBackdrop.SetPalette (NULL);
 
