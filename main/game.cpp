@@ -1873,9 +1873,11 @@ if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringC
 			gameData.fusion.xAutoFireTime = gameData.time.xGame + flFrameTime / 2 + 1;
 		if (gameStates.limitFPS.bFusion && !gameStates.app.tick40fps.bTick)
 			return;
+
+		int nScale = (gameData.fusion.xCharge >> 11) * 255;
+		tRgbaColorf* colorP = gameData.weapons.color + FUSION_ID;
+
 		if (gameData.fusion.xCharge < I2X (2)) {
-			int nScale = (gameData.fusion.xCharge >> 11) * 255;
-			tRgbaColorf* colorP = gameData.weapons.color + FUSION_ID;
 			paletteManager.BumpEffect (int (colorP->red * nScale), int (colorP->green * nScale), int (colorP->blue * nScale));
 			}
 		else

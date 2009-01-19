@@ -96,21 +96,22 @@ for (i = 0; i < l; i++) {
 //------------------------------------------------------------------------------
 
 #define MAX_MARKER_MESSAGE_LEN 120
-void GameDrawMarkerMessage ()
+
+void GameDrawMarkerMessage (void)
 {
-	char temp_string [MAX_MARKER_MESSAGE_LEN+25];
+	char szTemp [MAX_MARKER_MESSAGE_LEN+25];
 
 if (gameData.marker.nDefiningMsg) {
 	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-   sprintf (temp_string, TXT_DEF_MARKER, gameData.marker.szInput);
-	DrawCenteredText (CCanvas::Current ()->Height ()/2-16, temp_string);
+   sprintf (szTemp, TXT_DEF_MARKER, gameData.marker.szInput);
+	DrawCenteredText (CCanvas::Current ()->Height ()/2-16, szTemp);
    }
 }
 
 //------------------------------------------------------------------------------
 
-void GameDrawMultiMessage ()
+void GameDrawMultiMessage (void)
 {
 	char temp_string [MAX_MULTI_MESSAGE_LEN+25];
 
@@ -120,8 +121,8 @@ if ((gameData.app.nGameMode&GM_MULTI) && (gameData.multigame.msg.bSending)) {
 	sprintf (temp_string, "%s: %s_", TXT_MESSAGE, gameData.multigame.msg.szMsg);
 	DrawCenteredText (CCanvas::Current ()->Height ()/2-16, temp_string);
 	}
-if ((gameData.app.nGameMode&GM_MULTI) && (gameData.multigame.msg.bDefining)) {
-	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
+if (IsMultiGame && gameData.multigame.msg.bDefining) {
+	fontManager.SetCurrent (GAME_FONT);   
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	sprintf (temp_string, "%s #%d: %s_", TXT_MACRO, gameData.multigame.msg.bDefining, gameData.multigame.msg.szMsg);
 	DrawCenteredText (CCanvas::Current ()->Height ()/2-16, temp_string);
@@ -129,6 +130,7 @@ if ((gameData.app.nGameMode&GM_MULTI) && (gameData.multigame.msg.bDefining)) {
 }
 
 //------------------------------------------------------------------------------
+
 #if DBG
 
 fix ShowView_textTimer = -1;
@@ -212,11 +214,9 @@ if (ShowView_textTimer > 0) {
 
 //------------------------------------------------------------------------------
 
-void RenderCountdownGauge ()
+void RenderCountdownGauge (void)
 {
 if (!gameStates.app.bEndLevelSequence && gameData.reactor.bDestroyed  && (gameData.reactor.countdown.nSecsLeft>-1)) { // && (gameData.reactor.countdown.nSecsLeft<127)) {
-	int	y;
-
 	if (!IS_D2_OEM && !IS_MAC_SHARE && !IS_SHAREWARE) {    // no countdown on registered only
 		//	On last level, we don't want a countdown.
 		if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) &&
@@ -229,7 +229,7 @@ if (!gameStates.app.bEndLevelSequence && gameData.reactor.bDestroyed  && (gameDa
 		}
 	fontManager.SetCurrent (SMALL_FONT);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-	y = SMALL_FONT->Height () * 4;
+	int y = SMALL_FONT->Height () * 4;
 	if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)
 		y += SMALL_FONT->Height () * 2;
 	if (gameStates.app.bPlayerIsDead)
@@ -240,7 +240,7 @@ if (!gameStates.app.bEndLevelSequence && gameData.reactor.bDestroyed  && (gameDa
 
 //------------------------------------------------------------------------------
 
-void GameDrawHUDStuff ()
+void GameDrawHUDStuff (void)
 {
 #if DBG
 if (Debug_pause) {
@@ -669,9 +669,9 @@ ubyte nDemoDoingRight = 0, nDemoDoingLeft = 0;
 extern ubyte nDemoDoRight, nDemoDoLeft;
 extern CObject demoRightExtra, demoLeftExtra;
 
-char DemoWBUType []={0, WBUMSL, WBUMSL, WBU_REAR, WBU_ESCORT, WBU_MARKER, WBUMSL};
-char DemoRearCheck []={0, 0, 0, 1, 0, 0, 0};
-const char *DemoExtraMessage []={"PLAYER", "GUIDED", "MISSILE", "REAR", "GUIDE-BOT", "MARKER", "SHIP"};
+char nDemoWBUType [] = {0, WBUMSL, WBUMSL, WBU_REAR, WBU_ESCORT, WBU_MARKER, WBUMSL};
+char bDemoRearCheck [] = {0, 0, 0, 1, 0, 0, 0};
+const char *szDemoExtraMessage [] = {"PLAYER", "GUIDED", "MISSILE", "REAR", "GUIDE-BOT", "MARKER", "SHIP"};
 
 //------------------------------------------------------------------------------
 
@@ -732,7 +732,7 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {
       if (nDemoDoLeft == 3)
 			DoCockpitWindowView (0, gameData.objs.consoleP, 1, WBU_REAR, "REAR");
       else
-			DoCockpitWindowView (0, &demoLeftExtra, DemoRearCheck [nDemoDoLeft], DemoWBUType [nDemoDoLeft], DemoExtraMessage [nDemoDoLeft]);
+			DoCockpitWindowView (0, &demoLeftExtra, bDemoRearCheck [nDemoDoLeft], nDemoWBUType [nDemoDoLeft], szDemoExtraMessage [nDemoDoLeft]);
 		}
    else
 		DoCockpitWindowView (0, NULL, 0, WBU_WEAPON, NULL);
@@ -740,7 +740,7 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {
       if (nDemoDoRight == 3)
 			DoCockpitWindowView (1, gameData.objs.consoleP, 1, WBU_REAR, "REAR");
       else
-			DoCockpitWindowView (1, &demoRightExtra, DemoRearCheck [nDemoDoRight], DemoWBUType [nDemoDoRight], DemoExtraMessage [nDemoDoRight]);
+			DoCockpitWindowView (1, &demoRightExtra, bDemoRearCheck [nDemoDoRight], nDemoWBUType [nDemoDoRight], szDemoExtraMessage [nDemoDoRight]);
 		}
    else
 		DoCockpitWindowView (1, NULL, 0, WBU_WEAPON, NULL);
@@ -1123,14 +1123,14 @@ void DrawCockpit (int h, int y)
 if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {
 	int i = gameData.pig.tex.cockpitBmIndex [h].index;
 	CBitmap *bmP = gameData.pig.tex.bitmaps [0] + i;
+	LoadBitmap (gameData.pig.tex.cockpitBmIndex [h].index, 0);
 	if (bmP->Override (-1))
 		bmP = bmP->Override (-1);
+	bmP->SetupTexture (0, 3, 1);
+   CCanvas::SetCurrent (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
 
 	tCanvasColor c;
 
-	LoadBitmap (gameData.pig.tex.cockpitBmIndex [h].index, 0);
-	bmP->SetupTexture (0, 3, 1);
-   CCanvas::SetCurrent (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
 	c.index = 255;
 	c.rgb = 0;
 	OglUBitMapMC (0, y, -1, CCanvas::Current ()->Height () - y, bmP, &c, I2X (1), 0);
