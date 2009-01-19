@@ -34,6 +34,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "lightmap.h"
 #include "headlight.h"
 #include "dynlight.h"
+#include "lightprecalc.h"
+#include "createmesh.h"
 
 #define SORT_LIGHTS 0
 #define PREFER_GEOMETRY_LIGHTS 1
@@ -679,6 +681,22 @@ if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !ga
 	}
 }
 
+// ----------------------------------------------------------------------------------------------
+
+void CLightManager::Setup (int nLevel)
+{
+if (!gameStates.app.bNostalgia) {
+	lightManager.AddFromGeometry ();
+	ComputeNearestLights (nLevel);
+	if (gameStates.render.bPerPixelLighting) {
+		lightmapManager.Create (nLevel);
+		if (lightmapManager.HaveLightmaps ())
+			meshBuilder.RebuildLightmapTexCoord ();	//rebuild to create proper lightmap texture coordinates
+		else
+			gameOpts->render.bUseLightmaps = 0;
+		}
+	}
+}
 
 // ----------------------------------------------------------------------------------------------
 //eof

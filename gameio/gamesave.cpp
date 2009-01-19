@@ -1541,23 +1541,6 @@ if (!meshBuilder.Build (nLevel))
 if (!gameData.render.mine.Create ())
 	return 4;
 
-if (!gameStates.app.bNostalgia) {
-#if !SHADOWS
-	if (SHOW_DYN_LIGHT || !gameStates.app.bD2XLevel)
-#endif
-	 {
-		lightManager.AddFromGeometry ();
-		ComputeNearestLights (nLevel);
-		if (gameStates.render.bPerPixelLighting) {
-			lightmapManager.Create (nLevel);
-			if (lightmapManager.HaveLightmaps ())
-				meshBuilder.RebuildLightmapTexCoord ();	//rebuild to create proper lightmap texture coordinates
-			else
-				gameOpts->render.bUseLightmaps = 0;
-			}
-		}
-	}
-
 SetAmbientSoundFlags ();
 #ifdef EDITOR
 write_game_text_file(filename);

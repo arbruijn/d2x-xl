@@ -477,7 +477,7 @@ switch (nObjType) {
 			tVideoClip *vcP = gameData.eff.vClips [0] + objP->info.nId;
 			fix		xLight = vcP->lightValue;
 			int		i, j;
-			CBitmap	*bmP = gameData.pig.tex.bitmapP [vcP->frames [0].index].Override ();
+			CBitmap	*bmP = gameData.pig.tex.bitmapP [vcP->frames [0].index].Override (-1);
 			if (bmP) {
 				bmP->GetAvgColor (colorP);
 				*pbGotColor = 1;

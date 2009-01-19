@@ -188,6 +188,7 @@ class CLightManager {
 		void Init (void);
 		void Destroy (void);
 		bool Create (void);
+		void Setup (int nLevel);
 
 		void SetColor (short nLight, float red, float green, float blue, float fBrightness);
 		void SetPos (short nObject);

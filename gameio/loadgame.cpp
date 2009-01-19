@@ -710,10 +710,10 @@ extern char szAutoMission [255];
 
 int LoadLevel (int nLevel, bool bLoadTextures, bool bRestore)
 {
-	char		*pszLevelName;
-	char		szHogName [FILENAME_LEN];
-	CPlayerData	save_player;
-	int		nRooms, bRetry = 0, nLoadRes, nCurrentLevel = gameData.missions.nCurrentLevel;
+	char*			pszLevelName;
+	char			szHogName [FILENAME_LEN];
+	CPlayerData	savePlayer;
+	int			nRooms, bRetry = 0, nLoadRes, nCurrentLevel = gameData.missions.nCurrentLevel;
 
 /*---*/PrintLog ("Loading level...\n");
 gameData.Destroy ();
@@ -801,7 +801,7 @@ InitObjectSmoke ();
 gameData.pig.tex.bitmapColors.Clear ();
 gameData.models.thrusters.Clear ();
 gameData.render.lights.flicker.nLights = 0;
-save_player = LOCALPLAYER;
+savePlayer = LOCALPLAYER;
 #if 0
 Assert (gameStates.app.bAutoRunMission ||
 		  ((nLevel <= gameData.missions.nLastLevel) &&
@@ -928,7 +928,7 @@ else if ((gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD)) ||
 gameData.render.lights.segDeltas.Clear ();
 /*---*/PrintLog ("   initializing door animations\n");
 InitDoorAnims ();
-LOCALPLAYER = save_player;
+LOCALPLAYER = savePlayer;
 gameData.hoard.nMonsterballSeg = -1;
 /*---*/PrintLog ("   initializing sound sources\n");
 SetSoundSources ();
@@ -941,6 +941,7 @@ paletteManager.LoadEffect ();		//actually load the palette
 /*---*/PrintLog ("   rebuilding OpenGL texture data\n");
 /*---*/PrintLog ("      rebuilding effects\n");
 if (!bRestore) {
+	lightManager.Setup (nLevel);
 	RebuildRenderContext (1);
 	SetRenderQuality ();
 	}

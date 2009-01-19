@@ -977,15 +977,26 @@ switch (objP->info.renderType) {
 					RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
 #	endif
 #endif
-					if (objP->info.nType != OBJ_WEAPON)
+					if (objP->info.nType != OBJ_WEAPON) {
 						DrawPolygonObject (objP, bDepthSort, 0);
-					if ((objP->info.nId != SMALLMINE_ID) && !gameStates.render.bQueryCoronas)
-						RenderLightTrail (objP);
-					if (objP->info.nType == OBJ_WEAPON) {
+						if ((objP->info.nId != SMALLMINE_ID) && !gameStates.render.bQueryCoronas)
+							RenderLightTrail (objP);
+						}
+					else {
 						//DoObjectSmoke (objP);
-						if ((objP->info.nId == VULCAN_ID) || (objP->info.nId == GAUSS_ID))
-							gameData.models.vScale.Set (I2X (1) / 4, I2X (1) / 4, I2X (2));
-						DrawPolygonObject (objP, bDepthSort, 0);
+						if ((objP->info.nId == VULCAN_ID) || (objP->info.nId == GAUSS_ID)) {
+							if (extraGameInfo [0].bTracers) {
+								if (!gameStates.render.bQueryCoronas)
+									RenderLightTrail (objP);
+								gameData.models.vScale.Set (I2X (1) / 4, I2X (1) / 4, I2X (2));
+								DrawPolygonObject (objP, bDepthSort, 0);
+								}
+							}
+						else {
+							if ((objP->info.nId != SMALLMINE_ID) && !gameStates.render.bQueryCoronas)
+								RenderLightTrail (objP);
+							DrawPolygonObject (objP, bDepthSort, 0);
+							}
 						gameData.models.vScale.SetZero ();
 						}
 					}
