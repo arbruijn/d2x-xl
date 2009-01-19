@@ -1630,8 +1630,8 @@ gameData.render.mine.nSegRenderList [0] = nStartSeg;
 gameData.render.mine.nSegDepth [0] = 0;
 VISIT (nStartSeg);
 gameData.render.mine.nRenderPos [nStartSeg] = 0;
-nHead = 0;
-nCurrent = nTail = 1;
+nHead = nTail = 0;
+nCurrent = 1;
 
 #if DBG
 if (bPreDrawSegs)
@@ -1649,7 +1649,7 @@ renderPortals [0].bot = CCanvas::Current ()->Height () - 1;
 int nRenderDepth = min (gameStates.render.detail.nRenderDepth, gameData.segs.nSegments);
 for (l = 0; l < nRenderDepth; l++) {
 	//while (nHead < nTail) {
-	for (nHead = 0; nHead < nTail; nHead++) {
+	for (nHead = nTail, nTail = nCurrent; nHead < nTail; nHead++) {
 		if (gameData.render.mine.bProcessed [nHead] == gameData.render.mine.nProcessed)
 			continue;
 		gameData.render.mine.bProcessed [nHead] = gameData.render.mine.nProcessed;
@@ -1789,7 +1789,8 @@ for (l = 0; l < nRenderDepth; l++) {
 					else if (h > 0)
 						bExpand = true;
 					if (bExpand) {
-						gameData.render.mine.nSegRenderList [nCurrent] = -0x7fff;
+						if (nCurrent < gameData.segs.nSegments)
+							gameData.render.mine.nSegRenderList [nCurrent] = -0x7fff;
 						*rwP = *newPortal;		//get updated tPortal
 						gameData.render.mine.bProcessed [nPos] = gameData.render.mine.nProcessed - 1;		//force reprocess
 						}
@@ -1797,8 +1798,10 @@ for (l = 0; l < nRenderDepth; l++) {
 				}
 			}
 		}
+#if 0
 	nHead = nTail;
 	nTail = nCurrent;
+#endif
 	}
 
 gameData.render.mine.lCntSave = nCurrent;
