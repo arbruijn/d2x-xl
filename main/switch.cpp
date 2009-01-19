@@ -818,19 +818,15 @@ return 0;
 
 int CTrigger::Operate (short nObject, int nPlayer, int shot, bool bObjTrigger)
 {
-if (flags & TF_DISABLED) {
-	PrintLog ("trigger %d has been disabled\n", this - gameData.trigs.triggers.Buffer ());
+if (flags & TF_DISABLED) 
 	return 1;		//1 means don't send trigger hit to other players
-	}
 
 CObject*	objP = OBJECTS + nObject;
 bool bIsPlayer = (objP->info.nType == OBJ_PLAYER);
 
 if (bIsPlayer) {
-	if (!IsMultiGame && (nObject != LOCALPLAYER.nObject)) {
-		PrintLog ("trigger %d object error (%d <-> %d)\n", this - gameData.trigs.triggers.Buffer (), nObject, LOCALPLAYER.nObject);
+	if (!IsMultiGame && (nObject != LOCALPLAYER.nObject))
 		return 1;
-		}
 	}
 else {
 	nPlayer = -1;
@@ -849,10 +845,8 @@ int nTrigger = Index ();
 
 if (!bObjTrigger && (nType != TT_TELEPORT) && (nType != TT_SPEEDBOOST)) {
 	int t = gameStates.app.nSDLTicks;
-	if ((gameData.trigs.delay [nTrigger] >= 0) && (t - gameData.trigs.delay [nTrigger] < 750)) {
-		PrintLog ("trigger %d has been delayed\n", this - gameData.trigs.triggers.Buffer ());
+	if ((gameData.trigs.delay [nTrigger] >= 0) && (t - gameData.trigs.delay [nTrigger] < 750))
 		return 1;
-		}
 	gameData.trigs.delay [nTrigger] = t;
 	}
 

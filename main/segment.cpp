@@ -863,8 +863,6 @@ void CSegment::OperateTrigger (int nSide, CObject *objP, int shot)
 {
 CTrigger* trigP = Trigger (nSide);
 
-PrintLog ("segment %d operating trigger %d on side %d\n", this - gameData.segs.segments.Buffer (), trigP ? trigP - gameData.trigs.triggers.Buffer () : -1, nSide);
-
 if (!trigP)
 	return;
 

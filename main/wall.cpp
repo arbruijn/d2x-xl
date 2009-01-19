@@ -1243,7 +1243,6 @@ return (nType == WALL_DOOR) && (keys == KEY_NONE) && (state == WALL_DOOR_CLOSED)
 
 CTrigger* CWall::Trigger (void)
 {
-//PrintLog ("wall %d has trigger %d (of %d)\n", this - gameData.walls.walls.Buffer (), nTrigger, gameData.trigs.m_nTriggers);
 return ((nTrigger == NO_TRIGGER) || (nTrigger >= gameData.trigs.m_nTriggers)) ? NULL : &TRIGGERS [nTrigger];
 }
 

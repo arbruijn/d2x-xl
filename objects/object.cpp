@@ -2289,8 +2289,6 @@ for (i = 0; i < gameData.physics.nSegments - 1; i++) {
 		PrintLog ("invalid segment in gameData.physics.segments\n");
 #endif
 	nConnSide = SEGMENTS [gameData.physics.segments [i + 1]].ConnectedSide (SEGMENTS + gameData.physics.segments [i]);
-	if (!Index ())
-		PrintLog ("player move: %d --%d--> %d\n", gameData.physics.segments [i], nConnSide, gameData.physics.segments [i+1]);
 	if (nConnSide != -1)
 		SEGMENTS [gameData.physics.segments [i]].OperateTrigger (nConnSide, this, 0);
 #if DBG
