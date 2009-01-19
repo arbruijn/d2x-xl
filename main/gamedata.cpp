@@ -581,6 +581,8 @@ DESTROY (gameData.segs.sideCenters);
 DESTROY (gameData.segs.bSegVis);
 DESTROY (gameData.segs.slideSegs);
 DESTROY (gameData.segs.segFaces);
+nSegments = 0;
+nFaces = 0;
 faces.Destroy ();
 }
 
@@ -603,6 +605,7 @@ CLEAR (nAnims);
 void CWallData::Destroy (void)
 {
 walls.Destroy ();
+nWalls = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -636,6 +639,8 @@ triggers.Destroy ();
 objTriggers.Destroy ();
 objTriggerRefs.Destroy ();
 delay.Destroy ();
+m_nTriggers = 0;
+m_nObjTriggers = 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -1061,6 +1066,7 @@ DESTROY (gameData.objs.nLightSig);
 DESTROY (gameData.objs.nHitObjects);
 DESTROY (gameData.objs.viewData);
 DESTROY (gameData.objs.bWantEffect);
+nObjects = 0;
 lightManager.Reset ();
 shrapnelManager.Reset ();
 }
