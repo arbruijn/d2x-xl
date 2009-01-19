@@ -360,7 +360,7 @@ void AddToFCDCache (int seg0, int seg1, int nDepth, fix dist)
 //	Determine whether seg0 and seg1 are reachable in a way that allows sound to pass.
 //	Search up to a maximum nDepth of nMaxDepth.
 //	Return the distance.
-fix FindConnectedDistance (CFixVector& p0, short seg0, CFixVector& p1, short seg1, int nMaxDepth, int widFlag, int bUseCache)
+fix FindConnectedDistance (CFixVector& p0, short nSrcSeg, CFixVector& p1, short nDestSeg, int nMaxDepth, int widFlag, int bUseCache)
 {
 	short				nConnSide;
 	short				nCurSeg, nParentSeg, nThisSeg;
@@ -376,19 +376,19 @@ fix FindConnectedDistance (CFixVector& p0, short seg0, CFixVector& p1, short seg
 	tFCDCacheData	*pc;
 
 	//	If > this, will overrun routeSegs buffer
-if (nMaxDepth > MAX_LOC_POINT_SEGS-2) {
+if (nMaxDepth > MAX_LOC_POINT_SEGS - 2) {
 #if TRACE
 	console.printf (1, "Warning: In FindConnectedDistance, nMaxDepth = %i, limited to %i\n", nMaxDepth, MAX_LOC_POINT_SEGS-2);
 #endif
 	nMaxDepth = MAX_LOC_POINT_SEGS - 2;
 	}
-if (seg0 == seg1) {
+if (nSrcSeg == nDestSeg) {
 	gameData.fcd.nConnSegDist = 0;
 	return CFixVector::Dist (p0, p1);
 	}
-nConnSide = SEGMENTS [seg0].ConnectedSide (SEGMENTS + seg1);
+nConnSide = SEGMENTS [nSrcSeg].ConnectedSide (SEGMENTS + nDestSeg);
 if ((nConnSide != -1) &&
-	 (SEGMENTS [seg1].IsDoorWay (nConnSide, NULL) & widFlag)) {
+	 (SEGMENTS [nDestSeg].IsDoorWay (nConnSide, NULL) & widFlag)) {
 	gameData.fcd.nConnSegDist = 1;
 	return CFixVector::Dist (p0, p1);
 	}
@@ -402,27 +402,27 @@ if ((gameData.time.xGame - gameData.fcd.xLastFlushTime > I2X (2)) ||
 //	Can't quickly get distance, so see if in gameData.fcd.cache.
 if (bUseCache) {
 	for (i = gameData.fcd.cache.Length (), pc = gameData.fcd.cache.Buffer (); i; i--, pc++)
-		if ((pc->seg0 == seg0) && (pc->seg1 == seg1)) {
+		if ((pc->seg0 == nSrcSeg) && (pc->seg1 == nDestSeg)) {
 			gameData.fcd.nConnSegDist = pc->csd;
 			return pc->dist;
 			}
 	}
-memset (visited, 0, gameData.segs.nLastSegment + 1);
-memset (nDepth, 0, sizeof (nDepth [0]) * (gameData.segs.nLastSegment + 1));
+memset (visited, 0, gameData.segs.nSegments);
+memset (nDepth, 0, sizeof (nDepth [0]) * gameData.segs.nSegments);
 
 nPoints = 0;
-nCurSeg = seg0;
+nCurSeg = nSrcSeg;
 visited [nCurSeg] = 1;
 nCurDepth = 0;
 
-while (nCurSeg != seg1) {
+while (nCurSeg != nDestSeg) {
 	segP = SEGMENTS + nCurSeg;
 
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		if (segP->IsDoorWay (nSide, NULL) & widFlag) {
 			nThisSeg = segP->m_children [nSide];
 			Assert ((nThisSeg >= 0) && (nThisSeg < LEVEL_SEGMENTS));
-			Assert ((qTail >= 0) && (qTail < LEVEL_SEGMENTS - 1));
+			Assert ((qTail >= 0) && (qTail < LEVEL_SEGMENTS));
 			if (!visited [nThisSeg]) {
 				segmentQ [qTail].start = nCurSeg;
 				segmentQ [qTail].end = nThisSeg;
@@ -431,11 +431,11 @@ while (nCurSeg != seg1) {
 				if (nMaxDepth != -1) {
 					if (nDepth [qTail - 1] == nMaxDepth) {
 						gameData.fcd.nConnSegDist = 1000;
-						AddToFCDCache (seg0, seg1, gameData.fcd.nConnSegDist, I2X (1000));
+						AddToFCDCache (nSrcSeg, nDestSeg, gameData.fcd.nConnSegDist, I2X (1000));
 						return -1;
 						}
 					}
-				else if (nThisSeg == seg1) {
+				else if (nThisSeg == nDestSeg) {
 					goto fcd_done1;
 				}
 			}
@@ -444,7 +444,7 @@ while (nCurSeg != seg1) {
 
 	if (qHead >= qTail) {
 		gameData.fcd.nConnSegDist = 1000;
-		AddToFCDCache (seg0, seg1, gameData.fcd.nConnSegDist, I2X (1000));
+		AddToFCDCache (nSrcSeg, nDestSeg, gameData.fcd.nConnSegDist, I2X (1000));
 		return -1;
 		}
 	Assert ((qHead >= 0) && (qHead < LEVEL_SEGMENTS));
@@ -456,10 +456,10 @@ fcd_done1: ;
 	}	//	while (nCurSeg ...
 
 //	Set qTail to the CSegment which ends at the goal.
-while (segmentQ [--qTail].end != seg1)
+while (segmentQ [--qTail].end != nDestSeg)
 	if (qTail < 0) {
 		gameData.fcd.nConnSegDist = 1000;
-		AddToFCDCache (seg0, seg1, gameData.fcd.nConnSegDist, I2X (1000));
+		AddToFCDCache (nSrcSeg, nDestSeg, gameData.fcd.nConnSegDist, I2X (1000));
 		return -1;
 		}
 
@@ -469,13 +469,13 @@ while (qTail >= 0) {
 	routeSegs [nPoints].nSegment = nThisSeg;
 	routeSegs [nPoints].point = SEGMENTS [nThisSeg].Center ();
 	nPoints++;
-	if (nParentSeg == seg0)
+	if (nParentSeg == nSrcSeg)
 		break;
 	while (segmentQ [--qTail].end != nParentSeg)
 		Assert (qTail >= 0);
 	}
-routeSegs [nPoints].nSegment = seg0;
-routeSegs [nPoints].point = SEGMENTS [seg0].Center ();
+routeSegs [nPoints].nSegment = nSrcSeg;
+routeSegs [nPoints].point = SEGMENTS [nSrcSeg].Center ();
 nPoints++;
 if (nPoints == 1) {
 	gameData.fcd.nConnSegDist = nPoints;
@@ -491,7 +491,7 @@ else {
 		}
 	}
 gameData.fcd.nConnSegDist = nPoints;
-AddToFCDCache (seg0, seg1, nPoints, dist);
+AddToFCDCache (nSrcSeg, nDestSeg, nPoints, dist);
 return dist;
 }
 

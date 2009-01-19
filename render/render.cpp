@@ -1592,18 +1592,18 @@ gameData.render.zMax = vCenter [Z] + d1 + r;
 
 void BuildRenderSegList (short nStartSeg, int nWindow)
 {
-	int		lCnt, sCnt, eCnt, nSide;
-	int		l, i, j;
-	short		nChild;
-	short		nChildSeg;
-	short*	sv;
-	int*		s2v;
-	ubyte		andCodes, andCodes3D;
-	int		bRotated, nSegment, bNotProjected;
-	tPortal	*curPortal;
-	short		childList [MAX_SIDES_PER_SEGMENT];		//list of ordered sides to process
-	int		nChildren, bCullIfBehind;					//how many sides in childList
-	CSegment	*segP;
+	int			nCurrent, nHead, nTail, nSide;
+	int			l, i, j;
+	short			nChild;
+	short			nChildSeg;
+	short*		sv;
+	int*			s2v;
+	ubyte			andCodes, andCodes3D;
+	int			bRotated, nSegment, bNotProjected;
+	tPortal*		curPortal;
+	short			childList [MAX_SIDES_PER_SEGMENT];		//list of ordered sides to process
+	int			nChildren, bCullIfBehind;					//how many sides in childList
+	CSegment*	segP;
 
 gameData.render.zMin = 0x7fffffff;
 gameData.render.zMax = -0x7fffffff;
@@ -1630,8 +1630,8 @@ gameData.render.mine.nSegRenderList [0] = nStartSeg;
 gameData.render.mine.nSegDepth [0] = 0;
 VISIT (nStartSeg);
 gameData.render.mine.nRenderPos [nStartSeg] = 0;
-sCnt = 0;
-lCnt = eCnt = 1;
+nHead = 0;
+nCurrent = nTail = 1;
 
 #if DBG
 if (bPreDrawSegs)
@@ -1646,14 +1646,15 @@ renderPortals [0].bot = CCanvas::Current ()->Height () - 1;
 //breadth-first renderer
 
 //build list
-for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
-	//while (sCnt < eCnt) {
-	for (sCnt = 0; sCnt < eCnt; sCnt++) {
-		if (gameData.render.mine.bProcessed [sCnt] == gameData.render.mine.nProcessed)
+int nRenderDepth = min (gameStates.render.detail.nRenderDepth, gameData.segs.nSegments);
+for (l = 0; l < nRenderDepth; l++) {
+	//while (nHead < nTail) {
+	for (nHead = 0; nHead < nTail; nHead++) {
+		if (gameData.render.mine.bProcessed [nHead] == gameData.render.mine.nProcessed)
 			continue;
-		gameData.render.mine.bProcessed [sCnt] = gameData.render.mine.nProcessed;
-		nSegment = gameData.render.mine.nSegRenderList [sCnt];
-		curPortal = renderPortals + sCnt;
+		gameData.render.mine.bProcessed [nHead] = gameData.render.mine.nProcessed;
+		nSegment = gameData.render.mine.nSegRenderList [nHead];
+		curPortal = renderPortals + nHead;
 		if (nSegment == -1)
 			continue;
 #if DBG
@@ -1745,8 +1746,8 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 					p.bot = y;
 				}
 			if (bNotProjected || !(andCodes3D | (0xff & CodePortal (&p, curPortal)))) {	//maybe add this segment
-				int rp = gameData.render.mine.nRenderPos [nChildSeg];
-				tPortal *newPortal = renderPortals + lCnt;
+				int nPos = gameData.render.mine.nRenderPos [nChildSeg];
+				tPortal *newPortal = renderPortals + nCurrent;
 
 				if (bNotProjected)
 					*newPortal = *curPortal;
@@ -1757,14 +1758,14 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 					newPortal->bot = min (curPortal->bot, p.bot);
 					}
 				//see if this segment has already been visited, and if so, does the current portal expand the old portal?
-				if (rp == -1) {
-					gameData.render.mine.nRenderPos [nChildSeg] = lCnt;
-					gameData.render.mine.nSegRenderList [lCnt] = nChildSeg;
-					gameData.render.mine.nSegDepth [lCnt++] = l;
+				if (nPos == -1) {
+					gameData.render.mine.nRenderPos [nChildSeg] = nCurrent;
+					gameData.render.mine.nSegRenderList [nCurrent] = nChildSeg;
+					gameData.render.mine.nSegDepth [nCurrent++] = l;
 					VISIT (nChildSeg);
 					}
 				else {
-					tPortal *rwP = renderPortals + rp;
+					tPortal *rwP = renderPortals + nPos;
 					bool bExpand = false;
 					int h;
 					h = newPortal->left - rwP->left;
@@ -1788,22 +1789,22 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 					else if (h > 0)
 						bExpand = true;
 					if (bExpand) {
-						gameData.render.mine.nSegRenderList [lCnt] = -0x7fff;
+						gameData.render.mine.nSegRenderList [nCurrent] = -0x7fff;
 						*rwP = *newPortal;		//get updated tPortal
-						gameData.render.mine.bProcessed [rp] = gameData.render.mine.nProcessed - 1;		//force reprocess
+						gameData.render.mine.bProcessed [nPos] = gameData.render.mine.nProcessed - 1;		//force reprocess
 						}
 					}
 				}
 			}
 		}
-	sCnt = eCnt;
-	eCnt = lCnt;
+	nHead = nTail;
+	nTail = nCurrent;
 	}
 
-gameData.render.mine.lCntSave = lCnt;
-gameData.render.mine.sCntSave = sCnt;
-nFirstTerminalSeg = sCnt;
-gameData.render.mine.nRenderSegs = lCnt;
+gameData.render.mine.lCntSave = nCurrent;
+gameData.render.mine.sCntSave = nHead;
+nFirstTerminalSeg = nHead;
+gameData.render.mine.nRenderSegs = nCurrent;
 
 for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 #if DBG
