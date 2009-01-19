@@ -918,7 +918,7 @@ int AddVariableLight (int nSegment, int nSide, fix delay, uint mask)
 
 int IsLight (int tMapNum)
 {
-return gameData.pig.tex.brightness [tMapNum];
+return (tMapNum < MAX_WALL_TEXTURES) && gameData.pig.tex.brightness [tMapNum];
 }
 
 //	------------------------------------------------------------------------------------------

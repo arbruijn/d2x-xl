@@ -2678,11 +2678,16 @@ FORALL_EFFECT_OBJS (objP, i)
 //compressed.  resets free list, marks unused objects as unused
 void ResetObjects (int nObjects)
 {
-	int 		i;
-	CObject	*objP;
+	CObject	*objP = OBJECTS.Buffer ();
+
+if (!objP)
+	return;
 
 gameData.objs.nObjects = nObjects;
-for (i = 0, objP = OBJECTS.Buffer (); i < nObjects; i++, objP++)
+
+	int	i;
+
+for (i = 0; i < nObjects; i++, objP++)
 	if (objP->info.nType != OBJ_DEBRIS)
 		objP->rType.polyObjInfo.nSubObjFlags = 0;
 for (; i < LEVEL_OBJECTS; i++, objP++) {
