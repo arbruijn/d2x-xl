@@ -2860,6 +2860,7 @@ void NDPlayBackOneFrame (void)
 	static fix base_interpolTime = 0;
 	static fix d_recorded = 0;
 
+gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 for (i = 0; i < MAX_PLAYERS; i++)
 	if (gameData.demo.bPlayersCloaked &(1 << i))
 		gameData.multiplayer.players [i].cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);

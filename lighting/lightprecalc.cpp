@@ -483,12 +483,12 @@ if (bOk)
 			((ldh.bPerPixelLighting != 0) == (gameStates.render.bPerPixelLighting != 0)));
 if (bOk)
 	bOk =
-			(gameData.segs.bSegVis.Read (cf, ldh.nSegments * SEGVIS_FLAGS, 1) == ldh.nSegments * SEGVIS_FLAGS) &&
+			(gameData.segs.bSegVis.Read (cf, ldh.nSegments * SEGVIS_FLAGS, 0) == ldh.nSegments * SEGVIS_FLAGS) &&
 #if 0
-			(gameData.segs.bVertVis.Read (cf, ldh.nVertices * VERTVIS_FLAGS, 1) == ldh.nVertices * VERTVIS_FLAGS) &&
+			(gameData.segs.bVertVis.Read (cf, ldh.nVertices * VERTVIS_FLAGS, 0) == ldh.nVertices * VERTVIS_FLAGS) &&
 #endif
-			(lightManager.NearestSegLights  ().Read (cf, ldh.nSegments * MAX_NEAREST_LIGHTS, 1) == ldh.nSegments * MAX_NEAREST_LIGHTS) &&
-			(lightManager.NearestVertLights ().Read (cf, ldh.nVertices * MAX_NEAREST_LIGHTS, 1) == ldh.nVertices * MAX_NEAREST_LIGHTS);
+			(lightManager.NearestSegLights  ().Read (cf, ldh.nSegments * MAX_NEAREST_LIGHTS, 0) == ldh.nSegments * MAX_NEAREST_LIGHTS) &&
+			(lightManager.NearestVertLights ().Read (cf, ldh.nVertices * MAX_NEAREST_LIGHTS, 0) == ldh.nVertices * MAX_NEAREST_LIGHTS);
 cf.Close ();
 return bOk;
 }
