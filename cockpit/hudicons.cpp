@@ -221,7 +221,7 @@ for (i = 0; i < Controls [0].toggleIconsCount; i++)
 
 void HUDShowWeaponIcons (void)
 {
-	CBitmap	*bmP;
+	CBitmap*	bmP, * bmoP;
 	int	nWeaponIcons = (gameStates.render.cockpit.nMode == CM_STATUS_BAR) ? 3 : extraGameInfo [0].nWeaponIcons;
 	int	nIconScale = (gameOpts->render.weaponIcons.bSmall || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) ? 4 : 3;
 	int	nIconPos = nWeaponIcons - 1;
@@ -302,13 +302,15 @@ for (i = 0; i < 2; i++) {
 			l = nLvlMap [gameStates.app.bD1Mission][j];
 		m = i ? secondaryWeaponToWeaponInfo [l] : primaryWeaponToWeaponInfo [l];
 		if ((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) {
-			bmP = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [m].hiresPicture.index;
 			LoadBitmap (gameData.weapons.info [m].hiresPicture.index, 0);
+			bmP = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [m].hiresPicture.index;
 			}
 		else {
 			bmP = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [m].picture.index;
 			LoadBitmap (gameData.weapons.info [m].picture.index, 0);
 			}
+		if ((bmoP = bmP->Override (-1)))
+			bmP = bmoP;
 		Assert (bmP != NULL);
 		if (w < bmP->Width ())
 			w = bmP->Width ();

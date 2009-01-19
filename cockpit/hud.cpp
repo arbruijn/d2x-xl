@@ -58,7 +58,7 @@ szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage][0] = 0;
 
 //	-----------------------------------------------------------------------------
 
-void HUDClearMessages ()
+void HUDClearMessages (void)
 {
 	int i, j;
 	CHUDMessage	*pMsgs;

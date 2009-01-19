@@ -1123,6 +1123,9 @@ void DrawCockpit (int h, int y)
 if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {
 	int i = gameData.pig.tex.cockpitBmIndex [h].index;
 	CBitmap *bmP = gameData.pig.tex.bitmaps [0] + i;
+	if (bmP->Override (-1))
+		bmP = bmP->Override (-1);
+
 	tCanvasColor c;
 
 	LoadBitmap (gameData.pig.tex.cockpitBmIndex [h].index, 0);

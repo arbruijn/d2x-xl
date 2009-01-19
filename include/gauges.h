@@ -110,6 +110,9 @@ extern int nHUDLineSpacing;
 
 static inline void HUDBitBlt (int x, int y, CBitmap *bmP, int scale, int orient)
 {
+CBitmap* bmoP = bmP->Override (-1);
+if (bmoP)
+	bmP = bmoP;
 OglUBitMapMC (
 	 (x < 0) ? -x : HUD_SCALE_X (x), 
 	 (y < 0) ? -y : HUD_SCALE_Y (y), 
