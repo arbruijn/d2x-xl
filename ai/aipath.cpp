@@ -307,8 +307,8 @@ bAvoidPlayer = gameData.objs.consoleP->info.nSegment == nAvoidSeg;
 if (nMaxDepth == -1)
 	nMaxDepth = MAX_PATH_LENGTH;
 lNumPoints = 0;
-memset (bVisited, 0, sizeof (bVisited [0]) * (gameData.segs.nLastSegment + 1));
-memset (depth, 0, sizeof (depth [0]) * (gameData.segs.nLastSegment + 1));
+memset (bVisited, 0, sizeof (bVisited [0]) * gameData.segs.nSegments);
+memset (depth, 0, sizeof (depth [0]) * gameData.segs.nSegments);
 //	If there is a CSegment we're not allowed to visit, mark it.
 if (nAvoidSeg != -1) {
 	Assert (nAvoidSeg <= gameData.segs.nLastSegment);
