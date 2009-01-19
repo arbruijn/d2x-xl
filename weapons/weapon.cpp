@@ -980,6 +980,7 @@ poLenToWidthRatio = cf.ReadFix ();
 if (gameData.objs.bIsMissile [i])
 	poLenToWidthRatio = I2X (10);
 light = cf.ReadFix ();
+i = this - gameData.weapons.info.Buffer ();
 if (i == SPREADFIRE_ID)
 	light = I2X (1);
 else if (i == HELIX_ID)

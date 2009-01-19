@@ -587,6 +587,7 @@ for (nFace = gameData.segs.nFaces, faceP = FACES.faces.Buffer (); nFace; nFace--
 	colorP = gameData.render.color.textures + nTexture;
 	if ((nLight = IsLight (nTexture)))
 		Add (faceP, &colorP->color, nLight, (short) nSegment, (short) nSide, -1, nTexture, NULL);
+	faceP->nOvlTex = SEGMENTS [faceP->nSegment].Side (faceP->nSide)->m_nOvlTex;
 	nTexture = faceP->nOvlTex;
 #if 0//def _DEBUG
 	if (gameStates.app.bD1Mission && (nTexture == 289)) //empty, light
