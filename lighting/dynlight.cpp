@@ -697,7 +697,7 @@ if (!gameStates.app.bNostalgia) {
 			gameOpts->render.bUseLightmaps = 0;
 		}
 	}
-//GatherStaticLights (nLevel);
+GatherStaticLights (nLevel);
 }
 
 // ----------------------------------------------------------------------------------------------
