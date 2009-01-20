@@ -1927,7 +1927,7 @@ if (!m_bBetweenLevels) {
 		for (i = 0; i < LEVEL_SEGMENTS; i++)
 			automap.m_visited [0][i] = (ushort) m_cf.ReadShort ();
 		}
-	if (m_nVersion > 37) {
+	else if (m_nVersion > 37) {
 		for (i = 0; i < MAX_SEGMENTS; i++)
 			automap.m_visited [0][i] = (ushort) m_cf.ReadShort ();
 		}

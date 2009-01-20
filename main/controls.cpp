@@ -145,16 +145,18 @@ void ReadFlyingControls (CObject *objP)
 			}
 		}
 		else {
-			fix cur_energy,charge_up;
-
-			//charge up to full
-			charge_up = min(gameData.time.xFrame/8,I2X (1) - gameData.physics.xAfterburnerCharge);	//recharge over 8 seconds
-			cur_energy = LOCALPLAYER.energy - I2X (10);
-			cur_energy = max(cur_energy, 0);	//don't drop below 10
-			//maybe limit charge up by energy
-			charge_up = min (charge_up,cur_energy / 10);
-			gameData.physics.xAfterburnerCharge += charge_up;
-			LOCALPLAYER.energy -= charge_up * 100 / 10;	//full charge uses 10% of energy
+			fix xChargeUp = min (gameData.time.xFrame / 8, I2X (1) - gameData.physics.xAfterburnerCharge);	//recharge over 8 seconds
+			if (xChargeUp > 0) {
+			fix xCurEnergy = LOCALPLAYER.energy - I2X (10);
+			xCurEnergy = max (xCurEnergy, 0) / 10;	//don't drop below 10
+			if (xCurEnergy > 0) {	//maybe limit charge up by energy
+				xChargeUp = min (xChargeUp, xCurEnergy / 10);
+				if (xChargeUp > 0) {
+					gameData.physics.xAfterburnerCharge += xChargeUp;
+					LOCALPLAYER.energy -= xChargeUp * 100 / 10;	//full charge uses 10% of energy
+					}
+				}
+			}
 		}
 	}
 	// Set CObject's thrust vector for forward/backward

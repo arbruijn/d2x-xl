@@ -113,7 +113,7 @@ int LaserCreationTimeout (int nId, fix xCreationTime)
 {
 if (nId == PHOENIX_ID)
 	return gameData.time.xGame > xCreationTime + (I2X (1) / 3) * gameStates.gameplay.slowmo [0].fSpeed;
-else if (nId == PHOENIX_ID)
+else if (nId == GUIDEDMSL_ID)
 	return gameData.time.xGame > xCreationTime + (I2X (1) / 2) * gameStates.gameplay.slowmo [0].fSpeed;
 else if (WeaponIsPlayerMine (nId))
 	return gameData.time.xGame > xCreationTime + (I2X (4)) * gameStates.gameplay.slowmo [0].fSpeed;
@@ -143,7 +143,7 @@ ct1 = objP1->cType.laserInfo.xCreationTime;
 if (objP1->info.nType == OBJ_WEAPON)
 	if ((objP1->cType.laserInfo.parent.nObject == o2) &&
 		 (objP1->cType.laserInfo.parent.nSignature == objP2->info.nSignature)) {
-		//	o1 is a weapon, o2 is the parent of 1, so if o1 is PROXIMITY_BOMB and o2 is CPlayerData, they are related only if o1 < 2.0 seconds old
+		//	o1 is a weapon, o2 is the parent of 1, so if o1 is PROXIMITY_BOMB and o2 is player, they are related only if o1 < 2.0 seconds old
 		if (LaserCreationTimeout (id1, ct1))
 			return 0;
 		return 1;
@@ -155,7 +155,7 @@ ct2 = objP2->cType.laserInfo.xCreationTime;
 if (objP2->info.nType == OBJ_WEAPON)
 	if ((objP2->cType.laserInfo.parent.nObject == o1) &&
 		 (objP2->cType.laserInfo.parent.nSignature == objP1->info.nSignature)) {
-		//	o2 is a weapon, o1 is the parent of 2, so if o2 is PROXIMITY_BOMB and o1 is CPlayerData, they are related only if o1 < 2.0 seconds old
+		//	o2 is a weapon, o1 is the parent of 2, so if o2 is PROXIMITY_BOMB and o1 is player, they are related only if o1 < 2.0 seconds old
 		if (LaserCreationTimeout (id2, ct2))
 			return 0;
 		return 1;

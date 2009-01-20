@@ -769,6 +769,8 @@ if (flags & FQ_CHECK_OBJS) {
 #	if DBG
 	if ((thisObjP->info.nType == OBJ_WEAPON) && (thisObjP->info.nSegment == gameData.objs.consoleP->info.nSegment))
 		flags = flags;
+	if (nStartSeg == nDbgSeg)
+		nDbgSeg = nDbgSeg;
 #	endif
 #if 1
 	segP = SEGMENTS + nStartSeg;
@@ -787,10 +789,14 @@ if (flags & FQ_CHECK_OBJS) {
 #if DBG
 restart:
 #endif
+		if (nSegment == nDbgSeg)
+			nDbgSeg = nDbgSeg;
 		nSegObjs = gameData.objs.nObjects;
 		for (nObject = nFirstObj = SEGMENTS [nSegment].m_objects; nObject != -1; nObject = otherObjP->info.nNextInSeg, nSegObjs--) {
 			otherObjP = OBJECTS + nObject;
 #if DBG
+			if (nObject == nDbgObj)
+				nDbgObj = nDbgObj;
 			if ((nSegObjs < 0) || !CheckSegObjList (otherObjP, nObject, nFirstObj)) {
 				RelinkAllObjsToSegs ();
 				goto restart;
