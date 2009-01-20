@@ -653,7 +653,7 @@ switch (nType) {
 			objP->cType.aiInfo.GOAL_STATE = AIS_LOCK;
 			objP->cType.aiInfo.REMOTE_OWNER = -1;
 			if (ROBOTINFO (id).bossFlag)
-				AddBoss (nObject);
+				gameData.bosses.Add (nObject);
 			}
 		// At JasenW's request, robots which contain robots
 		// sometimes drop shields.

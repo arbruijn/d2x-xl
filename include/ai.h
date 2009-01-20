@@ -76,9 +76,6 @@ void MoveTowardsPlayer (CObject *objP, CFixVector *vec_to_player);
 
 int AICanFireAtPlayer (CObject *objP, CFixVector *vGun, CFixVector *vPlayer);
 
-void InitBossData (int i, int nObject);
-int AddBoss (int nObject);
-void RemoveBoss (int i);
 void DoBossDyingFrame (CObject *objP);
 
 // max_length is maximum depth of path to create.

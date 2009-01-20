@@ -69,11 +69,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define fabsf(_f)	(float) fabs (_f)
 #endif
 
-int dbgObjInstances = 0;
-
 #define	DEG90		 (I2X (1) / 4)
 #define	DEG45		 (I2X (1) / 8)
 #define	DEG1		 (I2X (1) / (4 * 90))
+
+//------------------------------------------------------------------------------
 
 void StopObjectMovement (CObject *objP)
 {

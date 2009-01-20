@@ -327,7 +327,7 @@ rval = DoRobotDyingFrame (objP, gameData.bosses [i].m_nDyingStartTime, BOSS_DEAT
 								 &gameData.bosses [i].m_bDyingSoundPlaying,
 								 ROBOTINFO (objP->info.nId).deathrollSound, I2X (4), I2X (4));
 if (rval) {
-	RemoveBoss (i);
+	gameData.bosses.Remove (i);
 	DoReactorDestroyedStuff (NULL);
 	objP->Explode (I2X (1)/4);
 	audio.CreateObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, objP->Index (), 0, I2X (2), I2X (512));

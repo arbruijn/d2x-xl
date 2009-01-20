@@ -379,6 +379,14 @@ return -1;
 
 // -----------------------------------------------------------------------------
 
+void CBossData::Setup (int nObject)
+{
+for (uint i = 0; i < m_info.ToS (); i++)
+	m_info [i].Setup (nObject);
+}
+
+// -----------------------------------------------------------------------------
+
 int CBossData::Add (short nObject)
 {
 	short	nBoss = Find (nObject);

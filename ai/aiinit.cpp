@@ -155,8 +155,7 @@ for (i = j = 0, objP = OBJECTS.Buffer (); i < LEVEL_OBJECTS; i++, objP++) {
 	if ((objP->info.nType == OBJ_ROBOT) && (ROBOTINFO (objP->info.nId).bossFlag))
 		gameData.bosses [j++].m_nObject = i;
 	}
-for (h = BOSS_COUNT, i = 0; i < h; i++)
-	InitBossData (i, -1);
+gameData.bosses.Setup ();
 gameData.ai.bInitialized = 1;
 AIDoCloakStuff ();
 InitBuddyForLevel ();

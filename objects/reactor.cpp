@@ -471,7 +471,6 @@ FORALL_ACTOR_OBJS (objP, i) {
 
 	if (IS_BOSS (objP)) {
 		extraGameInfo [0].nBossCount++;
-		//InitBossData (extraGameInfo [0].nBossCount - 1, objP->Index ());
 		if (BOSS_COUNT > 1) {
 #if TRACE
 			console.printf (1, "Warning: Two or more bosses including %i and %i\n", objP->Index (), nBossObj);

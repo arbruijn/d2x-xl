@@ -164,7 +164,7 @@ if (nLinks) {
 			int	i = gameData.bosses.Find (objP->Index ());
 
 			if (i >= 0)
-				InitBossData (i, objP->Index ());
+				gameData.bosses [i].Setup (objP->Index ());
 			}
 		}
 	}

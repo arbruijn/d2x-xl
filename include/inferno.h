@@ -2615,6 +2615,7 @@ class CBossData {
 		CBossData ();
 		bool Create (uint nBosses = 0);
 		void Destroy (void);
+		void Setup (int nObject = -1);
 		short Find (short nBossObj);
 		int Add (short nObject);
 		void Remove (short nBoss);
