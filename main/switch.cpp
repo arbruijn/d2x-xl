@@ -161,7 +161,7 @@ if (nLinks) {
 		objP->info.position.vPos = SEGMENTS [nSegment].Center ();
 		objP->RelinkToSeg (nSegment);
 		if (ROBOTINFO (objP->info.nId).bossFlag) {
-			int	i = FindBoss (objP->Index ());
+			int	i = gameData.bosses.Find (objP->Index ());
 
 			if (i >= 0)
 				InitBossData (i, objP->Index ());

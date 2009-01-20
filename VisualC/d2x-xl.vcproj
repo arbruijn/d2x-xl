@@ -3702,7 +3702,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\objects\effectobjects.cpp"
+						RelativePath="..\objects\effectobject.cpp"
 						>
 					</File>
 					<File
@@ -3715,6 +3715,10 @@
 					</File>
 					<File
 						RelativePath="..\objects\object.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\objects\objectio.cpp"
 						>
 					</File>
 					<File

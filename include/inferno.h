@@ -2597,7 +2597,7 @@ class CBossInfo {
 
 class CBossData {
 	private:	
-		CStack<CBossInfo>			m_info;
+		CStack<CBossInfo>	m_info;
 
 	public:
 		CBossData ();
@@ -2611,6 +2611,7 @@ class CBossData {
 
 		inline CBossInfo& Boss (uint i) { return m_info [i]; }
 		inline uint BossCount (void) { return m_info.Buffer () ? m_info.ToS () : 0; }
+		inline CBossInfo& operator[] (uint i) { return m_info [i]; }
 	};
 
 //------------------------------------------------------------------------------

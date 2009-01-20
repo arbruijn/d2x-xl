@@ -1369,7 +1369,7 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 	nSegment = objP->info.nSegment;
 	// hack for a bug I haven't yet been able to fix 
 	if ((objP->info.nType != OBJ_REACTOR) && (objP->info.xShields < 0)) {
-		j = FindBoss (i);
+		j = gameData.bosses.Find (i);
 		if ((j < 0) || (gameData.bosses [j].nDying != i))
 			objP->info.nType = OBJ_NONE;
 		}

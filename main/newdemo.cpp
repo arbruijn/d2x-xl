@@ -829,7 +829,7 @@ else {
 	}
 if (o.info.nType == OBJ_ROBOT) {
 	if (ROBOTINFO (o.info.nId).bossFlag) {
-		int i = FindBoss (objP->Index ());
+		int i = gameData.bosses.Find (objP->Index ());
 		if ((i >= 0) &&
 			 (gameData.time.xGame > gameData.bosses [i].nCloakStartTime) && 
 			 (gameData.time.xGame < gameData.bosses [i].nCloakEndTime))

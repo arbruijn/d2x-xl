@@ -1211,7 +1211,7 @@ if (!(gameStates.app.cheats.bRobotsKillRobots || EGI_FLAG (bRobotsHitRobots, 0, 
 		return 0;
 	}
 if ((bIsBoss = ROBOTINFO (info.nId).bossFlag)) {
-	int i = FindBoss (OBJ_IDX (this));
+	int i = gameData.bosses.Find (OBJ_IDX (this));
 	if (i >= 0) {
 		gameData.bosses [i].nHitTime = gameData.time.xGame;
 		gameData.bosses [i].bHasBeenHit = 1;
@@ -1305,7 +1305,7 @@ Assert ((d2BossIndex >= 0) && (d2BossIndex < NUM_D2_BOSSES));
 if (weaponP->cType.laserInfo.parent.nType == OBJ_PLAYER) {
 	if ((bKinetic && bossProps [gameStates.app.bD1Mission][d2BossIndex].bSpewBotsKinetic) ||
 		 (!bKinetic && bossProps [gameStates.app.bD1Mission][d2BossIndex].bSpewBotsEnergy)) {
-		int i = FindBoss (OBJ_IDX (robotP));
+		int i = gameData.bosses.Find (OBJ_IDX (robotP));
 		if (i >= 0) {
 			if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bSpewMore && (d_rand () > 16384) &&
 				 (robotP->BossSpewRobot (&vHitPt, -1, 0) != -1))
@@ -1456,7 +1456,7 @@ else if (info.nId == OMEGA_ID) {
 		return 1;
 	}
 if (botInfoP->bossFlag) {
-	int i = FindBoss (OBJ_IDX (robotP));
+	int i = gameData.bosses.Find (OBJ_IDX (robotP));
 	if (i >= 0)
 		gameData.bosses [i].nHitTime = gameData.time.xGame;
 	if (botInfoP->bossFlag >= BOSS_D2) {

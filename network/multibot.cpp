@@ -77,7 +77,7 @@ else if (objP->info.nType != OBJ_ROBOT) {
 	}
 #endif
 else if (ROBOTINFO (objP->info.nId).bossFlag) {
-	int i = FindBoss (nObject);
+	int i = gameData.bosses.Find (nObject);
 	if ((i >= 0) && gameData.bosses [i].nDying == 1)
 		return 0;
 	return 1;
@@ -702,7 +702,7 @@ else if (robotP->cType.aiInfo.REMOTE_OWNER == -1 && NetworkIAmMaster ()) {
 if (bIsThief || ROBOTINFO (robotP->info.nId).thief)
 	DropStolenItems (robotP);
 if (ROBOTINFO (robotP->info.nId).bossFlag) {
-	int i = FindBoss (nRobot);
+	int i = gameData.bosses.Find (nRobot);
 	if ((i >= 0) && gameData.bosses [i].nDying)
 		return 0;
 	StartBossDeathSequence (robotP);
@@ -816,7 +816,7 @@ if ((nBossObj < 0) || (nBossObj > gameData.objs.nLastObject [0])) {
 	Int3 ();  // See Rob
 	return;
 	}
-nBossIdx = FindBoss (nBossObj);
+nBossIdx = gameData.bosses.Find (nBossObj);
 if (nBossIdx < 0)
 	return;
 bossObjP = OBJECTS + nBossObj;

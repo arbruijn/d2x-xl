@@ -213,7 +213,7 @@ if (objP->cType.aiInfo.xDyingStartTime)
 //	Don't let the boss fire while in death roll.  Sorry, this is the easiest way to do this.
 //	If you try to key the boss off objP->cType.aiInfo.xDyingStartTime, it will hose the endlevel stuff.
 if (ROBOTINFO (objP->info.nId).bossFlag) {
-	i = FindBoss (nObject);
+	i = gameData.bosses.Find (nObject);
 	if (gameData.bosses [i].nDyingStartTime)
 		return;
 	}
