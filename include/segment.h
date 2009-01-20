@@ -315,7 +315,7 @@ class CSegment {
 		inline int CheckForTranspPixel (CFixVector& intersection, int nSide, short iFace) 
 		 { return m_sides [nSide].CheckForTranspPixel (intersection, iFace); }
 
-		int Physics (int nSide, fix* damageP) { return m_sides [nSide].Physics (damageP); }
+		int Physics (int nSide, fix& damage) { return m_sides [nSide].Physics (damage); }
 		int Physics (fix& xDamage);
 
 		void OperateTrigger (int nSide, CObject *objP, int shot);

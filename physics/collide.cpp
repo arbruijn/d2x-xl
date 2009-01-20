@@ -452,7 +452,7 @@ if ((gameData.pig.tex.tMapInfoP [nBaseTex].flags & (TMI_WATER|TMI_VOLATILE)) ||
 		(nOvlTex && (gameData.pig.tex.tMapInfoP [nOvlTex].flags & (TMI_WATER|TMI_VOLATILE))))
 	damage = 0;
 if (damage >= DAMAGE_THRESHOLD) {
-	int	volume = (xHitSpeed- (DAMAGE_SCALE*DAMAGE_THRESHOLD)) / WALL_LOUDNESS_SCALE ;
+	int	volume = (xHitSpeed- (DAMAGE_SCALE*DAMAGE_THRESHOLD)) / WALL_LOUDNESS_SCALE;
 	CreateAwarenessEvent (this, PA_WEAPON_WALL_COLLISION);
 	if (volume > I2X (1))
 		volume = I2X (1);
@@ -478,10 +478,11 @@ fix	xLastVolatileScrapeSoundTime = 0;
 //returns 1=lava, 2=water
 int CObject::ApplyWallPhysics (short nSegment, short nSide)
 {
-	fix	xDamage;
+	fix	xDamage = 0;
 	int	nType;
 
-if (!(nType = SEGMENTS [nSegment].Physics (xDamage)))
+if (!((nType = SEGMENTS [nSegment].Physics (nSide, xDamage)) || 
+		(nType = SEGMENTS [nSegment].Physics (xDamage))))
 	return 0;
 if (info.nId == gameData.multiplayer.nLocalPlayer) {
 	if (xDamage > 0) {
