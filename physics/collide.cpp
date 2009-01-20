@@ -549,11 +549,11 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 //this gets called when an CObject is scraping along the CWall
-void CObject::ScrapeOnWall (short nHitSeg, short nHitSide,   CFixVector& vHitPt)
+void CObject::ScrapeOnWall (short nHitSeg, short nHitSide, CFixVector& vHitPt)
 {
 if (info.nType == OBJ_PLAYER) {
 	if (info.nId == gameData.multiplayer.nLocalPlayer) {
-		int nType = CheckWallPhysics (nHitSeg, nHitSide);
+		int nType = ApplyWallPhysics (nHitSeg, nHitSide);
 		if (nType != 0) {
 			CFixVector	vHit, vRand;
 
@@ -584,7 +584,7 @@ else if (info.nType == OBJ_DEBRIS)
 #define	MAX_OMEGA_BLOBS		16				//	No matter how far away the obstruction, this is the maximum number of blobs.
 #define	MAX_OMEGA_DIST			 (MAX_OMEGA_BLOBS * DESIRED_OMEGA_DIST)		//	Maximum extent of lightning blobs.
 
-//	-------------------------------------------------
+//	-----------------------------------------------------------------------------
 //	Return true if ok to do Omega damage.
 int OkToDoOmegaDamage (CObject* weaponP)
 {
@@ -691,9 +691,7 @@ if (gameStates.input.keys.pressed [KEY_LAPOSTRO])
 		else if (info.nId == FLARE_ID)
 			AddLight (nHitSeg, nHitWall);
 		}
-if (!(mType.physInfo.velocity[X] ||
-	   mType.physInfo.velocity[Y] ||
-	   mType.physInfo.velocity[Z])) {
+if (mType.physInfo.velocity.IsZero ()) {
 	Int3 ();	//	Contact Matt: This is impossible.  A this with 0 velocity hit a CWall, which doesn't move.
 	return 1;
 	}

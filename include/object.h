@@ -766,7 +766,7 @@ class CObject : public CObjectInfo {
 
 		int OpenableDoorsInSegment (void);
 		int CheckSegmentPhysics (void);
-		int CheckWallPhysics (short nSegment, short nSide);
+		int CheckWallPhysics (void);
 		int ApplyWallPhysics (short nSegment, short nSide);
 		void ScrapeOnWall (short nHitSeg, short nHitSide, CFixVector& vHitPt);
 		void CreateSound (short nSound);

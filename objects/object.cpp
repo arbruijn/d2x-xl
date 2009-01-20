@@ -2057,26 +2057,21 @@ if (EGI_FLAG (bRotateMarkers, 0, 1, 0) && gameStates.app.tick40fps.bTick) {
 
 //--------------------------------------------------------------------
 
-int CObject::CheckWallPhysics (short nSegment, short nSide)
+int CObject::CheckWallPhysics (void)
 {
 	int			nType = 0, sideMask;
-	CSegment*	segP = SEGMENTS + nSegment;
 
 	static bool bPlayingSound [MAX_PLAYERS] = {false, false, false, false, false, false, false, false};
 
 if (info.nType != OBJ_PLAYER)
 	return 0;
-sideMask = segP->Masks (info.position.vPos, info.xSize).m_side;
+sideMask = SEGMENTS [info.nSegment].Masks (info.position.vPos, info.xSize).m_side;
 if (sideMask) {
 	short		nSide;
 	int		bit;
-	CSide*	sideP = segP->m_sides;
-	for (nSide = 0, bit = 1; nSide < 6; bit <<= 1, nSide++, sideP++) {
-		if (!(sideMask & bit))
-			continue;
-		if ((nType = ApplyWallPhysics (nSegment, nSide)))
+	for (nSide = 0, bit = 1; nSide < 6; bit <<= 1, nSide++)
+		if ((sideMask & bit) && (nType = ApplyWallPhysics (info.nSegment, nSide)))
 			break;
-		}
 	}
 if (!nType)
 	nType = CheckSegmentPhysics ();
@@ -2448,7 +2443,7 @@ UpdateMovement ();
 UpdateEffects ();
 if (CheckTriggerHits (nPrevSegment))
 	return 0;
-CheckSegmentPhysics ();
+CheckWallPhysics ();
 CheckGuidedMissileThroughExit (nPrevSegment);
 CheckAfterburnerBlobDrop ();
 return 1;
