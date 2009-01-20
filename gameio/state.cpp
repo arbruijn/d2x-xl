@@ -2309,7 +2309,8 @@ if (!i) {
 FixObjectSegs ();
 FixObjectSizes ();
 //ComputeNearestLights (nLevel);
-lightManager.Setup (nLevel);
+//lightManager.Setup (nLevel);
+lightManager.AddFromGeometry ();	// redo to account for broken lights
 SetupEffects ();
 InitReactorForLevel (1);
 AddPlayerLoadout ();

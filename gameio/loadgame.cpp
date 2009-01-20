@@ -718,7 +718,7 @@ int LoadLevel (int nLevel, bool bLoadTextures, bool bRestore)
 /*---*/PrintLog ("Loading level...\n");
 gameData.Destroy ();
 srand (SDL_GetTicks ());
-gameStates.render.nLightingMethod = gameOpts->render.nLightingMethod && !gameStates.app.bNostalgia;
+gameStates.render.nLightingMethod = gameStates.app.bNostalgia ? 0 : gameOpts->render.nLightingMethod;
 gameStates.app.bBetweenLevels = 1;
 gameStates.app.bFreeCam = 0;
 gameStates.app.bGameRunning = 0;
@@ -966,10 +966,9 @@ if (!bRestore) {
 	gameData.omega.xCharge [IsMultiGame] = MAX_OMEGA_CHARGE;
 	SetMaxOmegaCharge ();
 	ConvertObjects ();
-//	lightManager.Setup (nLevel);
 	SetEquipGenStates ();
 	SetupEffects ();
-	lightManager.Setup (nLevel);
+//	lightManager.Setup (nLevel);
 	gameData.time.nPaused = 0;
 	}
 LoadExtraImages ();
