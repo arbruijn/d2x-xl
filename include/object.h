@@ -1184,7 +1184,7 @@ int DelObjChildP (CObject *pChild);
 void LinkObject (CObject *objP);
 void UnlinkObject (CObject *objP);
 
-void BuildObjectModels (void);
+void PrepareModels (void);
 
 tObjectRef *GetChildObjN (short nParent, tObjectRef *pChildRef);
 tObjectRef *GetChildObjP (CObject *pParent, tObjectRef *pChildRef);

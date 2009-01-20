@@ -439,7 +439,7 @@ else {
 #endif
 	gameData.objs.missileViewerP = NULL;
 	}
-gameData.boss.ResetHitTimes ();
+gameData.bosses.ResetHitTimes ();
 }
 
 //------------------------------------------------------------------------------
@@ -1478,7 +1478,7 @@ if (IsMultiGame) {
 if (gameData.app.nGameMode & GM_NETWORK)
 	NetworkDoFrame (1, 1);
 AIResetAllPaths ();
-gameData.boss.ResetHitTimes ();
+gameData.bosses.ResetHitTimes ();
 ClearStuckObjects ();
 ResetTime ();
 ResetRearView ();
@@ -1599,7 +1599,7 @@ CopyDefaultsToRobotsAll ();
 if (!bRestore)
 	InitReactorForLevel (0);
 InitAIObjects ();
-BuildObjectModels ();
+PrepareModels ();
 #if 0
 LOCALPLAYER.nInvuls =
 LOCALPLAYER.nCloaks = 0;

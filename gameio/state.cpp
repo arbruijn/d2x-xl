@@ -1370,7 +1370,7 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 	// hack for a bug I haven't yet been able to fix 
 	if ((objP->info.nType != OBJ_REACTOR) && (objP->info.xShields < 0)) {
 		j = FindBoss (i);
-		if ((j < 0) || (gameData.boss [j].nDying != i))
+		if ((j < 0) || (gameData.bosses [j].nDying != i))
 			objP->info.nType = OBJ_NONE;
 		}
 	objP->info.nNextInSeg = objP->info.nPrevInSeg = objP->info.nSegment = -1;
@@ -1783,7 +1783,7 @@ if (!m_bBetweenLevels) {
 	for (i = 0; i < h; i++) {
 		OBJECTS [i].LoadState (m_cf);
 		if ((m_nVersion < 32) && IS_BOSS (OBJECTS + i))
-			gameData.boss [(int) extraGameInfo [0].nBossCount++].nObject = i;
+			gameData.bosses [(int) extraGameInfo [0].nBossCount++].nObject = i;
 		}
 	IFDBG (fPos = m_cf.Tell ());
 	FixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);

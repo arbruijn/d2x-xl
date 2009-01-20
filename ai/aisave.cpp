@@ -54,47 +54,47 @@ gameData.ai.localInfo.Read (m_cf, (m_nVersion > 39) ? LEVEL_OBJECTS : (m_nVersio
 gameData.ai.routeSegs.Read (m_cf, (m_nVersion > 39) ? LEVEL_POINT_SEGS : (m_nVersion > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2);
 gameData.ai.cloakInfo.Read (m_cf);
 if (m_nVersion < 29) {
-	m_cf.Read (&gameData.boss [0].nCloakStartTime, sizeof (fix), 1);
-	m_cf.Read (&gameData.boss [0].nCloakEndTime , sizeof (fix), 1);
-	m_cf.Read (&gameData.boss [0].nLastTeleportTime , sizeof (fix), 1);
-	m_cf.Read (&gameData.boss [0].nTeleportInterval, sizeof (fix), 1);
-	m_cf.Read (&gameData.boss [0].nCloakInterval, sizeof (fix), 1);
-	m_cf.Read (&gameData.boss [0].nCloakDuration, sizeof (fix), 1);
-	m_cf.Read (&gameData.boss [0].nLastGateTime, sizeof (fix), 1);
-	m_cf.Read (&gameData.boss [0].nGateInterval, sizeof (fix), 1);
-	m_cf.Read (&gameData.boss [0].nDyingStartTime, sizeof (fix), 1);
-	m_cf.Read (&gameData.boss [0].nDying, sizeof (int), 1);
-	m_cf.Read (&gameData.boss [0].bDyingSoundPlaying, sizeof (int), 1);
-	m_cf.Read (&gameData.boss [0].nHitTime, sizeof (fix), 1);
+	m_cf.Read (&gameData.bosses [0].nCloakStartTime, sizeof (fix), 1);
+	m_cf.Read (&gameData.bosses [0].nCloakEndTime , sizeof (fix), 1);
+	m_cf.Read (&gameData.bosses [0].nLastTeleportTime , sizeof (fix), 1);
+	m_cf.Read (&gameData.bosses [0].nTeleportInterval, sizeof (fix), 1);
+	m_cf.Read (&gameData.bosses [0].nCloakInterval, sizeof (fix), 1);
+	m_cf.Read (&gameData.bosses [0].nCloakDuration, sizeof (fix), 1);
+	m_cf.Read (&gameData.bosses [0].nLastGateTime, sizeof (fix), 1);
+	m_cf.Read (&gameData.bosses [0].nGateInterval, sizeof (fix), 1);
+	m_cf.Read (&gameData.bosses [0].nDyingStartTime, sizeof (fix), 1);
+	m_cf.Read (&gameData.bosses [0].nDying, sizeof (int), 1);
+	m_cf.Read (&gameData.bosses [0].bDyingSoundPlaying, sizeof (int), 1);
+	m_cf.Read (&gameData.bosses [0].nHitTime, sizeof (fix), 1);
 	for (i = 1; i < MAX_BOSS_COUNT; i++) {
-		gameData.boss [i].nCloakStartTime = 0;
-		gameData.boss [i].nCloakEndTime = 0;
-		gameData.boss [i].nLastTeleportTime = 0;
-		gameData.boss [i].nTeleportInterval = 0;
-		gameData.boss [i].nCloakInterval = 0;
-		gameData.boss [i].nCloakDuration = 0;
-		gameData.boss [i].nLastGateTime = 0;
-		gameData.boss [i].nGateInterval = 0;
-		gameData.boss [i].nDyingStartTime = 0;
-		gameData.boss [i].nDying = 0;
-		gameData.boss [i].bDyingSoundPlaying = 0;
-		gameData.boss [i].nHitTime = 0;
+		gameData.bosses [i].nCloakStartTime = 0;
+		gameData.bosses [i].nCloakEndTime = 0;
+		gameData.bosses [i].nLastTeleportTime = 0;
+		gameData.bosses [i].nTeleportInterval = 0;
+		gameData.bosses [i].nCloakInterval = 0;
+		gameData.bosses [i].nCloakDuration = 0;
+		gameData.bosses [i].nLastGateTime = 0;
+		gameData.bosses [i].nGateInterval = 0;
+		gameData.bosses [i].nDyingStartTime = 0;
+		gameData.bosses [i].nDying = 0;
+		gameData.bosses [i].bDyingSoundPlaying = 0;
+		gameData.bosses [i].nHitTime = 0;
 		}
 	}
 else {
 	for (i = 0; i < MAX_BOSS_COUNT; i++) {
-		m_cf.Read (&gameData.boss [i].nCloakStartTime, sizeof (fix), 1);
-		m_cf.Read (&gameData.boss [i].nCloakEndTime , sizeof (fix), 1);
-		m_cf.Read (&gameData.boss [i].nLastTeleportTime , sizeof (fix), 1);
-		m_cf.Read (&gameData.boss [i].nTeleportInterval, sizeof (fix), 1);
-		m_cf.Read (&gameData.boss [i].nCloakInterval, sizeof (fix), 1);
-		m_cf.Read (&gameData.boss [i].nCloakDuration, sizeof (fix), 1);
-		m_cf.Read (&gameData.boss [i].nLastGateTime, sizeof (fix), 1);
-		m_cf.Read (&gameData.boss [i].nGateInterval, sizeof (fix), 1);
-		m_cf.Read (&gameData.boss [i].nDyingStartTime, sizeof (fix), 1);
-		m_cf.Read (&gameData.boss [i].nDying, sizeof (int), 1);
-		m_cf.Read (&gameData.boss [i].bDyingSoundPlaying, sizeof (int), 1);
-		m_cf.Read (&gameData.boss [i].nHitTime, sizeof (fix), 1);
+		m_cf.Read (&gameData.bosses [i].nCloakStartTime, sizeof (fix), 1);
+		m_cf.Read (&gameData.bosses [i].nCloakEndTime , sizeof (fix), 1);
+		m_cf.Read (&gameData.bosses [i].nLastTeleportTime , sizeof (fix), 1);
+		m_cf.Read (&gameData.bosses [i].nTeleportInterval, sizeof (fix), 1);
+		m_cf.Read (&gameData.bosses [i].nCloakInterval, sizeof (fix), 1);
+		m_cf.Read (&gameData.bosses [i].nCloakDuration, sizeof (fix), 1);
+		m_cf.Read (&gameData.bosses [i].nLastGateTime, sizeof (fix), 1);
+		m_cf.Read (&gameData.bosses [i].nGateInterval, sizeof (fix), 1);
+		m_cf.Read (&gameData.bosses [i].nDyingStartTime, sizeof (fix), 1);
+		m_cf.Read (&gameData.bosses [i].nDying, sizeof (int), 1);
+		m_cf.Read (&gameData.bosses [i].bDyingSoundPlaying, sizeof (int), 1);
+		m_cf.Read (&gameData.bosses [i].nHitTime, sizeof (fix), 1);
 		}
 	}
 // -- MK, 10/21/95, unused!-- m_cf.Read (&Boss_been_hit, sizeof (int), 1);
@@ -124,14 +124,14 @@ else
 	AIResetAllPaths ();
 if (m_nVersion >= 24) {
 	for (i = 0; i < MAX_BOSS_COUNT; i++)
-		m_cf.Read (&gameData.boss [i].nTeleportSegs, sizeof (gameData.boss [i].nTeleportSegs), 1);
+		m_cf.Read (&gameData.bosses [i].nTeleportSegs, sizeof (gameData.bosses [i].nTeleportSegs), 1);
 	for (i = 0; i < MAX_BOSS_COUNT; i++)
-		m_cf.Read (&gameData.boss [i].nGateSegs, sizeof (gameData.boss [i].nGateSegs), 1);
+		m_cf.Read (&gameData.bosses [i].nGateSegs, sizeof (gameData.bosses [i].nGateSegs), 1);
 	for (i = 0; i < MAX_BOSS_COUNT; i++) {
-		if (gameData.boss [i].nGateSegs)
-			m_cf.Read (gameData.boss [i].gateSegs.Buffer (), sizeof (gameData.boss [i].gateSegs [0]), gameData.boss [i].nGateSegs);
-		if (gameData.boss [i].nTeleportSegs)
-			m_cf.Read (gameData.boss [i].teleportSegs.Buffer (), sizeof (gameData.boss [i].teleportSegs [0]), gameData.boss [i].nTeleportSegs);
+		if (gameData.bosses [i].nGateSegs)
+			m_cf.Read (gameData.bosses [i].gateSegs.Buffer (), sizeof (gameData.bosses [i].gateSegs [0]), gameData.bosses [i].nGateSegs);
+		if (gameData.bosses [i].nTeleportSegs)
+			m_cf.Read (gameData.bosses [i].teleportSegs.Buffer (), sizeof (gameData.bosses [i].teleportSegs [0]), gameData.bosses [i].nTeleportSegs);
 		}
 	}
 else if (m_nVersion >= 21) {
@@ -141,18 +141,18 @@ else if (m_nVersion >= 21) {
 	m_cf.Read (&nGateSegs, sizeof (nGateSegs), 1);
 
 	if (nGateSegs) {
-		gameData.boss [0].nGateSegs = nGateSegs;
-		m_cf.Read (gameData.boss [0].gateSegs.Buffer (), sizeof (gameData.boss [0].gateSegs [0]), nGateSegs);
+		gameData.bosses [0].nGateSegs = nGateSegs;
+		m_cf.Read (gameData.bosses [0].gateSegs.Buffer (), sizeof (gameData.bosses [0].gateSegs [0]), nGateSegs);
 		}
 	if (nTeleportSegs) {
-		gameData.boss [0].nTeleportSegs = nTeleportSegs;
-		m_cf.Read (gameData.boss [0].teleportSegs.Buffer (), sizeof (gameData.boss [0].teleportSegs [0]), nTeleportSegs);
+		gameData.bosses [0].nTeleportSegs = nTeleportSegs;
+		m_cf.Read (gameData.bosses [0].teleportSegs.Buffer (), sizeof (gameData.bosses [0].teleportSegs [0]), nTeleportSegs);
 		}
 } else {
-	// -- gameData.boss.nTeleportSegs = 1;
-	// -- gameData.boss.nGateSegs = 1;
-	// -- gameData.boss.teleportSegs [0] = 0;
-	// -- gameData.boss.gateSegs [0] = 0;
+	// -- gameData.bosses.nTeleportSegs = 1;
+	// -- gameData.bosses.nGateSegs = 1;
+	// -- gameData.bosses.teleportSegs [0] = 0;
+	// -- gameData.bosses.gateSegs [0] = 0;
 	// Note: Maybe better to leave alone...will probably be ok.
 #if TRACE
 	console.printf (1, "Warning: If you fight the boss, he might teleport to CSegment #0!\n");
@@ -221,19 +221,19 @@ for (i = 0; i < LEVEL_POINT_SEGS; i++)
 for (i = 0; i < MAX_AI_CLOAK_INFO; i++)
 	SaveAICloakInfo (gameData.ai.cloakInfo + i);
 for (i = 0; i < MAX_BOSS_COUNT; i++) {
-	m_cf.WriteShort (gameData.boss [i].nObject);
-	m_cf.WriteFix (gameData.boss [i].nCloakStartTime);
-	m_cf.WriteFix (gameData.boss [i].nCloakEndTime );
-	m_cf.WriteFix (gameData.boss [i].nLastTeleportTime );
-	m_cf.WriteFix (gameData.boss [i].nTeleportInterval);
-	m_cf.WriteFix (gameData.boss [i].nCloakInterval);
-	m_cf.WriteFix (gameData.boss [i].nCloakDuration);
-	m_cf.WriteFix (gameData.boss [i].nLastGateTime);
-	m_cf.WriteFix (gameData.boss [i].nGateInterval);
-	m_cf.WriteFix (gameData.boss [i].nDyingStartTime);
-	m_cf.WriteInt (gameData.boss [i].nDying);
-	m_cf.WriteInt (gameData.boss [i].bDyingSoundPlaying);
-	m_cf.WriteFix (gameData.boss [i].nHitTime);
+	m_cf.WriteShort (gameData.bosses [i].nObject);
+	m_cf.WriteFix (gameData.bosses [i].nCloakStartTime);
+	m_cf.WriteFix (gameData.bosses [i].nCloakEndTime );
+	m_cf.WriteFix (gameData.bosses [i].nLastTeleportTime );
+	m_cf.WriteFix (gameData.bosses [i].nTeleportInterval);
+	m_cf.WriteFix (gameData.bosses [i].nCloakInterval);
+	m_cf.WriteFix (gameData.bosses [i].nCloakDuration);
+	m_cf.WriteFix (gameData.bosses [i].nLastGateTime);
+	m_cf.WriteFix (gameData.bosses [i].nGateInterval);
+	m_cf.WriteFix (gameData.bosses [i].nDyingStartTime);
+	m_cf.WriteInt (gameData.bosses [i].nDying);
+	m_cf.WriteInt (gameData.bosses [i].bDyingSoundPlaying);
+	m_cf.WriteFix (gameData.bosses [i].nHitTime);
 	}
 m_cf.WriteInt (gameData.escort.nKillObject);
 m_cf.WriteFix (gameData.escort.xLastPathCreated);
@@ -246,16 +246,16 @@ i = CFTell ();
 #endif
 m_cf.WriteInt ((int) (gameData.ai.freePointSegs - gameData.ai.routeSegs.Buffer ()));
 for (i = 0; i < MAX_BOSS_COUNT; i++) {
-	m_cf.WriteShort (gameData.boss [i].nTeleportSegs);
-	m_cf.WriteShort (gameData.boss [i].nGateSegs);
+	m_cf.WriteShort (gameData.bosses [i].nTeleportSegs);
+	m_cf.WriteShort (gameData.bosses [i].nGateSegs);
 	}
 for (i = 0; i < MAX_BOSS_COUNT; i++) {
-	if ((h = gameData.boss [i].nGateSegs))
+	if ((h = gameData.bosses [i].nGateSegs))
 		for (j = 0; j < h; j++)
-			m_cf.WriteShort (gameData.boss [i].gateSegs [j]);
-	if ((h = gameData.boss [i].nTeleportSegs))
+			m_cf.WriteShort (gameData.bosses [i].gateSegs [j]);
+	if ((h = gameData.bosses [i].nTeleportSegs))
 		for (j = 0; j < h; j++)
-			m_cf.WriteShort (gameData.boss [i].teleportSegs [j]);
+			m_cf.WriteShort (gameData.bosses [i].teleportSegs [j]);
 	}
 return 1;
 }
@@ -329,49 +329,49 @@ for (i = 0; i < MAX_AI_CLOAK_INFO; i++)
 	LoadAICloakInfo (gameData.ai.cloakInfo + i);
 DBG (i = CFTell (fp));
 if (m_nVersion < 29) {
-	gameData.boss [0].nCloakStartTime = m_cf.ReadFix ();
-	gameData.boss [0].nCloakEndTime = m_cf.ReadFix ();
-	gameData.boss [0].nLastTeleportTime = m_cf.ReadFix ();
-	gameData.boss [0].nTeleportInterval = m_cf.ReadFix ();
-	gameData.boss [0].nCloakInterval = m_cf.ReadFix ();
-	gameData.boss [0].nCloakDuration = m_cf.ReadFix ();
-	gameData.boss [0].nLastGateTime = m_cf.ReadFix ();
-	gameData.boss [0].nGateInterval = m_cf.ReadFix ();
-	gameData.boss [0].nDyingStartTime = m_cf.ReadFix ();
-	gameData.boss [0].nDying = m_cf.ReadInt ();
-	gameData.boss [0].bDyingSoundPlaying = m_cf.ReadInt ();
-	gameData.boss [0].nHitTime = m_cf.ReadFix ();
+	gameData.bosses [0].nCloakStartTime = m_cf.ReadFix ();
+	gameData.bosses [0].nCloakEndTime = m_cf.ReadFix ();
+	gameData.bosses [0].nLastTeleportTime = m_cf.ReadFix ();
+	gameData.bosses [0].nTeleportInterval = m_cf.ReadFix ();
+	gameData.bosses [0].nCloakInterval = m_cf.ReadFix ();
+	gameData.bosses [0].nCloakDuration = m_cf.ReadFix ();
+	gameData.bosses [0].nLastGateTime = m_cf.ReadFix ();
+	gameData.bosses [0].nGateInterval = m_cf.ReadFix ();
+	gameData.bosses [0].nDyingStartTime = m_cf.ReadFix ();
+	gameData.bosses [0].nDying = m_cf.ReadInt ();
+	gameData.bosses [0].bDyingSoundPlaying = m_cf.ReadInt ();
+	gameData.bosses [0].nHitTime = m_cf.ReadFix ();
 	for (i = 1; i < MAX_BOSS_COUNT; i++) {
-		gameData.boss [i].nCloakStartTime = 0;
-		gameData.boss [i].nCloakEndTime = 0;
-		gameData.boss [i].nLastTeleportTime = 0;
-		gameData.boss [i].nTeleportInterval = 0;
-		gameData.boss [i].nCloakInterval = 0;
-		gameData.boss [i].nCloakDuration = 0;
-		gameData.boss [i].nLastGateTime = 0;
-		gameData.boss [i].nGateInterval = 0;
-		gameData.boss [i].nDyingStartTime = 0;
-		gameData.boss [i].nDying = 0;
-		gameData.boss [i].bDyingSoundPlaying = 0;
-		gameData.boss [i].nHitTime = 0;
+		gameData.bosses [i].nCloakStartTime = 0;
+		gameData.bosses [i].nCloakEndTime = 0;
+		gameData.bosses [i].nLastTeleportTime = 0;
+		gameData.bosses [i].nTeleportInterval = 0;
+		gameData.bosses [i].nCloakInterval = 0;
+		gameData.bosses [i].nCloakDuration = 0;
+		gameData.bosses [i].nLastGateTime = 0;
+		gameData.bosses [i].nGateInterval = 0;
+		gameData.bosses [i].nDyingStartTime = 0;
+		gameData.bosses [i].nDying = 0;
+		gameData.bosses [i].bDyingSoundPlaying = 0;
+		gameData.bosses [i].nHitTime = 0;
 		}
 	}
 else {
 	for (i = 0; i < MAX_BOSS_COUNT; i++) {
 		if (m_nVersion > 31)
-			gameData.boss [i].nObject = m_cf.ReadShort ();
-		gameData.boss [i].nCloakStartTime = m_cf.ReadFix ();
-		gameData.boss [i].nCloakEndTime = m_cf.ReadFix ();
-		gameData.boss [i].nLastTeleportTime = m_cf.ReadFix ();
-		gameData.boss [i].nTeleportInterval = m_cf.ReadFix ();
-		gameData.boss [i].nCloakInterval = m_cf.ReadFix ();
-		gameData.boss [i].nCloakDuration = m_cf.ReadFix ();
-		gameData.boss [i].nLastGateTime = m_cf.ReadFix ();
-		gameData.boss [i].nGateInterval = m_cf.ReadFix ();
-		gameData.boss [i].nDyingStartTime = m_cf.ReadFix ();
-		gameData.boss [i].nDying = m_cf.ReadInt ();
-		gameData.boss [i].bDyingSoundPlaying = m_cf.ReadInt ();
-		gameData.boss [i].nHitTime = m_cf.ReadFix ();
+			gameData.bosses [i].nObject = m_cf.ReadShort ();
+		gameData.bosses [i].nCloakStartTime = m_cf.ReadFix ();
+		gameData.bosses [i].nCloakEndTime = m_cf.ReadFix ();
+		gameData.bosses [i].nLastTeleportTime = m_cf.ReadFix ();
+		gameData.bosses [i].nTeleportInterval = m_cf.ReadFix ();
+		gameData.bosses [i].nCloakInterval = m_cf.ReadFix ();
+		gameData.bosses [i].nCloakDuration = m_cf.ReadFix ();
+		gameData.bosses [i].nLastGateTime = m_cf.ReadFix ();
+		gameData.bosses [i].nGateInterval = m_cf.ReadFix ();
+		gameData.bosses [i].nDyingStartTime = m_cf.ReadFix ();
+		gameData.bosses [i].nDying = m_cf.ReadInt ();
+		gameData.bosses [i].bDyingSoundPlaying = m_cf.ReadInt ();
+		gameData.bosses [i].nHitTime = m_cf.ReadFix ();
 		}
 	}
 if (m_nVersion >= 8) {
@@ -410,16 +410,16 @@ if (m_nVersion < 21) {
 else {
 	nMaxBossCount = (m_nVersion >= 24) ? MAX_BOSS_COUNT : 1;
 	for (i = 0; i < MAX_BOSS_COUNT; i++) {
-		gameData.boss [i].nTeleportSegs = m_cf.ReadShort ();
-		gameData.boss [i].nGateSegs = m_cf.ReadShort ();
+		gameData.bosses [i].nTeleportSegs = m_cf.ReadShort ();
+		gameData.bosses [i].nGateSegs = m_cf.ReadShort ();
 		}
 	for (i = 0; i < MAX_BOSS_COUNT; i++) {
-		if ((h = gameData.boss [i].nGateSegs))
+		if ((h = gameData.bosses [i].nGateSegs))
 			for (j = 0; j < h; j++)
-				gameData.boss [i].gateSegs [j] = m_cf.ReadShort ();
-		if ((h = gameData.boss [i].nTeleportSegs))
+				gameData.bosses [i].gateSegs [j] = m_cf.ReadShort ();
+		if ((h = gameData.bosses [i].nTeleportSegs))
 			for (j = 0; j < h; j++)
-				gameData.boss [i].teleportSegs [j] = m_cf.ReadShort ();
+				gameData.bosses [i].teleportSegs [j] = m_cf.ReadShort ();
 		}
 	}
 return 1;

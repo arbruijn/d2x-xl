@@ -3714,6 +3714,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\objects\playerdeath.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\objects\powerup.cpp"
 						>
 					</File>
@@ -3723,6 +3727,10 @@
 					</File>
 					<File
 						RelativePath="..\objects\robot.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\objects\updateobject.cpp"
 						>
 					</File>
 				</Filter>

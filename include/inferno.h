@@ -2608,6 +2608,7 @@ class CBossData {
 		void ResetHitTimes (void);
 		void InitGateIntervals (void);
 
+		inline CBossInfo& Boss (uint i) { return m_info [i]; }
 		inline uint BossCount (void) { return m_info.Buffer () ? m_info.ToS () : 0; }
 	};
 
@@ -3108,7 +3109,7 @@ class CGameData {
 		CEntropyData		entropy;
 		CReactorData		reactor;
 		CMarkerData			marker;
-		CBossData			boss; // [MAX_BOSS_COUNT];
+		CBossData			bosses; // [MAX_BOSS_COUNT];
 		CAIData				ai;
 		CEndLevelData		endLevel;
 		CMenuData			menu;

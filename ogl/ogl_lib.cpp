@@ -803,7 +803,7 @@ InitDynLighting ();
 OglCreateDrawBuffer ();
 cameraManager.Create ();
 InitSpheres ();
-BuildObjectModels ();
+PrepareModels ();
 OglSetDrawBuffer (gameStates.ogl.nDrawBuffer, 1);
 if (!gameStates.app.bGameRunning)
 	ClearBoxedMessage ();

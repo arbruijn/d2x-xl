@@ -944,7 +944,7 @@ void ai_fire_laser_at_player(CObject *objP, CFixVector *fire_point)
 
 	//	If the boss fired, allow him to teleport very soon (right after firing, cool!), pending other factors.
 	if (botInfoP->bossFlag)
-		gameData.boss [0].nLastTeleportTime -= gameData.boss [0].nTeleportInterval/2;
+		gameData.bosses [0].nLastTeleportTime -= gameData.bosses [0].nTeleportInterval/2;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -1522,7 +1522,7 @@ int CreateGatedRobot (int nSegment, int nObjId)
 			count++;
 		}
 	if (count > 2 * gameStates.app.nDifficultyLevel + 3) {
-		gameData.boss [0].nLastGateTime = gameData.time.xGame - 3 * gameData.boss [0].nGateInterval / 4;
+		gameData.bosses [0].nLastGateTime = gameData.time.xGame - 3 * gameData.bosses [0].nGateInterval / 4;
 		return 0;
 	}
 
@@ -1530,14 +1530,14 @@ int CreateGatedRobot (int nSegment, int nObjId)
 
 	//	See if legal to place CObject here.  If not, move about in CSegment and try again.
 	if (CheckObjectObjectIntersection(&vObjPos, objsize, segP)) {
-		gameData.boss [0].nLastGateTime = gameData.time.xGame - 3*gameData.boss [0].nGateInterval/4;
+		gameData.bosses [0].nLastGateTime = gameData.time.xGame - 3*gameData.bosses [0].nGateInterval/4;
 		return 0;
 	}
 
 	nObject = CreateRobot (nObjId, nSegment, vObjPos);
 
 	if (nObject < 0) {
-		gameData.boss [0].nLastGateTime = gameData.time.xGame - 3*gameData.boss [0].nGateInterval/4;
+		gameData.bosses [0].nLastGateTime = gameData.time.xGame - 3*gameData.bosses [0].nGateInterval/4;
 		return -1;
 	}
 
@@ -1568,7 +1568,7 @@ int CreateGatedRobot (int nSegment, int nObjId)
 	audio.CreateSegmentSound (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, vObjPos, 0, I2X (1));
 	objP->MorphStart ();
 
-	gameData.boss [0].nLastGateTime = gameData.time.xGame;
+	gameData.bosses [0].nLastGateTime = gameData.time.xGame;
 	LOCALPLAYER.numRobotsLevel++;
 	LOCALPLAYER.numRobotsTotal++;
 	return nObject;
@@ -1582,7 +1582,7 @@ int CreateGatedRobot (int nSegment, int nObjId)
 int gate_in_robot(int type, int nSegment)
 {
 	if (nSegment < 0)
-		nSegment = gameData.boss [0].gateSegs [(rand() * gameData.boss [0].nGateSegs) >> 15];
+		nSegment = gameData.bosses [0].gateSegs [(rand() * gameData.bosses [0].nGateSegs) >> 15];
 
 	Assert((nSegment >= 0) && (nSegment <= gameData.segs.nLastSegment));
 
@@ -1647,31 +1647,31 @@ fix	Prev_boss_shields = -1;
 void do_boss_stuff(CObject *objP)
 {
     //  New code, fixes stupid bug which meant boss never gated in robots if > 32767 seconds played.
-    if (gameData.boss [0].nLastTeleportTime > gameData.time.xGame)
-        gameData.boss [0].nLastTeleportTime = gameData.time.xGame;
+    if (gameData.bosses [0].nLastTeleportTime > gameData.time.xGame)
+        gameData.bosses [0].nLastTeleportTime = gameData.time.xGame;
 
-    if (gameData.boss [0].nLastGateTime > gameData.time.xGame)
-        gameData.boss [0].nLastGateTime = gameData.time.xGame;
+    if (gameData.bosses [0].nLastGateTime > gameData.time.xGame)
+        gameData.bosses [0].nLastGateTime = gameData.time.xGame;
 
-	if (!gameData.boss [0].nDying) {
+	if (!gameData.bosses [0].nDying) {
 		if (objP->cType.aiInfo.CLOAKED == 1) {
-			if ((gameData.time.xGame - gameData.boss [0].nCloakStartTime > BOSS_CLOAK_DURATION/3) && (gameData.boss [0].nCloakEndTime - gameData.time.xGame > BOSS_CLOAK_DURATION/3) && (gameData.time.xGame - gameData.boss [0].nLastTeleportTime > gameData.boss [0].nTeleportInterval)) {
+			if ((gameData.time.xGame - gameData.bosses [0].nCloakStartTime > BOSS_CLOAK_DURATION/3) && (gameData.bosses [0].nCloakEndTime - gameData.time.xGame > BOSS_CLOAK_DURATION/3) && (gameData.time.xGame - gameData.bosses [0].nLastTeleportTime > gameData.bosses [0].nTeleportInterval)) {
 				if (ai_multiplayer_awareness(objP, 98))
 					TeleportBoss(objP);
-			} else if (gameData.boss [0].bHitThisFrame) {
-				gameData.boss [0].bHitThisFrame = 0;
-				gameData.boss [0].nLastTeleportTime -= gameData.boss [0].nTeleportInterval/4;
+			} else if (gameData.bosses [0].bHitThisFrame) {
+				gameData.bosses [0].bHitThisFrame = 0;
+				gameData.bosses [0].nLastTeleportTime -= gameData.bosses [0].nTeleportInterval/4;
 			}
 
-			if (gameData.time.xGame > gameData.boss [0].nCloakEndTime)
+			if (gameData.time.xGame > gameData.bosses [0].nCloakEndTime)
 				objP->cType.aiInfo.CLOAKED = 0;
 		} else {
-			if ((gameData.time.xGame - gameData.boss [0].nCloakEndTime > gameData.boss [0].nCloakInterval) || gameData.boss [0].bHitThisFrame) {
+			if ((gameData.time.xGame - gameData.bosses [0].nCloakEndTime > gameData.bosses [0].nCloakInterval) || gameData.bosses [0].bHitThisFrame) {
 				if (ai_multiplayer_awareness(objP, 95))
 			 {
-					gameData.boss [0].bHitThisFrame = 0;
-					gameData.boss [0].nCloakStartTime = gameData.time.xGame;
-					gameData.boss [0].nCloakEndTime = gameData.time.xGame+BOSS_CLOAK_DURATION;
+					gameData.bosses [0].bHitThisFrame = 0;
+					gameData.bosses [0].nCloakStartTime = gameData.time.xGame;
+					gameData.bosses [0].nCloakEndTime = gameData.time.xGame+BOSS_CLOAK_DURATION;
 					objP->cType.aiInfo.CLOAKED = 1;
 					if (IsMultiGame)
 						MultiSendBossActions(objP->Index (), 2, 0, 0);
@@ -1697,7 +1697,7 @@ void do_super_boss_stuff(CObject *objP, fix dist_to_player, int player_visibilit
 		return;
 
 	if ((dist_to_player < BOSS_TO_PLAYER_GATE_DISTANCE) || player_visibility || (IsMultiGame)) {
-		if (gameData.time.xGame - gameData.boss [0].nLastGateTime > gameData.boss [0].nGateInterval/2) {
+		if (gameData.time.xGame - gameData.bosses [0].nLastGateTime > gameData.bosses [0].nGateInterval/2) {
 			RestartEffect(BOSS_ECLIP_NUM);
 			if (eclipState == 0) {
 				MultiSendBossActions(objP->Index (), 4, 0, 0);
@@ -1712,7 +1712,7 @@ void do_super_boss_stuff(CObject *objP, fix dist_to_player, int player_visibilit
 			}
 		}
 
-		if (gameData.time.xGame - gameData.boss [0].nLastGateTime > gameData.boss [0].nGateInterval)
+		if (gameData.time.xGame - gameData.bosses [0].nLastGateTime > gameData.bosses [0].nGateInterval)
 			if (ai_multiplayer_awareness(objP, 99)) {
 				int	nObject;
 				int	randtype = (rand() * D1_MAX_GATE_INDEX) >> 15;

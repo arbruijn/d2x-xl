@@ -831,8 +831,8 @@ if (o.info.nType == OBJ_ROBOT) {
 	if (ROBOTINFO (o.info.nId).bossFlag) {
 		int i = FindBoss (objP->Index ());
 		if ((i >= 0) &&
-			 (gameData.time.xGame > gameData.boss [i].nCloakStartTime) && 
-			 (gameData.time.xGame < gameData.boss [i].nCloakEndTime))
+			 (gameData.time.xGame > gameData.bosses [i].nCloakStartTime) && 
+			 (gameData.time.xGame < gameData.bosses [i].nCloakEndTime))
 			NDWriteByte (1);
 		else
 			NDWriteByte (0);
@@ -1613,8 +1613,8 @@ if (gameData.demo.nVersion < DEMO_VERSION) {
 gameData.demo.bUseShortPos = (gameData.demo.nVersion == DEMO_VERSION);
 gameData.time.xGame = NDReadFix ();
 for (i = 0; i < MAX_BOSS_COUNT; i++)
-	gameData.boss [i].nCloakStartTime =
-	gameData.boss [i].nCloakEndTime = gameData.time.xGame;
+	gameData.bosses [i].nCloakStartTime =
+	gameData.bosses [i].nCloakEndTime = gameData.time.xGame;
 gameData.demo.xJasonPlaybackTotal = 0;
 gameData.demo.nGameMode = NDReadInt ();
 ChangePlayerNumTo ((gameData.demo.nGameMode >> 16) & 0x7);
