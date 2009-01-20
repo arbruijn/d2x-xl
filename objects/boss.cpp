@@ -258,34 +258,34 @@ void CBossInfo::SaveBufferState (CFile& cf, CShortArray& buffer)
 	int	i, j;
 
 if (buffer.Buffer () && (j = buffer.Length ()))
-	for (i = 0; i < j; ++)
-		m_cf.WriteShort (buffer [i]);
+	for (i = 0; i < j; i++)
+		cf.WriteShort (buffer [i]);
 }
 
 // -----------------------------------------------------------------------------
 
 void CBossInfo::SaveBufferStates (CFile& cf)
 {
-SaveBufferState (m_gateSegs);
-SaveBufferState (m_teleportSegs);
+SaveBufferState (cf, m_gateSegs);
+SaveBufferState (cf, m_teleportSegs);
 }
 
 // -----------------------------------------------------------------------------
 
 void CBossInfo::LoadBinState (CFile& cf)
 {
-cf.Read (&nCloakStartTime, sizeof (fix), 1);
-cf.Read (&nCloakEndTime , sizeof (fix), 1);
-cf.Read (&nLastTeleportTime , sizeof (fix), 1);
-cf.Read (&nTeleportInterval, sizeof (fix), 1);
-cf.Read (&nCloakInterval, sizeof (fix), 1);
-cf.Read (&nCloakDuration, sizeof (fix), 1);
-cf.Read (&nLastGateTime, sizeof (fix), 1);
-cf.Read (&nGateInterval, sizeof (fix), 1);
-cf.Read (&nDyingStartTime, sizeof (fix), 1);
-cf.Read (&nDying, sizeof (int), 1);
-cf.Read (&bDyingSoundPlaying, sizeof (int), 1);
-cf.Read (&nHitTime, sizeof (fix), 1);
+cf.Read (&m_nCloakStartTime, sizeof (fix), 1);
+cf.Read (&m_nCloakEndTime , sizeof (fix), 1);
+cf.Read (&m_nLastTeleportTime , sizeof (fix), 1);
+cf.Read (&m_nTeleportInterval, sizeof (fix), 1);
+cf.Read (&m_nCloakInterval, sizeof (fix), 1);
+cf.Read (&m_nCloakDuration, sizeof (fix), 1);
+cf.Read (&m_nLastGateTime, sizeof (fix), 1);
+cf.Read (&m_nGateInterval, sizeof (fix), 1);
+cf.Read (&m_nDyingStartTime, sizeof (fix), 1);
+cf.Read (&m_nDying, sizeof (int), 1);
+cf.Read (&m_bDyingSoundPlaying, sizeof (int), 1);
+cf.Read (&m_nHitTime, sizeof (fix), 1);
 }
 
 // -----------------------------------------------------------------------------
@@ -293,19 +293,19 @@ cf.Read (&nHitTime, sizeof (fix), 1);
 void CBossInfo::LoadState (CFile& cf, int nVersion)
 {
 if (nVersion > 31)
-	m_nObject = m_cf.ReadShort ();
-m_nCloakStartTime = m_cf.ReadFix ();
-m_nCloakEndTime = m_cf.ReadFix ();
-m_nLastTeleportTime = m_cf.ReadFix ();
-m_nTeleportInterval = m_cf.ReadFix ();
-m_nCloakInterval = m_cf.ReadFix ();
-m_nCloakDuration = m_cf.ReadFix ();
-m_nLastGateTime = m_cf.ReadFix ();
-m_nGateInterval = m_cf.ReadFix ();
-m_nDyingStartTime = m_cf.ReadFix ();
-m_nDying = m_cf.ReadInt ();
-m_bDyingSoundPlaying = m_cf.ReadInt ();
-m_nHitTime = m_cf.ReadFix ();
+	m_nObject = cf.ReadShort ();
+m_nCloakStartTime = cf.ReadFix ();
+m_nCloakEndTime = cf.ReadFix ();
+m_nLastTeleportTime = cf.ReadFix ();
+m_nTeleportInterval = cf.ReadFix ();
+m_nCloakInterval = cf.ReadFix ();
+m_nCloakDuration = cf.ReadFix ();
+m_nLastGateTime = cf.ReadFix ();
+m_nGateInterval = cf.ReadFix ();
+m_nDyingStartTime = cf.ReadFix ();
+m_nDying = cf.ReadInt ();
+m_bDyingSoundPlaying = cf.ReadInt ();
+m_nHitTime = cf.ReadFix ();
 }
 
 // -----------------------------------------------------------------------------
@@ -318,13 +318,22 @@ m_nGateSegs = cf.ReadShort ();
 
 // -----------------------------------------------------------------------------
 
-void CBossInfo::LoadBufferState (CFile& cf, CShortArray& buffer)
+int CBossInfo::LoadBufferState (CFile& cf, CShortArray& buffer, int nBufSize)
 {
-	int	i, j;
+if (!nBufSize)
+	return 1;
+if (!buffer.Create (nBufSize))
+	return 0;
+for (int i = 0; i < nBufSize; i++)
+	buffer [i] = cf.ReadShort ();
+return 1;
+}
 
-if (buffer.Buffer () && (j = buffer.Length ()))
-	for (i = 0; i < j; ++)
-		buffer [i] = m_cf.ReadShort ();
+// -----------------------------------------------------------------------------
+
+int CBossInfo::LoadBufferStates (CFile& cf)
+{
+return LoadBufferState (cf, m_gateSegs, m_nGateSegs) && LoadBufferState (cf, m_teleportSegs, m_nTeleportSegs);
 }
 
 // -----------------------------------------------------------------------------
@@ -406,57 +415,59 @@ for (uint i = 0; i < m_info.ToS (); i++)
 
 // -----------------------------------------------------------------------------
 
-void CBossData:: int SaveStates (CFile& cf) {
-	for (int i = 0; i < m_info.Tos (); i++)
-		m_info [i].SaveState ();
+int CBossData:: SaveStates (CFile& cf) {
+	for (uint i = 0; i < m_info.ToS (); i++)
+		m_info [i].SaveState (cf);
 	}
 
 // -----------------------------------------------------------------------------
 
 int CBossData::SaveSizeStates (CFile& cf) 
 {
-for (int i = 0; i < m_info.Tos (); i++)
-	m_info [i].SaveSizeStates ();
+for (uint i = 0; i < m_info.ToS (); i++)
+	m_info [i].SaveSizeStates (cf);
 }
 
 // -----------------------------------------------------------------------------
 
 int CBossData::SaveBufferStates (CFile& cf) 
 {
-for (int i = 0; i < m_info.Tos (); i++)
-	m_info [i].SaveBufferStates ();
+for (uint i = 0; i < m_info.ToS (); i++)
+	m_info [i].SaveBufferStates (cf);
 }
 
 // -----------------------------------------------------------------------------
 
 int CBossData::LoadBinStates (CFile& cf) 
 {
-for (int i = 0; i < m_info.Tos (); i++)
-	m_info [i].LoadBinState ();
+for (uint i = 0; i < m_info.ToS (); i++)
+	m_info [i].LoadBinState (cf);
 }
 
 // -----------------------------------------------------------------------------
 
 int CBossData::LoadStates (CFile& cf, int nVersion) 
 {
-for (int i = 0; i < m_info.Tos (); i++)
-	m_info [i].LoadState (nVersion);
+for (uint i = 0; i < m_info.ToS (); i++)
+	m_info [i].LoadState (cf, nVersion);
 }
 
 // -----------------------------------------------------------------------------
 
 int CBossData::LoadSizeStates (CFile& cf) 
 {
-for (int i = 0; i < m_info.Tos (); i++)
-	m_info [i].LoadSizeStates ();
+for (uint i = 0; i < m_info.ToS (); i++)
+	m_info [i].LoadSizeStates (cf);
 }
 
 // -----------------------------------------------------------------------------
 
 int CBossData::LoadBufferStates (CFile& cf) 
 {
-for (int i = 0; i < m_info.Tos (); i++)
-	m_info [i].LoadBufferStates ();
+for (uint i = 0; i < m_info.ToS (); i++)
+	if (!m_info [i].LoadBufferStates (cf))
+		return 0;
+return 1;
 }
 
 //------------------------------------------------------------------------------

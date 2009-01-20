@@ -2596,12 +2596,14 @@ class CBossInfo {
 		void SaveBufferStates (CFile& cf);
 		void LoadBinState (CFile& cf);
 		void LoadState (CFile& cf, int nVersion);
+		void LoadSizeStates (CFile& cf);
+		int LoadBufferStates (CFile& cf);
 
 		inline void ResetHitTime (void) { m_nHitTime = -I2X (10); }
 
 	private:
-		int SaveBufferState (CFile& cf, CShortArray& buffer);
-		int LoadBufferState (CFile& cf, CShortArray& buffer);
+		void SaveBufferState (CFile& cf, CShortArray& buffer);
+		int LoadBufferState (CFile& cf, CShortArray& buffer, int nBufSize);
 	};
 
 class CBossData {
