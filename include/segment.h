@@ -179,7 +179,7 @@ class CSide {
 		CSegMasks Masks (const CFixVector& refP, fix xRad, short sideBit, short& faceBit);
 		void HitPointUV (fix *u, fix *v, fix *l, CFixVector& intersection, int iFace);
 		int CheckForTranspPixel (CFixVector& intersection, short iFace);
-		int Physics (fix* damageP);
+		int Physics (fix& damage);
 
 		bool IsOpenableDoor (void);
 
