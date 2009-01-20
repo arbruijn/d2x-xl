@@ -1472,6 +1472,7 @@ gameData.multigame.Destroy ();
 gameData.demo.Destroy ();
 particleManager.Shutdown ();
 lightningManager.Shutdown (1);
+cameraManager.Destroy ();
 }
 
 // ----------------------------------------------------------------------------

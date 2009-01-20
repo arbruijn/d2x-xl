@@ -628,9 +628,9 @@ int CCameraManager::Create (void)
 if (!(gameStates.app.bD2XLevel && SEGMENTS.Buffer () && OBJECTS.Buffer ()))
 	return 0;
 PrintLog ("   creating cameras\n");
-if (!(m_faceCameras.Buffer() || m_faceCameras.Create (LEVEL_FACES)))
+if (!m_faceCameras.Create (LEVEL_FACES))
 	return 0;
-if (!(m_objectCameras.Buffer() || m_objectCameras.Create (LEVEL_OBJECTS)))
+if (!m_objectCameras.Create (LEVEL_OBJECTS))
 	return 0;
 m_faceCameras.Clear (0xFF);
 m_objectCameras.Clear (0xFF);
@@ -692,7 +692,8 @@ if (gameStates.ogl.bRender2TextureOk)
 PrintLog ("Destroying cameras\n");
 for (int i = 0; i < m_nCameras; i++)
 	m_cameras [i].Destroy ();
-m_faceCameras.Clear (0xFF);
+m_faceCameras.Destroy ();
+m_objectCameras.Destroy ();
 m_nCameras = 0;
 }
 
