@@ -1592,7 +1592,7 @@ gameData.render.zMax = vCenter [Z] + d1 + r;
 
 void BuildRenderSegList (short nStartSeg, int nWindow)
 {
-	int			nCurrent, nHead, nTail, nSide;
+	int			nCurrent, nHead, nTail, nRewind, nSide;
 	int			l, i, j;
 	short			nChild;
 	short			nChildSeg;
@@ -1632,6 +1632,7 @@ VISIT (nStartSeg);
 gameData.render.mine.nRenderPos [nStartSeg] = 0;
 nHead = nTail = 0;
 nCurrent = 1;
+nRewind = 32767;
 
 #if DBG
 if (bPreDrawSegs)
@@ -1649,7 +1650,7 @@ renderPortals [0].bot = CCanvas::Current ()->Height () - 1;
 int nRenderDepth = min (gameStates.render.detail.nRenderDepth, gameData.segs.nSegments);
 for (l = 0; l < nRenderDepth; l++) {
 	//while (nHead < nTail) {
-	for (nHead = nTail, nTail = nCurrent; nHead < nTail; nHead++) {
+	for (nHead = nTail, nTail = (nRewind == 32767) ? nCurrent : nRewind, nRewind = 32767; nHead < nTail; nHead++) {
 		if (gameData.render.mine.bProcessed [nHead] == gameData.render.mine.nProcessed)
 			continue;
 		gameData.render.mine.bProcessed [nHead] = gameData.render.mine.nProcessed;
@@ -1720,27 +1721,29 @@ for (l = 0; l < nRenderDepth; l++) {
 			andCodes3D = 0xff;
 			for (j = 0; j < 4; j++) {
 				g3sPoint *pnt = gameData.segs.points + sv [s2v [j]];
-#if 0
+#if 1
 				if (pnt->p3_codes & CC_BEHIND) {
 					bNotProjected = 1;
 					break;
 					}
+#else
+				c = pnt->p3_codes;
+				pnt->p3_codes &= ~CC_BEHIND;
 #endif
 				if (!(pnt->p3_flags & PF_PROJECTED))
 					G3ProjectPoint (pnt);
 				x = pnt->p3_screen.x;
 				y = pnt->p3_screen.y;
-#if 1
-				if (pnt->p3_codes & CC_BEHIND) {
-					if (x < renderPortals [0].left)
-						x = renderPortals [0].left;
-					else if (x > renderPortals [0].right)
-						x = renderPortals [0].right;
-					if (y < renderPortals [0].top)
-						y = renderPortals [0].top;
-					else if (y > renderPortals [0].bot)
-						y = renderPortals [0].bot;
-					}
+#if 0
+				pnt->p3_codes = c;
+				if (x < renderPortals [0].left)
+					x = renderPortals [0].left;
+				else if (x > renderPortals [0].right)
+					x = renderPortals [0].right;
+				if (y < renderPortals [0].top)
+					y = renderPortals [0].top;
+				else if (y > renderPortals [0].bot)
+					y = renderPortals [0].bot;
 #endif
 				andCodes3D &= (pnt->p3_codes & ~CC_BEHIND);
 				if (p.left > x)
@@ -1799,6 +1802,8 @@ for (l = 0; l < nRenderDepth; l++) {
 							gameData.render.mine.nSegRenderList [nCurrent] = -0x7fff;
 						*oldPortal = *newPortal;		//get updated tPortal
 						gameData.render.mine.bProcessed [nPos] = gameData.render.mine.nProcessed - 1;		//force reprocess
+						if (nRewind > nPos)
+							nRewind = nPos;
 						}
 					}
 				}
