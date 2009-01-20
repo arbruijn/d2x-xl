@@ -1199,7 +1199,6 @@ if (!setjmp (gameExitPoint)) {
 #ifdef MWPROFILE
 ProfilerSetStatus (0);
 #endif
-UnloadLevelData ();
 audio.StopAll ();
 if (gameStates.sound.bD1Sound) {
 	gameStates.sound.bD1Sound = 0;
@@ -1232,6 +1231,7 @@ SetFunctionMode (FMODE_EXIT);		// get out of game in Apple OEM version
 if (pfnTIRStop)
 	pfnTIRStop ();
 meshBuilder.DestroyVBOs ();
+UnloadLevelData ();
 gameData.Destroy ();
 }
 

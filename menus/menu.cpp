@@ -567,7 +567,7 @@ while (!done) {
 	else 
 #endif
 		{
-		if (gameStates.app.bGameRunning && (gameData.demo.nState == ND_STATE_NORMAL)) {
+		if (gameStates.app.bGameRunning /*&& (gameData.demo.nState == ND_STATE_NORMAL)*/) {
 			CCanvas::Push ();
 			CCanvas::SetCurrent (gameCanvasP);
 			//GrPaletteStepLoad (paletteManager.Game ());
