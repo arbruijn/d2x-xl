@@ -43,7 +43,7 @@ m_value = 0;
 void CCvar::Destroy (void)
 {
 if (m_name) {
-	delete[] m_name;
+	delete[] (char*) (m_name);
 	m_name = NULL;
 	}
 if (m_text) {

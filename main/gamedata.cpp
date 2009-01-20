@@ -845,7 +845,9 @@ Create ();
 
 bool CModelData::Create (void)
 {
-for (int i = 0; i < 2; i++) {
+	int i;
+
+for (i = 0; i < 2; i++) {
 	aseModels [i].Create (MAX_POLYGON_MODELS);
 	oofModels [i].Create (MAX_POLYGON_MODELS);
 	for (int j = 0; j < 2; j++)
@@ -855,7 +857,7 @@ for (int i = 0; i < 2; i++) {
 	renderModels [i].Create (MAX_POLYGON_MODELS);
 	}
 CREATE (bHaveHiresModel, MAX_POLYGON_MODELS, 0);
-for (int i = 0; i < 3; i++) {
+for (i = 0; i < 3; i++) {
 	polyModels [i].Create (MAX_POLYGON_MODELS);
 	for (int j = 0; j < MAX_POLYGON_MODELS; j++)
 		polyModels [i][j].SetId (j);

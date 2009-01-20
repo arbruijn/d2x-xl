@@ -63,9 +63,9 @@ memset (pg, 0xff, 256 * sizeof (*pg));
 
 int OglSetBrightnessInternal (void)
 {
-return SDL_SetGammaRamp (gammaRamp + paletteManager.RedEffect () * 4,
-	                      gammaRamp + paletteManager.GreenEffect () * 4,
-	                      gammaRamp + paletteManager.BlueEffect () * 4);
+return SDL_SetGammaRamp ((Uint16*) (gammaRamp + paletteManager.RedEffect () * 4),
+	                      (Uint16*) (gammaRamp + paletteManager.GreenEffect () * 4),
+	                      (Uint16*) (gammaRamp + paletteManager.BlueEffect () * 4));
 }
 
 //------------------------------------------------------------------------------

@@ -280,7 +280,7 @@ MorphInitPoints (pmP, &vBoxSize, 0, mdP);
 
 void MorphDrawModel (CPolyModel* modelP, int nSubModel, CAngleVector *animAngles, fix light, tMorphInfo *mdP, int nModel)
 {
-	int i, mn;
+	int i, j, mn;
 	int facing;
 	int sort_list [MAX_SUBMODELS], sort_n;
 	//first, sort the submodels
@@ -306,7 +306,7 @@ for (i = 0; i < modelP->ModelCount (); i++) {
 for (i = 0; i < sort_n; i++) {
 	mn = sort_list [i];
 	if (mn == nSubModel) {
-		for (int j = 0; j < modelP->TextureCount (); j++) {
+		for (j = 0; j < modelP->TextureCount (); j++) {
 			gameData.models.textureIndex [j] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [modelP->FirstTexture () + j]];
 			gameData.models.textures [j] = gameData.pig.tex.bitmaps [0] + /*gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [modelP->FirstTexture ()+j]]*/gameData.models.textureIndex [j].index;
 			}
@@ -314,7 +314,7 @@ for (i = 0; i < sort_n; i++) {
 #ifdef PIGGY_USE_PAGING
 		// Make sure the textures for this CObject are paged in..
 		gameData.pig.tex.bPageFlushed = 0;
-		for (int j = 0; j < modelP->TextureCount (); j++)
+		for (j = 0; j < modelP->TextureCount (); j++)
 			LoadBitmap (gameData.models.textureIndex [j].index, 0);
 		// Hmmm.. cache got flushed in the middle of paging all these in,
 		// so we need to reread them all in.

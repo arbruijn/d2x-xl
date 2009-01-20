@@ -99,7 +99,7 @@ class CBackgroundManager : public CStack<CBackground> {
 				m_bg [m_nDepth].Draw (bUpdate); 
 			}
 		inline void DrawArea (int left, int top, int right, int bottom)
-		 { return m_bg [m_nDepth].DrawArea (left, top, right, bottom); }
+		 { m_bg [m_nDepth].DrawArea (left, top, right, bottom); }
 		inline CBitmap* Current (void) { return m_bg [m_nDepth].Background (); }
 		inline CCanvas* Canvas (uint i = 0) { return m_bg [m_nDepth].Canvas (i); }
 

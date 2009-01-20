@@ -363,7 +363,7 @@ class CAudio {
 #if DBG
 		int VerifyChannelFree (int channel);
 #endif
-		static void _CDECL_ MixCallback (void* userdata, ubyte* stream, int len);
+		static void _CDECL_ MixCallback (void* userdata, Uint8* stream, int len);
 
 	private:
 		CAudioChannel* FindFreeChannel (int nSoundClass);

@@ -361,10 +361,12 @@ switch (info.movementType) {
 		Int3();
 	}
 
+int i;
+
 switch (info.controlType) {
 	case CT_AI: 
 		cType.aiInfo.behavior = cf.ReadByte ();
-		for (int i = 0; i < MAX_AI_FLAGS; i++)
+		for (i = 0; i < MAX_AI_FLAGS; i++)
 			cType.aiInfo.flags [i] = cf.ReadByte ();
 		cType.aiInfo.nHideSegment = cf.ReadShort ();
 		cType.aiInfo.nHideIndex = cf.ReadShort ();

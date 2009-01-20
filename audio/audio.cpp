@@ -101,7 +101,7 @@ static SDL_AudioSpec waveSpec;
 //------------------------------------------------------------------------------
 /* Audio mixing callback */
 //changed on 980905 by adb to cleanup, add nPan support and optimize mixer
-void _CDECL_ CAudio::MixCallback (void* userdata, ubyte* stream, int len)
+void _CDECL_ CAudio::MixCallback (void* userdata, Uint8* stream, int len)
 {
 	CAudioChannel*	channelP;
 
@@ -109,7 +109,7 @@ if (!audio.Available ())
 	return;
 memset (stream, 0x80, len); // fix "static" sound bug on Mac OS X
 for (channelP = audio.m_channels.Buffer (); channelP < audio.m_channels + MAX_SOUND_CHANNELS; channelP++)
-	channelP->Mix (stream, len);
+	channelP->Mix (reinterpret_cast<ubyte*> (stream), len);
 }
 
 //------------------------------------------------------------------------------
@@ -489,7 +489,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 			if (nSpeed < I2X (1))
 				l = Speedup (soundP, nSpeed);
 			}
-		m_info.mixChunkP = Mix_QuickLoad_RAW (m_info.sample.Buffer (), l);
+		m_info.mixChunkP = Mix_QuickLoad_RAW (reinterpret_cast<Uint8*> (m_info.sample.Buffer ()), l);
 		}
 	Mix_VolPan (audio.FreeChannel (), nVolume, nPan);
 	Mix_PlayChannel (audio.FreeChannel (), m_info.mixChunkP, bLooping ? -1 : nLoopEnd - nLoopStart);

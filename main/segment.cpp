@@ -115,12 +115,14 @@ if (gameData.segs.nLevelVersion <= 5) // descent 1 thru d2 SHAREWARE level
 // Read the walls as a 6 byte array
 flags = bNewFileFormat ? cf.ReadByte () : 0x3f;
 
-for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
+int i;
+
+for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
 	m_sides [i].ReadWallNum (cf, (flags & (1 << i)) != 0);
 
 ushort sideVerts [4];
 
-for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 	::GetCorners (Index (), i, sideVerts);
 	m_sides [i].Read (cf, sideVerts, m_children [i] == -1);
 	}

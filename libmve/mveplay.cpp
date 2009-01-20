@@ -246,7 +246,7 @@ if (timer_expire.tv_usec > 1000000) {
 #define TOTAL_AUDIO_BUFFERS 64
 
 static int audiobuf_created = 0;
-static void _CDECL_ mve_audio_callback (void *userdata, ubyte *stream, int len);
+static void _CDECL_ mve_audio_callback (void *userdata, Uint8 *stream, int len);
 static short *mve_audio_buffers[TOTAL_AUDIO_BUFFERS];
 static int    mve_audio_buflens[TOTAL_AUDIO_BUFFERS];
 static int    mve_audio_curbuf_curpos=0;
@@ -260,7 +260,7 @@ static SDL_AudioSpec *mve_audio_spec=NULL;
 
 //-----------------------------------------------------------------------
 
-static void _CDECL_ mve_audio_callback (void *userdata, ubyte *stream, int len)
+static void _CDECL_ mve_audio_callback (void *userdata, Uint8* stream, int len)
 {
 	int total=0;
 	int length;

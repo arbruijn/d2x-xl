@@ -799,11 +799,12 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 
 void WallFrameProcess (void)
 {
-	CCloakingWall	*cloakWallP;
-	CActiveDoor		*doorP = gameData.walls.activeDoors.Buffer ();
-	CWall				*wallP, *backWallP;
+	CCloakingWall*	cloakWallP;
+	CActiveDoor*	doorP = gameData.walls.activeDoors.Buffer ();
+	CWall*			wallP, *backWallP;
+	uint			i;
 
-for (uint i = 0; i < gameData.walls.activeDoors.ToS (); i++, doorP++) {
+for (i = 0; i < gameData.walls.activeDoors.ToS (); i++, doorP++) {
 	backWallP = NULL,
 	wallP = WALLS + doorP->nFrontWall [0];
 	if (wallP->state == WALL_DOOR_OPENING)
@@ -838,7 +839,7 @@ for (uint i = 0; i < gameData.walls.activeDoors.ToS (); i++, doorP++) {
 	}
 
 cloakWallP = gameData.walls.cloaking.Buffer ();
-for (uint i = 0; i < gameData.walls.cloaking.ToS (); i++, cloakWallP++) {
+for (i = 0; i < gameData.walls.cloaking.ToS (); i++, cloakWallP++) {
 	ubyte s = WALLS [cloakWallP->nFrontWall].state;
 	if (s == WALL_DOOR_CLOAKING)
 		DoCloakingWallFrame (i);

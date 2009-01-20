@@ -307,7 +307,7 @@ CAnim::Destroy ();
 
 int CRotAnim::Read (CFile& cf, CModel* po, int bTimed)
 {
-if (!OOF::CFrameInfo::Read (cf, po, bTimed))
+if (!this->CFrameInfo::Read (cf, po, bTimed))
 	return 0;
 if (!m_frames.Create (m_nFrames))
 	return 0;
@@ -409,7 +409,7 @@ CAnim::Destroy ();
 
 int CPosAnim::Read (CFile& cf, CModel* po, int bTimed)
 {
-if (!OOF::CFrameInfo::Read (cf, po, bTimed))
+if (!this->CFrameInfo::Read (cf, po, bTimed))
 	return 0;
 if (bTimed &&
 	 (m_nTicks = m_nLastFrame - m_nFirstFrame) &&

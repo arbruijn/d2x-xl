@@ -325,7 +325,7 @@ class CExplosionInfo : public CAttachedInfo {
 		inline short GetDeleteObj (void) { return m_info.nDeleteObj; }
 		inline void SetSpawnTime (fix nSpawnTime) { m_info.nSpawnTime = nSpawnTime; }
 		inline void SetDeleteTime (fix nDeleteTime) { m_info.nDeleteTime = nDeleteTime; }
-		inline void SetDeleteObj (fix nDeleteObj) { m_info.nDeleteObj = nDeleteObj; }
+		inline void SetDeleteObj (short nDeleteObj) { m_info.nDeleteObj = nDeleteObj; }
 };
 
 //	-----------------------------------------------------------------------------

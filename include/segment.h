@@ -296,7 +296,7 @@ class CSegment {
 		CSegMasks SideMasks (int nSide, const CFixVector& refP, fix xRad);
 		ubyte GetSideDists (const CFixVector& refP, fix* xSideDists, int bBehind);
 		void HitPointUV (int nSide, fix *u, fix *v, fix *l, CFixVector& intersection, int iFace)
-		 { return m_sides [nSide].HitPointUV (u, v, l, intersection, iFace); }
+		 { m_sides [nSide].HitPointUV (u, v, l, intersection, iFace); }
 
 		fix MinRad (void) { return m_rads [0]; }
 		fix MaxRad (void) { return m_rads [1]; }

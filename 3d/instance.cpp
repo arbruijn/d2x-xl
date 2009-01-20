@@ -28,7 +28,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_INSTANCE_DEPTH	10
 
-struct CTransformation instanceStack [MAX_INSTANCE_DEPTH];
+CTransformation instanceStack [MAX_INSTANCE_DEPTH];
 
 int nInstanceDepth = 0;
 
@@ -51,7 +51,7 @@ m_info.viewf [1] =
 m_info.viewf [2] = CFloatMatrix::IDENTITY;
 m_info.zoom = 0;
 m_info.zoomf = 0;
-m_info.save.Create (MAX_INSTANCE_DEPTH);
+m_info.m_save.Create (MAX_INSTANCE_DEPTH);
 }
 
 //------------------------------------------------------------------------------
