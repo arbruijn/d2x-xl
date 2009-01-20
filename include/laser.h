@@ -166,6 +166,7 @@ typedef struct tMuzzleInfo {
 // Omega cannon stuff.
 #define DEFAULT_MAX_OMEGA_CHARGE    (I2X (1))  //  Maximum charge level for omega cannonw
 extern int nOmegaDuration [7];
+extern int nProximityDropped, nSmartMinesDropped;
 
 // NOTE: OMEGA_CHARGE_SCALE moved to laser.c to avoid long rebuilds if changed
 

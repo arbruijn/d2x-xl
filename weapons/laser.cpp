@@ -1571,7 +1571,7 @@ if (nPlayer == gameData.multiplayer.nLocalPlayer) {
 gameData.objs.guidedMissile [nPlayer].objP = NULL;
 }
 
-int nProximityDropped = 0, nSmartminesDropped = 0;
+int nProximityDropped = 0, nSmartMinesDropped = 0;
 
 //	-------------------------------------------------------------------------------------------
 //parameter determines whether or not to do autoselect if have run out of ammo
@@ -1628,8 +1628,8 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 		}
 	else if (gameData.weapons.nSecondary == SMARTMINE_INDEX) {
 		if (!(gameData.app.nGameMode & GM_ENTROPY)) {
-			if (++nSmartminesDropped == 4) {
-				nSmartminesDropped = 0;
+			if (++nSmartMinesDropped == 4) {
+				nSmartMinesDropped = 0;
 				MaybeDropNetPowerup (nObject, POW_SMARTMINE, INIT_DROP);
 				}
 			}

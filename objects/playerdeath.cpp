@@ -158,7 +158,7 @@ gameStates.app.bPlayerEggsDropped = 0;
 
 //------------------------------------------------------------------------------
 
-extern int nProximityDropped, nSmartminesDropped;
+extern int nProximityDropped, nSmartMinesDropped;
 
 void DeadPlayerFrame (void)
 {
