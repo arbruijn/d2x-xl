@@ -415,14 +415,14 @@ for (uint i = 0; i < m_info.ToS (); i++)
 
 // -----------------------------------------------------------------------------
 
-int CBossData:: SaveStates (CFile& cf) {
+void CBossData:: SaveStates (CFile& cf) {
 	for (uint i = 0; i < m_info.ToS (); i++)
 		m_info [i].SaveState (cf);
 	}
 
 // -----------------------------------------------------------------------------
 
-int CBossData::SaveSizeStates (CFile& cf) 
+void CBossData::SaveSizeStates (CFile& cf) 
 {
 for (uint i = 0; i < m_info.ToS (); i++)
 	m_info [i].SaveSizeStates (cf);
@@ -430,7 +430,7 @@ for (uint i = 0; i < m_info.ToS (); i++)
 
 // -----------------------------------------------------------------------------
 
-int CBossData::SaveBufferStates (CFile& cf) 
+void CBossData::SaveBufferStates (CFile& cf) 
 {
 for (uint i = 0; i < m_info.ToS (); i++)
 	m_info [i].SaveBufferStates (cf);
@@ -438,7 +438,7 @@ for (uint i = 0; i < m_info.ToS (); i++)
 
 // -----------------------------------------------------------------------------
 
-int CBossData::LoadBinStates (CFile& cf) 
+void CBossData::LoadBinStates (CFile& cf) 
 {
 for (uint i = 0; i < m_info.ToS (); i++)
 	m_info [i].LoadBinState (cf);
@@ -446,7 +446,7 @@ for (uint i = 0; i < m_info.ToS (); i++)
 
 // -----------------------------------------------------------------------------
 
-int CBossData::LoadStates (CFile& cf, int nVersion) 
+void CBossData::LoadStates (CFile& cf, int nVersion) 
 {
 for (uint i = 0; i < m_info.ToS (); i++)
 	m_info [i].LoadState (cf, nVersion);
@@ -454,7 +454,7 @@ for (uint i = 0; i < m_info.ToS (); i++)
 
 // -----------------------------------------------------------------------------
 
-int CBossData::LoadSizeStates (CFile& cf) 
+void CBossData::LoadSizeStates (CFile& cf) 
 {
 for (uint i = 0; i < m_info.ToS (); i++)
 	m_info [i].LoadSizeStates (cf);

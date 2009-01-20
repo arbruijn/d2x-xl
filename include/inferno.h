@@ -2620,17 +2620,18 @@ class CBossData {
 		void ResetHitTimes (void);
 		void InitGateIntervals (void);
 
+		inline bool Grow (uint i) { return m_info.Grow (i); }
 		inline CBossInfo& Boss (uint i) { return m_info [i]; }
 		inline uint BossCount (void) { return m_info.Buffer () ? m_info.ToS () : 0; }
 		inline uint Count (void) { return m_info.Buffer () ? m_info.ToS () : 0; }
 		inline CBossInfo& operator[] (uint i) { return m_info [i]; }
 
-		int SaveStates (CFile& cf);
-		int SaveSizeStates (CFile& cf);
-		int SaveBufferStates (CFile& cf);
-		int LoadBinStates (CFile& cf);
-		int LoadStates (CFile& cf, int nVersion);
-		int LoadSizeStates (CFile& cf);
+		void SaveStates (CFile& cf);
+		void SaveSizeStates (CFile& cf);
+		void SaveBufferStates (CFile& cf);
+		void LoadBinStates (CFile& cf);
+		void LoadStates (CFile& cf, int nVersion);
+		void LoadSizeStates (CFile& cf);
 		int LoadBufferStates (CFile& cf);
 	};
 

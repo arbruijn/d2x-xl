@@ -62,7 +62,7 @@ else
 if (!gameData.bosses.Create (j))
 	return 0;
 gameData.bosses.Grow (j);
-gameData.bosses.LoadBinStates ();
+gameData.bosses.LoadBinStates (m_cf);
 
 if (m_nVersion >= 8) {
 	m_cf.Read (&gameData.escort.nKillObject, sizeof (gameData.escort.nKillObject), 1);
@@ -93,11 +93,11 @@ if (m_nVersion >= 21) {
 	for (i = 0; i < j; i++)
 		m_cf.Read (&gameData.bosses [i].m_nGateSegs, sizeof (gameData.bosses [i].m_nGateSegs), 1);
 	for (i = 0; i < j; i++) {
-		if (gameData.bosses [i].m_nGateSegs && gameData.bosses [i].gateSegs.Create (gameData.bosses [i].m_nGateSegs))
+		if (gameData.bosses [i].m_nGateSegs && gameData.bosses [i].m_gateSegs.Create (gameData.bosses [i].m_nGateSegs))
 			gameData.bosses [i].m_gateSegs.Read (m_cf);
 		else
 			return 0;
-		if (gameData.bosses [i].m_nTeleportSegs && gameData.bosses [i].teleportSegs.Create (gameData.bosses [i].m_nTeleportSegs))
+		if (gameData.bosses [i].m_nTeleportSegs && gameData.bosses [i].m_teleportSegs.Create (gameData.bosses [i].m_nTeleportSegs))
 			gameData.bosses [i].m_teleportSegs.Read (m_cf);
 		else
 			return 0;
@@ -160,7 +160,7 @@ m_cf.WriteVector (ciP->vLastPos);
 
 int CSaveGameManager::SaveAI (void)
 {
-	int	h, i, j;
+	int	i;
 
 m_cf.WriteInt (gameData.ai.bInitialized);
 m_cf.WriteInt (gameData.ai.nOverallAgitation);
@@ -170,8 +170,8 @@ for (i = 0; i < LEVEL_POINT_SEGS; i++)
 	SaveAIPointSeg (gameData.ai.routeSegs + i);
 for (i = 0; i < MAX_AI_CLOAK_INFO; i++)
 	SaveAICloakInfo (gameData.ai.cloakInfo + i);
-m_cf.WriteUInt (gameData.bosses.Count ());
-gameData.bosses.SaveStates ();
+m_cf.WriteInt (int (gameData.bosses.Count ()));
+gameData.bosses.SaveStates (m_cf);
 m_cf.WriteInt (gameData.escort.nKillObject);
 m_cf.WriteFix (gameData.escort.xLastPathCreated);
 m_cf.WriteInt (gameData.escort.nGoalObject);
@@ -182,8 +182,8 @@ gameData.thief.stolenItems.Write (m_cf);
 i = CFTell ();
 #endif
 m_cf.WriteInt ((int) (gameData.ai.freePointSegs - gameData.ai.routeSegs.Buffer ()));
-gameData.bosses.SaveSizeStates ();
-gameData.bosses.SaveBufferStates ();
+gameData.bosses.SaveSizeStates (m_cf);
+gameData.bosses.SaveBufferStates (m_cf);
 return 1;
 }
 
@@ -237,7 +237,7 @@ m_cf.ReadVector (ciP->vLastPos);
 
 int CSaveGameManager::LoadAIUniFormat (void)
 {
-	int	h, i, j, nMaxBossCount, nMaxPointSegs;
+	int	h, i, nMaxPointSegs;
 
 gameData.ai.localInfo.Clear ();
 gameData.ai.bInitialized = m_cf.ReadInt ();
@@ -260,7 +260,7 @@ gameData.bosses.Destroy ();
 if (!gameData.bosses.Create (h))
 	return 0;
 gameData.bosses.Grow (h);
-gameData.bosses.LoadStates (m_nVersion);
+gameData.bosses.LoadStates (m_cf, m_nVersion);
 if (m_nVersion >= 8) {
 	gameData.escort.nKillObject = m_cf.ReadInt ();
 	gameData.escort.xLastPathCreated = m_cf.ReadFix ();
@@ -295,8 +295,9 @@ if (m_nVersion < 21) {
 	#endif
 	}
 else {
-	gameData.bosses.LoadSizeStates ();
-	gameData.bosses.LoadBuffers ();
+	gameData.bosses.LoadSizeStates (m_cf);
+	if (!gameData.bosses.LoadBufferStates (m_cf))
+		return 0;
 	}
 return 1;
 }
