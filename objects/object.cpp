@@ -2029,59 +2029,6 @@ return GetChildObjN (OBJ_IDX (pParent), pChildRef);
 
 //------------------------------------------------------------------------------
 
-int CountPlayerObjects (int nPlayer, int nType, int nId)
-{
-	int		h = 0;
-	//int		i;
-	CObject	*objP;
-
-FORALL_OBJS (objP, i) 
-	if ((objP->info.nType == nType) && (objP->info.nId == nId) &&
-		 (objP->cType.laserInfo.parent.nType == OBJ_PLAYER) &&
-		 (OBJECTS [objP->cType.laserInfo.parent.nObject].info.nId == nPlayer))
-	h++;
-return h;
-}
-
-//------------------------------------------------------------------------------
-
-void GetPlayerSpawn (int nSpawnPos, CObject *objP)
-{
-	CObject	*markerP = SpawnMarkerObject (-1);
-
-if (markerP) {
-	objP->info.position = markerP->info.position;
- 	objP->RelinkToSeg (markerP->info.nSegment);
-	}
-else {
-	if ((gameData.multiplayer.playerInit [nSpawnPos].nSegment < 0) || 
-		 (gameData.multiplayer.playerInit [nSpawnPos].nSegment >= gameData.segs.nSegments))
-		GameStartInitNetworkPlayers ();
-	objP->info.position = gameData.multiplayer.playerInit [nSpawnPos].position;
- 	objP->RelinkToSeg (gameData.multiplayer.playerInit [nSpawnPos].nSegment);
-	}
-}
-
-//------------------------------------------------------------------------------
-
-CFixVector* PlayerSpawnPos (int nPlayer)
-{
-	CObject	*markerP = SpawnMarkerObject (nPlayer);
-
-return markerP ? &markerP->info.position.vPos : &gameData.multiplayer.playerInit [nPlayer].position.vPos;
-}
-
-//------------------------------------------------------------------------------
-
-CFixMatrix *PlayerSpawnOrient (int nPlayer)
-{
-	CObject	*markerP = SpawnMarkerObject (nPlayer);
-
-return markerP ? &markerP->info.position.mOrient : &gameData.multiplayer.playerInit [nPlayer].position.mOrient;
-}
-
-//------------------------------------------------------------------------------
-
 CFixMatrix *ObjectView (CObject *objP)
 {
 	tObjectViewData	*viewP = gameData.objs.viewData + objP->Index ();
