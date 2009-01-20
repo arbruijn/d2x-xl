@@ -1592,7 +1592,7 @@ gameData.render.zMax = vCenter [Z] + d1 + r;
 
 void BuildRenderSegList (short nStartSeg, int nWindow)
 {
-	int			nCurrent, nHead, nTail, nSide;
+	int			nCurrent, nHead, nTail, nRestart, nSide;
 	int			l, i, j;
 	short			nChild;
 	short			nChildSeg;
@@ -1632,6 +1632,7 @@ VISIT (nStartSeg);
 gameData.render.mine.nRenderPos [nStartSeg] = 0;
 nHead = nTail = 0;
 nCurrent = 1;
+nRestart = 32767;
 
 #if DBG
 if (bPreDrawSegs)
@@ -1648,8 +1649,7 @@ renderPortals [0].bot = CCanvas::Current ()->Height () - 1;
 //build list
 int nRenderDepth = min (gameStates.render.detail.nRenderDepth, gameData.segs.nSegments);
 for (l = 0; l < nRenderDepth; l++) {
-	//while (nHead < nTail) {
-	for (nHead = 0, nTail = nCurrent; nHead < nTail; nHead++) {
+	for (nHead = (nRestart = 32767) ? 0 : nRestart, nRestart = 32767, nTail = nCurrent; nHead < nTail; nHead++) {
 		if (gameData.render.mine.bProcessed [nHead] == gameData.render.mine.nProcessed)
 			continue;
 		gameData.render.mine.bProcessed [nHead] = gameData.render.mine.nProcessed;
@@ -1720,30 +1720,14 @@ for (l = 0; l < nRenderDepth; l++) {
 			andCodes3D = 0xff;
 			for (j = 0; j < 4; j++) {
 				g3sPoint *pnt = gameData.segs.points + sv [s2v [j]];
-#if 1
 				if (pnt->p3_codes & CC_BEHIND) {
 					bNotProjected = 1;
 					break;
 					}
-#else
-				c = pnt->p3_codes;
-				pnt->p3_codes &= ~CC_BEHIND;
-#endif
 				if (!(pnt->p3_flags & PF_PROJECTED))
 					G3ProjectPoint (pnt);
 				x = pnt->p3_screen.x;
 				y = pnt->p3_screen.y;
-#if 0
-				pnt->p3_codes = c;
-				if (x < renderPortals [0].left)
-					x = renderPortals [0].left;
-				else if (x > renderPortals [0].right)
-					x = renderPortals [0].right;
-				if (y < renderPortals [0].top)
-					y = renderPortals [0].top;
-				else if (y > renderPortals [0].bot)
-					y = renderPortals [0].bot;
-#endif
 				andCodes3D &= (pnt->p3_codes & ~CC_BEHIND);
 				if (p.left > x)
 					p.left = x;
@@ -1780,36 +1764,39 @@ for (l = 0; l < nRenderDepth; l++) {
 				else {
 					tPortal *oldPortal = renderPortals + nPos;
 					bool bExpand = false;
-					if (newPortal->left < oldPortal->left) {
+					int h;
+					h = newPortal->left - oldPortal->left;
+					if (h > 0)
 						newPortal->left = oldPortal->left;
+					else if (h < 0)
 						bExpand = true;
-						}
-					if (newPortal->right > oldPortal->right) {
+					h = newPortal->right - oldPortal->right;
+					if (h < 0)
 						newPortal->right = oldPortal->right;
+					else if (h > 0)
 						bExpand = true;
-						}
-					if (newPortal->top < oldPortal->top) {
+					h = newPortal->top - oldPortal->top;
+					if (h > 0)
 						newPortal->top = oldPortal->top;
+					else if (h < 0)
 						bExpand = true;
-						}
-					if (newPortal->bot > oldPortal->bot) {
+					h = newPortal->bot - oldPortal->bot;
+					if (h < 0)
 						newPortal->bot = oldPortal->bot;
+					else if (h > 0)
 						bExpand = true;
-						}
 					if (bExpand) {
 						if (nCurrent < gameData.segs.nSegments)
 							gameData.render.mine.nSegRenderList [nCurrent] = -0x7fff;
 						*oldPortal = *newPortal;		//get updated tPortal
 						gameData.render.mine.bProcessed [nPos] = gameData.render.mine.nProcessed - 1;		//force reprocess
+						if (nRestart > nPos)
+							nRestart = nPos;
 						}
 					}
 				}
 			}
 		}
-#if 0
-	nHead = nTail;
-	nTail = nCurrent;
-#endif
 	}
 
 gameData.render.mine.lCntSave = nCurrent;
