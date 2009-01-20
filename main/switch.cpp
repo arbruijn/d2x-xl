@@ -1071,6 +1071,9 @@ for (int i = 0; i < MAX_TRIGGER_TARGETS; i++) {
 
 CTrigger *FindObjTrigger (short nObject, short nType, short nTrigger)
 {
+if (!OBJTRIGGERS.Buffer ())
+	return NULL;
+
 	short i = (nTrigger < 0) ? gameData.trigs.firstObjTrigger [nObject] : gameData.trigs.objTriggerRefs [nTrigger].next;
 
 while (i >= 0) {
@@ -1087,7 +1090,10 @@ return NULL;
 
 void ExecObjTriggers (short nObject, int bDamage)
 {
-	short		i = gameData.trigs.firstObjTrigger [nObject], j = 0;
+if (!OBJTRIGGERS.Buffer ())
+	return;
+
+	short	i = gameData.trigs.firstObjTrigger [nObject], j = 0;
 
 while ((i >= 0) && (j < 256)) {
 	if (gameData.trigs.objTriggerRefs [i].nObject < 0)
