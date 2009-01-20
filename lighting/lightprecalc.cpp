@@ -483,12 +483,12 @@ if (bOk)
 			((ldh.bPerPixelLighting != 0) == (gameStates.render.bPerPixelLighting != 0)));
 if (bOk)
 	bOk =
-			(gameData.segs.bSegVis.Read (cf, ldh.nSegments * SEGVIS_FLAGS, 0) == ldh.nSegments * SEGVIS_FLAGS) &&
+			(gameData.segs.bSegVis.Read (cf, ldh.nSegments * SEGVIS_FLAGS, 0) == size_t (ldh.nSegments * SEGVIS_FLAGS)) &&
 #if 0
-			(gameData.segs.bVertVis.Read (cf, ldh.nVertices * VERTVIS_FLAGS, 0) == ldh.nVertices * VERTVIS_FLAGS) &&
+			(gameData.segs.bVertVis.Read (cf, ldh.nVertices * VERTVIS_FLAGS, 0) == size_t (ldh.nVertices * VERTVIS_FLAGS)) &&
 #endif
-			(lightManager.NearestSegLights  ().Read (cf, ldh.nSegments * MAX_NEAREST_LIGHTS, 0) == ldh.nSegments * MAX_NEAREST_LIGHTS) &&
-			(lightManager.NearestVertLights ().Read (cf, ldh.nVertices * MAX_NEAREST_LIGHTS, 0) == ldh.nVertices * MAX_NEAREST_LIGHTS);
+			(lightManager.NearestSegLights  ().Read (cf, ldh.nSegments * MAX_NEAREST_LIGHTS, 0) == size_t (ldh.nSegments * MAX_NEAREST_LIGHTS)) &&
+			(lightManager.NearestVertLights ().Read (cf, ldh.nVertices * MAX_NEAREST_LIGHTS, 0) == size_t (ldh.nVertices * MAX_NEAREST_LIGHTS));
 cf.Close ();
 return bOk;
 }
@@ -513,12 +513,12 @@ if (!gameStates.app.bCacheLights)
 if (!cf.Open (LightDataFilename (szFilename, nLevel), gameFolders.szCacheDir, "wb", 0))
 	return 0;
 bOk = (cf.Write (&ldh, sizeof (ldh), 1) == 1) &&
-		(gameData.segs.bSegVis.Write (cf, ldh.nSegments * SEGVIS_FLAGS) == ldh.nSegments * SEGVIS_FLAGS) &&
+		(gameData.segs.bSegVis.Write (cf, ldh.nSegments * SEGVIS_FLAGS) == size_t (ldh.nSegments * SEGVIS_FLAGS)) &&
 #if 0
-		(gameData.segs.bVertVis.Write (cf, ldh.nVertices * VERTVIS_FLAGS) == ldh.nVertices * VERTVIS_FLAGS) &&
+		(gameData.segs.bVertVis.Write (cf, ldh.nVertices * VERTVIS_FLAGS) == size_t (ldh.nVertices * VERTVIS_FLAGS)) &&
 #endif
-		(lightManager.NearestSegLights  ().Write (cf, ldh.nSegments * MAX_NEAREST_LIGHTS) == ldh.nSegments * MAX_NEAREST_LIGHTS) &&
-		(lightManager.NearestVertLights ().Write (cf, ldh.nVertices * MAX_NEAREST_LIGHTS) == ldh.nVertices * MAX_NEAREST_LIGHTS);
+		(lightManager.NearestSegLights  ().Write (cf, ldh.nSegments * MAX_NEAREST_LIGHTS) == size_t (ldh.nSegments * MAX_NEAREST_LIGHTS)) &&
+		(lightManager.NearestVertLights ().Write (cf, ldh.nVertices * MAX_NEAREST_LIGHTS) == size_t (ldh.nVertices * MAX_NEAREST_LIGHTS));
 cf.Close ();
 return bOk;
 }

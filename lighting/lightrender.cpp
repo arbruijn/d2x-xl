@@ -431,9 +431,8 @@ if (gameStates.render.nLightingMethod) {
 		prl->render.xDistance = (fix) ((CFixVector::Dist(c, prl->info.vPos) /*- F2X (prl->info.fRad)*/) / (prl->info.fRange * max (prl->info.fRad, 1.0f)));
 		if (prl->render.xDistance > xMaxLightRange)
 			continue;
-		if (SetActive (activeLightsP, prl, 1, nThread))
 #if DBG
-		 {
+		if (SetActive (activeLightsP, prl, 1, nThread)) {
 			if ((nSegment == nDbgSeg) && (nDbgObj >= 0) && (prl->info.nObject == nDbgObj))
 				prl = prl;
 			if (nFace < 0)
@@ -443,7 +442,7 @@ if (gameStates.render.nLightingMethod) {
 			prl->render.nFrame = gameData.app.nFrameCount;
 			}
 #else
-			;
+		SetActive (activeLightsP, prl, 1, nThread);
 #endif
 		}
 	m_data.index [1][nThread] = *sliP;

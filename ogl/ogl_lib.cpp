@@ -1023,7 +1023,7 @@ void OglSetLibFlags (int bGame)
 	static	time_t	t0 = 0;
 
 if (OglCheckLibFlags ()) {
-	if (SDL_GetTicks () - t0 > 5000 + gameData.app.nFrameCount % 5000) {
+	if (int (SDL_GetTicks () - t0) > 5000 + gameData.app.nFrameCount % 5000) {
 		RebuildRenderContext (bGame);
 		t0 = SDL_GetTicks ();
 		}
