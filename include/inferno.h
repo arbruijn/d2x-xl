@@ -2600,6 +2600,7 @@ class CBossInfo {
 		int LoadBufferStates (CFile& cf);
 
 		inline void ResetHitTime (void) { m_nHitTime = -I2X (10); }
+		void ResetCloakTime (void);
 
 	private:
 		void SaveBufferState (CFile& cf, CShortArray& buffer);
@@ -2618,6 +2619,7 @@ class CBossData {
 		int Add (short nObject);
 		void Remove (short nBoss);
 		void ResetHitTimes (void);
+		void ResetCloakTimes (void);
 		void InitGateIntervals (void);
 
 		inline bool Grow (uint i) { return m_info.Grow (i); }

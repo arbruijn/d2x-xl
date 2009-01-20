@@ -149,10 +149,6 @@ void InitAIObjects (void)
 gameData.ai.freePointSegs = gameData.ai.routeSegs.Buffer ();
 gameData.bosses.Destroy ();
 gameData.bosses.Create ();
-#if DBG
-//	gameData.bosses [i].m_xPrevShields = -1;
-#endif
-	}
 for (i = j = 0, objP = OBJECTS.Buffer (); i < LEVEL_OBJECTS; i++, objP++) {
 	if (objP->info.controlType == CT_AI)
 		InitAIObject (i, objP->cType.aiInfo.behavior, objP->cType.aiInfo.nHideSegment);

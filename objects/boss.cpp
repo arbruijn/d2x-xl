@@ -337,6 +337,13 @@ return LoadBufferState (cf, m_gateSegs, m_nGateSegs) && LoadBufferState (cf, m_t
 }
 
 // -----------------------------------------------------------------------------
+
+void CBossInfo::ResetCloakTime (void) 
+{ 
+m_nCloakStartTime = m_nCloakEndTime = gameData.time.xGame; 
+}
+
+// -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
@@ -415,7 +422,15 @@ for (uint i = 0; i < m_info.ToS (); i++)
 
 // -----------------------------------------------------------------------------
 
-void CBossData:: SaveStates (CFile& cf) {
+void CBossData::ResetCloakTimes (void)
+{
+for (uint i = 0; i < m_info.ToS (); i++)
+	gameData.bosses [i].ResetCloakTime ();
+}
+
+// -----------------------------------------------------------------------------
+
+void CBossData::SaveStates (CFile& cf) {
 	for (uint i = 0; i < m_info.ToS (); i++)
 		m_info [i].SaveState (cf);
 	}
