@@ -147,17 +147,17 @@ void InitAIObjects (void)
 	CObject	*objP;
 
 gameData.ai.freePointSegs = gameData.ai.routeSegs.Buffer ();
-for (i = 0; i < MAX_BOSS_COUNT; i++) {
-	gameData.bosses [i].nObject = -1;
+gameData.bosses.Destroy ();
+gameData.bosses.Create ();
 #if DBG
-//	gameData.bosses [i].xPrevShields = -1;
+//	gameData.bosses [i].m_xPrevShields = -1;
 #endif
 	}
 for (i = j = 0, objP = OBJECTS.Buffer (); i < LEVEL_OBJECTS; i++, objP++) {
 	if (objP->info.controlType == CT_AI)
 		InitAIObject (i, objP->cType.aiInfo.behavior, objP->cType.aiInfo.nHideSegment);
 	if ((objP->info.nType == OBJ_ROBOT) && (ROBOTINFO (objP->info.nId).bossFlag))
-		gameData.bosses [j++].nObject = i;
+		gameData.bosses [j++].m_nObject = i;
 	}
 for (h = BOSS_COUNT, i = 0; i < h; i++)
 	InitBossData (i, -1);
@@ -230,7 +230,7 @@ gameData.escort.nObjNum = 0;
 gameData.escort.bMayTalk = 0;
 gameData.physics.xBossInvulDot = I2X (1)/4 - I2X (gameStates.app.nDifficultyLevel)/8;
 for (int i = 0; i < MAX_BOSS_COUNT; i++)
-	gameData.bosses [i].nDyingStartTime = 0;
+	gameData.bosses [i].m_nDyingStartTime = 0;
 }
 
 // ----------------------------------------------------------------------------

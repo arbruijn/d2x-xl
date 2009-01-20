@@ -34,6 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "dynlight.h"
 #include "buildmodel.h"
 #include "hitbox.h"
+#include "objrender.h"
 
 #ifdef _3DFX
 #include "3dfx_des.h"
@@ -767,6 +768,85 @@ Assert (strlen (filename) <= 12);
 strcpy (pofNames [gameData.models.nPolyModels], filename);
 gameData.models.polyModels [0][gameData.models.nPolyModels++].Load (filename, nTextures, nFirstTexture, botInfoP);
 return gameData.models.nPolyModels - 1;
+}
+
+//------------------------------------------------------------------------------
+
+#define BUILD_ALL_MODELS 0
+
+void PrepareModels (void)
+{
+	int      h, i, j;
+	CObject	o, *objP = OBJECTS.Buffer ();
+	const char		*pszHires;
+
+if (!RENDERPATH)
+	return;
+if (!gameData.objs.nLastObject [0])
+	return;
+PrintLog ("   building optimized polygon model data\n");
+gameStates.render.nType = 1;
+gameStates.render.nShadowPass = 1;
+gameStates.render.bBuildModels = 1;
+h = 0;
+#if !BUILD_ALL_MODELS
+for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
+	if ((objP->info.nSegment >= 0) && (objP->info.nType != 255) && (objP->info.renderType == RT_POLYOBJ) &&
+		 !G3HaveModel (objP->rType.polyObjInfo.nModel)) {
+		PrintLog ("      building model %d\n", objP->rType.polyObjInfo.nModel);
+#if DBG
+		if (objP->rType.polyObjInfo.nModel == nDbgModel)
+			nDbgModel = nDbgModel;
+#endif
+		if (DrawPolygonObject (objP, 1, 0))
+			h++;
+		}
+	}
+#endif
+memset (&o, 0, sizeof (o));
+o.info.nType = OBJ_WEAPON;
+o.info.position = OBJECTS [0].info.position;
+o.rType.polyObjInfo.nTexOverride = -1;
+PrintLog ("   building optimized replacement model data\n");
+#if BUILD_ALL_MODELS
+j = 0;
+for (i = 0; i < MAX_POLYGON_MODELS; i++) {
+	o.rType.polyObjInfo.nModel = i; //replacementModels [i].nModel;
+#else
+j = ReplacementModelCount ();
+for (i = 0; i < j; i++)
+	if ((pszHires = replacementModels [i].pszHires) && (strstr (pszHires, "laser") == pszHires))
+		break;
+for (tReplacementModel *rmP = replacementModels + i; i < j; i++, rmP++) {
+#endif
+	if ((pszHires = rmP->pszHires)) {
+		if (strstr (pszHires, "pminepack") == pszHires)
+			o.info.nType = OBJ_POWERUP;
+		else if (strstr (pszHires, "hostage") == pszHires)
+			o.info.nType = OBJ_HOSTAGE;
+		}
+	o.info.nId = (ubyte) rmP->nId;
+#if DBG
+	if (o.info.nId == nDbgObjId)
+		nDbgObjId = nDbgObjId;
+#endif
+	o.rType.polyObjInfo.nModel = rmP->nModel;
+	if (!G3HaveModel (o.rType.polyObjInfo.nModel)) {
+#if DBG
+		if (o.rType.polyObjInfo.nModel == nDbgModel)
+			nDbgModel = nDbgModel;
+#endif
+		PrintLog ("      building model %d (%s)\n", o.rType.polyObjInfo.nModel, pszHires ? pszHires : "n/a");
+		if (DrawPolygonObject (&o, 1, 0))
+			h++;
+		}
+	if (o.info.nType == OBJ_HOSTAGE)
+		o.info.nType = OBJ_POWERUP;
+	}
+gameStates.render.bBuildModels = 0;
+PrintLog ("   saving optimized polygon model data\n", h);
+SaveModelData ();
+PrintLog ("   finished building optimized polygon model data (%d models converted)\n", h);
 }
 
 //------------------------------------------------------------------------------

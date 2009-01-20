@@ -465,7 +465,7 @@ int GetBossId (void)
 	int	nObject;
 
 	for (h = BOSS_COUNT, i = 0; i < BOSS_COUNT; i++) {
-		if (0 <= (nObject = gameData.bosses [i].nObject))
+		if (0 <= (nObject = gameData.bosses [i].m_nObject))
 			return OBJECTS [nObject].info.nId;
 		}
 	return -1;
@@ -812,7 +812,7 @@ else if (!gameData.reactor.bDestroyed) {
 	int	i;
 
 	for (i = 0; i < extraGameInfo [0].nBossCount; i++)
-		if ((gameData.bosses [i].nObject >= 0) && gameData.bosses [i].nTeleportSegs)
+		if ((gameData.bosses [i].m_nObject >= 0) && gameData.bosses [i].m_nTeleportSegs)
 			return ESCORT_GOAL_BOSS;
 		return ESCORT_GOAL_CONTROLCEN;
 	}

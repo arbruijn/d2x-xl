@@ -2591,8 +2591,17 @@ class CBossInfo {
 		void Destroy (void);
 		bool SetupSegments (CShortArray segments, int bSizeCheck, int bOneWallHack);
 		void InitGateInterval (void);
+		void SaveState (CFile& cf);
+		void SaveSizeStates (CFile& cf);
+		void SaveBufferStates (CFile& cf);
+		void LoadBinState (CFile& cf);
+		void LoadState (CFile& cf, int nVersion);
 
 		inline void ResetHitTime (void) { m_nHitTime = -I2X (10); }
+
+	private:
+		int SaveBufferState (CFile& cf, CShortArray& buffer);
+		int LoadBufferState (CFile& cf, CShortArray& buffer);
 	};
 
 class CBossData {
@@ -2601,7 +2610,7 @@ class CBossData {
 
 	public:
 		CBossData ();
-		bool Create (void);
+		bool Create (uint nBosses = 0);
 		void Destroy (void);
 		short Find (short nBossObj);
 		int Add (short nObject);
@@ -2611,7 +2620,16 @@ class CBossData {
 
 		inline CBossInfo& Boss (uint i) { return m_info [i]; }
 		inline uint BossCount (void) { return m_info.Buffer () ? m_info.ToS () : 0; }
+		inline uint Count (void) { return m_info.Buffer () ? m_info.ToS () : 0; }
 		inline CBossInfo& operator[] (uint i) { return m_info [i]; }
+
+		int SaveStates (CFile& cf);
+		int SaveSizeStates (CFile& cf);
+		int SaveBufferStates (CFile& cf);
+		int LoadBinStates (CFile& cf);
+		int LoadStates (CFile& cf, int nVersion);
+		int LoadSizeStates (CFile& cf);
+		int LoadBufferStates (CFile& cf);
 	};
 
 //------------------------------------------------------------------------------

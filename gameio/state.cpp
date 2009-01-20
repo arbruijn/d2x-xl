@@ -105,7 +105,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define IFDBG(_expr)
 #endif
 
-#define STATE_VERSION				41
+#define STATE_VERSION				42
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) nId at tof.
 // 1 - Added Difficulty level save
@@ -1370,7 +1370,7 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 	// hack for a bug I haven't yet been able to fix 
 	if ((objP->info.nType != OBJ_REACTOR) && (objP->info.xShields < 0)) {
 		j = gameData.bosses.Find (i);
-		if ((j < 0) || (gameData.bosses [j].nDying != i))
+		if ((j < 0) || (gameData.bosses [j].m_nDying != i))
 			objP->info.nType = OBJ_NONE;
 		}
 	objP->info.nNextInSeg = objP->info.nPrevInSeg = objP->info.nSegment = -1;
@@ -1783,7 +1783,7 @@ if (!m_bBetweenLevels) {
 	for (i = 0; i < h; i++) {
 		OBJECTS [i].LoadState (m_cf);
 		if ((m_nVersion < 32) && IS_BOSS (OBJECTS + i))
-			gameData.bosses [(int) extraGameInfo [0].nBossCount++].nObject = i;
+			gameData.bosses.Add (i);
 		}
 	IFDBG (fPos = m_cf.Tell ());
 	FixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);

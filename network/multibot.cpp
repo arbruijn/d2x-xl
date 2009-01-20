@@ -78,7 +78,7 @@ else if (objP->info.nType != OBJ_ROBOT) {
 #endif
 else if (ROBOTINFO (objP->info.nId).bossFlag) {
 	int i = gameData.bosses.Find (nObject);
-	if ((i >= 0) && gameData.bosses [i].nDying == 1)
+	if ((i >= 0) && gameData.bosses [i].m_nDying == 1)
 		return 0;
 	return 1;
 	}
@@ -703,7 +703,7 @@ if (bIsThief || ROBOTINFO (robotP->info.nId).thief)
 	DropStolenItems (robotP);
 if (ROBOTINFO (robotP->info.nId).bossFlag) {
 	int i = gameData.bosses.Find (nRobot);
-	if ((i >= 0) && gameData.bosses [i].nDying)
+	if ((i >= 0) && gameData.bosses [i].m_nDying)
 		return 0;
 	StartBossDeathSequence (robotP);
 	}
@@ -830,18 +830,18 @@ switch (action)  {
 		short nTeleportSeg;
 
 		CFixVector vBossDir;
-		if ((secondary < 0) || (secondary > gameData.bosses [nBossIdx].nTeleportSegs)) {
+		if ((secondary < 0) || (secondary > gameData.bosses [nBossIdx].m_nTeleportSegs)) {
 			Int3 (); // Bad nSegment for boss teleport, ROB!!
 			return;
 			}
-		nTeleportSeg = gameData.bosses [nBossIdx].teleportSegs[secondary];
+		nTeleportSeg = gameData.bosses [nBossIdx].m_teleportSegs[secondary];
 		if ((nTeleportSeg < 0) || (nTeleportSeg > gameData.segs.nLastSegment)) {
 			Int3 ();  // See Rob
 			return;
 			}
 		bossObjP->info.position.vPos = SEGMENTS [nTeleportSeg].Center ();
 		OBJECTS [nBossObj].RelinkToSeg (nTeleportSeg);
-		gameData.bosses [nBossIdx].nLastTeleportTime = gameData.time.xGame;
+		gameData.bosses [nBossIdx].m_nLastTeleportTime = gameData.time.xGame;
 		vBossDir = OBJECTS [gameData.multiplayer.players [nPlayer].nObject].info.position.vPos - bossObjP->info.position.vPos;
 		bossObjP->info.position.mOrient = CFixMatrix::CreateF(vBossDir);
 
@@ -859,9 +859,9 @@ switch (action)  {
 		break;
 
 	case 2: // Cloak
-		gameData.bosses [nBossIdx].nHitTime = -I2X (10);
-		gameData.bosses [nBossIdx].nCloakStartTime = gameData.time.xGame;
-		gameData.bosses [nBossIdx].nCloakEndTime = gameData.time.xGame + gameData.bosses [nBossIdx].nCloakDuration;
+		gameData.bosses [nBossIdx].m_nHitTime = -I2X (10);
+		gameData.bosses [nBossIdx].m_nCloakStartTime = gameData.time.xGame;
+		gameData.bosses [nBossIdx].m_nCloakEndTime = gameData.time.xGame + gameData.bosses [nBossIdx].m_nCloakDuration;
 		bossObjP->cType.aiInfo.CLOAKED = 1;
 		break;
 

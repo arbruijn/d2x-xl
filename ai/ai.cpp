@@ -169,9 +169,9 @@ if (gameData.ai.nLastMissileCamera != -1) {
 		}
 	}
 for (h = BOSS_COUNT, j = 0; j < h; j++)
-	if (gameData.bosses [j].nDying) {
+	if (gameData.bosses [j].m_nDying) {
 		if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)
-			DoBossDyingFrame (OBJECTS + gameData.bosses [j].nDying);
+			DoBossDyingFrame (OBJECTS + gameData.bosses [j].m_nDying);
 		else {
 			CObject *objP = OBJECTS.Buffer ();
 			FORALL_ROBOT_OBJS (objP, i)

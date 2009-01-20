@@ -760,30 +760,6 @@ for (int i = 0; i < MAX_BOSS_COUNT; i++)
 
 // ----------------------------------------------------------------------------
 
-CBossData::CBossData ()
-{
-}
-
-// ----------------------------------------------------------------------------
-
-bool CBossData::Create (void)
-{
-if (!m_info.Create (10))
-	return false;
-m_info.SetGrowth (10);
-m_info.Clear ();
-return true;
-}
-
-// ----------------------------------------------------------------------------
-
-void CBossData::Destroy (void)
-{
-m_info.Destroy ();
-}
-
-// ----------------------------------------------------------------------------
-
 CEscortData::CEscortData ()
 {
 memset (this, 0, sizeof (*this));
@@ -1480,6 +1456,7 @@ gameData.ai.Destroy ();
 gameData.multiplayer.Destroy ();
 gameData.multigame.Destroy ();
 gameData.demo.Destroy ();
+gameData.bosses.Destroy ();
 particleManager.Shutdown ();
 lightningManager.Shutdown (1);
 cameraManager.Destroy ();
