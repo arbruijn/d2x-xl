@@ -214,7 +214,7 @@ if (gameStates.app.nDifficultyLevel != v) {
 	gameStates.app.nDifficultyLevel = v;
 	if (!IsMultiGame) {
 		gameStates.app.nDifficultyLevel = v;
-		InitGateIntervals ();
+		gameData.bosses.InitGateIntervals ();
 		}
 	sprintf (m->m_text, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
 	m->m_bRebuild = 1;

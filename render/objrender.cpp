@@ -487,8 +487,8 @@ if (!(xCloakStartTime || xCloakEndTime)) {
 			xCloakEndTime = gameData.time.xGame + I2X (10);
 			}
 		else if (0 <= (i = gameData.bosses.Find (objP->Index ()))) {
-			xCloakStartTime = gameData.bosses [i].nCloakStartTime;
-			xCloakEndTime = gameData.bosses [i].nCloakEndTime;
+			xCloakStartTime = gameData.bosses [i].m_nCloakStartTime;
+			xCloakEndTime = gameData.bosses [i].m_nCloakEndTime;
 			}
 		}
 	}
@@ -724,7 +724,7 @@ else {
 			if (!ROBOTINFO (id).bossFlag)
 				bOk = DrawCloakedObject (objP, xLight, xEngineGlow, gameData.time.xGame - I2X (10), gameData.time.xGame + I2X (10));
 			else if (0 <= (i = gameData.bosses.Find (objP->Index ())))
-				bOk = DrawCloakedObject (objP, xLight, xEngineGlow, gameData.bosses [i].nCloakStartTime, gameData.bosses [i].nCloakEndTime);
+				bOk = DrawCloakedObject (objP, xLight, xEngineGlow, gameData.bosses [i].m_nCloakStartTime, gameData.bosses [i].m_nCloakEndTime);
 			}
 		}
 	else {

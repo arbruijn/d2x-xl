@@ -246,7 +246,7 @@ v = m->m_value;
 if (gameStates.app.nDifficultyLevel != v) {
 	gameStates.app.nDifficultyLevel = 
 	gameStates.app.nDifficultyLevel = v;
-	InitGateIntervals ();
+	gameData.bosses.InitGateIntervals ();
 	sprintf (m->m_text, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
 	m->m_bRebuild = 1;
 	}
@@ -349,7 +349,7 @@ for (;;) {
 i = m [nOptDifficulty].m_value;
 if (gameStates.app.nDifficultyLevel != i) {
 	gameStates.app.nDifficultyLevel = i;
-	InitGateIntervals ();
+	gameData.bosses.InitGateIntervals ();
 	}
 WritePlayerFile ();
 if (optLevel > 0)

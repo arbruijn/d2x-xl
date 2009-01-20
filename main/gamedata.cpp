@@ -777,7 +777,7 @@ return true;
 
 // ----------------------------------------------------------------------------
 
-bool CBossData::Destroy (void)
+void CBossData::Destroy (void)
 {
 m_info.Destroy ();
 }

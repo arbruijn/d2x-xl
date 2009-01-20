@@ -11,6 +11,7 @@
 #include "inferno.h"
 #include "input.h"
 #include "network.h"
+#include "marker.h"
 
 //-------------------------------------------------------------------------
 // reads a CPlayerShip structure from a CFile

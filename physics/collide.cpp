@@ -1213,8 +1213,8 @@ if (!(gameStates.app.cheats.bRobotsKillRobots || EGI_FLAG (bRobotsHitRobots, 0, 
 if ((bIsBoss = ROBOTINFO (info.nId).bossFlag)) {
 	int i = gameData.bosses.Find (OBJ_IDX (this));
 	if (i >= 0) {
-		gameData.bosses [i].nHitTime = gameData.time.xGame;
-		gameData.bosses [i].bHasBeenHit = 1;
+		gameData.bosses [i].m_nHitTime = gameData.time.xGame;
+		gameData.bosses [i].m_bHasBeenHit = 1;
 		}
 	}
 
@@ -1309,7 +1309,7 @@ if (weaponP->cType.laserInfo.parent.nType == OBJ_PLAYER) {
 		if (i >= 0) {
 			if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bSpewMore && (d_rand () > 16384) &&
 				 (robotP->BossSpewRobot (&vHitPt, -1, 0) != -1))
-				gameData.bosses [i].nLastGateTime = gameData.time.xGame - gameData.bosses [i].nGateInterval - 1;	//	Force allowing spew of another bot.
+				gameData.bosses [i].m_nLastGateTime = gameData.time.xGame - gameData.bosses [i].m_nGateInterval - 1;	//	Force allowing spew of another bot.
 			robotP->BossSpewRobot (&vHitPt, -1, 0);
 			}
 		}
@@ -1458,7 +1458,7 @@ else if (info.nId == OMEGA_ID) {
 if (botInfoP->bossFlag) {
 	int i = gameData.bosses.Find (OBJ_IDX (robotP));
 	if (i >= 0)
-		gameData.bosses [i].nHitTime = gameData.time.xGame;
+		gameData.bosses [i].m_nHitTime = gameData.time.xGame;
 	if (botInfoP->bossFlag >= BOSS_D2) {
 		bDamage = DoBossWeaponCollision (robotP, this, vHitPt);
 		bInvulBoss = !bDamage;
