@@ -1720,22 +1720,29 @@ for (l = 0; l < nRenderDepth; l++) {
 			andCodes3D = 0xff;
 			for (j = 0; j < 4; j++) {
 				g3sPoint *pnt = gameData.segs.points + sv [s2v [j]];
-#if 1
+#if 0
 				if (pnt->p3_codes & CC_BEHIND) {
 					bNotProjected = 1;
 					break;
 					}
+#endif
 				if (!(pnt->p3_flags & PF_PROJECTED))
 					G3ProjectPoint (pnt);
-#else
-				if (!(pnt->p3_flags & PF_PROJECTED)) {
-					bNotProjected = 1;
-					break;
-					}
-#endif
 				x = pnt->p3_screen.x;
 				y = pnt->p3_screen.y;
-				andCodes3D &= pnt->p3_codes;
+#if 1
+				if (pnt->p3_codes & CC_BEHIND) {
+					if (x < renderPortals [0].left)
+						x = renderPortals [0].left;
+					else if (x > renderPortals [0].right)
+						x = renderPortals [0].right;
+					if (y < renderPortals [0].top)
+						y = renderPortals [0].top;
+					else if (y > renderPortals [0].bot)
+						y = renderPortals [0].bot;
+					}
+#endif
+				andCodes3D &= (pnt->p3_codes & ~CC_BEHIND);
 				if (p.left > x)
 					p.left = x;
 				if (p.right < x)
@@ -1745,6 +1752,10 @@ for (l = 0; l < nRenderDepth; l++) {
 				if (p.bot < y)
 					p.bot = y;
 				}
+#if DBG
+			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+				nChildSeg = nChildSeg;
+#endif
 			if (bNotProjected || !(andCodes3D | (0xff & CodePortal (&p, curPortal)))) {	//maybe add this segment
 				int nPos = gameData.render.mine.nRenderPos [nChildSeg];
 				tPortal *newPortal = renderPortals + nCurrent;
@@ -1765,33 +1776,28 @@ for (l = 0; l < nRenderDepth; l++) {
 					VISIT (nChildSeg);
 					}
 				else {
-					tPortal *rwP = renderPortals + nPos;
+					tPortal *oldPortal = renderPortals + nPos;
 					bool bExpand = false;
-					int h;
-					h = newPortal->left - rwP->left;
-					if (h > 0)
-						newPortal->left = rwP->left;
-					else if (h < 0)
+					if (newPortal->left < oldPortal->left) {
+						newPortal->left = oldPortal->left;
 						bExpand = true;
-					h = newPortal->right - rwP->right;
-					if (h < 0)
-						newPortal->right = rwP->right;
-					else if (h > 0)
+						}
+					if (newPortal->right > oldPortal->right) {
+						newPortal->right = oldPortal->right;
 						bExpand = true;
-					h = newPortal->top - rwP->top;
-					if (h > 0)
-						newPortal->top = rwP->top;
-					else if (h < 0)
+						}
+					if (newPortal->top < oldPortal->top) {
+						newPortal->top = oldPortal->top;
 						bExpand = true;
-					h = newPortal->bot - rwP->bot;
-					if (h < 0)
-						newPortal->bot = rwP->bot;
-					else if (h > 0)
+						}
+					if (newPortal->bot > oldPortal->bot) {
+						newPortal->bot = oldPortal->bot;
 						bExpand = true;
+						}
 					if (bExpand) {
 						if (nCurrent < gameData.segs.nSegments)
 							gameData.render.mine.nSegRenderList [nCurrent] = -0x7fff;
-						*rwP = *newPortal;		//get updated tPortal
+						*oldPortal = *newPortal;		//get updated tPortal
 						gameData.render.mine.bProcessed [nPos] = gameData.render.mine.nProcessed - 1;		//force reprocess
 						}
 					}
@@ -1959,7 +1965,7 @@ else if (gameStates.render.nType == 2)	// render objects containing transparency
 int BeginRenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 {
 PROF_START
-	tPortal	*rwP;
+	tPortal	*oldPortal;
 #if 0//def _DEBUG
 	int		i;
 #endif
@@ -2021,15 +2027,15 @@ if (nClearWindow == 2) {
 		if (nClearWindowColor == (uint) -1)
 			nClearWindowColor = BLACK_RGBA;
 		CCanvas::Current ()->SetColor (nClearWindowColor);
-		for (i = nFirstTerminalSeg, rwP = renderPortals; i < gameData.render.mine.nRenderSegs; i++, rwP++) {
+		for (i = nFirstTerminalSeg, oldPortal = renderPortals; i < gameData.render.mine.nRenderSegs; i++, oldPortal++) {
 			if (gameData.render.mine.nSegRenderList [i] != -0x7fff) {
 #if DBG
-				if ((rwP->left == -1) || (rwP->top == -1) || (rwP->right == -1) || (rwP->bot == -1))
+				if ((oldPortal->left == -1) || (oldPortal->top == -1) || (oldPortal->right == -1) || (oldPortal->bot == -1))
 					Int3();
 				else
 #endif
 					//NOTE LINK TO ABOVE!
-					GrRect(rwP->left, rwP->top, rwP->right, rwP->bot);
+					GrRect(oldPortal->left, oldPortal->top, oldPortal->right, oldPortal->bot);
 				}
 			}
 		}
