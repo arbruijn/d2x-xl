@@ -3006,6 +3006,8 @@ class CLaserData {
 		int		nGlobalFiringCount;
 		int		nMissileGun;
 		int		nOffset;
+		int		nProximityDropped;
+		int		nSmartMinesDropped;
 };
 
 //------------------------------------------------------------------------------

@@ -1571,8 +1571,6 @@ if (nPlayer == gameData.multiplayer.nLocalPlayer) {
 gameData.objs.guidedMissile [nPlayer].objP = NULL;
 }
 
-int nProximityDropped = 0, nSmartMinesDropped = 0;
-
 //	-------------------------------------------------------------------------------------------
 //parameter determines whether or not to do autoselect if have run out of ammo
 //this is needed because if you drop a bomb with the B key, you don't
@@ -1619,8 +1617,8 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 	nObject = LaserPlayerFire (gameData.objs.consoleP, nWeaponId, nGun, 1, 0, -1);
 	if (gameData.weapons.nSecondary == PROXMINE_INDEX) {
 		if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
-			if (++nProximityDropped == 4) {
-				nProximityDropped = 0;
+			if (++gameData.laser.nProximityDropped == 4) {
+				gameData.laser.nProximityDropped = 0;
 				MaybeDropNetPowerup (nObject, POW_PROXMINE, INIT_DROP);
 				}
 			}
@@ -1628,8 +1626,8 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 		}
 	else if (gameData.weapons.nSecondary == SMARTMINE_INDEX) {
 		if (!(gameData.app.nGameMode & GM_ENTROPY)) {
-			if (++nSmartMinesDropped == 4) {
-				nSmartMinesDropped = 0;
+			if (++gameData.laser.nSmartMinesDropped == 4) {
+				gameData.laser.nSmartMinesDropped = 0;
 				MaybeDropNetPowerup (nObject, POW_SMARTMINE, INIT_DROP);
 				}
 			}

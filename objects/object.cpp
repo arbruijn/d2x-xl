@@ -1495,11 +1495,11 @@ void AdjustMineSpawn (void)
 if (!(gameData.app.nGameMode & GM_NETWORK))
 	return;  // No need for this function in any other mode
 if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))
-	LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] += nProximityDropped;
+	LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] += gameData.laser.nProximityDropped;
 if (!(gameData.app.nGameMode & GM_ENTROPY))
-	LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX] += nSmartMinesDropped;
-nProximityDropped = 0;
-nSmartMinesDropped = 0;
+	LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX] += gameData.laser.nSmartMinesDropped;
+gameData.laser.nProximityDropped = 0;
+gameData.laser.nSmartMinesDropped = 0;
 }
 
 //------------------------------------------------------------------------------

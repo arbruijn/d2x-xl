@@ -158,7 +158,7 @@ gameStates.app.bPlayerEggsDropped = 0;
 
 //------------------------------------------------------------------------------
 
-extern int nProximityDropped, nSmartMinesDropped;
+extern int gameData.laser.nProximityDropped, gameData.laser.nSmartMinesDropped;
 
 void DeadPlayerFrame (void)
 {
