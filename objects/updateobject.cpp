@@ -623,5 +623,34 @@ for (i = windowRenderedData [nWindow].nObjects; i; ) {
 	}
 }
 
+//------------------------------------------------------------------------------
+
+void CleanupObjects (void)
+{
+	CObject	*objP, *nextObjP = NULL;
+	int		nLocalDeadPlayerObj = -1;
+
+for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
+	nextObjP = objP->Links (0).next;
+	if (objP->info.nType == OBJ_NONE)
+		continue;
+	if (!(objP->info.nFlags & OF_SHOULD_BE_DEAD))
+		continue;
+	Assert ((objP->info.nType != OBJ_FIREBALL) || (objP->cType.explInfo.nDeleteTime == -1));
+	if (objP->info.nType != OBJ_PLAYER)
+		ReleaseObject (objP->Index ());
+	else {
+		if (objP->info.nId == gameData.multiplayer.nLocalPlayer) {
+			if (nLocalDeadPlayerObj == -1) {
+				StartPlayerDeathSequence (objP);
+				nLocalDeadPlayerObj = objP->Index ();
+				}
+			else
+				Int3 ();
+			}
+		}
+	}
+}
+
 //	-----------------------------------------------------------------------------------------------------------
 //eof

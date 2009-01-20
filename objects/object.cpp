@@ -1680,45 +1680,16 @@ nSmartminesDropped = 0;
 
 //------------------------------------------------------------------------------
 
-void CleanupObjects (void)
-{
-	CObject	*objP, *nextObjP = NULL;
-	int		nLocalDeadPlayerObj = -1;
-
-for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
-	nextObjP = objP->Links (0).next;
-	if (objP->info.nType == OBJ_NONE)
-		continue;
-	if (!(objP->info.nFlags & OF_SHOULD_BE_DEAD))
-		continue;
-	Assert ((objP->info.nType != OBJ_FIREBALL) || (objP->cType.explInfo.nDeleteTime == -1));
-	if (objP->info.nType != OBJ_PLAYER)
-		ReleaseObject (objP->Index ());
-	else {
-		if (objP->info.nId == gameData.multiplayer.nLocalPlayer) {
-			if (nLocalDeadPlayerObj == -1) {
-				StartPlayerDeathSequence (objP);
-				nLocalDeadPlayerObj = objP->Index ();
-				}
-			else
-				Int3 ();
-			}
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-
 int CObject::SoundClass (void)
 {
-	short nType = objP->info.nType;
+	short nType = info.nType;
 
 if (nType == OBJ_PLAYER)
 	return SOUNDCLASS_PLAYER;
 if (nType == OBJ_ROBOT)
 	return SOUNDCLASS_ROBOT;
 if (nType == OBJ_WEAPON)
-	return gameData.objs.bIsMissile [objP->info.nId] ? SOUNDCLASS_MISSILE : SOUNDCLASS_GENERIC;
+	return gameData.objs.bIsMissile [info.nId] ? SOUNDCLASS_MISSILE : SOUNDCLASS_GENERIC;
 return SOUNDCLASS_GENERIC;
 }
 
