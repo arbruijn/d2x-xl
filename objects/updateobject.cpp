@@ -75,6 +75,17 @@ int dbgObjInstances = 0;
 #define	DEG45		 (I2X (1) / 8)
 #define	DEG1		 (I2X (1) / (4 * 90))
 
+//------------------------------------------------------------------------------
+
+void CObject::Die (void)
+{
+info.nFlags |= OF_SHOULD_BE_DEAD;
+#if DBG
+if (this == dbgObjP)
+	dbgObjP = dbgObjP;
+#endif
+}
+
 //--------------------------------------------------------------------
 //process a continuously-spinning CObject
 void CObject::Spin (void)
@@ -517,8 +528,6 @@ int UpdateAllObjects (void)
 	int i;
 	CObject *objP, *nextObjP;
 
-//	CheckDuplicateObjects ();
-//	RemoveIncorrectObjects ();
 gameData.objs.nFrameCount++;
 if (gameData.objs.nLastObject [0] > gameData.objs.nMaxUsedObjects)
 	FreeObjectSlots (gameData.objs.nMaxUsedObjects);		//	Free all possible CObject slots.

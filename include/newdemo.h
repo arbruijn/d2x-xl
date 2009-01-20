@@ -78,7 +78,7 @@ void NDRecordDoorOpening (int nSegment, int nSide);
 void NDRecordLaserLevel (sbyte oldLevel, sbyte newLevel);
 void NDRecordCloakingWall (int nFrontWall, int nBackWall, ubyte nType, ubyte state, fix cloakValue, fix l0, fix l1, fix l2, fix l3);
 void NDRecordSecretExitBlown (int truth);
-
+void NDRecordGuidedEnd (void);
 
 // Functions called during playback process...
 void newdemoObject_move_all (void);

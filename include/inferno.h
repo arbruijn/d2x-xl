@@ -1874,6 +1874,7 @@ class CObjectData {
 		int							nObjectLimit;
 		int							nMaxUsedObjects;
 		int							nEffects;
+		int							nDebris;
 		int							nNextSignature;
 		int							nChildFreeList;
 		int							nDrops;

@@ -1131,14 +1131,14 @@ StartTime (0);
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordGuidedStart ()
+void NDRecordGuidedStart (void)
 {
 NDWriteByte (ND_EVENT_START_GUIDED);
 }
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordGuidedEnd ()
+void NDRecordGuidedEnd (void)
 {
 NDWriteByte (ND_EVENT_END_GUIDED);
 }

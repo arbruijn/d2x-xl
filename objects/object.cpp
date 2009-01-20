@@ -225,117 +225,6 @@ FORALL_OBJS (objP, i)
  }
 
 //------------------------------------------------------------------------------
-// These variables are used to keep a list of the 3 closest robots to the viewerP.
-// The code works like this: Every time render CObject is called with a polygon model,
-// it finds the distance of that robot to the viewerP.  If this distance if within 10
-// segments of the viewerP, it does the following: If there aren't already 3 robots in
-// the closet-robots list, it just sticks that CObject into the list along with its distance.
-// If the list already contains 3 robots, then it finds the robot in that list that is
-// farthest from the viewerP. If that CObject is farther than the CObject currently being
-// rendered, then the new CObject takes over that far CObject's slot.  *Then* after all
-// OBJECTS are rendered, object_render_targets is called an it draws a target on top
-// of all the OBJECTS.
-
-//091494: #define MAX_CLOSE_ROBOTS 3
-//--unused-- static int Object_draw_lock_boxes = 0;
-//091494: static int Object_num_close = 0;
-//091494: static CObject * Object_close_ones [MAX_CLOSE_ROBOTS];
-//091494: static fix Object_closeDistance [MAX_CLOSE_ROBOTS];
-
-//091494: set_closeObjects (CObject *objP)
-//091494: {
-//091494: 	fix dist;
-//091494:
-//091494: 	if ((objP->info.nType != OBJ_ROBOT) || (Object_draw_lock_boxes == 0))
-//091494: 		return;
-//091494:
-//091494: 	// The following code keeps a list of the 10 closest robots to the
-//091494: 	// viewerP.  See comments in front of this function for how this works.
-//091494: 	dist = VmVecDist (&objP->info.position.vPos, &gameData.objs.viewerP->info.position.vPos);
-//091494: 	if (dist < I2X (20*10)) {
-//091494: 		if (Object_num_close < MAX_CLOSE_ROBOTS) {
-//091494: 			Object_close_ones [Object_num_close] = obj;
-//091494: 			Object_closeDistance [Object_num_close] = dist;
-//091494: 			Object_num_close++;
-//091494: 		} else {
-//091494: 			int i, farthestRobot;
-//091494: 			fix farthestDistance;
-//091494: 			// Find the farthest robot in the list
-//091494: 			farthestRobot = 0;
-//091494: 			farthestDistance = Object_closeDistance [0];
-//091494: 			for (i=1; i<Object_num_close; i++) {
-//091494: 				if (Object_closeDistance [i] > farthestDistance) {
-//091494: 					farthestDistance = Object_closeDistance [i];
-//091494: 					farthestRobot = i;
-//091494: 				}
-//091494: 			}
-//091494: 			// If this CObject is closer to the viewerP than
-//091494: 			// the farthest in the list, replace the farthest with this CObject.
-//091494: 			if (farthestDistance > dist) {
-//091494: 				Object_close_ones [farthestRobot] = obj;
-//091494: 				Object_closeDistance [farthestRobot] = dist;
-//091494: 			}
-//091494: 		}
-//091494: 	}
-//091494: }
-
-
-//	------------------------------------------------------------------------------------------------------------------
-
-void CreateSmallFireballOnObject (CObject *objP, fix size_scale, int bSound)
-{
-	fix			size;
-	CFixVector	vPos, vRand;
-	short			nSegment;
-
-vPos = objP->info.position.vPos;
-vRand = CFixVector::Random();
-vRand *= (objP->info.xSize / 2);
-vPos += vRand;
-size = FixMul (size_scale, I2X (1) / 2 + d_rand () * 4 / 2);
-nSegment = FindSegByPos (vPos, objP->info.nSegment, 1, 0);
-if (nSegment != -1) {
-	CObject *explObjP = /*Object*/CreateExplosion (nSegment, vPos, size, VCLIP_SMALL_EXPLOSION);
-	if (!explObjP)
-		return;
-	AttachObject (objP, explObjP);
-	if (d_rand () < 8192) {
-		fix	vol = I2X (1) / 2;
-		if (objP->info.nType == OBJ_ROBOT)
-			vol *= 2;
-		else if (bSound)
-			audio.CreateObjectSound (SOUND_EXPLODING_WALL, SOUNDCLASS_EXPLOSION, objP->Index (), 0, vol);
-		}
-	}
-}
-
-//	------------------------------------------------------------------------------------------------------------------
-
-void CreateVClipOnObject (CObject *objP, fix xScale, ubyte nVClip)
-{
-	fix			xSize;
-	CFixVector	vPos, vRand;
-	short			nSegment;
-
-vPos = objP->info.position.vPos;
-vRand = CFixVector::Random();
-vRand *= (objP->info.xSize / 2);
-vPos += vRand;
-xSize = FixMul (xScale, I2X (1) + d_rand ()*4);
-nSegment = FindSegByPos (vPos, objP->info.nSegment, 1, 0);
-if (nSegment != -1) {
-	CObject *explObjP = /*Object*/CreateExplosion (nSegment, vPos, xSize, nVClip);
-	if (!explObjP)
-		return;
-
-	explObjP->info.movementType = MT_PHYSICS;
-	explObjP->mType.physInfo.velocity [X] = objP->mType.physInfo.velocity [X] / 2;
-	explObjP->mType.physInfo.velocity [Y] = objP->mType.physInfo.velocity [Y] / 2;
-	explObjP->mType.physInfo.velocity [Z] = objP->mType.physInfo.velocity [Z] / 2;
-	}
-}
-
-//------------------------------------------------------------------------------
 
 void ResetPlayerObject (void)
 {
@@ -396,17 +285,6 @@ gameData.objs.consoleP->info.xLifeLeft = IMMORTAL_TIME;
 gameData.objs.consoleP->info.nAttachedObj = -1;
 ResetPlayerObject ();
 InitMultiPlayerObject ();
-}
-
-//------------------------------------------------------------------------------
-
-void CObject::Die (void)
-{
-info.nFlags |= OF_SHOULD_BE_DEAD;
-#if DBG
-if (this == dbgObjP)
-	dbgObjP = dbgObjP;
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -523,37 +401,6 @@ else
 	OBJECTS [objP->info.nPrevInSeg].info.nNextInSeg = objP->info.nNextInSeg;
 if (objP->info.nNextInSeg != -1)
 	OBJECTS [objP->info.nNextInSeg].info.nPrevInSeg = objP->info.nPrevInSeg;
-}
-
-//------------------------------------------------------------------------------
-
-void RemoveIncorrectObjects ()
-{
-	int nSegment, nObject, count;
-
-for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
-	count = 0;
-	for (nObject = SEGMENTS [nSegment].m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
-		count++;
-		#if DBG
-		if (count > LEVEL_OBJECTS) {
-#if TRACE
-			console.printf (1, "Object list in CSegment %d is circular.\n", nSegment);
-#endif
-			Int3 ();
-		}
-		#endif
-		if (OBJECTS [nObject].info.nSegment != nSegment) {
-			#if DBG
-#if TRACE
-			console.printf (CON_DBG, "Removing CObject %d from CSegment %d.\n", nObject, nSegment);
-#endif
-			Int3 ();
-			#endif
-			JohnsObjUnlink (nSegment, nObject);
-			}
-		}
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -767,7 +614,6 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int nDebrisObjectCount = 0;
 int nUnusedObjectsSlots;
 
 //returns the number of a free object, updating gameData.objs.nLastObject [0].
@@ -1299,7 +1145,7 @@ if ((Segment () < 0) || (Segment () > gameData.segs.nLastSegment))
 	return -1;
 
 if (nType == OBJ_DEBRIS) {
-	if (nDebrisObjectCount >= gameStates.render.detail.nMaxDebrisObjects)
+	if (gameData.objs.nDebris >= gameStates.render.detail.nMaxDebrisObjects)
 		return -1;
 	}
 
@@ -1338,7 +1184,7 @@ if (GetType () == OBJ_WEAPON) {
 	CLaserInfo::SetScale (I2X (1));
 	}
 else if (GetType () == OBJ_DEBRIS)
-	nDebrisObjectCount++;
+	gameData.objs.nDebris++;
 if (GetControlType () == CT_POWERUP)
 	CPowerupInfo::SetCreationTime (gameData.time.xGame);
 else if (GetControlType () == CT_EXPLOSION) {
@@ -1403,7 +1249,7 @@ if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment))
 	return -1;
 
 if (nType == OBJ_DEBRIS) {
-	if (nDebrisObjectCount >= gameStates.render.detail.nMaxDebrisObjects)
+	if (gameData.objs.nDebris >= gameStates.render.detail.nMaxDebrisObjects)
 		return -1;
 	}
 
@@ -1447,7 +1293,7 @@ if (objP->info.nType == OBJ_WEAPON) {
 	objP->cType.laserInfo.xScale = I2X (1);
 	}
 else if (objP->info.nType == OBJ_DEBRIS)
-	nDebrisObjectCount++;
+	gameData.objs.nDebris++;
 if (objP->info.controlType == CT_POWERUP)
 	objP->cType.powerupInfo.xCreationTime = gameData.time.xGame;
 else if (objP->info.controlType == CT_EXPLOSION)
@@ -1630,7 +1476,7 @@ if (objP->info.nFlags & OF_ATTACHED)		//detach this from CObject
 if (objP->info.nAttachedObj != -1)		//detach all OBJECTS from this
 	DetachChildObjects (objP);
 if (objP->info.nType == OBJ_DEBRIS)
-	nDebrisObjectCount--;
+	gameData.objs.nDebris--;
 OBJECTS [nObject].UnlinkFromSeg ();
 Assert (OBJECTS [0].info.nNextInSeg != 0);
 if ((objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR))
@@ -1949,7 +1795,7 @@ for (; i < LEVEL_OBJECTS; i++, objP++) {
 	objP->info.nFlags = 0;
 	}
 gameData.objs.nLastObject [0] = gameData.objs.nObjects - 1;
-nDebrisObjectCount = 0;
+gameData.objs.nDebris = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -2080,33 +1926,33 @@ Assert (childObjP->cType.explInfo.attached.nPrev != OBJ_IDX (childObjP));
 
 //------------------------------------------------------------------------------
 //dettaches one CObject
-void DetachFromParent (CObject *sub)
+void DetachFromParent (CObject *objP)
 {
-if ((OBJECTS [sub->cType.explInfo.attached.nParent].info.nType != OBJ_NONE) &&
-	 (OBJECTS [sub->cType.explInfo.attached.nParent].info.nAttachedObj != -1)) {
-	if (sub->cType.explInfo.attached.nNext != -1) {
-		OBJECTS [sub->cType.explInfo.attached.nNext].cType.explInfo.attached.nPrev = sub->cType.explInfo.attached.nPrev;
+if ((OBJECTS [objP->cType.explInfo.attached.nParent].info.nType != OBJ_NONE) &&
+	 (OBJECTS [objP->cType.explInfo.attached.nParent].info.nAttachedObj != -1)) {
+	if (objP->cType.explInfo.attached.nNext != -1) {
+		OBJECTS [objP->cType.explInfo.attached.nNext].cType.explInfo.attached.nPrev = objP->cType.explInfo.attached.nPrev;
 		}
-	if (sub->cType.explInfo.attached.nPrev != -1) {
-		OBJECTS [sub->cType.explInfo.attached.nPrev].cType.explInfo.attached.nNext =
-			sub->cType.explInfo.attached.nNext;
+	if (objP->cType.explInfo.attached.nPrev != -1) {
+		OBJECTS [objP->cType.explInfo.attached.nPrev].cType.explInfo.attached.nNext =
+			objP->cType.explInfo.attached.nNext;
 		}
 	else {
-		OBJECTS [sub->cType.explInfo.attached.nParent].info.nAttachedObj = sub->cType.explInfo.attached.nNext;
+		OBJECTS [objP->cType.explInfo.attached.nParent].info.nAttachedObj = objP->cType.explInfo.attached.nNext;
 		}
 	}
-sub->cType.explInfo.attached.nNext =
-sub->cType.explInfo.attached.nPrev =
-sub->cType.explInfo.attached.nParent = -1;
-sub->info.nFlags &= ~OF_ATTACHED;
+objP->cType.explInfo.attached.nNext =
+objP->cType.explInfo.attached.nPrev =
+objP->cType.explInfo.attached.nParent = -1;
+objP->info.nFlags &= ~OF_ATTACHED;
 }
 
 //------------------------------------------------------------------------------
 //dettaches all OBJECTS from this CObject
-void DetachChildObjects (CObject *parent)
+void DetachChildObjects (CObject *parentP)
 {
-while (parent->info.nAttachedObj != -1)
-	DetachFromParent (OBJECTS + parent->info.nAttachedObj);
+while (parentP->info.nAttachedObj != -1)
+	DetachFromParent (OBJECTS + parentP->info.nAttachedObj);
 }
 
 //------------------------------------------------------------------------------

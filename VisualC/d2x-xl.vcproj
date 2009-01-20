@@ -3698,6 +3698,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\objects\createobject.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\objects\effectobjects.cpp"
 						>
 					</File>

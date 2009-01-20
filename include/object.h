@@ -1207,6 +1207,9 @@ void DeadPlayerFrame (void);
 
 void SetObjectType (CObject *objP, ubyte nNewType);
 
+void DetachFromParent (CObject *objP);
+void DetachChildObjects (CObject *parentP);
+
 extern ubyte bIsMissile [];
 
 //	-----------------------------------------------------------------------------
