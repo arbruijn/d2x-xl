@@ -3115,18 +3115,18 @@ ndOutFile.Close ();
 
 //	-----------------------------------------------------------------------------
 
-char demoname_allowed_chars [] = "azAZ09__--";
+char szAllowedDemoNameChars [] = "azAZ09__--";
+
 void NDStopRecording (void)
 {
 	static char filename [15] = "", *s;
-	static ubyte tmpcnt = 0;
+	static ubyte nAnonymous = 0;
 
 	CMenu	m (6);
 	int	exit = 0;
 	char	fullname [15 + FILENAME_LEN] = "";
 
 NDFinishRecording ();
-gameData.demo.nState = ND_STATE_NORMAL;
 paletteManager.LoadEffect ();
 if (filename [0] != '\0') {
 	int num, i = (int) strlen (filename) - 1;
@@ -3148,7 +3148,7 @@ if (filename [0] != '\0') {
 
 do {
 	m.Destroy ();
-	nmAllowedChars = demoname_allowed_chars;
+	nmAllowedChars = szAllowedDemoNameChars;
 	if (!gameData.demo.bNoSpace) {
 		m.Create (1);
 		m.AddInput (filename, 8);
@@ -3168,20 +3168,21 @@ do {
 		}
 	nmAllowedChars = NULL;
 	if (exit == -2) {                   // got bumped out from network menu
-		char save_file [7 + FILENAME_LEN];
+		char szSaveFile [7 + FILENAME_LEN];
 
 		if (filename [0] != '\0') {
-			strcpy (save_file, filename);
-			strcat (save_file, ".dem");
-		} else
-			sprintf (save_file, "tmp%d.dem", tmpcnt++);
-		CFile::Delete (save_file, gameFolders.szDemoDir);
-		CFile::Rename (DEMO_FILENAME, save_file, gameFolders.szDemoDir);
-		return;
+			strcpy (szSaveFile, filename);
+			strcat (szSaveFile, ".dem");
+			}
+		else
+			sprintf (szSaveFile, "tmp%d.dem", nAnonymous++);
+		CFile::Delete (szSaveFile, gameFolders.szDemoDir);
+		CFile::Rename (DEMO_FILENAME, szSaveFile, gameFolders.szDemoDir);
+		break;
 		}
 	if (exit == -1) {               // pressed ESC
 		CFile::Delete (DEMO_FILENAME, gameFolders.szDemoDir);      // might as well remove the file
-		return;                     // return without doing anything
+		break;                     // return without doing anything
 		}
 
 	//check to make sure name is ok
@@ -3193,10 +3194,13 @@ do {
 			}
 	} while (!*filename);
 
-strcpy (fullname, m [gameData.demo.bNoSpace].m_text);
-strcat (fullname, ".dem");
-CFile::Delete (fullname, gameFolders.szDemoDir);
-CFile::Rename (DEMO_FILENAME, fullname, gameFolders.szDemoDir);
+gameData.demo.nState = ND_STATE_NORMAL;
+if (exit >= 0) {
+	strcpy (fullname, m [gameData.demo.bNoSpace].m_text);
+	strcat (fullname, ".dem");
+	CFile::Delete (fullname, gameFolders.szDemoDir);
+	CFile::Rename (DEMO_FILENAME, fullname, gameFolders.szDemoDir);
+	}
 }
 
 //	-----------------------------------------------------------------------------
