@@ -64,156 +64,8 @@ int spewBots [2][NUM_D2_BOSSES][MAX_SPEW_BOT] = {
 
 int	maxSpewBots [NUM_D2_BOSSES] = {2, 1, 2, 3, 3, 3, 3, 3};
 
-// ---------------------------------------------------------------------------------------------------------------------
-//	Call every time the CPlayerData starts a new ship.
-void AIInitBossForShip (void)
-{
-	int	i;
-
-for (i = 0; i < MAX_BOSS_COUNT; i++)
-	gameData.boss [i].nHitTime = -I2X (10);
-}
-
-#define	QUEUE_SIZE	256
-
 // --------------------------------------------------------------------------------------------------------------------
-//	Create list of segments boss is allowed to teleport to at segListP.
-//	Set *segCountP.
-//	Boss is allowed to teleport to segments he fits in (calls ObjectIntersectsWall) and
-//	he can reach from his initial position (calls FindConnectedDistance).
-//	If bSizeCheck is set, then only add CSegment if boss can fit in it, else any segment is legal.
-//	bOneWallHack added by MK, 10/13/95: A mega-hack! Set to !0 to ignore the
-void InitBossSegments (int objList, short segListP [], short *segCountP, int bSizeCheck, int bOneWallHack)
-{
-	CSegment		*segP;
-	CObject		*bossObjP = OBJECTS + objList;
-	CFixVector	vBossHomePos;
-	int			nBossHomeSeg;
-	int			head, tail, w, childSeg;
-	int			nGroup, nSide, nSegments;
-	int			seqQueue [QUEUE_SIZE];
-	fix			xBossSizeSave;
-
-#ifdef EDITOR
-nSelectedSegs = 0;
-#endif
-//	See if there is a boss.  If not, quick out.
-nSegments = 0;
-xBossSizeSave = bossObjP->info.xSize;
-// -- Causes problems!!	-- bossObjP->info.xSize = FixMul (I2X (3) / 4, bossObjP->info.xSize);
-nBossHomeSeg = bossObjP->info.nSegment;
-vBossHomePos = bossObjP->info.position.vPos;
-nGroup = SEGMENTS [nBossHomeSeg].m_group;
-head =
-tail = 0;
-seqQueue [head++] = nBossHomeSeg;
-segListP [nSegments++] = nBossHomeSeg;
-#ifdef EDITOR
-Selected_segs [nSelectedSegs++] = nBossHomeSeg;
-#endif
-
-gameData.render.mine.bVisited.Clear ();
-
-while (tail != head) {
-	segP = SEGMENTS + seqQueue [tail++];
-	tail &= QUEUE_SIZE-1;
-	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
-		childSeg = segP->m_children [nSide];
-		if (!bOneWallHack) {
-			w = segP->IsDoorWay (nSide, NULL);
-			if (!(w & WID_FLY_FLAG))
-				continue;
-			}
-		//	If we get here and w == WID_WALL, then we want to process through this CWall, else not.
-		if (!IS_CHILD (childSeg))
-			continue;
-		if (bOneWallHack)
-			bOneWallHack--;
-		if (gameData.render.mine.bVisited [childSeg])
-			continue;
-		if (nGroup != SEGMENTS [childSeg].m_group)
-			continue;
-		seqQueue [head++] = childSeg;
-		gameData.render.mine.bVisited [childSeg] = 1;
-		head &= QUEUE_SIZE - 1;
-		if (head > tail) {
-			if (head == tail + QUEUE_SIZE-1)
-				goto errorExit;	//	queue overflow.  Make it bigger!
-			}
-		else if (head + QUEUE_SIZE == tail + QUEUE_SIZE - 1)
-			goto errorExit;	//	queue overflow.  Make it bigger!
-		if (bSizeCheck && !BossFitsInSeg (bossObjP, childSeg))
-			continue;
-		if (nSegments >= MAX_BOSS_TELEPORT_SEGS - 1)
-			goto errorExit;
-		segListP [nSegments++] = childSeg;
-#ifdef EDITOR
-		Selected_segs [nSelectedSegs++] = childSeg;
-#endif
-		}
-	}
-
-errorExit:
-
-bossObjP->info.xSize = xBossSizeSave;
-bossObjP->info.position.vPos = vBossHomePos;
-OBJECTS [objList].RelinkToSeg (nBossHomeSeg);
-*segCountP = nSegments;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void InitBossData (int i, int nObject)
-{
-if (nObject >= 0)
-	gameData.boss [i].nObject = nObject;
-else if (gameData.boss [i].nObject < 0)
-	return;
-InitBossSegments (gameData.boss [i].nObject, gameData.boss [i].gateSegs.Buffer (), &gameData.boss [i].nGateSegs, 0, 0);
-InitBossSegments (gameData.boss [i].nObject, gameData.boss [i].teleportSegs.Buffer (), &gameData.boss [i].nTeleportSegs, 1, 0);
-if (gameData.boss [i].nTeleportSegs == 1)
-	InitBossSegments (gameData.boss [i].nObject, gameData.boss [i].teleportSegs.Buffer (), &gameData.boss [i].nTeleportSegs, 1, 1);
-gameData.boss [i].bDyingSoundPlaying = 0;
-gameData.boss [i].nDying = 0;
-if (gameStates.app.bD1Mission)
-	gameData.boss [i].nGateInterval = I2X (5) - I2X (gameStates.app.nDifficultyLevel) / 2;
-else
-	gameData.boss [i].nGateInterval = I2X (4) - gameStates.app.nDifficultyLevel * I2X (2) / 3;
-if (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) {
-	gameData.boss [i].nTeleportInterval = I2X (10);
-	gameData.boss [i].nCloakInterval = I2X (15);					//	Time between cloaks
-	}
-else {
-	gameData.boss [i].nTeleportInterval = I2X (7);
-	gameData.boss [i].nCloakInterval = I2X (10);					//	Time between cloaks
-	}
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-int AddBoss (int nObject)
-{
-	int	i = FindBoss (nObject);
-
-if (i >= 0)
-	return i;
-i = extraGameInfo [0].nBossCount++;
-if (i >= MAX_BOSS_COUNT)
-	return -1;
-InitBossData (i, nObject);
-return i;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void RemoveBoss (int i)
-{
-extraGameInfo [0].nBossCount--;
-if (i < BOSS_COUNT)
-	gameData.boss [i] = gameData.boss [BOSS_COUNT];
-memset (gameData.boss + BOSS_COUNT, 0, sizeof (gameData.boss [BOSS_COUNT]));
-}
-
+// --------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------
 //	Return nObject if CObject created, else return -1.
 //	If pos == NULL, pick random spot in CSegment.
@@ -351,10 +203,10 @@ return nObject;
 int GateInRobot (short nObject, ubyte nType, short nSegment)
 {
 if (nSegment < 0) {
-	int i = FindBoss (nObject);
-	if (i < 0)
+	int nBoss = FindBoss (nObject);
+	if (nBoss < 0)
 		return -1;
-	nSegment = gameData.boss [i].gateSegs [(d_rand () * gameData.boss [i].nGateSegs) >> 15];
+	nSegment = gameData.boss [nBoss].gateSegs [(d_rand () * gameData.boss [nBoss].nGateSegs) >> 15];
 	}
 Assert ((nSegment >= 0) && (nSegment <= gameData.segs.nLastSegment));
 return OBJECTS [nObject].CreateGatedRobot (nSegment, nType, NULL);

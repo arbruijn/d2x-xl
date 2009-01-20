@@ -51,10 +51,12 @@ class CStack : public CArray< _T > {
 			return this->m_data.buffer [m_tos];
 			}
 
-		inline void Delete (uint i) {
-			if (i < m_tos)
-				if (i < --m_tos)
-					this->m_data.buffer [i] = this->m_data.buffer [m_tos];
+		inline bool Delete (uint i) {
+			if (i >= m_tos)
+				return false;
+			if (i < --m_tos)
+				this->m_data.buffer [i] = this->m_data.buffer [m_tos];
+			return true;
 			}
 
 		inline _T& Pull (_T& elem, uint i) {

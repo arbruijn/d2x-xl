@@ -159,9 +159,9 @@ return (fDmg > 1.0f) ? 1.0f : (fDmg < 0.0f) ? 0.0f : fDmg;
 
 // -----------------------------------------------------------------------------
 
-int FindBoss (int nBossObj)
+short CBossData::Find (short nBossObj)
 {
-	int	i, j = BOSS_COUNT;
+	short	i, j = BOSS_COUNT;
 
 for (i = 0; i < j; i++)
 	if (gameData.boss [i].nObject == nBossObj)
@@ -171,11 +171,17 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-void InitGateIntervals (void)
+void CBossInfo::InitGateInterval (void)
 {
-	int	i;
+for (int i = 0; i < MAX_BOSS_COUNT; i++)
+	m_nGateInterval = I2X (4) - gameStates.app.nDifficultyLevel * I2X (2) / 3;
+}
 
-for (i = 0; i < MAX_BOSS_COUNT; i++)
+//------------------------------------------------------------------------------
+
+void CBossData::InitGateIntervals (void)
+{
+for (int i = 0; i < MAX_BOSS_COUNT; i++)
 	gameData.boss [i].nGateInterval = I2X (4) - gameStates.app.nDifficultyLevel * I2X (2) / 3;
 }
 

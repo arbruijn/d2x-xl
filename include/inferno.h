@@ -2557,34 +2557,59 @@ typedef struct tProfilerData {
 #define BOSS_CLOAK_DURATION		I2X (7)
 #define BOSS_DEATH_DURATION		I2X (6)
 
-class CBossData {
+class CBossInfo {
 	public:
-		short					nTeleportSegs;
-		CStaticArray< short, MAX_BOSS_TELEPORT_SEGS >	teleportSegs; // [MAX_BOSS_TELEPORT_SEGS];
-		short					nGateSegs;
-		CStaticArray< short, MAX_BOSS_TELEPORT_SEGS >	gateSegs; // [MAX_BOSS_TELEPORT_SEGS];
-		fix					nDyingStartTime;
-		fix					nHitTime;
-		fix					nCloakStartTime;
-		fix					nCloakEndTime;
-		fix					nCloakDuration;
-		fix					nCloakInterval;
-		fix					nLastTeleportTime;
-		fix					nTeleportInterval;
-		fix					nLastGateTime;
-		fix					nGateInterval;
+		short					m_nTeleportSegs;
+		CShortArray			m_teleportSegs; // [MAX_BOSS_TELEPORT_SEGS];
+		short					m_nGateSegs;
+		CShortArray			m_gateSegs; // [MAX_BOSS_TELEPORT_SEGS];
+		fix					m_nDyingStartTime;
+		fix					m_nHitTime;
+		fix					m_nCloakStartTime;
+		fix					m_nCloakEndTime;
+		fix					m_nCloakDuration;
+		fix					m_nCloakInterval;
+		fix					m_nLastTeleportTime;
+		fix					m_nTeleportInterval;
+		fix					m_nLastGateTime;
+		fix					m_nGateInterval;
 	#if DBG
-		fix					xPrevShields;
+		fix					m_xPrevShields;
 	#endif
-		int					bHitThisFrame;
-		int					bHasBeenHit;
-		int					nObject;
-		short					nDying;
-		sbyte					bDyingSoundPlaying;
+		int					m_bHitThisFrame;
+		int					m_bHasBeenHit;
+		int					m_nObject;
+		short					m_nDying;
+		sbyte					m_bDyingSoundPlaying;
+
+	public:
+		CBossInfo () { Init (); }
+		~CBossInfo () { Destroy (); }
+		void Init (void);
+		bool Setup (short nObject);
+		void Destroy (void);
+		bool SetupSegments (CShortArray segments, int bSizeCheck, int bOneWallHack);
+		void InitGateInterval (void);
+
+		inline void ResetHitTime (void) { m_nHitTime = -I2X (10); }
+	};
+
+class CBossData {
+	private:	
+		CStack<CBossInfo>			m_info;
 
 	public:
 		CBossData ();
-};
+		bool Create (void);
+		void Destroy (void);
+		short Find (short nBossObj);
+		int Add (short nObject);
+		void Remove (short nBoss);
+		void ResetHitTimes (void);
+		void InitGateIntervals (void);
+
+		inline uint BossCount (void) { return m_info.Buffer () ? m_info.ToS () : 0; }
+	};
 
 //------------------------------------------------------------------------------
 
@@ -3083,7 +3108,7 @@ class CGameData {
 		CEntropyData		entropy;
 		CReactorData		reactor;
 		CMarkerData			marker;
-		CStaticArray< CBossData, MAX_BOSS_COUNT >		boss; // [MAX_BOSS_COUNT];
+		CBossData			boss; // [MAX_BOSS_COUNT];
 		CAIData				ai;
 		CEndLevelData		endLevel;
 		CMenuData			menu;

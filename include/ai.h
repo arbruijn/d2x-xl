@@ -107,7 +107,6 @@ void force_dump_aiObjects_all (char *msg);
 #endif
 
 void StartBossDeathSequence (CObject *objP);
-void AIInitBossForShip (void);
 extern int Boss_been_hit;
 extern fix AI_procTime;
 

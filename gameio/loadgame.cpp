@@ -439,6 +439,7 @@ else {
 #endif
 	gameData.objs.missileViewerP = NULL;
 	}
+gameData.boss.ResetHitTimes ();
 }
 
 //------------------------------------------------------------------------------
@@ -1477,7 +1478,7 @@ if (IsMultiGame) {
 if (gameData.app.nGameMode & GM_NETWORK)
 	NetworkDoFrame (1, 1);
 AIResetAllPaths ();
-AIInitBossForShip ();
+gameData.boss.ResetHitTimes ();
 ClearStuckObjects ();
 ResetTime ();
 ResetRearView ();

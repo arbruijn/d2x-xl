@@ -762,14 +762,24 @@ for (int i = 0; i < MAX_BOSS_COUNT; i++)
 
 CBossData::CBossData ()
 {
-nCloakStartTime = 0;
-nCloakEndTime = 0;
-nLastTeleportTime = 0;
-nTeleportInterval = I2X (8);
-nCloakInterval = I2X (10);
-nCloakDuration = BOSS_CLOAK_DURATION;
-nLastGateTime = 0;
-nGateInterval = I2X (6);
+}
+
+// ----------------------------------------------------------------------------
+
+bool CBossData::Create (void)
+{
+if (!m_info.Create (10))
+	return false;
+m_info.SetGrowth (10);
+m_info.Clear ();
+return true;
+}
+
+// ----------------------------------------------------------------------------
+
+bool CBossData::Destroy (void)
+{
+m_info.Destroy ();
 }
 
 // ----------------------------------------------------------------------------

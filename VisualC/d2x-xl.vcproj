@@ -3694,6 +3694,10 @@
 					Name="Source Files"
 					>
 					<File
+						RelativePath="..\objects\boss.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\objects\hostage.cpp"
 						>
 					</File>
@@ -4541,11 +4545,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
