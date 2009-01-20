@@ -840,6 +840,7 @@ class CObject : public CObjectInfo {
 		int Update (void);
 		int Index (void);
 		float Damage (void);
+		int SoundClass (void);
 
 		void MorphStart (void);
 		void MorphDraw (void);
@@ -1152,25 +1153,22 @@ void SpecialResetObjects(void);
 
 // attaches an CObject, such as a fireball, to another CObject, such as
 // a robot
-void AttachObject(CObject *parent, CObject *sub);
 
-extern void CreateSmallFireballOnObject(CObject *objp, fix size_scale, int soundFlag);
+void CreateSmallFireballOnObject (CObject *objp, fix size_scale, int soundFlag);
 
 // returns CObject number
-int DropMarkerObject(CFixVector& vPos, short nSegment, CFixMatrix& orient, ubyte marker_num);
+int DropMarkerObject (CFixVector& vPos, short nSegment, CFixMatrix& orient, ubyte marker_num);
 
-extern void WakeupRenderedObjects(CObject *gmissp, int window_num);
+void WakeupRenderedObjects (CObject *viewerP, int nWindow);
 
-extern void AdjustMineSpawn();
+void AdjustMineSpawn (void);
 
 void ResetPlayerObject(void);
 void StopObjectMovement (CObject *obj);
 void StopPlayerMovement (void);
 
-int ObjectSoundClass (CObject *objP);
-
-void ObjectGotoNextViewer();
-void ObjectGotoPrevViewer();
+void ObjectGotoNextViewer (void);
+void ObjectGotoPrevViewer (void);
 
 int ObjectCount (int nType);
 
@@ -1192,8 +1190,6 @@ tObjectRef *GetChildObjP (CObject *pParent, tObjectRef *pChildRef);
 
 CObject *ObjFindFirstOfType (int nType);
 void InitWeaponFlags (void);
-int FindBoss (int nObject);
-void InitGateIntervals (void);
 int CountPlayerObjects (int nPlayer, int nType, int nId);
 void FixObjectSizes (void);
 void DoSlowMotionFrame (void);
@@ -1202,11 +1198,12 @@ CFixMatrix *ObjectView (CObject *objP);
 CFixVector* PlayerSpawnPos (int nPlayer);
 CFixMatrix* PlayerSpawnOrient (int nPlayer);
 void GetPlayerSpawn (int nPlayer, CObject *objP);
-void RecreateThief(CObject *objP);
+void RecreateThief (CObject *objP);
 void DeadPlayerFrame (void);
 
 void SetObjectType (CObject *objP, ubyte nNewType);
 
+void AttachObject (CObject *parentObjP, CObject *childObjP);
 void DetachFromParent (CObject *objP);
 void DetachChildObjects (CObject *parentP);
 

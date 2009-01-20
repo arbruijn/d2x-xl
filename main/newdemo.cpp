@@ -1896,7 +1896,7 @@ while (!bDone) {
 			loop_end = NDReadInt ();
 			nObject = NDFindObject (nSignature);
 			if (nObject > -1)   //  @mk, 2/22/96, John told me to.
-				audio.CreateObjectSound ((short) soundno, ObjectSoundClass (OBJECTS + nObject), (short) nObject, 1, maxVolume, maxDistance, loop_start, loop_end);
+				audio.CreateObjectSound ((short) soundno, OBJECTS [nObject].SoundClass (), (short) nObject, 1, maxVolume, maxDistance, loop_start, loop_end);
 			}
 			break;
 

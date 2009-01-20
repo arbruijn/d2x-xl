@@ -88,13 +88,13 @@ return (d_rand() * gameData.segs.nLastSegment) >> 15;
 
 //	----------------------------------------------------------------------
 
-void RecreateThief(CObject *objP)
+void RecreateThief (CObject *objP)
 {
 	int			nSegment;
 	CFixVector	vCenter;
 	CObject*		newObjP;
 
-nSegment = ChooseThiefRecreationSegment();
+nSegment = ChooseThiefRecreationSegment ();
 vCenter = SEGMENTS [nSegment].Center ();
 newObjP = CreateMorphRobot( &SEGMENTS[nSegment], &vCenter, objP->info.nId);
 InitAIObject (OBJ_IDX (newObjP), AIB_SNIPE, -1);

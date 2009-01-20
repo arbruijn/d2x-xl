@@ -75,6 +75,32 @@ int dbgObjInstances = 0;
 #define	DEG45		 (I2X (1) / 8)
 #define	DEG1		 (I2X (1) / (4 * 90))
 
+void StopObjectMovement (CObject *objP)
+{
+Controls [0].headingTime = 0;
+Controls [0].pitchTime = 0;
+Controls [0].bankTime = 0;
+Controls [0].verticalThrustTime = 0;
+Controls [0].sidewaysThrustTime = 0;
+Controls [0].forwardThrustTime = 0;
+objP->mType.physInfo.rotThrust.SetZero ();
+objP->mType.physInfo.thrust.SetZero ();
+objP->mType.physInfo.velocity.SetZero ();
+objP->mType.physInfo.rotVel.SetZero ();
+}
+
+//------------------------------------------------------------------------------
+
+void StopPlayerMovement (void)
+{
+if (!gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted) {
+	StopObjectMovement (OBJECTS + LOCALPLAYER.nObject);
+	memset (&gameData.physics.playerThrust, 0, sizeof (gameData.physics.playerThrust));
+//	gameData.time.xFrame = I2X (1);
+	gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted = 0;
+	}
+}
+
 //------------------------------------------------------------------------------
 
 void CObject::Die (void)
@@ -86,7 +112,7 @@ if (this == dbgObjP)
 #endif
 }
 
-//--------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //process a continuously-spinning CObject
 void CObject::Spin (void)
 {
@@ -557,7 +583,7 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 return 1;
 }
 
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------
 
 //	*viewerP is a viewerP, probably a missile.
 //	wake up all robots that were rendered last frame subject to some constraints.

@@ -1707,39 +1707,9 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 	}
 }
 
-//--------------------------------------------------------------------
-//reset CObject's movement info
-//--------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-void StopObjectMovement (CObject *objP)
-{
-Controls [0].headingTime = 0;
-Controls [0].pitchTime = 0;
-Controls [0].bankTime = 0;
-Controls [0].verticalThrustTime = 0;
-Controls [0].sidewaysThrustTime = 0;
-Controls [0].forwardThrustTime = 0;
-objP->mType.physInfo.rotThrust.SetZero ();
-objP->mType.physInfo.thrust.SetZero ();
-objP->mType.physInfo.velocity.SetZero ();
-objP->mType.physInfo.rotVel.SetZero ();
-}
-
-//--------------------------------------------------------------------
-
-void StopPlayerMovement (void)
-{
-if (!gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted) {
-	StopObjectMovement (OBJECTS + LOCALPLAYER.nObject);
-	memset (&gameData.physics.playerThrust, 0, sizeof (gameData.physics.playerThrust));
-//	gameData.time.xFrame = I2X (1);
-	gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted = 0;
-	}
-}
-
-//	-----------------------------------------------------------------------------------------------------------
-
-int ObjectSoundClass (CObject *objP)
+int CObject::SoundClass (void)
 {
 	short nType = objP->info.nType;
 
@@ -1953,25 +1923,6 @@ void DetachChildObjects (CObject *parentP)
 {
 while (parentP->info.nAttachedObj != -1)
 	DetachFromParent (OBJECTS + parentP->info.nAttachedObj);
-}
-
-//------------------------------------------------------------------------------
-//creates a marker CObject in the world.  returns the CObject number
-int DropMarkerObject (CFixVector& vPos, short nSegment, CFixMatrix& orient, ubyte nMarker)
-{
-	short nObject;
-
-Assert (gameData.models.nMarkerModel != -1);
-nObject = CreateObject (OBJ_MARKER, nMarker, -1, nSegment, vPos, orient,
-								gameData.models.polyModels [0][gameData.models.nMarkerModel].Rad (), CT_NONE, MT_NONE, RT_POLYOBJ);
-if (nObject >= 0) {
-	CObject *objP = OBJECTS + nObject;
-	objP->rType.polyObjInfo.nModel = gameData.models.nMarkerModel;
-	objP->mType.spinRate = objP->info.position.mOrient.UVec () * (I2X (1) / 2);
-	//	MK, 10/16/95: Using lifeleft to make it flash, thus able to trim lightlevel from all OBJECTS.
-	objP->info.xLifeLeft = IMMORTAL_TIME;
-	}
-return nObject;
 }
 
 //------------------------------------------------------------------------------

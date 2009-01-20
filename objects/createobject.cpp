@@ -409,7 +409,7 @@ int CreateLight (ubyte nId, short nSegment, const CFixVector& vPos)
 return CreateObject (OBJ_LIGHT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, 0, CT_LIGHT, MT_NONE, RT_NONE);
 }
 
-//	------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 void CreateSmallFireballOnObject (CObject *objP, fix size_scale, int bSound)
 {
@@ -438,7 +438,8 @@ if (nSegment != -1) {
 	}
 }
 
-//	------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
 
 void CreateVClipOnObject (CObject *objP, fix xScale, ubyte nVClip)
 {
@@ -462,6 +463,25 @@ if (nSegment != -1) {
 	explObjP->mType.physInfo.velocity [Y] = objP->mType.physInfo.velocity [Y] / 2;
 	explObjP->mType.physInfo.velocity [Z] = objP->mType.physInfo.velocity [Z] / 2;
 	}
+}
+
+//------------------------------------------------------------------------------
+//creates a marker CObject in the world.  returns the CObject number
+int DropMarkerObject (CFixVector& vPos, short nSegment, CFixMatrix& orient, ubyte nMarker)
+{
+	short nObject;
+
+Assert (gameData.models.nMarkerModel != -1);
+nObject = CreateObject (OBJ_MARKER, nMarker, -1, nSegment, vPos, orient,
+								gameData.models.polyModels [0][gameData.models.nMarkerModel].Rad (), CT_NONE, MT_NONE, RT_POLYOBJ);
+if (nObject >= 0) {
+	CObject *objP = OBJECTS + nObject;
+	objP->rType.polyObjInfo.nModel = gameData.models.nMarkerModel;
+	objP->mType.spinRate = objP->info.position.mOrient.UVec () * (I2X (1) / 2);
+	//	MK, 10/16/95: Using lifeleft to make it flash, thus able to trim lightlevel from all OBJECTS.
+	objP->info.xLifeLeft = IMMORTAL_TIME;
+	}
+return nObject;
 }
 
 //------------------------------------------------------------------------------
