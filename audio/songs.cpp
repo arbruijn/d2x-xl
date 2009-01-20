@@ -353,12 +353,12 @@ m_info.nCurrent = nSong;
 if (nSong == SONG_TITLE) {
 	if (*m_user.szIntroSong && midi.PlaySong (m_user.szIntroSong, NULL, NULL, repeat, 0))
 		return;
-	redbook.PlayTrack (REDBOOK_TITLE_TRACK, 0);
+	m_info.bPlaying = redbook.PlayTrack (REDBOOK_TITLE_TRACK, 0);
 	}
 else if (nSong == SONG_CREDITS) {
 	if (*m_user.szCreditsSong && midi.PlaySong (m_user.szCreditsSong, NULL, NULL, repeat, 0))
 		return;
-	redbook.PlayTrack (REDBOOK_CREDITS_TRACK, 0);
+	m_info.bPlaying = redbook.PlayTrack (REDBOOK_CREDITS_TRACK, 0);
 	}
 else if (nSong == SONG_BRIEFING) {
 	if (*m_user.szBriefingSong && midi.PlaySong (m_user.szBriefingSong, NULL, NULL, repeat, 0))

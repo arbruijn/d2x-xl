@@ -966,6 +966,7 @@ if (!gameOpts->sound.bUseSDLMixer)
 #	endif
 	midi.Shutdown ();
 #endif
+	songManager.SetPlaying (0);
 	}
 }
 
