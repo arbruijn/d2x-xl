@@ -463,6 +463,7 @@ void MultiSendLightSpecific (int nPlayer, int nSegment, ubyte val);
 void MultiSendTriggerSpecific (char nPlayer, ubyte trig);
 void MultiResetObjectTexture (CObject *objP);
 void MultiSendSeismic (fix start, fix end);
+void MultiSendDropBlobs (char nPlayer);
 
 void InitDefaultPlayerShip (void);
 

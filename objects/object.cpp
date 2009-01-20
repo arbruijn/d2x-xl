@@ -66,13 +66,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define LIMIT_PHYSICS_FPS	0
 
+void NDRecordGuidedEnd (void);
 void DetachChildObjects (CObject *parent);
 void DetachFromParent (CObject *sub);
 int FreeObjectSlots (int nRequested);
 
 //info on the various types of OBJECTS
 #if DBG
-CObject	Object_minus_one;
 CObject	*dbgObjP = NULL;
 #endif
 
@@ -87,21 +87,8 @@ int dbgObjInstances = 0;
 #define	DEG1		 (I2X (1) / (4 * 90))
 
 //------------------------------------------------------------------------------
-// CBitmap *robot_bms [MAX_ROBOT_BITMAPS];	//all bitmaps for all robots
-
-// int robot_bm_nums [MAX_ROBOT_TYPES];		//starting bitmap num for each robot
-// int robot_n_bitmaps [MAX_ROBOT_TYPES];		//how many bitmaps for each robot
-
-// char *gameData.bots.names [MAX_ROBOT_TYPES];		//name of each robot
-
-//--unused-- int NumRobotTypes = 0;
 
 int bPrintObjectInfo = 0;
-//@@int ObjectViewer = 0;
-
-//CObject * SlewObject = NULL;	// Object containing slew CObject info.
-
-//--unused-- int Player_controllerType = 0;
 
 tWindowRenderedData windowRenderedData [MAX_RENDERED_WINDOWS];
 
@@ -1220,6 +1207,32 @@ if (info.nNextInSeg != -1)
 	OBJECTS [info.nNextInSeg].SetPrevInSeg (Index ());
 }
 
+//--------------------------------------------------------------------
+//when an CObject has moved into a new CSegment, this function unlinks it
+//from its old CSegment, and links it into the new CSegment
+void CObject::RelinkToSeg (int nNewSeg)
+{
+#if DBG
+	short nObject = OBJ_IDX (this);
+if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
+	PrintLog ("invalid object in RelinkObjToSeg\r\n");
+	return;
+	}
+if ((nNewSeg < 0) || (nNewSeg > gameData.segs.nLastSegment)) {
+	PrintLog ("invalid segment in RelinkObjToSeg\r\n");
+	return;
+	}
+#endif
+UnlinkFromSeg ();
+LinkToSeg (nNewSeg);
+#if DBG
+#if TRACE
+if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center)
+	console.printf (1, "CObject::RelinkToSeg violates seg masks.\n");
+#endif
+#endif
+}
+
 //------------------------------------------------------------------------------
 
 void CObject::Initialize (ubyte nType, ubyte nId, short nCreator, short nSegment, const CFixVector& vPos,
@@ -1591,8 +1604,6 @@ return newObjNum;
 
 //------------------------------------------------------------------------------
 
-void NDRecordGuidedEnd (void);
-
 //remove CObject from the world
 void ReleaseObject (short nObject)
 {
@@ -1809,7 +1820,7 @@ if (gameStates.app.bPlayerIsDead) {
 
 //------------------------------------------------------------------------------
 
-void AdjustMineSpawn ()
+void AdjustMineSpawn (void)
 {
 if (!(gameData.app.nGameMode & GM_NETWORK))
 	return;  // No need for this function in any other mode
@@ -1819,81 +1830,6 @@ if (!(gameData.app.nGameMode & GM_ENTROPY))
 	LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX]+=nSmartminesDropped;
 nProximityDropped = 0;
 nSmartminesDropped = 0;
-}
-
-
-
-int nKilledInFrame = -1;
-short nKilledObjNum = -1;
-extern char bMultiSuicide;
-
-//	------------------------------------------------------------------------
-
-void StartPlayerDeathSequence (CObject *playerP)
-{
-	int	nObject;
-
-Assert (playerP == gameData.objs.consoleP);
-gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted = 0;
-if (gameStates.app.bPlayerIsDead)
-	return;
-if (gameData.objs.deadPlayerCamera) {
-	ReleaseObject (OBJ_IDX (gameData.objs.deadPlayerCamera));
-	gameData.objs.deadPlayerCamera = NULL;
-	}
-StopConquerWarning ();
-//Assert (gameStates.app.bPlayerIsDead == 0);
-//Assert (gameData.objs.deadPlayerCamera == NULL);
-ResetRearView ();
-if (!(gameData.app.nGameMode & GM_MULTI))
-	HUDClearMessages ();
-nKilledInFrame = gameData.app.nFrameCount;
-nKilledObjNum = OBJ_IDX (playerP);
-gameStates.app.bDeathSequenceAborted = 0;
-if (gameData.app.nGameMode & GM_MULTI) {
-	MultiSendKill (LOCALPLAYER.nObject);
-//		If Hoard, increase number of orbs by 1
-//    Only if you haven't killed yourself
-//		This prevents cheating
-	if (gameData.app.nGameMode & GM_HOARD)
-		if (!bMultiSuicide)
-			if (LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]<12)
-				LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]++;
-	}
-paletteManager.SetRedEffect (40);
-gameStates.app.bPlayerIsDead = 1;
-#ifdef TACTILE
-   if (TactileStick)
-	Buffeting (70);
-#endif
-//LOCALPLAYER.flags &= ~ (PLAYER_FLAGS_AFTERBURNER);
-playerP->mType.physInfo.rotThrust.SetZero ();
-playerP->mType.physInfo.thrust.SetZero ();
-gameStates.app.nPlayerTimeOfDeath = gameData.time.xGame;
-nObject = CreateCamera (playerP);
-viewerSaveP = gameData.objs.viewerP;
-if (nObject != -1)
-	gameData.objs.viewerP = gameData.objs.deadPlayerCamera = OBJECTS + nObject;
-else {
-	Int3 ();
-	gameData.objs.deadPlayerCamera = NULL;
-	}
-if (gameStates.render.cockpit.nModeSave == -1)		//if not already saved
-	gameStates.render.cockpit.nModeSave = gameStates.render.cockpit.nMode;
-SelectCockpit (CM_LETTERBOX);
-if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordLetterbox ();
-nPlayerFlagsSave = playerP->info.nFlags;
-nControlTypeSave = playerP->info.controlType;
-nRenderTypeSave = playerP->info.renderType;
-playerP->info.nFlags &= ~OF_SHOULD_BE_DEAD;
-//	LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
-playerP->info.controlType = CT_NONE;
-if (!gameStates.entropy.bExitSequence) {
-	playerP->info.xShields = I2X (1000);
-	MultiSendShields ();
-	}
-paletteManager.SetEffect (0, 0, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -1924,33 +1860,6 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 		}
 	}
 }
-
-//--------------------------------------------------------------------
-//when an CObject has moved into a new CSegment, this function unlinks it
-//from its old CSegment, and links it into the new CSegment
-void CObject::RelinkToSeg (int nNewSeg)
-{
-#if DBG
-	short nObject = OBJ_IDX (this);
-if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
-	PrintLog ("invalid object in RelinkObjToSeg\r\n");
-	return;
-	}
-if ((nNewSeg < 0) || (nNewSeg > gameData.segs.nLastSegment)) {
-	PrintLog ("invalid segment in RelinkObjToSeg\r\n");
-	return;
-	}
-#endif
-UnlinkFromSeg ();
-LinkToSeg (nNewSeg);
-#if DBG
-#if TRACE
-if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center)
-	console.printf (1, "CObject::RelinkToSeg violates seg masks.\n");
-#endif
-#endif
-}
-
 
 //--------------------------------------------------------------------
 //reset CObject's movement info
@@ -1997,45 +1906,6 @@ if (nType == OBJ_WEAPON)
 return SOUNDCLASS_GENERIC;
 }
 
-//	-----------------------------------------------------------------------------------------------------------
-//make CObject array non-sparse
-void compressObjects (void)
-{
-	int start_i;	//, last_i;
-
-	//last_i = find_last_obj (LEVEL_OBJECTS);
-
-	//	Note: It's proper to do < (rather than <=) gameData.objs.nLastObject [0] here because we
-	//	are just removing gaps, and the last CObject can't be a gap.
-	for (start_i = 0;start_i<gameData.objs.nLastObject [0];start_i++)
-
-		if (OBJECTS [start_i].info.nType == OBJ_NONE) {
-
-			int	segnum_copy;
-
-			segnum_copy = OBJECTS [gameData.objs.nLastObject [0]].info.nSegment;
-			OBJECTS [gameData.objs.nLastObject [0]].UnlinkFromSeg ();
-			OBJECTS [start_i] = OBJECTS [gameData.objs.nLastObject [0]];
-
-			#ifdef EDITOR
-			if (CurObject_index == gameData.objs.nLastObject [0])
-				CurObject_index = start_i;
-			#endif
-
-			OBJECTS [gameData.objs.nLastObject [0]].info.nType = OBJ_NONE;
-
-			OBJECTS [start_i].LinkToSeg (segnum_copy);
-
-			while (OBJECTS [--gameData.objs.nLastObject [0]].info.nType == OBJ_NONE);
-
-			//last_i = find_last_obj (last_i);
-
-		}
-
-	ResetObjects (gameData.objs.nObjects);
-
-}
-
 //------------------------------------------------------------------------------
 
 int ObjectCount (int nType)
@@ -2048,119 +1918,6 @@ FORALL_OBJS (objP, i)
 	if (objP->info.nType == nType)
 		h++;
 return h;
-}
-
-//------------------------------------------------------------------------------
-
-void ConvertSmokeObject (CObject *objP)
-{
-	int			j;
-	CTrigger		*trigP;
-
-objP->SetType (OBJ_EFFECT);
-objP->info.nId = SMOKE_ID;
-objP->info.renderType = RT_SMOKE;
-trigP = FindObjTrigger (objP->Index (), TT_SMOKE_LIFE, -1);
-#if 1
-j = (trigP && trigP->value) ? trigP->value : 5;
-objP->rType.particleInfo.nLife = (j * (j + 1)) / 2;
-#else
-objP->rType.particleInfo.nLife = (trigP && trigP->value) ? trigP->value : 5;
-#endif
-trigP = FindObjTrigger (objP->Index (), TT_SMOKE_BRIGHTNESS, -1);
-objP->rType.particleInfo.nBrightness = (trigP && trigP->value) ? trigP->value * 10 : 75;
-trigP = FindObjTrigger (objP->Index (), TT_SMOKE_SPEED, -1);
-j = (trigP && trigP->value) ? trigP->value : 5;
-#if 1
-objP->rType.particleInfo.nSpeed = (j * (j + 1)) / 2;
-#else
-objP->rType.particleInfo.nSpeed = j;
-#endif
-trigP = FindObjTrigger (objP->Index (), TT_SMOKE_DENS, -1);
-objP->rType.particleInfo.nParts = j * ((trigP && trigP->value) ? trigP->value * 50 : STATIC_SMOKE_MAX_PARTS);
-trigP = FindObjTrigger (objP->Index (), TT_SMOKE_DRIFT, -1);
-objP->rType.particleInfo.nDrift = (trigP && trigP->value) ? j * trigP->value * 50 : objP->rType.particleInfo.nSpeed * 50;
-trigP = FindObjTrigger (objP->Index (), TT_SMOKE_SIZE, -1);
-j = (trigP && trigP->value) ? trigP->value : 5;
-objP->rType.particleInfo.nSize [0] = j + 1;
-objP->rType.particleInfo.nSize [1] = (j * (j + 1)) / 2;
-}
-
-//------------------------------------------------------------------------------
-
-void ConvertObjects (void)
-{
-	CObject	*objP;
-	//int		i;
-
-PrintLog ("   converting deprecated smoke objects\n");
-FORALL_STATIC_OBJS (objP, i)
-	if (objP->info.nType == OBJ_SMOKE)
-		ConvertSmokeObject (objP);
-}
-
-//------------------------------------------------------------------------------
-
-void CObject::SetupSmoke (void)
-{
-if ((info.nType != OBJ_EFFECT) || (info.nId != SMOKE_ID))
-	return;
-
-	tParticleInfo*	psi = &rType.particleInfo;
-	int				nLife, nSpeed, nParts, nSize;
-
-info.renderType = RT_SMOKE;
-nLife = psi->nLife ? psi->nLife : 5;
-#if 1
-psi->nLife = (nLife * (nLife + 1)) / 2;
-#else
-psi->nLife = psi->value ? psi->value : 5;
-#endif
-psi->nBrightness = psi->nBrightness ? psi->nBrightness * 10 : 50;
-if (!(nSpeed = psi->nSpeed))
-	nSpeed = 5;
-#if 1
-psi->nSpeed = (nSpeed * (nSpeed + 1)) / 2;
-#else
-psi->nSpeed = i;
-#endif
-if (!(nParts = psi->nParts))
-	nParts = 5;
-psi->nDrift = psi->nDrift ? nSpeed * psi->nDrift * 75 : psi->nSpeed * 50;
-nSize = psi->nSize [0] ? psi->nSize [0] : 5;
-psi->nSize [0] = nSize + 1;
-psi->nSize [1] = (nSize * (nSize + 1)) / 2;
-psi->nParts = 90 + (nParts * psi->nLife * 3 * (1 << nSpeed)) / (11 - nParts);
-if (psi->nSide > 0) {
-	float faceSize = FaceSize (info.nSegment, psi->nSide - 1);
-	psi->nParts = (int) (psi->nParts * ((faceSize < 1) ? sqrt (faceSize) : faceSize));
-	if (gameData.segs.nLevelVersion >= 18) {
-		if (psi->nType == SMOKE_TYPE_SPRAY)
-			psi->nParts *= 4;
-		}
-	else if ((gameData.segs.nLevelVersion < 18) && IsWaterTexture (SEGMENTS [info.nSegment].m_sides [psi->nSide - 1].m_nBaseTex)) {
-		psi->nParts *= 4;
-		//psi->nSize [1] /= 2;
-		}
-	}
-#if 1
-if (psi->nType == SMOKE_TYPE_BUBBLES) {
-	psi->nParts *= 2;
-	}
-#endif
-}
-
-//------------------------------------------------------------------------------
-
-void SetupEffects (void)
-{
-	CObject	*objP;
-	//int		i;
-
-PrintLog ("   setting up effects\n");
-FORALL_EFFECT_OBJS (objP, i) 
-	if (objP->info.nId == SMOKE_ID)
-		objP->SetupSmoke ();
 }
 
 //------------------------------------------------------------------------------
@@ -2369,46 +2126,6 @@ if (nObject >= 0) {
 	objP->info.xLifeLeft = IMMORTAL_TIME;
 	}
 return nObject;
-}
-
-//------------------------------------------------------------------------------
-
-//	*viewerP is a viewerP, probably a missile.
-//	wake up all robots that were rendered last frame subject to some constraints.
-void WakeupRenderedObjects (CObject *viewerP, int nWindow)
-{
-	int	i;
-
-	//	Make sure that we are processing current data.
-if (gameData.app.nFrameCount != windowRenderedData [nWindow].nFrame) {
-#if TRACE
-		console.printf (1, "Warning: Called WakeupRenderedObjects with a bogus window.\n");
-#endif
-	return;
-	}
-gameData.ai.nLastMissileCamera = OBJ_IDX (viewerP);
-
-int nObject, frameFilter = gameData.app.nFrameCount & 3;
-CObject *objP;
-tAILocalInfo *ailP;
-
-for (i = windowRenderedData [nWindow].nObjects; i; ) {
-	nObject = windowRenderedData [nWindow].renderedObjects [--i];
-	if ((nObject & 3) == frameFilter) {
-		objP = OBJECTS + nObject;
-		if (objP->info.nType == OBJ_ROBOT) {
-			if (CFixVector::Dist (viewerP->info.position.vPos, objP->info.position.vPos) < I2X (100)) {
-				ailP = gameData.ai.localInfo + nObject;
-				if (ailP->playerAwarenessType == 0) {
-					objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_CAMERA_AWAKE;
-					ailP->playerAwarenessType = WEAPON_ROBOT_COLLISION;
-					ailP->playerAwarenessTime = I2X (3);
-					ailP->nPrevVisibility = 2;
-					}
-				}
-			}
-		}
-	}
 }
 
 //------------------------------------------------------------------------------

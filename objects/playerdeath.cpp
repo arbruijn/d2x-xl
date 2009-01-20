@@ -73,6 +73,10 @@ CObject	*viewerSaveP;
 int		nPlayerFlagsSave;
 fix		xCameraToPlayerDistGoal=I2X (4);
 ubyte		nControlTypeSave, nRenderTypeSave;
+int		nKilledInFrame = -1;
+short		nKilledObjNum = -1;
+
+extern char bMultiSuicide;
 
 //------------------------------------------------------------------------------
 
@@ -240,10 +244,6 @@ if (gameStates.app.bPlayerIsDead) {
 		}
 	}
 }
-
-int nKilledInFrame = -1;
-short nKilledObjNum = -1;
-extern char bMultiSuicide;
 
 //	------------------------------------------------------------------------
 

@@ -1065,6 +1065,7 @@ void UnlinkObjFromSeg (CObject *objP);
 int ObjectCreateCopy(int nObject, CFixVector& new_pos, int newsegnum);
 
 // remove CObject from the world
+int FreeObjectSlots (int nRequested);
 void ReleaseObject(short nObject);
 
 // called after load.  Takes number of objects, and objects should be

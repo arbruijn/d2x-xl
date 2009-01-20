@@ -53,6 +53,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hiresmodels.h"
 #include "loadgame.h"
 #include "multi.h"
+#include "playerdeath.h"
 #ifdef TACTILE
 #	include "tactile.h"
 #endif
@@ -545,6 +546,46 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 	i++;
 	}
 return 1;
+}
+
+//------------------------------------------------------------------------------
+
+//	*viewerP is a viewerP, probably a missile.
+//	wake up all robots that were rendered last frame subject to some constraints.
+void WakeupRenderedObjects (CObject *viewerP, int nWindow)
+{
+	int	i;
+
+	//	Make sure that we are processing current data.
+if (gameData.app.nFrameCount != windowRenderedData [nWindow].nFrame) {
+#if TRACE
+		console.printf (1, "Warning: Called WakeupRenderedObjects with a bogus window.\n");
+#endif
+	return;
+	}
+gameData.ai.nLastMissileCamera = OBJ_IDX (viewerP);
+
+int nObject, frameFilter = gameData.app.nFrameCount & 3;
+CObject *objP;
+tAILocalInfo *ailP;
+
+for (i = windowRenderedData [nWindow].nObjects; i; ) {
+	nObject = windowRenderedData [nWindow].renderedObjects [--i];
+	if ((nObject & 3) == frameFilter) {
+		objP = OBJECTS + nObject;
+		if (objP->info.nType == OBJ_ROBOT) {
+			if (CFixVector::Dist (viewerP->info.position.vPos, objP->info.position.vPos) < I2X (100)) {
+				ailP = gameData.ai.localInfo + nObject;
+				if (ailP->playerAwarenessType == 0) {
+					objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_CAMERA_AWAKE;
+					ailP->playerAwarenessType = WEAPON_ROBOT_COLLISION;
+					ailP->playerAwarenessTime = I2X (3);
+					ailP->nPrevVisibility = 2;
+					}
+				}
+			}
+		}
+	}
 }
 
 //	-----------------------------------------------------------------------------------------------------------
