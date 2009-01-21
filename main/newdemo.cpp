@@ -3176,60 +3176,74 @@ if (filename [0] != '\0') {
 	}
 
 do {
-	m.Destroy ();
-	nmAllowedChars = szAllowedDemoNameChars;
-	if (!gameData.demo.bNoSpace) {
-		m.Create (1);
-		m.AddInput (filename, 8);
-		exit = m.Menu (NULL, TXT_SAVE_DEMO_AS);
-		}
-	else if (gameData.demo.bNoSpace == 1) {
-		m.Create (2);
-		m.AddText (const_cast<char*> (TXT_DEMO_SAVE_BAD));
-		m.AddInput (filename, 8);
-		exit = m.Menu (NULL, NULL);
-		} 
-	else if (gameData.demo.bNoSpace == 2) {
-		m.Create (2);
-		m.AddText (const_cast<char*> (TXT_DEMO_SAVE_NOSPACE));
-		m.AddInput (filename, 8);
-		exit = m.Menu (NULL, NULL);
-		}
-	nmAllowedChars = NULL;
-	if (exit == -2) {                   // got bumped out from network menu
-		char szSaveFile [7 + FILENAME_LEN];
-
-		if (filename [0] != '\0') {
-			strcpy (szSaveFile, filename);
-			strcat (szSaveFile, ".dem");
+	do {
+		m.Destroy ();
+		nmAllowedChars = szAllowedDemoNameChars;
+		if (!gameData.demo.bNoSpace) {
+			m.Create (1);
+			m.AddInput (filename, 8);
+			exit = m.Menu (NULL, TXT_SAVE_DEMO_AS);
 			}
-		else
-			sprintf (szSaveFile, "tmp%d.dem", nAnonymous++);
-		CFile::Delete (szSaveFile, gameFolders.szDemoDir);
-		CFile::Rename (DEMO_FILENAME, szSaveFile, gameFolders.szDemoDir);
-		break;
-		}
-	if (exit == -1) {               // pressed ESC
-		CFile::Delete (DEMO_FILENAME, gameFolders.szDemoDir);      // might as well remove the file
-		break;                     // return without doing anything
-		}
+		else if (gameData.demo.bNoSpace == 1) {
+			m.Create (2);
+			m.AddText (const_cast<char*> (TXT_DEMO_SAVE_BAD));
+			m.AddInput (filename, 8);
+			exit = m.Menu (NULL, NULL);
+			} 
+		else if (gameData.demo.bNoSpace == 2) {
+			m.Create (2);
+			m.AddText (const_cast<char*> (TXT_DEMO_SAVE_NOSPACE));
+			m.AddInput (filename, 8);
+			exit = m.Menu (NULL, NULL);
+			}
+		nmAllowedChars = NULL;
+		if (exit == -2) {                   // got bumped out from network menu
+			char szSaveFile [7 + FILENAME_LEN];
 
-	//check to make sure name is ok
-	for (s = filename; *s; s++)
-		if (!isalnum (*s) && (*s != '_')) {
-			MsgBox (NULL, NULL, 1, TXT_CONTINUE, TXT_DEMO_USE_LETTERS);
-			*filename = '\0';
+			if (filename [0] != '\0') {
+				strcpy (szSaveFile, filename);
+				strcat (szSaveFile, ".dem");
+				}
+			else
+				sprintf (szSaveFile, "tmp%d.dem", nAnonymous++);
+			if (CFile::Exist (szSaveFile, gameFolders.szDemoDir, 0))
+				exit = MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_CONFIRM_OVERWRITE) - 1;
+			if (exit != -2)
+				exit = 0;
+			else {
+				CFile::Delete (szSaveFile, gameFolders.szDemoDir);
+				CFile::Rename (DEMO_FILENAME, szSaveFile, gameFolders.szDemoDir);
+				}
 			break;
 			}
-	} while (!*filename);
+		if (exit == -1) {               // pressed ESC
+			CFile::Delete (DEMO_FILENAME, gameFolders.szDemoDir);      // might as well remove the file
+			break;                     // return without doing anything
+			}
 
-gameData.demo.nState = ND_STATE_NORMAL;
-if (exit >= 0) {
+		//check to make sure name is ok
+		for (s = filename; *s; s++)
+			if (!isalnum (*s) && (*s != '_')) {
+				MsgBox (NULL, NULL, 1, TXT_CONTINUE, TXT_DEMO_USE_LETTERS);
+				*filename = '\0';
+				break;
+				}
+		} while (!*filename);
+
+	gameData.demo.nState = ND_STATE_NORMAL;
+	if (exit < 0)
+		break;
 	strcpy (fullname, m [gameData.demo.bNoSpace].m_text);
 	strcat (fullname, ".dem");
-	CFile::Delete (fullname, gameFolders.szDemoDir);
-	CFile::Rename (DEMO_FILENAME, fullname, gameFolders.szDemoDir);
-	}
+	if (CFile::Exist (fullname, gameFolders.szDemoDir, 0))
+		exit = MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_CONFIRM_OVERWRITE);
+	else
+		exit = 0;
+	if (!exit) {
+		CFile::Delete (fullname, gameFolders.szDemoDir);
+		CFile::Rename (DEMO_FILENAME, fullname, gameFolders.szDemoDir);
+		}
+	} while (exit);
 }
 
 //	-----------------------------------------------------------------------------

@@ -1837,6 +1837,7 @@ const char *defaultGameTexts [][2] = {
  {"Luftblasen aendern die Form", "air bubbles w~Obble"},
  {"Rauch auf ~onitoren zeigen", "show smoke on ~Monitors"},
  {"Blitze auf ~Monitoren zeigen", "show lightnings on ~Monitors"},
+ {"Existierende Datei ueberschreiben?", "Overwrite existing file?"},
 #if 0
  {"", ""},
 #endif

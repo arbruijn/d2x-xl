@@ -1884,10 +1884,10 @@ void LoadGameTexts(void);
 #define TXT_WOBBLE_BUBBLES				GT(1092)
 #define TXT_SMOKE_MONITORS				GT(1093)
 #define TXT_LIGHTNING_MONITORS		GT(1094)
+#define TXT_CONFIRM_OVERWRITE			GT(1095)
 
 #if 0
 
-#define TXT_					GT(1095)
 #define TXT_					GT(1096)
 #define TXT_					GT(1097)
 #define TXT_					GT(1098)
