@@ -106,8 +106,10 @@ if (nType == OBJ_WEAPON) {
 		nType = nType;
 	}
 else if (nType == OBJ_ROBOT) {
+#if 0
 	if (ROBOTINFO ((int) nId).bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))
 		return -1;
+#endif
 	}
 else if (nType == OBJ_HOSTAGE)
 	nType = nType;
@@ -206,8 +208,10 @@ if (nType == OBJ_WEAPON) {
 		nType = nType;
 	}
 else if (nType == OBJ_ROBOT) {
+#if 0
 	if (ROBOTINFO ((int) nId).bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))
 		return -1;
+#endif
 	}
 else if (nType == OBJ_HOSTAGE)
 	nType = nType;

@@ -224,7 +224,7 @@ gameStates.gameplay.bFinalBossIsDead=0;
 gameData.escort.nObjNum = 0;
 gameData.escort.bMayTalk = 0;
 gameData.physics.xBossInvulDot = I2X (1)/4 - I2X (gameStates.app.nDifficultyLevel)/8;
-for (int i = 0; i < MAX_BOSS_COUNT; i++)
+for (int i = 0; i < gameData.bosses.Count (); i++)
 	gameData.bosses [i].m_nDyingStartTime = 0;
 }
 

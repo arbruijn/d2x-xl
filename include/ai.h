@@ -187,33 +187,6 @@ extern int Escort_goalObject, Escort_special_goal, Escort_goal_index;
 #define THIEF_PROBABILITY   16384   // 50% chance of stealing an item at each attempt
 #define MAX_STOLEN_ITEMS    10      // Maximum number kept track of, will keep stealing, causes stolen weapons to be lost!
 
-#if 0
-
-extern ubyte Stolen_items [MAX_STOLEN_ITEMS];
-extern int Stolen_item_index;   // Used in ai.c for controlling rate of Thief flare firing.
-
-extern int   Max_escort_length;
-extern int   EscortKillObject;
-extern fix   Escort_last_path_created;
-extern int   Escort_goalObject, Escort_special_goal, Escort_goal_index;
-extern int 	 nEscortGoalText [MAX_ESCORT_GOALS];
-
-extern int   Num_boss_teleport_segs [MAX_BOSS_COUNT];
-extern short Boss_teleport_segs [MAX_BOSS_COUNT][MAX_BOSS_TELEPORT_SEGS];
-extern int   Num_boss_gate_segs [MAX_BOSS_COUNT];
-extern short Boss_gate_segs [MAX_BOSS_COUNT][MAX_BOSS_TELEPORT_SEGS];
-extern int	 boss_obj_num [MAX_BOSS_COUNT];
-
-// --------- John: These variables must be saved as part of gamesave. ---------
-extern int              Ai_initialized;
-extern int              nOverallAgitation;
-//extern tAILocalInfo     aiLocalInfo [MAX_OBJECTS];
-//extern tPointSeg        Point_segs [MAX_POINT_SEGS];
-extern tPointSeg        *Point_segs_free_ptr;
-//extern tAICloakInfo     aiCloakInfo [MAX_AI_CLOAK_INFO];
-
-#endif
-
 extern void  CreateBuddyBot (void);
 
 extern void  AIMultiSendRobotPos (short nObject, int force);
