@@ -407,19 +407,16 @@ if (i < nFrames)
 	segP->SetTexture (nSide, NULL, -1, nClip, i);
 if (i > nFrames / 2)
 	flags |= WALL_DOOR_OPENED;
-if (i >= nFrames - 1) {
-	segP->SetTexture (nSide, NULL, -1, nClip, nFrames - 1);
-	// If our door is not automatic just remove it from the list.
-	if (!(flags & WALL_DOOR_AUTO)) {
-		state = WALL_DOOR_OPEN;
-		return 1;
-		}
-	else {
-		state = WALL_DOOR_WAITING;
-		return 2;
-		}
+if (i < nFrames - 1)
+	return 0;
+segP->SetTexture (nSide, NULL, -1, nClip, nFrames - 1);
+if (flags & WALL_DOOR_AUTO) {
+	state = WALL_DOOR_WAITING;
+	return 2;
 	}
-return 0;
+// If our door is not automatic just remove it from the list.
+state = WALL_DOOR_OPEN;
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -489,7 +486,7 @@ if (bFlags & 1) {
 	}
 if (bFlags & 2)
 	doorP->time = 0;	//counts up
-return true;
+return false;
 }
 
 //------------------------------------------------------------------------------
@@ -852,6 +849,7 @@ for (i = 0; i < gameData.walls.activeDoors.ToS (); i++, doorP++) {
 		//there shouldn't be an activedoor entry for it.  So we'll kill
 		//the activedoor entry.  Tres simple.
 		gameData.walls.activeDoors.Delete (i);
+		i--;
 		}
 	}
 

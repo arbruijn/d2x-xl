@@ -255,12 +255,14 @@ DBG (i = CFTell (fp));
 for (i = 0; i < MAX_AI_CLOAK_INFO; i++)
 	LoadAICloakInfo (gameData.ai.cloakInfo + i);
 DBG (i = CFTell (fp));
-h = (m_nVersion < 24) ? 1 : (m_nVersion < 42) ? MAX_BOSS_COUNT : h;
+h = (m_nVersion < 24) ? 1 : (m_nVersion < 42) ? MAX_BOSS_COUNT : m_cf.ReadFix ();
 gameData.bosses.Destroy ();
-if (!gameData.bosses.Create (h))
-	return 0;
-gameData.bosses.Grow (h);
-gameData.bosses.LoadStates (m_cf, m_nVersion);
+if (h) {
+	if (!gameData.bosses.Create (h))
+		return 0;
+	gameData.bosses.Grow (h);
+	gameData.bosses.LoadStates (m_cf, m_nVersion);
+	}
 if (m_nVersion >= 8) {
 	gameData.escort.nKillObject = m_cf.ReadInt ();
 	gameData.escort.xLastPathCreated = m_cf.ReadFix ();
@@ -294,7 +296,7 @@ if (m_nVersion < 21) {
 	console.printf (1, "Warning: If you fight the boss, he might teleport to CSegment #0!\n");
 	#endif
 	}
-else {
+else if (h) {
 	gameData.bosses.LoadSizeStates (m_cf);
 	if (!gameData.bosses.LoadBufferStates (m_cf))
 		return 0;

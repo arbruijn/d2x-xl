@@ -75,7 +75,7 @@ using namespace Mesh;
 
 #define	MAX_EDGE_LEN	fMaxEdgeLen [gameOpts->render.nMeshQuality]
 
-#define MESH_DATA_VERSION 5
+#define MESH_DATA_VERSION 6
 
 //------------------------------------------------------------------------------
 
