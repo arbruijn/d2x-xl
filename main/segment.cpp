@@ -390,9 +390,9 @@ else {
 	}
 if (gameData.demo.nState == ND_STATE_RECORDING) {
 	if ((animP->flags & WCF_TMAP1) || !m_sides [nSide].m_nOvlTex)
-		NDRecordWallSetTMapNum1 (SEG_IDX (this), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) nConnSide, nTexture);
+		NDRecordWallSetTMapNum1 (SEG_IDX (this), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) nConnSide, nTexture, nAnim, nFrame);
 	else
-		NDRecordWallSetTMapNum2 (SEG_IDX (this), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) nConnSide, nTexture);
+		NDRecordWallSetTMapNum2 (SEG_IDX (this), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) nConnSide, nTexture, nAnim, nFrame);
 	}
 m_sides [nSide].m_nFrame = -nFrame;
 if (connSegP)
