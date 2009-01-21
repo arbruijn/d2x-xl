@@ -89,9 +89,9 @@ if (!m_data.bAllowEffect)
 if (!gameStates.render.nLightingMethod || gameStates.menus.nInMenu || !gameStates.app.bGameRunning) 
 #endif
  {
-	red += m_data.nGamma;
-	green += m_data.nGamma;
-	blue += m_data.nGamma;
+	red += float (m_data.nGamma) / 64.0f;
+	green += float (m_data.nGamma) / 64.0f;
+	blue += float (m_data.nGamma) / 64.0f;
 	}
 CLAMP (red, 0, 1);
 CLAMP (green, 0, 1);
