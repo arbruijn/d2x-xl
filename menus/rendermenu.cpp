@@ -287,6 +287,7 @@ do {
 	*szMaxFps = *(TXT_FRAMECAP - 1);
 	renderOpts.nMaxFPS = m.AddSlider (szMaxFps + 1, FindTableFps (gameOpts->render.nMaxFPS), 0, 15, KEY_F, HTX_RENDER_FRAMECAP);
 
+	renderOpts.nContrast = -1;
 	if (gameOpts->app.bExpertMode) {
 		if ((gameOpts->render.nLightingMethod < 2) && !gameOpts->render.bUseLightmaps) {
 			sprintf (szContrast, TXT_CONTRAST, ContrastText ());

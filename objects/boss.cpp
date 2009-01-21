@@ -247,8 +247,8 @@ cf.WriteFix (m_nHitTime);
 
 void CBossInfo::SaveSizeStates (CFile& cf)
 {
-cf.WriteShort (m_nTeleportSegs);
-cf.WriteShort (m_nGateSegs);
+cf.WriteShort (m_teleportSegs.Length ());
+cf.WriteShort (m_gateSegs.Length ());
 }
 
 // -----------------------------------------------------------------------------
