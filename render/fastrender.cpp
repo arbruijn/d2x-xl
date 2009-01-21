@@ -644,9 +644,9 @@ OglClearError (0);
 
 void RenderSkyBoxFaces (void)
 {
-	tSegFaces	*segFaceP;
-	tFace		*faceP;
-	short			*segP;
+	tSegFaces*	segFaceP;
+	tFace*		faceP;
+	short*		segP;
 	int			i, j, nSegment, bVertexArrays, bFullBright = gameStates.render.bFullBright;
 
 if (gameStates.render.bHaveSkyBox) {
@@ -749,8 +749,10 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 #if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
-			else
+#	if 0
+			else if (nDbgSeg >= 0)
 				continue;
+#	endif
 #endif
 			CoronaVisibility (faceP->nCorona);
 			}
@@ -758,8 +760,10 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 #if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
-			else
+#	if 0
+			else if (nDbgSeg >= 0)
 				continue;
+#	endif
 #endif
 			glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->nCorona - 1]);
 			if (!glGetError ())
@@ -770,8 +774,10 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 #if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
+#	if 0
 			else if (nDbgSeg >= 0)
 				continue;
+#	endif
 #endif
 			glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->nCorona - 1]);
 			OglClearError (1);
