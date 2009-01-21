@@ -264,12 +264,6 @@ extern char pszWallNames[7][10];
 // Initializes all walls (i.e. no special walls.)
 void WallInit();
 
-// Opens a door, including animation and other processing.
-void DoDoorOpen(int nDoor);
-
-// Closes a door, including animation and other processing.
-void DoDoorClose(int nDoor);
-
 //return codes for CSegment::ProcessWallHit ()
 #define WHP_NOT_SPECIAL     0       //wasn't a quote-CWall-unquote
 #define WHP_NO_KEY          1       //hit door, but didn't have key

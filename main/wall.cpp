@@ -67,7 +67,15 @@ char	pszWallNames [7][10] = {
 };
 #endif
 
+//------------------------------------------------------------------------------
+
 void FlushFCDCache (void);
+
+// Opens a door, including animation and other processing.
+bool DoDoorOpen (int nDoor);
+
+// Closes a door, including animation and other processing.
+bool DoDoorClose (int nDoor);
 
 //------------------------------------------------------------------------------
 
@@ -103,11 +111,10 @@ return (fix) (((double) pt * (double) anim->nFrameCount) / (double) nFrames);
 // Initializes all the walls (in other words, no special walls)
 void WallInit (void)
 {
-	int i;
 	CWall *wallP = WALLS;
 
 gameData.walls.nWalls = 0;
-for (i = 0; i < MAX_WALLS; i++, wallP++) {
+for (int i = 0; i < LEVEL_WALLS; i++, wallP++) {
 	wallP->nSegment =
 	wallP->nSide = -1;
 	wallP->nType = WALL_NORMAL;
@@ -438,7 +445,7 @@ return 0;
 //------------------------------------------------------------------------------
 // Animates opening of a door.
 // Called in the game loop.
-void DoDoorOpen (int nDoor)
+bool DoDoorOpen (int nDoor)
 {
 	CActiveDoor*	doorP;
 	CWall*			wallP;
@@ -447,7 +454,7 @@ void DoDoorOpen (int nDoor)
 	int				i, nWall, bFlags = 3;
 
 if (nDoor < -1)
-	return;
+	return false;
 doorP = gameData.walls.activeDoors + nDoor;
 for (i = 0; i < doorP->nPartCount; i++) {
 	doorP->time += gameData.time.xFrame;
@@ -476,19 +483,22 @@ for (i = 0; i < doorP->nPartCount; i++) {
 	if (connSegP->IsWall (nConnSide))
 		bFlags &= connSegP->AnimateOpeningDoor (nConnSide, doorP->time);
 	}
-if (bFlags & 1)
+if (bFlags & 1) {
 	DeleteActiveDoor (nDoor);
-else if (bFlags & 2)
+	return true;
+	}
+if (bFlags & 2)
 	doorP->time = 0;	//counts up
+return true;
 }
 
 //------------------------------------------------------------------------------
 // Animates and processes the closing of a door.
 // Called from the game loop.
-void DoDoorClose (int nDoor)
+bool DoDoorClose (int nDoor)
 {
 if (nDoor < -1)
-	return;
+	return false;
 CActiveDoor* doorP = gameData.walls.activeDoors + nDoor;
 CWall* wallP = WALLS + doorP->nFrontWall [0];
 CSegment* segP = SEGMENTS + wallP->nSegment;
@@ -502,7 +512,7 @@ if (wallP->flags & WALL_DOOR_AUTO)
 	if (segP->DoorIsBlocked (short (wallP->nSide))) {
 		audio.DestroySegmentSound (short (wallP->nSegment), short (wallP->nSide), -1);
 		segP->OpenDoor (short (wallP->nSide));		//re-open door
-		return;
+		return false;
 		}
 
 for (i = 0; i < doorP->nPartCount; i++) {
@@ -536,10 +546,11 @@ for (i = 0; i < doorP->nPartCount; i++) {
 	if (connSegP->IsWall (nConnSide))
 		bFlags &= connSegP->AnimateClosingDoor (nConnSide, doorP->time);
 	}
-if (bFlags & 1)
+if (bFlags & 1) {
 	CloseDoor (nDoor);
-else if (bFlags & 2)
-	doorP->time = 0;		//counts up
+	return true;
+	}
+return false;
 }
 
 //	-----------------------------------------------------------------------------
@@ -678,13 +689,14 @@ for (int i = 0; i < gameData.walls.nWalls; i++)
 
 //------------------------------------------------------------------------------
 
-void DoCloakingWallFrame (int nCloakingWall)
+bool DoCloakingWallFrame (int nCloakingWall)
 {
-	CCloakingWall	*cloakWallP;
-	CWall				*frontWallP,*backWallP;
+	CCloakingWall*	cloakWallP;
+	CWall*			frontWallP,*backWallP;
+	bool				bDeleted = false;
 
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
-	return;
+	return false;
 cloakWallP = gameData.walls.cloaking + nCloakingWall;
 frontWallP = WALLS + cloakWallP->nFrontWall;
 backWallP = IS_WALL (cloakWallP->nBackWall) ? WALLS + cloakWallP->nBackWall : NULL;
@@ -735,6 +747,7 @@ else {		//fading out
 									 uvlP [0].l, uvlP [1].l, uvlP [2].l, uvlP [3].l);
 		}
 	}
+return bDeleted;
 }
 
 //------------------------------------------------------------------------------
@@ -807,10 +820,14 @@ void WallFrameProcess (void)
 for (i = 0; i < gameData.walls.activeDoors.ToS (); i++, doorP++) {
 	backWallP = NULL,
 	wallP = WALLS + doorP->nFrontWall [0];
-	if (wallP->state == WALL_DOOR_OPENING)
-		DoDoorOpen (i);
-	else if (wallP->state == WALL_DOOR_CLOSING)
-		DoDoorClose (i);
+	if (wallP->state == WALL_DOOR_OPENING) {
+		if (DoDoorOpen (i))
+			i--;
+		}
+	else if (wallP->state == WALL_DOOR_CLOSING) {
+		if (DoDoorClose (i))
+			i--;	// active door has been deleted - account for it
+		}
 	else if (wallP->state == WALL_DOOR_WAITING) {
 		doorP->time += gameData.time.xFrame;
 
@@ -841,8 +858,10 @@ for (i = 0; i < gameData.walls.activeDoors.ToS (); i++, doorP++) {
 cloakWallP = gameData.walls.cloaking.Buffer ();
 for (i = 0; i < gameData.walls.cloaking.ToS (); i++, cloakWallP++) {
 	ubyte s = WALLS [cloakWallP->nFrontWall].state;
-	if (s == WALL_DOOR_CLOAKING)
-		DoCloakingWallFrame (i);
+	if (s == WALL_DOOR_CLOAKING) {
+		if (DoCloakingWallFrame (i))
+			i--;	// cloaking wall has been deleted from cloaking wall tracker
+		}
 	else if (s == WALL_DOOR_DECLOAKING)
 		DoDecloakingWallFrame (i);
 #if DBG
