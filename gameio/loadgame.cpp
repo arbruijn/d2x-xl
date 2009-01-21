@@ -236,12 +236,12 @@ memset (gameStates.multi.bPlayerIsTyping, 0, sizeof (gameStates.multi.bPlayerIsT
 nPlayers = 0;
 j = 0;
 for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
+	i = objP->Index ();
 	nextObjP = objP->Links (0).next;
 	t = objP->info.nType;
 	if ((t == OBJ_PLAYER) || (t == OBJ_GHOST) || (t == OBJ_COOP)) {
-		i = objP->Index ();
 		if ((nPlayers >= nMaxPlayers) || (bCoop ? (j && (t != OBJ_COOP)) : (t == OBJ_COOP)))
-			ReleaseObject ((short) i);
+			ReleaseObject (short (i));
 		else {
 			playerObjs [nPlayers] = i;
 			startSegs [nPlayers] = objP->info.nSegment;
@@ -251,7 +251,7 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 		}
 	else if (t == OBJ_ROBOT) {
 		if (ROBOTINFO (objP->info.nId).companion && IsMultiGame)
-			ReleaseObject ((short) i);		//kill the buddy in netgames
+			ReleaseObject (short (i));		//kill the buddy in netgames
 		}
 	}
 
@@ -850,7 +850,7 @@ if (gameStates.app.bD1Mission)
 	LoadD1BitmapReplacements ();
 
 for (;;) {
-	if (!(nLoadRes = LoadLevelSub (pszLevelName, nLevel)))
+	if (!(nLoadRes = LoadLevelData (pszLevelName, nLevel)))
 		break;	//actually load the data from disk!
 	nLoadRes = 1;
 	if (bRetry)

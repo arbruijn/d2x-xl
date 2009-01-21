@@ -32,7 +32,7 @@ void LoadGame(void);
 void SaveGame(void);
 void getLevel_name(void);
 
-int LoadLevelSub(char *filename, int nLevel);
+int LoadLevelData(char *filename, int nLevel);
 int SaveLevel(char *filename);
 
 // called in place of load_game() to only load the .min data

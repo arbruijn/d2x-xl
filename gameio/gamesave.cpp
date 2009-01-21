@@ -1423,7 +1423,7 @@ int no_oldLevel_file_error=0;
 // ----------------------------------------------------------------------------
 //loads a level (.LVL) file from disk
 //returns 0 if success, else error code
-int LoadLevelSub (char * pszFilename, int nLevel)
+int LoadLevelData (char * pszFilename, int nLevel)
 {
 #ifdef EDITOR
 	int bUseCompiledLevel = 1;
@@ -1721,14 +1721,14 @@ void DoLoadSaveLevels(int save)
 	no_oldLevel_file_error=1;
 
 	for (level_num=1;level_num<=gameData.missions.nLastLevel;level_num++) {
-		LoadLevelSub(gameData.missions.szLevelNames [level_num-1]);
+		LoadLevelData(gameData.missions.szLevelNames [level_num-1]);
 		paletteManager.Load(szCurrentLevelPalette,1,1,0);		//don't change screen
 		if (save)
 			saveLevel_sub(gameData.missions.szLevelNames [level_num-1],1);
 	}
 
 	for (level_num = -1; level_num >= gameData.missions.nLastSecretLevel; level_num--) {
-		LoadLevelSub(gameData.missions.szSecretLevelNames [-level_num-1]);
+		LoadLevelData(gameData.missions.szSecretLevelNames [-level_num-1]);
 		paletteManager.Load(szCurrentLevelPalette,1,1,0);		//don't change screen
 		if (save)
 			saveLevel_sub (gameData.missions.szSecretLevelNames [-level_num-1],1);
