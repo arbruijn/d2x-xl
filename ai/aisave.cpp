@@ -160,7 +160,7 @@ m_cf.WriteVector (ciP->vLastPos);
 
 int CSaveGameManager::SaveAI (void)
 {
-	int	i;
+	int	h, i;
 
 m_cf.WriteInt (gameData.ai.bInitialized);
 m_cf.WriteInt (gameData.ai.nOverallAgitation);
@@ -170,8 +170,9 @@ for (i = 0; i < LEVEL_POINT_SEGS; i++)
 	SaveAIPointSeg (gameData.ai.routeSegs + i);
 for (i = 0; i < MAX_AI_CLOAK_INFO; i++)
 	SaveAICloakInfo (gameData.ai.cloakInfo + i);
-m_cf.WriteInt (int (gameData.bosses.Count ()));
-gameData.bosses.SaveStates (m_cf);
+m_cf.WriteInt (h = int (gameData.bosses.Count ()));
+if (h)
+	gameData.bosses.SaveStates (m_cf);
 m_cf.WriteInt (gameData.escort.nKillObject);
 m_cf.WriteFix (gameData.escort.xLastPathCreated);
 m_cf.WriteInt (gameData.escort.nGoalObject);
@@ -182,8 +183,10 @@ gameData.thief.stolenItems.Write (m_cf);
 i = CFTell ();
 #endif
 m_cf.WriteInt ((int) (gameData.ai.freePointSegs - gameData.ai.routeSegs.Buffer ()));
-gameData.bosses.SaveSizeStates (m_cf);
-gameData.bosses.SaveBufferStates (m_cf);
+if (h) {
+	gameData.bosses.SaveSizeStates (m_cf);
+	gameData.bosses.SaveBufferStates (m_cf);
+	}
 return 1;
 }
 
