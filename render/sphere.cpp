@@ -737,6 +737,7 @@ if (gameData.render.monsterball.nFaces > 0)
 		OglSetupTransform (0);
 		transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
 		CFloatVector p;
+		p.SetZero ();
 		gameData.render.monsterball.Render (&p, r, r, r, red, green, blue, gameData.hoard.monsterball.bm.Buffer () ? 1.0f : alpha,
 														&gameData.hoard.monsterball.bm, 4, 0);
 		transformation.End ();

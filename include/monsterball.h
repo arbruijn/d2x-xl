@@ -3,6 +3,7 @@
 
 int FindMonsterball (void);
 int CreateMonsterball (void);
+void RemoveMonsterball (void);
 int CheckMonsterballScore (void);
 void SetMonsterballForces (void);
 

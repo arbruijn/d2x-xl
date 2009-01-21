@@ -123,6 +123,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "slowmotion.h"
 #include "soundthreads.h"
 #include "menubackground.h"
+#include "monsterball.h"
 
 #if defined (TACTILE)
  #include "tactile.h"
@@ -702,6 +703,8 @@ G3FreeAllPolyModelItems ();
 cameraManager.Destroy ();
 /*---*/PrintLog ("   Destroying omega lightnings\n");
 omegaLightnings.Destroy (-1);
+/*---*/PrintLog ("   Destroying monsterball\n");
+RemoveMonsterball ();
 }
 
 //------------------------------------------------------------------------------
