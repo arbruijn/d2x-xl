@@ -358,6 +358,8 @@ void CSegment::SetTexture (int nSide, CSegment *connSegP, short nConnSide, int n
 if (nConnSide < 0)
 	connSegP = NULL;
 if (animP->flags & WCF_ALTFMT) {
+	if (gameData.demo.nState == ND_STATE_RECORDING)
+		NDRecordWallSetTMapNum1 (SEG_IDX (this), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) nConnSide, nTexture, nAnim, nFrame);
 	nFrames = animP->nFrameCount;
 	bmP = SetupHiresAnim (reinterpret_cast<short*> (animP->frames), nFrames, -1, 1, 0, &nFrames);
 	//if (animP->flags & WCF_TMAP1)
@@ -371,6 +373,8 @@ if (animP->flags & WCF_ALTFMT) {
 			animP->flags &= ~WCF_ALTFMT;
 		else {
 			animP->flags |= WCF_INITIALIZED;
+			if (gameData.demo.nState == ND_STATE_RECORDING)
+				bmP->SetupTexture (1, 3, 1);
 			bmP->SetCurFrame (bmP->Frames () + nFrame);
 			bmP->CurFrame ()->SetupTexture (1, 3, 1);
 			if (++nFrame > nFrames)
@@ -382,16 +386,14 @@ else if ((animP->flags & WCF_TMAP1) || !m_sides [nSide].m_nOvlTex) {
 	m_sides [nSide].m_nBaseTex = nTexture;
 	if (connSegP)
 		connSegP->m_sides [nConnSide].m_nBaseTex = nTexture;
+	if (gameData.demo.nState == ND_STATE_RECORDING) 
+		NDRecordWallSetTMapNum1 (SEG_IDX (this), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) nConnSide, nTexture, nAnim, nFrame);
 	}
 else {
 	m_sides [nSide].m_nOvlTex = nTexture;
 	if (connSegP)
 		connSegP->m_sides [nConnSide].m_nOvlTex = nTexture;
-	}
-if (gameData.demo.nState == ND_STATE_RECORDING) {
-	if ((animP->flags & WCF_TMAP1) || !m_sides [nSide].m_nOvlTex)
-		NDRecordWallSetTMapNum1 (SEG_IDX (this), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) nConnSide, nTexture, nAnim, nFrame);
-	else
+	if (gameData.demo.nState == ND_STATE_RECORDING) 
 		NDRecordWallSetTMapNum2 (SEG_IDX (this), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) nConnSide, nTexture, nAnim, nFrame);
 	}
 m_sides [nSide].m_nFrame = -nFrame;

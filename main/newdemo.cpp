@@ -2260,7 +2260,7 @@ while (!bDone) {
 		case ND_EVENT_WALL_SET_TMAP_NUM1: {
 			short nSegment, nConnSeg, tmap;
 			ubyte nSide, nConnSide;
-			int nAnim, nFrame;
+			short nAnim, nFrame;
 
 			nSegment = NDReadShort ();
 			nSide = NDReadByte ();
@@ -2269,8 +2269,8 @@ while (!bDone) {
 			if (gameData.demo.nVersion < 18)
 				tmap = NDReadShort ();
 			else {
-				nAnim = NDReadInt ();
-				nFrame = NDReadInt ();
+				nAnim = NDReadShort ();
+				nFrame = NDReadShort ();
 				}
 			if ((gameData.demo.nVcrState != ND_STATE_PAUSED) && 
 				 (gameData.demo.nVcrState != ND_STATE_REWINDING) &&
@@ -2295,8 +2295,8 @@ while (!bDone) {
 			if (gameData.demo.nVersion < 18)
 				tmap = NDReadShort ();
 			else {
-				nAnim = NDReadInt ();
-				nFrame = NDReadInt ();
+				nAnim = NDReadShort ();
+				nFrame = NDReadShort ();
 				}
 			if ((gameData.demo.nVcrState != ND_STATE_PAUSED) &&
 				 (gameData.demo.nVcrState != ND_STATE_REWINDING) &&
