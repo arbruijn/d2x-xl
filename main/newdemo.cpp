@@ -127,7 +127,7 @@ static int		bRevertFormat = -1;
 #define INTERPOLATE_PLAYBACK    2
 #define INTERPOL_FACTOR         (I2X (1) + (I2X (1)/5))
 
-#define DEMO_VERSION_D2X        17      // last D1 version was 13
+#define DEMO_VERSION_D2X        18      // last D1 version was 13
 #define DEMO_GAME_TYPE          3       // 1 was shareware, 2 registered
 
 #define DEMO_FILENAME           "tmpdemo.dem"
@@ -1347,7 +1347,7 @@ StartTime (0);
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordWallSetTMapNum1 (short nSegment, ubyte nSide, short nConnSeg, ubyte nConnSide, short tmap)
+void NDRecordWallSetTMapNum1 (short nSegment, ubyte nSide, short nConnSeg, ubyte nConnSide, short tmap, int nAnim, int nFrame)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_WALL_SET_TMAP_NUM1);
@@ -1355,13 +1355,18 @@ NDWriteShort (nSegment);
 NDWriteByte (nSide);
 NDWriteShort (nConnSeg);
 NDWriteByte (nConnSide);
-NDWriteShort (tmap);
+if (gameStates.app.bNostalgia || gameOpts->demo.bOldFormat || (bRevertFormat > 0))
+	NDWriteShort (tmap);
+else {
+	NDWriteShort (nAnim);
+	NDWriteShort (nFrame);
+	}
 StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordWallSetTMapNum2 (short nSegment, ubyte nSide, short nConnSeg, ubyte nConnSide, short tmap)
+void NDRecordWallSetTMapNum2 (short nSegment, ubyte nSide, short nConnSeg, ubyte nConnSide, short tmap, int nAnim, int nFrame)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_WALL_SET_TMAP_NUM2);
@@ -1369,7 +1374,12 @@ NDWriteShort (nSegment);
 NDWriteByte (nSide);
 NDWriteShort (nConnSeg);
 NDWriteByte (nConnSide);
-NDWriteShort (tmap);
+if (gameStates.app.bNostalgia || gameOpts->demo.bOldFormat || (bRevertFormat > 0))
+	NDWriteShort (tmap);
+else {
+	NDWriteShort (nAnim);
+	NDWriteShort (nFrame);
+	}
 StartTime (0);
 }
 
@@ -2248,39 +2258,60 @@ while (!bDone) {
 
 
 		case ND_EVENT_WALL_SET_TMAP_NUM1: {
-			short segP, nConnSeg, tmap;
+			short nSegment, nConnSeg, tmap;
 			ubyte nSide, nConnSide;
+			int nAnim, nFrame;
 
-			segP = NDReadShort ();
+			nSegment = NDReadShort ();
 			nSide = NDReadByte ();
 			nConnSeg = NDReadShort ();
 			nConnSide = NDReadByte ();
-			tmap = NDReadShort ();
+			if (gameData.demo.nVersion < 18)
+				tmap = NDReadShort ();
+			else {
+				nAnim = NDReadInt ();
+				nFrame = NDReadInt ();
+				}
 			if ((gameData.demo.nVcrState != ND_STATE_PAUSED) && 
 				 (gameData.demo.nVcrState != ND_STATE_REWINDING) &&
-				 (gameData.demo.nVcrState != ND_STATE_ONEFRAMEBACKWARD))
-				SEGMENTS [segP].m_sides [nSide].m_nBaseTex = 
-					SEGMENTS [nConnSeg].m_sides [nConnSide].m_nBaseTex = tmap;
+				 (gameData.demo.nVcrState != ND_STATE_ONEFRAMEBACKWARD)) {
+				if (gameData.demo.nVersion >= 18)
+					SEGMENTS [nSegment].SetTexture (nSide, SEGMENTS + nConnSeg, nConnSide, nAnim, nFrame);
+				else
+					SEGMENTS [nSegment].m_sides [nSide].m_nBaseTex = SEGMENTS [nConnSeg].m_sides [nConnSide].m_nBaseTex = tmap;
+				}
 			}
 			break;
 
 		case ND_EVENT_WALL_SET_TMAP_NUM2: {
-			short segP, nConnSeg, tmap;
+			short nSegment, nConnSeg, tmap;
 			ubyte nSide, nConnSide;
+			int nAnim, nFrame;
 
-			segP = NDReadShort ();
+			nSegment = NDReadShort ();
 			nSide = NDReadByte ();
 			nConnSeg = NDReadShort ();
 			nConnSide = NDReadByte ();
-			tmap = NDReadShort ();
+			if (gameData.demo.nVersion < 18)
+				tmap = NDReadShort ();
+			else {
+				nAnim = NDReadInt ();
+				nFrame = NDReadInt ();
+				}
 			if ((gameData.demo.nVcrState != ND_STATE_PAUSED) &&
 				 (gameData.demo.nVcrState != ND_STATE_REWINDING) &&
 				 (gameData.demo.nVcrState != ND_STATE_ONEFRAMEBACKWARD)) {
-				Assert (tmap!=0 && SEGMENTS [segP].m_sides [nSide].m_nOvlTex!=0);
-				SEGMENTS [segP].m_sides [nSide].m_nOvlTex = 
-				SEGMENTS [nConnSeg].m_sides [nConnSide].m_nOvlTex = tmap & 0x3fff;
-				SEGMENTS [segP].m_sides [nSide].m_nOvlOrient = 
-				SEGMENTS [nConnSeg].m_sides [nConnSide].m_nOvlOrient = (tmap >> 14) & 3;
+				Assert (tmap!=0 && SEGMENTS [nSegment].m_sides [nSide].m_nOvlTex!=0);
+				if (gameData.demo.nVersion >= 18)
+					SEGMENTS [nSegment].SetTexture (nSide, SEGMENTS + nConnSeg, nConnSide, nAnim, nFrame);
+				else {
+					SEGMENTS [nSegment].m_sides [nSide].m_nOvlTex = tmap & 0x3fff;
+					SEGMENTS [nSegment].m_sides [nSide].m_nOvlOrient = (tmap >> 14) & 3;
+					if (nConnSide < 6) {
+						SEGMENTS [nConnSeg].m_sides [nConnSide].m_nOvlTex = tmap & 0x3fff;
+						SEGMENTS [nConnSeg].m_sides [nConnSide].m_nOvlOrient = (tmap >> 14) & 3;
+						}
+					}
 				}
 			}
 			break;

@@ -382,17 +382,17 @@ else if ((animP->flags & WCF_TMAP1) || !m_sides [nSide].m_nOvlTex) {
 	m_sides [nSide].m_nBaseTex = nTexture;
 	if (connSegP)
 		connSegP->m_sides [nConnSide].m_nBaseTex = nTexture;
-	if (gameData.demo.nState == ND_STATE_RECORDING)
-		NDRecordWallSetTMapNum1(
-			SEG_IDX (this), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) nConnSide, nTexture);
 	}
 else {
 	m_sides [nSide].m_nOvlTex = nTexture;
 	if (connSegP)
 		connSegP->m_sides [nConnSide].m_nOvlTex = nTexture;
-	if (gameData.demo.nState == ND_STATE_RECORDING)
-		NDRecordWallSetTMapNum2(
-		SEG_IDX (this), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) nConnSide, nTexture);
+	}
+if (gameData.demo.nState == ND_STATE_RECORDING) {
+	if ((animP->flags & WCF_TMAP1) || !m_sides [nSide].m_nOvlTex)
+		NDRecordWallSetTMapNum1 (SEG_IDX (this), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) nConnSide, nTexture);
+	else
+		NDRecordWallSetTMapNum2 (SEG_IDX (this), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) nConnSide, nTexture);
 	}
 m_sides [nSide].m_nFrame = -nFrame;
 if (connSegP)

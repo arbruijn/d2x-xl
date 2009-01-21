@@ -6,7 +6,7 @@ INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/input/include -I $(top_srcd
 
 
 libobjects_a_SOURCES = \
-	createobject.cpp effectobject.cpp hostage.cpp marker.cpp object.cpp player.cpp \
-	playerdeath.cpp powerup.cpp reactor.cpp robot.cpp updateobject.cpp 
+	boss.cpp createobject.cpp effectobject.cpp hostage.cpp marker.cpp object.cpp objectio.cpp \
+	player.cpp playerdeath.cpp powerup.cpp reactor.cpp robot.cpp updateobject.cpp 
 	
 
