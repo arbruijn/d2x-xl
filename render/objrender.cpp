@@ -985,11 +985,14 @@ switch (objP->info.renderType) {
 					else {
 						//DoObjectSmoke (objP);
 						if ((objP->info.nId == VULCAN_ID) || (objP->info.nId == GAUSS_ID)) {
-							if (extraGameInfo [0].bTracers) {
+							if (SHOW_OBJ_FX && extraGameInfo [0].bTracers) {
 								if (!gameStates.render.bQueryCoronas)
 									RenderLightTrail (objP);
 								gameData.models.vScale.Set (I2X (1) / 4, I2X (1) / 4, I2X (2));
+								CFixVector vSavedPos = objP->info.position.vPos;
+								objP->info.position.vPos += objP->info.position.mOrient.FVec ();
 								DrawPolygonObject (objP, bDepthSort, 0);
+								objP->info.position.vPos = vSavedPos;
 								}
 							}
 						else {
