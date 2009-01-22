@@ -314,7 +314,7 @@ if (texP == &tex)
 
 //------------------------------------------------------------------------------
 // OglUBitBltToLinear
-void CBitmap::RenderToBitmap (CBitmap * dest, int dx, int dy, int w, int h, int sx, int sy)
+void CBitmap::ScreenCopy (CBitmap * dest, int dx, int dy, int w, int h, int sx, int sy)
 {
 	ubyte *d, *s;
 	int	i, j;

@@ -1614,7 +1614,7 @@ void KConfig (int n, const char *pszTitle)
 		bmSave = CBitmap::Create (0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height (), 1);
 		Assert (bmSave != NULL);
 		bmSave->SetPalette (paletteManager.Texture ());
-		CCanvas::Current ()->RenderClipped (bmSave, 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Width (), 0, 0);
+		CCanvas::Current ()->BlitClipped (bmSave, 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Width (), 0, 0);
 		}
 	if (n == 0)
 		KConfigSub (kcKeyboard, NUM_KEY_CONTROLS, pszTitle);
@@ -1639,7 +1639,7 @@ void KConfig (int n, const char *pszTitle)
 
 	//restore screen
 	if (bmSave) {
-		GrBitmap (xOffs, yOffs, bmSave);
+		bmSave->BlitClipped (xOffs, yOffs);
 		delete bmSave;
 		}
 	ResetCockpit ();		//force cockpit redraw next time

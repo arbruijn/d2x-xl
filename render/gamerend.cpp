@@ -514,7 +514,7 @@ void game_render_frame_stereo ()
 	CCanvas::SetCurrent (&RenderCanvas [1]);
 
 	if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ())
-		GrBitmap (0, 0, &RenderCanvas [0].Bitmap ());
+		RenderCanvas [0].Bitmap ().BlitClipped (0, 0);
 	else {
 		if (gameStates.render.bRearView)
 			RenderFrame (-actual_eye_width, 0);	// switch eye positions for rear view
@@ -532,7 +532,7 @@ void game_render_frame_stereo ()
 	for (w=0;w<2;w++) {
 		if (SW_drawn [w]) {
 			GrInitSubCanvas (&temp, &RenderCanvas [0], SW_x [w], SW_y [w], SW_w [w], SW_h [w]);
-			GrBitmap (SW_x [w]+actual_eye_offset*2, SW_y [w], &temp.Bitmap ());
+			temp.Bitmap ().BlitClipped (SW_x [w] + actual_eye_offset * 2, SW_y [w]);
 			}
 		}
 	}
@@ -614,20 +614,20 @@ void game_render_frame_stereo ()
 	if (gameStates.render.vr.nRenderMode == VR_INTERLACED)  {
 		if (actual_eye_offset > 0) {
 			int xoff = labs (actual_eye_offset);
-			GrBmUBitBlt (dw-xoff, dh, xoff, 0, 0, 0, &RenderCanvas [0].Bitmap (), &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].Bitmap ());
-			GrBmUBitBlt (dw-xoff, dh, 0, 1, xoff, 0, &RenderCanvas [1].Bitmap (), &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].Bitmap ());
+			BlitToBitmap (dw-xoff, dh, xoff, 0, 0, 0, &RenderCanvas [0].Bitmap (), &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].Bitmap ());
+			BlitToBitmap (dw-xoff, dh, 0, 1, xoff, 0, &RenderCanvas [1].Bitmap (), &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].Bitmap ());
 		} else if (actual_eye_offset < 0) {
 			int xoff = labs (actual_eye_offset);
-			GrBmUBitBlt (dw-xoff, dh, 0, 0, xoff, 0, &RenderCanvas [0].Bitmap (), &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].Bitmap ());
-			GrBmUBitBlt (dw-xoff, dh, xoff, 1, 0, 0, &RenderCanvas [1].Bitmap (), &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].Bitmap ());
+			BlitToBitmap (dw-xoff, dh, 0, 0, xoff, 0, &RenderCanvas [0].Bitmap (), &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].Bitmap ());
+			BlitToBitmap (dw-xoff, dh, xoff, 1, 0, 0, &RenderCanvas [1].Bitmap (), &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].Bitmap ());
 		} else {
-			GrBmUBitBlt (dw, dh, 0, 0, 0, 0, &RenderCanvas [0].Bitmap (), &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].Bitmap ());
-			GrBmUBitBlt (dw, dh, 0, 1, 0, 0, &RenderCanvas [1].Bitmap (), &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].Bitmap ());
+			BlitToBitmap (dw, dh, 0, 0, 0, 0, &RenderCanvas [0].Bitmap (), &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].Bitmap ());
+			BlitToBitmap (dw, dh, 0, 1, 0, 0, &RenderCanvas [1].Bitmap (), &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].Bitmap ());
 		}
 	} else if (gameStates.render.vr.nRenderMode == VR_AREA_DET) {
 		// VFX copy
-		GrBmUBitBlt (dw, dh, 0,  gameStates.render.vr.nCurrentPage, 0, 0, &RenderCanvas [0].Bitmap (), &gameStates.render.vr.buffers.screenPages [0].Bitmap ());
-		GrBmUBitBlt (dw, dh, dw, gameStates.render.vr.nCurrentPage, 0, 0, &RenderCanvas [1].Bitmap (), &gameStates.render.vr.buffers.screenPages [0].Bitmap ());
+		BlitToBitmap (dw, dh, 0,  gameStates.render.vr.nCurrentPage, 0, 0, &RenderCanvas [0].Bitmap (), &gameStates.render.vr.buffers.screenPages [0].Bitmap ());
+		BlitToBitmap (dw, dh, dw, gameStates.render.vr.nCurrentPage, 0, 0, &RenderCanvas [1].Bitmap (), &gameStates.render.vr.buffers.screenPages [0].Bitmap ());
 	} else {
 		Int3 ();		// Huh?
 	}
@@ -892,7 +892,7 @@ if (!bGameCockpitCopyCode) {
 	if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING) {
 		gameStates.render.vr.nCurrentPage = !gameStates.render.vr.nCurrentPage;
 		CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
-		GrBmUBitBlt (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage], 
+		BlitToBitmap (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage], 
 						 gameStates.render.vr.buffers.subRender [0].Left (),
 						 gameStates.render.vr.buffers.subRender [0].Top (),
 						 gameStates.render.vr.buffers.subRender [0].Width (),
@@ -1009,7 +1009,7 @@ void CopyBackgroundRect (int left, int top, int right, int bot)
 		for (x=tile_left;x<=tile_right;x++) {
 			//w = (right < dest_x+bm->Width ())? (right-dest_x+1): (bm->Width ()-ofs_x);
 			w = min(right-dest_x+1, bm->Width ()-ofs_x);
-			GrBmUBitBlt (CCanvas::Current (), dest_x, dest_y, w, h, &bmBackground, ofs_x, ofs_y, 1);
+			BlitToBitmap (CCanvas::Current (), dest_x, dest_y, w, h, &bmBackground, ofs_x, ofs_y, 1);
 			ofs_x = 0;
 			dest_x += w;
 			}
@@ -1285,7 +1285,7 @@ if (gameStates.app.bClearMessage) {
 	CBitmap* bmP = backgroundManager.Current ();
 
 if (bmP) {
-	GrBitmap (bg.x - BOX_BORDER / 2, bg.y - BOX_BORDER / 2, bg.bmP);
+	bg.bmP.BlitClipped (bg.x - BOX_BORDER / 2, bg.y - BOX_BORDER / 2);
 	if (bg.bmP) {
 		delete bg.bmP;
 		bg.bmP = NULL;

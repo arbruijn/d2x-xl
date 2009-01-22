@@ -202,7 +202,7 @@ if (!MODERN_STYLE) {
 		CCanvas::Push ();
 		CCanvas::SetCurrent (m_canvas [0]);
 		m_saved [i]->SetPalette (paletteManager.Default ());
-		CCanvas::Current ()->RenderToBitmap (m_saved [i], 0, 0, width, height, 0, 0);
+		CCanvas::Current ()->ScreenCopy (m_saved [i], 0, 0, width, height, 0, 0);
 		GrUpdate (0);
 		CCanvas::Pop ();
 		}
@@ -236,7 +236,7 @@ if (!(gameStates.menus.bNoBackground || (gameStates.app.bGameRunning && !gameSta
 	if (m_filename && (MODERN_STYLE || m_bTopMenu)) {
 		CCanvas::Push ();
 		CCanvas::SetCurrent (m_canvas [0]);
-		m_background->Stretch ();
+		m_background->RenderStretched ();
 		PrintVersionInfo ();
 		CCanvas::Pop ();
 		}
@@ -283,10 +283,10 @@ else
 	if (!backgroundManager.Shadow ()) {
 		CCanvas::Current ()->SetLeft (CCanvas::Current ()->Left () + LHX (10));
 		CCanvas::Current ()->SetTop (CCanvas::Current ()->Top () + LHX (10));
-		m_background->Blit (NULL, left, top, width, height); //, LHX (10), LHY (10));
+		m_background->RenderFixed (NULL, left, top, width, height); //, LHX (10), LHY (10));
 		}
 	else {
-		m_background->Blit (NULL, left, top, width, height); //, 0, 0);
+		m_background->RenderFixed (NULL, left, top, width, height); //, 0, 0);
 		gameStates.render.grAlpha = 2 * 7;
 		glEnable (GL_BLEND);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -331,9 +331,9 @@ void CBackground::Restore (void)
 if (!gameStates.app.bGameRunning) {
 	CCanvas::SetCurrent (m_canvas [0]);
 	if (MODERN_STYLE) 
-		m_background->Stretch ();
+		m_background->RenderStretched ();
 	else if (m_saved [1]) {
-		m_saved [1]->Blit ();
+		m_saved [1]->RenderFixed ();
 		GrUpdate (0);
 		}
 	}

@@ -293,7 +293,7 @@ if (w1 > 0)
 fontManager.Current ()->StringSize (s2, w, h, aw);
 // CHANGED
 if (RETRO_STYLE)
-	backgroundManager.Top ()->Saved (1)->RenderClipped (CCanvas::Current (), 5, y - 1, backgroundManager.Current ()->Width () - 15, h + 2, 5, y - 1);
+	backgroundManager.Top ()->Saved (1)->BlitClipped (CCanvas::Current (), 5, y - 1, backgroundManager.Current ()->Width () - 15, h + 2, 5, y - 1);
 if (0 && gameStates.multi.bSurfingNet) {
 	for (i = 0;i < l;i++) {
 		if (s2 [i] == '\t' && gameStates.multi.bSurfingNet) {
@@ -335,14 +335,14 @@ fontManager.Current ()->StringSize (m_text, w, h, aw);
 
 int y = m_y;
 if (RETRO_STYLE)
-	backgroundManager.Current ()->RenderClipped (CCanvas::Current (), 5, y, backgroundManager.Current ()->Width () - 15, h, 5, y);
+	backgroundManager.Current ()->BlitClipped (CCanvas::Current (), 5, y, backgroundManager.Current ()->Width () - 15, h, 5, y);
 DrawHotKeyString (bIsCurrent, bTiny, 1, 0);
 if (p) {
 	fontManager.Current ()->StringSize (s1, w, h, aw);
 	int x = m_x + m_w - w;
 	if (RETRO_STYLE) {
-		backgroundManager.Current ()->RenderClipped (CCanvas::Current (), x, y, w, 1, x, y);
-		backgroundManager.Current ()->RenderClipped (CCanvas::Current (), x, y + h - 1, w, 1, x, y);
+		backgroundManager.Current ()->BlitClipped (CCanvas::Current (), x, y, w, 1, x, y);
+		backgroundManager.Current ()->BlitClipped (CCanvas::Current (), x, y + h - 1, w, 1, x, y);
 		}
 	GrString (x, y, s1, NULL);
 	*p = '\t';
@@ -363,7 +363,7 @@ x -= 3;
 if (w1 == 0) 
 	w1 = w;
 if (RETRO_STYLE)
-	backgroundManager.Current ()->RenderClipped (CCanvas::Current (), x - w1, y, w1, h, x - w1, y);
+	backgroundManager.Current ()->BlitClipped (CCanvas::Current (), x - w1, y, w1, h, x - w1, y);
 SaveText ();
 SetText (s);
 h = m_x;

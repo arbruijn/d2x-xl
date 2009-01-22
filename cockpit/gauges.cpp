@@ -467,12 +467,12 @@ if (box->spanlist) {
 	int cnt, y;
 
 for (cnt=0, y=box->top;cnt<n_spans;cnt++, y++) {
-	GrBmUBitBlt (box->spanlist [cnt].r-box->spanlist [cnt].l+1, 1,
+	BlitToBitmap (box->spanlist [cnt].r-box->spanlist [cnt].l+1, 1,
 				box->left+box->spanlist [cnt].l, y, box->left+box->spanlist [cnt].l, y, bmP, CCanvas::Current ());
 	 	}
  	}
 else {
-	GrBmUBitBlt (box->right-box->left+1, box->bot-box->top+1,
+	BlitToBitmap (box->right-box->left+1, box->bot-box->top+1,
 					box->left, box->top, box->left, box->top,
 					bmP, CCanvas::Current ());
 	}
@@ -1422,12 +1422,8 @@ HUDBitBlt (LEFT_ENERGY_GAUGE_X, LEFT_ENERGY_GAUGE_Y, bmP, I2X (1), 0);
 			}
 		}
 	CCanvas::SetCurrent (GetCurrentGameScreen ());
-	// Draw right energy bar
-//	CCanvas::SetCurrent (Canv_RightEnergyGauge);
 	PAGE_IN_GAUGE (GAUGE_ENERGY_RIGHT);
 	bmP = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_ENERGY_RIGHT);
-//	GrUBitmapM (0, 0, bmP);
-//	GrUBitmapM (RIGHT_ENERGY_GAUGE_X, RIGHT_ENERGY_GAUGE_Y, bmP);
 	HUDBitBlt (RIGHT_ENERGY_GAUGE_X, RIGHT_ENERGY_GAUGE_Y, bmP, I2X (1), 0);
 #if DBG
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (255, 255, 255));
@@ -1588,12 +1584,8 @@ void DrawAfterburnerBar (int afterburner)
 	CBitmap *bmP;
 	ubyte *pabt = gameStates.video.nDisplayMode ? afterburner_bar_table_hires : afterburner_bar_table;
 
-// Draw afterburner bar
-//CCanvas::SetCurrent (Canv_AfterburnerGauge);
 PAGE_IN_GAUGE (GAUGE_AFTERBURNER);
 bmP =  gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_AFTERBURNER);
-//	GrUBitmapM (0, 0, bmP);
-//	GrUBitmapM (AFTERBURNER_GAUGE_X, AFTERBURNER_GAUGE_Y, bmP);
 HUDBitBlt (AFTERBURNER_GAUGE_X, AFTERBURNER_GAUGE_Y, bmP, I2X (1), 0);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 not_afterburner = FixMul (I2X (1) - afterburner, AFTERBURNER_GAUGE_H);
@@ -2014,7 +2006,7 @@ void DrawStatic (int win)
 	CCanvas::SetCurrent (&gameStates.render.vr.buffers.render [0]);
 	for (x=gaugeBoxes [boxofs+win].left;x<gaugeBoxes [boxofs+win].right;x+=bmp->Width ())
 		for (y=gaugeBoxes [boxofs+win].top;y<gaugeBoxes [boxofs+win].bot;y+=bmp->Height ())
-			/*GrBitmap*/HUDBitBlt (x, y, bmp, I2X (1), 0);
+			/*BlitClipped*/HUDBitBlt (x, y, bmp, I2X (1), 0);
 	CCanvas::SetCurrent (GetCurrentGameScreen ());
 	CopyGaugeBox (&gaugeBoxes [boxofs+win], &gameStates.render.vr.buffers.render [0]);
 }
@@ -2876,7 +2868,7 @@ if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
 			CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [!gameStates.render.vr.nCurrentPage]);
 		else
 			CCanvas::SetCurrent (GetCurrentGameScreen ());
-		GrBitmap (window_x, window_y, &windowCanv);
+		windowCanv.BlitClipped (window_x, window_y);
 		bOverlapDirty [nWindow] = 1;
 		}
 	else {
@@ -2887,7 +2879,7 @@ if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
 				CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [!gameStates.render.vr.nCurrentPage]);
 			else
 				CCanvas::SetCurrent (GetCurrentGameScreen ());
-				GrBitmap (window_x, bigWindowBottom+1, &overlapCanv);
+				overlapCanv.BlitClipped (window_x, bigWindowBottom+1);
 			bOverlapDirty [nWindow] = 1;
 			}
 		}

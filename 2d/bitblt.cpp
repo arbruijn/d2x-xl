@@ -293,7 +293,7 @@ void gr_ubitmapGENERICm(int x, int y, CBitmap * bmP)
 //@extern int Interlacing_on;
 
 // From Linear to Linear
-void gr_bm_ubitblt00(int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
+void SWBlitToBitmap (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
 {
 ubyte* sbits = src->Buffer ()  + (src->RowSize () * sy) + sx;
 ubyte* dbits = dest->Buffer () + (dest->RowSize () * dy) + dx;
@@ -312,7 +312,7 @@ for (int i = 0; i < h; i++) {
 
 //------------------------------------------------------------------------------
 // From Linear to Linear Masked
-void gr_bm_ubitblt00m(int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
+void BlitToBitmapMasked (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
 {
 ubyte* sbits = src->Buffer ()  + (src->RowSize () * sy) + sx;
 ubyte* dbits = dest->Buffer () + (dest->RowSize () * dy) + dx;
@@ -344,41 +344,7 @@ extern void gr_lbitblt(CBitmap * source, CBitmap * dest, int height, int width);
 
 //------------------------------------------------------------------------------
 
-void GrBitmap (int x, int y, CBitmap* src)
-{
-	CBitmap * const dest = CCanvas::Current ();
-
-	int left = x, right = x + src->Width () - 1;
-	int top = y, bottom = y + src->Height () - 1;
-
-if ((left >= dest->Width ()) || (right < 0)) 
-	return;
-if ((top >= dest->Height ()) || (bottom < 0)) 
-	return;
-if (left < 0) { 
-	x = -left; 
-	left = 0; 
-	}
-else
-	x = 0;
-if (top < 0) { 
-	y = -top; 
-	top = 0; 
-	}
-else
-	y = 0;
-if (right >= dest->Width ())
-	right = dest->Width () - 1;
-if (bottom >= dest->Height ())
-	bottom = dest->Height () - 1;
-
-// Draw bitmap bmP[x,y] into (left,top)-(right,bottom)
-GrBmUBitBlt (dest, left, top, right - left + 1, bottom - top + 1, src, x, y, 0);
-}
-
-//------------------------------------------------------------------------------
-
-void gr_bm_ubitblt00_rle(int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
+void BlitToBitmapRLE (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
 {
 	ubyte * dbits;
 	ubyte * sbits;
@@ -408,7 +374,7 @@ void gr_bm_ubitblt00_rle(int w, int h, int dx, int dy, int sx, int sy, CBitmap *
 
 //------------------------------------------------------------------------------
 
-void gr_bm_ubitblt00m_rle(int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
+void BlitToBitmapMaskedRLE (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
 {
 	ubyte * dbits;
 	ubyte * sbits;
@@ -442,7 +408,7 @@ extern void gr_rle_expand_scanline_generic(CBitmap * dest, int dx, int dy, ubyte
 extern void gr_rle_expand_scanline_generic_masked(CBitmap * dest, int dx, int dy, ubyte *src, int x1, int x2 );
 extern void gr_rle_expand_scanline_svga_masked(CBitmap * dest, int dx, int dy, ubyte *src, int x1, int x2 );
 
-void gr_bm_ubitblt0x_rle(int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
+void StretchToBitmapRLE (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
 {
 	int i, data_offset;
 	register int y1;
@@ -468,94 +434,7 @@ void gr_bm_ubitblt0x_rle(int w, int h, int dx, int dy, int sx, int sy, CBitmap *
 
 //------------------------------------------------------------------------------
 
-void gr_bm_ubitblt0xm_rle(int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
-{
-	int i, data_offset;
-	register int y1;
-	ubyte * sbits;
-
-	data_offset = 1;
-	if (src->Flags () & BM_FLAG_RLE_BIG)
-		data_offset = 2;
-
-	sbits = &src->Buffer ()[4 + (src->Height ()*data_offset)];
-	for (i=0; i<sy; i++)
-		sbits += (int)(INTEL_SHORT(src->Buffer ()[4+(i*data_offset)]));
-
-	for (y1=0; y1 < h; y1++)    {
-		gr_rle_expand_scanline_generic_masked(dest, dx, dy+y1,  sbits, sx, sx+w-1 );
-		if (src->Flags () & BM_FLAG_RLE_BIG)
-			sbits += (int)INTEL_SHORT(*(reinterpret_cast<short*> (src->Buffer (4 + (y1 + sy) * data_offset))));
-		else
-			sbits += (int)src->Buffer ()[4+y1+sy];
-	}
-
-}
-
-//------------------------------------------------------------------------------
-
-void GrBmUBitBlt (CBitmap* dest, int dx, int dy, int w, int h,  CBitmap * src, int sx, int sy, int bTransp)
-{
-	register int x1, y1;
-
-if ((src->Mode () == BM_LINEAR) && (dest->Mode () == BM_LINEAR)) {
-	if (src->Flags () & BM_FLAG_RLE)
-		gr_bm_ubitblt00_rle(w, h, dx, dy, sx, sy, src, dest);
-	else
-		gr_bm_ubitblt00(w, h, dx, dy, sx, sy, src, dest);
-	return;
-	}
-
-if ((src->Mode () == BM_LINEAR) && (dest->Mode () == BM_OGL)) {
-	src->Render (dest, dx, dy, w, h, sx, sy, w, h, bTransp);
-	return;
-	}
-if ((src->Mode () == BM_OGL) && (dest->Mode () == BM_LINEAR)) {
-	src->RenderToBitmap (dest, dx, dy, w, h, sx, sy);
-	return;
-	}
-if ((src->Flags () & BM_FLAG_RLE) && (src->Mode () == BM_LINEAR)) {
-	gr_bm_ubitblt0x_rle (w, h, dx, dy, sx, sy, src, dest);
-	return;
-	}
-for (y1=0; y1 < h; y1++)  
-	for (x1=0; x1 < w; x1++)  
-		dest->DrawPixel (dx+x1, dy+y1, src->GetPixel (sx + x1, sy + y1));
-}
-
-//------------------------------------------------------------------------------
-
-void gr_ubitmap(int x, int y, CBitmap *bmP)
-{
-	int source = bmP->Mode ();
-	int dest = MODE;
-
-if (source==BM_LINEAR) {
-	switch(dest) {
-	case BM_LINEAR:
-		if (bmP->Flags () & BM_FLAG_RLE)
-			gr_bm_ubitblt00_rle(bmP->Width (), bmP->Height (), x, y, 0, 0, bmP, CCanvas::Current ());
-		else
-			gr_ubitmap00 (x, y, bmP);
-		return;
-
-	case BM_OGL:
-		OglUBitMapM (x, y, bmP);
-		return;
-
-	default:
-		gr_ubitmap012 (x, y, bmP);
-		return;
-		}
-	} 
-else {
-	gr_ubitmapGENERIC (x, y, bmP);
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void GrUBitmapM(int x, int y, CBitmap *bmP)
+void GrUBitmapM (int x, int y, CBitmap *bmP)
 {
 	int source = bmP->Mode ();
 	int dest = MODE;
@@ -567,7 +446,7 @@ if (source == BM_LINEAR) {
 	switch (dest) {
 		case BM_LINEAR:
 			if (bmP->Flags () & BM_FLAG_RLE)
-				gr_bm_ubitblt00m_rle(bmP->Width (), bmP->Height (), x, y, 0, 0, bmP, CCanvas::Current ());
+				BlitToBitmapMaskedRLE(bmP->Width (), bmP->Height (), x, y, 0, 0, bmP, CCanvas::Current ());
 			else
 				gr_ubitmap00m(x, y, bmP);
 			return;
@@ -614,9 +493,9 @@ if (dy2 >= CCanvas::Current ()->Height ())
 
 if ((bmP->Mode () == BM_LINEAR) && (CCanvas::Current ()->Mode () == BM_LINEAR)) {
 	if (bmP->Flags () & BM_FLAG_RLE)
-		gr_bm_ubitblt00m_rle (dx2 - dx1 + 1, dy2 - dy1 + 1, dx1, dy1, sx, sy, bmP, CCanvas::Current ());
+		BlitToBitmapMaskedRLE (dx2 - dx1 + 1, dy2 - dy1 + 1, dx1, dy1, sx, sy, bmP, CCanvas::Current ());
 	else
-		gr_bm_ubitblt00m (dx2 - dx1 + 1, dy2 - dy1 + 1, dx1, dy1, sx, sy, bmP, CCanvas::Current ());
+		BlitToBitmapMasked (dx2 - dx1 + 1, dy2 - dy1 + 1, dx1, dy1, sx, sy, bmP, CCanvas::Current ());
 	return;
 	}
 GrBmUBitBltM (dx2 - dx1 + 1, dy2 - dy1 + 1, dx1, dy1, sx, sy, bmP, CCanvas::Current (), bTransp);
@@ -632,7 +511,7 @@ void GrBmUBitBltM (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, 
 if ((src->Mode () == BM_LINEAR) && (dest->Mode () == BM_OGL))
 	src->Render (dest, dx, dy, w, h, sx, sy, w, h, bTransp);
 else if ((src->Mode () == BM_OGL) && (dest->Mode () == BM_LINEAR))
-	src->RenderToBitmap (dest, dx, dy, w, h, sx, sy);
+	src->ScreenCopy (dest, dx, dy, w, h, sx, sy);
 else
 	for (y1 = 0; y1 < h; y1++) {
 		for (x1 = 0; x1 < w; x1++) {
@@ -693,8 +572,69 @@ inside:
 }
 
 //------------------------------------------------------------------------------
+
+void CBitmap::Blit (CBitmap* dest, int xDest, int yDest, int w, int h, int xSrc, int ySrc, int bTransp)
+{
+if (Mode () == BM_LINEAR) {
+	if (dest->Mode () == BM_LINEAR) {
+		if (Flags () & BM_FLAG_RLE)
+			BlitToBitmapRLE (w, h, xDest, yDest, xSrc, ySrc, this, dest);
+		else
+			SWBlitToBitmap (w, h, xDest, yDest, xSrc, ySrc, this, dest);
+		}
+	else if (dest->Mode () == BM_OGL) {
+		Render (dest, xDest, yDest, w, h, xSrc, ySrc, w, h, bTransp);
+		}
+	else if (Flags () & BM_FLAG_RLE) {
+		StretchToBitmapRLE (w, h, xDest, yDest, xSrc, ySrc, this, dest);
+		}
+	else {
+		for (int y1 = 0; y1 < h; y1++)  
+			for (int x1 = 0; x1 < w; x1++)  
+				dest->DrawPixel (xDest + x1, yDest + y1, GetPixel (xSrc + x1, ySrc + y1));
+		}
+	}
+else if (Mode () == BM_OGL) {
+	if (dest->Mode () == BM_LINEAR)
+		ScreenCopy (dest, xDest, yDest, w, h, xSrc, ySrc);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CBitmap::BlitClipped (int xSrc, int ySrc)
+{
+	CBitmap* const dest = CCanvas::Current ();
+
+	int destLeft = xSrc, destRight = xSrc + Width () - 1;
+	int destTop = ySrc, destBottom = ySrc + Height () - 1;
+
+if ((destLeft >= dest->Width ()) || (destRight < 0)) 
+	return;
+if ((destTop >= dest->Height ()) || (destBottom < 0)) 
+	return;
+if (destLeft < 0) { 
+	xSrc = -destLeft; 
+	destLeft = 0; 
+	}
+else
+	xSrc = 0;
+if (destTop < 0) { 
+	ySrc = -destTop; 
+	destTop = 0; 
+	}
+else
+	ySrc = 0;
+if (destRight >= dest->Width ())
+	destRight = dest->Width () - 1;
+if (destBottom >= dest->Height ())
+	destBottom = dest->Height () - 1;
+Blit (dest, destLeft, destTop, destRight - destLeft + 1, destBottom - destTop + 1, xSrc, ySrc, 0);
+}
+
+//------------------------------------------------------------------------------
 // GrBmBitBlt 
-void CBitmap::RenderClipped (CBitmap* dest, int destLeft, int destTop, int w, int h, int srcLeft, int srcTop)
+void CBitmap::BlitClipped (CBitmap* dest, int destLeft, int destTop, int w, int h, int srcLeft, int srcTop)
 {
 if (!dest)
 	dest = CCanvas::Current ();
@@ -708,6 +648,7 @@ if ((destLeft >= dest->Width ()) || (destRight < 0))
 	return;
 if ((destTop >= dest->Height ()) || (destBottom < 0)) 
 	return;
+
 if (destLeft < 0) { 
 	srcLeft -= destLeft; 
 	destLeft = 0; 
@@ -716,12 +657,11 @@ if (destTop < 0) {
 	srcTop -= destTop; 
 	destTop = 0; 
 	}
-if (destRight >= dest->Width ()) { 
+
+if (destRight >= dest->Width ())
 	destRight = dest->Width () - 1; 
-	}
-if (destBottom >= dest->Height ()) { 
+if (destBottom >= dest->Height ())
 	destBottom = dest->Height () - 1; 
-	}
 
 if ((srcLeft >= Width ()) || (srcRight < 0)) 
 	return;
@@ -747,21 +687,7 @@ if (w < 0)
 	w = Width ();
 if (h < 0)
 	h = Height ();
-#if 0
-int dw = destRight - destLeft + 1;
-if (dw > w)
-	dw = w;
-int dh = destBottom - destTop + 1;
-if (dh > h)
-	dh = h;
-int sw = srcRight - srcLeft + 1;
-if (sw > w)
-	sw = w;
-int sh = srcBottom - srcTop + 1;
-if (sh > h)
-	sh = h;
-Render (CCanvas::Current (), destLeft, destTop, dw, dh, srcLeft, srcTop, sw, sh, 1);
-#else
+
 if (destRight - destLeft + 1 < w)
 	w = destRight - destLeft + 1;
 if (destBottom - destTop + 1 < h)
@@ -770,8 +696,8 @@ if (srcRight - srcLeft + 1 < w)
 	w = srcRight - srcLeft + 1;
 if (srcBottom - srcTop + 1 < h)
 	h = srcBottom - srcTop + 1;
-#endif
-GrBmUBitBlt (dest, destLeft, destTop, w, h, this, srcLeft, srcTop, 1);
+
+Blit (dest, destLeft, destTop, w, h, srcLeft, srcTop, 1);
 }
 
 //------------------------------------------------------------------------------
@@ -791,7 +717,7 @@ if ((Mode () == BM_LINEAR) && (dest->Mode () == BM_OGL)) {
 if (dest->Mode () != BM_LINEAR) {
 	CBitmap *tmp = CBitmap::Create (0, dest->Width (), dest->Height (), 1);
 	GrBitmapScaleTo (this, tmp);
-	GrBitmap (0, 0, tmp);
+	tmp->BlitClipped (0, 0);
 	delete tmp;
 	return;
 	}

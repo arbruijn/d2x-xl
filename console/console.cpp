@@ -296,7 +296,7 @@ if (!gameOpts->menus.nStyle) {
 		SDL_SetAlpha (m_surface, 0, SDL_ALPHA_OPAQUE);
 /* draw the background image if there is one */
 	if (m_background)
-		m_background->Stretch ();
+		m_background->RenderStretched ();
 	}
 #endif
 /* Draw the text from the back buffers, calculate in the scrollback from the user
@@ -394,7 +394,7 @@ else {
 	clip = m_surface->CreateChild (
 		0, m_surface->Height () - m_RaiseOffset, 
 		m_surface->Width (), m_RaiseOffset);
-	GrBitmap (m_DispX, m_DispY, clip);
+	clip->BlitClipped (m_DispX, m_DispY);
 	clip->Destroy ();
 #if 0
 	if (m_output->flags & SDL_OPENGLBLIT)
@@ -676,7 +676,7 @@ if (!gameOpts->menus.nStyle) {
 									 m_surface->Width (), m_surface->Font ()->Height (),
 									 0, m_surface->Height () - m_surface->Font ()->Height ());
 	else
-		GrBitmap (0, m_surface->Height () - m_surface->Font ()->Height (), m_input);
+		m_input->BlitClipped (0, m_surface->Height () - m_surface->Font ()->Height ());
 	}
 #endif
 //now add the text

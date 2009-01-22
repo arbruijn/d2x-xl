@@ -155,9 +155,9 @@ CCreditsManager creditsManager;
 void CCreditsManager::RenderBackdrop (void)
 {
 if (gameOpts->menus.nStyle)
-	m_bmBackdrop.Stretch ();
+	m_bmBackdrop.RenderStretched ();
 else {
-	m_bmBackdrop.Blit (CCanvas::Current (), m_xOffs, m_yOffs);
+	m_bmBackdrop.RenderFixed (CCanvas::Current (), m_xOffs, m_yOffs);
 	if ((CCanvas::Current ()->Width () > 640) || (CCanvas::Current ()->Height () > 480)) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0,0,32));
 		DrawEmptyRect (m_xOffs, m_yOffs, m_xOffs + m_bmBackdrop.Width () + 1, m_yOffs + m_bmBackdrop.Height () + 1);

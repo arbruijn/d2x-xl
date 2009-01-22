@@ -265,7 +265,7 @@ else {
 		yOffs = 0;
 	dstx += xOffs;
 	dsty += yOffs;
-	GrBmUBitBlt (CCanvas::Current (), dstx, dsty, bufw, bufh, &bmFrame, sx, sy, 1);
+	BlitToBitmap (CCanvas::Current (), dstx, dsty, bufw, bufh, &bmFrame, sx, sy, 1);
 	if ((CCanvas::Current ()->Width () > 640) || (CCanvas::Current ()->Height () > 480)) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
 		DrawEmptyRect (dstx - 1, dsty, dstx + w, dsty + h + 1);
@@ -519,47 +519,7 @@ Init ();
 //CD may not have been inserted
 int CMovieManager::RequestCD (void)
 {
-#if 0
-	ubyte save_pal [256*3];
-	CCanvas *tcanv, canvP = CCanvas::Current ();
-	int ret, was_faded=paletteManager.EffectDisabled ();
-
-	GrPaletteStepClear ();
-
-	CCanvas::Push ();
-	tcanv = GrCreateCanvas (CCanvas::Current ()->bm.Width (), CCanvas::Current ()->bm.Height ());
-
-	CCanvas::SetCurrent (tcanv);
-	gr_ubitmap (0, 0, &canvP->Bitmap ());
-	CCanvas::Pop ();
-
-	GrClearCanvas (0);
-
- try_again:;
-
-	ret = MsgBox ("CD ERROR", 1, "Ok", "Please insert your Descent II CD");
-
-	if (ret == -1) {
-		int ret2;
-
-		ret2 = MsgBox ("CD ERROR", 2, "Try Again", "Leave Game", "You must insert your\nDescent II CD to Continue");
-
-		if (ret2 == -1 || ret2 == 0)
-			goto try_again;
-	}
-	force_rb_register = 1;  //disc has changed; force register new CD
-	GrPaletteStepClear ();
-	gr_ubitmap (0, 0, &tcanv->Bitmap ());
-	if (!was_faded)
-		paletteManager.LoadEffect ();
-	GrFreeCanvas (tcanv);
-	return ret;
-#else
-#if TRACE
-	console.printf (DEBUG_LEVEL, "STUB: movie: RequestCD\n");
-#endif
-	return 0;
-#endif
+return -1;
 }
 
 //-----------------------------------------------------------------------

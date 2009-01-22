@@ -299,15 +299,15 @@ if (gameStates.menus.bHires) {
 	y = menu [0].m_y - 16;
 	if (gameStates.app.bGameRunning)
 		paletteManager.LoadEffect ();
-	//GrBitmap (x, y, image);
-	image->Blit (NULL, x, y);
+	//BlitClipped (x, y, image);
+	image->RenderFixed (NULL, x, y);
 	if (gameOpts->menus.nStyle) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
 		DrawEmptyRect (x - 1, y - 1, x + image->Width () + 1, y + image->Height () + 1);
 		}
 	}
 else {
-	GrBitmap ((CCanvas::Current ()->Width ()-THUMBNAIL_W) / 2, menu [0].m_y - 5, saveGameInfo [nCurItem - 1].Image ());
+	BlitClipped ((CCanvas::Current ()->Width ()-THUMBNAIL_W) / 2, menu [0].m_y - 5, saveGameInfo [nCurItem - 1].Image ());
 	}
 return nCurItem;
 }
