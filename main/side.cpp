@@ -814,11 +814,13 @@ return IsWall () && WALLS [m_nWall].IsVolatile ();
 
 //------------------------------------------------------------------------------
 
-int CSide::Physics (fix& damage)
+int CSide::Physics (fix& damage, bool bSolid)
 {
-CWall* wallP = Wall ();
-if (!wallP || (wallP->nType != WALL_ILLUSION))
-	return 0;
+if (!bSolid) {
+	CWall* wallP = Wall ();
+	if (!wallP || (wallP->nType != WALL_ILLUSION))
+		return 0;
+	}
 if (gameData.pig.tex.tMapInfoP [m_nBaseTex].damage) {
 	damage = gameData.pig.tex.tMapInfoP [m_nBaseTex].damage;
 	return 1;

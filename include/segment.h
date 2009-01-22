@@ -179,7 +179,7 @@ class CSide {
 		CSegMasks Masks (const CFixVector& refP, fix xRad, short sideBit, short& faceBit);
 		void HitPointUV (fix *u, fix *v, fix *l, CFixVector& intersection, int iFace);
 		int CheckForTranspPixel (CFixVector& intersection, short iFace);
-		int Physics (fix& damage);
+		int Physics (fix& damage, bool bSolid);
 
 		bool IsOpenableDoor (void);
 
@@ -315,7 +315,7 @@ class CSegment {
 		inline int CheckForTranspPixel (CFixVector& intersection, int nSide, short iFace) 
 		 { return m_sides [nSide].CheckForTranspPixel (intersection, iFace); }
 
-		int Physics (int nSide, fix& damage) { return m_sides [nSide].Physics (damage); }
+		int Physics (int nSide, fix& damage) { return m_sides [nSide].Physics (damage, m_children [nSide] == -1); }
 		int Physics (fix& xDamage);
 
 		void OperateTrigger (int nSide, CObject *objP, int shot);
