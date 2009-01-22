@@ -657,7 +657,7 @@ return h;
 
 //------------------------------------------------------------------------------
 
-#define kc_gr_pixel(_x,_y)		gr_pixel ((_x), (_y))
+#define kc_gr_pixel(_x,_y)		DrawPixelClipped ((_x), (_y))
 #define KC_LHX(_x) 				(LHX (_x)+xOffs)
 #define KC_LHY(_y) 				(LHY (_y)+yOffs)
 

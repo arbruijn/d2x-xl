@@ -26,53 +26,11 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 ubyte gr_ugpixel( CBitmap * bitmap, int x, int y )
 {
-#ifdef __DJGPP__
-	switch(bitmap->props.nMode)
- {
-	case BM_LINEAR:
-#endif
 		return bitmap->Buffer () [bitmap->RowSize () * y + x];
-#ifdef __DJGPP__
-	case BM_MODEX:
-		x += bitmap->props.x;
-		y += bitmap->props.y;
-		gr_modex_setplane( x & 3 );
-		return gr_video_memory[(bitmap->RowSize () * y) + (x/4)];
-	case BM_SVGA:
-	 {
-		uint offset;
-		offset = (uint)bitmap->Buffer () + (uint)bitmap->RowSize () * y + x;
-		gr_vesa_setpage( offset >> 16 );
-		return gr_video_memory[offset & 0xFFFF];
-		}
-	}
-	return 0;
-#endif
 }
 
-ubyte gr_gpixel( CBitmap * bitmap, int x, int y )
+ubyte gr_gpixel (CBitmap * bitmap, int x, int y)
 {
 	if ((x<0) || (y<0) || (x>=bitmap->Width ()) || (y>=bitmap->Height ())) return 0;
-#ifdef __DJGPP__
-	switch(bitmap->props.nMode)
- {
-	case BM_LINEAR:
-#endif
 		return bitmap->Buffer ()[ bitmap->RowSize ()*y + x ];
-#ifdef __DJGPP__
-	case BM_MODEX:
-		x += bitmap->props.x;
-		y += bitmap->props.y;
-		gr_modex_setplane( x & 3 );
-		return gr_video_memory[(bitmap->RowSize () * y) + (x/4)];
-	case BM_SVGA:
-	 {
-		uint offset;
-		offset = (uint)bitmap->Buffer () + (uint)bitmap->RowSize () * y + x;
-		gr_vesa_setpage( offset >> 16 );
-		return gr_video_memory[offset & 0xFFFF];
-		}
-	}
-	return 0;
-#endif
 }

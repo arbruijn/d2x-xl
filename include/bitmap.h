@@ -276,6 +276,10 @@ class CBitmap : public CArray< ubyte > {
 		void RenderClipped (CBitmap* dest = NULL, int dx = 0, int dy = 0, int w = -1, int h = -1, int sx = 0, int sy = 0);
 		void RenderToBitmap (CBitmap* dest, int dx, int dy, int w, int h, int sx, int sy);
 
+		inline bool Clip (int x, int y) { return (x < 0) || (y < 0) || (x >= Width ()) || (y >= Width ()); }
+		void DrawPixel (int x, int y, ubyte color);
+		ubyte GetPixel (int x, int y);
+
 		inline CBitmap& Clone (CBitmap& clone) { 
 			memcpy (&clone, this, sizeof (CBitmap)); 
 			return clone;

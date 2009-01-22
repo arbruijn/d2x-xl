@@ -799,7 +799,7 @@ while (nextRowP != NULL) {
 			if (underline) {
 				for (i = 0; i < width; i++) {
 					CCanvas::Current ()->SetColor (CCanvas::Current ()->FontColor (0).index);
-					gr_pixel (x++, y);
+					DrawPixelClipped (x++, y);
 					}
 				} 
 			else {
@@ -814,7 +814,7 @@ while (nextRowP != NULL) {
 						CCanvas::Current ()->SetColor (CCanvas::Current ()->FontColor (0).index);
 					else
 						CCanvas::Current ()->SetColor (CCanvas::Current ()->FontColor (1).index);
-					gr_pixel (x++, y);
+					DrawPixelClipped (x++, y);
 					mask >>= 1;
 					}
 				}
@@ -892,7 +892,7 @@ while (nextRowP != NULL) {
 			if (underline) {
 				for (i = 0; i < width; i++) {
 					CCanvas::Current ()->SetColor (CCanvas::Current ()->FontColor (0).index);
-					gr_pixel (x++, y);
+					DrawPixelClipped (x++, y);
 					}
 				}
 			else {
@@ -905,7 +905,7 @@ while (nextRowP != NULL) {
 						}
 					if (bits & mask) {
 						CCanvas::Current ()->SetColor (CCanvas::Current ()->FontColor (0).index);
-						gr_pixel (x++, y);
+						DrawPixelClipped (x++, y);
 						} 
 					else {
 						x++;

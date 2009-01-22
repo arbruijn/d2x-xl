@@ -265,7 +265,7 @@ void gr_ubitmapGENERIC(int x, int y, CBitmap * bmP)
 
 	for (y1=0; y1 < bmP->Height (); y1++)    {
 		for (x1=0; x1 < bmP->Width (); x1++)    {
-			CCanvas::Current ()->SetColor(gr_gpixel(bmP,x1,y1));
+			CCanvas::Current ()->SetColor(bmP->GetPixel (x1,y1));
 			gr_upixel(x+x1, y+y1);
 		}
 	}
@@ -280,7 +280,7 @@ void gr_ubitmapGENERICm(int x, int y, CBitmap * bmP)
 
 	for (y1=0; y1 < bmP->Height (); y1++) {
 		for (x1=0; x1 < bmP->Width (); x1++) {
-			c = gr_gpixel(bmP,x1,y1);
+			c = bmP->GetPixel (x1,y1);
 			if (c != TRANSPARENCY_COLOR) {
 				CCanvas::Current ()->SetColor(c);
 				gr_upixel(x+x1, y+y1);
@@ -520,7 +520,7 @@ if ((src->Flags () & BM_FLAG_RLE) && (src->Mode () == BM_LINEAR)) {
 	}
 for (y1=0; y1 < h; y1++)  
 	for (x1=0; x1 < w; x1++)  
-		gr_bm_pixel(dest, dx+x1, dy+y1, gr_gpixel(src,sx+x1,sy+y1));
+		dest->DrawPixel (dx+x1, dy+y1, src->GetPixel (sx + x1, sy + y1));
 }
 
 //------------------------------------------------------------------------------
@@ -636,8 +636,8 @@ else if ((src->Mode () == BM_OGL) && (dest->Mode () == BM_LINEAR))
 else
 	for (y1 = 0; y1 < h; y1++) {
 		for (x1 = 0; x1 < w; x1++) {
-			if ((c = gr_gpixel (src, sx + x1, sy + y1)) != TRANSPARENCY_COLOR)
-				gr_bm_pixel (dest, dx + x1, dy + y1, c);
+			if ((c = src->GetPixel (sx + x1, sy + y1)) != TRANSPARENCY_COLOR)
+				dest->DrawPixel (dx + x1, dy + y1, c);
 		}
 	}
 }

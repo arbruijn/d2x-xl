@@ -192,11 +192,11 @@ else {
 					return PCX_ERROR_READING;
 					}
 				for (i=0;i<count;i++)
-					gr_bm_pixel (bmP, col+i, row, data);
+					bmP->DrawPixel (col+i, row, data);
 				col += count;
 				} 
 			else {
-				gr_bm_pixel (bmP, col, row, data);
+				bmP->DrawPixel (col, row, data);
 				col++;
 				}
 			}

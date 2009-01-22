@@ -143,8 +143,8 @@ aiP->xDyingStartTime = 0;
 
 void InitAIObjects (void)
 {
-	short		h, i, j;
-	CObject	*objP;
+	short		i, j;
+	CObject*	objP;
 
 gameData.ai.freePointSegs = gameData.ai.routeSegs.Buffer ();
 gameData.bosses.Destroy ();
@@ -224,7 +224,7 @@ gameStates.gameplay.bFinalBossIsDead=0;
 gameData.escort.nObjNum = 0;
 gameData.escort.bMayTalk = 0;
 gameData.physics.xBossInvulDot = I2X (1)/4 - I2X (gameStates.app.nDifficultyLevel)/8;
-for (int i = 0; i < gameData.bosses.Count (); i++)
+for (uint i = 0; i < gameData.bosses.Count (); i++)
 	gameData.bosses [i].m_nDyingStartTime = 0;
 }
 

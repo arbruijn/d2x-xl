@@ -2263,7 +2263,7 @@ void CheckFace(int nSegment, int nSide, int facenum, int nVertices, short *vp, i
 		}
 
 		CCanvas::Current ()->SetColor(0);
-		gr_pixel(_search_x, _search_y);	//set our search pixel to color zero
+		DrawPixelClipped(_search_x, _search_y);	//set our search pixel to color zero
 		CCanvas::Current ()->SetColor(1);					//and render in color one
  save_lighting = gameStates.render.nLighting;
  gameStates.render.nLighting = 2;
@@ -2290,13 +2290,13 @@ void RenderObjectSearch(CObject *objP)
 	//in case the CObject itself is rendering color 0
 
 	CCanvas::Current ()->SetColor(0);
-	gr_pixel(_search_x, _search_y);	//set our search pixel to color zero
+	DrawPixelClipped(_search_x, _search_y);	//set our search pixel to color zero
 	RenderObject (objP, 0, 0);
 	if (gr_ugpixel(CCanvas::Current (), _search_x, _search_y) != 0)
 		changed=1;
 
 	CCanvas::Current ()->SetColor(1);
-	gr_pixel(_search_x, _search_y);	//set our search pixel to color zero
+	DrawPixelClipped(_search_x, _search_y);	//set our search pixel to color zero
 	RenderObject (objP, 0, 0);
 	if (gr_ugpixel(CCanvas::Current (), _search_x, _search_y) != 1)
 		changed=1;

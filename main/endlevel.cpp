@@ -832,7 +832,7 @@ for (i = 0; i < MAX_STARS; i++) {
 	if (p.p3_codes == 0) {
 		p.p3_flags &= ~PF_PROJECTED;
 		G3ProjectPoint (&p);
-		gr_pixel (p.p3_screen.x, p.p3_screen.y);
+		DrawPixelClipped (p.p3_screen.x, p.p3_screen.y);
 		}
 	}
 }

@@ -1,4 +1,4 @@
-/*
+
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
 END-USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
@@ -468,12 +468,12 @@ void gr_rle_expand_scanline_generic (CBitmap * dest, int dx, int dy, ubyte *src,
 	if (x1+count > x2) {
 		count = x2-x1+1;
 		for (j=0; j<count; j++)
-			gr_bm_pixel (dest, dx++, dy, color);
+			dest->DrawPixel (dx++, dy, color);
 		return;
 	}
 
 	for (j=0; j<count; j++)
-		gr_bm_pixel (dest, dx++, dy, color);
+		dest->DrawPixel (dx++, dy, color);
 	i += count;
 
 	while (i <= x2)	 {
@@ -489,12 +489,12 @@ void gr_rle_expand_scanline_generic (CBitmap * dest, int dx, int dy, ubyte *src,
 		// we know have '*count' pixels of 'color'.
 		if (i+count <= x2) {
 			for (j=0; j<count; j++)
-				gr_bm_pixel (dest, dx++, dy, color);
+				dest->DrawPixel (dx++, dy, color);
 			i += count;
 		} else {
 			count = x2-i+1;
 			for (j=0; j<count; j++)
-				gr_bm_pixel (dest, dx++, dy, color);
+				dest->DrawPixel (dx++, dy, color);
 			i += count;
 		}
 	}
@@ -531,14 +531,14 @@ void gr_rle_expand_scanline_generic_masked (CBitmap * dest, int dx, int dy, ubyt
 		count = x2-x1+1;
 		if (color != TRANSPARENCY_COLOR) {
 			for (j=0; j<count; j++)
-				gr_bm_pixel (dest, dx++, dy, color);
+				dest->DrawPixel (dx++, dy, color);
 		}
 		return;
 	}
 
 	if (color != TRANSPARENCY_COLOR) {
 		for (j=0; j<count; j++)
-			gr_bm_pixel (dest, dx++, dy, color);
+			dest->DrawPixel (dx++, dy, color);
 	} else
 		dx += count;
 	i += count;
@@ -557,7 +557,7 @@ void gr_rle_expand_scanline_generic_masked (CBitmap * dest, int dx, int dy, ubyt
 		if (i+count <= x2) {
 			if (color != TRANSPARENCY_COLOR) {
 				for (j=0; j<count; j++)
-					gr_bm_pixel (dest, dx++, dy, color);
+					dest->DrawPixel (dx++, dy, color);
 			} else
 				dx += count;
 			i += count;
@@ -565,7 +565,7 @@ void gr_rle_expand_scanline_generic_masked (CBitmap * dest, int dx, int dy, ubyt
 			count = x2-i+1;
 			if (color != TRANSPARENCY_COLOR) {
 				for (j=0; j<count; j++)
-					gr_bm_pixel (dest, dx++, dy, color);
+					dest->DrawPixel (dx++, dy, color);
 			} else
 				dx += count;
 			i += count;

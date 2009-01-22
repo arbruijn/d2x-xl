@@ -30,69 +30,48 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gr.h"
 #include "bitmap.h"
 
-#ifndef D1XD3D
-void gr_upixel( int x, int y )
-{
-	switch (MODE)
- {
-	case BM_OGL:
-		OglDrawPixel(x,y, &COLOR);
-		return;
-	case BM_LINEAR:
-		DATA [ROWSIZE*y+x] = (ubyte) COLOR.index;
-		return;
-#ifdef __DJGPP__
-	case BM_MODEX:
-		gr_modex_setplane( (x+XOFFSET) & 3 );
-		gr_video_memory[(ROWSIZE * (y+YOFFSET)) + ((x+XOFFSET)>>2)] = COLOR.index;
-		return;
-	case BM_SVGA:
-		gr_vesa_pixel( COLOR, (uint)DATA + (uint)ROWSIZE * y + x);
-		return;
-#endif
-	}
-}
-#endif
+//------------------------------------------------------------------------------
 
-void DrawPixel( int x, int y )
+void DrawPixel (int x, int y)
 {
-	if ((x<0) || (y<0) || (x>=CCanvas::Current ()->Width ()) || (y>=CCanvas::Current ()->Height ())) return;
-	gr_upixel (x, y);
+if (MODE == BM_OGL)
+	OglDrawPixel (x, y);
+else if (MODE == BM_LINEAR)
+	DATA [ROWSIZE * y + x] = (ubyte) COLOR.index;
 }
 
-#ifndef D1XD3D
-inline void gr_bm_upixel( CBitmap * bmP, int x, int y, ubyte color )
+//------------------------------------------------------------------------------
+
+void DrawPixelClipped (int x, int y)
 {
+if (!CCanvas::Current ()->Clip (x, y))
+	DrawPixel (x, y);
+}
+
+//------------------------------------------------------------------------------
+
+void CBitmap::DrawPixel (int x, int y, ubyte color)
+{
+if (!Buffer () || Clip (x, y))
+	return;
+if (Mode () == BM_OGL) {
 	tCanvasColor c;
-	switch (bmP->Mode ())
- {
-	case BM_OGL:
-		c.index = color;
-		c.rgb = 0;
-		OglDrawPixel (bmP->Left () + x, bmP->Top () + y, &c);
-		return;
-	case BM_LINEAR:
-		(*bmP) [bmP->RowSize () * y + x] = color;
-		return;
-#ifdef __DJGPP__
-	case BM_MODEX:
-		x += bmP->Left ();
-		y += bmP->Top ();
-		gr_modex_setplane( x & 3 );
-		gr_video_memory[(bmP->RowSize () * y) + (x/4)] = color;
-		return;
-	case BM_SVGA:
-		gr_vesa_pixel(color,(uint)bmP->Buffer () + (uint)bmP->RowSize () * y + x);
-		return;
-#endif
+	c.index = color;
+	c.rgb = 0;
+	OglDrawPixel (Left () + x, Top () + y, &c);
 	}
+else if (Mode () == BM_LINEAR) 
+	Buffer () [RowSize () * y + x] = color;
 }
-#endif
 
-void gr_bm_pixel( CBitmap * bmP, int x, int y, ubyte color )
+//------------------------------------------------------------------------------
+
+ubyte CBitmap::GetPixel (int x, int y)
 {
-	if ((x<0) || (y<0) || (x >= bmP->Width ()) || (y >= bmP->Height ())) return;
-	gr_bm_upixel (bmP, x, y, color);
+if (!Buffer () || Clip (x, y))
+	return 0;
+return Buffer () [RowSize () * y + x];
 }
 
-
+//------------------------------------------------------------------------------
+//eof

@@ -101,6 +101,8 @@ class CCanvas : public CBitmap {
 		void SetColorRGB15bpp (ushort c, ubyte alpha);
 		inline void SetColorRGBi (int i) { SetColorRGB (RGBA_RED (i), RGBA_GREEN (i), RGBA_BLUE (i), 255); }
 
+		inline bool Clip (int x, int y) { return this->CBitmap::Clip (x, y); }
+
 		void FadeColorRGB (double dFade);
 };
 

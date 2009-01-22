@@ -106,7 +106,7 @@ int gr_upoly(int nverts, int *verts);
 
 
 // Draws a point into the current canvas in the current color and drawmode.
-void gr_pixel(int x, int y);
+void DrawPixelClipped(int x, int y);
 void gr_upixel(int x, int y);
 
 // Gets a pixel;
