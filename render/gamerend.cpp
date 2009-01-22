@@ -892,7 +892,7 @@ if (!bGameCockpitCopyCode) {
 	if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING) {
 		gameStates.render.vr.nCurrentPage = !gameStates.render.vr.nCurrentPage;
 		CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
-		gameStates.render.vr.buffers.subRender [0].BlitToBitmap (
+		gameStates.render.vr.buffers.subRender [0].Blit (
 			&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage], 
 			 gameStates.render.vr.buffers.subRender [0].Left (),
 			 gameStates.render.vr.buffers.subRender [0].Top (),
@@ -1008,7 +1008,7 @@ void CopyBackgroundRect (int left, int top, int right, int bot)
 		for (x=tile_left;x<=tile_right;x++) {
 			//w = (right < dest_x+bm->Width ())? (right-dest_x+1): (bm->Width ()-ofs_x);
 			w = min(right-dest_x+1, bm->Width ()-ofs_x);
-			bmBackground.BlitToBitmap (CCanvas::Current (), dest_x, dest_y, w, h, ofs_x, ofs_y, 1);
+			bmBackground.Blit (CCanvas::Current (), dest_x, dest_y, w, h, ofs_x, ofs_y, 1);
 			ofs_x = 0;
 			dest_x += w;
 			}
