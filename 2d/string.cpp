@@ -414,11 +414,11 @@ int Pow2ize (int x);//from ogl.c
 
 //------------------------------------------------------------------------------
 
-int CFont::DrawString (int x, int y, const char *s)
+int CFont::DrawString (int left, int top, const char *s)
 {
 	const char*		textP, * nextRowP, * text_ptr1;
 	int				width, spacing, letter;
-	int				l, t;
+	int				x, y;
 	int				origColor = CCanvas::Current ()->FontColor (0).index;//to allow easy reseting to default string color with colored strings -MPM
 	ubyte				c;
 	CBitmap*			bmf;
@@ -426,18 +426,18 @@ int CFont::DrawString (int x, int y, const char *s)
 	bool				bOGL = CCanvas::Current ()->Mode () == BM_OGL;
 
 nextRowP = s;
-t = y;
+y = top;
 if (screen.Canvas ()->Mode () != BM_OGL)
 	Error ("carp.\n");
 while (nextRowP != NULL) {
 	text_ptr1 = nextRowP;
 	nextRowP = NULL;
 	textP = text_ptr1;
-	l = (x == 0x8000) ? fontManager.Current ()->GetCenteredX (textP) : x;
+	x = (left == 0x8000) ? fontManager.Current ()->GetCenteredX (textP) : left;
 	while ((c = *textP)) {
 		if (c == '\n') {
 			nextRowP = textP + 1;
-			t += m_info.height + 2;
+			y += m_info.height + 2;
 			break;
 			}
 		letter = c - m_info.minChar;
@@ -450,11 +450,11 @@ while (nextRowP != NULL) {
 			bmf = m_info.bitmaps + letter;
 			bmf->AddFlags (BM_FLAG_TRANSPARENT);
 			if (bOGL)
-				bmf->OglUBitMapMC (l, t, 0, 0, I2X (1), 0, colorP);
+				bmf->OglUBitMapMC (x, y, 0, 0, I2X (1), 0, colorP);
 			else
-				GrBitmapM (l, t, bmf, 2); // credits need clipping
+				GrBitmapM (x, y, bmf, 2); // credits need clipping
 			}
-		l += spacing;
+		x += spacing;
 		textP++;
 		}
 	}

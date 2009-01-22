@@ -93,7 +93,7 @@ else {
 		palette = paletteManager.Game ();
 	palette->ToRgbaf (c, color);
 	if (gameStates.render.grAlpha >= FADE_LEVELS)
-		color.alpha = 1.0f;
+ 		color.alpha = 1.0f;
 	else
 		color.alpha = (float) gameStates.render.grAlpha / (float) FADE_LEVELS; //1.0f - (float) gameStates.render.grAlpha / ((float) FADE_LEVELS - 1.0f);
 	}
@@ -109,10 +109,10 @@ void OglCanvasColor (tCanvasColor* colorP)
 if (!colorP)
 	glColor4f (1.0, 1.0, 1.0, gameStates.render.grAlpha);
 else if (colorP->rgb) {
-	fc [0] = (float) (colorP->color.red) / 255.0f;
-	fc [1] = (float) (colorP->color.green) / 255.0f;
-	fc [2] = (float) (colorP->color.blue) / 255.0f;
-	fc [3] = (float) (colorP->color.alpha) / 255.0f;
+	fc [0] = float (colorP->color.red) / 255.0f;
+	fc [1] = float (colorP->color.green) / 255.0f;
+	fc [2] = float (colorP->color.blue) / 255.0f;
+	fc [3] = float (colorP->color.alpha) / 255.0f;
 	if (fc [3] < 1.0f) {
 		glEnable (GL_BLEND);
 		glBlendFunc (gameData.render.ogl.nSrcBlend, gameData.render.ogl.nDestBlend);
@@ -127,12 +127,20 @@ else
 
 tRgbaColorf GetCanvasColor (tCanvasColor *colorP)
 {
+
 if (!colorP) {
-	tRgbaColorf	color {1, 1, 1, gameStates.render.grAlpha};
+	tRgbaColorf	color = {1, 1, 1, gameStates.render.grAlpha};
 	return color;
 	}
-else if (colorP->rgb)
-	return colorP->color;
+else if (colorP->rgb) {
+	tRgbaColorf color = {
+		float (colorP->color.red) / 255.0f,
+		float (colorP->color.green) / 255.0f,
+		float (colorP->color.blue) / 255.0f,
+		float (colorP->color.alpha) / 255.0f
+		};
+	return color;
+	}
 else
 	return GetPalColor (paletteManager.Game (), colorP->index);
 }
