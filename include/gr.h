@@ -145,10 +145,10 @@ void RotateBitmap(CBitmap *bp, grsPoint *vertbuf, int lightValue);
 
 void ScaleBitmap(CBitmap *bp, grsPoint *vertbuf, int orientation);
 
-void OglURect(int left,int top,int right,int bot);
+void OglURect (int left,int top,int right,int bot);
 void OglUPixelC (int x, int y, tCanvasColor *c);
 void OglULineC (int left,int top,int right,int bot, tCanvasColor *c);
-void OglUPolyC (int left, int top, int right, int bot, tCanvasColor *c);
+void OglDrawBox (int left, int top, int right, int bot);
 
 //===========================================================================
 // Global variables

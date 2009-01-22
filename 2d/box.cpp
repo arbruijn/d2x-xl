@@ -69,7 +69,7 @@ void gr_box0(int left,int top,int right,int bot)
 
 void gr_ubox12(int left,int top,int right,int bot)
 {
-OglUPolyC(left, top, right, bot, &COLOR);
+OglDrawBox(left, top, right, bot, &COLOR);
 }
 
 void gr_box12(int left,int top,int right,int bot)

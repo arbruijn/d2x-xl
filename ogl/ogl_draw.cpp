@@ -54,8 +54,8 @@ glDisable (GL_TEXTURE_2D);
 glPointSize (1.0);
 glBegin (GL_POINTS);
 OglCanvasColor (colorP);
-glVertex2d ((x + CCanvas::Current ()->Left ()) / (double) gameStates.ogl.nLastW,
-				1.0 - (y + CCanvas::Current ()->Top ()) / (double) gameStates.ogl.nLastW);
+glVertex2f (float (x + CCanvas::Current ()->Left ()) / float (gameStates.ogl.nLastW),
+				1.0f - float (y + CCanvas::Current ()->Top ()) / float (gameStates.ogl.nLastW));
 if (colorP->rgb)
 	glDisable (GL_BLEND);
 glEnd();
@@ -63,22 +63,20 @@ glEnd();
 
 //------------------------------------------------------------------------------
 
-void OglURect(int left, int top, int right, int bot)
+void OglURect (int left, int top, int right, int bot)
 {
-	GLfloat		xo, yo, xf, yf;
-
-xo = ((float) left + CCanvas::Current ()->Left ()) / (float) gameStates.ogl.nLastW;
-xf = (float) (right + CCanvas::Current ()->Left ()) / (float) gameStates.ogl.nLastW;
-yo = 1.0f - (float) (top + CCanvas::Current ()->Top ()) / (float) gameStates.ogl.nLastH;
-yf = 1.0f - (float) (bot + CCanvas::Current ()->Top ()) / (float) gameStates.ogl.nLastH;
+GLfloat x0 = float (left + CCanvas::Current ()->Left ()) / float (gameStates.ogl.nLastW);
+GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (gameStates.ogl.nLastW);
+GLfloat y0 = 1.0f - float (top + CCanvas::Current ()->Top ()) / float (gameStates.ogl.nLastH);
+GLfloat y1 = 1.0f - float (bot + CCanvas::Current ()->Top ()) / float (gameStates.ogl.nLastH);
 
 glDisable (GL_TEXTURE_2D);
 OglCanvasColor (&COLOR);
 glBegin (GL_QUADS);
-glVertex2f (xo,yo);
-glVertex2f (xo,yf);
-glVertex2f (xf,yf);
-glVertex2f (xf,yo);
+glVertex2f (x0,y0);
+glVertex2f (x0,y1);
+glVertex2f (x1,y1);
+glVertex2f (x1,y0);
 glEnd ();
 if (COLOR.rgb || (gameStates.render.grAlpha < FADE_LEVELS))
 	glDisable (GL_BLEND);
@@ -86,43 +84,49 @@ if (COLOR.rgb || (gameStates.render.grAlpha < FADE_LEVELS))
 
 //------------------------------------------------------------------------------
 
-void OglULineC (int left,int top,int right,int bot, tCanvasColor *c)
+void OglULineC (int left,int top,int right,int bot, tCanvasColor *colorP)
 {
-	GLfloat xo, yo, xf, yf;
-
-xo = (left + CCanvas::Current ()->Left ()) / (float) gameStates.ogl.nLastW;
-xf = (right + CCanvas::Current ()->Left ()) / (float) gameStates.ogl.nLastW;
-yo = 1.0f - (top + CCanvas::Current ()->Top ()) / (float) gameStates.ogl.nLastH;
-yf = 1.0f - (bot + CCanvas::Current ()->Top ()) / (float) gameStates.ogl.nLastH;
+GLfloat x0 = float (left + CCanvas::Current ()->Left ()) / float (gameStates.ogl.nLastW);
+GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (gameStates.ogl.nLastW);
+GLfloat y0 = 1.0f - float (top + CCanvas::Current ()->Top ()) / float (gameStates.ogl.nLastH);
+GLfloat y1 = 1.0f - float (bot + CCanvas::Current ()->Top ()) / float (gameStates.ogl.nLastH);
 glDisable (GL_TEXTURE_2D);
-OglCanvasColor (c);
+OglCanvasColor (colorP);
 glBegin (GL_LINES);
-glVertex2f (xo,yo);
-glVertex2f (xf,yf);
-if (c->rgb)
+glVertex2f (x0,y0);
+glVertex2f (x1,y1);
+if (colorP->rgb)
 	glDisable (GL_BLEND);
 glEnd();
 }
 
 //------------------------------------------------------------------------------
 
-void OglUPolyC (int left, int top, int right, int bot, tCanvasColor *c)
+void OglDrawBox (int left, int top, int right, int bot)
 {
-	GLfloat xo, yo, xf, yf;
-
-xo = (left + CCanvas::Current ()->Left ()) / (float) gameStates.ogl.nLastW;
-xf = (right + CCanvas::Current ()->Left ()) / (float) gameStates.ogl.nLastW;
-yo = 1.0f - (top + CCanvas::Current ()->Top ()) / (float) gameStates.ogl.nLastH;
-yf = 1.0f - (bot + CCanvas::Current ()->Top ()) / (float) gameStates.ogl.nLastH;
+GLfloat x0 = float (left + CCanvas::Current ()->Left ()) / float (gameStates.ogl.nLastW);
+GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (gameStates.ogl.nLastW);
+GLfloat y0 = 1.0f - float (top + CCanvas::Current ()->Top ()) / float (gameStates.ogl.nLastH);
+GLfloat y1 = 1.0f - float (bot + CCanvas::Current ()->Top ()) / float (gameStates.ogl.nLastH);
 glDisable (GL_TEXTURE_2D);
-OglCanvasColor (c);
-glBegin (GL_LINE_LOOP);
-glVertex2f (xo, yo);
-glVertex2f (xf, yo);
-glVertex2f (xf, yf);
-glVertex2f (xo, yf);
+OglCanvasColor (&COLOR);
+glEnable (GL_BLEND);
+glBlendFunc (GL_ONE, GL_ZERO);
+glBegin (GL_LINES);
+glVertex2f (x0, y0);
+glVertex2f (x1, y0);
+
+glVertex2f (x1, y0);
+glVertex2f (x1, y1);
+
+glVertex2f (x1, y1);
+glVertex2f (x0, y1);
+
+glVertex2f (x0, y1);
+glVertex2f (x0, y0);
 glEnd();
-if (c->rgb)
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+if (colorP->rgb)
 	glDisable (GL_BLEND);
 }
 

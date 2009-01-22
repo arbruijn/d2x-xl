@@ -290,7 +290,7 @@ for (i = 0; i < 2; i++) {
 			x -= dx + wIcon;
 		}
 	for (j = 0; j < n; j++) {
-		int bArmed, bHave, bLoaded, l, m;
+		int bArmed, bHave, bAvailable, l, m;
 
 		if (gameOpts->render.weaponIcons.nSort && !gameStates.app.bD1Mission) {
 			l = nWeaponOrder [i][j];
@@ -344,9 +344,9 @@ for (i = 0; i < 2; i++) {
 		nAmmoColor = GREEN_RGBA;
 		if (ammoType [i][l]) {
 			int nAmmo = (i ? LOCALPLAYER.secondaryAmmo [l] : LOCALPLAYER.primaryAmmo [(l == 6) ? 1 : l]);
-			bLoaded = (nAmmo > 0);
+			bAvailable = (nAmmo > 0);
 			if (bHave) {
-				if (bLoaded && gameOpts->render.weaponIcons.bShowAmmo) {
+				if (bAvailable && gameOpts->render.weaponIcons.bShowAmmo) {
 					if (!i && (l % 5 == 1)) {//Gauss/Vulcan
 						nAmmo = X2I (nAmmo * (unsigned) VULCAN_AMMO_SCALE);
 #if 0
@@ -367,7 +367,7 @@ for (i = 0; i < 2; i++) {
 				}
 			}
 		else {
-			bLoaded = (LOCALPLAYER.energy > gameData.weapons.info [l].xEnergyUsage);
+			bAvailable = (LOCALPLAYER.energy > gameData.weapons.info [l].xEnergyUsage);
 			if (l == 0) {//Lasers
 				sprintf (szAmmo, "%d", (ll > MAX_LASER_LEVEL) ? MAX_LASER_LEVEL + 1 : ll + 1);
 				fontManager.Current ()->StringSize (szAmmo, fw, fh, faw);
@@ -377,11 +377,11 @@ for (i = 0; i < 2; i++) {
 				fontManager.Current ()->StringSize (szAmmo, fw, fh, faw);
 				}
 			}
-		if (i && !bLoaded)
+		if (i && !bAvailable)
 			bHave = 0;
 		if (bHave) {
 			//gameStates.render.grAlpha = FADE_LEVELS * 2 / 3;
-			if (bLoaded)
+			if (bAvailable)
 				CCanvas::Current ()->SetColorRGB (128, 128, 0, (ubyte) (alpha * 16));
 			else
 				CCanvas::Current ()->SetColorRGB (128, 0, 0, (ubyte) (alpha * 16));
@@ -406,18 +406,20 @@ for (i = 0; i < 2; i++) {
 				bArmed = (bHave && (l == gameData.weapons.nPrimary));
 			}
 		if (bArmed)
-			if (bLoaded)
+			if (bAvailable)
 				CCanvas::Current ()->SetColorRGB (255, 192, 0, 255);
 			else
 				CCanvas::Current ()->SetColorRGB (160, 0, 0, 255);
 		else if (bHave)
-			if (bLoaded)
+			if (bAvailable)
 				CCanvas::Current ()->SetColorRGB (0, 160, 0, 255);
 			else
 				CCanvas::Current ()->SetColorRGB (96, 0, 0, 255);
 		else
 			CCanvas::Current ()->SetColorRGB (64, 64, 64, 255);
 		GrUBox (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
+		if (bArmed && bAvailable)
+			GrUBox (x - 2, y - hIcon - 2, x + wIcon + 3, y + 3);
 		if (*szAmmo) {
 			fontManager.SetColorRGBi (nAmmoColor, 1, 0, 0);
 			nIdIcons [i][j] = GrString (x + wIcon + 2 - fw, y - fh, szAmmo, nIdIcons [i] + j);
@@ -542,7 +544,7 @@ n = (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) ? NUM_INV_IT
 firstItem = gameStates.app.bD1Mission ? INV_ITEM_QUADLASERS : 0;
 x = (screen.Width () - (n - firstItem) * wIcon - (n - 1 - firstItem) * ox) / 2;
 for (j = firstItem; j < n; j++) {
-	int bHave, bArmed, bActive = HUDEquipmentActive (nInvFlags [j]);
+	int bHave, bAvailable, bArmed = HUDEquipmentActive (nInvFlags [j]);
 	bmP = bmInvItems + j;
 	HUDBitBlt (nIconScale * - (x + (w - bmP->Width ()) / (2 * nIconScale)), nIconScale * - (y - hIcon), bmP, I2X (nIconScale), 0);
 	//m = 9 - j;
@@ -563,11 +565,11 @@ for (j = firstItem; j < n; j++) {
 		}
 	else
 		bHave = LOCALPLAYER.flags & nInvFlags [j];
-	bArmed = (LOCALPLAYER.energy > nEnergyType [j]);
+	bAvailable = (LOCALPLAYER.energy > nEnergyType [j]);
 	if (bHave) {
 		//gameStates.render.grAlpha = FADE_LEVELS * 2 / 3;
-		if (bArmed)
-			if (bActive)
+		if (bAvailable)
+			if (bArmed)
 				CCanvas::Current ()->SetColorRGB (255, 208, 0, (ubyte) (alpha * 16));
 			else
 				CCanvas::Current ()->SetColorRGB (128, 128, 0, (ubyte) (alpha * 16));
@@ -580,8 +582,8 @@ for (j = firstItem; j < n; j++) {
 		}
 	GrURect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
 	if (bHave)
-		if (bArmed)
-			if (bActive)
+		if (bAvailable)
+			if (bArmed)
 				CCanvas::Current ()->SetColorRGB (255, 208, 0, 255);
 			else
 				CCanvas::Current ()->SetColorRGB (0, 160, 0, 255);
@@ -590,6 +592,8 @@ for (j = firstItem; j < n; j++) {
 	else
 		CCanvas::Current ()->SetColorRGB (64, 64, 64, 255);
 	GrUBox (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
+	if (bArmed)
+		GrUBox (x - 2, y - hIcon - 2, x + wIcon + 3, y + 3);
 	if (*szCount) {
 		fontManager.Current ()->StringSize (szCount, fw, fh, faw);
 		nIdItems [j] = GrString (x + wIcon + 2 - fw, y - fh, szCount, nIdItems + j);
