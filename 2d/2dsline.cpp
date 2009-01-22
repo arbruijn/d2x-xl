@@ -24,71 +24,66 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "ogl_defs.h"
 
-void gr_linear_darken(ubyte * dest, int darkeningLevel, int count, ubyte * fade_table) {
-	register int i;
+//------------------------------------------------------------------------------
 
-	for (i=0;i<count;i++)
- {
-		*dest = fade_table [(*dest)+(darkeningLevel*256)];
-		dest++;
+void gr_linear_darken (ubyte * dest, int darkeningLevel, int count, ubyte * fade_table) 
+{
+for (int i = 0; i <count; i++) {
+	*dest = fade_table [*dest + darkeningLevel * 256];
+	dest++;
 	}
 }
 
+//------------------------------------------------------------------------------
 
-void gr_linear_stosd( ubyte * dest, tCanvasColor *color, uint nbytes) 
+static inline void gr_linear_stosd (ubyte * dest, tCanvasColor *color, uint nbytes) 
 {
-memset(dest, color->index, nbytes);
+memset (dest, color->index, nbytes);
 }
 
+//------------------------------------------------------------------------------
 
-void gr_uscanline( int x1, int x2, int y )
+void DrawScanLine (int x1, int x2, int y)
 {
-	if (gameStates.render.grAlpha >= FADE_LEVELS ) {
-		switch(MODE)
-	 {
-		case BM_LINEAR:
-		case BM_OGL:
-			OglULineC(x1, y, x2, y, &COLOR);
-			break;
-		}
-	} else {
-		switch(MODE)
-	 {
-		case BM_LINEAR:
-		case BM_OGL:
-			gr_linear_darken( DATA + ROWSIZE*y + x1, (int) gameStates.render.grAlpha, x2-x1+1, paletteManager.FadeTable ());
-			break;
-		}
-	}
+if ((MODE != BM_LINEAR) && (MODE != BM_OGL))
+	return;
+if (gameStates.render.grAlpha >= FADE_LEVELS) 
+	gr_linear_stosd (DATA + ROWSIZE * y + x1, &COLOR, x2 - x1 + 1);
+//	OglDrawLine (x1, y, x2, y, &COLOR);
+else 
+	gr_linear_darken (DATA + ROWSIZE * y + x1, (int) gameStates.render.grAlpha, x2 - x1 + 1, paletteManager.FadeTable ());
 }
 
-void GrScanLine( int x1, int x2, int y )
+//------------------------------------------------------------------------------
+
+void DrawScanLineClipped (int x1, int x2, int y)
 {
-	if ((y<0)||(y>MAXY)) return;
+if ((MODE != BM_LINEAR) && (MODE != BM_OGL))
+	return;
 
-	if (x2 < x1 ) x2 ^= x1 ^= x2;
+if ((y < 0) || (y > MAXY)) 
+	return;
 
-	if (x1 > MAXX) return;
-	if (x2 < MINX) return;
+if (x2 < x1) 
+	x2 ^= x1 ^= x2;
 
-	if (x1 < MINX) x1 = MINX;
-	if (x2 > MAXX) x2 = MAXX;
+if ((x1 > MAXX) || (x2 < MINX))
+	return;
 
-	if (gameStates.render.grAlpha >= FADE_LEVELS ) {
-		switch(MODE)
-	 {
-		case BM_LINEAR:
-		case BM_OGL:
-			gr_linear_stosd( DATA + ROWSIZE*y + x1, &COLOR, x2-x1+1);
-			break;
-		}
-	} else {
-		switch(MODE)
-	 {
-		case BM_LINEAR:
-		case BM_OGL:
-			gr_linear_darken( DATA + ROWSIZE*y + x1, (int) gameStates.render.grAlpha, x2-x1+1, paletteManager.FadeTable ());
-			break;
-		}
-	}
+if (x1 < MINX) 
+	x1 = MINX;
+if (x2 > MAXX) 
+	x2 = MAXX;
+
+#if 1
+DrawScanLine (x1, x2, y);
+#else
+if (gameStates.render.grAlpha >= FADE_LEVELS)
+	gr_linear_stosd (DATA + ROWSIZE * y + x1, &COLOR, x2 - x1 + 1);
+else
+	gr_linear_darken (DATA + ROWSIZE * y + x1, int (gameStates.render.grAlpha), x2 - x1 + 1, paletteManager.FadeTable ());
+#endif
 }
+
+//------------------------------------------------------------------------------
+

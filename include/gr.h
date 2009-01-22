@@ -122,7 +122,7 @@ int gr_aaline(fix x0, fix y0, fix x1, fix y1);
 int gr_uaaline(fix x0, fix y0, fix x1, fix y1);
 
 // Draw a rectangle into the current canvas.
-void GrRect(int left, int top, int right, int bot);
+void DrawFilledRect(int left, int top, int right, int bot);
 void GrURect(int left, int top, int right, int bot);
 
 // Draw a filled circle
@@ -135,20 +135,20 @@ int GrUCircle(fix x, fix y, fix r);
 
 // Draw an unfilled rectangle into the current canvas
 void gr_box(int left, int top, int right, int bot);
-void GrUBox(int left, int top, int right, int bot);
+void DrawEmptyRect(int left, int top, int right, int bot);
 
-void GrScanLine(int x1, int x2, int y);
-void gr_uscanline(int x1, int x2, int y);
+void DrawScanLineClipped(int x1, int x2, int y);
+void DrawScanLine(int x1, int x2, int y);
 
 
 void RotateBitmap(CBitmap *bp, grsPoint *vertbuf, int lightValue);
 
 void ScaleBitmap(CBitmap *bp, grsPoint *vertbuf, int orientation);
 
-void OglURect (int left,int top,int right,int bot);
-void OglUPixelC (int x, int y, tCanvasColor *c);
-void OglULineC (int left,int top,int right,int bot, tCanvasColor *c);
-void OglDrawBox (int left, int top, int right, int bot);
+void OglDrawFilledRect (int left,int top, int right,int bot, tCanvasColor* colorP = NULL);
+void OglDrawPixel (int x, int y, tCanvasColor* colorP = NULL);
+void OglDrawLine (int left,int top, int right,int bot, tCanvasColor* colorP = NULL);
+void OglDrawEmptyRect (int left, int top, int right, int bot, tCanvasColor* colorP = NULL);
 
 //===========================================================================
 // Global variables

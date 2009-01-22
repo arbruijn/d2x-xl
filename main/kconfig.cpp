@@ -657,10 +657,9 @@ return h;
 
 //------------------------------------------------------------------------------
 
-#define kc_gr_scanline(_x1,_x2,_y)	GrScanLine ((_x1), (_x2), (_y))
-#define kc_gr_pixel(_x,_y)	gr_pixel ((_x), (_y))
-#define KC_LHX(_x) (LHX (_x)+xOffs)
-#define KC_LHY(_y) (LHY (_y)+yOffs)
+#define kc_gr_pixel(_x,_y)		gr_pixel ((_x), (_y))
+#define KC_LHX(_x) 				(LHX (_x)+xOffs)
+#define KC_LHY(_y) 				(LHY (_y)+yOffs)
 
 void KCDrawTitle (const char *pszTitle)
 {
@@ -691,8 +690,8 @@ fontManager.SetColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
 if (items == kcKeyboard) {
 	fontManager.SetColorRGBi (RGBA_PAL2 (31, 27, 6), 1, 0, 0);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (31, 27, 6));
-	kc_gr_scanline (KC_LHX (98), KC_LHX (106), KC_LHY (42));
-	kc_gr_scanline (KC_LHX (120), KC_LHX (128), KC_LHY (42));
+	DrawScanLineClipped (KC_LHX (98), KC_LHX (106), KC_LHY (42));
+	DrawScanLineClipped (KC_LHX (120), KC_LHX (128), KC_LHY (42));
 	kc_gr_pixel (KC_LHX (98), KC_LHY (43));					
 	kc_gr_pixel (KC_LHX (98), KC_LHY (44));					
 	kc_gr_pixel (KC_LHX (128), KC_LHY (43));					
@@ -700,8 +699,8 @@ if (items == kcKeyboard) {
 
 	GrString (KC_LHX (109), KC_LHY (40), "OR", NULL);
 
-	kc_gr_scanline (KC_LHX (253), KC_LHX (261), KC_LHY (42));
-	kc_gr_scanline (KC_LHX (274), KC_LHX (283), KC_LHY (42));
+	DrawScanLineClipped (KC_LHX (253), KC_LHX (261), KC_LHY (42));
+	DrawScanLineClipped (KC_LHX (274), KC_LHX (283), KC_LHY (42));
 	kc_gr_pixel (KC_LHX (253), KC_LHY (43));					
 	kc_gr_pixel (KC_LHX (253), KC_LHY (44));					
 	kc_gr_pixel (KC_LHX (283), KC_LHY (43));					
@@ -713,10 +712,10 @@ if (items == kcKeyboard) {
 if (items == kcJoystick) {
 	fontManager.SetColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (31, 27, 6));
-	kc_gr_scanline (KC_LHX (18), KC_LHX (135), KC_LHY (37));
-	kc_gr_scanline (KC_LHX (181), KC_LHX (294), KC_LHY (37));
-	kc_gr_scanline (KC_LHX (18), KC_LHX (144), KC_LHY (119+18));
-	kc_gr_scanline (KC_LHX (174), KC_LHX (294), KC_LHY (119+18));
+	DrawScanLineClipped (KC_LHX (18), KC_LHX (135), KC_LHY (37));
+	DrawScanLineClipped (KC_LHX (181), KC_LHX (294), KC_LHY (37));
+	DrawScanLineClipped (KC_LHX (18), KC_LHX (144), KC_LHY (119+18));
+	DrawScanLineClipped (KC_LHX (174), KC_LHX (294), KC_LHY (119+18));
 	GrString (0x8000, KC_LHY (35), TXT_BUTTONS_HATS, NULL);
 	GrString (0x8000,KC_LHY (125+18), TXT_AXES, NULL);
 	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
@@ -727,10 +726,10 @@ if (items == kcJoystick) {
 } else if (items == kcMouse) {
 	fontManager.SetColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (31,27,6));
-	kc_gr_scanline (KC_LHX (18), KC_LHX (135), KC_LHY (37));
-	kc_gr_scanline (KC_LHX (181), KC_LHX (294), KC_LHY (37));
-	kc_gr_scanline (KC_LHX (18), KC_LHX (144), KC_LHY (119+5));
-	kc_gr_scanline (KC_LHX (174), KC_LHX (294), KC_LHY (119+5));
+	DrawScanLineClipped (KC_LHX (18), KC_LHX (135), KC_LHY (37));
+	DrawScanLineClipped (KC_LHX (181), KC_LHX (294), KC_LHY (37));
+	DrawScanLineClipped (KC_LHX (18), KC_LHX (144), KC_LHY (119+5));
+	DrawScanLineClipped (KC_LHX (174), KC_LHX (294), KC_LHY (119+5));
 	GrString (0x8000, KC_LHY (35), TXT_BUTTONS, NULL);
 	GrString (0x8000,KC_LHY (125+5), TXT_AXES, NULL);
 	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
@@ -1249,9 +1248,9 @@ for (;;) {
 			close_y += yOffs;
 			close_size = gameStates.menus.bHires?10:5;
 			CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-			GrRect (close_x, close_y, close_x + close_size, close_y + close_size);
+			DrawFilledRect (close_x, close_y, close_x + close_size, close_y + close_size);
 			CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 21, 21));
-			GrRect (close_x + LHX (1), close_y + LHX (1), close_x + close_size - LHX (1), close_y + close_size - LHX (1));
+			DrawFilledRect (close_x + LHX (1), close_y + LHX (1), close_x + close_size - LHX (1), close_y + close_size - LHX (1));
 			KCDrawHeader (items);
 			KCDrawTable (items, nItems, nCurItem);
 			}

@@ -27,26 +27,27 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_defs.h"
 #include "gr.h"
 
-void GrURect(int left,int top,int right,int bot)
-{
-	int i;
+//------------------------------------------------------------------------------
 
-	if (MODE == BM_OGL) {
-		OglURect(left,top,right,bot);
-		return;
-	}
-	for ( i=top; i<=bot; i++ )
-		gr_uscanline( left, right, i );
+void GrURect (int left, int top, int right, int bot)
+{
+if (MODE == BM_OGL)
+	OglDrawFilledRect (left, top, right, bot);
+else 
+	for (int i = top; i <= bot; i++)
+		DrawScanLine (left, right, i);
 }
 
-void GrRect(int left,int top,int right,int bot)
-{
-	int i;
+//------------------------------------------------------------------------------
 
-	if (MODE == BM_OGL) {
-		OglURect(left,top,right,bot);
-		return;
-	}
-	for ( i=top; i<=bot; i++ )
-		GrScanLine( left, right, i );
+void DrawFilledRect (int left,int top,int right,int bot)
+{
+if (MODE == BM_OGL)
+	OglDrawFilledRect (left, top, right, bot);
+else
+	for (int i = top; i <= bot; i++)
+		DrawScanLineClipped (left, right, i);
 }
+
+//------------------------------------------------------------------------------
+//eof

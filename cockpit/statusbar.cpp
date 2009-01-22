@@ -124,7 +124,7 @@ scoreTime -= gameData.time.xFrame;
 if (scoreTime > 0) {
 	if (scoreDisplay [gameStates.render.vr.nCurrentPage] != last_score_display [gameStates.render.vr.nCurrentPage] || frc) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
-		GrRect (lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage], SB_SCORE_ADDED_Y, SB_SCORE_ADDED_RIGHT, SB_SCORE_ADDED_Y+GAME_FONT->Height ());
+		DrawFilledRect (lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage], SB_SCORE_ADDED_Y, SB_SCORE_ADDED_RIGHT, SB_SCORE_ADDED_Y+GAME_FONT->Height ());
 		last_score_display [gameStates.render.vr.nCurrentPage] = scoreDisplay [gameStates.render.vr.nCurrentPage];
 		}
 	color = X2I (scoreTime * 20) + 10;
@@ -145,7 +145,7 @@ if (scoreTime > 0) {
 else {
 	//erase old score
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
-	GrRect (lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage], SB_SCORE_ADDED_Y, SB_SCORE_ADDED_RIGHT, SB_SCORE_ADDED_Y+GAME_FONT->Height ());
+	DrawFilledRect (lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage], SB_SCORE_ADDED_Y, SB_SCORE_ADDED_RIGHT, SB_SCORE_ADDED_Y+GAME_FONT->Height ());
 	scoreTime = 0;
 	scoreDisplay [gameStates.render.vr.nCurrentPage] = 0;
 	}

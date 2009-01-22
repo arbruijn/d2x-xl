@@ -2024,7 +2024,7 @@ if (nClearWindow == 2) {
 				else
 #endif
 					//NOTE LINK TO ABOVE!
-					GrRect(oldPortal->left, oldPortal->top, oldPortal->right, oldPortal->bot);
+					DrawFilledRect(oldPortal->left, oldPortal->top, oldPortal->right, oldPortal->bot);
 				}
 			}
 		}

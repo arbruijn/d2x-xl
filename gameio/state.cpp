@@ -303,7 +303,7 @@ if (gameStates.menus.bHires) {
 	image->Blit (NULL, x, y);
 	if (gameOpts->menus.nStyle) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
-		GrUBox (x - 1, y - 1, x + image->Width () + 1, y + image->Height () + 1);
+		DrawEmptyRect (x - 1, y - 1, x + image->Width () + 1, y + image->Height () + 1);
 		}
 	}
 else {

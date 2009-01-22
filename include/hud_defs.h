@@ -398,7 +398,7 @@ OglUBitMapMC (
 
 static inline void HUDRect (int left, int top, int width, int height)
 {
-GrRect (HUD_SCALE_X (left), HUD_SCALE_Y (top), HUD_SCALE_X (width), HUD_SCALE_Y (height));
+DrawFilledRect (HUD_SCALE_X (left), HUD_SCALE_Y (top), HUD_SCALE_X (width), HUD_SCALE_Y (height));
 }
 
 //	-----------------------------------------------------------------------------

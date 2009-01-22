@@ -36,7 +36,7 @@ void gr_upixel( int x, int y )
 	switch (MODE)
  {
 	case BM_OGL:
-		OglUPixelC(x,y, &COLOR);
+		OglDrawPixel(x,y, &COLOR);
 		return;
 	case BM_LINEAR:
 		DATA [ROWSIZE*y+x] = (ubyte) COLOR.index;
@@ -54,7 +54,7 @@ void gr_upixel( int x, int y )
 }
 #endif
 
-void gr_pixel( int x, int y )
+void DrawPixel( int x, int y )
 {
 	if ((x<0) || (y<0) || (x>=CCanvas::Current ()->Width ()) || (y>=CCanvas::Current ()->Height ())) return;
 	gr_upixel (x, y);
@@ -69,7 +69,7 @@ inline void gr_bm_upixel( CBitmap * bmP, int x, int y, ubyte color )
 	case BM_OGL:
 		c.index = color;
 		c.rgb = 0;
-		OglUPixelC (bmP->Left () + x, bmP->Top () + y, &c);
+		OglDrawPixel (bmP->Left () + x, bmP->Top () + y, &c);
 		return;
 	case BM_LINEAR:
 		(*bmP) [bmP->RowSize () * y + x] = color;

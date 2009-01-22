@@ -491,11 +491,11 @@ void game_render_frame_stereo ()
 //NEWVR
 	if (actual_eye_offset > 0) {
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-		GrRect (CCanvas::Current ()->Width ()-labs (actual_eye_offset)*2, 0,
+		DrawFilledRect (CCanvas::Current ()->Width ()-labs (actual_eye_offset)*2, 0,
                CCanvas::Current ()->Width ()-1, CCanvas::Current ()->Height ());
 	} else if (actual_eye_offset < 0) {
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-		GrRect (0, 0, labs (actual_eye_offset)*2-1, CCanvas::Current ()->Height ());
+		DrawFilledRect (0, 0, labs (actual_eye_offset)*2-1, CCanvas::Current ()->Height ());
 	}
 
 	if (gameStates.render.vr.bShowHUD && !bNoDrawHUD) {
@@ -540,10 +540,10 @@ void game_render_frame_stereo ()
 //NEWVR
 	if (actual_eye_offset>0) {
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-		GrRect (0, 0, labs (actual_eye_offset)*2-1, CCanvas::Current ()->Height ());
+		DrawFilledRect (0, 0, labs (actual_eye_offset)*2-1, CCanvas::Current ()->Height ());
 	} else if (actual_eye_offset < 0) {
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-		GrRect (CCanvas::Current ()->Width ()-labs (actual_eye_offset)*2, 0,
+		DrawFilledRect (CCanvas::Current ()->Width ()-labs (actual_eye_offset)*2, 0,
                CCanvas::Current ()->Width ()-1, CCanvas::Current ()->Height ());
 	}
 
@@ -577,18 +577,18 @@ void game_render_frame_stereo ()
 		else
 			CCanvas::SetCurrent (&RenderCanvas [0]);
 		CCanvas::Current ()->SetColorRGB (255, 255, 255, 255);
-		GrScanLine (0, quarter, height-1);
+		DrawScanLineClipped (0, quarter, height-1);
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-		GrScanLine (quarter, width-1, height-1);
+		DrawScanLineClipped (quarter, width-1, height-1);
 
 		if (gameStates.render.vr.nEyeSwitch)
 			CCanvas::SetCurrent (&RenderCanvas [0]);
 		else
 			CCanvas::SetCurrent (&RenderCanvas [1]);
 		CCanvas::Current ()->SetColorRGB (255, 255, 255, 255);
-		GrScanLine (0, quarter*3, height-1);
+		DrawScanLineClipped (0, quarter*3, height-1);
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-		GrScanLine (quarter*3, width-1, height-1);
+		DrawScanLineClipped (quarter*3, width-1, height-1);
    }
 
  		// Copy left eye, then right eye
@@ -1229,7 +1229,7 @@ void DrawGuidedCrosshair (void)
 	x = CCanvas::Current ()->Width () / 2;
 	y = CCanvas::Current ()->Height () / 2;
 
-//	GrScanLine (x-w/2, x+w/2, y);
+//	DrawScanLineClipped (x-w/2, x+w/2, y);
 #if 1
 	x = I2X (x);
 	y = I2X (y);

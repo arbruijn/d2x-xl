@@ -440,7 +440,7 @@ static double xScale, yScale;
 
 inline void HUDUScanLine (int left, int right, int y)
 {
-gr_uscanline (HUD_SCALE_X (left), HUD_SCALE_X (right), HUD_SCALE_Y (y));
+DrawScanLine (HUD_SCALE_X (left), HUD_SCALE_X (right), HUD_SCALE_Y (y));
 }
 
 //	-----------------------------------------------------------------------------
@@ -868,7 +868,7 @@ else {
 		}
 	y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 5 : 1) * nHUDLineSpacing - 1) * yScale);
 	CCanvas::Current ()->SetColorRGB (255, 255, (ubyte) ((h > 100) ? 255 : 0), 255);
-	GrUBox (6, y, 6 + (int) (100 * xScale), y + (int) (9 * yScale));
+	DrawEmptyRect (6, y, 6 + (int) (100 * xScale), y + (int) (9 * yScale));
 	if (bFlash) {
 		if (!bShow)
 			goto skipGauge;
@@ -914,7 +914,7 @@ if (gameOpts->render.cockpit.bTextGauges) {
 else {
 	y = CCanvas::Current ()->Height () - (int) ((((gameData.app.nGameMode & GM_MULTI) ? 8 : 3) * nHUDLineSpacing - 1) * yScale);
 	CCanvas::Current ()->SetColorRGB (255, 0, 0, 255);
-	GrUBox (6, y, 6 + (int) (100 * xScale), y + (int) (9 * yScale));
+	DrawEmptyRect (6, y, 6 + (int) (100 * xScale), y + (int) (9 * yScale));
 	CCanvas::Current ()->SetColorRGB (224, 0, 0, 128);
 	GrURect (6, y, 6 + (int) (h * xScale), y + (int) (9 * yScale));
 	}
@@ -967,12 +967,12 @@ if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {		//draw background
 	if (!gameStates.video.nDisplayMode) {
 		HUDRect (169, 189, 189, 196);
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
-		GrScanLine (168, 189, 189);
+		DrawScanLineClipped (168, 189, 189);
 		}
 	else {
-		GrRect (HUD_SCALE_X (338), HUD_SCALE_Y (453), HUD_SCALE_X (378), HUD_SCALE_Y (470));
+		DrawFilledRect (HUD_SCALE_X (338), HUD_SCALE_Y (453), HUD_SCALE_X (378), HUD_SCALE_Y (470));
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
-		GrScanLine (HUD_SCALE_X (336), HUD_SCALE_X (378), HUD_SCALE_Y (453));
+		DrawScanLineClipped (HUD_SCALE_X (336), HUD_SCALE_X (378), HUD_SCALE_Y (453));
 		}
 	}
 if (count)
@@ -1155,7 +1155,7 @@ if (gameOpts->render.cockpit.bTextGauges) {
 else {
 	y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 6 : 2) * nHUDLineSpacing - 1) * yScale);
 	CCanvas::Current ()->SetColorRGB (0, (ubyte) ((h > 100) ? 255 : 64), 255, 255);
-	GrUBox (6, y, 6 + (int) (100 * xScale), y + (int) (9 * yScale));
+	DrawEmptyRect (6, y, 6 + (int) (100 * xScale), y + (int) (9 * yScale));
 	if (bShow) {
 		CCanvas::Current ()->SetColorRGB (0, (ubyte) ((h > 100) ? 224 : 64), 224, 128);
 		GrURect (6, y, 6 + (int) (((h > 100) ? h - 100 : h) * xScale), y + (int) (9 * yScale));
@@ -1414,7 +1414,7 @@ HUDBitBlt (LEFT_ENERGY_GAUGE_X, LEFT_ENERGY_GAUGE_Y, bmP, I2X (1), 0);
 						x2 = w3;
 					}
 				if (x2 > x1)
-					gr_uscanline (
+					DrawScanLine (
 						HUD_SCALE_X (LEFT_ENERGY_GAUGE_X) + x1,
 						HUD_SCALE_X (LEFT_ENERGY_GAUGE_X) + x2,
 						HUD_SCALE_Y (LEFT_ENERGY_GAUGE_Y) + y);
@@ -1457,7 +1457,7 @@ HUDBitBlt (LEFT_ENERGY_GAUGE_X, LEFT_ENERGY_GAUGE_Y, bmP, I2X (1), 0);
 						x1 = w2;
 					}
 				if (x2 > x1)
-					gr_uscanline (
+					DrawScanLine (
 						HUD_SCALE_X (RIGHT_ENERGY_GAUGE_X) + x1,
 						HUD_SCALE_X (RIGHT_ENERGY_GAUGE_X) + x2,
 						HUD_SCALE_Y (RIGHT_ENERGY_GAUGE_Y) + y);
@@ -1601,7 +1601,7 @@ gameStates.render.grAlpha = FADE_LEVELS;
 yMax = HUD_SCALE_Y (not_afterburner);
 for (y = 0; y < not_afterburner; y++) {
 	for (i = HUD_SCALE_Y (y), j = HUD_SCALE_Y (y + 1); i < j; i++) {
-		gr_uscanline (
+		DrawScanLine (
 			HUD_SCALE_X (AFTERBURNER_GAUGE_X + pabt [y * 2]),
 			HUD_SCALE_X (AFTERBURNER_GAUGE_X + pabt [y * 2 + 1] + 1),
 			HUD_SCALE_Y (AFTERBURNER_GAUGE_Y) + i);
@@ -1691,7 +1691,7 @@ if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT) {
 	gameStates.render.grAlpha = FADE_LEVELS;
 	}
 //		gameStates.render.grAlpha = nCloakFadeValue;
-//		GrRect (x, y, x+bmP->Width ()-1, y+bmP->Height ()-1);
+//		DrawFilledRect (x, y, x+bmP->Width ()-1, y+bmP->Height ()-1);
 //		gameStates.render.grAlpha = FADE_LEVELS;
 if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT)
 	CCanvas::SetCurrent (GetCurrentGameScreen ());
@@ -1787,7 +1787,7 @@ void DrawWeaponInfoSub (int info_index, tGaugeBox *box, int pic_x, int pic_y, co
 #if 0
 	if (gameStates.render.cockpit.nMode != CM_FULL_SCREEN) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
-		GrRect ((int) (box->left * cmScaleX), (int) (box->top * cmScaleY),
+		DrawFilledRect ((int) (box->left * cmScaleX), (int) (box->top * cmScaleY),
 				  (int) (box->right * cmScaleX), (int) (box->bot * cmScaleY));
 		}
 #endif
@@ -1897,12 +1897,12 @@ void DrawAmmoInfo (int x, int y, int ammoCount, int bPrimary)
 
 w = (CCanvas::Current ()->Font ()->Width () * (bPrimary ? 7 : 5)) / 2;
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
-GrRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + CCanvas::Current ()->Font ()->Height ()));
+DrawFilledRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + CCanvas::Current ()->Font ()->Height ()));
 fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 sprintf (str, "%03d", ammoCount);
 convert_1s (str);
 nIdAmmo [bPrimary][0] = HUDPrintF (&nIdAmmo [bPrimary][0], x, y, str);
-GrRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + CCanvas::Current ()->Font ()->Height ()));
+DrawFilledRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + CCanvas::Current ()->Font ()->Height ()));
 nIdAmmo [bPrimary][1] = HUDPrintF (&nIdAmmo [bPrimary][1], x, y, str);
 }
 
@@ -1981,7 +1981,7 @@ if (weaponBoxStates [nWeaponType] != WS_SET) {		//fade gauge
 	int fadeValue = X2I (weaponBoxFadeValues [nWeaponType]);
 	int boxofs = (gameStates.render.cockpit.nMode == CM_STATUS_BAR) ? SB_PRIMARY_BOX : COCKPIT_PRIMARY_BOX;
 	gameStates.render.grAlpha = (float) fadeValue;
-	GrRect (gaugeBoxes [boxofs + nWeaponType].left,
+	DrawFilledRect (gaugeBoxes [boxofs + nWeaponType].left,
 			  gaugeBoxes [boxofs + nWeaponType].top,
 			  gaugeBoxes [boxofs + nWeaponType].right,
 			  gaugeBoxes [boxofs + nWeaponType].bot);
@@ -2496,7 +2496,7 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 					nIdNames [nCurColor][p] = GrString (x1, y1, s, nIdNames [nCurColor] + p);
 					CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (colorP->r, colorP->g, colorP->b));
 					glLineWidth ((GLfloat) 2.0f);
-					GrUBox (x1 - 4, y1 - 3, x1 + w + 2, y1 + h + 3);
+					DrawEmptyRect (x1 - 4, y1 - 3, x1 + w + 2, y1 + h + 3);
 					glLineWidth (1);
 					//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 					}
@@ -2864,7 +2864,7 @@ if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
 	int smallWindowBottom, bigWindowBottom, extraPartHeight;
 
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
-	GrUBox (0, 0, CCanvas::Current ()->Width ()-1, CCanvas::Current ()->Height ());
+	DrawEmptyRect (0, 0, CCanvas::Current ()->Width ()-1, CCanvas::Current ()->Height ());
 
 	//if the window only partially overlaps the big 3d window, copy
 	//the extra part to the visible screen

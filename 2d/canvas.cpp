@@ -118,7 +118,7 @@ else
 		SetColor (CCanvas::Current ()->Palette ()->ClosestColor (RGBA_RED (color), RGBA_GREEN (color), RGBA_BLUE (color)));
 	else
 		SetColor (TRANSPARENCY_COLOR);
-GrRect (0, 0, CCanvas::Current ()->Width () - 1, CCanvas::Current ()->Height () - 1);
+DrawFilledRect (0, 0, CCanvas::Current ()->Width () - 1, CCanvas::Current ()->Height () - 1);
 }
 
 //	-----------------------------------------------------------------------------

@@ -384,13 +384,13 @@ if (w1 == 0)
 	w1 = w;
 
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (2, 2, 2));
-GrRect (x - 1, y - 1, x - 1, y + h - 1);
-GrRect (x - 1, y - 1, x + w1 - 1, y - 1);
+DrawFilledRect (x - 1, y - 1, x - 1, y + h - 1);
+DrawFilledRect (x - 1, y - 1, x + w1 - 1, y - 1);
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (5, 5, 5));
-GrRect (x, y + h, x + w1, y + h);
-GrRect (x + w1, y - 1, x + w1, y + h);
+DrawFilledRect (x, y + h, x + w1, y + h);
+DrawFilledRect (x + w1, y - 1, x + w1, y + h);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-GrRect (x, y, x + w1 - 1, y + h - 1);
+DrawFilledRect (x, y, x + w1 - 1, y + h - 1);
 GrString (x + 1, y + 1, s, NULL);
 }
 
@@ -431,7 +431,7 @@ if (w1 < w) {
 CCanvas::Current ()->SetColorRGB (200, 0, 0, 255);
 if (w1)
 	GrURect (x + 1, y, x + w1, y + h - 2);
-GrUBox (x, y, x + w - 1, y + h - 1);
+DrawEmptyRect (x, y, x + w - 1, y + h - 1);
 }
 
 //------------------------------------------------------------------------------ 
@@ -478,7 +478,7 @@ if (time & 0x8000)
 	GrString (x, y, CURSOR_STRING, NULL);
 else {
 	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-	GrRect (x, y, x + CCanvas::Current ()->Font ()->Width () - 1, y + CCanvas::Current ()->Font ()->Height () - 1);
+	DrawFilledRect (x, y, x + CCanvas::Current ()->Font ()->Width () - 1, y + CCanvas::Current ()->Font ()->Height () - 1);
 	}
 }
 

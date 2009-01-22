@@ -209,7 +209,7 @@ y = CCanvas::Current ()->Height () - ((nLineSpacing + 1) * MAX_ACTIVE_SUBTITLES 
 //erase old subtitles if necessary
 if (bMustErase) {
 	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-	GrRect (0, y, CCanvas::Current ()->Width () - 1, CCanvas::Current ()->Height () - 1);
+	DrawFilledRect (0, y, CCanvas::Current ()->Width () - 1, CCanvas::Current ()->Height () - 1);
 	}
 //now draw the current subtitles
 for (t = 0; t < nActiveSubTitles; t++)
@@ -268,7 +268,7 @@ else {
 	GrBmUBitBlt (CCanvas::Current (), dstx, dsty, bufw, bufh, &bmFrame, sx, sy, 1);
 	if ((CCanvas::Current ()->Width () > 640) || (CCanvas::Current ()->Height () > 480)) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
-		GrUBox (dstx - 1, dsty, dstx + w, dsty + h + 1);
+		DrawEmptyRect (dstx - 1, dsty, dstx + w, dsty + h + 1);
 		}
 	}
 TRANSPARENCY_COLOR = DEFAULT_TRANSPARENCY_COLOR;
@@ -334,7 +334,7 @@ fontManager.Current ()->StringSize (msg, w, h, aw);
 x = (screen.Width () - w) / 2;
 y = (screen.Height () - h) / 2;
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-GrRect (x-BOX_BORDER/2, y-BOX_BORDER/2, x+w+BOX_BORDER/2-1, y+h+BOX_BORDER/2-1);
+DrawFilledRect (x-BOX_BORDER/2, y-BOX_BORDER/2, x+w+BOX_BORDER/2-1, y+h+BOX_BORDER/2-1);
 fontManager.SetColor (255, -1);
 GrUString (0x8000, y, msg);
 GrUpdate (0);

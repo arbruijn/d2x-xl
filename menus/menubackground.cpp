@@ -429,7 +429,7 @@ if (bForce || (MODERN_STYLE == 1)) {
 	gameStates.render.grAlpha = FADE_LEVELS;
 	CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), (ubyte) (255 * fAlpha));
 	glLineWidth ((GLfloat) nLineWidth);
-	GrUBox (left, top, right, bottom);
+	DrawEmptyRect (left, top, right, bottom);
 	glLineWidth (1);
 	}
 }

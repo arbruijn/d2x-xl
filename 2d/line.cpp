@@ -272,7 +272,7 @@ int gr_uline(fix _a1, fix _b1, fix _a2, fix _b2)
 	switch(MODE)
  {
 	case BM_OGL:
-		OglULineC(a1,b1,a2,b2,&COLOR);
+		OglDrawLine(a1,b1,a2,b2,&COLOR);
 		return 0;
 	case BM_LINEAR:
 		gr_universal_uline( a1,b1,a2,b2);
