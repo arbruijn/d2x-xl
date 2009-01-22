@@ -44,6 +44,21 @@ CCanvas *Canv_SBAfterburnerGauge;
 
 //	-----------------------------------------------------------------------------
 
+static inline void HUDStretchBlt (int x, int y, CBitmap *bmP, int scale, int orient, double xScale, double yScale)
+{
+bmP->OglUBitMapMC (
+	(x < 0) ? -x : HUD_SCALE_X (x), 
+	(y < 0) ? -y : HUD_SCALE_Y (y), 
+	HUD_SCALE_X ((int) (bmP->Width () * xScale + 0.5)), 
+	HUD_SCALE_Y ((int) (bmP->Height () * yScale + 0.5)), 
+	scale, 
+	orient, 
+	NULL
+	);
+}
+
+//	-----------------------------------------------------------------------------
+
 void SBInitGaugeCanvases (void)
 {
 if (!bHaveGaugeCanvases && paletteManager.Game ()) {
