@@ -93,8 +93,8 @@ else {
 	glPushMatrix ();
 	glTranslatef (0.5f, 0.5f, 0);
 	if (LoadDeadzone ()) {
-		tCanvasColor c = {-1, 1, {255, 255, 255, 128}};
-		OglUBitMapMC (0, 0, 16, 16, bmpDeadzone, &c, 1, 0);
+		static tCanvasColor color = {-1, 1, {255, 255, 255, 128}};
+		bmpDeadzone->OglUBitMapMC (0, 0, 16, 16, 1, 0, &color);
 		r = (float) CalcDeadzone (0, gameOpts->input.mouse.nDeadzone);
 		w = r / (float) screen.Width ();
 		h = r / (float) screen.Height ();

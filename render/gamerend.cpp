@@ -1128,11 +1128,11 @@ if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL
 	bmP->SetupTexture (0, 3, 1);
    CCanvas::SetCurrent (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
 
-	tCanvasColor c;
+	tCanvasColor color;
 
-	c.index = 255;
-	c.rgb = 0;
-	OglUBitMapMC (0, y, -1, CCanvas::Current ()->Height () - y, bmP, &c, I2X (1), 0);
+	color.index = 255;
+	color.rgb = 0;
+	bmP->OglUBitMapMC (0, y, -1, CCanvas::Current ()->Height () - y, I2X (1), 0, &color);
 	}
 }
 

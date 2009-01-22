@@ -40,12 +40,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 class CCanvas;
 class CScreen;
 
-typedef struct tCanvasColor {
-	short       index;       // current color
-	ubyte			rgb;
-	tRgbaColorb	color;
-} tCanvasColor;
-
 typedef struct tCanvas {
 	tCanvasColor	color;
 	CFont				*font;				// the currently selected font

@@ -450,7 +450,7 @@ while (nextRowP != NULL) {
 			bmf = m_info.bitmaps + letter;
 			bmf->AddFlags (BM_FLAG_TRANSPARENT);
 			if (bOGL)
-				OglUBitMapMC (l, t, 0, 0, bmf, colorP, I2X (1), 0);
+				bmf->OglUBitMapMC (l, t, 0, 0, I2X (1), 0, colorP);
 			else
 				GrBitmapM (l, t, bmf, 2); // credits need clipping
 			}
@@ -626,7 +626,7 @@ if (gameOpts->render.coronas.nStyle < 2) {
 		grsString	*ps;
 
 	if ((MODE == BM_OGL) && (ps = GetPoolString (s, idP))) {
-		OglUBitMapMC (x, y, 0, 0, ps->bmP, &CCanvas::Current ()->FontColor (0), I2X (1), 0);
+		ps->bmP->OglUBitMapMC (x, y, 0, 0, I2X (1), 0, &CCanvas::Current ()->FontColor (0));
 		return (int) (ps - stringPool) + 1;
 		}
 	}

@@ -98,13 +98,18 @@ class CBitmapInfo {
 		CFrameInfo			frames;
 		CPalette*			palette;
 		CTexture*			texture;
-};
+
+	};
 
 //-----------------------------------------------------------------------------
 
 class CBitmap : public CArray< ubyte > {
 	private:
 		CBitmapInfo	m_info;
+
+		GLfloat		x0, x1, y0, y1, u1, v1, u2, v2, aspect;
+		GLint			depthFunc, bBlendState;
+		int			nOrient;
 
 	public:
 		CBitmap () { Init (); };
@@ -264,11 +269,11 @@ class CBitmap : public CArray< ubyte > {
 		void Unlink (int bAddon);
 
 		void RenderFullScreen (void);
-		void Render (CBitmap *dest, 
-						 int xDest, int yDest, int wDest, int hDest, 
-						 int xSrc, int ySrc, int wSrc, int hSrc, 
-						 int bTransp = 0, int bMipMaps = 0, int bSmoothe = 0, 
-						 float fAlpha = 1.0f, tRgbaColorf* colorP = NULL);
+		int Render (CBitmap *dest, 
+						int xDest, int yDest, int wDest, int hDest, 
+						int xSrc, int ySrc, int wSrc, int hSrc, 
+						int bTransp = 0, int bMipMaps = 0, int bSmoothe = 0, 
+						float fAlpha = 1.0f, tRgbaColorf* colorP = NULL);
 		inline void Render (CBitmap* dest, int bTransp = 0, int bMipMaps = 0, int bSmoothe = 0, float fAlpha = 1.0f)
 		 { Render (dest, 0, 0, dest->Width (), dest->Height (), 0, 0, Width (), Height (), bTransp, bMipMaps, bSmoothe, fAlpha); }
 		void RenderStretched (CBitmap* dest = NULL, int x = 0, int y = 0);
@@ -278,6 +283,14 @@ class CBitmap : public CArray< ubyte > {
 		void BlitClipped (CBitmap* dest = NULL, int dx = 0, int dy = 0, int w = -1, int h = -1, int sx = 0, int sy = 0);
 		void BlitClipped (int xSrc, int ySrc);
 		void ScreenCopy (CBitmap* dest, int dx, int dy, int w, int h, int sx, int sy);
+
+		void OglVertices (int x, int y, int w = 0, int h = 0, int scale = I2X (1), int orient = 0, CBitmap* destP = NULL);
+		void OglTexCoord (CTexture* texP);
+		void SetTexCoord (GLfloat u, GLfloat v, int orient);
+		CTexture* OglBeginRender (CTexture* texP, bool bBlend = false);
+		void OglRender (tRgbaColorf* colorP, int nColors, int orient);
+		void OglEndRender (void);
+		int OglUBitMapMC (int x, int y, int dw, int dh, tCanvasColor *colorP, int scale, int orient);
 
 		inline bool Clip (int x, int y) { return (x < 0) || (y < 0) || (x >= Width ()) || (y >= Width ()); }
 		void DrawPixel (int x, int y, ubyte color);

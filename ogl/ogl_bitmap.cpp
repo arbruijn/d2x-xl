@@ -43,7 +43,7 @@
 
 //------------------------------------------------------------------------------
 
-int G3DrawBitmap (const CFixVector&	vPos, fix width, fix height, CBitmap* bmP, tRgbaColorf* color, float alpha, int transp)
+int G3DrawBitmap (const CFixVector&	vPos, fix width, fix height, CBitmap* bmP, tRgbaColorf* colorP, float alpha, int transp)
 {
 	CFloatVector	fPos;
 	GLfloat			h, w, u, v;
@@ -82,10 +82,10 @@ else {
 		return 1;
 	bmP = bmP->Override (-1);
 	bmP->Texture ()->Wrap (GL_CLAMP);
-	if (color)
-		glColor4f (color->red, color->green, color->blue, alpha);
+	if (colorP)
+		glColor4f (colorP->red, colorP->green, colorP->blue, alpha);
 	else
-		glColor4d (1, 1, 1, (double) alpha);
+		glColor4d (1, 1, 1, double (alpha));
 	u = bmP->Texture ()->U ();
 	v = bmP->Texture ()->V ();
 	glBegin (GL_QUADS);
@@ -109,146 +109,159 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-static inline void BmSetTexCoord (GLfloat u, GLfloat v, GLfloat a, int orient)
+void CBitmap::SetTexCoord (GLfloat u, GLfloat v, int orient)
 {
 if (orient == 1)
-	glTexCoord2f ((1.0f - v) * a, u);
+	glTexCoord2f ((1.0f - v) * aspect, u);
 else if (orient == 2)
 	glTexCoord2f (1.0f - u, 1.0f - v);
 else if (orient == 3)
-	glTexCoord2f (v * a, (1.0f - u));
+	glTexCoord2f (v * aspect, 1.0f - u);
 else
 	glTexCoord2f (u, v);
 }
 
 //------------------------------------------------------------------------------
 
-int OglUBitMapMC (int x, int y, int dw, int dh, CBitmap *bmP, tCanvasColor *colorP, int scale, int orient)
+void CBitmap::OglVertices (int x, int y, int w, int h, int scale, int orient, CBitmap* destP)
 {
-	GLint		depthFunc, bBlend;
-	GLfloat	xo, yo, xf, yf;
-	GLfloat	u1, u2, v1, v2;
-	GLfloat	h, a;
-	GLfloat	dx, dy;
-	CTexture	*texP;
+if (!destP)
+	destP = CCanvas::Current ();
 
-bmP = bmP->Override (-1);
-bmP->DelFlags (BM_FLAG_SUPER_TRANSPARENT);
-if (dw < 0)
-	dw = CCanvas::Current ()->Width ();
-else if (dw == 0)
-	dw = bmP->Width ();
-if (dh < 0)
-	dh = CCanvas::Current ()->Height ();
-else if (dh == 0)
-	dh = bmP->Height ();
+if (!w)
+	w = Width ();
+else if (w < 0)
+	w = destP->Width ();
+
+if (!h)
+	h = Height ();
+else if (h < 0)
+	h = destP->Height ();
+
+int dx = destP->Left ();
+int dy = destP->Top ();
+
 if (orient & 1) {
-	int h = dw;
-	dw = dh;
-	dh = h;
-	dx = (float) CCanvas::Current ()->Top () / (float) gameStates.ogl.nLastH;
-	dy = (float) CCanvas::Current ()->Left () / (float) gameStates.ogl.nLastW;
+	::Swap (w, h);
+	::Swap (dx, dy);
 	}
-else {
-	dx = (float) CCanvas::Current ()->Left () / (float) gameStates.ogl.nLastW;
-	dy = (float) CCanvas::Current ()->Top () / (float) gameStates.ogl.nLastH;
-	}
-a = float (screen.Width ()) / float (screen.Height ());
-h = float (scale) / float (I2X (1));
-xo = dx + x / float (gameStates.ogl.nLastW * h);
-xf = dx + (dw + x) / float (gameStates.ogl.nLastW * h);
-yo = 1.0f - dy - y / float (gameStates.ogl.nLastH * h);
-yf = 1.0f - dy - (dh + y) / float (gameStates.ogl.nLastH * h);
 
+x += dx;
+y += dy;
+
+float fScale = X2F (scale);
+aspect = float (gameStates.ogl.nLastW * fScale);
+x0 = float (x) / aspect;
+x1 = float (x + w) / aspect;
+aspect = float (gameStates.ogl.nLastH * fScale);
+y0 = 1.0f - float (y) / aspect;
+y1 = 1.0f - float (y + h) / aspect;
+aspect = float (screen.Width ()) / float (screen.Height ());
+}
+
+//------------------------------------------------------------------------------
+
+void CBitmap::OglTexCoord (CTexture* texP)
+{
+float h = float (texP->TW ());
+u1 = float (Left ()) / h;
+u2 = float (Right ()) / h;
+h = float (texP->TH ());
+v1 = float (Top ()) / h;
+v2 = float (Bottom ()) / h;
+}
+
+//------------------------------------------------------------------------------
+
+CTexture* CBitmap::OglBeginRender (CTexture* texP, bool bBlend)
+{
 glActiveTexture (GL_TEXTURE0);
 glEnable (GL_TEXTURE_2D);
-if (bmP->Bind (0, 3))
-	return 1;
-texP = bmP->Texture ();
+if (Bind (0, 3))
+	return NULL;
 texP->Wrap (GL_CLAMP);
 
+bBlendState = glIsEnabled (GL_BLEND);
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 glDepthFunc (GL_ALWAYS);
-if (!(bBlend = glIsEnabled (GL_BLEND)))
+if (bBlend)
 	glEnable (GL_BLEND);
+else
+	glDisable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+return texP;
+}
 
-#if 1
-h = float (texP->TW ());
-u1 = float (bmP->Left ()) / h;
-u2 = float (bmP->Right ()) / h;
-h = float (texP->TH ());
-v1 = float (bmP->Top ()) / h;
-v2 = float (bmP->Bottom ()) / h;
-#else
-if (bmP->Left () == 0) {
-	u1 = 0;
-	if (bmP->Width () == texP->Width ())
-		u2 = texP->U ();
-	else
-		u2 = float (bmP->Right ()) / float (texP->TW ());
-	}
-else {
-	u1 = float (bmP->Left ()) / float (texP->TW ());
-	u2 = float (bmP->Right ()) / float (texP->TW ());
-	}
-if (bmP->Top () == 0) {
-	v1 = 0;
-	if (bmP->Height () == texP->Height ())
-		v2 = texP->V ();
-	else
-		v2 = float (bmP->Bottom ()) / float (texP->TH ());
-	}
-else{
-	v1 = float (bmP->Top ()) / float (texP->TH ());
-	v2 = float (bmP->Bottom ()) / float (texP->TH ());
-	}
-#endif
+//------------------------------------------------------------------------------
 
-OglCanvasColor (colorP);
-glBegin (GL_QUADS);
-BmSetTexCoord (u1, v1, a, orient);
-glVertex2f (xo, yo);
-BmSetTexCoord (u2, v1, a, orient);
-glVertex2f (xf, yo);
-BmSetTexCoord (u2, v2, a, orient);
-glVertex2f (xf, yf);
-BmSetTexCoord (u1, v2, a, orient);
-glVertex2f (xo, yf);
-glEnd ();
+void CBitmap::OglRender (tRgbaColorf* colorP, int nColors, int orient)
+{
+glColor4fv (reinterpret_cast<GLfloat*> (colorP));
+SetTexCoord (u1, v1, orient);
+glVertex2f (x0, y0);
+if (nColors > 1)
+	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 1));
+SetTexCoord (u2, v1, orient);
+glVertex2f (x0, y1);
+if (nColors > 1)
+	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 2));
+SetTexCoord (u2, v2, orient);
+glVertex2f (x1, y1);
+if (nColors > 1)
+	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 3));
+SetTexCoord (u1, v2, orient);
+glVertex2f (x1, y0);
+}
+
+//------------------------------------------------------------------------------
+
+void CBitmap::OglEndRender (void)
+{
 glDepthFunc (depthFunc);
-//glDisable (GL_ALPHA_TEST);
-if (!bBlend)
+if (bBlendState)
+	glEnable (GL_BLEND);
+else
 	glDisable (GL_BLEND);
 OglActiveTexture (GL_TEXTURE0, 0);
 OGL_BINDTEX (0);
 glDisable (GL_TEXTURE_2D);
+}
+
+//------------------------------------------------------------------------------
+
+int CBitmap::OglUBitMapMC (int x, int y, int w, int h, tCanvasColor* colorP, int scale, int orient)
+{
+	CBitmap*		bmoP;
+	CTexture*	texP;
+	tRgbaColorf	color;
+
+if (bmoP = Override (-1))
+	return bmoP->OglUBitMapMC (x, y, w, h, colorP, scale, orient);
+DelFlags (BM_FLAG_SUPER_TRANSPARENT);
+if (!(texP = OglBeginRender (m_info.texture)))
+	return 1; // fail
+OglVertices (x, y, w, h, scale, orient);
+OglTexCoord (m_info.texture);
+color = GetCanvasColor (colorP);
+OglRender (&color, 1, orient);
+OglEndRender ();
 return 0;
 }
 
 //------------------------------------------------------------------------------
 
-void CBitmap::Render (CBitmap *dest, 
+int CBitmap::Render (CBitmap *destP, 
 							 int xDest, int yDest, int wDest, int hDest, 
 							 int xSrc, int ySrc, int wSrc, int hSrc, 
 							 int bTransp, int bMipMaps, int bSmoothe,
 							 float fAlpha, tRgbaColorf* colorP)
 {
-	GLfloat xo, yo, xs, ys;
-	GLfloat u1, v1, u2, v2;
-	CTexture tex, *texP;
-	GLint curFunc; 
-	int nTransp = (Flags () & BM_FLAG_TGA) ? -1 : HasTransparency () ? 2 : 0;
+	CTexture*	texP, tex;
+	int			nTransp = (Flags () & BM_FLAG_TGA) ? -1 : HasTransparency () ? 2 : 0;
 
 //	ubyte *oldpal;
-xDest += dest->Left ();
-yDest += dest->Top ();
-xo = xDest / float (gameStates.ogl.nLastW);
-xs = wDest / float (gameStates.ogl.nLastW);
-yo = 1.0f - yDest / float (gameStates.ogl.nLastH);
-ys = hDest / float (gameStates.ogl.nLastH);
-glActiveTexture (GL_TEXTURE0);
-glEnable (GL_TEXTURE_2D);
+OglVertices (xDest, yDest, wDest, hDest, I2X (1), 0, destP);
+
 if (!(texP = Texture ())) {
 	texP = &tex;
 	texP->Init ();
@@ -258,58 +271,41 @@ if (!(texP = Texture ())) {
 	}
 else
 	SetupTexture (0, bTransp, 1);
-texP->Bind ();
-texP->Wrap (GL_REPEAT);
+
+tRgbaColorf color;
+int nColors;
+bool bBlend = bTransp && nTransp;
+
+if (!colorP) {
+	color.red = color.green = color.blue = 1.0f;
+	color.alpha = bBlend ? fAlpha : 1.0f;
+	colorP = &color;
+	nColors = 1;
+	}
+else
+	nColors = 4;
+
+if (!(texP = OglBeginRender (texP, bBlend)))
+	return 1; // fail
 
 u1 = v1 = 0;
-u2 = texP->U ();
 u2 = float (wSrc) / float (Width ());
 if (u2 < 1.0f)
 	u2 *= texP->U ();
 else
 	u2 = texP->U ();
-v2 = texP->V ();
 v2 = float (hSrc) / float (Height ());
 if (v2 < 1.0f)
 	v2 *= texP->V ();
 else
 	v2 = texP->V ();
 
-glGetIntegerv (GL_DEPTH_FUNC, &curFunc);
-glDepthFunc (GL_ALWAYS); 
-if (bTransp && nTransp) {
-	glEnable (GL_BLEND);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glColor4f (1.0, 1.0, 1.0, fAlpha);
-	}
-else {
-	glDisable (GL_BLEND);
-	glColor3f (1.0, 1.0, 1.0);
-	}
-glBegin (GL_QUADS);
-if (colorP)
-	glColor4fv (reinterpret_cast<GLfloat*> (colorP));
-glTexCoord2f (u1, v1); 
-glVertex2f (xo, yo);
-if (colorP)
-	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 1));
-glTexCoord2f (u2, v1); 
-glVertex2f (xo + xs, yo);
-if (colorP)
-	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 2));
-glTexCoord2f (u2, v2); 
-glVertex2f (xo + xs, yo - ys);
-if (colorP)
-	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 3));
-glTexCoord2f (u1, v2); 
-glVertex2f (xo, yo - ys);
-glEnd ();
-if (bTransp && nTransp)
-	glDisable (GL_BLEND);
-glDisable (GL_TEXTURE_2D);
-glDepthFunc (curFunc);
+OglRender (colorP, nColors, 0);
+OglEndRender ();
+
 if (texP == &tex)
 	texP->Destroy ();
+return 0;
 }
 
 //------------------------------------------------------------------------------

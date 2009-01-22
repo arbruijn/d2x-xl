@@ -82,7 +82,28 @@ else {
 
 //------------------------------------------------------------------------------
 
-void OglCanvasColor (tCanvasColor *colorP)
+void GetPalColor (CPalette *palette, int c)
+{
+	return color;
+
+if (c < 0) 
+	color.red = color.green = color.blue = color.alpha = 1.0f;
+	}
+else {
+	if (!palette)
+		palette = paletteManager.Game ();
+	palette->ToRgbaf (c, color);
+	if (gameStates.render.grAlpha >= FADE_LEVELS)
+		color.alpha = 1.0f;
+	else
+		color.alpha = (float) gameStates.render.grAlpha / (float) FADE_LEVELS; //1.0f - (float) gameStates.render.grAlpha / ((float) FADE_LEVELS - 1.0f);
+	}
+return color;
+}
+
+//------------------------------------------------------------------------------
+
+void OglCanvasColor (tCanvasColor* colorP)
 {
 	GLfloat	fc [4];
 
@@ -101,6 +122,20 @@ else if (colorP->rgb) {
 	}
 else
 	OglPalColor (paletteManager.Game (), colorP->index);
+}
+
+//------------------------------------------------------------------------------
+
+tRgbaColorf GetCanvasColor (tCanvasColor *colorP)
+{
+if (!colorP) {
+	tRgbaColorf	color {1, 1, 1, gameStates.render.grAlpha};
+	return color;
+	}
+else if (colorP->rgb)
+	return colorP->color;
+else
+	return GetPalColor (paletteManager.Game (), colorP->index);
 }
 
 //------------------------------------------------------------------------------

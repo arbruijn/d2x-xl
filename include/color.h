@@ -46,6 +46,12 @@ typedef struct tFaceColor {
 	char			index;
 } tFaceColor;
 
+typedef struct tCanvasColor {
+	short       index;       // current color
+	ubyte			rgb;
+	tRgbaColorb	color;
+} tCanvasColor;
+
 //-----------------------------------------------------------------------------
 
 #ifdef MACDATA
