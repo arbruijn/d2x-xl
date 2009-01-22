@@ -112,6 +112,23 @@ m_colors.nLgtRed = RGBA_PAL2 (48,0,0);
 
 //------------------------------------------------------------------------------
 
+bool CAutomap::InitBackground (void)
+{
+//m_background.Init ();
+if (m_background.Buffer ())
+	return true;
+
+int nPCXError = PCXReadBitmap (BackgroundName (BG_MAP), &m_background, BM_LINEAR, 0);
+if (nPCXError != PCX_ERROR_NONE) {
+	Error ("File %s - PCX error: %s", BackgroundName (BG_MAP), pcx_errormsg (nPCXError));
+	return false;
+	}
+m_background.Remap (NULL, -1, -1);
+return (m_background.Buffer () != NULL);
+}
+
+//------------------------------------------------------------------------------
+
 void CAutomap::Init (void)
 {
 m_nWidth = 640;
@@ -353,7 +370,8 @@ if ((m_bRadar = m_bRadar) == 2) {
 	}
 CCanvas::Current ()->Clear (RGBA_PAL2 (0,0,0));
 if (bAutomapFrame) {
-	m_background.RenderFullScreen ();
+	if (InitBackground ()) 
+		m_background.RenderFullScreen ();
 	fontManager.SetCurrent (HUGE_FONT);
 	fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
 	GrPrintF (NULL, RESCALE_X (80), RESCALE_Y (36), TXT_AUTOMAP, HUGE_FONT);
@@ -440,7 +458,7 @@ int SetSegmentDepths (int start_seg, ushort *pDepthBuf);
 
 int CAutomap::Setup (int bPauseGame, fix& xEntryTime, CAngleVector& vTAngles)
 {
-		int		i, nPCXError;
+		int		i;
 		fix		t1, t2;
 		CObject	*playerP;
 
@@ -476,13 +494,6 @@ gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && m_da
 if (!m_bRadar) {
 	CreateNameCanvas ();
 	paletteManager.ResetEffect ();
-	}
-if (!m_bRadar) {
-	m_background.Init ();
-	nPCXError = PCXReadBitmap (BackgroundName (BG_MAP), &m_background, BM_LINEAR, 0);
-	if (nPCXError != PCX_ERROR_NONE)
-		Error ("File %s - PCX error: %s", BackgroundName (BG_MAP), pcx_errormsg (nPCXError));
-	m_background.Remap (NULL, -1, -1);
 	}
 if (m_bRadar || !gameOpts->render.automap.bTextured)
 	BuildEdgeList ();

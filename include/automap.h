@@ -102,6 +102,7 @@ class CAutomap {
 		~CAutomap () {}
 		void Init (void);
 		void InitColors (void);
+		bool InitBackground (void);
 		int Setup (int bPauseGame, fix& xEntryTime, CAngleVector& vTAngles);
 		int Update (CAngleVector& vTAngles);
 		void Draw (void);
