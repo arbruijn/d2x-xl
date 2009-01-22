@@ -165,7 +165,7 @@ void CAutomap::DrawPlayer (CObject* objP)
 {
 	CFixVector	vArrowPos, vHeadPos;
 	g3sPoint		spherePoint, arrowPoint, headPoint;
-	int			size = objP->info.xSize * (gameStates.render.automap.bRadar ? 2 : 1);
+	int			size = objP->info.xSize * (m_bRadar ? 2 : 1);
 	int			bUseTransform = gameStates.ogl.bUseTransform;
 
 //gameStates.ogl.bUseTransform = RENDERPATH;
@@ -176,9 +176,9 @@ spherePoint.p3_index = -1;
 spherePoint.p3_vec.SetZero ();
 G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
 //transformation.Rotate (&spherePoint.p3_vec, &objP->info.position.vPos, 0);
-G3DrawSphere (&spherePoint, gameStates.render.automap.bRadar ? objP->info.xSize * 2 : objP->info.xSize, !gameStates.render.automap.bRadar);
+G3DrawSphere (&spherePoint, m_bRadar ? objP->info.xSize * 2 : objP->info.xSize, !m_bRadar);
 
-if (gameStates.render.automap.bRadar && (objP->Index () != LOCALPLAYER.nObject))
+if (m_bRadar && (objP->Index () != LOCALPLAYER.nObject))
 	return;
 // Draw shaft of arrow
 vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (size*3);
@@ -210,9 +210,9 @@ void CAutomap::DrawObjects (void)
 {
 int color = IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer;	// Note link to above if!
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b));
-if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
+if (!gameOpts->render.automap.bTextured || m_bRadar) {
 	DrawPlayer (OBJECTS + LOCALPLAYER.nObject);
-	if (!gameStates.render.automap.bRadar) {
+	if (!m_bRadar) {
 		DrawMarkers ();
 		if ((gameData.marker.nHighlight > -1) && (gameData.marker.szMessage [gameData.marker.nHighlight][0] != 0)) {
 			char msg [10 + MARKER_MESSAGE_LEN + 1];
@@ -244,13 +244,13 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 			case OBJ_HOSTAGE:
 				CCanvas::Current ()->SetColorRGBi (m_colors.nHostage);
 				G3TransformAndEncodePoint(&spherePoint, objP->info.position.vPos);
-				G3DrawSphere (&spherePoint,size, !gameStates.render.automap.bRadar);
+				G3DrawSphere (&spherePoint,size, !m_bRadar);
 				break;
 
 			case OBJ_MONSTERBALL:
 				CCanvas::Current ()->SetColorRGBi (m_colors.nMonsterball);
 				G3TransformAndEncodePoint(&spherePoint, objP->info.position.vPos);
-				G3DrawSphere (&spherePoint,size, !gameStates.render.automap.bRadar);
+				G3DrawSphere (&spherePoint,size, !m_bRadar);
 				break;
 
 			case OBJ_ROBOT:
@@ -274,7 +274,7 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 							CCanvas::Current ()->SetColorRGB (78, 0, 96, 255); //gr_getcolor (47, 1, 47)); 
 					G3TransformAndEncodePoint(&spherePoint, objP->info.position.vPos);
 					//transformation.Begin (&objP->info.position.vPos, &objP->info.position.mOrient);
-					G3DrawSphere (&spherePoint, (size * 3) / 2, !gameStates.render.automap.bRadar);
+					G3DrawSphere (&spherePoint, (size * 3) / 2, !m_bRadar);
 					//transformation.End ();
 					}
 				break;
@@ -300,7 +300,7 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 							//Error ("Illegal key nType: %i", objP->info.nId);
 						}
 					G3TransformAndEncodePoint(&spherePoint, objP->info.position.vPos);
-					G3DrawSphere (&spherePoint, size, !gameStates.render.automap.bRadar);
+					G3DrawSphere (&spherePoint, size, !m_bRadar);
 					}
 				break;
 			}
@@ -335,13 +335,13 @@ void CAutomap::Draw (void)
 {
 #if 1
 PROF_START
-	int	bAutomapFrame = !gameStates.render.automap.bRadar && 
+	int	bAutomapFrame = !m_bRadar && 
 								 (gameStates.render.cockpit.nMode != CM_FULL_SCREEN) && 
 								 (gameStates.render.cockpit.nMode != CM_LETTERBOX);
 	CFixMatrix	vmRadar;
 
 automap.m_bFull = (LOCALPLAYER.flags & (PLAYER_FLAGS_FULLMAP_CHEAT | PLAYER_FLAGS_FULLMAP)) != 0;
-if (gameStates.render.automap.bRadar == 2) {
+if ((m_bRadar = m_bRadar) == 2) {
 	CFixMatrix& po = gameData.multiplayer.playerInit [gameData.multiplayer.nLocalPlayer].position.mOrient;
 #if 1
 	vmRadar.RVec () = po.RVec ();
@@ -373,7 +373,7 @@ if (bAutomapFrame) {
 	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (460), TXT_VIEWING_DISTANCE);
 	//GrUpdate (0);
 	}
-G3StartFrame (gameStates.render.automap.bRadar || !gameOpts->render.automap.bTextured, 0); //!gameStates.render.automap.bRadar);
+G3StartFrame (m_bRadar || !gameOpts->render.automap.bTextured, 0); //!m_bRadar);
 
 if (bAutomapFrame)
 	OglViewport (RESCALE_X (27), RESCALE_Y (80), RESCALE_X (582), RESCALE_Y (334));
@@ -383,10 +383,10 @@ if (m_bRadar == 2) {
 	G3SetViewMatrix (m_data.viewPos, vmRadar, m_data.nZoom * 2, 1);
 	}
 else {
-	m_data.viewPos = m_data.viewTarget + m_data.viewMatrix.FVec () * (gameStates.render.automap.bRadar ? -m_data.nViewDist : -m_data.nViewDist);
-	G3SetViewMatrix (m_data.viewPos, m_data.viewMatrix, gameStates.render.automap.bRadar ? (m_data.nZoom * 3) / 2 : m_data.nZoom, 1);
+	m_data.viewPos = m_data.viewTarget + m_data.viewMatrix.FVec () * (m_bRadar ? -m_data.nViewDist : -m_data.nViewDist);
+	G3SetViewMatrix (m_data.viewPos, m_data.viewMatrix, m_bRadar ? (m_data.nZoom * 3) / 2 : m_data.nZoom, 1);
 	}
-if (!gameStates.render.automap.bRadar && gameOpts->render.automap.bTextured) {
+if (!m_bRadar && gameOpts->render.automap.bTextured) {
 	gameData.render.mine.viewerEye = m_data.viewPos;
 	RenderMine (gameData.objs.consoleP->info.nSegment, 0, 0);
 	RenderEffects (0);
@@ -398,7 +398,7 @@ DrawObjects ();
 G3EndFrame ();
 
 gameData.app.nFrameCount++;
-if (gameStates.render.automap.bRadar) {
+if (m_bRadar) {
 	gameStates.ogl.bEnableScissor = 0;
 	return;
 	}
@@ -456,18 +456,18 @@ int CAutomap::Setup (int bPauseGame, fix& xEntryTime, CAngleVector& vTAngles)
 m_bDisplay = 1;
 gameStates.ogl.nContrast = 8;
 InitColors ();
-if (!gameStates.render.automap.bRadar)
+if (!m_bRadar)
 	SlowMotionOff ();
-if (gameStates.render.automap.bRadar || 
+if (m_bRadar || 
 	 (IsMultiGame && 
 	  (gameStates.app.nFunctionMode == FMODE_GAME) && 
 	  (!gameStates.app.bEndLevelSequence)))
 	bPauseGame = 0;
 if (bPauseGame)
 	PauseGame ();
-if (gameStates.render.automap.bRadar || (gameStates.video.nDisplayMode > 1)) {
+if (m_bRadar || (gameStates.video.nDisplayMode > 1)) {
 	//GrSetMode (gameStates.video.nLastScreenMode);
-	if (gameStates.render.automap.bRadar) {
+	if (m_bRadar) {
 		m_nWidth = CCanvas::Current ()->Width ();
 		m_nHeight = CCanvas::Current ()->Height ();
 		}
@@ -482,20 +482,20 @@ else {
 	m_data.bHires = 0;
 	}
 gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && m_data.bHires;
-if (!gameStates.render.automap.bRadar) {
+if (!m_bRadar) {
 	CreateNameCanvas ();
 	paletteManager.ResetEffect ();
 	}
-if (!gameStates.render.automap.bRadar) {
+if (!m_bRadar) {
 	m_background.Init ();
 	nPCXError = PCXReadBitmap (MAP_BACKGROUND_FILENAME, &m_background, BM_LINEAR, 0);
 	if (nPCXError != PCX_ERROR_NONE)
 		Error ("File %s - PCX error: %s", MAP_BACKGROUND_FILENAME, pcx_errormsg (nPCXError));
 	m_background.Remap (NULL, -1, -1);
 	}
-if (gameStates.render.automap.bRadar || !gameOpts->render.automap.bTextured)
+if (m_bRadar || !gameOpts->render.automap.bTextured)
 	BuildEdgeList ();
-if (gameStates.render.automap.bRadar)
+if (m_bRadar)
 	m_data.nViewDist = ZOOM_DEFAULT;
 else if (!m_data.nViewDist)
 	m_data.nViewDist = ZOOM_DEFAULT;
@@ -510,7 +510,7 @@ m_data.viewTarget = playerP->info.position.vPos;
 t1 = xEntryTime = TimerGetFixedSeconds ();
 t2 = t1;
 //Fill in m_visited [0] from OBJECTS [LOCALPLAYER.nObject].nSegment
-if (gameStates.render.automap.bRadar) {
+if (m_bRadar) {
 	for (i = 0; i < gameData.segs.nSegments; i++)
 		automap.m_visible [i] = 1;
 	}
@@ -521,10 +521,10 @@ else if (automap.m_bFull) {
 else
 	memcpy (automap.m_visible.Buffer (), m_visited [0].Buffer (), m_visited [0].Size ());
 //m_visited [0][OBJECTS [LOCALPLAYER.nObject].nSegment] = 1;
-gameStates.render.automap.nSegmentLimit =
-gameStates.render.automap.nMaxSegsAway = 
+m_nSegmentLimit =
+m_nMaxSegsAway = 
 	SetSegmentDepths (OBJECTS [LOCALPLAYER.nObject].info.nSegment, automap.m_visible.Buffer ());
-AdjustSegmentLimit (gameStates.render.automap.nSegmentLimit, automap.m_visible);
+AdjustSegmentLimit (m_nSegmentLimit, automap.m_visible);
 return bPauseGame;
 }
 
@@ -567,7 +567,7 @@ return 1;
 
 static inline int ViewDistStep (void)
 {
-	int h = (gameStates.render.automap.nSegmentLimit + 5) / 10;
+	int h = (automap.SegmentLimit () + 5) / 10;
 
 return h ? h : 1;
 }
@@ -618,31 +618,31 @@ while ((c = KeyInKey ())) {
 			for (i = 0; i <= gameData.segs.nLastSegment; i++)
 				automap.m_visible [i] = 1;
 			BuildEdgeList ();
-			gameStates.render.automap.nSegmentLimit = 
-			gameStates.render.automap.nMaxSegsAway = 
+			m_nSegmentLimit = 
+			m_nMaxSegsAway = 
 				SetSegmentDepths (OBJECTS [LOCALPLAYER.nObject].info.nSegment, automap.m_visible.Buffer ());
-			AdjustSegmentLimit (gameStates.render.automap.nSegmentLimit, automap.m_visible);
+			AdjustSegmentLimit (m_nSegmentLimit, automap.m_visible);
 			}
 			break;
 #endif
 
 		case KEY_MINUS:
 		case KEY_PADMINUS:
-			if (gameStates.render.automap.nSegmentLimit > 1)  {
-				gameStates.render.automap.nSegmentLimit -= ViewDistStep ();
-				if (!gameStates.render.automap.nSegmentLimit)
-					gameStates.render.automap.nSegmentLimit = 1;
-				AdjustSegmentLimit (gameStates.render.automap.nSegmentLimit, automap.m_visible);
+			if (m_nSegmentLimit > 1)  {
+				m_nSegmentLimit -= ViewDistStep ();
+				if (!m_nSegmentLimit)
+					m_nSegmentLimit = 1;
+				AdjustSegmentLimit (m_nSegmentLimit, automap.m_visible);
 				}
 			break;
 
 		case KEY_EQUAL:
 		case KEY_PADPLUS:
-			if (gameStates.render.automap.nSegmentLimit < gameStates.render.automap.nMaxSegsAway) {
-				gameStates.render.automap.nSegmentLimit += ViewDistStep ();
-				if (gameStates.render.automap.nSegmentLimit > gameStates.render.automap.nMaxSegsAway)
-					gameStates.render.automap.nSegmentLimit = gameStates.render.automap.nMaxSegsAway;
-				AdjustSegmentLimit (gameStates.render.automap.nSegmentLimit, automap.m_visible);
+			if (m_nSegmentLimit < m_nMaxSegsAway) {
+				m_nSegmentLimit += ViewDistStep ();
+				if (m_nSegmentLimit > m_nMaxSegsAway)
+					m_nSegmentLimit = m_nMaxSegsAway;
+				AdjustSegmentLimit (m_nSegmentLimit, automap.m_visible);
 				}
 			break;
 
@@ -737,9 +737,9 @@ void CAutomap::DoFrame (int nKeyCode, int bRadar)
 
 	//static ubyte	automapPal [256*3];
 
-gameStates.render.automap.nMaxSegsAway = 0;
-gameStates.render.automap.nSegmentLimit = 1;
-gameStates.render.automap.bRadar = bRadar;
+m_nMaxSegsAway = 0;
+m_nSegmentLimit = 1;
+m_bRadar = bRadar;
 bPauseGame = Setup (bPauseGame, xEntryTime, vTAngles);
 bRedrawScreen = 0;
 if (bRadar) {

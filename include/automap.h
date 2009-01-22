@@ -94,6 +94,8 @@ class CAutomap {
 		int						m_bRadar;
 		bool						m_bFull;
 		bool						m_bDisplay;
+		int						m_nSegmentLimit;
+		int						m_nMaxSegsAway;
 
 	public:
 		CAutomap () { Init (); }
@@ -106,6 +108,10 @@ class CAutomap {
 		void DoFrame (int nKeyCode, int bRadar);
 		void ClearVisited (void);
 		int ReadControls (int nLeaveMode, int bDone, int& bPauseGame);
+
+		inline int Radar (void) { return m_bRadar; }
+		inline int SegmentLimit (void) { return m_nSegmentLimit; }
+		inline int MaxSegsAway (void) { return m_nMaxSegsAway; }
 
 	private:
 		void AdjustSegmentLimit (int nSegmentLimit, CArray<ushort>& visited);

@@ -872,14 +872,6 @@ typedef struct tRenderDetail {
 	sbyte nSoundChannels;
 } tRenderDetail;
 
-typedef struct tAutomapStates {
-	int bDisplay;
-	int bFull;
-	int bRadar;
-	int nSegmentLimit;
-	int nMaxSegsAway;
-	} tAutomapStates;
-
 typedef struct tRenderHistory {
 	CBitmap		*bmBot;
 	CBitmap		*bmTop;
@@ -987,7 +979,6 @@ typedef struct tRenderStates {
 	double glAspect;
 	float grAlpha;
 	tRenderDetail detail;
-	tAutomapStates automap;
 	tRenderHistory history;
 } tRenderStates;
 
@@ -3319,7 +3310,7 @@ extern fix nDebrisLife [];
 
 // limit framerate to 30 while recording demo and to 40 when in automap and framerate display is disabled
 #define MAXFPS		((gameData.demo.nState == ND_STATE_RECORDING) ? 30 : \
-                   (automap.m_bDisplay && !(gameStates.render.automap.bRadar || (gameStates.render.bShowFrameRate == 1))) ? 40 : \
+                   (automap.m_bDisplay && !(automap.Radar () || (gameStates.render.bShowFrameRate == 1))) ? 40 : \
                    gameOpts->render.nMaxFPS)
 
 #define SPECTATOR(_objP)	(gameStates.app.bFreeCam && (OBJ_IDX (_objP) == LOCALPLAYER.nObject))

@@ -1613,11 +1613,11 @@ BumpVisitedFlag ();
 BumpProcessedFlag ();
 BumpVisibleFlag ();
 
-if (automap.m_bDisplay && gameOpts->render.automap.bTextured && !gameStates.render.automap.bRadar) {
+if (automap.m_bDisplay && gameOpts->render.automap.bTextured && !automap.Radar ()) {
 	for (i = gameData.render.mine.nRenderSegs = 0; i < gameData.segs.nSegments; i++)
 		if ((automap.m_bFull || automap.m_visited [0][i]) &&
-			 ((gameStates.render.automap.nSegmentLimit == gameStates.render.automap.nMaxSegsAway) ||
-			  (automap.m_visible [i] <= gameStates.render.automap.nSegmentLimit))) {
+			 ((automap.SegmentLimit () == automap.MaxSegsAway ()) ||
+			  (automap.m_visible [i] <= automap.SegmentLimit ()))) {
 			gameData.render.mine.nSegRenderList [gameData.render.mine.nRenderSegs++] = i;
 			gameData.render.mine.bVisible [i] = gameData.render.mine.nVisible;
 			VISIT (i);
