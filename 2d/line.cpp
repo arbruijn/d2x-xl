@@ -45,9 +45,9 @@ from "Graphics Gems", Academic Press, 1990
 void plot(int x,int y,int flag)
 {
 	if (flag)
-		gr_upixel(y, x);
+		DrawPixel(y, x);
 	else
-		gr_upixel(x, y);
+		DrawPixel(x, y);
 }
 
 int gr_hline(int x1, int x2, int y)
@@ -56,7 +56,7 @@ int gr_hline(int x1, int x2, int y)
 
 	if (x1 > x2) EXCHG(x1,x2);
 	for (i=x1; i<=x2; i++ )
-		gr_upixel( i, y );
+		DrawPixel( i, y );
 	return 0;
 }
 
@@ -65,7 +65,7 @@ int gr_vline(int y1, int y2, int x)
 	int i;
 	if (y1 > y2) EXCHG(y1,y2);
 	for (i=y1; i<=y2; i++ )
-		gr_upixel( x, i );
+		DrawPixel( x, i );
 	return 0;
 }
 
