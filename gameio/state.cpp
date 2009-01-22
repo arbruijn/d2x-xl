@@ -307,7 +307,7 @@ if (gameStates.menus.bHires) {
 		}
 	}
 else {
-	BlitClipped ((CCanvas::Current ()->Width ()-THUMBNAIL_W) / 2, menu [0].m_y - 5, saveGameInfo [nCurItem - 1].Image ());
+	saveGameInfo [nCurItem - 1].Image ()->BlitClipped ((CCanvas::Current ()->Width ()-THUMBNAIL_W) / 2, menu [0].m_y - 5);
 	}
 return nCurItem;
 }

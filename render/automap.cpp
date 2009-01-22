@@ -46,6 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "slowmotion.h"
 #include "marker.h"
 #include "songs.h"
+#include "menubackground.h"
 #include "automap.h"
 
 #ifndef Pi
@@ -87,16 +88,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define LEAVE_TIME				0x4000
 
 #define EDGE_IDX(_edgeP)		((int) ((_edgeP) - m_edges.Buffer ()))
-
-#if !DBG
-const char	*pszMapBackgroundFilename [2] = {"\x01MAP.PCX", "\x01MAPB.PCX"};
-
-#	define MAP_BACKGROUND_FILENAME pszMapBackgroundFilename [m_data.bHires]
-#else
-char	*pszMapBackgroundFilename [2] = {"MAP.PCX", "MAPB.PCX"};
-
-#	define MAP_BACKGROUND_FILENAME pszMapBackgroundFilename [m_data.bHires && CFile::Exist ("mapb.pcx",gameFolders.szDataDir,0)]
-#endif
 
 CAutomap automap;
 
@@ -488,9 +479,9 @@ if (!m_bRadar) {
 	}
 if (!m_bRadar) {
 	m_background.Init ();
-	nPCXError = PCXReadBitmap (MAP_BACKGROUND_FILENAME, &m_background, BM_LINEAR, 0);
+	nPCXError = PCXReadBitmap (BackgroundName (BG_MAP), &m_background, BM_LINEAR, 0);
 	if (nPCXError != PCX_ERROR_NONE)
-		Error ("File %s - PCX error: %s", MAP_BACKGROUND_FILENAME, pcx_errormsg (nPCXError));
+		Error ("File %s - PCX error: %s", BackgroundName (BG_MAP), pcx_errormsg (nPCXError));
 	m_background.Remap (NULL, -1, -1);
 	}
 if (m_bRadar || !gameOpts->render.automap.bTextured)

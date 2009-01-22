@@ -125,7 +125,7 @@ glVertex2f (x0, y1);
 glVertex2f (x0, y0);
 glEnd();
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-if (colorP->rgb)
+if (colorP && colorP->rgb)
 	glDisable (GL_BLEND);
 }
 

@@ -22,6 +22,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define BG_MENU		0
 #define BG_STARS		1
 #define BG_SCORES		2
+#define BG_MAP			3
 
 //------------------------------------------------------------------------------
 

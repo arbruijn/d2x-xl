@@ -87,16 +87,17 @@ char *menuBgNames [4][2] = {
 #else
 
 const char *menuBgNames [4][2] = {
- {"\x01menu.pcx", "\x01menub.pcx"},
- {"\x01menuo.pcx", "\x01menuob.pcx"},
- {"\x01menud.pcx", "\x01menud.pcx"},
- {"\x01menub.pcx", "\x01menub.pcx"}
+	{"\x01menu.pcx", "\x01menub.pcx"},
+	{"\x01menuo.pcx", "\x01menuob.pcx"},
+	{"\x01menud.pcx", "\x01menud.pcx"},
+	{"\x01menub.pcx", "\x01menub.pcx"}
 	};
 #endif
 
-	static char szBackgrounds [2][2][12] = {
+	static char szBackgrounds [3][2][12] = {
 		{"stars.pcx", "starsb.pcx"},
-		{"scores.pcx", "scoresb.pcx"}
+		{"scores.pcx", "scoresb.pcx"},
+		{"\x01map.pcx", "\x01mapb.pcx"}
 		};
 
 //------------------------------------------------------------------------------

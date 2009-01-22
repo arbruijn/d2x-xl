@@ -272,12 +272,14 @@ if (m_info.nType && (m_info.nBPP == 4))
 	return 1;
 if (m_info.props.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 	return 1;
-nFrames = m_info.props.h / m_info.props.w;
-for (i = 1; i < nFrames; i++) {
-	if (m_info.transparentFrames [i / 32] & (1 << (i % 32)))
-		return 1;
-	if (m_info.supertranspFrames [i / 32] & (1 << (i % 32)))
-		return 1;
+if (m_info.props.w) {
+	nFrames = m_info.props.h / m_info.props.w;
+	for (i = 1; i < nFrames; i++) {
+		if (m_info.transparentFrames [i / 32] & (1 << (i % 32)))
+			return 1;
+		if (m_info.supertranspFrames [i / 32] & (1 << (i % 32)))
+			return 1;
+		}
 	}
 return 0;
 }

@@ -712,16 +712,15 @@ if ((Mode () == BM_LINEAR) && (dest->Mode () == BM_OGL)) {
 	Render (dest, 0, 0, dest->Width (), dest->Height (), 0, 0, Width (), Height (), 0, 0);
 	if (!gameStates.render.bBlendBackground)
 		glEnable (GL_BLEND);
-	return;
 	}
-if (dest->Mode () != BM_LINEAR) {
+else if (dest->Mode () != BM_LINEAR) {
 	CBitmap *tmp = CBitmap::Create (0, dest->Width (), dest->Height (), 1);
 	GrBitmapScaleTo (this, tmp);
 	tmp->BlitClipped (0, 0);
 	delete tmp;
-	return;
 	}
-GrBitmapScaleTo (this, dest);
+else
+	GrBitmapScaleTo (this, dest);
 }
 
 //------------------------------------------------------------------------------
