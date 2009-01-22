@@ -452,7 +452,7 @@ if (source == BM_LINEAR) {
 			return;
 
 		case BM_OGL:
-			OglUBitMapM (x, y, bmP);
+			bmP->OglUBitMapMC (x, y);
 			return;
 
 		default:

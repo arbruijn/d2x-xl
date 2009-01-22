@@ -380,22 +380,6 @@ LoadBitmap (gameStates.render.fonts.bHires ? gameData.cockpit.gauges [0][x].inde
 
 //	-----------------------------------------------------------------------------
 
-static inline void HUDStretchBlt (int x, int y, CBitmap *bmP, int scale, int orient, double xScale, double yScale)
-{
-OglUBitMapMC (
-	 (x < 0) ? -x : HUD_SCALE_X (x), 
-	 (y < 0) ? -y : HUD_SCALE_Y (y), 
-	HUD_SCALE_X ((int) (bmP->Width () * xScale + 0.5)), 
-	HUD_SCALE_Y ((int) (bmP->Height () * yScale + 0.5)), 
-	bmP, 
-	NULL, 
-	scale, 
-	orient
-	);
-}
-
-//	-----------------------------------------------------------------------------
-
 static inline void HUDRect (int left, int top, int width, int height)
 {
 DrawFilledRect (HUD_SCALE_X (left), HUD_SCALE_Y (top), HUD_SCALE_X (width), HUD_SCALE_Y (height));

@@ -10,15 +10,7 @@
 #include "ogl_defs.h"
 #include "ogl_lib.h"
 
-int OglUBitMapMC (int x, int y, int dw, int dh, CBitmap *bm, tCanvasColor *c, int scale, int orient);
 int OglUBitBltCopy (int w,int h,int dx,int dy, int sx, int sy, CBitmap * src, CBitmap * dest);
-
-//------------------------------------------------------------------------------
-
-static inline int OglUBitMapM (int x, int y, CBitmap *bmP)
-{
-return OglUBitMapMC (x, y, 0, 0, bmP, NULL, I2X (1), 0);
-}
 
 //------------------------------------------------------------------------------
 
