@@ -925,6 +925,8 @@ m_faceP->fRads [1] = X2F (SEGMENTS [nSegment].Side (nSide)->m_rads [1]); //(floa
 
 void CQuadMeshBuilder::InitTexturedFace (void)
 {
+	static char szEmpty [] = "";
+	
 m_faceP->nBaseTex = m_sideP->m_nBaseTex;
 if ((m_faceP->nOvlTex = m_sideP->m_nOvlTex))
 	m_nOvlTexCount++;
@@ -937,7 +939,7 @@ m_faceP->bTransparent = 0;
 int nTexture = m_faceP->nOvlTex ? m_faceP->nOvlTex : m_faceP->nBaseTex;
 char *pszName = (nTexture < MAX_WALL_TEXTURES)
 					 ? gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.bmIndexP [nTexture].index].name
-					 : "";
+					 : szEmpty;
 m_faceP->bSparks = (strstr (pszName, "misc17") != NULL);
 if (m_nWallType < 2)
 	m_faceP->bAdditive = 0;
