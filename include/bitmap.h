@@ -290,7 +290,7 @@ class CBitmap : public CArray< ubyte > {
 		CTexture* OglBeginRender (CTexture* texP, bool bBlend = false);
 		void OglRender (tRgbaColorf* colorP, int nColors, int orient);
 		void OglEndRender (void);
-		int OglUBitMapMC (int x, int y, int dw, int dh, tCanvasColor *colorP, int scale, int orient);
+		int OglUBitMapMC (int x, int y, int dw, int dh, int scale, int orient, tCanvasColor *colorP);
 
 		inline bool Clip (int x, int y) { return (x < 0) || (y < 0) || (x >= Width ()) || (y >= Width ()); }
 		void DrawPixel (int x, int y, ubyte color);

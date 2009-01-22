@@ -82,13 +82,12 @@ else {
 
 //------------------------------------------------------------------------------
 
-void GetPalColor (CPalette *palette, int c)
+tRgbaColorf GetPalColor (CPalette *palette, int c)
 {
-	return color;
+	tRgbaColorf color;
 
 if (c < 0) 
 	color.red = color.green = color.blue = color.alpha = 1.0f;
-	}
 else {
 	if (!palette)
 		palette = paletteManager.Game ();

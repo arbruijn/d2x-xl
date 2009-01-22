@@ -32,7 +32,7 @@ extern float fLightRanges [5];
 //------------------------------------------------------------------------------
 
 void OglPalColor (ubyte *palette, int c);
-void GetPalColor (CPalette *palette, int c);
+tRgbaColorf GetPalColor (CPalette *palette, int c);
 void OglCanvasColor (tCanvasColor* colorP);
 tRgbaColorf GetCanvasColor (tCanvasColor* colorP);
 void OglColor4sf (float r, float g, float b, float s);
