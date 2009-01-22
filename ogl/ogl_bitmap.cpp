@@ -196,6 +196,7 @@ return texP;
 
 void CBitmap::OglRender (tRgbaColorf* colorP, int nColors, int orient)
 {
+glBegin (GL_QUADS);
 glColor4fv (reinterpret_cast<GLfloat*> (colorP));
 SetTexCoord (u1, v1, orient);
 glVertex2f (x0, y0);
@@ -211,6 +212,7 @@ if (nColors > 1)
 	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 3));
 SetTexCoord (u1, v2, orient);
 glVertex2f (x1, y0);
+glEnd ();
 }
 
 //------------------------------------------------------------------------------
@@ -231,11 +233,11 @@ glDisable (GL_TEXTURE_2D);
 
 int CBitmap::OglUBitMapMC (int x, int y, int w, int h, int scale, int orient, tCanvasColor* colorP)
 {
-	CBitmap*		bmoP;
+	CBitmap*		bmoP = Override (-1);
 	CTexture*	texP;
 	tRgbaColorf	color;
 
-if (bmoP = Override (-1))
+if (bmoP != this)
 	return bmoP->OglUBitMapMC (x, y, w, h, scale, orient, colorP);
 DelFlags (BM_FLAG_SUPER_TRANSPARENT);
 if (!(texP = OglBeginRender (m_info.texture)))
@@ -303,8 +305,10 @@ else
 OglRender (colorP, nColors, 0);
 OglEndRender ();
 
-if (texP == &tex)
+if (texP == &tex) {
 	texP->Destroy ();
+	SetTexture (NULL);
+	}
 return 0;
 }
 
