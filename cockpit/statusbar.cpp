@@ -344,19 +344,20 @@ HUDBitBlt (GAUGE_SHIELDS + 9 - ((shield >= 100) ? 9 : (shield / 10)), SB_SHIELD_
 //	-----------------------------------------------------------------------------
 
 typedef struct tKeyGaugeInfo {
-	int	nFlag, nGaugeOn, nGaugeOff, x, y;
+	int	nFlag, nGaugeOn, nGaugeOff, x [2], y [2];
 } tKeyGaugeInfo;
 
 static tKeyGaugeInfo keyGaugeInfo [] = {
-	{PLAYER_FLAGS_BLUE_KEY, SB_GAUGE_BLUE_KEY, SB_GAUGE_BLUE_KEY_OFF, SB_GAUGE_KEYS_X, SB_GAUGE_BLUE_KEY_Y},
-	{PLAYER_FLAGS_GOLD_KEY, SB_GAUGE_GOLD_KEY, SB_GAUGE_GOLD_KEY_OFF, SB_GAUGE_KEYS_X, SB_GAUGE_GOLD_KEY_Y},
-	{PLAYER_FLAGS_RED_KEY, SB_GAUGE_RED_KEY, SB_GAUGE_RED_KEY_OFF, SB_GAUGE_KEYS_X, SB_GAUGE_RED_KEY_Y}
+	{PLAYER_FLAGS_BLUE_KEY, SB_GAUGE_BLUE_KEY, SB_GAUGE_BLUE_KEY_OFF, {SB_GAUGE_KEYS_X_L, SB_GAUGE_KEYS_X_H}, {SB_GAUGE_BLUE_KEY_Y_L, SB_GAUGE_BLUE_KEY_Y_H}},
+	{PLAYER_FLAGS_GOLD_KEY, SB_GAUGE_GOLD_KEY, SB_GAUGE_GOLD_KEY_OFF, {SB_GAUGE_KEYS_X_L, SB_GAUGE_KEYS_X_H}, {SB_GAUGE_GOLD_KEY_Y_L, SB_GAUGE_GOLD_KEY_Y_H}},
+	{PLAYER_FLAGS_RED_KEY, SB_GAUGE_RED_KEY, SB_GAUGE_RED_KEY_OFF, {SB_GAUGE_KEYS_X_L, SB_GAUGE_KEYS_X_H}, {SB_GAUGE_RED_KEY_Y_L, SB_GAUGE_RED_KEY_Y_H}},
 	};
 
 void SBDrawKeys (void)
 {
+int bHires = gameStates.video.nDisplayMode != 0;
 for (int i = 0; i < 3; i++)
-	HUDBitBlt ((LOCALPLAYER.flags & keyGaugeInfo [i].nFlag) ? keyGaugeInfo [i].nGaugeOn : keyGaugeInfo [i].nGaugeOff, keyGaugeInfo [i].x, keyGaugeInfo [i].y);
+	HUDBitBlt ((LOCALPLAYER.flags & keyGaugeInfo [i].nFlag) ? keyGaugeInfo [i].nGaugeOn : keyGaugeInfo [i].nGaugeOff, keyGaugeInfo [i].x [bHires], keyGaugeInfo [i].y [bHires]);
 }
 
 //	-----------------------------------------------------------------------------

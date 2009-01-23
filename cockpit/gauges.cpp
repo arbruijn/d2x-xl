@@ -1715,20 +1715,21 @@ if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT) {
 //	-----------------------------------------------------------------------------
 
 typedef struct tKeyGaugeInfo {
-	int	nFlag, nGaugeOn, nGaugeOff, x, y;
+	int	nFlag, nGaugeOn, nGaugeOff, x [2], y [2];
 } tKeyGaugeInfo;
 
 static tKeyGaugeInfo keyGaugeInfo [] = {
-	{PLAYER_FLAGS_BLUE_KEY, GAUGE_BLUE_KEY, GAUGE_BLUE_KEY_OFF, GAUGE_BLUE_KEY_X, GAUGE_BLUE_KEY_Y},
-	{PLAYER_FLAGS_GOLD_KEY, GAUGE_GOLD_KEY, GAUGE_GOLD_KEY_OFF, GAUGE_GOLD_KEY_X, GAUGE_GOLD_KEY_Y},
-	{PLAYER_FLAGS_RED_KEY, GAUGE_RED_KEY, GAUGE_RED_KEY_OFF, GAUGE_RED_KEY_X, GAUGE_RED_KEY_Y}
+	{PLAYER_FLAGS_BLUE_KEY, GAUGE_BLUE_KEY, GAUGE_BLUE_KEY_OFF, {GAUGE_BLUE_KEY_X_L, GAUGE_BLUE_KEY_X_H}, {GAUGE_BLUE_KEY_Y_L, GAUGE_BLUE_KEY_Y_H}},
+	{PLAYER_FLAGS_GOLD_KEY, GAUGE_GOLD_KEY, GAUGE_GOLD_KEY_OFF, {GAUGE_GOLD_KEY_X_L, GAUGE_GOLD_KEY_X_H}, {GAUGE_GOLD_KEY_Y_L, GAUGE_GOLD_KEY_Y_H}},
+	{PLAYER_FLAGS_RED_KEY, GAUGE_RED_KEY, GAUGE_RED_KEY_OFF, {GAUGE_RED_KEY_X_L, GAUGE_RED_KEY_X_H}, {GAUGE_RED_KEY_Y_L, GAUGE_RED_KEY_Y_H}},
 	};
 
 void DrawKeys (void)
 {
 CCanvas::SetCurrent (GetCurrentGameScreen ());
+int bHires = gameStates.video.nDisplayMode != 0;
 for (int i = 0; i < 3; i++)
-	HUDBitBlt ((LOCALPLAYER.flags & keyGaugeInfo [i].nFlag) ? keyGaugeInfo [i].nGaugeOn : keyGaugeInfo [i].nGaugeOff, keyGaugeInfo [i].x, keyGaugeInfo [i].y);
+	HUDBitBlt ((LOCALPLAYER.flags & keyGaugeInfo [i].nFlag) ? keyGaugeInfo [i].nGaugeOn : keyGaugeInfo [i].nGaugeOff, keyGaugeInfo [i].x [bHires], keyGaugeInfo [i].y [bHires]);
 }
 
 //	-----------------------------------------------------------------------------
