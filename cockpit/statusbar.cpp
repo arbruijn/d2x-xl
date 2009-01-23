@@ -39,11 +39,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //	-----------------------------------------------------------------------------
 
-CCanvas *Canv_SBEnergyGauge;
-CCanvas *Canv_SBAfterburnerGauge;
-
-//	-----------------------------------------------------------------------------
-
 static inline CBitmap* HUDStretchBlt (int nGauge, int x, int y, double xScale, double yScale, int scale = I2X (1), int orient = 0, CBitmap* bmP = NULL)
 {
 if (nGauge >= 0) {
@@ -61,21 +56,12 @@ return bmP;
 
 void SBInitGaugeCanvases (void)
 {
-if (!bHaveGaugeCanvases && paletteManager.Game ()) {
-	PAGE_IN_GAUGE (SB_GAUGE_ENERGY);
-	Canv_SBEnergyGauge = CCanvas::Create (SB_ENERGY_GAUGE_W, SB_ENERGY_GAUGE_H);
-	Canv_SBAfterburnerGauge = CCanvas::Create (SB_AFTERBURNER_GAUGE_W, SB_AFTERBURNER_GAUGE_H);
-	}
 }
 
 //	-----------------------------------------------------------------------------
 
 void SBCloseGaugeCanvases (void)
 {
-if (bHaveGaugeCanvases) {
-	Canv_SBEnergyGauge->Destroy ();
-	Canv_SBAfterburnerGauge->Destroy ();
-	}
 }
 
 //	-----------------------------------------------------------------------------
@@ -272,7 +258,6 @@ nIdEnergyBar = HUDPrintF (&nIdEnergyBar,
 								  SB_ENERGY_GAUGE_X + ((SB_ENERGY_GAUGE_W - w)/2), 
 								  SB_ENERGY_GAUGE_Y + SB_ENERGY_GAUGE_H - GAME_FONT->Height () - (GAME_FONT->Height () / 4), 
 							     "%d", nEnergy);
-Canv_SBEnergyGauge->ReleaseTexture ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -288,7 +273,6 @@ void SBDrawAfterburner (void)
 
 	if (gameStates.app.bD1Mission)
 		return;
-//	CCanvas::SetCurrent (Canv_SBAfterburnerGauge);
 	HUDBitBlt (SB_GAUGE_AFTERBURNER, SB_AFTERBURNER_GAUGE_X, SB_AFTERBURNER_GAUGE_Y);
 	erase_height = FixMul ((I2X (1) - gameData.physics.xAfterburnerCharge), SB_AFTERBURNER_GAUGE_H);
 //	HUDMessage (0, "AB: %d", erase_height);
@@ -315,7 +299,6 @@ nIdAfterBurner = HUDPrintF (&nIdAfterBurner,
 									 SB_AFTERBURNER_GAUGE_X + ((SB_AFTERBURNER_GAUGE_W - w)/2), 
 									 SB_AFTERBURNER_GAUGE_Y+SB_AFTERBURNER_GAUGE_H-GAME_FONT->Height () - (GAME_FONT->Height () / 4), 
 									 "AB");
-Canv_SBAfterburnerGauge->ReleaseTexture ();
 }
 
 //	-----------------------------------------------------------------------------

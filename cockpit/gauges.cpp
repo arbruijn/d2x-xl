@@ -814,8 +814,7 @@ if ((gameData.app.nGameMode & GM_CAPTURE) && (LOCALPLAYER.flags & PLAYER_FLAGS_F
 	else
 		Int3 ();		//what sort of cockpit?
 	icon = (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_BLUE) ? FLAG_ICON_RED : FLAG_ICON_BLUE;
-	PAGE_IN_GAUGE (icon);
-	GrUBitmapM (x, y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (icon));
+	HUDBitBlt (icon, x, y, false, false);
 	}
 }
 
@@ -986,7 +985,8 @@ if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {		//draw background
 		}
 	else {
 		DrawFilledRect (HUD_SCALE_X (338), HUD_SCALE_Y (453), HUD_SCALE_X (378), HUD_SCALE_Y (470));
-		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
+		//CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
+		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (255, 200, 0));
 		DrawScanLineClipped (HUD_SCALE_X (336), HUD_SCALE_X (378), HUD_SCALE_Y (453));
 		}
 	}

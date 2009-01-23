@@ -81,7 +81,7 @@ glVertex2f (x0,y1);
 glVertex2f (x1,y1);
 glVertex2f (x1,y0);
 glEnd ();
-if (COLOR.rgb || (gameStates.render.grAlpha < FADE_LEVELS))
+if (colorP->rgb || (gameStates.render.grAlpha < FADE_LEVELS))
 	glDisable (GL_BLEND);
 }
 
@@ -104,7 +104,7 @@ for (int i = 0; i <= nVerts; i++) {
 					1.0f - GLfloat (y [j] + top) / GLfloat (gameStates.ogl.nLastH));
 	}
 glEnd ();
-if (COLOR.rgb || (gameStates.render.grAlpha < FADE_LEVELS))
+if (colorP->rgb || (gameStates.render.grAlpha < FADE_LEVELS))
 	glDisable (GL_BLEND);
 }
 
@@ -117,7 +117,9 @@ GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (gameStates.og
 GLfloat y0 = 1.0f - float (top + CCanvas::Current ()->Top ()) / float (gameStates.ogl.nLastH);
 GLfloat y1 = 1.0f - float (bot + CCanvas::Current ()->Top ()) / float (gameStates.ogl.nLastH);
 glDisable (GL_TEXTURE_2D);
-OglCanvasColor (colorP ? colorP : &COLOR);
+if (!colorP)
+	colorP = &COLOR;
+OglCanvasColor (colorP);
 glBegin (GL_LINES);
 glVertex2f (x0,y0);
 glVertex2f (x1,y1);

@@ -434,39 +434,6 @@ void StretchToBitmapRLE (int w, int h, int dx, int dy, int sx, int sy, CBitmap *
 
 //------------------------------------------------------------------------------
 
-void GrUBitmapM (int x, int y, CBitmap *bmP)
-{
-	int source = bmP->Mode ();
-	int dest = MODE;
-
-Assert(x+bmP->Width () <= CCanvas::Current ()->Width ());
-Assert(y+bmP->Height () <= CCanvas::Current ()->Height ());
-
-if (source == BM_LINEAR) {
-	switch (dest) {
-		case BM_LINEAR:
-			if (bmP->Flags () & BM_FLAG_RLE)
-				BlitToBitmapMaskedRLE(bmP->Width (), bmP->Height (), x, y, 0, 0, bmP, CCanvas::Current ());
-			else
-				gr_ubitmap00m(x, y, bmP);
-			return;
-
-		case BM_OGL:
-			bmP->OglUBitMapMC (x, y);
-			return;
-
-		default:
-			gr_ubitmap012m (x, y, bmP);
-			return;
-		}
-	} 
-else {
-	gr_ubitmapGENERICm (x, y, bmP);
-	}
-}
-
-//------------------------------------------------------------------------------
-
 void GrBitmapM (int x, int y, CBitmap *bmP, int bTransp)
 {
 	int dx1 = x, dx2 = x + bmP->Width () - 1;
