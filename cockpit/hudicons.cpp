@@ -28,6 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gamefont.h"
 #include "input.h"
 #include "ogl_bitmap.h"
+#include "ogl_render.h"
 #include "ogl_hudstuff.h"
 #include "slowmotion.h"
 #include "network.h"

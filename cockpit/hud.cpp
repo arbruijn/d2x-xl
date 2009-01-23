@@ -30,6 +30,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "screens.h"
 #include "text.h"
 #include "args.h"
+#include "ogl_render.h"
 
 void CopyBackgroundRect (int left,int top,int right,int bot);
 char szDisplayedBackgroundMsg [2][HUD_MESSAGE_LENGTH] = {"",""};

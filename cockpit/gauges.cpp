@@ -32,6 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "transprender.h"
 #include "gamepal.h"
 #include "ogl_lib.h"
+#include "ogl_render.h"
 #include "ogl_bitmap.h"
 #include "ogl_hudstuff.h"
 #include "playsave.h"

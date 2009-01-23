@@ -27,7 +27,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "vesa.h"
 #include "modex.h"
 #include "ogl_defs.h"
-#include "gr.h"
+#include "ogl_render.h"
 #include "bitmap.h"
 
 //------------------------------------------------------------------------------

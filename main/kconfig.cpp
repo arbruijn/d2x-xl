@@ -43,6 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #include "menubackground.h"
 #include "songs.h"
 #include "headlight.h"
+#include "ogl_render.h"
 #if defined (TACTILE)
 #	include "tactile.h"
 #endif

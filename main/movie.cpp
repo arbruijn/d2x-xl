@@ -33,6 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "u_mem.h"
 #include "byteswap.h"
+#include "ogl_render.h"
 #include "ogl_bitmap.h"
 #include "gamefont.h"
 #include "libmve.h"
