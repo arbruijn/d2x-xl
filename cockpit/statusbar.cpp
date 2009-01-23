@@ -44,17 +44,17 @@ CCanvas *Canv_SBAfterburnerGauge;
 
 //	-----------------------------------------------------------------------------
 
-static inline void HUDStretchBlt (int x, int y, CBitmap *bmP, int scale, int orient, double xScale, double yScale)
+static inline CBitmap* HUDStretchBlt (int nGauge, int x, int y, double xScale, double yScale, int scale = I2X (1), int orient = 0, CBitmap* bmP = NULL)
 {
-bmP->OglUBitMapMC (
-	(x < 0) ? -x : HUD_SCALE_X (x), 
-	(y < 0) ? -y : HUD_SCALE_Y (y), 
-	HUD_SCALE_X ((int) (bmP->Width () * xScale + 0.5)), 
-	HUD_SCALE_Y ((int) (bmP->Height () * yScale + 0.5)), 
-	scale, 
-	orient, 
-	NULL
-	);
+if (nGauge >= 0) {
+	PAGE_IN_GAUGE (nGauge);
+	bmP = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (nGauge);
+	}
+if (bmP)
+	bmP->OglUBitMapMC (HUD_SCALE_X (x), HUD_SCALE_Y (y), 
+							 HUD_SCALE_X ((int) (bmP->Width () * xScale + 0.5)), HUD_SCALE_Y ((int) (bmP->Height () * yScale + 0.5)), 
+							 scale, orient, NULL);
+return bmP;
 }
 
 //	-----------------------------------------------------------------------------
@@ -171,10 +171,7 @@ else {
 void SBShowHomingWarning (void)
 {
 if (bLastHomingWarningShown [gameStates.render.vr.nCurrentPage] == 1) {
-	PAGE_IN_GAUGE (GAUGE_HOMING_WARNING_OFF);
-	HUDBitBlt (
-		HOMING_WARNING_X, HOMING_WARNING_Y, 
-		gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_HOMING_WARNING_OFF), I2X (1), 0);
+	HUDBitBlt (GAUGE_HOMING_WARNING_OFF, HOMING_WARNING_X, HOMING_WARNING_Y);
 	bLastHomingWarningShown [gameStates.render.vr.nCurrentPage] = 0;
 	}
 }
@@ -236,8 +233,7 @@ if ((oldLives [gameStates.render.vr.nCurrentPage] == -1) ||
 	if (LOCALPLAYER.lives - 1 > 0) {
 		fontManager.SetCurrent (GAME_FONT);
 		fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
-		PAGE_IN_GAUGE (GAUGE_LIVES);
-		HUDBitBlt (x, y, bmP, I2X (1), 0);
+		HUDBitBlt (GAUGE_LIVES, x, y);
 		nIdLives [1] = HUDPrintF (&nIdLives [1], x + bmP->Width () + GAME_FONT->Width (), y, "x %d", LOCALPLAYER.lives - 1);
 		}
 	}
@@ -252,16 +248,10 @@ void SBDrawEnergyBar (int nEnergy)
 
 	static int nIdEnergyBar = 0;
 
-//	CCanvas::SetCurrent (Canv_SBEnergyGauge);
-
-	PAGE_IN_GAUGE (SB_GAUGE_ENERGY);
 	if (gameStates.app.bD1Mission)
-	HUDStretchBlt (SB_ENERGY_GAUGE_X, SB_ENERGY_GAUGE_Y, 
-			         gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (SB_GAUGE_ENERGY), I2X (1), 0, 
-						1.0, (double) SB_ENERGY_GAUGE_H / (double) (SB_ENERGY_GAUGE_H - SB_AFTERBURNER_GAUGE_H));
+		HUDStretchBlt (SB_GAUGE_ENERGY, SB_ENERGY_GAUGE_X, SB_ENERGY_GAUGE_Y, 1.0, (double) SB_ENERGY_GAUGE_H / (double) (SB_ENERGY_GAUGE_H - SB_AFTERBURNER_GAUGE_H));
 	else
-	HUDBitBlt (SB_ENERGY_GAUGE_X, SB_ENERGY_GAUGE_Y, 
-									  gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (SB_GAUGE_ENERGY), I2X (1), 0);
+		HUDBitBlt (SB_GAUGE_ENERGY, SB_ENERGY_GAUGE_X, SB_ENERGY_GAUGE_Y);
 	erase_height = (100 - nEnergy) * SB_ENERGY_GAUGE_H / 100;
 	if (erase_height > 0) {
 		CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
@@ -299,8 +289,7 @@ void SBDrawAfterburner (void)
 	if (gameStates.app.bD1Mission)
 		return;
 //	CCanvas::SetCurrent (Canv_SBAfterburnerGauge);
-	PAGE_IN_GAUGE (SB_GAUGE_AFTERBURNER);
-	HUDBitBlt (SB_AFTERBURNER_GAUGE_X, SB_AFTERBURNER_GAUGE_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (SB_GAUGE_AFTERBURNER), I2X (1), 0);
+	HUDBitBlt (SB_GAUGE_AFTERBURNER, SB_AFTERBURNER_GAUGE_X, SB_AFTERBURNER_GAUGE_Y);
 	erase_height = FixMul ((I2X (1) - gameData.physics.xAfterburnerCharge), SB_AFTERBURNER_GAUGE_H);
 //	HUDMessage (0, "AB: %d", erase_height);
 
@@ -348,30 +337,26 @@ nIdShieldNum = HUDPrintF (&nIdShieldNum, (shield>99)?SB_SHIELD_NUM_X: ((shield>9
 
 void SBDrawShieldBar (int shield)
 {
-	int bm_num = shield>=100?9: (shield / 10);
-
 CCanvas::SetCurrent (GetCurrentGameScreen ());
-PAGE_IN_GAUGE (GAUGE_SHIELDS + 9 - bm_num);
-HUDBitBlt (SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (GAUGE_SHIELDS+9-bm_num)], I2X (1), 0);
+HUDBitBlt (GAUGE_SHIELDS + 9 - ((shield >= 100) ? 9 : (shield / 10)), SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y);
 }
 
 //	-----------------------------------------------------------------------------
 
+typedef struct tKeyGaugeInfo {
+	int	nFlag, nGaugeOn, nGaugeOff, x, y;
+} tKeyGaugeInfo;
+
+static tKeyGaugeInfo keyGaugeInfo [] = {
+	{PLAYER_FLAGS_BLUE_KEY, SB_GAUGE_BLUE_KEY, SB_GAUGE_BLUE_KEY_OFF, SB_GAUGE_KEYS_X, SB_GAUGE_BLUE_KEY_Y},
+	{PLAYER_FLAGS_GOLD_KEY, SB_GAUGE_GOLD_KEY, SB_GAUGE_GOLD_KEY_OFF, SB_GAUGE_KEYS_X, SB_GAUGE_GOLD_KEY_Y},
+	{PLAYER_FLAGS_RED_KEY, SB_GAUGE_RED_KEY, SB_GAUGE_RED_KEY_OFF, SB_GAUGE_KEYS_X, SB_GAUGE_RED_KEY_Y}
+	};
+
 void SBDrawKeys (void)
 {
-	CBitmap * bmP;
-	int flags = LOCALPLAYER.flags;
-
-CCanvas::SetCurrent (GetCurrentGameScreen ());
-bmP = &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX ((flags&PLAYER_FLAGS_BLUE_KEY)?SB_GAUGE_BLUE_KEY:SB_GAUGE_BLUE_KEY_OFF)];
-PAGE_IN_GAUGE ((flags&PLAYER_FLAGS_BLUE_KEY)?SB_GAUGE_BLUE_KEY:SB_GAUGE_BLUE_KEY_OFF);
-HUDBitBlt (SB_GAUGE_KEYS_X, SB_GAUGE_BLUE_KEY_Y, bmP, I2X (1), 0);
-bmP = &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX ((flags&PLAYER_FLAGS_GOLD_KEY)?SB_GAUGE_GOLD_KEY:SB_GAUGE_GOLD_KEY_OFF)];
-PAGE_IN_GAUGE ((flags&PLAYER_FLAGS_GOLD_KEY)?SB_GAUGE_GOLD_KEY:SB_GAUGE_GOLD_KEY_OFF);
-HUDBitBlt (SB_GAUGE_KEYS_X, SB_GAUGE_GOLD_KEY_Y, bmP, I2X (1), 0);
-bmP = &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX ((flags&PLAYER_FLAGS_RED_KEY)?SB_GAUGE_RED_KEY:SB_GAUGE_RED_KEY_OFF)];
-PAGE_IN_GAUGE ((flags&PLAYER_FLAGS_RED_KEY)?SB_GAUGE_RED_KEY:SB_GAUGE_RED_KEY_OFF);
-HUDBitBlt (SB_GAUGE_KEYS_X, SB_GAUGE_RED_KEY_Y, bmP , I2X (1), 0);
+for (int i = 0; i < 3; i++)
+	HUDBitBlt ((LOCALPLAYER.flags & keyGaugeInfo [i].nFlag) ? keyGaugeInfo [i].nGaugeOn : keyGaugeInfo [i].nGaugeOff, keyGaugeInfo [i].x, keyGaugeInfo [i].y);
 }
 
 //	-----------------------------------------------------------------------------
@@ -384,10 +369,8 @@ void SBDrawInvulnerableShip (void)
 CCanvas::SetCurrent (GetCurrentGameScreen ());
 if (tInvul <= 0) 
 	SBDrawShieldBar (X2IR (LOCALPLAYER.shields));
-else if ((tInvul > I2X (4)) || (gameData.time.xGame & 0x8000)) {
-	PAGE_IN_GAUGE (GAUGE_INVULNERABLE + nInvulnerableFrame);
-	HUDBitBlt (SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (GAUGE_INVULNERABLE + nInvulnerableFrame)], I2X (1), 0);
-	}
+else if ((tInvul > I2X (4)) || (gameData.time.xGame & 0x8000))
+	HUDBitBlt (GAUGE_INVULNERABLE + nInvulnerableFrame, SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y);
 }
 
 //	-----------------------------------------------------------------------------
