@@ -389,7 +389,7 @@ for (i = 0; i < 2; i++) {
 			//gameStates.render.grAlpha = FADE_LEVELS * 2 / 7;
 			CCanvas::Current ()->SetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
 			}
-		GrURect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
+		OglDrawFilledRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
 		if (i) {
 			if (j < 8)
 				bArmed = (l == gameData.weapons.nSecondary);
@@ -579,7 +579,7 @@ for (j = firstItem; j < n; j++) {
 		//gameStates.render.grAlpha = FADE_LEVELS * 2 / 7;
 		CCanvas::Current ()->SetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
 		}
-	GrURect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
+	OglDrawFilledRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
 	if (bHave)
 		if (bAvailable)
 			if (bArmed)

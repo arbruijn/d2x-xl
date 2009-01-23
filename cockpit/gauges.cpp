@@ -885,7 +885,7 @@ else {
 		bShow = 1;
 	c = (h > 100) ? 224 : 224;
 	CCanvas::Current ()->SetColorRGB (c, c, (ubyte) ((h > 100) ? c : 0), 128);
-	GrURect (6, y, 6 + (int) (((h > 100) ? h - 100 : h) * xScale), y + (int) (9 * yScale));
+	OglDrawFilledRect (6, y, 6 + (int) (((h > 100) ? h - 100 : h) * xScale), y + (int) (9 * yScale));
 	}
 
 skipGauge:
@@ -923,7 +923,7 @@ else {
 	CCanvas::Current ()->SetColorRGB (255, 0, 0, 255);
 	DrawEmptyRect (6, y, 6 + (int) (100 * xScale), y + (int) (9 * yScale));
 	CCanvas::Current ()->SetColorRGB (224, 0, 0, 128);
-	GrURect (6, y, 6 + (int) (h * xScale), y + (int) (9 * yScale));
+	OglDrawFilledRect (6, y, 6 + (int) (h * xScale), y + (int) (9 * yScale));
 	}
 if (gameData.demo.nState==ND_STATE_RECORDING) {
 	if (gameData.physics.xAfterburnerCharge != oldAfterburner [gameStates.render.vr.nCurrentPage]) {
@@ -1165,7 +1165,7 @@ else {
 	DrawEmptyRect (6, y, 6 + (int) (100 * xScale), y + (int) (9 * yScale));
 	if (bShow) {
 		CCanvas::Current ()->SetColorRGB (0, (ubyte) ((h > 100) ? 224 : 64), 224, 128);
-		GrURect (6, y, 6 + (int) (((h > 100) ? h - 100 : h) * xScale), y + (int) (9 * yScale));
+		OglDrawFilledRect (6, y, 6 + (int) (((h > 100) ? h - 100 : h) * xScale), y + (int) (9 * yScale));
 		}
 	}
 if (gameStates.render.cockpit.nShieldFlash) {

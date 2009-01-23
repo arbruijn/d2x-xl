@@ -27,17 +27,6 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_defs.h"
 #include "gr.h"
 
-//------------------------------------------------------------------------------
-
-void GrURect (int left, int top, int right, int bot)
-{
-if (MODE == BM_OGL)
-	OglDrawFilledRect (left, top, right, bot);
-else 
-	for (int i = top; i <= bot; i++)
-		DrawScanLine (left, right, i);
-}
-
 //------------------------------------------------------------------------------ 
 
 void SWDrawEmptyRect (int left, int top, int right, int bot)
@@ -73,7 +62,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void DrawFilledRect (int left,int top,int right,int bot)
+void DrawFilledRect (int left,int top,int right, int bot)
 {
 if (MODE == BM_OGL)
 	OglDrawFilledRect (left, top, right, bot);

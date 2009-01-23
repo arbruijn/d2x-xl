@@ -814,7 +814,7 @@ void KCDrawQuestion (kcItem *item)
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21*fades [looper]/31, 0, 24*fades [looper]/31));
 	if (++looper>63) 
 		looper=0;
-	GrURect (KC_LHX (item->w1 + item->x), KC_LHY (item->y - 1), 
+	OglDrawFilledRect (KC_LHX (item->w1 + item->x), KC_LHY (item->y - 1), 
 				KC_LHX (item->w1 + item->x + item->w2), KC_LHY (item->y) + h);
 	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 	x = LHX (item->w1+item->x)+ ((LHX (item->w2)-w)/2)+xOffs;
@@ -1581,7 +1581,7 @@ if (bRedraw && MODERN_STYLE)
 			CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 0, 24));
 		else
 			CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (16, 0, 19));
-		GrURect (KC_LHX (item->x + item->w1), KC_LHY (item->y - 1), 
+		OglDrawFilledRect (KC_LHX (item->x + item->w1), KC_LHY (item->y - 1), 
 					KC_LHX (item->x + item->w1 + item->w2), KC_LHY (item->y) + h);
 		fontManager.SetColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
 		x = LHX (item->w1 + item->x) + ((LHX (item->w2) - w) / 2) + xOffs;

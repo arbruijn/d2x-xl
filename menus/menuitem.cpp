@@ -426,11 +426,11 @@ if (!w)
 w1 = w * val / maxVal;
 if (w1 < w) {
 	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-	GrURect (x + w1 + 1, y, x + w, y + h - 2);
+	OglDrawFilledRect (x + w1 + 1, y, x + w, y + h - 2);
 	}
 CCanvas::Current ()->SetColorRGB (200, 0, 0, 255);
 if (w1)
-	GrURect (x + 1, y, x + w1, y + h - 2);
+	OglDrawFilledRect (x + 1, y, x + w1, y + h - 2);
 DrawEmptyRect (x, y, x + w - 1, y + h - 1);
 }
 
