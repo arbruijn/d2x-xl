@@ -138,24 +138,21 @@ if (!h)
 else if (h < 0)
 	h = destP->Height ();
 
-int dx = destP->Left ();
-int dy = destP->Top ();
+float dx = float (destP->Left ()) / float (gameStates.ogl.nLastW);
+float dy = float (destP->Top ()) / float (gameStates.ogl.nLastH);
 
 if (orient & 1) {
 	::Swap (w, h);
 	::Swap (dx, dy);
 	}
 
-x += dx;
-y += dy;
-
 float fScale = X2F (scale);
 aspect = float (gameStates.ogl.nLastW * fScale);
-x0 = float (x) / aspect;
-x1 = float (x + w) / aspect;
+x0 = dx + float (x) / aspect;
+x1 = dx + float (x + w) / aspect;
 aspect = float (gameStates.ogl.nLastH * fScale);
-y0 = 1.0f - float (y) / aspect;
-y1 = 1.0f - float (y + h) / aspect;
+y0 = 1.0f - dy - float (y) / aspect;
+y1 = 1.0f - dy - float (y + h) / aspect;
 aspect = float (screen.Width ()) / float (screen.Height ());
 }
 
