@@ -203,7 +203,7 @@ glVertex2f (x0, y0);
 if (nColors > 1)
 	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 1));
 SetTexCoord (u2, v1, orient);
-glVertex2f (x0, y1);
+glVertex2f (x1, y0);
 if (nColors > 1)
 	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 2));
 SetTexCoord (u2, v2, orient);
@@ -211,7 +211,7 @@ glVertex2f (x1, y1);
 if (nColors > 1)
 	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 3));
 SetTexCoord (u1, v2, orient);
-glVertex2f (x1, y0);
+glVertex2f (x0, y1);
 glEnd ();
 }
 
@@ -233,14 +233,14 @@ glDisable (GL_TEXTURE_2D);
 
 int CBitmap::OglUBitMapMC (int x, int y, int w, int h, int scale, int orient, tCanvasColor* colorP)
 {
-	CBitmap*		bmoP = Override (-1);
+	CBitmap*		bmoP;
 	CTexture*	texP;
 	tRgbaColorf	color;
 
-if (bmoP != this)
+if (bmoP  = HasOverride ())
 	return bmoP->OglUBitMapMC (x, y, w, h, scale, orient, colorP);
 DelFlags (BM_FLAG_SUPER_TRANSPARENT);
-if (!(texP = OglBeginRender (m_info.texture)))
+if (!(texP = OglBeginRender (m_info.texture, true)))
 	return 1; // fail
 OglVertices (x, y, w, h, scale, orient);
 OglTexCoord (m_info.texture);
@@ -302,7 +302,28 @@ if (v2 < 1.0f)
 else
 	v2 = texP->V ();
 
+#if 1
 OglRender (colorP, nColors, 0);
+#else
+glBegin (GL_QUADS);
+if (colorP)
+	glColor4fv (reinterpret_cast<GLfloat*> (colorP));
+glTexCoord2f (u1, v1); 
+glVertex2f (x0, y0);
+if (colorP)
+	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 1));
+glTexCoord2f (u2, v1); 
+glVertex2f (x1, y0);
+if (colorP)
+	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 2));
+glTexCoord2f (u2, v2); 
+glVertex2f (x1, y1);
+if (colorP)
+	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 3));
+glTexCoord2f (u1, v2); 
+glVertex2f (x0, y1);
+glEnd ();
+#endif
 OglEndRender ();
 
 if (texP == &tex) {

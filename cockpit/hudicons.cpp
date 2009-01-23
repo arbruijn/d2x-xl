@@ -309,7 +309,7 @@ for (i = 0; i < 2; i++) {
 			bmP = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [m].picture.index;
 			LoadBitmap (gameData.weapons.info [m].picture.index, 0);
 			}
-		if ((bmoP = bmP->Override (-1)))
+		if ((bmoP = bmP->HasOverride ()))
 			bmP = bmoP;
 		Assert (bmP != NULL);
 		if (w < bmP->Width ())
