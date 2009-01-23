@@ -108,17 +108,19 @@ extern int nHUDLineSpacing;
 
 //	-----------------------------------------------------------------------------
 
-static inline void HUDBitBlt (int x, int y, CBitmap *bmP, int scale, int orient)
+static inline void HUDBitBlt (int x, int y, CBitmap *bmP, bool bScalePos = true, bool bScaleSize = true, int scale = I2X (1), int orient = 0)
 {
-bmP->OglUBitMapMC (
-	(x < 0) ? -x : HUD_SCALE_X (x), 
-	(y < 0) ? -y : HUD_SCALE_Y (y), 
-	HUD_SCALE_X (bmP->Width ()) * (gameStates.app.bDemoData + 1), 
-	HUD_SCALE_Y (bmP->Height ()) * (gameStates.app.bDemoData + 1), 
-	scale, 
-	orient,
-	NULL
-	);
+if (bScalePos) {
+	x = HUD_SCALE_X (x);
+	y = HUD_SCALE_Y (y);
+	}
+int w = bmP->Width ();
+int h = bmP->Height ();
+if (bScaleSize) {
+	w = HUD_SCALE_X (w);
+	h = HUD_SCALE_Y (h);
+	}
+bmP->OglUBitMapMC (x, y, w * (gameStates.app.bDemoData + 1), h * (gameStates.app.bDemoData + 1), scale, orient, NULL);
 }
 
 //	-----------------------------------------------------------------------------

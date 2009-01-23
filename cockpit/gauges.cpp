@@ -636,14 +636,14 @@ else {
 			PAGE_IN_GAUGE (GAUGE_HOMING_WARNING_ON);
 			HUDBitBlt (
 				HOMING_WARNING_X, HOMING_WARNING_Y,
-				gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_HOMING_WARNING_ON), I2X (1), 0);
+				gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_HOMING_WARNING_ON));
 				bLastHomingWarningShown [gameStates.render.vr.nCurrentPage] = 1;
 			}
 		else {
 			PAGE_IN_GAUGE (GAUGE_HOMING_WARNING_OFF);
 			HUDBitBlt (
 				HOMING_WARNING_X, HOMING_WARNING_Y,
-				gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_HOMING_WARNING_OFF), I2X (1), 0);
+				gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_HOMING_WARNING_OFF));
 			bLastHomingWarningShown [gameStates.render.vr.nCurrentPage] = 0;
 			}
 		}
@@ -651,7 +651,7 @@ else {
 		PAGE_IN_GAUGE (GAUGE_HOMING_WARNING_OFF);
 		HUDBitBlt (
 			HOMING_WARNING_X, HOMING_WARNING_Y,
-			gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_HOMING_WARNING_OFF), I2X (1), 0);
+			gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_HOMING_WARNING_OFF));
 		bLastHomingWarningShown [gameStates.render.vr.nCurrentPage] = 0;
 		}
 	}
@@ -694,15 +694,18 @@ if (IsMultiGame && !IsCoopGame)
 	return;
 if (LOCALPLAYER.flags & PLAYER_FLAGS_BLUE_KEY) {
 	PAGE_IN_GAUGE (KEY_ICON_BLUE);
-	GrUBitmapM (2, y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (KEY_ICON_BLUE)]);
+	HUDBitBlt (2, y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (KEY_ICON_BLUE)], false, false);
+	//	GrUBitmapM (2, y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (KEY_ICON_BLUE)]);
 	}
 if (LOCALPLAYER.flags & PLAYER_FLAGS_GOLD_KEY) {
 	PAGE_IN_GAUGE (KEY_ICON_YELLOW);
-	GrUBitmapM (2+dx, y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (KEY_ICON_YELLOW)]);
+	HUDBitBlt (2 + dx, y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (KEY_ICON_YELLOW)], false, false);
+//	GrUBitmapM (2+dx, y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (KEY_ICON_YELLOW)]);
 	}
 if (LOCALPLAYER.flags & PLAYER_FLAGS_RED_KEY) {
 	PAGE_IN_GAUGE (KEY_ICON_RED);
-	GrUBitmapM (2+2*dx, y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (KEY_ICON_RED)]);
+	HUDBitBlt (2 + (2 * dx), y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (KEY_ICON_RED)], false, false);
+//	GrUBitmapM (2+2*dx, y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (KEY_ICON_RED)]);
 	}
 }
 
@@ -1384,7 +1387,7 @@ void DrawEnergyBar (int energy)
 // Draw left energy bar
 PAGE_IN_GAUGE (GAUGE_ENERGY_LEFT);
 bmP = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_ENERGY_LEFT);
-HUDBitBlt (LEFT_ENERGY_GAUGE_X, LEFT_ENERGY_GAUGE_Y, bmP, I2X (1), 0);
+HUDBitBlt (LEFT_ENERGY_GAUGE_X, LEFT_ENERGY_GAUGE_Y, bmP);
 #if DBG
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (255, 255, 255));
 #else
@@ -1424,7 +1427,7 @@ HUDBitBlt (LEFT_ENERGY_GAUGE_X, LEFT_ENERGY_GAUGE_Y, bmP, I2X (1), 0);
 	CCanvas::SetCurrent (GetCurrentGameScreen ());
 	PAGE_IN_GAUGE (GAUGE_ENERGY_RIGHT);
 	bmP = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_ENERGY_RIGHT);
-	HUDBitBlt (RIGHT_ENERGY_GAUGE_X, RIGHT_ENERGY_GAUGE_Y, bmP, I2X (1), 0);
+	HUDBitBlt (RIGHT_ENERGY_GAUGE_X, RIGHT_ENERGY_GAUGE_Y, bmP);
 #if DBG
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (255, 255, 255));
 #else
@@ -1586,7 +1589,7 @@ void DrawAfterburnerBar (int afterburner)
 
 PAGE_IN_GAUGE (GAUGE_AFTERBURNER);
 bmP =  gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_AFTERBURNER);
-HUDBitBlt (AFTERBURNER_GAUGE_X, AFTERBURNER_GAUGE_Y, bmP, I2X (1), 0);
+HUDBitBlt (AFTERBURNER_GAUGE_X, AFTERBURNER_GAUGE_Y, bmP);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 not_afterburner = FixMul (I2X (1) - afterburner, AFTERBURNER_GAUGE_H);
 gameStates.render.grAlpha = FADE_LEVELS;
@@ -1609,7 +1612,7 @@ void DrawShieldBar (int shield)
 	int bm_num = shield>=100?9: (shield / 10);
 
 PAGE_IN_GAUGE (GAUGE_SHIELDS+9-bm_num	);
-HUDBitBlt (SHIELD_GAUGE_X, SHIELD_GAUGE_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_SHIELDS+9-bm_num), I2X (1), 0);
+HUDBitBlt (SHIELD_GAUGE_X, SHIELD_GAUGE_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_SHIELDS+9-bm_num));
 }
 
 #define CLOAK_FADE_WAIT_TIME  0x400
@@ -1679,7 +1682,7 @@ if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT) {
 //if (nCloakFadeValue >= FADE_LEVELS - 1)
  {
 	gameStates.render.grAlpha = (float) nCloakFadeValue / (float) FADE_LEVELS;
-	HUDBitBlt (x, y, bmP, I2X (1), 0);
+	HUDBitBlt (x, y, bmP);
 	gameStates.render.grAlpha = FADE_LEVELS;
 	}
 //		gameStates.render.grAlpha = nCloakFadeValue;
@@ -1718,7 +1721,7 @@ void DrawNumericalDisplay (int shield, int energy)
 		CCanvas::SetCurrent (Canv_NumericalGauge);
 	PAGE_IN_GAUGE (GAUGE_NUMERICAL);
 //	gr_ubitmap (dx, dy, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_NUMERICAL));
-	HUDBitBlt (dx, dy, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_NUMERICAL), I2X (1), 0);
+	HUDBitBlt (dx, dy, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_NUMERICAL));
 	fontManager.SetCurrent (GAME_FONT);
 	fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
 	nIdShields = HUDPrintF (&nIdShields, NumDispX (shield), dy + (gameStates.video.nDisplayMode ? 36 : 16), "%d", shield);
@@ -1727,7 +1730,7 @@ void DrawNumericalDisplay (int shield, int energy)
 
 	if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT) {
 		CCanvas::SetCurrent (GetCurrentGameScreen ());
-		HUDBitBlt (NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y, Canv_NumericalGauge, I2X (1), 0);
+		HUDBitBlt (NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y, Canv_NumericalGauge);
 	}
 }
 
@@ -1740,27 +1743,27 @@ CCanvas::SetCurrent (GetCurrentGameScreen ());
 
 if (LOCALPLAYER.flags & PLAYER_FLAGS_BLUE_KEY) {
 	PAGE_IN_GAUGE (GAUGE_BLUE_KEY);
-	HUDBitBlt (GAUGE_BLUE_KEY_X, GAUGE_BLUE_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_BLUE_KEY), I2X (1), 0);
+	HUDBitBlt (GAUGE_BLUE_KEY_X, GAUGE_BLUE_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_BLUE_KEY));
 	}
 else {
 	PAGE_IN_GAUGE (GAUGE_BLUE_KEY_OFF);
-	HUDBitBlt (GAUGE_BLUE_KEY_X, GAUGE_BLUE_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_BLUE_KEY_OFF), I2X (1), 0);
+	HUDBitBlt (GAUGE_BLUE_KEY_X, GAUGE_BLUE_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_BLUE_KEY_OFF));
 	}
 if (LOCALPLAYER.flags & PLAYER_FLAGS_GOLD_KEY) {
 	PAGE_IN_GAUGE (GAUGE_GOLD_KEY);
-	HUDBitBlt (GAUGE_GOLD_KEY_X, GAUGE_GOLD_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_GOLD_KEY), I2X (1), 0);
+	HUDBitBlt (GAUGE_GOLD_KEY_X, GAUGE_GOLD_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_GOLD_KEY));
 	}
 else {
 	PAGE_IN_GAUGE (GAUGE_GOLD_KEY_OFF);
-	HUDBitBlt (GAUGE_GOLD_KEY_X, GAUGE_GOLD_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_GOLD_KEY_OFF), I2X (1), 0);
+	HUDBitBlt (GAUGE_GOLD_KEY_X, GAUGE_GOLD_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_GOLD_KEY_OFF));
 	}
 if (LOCALPLAYER.flags & PLAYER_FLAGS_RED_KEY) {
 	PAGE_IN_GAUGE (GAUGE_RED_KEY);
-	HUDBitBlt (GAUGE_RED_KEY_X,  GAUGE_RED_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_RED_KEY), I2X (1), 0);
+	HUDBitBlt (GAUGE_RED_KEY_X,  GAUGE_RED_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_RED_KEY));
 	}
 else {
 	PAGE_IN_GAUGE (GAUGE_RED_KEY_OFF);
-	HUDBitBlt (GAUGE_RED_KEY_X,  GAUGE_RED_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_RED_KEY_OFF), I2X (1), 0);
+	HUDBitBlt (GAUGE_RED_KEY_X,  GAUGE_RED_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_RED_KEY_OFF));
 	}
 }
 
@@ -1993,22 +1996,23 @@ void DrawStatic (int win)
 	CBitmap *bmp;
 	int framenum;
 	int boxofs = (gameStates.render.cockpit.nMode == CM_STATUS_BAR) ? SB_PRIMARY_BOX : COCKPIT_PRIMARY_BOX;
-	int x, y;
+	int h, x, y;
 
-	staticTime [win] += gameData.time.xFrame;
-	if (staticTime [win] >= vc->xTotalTime) {
-		weaponBoxUser [win] = WBU_WEAPON;
-		return;
-		}
-	framenum = staticTime [win] * vc->nFrameCount / vc->xTotalTime;
-	LoadBitmap (vc->frames [framenum].index, 0);
-	bmp = gameData.pig.tex.bitmaps [0] + vc->frames [framenum].index;
-	CCanvas::SetCurrent (&gameStates.render.vr.buffers.render [0]);
-	for (x=gaugeBoxes [boxofs+win].left;x<gaugeBoxes [boxofs+win].right;x+=bmp->Width ())
-		for (y=gaugeBoxes [boxofs+win].top;y<gaugeBoxes [boxofs+win].bot;y+=bmp->Height ())
-			/*BlitClipped*/HUDBitBlt (x, y, bmp, I2X (1), 0);
-	CCanvas::SetCurrent (GetCurrentGameScreen ());
-	CopyGaugeBox (&gaugeBoxes [boxofs+win], &gameStates.render.vr.buffers.render [0]);
+staticTime [win] += gameData.time.xFrame;
+if (staticTime [win] >= vc->xTotalTime) {
+	weaponBoxUser [win] = WBU_WEAPON;
+	return;
+	}
+framenum = staticTime [win] * vc->nFrameCount / vc->xTotalTime;
+LoadBitmap (vc->frames [framenum].index, 0);
+bmp = gameData.pig.tex.bitmaps [0] + vc->frames [framenum].index;
+CCanvas::SetCurrent (&gameStates.render.vr.buffers.render [0]);
+h = boxofs + win;
+for (x = gaugeBoxes [h].left; x < gaugeBoxes [h].right; x += bmp->Width ())
+	for (y = gaugeBoxes [h].top; y < gaugeBoxes [h].bot; y += bmp->Height ())
+		HUDBitBlt (x, y, bmp);
+CCanvas::SetCurrent (GetCurrentGameScreen ());
+CopyGaugeBox (&gaugeBoxes [h], &gameStates.render.vr.buffers.render [0]);
 }
 
 //	-----------------------------------------------------------------------------
@@ -2076,11 +2080,11 @@ if (tInvul > 0) {
 	if ((tInvul > I2X (4)) || (gameData.time.xGame & 0x8000)) {
 		if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
 			PAGE_IN_GAUGE (GAUGE_INVULNERABLE + nInvulnerableFrame);
-			HUDBitBlt (SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (GAUGE_INVULNERABLE + nInvulnerableFrame)], I2X (1), 0);
+			HUDBitBlt (SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (GAUGE_INVULNERABLE + nInvulnerableFrame)]);
 			}
 		else {
 			PAGE_IN_GAUGE (GAUGE_INVULNERABLE + nInvulnerableFrame);
-			HUDBitBlt (SHIELD_GAUGE_X, SHIELD_GAUGE_Y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (GAUGE_INVULNERABLE + nInvulnerableFrame)], I2X (1), 0);
+			HUDBitBlt (SHIELD_GAUGE_X, SHIELD_GAUGE_Y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (GAUGE_INVULNERABLE + nInvulnerableFrame)]);
 			}
 		time += gameData.time.xFrame;
 		while (time > INV_FRAME_TIME) {
@@ -2173,19 +2177,19 @@ else {
 	HUDBitBlt (
 		- (x + HUD_SCALE_X (cross_offsets [ofs].x)),
 		- (y + HUD_SCALE_Y (cross_offsets [ofs].y)),
-		gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (nGaugeIndex), I2X (1), 0);
+		gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (nGaugeIndex));
 	nGaugeIndex = (bSmallReticle ? SML_RETICLE_PRIMARY : RETICLE_PRIMARY) + nPrimaryBm;
 	PAGE_IN_GAUGE (nGaugeIndex);
 	HUDBitBlt (
 		- (x + HUD_SCALE_X (primary_offsets [ofs].x)),
 		- (y + HUD_SCALE_Y (primary_offsets [ofs].y)),
-		gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (nGaugeIndex), I2X (1), 0);
+		gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (nGaugeIndex));
 	nGaugeIndex = (bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondaryBm;
 	PAGE_IN_GAUGE (nGaugeIndex);
 	HUDBitBlt (
 		- (x + HUD_SCALE_X (secondary_offsets [ofs].x)),
 		- (y + HUD_SCALE_Y (secondary_offsets [ofs].y)),
-		gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (nGaugeIndex), I2X (1), 0);
+		gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (nGaugeIndex));
   }
 if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick && gameOpts->render.cockpit.bMouseIndicator)
 	OglDrawMouseIndicator ();
