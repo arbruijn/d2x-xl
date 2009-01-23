@@ -1479,7 +1479,7 @@ CCanvas::SetCurrent (GetCurrentGameScreen ());
 
 //	-----------------------------------------------------------------------------
 
-ubyte afterburner_bar_table [AFTERBURNER_GAUGE_H_L*2] = {
+ubyte afterburnerBarTable [AFTERBURNER_GAUGE_H_L*2] = {
 			3, 11,
 			3, 11,
 			3, 11,
@@ -1514,7 +1514,7 @@ ubyte afterburner_bar_table [AFTERBURNER_GAUGE_H_L*2] = {
 			6, 7,
 };
 
-ubyte afterburner_bar_table_hires [AFTERBURNER_GAUGE_H_H*2] = {
+ubyte afterburnerBarTableHires [AFTERBURNER_GAUGE_H_H*2] = {
 	5, 20,
 	5, 20,
 	5, 19,
@@ -1591,25 +1591,23 @@ ubyte afterburner_bar_table_hires [AFTERBURNER_GAUGE_H_H*2] = {
 
 //	-----------------------------------------------------------------------------
 
-void DrawAfterburnerBar (int afterburner)
+void DrawAfterburnerBar (int nEnergy)
 {
-	int		noAfterburner;
-	int		i, j, y, yMax;
-	ubyte*	pabt = gameStates.video.nDisplayMode ? afterburner_bar_table_hires : afterburner_bar_table;
+	int		x [4], y [4], yMax;
+	ubyte*	tableP = gameStates.video.nDisplayMode ? afterburnerBarTableHires : afterburnerBarTable;
 
 HUDBitBlt (GAUGE_AFTERBURNER, AFTERBURNER_GAUGE_X, AFTERBURNER_GAUGE_Y);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-noAfterburner = FixMul (I2X (1) - afterburner, AFTERBURNER_GAUGE_H);
+yMax = FixMul (I2X (1) - nEnergy, AFTERBURNER_GAUGE_H);
+y [0] = y [1] = HUD_SCALE_Y (AFTERBURNER_GAUGE_Y);
+y [2] = y [3] = HUD_SCALE_Y (AFTERBURNER_GAUGE_Y + yMax);
+x [0] = HUD_SCALE_X (AFTERBURNER_GAUGE_X + tableP [0]);
+x [1] = HUD_SCALE_X (AFTERBURNER_GAUGE_X + tableP [1]);
+x [0] = HUD_SCALE_X (AFTERBURNER_GAUGE_X + tableP [2 * yMax - 2]);
+x [1] = HUD_SCALE_X (AFTERBURNER_GAUGE_X + tableP [2 * yMax - 1]);
 gameStates.render.grAlpha = FADE_LEVELS;
-yMax = HUD_SCALE_Y (noAfterburner);
-for (y = 0; y < noAfterburner; y++) {
-	for (i = HUD_SCALE_Y (y), j = HUD_SCALE_Y (y + 1); i < j; i++) {
-		DrawScanLine (
-			HUD_SCALE_X (AFTERBURNER_GAUGE_X + pabt [y * 2]),
-			HUD_SCALE_X (AFTERBURNER_GAUGE_X + pabt [y * 2 + 1] + 1),
-			HUD_SCALE_Y (AFTERBURNER_GAUGE_Y) + i);
-		}
-	}
+CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
+OglDrawFilledPoly (x, y, 4);
 CCanvas::SetCurrent (GetCurrentGameScreen ());
 }
 
@@ -1676,7 +1674,7 @@ if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT) {
 	CCanvas::SetCurrent (&gameStates.render.vr.buffers.render [0]);
 	}
 gameStates.render.grAlpha = (float) nCloakFadeValue / (float) FADE_LEVELS;
-HUDBitBlt (GAUGE_SHIPS + IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer, x, y);
+HUDBitBlt (GAUGE_SHIPS + (IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer), x, y);
 gameStates.render.grAlpha = FADE_LEVELS;
 if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT)
 	CCanvas::SetCurrent (GetCurrentGameScreen ());

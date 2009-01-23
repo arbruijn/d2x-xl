@@ -87,6 +87,29 @@ if (COLOR.rgb || (gameStates.render.grAlpha < FADE_LEVELS))
 
 //------------------------------------------------------------------------------
 
+void OglDrawFilledPoly (int* x, int* y, int nVerts, tCanvasColor *colorP)
+{
+	int left = CCanvas::Current ()->Left ();
+	int top = CCanvas::Current ()->Top ();
+	int j;
+
+glDisable (GL_TEXTURE_2D);
+if (!colorP)
+	colorP = &COLOR;
+OglCanvasColor (colorP);
+glBegin (GL_POLYGON);
+for (int i = 0; i <= nVerts; i++) {
+	j = i % nVerts;
+	glVertex2f (GLfloat (x [j] + left) / GLfloat (gameStates.ogl.nLastW),
+					1.0f - GLfloat (y [j] + top) / GLfloat (gameStates.ogl.nLastH));
+	}
+glEnd ();
+if (COLOR.rgb || (gameStates.render.grAlpha < FADE_LEVELS))
+	glDisable (GL_BLEND);
+}
+
+//------------------------------------------------------------------------------
+
 void OglDrawLine (int left,int top, int right, int bot, tCanvasColor *colorP)
 {
 GLfloat x0 = float (left + CCanvas::Current ()->Left ()) / float (gameStates.ogl.nLastW);

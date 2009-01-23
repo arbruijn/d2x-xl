@@ -48,8 +48,8 @@ void DrawScanLine (int x1, int x2, int y)
 if ((MODE != BM_LINEAR) && (MODE != BM_OGL))
 	return;
 if (gameStates.render.grAlpha >= FADE_LEVELS) 
-	gr_linear_stosd (DATA + ROWSIZE * y + x1, &COLOR, x2 - x1 + 1);
-//	OglDrawLine (x1, y, x2, y, &COLOR);
+//	gr_linear_stosd (DATA + ROWSIZE * y + x1, &COLOR, x2 - x1 + 1);
+	OglDrawLine (x1, y, x2, y, &COLOR);
 else 
 	gr_linear_darken (DATA + ROWSIZE * y + x1, (int) gameStates.render.grAlpha, x2 - x1 + 1, paletteManager.FadeTable ());
 }
