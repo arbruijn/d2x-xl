@@ -51,6 +51,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gauges.h"
 #include "strutil.h"
 #include "reorder.h"
+#include "ogl_render.h"
 #include "render.h"
 #include "light.h"
 #include "lightmap.h"

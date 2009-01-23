@@ -23,6 +23,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "grdef.h"
 #include "error.h"
 #include "ogl_defs.h"
+#include "ogl_render.h"
 
 //------------------------------------------------------------------------------
 

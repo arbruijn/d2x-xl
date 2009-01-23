@@ -48,6 +48,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "strutil.h"
 #include "ogl_lib.h"
 #include "ogl_bitmap.h"
+#include "ogl_render.h"
 #include "render.h"
 #include "menu.h"
 #include "input.h"
