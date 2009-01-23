@@ -88,20 +88,22 @@ else {
 	glTranslatef ((float) (mouseData.x) / (float) screen.Width (), 1.0f - (float) (mouseData.y) / (float) screen.Height (), 0);
 	glScalef (scale / 320.0f, scale / 200.0f, scale);//the positions are based upon the standard reticle at 320x200 res.
 	glLineWidth (3);
-	OglDrawEllipse (12, GL_LINE_LOOP, 1.5f, 0, 1.5f * (float) screen.Height () / (float) screen.Width (), 0, sinCos12);
+	OglDrawEllipse (12, GL_LINE_LOOP, 1.5f, 0, 1.5f * float (screen.Height ()) / float (screen.Width ()), 0, sinCos12);
 	glPopMatrix ();
 	glPushMatrix ();
-	glTranslatef (0.5f, 0.5f, 0);
-	if (LoadDeadzone ()) {
-		static tCanvasColor color = {-1, 1, {255, 255, 255, 128}};
-		bmpDeadzone->OglUBitMapMC (0, 0, 16, 16, 1, 0, &color);
+	if (0 && LoadDeadzone ()) {
+		static tCanvasColor color = {-1, 1, {255, 255, 255, 64}};
+//		bmpDeadzone->OglUBitMapMC (0, 0, 16, 16, 1, 0, &color);
 		r = (float) CalcDeadzone (0, gameOpts->input.mouse.nDeadzone);
 		w = r / (float) screen.Width ();
 		h = r / (float) screen.Height ();
 		glEnable (GL_TEXTURE_2D);
+		glEnable (GL_BLEND);
+		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 		if (bmpDeadzone->Bind (1, -1)) 
 			return;
 		bmpDeadzone->Texture ()->Wrap (GL_CLAMP);
+		glTranslatef (0.5f, 0.5f, 0);
 		glColor4f (1.0f, 1.0f, 1.0f, 0.8f / (float) gameOpts->input.mouse.nDeadzone);
 		glBegin (GL_QUADS);
 		glTexCoord2f (0, 0);
@@ -115,15 +117,16 @@ else {
 		glEnd ();
 		OGL_BINDTEX (0);
 		glDisable (GL_TEXTURE_2D);
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 	else {
+		glTranslatef (0.5f, 0.5f, 0);
 		glScaled (scale / 320.0f, scale / 200.0f, scale);//the positions are based upon the standard reticle at 320x200 res.
 		glColor4d (1.0f, 0.8, 0.0f, 1.0f / (3.0f + 0.5 * gameOpts->input.mouse.nDeadzone));
 		glLineWidth ((GLfloat) (4 + 2 * gameOpts->input.mouse.nDeadzone));
 		r = (float) CalcDeadzone (0, gameOpts->input.mouse.nDeadzone) / 4;
-		OglDrawEllipse (30, GL_LINE_LOOP, r, 0, r * (float) screen.Height () / (float) screen.Width (), 0, sinCos30);
+		OglDrawEllipse (30, GL_LINE_LOOP, r, 0, r * float (screen.Height ()) / float (screen.Width ()), 0, sinCos30);
 		}
-	glPopMatrix ();
 	glDisable (GL_LINE_SMOOTH);
 	glLineWidth (1);
 #if 0

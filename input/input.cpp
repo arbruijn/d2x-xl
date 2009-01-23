@@ -775,7 +775,7 @@ for (i = 0; i < 60; i += 30) {
 int CalcDeadzone (int d, int nDeadzone)
 {
 double	r = 32 * nDeadzone;
-return (int) (r ? (d ? sqrt (r * r - d * d) : r) : 0);
+return (int) (r ? (d ? sqrt (fabs (r * r - d * d)) : r) : 0);
 }
 
 //------------------------------------------------------------------------------
@@ -879,7 +879,7 @@ if (bGetSlideBank == 2) {
 		SDL_GetMouseState (&mouseData.x, &mouseData.y);
 		if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick) {
 			int dx = mouseData.x - screen.Width () / 2;
-			int dz = CalcDeadzone (mouseData.y - screen.Height () / 2, gameOpts->input.mouse.nDeadzone);
+			int dz = CalcDeadzone (0, gameOpts->input.mouse.nDeadzone);
 			if (dx < 0) {
 				if (dx > -dz)
 					dx = 0;
@@ -915,7 +915,7 @@ if (bGetSlideBank == 2) {
 		else {
 			if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick) {
 				int	dy = mouseData.y - screen.Height () / 2;
-				int	dz = CalcDeadzone (mouseData.x - screen.Width () / 2, gameOpts->input.mouse.nDeadzone);
+				int	dz = CalcDeadzone (0, gameOpts->input.mouse.nDeadzone);
 				if (kcMouse [14].value)
 					dy = -dy;
 				if (dy < 0) {

@@ -328,7 +328,7 @@ glEnd ();
 OglEndRender ();
 
 if (bLocal) {
-	m_info.texture->Destroy ();
+	m_info.texture->Release ();
 	SetTexture (NULL);
 	}
 return 0;
