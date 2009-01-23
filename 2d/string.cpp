@@ -556,6 +556,7 @@ x = 0;
 		if (!fontManager.Current ()->InFont (letter)) {
 			x += spacing;
 			textP++;
+			continue;
 			}
 		if ((bHotKey = ((nKey < 0) && isalnum (c)) || (nKey && ((int) c == nKey))))
 			nKey = 0;

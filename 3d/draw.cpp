@@ -45,7 +45,6 @@ void G3SetSpecialRender (tmap_drawer_fp tmap_drawer, flat_drawer_fp flat_drawer,
 {
 tmap_drawer_ptr = (tmap_drawer)?tmap_drawer:draw_tmap;
 flat_drawer_ptr = (flat_drawer)?flat_drawer:gr_upoly_tmap;
-line_drawer_ptr = (line_drawer)?line_drawer:GrLine;
 if (tmap_drawer == DrawTexPolyFlat)
 	fpDrawTexPolyMulti = G3DrawTexPolyFlat;
 else

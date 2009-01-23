@@ -1729,7 +1729,7 @@ void DrawWeaponInfoSub (int info_index, tGaugeBox *box, int xPic, int yPic, cons
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	if ((p = const_cast<char*> (strchr (pszName, '\n')))) {
 		memcpy (szName, pszName, l = p - pszName);
-		szName [l + 1] = '\0';
+		szName [l] = '\0';
 		nIdWeapon [0] = HUDPrintF (&nIdWeapon [0], xText, yText, szName);
 		nIdWeapon [1] = HUDPrintF (&nIdWeapon [1], xText, yText + CCanvas::Current ()->Font ()->Height () + 1, p + 1);
 		}

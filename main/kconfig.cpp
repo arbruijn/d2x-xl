@@ -38,6 +38,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #include "automap.h"
 #include "args.h"
 #include "input.h"
+#include "menu.h"
 #include "collide.h"
 #include "menubackground.h"
 #include "songs.h"
@@ -425,7 +426,7 @@ void ControlsReadFCS (int raw_axis);
 
 inline void KCDrawItem (kcItem *item, int is_current)
 {
-KCDrawItemExt (item, is_current, gameOpts->menus.nStyle);
+KCDrawItemExt (item, is_current, MODERN_STYLE);
 }
 
 //------------------------------------------------------------------------------
@@ -1235,7 +1236,7 @@ if (i >= 0)
 for (;;) {
 //	Windows addendum to allow for KConfig input.
 	do {
-		if (gameOpts->menus.nStyle || !bRedraw) {
+		if (MODERN_STYLE || !bRedraw) {
 			bRedraw = 1;
 			if (gameOpts->menus.nStyle && gameStates.app.bGameRunning)
 				GameRenderFrame ();
@@ -1503,7 +1504,7 @@ void KCDrawItemExt (kcItem *item, int is_current, int bRedraw)
 	int x, w, h, aw;
 	char szText [64];
 
-if (bRedraw && gameOpts->menus.nStyle)
+if (bRedraw && MODERN_STYLE)
 	return;
 
 	if (is_current)

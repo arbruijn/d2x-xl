@@ -339,6 +339,8 @@ void GetThrusterPos (int nModel, CFixVector *vNormal, CFixVector *vOffset, CBitm
 if (mtP->nCount >= 2)
 	return;
 if (bmP) {
+	if (!gameData.pig.tex.bitmaps [0].IsElement (bmP))
+		return;
 	i = (int) (bmP - gameData.pig.tex.bitmaps [0]);
 	if ((i != 24) && ((i < 1741) || (i > 1745)))
 		return;
