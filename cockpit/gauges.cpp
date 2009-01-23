@@ -1220,7 +1220,7 @@ else if (LOCALPLAYER.lives > 1)  {
 	fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 	PAGE_IN_GAUGE (GAUGE_LIVES);
 	bmP = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_LIVES);
-	GrUBitmapM (10, 3, bmP);
+	bmP->OglUBitMapMC (10, 3);
 	nIdLives = GrPrintF (&nIdLives, 10 + bmP->Width () + bmP->Width () / 2, 4, "x %d", LOCALPLAYER.lives - 1);
 	}
 }

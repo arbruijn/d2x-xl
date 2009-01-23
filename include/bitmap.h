@@ -285,9 +285,9 @@ class CBitmap : public CArray< ubyte > {
 		void ScreenCopy (CBitmap* dest, int dx, int dy, int w, int h, int sx, int sy);
 
 		void OglVertices (int x, int y, int w = 0, int h = 0, int scale = I2X (1), int orient = 0, CBitmap* destP = NULL);
-		void OglTexCoord (CTexture* texP);
+		void OglTexCoord (void);
 		void SetTexCoord (GLfloat u, GLfloat v, int orient);
-		CTexture* OglBeginRender (CTexture* texP, bool bBlend = false);
+		CTexture* OglBeginRender (bool bBlend, int bMipMaps, int nTransp);
 		void OglRender (tRgbaColorf* colorP, int nColors, int orient);
 		void OglEndRender (void);
 		int OglUBitMapMC (int x, int y, int w = 0, int h = 0, int scale = I2X (1), int orient = 0, tCanvasColor *colorP = NULL);

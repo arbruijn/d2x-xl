@@ -161,25 +161,25 @@ aspect = float (screen.Width ()) / float (screen.Height ());
 
 //------------------------------------------------------------------------------
 
-void CBitmap::OglTexCoord (CTexture* texP)
+void CBitmap::OglTexCoord (void)
 {
-float h = float (texP->TW ());
+float h = float (m_info.texture->TW ());
 u1 = float (Left ()) / h;
 u2 = float (Right ()) / h;
-h = float (texP->TH ());
+h = float (m_info.texture->TH ());
 v1 = float (Top ()) / h;
 v2 = float (Bottom ()) / h;
 }
 
 //------------------------------------------------------------------------------
 
-CTexture* CBitmap::OglBeginRender (CTexture* texP, bool bBlend)
+CTexture* CBitmap::OglBeginRender (bool bBlend, int bMipMaps, int nTransp)
 {
 glActiveTexture (GL_TEXTURE0);
 glEnable (GL_TEXTURE_2D);
-if (Bind (0, 3))
+if (Bind (bMipMaps, nTransp))
 	return NULL;
-texP->Wrap (GL_CLAMP);
+m_info.texture->Wrap (GL_CLAMP);
 
 bBlendState = glIsEnabled (GL_BLEND);
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
@@ -189,7 +189,7 @@ if (bBlend)
 else
 	glDisable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-return texP;
+return m_info.texture;
 }
 
 //------------------------------------------------------------------------------
@@ -234,16 +234,15 @@ glDisable (GL_TEXTURE_2D);
 int CBitmap::OglUBitMapMC (int x, int y, int w, int h, int scale, int orient, tCanvasColor* colorP)
 {
 	CBitmap*		bmoP;
-	CTexture*	texP;
 	tRgbaColorf	color;
 
 if (bmoP  = HasOverride ())
 	return bmoP->OglUBitMapMC (x, y, w, h, scale, orient, colorP);
 DelFlags (BM_FLAG_SUPER_TRANSPARENT);
-if (!(texP = OglBeginRender (m_info.texture, true)))
+if (!OglBeginRender (true, 0, 3))
 	return 1; // fail
 OglVertices (x, y, w, h, scale, orient);
-OglTexCoord (m_info.texture);
+OglTexCoord ();
 color = GetCanvasColor (colorP);
 OglRender (&color, 1, orient);
 OglEndRender ();
@@ -253,17 +252,22 @@ return 0;
 //------------------------------------------------------------------------------
 
 int CBitmap::Render (CBitmap *destP, 
-							 int xDest, int yDest, int wDest, int hDest, 
-							 int xSrc, int ySrc, int wSrc, int hSrc, 
-							 int bTransp, int bMipMaps, int bSmoothe,
-							 float fAlpha, tRgbaColorf* colorP)
+							int xDest, int yDest, int wDest, int hDest, 
+							int xSrc, int ySrc, int wSrc, int hSrc, 
+							int bTransp, int bMipMaps, int bSmoothe,
+							float fAlpha, tRgbaColorf* colorP)
 {
-	CTexture*	texP, tex;
+	CBitmap*		bmoP;
+
+if (bmoP = HasOverride ())
+	return bmoP->Render (destP, xDest, yDest, wDest, hDest, xSrc, ySrc, wSrc, hSrc, bTransp, bMipMaps, bSmoothe, fAlpha, colorP);
+
 	int			nTransp = (Flags () & BM_FLAG_TGA) ? -1 : HasTransparency () ? 2 : 0;
+	bool			bLocal = Texture () == NULL;
 
 //	ubyte *oldpal;
 OglVertices (xDest, yDest, wDest, hDest, I2X (1), 0, destP);
-
+#if 0
 if (!(texP = Texture ())) {
 	texP = &tex;
 	texP->Init ();
@@ -273,7 +277,7 @@ if (!(texP = Texture ())) {
 	}
 else
 	SetupTexture (0, bTransp, 1);
-
+#endif
 tRgbaColorf color;
 int nColors;
 bool bBlend = bTransp && nTransp;
@@ -287,20 +291,20 @@ if (!colorP) {
 else
 	nColors = 4;
 
-if (!(texP = OglBeginRender (texP, bBlend)))
+if (!OglBeginRender (bBlend, bMipMaps, nTransp))
 	return 1; // fail
 
 u1 = v1 = 0;
 u2 = float (wSrc) / float (Width ());
 if (u2 < 1.0f)
-	u2 *= texP->U ();
+	u2 *= m_info.texture->U ();
 else
-	u2 = texP->U ();
+	u2 = m_info.texture->U ();
 v2 = float (hSrc) / float (Height ());
 if (v2 < 1.0f)
-	v2 *= texP->V ();
+	v2 *= m_info.texture->V ();
 else
-	v2 = texP->V ();
+	v2 = m_info.texture->V ();
 
 #if 1
 OglRender (colorP, nColors, 0);
@@ -326,8 +330,8 @@ glEnd ();
 #endif
 OglEndRender ();
 
-if (texP == &tex) {
-	texP->Destroy ();
+if (bLocal) {
+	m_info.texture->Destroy ();
 	SetTexture (NULL);
 	}
 return 0;
