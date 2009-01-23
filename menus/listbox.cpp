@@ -356,14 +356,14 @@ while (!done) {
 				y = (i - nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2) + wy;
 				if (i >= int (items.ToS ())) {
 					CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-					DrawFilledRect (wx, y - 1, wx + width - 1, y + CCanvas::Current ()->Font ()->Height () + 1);
+					OglDrawFilledRect (wx, y - 1, wx + width - 1, y + CCanvas::Current ()->Font ()->Height () + 1);
 				} else {
 					if (i == nItem)
 						fontManager.SetCurrent (SELECTED_FONT);
 					else
 						fontManager.SetCurrent (NORMAL_FONT);
 					fontManager.Current ()->StringSize (items [i], w, h, aw);
-					DrawFilledRect (wx, y - 1, wx + width - 1, y + h + 1);
+					OglDrawFilledRect (wx, y - 1, wx + width - 1, y + h + 1);
 					GrString (wx + 5, y, items [i], NULL);
 				}
 			}	
@@ -386,7 +386,7 @@ while (!done) {
 				else
 					fontManager.SetCurrent (NORMAL_FONT);
 				fontManager.Current ()->StringSize (items [i], w, h, aw);
-				DrawFilledRect (wx, y - 1, wx + width - 1, y + h + 1);
+				OglDrawFilledRect (wx, y - 1, wx + width - 1, y + h + 1);
 				GrString (wx + 5, y, items [i], NULL);
 
 			}
@@ -398,7 +398,7 @@ while (!done) {
 				else
 					fontManager.SetCurrent (NORMAL_FONT);
 				fontManager.Current ()->StringSize (items [i], w, h, aw);
-				DrawFilledRect (wx, y - 1, wx + width - 1, y + h);
+				OglDrawFilledRect (wx, y - 1, wx + width - 1, y + h);
 				GrString (wx + 5, y, items [i], NULL);
 			}
 			SDL_ShowCursor (1);

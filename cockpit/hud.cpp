@@ -330,7 +330,7 @@ if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
       y = (CCanvas::Current ()->Height () - h) / 2;
       gameStates.render.grAlpha = 2 * 7;
       CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-      DrawFilledRect (x, y, x+w, y+h);
+      OglDrawFilledRect (x, y, x+w, y+h);
       gameStates.render.grAlpha = FADE_LEVELS;
       GrString (0x8000, (CCanvas::Current ()->Height () - CCanvas::Current ()->Font ()->Height ())/2 + h/8, TXT_GAME_OVER, NULL);
 #if 0

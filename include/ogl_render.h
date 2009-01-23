@@ -70,7 +70,11 @@ void DrawTexPolyFlat (CBitmap *bm,int nv,g3sPoint **vertlist);
 int OglRenderArrays (CBitmap *bmP, int nFrame, CFloatVector *vertexP, int nVertices, tTexCoord2f *texCoordP, 
 							tRgbaColorf *colorP, int nColors, int nPrimitive, int nWrap);
 
-void OglDrawFilledRect(int left,int top,int right,int bot);
+void OglDrawFilledPoly (int* x, int* y, int nVerts, tCanvasColor *colorP = NULL);
+void OglDrawFilledRect (int left,int top, int right,int bot, tCanvasColor* colorP = NULL);
+void OglDrawPixel (int x, int y, tCanvasColor* colorP = NULL);
+void OglDrawLine (int left,int top, int right,int bot, tCanvasColor* colorP = NULL);
+void OglDrawEmptyRect (int left, int top, int right, int bot, tCanvasColor* colorP = NULL);
 
 void InitGrayScaleShader (void);
 

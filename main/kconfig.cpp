@@ -1249,9 +1249,9 @@ for (;;) {
 			close_y += yOffs;
 			close_size = gameStates.menus.bHires?10:5;
 			CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-			DrawFilledRect (close_x, close_y, close_x + close_size, close_y + close_size);
+			OglDrawFilledRect (close_x, close_y, close_x + close_size, close_y + close_size);
 			CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 21, 21));
-			DrawFilledRect (close_x + LHX (1), close_y + LHX (1), close_x + close_size - LHX (1), close_y + close_size - LHX (1));
+			OglDrawFilledRect (close_x + LHX (1), close_y + LHX (1), close_x + close_size - LHX (1), close_y + close_size - LHX (1));
 			KCDrawHeader (items);
 			KCDrawTable (items, nItems, nCurItem);
 			}

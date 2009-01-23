@@ -209,7 +209,7 @@ y = CCanvas::Current ()->Height () - ((nLineSpacing + 1) * MAX_ACTIVE_SUBTITLES 
 //erase old subtitles if necessary
 if (bMustErase) {
 	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-	DrawFilledRect (0, y, CCanvas::Current ()->Width () - 1, CCanvas::Current ()->Height () - 1);
+	OglDrawFilledRect (0, y, CCanvas::Current ()->Width () - 1, CCanvas::Current ()->Height () - 1);
 	}
 //now draw the current subtitles
 for (t = 0; t < nActiveSubTitles; t++)
@@ -334,7 +334,7 @@ fontManager.Current ()->StringSize (msg, w, h, aw);
 x = (screen.Width () - w) / 2;
 y = (screen.Height () - h) / 2;
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-DrawFilledRect (x-BOX_BORDER/2, y-BOX_BORDER/2, x+w+BOX_BORDER/2-1, y+h+BOX_BORDER/2-1);
+OglDrawFilledRect (x-BOX_BORDER/2, y-BOX_BORDER/2, x+w+BOX_BORDER/2-1, y+h+BOX_BORDER/2-1);
 fontManager.SetColor (255, -1);
 GrUString (0x8000, y, msg);
 GrUpdate (0);

@@ -145,12 +145,6 @@ void RotateBitmap(CBitmap *bp, grsPoint *vertbuf, int lightValue);
 
 void ScaleBitmap(CBitmap *bp, grsPoint *vertbuf, int orientation);
 
-void OglDrawFilledPoly (int* x, int* y, int nVerts, tCanvasColor *colorP = NULL);
-void OglDrawFilledRect (int left,int top, int right,int bot, tCanvasColor* colorP = NULL);
-void OglDrawPixel (int x, int y, tCanvasColor* colorP = NULL);
-void OglDrawLine (int left,int top, int right,int bot, tCanvasColor* colorP = NULL);
-void OglDrawEmptyRect (int left, int top, int right, int bot, tCanvasColor* colorP = NULL);
-
 //===========================================================================
 // Global variables
 extern ubyte Test_bitmap_data[64*64];

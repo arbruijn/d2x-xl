@@ -384,13 +384,13 @@ if (w1 == 0)
 	w1 = w;
 
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (2, 2, 2));
-DrawFilledRect (x - 1, y - 1, x - 1, y + h - 1);
-DrawFilledRect (x - 1, y - 1, x + w1 - 1, y - 1);
+OglDrawFilledRect (x - 1, y - 1, x - 1, y + h - 1);
+OglDrawFilledRect (x - 1, y - 1, x + w1 - 1, y - 1);
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (5, 5, 5));
-DrawFilledRect (x, y + h, x + w1, y + h);
-DrawFilledRect (x + w1, y - 1, x + w1, y + h);
+OglDrawFilledRect (x, y + h, x + w1, y + h);
+OglDrawFilledRect (x + w1, y - 1, x + w1, y + h);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-DrawFilledRect (x, y, x + w1 - 1, y + h - 1);
+OglDrawFilledRect (x, y, x + w1 - 1, y + h - 1);
 GrString (x + 1, y + 1, s, NULL);
 }
 
@@ -478,7 +478,7 @@ if (time & 0x8000)
 	GrString (x, y, CURSOR_STRING, NULL);
 else {
 	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-	DrawFilledRect (x, y, x + CCanvas::Current ()->Font ()->Width () - 1, y + CCanvas::Current ()->Font ()->Height () - 1);
+	OglDrawFilledRect (x, y, x + CCanvas::Current ()->Font ()->Width () - 1, y + CCanvas::Current ()->Font ()->Height () - 1);
 	}
 }
 

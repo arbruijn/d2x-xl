@@ -511,24 +511,24 @@ while (!done) {
 	
 			if (i >= nFileCount) {
 				CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (5, 5, 5));
-				DrawFilledRect (box_x + box_w, y - 1, box_x + box_w, y + CCanvas::Current ()->Font ()->Height () + 1);
-				//DrawFilledRect (box_x, y + CCanvas::Current ()->Font ()->Height () + 2, box_x + box_w, y + CCanvas::Current ()->Font ()->Height () + 2);
+				OglDrawFilledRect (box_x + box_w, y - 1, box_x + box_w, y + CCanvas::Current ()->Font ()->Height () + 1);
+				//OglDrawFilledRect (box_x, y + CCanvas::Current ()->Font ()->Height () + 2, box_x + box_w, y + CCanvas::Current ()->Font ()->Height () + 2);
 			
 				CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (2, 2, 2));
-				DrawFilledRect (box_x - 1, y - 1, box_x - 1, y + CCanvas::Current ()->Font ()->Height () + 2);
+				OglDrawFilledRect (box_x - 1, y - 1, box_x - 1, y + CCanvas::Current ()->Font ()->Height () + 2);
 			
 				CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-				DrawFilledRect (box_x, y - 1, box_x + box_w - 1, y + CCanvas::Current ()->Font ()->Height () + 1);
+				OglDrawFilledRect (box_x, y - 1, box_x + box_w - 1, y + CCanvas::Current ()->Font ()->Height () + 1);
 				} 
 			else {
 				fontManager.SetCurrent ((i == nItem) ? SELECTED_FONT : NORMAL_FONT);
 				fontManager.Current ()->StringSize ((char*) (&filenames [i]), w, h, aw);
 				CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (5, 5, 5));
-				DrawFilledRect (box_x + box_w, y - 1, box_x + box_w, y + h + 1);
+				OglDrawFilledRect (box_x + box_w, y - 1, box_x + box_w, y + h + 1);
 				CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (2, 2, 2));
-				DrawFilledRect (box_x - 1, y - 1, box_x - 1, y + h + 1);
+				OglDrawFilledRect (box_x - 1, y - 1, box_x - 1, y + h + 1);
 				CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-				DrawFilledRect (box_x, y - 1, box_x + box_w - 1, y + h + 1);
+				OglDrawFilledRect (box_x, y - 1, box_x + box_w - 1, y + h + 1);
 				GrString (box_x + 5, y, reinterpret_cast<char*> (&filenames [i]) + ((bPlayerMode && filenames [i][0] == '$') ? 1 : 0), NULL);
 				}
 			}	 
@@ -547,7 +547,7 @@ while (!done) {
 			else
 				fontManager.SetCurrent (NORMAL_FONT);
 			fontManager.Current ()->StringSize (reinterpret_cast<char*> (&filenames [i]), w, h, aw);
-			DrawFilledRect (box_x, y - 1, box_x + box_w - 1, y + h + 1);
+			OglDrawFilledRect (box_x, y - 1, box_x + box_w - 1, y + h + 1);
 			GrString (box_x + 5, y, reinterpret_cast<char*> (&filenames [i]) + (bPlayerMode && filenames [i][0] == '$'), NULL);
 			}
 		i = nItem;
@@ -558,7 +558,7 @@ while (!done) {
 			else
 				fontManager.SetCurrent (NORMAL_FONT);
 			fontManager.Current ()->StringSize (reinterpret_cast<char*> (&filenames [i]), w, h, aw);
-			DrawFilledRect (box_x, y - 1, box_x + box_w - 1, y + h + 1);
+			OglDrawFilledRect (box_x, y - 1, box_x + box_w - 1, y + h + 1);
 			GrString (box_x + 5, y, reinterpret_cast<char*> (&filenames [i]) + (bPlayerMode && filenames [i][0] == '$'), NULL);
 			}
 		GrUpdate (0);

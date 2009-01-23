@@ -1994,7 +1994,7 @@ if (nClearWindow == 2) {
 				else
 #endif
 					//NOTE LINK TO ABOVE!
-					DrawFilledRect(oldPortal->left, oldPortal->top, oldPortal->right, oldPortal->bot);
+					OglDrawFilledRect (oldPortal->left, oldPortal->top, oldPortal->right, oldPortal->bot);
 				}
 			}
 		}

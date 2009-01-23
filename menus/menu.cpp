@@ -180,9 +180,9 @@ ubyte bHackDblClickMenuMode = 0;
 void CMenu::DrawCloseBox (int x, int y)
 {
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-DrawFilledRect (x + MENU_CLOSE_X, y + MENU_CLOSE_Y, x + MENU_CLOSE_X + MENU_CLOSE_SIZE, y + MENU_CLOSE_Y + MENU_CLOSE_SIZE);
+OglDrawFilledRect (x + MENU_CLOSE_X, y + MENU_CLOSE_Y, x + MENU_CLOSE_X + MENU_CLOSE_SIZE, y + MENU_CLOSE_Y + MENU_CLOSE_SIZE);
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 21, 21));
-DrawFilledRect (x + MENU_CLOSE_X + LHX (1), y + MENU_CLOSE_Y + LHX (1), x + MENU_CLOSE_X + MENU_CLOSE_SIZE - LHX (1), y + MENU_CLOSE_Y + MENU_CLOSE_SIZE - LHX (1));
+OglDrawFilledRect (x + MENU_CLOSE_X + LHX (1), y + MENU_CLOSE_Y + LHX (1), x + MENU_CLOSE_X + MENU_CLOSE_SIZE - LHX (1), y + MENU_CLOSE_Y + MENU_CLOSE_SIZE - LHX (1));
 }
 
 //------------------------------------------------------------------------------ 

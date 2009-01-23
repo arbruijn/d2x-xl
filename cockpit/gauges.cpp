@@ -977,7 +977,7 @@ if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {		//draw background
 		OglDrawLine (HUD_SCALE_X (168), HUD_SCALE_Y (189), HUD_SCALE_X (189), HUD_SCALE_Y (189));
 		}
 	else {
-		DrawFilledRect (HUD_SCALE_X (338), HUD_SCALE_Y (453), HUD_SCALE_X (378), HUD_SCALE_Y (470));
+		OglDrawFilledRect (HUD_SCALE_X (338), HUD_SCALE_Y (453), HUD_SCALE_X (378), HUD_SCALE_Y (470));
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (128, 128, 128));
 		OglDrawLine (HUD_SCALE_X (336), HUD_SCALE_Y (453), HUD_SCALE_X (378), HUD_SCALE_Y (453));
 		}
@@ -1708,7 +1708,7 @@ void DrawWeaponInfoSub (int info_index, tGaugeBox *box, int xPic, int yPic, cons
 #if 0
 	if (gameStates.render.cockpit.nMode != CM_FULL_SCREEN) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
-		DrawFilledRect ((int) (box->left * cmScaleX), (int) (box->top * cmScaleY),
+		OglDrawFilledRect ((int) (box->left * cmScaleX), (int) (box->top * cmScaleY),
 				  (int) (box->right * cmScaleX), (int) (box->bot * cmScaleY));
 		}
 #endif
@@ -1819,12 +1819,12 @@ void DrawAmmoInfo (int x, int y, int ammoCount, int bPrimary)
 
 w = (CCanvas::Current ()->Font ()->Width () * (bPrimary ? 7 : 5)) / 2;
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
-DrawFilledRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + CCanvas::Current ()->Font ()->Height ()));
+OglDrawFilledRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + CCanvas::Current ()->Font ()->Height ()));
 fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 sprintf (str, "%03d", ammoCount);
 convert_1s (str);
 nIdAmmo [bPrimary][0] = HUDPrintF (&nIdAmmo [bPrimary][0], x, y, str);
-DrawFilledRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + CCanvas::Current ()->Font ()->Height ()));
+OglDrawFilledRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + CCanvas::Current ()->Font ()->Height ()));
 nIdAmmo [bPrimary][1] = HUDPrintF (&nIdAmmo [bPrimary][1], x, y, str);
 }
 
@@ -1903,7 +1903,7 @@ if (weaponBoxStates [nWeaponType] != WS_SET) {		//fade gauge
 	int fadeValue = X2I (weaponBoxFadeValues [nWeaponType]);
 	int boxofs = (gameStates.render.cockpit.nMode == CM_STATUS_BAR) ? SB_PRIMARY_BOX : COCKPIT_PRIMARY_BOX;
 	gameStates.render.grAlpha = (float) fadeValue;
-	DrawFilledRect (gaugeBoxes [boxofs + nWeaponType].left,
+	OglDrawFilledRect (gaugeBoxes [boxofs + nWeaponType].left,
 			  gaugeBoxes [boxofs + nWeaponType].top,
 			  gaugeBoxes [boxofs + nWeaponType].right,
 			  gaugeBoxes [boxofs + nWeaponType].bot);

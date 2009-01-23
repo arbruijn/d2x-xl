@@ -34,6 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "newdemo.h"
 #include "text.h"
 #include "gr.h"
+#include "ogl_render.h"
 #include "endlevel.h"
 #include "playsave.h"
 #include "automap.h"
@@ -491,11 +492,11 @@ void game_render_frame_stereo ()
 //NEWVR
 	if (actual_eye_offset > 0) {
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-		DrawFilledRect (CCanvas::Current ()->Width ()-labs (actual_eye_offset)*2, 0,
+		OglDrawFilledRect (CCanvas::Current ()->Width ()-labs (actual_eye_offset)*2, 0,
                CCanvas::Current ()->Width ()-1, CCanvas::Current ()->Height ());
 	} else if (actual_eye_offset < 0) {
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-		DrawFilledRect (0, 0, labs (actual_eye_offset)*2-1, CCanvas::Current ()->Height ());
+		OglDrawFilledRect (0, 0, labs (actual_eye_offset)*2-1, CCanvas::Current ()->Height ());
 	}
 
 	if (gameStates.render.vr.bShowHUD && !bNoDrawHUD) {
@@ -540,10 +541,10 @@ void game_render_frame_stereo ()
 //NEWVR
 	if (actual_eye_offset>0) {
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-		DrawFilledRect (0, 0, labs (actual_eye_offset)*2-1, CCanvas::Current ()->Height ());
+		OglDrawFilledRect (0, 0, labs (actual_eye_offset)*2-1, CCanvas::Current ()->Height ());
 	} else if (actual_eye_offset < 0) {
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-		DrawFilledRect (CCanvas::Current ()->Width ()-labs (actual_eye_offset)*2, 0,
+		OglDrawFilledRect (CCanvas::Current ()->Width ()-labs (actual_eye_offset)*2, 0,
                CCanvas::Current ()->Width ()-1, CCanvas::Current ()->Height ());
 	}
 
