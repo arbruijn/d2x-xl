@@ -1598,17 +1598,17 @@ void DrawAfterburnerBar (int nEnergy)
 
 HUDBitBlt (GAUGE_AFTERBURNER, AFTERBURNER_GAUGE_X, AFTERBURNER_GAUGE_Y);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-yMax = FixMul (I2X (1) - nEnergy, AFTERBURNER_GAUGE_H);
-y [0] = y [1] = HUD_SCALE_Y (AFTERBURNER_GAUGE_Y);
-y [2] = y [3] = HUD_SCALE_Y (AFTERBURNER_GAUGE_Y + yMax);
-x [0] = HUD_SCALE_X (AFTERBURNER_GAUGE_X + tableP [0]);
-x [1] = HUD_SCALE_X (AFTERBURNER_GAUGE_X + tableP [1]);
-x [2] = HUD_SCALE_X (AFTERBURNER_GAUGE_X + tableP [2 * yMax - 2]);
-x [3] = HUD_SCALE_X (AFTERBURNER_GAUGE_X + tableP [2 * yMax - 1]);
-gameStates.render.grAlpha = FADE_LEVELS;
-CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
-OglDrawFilledPoly (x, y, 4);
-CCanvas::SetCurrent (GetCurrentGameScreen ());
+if ((yMax = FixMul (I2X (1) - nEnergy, AFTERBURNER_GAUGE_H))) {
+	y [0] = y [1] = HUD_SCALE_Y (AFTERBURNER_GAUGE_Y);
+	y [2] = y [3] = HUD_SCALE_Y (AFTERBURNER_GAUGE_Y + yMax);
+	x [0] = HUD_SCALE_X (AFTERBURNER_GAUGE_X + tableP [0]);
+	x [1] = HUD_SCALE_X (AFTERBURNER_GAUGE_X + tableP [1]);
+	x [2] = HUD_SCALE_X (AFTERBURNER_GAUGE_X + tableP [2 * yMax - 2]);
+	x [3] = HUD_SCALE_X (AFTERBURNER_GAUGE_X + tableP [2 * yMax - 1]);
+	gameStates.render.grAlpha = FADE_LEVELS;
+	OglDrawFilledPoly (x, y, 4);
+	}
+//CCanvas::SetCurrent (GetCurrentGameScreen ());
 }
 
 //	-----------------------------------------------------------------------------
