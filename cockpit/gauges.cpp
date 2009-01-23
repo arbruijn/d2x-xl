@@ -1403,14 +1403,14 @@ CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
 #endif
 if (nEnergy < 100) {	// erase part of gauge corresponding to energy loss
 	gameStates.render.grAlpha = FADE_LEVELS;
-	float fScale = 1.0f - X2F (nEnergy);
+	float fScale = float (100 - nEnergy) / 100.0f;
 
 	{
-	int x [4] = {ENERGY_GAUGE_TOP_LEFT, LEFT_ENERGY_GAUGE_W, ENERGY_GAUGE_BOT_LEFT + ENERGY_GAUGE_BOT_WIDTH, ENERGY_GAUGE_BOT_WIDTH};
+	int x [4] = {ENERGY_GAUGE_TOP_LEFT, LEFT_ENERGY_GAUGE_W, ENERGY_GAUGE_BOT_LEFT + ENERGY_GAUGE_BOT_WIDTH, ENERGY_GAUGE_BOT_LEFT};
 	int y [4] = {0, 0, LEFT_ENERGY_GAUGE_H, LEFT_ENERGY_GAUGE_H};
 
 	x [1] = x [0] + int (fScale * (x [1] - x [0]));
-	x [2] = x [3] + int (fScale * (x [3] - x [2]));
+	x [2] = x [3] + int (fScale * (x [2] - x [3]));
 	for (int i = 0; i < 4; i++) {
 		x [i] = HUD_SCALE_X (LEFT_ENERGY_GAUGE_X + x [i]);
 		y [i] = HUD_SCALE_Y (LEFT_ENERGY_GAUGE_Y + y [i]);
@@ -1423,7 +1423,7 @@ if (nEnergy < 100) {	// erase part of gauge corresponding to energy loss
 	int y [4] = {0, 0, LEFT_ENERGY_GAUGE_H, LEFT_ENERGY_GAUGE_H};
 
 	x [0] = x [1] - int (fScale * (x [1] - x [0]));
-	x [3] = x [2] - int (fScale * (x [3] - x [2]));
+	x [3] = x [2] - int (fScale * (x [2] - x [3]));
 	for (int i = 0; i < 4; i++) {
 		x [i] = HUD_SCALE_X (RIGHT_ENERGY_GAUGE_X + x [i]);
 		y [i] = HUD_SCALE_Y (RIGHT_ENERGY_GAUGE_Y + y [i]);
