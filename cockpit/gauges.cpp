@@ -438,9 +438,15 @@ static double xScale, yScale;
 
 //	-----------------------------------------------------------------------------
 
+static int nDbgGauge = -1;
+
 CBitmap* HUDBitBlt (int nGauge, int x, int y, bool bScalePos , bool bScaleSize, int scale, int orient, CBitmap* bmP)
 {
 if (nGauge >= 0) {
+#if DBG
+	if (nGauge == nDbgGauge)
+		nDbgGauge = nDbgGauge;
+#endif
 	PAGE_IN_GAUGE (nGauge);
 	bmP = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (nGauge);
 	}
@@ -1611,7 +1617,7 @@ CCanvas::SetCurrent (GetCurrentGameScreen ());
 
 void DrawShieldBar (int shield)
 {
-HUDBitBlt (GAUGE_SHIELDS + 9 - (shield >= 100 ? 9 : (shield / 10)), SHIELD_GAUGE_X, SHIELD_GAUGE_Y);
+HUDBitBlt (GAUGE_SHIELDS + 9 - ((shield >= 100) ? 9 : (shield / 10)), SHIELD_GAUGE_X, SHIELD_GAUGE_Y);
 }
 
 #define CLOAK_FADE_WAIT_TIME  0x400
