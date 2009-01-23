@@ -285,6 +285,8 @@ else
 		CCanvas::Current ()->SetLeft (CCanvas::Current ()->Left () + LHX (10));
 		CCanvas::Current ()->SetTop (CCanvas::Current ()->Top () + LHX (10));
 		m_background->RenderFixed (NULL, left, top, width, height); //, LHX (10), LHY (10));
+		CCanvas::Current ()->SetLeft (CCanvas::Current ()->Left () - LHX (10));
+		CCanvas::Current ()->SetTop (CCanvas::Current ()->Top () - LHX (10));
 		}
 	else {
 		m_background->RenderFixed (NULL, left, top, width, height); //, 0, 0);
