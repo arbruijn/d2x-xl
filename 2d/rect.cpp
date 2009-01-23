@@ -38,6 +38,39 @@ else
 		DrawScanLine (left, right, i);
 }
 
+//------------------------------------------------------------------------------ 
+
+void SWDrawEmptyRect (int left, int top, int right, int bot)
+{
+	int i, d, c = COLOR.index;
+	ubyte* ptr1 = DATA + ROWSIZE *top+left;
+	ubyte* ptr2 = ptr1;
+
+d = right - left;
+for (i = top; i <= bot; i++) {
+	ptr2 [0] = c;
+	ptr2 [d] = c;
+	ptr2 += ROWSIZE;
+	}
+
+ptr2 = ptr1;
+d = (bot - top) * ROWSIZE;
+for (i = 1; i < (right-left); i++) {
+	ptr2 [i + 0] = c;
+	ptr2 [i + d] = c;
+	}
+}
+
+//------------------------------------------------------------------------------ 
+
+void DrawEmptyRect (int left, int top, int right, int bot)
+{
+if (MODE == BM_LINEAR)
+	SWDrawEmptyRect (left, top, right, bot);
+else
+	OglDrawEmptyRect (left, top, right, bot);
+}
+
 //------------------------------------------------------------------------------
 
 void DrawFilledRect (int left,int top,int right,int bot)

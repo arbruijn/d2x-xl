@@ -90,7 +90,7 @@ void OglDrawMouseIndicator (void)
 	static tSinCosf sinCos12 [12];
 	static int bInitSinCos = 1;
 
-	static tCanvasColor color = {-1, 1, {255, 255, 255, 64}};
+	static tCanvasColor color = {-1, 1, {255, 255, 255, 96}};
 
 	float	r, w, h;
 
@@ -108,7 +108,9 @@ else {
 	glNewList (mouseIndList, GL_COMPILE_AND_EXECUTE);
 #endif
 	if (LoadJoyMouse ()) {
+		color.color.alpha = 255;
 		bmpJoyMouse->OglUBitMapMC (mouseData.x - 8, mouseData.y - 8, 16, 16, I2X (1), 0, &color);
+		color.color.alpha = 96;
 		}
 	else {
 	glPushMatrix ();
@@ -121,7 +123,7 @@ else {
 	OglDrawEllipse (12, GL_LINE_LOOP, 1.5f, 0, 1.5f * float (screen.Height ()) / float (screen.Width ()), 0, sinCos12);
 	glPopMatrix ();
 	}
-	if (0 && LoadDeadzone ()) {
+	if (LoadDeadzone ()) {
 		r = (float) CalcDeadzone (0, gameOpts->input.mouse.nDeadzone);
 		w = r / (float) screen.Width ();
 		h = r / (float) screen.Height ();
@@ -149,14 +151,17 @@ else {
 		glPopMatrix ();
 		}
 	else {
+		LoadDeadzone ();
 		glPushMatrix ();
 		glTranslatef (0.5f, 0.5f, 0);
 		glScalef (scale / 320.0f, scale / 200.0f, scale);	//the positions are based upon the standard reticle at 320x200 res.
+		glEnable (GL_BLEND);
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glColor4f (1.0f, 0.8f, 0.0f, 1.0f / (3.0f + 0.5f * gameOpts->input.mouse.nDeadzone));
-		glLineWidth ((GLfloat) (4 + 2 * gameOpts->input.mouse.nDeadzone));
+		glLineWidth (4); //(GLfloat) (4 + 2 * gameOpts->input.mouse.nDeadzone));
 		r = (float) CalcDeadzone (0, gameOpts->input.mouse.nDeadzone) / 4;
 		glDisable (GL_TEXTURE_2D);
-		OglDrawEllipse (30, GL_LINE_LOOP, r, 0, r * float (screen.Height ()) / float (screen.Width ()), 0, sinCos30);
+		OglDrawEllipse (30, GL_LINES, r, 0, r * float (screen.Height ()) / float (screen.Width ()), 0, sinCos30);
 		glPopMatrix ();
 		}
 	glDisable (GL_LINE_SMOOTH);

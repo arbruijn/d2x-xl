@@ -117,18 +117,11 @@ if (!colorP)
 OglCanvasColor (colorP);
 glEnable (GL_BLEND);
 glBlendFunc (GL_ONE, GL_ZERO);
-glBegin (GL_LINES);
+glBegin (GL_LINE_LOOP);
 glVertex2f (x0, y0);
 glVertex2f (x1, y0);
-
-glVertex2f (x1, y0);
-glVertex2f (x1, y1);
-
 glVertex2f (x1, y1);
 glVertex2f (x0, y1);
-
-glVertex2f (x0, y1);
-glVertex2f (x0, y0);
 glEnd();
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 if (colorP->rgb)

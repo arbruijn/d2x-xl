@@ -139,14 +139,34 @@ void OglDrawEllipse (int nSides, int nType, float xsc, float xo, float ysc, floa
 	double	ang;
 
 glBegin (nType);
-if (sinCosP) {
-	for (i = 0; i < nSides; i++, sinCosP++)
-		glVertex2f (sinCosP->fCos * xsc + xo, sinCosP->fSin * ysc + yo);
+if (nType == GL_LINES) {	// implies a dashed circle
+	if (sinCosP) {
+		for (i = 0; i < nSides; i++, sinCosP++) {
+			glVertex2f (sinCosP->fCos * xsc + xo, sinCosP->fSin * ysc + yo);
+			i++, sinCosP++;
+			glVertex2f (sinCosP->fCos * xsc + xo, sinCosP->fSin * ysc + yo);
+			}
+		}
+	else {
+		for (i = 0; i < nSides; i++) {
+			ang = 2.0 * Pi * i / nSides;
+			glVertex2f ((float) cos (ang) * xsc + xo, (float) sin (ang) * ysc + yo);
+			i++;
+			ang = 2.0 * Pi * i / nSides;
+			glVertex2f ((float) cos (ang) * xsc + xo, (float) sin (ang) * ysc + yo);
+			}
+		}
 	}
 else {
-	for (i = 0; i < nSides; i++) {
-		ang = 2.0 * Pi * i / nSides;
-		glVertex2f ((float) cos (ang) * xsc + xo, (float) sin (ang) * ysc + yo);
+	if (sinCosP) {
+		for (i = 0; i < nSides; i++, sinCosP++)
+			glVertex2f (sinCosP->fCos * xsc + xo, sinCosP->fSin * ysc + yo);
+		}
+	else {
+		for (i = 0; i < nSides; i++) {
+			ang = 2.0 * Pi * i / nSides;
+			glVertex2f ((float) cos (ang) * xsc + xo, (float) sin (ang) * ysc + yo);
+			}
 		}
 	}
 glEnd ();
