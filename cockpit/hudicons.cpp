@@ -545,7 +545,7 @@ x = (screen.Width () - (n - firstItem) * wIcon - (n - 1 - firstItem) * ox) / 2;
 for (j = firstItem; j < n; j++) {
 	int bHave, bAvailable, bArmed = HUDEquipmentActive (nInvFlags [j]);
 	bmP = bmInvItems + j;
-	HUDBitBlt (-1, nIconScale * (x + (w - bmP->Width ()) / (2 * nIconScale)), nIconScale * - (y - hIcon), false, true, I2X (nIconScale), 0, bmP);
+	HUDBitBlt (-1, nIconScale * (x + (w - bmP->Width ()) / (2 * nIconScale)), nIconScale * (y - hIcon), false, true, I2X (nIconScale), 0, bmP);
 	//m = 9 - j;
 	*szCount = '\0';
 	if (j == INV_ITEM_HEADLIGHT)

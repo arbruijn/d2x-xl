@@ -1982,7 +1982,7 @@ CopyGaugeBox (&gaugeBoxes [h], &gameStates.render.vr.buffers.render [0]);
 
 //	-----------------------------------------------------------------------------
 
-void DrawWeaponBoxes ()
+void DrawWeaponBoxes (void)
 {
 	int boxofs = (gameStates.render.cockpit.nMode == CM_STATUS_BAR) ? SB_PRIMARY_BOX : COCKPIT_PRIMARY_BOX;
 	int bDrawn;
