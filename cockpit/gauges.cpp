@@ -468,13 +468,6 @@ return bmP;
 
 //	-----------------------------------------------------------------------------
 
-inline void HUDUScanLine (int left, int right, int y)
-{
-DrawScanLine (HUD_SCALE_X (left), HUD_SCALE_X (right), HUD_SCALE_Y (y));
-}
-
-//	-----------------------------------------------------------------------------
-
 int _CDECL_ HUDPrintF (int *idP, int x, int y, const char *pszFmt, ...)
 {
 	static char szBuf [1000];
@@ -980,14 +973,13 @@ if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {		//draw background
 	CCanvas::Current ()->SetColorRGBi (bg_color);
 	if (!gameStates.video.nDisplayMode) {
 		HUDRect (169, 189, 189, 196);
-		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
-		DrawScanLineClipped (168, 189, 189);
+		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (128, 128, 128));
+		OglDrawLine (HUD_SCALE_X (168), HUD_SCALE_Y (189), HUD_SCALE_X (189), HUD_SCALE_Y (189));
 		}
 	else {
 		DrawFilledRect (HUD_SCALE_X (338), HUD_SCALE_Y (453), HUD_SCALE_X (378), HUD_SCALE_Y (470));
-		//CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
-		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (255, 200, 0));
-		DrawScanLineClipped (HUD_SCALE_X (336), HUD_SCALE_X (378), HUD_SCALE_Y (453));
+		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (128, 128, 128));
+		OglDrawLine (HUD_SCALE_X (336), HUD_SCALE_Y (453), HUD_SCALE_X (378), HUD_SCALE_Y (453));
 		}
 	}
 if (count)
@@ -2331,7 +2323,7 @@ return bCheckObjs ? (nHitType == HIT_OBJECT) && (hit_data.hit.nObject == nObject
 //	-----------------------------------------------------------------------------
 
 //show names of teammates & players carrying flags
-void ShowHUDNames ()
+void ShowHUDNames (void)
 {
 	int bHasFlag, bShowName, bShowTeamNames, bShowAllNames, bShowFlags, nObject, nTeam;
 	int p;
@@ -2343,7 +2335,7 @@ void ShowHUDNames ()
 	};
 	char s [CALLSIGN_LEN+10];
 	int w, h, aw;
-	int x1, y1;
+	int x0, y0, x1, y1;
 	int nColor;
 	static int nIdNames [2][MAX_PLAYERS] = {{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
 
@@ -2420,8 +2412,8 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 					fix dy = -FixMulDiv (OBJECTS [nObject].info.xSize, I2X (CCanvas::Current ()->Height ())/2, vPlayerPos.p3_vec[Z]);
 //					fix dy = -FixMulDiv (FixMul (OBJECTS [nObject].size, transformation.m_info.scale.y), I2X (CCanvas::Current ()->Height ())/2, vPlayerPos.p3_z);
 					fix dx = FixMul (dy, screen.Aspect ());
-					fix w = dx/4;
-					fix h = dy/4;
+					fix w = dx / 4;
+					fix h = dy / 4;
 					if (gameData.app.nGameMode & (GM_CAPTURE | GM_ENTROPY))
 						CCanvas::Current ()->SetColorRGBi ((GetTeam (p) == TEAM_BLUE) ? MEDRED_RGBA :  MEDBLUE_RGBA);
 					else if (gameData.app.nGameMode & GM_HOARD) {
@@ -2430,14 +2422,30 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 						else
 							CCanvas::Current ()->SetColorRGBi (MEDGREEN_RGBA);
 						}
-					GrLine (x+dx-w, y-dy, x+dx, y-dy);
-					GrLine (x+dx, y-dy, x+dx, y-dy+h);
-					GrLine (x-dx, y-dy, x-dx+w, y-dy);
-					GrLine (x-dx, y-dy, x-dx, y-dy+h);
-					GrLine (x+dx-w, y+dy, x+dx, y+dy);
-					GrLine (x+dx, y+dy, x+dx, y+dy-h);
-					GrLine (x-dx, y+dy, x-dx+w, y+dy);
-					GrLine (x-dx, y+dy, x-dx, y+dy-h);
+					x0 = x - dx;
+					x1 = x + dx;
+					y0 = y - dy;
+					y1 = y + dy;
+					// draw the edges of a rectangle around the player (not a complete rectangle)
+#if 1
+					// draw the complete rectangle
+					OglDrawEmptyRect (x0, y0, x1, y1);
+					// now partially erase its sides
+					CCanvas::Current ()->SetColorRGBi (0);
+					OglDrawLine (x - w, y0, x + w, y0);
+					OglDrawLine (x - w, y1, x + w, y1);
+					OglDrawLine (x0, y - h, x0, y + h);
+					OglDrawLine (x1, y - h, x1, y + h);
+#else
+					OglDrawLine (x1 - w, y0, x1, y0);	//right
+					OglDrawLine (x1, y0, x1, y0 + h);	//down
+					OglDrawLine (x0, y0, x0 + w, y0);
+					OglDrawLine (x0, y0, x0, y0 + h);
+					OglDrawLine (x1 - w, y1, x1, y1);
+					OglDrawLine (x1, y1, x1, y1 - h);
+					OglDrawLine (x0, y1, x0 + w, y1);
+					OglDrawLine (x0, y1, x0, y1 - h);
+#endif
 					}
 				}
 			}

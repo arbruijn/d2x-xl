@@ -690,8 +690,8 @@ fontManager.SetColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
 if (items == kcKeyboard) {
 	fontManager.SetColorRGBi (RGBA_PAL2 (31, 27, 6), 1, 0, 0);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (31, 27, 6));
-	DrawScanLineClipped (KC_LHX (98), KC_LHX (106), KC_LHY (42));
-	DrawScanLineClipped (KC_LHX (120), KC_LHX (128), KC_LHY (42));
+	OglDrawLine (KC_LHX (98), KC_LHY (42), KC_LHX (106), KC_LHY (42));
+	OglDrawLine (KC_LHX (120), KC_LHY (42), KC_LHX (128), KC_LHY (42));
 	kc_gr_pixel (KC_LHX (98), KC_LHY (43));					
 	kc_gr_pixel (KC_LHX (98), KC_LHY (44));					
 	kc_gr_pixel (KC_LHX (128), KC_LHY (43));					
@@ -699,8 +699,8 @@ if (items == kcKeyboard) {
 
 	GrString (KC_LHX (109), KC_LHY (40), "OR", NULL);
 
-	DrawScanLineClipped (KC_LHX (253), KC_LHX (261), KC_LHY (42));
-	DrawScanLineClipped (KC_LHX (274), KC_LHX (283), KC_LHY (42));
+	OglDrawLine (KC_LHX (253), KC_LHY (42), KC_LHX (261), KC_LHY (42));
+	OglDrawLine (KC_LHX (274), KC_LHY (42), KC_LHX (283), KC_LHY (42));
 	kc_gr_pixel (KC_LHX (253), KC_LHY (43));					
 	kc_gr_pixel (KC_LHX (253), KC_LHY (44));					
 	kc_gr_pixel (KC_LHX (283), KC_LHY (43));					
@@ -712,10 +712,10 @@ if (items == kcKeyboard) {
 if (items == kcJoystick) {
 	fontManager.SetColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (31, 27, 6));
-	DrawScanLineClipped (KC_LHX (18), KC_LHX (135), KC_LHY (37));
-	DrawScanLineClipped (KC_LHX (181), KC_LHX (294), KC_LHY (37));
-	DrawScanLineClipped (KC_LHX (18), KC_LHX (144), KC_LHY (119+18));
-	DrawScanLineClipped (KC_LHX (174), KC_LHX (294), KC_LHY (119+18));
+	OglDrawLine (KC_LHX (18), KC_LHY (37), KC_LHX (135), KC_LHY (37));
+	OglDrawLine (KC_LHX (181), KC_LHY (37), KC_LHX (294), KC_LHY (37));
+	OglDrawLine (KC_LHX (18), KC_LHY (119+18), KC_LHX (144), KC_LHY (119+18));
+	OglDrawLine (KC_LHX (174), KC_LHY (119+18), KC_LHX (294), KC_LHY (119+18));
 	GrString (0x8000, KC_LHY (35), TXT_BUTTONS_HATS, NULL);
 	GrString (0x8000,KC_LHY (125+18), TXT_AXES, NULL);
 	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
@@ -726,10 +726,10 @@ if (items == kcJoystick) {
 } else if (items == kcMouse) {
 	fontManager.SetColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (31,27,6));
-	DrawScanLineClipped (KC_LHX (18), KC_LHX (135), KC_LHY (37));
-	DrawScanLineClipped (KC_LHX (181), KC_LHX (294), KC_LHY (37));
-	DrawScanLineClipped (KC_LHX (18), KC_LHX (144), KC_LHY (119+5));
-	DrawScanLineClipped (KC_LHX (174), KC_LHX (294), KC_LHY (119+5));
+	OglDrawLine (KC_LHX (18), KC_LHY (37), KC_LHX (135), KC_LHY (37));
+	OglDrawLine (KC_LHX (181), KC_LHY (37), KC_LHX (294), KC_LHY (37));
+	OglDrawLine (KC_LHX (18), KC_LHY (119+5), KC_LHX (144), KC_LHY (119+5));
+	OglDrawLine (KC_LHX (174), KC_LHY (119+5), KC_LHX (294), KC_LHY (119+5));
 	GrString (0x8000, KC_LHY (35), TXT_BUTTONS, NULL);
 	GrString (0x8000,KC_LHY (125+5), TXT_AXES, NULL);
 	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);

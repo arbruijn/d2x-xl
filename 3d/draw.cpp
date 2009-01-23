@@ -33,11 +33,9 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #if 1
 tmap_drawer_fp tmap_drawer_ptr = draw_tmap;
 flat_drawer_fp flat_drawer_ptr = gr_upoly_tmap;
-line_drawer_fp line_drawer_ptr = GrLine;
 #else
 void (*tmap_drawer_ptr) (CBitmap *bm, int nv, g3sPoint **vertlist) = draw_tmap;
 void (*flat_drawer_ptr) (int nv, int *vertlist) = gr_upoly_tmap;
-int (*line_drawer_ptr) (fix x0, fix y0, fix x1, fix y1) = GrLine;
 #endif
 
 //------------------------------------------------------------------------------

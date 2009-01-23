@@ -812,36 +812,6 @@ return code;
 
 //------------------------------------------------------------------------------
 
-#if DBG
-void DrawWindowBox (uint color, short left, short top, short right, short bot)
-{
-	short l, t, r, b;
-
-CCanvas::Current ()->SetColorRGBi (color);
-l=left;
-t=top;
-r=right;
-b=bot;
-
-if ( r<0 || b<0 || l>=CCanvas::Current ()->Width () || (t >= CCanvas::Current ()->Height () && b >= CCanvas::Current ()->Height ()))
-	return;
-
-if (l<0)
-	l=0;
-if (t<0)
-	t=0;
-if (r>=CCanvas::Current ()->Width ()) r=CCanvas::Current ()->Width ()-1;
-if (b>=CCanvas::Current ()->Height ()) b=CCanvas::Current ()->Height ()-1;
-
-GrLine(I2X(l), I2X(t), I2X(r), I2X(t));
-GrLine(I2X(r), I2X(t), I2X(r), I2X(b));
-GrLine(I2X(r), I2X(b), I2X(l), I2X(b));
-GrLine(I2X(l), I2X(b), I2X(l), I2X(t));
-}
-#endif
-
-//------------------------------------------------------------------------------
-
 tPortal renderPortals [MAX_SEGMENTS_D2X];
 #if !OLD_SEGLIST
 tPortal sidePortals [MAX_SEGMENTS_D2X * 6];

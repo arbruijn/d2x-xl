@@ -610,22 +610,6 @@ if (i >= 0)
 
 //------------------------------------------------------------------------------
 
-void modex_clear_box (int x,int y,int w,int h)
-{
-	CCanvas *canvP;
-
-CCanvas::Push ();
-canvP = CCanvas::Create (w,h);
-CCanvas::SetCurrent (canvP);
-CCanvas::Current ()->Clear (BLACK_RGBA);
-CCanvas::Pop ();
-GrBitmapM (x,y, canvP, 0);
-canvP->Destroy ();
-
-}
-
-//------------------------------------------------------------------------------
-
 // mac routine to drop contents of screen to a pict file using copybits
 // save a PICT to a file
 #ifdef MACINTOSH

@@ -528,6 +528,7 @@ do {
 
 void CFont::PrintToCanvas (int x, int y, char *s, uint color, int bScale)
 {
+#if 1
 	ubyte		*data;
 	int		rs;
 	CCanvas	*canvP;
@@ -558,6 +559,7 @@ if (bScale) {
 CCanvas::Pop ();
 GrBitmapM (x, y, canvP, 2);
 canvP->Destroy ();
+#endif
 }
 
 //------------------------------------------------------------------------------

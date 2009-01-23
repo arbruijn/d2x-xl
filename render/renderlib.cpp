@@ -756,38 +756,6 @@ return bHaveMonitorBg || gameOpts->render.cameras.bFitToWall;
 }
 
 //------------------------------------------------------------------------------
-//draw outline for curside
-#if DBG
-
-#define CROSS_WIDTH  I2X(8)
-#define CROSS_HEIGHT I2X(8)
-
-void OutlineSegSide (CSegment *segP, int _side, int edge, int vert)
-{
-	g3sCodes cc;
-
-cc = RotateVertexList (8, segP->m_verts);
-if (! cc.ccAnd) {		//all off screen?
-	g3sPoint *pnt;
-	//render curedge of curside of curseg in green
-	CCanvas::Current ()->SetColorRGB (0, 255, 0, 255);
-	G3DrawLine(gameData.segs.points + segP->m_verts [sideVertIndex [_side][edge]],
-						gameData.segs.points + segP->m_verts [sideVertIndex [_side][(edge+1)%4]]);
-	//draw a little cross at the current vert
-	pnt = gameData.segs.points + segP->m_verts [sideVertIndex [_side][vert]];
-	G3ProjectPoint(pnt);		//make sure projected
-	fix x = I2X (pnt->p3_screen.x);
-	fix y = I2X (pnt->p3_screen.y);
-	GrLine(x-CROSS_WIDTH, y, x, y-CROSS_HEIGHT);
-	GrLine(x, y-CROSS_HEIGHT, x+CROSS_WIDTH, y);
-	GrLine(x+CROSS_WIDTH, y, x, y+CROSS_HEIGHT);
-	GrLine(x, y+CROSS_HEIGHT, x-CROSS_WIDTH, y);
-	}
-}
-
-#endif
-
-//------------------------------------------------------------------------------
 
 void AdjustVertexColor (CBitmap *bmP, tFaceColor *colorP, fix xLight)
 {

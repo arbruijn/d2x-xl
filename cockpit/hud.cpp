@@ -129,6 +129,9 @@ if (pMsgs->nMessages > 0) {
 			fontManager.SetCurrent (SMALL_FONT);
 			fontManager.Current ()->StringSize (pszMsg, w, h, aw);
 			ClearBackgroundMessages ();
+#if 1
+			Assert (CCanvas::Current ()->Mode () != BM_MODEX);
+#else				
 			if (CCanvas::Current ()->Mode () == BM_MODEX) {
 				ycrd -= h;
 				h *= 2;
@@ -140,7 +143,9 @@ if (pMsgs->nMessages > 0) {
 				else
 					strcpy (szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage], pszMsg);
 				}
-			else {
+			else 
+#endif
+				{
 				if (pMsgs->nColor == (uint) -1)
 					pMsgs->nColor = GREEN_RGBA;
 				fontManager.SetColorRGBi (pMsgs->nColor, 1, 0, 0);

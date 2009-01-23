@@ -188,28 +188,6 @@ if (info.xLifeLeft <= 0) {
 	}
 }
 
-#ifdef EDITOR
-extern fix blob_vertices[];
-
-//------------------------------------------------------------------------------
-//	blob_vertices has 3 vertices in it, 4th must be computed
-void DrawBlobOutline (void)
-{
-	fix	v3x, v3y;
-
-	v3x = blob_vertices[4] - blob_vertices[2] + blob_vertices[0];
-	v3y = blob_vertices[5] - blob_vertices[3] + blob_vertices[1];
-
-	CCanvas::Current ()->SetColorRGB (255, 255, 255, 255);
-
-	GrLine (blob_vertices[0], blob_vertices[1], blob_vertices[2], blob_vertices[3]);
-	GrLine (blob_vertices[2], blob_vertices[3], blob_vertices[4], blob_vertices[5]);
-	GrLine (blob_vertices[4], blob_vertices[5], v3x, v3y);
-
-	GrLine (v3x, v3y, blob_vertices[0], blob_vertices[1]);
-}
-#endif
-
 //------------------------------------------------------------------------------
 
 void DrawPowerup (CObject *objP)

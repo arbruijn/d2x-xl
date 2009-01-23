@@ -1215,30 +1215,23 @@ PROF_END(ptRenderMine)
 //draw a crosshair for the guided missile
 void DrawGuidedCrosshair (void)
 {
-	int x, y, w, h;
-
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 31, 0));
-
-	w = CCanvas::Current ()->Width ()>>5;
-	if (w < 5)
-		w = 5;
-
-	h = I2X (w) / screen.Aspect ();
-
-	x = CCanvas::Current ()->Width () / 2;
-	y = CCanvas::Current ()->Height () / 2;
-
-//	DrawScanLineClipped (x-w/2, x+w/2, y);
+CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 31, 0));
+int w = CCanvas::Current ()->Width ()>>5;
+if (w < 5)
+	w = 5;
+int h = I2X (w) / screen.Aspect ();
+int x = CCanvas::Current ()->Width () / 2;
+int y = CCanvas::Current ()->Height () / 2;
 #if 1
 	x = I2X (x);
 	y = I2X (y);
 	w = I2X (w / 2);
 	h = I2X (h / 2);
-	gr_uline (x - w, y, x + w, y);
-	gr_uline (x, y - h, x, y + h);
+	OglDrawLine (x - w, y, x + w, y);
+	OglDrawLine (x, y - h, x, y + h);
 #else
-	gr_uline (I2X (x-w/2), I2X (y), I2X (x+w/2), I2X (y));
-	gr_uline (I2X (x), I2X (y-h/2), I2X (x), I2X (y+h/2));
+	OglDrawLine (I2X (x-w/2), I2X (y), I2X (x+w/2), I2X (y));
+	OglDrawLine (I2X (x), I2X (y-h/2), I2X (x), I2X (y+h/2));
 #endif
 }
 
