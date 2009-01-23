@@ -99,7 +99,7 @@ extern int nHUDLineSpacing;
 
 //	-----------------------------------------------------------------------------
 
-#define HUD_SCALE(v, s)	((int) ((double) (v) * (s) + 0.5))
+#define HUD_SCALE(v, s)	((int) (double (v) * (s) /*+ 0.5*/))
 #define HUD_SCALE_X(v)	HUD_SCALE (v, cmScaleX)
 #define HUD_SCALE_Y(v)	HUD_SCALE (v, cmScaleY)
 #define HUD_LHX(x)      (gameStates.menus.bHires ? 2 * (x) : x)

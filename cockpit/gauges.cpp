@@ -1387,93 +1387,51 @@ weaponBoxUser [0] = weaponBoxUser [1] = WBU_WEAPON;
 
 //	-----------------------------------------------------------------------------
 
-void DrawEnergyBar (int energy)
+void DrawEnergyBar (int nEnergy)
 {
-	int energy0;
-	int x1, x2, y, yMax, i;
-	int h0 = HUD_SCALE_X (LEFT_ENERGY_GAUGE_H - 1);
-	int h1 = HUD_SCALE_Y (LEFT_ENERGY_GAUGE_H / 4);
-	int h2 = HUD_SCALE_Y ((LEFT_ENERGY_GAUGE_H * 3) / 4);
-	int w1 = HUD_SCALE_X (LEFT_ENERGY_GAUGE_W - 1);
-	int w2 = HUD_SCALE_X (LEFT_ENERGY_GAUGE_W - 2);
-	int w3 = HUD_SCALE_X (LEFT_ENERGY_GAUGE_W - 3);
-	double eBarScale = (100.0 - (double) energy) * cmScaleX * 0.15 / (double) HUD_SCALE_Y (LEFT_ENERGY_GAUGE_H);
+// values taken directly from the bitmap
+#define ENERGY_GAUGE_TOP_LEFT		20
+#define ENERGY_GAUGE_BOT_LEFT		0
+#define ENERGY_GAUGE_BOT_WIDTH	126
 
-// Draw left energy bar
 HUDBitBlt (GAUGE_ENERGY_LEFT, LEFT_ENERGY_GAUGE_X, LEFT_ENERGY_GAUGE_Y);
+HUDBitBlt (GAUGE_ENERGY_RIGHT, RIGHT_ENERGY_GAUGE_X, RIGHT_ENERGY_GAUGE_Y);
 #if DBG
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (255, 255, 255));
+CCanvas::Current ()->SetColorRGBi (RGBA_PAL (255, 255, 255));
 #else
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
+CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
 #endif
-	//energy0 = (gameStates.video.nDisplayMode ? 125 - (energy * 125) / 100 : 61 - (energy * 61) / 100);
-	energy0 = HUD_SCALE_X (112);
-	energy0 = energy0 - (energy * energy0) / 100;
-	//energy0 = HUD_SCALE_X (energy0);
-	if (energy < 100) {
-		gameStates.render.grAlpha = FADE_LEVELS;
-		for (i = 0; i < LEFT_ENERGY_GAUGE_H; i++) {
-			yMax = HUD_SCALE_Y (i + 1);
-			for (y = i; y <= yMax; y++) {
-				x1 = h0 - y;
-				x2 = x1 + energy0 + (int) ((double) y * eBarScale);
-				if (y < h1) {
-					if (x2 > w1)
-						x2 = w1;
-					}
-				else if (y < h2) {
-					if (x2 > w2)
-						x2 = w2;
-					}
-				else {
-					if (x2 > w3)
-						x2 = w3;
-					}
-				if (x2 > x1)
-					DrawScanLine (
-						HUD_SCALE_X (LEFT_ENERGY_GAUGE_X) + x1,
-						HUD_SCALE_X (LEFT_ENERGY_GAUGE_X) + x2,
-						HUD_SCALE_Y (LEFT_ENERGY_GAUGE_Y) + y);
-				}
-			}
+if (nEnergy < 100) {	// erase part of gauge corresponding to energy loss
+	gameStates.render.grAlpha = FADE_LEVELS;
+	float fScale = 1.0f - X2F (nEnergy);
+
+	{
+	int x [4] = {ENERGY_GAUGE_TOP_LEFT, LEFT_ENERGY_GAUGE_W, ENERGY_GAUGE_BOT_LEFT + ENERGY_GAUGE_BOT_WIDTH, ENERGY_GAUGE_BOT_WIDTH};
+	int y [4] = {0, 0, LEFT_ENERGY_GAUGE_H, LEFT_ENERGY_GAUGE_H};
+
+	x [1] = x [0] + int (fScale * (x [1] - x [0]));
+	x [2] = x [3] + int (fScale * (x [3] - x [2]));
+	for (int i = 0; i < 4; i++) {
+		x [i] = HUD_SCALE_X (LEFT_ENERGY_GAUGE_X + x [i]);
+		y [i] = HUD_SCALE_Y (LEFT_ENERGY_GAUGE_Y + y [i]);
 		}
-	CCanvas::SetCurrent (GetCurrentGameScreen ());
-	HUDBitBlt (GAUGE_ENERGY_RIGHT, RIGHT_ENERGY_GAUGE_X, RIGHT_ENERGY_GAUGE_Y);
-#if DBG
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (255, 255, 255));
-#else
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
-#endif
-	h0 = HUD_SCALE_X (RIGHT_ENERGY_GAUGE_W - RIGHT_ENERGY_GAUGE_H);
-	w1 = HUD_SCALE_X (1);
-	w2 = HUD_SCALE_X (2);
-	if (energy < 100) {
-		yMax = HUD_SCALE_Y (RIGHT_ENERGY_GAUGE_H);
-		for (i = 0; i < RIGHT_ENERGY_GAUGE_H; i++) {
-			yMax = HUD_SCALE_Y (i + 1);
-			for (y = i; y <= yMax; y++) {
-				x2 = h0 + y;
-				x1 = x2 - energy0 - (int) ((double) y * eBarScale);
-				if (y < h1) {
-					if (x1 < 0)
-						x1 = 0;
-					}
-				else if (y < h2) {
-					if (x1 < w1)
-						x1 = w1;
-					}
-				else {
-					if (x1 < w2)
-						x1 = w2;
-					}
-				if (x2 > x1)
-					DrawScanLine (
-						HUD_SCALE_X (RIGHT_ENERGY_GAUGE_X) + x1,
-						HUD_SCALE_X (RIGHT_ENERGY_GAUGE_X) + x2,
-						HUD_SCALE_Y (RIGHT_ENERGY_GAUGE_Y) + y);
-				}
-			}
+	OglDrawFilledPoly (x, y, 4);
+	}
+
+	{
+	int x [4] = {0, LEFT_ENERGY_GAUGE_W - ENERGY_GAUGE_TOP_LEFT, LEFT_ENERGY_GAUGE_W - ENERGY_GAUGE_BOT_LEFT, LEFT_ENERGY_GAUGE_W - ENERGY_GAUGE_BOT_WIDTH};
+	int y [4] = {0, 0, LEFT_ENERGY_GAUGE_H, LEFT_ENERGY_GAUGE_H};
+
+	x [0] = x [1] - int (fScale * (x [1] - x [0]));
+	x [3] = x [2] - int (fScale * (x [3] - x [2]));
+	for (int i = 0; i < 4; i++) {
+		x [i] = HUD_SCALE_X (RIGHT_ENERGY_GAUGE_X + x [i]);
+		y [i] = HUD_SCALE_Y (RIGHT_ENERGY_GAUGE_Y + y [i]);
 		}
+	OglDrawFilledPoly (x, y, 4);
+	}
+
+	}
 CCanvas::SetCurrent (GetCurrentGameScreen ());
 }
 
@@ -1611,7 +1569,7 @@ if ((yMax = FixMul (I2X (1) - nEnergy, AFTERBURNER_GAUGE_H))) {
 			y [2] = i;
 			}
 	x [2] = HUD_SCALE_X (AFTERBURNER_GAUGE_X + x [2] + 1);
-	y [2] = HUD_SCALE_X (AFTERBURNER_GAUGE_Y + y [2]);
+	y [2] = HUD_SCALE_Y (AFTERBURNER_GAUGE_Y + y [2]);
 	x [3] = HUD_SCALE_X (AFTERBURNER_GAUGE_X + tableP [2 * yMax - 1] + 1);
 	gameStates.render.grAlpha = FADE_LEVELS;
 	OglDrawFilledPoly (x, y, 4);

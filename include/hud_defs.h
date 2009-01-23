@@ -102,9 +102,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SB_GAUGE_GOLD_KEY_Y_H		422
 #define SB_GAUGE_RED_KEY_Y_H		454
 
-#define SB_GAUGE_BLUE_KEY_Y	 (gameStates.video.nDisplayMode ? SB_GAUGE_BLUE_KEY_Y_H : SB_GAUGE_BLUE_KEY_Y_L)
-#define SB_GAUGE_GOLD_KEY_Y	 (gameStates.video.nDisplayMode ? SB_GAUGE_GOLD_KEY_Y_H : SB_GAUGE_GOLD_KEY_Y_L)
-#define SB_GAUGE_RED_KEY_Y		 (gameStates.video.nDisplayMode ? SB_GAUGE_RED_KEY_Y_H : SB_GAUGE_RED_KEY_Y_L)
+#define SB_GAUGE_BLUE_KEY_Y		(gameStates.video.nDisplayMode ? SB_GAUGE_BLUE_KEY_Y_H : SB_GAUGE_BLUE_KEY_Y_L)
+#define SB_GAUGE_GOLD_KEY_Y		(gameStates.video.nDisplayMode ? SB_GAUGE_GOLD_KEY_Y_H : SB_GAUGE_GOLD_KEY_Y_L)
+#define SB_GAUGE_RED_KEY_Y			(gameStates.video.nDisplayMode ? SB_GAUGE_RED_KEY_Y_H : SB_GAUGE_RED_KEY_Y_L)
 
 // cockpit enery gauges
 
@@ -118,15 +118,25 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define LEFT_ENERGY_GAUGE_W_H 	133
 #define LEFT_ENERGY_GAUGE_H_H 	21
 
-#define LEFT_ENERGY_GAUGE_X 	 (gameStates.video.nDisplayMode ? LEFT_ENERGY_GAUGE_X_H : LEFT_ENERGY_GAUGE_X_L)
-#define LEFT_ENERGY_GAUGE_Y 	 (gameStates.video.nDisplayMode ? LEFT_ENERGY_GAUGE_Y_H : LEFT_ENERGY_GAUGE_Y_L)
-#define LEFT_ENERGY_GAUGE_W 	 (gameStates.video.nDisplayMode ? LEFT_ENERGY_GAUGE_W_H : LEFT_ENERGY_GAUGE_W_L)
-#define LEFT_ENERGY_GAUGE_H 	 (gameStates.video.nDisplayMode ? LEFT_ENERGY_GAUGE_H_H : LEFT_ENERGY_GAUGE_H_L)
+#define LEFT_ENERGY_GAUGE_X 		(gameStates.video.nDisplayMode ? LEFT_ENERGY_GAUGE_X_H : LEFT_ENERGY_GAUGE_X_L)
+#define LEFT_ENERGY_GAUGE_Y 		(gameStates.video.nDisplayMode ? LEFT_ENERGY_GAUGE_Y_H : LEFT_ENERGY_GAUGE_Y_L)
+#define LEFT_ENERGY_GAUGE_W 		(gameStates.video.nDisplayMode ? LEFT_ENERGY_GAUGE_W_H : LEFT_ENERGY_GAUGE_W_L)
+#define LEFT_ENERGY_GAUGE_H 		(gameStates.video.nDisplayMode ? LEFT_ENERGY_GAUGE_H_H : LEFT_ENERGY_GAUGE_H_L)
 
-#define RIGHT_ENERGY_GAUGE_X 	 (gameStates.video.nDisplayMode ? 380 : 190)
-#define RIGHT_ENERGY_GAUGE_Y 	 (gameStates.video.nDisplayMode ? 314 : 131)
-#define RIGHT_ENERGY_GAUGE_W 	 (gameStates.video.nDisplayMode ? 133 : 64)
-#define RIGHT_ENERGY_GAUGE_H 	 (gameStates.video.nDisplayMode ? 21 : 8)
+#define RIGHT_ENERGY_GAUGE_X_L 	190
+#define RIGHT_ENERGY_GAUGE_Y_L 	131
+#define RIGHT_ENERGY_GAUGE_W_L 	64
+#define RIGHT_ENERGY_GAUGE_H_L 	8
+
+#define RIGHT_ENERGY_GAUGE_X_H 	380
+#define RIGHT_ENERGY_GAUGE_Y_H 	314
+#define RIGHT_ENERGY_GAUGE_W_H 	133
+#define RIGHT_ENERGY_GAUGE_H_H 	21
+
+#define RIGHT_ENERGY_GAUGE_X 		(gameStates.video.nDisplayMode ? RIGHT_ENERGY_GAUGE_X_H : RIGHT_ENERGY_GAUGE_X_L)
+#define RIGHT_ENERGY_GAUGE_Y 		(gameStates.video.nDisplayMode ? RIGHT_ENERGY_GAUGE_Y_H : RIGHT_ENERGY_GAUGE_Y_L)
+#define RIGHT_ENERGY_GAUGE_W 		(gameStates.video.nDisplayMode ? RIGHT_ENERGY_GAUGE_W_H : RIGHT_ENERGY_GAUGE_W_L)
+#define RIGHT_ENERGY_GAUGE_H 		(gameStates.video.nDisplayMode ? RIGHT_ENERGY_GAUGE_H_H : RIGHT_ENERGY_GAUGE_H_L)
 
 // cockpit afterburner gauge
 
