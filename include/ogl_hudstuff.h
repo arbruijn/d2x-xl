@@ -12,8 +12,13 @@
 extern CBitmap *bmpDeadzone;
 extern int bHaveDeadzone;
 
+extern CBitmap *bmpJoyMouse;
+extern int bHaveJoyMouse;
+
 int LoadDeadzone (void);
 void FreeDeadzone (void);
+int LoadJoyMouse (void);
+void FreeJoyMouse (void);
 void OglDrawMouseIndicator (void);
 void OglDrawReticle (int cross, int primary, int secondary);
 

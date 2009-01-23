@@ -30,6 +30,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "lightmap.h"
 #include "ogl_color.h"
 #include "ogl_render.h"
+#include "ogl_hudstuff.h"
 #include "renderlib.h"
 #include "renderthreads.h"
 #include "cameras.h"
@@ -281,8 +282,6 @@ if (bmpShield) {
 
 //------------------------------------------------------------------------------
 
-void FreeDeadzone ();
-
 void LoadExtraImages (void)
 {
 PrintLog ("Loading extra images\n");
@@ -302,6 +301,8 @@ PrintLog ("   Loading spark images\n");
 LoadSparks ();
 PrintLog ("   Loading deadzone images\n");
 LoadDeadzone ();
+PrintLog ("   Loading joystick emulator images\n");
+LoadJoyMouse ();
 }
 
 //------------------------------------------------------------------------------
@@ -316,6 +317,7 @@ FreeShield ();
 FreeExplBlast ();
 FreeSparks ();
 FreeDeadzone ();
+FreeJoyMouse ();
 }
 
 //------------------------------------------------------------------------------

@@ -233,7 +233,7 @@ int CBitmap::OglUBitMapMC (int x, int y, int w, int h, int scale, int orient, tC
 	CBitmap*		bmoP;
 	tRgbaColorf	color;
 
-if (bmoP  = HasOverride ())
+if (bmoP = HasOverride ())
 	return bmoP->OglUBitMapMC (x, y, w, h, scale, orient, colorP);
 DelFlags (BM_FLAG_SUPER_TRANSPARENT);
 if (!OglBeginRender (true, 0, 3))
