@@ -1417,7 +1417,6 @@ nGameMode = GM_GAME_OVER;
 
 bool CGameData::Create (int nSegments, int nVertices)
 {
-Destroy ();
 if (!(gameData.segs.Create (nSegments, nVertices) &&
 		gameData.objs.Create () &&
 		gameData.render.color.Create () &&

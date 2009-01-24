@@ -1010,29 +1010,31 @@ if ((dir < 0) && lightManager.Delete (nSegment, nSide, -1))
 	return;
 if (lightManager.Toggle (nSegment, nSide, -1, dir >= 0) >= 0)
 	return;
-i = FindDLIndex (nSegment, nSide);
-for (dliP = gameData.render.lights.deltaIndices + i; i < gameData.render.lights.nStatic; i++, dliP++) {
-	iSeg = dliP->nSegment;
-	iSide = dliP->nSide;
+if (gameData.render.lights.deltaIndices.Buffer ()) {
+	i = FindDLIndex (nSegment, nSide);
+	for (dliP = gameData.render.lights.deltaIndices + i; i < gameData.render.lights.nStatic; i++, dliP++) {
+		iSeg = dliP->nSegment;
+		iSide = dliP->nSide;
 #if !DBG
-	if ((iSeg > nSegment) || ((iSeg == nSegment) && (iSide > nSide)))
-		return;
+		if ((iSeg > nSegment) || ((iSeg == nSegment) && (iSide > nSide)))
+			return;
 #endif
-	if ((iSeg == nSegment) && (iSide == nSide)) {
-		if (dliP->index >= LEVEL_DELTA_LIGHTS)
-			continue;	//ouch - bogus data!
-		dlP = gameData.render.lights.deltas + dliP->index;
-		for (j = dliP->count; j; j--, dlP++) {
-			if (!dlP->bValid)
-				continue;	//bogus data!
-			uvlP = SEGMENTS [dlP->nSegment].m_sides [dlP->nSide].m_uvls;
-			pSegLightDelta = gameData.render.lights.segDeltas + dlP->nSegment * 6 + dlP->nSide;
-			for (k = 0; k < 4; k++, uvlP++) {
-				dl = dir * dlP->vertLight [k] * DL_SCALE;
-				lNew = (uvlP->l += dl);
-				if (lNew < 0)
-					uvlP->l = 0;
-				*pSegLightDelta += dl;
+		if ((iSeg == nSegment) && (iSide == nSide)) {
+			if (dliP->index >= gameData.render.lights.deltas.Length ())
+				continue;	//ouch - bogus data!
+			dlP = gameData.render.lights.deltas + dliP->index;
+			for (j = dliP->count; j; j--, dlP++) {
+				if (!dlP->bValid)
+					continue;	//bogus data!
+				uvlP = SEGMENTS [dlP->nSegment].m_sides [dlP->nSide].m_uvls;
+				pSegLightDelta = gameData.render.lights.segDeltas + dlP->nSegment * 6 + dlP->nSide;
+				for (k = 0; k < 4; k++, uvlP++) {
+					dl = dir * dlP->vertLight [k] * DL_SCALE;
+					lNew = (uvlP->l += dl);
+					if (lNew < 0)
+						uvlP->l = 0;
+					*pSegLightDelta += dl;
+					}
 				}
 			}
 		}
