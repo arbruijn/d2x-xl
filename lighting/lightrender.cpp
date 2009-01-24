@@ -50,6 +50,8 @@ for (i = 0; i < m_data.nLights [0]; i++, pl++) {
 	if ((nDbgSeg >= 0) && (nDbgSeg == pl->info.nSegment) && ((nDbgSide < 0) || (nDbgSide == pl->info.nSide)))
 		nDbgSeg = nDbgSeg;
 #endif
+	if (!(pl->info.bOn && pl->info.bState))
+		continue;
 	pl->render.vPosf [0].Assign (pl->info.vPos);
 	if (gameStates.ogl.bUseTransform)
 		pl->render.vPosf [1] = pl->render.vPosf [0];
@@ -190,9 +192,10 @@ return prl;
 
 ubyte CLightManager::VariableVertexLights (int nVertex)
 {
-	short	*pnl = m_data.nearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
-	short	i, j;
-	ubyte	h;
+	short*		pnl = m_data.nearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
+	CDynLight*	pl;
+	short			i, j;
+	ubyte			h;
 
 #if DBG
 if (nVertex == nDbgVertex)
@@ -201,7 +204,8 @@ if (nVertex == nDbgVertex)
 for (h = 0, i = MAX_NEAREST_LIGHTS; i; i--, pnl++) {
 	if ((j = *pnl) < 0)
 		break;
-	h += RenderLights (j)->info.bVariable;
+	if ((pl = RenderLights (j)))
+		h += pl->info.bVariable;
 	}
 return h;
 }
@@ -232,7 +236,8 @@ if (nVertex == nDbgVertex)
 		if (j >= m_data.nLights [1])
 			break;
 #endif
-		prl = RenderLights (j);
+		if (!(prl = RenderLights (j)))
+			continue;
 #if DBG
 		if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg))
 			nDbgSeg = nDbgSeg;
@@ -345,7 +350,8 @@ if (gameStates.render.nLightingMethod) {
 	for (i = gameStates.render.nMaxLightsPerFace; i; i--, pnl++) {
 		if ((j = *pnl) < 0)
 			break;
-		prl = RenderLights (j);
+		if (!(prl = RenderLights (j)))
+			continue;
 		if (gameData.threads.vertColor.data.bNoShadow && prl->render.bShadow)
 			continue;
 		if (prl->info.bVariable) {
@@ -389,7 +395,8 @@ if (gameStates.render.nLightingMethod) {
 	lightManager.ResetAllUsed (1, nThread);
 	lightManager.ResetActive (nThread, 0);
 	while (i) {
-		prl = RenderLights (--i);
+		if (!(prl = RenderLights (--i)))
+			continue;
 #if DBG
 		if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg))
 			prl = prl;
@@ -477,7 +484,8 @@ if (gameStates.render.nLightingMethod) {
 	ResetActive (nThread, 0);
 	ResetAllUsed (0, nThread);
 	for (i = 0; i < n; i++) {
-		prl = RenderLights (i);
+		if (!(prl = RenderLights (i)))
+			continue;
 #if DBG
 		if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg))
 			prl = prl;
@@ -682,8 +690,7 @@ if (gameStates.render.nLightingMethod) {
 	for (i = gameStates.render.nMaxLightsPerFace; i; i--, pnl++) {
 		if ((j = *pnl) < 0)
 			break;
-		prl = RenderLights (j);
-		if (prl->render.bUsed [nThread] == 3)
+		if ((prl = RenderLights (j)) && (prl->render.bUsed [nThread] == 3))
 			ResetUsed (prl, nThread);
 		}
 	}
@@ -706,8 +713,7 @@ void CLightManager::ResetNearestToVertex (int nVertex, int nThread)
 	for (i = MAX_NEAREST_LIGHTS; i; i--, pnl++) {
 		if ((j = *pnl) < 0)
 			break;
-		prl = RenderLights (j);
-		if (prl->render.bUsed [nThread] == 2)
+		if ((prl = RenderLights (j)) && (prl->render.bUsed [nThread] == 2))
 			ResetUsed (prl, nThread);
 		}
 	}
@@ -735,7 +741,8 @@ void CLightManager::ResetAllUsed (int bVariable, int nThread)
 	CDynLight*	prl;
 
 while (i) {
-	prl = RenderLights (--i);
+	if (!(prl = RenderLights (--i)))
+		continue;
 	if (bVariable && (prl->info.nType < 2))
 		break;
 	ResetUsed (prl, nThread);
