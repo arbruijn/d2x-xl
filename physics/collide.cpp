@@ -541,7 +541,7 @@ if (((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) && !mType.physInfo
 	mType.physInfo.rotVel [X] = (d_rand () - 16384) / 8;
 	mType.physInfo.rotVel [Z] = (d_rand () - 16384) / 8;
 	}
-return 0;
+return nType;
 }
 
 //	-----------------------------------------------------------------------------

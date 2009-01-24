@@ -2112,7 +2112,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 			if (gameStates.render.bTriangleMesh || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
 				ComputeFaceLight (0, gameData.render.mine.nRenderSegs, 0);
 			else
-				ComputeFaceLight (0, gameData.segs.nFaces, 0);
+				ComputeFaceLight (0, gameData.segs.nSegments, 0);
 			}
 		PROF_START
 		//PrintLog  ("UpdateSlidingFaces\n");

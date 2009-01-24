@@ -151,8 +151,6 @@ int CObject::CheckWallPhysics (void)
 {
 	int	nType = 0, sideMask;
 
-	static bool bPlayingSound [MAX_PLAYERS] = {false, false, false, false, false, false, false, false};
-
 if (info.nType != OBJ_PLAYER)
 	return 0;
 sideMask = SEGMENTS [info.nSegment].Masks (info.position.vPos, info.xSize).m_side;
@@ -169,20 +167,24 @@ if (!nType)
 // type 2,3: sound caused by ship touching a wall
 // type & 1: lava
 // type & 2: water
-if (nType > 1) {
-	if (!bPlayingSound [info.nId]) {
-		short sound;
-		if (nType == 2)
-			sound = SOUND_SHIP_IN_WATER;
-		else
-			sound = (nType & 1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
-		audio.CreateObjectSound (sound, SOUNDCLASS_GENERIC, OBJ_IDX (this), 1);
-		bPlayingSound [info.nId] = 1;
+if (nType) {
+	short nSound;
+	HUDMessage (0, "Thrust: %d %d %d", mType.physInfo.thrust [X], mType.physInfo.thrust [Y], mType.physInfo.thrust [Z]);
+	if (nType == 2)
+		nSound = mType.physInfo.thrust.IsZero () ? 0 : SOUND_SHIP_IN_WATER;
+	else
+		nSound = (nType & 1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
+	if (nSound != nSoundPlaying [info.nId]) {
+		if (nSoundPlaying [info.nId])
+			audio.DestroyObjectSound (OBJ_IDX (this));
+		if (nSound)
+			audio.CreateObjectSound (nSound, SOUNDCLASS_GENERIC, OBJ_IDX (this), 1);
+		nSoundPlaying [info.nId] = nSound;
 		}
 	}
-else if (bPlayingSound [info.nId]) {
+else if (nSoundPlaying [info.nId]) {
 	audio.DestroyObjectSound (OBJ_IDX (this));
-	bPlayingSound [info.nId] = 0;
+	nSoundPlaying [info.nId] = 0;
 	}
 return nType;
 }

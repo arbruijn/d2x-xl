@@ -826,7 +826,7 @@ if (gameData.pig.tex.tMapInfoP [m_nBaseTex].damage) {
 	return 3;
 	}
 if (gameData.pig.tex.tMapInfoP [m_nBaseTex].flags & TMI_WATER)
-	return 4;
+	return bSolid ? 2 : 4;
 return 0;
 }
 

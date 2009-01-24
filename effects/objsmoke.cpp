@@ -34,7 +34,8 @@ static tRgbaColorf smokeColors [3] = {
 void KillObjectSmoke (int nObject)
 {
 if ((nObject >= 0) && (particleManager.GetObjectSystem (nObject) >= 0)) {
-	audio.DestroyObjectSound (nObject);
+	if (OBJECTS [nObject].Type () == OBJ_EFFECT)
+		audio.DestroyObjectSound (nObject);
 	particleManager.SetLife (particleManager.GetObjectSystem (nObject), 0);
 	particleManager.SetObjectSystem (nObject, -1);
 	shrapnelManager.Destroy (OBJECTS + nObject);

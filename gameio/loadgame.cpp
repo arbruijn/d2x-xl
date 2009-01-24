@@ -437,6 +437,7 @@ else {
 	gameData.objs.missileViewerP = NULL;
 	}
 gameData.bosses.ResetHitTimes ();
+gameData.nSoundPlaying [nPlayer] = 0;
 }
 
 //------------------------------------------------------------------------------
