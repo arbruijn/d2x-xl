@@ -429,43 +429,6 @@ void StretchToBitmapRLE (int w, int h, int dx, int dy, int sx, int sy, CBitmap *
 		else
 			sbits += (int) (*src) [4 + y1 + sy];
 	}
-
-}
-
-//------------------------------------------------------------------------------
-
-void GrBitmapM (int x, int y, CBitmap *bmP, int bTransp)
-{
-	int dx1 = x, dx2 = x + bmP->Width () - 1;
-	int dy1 = y, dy2 = y + bmP->Height () - 1;
-	int sx=0, sy=0;
-
-if ((dx1 >= CCanvas::Current ()->Width ()) || (dx2 < 0)) 
-	return;
-if ((dy1 >= CCanvas::Current ()->Height ()) || (dy2 < 0)) 
-	return;
-if (dx1 < 0) { 
-	sx = -dx1; 
-	dx1 = 0; 
-	}
-if (dy1 < 0) { 
-	sy = -dy1; 
-	dy1 = 0; 
-	}
-if (dx2 >= CCanvas::Current ()->Width ())
-	dx2 = CCanvas::Current ()->Width ()-1;
-if (dy2 >= CCanvas::Current ()->Height ())
-	dy2 = CCanvas::Current ()->Height ()-1; 
-// Draw bitmap bmP[x,y] into (dx1,dy1)-(dx2,dy2)
-
-if ((bmP->Mode () == BM_LINEAR) && (CCanvas::Current ()->Mode () == BM_LINEAR)) {
-	if (bmP->Flags () & BM_FLAG_RLE)
-		BlitToBitmapMaskedRLE (dx2 - dx1 + 1, dy2 - dy1 + 1, dx1, dy1, sx, sy, bmP, CCanvas::Current ());
-	else
-		BlitToBitmapMasked (dx2 - dx1 + 1, dy2 - dy1 + 1, dx1, dy1, sx, sy, bmP, CCanvas::Current ());
-	return;
-	}
-GrBmUBitBltM (dx2 - dx1 + 1, dy2 - dy1 + 1, dx1, dy1, sx, sy, bmP, CCanvas::Current (), bTransp);
 }
 
 //------------------------------------------------------------------------------

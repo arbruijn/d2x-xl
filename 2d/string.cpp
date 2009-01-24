@@ -423,7 +423,9 @@ int CFont::DrawString (int left, int top, const char *s)
 	ubyte				c;
 	CBitmap*			bmf;
 	tCanvasColor*	colorP = (m_info.flags & FT_COLOR) ? NULL : &CCanvas::Current ()->FontColor (0);
-	bool				bOGL = CCanvas::Current ()->Mode () == BM_OGL;
+	
+if (CCanvas::Current ()->Mode () != BM_OGL)
+	return -1;
 
 nextRowP = s;
 y = top;
@@ -449,10 +451,7 @@ while (nextRowP != NULL) {
 		if (fontManager.Current ()->InFont (letter)) {
 			bmf = m_info.bitmaps + letter;
 			bmf->AddFlags (BM_FLAG_TRANSPARENT);
-			if (bOGL)
-				bmf->OglUBitMapMC (x, y, 0, 0, I2X (1), 0, colorP);
-			else
-				GrBitmapM (x, y, bmf, 2); // credits need clipping
+			bmf->OglUBitMapMC (x, y, 0, 0, I2X (1), 0, colorP);
 			}
 		x += spacing;
 		textP++;

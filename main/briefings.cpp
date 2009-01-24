@@ -580,12 +580,12 @@ if (*m_info.szBitmapName) {
 
 //-----------------------------------------------------------------------------
 
-void CBriefing::RenderBitmap (CBitmap *bmp)
+void CBriefing::RenderBitmap (CBitmap* bmP)
 {
-CCanvas* bitmapCanv = CCanvas::Current ()->CreatePane (220, 45, bmp->Width (), bmp->Height ());
+CCanvas* bitmapCanv = CCanvas::Current ()->CreatePane (220, 45, bmP->Width (), bmP->Height ());
 CCanvas::Push ();
 CCanvas::SetCurrent (bitmapCanv);
-GrBitmapM (0, 0, bmp, 0);
+bmP->OglUBitMapMC (0, 0);
 CCanvas::Pop ();
 bitmapCanv->Destroy ();
 }
