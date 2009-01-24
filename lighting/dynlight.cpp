@@ -232,7 +232,7 @@ int CLightManager::IsFlickering (short nSegment, short nSide)
 
 if ((flP = gameData.render.lights.flicker.Buffer ()))
 	for (int l = gameData.render.lights.flicker.Length (); l; l--, flP++)
-		if ((flP->m_nSegment == nSegment) && (flP->nSide == m_nSide))
+		if ((flP->m_nSegment == nSegment) && (flP->m_nSide == nSide))
 			return 1;
 return 0;
 }

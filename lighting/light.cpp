@@ -818,7 +818,7 @@ void FlickerLights (void)
 {
 	CVariableLight	*flP;
 	
-if (!(flP = gameData.render.lights.flicker.lights.Buffer ()))
+if (!(flP = gameData.render.lights.flicker.Buffer ()))
 	return;
 	
 	int				l;
@@ -835,13 +835,13 @@ for (l = gameData.render.lights.flicker.Length (); l; l--, flP++) {
 	if (!(gameData.pig.tex.brightness [sideP->m_nBaseTex] ||
 			gameData.pig.tex.brightness [sideP->m_nOvlTex]))
 		continue;
-	if (flP->timer == (fix) 0x80000000)		//disabled
+	if (flP->m_timer == (fix) 0x80000000)		//disabled
 		continue;
-	if ((flP->timer -= gameData.time.xFrame) < 0) {
-		while (flP->timer < 0)
-			flP->timer += flP->delay;
-		flP->mask = ((flP->mask & 0x80000000) ? 1 : 0) + (flP->mask << 1);
-		if (flP->mask & 1)
+	if ((flP->m_timer -= gameData.time.xFrame) < 0) {
+		while (flP->m_timer < 0)
+			flP->m_timer += flP->m_delay;
+		flP->m_mask = ((flP->m_mask & 0x80000000) ? 1 : 0) + (flP->m_mask << 1);
+		if (flP->m_mask & 1)
 			AddLight (nSegment, nSide);
 		else if (EGI_FLAG (bFlickerLights, 1, 0, 1))
 			SubtractLight (nSegment, nSide);
@@ -854,7 +854,7 @@ CVariableLight *FindVariableLight (int nSegment,int nSide)
 {
 	CVariableLight	*flP;
 	
-if ((flP = gameData.render.lights.flicker.lights.Buffer ()))
+if ((flP = gameData.render.lights.flicker.Buffer ()))
 	for (int l = gameData.render.lights.flicker.Length (); l; l--, flP++)
 		if ((flP->m_nSegment == nSegment) && (flP->m_nSide == nSide))	//found it!
 			return flP;
@@ -864,10 +864,10 @@ return NULL;
 //turn flickering off (because light has been turned off)
 void DisableVariableLight (int nSegment,int nSide)
 {
-CVariableLight *flP = FindVariableLight (nSegment ,nSide);
+CVariableLight *flP = FindVariableLight (nSegment, nSide);
 
 if (flP)
-	flP->timer = 0x80000000;
+	flP->m_timer = 0x80000000;
 }
 
 //-----------------------------------------------------------------------------
@@ -877,7 +877,7 @@ void EnableVariableLight (int nSegment,int nSide)
 	CVariableLight *flP = FindVariableLight (nSegment, nSide);
 
 if (flP)
-	flP->timer = 0;
+	flP->m_timer = 0;
 }
 
 //------------------------------------------------------------------------------
