@@ -556,7 +556,7 @@ if (info.nType == OBJ_PLAYER) {
 
 			if ((gameData.time.xGame > xLastVolatileScrapeSoundTime + I2X (1)/4) ||
 					(gameData.time.xGame < xLastVolatileScrapeSoundTime)) {
-				short sound = (nType == 1) ? SOUND_VOLATILE_WALL_HISS : SOUND_SHIP_IN_WATER;
+				short sound = (nType & 1) ? SOUND_VOLATILE_WALL_HISS : SOUND_SHIP_IN_WATER;
 				xLastVolatileScrapeSoundTime = gameData.time.xGame;
 				audio.CreateSegmentSound (sound, nHitSeg, 0, vHitPt);
 				if (IsMultiGame)

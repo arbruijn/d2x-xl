@@ -823,10 +823,10 @@ if (!bSolid) {
 	}
 if (gameData.pig.tex.tMapInfoP [m_nBaseTex].damage) {
 	damage = gameData.pig.tex.tMapInfoP [m_nBaseTex].damage;
-	return 1;
+	return 3;
 	}
 if (gameData.pig.tex.tMapInfoP [m_nBaseTex].flags & TMI_WATER)
-	return 2;
+	return 4;
 return 0;
 }
 

@@ -165,9 +165,17 @@ if (sideMask) {
 	}
 if (!nType)
 	nType = CheckSegmentPhysics ();
-if (nType) {
+// type 1,2: segment related sound
+// type 2,3: sound caused by ship touching a wall
+// type & 1: lava
+// type & 2: water
+if (nType > 1) {
 	if (!bPlayingSound [info.nId]) {
-		short sound = (nType == 1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
+		short sound;
+		if (nType == 2)
+			sound = SOUND_SHIP_IN_WATER;
+		else
+			sound = (nType & 1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
 		audio.CreateObjectSound (sound, SOUNDCLASS_GENERIC, OBJ_IDX (this), 1);
 		bPlayingSound [info.nId] = 1;
 		}

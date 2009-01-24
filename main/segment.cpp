@@ -333,12 +333,12 @@ return false;
 
 int CSegment::Physics (fix& xDamage)
 {
-if (m_nType == SEGMENT_IS_WATER) {
-	xDamage = 0;
-	return 2;
-	}
 if (m_nType == SEGMENT_IS_LAVA) {
 	xDamage = gameData.pig.tex.tMapInfo [0][404].damage / 2;
+	return 1;
+	}
+if (m_nType == SEGMENT_IS_WATER) {
+	xDamage = 0;
 	return 2;
 	}
 return 0;
