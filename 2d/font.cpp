@@ -525,44 +525,6 @@ do {
 }
 
 //------------------------------------------------------------------------------
-
-void CFont::PrintToCanvas (int x, int y, char *s, uint color, int bScale)
-{
-#if 1
-	ubyte		*data;
-	int		rs;
-	CCanvas	*canvP;
-	int		w, h, aw;
-
-CCanvas::Push ();
-fontManager.SetCurrent (this);					//set the font we're going to use
-fontManager.Current ()->StringSize (s, w, h, aw);		//now get the string size
-
-//canvP = GrCreateCanvas (font->width*strlen (s),font->height*2);
-if (!(canvP = CCanvas::Create (w, Height () * 2)))
-	return;
-canvP->SetPalette (paletteManager.Game ());
-CCanvas::SetCurrent (canvP);
-fontManager.SetCurrent (this);
-canvP->Clear (0);						//trans color
-fontManager.SetColorRGBi (color, 1, 0, 1);
-GrPrintF (NULL, 0, 0, s);
-if (bScale) {
-	data = canvP->Buffer ();
-	rs = canvP->RowSize ();
-
-	for (y=canvP->Height () / 2;y--;) {
-		memcpy (data + rs * y * 2, data+ rs * y, canvP->Width ());
-		memcpy (data + rs * (y * 2 + 1), data + rs *y, canvP->Width ());
-		}
-	}
-CCanvas::Pop ();
-GrBitmapM (x, y, canvP, 2);
-canvP->Destroy ();
-#endif
-}
-
-//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 

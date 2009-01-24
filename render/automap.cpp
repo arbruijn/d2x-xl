@@ -227,7 +227,8 @@ if (!gameOpts->render.automap.bTextured || m_bRadar) {
 			sprintf (msg, TXT_MARKER_MSG, gameData.marker.nHighlight + 1,
 						gameData.marker.szMessage [(gameData.multiplayer.nLocalPlayer * 2) + gameData.marker.nHighlight]);
 			CCanvas::Current ()->SetColorRGB (196, 0, 0, 255);
-			SMALL_FONT->PrintToCanvas (5, 20, msg, m_colors.nDkGray, !m_data.bHires);
+			fontManager.SetCurrent (SMALL_FONT);
+			GrString (5, 20, msg, NULL);
 			}
 		}			
 	// Draw CPlayerData (s)...

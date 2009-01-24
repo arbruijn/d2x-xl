@@ -619,8 +619,6 @@ return bmP;
 
 //------------------------------------------------------------------------------
 
-int OglUBitMapMC2 (int x, int y, int dw, int dh, CBitmap *bmP, tCanvasColor *c, int scale, int orient);
-
 int GrString (int x, int y, const char *s, int *idP)
 {
 if (gameOpts->render.coronas.nStyle < 2) {

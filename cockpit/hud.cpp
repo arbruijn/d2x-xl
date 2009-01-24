@@ -121,39 +121,20 @@ if (pMsgs->nMessages > 0) {
 		pszMsg = pMsgs->szMsgs [nMsg];
 
 		if (strcmp (szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage], pszMsg)) {
-				CCanvas::Push ();
-				int ycrd = CCanvas::Current ()->Top () - (SMALL_FONT->Height ()+2);
-
+			CCanvas::Push ();
+			int ycrd = CCanvas::Current ()->Top () - (SMALL_FONT->Height ()+2);
 			if (ycrd < 0)
 				ycrd = 0;
 			CCanvas::SetCurrent (GetCurrentGameScreen ());
 			fontManager.SetCurrent (SMALL_FONT);
 			fontManager.Current ()->StringSize (pszMsg, w, h, aw);
 			ClearBackgroundMessages ();
-#if 1
-			Assert (CCanvas::Current ()->Mode () != BM_MODEX);
-#else				
-			if (CCanvas::Current ()->Mode () == BM_MODEX) {
-				ycrd -= h;
-				h *= 2;
-				SMALL_FONT->PrintToCanvas ((CCanvas::Current ()->Width () - w) / 2, ycrd, pszMsg, pMsgs->nColor, 2);
-				if (nModexHUDMsgs > 0) {
-					nModexHUDMsgs--;
-					szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage][0] = '!';
-					}
-				else
-					strcpy (szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage], pszMsg);
-				}
-			else 
-#endif
-				{
-				if (pMsgs->nColor == (uint) -1)
-					pMsgs->nColor = GREEN_RGBA;
-				fontManager.SetColorRGBi (pMsgs->nColor, 1, 0, 0);
-				pMsgs->nMsgIds [nMsg] = GrPrintF (pMsgs->nMsgIds + nMsg, (CCanvas::Current ()->Width ()-w) / 2, ycrd, pszMsg);
-				strcpy (szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage], pszMsg);
-				}
-				CCanvas::Pop ();
+			if (pMsgs->nColor == (uint) -1)
+				pMsgs->nColor = GREEN_RGBA;
+			fontManager.SetColorRGBi (pMsgs->nColor, 1, 0, 0);
+			pMsgs->nMsgIds [nMsg] = GrPrintF (pMsgs->nMsgIds + nMsg, (CCanvas::Current ()->Width ()-w) / 2, ycrd, pszMsg);
+			strcpy (szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage], pszMsg);
+			CCanvas::Pop ();
 			nLastMsgYCrd = ycrd;
 			nLastMsgHeight = h;
 			}
