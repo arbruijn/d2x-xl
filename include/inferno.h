@@ -2614,7 +2614,8 @@ class CBossData {
 		void ResetCloakTimes (void);
 		void InitGateIntervals (void);
 
-		inline bool Grow (uint i) { return m_info.Grow (i); }
+		inline uint ToS (void) { return m_info.ToS (); }
+		inline bool Grow (uint i = 1) { return m_info.Grow (i); }
 		inline CBossInfo& Boss (uint i) { return m_info [i]; }
 		inline uint BossCount (void) { return m_info.Buffer () ? m_info.ToS () : 0; }
 		inline uint Count (void) { return m_info.Buffer () ? m_info.ToS () : 0; }

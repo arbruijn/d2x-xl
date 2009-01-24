@@ -143,13 +143,9 @@ void InitAIObjects (void)
 	CObject*	objP;
 
 gameData.ai.freePointSegs = gameData.ai.routeSegs.Buffer ();
-gameData.bosses.Destroy ();
-gameData.bosses.Create ();
 for (i = j = 0, objP = OBJECTS.Buffer (); i < LEVEL_OBJECTS; i++, objP++) {
 	if (objP->info.controlType == CT_AI)
 		InitAIObject (i, objP->cType.aiInfo.behavior, objP->cType.aiInfo.nHideSegment);
-	if ((objP->info.nType == OBJ_ROBOT) && (ROBOTINFO (objP->info.nId).bossFlag))
-		gameData.bosses [j++].m_nObject = i;
 	}
 gameData.bosses.Setup ();
 gameData.ai.bInitialized = 1;

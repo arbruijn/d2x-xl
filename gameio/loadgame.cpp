@@ -1595,9 +1595,10 @@ else {
 	StartLevel (0);		// Note link to above if!
 	}
 CopyDefaultsToRobotsAll ();
-if (!bRestore)
+if (!bRestore) {
 	InitReactorForLevel (0);
-InitAIObjects ();
+	InitAIObjects ();
+	}
 PrepareModels ();
 #if 0
 LOCALPLAYER.nInvuls =

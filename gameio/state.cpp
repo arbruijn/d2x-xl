@@ -2314,6 +2314,7 @@ FixObjectSizes ();
 lightManager.AddFromGeometry ();	// redo to account for broken lights
 SetupEffects ();
 InitReactorForLevel (1);
+InitAIObjects ();
 AddPlayerLoadout ();
 SetMaxOmegaCharge ();
 SetEquipGenStates ();

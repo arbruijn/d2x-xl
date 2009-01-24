@@ -470,14 +470,15 @@ FORALL_ACTOR_OBJS (objP, i) {
 		}
 
 	if (IS_BOSS (objP)) {
-		extraGameInfo [0].nBossCount++;
-		if (BOSS_COUNT > 1) {
+		if ((extraGameInfo [0].nBossCount < int (gameData.bosses.ToS ())) || gameData.bosses.Grow ()) {
+			gameData.bosses [extraGameInfo [0].nBossCount++].m_nObject = objP->Index ();
+			if (BOSS_COUNT < 2)
+				nBossObj = objP->Index ();
 #if TRACE
-			console.printf (1, "Warning: Two or more bosses including %i and %i\n", objP->Index (), nBossObj);
+			else
+				console.printf (1, "Warning: Two or more bosses including %i and %i\n", objP->Index (), nBossObj);
 #endif
-			}			
-		else
-			nBossObj = objP->Index ();
+			}
 		}
 	}
 

@@ -1435,6 +1435,7 @@ particleManager.SetLastType (-1);
 lightningManager.Init ();
 gameData.marker.Init ();
 gameData.physics.Init ();
+gameData.bosses.Create ();
 return true;
 }
 

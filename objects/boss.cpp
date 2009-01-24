@@ -96,6 +96,8 @@ vBossHomePos = bossObjP->info.position.vPos;
 nGroup = SEGMENTS [nBossHomeSeg].m_group;
 head =
 tail = 0;
+if (!queue.Create (nQueueSize))
+	return false;
 queue [head++] = nBossHomeSeg;
 bossSegs [nSegments++] = nBossHomeSeg;
 
