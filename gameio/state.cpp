@@ -303,7 +303,7 @@ if (gameStates.menus.bHires) {
 	image->RenderFixed (NULL, x, y);
 	if (gameOpts->menus.nStyle) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
-		DrawEmptyRect (x - 1, y - 1, x + image->Width () + 1, y + image->Height () + 1);
+		OglDrawEmptyRect (x - 1, y - 1, x + image->Width () + 1, y + image->Height () + 1);
 		}
 	}
 else {

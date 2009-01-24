@@ -135,7 +135,7 @@ int GrUCircle(fix x, fix y, fix r);
 
 // Draw an unfilled rectangle into the current canvas
 void gr_box(int left, int top, int right, int bot);
-void DrawEmptyRect(int left, int top, int right, int bot);
+void OglDrawEmptyRect(int left, int top, int right, int bot);
 
 void DrawScanLineClipped(int x1, int x2, int y);
 void DrawScanLine(int x1, int x2, int y);

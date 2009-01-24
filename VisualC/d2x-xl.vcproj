@@ -3994,10 +3994,6 @@
 					Name="Source Files"
 					>
 					<File
-						RelativePath="..\2d\2dsline.cpp"
-						>
-					</File>
-					<File
 						RelativePath="..\2d\bitblt.cpp"
 						>
 						<FileConfiguration
@@ -4159,26 +4155,6 @@
 					</File>
 					<File
 						RelativePath="..\2d\pixel.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\2d\rect.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Win32"

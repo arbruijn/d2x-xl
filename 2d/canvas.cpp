@@ -22,6 +22,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "console.h"
 #include "inferno.h"
 #include "grdef.h"
+#include "ogl_render.h"
 #include "canvas.h"
 
 CCanvas*	CCanvas::m_current = NULL;
@@ -111,14 +112,8 @@ fontManager.SetCurrent (m_current->Font ());
 
 void CCanvas::Clear (uint color)
 {
-if (MODE == BM_OGL)
-	SetColorRGBi (color);
-else 
-	if (color)
-		SetColor (CCanvas::Current ()->Palette ()->ClosestColor (RGBA_RED (color), RGBA_GREEN (color), RGBA_BLUE (color)));
-	else
-		SetColor (TRANSPARENCY_COLOR);
-DrawFilledRect (0, 0, CCanvas::Current ()->Width () - 1, CCanvas::Current ()->Height () - 1);
+SetColorRGBi (color);
+OglDrawFilledRect (0, 0, CCanvas::Current ()->Width () - 1, CCanvas::Current ()->Height () - 1);
 }
 
 //	-----------------------------------------------------------------------------

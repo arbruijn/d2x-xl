@@ -876,7 +876,7 @@ else {
 		}
 	y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 5 : 1) * nHUDLineSpacing - 1) * yScale);
 	CCanvas::Current ()->SetColorRGB (255, 255, (ubyte) ((h > 100) ? 255 : 0), 255);
-	DrawEmptyRect (6, y, 6 + (int) (100 * xScale), y + (int) (9 * yScale));
+	OglDrawEmptyRect (6, y, 6 + (int) (100 * xScale), y + (int) (9 * yScale));
 	if (bFlash) {
 		if (!bShow)
 			goto skipGauge;
@@ -922,7 +922,7 @@ if (gameOpts->render.cockpit.bTextGauges) {
 else {
 	y = CCanvas::Current ()->Height () - (int) ((((gameData.app.nGameMode & GM_MULTI) ? 8 : 3) * nHUDLineSpacing - 1) * yScale);
 	CCanvas::Current ()->SetColorRGB (255, 0, 0, 255);
-	DrawEmptyRect (6, y, 6 + (int) (100 * xScale), y + (int) (9 * yScale));
+	OglDrawEmptyRect (6, y, 6 + (int) (100 * xScale), y + (int) (9 * yScale));
 	CCanvas::Current ()->SetColorRGB (224, 0, 0, 128);
 	OglDrawFilledRect (6, y, 6 + (int) (h * xScale), y + (int) (9 * yScale));
 	}
@@ -1163,7 +1163,7 @@ if (gameOpts->render.cockpit.bTextGauges) {
 else {
 	y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 6 : 2) * nHUDLineSpacing - 1) * yScale);
 	CCanvas::Current ()->SetColorRGB (0, (ubyte) ((h > 100) ? 255 : 64), 255, 255);
-	DrawEmptyRect (6, y, 6 + (int) (100 * xScale), y + (int) (9 * yScale));
+	OglDrawEmptyRect (6, y, 6 + (int) (100 * xScale), y + (int) (9 * yScale));
 	if (bShow) {
 		CCanvas::Current ()->SetColorRGB (0, (ubyte) ((h > 100) ? 224 : 64), 224, 128);
 		OglDrawFilledRect (6, y, 6 + (int) (((h > 100) ? h - 100 : h) * xScale), y + (int) (9 * yScale));
@@ -2404,7 +2404,7 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 					nIdNames [nCurColor][p] = GrString (x1, y1, s, nIdNames [nCurColor] + p);
 					CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (colorP->r, colorP->g, colorP->b));
 					glLineWidth ((GLfloat) 2.0f);
-					DrawEmptyRect (x1 - 4, y1 - 3, x1 + w + 2, y1 + h + 3);
+					OglDrawEmptyRect (x1 - 4, y1 - 3, x1 + w + 2, y1 + h + 3);
 					glLineWidth (1);
 					//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 					}
@@ -2788,7 +2788,7 @@ if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
 	int smallWindowBottom, bigWindowBottom, extraPartHeight;
 
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
-	DrawEmptyRect (0, 0, CCanvas::Current ()->Width ()-1, CCanvas::Current ()->Height ());
+	OglDrawEmptyRect (0, 0, CCanvas::Current ()->Width ()-1, CCanvas::Current ()->Height ());
 
 	//if the window only partially overlaps the big 3d window, copy
 	//the extra part to the visible screen

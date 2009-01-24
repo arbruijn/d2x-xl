@@ -432,7 +432,7 @@ if (w1 < w) {
 CCanvas::Current ()->SetColorRGB (200, 0, 0, 255);
 if (w1)
 	OglDrawFilledRect (x + 1, y, x + w1, y + h - 2);
-DrawEmptyRect (x, y, x + w - 1, y + h - 1);
+OglDrawEmptyRect (x, y, x + w - 1, y + h - 1);
 }
 
 //------------------------------------------------------------------------------ 
