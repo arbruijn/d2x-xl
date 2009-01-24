@@ -174,17 +174,17 @@ if (nType) {
 		nSound = mType.physInfo.thrust.IsZero () ? 0 : SOUND_SHIP_IN_WATER;
 	else
 		nSound = (nType & 1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
-	if (nSound != nSoundPlaying [info.nId]) {
-		if (nSoundPlaying [info.nId])
+	if (nSound != gameData.objs.nSoundPlaying [info.nId]) {
+		if (gameData.objs.nSoundPlaying [info.nId])
 			audio.DestroyObjectSound (OBJ_IDX (this));
 		if (nSound)
 			audio.CreateObjectSound (nSound, SOUNDCLASS_GENERIC, OBJ_IDX (this), 1);
-		nSoundPlaying [info.nId] = nSound;
+		gameData.objs.nSoundPlaying [info.nId] = nSound;
 		}
 	}
-else if (nSoundPlaying [info.nId]) {
+else if (gameData.objs.nSoundPlaying [info.nId]) {
 	audio.DestroyObjectSound (OBJ_IDX (this));
-	nSoundPlaying [info.nId] = 0;
+	gameData.objs.nSoundPlaying [info.nId] = 0;
 	}
 return nType;
 }
