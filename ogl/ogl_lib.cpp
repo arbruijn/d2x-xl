@@ -1259,6 +1259,14 @@ void OglDeleteTextures (GLsizei n, GLuint *hTextures)
 if ((*hTextures == gameData.render.ogl.drawBuffer.RenderBuffer ()) &&
 	 (hTextures != &gameData.render.ogl.drawBuffer.RenderBuffer ()))
 	OglDestroyDrawBuffer ();
+#if DBG
+for (int i = 0; i < n;)
+	if (int (hTextures [i]) < 0)
+		hTextures [i] = hTextures [--n];
+	else
+		i++;
+if (n)
+#endif
 glDeleteTextures (n, hTextures);
 }
 

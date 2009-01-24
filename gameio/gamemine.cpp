@@ -482,6 +482,10 @@ gameData.render.shadows.nLights = 0;
 if (gameStates.app.bD2XLevel) {
 	INIT_PROGRESS_LOOP (i, j, gameData.segs.nVertices);
 	for (; i < j; i++) {
+#if DBG
+		if (i == nDbgVertex)
+			nDbgVertex = nDbgVertex;
+#endif
 		ReadColor (cf, gameData.render.color.ambient + i, gameData.segs.nLevelVersion <= 14, 1);
 		}
 	}
