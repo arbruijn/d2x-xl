@@ -368,7 +368,7 @@ ReshowScores:
 
 			GrString (0x8000, yOffs + LHY (15), TXT_HIGH_SCORES, NULL);
 			fontManager.SetCurrent (SMALL_FONT);
-			fontManager.SetColorRGBi (RGBA_PAL (31,26,5), 1, 0, 0);
+			fontManager.SetColorRGBi (RGBA_PAL2 (31,26,5), 1, 0, 0);
 			GrString (xOffs + LHX (31+33+XX), yOffs + LHY (46+7+YY), TXT_NAME, NULL);
 			GrString (xOffs + LHX (82+33+XX), yOffs + LHY (46+7+YY), TXT_SCORE, NULL);
 			GrString (xOffs + LHX (127+33+XX), yOffs + LHY (46+7+YY), TXT_SKILL, NULL);
@@ -378,16 +378,16 @@ ReshowScores:
 			GrString (xOffs + LHX (288-42+XX), yOffs + LHY (46+7+YY), TXT_TIME, NULL);
 			if (nCurItem < 0)
 				GrString (0x8000, yOffs + LHY (175), TXT_PRESS_CTRL_R, NULL);
-			fontManager.SetColorRGBi (RGBA_PAL (28,28,28), 1, 0, 0);
+			fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 			//GrPrintF (NULL, 0x8000, yOffs + LHY (31), "%c%s%c  - %s", 34, Scores.cool_saying, 34, Scores.stats[0].name);
 			for (i = 0; i < MAX_HIGH_SCORES; i++) {
 				//@@if (i==0) {
-				//@@	fontManager.SetColorRGBi (RGBA_PAL (28,28,28), 1, 0, 0);
+				//@@	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 				//@@} else {
 				//@@	fontManager.SetColor (paletteManager.FadeTable ()[BM_XRGB (28,28,28)+ ((28-i*2)*256)], 1, 0, 0);
 				//@@}														 
 				c = 28 - i * 2;
-				fontManager.SetColorRGBi (RGBA_PAL (c, c, c), 1, 0, 0);
+				fontManager.SetColorRGBi (RGBA_PAL2 (c, c, c), 1, 0, 0);
 				scores_draw_item (i, Scores.stats + i);
 			}
 
@@ -405,7 +405,7 @@ ReshowScores:
 				t0 = t1;
 				//@@fontManager.SetColor (paletteManager.FadeTable ()[fades[looper]*256+BM_XRGB (28,28,28)], -1);
 				c = 7 + fades [looper];
-				fontManager.SetColorRGBi (RGBA_PAL (c, c, c), 1, 0, 0);
+				fontManager.SetColorRGBi (RGBA_PAL2 (c, c, c), 1, 0, 0);
 				if (++looper > 63) 
 				 looper=0;
 				if (nCurItem ==  MAX_HIGH_SCORES)
