@@ -940,9 +940,8 @@ if (!nLights)
 	return 0;
 if (!gameData.render.lights.flicker.Create (nLights))
 	return -1;
-for (i = 0; i < nLights; i++)
+for (int i = 0; i < nLights; i++)
 	gameData.render.lights.flicker [i].Read (cf);
-	ReadVariableLight (&gameData.render.lights.flicker.lights [i], cf);
 return nLights;
 }
 
@@ -1150,8 +1149,7 @@ int LoadLevelData (char * pszFilename, int nLevel)
 	CFile cf;
 	char	filename [128];
 	int	sig, nMineDataOffset, nGameDataOffset;
-	int	nLights, nError;
-	//int i;
+	int	nError;
 
 SetDataVersion (-1);
 gameData.segs.bHaveSlideSegs = 0;
@@ -1216,16 +1214,15 @@ else
 	gameData.reactor.nStrength = -1;  //use old defaults
 
 if (gameData.segs.nLevelVersion >= 7) {
-	int i;
-
 #if TRACE
-console.printf (CON_DBG, "   loading dynamic lights ...\n");
+	console.printf (CON_DBG, "   loading dynamic lights ...\n");
 #endif
-if (0 > ReadVariableLights (cf)) {
-	cf.Close ();
-	return 5;
-	}
-	
+	if (0 > ReadVariableLights (cf)) {
+		cf.Close ();
+		return 5;
+		}
+	}	
+
 if (gameData.segs.nLevelVersion < 6) {
 	gameData.segs.secret.nReturnSegment = 0;
 	gameData.segs.secret.returnOrient = CFixMatrix::IDENTITY;
