@@ -50,8 +50,6 @@ for (i = 0; i < m_data.nLights [0]; i++, pl++) {
 	if ((nDbgSeg >= 0) && (nDbgSeg == pl->info.nSegment) && ((nDbgSide < 0) || (nDbgSide == pl->info.nSide)))
 		nDbgSeg = nDbgSeg;
 #endif
-	if (!(pl->info.bOn && pl->info.bState))
-		continue;
 	pl->render.vPosf [0].Assign (pl->info.vPos);
 	if (gameStates.ogl.bUseTransform)
 		pl->render.vPosf [1] = pl->render.vPosf [0];
@@ -278,7 +276,7 @@ if (nVertex == nDbgVertex)
 			continue;
 		if (SetActive (activeLightsP, prl, 2, nThread)) {
 			prl->render.nType = nType;
-			prl->render.bState = 1;
+			//prl->render.bState = 1;
 #if DBG
 			prl->render.nTarget = nFace + 1;
 			prl->render.nFrame = gameData.app.nFrameCount;

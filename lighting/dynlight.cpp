@@ -197,6 +197,7 @@ int CLightManager::Toggle (short nSegment, short nSide, short nObject, int bStat
 if (nLight >= 0) {
 	CDynLight* pl = m_data.lights + nLight;
 	pl->info.bOn = bState;
+	pl->info.bState = 1;
 	}
 return nLight;
 }
