@@ -36,7 +36,7 @@ fix ComputeObjectLight(CObject *obj,CFixVector *rotated_pnt);
 void ComputeEngineGlow (CObject *obj, fix *engine_glowValue);
 
 // returns ptr to flickering light structure, or NULL if can't find
-tVariableLight *FindVariableLight (int nSegment, int nSide);
+CVariableLight *FindVariableLight (int nSegment, int nSide);
 
 // turn flickering off (because light has been turned off)
 void DisableVariableLight (int nSegment, int nSide);
@@ -47,7 +47,7 @@ void EnableVariableLight (int nSegment, int nSide);
 // returns 1 if ok, 0 if error
 int AddVariableLight(int nSegment, int nSide, fix delay, unsigned long mask);
 
-void ReadVariableLight (tVariableLight *fl, CFile& cf);
+void ReadVariableLight (CVariableLight *fl, CFile& cf);
 
 void InitTextureBrightness (void);
 

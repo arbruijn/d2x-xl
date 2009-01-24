@@ -254,6 +254,7 @@ DESTROY (newObjects);
 DESTROY (objects);
 DESTROY (coronaQueries);
 DESTROY (coronaSamples);
+flicker.Destroy ();
 }
 
 //------------------------------------------------------------------------------

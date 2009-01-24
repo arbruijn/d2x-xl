@@ -801,7 +801,6 @@ if (gameData.missions.nEnhancedMission) {
 InitObjectSmoke ();
 gameData.pig.tex.bitmapColors.Clear ();
 gameData.models.thrusters.Clear ();
-gameData.render.lights.flicker.nLights = 0;
 savePlayer = LOCALPLAYER;
 #if 0
 Assert (gameStates.app.bAutoRunMission ||

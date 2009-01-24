@@ -222,7 +222,7 @@ int GameLoop (int RenderFlag, int bReadControls);
 void FullPaletteSave (void);
 
 /*
- * reads a tVariableLight structure from a CFILE
+ * reads a CVariableLight structure from a CFILE
  */
 extern short maxfps;
 extern int timer_paused;

@@ -1272,23 +1272,21 @@ class CPulseData {
 //------------------------------------------------------------------------------
 
 //Flickering light system
-typedef struct tVariableLight {
-	short				nSegment;
-	short				nSide;
-	uint	mask;     // determines flicker pattern
-	fix				timer;    // time until next change
-	fix				delay;    // time between changes
-} tVariableLight;
+class CVariableLight {
+	public:
+		short		m_nSegment;
+		short		m_nSide;
+		uint		m_mask;     // determines flicker pattern
+		fix		m_timer;    // time until next change
+		fix		m_delay;    // time between changes
+
+	public:
+		void Read (CFile& cf);
+};
 
 #define MAX_FLICKERING_LIGHTS 1000
 
-class CFlickerLightData {
-	public:
-		CStaticArray< tVariableLight, MAX_FLICKERING_LIGHTS >	lights; // [MAX_FLICKERING_LIGHTS];
-		int				nLights;
-	public:
-		CFlickerLightData () { nLights = 0; }
-};
+class CFlickerLightData : public CArray< CVariableLight > {};
 
 //------------------------------------------------------------------------------
 

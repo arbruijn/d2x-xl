@@ -932,6 +932,22 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
+static int ReadVariableLights (CFile& cf)
+{
+	int	nLights = cf.ReadInt ();
+
+if (!nLights)
+	return 0;
+if (!gameData.render.lights.flicker.Create (nLights))
+	return -1;
+for (i = 0; i < nLights; i++)
+	gameData.render.lights.flicker [i].Read (cf);
+	ReadVariableLight (&gameData.render.lights.flicker.lights [i], cf);
+return nLights;
+}
+
+// -----------------------------------------------------------------------------
+
 static void CheckAndLinkObjects (void)
 {
 	int		i, nObjSeg;
@@ -1132,9 +1148,9 @@ int no_oldLevel_file_error=0;
 int LoadLevelData (char * pszFilename, int nLevel)
 {
 	CFile cf;
-	char filename [128];
-	int sig, nMineDataOffset, nGameDataOffset;
-	int nError;
+	char	filename [128];
+	int	sig, nMineDataOffset, nGameDataOffset;
+	int	nLights, nError;
 	//int i;
 
 SetDataVersion (-1);
@@ -1205,14 +1221,11 @@ if (gameData.segs.nLevelVersion >= 7) {
 #if TRACE
 console.printf (CON_DBG, "   loading dynamic lights ...\n");
 #endif
-gameData.render.lights.flicker.nLights = cf.ReadInt ();
-Assert ((gameData.render.lights.flicker.nLights >= 0) && (gameData.render.lights.flicker.nLights < MAX_FLICKERING_LIGHTS));
-for (i = 0; i < gameData.render.lights.flicker.nLights; i++)
-	ReadVariableLight (&gameData.render.lights.flicker.lights [i], cf);
-}
-else
-	gameData.render.lights.flicker.nLights = 0;
-
+if (0 > ReadVariableLights (cf)) {
+	cf.Close ();
+	return 5;
+	}
+	
 if (gameData.segs.nLevelVersion < 6) {
 	gameData.segs.secret.nReturnSegment = 0;
 	gameData.segs.secret.returnOrient = CFixMatrix::IDENTITY;

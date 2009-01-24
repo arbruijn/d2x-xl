@@ -816,17 +816,21 @@ if (objP->info.nType == OBJ_PLAYER) {
 
 void FlickerLights (void)
 {
-	tVariableLight	*flP = &gameData.render.lights.flicker.lights [0];
+	CVariableLight	*flP;
+	
+if (!(flP = gameData.render.lights.flicker.lights.Buffer ()))
+	return;
+	
 	int				l;
 	CSide				*sideP;
 	short				nSegment, nSide;
 
-for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++) {
+for (l = gameData.render.lights.flicker.Length (); l; l--, flP++) {
 	//make sure this is actually a light
-	if (!(SEGMENTS [flP->nSegment].IsDoorWay (flP->nSide, NULL) & WID_RENDER_FLAG))
+	nSegment = flP->m_nSegment;
+	nSide = flP->m_nSide;
+	if (!(SEGMENTS [nSegment].IsDoorWay (nSide, NULL) & WID_RENDER_FLAG))
 		continue;
-	nSegment = flP->nSegment;
-	nSide = flP->nSide;
 	sideP = SEGMENTS [nSegment].m_sides + nSide;
 	if (!(gameData.pig.tex.brightness [sideP->m_nBaseTex] ||
 			gameData.pig.tex.brightness [sideP->m_nOvlTex]))
@@ -846,20 +850,21 @@ for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++) {
 }
 //-----------------------------------------------------------------------------
 //returns ptr to flickering light structure, or NULL if can't find
-tVariableLight *FindVariableLight (int nSegment,int nSide)
+CVariableLight *FindVariableLight (int nSegment,int nSide)
 {
-	tVariableLight *flP = &gameData.render.lights.flicker.lights [0];
-
-for (int l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++)
-	if ((flP->nSegment == nSegment) && (flP->nSide == nSide))	//found it!
-		return flP;
+	CVariableLight	*flP;
+	
+if ((flP = gameData.render.lights.flicker.lights.Buffer ()))
+	for (int l = gameData.render.lights.flicker.Length (); l; l--, flP++)
+		if ((flP->m_nSegment == nSegment) && (flP->m_nSide == nSide))	//found it!
+			return flP;
 return NULL;
 }
 //-----------------------------------------------------------------------------
 //turn flickering off (because light has been turned off)
 void DisableVariableLight (int nSegment,int nSide)
 {
-tVariableLight *flP = FindVariableLight (nSegment ,nSide);
+CVariableLight *flP = FindVariableLight (nSegment ,nSide);
 
 if (flP)
 	flP->timer = 0x80000000;
@@ -869,7 +874,7 @@ if (flP)
 //turn flickering off (because light has been turned on)
 void EnableVariableLight (int nSegment,int nSide)
 {
-	tVariableLight *flP = FindVariableLight (nSegment, nSide);
+	CVariableLight *flP = FindVariableLight (nSegment, nSide);
 
 if (flP)
 	flP->timer = 0;
@@ -940,7 +945,7 @@ extern CObject *oldViewer;
 //this code is copied from the editor routine calim_process_all_lights ()
 void ChangeSegmentLight (short nSegment, short nSide, int dir)
 {
-	CSegment *segP = SEGMENTS+nSegment;
+	CSegment *segP = SEGMENTS + nSegment;
 
 if (segP->IsDoorWay (nSide, NULL) & WID_RENDER_FLAG) {
 	CSide	*sideP = segP->m_sides+nSide;
@@ -963,6 +968,9 @@ oldViewer = NULL;
 
 int FindDLIndex (short nSegment, short nSide)
 {
+if (!gameData.render.lights.deltaIndices.Buffer ())
+	return 0;
+
 int	m,
 		l = 0,
 		r = gameData.render.lights.nStatic;
@@ -1143,6 +1151,17 @@ else {
 	count = cf.ReadByte ();
 	index = cf.ReadShort ();
 	}
+}
+
+//-----------------------------------------------------------------------------
+
+void CVariableLight::Read (CFile& cf)
+{
+m_nSegment = cf.ReadShort ();
+m_nSide = cf.ReadShort ();
+m_mask = cf.ReadInt ();
+m_timer = cf.ReadFix ();
+m_delay = cf.ReadFix ();
 }
 
 // ----------------------------------------------------------------------------------------------

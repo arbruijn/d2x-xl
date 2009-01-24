@@ -228,11 +228,12 @@ if (!colorP || colorP->index) {
 
 int CLightManager::IsFlickering (short nSegment, short nSide)
 {
-	tVariableLight* flP = &gameData.render.lights.flicker.lights [0];
+	CVariableLight* flP;
 
-for (int l = gameData.render.lights.flicker.nLights; l; l--, flP++)
-	if ((flP->nSegment == nSegment) && (flP->nSide == nSide))
-		return 1;
+if ((flP = gameData.render.lights.flicker.Buffer ()))
+	for (int l = gameData.render.lights.flicker.Length (); l; l--, flP++)
+		if ((flP->m_nSegment == nSegment) && (flP->nSide == m_nSide))
+			return 1;
 return 0;
 }
 

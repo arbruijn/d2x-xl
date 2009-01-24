@@ -2005,19 +2005,6 @@ void show_freeObjects (void)
 
 #endif
 
-//-----------------------------------------------------------------------------
-/*
- * reads a tVariableLight structure from a CFile
- */
-void ReadVariableLight (tVariableLight *fl, CFile& cf)
-{
-fl->nSegment = cf.ReadShort ();
-fl->nSide = cf.ReadShort ();
-fl->mask = cf.ReadInt ();
-fl->timer = cf.ReadFix ();
-fl->delay = cf.ReadFix ();
-}
-
 //------------------------------------------------------------------------------
 
 void LoadBackgroundBitmap (void)
