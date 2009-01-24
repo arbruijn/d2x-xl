@@ -1133,7 +1133,7 @@ if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL
 
 	color.index = 255;
 	color.rgb = 0;
-	bmP->OglUBitMapMC (0, y, -1, CCanvas::Current ()->Height () - y, I2X (1), 0, &color);
+	bmP->RenderScaled (0, y, -1, CCanvas::Current ()->Height () - y, I2X (1), 0, &color);
 	}
 }
 

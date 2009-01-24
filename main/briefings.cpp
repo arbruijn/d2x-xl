@@ -585,7 +585,7 @@ void CBriefing::RenderBitmap (CBitmap* bmP)
 CCanvas* bitmapCanv = CCanvas::Current ()->CreatePane (220, 45, bmP->Width (), bmP->Height ());
 CCanvas::Push ();
 CCanvas::SetCurrent (bitmapCanv);
-bmP->OglUBitMapMC (0, 0);
+bmP->RenderScaled (0, 0);
 CCanvas::Pop ();
 bitmapCanv->Destroy ();
 }

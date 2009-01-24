@@ -451,7 +451,7 @@ while (nextRowP != NULL) {
 		if (fontManager.Current ()->InFont (letter)) {
 			bmf = m_info.bitmaps + letter;
 			bmf->AddFlags (BM_FLAG_TRANSPARENT);
-			bmf->OglUBitMapMC (x, y, 0, 0, I2X (1), 0, colorP);
+			bmf->RenderScaled (x, y, 0, 0, I2X (1), 0, colorP);
 			}
 		x += spacing;
 		textP++;
@@ -624,7 +624,7 @@ if (gameOpts->render.coronas.nStyle < 2) {
 		grsString	*ps;
 
 	if ((MODE == BM_OGL) && (ps = GetPoolString (s, idP))) {
-		ps->bmP->OglUBitMapMC (x, y, 0, 0, I2X (1), 0, &CCanvas::Current ()->FontColor (0));
+		ps->bmP->RenderScaled (x, y, 0, 0, I2X (1), 0, &CCanvas::Current ()->FontColor (0));
 		return (int) (ps - stringPool) + 1;
 		}
 	}

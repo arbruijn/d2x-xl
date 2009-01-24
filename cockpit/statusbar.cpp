@@ -47,7 +47,7 @@ if (nGauge >= 0) {
 	bmP = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (nGauge);
 	}
 if (bmP)
-	bmP->OglUBitMapMC (HUD_SCALE_X (x), HUD_SCALE_Y (y), 
+	bmP->RenderScaled (HUD_SCALE_X (x), HUD_SCALE_Y (y), 
 							 HUD_SCALE_X ((int) (bmP->Width () * xScale + 0.5)), HUD_SCALE_Y ((int) (bmP->Height () * yScale + 0.5)), 
 							 scale, orient, NULL);
 return bmP;

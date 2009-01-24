@@ -131,7 +131,7 @@ if (!IsMultiGame || IsCoopGame) {
 			bmH = bmObjTally [i].Width () / 2;
 			bmW = bmObjTally [i].Height () / 2;
 			x = x0 - bmW - HUD_LHX (2);
-			bmObjTally [i].OglUBitMapMC (x, y, bmW, bmH, I2X (1), 0, NULL);
+			bmObjTally [i].RenderScaled (x, y, bmW, bmH, I2X (1), 0, NULL);
 			sprintf (szInfo, "%d", objCounts [i]);
 			fontManager.Current ()->StringSize (szInfo, w, h, aw);
 			x -= w + HUD_LHY (2);

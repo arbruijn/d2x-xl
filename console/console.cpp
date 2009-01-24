@@ -818,7 +818,7 @@ SDL_FillRect (m_input, NULL, SDL_MapRGBA (m_surface->format, 0, 0, 0, SDL_ALPHA_
 if (m_background)
 	delete m_background;
 m_background = CBitmap::Create (0, m_surface->Width (), m_surface->Height (), 1);
-GrBitmapScaleTo (image, m_background);
+image->BlitScaled (m_background);
 return 0;
 }
 

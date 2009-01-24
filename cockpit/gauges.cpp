@@ -462,7 +462,7 @@ if (bmP) {
 		w = HUD_SCALE_X (w);
 		h = HUD_SCALE_Y (h);
 		}
-	bmP->OglUBitMapMC (x, y, w * (gameStates.app.bDemoData + 1), h * (gameStates.app.bDemoData + 1), scale, orient, NULL);
+	bmP->RenderScaled (x, y, w * (gameStates.app.bDemoData + 1), h * (gameStates.app.bDemoData + 1), scale, orient, NULL);
 	}
 return bmP;
 }
@@ -1231,7 +1231,7 @@ else if (LOCALPLAYER.lives > 1)  {
 #else
 	PAGE_IN_GAUGE (GAUGE_LIVES);
 	bmP = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_LIVES);
-	bmP->OglUBitMapMC (10, 3);
+	bmP->RenderScaled (10, 3);
 #endif
 	nIdLives = GrPrintF (&nIdLives, 10 + bmP->Width () + bmP->Width () / 2, 4, "x %d", LOCALPLAYER.lives - 1);
 	}

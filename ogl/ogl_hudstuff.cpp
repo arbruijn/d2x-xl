@@ -109,7 +109,7 @@ else {
 #endif
 	if (LoadJoyMouse ()) {
 		color.color.alpha = 255;
-		bmpJoyMouse->OglUBitMapMC (mouseData.x - 8, mouseData.y - 8, 16, 16, I2X (1), 0, &color);
+		bmpJoyMouse->RenderScaled (mouseData.x - 8, mouseData.y - 8, 16, 16, I2X (1), 0, &color);
 		color.color.alpha = 96;
 		}
 	else {

@@ -432,26 +432,6 @@ void StretchToBitmapRLE (int w, int h, int dx, int dy, int sx, int sy, CBitmap *
 }
 
 //------------------------------------------------------------------------------
-
-void GrBmUBitBltM (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest, int bTransp)
-{
-	register int x1, y1;
-	ubyte c;
-
-if ((src->Mode () == BM_LINEAR) && (dest->Mode () == BM_OGL))
-	src->Render (dest, dx, dy, w, h, sx, sy, w, h, bTransp);
-else if ((src->Mode () == BM_OGL) && (dest->Mode () == BM_LINEAR))
-	src->ScreenCopy (dest, dx, dy, w, h, sx, sy);
-else
-	for (y1 = 0; y1 < h; y1++) {
-		for (x1 = 0; x1 < w; x1++) {
-			if ((c = src->GetPixel (sx + x1, sy + y1)) != TRANSPARENCY_COLOR)
-				dest->DrawPixel (dx + x1, dy + y1, c);
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
 // rescaling bitmaps, 10/14/99 Jan Bobrowski jb@wizard.ae.krakow.pl
 
 inline void ScaleLine (ubyte *src, ubyte *dest, int ilen, int olen)
@@ -467,9 +447,9 @@ while (dest < end) {
 		c -= ilen;
 		goto inside;
 		}
-	while(--i>=0) {
+	while(--i >= 0) {
 inside:
-			*dest++ = *src;
+		*dest++ = *src;
 		}
 	src++;
 	}
@@ -477,12 +457,12 @@ inside:
 
 //------------------------------------------------------------------------------
 
-void GrBitmapScaleTo (CBitmap *src, CBitmap *dest)
+void CBitmap::BlitScaled (CBitmap* destP)
 {
-	ubyte *s = src->Buffer ();
-	ubyte *d = dest->Buffer ();
-	int h = src->Height ();
-	int a = dest->Height () / h, b = dest->Height () % h;
+	ubyte *s = Buffer ();
+	ubyte *d = destP->Buffer ();
+	int h = Height ();
+	int a = destP->Height () / h, b = destP->Height () % h;
 	int c = 0, i, y;
 
 for (y = 0; y < h; y++) {
@@ -494,10 +474,10 @@ for (y = 0; y < h; y++) {
 		}
 	while(--i >= 0) {
 inside:
-		ScaleLine (s, d, src->Width (), dest->Width ());
-		d += dest->RowSize ();
+		ScaleLine (s, d, Width (), destP->Width ());
+		d += destP->RowSize ();
 		}
-	s += src->RowSize ();
+	s += RowSize ();
 	}
 }
 
@@ -645,12 +625,12 @@ if ((Mode () == BM_LINEAR) && (dest->Mode () == BM_OGL)) {
 	}
 else if (dest->Mode () != BM_LINEAR) {
 	CBitmap *tmp = CBitmap::Create (0, dest->Width (), dest->Height (), 1);
-	GrBitmapScaleTo (this, tmp);
+	BlitScaled (tmp);
 	tmp->BlitClipped (0, 0);
 	delete tmp;
 	}
 else
-	GrBitmapScaleTo (this, dest);
+	BlitScaled (dest);
 }
 
 //------------------------------------------------------------------------------
