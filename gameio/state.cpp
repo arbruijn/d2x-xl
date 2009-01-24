@@ -70,6 +70,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "morph.h"
 #include "weapon.h"
 #include "render.h"
+#include "ogl_render.h"
 #include "loadgame.h"
 #include "gauges.h"
 #include "newdemo.h"

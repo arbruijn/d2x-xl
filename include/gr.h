@@ -125,25 +125,11 @@ int gr_uaaline(fix x0, fix y0, fix x1, fix y1);
 void DrawFilledRect(int left, int top, int right, int bot);
 void GrURect(int left, int top, int right, int bot);
 
-// Draw a filled circle
-int gr_disk(fix x, fix y, fix r);
-int gr_udisk(fix x, fix y, fix r);
-
-// Draw an outline circle
-int gr_circle(fix x, fix y, fix r);
-int GrUCircle(fix x, fix y, fix r);
-
-// Draw an unfilled rectangle into the current canvas
-void gr_box(int left, int top, int right, int bot);
-void OglDrawEmptyRect(int left, int top, int right, int bot);
-
 void DrawScanLineClipped(int x1, int x2, int y);
 void DrawScanLine(int x1, int x2, int y);
 
-
-void RotateBitmap(CBitmap *bp, grsPoint *vertbuf, int lightValue);
-
-void ScaleBitmap(CBitmap *bp, grsPoint *vertbuf, int orientation);
+void RotateBitmap (CBitmap *bp, grsPoint *vertbuf, int lightValue);
+void ScaleBitmap (CBitmap *bp, grsPoint *vertbuf, int orientation);
 
 //===========================================================================
 // Global variables
