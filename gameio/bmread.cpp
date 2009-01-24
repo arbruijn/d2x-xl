@@ -16,27 +16,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Routines to parse bitmaps.tbl
  *
- * Old Log:
- * Revision 2.4  1995/03/28  18:05:29  john
- * Fixed it so you don't have to delete pig after changing bitmaps.tbl
- *
- * Revision 2.3  1995/03/07  16:52:03  john
- * Fixed robots not moving without edtiro bug.
- *
- * Revision 2.2  1995/03/06  16:10:20  mike
- * Fix compile errors if building without editor.
- *
- * Revision 2.1  1995/03/02  14:55:40  john
- * Fixed bug with EDITOR never defined.
- *
- * Revision 2.0  1995/02/27  11:33:10  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.1  1995/02/25  14:02:36  john
- * Initial revision
- *
- *
  */
 
 #ifdef HAVE_CONFIG_H
@@ -567,12 +546,6 @@ int bm_init_use_tbl()
 
 			else IFTOK("$EFFECTS")		{bmFlag = BM_EFFECTS;	nClip = 0;}
 			else IFTOK("$ALIAS")			bm_read_alias();
-
-			#ifdef EDITOR
-			else IFTOK("!METALS_FLAG")		TextureMetals = textureCount;
-			else IFTOK("!LIGHTS_FLAG")		TextureLights = textureCount;
-			else IFTOK("!EFFECTS_FLAG")	TextureEffects = textureCount;
-			#endif
 
 			else IFTOK("lighting") 			TmapInfo [gameStates.app.bD1Data][textureCount-1].lighting = F2X(get_float();
 			else IFTOK("damage") 			TmapInfo [gameStates.app.bD1Data][textureCount-1].damage = F2X(get_float();

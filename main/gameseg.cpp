@@ -43,66 +43,6 @@ vertIndex [2] = vp [sv [2]];
 vertIndex [3] = vp [sv [3]];
 }
 
-#ifdef EDITOR
-// -----------------------------------------------------------------------------------
-//	Create all vertex lists (1 or 2) for faces on a CSide.
-//	Sets:
-//		nFaces		number of lists
-//		vertices			vertices in all (1 or 2) faces
-//	If there is one face, it has 4 vertices.
-//	If there are two faces, they both have three vertices, so face #0 is stored in vertices 0, 1, 2,
-//	face #1 is stored in vertices 3, 4, 5.
-// Note: these are not absolute vertex numbers, but are relative to the CSegment
-// Note:  for triagulated sides, the middle vertex of each trianle is the one NOT
-//   adjacent on the diagonal edge
-void CreateAllVertexLists (int *nFaces, int *vertices, int nSegment, int nSide)
-{
-	CSide	*sideP = &SEGMENTS [nSegment].m_sides [nSide];
-	int  *sv = sideToVertsInt [nSide];
-
-Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= 0);
-Assert ((nSide >= 0) && (nSide < 6);
-
-switch (sideP->m_nType) {
-	case SIDE_IS_QUAD:
-
-		vertices [0] = sv [0];
-		vertices [1] = sv [1];
-		vertices [2] = sv [2];
-		vertices [3] = sv [3];
-
-		*nFaces = 1;
-		break;
-	case SIDE_IS_TRI_02:
-		*nFaces = 2;
-		vertices [0] =
-		vertices [5] = sv [0];
-		vertices [1] = sv [1];
-		vertices [2] =
-		vertices [3] = sv [2];
-		vertices [4] = sv [3];
-
-		//IMPORTANT: DON'T CHANGE THIS CODE WITHOUT CHANGING GET_SEG_MASKS ()
-		//CREATE_ABS_VERTEX_LISTS (), CREATE_ALL_VERTEX_LISTS (), CREATE_ALL_VERTNUM_LISTS ()
-		break;
-	case SIDE_IS_TRI_13:
-		*nFaces = 2;
-		vertices [0] =
-		vertices [5] = sv [3];
-		vertices [1] = sv [0];
-		vertices [2] =
-		vertices [3] = sv [1];
-		vertices [4] = sv [2];
-		//IMPORTANT: DON'T CHANGE THIS CODE WITHOUT CHANGING GET_SEG_MASKS ()
-		//CREATE_ABS_VERTEX_LISTS (), CREATE_ALL_VERTEX_LISTS (), CREATE_ALL_VERTNUM_LISTS ()
-		break;
-	default:
-		Error ("Illegal CSide nType (1), nType = %i, CSegment # = %i, CSide # = %i\n", sideP->m_nType, nSegment, nSide);
-		break;
-	}
-}
-#endif
-
 // ------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------
@@ -651,35 +591,6 @@ void ExtractOrientFromSegment (CFixMatrix *m, CSegment *seg)
 //	*m = CFixMatrix::CreateFU(fVec, &uVec, NULL);
 }
 
-#ifdef EDITOR
-// ------------------------------------------------------------------------------------------
-//	Extract the forward vector from CSegment *segP, return in *vp.
-//	The forward vector is defined to be the vector from the the center of the front face of the CSegment
-// to the center of the back face of the CSegment.
-void extract_forward_vector_from_segment (CSegment *segP, CFixVector *vp)
-{
-	extract_vector_from_segment (segP, vp, WFRONT, WBACK);
-}
-
-// ------------------------------------------------------------------------------------------
-//	Extract the right vector from CSegment *segP, return in *vp.
-//	The forward vector is defined to be the vector from the the center of the left face of the CSegment
-// to the center of the right face of the CSegment.
-void extract_right_vector_from_segment (CSegment *segP, CFixVector *vp)
-{
-	extract_vector_from_segment (segP, vp, WLEFT, WRIGHT);
-}
-
-// ------------------------------------------------------------------------------------------
-//	Extract the up vector from CSegment *segP, return in *vp.
-//	The forward vector is defined to be the vector from the the center of the bottom face of the CSegment
-// to the center of the top face of the CSegment.
-void extract_up_vector_from_segment (CSegment *segP, CFixVector *vp)
-{
-	extract_vector_from_segment (segP, vp, WBOTTOM, WTOP);
-}
-#endif
-
 // -------------------------------------------------------------------------------
 //	Return v0, v1, v2 = 3 vertices with smallest numbers.  If *bFlip set, then negate Normal after computation.
 //	Note, pos [Y]u cannot just compute the Normal by treating the points in the opposite direction as this introduces
@@ -731,36 +642,10 @@ void SetupSegments (void)
 gameOpts->render.nMathFormat = 0;
 gameData.segs.points.Clear ();
 for (int i = 0; i <= gameData.segs.nLastSegment; i++)
-#ifdef EDITOR
-	if (SEGMENTS [s].nSegment != -1)
-#endif
 	SEGMENTS [i].Setup ();
-#ifdef EDITOR
- {
-	int said = 0;
-	for (s = gameData.segs.nLastSegment + 1; s < LEVEL_SEGMENTS; s++)
-		if (SEGMENTS [s].nSegment != -1) {
-			if (!said) {
-#if TRACE
-				console.printf (CON_DBG, "Segment %i has invalid nSegment.  Bashing to -1.  Silently bashing all others...", s);
-#endif
-				}
-			said++;
-			SEGMENTS [s].nSegment = -1;
-			}
-	if (said) {
-#if TRACE
-		console.printf (CON_DBG, "%i fixed.\n", said);
-#endif
-		}
-	}
-#endif
-
 ComputeVertexNormals ();
 gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 }
-
-
 
 //	-----------------------------------------------------------------------------
 //	Set the segment depth of all segments from nStartSeg in *segbuf.

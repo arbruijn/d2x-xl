@@ -848,10 +848,6 @@ if (gameData.objs.viewerP->info.nType == OBJ_PLAYER)
 	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient.FVec() * ((gameData.objs.viewerP->info.xSize * 3) / 4);
 if (xEyeOffset)
 	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient.RVec() * (xEyeOffset);
-#ifdef EDITOR
-if (gameStates.app.nFunctionMode == FMODE_EDITOR)
-	gameData.render.mine.viewerEye = gameData.objs.viewerP->info.position.vPos;
-#endif
 if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE) {
 	nStartSeg = gameData.endLevel.exit.nSegNum;
 	}

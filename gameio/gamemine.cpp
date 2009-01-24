@@ -46,10 +46,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menu.h"
 #include "menu.h"
 
-#ifdef EDITOR
-#include "editor/editor.h"
-#endif
-
 #include "cfile.h"
 #include "fuelcen.h"
 
@@ -82,23 +78,12 @@ struct mh mine_header;
 struct me mine_editor;
 
 typedef struct v16_segment {
-	#ifdef EDITOR
-	short   nSegment;             // CSegment number, not sure what it means
-	#endif
-	CSide   sides [MAX_SIDES_PER_SEGMENT];       // 6 sides
-	short   children [MAX_SIDES_PER_SEGMENT];    // indices of 6 children segments, front, left, top, right, bottom, back
-	short   verts [MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
-	#ifdef  EDITOR
-	short   group;              // group number to which the CSegment belongs.
-	#endif
 	short   objects;            // pointer to OBJECTS in this CSegment
 	ubyte   special;            // what nType of center this is
 	sbyte   nMatCen;         // which center CSegment is associated with.
 	short   value;
 	fix     xAvgSegLight;       // average static light in CSegment
-	#ifndef EDITOR
 	short   pad;                // make structure longword aligned
-	#endif
 } v16_segment;
 
 struct mfi_v19 {
@@ -464,10 +449,6 @@ void LoadSegmentsCompiled (short nSegment, CFile& cf)
 
 INIT_PROGRESS_LOOP (nSegment, nLastSeg, gameData.segs.nSegments);
 for (; nSegment < nLastSeg; nSegment++) {
-#ifdef EDITOR
-	segP->nSegment = nSegment;
-	segP->m_group = 0;
-#endif
 #if DBG
 	if (nSegment == nDbgSeg)
 		nDbgSeg = nDbgSeg;
@@ -774,10 +755,6 @@ psz = strchr (gameData.segs.szLevelFilename, '.');
 bNewFileFormat = !psz || strcmp (psz, ".sdl");
 //	For compiled levels, textures map to themselves, prevent nTexOverride always being gray,
 //	bug which Matt and John refused to acknowledge, so here is Mike, fixing it.
-#ifdef EDITOR
-for (i = 0; i < MAX_TEXTURES; i++)
-	tmap_xlate_table [i] = i;
-#endif
 
 //=============================== Reading part ==============================
 nCompiledVersion = cf.ReadByte ();

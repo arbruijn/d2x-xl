@@ -66,9 +66,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "soundthreads.h"
 #include "menubackground.h"
 #include "songs.h"
-#ifdef EDITOR
-#	include "editor/editor.h"
-#endif
 
 //------------------------------------------------------------------------------
 //static int FirstTime = 1;
@@ -352,23 +349,11 @@ else if (nChoice == mainOpts.nCredits) {
 	songManager.StopAll ();
 	creditsManager.Show (NULL); 
 	}
-#ifdef EDITOR
-else if (nChoice == mainOpts.nEditor) {
-	SetFunctionMode (FMODE_EDITOR);
-	InitCockpit ();
-	}
-#endif
 else if (nChoice == mainOpts.nHelp) 
 	DoShowHelp ();
 else if (nChoice == mainOpts.nQuit) {
-#ifdef EDITOR
-	if (SafetyCheck ()) {
-#endif
 	paletteManager.DisableEffect ();
 	SetFunctionMode (FMODE_EXIT);
-#ifdef EDITOR
-	}
-#endif
 	}
 else if (nChoice == mainOpts.nOrder) 
 	ShowOrderForm ();

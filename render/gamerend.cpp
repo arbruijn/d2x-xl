@@ -151,9 +151,6 @@ if (ShowView_textTimer > 0) {
 			break;
 		case OBJ_ROBOT:
 			viewer_name = "Robot";
-#ifdef EDITOR
-			viewer_id = gameData.bots.names [gameData.objs.viewerP->info.nId];
-#endif
 			break;
 		case OBJ_HOSTAGE:
 			viewer_name = "Hostage";
@@ -169,9 +166,6 @@ if (ShowView_textTimer > 0) {
 			break;
 		case OBJ_POWERUP:
 			viewer_name = "Powerup";
-#ifdef EDITOR
-			viewer_id = Powerup_names [gameData.objs.viewerP->info.nId];
-#endif
 			break;
 		case OBJ_DEBRIS:
 			viewer_name = "Debris";

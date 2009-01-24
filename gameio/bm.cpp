@@ -58,13 +58,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 ubyte Sounds [2][MAX_SOUNDS];
 ubyte AltSounds [2][MAX_SOUNDS];
 
-#ifdef EDITOR
-int gameData.objs.types.nCount;
-byte	gameData.objs.types.nType [MAX_OBJTYPE];
-byte	gameData.objs.types.nType.nId [MAX_OBJTYPE];
-fix	gameData.objs.types.nType.nStrength [MAX_OBJTYPE];
-#endif
-
 //right now there's only one CPlayerData ship, but we can have another by
 //adding an array and setting the pointer to the active ship.
 

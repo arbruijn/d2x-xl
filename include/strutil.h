@@ -29,10 +29,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 #ifndef _WIN32
-#	ifndef __DJGPP__
-char *strupr( char *s1 );
-char *strlwr( char *s1 );
-#	endif
 
 char *strrev( char *s1 );
 #endif

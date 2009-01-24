@@ -28,10 +28,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "escort.h"
 #include "headlight.h"
 
-#ifdef EDITOR
-#include "editor/editor.h"
-#include "editor/kdefs.h"
-#endif
 //#define _DEBUG
 #if DBG
 #include "string.h"

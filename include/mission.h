@@ -69,12 +69,8 @@ typedef struct tMsnListEntry {
 #define ML_MSNROOTDIR	5
 
 //where the missions go
-#ifndef EDITOR
 #define BASE_MISSION_DIR "missions"
 #define MISSION_DIR (gameOpts->app.bSinglePlayer ? BASE_MISSION_DIR "/single/" : BASE_MISSION_DIR)
-#else
-#define MISSION_DIR "./"
-#endif
 
 #define IS_SHAREWARE (gameData.missions.nBuiltinHogSize == SHAREWARE_MISSION_HOGSIZE)
 #define IS_MAC_SHARE (gameData.missions.nBuiltinHogSize == MAC_SHARE_MISSION_HOGSIZE)

@@ -1199,27 +1199,16 @@ m_nLastEdge = -1;
 if (m_data.bCheat || (LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP)) {
 	// Cheating, add all edges as visited
 	for (s = 0; s <= gameData.segs.nLastSegment; s++)
-#ifdef EDITOR
-		if (SEGMENTS [s].nSegment != -1)
-#endif
-		 {
-			AddSegmentEdges (&SEGMENTS [s]);
-			}
+		AddSegmentEdges (&SEGMENTS [s]);
 	} 
 else {
 	// Not cheating, add visited edges, and then unvisited edges
 	for (s = 0; s <= gameData.segs.nLastSegment; s++)
-#ifdef EDITOR
-		if (SEGMENTS [s].nSegment != -1)
-#endif
 		if (automap.m_visited [0][s]) {
 			h++;
 			AddSegmentEdges (&SEGMENTS [s]);
 			}
 		for (s = 0; s <= gameData.segs.nLastSegment; s++)
-#ifdef EDITOR
-			if (SEGMENTS [s].nSegment != -1)
-#endif
 			if (!automap.m_visited [0][s]) {
 				AddUnknownSegmentEdges (&SEGMENTS [s]);
 				}

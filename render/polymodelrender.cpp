@@ -36,10 +36,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hitbox.h"
 #include "paging.h"
 
-#ifdef _3DFX
-#include "3dfx_des.h"
-#endif
-
 //------------------------------------------------------------------------------
 
 #define BASE_MODEL_SIZE		0x28000

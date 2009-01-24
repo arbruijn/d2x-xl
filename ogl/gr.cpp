@@ -489,29 +489,6 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-#ifdef EDITOR
-
-int SetEditorScreenMode (u_int32_t sm)
-{
-if (screen.scMode != SM (800,600)) {
-	int gr_error = GrSetMode (SM (800,600);
-	if (gr_error { //force into game scrren
-		Warning ("Cannot init editor screen (error=%d)",gr_error);
-		return 0;
-		}
-	}
-paletteManager.LoadEffect ();
-GrInitSubCanvas (&gameStates.render.vr.buffers.editorCanvas, screen.Canvas (), 0, 0, screen.Width (), screen.Height ());
-Canv_editor = &gameStates.render.vr.buffers.editorCanvas;
-GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[0], Canv_editor, 0, 0, Canv_editor->bm.Width (), Canv_editor->bm.Height ());
-GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[1], Canv_editor, 0, 0, Canv_editor->bm.Width (), Canv_editor->bm.Height ());
-CCanvas::SetCurrent (Canv_editor);
-init_editor_screen ();   //setup other editor stuff
-return 1;
-}
-
-#endif
-
 //------------------------------------------------------------------------------
 //called to change the screen mode. Parameter sm is the new mode, one of
 //SMODE_GAME or SMODE_EDITOR. returns mode acutally set (could be other
@@ -521,22 +498,12 @@ int SetScreenMode (u_int32_t sm)
 #if 0
 	GLint nError = glGetError ();
 #endif
-#ifdef EDITOR
-if ((sm == SCREEN_MENU) && (gameStates.video.nScreenMode == SCREEN_EDITOR)) {
-	CCanvas::SetCurrent (Canv_editor);
-	return 1;
-	}
-#endif
 if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.render.vr.nScreenSize) && 
 		(screen.Mode () == gameStates.render.vr.nScreenSize)) {
 	CCanvas::SetCurrent (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
 	OglSetScreenMode ();
 	return 1;
 	}
-#ifdef EDITOR
-	Canv_editor = NULL;
-#endif
-
 	gameStates.video.nScreenMode = sm;
 	switch (gameStates.video.nScreenMode) {
 		case SCREEN_MENU:
@@ -547,11 +514,6 @@ if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.rende
 		SetGameScreenMode (sm);
 		break;
 
-#ifdef EDITOR
-	case SCREEN_EDITOR:
-		SetEditorScreenMode (sm);
-		break;
-#endif
 
 	default:
 		Error ("Invalid screen mode %d",sm);

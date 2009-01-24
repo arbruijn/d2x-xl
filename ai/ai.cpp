@@ -23,10 +23,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "network.h"
 
-#ifdef EDITOR
-#include "editor/editor.h"
-#endif
-
 #include "string.h"
 //#define _DEBUG
 #if DBG

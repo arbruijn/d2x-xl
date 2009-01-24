@@ -66,9 +66,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "renderthreads.h"
 #include "soundthreads.h"
 #include "menubackground.h"
-#ifdef EDITOR
-#	include "editor/editor.h"
-#endif
 
 // -----------------------------------------------------------------------------
 // Set detail level based stuff.

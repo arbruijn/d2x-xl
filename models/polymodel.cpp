@@ -36,10 +36,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hitbox.h"
 #include "objrender.h"
 
-#ifdef _3DFX
-#include "3dfx_des.h"
-#endif
-
 #define PM_COMPATIBLE_VERSION 6
 #define PM_OBJFILE_VERSION 8
 
@@ -661,9 +657,6 @@ if (altTextures) {
 		gameData.models.textures [i] = gameData.pig.tex.bitmaps [gameStates.app.bD1Model] + altTextures [i].index;
 		if (gameStates.render.bBuildModels)
 			LoadBitmap (altTextures [i].index, gameStates.app.bD1Model);
-#ifdef _3DFX
-      gameData.models.textures [i]->nId = gameData.models.textureIndex [i].index;
-#endif
 		}
 	}
 else {
@@ -672,9 +665,6 @@ else {
 		gameData.models.textures [i] = gameData.pig.tex.bitmaps [gameStates.app.bD1Model] + gameData.models.textureIndex [i].index;
 		if (gameStates.render.bBuildModels)
 			LoadBitmap (gameData.models.textureIndex [i].index, gameStates.app.bD1Model);
-#ifdef _3DFX
-      gameData.models.textures [i]->nId = gameData.models.textureIndex [i].index;
-#endif
 		}
 	}
 #ifdef PIGGY_USE_PAGING

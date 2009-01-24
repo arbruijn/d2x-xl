@@ -27,10 +27,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gauges.h"
 #include "dropobject.h"
 
-#ifdef EDITOR
-#include "editor/editor.h"
-#endif
-
 extern void MultiSendStolenItems();
 
 #define	THIEF_ATTACK_TIME		(I2X (10))

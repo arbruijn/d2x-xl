@@ -428,11 +428,6 @@ if (bHaveMonitorBg) {
 		bmTop = &cameraP->Texture ();
 	}
 SetFaceLight (&props);
-#ifdef EDITOR
-if (Render_only_bottom && (nSide == WBOTTOM))
-	G3DrawTexPoly (props.nVertices, pointList, props.uvls, gameData.pig.tex.bitmaps + gameData.pig.tex.bmIndex [Bottom_bitmap_num].index, 1, propsP->segNum);
-else
-#endif
 #if DBG //convenient place for a debug breakpoint
 if (props.segNum == nDbgSeg && props.sideNum == nDbgSide)
 	props.segNum = props.segNum;
@@ -599,9 +594,6 @@ if (sideP->m_nType == SIDE_IS_QUAD) {
 	memcpy (props.uvls, sideP->m_uvls, sizeof (tUVL) * 4);
 	memcpy (props.vp, SEGMENTS [props.segNum].Corners (props.sideNum), 4 * sizeof (ushort));
 	RenderFace (&props);
-#ifdef EDITOR
-	CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->m_nBaseTex, sideP->m_nOvlTex, sideP->m_uvls);
-#endif
 	}
 else {
 	// new code
@@ -662,9 +654,6 @@ extern ubyte nDemoDoingRight, nDemoDoingLeft;
 
 void DoRenderObject (int nObject, int nWindow)
 {
-#ifdef EDITOR
-	int save_3d_outline=0;
-#endif
 	CObject *objP = OBJECTS + nObject, *hObj;
 	tWindowRenderedData *wrd = windowRenderedData + nWindow;
 	int nType, count = 0;
@@ -707,15 +696,6 @@ if ((count++ > LEVEL_OBJECTS) || (objP->info.nNextInSeg == nObject)) {
 	}
 	//g3_drawObject(objP->class_id, &objP->info.position.vPos, &objP->info.position.mOrient, objP->info.xSize);
 	//check for editor CObject
-#ifdef EDITOR
-if (gameStates.app.nFunctionMode == FMODE_EDITOR && nObject == CurObject_index) {
-	save_3d_outline = g3d_interp_outline;
-	g3d_interp_outline=1;
-	}
-if (bSearchMode)
-	RenderObjectSearch (objP);
-	else
-#endif
 	//NOTE LINK TO ABOVE
 if (RenderObject (objP, nWindow, 0))
 	gameData.render.mine.bObjectRendered [nObject] = gameStates.render.nFrameFlipFlop;
@@ -726,10 +706,6 @@ for (n = objP->info.nAttachedObj; n != -1; n = hObj->cType.explInfo.attached.nNe
 	Assert (hObj->info.nFlags & OF_ATTACHED);
 	RenderObject (hObj, nWindow, 1);
 	}
-#ifdef EDITOR
-if (gameStates.app.nFunctionMode == FMODE_EDITOR && nObject == CurObject_index)
-	g3d_interp_outline = save_3d_outline;
-#endif
 }
 
 // -----------------------------------------------------------------------------------
@@ -1083,10 +1059,6 @@ gameData.render.mine.viewerEye = gameData.objs.viewerP->info.position.vPos;
 if (nEyeOffset) {
 	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient.RVec() * nEyeOffset;
 	}
-#ifdef EDITOR
-if (gameStates.app.nFunctionMode == FMODE_EDITOR)
-	gameData.render.mine.viewerEye = gameData.objs.viewerP->info.position.vPos;
-#endif
 
 externalView.SetPos (NULL);
 if (gameStates.render.cameras.bActive) {
@@ -1947,26 +1919,8 @@ if (((gameStates.render.nRenderPass <= 0) &&
 #endif
 	if (!RENDERPATH)
 		RotateSideNorms ();
-#if defined(EDITOR) && defined (_DEBUG)
-	if (bShowOnlyCurSide) {
-		RotateVertexList (8, Cursegp->verts);
-		RenderSide (Cursegp, Curside);
-		goto done_rendering;
-		}
-#endif
 	 }
-#ifdef EDITOR
-	if (bSearchMode) {
-		}
-	else
-#endif
-
-#if 1
 if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
-#else
-if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2) && (gameStates.render.nShadowBlurPass < 2)) ||
-	 (gameStates.render.nShadowPass == 2)) {
-#endif
 	gameStates.ogl.bUseTransform = RENDERPATH;
 	BuildRenderSegList (nStartSeg, nWindow);		//fills in gameData.render.mine.nSegRenderList & gameData.render.mine.nRenderSegs
 	if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
@@ -2205,115 +2159,6 @@ if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nSha
 	}
 gameData.app.nMineRenderCount++;
 }
-
-// ----------------------------------------------------------------------------
-//	Only called if editor active.
-//	Used to determine which face was clicked on.
-
-#ifdef EDITOR
-
-void CheckFace(int nSegment, int nSide, int facenum, int nVertices, short *vp, int tmap1, int tmap2, tUVL *uvlp)
-{
-	int	i;
-
-	if (bSearchMode) {
-		int save_lighting;
-		CBitmap *bm;
-		tUVL uvlCopy [8];
-		g3sPoint *pointList [4];
-
-		if (tmap2 > 0)
-			bm = TexMergeGetCachedBitmap( tmap1, tmap2, nOrient);
-		else
-			bm = gameData.pig.tex.bitmaps + gameData.pig.tex.bmIndex [tmap1].index;
-
-		for (i = 0; i < nVertices; i++) {
-			uvlCopy [i] = uvlp [i];
-			pointList [i] = gameData.segs.points + vp [i];
-		}
-
-		CCanvas::Current ()->SetColor(0);
-		DrawPixelClipped(_search_x, _search_y);	//set our search pixel to color zero
-		CCanvas::Current ()->SetColor(1);					//and render in color one
- save_lighting = gameStates.render.nLighting;
- gameStates.render.nLighting = 2;
-		//G3DrawPoly(nVertices, vp);
-		G3DrawTexPoly (nVertices, pointList, reinterpret_cast<tUVL*> (uvlCopy), bm, 1, -1);
- gameStates.render.nLighting = save_lighting;
-
-		if (gr_ugpixel(CCanvas::Current (), _search_x, _search_y) == 1) {
-			found_seg = nSegment;
-			found_side = nSide;
-			found_face = facenum;
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void RenderObjectSearch(CObject *objP)
-{
-	int changed=0;
-
-	//note that we draw each pixel CObject twice, since we cannot control
-	//what color the CObject draws in, so we try color 0, then color 1,
-	//in case the CObject itself is rendering color 0
-
-	CCanvas::Current ()->SetColor(0);
-	DrawPixelClipped(_search_x, _search_y);	//set our search pixel to color zero
-	RenderObject (objP, 0, 0);
-	if (gr_ugpixel(CCanvas::Current (), _search_x, _search_y) != 0)
-		changed=1;
-
-	CCanvas::Current ()->SetColor(1);
-	DrawPixelClipped(_search_x, _search_y);	//set our search pixel to color zero
-	RenderObject (objP, 0, 0);
-	if (gr_ugpixel(CCanvas::Current (), _search_x, _search_y) != 1)
-		changed=1;
-
-	if (changed) {
-		if (objP->info.nSegment != -1)
-			Cursegp = SEGMENTS+objP->info.nSegment;
-		found_seg = -(objP->Index ()+1);
-	}
-}
-#endif
-
-//------------------------------------------------------------------------------
-
-#ifdef EDITOR
-
-extern int render_3d_in_big_tPortal;
-
-//finds what CSegment is at a given x&y -  seg, CSide, face are filled in
-//works on last frame rendered. returns true if found
-//if seg<0, then an CObject was found, and the CObject number is -seg-1
-int FindSegSideFace(short x, short y, int *seg, int *CSide, int *face, int *poly)
-{
-	bSearchMode = -1;
-	_search_x = x; _search_y = y;
-	found_seg = -1;
-	if (render_3d_in_big_tPortal) {
-		CCanvas temp_canvas;
-
-		GrInitSubCanvas(&temp_canvas, canv_offscreen, 0, 0,
-			LargeView.ev_canv->Width (), LargeView.ev_canv->Bitmap ().Height ());
-		CCanvas::SetCurrent(&temp_canvas);
-		RenderFrame(0, 0);
-	}
-	else {
-		CCanvas::SetCurrent(&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
-		RenderFrame(0, 0);
-	}
-	bSearchMode = 0;
-	*seg = found_seg;
-	*CSide = found_side;
-	*face = found_face;
-	*poly = found_poly;
-	return (found_seg!=-1);
-}
-
-#endif
 
 //------------------------------------------------------------------------------
 // eof

@@ -72,17 +72,6 @@ char *pszPauseMsg = NULL;
 //------------------------------------------------------------------------------
 //#define TEST_TIMER    1		//if this is set, do checking on timer
 
-#ifdef EDITOR
-#include "editor/editor.h"
-#endif
-
-//#define _MARK_ON 1
-#ifdef __WATCOMC__
-#if __WATCOMC__ < 1000
-#include <wsample.h>		//should come after inferno[HA] to get mark setting
-#endif
-#endif
-
 #ifdef SDL_INPUT
 #ifdef __macosx__
 # include <SDL/SDL.h>

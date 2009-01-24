@@ -875,45 +875,6 @@ if (flP)
 	flP->timer = 0;
 }
 
-#ifdef EDITOR
-//returns 1 if ok, 0 if error
-int AddVariableLight (int nSegment, int nSide, fix delay, uint mask)
-{
-	int l;
-	tVariableLight *flP;
-#if TRACE
-	//console.printf (CON_DBG,"AddVariableLight: %d:%d %x %x\n",nSegment,nSide,delay,mask);
-#endif
-	//see if there's already an entry for this seg/CSide
-	flP = gameData.render.lights.flicker.lights;
-	for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++)
-		if ((flP->nSegment == nSegment) && (flP->nSide == nSide))	//found it!
-			break;
-	if (mask==0) {		//clearing entry
-		if (l == gameData.render.lights.flicker.nLights)
-			return 0;
-		else {
-			int i;
-			for (i=l;i<gameData.render.lights.flicker.nLights-1;i++)
-				gameData.render.lights.flicker.lights[i] = gameData.render.lights.flicker.lights[i+1];
-			gameData.render.lights.flicker.nLights--;
-			return 1;
-		}
-	}
-	if (l == gameData.render.lights.flicker.nLights) {
-		if (gameData.render.lights.flicker.nLights == MAX_FLICKERING_LIGHTS)
-			return 0;
-		else
-			gameData.render.lights.flicker.nLights++;
-	}
-	flP->nSegment = nSegment;
-	flP->nSide = nSide;
-	flP->delay = flP->timer = delay;
-	flP->mask = mask;
-	return 1;
-}
-#endif
-
 //------------------------------------------------------------------------------
 
 int IsLight (int tMapNum)

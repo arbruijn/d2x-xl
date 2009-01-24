@@ -189,10 +189,6 @@ typedef struct pnt2d {
 	fix x,y;
 } pnt2d;
 
-#ifdef __WATCOMC__
-#pragma off (unreferenced)		//bp not referenced
-#endif
-
 //this takes the same partms as draw_tmap, but draws a flat-shaded polygon
 void DrawTexPolyFlat(CBitmap *bp,int nverts,g3sPoint **vertbuf)
 {
@@ -228,9 +224,6 @@ void DrawTexPolyFlat(CBitmap *bp,int nverts,g3sPoint **vertbuf)
 	gr_upoly_tmap(nverts,reinterpret_cast<int*> (points));
 
 }
-#ifdef __WATCOMC__
-#pragma on (unreferenced)
-#endif
 
 //	-----------------------------------------------------------------------------------------
 //This is like gr_upoly_tmap() but instead of drawing, it calls the specified

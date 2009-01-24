@@ -29,32 +29,6 @@ typedef struct dpmi_real_regs {
     ushort es,ds,fs,gs,ip,cs,sp,ss;
 } dpmi_real_regs;
 
-#ifdef __WATCOMC__
-#pragma intrinsic( inp );
-#pragma intrinsic( outp );
-#pragma intrinsic( _enable );
-#pragma intrinsic( _disable );
-#endif
-#ifdef __DJGPP__
-/* inp & outp are functions in DJGPP, while inportb & outportb are inlined */
-#define inp(port) inportb(port)
-#define outp(port,value) outportb(port,value)
-#if 0 /* only causes problems */
-#undef _enable()
-#undef _disable()
-#define _enable() __asm__ __volatile__ ("sti")
-#define _disable() __asm__ __volatile__ ("cli")
-#endif
-#endif
-
-#ifdef __DJGPP__
-#include "sys/nearptr.h"
-#define DPMI_real_segment(P) ((((uint)(P)-(uint)(__djgpp_conventional_base)) >> 4) & 0xffff)
-#define DPMI_real_offset(P) (((uint)(P)-(uint)(__djgpp_conventional_base)) & 0xf)
-#else
-#define DPMI_real_segment(P)	((((uint) (P)) >> 4) & 0xFFFF)
-#define DPMI_real_offset(P)     (((uint) (P)) & 0xF)
-#endif
 
 // Initializes dpmi. Returns zero if failed.
 extern int dpmi_init(int verbose);

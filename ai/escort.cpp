@@ -31,10 +31,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gameseg.h"
 #include "headlight.h"
 
-#ifdef EDITOR
-#include "editor/editor.h"
-#endif
-
 void SayEscortGoal (int goal_num);
 void ShowEscortMenu (char *msg);
 

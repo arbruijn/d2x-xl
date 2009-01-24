@@ -55,10 +55,6 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "text.h"
 #include "gameseg.h"
 
-#ifdef EDITOR
-#include "editor\editor.h"
-#endif
-
 #if DBG
 #include "string.h"
 #include <time.h>

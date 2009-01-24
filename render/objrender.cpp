@@ -45,14 +45,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "marker.h"
 #include "hiresmodels.h"
 
-#ifdef EDITOR
-#include "editor/editor.h"
-#endif
-
-#ifdef _3DFX
-#include "3dfx_des.h"
-#endif
-
 //------------------------------------------------------------------------------
 
 
@@ -440,16 +432,7 @@ if (bLit)
 	light = ComputeObjectLight (objP, &top_p.p3_vec);
 else
 	light = I2X (1);
-#ifdef _3DFX
-_3dfx_rendering_poly_obj = 1;
-#endif
-#ifdef PA_3DFX_VOODOO
-light = I2X (1);
-#endif
 G3DrawRodTexPoly (bmP, &bot_p, objP->info.xSize, &top_p, objP->info.xSize, light, NULL);
-#ifdef _3DFX
-_3dfx_rendering_poly_obj = 0;
-#endif
 }
 
 //------------------------------------------------------------------------------

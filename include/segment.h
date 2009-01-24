@@ -56,15 +56,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define DEFAULT_LIGHTING        0   // (I2X (1)/2)
 
-#ifdef EDITOR   //verts for the new tSegment
-# define NUM_NEW_SEG_VERTICES   8
-# define NEW_SEGMENT_VERTICES   (MAX_SEGMENT_VERTICES)
-# define MAX_VERTICES           (MAX_SEGMENT_VERTICES + NUM_NEW_SEG_VERTICES)
-# define MAX_VERTICES_D2X       (MAX_SEGMENT_VERTICES_D2X + NUM_NEW_SEG_VERTICES)
-#else           //No editor
 # define MAX_VERTICES           (MAX_SEGMENT_VERTICES)
 # define MAX_VERTICES_D2X       (MAX_SEGMENT_VERTICES_D2X)
-#endif
 
 // Returns true if nSegment references a child, else returns false.
 // Note that -1 means no connection, -2 means a connection to the outside world.
@@ -372,17 +365,6 @@ typedef struct tSegFaces {
 //--repair-- 	short   special_segment; // if specialType indicates repair center, this is the base of the repair center
 //--repair-- } lsegment;
 
-#ifdef EDITOR
-
-typedef struct {
-	int     num_segments;
-	int     num_vertices;
-	short   segments [MAX_SEGMENTS];
-	short   vertices [MAX_VERTICES];
-} group;
-
-#endif
-
 // Globals from mglobal.c
 extern int	sideVertIndex [MAX_SIDES_PER_SEGMENT][4];       // sideVertIndex[my_side] is list of vertices forming CSide my_side.
 extern char sideOpposite [];                                // sideOpposite [my_side] returns CSide opposite cube from my_side.
@@ -430,44 +412,13 @@ int SubtractLight (short nSegment, int nSide);
 int AddLight (short nSegment, int nSide);
 void ClearLightSubtracted (void);
 
-// ----------------------------------------------------------------------------
-// --------------------- Segment interrogation functions ----------------------
-// Do NOT read the tSegment data structure directly.  Use these
-// functions instead.  The tSegment data structure is GUARANTEED to
-// change MANY TIMES.  If you read the tSegment data structure
-// directly, your code will break, I PROMISE IT!
-
-#ifdef EDITOR
-
-// Return a pointer to the list of vertex indices for the current
-// tSegment in vp and the number of vertices in *nv.
-extern void med_get_vertex_list(tSegment *s,int *nv,short **vp);
-
-// Return a pointer to the list of vertex indices for face facenum in
-// vp and the number of vertices in *nv.
-extern void med_get_face_vertex_list(tSegment *s,int CSide, int facenum,int *nv,short **vp);
-
-// Set *nf = number of faces in tSegment s.
-extern void med_get_num_faces(tSegment *s,int *nf);
-
-void med_validate_segment_side(tSegment *sp, short CSide);
-
-// Delete tSegment function added for curves.c
-extern int med_delete_segment(tSegment *sp);
-
-// Delete tSegment from group
-extern void DeleteSegmentFromGroup (int nSegment, int nGroup);
-
-// Add segment to group
-void AddSegmentToGroup (int nSegment, int nGroup);
-
-#endif
-
-// Verify that all vertices are legal.
-void med_check_all_vertices();
-
+int CountSkyBoxSegments (void);
 void FreeSkyBoxSegList (void);
 int BuildSkyBoxSegList (void);
+
 void GetCorners (int nSegment, int nSide, ushort* vertIndex);
 
-#endif
+// ----------------------------------------------------------------------------
+
+#endif //_SEGMENT_H
+

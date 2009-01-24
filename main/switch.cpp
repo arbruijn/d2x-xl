@@ -38,10 +38,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "marker.h"
 #include "state.h"
 
-#ifdef EDITOR
-#include "editor/editor.h"
-#endif
-
 #define MAX_ORIENT_STEPS	10
 
 int oppTrigTypes  [] = {
@@ -73,28 +69,6 @@ int oppTrigTypes  [] = {
 void EnterSecretLevel (void);
 void ExitSecretLevel (void);
 int PSecretLevelDestroyed (void);
-
-#ifdef EDITOR
-fix triggerTimeCount=I2X (1);
-
-//-----------------------------------------------------------------
-// Initializes all the switches.
-void TriggerInit ()
-{
-	int i;
-
-	gameData.trigs.m_nTriggers = 0;
-
-for (i = 0; i < MAX_TRIGGERS; i++) {
-	TRIGGERS [i].nType = 0;
-	TRIGGERS [i].flags = 0;
-	TRIGGERS [i].nLinks = 0;
-	TRIGGERS [i].value = 0;
-	TRIGGERS [i].time = -1;
-	}
-memset (gameData.trigs.delay, -1, sizeof (gameData.trigs.delay));
-}
-#endif
 
 //-----------------------------------------------------------------
 

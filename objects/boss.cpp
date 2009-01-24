@@ -56,13 +56,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifdef TACTILE
 #	include "tactile.h"
 #endif
-#ifdef EDITOR
-#	include "editor/editor.h"
-#endif
-
-#ifdef _3DFX
-#include "3dfx_des.h"
-#endif
 
 //------------------------------------------------------------------------------
 
@@ -95,9 +88,6 @@ bool CBossInfo::SetupSegments (CShortArray segments, int bSizeCheck, int bOneWal
 
 	static short bossSegs [MAX_BOSS_TELEPORT_SEGS];
 
-#ifdef EDITOR
-nSelectedSegs = 0;
-#endif
 //	See if there is a boss.  If not, quick out.
 xBossSizeSave = bossObjP->info.xSize;
 // -- Causes problems!!	-- bossObjP->info.xSize = FixMul (I2X (3) / 4, bossObjP->info.xSize);
@@ -108,9 +98,6 @@ head =
 tail = 0;
 queue [head++] = nBossHomeSeg;
 bossSegs [nSegments++] = nBossHomeSeg;
-#ifdef EDITOR
-Selected_segs [nSelectedSegs++] = nBossHomeSeg;
-#endif
 
 gameData.render.mine.bVisited.Clear ();
 
@@ -153,9 +140,6 @@ while (tail != head) {
 		if (nSegments >= MAX_BOSS_TELEPORT_SEGS - 1)
 			goto done;
 		bossSegs [nSegments++] = childSeg;
-#ifdef EDITOR
-		Selected_segs [nSelectedSegs++] = childSeg;
-#endif
 		}
 	}
 

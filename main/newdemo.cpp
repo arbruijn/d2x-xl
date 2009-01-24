@@ -51,11 +51,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menu.h"
 #include "findfile.h"
 
-#ifdef EDITOR
-#include "editor/editor.h"
-#endif
-
-extern void SetFunctionMode (int);
+void SetFunctionMode (int);
 
 void DoJasonInterpolate (fix xRecordedTime);
 
@@ -730,20 +726,7 @@ switch (objP->info.renderType) {
 		for (i = 0; i < gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].ModelCount (); i++)
 			NDReadAngVec (objP->rType.polyObjInfo.animAngles[i]);
 		tmo = NDReadInt ();
-#ifndef EDITOR
 		objP->rType.polyObjInfo.nTexOverride = tmo;
-#else
-		if (tmo == -1)
-			objP->rType.polyObjInfo.nTexOverride = -1;
-		else {
-			int xlated_tmo = tmap_xlate_table [tmo];
-			if (xlated_tmo < 0) {
-				Int3 ();
-				xlated_tmo = 0;
-				}
-			objP->rType.polyObjInfo.nTexOverride = xlated_tmo;
-			}
-#endif
 		break;
 		}
 

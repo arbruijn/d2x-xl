@@ -28,14 +28,6 @@
 #	include "tactile.h"
 #endif
 
-#ifdef EDITOR
-#include "editor/editor.h"
-#endif
-
-#ifdef _3DFX
-#include "3dfx_des.h"
-#endif
-
 #define RENDER_LIGHTNING_PLASMA 1
 #define RENDER_LIGHTNING_OUTLINE 0
 #define RENDER_LIGHTINGS_BUFFERED 1

@@ -27,9 +27,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gr.h"
 #include "palette.h"
 #include "menu.h"
-#ifdef EDITOR
-#	include "editor/editor.h"
-#endif
 #include "error.h"
 #include "dynlight.h"
 #include "object.h"
@@ -84,19 +81,8 @@ game_top_fileinfo	gameTopFileInfo;
 
 //  LINT: adding function prototypes
 void ReadObject(CObject *objP, CFile *f, int version);
-#ifdef EDITOR
-void writeObject(CObject *objP, FILE *f);
-void DoLoadSaveLevels(int save);
-#endif
 #if DBG
 void dump_mine_info(void);
-#endif
-
-#ifdef EDITOR
-extern char mine_filename [];
-extern int save_mine_data_compiled(FILE * SaveFile);
-//--unused-- #else
-//--unused-- char mine_filename [128];
 #endif
 
 int nGameSavePlayers = 0;
@@ -107,19 +93,6 @@ char szSavePOFNames [MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
 //--unused-- CBitmap * Gamesave_saved_bitmap = NULL;
 
 //------------------------------------------------------------------------------
-#ifdef EDITOR
-// Return true if this level has a name of the form "level??"
-// Note that a pathspec can appear at the beginning of the filename.
-int IsRealLevel(char *filename)
-{
-	int len = (int) strlen(filename);
-
-if (len < 6)
-	return 0;
-return !strnicmp(&filename [len-11], "level", 5);
-}
-#endif
-
 //------------------------------------------------------------------------------
 
 void VerifyObject (CObject * objP)
@@ -212,19 +185,6 @@ else if (objP->info.nType == OBJ_REACTOR) {
 		objP->info.nId = 0;                         // used to be only one kind of reactor
 		objP->rType.polyObjInfo.nModel = gameData.reactor.props [0].nModel;// descent 1 reactor
 		}
-#ifdef EDITOR
- {
-	int i;
-	// Check, and set, strength of reactor
-	for (i = 0; i < gameData.objs.types.count; i++)
-		if ((gameData.objs.types.nType [i] == OL_CONTROL_CENTER) && 
-			 (gameData.objs.types.nType.nId [i] == objP->info.nId)) {
-			objP->info.xShields = gameData.objs.types.nType.nStrength [i];
-			break;	
-			}
-		Assert(i < gameData.objs.types.count);		//make sure we found it
-		}
-#endif
 	}
 else if (objP->info.nType == OBJ_PLAYER) {
 	if (objP == gameData.objs.consoleP)	
@@ -251,65 +211,6 @@ objP->Link ();
 //
 //	cf.Seek (file,len,SEEK_CUR);
 //}
-
-#ifdef EDITOR
-static void gs_write_int(int i,FILE *file)
-{
-	if (fwrite(&i, sizeof(i), 1, file) != 1)
-		Error("Error reading int in gamesave.c");
-
-}
-
-static void gs_write_fix(fix f,FILE *file)
-{
-	if (fwrite(&f, sizeof(f), 1, file) != 1)
-		Error("Error reading fix in gamesave.c");
-
-}
-
-static void gs_write_short(short s,FILE *file)
-{
-	if (fwrite(&s, sizeof(s), 1, file) != 1)
-		Error("Error reading short in gamesave.c");
-
-}
-
-static void gs_write_fixang(fixang f,FILE *file)
-{
-	if (fwrite(&f, sizeof(f), 1, file) != 1)
-		Error("Error reading fixang in gamesave.c");
-
-}
-
-static void gs_write_byte(byte b,FILE *file)
-{
-	if (fwrite(&b, sizeof(b), 1, file) != 1)
-		Error("Error reading byte in gamesave.c");
-
-}
-
-static void gr_write_vector(CFixVector *v,FILE *file)
-{
-	gs_write_fix(v->x,file);
-	gs_write_fix(v->y,file);
-	gs_write_fix(v->z,file);
-}
-
-static void gs_write_matrix(CFixMatrix *m,FILE *file)
-{
-	gr_write_vector(&m->rVec,file);
-	gr_write_vector(&m->uVec,file);
-	gr_write_vector(&m->fVec,file);
-}
-
-static void gs_write_angvec(CAngleVector *v,FILE *file)
-{
-	gs_write_fixang(v->p,file);
-	gs_write_fixang(v->b,file);
-	gs_write_fixang(v->h,file);
-}
-
-#endif
 
 //------------------------------------------------------------------------------
 
@@ -437,23 +338,7 @@ switch (info.renderType) {
 			cf.ReadAngVec(rType.polyObjInfo.animAngles [i]);
 		rType.polyObjInfo.nSubObjFlags = cf.ReadInt ();
 		int tmo = cf.ReadInt ();
-#ifndef EDITOR
 		rType.polyObjInfo.nTexOverride = tmo;
-#else
-		if (tmo==-1)
-			rType.polyObjInfo.nTexOverride = -1;
-		else {
-			int xlated_tmo = tmap_xlate_table [tmo];
-			if (xlated_tmo < 0) {
-#if TRACE
-				console.printf (CON_DBG, "Couldn't find texture for demo CObject, nModel = %d\n", rType.polyObjInfo.nModel);
-#endif
-				Int3();
-				xlated_tmo = 0;
-				}
-			rType.polyObjInfo.nTexOverride	= xlated_tmo;
-			}
-#endif
 		rType.polyObjInfo.nAltTextures = 0;
 		break;
 		}
@@ -521,176 +406,6 @@ switch (info.renderType) {
 }
 
 //------------------------------------------------------------------------------
-#ifdef EDITOR
-
-//writes one CObject to the given file
-void writeObject(CObject *objP,FILE *f)
-{
-	gs_write_byte(objP->info.nType,f);
-	gs_write_byte(objP->info.nId,f);
-
-	gs_write_byte(objP->info.controlType,f);
-	gs_write_byte(objP->info.movementType,f);
-	gs_write_byte(objP->info.renderType,f);
-	gs_write_byte(objP->info.nFlags,f);
-
-	gs_write_short(objP->info.nSegment,f);
-
-	gr_write_vector(&objP->info.position.vPos,f);
-	gs_write_matrix(&objP->info.position.mOrient,f);
-
-	gs_write_fix(objP->info.xSize,f);
-	gs_write_fix(objP->info.xShields,f);
-
-	gr_write_vector(&objP->info.vLastPos,f);
-
-	gs_write_byte(objP->info.contains.nType,f);
-	gs_write_byte(objP->info.contains.nId,f);
-	gs_write_byte(objP->info.contains.count,f);
-
-	switch (objP->info.movementType) {
-
-		case MT_PHYSICS:
-
-	 		gr_write_vector(&objP->mType.physInfo.velocity,f);
-			gr_write_vector(&objP->mType.physInfo.thrust,f);
-
-			gs_write_fix(objP->mType.physInfo.mass,f);
-			gs_write_fix(objP->mType.physInfo.drag,f);
-			gs_write_fix(objP->mType.physInfo.brakes,f);
-
-			gr_write_vector(&objP->mType.physInfo.rotVel,f);
-			gr_write_vector(&objP->mType.physInfo.rotThrust,f);
-
-			gs_write_fixang(objP->mType.physInfo.turnRoll,f);
-			gs_write_short(objP->mType.physInfo.flags,f);
-
-			break;
-
-		case MT_SPINNING:
-
-			gr_write_vector(&objP->mType.spinRate,f);
-			break;
-
-		case MT_NONE:
-			break;
-
-		default:
-			Int3();
-	}
-
-	switch (objP->info.controlType) {
-
-		case CT_AI: {
-			int i;
-
-			gs_write_byte(objP->cType.aiInfo.behavior,f);
-
-			for (i=0;i<MAX_AI_FLAGS;i++)
-				gs_write_byte(objP->cType.aiInfo.flags [i],f);
-
-			gs_write_short(objP->cType.aiInfo.nHideSegment,f);
-			gs_write_short(objP->cType.aiInfo.nHideIndex,f);
-			gs_write_short(objP->cType.aiInfo.nPathLength,f);
-			gs_write_short(objP->cType.aiInfo.nCurPathIndex,f);
-
-			// -- unused! mk, 08/13/95 -- gs_write_short(objP->cType.aiInfo.follow_path_start_seg,f);
-			// -- unused! mk, 08/13/95 -- gs_write_short(objP->cType.aiInfo.follow_path_end_seg,f);
-
-			break;
-		}
-
-		case CT_EXPLOSION:
-
-			gs_write_fix(objP->cType.explInfo.nSpawnTime,f);
-			gs_write_fix(objP->cType.explInfo.nDeleteTime,f);
-			gs_write_short(objP->cType.explInfo.nDeleteObj,f);
-
-			break;
-
-		case CT_WEAPON:
-
-			//do I really need to write these OBJECTS?
-
-			gs_write_short(objP->cType.laserInfo.parent.nType,f);
-			gs_write_short(objP->cType.laserInfo.parent.nObject,f);
-			gs_write_int(objP->cType.laserInfo.parent.nSignature,f);
-
-			break;
-
-		case CT_LIGHT:
-
-			gs_write_fix(objP->cType.lightInfo.intensity,f);
-			break;
-
-		case CT_POWERUP:
-
-			gs_write_int(objP->cType.powerupInfo.count,f);
-			break;
-
-		case CT_NONE:
-		case CT_FLYING:
-		case CT_DEBRIS:
-			break;
-
-		case CT_SLEW:		//the CPlayerData is generally saved as slew
-			break;
-
-		case CT_CNTRLCEN:
-			break;			//control center CObject.
-
-		case CT_MORPH:
-		case CT_REPAIRCEN:
-		case CT_FLYTHROUGH:
-		default:
-			Int3();
-
-	}
-
-	switch (objP->info.renderType) {
-
-		case RT_NONE:
-			break;
-
-		case RT_MORPH:
-		case RT_POLYOBJ: {
-			int i;
-
-			gs_write_int(objP->rType.polyObjInfo.nModel,f);
-
-			for (i=0;i<MAX_SUBMODELS;i++)
-				gs_write_angvec(&objP->rType.polyObjInfo.animAngles [i],f);
-
-			gs_write_int(objP->rType.polyObjInfo.nSubObjFlags,f);
-
-			gs_write_int(objP->rType.polyObjInfo.nTexOverride,f);
-
-			break;
-		}
-
-		case RT_WEAPON_VCLIP:
-		case RT_HOSTAGE:
-		case RT_POWERUP:
-		case RT_FIREBALL:
-
-			gs_write_int(objP->rType.vClipInfo.nClipIndex,f);
-			gs_write_fix(objP->rType.vClipInfo.xFrameTime,f);
-			gs_write_byte(objP->rType.vClipInfo.nCurFrame,f);
-
-			break;
-
-		case RT_THRUSTER:
-		case RT_LASER:
-			break;
-
-		default:
-			Int3();
-
-	}
-
-}
-#endif
-
 extern int RemoveTriggerNum (int trigger_num);
 
 // -----------------------------------------------------------------------------
@@ -1294,15 +1009,6 @@ for (i = 0; i < gameData.trigs.m_nTriggers; ) {
 	for (j = 0; j < gameData.walls.nWalls; j++)
 		if (WALLS [j].nTrigger == i)
 			break;
-#ifdef EDITOR
-	if (j == gameData.walls.nWalls) {
-#if TRACE
-		console.printf (CON_DBG,"Removing unreferenced CTrigger %d\n",i);
-#endif
-		RemoveTriggerNum (i);
-		}
-	else
-#endif
 		i++;
 	}
 
@@ -1425,9 +1131,6 @@ int no_oldLevel_file_error=0;
 //returns 0 if success, else error code
 int LoadLevelData (char * pszFilename, int nLevel)
 {
-#ifdef EDITOR
-	int bUseCompiledLevel = 1;
-#endif
 	CFile cf;
 	char filename [128];
 	int sig, nMineDataOffset, nGameDataOffset;
@@ -1545,105 +1248,8 @@ if (!gameData.render.mine.Create ())
 lightManager.Setup (nLevel); //moved to loadgame.cpp::LoadLevel()
 
 SetAmbientSoundFlags ();
-#ifdef EDITOR
-write_game_text_file(filename);
-if (Errors_in_mine) {
-	if (IsRealLevel(filename)) {
-		char  ErrorMessage [200];
-
-		sprintf(ErrorMessage, TXT_MINE_ERRORS, Errors_in_mine, Level_being_loaded);
-		StopTime();
-		paletteManager.LoadEffect ();
-		MsgBox(NULL, 1, TXT_CONTINUE, ErrorMessage);
-		StartTime();
-	} else {
-#if TRACE
-		console.printf (1, TXT_MINE_ERRORS, Errors_in_mine, Level_being_loaded);
-#endif
-	}
-}
-#endif
-
-#ifdef EDITOR
-//If an old version, ask the use if he wants to save as new version
-if (!no_oldLevel_file_error && (gameStates.app.nFunctionMode == FMODE_EDITOR) && 
-    (((LEVEL_FILE_VERSION > 3) && gameData.segs.nLevelVersion < LEVEL_FILE_VERSION) || nError == 1 || nError == 1)) {
-	char  ErrorMessage [200];
-
-	sprintf(ErrorMessage,
-				"You just loaded a old version\n"
-				"level.  Would you like to save\n"
-				"it as a current version level?");
-
-	StopTime();
-	paletteManager.LoadEffect ();
-	if (MsgBox(NULL, 2, "Don't Save", "Save", ErrorMessage)==1)
-		SaveLevel(filename);
-	StartTime();
-}
-#endif
-
-#ifdef EDITOR
-if (gameStates.app.nFunctionMode == FMODE_EDITOR)
-	editor_status("Loaded NEW mine %s, \"%s\"",filename,gameData.missions.szCurrentLevel);
-#endif
-
-#ifdef EDITOR
-if (CheckSegmentConnections())
-	MsgBox("ERROR", 1, "Ok", 
-			"Connectivity errors detected in\n"
-			"mine.  See monochrome screen for\n"
-			"details, and contact Matt or Mike.");
-#endif
-
 return 0;
 }
-
-#ifdef EDITOR
-void GetLevelName()
-{
-//NO_UI!!!	UI_WINDOW 				*NameWindow = NULL;
-//NO_UI!!!	UI_GADGET_INPUTBOX	*NameText;
-//NO_UI!!!	UI_GADGET_BUTTON 		*QuitButton;
-//NO_UI!!!
-//NO_UI!!!	// Open a window with a quit button
-//NO_UI!!!	NameWindow = ui_open_window(20, 20, 300, 110, WIN_DIALOG);
-//NO_UI!!!	QuitButton = ui_add_gadget_button(NameWindow, 150-24, 60, 48, 40, "Done", NULL);
-//NO_UI!!!
-//NO_UI!!!	ui_wprintf_at(NameWindow, 10, 12,"Please enter a name for this mine:");
-//NO_UI!!!	NameText = ui_add_gadget_inputbox(NameWindow, 10, 30, LEVEL_NAME_LEN, LEVEL_NAME_LEN, gameData.missions.szCurrentLevel);
-//NO_UI!!!
-//NO_UI!!!	NameWindow->keyboard_focus_gadget = reinterpret_cast<UI_GADGET*> (NameText);
-//NO_UI!!!	QuitButton->hotkey = KEY_ENTER;
-//NO_UI!!!
-//NO_UI!!!	ui_gadget_calc_keys(NameWindow);
-//NO_UI!!!
-//NO_UI!!!	while (!QuitButton->pressed && last_keypress!=KEY_ENTER) {
-//NO_UI!!!		ui_mega_process();
-//NO_UI!!!		ui_window_do_gadgets(NameWindow);
-//NO_UI!!!	}
-//NO_UI!!!
-//NO_UI!!!	strcpy(gameData.missions.szCurrentLevel, NameText->text);
-//NO_UI!!!
-//NO_UI!!!	if (NameWindow!=NULL) {
-//NO_UI!!!		ui_close_window(NameWindow);
-//NO_UI!!!		NameWindow = NULL;
-//NO_UI!!!	}
-//NO_UI!!!
-
-	CMenuItem m [2];
-
-	memset (m, 0, sizeof (m));
-	m [0].nType = NM_TYPE_TEXT; 
-	m [0].text = "Please enter a name for this mine:";
-	m [1].nType = NM_TYPE_INPUT; 
-	m [1].text = gameData.missions.szCurrentLevel; 
-	m [1].nTextLen = LEVEL_NAME_LEN;
-
-	ExecMenu(NULL, "Enter mine name", 2, m, NULL);
-
-}
-#endif
 
 
 #if DBG
@@ -1693,49 +1299,3 @@ void dump_mine_info(void)
 
 #endif
 
-#ifdef EDITOR
-
-// -----------------------------------------------------------------------------
-//read in every level in mission and save out compiled version 
-void save_all_compiledLevels(void)
-{
-DoLoadSaveLevels(1);
-}
-
-// -----------------------------------------------------------------------------
-//read in every level in mission
-void LoadAllLevels(void)
-{
-DoLoadSaveLevels(0);
-}
-
-// -----------------------------------------------------------------------------
-
-void DoLoadSaveLevels(int save)
-{
-	int level_num;
-
-	if (! SafetyCheck())
-		return;
-
-	no_oldLevel_file_error=1;
-
-	for (level_num=1;level_num<=gameData.missions.nLastLevel;level_num++) {
-		LoadLevelData(gameData.missions.szLevelNames [level_num-1]);
-		paletteManager.Load(szCurrentLevelPalette,1,1,0);		//don't change screen
-		if (save)
-			saveLevel_sub(gameData.missions.szLevelNames [level_num-1],1);
-	}
-
-	for (level_num = -1; level_num >= gameData.missions.nLastSecretLevel; level_num--) {
-		LoadLevelData(gameData.missions.szSecretLevelNames [-level_num-1]);
-		paletteManager.Load(szCurrentLevelPalette,1,1,0);		//don't change screen
-		if (save)
-			saveLevel_sub (gameData.missions.szSecretLevelNames [-level_num-1],1);
-	}
-
-	no_oldLevel_file_error=0;
-
-}
-
-#endif

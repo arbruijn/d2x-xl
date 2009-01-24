@@ -56,13 +56,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifdef TACTILE
 #	include "tactile.h"
 #endif
-#ifdef EDITOR
-#	include "editor/editor.h"
-#endif
-
-#ifdef _3DFX
-#include "3dfx_des.h"
-#endif
 
 //------------------------------------------------------------------------------
 

@@ -29,10 +29,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "collide.h"
 #include "lightcluster.h"
 
-#ifdef EDITOR
-#include "editor/editor.h"
-#include "editor/kdefs.h"
-#endif
 //#define _DEBUG
 #if DBG
 #include "string.h"

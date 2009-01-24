@@ -90,12 +90,6 @@ u_int32_t nCurrentVGAMode;
 
 //#define TEST_TIMER	1		//if this is set, do checking on timer
 
-#ifdef EDITOR
-#include "editor/editor.h"
-#endif
-
-//#define _DEBUG
-
 void FreeHoardData (void);
 int ReadControls (void);		// located in gamecntl.c
 void DoFinalBossFrame (void);
@@ -129,11 +123,6 @@ int Debug_pause=0;				//John's debugging pause system
 //	Toggle_var points at a variable which gets !ed on ctrl-alt-T press.
 int	Dummy_var;
 int	*Toggle_var = &Dummy_var;
-
-#ifdef EDITOR
-//flag for whether initial fade-in has been done
-char faded_in;
-#endif
 
 #if DBG                          //these only exist if debugging
 
@@ -1031,13 +1020,6 @@ InitGauges ();
 //DigiInitSounds ();
 //gameStates.input.keys.bRepeat = 0;                // Don't allow repeat in game
 gameStates.input.keys.bRepeat = 1;                // Do allow repeat in game
-#ifdef EDITOR
-	if (SEGMENTS[gameData.objs.consoleP->info.nSegment].nSegment == -1)      //CSegment no longer exists
-		gameData.objs.consoleP->RelinkToSeg (SEG_IDX (Cursegp));
-
-	if (!check_obj_seg (gameData.objs.consoleP))
-		MovePlayerToSegment (Cursegp,Curside);
-#endif
 gameData.objs.viewerP = gameData.objs.consoleP;
 #if TRACE
 //console.printf (CON_DBG, "   FlyInit d:\temp\dm_test.\n");
@@ -1321,12 +1303,6 @@ void SpeedtestFrame (void);
 uint nDebugSlowdown = 0;
 #endif
 
-#ifdef EDITOR
-extern void player_follow_path (CObject *objP);
-extern void check_create_player_path (void);
-
-#endif
-
 //returns ptr to escort robot, or NULL
 CObject *find_escort ()
 {
@@ -1599,10 +1575,6 @@ DoFinalBossFrame ();
 // -- recharge_energy_frame ();
 //PrintLog ("DrainHeadlightPower\n");
 DrainHeadlightPower ();
-#ifdef EDITOR
-check_create_player_path ();
-player_follow_path (gameData.objs.consoleP);
-#endif
 
 if (IsMultiGame) {
 	AddServerToTracker ();

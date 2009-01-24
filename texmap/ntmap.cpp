@@ -36,10 +36,6 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "rle.h"
 #include "scanline.h"
 
-#ifdef EDITOR
-#define EDITOR_TMAP 1       //if in, include extra stuff
-#endif
-
 #define F15_5 (I2X (15) + (I2X (1) / 2))
 
 // Temporary texture map, interface from Matt's 3d system to Mike's texture mapper.

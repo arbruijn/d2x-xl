@@ -59,10 +59,6 @@ extern fix xRenderZoom;     // the CPlayerData's zoom factor
 
 extern short nRenderList [MAX_SEGMENTS_D2X];
 
-#ifdef EDITOR
-extern int Render_only_bottom;
-#endif
-
 // Set the following to turn on CPlayerData head turning
 // If the above flag is set, these angles specify the orientation of the head
 extern CAngleVector Player_head_angles;

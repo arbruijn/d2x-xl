@@ -33,11 +33,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "newdemo.h"
 #include "sphere.h"
 
-#ifdef EDITOR
-#include "gr.h"	//	for powerup outline drawing
-#include "editor/editor.h"
-#endif
-//#define _DEBUG
 int ReturnFlagHome (CObject *pObj);
 void InvalidateEscortGoal (void);
 char GetKeyValue (char);
@@ -200,15 +195,7 @@ if (objP->info.nType == OBJ_MONSTERBALL)
 else if ((objP->info.nId < MAX_POWERUP_TYPES_D2) || ((objP->info.nType == OBJ_EXPLOSION) && (objP->info.nId < VCLIP_MAXNUM))) {
 		tBitmapIndex	*frameP = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].frames;
 		int				iFrame = objP->rType.vClipInfo.nCurFrame;
-#ifdef EDITOR
-		blob_vertices[0] = 0x80000;
-#endif
 	DrawObjectBlob (objP, frameP->index, frameP [iFrame].index, iFrame, NULL, 0);
-#ifdef EDITOR
-	if ((gameStates.app.nFunctionMode == FMODE_EDITOR) && (CurObject_index == objP->Index ()))
-		if (blob_vertices[0] != 0x80000)
-			DrawBlobOutline ();
-#endif
 	}
 else {
 	DrawObjectBlob (objP, objP->rType.vClipInfo.nClipIndex, objP->rType.vClipInfo.nClipIndex, objP->rType.vClipInfo.nCurFrame, NULL, 1);

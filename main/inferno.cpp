@@ -89,12 +89,6 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 
 extern int SDL_HandleSpecialKeys;
 
-#ifdef EDITOR
-#include "editor/editor.h"
-#include "editor/kdefs.h"
-#include "ui.h"
-#endif
-
 #ifdef __macosx__
 #	include <SDL/SDL.h>
 #	if USE_SDL_MIXER
@@ -113,10 +107,6 @@ tGameStates		gameStates;
 CGameData		gameData;
 
 //static const char desc_id_checksum_str[] = DESC_ID_CHKSUM_TAG "0000"; // 4-byte checksum
-
-#ifdef EDITOR
-int Inferno_is_800x600_available = 0;
-#endif
 
 void check_joystick_calibration (void);
 
@@ -314,16 +304,6 @@ if (!gameData.demo.bAuto)  {
 
 #define MENU_HIRES_MODE SM (640, 480)
 
-//	DESCENT II by Parallax Software
-//		Descent Main
-
-//extern ubyte gr_current_pal[];
-
-#ifdef	EDITOR
-int	Auto_exit = 0;
-char	Auto_file [128] = "";
-#endif
-
 // ----------------------------------------------------------------------------
 
 void PrintVersion (void)
@@ -424,67 +404,6 @@ else {
 
 void LoadHoardData (void)
 {
-#ifdef EDITOR
-if (FindArg ("-hoarddata")) {
-#define MAX_BITMAPS_PER_BRUSH 30
-	CBitmap * bm[MAX_BITMAPS_PER_BRUSH];
-	CBitmap icon;
-	int nframes;
-	short nframes_short;
-	ubyte palette [256*3];
-	FILE *ofile;
-	int iff_error, i;
-
-	char *sounds[] = {"selforb.raw", "selforb.r22", 		//SOUND_YOU_GOT_ORB		
-							"teamorb.raw", "teamorb.r22", 		//SOUND_FRIEND_GOT_ORB		
-							"enemyorb.raw", "enemyorb.r22", 	//SOUND_OPPONENT_GOT_ORB
-							"OPSCORE1.raw", "OPSCORE1.r22"};	//SOUND_OPPONENT_HAS_SCORED
-
-	ofile = fopen ("hoard.ham", "wb");
-
-	iff_error = iff_read_animbrush ("orb.abm", bm, MAX_BITMAPS_PER_BRUSH, &nframes, palette);
-	Assert (iff_error == IFF_NO_ERROR);
-	nframes_short = nframes;
-	fwrite (&nframes_short, sizeof (nframes_short), 1, ofile);
-	fwrite (&bm[0]->Width (), sizeof (short), 1, ofile);
-	fwrite (&bm[0]->Height (), sizeof (short), 1, ofile);
-	fwrite (palette, 3, 256, ofile);
-	for (i=0;i<nframes;i++)
-		fwrite (bm[i]->buffer, 1, bm[i]->Width ()*bm[i]->Height (), ofile);
-
-	iff_error = iff_read_animbrush ("orbgoal.abm", bm, MAX_BITMAPS_PER_BRUSH, &nframes, palette);
-	Assert (iff_error == IFF_NO_ERROR);
-	Assert (bm[0]->Width () == 64 && bm[0]->Height () == 64);
-	nframes_short = nframes;
-	fwrite (&nframes_short, sizeof (nframes_short), 1, ofile);
-	fwrite (palette, 3, 256, ofile);
-	for (i=0;i<nframes;i++)
-		fwrite (bm[i]->buffer, 1, bm[i]->Width ()*bm[i]->Height (), ofile);
-
-	for (i=0;i<2;i++) {
-		iff_error = iff_read_bitmap (i?"orbb.bbm":"orb.bbm", &icon, BM_LINEAR, palette);
-		Assert (iff_error == IFF_NO_ERROR);
-		fwrite (&icon.Width (), sizeof (short), 1, ofile);
-		fwrite (&icon.Height (), sizeof (short), 1, ofile);
-		fwrite (palette, 3, 256, ofile);
-		fwrite (icon.buffer, 1, icon.Width ()*icon.Height (), ofile);
-		}
-
-	for (i = 0; i < sizeof (sounds)/sizeof (*sounds);i++) {
-		FILE *cf = fopen (sounds[i], "rb");
-		Assert (cf != NULL);
-		int size = ffilelength (cf);
-		ubyte* buf = new ubyte [size];
-		fread (buf, 1, size, cf);
-		fwrite (&size, sizeof (size), 1, ofile);
-		fwrite (buf, 1, size, ofile);
-		delete[] buf;
-		fclose (cf);
-		}
-	fclose (ofile);
-	exit (1);
-	}
-#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -512,34 +431,16 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 				Error ("No demo files were found for autodemo mode!");
 				}
 			else {
-#ifdef EDITOR
-				if (Auto_exit) {
-					strcpy (reinterpret_cast<char*> (&gameData.missions.szLevelNames [0]), Auto_file);
-					LoadLevel (1, 1, 0);
-					SetFunctionMode (FMODE_EXIT);
-					break;
-					}
-#endif
 				check_joystick_calibration ();
 				paletteManager.ClearEffect ();		//I'm not sure why we need this, but we do
 				//SetRenderQuality (0);
 				MainMenu ();
-#ifdef EDITOR
-				if (gameStates.app.nFunctionMode == FMODE_EDITOR) {
-					create_new_mine ();
-					SetPlayerFromCurseg ();
-					paletteManager.Load (NULL, 1, 0);
-					}
-#endif
 				}
 			if (gameData.multiplayer.autoNG.bValid && (gameStates.app.nFunctionMode != FMODE_GAME))
 				gameStates.app.nFunctionMode = FMODE_EXIT;
 			break;
 
 		case FMODE_GAME:
-#ifdef EDITOR
-			gameStates.input.keys.bEditorMode = 0;
-#endif
 			GrabMouse (1, 1);
 			RunGame ();
 			GrabMouse (0, 1);
@@ -556,17 +457,6 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 			RestoreDefaultRobots ();
 			break;
 
-#ifdef EDITOR
-		case FMODE_EDITOR:
-			gameStates.input.keys.bEditorMode = 1;
-			editor ();
-			if (gameStates.app.nFunctionMode == FMODE_GAME) {
-				gameData.app.nGameMode = GM_EDITOR;
-				editor_reset_stuff_onLevel ();
-				gameData.multiplayer.nPlayers = 1;
-				}
-			break;
-#endif
 		default:
 			Error ("Invalid function mode %d", gameStates.app.nFunctionMode);
 		}
@@ -689,10 +579,6 @@ if ((t = GrInit ())) {		//doesn't do much
 	return 0;
 	}
 nScreenSize = SM (scrSizes [gameStates.gfx.nStartScrMode].x, scrSizes [gameStates.gfx.nStartScrMode].y);
-#ifdef _3DFX
-_3dfx_Init ();
-#endif
-
 /*---*/PrintLog ("Initializing render buffers\n");
 if (!gameStates.render.vr.buffers.offscreen)	//if hasn't been initialied (by headset init)
 	SetDisplayMode (gameStates.gfx.nStartScrMode, gameStates.gfx.bOverride);		//..then set default display mode
@@ -946,16 +832,6 @@ if (Initialize (argc, argv))
 	return -1;
 //	If built with editor, option to auto-load a level and quit game
 //	to write certain data.
-#ifdef	EDITOR
-if ((i = FindArg ("-autoload"))) {
-	Auto_exit = 1;
-	strcpy (Auto_file, pszArgList[i+1]);
-	}
-if (Auto_exit) {
-	strcpy (gameData.multiplayer.players[0].callsign, "dummy");
-	} 
-else
-#endif
 /*---*/PrintLog ("Loading player profile\n");
 DoSelectPlayer ();
 StartSoundThread (); //needs to be repeated here due to dependency on data read in DoSelectPlayer()
@@ -1017,7 +893,6 @@ void check_joystick_calibration ()
 
 void ShowOrderForm ()
 {
-#ifndef EDITOR
 	int 	pcx_error;
 	char	exit_screen[16];
 
@@ -1047,7 +922,6 @@ void ShowOrderForm ()
 		Int3 ();		//can't load order screen
 
 	KeyFlush ();
-#endif
 }
 
 // ----------------------------------------------------------------------------

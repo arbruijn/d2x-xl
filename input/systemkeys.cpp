@@ -67,17 +67,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include "tactile.h"
 #endif
 
-#ifdef EDITOR
-#	include "editor/editor.h"
-#endif
-
-//#define _MARK_ON 1
-#ifdef __WATCOMC__
-#if __WATCOMC__ < 1000
-#include <wsample.h>		//should come after inferno[HA] to get mark setting
-#endif
-#endif
-
 // Global Variables -----------------------------------------------------------
 
 int	redbookVolume = 255;
@@ -397,12 +386,6 @@ switch (key) {
 
 #else
 	case KEY_SHIFTED + KEY_ESC:     //quick exit
-		#ifdef EDITOR
-			if (! SafetyCheck()) 
-			break;
-			close_editor_screen();
-		#endif
-
 		gameStates.app.bGameAborted = 1;
 		gameStates.app.nFunctionMode = FMODE_EXIT;
 		break;
@@ -963,44 +946,7 @@ void HandleTestKey(int key)
 			KillAllRobots (1);
 			break;
 
-		#ifdef EDITOR		//editor-specific functions
-
-		case KEY_E + KEYDBGGED:
-			NetworkLeaveGame();
-			SetFunctionMode (FMODE_EDITOR);
-			break;
-	case KEY_Q + KEY_SHIFTED + KEYDBGGED:
-	 {
-			char pal_save [768];
-			memcpy(pal_save, grPalette, 768);
-			InitSubTitles("end.tex");	//ingore errors
-			movieManager.Play ("end.mve", MOVIE_ABORT_ON, 0, gameOpts->movies.bResize);
-			CloseSubTitles();
-			gameStates.video.nScreenMode = -1;
-			SetScreenMode(SCREEN_GAME);
-			ResetCockpit();
-			memcpy(grPalette, pal_save, 768);
-			paletteManager.LoadEffect ();
-			break;
-		}
-		case KEY_C + KEY_SHIFTED + KEYDBGGED:
-			if (!( gameData.app.nGameMode & GM_MULTI ))
-				MovePlayerToSegment(Cursegp, Curside);
-			break;   //move eye to curseg
-
-
-		case KEYDBGGED+KEY_W:
-			DrawWorldFromGame(); 
-			break;
-
-		#endif  //#ifdef EDITOR
-
 		//flythrough keys
-		// case KEYDBGGED+KEY_SHIFTED+KEY_F: toggle_flythrough(); break;
-		// case KEY_LEFT:		ft_preference=FP_LEFT; break;
-		// case KEY_RIGHT:				ft_preference=FP_RIGHT; break;
-		// case KEY_UP:		ft_preference=FP_UP; break;
-		// case KEY_DOWN:		ft_preference=FP_DOWN; break;
 
 #if DBG
 		case KEYDBGGED+KEY_LAPOSTRO: 
@@ -1105,14 +1051,6 @@ void HandleTestKey(int key)
 		case KEYDBGGED+KEY_P+KEY_SHIFTED: 
 			Debug_pause = 1; 
 			break;
-
-		#ifdef EDITOR
-		case KEYDBGGED+KEY_Q:
-			StopTime();
-			dump_used_textures_all();
-			StartTime();
-			break;
-		#endif
 
 		case KEYDBGGED+KEY_B: {
 			CMenu	m (1);

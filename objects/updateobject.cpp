@@ -57,14 +57,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifdef TACTILE
 #	include "tactile.h"
 #endif
-#ifdef EDITOR
-#	include "editor/editor.h"
-#endif
-
-#ifdef _3DFX
-#include "3dfx_des.h"
-#endif
-
 #ifndef fabsf
 #	define fabsf(_f)	(float) fabs (_f)
 #endif
@@ -307,11 +299,7 @@ switch (info.controlType) {
 		break;
 
 	default:
-#ifdef __DJGPP__
-		Error ("Unknown control nType %d in CObject %li, sig/nType/id = %i/%i/%i", info.controlType, OBJ_IDX (this), info.nSignature, info.nType, info.nId);
-#else
 		Error ("Unknown control nType %d in CObject %i, sig/nType/id = %i/%i/%i", info.controlType, OBJ_IDX (this), info.nSignature, info.nType, info.nId);
-#endif
 	}
 return 0;
 }

@@ -39,17 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define SW_CULLING 1
 
-#ifdef EDITOR
-#include "editor/editor.h"
-#endif
-
 //------------------------------------------------------------------------------
-
-#ifdef EDITOR
-int bSearchMode = 0;			//true if looking for curseg, CSide, face
-short _search_x, _search_y;	//pixel we're looking at
-int found_seg, found_side, found_face, found_poly;
-#endif
 
 int	bOutLineMode = 0,
 		bShowOnlyCurSide = 0;

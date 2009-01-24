@@ -42,18 +42,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MATCEN_HP_DEFAULT			I2X (500) // Hitpoints
 #define MATCEN_INTERVAL_DEFAULT	I2X (5)	//  5 seconds
 
-#ifdef EDITOR
-char	Special_names [MAX_CENTER_TYPES][11] = {
-	"NOTHING   ",
-	"FUELCEN   ",
-	"REPAIRCEN ",
-	"CONTROLCEN",
-	"ROBOTMAKER",
-	"GOAL_RED  ",
-	"GOAL_BLUE ",
-};
-#endif
-
 //------------------------------------------------------------
 // Resets all fuel center info
 void ResetGenerators (void)
@@ -344,50 +332,6 @@ else {
 	}
 objP->BossSpewRobot (NULL, nType, 1);
 }
-
-#ifdef EDITOR
-//------------------------------------------------------------
-// Takes away a CSegment's fuel center properties.
-//	Deletes the CSegment point entry in the tFuelCenInfo list.
-void FuelCenDelete (CSegment * segP)
-{
-	CSegment	*segP = &SEGMENTS [segP->Index ()];
-	int i, j;
-
-Restart: ;
-
-segP->m_nType = 0;
-
-for (i = 0; i < gameData.matCens.nFuelCenters; i++) {
-	if (gameData.matCens.fuelCenters [i].nSegment == segP->Index ()) {
-		// If Robot maker is deleted, fix SEGMENTS and gameData.matCens.botGens.
-		if (gameData.matCens.fuelCenters [i].nType == SEGMENT_IS_ROBOTMAKER) {
-			gameData.matCens.nBotCenters--;
-			Assert (gameData.matCens.nBotCenters >= 0);
-			for (j = segP->m_nMatCen; j < gameData.matCens.nBotCenters; j++)
-				gameData.matCens.botGens [j] = gameData.matCens.botGens [j+1];
-			for (j = 0; j < gameData.matCens.nFuelCenters; j++) {
-				if (gameData.matCens.fuelCenters [j].nType == SEGMENT_IS_ROBOTMAKER)
-					if (SEGMENTS [gameData.matCens.fuelCenters [j].nSegment].m_nMatCen > segP->m_nMatCen)
-						SEGMENTS [gameData.matCens.fuelCenters [j].nSegment].m_nMatCen--;
-				}
-			}
-		//fix gameData.matCens.botGens so they point to correct fuelcenter
-		for (j = 0; j < gameData.matCens.nBotCenters; j++)
-			if (gameData.matCens.botGens [j].nFuelCen > i)		//this matCenPter's fuelcen is changing
-				gameData.matCens.botGens [j].nFuelCen--;
-
-		gameData.matCens.nFuelCenters--;
-		Assert (gameData.matCens.nFuelCenters >= 0);
-		for (j = i; j < gameData.matCens.nFuelCenters; j++) {
-			gameData.matCens.fuelCenters [j] = gameData.matCens.fuelCenters [j+1];
-			SEGMENTS [gameData.matCens.fuelCenters [j].nSegment].value = j;
-			}
-		goto Restart;
-		}
-	}
-}
-#endif
 
 //	----------------------------------------------------------------------------------------------------------
 

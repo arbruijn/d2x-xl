@@ -67,9 +67,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menubackground.h"
 #include "midi.h"
 #include "songs.h"
-#ifdef EDITOR
-#	include "editor/editor.h"
-#endif
 
 extern tDetailData detailData;
 

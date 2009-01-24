@@ -193,10 +193,6 @@ if (strstr (name, "door13"))
 #endif
 bmi.index = gameData.pig.tex.nBitmaps [gameStates.app.bD1Data];
 if (!bInFile) {
-#ifdef EDITOR
-	if (FindArg ("-macdata"))
-		swap_0_255 (bmP);
-#endif
 	nBitmapFilesNew++;
 	}
 int i = gameData.pig.tex.nBitmaps [gameStates.app.bD1Data];
@@ -311,10 +307,7 @@ if (gameStates.app.bUseSwapFile) {
 	gameStates.render.nMaxTextureQuality = 3;
 	return bMemInited = 1;
 	}
-#ifdef EDITOR
-bitmapCacheSize = nDataSize + (nDataSize / 10);   //extra mem for new bitmaps
-Assert (bitmapCacheSize > 0);
-#elif defined (WIN32)
+#if defined (WIN32)
  {
 	MEMORYSTATUS	memStat;
 	GlobalMemoryStatus (&memStat);
@@ -375,12 +368,8 @@ if (!stricmp (DefaultPigFile (), DefaultPigFile (1)) &&
 	strcpy (szPigName, DefaultPigFile (1));
 strlwr (szPigName);
 if (!cfP->Open (szPigName, gameFolders.szDataDir, "rb", 0)) {
-#ifdef EDITOR
-	return;         //if editor, ok to not have pig, because we'll build one
-#else
 	if (!CopyPigFileFromCD (*cfP, szPigName))
 		return;
-#endif
 	}
 int pig_id = cfP->ReadInt ();
 int pigVersion = cfP->ReadInt ();
@@ -438,11 +427,9 @@ if (nHAMId != HAMFILE_ID)
 	Error ("Cannot open ham file %s\n", DefaultHamFile ());
 if (gameData.pig.tex.nHamFileVersion < 3) // hamfile contains sound info
 	nSoundOffset = cf.ReadInt ();
-#ifndef EDITOR
 	BMReadAll (cf);
 /*---*/PrintLog ("      Loading bitmap index translation table\n");
 	gameData.pig.tex.bitmapXlat.Read (cf, MAX_BITMAP_FILES);
-#endif
 if (gameData.pig.tex.nHamFileVersion < 3) {
 	cf.Seek (nSoundOffset, SEEK_SET);
 	int nSoundNum = cf.ReadInt ();
@@ -518,9 +505,7 @@ if (FindArg ("-nolowmem"))
 if (bLowMemory)
 	gameStates.sound.digi.bLoMem = 1;
 /*---*/PrintLog ("   Loading game data\n");
-#if 1 //def EDITOR //need for d1 mission briefings
 PiggyInitPigFile (DefaultPigFile ());
-#endif
 /*---*/PrintLog ("   Loading main ham file\n");
 bSoundOk = bHamOk = ReadHamFile ();
 

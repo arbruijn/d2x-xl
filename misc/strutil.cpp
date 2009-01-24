@@ -99,7 +99,6 @@ return 0;
 #endif
 
 #ifndef _WIN32
-#ifndef __DJGPP__
 char *strlwr( char *s1 )
 {
 	char *p = s1;
@@ -120,7 +119,6 @@ char *strupr( char *s1 )
 	return p;
 }
 
-#endif
 
 char *strrev( char *s1 )
 {

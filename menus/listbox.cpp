@@ -69,9 +69,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "soundthreads.h"
 #include "menubackground.h"
 #include "songs.h"
-#ifdef EDITOR
-#	include "editor/editor.h"
-#endif
 
 //------------------------------------------------------------------------------ 
 

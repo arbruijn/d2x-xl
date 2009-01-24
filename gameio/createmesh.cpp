@@ -45,10 +45,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menu.h"
 #include "createmesh.h"
 
-#ifdef EDITOR
-#include "editor/editor.h"
-#endif
-
 #include "cfile.h"
 #include "fuelcen.h"
 

@@ -43,32 +43,13 @@ extern void timer_set_function( void _far * function );
 // and microseconds.  They time out after 1000 hrs, 100 hrs, 10 hrs, and
 // 1 hr, respectively.
 
-#ifdef __DJGPP__
-extern fix timer_get_fixedSecondsX(); // Assume interrupts already disabled
-extern void timer_set_joyhandler( void (*joy_handler)() );
-#else
 #define timer_get_fixedSecondsX TimerGetFixedSeconds
 //#define TimerGetApproxSeconds TimerGetFixedSeconds
-#endif
 
 //==========================================================================
 // Use to access the BIOS ticker... ie...   i = TICKER
-#ifndef __DJGPP__
+
 #define TICKER (TimerGetFixedSeconds())
-#endif
-
-#ifdef __DJGPP__
-
-#ifndef __GNUC__
-#define TICKER (*(volatile int *)0x46C)
-#else
-#include <go32.h>
-#include <sys/farptr.h>
-#define TICKER _farpeekl(_dos_ds, 0x46c)
-#endif
-#define USECS_PER_READING( start, stop, frames ) (((stop-start)*54945)/frames)
-#endif
-
 
 #define approx_usec_to_fsec(usec) ((usec) >> 4)
 #define approx_fsec_to_usec(fsec) ((fsec) << 4)

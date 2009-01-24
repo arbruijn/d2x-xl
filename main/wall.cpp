@@ -34,10 +34,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "segment.h"
 #include "dynlight.h"
 
-#ifdef EDITOR
-#include "editor/editor.h"
-#endif
-
 //	Special door on boss level which is locked if not in multiplayer...sorry for this awful solution --MK.
 #define	BOSS_LOCKED_DOOR_LEVEL	7
 #define	BOSS_LOCKED_DOOR_SEG		595
@@ -54,18 +50,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //#define BM_FLAG_TRANSPARENT			1
 //#define BM_FLAG_SUPER_TRANSPARENT	2
-
-#ifdef EDITOR
-char	pszWallNames [7][10] = {
-	"NORMAL   ",
-	"BLASTABLE",
-	"DOOR     ",
-	"ILLUSION ",
-	"OPEN     ",
-	"CLOSED   ",
-	"EXTERNAL "
-};
-#endif
 
 //------------------------------------------------------------------------------
 
@@ -105,55 +89,6 @@ return (fix) (((double) pt * (double) anim->nFrameCount) / (double) nFrames);
 // This function determines whether the current CSegment/nSide is transparent
 //		1 = YES
 //		0 = NO
-#ifdef EDITOR
-
-//------------------------------------------------------------------------------
-// Initializes all the walls (in other words, no special walls)
-void WallInit (void)
-{
-	CWall *wallP = WALLS;
-
-gameData.walls.nWalls = 0;
-for (int i = 0; i < LEVEL_WALLS; i++, wallP++) {
-	wallP->nSegment =
-	wallP->nSide = -1;
-	wallP->nType = WALL_NORMAL;
-	wallP->flags = 0;
-	wallP->hps = 0;
-	wallP->nTrigger = NO_TRIGGER;
-	wallP->nClip = -1;
-	wallP->nLinkedWall = NO_WALL;
-	}
-gameData.walls.activeDoors.Reset ();
-gameData.walls.cloaking.Reset ();
-}
-
-//------------------------------------------------------------------------------
-// Initializes one CWall.
-void WallReset (CSegment *segP, short nSide)
-{
-	CWall *wallP;
-	int i = WallNumP (segP, nSide);
-
-if (!IS_WALL (i)) {
-#if TRACE
-	console.printf (CON_DBG, "Resetting Illegal Wall\n");
-#endif
-	return;
-	}
-wallP = WALLS;
-wallP->nSegment = segP->Index ();
-wallP->nSide = nSide;
-wallP->nType = WALL_NORMAL;
-wallP->flags = 0;
-wallP->hps = 0;
-wallP->nTrigger = NO_TRIGGER;
-wallP->nClip = -1;
-wallP->nLinkedWall = NO_WALL;
-}
-#endif
-
-
 //------------------------------------------------------------------------------
 
 CActiveDoor* FindActiveDoor (short nWall)
