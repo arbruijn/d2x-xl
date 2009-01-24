@@ -335,13 +335,6 @@ else {
 	}
 }
 
-
-//------------------------------------------------------------------------------
-
-extern void gr_lbitblt(CBitmap * source, CBitmap * dest, int height, int width);
-
-// Clipped bitmap ...
-
 //------------------------------------------------------------------------------
 
 void BlitToBitmapRLE (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
