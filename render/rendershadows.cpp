@@ -360,7 +360,7 @@ FORALL_OBJS (objP, h) {
 	k = h * MAX_SHADOW_LIGHTS;
 	for (i = n = 0; (n < m) && (*pnl >= 0); i++, pnl++) {
 		prl = lightManager.RenderLights (*pnl);
-		if (!prl->info.bState)
+		if (!prl->render.bState)
 			continue;
 		if (!CanSeePoint (objP, &objP->info.position.vPos, &prl->info.vPos, objP->info.nSegment))
 			continue;

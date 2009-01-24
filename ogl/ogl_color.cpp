@@ -390,11 +390,13 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		nDbgSeg = nDbgSeg;
 #endif
 	nLights--;
+	if (!prl->render.bState)
+		continue;
 #if 0
 	if (i == vcd.nMatLight)
 		continue;
 #endif
-	nType = prl->info.nType;
+	nType = prl->render.nType;
 	if (bSkipHeadlight && (nType == 3))
 		continue;
 #if ONLY_HEADLIGHT

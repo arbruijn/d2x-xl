@@ -58,18 +58,19 @@ for (i = 0; i < m_data.nLights [0]; i++, pl++) {
 		pl->render.vPosf [1][W] = 1;
 		}
 	pl->render.vPosf [0][W] = 1;
-	pl->info.bState = pl->info.bState && (pl->info.color.red + pl->info.color.green + pl->info.color.blue > 0.0);
+	pl->render.nType = pl->info.nType;
+	pl->render.bState = pl->info.bState && (pl->info.color.red + pl->info.color.green + pl->info.color.blue > 0.0);
 	pl->render.bLightning = (pl->info.nObject < 0) && (pl->info.nSide < 0);
 	ResetUsed (pl, 0);
 	if (gameStates.app.bMultiThreaded)
 		ResetUsed (pl, 1);
 	pl->render.bShadow =
 	pl->render.bExclusive = 0;
-	if (pl->info.bState) {
+	if (pl->render.bState) {
 		if (!bStatic && (pl->info.nType == 1) && !pl->info.bVariable)
-			pl->info.bState = 0;
+			pl->render.bState = 0;
 		if (!bVariable && ((pl->info.nType > 1) || pl->info.bVariable))
-			pl->info.bState = 0;
+			pl->render.bState = 0;
 		}
 	m_data.renderLights [m_data.nLights [1]++] = pl;
 	}
@@ -271,8 +272,8 @@ if (nVertex == nDbgVertex)
 		if (prl->render.xDistance > xMaxLightRange)
 			continue;
 		if (SetActive (activeLightsP, prl, 2, nThread)) {
-			prl->info.nType = nType;
-			prl->info.bState = 1;
+			prl->render.nType = nType;
+			prl->render.bState = 1;
 #if DBG
 			prl->render.nTarget = nFace + 1;
 			prl->render.nFrame = gameData.app.nFrameCount;
@@ -344,7 +345,6 @@ if (gameStates.render.nLightingMethod) {
 	for (i = gameStates.render.nMaxLightsPerFace; i; i--, pnl++) {
 		if ((j = *pnl) < 0)
 			break;
-		//m_data.lights [j].info.nType = nType;
 		prl = RenderLights (j);
 		if (gameData.threads.vertColor.data.bNoShadow && prl->render.bShadow)
 			continue;

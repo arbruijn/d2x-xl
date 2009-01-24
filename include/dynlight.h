@@ -38,6 +38,8 @@ class CLightRenderData {
 		short					nVerts [4];
 		int					nTarget;	//lit segment/face
 		int					nFrame;
+		ubyte					nType;
+		ubyte					bState;
 		ubyte					bShadow;
 		ubyte					bLightning;
 		ubyte					bExclusive;
