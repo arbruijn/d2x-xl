@@ -121,10 +121,6 @@ int gr_uline(fix x0, fix y0, fix x1, fix y1);
 int gr_aaline(fix x0, fix y0, fix x1, fix y1);
 int gr_uaaline(fix x0, fix y0, fix x1, fix y1);
 
-// Draw a rectangle into the current canvas.
-void DrawFilledRect(int left, int top, int right, int bot);
-void GrURect(int left, int top, int right, int bot);
-
 void DrawScanLineClipped(int x1, int x2, int y);
 void DrawScanLine(int x1, int x2, int y);
 

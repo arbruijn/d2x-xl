@@ -392,7 +392,7 @@ LoadBitmap (gameStates.render.fonts.bHires  ?  gameData.cockpit.gauges [0][x].in
 
 static inline void HUDRect (int left, int top, int width, int height)
 {
-DrawFilledRect (HUD_SCALE_X (left), HUD_SCALE_Y (top), HUD_SCALE_X (width), HUD_SCALE_Y (height));
+OglDrawFilledRect (HUD_SCALE_X (left), HUD_SCALE_Y (top), HUD_SCALE_X (width), HUD_SCALE_Y (height));
 }
 
 //	-----------------------------------------------------------------------------
