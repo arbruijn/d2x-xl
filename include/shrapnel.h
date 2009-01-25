@@ -1,7 +1,7 @@
 #ifndef _SHRAPNEL_H
 #define _SHRAPNEL_H
 
-#include "inferno.h"
+#include "descent.h"
 
 //------------------------------------------------------------------------------
 
