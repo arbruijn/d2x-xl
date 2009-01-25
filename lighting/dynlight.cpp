@@ -688,6 +688,13 @@ if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !ga
 
 void CLightManager::Setup (int nLevel)
 {
+gameStates.render.nLightingMethod = gameStates.app.bNostalgia ? 0 : gameOpts->render.nLightingMethod;
+if (gameStates.render.nLightingMethod == 2)
+	gameStates.render.bPerPixelLighting = 2;
+else if ((gameStates.render.nLightingMethod == 1) && gameOpts->render.bUseLightmaps)
+	gameStates.render.bPerPixelLighting = 1;
+else
+	gameStates.render.bPerPixelLighting = 0;
 if (!gameStates.app.bNostalgia) {
 	lightManager.AddFromGeometry ();
 	ComputeNearestLights (nLevel);
