@@ -241,8 +241,12 @@ int CLightmapManager::Init (int bVariable)
 	double			sideRad;
 
 //first step find all the lights in the level.  By iterating through every surface in the level.
-if (!(m_list.nLights = CountLights (bVariable)))
-	return m_list.buffers.Create (m_list.nBuffers = 1) ? 0 : -1;
+if (!(m_list.nLights = CountLights (bVariable))) {
+	if (!m_list.buffers.Create (m_list.nBuffers = 1))
+		return -1;
+	m_list.buffers.Clear ();
+	return 0;
+	}
 if (!m_list.info.Create (m_list.nLights)) {
 	m_list.nLights = 0; 
 	return -1;
