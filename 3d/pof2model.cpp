@@ -110,7 +110,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-CFace* CModel::AddPOFFace (CSubModel* psm, CFace* pmf, CFixVector* pn, ubyte* p, CBitmap** modelBitmaps, tRgbaColorf* objColorP)
+CFace* CModel::AddPOFFace (CSubModel* psm, CFace* pmf, CFixVector* pn, ubyte* p, CArray<CBitmap*>& modelBitmaps, tRgbaColorf* objColorP, bool bTextured)
 {
 	short					nVerts = WORDVAL (p+2);
 	CVertex*				pmv;
@@ -120,13 +120,11 @@ CFace* CModel::AddPOFFace (CSubModel* psm, CFace* pmf, CFixVector* pn, ubyte* p,
 	CFloatVector3		n, * pvn;
 	short					i, j;
 	ushort				c;
-	char					bTextured;
 
 if (!psm->m_faces)
 	psm->m_faces = pmf;
 Assert (pmf - m_faces < m_nFaces);
-if (modelBitmaps && *modelBitmaps) {
-	bTextured = 1;
+if (bTextured) {
 	pmf->m_nBitmap = WORDVAL (p+28);
 	CBitmap* bmP = modelBitmaps [pmf->m_nBitmap];
 	if (objColorP) {
@@ -167,8 +165,8 @@ if ((pmf->m_bGlow = (nGlow >= 0)))
 	nGlow = -1;
 uvl = reinterpret_cast<tUVL*> (p + 30 + (nVerts | 1) * 2);
 n.Assign (*pn);
-Assert (m_iFaceVert + nVerts <= m_faceVerts.Length ());
-Assert (m_iFaceVert + nVerts <= m_vertNorms.Length ());
+Assert (m_iFaceVert + nVerts <= int (m_faceVerts.Length ()));
+Assert (m_iFaceVert + nVerts <= int (m_vertNorms.Length ()));
 for (i = nVerts, pfv = WORDPTR (p+30); i; i--, pfv++, uvl++, pmv++, pvn++) {
 	j = *pfv;
 	Assert (pmv - m_faceVerts < m_nFaceVerts);
@@ -191,7 +189,7 @@ return ++pmf;
 //------------------------------------------------------------------------------
 
 int CModel::GetPOFModelItems (void *modelDataP, CAngleVector *pAnimAngles, int nThis, int nParent,
-										int bSubObject, CBitmap **modelBitmaps, tRgbaColorf *objColorP)
+										int bSubObject, CArray<CBitmap*>& modelBitmaps, tRgbaColorf *objColorP)
 {
 	ubyte*		p = reinterpret_cast<ubyte*> (modelDataP);
 	CSubModel*	psm = m_subModels + nThis;
@@ -222,7 +220,7 @@ for (;;) {
 
 		case OP_DEFPOINTS: {
 			int i, n = WORDVAL (p+2);
-			Assert (n <= m_verts.Length ());
+			Assert (n <= int (m_verts.Length ()));
 			CFloatVector3 *pfv = m_verts.Buffer ();
 			CFixVector *pv = VECPTR (p+4);
 			for (i = n; i; i--) {
@@ -236,7 +234,7 @@ for (;;) {
 		case OP_DEFP_START: {
 			int i, n = WORDVAL (p+2);
 			int s = WORDVAL (p+4);
-			Assert (s + n <= m_verts.Length ());
+			Assert (s + n <= int (m_verts.Length ()));
 			CFloatVector3 *pfv = m_verts + s;
 			CFixVector *pv = VECPTR (p+8);
 			for (i = n; i; i--) {
@@ -249,7 +247,7 @@ for (;;) {
 
 		case OP_FLATPOLY: {
 			int nVerts = WORDVAL (p+2);
-			pmf = AddPOFFace (psm, pmf, VECPTR (p+16), p, NULL, objColorP);
+			pmf = AddPOFFace (psm, pmf, VECPTR (p+16), p, modelBitmaps, objColorP, false);
 			p += 30 + (nVerts | 1) * 2;
 			break;
 			}
@@ -303,9 +301,9 @@ return 1;
 
 void CModel::AssignPOFFaces (void)
 {
-	int				i;
-	ubyte				nSubModel = 255;
-	CFace	*pmf;
+	int		i;
+	ubyte		nSubModel = 255;
+	CFace*	pmf;
 
 for (pmf = m_faces.Buffer (), i = m_nFaces; i; i--, pmf++)
 	if (pmf->m_nSubModel != nSubModel) {
@@ -318,7 +316,7 @@ for (pmf = m_faces.Buffer (), i = m_nFaces; i; i--, pmf++)
 
 //------------------------------------------------------------------------------
 
-int CModel::BuildFromPOF (CObject* objP, int nModel, CPolyModel* pp, CBitmap** modelBitmaps, tRgbaColorf* objColorP)
+int CModel::BuildFromPOF (CObject* objP, int nModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps, tRgbaColorf* objColorP)
 {
 if (!pp->Buffer ())
 	return 0;

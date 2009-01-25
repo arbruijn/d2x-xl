@@ -197,7 +197,7 @@ class CModel {
 
 		int BuildFromASE (CObject *objP, int nModel);
 		int BuildFromOOF (CObject *objP, int nModel);
-		int BuildFromPOF (CObject* objP, int nModel, CPolyModel* pp, CBitmap** modelBitmaps, tRgbaColorf* objColorP);
+		int BuildFromPOF (CObject* objP, int nModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps, tRgbaColorf* objColorP);
 
 	private:
 		void CountASEModelItems (ASE::CModel *pa);
@@ -208,9 +208,9 @@ class CModel {
 
 		void AssignPOFFaces (void);
 		int CountPOFModelItems (void* modelDataP, short* pnSubModels, short* pnVerts, short* pnFaces, short* pnFaceVerts);
-		CFace* AddPOFFace (CSubModel* psm, CFace* pmf, CFixVector* pn, ubyte* p, CBitmap** modelBitmaps, tRgbaColorf* objColorP);
+		CFace* AddPOFFace (CSubModel* psm, CFace* pmf, CFixVector* pn, ubyte* p, CArray<CBitmap*>& modelBitmaps, tRgbaColorf* objColorP, bool bTextured = true);
 		int GetPOFModelItems (void *modelDataP, CAngleVector *pAnimAngles, int nThis, int nParent,
-									 int bSubObject, CBitmap **modelBitmaps, tRgbaColorf *objColorP);
+									 int bSubObject, CArray<CBitmap*>& modelBitmaps, tRgbaColorf *objColorP);
 
 	};	
 

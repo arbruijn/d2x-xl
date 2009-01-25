@@ -416,7 +416,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void G3DrawSubModel (CObject *objP, short nModel, short nSubModel, short nExclusive, CBitmap **modelBitmaps,
+void G3DrawSubModel (CObject *objP, short nModel, short nSubModel, short nExclusive, CArray<CBitmap*>& modelBitmaps,
 						   CAngleVector *pAnimAngles, CFixVector *vOffsetP, int bHires, int bUseVBO, int nPass, int bTransparency,
 							int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
@@ -557,7 +557,7 @@ if ((nExclusive < 0) /*|| (nSubModel == nExclusive)*/)
 
 //------------------------------------------------------------------------------
 
-void G3DrawModel (CObject *objP, short nModel, short nSubModel, CBitmap **modelBitmaps,
+void G3DrawModel (CObject *objP, short nModel, short nSubModel, CArray<CBitmap*>& modelBitmaps,
 						CAngleVector *pAnimAngles, CFixVector *vOffsetP, int bHires, int bUseVBO, int bTransparency,
 						int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
@@ -740,7 +740,7 @@ if (vOffsetP)
 
 //------------------------------------------------------------------------------
 
-int G3RenderModel (CObject *objP, short nModel, short nSubModel, CPolyModel* pp, CBitmap **modelBitmaps,
+int G3RenderModel (CObject *objP, short nModel, short nSubModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps,
 						 CAngleVector *pAnimAngles, CFixVector *vOffsetP, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor)
 {
 	RenderModel::CModel	*pm = gameData.models.renderModels [1] + nModel;

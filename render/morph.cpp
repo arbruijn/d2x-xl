@@ -328,14 +328,14 @@ for (i = 0; i < sort_n; i++) {
 #endif
 		G3DrawMorphingModel (
 			modelP->Data () + modelP->SubModels ().ptrs [nSubModel],
-			gameData.models.textures.Buffer (),
+			gameData.models.textures,
 			animAngles, NULL, light,
 			mdP->vecs + mdP->submodelStartPoints [nSubModel], nModel);
 		}
 	else {
 		CFixMatrix orient;
 		orient = CFixMatrix::Create(animAngles[mn]);
-		transformation.Begin(modelP->SubModels ().offsets[mn], orient);
+		transformation.Begin (modelP->SubModels ().offsets [mn], orient);
 		MorphDrawModel (modelP, mn, animAngles, light, mdP, nModel);
 		transformation.End ();
 		}

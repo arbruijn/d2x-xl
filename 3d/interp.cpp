@@ -379,16 +379,16 @@ if (!mtP->nCount++) {
 #define CHECK_NORMAL_FACING	0
 
 int G3DrawPolyModel (
-	CObject*			objP,
-	void*				modelDataP,
-	CBitmap**		modelBitmaps,
-	CAngleVector*	pAnimAngles,
-	CFixVector*		vOffset,
-	fix				xModelLight,
-	fix*				xGlowValues,
-	tRgbaColorf*	colorP,
-	POF::CModel*	po,
-	int				nModel)
+	CObject*				objP,
+	void*					modelDataP,
+	CArray<CBitmap*>&	modelBitmaps,
+	CAngleVector*		pAnimAngles,
+	CFixVector*			vOffset,
+	fix					xModelLight,
+	fix*					xGlowValues,
+	tRgbaColorf*		colorP,
+	POF::CModel*		po,
+	int					nModel)
 {
 	ubyte *p = reinterpret_cast<ubyte*> (modelDataP);
 	short	nTag;
@@ -571,7 +571,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 //alternate interpreter for morphing CObject
-int G3DrawMorphingModel (void *modelP, CBitmap **modelBitmaps, CAngleVector *pAnimAngles, CFixVector *vOffset,
+int G3DrawMorphingModel (void *modelP, CArray<CBitmap*>& modelBitmaps, CAngleVector *pAnimAngles, CFixVector *vOffset,
 								  fix xModelLight, CFixVector *new_points, int nModel)
 {
 	ubyte *p = reinterpret_cast<ubyte*> (modelP);

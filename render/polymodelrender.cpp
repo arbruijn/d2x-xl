@@ -176,12 +176,12 @@ gameStates.ogl.bUseTransform = 1;
 G3SetModelPoints (gameData.models.polyModelPoints.Buffer ());
 gameData.render.vertP = gameData.models.fPolyModelVerts.Buffer ();
 if (!flags) {	//draw entire CObject
-	if (!G3RenderModel (objP, nModel, -1, modelP, gameData.models.textures.Buffer (), animAngles, NULL, light, glowValues, colorP)) {
+	if (!G3RenderModel (objP, nModel, -1, modelP, gameData.models.textures, animAngles, NULL, light, glowValues, colorP)) {
 		if (bHires)
 			return 0;
 #if 0//def _DEBUG
 		if (objP && (objP->info.nType == OBJ_ROBOT))
-			G3RenderModel (objP, nModel, -1, modelP, gameData.models.textures.Buffer (), animAngles, NULL, light, glowValues, colorP);
+			G3RenderModel (objP, nModel, -1, modelP, gameData.models.textures, animAngles, NULL, light, glowValues, colorP);
 #endif
 		if (objP && (objP->info.nType == OBJ_POWERUP)) {
 			if ((objP->info.nId == POW_SMARTMINE) || (objP->info.nId == POW_PROXMINE))
@@ -193,7 +193,7 @@ if (!flags) {	//draw entire CObject
 			(gameStates.app.bEndLevelSequence < EL_OUTSIDE) && 
 			!(SHOW_DYN_LIGHT && ((RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects));
 		transformation.Begin (*pos, *orient);
-		G3DrawPolyModel (objP, modelP->Data (), gameData.models.textures.Buffer (), animAngles, NULL, light, glowValues, colorP, NULL, nModel);
+		G3DrawPolyModel (objP, modelP->Data (), gameData.models.textures, animAngles, NULL, light, glowValues, colorP, NULL, nModel);
 		transformation.End ();
 		}
 	}
@@ -210,14 +210,14 @@ else {
 			//if submodel, rotate around its center point, not pivot point
 				vOffset = CFixVector::Avg (modelP->SubModels ().mins [i], modelP->SubModels ().maxs [i]);
 				vOffset.Neg();
-				if (!G3RenderModel (objP, nModel, i, modelP, gameData.models.textures.Buffer (), animAngles, &vOffset, light, glowValues, colorP)) {
+				if (!G3RenderModel (objP, nModel, i, modelP, gameData.models.textures, animAngles, &vOffset, light, glowValues, colorP)) {
 					if (bHires)
 						return 0;
 #if DBG
-					G3RenderModel (objP, nModel, i, modelP, gameData.models.textures.Buffer (), animAngles, &vOffset, light, glowValues, colorP);
+					G3RenderModel (objP, nModel, i, modelP, gameData.models.textures, animAngles, &vOffset, light, glowValues, colorP);
 #endif
 					transformation.Begin (vOffset);
-					G3DrawPolyModel (objP, modelP->Data () + modelP->SubModels ().ptrs [i], gameData.models.textures.Buffer (),
+					G3DrawPolyModel (objP, modelP->Data () + modelP->SubModels ().ptrs [i], gameData.models.textures,
 										  animAngles, NULL, light, glowValues, colorP, NULL, nModel);
 					transformation.End ();
 					}
