@@ -242,13 +242,16 @@ int CLightmapManager::Init (int bVariable)
 
 //first step find all the lights in the level.  By iterating through every surface in the level.
 if (!(m_list.nLights = CountLights (bVariable)))
-	return 0;
-if (!m_list.info.Create (m_list.nLights))
-	return m_list.nLights = 0; 
+	return m_list.buffers.Create (m_list.nBuffers = 1) ? 0 : -1;
+if (!m_list.info.Create (m_list.nLights)) {
+	m_list.nLights = 0; 
+	return -1;
+	}
 m_list.nBuffers = (gameData.segs.nFaces + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE;
 if (!m_list.buffers.Create (m_list.nBuffers)) {
 	m_list.info.Destroy ();
-	return m_list.nLights = 0; 
+	m_list.nLights = 0; 
+	return -1;
 	}
 m_list.buffers.Clear (); 
 m_list.info.Clear (); 
@@ -412,7 +415,7 @@ for (x = xMin; x < xMax; x++) {
 			nDbgSeg = nDbgSeg;
 #endif
 		if (0 < lightManager.SetNearestToPixel (m_data.faceP->nSegment, m_data.faceP->nSide, &m_data.vNormal, 
-												 pixelPosP, m_data.faceP->fRads [1] / 10.0f, nThread)) {
+															 pixelPosP, m_data.faceP->fRads [1] / 10.0f, nThread)) {
 			vcd.vertPos.Assign (*pixelPosP);
 			color.SetZero ();
 			G3AccumVertColor (-1, &color, &vcd, nThread);
@@ -652,29 +655,36 @@ if (gameOpts->render.nLightmapQuality > 3)
 	gameOpts->render.nLightmapQuality = 3;
 #endif
 Destroy ();
-if (!Init (0))
+int nLights = Init (0);
+if (nLights < 0)
 	return 0;
 if (Load (nLevel))
 	return 1;
 lightManager.Transform (1, 0);
 if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
-	int nSaturation = gameOpts->render.color.nSaturation;
-	gameOpts->render.color.nSaturation = 1;
-	gameStates.render.bLightmaps = 1;
-	gameData.render.fAttScale = 2.0f;
-	lightManager.Index (0)[0].nFirst = MAX_SHADER_LIGHTS;
-	lightManager.Index (0)[0].nLast = 0;
-	if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
-		nFace = 0;
-		ProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (gameData.segs.nFaces), CreatePoll);
+	if (nLights) {
+		int nSaturation = gameOpts->render.color.nSaturation;
+		gameOpts->render.color.nSaturation = 1;
+		gameStates.render.bLightmaps = 1;
+		gameData.render.fAttScale = 2.0f;
+		lightManager.Index (0)[0].nFirst = MAX_SHADER_LIGHTS;
+		lightManager.Index (0)[0].nLast = 0;
+		if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
+			nFace = 0;
+			ProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (gameData.segs.nFaces), CreatePoll);
+			}
+		else
+			BuildAll (-1);
+		gameData.render.fAttScale = (gameStates.render.bPerPixelLighting == 2) ? 1.0f : 2.0f;
+		gameStates.render.bLightmaps = 0;
+		gameStates.render.nState = 0;
+		gameOpts->render.color.nSaturation = nSaturation;
+		Realloc ((m_list.nLightmaps + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE);
 		}
-	else
-		BuildAll (-1);
-	gameData.render.fAttScale = (gameStates.render.bPerPixelLighting == 2) ? 1.0f : 2.0f;
-	gameStates.render.bLightmaps = 0;
-	gameStates.render.nState = 0;
-	gameOpts->render.color.nSaturation = nSaturation;
-	Realloc ((m_list.nLightmaps + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE);
+	else {
+		for (int i = 0; i < gameData.segs.nFaces; i++)
+			FACES.faces [i].nLightmap = 0;
+		}
 	BindAll ();
 	Save (nLevel);
 	}
