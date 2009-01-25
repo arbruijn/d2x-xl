@@ -660,9 +660,9 @@ if (nLights < 0)
 	return 0;
 if (Load (nLevel))
 	return 1;
-lightManager.Transform (1, 0);
 if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 	if (nLights) {
+		lightManager.Transform (1, 0);
 		int nSaturation = gameOpts->render.color.nSaturation;
 		gameOpts->render.color.nSaturation = 1;
 		gameStates.render.bLightmaps = 1;
@@ -682,6 +682,8 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 		Realloc ((m_list.nLightmaps + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE);
 		}
 	else {
+		CreateSpecial (m_data.texColor, 0, 0);
+		m_list.nLightmaps = 1;
 		for (int i = 0; i < gameData.segs.nFaces; i++)
 			FACES.faces [i].nLightmap = 0;
 		}
