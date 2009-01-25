@@ -250,7 +250,19 @@ class CArray : public CQuickSort < _T > {
 			return m_data.buffer + m_data.pos;
 			}
 
+#if DBG
+
+		inline _T* operator+ (uint i) { 
+			if (m_data.buffer && (i < m_data.length))
+				return m_data.buffer + i;
+			return  NULL; 
+			}
+
+#else
+
 		inline _T* operator+ (uint i) { return m_data.buffer ? m_data.buffer + i : NULL; }
+
+#endif
 
 		inline _T* operator- (uint i) { return m_data.buffer ? m_data.buffer - i : NULL; }
 
