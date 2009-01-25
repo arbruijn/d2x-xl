@@ -695,7 +695,7 @@ PiggyFreeHiresAnimations ();
 /*---*/PrintLog ("   freeing spark effect buffers\n");
 sparkManager.Destroy ();
 /*---*/PrintLog ("   freeing auxiliary poly model data\n");
-G3FreeAllPolyModelItems ();
+gameData.models.Destroy ();
 /*---*/PrintLog ("   Destroying camera objects\n");
 cameraManager.Destroy ();
 /*---*/PrintLog ("   Destroying omega lightnings\n");

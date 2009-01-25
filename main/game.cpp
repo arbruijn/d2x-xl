@@ -1239,7 +1239,7 @@ FreeSoundReplacements ();
 PrintLog ("unloading hoard data\n");
 FreeHoardData ();
 PrintLog ("unloading auxiliary poly model data\n");
-G3FreeAllPolyModelItems ();
+gameData.models.Destroy ();
 PrintLog ("unloading hires models\n");
 FreeHiresModels (0);
 PrintLog ("unloading tracker list\n");
