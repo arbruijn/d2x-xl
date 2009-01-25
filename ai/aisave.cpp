@@ -236,7 +236,7 @@ m_cf.ReadVector (ciP->vLastPos);
 
 int CSaveGameManager::LoadAIUniFormat (void)
 {
-	int	h, i, j, fPos, nPointSegs;
+	int	h, i, j, fPos, nRouteSegs;
 
 gameData.ai.bInitialized = m_cf.ReadInt ();
 gameData.ai.nOverallAgitation = m_cf.ReadInt ();
@@ -244,14 +244,16 @@ gameData.ai.nOverallAgitation = m_cf.ReadInt ();
 h = (m_nVersion > 39) ? LEVEL_OBJECTS : (m_nVersion > 22) ? MAX_OBJECTS : MAX_OBJECTS_D2;
 fPos = m_cf.Tell ();
 j = min (h, int (gameData.ai.localInfo.Length ()));
+gameData.ai.localInfo.Clear ();
 for (i = 0; i < j; i++)
 	LoadAILocalInfo (gameData.ai.localInfo + i);
 if (i < h)
 	m_cf.Seek (SEEK_CUR, (h - i) * (m_cf.Tell () - fPos) / i);
 
 h = (m_nVersion > 39) ? LEVEL_POINT_SEGS : (m_nVersion > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2;
-nPointSegs = h;
+nRouteSegs = h;
 fPos = m_cf.Tell ();
+gameData.ai.routeSegs.Clear ();
 j = min (h, int (gameData.ai.routeSegs.Length ()));
 for (i = 0; i < j; i++)
 	LoadAIPointSeg (gameData.ai.routeSegs + i);
@@ -292,7 +294,7 @@ else {
 if (m_nVersion >= 15) {
 	DBG (i = CFTell (fp));
 	i = m_cf.ReadInt ();
-	if ((i >= 0) && (i < nPointSegs))
+	if ((i >= 0) && (i < nRouteSegs))
 		gameData.ai.freePointSegs = gameData.ai.routeSegs + i;
 	else
 		AIResetAllPaths ();
