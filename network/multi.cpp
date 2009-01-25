@@ -21,7 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <time.h>
 #include <ctype.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "u_mem.h"
 #include "strutil.h"
 #include "network.h"

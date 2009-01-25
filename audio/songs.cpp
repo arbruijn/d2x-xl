@@ -23,7 +23,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include <unistd.h>
 #endif
 
-#include "inferno.h"
+#include "descent.h"
 #include "carray.h"
 #include "error.h"
 #include "args.h"

@@ -23,7 +23,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define WIREFRAME 0
 #define PERSPECTIVE 1
 
-#include "inferno.h"
+#include "descent.h"
 #include "pstypes.h"
 #include "fix.h"
 #include "vecmat.h"

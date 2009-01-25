@@ -23,7 +23,7 @@
 #include <linux/cdrom.h>
 #endif
 
-#include "inferno.h"
+#include "descent.h"
 #include "strutil.h"
 #include "error.h"
 #include "args.h"

@@ -14,7 +14,7 @@
 #include <string.h>
 #include <math.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "u_mem.h"
 #include "error.h"
 #include "text.h"

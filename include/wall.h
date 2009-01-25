@@ -14,7 +14,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _WALL_H
 #define _WALL_H
 
-#include "inferno.h"
+#include "descent.h"
 #include "segment.h"
 #include "object.h"
 #include "cfile.h"

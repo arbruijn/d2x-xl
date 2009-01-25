@@ -17,8 +17,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  */
 
-#ifndef _INFERNO_H
-#define _INFERNO_H
+#ifndef _DESCENT_H
+#define _DESCENT_H
 
 #include <math.h>
 

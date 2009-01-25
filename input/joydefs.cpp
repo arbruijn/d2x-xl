@@ -11,7 +11,7 @@
 #include <string.h>
 
 #include "pstypes.h"
-#include "inferno.h"
+#include "descent.h"
 #include "menu.h"
 #include "menu.h"
 #include "config.h"

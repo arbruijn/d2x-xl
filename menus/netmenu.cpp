@@ -13,7 +13,7 @@
 #	include <sys/socket.h>
 #endif
 
-#include "inferno.h"
+#include "descent.h"
 #include "strutil.h"
 #include "args.h"
 #include "timer.h"

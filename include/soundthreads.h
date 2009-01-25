@@ -14,7 +14,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _SOUNDTHREADS_H
 #define _SOUNDTHREADS_H
 
-#include "inferno.h"
+#include "descent.h"
 
 //------------------------------------------------------------------------------
 

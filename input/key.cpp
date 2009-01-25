@@ -19,7 +19,7 @@
 # include <SDL.h>
 #endif
 
-#include "inferno.h"
+#include "descent.h"
 #include "event.h"
 #include "error.h"
 #include "key.h"

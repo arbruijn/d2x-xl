@@ -14,7 +14,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _RENDERTHREADS_H
 #define _RENDERTHREADS_H
 
-#include "inferno.h"
+#include "descent.h"
 #include "lightning.h"
 #include "transprender.h"
 #include "particles.h"

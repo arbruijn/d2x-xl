@@ -15,7 +15,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <conf.h>
 #endif
 
-#include "inferno.h"
+#include "descent.h"
 #include "pa_enabl.h"
 #include "pstypes.h"
 #include "gr.h"

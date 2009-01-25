@@ -28,7 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <sys/types.h>
 #endif
 
-#include "inferno.h"
+#include "descent.h"
 #include "u_mem.h"
 #include "stdlib.h"
 #include "texmap.h"

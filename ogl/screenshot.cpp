@@ -30,7 +30,7 @@
 # include <SDL.h>
 #endif
 
-#include "inferno.h"
+#include "descent.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "ogl_color.h"
@@ -47,7 +47,7 @@
 #include "u_mem.h"
 #include "error.h"
 
-#include "inferno.h"
+#include "descent.h"
 #include "screens.h"
 
 #include "strutil.h"

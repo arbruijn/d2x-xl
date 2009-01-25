@@ -15,7 +15,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <conf.h>
 #endif
 
-#include "inferno.h"
+#include "descent.h"
 #include "3d.h"
 #include "globvars.h"
 #include "fix.h"

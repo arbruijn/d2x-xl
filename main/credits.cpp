@@ -33,7 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdarg.h>
 #include <ctype.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "error.h"
 #include "key.h"
 #include "gamepal.h"

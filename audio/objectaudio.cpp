@@ -21,7 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 #include <math.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "fix.h"
 #include "mono.h"
 #include "timer.h"

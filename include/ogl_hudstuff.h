@@ -7,7 +7,7 @@
 #include <stddef.h>
 #endif
 
-#include "inferno.h"
+#include "descent.h"
 
 extern CBitmap *bmpDeadzone;
 extern int bHaveDeadzone;

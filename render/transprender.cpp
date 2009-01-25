@@ -23,7 +23,7 @@ COPYTIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL TIGHTS RESERVED.
 #	include <unistd.h>
 #endif
 
-#include "inferno.h"
+#include "descent.h"
 #include "u_mem.h"
 #include "error.h"
 #include "ogl_lib.h"

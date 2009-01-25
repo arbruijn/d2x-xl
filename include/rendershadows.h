@@ -1,7 +1,7 @@
 #ifndef _RENDERSHADOWS_H
 #define _RENDERSHADOWS_H
 
-#include "inferno.h"
+#include "descent.h"
 #include "renderlib.h"
 
 void RenderFaceShadow (tFaceProps *propsP);

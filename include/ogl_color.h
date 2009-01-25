@@ -7,7 +7,7 @@
 #include <stddef.h>
 #endif
 
-#include "inferno.h"
+#include "descent.h"
 #include "gr.h"
 
 //------------------------------------------------------------------------------

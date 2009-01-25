@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <string.h>	// for memset ()
 
-#include "inferno.h"
+#include "descent.h"
 #include "error.h"
 #include "lightcluster.h"
 #include "dynlight.h"

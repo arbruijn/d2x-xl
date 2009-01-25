@@ -20,7 +20,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "u_mem.h"
 #include "console.h"
-#include "inferno.h"
+#include "descent.h"
 #include "grdef.h"
 #include "ogl_render.h"
 #include "canvas.h"

@@ -26,7 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pstypes.h"
 #include "mono.h"
 
-#include "inferno.h"
+#include "descent.h"
 #include "text.h"
 #include "segment.h"
 #include "textures.h"

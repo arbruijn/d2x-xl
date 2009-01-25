@@ -2,7 +2,7 @@
 #	include <conf.h>
 #endif
 
-#include "inferno.h"
+#include "descent.h"
 #include "error.h"
 #include "input.h"
 #include "text.h"

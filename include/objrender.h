@@ -1,7 +1,7 @@
 #ifndef __OBJRENDER_H
 #define __OBJRENDER_H
 
-#include "inferno.h"
+#include "descent.h"
 
 //------------------------------------------------------------------------------
 

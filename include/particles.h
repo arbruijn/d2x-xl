@@ -1,7 +1,7 @@
 #ifndef __PARTICLES_H
 #define __PARTICLES_H
 
-#include "inferno.h"
+#include "descent.h"
 
 #define EXTRA_VERTEX_ARRAYS	1
 

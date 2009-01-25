@@ -7,7 +7,7 @@
 #	include <conf.h>
 #endif
 //#include  "oof.h
-#include "inferno.h"
+#include "descent.h"
 #include "args.h"
 #include "u_mem.h"
 #include "error.h"

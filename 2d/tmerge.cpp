@@ -9,7 +9,7 @@
 #include <conf.h>
 #endif
 
-#include "inferno.h"
+#include "descent.h"
 #include "gr.h"
 
 void GrMergeTextures( ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale )

@@ -21,7 +21,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "ipx_mcast4.h"
 #include "args.h"
 #include "error.h"

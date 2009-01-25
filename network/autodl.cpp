@@ -13,7 +13,7 @@
 #else
 # include <SDL.h>
 #endif
-#include "inferno.h"
+#include "descent.h"
 #include "ipx.h"
 #include "key.h"
 #include "network.h"

@@ -3,7 +3,7 @@
 #include <limits.h>
 #include <stdlib.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "hmpfile.h"
 #include "byteswap.h"
 #include "u_mem.h"

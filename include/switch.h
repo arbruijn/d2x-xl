@@ -14,7 +14,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _SWITCH_H
 #define _SWITCH_H
 
-#include "inferno.h"
+#include "descent.h"
 #include "segment.h"
 
 #define MAX_TRIGGERS        254

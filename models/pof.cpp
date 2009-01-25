@@ -1,5 +1,5 @@
 
-#include "inferno.h"
+#include "descent.h"
 #include "pof.h"
 
 using namespace POF;

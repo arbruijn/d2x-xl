@@ -21,7 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include <stdarg.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "screens.h"
 #include "physics.h"
 #include "error.h"

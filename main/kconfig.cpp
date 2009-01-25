@@ -21,7 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #include <stdarg.h>
 #include <time.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "error.h"
 #include "key.h"
 #include "gamefont.h"

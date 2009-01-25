@@ -18,7 +18,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "joy.h"
 #include "error.h"
 #include "physics.h"

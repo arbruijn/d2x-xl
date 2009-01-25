@@ -806,6 +806,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\include\descent.h"
+						>
+					</File>
+					<File
 						RelativePath="..\include\dropobject.h"
 						>
 					</File>
@@ -847,10 +851,6 @@
 					</File>
 					<File
 						RelativePath="..\include\highscores.h"
-						>
-					</File>
-					<File
-						RelativePath="..\include\inferno.h"
 						>
 					</File>
 					<File
@@ -1016,6 +1016,10 @@
 								ObjectFile="$(IntDir)/$(InputName)1.obj"
 							/>
 						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\main\descent.cpp"
+						>
 					</File>
 					<File
 						RelativePath="..\main\dropobject.cpp"
@@ -1199,26 +1203,6 @@
 					</File>
 					<File
 						RelativePath="..\main\highscores.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\main\inferno.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Win32"
@@ -4425,11 +4409,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

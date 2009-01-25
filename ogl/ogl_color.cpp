@@ -16,7 +16,7 @@
 #endif
 #include <math.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "maths.h"
 #include "error.h"
 #include "network.h"

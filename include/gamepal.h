@@ -14,7 +14,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _GAMEPAL_H
 #define _GAMEPAL_H
 
-#include "inferno.h"
+#include "descent.h"
 #include "cfile.h"
 
 #define D2_DEFAULT_PALETTE "default.256"

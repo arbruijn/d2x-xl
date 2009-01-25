@@ -26,7 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 #include <ctype.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "movie.h"
 #include "key.h"
 #include "strutil.h"

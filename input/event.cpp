@@ -25,7 +25,7 @@
 # include <SDL.h>
 #endif
 
-#include "inferno.h"
+#include "descent.h"
 
 extern void KeyHandler(SDL_KeyboardEvent *event);
 extern void MouseButtonHandler(SDL_MouseButtonEvent *mbe);

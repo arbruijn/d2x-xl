@@ -22,7 +22,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "maths.h"
 #include "vecmat.h"
-#include "inferno.h"
+#include "descent.h"
 #include "error.h"
 
 #define EXACT_VEC_MAG	1

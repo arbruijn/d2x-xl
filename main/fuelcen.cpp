@@ -19,7 +19,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include <string.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "gameseg.h"
 #include "error.h"
 #include "gauges.h"

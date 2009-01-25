@@ -14,7 +14,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _RENDERLIB_H
 #define _RENDERLIB_H
 
-#include "inferno.h"
+#include "descent.h"
 
 //------------------------------------------------------------------------------
 

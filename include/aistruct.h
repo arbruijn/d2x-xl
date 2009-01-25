@@ -15,7 +15,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define _AISTRUCT_H
 
 #include "d1_aistruct.h"
-//#include "inferno.h"
+//#include "descent.h"
 //#include "polymodel.h"
 
 #define GREEN_GUY   1

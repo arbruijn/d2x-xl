@@ -22,7 +22,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <ctype.h>
 #include <time.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "ogl_lib.h"
 #include "ogl_render.h"
 #include "key.h"

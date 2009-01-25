@@ -20,7 +20,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 #include <ctype.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "kconfig.h"
 #include "u_mem.h"
 #include "joy.h"

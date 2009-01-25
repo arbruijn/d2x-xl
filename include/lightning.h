@@ -1,7 +1,7 @@
 #ifndef __LIGHTNING_H
 #define __LIGHTNING_H
 
-#include "inferno.h"
+#include "descent.h"
 #include "u_mem.h"
 
 #define MAX_LIGHTNING_SYSTEMS	1000

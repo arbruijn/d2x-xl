@@ -14,7 +14,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _RENDER_H
 #define _RENDER_H
 
-#include "inferno.h"
+#include "descent.h"
 #include "network.h"
 #include "3d.h"
 #include "object.h"

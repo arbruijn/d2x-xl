@@ -25,7 +25,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "fix.h"
 #include "vecmat.h"
 
-#include "inferno.h"
+#include "descent.h"
 #include "gauges.h"
 #include "escort.h"
 #include "fireball.h"

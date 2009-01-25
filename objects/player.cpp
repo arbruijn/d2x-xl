@@ -8,7 +8,7 @@
 #include <conf.h>
 #endif
 
-#include "inferno.h"
+#include "descent.h"
 #include "input.h"
 #include "network.h"
 #include "marker.h"

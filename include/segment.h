@@ -18,7 +18,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "fix.h"
 #include "vecmat.h"
 #include "3d.h"
-//#include "inferno.h"
+//#include "descent.h"
 #include "cfile.h"
 #include "gr.h"
 #include "carray.h"

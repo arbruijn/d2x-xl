@@ -14,7 +14,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _TEXT_H
 #define _TEXT_H
 
-#include "inferno.h"
+#include "descent.h"
 
 //Array of pointers to text
 #define N_BASE_TEXTS					649

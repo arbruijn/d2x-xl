@@ -25,7 +25,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include <errno.h>
 #endif
 
-#include "inferno.h"
+#include "descent.h"
 #include "pstypes.h"
 #include "u_mem.h"
 #include "strutil.h"

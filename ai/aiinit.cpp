@@ -20,7 +20,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include <time.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "error.h"
 #include "input.h"
 #include "network.h"

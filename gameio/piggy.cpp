@@ -26,7 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "pstypes.h"
 #include "strutil.h"
-#include "inferno.h"
+#include "descent.h"
 #include "gr.h"
 #include "u_mem.h"
 #include "iff.h"

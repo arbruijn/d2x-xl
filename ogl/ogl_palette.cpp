@@ -4,7 +4,7 @@
 #include <conf.h>
 #endif
 
-#include "inferno.h"
+#include "descent.h"
 #include "hudmsg.h"
 #include "game.h"
 #include "text.h"

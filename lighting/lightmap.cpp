@@ -24,7 +24,7 @@ there I just had it exit instead.
 #include <fcntl.h>
 #include <stdio.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "ogl_shader.h"

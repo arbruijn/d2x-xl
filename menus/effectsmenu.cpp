@@ -19,7 +19,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 
 #include "menu.h"
-#include "inferno.h"
+#include "descent.h"
 #include "ipx.h"
 #include "key.h"
 #include "iff.h"

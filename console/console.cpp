@@ -16,7 +16,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "strutil.h"
 #include "u_mem.h"
 #include "gr.h"

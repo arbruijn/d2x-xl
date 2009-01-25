@@ -38,7 +38,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 #include "error.h"
-#include "inferno.h"
+#include "descent.h"
 #include "key.h"
 #include "text.h"
 #include "findfile.h"

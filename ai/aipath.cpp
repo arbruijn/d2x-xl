@@ -19,7 +19,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>		// for d_rand () and qsort ()
 #include <string.h>		// for memset ()
 
-#include "inferno.h"
+#include "descent.h"
 #include "mono.h"
 #include "u_mem.h"
 

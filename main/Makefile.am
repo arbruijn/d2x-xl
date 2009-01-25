@@ -11,7 +11,7 @@ INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/input/include -I $(top_srcd
 libmain_a_SOURCES = ${EDITOR_SRCS} ${NETWORK_SRCS} \
 	briefings.cpp cheats.cpp cmd.cpp config.cpp controls.cpp credits.cpp crypt.cpp dropobject.cpp effects.cpp endlevel.cpp \
 	flightpath.cpp fuelcen.cpp game.cpp gameargs.cpp gamecntl.cpp gamedata.cpp gamefolders.cpp gameoptions.cpp gameseg.cpp \
-	gamestates.cpp highscores.cpp inferno.cpp kconfig.cpp mglobal.cpp movie.cpp newdemo.cpp scores.cpp segment.cpp side.cpp \
+	gamestates.cpp highscores.cpp descent.cpp kconfig.cpp mglobal.cpp movie.cpp newdemo.cpp scores.cpp segment.cpp side.cpp \
 	skybox.cpp slew.cpp switch.cpp terrain.cpp texmerge.cpp text.cpp textdata.cpp trackobject.cpp vclip.cpp wall.cpp 
 	
 EXTRA_DIST = ${EXTRA_SUBDIRS} \
@@ -20,7 +20,7 @@ EXTRA_DIST = ${EXTRA_SUBDIRS} \
 	endlevel.h escort.h oof.h ase.h \
 	fireball.h fuelcen.h fvi.h fvi_a.h game.h gamefont.h gamemine.h \
 	gamepal.h gamesave.h gameseg.h loadgame.h gamestat.h gauges.h \
-	hostage.h hudmsg.h inferno.h joydefs.h kconfig.h \
+	hostage.h hudmsg.h descent.h joydefs.h kconfig.h \
 	highscores.h laser.h light.h menu.h mission.h modem.h morph.h movie.h multi.h \
 	multibot.h netmisc.h network.h newdemo.h newmenu.h \
 	object.h paging.h physics.h piggy.h player.h playsave.h polyobj.h powerup.h \

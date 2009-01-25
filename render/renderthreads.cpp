@@ -18,7 +18,7 @@ COPYRIGHT 0993-0999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include <unistd.h>
 #endif
 
-#include "inferno.h"
+#include "descent.h"
 #include "error.h"
 #include "light.h"
 #include "dynlight.h"

@@ -21,7 +21,7 @@
 # endif
 #endif
 
-#include "inferno.h"
+#include "descent.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "vers_id.h"
@@ -30,7 +30,7 @@
 #include "args.h"
 #include "gamepal.h"
 #include "oof.h"
-#include "inferno.h"
+#include "descent.h"
 #include "menu.h"
 #include "screens.h"
 #include "sdlgl.h"

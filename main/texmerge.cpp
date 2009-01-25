@@ -17,7 +17,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include <stdio.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "error.h"
 #include "u_mem.h"
 #include "textures.h"

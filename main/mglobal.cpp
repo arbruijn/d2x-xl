@@ -15,7 +15,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include <conf.h>
 #endif
 
-#include "inferno.h"
+#include "descent.h"
 
 // Global array of vertices, common to one mine.
 //	This is the global mine which create_new_mine returns.

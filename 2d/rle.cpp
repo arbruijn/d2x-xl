@@ -19,7 +19,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 #include <string.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "pstypes.h"
 #include "u_mem.h"
 #include "mono.h"

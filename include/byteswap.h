@@ -16,7 +16,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include <string.h>
 #include "pstypes.h"
-#include "inferno.h"
+#include "descent.h"
 #include "vecmat.h"
 
 // ----------------------------------------------------------------------------

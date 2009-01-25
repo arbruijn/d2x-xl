@@ -16,7 +16,7 @@
 # include <SDL.h>
 #endif
 
-#include "inferno.h"
+#include "descent.h"
 #include "joy.h"
 #include "error.h"
 #include "timer.h"

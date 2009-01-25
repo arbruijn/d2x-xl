@@ -23,7 +23,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #include <math.h>
 
 #include "error.h"
-#include "inferno.h"
+#include "descent.h"
 #include "key.h"
 #include "gamefont.h"
 #include "iff.h"

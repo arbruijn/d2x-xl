@@ -17,7 +17,7 @@
 #	include <netinet/in.h> /* for htons & co. */
 #endif
 
-#include "inferno.h"
+#include "descent.h"
 #include "args.h"
 #include "u_mem.h"
 #include "ipx.h"

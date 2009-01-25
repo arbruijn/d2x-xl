@@ -2,7 +2,7 @@
 #include <conf.h>
 #endif
 
-#include "inferno.h"
+#include "descent.h"
 #include "u_mem.h"
 #include "gr.h"
 #include "tga.h"

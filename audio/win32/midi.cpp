@@ -1,7 +1,7 @@
 // MIDI stuff follows.
 #include <stdio.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "error.h"
 #include "hmpfile.h"
 #include "audio.h"

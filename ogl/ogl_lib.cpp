@@ -26,7 +26,7 @@
 # include <SDL.h>
 #endif
 
-#include "inferno.h"
+#include "descent.h"
 #include "error.h"
 #include "u_mem.h"
 #include "config.h"

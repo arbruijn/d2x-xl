@@ -92,7 +92,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #include <string.h>
 #include <winsock.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "args.h"
 #include "error.h"
 #include "ipx.h"

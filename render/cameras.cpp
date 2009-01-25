@@ -7,7 +7,7 @@
 #include <string.h>
 #include <math.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "error.h"
 #include "ogl_lib.h"
 #include "render.h"

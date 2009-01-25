@@ -37,7 +37,7 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #	include "SDL_main.h"
 #	include "SDL_keyboard.h"
 #endif
-#include "inferno.h"
+#include "descent.h"
 #include "u_mem.h"
 #include "strutil.h"
 #include "key.h"

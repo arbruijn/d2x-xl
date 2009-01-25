@@ -7,7 +7,7 @@
 #include <math.h>
 #include <string.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "error.h"
 #include "u_mem.h"
 #include "text.h"

@@ -14,7 +14,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _FASTRENDER_H
 #define _FASTRENDER_H
 
-#include "inferno.h"
+#include "descent.h"
 #include "endlevel.h"
 
 //------------------------------------------------------------------------------

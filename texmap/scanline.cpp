@@ -30,7 +30,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "maths.h"
 #include "mono.h"
-#include "inferno.h"
+#include "descent.h"
 #include "gr.h"
 #include "grdef.h"
 #include "texmap.h"

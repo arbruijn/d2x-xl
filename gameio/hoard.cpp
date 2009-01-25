@@ -8,7 +8,7 @@
 #include <time.h>
 #include <ctype.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "u_mem.h"
 #include "strutil.h"
 #include "network.h"

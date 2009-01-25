@@ -19,7 +19,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include <stdarg.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "u_mem.h"
 #include "textures.h"
 #include "error.h"
