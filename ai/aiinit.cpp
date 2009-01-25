@@ -146,8 +146,12 @@ gameData.ai.freePointSegs = gameData.ai.routeSegs.Buffer ();
 for (i = j = 0, objP = OBJECTS.Buffer (); i < LEVEL_OBJECTS; i++, objP++) {
 	if (objP->info.controlType == CT_AI)
 		InitAIObject (i, objP->cType.aiInfo.behavior, objP->cType.aiInfo.nHideSegment);
+	if ((objP->info.nType == OBJ_ROBOT) && (ROBOTINFO (objP->info.nId).bossFlag))
+		gameData.bosses [j++].Setup (i);
 	}
-gameData.bosses.Setup ();
+if (0 < (i = gameData.bosses.Count () - j))
+	gameData.bosses.Drop (uint (i));
+extraGameInfo [0].nBossCount = j;
 gameData.ai.bInitialized = 1;
 AIDoCloakStuff ();
 InitBuddyForLevel ();

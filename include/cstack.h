@@ -51,6 +51,13 @@ class CStack : public CArray< _T > {
 			return this->m_data.buffer [m_tos];
 			}
 
+		inline void Drop (uint i = 1) {
+			if (i >= m_tos)
+				m_tos = 0;
+			else
+				m_tos -= i;
+			}
+
 		inline bool Delete (uint i) {
 			if (i >= m_tos)
 				return false;

@@ -179,7 +179,7 @@ gameData.thief.stolenItems.Write (m_cf);
 i = CFTell ();
 #endif
 m_cf.WriteInt ((int) (gameData.ai.freePointSegs - gameData.ai.routeSegs.Buffer ()));
-if (h) {
+if (h && (m_nVersion < 43)) {
 	gameData.bosses.SaveSizeStates (m_cf);
 	gameData.bosses.SaveBufferStates (m_cf);
 	}
@@ -295,7 +295,7 @@ if (m_nVersion < 21) {
 	console.printf (1, "Warning: If you fight the boss, he might teleport to CSegment #0!\n");
 	#endif
 	}
-else if (h) {
+else if (h && (m_nVersion < 43)) {
 	gameData.bosses.LoadSizeStates (m_cf);
 	if (!gameData.bosses.LoadBufferStates (m_cf))
 		return 0;
