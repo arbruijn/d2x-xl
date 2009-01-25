@@ -866,7 +866,7 @@ return true;
 
 void CModelData::Destroy (void)
 {
-	int	h, i, j;
+	int	h, i;
 
 PrintLog ("unloading polygon model data\n");
 for (h = 0; h < 2; h++) {
