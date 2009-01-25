@@ -1812,8 +1812,11 @@ if (!m_bBetweenLevels) {
 		return 0;
 	gameData.walls.exploding.Reset ();
 	for (; i; i--)
-		if (gameData.walls.exploding.Grow ())
+		if (gameData.walls.exploding.Grow ()) {
 			gameData.walls.exploding.Top ()->LoadState (m_cf);
+			if (gameData.walls.exploding.Top ()->nSegment < 0)
+				gameData.walls.exploding.Shrink ();
+			}
 		else
 			return 0;
 	IFDBG (fPos = m_cf.Tell ());

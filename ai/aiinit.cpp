@@ -150,7 +150,7 @@ for (i = j = 0, objP = OBJECTS.Buffer (); i < LEVEL_OBJECTS; i++, objP++) {
 		gameData.bosses [j++].Setup (i);
 	}
 if (0 < (i = gameData.bosses.Count () - j))
-	gameData.bosses.Drop (uint (i));
+	gameData.bosses.Shrink (uint (i));
 extraGameInfo [0].nBossCount = char (j);
 gameData.ai.bInitialized = 1;
 AIDoCloakStuff ();
