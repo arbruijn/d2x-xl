@@ -151,7 +151,7 @@ for (i = j = 0, objP = OBJECTS.Buffer (); i < LEVEL_OBJECTS; i++, objP++) {
 	}
 if (0 < (i = gameData.bosses.Count () - j))
 	gameData.bosses.Drop (uint (i));
-extraGameInfo [0].nBossCount = j;
+extraGameInfo [0].nBossCount = char (j);
 gameData.ai.bInitialized = 1;
 AIDoCloakStuff ();
 InitBuddyForLevel ();
