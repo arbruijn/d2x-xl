@@ -1500,16 +1500,4 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
-
-void POFFreeAllPolyModelItems (void)
-{
-	int	h, i, j;
-
-for (h = 0; h < 2; h++)
-	for (i = 0; i < 2; i++)
-		for (j = 0; j < MAX_POLYGON_MODELS; j++)
-			gameData.models.pofData [h][i][j].Destroy ();
-}
-
-//------------------------------------------------------------------------------
 //eof

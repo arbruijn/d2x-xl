@@ -764,11 +764,11 @@ return gameData.models.nPolyModels - 1;
 
 #define BUILD_ALL_MODELS 0
 
-void PrepareModels (void)
+void CModelData::Prepare (void)
 {
-	int      h, i, j;
-	CObject	o, *objP = OBJECTS.Buffer ();
-	const char		*pszHires;
+	int			h, i, j;
+	CObject		o, *objP = OBJECTS.Buffer ();
+	const char*	pszHires;
 
 if (!RENDERPATH)
 	return;

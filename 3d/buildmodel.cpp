@@ -165,34 +165,6 @@ Init ();
 
 //------------------------------------------------------------------------------
 
-int G3AllocModel (RenderModel::CModel *pm)
-{
-return static_cast<int> (pm->Create ());
-}
-
-//------------------------------------------------------------------------------
-
-int G3FreeModelItems (RenderModel::CModel *pm)
-{
-pm->Destroy ();
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-void G3FreeAllPolyModelItems (void)
-{
-	int	i, j;
-
-PrintLog ("unloading polygon model data\n");
-for (j = 0; j < 2; j++)
-	for (i = 0; i < MAX_POLYGON_MODELS; i++)
-		gameData.models.renderModels [j][i].Destroy ();
-POFFreeAllPolyModelItems ();
-}
-
-//------------------------------------------------------------------------------
-
 int CFace::Compare (const CFace* pf, const CFace* pm)
 {
 if (pf == pm)

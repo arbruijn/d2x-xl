@@ -792,7 +792,8 @@ backgroundManager.Rebuild ();
 if (!gameStates.app.bGameRunning)
 	ShowBoxedMessage ("Setting up renderer...");
 ResetTextures (1, bGame);
-G3FreeAllPolyModelItems ();
+gameData.models.Destroy ();
+gameData.models.Prepare ();
 InitShaders ();
 #if LIGHTMAPS
 if (lightmapManager.HaveLightmaps ())
@@ -803,7 +804,7 @@ InitDynLighting ();
 OglCreateDrawBuffer ();
 cameraManager.Create ();
 InitSpheres ();
-PrepareModels ();
+//gameData.models.Prepare ();
 OglSetDrawBuffer (gameStates.ogl.nDrawBuffer, 1);
 if (!gameStates.app.bGameRunning)
 	ClearBoxedMessage ();

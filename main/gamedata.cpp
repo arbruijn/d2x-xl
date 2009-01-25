@@ -862,6 +862,22 @@ CREATE (spheres, MAX_POLYGON_MODELS, 0);
 return true;
 }
 
+//------------------------------------------------------------------------------
+
+void CModelData::Destroy (void)
+{
+	int	h, i, j;
+
+PrintLog ("unloading polygon model data\n");
+for (h = 0; h < 2; h++) {
+	for (i = 0; i < MAX_POLYGON_MODELS; i++) {
+		renderModels [h][i].Destroy ();
+		gameData.models.pofData [h][0][i].Destroy ();
+		gameData.models.pofData [h][1][i].Destroy ();
+		}
+	}
+}
+
 // ----------------------------------------------------------------------------
 
 CMorphData::CMorphData ()

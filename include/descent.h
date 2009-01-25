@@ -2205,6 +2205,8 @@ class CModelData {
 	public:
 		CModelData ();
 		bool Create (void);
+		void Destroy (void);
+		void Prepare (void);
 };
 
 //------------------------------------------------------------------------------
