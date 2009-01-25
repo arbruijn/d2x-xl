@@ -75,9 +75,28 @@ m_vboIndexHandle = 0;
 bool CModel::Create (void)
 {
 m_verts.Create (m_nVerts);
-m_color.Clear (0);
 m_color.Create (m_nVerts);
+m_vertBuf [0].Create (m_nFaceVerts);
+m_faceVerts.Create (m_nFaceVerts);
+m_vertNorms.Create (m_nFaceVerts);
+m_subModels.Create (m_nSubModels);
+m_faces.Create (m_nFaces);
+m_index [0].Create (m_nFaceVerts);
+m_sortedVerts.Create (m_nFaceVerts);
+
+m_verts.Clear (0);
 m_color.Clear (0xff);
+m_vertBuf [0].Clear (0);
+m_faceVerts.Clear (0);
+m_vertNorms.Clear (0);
+m_subModels.Clear (0);
+m_faces.Clear (0);
+m_index [0].Clear (0);
+m_sortedVerts.Clear (0);
+
+for (short i = 0; i < m_nSubModels; i++)
+	m_subModels [i].m_nSubModel = i;
+
 if (gameStates.ogl.bHaveVBOs) {
 	int i;
 	glGenBuffersARB (1, &m_vboDataHandle);
@@ -111,22 +130,6 @@ if (gameStates.ogl.bHaveVBOs) {
 		m_index [1].SetBuffer (reinterpret_cast<short*> (glMapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB)), 1, m_nFaceVerts);
 		}
 	}
-m_vertBuf [0].Create (m_nFaceVerts);
-m_faceVerts.Create (m_nFaceVerts);
-m_vertNorms.Create (m_nFaceVerts);
-m_subModels.Create (m_nSubModels);
-m_vertBuf [0].Clear (0);
-m_faceVerts.Clear (0);
-m_vertNorms.Clear (0);
-m_subModels.Clear (0);
-for (short i = 0; i < m_nSubModels; i++)
-	m_subModels [i].m_nSubModel = i;
-m_faces.Create (m_nFaces);
-m_faces.Clear (0);
-m_index [0].Create (m_nFaceVerts);
-m_index [0].Clear (0);
-m_sortedVerts.Create (m_nFaceVerts);
-m_sortedVerts.Clear (0);
 return true;
 }
 
@@ -140,21 +143,23 @@ if (m_nModel > -1)
 if (m_nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
-m_faces.Destroy ();
-m_subModels.Destroy ();
 if (gameStates.ogl.bHaveVBOs && m_vboDataHandle)
 	glDeleteBuffersARB (1, &m_vboDataHandle);
-m_vertBuf [0].Destroy ();
-m_vertBuf [1].SetBuffer (0);	//avoid trying to delete memory allocated by the graphics driver
-m_faceVerts.Destroy ();
-m_color.Destroy ();
-m_vertNorms.Destroy ();
-m_verts.Destroy ();
-m_sortedVerts.Destroy ();
-m_textures.Destroy ();
 if (gameStates.ogl.bHaveVBOs && m_vboIndexHandle)
 	glDeleteBuffersARB (1, &m_vboIndexHandle);
+
+m_textures.Destroy ();
+m_sortedVerts.Destroy ();
 m_index [0].Destroy ();
+m_faces.Destroy ();
+m_subModels.Destroy ();
+m_vertNorms.Destroy ();
+m_faceVerts.Destroy ();
+m_vertBuf [0].Destroy ();
+m_vertBuf [1].SetBuffer (0);	//avoid trying to delete memory allocated by the graphics driver
+m_color.Destroy ();
+m_verts.Destroy ();
+
 Init ();
 }
 
