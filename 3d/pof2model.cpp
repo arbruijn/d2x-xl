@@ -43,15 +43,18 @@ for (;;) {
 
 		case OP_DEFPOINTS: {
 			int n = WORDVAL (p+2);
-			(*pnVerts) += n;
+			if (*pnVerts < n) 
+				*pnVerts = n;
 			p += n * sizeof (CFixVector) + 4;
 			break;
 			}
 
 		case OP_DEFP_START: {
 			int n = WORDVAL (p+2);
+			int s = WORDVAL (p+4);
 			p += n * sizeof (CFixVector) + 8;
-			(*pnVerts) += n;
+			if (*pnVerts < s + n) 
+				*pnVerts = s + n;
 			break;
 			}
 
@@ -152,6 +155,7 @@ else {
 		*objColorP = baseColor;
 	}
 pmf->m_nSubModel = psm - m_subModels;
+Assert (pmf->m_nSubModel < m_nSubModels);
 pmf->m_vNormal = *pn;
 pmf->m_nIndex = m_iFaceVert;
 pmv = m_faceVerts + m_iFaceVert;
@@ -163,6 +167,8 @@ if ((pmf->m_bGlow = (nGlow >= 0)))
 	nGlow = -1;
 uvl = reinterpret_cast<tUVL*> (p + 30 + (nVerts | 1) * 2);
 n.Assign (*pn);
+Assert (m_iFaceVert + nVerts <= m_faceVerts.Length ());
+Assert (m_iFaceVert + nVerts <= m_vertNorms.Length ());
 for (i = nVerts, pfv = WORDPTR (p+30); i; i--, pfv++, uvl++, pmv++, pvn++) {
 	j = *pfv;
 	Assert (pmv - m_faceVerts < m_nFaceVerts);
@@ -216,6 +222,7 @@ for (;;) {
 
 		case OP_DEFPOINTS: {
 			int i, n = WORDVAL (p+2);
+			Assert (n <= m_verts.Length ());
 			CFloatVector3 *pfv = m_verts.Buffer ();
 			CFixVector *pv = VECPTR (p+4);
 			for (i = n; i; i--) {
@@ -229,6 +236,7 @@ for (;;) {
 		case OP_DEFP_START: {
 			int i, n = WORDVAL (p+2);
 			int s = WORDVAL (p+4);
+			Assert (s + n <= m_verts.Length ());
 			CFloatVector3 *pfv = m_verts + s;
 			CFixVector *pv = VECPTR (p+8);
 			for (i = n; i; i--) {
