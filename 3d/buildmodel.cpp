@@ -328,9 +328,9 @@ for (i = 0; i < m_nSubModels; i++) {
 	pfi->m_nId = nId;
 	}
 m_vbVerts.SetBuffer (reinterpret_cast<CFloatVector3*> (m_vertBuf [0].Buffer ()), 1, m_vertBuf [0].Length ());
-m_vbNormals.SetBuffer (m_vbVerts + m_nFaceVerts, true, m_vertBuf [0].Length ());
-m_vbColor.SetBuffer (reinterpret_cast<tRgbaColorf*> (m_vbNormals + m_nFaceVerts), 1, m_vertBuf [0].Length ());
-m_vbTexCoord.SetBuffer (reinterpret_cast<tTexCoord2f*> (m_vbColor + m_nFaceVerts), 1, m_vertBuf [0].Length ());
+m_vbNormals.SetBuffer (m_vbVerts.Buffer () + m_nFaceVerts, true, m_vertBuf [0].Length ());
+m_vbColor.SetBuffer (reinterpret_cast<tRgbaColorf*> (m_vbNormals.Buffer () + m_nFaceVerts), 1, m_vertBuf [0].Length ());
+m_vbTexCoord.SetBuffer (reinterpret_cast<tTexCoord2f*> (m_vbColor.Buffer () + m_nFaceVerts), 1, m_vertBuf [0].Length ());
 pv = m_vbVerts.Buffer ();
 pn = m_vbNormals.Buffer ();
 pt = m_vbTexCoord.Buffer ();
