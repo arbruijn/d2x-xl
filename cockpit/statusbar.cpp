@@ -84,7 +84,7 @@ if (m_info.old [gameStates.render.vr.nCurrentPage].score == bRedrawScore) {
 fontManager.SetCurrent (GAME_FONT);
 sprintf (szScore, "%5d", (IsMultiGame && !IsCoopGame) ? LOCALPLAYER.netKillsTotal : LOCALPLAYER.score);
 fontManager.Current ()->StringSize (szScore, w, h, aw);
-x = SB_SCORE_RIGHT-w - HUD_LHX (2);
+x = SB_SCORE_RIGHT - w - HUD_LHX (2);
 y = SB_SCORE_Y;
 //erase old score
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
@@ -140,6 +140,13 @@ else {
 	scoreTime = 0;
 	scoreDisplay [gameStates.render.vr.nCurrentPage] = 0;
 	}
+}
+
+//	-----------------------------------------------------------------------------
+
+void CCockpit::DrawOrbs (void)
+{
+DrawOrbs (m_info.fontWidth, m_info.nLineSpacing);
 }
 
 //	-----------------------------------------------------------------------------

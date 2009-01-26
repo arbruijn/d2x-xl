@@ -139,6 +139,11 @@ class CCockpitInfo {
 		fix	weaponBoxFadeValues [2];
 		int	weaponBoxUser [2];
 		int	nLineSpacing;
+		int	nMode;
+		float	xScale;
+		float	yScale;
+		int	fontWidth;
+		int	fontHeight;
 
 	public:
 		CCockpitInfo () { Init (); }
@@ -152,8 +157,142 @@ class CGenericCockpit {
 		CCockpitInfo	m_info;
 
 	public:
+		CBitmap* DBitBlt (int nGauge, int x, int y, bool bScalePos = true, bool bScaleSize = true, int scale = I2X (1), int orient = 0, CBitmap* bmP = NULL);
+		int _CDECL_ Print (int *idP, int x, int y, const char *pszFmt, ...);
+		char* ftoa (char *pszVal, fix f);
 
-};
+		void DrawSlowMotion (void);
+		void DrawTime (void);
+		void DrawTimerCount (void);
+		void PlayHomingWarning (void);
+		void DrawBombCount (int x, int y, int bgColor, int bShowAlways);
+		void DrawAmmoInfo (int x, int y, int ammoCount, int bPrimary);
+		void CheckForExtraLife (int nPrevScore);
+		void AddPointsToScore (int points);
+		void AddBonusPointsToScore (int points);
+		void DrawPlayerShip (int nCloakState, int nOldCloakState, int x, int y);
+		void DrawWeaponInfo (int info_index, tGaugeBox *box, int xPic, int yPic, const char *pszName, int xText, int yText, int orient);
+		void DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel);
+		int DrawWeaponDisplay (int nWeaponType, int nWeaponId);
+		void DrawStatic (int nWindow);
+		void DrawWeaponDisplays (void);
+		void DrawReticle (int bForceBig);
+		int CanSeeObject (int nObject, int bCheckObjs);
+		void DrawPlayerNames (void);
+		void DrawKillList (int nMode);
+		void Render (void);
+
+		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h) = 0;
+		virtual void DrawScore (void) = 0;
+		virtual void DrawScoreAdded (void) = 0;
+		virtual void DrawHomingWarning (void) = 0;
+		virtual void DrawKeys (void) = 0;
+		virtual void DrawOrbs (void) = 0;
+		virtual void DrawFlag (void) = 0;
+		virtual void DrawEnergy (void) = 0;
+		virtual void DrawEnergyBar (void) = 0;
+		virtual void DrawAfterburner (void) = 0;
+		virtual void DrawAfterburnerBar (void) = 0;
+		virtual void DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount) = 0;
+		virtual void DrawPrimaryAmmoInfo (int ammoCount) = 0;
+		virtual void DrawSecondaryAmmoInfo (int ammoCount) = 0;
+		virtual void DrawCloakInvul (void) = 0;
+		virtual void DrawShield (void) = 0;
+		virtual void DrawShieldBar (void) = 0;
+		virtual void DrawLives (void) = 0;
+		virtual void DrawPlayerShip (int nCloakState, int nOldCloakState, int y, int x) = 0;
+
+		virtual void DrawWeapons (void);
+		void DrawOrbs (int x, int y);
+		void DrawFlag (int x, int y);
+	};
+
+class CHUD : public CGenericCockpit {
+	public:
+		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h);
+		virtual void DrawScore (void);
+		virtual void DrawScoreAdded (void);
+		virtual void DrawHomingWarning (void);
+		virtual void DrawKeys (void);
+		virtual void DrawOrbs (void);
+		virtual void DrawFlag (void);
+		virtual void DrawEnergy (void);
+		virtual void DrawEnergyBar (void);
+		virtual void DrawAfterburner (void);
+		virtual void DrawAfterburnerBar (void);
+		virtual void DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount);
+		virtual void DrawPrimaryAmmoInfo (int ammoCount);
+		virtual void DrawSecondaryAmmoInfo (int ammoCount);
+		virtual void DrawWeapons (void);
+		virtual void DrawCloakInvul (void);
+		virtual void DrawShield (void);
+		virtual void DrawShieldBar (void);
+		virtual void DrawLives (void);
+		virtual void DrawPlayerShip (int nCloakState, int nOldCloakState, int y, int x);
+
+		virtual void DrawWeapons (void);
+		virtual void DrawKillList (void);
+
+	private:
+		int FlashGauge (int h, int *bFlash, int tToggle);
+	};
+
+class CStatusBar : public CGenericCockpit {
+	public:
+		CBitmap* StretchBlt (int nGauge, int x, int y, double xScale, double yScale, int scale, int orient, CBitmap);
+
+		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h);
+		virtual void DrawScore (void);
+		virtual void DrawScoreAdded (void);
+		virtual void DrawHomingWarning (void);
+		virtual void DrawKeys (void);
+		virtual void DrawOrbs (void);
+		virtual void DrawFlag (void);
+		virtual void DrawEnergy (void);
+		virtual void DrawEnergyBar (void);
+		virtual void DrawAfterburner (void);
+		virtual void DrawAfterburnerBar (void);
+		virtual void DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount);
+		virtual void DrawPrimaryAmmoInfo (int ammoCount);
+		virtual void DrawSecondaryAmmoInfo (int ammoCount);
+		virtual void DrawWeapons (void);
+		virtual void DrawCloakInvul (void);
+		virtual void DrawShield (void);
+		virtual void DrawShieldBar (void);
+		virtual void DrawLives (void);
+		virtual void DrawPlayerShip (int nCloakState, int nOldCloakState, int y, int x);
+
+		virtual void DrawWeapons (void);
+		virtual void DrawKillList (void);
+	};
+
+
+class CCockpit : public CGenericCockpit {
+	public:
+		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h);
+		virtual void DrawScore (void);
+		virtual void DrawScoreAdded (void);
+		virtual void DrawHomingWarning (void);
+		virtual void DrawKeys (void);
+		virtual void DrawOrbs (void);
+		virtual void DrawFlag (void);
+		virtual void DrawEnergy (void);
+		virtual void DrawEnergyBar (void);
+		virtual void DrawAfterburner (void);
+		virtual void DrawAfterburnerBar (void);
+		virtual void DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount);
+		virtual void DrawPrimaryAmmoInfo (int ammoCount);
+		virtual void DrawSecondaryAmmoInfo (int ammoCount);
+		virtual void DrawWeapons (void);
+		virtual void DrawCloakInvul (void);
+		virtual void DrawShield (void);
+		virtual void DrawShieldBar (void);
+		virtual void DrawLives (void);
+		virtual void DrawPlayerShip (int nCloakState, int nOldCloakState, int y, int x);
+
+		virtual void DrawWeapons (void);
+		virtual void DrawKillList (void);
+	};
 
 //	-----------------------------------------------------------------------------
 

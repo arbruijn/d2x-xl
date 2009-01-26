@@ -174,6 +174,42 @@ return pszVal;
 
 //	-----------------------------------------------------------------------------
 
+void CGenericCockpit::DrawSlowMotion (void)
+{
+if (HIDE_HUD)
+	return;
+
+	char	szScore [40];
+	int	w, h, aw;
+
+if ((gameData.hud.msgs [0].nMessages > 0) &&
+	 (strlen (gameData.hud.msgs [0].szMsgs [gameData.hud.msgs [0].nFirst]) > 38))
+	return;
+GrSetCurFont (GAME_FONT);
+szScore [0] = (char) 1;
+szScore [1] = (char) (127 + 128);
+szScore [2] = (char) (127 + 128);
+szScore [3] = (char) (0 + 128);
+#if !DBG
+if (!SlowMotionActive ())
+	strcpy (szScore + 4, "          ");
+else
+#endif
+	sprintf (szScore + 4, "M%1.1f S%1.1f ",
+				gameStates.gameplay.slowmo [0].fSpeed,
+				gameStates.gameplay.slowmo [1].fSpeed);
+szScore [14] = (char) 1;
+szScore [15] = (char) (0 + 128);
+szScore [16] = (char) (127 + 128);
+szScore [17] = (char) (0 + 128);
+szScore [18] = (char) (0);
+GrGetStringSize (szScore, &w, &h, &aw);
+GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+GrPrintF (NULL, grdCurCanv->cv_w - 2 * w - HUD_LHX (2), 3, szScore);
+}
+
+//	-----------------------------------------------------------------------------
+
 void CGenericCockpit::DrawTime (void)
 {
 if (gameStates.render.bShowTime) {
@@ -213,6 +249,81 @@ if ((gameData.app.nGameMode & GM_NETWORK) && netGame.xPlayTimeAllowed) {
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	if ((i >= 0) && !gameData.reactor.bDestroyed)
 		nIdTimer = GrPrintF (&nIdTimer, CCanvas::Current ()->Width () - w - HUD_LHX (10), HUD_LHX (11), szScore);
+	}
+}
+
+//	-----------------------------------------------------------------------------
+
+void CGenericCockpit::DrawFlag (int x, int y)
+{
+if ((gameData.app.nGameMode & GM_CAPTURE) && (LOCALPLAYER.flags & PLAYER_FLAGS_FLAG)) {
+icon = (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_BLUE) ? FLAG_ICON_RED : FLAG_ICON_BLUE;
+HUDBitBlt (icon, x, y, false, false);
+}
+
+//	-----------------------------------------------------------------------------
+
+void CGenericCockpit::DrawOrbs (int x, int y)
+{
+	static int nIdOrbs = 0, nIdEntropy [2]= {0, 0};
+
+if (HIDE_HUD)
+	return;
+if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
+	int x = 0, y = 0;
+	CBitmap *bmP = NULL;
+
+	if (nMode == CM_FULL_COCKPIT) {
+		y = 2*nLineSpacing;
+		x = 4*GAME_FONT->Width ();
+		}
+	else if (nMode == CM_STATUS_BAR) {
+		y = nLineSpacing;
+		x = GAME_FONT->Width ();
+		}
+	else if ((nMode == CM_FULL_SCREEN) ||
+				(nMode == CM_LETTERBOX)) {
+//			y = 5*nLineSpacing;
+		y = nLineSpacing;
+		x = GAME_FONT->Width ();
+		if (gameStates.render.fonts.bHires)
+			y += nLineSpacing;
+		}
+	else
+		Int3 ();		//what sort of cockpit?
+
+	bmP = HUDBitBlt (-1, x, y, false, false, I2X (1), 0, &gameData.hoard.icon [gameStates.render.fonts.bHires].bm);
+	//GrUBitmapM (x, y, bmP);
+
+	x += bmP->Width () + bmP->Width ()/2;
+	y+= (gameStates.render.fonts.bHires?2:1);
+	if (gameData.app.nGameMode & GM_ENTROPY) {
+		char	szInfo [20];
+		int	w, h, aw;
+		if (LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] >= extraGameInfo [1].entropy.nCaptureVirusLimit)
+			fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
+		else
+			fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
+		sprintf (szInfo,
+			"x %d [%d]",
+			LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX],
+			LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX]);
+		nIdEntropy [0] = GrPrintF (nIdEntropy, x, y, szInfo);
+		if (gameStates.entropy.bConquering) {
+			int t = (extraGameInfo [1].entropy.nCaptureTimeLimit * 1000) -
+					   (gameStates.app.nSDLTicks - gameStates.entropy.nTimeLastMoved);
+
+			if (t < 0)
+				t = 0;
+			fontManager.Current ()->StringSize (szInfo, w, h, aw);
+			x += w;
+			fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
+			sprintf (szInfo, " %d.%d", t / 1000, (t % 1000) / 100);
+			nIdEntropy [1] = GrPrintF (nIdEntropy + 1, x, y, szInfo);
+			}
+		}
+	else
+		nIdOrbs = GrPrintF (&nIdOrbs, x, y, "x %d", LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]);
 	}
 }
 
@@ -283,8 +394,8 @@ nIdBombCount = DrawBombCount (&nIdBombCount, x, y, szBombCount);
 
 void CGenericCockpit::DrawAmmoInfo (int x, int y, int ammoCount, int bPrimary)
 {
-	int w;
-	char str [16];
+	int	w;
+	char	szAmmo [16];
 
 	static int nIdAmmo [2][2] = {{0, 0},{0, 0}};
 
@@ -292,121 +403,14 @@ w = (m_info.fontWidth * (bPrimary ? 7 : 5)) / 2;
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
 OglDrawFilledRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + m_info.fontHeight));
 fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
-sprintf (str, "%03d", ammoCount);
-convert_1s (str);
-nIdAmmo [bPrimary][0] = HUDPrintF (&nIdAmmo [bPrimary][0], x, y, str);
+sprintf (szAmmo, "%03d", ammoCount);
+convert_1s (szAmmo);
+nIdAmmo [bPrimary][0] = HUDPrintF (&nIdAmmo [bPrimary][0], x, y, szAmmo);
 OglDrawFilledRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + m_info.fontHeight));
-nIdAmmo [bPrimary][1] = HUDPrintF (&nIdAmmo [bPrimary][1], x, y, str);
+nIdAmmo [bPrimary][1] = HUDPrintF (&nIdAmmo [bPrimary][1], x, y, szAmmo);
 }
 
 //	-----------------------------------------------------------------------------
-
-//convert '1' characters to special wide ones
-#define convert_1s(s) {char *p=s; while ((p = strchr (p, '1'))) *p = (char)132;}
-
-void CHUD::ShowWeapons (void)
-{
-	int	w, h, aw;
-	int	y;
-	const char	*pszWeapon;
-	char	szWeapon [32];
-
-	static int nIdWeapons [2] = {0, 0};
-
-if (HIDE_HUD)
-	return;
-#if 0
-CHUD::ShowIcons ();
-#endif
-fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-y = CCanvas::Current ()->Height ();
-if (IsMultiGame)
-	y -= 4*nLineSpacing;
-pszWeapon = PRIMARY_WEAPON_NAMES_SHORT (gameData.weapons.nPrimary);
-switch (gameData.weapons.nPrimary) {
-	case LASER_INDEX:
-		if (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS)
-			sprintf (szWeapon, "%s %s %i", TXT_QUAD, pszWeapon, LOCALPLAYER.laserLevel+1);
-		else
-			sprintf (szWeapon, "%s %i", pszWeapon, LOCALPLAYER.laserLevel+1);
-		break;
-
-	case SUPER_LASER_INDEX:
-		Int3 ();
-		break;	//no such thing as super laser
-
-	case VULCAN_INDEX:
-	case GAUSS_INDEX:
-		sprintf (szWeapon, "%s: %i", pszWeapon, X2I ((unsigned) LOCALPLAYER.primaryAmmo [VULCAN_INDEX] * (unsigned) VULCAN_AMMO_SCALE));
-		convert_1s (szWeapon);
-		break;
-
-	case SPREADFIRE_INDEX:
-	case PLASMA_INDEX:
-	case FUSION_INDEX:
-	case HELIX_INDEX:
-	case PHOENIX_INDEX:
-		strcpy (szWeapon, pszWeapon);
-		break;
-
-	case OMEGA_INDEX:
-		sprintf (szWeapon, "%s: %03i", pszWeapon, gameData.omega.xCharge [IsMultiGame] * 100 / MAX_OMEGA_CHARGE);
-		convert_1s (szWeapon);
-		break;
-
-	default:
-		Int3 ();
-		szWeapon [0] = 0;
-		break;
-	}
-
-fontManager.Current ()->StringSize (szWeapon, w, h, aw);
-nIdWeapons [0] = GrPrintF (nIdWeapons + 0, CCanvas::Current ()->Width () - 5 - w, y-2*nLineSpacing, szWeapon);
-
-if (gameData.weapons.nPrimary == VULCAN_INDEX) {
-	if (LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary] != oldAmmoCount [0][gameStates.render.vr.nCurrentPage]) {
-		if (gameData.demo.nState == ND_STATE_RECORDING)
-			NDRecordPrimaryAmmo (oldAmmoCount [0][gameStates.render.vr.nCurrentPage], LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary]);
-		oldAmmoCount [0][gameStates.render.vr.nCurrentPage] = LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary];
-		}
-	}
-
-if (gameData.weapons.nPrimary == OMEGA_INDEX) {
-	if (gameData.omega.xCharge [IsMultiGame] != xOldOmegaCharge [gameStates.render.vr.nCurrentPage]) {
-		if (gameData.demo.nState == ND_STATE_RECORDING)
-			NDRecordPrimaryAmmo (xOldOmegaCharge [gameStates.render.vr.nCurrentPage], gameData.omega.xCharge [IsMultiGame]);
-		xOldOmegaCharge [gameStates.render.vr.nCurrentPage] = gameData.omega.xCharge [IsMultiGame];
-		}
-	}
-
-pszWeapon = SECONDARY_WEAPON_NAMES_VERY_SHORT (gameData.weapons.nSecondary);
-sprintf (szWeapon, "%s %d", pszWeapon, LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
-fontManager.Current ()->StringSize (szWeapon, w, h, aw);
-nIdWeapons [1] = GrPrintF (nIdWeapons + 1, CCanvas::Current ()->Width ()-5-w, y-nLineSpacing, szWeapon);
-
-if (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != oldAmmoCount [1][gameStates.render.vr.nCurrentPage]) {
-	if (gameData.demo.nState == ND_STATE_RECORDING)
-		NDRecordSecondaryAmmo (oldAmmoCount [1][gameStates.render.vr.nCurrentPage], LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
-	oldAmmoCount [1][gameStates.render.vr.nCurrentPage] = LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary];
-	}
-ShowBombCount (CCanvas::Current ()->Width ()- (3*GAME_FONT->Width ()+ (gameStates.render.fonts.bHires?0:2)), y-3*nLineSpacing, -1, 1);
-}
-
-//	-----------------------------------------------------------------------------
-
-void CGenericCockpit::CheckForExtraLife (int nPrevScore)
-{
-if (LOCALPLAYER.score / EXTRA_SHIP_SCORE != nPrevScore / EXTRA_SHIP_SCORE) {
-LOCALPLAYER.lives += LOCALPLAYER.score / EXTRA_SHIP_SCORE - nPrevScore / EXTRA_SHIP_SCORE;
-PowerupBasic (20, 20, 20, 0, TXT_EXTRA_LIFE);
-short nSound = gameData.objs.pwrUp.info [POW_EXTRA_LIFE].hitSound;
-if (nSound > -1)
-	audio.PlaySound (nSound);
-}
-
-//	-----------------------------------------------------------------------------
-
-#define EXTRA_SHIP_SCORE	50000		//get new ship every this many points
 
 void CGenericCockpit::AddPointsToScore (int points)
 {
@@ -512,59 +516,6 @@ if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT)
 
 //	-----------------------------------------------------------------------------
 
-inline int NumDispX (int val)
-{
-int x = ((val > 99) ? 7 : (val > 9) ? 11 : 15);
-if (!gameStates.video.nDisplayMode)
-	x /= 2;
-return x + NUMERICAL_GAUGE_X;
-}
-
-void DrawNumericalDisplay (int shield, int energy)
-{
-	int dx = NUMERICAL_GAUGE_X,
-		 dy = NUMERICAL_GAUGE_Y;
-
-	static int nIdShields = 0, nIdEnergy = 0;
-
-#if 0
-if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT)
-	CCanvas::SetCurrent (numericalGaugeCanv);
-#endif
-HUDBitBlt (GAUGE_NUMERICAL, dx, dy);
-fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
-nIdShields = HUDPrintF (&nIdShields, NumDispX (shield), dy + (gameStates.video.nDisplayMode ? 36 : 16), "%d", shield);
-fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
-nIdEnergy = HUDPrintF (&nIdEnergy, NumDispX (energy), dy + (gameStates.video.nDisplayMode ? 5 : 2), "%d", energy);
-
-if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT) {
-	//CCanvas::SetCurrent (GetCurrentGameScreen ());
-	HUDBitBlt (-1, NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y, true, true, I2X (1), 0, numericalGaugeCanv);
-	}
-}
-
-
-//	-----------------------------------------------------------------------------
-
-typedef struct tKeyGaugeInfo {
-	int	nFlag, nGaugeOn, nGaugeOff, x [2], y [2];
-} tKeyGaugeInfo;
-
-static tKeyGaugeInfo keyGaugeInfo [] = {
-	{PLAYER_FLAGS_BLUE_KEY, GAUGE_BLUE_KEY, GAUGE_BLUE_KEY_OFF, {GAUGE_BLUE_KEY_X_L, GAUGE_BLUE_KEY_X_H}, {GAUGE_BLUE_KEY_Y_L, GAUGE_BLUE_KEY_Y_H}},
-	{PLAYER_FLAGS_GOLD_KEY, GAUGE_GOLD_KEY, GAUGE_GOLD_KEY_OFF, {GAUGE_GOLD_KEY_X_L, GAUGE_GOLD_KEY_X_H}, {GAUGE_GOLD_KEY_Y_L, GAUGE_GOLD_KEY_Y_H}},
-	{PLAYER_FLAGS_RED_KEY, GAUGE_RED_KEY, GAUGE_RED_KEY_OFF, {GAUGE_RED_KEY_X_L, GAUGE_RED_KEY_X_H}, {GAUGE_RED_KEY_Y_L, GAUGE_RED_KEY_Y_H}},
-	};
-
-void DrawKeys (void)
-{
-int bHires = gameStates.video.nDisplayMode != 0;
-for (int i = 0; i < 3; i++)
-	HUDBitBlt ((LOCALPLAYER.flags & keyGaugeInfo [i].nFlag) ? keyGaugeInfo [i].nGaugeOn : keyGaugeInfo [i].nGaugeOff, keyGaugeInfo [i].x [bHires], keyGaugeInfo [i].y [bHires]);
-}
-
-//	-----------------------------------------------------------------------------
-
 void DrawWeaponInfo (int info_index, tGaugeBox *box, int xPic, int yPic, const char *pszName, int xText, int yText, int orient)
 {
 	CBitmap*	bmP;
@@ -658,30 +609,28 @@ bLaserLevelChanged = ((nWeaponType == 0) &&
 								(nWeaponId == LASER_INDEX) &&
 								((LOCALPLAYER.laserLevel != m_info.old [gameStates.render.vr.nCurrentPage].laserLevel)));
 
-if ((nWeaponId != oldWeapon [nWeaponType][gameStates.render.vr.nCurrentPage] || bLaserLevelChanged) && weaponBoxStates [nWeaponType] == WS_SET) {
+if ((nWeaponId != m_info.history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] || bLaserLevelChanged) && weaponBoxStates [nWeaponType] == WS_SET) {
 	weaponBoxStates [nWeaponType] = WS_FADING_OUT;
 	weaponBoxFadeValues [nWeaponType] = I2X (FADE_LEVELS - 1);
 	}
 
-if ((oldWeapon [nWeaponType][gameStates.render.vr.nCurrentPage] == -1) || 1/* (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT)*/) {
-	ShowWeaponInfo (nWeaponType, nWeaponId, LOCALPLAYER.laserLevel);
-	oldWeapon [nWeaponType][gameStates.render.vr.nCurrentPage] = nWeaponId;
-	oldAmmoCount [nWeaponType][gameStates.render.vr.nCurrentPage] = -1;
-	xOldOmegaCharge [gameStates.render.vr.nCurrentPage] = -1;
-	m_info.old [gameStates.render.vr.nCurrentPage].laserLevel = LOCALPLAYER.laserLevel;
-	bDrew = 1;
-	weaponBoxStates [nWeaponType] = WS_SET;
-	}
+ShowWeaponInfo (nWeaponType, nWeaponId, LOCALPLAYER.laserLevel);
+m_info.history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] = nWeaponId;
+m_info.history [gameStates.render.vr.nCurrentPage].ammo [nWeaponType] = -1;
+xOldOmegaCharge [gameStates.render.vr.nCurrentPage] = -1;
+m_info.old [gameStates.render.vr.nCurrentPage].laserLevel = LOCALPLAYER.laserLevel;
+bDrew = 1;
+weaponBoxStates [nWeaponType] = WS_SET;
 
 if (weaponBoxStates [nWeaponType] == WS_FADING_OUT) {
-	ShowWeaponInfo (nWeaponType, oldWeapon [nWeaponType][gameStates.render.vr.nCurrentPage], m_info.old [gameStates.render.vr.nCurrentPage].laserLevel);
-	oldAmmoCount [nWeaponType][gameStates.render.vr.nCurrentPage] = -1;
+	ShowWeaponInfo (nWeaponType, m_info.history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType], m_info.old [gameStates.render.vr.nCurrentPage].laserLevel);
+	m_info.history [gameStates.render.vr.nCurrentPage].ammo [nWeaponType] = -1;
 	xOldOmegaCharge [gameStates.render.vr.nCurrentPage] = -1;
 	bDrew = 1;
 	weaponBoxFadeValues [nWeaponType] -= gameData.time.xFrame * FADE_SCALE;
 	if (weaponBoxFadeValues [nWeaponType] <= 0) {
 		weaponBoxStates [nWeaponType] = WS_FADING_IN;
-		oldWeapon [nWeaponType][gameStates.render.vr.nCurrentPage] = nWeaponId;
+		m_info.history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] = nWeaponId;
 		oldWeapon [nWeaponType][!gameStates.render.vr.nCurrentPage] = nWeaponId;
 		m_info.old [gameStates.render.vr.nCurrentPage].laserLevel = LOCALPLAYER.laserLevel;
 		oldLaserLevel [!gameStates.render.vr.nCurrentPage] = LOCALPLAYER.laserLevel;
@@ -689,12 +638,12 @@ if (weaponBoxStates [nWeaponType] == WS_FADING_OUT) {
 		}
 	}
 else if (weaponBoxStates [nWeaponType] == WS_FADING_IN) {
-	if (nWeaponId != oldWeapon [nWeaponType][gameStates.render.vr.nCurrentPage]) {
+	if (nWeaponId != m_info.history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType]) {
 		weaponBoxStates [nWeaponType] = WS_FADING_OUT;
 		}
 	else {
 		ShowWeaponInfo (nWeaponType, nWeaponId, LOCALPLAYER.laserLevel);
-		oldAmmoCount [nWeaponType][gameStates.render.vr.nCurrentPage] = -1;
+		m_info.history [gameStates.render.vr.nCurrentPage].ammo [nWeaponType] = -1;
 		xOldOmegaCharge [gameStates.render.vr.nCurrentPage] = -1;
 		bDrew=1;
 		weaponBoxFadeValues [nWeaponType] += gameData.time.xFrame * FADE_SCALE;
@@ -749,24 +698,19 @@ for (x = hudWindowAreas [h].left; x < hudWindowAreas [h].right; x += bmp->Width 
 
 //	-----------------------------------------------------------------------------
 
-void CGenericCockpit::DrawWeaponDisplays (void)
+void CGenericCockpit::DrawWeapons (void)
 {
-	int boxofs = (gameStates.render.cockpit.nMode == CM_STATUS_BAR) ? SB_PRIMARY_BOX : COCKPIT_PRIMARY_BOX;
-	int bDrawn;
-
 if (weaponBoxUser [0] == WBU_WEAPON) {
-	bDrawn = DrawWeaponDisplay (0, gameData.weapons.nPrimary);
-	if (bDrawn)
-	if (weaponBoxStates [0] == WS_SET) {
-		if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {
-			if (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] != oldAmmoCount [0][gameStates.render.vr.nCurrentPage]) {
+	if (DrawWeaponDisplay (0, gameData.weapons.nPrimary) && (weaponBoxStates [0] == WS_SET)) {
+		 (((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {
+			if (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] != m_info.history [gameStates.render.vr.nCurrentPage].ammo [0]) {
 				if (gameData.demo.nState == ND_STATE_RECORDING)
-					NDRecordPrimaryAmmo (oldAmmoCount [0][gameStates.render.vr.nCurrentPage], LOCALPLAYER.primaryAmmo [VULCAN_INDEX]);
+					NDRecordPrimaryAmmo (m_info.history [gameStates.render.vr.nCurrentPage].ammo [0], LOCALPLAYER.primaryAmmo [VULCAN_INDEX]);
 				DrawPrimaryAmmoInfo (X2I ((unsigned) VULCAN_AMMO_SCALE * (unsigned) LOCALPLAYER.primaryAmmo [VULCAN_INDEX]));
-				oldAmmoCount [0][gameStates.render.vr.nCurrentPage] = LOCALPLAYER.primaryAmmo [VULCAN_INDEX];
+				m_info.history [gameStates.render.vr.nCurrentPage].ammo [0] = LOCALPLAYER.primaryAmmo [VULCAN_INDEX];
 				}
 			}
-		if (gameData.weapons.nPrimary == OMEGA_INDEX) {
+		else if (gameData.weapons.nPrimary == OMEGA_INDEX) {
 			if (gameData.omega.xCharge [IsMultiGame] != xOldOmegaCharge [gameStates.render.vr.nCurrentPage]) {
 				if (gameData.demo.nState == ND_STATE_RECORDING)
 					NDRecordPrimaryAmmo (xOldOmegaCharge [gameStates.render.vr.nCurrentPage], gameData.omega.xCharge [IsMultiGame]);
@@ -780,48 +724,17 @@ else if (weaponBoxUser [0] == WBU_STATIC)
 	DrawStatic (0);
 
 if (weaponBoxUser [1] == WBU_WEAPON) {
-	bDrawn = DrawWeaponDisplay (1, gameData.weapons.nSecondary);
-	if (bDrawn)
-	if (weaponBoxStates [1] == WS_SET)
-		if (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != oldAmmoCount [1][gameStates.render.vr.nCurrentPage]) {
-			oldBombcount [gameStates.render.vr.nCurrentPage] = 0x7fff;	//force redraw
-			if (gameData.demo.nState == ND_STATE_RECORDING)
-				NDRecordSecondaryAmmo (oldAmmoCount [1][gameStates.render.vr.nCurrentPage], LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
-			DrawSecondaryAmmoInfo (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
-			oldAmmoCount [1][gameStates.render.vr.nCurrentPage] = LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary];
-			}
+	if (DrawWeaponDisplay (1, gameData.weapons.nSecondary) && (weaponBoxStates [1] == WS_SET) &&
+		 (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != m_info.history [gameStates.render.vr.nCurrentPage].ammo [1])) {
+		oldBombcount [gameStates.render.vr.nCurrentPage] = 0x7fff;	//force redraw
+		if (gameData.demo.nState == ND_STATE_RECORDING)
+			NDRecordSecondaryAmmo (m_info.history [gameStates.render.vr.nCurrentPage].ammo [1], LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
+		DrawSecondaryAmmoInfo (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
+		m_info.history [gameStates.render.vr.nCurrentPage].ammo [1] = LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary];
+		}
 	}
 else if (weaponBoxUser [1] == WBU_STATIC)
 	DrawStatic (1);
-}
-
-//	-----------------------------------------------------------------------------
-
-//	Draws invulnerable ship, or maybe the flashing ship, depending on invulnerability time left.
-void DrawInvulnerableShip (void)
-{
-	static fix time = 0;
-	fix tInvul = LOCALPLAYER.invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame;
-
-//CCanvas::SetCurrent (GetCurrentGameScreen ());
-if (tInvul > 0) {
-	if ((tInvul > I2X (4)) || (gameData.time.xGame & 0x8000)) {
-		if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
-			HUDBitBlt (GAUGE_INVULNERABLE + nInvulnerableFrame, SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y);
-		else
-			HUDBitBlt (GAUGE_INVULNERABLE + nInvulnerableFrame, SHIELD_GAUGE_X, SHIELD_GAUGE_Y);
-		time += gameData.time.xFrame;
-		while (time > INV_FRAME_TIME) {
-			time -= INV_FRAME_TIME;
-			if (++nInvulnerableFrame == N_INVULNERABLE_FRAMES)
-				nInvulnerableFrame = 0;
-			}
-		}
-	}
-else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
-	SBDrawShieldBar (X2IR (LOCALPLAYER.shields));
-else
-	DrawShieldBar (X2IR (LOCALPLAYER.shields));
 }
 
 //	-----------------------------------------------------------------------------
@@ -845,10 +758,8 @@ xy cross_offsets [4] = 	 {{-8, -5},  {-4, -2},  {-4, -2}, {-2, -1}};
 xy primary_offsets [4] =  {{-30, 14}, {-16, 6},  {-15, 6}, {-8, 2}};
 xy secondary_offsets [4] = {{-24, 2},  {-12, 0}, {-12, 1}, {-6, -2}};
 
-void OglDrawMouseIndicator (void);
-
 //draw the reticle
-void DrawReticle (int bForceBig)
+void CGenericCockpit::DrawReticle (int bForceBig)
 {
 	int x, y;
 	int bLaserReady, bMissileReady, bLaserAmmo, bMissileAmmo;
@@ -910,187 +821,6 @@ cmScaleX /= HUD_ASPECT;
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::ShowKillList (void)
-{
-	int n_players, player_list [MAX_NUM_NET_PLAYERS];
-	int n_left, i, xo = 0, x0, x1, y, save_y, fth, l;
-	int t = gameStates.app.nSDLTicks;
-	int bGetPing = gameStates.render.cockpit.bShowPingStats && (!networkData.tLastPingStat || (t - networkData.tLastPingStat >= 1000));
-	static int faw = -1;
-
-	static int nIdKillList [2][MAX_PLAYERS] = {{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
-
-if (HIDE_HUD)
-	return;
-// ugly hack since placement of netgame players and kills is based off of
-// menuhires (which is always 1 for mac).  This throws off placement of
-// players in pixel double mode.
-if (bGetPing)
-	networkData.tLastPingStat = t;
-if (gameData.multigame.kills.xShowListTimer > 0) {
-	gameData.multigame.kills.xShowListTimer -= gameData.time.xFrame;
-	if (gameData.multigame.kills.xShowListTimer < 0)
-		gameData.multigame.kills.bShowList = 0;
-	}
-n_players = (gameData.multigame.kills.bShowList == 3) ? 2 : MultiGetKillList (player_list);
-n_left = (n_players <= 4) ? n_players : (n_players+1)/2;
-//If font size changes, this code might not work right anymore
-//Assert (GAME_FONT->Height ()==5 && GAME_FONT->Width ()==7);
-fth = GAME_FONT->Height ();
-x0 = HUD_LHX (1);
-x1 = (IsCoopGame) ? HUD_LHX (43) : HUD_LHX (43);
-save_y = y = CCanvas::Current ()->Height () - n_left* (fth+1);
-if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
-	save_y = y -= HUD_LHX (6);
-	x1 = (IsCoopGame) ? HUD_LHX (43) : HUD_LHX (43);
-	}
-if (gameStates.render.cockpit.bShowPingStats) {
-	if (faw < 0)
-		faw = GAME_FONT->TotalWidth () / (GAME_FONT->Range ());
-		if (gameData.multigame.kills.bShowList == 2)
-			xo = faw * 24;//was +25;
-		else if (IsCoopGame)
-			xo = faw * 14;//was +30;
-		else
-			xo = faw * 8; //was +20;
-	}
-for (i = 0; i < n_players; i++) {
-	int nPlayer;
-	char name [80], teamInd [2] = {127, 0};
-	int sw, sh, aw, indent =0;
-
-	if (i>=n_left) {
-		x0 = CCanvas::Current ()->Width () - ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) ? HUD_LHX (53) : HUD_LHX (60));
-		x1 = CCanvas::Current ()->Width () - ((gameData.app.nGameMode & GM_MULTI_COOP) ? HUD_LHX (27) : HUD_LHX (15));
-		if (gameStates.render.cockpit.bShowPingStats) {
-			x0 -= xo + 6 * faw;
-			x1 -= xo + 6 * faw;
-			}
-		if (i==n_left)
-			y = save_y;
-		if (netGame.KillGoal || netGame.xPlayTimeAllowed)
-			x1-=HUD_LHX (18);
-		}
-	else if (netGame.KillGoal || netGame.xPlayTimeAllowed)
-		 x1 = HUD_LHX (43) - HUD_LHX (18);
-	nPlayer = (gameData.multigame.kills.bShowList == 3) ? i : player_list [i];
-	if ((gameData.multigame.kills.bShowList == 1) || (gameData.multigame.kills.bShowList == 2)) {
-		int color;
-
-		if (gameData.multiplayer.players [nPlayer].connected != 1)
-			fontManager.SetColorRGBi (RGBA_PAL2 (12, 12, 12), 1, 0, 0);
-		else {
-			if (IsTeamGame)
-				color = GetTeam (nPlayer);
-			else
-				color = nPlayer;
-			fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue), 1, 0, 0);
-			}
-		}
-	else
-		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [nPlayer].red, playerColors [nPlayer].green, playerColors [nPlayer].blue), 1, 0, 0);
-	if (gameData.multigame.kills.bShowList == 3) {
-		if (GetTeam (gameData.multiplayer.nLocalPlayer) == i) {
-#if 0//def _DEBUG
-			sprintf (name, "%c%-8s %d.%d.%d.%d:%d",
-						teamInd [0], netGame.szTeamName [i],
-						netPlayers.players [i].network.ipx.node [0],
-						netPlayers.players [i].network.ipx.node [1],
-						netPlayers.players [i].network.ipx.node [2],
-						netPlayers.players [i].network.ipx.node [3],
-						netPlayers.players [i].network.ipx.node [5] +
-						 (unsigned) netPlayers.players [i].network.ipx.node [4] * 256);
-#else
-			sprintf (name, "%c%s", teamInd [0], netGame.szTeamName [i]);
-#endif
-			indent = 0;
-			}
-		else {
-#if SHOW_PLAYER_IP
-			sprintf (name, "%-8s %d.%d.%d.%d:%d",
-						netGame.szTeamName [i],
-						netPlayers.players [i].network.ipx.node [0],
-						netPlayers.players [i].network.ipx.node [1],
-						netPlayers.players [i].network.ipx.node [2],
-						netPlayers.players [i].network.ipx.node [3],
-						netPlayers.players [i].network.ipx.node [5] +
-						 (unsigned) netPlayers.players [i].network.ipx.node [4] * 256);
-#else
-			strcpy (name, netGame.szTeamName [i]);
-#endif
-			fontManager.Current ()->StringSize (teamInd, indent, sh, aw);
-			}
-		}
-	else
-#if 0//def _DEBUG
-		sprintf (name, "%-8s %d.%d.%d.%d:%d",
-					gameData.multiplayer.players [nPlayer].callsign,
-					netPlayers.players [nPlayer].network.ipx.node [0],
-					netPlayers.players [nPlayer].network.ipx.node [1],
-					netPlayers.players [nPlayer].network.ipx.node [2],
-					netPlayers.players [nPlayer].network.ipx.node [3],
-					netPlayers.players [nPlayer].network.ipx.node [5] +
-					 (unsigned) netPlayers.players [nPlayer].network.ipx.node [4] * 256);
-#else
-		strcpy (name, gameData.multiplayer.players [nPlayer].callsign);	// Note link to above if!!
-#endif
-#if 0//def _DEBUG
-	x1 += HUD_LHX (100);
-#endif
-	for (l = (int) strlen (name); l;) {
-		fontManager.Current ()->StringSize (name, sw, sh, aw);
-		if (sw <= x1 - x0 - HUD_LHX (2))
-			break;
-		name [--l] = '\0';
-		}
-	nIdKillList [0][i] = GrPrintF (nIdKillList [0] + i, x0 + indent, y, "%s", name);
-
-	if (gameData.multigame.kills.bShowList == 2) {
-		if (gameData.multiplayer.players [nPlayer].netKilledTotal + gameData.multiplayer.players [nPlayer].netKillsTotal <= 0)
-			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, TXT_NOT_AVAIL);
-		else
-			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%d%%",
-				 (int) ((double) gameData.multiplayer.players [nPlayer].netKillsTotal /
-						 ((double) gameData.multiplayer.players [nPlayer].netKilledTotal +
-						  (double) gameData.multiplayer.players [nPlayer].netKillsTotal) * 100.0));
-		}
-	else if (gameData.multigame.kills.bShowList == 3) {
-		if (gameData.app.nGameMode & GM_ENTROPY)
-			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%3d [%d/%d]",
-						 gameData.multigame.kills.nTeam [i], gameData.entropy.nTeamRooms [i + 1],
-						 gameData.entropy.nTotalRooms);
-		else
-			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%3d", gameData.multigame.kills.nTeam [i]);
-		}
-	else if (IsCoopGame)
-		nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%-6d", gameData.multiplayer.players [nPlayer].score);
-   else if (netGame.xPlayTimeAllowed || netGame.KillGoal)
-      nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%3d (%d)",
-					 gameData.multiplayer.players [nPlayer].netKillsTotal,
-					 gameData.multiplayer.players [nPlayer].nKillGoalCount);
-   else
-		nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%3d", gameData.multiplayer.players [nPlayer].netKillsTotal);
-	if (gameStates.render.cockpit.bShowPingStats && (nPlayer != gameData.multiplayer.nLocalPlayer)) {
-		if (bGetPing)
-			PingPlayer (nPlayer);
-		if (pingStats [nPlayer].sent) {
-#if 0//def _DEBUG
-			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1 + xo, y, "%lu %d %d",
-						  pingStats [nPlayer].ping,
-						  pingStats [nPlayer].sent,
-						  pingStats [nPlayer].received);
-#else
-			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1 + xo, y, "%lu %i%%", pingStats [nPlayer].ping,
-						 100 - ((pingStats [nPlayer].received * 100) / pingStats [nPlayer].sent));
-#endif
-			}
-		}
-	y += fth+1;
-	}
-}
-
-//	-----------------------------------------------------------------------------
-
 #if DBG
 extern int bSavingMovieFrames;
 #else
@@ -1100,7 +830,7 @@ extern int bSavingMovieFrames;
 //returns true if viewerP can see CObject
 //	-----------------------------------------------------------------------------
 
-int CanSeeObject (int nObject, int bCheckObjs)
+int CGenericCockpit::CanSeeObject (int nObject, int bCheckObjs)
 {
 	tFVIQuery fq;
 	int nHitType;
@@ -1123,7 +853,7 @@ return bCheckObjs ? (nHitType == HIT_OBJECT) && (hit_data.hit.nObject == nObject
 //	-----------------------------------------------------------------------------
 
 //show names of teammates & players carrying flags
-void DrawHUDNames (void)
+void CGenericCockpit::DrawPlayerNames (void)
 {
 	int			bHasFlag, bShowName, bShowTeamNames, bShowAllNames, bShowFlags, nObject, nTeam;
 	int			p;
@@ -1131,17 +861,16 @@ void DrawHUDNames (void)
 	
 	static int nCurColor = 1, tColorChange = 0;
 	static tRgbColorb typingColors [2] = {
-	 {63, 0, 0},
-	 {63, 63, 0}
+		{63, 0, 0},
+		{63, 63, 0}
 	};
-	char s [CALLSIGN_LEN+10];
+	char s [CALLSIGN_LEN + 10];
 	int w, h, aw;
 	int x0, y0, x1, y1;
 	int nColor;
 	static int nIdNames [2][MAX_PLAYERS] = {{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
 
-bShowAllNames = ((gameData.demo.nState == ND_STATE_PLAYBACK) ||
-						 (netGame.bShowAllNames && gameData.multigame.bShowReticleName));
+bShowAllNames = ((gameData.demo.nState == ND_STATE_PLAYBACK) || (netGame.bShowAllNames && gameData.multigame.bShowReticleName));
 bShowTeamNames = (gameData.multigame.bShowReticleName && (IsCoopGame || IsTeamGame));
 bShowFlags = (gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD | GM_ENTROPY));
 
@@ -1251,6 +980,185 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 				}
 			}
 		}
+	}
+}
+
+//	-----------------------------------------------------------------------------
+
+void CGenericCockpit::DrawKillList (int nMode)
+{
+	int nPlayers, playerList [MAX_NUM_NET_PLAYERS];
+	int nLeft, i, xo = 0, x0, x1, y, ySave, fth, l;
+	int t = gameStates.app.nSDLTicks;
+	int bGetPing = gameStates.render.cockpit.bShowPingStats && (!networkData.tLastPingStat || (t - networkData.tLastPingStat >= 1000));
+	static int faw = -1;
+
+	static int nIdKillList [2][MAX_PLAYERS] = {{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
+
+if (HIDE_HUD)
+	return;
+
+if (bGetPing)
+	networkData.tLastPingStat = t;
+if (gameData.multigame.kills.xShowListTimer > 0) {
+	gameData.multigame.kills.xShowListTimer -= gameData.time.xFrame;
+	if (gameData.multigame.kills.xShowListTimer < 0)
+		gameData.multigame.kills.bShowList = 0;
+	}
+nPlayers = (gameData.multigame.kills.bShowList == 3) ? 2 : MultiGetKillList (playerList);
+nLeft = (nPlayers <= 4) ? nPlayers : (nPlayers + 1) / 2;
+//If font size changes, this code might not work right anymore
+//Assert (GAME_FONT->Height ()==5 && GAME_FONT->Width ()==7);
+fth = GAME_FONT->Height ();
+x0 = HUD_LHX (1);
+x1 = (IsCoopGame) ? HUD_LHX (43) : HUD_LHX (43);
+ySave = y = CCanvas::Current ()->Height () - nLeft * (fth + 1);
+if (nMode == CM_FULL_COCKPIT) {
+	ySave = y -= HUD_LHX (6);
+	x1 = (IsCoopGame) ? HUD_LHX (43) : HUD_LHX (43);
+	}
+if (gameStates.render.cockpit.bShowPingStats) {
+	if (faw < 0)
+		faw = GAME_FONT->TotalWidth () / (GAME_FONT->Range ());
+		if (gameData.multigame.kills.bShowList == 2)
+			xo = faw * 24;//was +25;
+		else if (IsCoopGame)
+			xo = faw * 14;//was +30;
+		else
+			xo = faw * 8; //was +20;
+	}
+for (i = 0; i < nPlayers; i++) {
+	int nPlayer;
+	char name [80], teamInd [2] = {127, 0};
+	int sw, sh, aw, indent =0;
+
+	if (i>=nLeft) {
+		x0 = CCanvas::Current ()->Width () - ((nMode == CM_FULL_COCKPIT) ? HUD_LHX (53) : HUD_LHX (60));
+		x1 = CCanvas::Current ()->Width () - ((gameData.app.nGameMode & GM_MULTI_COOP) ? HUD_LHX (27) : HUD_LHX (15));
+		if (gameStates.render.cockpit.bShowPingStats) {
+			x0 -= xo + 6 * faw;
+			x1 -= xo + 6 * faw;
+			}
+		if (i==nLeft)
+			y = ySave;
+		if (netGame.KillGoal || netGame.xPlayTimeAllowed)
+			x1-=HUD_LHX (18);
+		}
+	else if (netGame.KillGoal || netGame.xPlayTimeAllowed)
+		 x1 = HUD_LHX (43) - HUD_LHX (18);
+	nPlayer = (gameData.multigame.kills.bShowList == 3) ? i : playerList [i];
+	if ((gameData.multigame.kills.bShowList == 1) || (gameData.multigame.kills.bShowList == 2)) {
+		int color;
+
+		if (gameData.multiplayer.players [nPlayer].connected != 1)
+			fontManager.SetColorRGBi (RGBA_PAL2 (12, 12, 12), 1, 0, 0);
+		else {
+			if (IsTeamGame)
+				color = GetTeam (nPlayer);
+			else
+				color = nPlayer;
+			fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue), 1, 0, 0);
+			}
+		}
+	else
+		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [nPlayer].red, playerColors [nPlayer].green, playerColors [nPlayer].blue), 1, 0, 0);
+	if (gameData.multigame.kills.bShowList == 3) {
+		if (GetTeam (gameData.multiplayer.nLocalPlayer) == i) {
+#if 0//def _DEBUG
+			sprintf (name, "%c%-8s %d.%d.%d.%d:%d",
+						teamInd [0], netGame.szTeamName [i],
+						netPlayers.players [i].network.ipx.node [0],
+						netPlayers.players [i].network.ipx.node [1],
+						netPlayers.players [i].network.ipx.node [2],
+						netPlayers.players [i].network.ipx.node [3],
+						netPlayers.players [i].network.ipx.node [5] +
+						 (unsigned) netPlayers.players [i].network.ipx.node [4] * 256);
+#else
+			sprintf (name, "%c%s", teamInd [0], netGame.szTeamName [i]);
+#endif
+			indent = 0;
+			}
+		else {
+#if SHOW_PLAYER_IP
+			sprintf (name, "%-8s %d.%d.%d.%d:%d",
+						netGame.szTeamName [i],
+						netPlayers.players [i].network.ipx.node [0],
+						netPlayers.players [i].network.ipx.node [1],
+						netPlayers.players [i].network.ipx.node [2],
+						netPlayers.players [i].network.ipx.node [3],
+						netPlayers.players [i].network.ipx.node [5] +
+						 (unsigned) netPlayers.players [i].network.ipx.node [4] * 256);
+#else
+			strcpy (name, netGame.szTeamName [i]);
+#endif
+			fontManager.Current ()->StringSize (teamInd, indent, sh, aw);
+			}
+		}
+	else
+#if 0//def _DEBUG
+		sprintf (name, "%-8s %d.%d.%d.%d:%d",
+					gameData.multiplayer.players [nPlayer].callsign,
+					netPlayers.players [nPlayer].network.ipx.node [0],
+					netPlayers.players [nPlayer].network.ipx.node [1],
+					netPlayers.players [nPlayer].network.ipx.node [2],
+					netPlayers.players [nPlayer].network.ipx.node [3],
+					netPlayers.players [nPlayer].network.ipx.node [5] +
+					 (unsigned) netPlayers.players [nPlayer].network.ipx.node [4] * 256);
+#else
+		strcpy (name, gameData.multiplayer.players [nPlayer].callsign);	// Note link to above if!!
+#endif
+#if 0//def _DEBUG
+	x1 += HUD_LHX (100);
+#endif
+	for (l = (int) strlen (name); l;) {
+		fontManager.Current ()->StringSize (name, sw, sh, aw);
+		if (sw <= x1 - x0 - HUD_LHX (2))
+			break;
+		name [--l] = '\0';
+		}
+	nIdKillList [0][i] = GrPrintF (nIdKillList [0] + i, x0 + indent, y, "%s", name);
+
+	if (gameData.multigame.kills.bShowList == 2) {
+		if (gameData.multiplayer.players [nPlayer].netKilledTotal + gameData.multiplayer.players [nPlayer].netKillsTotal <= 0)
+			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, TXT_NOT_AVAIL);
+		else
+			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%d%%",
+				 (int) ((double) gameData.multiplayer.players [nPlayer].netKillsTotal /
+						 ((double) gameData.multiplayer.players [nPlayer].netKilledTotal +
+						  (double) gameData.multiplayer.players [nPlayer].netKillsTotal) * 100.0));
+		}
+	else if (gameData.multigame.kills.bShowList == 3) {
+		if (gameData.app.nGameMode & GM_ENTROPY)
+			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%3d [%d/%d]",
+						 gameData.multigame.kills.nTeam [i], gameData.entropy.nTeamRooms [i + 1],
+						 gameData.entropy.nTotalRooms);
+		else
+			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%3d", gameData.multigame.kills.nTeam [i]);
+		}
+	else if (IsCoopGame)
+		nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%-6d", gameData.multiplayer.players [nPlayer].score);
+   else if (netGame.xPlayTimeAllowed || netGame.KillGoal)
+      nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%3d (%d)",
+					 gameData.multiplayer.players [nPlayer].netKillsTotal,
+					 gameData.multiplayer.players [nPlayer].nKillGoalCount);
+   else
+		nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%3d", gameData.multiplayer.players [nPlayer].netKillsTotal);
+	if (gameStates.render.cockpit.bShowPingStats && (nPlayer != gameData.multiplayer.nLocalPlayer)) {
+		if (bGetPing)
+			PingPlayer (nPlayer);
+		if (pingStats [nPlayer].sent) {
+#if 0//def _DEBUG
+			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1 + xo, y, "%lu %d %d",
+						  pingStats [nPlayer].ping,
+						  pingStats [nPlayer].sent,
+						  pingStats [nPlayer].received);
+#else
+			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1 + xo, y, "%lu %i%%", pingStats [nPlayer].ping,
+													 100 - ((pingStats [nPlayer].received * 100) / pingStats [nPlayer].sent));
+#endif
+			}
+		}
+	y += fth+1;
 	}
 }
 

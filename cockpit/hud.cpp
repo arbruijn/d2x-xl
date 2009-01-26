@@ -68,42 +68,6 @@ CHUD hud;
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::ShowSlowMotion (void)
-{
-if (HIDE_HUD)
-	return;
-
-	char	szScore [40];
-	int	w, h, aw;
-
-if ((gameData.hud.msgs [0].nMessages > 0) &&
-	 (strlen (gameData.hud.msgs [0].szMsgs [gameData.hud.msgs [0].nFirst]) > 38))
-	return;
-GrSetCurFont (GAME_FONT);
-szScore [0] = (char) 1;
-szScore [1] = (char) (127 + 128);
-szScore [2] = (char) (127 + 128);
-szScore [3] = (char) (0 + 128);
-#if !DBG
-if (!SlowMotionActive ())
-	strcpy (szScore + 4, "          ");
-else
-#endif
-	sprintf (szScore + 4, "M%1.1f S%1.1f ",
-				gameStates.gameplay.slowmo [0].fSpeed,
-				gameStates.gameplay.slowmo [1].fSpeed);
-szScore [14] = (char) 1;
-szScore [15] = (char) (0 + 128);
-szScore [16] = (char) (127 + 128);
-szScore [17] = (char) (0 + 128);
-szScore [18] = (char) (0);
-GrGetStringSize (szScore, &w, &h, &aw);
-GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
-GrPrintF (NULL, grdCurCanv->cv_w - 2 * w - HUD_LHX (2), 3, szScore);
-}
-
-//	-----------------------------------------------------------------------------
-
 void CHUD::DrawScore (void)
 {
 if (HIDE_HUD)
@@ -126,7 +90,7 @@ GrPrintF (NULL, grdCurCanv->cv_w - w - HUD_LHX (2), 3, szScore);
 }
 
 //	-----------------------------------------------------------------------------
-//x offset between lines on HUD
+//y offset between lines on HUD
 
  void CHUD::DrawScoreAdded (void)
 {
@@ -177,14 +141,14 @@ if (HIDE_HUD)
 
 if (LOCALPLAYER.homingObjectDist >= 0) {
 	if (gameData.time.xGame & 0x4000) {
-		int y = 0x8000, x = CCanvas::Current ()->Height ()-m_info.nLineSpacing;
+		int x = 0x8000, y = CCanvas::Current ()->Height ()-m_info.nLineSpacing;
 		if ((weaponBoxUser [0] != WBU_WEAPON) || (weaponBoxUser [1] != WBU_WEAPON)) {
 			int wy = (weaponBoxUser [0] != WBU_WEAPON) ? SW_y [0] : SW_y [1];
-			x = min (x, (wy - m_info.nLineSpacing - gameData.render.window.x));
+			y = min (y, (wy - m_info.nLineSpacing - gameData.render.window.y));
 			}
 		fontManager.SetCurrent (GAME_FONT);
 		fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-		nIdLock = GrPrintF (&nIdLock, y, x, TXT_LOCK);
+		nIdLock = GrPrintF (&nIdLock, x, y, TXT_LOCK);
 		}
 	}
 }
@@ -196,17 +160,17 @@ void CHUD::DrawKeys (void)
 if (HIDE_HUD)
 	return;
 
-	int x = 3 * m_info.nLineSpacing;
+	int y = 3 * m_info.nLineSpacing;
 	int dx = GAME_FONT->Width () + GAME_FONT->Width () / 2;
 
 if (IsMultiGame && !IsCoopGame)
 	return;
 if (LOCALPLAYER.flags & PLAYER_FLAGS_BLUE_KEY)
-	HUDBitBlt (KEY_ICON_BLUE, 2, x, false, false);
+	HUDBitBlt (KEY_ICON_BLUE, 2, y, false, false);
 if (LOCALPLAYER.flags & PLAYER_FLAGS_GOLD_KEY) 
-	HUDBitBlt (KEY_ICON_YELLOW, 2 + dx, x, false, false);
+	HUDBitBlt (KEY_ICON_YELLOW, 2 + dx, y, false, false);
 if (LOCALPLAYER.flags & PLAYER_FLAGS_RED_KEY)
-	HUDBitBlt (KEY_ICON_RED, 2 + (2 * dx), x, false, false);
+	HUDBitBlt (KEY_ICON_RED, 2 + (2 * dx), y, false, false);
 }
 
 //	-----------------------------------------------------------------------------
@@ -216,64 +180,12 @@ void CHUD::DrawOrbs (void)
 if (HIDE_HUD)
 	return;
 
-	static int nIdOrbs = 0, nIdEntropy [2]= {0, 0};
+//	-----------------------------------------------------------------------------
 
-if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
-	int y = 0, x = 0;
-	CBitmap *bmP = NULL;
-
-	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
-		x = 2*m_info.nLineSpacing;
-		y = 4*GAME_FONT->Width ();
-		}
-	else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
-		x = m_info.nLineSpacing;
-		y = GAME_FONT->Width ();
-		}
-	else if ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) ||
-				(gameStates.render.cockpit.nMode == CM_LETTERBOX)) {
-//			x = 5*m_info.nLineSpacing;
-		x = m_info.nLineSpacing;
-		y = GAME_FONT->Width ();
-		if (gameStates.render.fonts.bHires)
-			x += m_info.nLineSpacing;
-		}
-	else
-		Int3 ();		//what sort of cockpit?
-
-	bmP = HUDBitBlt (-1, y, x, false, false, I2X (1), 0, &gameData.hoard.icon [gameStates.render.fonts.bHires].bm);
-	//GrUBitmapM (y, x, bmP);
-
-	y += bmP->Width () + bmP->Width ()/2;
-	x+= (gameStates.render.fonts.bHires?2:1);
-	if (gameData.app.nGameMode & GM_ENTROPY) {
-		char	szInfo [20];
-		int	w, h, aw;
-		if (LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] >= extraGameInfo [1].entropy.nCaptureVirusLimit)
-			fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
-		else
-			fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-		sprintf (szInfo,
-			"y %d [%d]",
-			LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX],
-			LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX]);
-		nIdEntropy [0] = GrPrintF (nIdEntropy, y, x, szInfo);
-		if (gameStates.entropy.bConquering) {
-			int t = (extraGameInfo [1].entropy.nCaptureTimeLimit * 1000) -
-					   (gameStates.app.nSDLTicks - gameStates.entropy.nTimeLastMoved);
-
-			if (t < 0)
-				t = 0;
-			fontManager.Current ()->StringSize (szInfo, w, h, aw);
-			y += w;
-			fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
-			sprintf (szInfo, " %d.%d", t / 1000, (t % 1000) / 100);
-			nIdEntropy [1] = GrPrintF (nIdEntropy + 1, y, x, szInfo);
-			}
-		}
-	else
-		nIdOrbs = GrPrintF (&nIdOrbs, y, x, "y %d", LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]);
-	}
+void CCockpit::DrawOrbs (void)
+{
+DrawOrbs (m_info.fontWidth, m_info.nLineSpacing * (gameStates.render.fonts.bHires + 1));
+}
 }
 
 //	-----------------------------------------------------------------------------
@@ -282,35 +194,12 @@ void CHUD::DrawFlag (void)
 {
 if (HIDE_HUD)
 	return;
-
-if ((gameData.app.nGameMode & GM_CAPTURE) && (LOCALPLAYER.flags & PLAYER_FLAGS_FLAG)) {
-	int y = 0, x = 0, icon;
-
-	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
-		x = 2 * m_info.nLineSpacing;
-		y = 4 * GAME_FONT->Width ();
-		}
-	else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
-		x = m_info.nLineSpacing;
-		y = GAME_FONT->Width ();
-		}
-	else if ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) ||
-				 (gameStates.render.cockpit.nMode == CM_LETTERBOX)) {
-		x = 5 * m_info.nLineSpacing;
-		y = GAME_FONT->Width ();
-		if (gameStates.render.fonts.bHires)
-			x += m_info.nLineSpacing;
-		}
-	else
-		Int3 ();		//what sort of cockpit?
-	icon = (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_BLUE) ? FLAG_ICON_RED : FLAG_ICON_BLUE;
-	HUDBitBlt (icon, y, x, false, false);
-	}
+DrawFlag (5 * m_info.nLineSpacing, m_info.nLineSpacing * (gameStates.render.fonts.bHires + 1));
 }
 
 //	-----------------------------------------------------------------------------
 
-inline int CHUD::FlashGauge (int h, int *bFlash, int tToggle)
+int CHUD::FlashGauge (int h, int *bFlash, int tToggle)
 {
 	time_t t = gameStates.app.nSDLTicks;
 	int b = *bFlash;
@@ -349,15 +238,15 @@ void CHUD::DrawEnergy (void)
 if (HIDE_HUD)
 	return;
 
-	int h, x;
+	int h, y;
 	static int nIdEnergy = 0;
 
 h = LOCALPLAYER.energy ? X2IR (LOCALPLAYER.energy) : 0;
 if (gameOpts->render.cockpit.bTextGauges) {
-	x = CCanvas::Current ()->Height () - (IsMultiGame ? 5 : 1) * m_info.nLineSpacing;
+	y = CCanvas::Current ()->Height () - (IsMultiGame ? 5 : 1) * m_info.nLineSpacing;
 	fontManager.SetCurrent (GAME_FONT);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-	nIdEnergy = GrPrintF (&nIdEnergy, 2, x, "%s: %i", TXT_ENERGY, h);
+	nIdEnergy = GrPrintF (&nIdEnergy, 2, y, "%s: %i", TXT_ENERGY, h);
 	}
 if (gameData.demo.nState == ND_STATE_RECORDING) {
 	int energy = X2IR (LOCALPLAYER.energy);
@@ -376,7 +265,7 @@ void CHUD::DrawEnergyBar (void)
 if (HIDE_HUD)
 	return;
 
-	int h, x;
+	int h, y;
 	static int nIdEnergy = 0;
 
 if (!gameOpts->render.cockpit.bTextGauges) {
@@ -389,9 +278,9 @@ if (!gameOpts->render.cockpit.bTextGauges) {
 		tToggle = t;
 		bShow = !bShow;
 		}
-	x = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 5 : 1) * m_info.nLineSpacing - 1) * yGaugeScale);
+	y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 5 : 1) * m_info.nLineSpacing - 1) * yGaugeScale);
 	CCanvas::Current ()->SetColorRGB (255, 255, (ubyte) ((h > 100) ? 255 : 0), 255);
-	OglDrawEmptyRect (6, x, 6 + (int) (100 * xGaugeScale), x + (int) (9 * yGaugeScale));
+	OglDrawEmptyRect (6, y, 6 + (int) (100 * xGaugeScale), y + (int) (9 * yGaugeScale));
 	if (bFlash) {
 		if (!bShow)
 			return;
@@ -401,7 +290,7 @@ if (!gameOpts->render.cockpit.bTextGauges) {
 		bShow = 1;
 	c = (h > 100) ? 224 : 224;
 	CCanvas::Current ()->SetColorRGB (c, c, (ubyte) ((h > 100) ? c : 0), 128);
-	OglDrawFilledRect (6, x, 6 + (int) (((h > 100) ? h - 100 : h) * xGaugeScale), x + (int) (9 * yGaugeScale));
+	OglDrawFilledRect (6, y, 6 + (int) (((h > 100) ? h - 100 : h) * xGaugeScale), y + (int) (9 * yGaugeScale));
 	}
 }
 
@@ -412,17 +301,17 @@ void CHUD::DrawAfterburner (void)
 if (HIDE_HUD)
 	return;
 	
-	int h, x;
+	int h, y;
 	static int nIdAfterBurner = 0;
 
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 	return;		//don't draw if don't have
 h = FixMul (gameData.physics.xAfterburnerCharge, 100);
 if (gameOpts->render.cockpit.bTextGauges) {
-	x = CCanvas::Current ()->Height () - ((gameData.app.nGameMode & GM_MULTI) ? 8 : 3) * m_info.nLineSpacing;
+	y = CCanvas::Current ()->Height () - ((gameData.app.nGameMode & GM_MULTI) ? 8 : 3) * m_info.nLineSpacing;
 	fontManager.SetCurrent (GAME_FONT);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-	nIdAfterBurner = GrPrintF (&nIdAfterBurner, 2, x, TXT_HUD_BURN, h);
+	nIdAfterBurner = GrPrintF (&nIdAfterBurner, 2, y, TXT_HUD_BURN, h);
 	}
 }
 
@@ -433,18 +322,18 @@ void CHUD::DrawAfterburnerBar (void)
 if (HIDE_HUD)
 	return;
 	
-	int h, x;
+	int h, y;
 	static int nIdAfterBurner = 0;
 
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 	return;		//don't draw if don't have
 h = FixMul (gameData.physics.xAfterburnerCharge, 100);
 if (!gameOpts->render.cockpit.bTextGauges) {
-	x = CCanvas::Current ()->Height () - (int) ((((gameData.app.nGameMode & GM_MULTI) ? 8 : 3) * m_info.nLineSpacing - 1) * yGaugeScale);
+	y = CCanvas::Current ()->Height () - (int) ((((gameData.app.nGameMode & GM_MULTI) ? 8 : 3) * m_info.nLineSpacing - 1) * yGaugeScale);
 	CCanvas::Current ()->SetColorRGB (255, 0, 0, 255);
-	OglDrawEmptyRect (6, x, 6 + (int) (100 * xGaugeScale), x + (int) (9 * yGaugeScale));
+	OglDrawEmptyRect (6, y, 6 + (int) (100 * xGaugeScale), y + (int) (9 * yGaugeScale));
 	CCanvas::Current ()->SetColorRGB (224, 0, 0, 128);
-	OglDrawFilledRect (6, x, 6 + (int) (h * xGaugeScale), x + (int) (9 * yGaugeScale));
+	OglDrawFilledRect (6, y, 6 + (int) (h * xGaugeScale), y + (int) (9 * yGaugeScale));
 	}
 if (gameData.demo.nState == ND_STATE_RECORDING) {
 	if (gameData.physics.xAfterburnerCharge != oldAfterburner [gameStates.render.vr.nCurrentPage]) {
@@ -456,18 +345,18 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 
 //	-----------------------------------------------------------------------------
 
-#define SECONDARY_WEAPON_NAMES_VERY_SHORT(nWeaponId) 				\
+#define SECONDARY_WEAPON_NAMES_VERY_SHORT(nWeaponId) 			\
 	 ((nWeaponId <= MEGA_INDEX)?GAMETEXT (541 + nWeaponId):	\
 	 GT (636 + nWeaponId - FLASHMSL_INDEX))
 
 //return which bomb will be dropped next time the bomb key is pressed
-extern int ArmedBomb ();
+int ArmedBomb ();
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount)
+void CHUD::DrawBombCount (int& nIdBombCount, int x, int y, char* pszBombCount)
 {
-GrString (y, x, szBombCount, &nIdBombCount);
+GrString (x, y, szBombCount, &nIdBombCount);
 }
 
 //	-----------------------------------------------------------------------------
@@ -495,21 +384,18 @@ if (HIDE_HUD)
 	return;
 
 	int	w, h, aw;
-	int	x;
+	int	y;
 	const char	*pszWeapon;
 	char	szWeapon [32];
 
 	static int nIdWeapons [2] = {0, 0};
 
-#if 0
-CHUD::DrawIcons ();
-#endif
 //	CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
 fontManager.SetCurrent (GAME_FONT);
 fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-x = CCanvas::Current ()->Height ();
+y = CCanvas::Current ()->Height ();
 if (IsMultiGame)
-	x -= 4 * m_info.nLineSpacing;
+	y -= 4 * m_info.nLineSpacing;
 pszWeapon = PRIMARY_WEAPON_NAMES_SHORT (gameData.weapons.nPrimary);
 switch (gameData.weapons.nPrimary) {
 	case LASER_INDEX:
@@ -549,7 +435,7 @@ switch (gameData.weapons.nPrimary) {
 	}
 
 fontManager.Current ()->StringSize (szWeapon, w, h, aw);
-nIdWeapons [0] = GrPrintF (nIdWeapons + 0, CCanvas::Current ()->Width () - 5 - w, x-2*m_info.nLineSpacing, szWeapon);
+nIdWeapons [0] = GrPrintF (nIdWeapons + 0, CCanvas::Current ()->Width () - 5 - w, y-2*m_info.nLineSpacing, szWeapon);
 
 if (gameData.weapons.nPrimary == VULCAN_INDEX) {
 	if (LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary] != oldAmmoCount [0][gameStates.render.vr.nCurrentPage]) {
@@ -570,14 +456,14 @@ if (gameData.weapons.nPrimary == OMEGA_INDEX) {
 pszWeapon = SECONDARY_WEAPON_NAMES_VERY_SHORT (gameData.weapons.nSecondary);
 sprintf (szWeapon, "%s %d", pszWeapon, LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
 fontManager.Current ()->StringSize (szWeapon, w, h, aw);
-nIdWeapons [1] = GrPrintF (nIdWeapons + 1, CCanvas::Current ()->Width ()-5-w, x-m_info.nLineSpacing, szWeapon);
+nIdWeapons [1] = GrPrintF (nIdWeapons + 1, CCanvas::Current ()->Width ()-5-w, y-m_info.nLineSpacing, szWeapon);
 
 if (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != oldAmmoCount [1][gameStates.render.vr.nCurrentPage]) {
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordSecondaryAmmo (oldAmmoCount [1][gameStates.render.vr.nCurrentPage], LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
 	oldAmmoCount [1][gameStates.render.vr.nCurrentPage] = LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary];
 	}
-ShowBombCount (CCanvas::Current ()->Width ()- (3 * GAME_FONT->Width () + (gameStates.render.fonts.bHires?0:2)), x - 3 * m_info.nLineSpacing, -1, 1);
+ShowBombCount (CCanvas::Current ()->Width ()- (3 * GAME_FONT->Width () + (gameStates.render.fonts.bHires?0:2)), y - 3 * m_info.nLineSpacing, -1, 1);
 }
 
 //	-----------------------------------------------------------------------------
@@ -592,24 +478,24 @@ if (HIDE_HUD)
 fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 
 if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
-	int	x = CCanvas::Current ()->Height ();
+	int	y = CCanvas::Current ()->Height ();
 
 	if (IsMultiGame)
-		x -= 7 * m_info.nLineSpacing;
+		y -= 7 * m_info.nLineSpacing;
 	else
-		x -= 4 * m_info.nLineSpacing;
+		y -= 4 * m_info.nLineSpacing;
 	if ((LOCALPLAYER.cloakTime+CLOAK_TIME_MAX - gameData.time.xGame > I2X (3)) || (gameData.time.xGame & 0x8000))
-		nIdCloak = GrPrintF (&nIdCloak, 2, x, "%s", TXT_CLOAKED);
+		nIdCloak = GrPrintF (&nIdCloak, 2, y, "%s", TXT_CLOAKED);
 	}
 if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) {
-	int	x = CCanvas::Current ()->Height ();
+	int	y = CCanvas::Current ()->Height ();
 
 	if (IsMultiGame)
-		x -= 10*m_info.nLineSpacing;
+		y -= 10*m_info.nLineSpacing;
 	else
-		x -= 5*m_info.nLineSpacing;
+		y -= 5*m_info.nLineSpacing;
 	if (((LOCALPLAYER.invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame) > I2X (4)) || (gameData.time.xGame & 0x8000))
-		nIdInvul = GrPrintF (&nIdInvul, 2, x, "%s", TXT_INVULNERABLE);
+		nIdInvul = GrPrintF (&nIdInvul, 2, y, "%s", TXT_INVULNERABLE);
 	}
 }
 
@@ -625,10 +511,10 @@ if (HIDE_HUD)
 //	CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
 h = (LOCALPLAYER.shields >= 0) ? X2IR (LOCALPLAYER.shields) : 0;
 if (gameOpts->render.cockpit.bTextGauges) {
-	int x = CCanvas::Current ()->Height () - (IsMultiGame ? 6 : 2) * m_info.nLineSpacing;
+	int y = CCanvas::Current ()->Height () - (IsMultiGame ? 6 : 2) * m_info.nLineSpacing;
 	fontManager.SetCurrent (GAME_FONT);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-	nIdShield = GrPrintF (&nIdShield, 2, x, "%s: %i", TXT_SHIELD, h);
+	nIdShield = GrPrintF (&nIdShield, 2, y, "%s: %i", TXT_SHIELD, h);
 	}
 if (gameData.demo.nState == ND_STATE_RECORDING) {
 	if (h != oldShields [gameStates.render.vr.nCurrentPage]) {		// Draw the shield gauge
@@ -649,7 +535,7 @@ if (HIDE_HUD)
 	static time_t	tToggle = 0, nBeep = -1;
 	time_t			t = gameStates.app.nSDLTicks;
 	int				bLastFlash = gameStates.render.cockpit.nShieldFlash;
-	int				h, x;
+	int				h, y;
 
 	static int nIdShield = 0;
 
@@ -661,12 +547,12 @@ if (!gameOpts->render.cockpit.bTextGauges) {
 		bShow = !bShow;
 		}
 
-	x = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 6 : 2) * m_info.nLineSpacing - 1) * yGaugeScale);
+	y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 6 : 2) * m_info.nLineSpacing - 1) * yGaugeScale);
 	CCanvas::Current ()->SetColorRGB (0, (ubyte) ((h > 100) ? 255 : 64), 255, 255);
-	OglDrawEmptyRect (6, x, 6 + (int) (100 * xGaugeScale), x + (int) (9 * yGaugeScale));
+	OglDrawEmptyRect (6, y, 6 + (int) (100 * xGaugeScale), y + (int) (9 * yGaugeScale));
 	if (bShow) {
 		CCanvas::Current ()->SetColorRGB (0, (ubyte) ((h > 100) ? 224 : 64), 224, 128);
-		OglDrawFilledRect (6, x, 6 + (int) (((h > 100) ? h - 100 : h) * xGaugeScale), x + (int) (9 * yGaugeScale));
+		OglDrawFilledRect (6, y, 6 + (int) (((h > 100) ? h - 100 : h) * xGaugeScale), y + (int) (9 * yGaugeScale));
 		}
 	}
 if (gameStates.render.cockpit.nShieldFlash) {
@@ -716,7 +602,7 @@ else if (LOCALPLAYER.lives > 1)  {
 	fontManager.SetCurrent (GAME_FONT);
 	fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 	bmP = HUDBitBlt (GAUGE_LIVES, 10, 3, false, false);
-	nIdLives = GrPrintF (&nIdLives, 10 + bmP->Width () + bmP->Width () / 2, 4, "y %d", LOCALPLAYER.lives - 1);
+	nIdLives = GrPrintF (&nIdLives, 10 + bmP->Width () + bmP->Width () / 2, 4, "x %d", LOCALPLAYER.lives - 1);
 	}
 }
 
@@ -740,61 +626,8 @@ if (gameStates.render.bShowTime) {
 
 //	-----------------------------------------------------------------------------
 
-void CHud::DrawPlayerShip (int nCloakState, int nOldCloakState, int y, int x)
+void CHud::DrawPlayerShip (int nCloakState, int nOldCloakState, int x, int y)
 {
-}
-
-//	-----------------------------------------------------------------------------
-
-inline int NumDispX (int val)
-{
-int y = ((val > 99) ? 7 : (val > 9) ? 11 : 15);
-if (!gameStates.video.nDisplayMode)
-	y /= 2;
-return y + NUMERICAL_GAUGE_X;
-}
-
-void DrawNumericalDisplay (int shield, int energy)
-{
-	int dx = NUMERICAL_GAUGE_X,
-		 dy = NUMERICAL_GAUGE_Y;
-
-	static int nIdShields = 0, nIdEnergy = 0;
-
-if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT)
-	CCanvas::SetCurrent (numericalGaugeCanv);
-HUDBitBlt (GAUGE_NUMERICAL, dx, dy);
-fontManager.SetCurrent (GAME_FONT);
-fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
-nIdShields = HUDPrintF (&nIdShields, NumDispX (shield), dy + (gameStates.video.nDisplayMode ? 36 : 16), "%d", shield);
-fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
-nIdEnergy = HUDPrintF (&nIdEnergy, NumDispX (energy), dy + (gameStates.video.nDisplayMode ? 5 : 2), "%d", energy);
-
-if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT) {
-	CCanvas::SetCurrent (GetCurrentGameScreen ());
-	HUDBitBlt (-1, NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y, true, true, I2X (1), 0, numericalGaugeCanv);
-	}
-}
-
-
-//	-----------------------------------------------------------------------------
-
-typedef struct tKeyGaugeInfo {
-	int	nFlag, nGaugeOn, nGaugeOff, y [2], x [2];
-} tKeyGaugeInfo;
-
-static tKeyGaugeInfo keyGaugeInfo [] = {
-	{PLAYER_FLAGS_BLUE_KEY, GAUGE_BLUE_KEY, GAUGE_BLUE_KEY_OFF, {GAUGE_BLUE_KEY_X_L, GAUGE_BLUE_KEY_X_H}, {GAUGE_BLUE_KEY_Y_L, GAUGE_BLUE_KEY_Y_H}},
-	{PLAYER_FLAGS_GOLD_KEY, GAUGE_GOLD_KEY, GAUGE_GOLD_KEY_OFF, {GAUGE_GOLD_KEY_X_L, GAUGE_GOLD_KEY_X_H}, {GAUGE_GOLD_KEY_Y_L, GAUGE_GOLD_KEY_Y_H}},
-	{PLAYER_FLAGS_RED_KEY, GAUGE_RED_KEY, GAUGE_RED_KEY_OFF, {GAUGE_RED_KEY_X_L, GAUGE_RED_KEY_X_H}, {GAUGE_RED_KEY_Y_L, GAUGE_RED_KEY_Y_H}},
-	};
-
-void DrawKeys (void)
-{
-CCanvas::SetCurrent (GetCurrentGameScreen ());
-int bHires = gameStates.video.nDisplayMode != 0;
-for (int i = 0; i < 3; i++)
-	HUDBitBlt ((LOCALPLAYER.flags & keyGaugeInfo [i].nFlag) ? keyGaugeInfo [i].nGaugeOn : keyGaugeInfo [i].nGaugeOff, keyGaugeInfo [i].y [bHires], keyGaugeInfo [i].x [bHires]);
 }
 
 //	-----------------------------------------------------------------------------
@@ -890,8 +723,8 @@ int DrawWeaponDisplay (int nWeaponType, int nWeaponId)
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.render [0]);
 fontManager.SetCurrent (GAME_FONT);
 bLaserLevelChanged = ((nWeaponType == 0) &&
-								(nWeaponId == LASER_INDEX) &&
-								((LOCALPLAYER.laserLevel != oldLaserLevel [gameStates.render.vr.nCurrentPage])));
+							  (nWeaponId == LASER_INDEX) &&
+							  ((LOCALPLAYER.laserLevel != oldLaserLevel [gameStates.render.vr.nCurrentPage])));
 
 if ((nWeaponId != oldWeapon [nWeaponType][gameStates.render.vr.nCurrentPage] || bLaserLevelChanged) && weaponBoxStates [nWeaponType] == WS_SET) {
 	weaponBoxStates [nWeaponType] = WS_FADING_OUT;
@@ -964,7 +797,7 @@ void DrawStatic (int nWindow)
 	CBitmap *bmp;
 	int framenum;
 	int boxofs = (gameStates.render.cockpit.nMode == CM_STATUS_BAR) ? SB_PRIMARY_BOX : COCKPIT_PRIMARY_BOX;
-	int h, y, x;
+	int h, x, y;
 
 staticTime [nWindow] += gameData.time.xFrame;
 if (staticTime [nWindow] >= vc->xTotalTime) {
@@ -976,9 +809,9 @@ LoadBitmap (vc->frames [framenum].index, 0);
 bmp = gameData.pig.tex.bitmaps [0] + vc->frames [framenum].index;
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.render [0]);
 h = boxofs + nWindow;
-for (y = hudWindowAreas [h].left; y < hudWindowAreas [h].right; y += bmp->Width ())
-	for (x = hudWindowAreas [h].top; x < hudWindowAreas [h].bot; x += bmp->Height ())
-		HUDBitBlt (-1, y, x, true, true, I2X (1), 0, bmp);
+for (x = hudWindowAreas [h].left; x < hudWindowAreas [h].right; x += bmp->Width ())
+	for (y = hudWindowAreas [h].top; y < hudWindowAreas [h].bot; y += bmp->Height ())
+		HUDBitBlt (-1, x, y, true, true, I2X (1), 0, bmp);
 CCanvas::SetCurrent (GetCurrentGameScreen ());
 CopyGaugeBox (&hudWindowAreas [h], &gameStates.render.vr.buffers.render [0]);
 }
@@ -1066,94 +899,10 @@ else
 
 //	-----------------------------------------------------------------------------
 
-tRgbColorb playerColors [] = {
- {15, 15, 23},
- {27, 0, 0},
- {0, 23, 0},
- {30, 11, 31},
- {31, 16, 0},
- {24, 17, 6},
- {14, 21, 12},
- {29, 29, 0}};
-
-typedef struct {
-	sbyte y, x;
-} xy;
-
-//offsets for reticle parts: high-big  high-sml  low-big  low-sml
-xy cross_offsets [4] = 	 {{-8, -5},  {-4, -2},  {-4, -2}, {-2, -1}};
-xy primary_offsets [4] =  {{-30, 14}, {-16, 6},  {-15, 6}, {-8, 2}};
-xy secondary_offsets [4] = {{-24, 2},  {-12, 0}, {-12, 1}, {-6, -2}};
-
-void OglDrawMouseIndicator (void);
-
-//draw the reticle
-void DrawReticle (int bForceBig)
-{
-	int y, x;
-	int bLaserReady, bMissileReady, bLaserAmmo, bMissileAmmo;
-	int nCrossBm, nPrimaryBm, nSecondaryBm;
-	int bHiresReticle, bSmallReticle, ofs;
-
-if ((gameData.demo.nState==ND_STATE_PLAYBACK) && gameData.demo.bFlyingGuided) {
-	DrawGuidedCrosshair ();
-	return;
-	}
-
-y = CCanvas::Current ()->Width () / 2;
-x = CCanvas::Current ()->Height () / ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) ? 2 : 2);
-bLaserReady = AllowedToFireLaser ();
-bMissileReady = AllowedToFireMissile (-1, 1);
-bLaserAmmo = PlayerHasWeapon (gameData.weapons.nPrimary, 0, -1, 1);
-bMissileAmmo = PlayerHasWeapon (gameData.weapons.nSecondary, 1, -1, 1);
-nPrimaryBm = bLaserReady && (bLaserAmmo == HAS_ALL);
-nSecondaryBm = bMissileReady && (bMissileAmmo == HAS_ALL);
-if (nPrimaryBm && (gameData.weapons.nPrimary == LASER_INDEX) &&
-	 (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS))
-	nPrimaryBm++;
-
-if (secondaryWeaponToGunNum [gameData.weapons.nSecondary] == 7)
-	nSecondaryBm += 3;		//now value is 0, 1 or 3, 4
-else if (nSecondaryBm && !(gameData.laser.nMissileGun & 1))
-		nSecondaryBm++;
-
-nCrossBm = ((nPrimaryBm > 0) || (nSecondaryBm > 0));
-
-Assert (nPrimaryBm <= 2);
-Assert (nSecondaryBm <= 4);
-Assert (nCrossBm <= 1);
-#if DBG
-if (gameStates.render.bExternalView)
-#else
-if (gameStates.render.bExternalView && (!IsMultiGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
-#endif
-	return;
-cmScaleX *= HUD_ASPECT;
-if ((gameStates.ogl.nReticle == 2) || (gameStates.ogl.nReticle && CCanvas::Current ()->Width () > 320))
-   OglDrawReticle (nCrossBm, nPrimaryBm, nSecondaryBm);
-else {
-	bHiresReticle = (gameStates.render.fonts.bHires != 0);
-	bSmallReticle = !bForceBig && (CCanvas::Current ()->Width () * 3 <= gameData.render.window.wMax * 2);
-	ofs = (bHiresReticle ? 0 : 2) + bSmallReticle;
-
-	HUDBitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
-				  (y + HUD_SCALE_X (cross_offsets [ofs].y)), (x + HUD_SCALE_Y (cross_offsets [ofs].x)), false, true);
-	HUDBitBlt ((bSmallReticle ? SML_RETICLE_PRIMARY : RETICLE_PRIMARY) + nPrimaryBm,
-					(y + HUD_SCALE_X (primary_offsets [ofs].y)), (x + HUD_SCALE_Y (primary_offsets [ofs].x)), false, true);
-	HUDBitBlt ((bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondaryBm,
-					(y + HUD_SCALE_X (secondary_offsets [ofs].y)), (x + HUD_SCALE_Y (secondary_offsets [ofs].x)), false, true);
-  }
-if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick && gameOpts->render.cockpit.bMouseIndicator)
-	OglDrawMouseIndicator ();
-cmScaleX /= HUD_ASPECT;
-}
-
-//	-----------------------------------------------------------------------------
-
 void CHUD::DrawKillList (void)
 {
 	int n_players, player_list [MAX_NUM_NET_PLAYERS];
-	int n_left, i, xo = 0, x0, x1, x, save_y, fth, l;
+	int n_left, i, xo = 0, x0, x1, y, save_y, fth, l;
 	int t = gameStates.app.nSDLTicks;
 	int bGetPing = gameStates.render.cockpit.bShowPingStats && (!networkData.tLastPingStat || (t - networkData.tLastPingStat >= 1000));
 	static int faw = -1;
@@ -1180,9 +929,9 @@ n_left = (n_players <= 4) ? n_players : (n_players+1)/2;
 fth = GAME_FONT->Height ();
 x0 = HUD_LHX (1);
 x1 = (IsCoopGame) ? HUD_LHX (43) : HUD_LHX (43);
-save_y = x = CCanvas::Current ()->Height () - n_left* (fth+1);
+save_y = y = CCanvas::Current ()->Height () - n_left* (fth+1);
 if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
-	save_y = x -= HUD_LHX (6);
+	save_y = y -= HUD_LHX (6);
 	x1 = (IsCoopGame) ? HUD_LHX (43) : HUD_LHX (43);
 	}
 if (gameStates.render.cockpit.bShowPingStats) {
@@ -1208,7 +957,7 @@ for (i = 0; i < n_players; i++) {
 			x1 -= xo + 6 * faw;
 			}
 		if (i==n_left)
-			x = save_y;
+			y = save_y;
 		if (netGame.KillGoal || netGame.xPlayTimeAllowed)
 			x1-=HUD_LHX (18);
 		}
@@ -1284,68 +1033,59 @@ for (i = 0; i < n_players; i++) {
 			break;
 		name [--l] = '\0';
 		}
-	nIdKillList [0][i] = GrPrintF (nIdKillList [0] + i, x0 + indent, x, "%s", name);
+	nIdKillList [0][i] = GrPrintF (nIdKillList [0] + i, x0 + indent, y, "%s", name);
 
 	if (gameData.multigame.kills.bShowList == 2) {
 		if (gameData.multiplayer.players [nPlayer].netKilledTotal + gameData.multiplayer.players [nPlayer].netKillsTotal <= 0)
-			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, x, TXT_NOT_AVAIL);
+			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, TXT_NOT_AVAIL);
 		else
-			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, x, "%d%%",
+			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%d%%",
 				 (int) ((double) gameData.multiplayer.players [nPlayer].netKillsTotal /
 						 ((double) gameData.multiplayer.players [nPlayer].netKilledTotal +
 						  (double) gameData.multiplayer.players [nPlayer].netKillsTotal) * 100.0));
 		}
 	else if (gameData.multigame.kills.bShowList == 3) {
 		if (gameData.app.nGameMode & GM_ENTROPY)
-			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, x, "%3d [%d/%d]",
+			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%3d [%d/%d]",
 						 gameData.multigame.kills.nTeam [i], gameData.entropy.nTeamRooms [i + 1],
 						 gameData.entropy.nTotalRooms);
 		else
-			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, x, "%3d", gameData.multigame.kills.nTeam [i]);
+			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%3d", gameData.multigame.kills.nTeam [i]);
 		}
 	else if (IsCoopGame)
-		nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, x, "%-6d", gameData.multiplayer.players [nPlayer].score);
+		nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%-6d", gameData.multiplayer.players [nPlayer].score);
    else if (netGame.xPlayTimeAllowed || netGame.KillGoal)
-      nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, x, "%3d (%d)",
+      nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%3d (%d)",
 					 gameData.multiplayer.players [nPlayer].netKillsTotal,
 					 gameData.multiplayer.players [nPlayer].nKillGoalCount);
    else
-		nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, x, "%3d", gameData.multiplayer.players [nPlayer].netKillsTotal);
+		nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%3d", gameData.multiplayer.players [nPlayer].netKillsTotal);
 	if (gameStates.render.cockpit.bShowPingStats && (nPlayer != gameData.multiplayer.nLocalPlayer)) {
 		if (bGetPing)
 			PingPlayer (nPlayer);
 		if (pingStats [nPlayer].sent) {
 #if 0//def _DEBUG
-			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1 + xo, x, "%lu %d %d",
+			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1 + xo, y, "%lu %d %d",
 						  pingStats [nPlayer].ping,
 						  pingStats [nPlayer].sent,
 						  pingStats [nPlayer].received);
 #else
-			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1 + xo, x, "%lu %i%%", pingStats [nPlayer].ping,
+			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1 + xo, y, "%lu %i%%", pingStats [nPlayer].ping,
 						 100 - ((pingStats [nPlayer].received * 100) / pingStats [nPlayer].sent));
 #endif
 			}
 		}
-	x += fth+1;
+	y += fth+1;
 	}
 }
 
 //	-----------------------------------------------------------------------------
 
-#if DBG
-extern int bSavingMovieFrames;
-#else
-#define bSavingMovieFrames 0
-#endif
-
-//returns true if viewerP can see CObject
-//	-----------------------------------------------------------------------------
-
 int CanSeeObject (int nObject, int bCheckObjs)
 {
-	tFVIQuery fq;
-	int nHitType;
-	tFVIData hit_data;
+	tFVIQuery	fq;
+	int			nHitType;
+	tFVIData		hitData;
 
 	//see if we can see this CPlayerData
 
@@ -1357,142 +1097,8 @@ fq.thisObjNum = gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.
 fq.flags = bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_TRANSWALL;
 fq.startSeg = gameData.objs.viewerP->info.nSegment;
 fq.ignoreObjList = NULL;
-nHitType = FindVectorIntersection (&fq, &hit_data);
-return bCheckObjs ? (nHitType == HIT_OBJECT) && (hit_data.hit.nObject == nObject) : (nHitType != HIT_WALL);
-}
-
-//	-----------------------------------------------------------------------------
-
-//show names of teammates & players carrying flags
-void DrawHUDNames (void)
-{
-	int			bHasFlag, bShowName, bShowTeamNames, bShowAllNames, bShowFlags, nObject, nTeam;
-	int			p;
-	tRgbColorb*	colorP;
-	
-	static int nCurColor = 1, tColorChange = 0;
-	static tRgbColorb typingColors [2] = {
-	 {63, 0, 0},
-	 {63, 63, 0}
-	};
-	char s [CALLSIGN_LEN+10];
-	int w, h, aw;
-	int x0, y0, x1, y1;
-	int nColor;
-	static int nIdNames [2][MAX_PLAYERS] = {{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
-
-bShowAllNames = ((gameData.demo.nState == ND_STATE_PLAYBACK) ||
-						 (netGame.bShowAllNames && gameData.multigame.bShowReticleName));
-bShowTeamNames = (gameData.multigame.bShowReticleName && (IsCoopGame || IsTeamGame));
-bShowFlags = (gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD | GM_ENTROPY));
-
-nTeam = GetTeam (gameData.multiplayer.nLocalPlayer);
-for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
-
-	bShowName = (gameStates.multi.bPlayerIsTyping [p] || 
-					 (bShowAllNames && !(gameData.multiplayer.players [p].flags & PLAYER_FLAGS_CLOAKED)) || 
-					 (bShowTeamNames && GetTeam (p) == nTeam));
-	bHasFlag = (gameData.multiplayer.players [p].connected && gameData.multiplayer.players [p].flags & PLAYER_FLAGS_FLAG);
-
-	if (gameData.demo.nState != ND_STATE_PLAYBACK)
-		nObject = gameData.multiplayer.players [p].nObject;
-	else {
-		//if this is a demo, the nObject in the CPlayerData struct is wrong,
-		//so we search the CObject list for the nObject
-		CObject *objP;
-		FORALL_PLAYER_OBJS (objP, nObject) 
-			if (objP->info.nId == p) {
-				nObject = objP->Index ();
-				break;
-				}
-		if (IS_OBJECT (objP, nObject))		//not in list, thus not visible
-			bShowName = !bHasFlag;				//..so don't show name
-		}
-
-	if ((bShowName || bHasFlag) && CanSeeObject (nObject, 1)) {
-		g3sPoint		vPlayerPos;
-		CFixVector	vPos;
-
-		vPos = OBJECTS [nObject].info.position.vPos;
-		vPos[Y] += I2X (2);
-		G3TransformAndEncodePoint(&vPlayerPos, vPos);
-		if (vPlayerPos.p3_codes == 0) {	//on screen
-			G3ProjectPoint (&vPlayerPos);
-			if (!(vPlayerPos.p3_flags & PF_OVERFLOW)) {
-				fix y = vPlayerPos.p3_screen.y;
-				fix x = vPlayerPos.p3_screen.x;
-				if (bShowName) {				// Draw callsign on HUD
-					if (gameStates.multi.bPlayerIsTyping [p]) {
-						int t = gameStates.app.nSDLTicks;
-
-						if (t - tColorChange > 333) {
-							tColorChange = t;
-							nCurColor = !nCurColor;
-							}
-						colorP = typingColors + nCurColor;
-						}
-					else {
-						nColor = IsTeamGame ? GetTeam (p) : p;
-						colorP = playerColors + nColor;
-						}
-
-					sprintf (s, "%s", gameStates.multi.bPlayerIsTyping [p] ? TXT_TYPING : gameData.multiplayer.players [p].callsign);
-					fontManager.Current ()->StringSize (s, w, h, aw);
-					fontManager.SetColorRGBi (RGBA_PAL2 (colorP->red, colorP->green, colorP->blue), 1, 0, 0);
-					x1 = y - w / 2;
-					y1 = x - h / 2;
-					//glBlendFunc (GL_ONE, GL_ONE);
-					nIdNames [nCurColor][p] = GrString (x1, y1, s, nIdNames [nCurColor] + p);
-					CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (colorP->red, colorP->green, colorP->blue));
-					glLineWidth ((GLfloat) 2.0f);
-					OglDrawEmptyRect (x1 - 4, y1 - 3, x1 + w + 2, y1 + h + 3);
-					glLineWidth (1);
-					//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-					}
-
-				if (bHasFlag && (gameStates.app.bNostalgia || !(EGI_FLAG (bTargetIndicators, 0, 1, 0) || EGI_FLAG (bTowFlags, 0, 1, 0)))) {// Draw box on HUD
-					fix dy = -FixMulDiv (OBJECTS [nObject].info.xSize, I2X (CCanvas::Current ()->Height ())/2, vPlayerPos.p3_vec[Z]);
-//					fix dy = -FixMulDiv (FixMul (OBJECTS [nObject].size, transformation.m_info.scale.x), I2X (CCanvas::Current ()->Height ())/2, vPlayerPos.p3_z);
-					fix dx = FixMul (dy, screen.Aspect ());
-					fix w = dx / 4;
-					fix h = dy / 4;
-					if (gameData.app.nGameMode & (GM_CAPTURE | GM_ENTROPY))
-						CCanvas::Current ()->SetColorRGBi ((GetTeam (p) == TEAM_BLUE) ? MEDRED_RGBA :  MEDBLUE_RGBA);
-					else if (gameData.app.nGameMode & GM_HOARD) {
-						if (gameData.app.nGameMode & GM_TEAM)
-							CCanvas::Current ()->SetColorRGBi ((GetTeam (p) == TEAM_RED) ? MEDRED_RGBA :  MEDBLUE_RGBA);
-						else
-							CCanvas::Current ()->SetColorRGBi (MEDGREEN_RGBA);
-						}
-					x0 = y - dx;
-					x1 = y + dx;
-					y0 = x - dy;
-					y1 = x + dy;
-					// draw the edges of a rectangle around the player (not a complete rectangle)
-#if 1
-					// draw the complete rectangle
-					OglDrawEmptyRect (x0, y0, x1, y1);
-					// now partially erase its sides
-					CCanvas::Current ()->SetColorRGBi (0);
-					OglDrawLine (y - w, y0, y + w, y0);
-					OglDrawLine (y - w, y1, y + w, y1);
-					OglDrawLine (x0, x - h, x0, x + h);
-					OglDrawLine (x1, x - h, x1, x + h);
-#else
-					OglDrawLine (x1 - w, y0, x1, y0);	//right
-					OglDrawLine (x1, y0, x1, y0 + h);	//down
-					OglDrawLine (x0, y0, x0 + w, y0);
-					OglDrawLine (x0, y0, x0, y0 + h);
-					OglDrawLine (x1 - w, y1, x1, y1);
-					OglDrawLine (x1, y1, x1, y1 - h);
-					OglDrawLine (x0, y1, x0 + w, y1);
-					OglDrawLine (x0, y1, x0, y1 - h);
-#endif
-					}
-				}
-			}
-		}
-	}
+nHitType = FindVectorIntersection (&fq, &hitData);
+return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitData.hit.nObject == nObject) : (nHitType != HIT_WALL);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1544,9 +1150,9 @@ if (!gameStates.render.bRearView && (gameStates.render.cockpit.nMode != CM_REAR_
 			CHUD::DrawKeys ();
 		CHUD::DrawCloakInvul ();
 
-		if ((gameData.demo.nState==ND_STATE_RECORDING) && (LOCALPLAYER.flags != oldFlags [gameStates.render.vr.nCurrentPage])) {
-			NDRecordPlayerFlags (oldFlags [gameStates.render.vr.nCurrentPage], LOCALPLAYER.flags);
-			oldFlags [gameStates.render.vr.nCurrentPage] = LOCALPLAYER.flags;
+		if ((gameData.demo.nState==ND_STATE_RECORDING) && (LOCALPLAYER.flags != m_info.history [gameStates.render.vr.nCurrentPage].flags)) {
+			NDRecordPlayerFlags (m_info.history [gameStates.render.vr.nCurrentPage].flags, LOCALPLAYER.flags);
+			m_info.history [gameStates.render.vr.nCurrentPage].flags = LOCALPLAYER.flags;
 			}
 		}
 #if 1//def _DEBUG
@@ -1584,15 +1190,10 @@ if (gameStates.render.bRearView && gameStates.render.cockpit.nMode!=CM_REAR_VIEW
 }
 
 //	-----------------------------------------------------------------------------
-
 //print out some CPlayerData statistics
+
 void RenderGauges (void)
 {
-	static int old_display_mode = 0;
-	int nEnergy = X2IR (LOCALPLAYER.energy);
-	int nShields = X2IR (LOCALPLAYER.shields);
-	int bCloak = ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0);
-
 if (HIDE_HUD)
 	return;
 SetCMScales ();
@@ -1649,10 +1250,10 @@ else if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 		oldShields [gameStates.render.vr.nCurrentPage] = nShields;
 		}
 
-	if (LOCALPLAYER.flags != oldFlags [gameStates.render.vr.nCurrentPage]) {
+	if (LOCALPLAYER.flags != m_info.history [gameStates.render.vr.nCurrentPage].flags) {
 		if (gameData.demo.nState==ND_STATE_RECORDING)
-			NDRecordPlayerFlags (oldFlags [gameStates.render.vr.nCurrentPage], LOCALPLAYER.flags);
-		oldFlags [gameStates.render.vr.nCurrentPage] = LOCALPLAYER.flags;
+			NDRecordPlayerFlags (m_info.history [gameStates.render.vr.nCurrentPage].flags, LOCALPLAYER.flags);
+		m_info.history [gameStates.render.vr.nCurrentPage].flags = LOCALPLAYER.flags;
 		}
 	DrawKeys ();
 	ShowHomingWarning ();
@@ -1663,98 +1264,62 @@ bOldCloak [gameStates.render.vr.nCurrentPage] = bCloak;
 }
 
 //	---------------------------------------------------------------------------------------------------------
-//	Call when picked up a laser powerup.
-//	If laser is active, set oldWeapon [0] to -1 to force redraw.
-void UpdateLaserWeaponInfo (void)
-{
-	if (oldWeapon [0][gameStates.render.vr.nCurrentPage] == 0)
-		if (!(LOCALPLAYER.laserLevel > MAX_LASER_LEVEL && oldLaserLevel [gameStates.render.vr.nCurrentPage] <= MAX_LASER_LEVEL))
-			oldWeapon [0][gameStates.render.vr.nCurrentPage] = -1;
-}
-
-void FillBackground (void);
-
-int SW_drawn [2], SW_x [2], SW_y [2], SW_w [2], SW_h [2];
-
-//	---------------------------------------------------------------------------------------------------------
 
 static int cockpitWindowScale [4] = {6, 5, 4, 3};
 
 void CHUD::SetupWindow (int nWindow)
 {
-int x, y;
+int y, x;
 int w = (int) (gameStates.render.vr.buffers.render [0].Width () / cockpitWindowScale [gameOpts->render.cockpit.nWindowSize] * HUD_ASPECT);	
 int h = I2X (w) / screen.Aspect ();
 int dx = (nWindow == 0) ? -w - w / 10 : w / 10;
 switch (gameOpts->render.cockpit.nWindowPos) {
 	case 0:
-		x = nWindow ?
+		y = nWindow ?
 			gameStates.render.vr.buffers.render [0].Width () - w - h / 10 :
 			h / 10;
-		y = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
+		x = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
 		break;
 	case 1:
-		x = nWindow ?
+		y = nWindow ?
 			gameStates.render.vr.buffers.render [0].Width () / 3 * 2 - w / 3 :
 			gameStates.render.vr.buffers.render [0].Width () / 3 - 2 * w / 3;
-		y = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
+		x = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
 		break;
 	case 2:	// only makes sense if there's only one cockpit window
-		x = gameStates.render.vr.buffers.render [0].Width () / 2 - w / 2;
-		y = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
+		y = gameStates.render.vr.buffers.render [0].Width () / 2 - w / 2;
+		x = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
 		break;
 	case 3:
-		x = nWindow ?
+		y = nWindow ?
 			gameStates.render.vr.buffers.render [0].Width () - w - h / 10 :
 			h / 10;
-		y = h / 10;
+		x = h / 10;
 		break;
 	case 4:
-		x = nWindow ?
+		y = nWindow ?
 			gameStates.render.vr.buffers.render [0].Width () / 3 * 2 - w / 3 :
 			gameStates.render.vr.buffers.render [0].Width () / 3 - 2 * w / 3;
-		y = h / 10;
+		x = h / 10;
 		break;
 	case 5:	// only makes sense if there's only one cockpit window
-		x = gameStates.render.vr.buffers.render [0].Width () / 2 - w / 2;
-		y = h / 10;
+		y = gameStates.render.vr.buffers.render [0].Width () / 2 - w / 2;
+		x = h / 10;
 		break;
 	}
 if ((gameOpts->render.cockpit.nWindowPos < 3) &&
 		extraGameInfo [0].nWeaponIcons &&
 		(extraGameInfo [0].nWeaponIcons - gameOpts->render.weaponIcons.bEquipment < 3))
-		y -= (int) ((gameOpts->render.weaponIcons.bSmall ? 20.0 : 30.0) * (double) CCanvas::Current ()->Height () / 480.0);
+		x -= (int) ((gameOpts->render.weaponIcons.bSmall ? 20.0 : 30.0) * (double) CCanvas::Current ()->Height () / 480.0);
 
 //copy these vars so stereo code can get at them
 SW_drawn [nWindow] = 1;
-SW_x [nWindow] = y;
-SW_y [nWindow] = x;
+SW_x [nWindow] = x;
+SW_y [nWindow] = y;
 SW_w [nWindow] = w;
 SW_h [nWindow] = h;
 
-gameStates.render.vr.buffers.render [0].SetupPane (&windowCanv, x, y, w, h);
+gameStates.render.vr.buffers.render [0].SetupPane (&windowCanv, y, x, w, h);
 }
-
-//------------------------------------------------------------------------------
-
-char *ftoa (char *pszVal, fix f)
-{
-	int decimal, fractional;
-
-decimal = X2I (f);
-fractional = ((f & 0xffff) * 100) / 65536;
-if (fractional < 0)
-	fractional = -fractional;
-if (fractional > 99)
-	fractional = 99;
-sprintf (pszVal, "%d.%02d", decimal, fractional);
-return pszVal;
-}
-
-//------------------------------------------------------------------------------
-
-fix frameTimeList [8] = {0, 0, 0, 0, 0, 0, 0, 0};
-fix frameTimeTotal = 0;
-int frameTimeCounter = 0;
 
 //	-----------------------------------------------------------------------------

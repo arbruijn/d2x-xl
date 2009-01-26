@@ -104,8 +104,4 @@ extern int nHUDLineSpacing;
 
 //	-----------------------------------------------------------------------------
 
-CBitmap* HUDBitBlt (int nGauge, int x, int y, bool bScalePos = true, bool bScaleSize = true, int scale = I2X (1), int orient = 0, CBitmap* bmP = NULL);
-
-//	-----------------------------------------------------------------------------
-
 #endif /* _GAUGES_H */
