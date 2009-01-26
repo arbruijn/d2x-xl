@@ -90,10 +90,9 @@ int nAlanPavlishReactorTimes [2][NDL] = {{90,60,45,35,30},{50,45,40,35,30}};
 void DoReactorDeadFrame (void)
 {
 if (gameStates.gameplay.nReactorCount) {
-	int	i;
 	tReactorStates*	rStatP = &gameData.reactor.states [0];
 
-	for (i = 0; i < gameStates.gameplay.nReactorCount; i++, rStatP++) {
+	for (int i = 0; i < gameStates.gameplay.nReactorCount; i++, rStatP++) {
 		if ((rStatP->nDeadObj != -1) && 
 			 (OBJECTS [rStatP->nDeadObj].info.nType == OBJ_REACTOR) &&
 			 (gameData.reactor.countdown.nSecsLeft > 0))
@@ -111,6 +110,10 @@ if (!gameStates.app.bEndLevelSequence)
 
 void DoCountdownFrame (void)
 {
+#if DBG
+return;
+#endif
+
 	fix	oldTime;
 	int	fc, h, xScale;
 

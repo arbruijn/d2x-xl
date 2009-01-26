@@ -207,7 +207,7 @@ class CLightManager {
 		int Delete (short nSegment, short nSide, short nObject);
 		void Reset (void);
 		void SetMaterial (short nSegment, short nSide, short nObject);
-		void AddFromGeometry (void);
+		void AddGeometryLights (void);
 		void Transform (int bStatic, int bVariable);
 		ubyte VariableVertexLights (int nVertex);
 		void SetNearestToVertex (int nFace, int nVertex, CFixVector *vNormalP, ubyte nType, int bStatic, int bVariable, int nThread);

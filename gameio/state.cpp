@@ -2312,9 +2312,9 @@ if (!i) {
 	}
 FixObjectSegs ();
 FixObjectSizes ();
-//ComputeNearestLights (nLevel);
 //lightManager.Setup (nLevel);
-lightManager.AddFromGeometry ();	// redo to account for broken lights
+//lightManager.AddGeometryLights ();	// redo to account for broken lights
+//ComputeNearestLights (nLevel);
 SetupEffects ();
 InitReactorForLevel (1);
 InitAIObjects ();

@@ -550,7 +550,7 @@ qs.SortAscending (m_data.lights, 0, m_data.nLights [0] - 1);
 
 //------------------------------------------------------------------------------
 
-void CLightManager::AddFromGeometry (void)
+void CLightManager::AddGeometryLights (void)
 {
 	int			nFace, nSegment, nSide, nTexture, nLight;
 	tFace*		faceP;
@@ -696,7 +696,7 @@ else if ((gameStates.render.nLightingMethod == 1) && gameOpts->render.bUseLightm
 else
 	gameStates.render.bPerPixelLighting = 0;
 if (!gameStates.app.bNostalgia) {
-	lightManager.AddFromGeometry ();
+	lightManager.AddGeometryLights ();
 	ComputeNearestLights (nLevel);
 	if (gameStates.render.bPerPixelLighting) {
 		lightmapManager.Create (nLevel);
