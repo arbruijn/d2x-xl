@@ -10,4 +10,4 @@ endif
 
 lib2d_a_SOURCES = \
 	bitblt.cpp bitmap.cpp canvas.cpp circle.cpp font.cpp ibitblt.cpp palette.cpp \
-	pcx.cpp pixel.cpp poly.cpp rect.cpp rle.cpp scalec.cpp string.cpp tmerge.cpp	
+	pcx.cpp pixel.cpp rle.cpp scalec.cpp string.cpp tmerge.cpp
