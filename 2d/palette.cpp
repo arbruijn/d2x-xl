@@ -281,9 +281,9 @@ void CPaletteManager::BumpEffect (float red, float green, float blue)
 {
 	float	maxVal = (paletteManager.FlashDuration () ? 60 : MAX_PALETTE_ADD) / 64.0f;
 
-m_data.effect.red = red;
-m_data.effect.green = green;
-m_data.effect.blue = blue;
+m_data.effect.red += red;
+m_data.effect.green += green;
+m_data.effect.blue += blue;
 CLAMP (m_data.effect.red, -maxVal, maxVal);
 CLAMP (m_data.effect.green, -maxVal, maxVal);
 CLAMP (m_data.effect.blue, -maxVal, maxVal);
