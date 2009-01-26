@@ -95,9 +95,9 @@ extern int nHUDLineSpacing;
 
 //	-----------------------------------------------------------------------------
 
-#define HUD_SCALE(v, s)	((int) (double (v) * (s) /*+ 0.5*/))
-#define HUD_SCALE_X(v)	HUD_SCALE (v, cmScaleX)
-#define HUD_SCALE_Y(v)	HUD_SCALE (v, cmScaleY)
+#define HUD_SCALE(v, s)	(int (float (v) * (s) /*+ 0.5*/))
+#define HUD_SCALE_X(v)	HUD_SCALE (v, m_info.xScale)
+#define HUD_SCALE_Y(v)	HUD_SCALE (v, m_info.yScale)
 #define HUD_LHX(x)      (gameStates.menus.bHires ? 2 * (x) : x)
 #define HUD_LHY(y)      (gameStates.menus.bHires? (24 * (y)) / 10 : y)
 #define HUD_ASPECT		((double) screen.Height () / (double) screen.Width () / 0.75)

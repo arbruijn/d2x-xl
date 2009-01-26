@@ -1,4 +1,4 @@
-/* $Id: gauges.c, v 1.10 2003/10/11 09:28:38 btb Exp $ */
+/* $Id: gauges.c, v 1.10 2003/10/11 09:28:38 btb Exp $& /
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -40,7 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //	-----------------------------------------------------------------------------
 
-static inline CBitmap* HUDStretchBlt (int nGauge, int x, int y, double xScale, double yScale, int scale = I2X (1), int orient = 0, CBitmap* bmP = NULL)
+CBitmap* CStatusBar::StretchBlt (int nGauge, int x, int y, double xScale, double yScale, int scale, int orient, CBitmap)
 {
 if (nGauge >= 0) {
 	PAGE_IN_GAUGE (nGauge);
@@ -48,36 +48,24 @@ if (nGauge >= 0) {
 	}
 if (bmP)
 	bmP->RenderScaled (HUD_SCALE_X (x), HUD_SCALE_Y (y), 
-							 HUD_SCALE_X ((int) (bmP->Width () * xScale + 0.5)), HUD_SCALE_Y ((int) (bmP->Height () * yScale + 0.5)), 
+							 HUD_SCALE_X ((int) (bmP->Width ()&  xScale + 0.5)), HUD_SCALE_Y ((int) (bmP->Height ()&  yScale + 0.5)), 
 							 scale, orient, NULL);
 return bmP;
 }
 
 //	-----------------------------------------------------------------------------
-
-void SBInitGaugeCanvases (void)
-{
-}
-
-//	-----------------------------------------------------------------------------
-
-void SBCloseGaugeCanvases (void)
-{
-}
-
-//	-----------------------------------------------------------------------------
 //fills in the coords of the hostage video window
-void SBGetHostageWindowCoords (int *x, int *y, int *w, int *h)
+void CStatusBar::GetHostageWindowCoords (int& x, int& y, int& w, int& h)
 {
-*x = SB_SECONDARY_W_BOX_LEFT;
-*y = SB_SECONDARY_W_BOX_TOP;
-*w = SB_SECONDARY_W_BOX_RIGHT - SB_SECONDARY_W_BOX_LEFT + 1;
-*h = SB_SECONDARY_W_BOX_BOT - SB_SECONDARY_W_BOX_TOP + 1;
+x = SB_SECONDARY_W_BOX_LEFT;
+y = SB_SECONDARY_W_BOX_TOP;
+w = SB_SECONDARY_W_BOX_RIGHT - SB_SECONDARY_W_BOX_LEFT + 1;
+h = SB_SECONDARY_W_BOX_BOT - SB_SECONDARY_W_BOX_TOP + 1;
 }
 
 //	-----------------------------------------------------------------------------
 
-void SBShowScore (void)
+void CStatusBar::DrawScore (void)
 {	                                                                                                                                                                                                                                                             
 	char	szScore [20];
 	int 	x, y;
@@ -88,7 +76,7 @@ void SBShowScore (void)
 	static int nIdLabel = 0, nIdScore = 0;
 
 bRedrawScore = -99 ? (IsMultiGame && !IsCoopGame) : -1;
-if (oldScore [gameStates.render.vr.nCurrentPage] == bRedrawScore) {
+if (m_info.old [gameStates.render.vr.nCurrentPage].score == bRedrawScore) {
 	fontManager.SetCurrent (GAME_FONT);
 	fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 	nIdLabel = HUDPrintF (&nIdLabel, SB_SCORE_LABEL_X, SB_SCORE_Y, "%s:", (IsMultiGame && !IsCoopGame) ? TXT_KILLS : TXT_SCORE);
@@ -96,7 +84,7 @@ if (oldScore [gameStates.render.vr.nCurrentPage] == bRedrawScore) {
 fontManager.SetCurrent (GAME_FONT);
 sprintf (szScore, "%5d", (IsMultiGame && !IsCoopGame) ? LOCALPLAYER.netKillsTotal : LOCALPLAYER.score);
 fontManager.Current ()->StringSize (szScore, w, h, aw);
-x = SB_SCORE_RIGHT-w-HUD_LHX (2);
+x = SB_SCORE_RIGHT-w - HUD_LHX (2);
 y = SB_SCORE_Y;
 //erase old score
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
@@ -108,8 +96,13 @@ lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage] = 
 
 //	-----------------------------------------------------------------------------
 
-void SBShowScoreAdded (void)
+void CStatusBar::DrawScoreAdded (void)
 {
+if (IsMultiGame && !IsCoopGame) 
+	return;
+if (scoreDisplay [gameStates.render.vr.nCurrentPage] == 0)
+	return;
+
 	int	x, w, h, aw, color, frc = 0;
 	char	szScore [32];
 
@@ -117,10 +110,6 @@ void SBShowScoreAdded (void)
 	static int last_score_display [2] = {-1, -1};
 	static int nIdTotalScore = 0;
 
-if (IsMultiGame && !IsCoopGame) 
-	return;
-if (scoreDisplay [gameStates.render.vr.nCurrentPage] == 0)
-	return;
 fontManager.SetCurrent (GAME_FONT);
 scoreTime -= gameData.time.xFrame;
 if (scoreTime > 0) {
@@ -129,7 +118,7 @@ if (scoreTime > 0) {
 		OglDrawFilledRect (lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage], SB_SCORE_ADDED_Y, SB_SCORE_ADDED_RIGHT, SB_SCORE_ADDED_Y+GAME_FONT->Height ());
 		last_score_display [gameStates.render.vr.nCurrentPage] = scoreDisplay [gameStates.render.vr.nCurrentPage];
 		}
-	color = X2I (scoreTime * 20) + 10;
+	color = X2I (scoreTime&  20) + 10;
 	if (color < 10) 
 		color = 10;
 	else if (color > 31) 
@@ -155,39 +144,39 @@ else {
 
 //	-----------------------------------------------------------------------------
 
-void SBShowHomingWarning (void)
+void CStatusBar::DrawHomingWarning (void)
 {
-if (bLastHomingWarningShown [gameStates.render.vr.nCurrentPage] == 1) {
+if (bLastHomingWarningDrawn [gameStates.render.vr.nCurrentPage] == 1) {
 	HUDBitBlt (GAUGE_HOMING_WARNING_OFF, HOMING_WARNING_X, HOMING_WARNING_Y);
-	bLastHomingWarningShown [gameStates.render.vr.nCurrentPage] = 0;
+	bLastHomingWarningDrawn [gameStates.render.vr.nCurrentPage] = 0;
 	}
 }
 
 //	-----------------------------------------------------------------------------
 
-void SBDrawPrimaryAmmoInfo (int ammoCount)
+void CStatusBar::DrawPrimaryAmmoInfo (int ammoCount)
 {
 DrawAmmoInfo (SB_PRIMARY_AMMO_X, SB_PRIMARY_AMMO_Y, ammoCount, 1);
 }
 
 //	-----------------------------------------------------------------------------
 
-void SBDrawSecondaryAmmoInfo (int ammoCount)
+void CStatusBar::DrawSecondaryAmmoInfo (int ammoCount)
 {
 DrawAmmoInfo (SB_SECONDARY_AMMO_X, SB_SECONDARY_AMMO_Y, ammoCount, 0);
 }
 
 //	-----------------------------------------------------------------------------
 
-void SBShowLives (void)
+void CStatusBar::DrawLives (void)
 {
 	int x = SB_LIVES_X, y = SB_LIVES_Y;
 
-	CBitmap *bmP = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_LIVES);
+	CBitmap& bmP = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_LIVES);
 
 	static int nIdLives [2] = {0, 0}, nIdKilled = 0;
   
-if (oldLives [gameStates.render.vr.nCurrentPage] == -1) {
+if (m_info.old [gameStates.render.vr.nCurrentPage].lives == -1) {
 	fontManager.SetCurrent (GAME_FONT);
 	fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 	nIdLives [0] = IsMultiGame ? 
@@ -211,8 +200,8 @@ if (IsMultiGame) {
 		lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage] = x;
 		return;
 	}
-if ((oldLives [gameStates.render.vr.nCurrentPage] == -1) || 
-	 (LOCALPLAYER.lives != oldLives [gameStates.render.vr.nCurrentPage])) {
+if ((m_info.old [gameStates.render.vr.nCurrentPage].lives == -1) || 
+	 (LOCALPLAYER.lives != m_info.old [gameStates.render.vr.nCurrentPage].lives)) {
 //erase old icons
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
    
@@ -228,32 +217,15 @@ if ((oldLives [gameStates.render.vr.nCurrentPage] == -1) ||
 
 //	-----------------------------------------------------------------------------
 
-void SBDrawEnergyBar (int nEnergy)
+void CStatusBar::DrawEnergy (int nEnergy)
 {
-	int erase_height, w, h, aw;
-	char energy_str [20];
+	int w, h, aw;
+	char szEnergy [20];
 
 	static int nIdEnergyBar = 0;
 
-	if (gameStates.app.bD1Mission)
-		HUDStretchBlt (SB_GAUGE_ENERGY, SB_ENERGY_GAUGE_X, SB_ENERGY_GAUGE_Y, 1.0, (double) SB_ENERGY_GAUGE_H / (double) (SB_ENERGY_GAUGE_H - SB_AFTERBURNER_GAUGE_H));
-	else
-		HUDBitBlt (SB_GAUGE_ENERGY, SB_ENERGY_GAUGE_X, SB_ENERGY_GAUGE_Y);
-	erase_height = (100 - nEnergy) * SB_ENERGY_GAUGE_H / 100;
-	if (erase_height > 0) {
-		CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
-		glDisable (GL_BLEND);
-		HUDRect (
-			SB_ENERGY_GAUGE_X, 
-			SB_ENERGY_GAUGE_Y, 
-			SB_ENERGY_GAUGE_X+SB_ENERGY_GAUGE_W, 
-			SB_ENERGY_GAUGE_Y+erase_height);
-		glEnable (GL_BLEND);
-	}
-CCanvas::SetCurrent (GetCurrentGameScreen ());
-//draw numbers
-sprintf (energy_str, "%d", nEnergy);
-fontManager.Current ()->StringSize (energy_str, w, h, aw);
+sprintf (szEnergy, "%d", nEnergy);
+fontManager.Current ()->StringSize (szEnergy, w, h, aw);
 fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
 nIdEnergyBar = HUDPrintF (&nIdEnergyBar, 
 								  SB_ENERGY_GAUGE_X + ((SB_ENERGY_GAUGE_W - w)/2), 
@@ -263,39 +235,46 @@ nIdEnergyBar = HUDPrintF (&nIdEnergyBar,
 
 //	-----------------------------------------------------------------------------
 
-void SBDrawAfterburner (void)
+void CStatusBar::DrawEnergyBar (int nEnergy)
 {
-	int erase_height, w, h, aw;
-	char ab_str [3] = "AB";
+	int nEraseHeight;
 
-	static int nIdAfterBurner = 0;
-
-//	static int b = 1;
+	static int nIdEnergyBar = 0;
 
 	if (gameStates.app.bD1Mission)
-		return;
-	HUDBitBlt (SB_GAUGE_AFTERBURNER, SB_AFTERBURNER_GAUGE_X, SB_AFTERBURNER_GAUGE_Y);
-	erase_height = FixMul ((I2X (1) - gameData.physics.xAfterburnerCharge), SB_AFTERBURNER_GAUGE_H);
-//	HUDMessage (0, "AB: %d", erase_height);
-
-	if (erase_height > 0) {
+		StretchBlt (SB_GAUGE_ENERGY, SB_ENERGY_GAUGE_X, SB_ENERGY_GAUGE_Y, 1.0, (double) SB_ENERGY_GAUGE_H / (double) (SB_ENERGY_GAUGE_H - SB_AFTERBURNER_GAUGE_H));
+	else
+		BitBlt (SB_GAUGE_ENERGY, SB_ENERGY_GAUGE_X, SB_ENERGY_GAUGE_Y);
+	nEraseHeight = (100 - nEnergy)&  SB_ENERGY_GAUGE_H / 100;
+	if (nEraseHeight > 0) {
 		CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
 		glDisable (GL_BLEND);
 		HUDRect (
-			SB_AFTERBURNER_GAUGE_X, 
-			SB_AFTERBURNER_GAUGE_Y, 
-			SB_AFTERBURNER_GAUGE_X+SB_AFTERBURNER_GAUGE_W-1, 
-			SB_AFTERBURNER_GAUGE_Y+erase_height-1);
+			SB_ENERGY_GAUGE_X, 
+			SB_ENERGY_GAUGE_Y, 
+			SB_ENERGY_GAUGE_X+SB_ENERGY_GAUGE_W, 
+			SB_ENERGY_GAUGE_Y+nEraseHeight);
 		glEnable (GL_BLEND);
 	}
-CCanvas::SetCurrent (GetCurrentGameScreen ());
-//draw legend
+}
+
+//	-----------------------------------------------------------------------------
+
+void CStatusBar::DrawAfterburner (void)
+{
+if (gameStates.app.bD1Mission)
+	return;
+
+	char szAB [3] = "AB";
+
+	static int nIdAfterBurner = 0;
+
 if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)
 	fontManager.SetColorRGBi (RGBA_PAL2 (45, 0, 0), 1, 0, 0);
 else 
 	fontManager.SetColorRGBi (RGBA_PAL2 (12, 12, 12), 1, 0, 0);
 
-fontManager.Current ()->StringSize (ab_str, w, h, aw);
+fontManager.Current ()->StringSize (szAB, w, h, aw);
 nIdAfterBurner = HUDPrintF (&nIdAfterBurner, 
 									 SB_AFTERBURNER_GAUGE_X + ((SB_AFTERBURNER_GAUGE_W - w)/2), 
 									 SB_AFTERBURNER_GAUGE_Y+SB_AFTERBURNER_GAUGE_H-GAME_FONT->Height () - (GAME_FONT->Height () / 4), 
@@ -304,7 +283,35 @@ nIdAfterBurner = HUDPrintF (&nIdAfterBurner,
 
 //	-----------------------------------------------------------------------------
 
-void SBDrawShieldNum (int shield)
+void CStatusBar::DrawAfterburnerBar (void)
+{
+if (gameStates.app.bD1Mission)
+	return;
+
+	int nEraseHeight, w, h, aw;
+	char szAB [3] = "AB";
+
+	static int nIdAfterBurner = 0;
+
+HUDBitBlt (SB_GAUGE_AFTERBURNER, SB_AFTERBURNER_GAUGE_X, SB_AFTERBURNER_GAUGE_Y);
+nEraseHeight = FixMul ((I2X (1) - gameData.physics.xAfterburnerCharge), SB_AFTERBURNER_GAUGE_H);
+//	HUDMessage (0, "AB: %d", nEraseHeight);
+
+if (nEraseHeight > 0) {
+	CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
+	glDisable (GL_BLEND);
+	HUDRect (
+		SB_AFTERBURNER_GAUGE_X, 
+		SB_AFTERBURNER_GAUGE_Y, 
+		SB_AFTERBURNER_GAUGE_X+SB_AFTERBURNER_GAUGE_W-1, 
+		SB_AFTERBURNER_GAUGE_Y+nEraseHeight-1);
+	glEnable (GL_BLEND);
+	}
+}
+
+//	-----------------------------------------------------------------------------
+
+void CStatusBar::DrawShield (int shield)
 {
 	static int nIdShieldNum = 0;
 
@@ -319,7 +326,7 @@ nIdShieldNum = HUDPrintF (&nIdShieldNum, (shield>99)?SB_SHIELD_NUM_X: ((shield>9
 
 //	-----------------------------------------------------------------------------
 
-void SBDrawShieldBar (int shield)
+void CStatusBar::DrawShieldBar (int shield)
 {
 CCanvas::SetCurrent (GetCurrentGameScreen ());
 HUDBitBlt (GAUGE_SHIELDS + 9 - ((shield >= 100) ? 9 : (shield / 10)), SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y);
@@ -337,7 +344,7 @@ static tKeyGaugeInfo keyGaugeInfo [] = {
 	{PLAYER_FLAGS_RED_KEY, SB_GAUGE_RED_KEY, SB_GAUGE_RED_KEY_OFF, {SB_GAUGE_KEYS_X_L, SB_GAUGE_KEYS_X_H}, {SB_GAUGE_RED_KEY_Y_L, SB_GAUGE_RED_KEY_Y_H}},
 	};
 
-void SBDrawKeys (void)
+void CStatusBar::DrawKeys (void)
 {
 int bHires = gameStates.video.nDisplayMode != 0;
 for (int i = 0; i < 3; i++)
@@ -347,15 +354,48 @@ for (int i = 0; i < 3; i++)
 //	-----------------------------------------------------------------------------
 
 //	Draws invulnerable ship, or maybe the flashing ship, depending on invulnerability time left.
-void SBDrawInvulnerableShip (void)
+void CStatusBar::DrawInvulnerableShip (void)
 {
+	static fix time = 0;
 	fix tInvul = LOCALPLAYER.invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame;
 
-CCanvas::SetCurrent (GetCurrentGameScreen ());
 if (tInvul <= 0) 
-	SBDrawShieldBar (X2IR (LOCALPLAYER.shields));
-else if ((tInvul > I2X (4)) || (gameData.time.xGame & 0x8000))
-	HUDBitBlt (GAUGE_INVULNERABLE + nInvulnerableFrame, SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y);
+	DrawShieldBar (X2IR (LOCALPLAYER.shields));
+else if ((tInvul > I2X (4)) || (gameData.time.xGame & 0x8000)) {
+		HUDBitBlt (GAUGE_INVULNERABLE + nInvulnerableFrame, SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y);
+		time += gameData.time.xFrame;
+		while (time > INV_FRAME_TIME) {
+			time -= INV_FRAME_TIME;
+			if (++nInvulnerableFrame == N_INVULNERABLE_FRAMES)
+				nInvulnerableFrame = 0;
+			}
+		}
+	}
+}
+
+//	-----------------------------------------------------------------------------
+
+void CCockpit::ClearBombCount (void)
+{
+CCanvas::Current ()->SetColorRGBi (bgColor);
+if (!gameStates.video.nDisplayMode) {
+	HUDRect (169, 189, 189, 196);
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (128, 128, 128));
+	OglDrawLine (HUD_SCALE_X (168), HUD_SCALE_Y (189), HUD_SCALE_X (189), HUD_SCALE_Y (189));
+	}
+else {
+	OglDrawFilledRect (HUD_SCALE_X (338), HUD_SCALE_Y (453), HUD_SCALE_X (378), HUD_SCALE_Y (470));
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (128, 128, 128));
+	OglDrawLine (HUD_SCALE_X (336), HUD_SCALE_Y (453), HUD_SCALE_X (378), HUD_SCALE_Y (453));
+	}
+}
+
+//	-----------------------------------------------------------------------------
+
+int CCockpit::DrawBombCount (int* nId, int x, int y, char* pszBombCount)
+{
+CCanvas::Current ()->SetColorRGBi (bgColor);
+return Print (&nIdBombCount, x, y, szBombCount, nIdBombCount);
 }
 
 //	-----------------------------------------------------------------------------
@@ -367,69 +407,72 @@ void SBRenderGauges (void)
 	int nShields = X2IR (LOCALPLAYER.shields);
 	int bCloak = ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0);
 
-if (nEnergy != oldEnergy [gameStates.render.vr.nCurrentPage])  {
-	if (gameData.demo.nState==ND_STATE_RECORDING) {
-		NDRecordPlayerEnergy (oldEnergy [gameStates.render.vr.nCurrentPage], nEnergy);
-		}
-	SBDrawEnergyBar (nEnergy);
-	oldEnergy [gameStates.render.vr.nCurrentPage] = nEnergy;
-	}
-if (gameData.physics.xAfterburnerCharge != oldAfterburner [gameStates.render.vr.nCurrentPage]) {
+if (nEnergy != m_info.old  [gameStates.render.vr.nCurrentPage].energy)  {
 	if (gameData.demo.nState == ND_STATE_RECORDING) {
-		NDRecordPlayerAfterburner (oldAfterburner [gameStates.render.vr.nCurrentPage], gameData.physics.xAfterburnerCharge);
+		NDRecordPlayerEnergy (m_info.old  [gameStates.render.vr.nCurrentPage].energy, nEnergy);
 		}
-	SBDrawAfterburner ();
-	oldAfterburner [gameStates.render.vr.nCurrentPage] = gameData.physics.xAfterburnerCharge;
+	DrawEnergyBar (nEnergy);
+	m_info.old  [gameStates.render.vr.nCurrentPage].energy = nEnergy;
+	}
+if (gameData.physics.xAfterburnerCharge != m_info.old [gameStates.render.vr.nCurrentPage].afterburner) {
+	if (gameData.demo.nState == ND_STATE_RECORDING) {
+		NDRecordPlayerAfterburner (m_info.old [gameStates.render.vr.nCurrentPage].afterburner, gameData.physics.xAfterburnerCharge);
+		}
+	DrawAfterburnerBar ();
+	DrawAfterburner ();
+	m_info.old [gameStates.render.vr.nCurrentPage].afterburner = gameData.physics.xAfterburnerCharge;
 	}
 if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) {
 	DrawInvulnerableShip ();
-	oldShields [gameStates.render.vr.nCurrentPage] = nShields ^ 1;
-	SBDrawShieldNum (nShields);
+	DrawShield (nShields);
+	m_info.old [gameStates.render.vr.nCurrentPage].shields = nShields ^ 1;
 	} 
 else {
-	if (nShields != oldShields [gameStates.render.vr.nCurrentPage]) {		// Draw the shield gauge
+	if (nShields != m_info.old [gameStates.render.vr.nCurrentPage].shields) {		// Draw the shield gauge
 		if (gameData.demo.nState == ND_STATE_RECORDING) {
-			NDRecordPlayerShields (oldShields [gameStates.render.vr.nCurrentPage], nShields);
+			NDRecordPlayerShields (m_info.old [gameStates.render.vr.nCurrentPage].shields, nShields);
 			}
-		SBDrawShieldBar (nShields);
-		oldShields [gameStates.render.vr.nCurrentPage] = nShields;
-		SBDrawShieldNum (nShields);
+		DrawShieldBar (nShields);
+		DrawShield (nShields);
+		m_info.old [gameStates.render.vr.nCurrentPage].shields = nShields;
 		}
 	}
 if (LOCALPLAYER.flags != oldFlags [gameStates.render.vr.nCurrentPage]) {
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordPlayerFlags (oldFlags [gameStates.render.vr.nCurrentPage], LOCALPLAYER.flags);
-	SBDrawKeys ();
+	DrawKeys ();
 	oldFlags [gameStates.render.vr.nCurrentPage] = LOCALPLAYER.flags;
 	}
-if (IsMultiGame && !IsCoopGame) {
-	if (LOCALPLAYER.netKilledTotal != oldLives [gameStates.render.vr.nCurrentPage]) {
-		SBShowLives ();
-		oldLives [gameStates.render.vr.nCurrentPage] = LOCALPLAYER.netKilledTotal;
+if ((IsMultiGame && !IsCoopGame) || (LOCALPLAYER.lives != m_info.old [gameStates.render.vr.nCurrentPage].lives)) {
+	if (LOCALPLAYER.netKilledTotal != m_info.old [gameStates.render.vr.nCurrentPage].lives) {
+		DrawLives ();
+		m_info.old [gameStates.render.vr.nCurrentPage].lives = LOCALPLAYER.netKilledTotal;
 		}
 	}
-else {
-	if (LOCALPLAYER.lives != oldLives [gameStates.render.vr.nCurrentPage]) {
-		SBShowLives ();
-		oldLives [gameStates.render.vr.nCurrentPage] = LOCALPLAYER.lives;
+if ((IsMultiGame && !IsCoopGame) || (LOCALPLAYER.score != m_info.old [gameStates.render.vr.nCurrentPage].score)) {
+	if (LOCALPLAYER.netKillsTotal != m_info.old [gameStates.render.vr.nCurrentPage].score) {
+		DrawScore ();
+		m_info.old [gameStates.render.vr.nCurrentPage].score = LOCALPLAYER.netKillsTotal;
 		}
+	CStatusBar::DrawScoreAdded ();
 	}
-if (IsMultiGame && !IsCoopGame) {
-	if (LOCALPLAYER.netKillsTotal != oldScore [gameStates.render.vr.nCurrentPage]) {
-		SBShowScore ();
-		oldScore [gameStates.render.vr.nCurrentPage] = LOCALPLAYER.netKillsTotal;
-		}
+DrawBombCount (SB_BOMB_COUNT_X, SB_BOMB_COUNT_Y, BLACK_RGBA, 0);
+DrawPlayerShip (bCloak, m_info.old [gameStates.render.vr.nCurrentPage].bCloak, SB_SHIP_GAUGE_X, SB_SHIP_GAUGE_Y);
+}
+
+//	---------------------------------------------------------------------------------------------------------
+
+void CStatusBar::SetupWindow (int nWindow)
+{
+nArea = SB_PRIMARY_BOX + nWindow;
+	tGaugeBox* hudAreaP = hudWindowAreas + nArea;
+	gameStates.render.vr.buffers.render->SetupPane (
+		&windowCanv,
+		HUD_SCALE_X (hudAreaP->left),
+		HUD_SCALE_Y (hudAreaP->top),
+		HUD_SCALE_X (hudAreaP->right - hudAreaP->left+1),
+		HUD_SCALE_Y (hudAreaP->bot - hudAreaP->top+1));
 	}
-else {
-	if (LOCALPLAYER.score != oldScore [gameStates.render.vr.nCurrentPage]) {
-		SBShowScore ();
-		oldScore [gameStates.render.vr.nCurrentPage] = LOCALPLAYER.score;
-		}
-	//if (scoreTime)
-	SBShowScoreAdded ();
-	}
-ShowBombCount (SB_BOMB_COUNT_X, SB_BOMB_COUNT_Y, BLACK_RGBA, 0);
-DrawPlayerShip (bCloak, bOldCloak [gameStates.render.vr.nCurrentPage], SB_SHIP_GAUGE_X, SB_SHIP_GAUGE_Y);
 }
 
 //	-----------------------------------------------------------------------------

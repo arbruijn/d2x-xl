@@ -320,6 +320,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SB_PRIMARY_BOX				 (!gameStates.video.nDisplayMode ? 2 : 6)
 #define SB_SECONDARY_BOX			 (!gameStates.video.nDisplayMode ? 3 : 7)
 
+#define EXTRA_SHIP_SCORE		50000		//get new ship every this many points
+
+#define INV_FRAME_TIME			(I2X (1)/10)		//how long for each frame
+#define CLOAK_FADE_WAIT_TIME  0x400
+
 #define WS_SET				0		//in correct state
 #define WS_FADING_OUT	1
 #define WS_FADING_IN		2
@@ -365,20 +370,20 @@ void SBDrawInvulnerableShip (void);
 void SBRenderGauges (void);
 
 //	-----------------------------------------------------------------------------
+
+extern tSpan weaponWindowLeft [];
+extern tSpan weaponWindowRight [];
+extern tSpan weaponWindowLeftHires [];
+extern tSpan weaponWindowRightHires [];
+extern tGaugeBox hudWindowAreas [];
+extern ubyte afterburnerBarTable [AFTERBURNER_GAUGE_H_L * 2];
+
+extern int SW_drawn [2], SW_x [2], SW_y [2], SW_w [2], SW_h [2];
+
+//	-----------------------------------------------------------------------------
 // Use static inline function under GCC to avoid CR/LF issues
-#ifdef __GNUC__
-
-#define PAGE_IN_GAUGE(x) _page_in_gauge (x)
-static inline void _page_in_gauge (int x)
-{
-LoadBitmap (gameStates.render.fonts.bHires  ?  gameData.cockpit.gauges [0][x].index  :  gameData.cockpit.gauges [1][x].index, 0);
-}
-
-#else
 
 #define PAGE_IN_GAUGE(x)	LoadBitmap (gameStates.render.fonts.bHires  ?  gameData.cockpit.gauges [0][x].index  :  gameData.cockpit.gauges [1][x].index, 0);
-
-#endif
 
 #define GET_GAUGE_INDEX(x)	 (gameStates.render.fonts.bHires ? gameData.cockpit.gauges [0][x].index : gameData.cockpit.gauges [1][x].index)
 
