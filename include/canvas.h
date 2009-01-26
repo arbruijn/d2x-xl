@@ -107,6 +107,7 @@ typedef struct tScreen {		// This is a video screen
 	u_int32_t	mode;				// Video mode number
 	short   		width, height; // Actual Width and Height
 	fix     		aspect;			//aspect ratio (w/h) for this screen
+	float			zoom [2];		//size ratio compared to 640x480
 } tScreen;
 
 
@@ -139,9 +140,16 @@ class CScreen {
 
 		inline void SetCanvas (CCanvas* canvas) { m_info.canvas = *canvas; }
 		inline void SetMode (u_int32_t mode) { m_info.mode = mode; }
-		inline void SetWidth (short width) { m_info.width = width; }
-		inline void SetHeight (short height) { m_info.height = height; }
+		inline void SetWidth (short width) { 
+			m_info.width = width; 
+			zoom [0] = float (width) / 640.0f;
+			}
+		inline void SetHeight (short height) { 
+			m_info.height = height; 
+			zoom [1] = float (height) / 480.0f;
+			}
 		inline void SetAspect (fix aspect) { m_info.aspect = aspect; }
+		inline float Zoom (uint i = 0) { return m_info.zoom [i]; }
 
 		static CScreen* Current (void) { return m_current; }
 };

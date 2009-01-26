@@ -1,4 +1,4 @@
-/*
+
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
 END-USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
@@ -315,6 +315,19 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SB_SECONDARY_AMMO_X		 (SB_SECONDARY_W_BOX_LEFT+ (gameStates.video.nDisplayMode ?  (14-4) : 11))	// (212+9)
 #define SB_SECONDARY_AMMO_Y		 (gameStates.video.nDisplayMode ? 414 : 171)
 
+#define COCKPIT_PRIMARY_BOX		 (!gameStates.video.nDisplayMode ? 0 : 4)
+#define COCKPIT_SECONDARY_BOX		 (!gameStates.video.nDisplayMode ? 1 : 5)
+#define SB_PRIMARY_BOX				 (!gameStates.video.nDisplayMode ? 2 : 6)
+#define SB_SECONDARY_BOX			 (!gameStates.video.nDisplayMode ? 3 : 7)
+
+#define WS_SET				0		//in correct state
+#define WS_FADING_OUT	1
+#define WS_FADING_IN		2
+
+#define FADE_SCALE	 (2*I2X (FADE_LEVELS)/REARM_TIME)		// fade out and back in REARM_TIME, in fade levels per seconds (int)
+
+//	-----------------------------------------------------------------------------
+
 typedef struct tSpan {
 	sbyte l, r;
 } tSpan;
@@ -326,25 +339,6 @@ typedef struct tGaugeBox {
 } tGaugeBox;
 
 extern tGaugeBox gaugeBoxes [];
-
-extern int oldScore [2];
-extern int oldEnergy [2];
-extern int oldShields [2];
-extern uint oldFlags [2];
-extern int old_weapon [2][2];
-extern int old_ammoCount [2][2];
-extern int xOldOmegaCharge [2];
-extern int old_laserLevel [2];
-extern int bOldCloak [2];
-extern int oldLives [2];
-extern fix oldAfterburner [2];
-extern int oldBombcount [2];
-extern int bLastHomingWarningShown [2];;
-extern int scoreDisplay [2];
-extern fix scoreTime;
-extern int nInvulnerableFrame;
-extern int nCloakFadeState;		//0=steady, -1 fading out, 1 fading in 
-extern int bHaveGaugeCanvases;
 
 //	-----------------------------------------------------------------------------
 

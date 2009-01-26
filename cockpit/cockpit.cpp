@@ -48,6 +48,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void DrawGuidedCrosshair (void);
 
 double cmScaleX, cmScaleY;
+int nLineSpacing;
 
 #if 0
 CCanvas *Canv_LeftEnergyGauge;
@@ -63,6 +64,24 @@ CCanvas *numericalGaugeCanv;
 //change MAX_GAUGE_BMS when adding gauges
 
 //Coordinats for gauges
+
+int scoreDisplay [2];
+fix scoreTime;
+fix	lastWarningBeepTime [2] = {0, 0};		//	Time we last played homing missile warning beep.
+
+int bHaveGaugeCanvases = 0;
+int nInvulnerableFrame = 0;
+int nCloakFadeState;		//0=steady, -1 fading out, 1 fading in
+
+#define WS_SET				0		//in correct state
+#define WS_FADING_OUT	1
+#define WS_FADING_IN		2
+
+int weaponBoxUser [2] = {WBU_WEAPON, WBU_WEAPON};		//see WBU_ constants in gauges.h
+int weaponBoxStates [2];
+fix weaponBoxFadeValues [2];
+
+#define FADE_SCALE	 (2*I2X (FADE_LEVELS)/REARM_TIME)		// fade out and back in REARM_TIME, in fade levels per seconds (int)
 
 //store delta x values from left of box
 tSpan weaponWindowLeft [] = {		//first tSpan 67, 151
@@ -641,7 +660,7 @@ if (scoreTime > 0) {
 		sprintf (szScore, "%5d", scoreDisplay [0]);
 	fontManager.Current ()->StringSize (szScore, w, h, aw);
 	fontManager.SetColorRGBi (RGBA_PAL2 (0, color, 0), 1, 0, 0);
-	nIdTotalScore = GrPrintF (&nIdTotalScore, CCanvas::Current ()->Width ()-w-HUD_LHX (2+10), nHUDLineSpacing + 4, szScore);
+	nIdTotalScore = GrPrintF (&nIdTotalScore, CCanvas::Current ()->Width ()-w-HUD_LHX (2+10), nLineSpacing+4, szScore);
 	}
 else {
 	scoreTime = 0;
@@ -711,10 +730,10 @@ if (HIDE_HUD)
 	return;
 if (LOCALPLAYER.homingObjectDist >= 0) {
 	if (gameData.time.xGame & 0x4000) {
-		int x = 0x8000, y = CCanvas::Current ()->Height ()-nHUDLineSpacing;
+		int x = 0x8000, y = CCanvas::Current ()->Height ()-nLineSpacing;
 		if ((weaponBoxUser [0] != WBU_WEAPON) || (weaponBoxUser [1] != WBU_WEAPON)) {
 			int wy = (weaponBoxUser [0] != WBU_WEAPON) ? SW_y [0] : SW_y [1];
-			y = min (y, (wy - nHUDLineSpacing - gameData.render.window.y));
+			y = min (y, (wy - nLineSpacing - gameData.render.window.y));
 			}
 		fontManager.SetCurrent (GAME_FONT);
 		fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
@@ -727,7 +746,7 @@ if (LOCALPLAYER.homingObjectDist >= 0) {
 
 void CFullScreenCockput::DrawKeys (void)
 {
-	int y = 3 * nHUDLineSpacing;
+	int y = 3 * nLineSpacing;
 	int dx = GAME_FONT->Width () + GAME_FONT->Width () / 2;
 
 if (HIDE_HUD)
@@ -755,20 +774,20 @@ if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
 	CBitmap *bmP = NULL;
 
 	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
-		y = 2*nHUDLineSpacing;
+		y = 2*nLineSpacing;
 		x = 4*GAME_FONT->Width ();
 		}
 	else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
-		y = nHUDLineSpacing;
+		y = nLineSpacing;
 		x = GAME_FONT->Width ();
 		}
 	else if ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) ||
 				(gameStates.render.cockpit.nMode == CM_LETTERBOX)) {
-//			y = 5*nHUDLineSpacing;
-		y = nHUDLineSpacing;
+//			y = 5*nLineSpacing;
+		y = nLineSpacing;
 		x = GAME_FONT->Width ();
 		if (gameStates.render.fonts.bHires)
-			y += nHUDLineSpacing;
+			y += nLineSpacing;
 		}
 	else
 		Int3 ();		//what sort of cockpit?
@@ -818,19 +837,19 @@ if ((gameData.app.nGameMode & GM_CAPTURE) && (LOCALPLAYER.flags & PLAYER_FLAGS_F
 	int x = 0, y = 0, icon;
 
 	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
-		y = 2*nHUDLineSpacing;
+		y = 2*nLineSpacing;
 		x = 4*GAME_FONT->Width ();
 		}
 	else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
-		y = nHUDLineSpacing;
+		y = nLineSpacing;
 		x = GAME_FONT->Width ();
 		}
 	else if ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) ||
 				 (gameStates.render.cockpit.nMode == CM_LETTERBOX)) {
-		y = 5*nHUDLineSpacing;
+		y = 5*nLineSpacing;
 		x = GAME_FONT->Width ();
 		if (gameStates.render.fonts.bHires)
-			y += nHUDLineSpacing;
+			y += nLineSpacing;
 		}
 	else
 		Int3 ();		//what sort of cockpit?
@@ -886,7 +905,7 @@ if (HIDE_HUD)
 	return;
 h = LOCALPLAYER.energy ? X2IR (LOCALPLAYER.energy) : 0;
 if (gameOpts->render.cockpit.bTextGauges) {
-	y = CCanvas::Current ()->Height () - (IsMultiGame ? 5 : 1) * nHUDLineSpacing;
+	y = CCanvas::Current ()->Height () - (IsMultiGame ? 5 : 1) * nLineSpacing;
 	fontManager.SetCurrent (GAME_FONT);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	nIdEnergy = GrPrintF (&nIdEnergy, 2, y, "%s: %i", TXT_ENERGY, h);
@@ -901,7 +920,7 @@ else {
 		tToggle = t;
 		bShow = !bShow;
 		}
-	y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 5 : 1) * nHUDLineSpacing - 1) * yScale);
+	y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 5 : 1) * nLineSpacing - 1) * yScale);
 	CCanvas::Current ()->SetColorRGB (255, 255, (ubyte) ((h > 100) ? 255 : 0), 255);
 	OglDrawEmptyRect (6, y, 6 + (int) (100 * xScale), y + (int) (9 * yScale));
 	if (bFlash) {
@@ -941,13 +960,13 @@ if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 	return;		//don't draw if don't have
 h = FixMul (gameData.physics.xAfterburnerCharge, 100);
 if (gameOpts->render.cockpit.bTextGauges) {
-	y = CCanvas::Current ()->Height () - ((gameData.app.nGameMode & GM_MULTI) ? 8 : 3) * nHUDLineSpacing;
+	y = CCanvas::Current ()->Height () - ((gameData.app.nGameMode & GM_MULTI) ? 8 : 3) * nLineSpacing;
 	fontManager.SetCurrent (GAME_FONT);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	nIdAfterBurner = GrPrintF (&nIdAfterBurner, 2, y, TXT_HUD_BURN, h);
 	}
 else {
-	y = CCanvas::Current ()->Height () - (int) ((((gameData.app.nGameMode & GM_MULTI) ? 8 : 3) * nHUDLineSpacing - 1) * yScale);
+	y = CCanvas::Current ()->Height () - (int) ((((gameData.app.nGameMode & GM_MULTI) ? 8 : 3) * nLineSpacing - 1) * yScale);
 	CCanvas::Current ()->SetColorRGB (255, 0, 0, 255);
 	OglDrawEmptyRect (6, y, 6 + (int) (100 * xScale), y + (int) (9 * yScale));
 	CCanvas::Current ()->SetColorRGB (224, 0, 0, 128);
@@ -1057,7 +1076,7 @@ fontManager.SetCurrent (GAME_FONT);
 fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 y = CCanvas::Current ()->Height ();
 if (IsMultiGame)
-	y -= 4*nHUDLineSpacing;
+	y -= 4*nLineSpacing;
 pszWeapon = PRIMARY_WEAPON_NAMES_SHORT (gameData.weapons.nPrimary);
 switch (gameData.weapons.nPrimary) {
 	case LASER_INDEX:
@@ -1097,7 +1116,7 @@ switch (gameData.weapons.nPrimary) {
 	}
 
 fontManager.Current ()->StringSize (szWeapon, w, h, aw);
-nIdWeapons [0] = GrPrintF (nIdWeapons + 0, CCanvas::Current ()->Width () - 5 - w, y-2*nHUDLineSpacing, szWeapon);
+nIdWeapons [0] = GrPrintF (nIdWeapons + 0, CCanvas::Current ()->Width () - 5 - w, y-2*nLineSpacing, szWeapon);
 
 if (gameData.weapons.nPrimary == VULCAN_INDEX) {
 	if (LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary] != oldAmmoCount [0][gameStates.render.vr.nCurrentPage]) {
@@ -1118,14 +1137,14 @@ if (gameData.weapons.nPrimary == OMEGA_INDEX) {
 pszWeapon = SECONDARY_WEAPON_NAMES_VERY_SHORT (gameData.weapons.nSecondary);
 sprintf (szWeapon, "%s %d", pszWeapon, LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
 fontManager.Current ()->StringSize (szWeapon, w, h, aw);
-nIdWeapons [1] = GrPrintF (nIdWeapons + 1, CCanvas::Current ()->Width ()-5-w, y-nHUDLineSpacing, szWeapon);
+nIdWeapons [1] = GrPrintF (nIdWeapons + 1, CCanvas::Current ()->Width ()-5-w, y-nLineSpacing, szWeapon);
 
 if (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != oldAmmoCount [1][gameStates.render.vr.nCurrentPage]) {
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordSecondaryAmmo (oldAmmoCount [1][gameStates.render.vr.nCurrentPage], LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
 	oldAmmoCount [1][gameStates.render.vr.nCurrentPage] = LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary];
 	}
-ShowBombCount (CCanvas::Current ()->Width ()- (3*GAME_FONT->Width ()+ (gameStates.render.fonts.bHires?0:2)), y-3*nHUDLineSpacing, -1, 1);
+ShowBombCount (CCanvas::Current ()->Width ()- (3*GAME_FONT->Width ()+ (gameStates.render.fonts.bHires?0:2)), y-3*nLineSpacing, -1, 1);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1143,9 +1162,9 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 	int	y = CCanvas::Current ()->Height ();
 
 	if (IsMultiGame)
-		y -= 7 * nHUDLineSpacing;
+		y -= 7 * nLineSpacing;
 	else
-		y -= 4 * nHUDLineSpacing;
+		y -= 4 * nLineSpacing;
 	if ((LOCALPLAYER.cloakTime+CLOAK_TIME_MAX - gameData.time.xGame > I2X (3)) || (gameData.time.xGame & 0x8000))
 		nIdCloak = GrPrintF (&nIdCloak, 2, y, "%s", TXT_CLOAKED);
 	}
@@ -1153,9 +1172,9 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) {
 	int	y = CCanvas::Current ()->Height ();
 
 	if (IsMultiGame)
-		y -= 10*nHUDLineSpacing;
+		y -= 10*nLineSpacing;
 	else
-		y -= 5*nHUDLineSpacing;
+		y -= 5*nLineSpacing;
 	if (((LOCALPLAYER.invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame) > I2X (4)) || (gameData.time.xGame & 0x8000))
 		nIdInvul = GrPrintF (&nIdInvul, 2, y, "%s", TXT_INVULNERABLE);
 	}
@@ -1182,13 +1201,13 @@ if ((t = HUDFlashGauge (h, &gameStates.render.cockpit.nShieldFlash, (int) tToggl
 	bShow = !bShow;
 	}
 if (gameOpts->render.cockpit.bTextGauges) {
-	y = CCanvas::Current ()->Height () - (IsMultiGame ? 6 : 2) * nHUDLineSpacing;
+	y = CCanvas::Current ()->Height () - (IsMultiGame ? 6 : 2) * nLineSpacing;
 	fontManager.SetCurrent (GAME_FONT);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	nIdShield = GrPrintF (&nIdShield, 2, y, "%s: %i", TXT_SHIELD, h);
 	}
 else {
-	y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 6 : 2) * nHUDLineSpacing - 1) * yScale);
+	y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 6 : 2) * nLineSpacing - 1) * yScale);
 	CCanvas::Current ()->SetColorRGB (0, (ubyte) ((h > 100) ? 255 : 64), 255, 255);
 	OglDrawEmptyRect (6, y, 6 + (int) (100 * xScale), y + (int) (9 * yScale));
 	if (bShow) {
@@ -1277,7 +1296,7 @@ if (gameStates.render.bShowTime) {
 	fontManager.SetCurrent (GAME_FONT);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	nIdTime = GrPrintF (&nIdTime, CCanvas::Current ()->Width () - 4 * GAME_FONT->Width (),
-							  CCanvas::Current ()->Height () - 4 * nHUDLineSpacing,
+							  CCanvas::Current ()->Height () - 4 * nLineSpacing,
 							  "%d:%02d", mins, secs);
 	}
 }
@@ -1395,6 +1414,7 @@ weaponBoxFadeValues [0] =
 weaponBoxFadeValues [1] = 0;
 weaponBoxUser [0] = 
 weaponBoxUser [1] = WBU_WEAPON;
+nLineSpacing = GAME_FONT->Height () + GAME_FONT->Height () / 4;
 }
 
 //	-----------------------------------------------------------------------------
@@ -1744,10 +1764,10 @@ else {
 if (info_index == LASER_ID || info_index == SUPERLASER_ID) {
 	sprintf (szName, "%s: 0", TXT_LVL);
 	szName [5] = LOCALPLAYER.laserLevel + 1 + '0';
-	nIdLaser [0] = HUDPrintF (&nIdLaser [0], xText, yText + nHUDLineSpacing, szName);
+	nIdLaser [0] = HUDPrintF (&nIdLaser [0], xText, yText + nLineSpacing, szName);
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) {
 		strcpy (szName, TXT_QUAD);
-		nIdLaser [1] = HUDPrintF (&nIdLaser [1], xText, yText + 2 * nHUDLineSpacing, szName);
+		nIdLaser [1] = HUDPrintF (&nIdLaser [1], xText, yText + 2 * nLineSpacing, szName);
 		}
 	}
 }
@@ -2462,7 +2482,7 @@ if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
 //	vr_reset_display ();
   }
 SetCMScales ();
-nLineSpacing = GAME_FONT->Height () + GAME_FONT->Height () / 4;
+nLineSpacing = GAME_FONT->Height () + GAME_FONT->Height ()/4;
 
 	//	Show score so long as not in rearview
 if (!(gameStates.render.bRearView || bSavingMovieFrames ||
