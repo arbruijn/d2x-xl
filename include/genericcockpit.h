@@ -179,7 +179,6 @@ class CGenericCockpit {
 		void DrawReticle (int bForceBig);
 		int CanSeeObject (int nObject, int bCheckObjs);
 		void DrawPlayerNames (void);
-		void DrawKillList (int nMode);
 		void Render (void);
 
 		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h) = 0;
@@ -201,10 +200,17 @@ class CGenericCockpit {
 		virtual void DrawShieldBar (void) = 0;
 		virtual void DrawLives (void) = 0;
 		virtual void DrawPlayerShip (int nCloakState, int nOldCloakState, int y, int x) = 0;
+		virtual void ClearBombCount (void) = 0;
+		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount) = 0;
+		virtual void DrawKillList (void) = 0;
+		virtual void DrawStatic (int nWindow) = 0;
 
 		virtual void DrawWeapons (void);
+
 		void DrawOrbs (int x, int y);
 		void DrawFlag (int x, int y);
+		void DrawKillList (int x, int y);
+		void DrawStatic (int nWindow, int nIndex);
 	};
 
 class CHUD : public CGenericCockpit {
@@ -230,8 +236,11 @@ class CHUD : public CGenericCockpit {
 		virtual void DrawLives (void);
 		virtual void DrawPlayerShip (int nCloakState, int nOldCloakState, int y, int x);
 
+		virtual void DrawStatic (int nWindow);
 		virtual void DrawWeapons (void);
 		virtual void DrawKillList (void);
+		virtual void ClearBombCount (void);
+		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount);
 
 	private:
 		int FlashGauge (int h, int *bFlash, int tToggle);
@@ -262,8 +271,11 @@ class CStatusBar : public CGenericCockpit {
 		virtual void DrawLives (void);
 		virtual void DrawPlayerShip (int nCloakState, int nOldCloakState, int y, int x);
 
+		virtual void DrawStatic (int nWindow);
 		virtual void DrawWeapons (void);
 		virtual void DrawKillList (void);
+		virtual void ClearBombCount (void);
+		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount);
 	};
 
 
@@ -290,8 +302,11 @@ class CCockpit : public CGenericCockpit {
 		virtual void DrawLives (void);
 		virtual void DrawPlayerShip (int nCloakState, int nOldCloakState, int y, int x);
 
+		virtual void DrawStatic (int nWindow);
 		virtual void DrawWeapons (void);
 		virtual void DrawKillList (void);
+		virtual void ClearBombCount (void);
+		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount);
 	};
 
 //	-----------------------------------------------------------------------------

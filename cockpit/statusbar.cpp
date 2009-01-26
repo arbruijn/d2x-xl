@@ -382,7 +382,7 @@ else if ((tInvul > I2X (4)) || (gameData.time.xGame & 0x8000)) {
 
 //	-----------------------------------------------------------------------------
 
-void CCockpit::ClearBombCount (void)
+void CStatusBar::ClearBombCount (void)
 {
 CCanvas::Current ()->SetColorRGBi (bgColor);
 if (!gameStates.video.nDisplayMode) {
@@ -399,10 +399,24 @@ else {
 
 //	-----------------------------------------------------------------------------
 
-int CCockpit::DrawBombCount (int* nId, int x, int y, char* pszBombCount)
+int CStatusBar::DrawBombCount (int* nId, int x, int y, char* pszBombCount)
 {
 CCanvas::Current ()->SetColorRGBi (bgColor);
 return Print (&nIdBombCount, x, y, szBombCount, nIdBombCount);
+}
+
+//	-----------------------------------------------------------------------------
+
+void CStatusBar::DrawStatic (int nWindow)
+{
+DrawStatic (nWindow, SB_PRIMARY_BOX);
+}
+
+//	-----------------------------------------------------------------------------
+
+void CStatusBar::DrawKillList (void)
+{
+DrawKillList (60, CCanvas::Current ()->Height ());
 }
 
 //	-----------------------------------------------------------------------------

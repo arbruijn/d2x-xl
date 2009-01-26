@@ -354,6 +354,12 @@ int ArmedBomb ();
 
 //	-----------------------------------------------------------------------------
 
+void CHUD::ClearBombCount (void)
+{
+}
+
+//	-----------------------------------------------------------------------------
+
 void CHUD::DrawBombCount (int& nIdBombCount, int x, int y, char* pszBombCount)
 {
 GrString (x, y, szBombCount, &nIdBombCount);
@@ -484,7 +490,7 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 		y -= 7 * m_info.nLineSpacing;
 	else
 		y -= 4 * m_info.nLineSpacing;
-	if ((LOCALPLAYER.cloakTime+CLOAK_TIME_MAX - gameData.time.xGame > I2X (3)) || (gameData.time.xGame & 0x8000))
+	if ((LOCALPLAYER.cloakTime + CLOAK_TIME_MAX - gameData.time.xGame > I2X (3)) || (gameData.time.xGame & 0x8000))
 		nIdCloak = GrPrintF (&nIdCloak, 2, y, "%s", TXT_CLOAKED);
 	}
 if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) {
@@ -608,20 +614,15 @@ else if (LOCALPLAYER.lives > 1)  {
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::DrawTime (void)
+void CHUD::DrawStatic (int nWindow)
 {
-if (gameStates.render.bShowTime) {
-		int secs = X2I (LOCALPLAYER.timeLevel) % 60;
-		int mins = X2I (LOCALPLAYER.timeLevel) / 60;
+}
 
-		static int nIdTime = 0;
+//	-----------------------------------------------------------------------------
 
-	fontManager.SetCurrent (GAME_FONT);
-	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-	nIdTime = GrPrintF (&nIdTime, CCanvas::Current ()->Width () - 4 * GAME_FONT->Width (),
-							  CCanvas::Current ()->Height () - 4 * m_info.nLineSpacing,
-							  "%d:%02d", mins, secs);
-	}
+void CStatusBar::DrawKillList (void)
+{
+DrawKillList (60, CCanvas::Current ()->Height ());
 }
 
 //	-----------------------------------------------------------------------------

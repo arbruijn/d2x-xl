@@ -672,7 +672,7 @@ return bDrew;
 
 fix staticTime [2];
 
-void CGenericCockpit::DrawStatic (int nWindow)
+void CGenericCockpit::DrawStatic (int nWindow, int nIndex)
 {
 	tVideoClip *vc = gameData.eff.vClips [0] + VCLIP_MONITOR_STATIC;
 	CBitmap *bmp;
@@ -985,10 +985,10 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 
 //	-----------------------------------------------------------------------------
 
-void CGenericCockpit::DrawKillList (int nMode)
+void CGenericCockpit::DrawKillList (int x, int y)
 {
 	int nPlayers, playerList [MAX_NUM_NET_PLAYERS];
-	int nLeft, i, xo = 0, x0, x1, y, ySave, fth, l;
+	int nLeft, i, xo = 0, x0, x1, y0, fth, l;
 	int t = gameStates.app.nSDLTicks;
 	int bGetPing = gameStates.render.cockpit.bShowPingStats && (!networkData.tLastPingStat || (t - networkData.tLastPingStat >= 1000));
 	static int faw = -1;
@@ -1010,13 +1010,12 @@ nLeft = (nPlayers <= 4) ? nPlayers : (nPlayers + 1) / 2;
 //If font size changes, this code might not work right anymore
 //Assert (GAME_FONT->Height ()==5 && GAME_FONT->Width ()==7);
 fth = GAME_FONT->Height ();
+y -= nLeft * (fth + 1);
+x = CCanvas::Current ()->Width () - HUD_LHX (x);
 x0 = HUD_LHX (1);
-x1 = (IsCoopGame) ? HUD_LHX (43) : HUD_LHX (43);
-ySave = y = CCanvas::Current ()->Height () - nLeft * (fth + 1);
-if (nMode == CM_FULL_COCKPIT) {
-	ySave = y -= HUD_LHX (6);
-	x1 = (IsCoopGame) ? HUD_LHX (43) : HUD_LHX (43);
-	}
+x1 = HUD_LHX (43);
+y0 = y;
+
 if (gameStates.render.cockpit.bShowPingStats) {
 	if (faw < 0)
 		faw = GAME_FONT->TotalWidth () / (GAME_FONT->Range ());
@@ -1032,17 +1031,17 @@ for (i = 0; i < nPlayers; i++) {
 	char name [80], teamInd [2] = {127, 0};
 	int sw, sh, aw, indent =0;
 
-	if (i>=nLeft) {
-		x0 = CCanvas::Current ()->Width () - ((nMode == CM_FULL_COCKPIT) ? HUD_LHX (53) : HUD_LHX (60));
+	if (i >= nLeft) {
+		x0 = x;
 		x1 = CCanvas::Current ()->Width () - ((gameData.app.nGameMode & GM_MULTI_COOP) ? HUD_LHX (27) : HUD_LHX (15));
 		if (gameStates.render.cockpit.bShowPingStats) {
 			x0 -= xo + 6 * faw;
 			x1 -= xo + 6 * faw;
 			}
-		if (i==nLeft)
-			y = ySave;
+		if (i == nLeft)
+			y0 = y;
 		if (netGame.KillGoal || netGame.xPlayTimeAllowed)
-			x1-=HUD_LHX (18);
+			x1 -= HUD_LHX (18);
 		}
 	else if (netGame.KillGoal || netGame.xPlayTimeAllowed)
 		 x1 = HUD_LHX (43) - HUD_LHX (18);
@@ -1116,49 +1115,49 @@ for (i = 0; i < nPlayers; i++) {
 			break;
 		name [--l] = '\0';
 		}
-	nIdKillList [0][i] = GrPrintF (nIdKillList [0] + i, x0 + indent, y, "%s", name);
+	nIdKillList [0][i] = GrPrintF (nIdKillList [0] + i, x0 + indent, y0, "%s", name);
 
 	if (gameData.multigame.kills.bShowList == 2) {
 		if (gameData.multiplayer.players [nPlayer].netKilledTotal + gameData.multiplayer.players [nPlayer].netKillsTotal <= 0)
-			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, TXT_NOT_AVAIL);
+			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y0, TXT_NOT_AVAIL);
 		else
-			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%d%%",
+			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y0, "%d%%",
 				 (int) ((double) gameData.multiplayer.players [nPlayer].netKillsTotal /
 						 ((double) gameData.multiplayer.players [nPlayer].netKilledTotal +
 						  (double) gameData.multiplayer.players [nPlayer].netKillsTotal) * 100.0));
 		}
 	else if (gameData.multigame.kills.bShowList == 3) {
 		if (gameData.app.nGameMode & GM_ENTROPY)
-			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%3d [%d/%d]",
+			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y0, "%3d [%d/%d]",
 						 gameData.multigame.kills.nTeam [i], gameData.entropy.nTeamRooms [i + 1],
 						 gameData.entropy.nTotalRooms);
 		else
-			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%3d", gameData.multigame.kills.nTeam [i]);
+			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y0, "%3d", gameData.multigame.kills.nTeam [i]);
 		}
 	else if (IsCoopGame)
-		nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%-6d", gameData.multiplayer.players [nPlayer].score);
+		nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y0, "%-6d", gameData.multiplayer.players [nPlayer].score);
    else if (netGame.xPlayTimeAllowed || netGame.KillGoal)
-      nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%3d (%d)",
+      nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y0, "%3d (%d)",
 					 gameData.multiplayer.players [nPlayer].netKillsTotal,
 					 gameData.multiplayer.players [nPlayer].nKillGoalCount);
    else
-		nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%3d", gameData.multiplayer.players [nPlayer].netKillsTotal);
+		nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y0, "%3d", gameData.multiplayer.players [nPlayer].netKillsTotal);
 	if (gameStates.render.cockpit.bShowPingStats && (nPlayer != gameData.multiplayer.nLocalPlayer)) {
 		if (bGetPing)
 			PingPlayer (nPlayer);
 		if (pingStats [nPlayer].sent) {
 #if 0//def _DEBUG
-			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1 + xo, y, "%lu %d %d",
+			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1 + xo, y0, "%lu %d %d",
 						  pingStats [nPlayer].ping,
 						  pingStats [nPlayer].sent,
 						  pingStats [nPlayer].received);
 #else
-			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1 + xo, y, "%lu %i%%", pingStats [nPlayer].ping,
+			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1 + xo, y0, "%lu %i%%", pingStats [nPlayer].ping,
 													 100 - ((pingStats [nPlayer].received * 100) / pingStats [nPlayer].sent));
 #endif
 			}
 		}
-	y += fth+1;
+	y0 += fth + 1;
 	}
 }
 
