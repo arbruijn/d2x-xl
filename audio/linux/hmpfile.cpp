@@ -9,7 +9,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include "hmpfile.h"
-#include "inferno.h"
+#include "descent.h"
 #include "cfile.h"
 #include "audio.h"
 #include "cfile.h"

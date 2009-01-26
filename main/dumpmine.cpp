@@ -22,7 +22,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdarg.h>
 #include <errno.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "pstypes.h"
 #include "mono.h"
 #include "key.h"

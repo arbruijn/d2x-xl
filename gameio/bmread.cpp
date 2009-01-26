@@ -29,7 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <ctype.h>
 
 #include "pstypes.h"
-#include "inferno.h"
+#include "descent.h"
 #include "gr.h"
 #include "bm.h"
 #include "gamepal.h"

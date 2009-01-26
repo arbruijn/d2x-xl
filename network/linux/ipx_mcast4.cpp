@@ -23,7 +23,7 @@
 #include <ctype.h>
 
 #include "pstypes.h"
-#include "inferno.h"
+#include "descent.h"
 #include "ipx_mcast4.h"
 #include "args.h"
 #include "error.h"

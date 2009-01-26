@@ -33,7 +33,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <netinet/in.h> /* for htons & co. */
 
 #include "pstypes.h"
-#include "inferno.h"
+#include "descent.h"
 #include "args.h"
 #include "error.h"
 

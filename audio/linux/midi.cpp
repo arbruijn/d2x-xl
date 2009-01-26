@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 
-#include "inferno.h"
+#include "descent.h"
 #include "digi.h"
 #include "cfile.h"
 #include "error.h"
