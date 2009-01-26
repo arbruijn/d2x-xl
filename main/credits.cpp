@@ -361,8 +361,6 @@ void CCreditsManager::Show (char *creditsFilename)
 		{"font2-2.fnt", "font2-2h.fnt"}
 	};
 	
-	static char szStars [2][15] = {"\0x1stars.pcx", "\0x1starsb.pcx"};
-	
 if (!Open (creditsFilename))
 	return;
 

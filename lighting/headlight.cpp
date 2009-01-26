@@ -69,7 +69,7 @@ if ((objP->info.nType != OBJ_ROBOT) && (objP->info.nType	!= OBJ_PLAYER))
 	CObject*		lightObjP;
 
 for (int nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
-	if (lightObjP = objects [nPlayer]) {
+	if ((lightObjP = objects [nPlayer])) {
 		vecToObj = objP->info.position.vPos - lightObjP->info.position.vPos;
 		dist = CFixVector::Normalize (vecToObj);
 		if (dist > 0) {

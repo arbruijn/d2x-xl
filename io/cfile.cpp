@@ -231,7 +231,7 @@ return (m_cf.rawPosition >= m_cf.size);
 
 int CFile::Error (void)
 {
-if (nCFileError = ferror (m_cf.file))
+if ((nCFileError = ferror (m_cf.file)))
 	PrintLog ("error %d during file operation\n", nCFileError);
 return nCFileError;
 }
