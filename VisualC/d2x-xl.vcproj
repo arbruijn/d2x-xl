@@ -3766,6 +3766,10 @@
 						</FileConfiguration>
 					</File>
 					<File
+						RelativePath="..\cockpit\genericcockpit.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\cockpit\hud.cpp"
 						>
 					</File>
