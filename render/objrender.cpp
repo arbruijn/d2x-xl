@@ -299,8 +299,10 @@ void DrawObjectBlob (CObject *objP, int bmi0, int bmi, int iFrame, tRgbaColorf *
 	fix			xSize;
 	float			fScale;
 
+if ((nType == OBJ_WEAPON) && (objP->info.nId == OMEGA_ID) && omegaLightnings.Exist ())
+	return;
 #if DBG
-if ((objP->info.nType == nDbgObjType) && ((nDbgObjId < 0) || (objP->info.nId == nDbgObjId)))
+if ((nType == nDbgObjType) && ((nDbgObjId < 0) || (objP->info.nId == nDbgObjId)))
 	nDbgObjType = nDbgObjType;
 #endif
 if (gameOpts->render.textures.bUseHires || gameOpts->render.effects.bTransparent) {

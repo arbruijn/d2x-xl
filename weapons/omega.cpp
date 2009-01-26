@@ -91,8 +91,7 @@ void CreateOmegaBlobs (short nFiringSeg, CFixVector *vMuzzle, CFixVector *vTarge
 
 if (IsMultiGame)
 	DeleteOldOmegaBlobs (parentObjP);
-//if (parentObjP->info.nId == gameData.multiplayer.nLocalPlayer)
-	omegaLightnings.Create (vTargetPos, parentObjP, targetObjP);
+omegaLightnings.Create (vTargetPos, parentObjP, targetObjP);
 vGoal = *vTargetPos - *vMuzzle;
 xGoalDist = CFixVector::Normalize(vGoal);
 if (xGoalDist < MIN_OMEGA_BLOBS * MIN_OMEGA_DIST) {

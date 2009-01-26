@@ -626,7 +626,8 @@ if (gameOpts->render.bDepthSort > 0) {
 		nFrames = nParticleFrames [0][nType];
 		deltaUV = 1.0f / (float) nFrames;
 		if (m_bEmissive)
-			glBlendFunc (GL_ONE, GL_ONE);
+			//glBlendFunc (GL_ONE, GL_ONE);
+			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 		else
 			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
@@ -1080,7 +1081,7 @@ else
 				m_particles [j].Create (&vPos, vDir, &mOrient, m_nSegment, m_nLife,
 												m_nSpeed, m_nType, m_nClass, m_fScale, m_bHaveColor ? &m_color : NULL,
 												nCurTime, m_bBlowUpParts, fBrightness, vEmittingFace);
-			if ((m_nType == LIGHT_PARTICLES) || (m_nType == BULLET_PARTICLES))
+			if (/*(m_nType == LIGHT_PARTICLES) ||*/ (m_nType == BULLET_PARTICLES))
 				goto funcExit;
 				}
 			}

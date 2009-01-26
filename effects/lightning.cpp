@@ -687,7 +687,7 @@ if ((nDepth > 1) || m_bRandom) {
 		}
 	}
 else {
-	plh = m_nodes + m_nNodes - 1;
+	plh = &m_nodes [m_nNodes - 1];
 	plh->m_vNewPos = plh->m_vPos;
 	plh->m_vOffs.SetZero ();
 	if (nStyle == 2) {
@@ -702,7 +702,7 @@ else {
 			nStyle = 0;
 		if (!nStyle) {
 			nAmplitude *= 4;
-			for (h = m_nNodes - 1, i = j = 0, nodeP [0] = m_nodes + 1, nodeP [1] = m_nodes + h - 1; i < h; i++, j = !j) {
+			for (h = m_nNodes - 1, i = j = 0, nodeP [0] = m_nodes + 1, nodeP [1] = &m_nodes [h - 1]; i < h; i++, j = !j) {
 				plh = nodeP [j];
 				plh->CreateErratic (vPos + j, vBase, nSteps, nAmplitude, bInPlane, j, 0, i, h, nSmoothe, bClamp);
 				if (nodeP [1] <= nodeP [0])
@@ -714,7 +714,7 @@ else {
 				}
 			}
 		else {
-			for (i = m_nNodes - 1, j = 0, nodeP [0] = m_nodes + 1, nodeP [1] = m_nodes + i - 1; i > 0; i--, j = !j) {
+			for (i = m_nNodes - 1, j = 0, nodeP [0] = m_nodes + 1, nodeP [1] = &m_nodes [i - 1]; i > 0; i--, j = !j) {
 				plh = nodeP [j];
 				vPrevOffs [j] = plh->CreateJaggy (vPos + j, vPos + !j, vBase, bPrevOffs [j] ? vPrevOffs + j : NULL, nSteps, nAmplitude, 0, i, nSmoothe, bClamp);
 				bPrevOffs [j] = 1;

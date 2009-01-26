@@ -417,9 +417,12 @@ for (i = 0; i < 2; i++) {
 				CCanvas::Current ()->SetColorRGB (96, 0, 0, 255);
 		else
 			CCanvas::Current ()->SetColorRGB (64, 64, 64, 255);
+		if (bArmed && bAvailable)
+			glLineWidth (3);
 		OglDrawEmptyRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
 		if (bArmed && bAvailable)
-			OglDrawEmptyRect (x - 2, y - hIcon - 2, x + wIcon + 3, y + 3);
+			glLineWidth (1);
+		if (bArmed && bAvailable)
 		if (*szAmmo) {
 			fontManager.SetColorRGBi (nAmmoColor, 1, 0, 0);
 			nIdIcons [i][j] = GrString (x + wIcon + 2 - fw, y - fh, szAmmo, nIdIcons [i] + j);
@@ -591,9 +594,11 @@ for (j = firstItem; j < n; j++) {
 			CCanvas::Current ()->SetColorRGB (96, 0, 0, 255);
 	else
 		CCanvas::Current ()->SetColorRGB (64, 64, 64, 255);
+	if (bArmed)
+		glLineWidth (3);
 	OglDrawEmptyRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
 	if (bArmed)
-		OglDrawEmptyRect (x - 2, y - hIcon - 2, x + wIcon + 3, y + 3);
+		glLineWidth (1);
 	if (*szCount) {
 		fontManager.Current ()->StringSize (szCount, fw, fh, faw);
 		nIdItems [j] = GrString (x + wIcon + 2 - fw, y - fh, szCount, nIdItems + j);

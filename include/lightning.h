@@ -265,6 +265,8 @@ class COmegaLightnings {
 		int Create (CFixVector *vTargetPos, CObject *parentObjP, CObject *targetObjP);
 		int Update (CObject *parentObjP, CObject *targetObjP);
 		void Destroy (short nObject);
+		inline bool Exist (void) { return m_nHandles > 0; }
+
 	private:
 		int Find (short nObject);
 		void Delete (short nHandle);

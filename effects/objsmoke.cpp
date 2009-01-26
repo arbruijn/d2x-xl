@@ -678,7 +678,9 @@ else
 
 void DoParticleTrail (CObject *objP)
 {
-	int			nParts, nObject, nSmoke, id = objP->info.nId, bGatling = (id == VULCAN_ID) || (id == GAUSS_ID);
+	int			nParts, nObject, nSmoke, id = objP->info.nId, 
+					bGatling = (id == VULCAN_ID) || (id == GAUSS_ID),
+					bOmega = (id == OMEGA_ID);
 	float			nScale;
 	CFixVector	pos;
 	tRgbaColorf	c;
@@ -726,13 +728,15 @@ if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 			nScale = 2;
 		else if ((id == ROBOT_BLUE_ENERGY_ID) || (id == ROBOT_WHITE_ENERGY_ID) || (id == ROBOT_PHASE_ENERGY_ID))
 			nScale = 2;
+		else if (bOmega)
+			nScale = omegaLightnings.Exist () ? 2.0f : 1.0f;
 		else
 			nScale = 1;
 		c.alpha = 0.1f + nScale / 10;
 		}
 	nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts << bGatling, -PARTICLE_SIZE (1, nScale),
-											   gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [3],
-											   1, ((gameOpts->render.particles.nLife [3] + 1) * LASER_PART_LIFE) << bGatling, LASER_PART_SPEED, 
+											   gameOpts->render.particles.nSize [3],
+											   1, ((gameOpts->render.particles.nLife [3] + 1) * (LASER_PART_LIFE >> bOmega)) << bGatling, LASER_PART_SPEED, 
 											   bGatling ? GATLING_PARTICLES : LIGHT_PARTICLES, nObject, &c, 0, -1);
 	if (nSmoke < 0)
 		return;
