@@ -2308,9 +2308,10 @@ return bCheckObjs ? (nHitType == HIT_OBJECT) && (hit_data.hit.nObject == nObject
 }
 
 //	-----------------------------------------------------------------------------
+// show names of teammates & players carrying flags
+// render them near their ship when its visible
 
-//show names of teammates & players carrying flags
-void DrawHUDNames (void)
+void CGenericCockpit::DrawNames (void)
 {
 	int			bHasFlag, bShowName, bShowTeamNames, bShowAllNames, bShowFlags, nObject, nTeam;
 	int			p;
@@ -2361,7 +2362,7 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 
 		vPos = OBJECTS [nObject].info.position.vPos;
 		vPos[Y] += I2X (2);
-		G3TransformAndEncodePoint(&vPlayerPos, vPos);
+		G3TransformAndEncodePoint (&vPlayerPos, vPos);
 		if (vPlayerPos.p3_codes == 0) {	//on screen
 			G3ProjectPoint (&vPlayerPos);
 			if (!(vPlayerPos.p3_flags & PF_OVERFLOW)) {

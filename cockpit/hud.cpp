@@ -66,17 +66,18 @@ int oldBombcount [2]		= {0, 0};
 
 static double xScale, yScale;
 
-CCockpit cockpit;
+CHUD hud;
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::ShowScore (void)
+void CHUD::DrawScore (void)
 {
+if (HIDE_HUD)
+	return;
+
 	char	szScore [40];
 	int	w, h, aw;
 
-if (HIDE_HUD)
-	return;
 if ((gameData.hud.msgs [0].nMessages > 0) &&
 	 (strlen (gameData.hud.msgs [0].szMsgs [gameData.hud.msgs [0].nFirst]) > 38))
 	return;
@@ -108,16 +109,17 @@ GrPrintF (NULL, CCanvas::Current ()->Width ()-w-HUD_LHX (2), 3, szScore);
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::ShowTimerCount (void)
+void CHUD::DrawTimerCount (void)
  {
+if (HIDE_HUD)
+	return;
+
 	char	szScore [20];
 	int	w, h, aw, i;
-	fix timevar = 0;
+	fix	timevar = 0;
 
 	static int nIdTimer = 0;
 
-if (HIDE_HUD)
-	return;
 if ((gameData.hud.msgs [0].nMessages > 0) && (strlen (gameData.hud.msgs [0].szMsgs [gameData.hud.msgs [0].nFirst]) > 38))
 	return;
 
@@ -136,16 +138,17 @@ if ((gameData.app.nGameMode & GM_NETWORK) && netGame.xPlayTimeAllowed) {
 //	-----------------------------------------------------------------------------
 //y offset between lines on HUD
 
- void CHUD::ShowScoreAdded (void)
+ void CHUD::DrawScoreAdded (void)
 {
+if (HIDE_HUD)
+	return;
+
 	int	color;
 	int	w, h, aw;
 	char	szScore [20];
 
 	static int nIdTotalScore = 0;
 
-if (HIDE_HUD)
-	return;
 if (IsMultiGame && !IsCoopGame)
 	return;
 if (scoreDisplay [0] == 0)
@@ -179,10 +182,11 @@ extern int SW_y [2];
 
 void CHUD::DrawHomingWarning (void)
 {
-	static int nIdLock = 0;
-
 if (HIDE_HUD)
 	return;
+
+	static int nIdLock = 0;
+
 if (LOCALPLAYER.homingObjectDist >= 0) {
 	if (gameData.time.xGame & 0x4000) {
 		int x = 0x8000, y = CCanvas::Current ()->Height ()-nLineSpacing;
@@ -201,11 +205,12 @@ if (LOCALPLAYER.homingObjectDist >= 0) {
 
 void CHUD::DrawKeys (void)
 {
+if (HIDE_HUD)
+	return;
+
 	int y = 3 * nLineSpacing;
 	int dx = GAME_FONT->Width () + GAME_FONT->Width () / 2;
 
-if (HIDE_HUD)
-	return;
 if (IsMultiGame && !IsCoopGame)
 	return;
 if (LOCALPLAYER.flags & PLAYER_FLAGS_BLUE_KEY)
@@ -218,12 +223,13 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_RED_KEY)
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::ShowOrbs (void)
+void CHUD::DrawOrbs (void)
 {
-	static int nIdOrbs = 0, nIdEntropy [2]= {0, 0};
-
 if (HIDE_HUD)
 	return;
+
+	static int nIdOrbs = 0, nIdEntropy [2]= {0, 0};
+
 if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
 	int x = 0, y = 0;
 	CBitmap *bmP = NULL;
@@ -284,10 +290,11 @@ if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::ShowFlag (void)
+void CHUD::DrawFlag (void)
 {
 if (HIDE_HUD)
 	return;
+
 if ((gameData.app.nGameMode & GM_CAPTURE) && (LOCALPLAYER.flags & PLAYER_FLAGS_FLAG)) {
 	int x = 0, y = 0, icon;
 
@@ -349,15 +356,14 @@ return (int) ((b && (tToggle <= t)) ? t + 300 / b : 0);
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::ShowEnergy (void)
+void CHUD::DrawEnergy (void)
 {
-	int h, y;
-
-	static int nIdEnergy = 0;
-
-	//CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
 if (HIDE_HUD)
 	return;
+
+	int h, y;
+	static int nIdEnergy = 0;
+
 h = LOCALPLAYER.energy ? X2IR (LOCALPLAYER.energy) : 0;
 if (gameOpts->render.cockpit.bTextGauges) {
 	y = CCanvas::Current ()->Height () - (IsMultiGame ? 5 : 1) * nLineSpacing;
@@ -404,13 +410,14 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::ShowAfterburner (void)
+void CHUD::DrawAfterburner (void)
 {
-	int h, y;
-
-	static int nIdAfterBurner = 0;
 if (HIDE_HUD)
 	return;
+	
+	int h, y;
+	static int nIdAfterBurner = 0;
+
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 	return;		//don't draw if don't have
 h = FixMul (gameData.physics.xAfterburnerCharge, 100);
@@ -447,54 +454,29 @@ extern int ArmedBomb ();
 
 //	-----------------------------------------------------------------------------
 
-void DrawBombCount (int x, int y, int bgColor, int bShowAlways)
+void CHUD::DrawBombCount (int& nIdBombCount, int x, int y, char* pszBombCount)
 {
-	int bomb, count, countx;
-	char txt [5], *t;
+GrString (x, y, szBombCount, &nIdBombCount);
+}
 
-	static int nIdBombCount = 0;
+//	-----------------------------------------------------------------------------
 
-if (gameData.app.nGameMode & GM_ENTROPY)
-	return;
-bomb = ArmedBomb ();
-if (!bomb)
-	return;
-if ((gameData.app.nGameMode & GM_HOARD) && (bomb == PROXMINE_INDEX))
-	return;
-count = LOCALPLAYER.secondaryAmmo [bomb];
-#if DBG
-count = min (count, 99);	//only have room for 2 digits - cheating give 200
-#endif
-countx = (bomb == PROXMINE_INDEX) ? count : -count;
-if (bShowAlways && count == 0)		//no bombs, draw nothing on HUD
-	return;
-if (!bShowAlways && countx == oldBombcount [gameStates.render.vr.nCurrentPage])
-	return;
-// I hate doing this off of hard coded coords!!!!
-if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {		//draw background
-	CCanvas::Current ()->SetColorRGBi (bgColor);
-	if (!gameStates.video.nDisplayMode) {
-		HUDRect (169, 189, 189, 196);
-		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (128, 128, 128));
-		OglDrawLine (HUD_SCALE_X (168), HUD_SCALE_Y (189), HUD_SCALE_X (189), HUD_SCALE_Y (189));
-		}
-	else {
-		OglDrawFilledRect (HUD_SCALE_X (338), HUD_SCALE_Y (453), HUD_SCALE_X (378), HUD_SCALE_Y (470));
-		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (128, 128, 128));
-		OglDrawLine (HUD_SCALE_X (336), HUD_SCALE_Y (453), HUD_SCALE_X (378), HUD_SCALE_Y (453));
-		}
-	}
-if (count)
-	fontManager.SetColorRGBi (
-		(bomb == PROXMINE_INDEX) ? RGBA_PAL2 (55, 0, 0) : RGBA_PAL2 (59, 59, 21), 1,
-		bgColor, bgColor != -1);
-else if (bgColor != -1)
-	fontManager.SetColorRGBi (bgColor, 1, bgColor, 1);	//erase by drawing in background color
-sprintf (txt, "B:%02d", count);
-while ((t = strchr (txt, '1')))
-	*t = '\x84';	//convert to wide '1'
-nIdBombCount = SHOW_COCKPIT ? HUDPrintF (&nIdBombCount, x, y, txt, nIdBombCount) : GrString (x, y, txt, &nIdBombCount);
-oldBombcount [gameStates.render.vr.nCurrentPage] = countx;
+void CGenericCockpit::DrawAmmoInfo (int x, int y, int ammoCount, int bPrimary)
+{
+	int w;
+	char str [16];
+
+	static int nIdAmmo [2][2] = {{0, 0},{0, 0}};
+
+w = (CCanvas::Current ()->Font ()->Width () * (bPrimary ? 7 : 5)) / 2;
+CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
+OglDrawFilledRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + CCanvas::Current ()->Font ()->Height ()));
+fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
+sprintf (str, "%03d", ammoCount);
+convert_1s (str);
+nIdAmmo [bPrimary][0] = HUDPrintF (&nIdAmmo [bPrimary][0], x, y, str);
+OglDrawFilledRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + CCanvas::Current ()->Font ()->Height ()));
+nIdAmmo [bPrimary][1] = HUDPrintF (&nIdAmmo [bPrimary][1], x, y, str);
 }
 
 //	-----------------------------------------------------------------------------
@@ -509,10 +491,20 @@ else
 
 //	-----------------------------------------------------------------------------
 
+void DrawSecondaryAmmoInfo (int ammoCount)
+{
+if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
+	SBDrawSecondaryAmmoInfo (ammoCount);
+else
+	DrawAmmoInfo (SECONDARY_AMMO_X, SECONDARY_AMMO_Y, ammoCount, 0);
+}
+
+//	-----------------------------------------------------------------------------
+
 //convert '1' characters to special wide ones
 #define convert_1s(s) {char *p=s; while ((p = strchr (p, '1'))) *p = (char)132;}
 
-void CHUD::ShowWeapons (void)
+void CHUD::DrawWeapons (void)
 {
 	int	w, h, aw;
 	int	y;
@@ -524,7 +516,7 @@ void CHUD::ShowWeapons (void)
 if (HIDE_HUD)
 	return;
 #if 0
-CHUD::ShowIcons ();
+CHUD::DrawIcons ();
 #endif
 //	CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
 fontManager.SetCurrent (GAME_FONT);
@@ -604,7 +596,7 @@ ShowBombCount (CCanvas::Current ()->Width ()- (3*GAME_FONT->Width ()+ (gameState
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::ShowCloakInvul (void)
+void CHUD::DrawCloakInvul (void)
 {
 
 	static int nIdCloak = 0, nIdInvul = 0;
@@ -637,7 +629,7 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) {
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::ShowShield (void)
+void CHUD::DrawShield (void)
 {
 	static int		bShow = 1;
 	static time_t	tToggle = 0, nBeep = -1;
@@ -710,7 +702,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 //	-----------------------------------------------------------------------------
 
 //draw the icons for number of lives
-void CHUD::ShowLives (void)
+void CHUD::DrawLives (void)
 {
 	static int nIdLives = 0;
 
@@ -1256,36 +1248,6 @@ else {
 
 //	-----------------------------------------------------------------------------
 
-void DrawAmmoInfo (int x, int y, int ammoCount, int bPrimary)
-{
-	int w;
-	char str [16];
-
-	static int nIdAmmo [2][2] = {{0, 0},{0, 0}};
-
-w = (CCanvas::Current ()->Font ()->Width () * (bPrimary ? 7 : 5)) / 2;
-CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
-OglDrawFilledRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + CCanvas::Current ()->Font ()->Height ()));
-fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
-sprintf (str, "%03d", ammoCount);
-convert_1s (str);
-nIdAmmo [bPrimary][0] = HUDPrintF (&nIdAmmo [bPrimary][0], x, y, str);
-OglDrawFilledRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + CCanvas::Current ()->Font ()->Height ()));
-nIdAmmo [bPrimary][1] = HUDPrintF (&nIdAmmo [bPrimary][1], x, y, str);
-}
-
-//	-----------------------------------------------------------------------------
-
-void DrawSecondaryAmmoInfo (int ammoCount)
-{
-if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
-	SBDrawSecondaryAmmoInfo (ammoCount);
-else
-	DrawAmmoInfo (SECONDARY_AMMO_X, SECONDARY_AMMO_Y, ammoCount, 0);
-}
-
-//	-----------------------------------------------------------------------------
-
 //returns true if drew picture
 int DrawWeaponDisplay (int nWeaponType, int nWeaponId)
 {
@@ -1555,7 +1517,7 @@ cmScaleX /= HUD_ASPECT;
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::ShowKillList (void)
+void CHUD::DrawKillList (void)
 {
 	int n_players, player_list [MAX_NUM_NET_PLAYERS];
 	int n_left, i, xo = 0, x0, x1, y, save_y, fth, l;
@@ -1927,18 +1889,18 @@ nLineSpacing = GAME_FONT->Height () + GAME_FONT->Height ()/4;
 if (!(gameStates.render.bRearView || bSavingMovieFrames ||
 	 (gameStates.render.cockpit.nMode == CM_REAR_VIEW) ||
 	 (gameStates.render.cockpit.nMode == CM_STATUS_BAR))) {
-	CHUD::ShowScore ();
+	CHUD::DrawScore ();
 	if (scoreTime)
-		CHUD::ShowScoreAdded ();
+		CHUD::DrawScoreAdded ();
 	}
 
 if (!(gameStates.render.bRearView || bSavingMovieFrames || (gameStates.render.cockpit.nMode == CM_REAR_VIEW)))
-	CHUD::ShowTimerCount ();
+	CHUD::DrawTimerCount ();
 
 //	Show other stuff if not in rearview or letterbox.
 if (!gameStates.render.bRearView && (gameStates.render.cockpit.nMode != CM_REAR_VIEW)) {
 	if ((gameStates.render.cockpit.nMode == CM_STATUS_BAR) || (gameStates.render.cockpit.nMode == CM_FULL_SCREEN))
-		CHUD::ShowHomingWarning ();
+		CHUD::DrawHomingWarning ();
 
 	if ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || (gameStates.render.cockpit.nMode == CM_LETTERBOX)) {
 		if (!gameOpts->render.cockpit.bTextGauges) {
@@ -1949,13 +1911,13 @@ if (!gameStates.render.bRearView && (gameStates.render.cockpit.nMode != CM_REAR_
 			else
 				xScale = yScale = 1;
 			}
-		CHUD::ShowEnergy ();
-		CHUD::ShowShield ();
-		CHUD::ShowAfterburner ();
-		CHUD::ShowWeapons ();
+		CHUD::DrawEnergy ();
+		CHUD::DrawShield ();
+		CHUD::DrawAfterburner ();
+		CHUD::DrawWeapons ();
 		if (!bSavingMovieFrames)
-			CHUD::ShowKeys ();
-		CHUD::ShowCloakInvul ();
+			CHUD::DrawKeys ();
+		CHUD::DrawCloakInvul ();
 
 		if ((gameData.demo.nState==ND_STATE_RECORDING) && (LOCALPLAYER.flags != oldFlags [gameStates.render.vr.nCurrentPage])) {
 			NDRecordPlayerFlags (oldFlags [gameStates.render.vr.nCurrentPage], LOCALPLAYER.flags);
@@ -1971,17 +1933,17 @@ if (!gameStates.render.bRearView && (gameStates.render.cockpit.nMode != CM_REAR_
 
 	ShowHUDNames ();
 	if (gameStates.render.cockpit.nMode != CM_REAR_VIEW) {
-		CHUD::ShowFlag ();
-		CHUD::ShowOrbs ();
+		CHUD::DrawFlag ();
+		CHUD::DrawOrbs ();
 		}
 	if (!bSavingMovieFrames)
 		HUDRenderMessageFrame ();
 
 	if (gameStates.render.cockpit.nMode!=CM_STATUS_BAR && !bSavingMovieFrames)
-		CHUD::ShowLives ();
+		CHUD::DrawLives ();
 
 	if (gameData.app.nGameMode&GM_MULTI && gameData.multigame.kills.bShowList)
-		CHUD::ShowKillList ();
+		CHUD::DrawKillList ();
 #if 0
 	ShowWeaponDisplayes ();
 #endif

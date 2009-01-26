@@ -3738,6 +3738,14 @@
 					Name="Source Files"
 					>
 					<File
+						RelativePath="..\cockpit\cockpit.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\cockpit\cockpitdata.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\cockpit\gauges.cpp"
 						>
 						<FileConfiguration
@@ -3760,22 +3768,6 @@
 					<File
 						RelativePath="..\cockpit\hud.cpp"
 						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\cockpit\hudicons.cpp"
@@ -3796,6 +3788,10 @@
 								ObjectFile="$(IntDir)/$(InputName)1.obj"
 							/>
 						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\cockpit\hudmsgs.cpp"
+						>
 					</File>
 					<File
 						RelativePath="..\cockpit\statusbar.cpp"
@@ -4409,11 +4405,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
