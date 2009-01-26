@@ -1598,13 +1598,8 @@ CopyDefaultsToRobotsAll ();
 if (!bRestore) {
 	InitReactorForLevel (0);
 	InitAIObjects ();
-#if !DBG //currently causes a crash
 	gameData.models.Prepare ();
-#endif
 	}
-#if DBG //currently causes a crash
-gameData.models.Prepare ();
-#endif
 #if 0
 LOCALPLAYER.nInvuls =
 LOCALPLAYER.nCloaks = 0;
