@@ -29,8 +29,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 #ifndef _WIN32
-
-char *strrev( char *s1 );
+char *strlwr (char *sl);
+char *strupr (char *sl);
+char *strrev (char *s1);
 #endif
 
 char *strcompress (char *str);

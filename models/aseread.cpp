@@ -576,7 +576,7 @@ while ((pszToken = ReadLine (cf))) {
 			return CModel::Error ("duplicate item");
 		*fn = '\001';
 		CFile::SplitPath (StrTok ("\""), NULL, fn + 1, NULL);
-		if (!ReadModelTGA (strlwr (fn), bmP, nType, bCustom))
+		if (!ReadModelTGA (::strlwr (fn), bmP, nType, bCustom))
 			return CModel::Error ("texture not found");
 		l = (int) strlen (fn) + 1;
 		if (!m_textures.m_names [nBitmap].Create (l))
