@@ -89,7 +89,7 @@ for (int = 0; i < 2; i++) {
 
 nCloakFadeState = 0;
 bLastHomingWarningShown [0] =
-bLastHomingWarningShown [0] = -1;
+bLastHomingWarningShown [1] = -1;
 scoreDisplay [0] =
 scoreDisplay [1] = 0;
 scoreTime = 0;
