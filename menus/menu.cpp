@@ -415,6 +415,7 @@ int CMenu::Menu (const char* pszTitle, const char* pszSubTitle,
 
 if (gameStates.menus.nInMenu)
 	return - 1;
+paletteManager.DisableEffect ();
 ClearBoxedMessage ();
 memset (&m_props, 0, sizeof (m_props));
 m_props.width = width;
@@ -1307,7 +1308,8 @@ if (time_stopped) {
 if (sound_stopped)
 	audio.ResumeSounds ();
 gameStates.menus.nInMenu--;
-paletteManager.SetEffect (0, 0, 0);
+paletteManager.EnableEffect ();
+//paletteManager.SetEffect (0, 0, 0);
 SDL_EnableKeyRepeat (0, 0);
 if (gameStates.app.bGameRunning && IsMultiGame)
 	MultiSendMsgQuit();

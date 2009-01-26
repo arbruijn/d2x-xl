@@ -111,7 +111,7 @@ class CPaletteData {
 		int				nPalettes;
 		int				nGamma;
 		int				nLastGamma;
-		fix				xEffectDuration;
+		fix				xFlash;
 		fix				xLastEffectTime;
 
 		ubyte				fadeTable [PALETTE_SIZE * MAX_FADE_LEVELS];
@@ -194,9 +194,9 @@ class CPaletteManager {
 		inline void SetRedEffect (sbyte color) {  m_data.effect.red = float (color) / 64.0f; }
 		inline void SetGreenEffect (sbyte color) {  m_data.effect.green = float (color) / 64.0f; }
 		inline void SetBlueEffect (sbyte color) {  m_data.effect.blue = float (color) / 64.0f; }
-		inline void SetEffectDuration (fix xDuration) { m_data.xEffectDuration = xDuration; }
+		inline void SetFlash (fix xDuration) { m_data.xFlash = xDuration; }
 		inline void SetLastEffectTime (fix xTime) { m_data.xLastEffectTime = xTime; }
-		inline fix EffectDuration (void) { return m_data.xEffectDuration; }
+		inline fix GetFlash (void) { return m_data.xFlash; }
 		inline fix LastEffectTime (void) { return m_data.xLastEffectTime; }
 
 		inline void SetDefault (CPalette* palette) { m_data.deflt = palette; }

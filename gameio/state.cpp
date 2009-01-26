@@ -980,7 +980,7 @@ m_cf.WriteFix (gameData.physics.xAfterburnerCharge);
 m_cf.Write (bLastPrimaryWasSuper, sizeof (bLastPrimaryWasSuper), 1);
 m_cf.Write (bLastSecondaryWasSuper, sizeof (bLastSecondaryWasSuper), 1);
 //	Save flash effect stuff
-m_cf.WriteFix (paletteManager.EffectDuration ());
+m_cf.WriteFix (paletteManager.Flash ());
 m_cf.WriteFix (paletteManager.LastEffectTime ());
 m_cf.WriteShort (paletteManager.RedEffect ());
 m_cf.WriteShort (paletteManager.GreenEffect ());
@@ -1971,7 +1971,7 @@ else {
 //read last was super information
 m_cf.Read (&bLastPrimaryWasSuper, sizeof (bLastPrimaryWasSuper), 1);
 m_cf.Read (&bLastSecondaryWasSuper, sizeof (bLastSecondaryWasSuper), 1);
-paletteManager.SetEffectDuration (m_cf.ReadFix ());
+paletteManager.SetFlash (m_cf.ReadFix ());
 paletteManager.SetLastEffectTime (m_cf.ReadFix ());
 paletteManager.SetRedEffect ((ubyte) m_cf.ReadShort ());
 paletteManager.SetGreenEffect ((ubyte) m_cf.ReadShort ());
@@ -2226,7 +2226,7 @@ if (m_nVersion >= 12) {
 	//read last was super information
 	m_cf.Read (&bLastPrimaryWasSuper, sizeof (bLastPrimaryWasSuper), 1);
 	m_cf.Read (&bLastSecondaryWasSuper, sizeof (bLastSecondaryWasSuper), 1);
-	paletteManager.SetEffectDuration ((fix) m_cf.ReadInt ());
+	paletteManager.SetFlash ((fix) m_cf.ReadInt ());
 	paletteManager.SetLastEffectTime ((fix) m_cf.ReadInt ());
 	paletteManager.SetRedEffect ((ubyte) m_cf.ReadShort ());
 	paletteManager.SetGreenEffect ((ubyte) m_cf.ReadShort ());

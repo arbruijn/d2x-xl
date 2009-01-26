@@ -279,14 +279,14 @@ BumpEffect (float (red) / 64.0f, float (green) / 64.0f, float (blue) / 64.0f);
 
 void CPaletteManager::BumpEffect (float red, float green, float blue)
 {
-	float	maxVal = (paletteManager.EffectDuration () ? 60 : MAX_PALETTE_ADD) / 64.0f;
+	float	maxVal = (paletteManager.Flash () ? 60 : MAX_PALETTE_ADD) / 64.0f;
 
-CLAMP (red, -maxVal, maxVal);
-CLAMP (green, -maxVal, maxVal);
-CLAMP (blue, -maxVal, maxVal);
 m_data.effect.red = red;
 m_data.effect.green = green;
 m_data.effect.blue = blue;
+CLAMP (m_data.effect.red, -maxVal, maxVal);
+CLAMP (m_data.effect.green, -maxVal, maxVal);
+CLAMP (m_data.effect.blue, -maxVal, maxVal);
 }
 
 //------------------------------------------------------------------------------
@@ -323,7 +323,7 @@ void CPaletteManager::ResetEffect (void)
 m_data.effect.red =
 m_data.effect.green =
 m_data.effect.blue= 0;
-m_data.xEffectDuration = 0;
+m_data.xFlash = 0;
 m_data.xLastEffectTime = 0;
 SetEffect (0, 0, 0);
 }
@@ -365,19 +365,19 @@ else {
 	}
 nDecAmount /= 64.0f;
 
-if (m_data.xEffectDuration) {
+if (m_data.xFlash) {
 	//	Part of hack system to force update of palette after exiting a menu.
 	if (m_data.xLastEffectTime)
 		bForce = true;
 
 	if ((m_data.xLastEffectTime + I2X (1)/8 < gameData.time.xGame) || (m_data.xLastEffectTime > gameData.time.xGame)) {
-		audio.PlaySound (SOUND_CLOAK_OFF, SOUNDCLASS_GENERIC, m_data.xEffectDuration / 4);
+		audio.PlaySound (SOUND_CLOAK_OFF, SOUNDCLASS_GENERIC, m_data.xFlash / 4);
 		m_data.xLastEffectTime = gameData.time.xGame;
 		}
 
-	m_data.xEffectDuration -= gameData.time.xFrame;
-	if (m_data.xEffectDuration < 0)
-		m_data.xEffectDuration = 0;
+	m_data.xFlash -= gameData.time.xFrame;
+	if (m_data.xFlash < 0)
+		m_data.xFlash = 0;
 
 	if (bForce || (d_rand () > 4096)) {
       if ((gameData.demo.nState == ND_STATE_RECORDING) && (m_data.effect.red || m_data.effect.green || m_data.effect.blue))
