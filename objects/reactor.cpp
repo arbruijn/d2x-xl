@@ -110,10 +110,6 @@ if (!gameStates.app.bEndLevelSequence)
 
 void DoCountdownFrame (void)
 {
-#if DBG
-return;
-#endif
-
 	fix	oldTime;
 	int	fc, h, xScale;
 

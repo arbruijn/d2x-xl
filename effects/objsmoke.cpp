@@ -646,36 +646,39 @@ if (objP->rType.particleInfo.nSide <= 0) {	//don't vary emitter position for smo
 
 void DoBombSmoke (CObject *objP)
 {
-	int			nParts, i;
+	int			nParts, nObject, nSmoke;
 	CFixVector	pos, offs;
 
 if (gameStates.app.bNostalgia || !gameStates.app.bHaveExtraGameInfo [IsMultiGame])
 	return;
-i = objP->Index ();
+nObject = objP->Index ();
 if ((objP->info.xShields < 0) || (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 	nParts = 0;
 else
 	nParts = -BOMB_MAX_PARTS;
 if (nParts) {
-	if (particleManager.GetObjectSystem (i) < 0) {
-		particleManager.SetObjectSystem (i, particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts,
-												  -PARTICLE_SIZE (3, 0.5f), -1, 3, BOMB_PART_LIFE, BOMB_PART_SPEED, SMOKE_PARTICLES, i, NULL, 1, -1));
+	if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
+		nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts,
+												   -PARTICLE_SIZE (3, 0.5f), -1, 3, BOMB_PART_LIFE, BOMB_PART_SPEED, SMOKE_PARTICLES, nObject, NULL, 1, -1);
+		if (nSmoke < 0)
+			return;
+		particleManager.SetObjectSystem (nObject, nSmoke);
 		}
 	offs [X] = (I2X (1) / 4 - d_rand ()) * ((d_rand () & 15) + 16);
 	offs [Y] = (I2X (1) / 4 - d_rand ()) * ((d_rand () & 15) + 16);
 	offs [Z] = (I2X (1) / 4 - d_rand ()) * ((d_rand () & 15) + 16);
 	pos = objP->info.position.vPos + offs;
-	particleManager.SetPos (particleManager.GetObjectSystem (i), &pos, NULL, objP->info.nSegment);
+	particleManager.SetPos (nSmoke, &pos, NULL, objP->info.nSegment);
 	}
 else
-	KillObjectSmoke (i);
+	KillObjectSmoke (nObject);
 }
 
 //------------------------------------------------------------------------------
 
 void DoParticleTrail (CObject *objP)
 {
-	int			nParts, nObject, id = objP->info.nId, bGatling = (id == VULCAN_ID) || (id == GAUSS_ID);
+	int			nParts, nObject, nSmoke, id = objP->info.nId, bGatling = (id == VULCAN_ID) || (id == GAUSS_ID);
 	float			nScale;
 	CFixVector	pos;
 	tRgbaColorf	c;
@@ -703,7 +706,7 @@ else {
 	c.blue = (float) gameData.weapons.color [objP->info.nId].blue;
 	c.alpha = 0.5f;
 	}
-if (particleManager.GetObjectSystem (nObject) < 0) {
+if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 	if (bGatling)
 		nScale = 5.0f;
 	else {
@@ -727,13 +730,16 @@ if (particleManager.GetObjectSystem (nObject) < 0) {
 			nScale = 1;
 		c.alpha = 0.1f + nScale / 10;
 		}
-	particleManager.SetObjectSystem (nObject, particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts << bGatling, -PARTICLE_SIZE (1, nScale),
+	nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts << bGatling, -PARTICLE_SIZE (1, nScale),
 											   gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [3],
 											   1, ((gameOpts->render.particles.nLife [3] + 1) * LASER_PART_LIFE) << bGatling, LASER_PART_SPEED, 
-											   bGatling ? GATLING_PARTICLES : LIGHT_PARTICLES, nObject, &c, 0, -1));
+											   bGatling ? GATLING_PARTICLES : LIGHT_PARTICLES, nObject, &c, 0, -1);
+	if (nSmoke < 0)
+		return;
+	particleManager.SetObjectSystem (nObject, nSmoke);
 	}
 pos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (-objP->info.xSize / 2);
-particleManager.SetPos (particleManager.GetObjectSystem (nObject), &pos, NULL, objP->info.nSegment);
+particleManager.SetPos (nSmoke, &pos, NULL, objP->info.nSegment);
 }
 
 //------------------------------------------------------------------------------
