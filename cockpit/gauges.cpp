@@ -708,11 +708,11 @@ if (HIDE_HUD)
 if (IsMultiGame && !IsCoopGame)
 	return;
 if (LOCALPLAYER.flags & PLAYER_FLAGS_BLUE_KEY)
-	HUDBitBlt (KEY_ICON_BLUE, 2, y, NULL, false, false);
+	HUDBitBlt (KEY_ICON_BLUE, 2, y, false, false);
 if (LOCALPLAYER.flags & PLAYER_FLAGS_GOLD_KEY) 
-	HUDBitBlt (KEY_ICON_YELLOW, 2 + dx, y, NULL, false, false);
+	HUDBitBlt (KEY_ICON_YELLOW, 2 + dx, y, false, false);
 if (LOCALPLAYER.flags & PLAYER_FLAGS_RED_KEY)
-	HUDBitBlt (KEY_ICON_RED, 2 + (2 * dx), y, NULL, false, false);
+	HUDBitBlt (KEY_ICON_RED, 2 + (2 * dx), y, false, false);
 }
 
 //	-----------------------------------------------------------------------------
