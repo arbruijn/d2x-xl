@@ -1305,6 +1305,10 @@ void DoExplodingWallFrame (void)
 {
 for (uint i = 0; i < gameData.walls.exploding.ToS (); ) {
 	short nSegment = gameData.walls.exploding [i].nSegment;
+	if (nSegment < 0) {
+		gameData.walls.exploding.Delete (i);
+		continue;
+		}
 	short nSide = gameData.walls.exploding [i].nSide;
 	fix oldfrac, newfrac;
 	int oldCount, newCount, e;		//n,
