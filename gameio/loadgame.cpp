@@ -444,8 +444,7 @@ gameData.objs.nSoundPlaying [nPlayer] = 0;
 
 void AddPlayerLoadout (void)
 {
-if (gameStates.app.bHaveExtraGameInfo [IsMultiGame])
- {
+if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 	LOCALPLAYER.primaryWeaponFlags |= extraGameInfo [IsMultiGame].loadout.nGuns;
 	if (gameStates.app.bD1Mission)
 	   LOCALPLAYER.primaryWeaponFlags &= ~(HAS_FLAG (HELIX_INDEX) | HAS_FLAG (GAUSS_INDEX) | HAS_FLAG (PHOENIX_INDEX) | HAS_FLAG (OMEGA_INDEX));

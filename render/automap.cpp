@@ -217,7 +217,7 @@ gameStates.ogl.bUseTransform = bUseTransform;
 void CAutomap::DrawObjects (void)
 {
 int color = IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer;	// Note link to above if!
-CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b));
+CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue));
 if (!gameOpts->render.automap.bTextured || m_bRadar) {
 	DrawPlayer (OBJECTS + LOCALPLAYER.nObject);
 	if (!m_bRadar) {
@@ -237,7 +237,7 @@ if (!gameOpts->render.automap.bTextured || m_bRadar) {
 			if ((i != gameData.multiplayer.nLocalPlayer) && AM_SHOW_PLAYER (i)) {
 				if (OBJECTS [gameData.multiplayer.players [i].nObject].info.nType == OBJ_PLAYER) {
 					color = (gameData.app.nGameMode & GM_TEAM) ? GetTeam (i) : i;
-					CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b));
+					CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue));
 					DrawPlayer (OBJECTS + gameData.multiplayer.players [i].nObject);
 					}
 				}

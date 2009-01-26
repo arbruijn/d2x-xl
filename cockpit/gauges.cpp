@@ -2026,7 +2026,7 @@ else
 
 //	-----------------------------------------------------------------------------
 
-rgb playerColors [] = {
+tRgbColorb playerColors [] = {
  {15, 15, 23},
  {27, 0, 0},
  {0, 23, 0},
@@ -2185,11 +2185,11 @@ for (i = 0; i < n_players; i++) {
 				color = GetTeam (nPlayer);
 			else
 				color = nPlayer;
-			fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b), 1, 0, 0);
+			fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue), 1, 0, 0);
 			}
 		}
 	else
-		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [nPlayer].r, playerColors [nPlayer].g, playerColors [nPlayer].b), 1, 0, 0);
+		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [nPlayer].red, playerColors [nPlayer].green, playerColors [nPlayer].blue), 1, 0, 0);
 	if (gameData.multigame.kills.bShowList == 3) {
 		if (GetTeam (gameData.multiplayer.nLocalPlayer) == i) {
 #if 0//def _DEBUG
@@ -2326,11 +2326,12 @@ return bCheckObjs ? (nHitType == HIT_OBJECT) && (hit_data.hit.nObject == nObject
 //show names of teammates & players carrying flags
 void ShowHUDNames (void)
 {
-	int bHasFlag, bShowName, bShowTeamNames, bShowAllNames, bShowFlags, nObject, nTeam;
-	int p;
-	rgb *colorP;
+	int			bHasFlag, bShowName, bShowTeamNames, bShowAllNames, bShowFlags, nObject, nTeam;
+	int			p;
+	tRgbColorb*	colorP;
+	
 	static int nCurColor = 1, tColorChange = 0;
-	static rgb typingColors [2] = {
+	static tRgbColorb typingColors [2] = {
 	 {63, 0, 0},
 	 {63, 63, 0}
 	};
@@ -2397,12 +2398,12 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 
 					sprintf (s, "%s", gameStates.multi.bPlayerIsTyping [p] ? TXT_TYPING : gameData.multiplayer.players [p].callsign);
 					fontManager.Current ()->StringSize (s, w, h, aw);
-					fontManager.SetColorRGBi (RGBA_PAL2 (colorP->r, colorP->g, colorP->b), 1, 0, 0);
+					fontManager.SetColorRGBi (RGBA_PAL2 (colorP->red, colorP->green, colorP->blue), 1, 0, 0);
 					x1 = x - w / 2;
 					y1 = y - h / 2;
 					//glBlendFunc (GL_ONE, GL_ONE);
 					nIdNames [nCurColor][p] = GrString (x1, y1, s, nIdNames [nCurColor] + p);
-					CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (colorP->r, colorP->g, colorP->b));
+					CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (colorP->red, colorP->green, colorP->blue));
 					glLineWidth ((GLfloat) 2.0f);
 					OglDrawEmptyRect (x1 - 4, y1 - 3, x1 + w + 2, y1 + h + 3);
 					glLineWidth (1);

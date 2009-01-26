@@ -129,9 +129,9 @@ if (!bHaveShipColors) {
 	int	i;
 
 	for (i = 0; i < 8; i++) {
-		shipColors [i].red = 2 * playerColors [i].r / 255.0f;
-		shipColors [i].green = 2 * playerColors [i].g / 255.0f;
-		shipColors [i].blue = 2 * playerColors [i].b / 255.0f;
+		shipColors [i].red = 2 * playerColors [i].red / 255.0f;
+		shipColors [i].green = 2 * playerColors [i].green / 255.0f;
+		shipColors [i].blue = 2 * playerColors [i].blue / 255.0f;
 		}
 	bHaveShipColors = 1;
 	}

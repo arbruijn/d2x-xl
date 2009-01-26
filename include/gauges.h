@@ -60,11 +60,7 @@ void gauge_frame(void);
 void UpdateLaserWeaponInfo(void);
 void PlayHomingWarning(void);
 
-typedef struct {
-	ubyte r,g,b;
-} rgb;
-
-extern rgb playerColors[];
+extern tRgbColorb playerColors [];
 
 #define WBU_WEAPON			0       // the weapons display
 #define WBUMSL					1       // the missile view
