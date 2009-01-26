@@ -3464,7 +3464,7 @@ void NDRenderExtras (ubyte which, CObject *objP)
 
 if (which==255) {
 	Int3 (); // how'd we get here?
-	DoCockpitWindowView (w, NULL, 0, WBU_WEAPON, NULL);
+	HUDRenderWindow (w, NULL, 0, WBU_WEAPON, NULL);
 	return;
 	}
 if (w) {

@@ -400,7 +400,7 @@ tSpan weaponWindowRightHires [] = {		//first tSpan 207, 154
 };
 
 
-tGaugeBox gaugeBoxes [] = {
+tGaugeBox hudWindowAreas [] = {
 // primary left/right low res
  {PRIMARY_W_BOX_LEFT_L, PRIMARY_W_BOX_TOP_L, PRIMARY_W_BOX_RIGHT_L, PRIMARY_W_BOX_BOT_L, weaponWindowLeft},
  {SECONDARY_W_BOX_LEFT_L, SECONDARY_W_BOX_TOP_L, SECONDARY_W_BOX_RIGHT_L, SECONDARY_W_BOX_BOT_L, weaponWindowRight},
@@ -430,10 +430,10 @@ int oldLives [2]			= {-1, -1};
 fix oldAfterburner [2]	= {-1, -1};
 int oldBombcount [2]		= {0, 0};
 
-#define COCKPIT_PRIMARY_BOX		 (!gameStates.video.nDisplayMode?0:4)
-#define COCKPIT_SECONDARY_BOX		 (!gameStates.video.nDisplayMode?1:5)
-#define SB_PRIMARY_BOX				 (!gameStates.video.nDisplayMode?2:6)
-#define SB_SECONDARY_BOX			 (!gameStates.video.nDisplayMode?3:7)
+#define COCKPIT_PRIMARY_BOX		 (!gameStates.video.nDisplayMode ? 0 : 4)
+#define COCKPIT_SECONDARY_BOX		 (!gameStates.video.nDisplayMode ? 1 : 5)
+#define SB_PRIMARY_BOX				 (!gameStates.video.nDisplayMode ? 2 : 6)
+#define SB_SECONDARY_BOX			 (!gameStates.video.nDisplayMode ? 3 : 7)
 
 static double xScale, yScale;
 
@@ -585,7 +585,7 @@ if ((gameData.app.nGameMode & GM_NETWORK) && netGame.xPlayTimeAllowed) {
 //	-----------------------------------------------------------------------------
 //y offset between lines on HUD
 
- void HUDShowScoreAdded ()
+ void HUDShowScoreAdded (void)
 {
 	int	color;
 	int	w, h, aw;
@@ -1764,21 +1764,21 @@ if (nWeaponType == 0) {
 
 	if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
 		DrawWeaponInfoSub (info_index,
-			gaugeBoxes + SB_PRIMARY_BOX,
+			hudWindowAreas + SB_PRIMARY_BOX,
 			SB_PRIMARY_W_PIC_X, SB_PRIMARY_W_PIC_Y,
 			PRIMARY_WEAPON_NAMES_SHORT (nWeaponNum),
 			SB_PRIMARY_W_TEXT_X, SB_PRIMARY_W_TEXT_Y, 0);
 #if 0
 	else if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)
 		DrawWeaponInfoSub (info_index,
-			gaugeBoxes + SB_PRIMARY_BOX,
+			hudWindowAreas + SB_PRIMARY_BOX,
 			SB_PRIMARY_W_PIC_X, SB_PRIMARY_W_PIC_Y,
 			PRIMARY_WEAPON_NAMES_SHORT (nWeaponNum),
 			SB_PRIMARY_W_TEXT_X, SB_PRIMARY_W_TEXT_Y, 3);
 #endif
 	else
 		DrawWeaponInfoSub (info_index,
-			gaugeBoxes + COCKPIT_PRIMARY_BOX,
+			hudWindowAreas + COCKPIT_PRIMARY_BOX,
 			PRIMARY_W_PIC_X, PRIMARY_W_PIC_Y,
 			PRIMARY_WEAPON_NAMES_SHORT (nWeaponNum),
 			PRIMARY_W_TEXT_X, PRIMARY_W_TEXT_Y, 0);
@@ -1788,21 +1788,21 @@ else {
 
 	if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
 		DrawWeaponInfoSub (info_index,
-			gaugeBoxes + SB_SECONDARY_BOX,
+			hudWindowAreas + SB_SECONDARY_BOX,
 			SB_SECONDARY_W_PIC_X, SB_SECONDARY_W_PIC_Y,
 			SECONDARY_WEAPON_NAMES_SHORT (nWeaponNum),
 			SB_SECONDARY_W_TEXT_X, SB_SECONDARY_W_TEXT_Y, 0);
 #if 0
 	else if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)
 		DrawWeaponInfoSub (info_index,
-			gaugeBoxes + COCKPIT_SECONDARY_BOX,
+			hudWindowAreas + COCKPIT_SECONDARY_BOX,
 			SECONDARY_W_PIC_X, SECONDARY_W_PIC_Y,
 			SECONDARY_WEAPON_NAMES_SHORT (nWeaponNum),
 			SECONDARY_W_TEXT_X, SECONDARY_W_TEXT_Y, 1);
 #endif
 	else
 		DrawWeaponInfoSub (info_index,
-			gaugeBoxes + COCKPIT_SECONDARY_BOX,
+			hudWindowAreas + COCKPIT_SECONDARY_BOX,
 			SECONDARY_W_PIC_X, SECONDARY_W_PIC_Y,
 			SECONDARY_WEAPON_NAMES_SHORT (nWeaponNum),
 			SECONDARY_W_TEXT_X, SECONDARY_W_TEXT_Y, 0);
@@ -1904,10 +1904,10 @@ if (weaponBoxStates [nWeaponType] != WS_SET) {		//fade gauge
 	int fadeValue = X2I (weaponBoxFadeValues [nWeaponType]);
 	int boxofs = (gameStates.render.cockpit.nMode == CM_STATUS_BAR) ? SB_PRIMARY_BOX : COCKPIT_PRIMARY_BOX;
 	gameStates.render.grAlpha = (float) fadeValue;
-	OglDrawFilledRect (gaugeBoxes [boxofs + nWeaponType].left,
-			  gaugeBoxes [boxofs + nWeaponType].top,
-			  gaugeBoxes [boxofs + nWeaponType].right,
-			  gaugeBoxes [boxofs + nWeaponType].bot);
+	OglDrawFilledRect (hudWindowAreas [boxofs + nWeaponType].left,
+			  hudWindowAreas [boxofs + nWeaponType].top,
+			  hudWindowAreas [boxofs + nWeaponType].right,
+			  hudWindowAreas [boxofs + nWeaponType].bot);
 	gameStates.render.grAlpha = FADE_LEVELS;
 	}
 CCanvas::SetCurrent (GetCurrentGameScreen ());
@@ -1936,11 +1936,11 @@ LoadBitmap (vc->frames [framenum].index, 0);
 bmp = gameData.pig.tex.bitmaps [0] + vc->frames [framenum].index;
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.render [0]);
 h = boxofs + win;
-for (x = gaugeBoxes [h].left; x < gaugeBoxes [h].right; x += bmp->Width ())
-	for (y = gaugeBoxes [h].top; y < gaugeBoxes [h].bot; y += bmp->Height ())
+for (x = hudWindowAreas [h].left; x < hudWindowAreas [h].right; x += bmp->Width ())
+	for (y = hudWindowAreas [h].top; y < hudWindowAreas [h].bot; y += bmp->Height ())
 		HUDBitBlt (-1, x, y, true, true, I2X (1), 0, bmp);
 CCanvas::SetCurrent (GetCurrentGameScreen ());
-CopyGaugeBox (&gaugeBoxes [h], &gameStates.render.vr.buffers.render [0]);
+CopyGaugeBox (&hudWindowAreas [h], &gameStates.render.vr.buffers.render [0]);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1953,7 +1953,7 @@ void DrawWeaponBoxes (void)
 if (weaponBoxUser [0] == WBU_WEAPON) {
 	bDrawn = DrawWeaponBox (0, gameData.weapons.nPrimary);
 	if (bDrawn)
-		CopyGaugeBox (gaugeBoxes+boxofs, &gameStates.render.vr.buffers.render [0]);
+		CopyGaugeBox (hudWindowAreas+boxofs, &gameStates.render.vr.buffers.render [0]);
 
 	if (weaponBoxStates [0] == WS_SET) {
 		if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {
@@ -1980,7 +1980,7 @@ else if (weaponBoxUser [0] == WBU_STATIC)
 if (weaponBoxUser [1] == WBU_WEAPON) {
 	bDrawn = DrawWeaponBox (1, gameData.weapons.nSecondary);
 	if (bDrawn)
-		CopyGaugeBox (&gaugeBoxes [boxofs+1], &gameStates.render.vr.buffers.render [0]);
+		CopyGaugeBox (&hudWindowAreas [boxofs+1], &gameStates.render.vr.buffers.render [0]);
 
 	if (weaponBoxStates [1] == WS_SET)
 		if (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != oldAmmoCount [1][gameStates.render.vr.nCurrentPage]) {
@@ -2653,22 +2653,23 @@ int SW_drawn [2], SW_x [2], SW_y [2], SW_w [2], SW_h [2];
 
 int cockpitWindowScale [4] = {6, 5, 4, 3};
 
-void DoCockpitWindowView (int nWindow, CObject *viewerP, int bRearView, int nUser, const char *pszLabel)
+void HUDRenderWindow (int nWindow, CObject *viewerP, int bRearView, int nUser, const char *pszLabel)
 {
 	CCanvas windowCanv;
 	static CCanvas overlapCanv;
 
 	CObject *viewerSave = gameData.objs.viewerP;
-	static int bOverlapDirty [2]={0, 0};
-	int nBox;
-	static int window_x, window_y;
-	tGaugeBox *boxP;
+	int nArea;
+	tGaugeBox*	hudAreaP;
 	int bRearViewSave = gameStates.render.bRearView;
 	int w, h, dx, nZoomSave;
 
+	static int bOverlapDirty [2] = {0, 0};
+	static int yWindow, xWindow;
+
 if (HIDE_HUD)
 	return;
-boxP = NULL;
+hudAreaP = NULL;
 if (!viewerP) {								//this nUser is done
 	Assert (nUser == WBU_WEAPON || nUser == WBU_STATIC);
 	if ((nUser == WBU_STATIC) && (weaponBoxUser [nWindow] != WBU_STATIC))
@@ -2691,70 +2692,70 @@ gameStates.render.bRearView = bRearView;
 if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
 	w = (int) (gameStates.render.vr.buffers.render [0].Width () / cockpitWindowScale [gameOpts->render.cockpit.nWindowSize] * HUD_ASPECT);			// hmm.  I could probably do the sub_buffer assigment for all macines, but I aint gonna chance it
 	h = I2X (w) / screen.Aspect ();
-	dx = (nWindow==0)?- (w+ (w/10)): (w/10);
+	dx = (nWindow == 0) ? -w - w / 10 : w / 10;
 	switch (gameOpts->render.cockpit.nWindowPos) {
 		case 0:
-			window_x = nWindow ?
+			yWindow = nWindow ?
 				gameStates.render.vr.buffers.render [0].Width () - w - h / 10 :
 				h / 10;
-			window_y = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
+			xWindow = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
 			break;
 		case 1:
-			window_x = nWindow ?
+			yWindow = nWindow ?
 				gameStates.render.vr.buffers.render [0].Width () / 3 * 2 - w / 3 :
 				gameStates.render.vr.buffers.render [0].Width () / 3 - 2 * w / 3;
-			window_y = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
+			xWindow = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
 			break;
 		case 2:	// only makes sense if there's only one cockpit window
-			window_x = gameStates.render.vr.buffers.render [0].Width () / 2 - w / 2;
-			window_y = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
+			yWindow = gameStates.render.vr.buffers.render [0].Width () / 2 - w / 2;
+			xWindow = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
 			break;
 		case 3:
-			window_x = nWindow ?
+			yWindow = nWindow ?
 				gameStates.render.vr.buffers.render [0].Width () - w - h / 10 :
 				h / 10;
-			window_y = h / 10;
+			xWindow = h / 10;
 			break;
 		case 4:
-			window_x = nWindow ?
+			yWindow = nWindow ?
 				gameStates.render.vr.buffers.render [0].Width () / 3 * 2 - w / 3 :
 				gameStates.render.vr.buffers.render [0].Width () / 3 - 2 * w / 3;
-			window_y = h / 10;
+			xWindow = h / 10;
 			break;
 		case 5:	// only makes sense if there's only one cockpit window
-			window_x = gameStates.render.vr.buffers.render [0].Width () / 2 - w / 2;
-			window_y = h / 10;
+			yWindow = gameStates.render.vr.buffers.render [0].Width () / 2 - w / 2;
+			xWindow = h / 10;
 			break;
 		}
 	if ((gameOpts->render.cockpit.nWindowPos < 3) &&
 			extraGameInfo [0].nWeaponIcons &&
 			(extraGameInfo [0].nWeaponIcons - gameOpts->render.weaponIcons.bEquipment < 3))
-			window_y -= (int) ((gameOpts->render.weaponIcons.bSmall ? 20.0 : 30.0) * (double) CCanvas::Current ()->Height () / 480.0);
+			xWindow -= (int) ((gameOpts->render.weaponIcons.bSmall ? 20.0 : 30.0) * (double) CCanvas::Current ()->Height () / 480.0);
 
 
 	//copy these vars so stereo code can get at them
 	SW_drawn [nWindow] = 1;
-	SW_x [nWindow] = window_x;
-	SW_y [nWindow] = window_y;
+	SW_x [nWindow] = yWindow;
+	SW_y [nWindow] = xWindow;
 	SW_w [nWindow] = w;
 	SW_h [nWindow] = h;
 
-	gameStates.render.vr.buffers.render [0].SetupPane (&windowCanv, window_x, window_y, w, h);
+	gameStates.render.vr.buffers.render [0].SetupPane (&windowCanv, yWindow, xWindow, w, h);
 	}
 else {
 	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT)
-		nBox = (COCKPIT_PRIMARY_BOX) + nWindow;
+		nArea = COCKPIT_PRIMARY_BOX + nWindow;
 	else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
-		nBox = (SB_PRIMARY_BOX) + nWindow;
+		nArea = SB_PRIMARY_BOX + nWindow;
 	else
 		goto abort;
-	boxP = gaugeBoxes + nBox;
+	hudAreaP = hudWindowAreas + nArea;
 	gameStates.render.vr.buffers.render->SetupPane (
 		&windowCanv,
-		HUD_SCALE_X (boxP->left),
-		HUD_SCALE_Y (boxP->top),
-		HUD_SCALE_X (boxP->right - boxP->left+1),
-		HUD_SCALE_Y (boxP->bot - boxP->top+1));
+		HUD_SCALE_X (hudAreaP->left),
+		HUD_SCALE_Y (hudAreaP->top),
+		HUD_SCALE_X (hudAreaP->right - hudAreaP->left+1),
+		HUD_SCALE_Y (hudAreaP->bot - hudAreaP->top+1));
 	}
 
 CCanvas::Push ();
@@ -2794,32 +2795,32 @@ if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
 	//if the window only partially overlaps the big 3d window, copy
 	//the extra part to the visible screen
 	bigWindowBottom = gameData.render.window.y + gameData.render.window.h - 1;
-	if (window_y > bigWindowBottom) {
+	if (xWindow > bigWindowBottom) {
 		//the small window is completely outside the big 3d window, so
 		//copy it to the visible screen
 		if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING)
 			CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [!gameStates.render.vr.nCurrentPage]);
 		else
 			CCanvas::SetCurrent (GetCurrentGameScreen ());
-		windowCanv.BlitClipped (window_x, window_y);
+		windowCanv.BlitClipped (yWindow, xWindow);
 		bOverlapDirty [nWindow] = 1;
 		}
 	else {
-		smallWindowBottom = window_y + windowCanv.Height () - 1;
+		smallWindowBottom = xWindow + windowCanv.Height () - 1;
 		if (0 < (extraPartHeight = smallWindowBottom - bigWindowBottom)) {
 			windowCanv.SetupPane (&overlapCanv, 0, windowCanv.Height ()-extraPartHeight, windowCanv.Width (), extraPartHeight);
 			if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING)
 				CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [!gameStates.render.vr.nCurrentPage]);
 			else
 				CCanvas::SetCurrent (GetCurrentGameScreen ());
-				overlapCanv.BlitClipped (window_x, bigWindowBottom+1);
+				overlapCanv.BlitClipped (yWindow, bigWindowBottom+1);
 			bOverlapDirty [nWindow] = 1;
 			}
 		}
 	}
 else {
 	CCanvas::SetCurrent (GetCurrentGameScreen ());
-	CopyGaugeBox (boxP, &gameStates.render.vr.buffers.render [0]);
+	CopyGaugeBox (hudAreaP, &gameStates.render.vr.buffers.render [0]);
 	}
 //force redraw when done
 oldWeapon [nWindow][gameStates.render.vr.nCurrentPage] = oldAmmoCount [nWindow][gameStates.render.vr.nCurrentPage] = -1;
