@@ -279,7 +279,7 @@ BumpEffect (float (red) / 64.0f, float (green) / 64.0f, float (blue) / 64.0f);
 
 void CPaletteManager::BumpEffect (float red, float green, float blue)
 {
-	float	maxVal = (paletteManager.Flash () ? 60 : MAX_PALETTE_ADD) / 64.0f;
+	float	maxVal = (paletteManager.GetFlash () ? 60 : MAX_PALETTE_ADD) / 64.0f;
 
 m_data.effect.red = red;
 m_data.effect.green = green;
