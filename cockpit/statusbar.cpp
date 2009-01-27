@@ -98,6 +98,8 @@ void CStatusBar::DrawScore (void)
 	static int lastX [4] = {SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_H, SB_SCORE_RIGHT_H};
 	static int nIdLabel = 0, nIdScore = 0;
 
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
 bRedrawScore = -99 ? (IsMultiGame && !IsCoopGame) : -1;
 if (m_history [gameStates.render.vr.nCurrentPage].score == bRedrawScore) {
 	fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
@@ -113,6 +115,7 @@ Rect (lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCur
 fontManager.SetColorRGBi ((IsMultiGame && !IsCoopGame) ? MEDGREEN_RGBA : GREEN_RGBA, 1, 0, 0);
 nIdScore = PrintF (&nIdScore, x, y, szScore);
 lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage] = x;
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -215,24 +218,25 @@ if (m_history [gameStates.render.vr.nCurrentPage].lives == -1) {
 						PrintF (&nIdLives [0], SB_LIVES_LABEL_X, SB_LIVES_LABEL_Y, "%s:", TXT_DEATHS) : 
 						PrintF (&nIdLives [0], SB_LIVES_LABEL_X, SB_LIVES_LABEL_Y, "%s:", TXT_LIVES);
 	}
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
 if (IsMultiGame) {
 	char szKilled [20];
 	int w, h, aw;
 	static int lastX [4] = {SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_H, SB_SCORE_RIGHT_H};
 	int x;
 
-		sprintf (szKilled, "%5d", LOCALPLAYER.netKilledTotal);
-		fontManager.Current ()->StringSize (szKilled, w, h, aw);
-		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
-		Rect (lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCurrentPage], 
-				y + 1, SB_SCORE_RIGHT, y + GAME_FONT->Height ());
-		fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
-		x = SB_SCORE_RIGHT - w - 2;	
-		nIdKilled = PrintF (&nIdKilled, x, y + 1, szKilled);
-		lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage] = x;
-		return;
+	sprintf (szKilled, "%5d", LOCALPLAYER.netKilledTotal);
+	fontManager.Current ()->StringSize (szKilled, w, h, aw);
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
+	Rect (lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCurrentPage], 
+			y + 1, SB_SCORE_RIGHT, y + GAME_FONT->Height ());
+	fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
+	x = SB_SCORE_RIGHT - w - 2;	
+	nIdKilled = PrintF (&nIdKilled, x, y + 1, szKilled);
+	lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage] = x;
 	}
-if ((m_history [gameStates.render.vr.nCurrentPage].lives == -1) || 
+else if ((m_history [gameStates.render.vr.nCurrentPage].lives == -1) || 
 	 (LOCALPLAYER.lives != m_history [gameStates.render.vr.nCurrentPage].lives)) {
 //erase old icons
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
@@ -244,6 +248,7 @@ if ((m_history [gameStates.render.vr.nCurrentPage].lives == -1) ||
 		nIdLives [1] = PrintF (&nIdLives [1], x + bmP->Width () + GAME_FONT->Width (), y, "x %d", LOCALPLAYER.lives - 1);
 		}
 	}
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
