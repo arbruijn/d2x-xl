@@ -1200,6 +1200,11 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 
 void CGenericCockpit::DrawKillList (int x, int y)
 {
+if (Hide ())
+	return;
+if (!(IsMultiGame && gameData.multigame.kills.bShowList))
+	return;
+
 	int nPlayers, playerList [MAX_NUM_NET_PLAYERS];
 	int nLeft, i, xo = 0, x0, x1, y0, fth, l;
 	int t = gameStates.app.nSDLTicks;
@@ -1207,9 +1212,6 @@ void CGenericCockpit::DrawKillList (int x, int y)
 	static int faw = -1;
 
 	static int nIdKillList [2][MAX_PLAYERS] = {{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
-
-if (Hide ())
-	return;
 
 if (bGetPing)
 	networkData.tLastPingStat = t;

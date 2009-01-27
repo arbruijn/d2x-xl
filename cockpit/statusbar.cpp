@@ -250,43 +250,42 @@ if ((m_history [gameStates.render.vr.nCurrentPage].lives == -1) ||
 
 void CStatusBar::DrawEnergy (void)
 {
+	static int nIdEnergy = 0;
+
 	int w, h, aw;
 	char szEnergy [20];
-
-	static int nIdEnergyBar = 0;
 
 sprintf (szEnergy, "%d", m_info.nEnergy);
 fontManager.Current ()->StringSize (szEnergy, w, h, aw);
 fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
-nIdEnergyBar = PrintF (&nIdEnergyBar, 
-								  SB_ENERGY_GAUGE_X + ((SB_ENERGY_GAUGE_W - w)/2), 
-								  SB_ENERGY_GAUGE_Y + SB_ENERGY_GAUGE_H - GAME_FONT->Height () - (GAME_FONT->Height () / 4), 
-							     "%d", m_info.nEnergy);
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
+nIdEnergy = PrintF (&nIdEnergy, 
+						  -(ScaleX (SB_ENERGY_GAUGE_X) + (ScaleX (w) - w) / 2), 
+						  -(ScaleY (SB_ENERGY_GAUGE_Y) - m_info.nLineSpacing + (ScaleY (h) - h) / 2), 
+						  "%d", m_info.nEnergy);
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
 
 void CStatusBar::DrawEnergyBar (void)
 {
-	int nEraseHeight;
-
-	static int nIdEnergyBar = 0;
-
-	if (gameStates.app.bD1Mission)
-		StretchBlt (SB_GAUGE_ENERGY, SB_ENERGY_GAUGE_X, SB_ENERGY_GAUGE_Y, 1.0, 
-						double (SB_ENERGY_GAUGE_H) / double (SB_ENERGY_GAUGE_H - SB_AFTERBURNER_GAUGE_H));
-	else
-		BitBlt (SB_GAUGE_ENERGY, SB_ENERGY_GAUGE_X, SB_ENERGY_GAUGE_Y);
-	nEraseHeight = (100 - m_info.nEnergy) * SB_ENERGY_GAUGE_H / 100;
-	if (nEraseHeight > 0) {
-		CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
-		glDisable (GL_BLEND);
-		Rect (
-			SB_ENERGY_GAUGE_X, 
-			SB_ENERGY_GAUGE_Y, 
-			SB_ENERGY_GAUGE_X + SB_ENERGY_GAUGE_W, 
-			SB_ENERGY_GAUGE_Y + nEraseHeight);
-		glEnable (GL_BLEND);
+if (gameStates.app.bD1Mission)
+	StretchBlt (SB_GAUGE_ENERGY, SB_ENERGY_GAUGE_X, SB_ENERGY_GAUGE_Y, 1.0, 
+					double (SB_ENERGY_GAUGE_H) / double (SB_ENERGY_GAUGE_H - SB_AFTERBURNER_GAUGE_H));
+else
+	BitBlt (SB_GAUGE_ENERGY, SB_ENERGY_GAUGE_X, SB_ENERGY_GAUGE_Y);
+int nEraseHeight = (100 - m_info.nEnergy) * SB_ENERGY_GAUGE_H / 100;
+if (nEraseHeight > 0) {
+	CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
+	glDisable (GL_BLEND);
+	Rect (
+		SB_ENERGY_GAUGE_X, 
+		SB_ENERGY_GAUGE_Y, 
+		SB_ENERGY_GAUGE_X + SB_ENERGY_GAUGE_W, 
+		SB_ENERGY_GAUGE_Y + nEraseHeight);
+	glEnable (GL_BLEND);
 	}
 }
 
@@ -308,10 +307,13 @@ else
 
 int w, h, aw;
 fontManager.Current ()->StringSize (szAB, w, h, aw);
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
 nIdAfterBurner = PrintF (&nIdAfterBurner, 
 								 SB_AFTERBURNER_GAUGE_X + ((SB_AFTERBURNER_GAUGE_W - w) / 2), 
 								 SB_AFTERBURNER_GAUGE_Y + SB_AFTERBURNER_GAUGE_H - (5 * m_info.fontHeight / 4), 
 								 "AB");
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -345,20 +347,28 @@ if (nEraseHeight > 0) {
 
 void CStatusBar::DrawShield (void)
 {
-	static int nIdShieldNum = 0;
+	static int nIdShield = 0;
 
+	int w, h, aw;
+	char szShield [20];
+
+sprintf (szShield, "%d", m_info.nShields);
+fontManager.Current ()->StringSize (szShield, w, h, aw);
 //draw numbers
 fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
 //erase old one
 LoadBitmap (gameData.pig.tex.cockpitBmIndex [gameStates.render.cockpit.nType + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0)].index, 0);
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
+
 Rect (SB_SHIELD_NUM_X, SB_SHIELD_NUM_Y, SB_SHIELD_NUM_X + (gameStates.video.nDisplayMode ? 27 : 13), SB_SHIELD_NUM_Y + m_info.fontHeight);
-int x = SB_SHIELD_NUM_X;
-if (m_info.nShields < 100)
-	if (m_info.nShields < 10)
-		x += 4;
-	else
-		x += 2;
-nIdShieldNum = PrintF (&nIdShieldNum, x, SB_SHIELD_NUM_Y, "%d", m_info.nShields);
+sprintf (szShield, "%d", m_info.nShields);
+fontManager.Current ()->StringSize (szShield, w, h, aw);
+nIdShield = PrintF (&nIdShield, 
+						  -(ScaleX (SB_SHIELD_NUM_X) + (ScaleX (w) - w) / 2), 
+						  -(ScaleY (SB_SHIELD_NUM_Y) - m_info.nLineSpacing + (ScaleY (h) - h) / 2), 
+						  "%d", m_info.nShields);
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
