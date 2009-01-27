@@ -705,6 +705,10 @@ int CPlayerProfile::Set (const char *pszIdent, const char *pszValue)
 {
 	CParam*	pp;
 
+#if DBG
+if (!strcmp (pszIdent, "gameStates.video.nDefaultDisplayMode"))
+	pszIdent = pszIdent;
+#endif
 if (!(pp = Find (pszIdent)))
 	return 0;
 pp->Set (pszIdent, pszValue);

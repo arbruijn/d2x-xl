@@ -244,8 +244,8 @@ gameStates.render.vr.bEyeOffsetChanged = 2;
 void GameInitRenderSubBuffers (int x, int y, int w, int h)
 {
 if (!bScanlineDouble) {
-	gameStates.render.vr.buffers.render[0].SetupPane (&gameStates.render.vr.buffers.subRender[0], x, y, w, h);
-	gameStates.render.vr.buffers.render[1].SetupPane (&gameStates.render.vr.buffers.subRender[1], x, y, w, h);
+	gameStates.render.vr.buffers.render [0].SetupPane (&gameStates.render.vr.buffers.subRender[0], x, y, w, h);
+	gameStates.render.vr.buffers.render [1].SetupPane (&gameStates.render.vr.buffers.subRender[1], x, y, w, h);
 	}
 }
 

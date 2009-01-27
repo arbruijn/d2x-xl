@@ -1514,6 +1514,7 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK))
 
 DrawCockpit (false);
 
+CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
 if (bExtraInfo) {
 #if DBG
 	DrawWindowLabel ();
@@ -1571,6 +1572,7 @@ if (m_info.nType != CM_REAR_VIEW) {
 	}
 DemoRecording ();
 m_history [gameStates.render.vr.nCurrentPage].bCloak = m_info.bCloak;
+CCanvas::SetCurrent (CurrentGameScreen ());
 }
 
 //	-----------------------------------------------------------------------------
@@ -1768,6 +1770,7 @@ else if (nType == CM_REAR_VIEW)
 else
 	return;
 m_info.nType = nType;
+m_info.nCockpit = (gameStates.video.nDisplayMode && !gameStates.app.bDemoData) ? gameData.models.nCockpits / 2 : 0;
 gameStates.render.cockpit.nNextType = -1;
 Setup ();
 HUDClearMessages ();

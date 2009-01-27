@@ -489,8 +489,8 @@ CGenericCockpit::DrawKillList (60, CCanvas::Current ()->Height ());
 void CStatusBar::DrawCockpit (bool bAlphaTest)
 {
 CGenericCockpit::DrawCockpit (m_info.nType + m_info.nCockpit, gameData.render.window.hMax, bAlphaTest);
-gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
-gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h)/2;
+gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w) / 2;
+gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h) / 2;
 //FillBackground ();
 }
 
