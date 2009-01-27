@@ -109,13 +109,6 @@ int gameData.time.xStops,gameData.time.xStarts;
 int gameData.time.xStopped,gameData.time.xStarted;
 #endif
 
-#ifndef MACINTOSH
-ubyte * bGameCockpitCopyCode = NULL;
-#else
-ubyte bGameCockpitCopyCode = 0;
-ubyte bScanlineDouble = 1;
-#endif
-
 //do menus work in 640x480 or 320x200?
 //PC version sets this in main ().  Mac versios is always high-res, so set to 1 here
 int Debug_pause=0;				//John's debugging pause system
@@ -240,8 +233,8 @@ extern void NDRecordCockpitChange (int);
 //selects a given cockpit (or lack of one).  See types in game.h
 void SelectCockpit (int nMode)
 {
-if (nMode != gameStates.render.cockpit.nMode) {		//new nMode
-	gameStates.render.cockpit.nMode = nMode;
+if (nMode != cockpit->Mode ()) {		//new nMode
+	cockpit->Mode () = nMode;
 	InitCockpit ();
 	}
 }
@@ -815,7 +808,7 @@ void CheckRearView ()
 		Controls [0].rearViewDownCount = 0;
 		if (gameStates.render.bRearView) {
 			gameStates.render.bRearView = 0;
-			if (gameStates.render.cockpit.nMode == CM_REAR_VIEW) {
+			if (cockpit->Mode () == CM_REAR_VIEW) {
 				SelectCockpit (gameStates.render.cockpit.nModeSave);
 				gameStates.render.cockpit.nModeSave = -1;
 			}
@@ -826,8 +819,8 @@ void CheckRearView ()
 			gameStates.render.bRearView = 1;
 			leave_mode = 0;		//means wait for another key
 			entryTime = TimerGetFixedSeconds ();
-			if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
-				gameStates.render.cockpit.nModeSave = gameStates.render.cockpit.nMode;
+			if (cockpit->Mode () == CM_FULL_COCKPIT) {
+				gameStates.render.cockpit.nModeSave = cockpit->Mode ();
 				SelectCockpit (CM_REAR_VIEW);
 			}
 			if (gameData.demo.nState == ND_STATE_RECORDING)
@@ -842,11 +835,11 @@ void CheckRearView ()
 		}
 		else {
 
-			//@@if (leave_mode==1 && gameStates.render.cockpit.nMode==CM_REAR_VIEW) {
+			//@@if (leave_mode==1 && cockpit->Mode ()==CM_REAR_VIEW) {
 
 			if (leave_mode==1 && gameStates.render.bRearView) {
 				gameStates.render.bRearView = 0;
-				if (gameStates.render.cockpit.nMode==CM_REAR_VIEW) {
+				if (cockpit->Mode ()==CM_REAR_VIEW) {
 					SelectCockpit (gameStates.render.cockpit.nModeSave);
 					gameStates.render.cockpit.nModeSave = -1;
 				}
@@ -865,7 +858,7 @@ if (gameStates.render.bRearView) {
 		NDRecordRestoreRearView ();
 	}
 gameStates.render.bRearView = 0;
-if ((gameStates.render.cockpit.nMode < 0) || (gameStates.render.cockpit.nMode > 4)) {
+if ((cockpit->Mode () < 0) || (cockpit->Mode () > 4)) {
 	if (!(gameStates.render.cockpit.nModeSave == CM_FULL_COCKPIT || gameStates.render.cockpit.nModeSave == CM_STATUS_BAR || gameStates.render.cockpit.nModeSave == CM_FULL_SCREEN))
 		gameStates.render.cockpit.nModeSave = CM_FULL_COCKPIT;
 	SelectCockpit (gameStates.render.cockpit.nModeSave);
@@ -1099,7 +1092,7 @@ MultiLeaveGame ();
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	NDStopPlayback ();
 if (gameStates.render.cockpit.nModeSave != -1) {
-	gameStates.render.cockpit.nMode = gameStates.render.cockpit.nModeSave;
+	cockpit->Mode () = gameStates.render.cockpit.nModeSave;
 	gameStates.render.cockpit.nModeSave = -1;
 	}
 if (gameStates.app.nFunctionMode != FMODE_EDITOR)
@@ -1187,10 +1180,6 @@ PrintLog ("unloading gauge data\n");
 CloseGaugeCanvases ();
 PrintLog ("restoring effect bitmaps\n");
 RestoreEffectBitmapIcons ();
-if (bGameCockpitCopyCode) {
-	delete[] bGameCockpitCopyCode;
-	bGameCockpitCopyCode = NULL;
-}
 if (bmBackground.Buffer ()) {
 	PrintLog ("unloading background bitmap\n");
 	bmBackground.DestroyBuffer ();
@@ -1224,7 +1213,7 @@ uint nDebugSlowdown = 0;
 #endif
 
 //returns ptr to escort robot, or NULL
-CObject *find_escort ()
+CObject *FindEscort ()
 {
 //	int 		i;
 	CObject	*objP = OBJECTS.Buffer ();

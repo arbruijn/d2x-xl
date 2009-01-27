@@ -596,7 +596,7 @@ CFixVector *TransformGunPoint (CObject *objP, CFixVector *vGunPoints, int nGun,
 	CFixMatrix	m, *viewP;
 	CFixVector	v [2];
 #if FULL_COCKPIT_OFFS
-	int			bLaserOffs = ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) &&
+	int			bLaserOffs = ((cockpit->Mode () == CM_FULL_COCKPIT) &&
 									  (objP->Index () == LOCALPLAYER.nObject));
 #else
 	int			bLaserOffs = 0;
@@ -652,7 +652,7 @@ int LaserPlayerFireSpreadDelay (
 	int			nObject;
 	CObject		*laserP;
 #if FULL_COCKPIT_OFFS
-	int bLaserOffs = ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) &&
+	int bLaserOffs = ((cockpit->Mode () == CM_FULL_COCKPIT) &&
 							(objP->Index () == LOCALPLAYER.nObject));
 #else
 	int bLaserOffs = 0;

@@ -243,7 +243,7 @@ while (gameData.app.bGamePaused) {
 			ShowBoxedMessage(msg);
 #if 0		
 			show_extraViews();
-			if (gameStates.render.cockpit.nMode==CM_FULL_COCKPIT || gameStates.render.cockpit.nMode==CM_STATUS_BAR)
+			if (cockpit->Mode ()==CM_FULL_COCKPIT || cockpit->Mode ()==CM_STATUS_BAR)
 				RenderGauges();
 #endif			
 			}
@@ -277,7 +277,7 @@ int SelectNextWindowFunction(int nWindow)
 				break;
 				}
 		case CV_RADAR_HEADSUP:
-			if (find_escort()) {
+			if (FindEscort()) {
 				gameStates.render.cockpit.n3DView [nWindow] = CV_ESCORT;
 				break;
 			}

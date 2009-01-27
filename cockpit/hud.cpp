@@ -64,7 +64,19 @@ int oldBombcount [2]		= {0, 0};
 #define SB_PRIMARY_BOX				 (!gameStates.video.nDisplayMode ? 2 : 6)
 #define SB_SECONDARY_BOX			 (!gameStates.video.nDisplayMode ? 3 : 7)
 
-CHUD hud;
+//	-----------------------------------------------------------------------------
+
+void CHUD::DrawCountdown (void)
+{
+CGenericCockpit::DrawCountDown (SMALL_FONT->Height () * 4);
+}
+
+//	-----------------------------------------------------------------------------
+
+void CHUD::DrawCruise (void)
+{
+CGenericCockpit::DrawCruise (3, CCanvas::Current ()->Height () - m_info.nLineSpacing * (IsMultiGame ? 11 : 6));
+}
 
 //	-----------------------------------------------------------------------------
 
@@ -719,8 +731,7 @@ gameStates.render.vr.buffers.render [0].SetupPane (canvP, y, x, w, h);
 
 void CHUD::Toggle (void)
 {
-cockpit = &letterboxCockpit;
-CGenericCockpit::Toggle ();
+CGenericCockpit::Toggle (CM_LETTERBOX);
 }
 
 //	-----------------------------------------------------------------------------
@@ -743,8 +754,7 @@ return true;
 
 void CWideHUD::Toggle (void)
 {
-cockpit = &fullCockpit;
-CGenericCockpit::Toggle ();
+CGenericCockpit::Toggle (CM_FULL_SCREEN);
 }
 
 //	-----------------------------------------------------------------------------

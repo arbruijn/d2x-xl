@@ -156,13 +156,6 @@ int TimeStopped (void);
 
 extern CCanvas * GetCurrentGameScreen();
 
-//valid modes for cockpit
-#define CM_FULL_COCKPIT     0   // normal screen with cockput
-#define CM_REAR_VIEW        1   // looking back with bitmap
-#define CM_STATUS_BAR       2   // small status bar, w/ reticle
-#define CM_FULL_SCREEN      3   // full screen, no cockpit (w/ reticle)
-#define CM_LETTERBOX        4   // half-height window (for cutscenes)
-
 extern int Cockpit_mode;        // what sort of cockpit or window is up?
 extern int Game_window_w,       // width and height of CPlayerData's game window
            Game_window_h;
@@ -198,7 +191,7 @@ void ResetRearView(void);
 extern int Game_turbo_mode;
 
 // returns ptr to escort robot, or NULL
-CObject *find_escort();
+CObject *FindEscort();
 
 extern void ApplyModifiedPalette(void);
 

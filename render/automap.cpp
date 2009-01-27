@@ -345,8 +345,8 @@ void CAutomap::Draw (void)
 #if 1
 PROF_START
 	int	bAutomapFrame = !m_bRadar && 
-								 (gameStates.render.cockpit.nMode != CM_FULL_SCREEN) && 
-								 (gameStates.render.cockpit.nMode != CM_LETTERBOX);
+								 (cockpit->Mode () != CM_FULL_SCREEN) && 
+								 (cockpit->Mode () != CM_LETTERBOX);
 	CFixMatrix	vmRadar;
 
 automap.m_bFull = (LOCALPLAYER.flags & (PLAYER_FLAGS_FULLMAP_CHEAT | PLAYER_FLAGS_FULLMAP)) != 0;

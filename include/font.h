@@ -161,6 +161,7 @@ int GrUString (int x, int y, const char *s);
 int _CDECL_ GrPrintF (int *idP, int x, int y, const char * format, ...);
 int _CDECL_ GrUPrintf (int x, int y, const char * format, ...);
 CBitmap *CreateStringBitmap (const char *s, int nKey, uint nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce);
+void DrawCenteredText (int y, char * s);
 
 //-----------------------------------------------------------------------------
 // Global variables

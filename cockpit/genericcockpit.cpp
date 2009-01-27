@@ -197,6 +197,110 @@ return s;
 
 //------------------------------------------------------------------------------
 
+#define MAX_MARKER_MESSAGE_LEN 120
+
+void CGenericCockpit::DrawMarkerMessage (void)
+{
+	char szTemp [MAX_MARKER_MESSAGE_LEN+25];
+
+if (gameData.marker.nDefiningMsg) {
+	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
+   sprintf (szTemp, TXT_DEF_MARKER, gameData.marker.szInput);
+	DrawCenteredText (CCanvas::Current ()->Height ()/2-16, szTemp);
+   }
+}
+
+//------------------------------------------------------------------------------
+
+void CGenericCockpit::DrawMultiMessage (void)
+{
+	char szMessage [MAX_MULTI_MESSAGE_LEN + 25];
+
+if (IsMultiGame && (gameData.multigame.msg.bSending)) {
+	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
+	sprintf (szMessage, "%s: %s_", TXT_MESSAGE, gameData.multigame.msg.szMsg);
+	DrawCenteredText (CCanvas::Current ()->Height () / 2 - 16, szMessage);
+	}
+if (IsMultiGame && gameData.multigame.msg.bDefining) {
+	fontManager.SetCurrent (GAME_FONT);   
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
+	sprintf (szMessage, "%s #%d: %s_", TXT_MACRO, gameData.multigame.msg.bDefining, gameData.multigame.msg.szMsg);
+	DrawCenteredText (CCanvas::Current ()->Height () / 2 - 16, szMessage);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CGenericCockpit::DrawCountdown (int y)
+{
+if (gameStates.app.bEndLevelSequence || !gameData.reactor.bDestroyed  || (gameData.reactor.countdown.nSecsLeft < 0))
+	return;
+
+if (!IS_D2_OEM && !IS_MAC_SHARE && !IS_SHAREWARE) {    // no countdown on registered only
+	//	On last level, we don't want a countdown.
+	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) &&
+		(gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)) {
+		if (!IsMultiGame)
+			return;
+		if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
+			return;
+			}
+		}
+fontManager.SetCurrent (SMALL_FONT);
+fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
+GrPrintF (NULL, 0x8000, y, "T-%d s", gameData.reactor.countdown.nSecsLeft);
+}
+
+//------------------------------------------------------------------------------
+
+void CGenericCockpit::DrawCruise (int x, int y)
+{
+if ((gameStates.input.nCruiseSpeed > 0) &&
+	 (gameData.multiplayer.nLocalPlayer > -1) &&
+	 (gameData.objs.viewerP->info.nType == OBJ_PLAYER) &&
+	 (gameData.objs.viewerP->info.nId == gameData.multiplayer.nLocalPlayer))
+	GrPrintF (NULL, x, y, "%s %2d%%", TXT_CRUISE, X2I (gameStates.input.nCruiseSpeed));
+}
+
+//------------------------------------------------------------------------------
+
+void CGenericCockpit::DrawRecording (void)
+{
+if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_STATE_RECORDING)) {
+	char message [128];
+	int h, w, aw;
+
+	if (gameData.demo.nState == ND_STATE_PLAYBACK) {
+		if (gameData.demo.nVcrState != ND_STATE_PRINTSCREEN) {
+			sprintf (message, "%s (%d%%%% %s)",
+						gameOpts->demo.bRevertFormat ? TXT_DEMO_CONVERSION : TXT_DEMO_PLAYBACK, NDGetPercentDone (), TXT_DONE);
+			}
+		else {
+			sprintf (message, " ");
+			}
+		}
+	else
+		sprintf (message, TXT_DEMO_RECORDING);
+	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
+	fontManager.SetColorRGBi (RGBA_PAL2 (27, 0, 0), 1, 0, 0);
+	fontManager.Current ()->StringSize (message, w, h, aw);
+	if (cockpit->Mode () == CM_FULL_COCKPIT) {
+		if (CCanvas::Current ()->Height () > 240)
+			h += 40;
+		else
+			h += 15;
+		}
+	else if (cockpit->Mode () == CM_LETTERBOX)
+		h += 7;
+	if (cockpit->Mode () != CM_REAR_VIEW)
+		GrPrintF (NULL, (CCanvas::Current ()->Width ()-w)/2, CCanvas::Current ()->Height () - h - 2, message);
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void CGenericCockpit::DrawFrameRate (void)
 {
 	static fix frameTimeList [8] = {0, 0, 0, 0, 0, 0, 0, 0};
@@ -566,14 +670,14 @@ else if (nCloakState && nOldCloakState && !m_info.nCloakFadeState && !refade) {
 	refade = 1;
 	}
 #if 0
-if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT)
+if (cockpit->Mode () != CM_FULL_COCKPIT)
 	CCanvas::SetCurrent (&gameStates.render.vr.buffers.render [0]);
 #endif
 gameStates.render.grAlpha = (float) nCloakFadeValue / (float) FADE_LEVELS;
 BitBlt (GAUGE_SHIPS + (IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer), x, y);
 gameStates.render.grAlpha = FADE_LEVELS;
 #if 0
-if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT)
+if (cockpit->Mode () != CM_FULL_COCKPIT)
 	CCanvas::SetCurrent (GetCurrentGameScreen ());
 #endif
 }
@@ -590,8 +694,8 @@ void CGenericCockpit::DrawWeaponInfo (int nIndex, tGaugeBox* box, int xPic, int 
 BitBlt (((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) 
 		  ? gameData.weapons.info [nIndex].hiresPicture.index
 		  : gameData.weapons.info [nIndex].picture.index, 
-		  xPic, yPic, true, true, (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) ? I2X (2) : I2X (1), orient);
-if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)
+		  xPic, yPic, true, true, (cockpit->Mode () == CM_FULL_SCREEN) ? I2X (2) : I2X (1), orient);
+if (cockpit->Mode () == CM_FULL_SCREEN)
 	return;
 fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 if ((p = const_cast<char*> (strchr (pszName, '\n')))) {
@@ -628,7 +732,7 @@ if (nWeaponType == 0) {
 	if (nIndex == LASER_ID && laserLevel > MAX_LASER_LEVEL)
 		nIndex = SUPERLASER_ID;
 
-	if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
+	if (cockpit->Mode () == CM_STATUS_BAR)
 		DrawWeaponInfo (nIndex,
 			hudWindowAreas + SB_PRIMARY_BOX,
 			SB_PRIMARY_W_PIC_X, SB_PRIMARY_W_PIC_Y,
@@ -644,7 +748,7 @@ if (nWeaponType == 0) {
 else {
 	nIndex = secondaryWeaponToWeaponInfo [nWeaponId];
 
-	if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
+	if (cockpit->Mode () == CM_STATUS_BAR)
 		DrawWeaponInfo (nIndex,
 			hudWindowAreas + SB_SECONDARY_BOX,
 			SB_SECONDARY_W_PIC_X, SB_SECONDARY_W_PIC_Y,
@@ -721,7 +825,7 @@ else if (m_info.weaponBoxStates [nWeaponType] == WS_FADING_IN) {
 
 if (m_info.weaponBoxStates [nWeaponType] != WS_SET) {		//fade gauge
 	int fadeValue = X2I (m_info.weaponBoxFadeValues [nWeaponType]);
-	int boxofs = (gameStates.render.cockpit.nMode == CM_STATUS_BAR) ? SB_PRIMARY_BOX : COCKPIT_PRIMARY_BOX;
+	int boxofs = (cockpit->Mode () == CM_STATUS_BAR) ? SB_PRIMARY_BOX : COCKPIT_PRIMARY_BOX;
 	gameStates.render.grAlpha = (float) fadeValue;
 	OglDrawFilledRect (hudWindowAreas [boxofs + nWeaponType].left,
 						    hudWindowAreas [boxofs + nWeaponType].top,
@@ -742,7 +846,7 @@ void CGenericCockpit::DrawStatic (int nWindow, int nIndex)
 	tVideoClip *vc = gameData.eff.vClips [0] + VCLIP_MONITOR_STATIC;
 	CBitmap *bmp;
 	int framenum;
-	int boxofs = (gameStates.render.cockpit.nMode == CM_STATUS_BAR) ? SB_PRIMARY_BOX : COCKPIT_PRIMARY_BOX;
+	int boxofs = (cockpit->Mode () == CM_STATUS_BAR) ? SB_PRIMARY_BOX : COCKPIT_PRIMARY_BOX;
 	int h, x, y;
 
 staticTime [nWindow] += gameData.time.xFrame;
@@ -837,7 +941,7 @@ if ((gameData.demo.nState==ND_STATE_PLAYBACK) && gameData.demo.bFlyingGuided) {
 	}
 
 x = CCanvas::Current ()->Width () / 2;
-y = CCanvas::Current ()->Height () / ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) ? 2 : 2);
+y = CCanvas::Current ()->Height () / ((cockpit->Mode () == CM_FULL_COCKPIT) ? 2 : 2);
 bLaserReady = AllowedToFireLaser ();
 bMissileReady = AllowedToFireMissile (-1, 1);
 bLaserAmmo = PlayerHasWeapon (gameData.weapons.nPrimary, 0, -1, 1);
@@ -1230,7 +1334,7 @@ for (i = 0; i < nPlayers; i++) {
 
 void DrawCockpit (int nCockpit, int y, bool bAlphaTest)
 {
-if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {
+if (gameOpts->render.cockpit.bHUD || (cockpit->Mode () != CM_FULL_SCREEN)) {
 	int i = gameData.pig.tex.cockpitBmIndex [nCockpit].index;
 	CBitmap *bmP = gameData.pig.tex.bitmaps [0] + i;
 	LoadBitmap (gameData.pig.tex.cockpitBmIndex [nCockpit].index, 0);
@@ -1283,8 +1387,11 @@ else
 
 DrawCockpit (false);
 
+DrawMultiMessage ();
+DrawMarkerMessage ();
 DrawFrameRate ();
 DrawSlowMotion ();
+DrawCruise ();
 DrawScore ();
 if (m_info.scoreTime)
 	DrawScoreAdded ();
@@ -1309,6 +1416,10 @@ DrawWeapons ();
 DrawPlayerNames ();
 DrawKillList ();
 DrawPlayerShip ();
+
+HUDShowIcons ();
+DrawCountdown ();
+DrawRecording ();
 
 if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead && !transformation.m_info.bUsePlayerHeadAngles)
 	DrawReticle (0);
@@ -1433,7 +1544,7 @@ if (pszLabel) {
 if (nUser == WBU_GUIDED) {
 	DrawGuidedCrosshair ();
 	}
-if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
+if (cockpit->Mode () == CM_FULL_SCREEN) {
 	int smallWindowBottom, bigWindowBottom, extraPartHeight;
 
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
@@ -1488,11 +1599,11 @@ bool CGenericCockpit::Setup (void)
 if (gameStates.video.nScreenMode != SCREEN_GAME)
 	return false;
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordCockpitChange (gameStates.render.cockpit.nMode);
+	NDRecordCockpitChange (cockpit->Mode ());
 if (gameStates.render.vr.nRenderMode != VR_NONE)
-	gameStates.render.cockpit.nMode = CM_FULL_SCREEN;
+	m_info.mode = CM_FULL_SCREEN;
 if (gameStates.video.nScreenMode == SCREEN_EDITOR)
-	gameStates.render.cockpit.nMode = CM_FULL_SCREEN;
+	m_info.mode = CM_FULL_SCREEN;
 CCanvas::SetCurrent (NULL);
 fontManager.SetCurrent (GAME_FONT);
 gameStates.render.cockpit.nShieldFlash = 0;
@@ -1501,8 +1612,21 @@ return true;
 
 //------------------------------------------------------------------------------
 
-void CGenericCockpit::Toggle (void)
+void CGenericCockpit::Toggle (int nMode)
 {
+if (nMode == CM_FULL_COCKPIT)
+	cockpit = &fullCockpit;
+else if (nMode == CM_STATUS_BAR)
+	cockpit = &statusBarCockpit;
+else if (nMode == CM_FULL_SCREEN)
+	cockpit = &hudCockpit;
+else if (nMode == CM_LETTERBOX)
+	cockpit = &letterboxCockpit;
+else if (nMode == CM_REAR_VIEW)
+	cockpit = &rearViewCockpit;
+else
+	return;
+m_info.mode = nMode;
 gameStates.render.cockpit.nNextMode = -1;
 cockpit->Setup ();
 HUDClearMessages ();

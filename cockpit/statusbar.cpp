@@ -67,6 +67,20 @@ h = SB_SECONDARY_W_BOX_BOT - SB_SECONDARY_W_BOX_TOP + 1;
 
 //	-----------------------------------------------------------------------------
 
+void CStatusBar::DrawCountdown (void)
+{
+CGenericCockpit::DrawCountDown (SMALL_FONT->Height () * 6);
+}
+
+//	-----------------------------------------------------------------------------
+
+void CStatusBar::DrawCruise (void)
+{
+CGenericCockpit::DrawCruise (22, m_info.nLineSpacing * 22);
+}
+
+//	-----------------------------------------------------------------------------
+
 void CStatusBar::DrawScore (void)
 {	                                                                                                                                                                                                                                                             
 	char	szScore [20];
@@ -329,7 +343,7 @@ void CStatusBar::DrawShield (void)
 fontManager.SetCurrent (GAME_FONT);
 fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
 //erase old one
-LoadBitmap (gameData.pig.tex.cockpitBmIndex [gameStates.render.cockpit.nMode + (gameStates.video.nDisplayMode? gameData.models.nCockpits / 2 : 0)].index, 0);
+LoadBitmap (gameData.pig.tex.cockpitBmIndex [cockpit->Mode () + (gameStates.video.nDisplayMode? gameData.models.nCockpits / 2 : 0)].index, 0);
 Rect (SB_SHIELD_NUM_X, SB_SHIELD_NUM_Y, SB_SHIELD_NUM_X + (gameStates.video.nDisplayMode ? 27 : 13), SB_SHIELD_NUM_Y + m_info.fontHeight);
 int x = SB_SHIELD_NUM_X;
 if (m_info.nShields < 100)
@@ -441,7 +455,7 @@ CGenericCockpit::DrawKillList (60, CCanvas::Current ()->Height ());
 
 void CCockpit::DrawCockpit (bool bAlphaTest)
 {
-CGenericCockpit::DrawCockpit (gameStates.render.cockpit.nMode + m_info.nCockpit, gameData.render.window.hMax, bAlphaTest);
+CGenericCockpit::DrawCockpit (cockpit->Mode () + m_info.nCockpit, gameData.render.window.hMax, bAlphaTest);
 gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
 gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h)/2;
 //FillBackground ();
@@ -484,11 +498,7 @@ gameStates.render.vr.buffers.render->SetupPane (
 
 void CStatusBar::Toggle (void)
 {
-if (gameStates.render.cockpit.nNextMode < 0)
-	cockpit = &hudCockpit;
-else
-	cockpit = &fullCockpit;
-CGenericCockpit::Toggle ();
+CGenericCockpit::Toggle (gameStates.render.cockpit.nNextMode < 0) ? CM_FULL_SCREEN : CM_FULL_COCKPIT);
 }
 
 //	-----------------------------------------------------------------------------

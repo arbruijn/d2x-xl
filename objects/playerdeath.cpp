@@ -288,7 +288,7 @@ else {
 	gameData.objs.deadPlayerCamera = NULL;
 	}
 if (gameStates.render.cockpit.nModeSave == -1)		//if not already saved
-	gameStates.render.cockpit.nModeSave = gameStates.render.cockpit.nMode;
+	gameStates.render.cockpit.nModeSave = cockpit->Mode ();
 SelectCockpit (CM_LETTERBOX);
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordLetterbox ();

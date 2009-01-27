@@ -31,6 +31,13 @@ extern ubyte Reticle_on;
 // (message might not be drawn if previous message was same)
 #define gauge_message HUDInitMessage
 
+//valid modes for cockpit
+#define CM_FULL_COCKPIT    0   // normal screen with cockput
+#define CM_REAR_VIEW       1   // looking back with bitmap
+#define CM_STATUS_BAR      2   // small status bar, w/ reticle
+#define CM_FULL_SCREEN     3   // full screen, no cockpit (w/ reticle)
+#define CM_LETTERBOX       4   // half-height window (for cutscenes)
+
 #define WBU_WEAPON			0       // the weapons display
 #define WBUMSL					1       // the missile view
 #define WBU_ESCORT			2       // the "buddy bot"
@@ -42,9 +49,9 @@ extern ubyte Reticle_on;
 #define WBU_RADAR_TOPDOWN	8
 #define WBU_RADAR_HEADSUP	9
 
-#define SHOW_COCKPIT	((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nMode == CM_STATUS_BAR))
+#define SHOW_COCKPIT	((cockpit->Mode () == CM_FULL_COCKPIT) || (cockpit->Mode () == CM_STATUS_BAR))
 #define SHOW_HUD		(!gameStates.app.bEndLevelSequence && (!gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || !SHOW_COCKPIT))
-#define HIDE_HUD		(gameStates.app.bEndLevelSequence || (!(gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) && (gameStates.render.cockpit.nMode >= CM_FULL_SCREEN)))
+#define HIDE_HUD		(gameStates.app.bEndLevelSequence || (!(gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) && (cockpit->Mode () >= CM_FULL_SCREEN)))
 
 extern double cmScaleX, cmScaleY;
 extern int nHUDLineSpacing;
@@ -142,11 +149,16 @@ class CGenericCockpit {
 		char* Convert1s (char* s);
 		void DemoRecording (void);
 
+		void DrawMarkerMessage (void);
+		void DrawMultiMessage (void);
+		void DrawCountdown (int y);
+		void DrawRecording (void);
 		void DrawFrameRate (void);
 		void DrawSlowMotion (void);
 		void DrawTime (void);
 		void DrawTimerCount (void);
 		void PlayHomingWarning (void);
+		void DrawCruise (int x, int y);
 		void DrawBombCount (int x, int y, int bgColor, int bShowAlways);
 		void DrawAmmoInfo (int x, int y, int ammoCount, int bPrimary);
 		void CheckForExtraLife (int nPrevScore);
@@ -168,6 +180,8 @@ class CGenericCockpit {
 		void RenderWindow (int nWindow, CObject *viewerP, int bRearView, int nUser, const char *pszLabel);
 
 		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h) = 0;
+		virtual void DrawCountdown (void) = 0;
+		virtual void DrawCruise (void) = 0;
 		virtual void DrawScore (void) = 0;
 		virtual void DrawScoreAdded (void) = 0;
 		virtual void DrawHomingWarning (void) = 0;
@@ -191,7 +205,7 @@ class CGenericCockpit {
 		virtual void DrawPlayerShip (void) = 0;
 		virtual void DrawKillList (void) = 0;
 		virtual void DrawStatic (int nWindow) = 0;
-		virtual void Toggle (void);
+		virtual void Toggle (int nMode);
 		virtual void DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel);
 		virtual void DrawWeapons (void);
 		virtual void DrawCockpit (bool bAlphaTest = false);
@@ -207,6 +221,8 @@ class CGenericCockpit {
 class CHUD : public CGenericCockpit {
 	public:
 		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h);
+		virtual void DrawCountdown (void);
+		virtual void DrawCruise (void);
 		virtual void DrawScore (void);
 		virtual void DrawScoreAdded (void);
 		virtual void DrawHomingWarning (void);
@@ -259,6 +275,8 @@ class CStatusBar : public CGenericCockpit {
 		CBitmap* StretchBlt (int nGauge, int x, int y, double xScale, double yScale, int scale = I2X (1), int orient = 0);
 
 		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h);
+		virtual void DrawCountdown (void);
+		virtual void DrawCruise (void);
 		virtual void DrawScore (void);
 		virtual void DrawScoreAdded (void);
 		virtual void DrawHomingWarning (void);
@@ -297,6 +315,8 @@ class CStatusBar : public CGenericCockpit {
 class CCockpit : public CGenericCockpit {
 	public:
 		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h);
+		virtual void DrawCountdown (void);
+		virtual void DrawCruise (void);
 		virtual void DrawScore (void);
 		virtual void DrawScoreAdded (void);
 		virtual void DrawHomingWarning (void);
@@ -335,6 +355,8 @@ class CCockpit : public CGenericCockpit {
 class CRearView : public CGenericCockpit {
 	public:
 		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h) { x = y = w = h = -1; }
+		virtual void DrawCountdown (void) {}
+		virtual void DrawCruise (void) {}
 		virtual void DrawScore (void) {}
 		virtual void DrawScoreAdded (void) {}
 		virtual void DrawHomingWarning (void) {}
@@ -363,7 +385,7 @@ class CRearView : public CGenericCockpit {
 		virtual void DrawKillList (void) {}
 		virtual void ClearBombCount (int bgColor) {}
 		virtual void DrawCockpit (bool bAlphaTest = false) { 
-			CGenericCockpit::DrawCockpit (gameStates.render.cockpit.nMode + m_info.nCockpit, 0, bAlphaTest); 
+			CGenericCockpit::DrawCockpit (CM_REAR_VIEW + m_info.nCockpit, 0, bAlphaTest); 
 			}
 		virtual void Toggle (void) {};
 		virtual void SetupWindow (int nWindow, CCanvas* canvP) {}

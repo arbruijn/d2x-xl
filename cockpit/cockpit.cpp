@@ -57,6 +57,20 @@ h = SECONDARY_W_BOX_BOT - SECONDARY_W_BOX_TOP + 1;
 
 //	-----------------------------------------------------------------------------
 
+void CCockpit::DrawCountdown (void)
+{
+CGenericCockpit::DrawCountDown (SMALL_FONT->Height () * 4);
+}
+
+//	-----------------------------------------------------------------------------
+
+void CHUD::DrawCruise (void)
+{
+CGenericCockpit::DrawCruise (3, CCanvas::Current ()->Height () - m_info.nLineSpacing * (IsMultiGame ? 11 : 6));
+}
+
+//	-----------------------------------------------------------------------------
+
 void CCockpit::DrawOrbs (void)
 {
 CGenericCockpit::DrawOrbs (4 * m_info.fontWidth, 2 * m_info.nLineSpacing);
@@ -458,8 +472,7 @@ return true;
 
 void CCockpit::Toggle (void)
 {
-cockpit = &statusBarCockpit;
-CGenericCockpit::Toggle ();
+CGenericCockpit::Toggle (CM_STATUS_BAR);
 }
 
 //	-----------------------------------------------------------------------------

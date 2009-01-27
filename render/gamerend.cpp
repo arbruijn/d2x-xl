@@ -69,74 +69,12 @@ return w;
 }
 
 //------------------------------------------------------------------------------
-// Draw string 's' centered on a canvas... if wider than
-// canvas, then wrap it.
-void DrawCenteredText (int y, char * s)
-{
-	char	p;
-	int	i, l = (int) strlen (s);
-
-if (StringWidth (s, l) < CCanvas::Current ()->Width ()) {
-	GrString (0x8000, y, s, NULL);
-	return;
-	}
-int w = CCanvas::Current ()->Width () - 16;
-int h = CCanvas::Current ()->Font ()->Height () + 1;
-for (i = 0; i < l; i++) {
-	if (StringWidth (s, i) > w) {
-		p = s [i];
-		s [i] = 0;
-		GrString (0x8000, y, s, NULL);
-		s [i] = p;
-		GrString (0x8000, y + h, &s [i], NULL);
-		return;
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-
-#define MAX_MARKER_MESSAGE_LEN 120
-
-void GameDrawMarkerMessage (void)
-{
-	char szTemp [MAX_MARKER_MESSAGE_LEN+25];
-
-if (gameData.marker.nDefiningMsg) {
-	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT
-	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-   sprintf (szTemp, TXT_DEF_MARKER, gameData.marker.szInput);
-	DrawCenteredText (CCanvas::Current ()->Height ()/2-16, szTemp);
-   }
-}
-
-//------------------------------------------------------------------------------
-
-void GameDrawMultiMessage (void)
-{
-	char temp_string [MAX_MULTI_MESSAGE_LEN+25];
-
-if ((gameData.app.nGameMode&GM_MULTI) && (gameData.multigame.msg.bSending)) {
-	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
-	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-	sprintf (temp_string, "%s: %s_", TXT_MESSAGE, gameData.multigame.msg.szMsg);
-	DrawCenteredText (CCanvas::Current ()->Height ()/2-16, temp_string);
-	}
-if (IsMultiGame && gameData.multigame.msg.bDefining) {
-	fontManager.SetCurrent (GAME_FONT);   
-	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-	sprintf (temp_string, "%s #%d: %s_", TXT_MACRO, gameData.multigame.msg.bDefining, gameData.multigame.msg.szMsg);
-	DrawCenteredText (CCanvas::Current ()->Height ()/2-16, temp_string);
-	}
-}
-
-//------------------------------------------------------------------------------
 
 #if DBG
 
 fix ShowView_textTimer = -1;
 
-void DrawWindowLabel ()
+void DrawWindowLabel (void)
 {
 if (ShowView_textTimer > 0) {
 	char *viewer_name, *control_name;
@@ -209,32 +147,6 @@ if (ShowView_textTimer > 0) {
 
 //------------------------------------------------------------------------------
 
-void RenderCountdownGauge (void)
-{
-if (!gameStates.app.bEndLevelSequence && gameData.reactor.bDestroyed  && (gameData.reactor.countdown.nSecsLeft>-1)) { // && (gameData.reactor.countdown.nSecsLeft<127)) {
-	if (!IS_D2_OEM && !IS_MAC_SHARE && !IS_SHAREWARE) {    // no countdown on registered only
-		//	On last level, we don't want a countdown.
-		if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) &&
-			(gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)) {
-			if (!(gameData.app.nGameMode & GM_MULTI))
-				return;
-			if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
-				return;
-			}
-		}
-	fontManager.SetCurrent (SMALL_FONT);
-	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-	int y = SMALL_FONT->Height () * 4;
-	if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)
-		y += SMALL_FONT->Height () * 2;
-	if (gameStates.app.bPlayerIsDead)
-		y += SMALL_FONT->Height () * 2;
-	GrPrintF (NULL, 0x8000, y, "T-%d s", gameData.reactor.countdown.nSecsLeft);
-	}
-}
-
-//------------------------------------------------------------------------------
-
 void GameDrawHUDStuff (void)
 {
 #if DBG
@@ -265,18 +177,19 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_S
 	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
 	fontManager.SetColorRGBi (RGBA_PAL2 (27, 0, 0), 1, 0, 0);
 	fontManager.Current ()->StringSize (message, w, h, aw);
-	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
+	if (cockpit->Mode () == CM_FULL_COCKPIT) {
 		if (CCanvas::Current ()->Height () > 240)
 			h += 40;
 		else
 			h += 15;
 		}
-	else if (gameStates.render.cockpit.nMode == CM_LETTERBOX)
+	else if (cockpit->Mode () == CM_LETTERBOX)
 		h += 7;
-	if (gameStates.render.cockpit.nMode != CM_REAR_VIEW && !bSavingMovieFrames)
+	if (cockpit->Mode () != CM_REAR_VIEW && !bSavingMovieFrames)
 		GrPrintF (NULL, (CCanvas::Current ()->Width ()-w)/2, CCanvas::Current ()->Height () - h - 2, message);
 	}
-if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {
+
+if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || (cockpit->Mode () != CM_FULL_SCREEN)) {
 	RenderCountdownGauge ();
 	if ((gameData.multiplayer.nLocalPlayer > -1) &&
 		 (gameData.objs.viewerP->info.nType == OBJ_PLAYER) &&
@@ -289,13 +202,13 @@ if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || (gameStates.re
 		if (gameStates.input.nCruiseSpeed > 0) {
 			int line_spacing = GAME_FONT->Height ()  + GAME_FONT->Height () /4;
 
-			if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
+			if (cockpit->Mode () == CM_FULL_SCREEN) {
 				if (gameData.app.nGameMode & GM_MULTI)
 					y -= line_spacing * 11;	//64
 				else
 					y -= line_spacing * 6;	//32
 				}
-			else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
+			else if (cockpit->Mode () == CM_STATUS_BAR) {
 				if (gameData.app.nGameMode & GM_MULTI)
 					y -= line_spacing * 8;	//48
 				else
@@ -312,8 +225,7 @@ if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || (gameStates.re
 ShowFrameRate ();
 if ((gameData.demo.nState == ND_STATE_PLAYBACK))
 	gameData.app.nGameMode = gameData.demo.nGameMode;
-if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN))
-	DrawHUD ();
+cockpit->Render ();
 if ((gameData.demo.nState == ND_STATE_PLAYBACK))
 	gameData.app.nGameMode = GM_NORMAL;
 if (gameStates.app.bPlayerIsDead)
@@ -677,18 +589,18 @@ int ShowMissileView (void)
 if (GuidedMslView (&objP)) {
 	if (gameOpts->render.cockpit.bGuidedInMainView) {
 		gameStates.render.nRenderingType = 6 + (1<<4);
-		HUDRenderWindow (1, gameData.objs.viewerP, 0, WBUMSL, "SHIP");
+		cockpit->RenderWindow (1, gameData.objs.viewerP, 0, WBUMSL, "SHIP");
 		}
 	else {
 		gameStates.render.nRenderingType = 1+ (1<<4);
-		HUDRenderWindow (1, objP, 0, WBU_GUIDED, "GUIDED");
+		cockpit->RenderWindow (1, objP, 0, WBU_GUIDED, "GUIDED");
 	   }
 	return 1;
 	}
 else {
 	if (objP) {		//used to be active
 		if (!gameOpts->render.cockpit.bGuidedInMainView)
-			HUDRenderWindow (1, NULL, 0, WBU_STATIC, NULL);
+			cockpit->RenderWindow (1, NULL, 0, WBU_STATIC, NULL);
 		gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP = NULL;
 		}
 	if (gameData.objs.missileViewerP && !gameStates.render.bExternalView) {		//do missile view
@@ -700,14 +612,14 @@ else {
 			 (gameData.objs.missileViewerP->info.nType != OBJ_NONE) &&
 			 (gameData.objs.missileViewerP->info.nSignature == mslViewerSig)) {
   			gameStates.render.nRenderingType = 2 + (1<<4);
-			HUDRenderWindow (1, gameData.objs.missileViewerP, 0, WBUMSL, "MISSILE");
+			cockpit->RenderWindow (1, gameData.objs.missileViewerP, 0, WBUMSL, "MISSILE");
 			return 1;
 			}
 		else {
 			gameData.objs.missileViewerP = NULL;
 			mslViewerSig = -1;
 			gameStates.render.nRenderingType = 255;
-			HUDRenderWindow (1, NULL, 0, WBU_STATIC, NULL);
+			cockpit->RenderWindow (1, NULL, 0, WBU_STATIC, NULL);
 			}
 		}
 	}
@@ -725,20 +637,20 @@ void ShowExtraViews (void)
 if (gameData.demo.nState == ND_STATE_PLAYBACK) {
    if (nDemoDoLeft) {
       if (nDemoDoLeft == 3)
-			HUDRenderWindow (0, gameData.objs.consoleP, 1, WBU_REAR, "REAR");
+			cockpit->RenderWindow (0, gameData.objs.consoleP, 1, WBU_REAR, "REAR");
       else
-			HUDRenderWindow (0, &demoLeftExtra, bDemoRearCheck [nDemoDoLeft], nDemoWBUType [nDemoDoLeft], szDemoExtraMessage [nDemoDoLeft]);
+			cockpit->RenderWindow (0, &demoLeftExtra, bDemoRearCheck [nDemoDoLeft], nDemoWBUType [nDemoDoLeft], szDemoExtraMessage [nDemoDoLeft]);
 		}
    else
-		HUDRenderWindow (0, NULL, 0, WBU_WEAPON, NULL);
+		cockpit->RenderWindow (0, NULL, 0, WBU_WEAPON, NULL);
 	if (nDemoDoRight) {
       if (nDemoDoRight == 3)
-			HUDRenderWindow (1, gameData.objs.consoleP, 1, WBU_REAR, "REAR");
+			cockpit->RenderWindow (1, gameData.objs.consoleP, 1, WBU_REAR, "REAR");
       else
-			HUDRenderWindow (1, &demoRightExtra, bDemoRearCheck [nDemoDoRight], nDemoWBUType [nDemoDoRight], szDemoExtraMessage [nDemoDoRight]);
+			cockpit->RenderWindow (1, &demoRightExtra, bDemoRearCheck [nDemoDoRight], nDemoWBUType [nDemoDoRight], szDemoExtraMessage [nDemoDoRight]);
 		}
    else
-		HUDRenderWindow (1, NULL, 0, WBU_WEAPON, NULL);
+		cockpit->RenderWindow (1, NULL, 0, WBU_WEAPON, NULL);
    nDemoDoLeft = nDemoDoRight = 0;
 	nDemoDoingLeft = nDemoDoingRight = 0;
    return;
@@ -749,29 +661,29 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 	switch (gameStates.render.cockpit.n3DView [w]) {
 		case CV_NONE:
 			gameStates.render.nRenderingType = 255;
-			HUDRenderWindow (w, NULL, 0, WBU_WEAPON, NULL);
+			cockpit->RenderWindow (w, NULL, 0, WBU_WEAPON, NULL);
 			break;
 
 		case CV_REAR:
 			if (gameStates.render.bRearView) {		//if big window is rear view, show front here
 				gameStates.render.nRenderingType = 3+ (w<<4);
-				HUDRenderWindow (w, gameData.objs.consoleP, 0, WBU_REAR, "FRONT");
+				cockpit->RenderWindow (w, gameData.objs.consoleP, 0, WBU_REAR, "FRONT");
 				}
 			else {					//show Normal rear view
 				gameStates.render.nRenderingType = 3+ (w<<4);
-				HUDRenderWindow (w, gameData.objs.consoleP, 1, WBU_REAR, "REAR");
+				cockpit->RenderWindow (w, gameData.objs.consoleP, 1, WBU_REAR, "REAR");
 				}
 			break;
 
 		case CV_ESCORT: {
-			CObject *buddy = find_escort ();
+			CObject *buddy = FindEscort ();
 			if (!buddy) {
-				HUDRenderWindow (w, NULL, 0, WBU_WEAPON, NULL);
+				cockpit->RenderWindow (w, NULL, 0, WBU_WEAPON, NULL);
 				gameStates.render.cockpit.n3DView [w] = CV_NONE;
 				}
 			else {
 				gameStates.render.nRenderingType = 4+ (w<<4);
-				HUDRenderWindow (w, buddy, 0, WBU_ESCORT, gameData.escort.szName);
+				cockpit->RenderWindow (w, buddy, 0, WBU_ESCORT, gameData.escort.szName);
 				}
 			break;
 			}
@@ -782,9 +694,9 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 			if ((nPlayer != -1) &&
 				 gameData.multiplayer.players [nPlayer].connected &&
 				 (IsCoopGame || (IsTeamGame && (GetTeam (nPlayer) == GetTeam (gameData.multiplayer.nLocalPlayer)))))
-				HUDRenderWindow (w, &OBJECTS [gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].nObject], 0, WBU_COOP, gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].callsign);
+				cockpit->RenderWindow (w, &OBJECTS [gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].nObject], 0, WBU_COOP, gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].callsign);
 			else {
-				HUDRenderWindow (w, NULL, 0, WBU_WEAPON, NULL);
+				cockpit->RenderWindow (w, NULL, 0, WBU_WEAPON, NULL);
 				gameStates.render.cockpit.n3DView [w] = CV_NONE;
 				}
 			break;
@@ -799,14 +711,14 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 				break;
 				}
 			sprintf (label, "Marker %d", gameData.marker.viewers [w]+1);
-			HUDRenderWindow (w, OBJECTS + gameData.marker.objects [gameData.marker.viewers [w]], 0, WBU_MARKER, label);
+			cockpit->RenderWindow (w, OBJECTS + gameData.marker.objects [gameData.marker.viewers [w]], 0, WBU_MARKER, label);
 			break;
 			}
 
 		case CV_RADAR_TOPDOWN:
 		case CV_RADAR_HEADSUP:
 			if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0))
-				HUDRenderWindow (w, gameData.objs.consoleP, 0,
+				cockpit->RenderWindow (w, gameData.objs.consoleP, 0,
 					(gameStates.render.cockpit.n3DView [w] == CV_RADAR_TOPDOWN) ? WBU_RADAR_TOPDOWN : WBU_RADAR_HEADSUP, "MINI MAP");
 			else
 				gameStates.render.cockpit.n3DView [w] = CV_NONE;
@@ -821,14 +733,12 @@ gameData.demo.nState = saveNewDemoState;
 
 //------------------------------------------------------------------------------
 
-extern ubyte * bGameCockpitCopyCode;
-
 void DrawGuidedCrosshair (void);
 
 void GameRenderFrameMono (void)
 {
 	CCanvas		Screen_3d_window;
-	int			bNoDrawHUD = 0;
+	int			bDrawHUD = 1;
 
 gameStates.render.vr.buffers.screenPages [0].SetupPane (
 	&Screen_3d_window,
@@ -844,10 +754,10 @@ if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 	const char *msg = "Guided Missile View";
 	CObject *viewerSave = gameData.objs.viewerP;
 
-   if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
+   if (cockpit->Mode () == CM_FULL_COCKPIT) {
 		gameStates.render.cockpit.bBigWindowSwitch = 1;
 		gameStates.render.cockpit.bRedraw = 1;
-		gameStates.render.cockpit.nMode = CM_STATUS_BAR;
+		cockpit->Mode () = CM_STATUS_BAR;
 		return;
 		}
   	gameData.objs.viewerP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
@@ -863,12 +773,12 @@ if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 	GrPrintF (NULL, (CCanvas::Current ()->Width () - w) / 2, 3, msg);
 	DrawGuidedCrosshair ();
 	HUDRenderMessageFrame ();
-	bNoDrawHUD = 1;
+	bDrawHUD = 0;
 	}
 else {
 	if (gameStates.render.cockpit.bBigWindowSwitch) {
 		gameStates.render.cockpit.bRedraw = 1;
-		gameStates.render.cockpit.nMode = CM_FULL_COCKPIT;
+		cockpit->Mode () = CM_FULL_COCKPIT;
 		gameStates.render.cockpit.bBigWindowSwitch = 0;
 		return;
 		}
@@ -878,25 +788,11 @@ else {
 	RenderFrame (0, 0);
 	}
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
-if (!bNoDrawHUD)
+if (bDrawHUD)
 	GameDrawHUDStuff ();
 
-if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT)
+if (cockpit->Mode () != CM_FULL_COCKPIT)
 	ShowExtraViews ();		//missile view, buddy bot, etc.
-if (!bGameCockpitCopyCode) {
-	if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING) {
-		gameStates.render.vr.nCurrentPage = !gameStates.render.vr.nCurrentPage;
-		CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
-		gameStates.render.vr.buffers.subRender [0].Blit (
-			&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage], 
-			 gameStates.render.vr.buffers.subRender [0].Left (),
-			 gameStates.render.vr.buffers.subRender [0].Top (),
-			 gameStates.render.vr.buffers.subRender [0].Width (),
-			 gameStates.render.vr.buffers.subRender [0].Height (),
-			 0, 0, 1);
-		}
-	}
-
 if (SHOW_COCKPIT) {
 	if (gameData.demo.nState == ND_STATE_PLAYBACK)
 		gameData.app.nGameMode = gameData.demo.nGameMode;
@@ -910,7 +806,7 @@ if (SHOW_COCKPIT) {
 	if (gameData.demo.nState == ND_STATE_PLAYBACK)
 		gameData.app.nGameMode = GM_NORMAL;
 	}
-else if (gameStates.render.cockpit.nMode == CM_REAR_VIEW)
+else if (cockpit->Mode () == CM_REAR_VIEW)
 	UpdateCockpits (1);
 else
 	HUDShowIcons ();
@@ -931,7 +827,7 @@ if (gameStates.app.bSaveScreenshot)
 void GrowWindow ()
 {
 StopTime ();
-if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
+if (cockpit->Mode () == CM_FULL_COCKPIT) {
 	gameData.render.window.h = gameData.render.window.hMax;
 	gameData.render.window.w = gameData.render.window.wMax;
 	ToggleCockpit ();
@@ -940,7 +836,7 @@ if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 	return;
 	}
 
-if (gameStates.render.cockpit.nMode != CM_STATUS_BAR && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
+if (cockpit->Mode () != CM_STATUS_BAR && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
 	StartTime (0);
 	return;
 	}
@@ -1048,7 +944,7 @@ void FillBackground (void)
 void ShrinkWindow (void)
 {
 StopTime ();
-if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
+if (cockpit->Mode () == CM_FULL_COCKPIT && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
 	gameData.render.window.h = gameData.render.window.hMax;
 	gameData.render.window.w = gameData.render.window.wMax;
 	//!!ToggleCockpit ();
@@ -1062,7 +958,7 @@ if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT && (gameStates.render.vr.
 	return;
 	}
 
-if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
+if (cockpit->Mode () == CM_FULL_SCREEN && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
 	//gameData.render.window.w = gameData.render.window.wMax;
 	//gameData.render.window[HA] = gameData.render.window.hMax;
 	SelectCockpit (CM_STATUS_BAR);
@@ -1071,13 +967,13 @@ if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN && (gameStates.render.vr.n
 	return;
 	}
 
-if (gameStates.render.cockpit.nMode != CM_STATUS_BAR && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
+if (cockpit->Mode () != CM_STATUS_BAR && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
 	StartTime (0);
 	return;
 	}
 
 #if TRACE
-console.printf (CON_DBG, "Cockpit mode=%d\n", gameStates.render.cockpit.nMode);
+console.printf (CON_DBG, "Cockpit mode=%d\n", cockpit->Mode ());
 #endif
 if (gameData.render.window.w > WINDOW_MIN_W) {
 	//int x, y;
@@ -1122,7 +1018,7 @@ void UpdateCockpits (int bForceRedraw)
 //Redraw the on-screen cockpit bitmaps
 if (gameStates.render.vr.nRenderMode != VR_NONE)
 	return;
-switch (gameStates.render.cockpit.nMode) {
+switch (cockpit->Mode ()) {
 	case CM_FULL_COCKPIT:
 		DrawCockpit (nCockpit, 0);
 		if (bForceRedraw)
@@ -1131,7 +1027,7 @@ switch (gameStates.render.cockpit.nMode) {
 
 	case CM_REAR_VIEW:
 		CCanvas::SetCurrent (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
-		DrawCockpit (gameStates.render.cockpit.nMode + nCockpit, 0);
+		DrawCockpit (cockpit->Mode () + nCockpit, 0);
 		if (bForceRedraw)
 			return;
 		break;
@@ -1143,7 +1039,7 @@ switch (gameStates.render.cockpit.nMode) {
 		break;
 
 	case CM_STATUS_BAR:
-		DrawCockpit (gameStates.render.cockpit.nMode + nCockpit, gameData.render.window.hMax);
+		DrawCockpit (cockpit->Mode () + nCockpit, gameData.render.window.hMax);
 		gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
 		gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h)/2;
 		FillBackground ();
@@ -1152,12 +1048,6 @@ switch (gameStates.render.cockpit.nMode) {
 	case CM_LETTERBOX:
 		CCanvas::SetCurrent (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
 		CCanvas::Current ()->Clear (BLACK_RGBA);
-		// In a modex mode, clear the other buffer.
-		if (CCanvas::Current ()->Mode () == BM_MODEX) {
-			CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage^1]);
-			CCanvas::Current ()->Clear (BLACK_RGBA);
-			CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
-			}
 		break;
 	}
 CCanvas::SetCurrent (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
