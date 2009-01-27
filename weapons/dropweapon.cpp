@@ -26,7 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "sounds.h"
 #include "text.h"
 #include "network.h"
-#include "hudmsg.h"
+#include "hudmsgs.h"
 
 //	-----------------------------------------------------------------------------
 

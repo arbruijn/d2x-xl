@@ -17,7 +17,7 @@
 #include "ogl_texcache.h"
 #include "sdlgl.h"
 
-#include "hudmsg.h"
+#include "hudmsgs.h"
 #include "game.h"
 #include "text.h"
 #include "gr.h"

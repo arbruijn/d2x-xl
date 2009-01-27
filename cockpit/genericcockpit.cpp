@@ -42,7 +42,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "statusbar.h"
 #include "slowmotion.h"
 #include "automap.h"
-#include "hudmsg.h"
+#include "hudmsgs.h"
 #include "hudicons.h"
 #include "key.h"
 

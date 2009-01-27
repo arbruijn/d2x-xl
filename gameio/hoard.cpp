@@ -26,7 +26,7 @@
 #include "args.h"
 #include "cfile.h"
 #include "effects.h"
-#include "hudmsg.h"
+#include "hudmsgs.h"
 #include "gamepal.h"
 #include "multi.h"
 

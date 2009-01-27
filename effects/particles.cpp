@@ -22,7 +22,7 @@
 #include "error.h"
 #include "u_mem.h"
 #include "vecmat.h"
-#include "hudmsg.h"
+#include "hudmsgs.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "ogl_fastrender.h"

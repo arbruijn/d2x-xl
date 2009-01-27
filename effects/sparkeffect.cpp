@@ -17,7 +17,7 @@
 #include "ogl_defs.h"
 #include "maths.h"
 #include "vecmat.h"
-#include "hudmsg.h"
+#include "hudmsgs.h"
 #include "gameseg.h"
 #include "piggy.h"
 #include "renderlib.h"

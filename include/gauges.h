@@ -18,7 +18,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gr.h"
 #include "piggy.h"
 #include "object.h"
-#include "hudmsg.h"
+#include "hudmsgs.h"
 #include "ogl_defs.h"
 #include "ogl_bitmap.h"
 #include "ogl_hudstuff.h"

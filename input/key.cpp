@@ -24,7 +24,7 @@
 #include "error.h"
 #include "key.h"
 #include "timer.h"
-#include "hudmsg.h"
+#include "hudmsgs.h"
 #include "maths.h"
 
 #define KEY_BUFFER_SIZE 16

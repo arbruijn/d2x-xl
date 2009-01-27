@@ -103,7 +103,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #include "player.h"	/* for gameData.multiplayer.players */
 #include "multi.h"	/* for netPlayers */
 #include "tracker.h"
-#include "hudmsg.h"
+#include "hudmsgs.h"
 
 extern struct ipx_driver ipx_win;
 

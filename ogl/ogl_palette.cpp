@@ -5,7 +5,7 @@
 #endif
 
 #include "descent.h"
-#include "hudmsg.h"
+#include "hudmsgs.h"
 #include "game.h"
 #include "text.h"
 #include "gr.h"

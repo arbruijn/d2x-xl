@@ -2905,7 +2905,7 @@ class CHoardData {
 
 //------------------------------------------------------------------------------
 
-#include "hudmsg.h"
+#include "hudmsgs.h"
 
 class CHUDMessage {
 	public:

@@ -3818,7 +3818,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\include\hudmsg.h"
+						RelativePath="..\include\hudmsgs.h"
 						>
 					</File>
 				</Filter>
