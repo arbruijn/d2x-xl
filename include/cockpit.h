@@ -22,6 +22,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_defs.h"
 #include "ogl_bitmap.h"
 #include "ogl_hudstuff.h"
+#include "ogl_render.h"
 //from gauges.c
 
 // Flags for gauges/hud stuff
@@ -176,8 +177,9 @@ class CGenericCockpit {
 		void DrawReticle (int bForceBig);
 		int CanSeeObject (int nObject, int bCheckObjs);
 		void DrawPlayerNames (void);
-		void Render (void);
+		void Render (int bExtraInfo);
 		void RenderWindow (int nWindow, CObject *viewerP, int bRearView, int nUser, const char *pszLabel);
+		void Toggle (int nMode);
 
 		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h) = 0;
 		virtual void DrawCountdown (void) = 0;
@@ -205,7 +207,7 @@ class CGenericCockpit {
 		virtual void DrawPlayerShip (void) = 0;
 		virtual void DrawKillList (void) = 0;
 		virtual void DrawStatic (int nWindow) = 0;
-		virtual void Toggle (int nMode);
+		virtual void Toggle (void);
 		virtual void DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel);
 		virtual void DrawWeapons (void);
 		virtual void DrawCockpit (bool bAlphaTest = false);

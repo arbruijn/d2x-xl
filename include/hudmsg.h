@@ -59,6 +59,7 @@ void _CDECL_ HUDPlayerMessage (const char *format, ... );
 
 void HUDRenderMessageFrame (void);
 void HUDClearMessages (void);
+void PlayerDeadMessage (void);
 
 void mekh_resend_last();
 void mekh_hud_recall_msgs();

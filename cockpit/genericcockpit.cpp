@@ -31,6 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "render.h"
 #include "transprender.h"
 #include "gamepal.h"
+#include "gr.h"
 #include "ogl_lib.h"
 #include "ogl_render.h"
 #include "ogl_bitmap.h"
@@ -41,7 +42,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "statusbar.h"
 #include "slowmotion.h"
 #include "automap.h"
-#include "gr.h"
+#include "hudmsg.h"
 #include "key.h"
 
 #define SHOW_PLAYER_IP		0
@@ -1430,7 +1431,7 @@ if (ShowView_textTimer > 0) {
 
 //	-----------------------------------------------------------------------------
 //draw all the things on the HUD
-void CGenericCockpit::Render (bool bExtraInfo)
+void CGenericCockpit::Render (int bExtraInfo)
 {
 if (HIDE_HUD)
 	return;

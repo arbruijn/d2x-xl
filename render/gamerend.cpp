@@ -54,8 +54,6 @@ extern int bSavingMovieFrames;
 
 //------------------------------------------------------------------------------
 
-void UpdateCockpits (int bForceRedraw);
-
 // Returns the length of the first 'n' characters of a string.
 int StringWidth (char * s, int n)
 {
@@ -668,7 +666,7 @@ if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
    if (cockpit->Mode () == CM_FULL_COCKPIT) {
 		gameStates.render.cockpit.bBigWindowSwitch = 1;
 		gameStates.render.cockpit.bRedraw = 1;
-		cockpit->Mode () = CM_STATUS_BAR;
+		cockpit->Toggle (CM_STATUS_BAR);
 		return;
 		}
   	gameData.objs.viewerP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
@@ -689,7 +687,7 @@ if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 else {
 	if (gameStates.render.cockpit.bBigWindowSwitch) {
 		gameStates.render.cockpit.bRedraw = 1;
-		cockpit->Mode () = CM_FULL_COCKPIT;
+		cockpit->Toggle (CM_FULL_COCKPIT);
 		gameStates.render.cockpit.bBigWindowSwitch = 0;
 		return;
 		}
@@ -720,7 +718,7 @@ StopTime ();
 if (cockpit->Mode () == CM_FULL_COCKPIT) {
 	gameData.render.window.h = gameData.render.window.hMax;
 	gameData.render.window.w = gameData.render.window.wMax;
-	ToggleCockpit ();
+	cockpit->Toggle ();
 	HUDInitMessage (TXT_COCKPIT_F3);
 	StartTime (0);
 	return;
@@ -900,58 +898,11 @@ inline
 #endif
 //------------------------------------------------------------------------------
 
-// This actually renders the new cockpit onto the screen.
-void UpdateCockpits (int bForceRedraw)
-{
-	//int x, y, w, h;
-
-//Redraw the on-screen cockpit bitmaps
-if (gameStates.render.vr.nRenderMode != VR_NONE)
-	return;
-switch (cockpit->Mode ()) {
-	case CM_FULL_COCKPIT:
-		DrawCockpit (nCockpit, 0);
-		if (bForceRedraw)
-			return;
-		break;
-
-	case CM_REAR_VIEW:
-		CCanvas::SetCurrent (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
-		DrawCockpit (cockpit->Mode () + nCockpit, 0);
-		if (bForceRedraw)
-			return;
-		break;
-
-	case CM_FULL_SCREEN:
-		gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w) / 2;
-		gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h) / 2;
-		FillBackground ();
-		break;
-
-	case CM_STATUS_BAR:
-		DrawCockpit (cockpit->Mode () + nCockpit, gameData.render.window.hMax);
-		gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
-		gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h)/2;
-		FillBackground ();
-		break;
-
-	case CM_LETTERBOX:
-		CCanvas::SetCurrent (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
-		CCanvas::Current ()->Clear (BLACK_RGBA);
-		break;
-	}
-CCanvas::SetCurrent (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
-if (SHOW_COCKPIT)
-	InitGauges ();
-}
-
-//------------------------------------------------------------------------------
-
 void GameRenderFrame (void)
 {
 PROF_START
 SetScreenMode (SCREEN_GAME);
-PlayHomingWarning ();
+cockpit->PlayHomingWarning ();
 paletteManager.ClearEffect (paletteManager.Game ());
 if (gameStates.render.vr.nRenderMode == VR_NONE)
 	GameRenderFrameMono ();
