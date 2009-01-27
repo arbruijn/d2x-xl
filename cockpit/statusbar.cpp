@@ -409,7 +409,7 @@ DrawBombCount (SB_BOMB_COUNT_X, SB_BOMB_COUNT_Y, BLACK_RGBA, 0);
 
 //	-----------------------------------------------------------------------------
 
-int CStatusBar::DrawBombCount (int* nId, int x, int y, char* pszBombCount)
+int CStatusBar::DrawBombCount (int* nId, int x, int y, int bgColor, char* pszBombCount)
 {
 CCanvas::Current ()->SetColorRGBi (bgColor);
 return Print (&nIdBombCount, x, y, szBombCount, nIdBombCount);

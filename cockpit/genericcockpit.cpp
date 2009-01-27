@@ -451,7 +451,7 @@ if (count)
 		bgColor, bgColor != -1);
 else if (bgColor != -1)
 	fontManager.SetColorRGBi (bgColor, 1, bgColor, 1);	//erase by drawing in background color
-nIdBombCount = DrawBombCount (nIdBombCount, x, y, szBombCount);
+nIdBombCount = DrawBombCount (nIdBombCount, x, y, bgColor, szBombCount);
 }
 
 //	-----------------------------------------------------------------------------

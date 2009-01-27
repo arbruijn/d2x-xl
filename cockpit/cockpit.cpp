@@ -84,7 +84,7 @@ CGenericCockpit::DrawBombCount (BOMB_COUNT_X, BOMB_COUNT_Y, BLACK_RGBA, 1);
 
 //	-----------------------------------------------------------------------------
 
-int CCockpit::DrawBombCount (int* nId, int x, int y, char* pszBombCount)
+int CCockpit::DrawBombCount (int& nId, int x, int y, int bgColor, char* pszBombCount)
 {
 CCanvas::Current ()->SetColorRGBi (bgColor);
 return Print (&nIdBombCount, x, y, szBombCount, nIdBombCount);
@@ -186,6 +186,117 @@ if (m_info.nEnergy < 100) {	// erase part of gauge corresponding to energy loss
 
 //	-----------------------------------------------------------------------------
 
+ubyte afterburnerBarTable [AFTERBURNER_GAUGE_H_L * 2] = {
+			3, 11,
+			3, 11,
+			3, 11,
+			3, 11,
+			3, 11,
+			3, 11,
+			2, 11,
+			2, 10,
+			2, 10,
+			2, 10,
+			2, 10,
+			2, 10,
+			2, 10,
+			1, 10,
+			1, 10,
+			1, 10,
+			1, 9,
+			1, 9,
+			1, 9,
+			1, 9,
+			0, 9,
+			0, 9,
+			0, 8,
+			0, 8,
+			0, 8,
+			0, 8,
+			1, 8,
+			2, 8,
+			3, 8,
+			4, 8,
+			5, 8,
+			6, 7,
+};
+
+ubyte afterburnerBarTableHires [AFTERBURNER_GAUGE_H_H*2] = {
+	5, 20,
+	5, 20,
+	5, 19,
+	5, 19,
+	5, 19,
+	5, 19,
+	4, 19,
+	4, 19,
+	4, 19,
+	4, 19,
+
+	4, 19,
+	4, 18,
+	4, 18,
+	4, 18,
+	4, 18,
+	3, 18,
+	3, 18,
+	3, 18,
+	3, 18,
+	3, 18,
+
+	3, 18,
+	3, 17,
+	3, 17,
+	2, 17,
+	2, 17,
+	2, 17,
+	2, 17,
+	2, 17,
+	2, 17,
+	2, 17,
+
+	2, 17,
+	2, 16,
+	2, 16,
+	1, 16,
+	1, 16,
+	1, 16,
+	1, 16,
+	1, 16,
+	1, 16,
+	1, 16,
+
+	1, 16,
+	1, 15,
+	1, 15,
+	1, 15,
+	0, 15,
+	0, 15,
+	0, 15,
+	0, 15,
+	0, 15,
+	0, 15,
+
+	0, 14,
+	0, 14,
+	0, 14,
+	1, 14,
+	2, 14,
+	3, 14,
+	4, 14,
+	5, 14,
+	6, 13,
+	7, 13,
+
+	8, 13,
+	9, 13,
+	10, 13,
+	11, 13,
+	12, 13
+};
+
+//	-----------------------------------------------------------------------------
+
 void CCockpit::DrawAfterburnerBar (void)
 {
 	int		x [4], y [4], yMax;
@@ -252,7 +363,7 @@ if (nWeaponType == 0) {
 	nIndex = primaryWeaponToWeaponInfo [nWeaponId];
 	if (nIndex == LASER_ID && laserLevel > MAX_LASER_LEVEL)
 		nIndex = SUPERLASER_ID;
-	DrawWeaponInfo (nIndex,
+	CGenericCockpit::DrawWeaponInfo (nIndex,
 		hudWindowAreas + COCKPIT_PRIMARY_BOX,
 		PRIMARY_W_PIC_X, PRIMARY_W_PIC_Y,
 		PRIMARY_WEAPON_NAMES_SHORT (nWeaponId),
@@ -260,7 +371,7 @@ if (nWeaponType == 0) {
 		}
 else {
 	nIndex = secondaryWeaponToWeaponInfo [nWeaponId];
-	DrawWeaponInfo (nIndex,
+	CGenericCockpit::DrawWeaponInfo (nIndex,
 		hudWindowAreas + COCKPIT_SECONDARY_BOX,
 		SECONDARY_W_PIC_X, SECONDARY_W_PIC_Y,
 		SECONDARY_WEAPON_NAMES_SHORT (nWeaponId),
@@ -286,7 +397,7 @@ CGenericCockpit::DrawStatic (nWindow, COCKPIT_PRIMARY_BOX);
 
 void CStatusBar::DrawPlayerShip (void)
 {
-DrawPlayerShip (bCloak, m_info.history [gameStates.render.vr.nCurrentPage].bCloak, SHIP_GAUGE_X, SHIP_GAUGE_Y);
+DrawPlayerShip (m_info.bCloak, m_history [gameStates.render.vr.nCurrentPage].bCloak, SHIP_GAUGE_X, SHIP_GAUGE_Y);
 }
 
 //	-----------------------------------------------------------------------------
@@ -297,12 +408,12 @@ void CCockpit::DrawInvul (void)
 	static fix time = 0;
 
 if ((m_info.tInvul > I2X (4)) || ((m_info.tInvul > 0) && (gameData.time.xGame & 0x8000))) {
-	BitBlt (GAUGE_INVULNERABLE + nInvulnerableFrame, SHIELD_GAUGE_X, SHIELD_GAUGE_Y);
+	BitBlt (GAUGE_INVULNERABLE + m_info.nInvulnerableFrame, SHIELD_GAUGE_X, SHIELD_GAUGE_Y);
 	time += gameData.time.xFrame;
 	while (time > INV_FRAME_TIME) {
 		time -= INV_FRAME_TIME;
-		if (++nInvulnerableFrame == N_INVULNERABLE_FRAMES)
-			nInvulnerableFrame = 0;
+		if (++m_info.nInvulnerableFrame == N_INVULNERABLE_FRAMES)
+			m_info.nInvulnerableFrame = 0;
 		}
 	}
 }
