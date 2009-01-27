@@ -66,6 +66,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "findfile.h"
 #include "u_mem.h"
 #include "dynlight.h"
+#include "cockpit.h"
 
 //------------------------------------------------------------------------------
 
@@ -254,7 +255,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameStates.render.bShowFrameRate, 0, 0);
 		RP (gameStates.render.bShowTime, 0, 1);
 		RP (gameStates.sound.audio.nMaxChannels, 0, 128);
-		RP (gameStates.cockpit.nType, 0, 0);
+		RP (gameStates.render.cockpit.nType, 0, 0);
 		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
 		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
 		RP (gameOptions [i].render.cockpit.bGuidedInMainView, 0, 0);
@@ -673,7 +674,7 @@ int WriteParams (void)
 	tParam		*pp;
 
 gameStates.sound.audio.nMaxChannels = audio.MaxChannels ();
-gameStates.cockpit.nType = cockpit->Type ();
+gameStates.render.cockpit.nType = cockpit->Type ();
 RegisterParams ();
 sprintf (fn, "%s.plx", LOCALPLAYER.callsign);
 if (!cf.Open (fn, gameFolders.szProfDir, "wt", 0))
@@ -766,7 +767,7 @@ if (!cf.Open (fn, gameFolders.szProfDir, "rt", 0))
 while (!cf.EoF ())
 	ReadParam (cf);
 audio.SetMaxChannels (gameStates.sound.audio.nMaxChannels);
-cockpit->Activate (gameStates.cockpit.nType);
+cockpit->Activate (gameStates.render.cockpit.nType);
 return cf.Close ();
 }
 
