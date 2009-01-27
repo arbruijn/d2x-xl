@@ -664,8 +664,8 @@ if (!CGenericCockpit::Setup ())
 gameData.render.window.hMax = screen.Height ();
 gameData.render.window.h = gameData.render.window.hMax;
 gameData.render.window.w = gameData.render.window.wMax;
-gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
-gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h)/2;
+gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w) / 2;
+gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h) / 2;
 GameInitRenderSubBuffers (gameData.render.window.x, gameData.render.window.y, gameData.render.window.w, gameData.render.window.h);
 return true;
 }
@@ -764,7 +764,7 @@ CGenericCockpit::DrawRecording (7);
 
 void CWideHUD::Toggle (void)
 {
-CGenericCockpit::Activate (CM_FULL_SCREEN);
+CGenericCockpit::Activate (CM_FULL_COCKPIT);
 }
 
 //	-----------------------------------------------------------------------------
