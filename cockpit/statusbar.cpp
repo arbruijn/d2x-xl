@@ -360,6 +360,13 @@ for (int i = 0; i < 3; i++)
 
 //	-----------------------------------------------------------------------------
 
+void CStatusBar::DrawPlayerShip (void)
+{
+DrawPlayerShip (bCloak, m_info.history [gameStates.render.vr.nCurrentPage].bCloak, SB_SHIP_GAUGE_X, SB_SHIP_GAUGE_Y);
+}
+
+//	-----------------------------------------------------------------------------
+
 //	Draws invulnerable ship, or maybe the flashing ship, depending on invulnerability time left.
 void CStatusBar::DrawInvulnerableShip (void)
 {

@@ -147,6 +147,9 @@ class CCockpitInfo {
 		int	fontWidth;
 		int	fontHeight;
 		int	nCockpit;
+		int	nShields;
+		int	nEnergy;
+		int	bCloak;
 
 	public:
 		CCockpitInfo () { Init (); }
@@ -203,7 +206,7 @@ class CGenericCockpit {
 		virtual void DrawShield (void) = 0;
 		virtual void DrawShieldBar (void) = 0;
 		virtual void DrawLives (void) = 0;
-		virtual void DrawPlayerShip (int nCloakState, int nOldCloakState, int y, int x) = 0;
+		virtual void DrawPlayerShip (void) = 0;
 		virtual void ClearBombCount (void) = 0;
 		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount) = 0;
 		virtual void DrawKillList (void) = 0;
@@ -216,6 +219,7 @@ class CGenericCockpit {
 		void DrawKillList (int x, int y);
 		void DrawStatic (int nWindow, int nIndex);
 		void DrawCockpit (int nCockpit, int y, bool bAlphaTest = false);
+		virtual void DrawPlayerShip (int nCloakState, int nOldCloakState, int y, int x);
 
 		inline int Mode (void) { return m_info.mode; }
 		inline void SetMode (int mode) { m_info.mode = mode; }
@@ -245,7 +249,7 @@ class CHUD : public CGenericCockpit {
 		virtual void DrawShield (void);
 		virtual void DrawShieldBar (void);
 		virtual void DrawLives (void);
-		virtual void DrawPlayerShip (int nCloakState, int nOldCloakState, int y, int x);
+		virtual void DrawPlayerShip (void) {}
 		virtual void DrawCockpit (void);
 
 		virtual void DrawStatic (int nWindow);
@@ -285,7 +289,7 @@ class CStatusBar : public CGenericCockpit {
 		virtual void DrawShield (void);
 		virtual void DrawShieldBar (void);
 		virtual void DrawLives (void);
-		virtual void DrawPlayerShip (int nCloakState, int nOldCloakState, int y, int x);
+		virtual void DrawPlayerShip (void);
 
 		virtual void DrawStatic (int nWindow);
 		virtual void DrawWeapons (void);
@@ -319,7 +323,7 @@ class CCockpit : public CGenericCockpit {
 		virtual void DrawShield (void);
 		virtual void DrawShieldBar (void);
 		virtual void DrawLives (void);
-		virtual void DrawPlayerShip (int nCloakState, int nOldCloakState, int y, int x);
+		virtual void DrawPlayerShip (void);
 
 		virtual void DrawStatic (int nWindow);
 		virtual void DrawWeapons (void);
@@ -353,7 +357,7 @@ class CRearView : public CGenericCockpit {
 		virtual void DrawShield (void) {}
 		virtual void DrawShieldBar (void) {}
 		virtual void DrawLives (void) {}
-		virtual void DrawPlayerShip (int nCloakState, int nOldCloakState, int y, int x) {}
+		virtual void DrawPlayerShip (void) {}
 		virtual void DrawCockpit (void) {}
 
 		virtual void DrawStatic (int nWindow) {}

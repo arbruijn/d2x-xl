@@ -1196,6 +1196,13 @@ m_info.nEnergy = X2IR (LOCALPLAYER.energy);
 m_info.nShields = X2IR (LOCALPLAYER.shields);
 m_info.bCloak = ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0);
 m_info.nCockpit = (gameStates.video.nDisplayMode && !gameStates.app.bDemoData) ? gameData.models.nCockpits / 2 : 0;
+m_info.nEnergy = X2IR (LOCALPLAYER.energy);
+if (m_info.nEnergy < 0)
+	m_info.nEnergy  = 0;
+m_info.nShields = X2IR (LOCALPLAYER.shields);
+if (m_info.nShields < 0)
+	m_info.nShields  = 0;
+m_info.bCloak = ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0);
 if (gameOpts->render.cockpit.bScaleGauges) {
 	m_info.xGaugeScale = float (CCanvas::Current ()->Height ()) / 480.0f;
 	m_info.yGaugeScale = float (CCanvas::Current ()->Height ()) / 640.0f;
@@ -1246,9 +1253,6 @@ if (m_info.nMode != CM_REAR_VIEW) {
 void CGenericCockpit::RenderGauges (void)
 {
 	static int old_display_mode = 0;
-	int nEnergy = X2IR (LOCALPLAYER.energy);
-	int nShields = X2IR (LOCALPLAYER.shields);
-	int bCloak = ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0);
 
 if (HIDE_HUD)
 	return;
@@ -1256,11 +1260,6 @@ if (HIDE_HUD)
 Assert ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nMode == CM_STATUS_BAR));
 // check to see if our display mode has changed since last render time --
 // if so, then we need to make new gauge canvases.
-if (old_display_mode != gameStates.video.nDisplayMode) {
-	CloseGaugeCanvases ();
-	InitGaugeCanvases ();
-	old_display_mode = gameStates.video.nDisplayMode;
-	}
 if (nShields < 0)
 	nShields = 0;
 //CCanvas::SetCurrent (GetCurrentGameScreen ());
@@ -1268,54 +1267,47 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 	if (LOCALPLAYER.homingObjectDist >= 0)
 		NDRecordHomingDistance (LOCALPLAYER.homingObjectDist);
 
-ShowWeaponDisplays ();
-if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
-	SBRenderGauges ();
-else if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
-	if (nEnergy != oldEnergy [gameStates.render.vr.nCurrentPage]) {
-		if (gameData.demo.nState == ND_STATE_RECORDING) {
-			NDRecordPlayerEnergy (oldEnergy [gameStates.render.vr.nCurrentPage], nEnergy);
-			}
-		}
-	DrawEnergyBar (nEnergy);
-	DrawNumericalDisplay (nShields, nEnergy);
-	oldEnergy [gameStates.render.vr.nCurrentPage] = nEnergy;
+DrawEnergyBar (nEnergy);
+DrawShieldBar (nShields);
+DrawAfterburnerBar (gameData.physics.xAfterburnerCharge);
+DrawWeapons ();
+DrwawKeys ();
+DrawHomingWarning ();
+DrawBombCount (BOMB_COUNT_X, BOMB_COUNT_Y, BLACK_RGBA, gameStates.render.cockpit.nMode == CM_FULL_COCKPIT);
+DrawPlayerShip ();
+DrawInvulnerableShip ();
 
-	if (gameData.physics.xAfterburnerCharge != oldAfterburner [gameStates.render.vr.nCurrentPage]) {
-		if (gameData.demo.nState == ND_STATE_RECORDING) {
-			NDRecordPlayerAfterburner (oldAfterburner [gameStates.render.vr.nCurrentPage], gameData.physics.xAfterburnerCharge);
-			}
+if (nEnergy != m_info.history [gameStates.render.vr.nCurrentPage].energy) {
+	if (gameData.demo.nState == ND_STATE_RECORDING) {
+		NDRecordPlayerEnergy (m_info.history [gameStates.render.vr.nCurrentPage].energy, nEnergy);
 		}
-	DrawAfterburnerBar (gameData.physics.xAfterburnerCharge);
-	oldAfterburner [gameStates.render.vr.nCurrentPage] = gameData.physics.xAfterburnerCharge;
-
-	if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) {
-		DrawNumericalDisplay (nShields, nEnergy);
-		DrawInvulnerableShip ();
-		oldShields [gameStates.render.vr.nCurrentPage] = nShields ^ 1;
-		}
-	else {
-		if (nShields != oldShields [gameStates.render.vr.nCurrentPage]) {		// Draw the shield gauge
-			if (gameData.demo.nState == ND_STATE_RECORDING) {
-				NDRecordPlayerShields (oldShields [gameStates.render.vr.nCurrentPage], nShields);
-				}
-			}
-		DrawShieldBar (nShields);
-		DrawNumericalDisplay (nShields, nEnergy);
-		oldShields [gameStates.render.vr.nCurrentPage] = nShields;
-		}
-
-	if (LOCALPLAYER.flags != m_info.old [gameStates.render.vr.nCurrentPage].flags) {
-		if (gameData.demo.nState==ND_STATE_RECORDING)
-			NDRecordPlayerFlags (m_info.old [gameStates.render.vr.nCurrentPage].flags, LOCALPLAYER.flags);
-		m_info.old [gameStates.render.vr.nCurrentPage].flags = LOCALPLAYER.flags;
-		}
-	DrawKeys ();
-	ShowHomingWarning ();
-	ShowBombCount (BOMB_COUNT_X, BOMB_COUNT_Y, BLACK_RGBA, gameStates.render.cockpit.nMode == CM_FULL_COCKPIT);
-	DrawPlayerShip (bCloak, bOldCloak [gameStates.render.vr.nCurrentPage], SHIP_GAUGE_X, SHIP_GAUGE_Y);
+	m_info.history [gameStates.render.vr.nCurrentPage].energy = nEnergy;
 	}
-bOldCloak [gameStates.render.vr.nCurrentPage] = bCloak;
+
+if (gameData.physics.xAfterburnerCharge != m_info.history [gameStates.render.vr.nCurrentPage].afterburner) {
+	if (gameData.demo.nState == ND_STATE_RECORDING) {
+		NDRecordPlayerAfterburner (m_info.history [gameStates.render.vr.nCurrentPage].afterburner, gameData.physics.xAfterburnerCharge);
+		}
+	m_info.history [gameStates.render.vr.nCurrentPage].afterburner = gameData.physics.xAfterburnerCharge;
+	}
+
+if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)
+	m_info.history [gameStates.render.vr.nCurrentPage].shields = nShields ^ 1;
+else {
+	if (nShields != m_info.history [gameStates.render.vr.nCurrentPage].shields) {		// Draw the shield gauge
+		if (gameData.demo.nState == ND_STATE_RECORDING) {
+			NDRecordPlayerShields (m_info.history [gameStates.render.vr.nCurrentPage].shields, nShields);
+			}
+		m_info.history [gameStates.render.vr.nCurrentPage].shields = nShields;
+		}
+	}
+if (LOCALPLAYER.flags != m_info.old [gameStates.render.vr.nCurrentPage].flags) {
+	if (gameData.demo.nState == ND_STATE_RECORDING)
+		NDRecordPlayerFlags (m_info.old [gameStates.render.vr.nCurrentPage].flags, LOCALPLAYER.flags);
+	m_info.old [gameStates.render.vr.nCurrentPage].flags = LOCALPLAYER.flags;
+	}
+	}
+m_info.history [gameStates.render.vr.nCurrentPage].bCloak = bCloak;
 }
 
 //	---------------------------------------------------------------------------------------------------------

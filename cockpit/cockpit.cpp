@@ -433,6 +433,13 @@ DrawStatic (nWindow, COCKPIT_PRIMARY_BOX);
 
 //	-----------------------------------------------------------------------------
 
+void CStatusBar::DrawPlayerShip (void)
+{
+DrawPlayerShip (bCloak, m_info.history [gameStates.render.vr.nCurrentPage].bCloak, SHIP_GAUGE_X, SHIP_GAUGE_Y);
+}
+
+//	-----------------------------------------------------------------------------
+
 //	Draws invulnerable ship, or maybe the flashing ship, depending on invulnerability time left.
 void CCockpit::DrawInvulnerableShip (void)
 {
