@@ -43,6 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "slowmotion.h"
 #include "automap.h"
 #include "hudmsg.h"
+#include "hudicons.h"
 #include "key.h"
 
 #define SHOW_PLAYER_IP		0
@@ -113,7 +114,7 @@ weaponBoxFadeValues [0] =
 weaponBoxFadeValues [1] = 0;
 weaponBoxUser [0] = 
 weaponBoxUser [1] = WBU_WEAPON;
-m_info.nLineSpacing = GAME_FONT->Height () + GAME_FONT->Height () / 4;
+nLineSpacing = GAME_FONT->Height () + GAME_FONT->Height () / 4;
 }
 
 //	-----------------------------------------------------------------------------
@@ -996,7 +997,7 @@ if (gameStates.render.bExternalView)
 if (gameStates.render.bExternalView && (!IsMultiGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
 #endif
 	return;
-m_info.xScale *= HUD_ASPECT;
+m_info.xScale *= float (HUD_ASPECT);
 if ((gameStates.ogl.nReticle == 2) || (gameStates.ogl.nReticle && CCanvas::Current ()->Width () > 320))
    OglDrawReticle (nCrossBm, nPrimaryBm, nSecondaryBm);
 else {
@@ -1013,7 +1014,7 @@ else {
   }
 if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick && gameOpts->render.cockpit.bMouseIndicator)
 	OglDrawMouseIndicator ();
-m_info.xScale /= HUD_ASPECT;
+m_info.xScale /= float (HUD_ASPECT);
 }
 
 //	-----------------------------------------------------------------------------

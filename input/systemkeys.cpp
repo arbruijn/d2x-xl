@@ -433,7 +433,7 @@ switch (key) {
 			if (!IsMultiGame) 
 				paletteManager.LoadEffect ();
 			if (bScanlineSave != bScanlineDouble)   
-				cockpit->Init ()();	// reset the cockpit after changing...
+				cockpit->Init ();	// reset the cockpit after changing...
 			break;
 		}
 
