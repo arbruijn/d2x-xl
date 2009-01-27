@@ -305,7 +305,7 @@ while (i--) {
 	nSegment = SEGMENTS [nSegment].m_children [nExitSide];
 	}
 gameData.endLevel.exit.nTransitSegNum = nSegment;
-gameStates.render.cockpit.nModeSave = cockpit->Mode ();
+gameStates.render.cockpit.nTypeSave = cockpit->Mode ();
 if (IsMultiGame) {
 	MultiSendEndLevelStart (0);
 	NetworkDoFrame (1, 1);
@@ -404,7 +404,7 @@ void StopEndLevelSequence (void)
 	gameStates.render.nInterpolationMethod = 0;
 
 paletteManager.DisableEffect ();
-SelectCockpit (gameStates.render.cockpit.nModeSave);
+cockpit->Activate (gameStates.render.cockpit.nTypeSave);
 gameStates.app.bEndLevelSequence = EL_OFF;
 PlayerFinishedLevel (0);
 }
@@ -551,7 +551,7 @@ switch (gameStates.app.bEndLevelSequence) {
 					return;
 					}
 				gameData.objs.viewerP = gameData.objs.endLevelCamera = OBJECTS + nObject;
-				SelectCockpit (CM_LETTERBOX);
+				cockpit->Activate (CM_LETTERBOX);
 				gameOpts->render.cockpit.bHUD = 0;	//will be restored by reading plr file when loading next level
 				exitFlightObjects [1] = exitFlightObjects [0];
 				exitFlightObjects [1].objP = gameData.objs.endLevelCamera;

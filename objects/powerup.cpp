@@ -215,7 +215,7 @@ va_end (args);
 paletteManager.BumpEffect (redAdd, greenAdd, blueAdd);
 HUDInitMessage (text);
 //mprintf_gameData.objs.pwrUp.Info ();
-AddPointsToScore (score);
+cockpit->AddPointsToScore (score);
 }
 
 //------------------------------------------------------------------------------
@@ -246,7 +246,7 @@ if (gameData.app.nGameMode & GM_HOARD)
 	LOCALPLAYER.secondaryAmmo[PROXMINE_INDEX] = 12;
 else if (gameData.app.nGameMode & GM_ENTROPY)
 	LOCALPLAYER.secondaryAmmo[PROXMINE_INDEX] = 15;
-UpdateLaserWeaponInfo ();
+cockpit->UpdateLaserWeaponInfo ();
 }
 //#endif
 

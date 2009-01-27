@@ -52,7 +52,7 @@ extern ubyte Reticle_on;
 
 #define SHOW_COCKPIT	((cockpit->Mode () == CM_FULL_COCKPIT) || (cockpit->Mode () == CM_STATUS_BAR))
 #define SHOW_HUD		(!gameStates.app.bEndLevelSequence && (!gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || !SHOW_COCKPIT))
-#define HIDE_HUD		(gameStates.app.bEndLevelSequence || (!(gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) && (cockpit->Mode () >= CM_FULL_SCREEN)))
+#define HIDE_HUD		(gameStates.app.bEndLevelSequence || (!(gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) && (m_info.nType >= CM_FULL_SCREEN)))
 
 extern double cmScaleX, cmScaleY;
 extern int nHUDLineSpacing;
@@ -112,7 +112,7 @@ class CCockpitInfo {
 		fix	weaponBoxFadeValues [2];
 		int	weaponBoxUser [2];
 		int	nLineSpacing;
-		int	mode;
+		int	nType;
 		float	xScale;
 		float	yScale;
 		float	xGaugeScale;
@@ -153,7 +153,7 @@ class CGenericCockpit {
 		void DrawMarkerMessage (void);
 		void DrawMultiMessage (void);
 		void DrawCountdown (int y);
-		void DrawRecording (void);
+		void DrawRecording (int y);
 		void DrawFrameRate (void);
 		void DrawSlowMotion (void);
 		void DrawTime (void);
@@ -179,9 +179,10 @@ class CGenericCockpit {
 		void DrawPlayerNames (void);
 		void Render (int bExtraInfo);
 		void RenderWindow (int nWindow, CObject *viewerP, int bRearView, int nUser, const char *pszLabel);
-		void Toggle (int nMode);
+		void Activate (int nType);
 
 		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h) = 0;
+		virtual void DrawRecording (void) = 0;
 		virtual void DrawCountdown (void) = 0;
 		virtual void DrawCruise (void) = 0;
 		virtual void DrawScore (void) = 0;
@@ -214,8 +215,8 @@ class CGenericCockpit {
 		virtual void SetupWindow (int nWindow, CCanvas* canvP) = 0;
 		virtual bool Setup (void);
 
-		inline int Mode (void) { return m_info.mode; }
-		inline void SetMode (int mode) { m_info.mode = mode; }
+		inline int Type (void) { return m_info.nType; }
+		inline void SetMode (int nType) { m_info.nType = nType; }
 };
 
 //	-----------------------------------------------------------------------------
@@ -223,6 +224,7 @@ class CGenericCockpit {
 class CHUD : public CGenericCockpit {
 	public:
 		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h);
+		virtual void DrawRecording (void);
 		virtual void DrawCountdown (void);
 		virtual void DrawCruise (void);
 		virtual void DrawScore (void);
@@ -266,6 +268,7 @@ class CHUD : public CGenericCockpit {
 
 class CWideHUD : public CHUD {
 	public:
+		virtual void DrawRecording (void);
 		virtual void Toggle (void);
 		virtual bool Setup (void);
 	};
@@ -277,6 +280,7 @@ class CStatusBar : public CGenericCockpit {
 		CBitmap* StretchBlt (int nGauge, int x, int y, double xScale, double yScale, int scale = I2X (1), int orient = 0);
 
 		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h);
+		virtual void DrawRecording (void);
 		virtual void DrawCountdown (void);
 		virtual void DrawCruise (void);
 		virtual void DrawScore (void);
@@ -317,6 +321,7 @@ class CStatusBar : public CGenericCockpit {
 class CCockpit : public CGenericCockpit {
 	public:
 		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h);
+		virtual void DrawRecording (void);
 		virtual void DrawCountdown (void);
 		virtual void DrawCruise (void);
 		virtual void DrawScore (void);
@@ -357,6 +362,7 @@ class CCockpit : public CGenericCockpit {
 class CRearView : public CGenericCockpit {
 	public:
 		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h) { x = y = w = h = -1; }
+		virtual void DrawRecording (void) {}
 		virtual void DrawCountdown (void) {}
 		virtual void DrawCruise (void) {}
 		virtual void DrawScore (void) {}

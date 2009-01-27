@@ -54,6 +54,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "loadgame.h"
 #include "multi.h"
 #include "playerdeath.h"
+#include "cockpit.h"
 #ifdef TACTILE
 #	include "tactile.h"
 #endif
@@ -137,8 +138,8 @@ if (gameData.objs.deadPlayerCamera) {
 	ReleaseObject (OBJ_IDX (gameData.objs.deadPlayerCamera));
 	gameData.objs.deadPlayerCamera = NULL;
 	}
-SelectCockpit (gameStates.render.cockpit.nModeSave);
-gameStates.render.cockpit.nModeSave = -1;
+cockpit->Activate (gameStates.render.cockpit.nTypeSave);
+gameStates.render.cockpit.nTypeSave = -1;
 gameData.objs.viewerP = viewerSaveP;
 gameData.objs.consoleP->SetType (OBJ_PLAYER);
 gameData.objs.consoleP->info.nFlags = nPlayerFlagsSave;
@@ -287,9 +288,9 @@ else {
 	Int3 ();
 	gameData.objs.deadPlayerCamera = NULL;
 	}
-if (gameStates.render.cockpit.nModeSave == -1)		//if not already saved
-	gameStates.render.cockpit.nModeSave = cockpit->Mode ();
-SelectCockpit (CM_LETTERBOX);
+if (gameStates.render.cockpit.nTypeSave == -1)		//if not already saved
+	gameStates.render.cockpit.nTypeSave = cockpit->Mode ();
+cockpit->Activate (CM_LETTERBOX);
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordLetterbox ();
 nPlayerFlagsSave = playerP->info.nFlags;

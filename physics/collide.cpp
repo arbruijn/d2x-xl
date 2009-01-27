@@ -136,7 +136,7 @@ if ((otherObjP->info.nType == OBJ_PLAYER) && gameStates.app.cheats.bMonsterMode)
 					result = ApplyDamageToRobot (xDamage / 2, OBJ_IDX (otherObjP));
 				}
 			if (!gameStates.gameplay.bNoBotAI && result && (otherObjP->cType.laserInfo.parent.nSignature == gameData.objs.consoleP->info.nSignature))
-				AddPointsToScore (ROBOTINFO (info.nId).scoreValue);
+				cockpit->AddPointsToScore (ROBOTINFO (info.nId).scoreValue);
 			break;
 
 		case OBJ_PLAYER:
@@ -928,7 +928,7 @@ if (playerObjP->info.nId == gameData.multiplayer.nLocalPlayer) {
 	if (ROBOTINFO (info.nId).kamikaze) {
 		ApplyDamageToRobot (info.xShields + 1, OBJ_IDX (playerObjP));
 		if (!gameStates.gameplay.bNoBotAI && (playerObjP == gameData.objs.consoleP))
-			AddPointsToScore (ROBOTINFO (info.nId).scoreValue);
+			cockpit->AddPointsToScore (ROBOTINFO (info.nId).scoreValue);
 		}
 	if (ROBOTINFO (info.nId).thief) {
 		if (gameData.ai.localInfo [OBJ_IDX (this)].mode == AIM_THIEF_ATTACK) {
@@ -1022,11 +1022,11 @@ if ((info.xShields < 0) && !(info.nFlags & (OF_EXPLODING | OF_DESTROYED))) {
 	DoReactorDestroyedStuff (this);
 	if (IsMultiGame) {
 		if (!gameStates.gameplay.bNoBotAI && (nAttacker == LOCALPLAYER.nObject))
-			AddPointsToScore (CONTROL_CEN_SCORE);
+			cockpit->AddPointsToScore (CONTROL_CEN_SCORE);
 		MultiSendDestroyReactor (OBJ_IDX (this), OBJECTS [nAttacker].info.nId);
 		}
 	else if (!gameStates.gameplay.bNoBotAI)
-		AddPointsToScore (CONTROL_CEN_SCORE);
+		cockpit->AddPointsToScore (CONTROL_CEN_SCORE);
 	CreateSound (SOUND_CONTROL_CENTER_DESTROYED);
 	Explode (0);
 	}
@@ -1538,7 +1538,7 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
 			if (!robotP->ApplyDamageToRobot (xDamage, cType.laserInfo.parent.nObject))
 				BumpTwoObjects (robotP, this, 0, vHitPt);		//only bump if not dead. no xDamage from bump
 			else if (!gameStates.gameplay.bNoBotAI && (cType.laserInfo.parent.nSignature == gameData.objs.consoleP->info.nSignature)) {
-				AddPointsToScore (botInfoP->scoreValue);
+				cockpit->AddPointsToScore (botInfoP->scoreValue);
 				DetectEscortGoalAccomplished (OBJ_IDX (robotP));
 				}
 			}
@@ -1564,7 +1564,7 @@ int CObject::CollidePlayerAndHostage (CObject* hostageP, CFixVector& vHitPt)
 {
 if (this == gameData.objs.consoleP) {
 	DetectEscortGoalAccomplished (OBJ_IDX (hostageP));
-	AddPointsToScore (HOSTAGE_SCORE);
+	cockpit->AddPointsToScore (HOSTAGE_SCORE);
 	// Do effect
 	RescueHostage (hostageP->info.nId);
 	// Remove the hostage CObject.

@@ -666,7 +666,7 @@ if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
    if (cockpit->Mode () == CM_FULL_COCKPIT) {
 		gameStates.render.cockpit.bBigWindowSwitch = 1;
 		gameStates.render.cockpit.bRedraw = 1;
-		cockpit->Toggle (CM_STATUS_BAR);
+		cockpit->Activate (CM_STATUS_BAR);
 		return;
 		}
   	gameData.objs.viewerP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
@@ -687,7 +687,7 @@ if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 else {
 	if (gameStates.render.cockpit.bBigWindowSwitch) {
 		gameStates.render.cockpit.bRedraw = 1;
-		cockpit->Toggle (CM_FULL_COCKPIT);
+		cockpit->Activate (CM_FULL_COCKPIT);
 		gameStates.render.cockpit.bBigWindowSwitch = 0;
 		return;
 		}
@@ -732,7 +732,7 @@ if (cockpit->Mode () != CM_STATUS_BAR && (gameStates.render.vr.nScreenFlags & VR
 if (gameData.render.window.h>=gameData.render.window.hMax || gameData.render.window.w>=gameData.render.window.wMax) {
 	//gameData.render.window.w = gameData.render.window.wMax;
 	//gameData.render.window[HA] = gameData.render.window.hMax;
-	SelectCockpit (CM_FULL_SCREEN);
+	cockpit->Activate (CM_FULL_SCREEN);
 	}
 else {
 	//int x, y;
@@ -836,8 +836,8 @@ if (cockpit->Mode () == CM_FULL_COCKPIT && (gameStates.render.vr.nScreenFlags & 
 	gameData.render.window.h = gameData.render.window.hMax;
 	gameData.render.window.w = gameData.render.window.wMax;
 	//!!ToggleCockpit ();
-	gameStates.render.cockpit.nNextMode = CM_FULL_COCKPIT;
-	SelectCockpit (CM_STATUS_BAR);
+	gameStates.render.cockpit.nNextType = CM_FULL_COCKPIT;
+	cockpit->Activate (CM_STATUS_BAR);
 //		ShrinkWindow ();
 //		ShrinkWindow ();
 	HUDInitMessage (TXT_COCKPIT_F3);
@@ -849,7 +849,7 @@ if (cockpit->Mode () == CM_FULL_COCKPIT && (gameStates.render.vr.nScreenFlags & 
 if (cockpit->Mode () == CM_FULL_SCREEN && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
 	//gameData.render.window.w = gameData.render.window.wMax;
 	//gameData.render.window[HA] = gameData.render.window.hMax;
-	SelectCockpit (CM_STATUS_BAR);
+	cockpit->Activate (CM_STATUS_BAR);
 	WritePlayerFile ();
 	StartTime (0);
 	return;

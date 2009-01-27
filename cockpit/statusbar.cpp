@@ -67,6 +67,13 @@ h = SB_SECONDARY_W_BOX_BOT - SB_SECONDARY_W_BOX_TOP + 1;
 
 //	-----------------------------------------------------------------------------
 
+void CStatusBar::DrawRecording (void)
+{
+CGenericCockpit::DrawRecording (0);
+}
+
+//	-----------------------------------------------------------------------------
+
 void CStatusBar::DrawCountdown (void)
 {
 CGenericCockpit::DrawCountdown (SMALL_FONT->Height () * 6);
@@ -93,11 +100,9 @@ void CStatusBar::DrawScore (void)
 
 bRedrawScore = -99 ? (IsMultiGame && !IsCoopGame) : -1;
 if (m_history [gameStates.render.vr.nCurrentPage].score == bRedrawScore) {
-	fontManager.SetCurrent (GAME_FONT);
 	fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 	nIdLabel = PrintF (&nIdLabel, SB_SCORE_LABEL_X, SB_SCORE_Y, "%s:", (IsMultiGame && !IsCoopGame) ? TXT_KILLS : TXT_SCORE);
 	}
-fontManager.SetCurrent (GAME_FONT);
 sprintf (szScore, "%5d", (IsMultiGame && !IsCoopGame) ? LOCALPLAYER.netKillsTotal : LOCALPLAYER.score);
 fontManager.Current ()->StringSize (szScore, w, h, aw);
 x = SB_SCORE_RIGHT - w - HUD_LHX (2);
@@ -126,7 +131,6 @@ if (m_info.scoreDisplay [gameStates.render.vr.nCurrentPage] == 0)
 	static int last_score_display [2] = {-1, -1};
 	static int nIdTotalScore = 0;
 
-fontManager.SetCurrent (GAME_FONT);
 m_info.scoreTime -= gameData.time.xFrame;
 if (m_info.scoreTime > 0) {
 	if (m_info.scoreDisplay [gameStates.render.vr.nCurrentPage] != last_score_display [gameStates.render.vr.nCurrentPage] || frc) {
@@ -200,7 +204,6 @@ void CStatusBar::DrawLives (void)
 	static int nIdLives [2] = {0, 0}, nIdKilled = 0;
   
 if (m_history [gameStates.render.vr.nCurrentPage].lives == -1) {
-	fontManager.SetCurrent (GAME_FONT);
 	fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 	nIdLives [0] = IsMultiGame ? 
 						PrintF (&nIdLives [0], SB_LIVES_LABEL_X, SB_LIVES_LABEL_Y, "%s:", TXT_DEATHS) : 
@@ -230,7 +233,6 @@ if ((m_history [gameStates.render.vr.nCurrentPage].lives == -1) ||
    
 	Rect (x, y, SB_SCORE_RIGHT, y + bmP->Height ());
 	if (LOCALPLAYER.lives - 1 > 0) {
-		fontManager.SetCurrent (GAME_FONT);
 		fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 		BitBlt (GAUGE_LIVES, x, y);
 		nIdLives [1] = PrintF (&nIdLives [1], x + bmP->Width () + GAME_FONT->Width (), y, "x %d", LOCALPLAYER.lives - 1);
@@ -340,10 +342,9 @@ void CStatusBar::DrawShield (void)
 	static int nIdShieldNum = 0;
 
 //draw numbers
-fontManager.SetCurrent (GAME_FONT);
 fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
 //erase old one
-LoadBitmap (gameData.pig.tex.cockpitBmIndex [cockpit->Mode () + (gameStates.video.nDisplayMode? gameData.models.nCockpits / 2 : 0)].index, 0);
+LoadBitmap (gameData.pig.tex.cockpitBmIndex [m_info.nType + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0)].index, 0);
 Rect (SB_SHIELD_NUM_X, SB_SHIELD_NUM_Y, SB_SHIELD_NUM_X + (gameStates.video.nDisplayMode ? 27 : 13), SB_SHIELD_NUM_Y + m_info.fontHeight);
 int x = SB_SHIELD_NUM_X;
 if (m_info.nShields < 100)
@@ -455,7 +456,7 @@ CGenericCockpit::DrawKillList (60, CCanvas::Current ()->Height ());
 
 void CCockpit::DrawCockpit (bool bAlphaTest)
 {
-CGenericCockpit::DrawCockpit (cockpit->Mode () + m_info.nCockpit, gameData.render.window.hMax, bAlphaTest);
+CGenericCockpit::DrawCockpit (m_info.nType + m_info.nCockpit, gameData.render.window.hMax, bAlphaTest);
 gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
 gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h)/2;
 //FillBackground ();
@@ -498,7 +499,7 @@ gameStates.render.vr.buffers.render->SetupPane (
 
 void CStatusBar::Toggle (void)
 {
-CGenericCockpit::Toggle ((gameStates.render.cockpit.nNextMode < 0) ? CM_FULL_SCREEN : CM_FULL_COCKPIT);
+CGenericCockpit::Activate ((gameStates.render.cockpit.nNextType < 0) ? CM_FULL_SCREEN : CM_FULL_COCKPIT);
 }
 
 //	-----------------------------------------------------------------------------

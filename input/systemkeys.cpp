@@ -208,7 +208,7 @@ if (gameOpts->demo.bRevertFormat && (gameData.demo.nVersion > DEMO_VERSION))
 switch (key) {
 	case KEY_F3:
 		 if (!GuidedInMainView ())
-			ToggleCockpit();
+			cockpit->Toggle ();
 		 break;
 
 	case KEY_SHIFTED+KEY_MINUS:
@@ -440,14 +440,14 @@ switch (key) {
 
 	case KEY_F3:
 		if (!GuidedInMainView ()) {
-			ToggleCockpit();
-			bScreenChanged=1;
+			cockpit->Toggle ();
+			bScreenChanged = 1;
 		}
 		break;
 
 	case KEY_F7+KEY_SHIFTED: 
-		paletteManager.SaveEffect(); 
-		JoyDefsCalibrate(); 
+		paletteManager.SaveEffect (); 
+		JoyDefsCalibrate (); 
 		paletteManager.LoadEffect (); 
 		break;
 

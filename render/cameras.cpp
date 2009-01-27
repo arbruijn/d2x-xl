@@ -13,6 +13,7 @@
 #include "render.h"
 #include "u_mem.h"
 #include "gameseg.h"
+#include "cockpit.h"
 
 #define CAMERA_READPIXELS	0
 #define TELEPORT_CAMERAS	1
@@ -453,7 +454,7 @@ int CCamera::Render (void)
 {
 gameStates.render.cameras.bActive = 1;
 if (cockpit->Mode () != CM_FULL_SCREEN)
-	SelectCockpit (CM_FULL_SCREEN);
+	cockpit->Activate (CM_FULL_SCREEN);
 gameData.objs.viewerP = m_info.objP;
 gameOpts->render.nMaxFPS = 1;
 #if RENDER2TEXTURE
@@ -732,7 +733,7 @@ if (cameraP) {
 gameData.objs.viewerP = viewerSave;
 gameOpts->render.nMaxFPS = frameCap;
 if (cockpit->Mode () != cm) {
-	SelectCockpit (cm);
+	cockpit->Activate (cm);
 	return nCamsRendered;
 	}
 return 0;

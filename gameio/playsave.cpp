@@ -2587,8 +2587,8 @@ cf.WriteShort ((short) gameData.render.window.h);
 cf.WriteByte ((sbyte) gameStates.app.nDifficultyLevel);
 cf.WriteByte ((sbyte) gameOptions [0].gameplay.nAutoLeveling);
 cf.WriteByte ((sbyte) gameOptions [0].render.cockpit.bReticle);
-cf.WriteByte ((sbyte) ((gameStates.render.cockpit.nModeSave != -1) 
-							  ? gameStates.render.cockpit.nModeSave
+cf.WriteByte ((sbyte) ((gameStates.render.cockpit.nTypeSave != -1) 
+							  ? gameStates.render.cockpit.nTypeSave
 							  : cockpit->Mode ()));   //if have saved mode, write it instead of letterbox/rear view
 cf.WriteByte ((sbyte) gameStates.video.nDefaultDisplayMode);
 cf.WriteByte ((sbyte) gameOptions [0].render.cockpit.bMissileView);

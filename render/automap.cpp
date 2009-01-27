@@ -334,7 +334,7 @@ if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) {
 	GrPrintF (NULL, CCanvas::Current ()->Width () - offs - w, offs, m_szLevelName);
 	fontManager.SetCurrent (curFont);
 	if (gameOpts->render.automap.bTextured)
-		ShowFrameRate ();
+		cockpit->ShowFrameRate ();
 	}
 }
 

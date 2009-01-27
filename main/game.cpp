@@ -230,17 +230,6 @@ extern void NDRecordCockpitChange (int);
 
 //------------------------------------------------------------------------------
 
-//selects a given cockpit (or lack of one).  See types in game.h
-void SelectCockpit (int nMode)
-{
-if (nMode != cockpit->Mode ()) {		//new nMode
-	cockpit->Mode () = nMode;
-	InitCockpit ();
-	}
-}
-
-//------------------------------------------------------------------------------
-
 //force cockpit redraw next time. call this if you've trashed the screen
 void ResetCockpit ()
 {
@@ -809,8 +798,8 @@ void CheckRearView ()
 		if (gameStates.render.bRearView) {
 			gameStates.render.bRearView = 0;
 			if (cockpit->Mode () == CM_REAR_VIEW) {
-				SelectCockpit (gameStates.render.cockpit.nModeSave);
-				gameStates.render.cockpit.nModeSave = -1;
+				cockpit->Activate (gameStates.render.cockpit.nTypeSave);
+				gameStates.render.cockpit.nTypeSave = -1;
 			}
 			if (gameData.demo.nState == ND_STATE_RECORDING)
 				NDRecordRestoreRearView ();
@@ -820,8 +809,8 @@ void CheckRearView ()
 			leave_mode = 0;		//means wait for another key
 			entryTime = TimerGetFixedSeconds ();
 			if (cockpit->Mode () == CM_FULL_COCKPIT) {
-				gameStates.render.cockpit.nModeSave = cockpit->Mode ();
-				SelectCockpit (CM_REAR_VIEW);
+				gameStates.render.cockpit.nTypeSave = cockpit->Mode ();
+				cockpit->Activate (CM_REAR_VIEW);
 			}
 			if (gameData.demo.nState == ND_STATE_RECORDING)
 				NDRecordRearView ();
@@ -840,8 +829,8 @@ void CheckRearView ()
 			if (leave_mode==1 && gameStates.render.bRearView) {
 				gameStates.render.bRearView = 0;
 				if (cockpit->Mode ()==CM_REAR_VIEW) {
-					SelectCockpit (gameStates.render.cockpit.nModeSave);
-					gameStates.render.cockpit.nModeSave = -1;
+					cockpit->Activate (gameStates.render.cockpit.nTypeSave);
+					gameStates.render.cockpit.nTypeSave = -1;
 				}
 				if (gameData.demo.nState == ND_STATE_RECORDING)
 					NDRecordRestoreRearView ();
@@ -859,10 +848,10 @@ if (gameStates.render.bRearView) {
 	}
 gameStates.render.bRearView = 0;
 if ((cockpit->Mode () < 0) || (cockpit->Mode () > 4)) {
-	if (!(gameStates.render.cockpit.nModeSave == CM_FULL_COCKPIT || gameStates.render.cockpit.nModeSave == CM_STATUS_BAR || gameStates.render.cockpit.nModeSave == CM_FULL_SCREEN))
-		gameStates.render.cockpit.nModeSave = CM_FULL_COCKPIT;
-	SelectCockpit (gameStates.render.cockpit.nModeSave);
-	gameStates.render.cockpit.nModeSave	= -1;
+	if (!(gameStates.render.cockpit.nTypeSave == CM_FULL_COCKPIT || gameStates.render.cockpit.nTypeSave == CM_STATUS_BAR || gameStates.render.cockpit.nTypeSave == CM_FULL_SCREEN))
+		gameStates.render.cockpit.nTypeSave = CM_FULL_COCKPIT;
+	cockpit->Activate (gameStates.render.cockpit.nTypeSave);
+	gameStates.render.cockpit.nTypeSave	= -1;
 	}
 }
 
@@ -1091,9 +1080,9 @@ MultiLeaveGame ();
 #endif
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	NDStopPlayback ();
-if (gameStates.render.cockpit.nModeSave != -1) {
-	cockpit->Mode () = gameStates.render.cockpit.nModeSave;
-	gameStates.render.cockpit.nModeSave = -1;
+if (gameStates.render.cockpit.nTypeSave != -1) {
+	cockpit->Mode () = gameStates.render.cockpit.nTypeSave;
+	gameStates.render.cockpit.nTypeSave = -1;
 	}
 if (gameStates.app.nFunctionMode != FMODE_EDITOR)
 	paletteManager.DisableEffect ();			// Fade out before going to menu
@@ -1200,7 +1189,7 @@ if (fErr) {
 
 //-----------------------------------------------------------------------------
 
-CCanvas *GetCurrentGameScreen (void)
+CCanvas* CurrentGameScreen (void)
 {
 return gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage;
 }

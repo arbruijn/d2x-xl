@@ -2175,18 +2175,18 @@ while (!bDone) {
 				 (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
 				saved_letter_cockpit = cockpit->Mode ();
-				SelectCockpit (CM_LETTERBOX);
+				cockpit->Activate (CM_LETTERBOX);
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				SelectCockpit (saved_letter_cockpit);
+				cockpit->Activate (saved_letter_cockpit);
 			break;
 
 		case ND_EVENT_CHANGE_COCKPIT: {
 				int dummy;
 
 			dummy = NDReadInt ();
-			SelectCockpit (dummy);
+			cockpit->Activate (dummy);
 			}
 			break;
 
@@ -2196,14 +2196,14 @@ while (!bDone) {
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
 				saved_rearview_cockpit = cockpit->Mode ();
 				if (cockpit->Mode () == CM_FULL_COCKPIT)
-					SelectCockpit (CM_REAR_VIEW);
+					cockpit->Activate (CM_REAR_VIEW);
 				gameStates.render.bRearView=1;
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				if (saved_rearview_cockpit == CM_REAR_VIEW)     // hack to be sure we get a good cockpit on restore
 					saved_rearview_cockpit = CM_FULL_COCKPIT;
-				SelectCockpit (saved_rearview_cockpit);
+				cockpit->Activate (saved_rearview_cockpit);
 				gameStates.render.bRearView = 0;
 				}
 			break;
@@ -2212,12 +2212,12 @@ while (!bDone) {
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				saved_letter_cockpit = cockpit->Mode ();
-				SelectCockpit (CM_LETTERBOX);
+				cockpit->Activate (CM_LETTERBOX);
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				SelectCockpit (saved_letter_cockpit);
+				cockpit->Activate (saved_letter_cockpit);
 			break;
 
 
@@ -2226,7 +2226,7 @@ while (!bDone) {
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				saved_rearview_cockpit = cockpit->Mode ();
 				if (cockpit->Mode () == CM_FULL_COCKPIT)
-					SelectCockpit (CM_REAR_VIEW);
+					cockpit->Activate (CM_REAR_VIEW);
 				gameStates.render.bRearView=1;
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
@@ -2234,7 +2234,7 @@ while (!bDone) {
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
 				if (saved_rearview_cockpit == CM_REAR_VIEW)     // hack to be sure we get a good cockpit on restore
 					saved_rearview_cockpit = CM_FULL_COCKPIT;
-				SelectCockpit (saved_rearview_cockpit);
+				cockpit->Activate (saved_rearview_cockpit);
 				gameStates.render.bRearView=0;
 				}
 			break;

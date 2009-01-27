@@ -806,9 +806,8 @@ typedef struct tTextureStates {
 
 typedef struct tCockpitStates {
 	int bShowPingStats;
-	int nMode;
-	int nNextMode;
-	int nModeSave;
+	int nNextType;
+	int nTypeSave;
 	int nShieldFlash;
 	int bRedraw;
 	int bBigWindowSwitch;

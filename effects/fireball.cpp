@@ -39,6 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "interp.h"
 #include "lightning.h"
 #include "dropobject.h"
+#include "cockpit.h"
 
 //#define _DEBUG
 #define EXPLOSION_SCALE (I2X (5)/2)		//explosion is the obj size times this
@@ -211,7 +212,7 @@ FORALL_OBJS (objP, i) {
 				damage /= 4;
 			if (objP->ApplyDamageToRobot (damage, nParent)) {
 				if (!gameStates.gameplay.bNoBotAI && parentP && (nParent == LOCALPLAYER.nObject))
-					AddPointsToScore (ROBOTINFO (objP->info.nId).scoreValue);
+					cockpit->AddPointsToScore (ROBOTINFO (objP->info.nId).scoreValue);
 				}
 			}
 		if (!flash && ROBOTINFO (objP->info.nId).companion)

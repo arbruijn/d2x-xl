@@ -57,6 +57,13 @@ h = SECONDARY_W_BOX_BOT - SECONDARY_W_BOX_TOP + 1;
 
 //	-----------------------------------------------------------------------------
 
+void CCockpit::DrawRecording (void)
+{
+CGenericCockpit::DrawRecording ((CCanvas::Current ()->Height () > 240) ? 40 : 15);
+}
+
+//	-----------------------------------------------------------------------------
+
 void CCockpit::DrawCountdown (void)
 {
 CGenericCockpit::DrawCountdown (SMALL_FONT->Height () * 4);
@@ -335,7 +342,6 @@ if ((yMax = FixMul (I2X (1) - gameData.physics.xAfterburnerCharge, AFTERBURNER_G
 	gameStates.render.grAlpha = FADE_LEVELS;
 	OglDrawFilledPoly (x, y, 4);
 	}
-//CCanvas::SetCurrent (GetCurrentGameScreen ());
 }
 
 //	-----------------------------------------------------------------------------
@@ -360,7 +366,6 @@ static tKeyGaugeInfo keyGaugeInfo [] = {
 
 void CCockpit::DrawKeys (void)
 {
-CCanvas::SetCurrent (GetCurrentGameScreen ());
 int bHires = gameStates.video.nDisplayMode != 0;
 for (int i = 0; i < 3; i++)
 	BitBlt ((LOCALPLAYER.flags & keyGaugeInfo [i].nFlag) ? keyGaugeInfo [i].nGaugeOn : keyGaugeInfo [i].nGaugeOff, keyGaugeInfo [i].x [bHires], keyGaugeInfo [i].y [bHires]);
@@ -472,7 +477,7 @@ return true;
 
 void CCockpit::Toggle (void)
 {
-CGenericCockpit::Toggle (CM_STATUS_BAR);
+CGenericCockpit::Activate (CM_STATUS_BAR);
 }
 
 //	-----------------------------------------------------------------------------

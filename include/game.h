@@ -154,27 +154,10 @@ int TimeStopped (void);
 
 // If automapFlag == 1, then call automap routine to write message.
 
-extern CCanvas * GetCurrentGameScreen();
-
-extern int Cockpit_mode;        // what sort of cockpit or window is up?
-extern int Game_window_w,       // width and height of CPlayerData's game window
-           Game_window_h;
-
-extern int RearView;           // if true, looking back.
+CCanvas* CurrentGameScreen();
 
 // initalize flying
 void FlyInit(CObject *obj);
-
-// selects a given cockpit (or lack of one).
-void SelectCockpit(int mode);
-
-// force cockpit redraw next time. call this if you've trashed the screen
-void ResetCockpit(void);       // called if you've trashed the screen
-
-// functions to save, clear, and resture palette flash effects
-void PaletteSave(void);
-void ResetPaletteAdd(void);
-void PaletteRestore(void);
 
 // put up the help message
 void DoShowHelp();
