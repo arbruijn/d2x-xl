@@ -34,7 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "newdemo.h"
 #include "scores.h"
 #include "text.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "hudmsg.h"
 #include "sphere.h"
 #include "escort.h"

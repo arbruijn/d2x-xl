@@ -46,7 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "timer.h"
 #include "text.h"
 #include "reactor.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "powerup.h"
 #include "fuelcen.h"
 #include "mission.h"

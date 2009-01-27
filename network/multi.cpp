@@ -27,7 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network.h"
 #include "network_lib.h"
 #include "objsmoke.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "collide.h"
 #include "error.h"
 #include "fireball.h"

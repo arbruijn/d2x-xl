@@ -36,7 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "objrender.h"
 #include "transprender.h"
 #include "screens.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "terrain.h"
 #include "newdemo.h"
 #include "fireball.h"

@@ -21,7 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 
 #include "descent.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "menu.h"
 #include "error.h"
 #include "gameseg.h"

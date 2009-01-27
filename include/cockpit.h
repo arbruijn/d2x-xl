@@ -11,8 +11,8 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-#ifndef _GENERICCOCKPIT_H
-#define _GENERICCOCKPIT_H
+#ifndef _COCKPIT_H
+#define _COCKPIT_H
 
 #include "fix.h"
 #include "gr.h"
@@ -27,29 +27,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Flags for gauges/hud stuff
 extern ubyte Reticle_on;
 
-void InitGaugeCanvases();
-void CloseGaugeCanvases();
-
-void ShowScore ();
-void ShowScoreAdded ();
-void AddPointsToScore (int);
-void AddBonusPointsToScore (int);
-
-void RenderGauges(void);
-void InitGauges(void);
-void check_erase_message(void);
-
-void HUDRenderMessageFrame();
-void HUDClearMessages();
-
 // Call to flash a message on the HUD.  Returns true if message drawn.
 // (message might not be drawn if previous message was same)
 #define gauge_message HUDInitMessage
-
-void PlayerDeadMessage(void);
-//void say_afterburner_status(void);
-
-extern tRgbColorb playerColors [];
 
 #define WBU_WEAPON			0       // the weapons display
 #define WBUMSL					1       // the missile view
@@ -61,15 +41,6 @@ extern tRgbColorb playerColors [];
 #define WBU_STATIC			7       // playing static after missile hits
 #define WBU_RADAR_TOPDOWN	8
 #define WBU_RADAR_HEADSUP	9
-
-// draws a 3d view into one of the cockpit windows.  win is 0 for
-// left, 1 for right.  viewer is CObject.  NULL CObject means give up
-// window user is one of the WBU_ constants.  If rearViewFlag is
-// set, show a rear view.  If label is non-NULL, print the label at
-// the top of the window.
-void FreeInventoryIcons (void);
-void FreeObjTallyIcons (void);
-void HUDShowIcons (void);
 
 #define SHOW_COCKPIT	((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nMode == CM_STATUS_BAR))
 #define SHOW_HUD		(!gameStates.app.bEndLevelSequence && (!gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || !SHOW_COCKPIT))
@@ -375,4 +346,12 @@ class CRearView : public CGenericCockpit {
 
 //	-----------------------------------------------------------------------------
 
-#endif /* _GENERICCOCKPIT_H */
+void FreeInventoryIcons (void);
+void FreeObjTallyIcons (void);
+void HUDShowIcons (void);
+
+extern tRgbColorb playerColors [];
+
+//	-----------------------------------------------------------------------------
+
+#endif // _COCKPIT_H

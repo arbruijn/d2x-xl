@@ -42,7 +42,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "screens.h"
 #include "textures.h"
 #include "slew.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "texmap.h"
 #include "menu.h"
 #include "gameseg.h"

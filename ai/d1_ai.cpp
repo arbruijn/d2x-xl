@@ -51,7 +51,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "loadgame.h"
 #include "key.h"
 #include "powerup.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "text.h"
 #include "gameseg.h"
 

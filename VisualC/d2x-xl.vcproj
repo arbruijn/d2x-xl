@@ -3802,11 +3802,11 @@
 					Name="Header Files"
 					>
 					<File
-						RelativePath="..\include\gauges.h"
+						RelativePath="..\include\cockpit.h"
 						>
 					</File>
 					<File
-						RelativePath="..\include\genericcockpit.h"
+						RelativePath="..\include\gauges.h"
 						>
 					</File>
 					<File
@@ -4393,11 +4393,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

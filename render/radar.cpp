@@ -22,7 +22,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "descent.h"
 #include "render.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "automap.h"
 #include "ogl_render.h"
 

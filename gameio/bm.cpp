@@ -46,7 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "aistruct.h"
 #include "robot.h"
 #include "weapon.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "player.h"
 #include "endlevel.h"
 #include "reactor.h"

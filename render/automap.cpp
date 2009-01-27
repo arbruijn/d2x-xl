@@ -39,7 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "kconfig.h"
 #include "endlevel.h"
 #include "text.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "gameseg.h"
 #include "gamecntl.h"
 #include "input.h"

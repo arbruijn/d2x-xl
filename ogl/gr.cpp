@@ -33,7 +33,7 @@
 #include "mono.h"
 #include "args.h"
 #include "key.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "render.h"
 #include "particles.h"
 #include "glare.h"

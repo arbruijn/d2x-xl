@@ -24,7 +24,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "text.h"
 #include "network.h"
 #include "gameseg.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "dropobject.h"
 
 extern void MultiSendStolenItems();

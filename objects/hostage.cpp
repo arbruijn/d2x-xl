@@ -21,7 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "descent.h"
 #include "error.h"
 #include "objrender.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "hostage.h"
 #include "newdemo.h"
 #include "text.h"

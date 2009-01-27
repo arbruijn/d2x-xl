@@ -48,7 +48,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "state.h"
 #include "movie.h"
 #include "gamepal.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "strutil.h"
 #include "reorder.h"
 #include "ogl_render.h"

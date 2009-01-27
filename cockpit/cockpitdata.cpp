@@ -36,7 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_bitmap.h"
 #include "ogl_hudstuff.h"
 #include "playsave.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "hud_defs.h"
 #include "statusbar.h"
 #include "slowmotion.h"

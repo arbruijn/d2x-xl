@@ -24,7 +24,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "objrender.h"
 #include "key.h"
 #include "fireball.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "text.h"
 #include "scores.h"
 #include "light.h"

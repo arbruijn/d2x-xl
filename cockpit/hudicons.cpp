@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_hudstuff.h"
 #include "slowmotion.h"
 #include "network.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "headlight.h"
 #include "hudicons.h"
 

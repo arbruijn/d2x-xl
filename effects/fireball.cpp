@@ -26,7 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "vecmat.h"
 
 #include "descent.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "escort.h"
 #include "fireball.h"
 #include "collide.h"

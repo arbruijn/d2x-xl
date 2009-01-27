@@ -72,7 +72,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "render.h"
 #include "ogl_render.h"
 #include "loadgame.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "newdemo.h"
 #include "automap.h"
 #include "piggy.h"

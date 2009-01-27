@@ -50,7 +50,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "text.h"
 #include "mono.h"
 #include "state.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "screens.h"
 #include "powerup.h"
 #include "makesig.h"

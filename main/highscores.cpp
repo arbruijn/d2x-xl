@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "timer.h"
 #include "text.h"
 #include "highscores.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "gamefont.h"
 #include "network.h"
 #include "network_lib.h"

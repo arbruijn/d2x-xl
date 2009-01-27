@@ -52,7 +52,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_color.h"
 #include "ogl_render.h"
 #include "ogl_fastrender.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "input.h"
 #include "shadows.h"
 #include "textdata.h"

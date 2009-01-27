@@ -40,7 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "dynlight.h"
 #include "interp.h"
 #include "newdemo.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "text.h"
 #include "sphere.h"
 #include "input.h"

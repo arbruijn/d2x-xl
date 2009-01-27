@@ -30,7 +30,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #include "joy.h"
 #include "mouse.h"
 #include "kconfig.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "render.h"
 #include "endlevel.h"
 #include "timer.h"

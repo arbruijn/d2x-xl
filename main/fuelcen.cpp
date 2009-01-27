@@ -22,7 +22,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "descent.h"
 #include "gameseg.h"
 #include "error.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "fireball.h"
 #include "gamesave.h"
 #include "collide.h"

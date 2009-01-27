@@ -31,7 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "render.h"
 #include "fireball.h"
 #include "hostage.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "scores.h"
 #include "textures.h"
 #include "newdemo.h"

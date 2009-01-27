@@ -43,7 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "collide.h"
 #include "light.h"
 #include "newdemo.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "text.h"
 #include "d_io.h"
 #include "timer.h"

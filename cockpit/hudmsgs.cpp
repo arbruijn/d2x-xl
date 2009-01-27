@@ -23,7 +23,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "descent.h"
 #include "u_mem.h"
 #include "strutil.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "error.h"
 #include "newdemo.h"
 #include "gamefont.h"

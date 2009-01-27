@@ -49,7 +49,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "screens.h"
 #include "textures.h"
 #include "slew.h"
-#include "gauges.h"
+#include "cockpit.h"
 #include "texmap.h"
 #include "3d.h"
 #include "effects.h"
@@ -164,7 +164,7 @@ void FilterObjectsFromLevel (void);
 void ResetShipData (void);
 void CopyDefaultsToRobotsAll (void);
 
-//	HUDClearMessages external, declared in gauges.h
+//	HUDClearMessages external, declared in cockpit.h
 #ifndef _GAUGES_H
 void HUDClearMessages (); // From hud.c
 #endif
