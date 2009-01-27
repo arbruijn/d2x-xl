@@ -672,7 +672,7 @@ RegisterConfig (kcHotkeys, KcHotkeySize (), "hotkeys.");
 int CPlayerProfile::Save (void)
 {
 if (m_cf.File ())
-	return 0;
+	return 1;
 
 	char			fn [FILENAME_LEN];
 	CParam		*pp;
@@ -732,7 +732,7 @@ return Set (szParam, pszValue);
 int CPlayerProfile::Load (void)
 {
 if (m_cf.File ())
-	return 0;
+	return 1;
 
 	char	fn [FILENAME_LEN];
 
