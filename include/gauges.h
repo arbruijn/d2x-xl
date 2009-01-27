@@ -86,6 +86,8 @@ int CanSeeObject(int nObject, int bCheckObjs);
 void ShowFrameRate (void);
 void ToggleCockpit ();
 
+extern CGenericCockpit*	cockpit;
+
 #define SHOW_COCKPIT	((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nMode == CM_STATUS_BAR))
 #define SHOW_HUD		(!gameStates.app.bEndLevelSequence && (!gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || !SHOW_COCKPIT))
 #define HIDE_HUD		(gameStates.app.bEndLevelSequence || (!(gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) && (gameStates.render.cockpit.nMode >= CM_FULL_SCREEN)))

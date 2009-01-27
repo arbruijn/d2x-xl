@@ -836,7 +836,7 @@ void CHUD::DrawInvulnerableShip (void)
 {
 }
 
-//	---------------------------------------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
 
 void DrawCockpit (bool bAlphaTest)
 {
@@ -845,13 +845,29 @@ gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window
 //FillBackground ();
 }
 
-//	---------------------------------------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
 
-static int cockpitWindowScale [4] = {6, 5, 4, 3};
+bool CHUD::Setup (void)
+{
+if (!CGenericCockpit::Setup ())
+	return false;
+gameData.render.window.hMax = screen.Height ();
+gameData.render.window.h = gameData.render.window.hMax;
+gameData.render.window.w = gameData.render.window.wMax;
+gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
+gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h)/2;
+GameInitRenderSubBuffers (gameData.render.window.x, gameData.render.window.y, gameData.render.window.w, gameData.render.window.h);
+return true;
+}
+
+//	-----------------------------------------------------------------------------
 
 void CHUD::SetupWindow (int nWindow)
 {
-int y, x;
+	static int cockpitWindowScale [4] = {6, 5, 4, 3};
+
+	int y, x;
+
 int w = (int) (gameStates.render.vr.buffers.render [0].Width () / cockpitWindowScale [gameOpts->render.cockpit.nWindowSize] * HUD_ASPECT);	
 int h = I2X (w) / screen.Aspect ();
 int dx = (nWindow == 0) ? -w - w / 10 : w / 10;
@@ -902,6 +918,38 @@ SW_w [nWindow] = w;
 SW_h [nWindow] = h;
 
 gameStates.render.vr.buffers.render [0].SetupPane (&windowCanv, y, x, w, h);
+}
+
+//	-----------------------------------------------------------------------------
+
+void CHUD::Toggle (void)
+{
+cockpit = letterboxCockpit;
+CGenericCockpit::Toggle ();
+}
+
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
+
+bool CWideHUD::Setup (void)
+{
+if (!CGenericCockpit::Setup ())
+	return false;
+int x = 0;
+int w = gameStates.render.vr.buffers.render[0].Width ();		//VR_render_width;
+int h = (int) ((gameStates.render.vr.buffers.render [0].Height () * 7) / 10 / ((double) screen.Height () / (double) screen.Width () / 0.75));
+int y = (gameStates.render.vr.buffers.render [0].Height () - h) / 2;
+GameInitRenderSubBuffers (x, y, w, h);
+return true;
+}
+
+//	-----------------------------------------------------------------------------
+
+void CWideHUD::Toggle (void)
+{
+cockpit = fullCockpit;
+CGenericCockpit::Toggle ();
 }
 
 //	-----------------------------------------------------------------------------

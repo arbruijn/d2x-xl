@@ -63,7 +63,13 @@ CCanvas *numericalGaugeCanv;
 #define SB_PRIMARY_BOX				 (!gameStates.video.nDisplayMode ? 2 : 6)
 #define SB_SECONDARY_BOX			 (!gameStates.video.nDisplayMode ? 3 : 7)
 
-CCockpit cockpit;
+CHUD			hudCockpit;
+CWideHUD		letterboxCockpit;
+CCockpit		fullCockpit;
+CStatusBar	statusBarCockpit;
+CRearView	rearViewCockpit;
+
+CGenericCockpit* cockpit = fullCockpit;
 
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
@@ -146,7 +152,7 @@ return bmP;
 
 //	-----------------------------------------------------------------------------
 
-int _CDECL_ CGenericCockpit::Print (int *idP, int x, int y, const char *pszFmt, ...)
+int _CDECL_ CGenericCockpit::PrintF (int *idP, int x, int y, const char *pszFmt, ...)
 {
 	static char szBuf [1000];
 	va_list args;
@@ -170,6 +176,67 @@ if (fractional > 99)
 	fractional = 99;
 sprintf (pszVal, "%d.%02d", decimal, fractional);
 return pszVal;
+}
+
+//------------------------------------------------------------------------------
+
+void CGenericCockpit::DrawFrameRate (void)
+{
+	static fix frameTimeList [8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	static fix frameTimeTotal = 0;
+	static int frameTimeCounter = 0;
+	static int nIdFrameRate = 0;
+
+if (gameStates.render.bShowFrameRate) {
+		static time_t t, t0 = -1;
+
+		char	szItem [50];
+		int	x = 11, y; // position measured from lower right corner
+
+	frameTimeTotal += gameData.time.xRealFrame - frameTimeList [frameTimeCounter];
+	frameTimeList [frameTimeCounter] = gameData.time.xRealFrame;
+	frameTimeCounter = (frameTimeCounter + 1) % 8;
+	if (gameStates.render.bShowFrameRate == 1) {
+		static fix xRate = 0;
+
+		char szRate [20];
+		t = SDL_GetTicks ();
+		if ((t0 < 0) || (t - t0 >= 500)) {
+			t0 = t;
+			xRate = frameTimeTotal ? FixDiv (I2X (1) * 8, frameTimeTotal) : 0;
+			}
+		sprintf (szItem, "FPS: %s", ftoa (szRate, xRate));
+		}
+	else if (gameStates.render.bShowFrameRate == 2) {
+		sprintf (szItem, "Faces: %d ", gameData.render.nTotalFaces);
+		}
+	else if (gameStates.render.bShowFrameRate == 3) {
+		sprintf (szItem, "Transp: %d ", transparencyRenderer.ItemCount ());
+		}
+	else if (gameStates.render.bShowFrameRate == 4) {
+		sprintf (szItem, "Objects: %d/%d ", gameData.render.nTotalObjects, gameData.render.nTotalSprites);
+		}
+	else if (gameStates.render.bShowFrameRate == 5) {
+		sprintf (szItem, "States: %d/%d ", gameData.render.nStateChanges, gameData.render.nShaderChanges);
+		}
+	else if (gameStates.render.bShowFrameRate == 6) {
+		sprintf (szItem, "Lights/Face: %1.2f (%d)",
+					(float) gameData.render.nTotalLights / (float) gameData.render.nTotalFaces,
+					gameData.render.nMaxLights);
+		x = 19;
+		}
+	if (automap.m_bDisplay)
+		y = 2;
+	else if (IsMultiGame)
+		y = 7;
+	else
+		y = 6;
+	fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
+	nIdFrameRate = GrPrintF (&nIdFrameRate,
+									 CCanvas::Current ()->Width () - (x * GAME_FONT->Width ()),
+									 CCanvas::Current ()->Height () - y * (GAME_FONT->Height () + GAME_FONT->Height () / 4),
+									 szItem);
+	}
 }
 
 //	-----------------------------------------------------------------------------
@@ -212,7 +279,10 @@ GrPrintF (NULL, grdCurCanv->cv_w - 2 * w - HUD_LHX (2), 3, szScore);
 
 void CGenericCockpit::DrawTime (void)
 {
-if (gameStates.render.bShowTime) {
+if (HIDE_HUD)
+	return;
+
+if (gameStates.render.bShowTime && !(IsMultiGame && gameData.multigame.kills.bShowList)) {
 		int secs = X2I (LOCALPLAYER.timeLevel) % 60;
 		int mins = X2I (LOCALPLAYER.timeLevel) / 60;
 
@@ -270,33 +340,11 @@ void CGenericCockpit::DrawOrbs (int x, int y)
 if (HIDE_HUD)
 	return;
 if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
-	int x = 0, y = 0;
-	CBitmap *bmP = NULL;
-
-	if (nMode == CM_FULL_COCKPIT) {
-		y = 2*nLineSpacing;
-		x = 4*GAME_FONT->Width ();
-		}
-	else if (nMode == CM_STATUS_BAR) {
-		y = nLineSpacing;
-		x = GAME_FONT->Width ();
-		}
-	else if ((nMode == CM_FULL_SCREEN) ||
-				(nMode == CM_LETTERBOX)) {
-//			y = 5*nLineSpacing;
-		y = nLineSpacing;
-		x = GAME_FONT->Width ();
-		if (gameStates.render.fonts.bHires)
-			y += nLineSpacing;
-		}
-	else
-		Int3 ();		//what sort of cockpit?
-
 	bmP = BitBlt (-1, x, y, false, false, I2X (1), 0, &gameData.hoard.icon [gameStates.render.fonts.bHires].bm);
 	//GrUBitmapM (x, y, bmP);
 
 	x += bmP->Width () + bmP->Width ()/2;
-	y+= (gameStates.render.fonts.bHires?2:1);
+	y += gameStates.render.fonts.bHires + 1;
 	if (gameData.app.nGameMode & GM_ENTROPY) {
 		char	szInfo [20];
 		int	w, h, aw;
@@ -1186,6 +1234,9 @@ if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL
 //draw all the things on the HUD
 void CGenericCockpit::Render (void)
 {
+if (HIDE_HUD)
+	return;
+
 CCanvas::SetCurrent (GetCurrentGameScreen ());
 fontManager.SetCurrent (GAME_FONT);
 m_info.fontWidth = CCanvas::Current ()->Font ()->Width ();
@@ -1214,11 +1265,13 @@ else
 	m_info.yGaugeScale = 1;
 
 DrawCockpit (false);
-ShowScore ();
+DrawFrameRate ();
+DrawSlowMotion ();
+DrawScore ();
 if (m_info.scoreTime)
-	ShowScoreAdded ();
-ShowTimerCount ();
-ShowHomingWarning ();
+	DrawScoreAdded ();
+DrawTimerCount ();
+DrawwHomingWarning ();
 
 DrawEnergy ();
 DrawShield ();
@@ -1227,21 +1280,14 @@ DrawWeapons ();
 DrawKeys ();
 DrawCloak ();
 ShowInvul ();
-
-if ((gameData.demo.nState == ND_STATE_RECORDING) && (LOCALPLAYER.flags != m_info.old [gameStates.render.vr.nCurrentPage].flags)) {
-	NDRecordPlayerFlags (m_info.old [gameStates.render.vr.nCurrentPage].flags, LOCALPLAYER.flags);
-	m_info.old [gameStates.render.vr.nCurrentPage].flags = LOCALPLAYER.flags;
-	}
-if (!(IsMultiGame && gameData.multigame.kills.bShowList))
-	ShowTime ();
+DrawPlayerNames ();
+DrawFlag ();
+DrawOrbs ();
+DrawLives ();
+DrawKillList ();
+DrawTime ();
 if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead && !transformation.m_info.bUsePlayerHeadAngles)
 	ShowReticle (0);
-DrawPlayerNames ();
-ShowFlag ();
-ShowOrbs ();
-HUDRenderMessageFrame ();
-ShowLives ();
-ShowKillList ();
 if (m_info.nMode != CM_REAR_VIEW) {
 	HUDRenderMessageFrame ();
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
@@ -1254,60 +1300,40 @@ if (m_info.nMode != CM_REAR_VIEW) {
 //print out some CPlayerData statistics
 void CGenericCockpit::RenderGauges (void)
 {
-	static int old_display_mode = 0;
-
-if (HIDE_HUD)
-	return;
-
-Assert ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nMode == CM_STATUS_BAR));
-// check to see if our display mode has changed since last render time --
-// if so, then we need to make new gauge canvases.
-if (nShields < 0)
-	nShields = 0;
-//CCanvas::SetCurrent (GetCurrentGameScreen ());
-if (gameData.demo.nState == ND_STATE_RECORDING)
-	if (LOCALPLAYER.homingObjectDist >= 0)
-		NDRecordHomingDistance (LOCALPLAYER.homingObjectDist);
-
 DrawEnergyBar (nEnergy);
 DrawShieldBar (nShields);
 DrawAfterburnerBar (gameData.physics.xAfterburnerCharge);
 DrawWeapons ();
-DrwawKeys ();
+DrawKeys ();
 DrawHomingWarning ();
 DrawBombCount (BOMB_COUNT_X, BOMB_COUNT_Y, BLACK_RGBA, gameStates.render.cockpit.nMode == CM_FULL_COCKPIT);
 DrawPlayerShip ();
-DrawInvulnerableShip ();
 
-if (nEnergy != m_info.history [gameStates.render.vr.nCurrentPage].energy) {
-	if (gameData.demo.nState == ND_STATE_RECORDING) {
+if (gameData.demo.nState == ND_STATE_RECORDING) {
+	if (LOCALPLAYER.homingObjectDist >= 0)
+		NDRecordHomingDistance (LOCALPLAYER.homingObjectDist);
+
+	if (nEnergy != m_info.history [gameStates.render.vr.nCurrentPage].energy) {
 		NDRecordPlayerEnergy (m_info.history [gameStates.render.vr.nCurrentPage].energy, nEnergy);
+		m_info.history [gameStates.render.vr.nCurrentPage].energy = nEnergy;
 		}
-	m_info.history [gameStates.render.vr.nCurrentPage].energy = nEnergy;
-	}
 
-if (gameData.physics.xAfterburnerCharge != m_info.history [gameStates.render.vr.nCurrentPage].afterburner) {
-	if (gameData.demo.nState == ND_STATE_RECORDING) {
+	if (gameData.physics.xAfterburnerCharge != m_info.history [gameStates.render.vr.nCurrentPage].afterburner) {
 		NDRecordPlayerAfterburner (m_info.history [gameStates.render.vr.nCurrentPage].afterburner, gameData.physics.xAfterburnerCharge);
+		m_info.history [gameStates.render.vr.nCurrentPage].afterburner = gameData.physics.xAfterburnerCharge;
 		}
-	m_info.history [gameStates.render.vr.nCurrentPage].afterburner = gameData.physics.xAfterburnerCharge;
-	}
 
-if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)
-	m_info.history [gameStates.render.vr.nCurrentPage].shields = nShields ^ 1;
-else {
-	if (nShields != m_info.history [gameStates.render.vr.nCurrentPage].shields) {		// Draw the shield gauge
-		if (gameData.demo.nState == ND_STATE_RECORDING) {
+	if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)
+		m_info.history [gameStates.render.vr.nCurrentPage].shields = nShields ^ 1;
+	else {
+		if (nShields != m_info.history [gameStates.render.vr.nCurrentPage].shields) {		// Draw the shield gauge
 			NDRecordPlayerShields (m_info.history [gameStates.render.vr.nCurrentPage].shields, nShields);
+			m_info.history [gameStates.render.vr.nCurrentPage].shields = nShields;
 			}
-		m_info.history [gameStates.render.vr.nCurrentPage].shields = nShields;
-		}
-	}
-if (LOCALPLAYER.flags != m_info.old [gameStates.render.vr.nCurrentPage].flags) {
-	if (gameData.demo.nState == ND_STATE_RECORDING)
+	if (LOCALPLAYER.flags != m_info.old [gameStates.render.vr.nCurrentPage].flags) {
 		NDRecordPlayerFlags (m_info.old [gameStates.render.vr.nCurrentPage].flags, LOCALPLAYER.flags);
-	m_info.old [gameStates.render.vr.nCurrentPage].flags = LOCALPLAYER.flags;
-	}
+		m_info.old [gameStates.render.vr.nCurrentPage].flags = LOCALPLAYER.flags;
+		}
 	}
 m_info.history [gameStates.render.vr.nCurrentPage].bCloak = bCloak;
 }
@@ -1434,7 +1460,7 @@ else {
 	//CCanvas::SetCurrent (GetCurrentGameScreen ());
 	}
 //force redraw when done
-oldWeapon [nWindow][gameStates.render.vr.nCurrentPage] = oldAmmoCount [nWindow][gameStates.render.vr.nCurrentPage] = -1;
+m_info.history [gameStates.render.vr.nCurrentPage].weapon [nWindow] = oldAmmoCount [nWindow][gameStates.render.vr.nCurrentPage] = -1;
 
 abort:;
 
@@ -1443,120 +1469,41 @@ CCanvas::Pop ();
 gameStates.render.bRearView = bRearViewSave;
 }
 
-//------------------------------------------------------------------------------
-
-char *ftoa (char *pszVal, fix f)
+//	---------------------------------------------------------------------------------------------------------
+//	Call when picked up a laser powerup.
+//	If laser is active, set oldWeapon [0] to -1 to force redraw.
+void CGenericCockpit::UpdateLaserWeaponInfo (void)
 {
-	int decimal, fractional;
+if (m_info.history [gameStates.render.vr.nCurrentPage].weapon [0] == 0)
+	if (!(LOCALPLAYER.laserLevel > MAX_LASER_LEVEL && oldLaserLevel [gameStates.render.vr.nCurrentPage] <= MAX_LASER_LEVEL))
+		m_info.history [gameStates.render.vr.nCurrentPage].weapon [0] = -1;
+}
 
-decimal = X2I (f);
-fractional = ((f & 0xffff) * 100) / 65536;
-if (fractional < 0)
-	fractional = -fractional;
-if (fractional > 99)
-	fractional = 99;
-sprintf (pszVal, "%d.%02d", decimal, fractional);
-return pszVal;
+//------------------------------------------------------------------------------
+//initialize the various canvases on the game screen
+//called every time the screen mode or cockpit changes
+bool CGenericCockpit::Setup (void)
+{
+if (gameStates.video.nScreenMode != SCREEN_GAME)
+	return false;
+if (gameData.demo.nState == ND_STATE_RECORDING)
+	NDRecordCockpitChange (gameStates.render.cockpit.nMode);
+if (gameStates.render.vr.nRenderMode != VR_NONE)
+	gameStates.render.cockpit.nMode = CM_FULL_SCREEN;
+if (gameStates.video.nScreenMode == SCREEN_EDITOR)
+	gameStates.render.cockpit.nMode = CM_FULL_SCREEN;
+CCanvas::SetCurrent (NULL);
+fontManager.SetCurrent (GAME_FONT);
+gameStates.render.cockpit.nShieldFlash = 0;
+return true;
 }
 
 //------------------------------------------------------------------------------
 
-fix frameTimeList [8] = {0, 0, 0, 0, 0, 0, 0, 0};
-fix frameTimeTotal = 0;
-int frameTimeCounter = 0;
-
-//	-----------------------------------------------------------------------------
-
-void CGenericCockpit::DrawFrameRate (void)
+void CGenericCockpit::Toggle (void)
 {
-	static int nIdFrameRate = 0;
-
-if (gameStates.render.bShowFrameRate) {
-		static time_t t, t0 = -1;
-
-		char	szItem [50];
-		int	x = 11, y; // position measured from lower right corner
-
-	frameTimeTotal += gameData.time.xRealFrame - frameTimeList [frameTimeCounter];
-	frameTimeList [frameTimeCounter] = gameData.time.xRealFrame;
-	frameTimeCounter = (frameTimeCounter + 1) % 8;
-	if (gameStates.render.bShowFrameRate == 1) {
-		static fix xRate = 0;
-
-		char szRate [20];
-		t = SDL_GetTicks ();
-		if ((t0 < 0) || (t - t0 >= 500)) {
-			t0 = t;
-			xRate = frameTimeTotal ? FixDiv (I2X (1) * 8, frameTimeTotal) : 0;
-			}
-		sprintf (szItem, "FPS: %s", ftoa (szRate, xRate));
-		}
-	else if (gameStates.render.bShowFrameRate == 2) {
-		sprintf (szItem, "Faces: %d ", gameData.render.nTotalFaces);
-		}
-	else if (gameStates.render.bShowFrameRate == 3) {
-		sprintf (szItem, "Transp: %d ", transparencyRenderer.ItemCount ());
-		}
-	else if (gameStates.render.bShowFrameRate == 4) {
-		sprintf (szItem, "Objects: %d/%d ", gameData.render.nTotalObjects, gameData.render.nTotalSprites);
-		}
-	else if (gameStates.render.bShowFrameRate == 5) {
-		sprintf (szItem, "States: %d/%d ", gameData.render.nStateChanges, gameData.render.nShaderChanges);
-		}
-	else if (gameStates.render.bShowFrameRate == 6) {
-		sprintf (szItem, "Lights/Face: %1.2f (%d)",
-					(float) gameData.render.nTotalLights / (float) gameData.render.nTotalFaces,
-					gameData.render.nMaxLights);
-		x = 19;
-		}
-	if (automap.m_bDisplay)
-		y = 2;
-	else if (IsMultiGame)
-		y = 7;
-	else
-		y = 6;
-	fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
-	nIdFrameRate = GrPrintF (&nIdFrameRate,
-									 CCanvas::Current ()->Width () - (x * GAME_FONT->Width ()),
-									 CCanvas::Current ()->Height () - y * (GAME_FONT->Height () + GAME_FONT->Height () / 4),
-									 szItem);
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void CGenericCockpit::ToggleCockpit (void)
-{
-	int nNewMode;
-
-switch (gameStates.render.cockpit.nMode) {
-	case CM_FULL_COCKPIT:
-		nNewMode = CM_STATUS_BAR;
-		break;
-
-	case CM_STATUS_BAR:
-		if (gameStates.render.bRearView)
-			return;
-		nNewMode = (gameStates.render.cockpit.nNextMode < 0) ? CM_FULL_SCREEN : CM_FULL_COCKPIT;
-		break;
-
-	case CM_FULL_SCREEN:
-		if (gameStates.render.bRearView)
-			return;
-		nNewMode = CM_LETTERBOX;
-		break;
-
-	case CM_LETTERBOX:
-		nNewMode = CM_FULL_COCKPIT;
-		break;
-
-	case CM_REAR_VIEW:
-   default:
-		return;			//do nothing
-		break;
-	}
 gameStates.render.cockpit.nNextMode = -1;
-SelectCockpit (nNewMode);
+cockpit->Setup ();
 HUDClearMessages ();
 WritePlayerFile ();
 }

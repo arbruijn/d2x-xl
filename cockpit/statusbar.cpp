@@ -494,7 +494,27 @@ DrawBombCount (SB_BOMB_COUNT_X, SB_BOMB_COUNT_Y, BLACK_RGBA, 0);
 DrawPlayerShip (bCloak, m_info.old [gameStates.render.vr.nCurrentPage].bCloak, SB_SHIP_GAUGE_X, SB_SHIP_GAUGE_Y);
 }
 
-//	---------------------------------------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
+
+bool CStatusBar::Setup (void)
+{
+if (!CGenericCockpit::Setup ())
+	return false;
+int h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [CM_STATUS_BAR + (gameStates.video.nDisplayMode ? (gameData.models.nCockpits / 2) : 0)].index].Height ();
+if (gameStates.app.bDemoData)
+	h *= 2;
+if (screen.Height () > 480)
+	h = (int) ((double) h * (double) screen.Height () / 480.0);
+gameData.render.window.hMax = screen.Height () - h;
+gameData.render.window.h = gameData.render.window.hMax;
+gameData.render.window.w = gameData.render.window.wMax;
+gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w) / 2;
+gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h) / 2;
+GameInitRenderSubBuffers (gameData.render.window.x, gameData.render.window.y, gameData.render.window.w, gameData.render.window.h);
+return true;
+}
+
+//	-----------------------------------------------------------------------------
 
 void CStatusBar::SetupWindow (int nWindow)
 {
@@ -507,6 +527,14 @@ nArea = SB_PRIMARY_BOX + nWindow;
 		HUD_SCALE_X (hudAreaP->right - hudAreaP->left+1),
 		HUD_SCALE_Y (hudAreaP->bot - hudAreaP->top+1));
 	}
+}
+
+//	-----------------------------------------------------------------------------
+
+void CStatusBar::Toggle (void)
+{
+cockpit = (gameStates.render.cockpit.nNextMode < 0) ? hudCockpit : fullCockpit;
+CGenericCockpit::Toggle ();
 }
 
 //	-----------------------------------------------------------------------------

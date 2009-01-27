@@ -457,28 +457,14 @@ if ((m_info.tInvul > I2X (4)) || ((m_info.tInvul > 0) && (gameData.time.xGame & 
 	}
 }
 
-//	---------------------------------------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
 
 void DrawCockpit (bool bAlphaTest)
 {
 DrawCockpit (nCockpit, 0, bAlphaTest);
 }
 
-//	---------------------------------------------------------------------------------------------------------
-//	Call when picked up a laser powerup.
-//	If laser is active, set oldWeapon [0] to -1 to force redraw.
-void UpdateLaserWeaponInfo (void)
-{
-	if (oldWeapon [0][gameStates.render.vr.nCurrentPage] == 0)
-		if (!(LOCALPLAYER.laserLevel > MAX_LASER_LEVEL && oldLaserLevel [gameStates.render.vr.nCurrentPage] <= MAX_LASER_LEVEL))
-			oldWeapon [0][gameStates.render.vr.nCurrentPage] = -1;
-}
-
-void FillBackground (void);
-
-int SW_drawn [2], SW_x [2], SW_y [2], SW_w [2], SW_h [2];
-
-//	---------------------------------------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
 
 void CCockpit::SetupWindow (int nWindow)
 {
@@ -494,3 +480,48 @@ nArea = COCKPIT_PRIMARY_BOX + nWindow;
 }
 
 //	-----------------------------------------------------------------------------
+
+bool CCockpit::Setup (void)
+{
+if (!CGenericCockpit::Setup ())
+	return false;
+gameData.render.window.hMax = (screen.Height () * 2) / 3;
+if (gameData.render.window.h > gameData.render.window.hMax)
+	gameData.render.window.h = gameData.render.window.hMax;
+if (gameData.render.window.w > gameData.render.window.wMax)
+	gameData.render.window.w = gameData.render.window.wMax;
+gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
+gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h)/2;
+GameInitRenderSubBuffers (gameData.render.window.x, gameData.render.window.y, gameData.render.window.w, gameData.render.window.h);
+return true;
+}
+
+//	-----------------------------------------------------------------------------
+
+void CCockpit::Toggle (void)
+{
+cockpit = statusbarCockpit;
+CGenericCockpit::Toggle ();
+}
+
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
+
+bool CRearView::Setup (void)
+{
+if (!CGenericCockpit::Setup ())
+	return false;
+gameData.render.window.hMax = (screen.Height () * 2) / 3;
+if (gameData.render.window.h > gameData.render.window.hMax)
+	gameData.render.window.h = gameData.render.window.hMax;
+if (gameData.render.window.w > gameData.render.window.wMax)
+	gameData.render.window.w = gameData.render.window.wMax;
+gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
+gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h)/2;
+GameInitRenderSubBuffers (gameData.render.window.x, gameData.render.window.y, gameData.render.window.w, gameData.render.window.h);
+return true;
+}
+
+//	-----------------------------------------------------------------------------
+

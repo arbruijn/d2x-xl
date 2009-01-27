@@ -46,19 +46,8 @@ void HUDClearMessages();
 // (message might not be drawn if previous message was same)
 #define gauge_message HUDInitMessage
 
-void DrawHUD();     // draw all the HUD stuff
-
 void PlayerDeadMessage(void);
 //void say_afterburner_status(void);
-
-// fills in the coords of the hostage video window
-void get_hostage_window_coords(int *x, int *y, int *w, int *h);
-
-// from testgaug.c
-
-void gauge_frame(void);
-void UpdateLaserWeaponInfo(void);
-void PlayHomingWarning(void);
 
 extern tRgbColorb playerColors [];
 
@@ -78,13 +67,9 @@ extern tRgbColorb playerColors [];
 // window user is one of the WBU_ constants.  If rearViewFlag is
 // set, show a rear view.  If label is non-NULL, print the label at
 // the top of the window.
-void HUDRenderWindow(int win, CObject *viewer, int rearViewFlag, int user, const char *label);
 void FreeInventoryIcons (void);
 void FreeObjTallyIcons (void);
 void HUDShowIcons (void);
-int CanSeeObject(int nObject, int bCheckObjs);
-void ShowFrameRate (void);
-void ToggleCockpit ();
 
 #define SHOW_COCKPIT	((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nMode == CM_STATUS_BAR))
 #define SHOW_HUD		(!gameStates.app.bEndLevelSequence && (!gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || !SHOW_COCKPIT))
@@ -212,15 +197,19 @@ class CGenericCockpit {
 		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount) = 0;
 		virtual void DrawKillList (void) = 0;
 		virtual void DrawStatic (int nWindow) = 0;
+		virtual void Toggle (void);
+
 		virtual void DrawWeapons (void);
 		virtual void DrawCockpit (bool bAlphaTest = false);
+		virtual bool Setup (void);
 
 		void DrawOrbs (int x, int y);
 		void DrawFlag (int x, int y);
 		void DrawKillList (int x, int y);
 		void DrawStatic (int nWindow, int nIndex);
 		void DrawCockpit (int nCockpit, int y, bool bAlphaTest = false);
-		virtual void DrawPlayerShip (int nCloakState, int nOldCloakState, int y, int x);
+		void DrawPlayerShip (int nCloakState, int nOldCloakState, int y, int x);
+		void UpdateLaserWeaponInfo (void);
 
 		inline int Mode (void) { return m_info.mode; }
 		inline void SetMode (int mode) { m_info.mode = mode; }
@@ -259,6 +248,9 @@ class CHUD : public CGenericCockpit {
 		virtual void ClearBombCount (void);
 		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount);
 		virtual void DrawCockpit (bool bAlphaTest = false);
+		virtual void Toggle (void);
+
+		virtual bool Setup (void);
 
 	private:
 		int FlashGauge (int h, int *bFlash, int tToggle);
@@ -298,6 +290,9 @@ class CStatusBar : public CGenericCockpit {
 		virtual void ClearBombCount (void);
 		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount);
 		virtual void DrawCockpit (bool bAlphaTest = false);
+		virtual void Toggle (void);
+
+		virtual bool Setup (void);
 	};
 
 //	-----------------------------------------------------------------------------
@@ -332,6 +327,9 @@ class CCockpit : public CGenericCockpit {
 		virtual void ClearBombCount (void);
 		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount);
 		virtual void DrawCockpit (bool bAlphaTest = false);
+		virtual void Toggle (void);
+
+		virtual bool Setup (void);
 	};
 
 //	-----------------------------------------------------------------------------
@@ -367,6 +365,9 @@ class CRearView : public CGenericCockpit {
 		virtual void ClearBombCount (void) {}
 		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount) {}
 		virtual void DrawCockpit (bool bAlphaTest = false) { DrawCockpit (gameStates.render.cockpit.nMode + nCockpit, 0, bAlphaTest); }
+		virtual void Toggle (void) {};
+
+		virtual bool Setup (void);
 
 	private:
 		int FlashGauge (int h, int *bFlash, int tToggle);

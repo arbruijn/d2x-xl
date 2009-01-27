@@ -505,10 +505,6 @@ ubyte afterburnerBarTableHires [AFTERBURNER_GAUGE_H_H*2] = {
 
 int SW_drawn [2], SW_x [2], SW_y [2], SW_w [2], SW_h [2];
 
-fix frameTimeList [8] = {0, 0, 0, 0, 0, 0, 0, 0};
-fix frameTimeTotal = 0;
-int frameTimeCounter = 0;
-
 static int nDbgGauge = -1;
 
 //	-----------------------------------------------------------------------------
