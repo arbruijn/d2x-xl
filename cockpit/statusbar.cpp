@@ -335,8 +335,8 @@ nIdShieldNum = PrintF (&nIdShieldNum, (shield>99)?SB_SHIELD_NUM_X: ((shield>9)?S
 
 void CStatusBar::DrawShieldBar (int shield)
 {
-CCanvas::SetCurrent (GetCurrentGameScreen ());
-BitBlt (GAUGE_SHIELDS + 9 - ((shield >= 100) ? 9 : (shield / 10)), SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y);
+if (m_info.tInvul <= 0)
+	BitBlt (GAUGE_SHIELDS + 9 - ((shield >= 100) ? 9 : (shield / 10)), SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y);
 }
 
 //	-----------------------------------------------------------------------------
@@ -368,21 +368,17 @@ DrawPlayerShip (bCloak, m_info.history [gameStates.render.vr.nCurrentPage].bCloa
 //	-----------------------------------------------------------------------------
 
 //	Draws invulnerable ship, or maybe the flashing ship, depending on invulnerability time left.
-void CStatusBar::DrawInvulnerableShip (void)
+void CStatusBar::DrawInvul (void)
 {
 	static fix time = 0;
-	fix tInvul = LOCALPLAYER.invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame;
 
-if (tInvul <= 0) 
-	DrawShieldBar (X2IR (LOCALPLAYER.shields));
-else if ((tInvul > I2X (4)) || (gameData.time.xGame & 0x8000)) {
-		BitBlt (GAUGE_INVULNERABLE + nInvulnerableFrame, SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y);
-		time += gameData.time.xFrame;
-		while (time > INV_FRAME_TIME) {
-			time -= INV_FRAME_TIME;
-			if (++nInvulnerableFrame == N_INVULNERABLE_FRAMES)
-				nInvulnerableFrame = 0;
-			}
+if ((m_info.tInvul > I2X (4)) || ((m_info.tInvul > 0) && (gameData.time.xGame & 0x8000))) {
+	BitBlt (GAUGE_INVULNERABLE + nInvulnerableFrame, SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y);
+	time += gameData.time.xFrame;
+	while (time > INV_FRAME_TIME) {
+		time -= INV_FRAME_TIME;
+		if (++nInvulnerableFrame == N_INVULNERABLE_FRAMES)
+			nInvulnerableFrame = 0;
 		}
 	}
 }

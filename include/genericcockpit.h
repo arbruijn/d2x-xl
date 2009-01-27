@@ -150,6 +150,7 @@ class CCockpitInfo {
 		int	nShields;
 		int	nEnergy;
 		int	bCloak;
+		fix	tInvul;
 
 	public:
 		CCockpitInfo () { Init (); }
@@ -285,7 +286,7 @@ class CStatusBar : public CGenericCockpit {
 		virtual void DrawSecondaryAmmoInfo (int ammoCount);
 		virtual void DrawWeapons (void);
 		virtual void DrawCloak (void) {}
-		virtual void DrawInvul (void) {}
+		virtual void DrawInvul (void);
 		virtual void DrawShield (void);
 		virtual void DrawShieldBar (void);
 		virtual void DrawLives (void);
@@ -319,7 +320,7 @@ class CCockpit : public CGenericCockpit {
 		virtual void DrawSecondaryAmmoInfo (int ammoCount);
 		virtual void DrawWeapons (void);
 		virtual void DrawCloak (void) {}
-		virtual void DrawInvul (void) {}
+		virtual void DrawInvul (void);
 		virtual void DrawShield (void);
 		virtual void DrawShieldBar (void);
 		virtual void DrawLives (void);

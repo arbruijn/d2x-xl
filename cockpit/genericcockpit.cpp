@@ -1203,6 +1203,8 @@ m_info.nShields = X2IR (LOCALPLAYER.shields);
 if (m_info.nShields < 0)
 	m_info.nShields  = 0;
 m_info.bCloak = ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0);
+m_info.tInvul = LOCALPLAYER.invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame;
+
 if (gameOpts->render.cockpit.bScaleGauges) {
 	m_info.xGaugeScale = float (CCanvas::Current ()->Height ()) / 480.0f;
 	m_info.yGaugeScale = float (CCanvas::Current ()->Height ()) / 640.0f;

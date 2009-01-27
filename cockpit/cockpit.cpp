@@ -368,7 +368,8 @@ if ((yMax = FixMul (I2X (1) - nEnergy, AFTERBURNER_GAUGE_H))) {
 
 void CCockpit::DrawShieldBar (int shield)
 {
-BitBlt (GAUGE_SHIELDS + 9 - ((shield >= 100) ? 9 : (shield / 10)), SHIELD_GAUGE_X, SHIELD_GAUGE_Y);
+if (m_info.tInvul <= 0)
+	BitBlt (GAUGE_SHIELDS + 9 - ((shield >= 100) ? 9 : (shield / 10)), SHIELD_GAUGE_X, SHIELD_GAUGE_Y);
 }
 
 //	-----------------------------------------------------------------------------
@@ -441,14 +442,11 @@ DrawPlayerShip (bCloak, m_info.history [gameStates.render.vr.nCurrentPage].bCloa
 //	-----------------------------------------------------------------------------
 
 //	Draws invulnerable ship, or maybe the flashing ship, depending on invulnerability time left.
-void CCockpit::DrawInvulnerableShip (void)
+void CCockpit::DrawInvul (void)
 {
 	static fix time = 0;
-	fix tInvul = LOCALPLAYER.invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame;
 
-if (tInvul <= 0) 
-	DrawShieldBar (X2IR (LOCALPLAYER.shields));
-else if ((tInvul > I2X (4)) || (gameData.time.xGame & 0x8000)) {
+if ((m_info.tInvul > I2X (4)) || ((m_info.tInvul > 0) && (gameData.time.xGame & 0x8000))) {
 	BitBlt (GAUGE_INVULNERABLE + nInvulnerableFrame, SHIELD_GAUGE_X, SHIELD_GAUGE_Y);
 	time += gameData.time.xFrame;
 	while (time > INV_FRAME_TIME) {
