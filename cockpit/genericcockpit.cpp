@@ -735,16 +735,16 @@ void CGenericCockpit::DrawWeaponInfo (int nIndex, tGaugeBox* box, int xPic, int 
 	static int nIdWeapon [3] = {0, 0, 0}, nIdLaser [2] = {0, 0};
 
 i = ((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) 
-	 ? gameData.weapons.info [nIndex].hires_picture.index 
-	 : gameData.weapons.info [nIndex].picture.index
+	 ? gameData.weapons.info [nIndex].hiresPicture.index 
+	 : gameData.weapons.info [nIndex].picture.index;
 LoadBitmap (i, 0);
 if (!(bmP = gameData.pig.tex.bitmaps [0] + i))
 	return;
 BitBlt (-1, xPic, yPic, true, true, (m_info.nType == CM_FULL_SCREEN) ? I2X (2) : I2X (1), orient, bmP);
 fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 if ((p = const_cast<char*> (strchr (pszName, '\n')))) {
-	memcpy (szName, pszName, l = p - pszName);
-	szName [l] = '\0';
+	memcpy (szName, pszName, i = p - pszName);
+	szName [i] = '\0';
 	nIdWeapon [0] = PrintF (&nIdWeapon [0], xText, yText, szName);
 	nIdWeapon [1] = PrintF (&nIdWeapon [1], xText, yText + m_info.fontHeight + 1, p + 1);
 	}
