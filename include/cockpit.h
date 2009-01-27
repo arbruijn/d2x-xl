@@ -380,6 +380,14 @@ void HUDShowIcons (void);
 
 extern tRgbColorb playerColors [];
 
+extern CHUD			hudCockpit;
+extern CWideHUD	letterboxCockpit;
+extern CCockpit	fullCockpit;
+extern CStatusBar	statusBarCockpit;
+extern CRearView	rearViewCockpit;
+
+extern CGenericCockpit* cockpit;
+
 //	-----------------------------------------------------------------------------
 
 #endif // _COCKPIT_H

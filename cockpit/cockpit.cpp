@@ -459,7 +459,7 @@ return true;
 
 void CCockpit::Toggle (void)
 {
-cockpit = statusbarCockpit;
+cockpit = &statusBarCockpit;
 CGenericCockpit::Toggle ();
 }
 
