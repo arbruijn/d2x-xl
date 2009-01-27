@@ -24,7 +24,7 @@ class CHUDIcons {
 		void Render (void);
 	};
 
-CHUDIcons	hudIcons;
+extern CHUDIcons hudIcons;
 
 //	-----------------------------------------------------------------------------
 
