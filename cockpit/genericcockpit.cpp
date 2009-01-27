@@ -37,6 +37,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_hudstuff.h"
 #include "playsave.h"
 #include "hud_defs.h"
+#include "hudmsgs.h"
 #include "cockpit.h"
 #include "statusbar.h"
 #include "slowmotion.h"
@@ -90,7 +91,7 @@ weapon [0] =
 weapon [1] = -1;
 ammo [0] = 
 ammo [1] = -1;
-omegaCharge  = -1;
+xOmegaCharge  = -1;
 }
 
 //	-----------------------------------------------------------------------------
@@ -746,7 +747,7 @@ void CGenericCockpit::DrawStatic (int nWindow, int nIndex)
 
 staticTime [nWindow] += gameData.time.xFrame;
 if (staticTime [nWindow] >= vc->xTotalTime) {
-	weaponBoxUser [nWindow] = WBU_WEAPON;
+	m_info.weaponBoxUser [nWindow] = WBU_WEAPON;
 	return;
 	}
 framenum = staticTime [nWindow] * vc->nFrameCount / vc->xTotalTime;
@@ -764,9 +765,9 @@ for (x = hudWindowAreas [h].left; x < hudWindowAreas [h].right; x += bmp->Width 
 
 void CGenericCockpit::DrawWeapons (void)
 {
-if (weaponBoxUser [0] == WBU_WEAPON) {
+if (m_info.weaponBoxUser [0] == WBU_WEAPON) {
 	if (DrawWeaponDisplay (0, gameData.weapons.nPrimary) && (m_info.weaponBoxStates [0] == WS_SET)) {
-		 (((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {
+		if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {
 			if (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] != m_history [gameStates.render.vr.nCurrentPage].ammo [0]) {
 				if (gameData.demo.nState == ND_STATE_RECORDING)
 					NDRecordPrimaryAmmo (m_history [gameStates.render.vr.nCurrentPage].ammo [0], LOCALPLAYER.primaryAmmo [VULCAN_INDEX]);
@@ -784,10 +785,10 @@ if (weaponBoxUser [0] == WBU_WEAPON) {
 			}
 		}
 	}
-else if (weaponBoxUser [0] == WBU_STATIC)
+else if (m_info.weaponBoxUser [0] == WBU_STATIC)
 	DrawStatic (0);
 
-if (weaponBoxUser [1] == WBU_WEAPON) {
+if (m_info.weaponBoxUser [1] == WBU_WEAPON) {
 	if (DrawWeaponDisplay (1, gameData.weapons.nSecondary) && (m_info.weaponBoxStates [1] == WS_SET) &&
 		 (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != m_history [gameStates.render.vr.nCurrentPage].ammo [1])) {
 		m_history [gameStates.render.vr.nCurrentPage].bombCount = 0x7fff;	//force redraw
@@ -797,7 +798,7 @@ if (weaponBoxUser [1] == WBU_WEAPON) {
 		m_history [gameStates.render.vr.nCurrentPage].ammo [1] = LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary];
 		}
 	}
-else if (weaponBoxUser [1] == WBU_STATIC)
+else if (m_info.weaponBoxUser [1] == WBU_STATIC)
 	DrawStatic (1);
 }
 
@@ -1281,50 +1282,47 @@ else
 	m_info.yGaugeScale = 1;
 
 DrawCockpit (false);
+
 DrawFrameRate ();
 DrawSlowMotion ();
 DrawScore ();
 if (m_info.scoreTime)
 	DrawScoreAdded ();
 DrawTimerCount ();
-DrawwHomingWarning ();
-
-DrawEnergy ();
-DrawShield ();
-DrawAfterburner ();
-DrawWeapons ();
+DrawTime ();
 DrawKeys ();
-DrawCloak ();
-ShowInvul ();
-DrawPlayerNames ();
 DrawFlag ();
 DrawOrbs ();
 DrawLives ();
+DrawCloak ();
+DrawInvul ();
+DrawEnergy ();
+DrawShield ();
+DrawBombCount ();
+DrawAfterburner ();
+DrawEnergyBar ();
+DrawShieldBar ();
+DrawAfterburnerBar ();
+DrawHomingWarning ();
+DrawWeapons ();
+DrawPlayerNames ();
 DrawKillList ();
-DrawTime ();
+DrawPlayerShip ();
+
 if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead && !transformation.m_info.bUsePlayerHeadAngles)
-	ShowReticle (0);
+	DrawReticle (0);
 if (m_info.nMode != CM_REAR_VIEW) {
 	HUDRenderMessageFrame ();
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - ((gameData.demo.nState == ND_STATE_PLAYBACK) ? 14 : 10), TXT_REAR_VIEW);
 	}
+DemoRecording ();
 }
 
 //	-----------------------------------------------------------------------------
 
-//print out some CPlayerData statistics
-void CGenericCockpit::RenderGauges (void)
+void CGenericCockpit::DemoRecording (void)
 {
-DrawEnergyBar (nEnergy);
-DrawShieldBar (nShields);
-DrawAfterburnerBar (gameData.physics.xAfterburnerCharge);
-DrawWeapons ();
-DrawKeys ();
-DrawHomingWarning ();
-DrawBombCount (BOMB_COUNT_X, BOMB_COUNT_Y, BLACK_RGBA, gameStates.render.cockpit.nMode == CM_FULL_COCKPIT);
-DrawPlayerShip ();
-
 if (gameData.demo.nState == ND_STATE_RECORDING) {
 	if (LOCALPLAYER.homingObjectDist >= 0)
 		NDRecordHomingDistance (LOCALPLAYER.homingObjectDist);
@@ -1391,11 +1389,11 @@ if (HIDE_HUD)
 hudAreaP = NULL;
 if (!viewerP) {								//this nUser is done
 	Assert (nUser == WBU_WEAPON || nUser == WBU_STATIC);
-	if ((nUser == WBU_STATIC) && (weaponBoxUser [nWindow] != WBU_STATIC))
+	if ((nUser == WBU_STATIC) && (m_info.weaponBoxUser [nWindow] != WBU_STATIC))
 		staticTime [nWindow] = 0;
-	if (weaponBoxUser [nWindow] == WBU_WEAPON || weaponBoxUser [nWindow] == WBU_STATIC)
+	if (m_info.weaponBoxUser [nWindow] == WBU_WEAPON || m_info.weaponBoxUser [nWindow] == WBU_STATIC)
 		return;		//already set
-	weaponBoxUser [nWindow] = nUser;
+	m_info.weaponBoxUser [nWindow] = nUser;
 	if (bOverlapDirty [nWindow]) {
 		//CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
 		FillBackground ();
@@ -1404,7 +1402,7 @@ if (!viewerP) {								//this nUser is done
 	return;
 	}
 UpdateRenderedData (nWindow+1, viewerP, bRearView, nUser);
-weaponBoxUser [nWindow] = nUser;						//say who's using window
+m_info.weaponBoxUser [nWindow] = nUser;						//say who's using window
 gameData.objs.viewerP = viewerP;
 gameStates.render.bRearView = bRearView;
 

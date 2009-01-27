@@ -85,7 +85,7 @@ class CCockpitHistory {
 		int	laserLevel;
 		int	weapon [2];
 		int	ammo [2];
-		int	omegaCharge;
+		fix	xOmegaCharge;
 
 	public:
 		void Init (void);
@@ -100,7 +100,6 @@ class CCockpitInfo {
 		fix	lastWarningBeepTime [2];
 		int	bHaveGaugeCanvases;
 		int	nInvulnerableFrame;
-		fix	xOmegaCharge;
 		int	weaponBoxStates [2];
 		fix	weaponBoxFadeValues [2];
 		int	weaponBoxUser [2];
@@ -141,6 +140,7 @@ class CGenericCockpit {
 
 		char* ftoa (char *pszVal, fix f);
 		char* Convert1s (char* s);
+		void DemoRecording (void);
 
 		void DrawFrameRate (void);
 		void DrawSlowMotion (void);
