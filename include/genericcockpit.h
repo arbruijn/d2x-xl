@@ -208,14 +208,17 @@ class CGenericCockpit {
 		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount) = 0;
 		virtual void DrawKillList (void) = 0;
 		virtual void DrawStatic (int nWindow) = 0;
-
 		virtual void DrawWeapons (void);
+		virtual void DrawCockpit (bool bAlphaTest = false);
 
 		void DrawOrbs (int x, int y);
 		void DrawFlag (int x, int y);
 		void DrawKillList (int x, int y);
 		void DrawStatic (int nWindow, int nIndex);
-		void DrawCockpit (int nCockpit, int y);
+		void DrawCockpit (int nCockpit, int y, bool bAlphaTest = false);
+
+		inline int Mode (void) { return m_info.mode; }
+		inline void SetMode (int mode) { m_info.mode = mode; }
 };
 
 //	-----------------------------------------------------------------------------
@@ -250,7 +253,7 @@ class CHUD : public CGenericCockpit {
 		virtual void DrawKillList (void);
 		virtual void ClearBombCount (void);
 		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount);
-		virtual void DrawCockpit (void);
+		virtual void DrawCockpit (bool bAlphaTest = false);
 
 	private:
 		int FlashGauge (int h, int *bFlash, int tToggle);
@@ -289,7 +292,7 @@ class CStatusBar : public CGenericCockpit {
 		virtual void DrawKillList (void);
 		virtual void ClearBombCount (void);
 		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount);
-		virtual void DrawCockpit (void);
+		virtual void DrawCockpit (bool bAlphaTest = false);
 	};
 
 //	-----------------------------------------------------------------------------
@@ -323,7 +326,7 @@ class CCockpit : public CGenericCockpit {
 		virtual void DrawKillList (void);
 		virtual void ClearBombCount (void);
 		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount);
-		virtual void DrawCockpit (void);
+		virtual void DrawCockpit (bool bAlphaTest = false);
 	};
 
 //	-----------------------------------------------------------------------------
@@ -358,7 +361,7 @@ class CRearView : public CGenericCockpit {
 		virtual void DrawKillList (void) {}
 		virtual void ClearBombCount (void) {}
 		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount) {}
-		virtual void DrawCockpit (void) { DrawCockpit (gameStates.render.cockpit.nMode + nCockpit, 0); }
+		virtual void DrawCockpit (bool bAlphaTest = false) { DrawCockpit (gameStates.render.cockpit.nMode + nCockpit, 0, bAlphaTest); }
 
 	private:
 		int FlashGauge (int h, int *bFlash, int tToggle);

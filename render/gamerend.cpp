@@ -1045,7 +1045,7 @@ void FillBackground (void)
 
 //------------------------------------------------------------------------------
 
-void ShrinkWindow ()
+void ShrinkWindow (void)
 {
 StopTime ();
 if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {

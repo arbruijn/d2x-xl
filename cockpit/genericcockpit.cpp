@@ -1163,13 +1163,13 @@ for (i = 0; i < nPlayers; i++) {
 
 //	-----------------------------------------------------------------------------
 
-void DrawCockpit (int nCockpit, int y)
+void DrawCockpit (int nCockpit, int y, bool bAlphaTest)
 {
 if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {
 	int i = gameData.pig.tex.cockpitBmIndex [nCockpit].index;
 	CBitmap *bmP = gameData.pig.tex.bitmaps [0] + i;
 	LoadBitmap (gameData.pig.tex.cockpitBmIndex [nCockpit].index, 0);
-	if (bmP->Override (-1))
+	if (bmP->HasOverride ())
 		bmP = bmP->Override (-1);
 	bmP->SetupTexture (0, 3, 1);
    CCanvas::SetCurrent (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
@@ -1204,6 +1204,7 @@ else
 	m_info.xGaugeScale = 
 	m_info.yGaugeScale = 1;
 
+DrawCockpit (false);
 ShowScore ();
 if (m_info.scoreTime)
 	ShowScoreAdded ();
@@ -1218,38 +1219,21 @@ DrawKeys ();
 DrawCloak ();
 ShowInvul ();
 
-		if ((gameData.demo.nState == ND_STATE_RECORDING) && (LOCALPLAYER.flags != m_info.old [gameStates.render.vr.nCurrentPage].flags)) {
-			NDRecordPlayerFlags (m_info.old [gameStates.render.vr.nCurrentPage].flags, LOCALPLAYER.flags);
-			m_info.old [gameStates.render.vr.nCurrentPage].flags = LOCALPLAYER.flags;
-			}
-		}
-#if 1//def _DEBUG
-	if (!(IsMultiGame && gameData.multigame.kills.bShowList) && !bSavingMovieFrames)
-		ShowTime ();
-#endif
-	if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead && !transformation.m_info.bUsePlayerHeadAngles)
-		ShowReticle (0);
-
-	DrawPlayerNames ();
-	if (gameStates.render.cockpit.nMode != CM_REAR_VIEW) {
-		CHUD::ShowFlag ();
-		CHUD::ShowOrbs ();
-		}
-	if (!bSavingMovieFrames)
-		HUDRenderMessageFrame ();
-
-	if (gameStates.render.cockpit.nMode != CM_STATUS_BAR && !bSavingMovieFrames)
-		CHUD::ShowLives ();
-
-	if (gameData.app.nGameMode&GM_MULTI && gameData.multigame.kills.bShowList)
-		CHUD::ShowKillList ();
-#if 0
-	ShowWeaponDisplays ();
-#endif
-	return;
+if ((gameData.demo.nState == ND_STATE_RECORDING) && (LOCALPLAYER.flags != m_info.old [gameStates.render.vr.nCurrentPage].flags)) {
+	NDRecordPlayerFlags (m_info.old [gameStates.render.vr.nCurrentPage].flags, LOCALPLAYER.flags);
+	m_info.old [gameStates.render.vr.nCurrentPage].flags = LOCALPLAYER.flags;
 	}
-
-if (gameStates.render.bRearView && gameStates.render.cockpit.nMode!=CM_REAR_VIEW) {
+if (!(IsMultiGame && gameData.multigame.kills.bShowList))
+	ShowTime ();
+if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead && !transformation.m_info.bUsePlayerHeadAngles)
+	ShowReticle (0);
+DrawPlayerNames ();
+ShowFlag ();
+ShowOrbs ();
+HUDRenderMessageFrame ();
+ShowLives ();
+ShowKillList ();
+if (m_info.nMode != CM_REAR_VIEW) {
 	HUDRenderMessageFrame ();
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - ((gameData.demo.nState == ND_STATE_PLAYBACK) ? 14 : 10), TXT_REAR_VIEW);
