@@ -248,6 +248,7 @@ class CHUD : public CGenericCockpit {
 
 class CWideHUD : public CHUD {
 	public:
+		virtual void Toggle (void);
 		virtual bool Setup (void);
 	};
 

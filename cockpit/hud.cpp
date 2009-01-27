@@ -257,7 +257,6 @@ void CHUD::DrawEnergyBar (void)
 if (HIDE_HUD)
 	return;
 
-	int h, y;
 	static int nIdEnergy = 0;
 
 if (!gameOpts->render.cockpit.bTextGauges) {
@@ -266,11 +265,12 @@ if (!gameOpts->render.cockpit.bTextGauges) {
 	time_t			t;
 	ubyte				c;
 
+	int h = m_info.nEnergy;
 	if ((t = FlashGauge (h, &bFlash, (int) tToggle))) {
 		tToggle = t;
 		bShow = !bShow;
 		}
-	y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 5 : 1) * m_info.nLineSpacing - 1) * m_info.yGaugeScale);
+	int y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 5 : 1) * m_info.nLineSpacing - 1) * m_info.yGaugeScale);
 	CCanvas::Current ()->SetColorRGB (255, 255, (ubyte) ((h > 100) ? 255 : 0), 255);
 	OglDrawEmptyRect (6, y, 6 + (int) (100 * m_info.xGaugeScale), y + (int) (9 * m_info.yGaugeScale));
 	if (bFlash) {
@@ -540,23 +540,23 @@ void CHUD::DrawShieldBar (void)
 if (HIDE_HUD)
 	return;
 
+	static int		nIdShield = 0;
 	static int		bShow = 1;
 	static time_t	tToggle = 0, nBeep = -1;
+
 	time_t			t = gameStates.app.nSDLTicks;
 	int				bLastFlash = gameStates.render.cockpit.nShieldFlash;
-	int				h, y;
-
-	static int nIdShield = 0;
 
 //	CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
 if (!gameOpts->render.cockpit.bTextGauges) {
-	h = (LOCALPLAYER.shields >= 0) ? X2IR (LOCALPLAYER.shields) : 0;
+
+	int h = m_info.nShields;
 	if ((t = FlashGauge (h, &gameStates.render.cockpit.nShieldFlash, (int) tToggle))) {
 		tToggle = t;
 		bShow = !bShow;
 		}
 
-	y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 6 : 2) * m_info.nLineSpacing - 1) * m_info.yGaugeScale);
+	int y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 6 : 2) * m_info.nLineSpacing - 1) * m_info.yGaugeScale);
 	CCanvas::Current ()->SetColorRGB (0, (ubyte) ((h > 100) ? 255 : 64), 255, 255);
 	OglDrawEmptyRect (6, y, 6 + (int) (100 * m_info.xGaugeScale), y + (int) (9 * m_info.yGaugeScale));
 	if (bShow) {
@@ -577,9 +577,6 @@ if (gameStates.render.cockpit.nShieldFlash) {
 		audio.StopSound ((int) nBeep);
 		nBeep = -1;
 		}
-	if (!bShow)
-		return;
-	h = 100;
 	}
 else {
 	bShow = 1;
@@ -630,65 +627,7 @@ CGenericCockpit::DrawKillList (60, CCanvas::Current ()->Height ());
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::DrawPlayerShip (int nCloakState, int nOldCloakState, int x, int y)
-{
-}
-
-//	-----------------------------------------------------------------------------
-
-void CHUD::DrawWeaponInfo (int info_index, tGaugeBox *box, int xPic, int yPic, const char *pszName, int xText, int yText, int orient)
-{
-	CBitmap*	bmP;
-	char		szName [100], *p;
-	int		l;
-
-	static int nIdWeapon [3] = {0, 0, 0}, nIdLaser [2] = {0, 0};
-
-BitBlt (((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) 
-			  ? gameData.weapons.info [info_index].hiresPicture.index
-			  : gameData.weapons.info [info_index].picture.index, 
-			  xPic, yPic, true, true, (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) ? I2X (2) : I2X (1), orient);
-if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)
-	return;
-fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-if ((p = const_cast<char*> (strchr (pszName, '\n')))) {
-	memcpy (szName, pszName, l = p - pszName);
-	szName [l] = '\0';
-	nIdWeapon [0] = PrintF (&nIdWeapon [0], xText, yText, szName);
-	nIdWeapon [1] = PrintF (&nIdWeapon [1], xText, yText + CCanvas::Current ()->Font ()->Height () + 1, p + 1);
-	}
-else {
-	nIdWeapon [2] = PrintF (&nIdWeapon [2], xText, yText, pszName);
-	}
-
-//	For laser, show level and quadness
-if (info_index == LASER_ID || info_index == SUPERLASER_ID) {
-	sprintf (szName, "%s: 0", TXT_LVL);
-	szName [5] = LOCALPLAYER.laserLevel + 1 + '0';
-	nIdLaser [0] = PrintF (&nIdLaser [0], xText, yText + m_info.nLineSpacing, szName);
-	if (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) {
-		strcpy (szName, TXT_QUAD);
-		nIdLaser [1] = PrintF (&nIdLaser [1], xText, yText + 2 * m_info.nLineSpacing, szName);
-		}
-	}
-}
-
-//	-----------------------------------------------------------------------------
-
-void CHUD::DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel)
-{
-}
-
-//	-----------------------------------------------------------------------------
-
 void DrawStatic (int nWindow)
-{
-}
-
-//	-----------------------------------------------------------------------------
-
-//	Draws invulnerable ship, or maybe the flashing ship, depending on invulnerability time left.
-void CHUD::DrawInvulnerableShip (void)
 {
 }
 
@@ -773,14 +712,14 @@ SW_y [nWindow] = y;
 SW_w [nWindow] = w;
 SW_h [nWindow] = h;
 
-gameStates.render.vr.buffers.render [0].SetupPane (&windowCanv, y, x, w, h);
+gameStates.render.vr.buffers.render [0].SetupPane (canvP, y, x, w, h);
 }
 
 //	-----------------------------------------------------------------------------
 
 void CHUD::Toggle (void)
 {
-cockpit = letterboxCockpit;
+cockpit = &letterboxCockpit;
 CGenericCockpit::Toggle ();
 }
 
@@ -804,7 +743,7 @@ return true;
 
 void CWideHUD::Toggle (void)
 {
-cockpit = fullCockpit;
+cockpit = &fullCockpit;
 CGenericCockpit::Toggle ();
 }
 
