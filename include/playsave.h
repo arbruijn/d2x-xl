@@ -46,4 +46,51 @@ int GetHighestLevel(void);
 
 void FreeParams (void);
 
+//------------------------------------------------------------------------------
+
+class CParam {
+	public:
+		class CParam*	next;
+		char*				valP;
+		short				nValues;
+		ubyte				nSize;
+		char				szTag [1];
+
+	public:
+		int Save (CFile& cf);
+		int Set (const char *pszIdent, const char *pszValue);
+	};
+
+//------------------------------------------------------------------------------
+
+class CFileParams {
+	private:
+		CParam*	paramList;
+		CParam*	lastParam;
+		bool		bRegistered;
+		CFile		m_cf;
+		
+		char* MakeTag (char *pszTag, const char *pszIdent, int i, int j);
+		void RegisterConfig (kcItem *cfgP, int nItems, const char *pszId);
+		int FindInConfig (kcItem *cfgP, int nItems, int iItem, const char *pszText);
+		int Register (void *valP, const char *pszIdent, int i, int j, ubyte nSize);
+		void Create (void);
+		CParam* Find (const char *pszTag);
+		int Set (const char *pszIdent, const char *pszValue);
+		int LoadParam (void);
+
+	public:
+		CFileParams () { Init (); }
+		~CFileParams () { Destroy (); }
+		void Init (void);
+		void Destroy (void);
+		void Setup (void);
+		int Load (void);
+		int Save (void);
+	};
+
+extern CFileParams fileParams;
+
+//------------------------------------------------------------------------------
+
 #endif /* _PLAYSAVE_H */

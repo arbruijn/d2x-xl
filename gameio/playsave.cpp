@@ -36,7 +36,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "game.h"
 #include "loadgame.h"
 #include "player.h"
-#include "playsave.h"
 #include "joy.h"
 #include "kconfig.h"
 #include "audio.h"
@@ -67,6 +66,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "u_mem.h"
 #include "dynlight.h"
 #include "cockpit.h"
+#include "playsave.h"
+
+CFileParams params;
 
 //------------------------------------------------------------------------------
 
@@ -113,23 +115,82 @@ hli highestLevels [MAX_MISSIONS];
 void InitWeaponOrdering();
 
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-typedef struct tParam {
-	struct tParam	*next;
-	char				*valP;
-	short				nValues;
-	ubyte				nSize;
-	char				szTag [1];
-} tParam;
-
-tParam	*paramList = NULL;
-tParam	*lastParam = NULL;
+#define issign(_c)	(((_c) == '-') || ((_c) == '+'))
 
 //------------------------------------------------------------------------------
 
-void FreeParams (void)
+int CParam::Set (const char *pszIdent, const char *pszValue)
 {
-	tParam	*pp;
+int nVal = atoi (pszValue);
+switch (nSize) {
+	case 1:
+		if (!(::isdigit (*pszValue) || issign (*pszValue)) || (nVal < SCHAR_MIN) || (nVal > SCHAR_MAX))
+			return 0;
+		*reinterpret_cast<sbyte*> (valP) = (sbyte) nVal;
+		break;
+	case 2:
+		if (!(::isdigit (*pszValue) || issign (*pszValue))  || (nVal < SHRT_MIN) || (nVal > SHRT_MAX))
+			return 0;
+		*reinterpret_cast<short*> (valP) = (short) nVal;
+		break;
+	case 4:
+		if (!(::isdigit (*pszValue) || issign (*pszValue)))
+			return 0;
+		*reinterpret_cast<int*> (valP) = (int) nVal;
+		break;
+	default:
+		strncpy (reinterpret_cast<char*> (valP), pszValue, nSize);
+		break;
+	}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CParam::Save (CFile& cf)
+{
+	char	szVal [200];
+
+switch (nSize) {
+	case 1:
+		sprintf (szVal, "=%d\n", *reinterpret_cast<sbyte*> (valP));
+		break;
+	case 2:
+		sprintf (szVal, "=%d\n", *reinterpret_cast<short*> (valP));
+		break;
+	case 4:
+		sprintf (szVal, "=%d\n", *reinterpret_cast<int*> (valP));
+		break;
+	default:
+		sprintf (szVal, "=%s\n", valP);
+		break;
+	}
+cf.Write (szTag, 1, (int) strlen (szTag));
+cf.Write (szVal, 1, (int) strlen (szVal));
+fflush (cf.File ());
+return 1;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+void CFileParams::Init (void)
+{ 
+paramList = lastParam = NULL; 
+bRegistered = false;
+Create ();
+Setup ();
+}
+
+//------------------------------------------------------------------------------
+
+void CFileParams::Destroy (void)
+{
+	CParam	*pp;
 
 while (paramList) {
 	pp = paramList;
@@ -140,7 +201,7 @@ while (paramList) {
 
 //------------------------------------------------------------------------------
 
-char *MakeTag (char *pszTag, const char *pszIdent, int i, int j)
+char* CFileParams::MakeTag (char *pszTag, const char *pszIdent, int i, int j)
 {
 	char	*pi;
 	const char *ph;
@@ -161,14 +222,14 @@ return pszTag;
 
 //------------------------------------------------------------------------------
 
-int RegisterParam (void *valP, const char *pszIdent, int i, int j, ubyte nSize)
+int CFileParams::Register (void *valP, const char *pszIdent, int i, int j, ubyte nSize)
 {
 	char		szTag [200];
 	int		l;
-	tParam	*pp;
+	CParam	*pp;
 
 l = (int) strlen (MakeTag (szTag, pszIdent, i, j));
-pp = reinterpret_cast<tParam*> (new ubyte [sizeof (tParam) + l]);
+pp = reinterpret_cast<CParam*> (new ubyte [sizeof (CParam) + l]);
 if (!pp)
 	return 0;
 memcpy (pp->szTag, szTag, l + 1);
@@ -184,12 +245,12 @@ lastParam = pp;
 return 1;
 }
 
-#define RP(_v,_i,_j)	RegisterParam (reinterpret_cast<void*> (&(_v)), #_v, _i, _j, sizeof (_v))
+#define RP(_v,_i,_j)	Register (reinterpret_cast<void*> (&(_v)), #_v, _i, _j, sizeof (_v))
 
 //------------------------------------------------------------------------------
 // returns number of config items with identical ids before the current one
 
-int FindConfigParam (kcItem *cfgP, int nItems, int iItem, const char *pszText)
+int CFileParams::FindInConfig (kcItem *cfgP, int nItems, int iItem, const char *pszText)
 {
 	int	h, i;
 
@@ -206,7 +267,7 @@ return h ? h : -1;
 
 //------------------------------------------------------------------------------
 
-void RegisterConfigParams (kcItem *cfgP, int nItems, const char *pszId)
+void CFileParams::RegisterConfig (kcItem *cfgP, int nItems, const char *pszId)
 {
 	char	szTag [200], *p;
 	int	i, j = 0;
@@ -217,31 +278,29 @@ p = szTag + strlen (szTag);
 for (i = 0; i < nItems; i++) {
 #if 0
 	sprintf (p, "%s.type", cfgP [i].text);
-	RegisterParam (&cfgP [i].nType, szTag, 0, 0, sizeof (cfgP [i].nType));
+	Register (&cfgP [i].nType, szTag, 0, 0, sizeof (cfgP [i].nType));
 #endif
-	j = FindConfigParam (cfgP, nItems, i, cfgP [i].text);
+	j = FindInConfig (cfgP, nItems, i, cfgP [i].text);
 	if (j < 0) {
 		sprintf (p, "%s.value", cfgP [i].text);
-		RegisterParam (&cfgP [i].value, szTag, 0, 0, sizeof (cfgP [i].value));
+		Register (&cfgP [i].value, szTag, 0, 0, sizeof (cfgP [i].value));
 		}
 	else {
 		sprintf (p, "%s[%d].value", cfgP [i].text, j);
-		RegisterParam (&cfgP [i].value, szTag, j, 0, sizeof (cfgP [i].value));
+		Register (&cfgP [i].value, szTag, j, 0, sizeof (cfgP [i].value));
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void RegisterParams (void)
+void CFileParams::Create (void)
 {
 	uint	i, j;
 
-	static int bRegistered = 0;
-
 if (bRegistered)
 	return;
-bRegistered = 1;
+bRegistered = true;
 
 for (i = 0; i < 2; i++) {
 	if (i) {	// i == 1: nostalgia/pure D2 mode
@@ -256,7 +315,6 @@ for (i = 0; i < 2; i++) {
 		RP (gameStates.render.bShowTime, 0, 1);
 		RP (gameStates.sound.audio.nMaxChannels, 0, 128);
 		RP (gameStates.render.cockpit.nType, 0, 0);
-		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
 		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
 		RP (gameOptions [i].render.cockpit.bGuidedInMainView, 0, 0);
 		RP (networkData.nNetLifeKills, 0, 0);
@@ -602,93 +660,38 @@ for (i = 0; i < 2; i++) {
 	RP (gameOptions [i].render.cockpit.bHUD, i, 0);
 	RP (gameOptions [i].render.cockpit.bReticle, i, 0);
 	}
-RegisterConfigParams (kcKeyboard, KcKeyboardSize (), "keyboard.");
-RegisterConfigParams (kcMouse, KcMouseSize (), "mouse.");
-RegisterConfigParams (kcJoystick, KcJoystickSize (), "joystick.");
-RegisterConfigParams (kcSuperJoy, KcSuperJoySize (), "superjoy.");
-RegisterConfigParams (kcHotkeys, KcHotkeySize (), "hotkeys.");
+RegisterConfig (kcKeyboard, KcKeyboardSize (), "keyboard.");
+RegisterConfig (kcMouse, KcMouseSize (), "mouse.");
+RegisterConfig (kcJoystick, KcJoystickSize (), "joystick.");
+RegisterConfig (kcSuperJoy, KcSuperJoySize (), "superjoy.");
+RegisterConfig (kcHotkeys, KcHotkeySize (), "hotkeys.");
 }
 
 //------------------------------------------------------------------------------
 
-int WriteParam (CFile& cf, tParam *pp)
+int CFileParams::Save (void)
 {
-	char	szVal [200];
+if (m_cf.File ())
+	return 0;
 
-if (strstr (pp->szTag, "Slowmo/Speed"))
-	pp = pp;
-#if 1
-switch (pp->nSize) {
-	case 1:
-		sprintf (szVal, "=%d\n", *reinterpret_cast<sbyte*> (pp->valP));
-		break;
-	case 2:
-		sprintf (szVal, "=%d\n", *reinterpret_cast<short*> (pp->valP));
-		break;
-	case 4:
-		sprintf (szVal, "=%d\n", *reinterpret_cast<int*> (pp->valP));
-		break;
-	default:
-		sprintf (szVal, "=%s\n", pp->valP);
-		break;
-	}
-#else
-	char	*valP = pp->valP, *p;
-	short	nValues, nSize = pp->nSize;
-
-strcpy (szVal, "=");
-for (nValues = pp->nValues; nValues; nValues--, valP += nSize) {
-	p = szVal + strlen (szVal);
-	switch (nSize) {
-		case 1:
-			sprintf (p, "%d ", *reinterpret_cast<sbyte*> (pp->valP));
-			break;
-		case 2:
-			sprintf (p, "%d ", *reinterpret_cast<short*> (pp->valP));
-			break;
-		case 4:
-			sprintf (p, "%d ", *reinterpret_cast<int*> (pp->valP));
-			break;
-		default:
-			sprintf (p, "%s", reinterpret_cast<char*> (pp->valP));
-			goto done;
-		}
-	}
-
-done:
-
-strcat (szVal, "\n");
-#endif
-cf.Write (pp->szTag, 1, (int) strlen (pp->szTag));
-cf.Write (szVal, 1, (int) strlen (szVal));
-fflush (cf.File ());
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int WriteParams (void)
-{
-	CFile			cf;
 	char			fn [FILENAME_LEN];
-	tParam		*pp;
+	CParam		*pp;
 
 gameStates.sound.audio.nMaxChannels = audio.MaxChannels ();
 gameStates.render.cockpit.nType = cockpit->Type ();
-RegisterParams ();
 sprintf (fn, "%s.plx", LOCALPLAYER.callsign);
-if (!cf.Open (fn, gameFolders.szProfDir, "wt", 0))
+if (!m_cf.Open (fn, gameFolders.szProfDir, "wt", 0))
 	return 0;
 for (pp = paramList; pp; pp = pp->next)
-	WriteParam (cf, pp);
-return cf.Close ();
+	pp->Save (m_cf);
+return m_cf.Close ();
 }
 
 //------------------------------------------------------------------------------
 
-tParam *FindParam (const char *pszTag)
+CParam* CFileParams::Find (const char *pszTag)
 {
-	tParam	*pp;
+	CParam	*pp;
 
 for (pp = paramList; pp; pp = pp->next)
 	if (!stricmp (pszTag, pp->szTag))
@@ -698,77 +701,49 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-#define issign(_c)	(((_c) == '-') || ((_c) == '+'))
-
-//------------------------------------------------------------------------------
-
-int SetParam (const char *pszIdent, const char *pszValue)
+int CFileParams::Set (const char *pszIdent, const char *pszValue)
 {
-	tParam	*pp;
-	int		nVal;
+	CParam*	pp;
 
-if (!(pp = FindParam (pszIdent))) {
-#if DBG
-	FindParam (pszIdent);
-#endif
+if (!(pp = Find (pszIdent)))
 	return 0;
-	}
-nVal = atoi (pszValue);
-switch (pp->nSize) {
-	case 1:
-		if (!(::isdigit (*pszValue) || issign (*pszValue)) || (nVal < SCHAR_MIN) || (nVal > SCHAR_MAX))
-			return 0;
-		*reinterpret_cast<sbyte*> (pp->valP) = (sbyte) nVal;
-		break;
-	case 2:
-		if (!(::isdigit (*pszValue) || issign (*pszValue))  || (nVal < SHRT_MIN) || (nVal > SHRT_MAX))
-			return 0;
-		*reinterpret_cast<short*> (pp->valP) = (short) nVal;
-		break;
-	case 4:
-		if (!(::isdigit (*pszValue) || issign (*pszValue)))
-			return 0;
-		*reinterpret_cast<int*> (pp->valP) = (int) nVal;
-		break;
-	default:
-		strncpy (reinterpret_cast<char*> (pp->valP), pszValue, pp->nSize);
-		break;
-	}
+pp->Set (pszIdent, pszValue);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int ReadParam (CFile& cf)
+int CFileParams::LoadParam (void)
 {
 	char		szParam	[200], *pszValue;
 
-cf.GetS (szParam, sizeof (szParam));
+m_cf.GetS (szParam, sizeof (szParam));
 szParam [sizeof (szParam) - 1] = '\0';
 if ((pszValue = strchr (szParam, '\n')))
 	*pszValue = '\0';
 if (!(pszValue = strchr (szParam, '=')))
 	return 0;
 *pszValue++ = '\0';
-return SetParam (szParam, pszValue);
+return Set (szParam, pszValue);
 }
 
 //------------------------------------------------------------------------------
 
-int ReadParams (void)
+int CFileParams::Load (void)
 {
-	CFile			cf;
-	char			fn [FILENAME_LEN];
-
-RegisterParams ();
-sprintf (fn, "%s.plx", LOCALPLAYER.callsign);
-if (!cf.Open (fn, gameFolders.szProfDir, "rt", 0))
+if (m_cf.File ())
 	return 0;
-while (!cf.EoF ())
-	ReadParam (cf);
+
+	char	fn [FILENAME_LEN];
+
+sprintf (fn, "%s.plx", LOCALPLAYER.callsign);
+if (!m_cf.Open (fn, gameFolders.szProfDir, "rt", 0))
+	return 0;
+while (!m_cf.EoF ())
+	LoadParam ();
 audio.SetMaxChannels (gameStates.sound.audio.nMaxChannels);
 cockpit->Activate (gameStates.render.cockpit.nType);
-return cf.Close ();
+return m_cf.Close ();
 }
 
 //------------------------------------------------------------------------------
@@ -782,11 +757,10 @@ tParamValue defaultParams [] = {
  {"gameData.render.window.w", "640"},
  {"gameData.render.window.h", "480"},
  {"iDlTimeout", "5"},
- {"cockpit->Type ()", "3"},
+ {"gameStates.render.cockpit.nType", "3"},
  {"gameStates.render.bShowFrameRate", "0"},
  {"gameStates.render.bShowTime", "1"},
- {"gameStates.sound.audio.nMaxChannels", "16"},
- {"gameStates.video.nDefaultDisplayMode", "3"},
+ {"gameStates.sound.audio.nMaxChannels", "64"},
  {"gameStates.video.nDefaultDisplayMode", "3"},
  {"gameOptions[0].render.cockpit.bGuidedInMainView", "1"},
  {"networkData.nNetLifeKills", "0"},
@@ -1461,13 +1435,13 @@ tParamValue defaultParams [] = {
 
 //------------------------------------------------------------------------------
 
-void InitGameParams (void)
+void CFileParams::Setup (void)
 {
 	tParamValue	*pv;
 	int			i;
 
 for (i = sizeofa (defaultParams), pv = defaultParams; i; i--, pv++) {
-	SetParam (pv->pszIdent, pv->pszValue);
+	Set (pv->pszIdent, pv->pszValue);
 	}
 }
 
@@ -1537,7 +1511,7 @@ strcpy(gameData.multigame.msg.szMacro[3], TXT_URANUS);
 networkData.nNetLifeKills = 0;
 networkData.nNetLifeKilled = 0;
 gameData.app.nLifetimeChecksum = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
-InitGameParams ();
+fileParams.Setup ();
 #if 0
 InitGameOptions (0);
 InitArgs (0, NULL);
@@ -2145,7 +2119,7 @@ else {
 		controlSettings.d2xCustom [i] = controlSettings.d2xDefaults [i];
 	}
 if (gameStates.input.nPlrFileVersion >= D2XXL_PLAYER_FILE_VERSION) {
-	ReadParams ();
+	fileParams.Load ();
 	KCSetControls (1);
 	}
 else {
@@ -2647,7 +2621,7 @@ cf.WriteString (buf);  // Write out current joystick for player.
 cf.Write(controlSettings.d2xCustom, MAX_HOTKEY_CONTROLS, 1);
 // write D2X-XL stuff
 #if 1
-WriteParams ();
+fileParams.Save ();
 #else
 WriteBinD2XParams ();
 #endif
