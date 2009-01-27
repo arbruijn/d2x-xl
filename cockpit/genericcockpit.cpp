@@ -109,7 +109,6 @@ lastWarningBeepTime [0] =
 lastWarningBeepTime [1] = 0;
 bHaveGaugeCanvases = 0;
 nInvulnerableFrame = 0;
-nCloakFadeState = 0;		
 weaponBoxStates [0] = 
 weaponBoxStates [1] = 0;
 weaponBoxFadeValues [0] = 
@@ -184,6 +183,15 @@ if (fractional > 99)
 	fractional = 99;
 sprintf (pszVal, "%d.%02d", decimal, fractional);
 return pszVal;
+}
+
+//------------------------------------------------------------------------------
+
+char* CGenericCockpit::Convert1s (char* s) 
+{
+char* p = s; 
+while ((p = strchr (p, '1'))) 
+	*p = char (132);
 }
 
 //------------------------------------------------------------------------------
@@ -459,7 +467,7 @@ CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
 OglDrawFilledRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + m_info.fontHeight));
 fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 sprintf (szAmmo, "%03d", ammoCount);
-convert_1s (szAmmo);
+Convert1s (szAmmo);
 nIdAmmo [bPrimary][0] = PrintF (&nIdAmmo [bPrimary][0], x, y, szAmmo);
 OglDrawFilledRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + m_info.fontHeight));
 nIdAmmo [bPrimary][1] = PrintF (&nIdAmmo [bPrimary][1], x, y, szAmmo);
@@ -515,52 +523,52 @@ void CGenericCockpit::DrawPlayerShip (int nCloakState, int nOldCloakState, int x
 	static int refade = 0;
 
 if ((nOldCloakState == -1) && nCloakState)
-	nCloakFadeValue = 0;
+	m_info.nCloakFadeValue = 0;
 if (!nCloakState) {
-	nCloakFadeValue = FADE_LEVELS - 1;
-	nCloakFadeState = 0;
+	m_info.nCloakFadeValue = FADE_LEVELS - 1;
+	m_info.nCloakFadeState = 0;
 	}
 if ((nCloakState == 1) && !nOldCloakState)
-	nCloakFadeState = -1;
+	m_info.nCloakFadeState = -1;
 if (nCloakState == nOldCloakState)		//doing "about-to-uncloak" effect
-	if (!nCloakFadeState)
-		nCloakFadeState = 2;
+	if (!m_info.nCloakFadeState)
+		m_info.nCloakFadeState = 2;
 if (nCloakState && (gameData.time.xGame > LOCALPLAYER.cloakTime + CLOAK_TIME_MAX - I2X (3)))		//doing "about-to-uncloak" effect
-	if (!nCloakFadeState)
-		nCloakFadeState = 2;
-if (nCloakFadeState)
+	if (!m_info.nCloakFadeState)
+		m_info.nCloakFadeState = 2;
+if (m_info.nCloakFadeState)
 	xCloakFadeTimer -= gameData.time.xFrame;
-while (nCloakFadeState && (xCloakFadeTimer < 0)) {
+while (m_info.nCloakFadeState && (xCloakFadeTimer < 0)) {
 	xCloakFadeTimer += CLOAK_FADE_WAIT_TIME;
-	nCloakFadeValue += nCloakFadeState;
-	if (nCloakFadeValue >= FADE_LEVELS - 1) {
-		nCloakFadeValue = FADE_LEVELS - 1;
-		if (nCloakFadeState == 2 && nCloakState)
-			nCloakFadeState = -2;
+	m_info.nCloakFadeValue += m_info.nCloakFadeState;
+	if (m_info.nCloakFadeValue >= FADE_LEVELS - 1) {
+		m_info.nCloakFadeValue = FADE_LEVELS - 1;
+		if (m_info.nCloakFadeState == 2 && nCloakState)
+			m_info.nCloakFadeState = -2;
 		else
-			nCloakFadeState = 0;
+			m_info.nCloakFadeState = 0;
 		}
-	else if (nCloakFadeValue <= 0) {
-		nCloakFadeValue = 0;
-		if (nCloakFadeState == -2)
-			nCloakFadeState = 2;
+	else if (m_info.nCloakFadeValue <= 0) {
+		m_info.nCloakFadeValue = 0;
+		if (m_info.nCloakFadeState == -2)
+			m_info.nCloakFadeState = 2;
 		else
-			nCloakFadeState = 0;
+			m_info.nCloakFadeState = 0;
 		}
 	}
 
 //	To fade out both pages in a paged mode.
 if (refade)
 	refade = 0;
-else if (nCloakState && nOldCloakState && !nCloakFadeState && !refade) {
-	nCloakFadeState = -1;
+else if (nCloakState && nOldCloakState && !m_info.nCloakFadeState && !refade) {
+	m_info.nCloakFadeState = -1;
 	refade = 1;
 	}
 #if 0
 if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT)
 	CCanvas::SetCurrent (&gameStates.render.vr.buffers.render [0]);
 #endif
-gameStates.render.grAlpha = (float) nCloakFadeValue / (float) FADE_LEVELS;
+gameStates.render.grAlpha = (float) m_info.nCloakFadeValue / (float) FADE_LEVELS;
 BitBlt (GAUGE_SHIPS + (IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer), x, y);
 gameStates.render.grAlpha = FADE_LEVELS;
 #if 0

@@ -139,6 +139,7 @@ class CGenericCockpit {
 			}
 
 		char* ftoa (char *pszVal, fix f);
+		char* Convert1s (char* s);
 
 		void DrawFrameRate (void);
 		void DrawSlowMotion (void);

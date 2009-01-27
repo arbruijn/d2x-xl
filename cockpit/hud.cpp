@@ -382,8 +382,6 @@ DrawAmmoInfo (SECONDARY_AMMO_X, SECONDARY_AMMO_Y, ammoCount, 0);
 //	-----------------------------------------------------------------------------
 
 //convert '1' characters to special wide ones
-#define convert_1s(s) {char *p=s; while ((p = strchr (p, '1'))) *p = (char)132;}
-
 void CHUD::DrawWeapons (void)
 {
 if (HIDE_HUD)
