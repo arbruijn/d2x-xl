@@ -350,7 +350,7 @@ void CStatusBar::DrawShield (void)
 //draw numbers
 fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
 //erase old one
-LoadBitmap (gameData.pig.tex.cockpitBmIndex [m_info.nType + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0)].index, 0);
+LoadBitmap (gameData.pig.tex.cockpitBmIndex [gameStates.render.cockpit.nType + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0)].index, 0);
 Rect (SB_SHIELD_NUM_X, SB_SHIELD_NUM_Y, SB_SHIELD_NUM_X + (gameStates.video.nDisplayMode ? 27 : 13), SB_SHIELD_NUM_Y + m_info.fontHeight);
 int x = SB_SHIELD_NUM_X;
 if (m_info.nShields < 100)
@@ -488,7 +488,7 @@ CGenericCockpit::DrawKillList (60, CCanvas::Current ()->Height ());
 
 void CStatusBar::DrawCockpit (bool bAlphaTest)
 {
-CGenericCockpit::DrawCockpit (m_info.nType + m_info.nCockpit, gameData.render.window.hMax, bAlphaTest);
+CGenericCockpit::DrawCockpit (CM_STATUS_BAR + m_info.nCockpit, gameData.render.window.hMax, bAlphaTest);
 gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w) / 2;
 gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h) / 2;
 //FillBackground ();
