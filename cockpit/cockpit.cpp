@@ -78,6 +78,27 @@ CGenericCockpit::DrawCruise (3, CCanvas::Current ()->Height () - m_info.nLineSpa
 
 //	-----------------------------------------------------------------------------
 
+void CCockpit::DrawLives (void)
+{
+hudCockpit.DrawLives ();
+}
+
+//	-----------------------------------------------------------------------------
+
+void CCockpit::DrawScore (void)
+{
+hudCockpit.DrawScore ();
+}
+
+//	-----------------------------------------------------------------------------
+
+void CCockpit::DrawScoreAdded (void)
+{
+hudCockpit.DrawScoreAdded ();
+}
+
+//	-----------------------------------------------------------------------------
+
 void CCockpit::DrawOrbs (void)
 {
 CGenericCockpit::DrawOrbs (4 * m_info.fontWidth, 2 * m_info.nLineSpacing);

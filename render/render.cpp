@@ -83,7 +83,6 @@ typedef struct tPortal {
 // ------------------------------------------------------------------------------
 
 void StartLightingFrame (CObject *viewer);
-void ShowReticle(int force_big);
 
 uint	nClearWindowColor = 0;
 int				nClearWindow = 2;	// 1 = Clear whole background tPortal, 2 = clear view portals into rest of world, 0 = no clear
@@ -106,6 +105,8 @@ if (reticleCanvas) {
 }
 
 //------------------------------------------------------------------------------
+
+#if 0
 
 // Draw the reticle in 3D for head tracking
 void Draw3DReticle (fix nEyeOffset)
@@ -159,7 +160,7 @@ if ( reticleCanvas == NULL) {
 CCanvas::Push ();
 CCanvas::SetCurrent (reticleCanvas);
 reticleCanvas->Clear (0);		// Clear to Xparent
-ShowReticle (1);
+cockpit->DrawReticle (1);
 CCanvas::Pop ();
 
 saved_interp_method = gameStates.render.nInterpolationMethod;
@@ -168,6 +169,7 @@ G3DrawTexPoly (4, pointList, tUVL, reticleCanvas, NULL, 1, -1);
 gameStates.render.nInterpolationMethod	= saved_interp_method;
 }
 
+#endif
 
 //------------------------------------------------------------------------------
 

@@ -202,10 +202,10 @@ class CGenericCockpit {
 		virtual void DrawPlayerShip (void) = 0;
 		virtual void DrawKillList (void) = 0;
 		virtual void DrawStatic (int nWindow) = 0;
-		virtual void Toggle (void);
+		virtual void Toggle (void) = 0;
 		virtual void DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel);
 		virtual void DrawWeapons (void);
-		virtual void DrawCockpit (bool bAlphaTest = false);
+		virtual void DrawCockpit (bool bAlphaTest = false) = 0;
 		virtual void SetupWindow (int nWindow, CCanvas* canvP) = 0;
 		virtual bool Setup (void);
 
@@ -259,8 +259,6 @@ class CHUD : public CGenericCockpit {
 		virtual void DrawInvul (void);
 		virtual void DrawLives (void);
 		virtual void DrawPlayerShip (void) {}
-		virtual void DrawCockpit (void);
-
 		virtual void DrawStatic (int nWindow);
 		virtual void DrawKillList (void);
 		virtual void DrawCockpit (bool bAlphaTest = false);
@@ -313,7 +311,6 @@ class CStatusBar : public CGenericCockpit {
 		virtual void DrawInvul (void);
 		virtual void DrawLives (void);
 		virtual void DrawPlayerShip (void);
-
 		virtual void DrawStatic (int nWindow);
 		virtual void DrawKillList (void);
 		virtual void ClearBombCount (int bgColor);
@@ -353,7 +350,6 @@ class CCockpit : public CGenericCockpit {
 		virtual void DrawShieldBar (void);
 		virtual void DrawLives (void);
 		virtual void DrawPlayerShip (void);
-
 		virtual void DrawStatic (int nWindow);
 		virtual void DrawKillList (void);
 		virtual void ClearBombCount (int bgColor);
@@ -395,7 +391,6 @@ class CRearView : public CGenericCockpit {
 		virtual void DrawLives (void) {}
 		virtual void DrawPlayerShip (void) {}
 		virtual void DrawCockpit (void) {}
-
 		virtual void DrawStatic (int nWindow) {}
 		virtual void DrawKillList (void) {}
 		virtual void ClearBombCount (int bgColor) {}

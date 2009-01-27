@@ -66,6 +66,16 @@ int oldBombcount [2]		= {0, 0};
 
 //	-----------------------------------------------------------------------------
 
+void CHUD::GetHostageWindowCoords (int& x, int& y, int& w, int& h)
+{
+x = SECONDARY_W_BOX_LEFT;
+y = SECONDARY_W_BOX_TOP;
+w = SECONDARY_W_BOX_RIGHT - SECONDARY_W_BOX_LEFT + 1;
+h = SECONDARY_W_BOX_BOT - SECONDARY_W_BOX_TOP + 1;
+}
+
+//	-----------------------------------------------------------------------------
+
 void CHUD::DrawRecording (void)
 {
 CGenericCockpit::DrawRecording (0);
@@ -108,7 +118,6 @@ GrPrintF (NULL, CCanvas::Current ()->Width () - w - HUD_LHX (2), 3, szScore);
 }
 
 //	-----------------------------------------------------------------------------
-//y offset between lines on HUD
 
  void CHUD::DrawScoreAdded (void)
 {

@@ -977,7 +977,7 @@ void CGenericCockpit::DrawReticle (int bForceBig)
 	int nCrossBm, nPrimaryBm, nSecondaryBm;
 	int bHiresReticle, bSmallReticle, ofs;
 
-if ((gameData.demo.nState==ND_STATE_PLAYBACK) && gameData.demo.bFlyingGuided) {
+if ((gameData.demo.nState == ND_STATE_PLAYBACK) && gameData.demo.bFlyingGuided) {
 	DrawGuidedCrosshair ();
 	return;
 	}
@@ -1019,11 +1019,11 @@ else {
 	ofs = (bHiresReticle ? 0 : 2) + bSmallReticle;
 
 	BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
-				  (x + HUD_SCALE_X (cross_offsets [ofs].x)), (y + HUD_SCALE_Y (cross_offsets [ofs].y)), false, true);
+			  (x + HUD_SCALE_X (cross_offsets [ofs].x)), (y + HUD_SCALE_Y (cross_offsets [ofs].y)), false, true);
 	BitBlt ((bSmallReticle ? SML_RETICLE_PRIMARY : RETICLE_PRIMARY) + nPrimaryBm,
-					(x + HUD_SCALE_X (primary_offsets [ofs].x)), (y + HUD_SCALE_Y (primary_offsets [ofs].y)), false, true);
+			  (x + HUD_SCALE_X (primary_offsets [ofs].x)), (y + HUD_SCALE_Y (primary_offsets [ofs].y)), false, true);
 	BitBlt ((bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondaryBm,
-					(x + HUD_SCALE_X (secondary_offsets [ofs].x)), (y + HUD_SCALE_Y (secondary_offsets [ofs].y)), false, true);
+			  (x + HUD_SCALE_X (secondary_offsets [ofs].x)), (y + HUD_SCALE_Y (secondary_offsets [ofs].y)), false, true);
   }
 if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick && gameOpts->render.cockpit.bMouseIndicator)
 	OglDrawMouseIndicator ();
