@@ -308,6 +308,7 @@ class CStatusBar : public CGenericCockpit {
 		virtual int DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount);
 		virtual void DrawPrimaryAmmoInfo (int ammoCount);
 		virtual void DrawSecondaryAmmoInfo (int ammoCount);
+		virtual void DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel);
 		virtual void DrawCloak (void) {}
 		virtual void DrawInvul (void);
 		virtual void DrawLives (void);
@@ -345,6 +346,7 @@ class CCockpit : public CGenericCockpit {
 		virtual int DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount);
 		virtual void DrawPrimaryAmmoInfo (int ammoCount);
 		virtual void DrawSecondaryAmmoInfo (int ammoCount);
+		virtual void DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel);
 		virtual void DrawCloak (void) {}
 		virtual void DrawInvul (void);
 		virtual void DrawShield (void);

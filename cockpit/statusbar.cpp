@@ -453,6 +453,32 @@ CGenericCockpit::DrawStatic (nWindow, SB_PRIMARY_BOX);
 
 //	-----------------------------------------------------------------------------
 
+void CStatusBar::DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel)
+{
+	int nIndex;
+
+if (nWeaponType == 0) {
+	nIndex = primaryWeaponToWeaponInfo [nWeaponId];
+	if (nIndex == LASER_ID && laserLevel > MAX_LASER_LEVEL)
+		nIndex = SUPERLASER_ID;
+	CGenericCockpit::DrawWeaponInfo (nIndex,
+		hudWindowAreas + SB_PRIMARY_BOX,
+		SB_PRIMARY_W_PIC_X, SB_PRIMARY_W_PIC_Y,
+		PRIMARY_WEAPON_NAMES_SHORT (nWeaponId),
+		PRIMARY_W_TEXT_X, PRIMARY_W_TEXT_Y, 0);
+		}
+else {
+	nIndex = secondaryWeaponToWeaponInfo [nWeaponId];
+	CGenericCockpit::DrawWeaponInfo (nIndex,
+		hudWindowAreas + SP_SECONDARY_BOX,
+		SB_SECONDARY_W_PIC_X, SB_SECONDARY_W_PIC_Y,
+		SECONDARY_WEAPON_NAMES_SHORT (nWeaponId),
+		SECONDARY_W_TEXT_X, SECONDARY_W_TEXT_Y, 0);
+	}
+}
+
+//	-----------------------------------------------------------------------------
+
 void CStatusBar::DrawKillList (void)
 {
 CGenericCockpit::DrawKillList (60, CCanvas::Current ()->Height ());
