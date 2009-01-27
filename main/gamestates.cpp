@@ -305,8 +305,8 @@ gameStates.sound.bWasRecording = 0;
 gameStates.sound.bDontStartObjects = 0;
 gameStates.sound.nConquerWarningSoundChannel = -1;
 gameStates.sound.nSoundChannels = 2;
-gameStates.sound.digi.bSoundsInitialized = 0;
-gameStates.sound.digi.bLoMem = 0;
+gameStates.sound.audio.bSoundsInitialized = 0;
+gameStates.sound.audio.bLoMem = 0;
 }
 
 // ----------------------------------------------------------------------------

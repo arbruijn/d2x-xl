@@ -806,6 +806,7 @@ typedef struct tTextureStates {
 
 typedef struct tCockpitStates {
 	int bShowPingStats;
+	int nType;
 	int nNextType;
 	int nTypeSave;
 	int nShieldFlash;
@@ -983,12 +984,13 @@ typedef struct tRenderStates {
 
 //------------------------------------------------------------------------------
 
-typedef struct tDigiStates {
+typedef struct tAudioStates {
 	int bSoundsInitialized;
 	int bLoMem;
 	int nNextSignature;
 	int nActiveObjects;
-} tDigiStates;
+	int nMaxChannels;
+} tAudioStates;
 
 //------------------------------------------------------------------------------
 
@@ -998,7 +1000,7 @@ typedef struct tSoundStates {
 	int nConquerWarningSoundChannel;
 	int nSoundChannels;
 	int bD1Sound;
-	tDigiStates digi;
+	tAudioStates audio;
 } tSoundStates;
 
 //------------------------------------------------------------------------------

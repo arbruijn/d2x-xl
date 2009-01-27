@@ -173,7 +173,7 @@ return 1;
 void CMidi::Pause (void)
 {
 #if 0
-	if (!gameStates.sound.digi.bInitialized)
+	if (!gameStates.sound.audio.bInitialized)
 		return;
 #endif
 

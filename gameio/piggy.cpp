@@ -503,7 +503,7 @@ if (FindArg ("-nolowmem"))
 	bLowMemory = 0;
 
 if (bLowMemory)
-	gameStates.sound.digi.bLoMem = 1;
+	gameStates.sound.audio.bLoMem = 1;
 /*---*/PrintLog ("   Loading game data\n");
 PiggyInitPigFile (DefaultPigFile ());
 /*---*/PrintLog ("   Loading main ham file\n");

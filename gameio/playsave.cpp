@@ -253,8 +253,8 @@ for (i = 0; i < 2; i++) {
 
 		RP (gameStates.render.bShowFrameRate, 0, 0);
 		RP (gameStates.render.bShowTime, 0, 1);
-		RP (audio.MaxChannels (), 0, 16);
-		RP (cockpit->Info ().nType, 0, 0);
+		RP (gameStates.sound.audio.nMaxChannels, 0, 128);
+		RP (gameStates.cockpit.nType, 0, 0);
 		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
 		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
 		RP (gameOptions [i].render.cockpit.bGuidedInMainView, 0, 0);
@@ -672,6 +672,8 @@ int WriteParams (void)
 	char			fn [FILENAME_LEN];
 	tParam		*pp;
 
+gameStates.sound.audio.nMaxChannels = audio.MaxChannels ();
+gameStates.cockpit.nType = cockpit->Type ();
 RegisterParams ();
 sprintf (fn, "%s.plx", LOCALPLAYER.callsign);
 if (!cf.Open (fn, gameFolders.szProfDir, "wt", 0))
@@ -763,6 +765,8 @@ if (!cf.Open (fn, gameFolders.szProfDir, "rt", 0))
 	return 0;
 while (!cf.EoF ())
 	ReadParam (cf);
+audio.SetMaxChannels (gameStates.sound.audio.nMaxChannels);
+cockpit->Activate (gameStates.cockpit.nType);
 return cf.Close ();
 }
 
@@ -780,7 +784,7 @@ tParamValue defaultParams [] = {
  {"cockpit->Type ()", "3"},
  {"gameStates.render.bShowFrameRate", "0"},
  {"gameStates.render.bShowTime", "1"},
- {"gameStates.sound.digi.nMaxChannels", "16"},
+ {"gameStates.sound.audio.nMaxChannels", "16"},
  {"gameStates.video.nDefaultDisplayMode", "3"},
  {"gameStates.video.nDefaultDisplayMode", "3"},
  {"gameOptions[0].render.cockpit.bGuidedInMainView", "1"},
