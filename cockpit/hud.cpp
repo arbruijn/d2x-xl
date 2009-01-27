@@ -369,7 +369,7 @@ DrawBombCount (BOMB_COUNT_X, BOMB_COUNT_Y, BLACK_RGBA, 1);
 
 void CHUD::DrawBombCount (int& nIdBombCount, int x, int y, int bgColor, char* pszBombCount)
 {
-GrString (x, y, szBombCount, &nIdBombCount);
+GrString (x, y, pszBombCount, &nIdBombCount);
 }
 
 //	-----------------------------------------------------------------------------
@@ -843,7 +843,7 @@ void CHUD::DrawInvulnerableShip (void)
 
 //	-----------------------------------------------------------------------------
 
-void DrawCockpit (bool bAlphaTest)
+void CCockpit::DrawCockpit (bool bAlphaTest)
 {
 gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w) / 2;
 gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h) / 2;

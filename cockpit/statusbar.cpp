@@ -409,10 +409,10 @@ DrawBombCount (SB_BOMB_COUNT_X, SB_BOMB_COUNT_Y, BLACK_RGBA, 0);
 
 //	-----------------------------------------------------------------------------
 
-int CStatusBar::DrawBombCount (int* nId, int x, int y, int bgColor, char* pszBombCount)
+int CStatusBar::DrawBombCount (int* nIdBombCount, int x, int y, int bgColor, char* pszBombCount)
 {
 CCanvas::Current ()->SetColorRGBi (bgColor);
-return Print (&nIdBombCount, x, y, szBombCount, nIdBombCount);
+return Print (&nIdBombCount, x, y, pszBombCount, nIdBombCount);
 }
 
 //	-----------------------------------------------------------------------------
@@ -431,7 +431,7 @@ DrawKillList (60, CCanvas::Current ()->Height ());
 
 //	-----------------------------------------------------------------------------
 
-void DrawCockpit (bool bAlphaTest)
+void CCockpit::DrawCockpit (bool bAlphaTest)
 {
 DrawCockpit (gameStates.render.cockpit.nMode + nCockpit, gameData.render.window.hMax, bAlphaTest);
 gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;

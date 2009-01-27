@@ -420,7 +420,7 @@ if ((m_info.tInvul > I2X (4)) || ((m_info.tInvul > 0) && (gameData.time.xGame & 
 
 //	-----------------------------------------------------------------------------
 
-void DrawCockpit (bool bAlphaTest)
+void CCockpit::DrawCockpit (bool bAlphaTest)
 {
 DrawCockpit (m_info.nCockpit, 0, bAlphaTest);
 }
