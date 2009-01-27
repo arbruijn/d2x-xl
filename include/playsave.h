@@ -87,6 +87,7 @@ class CPlayerProfile {
 		void Setup (void);
 		int Load (void);
 		int Save (void);
+		inline bool Busy (void) { return m_cf.File () != 0; }
 	};
 
 extern CPlayerProfile profile;

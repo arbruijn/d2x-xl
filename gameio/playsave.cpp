@@ -671,7 +671,7 @@ RegisterConfig (kcHotkeys, KcHotkeySize (), "hotkeys.");
 
 int CPlayerProfile::Save (void)
 {
-if (m_cf.File ())
+if (Busy ())
 	return 1;
 
 	char			fn [FILENAME_LEN];
@@ -731,7 +731,7 @@ return Set (szParam, pszValue);
 
 int CPlayerProfile::Load (void)
 {
-if (m_cf.File ())
+if (Busy ())
 	return 1;
 
 	char	fn [FILENAME_LEN];
@@ -1999,6 +1999,9 @@ ubyte dosControlType,winControlType;
 //read in the CPlayerData's saved games.  returns errno (0 == no error)
 int LoadPlayerProfile (int bOnlyWindowSizes)
 {
+if (profile.Busy ())
+	return 1;
+
 	CFile		cf;
 	char		filename [FILENAME_LEN], buf [128];
 	ubyte		nDisplayMode;
@@ -2051,7 +2054,7 @@ if (bOnlyWindowSizes)
 gameStates.app.nDifficultyLevel = cf.ReadByte ();
 gameOpts->gameplay.nAutoLeveling = cf.ReadByte ();
 gameOpts->render.cockpit.bReticle = cf.ReadByte ();
-cockpit->Activate (int (cf.ReadByte ()));
+cf.ReadByte (); //skip cockpit type
 nDisplayMode = gameStates.video.nDefaultDisplayMode;
 gameStates.video.nDefaultDisplayMode = cf.ReadByte ();
 gameOpts->render.cockpit.bMissileView = cf.ReadByte ();
@@ -2539,6 +2542,9 @@ for (i = 0; i < 2; i++) {
 //write out CPlayerData's saved games.  returns errno (0 == no error)
 int SavePlayerProfile (void)
 {
+if (profile.Busy ())
+	return 1;
+
 	CFile	cf;
 	char	filename [FILENAME_LEN];		// because of ":gameData.multiplayer.players:" path
 	char	buf [128];
@@ -2638,13 +2644,13 @@ return funcRes;
 
 //------------------------------------------------------------------------------
 //update the CPlayerData's highest level.  returns errno (0 == no error)
-int UpdatePlayerFile()
+int UpdatePlayerFile (void)
 {
 	int ret = LoadPlayerProfile (0);
 
 if ((ret != EZERO) && (ret != ENOENT))		//if file doesn't exist, that's ok
 	return ret;
-return SavePlayerProfile();
+return SavePlayerProfile ();
 }
 
 //------------------------------------------------------------------------------
