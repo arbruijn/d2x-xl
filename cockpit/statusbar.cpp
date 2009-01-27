@@ -213,13 +213,15 @@ if (m_history [gameStates.render.vr.nCurrentPage].lives == -1) {
 	fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 	nIdLives [0] = IsMultiGame ? 
 						PrintF (&nIdLives [0], SB_LIVES_LABEL_X, -(ScaleY (SB_LIVES_LABEL_Y) + m_info.heightPad), "%s:", TXT_DEATHS) : 
-						PrintF (&nIdLives [0], SB_LIVES_LABEL_X, -(ScaleY (SB_LIVES_LABEL_Y) + m_info.heightPad) / 2), "%s:", TXT_LIVES);
+						PrintF (&nIdLives [0], SB_LIVES_LABEL_X, -(ScaleY (SB_LIVES_LABEL_Y) + m_info.heightPad), "%s:", TXT_LIVES);
 	}
 if (IsMultiGame) {
 	static int lastX [4] = {SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_H, SB_SCORE_RIGHT_H};
 
 	char	szKilled [20];
-	int	x, y, w, h, aw;
+	int	x = SB_LIVES_X, 
+			y = -(ScaleY (SB_LIVES_Y + 1) + m_info.heightPad);
+	int	w, h, aw;
 
 	sprintf (szKilled, "%5d", LOCALPLAYER.netKilledTotal);
 	fontManager.Current ()->StringSize (szKilled, w, h, aw);
@@ -234,7 +236,8 @@ if (IsMultiGame) {
 else if ((m_history [gameStates.render.vr.nCurrentPage].lives == -1) || 
 	 (LOCALPLAYER.lives != m_history [gameStates.render.vr.nCurrentPage].lives)) {
 
-	int x = SB_LIVES_X, y = -(ScaleY (SB_LIVES_Y) + m_info.heightPad);
+	int	x = SB_LIVES_X, 
+			y = -(ScaleY (SB_LIVES_Y) + m_info.heightPad);
 
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
 	Rect (x, y, SB_SCORE_RIGHT, y + bmP->Height ());
