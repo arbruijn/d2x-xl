@@ -183,9 +183,6 @@ CGenericCockpit::DrawFlag (5 * m_info.nLineSpacing, m_info.nLineSpacing * (gameS
 
 void CStatusBar::DrawHomingWarning (void)
 {
-m_info.bLastHomingWarningDrawn [gameStates.render.vr.nCurrentPage] = (LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000);
-BitBlt (m_info.bLastHomingWarningDrawn [gameStates.render.vr.nCurrentPage] ? GAUGE_HOMING_WARNING_ON : GAUGE_HOMING_WARNING_OFF, 
-		  HOMING_WARNING_X, HOMING_WARNING_Y);
 }
 
 //	-----------------------------------------------------------------------------
@@ -206,25 +203,23 @@ DrawAmmoInfo (SB_SECONDARY_AMMO_X, SB_SECONDARY_AMMO_Y, ammoCount, 0);
 
 void CStatusBar::DrawLives (void)
 {
-	int x = SB_LIVES_X, y = SB_LIVES_Y;
-
 	CBitmap* bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (GAUGE_LIVES);
 
 	static int nIdLives [2] = {0, 0}, nIdKilled = 0;
   
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
 if (m_history [gameStates.render.vr.nCurrentPage].lives == -1) {
 	fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 	nIdLives [0] = IsMultiGame ? 
-						PrintF (&nIdLives [0], SB_LIVES_LABEL_X, SB_LIVES_LABEL_Y, "%s:", TXT_DEATHS) : 
-						PrintF (&nIdLives [0], SB_LIVES_LABEL_X, SB_LIVES_LABEL_Y, "%s:", TXT_LIVES);
+						PrintF (&nIdLives [0], SB_LIVES_LABEL_X, -(ScaleY (SB_LIVES_LABEL_Y) + m_info.heightPad), "%s:", TXT_DEATHS) : 
+						PrintF (&nIdLives [0], SB_LIVES_LABEL_X, -(ScaleY (SB_LIVES_LABEL_Y) + m_info.heightPad) / 2), "%s:", TXT_LIVES);
 	}
-CCanvas::Push ();
-CCanvas::SetCurrent (CurrentGameScreen ());
 if (IsMultiGame) {
-	char szKilled [20];
-	int w, h, aw;
 	static int lastX [4] = {SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_H, SB_SCORE_RIGHT_H};
-	int x;
+
+	char	szKilled [20];
+	int	x, y, w, h, aw;
 
 	sprintf (szKilled, "%5d", LOCALPLAYER.netKilledTotal);
 	fontManager.Current ()->StringSize (szKilled, w, h, aw);
@@ -234,18 +229,19 @@ if (IsMultiGame) {
 	fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 	x = SB_SCORE_RIGHT - w - 2;	
 	nIdKilled = PrintF (&nIdKilled, x, y + 1, szKilled);
-	lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage] = x;
+	lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCurrentPage] = x;
 	}
 else if ((m_history [gameStates.render.vr.nCurrentPage].lives == -1) || 
 	 (LOCALPLAYER.lives != m_history [gameStates.render.vr.nCurrentPage].lives)) {
-//erase old icons
+
+	int x = SB_LIVES_X, y = -(ScaleY (SB_LIVES_Y) + m_info.heightPad);
+
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
-   
 	Rect (x, y, SB_SCORE_RIGHT, y + bmP->Height ());
 	if (LOCALPLAYER.lives - 1 > 0) {
 		fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 		BitBlt (GAUGE_LIVES, x, y);
-		nIdLives [1] = PrintF (&nIdLives [1], x + bmP->Width () + GAME_FONT->Width (), y, "x %d", LOCALPLAYER.lives - 1);
+		nIdLives [1] = PrintF (&nIdLives [1], x + bmP->Width () + m_info.fontWidth, y, "x %d", LOCALPLAYER.lives - 1);
 		}
 	}
 CCanvas::Pop ();
@@ -267,7 +263,7 @@ fontManager.Current ()->StringSize (szEnergy, w, h, aw);
 fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
 nIdEnergy = PrintF (&nIdEnergy, 
 						  -(ScaleX (SB_ENERGY_GAUGE_X) + (ScaleX (SB_ENERGY_GAUGE_W) - w) / 2), 
-						  -(ScaleY (SB_ENERGY_GAUGE_Y + SB_ENERGY_GAUGE_H - m_info.nLineSpacing) + (ScaleY (h) - h) / 2), 
+						  -(ScaleY (SB_ENERGY_GAUGE_Y + SB_ENERGY_GAUGE_H - m_info.nLineSpacing) + m_info.heightPad), 
 						  "%d", m_info.nEnergy);
 CCanvas::Pop ();
 }
@@ -316,7 +312,7 @@ int w, h, aw;
 fontManager.Current ()->StringSize (szAB, w, h, aw);
 nIdAfterBurner = PrintF (&nIdAfterBurner, 
 								 -(ScaleX (SB_AFTERBURNER_GAUGE_X) + (ScaleX (SB_AFTERBURNER_GAUGE_W) - w) / 2), 
-								 -(ScaleY (SB_AFTERBURNER_GAUGE_Y + SB_AFTERBURNER_GAUGE_H - m_info.nLineSpacing) + (ScaleY (h) - h) / 2), 
+								 -(ScaleY (SB_AFTERBURNER_GAUGE_Y + SB_AFTERBURNER_GAUGE_H - m_info.nLineSpacing) + m_info.heightPad), 
 								 "AB");
 CCanvas::Pop ();
 }
@@ -367,7 +363,7 @@ fontManager.Current ()->StringSize (szShield, w, h, aw);
 fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
 nIdShield = PrintF (&nIdShield, 
 						  -(ScaleX (SB_SHIELD_NUM_X + (gameStates.video.nDisplayMode ? 13 : 6)) - w / 2), 
-						  -(ScaleY (SB_SHIELD_NUM_Y) + (ScaleY (h) - h) / 2), 
+						  -(ScaleY (SB_SHIELD_NUM_Y) + m_info.heightPad), 
 						  "%d", m_info.nShields);
 CCanvas::Pop ();
 }

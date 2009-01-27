@@ -112,6 +112,7 @@ class CCockpitInfo {
 		float	yGaugeScale;
 		int	fontWidth;
 		int	fontHeight;
+		int	nHeightPad;
 		int	nCockpit;
 		int	nShields;
 		int	nEnergy;

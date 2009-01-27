@@ -1490,6 +1490,7 @@ m_info.fontWidth = CCanvas::Current ()->Font ()->Width ();
 m_info.fontHeight = CCanvas::Current ()->Font ()->Height ();
 m_info.xScale = screen.Scale (0);
 m_info.xScale = screen.Scale (1);
+m_info.nHeightPad = (ScaleY (m_info.fontHeight) - m_info.fontHeight) / 2;
 m_info.nEnergy = X2IR (LOCALPLAYER.energy);
 m_info.nShields = X2IR (LOCALPLAYER.shields);
 m_info.bCloak = ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0);
