@@ -354,7 +354,7 @@ if (gameStates.render.bShowFrameRate) {
 
 void CGenericCockpit::DrawSlowMotion (void)
 {
-if (cockpit->Hide ())
+if (Hide ())
 	return;
 
 	char	szScore [40];
@@ -387,9 +387,50 @@ GrPrintF (NULL, CCanvas::Current ()->Width () - 2 * w - HUD_LHX (2), 3, szScore)
 
 //	-----------------------------------------------------------------------------
 
+void CGenericCockpit::DrawPlayerStats (void)
+{
+if (Hide ())
+	return;
+
+	int		h, w, aw, y;
+	double	p [3], s [3];
+	char		szStats [50];
+
+	static int nIdStats = 0;
+
+if (!gameOpts->render.cockpit.bPlayerStats)
+	return;
+fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
+y = 6 + 2 * nLineSpacing;
+h = (gameData.stats.nDisplayMode - 1) / 2;
+if ((gameData.stats.nDisplayMode - 1) % 2 == 0) {
+	sprintf (szStats, "%s%d-%d %d-%d %d-%d", 
+				h ? "T:" : "", 
+				gameData.stats.player [h].nHits [0],
+				gameData.stats.player [h].nMisses [0],
+				gameData.stats.player [h].nHits [1],
+				gameData.stats.player [h].nMisses [1],
+				gameData.stats.player [h].nHits [0] + gameData.stats.player [h].nHits [1],
+				gameData.stats.player [h].nMisses [0] + gameData.stats.player [h].nMisses [1]);
+	}
+else {
+	s [0] = gameData.stats.player [h].nHits [0] + gameData.stats.player [h].nMisses [0];
+	s [1] = gameData.stats.player [h].nHits [1] + gameData.stats.player [h].nMisses [1];
+	s [2] = s [0] + s [1];
+	p [0] = s [0] ? (gameData.stats.player [h].nHits [0] / s [0]) * 100 : 0;
+	p [1] = s [1] ? (gameData.stats.player [h].nHits [1] / s [1]) * 100 : 0;
+	p [2] = s [2] ? ((gameData.stats.player [h].nHits [0] + gameData.stats.player [h].nHits [1]) / s [2]) * 100 : 0;
+	sprintf (szStats, "%s%1.1f%c %1.1f%c %1.1f%c", h ? "T:" : "", p [0], '%', p [1], '%', p [2], '%');
+	}
+fontManager.Current ()->StringSize (szStats, w, h, aw);
+nIdStats = GrString (CCanvas::Current ()->Width () - w - HUD_LHX (2), y, szStats, &nIdStats);
+}
+
+//	-----------------------------------------------------------------------------
+
 void CGenericCockpit::DrawTime (void)
 {
-if (cockpit->Hide ())
+if (Hide ())
 	return;
 
 if (gameStates.render.bShowTime && !(IsMultiGame && gameData.multigame.kills.bShowList)) {
@@ -409,7 +450,7 @@ if (gameStates.render.bShowTime && !(IsMultiGame && gameData.multigame.kills.bSh
 
 void CGenericCockpit::DrawTimerCount (void)
 {
-if (cockpit->Hide ())
+if (Hide ())
 	return;
 
 	char	szScore [20];
@@ -444,7 +485,7 @@ if ((gameData.app.nGameMode & GM_CAPTURE) && (LOCALPLAYER.flags & PLAYER_FLAGS_F
 
 void CGenericCockpit::DrawOrbs (int x, int y)
 {
-if (cockpit->Hide ())
+if (Hide ())
 	return;
 
 	static int nIdOrbs = 0, nIdEntropy [2] = {0, 0};
@@ -1154,7 +1195,7 @@ void CGenericCockpit::DrawKillList (int x, int y)
 
 	static int nIdKillList [2][MAX_PLAYERS] = {{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
 
-if (cockpit->Hide ())
+if (Hide ())
 	return;
 
 if (bGetPing)
@@ -1423,7 +1464,7 @@ if (ShowView_textTimer > 0) {
 //draw all the things on the HUD
 void CGenericCockpit::Render (int bExtraInfo)
 {
-if (cockpit->Hide ())
+if (Hide ())
 	return;
 
 glDepthFunc (GL_ALWAYS);
@@ -1471,6 +1512,7 @@ if (bExtraInfo) {
 	}
 
 DrawSlowMotion ();
+DrawPlayerStats ();
 DrawScore ();
 if (m_info.scoreTime)
 	DrawScoreAdded ();
@@ -1571,7 +1613,7 @@ if (m_history [gameStates.render.vr.nCurrentPage].weapon [0] == 0)
 
 void CGenericCockpit::RenderWindow (int nWindow, CObject *viewerP, int bRearView, int nUser, const char *pszLabel)
 {
-if (cockpit->Hide ())
+if (Hide ())
 	return;
 
 	CCanvas windowCanv;
@@ -1714,7 +1756,7 @@ else
 	return;
 m_info.nType = nType;
 gameStates.render.cockpit.nNextType = -1;
-cockpit->Setup ();
+Setup ();
 HUDClearMessages ();
 WritePlayerFile ();
 }

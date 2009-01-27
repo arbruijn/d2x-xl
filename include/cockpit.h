@@ -148,6 +148,7 @@ class CGenericCockpit {
 		void DrawCountdown (int y);
 		void DrawRecording (int y);
 		void DrawFrameRate (void);
+		void DrawPlayerStats (void);
 		void DrawSlowMotion (void);
 		void DrawTime (void);
 		void DrawTimerCount (void);
@@ -209,7 +210,9 @@ class CGenericCockpit {
 		virtual bool Setup (void);
 
 		inline int Type (void) { return m_info.nType; }
-		inline void SetMode (int nType) { m_info.nType = nType; }
+		inline int LineSpacing (void) { return m_info.nLineSpacing = GAME_FONT->Height () + GAME_FONT->Height () / 4; }
+		inline float XScale (void) { return m_info.xScale = screen.Scale (0); }
+		inline float YScale (void) { return m_info.yScale = screen.Scale (1); }
 
 		inline bool Always (void) { 
 			return (m_info.nType == CM_FULL_COCKPIT) || (m_info.nType == CM_STATUS_BAR); 

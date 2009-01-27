@@ -53,11 +53,13 @@ CBitmap	bmObjTally [2];
 int bHaveInvBms = -1;
 int bHaveObjTallyBms = -1;
 
+CHUDIcons	hudIcons;
+
 //	-----------------------------------------------------------------------------
 
 const char *pszObjTallyIcons [] = {"louguard.tga", "shldorb.tga"};
 
-int LoadObjTallyIcons (void)
+int CHUDIcons::LoadTally (void)
 {
 	int	i;
 
@@ -78,7 +80,7 @@ return bHaveObjTallyBms = 1;
 
 //	-----------------------------------------------------------------------------
 
-void FreeObjTallyIcons (void)
+void CHUDIcons::DestroyTally (void)
 {
 	int	i;
 
@@ -91,32 +93,33 @@ if (bHaveObjTallyBms > 0) {
 
 //	-----------------------------------------------------------------------------
 
-void HUDShowObjTally (void)
+void CHUDIcons::DrawTally (void)
 {
+if (!gameOpts->render.cockpit.bObjectTally)
+	return;
+if (cockpit->Hide ())
+	return;
+
 	static int		objCounts [2] = {0, 0};
 	static time_t	t0 = -1;
 	static int		nIdTally [2] = {0, 0};
 	time_t			t;
 
-if (!gameOpts->render.cockpit.bObjectTally)
-	return;
-if (cockpit->Hide ())
-	return;
 if (!IsMultiGame || IsCoopGame) {
 	int	x, x0 = 0, y = 0, w, h, aw, i, bmW, bmH;
 	char	szInfo [20];
 
 	if (cockpit->Type () == CM_FULL_COCKPIT)
-		y = 3 * nHUDLineSpacing;
+		y = 3 * nLineSpacing;
 	else if (cockpit->Type () == CM_STATUS_BAR)
-		y = 2 * nHUDLineSpacing;
+		y = 2 * nLineSpacing;
 	else {//if (!cockpit->Always ()) {
-		y = 2 * nHUDLineSpacing;
+		y = 2 * nLineSpacing;
 		if (gameStates.render.fonts.bHires)
-			y += nHUDLineSpacing;
+			y += nLineSpacing;
 		}
 	if (gameOpts->render.cockpit.bPlayerStats)
-		y += 2 * nHUDLineSpacing;
+		y += 2 * nLineSpacing;
 
 	x0 = CCanvas::Current ()->Width ();
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
@@ -126,7 +129,7 @@ if (!IsMultiGame || IsCoopGame) {
 		for (i = 0; i < 2; i++) 
 			objCounts [i] = ObjectCount (i ? OBJ_POWERUP : OBJ_ROBOT);
 		}
-	if (!gameOpts->render.cockpit.bTextGauges && (LoadObjTallyIcons () > 0)) {
+	if (!gameOpts->render.cockpit.bTextGauges && (LoadTally () > 0)) {
 		for (i = 0; i < 2; i++) {
 			bmH = bmObjTally [i].Width () / 2;
 			bmW = bmObjTally [i].Height () / 2;
@@ -140,12 +143,12 @@ if (!IsMultiGame || IsCoopGame) {
 			}
 		}
 	else {
-		y = 6 + 3 * nHUDLineSpacing;
+		y = 6 + 3 * nLineSpacing;
 		for (i = 0; i < 2; i++) {
 			sprintf (szInfo, "%s: %5d", i ? "Powerups" : "Robots", objCounts [i]);
 			fontManager.Current ()->StringSize (szInfo, w, h, aw);
 			nIdTally [i] = GrPrintF (nIdTally + i, CCanvas::Current ()->Width () - w - HUD_LHX (2), y, szInfo);
-			y += nHUDLineSpacing;
+			y += nLineSpacing;
 			}
 		}
 	}
@@ -153,60 +156,9 @@ if (!IsMultiGame || IsCoopGame) {
 
 //	-----------------------------------------------------------------------------
 
-void HUDShowPlayerStats (void)
+void CHUDIcons::ToggleWeaponIcons (void)
 {
-	int		h, w, aw, y;
-	double	p [3], s [3];
-	char		szStats [50];
-
-	static int nIdStats = 0;
-
-if (!gameOpts->render.cockpit.bPlayerStats)
-	return;
-if (cockpit->Hide ())
-	return;
-if (cockpit->Type () == CM_FULL_COCKPIT)
-	y = 3 * nHUDLineSpacing;
-else if (cockpit->Type () == CM_STATUS_BAR)
-	y = 2 * nHUDLineSpacing;
-else {//if (!cockpit->Always ()) {
-	y = 2 * nHUDLineSpacing;
-	if (gameStates.render.fonts.bHires)
-		y += nHUDLineSpacing;
-	}
-fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
-y = 6 + 2 * nHUDLineSpacing;
-h = (gameData.stats.nDisplayMode - 1) / 2;
-if ((gameData.stats.nDisplayMode - 1) % 2 == 0) {
-	sprintf (szStats, "%s%d-%d %d-%d %d-%d", 
-				h ? "T:" : "", 
-				gameData.stats.player [h].nHits [0],
-				gameData.stats.player [h].nMisses [0],
-				gameData.stats.player [h].nHits [1],
-				gameData.stats.player [h].nMisses [1],
-				gameData.stats.player [h].nHits [0] + gameData.stats.player [h].nHits [1],
-				gameData.stats.player [h].nMisses [0] + gameData.stats.player [h].nMisses [1]);
-	}
-else {
-	s [0] = gameData.stats.player [h].nHits [0] + gameData.stats.player [h].nMisses [0];
-	s [1] = gameData.stats.player [h].nHits [1] + gameData.stats.player [h].nMisses [1];
-	s [2] = s [0] + s [1];
-	p [0] = s [0] ? (gameData.stats.player [h].nHits [0] / s [0]) * 100 : 0;
-	p [1] = s [1] ? (gameData.stats.player [h].nHits [1] / s [1]) * 100 : 0;
-	p [2] = s [2] ? ((gameData.stats.player [h].nHits [0] + gameData.stats.player [h].nHits [1]) / s [2]) * 100 : 0;
-	sprintf (szStats, "%s%1.1f%c %1.1f%c %1.1f%c", h ? "T:" : "", p [0], '%', p [1], '%', p [2], '%');
-	}
-fontManager.Current ()->StringSize (szStats, w, h, aw);
-nIdStats = GrString (CCanvas::Current ()->Width () - w - HUD_LHX (2), y, szStats, &nIdStats);
-}
-
-//	-----------------------------------------------------------------------------
-
-void HUDToggleWeaponIcons (void)
-{
-	int	i;
-
-for (i = 0; i < Controls [0].toggleIconsCount; i++)
+for (int i = 0; i < Controls [0].toggleIconsCount; i++)
 	if (gameStates.app.bNostalgia)
 		extraGameInfo [0].nWeaponIcons = 0;
 	else {
@@ -220,7 +172,7 @@ for (i = 0; i < Controls [0].toggleIconsCount; i++)
 
 #define ICON_SCALE	3
 
-void HUDShowWeaponIcons (void)
+void CHUDIcons::DrawWeapons (void)
 {
 	CBitmap*	bmP, * bmoP;
 	int	nWeaponIcons = (cockpit->Type () == CM_STATUS_BAR) ? 3 : extraGameInfo [0].nWeaponIcons;
@@ -233,9 +185,12 @@ void HUDShowWeaponIcons (void)
 			oy = 6, 
 			x, dx, y = 0, dy = 0;
 	ubyte	alpha = gameOpts->render.weaponIcons.alpha;
-	uint nAmmoColor;
+	uint	nAmmoColor;
 	char	szAmmo [10];
 	int	nLvlMap [2][10] = {{9, 4, 8, 3, 7, 2, 6, 1, 5, 0}, {4, 3, 2, 1, 0, 4, 3, 2, 1, 0}};
+	float	xScale = cockpit->XScale ();
+	float	yScale = cockpit->YScale ();
+
 	static int	wIcon = 0, 
 					hIcon = 0;
 	static int	w = -1, 
@@ -249,7 +204,7 @@ if (gameOpts->render.weaponIcons.bShowAmmo) {
 	fontManager.SetCurrent (SMALL_FONT);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	}
-dx = (int) (10 * cmScaleX);
+dx = (int) (10 * xScale);
 if (nWeaponIcons < 3) {
 #if 0
 	if (cockpit->Type () != CM_FULL_COCKPIT) {
@@ -317,8 +272,8 @@ for (i = 0; i < 2; i++) {
 			w = bmP->Width ();
 		if (h < bmP->Height ())
 			h = bmP->Height ();
-		wIcon = (int) ((w + nIconScale - 1) / nIconScale * cmScaleX);
-		hIcon = (int) ((h + nIconScale - 1) / nIconScale * cmScaleY);
+		wIcon = (int) ((w + nIconScale - 1) / nIconScale * xScale);
+		hIcon = (int) ((h + nIconScale - 1) / nIconScale * yScale);
 		if (bInitIcons)
 			continue;
 		if (i)
@@ -339,7 +294,7 @@ for (i = 0; i < 2; i++) {
 				 LOCALPLAYER.primaryWeaponFlags & (1 << (l + 5)))
 				continue;
 			}
-		BitBlt (-1, nIconScale * (x + (w - bmP->Width ()) / (2 * nIconScale)), nIconScale * (y - hIcon), false, true, I2X (nIconScale), 0, bmP);
+		cockpit->BitBlt (-1, nIconScale * (x + (w - bmP->Width ()) / (2 * nIconScale)), nIconScale * (y - hIcon), false, true, I2X (nIconScale), 0, bmP);
 		*szAmmo = '\0';
 		nAmmoColor = GREEN_RGBA;
 		if (ammoType [i][l]) {
@@ -444,7 +399,7 @@ bInitIcons = 0;
 
 //	-----------------------------------------------------------------------------
 
-int LoadInventoryIcons (void)
+int CHUDIcons::LoadInventory (void)
 {
 	int	h, i;
 	ubyte	*buffer;
@@ -467,7 +422,7 @@ return bHaveInvBms = 1;
 
 //	-----------------------------------------------------------------------------
 
-void FreeInventoryIcons (void)
+void CHUDIcons::DestroyInventory (void)
 {
 if (bmpInventory) {
 	delete bmpInventory;
@@ -478,7 +433,7 @@ if (bmpInventory) {
 
 //	-----------------------------------------------------------------------------
 
-int HUDEquipmentActive (int bFlag)
+int CHUDIcons::EquipmentActive (int bFlag)
 {
 switch (bFlag) {
 	case PLAYER_FLAGS_AFTERBURNER:
@@ -507,7 +462,7 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 
-void HUDShowInventoryIcons (void)
+void CHUDIcons::DrawInventory (void)
 {
 	CBitmap	*bmP;
 	char	szCount [4];
@@ -520,9 +475,12 @@ void HUDShowInventoryIcons (void)
 			x, y, dy;
 	int	w = bmpInventory->Width (), 
 			h = bmpInventory->Width ();
-	int	wIcon = (int) ((w + nIconScale - 1) / nIconScale * cmScaleX), 
-			hIcon = (int) ((h + nIconScale - 1) / nIconScale * cmScaleY);
+	float	xScale = cockpit->XScale ();
+	float	yScale = cockpit->YScale ();
+	int	wIcon = (int) ((w + nIconScale - 1) / nIconScale * xScale), 
+			hIcon = (int) ((h + nIconScale - 1) / nIconScale * yScale);
 	ubyte	alpha = gameOpts->render.weaponIcons.alpha;
+
 	static int nInvFlags [NUM_INV_ITEMS] = {
 		PLAYER_FLAGS_AFTERBURNER, 
 		PLAYER_FLAGS_CONVERTER, 
@@ -547,9 +505,9 @@ n = (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) ? NUM_INV_IT
 firstItem = gameStates.app.bD1Mission ? INV_ITEM_QUADLASERS : 0;
 x = (screen.Width () - (n - firstItem) * wIcon - (n - 1 - firstItem) * ox) / 2;
 for (j = firstItem; j < n; j++) {
-	int bHave, bAvailable, bArmed = HUDEquipmentActive (nInvFlags [j]);
+	int bHave, bAvailable, bArmed = EquipmentActive (nInvFlags [j]);
 	bmP = bmInvItems + j;
-	BitBlt (-1, nIconScale * (x + (w - bmP->Width ()) / (2 * nIconScale)), nIconScale * (y - hIcon), false, true, I2X (nIconScale), 0, bmP);
+	cockpit->BitBlt (-1, nIconScale * (x + (w - bmP->Width ()) / (2 * nIconScale)), nIconScale * (y - hIcon), false, true, I2X (nIconScale), 0, bmP);
 	//m = 9 - j;
 	*szCount = '\0';
 	if (j == INV_ITEM_HEADLIGHT)
@@ -610,26 +568,27 @@ for (j = firstItem; j < n; j++) {
 
 //	-----------------------------------------------------------------------------
 
-void HUDShowIcons (void)
+void CHUDIcons::Render (void)
 {
 if (gameStates.app.bNostalgia)
 	return;
 if (gameStates.app.bEndLevelSequence)
 	return;
-HUDToggleWeaponIcons ();
+ToggleWeaponIcons ();
 if (gameOpts->render.cockpit.bHUD || cockpit->Always ()) {
-	HUDShowPlayerStats ();
-	HUDShowObjTally ();
+	xScale = cockpit->XScale ();
+	yScale = cockpit->YScale ();
+	nLineSpacing = cockpit->LineSpacing ();
+	DrawTally ();
 	if (!gameStates.app.bDemoData && EGI_FLAG (nWeaponIcons, 1, 1, 0)) {
-		cmScaleX *= HUD_ASPECT;
-		HUDShowWeaponIcons ();
+		xScale *= float (HUD_ASPECT);
+		DrawWeapons ();
 		if (gameOpts->render.weaponIcons.bEquipment) {
 			if (bHaveInvBms < 0)
-				LoadInventoryIcons ();
+				LoadInventory ();
 			if (bHaveInvBms > 0)
-				HUDShowInventoryIcons ();
+				DrawInventory ();
 			}
-		cmScaleX /= HUD_ASPECT;
 		}
 	}
 }
