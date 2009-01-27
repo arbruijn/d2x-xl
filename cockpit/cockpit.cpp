@@ -71,7 +71,7 @@ CGenericCockpit::DrawFlag (4 * m_info.fontWidth, 2 * m_info.nLineSpacing);
 
 //	-----------------------------------------------------------------------------
 
-void CCockpit::ClearBombCount (void)
+void CCockpit::ClearBombCount (int bgColor)
 {
 }
 
@@ -84,9 +84,8 @@ CGenericCockpit::DrawBombCount (BOMB_COUNT_X, BOMB_COUNT_Y, BLACK_RGBA, 1);
 
 //	-----------------------------------------------------------------------------
 
-int CCockpit::DrawBombCount (int& nIdBombCount, int x, int y, int bgColor, char* pszBombCount)
+int CCockpit::DrawBombCount (int& nIdBombCount, int x, int y, char* pszBombCount)
 {
-CCanvas::Current ()->SetColorRGBi (bgColor);
 return PrintF (&nIdBombCount, x, y, pszBombCount, nIdBombCount);
 }
 

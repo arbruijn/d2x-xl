@@ -100,8 +100,8 @@ xOmegaCharge  = -1;
 void CCockpitInfo::Init (void)
 {
 nCloakFadeState = 0;
-bLastHomingWarningShown [0] =
-bLastHomingWarningShown [1] = -1;
+bLastHomingWarningDrawn [0] =
+bLastHomingWarningDrawn [1] = -1;
 scoreDisplay [0] =
 scoreDisplay [1] = 0;
 scoreTime = 0;
@@ -444,14 +444,14 @@ while ((t = strchr (szBombCount, '1')))
 	*t = '\x84';	//convert to wide '1'
 m_history [gameStates.render.vr.nCurrentPage].bombCount = countx;
 
-ClearBombCount ();
+ClearBombCount (bgColor);
 if (count)
 	fontManager.SetColorRGBi (
 		(bomb == PROXMINE_INDEX) ? RGBA_PAL2 (55, 0, 0) : RGBA_PAL2 (59, 59, 21), 1,
 		bgColor, bgColor != -1);
 else if (bgColor != -1)
 	fontManager.SetColorRGBi (bgColor, 1, bgColor, 1);	//erase by drawing in background color
-nIdBombCount = DrawBombCount (nIdBombCount, x, y, bgColor, szBombCount);
+nIdBombCount = DrawBombCount (nIdBombCount, x, y, szBombCount);
 }
 
 //	-----------------------------------------------------------------------------

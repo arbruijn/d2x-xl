@@ -346,7 +346,7 @@ int ArmedBomb ();
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::ClearBombCount (void)
+void CCockpit::ClearBombCount (int bgColor)
 {
 }
 
@@ -359,7 +359,7 @@ CGenericCockpit::DrawBombCount (BOMB_COUNT_X, BOMB_COUNT_Y, BLACK_RGBA, 1);
 
 //	-----------------------------------------------------------------------------
 
-int CHUD::DrawBombCount (int& nIdBombCount, int x, int y, int bgColor, char* pszBombCount)
+int CHUD::DrawBombCount (int& nIdBombCount, int x, int y, char* pszBombCount)
 {
 return GrString (x, y, pszBombCount, &nIdBombCount);
 }
