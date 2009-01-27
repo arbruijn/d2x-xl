@@ -109,10 +109,10 @@ lastWarningBeepTime [0] =
 lastWarningBeepTime [1] = 0;
 bHaveGaugeCanvases = 0;
 nInvulnerableFrame = 0;
-weaponBoxStates [0] = 
-weaponBoxStates [1] = 0;
-weaponBoxFadeValues [0] = 
-weaponBoxFadeValues [1] = 0;
+m_info.weaponBoxStates [0] = 
+m_info.weaponBoxStates [1] = 0;
+m_info.weaponBoxFadeValues [0] = 
+m_info.weaponBoxFadeValues [1] = 0;
 weaponBoxUser [0] = 
 weaponBoxUser [1] = WBU_WEAPON;
 nLineSpacing = GAME_FONT->Height () + GAME_FONT->Height () / 4;
@@ -523,9 +523,9 @@ void CGenericCockpit::DrawPlayerShip (int nCloakState, int nOldCloakState, int x
 	static int refade = 0;
 
 if ((nOldCloakState == -1) && nCloakState)
-	m_info.nCloakFadeValue = 0;
+	nCloakFadeValue = 0;
 if (!nCloakState) {
-	m_info.nCloakFadeValue = FADE_LEVELS - 1;
+	nCloakFadeValue = FADE_LEVELS - 1;
 	m_info.nCloakFadeState = 0;
 	}
 if ((nCloakState == 1) && !nOldCloakState)
@@ -540,16 +540,16 @@ if (m_info.nCloakFadeState)
 	xCloakFadeTimer -= gameData.time.xFrame;
 while (m_info.nCloakFadeState && (xCloakFadeTimer < 0)) {
 	xCloakFadeTimer += CLOAK_FADE_WAIT_TIME;
-	m_info.nCloakFadeValue += m_info.nCloakFadeState;
-	if (m_info.nCloakFadeValue >= FADE_LEVELS - 1) {
-		m_info.nCloakFadeValue = FADE_LEVELS - 1;
+	nCloakFadeValue += m_info.nCloakFadeState;
+	if (nCloakFadeValue >= FADE_LEVELS - 1) {
+		nCloakFadeValue = FADE_LEVELS - 1;
 		if (m_info.nCloakFadeState == 2 && nCloakState)
 			m_info.nCloakFadeState = -2;
 		else
 			m_info.nCloakFadeState = 0;
 		}
-	else if (m_info.nCloakFadeValue <= 0) {
-		m_info.nCloakFadeValue = 0;
+	else if (nCloakFadeValue <= 0) {
+		nCloakFadeValue = 0;
 		if (m_info.nCloakFadeState == -2)
 			m_info.nCloakFadeState = 2;
 		else
@@ -568,7 +568,7 @@ else if (nCloakState && nOldCloakState && !m_info.nCloakFadeState && !refade) {
 if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT)
 	CCanvas::SetCurrent (&gameStates.render.vr.buffers.render [0]);
 #endif
-gameStates.render.grAlpha = (float) m_info.nCloakFadeValue / (float) FADE_LEVELS;
+gameStates.render.grAlpha = (float) nCloakFadeValue / (float) FADE_LEVELS;
 BitBlt (GAUGE_SHIPS + (IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer), x, y);
 gameStates.render.grAlpha = FADE_LEVELS;
 #if 0
@@ -579,18 +579,17 @@ if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT)
 
 //	-----------------------------------------------------------------------------
 
-void DrawWeaponInfo (int info_index, tGaugeBox *box, int xPic, int yPic, const char *pszName, int xText, int yText, int orient)
+void CGenericCockpit::DrawWeaponInfo (int nIndex, tGaugeBox* box, int xPic, int yPic, const char *pszName, int xText, int yText, int orient)
 {
-	CBitmap*	bmP;
 	char		szName [100], *p;
 	int		l;
 
 	static int nIdWeapon [3] = {0, 0, 0}, nIdLaser [2] = {0, 0};
 
 BitBlt (((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) 
-			  ? gameData.weapons.info [info_index].hiresPicture.index
-			  : gameData.weapons.info [info_index].picture.index, 
-			  xPic, yPic, true, true, (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) ? I2X (2) : I2X (1), orient);
+		  ? gameData.weapons.info [nIndex].hiresPicture.index
+		  : gameData.weapons.info [nIndex].picture.index, 
+		  xPic, yPic, true, true, (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) ? I2X (2) : I2X (1), orient);
 if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)
 	return;
 fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
@@ -605,7 +604,7 @@ else {
 	}
 
 //	For laser, show level and quadness
-if (info_index == LASER_ID || info_index == SUPERLASER_ID) {
+if (nIndex == LASER_ID || nIndex == SUPERLASER_ID) {
 	sprintf (szName, "%s: 0", TXT_LVL);
 	szName [5] = LOCALPLAYER.laserLevel + 1 + '0';
 	nIdLaser [0] = PrintF (&nIdLaser [0], xText, yText + nLineSpacing, szName);
@@ -618,7 +617,7 @@ if (info_index == LASER_ID || info_index == SUPERLASER_ID) {
 
 //	-----------------------------------------------------------------------------
 
-void DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel)
+void CGenericCockpit::DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel)
 {
 	int nIndex;
 
@@ -662,7 +661,7 @@ else {
 //	-----------------------------------------------------------------------------
 
 //returns true if drew picture
-int DrawWeaponDisplay (int nWeaponType, int nWeaponId)
+int CGenericCockpit::DrawWeaponDisplay (int nWeaponType, int nWeaponId)
 {
 	int bDrew = 0;
 	int bLaserLevelChanged;
@@ -672,53 +671,55 @@ bLaserLevelChanged = ((nWeaponType == 0) &&
 								(nWeaponId == LASER_INDEX) &&
 								((LOCALPLAYER.laserLevel != m_history [gameStates.render.vr.nCurrentPage].laserLevel)));
 
-if ((nWeaponId != m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] || bLaserLevelChanged) && weaponBoxStates [nWeaponType] == WS_SET) {
-	weaponBoxStates [nWeaponType] = WS_FADING_OUT;
-	weaponBoxFadeValues [nWeaponType] = I2X (FADE_LEVELS - 1);
+if ((nWeaponId != m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] || bLaserLevelChanged) && m_info.weaponBoxStates [nWeaponType] == WS_SET) {
+	m_info.weaponBoxStates [nWeaponType] = WS_FADING_OUT;
+	m_info.weaponBoxFadeValues [nWeaponType] = I2X (FADE_LEVELS - 1);
 	}
 
 ShowWeaponInfo (nWeaponType, nWeaponId, LOCALPLAYER.laserLevel);
 m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] = nWeaponId;
 m_history [gameStates.render.vr.nCurrentPage].ammo [nWeaponType] = -1;
-xOldOmegaCharge [gameStates.render.vr.nCurrentPage] = -1;
+m_history [gameStates.render.vr.nCurrentPage].xOmegaCharge = -1;
 m_history [gameStates.render.vr.nCurrentPage].laserLevel = LOCALPLAYER.laserLevel;
 bDrew = 1;
-weaponBoxStates [nWeaponType] = WS_SET;
+m_info.weaponBoxStates [nWeaponType] = WS_SET;
 
-if (weaponBoxStates [nWeaponType] == WS_FADING_OUT) {
-	ShowWeaponInfo (nWeaponType, m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType], m_history [gameStates.render.vr.nCurrentPage].laserLevel);
+if (m_info.weaponBoxStates [nWeaponType] == WS_FADING_OUT) {
+	ShowWeaponInfo (nWeaponType, 
+						 m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType], 
+						 m_history [gameStates.render.vr.nCurrentPage].laserLevel);
 	m_history [gameStates.render.vr.nCurrentPage].ammo [nWeaponType] = -1;
-	xOldOmegaCharge [gameStates.render.vr.nCurrentPage] = -1;
+	m_history [gameStates.render.vr.nCurrentPage].xOmegaCharge = -1;
 	bDrew = 1;
-	weaponBoxFadeValues [nWeaponType] -= gameData.time.xFrame * FADE_SCALE;
-	if (weaponBoxFadeValues [nWeaponType] <= 0) {
-		weaponBoxStates [nWeaponType] = WS_FADING_IN;
+	m_info.weaponBoxFadeValues [nWeaponType] -= gameData.time.xFrame * FADE_SCALE;
+	if (m_info.weaponBoxFadeValues [nWeaponType] <= 0) {
+		m_info.weaponBoxStates [nWeaponType] = WS_FADING_IN;
 		m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] = nWeaponId;
 		oldWeapon [nWeaponType][!gameStates.render.vr.nCurrentPage] = nWeaponId;
 		m_history [gameStates.render.vr.nCurrentPage].laserLevel = LOCALPLAYER.laserLevel;
 		oldLaserLevel [!gameStates.render.vr.nCurrentPage] = LOCALPLAYER.laserLevel;
-		weaponBoxFadeValues [nWeaponType] = 0;
+		m_info.weaponBoxFadeValues [nWeaponType] = 0;
 		}
 	}
-else if (weaponBoxStates [nWeaponType] == WS_FADING_IN) {
+else if (m_info.weaponBoxStates [nWeaponType] == WS_FADING_IN) {
 	if (nWeaponId != m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType]) {
-		weaponBoxStates [nWeaponType] = WS_FADING_OUT;
+		m_info.weaponBoxStates [nWeaponType] = WS_FADING_OUT;
 		}
 	else {
 		ShowWeaponInfo (nWeaponType, nWeaponId, LOCALPLAYER.laserLevel);
 		m_history [gameStates.render.vr.nCurrentPage].ammo [nWeaponType] = -1;
-		xOldOmegaCharge [gameStates.render.vr.nCurrentPage] = -1;
+		m_history [gameStates.render.vr.nCurrentPage].xOmegaCharge = -1;
 		bDrew=1;
-		weaponBoxFadeValues [nWeaponType] += gameData.time.xFrame * FADE_SCALE;
-		if (weaponBoxFadeValues [nWeaponType] >= I2X (FADE_LEVELS-1)) {
-			weaponBoxStates [nWeaponType] = WS_SET;
+		m_info.weaponBoxFadeValues [nWeaponType] += gameData.time.xFrame * FADE_SCALE;
+		if (m_info.weaponBoxFadeValues [nWeaponType] >= I2X (FADE_LEVELS-1)) {
+			m_info.weaponBoxStates [nWeaponType] = WS_SET;
 			oldWeapon [nWeaponType][!gameStates.render.vr.nCurrentPage] = -1;		//force redraw (at full fade-in) of other page
 			}
 		}
 	}
 
-if (weaponBoxStates [nWeaponType] != WS_SET) {		//fade gauge
-	int fadeValue = X2I (weaponBoxFadeValues [nWeaponType]);
+if (m_info.weaponBoxStates [nWeaponType] != WS_SET) {		//fade gauge
+	int fadeValue = X2I (m_info.weaponBoxFadeValues [nWeaponType]);
 	int boxofs = (gameStates.render.cockpit.nMode == CM_STATUS_BAR) ? SB_PRIMARY_BOX : COCKPIT_PRIMARY_BOX;
 	gameStates.render.grAlpha = (float) fadeValue;
 	OglDrawFilledRect (hudWindowAreas [boxofs + nWeaponType].left,
@@ -764,7 +765,7 @@ for (x = hudWindowAreas [h].left; x < hudWindowAreas [h].right; x += bmp->Width 
 void CGenericCockpit::DrawWeapons (void)
 {
 if (weaponBoxUser [0] == WBU_WEAPON) {
-	if (DrawWeaponDisplay (0, gameData.weapons.nPrimary) && (weaponBoxStates [0] == WS_SET)) {
+	if (DrawWeaponDisplay (0, gameData.weapons.nPrimary) && (m_info.weaponBoxStates [0] == WS_SET)) {
 		 (((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {
 			if (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] != m_history [gameStates.render.vr.nCurrentPage].ammo [0]) {
 				if (gameData.demo.nState == ND_STATE_RECORDING)
@@ -774,11 +775,11 @@ if (weaponBoxUser [0] == WBU_WEAPON) {
 				}
 			}
 		else if (gameData.weapons.nPrimary == OMEGA_INDEX) {
-			if (gameData.omega.xCharge [IsMultiGame] != xOldOmegaCharge [gameStates.render.vr.nCurrentPage]) {
+			if (gameData.omega.xCharge [IsMultiGame] != m_history [gameStates.render.vr.nCurrentPage].xOmegaCharge) {
 				if (gameData.demo.nState == ND_STATE_RECORDING)
-					NDRecordPrimaryAmmo (xOldOmegaCharge [gameStates.render.vr.nCurrentPage], gameData.omega.xCharge [IsMultiGame]);
+					NDRecordPrimaryAmmo (m_history [gameStates.render.vr.nCurrentPage].xOmegaCharge, gameData.omega.xCharge [IsMultiGame]);
 				DrawPrimaryAmmoInfo (gameData.omega.xCharge [IsMultiGame] * 100 / MAX_OMEGA_CHARGE);
-				xOldOmegaCharge [gameStates.render.vr.nCurrentPage] = gameData.omega.xCharge [IsMultiGame];
+				m_history [gameStates.render.vr.nCurrentPage].xOmegaCharge = gameData.omega.xCharge [IsMultiGame];
 				}
 			}
 		}
@@ -787,7 +788,7 @@ else if (weaponBoxUser [0] == WBU_STATIC)
 	DrawStatic (0);
 
 if (weaponBoxUser [1] == WBU_WEAPON) {
-	if (DrawWeaponDisplay (1, gameData.weapons.nSecondary) && (weaponBoxStates [1] == WS_SET) &&
+	if (DrawWeaponDisplay (1, gameData.weapons.nSecondary) && (m_info.weaponBoxStates [1] == WS_SET) &&
 		 (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != m_history [gameStates.render.vr.nCurrentPage].ammo [1])) {
 		oldBombcount [gameStates.render.vr.nCurrentPage] = 0x7fff;	//force redraw
 		if (gameData.demo.nState == ND_STATE_RECORDING)
