@@ -1646,7 +1646,7 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
 laserLevel = NDReadByte ();
 if (laserLevel != LOCALPLAYER.laserLevel) {
 	LOCALPLAYER.laserLevel = laserLevel;
-	UpdateLaserWeaponInfo ();
+	cockpit->UpdateLaserWeaponInfo ();
 	}
 // Support for missions
 NDReadString (szCurrentMission);
@@ -2114,7 +2114,7 @@ while (!bDone) {
 				if ((oflags & PLAYER_FLAGS_INVULNERABLE) && !(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
 					LOCALPLAYER.invulnerableTime = 0;
 				}
-			UpdateLaserWeaponInfo ();     // in case of quad laser change
+			cockpit->UpdateLaserWeaponInfo ();     // in case of quad laser change
 			}
 			break;
 
@@ -2517,13 +2517,13 @@ while (!bDone) {
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				LOCALPLAYER.laserLevel = oldLevel;
-				UpdateLaserWeaponInfo ();
+				cockpit->UpdateLaserWeaponInfo ();
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
 				LOCALPLAYER.laserLevel = newLevel;
-				UpdateLaserWeaponInfo ();
+				cockpit->UpdateLaserWeaponInfo ();
 				}
 			}
 			break;
@@ -2702,7 +2702,7 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
 laserLevel = NDReadByte ();
 if (laserLevel != LOCALPLAYER.laserLevel) {
 	LOCALPLAYER.laserLevel = laserLevel;
-	UpdateLaserWeaponInfo ();
+	cockpit->UpdateLaserWeaponInfo ();
 	}
 if (gameData.demo.nGameMode & GM_MULTI) {
 	c = NDReadByte ();
@@ -3377,7 +3377,7 @@ ndInFile.Close ();
 gameData.demo.nState = ND_STATE_NORMAL;
 ChangePlayerNumTo (0);             //this is reality
 strncpy (LOCALPLAYER.callsign, gameData.demo.callSignSave, CALLSIGN_LEN);
-cockpit->Type () = gameData.demo.nOldCockpit;
+cockpit->Activate (gameData.demo.nOldCockpit);
 gameData.app.nGameMode = GM_GAME_OVER;
 SetFunctionMode (FMODE_MENU);
 SDL_ShowCursor (1);
@@ -3464,7 +3464,7 @@ void NDRenderExtras (ubyte which, CObject *objP)
 
 if (which==255) {
 	Int3 (); // how'd we get here?
-	HUDRenderWindow (w, NULL, 0, WBU_WEAPON, NULL);
+	cockpit->RenderWindow (w, NULL, 0, WBU_WEAPON, NULL);
 	return;
 	}
 if (w) {

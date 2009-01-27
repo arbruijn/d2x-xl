@@ -777,7 +777,7 @@ else
 LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
 gameData.physics.xAfterburnerCharge = I2X (1);
 SetMaxOmegaCharge ();
-UpdateLaserWeaponInfo ();
+cockpit->UpdateLaserWeaponInfo ();
 if (bInitialize)
 	SetLastSuperWeaponStates ();
 }
@@ -1043,7 +1043,6 @@ void DoCheatMenu ()
 		//if (m [10].m_value) LOCALPLAYER.laserLevel=3;
 		LOCALPLAYER.laserLevel = m [7].m_value - 1;
 		LOCALPLAYER.secondaryAmmo [CONCUSSION_INDEX] = m [8].m_value;
-		InitGauges ();
 	}
 }
 #endif

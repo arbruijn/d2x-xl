@@ -164,9 +164,16 @@ else {
 
 //	-----------------------------------------------------------------------------
 
-void CCockpit::DrawOrbs (void)
+void CStatusBar::DrawOrbs (void)
 {
 CGenericCockpit::DrawOrbs (m_info.fontWidth, m_info.nLineSpacing);
+}
+
+//	-----------------------------------------------------------------------------
+
+void CStatusBar::DrawFlag (void)
+{
+CGenericCockpit::DrawFlag (5 * m_info.nLineSpacing, m_info.nLineSpacing * (gameStates.render.fonts.bHires + 1));
 }
 
 //	-----------------------------------------------------------------------------
@@ -454,7 +461,7 @@ CGenericCockpit::DrawKillList (60, CCanvas::Current ()->Height ());
 
 //	-----------------------------------------------------------------------------
 
-void CCockpit::DrawCockpit (bool bAlphaTest)
+void CStatusBar::DrawCockpit (bool bAlphaTest)
 {
 CGenericCockpit::DrawCockpit (m_info.nType + m_info.nCockpit, gameData.render.window.hMax, bAlphaTest);
 gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
@@ -484,7 +491,7 @@ return true;
 
 //	-----------------------------------------------------------------------------
 
-void CCockpit::SetupWindow (int nWindow, CCanvas* canvP)
+void CStatusBar::SetupWindow (int nWindow, CCanvas* canvP)
 {
 tGaugeBox* hudAreaP = hudWindowAreas + SB_PRIMARY_BOX + nWindow;
 gameStates.render.vr.buffers.render->SetupPane (

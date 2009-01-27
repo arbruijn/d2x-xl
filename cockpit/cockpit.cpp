@@ -71,7 +71,7 @@ CGenericCockpit::DrawCountdown (SMALL_FONT->Height () * 4);
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::DrawCruise (void)
+void CCockpit::DrawCruise (void)
 {
 CGenericCockpit::DrawCruise (3, CCanvas::Current ()->Height () - m_info.nLineSpacing * (IsMultiGame ? 11 : 6));
 }

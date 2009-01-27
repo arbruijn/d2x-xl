@@ -912,7 +912,6 @@ InitCockpit ();
 #if TRACE
 //console.printf (CON_DBG, "   InitGauges d:\temp\dm_test.\n");
 #endif
-InitGauges ();
 //DigiInitSounds ();
 //gameStates.input.keys.bRepeat = 0;                // Don't allow repeat in game
 gameStates.input.keys.bRepeat = 1;                // Do allow repeat in game
@@ -1073,7 +1072,7 @@ MultiLeaveGame ();
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	NDStopPlayback ();
 if (gameStates.render.cockpit.nTypeSave != -1) {
-	cockpit->Type () = gameStates.render.cockpit.nTypeSave;
+	cockpit->Activate (gameStates.render.cockpit.nTypeSave);
 	gameStates.render.cockpit.nTypeSave = -1;
 	}
 if (gameStates.app.nFunctionMode != FMODE_EDITOR)
@@ -1157,8 +1156,6 @@ if (gameStates.render.vr.buffers.offscreen) {
 	gameStates.render.vr.buffers.offscreen->Destroy ();
 	gameStates.render.vr.buffers.offscreen = NULL;
 }
-PrintLog ("unloading gauge data\n");
-CloseGaugeCanvases ();
 PrintLog ("restoring effect bitmaps\n");
 RestoreEffectBitmapIcons ();
 if (bmBackground.Buffer ()) {
