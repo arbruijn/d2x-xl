@@ -213,8 +213,8 @@ if (m_info.nEnergy < 100) {	// erase part of gauge corresponding to energy loss
 		x [1] = x [0] + int (fScale * (x [1] - x [0]));
 		x [2] = x [3] + int (fScale * (x [2] - x [3]));
 		for (int i = 0; i < 4; i++) {
-			x [i] = HUD_SCALE_X (LEFT_ENERGY_GAUGE_X + x [i]);
-			y [i] = HUD_SCALE_Y (LEFT_ENERGY_GAUGE_Y + y [i]);
+			x [i] = ScaleX (LEFT_ENERGY_GAUGE_X + x [i]);
+			y [i] = ScaleY (LEFT_ENERGY_GAUGE_Y + y [i]);
 			}
 		OglDrawFilledPoly (x, y, 4);
 		}
@@ -226,8 +226,8 @@ if (m_info.nEnergy < 100) {	// erase part of gauge corresponding to energy loss
 		x [0] = x [1] - int (fScale * (x [1] - x [0]));
 		x [3] = x [2] - int (fScale * (x [2] - x [3]));
 		for (int i = 0; i < 4; i++) {
-			x [i] = HUD_SCALE_X (RIGHT_ENERGY_GAUGE_X + x [i]);
-			y [i] = HUD_SCALE_Y (RIGHT_ENERGY_GAUGE_Y + y [i]);
+			x [i] = ScaleX (RIGHT_ENERGY_GAUGE_X + x [i]);
+			y [i] = ScaleY (RIGHT_ENERGY_GAUGE_Y + y [i]);
 			}
 		OglDrawFilledPoly (x, y, 4);
 		}
@@ -355,10 +355,10 @@ void CCockpit::DrawAfterburnerBar (void)
 BitBlt (GAUGE_AFTERBURNER, AFTERBURNER_GAUGE_X, AFTERBURNER_GAUGE_Y);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 if ((yMax = FixMul (I2X (1) - gameData.physics.xAfterburnerCharge, AFTERBURNER_GAUGE_H))) {
-	y [0] = y [1] = HUD_SCALE_Y (AFTERBURNER_GAUGE_Y);
-	y [3] = HUD_SCALE_Y (AFTERBURNER_GAUGE_Y + yMax) - 1;
-	x [1] = HUD_SCALE_X (AFTERBURNER_GAUGE_X + tableP [0]);
-	x [0] = HUD_SCALE_X (AFTERBURNER_GAUGE_X + tableP [1] + 1);
+	y [0] = y [1] = ScaleY (AFTERBURNER_GAUGE_Y);
+	y [3] = ScaleY (AFTERBURNER_GAUGE_Y + yMax) - 1;
+	x [1] = ScaleX (AFTERBURNER_GAUGE_X + tableP [0]);
+	x [0] = ScaleX (AFTERBURNER_GAUGE_X + tableP [1] + 1);
 	x [2] = x [1];
 	y [2] = 0;
 	for (int i = 1; i < yMax - 1; i++)
@@ -366,9 +366,9 @@ if ((yMax = FixMul (I2X (1) - gameData.physics.xAfterburnerCharge, AFTERBURNER_G
 			x [2] = tableP [2 * i];
 			y [2] = i;
 			}
-	x [2] = HUD_SCALE_X (AFTERBURNER_GAUGE_X + x [2] + 1);
-	y [2] = HUD_SCALE_Y (AFTERBURNER_GAUGE_Y + y [2]);
-	x [3] = HUD_SCALE_X (AFTERBURNER_GAUGE_X + tableP [2 * yMax - 1] + 1);
+	x [2] = ScaleX (AFTERBURNER_GAUGE_X + x [2] + 1);
+	y [2] = ScaleY (AFTERBURNER_GAUGE_Y + y [2]);
+	x [3] = ScaleX (AFTERBURNER_GAUGE_X + tableP [2 * yMax - 1] + 1);
 	gameStates.render.grAlpha = FADE_LEVELS;
 	OglDrawFilledPoly (x, y, 4);
 	}
@@ -431,7 +431,7 @@ else {
 
 void CCockpit::DrawKillList (void)
 {
-CGenericCockpit::DrawKillList (53, CCanvas::Current ()->Height () - HUD_LHX (6));
+CGenericCockpit::DrawKillList (53, CCanvas::Current ()->Height () - LHX (6));
 }
 
 //	-----------------------------------------------------------------------------
@@ -480,10 +480,10 @@ void CCockpit::SetupWindow (int nWindow, CCanvas* canvP)
 tGaugeBox* hudAreaP = hudWindowAreas + COCKPIT_PRIMARY_BOX + nWindow;
 gameStates.render.vr.buffers.render->SetupPane (
 	canvP,
-	HUD_SCALE_X (hudAreaP->left),
-	HUD_SCALE_Y (hudAreaP->top),
-	HUD_SCALE_X (hudAreaP->right - hudAreaP->left+1),
-	HUD_SCALE_Y (hudAreaP->bot - hudAreaP->top+1));
+	ScaleX (hudAreaP->left),
+	ScaleY (hudAreaP->top),
+	ScaleX (hudAreaP->right - hudAreaP->left+1),
+	ScaleY (hudAreaP->bot - hudAreaP->top+1));
 }
 
 //	-----------------------------------------------------------------------------

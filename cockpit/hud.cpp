@@ -114,7 +114,7 @@ else
 	sprintf (szScore, "   %s: %5d", TXT_SCORE, LOCALPLAYER.score);
 fontManager.Current ()->StringSize (szScore, w, h, aw);
 fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-GrPrintF (NULL, CCanvas::Current ()->Width () - w - HUD_LHX (2), 3, szScore);
+GrPrintF (NULL, CCanvas::Current ()->Width () - w - LHX (2), 3, szScore);
 }
 
 //	-----------------------------------------------------------------------------
@@ -148,7 +148,7 @@ if (m_info.scoreTime > 0) {
 		sprintf (szScore, "%5d", m_info.scoreDisplay [0]);
 	fontManager.Current ()->StringSize (szScore, w, h, aw);
 	fontManager.SetColorRGBi (RGBA_PAL2 (0, color, 0), 1, 0, 0);
-	nIdTotalScore = GrPrintF (&nIdTotalScore, CCanvas::Current ()->Width () - w - HUD_LHX (12), m_info.nLineSpacing + 4, szScore);
+	nIdTotalScore = GrPrintF (&nIdTotalScore, CCanvas::Current ()->Width () - w - LHX (12), m_info.nLineSpacing + 4, szScore);
 	}
 else {
 	m_info.scoreTime = 0;

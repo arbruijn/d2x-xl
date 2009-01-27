@@ -272,8 +272,6 @@ gameStates.render.bRenderIndirect = 0;
 gameStates.render.nModelQuality = 3;
 gameStates.render.nType = -1;
 gameStates.render.cockpit.bShowPingStats = 0;
-cockpit->Init ();
-cockpit->Activate (CM_FULL_COCKPIT);
 gameStates.render.cockpit.nNextType = -1;
 gameStates.render.cockpit.nTypeSave = -1;
 gameStates.render.cockpit.bRedraw = 0;

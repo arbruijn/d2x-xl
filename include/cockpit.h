@@ -119,7 +119,6 @@ class CCockpitInfo {
 		fix	tInvul;
 
 	public:
-		CCockpitInfo () { Init (); }
 		void Init (void);
 };
 
@@ -133,6 +132,13 @@ class CGenericCockpit {
 	public:
 		void Init (void);
 
+		inline float Aspect (void) { return float (screen.Height ()) / float (screen.Width ()) / 0.75f; }
+		inline int ScaleX (int v) { return int (float (v) * m_info.xScale); }
+		inline int ScaleY (int v) { return int (float (v) * m_info.yScale); }
+		inline int LHX (int x) { return x << gameStates.render.fonts.bHires; }
+		inline int LHY (int y) { return gameStates.render.fonts.bHires ? 24 * y / 10 : y; }
+		inline void PageInGauge (int nGauge) { LoadBitmap (gameData.cockpit.gauges [!gameStates.render.fonts.bHires][nGauge].index, 0); }
+		inline ushort GaugeIndex (int nGauge) { return gameData.cockpit.gauges [!gameStates.render.fonts.bHires][nGauge].index; }
 		CBitmap* BitBlt (int nGauge, int x, int y, bool bScalePos = true, bool bScaleSize = true, int scale = I2X (1), int orient = 0, CBitmap* bmP = NULL);
 		int _CDECL_ PrintF (int *idP, int x, int y, const char *pszFmt, ...);
 		void Rect (int left, int top, int width, int height) {

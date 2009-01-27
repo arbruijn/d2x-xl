@@ -45,11 +45,11 @@ CBitmap* CStatusBar::StretchBlt (int nGauge, int x, int y, double xScale, double
 	CBitmap* bmP = NULL;
 
 if (nGauge >= 0) {
-	PAGE_IN_GAUGE (nGauge);
-	CBitmap* bmP = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (nGauge);
+	PageInGauge (nGauge);
+	CBitmap* bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (nGauge);
 	if (bmP)
-		bmP->RenderScaled (HUD_SCALE_X (x), HUD_SCALE_Y (y), 
-								 HUD_SCALE_X ((int) (bmP->Width () * xScale + 0.5)), HUD_SCALE_Y ((int) (bmP->Height () * yScale + 0.5)), 
+		bmP->RenderScaled (ScaleX (x), ScaleY (y), 
+								 ScaleX ((int) (bmP->Width () * xScale + 0.5)), ScaleY ((int) (bmP->Height () * yScale + 0.5)), 
 								 scale, orient, NULL);
 	}
 return bmP;
@@ -105,7 +105,7 @@ if (m_history [gameStates.render.vr.nCurrentPage].score == bRedrawScore) {
 	}
 sprintf (szScore, "%5d", (IsMultiGame && !IsCoopGame) ? LOCALPLAYER.netKillsTotal : LOCALPLAYER.score);
 fontManager.Current ()->StringSize (szScore, w, h, aw);
-x = SB_SCORE_RIGHT - w - HUD_LHX (2);
+x = SB_SCORE_RIGHT - w - LHY (2);
 y = SB_SCORE_Y;
 //erase old score
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
@@ -148,7 +148,7 @@ if (m_info.scoreTime > 0) {
 	else
 		sprintf (szScore, "%5d", m_info.scoreDisplay [gameStates.render.vr.nCurrentPage]);
 	fontManager.Current ()->StringSize (szScore, w, h, aw);
-	x = SB_SCORE_ADDED_RIGHT-w-HUD_LHX (2);
+	x = SB_SCORE_ADDED_RIGHT-w-LHY (2);
 	fontManager.SetColorRGBi (RGBA_PAL2 (0, color, 0), 1, 0, 0);
 	nIdTotalScore = GrPrintF (&nIdTotalScore, x, SB_SCORE_ADDED_Y, szScore);
 	lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage] = x;
@@ -205,7 +205,7 @@ void CStatusBar::DrawLives (void)
 {
 	int x = SB_LIVES_X, y = SB_LIVES_Y;
 
-	CBitmap* bmP = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_LIVES);
+	CBitmap* bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (GAUGE_LIVES);
 
 	static int nIdLives [2] = {0, 0}, nIdKilled = 0;
   
@@ -421,12 +421,12 @@ CCanvas::Current ()->SetColorRGBi (bgColor);
 if (!gameStates.video.nDisplayMode) {
 	Rect (169, 189, 189, 196);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (128, 128, 128));
-	OglDrawLine (HUD_SCALE_X (168), HUD_SCALE_Y (189), HUD_SCALE_X (189), HUD_SCALE_Y (189));
+	OglDrawLine (ScaleX (168), ScaleY (189), ScaleX (189), ScaleY (189));
 	}
 else {
-	OglDrawFilledRect (HUD_SCALE_X (338), HUD_SCALE_Y (453), HUD_SCALE_X (378), HUD_SCALE_Y (470));
+	OglDrawFilledRect (ScaleX (338), ScaleY (453), ScaleX (378), ScaleY (470));
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (128, 128, 128));
-	OglDrawLine (HUD_SCALE_X (336), HUD_SCALE_Y (453), HUD_SCALE_X (378), HUD_SCALE_Y (453));
+	OglDrawLine (ScaleX (336), ScaleY (453), ScaleX (378), ScaleY (453));
 	}
 }
 
@@ -521,10 +521,10 @@ void CStatusBar::SetupWindow (int nWindow, CCanvas* canvP)
 tGaugeBox* hudAreaP = hudWindowAreas + SB_PRIMARY_BOX + nWindow;
 gameStates.render.vr.buffers.render->SetupPane (
 	canvP,
-	HUD_SCALE_X (hudAreaP->left),
-	HUD_SCALE_Y (hudAreaP->top),
-	HUD_SCALE_X (hudAreaP->right - hudAreaP->left + 1),
-	HUD_SCALE_Y (hudAreaP->bot - hudAreaP->top + 1));
+	ScaleX (hudAreaP->left),
+	ScaleY (hudAreaP->top),
+	ScaleX (hudAreaP->right - hudAreaP->left + 1),
+	ScaleY (hudAreaP->bot - hudAreaP->top + 1));
 }
 
 //	-----------------------------------------------------------------------------

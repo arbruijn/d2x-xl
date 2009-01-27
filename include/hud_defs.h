@@ -349,12 +349,5 @@ extern int nDbgGauge;
 extern int SW_drawn [2], SW_x [2], SW_y [2], SW_w [2], SW_h [2];
 
 //	-----------------------------------------------------------------------------
-// Use static inline function under GCC to avoid CR/LF issues
-
-#define PAGE_IN_GAUGE(x)	LoadBitmap (gameStates.render.fonts.bHires  ?  gameData.cockpit.gauges [0][x].index  :  gameData.cockpit.gauges [1][x].index, 0);
-
-#define GET_GAUGE_INDEX(x)	 (gameStates.render.fonts.bHires ? gameData.cockpit.gauges [0][x].index : gameData.cockpit.gauges [1][x].index)
-
-//	-----------------------------------------------------------------------------
 
 #endif //_HUD_DEFS_H

@@ -137,19 +137,19 @@ if (nGauge >= 0) {
 	if (nGauge == nDbgGauge)
 		nDbgGauge = nDbgGauge;
 #endif
-	PAGE_IN_GAUGE (nGauge);
-	bmP = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (nGauge);
+	PageInGauge (nGauge);
+	bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (nGauge);
 	}
 if (bmP) {
 	if (bScalePos) {
-		x = HUD_SCALE_X (x);
-		y = HUD_SCALE_Y (y);
+		x = ScaleX (x);
+		y = ScaleY (y);
 		}
 	int w = bmP->Width ();
 	int h = bmP->Height ();
 	if (bScaleSize) {
-		w = HUD_SCALE_X (w);
-		h = HUD_SCALE_Y (h);
+		w = ScaleX (w);
+		h = ScaleY (h);
 		}
 	bmP->RenderScaled (x, y, w * (gameStates.app.bDemoData + 1), h * (gameStates.app.bDemoData + 1), scale, orient, NULL);
 	}
@@ -165,7 +165,7 @@ int _CDECL_ CGenericCockpit::PrintF (int *idP, int x, int y, const char *pszFmt,
 
 va_start (args, pszFmt);
 vsprintf (szBuf, pszFmt, args);
-return GrString (HUD_SCALE_X (x), HUD_SCALE_Y (y), szBuf, idP);
+return GrString (ScaleX (x), ScaleY (y), szBuf, idP);
 }
 
 //------------------------------------------------------------------------------
@@ -380,7 +380,7 @@ szScore [17] = (char) (0 + 128);
 szScore [18] = (char) (0);
 fontManager.Current ()->StringSize (szScore, w, h, aw);
 fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-GrPrintF (NULL, CCanvas::Current ()->Width () - 2 * w - HUD_LHX (2), 3, szScore);
+GrPrintF (NULL, CCanvas::Current ()->Width () - 2 * w - LHX (2), 3, szScore);
 }
 
 //	-----------------------------------------------------------------------------
@@ -421,7 +421,7 @@ else {
 	sprintf (szStats, "%s%1.1f%c %1.1f%c %1.1f%c", h ? "T:" : "", p [0], '%', p [1], '%', p [2], '%');
 	}
 fontManager.Current ()->StringSize (szStats, w, h, aw);
-nIdStats = GrString (CCanvas::Current ()->Width () - w - HUD_LHX (2), y, szStats, &nIdStats);
+nIdStats = GrString (CCanvas::Current ()->Width () - w - LHX (2), y, szStats, &nIdStats);
 }
 
 //	-----------------------------------------------------------------------------
@@ -467,7 +467,7 @@ if ((gameData.app.nGameMode & GM_NETWORK) && netGame.xPlayTimeAllowed) {
 	fontManager.Current ()->StringSize (szScore, w, h, aw);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	if ((i >= 0) && !gameData.reactor.bDestroyed)
-		nIdTimer = GrPrintF (&nIdTimer, CCanvas::Current ()->Width () - w - HUD_LHX (10), HUD_LHX (11), szScore);
+		nIdTimer = GrPrintF (&nIdTimer, CCanvas::Current ()->Width () - w - LHX (10), LHX (11), szScore);
 	}
 }
 
@@ -598,12 +598,12 @@ void CGenericCockpit::DrawAmmoInfo (int x, int y, int ammoCount, int bPrimary)
 
 w = (m_info.fontWidth * (bPrimary ? 7 : 5)) / 2;
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
-OglDrawFilledRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + m_info.fontHeight));
+OglDrawFilledRect (ScaleX (x), ScaleY (y), ScaleX (x+w), ScaleY (y + m_info.fontHeight));
 fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 sprintf (szAmmo, "%03d", ammoCount);
 Convert1s (szAmmo);
 nIdAmmo [bPrimary][0] = PrintF (&nIdAmmo [bPrimary][0], x, y, szAmmo);
-OglDrawFilledRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + m_info.fontHeight));
+OglDrawFilledRect (ScaleX (x), ScaleY (y), ScaleX (x+w), ScaleY (y + m_info.fontHeight));
 nIdAmmo [bPrimary][1] = PrintF (&nIdAmmo [bPrimary][1], x, y, szAmmo);
 }
 
@@ -1019,11 +1019,11 @@ else {
 	ofs = (bHiresReticle ? 0 : 2) + bSmallReticle;
 
 	BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
-			  (x + HUD_SCALE_X (cross_offsets [ofs].x)), (y + HUD_SCALE_Y (cross_offsets [ofs].y)), false, true);
+			  (x + ScaleX (cross_offsets [ofs].x)), (y + ScaleY (cross_offsets [ofs].y)), false, true);
 	BitBlt ((bSmallReticle ? SML_RETICLE_PRIMARY : RETICLE_PRIMARY) + nPrimaryBm,
-			  (x + HUD_SCALE_X (primary_offsets [ofs].x)), (y + HUD_SCALE_Y (primary_offsets [ofs].y)), false, true);
+			  (x + ScaleX (primary_offsets [ofs].x)), (y + ScaleY (primary_offsets [ofs].y)), false, true);
 	BitBlt ((bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondaryBm,
-			  (x + HUD_SCALE_X (secondary_offsets [ofs].x)), (y + HUD_SCALE_Y (secondary_offsets [ofs].y)), false, true);
+			  (x + ScaleX (secondary_offsets [ofs].x)), (y + ScaleY (secondary_offsets [ofs].y)), false, true);
   }
 if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick && gameOpts->render.cockpit.bMouseIndicator)
 	OglDrawMouseIndicator ();
@@ -1222,9 +1222,9 @@ nLeft = (nPlayers <= 4) ? nPlayers : (nPlayers + 1) / 2;
 //Assert (GAME_FONT->Height ()==5 && GAME_FONT->Width ()==7);
 fth = GAME_FONT->Height ();
 y -= nLeft * (fth + 1);
-x = CCanvas::Current ()->Width () - HUD_LHX (x);
-x0 = HUD_LHX (1);
-x1 = HUD_LHX (43);
+x = CCanvas::Current ()->Width () - LHX (x);
+x0 = LHX (1);
+x1 = LHX (43);
 y0 = y;
 
 if (gameStates.render.cockpit.bShowPingStats) {
@@ -1244,7 +1244,7 @@ for (i = 0; i < nPlayers; i++) {
 
 	if (i >= nLeft) {
 		x0 = x;
-		x1 = CCanvas::Current ()->Width () - ((gameData.app.nGameMode & GM_MULTI_COOP) ? HUD_LHX (27) : HUD_LHX (15));
+		x1 = CCanvas::Current ()->Width () - ((gameData.app.nGameMode & GM_MULTI_COOP) ? LHX (27) : LHX (15));
 		if (gameStates.render.cockpit.bShowPingStats) {
 			x0 -= xo + 6 * faw;
 			x1 -= xo + 6 * faw;
@@ -1252,10 +1252,10 @@ for (i = 0; i < nPlayers; i++) {
 		if (i == nLeft)
 			y0 = y;
 		if (netGame.KillGoal || netGame.xPlayTimeAllowed)
-			x1 -= HUD_LHX (18);
+			x1 -= LHX (18);
 		}
 	else if (netGame.KillGoal || netGame.xPlayTimeAllowed)
-		 x1 = HUD_LHX (43) - HUD_LHX (18);
+		 x1 = LHX (43) - LHX (18);
 	nPlayer = (gameData.multigame.kills.bShowList == 3) ? i : playerList [i];
 	if ((gameData.multigame.kills.bShowList == 1) || (gameData.multigame.kills.bShowList == 2)) {
 		int color;
@@ -1318,11 +1318,11 @@ for (i = 0; i < nPlayers; i++) {
 		strcpy (name, gameData.multiplayer.players [nPlayer].callsign);	// Note link to above if!!
 #endif
 #if 0//def _DEBUG
-	x1 += HUD_LHX (100);
+	x1 += LHX (100);
 #endif
 	for (l = (int) strlen (name); l;) {
 		fontManager.Current ()->StringSize (name, sw, sh, aw);
-		if (sw <= x1 - x0 - HUD_LHX (2))
+		if (sw <= x1 - x0 - LHX (2))
 			break;
 		name [--l] = '\0';
 		}
