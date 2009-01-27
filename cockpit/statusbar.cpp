@@ -255,14 +255,14 @@ void CStatusBar::DrawEnergy (void)
 	int w, h, aw;
 	char szEnergy [20];
 
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
 sprintf (szEnergy, "%d", m_info.nEnergy);
 fontManager.Current ()->StringSize (szEnergy, w, h, aw);
 fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
-CCanvas::Push ();
-CCanvas::SetCurrent (CurrentGameScreen ());
 nIdEnergy = PrintF (&nIdEnergy, 
 						  -(ScaleX (SB_ENERGY_GAUGE_X) + (ScaleX (w) - w) / 2), 
-						  -(ScaleY (SB_ENERGY_GAUGE_Y) - m_info.nLineSpacing + (ScaleY (h) - h) / 2), 
+						  -(ScaleY (SB_ENERGY_GAUGE_Y + SB_ENERGY_GAUGE_H) + (ScaleY (h) - h) / 2 - m_info.nLineSpacing), 
 						  "%d", m_info.nEnergy);
 CCanvas::Pop ();
 }
@@ -352,21 +352,17 @@ void CStatusBar::DrawShield (void)
 	int w, h, aw;
 	char szShield [20];
 
-sprintf (szShield, "%d", m_info.nShields);
-fontManager.Current ()->StringSize (szShield, w, h, aw);
-//draw numbers
-fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
-//erase old one
-LoadBitmap (gameData.pig.tex.cockpitBmIndex [gameStates.render.cockpit.nType + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0)].index, 0);
 CCanvas::Push ();
 CCanvas::SetCurrent (CurrentGameScreen ());
-
+//LoadBitmap (gameData.pig.tex.cockpitBmIndex [gameStates.render.cockpit.nType + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0)].index, 0);
+fontManager.SetColorRGBi (0, 1, 0, 0);
 Rect (SB_SHIELD_NUM_X, SB_SHIELD_NUM_Y, SB_SHIELD_NUM_X + (gameStates.video.nDisplayMode ? 27 : 13), SB_SHIELD_NUM_Y + m_info.fontHeight);
 sprintf (szShield, "%d", m_info.nShields);
 fontManager.Current ()->StringSize (szShield, w, h, aw);
+fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
 nIdShield = PrintF (&nIdShield, 
 						  -(ScaleX (SB_SHIELD_NUM_X) + (ScaleX (w) - w) / 2), 
-						  -(ScaleY (SB_SHIELD_NUM_Y) - m_info.nLineSpacing + (ScaleY (h) - h) / 2), 
+						  -(ScaleY (SB_SHIELD_NUM_Y) + (ScaleY (h) - h) / 2), 
 						  "%d", m_info.nShields);
 CCanvas::Pop ();
 }

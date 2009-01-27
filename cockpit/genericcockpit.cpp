@@ -1542,14 +1542,13 @@ DrawOrbs ();
 DrawLives ();
 DrawCloak ();
 DrawInvul ();
-DrawEnergy ();
-DrawShield ();
 DrawBombCount ();
-
-DrawAfterburner ();
 DrawEnergyBar ();
 DrawShieldBar ();
 DrawAfterburnerBar ();
+DrawEnergy ();
+DrawShield ();
+DrawAfterburner ();
 DrawHomingWarning ();
 DrawWeapons ();
 DrawPlayerNames ();
