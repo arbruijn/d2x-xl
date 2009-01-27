@@ -1351,13 +1351,91 @@ if (gameOpts->render.cockpit.bHUD || (cockpit->Mode () != CM_FULL_SCREEN)) {
 	}
 }
 
+//------------------------------------------------------------------------------
+
+#if DBG
+
+fix ShowView_textTimer = -1;
+
+void DrawWindowLabel (void)
+{
+if (ShowView_textTimer > 0) {
+	char *viewer_name, *control_name;
+	char	*viewer_id;
+	ShowView_textTimer -= gameData.time.xFrame;
+	fontManager.SetCurrent (GAME_FONT);
+
+	viewer_id = "";
+	switch (gameData.objs.viewerP->info.nType) {
+		case OBJ_FIREBALL:
+			viewer_name = "Fireball";
+			break;
+		case OBJ_ROBOT:
+			viewer_name = "Robot";
+			break;
+		case OBJ_HOSTAGE:
+			viewer_name = "Hostage";
+			break;
+		case OBJ_PLAYER:
+			viewer_name = "Player";
+			break;
+		case OBJ_WEAPON:
+			viewer_name = "Weapon";
+			break;
+		case OBJ_CAMERA:
+			viewer_name = "Camera";
+			break;
+		case OBJ_POWERUP:
+			viewer_name = "Powerup";
+			break;
+		case OBJ_DEBRIS:
+			viewer_name = "Debris";
+			break;
+		case OBJ_REACTOR:
+			viewer_name = "Reactor";
+			break;
+		default:
+			viewer_name = "Unknown";
+			break;
+		}
+
+	switch (gameData.objs.viewerP->info.controlType) {
+		case CT_NONE:
+			control_name = "Stopped";
+			break;
+		case CT_AI:
+			control_name = "AI";
+			break;
+		case CT_FLYING:
+			control_name = "Flying";
+			break;
+		case CT_SLEW:
+			control_name = "Slew";
+			break;
+		case CT_FLYTHROUGH:
+			control_name = "Flythrough";
+			break;
+		case CT_MORPH:
+			control_name = "Morphing";
+			break;
+		default:
+			control_name = "Unknown";
+			break;
+		}
+	fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
+	GrPrintF (NULL, 0x8000, 45, "%i: %s [%s] View - %s", OBJ_IDX (gameData.objs.viewerP), viewer_name, viewer_id, control_name);
+	}
+}
+#endif
+
 //	-----------------------------------------------------------------------------
 //draw all the things on the HUD
-void CGenericCockpit::Render (void)
+void CGenericCockpit::Render (bool bExtraInfo)
 {
 if (HIDE_HUD)
 	return;
 
+glDepthFunc (GL_ALWAYS);
 CCanvas::SetCurrent (GetCurrentGameScreen ());
 fontManager.SetCurrent (GAME_FONT);
 m_info.fontWidth = CCanvas::Current ()->Font ()->Width ();
@@ -1385,13 +1463,23 @@ else
 	m_info.xGaugeScale = 
 	m_info.yGaugeScale = 1;
 
+
+if ((gameData.demo.nState == ND_STATE_PLAYBACK))
+	gameData.app.nGameMode = gameData.demo.nGameMode;
+
 DrawCockpit (false);
 
-DrawMultiMessage ();
-DrawMarkerMessage ();
-DrawFrameRate ();
+if (bExtraInfo) {
+#if DBG
+	DrawWindowLabel ();
+#endif
+	DrawMultiMessage ();
+	DrawMarkerMessage ();
+	DrawFrameRate ();
+	DrawCruise ();
+	}
+
 DrawSlowMotion ();
-DrawCruise ();
 DrawScore ();
 if (m_info.scoreTime)
 	DrawScoreAdded ();
@@ -1416,10 +1504,17 @@ DrawWeapons ();
 DrawPlayerNames ();
 DrawKillList ();
 DrawPlayerShip ();
-
 HUDShowIcons ();
-DrawCountdown ();
-DrawRecording ();
+if (bExtraInfo) {
+	DrawCountdown ();
+	DrawRecording ();
+	}
+
+if ((gameData.demo.nState == ND_STATE_PLAYBACK))
+	gameData.app.nGameMode = GM_NORMAL;
+
+if (gameStates.app.bPlayerIsDead)
+	PlayerDeadMessage ();
 
 if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead && !transformation.m_info.bUsePlayerHeadAngles)
 	DrawReticle (0);

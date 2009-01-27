@@ -147,93 +147,6 @@ if (ShowView_textTimer > 0) {
 
 //------------------------------------------------------------------------------
 
-void GameDrawHUDStuff (void)
-{
-#if DBG
-if (Debug_pause) {
-	fontManager.SetCurrent (MEDIUM1_FONT);
-	fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
-	GrUString (0x8000, 85/2, "Debug Pause - Press P to exit");
-	}
-DrawWindowLabel ();
-#endif
-GameDrawMultiMessage ();
-GameDrawMarkerMessage ();
-if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_STATE_RECORDING)) {
-	char message [128];
-	int h, w, aw;
-
-	if (gameData.demo.nState == ND_STATE_PLAYBACK) {
-		if (gameData.demo.nVcrState != ND_STATE_PRINTSCREEN) {
-			sprintf (message, "%s (%d%%%% %s)",
-						gameOpts->demo.bRevertFormat ? TXT_DEMO_CONVERSION : TXT_DEMO_PLAYBACK, NDGetPercentDone (), TXT_DONE);
-			}
-		else {
-			sprintf (message, " ");
-			}
-		}
-	else
-		sprintf (message, TXT_DEMO_RECORDING);
-	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
-	fontManager.SetColorRGBi (RGBA_PAL2 (27, 0, 0), 1, 0, 0);
-	fontManager.Current ()->StringSize (message, w, h, aw);
-	if (cockpit->Mode () == CM_FULL_COCKPIT) {
-		if (CCanvas::Current ()->Height () > 240)
-			h += 40;
-		else
-			h += 15;
-		}
-	else if (cockpit->Mode () == CM_LETTERBOX)
-		h += 7;
-	if (cockpit->Mode () != CM_REAR_VIEW && !bSavingMovieFrames)
-		GrPrintF (NULL, (CCanvas::Current ()->Width ()-w)/2, CCanvas::Current ()->Height () - h - 2, message);
-	}
-
-if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || (cockpit->Mode () != CM_FULL_SCREEN)) {
-	RenderCountdownGauge ();
-	if ((gameData.multiplayer.nLocalPlayer > -1) &&
-		 (gameData.objs.viewerP->info.nType == OBJ_PLAYER) &&
-		 (gameData.objs.viewerP->info.nId == gameData.multiplayer.nLocalPlayer)) {
-		int	x = 3;
-		int	y = CCanvas::Current ()->Height ();
-
-		fontManager.SetCurrent (GAME_FONT);
-		fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-		if (gameStates.input.nCruiseSpeed > 0) {
-			int line_spacing = GAME_FONT->Height ()  + GAME_FONT->Height () /4;
-
-			if (cockpit->Mode () == CM_FULL_SCREEN) {
-				if (gameData.app.nGameMode & GM_MULTI)
-					y -= line_spacing * 11;	//64
-				else
-					y -= line_spacing * 6;	//32
-				}
-			else if (cockpit->Mode () == CM_STATUS_BAR) {
-				if (gameData.app.nGameMode & GM_MULTI)
-					y -= line_spacing * 8;	//48
-				else
-					y -= line_spacing * 4;	//24
-				}
-			else {
-				y = line_spacing * 2;	//12
-				x = 20+2;
-				}
-			GrPrintF (NULL, x, y, "%s %2d%%", TXT_CRUISE, X2I (gameStates.input.nCruiseSpeed));
-			}
-		}
-	}
-ShowFrameRate ();
-if ((gameData.demo.nState == ND_STATE_PLAYBACK))
-	gameData.app.nGameMode = gameData.demo.nGameMode;
-cockpit->Render ();
-if ((gameData.demo.nState == ND_STATE_PLAYBACK))
-	gameData.app.nGameMode = GM_NORMAL;
-if (gameStates.app.bPlayerIsDead)
-	PlayerDeadMessage ();
-}
-
-//------------------------------------------------------------------------------
-
 void ExpandRow (ubyte * dest, ubyte * src, int num_src_pixels)
 {
 	int i;
@@ -413,7 +326,6 @@ void game_render_frame_stereo ()
 			GrInitSubCanvas (&tmp, CCanvas::Current (), 0, 0, CCanvas::Current ()->Width ()- (labs (actual_eye_offset)*2), CCanvas::Current ()->Height ());
 		}
 		CCanvas::SetCurrent (&tmp);
-		GameDrawHUDStuff ();
 	}
 
 
@@ -463,7 +375,6 @@ void game_render_frame_stereo ()
 			GrInitSubCanvas (&tmp, CCanvas::Current (), 0, 0, CCanvas::Current ()->Width ()- (labs (actual_eye_offset)*2), CCanvas::Current ()->Height ());
 		}
 		CCanvas::SetCurrent (&tmp);
-		GameDrawHUDStuff ();
 	}
 
 
@@ -738,7 +649,7 @@ void DrawGuidedCrosshair (void);
 void GameRenderFrameMono (void)
 {
 	CCanvas		Screen_3d_window;
-	int			bDrawHUD = 1;
+	int			bExtraInfo = 1;
 
 gameStates.render.vr.buffers.screenPages [0].SetupPane (
 	&Screen_3d_window,
@@ -773,7 +684,7 @@ if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 	GrPrintF (NULL, (CCanvas::Current ()->Width () - w) / 2, 3, msg);
 	DrawGuidedCrosshair ();
 	HUDRenderMessageFrame ();
-	bDrawHUD = 0;
+	bExtraInfo = 0;
 	}
 else {
 	if (gameStates.render.cockpit.bBigWindowSwitch) {
@@ -788,28 +699,7 @@ else {
 	RenderFrame (0, 0);
 	}
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
-if (bDrawHUD)
-	GameDrawHUDStuff ();
-
-if (cockpit->Mode () != CM_FULL_COCKPIT)
-	ShowExtraViews ();		//missile view, buddy bot, etc.
-if (SHOW_COCKPIT) {
-	if (gameData.demo.nState == ND_STATE_PLAYBACK)
-		gameData.app.nGameMode = gameData.demo.nGameMode;
-	glDepthFunc (GL_ALWAYS);
-	if (SHOW_COCKPIT) {
-		UpdateCockpits (1);
-		ShowExtraViews ();		//missile view, buddy bot, etc.
-		}
-	RenderGauges ();
-	HUDShowIcons ();
-	if (gameData.demo.nState == ND_STATE_PLAYBACK)
-		gameData.app.nGameMode = GM_NORMAL;
-	}
-else if (cockpit->Mode () == CM_REAR_VIEW)
-	UpdateCockpits (1);
-else
-	HUDShowIcons ();
+cockpit->Render (bExtraInfo);
 console.Draw ();
 OglSwapBuffers (0, 0);
 if (gameStates.app.bSaveScreenshot)
