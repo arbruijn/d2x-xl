@@ -43,6 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "textures.h"
 #include "slew.h"
 #include "cockpit.h"
+#include "hudicons.h"
 #include "texmap.h"
 #include "menu.h"
 #include "gameseg.h"

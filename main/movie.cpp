@@ -172,7 +172,7 @@ m_nCaptions = 0;
 void CSubTitles::Draw (int nFrame)
 {
 	static int activeSubTitleList [MAX_ACTIVE_SUBTITLES];
-	static int nActiveSubTitles, nNextSubTitle, m_info.nLineSpacing;
+	static int nActiveSubTitles, nNextSubTitle, nLineSpacing;
 	int t, y;
 	int bMustErase = 0;
 
@@ -180,7 +180,7 @@ if (nFrame == 0) {
 	nActiveSubTitles = 0;
 	nNextSubTitle = 0;
 	fontManager.SetCurrent (GAME_FONT);
-	m_info.nLineSpacing = CCanvas::Current ()->Font ()->Height () + (CCanvas::Current ()->Font ()->Height () / 4);
+	nLineSpacing = CCanvas::Current ()->Font ()->Height () + (CCanvas::Current ()->Font ()->Height () / 4);
 	fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
 	}
 
@@ -205,7 +205,7 @@ while (nNextSubTitle < m_nCaptions && nFrame >= m_captions [nNextSubTitle].first
 	}
 
 //find y coordinate for first line of subtitles
-y = CCanvas::Current ()->Height () - ((m_info.nLineSpacing + 1) * MAX_ACTIVE_SUBTITLES + 2);
+y = CCanvas::Current ()->Height () - ((nLineSpacing + 1) * MAX_ACTIVE_SUBTITLES + 2);
 
 //erase old subtitles if necessary
 if (bMustErase) {
@@ -216,7 +216,7 @@ if (bMustErase) {
 for (t = 0; t < nActiveSubTitles; t++)
 	if (activeSubTitleList [t] != -1) {
 		GrString (0x8000, y, m_captions [activeSubTitleList [t]].msg, NULL);
-		y += m_info.nLineSpacing + 1;
+		y += nLineSpacing + 1;
 	}
 }
 
