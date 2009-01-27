@@ -742,7 +742,7 @@ if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]))
 	return;
 rval = MultiExplodeRobotSub (nRobot, nKiller,thief);
 if (rval && (nKiller == LOCALPLAYER.nObject))
-	AddPointsToScore (ROBOTINFO (OBJECTS [nRobot].info.nId).scoreValue);
+	cockpit->AddPointsToScore (ROBOTINFO (OBJECTS [nRobot].info.nId).scoreValue);
 }
 
 //-----------------------------------------------------------------------------

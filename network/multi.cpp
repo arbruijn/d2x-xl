@@ -955,7 +955,7 @@ else {
 		HUDInitMessage ("%s %s %s!", TXT_YOU, TXT_KILLED, szKilled);
 		MultiAddLifetimeKills ();
 		if ((gameData.app.nGameMode & GM_MULTI_COOP) && (LOCALPLAYER.score  >= 1000))
-			AddPointsToScore (-1000);
+			cockpit->AddPointsToScore (-1000);
 		}
 	else if (nKilledPlayer == gameData.multiplayer.nLocalPlayer) {
 		HUDInitMessage ("%s %s %s!", szKiller, TXT_KILLED, TXT_YOU);
