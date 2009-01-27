@@ -261,8 +261,8 @@ sprintf (szEnergy, "%d", m_info.nEnergy);
 fontManager.Current ()->StringSize (szEnergy, w, h, aw);
 fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
 nIdEnergy = PrintF (&nIdEnergy, 
-						  -(ScaleX (SB_ENERGY_GAUGE_X) + (ScaleX (w) - w) / 2), 
-						  -(ScaleY (SB_ENERGY_GAUGE_Y + SB_ENERGY_GAUGE_H) + (ScaleY (h) - h) / 2 - m_info.nLineSpacing), 
+						  -(ScaleX (SB_ENERGY_GAUGE_X) + (ScaleX (SB_ENERGY_GAUGE_W) - w) / 2), 
+						  -(ScaleY (SB_ENERGY_GAUGE_Y + SB_ENERGY_GAUGE_H - m_info.nLineSpacing) + (ScaleY (h) - h) / 2), 
 						  "%d", m_info.nEnergy);
 CCanvas::Pop ();
 }
@@ -300,6 +300,8 @@ if (gameStates.app.bD1Mission)
 
 	char szAB [3] = "AB";
 
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
 if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)
 	fontManager.SetColorRGBi (RGBA_PAL2 (45, 0, 0), 1, 0, 0);
 else 
@@ -307,11 +309,9 @@ else
 
 int w, h, aw;
 fontManager.Current ()->StringSize (szAB, w, h, aw);
-CCanvas::Push ();
-CCanvas::SetCurrent (CurrentGameScreen ());
 nIdAfterBurner = PrintF (&nIdAfterBurner, 
-								 SB_AFTERBURNER_GAUGE_X + ((SB_AFTERBURNER_GAUGE_W - w) / 2), 
-								 SB_AFTERBURNER_GAUGE_Y + SB_AFTERBURNER_GAUGE_H - (5 * m_info.fontHeight / 4), 
+								 -(ScaleX (SB_AFTERBURNER_GAUGE_X) + (ScaleX (SB_AFTERBURNER_GAUGE_W) - w) / 2), 
+								 -(ScaleY (SB_AFTERBURNER_GAUGE_Y + SB_AFTERBURNER_GAUGE_H - m_info.nLineSpacing) + (ScaleY (h) - h) / 2), 
 								 "AB");
 CCanvas::Pop ();
 }
@@ -355,7 +355,7 @@ void CStatusBar::DrawShield (void)
 CCanvas::Push ();
 CCanvas::SetCurrent (CurrentGameScreen ());
 //LoadBitmap (gameData.pig.tex.cockpitBmIndex [gameStates.render.cockpit.nType + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0)].index, 0);
-fontManager.SetColorRGBi (0, 1, 0, 0);
+fontManager.SetColorRGBi (BLACK_RGBA, 1, 0, 0);
 Rect (SB_SHIELD_NUM_X, SB_SHIELD_NUM_Y, SB_SHIELD_NUM_X + (gameStates.video.nDisplayMode ? 27 : 13), SB_SHIELD_NUM_Y + m_info.fontHeight);
 sprintf (szShield, "%d", m_info.nShields);
 fontManager.Current ()->StringSize (szShield, w, h, aw);

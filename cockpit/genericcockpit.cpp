@@ -1484,6 +1484,7 @@ if (Hide ())
 
 glDepthFunc (GL_ALWAYS);
 CCanvas::SetCurrent (CurrentGameScreen ());
+CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
 fontManager.SetCurrent (GAME_FONT);
 m_info.fontWidth = CCanvas::Current ()->Font ()->Width ();
 m_info.fontHeight = CCanvas::Current ()->Font ()->Height ();
@@ -1517,6 +1518,7 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK))
 DrawCockpit (false);
 
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
+CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
 fontManager.SetCurrent (GAME_FONT);
 
 if (bExtraInfo) {
