@@ -46,8 +46,6 @@ void SetHighestLevel (ubyte nLevel);
 // gets the CPlayerData's highest level from the file for this mission
 int GetHighestLevel(void);
 
-void FreeParams (void);
-
 //------------------------------------------------------------------------------
 
 class CParam {

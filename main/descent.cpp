@@ -814,7 +814,7 @@ WriteConfigFile ();
 SavePlayerProfile ();
 /*---*/PrintLog ("Releasing tracker list\n");
 DestroyTrackerList ();
-FreeParams ();
+profile.Destroy ();
 #if DBG
 if (!FindArg ("-notitles"))
 #endif

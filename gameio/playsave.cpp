@@ -741,8 +741,9 @@ if (!m_cf.Open (fn, gameFolders.szProfDir, "rt", 0))
 	return 0;
 while (!m_cf.EoF ())
 	LoadParam ();
+// call this before closing the file to prevent the profile being overwritten
 audio.SetMaxChannels (gameStates.sound.audio.nMaxChannels);
-cockpit->Activate (gameStates.render.cockpit.nType);
+cockpit->Activate (gameStates.render.cockpit.nType);	
 return m_cf.Close ();
 }
 
