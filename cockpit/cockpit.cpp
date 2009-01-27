@@ -84,10 +84,10 @@ CGenericCockpit::DrawBombCount (BOMB_COUNT_X, BOMB_COUNT_Y, BLACK_RGBA, 1);
 
 //	-----------------------------------------------------------------------------
 
-int CCockpit::DrawBombCount (int& nId, int x, int y, int bgColor, char* pszBombCount)
+int CCockpit::DrawBombCount (int& nIdBombCount, int x, int y, int bgColor, char* pszBombCount)
 {
 CCanvas::Current ()->SetColorRGBi (bgColor);
-return Print (&nIdBombCount, x, y, szBombCount, nIdBombCount);
+return PrintF (&nIdBombCount, x, y, pszBombCount, nIdBombCount);
 }
 
 //	-----------------------------------------------------------------------------
@@ -397,7 +397,7 @@ CGenericCockpit::DrawStatic (nWindow, COCKPIT_PRIMARY_BOX);
 
 void CStatusBar::DrawPlayerShip (void)
 {
-DrawPlayerShip (m_info.bCloak, m_history [gameStates.render.vr.nCurrentPage].bCloak, SHIP_GAUGE_X, SHIP_GAUGE_Y);
+CGenericCockpit::DrawPlayerShip (m_info.bCloak, m_history [gameStates.render.vr.nCurrentPage].bCloak, SHIP_GAUGE_X, SHIP_GAUGE_Y);
 }
 
 //	-----------------------------------------------------------------------------
@@ -422,7 +422,7 @@ if ((m_info.tInvul > I2X (4)) || ((m_info.tInvul > 0) && (gameData.time.xGame & 
 
 void DrawCockpit (bool bAlphaTest)
 {
-DrawCockpit (nCockpit, 0, bAlphaTest);
+DrawCockpit (m_info.nCockpit, 0, bAlphaTest);
 }
 
 //	-----------------------------------------------------------------------------

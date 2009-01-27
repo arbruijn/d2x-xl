@@ -1405,7 +1405,7 @@ UpdateRenderedData (nWindow+1, viewerP, bRearView, nUser);
 m_info.weaponBoxUser [nWindow] = nUser;						//say who's using window
 gameData.objs.viewerP = viewerP;
 gameStates.render.bRearView = bRearView;
-
+SetupWindow (nWindow);
 CCanvas::Push ();
 CCanvas::SetCurrent (&windowCanv);
 transformation.Push ();
