@@ -906,9 +906,9 @@ SetScreenMode (SCREEN_GAME);
 paletteManager.ResetEffect ();
 SetWarnFunc (ShowInGameWarning);
 #if TRACE
-//console.printf (CON_DBG, "   InitCockpit d:\temp\dm_test.\n");
+//console.printf (CON_DBG, "   cockpit->Init () d:\temp\dm_test.\n");
 #endif
-InitCockpit ();
+cockpit->Init () ();
 #if TRACE
 //console.printf (CON_DBG, "   InitGauges d:\temp\dm_test.\n");
 #endif
@@ -1001,7 +1001,7 @@ if (!setjmp (gameExitPoint)) {
 				}
 			ConfigMenu ();
 			if (bScanlineDouble != double_save)
-				InitCockpit ();
+				cockpit->Init () ();
 			if (!IsMultiGame)
 				paletteManager.LoadEffect ();
 			}
@@ -1016,7 +1016,7 @@ if (!setjmp (gameExitPoint)) {
 			SetScreenMode (SCREEN_GAME);
 			gameData.render.window.w = save_w;
 			gameData.render.window.h = save_h;
-			InitCockpit ();
+			cockpit->Init () ();
 			}
 		if ((gameStates.app.nFunctionMode != FMODE_GAME) &&
 			 gameData.demo.bAuto && !gameOpts->demo.bRevertFormat &&
@@ -1145,8 +1145,7 @@ PrintLog ("unloading shield sphere data\n");
 gameData.render.shield.Destroy ();
 gameData.render.monsterball.Destroy ();
 PrintLog ("unloading HUD icons\n");
-FreeInventoryIcons ();
-FreeObjTallyIcons ();
+hudIcons.Destroy ();
 PrintLog ("unloading extra texture data\n");
 FreeExtraImages ();
 PrintLog ("unloading palettes\n");
@@ -1474,8 +1473,8 @@ if (IsMultiGame) {
   }
 if (bRenderFrame) {
 	if (gameStates.render.cockpit.bRedraw) {			//screen need redrawing?
-		//PrintLog ("InitCockpit\n");
-		InitCockpit ();
+		//PrintLog ("cockpit->Init ()\n");
+		cockpit->Init () ();
 		gameStates.render.cockpit.bRedraw = 0;
 	}
 	//PrintLog ("GameRenderFrame\n");

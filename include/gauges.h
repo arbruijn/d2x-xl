@@ -78,14 +78,6 @@ extern tRgbColorb playerColors [];
 // window user is one of the WBU_ constants.  If rearViewFlag is
 // set, show a rear view.  If label is non-NULL, print the label at
 // the top of the window.
-void HUDRenderWindow(int win, CObject *viewer, int rearViewFlag, int user, const char *label);
-void FreeInventoryIcons (void);
-void FreeObjTallyIcons (void);
-void HUDShowIcons (void);
-int CanSeeObject(int nObject, int bCheckObjs);
-void DrawFrameRate (void);
-void ToggleCockpit ();
-
 extern CGenericCockpit*	cockpit;
 
 #define cockpit->Always ()	((cockpit->Type () == CM_FULL_COCKPIT) || (cockpit->Type () == CM_STATUS_BAR))

@@ -362,7 +362,7 @@ int ArmedBomb ();
 
 //	-----------------------------------------------------------------------------
 
-void CCockpit::ClearBombCount (int bgColor)
+void CHUD::ClearBombCount (int bgColor)
 {
 }
 

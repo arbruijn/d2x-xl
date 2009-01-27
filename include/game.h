@@ -122,7 +122,6 @@ extern int Game_suspended;          // if non-zero, nothing moves but CPlayerDat
 bool InitGame(int nSegments, int nVertices);
 void RunGame (void);
 void _CDECL_ CloseGame(void);
-void InitCockpit(void);
 void CalcFrameTime(void);
 
 int do_flythrough(CObject *obj,int firstTime);

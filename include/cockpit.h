@@ -409,10 +409,6 @@ class CRearView : public CGenericCockpit {
 
 //	-----------------------------------------------------------------------------
 
-void FreeInventoryIcons (void);
-void FreeObjTallyIcons (void);
-void HUDShowIcons (void);
-
 extern tRgbColorb playerColors [];
 
 extern CHUD			hudCockpit;

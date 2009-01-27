@@ -470,7 +470,7 @@ if (nWeaponType == 0) {
 else {
 	nIndex = secondaryWeaponToWeaponInfo [nWeaponId];
 	CGenericCockpit::DrawWeaponInfo (nIndex,
-		hudWindowAreas + SP_SECONDARY_BOX,
+		hudWindowAreas + SB_SECONDARY_BOX,
 		SB_SECONDARY_W_PIC_X, SB_SECONDARY_W_PIC_Y,
 		SECONDARY_WEAPON_NAMES_SHORT (nWeaponId),
 		SECONDARY_W_TEXT_X, SECONDARY_W_TEXT_Y, 0);

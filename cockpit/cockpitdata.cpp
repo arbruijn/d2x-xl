@@ -47,8 +47,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void DrawGuidedCrosshair (void);
 
-double cmScaleX, cmScaleY;
-
 #if 0
 CCanvas *Canv_LeftEnergyGauge;
 CCanvas *Canv_AfterburnerGauge;

@@ -1,10 +1,6 @@
 #ifndef _HUDICONS_H
 #define _HUDICONS_H
 
-void FreeInventoryIcons (void);
-void FreeObjTallyIcons (void);
-void HUDShowIcons (void);
-
 class CHUDIcons {
 	private:
 		float	xScale;
@@ -13,15 +9,16 @@ class CHUDIcons {
 
 	public:
 		int EquipmentActive (int bFlag);
-		int LoadInventory (void);
-		void DestroyInventory (void);
-		int LoadTally (void);
-		void DestroyTally (void);
+		int LoadInventoryIcons (void);
+		void DestroyInventoryIcons (void);
+		int LoadTallyIcons (void);
+		void DestroyTallyIcons (void);
 		void DrawTally (void);
 		void ToggleWeaponIcons (void);
 		void DrawWeapons (void);
 		void DrawInventory (void);
 		void Render (void);
+		void Destroy (void);
 	};
 
 extern CHUDIcons hudIcons;

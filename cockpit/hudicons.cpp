@@ -59,7 +59,7 @@ CHUDIcons	hudIcons;
 
 const char *pszObjTallyIcons [] = {"louguard.tga", "shldorb.tga"};
 
-int CHUDIcons::LoadTally (void)
+int CHUDIcons::LoadTallyIcons (void)
 {
 	int	i;
 
@@ -80,7 +80,7 @@ return bHaveObjTallyBms = 1;
 
 //	-----------------------------------------------------------------------------
 
-void CHUDIcons::DestroyTally (void)
+void CHUDIcons::DestroyTallyIcons (void)
 {
 	int	i;
 
@@ -129,7 +129,7 @@ if (!IsMultiGame || IsCoopGame) {
 		for (i = 0; i < 2; i++) 
 			objCounts [i] = ObjectCount (i ? OBJ_POWERUP : OBJ_ROBOT);
 		}
-	if (!gameOpts->render.cockpit.bTextGauges && (LoadTally () > 0)) {
+	if (!gameOpts->render.cockpit.bTextGauges && (LoadTallyIcons () > 0)) {
 		for (i = 0; i < 2; i++) {
 			bmH = bmObjTally [i].Width () / 2;
 			bmW = bmObjTally [i].Height () / 2;
@@ -399,7 +399,7 @@ bInitIcons = 0;
 
 //	-----------------------------------------------------------------------------
 
-int CHUDIcons::LoadInventory (void)
+int CHUDIcons::LoadInventoryIcons	 (void)
 {
 	int	h, i;
 	ubyte	*buffer;
@@ -422,7 +422,7 @@ return bHaveInvBms = 1;
 
 //	-----------------------------------------------------------------------------
 
-void CHUDIcons::DestroyInventory (void)
+void CHUDIcons::DestroyInventoryIcons (void)
 {
 if (bmpInventory) {
 	delete bmpInventory;
@@ -585,12 +585,20 @@ if (gameOpts->render.cockpit.bHUD || cockpit->Always ()) {
 		DrawWeapons ();
 		if (gameOpts->render.weaponIcons.bEquipment) {
 			if (bHaveInvBms < 0)
-				LoadInventory ();
+				LoadInventoryIcons ();
 			if (bHaveInvBms > 0)
 				DrawInventory ();
 			}
 		}
 	}
+}
+
+//	-----------------------------------------------------------------------------
+
+void CHUDIcons::Destroy (void)
+{
+DestroyTallyIcons ();
+DestroyInventoryIcons ();
 }
 
 //	-----------------------------------------------------------------------------

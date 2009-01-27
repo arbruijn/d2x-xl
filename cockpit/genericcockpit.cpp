@@ -49,9 +49,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void DrawGuidedCrosshair (void);
 
-double cmScaleX, cmScaleY;
-int nLineSpacing;
-
 #if 0
 CCanvas *Canv_LeftEnergyGauge;
 CCanvas *Canv_AfterburnerGauge;
@@ -1388,14 +1385,14 @@ if (gameOpts->render.cockpit.bHUD || (m_info.nType != CM_FULL_SCREEN)) {
 
 #if DBG
 
-fix ShowView_textTimer = -1;
+fix showViewTextTimer = -1;
 
 void DrawWindowLabel (void)
 {
-if (ShowView_textTimer > 0) {
+if (showViewTextTimer > 0) {
 	char *viewer_name, *control_name;
 	char	*viewer_id;
-	ShowView_textTimer -= gameData.time.xFrame;
+	showViewTextTimer -= gameData.time.xFrame;
 
 	viewer_id = "";
 	switch (gameData.objs.viewerP->info.nType) {

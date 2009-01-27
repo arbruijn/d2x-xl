@@ -415,14 +415,14 @@ CGenericCockpit::DrawKillList (53, CCanvas::Current ()->Height () - HUD_LHX (6))
 
 //	-----------------------------------------------------------------------------
 
-void CStatusBar::DrawStatic (int nWindow)
+void CCockpit::DrawStatic (int nWindow)
 {
 CGenericCockpit::DrawStatic (nWindow, COCKPIT_PRIMARY_BOX);
 }
 
 //	-----------------------------------------------------------------------------
 
-void CStatusBar::DrawPlayerShip (void)
+void CCockpit::DrawPlayerShip (void)
 {
 CGenericCockpit::DrawPlayerShip (m_info.bCloak, m_history [gameStates.render.vr.nCurrentPage].bCloak, SHIP_GAUGE_X, SHIP_GAUGE_Y);
 }
