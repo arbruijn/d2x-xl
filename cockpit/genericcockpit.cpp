@@ -728,17 +728,19 @@ if (m_info.nType != CM_FULL_COCKPIT)
 
 void CGenericCockpit::DrawWeaponInfo (int nIndex, tGaugeBox* box, int xPic, int yPic, const char *pszName, int xText, int yText, int orient)
 {
+	CBitmap*	bmP;
 	char		szName [100], *p;
-	int		l;
+	int		i;
 
 	static int nIdWeapon [3] = {0, 0, 0}, nIdLaser [2] = {0, 0};
 
-BitBlt (((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) 
-		  ? gameData.weapons.info [nIndex].hiresPicture.index
-		  : gameData.weapons.info [nIndex].picture.index, 
-		  xPic, yPic, true, true, (m_info.nType == CM_FULL_SCREEN) ? I2X (2) : I2X (1), orient);
-if (m_info.nType == CM_FULL_SCREEN)
+i = ((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) 
+	 ? gameData.weapons.info [nIndex].hires_picture.index 
+	 : gameData.weapons.info [nIndex].picture.index
+LoadBitmap (i, 0);
+if (!(bmP = gameData.pig.tex.bitmaps [0] + i))
 	return;
+BitBlt (-1, xPic, yPic, true, true, (m_info.nType == CM_FULL_SCREEN) ? I2X (2) : I2X (1), orient, bmP);
 fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 if ((p = const_cast<char*> (strchr (pszName, '\n')))) {
 	memcpy (szName, pszName, l = p - pszName);
