@@ -347,7 +347,7 @@ extern tGaugeBox gaugeBoxes [];
 
 //	-----------------------------------------------------------------------------
 
-int _CDECL_ HUDPrintF (int *idP, int x, int y, const char *pszFmt, ...);
+int _CDECL_ PrintF (int *idP, int x, int y, const char *pszFmt, ...);
 void DrawAmmoInfo (int x, int y, int ammoCount, int primary);
 void DrawPlayerShip (int nCloakState, int nOldCloakState, int x, int y);
 void DrawInvulnerableShip (void);

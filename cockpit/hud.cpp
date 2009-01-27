@@ -166,11 +166,11 @@ if (HIDE_HUD)
 if (IsMultiGame && !IsCoopGame)
 	return;
 if (LOCALPLAYER.flags & PLAYER_FLAGS_BLUE_KEY)
-	HUDBitBlt (KEY_ICON_BLUE, 2, y, false, false);
+	BitBlt (KEY_ICON_BLUE, 2, y, false, false);
 if (LOCALPLAYER.flags & PLAYER_FLAGS_GOLD_KEY) 
-	HUDBitBlt (KEY_ICON_YELLOW, 2 + dx, y, false, false);
+	BitBlt (KEY_ICON_YELLOW, 2 + dx, y, false, false);
 if (LOCALPLAYER.flags & PLAYER_FLAGS_RED_KEY)
-	HUDBitBlt (KEY_ICON_RED, 2 + (2 * dx), y, false, false);
+	BitBlt (KEY_ICON_RED, 2 + (2 * dx), y, false, false);
 }
 
 //	-----------------------------------------------------------------------------
@@ -474,34 +474,46 @@ ShowBombCount (CCanvas::Current ()->Width ()- (3 * GAME_FONT->Width () + (gameSt
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::DrawCloakInvul (void)
+void CHUD::DrawInvul (void)
 {
-
-	static int nIdCloak = 0, nIdInvul = 0;
-
 if (HIDE_HUD)
 	return;
-fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 
-if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
+	static int nIdInvul = 0;
+
+if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
+	 (((LOCALPLAYER.invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame) > I2X (4)) || (gameData.time.xGame & 0x8000))) {
+	int	y = CCanvas::Current ()->Height ();
+
+	if (IsMultiGame)
+		y -= 10 * m_info.nLineSpacing;
+	else
+		y -= 5 * m_info.nLineSpacing;
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
+	nIdInvul = GrPrintF (&nIdInvul, 2, y, "%s", TXT_INVULNERABLE);
+	}
+}
+
+//	-----------------------------------------------------------------------------
+
+void CHUD::DrawCloak (void)
+{
+if (HIDE_HUD)
+	return;
+
+	static int nIdCloak = 0;
+
+
+if ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) &&
+	 ((LOCALPLAYER.cloakTime + CLOAK_TIME_MAX - gameData.time.xGame > I2X (3)) || (gameData.time.xGame & 0x8000))) {
 	int	y = CCanvas::Current ()->Height ();
 
 	if (IsMultiGame)
 		y -= 7 * m_info.nLineSpacing;
 	else
 		y -= 4 * m_info.nLineSpacing;
-	if ((LOCALPLAYER.cloakTime + CLOAK_TIME_MAX - gameData.time.xGame > I2X (3)) || (gameData.time.xGame & 0x8000))
-		nIdCloak = GrPrintF (&nIdCloak, 2, y, "%s", TXT_CLOAKED);
-	}
-if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) {
-	int	y = CCanvas::Current ()->Height ();
-
-	if (IsMultiGame)
-		y -= 10*m_info.nLineSpacing;
-	else
-		y -= 5*m_info.nLineSpacing;
-	if (((LOCALPLAYER.invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame) > I2X (4)) || (gameData.time.xGame & 0x8000))
-		nIdInvul = GrPrintF (&nIdInvul, 2, y, "%s", TXT_INVULNERABLE);
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
+	nIdCloak = GrPrintF (&nIdCloak, 2, y, "%s", TXT_CLOAKED);
 	}
 }
 
@@ -607,7 +619,7 @@ else if (LOCALPLAYER.lives > 1)  {
 	CBitmap *bmP;
 	fontManager.SetCurrent (GAME_FONT);
 	fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
-	bmP = HUDBitBlt (GAUGE_LIVES, 10, 3, false, false);
+	bmP = BitBlt (GAUGE_LIVES, 10, 3, false, false);
 	nIdLives = GrPrintF (&nIdLives, 10 + bmP->Width () + bmP->Width () / 2, 4, "x %d", LOCALPLAYER.lives - 1);
 	}
 }
@@ -641,7 +653,7 @@ void DrawWeaponInfo (int info_index, tGaugeBox *box, int xPic, int yPic, const c
 
 	static int nIdWeapon [3] = {0, 0, 0}, nIdLaser [2] = {0, 0};
 
-HUDBitBlt (((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) 
+BitBlt (((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) 
 			  ? gameData.weapons.info [info_index].hiresPicture.index
 			  : gameData.weapons.info [info_index].picture.index, 
 			  xPic, yPic, true, true, (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) ? I2X (2) : I2X (1), orient);
@@ -651,21 +663,21 @@ fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 if ((p = const_cast<char*> (strchr (pszName, '\n')))) {
 	memcpy (szName, pszName, l = p - pszName);
 	szName [l] = '\0';
-	nIdWeapon [0] = HUDPrintF (&nIdWeapon [0], xText, yText, szName);
-	nIdWeapon [1] = HUDPrintF (&nIdWeapon [1], xText, yText + CCanvas::Current ()->Font ()->Height () + 1, p + 1);
+	nIdWeapon [0] = PrintF (&nIdWeapon [0], xText, yText, szName);
+	nIdWeapon [1] = PrintF (&nIdWeapon [1], xText, yText + CCanvas::Current ()->Font ()->Height () + 1, p + 1);
 	}
 else {
-	nIdWeapon [2] = HUDPrintF (&nIdWeapon [2], xText, yText, pszName);
+	nIdWeapon [2] = PrintF (&nIdWeapon [2], xText, yText, pszName);
 	}
 
 //	For laser, show level and quadness
 if (info_index == LASER_ID || info_index == SUPERLASER_ID) {
 	sprintf (szName, "%s: 0", TXT_LVL);
 	szName [5] = LOCALPLAYER.laserLevel + 1 + '0';
-	nIdLaser [0] = HUDPrintF (&nIdLaser [0], xText, yText + m_info.nLineSpacing, szName);
+	nIdLaser [0] = PrintF (&nIdLaser [0], xText, yText + m_info.nLineSpacing, szName);
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) {
 		strcpy (szName, TXT_QUAD);
-		nIdLaser [1] = HUDPrintF (&nIdLaser [1], xText, yText + 2 * m_info.nLineSpacing, szName);
+		nIdLaser [1] = PrintF (&nIdLaser [1], xText, yText + 2 * m_info.nLineSpacing, szName);
 		}
 	}
 }
@@ -812,7 +824,7 @@ CCanvas::SetCurrent (&gameStates.render.vr.buffers.render [0]);
 h = boxofs + nWindow;
 for (x = hudWindowAreas [h].left; x < hudWindowAreas [h].right; x += bmp->Width ())
 	for (y = hudWindowAreas [h].top; y < hudWindowAreas [h].bot; y += bmp->Height ())
-		HUDBitBlt (-1, x, y, true, true, I2X (1), 0, bmp);
+		BitBlt (-1, x, y, true, true, I2X (1), 0, bmp);
 CCanvas::SetCurrent (GetCurrentGameScreen ());
 CopyGaugeBox (&hudWindowAreas [h], &gameStates.render.vr.buffers.render [0]);
 }

@@ -142,6 +142,8 @@ class CCockpitInfo {
 		int	nMode;
 		float	xScale;
 		float	yScale;
+		float	xGaugeScale;
+		float	yGaugeScale;
 		int	fontWidth;
 		int	fontHeight;
 		int	nCockpit;
@@ -158,8 +160,8 @@ class CGenericCockpit {
 		CCockpitInfo	m_info;
 
 	public:
-		CBitmap* DBitBlt (int nGauge, int x, int y, bool bScalePos = true, bool bScaleSize = true, int scale = I2X (1), int orient = 0, CBitmap* bmP = NULL);
-		int _CDECL_ Print (int *idP, int x, int y, const char *pszFmt, ...);
+		CBitmap* BitBlt (int nGauge, int x, int y, bool bScalePos = true, bool bScaleSize = true, int scale = I2X (1), int orient = 0, CBitmap* bmP = NULL);
+		int _CDECL_ PrintF (int *idP, int x, int y, const char *pszFmt, ...);
 		char* ftoa (char *pszVal, fix f);
 
 		void DrawSlowMotion (void);
@@ -196,7 +198,8 @@ class CGenericCockpit {
 		virtual void DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount) = 0;
 		virtual void DrawPrimaryAmmoInfo (int ammoCount) = 0;
 		virtual void DrawSecondaryAmmoInfo (int ammoCount) = 0;
-		virtual void DrawCloakInvul (void) = 0;
+		virtual void DrawCloak (void) = 0;
+		virtual void DrawInvul (void) = 0;
 		virtual void DrawShield (void) = 0;
 		virtual void DrawShieldBar (void) = 0;
 		virtual void DrawLives (void) = 0;
@@ -234,7 +237,8 @@ class CHUD : public CGenericCockpit {
 		virtual void DrawPrimaryAmmoInfo (int ammoCount);
 		virtual void DrawSecondaryAmmoInfo (int ammoCount);
 		virtual void DrawWeapons (void);
-		virtual void DrawCloakInvul (void);
+		virtual void DrawCloak (void);
+		virtual void DrawInvul (void);
 		virtual void DrawShield (void);
 		virtual void DrawShieldBar (void);
 		virtual void DrawLives (void);
@@ -273,7 +277,8 @@ class CStatusBar : public CGenericCockpit {
 		virtual void DrawPrimaryAmmoInfo (int ammoCount);
 		virtual void DrawSecondaryAmmoInfo (int ammoCount);
 		virtual void DrawWeapons (void);
-		virtual void DrawCloakInvul (void);
+		virtual void DrawCloak (void) {}
+		virtual void DrawInvul (void) {}
 		virtual void DrawShield (void);
 		virtual void DrawShieldBar (void);
 		virtual void DrawLives (void);
@@ -306,7 +311,8 @@ class CCockpit : public CGenericCockpit {
 		virtual void DrawPrimaryAmmoInfo (int ammoCount);
 		virtual void DrawSecondaryAmmoInfo (int ammoCount);
 		virtual void DrawWeapons (void);
-		virtual void DrawCloakInvul (void);
+		virtual void DrawCloak (void) {}
+		virtual void DrawInvul (void) {}
 		virtual void DrawShield (void);
 		virtual void DrawShieldBar (void);
 		virtual void DrawLives (void);
@@ -339,7 +345,8 @@ class CRearView : public CGenericCockpit {
 		virtual void DrawPrimaryAmmoInfo (int ammoCount) {}
 		virtual void DrawSecondaryAmmoInfo (int ammoCount) {}
 		virtual void DrawWeapons (void) {}
-		virtual void DrawCloakInvul (void) {}
+		virtual void DrawCloak (void) {}
+		virtual void DrawInvul (void) {}
 		virtual void DrawShield (void) {}
 		virtual void DrawShieldBar (void) {}
 		virtual void DrawLives (void) {}

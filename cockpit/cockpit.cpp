@@ -171,16 +171,16 @@ else {
 	CCanvas::SetCurrent (GetCurrentGameScreen ());
 	if (LOCALPLAYER.homingObjectDist >= 0) {
 		if (gameData.time.xGame & 0x4000) {
-			HUDBitBlt (GAUGE_HOMING_WARNING_ON, HOMING_WARNING_X, HOMING_WARNING_Y);
+			BitBlt (GAUGE_HOMING_WARNING_ON, HOMING_WARNING_X, HOMING_WARNING_Y);
 			bLastHomingWarningShown [gameStates.render.vr.nCurrentPage] = 1;
 			}
 		else {
-			HUDBitBlt (GAUGE_HOMING_WARNING_OFF, HOMING_WARNING_X, HOMING_WARNING_Y);
+			BitBlt (GAUGE_HOMING_WARNING_OFF, HOMING_WARNING_X, HOMING_WARNING_Y);
 			bLastHomingWarningShown [gameStates.render.vr.nCurrentPage] = 0;
 			}
 		}
 	else {
-		HUDBitBlt (GAUGE_HOMING_WARNING_OFF, HOMING_WARNING_X, HOMING_WARNING_Y);
+		BitBlt (GAUGE_HOMING_WARNING_OFF, HOMING_WARNING_X, HOMING_WARNING_Y);
 		bLastHomingWarningShown [gameStates.render.vr.nCurrentPage] = 0;
 		}
 	}
@@ -268,9 +268,9 @@ void CCockpit::DrawShield (void)
 {
 	static int nIdShield = 0;
 
-HUDBitBlt (GAUGE_NUMERICAL, NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y);
+BitBlt (GAUGE_NUMERICAL, NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y);
 fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
-nIdShields = HUDPrintF (&nIdShields, NumDispX (shield), NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 36 : 16), "%d", shield);
+nIdShields = PrintF (&nIdShields, NumDispX (shield), NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 36 : 16), "%d", shield);
 }
 
 //	-----------------------------------------------------------------------------
@@ -279,9 +279,9 @@ void CCockpit::DrawEnergy (void)
 {
 	static int nIdEnergy = 0;
 
-HUDBitBlt (GAUGE_NUMERICAL, NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y);
+BitBlt (GAUGE_NUMERICAL, NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y);
 fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
-nIdEnergy = HUDPrintF (&nIdEnergy, NumDispX (energy), NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 5 : 2), "%d", energy);
+nIdEnergy = PrintF (&nIdEnergy, NumDispX (energy), NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 5 : 2), "%d", energy);
 }
 
 //	-----------------------------------------------------------------------------
@@ -293,8 +293,8 @@ void CCockpit::DrawEnergyBar (int nEnergy)
 #define ENERGY_GAUGE_BOT_LEFT		0
 #define ENERGY_GAUGE_BOT_WIDTH	126
 
-HUDBitBlt (GAUGE_ENERGY_LEFT, LEFT_ENERGY_GAUGE_X, LEFT_ENERGY_GAUGE_Y);
-HUDBitBlt (GAUGE_ENERGY_RIGHT, RIGHT_ENERGY_GAUGE_X, RIGHT_ENERGY_GAUGE_Y);
+BitBlt (GAUGE_ENERGY_LEFT, LEFT_ENERGY_GAUGE_X, LEFT_ENERGY_GAUGE_Y);
+BitBlt (GAUGE_ENERGY_RIGHT, RIGHT_ENERGY_GAUGE_X, RIGHT_ENERGY_GAUGE_Y);
 #if DBG
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL (255, 255, 255));
 #else
@@ -341,7 +341,7 @@ void CCockpit::DrawAfterburnerBar (int nEnergy)
 	int		x [4], y [4], yMax;
 	ubyte*	tableP = gameStates.video.nDisplayMode ? afterburnerBarTableHires : afterburnerBarTable;
 
-HUDBitBlt (GAUGE_AFTERBURNER, AFTERBURNER_GAUGE_X, AFTERBURNER_GAUGE_Y);
+BitBlt (GAUGE_AFTERBURNER, AFTERBURNER_GAUGE_X, AFTERBURNER_GAUGE_Y);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 if ((yMax = FixMul (I2X (1) - nEnergy, AFTERBURNER_GAUGE_H))) {
 	y [0] = y [1] = HUD_SCALE_Y (AFTERBURNER_GAUGE_Y);
@@ -368,7 +368,7 @@ if ((yMax = FixMul (I2X (1) - nEnergy, AFTERBURNER_GAUGE_H))) {
 
 void CCockpit::DrawShieldBar (int shield)
 {
-HUDBitBlt (GAUGE_SHIELDS + 9 - ((shield >= 100) ? 9 : (shield / 10)), SHIELD_GAUGE_X, SHIELD_GAUGE_Y);
+BitBlt (GAUGE_SHIELDS + 9 - ((shield >= 100) ? 9 : (shield / 10)), SHIELD_GAUGE_X, SHIELD_GAUGE_Y);
 }
 
 //	-----------------------------------------------------------------------------
@@ -388,7 +388,7 @@ void CCockpit::DrawKeys (void)
 CCanvas::SetCurrent (GetCurrentGameScreen ());
 int bHires = gameStates.video.nDisplayMode != 0;
 for (int i = 0; i < 3; i++)
-	HUDBitBlt ((LOCALPLAYER.flags & keyGaugeInfo [i].nFlag) ? keyGaugeInfo [i].nGaugeOn : keyGaugeInfo [i].nGaugeOff, keyGaugeInfo [i].x [bHires], keyGaugeInfo [i].y [bHires]);
+	BitBlt ((LOCALPLAYER.flags & keyGaugeInfo [i].nFlag) ? keyGaugeInfo [i].nGaugeOn : keyGaugeInfo [i].nGaugeOff, keyGaugeInfo [i].x [bHires], keyGaugeInfo [i].y [bHires]);
 }
 
 //	-----------------------------------------------------------------------------
@@ -442,7 +442,7 @@ void CCockpit::DrawInvulnerableShip (void)
 if (tInvul <= 0) 
 	DrawShieldBar (X2IR (LOCALPLAYER.shields));
 else if ((tInvul > I2X (4)) || (gameData.time.xGame & 0x8000)) {
-	HUDBitBlt (GAUGE_INVULNERABLE + nInvulnerableFrame, SHIELD_GAUGE_X, SHIELD_GAUGE_Y);
+	BitBlt (GAUGE_INVULNERABLE + nInvulnerableFrame, SHIELD_GAUGE_X, SHIELD_GAUGE_Y);
 	time += gameData.time.xFrame;
 	while (time > INV_FRAME_TIME) {
 		time -= INV_FRAME_TIME;

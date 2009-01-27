@@ -79,7 +79,7 @@ bRedrawScore = -99 ? (IsMultiGame && !IsCoopGame) : -1;
 if (m_info.old [gameStates.render.vr.nCurrentPage].score == bRedrawScore) {
 	fontManager.SetCurrent (GAME_FONT);
 	fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
-	nIdLabel = HUDPrintF (&nIdLabel, SB_SCORE_LABEL_X, SB_SCORE_Y, "%s:", (IsMultiGame && !IsCoopGame) ? TXT_KILLS : TXT_SCORE);
+	nIdLabel = PrintF (&nIdLabel, SB_SCORE_LABEL_X, SB_SCORE_Y, "%s:", (IsMultiGame && !IsCoopGame) ? TXT_KILLS : TXT_SCORE);
 	}
 fontManager.SetCurrent (GAME_FONT);
 sprintf (szScore, "%5d", (IsMultiGame && !IsCoopGame) ? LOCALPLAYER.netKillsTotal : LOCALPLAYER.score);
@@ -90,7 +90,7 @@ y = SB_SCORE_Y;
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
 HUDRect (lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCurrentPage], y, SB_SCORE_RIGHT, y + GAME_FONT->Height ());
 fontManager.SetColorRGBi ((IsMultiGame && !IsCoopGame) ? MEDGREEN_RGBA : GREEN_RGBA, 1, 0, 0);
-nIdScore = HUDPrintF (&nIdScore, x, y, szScore);
+nIdScore = PrintF (&nIdScore, x, y, szScore);
 lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage] = x;
 }
 
@@ -154,7 +154,7 @@ DrawOrbs (m_info.fontWidth, m_info.nLineSpacing);
 void CStatusBar::DrawHomingWarning (void)
 {
 if (bLastHomingWarningDrawn [gameStates.render.vr.nCurrentPage] == 1) {
-	HUDBitBlt (GAUGE_HOMING_WARNING_OFF, HOMING_WARNING_X, HOMING_WARNING_Y);
+	BitBlt (GAUGE_HOMING_WARNING_OFF, HOMING_WARNING_X, HOMING_WARNING_Y);
 	bLastHomingWarningDrawn [gameStates.render.vr.nCurrentPage] = 0;
 	}
 }
@@ -187,8 +187,8 @@ if (m_info.old [gameStates.render.vr.nCurrentPage].lives == -1) {
 	fontManager.SetCurrent (GAME_FONT);
 	fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 	nIdLives [0] = IsMultiGame ? 
-						HUDPrintF (&nIdLives [0], SB_LIVES_LABEL_X, SB_LIVES_LABEL_Y, "%s:", TXT_DEATHS) : 
-						HUDPrintF (&nIdLives [0], SB_LIVES_LABEL_X, SB_LIVES_LABEL_Y, "%s:", TXT_LIVES);
+						PrintF (&nIdLives [0], SB_LIVES_LABEL_X, SB_LIVES_LABEL_Y, "%s:", TXT_DEATHS) : 
+						PrintF (&nIdLives [0], SB_LIVES_LABEL_X, SB_LIVES_LABEL_Y, "%s:", TXT_LIVES);
 	}
 if (IsMultiGame) {
 	char szKilled [20];
@@ -203,7 +203,7 @@ if (IsMultiGame) {
 					y + 1, SB_SCORE_RIGHT, y + GAME_FONT->Height ());
 		fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 		x = SB_SCORE_RIGHT - w - 2;	
-		nIdKilled = HUDPrintF (&nIdKilled, x, y + 1, szKilled);
+		nIdKilled = PrintF (&nIdKilled, x, y + 1, szKilled);
 		lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage] = x;
 		return;
 	}
@@ -216,8 +216,8 @@ if ((m_info.old [gameStates.render.vr.nCurrentPage].lives == -1) ||
 	if (LOCALPLAYER.lives - 1 > 0) {
 		fontManager.SetCurrent (GAME_FONT);
 		fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
-		HUDBitBlt (GAUGE_LIVES, x, y);
-		nIdLives [1] = HUDPrintF (&nIdLives [1], x + bmP->Width () + GAME_FONT->Width (), y, "x %d", LOCALPLAYER.lives - 1);
+		BitBlt (GAUGE_LIVES, x, y);
+		nIdLives [1] = PrintF (&nIdLives [1], x + bmP->Width () + GAME_FONT->Width (), y, "x %d", LOCALPLAYER.lives - 1);
 		}
 	}
 }
@@ -234,7 +234,7 @@ void CStatusBar::DrawEnergy (int nEnergy)
 sprintf (szEnergy, "%d", nEnergy);
 fontManager.Current ()->StringSize (szEnergy, w, h, aw);
 fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
-nIdEnergyBar = HUDPrintF (&nIdEnergyBar, 
+nIdEnergyBar = PrintF (&nIdEnergyBar, 
 								  SB_ENERGY_GAUGE_X + ((SB_ENERGY_GAUGE_W - w)/2), 
 								  SB_ENERGY_GAUGE_Y + SB_ENERGY_GAUGE_H - GAME_FONT->Height () - (GAME_FONT->Height () / 4), 
 							     "%d", nEnergy);
@@ -282,7 +282,7 @@ else
 	fontManager.SetColorRGBi (RGBA_PAL2 (12, 12, 12), 1, 0, 0);
 
 fontManager.Current ()->StringSize (szAB, w, h, aw);
-nIdAfterBurner = HUDPrintF (&nIdAfterBurner, 
+nIdAfterBurner = PrintF (&nIdAfterBurner, 
 									 SB_AFTERBURNER_GAUGE_X + ((SB_AFTERBURNER_GAUGE_W - w)/2), 
 									 SB_AFTERBURNER_GAUGE_Y+SB_AFTERBURNER_GAUGE_H-GAME_FONT->Height () - (GAME_FONT->Height () / 4), 
 									 "AB");
@@ -300,7 +300,7 @@ if (gameStates.app.bD1Mission)
 
 	static int nIdAfterBurner = 0;
 
-HUDBitBlt (SB_GAUGE_AFTERBURNER, SB_AFTERBURNER_GAUGE_X, SB_AFTERBURNER_GAUGE_Y);
+BitBlt (SB_GAUGE_AFTERBURNER, SB_AFTERBURNER_GAUGE_X, SB_AFTERBURNER_GAUGE_Y);
 nEraseHeight = FixMul ((I2X (1) - gameData.physics.xAfterburnerCharge), SB_AFTERBURNER_GAUGE_H);
 //	HUDMessage (0, "AB: %d", nEraseHeight);
 
@@ -328,7 +328,7 @@ fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
 //erase old one
 LoadBitmap (gameData.pig.tex.cockpitBmIndex [gameStates.render.cockpit.nMode + (gameStates.video.nDisplayMode? (gameData.models.nCockpits/2):0)].index, 0);
 HUDRect (SB_SHIELD_NUM_X, SB_SHIELD_NUM_Y, SB_SHIELD_NUM_X+ (gameStates.video.nDisplayMode?27:13), SB_SHIELD_NUM_Y+GAME_FONT->Height ());
-nIdShieldNum = HUDPrintF (&nIdShieldNum, (shield>99)?SB_SHIELD_NUM_X: ((shield>9)?SB_SHIELD_NUM_X+2:SB_SHIELD_NUM_X+4), SB_SHIELD_NUM_Y, "%d", shield);
+nIdShieldNum = PrintF (&nIdShieldNum, (shield>99)?SB_SHIELD_NUM_X: ((shield>9)?SB_SHIELD_NUM_X+2:SB_SHIELD_NUM_X+4), SB_SHIELD_NUM_Y, "%d", shield);
 }
 
 //	-----------------------------------------------------------------------------
@@ -336,7 +336,7 @@ nIdShieldNum = HUDPrintF (&nIdShieldNum, (shield>99)?SB_SHIELD_NUM_X: ((shield>9
 void CStatusBar::DrawShieldBar (int shield)
 {
 CCanvas::SetCurrent (GetCurrentGameScreen ());
-HUDBitBlt (GAUGE_SHIELDS + 9 - ((shield >= 100) ? 9 : (shield / 10)), SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y);
+BitBlt (GAUGE_SHIELDS + 9 - ((shield >= 100) ? 9 : (shield / 10)), SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y);
 }
 
 //	-----------------------------------------------------------------------------
@@ -355,7 +355,7 @@ void CStatusBar::DrawKeys (void)
 {
 int bHires = gameStates.video.nDisplayMode != 0;
 for (int i = 0; i < 3; i++)
-	HUDBitBlt ((LOCALPLAYER.flags & keyGaugeInfo [i].nFlag) ? keyGaugeInfo [i].nGaugeOn : keyGaugeInfo [i].nGaugeOff, keyGaugeInfo [i].x [bHires], keyGaugeInfo [i].y [bHires]);
+	BitBlt ((LOCALPLAYER.flags & keyGaugeInfo [i].nFlag) ? keyGaugeInfo [i].nGaugeOn : keyGaugeInfo [i].nGaugeOff, keyGaugeInfo [i].x [bHires], keyGaugeInfo [i].y [bHires]);
 }
 
 //	-----------------------------------------------------------------------------
@@ -369,7 +369,7 @@ void CStatusBar::DrawInvulnerableShip (void)
 if (tInvul <= 0) 
 	DrawShieldBar (X2IR (LOCALPLAYER.shields));
 else if ((tInvul > I2X (4)) || (gameData.time.xGame & 0x8000)) {
-		HUDBitBlt (GAUGE_INVULNERABLE + nInvulnerableFrame, SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y);
+		BitBlt (GAUGE_INVULNERABLE + nInvulnerableFrame, SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y);
 		time += gameData.time.xFrame;
 		while (time > INV_FRAME_TIME) {
 			time -= INV_FRAME_TIME;

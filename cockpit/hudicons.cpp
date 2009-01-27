@@ -339,7 +339,7 @@ for (i = 0; i < 2; i++) {
 				 LOCALPLAYER.primaryWeaponFlags & (1 << (l + 5)))
 				continue;
 			}
-		HUDBitBlt (-1, nIconScale * (x + (w - bmP->Width ()) / (2 * nIconScale)), nIconScale * (y - hIcon), false, true, I2X (nIconScale), 0, bmP);
+		BitBlt (-1, nIconScale * (x + (w - bmP->Width ()) / (2 * nIconScale)), nIconScale * (y - hIcon), false, true, I2X (nIconScale), 0, bmP);
 		*szAmmo = '\0';
 		nAmmoColor = GREEN_RGBA;
 		if (ammoType [i][l]) {
@@ -549,7 +549,7 @@ x = (screen.Width () - (n - firstItem) * wIcon - (n - 1 - firstItem) * ox) / 2;
 for (j = firstItem; j < n; j++) {
 	int bHave, bAvailable, bArmed = HUDEquipmentActive (nInvFlags [j]);
 	bmP = bmInvItems + j;
-	HUDBitBlt (-1, nIconScale * (x + (w - bmP->Width ()) / (2 * nIconScale)), nIconScale * (y - hIcon), false, true, I2X (nIconScale), 0, bmP);
+	BitBlt (-1, nIconScale * (x + (w - bmP->Width ()) / (2 * nIconScale)), nIconScale * (y - hIcon), false, true, I2X (nIconScale), 0, bmP);
 	//m = 9 - j;
 	*szCount = '\0';
 	if (j == INV_ITEM_HEADLIGHT)
