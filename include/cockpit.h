@@ -72,25 +72,27 @@ typedef struct tGaugeBox {
 
 //	-----------------------------------------------------------------------------
 
-typedef struct tCockpitHistory {
-	int	score;
-	int	energy;
-	int	shields;
-	int	flags;
-	int	oldCloak;
-	int	lives;
-	fix	afterburner;
-	int	bombCount;
-	int	laserLevel;
-	int	weapon [2];
-	int	ammo [2];
-	int	omegaCharge;
-} tCockpitHistory;
+class CCockpitHistory {
+	public:
+		int	score;
+		int	energy;
+		int	shields;
+		int	flags;
+		int	cloak;
+		int	lives;
+		fix	afterburner;
+		int	bombCount;
+		int	laserLevel;
+		int	weapon [2];
+		int	ammo [2];
+		int	omegaCharge;
+
+	public:
+		void Init (void);
+};
 
 class CCockpitInfo {
 	public:
-		tCockpitHistory	history [2];
-
 		int	nCloakFadeState;
 		int	bLastHomingWarningShown [2];
 		int	scoreDisplay [2];
@@ -102,7 +104,7 @@ class CCockpitInfo {
 		fix	weaponBoxFadeValues [2];
 		int	weaponBoxUser [2];
 		int	nLineSpacing;
-		int	nMode;
+		int	mode;
 		float	xScale;
 		float	yScale;
 		float	xGaugeScale;
@@ -124,13 +126,21 @@ class CCockpitInfo {
 
 class CGenericCockpit {
 	protected:
-		CCockpitInfo	m_info;
+		CCockpitHistory	m_history [2];
+		CCockpitInfo		m_info;
 
 	public:
+		void Init (void);
+
 		CBitmap* BitBlt (int nGauge, int x, int y, bool bScalePos = true, bool bScaleSize = true, int scale = I2X (1), int orient = 0, CBitmap* bmP = NULL);
 		int _CDECL_ PrintF (int *idP, int x, int y, const char *pszFmt, ...);
+		void Rect (int left, int top, int width, int height) {
+			OglDrawFilledRect (HUD_SCALE_X (left), HUD_SCALE_Y (top), HUD_SCALE_X (width), HUD_SCALE_Y (height));
+			}
+
 		char* ftoa (char *pszVal, fix f);
 
+		void DrawFrameRate (void);
 		void DrawSlowMotion (void);
 		void DrawTime (void);
 		void DrawTimerCount (void);
@@ -148,7 +158,6 @@ class CGenericCockpit {
 		void DrawOrbs (int x, int y);
 		void DrawFlag (int x, int y);
 		void DrawKillList (int x, int y);
-		void DrawStatic (int nWindow, int nIndex);
 		void DrawCockpit (int nCockpit, int y, bool bAlphaTest = false);
 		void UpdateLaserWeaponInfo (void);
 		void DrawReticle (int bForceBig);
@@ -217,7 +226,6 @@ class CHUD : public CGenericCockpit {
 		virtual void DrawCockpit (void);
 
 		virtual void DrawStatic (int nWindow);
-		virtual void DrawWeapons (void);
 		virtual void DrawKillList (void);
 		virtual void ClearBombCount (void);
 		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount);
@@ -228,6 +236,13 @@ class CHUD : public CGenericCockpit {
 
 	private:
 		int FlashGauge (int h, int *bFlash, int tToggle);
+	};
+
+//	-----------------------------------------------------------------------------
+
+class CWideHUD : public CHUD {
+	public:
+		virtual bool Setup (void);
 	};
 
 //	-----------------------------------------------------------------------------
@@ -259,7 +274,6 @@ class CStatusBar : public CGenericCockpit {
 		virtual void DrawPlayerShip (void);
 
 		virtual void DrawStatic (int nWindow);
-		virtual void DrawWeapons (void);
 		virtual void DrawKillList (void);
 		virtual void ClearBombCount (void);
 		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount);
@@ -296,7 +310,6 @@ class CCockpit : public CGenericCockpit {
 		virtual void DrawPlayerShip (void);
 
 		virtual void DrawStatic (int nWindow);
-		virtual void DrawWeapons (void);
 		virtual void DrawKillList (void);
 		virtual void ClearBombCount (void);
 		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount);
@@ -334,13 +347,13 @@ class CRearView : public CGenericCockpit {
 		virtual void DrawCockpit (void) {}
 
 		virtual void DrawStatic (int nWindow) {}
-		virtual void DrawWeapons (void) {}
 		virtual void DrawKillList (void) {}
 		virtual void ClearBombCount (void) {}
 		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount) {}
-		virtual void DrawCockpit (bool bAlphaTest = false) { DrawCockpit (gameStates.render.cockpit.nMode + nCockpit, 0, bAlphaTest); }
+		virtual void DrawCockpit (bool bAlphaTest = false) { 
+			CGenericCockpit::DrawCockpit (gameStates.render.cockpit.nMode + m_info.nCockpit, 0, bAlphaTest); 
+			}
 		virtual void Toggle (void) {};
-
 		virtual bool Setup (void);
 
 	private:

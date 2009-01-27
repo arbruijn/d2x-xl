@@ -69,7 +69,29 @@ CCockpit		fullCockpit;
 CStatusBar	statusBarCockpit;
 CRearView	rearViewCockpit;
 
-CGenericCockpit* cockpit = fullCockpit;
+CGenericCockpit* cockpit = &fullCockpit;
+
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
+
+void CCockpitHistory::Init (void)
+{
+score = (IsMultiGame && !IsCoopGame) ? -99 : -1;
+energy = -1;
+shields = -1;
+flags = -1;
+cloak = -1;
+lives = -1;
+afterburner = -1;
+bombCount = 0;
+laserLevel = 0;
+weapon [0] = 
+weapon [1] = -1;
+ammo [0] = 
+ammo [1] = -1;
+omegaCharge  = -1;
+}
 
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
@@ -77,22 +99,6 @@ CGenericCockpit* cockpit = fullCockpit;
 
 void CCockpitInfo::Init (void)
 {
-for (int = 0; i < 2; i++) {
-	old [i].score = (IsMultiGame && !IsCoopGame) ? -99 : -1;
-	old [i].energy = -1;
-	old [i].shields = -1;
-	old [i].flags = -1;
-	old [i].oldCloak = -1;
-	old [i].lives = -1;
-	old [i].afterburner = -1;
-	old [i].bombCount = 0;
-	old [i].laserLevel	old [i].= 0;
-	old [i].weapon [0] = 
-	old [i].weapon [1] = -1;
-	old [i].ammo [0] = ammo [1] = -1;
-	old [i].omegaCharge  = -1;
-	}
-
 nCloakFadeState = 0;
 bLastHomingWarningShown [0] =
 bLastHomingWarningShown [1] = -1;
@@ -119,6 +125,8 @@ nLineSpacing = GAME_FONT->Height () + GAME_FONT->Height () / 4;
 
 void CGenericCockpit::Init (void)
 {
+m_history [0].Init ();
+m_history [1].Init ();
 m_info.Init ();
 }
 
@@ -252,7 +260,6 @@ if (HIDE_HUD)
 if ((gameData.hud.msgs [0].nMessages > 0) &&
 	 (strlen (gameData.hud.msgs [0].szMsgs [gameData.hud.msgs [0].nFirst]) > 38))
 	return;
-GrSetCurFont (GAME_FONT);
 szScore [0] = (char) 1;
 szScore [1] = (char) (127 + 128);
 szScore [2] = (char) (127 + 128);
@@ -270,9 +277,9 @@ szScore [15] = (char) (0 + 128);
 szScore [16] = (char) (127 + 128);
 szScore [17] = (char) (0 + 128);
 szScore [18] = (char) (0);
-GrGetStringSize (szScore, &w, &h, &aw);
-GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
-GrPrintF (NULL, grdCurCanv->cv_w - 2 * w - HUD_LHX (2), 3, szScore);
+fontManager.Current ()->StringSize (szScore, w, h, aw);
+fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
+GrPrintF (NULL, CCanvas::Current ()->Width () - 2 * w - HUD_LHX (2), 3, szScore);
 }
 
 //	-----------------------------------------------------------------------------
@@ -289,7 +296,7 @@ if (gameStates.render.bShowTime && !(IsMultiGame && gameData.multigame.kills.bSh
 		static int nIdTime = 0;
 
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-	nIdTime = GrPrintF (&nIdTime, CCanvas::Current ()->Width () - 4 * GAME_FONT->Width (),
+	nIdTime = GrPrintF (&nIdTime, CCanvas::Current ()->Width () - 4 * m_info.fontWidth,
 							  CCanvas::Current ()->Height () - 4 * nLineSpacing,
 							  "%d:%02d", mins, secs);
 	}
@@ -326,24 +333,24 @@ if ((gameData.app.nGameMode & GM_NETWORK) && netGame.xPlayTimeAllowed) {
 
 void CGenericCockpit::DrawFlag (int x, int y)
 {
-if ((gameData.app.nGameMode & GM_CAPTURE) && (LOCALPLAYER.flags & PLAYER_FLAGS_FLAG)) {
-icon = (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_BLUE) ? FLAG_ICON_RED : FLAG_ICON_BLUE;
-BitBlt (icon, x, y, false, false);
+if ((gameData.app.nGameMode & GM_CAPTURE) && (LOCALPLAYER.flags & PLAYER_FLAGS_FLAG))
+	BitBlt ((GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_BLUE) ? FLAG_ICON_RED : FLAG_ICON_BLUE, x, y, false, false);
 }
 
 //	-----------------------------------------------------------------------------
 
 void CGenericCockpit::DrawOrbs (int x, int y)
 {
-	static int nIdOrbs = 0, nIdEntropy [2]= {0, 0};
-
 if (HIDE_HUD)
 	return;
+
+	static int nIdOrbs = 0, nIdEntropy [2] = {0, 0};
+
 if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
-	bmP = BitBlt (-1, x, y, false, false, I2X (1), 0, &gameData.hoard.icon [gameStates.render.fonts.bHires].bm);
+	CBitmap* bmP = BitBlt (-1, x, y, false, false, I2X (1), 0, &gameData.hoard.icon [gameStates.render.fonts.bHires].bm);
 	//GrUBitmapM (x, y, bmP);
 
-	x += bmP->Width () + bmP->Width ()/2;
+	x += 3 * bmP->Width () / 2;
 	y += gameStates.render.fonts.bHires + 1;
 	if (gameData.app.nGameMode & GM_ENTROPY) {
 		char	szInfo [20];
@@ -389,11 +396,11 @@ if (LOCALPLAYER.homingObjectDist >= 0) {
 		xBeepDelay = I2X (1);
 	else if (xBeepDelay < I2X (1)/8)
 		xBeepDelay = I2X (1)/8;
-	if (lastWarningBeepTime [gameStates.render.vr.nCurrentPage] > gameData.time.xGame)
-		lastWarningBeepTime [gameStates.render.vr.nCurrentPage] = 0;
-	if (gameData.time.xGame - lastWarningBeepTime [gameStates.render.vr.nCurrentPage] > xBeepDelay/2) {
+	if (m_info.lastWarningBeepTime [gameStates.render.vr.nCurrentPage] > gameData.time.xGame)
+		m_info.lastWarningBeepTime [gameStates.render.vr.nCurrentPage] = 0;
+	if (gameData.time.xGame - m_info.lastWarningBeepTime [gameStates.render.vr.nCurrentPage] > xBeepDelay/2) {
 		audio.PlaySound (SOUND_HOMING_WARNING);
-		lastWarningBeepTime [gameStates.render.vr.nCurrentPage] = gameData.time.xGame;
+		m_info.lastWarningBeepTime [gameStates.render.vr.nCurrentPage] = gameData.time.xGame;
 		}
 	}
 }
@@ -421,12 +428,12 @@ count = min (count, 99);	//only have room for 2 digits - cheating give 200
 countx = (bomb == PROXMINE_INDEX) ? count : -count;
 if (bShowAlways && count == 0)		//no bombs, draw nothing on HUD
 	return;
-if (!bShowAlways && countx == m_info.old [gameStates.render.vr.nCurrentPage].bombCount)
+if (!bShowAlways && countx == m_history [gameStates.render.vr.nCurrentPage].bombCount)
 	return;
 sprintf (szBombCount, "B:%02d", count);
 while ((t = strchr (szBombCount, '1')))
 	*t = '\x84';	//convert to wide '1'
-m_info.old [gameStates.render.vr.nCurrentPage].bombCount = countx;
+m_history [gameStates.render.vr.nCurrentPage].bombCount = countx;
 
 ClearBombCount ();
 if (count)
@@ -655,43 +662,43 @@ int DrawWeaponDisplay (int nWeaponType, int nWeaponId)
 //CCanvas::SetCurrent (&gameStates.render.vr.buffers.render [0]);
 bLaserLevelChanged = ((nWeaponType == 0) &&
 								(nWeaponId == LASER_INDEX) &&
-								((LOCALPLAYER.laserLevel != m_info.old [gameStates.render.vr.nCurrentPage].laserLevel)));
+								((LOCALPLAYER.laserLevel != m_history [gameStates.render.vr.nCurrentPage].laserLevel)));
 
-if ((nWeaponId != m_info.history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] || bLaserLevelChanged) && weaponBoxStates [nWeaponType] == WS_SET) {
+if ((nWeaponId != m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] || bLaserLevelChanged) && weaponBoxStates [nWeaponType] == WS_SET) {
 	weaponBoxStates [nWeaponType] = WS_FADING_OUT;
 	weaponBoxFadeValues [nWeaponType] = I2X (FADE_LEVELS - 1);
 	}
 
 ShowWeaponInfo (nWeaponType, nWeaponId, LOCALPLAYER.laserLevel);
-m_info.history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] = nWeaponId;
-m_info.history [gameStates.render.vr.nCurrentPage].ammo [nWeaponType] = -1;
+m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] = nWeaponId;
+m_history [gameStates.render.vr.nCurrentPage].ammo [nWeaponType] = -1;
 xOldOmegaCharge [gameStates.render.vr.nCurrentPage] = -1;
-m_info.old [gameStates.render.vr.nCurrentPage].laserLevel = LOCALPLAYER.laserLevel;
+m_history [gameStates.render.vr.nCurrentPage].laserLevel = LOCALPLAYER.laserLevel;
 bDrew = 1;
 weaponBoxStates [nWeaponType] = WS_SET;
 
 if (weaponBoxStates [nWeaponType] == WS_FADING_OUT) {
-	ShowWeaponInfo (nWeaponType, m_info.history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType], m_info.old [gameStates.render.vr.nCurrentPage].laserLevel);
-	m_info.history [gameStates.render.vr.nCurrentPage].ammo [nWeaponType] = -1;
+	ShowWeaponInfo (nWeaponType, m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType], m_history [gameStates.render.vr.nCurrentPage].laserLevel);
+	m_history [gameStates.render.vr.nCurrentPage].ammo [nWeaponType] = -1;
 	xOldOmegaCharge [gameStates.render.vr.nCurrentPage] = -1;
 	bDrew = 1;
 	weaponBoxFadeValues [nWeaponType] -= gameData.time.xFrame * FADE_SCALE;
 	if (weaponBoxFadeValues [nWeaponType] <= 0) {
 		weaponBoxStates [nWeaponType] = WS_FADING_IN;
-		m_info.history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] = nWeaponId;
+		m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] = nWeaponId;
 		oldWeapon [nWeaponType][!gameStates.render.vr.nCurrentPage] = nWeaponId;
-		m_info.old [gameStates.render.vr.nCurrentPage].laserLevel = LOCALPLAYER.laserLevel;
+		m_history [gameStates.render.vr.nCurrentPage].laserLevel = LOCALPLAYER.laserLevel;
 		oldLaserLevel [!gameStates.render.vr.nCurrentPage] = LOCALPLAYER.laserLevel;
 		weaponBoxFadeValues [nWeaponType] = 0;
 		}
 	}
 else if (weaponBoxStates [nWeaponType] == WS_FADING_IN) {
-	if (nWeaponId != m_info.history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType]) {
+	if (nWeaponId != m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType]) {
 		weaponBoxStates [nWeaponType] = WS_FADING_OUT;
 		}
 	else {
 		ShowWeaponInfo (nWeaponType, nWeaponId, LOCALPLAYER.laserLevel);
-		m_info.history [gameStates.render.vr.nCurrentPage].ammo [nWeaponType] = -1;
+		m_history [gameStates.render.vr.nCurrentPage].ammo [nWeaponType] = -1;
 		xOldOmegaCharge [gameStates.render.vr.nCurrentPage] = -1;
 		bDrew=1;
 		weaponBoxFadeValues [nWeaponType] += gameData.time.xFrame * FADE_SCALE;
@@ -751,11 +758,11 @@ void CGenericCockpit::DrawWeapons (void)
 if (weaponBoxUser [0] == WBU_WEAPON) {
 	if (DrawWeaponDisplay (0, gameData.weapons.nPrimary) && (weaponBoxStates [0] == WS_SET)) {
 		 (((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {
-			if (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] != m_info.history [gameStates.render.vr.nCurrentPage].ammo [0]) {
+			if (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] != m_history [gameStates.render.vr.nCurrentPage].ammo [0]) {
 				if (gameData.demo.nState == ND_STATE_RECORDING)
-					NDRecordPrimaryAmmo (m_info.history [gameStates.render.vr.nCurrentPage].ammo [0], LOCALPLAYER.primaryAmmo [VULCAN_INDEX]);
+					NDRecordPrimaryAmmo (m_history [gameStates.render.vr.nCurrentPage].ammo [0], LOCALPLAYER.primaryAmmo [VULCAN_INDEX]);
 				DrawPrimaryAmmoInfo (X2I ((unsigned) VULCAN_AMMO_SCALE * (unsigned) LOCALPLAYER.primaryAmmo [VULCAN_INDEX]));
-				m_info.history [gameStates.render.vr.nCurrentPage].ammo [0] = LOCALPLAYER.primaryAmmo [VULCAN_INDEX];
+				m_history [gameStates.render.vr.nCurrentPage].ammo [0] = LOCALPLAYER.primaryAmmo [VULCAN_INDEX];
 				}
 			}
 		else if (gameData.weapons.nPrimary == OMEGA_INDEX) {
@@ -773,12 +780,12 @@ else if (weaponBoxUser [0] == WBU_STATIC)
 
 if (weaponBoxUser [1] == WBU_WEAPON) {
 	if (DrawWeaponDisplay (1, gameData.weapons.nSecondary) && (weaponBoxStates [1] == WS_SET) &&
-		 (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != m_info.history [gameStates.render.vr.nCurrentPage].ammo [1])) {
+		 (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != m_history [gameStates.render.vr.nCurrentPage].ammo [1])) {
 		oldBombcount [gameStates.render.vr.nCurrentPage] = 0x7fff;	//force redraw
 		if (gameData.demo.nState == ND_STATE_RECORDING)
-			NDRecordSecondaryAmmo (m_info.history [gameStates.render.vr.nCurrentPage].ammo [1], LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
+			NDRecordSecondaryAmmo (m_history [gameStates.render.vr.nCurrentPage].ammo [1], LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
 		DrawSecondaryAmmoInfo (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
-		m_info.history [gameStates.render.vr.nCurrentPage].ammo [1] = LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary];
+		m_history [gameStates.render.vr.nCurrentPage].ammo [1] = LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary];
 		}
 	}
 else if (weaponBoxUser [1] == WBU_STATIC)
@@ -1313,29 +1320,29 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 	if (LOCALPLAYER.homingObjectDist >= 0)
 		NDRecordHomingDistance (LOCALPLAYER.homingObjectDist);
 
-	if (nEnergy != m_info.history [gameStates.render.vr.nCurrentPage].energy) {
-		NDRecordPlayerEnergy (m_info.history [gameStates.render.vr.nCurrentPage].energy, nEnergy);
-		m_info.history [gameStates.render.vr.nCurrentPage].energy = nEnergy;
+	if (nEnergy != m_history [gameStates.render.vr.nCurrentPage].energy) {
+		NDRecordPlayerEnergy (m_history [gameStates.render.vr.nCurrentPage].energy, nEnergy);
+		m_history [gameStates.render.vr.nCurrentPage].energy = nEnergy;
 		}
 
-	if (gameData.physics.xAfterburnerCharge != m_info.history [gameStates.render.vr.nCurrentPage].afterburner) {
-		NDRecordPlayerAfterburner (m_info.history [gameStates.render.vr.nCurrentPage].afterburner, gameData.physics.xAfterburnerCharge);
-		m_info.history [gameStates.render.vr.nCurrentPage].afterburner = gameData.physics.xAfterburnerCharge;
+	if (gameData.physics.xAfterburnerCharge != m_history [gameStates.render.vr.nCurrentPage].afterburner) {
+		NDRecordPlayerAfterburner (m_history [gameStates.render.vr.nCurrentPage].afterburner, gameData.physics.xAfterburnerCharge);
+		m_history [gameStates.render.vr.nCurrentPage].afterburner = gameData.physics.xAfterburnerCharge;
 		}
 
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)
-		m_info.history [gameStates.render.vr.nCurrentPage].shields = nShields ^ 1;
+		m_history [gameStates.render.vr.nCurrentPage].shields = nShields ^ 1;
 	else {
-		if (nShields != m_info.history [gameStates.render.vr.nCurrentPage].shields) {		// Draw the shield gauge
-			NDRecordPlayerShields (m_info.history [gameStates.render.vr.nCurrentPage].shields, nShields);
-			m_info.history [gameStates.render.vr.nCurrentPage].shields = nShields;
+		if (nShields != m_history [gameStates.render.vr.nCurrentPage].shields) {		// Draw the shield gauge
+			NDRecordPlayerShields (m_history [gameStates.render.vr.nCurrentPage].shields, nShields);
+			m_history [gameStates.render.vr.nCurrentPage].shields = nShields;
 			}
-	if (LOCALPLAYER.flags != m_info.old [gameStates.render.vr.nCurrentPage].flags) {
-		NDRecordPlayerFlags (m_info.old [gameStates.render.vr.nCurrentPage].flags, LOCALPLAYER.flags);
-		m_info.old [gameStates.render.vr.nCurrentPage].flags = LOCALPLAYER.flags;
+	if (LOCALPLAYER.flags != m_history [gameStates.render.vr.nCurrentPage].flags) {
+		NDRecordPlayerFlags (m_history [gameStates.render.vr.nCurrentPage].flags, LOCALPLAYER.flags);
+		m_history [gameStates.render.vr.nCurrentPage].flags = LOCALPLAYER.flags;
 		}
 	}
-m_info.history [gameStates.render.vr.nCurrentPage].bCloak = bCloak;
+m_history [gameStates.render.vr.nCurrentPage].bCloak = bCloak;
 }
 
 //	---------------------------------------------------------------------------------------------------------
@@ -1343,9 +1350,9 @@ m_info.history [gameStates.render.vr.nCurrentPage].bCloak = bCloak;
 //	If laser is active, set oldWeapon [0] to -1 to force redraw.
 void CGenericCockpit::UpdateLaserWeaponInfo (void)
 {
-if (m_info.old [gameStates.render.vr.nCurrentPage].weapon [0] == 0)
-	if (!(LOCALPLAYER.laserLevel > MAX_LASER_LEVEL && m_info.old [gameStates.render.vr.nCurrentPage].laserLevel <= MAX_LASER_LEVEL))
-		m_info.old [gameStates.render.vr.nCurrentPage].weapon [0] = -1;
+if (m_history [gameStates.render.vr.nCurrentPage].weapon [0] == 0)
+	if (!(LOCALPLAYER.laserLevel > MAX_LASER_LEVEL && m_history [gameStates.render.vr.nCurrentPage].laserLevel <= MAX_LASER_LEVEL))
+		m_history [gameStates.render.vr.nCurrentPage].weapon [0] = -1;
 }
 
 //	---------------------------------------------------------------------------------------------------------
@@ -1460,7 +1467,7 @@ else {
 	//CCanvas::SetCurrent (GetCurrentGameScreen ());
 	}
 //force redraw when done
-m_info.history [gameStates.render.vr.nCurrentPage].weapon [nWindow] = oldAmmoCount [nWindow][gameStates.render.vr.nCurrentPage] = -1;
+m_history [gameStates.render.vr.nCurrentPage].weapon [nWindow] = oldAmmoCount [nWindow][gameStates.render.vr.nCurrentPage] = -1;
 
 abort:;
 
@@ -1474,9 +1481,9 @@ gameStates.render.bRearView = bRearViewSave;
 //	If laser is active, set oldWeapon [0] to -1 to force redraw.
 void CGenericCockpit::UpdateLaserWeaponInfo (void)
 {
-if (m_info.history [gameStates.render.vr.nCurrentPage].weapon [0] == 0)
+if (m_history [gameStates.render.vr.nCurrentPage].weapon [0] == 0)
 	if (!(LOCALPLAYER.laserLevel > MAX_LASER_LEVEL && oldLaserLevel [gameStates.render.vr.nCurrentPage] <= MAX_LASER_LEVEL))
-		m_info.history [gameStates.render.vr.nCurrentPage].weapon [0] = -1;
+		m_history [gameStates.render.vr.nCurrentPage].weapon [0] = -1;
 }
 
 //------------------------------------------------------------------------------

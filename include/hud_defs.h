@@ -225,90 +225,90 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SB_SCORE_ADDED_RIGHT	 (gameStates.video.nDisplayMode ? SB_SCORE_RIGHT_H : SB_SCORE_RIGHT_L)
 #define SB_SCORE_ADDED_Y		 (gameStates.video.nDisplayMode ? 413 : 165)
 
-#define HOMING_WARNING_X		 (gameStates.video.nDisplayMode ? 14 : 7)
-#define HOMING_WARNING_Y		 (gameStates.video.nDisplayMode ? 415 : 171)
+#define HOMING_WARNING_X				(gameStates.video.nDisplayMode ? 14 : 7)
+#define HOMING_WARNING_Y				(gameStates.video.nDisplayMode ? 415 : 171)
 
-#define BOMB_COUNT_X				 (gameStates.video.nDisplayMode ? 546 : 275)
-#define BOMB_COUNT_Y				 (gameStates.video.nDisplayMode ? 445 : 186)
+#define BOMB_COUNT_X						(gameStates.video.nDisplayMode ? 546 : 275)
+#define BOMB_COUNT_Y						(gameStates.video.nDisplayMode ? 445 : 186)
 
-#define SB_BOMB_COUNT_X			 (gameStates.video.nDisplayMode ? 342 : 171)
-#define SB_BOMB_COUNT_Y			 (gameStates.video.nDisplayMode ? 458 : 191)
+#define SB_BOMB_COUNT_X					(gameStates.video.nDisplayMode ? 342 : 171)
+#define SB_BOMB_COUNT_Y					(gameStates.video.nDisplayMode ? 458 : 191)
 
-#define N_LEFT_WINDOW_SPANS  (sizeof (weaponWindowLeft)/sizeof (*weaponWindowLeft))
-#define N_RIGHT_WINDOW_SPANS (sizeof (weaponWindowRight)/sizeof (*weaponWindowRight))
+#define N_LEFT_WINDOW_SPANS			sizeofa (weaponWindowLeft)
+#define N_RIGHT_WINDOW_SPANS			sizeofa (weaponWindowRight)
 
-#define N_LEFT_WINDOW_SPANS_H  (sizeof (weaponWindowLeftHires)/sizeof (*weaponWindowLeftHires))
-#define N_RIGHT_WINDOW_SPANS_H (sizeof (weaponWindowRightHires)/sizeof (*weaponWindowRightHires))
+#define N_LEFT_WINDOW_SPANS_H			sizeofa (weaponWindowLeftHires)
+#define N_RIGHT_WINDOW_SPANS_H		sizeofa (weaponWindowRightHires)
 
 // defining box boundries for weapon pictures
 
-#define PRIMARY_W_BOX_LEFT_L		63
-#define PRIMARY_W_BOX_TOP_L		151		//154
-#define PRIMARY_W_BOX_RIGHT_L		 (PRIMARY_W_BOX_LEFT_L+58)
-#define PRIMARY_W_BOX_BOT_L		 (PRIMARY_W_BOX_TOP_L+N_LEFT_WINDOW_SPANS-1)
+#define PRIMARY_W_BOX_LEFT_L			63
+#define PRIMARY_W_BOX_TOP_L			151		//154
+#define PRIMARY_W_BOX_RIGHT_L			(PRIMARY_W_BOX_LEFT_L+58)
+#define PRIMARY_W_BOX_BOT_L			(PRIMARY_W_BOX_TOP_L+N_LEFT_WINDOW_SPANS-1)
 										
-#define PRIMARY_W_BOX_LEFT_H		121
-#define PRIMARY_W_BOX_TOP_H		364
-#define PRIMARY_W_BOX_RIGHT_H		242
+#define PRIMARY_W_BOX_LEFT_H			121
+#define PRIMARY_W_BOX_TOP_H			364
+#define PRIMARY_W_BOX_RIGHT_H			242
 
-#define PRIMARY_W_BOX_BOT_H		 (PRIMARY_W_BOX_TOP_H+N_LEFT_WINDOW_SPANS_H-1)		//470
+#define PRIMARY_W_BOX_BOT_H			(PRIMARY_W_BOX_TOP_H+N_LEFT_WINDOW_SPANS_H-1)		//470
 										
-#define PRIMARY_W_BOX_LEFT		 (gameStates.video.nDisplayMode ? PRIMARY_W_BOX_LEFT_H : PRIMARY_W_BOX_LEFT_L)
-#define PRIMARY_W_BOX_TOP		 (gameStates.video.nDisplayMode ? PRIMARY_W_BOX_TOP_H : PRIMARY_W_BOX_TOP_L)
-#define PRIMARY_W_BOX_RIGHT	 (gameStates.video.nDisplayMode ? PRIMARY_W_BOX_RIGHT_H : PRIMARY_W_BOX_RIGHT_L)
-#define PRIMARY_W_BOX_BOT		 (gameStates.video.nDisplayMode ? PRIMARY_W_BOX_BOT_H : PRIMARY_W_BOX_BOT_L)
+#define PRIMARY_W_BOX_LEFT				(gameStates.video.nDisplayMode ? PRIMARY_W_BOX_LEFT_H : PRIMARY_W_BOX_LEFT_L)
+#define PRIMARY_W_BOX_TOP				(gameStates.video.nDisplayMode ? PRIMARY_W_BOX_TOP_H : PRIMARY_W_BOX_TOP_L)
+#define PRIMARY_W_BOX_RIGHT			(gameStates.video.nDisplayMode ? PRIMARY_W_BOX_RIGHT_H : PRIMARY_W_BOX_RIGHT_L)
+#define PRIMARY_W_BOX_BOT				(gameStates.video.nDisplayMode ? PRIMARY_W_BOX_BOT_H : PRIMARY_W_BOX_BOT_L)
 
-#define SECONDARY_W_BOX_LEFT_L	202	//207
-#define SECONDARY_W_BOX_TOP_L		151
-#define SECONDARY_W_BOX_RIGHT_L	263	// (SECONDARY_W_BOX_LEFT+54)
-#define SECONDARY_W_BOX_BOT_L		 (SECONDARY_W_BOX_TOP_L+N_RIGHT_WINDOW_SPANS-1)
+#define SECONDARY_W_BOX_LEFT_L		202	//207
+#define SECONDARY_W_BOX_TOP_L			151
+#define SECONDARY_W_BOX_RIGHT_L		263	// (SECONDARY_W_BOX_LEFT+54)
+#define SECONDARY_W_BOX_BOT_L			(SECONDARY_W_BOX_TOP_L+N_RIGHT_WINDOW_SPANS-1)
 
-#define SECONDARY_W_BOX_LEFT_H	404
-#define SECONDARY_W_BOX_TOP_H		363
-#define SECONDARY_W_BOX_RIGHT_H	529
-#define SECONDARY_W_BOX_BOT_H		 (SECONDARY_W_BOX_TOP_H+N_RIGHT_WINDOW_SPANS_H-1)		//470
+#define SECONDARY_W_BOX_LEFT_H		404
+#define SECONDARY_W_BOX_TOP_H			363
+#define SECONDARY_W_BOX_RIGHT_H		529
+#define SECONDARY_W_BOX_BOT_H			(SECONDARY_W_BOX_TOP_H+N_RIGHT_WINDOW_SPANS_H-1)		//470
 
-#define SECONDARY_W_BOX_LEFT	 (gameStates.video.nDisplayMode ? SECONDARY_W_BOX_LEFT_H : SECONDARY_W_BOX_LEFT_L)
-#define SECONDARY_W_BOX_TOP	 (gameStates.video.nDisplayMode ? SECONDARY_W_BOX_TOP_H : SECONDARY_W_BOX_TOP_L)
-#define SECONDARY_W_BOX_RIGHT	 (gameStates.video.nDisplayMode ? SECONDARY_W_BOX_RIGHT_H : SECONDARY_W_BOX_RIGHT_L)
-#define SECONDARY_W_BOX_BOT	 (gameStates.video.nDisplayMode ? SECONDARY_W_BOX_BOT_H : SECONDARY_W_BOX_BOT_L)
+#define SECONDARY_W_BOX_LEFT			(gameStates.video.nDisplayMode ? SECONDARY_W_BOX_LEFT_H : SECONDARY_W_BOX_LEFT_L)
+#define SECONDARY_W_BOX_TOP			(gameStates.video.nDisplayMode ? SECONDARY_W_BOX_TOP_H : SECONDARY_W_BOX_TOP_L)
+#define SECONDARY_W_BOX_RIGHT			(gameStates.video.nDisplayMode ? SECONDARY_W_BOX_RIGHT_H : SECONDARY_W_BOX_RIGHT_L)
+#define SECONDARY_W_BOX_BOT			(gameStates.video.nDisplayMode ? SECONDARY_W_BOX_BOT_H : SECONDARY_W_BOX_BOT_L)
 
 #define SB_PRIMARY_W_BOX_LEFT_L		34		//50
 #define SB_PRIMARY_W_BOX_TOP_L		153
-#define SB_PRIMARY_W_BOX_RIGHT_L		 (SB_PRIMARY_W_BOX_LEFT_L+53+2)
-#define SB_PRIMARY_W_BOX_BOT_L		 (195+1)
+#define SB_PRIMARY_W_BOX_RIGHT_L		(SB_PRIMARY_W_BOX_LEFT_L+53+2)
+#define SB_PRIMARY_W_BOX_BOT_L		(195+1)
 										
 #define SB_PRIMARY_W_BOX_LEFT_H		68
 #define SB_PRIMARY_W_BOX_TOP_H		381
 #define SB_PRIMARY_W_BOX_RIGHT_H		179
 #define SB_PRIMARY_W_BOX_BOT_H		473
 										
-#define SB_PRIMARY_W_BOX_LEFT		 (gameStates.video.nDisplayMode ? SB_PRIMARY_W_BOX_LEFT_H : SB_PRIMARY_W_BOX_LEFT_L)
-#define SB_PRIMARY_W_BOX_TOP		 (gameStates.video.nDisplayMode ? SB_PRIMARY_W_BOX_TOP_H : SB_PRIMARY_W_BOX_TOP_L)
-#define SB_PRIMARY_W_BOX_RIGHT	 (gameStates.video.nDisplayMode ? SB_PRIMARY_W_BOX_RIGHT_H : SB_PRIMARY_W_BOX_RIGHT_L)
-#define SB_PRIMARY_W_BOX_BOT		 (gameStates.video.nDisplayMode ? SB_PRIMARY_W_BOX_BOT_H : SB_PRIMARY_W_BOX_BOT_L)
+#define SB_PRIMARY_W_BOX_LEFT			(gameStates.video.nDisplayMode ? SB_PRIMARY_W_BOX_LEFT_H : SB_PRIMARY_W_BOX_LEFT_L)
+#define SB_PRIMARY_W_BOX_TOP			(gameStates.video.nDisplayMode ? SB_PRIMARY_W_BOX_TOP_H : SB_PRIMARY_W_BOX_TOP_L)
+#define SB_PRIMARY_W_BOX_RIGHT		(gameStates.video.nDisplayMode ? SB_PRIMARY_W_BOX_RIGHT_H : SB_PRIMARY_W_BOX_RIGHT_L)
+#define SB_PRIMARY_W_BOX_BOT			(gameStates.video.nDisplayMode ? SB_PRIMARY_W_BOX_BOT_H : SB_PRIMARY_W_BOX_BOT_L)
 										
 #define SB_SECONDARY_W_BOX_LEFT_L	169
 #define SB_SECONDARY_W_BOX_TOP_L		153
-#define SB_SECONDARY_W_BOX_RIGHT_L	 (SB_SECONDARY_W_BOX_LEFT_L+54+1)
-#define SB_SECONDARY_W_BOX_BOT_L		 (153+43)
+#define SB_SECONDARY_W_BOX_RIGHT_L	(SB_SECONDARY_W_BOX_LEFT_L+54+1)
+#define SB_SECONDARY_W_BOX_BOT_L		(153+43)
 
 #define SB_SECONDARY_W_BOX_LEFT_H	338
 #define SB_SECONDARY_W_BOX_TOP_H		381
 #define SB_SECONDARY_W_BOX_RIGHT_H	449
 #define SB_SECONDARY_W_BOX_BOT_H		473
 
-#define SB_SECONDARY_W_BOX_LEFT	 (gameStates.video.nDisplayMode ? SB_SECONDARY_W_BOX_LEFT_H : SB_SECONDARY_W_BOX_LEFT_L)	//210
-#define SB_SECONDARY_W_BOX_TOP	 (gameStates.video.nDisplayMode ? SB_SECONDARY_W_BOX_TOP_H : SB_SECONDARY_W_BOX_TOP_L)
-#define SB_SECONDARY_W_BOX_RIGHT	 (gameStates.video.nDisplayMode ? SB_SECONDARY_W_BOX_RIGHT_H : SB_SECONDARY_W_BOX_RIGHT_L)
-#define SB_SECONDARY_W_BOX_BOT	 (gameStates.video.nDisplayMode ? SB_SECONDARY_W_BOX_BOT_H : SB_SECONDARY_W_BOX_BOT_L)
+#define SB_SECONDARY_W_BOX_LEFT		(gameStates.video.nDisplayMode ? SB_SECONDARY_W_BOX_LEFT_H : SB_SECONDARY_W_BOX_LEFT_L)	//210
+#define SB_SECONDARY_W_BOX_TOP		(gameStates.video.nDisplayMode ? SB_SECONDARY_W_BOX_TOP_H : SB_SECONDARY_W_BOX_TOP_L)
+#define SB_SECONDARY_W_BOX_RIGHT		(gameStates.video.nDisplayMode ? SB_SECONDARY_W_BOX_RIGHT_H : SB_SECONDARY_W_BOX_RIGHT_L)
+#define SB_SECONDARY_W_BOX_BOT		(gameStates.video.nDisplayMode ? SB_SECONDARY_W_BOX_BOT_H : SB_SECONDARY_W_BOX_BOT_L)
 
-#define SB_PRIMARY_W_PIC_X			 (SB_PRIMARY_W_BOX_LEFT+1)	//51
-#define SB_PRIMARY_W_PIC_Y			 (gameStates.video.nDisplayMode ? 382 : 154)
-#define SB_PRIMARY_W_TEXT_X		 (SB_PRIMARY_W_BOX_LEFT+ (gameStates.video.nDisplayMode ? 50 : 24))	// (51+23)
-#define SB_PRIMARY_W_TEXT_Y		 (gameStates.video.nDisplayMode ? 390 : 157)
-#define SB_PRIMARY_AMMO_X			 (SB_PRIMARY_W_BOX_LEFT+ (gameStates.video.nDisplayMode ?  (38+20) : 30))	// ((SB_PRIMARY_W_BOX_LEFT+33)-3)	// (51+32)
-#define SB_PRIMARY_AMMO_Y			 (gameStates.video.nDisplayMode ? 410 : 171)
+#define SB_PRIMARY_W_PIC_X				(SB_PRIMARY_W_BOX_LEFT+1)	//51
+#define SB_PRIMARY_W_PIC_Y				(gameStates.video.nDisplayMode ? 382 : 154)
+#define SB_PRIMARY_W_TEXT_X			(SB_PRIMARY_W_BOX_LEFT+ (gameStates.video.nDisplayMode ? 50 : 24))	// (51+23)
+#define SB_PRIMARY_W_TEXT_Y			(gameStates.video.nDisplayMode ? 390 : 157)
+#define SB_PRIMARY_AMMO_X				(SB_PRIMARY_W_BOX_LEFT+ (gameStates.video.nDisplayMode ?  (38+20) : 30))	// ((SB_PRIMARY_W_BOX_LEFT+33)-3)	// (51+32)
+#define SB_PRIMARY_AMMO_Y				(gameStates.video.nDisplayMode ? 410 : 171)
 
 #define SB_SECONDARY_W_PIC_X		 (gameStates.video.nDisplayMode ? 385 :  (SB_SECONDARY_W_BOX_LEFT+29))	// (212+27)
 #define SB_SECONDARY_W_PIC_Y		 (gameStates.video.nDisplayMode ? 382 : 154)
@@ -335,14 +335,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //	-----------------------------------------------------------------------------
 
-extern tGaugeBox gaugeBoxes [];
-extern tSpan weaponWindowLeft [];
-extern tSpan weaponWindowRight [];
-extern tSpan weaponWindowLeftHires [];
-extern tSpan weaponWindowRightHires [];
+#define WEAPON_WINDOW_SIZE			63
+#define WEAPON_WINDOW_SIZE_HIRES	126
+
+extern tGaugeBox gaugeBoxes [8];
+extern tSpan weaponWindowLeft [WEAPON_WINDOW_SIZE];
+extern tSpan weaponWindowRight [WEAPON_WINDOW_SIZE];
+extern tSpan weaponWindowLeftHires [WEAPON_WINDOW_SIZE_HIRES];
+extern tSpan weaponWindowRightHires [WEAPON_WINDOW_SIZE_HIRES];
 extern tGaugeBox hudWindowAreas [];
 extern ubyte afterburnerBarTable [AFTERBURNER_GAUGE_H_L * 2];
-
+extern int nDbgGauge;
 extern int SW_drawn [2], SW_x [2], SW_y [2], SW_w [2], SW_h [2];
 
 //	-----------------------------------------------------------------------------
@@ -351,13 +354,6 @@ extern int SW_drawn [2], SW_x [2], SW_y [2], SW_w [2], SW_h [2];
 #define PAGE_IN_GAUGE(x)	LoadBitmap (gameStates.render.fonts.bHires  ?  gameData.cockpit.gauges [0][x].index  :  gameData.cockpit.gauges [1][x].index, 0);
 
 #define GET_GAUGE_INDEX(x)	 (gameStates.render.fonts.bHires ? gameData.cockpit.gauges [0][x].index : gameData.cockpit.gauges [1][x].index)
-
-//	-----------------------------------------------------------------------------
-
-static inline void HUDRect (int left, int top, int width, int height)
-{
-OglDrawFilledRect (HUD_SCALE_X (left), HUD_SCALE_Y (top), HUD_SCALE_X (width), HUD_SCALE_Y (height));
-}
 
 //	-----------------------------------------------------------------------------
 

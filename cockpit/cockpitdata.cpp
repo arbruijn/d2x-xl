@@ -57,7 +57,7 @@ CCanvas *numericalGaugeCanv;
 #endif
 
 //store delta x values from left of box
-tSpan weaponWindowLeft [] = {		//first tSpan 67, 151
+tSpan weaponWindowLeft [WEAPON_WINDOW_SIZE] = {		//first tSpan 67, 151
 	 {8, 51},
 	 {6, 53},
 	 {5, 54},
@@ -100,12 +100,12 @@ tSpan weaponWindowLeft [] = {		//first tSpan 67, 151
 	 {3-2, 51+2},
 	 {4-2, 50+2},
 	 {5-2, 50},
-	 {5-2+2, 50-2},
+	 {5-2+2, 50-2}
 	};
 
 
 //store delta x values from left of box
-tSpan weaponWindowRight [] = {		//first tSpan 207, 154
+tSpan weaponWindowRight [WEAPON_WINDOW_SIZE] = {		//first tSpan 207, 154
 	 {208-202, 255-202},
 	 {206-202, 257-202},
 	 {205-202, 258-202},
@@ -148,11 +148,11 @@ tSpan weaponWindowRight [] = {		//first tSpan 207, 154
 	 {206-202, 262-202},
 	 {207-202, 261-202},
 	 {208-202, 260-202},
-	 {211-202, 255-202},
+	 {211-202, 255-202}
 	};
 
 //store delta x values from left of box
-tSpan weaponWindowLeftHires [] = {		//first tSpan 67, 154
+tSpan weaponWindowLeftHires [WEAPON_WINDOW_SIZE_HIRES] = {		//first tSpan 67, 154
  {20, 110},
  {18, 113},
  {16, 114},
@@ -264,7 +264,7 @@ tSpan weaponWindowLeftHires [] = {		//first tSpan 67, 154
 
 
 //store delta x values from left of box
-tSpan weaponWindowRightHires [] = {		//first tSpan 207, 154
+tSpan weaponWindowRightHires [WEAPON_WINDOW_SIZE_HIRES] = {		//first tSpan 207, 154
  {12, 105},
  {9, 107},
  {8, 109},
@@ -375,7 +375,7 @@ tSpan weaponWindowRightHires [] = {		//first tSpan 207, 154
 };
 
 
-tGaugeBox hudWindowAreas [] = {
+tGaugeBox hudWindowAreas [8] = {
 // primary left/right low res
  {PRIMARY_W_BOX_LEFT_L, PRIMARY_W_BOX_TOP_L, PRIMARY_W_BOX_RIGHT_L, PRIMARY_W_BOX_BOT_L, weaponWindowLeft},
  {SECONDARY_W_BOX_LEFT_L, SECONDARY_W_BOX_TOP_L, SECONDARY_W_BOX_RIGHT_L, SECONDARY_W_BOX_BOT_L, weaponWindowRight},
@@ -392,7 +392,7 @@ tGaugeBox hudWindowAreas [] = {
 
 //	-----------------------------------------------------------------------------
 
-ubyte afterburnerBarTable [AFTERBURNER_GAUGE_H_L*2] = {
+ubyte afterburnerBarTable [AFTERBURNER_GAUGE_H_L * 2] = {
 			3, 11,
 			3, 11,
 			3, 11,
@@ -500,6 +500,12 @@ ubyte afterburnerBarTableHires [AFTERBURNER_GAUGE_H_H*2] = {
 	11, 13,
 	12, 13
 };
+
+//	-----------------------------------------------------------------------------
+
+int WeaponWindowSize (void)
+{
+}
 
 //	-----------------------------------------------------------------------------
 
