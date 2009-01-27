@@ -243,7 +243,7 @@ while (gameData.app.bGamePaused) {
 			ShowBoxedMessage(msg);
 #if 0		
 			show_extraViews();
-			if (cockpit->Mode ()==CM_FULL_COCKPIT || cockpit->Mode ()==CM_STATUS_BAR)
+			if (cockpit->Type ()==CM_FULL_COCKPIT || cockpit->Type ()==CM_STATUS_BAR)
 				RenderGauges();
 #endif			
 			}

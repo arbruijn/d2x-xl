@@ -354,7 +354,7 @@ if (gameStates.render.bShowFrameRate) {
 
 void CGenericCockpit::DrawSlowMotion (void)
 {
-if (HIDE_HUD)
+if (cockpit->Hide ())
 	return;
 
 	char	szScore [40];
@@ -389,7 +389,7 @@ GrPrintF (NULL, CCanvas::Current ()->Width () - 2 * w - HUD_LHX (2), 3, szScore)
 
 void CGenericCockpit::DrawTime (void)
 {
-if (HIDE_HUD)
+if (cockpit->Hide ())
 	return;
 
 if (gameStates.render.bShowTime && !(IsMultiGame && gameData.multigame.kills.bShowList)) {
@@ -409,7 +409,7 @@ if (gameStates.render.bShowTime && !(IsMultiGame && gameData.multigame.kills.bSh
 
 void CGenericCockpit::DrawTimerCount (void)
 {
-if (HIDE_HUD)
+if (cockpit->Hide ())
 	return;
 
 	char	szScore [20];
@@ -444,7 +444,7 @@ if ((gameData.app.nGameMode & GM_CAPTURE) && (LOCALPLAYER.flags & PLAYER_FLAGS_F
 
 void CGenericCockpit::DrawOrbs (int x, int y)
 {
-if (HIDE_HUD)
+if (cockpit->Hide ())
 	return;
 
 	static int nIdOrbs = 0, nIdEntropy [2] = {0, 0};
@@ -1154,7 +1154,7 @@ void CGenericCockpit::DrawKillList (int x, int y)
 
 	static int nIdKillList [2][MAX_PLAYERS] = {{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
 
-if (HIDE_HUD)
+if (cockpit->Hide ())
 	return;
 
 if (bGetPing)
@@ -1423,7 +1423,7 @@ if (ShowView_textTimer > 0) {
 //draw all the things on the HUD
 void CGenericCockpit::Render (int bExtraInfo)
 {
-if (HIDE_HUD)
+if (cockpit->Hide ())
 	return;
 
 glDepthFunc (GL_ALWAYS);
@@ -1571,7 +1571,7 @@ if (m_history [gameStates.render.vr.nCurrentPage].weapon [0] == 0)
 
 void CGenericCockpit::RenderWindow (int nWindow, CObject *viewerP, int bRearView, int nUser, const char *pszLabel)
 {
-if (HIDE_HUD)
+if (cockpit->Hide ())
 	return;
 
 	CCanvas windowCanv;

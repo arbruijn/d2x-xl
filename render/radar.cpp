@@ -148,7 +148,7 @@ void RenderRadar (void)
 
 if (gameStates.app.bNostalgia)
 	return;
-if (HIDE_HUD)
+if (cockpit->Hide ())
 	return;
 if (automap.m_bDisplay)
 	return;

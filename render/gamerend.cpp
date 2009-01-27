@@ -663,7 +663,7 @@ if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 	const char *msg = "Guided Missile View";
 	CObject *viewerSave = gameData.objs.viewerP;
 
-   if (cockpit->Mode () == CM_FULL_COCKPIT) {
+   if (cockpit->Type () == CM_FULL_COCKPIT) {
 		gameStates.render.cockpit.bBigWindowSwitch = 1;
 		gameStates.render.cockpit.bRedraw = 1;
 		cockpit->Activate (CM_STATUS_BAR);
@@ -715,7 +715,7 @@ if (gameStates.app.bSaveScreenshot)
 void GrowWindow ()
 {
 StopTime ();
-if (cockpit->Mode () == CM_FULL_COCKPIT) {
+if (cockpit->Type () == CM_FULL_COCKPIT) {
 	gameData.render.window.h = gameData.render.window.hMax;
 	gameData.render.window.w = gameData.render.window.wMax;
 	cockpit->Toggle ();
@@ -724,7 +724,7 @@ if (cockpit->Mode () == CM_FULL_COCKPIT) {
 	return;
 	}
 
-if (cockpit->Mode () != CM_STATUS_BAR && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
+if (cockpit->Type () != CM_STATUS_BAR && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
 	StartTime (0);
 	return;
 	}
@@ -832,7 +832,7 @@ void FillBackground (void)
 void ShrinkWindow (void)
 {
 StopTime ();
-if (cockpit->Mode () == CM_FULL_COCKPIT && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
+if (cockpit->Type () == CM_FULL_COCKPIT && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
 	gameData.render.window.h = gameData.render.window.hMax;
 	gameData.render.window.w = gameData.render.window.wMax;
 	//!!ToggleCockpit ();
@@ -846,7 +846,7 @@ if (cockpit->Mode () == CM_FULL_COCKPIT && (gameStates.render.vr.nScreenFlags & 
 	return;
 	}
 
-if (cockpit->Mode () == CM_FULL_SCREEN && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
+if (cockpit->Type () == CM_FULL_SCREEN && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
 	//gameData.render.window.w = gameData.render.window.wMax;
 	//gameData.render.window[HA] = gameData.render.window.hMax;
 	cockpit->Activate (CM_STATUS_BAR);
@@ -855,13 +855,13 @@ if (cockpit->Mode () == CM_FULL_SCREEN && (gameStates.render.vr.nScreenFlags & V
 	return;
 	}
 
-if (cockpit->Mode () != CM_STATUS_BAR && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
+if (cockpit->Type () != CM_STATUS_BAR && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
 	StartTime (0);
 	return;
 	}
 
 #if TRACE
-console.printf (CON_DBG, "Cockpit mode=%d\n", cockpit->Mode ());
+console.printf (CON_DBG, "Cockpit mode=%d\n", cockpit->Type ());
 #endif
 if (gameData.render.window.w > WINDOW_MIN_W) {
 	//int x, y;

@@ -453,7 +453,7 @@ m_info.bVisible = 0;
 int CCamera::Render (void)
 {
 gameStates.render.cameras.bActive = 1;
-if (cockpit->Mode () != CM_FULL_SCREEN)
+if (cockpit->Type () != CM_FULL_SCREEN)
 	cockpit->Activate (CM_FULL_SCREEN);
 gameData.objs.viewerP = m_info.objP;
 gameOpts->render.nMaxFPS = 1;
@@ -707,7 +707,7 @@ int CCameraManager::Render (void)
 	CObject	*viewerSave = gameData.objs.viewerP;
 	time_t	t;
 	int		nCamsRendered;
-	int		cm = cockpit->Mode ();
+	int		cm = cockpit->Type ();
 	int		frameCap = gameOpts->render.nMaxFPS;
 	int		nWaitFrames, nMaxWaitFrames = -1;
 
@@ -732,7 +732,7 @@ if (cameraP) {
 	}
 gameData.objs.viewerP = viewerSave;
 gameOpts->render.nMaxFPS = frameCap;
-if (cockpit->Mode () != cm) {
+if (cockpit->Type () != cm) {
 	cockpit->Activate (cm);
 	return nCamsRendered;
 	}

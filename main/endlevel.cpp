@@ -305,7 +305,7 @@ while (i--) {
 	nSegment = SEGMENTS [nSegment].m_children [nExitSide];
 	}
 gameData.endLevel.exit.nTransitSegNum = nSegment;
-gameStates.render.cockpit.nTypeSave = cockpit->Mode ();
+gameStates.render.cockpit.nTypeSave = cockpit->Type ();
 if (IsMultiGame) {
 	MultiSendEndLevelStart (0);
 	NetworkDoFrame (1, 1);

@@ -89,7 +89,7 @@ CGenericCockpit::DrawCruise (3, CCanvas::Current ()->Height () - m_info.nLineSpa
 
 void CHUD::DrawScore (void)
 {
-if (HIDE_HUD)
+if (cockpit->Hide ())
 	return;
 
 	char	szScore [40];
@@ -112,7 +112,7 @@ GrPrintF (NULL, CCanvas::Current ()->Width () - w - HUD_LHX (2), 3, szScore);
 
  void CHUD::DrawScoreAdded (void)
 {
-if (HIDE_HUD)
+if (cockpit->Hide ())
 	return;
 
 	int	color;
@@ -151,7 +151,7 @@ else {
 
 void CHUD::DrawHomingWarning (void)
 {
-if (HIDE_HUD)
+if (cockpit->Hide ())
 	return;
 
 	static int nIdLock = 0;
@@ -173,7 +173,7 @@ if (LOCALPLAYER.homingObjectDist >= 0) {
 
 void CHUD::DrawKeys (void)
 {
-if (HIDE_HUD)
+if (cockpit->Hide ())
 	return;
 
 	int y = 3 * m_info.nLineSpacing;
@@ -193,7 +193,7 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_RED_KEY)
 
 void CHUD::DrawOrbs (void)
 {
-if (HIDE_HUD)
+if (cockpit->Hide ())
 	return;
 CGenericCockpit::DrawOrbs (m_info.fontWidth, m_info.nLineSpacing * (gameStates.render.fonts.bHires + 1));
 }
@@ -202,7 +202,7 @@ CGenericCockpit::DrawOrbs (m_info.fontWidth, m_info.nLineSpacing * (gameStates.r
 
 void CHUD::DrawFlag (void)
 {
-if (HIDE_HUD)
+if (cockpit->Hide ())
 	return;
 CGenericCockpit::DrawFlag (5 * m_info.nLineSpacing, m_info.nLineSpacing * (gameStates.render.fonts.bHires + 1));
 }
@@ -245,7 +245,7 @@ return (int) ((b && (tToggle <= t)) ? t + 300 / b : 0);
 
 void CHUD::DrawEnergy (void)
 {
-if (HIDE_HUD)
+if (cockpit->Hide ())
 	return;
 
 	int h, y;
@@ -271,7 +271,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 
 void CHUD::DrawEnergyBar (void)
 {
-if (HIDE_HUD)
+if (cockpit->Hide ())
 	return;
 
 	static int nIdEnergy = 0;
@@ -307,7 +307,7 @@ if (!gameOpts->render.cockpit.bTextGauges) {
 
 void CHUD::DrawAfterburner (void)
 {
-if (HIDE_HUD)
+if (cockpit->Hide ())
 	return;
 	
 	int h, y;
@@ -327,7 +327,7 @@ if (gameOpts->render.cockpit.bTextGauges) {
 
 void CHUD::DrawAfterburnerBar (void)
 {
-if (HIDE_HUD)
+if (cockpit->Hide ())
 	return;
 	
 	int h, y;
@@ -399,7 +399,7 @@ DrawAmmoInfo (SECONDARY_AMMO_X, SECONDARY_AMMO_Y, ammoCount, 0);
 //convert '1' characters to special wide ones
 void CHUD::DrawWeapons (void)
 {
-if (HIDE_HUD)
+if (cockpit->Hide ())
 	return;
 
 	int	w, h, aw;
@@ -489,7 +489,7 @@ CGenericCockpit::DrawBombCount (CCanvas::Current ()->Width ()- 3 * m_info.fontWi
 
 void CHUD::DrawInvul (void)
 {
-if (HIDE_HUD)
+if (cockpit->Hide ())
 	return;
 
 	static int nIdInvul = 0;
@@ -511,7 +511,7 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 
 void CHUD::DrawCloak (void)
 {
-if (HIDE_HUD)
+if (cockpit->Hide ())
 	return;
 
 	static int nIdCloak = 0;
@@ -534,7 +534,7 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) &&
 
 void CHUD::DrawShield (void)
 {
-if (HIDE_HUD)
+if (cockpit->Hide ())
 	return;
 
 	static int nIdShield = 0;
@@ -551,7 +551,7 @@ if (gameOpts->render.cockpit.bTextGauges) {
 
 void CHUD::DrawShieldBar (void)
 {
-if (HIDE_HUD)
+if (cockpit->Hide ())
 	return;
 
 	static int		nIdShield = 0;
@@ -608,7 +608,7 @@ void CHUD::DrawLives (void)
 {
 	static int nIdLives = 0;
 
-if (HIDE_HUD)
+if (cockpit->Hide ())
 	return;
 if ((gameData.hud.msgs [0].nMessages > 0) && (strlen (gameData.hud.msgs [0].szMsgs [gameData.hud.msgs [0].nFirst]) > 38))
 	return;

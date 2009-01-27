@@ -451,7 +451,6 @@ if (nCurrentVGAMode != gameStates.render.vr.nScreenSize) {
 	if ((gameConfig.nControlType == 1) && (gameStates.app.nFunctionMode == FMODE_GAME))
 		JoyDefsCalibrate ();
 #endif
-	ResetCockpit ();
 	}
 gameData.render.window.wMax = screen.Width ();
 gameData.render.window.hMax = screen.Height ();

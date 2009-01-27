@@ -141,7 +141,7 @@ void MultiCheckForEntropyWinner ();
 // text functions
 
 #if DBG
-void ShowFrameRate (void);
+void DrawFrameRate (void);
 #endif
 
 //------------------------------------------------------------------------------
@@ -797,7 +797,7 @@ void CheckRearView ()
 		Controls [0].rearViewDownCount = 0;
 		if (gameStates.render.bRearView) {
 			gameStates.render.bRearView = 0;
-			if (cockpit->Mode () == CM_REAR_VIEW) {
+			if (cockpit->Type () == CM_REAR_VIEW) {
 				cockpit->Activate (gameStates.render.cockpit.nTypeSave);
 				gameStates.render.cockpit.nTypeSave = -1;
 			}
@@ -808,8 +808,8 @@ void CheckRearView ()
 			gameStates.render.bRearView = 1;
 			leave_mode = 0;		//means wait for another key
 			entryTime = TimerGetFixedSeconds ();
-			if (cockpit->Mode () == CM_FULL_COCKPIT) {
-				gameStates.render.cockpit.nTypeSave = cockpit->Mode ();
+			if (cockpit->Type () == CM_FULL_COCKPIT) {
+				gameStates.render.cockpit.nTypeSave = cockpit->Type ();
 				cockpit->Activate (CM_REAR_VIEW);
 			}
 			if (gameData.demo.nState == ND_STATE_RECORDING)
@@ -824,11 +824,11 @@ void CheckRearView ()
 		}
 		else {
 
-			//@@if (leave_mode==1 && cockpit->Mode ()==CM_REAR_VIEW) {
+			//@@if (leave_mode==1 && cockpit->Type ()==CM_REAR_VIEW) {
 
 			if (leave_mode==1 && gameStates.render.bRearView) {
 				gameStates.render.bRearView = 0;
-				if (cockpit->Mode ()==CM_REAR_VIEW) {
+				if (cockpit->Type ()==CM_REAR_VIEW) {
 					cockpit->Activate (gameStates.render.cockpit.nTypeSave);
 					gameStates.render.cockpit.nTypeSave = -1;
 				}
@@ -847,7 +847,7 @@ if (gameStates.render.bRearView) {
 		NDRecordRestoreRearView ();
 	}
 gameStates.render.bRearView = 0;
-if ((cockpit->Mode () < 0) || (cockpit->Mode () > 4)) {
+if ((cockpit->Type () < 0) || (cockpit->Type () > 4)) {
 	if (!(gameStates.render.cockpit.nTypeSave == CM_FULL_COCKPIT || gameStates.render.cockpit.nTypeSave == CM_STATUS_BAR || gameStates.render.cockpit.nTypeSave == CM_FULL_SCREEN))
 		gameStates.render.cockpit.nTypeSave = CM_FULL_COCKPIT;
 	cockpit->Activate (gameStates.render.cockpit.nTypeSave);
@@ -1081,7 +1081,7 @@ MultiLeaveGame ();
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	NDStopPlayback ();
 if (gameStates.render.cockpit.nTypeSave != -1) {
-	cockpit->Mode () = gameStates.render.cockpit.nTypeSave;
+	cockpit->Type () = gameStates.render.cockpit.nTypeSave;
 	gameStates.render.cockpit.nTypeSave = -1;
 	}
 if (gameStates.app.nFunctionMode != FMODE_EDITOR)

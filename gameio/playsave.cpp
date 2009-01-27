@@ -254,7 +254,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameStates.render.bShowFrameRate, 0, 0);
 		RP (gameStates.render.bShowTime, 0, 1);
 		RP (audio.MaxChannels (), 0, 16);
-		RP (cockpit->Mode (), 0, 0);
+		RP (cockpit->Type (), 0, 0);
 		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
 		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
 		RP (gameOptions [i].render.cockpit.bGuidedInMainView, 0, 0);
@@ -777,7 +777,7 @@ tParamValue defaultParams [] = {
  {"gameData.render.window.w", "640"},
  {"gameData.render.window.h", "480"},
  {"iDlTimeout", "5"},
- {"cockpit->Mode ()", "3"},
+ {"cockpit->Type ()", "3"},
  {"gameStates.render.bShowFrameRate", "0"},
  {"gameStates.render.bShowTime", "1"},
  {"gameStates.sound.digi.nMaxChannels", "16"},
@@ -2071,7 +2071,7 @@ if (bOnlyWindowSizes)
 gameStates.app.nDifficultyLevel = cf.ReadByte ();
 gameOpts->gameplay.nAutoLeveling = cf.ReadByte ();
 gameOpts->render.cockpit.bReticle = cf.ReadByte ();
-cockpit->Mode () = cf.ReadByte ();
+cockpit->Type () = cf.ReadByte ();
 nDisplayMode = gameStates.video.nDefaultDisplayMode;
 gameStates.video.nDefaultDisplayMode = cf.ReadByte ();
 gameOpts->render.cockpit.bMissileView = cf.ReadByte ();
@@ -2589,7 +2589,7 @@ cf.WriteByte ((sbyte) gameOptions [0].gameplay.nAutoLeveling);
 cf.WriteByte ((sbyte) gameOptions [0].render.cockpit.bReticle);
 cf.WriteByte ((sbyte) ((gameStates.render.cockpit.nTypeSave != -1) 
 							  ? gameStates.render.cockpit.nTypeSave
-							  : cockpit->Mode ()));   //if have saved mode, write it instead of letterbox/rear view
+							  : cockpit->Type ()));   //if have saved mode, write it instead of letterbox/rear view
 cf.WriteByte ((sbyte) gameStates.video.nDefaultDisplayMode);
 cf.WriteByte ((sbyte) gameOptions [0].render.cockpit.bMissileView);
 cf.WriteByte ((sbyte) extraGameInfo [0].headlight.bAvailable);

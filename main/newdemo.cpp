@@ -2174,7 +2174,7 @@ while (!bDone) {
 			if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 				 (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
-				saved_letter_cockpit = cockpit->Mode ();
+				saved_letter_cockpit = cockpit->Type ();
 				cockpit->Activate (CM_LETTERBOX);
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
@@ -2194,8 +2194,8 @@ while (!bDone) {
 			if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 				 (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
-				saved_rearview_cockpit = cockpit->Mode ();
-				if (cockpit->Mode () == CM_FULL_COCKPIT)
+				saved_rearview_cockpit = cockpit->Type ();
+				if (cockpit->Type () == CM_FULL_COCKPIT)
 					cockpit->Activate (CM_REAR_VIEW);
 				gameStates.render.bRearView=1;
 				}
@@ -2211,7 +2211,7 @@ while (!bDone) {
 		case ND_EVENT_RESTORE_COCKPIT:
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
-				saved_letter_cockpit = cockpit->Mode ();
+				saved_letter_cockpit = cockpit->Type ();
 				cockpit->Activate (CM_LETTERBOX);
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
@@ -2224,8 +2224,8 @@ while (!bDone) {
 		case ND_EVENT_RESTORE_REARVIEW:
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
-				saved_rearview_cockpit = cockpit->Mode ();
-				if (cockpit->Mode () == CM_FULL_COCKPIT)
+				saved_rearview_cockpit = cockpit->Type ();
+				if (cockpit->Type () == CM_FULL_COCKPIT)
 					cockpit->Activate (CM_REAR_VIEW);
 				gameStates.render.bRearView=1;
 				}
@@ -3339,7 +3339,7 @@ if (gameOpts->demo.bRevertFormat && ndOutFile.File () && (bRevertFormat < 0)) {
 gameData.app.nGameMode = GM_NORMAL;
 gameData.demo.nState = ND_STATE_PLAYBACK;
 gameData.demo.nVcrState = ND_STATE_PLAYBACK;
-gameData.demo.nOldCockpit = cockpit->Mode ();
+gameData.demo.nOldCockpit = cockpit->Type ();
 gameData.demo.nSize = ndInFile.Length ();
 bNDBadRead = 0;
 gameData.demo.bEof = 0;
@@ -3377,7 +3377,7 @@ ndInFile.Close ();
 gameData.demo.nState = ND_STATE_NORMAL;
 ChangePlayerNumTo (0);             //this is reality
 strncpy (LOCALPLAYER.callsign, gameData.demo.callSignSave, CALLSIGN_LEN);
-cockpit->Mode () = gameData.demo.nOldCockpit;
+cockpit->Type () = gameData.demo.nOldCockpit;
 gameData.app.nGameMode = GM_GAME_OVER;
 SetFunctionMode (FMODE_MENU);
 SDL_ShowCursor (1);

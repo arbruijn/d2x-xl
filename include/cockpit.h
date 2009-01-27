@@ -50,13 +50,6 @@ extern ubyte Reticle_on;
 #define WBU_RADAR_TOPDOWN	8
 #define WBU_RADAR_HEADSUP	9
 
-#define SHOW_COCKPIT	((cockpit->Mode () == CM_FULL_COCKPIT) || (cockpit->Mode () == CM_STATUS_BAR))
-#define SHOW_HUD		(!gameStates.app.bEndLevelSequence && (!gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || !SHOW_COCKPIT))
-#define HIDE_HUD		(gameStates.app.bEndLevelSequence || (!(gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) && (m_info.nType >= CM_FULL_SCREEN)))
-
-extern double cmScaleX, cmScaleY;
-extern int nHUDLineSpacing;
-
 //	-----------------------------------------------------------------------------
 
 #define HUD_SCALE(v, s)	(int (float (v) * (s) /*+ 0.5*/))
@@ -217,7 +210,20 @@ class CGenericCockpit {
 
 		inline int Type (void) { return m_info.nType; }
 		inline void SetMode (int nType) { m_info.nType = nType; }
-};
+
+		inline bool Always (void) { 
+			return (m_info.nType == CM_FULL_COCKPIT) || (m_info.nType == CM_STATUS_BAR); 
+			}
+
+		inline bool Show (void) { 
+			return !gameStates.app.bEndLevelSequence && (!gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || !Always ()); 
+			}
+		
+		inline bool Hide (void) {
+			return gameStates.app.bEndLevelSequence || 
+					 (!(gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) && (m_info.nType >= CM_FULL_SCREEN));
+			}
+	};
 
 //	-----------------------------------------------------------------------------
 

@@ -83,14 +83,14 @@ void FreeInventoryIcons (void);
 void FreeObjTallyIcons (void);
 void HUDShowIcons (void);
 int CanSeeObject(int nObject, int bCheckObjs);
-void ShowFrameRate (void);
+void DrawFrameRate (void);
 void ToggleCockpit ();
 
 extern CGenericCockpit*	cockpit;
 
-#define SHOW_COCKPIT	((cockpit->Mode () == CM_FULL_COCKPIT) || (cockpit->Mode () == CM_STATUS_BAR))
-#define SHOW_HUD		(!gameStates.app.bEndLevelSequence && (!gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || !SHOW_COCKPIT))
-#define HIDE_HUD		(gameStates.app.bEndLevelSequence || (!(gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) && (cockpit->Mode () >= CM_FULL_SCREEN)))
+#define cockpit->Always ()	((cockpit->Type () == CM_FULL_COCKPIT) || (cockpit->Type () == CM_STATUS_BAR))
+#define cockpit->Show ()		(!gameStates.app.bEndLevelSequence && (!gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || !cockpit->Always ()))
+#define cockpit->Hide ()		(gameStates.app.bEndLevelSequence || (!(gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) && (cockpit->Type () >= CM_FULL_SCREEN)))
 
 extern double cmScaleX, cmScaleY;
 extern int nHUDLineSpacing;

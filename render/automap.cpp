@@ -334,7 +334,7 @@ if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) {
 	GrPrintF (NULL, CCanvas::Current ()->Width () - offs - w, offs, m_szLevelName);
 	fontManager.SetCurrent (curFont);
 	if (gameOpts->render.automap.bTextured)
-		cockpit->ShowFrameRate ();
+		cockpit->DrawFrameRate ();
 	}
 }
 
@@ -345,8 +345,8 @@ void CAutomap::Draw (void)
 #if 1
 PROF_START
 	int	bAutomapFrame = !m_bRadar && 
-								 (cockpit->Mode () != CM_FULL_SCREEN) && 
-								 (cockpit->Mode () != CM_LETTERBOX);
+								 (cockpit->Type () != CM_FULL_SCREEN) && 
+								 (cockpit->Type () != CM_LETTERBOX);
 	CFixMatrix	vmRadar;
 
 automap.m_bFull = (LOCALPLAYER.flags & (PLAYER_FLAGS_FULLMAP_CHEAT | PLAYER_FLAGS_FULLMAP)) != 0;
