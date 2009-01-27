@@ -77,7 +77,7 @@ int	redbookVolume = 255;
 extern int	*Toggle_var;
 extern int	Debug_pause;
 
-extern fix	ShowView_textTimer;
+extern fix	showViewTextTimer;
 
 //	Function prototypes --------------------------------------------------------
 
@@ -950,11 +950,11 @@ void HandleTestKey(int key)
 
 #if DBG
 		case KEYDBGGED+KEY_LAPOSTRO: 
-			ShowView_textTimer = 0x30000; 
+			showViewTextTimer = 0x30000; 
 			ObjectGotoNextViewer(); 
 			break;
 		case KEYDBGGED+KEY_CTRLED+KEY_LAPOSTRO: 
-			ShowView_textTimer = 0x30000; 
+			showViewTextTimer = 0x30000; 
 			ObjectGotoPrevViewer(); 
 			break;
 #endif

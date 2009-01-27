@@ -632,15 +632,9 @@ void CHUD::DrawStatic (int nWindow)
 
 //	-----------------------------------------------------------------------------
 
-void CStatusBar::DrawKillList (void)
+void CHUD::DrawKillList (void)
 {
 CGenericCockpit::DrawKillList (60, CCanvas::Current ()->Height ());
-}
-
-//	-----------------------------------------------------------------------------
-
-void DrawStatic (int nWindow)
-{
 }
 
 //	-----------------------------------------------------------------------------

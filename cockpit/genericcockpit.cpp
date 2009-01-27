@@ -609,6 +609,19 @@ nIdAmmo [bPrimary][1] = PrintF (&nIdAmmo [bPrimary][1], x, y, szAmmo);
 
 //	-----------------------------------------------------------------------------
 
+void CGenericCockpit::CheckForExtraLife (int nPrevScore)
+{
+if (LOCALPLAYER.score / EXTRA_SHIP_SCORE != nPrevScore / EXTRA_SHIP_SCORE) {
+	LOCALPLAYER.lives += LOCALPLAYER.score / EXTRA_SHIP_SCORE - nPrevScore / EXTRA_SHIP_SCORE;
+	PowerupBasic (20, 20, 20, 0, TXT_EXTRA_LIFE);
+	short nSound = gameData.objs.pwrUp.info [POW_EXTRA_LIFE].hitSound;
+	if (nSound > -1)
+		audio.PlaySound (nSound);
+	}
+}
+
+//	-----------------------------------------------------------------------------
+
 void CGenericCockpit::AddPointsToScore (int points)
 {
 	int nPrevScore;

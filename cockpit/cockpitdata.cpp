@@ -392,6 +392,6 @@ tGaugeBox hudWindowAreas [8] = {
 
 int SW_drawn [2], SW_x [2], SW_y [2], SW_w [2], SW_h [2];
 
-static int nDbgGauge = -1;
+int nDbgGauge = -1;
 
 //	-----------------------------------------------------------------------------
