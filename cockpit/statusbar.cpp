@@ -180,10 +180,9 @@ CGenericCockpit::DrawFlag (5 * m_info.nLineSpacing, m_info.nLineSpacing * (gameS
 
 void CStatusBar::DrawHomingWarning (void)
 {
-if (m_info.bLastHomingWarningDrawn [gameStates.render.vr.nCurrentPage] == 1) {
-	BitBlt (GAUGE_HOMING_WARNING_OFF, HOMING_WARNING_X, HOMING_WARNING_Y);
-	m_info.bLastHomingWarningDrawn [gameStates.render.vr.nCurrentPage] = 0;
-	}
+m_info.bLastHomingWarningDrawn [gameStates.render.vr.nCurrentPage] = (LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000);
+BitBlt (m_info.bLastHomingWarningDrawn [gameStates.render.vr.nCurrentPage] ? GAUGE_HOMING_WARNING_ON : GAUGE_HOMING_WARNING_OFF, 
+		  HOMING_WARNING_X, HOMING_WARNING_Y);
 }
 
 //	-----------------------------------------------------------------------------

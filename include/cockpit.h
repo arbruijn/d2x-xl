@@ -339,7 +339,7 @@ class CCockpit : public CGenericCockpit {
 		virtual void DrawFlag (void);
 		virtual void DrawEnergy (void);
 		virtual void DrawEnergyBar (void);
-		virtual void DrawAfterburner (void);
+		virtual void DrawAfterburner (void) {}
 		virtual void DrawAfterburnerBar (void);
 		virtual void DrawBombCount (void);
 		virtual int DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount);

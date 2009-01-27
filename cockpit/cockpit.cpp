@@ -92,6 +92,15 @@ CGenericCockpit::DrawFlag (4 * m_info.fontWidth, 2 * m_info.nLineSpacing);
 
 //	-----------------------------------------------------------------------------
 
+void CCockpit::DrawHomingWarning (void)
+{
+m_info.bLastHomingWarningDrawn [gameStates.render.vr.nCurrentPage] = (LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000);
+BitBlt (m_info.bLastHomingWarningDrawn [gameStates.render.vr.nCurrentPage] ? GAUGE_HOMING_WARNING_ON : GAUGE_HOMING_WARNING_OFF, 
+		  HOMING_WARNING_X, HOMING_WARNING_Y);
+}
+
+//	-----------------------------------------------------------------------------
+
 void CCockpit::ClearBombCount (int bgColor)
 {
 }
