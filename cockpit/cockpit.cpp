@@ -77,6 +77,13 @@ void CCockpit::ClearBombCount (void)
 
 //	-----------------------------------------------------------------------------
 
+void CCockpit::DrawBombCount (void)
+{
+DrawBombCount (BOMB_COUNT_X, BOMB_COUNT_Y, BLACK_RGBA, 1);
+}
+
+//	-----------------------------------------------------------------------------
+
 int CCockpit::DrawBombCount (int* nId, int x, int y, char* pszBombCount)
 {
 CCanvas::Current ()->SetColorRGBi (bgColor);

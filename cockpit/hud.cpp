@@ -360,6 +360,13 @@ void CHUD::ClearBombCount (void)
 
 //	-----------------------------------------------------------------------------
 
+void CHUD::DrawBombCount (void)
+{
+DrawBombCount (BOMB_COUNT_X, BOMB_COUNT_Y, BLACK_RGBA, 1);
+}
+
+//	-----------------------------------------------------------------------------
+
 void CHUD::DrawBombCount (int& nIdBombCount, int x, int y, char* pszBombCount)
 {
 GrString (x, y, szBombCount, &nIdBombCount);

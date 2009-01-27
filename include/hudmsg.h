@@ -52,11 +52,13 @@ int _CDECL_ HUDInitMessage(const char *format, ... )
 void _CDECL_ HUDPlayerMessage(const char *format, ... )
 	 __attribute__ ((format (printf, 1, 2)));
 #else
-void _CDECL_ HUDMessage(int msgClass, const char *format, ...);
-int _CDECL_ HUDInitMessage(const char *format, ... );
-void _CDECL_ HUDPlayerMessage(const char *format, ... );
+void _CDECL_ HUDMessage (int msgClass, const char *format, ...);
+int _CDECL_ HUDInitMessage (const char *format, ... );
+void _CDECL_ HUDPlayerMessage (const char *format, ... );
 #endif
 
+void HUDRenderMessageFrame (void);
+void HUDClearMessages (void);
 
 void mekh_resend_last();
 void mekh_hud_recall_msgs();

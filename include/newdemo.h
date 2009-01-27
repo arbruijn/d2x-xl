@@ -95,6 +95,7 @@ void NDStopRecording (void);
 int NDGetPercentDone (void);
 
 void NDRecordCreateObjectSound (int nSound, short nObject, fix maxVolume, fix maxDistance, int loop_start, int loop_end);
+void NDRecordCockpitChange (int mode);
 int NDFindObject (int nSignature);
 void NDRecordDestroyObjectSound (int nObject);
 void NDStripFrames (char* outname, int bytes_to_strip);

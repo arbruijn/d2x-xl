@@ -78,7 +78,7 @@ class CCockpitHistory {
 		int	energy;
 		int	shields;
 		int	flags;
-		int	cloak;
+		int	bCloak;
 		int	lives;
 		fix	afterburner;
 		int	bombCount;
@@ -166,6 +166,7 @@ class CGenericCockpit {
 		int CanSeeObject (int nObject, int bCheckObjs);
 		void DrawPlayerNames (void);
 		void Render (void);
+		void RenderWindow (int nWindow, CObject *viewerP, int bRearView, int nUser, const char *pszLabel);
 
 		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h) = 0;
 		virtual void DrawScore (void) = 0;
@@ -178,7 +179,9 @@ class CGenericCockpit {
 		virtual void DrawEnergyBar (void) = 0;
 		virtual void DrawAfterburner (void) = 0;
 		virtual void DrawAfterburnerBar (void) = 0;
-		virtual void DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount) = 0;
+		virtual void ClearBombCount (void) = 0;
+		virtual void DrawBombCount (void) = 0;
+		virtual int DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount) = 0;
 		virtual void DrawPrimaryAmmoInfo (int ammoCount) = 0;
 		virtual void DrawSecondaryAmmoInfo (int ammoCount) = 0;
 		virtual void DrawCloak (void) = 0;
@@ -187,8 +190,6 @@ class CGenericCockpit {
 		virtual void DrawShieldBar (void) = 0;
 		virtual void DrawLives (void) = 0;
 		virtual void DrawPlayerShip (void) = 0;
-		virtual void ClearBombCount (void) = 0;
-		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount) = 0;
 		virtual void DrawKillList (void) = 0;
 		virtual void DrawStatic (int nWindow) = 0;
 		virtual void Toggle (void);
@@ -215,7 +216,9 @@ class CHUD : public CGenericCockpit {
 		virtual void DrawEnergyBar (void);
 		virtual void DrawAfterburner (void);
 		virtual void DrawAfterburnerBar (void);
-		virtual void DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount);
+		virtual void ClearBombCount (void);
+		virtual void DrawBombCount (void);
+		virtual int DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount);
 		virtual void DrawPrimaryAmmoInfo (int ammoCount);
 		virtual void DrawSecondaryAmmoInfo (int ammoCount);
 		virtual void DrawWeapons (void);
@@ -229,8 +232,6 @@ class CHUD : public CGenericCockpit {
 
 		virtual void DrawStatic (int nWindow);
 		virtual void DrawKillList (void);
-		virtual void ClearBombCount (void);
-		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount);
 		virtual void DrawCockpit (bool bAlphaTest = false);
 		virtual void Toggle (void);
 
@@ -264,7 +265,8 @@ class CStatusBar : public CGenericCockpit {
 		virtual void DrawEnergyBar (void);
 		virtual void DrawAfterburner (void);
 		virtual void DrawAfterburnerBar (void);
-		virtual void DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount);
+		virtual void DrawBombCount (void);
+		virtual int DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount);
 		virtual void DrawPrimaryAmmoInfo (int ammoCount);
 		virtual void DrawSecondaryAmmoInfo (int ammoCount);
 		virtual void DrawWeapons (void);
@@ -278,7 +280,6 @@ class CStatusBar : public CGenericCockpit {
 		virtual void DrawStatic (int nWindow);
 		virtual void DrawKillList (void);
 		virtual void ClearBombCount (void);
-		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount);
 		virtual void DrawCockpit (bool bAlphaTest = false);
 		virtual void Toggle (void);
 
@@ -300,7 +301,8 @@ class CCockpit : public CGenericCockpit {
 		virtual void DrawEnergyBar (void);
 		virtual void DrawAfterburner (void);
 		virtual void DrawAfterburnerBar (void);
-		virtual void DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount);
+		virtual void DrawBombCount (void);
+		virtual int DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount);
 		virtual void DrawPrimaryAmmoInfo (int ammoCount);
 		virtual void DrawSecondaryAmmoInfo (int ammoCount);
 		virtual void DrawWeapons (void);
@@ -314,7 +316,6 @@ class CCockpit : public CGenericCockpit {
 		virtual void DrawStatic (int nWindow);
 		virtual void DrawKillList (void);
 		virtual void ClearBombCount (void);
-		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount);
 		virtual void DrawCockpit (bool bAlphaTest = false);
 		virtual void Toggle (void);
 
@@ -336,7 +337,8 @@ class CRearView : public CGenericCockpit {
 		virtual void DrawEnergyBar (void) {}
 		virtual void DrawAfterburner (void) {}
 		virtual void DrawAfterburnerBar (void) {}
-		virtual void DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount) {}
+		virtual void DrawBombCount (void);
+		virtual int DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount);
 		virtual void DrawPrimaryAmmoInfo (int ammoCount) {}
 		virtual void DrawSecondaryAmmoInfo (int ammoCount) {}
 		virtual void DrawWeapons (void) {}
@@ -351,7 +353,6 @@ class CRearView : public CGenericCockpit {
 		virtual void DrawStatic (int nWindow) {}
 		virtual void DrawKillList (void) {}
 		virtual void ClearBombCount (void) {}
-		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount) {}
 		virtual void DrawCockpit (bool bAlphaTest = false) { 
 			CGenericCockpit::DrawCockpit (gameStates.render.cockpit.nMode + m_info.nCockpit, 0, bAlphaTest); 
 			}
