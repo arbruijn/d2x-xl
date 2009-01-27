@@ -68,7 +68,7 @@ int oldBombcount [2]		= {0, 0};
 
 void CHUD::DrawCountdown (void)
 {
-CGenericCockpit::DrawCountDown (SMALL_FONT->Height () * 4);
+CGenericCockpit::DrawCountdown (SMALL_FONT->Height () * 4);
 }
 
 //	-----------------------------------------------------------------------------

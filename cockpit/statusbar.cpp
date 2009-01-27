@@ -69,7 +69,7 @@ h = SB_SECONDARY_W_BOX_BOT - SB_SECONDARY_W_BOX_TOP + 1;
 
 void CStatusBar::DrawCountdown (void)
 {
-CGenericCockpit::DrawCountDown (SMALL_FONT->Height () * 6);
+CGenericCockpit::DrawCountdown (SMALL_FONT->Height () * 6);
 }
 
 //	-----------------------------------------------------------------------------
@@ -498,7 +498,7 @@ gameStates.render.vr.buffers.render->SetupPane (
 
 void CStatusBar::Toggle (void)
 {
-CGenericCockpit::Toggle (gameStates.render.cockpit.nNextMode < 0) ? CM_FULL_SCREEN : CM_FULL_COCKPIT);
+CGenericCockpit::Toggle ((gameStates.render.cockpit.nNextMode < 0) ? CM_FULL_SCREEN : CM_FULL_COCKPIT);
 }
 
 //	-----------------------------------------------------------------------------

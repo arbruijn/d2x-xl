@@ -59,7 +59,7 @@ h = SECONDARY_W_BOX_BOT - SECONDARY_W_BOX_TOP + 1;
 
 void CCockpit::DrawCountdown (void)
 {
-CGenericCockpit::DrawCountDown (SMALL_FONT->Height () * 4);
+CGenericCockpit::DrawCountdown (SMALL_FONT->Height () * 4);
 }
 
 //	-----------------------------------------------------------------------------
