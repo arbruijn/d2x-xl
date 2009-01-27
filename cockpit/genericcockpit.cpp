@@ -1162,6 +1162,27 @@ for (i = 0; i < nPlayers; i++) {
 }
 
 //	-----------------------------------------------------------------------------
+
+void DrawCockpit (int nCockpit, int y)
+{
+if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {
+	int i = gameData.pig.tex.cockpitBmIndex [nCockpit].index;
+	CBitmap *bmP = gameData.pig.tex.bitmaps [0] + i;
+	LoadBitmap (gameData.pig.tex.cockpitBmIndex [nCockpit].index, 0);
+	if (bmP->Override (-1))
+		bmP = bmP->Override (-1);
+	bmP->SetupTexture (0, 3, 1);
+   CCanvas::SetCurrent (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
+
+	tCanvasColor color;
+
+	color.index = 255;
+	color.rgb = 0;
+	bmP->RenderScaled (0, y, -1, CCanvas::Current ()->Height () - y, I2X (1), 0, &color);
+	}
+}
+
+//	-----------------------------------------------------------------------------
 //draw all the things on the HUD
 void CGenericCockpit::Render (void)
 {
@@ -1174,6 +1195,7 @@ m_info.xScale = screen.Scale (1);
 m_info.nEnergy = X2IR (LOCALPLAYER.energy);
 m_info.nShields = X2IR (LOCALPLAYER.shields);
 m_info.bCloak = ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0);
+m_info.nCockpit = (gameStates.video.nDisplayMode && !gameStates.app.bDemoData) ? gameData.models.nCockpits / 2 : 0;
 
 if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
 	gameStates.render.cockpit.nLastDrawn [0] =

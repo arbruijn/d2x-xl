@@ -421,6 +421,16 @@ DrawKillList (60, CCanvas::Current ()->Height ());
 
 //	-----------------------------------------------------------------------------
 
+void DrawCockpit (void)
+{
+DrawCockpit (gameStates.render.cockpit.nMode + nCockpit, gameData.render.window.hMax);
+gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
+gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h)/2;
+//FillBackground ();
+}
+
+//	-----------------------------------------------------------------------------
+
 //print out some CPlayerData statistics
 void SBRenderGauges (void)
 {

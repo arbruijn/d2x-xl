@@ -1015,7 +1015,7 @@ void CopyBackgroundRect (int left, int top, int right, int bot)
 
 //------------------------------------------------------------------------------
 //fills int the background surrounding the 3d window
-void FillBackground ()
+void FillBackground (void)
 {
 	int x, y, w, h, dx, dy;
 
@@ -1112,36 +1112,13 @@ static
 #if !DBG
 inline
 #endif
-void DrawCockpit (int h, int y)
-{
-if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {
-	int i = gameData.pig.tex.cockpitBmIndex [h].index;
-	CBitmap *bmP = gameData.pig.tex.bitmaps [0] + i;
-	LoadBitmap (gameData.pig.tex.cockpitBmIndex [h].index, 0);
-	if (bmP->Override (-1))
-		bmP = bmP->Override (-1);
-	bmP->SetupTexture (0, 3, 1);
-   CCanvas::SetCurrent (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
-
-	tCanvasColor color;
-
-	color.index = 255;
-	color.rgb = 0;
-	bmP->RenderScaled (0, y, -1, CCanvas::Current ()->Height () - y, I2X (1), 0, &color);
-	}
-}
-
 //------------------------------------------------------------------------------
 
 // This actually renders the new cockpit onto the screen.
 void UpdateCockpits (int bForceRedraw)
 {
 	//int x, y, w, h;
-	int nCockpit = (gameStates.video.nDisplayMode && !gameStates.app.bDemoData) ? gameData.models.nCockpits / 2 : 0;
 
-if ((gameStates.render.cockpit.nMode != gameStates.render.cockpit.nLastDrawn [gameStates.render.vr.nCurrentPage]) && !bForceRedraw)
-	return;
-gameStates.render.cockpit.nLastDrawn [gameStates.render.vr.nCurrentPage] = gameStates.render.cockpit.nMode;
 //Redraw the on-screen cockpit bitmaps
 if (gameStates.render.vr.nRenderMode != VR_NONE)
 	return;
@@ -1190,7 +1167,7 @@ if (SHOW_COCKPIT)
 
 //------------------------------------------------------------------------------
 
-void GameRenderFrame ()
+void GameRenderFrame (void)
 {
 PROF_START
 SetScreenMode (SCREEN_GAME);

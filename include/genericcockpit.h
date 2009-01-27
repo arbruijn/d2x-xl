@@ -144,6 +144,7 @@ class CCockpitInfo {
 		float	yScale;
 		int	fontWidth;
 		int	fontHeight;
+		int	nCockpit;
 
 	public:
 		CCockpitInfo () { Init (); }
@@ -211,7 +212,10 @@ class CGenericCockpit {
 		void DrawFlag (int x, int y);
 		void DrawKillList (int x, int y);
 		void DrawStatic (int nWindow, int nIndex);
-	};
+		void DrawCockpit (int nCockpit, int y);
+};
+
+//	-----------------------------------------------------------------------------
 
 class CHUD : public CGenericCockpit {
 	public:
@@ -235,16 +239,20 @@ class CHUD : public CGenericCockpit {
 		virtual void DrawShieldBar (void);
 		virtual void DrawLives (void);
 		virtual void DrawPlayerShip (int nCloakState, int nOldCloakState, int y, int x);
+		virtual void DrawCockpit (void);
 
 		virtual void DrawStatic (int nWindow);
 		virtual void DrawWeapons (void);
 		virtual void DrawKillList (void);
 		virtual void ClearBombCount (void);
 		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount);
+		virtual void DrawCockpit (void);
 
 	private:
 		int FlashGauge (int h, int *bFlash, int tToggle);
 	};
+
+//	-----------------------------------------------------------------------------
 
 class CStatusBar : public CGenericCockpit {
 	public:
@@ -276,8 +284,10 @@ class CStatusBar : public CGenericCockpit {
 		virtual void DrawKillList (void);
 		virtual void ClearBombCount (void);
 		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount);
+		virtual void DrawCockpit (void);
 	};
 
+//	-----------------------------------------------------------------------------
 
 class CCockpit : public CGenericCockpit {
 	public:
@@ -307,6 +317,44 @@ class CCockpit : public CGenericCockpit {
 		virtual void DrawKillList (void);
 		virtual void ClearBombCount (void);
 		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount);
+		virtual void DrawCockpit (void);
+	};
+
+//	-----------------------------------------------------------------------------
+
+class CRearView : public CGenericCockpit {
+	public:
+		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h) { x = y = w = h = -1; }
+		virtual void DrawScore (void) {}
+		virtual void DrawScoreAdded (void) {}
+		virtual void DrawHomingWarning (void) {}
+		virtual void DrawKeys (void) {}
+		virtual void DrawOrbs (void) {}
+		virtual void DrawFlag (void) {}
+		virtual void DrawEnergy (void) {}
+		virtual void DrawEnergyBar (void) {}
+		virtual void DrawAfterburner (void) {}
+		virtual void DrawAfterburnerBar (void) {}
+		virtual void DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount) {}
+		virtual void DrawPrimaryAmmoInfo (int ammoCount) {}
+		virtual void DrawSecondaryAmmoInfo (int ammoCount) {}
+		virtual void DrawWeapons (void) {}
+		virtual void DrawCloakInvul (void) {}
+		virtual void DrawShield (void) {}
+		virtual void DrawShieldBar (void) {}
+		virtual void DrawLives (void) {}
+		virtual void DrawPlayerShip (int nCloakState, int nOldCloakState, int y, int x) {}
+		virtual void DrawCockpit (void) {}
+
+		virtual void DrawStatic (int nWindow) {}
+		virtual void DrawWeapons (void) {}
+		virtual void DrawKillList (void) {}
+		virtual void ClearBombCount (void) {}
+		virtual int DrawBombCount (int* nId, int x, int y, char* pszBombCount) {}
+		virtual void DrawCockpit (void) { DrawCockpit (gameStates.render.cockpit.nMode + nCockpit, 0); }
+
+	private:
+		int FlashGauge (int h, int *bFlash, int tToggle);
 	};
 
 //	-----------------------------------------------------------------------------

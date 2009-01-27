@@ -326,8 +326,6 @@ if (nMode != gameStates.render.cockpit.nMode) {		//new nMode
 void ResetCockpit ()
 {
 gameStates.render.cockpit.bRedraw = 1;
-gameStates.render.cockpit.nLastDrawn [0] =
-gameStates.render.cockpit.nLastDrawn [1] = -1;
 }
 
 //------------------------------------------------------------------------------
@@ -1002,8 +1000,6 @@ void GameSetup (void)
 DoLunacyOn ();		//	Copy values for insane into copy buffer in ai.c
 DoLunacyOff ();		//	Restore true insane mode.
 gameStates.app.bGameAborted = 0;
-gameStates.render.cockpit.nLastDrawn[0] = -1;				// Force cockpit to redraw next time a frame renders.
-gameStates.render.cockpit.nLastDrawn[1] = -1;				// Force cockpit to redraw next time a frame renders.
 gameStates.app.bEndLevelSequence = 0;
 paletteManager.LoadEffect ();
 SetScreenMode (SCREEN_GAME);
@@ -1122,8 +1118,6 @@ if (!setjmp (gameExitPoint)) {
 			gameData.render.window.w = save_w;
 			gameData.render.window.h = save_h;
 			InitCockpit ();
-			gameStates.render.cockpit.nLastDrawn [0] =
-			gameStates.render.cockpit.nLastDrawn [1] = -1;
 			}
 		if ((gameStates.app.nFunctionMode != FMODE_GAME) &&
 			 gameData.demo.bAuto && !gameOpts->demo.bRevertFormat &&

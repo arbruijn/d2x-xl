@@ -453,6 +453,13 @@ else if ((tInvul > I2X (4)) || (gameData.time.xGame & 0x8000)) {
 }
 
 //	---------------------------------------------------------------------------------------------------------
+
+void CCockpit::DrawCockpit (void)
+{
+DrawCockpit (nCockpit, 0);
+}
+
+//	---------------------------------------------------------------------------------------------------------
 //	Call when picked up a laser powerup.
 //	If laser is active, set oldWeapon [0] to -1 to force redraw.
 void UpdateLaserWeaponInfo (void)
