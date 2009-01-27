@@ -790,7 +790,7 @@ void CheckRearView ()
 		Controls [0].rearViewDownCount = 0;
 		if (gameStates.render.bRearView) {
 			gameStates.render.bRearView = 0;
-			if (cockpit->Type () == CM_REAR_VIEW) {
+			if (gameStates.render.cockpit.nType == CM_REAR_VIEW) {
 				cockpit->Activate (gameStates.render.cockpit.nTypeSave);
 				gameStates.render.cockpit.nTypeSave = -1;
 			}
@@ -801,8 +801,8 @@ void CheckRearView ()
 			gameStates.render.bRearView = 1;
 			leave_mode = 0;		//means wait for another key
 			entryTime = TimerGetFixedSeconds ();
-			if (cockpit->Type () == CM_FULL_COCKPIT) {
-				gameStates.render.cockpit.nTypeSave = cockpit->Type ();
+			if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) {
+				gameStates.render.cockpit.nTypeSave = gameStates.render.cockpit.nType;
 				cockpit->Activate (CM_REAR_VIEW);
 			}
 			if (gameData.demo.nState == ND_STATE_RECORDING)
@@ -817,11 +817,11 @@ void CheckRearView ()
 		}
 		else {
 
-			//@@if (leave_mode==1 && cockpit->Type ()==CM_REAR_VIEW) {
+			//@@if (leave_mode==1 && gameStates.render.cockpit.nType==CM_REAR_VIEW) {
 
 			if (leave_mode==1 && gameStates.render.bRearView) {
 				gameStates.render.bRearView = 0;
-				if (cockpit->Type ()==CM_REAR_VIEW) {
+				if (gameStates.render.cockpit.nType==CM_REAR_VIEW) {
 					cockpit->Activate (gameStates.render.cockpit.nTypeSave);
 					gameStates.render.cockpit.nTypeSave = -1;
 				}
@@ -840,7 +840,7 @@ if (gameStates.render.bRearView) {
 		NDRecordRestoreRearView ();
 	}
 gameStates.render.bRearView = 0;
-if ((cockpit->Type () < 0) || (cockpit->Type () > 4)) {
+if ((gameStates.render.cockpit.nType < 0) || (gameStates.render.cockpit.nType > 4)) {
 	if (!(gameStates.render.cockpit.nTypeSave == CM_FULL_COCKPIT || gameStates.render.cockpit.nTypeSave == CM_STATUS_BAR || gameStates.render.cockpit.nTypeSave == CM_FULL_SCREEN))
 		gameStates.render.cockpit.nTypeSave = CM_FULL_COCKPIT;
 	cockpit->Activate (gameStates.render.cockpit.nTypeSave);

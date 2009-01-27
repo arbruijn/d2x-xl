@@ -678,7 +678,6 @@ if (Busy ())
 	CParam		*pp;
 
 gameStates.sound.audio.nMaxChannels = audio.MaxChannels ();
-gameStates.render.cockpit.nType = cockpit->Type ();
 sprintf (fn, "%s.plx", LOCALPLAYER.callsign);
 if (!m_cf.Open (fn, gameFolders.szProfDir, "wt", 0))
 	return 0;
@@ -2579,7 +2578,7 @@ cf.WriteByte ((sbyte) gameOptions [0].gameplay.nAutoLeveling);
 cf.WriteByte ((sbyte) gameOptions [0].render.cockpit.bReticle);
 cf.WriteByte ((sbyte) ((gameStates.render.cockpit.nTypeSave != -1) 
 							  ? gameStates.render.cockpit.nTypeSave
-							  : cockpit->Type ()));   //if have saved mode, write it instead of letterbox/rear view
+							  : gameStates.render.cockpit.nType));   //if have saved mode, write it instead of letterbox/rear view
 cf.WriteByte ((sbyte) gameStates.video.nDefaultDisplayMode);
 cf.WriteByte ((sbyte) gameOptions [0].render.cockpit.bMissileView);
 cf.WriteByte ((sbyte) extraGameInfo [0].headlight.bAvailable);

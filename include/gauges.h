@@ -80,7 +80,7 @@ extern tRgbColorb playerColors [];
 // the top of the window.
 extern CGenericCockpit*	cockpit;
 
-#define cockpit->Always ()	((cockpit->Type () == CM_FULL_COCKPIT) || (cockpit->Type () == CM_STATUS_BAR))
+#define cockpit->Always ()	((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR))
 #define cockpit->Show ()		(!gameStates.app.bEndLevelSequence && (!gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || !cockpit->Always ()))
 #define cockpit->Hide ()		(gameStates.app.bEndLevelSequence || (!(gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) && (cockpit->Type () >= CM_FULL_SCREEN)))
 

@@ -2174,7 +2174,7 @@ while (!bDone) {
 			if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 				 (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
-				saved_letter_cockpit = cockpit->Type ();
+				saved_letter_cockpit = gameStates.render.cockpit.nType;
 				cockpit->Activate (CM_LETTERBOX);
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
@@ -2194,8 +2194,8 @@ while (!bDone) {
 			if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 				 (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
-				saved_rearview_cockpit = cockpit->Type ();
-				if (cockpit->Type () == CM_FULL_COCKPIT)
+				saved_rearview_cockpit = gameStates.render.cockpit.nType;
+				if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT)
 					cockpit->Activate (CM_REAR_VIEW);
 				gameStates.render.bRearView=1;
 				}
@@ -2211,7 +2211,7 @@ while (!bDone) {
 		case ND_EVENT_RESTORE_COCKPIT:
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
-				saved_letter_cockpit = cockpit->Type ();
+				saved_letter_cockpit = gameStates.render.cockpit.nType;
 				cockpit->Activate (CM_LETTERBOX);
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
@@ -2224,8 +2224,8 @@ while (!bDone) {
 		case ND_EVENT_RESTORE_REARVIEW:
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
-				saved_rearview_cockpit = cockpit->Type ();
-				if (cockpit->Type () == CM_FULL_COCKPIT)
+				saved_rearview_cockpit = gameStates.render.cockpit.nType;
+				if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT)
 					cockpit->Activate (CM_REAR_VIEW);
 				gameStates.render.bRearView=1;
 				}
@@ -3339,7 +3339,7 @@ if (gameOpts->demo.bRevertFormat && ndOutFile.File () && (bRevertFormat < 0)) {
 gameData.app.nGameMode = GM_NORMAL;
 gameData.demo.nState = ND_STATE_PLAYBACK;
 gameData.demo.nVcrState = ND_STATE_PLAYBACK;
-gameData.demo.nOldCockpit = cockpit->Type ();
+gameData.demo.nOldCockpit = gameStates.render.cockpit.nType;
 gameData.demo.nSize = ndInFile.Length ();
 bNDBadRead = 0;
 gameData.demo.bEof = 0;

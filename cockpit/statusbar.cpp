@@ -361,7 +361,7 @@ sprintf (szShield, "%d", m_info.nShields);
 fontManager.Current ()->StringSize (szShield, w, h, aw);
 fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
 nIdShield = PrintF (&nIdShield, 
-						  -(ScaleX (SB_SHIELD_NUM_X) + (ScaleX (w) - w) / 2), 
+						  -(ScaleX (SB_SHIELD_NUM_X + (gameStates.video.nDisplayMode ? 13 : 6)) - w / 2), 
 						  -(ScaleY (SB_SHIELD_NUM_Y) + (ScaleY (h) - h) / 2), 
 						  "%d", m_info.nShields);
 CCanvas::Pop ();

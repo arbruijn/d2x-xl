@@ -109,9 +109,9 @@ if (!IsMultiGame || IsCoopGame) {
 	int	x, x0 = 0, y = 0, w, h, aw, i, bmW, bmH;
 	char	szInfo [20];
 
-	if (cockpit->Type () == CM_FULL_COCKPIT)
+	if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT)
 		y = 3 * nLineSpacing;
-	else if (cockpit->Type () == CM_STATUS_BAR)
+	else if (gameStates.render.cockpit.nType == CM_STATUS_BAR)
 		y = 2 * nLineSpacing;
 	else {//if (!cockpit->Always ()) {
 		y = 2 * nLineSpacing;
@@ -175,8 +175,8 @@ for (int i = 0; i < Controls [0].toggleIconsCount; i++)
 void CHUDIcons::DrawWeapons (void)
 {
 	CBitmap*	bmP, * bmoP;
-	int	nWeaponIcons = (cockpit->Type () == CM_STATUS_BAR) ? 3 : extraGameInfo [0].nWeaponIcons;
-	int	nIconScale = (gameOpts->render.weaponIcons.bSmall || (cockpit->Type () != CM_FULL_SCREEN)) ? 4 : 3;
+	int	nWeaponIcons = (gameStates.render.cockpit.nType == CM_STATUS_BAR) ? 3 : extraGameInfo [0].nWeaponIcons;
+	int	nIconScale = (gameOpts->render.weaponIcons.bSmall || (gameStates.render.cockpit.nType != CM_FULL_SCREEN)) ? 4 : 3;
 	int	nIconPos = nWeaponIcons - 1;
 	int	nMaxAutoSelect;
 	int	fw, fh, faw, 
@@ -207,7 +207,7 @@ if (gameOpts->render.weaponIcons.bShowAmmo) {
 dx = (int) (10 * xScale);
 if (nWeaponIcons < 3) {
 #if 0
-	if (cockpit->Type () != CM_FULL_COCKPIT) {
+	if (gameStates.render.cockpit.nType != CM_FULL_COCKPIT) {
 #endif
 		dy = (screen.Height () - CCanvas::Current ()->Height ());
 		y = nIconPos ? screen.Height () - dy - oy : oy + hIcon + 12;
@@ -224,15 +224,15 @@ for (i = 0; i < 2; i++) {
 	nMaxAutoSelect = 255;
 	if (nWeaponIcons > 2) {
 		int h;
-		if (cockpit->Type () != CM_STATUS_BAR)
+		if (gameStates.render.cockpit.nType != CM_STATUS_BAR)
 			h = 0;
 		else {
 #if DBG
-			h = cockpit->Type () + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0);
+			h = gameStates.render.cockpit.nType + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0);
 			h = gameData.pig.tex.cockpitBmIndex [h].index;
 			h = gameData.pig.tex.bitmaps [0][h].Height ();
 #else
-			h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [cockpit->Type () + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0)].index].Height ();
+			h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [gameStates.render.cockpit.nType + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0)].index].Height ();
 #endif
 			}
 		y = (CCanvas::Current ()->Height () - h - n * (hIcon + oy)) / 2 + hIcon;
@@ -466,7 +466,7 @@ void CHUDIcons::DrawInventory (void)
 {
 	CBitmap	*bmP;
 	char	szCount [4];
-	int nIconScale = (gameOpts->render.weaponIcons.bSmall || (cockpit->Type () != CM_FULL_SCREEN)) ? 3 : 2;
+	int nIconScale = (gameOpts->render.weaponIcons.bSmall || (gameStates.render.cockpit.nType != CM_FULL_SCREEN)) ? 3 : 2;
 	int nIconPos = extraGameInfo [0].nWeaponIcons & 1;
 	int	fw, fh, faw;
 	int	j, n, firstItem, 
@@ -497,7 +497,7 @@ void CHUDIcons::DrawInventory (void)
 	static int nIdItems [NUM_INV_ITEMS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 dy = (screen.Height () - CCanvas::Current ()->Height ());
-if (cockpit->Type () != CM_STATUS_BAR) //(!cockpit->Always ())
+if (gameStates.render.cockpit.nType != CM_STATUS_BAR) //(!cockpit->Always ())
 	y = nIconPos ? screen.Height () - dy - oy : oy + hIcon + 12;
 else
 	y = oy + hIcon + 12;

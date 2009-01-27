@@ -198,7 +198,7 @@ glPushMatrix ();
 //	glTranslated (0.5, 0.5, 0);
 glTranslated (
 	(CCanvas::Current ()->Width ()/2+CCanvas::Current ()->Left ()) / (float) gameStates.ogl.nLastW, 
-	1.0f - (CCanvas::Current ()->Height () / ((cockpit->Type () == CM_FULL_COCKPIT) ? 2 : 2) +
+	1.0f - (CCanvas::Current ()->Height () / ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) ? 2 : 2) +
 	CCanvas::Current ()->Top ()) / (float) gameStates.ogl.nLastH, 
 	0);
 glScaled (scale/320.0f, scale/200.0f, scale);//the positions are based upon the standard reticle at 320x200 res.

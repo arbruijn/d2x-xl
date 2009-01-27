@@ -1104,10 +1104,10 @@ else {
 							  FixDiv (gameStates.render.xZoom, gameStates.render.nZoomFactor), bOglScale);
 		}
 	else if ((gameData.objs.viewerP == gameData.objs.consoleP) && (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1])) {
-		gameStates.render.nMinZoomFactor = I2X (gameStates.render.glAspect); //(((cockpit->Type () == CM_FULL_COCKPIT) ? I2X (2)  / 3 : I2X (1)) * glAspect);
+		gameStates.render.nMinZoomFactor = I2X (gameStates.render.glAspect); //(((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) ? I2X (2)  / 3 : I2X (1)) * glAspect);
 		gameStates.render.nMaxZoomFactor = gameStates.render.nMinZoomFactor * 5;
 		if ((gameData.weapons.nPrimary != VULCAN_INDEX) && (gameData.weapons.nPrimary != GAUSS_INDEX))
-			gameStates.render.nZoomFactor = gameStates.render.nMinZoomFactor; //(fix) (((cockpit->Type () == CM_FULL_COCKPIT) ? I2X (2)  / 3 : I2X (1)) * glAspect);
+			gameStates.render.nZoomFactor = gameStates.render.nMinZoomFactor; //(fix) (((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) ? I2X (2)  / 3 : I2X (1)) * glAspect);
 		else {
 			switch (extraGameInfo [IsMultiGame].nZoomMode) {
 				case 0:
@@ -1115,7 +1115,7 @@ else {
 				case 1:
 					if (ZoomKeyPressed ()) {
 						if (!bStopZoom) {
-							gameStates.render.nZoomFactor = (cockpit->Type () == CM_FULL_COCKPIT) ? (gameStates.render.nZoomFactor * 7) / 5 : (gameStates.render.nZoomFactor * 5) / 3;
+							gameStates.render.nZoomFactor = (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) ? (gameStates.render.nZoomFactor * 7) / 5 : (gameStates.render.nZoomFactor * 5) / 3;
 							if (gameStates.render.nZoomFactor > gameStates.render.nMaxZoomFactor)
 								gameStates.render.nZoomFactor = gameStates.render.nMinZoomFactor;
 							bStopZoom = 1;
