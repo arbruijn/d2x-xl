@@ -100,6 +100,7 @@ class CCockpitInfo {
 		fix	lastWarningBeepTime [2];
 		int	bHaveGaugeCanvases;
 		int	nInvulnerableFrame;
+		fix	xOmegaCharge;
 		int	weaponBoxStates [2];
 		fix	weaponBoxFadeValues [2];
 		int	weaponBoxUser [2];

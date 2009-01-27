@@ -109,10 +109,10 @@ lastWarningBeepTime [0] =
 lastWarningBeepTime [1] = 0;
 bHaveGaugeCanvases = 0;
 nInvulnerableFrame = 0;
-m_info.weaponBoxStates [0] = 
-m_info.weaponBoxStates [1] = 0;
-m_info.weaponBoxFadeValues [0] = 
-m_info.weaponBoxFadeValues [1] = 0;
+weaponBoxStates [0] = 
+weaponBoxStates [1] = 0;
+weaponBoxFadeValues [0] = 
+weaponBoxFadeValues [1] = 0;
 weaponBoxUser [0] = 
 weaponBoxUser [1] = WBU_WEAPON;
 nLineSpacing = GAME_FONT->Height () + GAME_FONT->Height () / 4;
@@ -676,7 +676,7 @@ if ((nWeaponId != m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponT
 	m_info.weaponBoxFadeValues [nWeaponType] = I2X (FADE_LEVELS - 1);
 	}
 
-ShowWeaponInfo (nWeaponType, nWeaponId, LOCALPLAYER.laserLevel);
+DrawWeaponInfo (nWeaponType, nWeaponId, LOCALPLAYER.laserLevel);
 m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] = nWeaponId;
 m_history [gameStates.render.vr.nCurrentPage].ammo [nWeaponType] = -1;
 m_history [gameStates.render.vr.nCurrentPage].xOmegaCharge = -1;
@@ -685,7 +685,7 @@ bDrew = 1;
 m_info.weaponBoxStates [nWeaponType] = WS_SET;
 
 if (m_info.weaponBoxStates [nWeaponType] == WS_FADING_OUT) {
-	ShowWeaponInfo (nWeaponType, 
+	DrawWeaponInfo (nWeaponType, 
 						 m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType], 
 						 m_history [gameStates.render.vr.nCurrentPage].laserLevel);
 	m_history [gameStates.render.vr.nCurrentPage].ammo [nWeaponType] = -1;
@@ -695,9 +695,9 @@ if (m_info.weaponBoxStates [nWeaponType] == WS_FADING_OUT) {
 	if (m_info.weaponBoxFadeValues [nWeaponType] <= 0) {
 		m_info.weaponBoxStates [nWeaponType] = WS_FADING_IN;
 		m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] = nWeaponId;
-		oldWeapon [nWeaponType][!gameStates.render.vr.nCurrentPage] = nWeaponId;
+		m_history [!gameStates.render.vr.nCurrentPage].weapon [nWeaponType] = nWeaponId;
 		m_history [gameStates.render.vr.nCurrentPage].laserLevel = LOCALPLAYER.laserLevel;
-		oldLaserLevel [!gameStates.render.vr.nCurrentPage] = LOCALPLAYER.laserLevel;
+		m_history [!gameStates.render.vr.nCurrentPage].laserLevel = LOCALPLAYER.laserLevel;
 		m_info.weaponBoxFadeValues [nWeaponType] = 0;
 		}
 	}
@@ -706,14 +706,14 @@ else if (m_info.weaponBoxStates [nWeaponType] == WS_FADING_IN) {
 		m_info.weaponBoxStates [nWeaponType] = WS_FADING_OUT;
 		}
 	else {
-		ShowWeaponInfo (nWeaponType, nWeaponId, LOCALPLAYER.laserLevel);
+		DrawWeaponInfo (nWeaponType, nWeaponId, LOCALPLAYER.laserLevel);
 		m_history [gameStates.render.vr.nCurrentPage].ammo [nWeaponType] = -1;
 		m_history [gameStates.render.vr.nCurrentPage].xOmegaCharge = -1;
 		bDrew=1;
 		m_info.weaponBoxFadeValues [nWeaponType] += gameData.time.xFrame * FADE_SCALE;
 		if (m_info.weaponBoxFadeValues [nWeaponType] >= I2X (FADE_LEVELS-1)) {
 			m_info.weaponBoxStates [nWeaponType] = WS_SET;
-			oldWeapon [nWeaponType][!gameStates.render.vr.nCurrentPage] = -1;		//force redraw (at full fade-in) of other page
+			m_history [!gameStates.render.vr.nCurrentPage].weapon [nWeaponType] = -1;		//force redraw (at full fade-in) of other page
 			}
 		}
 	}
@@ -790,7 +790,7 @@ else if (weaponBoxUser [0] == WBU_STATIC)
 if (weaponBoxUser [1] == WBU_WEAPON) {
 	if (DrawWeaponDisplay (1, gameData.weapons.nSecondary) && (m_info.weaponBoxStates [1] == WS_SET) &&
 		 (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != m_history [gameStates.render.vr.nCurrentPage].ammo [1])) {
-		oldBombcount [gameStates.render.vr.nCurrentPage] = 0x7fff;	//force redraw
+		m_history [gameStates.render.vr.nCurrentPage].bombCount = 0x7fff;	//force redraw
 		if (gameData.demo.nState == ND_STATE_RECORDING)
 			NDRecordSecondaryAmmo (m_history [gameStates.render.vr.nCurrentPage].ammo [1], LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
 		DrawSecondaryAmmoInfo (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
@@ -1356,7 +1356,8 @@ m_history [gameStates.render.vr.nCurrentPage].bCloak = bCloak;
 
 //	---------------------------------------------------------------------------------------------------------
 //	Call when picked up a laser powerup.
-//	If laser is active, set oldWeapon [0] to -1 to force redraw.
+//	If laser is active, set previous weapon [0] to -1 to force redraw.
+
 void CGenericCockpit::UpdateLaserWeaponInfo (void)
 {
 if (m_history [gameStates.render.vr.nCurrentPage].weapon [0] == 0)
@@ -1476,7 +1477,7 @@ else {
 	//CCanvas::SetCurrent (GetCurrentGameScreen ());
 	}
 //force redraw when done
-m_history [gameStates.render.vr.nCurrentPage].weapon [nWindow] = oldAmmoCount [nWindow][gameStates.render.vr.nCurrentPage] = -1;
+m_history [gameStates.render.vr.nCurrentPage].weapon [nWindow] = m_history [gameStates.render.vr.nCurrentPage].ammo [nWindow] = -1;
 
 abort:;
 
@@ -1487,11 +1488,12 @@ gameStates.render.bRearView = bRearViewSave;
 
 //	---------------------------------------------------------------------------------------------------------
 //	Call when picked up a laser powerup.
-//	If laser is active, set oldWeapon [0] to -1 to force redraw.
+//	If laser is active, set previous weapon [0] to -1 to force redraw.
+
 void CGenericCockpit::UpdateLaserWeaponInfo (void)
 {
 if (m_history [gameStates.render.vr.nCurrentPage].weapon [0] == 0)
-	if (!(LOCALPLAYER.laserLevel > MAX_LASER_LEVEL && oldLaserLevel [gameStates.render.vr.nCurrentPage] <= MAX_LASER_LEVEL))
+	if (!(LOCALPLAYER.laserLevel > MAX_LASER_LEVEL && m_history [gameStates.render.vr.nCurrentPage].laserLevel <= MAX_LASER_LEVEL))
 		m_history [gameStates.render.vr.nCurrentPage].weapon [0] = -1;
 }
 
