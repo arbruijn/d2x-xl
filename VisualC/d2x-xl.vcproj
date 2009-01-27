@@ -3806,6 +3806,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\include\genericcockpit.h"
+						>
+					</File>
+					<File
 						RelativePath="..\include\hud_defs.h"
 						>
 					</File>
