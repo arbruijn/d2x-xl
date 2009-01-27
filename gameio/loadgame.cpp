@@ -1156,7 +1156,7 @@ gameData.objs.viewerP = OBJECTS + LOCALPLAYER.nObject;
 GameStartRemoveUnusedPlayers ();
 gameStates.app.bGameSuspended = 0;
 gameData.reactor.bDestroyed = 0;
-cockpit->Init () ();
+cockpit->Init ();
 paletteManager.ResetEffect ();
 }
 
@@ -1566,7 +1566,7 @@ gameStates.app.bGameSuspended = 0;
 gameData.reactor.bDestroyed = 0;
 gameStates.render.glFOV = DEFAULT_FOV;
 SetScreenMode (SCREEN_GAME);
-cockpit->Init () ();
+cockpit->Init ();
 InitRobotsForLevel ();
 InitShakerDetonates ();
 MorphInit ();

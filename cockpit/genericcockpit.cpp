@@ -113,7 +113,7 @@ weaponBoxFadeValues [0] =
 weaponBoxFadeValues [1] = 0;
 weaponBoxUser [0] = 
 weaponBoxUser [1] = WBU_WEAPON;
-nLineSpacing = GAME_FONT->Height () + GAME_FONT->Height () / 4;
+m_info.nLineSpacing = GAME_FONT->Height () + GAME_FONT->Height () / 4;
 }
 
 //	-----------------------------------------------------------------------------
@@ -398,7 +398,7 @@ if (Hide ())
 if (!gameOpts->render.cockpit.bPlayerStats)
 	return;
 fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
-y = 6 + 2 * nLineSpacing;
+y = 6 + 2 * m_info.nLineSpacing;
 h = (gameData.stats.nDisplayMode - 1) / 2;
 if ((gameData.stats.nDisplayMode - 1) % 2 == 0) {
 	sprintf (szStats, "%s%d-%d %d-%d %d-%d", 
@@ -438,7 +438,7 @@ if (gameStates.render.bShowTime && !(IsMultiGame && gameData.multigame.kills.bSh
 
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	nIdTime = GrPrintF (&nIdTime, CCanvas::Current ()->Width () - 4 * m_info.fontWidth,
-							  CCanvas::Current ()->Height () - 4 * nLineSpacing,
+							  CCanvas::Current ()->Height () - 4 * m_info.nLineSpacing,
 							  "%d:%02d", mins, secs);
 	}
 }
@@ -740,10 +740,10 @@ else {
 if (nIndex == LASER_ID || nIndex == SUPERLASER_ID) {
 	sprintf (szName, "%s: 0", TXT_LVL);
 	szName [5] = LOCALPLAYER.laserLevel + 1 + '0';
-	nIdLaser [0] = PrintF (&nIdLaser [0], xText, yText + nLineSpacing, szName);
+	nIdLaser [0] = PrintF (&nIdLaser [0], xText, yText + m_info.nLineSpacing, szName);
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) {
 		strcpy (szName, TXT_QUAD);
-		nIdLaser [1] = PrintF (&nIdLaser [1], xText, yText + 2 * nLineSpacing, szName);
+		nIdLaser [1] = PrintF (&nIdLaser [1], xText, yText + 2 * m_info.nLineSpacing, szName);
 		}
 	}
 }
@@ -996,7 +996,7 @@ if (gameStates.render.bExternalView)
 if (gameStates.render.bExternalView && (!IsMultiGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
 #endif
 	return;
-cmScaleX *= HUD_ASPECT;
+m_info.xScale *= HUD_ASPECT;
 if ((gameStates.ogl.nReticle == 2) || (gameStates.ogl.nReticle && CCanvas::Current ()->Width () > 320))
    OglDrawReticle (nCrossBm, nPrimaryBm, nSecondaryBm);
 else {
@@ -1013,7 +1013,7 @@ else {
   }
 if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick && gameOpts->render.cockpit.bMouseIndicator)
 	OglDrawMouseIndicator ();
-cmScaleX /= HUD_ASPECT;
+m_info.xScale /= HUD_ASPECT;
 }
 
 //	-----------------------------------------------------------------------------
@@ -1534,7 +1534,7 @@ DrawWeapons ();
 DrawPlayerNames ();
 DrawKillList ();
 DrawPlayerShip ();
-HUDShowIcons ();
+hudIcons.Render ();
 if (bExtraInfo) {
 	DrawCountdown ();
 	DrawRecording ();

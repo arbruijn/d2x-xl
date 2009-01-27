@@ -34,6 +34,7 @@
 #include "args.h"
 #include "key.h"
 #include "cockpit.h"
+#include "hudicons.h"
 #include "render.h"
 #include "particles.h"
 #include "glare.h"
@@ -458,7 +459,7 @@ if (!gameData.render.window.h || (gameData.render.window.h > gameData.render.win
 	gameData.render.window.w = gameData.render.window.wMax;
 	gameData.render.window.h = gameData.render.window.hMax;
 	}
-cockpit->Init () ();
+cockpit->Init ();
 //	Define screen pages for game mode
 // If we designate through screenFlags to use paging, then do so.
 screen.Canvas ()->SetupPane (&gameStates.render.vr.buffers.screenPages[0], 
@@ -472,7 +473,7 @@ else {
 	screen.Canvas ()->SetupPane (&gameStates.render.vr.buffers.screenPages[1], 
 											0, 0, screen.Width (), screen.Height ());
 	}
-cockpit->Init () ();
+cockpit->Init ();
 gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && (gameStates.menus.bHires = (gameStates.video.nDisplayMode > 1));
 if (gameStates.render.vr.nRenderMode != VR_NONE) {
 	// for 640x480 or higher, use hires font.

@@ -908,7 +908,7 @@ SetWarnFunc (ShowInGameWarning);
 #if TRACE
 //console.printf (CON_DBG, "   cockpit->Init () d:\temp\dm_test.\n");
 #endif
-cockpit->Init () ();
+cockpit->Init ();
 #if TRACE
 //console.printf (CON_DBG, "   InitGauges d:\temp\dm_test.\n");
 #endif
@@ -1001,7 +1001,7 @@ if (!setjmp (gameExitPoint)) {
 				}
 			ConfigMenu ();
 			if (bScanlineDouble != double_save)
-				cockpit->Init () ();
+				cockpit->Init ();
 			if (!IsMultiGame)
 				paletteManager.LoadEffect ();
 			}
@@ -1016,7 +1016,7 @@ if (!setjmp (gameExitPoint)) {
 			SetScreenMode (SCREEN_GAME);
 			gameData.render.window.w = save_w;
 			gameData.render.window.h = save_h;
-			cockpit->Init () ();
+			cockpit->Init ();
 			}
 		if ((gameStates.app.nFunctionMode != FMODE_GAME) &&
 			 gameData.demo.bAuto && !gameOpts->demo.bRevertFormat &&
@@ -1474,7 +1474,7 @@ if (IsMultiGame) {
 if (bRenderFrame) {
 	if (gameStates.render.cockpit.bRedraw) {			//screen need redrawing?
 		//PrintLog ("cockpit->Init ()\n");
-		cockpit->Init () ();
+		cockpit->Init ();
 		gameStates.render.cockpit.bRedraw = 0;
 	}
 	//PrintLog ("GameRenderFrame\n");

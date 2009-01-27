@@ -5,7 +5,7 @@ class CHUDIcons {
 	private:
 		float	xScale;
 		float	yScale;
-		int	nLineSpacing;
+		int	m_info.nLineSpacing;
 
 	public:
 		int EquipmentActive (int bFlag);

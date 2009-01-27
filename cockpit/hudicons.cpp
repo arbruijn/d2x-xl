@@ -110,16 +110,16 @@ if (!IsMultiGame || IsCoopGame) {
 	char	szInfo [20];
 
 	if (cockpit->Type () == CM_FULL_COCKPIT)
-		y = 3 * nLineSpacing;
+		y = 3 * m_info.nLineSpacing;
 	else if (cockpit->Type () == CM_STATUS_BAR)
-		y = 2 * nLineSpacing;
+		y = 2 * m_info.nLineSpacing;
 	else {//if (!cockpit->Always ()) {
-		y = 2 * nLineSpacing;
+		y = 2 * m_info.nLineSpacing;
 		if (gameStates.render.fonts.bHires)
-			y += nLineSpacing;
+			y += m_info.nLineSpacing;
 		}
 	if (gameOpts->render.cockpit.bPlayerStats)
-		y += 2 * nLineSpacing;
+		y += 2 * m_info.nLineSpacing;
 
 	x0 = CCanvas::Current ()->Width ();
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
@@ -143,12 +143,12 @@ if (!IsMultiGame || IsCoopGame) {
 			}
 		}
 	else {
-		y = 6 + 3 * nLineSpacing;
+		y = 6 + 3 * m_info.nLineSpacing;
 		for (i = 0; i < 2; i++) {
 			sprintf (szInfo, "%s: %5d", i ? "Powerups" : "Robots", objCounts [i]);
 			fontManager.Current ()->StringSize (szInfo, w, h, aw);
 			nIdTally [i] = GrPrintF (nIdTally + i, CCanvas::Current ()->Width () - w - HUD_LHX (2), y, szInfo);
-			y += nLineSpacing;
+			y += m_info.nLineSpacing;
 			}
 		}
 	}
@@ -578,7 +578,7 @@ ToggleWeaponIcons ();
 if (gameOpts->render.cockpit.bHUD || cockpit->Always ()) {
 	xScale = cockpit->XScale ();
 	yScale = cockpit->YScale ();
-	nLineSpacing = cockpit->LineSpacing ();
+	m_info.nLineSpacing = cockpit->LineSpacing ();
 	DrawTally ();
 	if (!gameStates.app.bDemoData && EGI_FLAG (nWeaponIcons, 1, 1, 0)) {
 		xScale *= float (HUD_ASPECT);
