@@ -1321,8 +1321,10 @@ if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSe
 	//PrintLog ("RenderRadar\n");
 	RenderRadar ();
 	}
+#if 0
 if (transformation.m_info.bUsePlayerHeadAngles)
 	Draw3DReticle (nEyeOffset);
+#endif
 gameStates.render.nShadowPass = 0;
 //PrintLog ("G3EndFrame\n");
 G3EndFrame ();
