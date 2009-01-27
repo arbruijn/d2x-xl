@@ -54,20 +54,6 @@ extern int bSavingMovieFrames;
 
 //------------------------------------------------------------------------------
 
-// Returns the length of the first 'n' characters of a string.
-int StringWidth (char * s, int n)
-{
-	int w, h, aw;
-	char p = s [n];
-
-s [n] = 0;
-fontManager.Current ()->StringSize (s, w, h, aw);
-s [n] = p;
-return w;
-}
-
-//------------------------------------------------------------------------------
-
 #if DBG
 
 fix ShowView_textTimer = -1;

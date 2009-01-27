@@ -668,7 +668,7 @@ BitBlt (GAUGE_SHIPS + (IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) 
 gameStates.render.grAlpha = FADE_LEVELS;
 #if 0
 if (m_info.nType != CM_FULL_COCKPIT)
-	CCanvas::SetCurrent (GetCurrentGameScreen ());
+	CCanvas::SetCurrent (CurrentGameScreen ());
 #endif
 }
 
@@ -823,7 +823,7 @@ if (m_info.weaponBoxStates [nWeaponType] != WS_SET) {		//fade gauge
 						    hudWindowAreas [boxofs + nWeaponType].bot);
 	gameStates.render.grAlpha = FADE_LEVELS;
 	}
-//CCanvas::SetCurrent (GetCurrentGameScreen ());
+//CCanvas::SetCurrent (CurrentGameScreen ());
 return bDrew;
 }
 
@@ -852,7 +852,7 @@ h = boxofs + nWindow;
 for (x = hudWindowAreas [h].left; x < hudWindowAreas [h].right; x += bmp->Width ())
 	for (y = hudWindowAreas [h].top; y < hudWindowAreas [h].bot; y += bmp->Height ())
 		BitBlt (-1, x, y, true, true, I2X (1), 0, bmp);
-//CCanvas::SetCurrent (GetCurrentGameScreen ());
+//CCanvas::SetCurrent (CurrentGameScreen ());
 }
 
 //	-----------------------------------------------------------------------------
@@ -1646,7 +1646,7 @@ if (m_info.nType == CM_FULL_SCREEN) {
 		if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING)
 			CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [!gameStates.render.vr.nCurrentPage]);
 		else
-			CCanvas::SetCurrent (GetCurrentGameScreen ());
+			CCanvas::SetCurrent (CurrentGameScreen ());
 #endif
 		windowCanv.BlitClipped (y, x);
 		bOverlapDirty [nWindow] = 1;
@@ -1659,7 +1659,7 @@ if (m_info.nType == CM_FULL_SCREEN) {
 			if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING)
 				CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [!gameStates.render.vr.nCurrentPage]);
 			else
-				CCanvas::SetCurrent (GetCurrentGameScreen ());
+				CCanvas::SetCurrent (CurrentGameScreen ());
 #endif
 			overlapCanv.BlitClipped (y, bigWindowBottom+1);
 			bOverlapDirty [nWindow] = 1;
@@ -1667,7 +1667,7 @@ if (m_info.nType == CM_FULL_SCREEN) {
 		}
 	}
 else {
-	//CCanvas::SetCurrent (GetCurrentGameScreen ());
+	//CCanvas::SetCurrent (CurrentGameScreen ());
 	}
 //force redraw when done
 m_history [gameStates.render.vr.nCurrentPage].weapon [nWindow] = m_history [gameStates.render.vr.nCurrentPage].ammo [nWindow] = -1;

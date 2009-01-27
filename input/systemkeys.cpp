@@ -1061,7 +1061,6 @@ void HandleTestKey(int key)
 			item = m.Menu (NULL, "Briefing to play?");
 			if (item != -1) 
 				briefing.Run (text, 1);
-			}
 			break;
 		}
 

@@ -922,6 +922,19 @@ return 0;
 }
 
 //------------------------------------------------------------------------------
+// Returns the length of the first 'n' characters of a string.
+int StringWidth (char * s, int n)
+{
+	int w, h, aw;
+	char p = s [n];
+
+s [n] = 0;
+fontManager.Current ()->StringSize (s, w, h, aw);
+s [n] = p;
+return w;
+}
+
+//------------------------------------------------------------------------------
 // Draw string 's' centered on a canvas... if wider than
 // canvas, then wrap it.
 void DrawCenteredText (int y, char * s)
@@ -929,14 +942,14 @@ void DrawCenteredText (int y, char * s)
 	char	p;
 	int	i, l = (int) strlen (s);
 
-if (fontManager.Current ()->StringWidth (s, l) < CCanvas::Current ()->Width ()) {
+if (StringWidth (s, l) < CCanvas::Current ()->Width ()) {
 	GrString (0x8000, y, s, NULL);
 	return;
 	}
 int w = CCanvas::Current ()->Width () - 16;
 int h = CCanvas::Current ()->Font ()->Height () + 1;
 for (i = 0; i < l; i++) {
-	if (fontManager.Current ()->StringWidth (s, i) > w) {
+	if (StringWidth (s, i) > w) {
 		p = s [i];
 		s [i] = 0;
 		GrString (0x8000, y, s, NULL);

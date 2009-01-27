@@ -49,8 +49,8 @@ if (((cockpit->Type () == CM_STATUS_BAR) || (cockpit->Type () == CM_FULL_SCREEN)
 	  (nLastMsgYCrd != -1) && (gameStates.render.vr.buffers.subRender [0].Top () >= 6)) {
 	CCanvas::Push ();
 
-	CCanvas::SetCurrent (GetCurrentGameScreen ());
-	CopyBackgroundRect (0, nLastMsgYCrd, CCanvas::Current ()->Width (), nLastMsgYCrd+nLastMsgHeight-1);
+	CCanvas::SetCurrent (CurrentGameScreen ());
+	CopyBackgroundRect (0, nLastMsgYCrd, CCanvas::Current ()->Width (), nLastMsgYCrd + nLastMsgHeight - 1);
 	CCanvas::Pop ();
 	nLastMsgYCrd = -1;
 	}
@@ -125,7 +125,7 @@ if (pMsgs->nMessages > 0) {
 			int ycrd = CCanvas::Current ()->Top () - (SMALL_FONT->Height ()+2);
 			if (ycrd < 0)
 				ycrd = 0;
-			CCanvas::SetCurrent (GetCurrentGameScreen ());
+			CCanvas::SetCurrent (CurrentGameScreen ());
 			fontManager.SetCurrent (SMALL_FONT);
 			fontManager.Current ()->StringSize (pszMsg, w, h, aw);
 			ClearBackgroundMessages ();
@@ -181,7 +181,7 @@ if (pMsgs->nMessages > 0) {
 			}
 		}
 	}
-else if (GetCurrentGameScreen ()->Mode () == BM_MODEX) {
+else if (CurrentGameScreen ()->Mode () == BM_MODEX) {
 	if (nModexHUDMsgs) {
 		int temp = nLastMsgYCrd;
 		nModexHUDMsgs--;
