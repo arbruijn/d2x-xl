@@ -867,7 +867,7 @@ return true;
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::SetupWindow (int nWindow)
+void CHUD::SetupWindow (int nWindow, CCanvas* canvP)
 {
 	static int cockpitWindowScale [4] = {6, 5, 4, 3};
 

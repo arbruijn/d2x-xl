@@ -195,7 +195,7 @@ class CGenericCockpit {
 		virtual void DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel);
 		virtual void DrawWeapons (void);
 		virtual void DrawCockpit (bool bAlphaTest = false);
-		virtual void SetupWindow (int nWindow);
+		virtual void SetupWindow (int nWindow, CCanvas* canvP) = 0;
 		virtual bool Setup (void);
 
 		inline int Mode (void) { return m_info.mode; }
@@ -237,7 +237,7 @@ class CHUD : public CGenericCockpit {
 		virtual void DrawCockpit (bool bAlphaTest = false);
 		virtual void Toggle (void);
 
-		virtual void SetupWindow (int nWindow);
+		virtual void SetupWindow (int nWindow, CCanvas* canvP);
 		virtual bool Setup (void);
 
 	private:
@@ -287,7 +287,7 @@ class CStatusBar : public CGenericCockpit {
 		virtual void DrawCockpit (bool bAlphaTest = false);
 		virtual void Toggle (void);
 
-		virtual void SetupWindow (int nWindow);
+		virtual void SetupWindow (int nWindow, CCanvas* canvP);
 		virtual bool Setup (void);
 	};
 
@@ -325,7 +325,7 @@ class CCockpit : public CGenericCockpit {
 		virtual void DrawCockpit (bool bAlphaTest = false);
 		virtual void Toggle (void);
 
-		virtual void SetupWindow (int nWindow);
+		virtual void SetupWindow (int nWindow, CCanvas* canvP);
 		virtual bool Setup (void);
 	};
 
@@ -365,7 +365,7 @@ class CRearView : public CGenericCockpit {
 			CGenericCockpit::DrawCockpit (gameStates.render.cockpit.nMode + m_info.nCockpit, 0, bAlphaTest); 
 			}
 		virtual void Toggle (void) {};
-		virtual void SetupWindow (int nWindow) {}
+		virtual void SetupWindow (int nWindow, CCanvas* canvP) {}
 		virtual bool Setup (void);
 
 	private:

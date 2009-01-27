@@ -422,22 +422,20 @@ if ((m_info.tInvul > I2X (4)) || ((m_info.tInvul > 0) && (gameData.time.xGame & 
 
 void CCockpit::DrawCockpit (bool bAlphaTest)
 {
-DrawCockpit (m_info.nCockpit, 0, bAlphaTest);
+CGenericCockpit::DrawCockpit (m_info.nCockpit, 0, bAlphaTest);
 }
 
 //	-----------------------------------------------------------------------------
 
-void CCockpit::SetupWindow (int nWindow)
+void CCockpit::SetupWindow (int nWindow, CCanvas* canvP)
 {
-nArea = COCKPIT_PRIMARY_BOX + nWindow;
-	tGaugeBox* hudAreaP = hudWindowAreas + nArea;
-	gameStates.render.vr.buffers.render->SetupPane (
-		&windowCanv,
-		HUD_SCALE_X (hudAreaP->left),
-		HUD_SCALE_Y (hudAreaP->top),
-		HUD_SCALE_X (hudAreaP->right - hudAreaP->left+1),
-		HUD_SCALE_Y (hudAreaP->bot - hudAreaP->top+1));
-	}
+tGaugeBox* hudAreaP = hudWindowAreas + COCKPIT_PRIMARY_BOX + nWindow;
+gameStates.render.vr.buffers.render->SetupPane (
+	canvP,
+	HUD_SCALE_X (hudAreaP->left),
+	HUD_SCALE_Y (hudAreaP->top),
+	HUD_SCALE_X (hudAreaP->right - hudAreaP->left+1),
+	HUD_SCALE_Y (hudAreaP->bot - hudAreaP->top+1));
 }
 
 //	-----------------------------------------------------------------------------

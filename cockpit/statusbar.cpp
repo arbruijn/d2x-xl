@@ -523,17 +523,15 @@ return true;
 
 //	-----------------------------------------------------------------------------
 
-void CStatusBar::SetupWindow (int nWindow)
+void CCockpit::SetupWindow (int nWindow, CCanvas* canvP)
 {
-nArea = SB_PRIMARY_BOX + nWindow;
-	tGaugeBox* hudAreaP = hudWindowAreas + nArea;
-	gameStates.render.vr.buffers.render->SetupPane (
-		&windowCanv,
-		HUD_SCALE_X (hudAreaP->left),
-		HUD_SCALE_Y (hudAreaP->top),
-		HUD_SCALE_X (hudAreaP->right - hudAreaP->left+1),
-		HUD_SCALE_Y (hudAreaP->bot - hudAreaP->top+1));
-	}
+tGaugeBox* hudAreaP = hudWindowAreas + SB_PRIMARY_BOX + nWindow;
+gameStates.render.vr.buffers.render->SetupPane (
+	&canvP,
+	HUD_SCALE_X (hudAreaP->left),
+	HUD_SCALE_Y (hudAreaP->top),
+	HUD_SCALE_X (hudAreaP->right - hudAreaP->left+1),
+	HUD_SCALE_Y (hudAreaP->bot - hudAreaP->top+1));
 }
 
 //	-----------------------------------------------------------------------------
