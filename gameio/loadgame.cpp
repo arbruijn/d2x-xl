@@ -429,7 +429,6 @@ else {
 	Controls [0].afterburnerState = 0;
 	gameStates.gameplay.bLastAfterburnerState = 0;
 	audio.DestroyObjectSound (playerP->nObject);
-	InitGauges ();
 #ifdef TACTILE
 	if (TactileStick)
 		tactile_set_button_jolt ();
@@ -870,7 +869,6 @@ if (nLoadRes) {
 if (!gameStates.app.bProgressBars)
 	ShowBoxedMessage (TXT_LOADING);
 paletteManager.SetGame (paletteManager.Load (szCurrentLevelPalette, pszLevelName, 1, 1, 1));		//don't change screen
-InitGaugeCanvases ();
 ResetPogEffects ();
 if (gameStates.app.bD1Mission) {
 	/*---*/PrintLog ("   loading Descent 1 textures\n");
@@ -1075,7 +1073,7 @@ if (!gameStates.app.cheats.bEnabled) {
 		sprintf (szEndGame, "%s%i  ", TXT_SHIP_BONUS, nEndGamePoints);
 		bIsLastLevel = 1;
 		}
-	AddBonusPointsToScore (nSkillPoints + nEnergyPoints + nShieldPoints + nHostagePoints + nAllHostagePoints + nEndGamePoints);
+	cockpit->AddBonusPointsToScore (nSkillPoints + nEnergyPoints + nShieldPoints + nHostagePoints + nAllHostagePoints + nEndGamePoints);
 	}
 c = 0;
 sprintf (szMenu [c++], "%s%i  ", TXT_SHIELD_BONUS, nShieldPoints);		// Return at start to lower menu...

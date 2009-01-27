@@ -160,7 +160,6 @@ if (!gameData.app.bGamePaused) {
 void ResumeGame (void)
 {
 GameFlushInputs ();
-ResetCockpit ();
 paletteManager.LoadEffect ();
 StartTime (0);
 if (redbook.Playing ())

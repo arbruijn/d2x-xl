@@ -209,6 +209,7 @@ class CGenericCockpit {
 		virtual void SetupWindow (int nWindow, CCanvas* canvP) = 0;
 		virtual bool Setup (void);
 
+		inline CCockpitInfo& Info (void) { return m_info; }
 		inline int Type (void) { return m_info.nType; }
 		inline int LineSpacing (void) { return m_info.nLineSpacing = GAME_FONT->Height () + GAME_FONT->Height () / 4; }
 		inline float XScale (void) { return m_info.xScale = screen.Scale (0); }

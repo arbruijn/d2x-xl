@@ -568,7 +568,6 @@ else {
 sprintf (gameData.multigame.msg.szMsg, TXT_TEAMCHANGE3, gameData.multiplayer.players [nPlayer].callsign);
 if (nPlayer == gameData.multiplayer.nLocalPlayer) {
 	HUDInitMessage (TXT_TEAMJOIN, szTeamColors [team]);
-	ResetCockpit ();
 	}
 else
 	HUDInitMessage (TXT_TEAMJOIN2, gameData.multiplayer.players [i].callsign, szTeamColors [team]);

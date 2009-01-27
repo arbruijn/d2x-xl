@@ -1644,7 +1644,6 @@ void KConfig (int n, const char *pszTitle)
 		bmSave->BlitClipped (xOffs, yOffs);
 		delete bmSave;
 		}
-	ResetCockpit ();		//force cockpit redraw next time
 	// Update save values...
 	if (n == 0) {
 		for (i = 0, j = NUM_KEY_CONTROLS; i < j; i++)

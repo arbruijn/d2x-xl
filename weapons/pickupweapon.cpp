@@ -220,7 +220,7 @@ if (playerP->laserLevel < MAX_LASER_LEVEL) {
 		NDRecordLaserLevel ((sbyte) playerP->laserLevel, (sbyte) playerP->laserLevel + 1);
 	playerP->laserLevel++;
 	PowerupBasic (10, 0, 10, LASER_SCORE, "%s %s %d", TXT_LASER, TXT_BOOSTED_TO, playerP->laserLevel+1);
-	UpdateLaserWeaponInfo ();
+	cockpit->UpdateLaserWeaponInfo ();
 	PickupPrimary (LASER_INDEX, nPlayer);
 	return 1;
 	}
@@ -248,7 +248,7 @@ if (playerP->laserLevel < MAX_SUPER_LASER_LEVEL) {
 		if (gameData.demo.nState == ND_STATE_RECORDING)
 			NDRecordLaserLevel (nOldLevel, playerP->laserLevel);
 		PowerupBasic (10, 0, 10, LASER_SCORE, TXT_SUPERBOOST, playerP->laserLevel + 1, nPlayer);
-		UpdateLaserWeaponInfo ();
+		cockpit->UpdateLaserWeaponInfo ();
 		if (gameData.weapons.nPrimary != LASER_INDEX)
 		   CheckToUsePrimary (SUPER_LASER_INDEX);
 		}
@@ -271,7 +271,7 @@ int PickupQuadLaser (CObject *objP, int nId, int nPlayer)
 if (!(playerP->flags & PLAYER_FLAGS_QUAD_LASERS)) {
 	playerP->flags |= PLAYER_FLAGS_QUAD_LASERS;
 	PowerupBasic (15, 15, 7, QUAD_FIRE_SCORE, "%s!", TXT_QUAD_LASERS);
-	UpdateLaserWeaponInfo ();
+	cockpit->UpdateLaserWeaponInfo ();
 	return 1;
 	}
 if (nPlayer == gameData.multiplayer.nLocalPlayer)

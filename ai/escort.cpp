@@ -1259,6 +1259,5 @@ void ShowEscortMenu (char *msg)
 	fontManager.SetColorRGBi (RGBA (0, PAL2RGBA (28), 0, 255), 1, 0, 0);
    NMDrawBackground (NULL,x-15,y-15,x+w+15-1,y+h+15-1);
   	GrUString ( x, y, msg );
-	ResetCockpit ();
 }
 #endif

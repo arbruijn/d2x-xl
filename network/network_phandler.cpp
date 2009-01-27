@@ -337,7 +337,6 @@ if (IsTeamGame) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		if (gameData.multiplayer.players [i].connected)
 		   MultiResetObjectTexture (OBJECTS + gameData.multiplayer.players [i].nObject);
-	ResetCockpit ();
 	}
 return 1;
 }

@@ -230,14 +230,6 @@ extern void NDRecordCockpitChange (int);
 
 //------------------------------------------------------------------------------
 
-//force cockpit redraw next time. call this if you've trashed the screen
-void ResetCockpit ()
-{
-gameStates.render.cockpit.bRedraw = 1;
-}
-
-//------------------------------------------------------------------------------
-
 //NEWVR
 void VRResetParams ()
 {

@@ -404,7 +404,6 @@ if (bBlackScreen) {
 	CCanvas::Current ()->Clear (BLACK_RGBA);
 	}
 StartTime (0);
-ResetCockpit ();		//force cockpit redraw next time
 }
 
 //------------------------------------------------------------------------------

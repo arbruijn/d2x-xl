@@ -400,7 +400,6 @@ if ((gameData.app.nGameMode & GM_NETWORK) && (gameData.app.nGameMode & GM_TEAM))
 			sprintf (gameData.multigame.msg.szMsg, TXT_TEAMCHANGE3, gameData.multiplayer.players [i].callsign);
 			if (i == gameData.multiplayer.nLocalPlayer) {
 				HUDInitMessage (TXT_TEAMCHANGE1);
-				ResetCockpit ();
 				}
 			else
 				HUDInitMessage (TXT_TEAMCHANGE2, gameData.multiplayer.players [i].callsign);

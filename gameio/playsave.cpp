@@ -254,7 +254,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameStates.render.bShowFrameRate, 0, 0);
 		RP (gameStates.render.bShowTime, 0, 1);
 		RP (audio.MaxChannels (), 0, 16);
-		RP (cockpit->Type (), 0, 0);
+		RP (cockpit->Info ().nType, 0, 0);
 		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
 		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
 		RP (gameOptions [i].render.cockpit.bGuidedInMainView, 0, 0);
@@ -2071,7 +2071,7 @@ if (bOnlyWindowSizes)
 gameStates.app.nDifficultyLevel = cf.ReadByte ();
 gameOpts->gameplay.nAutoLeveling = cf.ReadByte ();
 gameOpts->render.cockpit.bReticle = cf.ReadByte ();
-cockpit->Type () = cf.ReadByte ();
+cockpit->Activate (int (cf.ReadByte ()));
 nDisplayMode = gameStates.video.nDefaultDisplayMode;
 gameStates.video.nDefaultDisplayMode = cf.ReadByte ();
 gameOpts->render.cockpit.bMissileView = cf.ReadByte ();
