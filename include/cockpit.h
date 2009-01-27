@@ -154,7 +154,6 @@ class CGenericCockpit {
 		void AddBonusPointsToScore (int points);
 		void DrawPlayerShip (int nCloakState, int nOldCloakState, int x, int y);
 		void DrawWeaponInfo (int info_index, tGaugeBox *box, int xPic, int yPic, const char *pszName, int xText, int yText, int orient);
-		void DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel);
 		int DrawWeaponDisplay (int nWeaponType, int nWeaponId);
 		void DrawStatic (int nWindow, int nIndex);
 		void DrawOrbs (int x, int y);
@@ -175,6 +174,8 @@ class CGenericCockpit {
 		virtual void DrawKeys (void) = 0;
 		virtual void DrawOrbs (void) = 0;
 		virtual void DrawFlag (void) = 0;
+		virtual void DrawShield (void) = 0;
+		virtual void DrawShieldBar (void) = 0;
 		virtual void DrawEnergy (void) = 0;
 		virtual void DrawEnergyBar (void) = 0;
 		virtual void DrawAfterburner (void) = 0;
@@ -186,13 +187,12 @@ class CGenericCockpit {
 		virtual void DrawSecondaryAmmoInfo (int ammoCount) = 0;
 		virtual void DrawCloak (void) = 0;
 		virtual void DrawInvul (void) = 0;
-		virtual void DrawShield (void) = 0;
-		virtual void DrawShieldBar (void) = 0;
 		virtual void DrawLives (void) = 0;
 		virtual void DrawPlayerShip (void) = 0;
 		virtual void DrawKillList (void) = 0;
 		virtual void DrawStatic (int nWindow) = 0;
 		virtual void Toggle (void);
+		virtual void DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel);
 		virtual void DrawWeapons (void);
 		virtual void DrawCockpit (bool bAlphaTest = false);
 		virtual bool Setup (void);
@@ -212,6 +212,8 @@ class CHUD : public CGenericCockpit {
 		virtual void DrawKeys (void);
 		virtual void DrawOrbs (void);
 		virtual void DrawFlag (void);
+		virtual void DrawShield (void);
+		virtual void DrawShieldBar (void);
 		virtual void DrawEnergy (void);
 		virtual void DrawEnergyBar (void);
 		virtual void DrawAfterburner (void);
@@ -221,11 +223,10 @@ class CHUD : public CGenericCockpit {
 		virtual int DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount);
 		virtual void DrawPrimaryAmmoInfo (int ammoCount);
 		virtual void DrawSecondaryAmmoInfo (int ammoCount);
+		virtual void DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel) {}
 		virtual void DrawWeapons (void);
 		virtual void DrawCloak (void);
 		virtual void DrawInvul (void);
-		virtual void DrawShield (void);
-		virtual void DrawShieldBar (void);
 		virtual void DrawLives (void);
 		virtual void DrawPlayerShip (void) {}
 		virtual void DrawCockpit (void);
@@ -262,6 +263,8 @@ class CStatusBar : public CGenericCockpit {
 		virtual void DrawOrbs (void);
 		virtual void DrawFlag (void);
 		virtual void DrawEnergy (void);
+		virtual void DrawShield (void);
+		virtual void DrawShieldBar (void);
 		virtual void DrawEnergyBar (void);
 		virtual void DrawAfterburner (void);
 		virtual void DrawAfterburnerBar (void);
@@ -269,11 +272,10 @@ class CStatusBar : public CGenericCockpit {
 		virtual int DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount);
 		virtual void DrawPrimaryAmmoInfo (int ammoCount);
 		virtual void DrawSecondaryAmmoInfo (int ammoCount);
+		virtual void DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel);
 		virtual void DrawWeapons (void);
 		virtual void DrawCloak (void) {}
 		virtual void DrawInvul (void);
-		virtual void DrawShield (void);
-		virtual void DrawShieldBar (void);
 		virtual void DrawLives (void);
 		virtual void DrawPlayerShip (void);
 
@@ -305,6 +307,7 @@ class CCockpit : public CGenericCockpit {
 		virtual int DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount);
 		virtual void DrawPrimaryAmmoInfo (int ammoCount);
 		virtual void DrawSecondaryAmmoInfo (int ammoCount);
+		virtual void DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel);
 		virtual void DrawWeapons (void);
 		virtual void DrawCloak (void) {}
 		virtual void DrawInvul (void);
@@ -341,6 +344,7 @@ class CRearView : public CGenericCockpit {
 		virtual int DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount);
 		virtual void DrawPrimaryAmmoInfo (int ammoCount) {}
 		virtual void DrawSecondaryAmmoInfo (int ammoCount) {}
+		virtual void DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel) {}
 		virtual void DrawWeapons (void) {}
 		virtual void DrawCloak (void) {}
 		virtual void DrawInvul (void) {}

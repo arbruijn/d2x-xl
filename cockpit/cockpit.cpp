@@ -59,14 +59,14 @@ h = SECONDARY_W_BOX_BOT - SECONDARY_W_BOX_TOP + 1;
 
 void CCockpit::DrawOrbs (void)
 {
-DrawOrbs (4 * m_info.fontWidth, 2 * m_info.nLineSpacing);
+CGenericCockpit::DrawOrbs (4 * m_info.fontWidth, 2 * m_info.nLineSpacing);
 }
 
 //	-----------------------------------------------------------------------------
 
-void CFullScreenCockpit::DrawFlag (void)
+void CCockpit::DrawFlag (void)
 {
-DrawFlag (4 * m_info.fontWidth, 2 * m_info.nLineSpacing);
+CGenericCockpit::DrawFlag (4 * m_info.fontWidth, 2 * m_info.nLineSpacing);
 }
 
 //	-----------------------------------------------------------------------------
@@ -79,7 +79,7 @@ void CCockpit::ClearBombCount (void)
 
 void CCockpit::DrawBombCount (void)
 {
-DrawBombCount (BOMB_COUNT_X, BOMB_COUNT_Y, BLACK_RGBA, 1);
+CGenericCockpit::DrawBombCount (BOMB_COUNT_X, BOMB_COUNT_Y, BLACK_RGBA, 1);
 }
 
 //	-----------------------------------------------------------------------------
@@ -122,7 +122,7 @@ void CCockpit::DrawShield (void)
 
 BitBlt (GAUGE_NUMERICAL, NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y);
 fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
-nIdShields = PrintF (&nIdShields, NumDispX (shield), NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 36 : 16), "%d", shield);
+nIdShield = PrintF (&nIdShield, NumDispX (m_info.nShields), NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 36 : 16), "%d", m_info.nShields);
 }
 
 //	-----------------------------------------------------------------------------
@@ -133,12 +133,12 @@ void CCockpit::DrawEnergy (void)
 
 BitBlt (GAUGE_NUMERICAL, NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y);
 fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
-nIdEnergy = PrintF (&nIdEnergy, NumDispX (energy), NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 5 : 2), "%d", energy);
+nIdEnergy = PrintF (&nIdEnergy, NumDispX (m_info.nEnergy), NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 5 : 2), "%d", m_info.nEnergy);
 }
 
 //	-----------------------------------------------------------------------------
 
-void CCockpit::DrawEnergyBar (int nEnergy)
+void CCockpit::DrawEnergyBar (void)
 {
 // values taken directly from the bitmap
 #define ENERGY_GAUGE_TOP_LEFT		20
@@ -152,50 +152,48 @@ CCanvas::Current ()->SetColorRGBi (RGBA_PAL (255, 255, 255));
 #else
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
 #endif
-if (nEnergy < 100) {	// erase part of gauge corresponding to energy loss
+if (m_info.nEnergy < 100) {	// erase part of gauge corresponding to energy loss
 	gameStates.render.grAlpha = FADE_LEVELS;
-	float fScale = float (100 - nEnergy) / 100.0f;
+	float fScale = float (100 - m_info.nEnergy) / 100.0f;
 
-	{
-	int x [4] = {ENERGY_GAUGE_TOP_LEFT, LEFT_ENERGY_GAUGE_W, ENERGY_GAUGE_BOT_LEFT + ENERGY_GAUGE_BOT_WIDTH, ENERGY_GAUGE_BOT_LEFT};
-	int y [4] = {0, 0, LEFT_ENERGY_GAUGE_H, LEFT_ENERGY_GAUGE_H};
+		{
+		int x [4] = {ENERGY_GAUGE_TOP_LEFT, LEFT_ENERGY_GAUGE_W, ENERGY_GAUGE_BOT_LEFT + ENERGY_GAUGE_BOT_WIDTH, ENERGY_GAUGE_BOT_LEFT};
+		int y [4] = {0, 0, LEFT_ENERGY_GAUGE_H, LEFT_ENERGY_GAUGE_H};
 
-	x [1] = x [0] + int (fScale * (x [1] - x [0]));
-	x [2] = x [3] + int (fScale * (x [2] - x [3]));
-	for (int i = 0; i < 4; i++) {
-		x [i] = HUD_SCALE_X (LEFT_ENERGY_GAUGE_X + x [i]);
-		y [i] = HUD_SCALE_Y (LEFT_ENERGY_GAUGE_Y + y [i]);
+		x [1] = x [0] + int (fScale * (x [1] - x [0]));
+		x [2] = x [3] + int (fScale * (x [2] - x [3]));
+		for (int i = 0; i < 4; i++) {
+			x [i] = HUD_SCALE_X (LEFT_ENERGY_GAUGE_X + x [i]);
+			y [i] = HUD_SCALE_Y (LEFT_ENERGY_GAUGE_Y + y [i]);
+			}
+		OglDrawFilledPoly (x, y, 4);
 		}
-	OglDrawFilledPoly (x, y, 4);
-	}
 
-	{
-	int x [4] = {0, LEFT_ENERGY_GAUGE_W - ENERGY_GAUGE_TOP_LEFT, LEFT_ENERGY_GAUGE_W - ENERGY_GAUGE_BOT_LEFT, LEFT_ENERGY_GAUGE_W - ENERGY_GAUGE_BOT_WIDTH};
-	int y [4] = {0, 0, LEFT_ENERGY_GAUGE_H, LEFT_ENERGY_GAUGE_H};
+		{
+		int x [4] = {0, LEFT_ENERGY_GAUGE_W - ENERGY_GAUGE_TOP_LEFT, LEFT_ENERGY_GAUGE_W - ENERGY_GAUGE_BOT_LEFT, LEFT_ENERGY_GAUGE_W - ENERGY_GAUGE_BOT_WIDTH};
+		int y [4] = {0, 0, LEFT_ENERGY_GAUGE_H, LEFT_ENERGY_GAUGE_H};
 
-	x [0] = x [1] - int (fScale * (x [1] - x [0]));
-	x [3] = x [2] - int (fScale * (x [2] - x [3]));
-	for (int i = 0; i < 4; i++) {
-		x [i] = HUD_SCALE_X (RIGHT_ENERGY_GAUGE_X + x [i]);
-		y [i] = HUD_SCALE_Y (RIGHT_ENERGY_GAUGE_Y + y [i]);
+		x [0] = x [1] - int (fScale * (x [1] - x [0]));
+		x [3] = x [2] - int (fScale * (x [2] - x [3]));
+		for (int i = 0; i < 4; i++) {
+			x [i] = HUD_SCALE_X (RIGHT_ENERGY_GAUGE_X + x [i]);
+			y [i] = HUD_SCALE_Y (RIGHT_ENERGY_GAUGE_Y + y [i]);
+			}
+		OglDrawFilledPoly (x, y, 4);
 		}
-	OglDrawFilledPoly (x, y, 4);
 	}
-
-	}
-CCanvas::SetCurrent (GetCurrentGameScreen ());
 }
 
 //	-----------------------------------------------------------------------------
 
-void CCockpit::DrawAfterburnerBar (int nEnergy)
+void CCockpit::DrawAfterburnerBar (void)
 {
 	int		x [4], y [4], yMax;
 	ubyte*	tableP = gameStates.video.nDisplayMode ? afterburnerBarTableHires : afterburnerBarTable;
 
 BitBlt (GAUGE_AFTERBURNER, AFTERBURNER_GAUGE_X, AFTERBURNER_GAUGE_Y);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-if ((yMax = FixMul (I2X (1) - nEnergy, AFTERBURNER_GAUGE_H))) {
+if ((yMax = FixMul (I2X (1) - gameData.physics.xAfterburnerCharge, AFTERBURNER_GAUGE_H))) {
 	y [0] = y [1] = HUD_SCALE_Y (AFTERBURNER_GAUGE_Y);
 	y [3] = HUD_SCALE_Y (AFTERBURNER_GAUGE_Y + yMax) - 1;
 	x [1] = HUD_SCALE_X (AFTERBURNER_GAUGE_X + tableP [0]);
@@ -218,10 +216,10 @@ if ((yMax = FixMul (I2X (1) - nEnergy, AFTERBURNER_GAUGE_H))) {
 
 //	-----------------------------------------------------------------------------
 
-void CCockpit::DrawShieldBar (int shield)
+void CCockpit::DrawShieldBar (void)
 {
 if (m_info.tInvul <= 0)
-	BitBlt (GAUGE_SHIELDS + 9 - ((shield >= 100) ? 9 : (shield / 10)), SHIELD_GAUGE_X, SHIELD_GAUGE_Y);
+	BitBlt (GAUGE_SHIELDS + 9 - ((m_info.nShields >= 100) ? 9 : (m_info.nShields / 10)), SHIELD_GAUGE_X, SHIELD_GAUGE_Y);
 }
 
 //	-----------------------------------------------------------------------------
@@ -272,16 +270,16 @@ else {
 
 //	-----------------------------------------------------------------------------
 
-void CStatusBar::DrawKillList (void)
+void CCockpit::DrawKillList (void)
 {
-DrawKillList (53, CCanvas::Current ()->Height () - HUD_LHX (6));
+CGenericCockpit::DrawKillList (53, CCanvas::Current ()->Height () - HUD_LHX (6));
 }
 
 //	-----------------------------------------------------------------------------
 
 void CStatusBar::DrawStatic (int nWindow)
 {
-DrawStatic (nWindow, COCKPIT_PRIMARY_BOX);
+CGenericCockpit::DrawStatic (nWindow, COCKPIT_PRIMARY_BOX);
 }
 
 //	-----------------------------------------------------------------------------
