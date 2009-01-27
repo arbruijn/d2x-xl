@@ -656,7 +656,7 @@ else {
 	GameInitRenderSubBuffers (gameData.render.window.x, gameData.render.window.y, gameData.render.window.w, gameData.render.window.h);
 	}
 HUDClearMessages ();	//	@mk, 11/11/94
-WritePlayerFile ();
+SavePlayerProfile ();
 StartTime (0);
 }
 
@@ -750,7 +750,7 @@ if (cockpit->Type () == CM_FULL_COCKPIT && (gameStates.render.vr.nScreenFlags & 
 //		ShrinkWindow ();
 //		ShrinkWindow ();
 	HUDInitMessage (TXT_COCKPIT_F3);
-	WritePlayerFile ();
+	SavePlayerProfile ();
 	StartTime (0);
 	return;
 	}
@@ -759,7 +759,7 @@ if (cockpit->Type () == CM_FULL_SCREEN && (gameStates.render.vr.nScreenFlags & V
 	//gameData.render.window.w = gameData.render.window.wMax;
 	//gameData.render.window[HA] = gameData.render.window.hMax;
 	cockpit->Activate (CM_STATUS_BAR);
-	WritePlayerFile ();
+	SavePlayerProfile ();
 	StartTime (0);
 	return;
 	}
@@ -794,7 +794,7 @@ if (gameData.render.window.w > WINDOW_MIN_W) {
 
 	GameInitRenderSubBuffers (gameData.render.window.x, gameData.render.window.y, gameData.render.window.w, gameData.render.window.h);
 	HUDClearMessages ();
-	WritePlayerFile ();
+	SavePlayerProfile ();
 	}
 StartTime (0);
 }

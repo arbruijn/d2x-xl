@@ -1584,7 +1584,7 @@ if (!(IsMultiGame || gameStates.app.cheats.bEnabled)) {
 	SetHighestLevel (gameData.missions.nCurrentLevel);
 	}
 else
-	ReadPlayerFile (1);		//get window sizes
+	LoadPlayerProfile (1);		//get window sizes
 ResetSpecialEffects ();
 if (networkData.nJoinState == 1){
 	networkData.nJoinState = 0;

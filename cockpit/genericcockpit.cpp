@@ -1771,7 +1771,7 @@ m_info.nType = nType;
 gameStates.render.cockpit.nNextType = -1;
 Setup ();
 HUDClearMessages ();
-WritePlayerFile ();
+SavePlayerProfile ();
 }
 
 //	-----------------------------------------------------------------------------

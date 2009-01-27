@@ -140,7 +140,7 @@ if (i <= -1)
 	return 0;
 if (choice != gameStates.app.nDifficultyLevel) {       
 	gameStates.app.nDifficultyLevel = choice;
-	WritePlayerFile ();
+	SavePlayerProfile ();
 	}
 return 1;
 }
@@ -220,7 +220,7 @@ try_again:
 	}
 }
 
-WritePlayerFile ();
+SavePlayerProfile ();
 if (!DifficultyMenu ())
 	return;
 paletteManager.DisableEffect ();
@@ -348,7 +348,7 @@ if (gameStates.app.nDifficultyLevel != i) {
 	gameStates.app.nDifficultyLevel = i;
 	gameData.bosses.InitGateIntervals ();
 	}
-WritePlayerFile ();
+SavePlayerProfile ();
 if (optLevel > 0)
 	nLevel = atoi (m [optLevel].m_text);
 paletteManager.DisableEffect ();

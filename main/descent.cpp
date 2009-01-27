@@ -811,7 +811,7 @@ SaveModelData ();
 /*---*/PrintLog ("Saving configuration file\n");
 WriteConfigFile ();
 /*---*/PrintLog ("Saving player profile\n");
-WritePlayerFile ();
+SavePlayerProfile ();
 /*---*/PrintLog ("Releasing tracker list\n");
 DestroyTrackerList ();
 FreeParams ();

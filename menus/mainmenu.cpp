@@ -210,7 +210,7 @@ do {
 	i = m.Menu ("", NULL, AutoDemoMenuCheck, &nChoice, BackgroundName (BG_MENU));
 	if (gameStates.app.bNostalgia)
 		gameOpts->app.nVersionFilter = 3;
-	WritePlayerFile ();
+	SavePlayerProfile ();
 	if (i > -1)
 		ExecMainMenuOption (nChoice);
 } while (gameStates.app.nFunctionMode == FMODE_MENU);

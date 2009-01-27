@@ -250,7 +250,7 @@ LOCALPLAYER.connected = 0;
 NetworkSendEndLevelPacket ();
 ChangePlayerNumTo (0);
 gameData.app.nGameMode = GM_GAME_OVER;
-WritePlayerFile ();
+SavePlayerProfile ();
 IpxHandleLeaveGame ();
 NetworkFlush ();
 }

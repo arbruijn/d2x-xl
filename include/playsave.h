@@ -30,13 +30,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // update the CPlayerData's highest level.  returns errno (0 == no error)
 int UpdatePlayerFile ();
 // Used to save KConfig values to disk.
-int WritePlayerFile ();
+int SavePlayerProfile ();
 int NewPlayerConfig ();
 
 // called once at program startup to get the CPlayerData's name
 int SelectPlayer (void);
 
-int ReadPlayerFile (int bOnlyWindowSizes);
+int LoadPlayerProfile (int bOnlyWindowSizes);
 
 // set a new highest level for CPlayerData for this mission
 void SetHighestLevel (ubyte nLevel);
@@ -63,7 +63,7 @@ class CParam {
 
 //------------------------------------------------------------------------------
 
-class CFileParams {
+class CPlayerProfile {
 	private:
 		CParam*	paramList;
 		CParam*	lastParam;
@@ -80,8 +80,8 @@ class CFileParams {
 		int LoadParam (void);
 
 	public:
-		CFileParams () { Init (); }
-		~CFileParams () { Destroy (); }
+		CPlayerProfile () { Init (); }
+		~CPlayerProfile () { Destroy (); }
 		void Init (void);
 		void Destroy (void);
 		void Setup (void);
@@ -89,7 +89,7 @@ class CFileParams {
 		int Save (void);
 	};
 
-extern CFileParams fileParams;
+extern CPlayerProfile profile;
 
 //------------------------------------------------------------------------------
 

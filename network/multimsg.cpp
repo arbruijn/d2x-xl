@@ -454,7 +454,7 @@ void MultiDefineMacroEnd ()
 {
 Assert (gameData.multigame.msg.bDefining > 0);
 strcpy (gameData.multigame.msg.szMacro [gameData.multigame.msg.bDefining-1], gameData.multigame.msg.szMsg);
-WritePlayerFile ();
+SavePlayerProfile ();
 MultiSendMsgQuit ();
 }
 

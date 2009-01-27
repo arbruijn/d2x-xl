@@ -295,7 +295,7 @@ item = m.Menu (NULL, "Enter Guide-bot name:");
 if (item != -1) {
 	strcpy (gameData.escort.szName,text);
 	strcpy (gameData.escort.szRealName,text);
-	WritePlayerFile ();
+	SavePlayerProfile ();
 	}
 }
 

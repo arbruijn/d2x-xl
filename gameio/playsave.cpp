@@ -68,7 +68,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "cockpit.h"
 #include "playsave.h"
 
-CFileParams params;
+CPlayerProfile profile;
 
 //------------------------------------------------------------------------------
 
@@ -178,7 +178,7 @@ return 1;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-void CFileParams::Init (void)
+void CPlayerProfile::Init (void)
 { 
 paramList = lastParam = NULL; 
 bRegistered = false;
@@ -188,7 +188,7 @@ Setup ();
 
 //------------------------------------------------------------------------------
 
-void CFileParams::Destroy (void)
+void CPlayerProfile::Destroy (void)
 {
 	CParam	*pp;
 
@@ -201,7 +201,7 @@ while (paramList) {
 
 //------------------------------------------------------------------------------
 
-char* CFileParams::MakeTag (char *pszTag, const char *pszIdent, int i, int j)
+char* CPlayerProfile::MakeTag (char *pszTag, const char *pszIdent, int i, int j)
 {
 	char	*pi;
 	const char *ph;
@@ -222,7 +222,7 @@ return pszTag;
 
 //------------------------------------------------------------------------------
 
-int CFileParams::Register (void *valP, const char *pszIdent, int i, int j, ubyte nSize)
+int CPlayerProfile::Register (void *valP, const char *pszIdent, int i, int j, ubyte nSize)
 {
 	char		szTag [200];
 	int		l;
@@ -250,7 +250,7 @@ return 1;
 //------------------------------------------------------------------------------
 // returns number of config items with identical ids before the current one
 
-int CFileParams::FindInConfig (kcItem *cfgP, int nItems, int iItem, const char *pszText)
+int CPlayerProfile::FindInConfig (kcItem *cfgP, int nItems, int iItem, const char *pszText)
 {
 	int	h, i;
 
@@ -267,7 +267,7 @@ return h ? h : -1;
 
 //------------------------------------------------------------------------------
 
-void CFileParams::RegisterConfig (kcItem *cfgP, int nItems, const char *pszId)
+void CPlayerProfile::RegisterConfig (kcItem *cfgP, int nItems, const char *pszId)
 {
 	char	szTag [200], *p;
 	int	i, j = 0;
@@ -294,7 +294,7 @@ for (i = 0; i < nItems; i++) {
 
 //------------------------------------------------------------------------------
 
-void CFileParams::Create (void)
+void CPlayerProfile::Create (void)
 {
 	uint	i, j;
 
@@ -669,7 +669,7 @@ RegisterConfig (kcHotkeys, KcHotkeySize (), "hotkeys.");
 
 //------------------------------------------------------------------------------
 
-int CFileParams::Save (void)
+int CPlayerProfile::Save (void)
 {
 if (m_cf.File ())
 	return 0;
@@ -689,7 +689,7 @@ return m_cf.Close ();
 
 //------------------------------------------------------------------------------
 
-CParam* CFileParams::Find (const char *pszTag)
+CParam* CPlayerProfile::Find (const char *pszTag)
 {
 	CParam	*pp;
 
@@ -701,7 +701,7 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-int CFileParams::Set (const char *pszIdent, const char *pszValue)
+int CPlayerProfile::Set (const char *pszIdent, const char *pszValue)
 {
 	CParam*	pp;
 
@@ -713,7 +713,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CFileParams::LoadParam (void)
+int CPlayerProfile::LoadParam (void)
 {
 	char		szParam	[200], *pszValue;
 
@@ -729,7 +729,7 @@ return Set (szParam, pszValue);
 
 //------------------------------------------------------------------------------
 
-int CFileParams::Load (void)
+int CPlayerProfile::Load (void)
 {
 if (m_cf.File ())
 	return 0;
@@ -1435,7 +1435,7 @@ tParamValue defaultParams [] = {
 
 //------------------------------------------------------------------------------
 
-void CFileParams::Setup (void)
+void CPlayerProfile::Setup (void)
 {
 	tParamValue	*pv;
 	int			i;
@@ -1511,7 +1511,7 @@ strcpy(gameData.multigame.msg.szMacro[3], TXT_URANUS);
 networkData.nNetLifeKills = 0;
 networkData.nNetLifeKilled = 0;
 gameData.app.nLifetimeChecksum = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
-fileParams.Setup ();
+profile.Setup ();
 #if 0
 InitGameOptions (0);
 InitArgs (0, NULL);
@@ -1996,7 +1996,7 @@ for (i = 0; i < 2; i++) {
 ubyte dosControlType,winControlType;
 
 //read in the CPlayerData's saved games.  returns errno (0 == no error)
-int ReadPlayerFile (int bOnlyWindowSizes)
+int LoadPlayerProfile (int bOnlyWindowSizes)
 {
 	CFile		cf;
 	char		filename [FILENAME_LEN], buf [128];
@@ -2119,7 +2119,7 @@ else {
 		controlSettings.d2xCustom [i] = controlSettings.d2xDefaults [i];
 	}
 if (gameStates.input.nPlrFileVersion >= D2XXL_PLAYER_FILE_VERSION) {
-	fileParams.Load ();
+	profile.Load ();
 	KCSetControls (1);
 	}
 else {
@@ -2170,7 +2170,7 @@ if (cf.Close ())
 	if (funcRes == EZERO)
 		funcRes = errno;
 if (bRewriteIt)
-	WritePlayerFile ();
+	SavePlayerProfile ();
 
 gameStates.render.nLightingMethod = gameStates.app.bNostalgia ? 0 : gameOpts->render.nLightingMethod;
 if (gameStates.render.nLightingMethod == 2)
@@ -2215,13 +2215,13 @@ void SetHighestLevel (ubyte nLevel)
 {
 	int ret, i;
 
-ret = ReadPlayerFile (0);
+ret = LoadPlayerProfile (0);
 if ((ret != EZERO) && (ret != ENOENT))		//if file doesn't exist, that's ok
 	return;
 i = FindHLIEntry ();
 if (nLevel > highestLevels [i].nLevel)
 	highestLevels [i].nLevel = nLevel;
-WritePlayerFile ();
+SavePlayerProfile ();
 }
 
 //------------------------------------------------------------------------------
@@ -2231,7 +2231,7 @@ int GetHighestLevel(void)
 	int i;
 	int nHighestSaturnLevel = 0;
 
-ReadPlayerFile (0);
+LoadPlayerProfile (0);
 #ifndef SATURN
 if (strlen (gameData.missions.list [gameData.missions.nCurrentMission].filename) == 0) {
 	for (i = 0; i < nHighestLevels; i++)
@@ -2536,7 +2536,7 @@ for (i = 0; i < 2; i++) {
 //------------------------------------------------------------------------------
 
 //write out CPlayerData's saved games.  returns errno (0 == no error)
-int WritePlayerFile (void)
+int SavePlayerProfile (void)
 {
 	CFile	cf;
 	char	filename [FILENAME_LEN];		// because of ":gameData.multiplayer.players:" path
@@ -2621,7 +2621,7 @@ cf.WriteString (buf);  // Write out current joystick for player.
 cf.Write(controlSettings.d2xCustom, MAX_HOTKEY_CONTROLS, 1);
 // write D2X-XL stuff
 #if 1
-fileParams.Save ();
+profile.Save ();
 #else
 WriteBinD2XParams ();
 #endif
@@ -2639,11 +2639,11 @@ return funcRes;
 //update the CPlayerData's highest level.  returns errno (0 == no error)
 int UpdatePlayerFile()
 {
-	int ret = ReadPlayerFile (0);
+	int ret = LoadPlayerProfile (0);
 
 if ((ret != EZERO) && (ret != ENOENT))		//if file doesn't exist, that's ok
 	return ret;
-return WritePlayerFile();
+return SavePlayerProfile();
 }
 
 //------------------------------------------------------------------------------
@@ -2702,7 +2702,7 @@ for (;;) {
 	break;
 	}
 strncpy (LOCALPLAYER.callsign, text, CALLSIGN_LEN);
-WritePlayerFile ();
+SavePlayerProfile ();
 return 1;
 }
 
@@ -2777,7 +2777,7 @@ if (filename [0] == '<') {
 	}
 else
 	strncpy (LOCALPLAYER.callsign, filename, CALLSIGN_LEN);
-if (ReadPlayerFile (0) != EZERO)
+if (LoadPlayerProfile (0) != EZERO)
 	goto callMenu;
 KCSetControls (0);
 SetDisplayMode (gameStates.video.nDefaultDisplayMode, 1);

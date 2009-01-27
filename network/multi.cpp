@@ -4589,7 +4589,7 @@ if (oldrank!=GetMyNetRanking ()) {
 		netPlayers.players [gameData.multiplayer.nLocalPlayer].rank = GetMyNetRanking ();
 		}
 	}
-WritePlayerFile ();
+SavePlayerProfile ();
 }
 
 //-----------------------------------------------------------------------------
@@ -4611,7 +4611,7 @@ if (oldrank!=GetMyNetRanking ()) {
 	if (!gameOpts->multi.bNoRankings)
 		HUDInitMessage (TXT_DEMOTED, pszRankStrings [GetMyNetRanking ()]);
 	}
-WritePlayerFile ();
+SavePlayerProfile ();
 }
 
 //-----------------------------------------------------------------------------

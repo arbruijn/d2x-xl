@@ -320,7 +320,7 @@ int SelectNextWindowFunction(int nWindow)
 				gameStates.render.cockpit.n3DView [nWindow] = CV_NONE;
 			break;
 	}
-	WritePlayerFile();
+	SavePlayerProfile();
 
 	return 1;	 //bScreenChanged
 }
