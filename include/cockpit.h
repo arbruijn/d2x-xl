@@ -60,7 +60,15 @@ extern int nHUDLineSpacing;
 
 //	-----------------------------------------------------------------------------
 
-CBitmap* HUDBitBlt (int nGauge, int x, int y, bool bScalePos = true, bool bScaleSize = true, int scale = I2X (1), int orient = 0, CBitmap* bmP = NULL);
+typedef struct tSpan {
+	sbyte l, r;
+} tSpan;
+
+typedef struct tGaugeBox {
+	int left, top;
+	int right, bot;		//maximal box
+	tSpan *spanlist;	//list of left, right spans for copy
+} tGaugeBox;
 
 //	-----------------------------------------------------------------------------
 
@@ -74,7 +82,6 @@ typedef struct tCockpitHistory {
 	fix	afterburner;
 	int	bombCount;
 	int	laserLevel;
-	int	weapon [0]; 
 	int	weapon [2];
 	int	ammo [2];
 	int	omegaCharge;
@@ -137,8 +144,13 @@ class CGenericCockpit {
 		void DrawWeaponInfo (int info_index, tGaugeBox *box, int xPic, int yPic, const char *pszName, int xText, int yText, int orient);
 		void DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel);
 		int DrawWeaponDisplay (int nWeaponType, int nWeaponId);
-		void DrawStatic (int nWindow);
-		void DrawWeaponDisplays (void);
+		void DrawStatic (int nWindow, int nIndex);
+		void DrawOrbs (int x, int y);
+		void DrawFlag (int x, int y);
+		void DrawKillList (int x, int y);
+		void DrawStatic (int nWindow, int nIndex);
+		void DrawCockpit (int nCockpit, int y, bool bAlphaTest = false);
+		void UpdateLaserWeaponInfo (void);
 		void DrawReticle (int bForceBig);
 		int CanSeeObject (int nObject, int bCheckObjs);
 		void DrawPlayerNames (void);
@@ -169,18 +181,9 @@ class CGenericCockpit {
 		virtual void DrawKillList (void) = 0;
 		virtual void DrawStatic (int nWindow) = 0;
 		virtual void Toggle (void);
-
 		virtual void DrawWeapons (void);
 		virtual void DrawCockpit (bool bAlphaTest = false);
 		virtual bool Setup (void);
-
-		void DrawOrbs (int x, int y);
-		void DrawFlag (int x, int y);
-		void DrawKillList (int x, int y);
-		void DrawStatic (int nWindow, int nIndex);
-		void DrawCockpit (int nCockpit, int y, bool bAlphaTest = false);
-		void DrawPlayerShip (int nCloakState, int nOldCloakState, int y, int x);
-		void UpdateLaserWeaponInfo (void);
 
 		inline int Mode (void) { return m_info.mode; }
 		inline void SetMode (int mode) { m_info.mode = mode; }

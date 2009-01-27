@@ -1,4 +1,4 @@
-
+/*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
 END-USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
@@ -13,6 +13,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #ifndef _HUD_DEFS_H
 #define _HUD_DEFS_H
+
+#include "cockpit.h"
 
 #define GAUGE_SHIELDS			0		//0..9, in decreasing order (100%, 90%...0%)
 
@@ -333,44 +335,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //	-----------------------------------------------------------------------------
 
-typedef struct tSpan {
-	sbyte l, r;
-} tSpan;
-
-typedef struct tGaugeBox {
-	int left, top;
-	int right, bot;		//maximal box
-	tSpan *spanlist;	//list of left, right spans for copy
-} tGaugeBox;
-
 extern tGaugeBox gaugeBoxes [];
-
-//	-----------------------------------------------------------------------------
-
-int _CDECL_ PrintF (int *idP, int x, int y, const char *pszFmt, ...);
-void DrawAmmoInfo (int x, int y, int ammoCount, int primary);
-void DrawPlayerShip (int nCloakState, int nOldCloakState, int x, int y);
-void DrawInvulnerableShip (void);
-void ShowBombCount (int x, int y, int bg_color, int bShowAlways);
-
-void SBInitGaugeCanvases (void);
-void SBGetHostageWindowCoords (int *x, int *y, int *w, int *h);
-void SBShowScore (void);
-void SBShowScoreAdded (void);
-void SBShowHomingWarning (void);
-void SBDrawPrimaryAmmoInfo (int ammoCount);
-void SBDrawSecondaryAmmoInfo (int ammoCount);
-void SBShowLives (void);
-void SBDrawEnergyBar (int nEnergy);
-void SBDrawAfterburner (void);
-void SBDrawShieldNum (int shield);
-void SBDrawShieldBar (int shield);
-void SBDrawKeys (void);
-void SBDrawInvulnerableShip (void);
-void SBRenderGauges (void);
-
-//	-----------------------------------------------------------------------------
-
 extern tSpan weaponWindowLeft [];
 extern tSpan weaponWindowRight [];
 extern tSpan weaponWindowLeftHires [];

@@ -142,11 +142,11 @@ class CScreen {
 		inline void SetMode (u_int32_t mode) { m_info.mode = mode; }
 		inline void SetWidth (short width) { 
 			m_info.width = width; 
-			scale [0] = (width > 640) ? float (width) / 640.0f : 1.0;
+			m_info.scale [0] = (width > 640) ? float (width) / 640.0f : 1.0f;
 			}
 		inline void SetHeight (short height) { 
 			m_info.height = height; 
-			scale [1] = (height > 480) ? float (height) / 480.0f : 1.0f;
+			m_info.scale [1] = (height > 480) ? float (height) / 480.0f : 1.0f;
 			}
 		inline void SetAspect (fix aspect) { m_info.aspect = aspect; }
 		inline float Scale (uint i = 0) { return m_info.scale [i]; }
