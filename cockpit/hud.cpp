@@ -145,7 +145,7 @@ if (cockpit->Hide ())
 
 	static int nIdLock = 0;
 
-if (/*(LOCALPLAYER.homingObjectDist >= 0) &&*/ (gameData.time.xGame & 0x4000)) {
+if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) {
 	int	x = 0x8000, 
 			y = CCanvas::Current ()->Height () - m_info.nLineSpacing;
 

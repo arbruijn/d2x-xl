@@ -426,6 +426,8 @@ if ((m_info.tInvul > I2X (4)) || ((m_info.tInvul > 0) && (gameData.time.xGame & 
 
 void CStatusBar::ClearBombCount (int bgColor)
 {
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
 CCanvas::Current ()->SetColorRGBi (bgColor);
 if (!gameStates.video.nDisplayMode) {
 	Rect (169, 189, 189, 196);
@@ -437,6 +439,7 @@ else {
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (128, 128, 128));
 	OglDrawLine (ScaleX (336), ScaleY (453), ScaleX (378), ScaleY (453));
 	}
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -450,7 +453,10 @@ CGenericCockpit::DrawBombCount (SB_BOMB_COUNT_X, SB_BOMB_COUNT_Y, BLACK_RGBA, 0)
 
 int CStatusBar::DrawBombCount (int& nIdBombCount, int x, int y, char* pszBombCount)
 {
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
 return PrintF (&nIdBombCount, x, y, pszBombCount, nIdBombCount);
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -466,6 +472,8 @@ void CStatusBar::DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel)
 {
 	int nIndex;
 
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
 if (nWeaponType == 0) {
 	nIndex = primaryWeaponToWeaponInfo [nWeaponId];
 	if (nIndex == LASER_ID && laserLevel > MAX_LASER_LEVEL)
@@ -484,6 +492,7 @@ else {
 		SECONDARY_WEAPON_NAMES_SHORT (nWeaponId),
 		SECONDARY_W_TEXT_X, SECONDARY_W_TEXT_Y, 0);
 	}
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------

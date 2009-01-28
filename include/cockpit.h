@@ -118,6 +118,7 @@ class CCockpitInfo {
 		int	nEnergy;
 		int	bCloak;
 		fix	tInvul;
+		bool	bRebuild;
 
 	public:
 		void Init (void);
@@ -221,6 +222,7 @@ class CGenericCockpit {
 		inline int LineSpacing (void) { return m_info.nLineSpacing = GAME_FONT->Height () + GAME_FONT->Height () / 4; }
 		inline float XScale (void) { return m_info.xScale = screen.Scale (0); }
 		inline float YScale (void) { return m_info.yScale = screen.Scale (1); }
+		inline void Rebuild (void) { m_info.bRebuild = true; }
 
 		inline bool Always (void) { 
 			return (m_info.nType == CM_FULL_COCKPIT) || (m_info.nType == CM_STATUS_BAR); 

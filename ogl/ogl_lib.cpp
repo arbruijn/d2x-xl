@@ -805,7 +805,7 @@ InitDynLighting ();
 OglCreateDrawBuffer ();
 cameraManager.Create ();
 InitSpheres ();
-cockpit->Setup ();
+cockpit->Rebuild ();
 //gameData.models.Prepare ();
 OglSetDrawBuffer (gameStates.ogl.nDrawBuffer, 1);
 if (!gameStates.app.bGameRunning)

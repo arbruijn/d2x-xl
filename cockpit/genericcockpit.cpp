@@ -115,6 +115,7 @@ weaponBoxFadeValues [1] = 0;
 weaponBoxUser [0] = 
 weaponBoxUser [1] = WBU_WEAPON;
 nLineSpacing = GAME_FONT->Height () + GAME_FONT->Height () / 4;
+bRebuild = false;
 }
 
 //	-----------------------------------------------------------------------------
@@ -1490,6 +1491,9 @@ void CGenericCockpit::Render (int bExtraInfo)
 if (Hide ())
 	return;
 
+if (m_info.bRebuild && !cockpit->Setup ())
+	return;
+		 
 glDepthFunc (GL_ALWAYS);
 CCanvas::SetCurrent (CurrentGameScreen ());
 CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
@@ -1765,6 +1769,7 @@ if (gameStates.video.nScreenMode == SCREEN_EDITOR)
 CCanvas::SetCurrent (NULL);
 fontManager.SetCurrent (GAME_FONT);
 gameStates.render.cockpit.nShieldFlash = 0;
+m_info.bRebuild = false;
 return true;
 }
 
