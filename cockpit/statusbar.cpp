@@ -515,8 +515,11 @@ gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window
 
 //	-----------------------------------------------------------------------------
 
-bool CStatusBar::Setup (void)
+bool CStatusBar::Setup (bool bRebuild)
 {
+if (bRebuild && !m_info.bRebuild))
+	return true;
+m_info.bRebuild = false;
 if (!CGenericCockpit::Setup ())
 	return false;
 int h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [CM_STATUS_BAR + (gameStates.video.nDisplayMode ? (gameData.models.nCockpits / 2) : 0)].index].Height ();

@@ -1494,7 +1494,7 @@ void CGenericCockpit::Render (int bExtraInfo)
 if (Hide ())
 	return;
 
-if (m_info.bRebuild && !cockpit->Setup ())
+if (!cockpit->Setup (true))
 	return;
 		 
 glDepthFunc (GL_ALWAYS);
@@ -1797,7 +1797,7 @@ else
 gameStates.render.cockpit.nType = nType;
 m_info.nCockpit = (gameStates.video.nDisplayMode && !gameStates.app.bDemoData) ? gameData.models.nCockpits / 2 : 0;
 gameStates.render.cockpit.nNextType = -1;
-cockpit->Setup ();
+cockpit->Setup (false);
 HUDClearMessages ();
 SavePlayerProfile ();
 }

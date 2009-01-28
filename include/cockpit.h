@@ -182,6 +182,7 @@ class CGenericCockpit {
 		void Render (int bExtraInfo);
 		void RenderWindow (int nWindow, CObject *viewerP, int bRearView, int nUser, const char *pszLabel);
 		void Activate (int nType);
+		bool Setup (void);
 
 		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h) = 0;
 		virtual void DrawRecording (void) = 0;
@@ -215,7 +216,7 @@ class CGenericCockpit {
 		virtual void DrawWeapons (void);
 		virtual void DrawCockpit (bool bAlphaTest = false) = 0;
 		virtual void SetupWindow (int nWindow, CCanvas* canvP) = 0;
-		virtual bool Setup (void);
+		virtual bool Setup (bool bRebuild) = 0;
 
 		inline CCockpitInfo& Info (void) { return m_info; }
 		inline int Type (void) { return m_info.nType; }
@@ -277,7 +278,7 @@ class CHUD : public CGenericCockpit {
 		virtual void Toggle (void);
 
 		virtual void SetupWindow (int nWindow, CCanvas* canvP);
-		virtual bool Setup (void);
+		virtual bool Setup (bool bRebuild);
 
 	private:
 		int FlashGauge (int h, int *bFlash, int tToggle);
@@ -289,7 +290,7 @@ class CWideHUD : public CHUD {
 	public:
 		virtual void DrawRecording (void);
 		virtual void Toggle (void);
-		virtual bool Setup (void);
+		virtual bool Setup (bool bRebuild);
 		virtual void SetupWindow (int nWindow, CCanvas* canvP);
 	};
 
@@ -331,7 +332,7 @@ class CStatusBar : public CGenericCockpit {
 		virtual void Toggle (void);
 
 		virtual void SetupWindow (int nWindow, CCanvas* canvP);
-		virtual bool Setup (void);
+		virtual bool Setup (bool bRebuild);
 	};
 
 //	-----------------------------------------------------------------------------
@@ -370,7 +371,7 @@ class CCockpit : public CGenericCockpit {
 		virtual void Toggle (void);
 
 		virtual void SetupWindow (int nWindow, CCanvas* canvP);
-		virtual bool Setup (void);
+		virtual bool Setup (bool bRebuild);
 	};
 
 //	-----------------------------------------------------------------------------
@@ -412,7 +413,7 @@ class CRearView : public CGenericCockpit {
 			}
 		virtual void Toggle (void) {};
 		virtual void SetupWindow (int nWindow, CCanvas* canvP) {}
-		virtual bool Setup (void);
+		virtual bool Setup (bool bRebuild);
 	};
 
 //	-----------------------------------------------------------------------------

@@ -523,8 +523,11 @@ gameStates.render.vr.buffers.render->SetupPane (
 
 //	-----------------------------------------------------------------------------
 
-bool CCockpit::Setup (void)
+bool CCockpit::Setup (bool bRebuild)
 {
+if (bRebuild && !m_info.bRebuild))
+	return true;
+m_info.bRebuild = false;
 if (!CGenericCockpit::Setup ())
 	return false;
 gameData.render.window.hMax = (screen.Height () * 2) / 3;

@@ -643,8 +643,11 @@ gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window
 
 //	-----------------------------------------------------------------------------
 
-bool CHUD::Setup (void)
+bool CHUD::Setup (bool bRebuild)
 {
+if (bRebuild && !m_info.bRebuild))
+	return true;
+m_info.bRebuild = false;
 if (!CGenericCockpit::Setup ())
 	return false;
 gameData.render.window.hMax = screen.Height ();
@@ -727,8 +730,11 @@ CGenericCockpit::Activate (CM_LETTERBOX);
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 
-bool CWideHUD::Setup (void)
+bool CWideHUD::Setup (bool bRebuild)
 {
+if (bRebuild && !m_info.bRebuild))
+	return true;
+m_info.bRebuild = false;
 if (!CGenericCockpit::Setup ())
 	return false;
 int x = 0;
