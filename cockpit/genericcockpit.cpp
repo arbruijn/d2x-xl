@@ -1636,7 +1636,7 @@ else
 if ((gameData.demo.nState == ND_STATE_PLAYBACK))
 	gameData.app.nGameMode = gameData.demo.nGameMode;
 
-FillBackground ();
+//FillBackground ();
 
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
 CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);

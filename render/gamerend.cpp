@@ -661,6 +661,7 @@ void FillBackground (void)
 {
 #if 1
 if (gameData.render.window.x || gameData.render.window.y) {
+//	OglEndFrame ();
 	CCanvas::Push ();
 	CCanvas::SetCurrent (CurrentGameScreen ());
 	gameStates.ogl.nLastW = CCanvas::Current ()->Width ();
@@ -671,6 +672,7 @@ if (gameData.render.window.x || gameData.render.window.y) {
 	CCanvas::Pop ();
 	gameStates.ogl.nLastW = CCanvas::Current ()->Width ();
 	gameStates.ogl.nLastH = CCanvas::Current ()->Height ();
+//	OglStartFrame (0, 0);
 	}
 #else
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
@@ -734,24 +736,17 @@ console.printf (CON_DBG, "Cockpit mode=%d\n", gameStates.render.cockpit.nType);
 #endif
 if (gameData.render.window.w > WINDOW_MIN_W) {
 	//int x, y;
-
    gameData.render.window.w -= WINDOW_W_DELTA;
 	gameData.render.window.h -= WINDOW_H_DELTA;
-
 #if TRACE
   console.printf (CON_DBG, "NewW=%d NewH=%d VW=%d maxH=%d\n", gameData.render.window.w, gameData.render.window.h, gameData.render.window.wMax, gameData.render.window.hMax);
 #endif
 	if (gameData.render.window.w < WINDOW_MIN_W)
 		gameData.render.window.w = WINDOW_MIN_W;
-
 	if (gameData.render.window.h < WINDOW_MIN_H)
 		gameData.render.window.h = WINDOW_MIN_H;
-
 	gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w) / 2;
 	gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h) / 2;
-
-	FillBackground ();
-
 	GameInitRenderSubBuffers (gameData.render.window.x, gameData.render.window.y, gameData.render.window.w, gameData.render.window.h);
 	HUDClearMessages ();
 	SavePlayerProfile ();
@@ -767,6 +762,7 @@ PROF_START
 SetScreenMode (SCREEN_GAME);
 cockpit->PlayHomingWarning ();
 paletteManager.ClearEffect (paletteManager.Game ());
+FillBackground ();
 if (gameStates.render.vr.nRenderMode == VR_NONE)
 	RenderFrameMono ();
 StopTime ();

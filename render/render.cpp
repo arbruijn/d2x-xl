@@ -1907,7 +1907,9 @@ else if (gameStates.render.nType == 2)	// render objects containing transparency
 int BeginRenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 {
 PROF_START
+#if CLEAR_WINDOW == 2
 	tPortal	*oldPortal;
+#endif
 #if 0//def _DEBUG
 	int		i;
 #endif
@@ -2060,6 +2062,8 @@ if (nWindow)
 	nWindow = nWindow;
 else
 	nWindow = nWindow;
+if (!nWindow)
+	FillBackground ();
 if (gameStates.app.bNostalgia) {
 	gameOptions [1].render.debug.bWireFrame = 0;
 	gameOptions [1].render.debug.bTextures = 1;

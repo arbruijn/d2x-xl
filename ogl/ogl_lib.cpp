@@ -579,9 +579,11 @@ else
 		glDepthMask (1);
 		glColorMask (1,1,1,1);
 		glClearColor (0,0,0,0);
+#if 0
 		if (bResetColorBuf)
 			glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		else
+#endif
 			glClear (GL_DEPTH_BUFFER_BIT);
 		}
 	else if (gameStates.render.nRenderPass) {
@@ -752,7 +754,7 @@ if (!gameStates.menus.nInMenu || bForce) {
 	OglFlushDrawBuffer ();
 	SDL_GL_SwapBuffers ();
 	OglSetDrawBuffer (GL_BACK, 1);
-	if (gameStates.menus.nInMenu || bClear)
+//	if (gameStates.menus.nInMenu || bClear)
 		glClear (GL_COLOR_BUFFER_BIT);
 	}
 }
