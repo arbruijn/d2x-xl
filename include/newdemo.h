@@ -100,6 +100,14 @@ int NDFindObject (int nSignature);
 void NDRecordDestroyObjectSound (int nObject);
 void NDStripFrames (char* outname, int bytes_to_strip);
 
+extern CObject demoRightExtra, demoLeftExtra;
+extern ubyte nDemoDoRight, nDemoDoLeft;
+extern ubyte nDemoDoingRight, nDemoDoingLeft;
+extern char nDemoWBUType [];
+extern char bDemoRearCheck [];
+extern const char *szDemoExtraMessage [];
+
+
 #endif // NEWDEMO
 
 #endif // _NEWDEMO_H

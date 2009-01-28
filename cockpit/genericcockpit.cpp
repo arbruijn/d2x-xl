@@ -1484,10 +1484,113 @@ if (showViewTextTimer > 0) {
 }
 #endif
 
+//------------------------------------------------------------------------------
+
+void CGenericCockpit::RenderWindows (void)
+{
+	int		bDidMissileView = 0;
+	int		saveNewDemoState = gameData.demo.nState;
+	int		w;
+
+if (gameData.demo.nState == ND_STATE_PLAYBACK) {
+   if (nDemoDoLeft) {
+      if (nDemoDoLeft == 3)
+			cockpit->RenderWindow (0, gameData.objs.consoleP, 1, WBU_REAR, "REAR");
+      else
+			cockpit->RenderWindow (0, &demoLeftExtra, bDemoRearCheck [nDemoDoLeft], nDemoWBUType [nDemoDoLeft], szDemoExtraMessage [nDemoDoLeft]);
+		}
+   else
+		cockpit->RenderWindow (0, NULL, 0, WBU_WEAPON, NULL);
+	if (nDemoDoRight) {
+      if (nDemoDoRight == 3)
+			cockpit->RenderWindow (1, gameData.objs.consoleP, 1, WBU_REAR, "REAR");
+      else
+			cockpit->RenderWindow (1, &demoRightExtra, bDemoRearCheck [nDemoDoRight], nDemoWBUType [nDemoDoRight], szDemoExtraMessage [nDemoDoRight]);
+		}
+   else
+		cockpit->RenderWindow (1, NULL, 0, WBU_WEAPON, NULL);
+   nDemoDoLeft = nDemoDoRight = 0;
+	nDemoDoingLeft = nDemoDoingRight = 0;
+   return;
+   }
+bDidMissileView = RenderMissileView ();
+for (w = 0; w < 2 - bDidMissileView; w++) {
+	//show special views if selected
+	switch (gameStates.render.cockpit.n3DView [w]) {
+		case CV_NONE:
+			gameStates.render.nRenderingType = 255;
+			cockpit->RenderWindow (w, NULL, 0, WBU_WEAPON, NULL);
+			break;
+
+		case CV_REAR:
+			if (gameStates.render.bRearView) {		//if big window is rear view, show front here
+				gameStates.render.nRenderingType = 3+ (w<<4);
+				cockpit->RenderWindow (w, gameData.objs.consoleP, 0, WBU_REAR, "FRONT");
+				}
+			else {					//show Normal rear view
+				gameStates.render.nRenderingType = 3+ (w<<4);
+				cockpit->RenderWindow (w, gameData.objs.consoleP, 1, WBU_REAR, "REAR");
+				}
+			break;
+
+		case CV_ESCORT: {
+			CObject *buddy = FindEscort ();
+			if (!buddy) {
+				cockpit->RenderWindow (w, NULL, 0, WBU_WEAPON, NULL);
+				gameStates.render.cockpit.n3DView [w] = CV_NONE;
+				}
+			else {
+				gameStates.render.nRenderingType = 4+ (w<<4);
+				cockpit->RenderWindow (w, buddy, 0, WBU_ESCORT, gameData.escort.szName);
+				}
+			break;
+			}
+
+		case CV_COOP: {
+			int nPlayer = gameStates.render.cockpit.nCoopPlayerView [w];
+	      gameStates.render.nRenderingType = 255; // don't handle coop stuff
+			if ((nPlayer != -1) &&
+				 gameData.multiplayer.players [nPlayer].connected &&
+				 (IsCoopGame || (IsTeamGame && (GetTeam (nPlayer) == GetTeam (gameData.multiplayer.nLocalPlayer)))))
+				cockpit->RenderWindow (w, &OBJECTS [gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].nObject], 0, WBU_COOP, gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].callsign);
+			else {
+				cockpit->RenderWindow (w, NULL, 0, WBU_WEAPON, NULL);
+				gameStates.render.cockpit.n3DView [w] = CV_NONE;
+				}
+			break;
+			}
+
+		case CV_MARKER: {
+			char label [10];
+			short v = gameData.marker.viewers [w];
+			gameStates.render.nRenderingType = 5+ (w<<4);
+			if ((v == -1) || (gameData.marker.objects [v] == -1)) {
+				gameStates.render.cockpit.n3DView [w] = CV_NONE;
+				break;
+				}
+			sprintf (label, "Marker %d", gameData.marker.viewers [w]+1);
+			cockpit->RenderWindow (w, OBJECTS + gameData.marker.objects [gameData.marker.viewers [w]], 0, WBU_MARKER, label);
+			break;
+			}
+
+		case CV_RADAR_TOPDOWN:
+		case CV_RADAR_HEADSUP:
+			if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0))
+				cockpit->RenderWindow (w, gameData.objs.consoleP, 0,
+					(gameStates.render.cockpit.n3DView [w] == CV_RADAR_TOPDOWN) ? WBU_RADAR_TOPDOWN : WBU_RADAR_HEADSUP, "MINI MAP");
+			else
+				gameStates.render.cockpit.n3DView [w] = CV_NONE;
+			break;
+		default:
+			Int3 ();		//invalid window nType
+		}
+	}
+gameStates.render.nRenderingType = 0;
+gameData.demo.nState = saveNewDemoState;
+}
+
 //	-----------------------------------------------------------------------------
 //draw all the things on the HUD
-
-void ShowExtraViews (void);
 
 void CGenericCockpit::Render (int bExtraInfo)
 {
@@ -1535,7 +1638,7 @@ CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
 CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
 fontManager.SetCurrent (GAME_FONT);
 
-ShowExtraViews ();
+RenderWindows ();
 DrawCockpit (false);
 
 if (bExtraInfo) {
@@ -1589,7 +1692,9 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK))
 if (gameStates.app.bPlayerIsDead)
 	PlayerDeadMessage ();
 
-if (gameStates.render.bRearView && (gameStates.render.cockpit.nType != CM_REAR_VIEW)) {
+if (!gameStates.render.bRearView)
+	HUDRenderMessageFrame ();
+else if (gameStates.render.cockpit.nType != CM_REAR_VIEW) {
 	HUDRenderMessageFrame ();
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - ((gameData.demo.nState == ND_STATE_PLAYBACK) ? 14 : 10), TXT_REAR_VIEW);

@@ -652,8 +652,6 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-extern ubyte nDemoDoingRight, nDemoDoingLeft;
-
 void DoRenderObject (int nObject, int nWindow)
 {
 	CObject *objP = OBJECTS + nObject, *hObj;

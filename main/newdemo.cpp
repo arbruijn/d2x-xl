@@ -3455,21 +3455,26 @@ particleManager.Shutdown ();
 //	-----------------------------------------------------------------------------
 
 CObject demoRightExtra, demoLeftExtra;
-ubyte nDemoDoRight=0, nDemoDoLeft=0;
+ubyte nDemoDoRight = 0, nDemoDoLeft = 0;
+ubyte nDemoDoingRight = 0, nDemoDoingLeft = 0;
+
+char nDemoWBUType [] = {0, WBUMSL, WBUMSL, WBU_REAR, WBU_ESCORT, WBU_MARKER, WBUMSL};
+char bDemoRearCheck [] = {0, 0, 0, 1, 0, 0, 0};
+const char *szDemoExtraMessage [] = {"PLAYER", "GUIDED", "MISSILE", "REAR", "GUIDE-BOT", "MARKER", "SHIP"};
 
 void NDRenderExtras (ubyte which, CObject *objP)
 {
-	ubyte w=which>>4;
-	ubyte nType=which&15;
+	ubyte w = which >> 4;
+	ubyte nType = which & 15;
 
-if (which==255) {
+if (which == 255) {
 	Int3 (); // how'd we get here?
 	cockpit->RenderWindow (w, NULL, 0, WBU_WEAPON, NULL);
 	return;
 	}
 if (w) {
 	memcpy (&demoRightExtra, objP, sizeof (CObject));  
-	nDemoDoRight=nType;
+	nDemoDoRight = nType;
 	}
 else {
 	memcpy (&demoLeftExtra, objP, sizeof (CObject)); 

@@ -179,6 +179,7 @@ class CGenericCockpit {
 		void DrawReticle (int bForceBig);
 		int CanSeeObject (int nObject, int bCheckObjs);
 		void DrawPlayerNames (void);
+		void RenderWindows (void);
 		void Render (int bExtraInfo);
 		void RenderWindow (int nWindow, CObject *viewerP, int bRearView, int nUser, const char *pszLabel);
 		void Activate (int nType);

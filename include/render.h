@@ -27,6 +27,7 @@ extern int nClearWindow;    // 1 = Clear whole background window, 2 = clear view
 
 void GameRenderFrame (void);
 void RenderFrame (fix eye_offset, int window_num);  //draws the world into the current canvas
+int RenderMissileView (void);
 
 // cycle the flashing light for when mine destroyed
 void FlashFrame (void);

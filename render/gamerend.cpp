@@ -390,27 +390,17 @@ void game_render_frame_stereo ()
 
 //------------------------------------------------------------------------------
 
-ubyte nDemoDoingRight = 0, nDemoDoingLeft = 0;
-extern ubyte nDemoDoRight, nDemoDoLeft;
-extern CObject demoRightExtra, demoLeftExtra;
-
-char nDemoWBUType [] = {0, WBUMSL, WBUMSL, WBU_REAR, WBU_ESCORT, WBU_MARKER, WBUMSL};
-char bDemoRearCheck [] = {0, 0, 0, 1, 0, 0, 0};
-const char *szDemoExtraMessage [] = {"PLAYER", "GUIDED", "MISSILE", "REAR", "GUIDE-BOT", "MARKER", "SHIP"};
-
-//------------------------------------------------------------------------------
-
-int ShowMissileView (void)
+int RenderMissileView (void)
 {
 	CObject	*objP = NULL;
 
 if (GuidedMslView (&objP)) {
 	if (gameOpts->render.cockpit.bGuidedInMainView) {
-		gameStates.render.nRenderingType = 6 + (1<<4);
+		gameStates.render.nRenderingType = 6 + (1 << 4);
 		cockpit->RenderWindow (1, gameData.objs.viewerP, 0, WBUMSL, "SHIP");
 		}
 	else {
-		gameStates.render.nRenderingType = 1+ (1<<4);
+		gameStates.render.nRenderingType = 1+ (1 << 4);
 		cockpit->RenderWindow (1, objP, 0, WBU_GUIDED, "GUIDED");
 	   }
 	return 1;
@@ -429,7 +419,7 @@ else {
 		if (gameOpts->render.cockpit.bMissileView &&
 			 (gameData.objs.missileViewerP->info.nType != OBJ_NONE) &&
 			 (gameData.objs.missileViewerP->info.nSignature == mslViewerSig)) {
-  			gameStates.render.nRenderingType = 2 + (1<<4);
+  			gameStates.render.nRenderingType = 2 + (1 << 4);
 			cockpit->RenderWindow (1, gameData.objs.missileViewerP, 0, WBUMSL, "MISSILE");
 			return 1;
 			}
@@ -442,111 +432,6 @@ else {
 		}
 	}
 return 0;
-}
-
-//------------------------------------------------------------------------------
-
-void ShowExtraViews (void)
-{
-	int		bDidMissileView = 0;
-	int		saveNewDemoState = gameData.demo.nState;
-	int		w;
-
-if (gameData.demo.nState == ND_STATE_PLAYBACK) {
-   if (nDemoDoLeft) {
-      if (nDemoDoLeft == 3)
-			cockpit->RenderWindow (0, gameData.objs.consoleP, 1, WBU_REAR, "REAR");
-      else
-			cockpit->RenderWindow (0, &demoLeftExtra, bDemoRearCheck [nDemoDoLeft], nDemoWBUType [nDemoDoLeft], szDemoExtraMessage [nDemoDoLeft]);
-		}
-   else
-		cockpit->RenderWindow (0, NULL, 0, WBU_WEAPON, NULL);
-	if (nDemoDoRight) {
-      if (nDemoDoRight == 3)
-			cockpit->RenderWindow (1, gameData.objs.consoleP, 1, WBU_REAR, "REAR");
-      else
-			cockpit->RenderWindow (1, &demoRightExtra, bDemoRearCheck [nDemoDoRight], nDemoWBUType [nDemoDoRight], szDemoExtraMessage [nDemoDoRight]);
-		}
-   else
-		cockpit->RenderWindow (1, NULL, 0, WBU_WEAPON, NULL);
-   nDemoDoLeft = nDemoDoRight = 0;
-	nDemoDoingLeft = nDemoDoingRight = 0;
-   return;
-   }
-bDidMissileView = ShowMissileView ();
-for (w = 0; w < 2 - bDidMissileView; w++) {
-	//show special views if selected
-	switch (gameStates.render.cockpit.n3DView [w]) {
-		case CV_NONE:
-			gameStates.render.nRenderingType = 255;
-			cockpit->RenderWindow (w, NULL, 0, WBU_WEAPON, NULL);
-			break;
-
-		case CV_REAR:
-			if (gameStates.render.bRearView) {		//if big window is rear view, show front here
-				gameStates.render.nRenderingType = 3+ (w<<4);
-				cockpit->RenderWindow (w, gameData.objs.consoleP, 0, WBU_REAR, "FRONT");
-				}
-			else {					//show Normal rear view
-				gameStates.render.nRenderingType = 3+ (w<<4);
-				cockpit->RenderWindow (w, gameData.objs.consoleP, 1, WBU_REAR, "REAR");
-				}
-			break;
-
-		case CV_ESCORT: {
-			CObject *buddy = FindEscort ();
-			if (!buddy) {
-				cockpit->RenderWindow (w, NULL, 0, WBU_WEAPON, NULL);
-				gameStates.render.cockpit.n3DView [w] = CV_NONE;
-				}
-			else {
-				gameStates.render.nRenderingType = 4+ (w<<4);
-				cockpit->RenderWindow (w, buddy, 0, WBU_ESCORT, gameData.escort.szName);
-				}
-			break;
-			}
-
-		case CV_COOP: {
-			int nPlayer = gameStates.render.cockpit.nCoopPlayerView [w];
-	      gameStates.render.nRenderingType = 255; // don't handle coop stuff
-			if ((nPlayer != -1) &&
-				 gameData.multiplayer.players [nPlayer].connected &&
-				 (IsCoopGame || (IsTeamGame && (GetTeam (nPlayer) == GetTeam (gameData.multiplayer.nLocalPlayer)))))
-				cockpit->RenderWindow (w, &OBJECTS [gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].nObject], 0, WBU_COOP, gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].callsign);
-			else {
-				cockpit->RenderWindow (w, NULL, 0, WBU_WEAPON, NULL);
-				gameStates.render.cockpit.n3DView [w] = CV_NONE;
-				}
-			break;
-			}
-
-		case CV_MARKER: {
-			char label [10];
-			short v = gameData.marker.viewers [w];
-			gameStates.render.nRenderingType = 5+ (w<<4);
-			if ((v == -1) || (gameData.marker.objects [v] == -1)) {
-				gameStates.render.cockpit.n3DView [w] = CV_NONE;
-				break;
-				}
-			sprintf (label, "Marker %d", gameData.marker.viewers [w]+1);
-			cockpit->RenderWindow (w, OBJECTS + gameData.marker.objects [gameData.marker.viewers [w]], 0, WBU_MARKER, label);
-			break;
-			}
-
-		case CV_RADAR_TOPDOWN:
-		case CV_RADAR_HEADSUP:
-			if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0))
-				cockpit->RenderWindow (w, gameData.objs.consoleP, 0,
-					(gameStates.render.cockpit.n3DView [w] == CV_RADAR_TOPDOWN) ? WBU_RADAR_TOPDOWN : WBU_RADAR_HEADSUP, "MINI MAP");
-			else
-				gameStates.render.cockpit.n3DView [w] = CV_NONE;
-			break;
-		default:
-			Int3 ();		//invalid window nType
-		}
-	}
-gameStates.render.nRenderingType = 0;
-gameData.demo.nState = saveNewDemoState;
 }
 
 //------------------------------------------------------------------------------
