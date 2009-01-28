@@ -412,7 +412,7 @@ void CStatusBar::DrawInvul (void)
 	static fix time = 0;
 
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
-	 (m_info.tInvul > I2X (4)) || ((m_info.tInvul > 0) && (gameData.time.xGame & 0x8000))) {
+	 ((m_info.tInvul > I2X (4)) || ((m_info.tInvul > 0) && (gameData.time.xGame & 0x8000)))) {
 	BitBlt (GAUGE_INVULNERABLE + m_info.nInvulnerableFrame, SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y);
 	time += gameData.time.xFrame;
 	while (time > INV_FRAME_TIME) {
