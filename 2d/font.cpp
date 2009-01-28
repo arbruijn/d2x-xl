@@ -52,8 +52,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-int Pow2ize (int x);//from ogl.c
-
 CFontManager fontManager;
 
 #define LHX(x)	 (gameStates.menus.bHires ? 2 * (x) : x)

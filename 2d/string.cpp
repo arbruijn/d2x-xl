@@ -410,8 +410,6 @@ return 0;
 #include "args.h"
 //font handling routines for OpenGL - Added 9/25/99 Matthew Mueller - they are here instead of in arch/ogl because they use all these defines
 
-int Pow2ize (int x);//from ogl.c
-
 //------------------------------------------------------------------------------
 
 int CFont::DrawString (int left, int top, const char *s)
