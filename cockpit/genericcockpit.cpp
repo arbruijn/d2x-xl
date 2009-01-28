@@ -165,7 +165,7 @@ int _CDECL_ CGenericCockpit::PrintF (int *idP, int x, int y, const char *pszFmt,
 
 va_start (args, pszFmt);
 vsprintf (szBuf, pszFmt, args);
-return GrString (ScaleX (x), ScaleY (y), szBuf, idP);
+return GrString ((x < 0) ? -x : ScaleX (x), (y < 0) ? -y : ScaleY (y), szBuf, idP);
 }
 
 //------------------------------------------------------------------------------
@@ -1029,11 +1029,11 @@ else {
 	ofs = (bHiresReticle ? 0 : 2) + bSmallReticle;
 
 	BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
-			  -(x + ScaleX (cross_offsets [ofs].x)), -(y + ScaleY (cross_offsets [ofs].y)));
+			  (x + ScaleX (cross_offsets [ofs].x)), (y + ScaleY (cross_offsets [ofs].y)), false, true);
 	BitBlt ((bSmallReticle ? SML_RETICLE_PRIMARY : RETICLE_PRIMARY) + nPrimaryBm,
-			  -(x + ScaleX (primary_offsets [ofs].x)), -(y + ScaleY (primary_offsets [ofs].y)));
+			  (x + ScaleX (primary_offsets [ofs].x)), (y + ScaleY (primary_offsets [ofs].y)), false, true);
 	BitBlt ((bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondaryBm,
-			  -(x + ScaleX (secondary_offsets [ofs].x)), -(y + ScaleY (secondary_offsets [ofs].y)));
+			  (x + ScaleX (secondary_offsets [ofs].x)), (y + ScaleY (secondary_offsets [ofs].y)), false, true);
   }
 if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick && gameOpts->render.cockpit.bMouseIndicator)
 	OglDrawMouseIndicator ();
