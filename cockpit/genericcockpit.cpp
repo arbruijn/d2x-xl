@@ -1802,4 +1802,24 @@ HUDClearMessages ();
 SavePlayerProfile ();
 }
 
+//------------------------------------------------------------------------------
+
+int CGenericCockpit::WidthPad (char* pszText)
+{
+	int	w, h, aw;
+
+fontManager.Current ()->StringSize (pszText, w, h, aw);
+return ScaleX (w) - w;
+}
+
+//------------------------------------------------------------------------------
+
+int CGenericCockpit::WidthPad (int nValue)
+{
+	char szValue [20];
+
+sprintf (szValue, "%d", nValue);
+return WidthPad (szValue);
+}
+
 //	-----------------------------------------------------------------------------

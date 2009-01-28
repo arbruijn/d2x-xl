@@ -171,8 +171,12 @@ void CCockpit::DrawShield (void)
 	static int nIdShield = 0;
 
 BitBlt (GAUGE_NUMERICAL, NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y);
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
 fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
-nIdShield = PrintF (&nIdShield, NumDispX (m_info.nShields), NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 36 : 16), "%d", m_info.nShields);
+nIdShield = PrintF (&nIdShield, -(ScaleX (NumDispX (m_info.nShields)) + WidthPad (m_info.nShields)), 
+						  NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 36 : 16) + m_info.heightPad, "%d", m_info.nShields);
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -182,8 +186,11 @@ void CCockpit::DrawEnergy (void)
 	static int nIdEnergy = 0;
 
 BitBlt (GAUGE_NUMERICAL, NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y);
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
 fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
-nIdEnergy = PrintF (&nIdEnergy, NumDispX (m_info.nEnergy), NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 5 : 2), "%d", m_info.nEnergy);
+nIdEnergy = PrintF (&nIdEnergy, -(ScaleX (NumDispX (m_info.nEnergy)) + WidthPad (m_info.nEnergy)), 
+						  NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 5 : 2), "%d", m_info.nEnergy);
 }
 
 //	-----------------------------------------------------------------------------

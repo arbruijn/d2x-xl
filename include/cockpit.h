@@ -224,6 +224,9 @@ class CGenericCockpit {
 		inline float YScale (void) { return m_info.yScale = screen.Scale (1); }
 		inline void Rebuild (void) { m_info.bRebuild = true; }
 
+		int WidthPad (char* pszText);
+		int WidthPad (int nValue);
+
 		inline bool Always (void) { 
 			return (m_info.nType == CM_FULL_COCKPIT) || (m_info.nType == CM_STATUS_BAR); 
 			}
