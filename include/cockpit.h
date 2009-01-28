@@ -134,8 +134,8 @@ class CGenericCockpit {
 		void Init (void);
 
 		inline float Aspect (void) { return float (screen.Height ()) / float (screen.Width ()) / 0.75f; }
-		inline int ScaleX (int v) { return (v < 0) ? -v : int (float (v) * m_info.xScale + 0.5f); }
-		inline int ScaleY (int v) { return (v < 0) ? -v : int (float (v) * m_info.yScale + 0.5f); }
+		inline int ScaleX (int v) { return int (float (v) * m_info.xScale + 0.5f); }
+		inline int ScaleY (int v) { return int (float (v) * m_info.yScale + 0.5f); }
 		inline int LHX (int x) { return x << gameStates.render.fonts.bHires; }
 		inline int LHY (int y) { return gameStates.render.fonts.bHires ? 24 * y / 10 : y; }
 		inline void PageInGauge (int nGauge) { LoadBitmap (gameData.cockpit.gauges [!gameStates.render.fonts.bHires][nGauge].index, 0); }

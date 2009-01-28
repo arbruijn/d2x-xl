@@ -993,7 +993,7 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) && gameData.demo.bFlyingGuided) 
 	}
 
 x = CCanvas::Current ()->Width () / 2;
-y = CCanvas::Current ()->Height () / ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) ? 2 : 2);
+y = CCanvas::Current ()->Height () / 2;
 bLaserReady = AllowedToFireLaser ();
 bMissileReady = AllowedToFireMissile (-1, 1);
 bLaserAmmo = PlayerHasWeapon (gameData.weapons.nPrimary, 0, -1, 1);
@@ -1029,11 +1029,11 @@ else {
 	ofs = (bHiresReticle ? 0 : 2) + bSmallReticle;
 
 	BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
-			  (x + ScaleX (cross_offsets [ofs].x)), (y + ScaleY (cross_offsets [ofs].y)), false, true);
+			  -(x + ScaleX (cross_offsets [ofs].x)), -(y + ScaleY (cross_offsets [ofs].y)));
 	BitBlt ((bSmallReticle ? SML_RETICLE_PRIMARY : RETICLE_PRIMARY) + nPrimaryBm,
-			  (x + ScaleX (primary_offsets [ofs].x)), (y + ScaleY (primary_offsets [ofs].y)), false, true);
+			  -(x + ScaleX (primary_offsets [ofs].x)), -(y + ScaleY (primary_offsets [ofs].y)));
 	BitBlt ((bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondaryBm,
-			  (x + ScaleX (secondary_offsets [ofs].x)), (y + ScaleY (secondary_offsets [ofs].y)), false, true);
+			  -(x + ScaleX (secondary_offsets [ofs].x)), -(y + ScaleY (secondary_offsets [ofs].y)));
   }
 if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick && gameOpts->render.cockpit.bMouseIndicator)
 	OglDrawMouseIndicator ();
@@ -1570,6 +1570,10 @@ if (bExtraInfo) {
 	DrawCountdown ();
 	DrawRecording ();
 	}
+if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead && !transformation.m_info.bUsePlayerHeadAngles)
+	DrawReticle (0);
+
+CCanvas::SetCurrent (CurrentGameScreen ());
 
 if ((gameData.demo.nState == ND_STATE_PLAYBACK))
 	gameData.app.nGameMode = GM_NORMAL;
@@ -1577,8 +1581,6 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK))
 if (gameStates.app.bPlayerIsDead)
 	PlayerDeadMessage ();
 
-if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead && !transformation.m_info.bUsePlayerHeadAngles)
-	DrawReticle (0);
 if (gameStates.render.bRearView && (gameStates.render.cockpit.nType != CM_REAR_VIEW)) {
 	HUDRenderMessageFrame ();
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
@@ -1586,7 +1588,6 @@ if (gameStates.render.bRearView && (gameStates.render.cockpit.nType != CM_REAR_V
 	}
 DemoRecording ();
 m_history [gameStates.render.vr.nCurrentPage].bCloak = m_info.bCloak;
-CCanvas::SetCurrent (CurrentGameScreen ());
 }
 
 //	-----------------------------------------------------------------------------

@@ -306,7 +306,7 @@ if (gameStates.app.bD1Mission)
 CCanvas::Push ();
 CCanvas::SetCurrent (CurrentGameScreen ());
 if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)
-	fontManager.SetColorRGBi (RGBA_PAL2 (45, 0, 0), 1, 0, 0);
+	fontManager.SetColorRGBi (RGBA_PAL2 (45, 21, 0), 1, 0, 0);
 else 
 	fontManager.SetColorRGBi (RGBA_PAL2 (12, 12, 12), 1, 0, 0);
 
