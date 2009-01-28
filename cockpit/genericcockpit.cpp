@@ -426,7 +426,10 @@ else {
 	sprintf (szStats, "%s%1.1f%c %1.1f%c %1.1f%c", h ? "T:" : "", p [0], '%', p [1], '%', p [2], '%');
 	}
 fontManager.Current ()->StringSize (szStats, w, h, aw);
-nIdStats = GrString (CCanvas::Current ()->Width () - w - LHX (2), y, szStats, &nIdStats);
+int x = CCanvas::Current ()->Width () - w - LHX (2);
+if ((extraGameInfo [0].nWeaponIcons >= 3) && (CCanvas::Current ()->Height () < 660))
+	x -= HUD_LHX (16);
+nIdStats = GrString (x, y, szStats, &nIdStats);
 }
 
 //	-----------------------------------------------------------------------------

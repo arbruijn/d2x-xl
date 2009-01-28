@@ -107,14 +107,14 @@ nIdLabel = PrintF (&nIdLabel, -(ScaleX (SB_SCORE_LABEL_X + w) - w), SB_SCORE_Y, 
 
 sprintf (szScore, "%5d", (IsMultiGame && !IsCoopGame) ? LOCALPLAYER.netKillsTotal : LOCALPLAYER.score);
 fontManager.Current ()->StringSize (szScore, w, h, aw);
-x = -(ScaleX (SB_SCORE_RIGHT - w - LHY (2)) - w);
+x = SB_SCORE_RIGHT - w - LHY (2);
 y = SB_SCORE_Y;
 //erase old score
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
 Rect (lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCurrentPage], y, SB_SCORE_RIGHT, y + GAME_FONT->Height ());
 fontManager.SetColorRGBi ((IsMultiGame && !IsCoopGame) ? MEDGREEN_RGBA : GREEN_RGBA, 1, 0, 0);
-nIdScore = PrintF (&nIdScore, x, y, szScore);
-lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage] = x;
+nIdScore = PrintF (&nIdScore, -(ScaleX (x) - w), y, szScore);
+lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCurrentPage] = x;
 CCanvas::Pop ();
 }
 
