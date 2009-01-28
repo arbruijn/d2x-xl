@@ -85,9 +85,12 @@ typedef struct tPortal {
 void StartLightingFrame (CObject *viewer);
 
 uint	nClearWindowColor = 0;
-int				nClearWindow = 2;	// 1 = Clear whole background tPortal, 2 = clear view portals into rest of world, 0 = no clear
+int	nClearWindow = 0; //2	// 1 = Clear whole background tPortal, 2 = clear view portals into rest of world, 0 = no clear
+
+#define CLEAR_WINDOW	0
 
 void RenderSkyBox (int nWindow);
+void FillBackground (void);
 
 //------------------------------------------------------------------------------
 
@@ -1216,10 +1219,14 @@ if (bSparks)
 
 //------------------------------------------------------------------------------
 
+extern CBitmap bmBackground;
+
 void RenderFrame (fix nEyeOffset, int nWindow)
 {
 	short nStartSeg;
 
+if (!nWindow)
+	FillBackground ();
 gameStates.render.nWindow = nWindow;
 gameStates.render.nEyeOffset = nEyeOffset;
 if (gameStates.app.bEndLevelSequence) {
@@ -1246,11 +1253,13 @@ G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive));
 //PrintLog ("SetRenderView\n");
 SetRenderView (nEyeOffset, &nStartSeg, 1);
 gameStates.render.nStartSeg = nStartSeg;
-if (nClearWindow == 1) {
-	if (!nClearWindowColor)
-		nClearWindowColor = BLACK_RGBA;	//BM_XRGB(31, 15, 7);
-	CCanvas::Current ()->Clear (nClearWindowColor);
-	}
+
+#if CLEAR_WINDOW == 1
+if (!nClearWindowColor)
+	nClearWindowColor = BLACK_RGBA;	//BM_XRGB(31, 15, 7);
+CCanvas::Current ()->Clear (nClearWindowColor);
+#endif
+
 #if DBG
 if (bShowOnlyCurSide)
 	CCanvas::Current ()->Clear (nClearWindowColor);
@@ -1935,7 +1944,8 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 	gameStates.ogl.bUseTransform = 0;
 	lightManager.Transform (0, 1);
 	}
-if (nClearWindow == 2) {
+
+#if CLEAR_WINDOW == 2
 	if (nFirstTerminalSeg < gameData.render.mine.nRenderSegs) {
 		int i;
 
@@ -1954,7 +1964,8 @@ if (nClearWindow == 2) {
 				}
 			}
 		}
-	}
+#endif //CLEAR_WINDOW
+
 gameStates.render.bFullBright = automap.m_bDisplay && gameOpts->render.automap.bBright;
 gameStates.ogl.bStandardContrast = gameStates.app.bNostalgia || IsMultiGame || (gameStates.ogl.nContrast == 8);
 #if SHADOWS

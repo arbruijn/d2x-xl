@@ -313,7 +313,7 @@ inline int operator- (CBitmap* o, CArray<CBitmap>& a) { return a.Index (o); }
 	
 //-----------------------------------------------------------------------------
 
-void LoadBackgroundBitmap (void);
+void LoadGameBackground (void);
 void GrBitmapM (int x, int y, CBitmap *bmP, int bTransp);
 void GrBmUBitBltM (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest, int bTransp);
 

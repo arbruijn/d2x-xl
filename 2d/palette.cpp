@@ -510,7 +510,7 @@ if (bForce || pszLevelName || stricmp (paletteManager.LastLoaded (), pszPaletteN
 	if (!paletteManager.FadedOut () && !bNoScreenChange)
 		LoadEffect ();
 	gameData.hud.msgs [0].nColor = -1;
-	LoadBackgroundBitmap ();
+	LoadGameBackground ();
 	}
 if (nUsedForLevel && stricmp (paletteManager.LastPig (), pszPaletteName) != 0) {
 	strncpy (paletteManager.LastPig (), pszPaletteName, sizeof (paletteManager.LastPig ()));

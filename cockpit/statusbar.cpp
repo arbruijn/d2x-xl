@@ -274,6 +274,8 @@ CCanvas::Pop ();
 
 void CStatusBar::DrawEnergyBar (void)
 {
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
 if (gameStates.app.bD1Mission)
 	StretchBlt (SB_GAUGE_ENERGY, SB_ENERGY_GAUGE_X, SB_ENERGY_GAUGE_Y, 1.0, 
 					double (SB_ENERGY_GAUGE_H) / double (SB_ENERGY_GAUGE_H - SB_AFTERBURNER_GAUGE_H));
@@ -290,6 +292,7 @@ if (nEraseHeight > 0) {
 		SB_ENERGY_GAUGE_Y + nEraseHeight);
 	glEnable (GL_BLEND);
 	}
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -331,6 +334,8 @@ if (gameStates.app.bD1Mission)
 
 	static int nIdAfterBurner = 0;
 
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
 BitBlt (SB_GAUGE_AFTERBURNER, SB_AFTERBURNER_GAUGE_X, SB_AFTERBURNER_GAUGE_Y);
 nEraseHeight = FixMul ((I2X (1) - gameData.physics.xAfterburnerCharge), SB_AFTERBURNER_GAUGE_H);
 
@@ -344,6 +349,7 @@ if (nEraseHeight > 0) {
 		SB_AFTERBURNER_GAUGE_Y + nEraseHeight - 1);
 	glEnable (GL_BLEND);
 	}
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -374,8 +380,12 @@ CCanvas::Pop ();
 
 void CStatusBar::DrawShieldBar (void)
 {
-if (m_info.tInvul <= 0)
+if (m_info.tInvul <= 0) {
+	CCanvas::Push ();
+	CCanvas::SetCurrent (CurrentGameScreen ());
 	BitBlt (GAUGE_SHIELDS + 9 - ((m_info.nShields >= 100) ? 9 : (m_info.nShields / 10)), SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y);
+	CCanvas::Pop ();
+	}
 }
 
 //	-----------------------------------------------------------------------------
@@ -392,16 +402,22 @@ static tKeyGaugeInfo keyGaugeInfo [] = {
 
 void CStatusBar::DrawKeys (void)
 {
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
 int bHires = gameStates.video.nDisplayMode != 0;
 for (int i = 0; i < 3; i++)
 	BitBlt ((LOCALPLAYER.flags & keyGaugeInfo [i].nFlag) ? keyGaugeInfo [i].nGaugeOn : keyGaugeInfo [i].nGaugeOff, keyGaugeInfo [i].x [bHires], keyGaugeInfo [i].y [bHires]);
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
 
 void CStatusBar::DrawPlayerShip (void)
 {
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
 CGenericCockpit::DrawPlayerShip (m_info.bCloak, m_history [gameStates.render.vr.nCurrentPage].bCloak, SB_SHIP_GAUGE_X, SB_SHIP_GAUGE_Y);
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------

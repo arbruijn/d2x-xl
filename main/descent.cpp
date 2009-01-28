@@ -669,7 +669,7 @@ switch (loadOp) {
 		InitPowerupTables ();
 		break;
 	case 14:
-		LoadBackgroundBitmap ();
+		LoadGameBackground ();
 		atexit (CloseGame);
 		break;
 	case 15:

@@ -176,7 +176,7 @@ glActiveTexture (GL_TEXTURE0);
 glEnable (GL_TEXTURE_2D);
 if (Bind (bMipMaps, nTransp))
 	return NULL;
-m_info.texture->Wrap (GL_CLAMP);
+m_info.texture->Wrap (GL_REPEAT);
 
 bBlendState = glIsEnabled (GL_BLEND);
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
@@ -292,17 +292,24 @@ if (!OglBeginRender (bBlend, bMipMaps, nTransp))
 	return 1; // fail
 
 u1 = v1 = 0;
-u2 = float (wSrc) / float (Width ());
-if (u2 < 1.0f)
-	u2 *= m_info.texture->U ();
-else
-	u2 = m_info.texture->U ();
-v2 = float (hSrc) / float (Height ());
-if (v2 < 1.0f)
-	v2 *= m_info.texture->V ();
-else
-	v2 = m_info.texture->V ();
-
+if (wSrc < 0)
+	u2 = float (destP->Width ()) / float (-wSrc);
+else {
+	u2 = float (wSrc) / float (Width ());
+	if (u2 < 1.0f)
+		u2 *= m_info.texture->U ();
+	else
+		u2 = m_info.texture->U ();
+	}
+if (hSrc < 0)
+	v2 = float (destP->Height ()) / float (-hSrc);
+else {
+	v2 = float (hSrc) / float (Height ());
+	if (v2 < 1.0f)
+		v2 *= m_info.texture->V ();
+	else
+		v2 = m_info.texture->V ();
+	}
 #if 1
 OglRender (colorP, nColors, 0);
 #else

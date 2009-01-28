@@ -619,48 +619,39 @@ StartTime (0);
 }
 
 //------------------------------------------------------------------------------
-// CBitmap bmBackground;	already declared in line 434 (samir 4/10/94)
 
 extern CBitmap bmBackground;
 
 void CopyBackgroundRect (int left, int top, int right, int bot)
 {
-	CBitmap *bm = &bmBackground;
+if (right < left || bot < top)
+	return;
+
 	int x, y;
-	int tile_left, tile_right, tile_top, tile_bot;
-	int ofs_x, ofs_y;
-	int dest_x, dest_y;
+	int tileLeft, tileRight, tileTop, tileBot;
+	int xOffs, yOffs;
+	int xDest, yDest;
 
-	if (right < left || bot < top)
-		return;
+tileLeft = left / bmBackground.Width ();
+tileRight = right / bmBackground.Width ();
+tileTop = top / bmBackground.Height ();
+tileBot = bot / bmBackground.Height ();
 
-	tile_left = left / bm->Width ();
-	tile_right = right / bm->Width ();
-	tile_top = top / bm->Height ();
-	tile_bot = bot / bm->Height ();
+yOffs = top % bmBackground.Height ();
+yDest = top;
 
-	ofs_y = top % bm->Height ();
-	dest_y = top;
-
-{
-	for (y=tile_top;y<=tile_bot;y++) {
-		int w, h;
-
-		ofs_x = left % bm->Width ();
-		dest_x = left;
-
-		//h = (bot < dest_y+bm->Height ())? (bot-dest_y+1): (bm->Height ()-ofs_y);
-		h = min(bot-dest_y+1, bm->Height ()-ofs_y);
-		for (x=tile_left;x<=tile_right;x++) {
-			//w = (right < dest_x+bm->Width ())? (right-dest_x+1): (bm->Width ()-ofs_x);
-			w = min(right-dest_x+1, bm->Width ()-ofs_x);
-			bmBackground.Blit (CCanvas::Current (), dest_x, dest_y, w, h, ofs_x, ofs_y, 1);
-			ofs_x = 0;
-			dest_x += w;
-			}
-		ofs_y = 0;
-		dest_y += h;
+for (y = tileTop;y <= tileBot; y++) {
+	xOffs = left % bmBackground.Width ();
+	xDest = left;
+	int h = min (bot - yDest + 1, bmBackground.Height () - yOffs);
+	for (x = tileLeft; x <= tileRight; x++) {
+		int w = min (right - xDest + 1, bmBackground.Width () - xOffs);
+		bmBackground.Blit (CCanvas::Current (), xDest, yDest, w, h, xOffs, yOffs, 1);
+		xOffs = 0;
+		xDest += w;
 		}
+	yOffs = 0;
+	yDest += h;
 	}
 }
 
@@ -668,29 +659,39 @@ void CopyBackgroundRect (int left, int top, int right, int bot)
 //fills int the background surrounding the 3d window
 void FillBackground (void)
 {
-#if 0
-	int x, y, w, h, dx, dy;
+#if 1
+if (gameData.render.window.x || gameData.render.window.y) {
+	CCanvas::Push ();
+	CCanvas::SetCurrent (CurrentGameScreen ());
+	gameStates.ogl.nLastW = CCanvas::Current ()->Width ();
+	gameStates.ogl.nLastH = CCanvas::Current ()->Height ();
+	glDepthMask (0);
+	bmBackground.Render (CCanvas::Current (), 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height (), 0, 0, -bmBackground.Width (), -bmBackground.Height ());
+	glDepthMask (1);
+	CCanvas::Pop ();
+	gameStates.ogl.nLastW = CCanvas::Current ()->Width ();
+	gameStates.ogl.nLastH = CCanvas::Current ()->Height ();
+	}
+#else
+CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
+CopyBackgroundRect (0, 0, gameData.render.window.x - 1, 2 * gameData.render.window.y + gameData.render.window.h - 1);
+CopyBackgroundRect (gameData.render.window.x + gameData.render.window.w, 0, 
+						  CCanvas::Current ()->Width () - 1, 2 * gameData.render.window.y + gameData.render.window.h - 1);
+CopyBackgroundRect (gameData.render.window.x, 0, 
+						  gameData.render.window.x + gameData.render.window.w - 1, gameData.render.window.y - 1);
+CopyBackgroundRect (gameData.render.window.x, gameData.render.window.y + gameData.render.window.h, 
+						  gameData.render.window.x + gameData.render.window.w - 1, 2 * gameData.render.window.y + gameData.render.window.h - 1);
 
-	x = gameData.render.window.x;
-	y = gameData.render.window.y;
-	w = gameData.render.window.w;
-	h = gameData.render.window.h;
-
-	dx = x;
-	dy = y;
-
-	CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
-	CopyBackgroundRect (x-dx, y-dy, x-1, y+h+dy-1);
-	CopyBackgroundRect (x+w, y-dy, CCanvas::Current ()->Width ()-1, y+h+dy-1);
-	CopyBackgroundRect (x, y-dy, x+w-1, y-1);
-	CopyBackgroundRect (x, y+h, x+w-1, y+h+dy-1);
-
-	if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING) {
-		CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [!gameStates.render.vr.nCurrentPage]);
-		CopyBackgroundRect (x-dx, y-dy, x-1, y+h+dy-1);
-		CopyBackgroundRect (x+w, y-dy, x+w+dx-1, y+h+dy-1);
-		CopyBackgroundRect (x, y-dy, x+w-1, y-1);
-		CopyBackgroundRect (x, y+h, x+w-1, y+h+dy-1);
+if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING) {
+	CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [!gameStates.render.vr.nCurrentPage]);
+	CopyBackgroundRect (0, gameData.render.window.y - gameData.render.window.y, 
+							  gameData.render.window.x - 1, 2 * gameData.render.window.y + gameData.render.window.h - 1);
+	CopyBackgroundRect (gameData.render.window.x + gameData.render.window.w, 0, 
+							  2 * gameData.render.window.x + gameData.render.window.w - 1, 2* gameData.render.window.y + gameData.render.window.h - 1);
+	CopyBackgroundRect (gameData.render.window.x, 0, 
+							  gameData.render.window.x + gameData.render.window.w - 1, gameData.render.window.y - 1);
+	CopyBackgroundRect (gameData.render.window.x, gameData.render.window.y + gameData.render.window.h, 
+							  gameData.render.window.x + gameData.render.window.w - 1, gameData.render.window.y + gameData.render.window.h + gameData.render.window.y - 1);
 	}
 #endif
 }

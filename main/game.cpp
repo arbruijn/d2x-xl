@@ -176,7 +176,7 @@ InitAISystem ();
 InitExplodingWalls ();
 ResetGenerators ();
 /*---*/PrintLog ("  loading background bitmap...\n");
-LoadBackgroundBitmap ();
+LoadGameBackground ();
 automap.Init ();
 InitDefaultPlayerShip ();
 nClearWindow = 2;		//	do portal only window clear.
@@ -1894,7 +1894,7 @@ void show_freeObjects (void)
 
 //------------------------------------------------------------------------------
 
-void LoadBackgroundBitmap (void)
+void LoadGameBackground (void)
 {
 	int pcx_error;
 	

@@ -551,15 +551,16 @@ SetupSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocal
 //------------------------------------------------------------------------------
 
 void FillBackground ();
-void LoadBackgroundBitmap ();
+void LoadGameBackground ();
 
 void JohnHeadCheat (int bVerbose)
 {
+#if 1
 gameStates.app.cheats.bJohnHeadOn = !gameStates.app.cheats.bJohnHeadOn;
-LoadBackgroundBitmap ();
-FillBackground ();
+LoadGameBackground ();
 if (bVerbose)
 	HUDInitMessage (gameStates.app.cheats.bJohnHeadOn? TXT_HI_JOHN : TXT_BYE_JOHN);
+#endif
 }
 
 //------------------------------------------------------------------------------
