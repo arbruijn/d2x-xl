@@ -1403,7 +1403,10 @@ if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nType != CM_FULL
 	color.rgb = 0;
 	CCanvas::Push ();
    CCanvas::SetCurrent (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
+	glEnable (GL_ALPHA_TEST);
+	glAlphaFunc (GL_GEQUAL, (float) 0.01);
 	bmP->RenderScaled (0, y, -1, CCanvas::Current ()->Height () - y, I2X (1), 0, &color);
+	glDisable (GL_ALPHA_TEST);
 	CCanvas::Pop ();
 	}
 }

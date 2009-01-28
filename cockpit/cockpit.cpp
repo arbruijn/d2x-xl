@@ -170,12 +170,22 @@ void CCockpit::DrawShield (void)
 {
 	static int nIdShield = 0;
 
-BitBlt (GAUGE_NUMERICAL, NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y);
+	char szShield [20];
+
+#if 0
+CBitmap* bmP = BitBlt (GAUGE_NUMERICAL, NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y);
+#else
+PageInGauge (GAUGE_NUMERICAL);
+CBitmap* bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (GAUGE_NUMERICAL);
+#endif
 CCanvas::Push ();
 CCanvas::SetCurrent (CurrentGameScreen ());
 fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
-nIdShield = PrintF (&nIdShield, -(ScaleX (NumDispX (m_info.nShields)) + WidthPad (m_info.nShields)), 
-						  NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 36 : 16) + m_info.heightPad, "%d", m_info.nShields);
+sprintf (szShield, "%d", m_info.nShields);
+int w, h, aw;
+fontManager.Current ()->StringSize (szShield, w, h, aw);
+nIdShield = PrintF (&nIdShield, -(ScaleX (NUMERICAL_GAUGE_X + bmP->Width () / 2) - w / 2), 
+						  NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 36 : 16) + m_info.heightPad, szShield);
 CCanvas::Pop ();
 }
 
@@ -185,12 +195,23 @@ void CCockpit::DrawEnergy (void)
 {
 	static int nIdEnergy = 0;
 
-BitBlt (GAUGE_NUMERICAL, NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y);
+	char szEnergy [20];
+
+#if 0
+CBitmap* bmP = BitBlt (GAUGE_NUMERICAL, NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y);
+#else
+PageInGauge (GAUGE_NUMERICAL);
+CBitmap* bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (GAUGE_NUMERICAL);
+#endif
 CCanvas::Push ();
 CCanvas::SetCurrent (CurrentGameScreen ());
 fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
-nIdEnergy = PrintF (&nIdEnergy, -(ScaleX (NumDispX (m_info.nEnergy)) + WidthPad (m_info.nEnergy)), 
-						  NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 5 : 2), "%d", m_info.nEnergy);
+sprintf (szEnergy, "%d", m_info.nEnergy);
+int w, h, aw;
+fontManager.Current ()->StringSize (szEnergy, w, h, aw);
+nIdEnergy = PrintF (&nIdEnergy,-(ScaleX (NUMERICAL_GAUGE_X + bmP->Width () / 2) - w / 2), 
+						  NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 5 : 2), szEnergy);
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
