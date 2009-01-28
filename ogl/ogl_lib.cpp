@@ -54,6 +54,7 @@
 #include "glare.h"
 #include "menu.h"
 #include "menubackground.h"
+#include "cockpit.h"
 
 #define _WIN32_WINNT		0x0600 
 
@@ -804,6 +805,7 @@ InitDynLighting ();
 OglCreateDrawBuffer ();
 cameraManager.Create ();
 InitSpheres ();
+cockpit->Setup ();
 //gameData.models.Prepare ();
 OglSetDrawBuffer (gameStates.ogl.nDrawBuffer, 1);
 if (!gameStates.app.bGameRunning)
