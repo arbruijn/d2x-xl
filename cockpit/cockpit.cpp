@@ -130,7 +130,10 @@ void CCockpit::ClearBombCount (int bgColor)
 
 void CCockpit::DrawBombCount (void)
 {
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
 CGenericCockpit::DrawBombCount (BOMB_COUNT_X, BOMB_COUNT_Y, BLACK_RGBA, 1);
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -435,6 +438,8 @@ void CCockpit::DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel)
 {
 	int nIndex;
 
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
 if (nWeaponType == 0) {
 	nIndex = primaryWeaponToWeaponInfo [nWeaponId];
 	if (nIndex == LASER_ID && laserLevel > MAX_LASER_LEVEL)
@@ -453,6 +458,7 @@ else {
 		SECONDARY_WEAPON_NAMES_SHORT (nWeaponId),
 		SECONDARY_W_TEXT_X, SECONDARY_W_TEXT_Y, 0);
 	}
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
