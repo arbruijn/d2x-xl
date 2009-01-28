@@ -122,7 +122,7 @@ if (!IsMultiGame || IsCoopGame) {
 		y += 2 * nLineSpacing;
 
 	x0 = CCanvas::Current ()->Width ();
-	if ((extraGameInfo [0].nWeaponIcons >= 3) && (CCanvas::Current ()->Height () < 660))
+	if ((extraGameInfo [0].nWeaponIcons >= 3) && (CCanvas::Current ()->Height () < 670))
 		x0 -= HUD_LHX (20);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	t = gameStates.app.nSDLTicks;

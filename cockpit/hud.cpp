@@ -145,13 +145,13 @@ if (cockpit->Hide ())
 
 	static int nIdLock = 0;
 
-//if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) 
-{
+if (/*(LOCALPLAYER.homingObjectDist >= 0) &&*/ (gameData.time.xGame & 0x4000)) {
 	int	x = 0x8000, 
 			y = CCanvas::Current ()->Height () - m_info.nLineSpacing;
 
-	if (hudIcons.Inventory () && (!(extraGameInfo [0].nWeaponIcons & 1)))
-		y -= LHY (16);
+	if ((hudIcons.Visible () && (extraGameInfo [0].nWeaponIcons == 2)) ||
+		(hudIcons.Inventory () && (extraGameInfo [0].nWeaponIcons & 1)))
+		y -= LHY (20);
 	if ((m_info.weaponBoxUser [0] != WBU_WEAPON) || (m_info.weaponBoxUser [1] != WBU_WEAPON)) {
 		int wy = (m_info.weaponBoxUser [0] != WBU_WEAPON) ? SW_y [0] : SW_y [1];
 		y = min (y, (wy - m_info.nLineSpacing - gameData.render.window.y));
@@ -362,7 +362,10 @@ void CHUD::ClearBombCount (int bgColor)
 
 void CHUD::DrawBombCount (void)
 {
-CGenericCockpit::DrawBombCount (BOMB_COUNT_X, BOMB_COUNT_Y, BLACK_RGBA, 1);
+int x = BOMB_COUNT_X;
+if ((extraGameInfo [0].nWeaponIcons >= 3) && (CCanvas::Current ()->Height () < 670))
+	x -= LHX (20);
+CGenericCockpit::DrawBombCount (x, BOMB_COUNT_Y, BLACK_RGBA, 1);
 }
 
 //	-----------------------------------------------------------------------------

@@ -427,7 +427,7 @@ else {
 	}
 fontManager.Current ()->StringSize (szStats, w, h, aw);
 int x = CCanvas::Current ()->Width () - w - LHX (2);
-if ((extraGameInfo [0].nWeaponIcons >= 3) && (CCanvas::Current ()->Height () < 660))
+if ((extraGameInfo [0].nWeaponIcons >= 3) && (CCanvas::Current ()->Height () < 670))
 	x -= HUD_LHX (20);
 nIdStats = GrString (x, y, szStats, &nIdStats);
 }
