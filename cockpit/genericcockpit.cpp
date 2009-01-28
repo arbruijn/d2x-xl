@@ -1576,7 +1576,7 @@ if (gameStates.app.bPlayerIsDead)
 
 if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead && !transformation.m_info.bUsePlayerHeadAngles)
 	DrawReticle (0);
-if (gameStates.render.cockpit.nType != CM_REAR_VIEW) {
+if (gameStates.render.bRearView && (gameStates.render.cockpit.nType != CM_REAR_VIEW)) {
 	HUDRenderMessageFrame ();
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - ((gameData.demo.nState == ND_STATE_PLAYBACK) ? 14 : 10), TXT_REAR_VIEW);

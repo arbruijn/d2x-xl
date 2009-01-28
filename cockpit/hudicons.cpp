@@ -122,6 +122,8 @@ if (!IsMultiGame || IsCoopGame) {
 		y += 2 * nLineSpacing;
 
 	x0 = CCanvas::Current ()->Width ();
+	if (CCanvas::Current ()->Height () < 640)
+		x0 -= HUD_LHX (20);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	t = gameStates.app.nSDLTicks;
 	if (t - t0 > 333) {	//update 3 times per second
@@ -500,12 +502,14 @@ void CHUDIcons::DrawInventory (void)
 	static int nIdItems [NUM_INV_ITEMS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 dy = (screen.Height () - CCanvas::Current ()->Height ());
-#if 0
+#if 1
+	y = nIconPos ? screen.Height () - dy - oy : oy + hIcon + 12;
+#else
 if (gameStates.render.cockpit.nType != CM_STATUS_BAR) //(!cockpit->Always ())
 	y = nIconPos ? screen.Height () - dy - oy : oy + hIcon + 12;
 else
-#endif
 	y = oy + hIcon + 12;
+#endif
 n = (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) ? NUM_INV_ITEMS : NUM_INV_ITEMS - 2;
 firstItem = gameStates.app.bD1Mission ? INV_ITEM_QUADLASERS : 0;
 x = (screen.Width () - (n - firstItem) * wIcon - (n - 1 - firstItem) * ox) / 2;
