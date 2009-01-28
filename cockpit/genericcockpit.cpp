@@ -255,7 +255,8 @@ fontManager.Pop ();
 
 void CGenericCockpit::DrawCruise (int x, int y)
 {
-if ((gameStates.input.nCruiseSpeed > 0) &&
+if (!gameStates.render.bRearView &&
+	 (gameStates.input.nCruiseSpeed > 0) &&
 	 (gameData.multiplayer.nLocalPlayer > -1) &&
 	 (gameData.objs.viewerP->info.nType == OBJ_PLAYER) &&
 	 (gameData.objs.viewerP->info.nId == gameData.multiplayer.nLocalPlayer))
@@ -354,6 +355,8 @@ void CGenericCockpit::DrawSlowMotion (void)
 {
 if (Hide ())
 	return;
+if (gameStates.render.bRearView)
+	return;
 
 	char	szScore [40];
 	int	w, h, aw;
@@ -388,6 +391,8 @@ GrPrintF (NULL, CCanvas::Current ()->Width () - 2 * w - LHX (2), 3, szScore);
 void CGenericCockpit::DrawPlayerStats (void)
 {
 if (Hide ())
+	return;
+if (gameStates.render.bRearView)
 	return;
 
 	int		h, w, aw, y;

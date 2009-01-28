@@ -579,6 +579,8 @@ if (gameStates.app.bNostalgia)
 	return;
 if (gameStates.app.bEndLevelSequence)
 	return;
+if (gameStates.render.bRearView)
+	return;
 ToggleWeaponIcons ();
 if (gameOpts->render.cockpit.bHUD || cockpit->Always ()) {
 	xScale = cockpit->XScale ();

@@ -204,23 +204,25 @@ DrawAmmoInfo (SB_SECONDARY_AMMO_X, SB_SECONDARY_AMMO_Y, ammoCount, 0);
 
 void CStatusBar::DrawLives (void)
 {
-	CBitmap* bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (GAUGE_LIVES);
-
 	static int nIdLives [2] = {0, 0}, nIdKilled = 0;
   
+	CBitmap* bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (GAUGE_LIVES);
+	char		szLives [20];
+	int		w, h, aw;
+
 CCanvas::Push ();
 CCanvas::SetCurrent (CurrentGameScreen ());
 fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
-nIdLives [0] = IsMultiGame ? 
-					PrintF (&nIdLives [0], SB_LIVES_LABEL_X, -ScaleY (SB_LIVES_LABEL_Y + m_info.heightPad), "%s:", TXT_DEATHS) : 
-					PrintF (&nIdLives [0], SB_LIVES_LABEL_X, -ScaleY (SB_LIVES_LABEL_Y + m_info.heightPad), "%s:", TXT_LIVES);
+strcpy (szLives, IsMultiGame ? TXT_DEATHS : TXT_LIVES);
+fontManager.Current ()->StringSize (szLives, w, h, aw);
+nIdLives [0] = PrintF (&nIdLives [0], -(ScaleX (SB_LIVES_LABEL_X + w) - w), -ScaleY (SB_LIVES_LABEL_Y + m_info.heightPad), szLives);
+
 if (IsMultiGame) {
 	static int lastX [4] = {SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_H, SB_SCORE_RIGHT_H};
 
 	char	szKilled [20];
 	int	x = SB_LIVES_X, 
 			y = -(ScaleY (SB_LIVES_Y + 1) + m_info.heightPad);
-	int	w, h, aw;
 
 	sprintf (szKilled, "%5d", LOCALPLAYER.netKilledTotal);
 	fontManager.Current ()->StringSize (szKilled, w, h, aw);
