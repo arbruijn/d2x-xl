@@ -1711,7 +1711,7 @@ if (pszLabel) {
 if (nUser == WBU_GUIDED) {
 	DrawGuidedCrosshair ();
 	}
-if (gameStates.render.cockpit.nType == CM_FULL_SCREEN) {
+if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 	int smallWindowBottom, bigWindowBottom, extraPartHeight;
 
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
@@ -1774,7 +1774,6 @@ if (gameStates.video.nScreenMode == SCREEN_EDITOR)
 CCanvas::SetCurrent (NULL);
 fontManager.SetCurrent (GAME_FONT);
 gameStates.render.cockpit.nShieldFlash = 0;
-m_info.bRebuild = false;
 return true;
 }
 
