@@ -185,7 +185,7 @@ void CHUDIcons::DrawWeapons (void)
 			i, j, ll, n, 
 			ox = 6, 
 			oy = 6, 
-			x, dx, y = 0, dy = 0, yOffs;
+			x, dx, y = 0, dy = 0;
 	ubyte	alpha = gameOpts->render.weaponIcons.alpha;
 	uint	nAmmoColor;
 	char	szAmmo [10];
@@ -222,9 +222,7 @@ if (nWeaponIcons < 3) {
 #endif
 	}
 if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) && (extraGameInfo [0].nWeaponIcons < 3))
-	yOffs = cockpit->LHX (10);
-else
-	yOffs = 0;
+	y -= cockpit->LHX (10);
 for (i = 0; i < 2; i++) {
 	n = (gameStates.app.bD1Mission) ? 5 : 10;
 	nMaxAutoSelect = 255;
@@ -244,7 +242,7 @@ for (i = 0; i < 2; i++) {
 #endif
 			}
 #endif
-		y = (CCanvas::Current ()->Height () - h - n * (hIcon + oy)) / 2 + hIcon - yOffs;
+		y = (CCanvas::Current ()->Height () - h - n * (hIcon + oy)) / 2 + hIcon;
 		x = i ? screen.Width () - wIcon - ox : ox;
 		}
 	else {
@@ -481,7 +479,7 @@ void CHUDIcons::DrawInventory (void)
 	int	j, n, firstItem, 
 			oy = 6, 
 			ox = 6, 
-			x, y, dy, yOffs;
+			x, y, dy;
 	int	w = bmpInventory->Width (), 
 			h = bmpInventory->Width ();
 	float	xScale = cockpit->XScale ();
@@ -518,13 +516,11 @@ n = (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) ? NUM_INV_IT
 firstItem = gameStates.app.bD1Mission ? INV_ITEM_QUADLASERS : 0;
 x = (screen.Width () - (n - firstItem) * wIcon - (n - 1 - firstItem) * ox) / 2;
 if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) && (extraGameInfo [0].nWeaponIcons & 1))
-	yOffs = cockpit->LHX (10);
-else
-	yOffs = 0;
+	y -= cockpit->LHX (10);
 for (j = firstItem; j < n; j++) {
 	int bHave, bAvailable, bArmed = EquipmentActive (nInvFlags [j]);
 	bmP = bmInvItems + j;
-	cockpit->BitBlt (-1, nIconScale * (x + (w - bmP->Width ()) / (2 * nIconScale)), nIconScale * (y - hIcon - yOffs), false, true, I2X (nIconScale), 0, bmP);
+	cockpit->BitBlt (-1, nIconScale * (x + (w - bmP->Width ()) / (2 * nIconScale)), nIconScale * (y - hIcon), false, true, I2X (nIconScale), 0, bmP);
 	//m = 9 - j;
 	*szCount = '\0';
 	if (j == INV_ITEM_HEADLIGHT)
