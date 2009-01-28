@@ -290,6 +290,7 @@ class CWideHUD : public CHUD {
 		virtual void DrawRecording (void);
 		virtual void Toggle (void);
 		virtual bool Setup (void);
+		virtual void SetupWindow (int nWindow, CCanvas* canvP);
 	};
 
 //	-----------------------------------------------------------------------------

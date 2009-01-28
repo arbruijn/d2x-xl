@@ -662,49 +662,49 @@ void CHUD::SetupWindow (int nWindow, CCanvas* canvP)
 {
 	static int cockpitWindowScale [4] = {6, 5, 4, 3};
 
-	int y, x;
+	int x, y;
 
 int w = (int) (gameStates.render.vr.buffers.render [0].Width () / cockpitWindowScale [gameOpts->render.cockpit.nWindowSize] * HUD_ASPECT);	
 int h = I2X (w) / screen.Aspect ();
 int dx = (nWindow == 0) ? -w - w / 10 : w / 10;
 switch (gameOpts->render.cockpit.nWindowPos) {
 	case 0:
-		y = nWindow ?
+		x = nWindow ?
 			gameStates.render.vr.buffers.render [0].Width () - w - h / 10 :
 			h / 10;
-		x = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
+		y = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
 		break;
 	case 1:
-		y = nWindow ?
+		x = nWindow ?
 			gameStates.render.vr.buffers.render [0].Width () / 3 * 2 - w / 3 :
 			gameStates.render.vr.buffers.render [0].Width () / 3 - 2 * w / 3;
-		x = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
+		y = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
 		break;
 	case 2:	// only makes sense if there's only one cockpit window
-		y = gameStates.render.vr.buffers.render [0].Width () / 2 - w / 2;
-		x = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
+		x = gameStates.render.vr.buffers.render [0].Width () / 2 - w / 2;
+		y = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
 		break;
 	case 3:
-		y = nWindow ?
+		x = nWindow ?
 			gameStates.render.vr.buffers.render [0].Width () - w - h / 10 :
 			h / 10;
-		x = h / 10;
+		y = h / 10;
 		break;
 	case 4:
-		y = nWindow ?
+		x = nWindow ?
 			gameStates.render.vr.buffers.render [0].Width () / 3 * 2 - w / 3 :
 			gameStates.render.vr.buffers.render [0].Width () / 3 - 2 * w / 3;
-		x = h / 10;
+		y = h / 10;
 		break;
 	case 5:	// only makes sense if there's only one cockpit window
-		y = gameStates.render.vr.buffers.render [0].Width () / 2 - w / 2;
-		x = h / 10;
+		x = gameStates.render.vr.buffers.render [0].Width () / 2 - w / 2;
+		y = h / 10;
 		break;
 	}
 if ((gameOpts->render.cockpit.nWindowPos < 3) &&
 		extraGameInfo [0].nWeaponIcons &&
 		(extraGameInfo [0].nWeaponIcons - gameOpts->render.weaponIcons.bEquipment < 3))
-		x -= (int) ((gameOpts->render.weaponIcons.bSmall ? 20.0 : 30.0) * (double) CCanvas::Current ()->Height () / 480.0);
+		y -= (int) ((gameOpts->render.weaponIcons.bSmall ? 20.0 : 30.0) * (double) CCanvas::Current ()->Height () / 480.0);
 
 //copy these vars so stereo code can get at them
 SW_drawn [nWindow] = 1;
@@ -712,8 +712,8 @@ SW_x [nWindow] = x;
 SW_y [nWindow] = y;
 SW_w [nWindow] = w;
 SW_h [nWindow] = h;
-
-gameStates.render.vr.buffers.render [0].SetupPane (canvP, y, x, w, h);
+if (canvP)
+	gameStates.render.vr.buffers.render [0].SetupPane (canvP, x, y, w, h);
 }
 
 //	-----------------------------------------------------------------------------
@@ -751,6 +751,17 @@ CGenericCockpit::DrawRecording (7);
 void CWideHUD::Toggle (void)
 {
 CGenericCockpit::Activate (CM_FULL_COCKPIT);
+}
+
+//	-----------------------------------------------------------------------------
+
+void CWideHUD::SetupWindow (int nWindow, CCanvas* canvP)
+{
+CHUD::SetupWindow (nWindow, NULL);
+SW_y [nWindow] += gameStates.render.vr.buffers.subRender [0].Top ();
+if (SW_y [nWindow] > gameStates.render.vr.buffers.subRender [0].Bottom ())
+	SW_y [nWindow] -= (gameStates.render.vr.buffers.render [0].Height () - gameStates.render.vr.buffers.subRender [0].Height ());
+gameStates.render.vr.buffers.render [0].SetupPane (canvP, SW_x [nWindow], SW_y [nWindow], SW_w [nWindow], SW_h [nWindow]);
 }
 
 //	-----------------------------------------------------------------------------
