@@ -621,7 +621,7 @@ if (gameStates.app.bSaveScreenshot)
 #define WINDOW_MIN_W		 ((gameData.render.window.wMax * 10) / 22)	//160
 #define WINDOW_MIN_H		 ((gameData.render.window.hMax * 10) / 22)
 
-void GrowWindow ()
+void GrowWindow (void)
 {
 StopTime ();
 if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) {

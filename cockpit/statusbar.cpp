@@ -482,7 +482,7 @@ if (nWeaponType == 0) {
 		hudWindowAreas + SB_PRIMARY_BOX,
 		SB_PRIMARY_W_PIC_X, SB_PRIMARY_W_PIC_Y,
 		PRIMARY_WEAPON_NAMES_SHORT (nWeaponId),
-		PRIMARY_W_TEXT_X, PRIMARY_W_TEXT_Y, 0);
+		SB_PRIMARY_W_TEXT_X, SB_PRIMARY_W_TEXT_Y, 0);
 		}
 else {
 	nIndex = secondaryWeaponToWeaponInfo [nWeaponId];
@@ -490,7 +490,7 @@ else {
 		hudWindowAreas + SB_SECONDARY_BOX,
 		SB_SECONDARY_W_PIC_X, SB_SECONDARY_W_PIC_Y,
 		SECONDARY_WEAPON_NAMES_SHORT (nWeaponId),
-		SECONDARY_W_TEXT_X, SECONDARY_W_TEXT_Y, 0);
+		SB_SECONDARY_W_TEXT_X, SB_SECONDARY_W_TEXT_Y, 0);
 	}
 CCanvas::Pop ();
 }

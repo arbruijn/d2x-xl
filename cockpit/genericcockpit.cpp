@@ -1486,6 +1486,9 @@ if (showViewTextTimer > 0) {
 
 //	-----------------------------------------------------------------------------
 //draw all the things on the HUD
+
+void ShowExtraViews (void);
+
 void CGenericCockpit::Render (int bExtraInfo)
 {
 if (Hide ())
@@ -1528,11 +1531,12 @@ else
 if ((gameData.demo.nState == ND_STATE_PLAYBACK))
 	gameData.app.nGameMode = gameData.demo.nGameMode;
 
-DrawCockpit (false);
-
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
 CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
 fontManager.SetCurrent (GAME_FONT);
+
+ShowExtraViews ();
+DrawCockpit (false);
 
 if (bExtraInfo) {
 #if DBG
@@ -1681,6 +1685,7 @@ gameStates.render.bRearView = bRearView;
 SetupWindow (nWindow, &windowCanv);
 CCanvas::Push ();
 CCanvas::SetCurrent (&windowCanv);
+fontManager.SetCurrent (GAME_FONT);
 transformation.Push ();
 nZoomSave = gameStates.render.nZoomFactor;
 gameStates.render.nZoomFactor = I2X (gameOpts->render.cockpit.nWindowZoom + 1);					//the CPlayerData's zoom factor
