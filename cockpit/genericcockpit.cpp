@@ -1809,7 +1809,7 @@ int CGenericCockpit::WidthPad (char* pszText)
 	int	w, h, aw;
 
 fontManager.Current ()->StringSize (pszText, w, h, aw);
-return ScaleX (w) - w;
+return (ScaleX (w) - w) / 2;
 }
 
 //------------------------------------------------------------------------------

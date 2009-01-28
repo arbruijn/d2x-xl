@@ -130,17 +130,17 @@ void CCockpit::ClearBombCount (int bgColor)
 
 void CCockpit::DrawBombCount (void)
 {
-CCanvas::Push ();
-CCanvas::SetCurrent (CurrentGameScreen ());
 CGenericCockpit::DrawBombCount (BOMB_COUNT_X, BOMB_COUNT_Y, BLACK_RGBA, 1);
-CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
 
 int CCockpit::DrawBombCount (int& nIdBombCount, int x, int y, char* pszBombCount)
 {
-return PrintF (&nIdBombCount, x, y, pszBombCount, nIdBombCount);
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
+return PrintF (&nIdBombCount, -(ScaleX (x) + WidthPad (pszBombCount)), -(ScaleY (y) + m_info.heightPad), pszBombCount, nIdBombCount);
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
