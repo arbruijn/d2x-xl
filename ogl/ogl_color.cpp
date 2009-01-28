@@ -375,7 +375,7 @@ if (nLights > lightManager.LightCount (0))
 	nLights = lightManager.LightCount (0);
 i = sliP->nLast - sliP->nFirst + 1;
 #if DBG
-if (nVertex == nDbgVertex)
+if ((nDbgVertex >= 0) && (nVertex == nDbgVertex))
 	nDbgVertex = nDbgVertex;
 #endif
 for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
@@ -486,7 +486,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		vReflect = CFloatVector3::Reflect(lightDir, vcd.vertNorm);
 		CFloatVector3::Normalize(vReflect);
 #if DBG
-		if (nVertex == nDbgVertex)
+		if ((nDbgVertex >= 0) && (nVertex == nDbgVertex))
 			nDbgVertex = nDbgVertex;
 #endif
 		RdotE = CFloatVector3::Dot (vReflect, vertPos);
