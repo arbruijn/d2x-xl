@@ -170,10 +170,10 @@ gameData.app.bGamePaused = 0;
 
 //------------------------------------------------------------------------------
 
-void DoShowNetgameHelp();
+void DoShowNetgameHelp (void);
 
 //Process selected keys until game unpaused. returns key that left pause (p or esc)
-int DoGamePause()
+int DoGamePause (void)
 {
 	int key;
 	int bScreenChanged;
@@ -214,7 +214,7 @@ formatTime(xLevelTime, X2I(LOCALPLAYER.timeLevel) + LOCALPLAYER.hoursLevel*3600)
 
 if (!gameOpts->menus.nStyle) {
 	gameStates.menus.nInMenu++;
-	GameRenderFrame();
+	GameRenderFrame ();
 	gameStates.menus.nInMenu--;
 	ShowBoxedMessage(pszPauseMsg=msg);		  //TXT_PAUSE);
 	}
@@ -238,17 +238,17 @@ while (gameData.app.bGamePaused) {
 		bScreenChanged = HandleSystemKey(key);
 		HandleVRKey(key);
 		if (bScreenChanged) {
-			GameRenderFrame();
-			ShowBoxedMessage(msg);
+			GameRenderFrame ();
+			ShowBoxedMessage (msg);
 #if 0		
-			show_extraViews();
+			show_extraViews ();
 			if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR))
 				RenderGauges();
 #endif			
 			}
 	}
 GrabMouse (1, 0);
-ClearBoxedMessage();
+ClearBoxedMessage ();
 ResumeGame ();
 return key;
 }
