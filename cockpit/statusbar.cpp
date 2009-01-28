@@ -93,21 +93,21 @@ void CStatusBar::DrawScore (void)
 	char	szScore [20];
 	int 	x, y;
 	int	w, h, aw;
-	int 	bRedrawScore;
 
 	static int lastX [4] = {SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_H, SB_SCORE_RIGHT_H};
 	static int nIdLabel = 0, nIdScore = 0;
 
 CCanvas::Push ();
 CCanvas::SetCurrent (CurrentGameScreen ());
-bRedrawScore = -99 ? (IsMultiGame && !IsCoopGame) : -1;
-if (m_history [gameStates.render.vr.nCurrentPage].score == bRedrawScore) {
-	fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
-	nIdLabel = PrintF (&nIdLabel, SB_SCORE_LABEL_X, SB_SCORE_Y, "%s:", (IsMultiGame && !IsCoopGame) ? TXT_KILLS : TXT_SCORE);
-	}
+strcpy (szScore, (IsMultiGame && !IsCoopGame) ? TXT_KILLS : TXT_SCORE);
+strcat (szScore, ":");
+fontManager.Current ()->StringSize (szScore, w, h, aw);
+fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
+nIdLabel = PrintF (&nIdLabel, -(ScaleX (SB_SCORE_LABEL_X + w) - w), SB_SCORE_Y, szScore);
+
 sprintf (szScore, "%5d", (IsMultiGame && !IsCoopGame) ? LOCALPLAYER.netKillsTotal : LOCALPLAYER.score);
 fontManager.Current ()->StringSize (szScore, w, h, aw);
-x = SB_SCORE_RIGHT - w - LHY (2);
+x = -(ScaleX (SB_SCORE_RIGHT - w - LHY (2)) - w);
 y = SB_SCORE_Y;
 //erase old score
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
