@@ -1,6 +1,8 @@
 #ifndef _HUDICONS_H
 #define _HUDICONS_H
 
+extern int bHaveInvBms;
+
 class CHUDIcons {
 	private:
 		float	xScale;
@@ -19,6 +21,9 @@ class CHUDIcons {
 		void DrawInventory (void);
 		void Render (void);
 		void Destroy (void);
+
+		inline bool Visible (void) { return !(gameStates.app.bNostalgia || gameStates.app.bEndLevelSequence || gameStates.render.bRearView); }
+		inline bool Inventory (void) { return Visible () && gameOpts->render.weaponIcons.bEquipment && bHaveInvBms; }
 	};
 
 extern CHUDIcons hudIcons;

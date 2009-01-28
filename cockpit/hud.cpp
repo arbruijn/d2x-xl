@@ -41,28 +41,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "statusbar.h"
 #include "slowmotion.h"
 #include "automap.h"
+#include "hudicons.h"
 #include "gr.h"
-
-
-// these macros refer to arrays above
-
-int oldScore [2]			= {-1, -1};
-int oldEnergy [2]			= {-1, -1};
-int oldShields [2]		= {-1, -1};
-uint oldFlags [2]			= {(uint) -1, (uint) -1};
-int oldWeapon [2][2]		= {{-1, -1}, {-1, -1}};
-int oldAmmoCount [2][2]	= {{-1, -1}, {-1, -1}};
-int xOldOmegaCharge [2]	= {-1, -1};
-int oldLaserLevel [2]	= {-1, -1};
-int bOldCloak [2]			= {0, 0};
-int oldLives [2]			= {-1, -1};
-fix oldAfterburner [2]	= {-1, -1};
-int oldBombcount [2]		= {0, 0};
-
-#define COCKPIT_PRIMARY_BOX		 (!gameStates.video.nDisplayMode ? 0 : 4)
-#define COCKPIT_SECONDARY_BOX		 (!gameStates.video.nDisplayMode ? 1 : 5)
-#define SB_PRIMARY_BOX				 (!gameStates.video.nDisplayMode ? 2 : 6)
-#define SB_SECONDARY_BOX			 (!gameStates.video.nDisplayMode ? 3 : 7)
 
 //	-----------------------------------------------------------------------------
 
@@ -165,10 +145,13 @@ if (cockpit->Hide ())
 
 	static int nIdLock = 0;
 
-if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) {
+//if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) 
+{
 	int	x = 0x8000, 
 			y = CCanvas::Current ()->Height () - m_info.nLineSpacing;
 
+	if (hudIcons.Inventory () && (!(extraGameInfo [0].nWeaponIcons & 1)))
+		y -= LHY (16);
 	if ((m_info.weaponBoxUser [0] != WBU_WEAPON) || (m_info.weaponBoxUser [1] != WBU_WEAPON)) {
 		int wy = (m_info.weaponBoxUser [0] != WBU_WEAPON) ? SW_y [0] : SW_y [1];
 		y = min (y, (wy - m_info.nLineSpacing - gameData.render.window.y));
@@ -269,9 +252,9 @@ if (gameOpts->render.cockpit.bTextGauges) {
 if (gameData.demo.nState == ND_STATE_RECORDING) {
 	int energy = X2IR (LOCALPLAYER.energy);
 
-	if (energy != oldEnergy [gameStates.render.vr.nCurrentPage]) {
-		NDRecordPlayerEnergy (oldEnergy [gameStates.render.vr.nCurrentPage], energy);
-		oldEnergy [gameStates.render.vr.nCurrentPage] = energy;
+	if (energy != m_history [gameStates.render.vr.nCurrentPage].energy) {
+		NDRecordPlayerEnergy (m_history [gameStates.render.vr.nCurrentPage].energy, energy);
+		m_history [gameStates.render.vr.nCurrentPage].energy = energy;
 	 	}
 	}
 }
@@ -353,9 +336,9 @@ if (!gameOpts->render.cockpit.bTextGauges) {
 	OglDrawFilledRect (6, y, 6 + (int) (h * m_info.xGaugeScale), y + (int) (9 * m_info.yGaugeScale));
 	}
 if (gameData.demo.nState == ND_STATE_RECORDING) {
-	if (gameData.physics.xAfterburnerCharge != oldAfterburner [gameStates.render.vr.nCurrentPage]) {
-		NDRecordPlayerAfterburner (oldAfterburner [gameStates.render.vr.nCurrentPage], gameData.physics.xAfterburnerCharge);
-		oldAfterburner [gameStates.render.vr.nCurrentPage] = gameData.physics.xAfterburnerCharge;
+	if (gameData.physics.xAfterburnerCharge != m_history [gameStates.render.vr.nCurrentPage].afterburner) {
+		NDRecordPlayerAfterburner (m_history [gameStates.render.vr.nCurrentPage].afterburner, gameData.physics.xAfterburnerCharge);
+		m_history [gameStates.render.vr.nCurrentPage].afterburner = gameData.physics.xAfterburnerCharge;
 	 	}
 	}
 }
@@ -465,18 +448,18 @@ fontManager.Current ()->StringSize (szWeapon, w, h, aw);
 nIdWeapons [0] = GrPrintF (nIdWeapons + 0, CCanvas::Current ()->Width () - 5 - w, y-2*m_info.nLineSpacing, szWeapon);
 
 if (gameData.weapons.nPrimary == VULCAN_INDEX) {
-	if (LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary] != oldAmmoCount [0][gameStates.render.vr.nCurrentPage]) {
+	if (LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary] != m_history [gameStates.render.vr.nCurrentPage].ammo [0]) {
 		if (gameData.demo.nState == ND_STATE_RECORDING)
-			NDRecordPrimaryAmmo (oldAmmoCount [0][gameStates.render.vr.nCurrentPage], LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary]);
-		oldAmmoCount [0][gameStates.render.vr.nCurrentPage] = LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary];
+			NDRecordPrimaryAmmo (m_history [gameStates.render.vr.nCurrentPage].ammo [0], LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary]);
+		m_history [gameStates.render.vr.nCurrentPage].ammo [0] = LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary];
 		}
 	}
 
 if (gameData.weapons.nPrimary == OMEGA_INDEX) {
-	if (gameData.omega.xCharge [IsMultiGame] != xOldOmegaCharge [gameStates.render.vr.nCurrentPage]) {
+	if (gameData.omega.xCharge [IsMultiGame] != m_history [gameStates.render.vr.nCurrentPage].xOmegaCharge) {
 		if (gameData.demo.nState == ND_STATE_RECORDING)
-			NDRecordPrimaryAmmo (xOldOmegaCharge [gameStates.render.vr.nCurrentPage], gameData.omega.xCharge [IsMultiGame]);
-		xOldOmegaCharge [gameStates.render.vr.nCurrentPage] = gameData.omega.xCharge [IsMultiGame];
+			NDRecordPrimaryAmmo (m_history [gameStates.render.vr.nCurrentPage].xOmegaCharge, gameData.omega.xCharge [IsMultiGame]);
+		m_history [gameStates.render.vr.nCurrentPage].xOmegaCharge = gameData.omega.xCharge [IsMultiGame];
 		}
 	}
 
@@ -485,10 +468,10 @@ sprintf (szWeapon, "%s %d", pszWeapon, LOCALPLAYER.secondaryAmmo [gameData.weapo
 fontManager.Current ()->StringSize (szWeapon, w, h, aw);
 nIdWeapons [1] = GrPrintF (nIdWeapons + 1, CCanvas::Current ()->Width ()-5-w, y-m_info.nLineSpacing, szWeapon);
 
-if (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != oldAmmoCount [1][gameStates.render.vr.nCurrentPage]) {
+if (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != m_history [gameStates.render.vr.nCurrentPage].ammo [1]) {
 	if (gameData.demo.nState == ND_STATE_RECORDING)
-		NDRecordSecondaryAmmo (oldAmmoCount [1][gameStates.render.vr.nCurrentPage], LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
-	oldAmmoCount [1][gameStates.render.vr.nCurrentPage] = LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary];
+		NDRecordSecondaryAmmo (m_history [gameStates.render.vr.nCurrentPage].ammo [1], LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
+	m_history [gameStates.render.vr.nCurrentPage].ammo [1] = LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary];
 	}
 CGenericCockpit::DrawBombCount (CCanvas::Current ()->Width ()- 3 * m_info.fontWidth + (gameStates.render.fonts.bHires ? 0 : 2), 
 										  y - 3 * m_info.nLineSpacing, -1, 1);
