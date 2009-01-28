@@ -645,7 +645,7 @@ gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window
 
 bool CHUD::Setup (bool bRebuild)
 {
-if (bRebuild && !m_info.bRebuild))
+if (bRebuild && !m_info.bRebuild)
 	return true;
 m_info.bRebuild = false;
 if (!CGenericCockpit::Setup ())
@@ -732,7 +732,7 @@ CGenericCockpit::Activate (CM_LETTERBOX);
 
 bool CWideHUD::Setup (bool bRebuild)
 {
-if (bRebuild && !m_info.bRebuild))
+if (bRebuild && !m_info.bRebuild)
 	return true;
 m_info.bRebuild = false;
 if (!CGenericCockpit::Setup ())
