@@ -165,16 +165,14 @@ if (cockpit->Hide ())
 
 	static int nIdLock = 0;
 
-if (LOCALPLAYER.homingObjectDist >= 0) {
-	if (gameData.time.xGame & 0x4000) {
-		int x = 0x8000, y = CCanvas::Current ()->Height ()-m_info.nLineSpacing;
-		if ((m_info.weaponBoxUser [0] != WBU_WEAPON) || (m_info.weaponBoxUser [1] != WBU_WEAPON)) {
-			int wy = (m_info.weaponBoxUser [0] != WBU_WEAPON) ? SW_y [0] : SW_y [1];
-			y = min (y, (wy - m_info.nLineSpacing - gameData.render.window.y));
-			}
-		fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-		nIdLock = GrPrintF (&nIdLock, x, y, TXT_LOCK);
+if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) {
+	int x = 0x8000, y = CCanvas::Current ()->Height () - m_info.nLineSpacing;
+	if ((m_info.weaponBoxUser [0] != WBU_WEAPON) || (m_info.weaponBoxUser [1] != WBU_WEAPON)) {
+		int wy = (m_info.weaponBoxUser [0] != WBU_WEAPON) ? SW_y [0] : SW_y [1];
+		y = min (y, (wy - m_info.nLineSpacing - gameData.render.window.y));
 		}
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
+	nIdLock = GrPrintF (&nIdLock, x, y, TXT_LOCK);
 	}
 }
 

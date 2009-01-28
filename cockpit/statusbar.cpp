@@ -183,6 +183,7 @@ CGenericCockpit::DrawFlag (5 * m_info.nLineSpacing, m_info.nLineSpacing * (gameS
 
 void CStatusBar::DrawHomingWarning (void)
 {
+hudCockpit.DrawHomingWarning ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -209,12 +210,10 @@ void CStatusBar::DrawLives (void)
   
 CCanvas::Push ();
 CCanvas::SetCurrent (CurrentGameScreen ());
-if (m_history [gameStates.render.vr.nCurrentPage].lives == -1) {
-	fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
-	nIdLives [0] = IsMultiGame ? 
-						PrintF (&nIdLives [0], SB_LIVES_LABEL_X, -(ScaleY (SB_LIVES_LABEL_Y) + m_info.heightPad), "%s:", TXT_DEATHS) : 
-						PrintF (&nIdLives [0], SB_LIVES_LABEL_X, -(ScaleY (SB_LIVES_LABEL_Y) + m_info.heightPad), "%s:", TXT_LIVES);
-	}
+fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
+nIdLives [0] = IsMultiGame ? 
+					PrintF (&nIdLives [0], SB_LIVES_LABEL_X, -ScaleY (SB_LIVES_LABEL_Y + m_info.heightPad), "%s:", TXT_DEATHS) : 
+					PrintF (&nIdLives [0], SB_LIVES_LABEL_X, -ScaleY (SB_LIVES_LABEL_Y + m_info.heightPad), "%s:", TXT_LIVES);
 if (IsMultiGame) {
 	static int lastX [4] = {SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_H, SB_SCORE_RIGHT_H};
 
@@ -233,18 +232,16 @@ if (IsMultiGame) {
 	nIdKilled = PrintF (&nIdKilled, x, y + 1, szKilled);
 	lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCurrentPage] = x;
 	}
-else if ((m_history [gameStates.render.vr.nCurrentPage].lives == -1) || 
-	 (LOCALPLAYER.lives != m_history [gameStates.render.vr.nCurrentPage].lives)) {
+else if (LOCALPLAYER.lives != m_history [gameStates.render.vr.nCurrentPage].lives) {
 
-	int	x = SB_LIVES_X, 
-			y = -(ScaleY (SB_LIVES_Y) + m_info.heightPad);
+	int	y = -ScaleY (SB_LIVES_Y + m_info.heightPad);
 
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
-	Rect (x, y, SB_SCORE_RIGHT, y + bmP->Height ());
+	Rect (SB_LIVES_X, y, SB_SCORE_RIGHT, y + bmP->Height ());
 	if (LOCALPLAYER.lives - 1 > 0) {
 		fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
-		BitBlt (GAUGE_LIVES, x, y);
-		nIdLives [1] = PrintF (&nIdLives [1], x + bmP->Width () + m_info.fontWidth, y, "x %d", LOCALPLAYER.lives - 1);
+		BitBlt (GAUGE_LIVES, SB_LIVES_X, SB_LIVES_Y);
+		nIdLives [1] = PrintF (&nIdLives [1], SB_LIVES_X + bmP->Width () + m_info.fontWidth, y, "x %d", LOCALPLAYER.lives - 1);
 		}
 	}
 CCanvas::Pop ();
