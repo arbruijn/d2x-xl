@@ -265,8 +265,10 @@ if (m_info.nEnergy < 100) {	// erase part of gauge corresponding to energy loss
 		OglDrawFilledPoly (x, y, 4, gaugeFadeColors [0], 1);
 		x [1] = x [0];
 		x [2] = x [3];
-		x [0] += ScaleX (RIGHT_ENERGY_GAUGE_W);
-		x [3] = ScaleX (RIGHT_ENERGY_GAUGE_W + LEFT_ENERGY_GAUGE_W - ENERGY_GAUGE_BOT_WIDTH);
+		x [0] = ScaleX (RIGHT_ENERGY_GAUGE_X);
+		x [0] += (x [1] - x [0]) / 2;
+		x [3] = ScaleX (RIGHT_ENERGY_GAUGE_X + LEFT_ENERGY_GAUGE_W - ENERGY_GAUGE_BOT_WIDTH);
+		x [3] += (x [2] - x [3]) / 2;
 		glEnable (GL_BLEND);
 		OglDrawFilledPoly (x, y, 4, gaugeFadeColors [1], 4);
 		}
