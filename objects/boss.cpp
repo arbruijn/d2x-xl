@@ -393,9 +393,10 @@ return nBoss;
 
 void CBossData::Remove (short nBoss)
 {
-if (m_info.Delete (nBoss))
+if (m_info.Delete (nBoss)) {
 	extraGameInfo [0].nBossCount--;
-memset (m_info.Top (), 0, sizeof (CBossInfo));
+	memset (&m_info [m_info.ToS ()], 0, sizeof (CBossInfo));
+	}
 }
 
 //------------------------------------------------------------------------------
