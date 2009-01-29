@@ -32,7 +32,9 @@ class CTracker {
 	private:
 		tServerList			m_list;
 		tServerListTable*	m_table;
-		bool					m_bUse;
+
+	public
+		int					m_bUse;
 
 	public:
 		CTracker () { Init (); }
@@ -63,5 +65,7 @@ class CTracker {
 	};
 
 #endif // __tracker_h
+
+extern CTracker tracker;
 
 // eof

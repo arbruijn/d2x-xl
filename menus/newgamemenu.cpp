@@ -371,11 +371,11 @@ int ExecMultiMenuOption (int nChoice)
 {
 	int	bUDP = 0, bStart = 0;
 
-gameStates.multi.bUseTracker = 0;
+tracker.m_bUse = 0;
 if ((nChoice == multiOpts.nStartUdpTracker) ||(nChoice == multiOpts.nJoinUdpTracker)) {
 	if (gameStates.app.bNostalgia > 1)
 		return 0;
-	gameStates.multi.bUseTracker = 1;
+	tracker.m_bUse = 1;
 	bUDP = 1;
 	bStart = (nChoice == multiOpts.nStartUdpTracker);
 	}
@@ -403,7 +403,7 @@ if (bUDP) {
 		if (n < -2) {
 			if (n == -4)
 				MsgBox (NULL, NULL, 1, TXT_OK, TXT_NO_TRACKERS);
-			gameStates.multi.bUseTracker = 0;
+			tracker.m_bUse = 0;
 			return 0;
 			}
 		}

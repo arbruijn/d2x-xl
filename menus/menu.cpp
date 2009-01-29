@@ -626,7 +626,7 @@ while (!done) {
 
 		case KEY_I:
 		 if (gameStates.multi.bSurfingNet && !bAlreadyShowingInfo)
-			 ShowNetGameInfo (choice - 2 - gameStates.multi.bUseTracker);
+			 ShowNetGameInfo (choice - 2 - tracker.m_bUse);
 		 if (gameStates.multi.bSurfingNet && bAlreadyShowingInfo) {
 			 done = 1;
 			 choice = -1;
@@ -635,7 +635,7 @@ while (!done) {
 		 
 		case KEY_U:
 		 if (gameStates.multi.bSurfingNet && !bAlreadyShowingInfo)
-			 NetworkRequestPlayerNames (choice - 2 - gameStates.multi.bUseTracker);
+			 NetworkRequestPlayerNames (choice - 2 - tracker.m_bUse);
 		 if (gameStates.multi.bSurfingNet && bAlreadyShowingInfo) {
 			 done = 1;
 			 choice = - 1;

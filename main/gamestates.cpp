@@ -155,7 +155,7 @@ void InitMultiplayerStates (void)
 {
 gameStates.multi.nGameType = 0;
 gameStates.multi.nGameSubType = 0;
-gameStates.multi.bUseTracker = 0;
+tracker.m_bUse = 0;
 gameStates.multi.bServer = 1;
 gameStates.multi.bTryAutoDL = 0;
 gameStates.multi.bHaveLocalAddress = 0;

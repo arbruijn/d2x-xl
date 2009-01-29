@@ -188,7 +188,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 		int	i;
 
 		console.printf (0, "looking for netgames\n");
-		if (gameStates.multi.bUseTracker) {
+		if (tracker.m_bUse) {
 			if (!RequestServerListFromTracker ())
 				return 0;
 			//memset (activeNetGames, 0, sizeof (activeNetGames));

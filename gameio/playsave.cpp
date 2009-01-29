@@ -332,7 +332,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameStates.app.nDifficultyLevel, 0, 0);
 		RP (gameStates.ogl.nContrast, 0, 0);
 		RP (gameStates.multi.nConnection, 0, 0);
-		RP (gameStates.multi.bUseTracker, 0, 0);
+		RP (tracker.m_bUse, 0, 0);
 
 		RP (gameData.menu.alpha, 0, 0);
 
@@ -788,7 +788,7 @@ tParamValue defaultParams [] = {
  {"gameStates.app.nDifficultyLevel", "2"},
  {"gameStates.ogl.nContrast", "8"},
  {"gameStates.multi.nConnection", "1"},
- {"gameStates.multi.bUseTracker", "0"},
+ {"tracker.m_bUse", "0"},
  {"gameData.menu.alpha", "79"},
  {"mpParams.nLevel", "1"},
  {"mpParams.nGameType", "3"},
@@ -1592,7 +1592,7 @@ for (i = 0; i < 2; i++) {
 	if (gameStates.input.nPlrFileVersion >= 43)
 		gameOptions [i].render.color.bGunLight = (int) cf.ReadByte ();
 	if (gameStates.input.nPlrFileVersion >= 44)
-		gameStates.multi.bUseTracker = (int) cf.ReadByte ();
+		tracker.m_bUse = (int) cf.ReadByte ();
 	if (gameStates.input.nPlrFileVersion >= 45)
 		gameOptions [i].gameplay.bFastRespawn = (int) cf.ReadByte ();
 	if (!i && (gameStates.input.nPlrFileVersion >= 46))
@@ -2288,7 +2288,7 @@ for (i = 0; i < 2; i++) {
 	if (!i)
 		cf.WriteByte ((sbyte) extraGameInfo [0].bAutoDownload);
 	cf.WriteByte ((sbyte) gameOptions [i].render.color.bGunLight);
-	cf.WriteByte ((sbyte) gameStates.multi.bUseTracker);
+	cf.WriteByte ((sbyte) tracker.m_bUse);
 	cf.WriteByte ((sbyte) gameOptions [i].gameplay.bFastRespawn);
 	if (!i)
 		cf.WriteByte ((sbyte) extraGameInfo [0].bDualMissileLaunch);

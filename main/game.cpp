@@ -1137,7 +1137,7 @@ gameData.models.Destroy ();
 PrintLog ("unloading hires models\n");
 FreeHiresModels (0);
 PrintLog ("unloading tracker list\n");
-DestroyTrackerList ();
+tracker.List ();
 PrintLog ("unloading lightmap data\n");
 lightmapManager.Destroy ();
 PrintLog ("unloading particle data\n");
@@ -1464,7 +1464,7 @@ DoFinalBossFrame ();
 DrainHeadlightPower ();
 
 if (IsMultiGame) {
-	AddServerToTracker ();
+	tracker.AddServer ();
    MultiDoFrame ();
 	CheckMonsterballScore ();
 	if (netGame.xPlayTimeAllowed && (gameStates.app.xThisLevelTime >= I2X ((netGame.xPlayTimeAllowed * 5 * 60))))

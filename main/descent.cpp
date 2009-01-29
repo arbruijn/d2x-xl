@@ -611,7 +611,7 @@ paletteManager.LoadEffect ();
 switch (loadOp) {
 	case 0:
 		/*---*/PrintLog ("Creating default tracker list\n");
-		CreateTrackerList ();
+		tracker.CreateList ();
 		break;
 	case 1:
 		/*---*/PrintLog ("Loading ban list\n");
@@ -813,7 +813,7 @@ WriteConfigFile ();
 /*---*/PrintLog ("Saving player profile\n");
 SavePlayerProfile ();
 /*---*/PrintLog ("Releasing tracker list\n");
-DestroyTrackerList ();
+tracker.DestroyList ();
 profile.Destroy ();
 #if DBG
 if (!FindArg ("-notitles"))

@@ -656,7 +656,7 @@ if (!gameStates.multi.bServer) {		//set up server address and add it to destinat
 	sin.sin_family = AF_INET;
 	memcpy (&sin.sin_addr.s_addr, ipx_ServerAddress + 4, 4);
 	sin.sin_port = htons (nServerPort);
-	if (!gameStates.multi.bUseTracker)
+	if (!tracker.m_bUse)
 		AddDestToList (&sin);
 	}
 

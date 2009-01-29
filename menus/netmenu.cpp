@@ -1240,7 +1240,7 @@ int NetworkGetIpAddr (void)
 	static char szClientPort [7] = {'\0'};
 	static int nClientPortSign = 0;
 
-if (!gameStates.multi.bUseTracker) {
+if (!tracker.m_bUse) {
 	if (!*mpParams.szServerIpAddr) {
 		ArchIpxSetDriver (IPX_DRIVER_UDP);
 		if (IpxInit (-1) != IPX_INIT_OK) {
@@ -1255,7 +1255,7 @@ if (!gameStates.multi.bUseTracker) {
 			}
 		}
 	}
-if (!gameStates.multi.bUseTracker) {
+if (!tracker.m_bUse) {
 	m.AddText (TXT_HOST_IP, 0);
 	optServer = m.AddInput (mpParams.szServerIpAddr, sizeof (mpParams.szServerIpAddr) - 1, HTX_GETIP_SERVER);
 	m.AddText (TXT_CLIENT_PORT, 0);
@@ -1267,12 +1267,12 @@ optPort = m.AddInput (szClientPort, sizeof (szClientPort) - 1, HTX_GETIP_CLIENT)
 m.AddText (TXT_PORT_HELP1, 0);
 m.AddText (TXT_PORT_HELP2, 0);
 for (;;) {
-	i = m.Menu (NULL, gameStates.multi.bUseTracker ? TXT_CLIENT_PORT + 1 : TXT_IP_HEADER, &IpAddrMenuCallBack, &choice);
+	i = m.Menu (NULL, tracker.m_bUse ? TXT_CLIENT_PORT + 1 : TXT_IP_HEADER, &IpAddrMenuCallBack, &choice);
 	if (i < 0)
 		break;
 	if (i < int (m.ToS ())) {
 		if ((i == optServer) || (i == optPort)) {
-			if (gameStates.multi.bUseTracker || stoip (mpParams.szServerIpAddr, ipx_ServerAddress + 4)) {
+			if (tracker.m_bUse || stoip (mpParams.szServerIpAddr, ipx_ServerAddress + 4)) {
 				stoport (szClientPort, &mpParams.udpClientPort, &nClientPortSign);
 				if (gameStates.multi.bCheckPorts && !mpParams.udpClientPort)
 					MsgBox (NULL, NULL, 1, TXT_OK, TXT_IP_INVALID);

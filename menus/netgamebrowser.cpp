@@ -47,7 +47,7 @@ void InitNetgameMenuOption (CMenu& menu, int j)
 if (j >= int (menu.ToS ()))
 	menu.AddMenu (szGameList [j]);
 CMenuItem* m = menu + j;
-sprintf (m->m_text, "%2d.                                                     ", j - 1 - gameStates.multi.bUseTracker);
+sprintf (m->m_text, "%2d.                                                     ", j - 1 - tracker.m_bUse);
 m->m_value = 0;
 m->m_bRebuild = 1;
 }
@@ -58,7 +58,7 @@ void InitNetgameMenu (CMenu& menu, int i)
 {
 	int j;
 
-for (j = i + 2 + gameStates.multi.bUseTracker; i < MAX_ACTIVE_NETGAMES; i++, j++)
+for (j = i + 2 + tracker.m_bUse; i < MAX_ACTIVE_NETGAMES; i++, j++)
 	InitNetgameMenuOption (menu, j);
 }
 
@@ -119,12 +119,12 @@ int NetworkJoinPoll (CMenu& menu, int& key, int nCurItem)
 	// Polling loop for Join Game menu
 	static fix t1 = 0;
 	int	t = SDL_GetTicks ();
-	int	i, h = 2 + gameStates.multi.bUseTracker, osocket, nJoinStatus, bPlaySound = 0;
+	int	i, h = 2 + tracker.m_bUse, osocket, nJoinStatus, bPlaySound = 0;
 	const char	*psz;
 	char	szOption [200];
 	char	szTrackers [100];
 
-if (gameStates.multi.bUseTracker) {
+if (tracker.m_bUse) {
 	i = ActiveTrackerCount (0);
 	menu [1].m_color = ORANGE_RGBA;
 	sprintf (szTrackers, TXT_TRACKERS_FOUND, i, (i == 1) ? "" : "s");
@@ -296,13 +296,13 @@ if (!bAutoRun) {
 		else
 			*menu.Top ()->m_text = '\0';
 		}
-	if (gameStates.multi.bUseTracker) {
+	if (tracker.m_bUse) {
 		menu.AddText (szGameList [1]);
 		strcpy (menu.Top ()->m_text, TXT_0TRACKERS);
 		menu.Top ()->m_x = (short) 0x8000;
 		menu.Top ()->m_bNoScroll = 1;
 		}
-	menu.AddText (szGameList [1 + gameStates.multi.bUseTracker]);
+	menu.AddText (szGameList [1 + tracker.m_bUse]);
 	strcpy (menu.Top ()->m_text, TXT_GAME_BROWSER);
 	menu.Top ()->m_bNoScroll = 1;
 	InitNetgameMenu (menu, 0);
@@ -339,7 +339,7 @@ if (choice == -1) {
 	networkData.nStatus = NETSTAT_MENU;
 	return 0; // they cancelled               
 	}               
-choice -= (2 + gameStates.multi.bUseTracker);
+choice -= (2 + tracker.m_bUse);
 if ((choice < 0) || (choice >= networkData.nActiveGames)) {
 	//MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INVALID_CHOICE);
 	goto doMenu;
@@ -366,7 +366,7 @@ if (AGI.protocolVersion != MULTI_PROTO_VERSION) {
 	goto doMenu;
 	}
 
-if (gameStates.multi.bUseTracker) {
+if (tracker.m_bUse) {
 	//PrintLog ("   getting server lists from trackers\n");
 	GetServerFromList (choice);
 	}

@@ -104,7 +104,7 @@ gameStates.multi.bTrackerCall = 0;
 
 int CTracker::AddServer (void)
 {
-if ((gameStates.multi.bServer || bTestTracker) && gameStates.multi.bUseTracker) {
+if ((gameStates.multi.bServer || bTestTracker) && tracker.m_bUse) {
 		int					i, t;
 		static int			nTimeout = 0;
 		ubyte					id = 'S';
@@ -127,7 +127,7 @@ int CTracker::RequestServerList (void)
 	static int		nTimeout = 0;
 	ubyte				id = 'R';
 
-if (!gameStates.multi.bUseTracker)
+if (!tracker.m_bUse)
 	return 0;
 if (bTestTracker)
 	AddServer ();

@@ -662,7 +662,6 @@ typedef struct tMenuStates {
 	int nInMenu;
 	int bInitBG;
 	int bDrawCopyright;
-	int bUseTracker;
 	int bFullScreen;
 	int bReordering;
 	int bNoBackground;

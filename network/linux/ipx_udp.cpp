@@ -862,7 +862,7 @@ if (!gameStates.multi.bServer) {
 	*reinterpret_cast<u_short*> (ipx_ServerAddress + 8) = htons (nServerPort);
 	memcpy (&sin.sin_addr.s_addr, ipx_ServerAddress + 4, 4);
 	sin.sin_port = htons (nServerPort);
-	if (!gameStates.multi.bUseTracker)	
+	if (!tracker.m_bUse)	
 		AddDestToList (&sin);
 	}
 
