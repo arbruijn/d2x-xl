@@ -712,7 +712,7 @@ int CBitmap::RLEExpand (ubyte *colorMap, int bSwap0255)
 {
 	ubyte		*pSrc, *destP;
 	ubyte		c, h;
-	int		i, j, l, bBigRLE;
+	int		i, j, l, n, bBigRLE;
 	ushort	nLineSize;
 
 	static int	rleBufSize = 0;
@@ -737,7 +737,7 @@ for (i = 0; i < m_info.props.h; i++, pSrc += nLineSize) {
 		nLineSize = INTEL_SHORT (*(reinterpret_cast<ushort*> (Buffer () + 4 + 2 * i)));
 	else
 		nLineSize = Buffer () [4 + i];
-	for (j = 0; j < nLineSize; j++) {
+	for (j = 0, n = m_info.props.w; (j < nLineSize) && n; j++) {
 		h = pSrc [j];
 		if (!IS_RLE_CODE (h)) {
 			c = colorMap ? colorMap [h] : h; // translate
@@ -752,6 +752,7 @@ for (i = 0; i < m_info.props.h; i++, pSrc += nLineSize) {
 				return -1;
 				}
 			*destP++ = c;
+			n--;
 			}
 		else if ((l = (h & NOT_RLE_CODE))) {
 			c = pSrc [++j];
@@ -767,10 +768,20 @@ for (i = 0; i < m_info.props.h; i++, pSrc += nLineSize) {
 				gameData.pig.tex.rleBuffer.Destroy ();
 				return -1;
 				}
+			if (l > n)
+				l = n;
 			memset (destP, c, l);
 			destP += l;
 			}
+		else
+			break;
 		}
+	if (n) {
+		memset (destP, 0, n);
+		destP += n;
+		}
+	if (j < nLineSize)
+		pSrc += nLineSize - j;
 	}
 l = (int) (destP - gameData.pig.tex.rleBuffer);
 if (l < 0)

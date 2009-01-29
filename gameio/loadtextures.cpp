@@ -835,6 +835,10 @@ if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 		if (!bm.CreateBuffer ())
 			break;
 		cf.Seek (bmDataOffset + bmOffset, SEEK_SET);
+#if DBG
+		if (indices [i] == nDbgTexture)
+			nDbgTexture = nDbgTexture;
+#endif
 		if (bTGA) {
 			int			nFrames = bm.Height () / bm.Width ();
 			tTgaHeader	h;
