@@ -504,6 +504,7 @@ int CSaveGameManager::Save (int bBetweenLevels, int bSecret, int bQuick, const c
 m_override = pszFilenameOverride;
 m_bBetweenLevels = bBetweenLevels;
 m_bQuick = bQuick;
+m_bSecret = bSecret;
 m_cf.Init ();
 if (IsMultiGame) {
 	MultiInitiateSaveGame ();
