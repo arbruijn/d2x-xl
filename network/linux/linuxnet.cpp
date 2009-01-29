@@ -59,7 +59,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "player.h"	/* for gameData.multiplayer.players */
 #include "multi.h"	/* for netPlayers */
 #include "tracker.h"
-#include "hudmsg.h"
+#include "hudmsgs.h"
 
 int ipx_fd;
 ipx_socket_t ipxSocketData;

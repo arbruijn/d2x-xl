@@ -230,7 +230,7 @@ class CGenericCockpit {
 		int WidthPad (int nValue);
 
 		inline bool Always (void) { 
-			return (m_info.nType == CM_FULL_COCKPIT) || (m_info.nType == CM_STATUS_BAR); 
+			return (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR); 
 			}
 
 		inline bool Show (void) { 
