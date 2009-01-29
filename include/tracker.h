@@ -33,7 +33,7 @@ class CTracker {
 		tServerList			m_list;
 		tServerListTable*	m_table;
 
-	public
+	public:
 		int					m_bUse;
 
 	public:
