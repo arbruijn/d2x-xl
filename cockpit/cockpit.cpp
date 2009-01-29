@@ -226,54 +226,54 @@ void CCockpit::DrawEnergyBar (void)
 #define ENERGY_GAUGE_BOT_LEFT		0
 #define ENERGY_GAUGE_BOT_WIDTH	126
 
-BitBlt (GAUGE_ENERGY_LEFT, LEFT_ENERGY_GAUGE_X, LEFT_ENERGY_GAUGE_Y);
-BitBlt (GAUGE_ENERGY_RIGHT, RIGHT_ENERGY_GAUGE_X, RIGHT_ENERGY_GAUGE_Y);
-if (m_info.nEnergy < 100) {	// erase part of gauge corresponding to energy loss
-#if 1
-	float fScale = float (100 - m_info.nEnergy) / 100.0f;
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+if (m_info.nEnergy) {	
+	BitBlt (GAUGE_ENERGY_LEFT, LEFT_ENERGY_GAUGE_X, LEFT_ENERGY_GAUGE_Y);
+	BitBlt (GAUGE_ENERGY_RIGHT, RIGHT_ENERGY_GAUGE_X, RIGHT_ENERGY_GAUGE_Y);
+	if (m_info.nEnergy < 100) {	// erase part of gauge corresponding to energy loss
+		float fScale = float (100 - m_info.nEnergy) / 100.0f;
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		{
-		int x [4] = {ENERGY_GAUGE_TOP_LEFT, LEFT_ENERGY_GAUGE_W, ENERGY_GAUGE_BOT_LEFT + ENERGY_GAUGE_BOT_WIDTH, ENERGY_GAUGE_BOT_LEFT};
-		int y [4] = {0, 0, LEFT_ENERGY_GAUGE_H, LEFT_ENERGY_GAUGE_H};
+			{
+			int x [4] = {ENERGY_GAUGE_TOP_LEFT, LEFT_ENERGY_GAUGE_W, ENERGY_GAUGE_BOT_LEFT + ENERGY_GAUGE_BOT_WIDTH, ENERGY_GAUGE_BOT_LEFT};
+			int y [4] = {0, 0, LEFT_ENERGY_GAUGE_H, LEFT_ENERGY_GAUGE_H};
 
-		x [1] = x [0] + int (fScale * (x [1] - x [0]));
-		x [2] = x [3] + int (fScale * (x [2] - x [3]));
-		for (int i = 0; i < 4; i++) {
-			x [i] = ScaleX (LEFT_ENERGY_GAUGE_X + x [i]);
-			y [i] = ScaleY (LEFT_ENERGY_GAUGE_Y + y [i]);
+			x [1] = x [0] + int (fScale * (x [1] - x [0]));
+			x [2] = x [3] + int (fScale * (x [2] - x [3]));
+			for (int i = 0; i < 4; i++) {
+				x [i] = ScaleX (LEFT_ENERGY_GAUGE_X + x [i]);
+				y [i] = ScaleY (LEFT_ENERGY_GAUGE_Y + y [i]);
+				}
+			OglDrawFilledPoly (x, y, 4, gaugeFadeColors [0], 1);
+			x [0] = x [1];
+			x [3] = x [2];
+			x [1] += (ScaleX (LEFT_ENERGY_GAUGE_X + LEFT_ENERGY_GAUGE_W) - x [1]) / 2;
+			x [2] += (ScaleX (LEFT_ENERGY_GAUGE_X + ENERGY_GAUGE_BOT_LEFT + ENERGY_GAUGE_BOT_WIDTH) - x [2]) / 2;
+			glEnable (GL_BLEND);
+			OglDrawFilledPoly (x, y, 4, gaugeFadeColors [0], 4);
 			}
-		OglDrawFilledPoly (x, y, 4, gaugeFadeColors [0], 1);
-		x [0] = x [1];
-		x [3] = x [2];
-		x [1] += (ScaleX (LEFT_ENERGY_GAUGE_X + LEFT_ENERGY_GAUGE_W) - x [1]) / 2;
-		x [2] += (ScaleX (LEFT_ENERGY_GAUGE_X + ENERGY_GAUGE_BOT_LEFT + ENERGY_GAUGE_BOT_WIDTH) - x [2]) / 2;
-		glEnable (GL_BLEND);
-		OglDrawFilledPoly (x, y, 4, gaugeFadeColors [0], 4);
-		}
 
-		{
-		int x [4] = {0, LEFT_ENERGY_GAUGE_W - ENERGY_GAUGE_TOP_LEFT, LEFT_ENERGY_GAUGE_W - ENERGY_GAUGE_BOT_LEFT, LEFT_ENERGY_GAUGE_W - ENERGY_GAUGE_BOT_WIDTH};
-		int y [4] = {0, 0, LEFT_ENERGY_GAUGE_H, LEFT_ENERGY_GAUGE_H};
+			{
+			int x [4] = {0, LEFT_ENERGY_GAUGE_W - ENERGY_GAUGE_TOP_LEFT, LEFT_ENERGY_GAUGE_W - ENERGY_GAUGE_BOT_LEFT, LEFT_ENERGY_GAUGE_W - ENERGY_GAUGE_BOT_WIDTH};
+			int y [4] = {0, 0, LEFT_ENERGY_GAUGE_H, LEFT_ENERGY_GAUGE_H};
 
-		x [0] = x [1] - int (fScale * (x [1] - x [0]));
-		x [3] = x [2] - int (fScale * (x [2] - x [3]));
-		for (int i = 0; i < 4; i++) {
-			x [i] = ScaleX (RIGHT_ENERGY_GAUGE_X + x [i]);
-			y [i] = ScaleY (RIGHT_ENERGY_GAUGE_Y + y [i]);
+			x [0] = x [1] - int (fScale * (x [1] - x [0]));
+			x [3] = x [2] - int (fScale * (x [2] - x [3]));
+			for (int i = 0; i < 4; i++) {
+				x [i] = ScaleX (RIGHT_ENERGY_GAUGE_X + x [i]);
+				y [i] = ScaleY (RIGHT_ENERGY_GAUGE_Y + y [i]);
+				}
+			OglDrawFilledPoly (x, y, 4, gaugeFadeColors [0], 1);
+			x [1] = x [0];
+			x [2] = x [3];
+			x [0] = ScaleX (RIGHT_ENERGY_GAUGE_X);
+			x [0] += (x [1] - x [0]) / 2;
+			x [3] = ScaleX (RIGHT_ENERGY_GAUGE_X + LEFT_ENERGY_GAUGE_W - ENERGY_GAUGE_BOT_WIDTH);
+			x [3] += (x [2] - x [3]) / 2;
+			glEnable (GL_BLEND);
+			OglDrawFilledPoly (x, y, 4, gaugeFadeColors [1], 4);
 			}
-		OglDrawFilledPoly (x, y, 4, gaugeFadeColors [0], 1);
-		x [1] = x [0];
-		x [2] = x [3];
-		x [0] = ScaleX (RIGHT_ENERGY_GAUGE_X);
-		x [0] += (x [1] - x [0]) / 2;
-		x [3] = ScaleX (RIGHT_ENERGY_GAUGE_X + LEFT_ENERGY_GAUGE_W - ENERGY_GAUGE_BOT_WIDTH);
-		x [3] += (x [2] - x [3]) / 2;
-		glEnable (GL_BLEND);
-		OglDrawFilledPoly (x, y, 4, gaugeFadeColors [1], 4);
+		glDisable (GL_BLEND);
 		}
-	glDisable (GL_BLEND);
-#endif
 	}
 }
 
@@ -392,7 +392,7 @@ ubyte afterburnerBarTableHires [AFTERBURNER_GAUGE_H_H*2] = {
 
 void CCockpit::DrawAfterburnerBar (void)
 {
-#if 0
+#if 1
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 	return;		//don't draw if don't have
 if (!gameData.physics.xAfterburnerCharge)
@@ -400,7 +400,6 @@ if (!gameData.physics.xAfterburnerCharge)
 #endif
 CCanvas::Current ()->SetColorRGB (255, 255, 255, 255);
 BitBlt (GAUGE_AFTERBURNER, AFTERBURNER_GAUGE_X, AFTERBURNER_GAUGE_Y);
-#if 0
 int yMax = FixMul (I2X (1) - gameData.physics.xAfterburnerCharge, AFTERBURNER_GAUGE_H);
 if (yMax) {
 	int		x [4], y [4];
@@ -426,7 +425,6 @@ if (yMax) {
 	OglDrawFilledPoly (x, y, 4, gaugeFadeColors [0], 4);
 	glDisable (GL_BLEND);
 	}
-#endif
 }
 
 //	-----------------------------------------------------------------------------
