@@ -171,7 +171,7 @@ else {
 	if (oldTime > 0)
 		audio.PlaySound (SOUND_MINE_BLEW_UP);
 	paletteManager.SetEffect (flashValue, flashValue, flashValue);
-	if (paletteManager.BlueEffect () > 64) {
+	if (paletteManager.BlueEffect () >= 64) {
 		CCanvas::SetCurrent (NULL);
 		CCanvas::Current ()->Clear (RGBA_PAL2 (31,31,31));	//make screen all white to match palette effect
 		paletteManager.ResetEffect ();	//restore palette for death message
