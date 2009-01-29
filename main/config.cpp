@@ -430,8 +430,10 @@ if (cf.Open ("descentw.cfg", gameFolders.szConfigDir, "rt", 0)) {
 	}
 JoySetCalVals (cal, sizeofa (cal));
 CfgInitHashs ();
+#if 0
 if (CheckGameConfig ())
 	SetNostalgia (3);
+#endif
 return 0;
 }
 

@@ -1047,8 +1047,10 @@ oglRenderer = reinterpret_cast<const char*> (glGetString (GL_RENDERER));
 oglVersion = reinterpret_cast<const char*> (glGetString (GL_VERSION));
 oglExtensions = reinterpret_cast<const char*> (glGetString (GL_EXTENSIONS));
 OglInitLibs ();
+#if 0
 if (OglCheckLibFlags ())
 	SetNostalgia (3);
+#endif
 }
 
 //------------------------------------------------------------------------------
