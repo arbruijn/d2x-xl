@@ -380,12 +380,14 @@ ubyte afterburnerBarTableHires [AFTERBURNER_GAUGE_H_H*2] = {
 
 void CCockpit::DrawAfterburnerBar (void)
 {
-	int		x [4], y [4], yMax;
-	ubyte*	tableP = gameStates.video.nDisplayMode ? afterburnerBarTableHires : afterburnerBarTable;
-
 BitBlt (GAUGE_AFTERBURNER, AFTERBURNER_GAUGE_X, AFTERBURNER_GAUGE_Y);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-if ((yMax = FixMul (I2X (1) - gameData.physics.xAfterburnerCharge, AFTERBURNER_GAUGE_H))) {
+int yMax = FixMul (I2X (1) - gameData.physics.xAfterburnerCharge, AFTERBURNER_GAUGE_H);
+if (yMax) {
+#if 0
+	int		x [4], y [4];
+	ubyte*	tableP = gameStates.video.nDisplayMode ? afterburnerBarTableHires : afterburnerBarTable;
+
 	y [0] = y [1] = ScaleY (AFTERBURNER_GAUGE_Y);
 	y [3] = ScaleY (AFTERBURNER_GAUGE_Y + yMax) - 1;
 	x [1] = ScaleX (AFTERBURNER_GAUGE_X + tableP [0]);
@@ -402,6 +404,7 @@ if ((yMax = FixMul (I2X (1) - gameData.physics.xAfterburnerCharge, AFTERBURNER_G
 	x [3] = ScaleX (AFTERBURNER_GAUGE_X + tableP [2 * yMax - 1] + 1);
 	gameStates.render.grAlpha = FADE_LEVELS;
 	OglDrawFilledPoly (x, y, 4);
+#endif
 	}
 }
 
