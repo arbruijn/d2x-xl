@@ -1058,7 +1058,8 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 			}
 		else if (ailP->mode == AIM_FOLLOW_PATH) {
 			CreatePathToPlayer (objP, 10, 1);
-			if (aiP->nHideSegment != gameData.ai.routeSegs [aiP->nHideIndex+aiP->nPathLength-1].nSegment) {
+			if ((aiP->nHideIndex+aiP->nPathLength < 1) ||
+				 (aiP->nHideSegment != gameData.ai.routeSegs [aiP->nHideIndex+aiP->nPathLength - 1].nSegment)) {
 				ailP->mode = AIM_IDLING;
 				return;
 				}

@@ -354,9 +354,9 @@ void CObject::MorphDraw (void)
 mdP = MorphFindData (this);
 Assert (mdP != NULL);
 Assert (rType.polyObjInfo.nModel < gameData.models.nPolyModels);
-pmP = gameData.models.polyModels [0]+rType.polyObjInfo.nModel;
+pmP = gameData.models.polyModels [0] + rType.polyObjInfo.nModel;
 light = ComputeObjectLight (this, NULL);
-transformation.Begin(info.position.vPos, info.position.mOrient);
+transformation.Begin (info.position.vPos, info.position.mOrient);
 G3SetModelPoints (gameData.models.polyModelPoints.Buffer ());
 gameData.render.vertP = gameData.models.fPolyModelVerts.Buffer ();
 MorphDrawModel (pmP, 0, rType.polyObjInfo.animAngles, light, mdP, rType.polyObjInfo.nModel);
