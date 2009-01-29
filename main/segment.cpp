@@ -881,7 +881,7 @@ if (IsMultiGame)
 //	-----------------------------------------------------------------------------
 //if an effect is hit, and it can blow up, then blow it up
 //returns true if it blew up
-int CSegment::CheckEffectBlowup (int nSide, CFixVector& vHit, CObject* blower, int bForceBlowup)
+int CSegment::CheckEffectBlowup (int nSide, CFixVector& vHit, CObject* blowerP, int bForceBlowup)
 {
 	int				tm, tmf, ec, nBitmap = 0;
 	int				bOkToBlow = 0, nSwitchType = -1;
@@ -893,14 +893,14 @@ int CSegment::CheckEffectBlowup (int nSide, CFixVector& vHit, CObject* blower, i
 	CBitmap*			bmP;
 	CWall*			wallP;
 	CTrigger*		trigP;
-	//	If this CWall has a CTrigger and the blower-upper is not the CPlayerData or the buddy, abort!
+	CObject*			parentP = (blowerP->cType.laserInfo.parent.nObject < 0) ? NULL : OBJECTS + blowerP->cType.laserInfo.parent.nObject;
+	//	If this CWall has a CTrigger and the blowerP-upper is not the CPlayerData or the buddy, abort!
 
-if (blower->cType.laserInfo.parent.nType == OBJ_ROBOT)
-	if (ROBOTINFO (OBJECTS [blower->cType.laserInfo.parent.nObject].info.nId).companion)
+if (parentP) {
+	if ((parentP->info.nType == OBJ_ROBOT) && ROBOTINFO (parentP->info.nId).companion)
 		bOkToBlow = 1;
-
-if (!(bOkToBlow || (blower->cType.laserInfo.parent.nType == OBJ_PLAYER))) {
-	if ((wallP = Wall (nSide)) && (wallP->nTrigger < gameData.trigs.m_nTriggers))
+	if (!(bOkToBlow || (parentP->info.nType == OBJ_PLAYER)) &&
+		 ((wallP = Wall (nSide)) && (wallP->nTrigger < gameData.trigs.m_nTriggers)))
 		return 0;
 	}
 

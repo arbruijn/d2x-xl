@@ -333,12 +333,18 @@ if (parentP == gameData.objs.consoleP) {
 		}
 	}
 #endif
-if ((nWeaponType == VULCAN_ID) || (nWeaponType == GAUSS_ID))
-	parentP->SetTracers ((parentP->Tracers () + 1) % 3);
 objP = OBJECTS + nObject;
 objP->cType.laserInfo.parent.nObject = nParent;
-objP->cType.laserInfo.parent.nType = parentP->info.nType;
-objP->cType.laserInfo.parent.nSignature = parentP->info.nSignature;
+if (parentP) {
+	objP->cType.laserInfo.parent.nType = parentP->info.nType;
+	objP->cType.laserInfo.parent.nSignature = parentP->info.nSignature;
+	if ((nWeaponType == VULCAN_ID) || (nWeaponType == GAUSS_ID))
+		parentP->SetTracers ((parentP->Tracers () + 1) % 3);
+	}
+else {
+	objP->cType.laserInfo.parent.nType = -1;
+	objP->cType.laserInfo.parent.nSignature = -1;
+	}
 //	Do the special Omega Cannon stuff.  Then return on account of everything that follows does
 //	not apply to the Omega Cannon.
 nViewer = OBJ_IDX (gameData.objs.viewerP);
@@ -346,8 +352,8 @@ weaponInfoP = gameData.weapons.info + nWeaponType;
 if (nWeaponType == OMEGA_ID) {
 	// Create orientation matrix for tracking purposes.
 	int bSpectator = SPECTATOR (parentP);
-	objP->info.position.mOrient = CFixMatrix::CreateFU(*vDirection, bSpectator ? gameStates.app.playerPos.mOrient.UVec () : parentP->info.position.mOrient.UVec ());
-//	objP->info.position.mOrient = CFixMatrix::CreateFU(*vDirection, bSpectator ? &gameStates.app.playerPos.mOrient.UVec () : &parentP->info.position.mOrient.UVec (), NULL);
+	objP->info.position.mOrient = CFixMatrix::CreateFU (*vDirection, bSpectator ? gameStates.app.playerPos.mOrient.UVec () : parentP->info.position.mOrient.UVec ());
+//	objP->info.position.mOrient = CFixMatrix::CreateFU (*vDirection, bSpectator ? &gameStates.app.playerPos.mOrient.UVec () : &parentP->info.position.mOrient.UVec (), NULL);
 	if (((nParent != nViewer) || bSpectator) && (parentP->info.nType != OBJ_WEAPON)) {
 		// Muzzle flash
 		if (weaponInfoP->nFlashVClip > -1)
@@ -359,11 +365,11 @@ if (nWeaponType == OMEGA_ID) {
 else if (nWeaponType == FUSION_ID) {
 	static int nRotDir = 0;
 	nRotDir = !nRotDir;
-	objP->mType.physInfo.rotVel[X] =
-	objP->mType.physInfo.rotVel[Y] = 0;
-	objP->mType.physInfo.rotVel[Z] = nRotDir ? -I2X (1) : I2X (1);
+	objP->mType.physInfo.rotVel [X] =
+	objP->mType.physInfo.rotVel [Y] = 0;
+	objP->mType.physInfo.rotVel [Z] = nRotDir ? -I2X (1) : I2X (1);
 	}
-if (parentP->info.nType == OBJ_PLAYER) {
+if (parentP && (parentP->info.nType == OBJ_PLAYER)) {
 	if (nWeaponType == FUSION_ID) {
 		if (gameData.fusion.xCharge <= 0)
 			objP->cType.laserInfo.xScale = I2X (1);
@@ -399,30 +405,29 @@ if (nWeaponType == FLARE_ID)
 	objP->mType.physInfo.flags |= PF_STICK;		//this obj sticks to walls
 objP->info.xShields = WI_strength (nWeaponType, gameStates.app.nDifficultyLevel);
 // Fill in laser-specific data
-objP->info.xLifeLeft							= WI_lifetime (nWeaponType);
-objP->cType.laserInfo.parent.nType	= parentP->info.nType;
-objP->cType.laserInfo.parent.nSignature = parentP->info.nSignature;
-objP->cType.laserInfo.parent.nObject	= nParent;
+objP->info.xLifeLeft	= WI_lifetime (nWeaponType);
 //	Assign nParent nType to highest level creator.  This propagates nParent nType down from
 //	the original creator through weapons which create children of their own (ie, smart missile)
-if (parentP->info.nType == OBJ_WEAPON) {
-	int	nHighestParent = nParent;
-	int	count = 0;
-	CObject	*parentObjP = OBJECTS + nHighestParent;
+if (parentP && (parentP->info.nType == OBJ_WEAPON)) {
+	int		nRoot = nParent;
+	int		count = 0;
+	CObject*	rootP = OBJECTS + nRoot;
 
-	while ((count++ < 10) && (parentObjP->info.nType == OBJ_WEAPON)) {
-		int nNextParent = parentObjP->cType.laserInfo.parent.nObject;
-		if (OBJECTS [nNextParent].info.nSignature != parentObjP->cType.laserInfo.parent.nSignature)
+	while ((count++ < 10) && (rootP->info.nType == OBJ_WEAPON)) {
+		int nNextParent = rootP->cType.laserInfo.parent.nObject;
+		if (nNextParent < 0)
+			break;
+		if (OBJECTS [nNextParent].info.nSignature != rootP->cType.laserInfo.parent.nSignature)
 			break;	//	Probably means nParent was killed.  Just continue.
-		if (nNextParent == nHighestParent) {
+		if (nNextParent == nRoot) {
 			Int3 ();	//	Hmm, CObject is nParent of itself.  This would seem to be bad, no?
 			break;
 			}
-		nHighestParent = nNextParent;
-		parentObjP = OBJECTS + nHighestParent;
-		objP->cType.laserInfo.parent.nObject = nHighestParent;
-		objP->cType.laserInfo.parent.nType = parentObjP->info.nType;
-		objP->cType.laserInfo.parent.nSignature = parentObjP->info.nSignature;
+		nRoot = nNextParent;
+		rootP = OBJECTS + nRoot;
+		objP->cType.laserInfo.parent.nObject = nRoot;
+		objP->cType.laserInfo.parent.nType = rootP->info.nType;
+		objP->cType.laserInfo.parent.nSignature = rootP->info.nSignature;
 		}
 	}
 // Create orientation matrix so we can look from this pov

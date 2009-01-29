@@ -170,7 +170,7 @@ else {
 	int flashValue = X2I (-gameData.reactor.countdown.nTimer * (64 / 4));	// 4 seconds to total whiteness
 	if (oldTime > 0)
 		audio.PlaySound (SOUND_MINE_BLEW_UP);
-	paletteManager.SetEffect (flashValue, flashValue, flashValue);
+	paletteManager.BumpEffect (flashValue, flashValue, flashValue);
 	if (paletteManager.BlueEffect () > 64) {
 		CCanvas::SetCurrent (NULL);
 		CCanvas::Current ()->Clear (RGBA_PAL2 (31,31,31));	//make screen all white to match palette effect
