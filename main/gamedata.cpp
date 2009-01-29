@@ -674,9 +674,11 @@ for (int i = 0; i < 2; i++) {
 	bitmapFlags [i].Create (MAX_BITMAP_FILES);
 	bitmaps [i].Create (MAX_BITMAP_FILES);
 	altBitmaps [i].Create (MAX_BITMAP_FILES);
-	bmIndex [i].Create (MAX_TEXTURES);
+	bmIndex [i].Create (MAX_TEXTURES + MAX_TEXTURES / 10);
+	bmIndex [i].Clear ();
 	textureIndex [i].Create (MAX_BITMAP_FILES);
 	tMapInfo [i].Create (MAX_TEXTURES + MAX_TEXTURES / 10);	//add some room for extra textures like e.g. from the hoard data
+	tMapInfo [i].Clear ();
 	defaultBrightness [i].Create (MAX_WALL_TEXTURES);
 	defaultBrightness [i].Clear ();
 	}
