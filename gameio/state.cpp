@@ -1933,13 +1933,17 @@ if (!m_bBetweenLevels) {
 			automap.m_visited [0][i] = (ushort) m_cf.ReadShort ();
 		}
 	else if (m_nVersion > 37) {
-		for (i = 0; i < MAX_SEGMENTS; i++)
+		for (i = 0; i < LEVEL_SEGMENTS; i++)
 			automap.m_visited [0][i] = (ushort) m_cf.ReadShort ();
+		if (MAX_SEGMENTS > LEVEL_SEGMENTS)
+			m_cf.Seek ((MAX_SEGMENTS - LEVEL_SEGMENTS) * sizeof (ushort), SEEK_CUR);
 		}
 	else {
 		int	i, j = (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2;
 		for (i = 0; i < j; i++)
 			automap.m_visited [0][i] = (ushort) m_cf.ReadByte ();
+		if (j > LEVEL_SEGMENTS)
+			m_cf.Seek ((j - LEVEL_SEGMENTS) * sizeof (ubyte), SEEK_CUR);
 		}
 	IFDBG (fPos = m_cf.Tell ());
 	//	Restore hacked up weapon system stuff.
