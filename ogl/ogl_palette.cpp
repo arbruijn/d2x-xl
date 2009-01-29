@@ -112,9 +112,15 @@ else {
 
 //------------------------------------------------------------------------------
 
-void CPaletteManager::SetEffect (int r, int g, int b, bool bForce)
+void CPaletteManager::SetEffect (int red, int green, int blue, bool bForce)
 {
-SetEffect (float (r) / 64.0f, float (g) / 64.0f, float (b) / 64.0f, bForce);
+m_data.effect.red = float (red) / 64.0f;
+m_data.effect.green = float (green) / 64.0f;
+m_data.effect.blue = float (blue) / 64.0f;
+CLAMP (m_data.effect.red, 0, 1);
+CLAMP (m_data.effect.green, 0, 1);
+CLAMP (m_data.effect.blue, 0, 1);
+SetEffect (bForce);
 }
 
 //------------------------------------------------------------------------------
