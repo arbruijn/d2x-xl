@@ -184,7 +184,10 @@ class CArray : public CQuickSort < _T > {
 		inline _T& operator[] (uint i) { 
 			if (m_data.buffer && (i < m_data.length))
 				return m_data.buffer [i];
-			return m_data.null; 
+			if (i == m_data.length)
+				return m_data.null; 
+			else
+				return m_data.null; 
 			}
 #else
 		inline _T& operator[] (uint i) { return m_data.buffer [i]; }
