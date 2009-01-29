@@ -163,7 +163,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void SetServerFromList (tServerList *psl, int i)
+void CTracker::SetServerFromList (tServerList *psl, int i)
 {
 memcpy (ipx_ServerAddress + 4, psl->servers + i, 4);
 *reinterpret_cast<ushort*> (ipx_ServerAddress + 8) = (ushort) htons (UDP_PORT (psl->servers + i));
@@ -189,7 +189,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int IsTracker (uint addr, ushort port)
+int CTracker::IsTracker (uint addr, ushort port)
 {
 	int	i;
 #if DBG
