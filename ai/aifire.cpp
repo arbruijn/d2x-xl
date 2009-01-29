@@ -210,7 +210,7 @@ if (objP->cType.aiInfo.xDyingStartTime)
 //	If you try to key the boss off objP->cType.aiInfo.xDyingStartTime, it will hose the endlevel stuff.
 if (ROBOTINFO (objP->info.nId).bossFlag) {
 	i = gameData.bosses.Find (nObject);
-	if (gameData.bosses [i].m_nDyingStartTime)
+	if ((i < 0) || (gameData.bosses [i].m_nDyingStartTime))
 		return;
 	}
 //	If CPlayerData is cloaked, maybe don't fire based on how long cloaked and randomness.
