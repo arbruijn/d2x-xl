@@ -301,7 +301,7 @@ int NetworkListen (void)
 
 CleanUploadDests ();
 if (NetworkIAmMaster ())
-	AddServerToTracker ();
+	tracker.AddServer ();
 if ((networkData.nStatus == NETSTAT_PLAYING) && netGame.bShortPackets && !networkData.nJoining)
 	nMaxLoops = gameData.multiplayer.nPlayers * PacketsPerSec ();
 
@@ -494,7 +494,7 @@ if ((networkData.sync.nPlayer != -1) && !(gameData.app.nFrameCount & 63))
 #endif
 NetworkDoSyncFrame ();
 if (NetworkIAmMaster ())
-	AddServerToTracker ();
+	tracker.AddServer ();
 }
 
 //------------------------------------------------------------------------------

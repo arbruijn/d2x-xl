@@ -273,7 +273,7 @@ return 1;
 
 int TrackerHandler (ubyte *dataP, int nLength)
 {
-ReceiveServerListFromTracker (dataP);
+tracker.ReceiveServerList (dataP);
 return 1;
 }
 

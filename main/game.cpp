@@ -1137,7 +1137,7 @@ gameData.models.Destroy ();
 PrintLog ("unloading hires models\n");
 FreeHiresModels (0);
 PrintLog ("unloading tracker list\n");
-tracker.List ();
+tracker.DestroyList ();
 PrintLog ("unloading lightmap data\n");
 lightmapManager.Destroy ();
 PrintLog ("unloading particle data\n");

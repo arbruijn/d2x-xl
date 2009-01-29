@@ -1025,7 +1025,7 @@ if (0 > (dataLen = recvfrom (s->fd, reinterpret_cast<char*> (outBuf), outBufSize
 #endif
 	return -1;
 	}
-bTracker = IsTracker (*reinterpret_cast<ulong*> (&fromAddr.sin_addr), *reinterpret_cast<ushort*> (&fromAddr.sin_port));
+bTracker = tracker.IsTracker (*reinterpret_cast<ulong*> (&fromAddr.sin_addr), *reinterpret_cast<ushort*> (&fromAddr.sin_port));
 if (fromAddr.sin_family != AF_INET) 
 	return -1;
 if ((dataLen < 6) || (!bTracker && (memcmp (outBuf, D2XUDP, 6) 

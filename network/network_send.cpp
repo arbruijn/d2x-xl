@@ -189,11 +189,11 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 
 		console.printf (0, "looking for netgames\n");
 		if (tracker.m_bUse) {
-			if (!RequestServerListFromTracker ())
+			if (!tracker.RequestServerList ())
 				return 0;
 			//memset (activeNetGames, 0, sizeof (activeNetGames));
 			//networkData.nActiveGames = 0;
-			for (i = 0; GetServerFromList (i); i++)
+			for (i = 0; tracker.GetServerFromList (i); i++)
 				SendInternetSequencePacket (me, ipx_ServerAddress, ipx_ServerAddress + 4);
 			}
 		else {

@@ -1234,7 +1234,7 @@ dataLen = recvfrom (s->fd, outBuf, outBufSize, 0, reinterpret_cast<struct sockad
 if (0 > dataLen) {
 		return -1;
 	}
-bTracker = IsTracker (*reinterpret_cast<uint*> (&fromAddr.sin_addr), *reinterpret_cast<ushort*> (&fromAddr.sin_port));
+bTracker = tracker.IsTracker (*reinterpret_cast<uint*> (&fromAddr.sin_addr), *reinterpret_cast<ushort*> (&fromAddr.sin_port));
 #if UDPDEBUG
 	//msg ("ReceivePacket, dataLen=%d", dataLen);
 	//printf (MSGHDR "recvfrom ((%d-8=%d),",dataLen,dataLen-8);

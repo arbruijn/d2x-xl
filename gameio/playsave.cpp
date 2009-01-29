@@ -67,6 +67,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "dynlight.h"
 #include "cockpit.h"
 #include "playsave.h"
+#include "tracker.h"
 
 CPlayerProfile profile;
 
