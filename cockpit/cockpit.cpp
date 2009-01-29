@@ -231,7 +231,6 @@ BitBlt (GAUGE_ENERGY_RIGHT, RIGHT_ENERGY_GAUGE_X, RIGHT_ENERGY_GAUGE_Y);
 if (m_info.nEnergy < 100) {	// erase part of gauge corresponding to energy loss
 #if 1
 	float fScale = float (100 - m_info.nEnergy) / 100.0f;
-	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		{
@@ -244,6 +243,12 @@ if (m_info.nEnergy < 100) {	// erase part of gauge corresponding to energy loss
 			x [i] = ScaleX (LEFT_ENERGY_GAUGE_X + x [i]);
 			y [i] = ScaleY (LEFT_ENERGY_GAUGE_Y + y [i]);
 			}
+		OglDrawFilledPoly (x, y, 4, gaugeFadeColors [0], 1);
+		x [1] = x [0];
+		x [2] = x [3];
+		x [0] = ScaleX (LEFT_ENERGY_GAUGE_W);
+		x [3] = ScaleX (ENERGY_GAUGE_BOT_LEFT + ENERGY_GAUGE_BOT_WIDTH);
+		glEnable (GL_BLEND);
 		OglDrawFilledPoly (x, y, 4, gaugeFadeColors [0], 4);
 		}
 
@@ -257,6 +262,12 @@ if (m_info.nEnergy < 100) {	// erase part of gauge corresponding to energy loss
 			x [i] = ScaleX (RIGHT_ENERGY_GAUGE_X + x [i]);
 			y [i] = ScaleY (RIGHT_ENERGY_GAUGE_Y + y [i]);
 			}
+		OglDrawFilledPoly (x, y, 4, gaugeFadeColors [0], 1);
+		x [1] = x [0];
+		x [2] = x [3];
+		x [0] = ScaleX (RIGHT_ENERGY_GAUGE_W);
+		x [3] = ScaleX (RIGHT_ENERGY_GAUGE_W + LEFT_ENERGY_GAUGE_W - ENERGY_GAUGE_BOT_WIDTH);
+		glEnable (GL_BLEND);
 		OglDrawFilledPoly (x, y, 4, gaugeFadeColors [1], 4);
 		}
 	glDisable (GL_BLEND);
