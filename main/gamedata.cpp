@@ -853,6 +853,8 @@ for (i = 0; i < 3; i++) {
 	}
 CREATE (modelToPOL, MAX_POLYGON_MODELS, 0);
 CREATE (polyModelPoints, MAX_POLYGON_VERTS, 0);
+for (i = 0; i < MAX_POLYGON_VERTS; i++)
+	polyModelPoints [i].p3_index = -1;
 CREATE (fPolyModelVerts, MAX_POLYGON_VERTS, 0);
 textures.Create (MAX_POLYOBJ_TEXTURES);
 CREATE (textureIndex, MAX_POLYOBJ_TEXTURES, 0xff);
