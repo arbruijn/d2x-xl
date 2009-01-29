@@ -1647,7 +1647,6 @@ stateP->nDeadObj = m_cf.ReadInt ();
 
 int CSaveGameManager::LoadSpawnPoint (int i)
 {
-IFDBG (i = m_cf.Tell ());
 m_cf.ReadVector (gameData.multiplayer.playerInit [i].position.vPos);     
 m_cf.ReadMatrix (gameData.multiplayer.playerInit [i].position.mOrient);  
 gameData.multiplayer.playerInit [i].nSegment = m_cf.ReadShort ();
@@ -1981,7 +1980,11 @@ paletteManager.SetLastEffectTime (m_cf.ReadFix ());
 paletteManager.SetRedEffect ((ubyte) m_cf.ReadShort ());
 paletteManager.SetGreenEffect ((ubyte) m_cf.ReadShort ());
 paletteManager.SetBlueEffect ((ubyte) m_cf.ReadShort ());
-gameData.render.lights.subtracted.Read (m_cf, (m_nVersion > 39) ? LEVEL_SEGMENTS : (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2);
+h = (m_nVersion > 39) ? LEVEL_SEGMENTS : (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2;
+j = min (h, LEVEL_SEGMENTS);
+gameData.render.lights.subtracted.Read (m_cf, j);
+if (h > j)
+	m_cf.Seek ((h - j) * sizeof (gameData.render.lights.subtracted [0]), SEEK_CUR);
 ApplyAllChangedLight ();
 gameStates.app.bFirstSecretVisit = m_cf.ReadInt ();
 if (m_bSecret) 
@@ -2000,7 +2003,7 @@ if (m_nVersion >= 37) {
 
 	memcpy (playerInitSave, gameData.multiplayer.playerInit, sizeof (playerInitSave));
 	for (h = 1, i = 0; i < MAX_PLAYERS; i++)
-		if (!CSaveGameManager::LoadSpawnPoint (i))
+		if (!LoadSpawnPoint (i))
 			h = 0;
 	if (!h)
 		memcpy (gameData.multiplayer.playerInit, playerInitSave, sizeof (playerInitSave));
@@ -2243,7 +2246,11 @@ else {
 
 //	Load gameData.render.lights.subtracted
 if (m_nVersion >= 16) {
-	gameData.render.lights.subtracted.Read (m_cf, (m_nVersion > 39) ? LEVEL_SEGMENTS : (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2);
+	int h = (m_nVersion > 39) ? LEVEL_SEGMENTS : (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2;
+	int j = min (LEVEL_SEGMENTS, h);
+	gameData.render.lights.subtracted.Read (m_cf, j);
+	if (j < h)
+		m_cf.Seek ((h - j) * sizeof (ubyte), SEEK_CUR);
 	ApplyAllChangedLight ();
 	//ComputeAllStaticLight ();	//	set xAvgSegLight field in CSegment struct.  See note at that function.
 	}
