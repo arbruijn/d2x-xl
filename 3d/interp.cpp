@@ -605,7 +605,7 @@ for (;;) {
 			CCanvas::Current ()->SetColor (WORDVAL (p+28));
 			for (i = 0; i < 2; i++)
 				pointList [i] = modelPointList + WORDPTR (p+30) [i];
-			for (nTris=nVerts-2;nTris;nTris--) {
+			for (nTris = nVerts - 2; nTris; nTris--) {
 				pointList [2] = modelPointList + WORDPTR (p+30) [i++];
 				G3CheckAndDrawPoly (3, pointList, NULL, NULL);
 				pointList [1] = pointList [2];

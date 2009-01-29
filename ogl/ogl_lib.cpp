@@ -233,21 +233,26 @@ else
 void G3CalcNormal (g3sPoint **pointList, CFloatVector *pvNormal)
 {
 	CFixVector	vNormal;
-	short			v [4], vSorted [4];
 
-v [0] = pointList [0]->p3_index;
-v [1] = pointList [1]->p3_index;
-v [2] = pointList [2]->p3_index;
-if ((v [0] < 0) || (v [1] < 0) || (v [2] < 0)) {
+if (gameStates.render.nState == 1)	// an object polymodel
 	vNormal = CFixVector::Normal (pointList [0]->p3_vec, pointList [1]->p3_vec, pointList [2]->p3_vec);
-	}
 else {
-	int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, vSorted);
-	vNormal = CFixVector::Normal (gameData.segs.vertices [vSorted [0]],
-										   gameData.segs.vertices [vSorted [1]],
-										   gameData.segs.vertices [vSorted [2]]);
-	if (bFlip)
-		vNormal.Neg();
+	short	v [4], vSorted [4];
+
+	v [0] = pointList [0]->p3_index;
+	v [1] = pointList [1]->p3_index;
+	v [2] = pointList [2]->p3_index;
+	if ((v [0] < 0) || (v [1] < 0) || (v [2] < 0)) {
+		vNormal = CFixVector::Normal (pointList [0]->p3_vec, pointList [1]->p3_vec, pointList [2]->p3_vec);
+		}
+	else {
+		int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, vSorted);
+		vNormal = CFixVector::Normal (gameData.segs.vertices [vSorted [0]],
+												gameData.segs.vertices [vSorted [1]],
+												gameData.segs.vertices [vSorted [2]]);
+		if (bFlip)
+			vNormal.Neg();
+		}
 	}
 pvNormal->Assign (vNormal);
 }
