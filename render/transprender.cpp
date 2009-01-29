@@ -1492,7 +1492,7 @@ G3DisableClientStates (1, 1, 0, GL_TEXTURE2 + m_data.bLightmaps);
 G3DisableClientStates (1, 1, 0, GL_TEXTURE1 + m_data.bLightmaps);
 G3DisableClientStates (1, 1, 0, GL_TEXTURE0 + m_data.bLightmaps);
 G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
-pl = m_data.itemLists + ITEM_BUFFER_SIZE - 1;
+pl = m_data.itemLists + (ITEM_BUFFER_SIZE - 1);
 m_data.bHaveParticles = particleImageManager.LoadAll ();
 glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
