@@ -142,9 +142,11 @@ if (nGauge >= 0) {
 	bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (nGauge);
 	}
 if (bmP) {
+#if 0
 	CBitmap* bmoP = bmP->HasOverride ();
 	if (bmoP)
 		bmP = bmoP;
+#endif
 	if (bScalePos) {
 		x = ScaleX (x);
 		y = ScaleY (y);
