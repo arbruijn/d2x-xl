@@ -772,6 +772,7 @@ for (i = 0; i < m_info.props.h; i++, pSrc += nLineSize) {
 				l = n;
 			memset (destP, c, l);
 			destP += l;
+			n -= l;
 			}
 		else
 			break;
