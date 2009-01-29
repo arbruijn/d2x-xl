@@ -840,7 +840,7 @@ bOk = (cf.Write (&mdh, sizeof (mdh), 1) == 1) &&
 		(FACES.ovlTexCoord.Write (cf, mdh.nTris * 3) == uint (mdh.nTris * 3) &&
 		(FACES.color.Write (cf, mdh.nTris * 3) == uint (mdh.nTris * 3)) &&
 		(FACES.lMapTexCoord.Write (cf, mdh.nTris * 3) == uint (mdh.nTris * 3)) &&
-		(FACES.faceVerts.Write (cf, mdh.nFaceVerts) == uint (mdh.nFaceVerts));
+		(FACES.faceVerts.Write (cf, mdh.nFaceVerts) == uint (mdh.nFaceVerts)));
 cf.Close ();
 return bOk;
 }
