@@ -347,7 +347,7 @@ extern tGaugeBox hudWindowAreas [];
 extern ubyte afterburnerBarTable [AFTERBURNER_GAUGE_H_L * 2];
 extern int nDbgGauge;
 extern int SW_drawn [2], SW_x [2], SW_y [2], SW_w [2], SW_h [2];
-extern tCanvasColor gaugeFadeColors [4];
+extern tCanvasColor gaugeFadeColors [2][4];
 
 //	-----------------------------------------------------------------------------
 

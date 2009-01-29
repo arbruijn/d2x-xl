@@ -242,7 +242,7 @@ if (m_info.nEnergy < 100) {	// erase part of gauge corresponding to energy loss
 			x [i] = ScaleX (LEFT_ENERGY_GAUGE_X + x [i]);
 			y [i] = ScaleY (LEFT_ENERGY_GAUGE_Y + y [i]);
 			}
-		OglDrawFilledPoly (x, y, 4, gaugeFadeColors, 4);
+		OglDrawFilledPoly (x, y, 4, gaugeFadeColors [0], 4);
 		}
 
 		{
@@ -255,7 +255,7 @@ if (m_info.nEnergy < 100) {	// erase part of gauge corresponding to energy loss
 			x [i] = ScaleX (RIGHT_ENERGY_GAUGE_X + x [i]);
 			y [i] = ScaleY (RIGHT_ENERGY_GAUGE_Y + y [i]);
 			}
-		OglDrawFilledPoly (x, y, 4, gaugeFadeColors, 4);
+		OglDrawFilledPoly (x, y, 4, gaugeFadeColors [1], 4);
 		}
 #endif
 	}
@@ -384,7 +384,7 @@ if (!gameData.physics.xAfterburnerCharge)
 #endif
 CCanvas::Current ()->SetColorRGB (255, 255, 255, 255);
 BitBlt (GAUGE_AFTERBURNER, AFTERBURNER_GAUGE_X, AFTERBURNER_GAUGE_Y);
-#if 1
+#if 0
 int yMax = FixMul (I2X (1) - gameData.physics.xAfterburnerCharge, AFTERBURNER_GAUGE_H);
 if (yMax) {
 	int		x [4], y [4];
@@ -405,7 +405,7 @@ if (yMax) {
 	y [2] = ScaleY (AFTERBURNER_GAUGE_Y + y [2]);
 	x [3] = ScaleX (AFTERBURNER_GAUGE_X + tableP [2 * yMax - 1] + 1);
 	gameStates.render.grAlpha = FADE_LEVELS;
-	OglDrawFilledPoly (x, y, 4, gaugeFadeColors, 4);
+	OglDrawFilledPoly (x, y, 4, gaugeFadeColors [0], 4);
 	}
 #endif
 }

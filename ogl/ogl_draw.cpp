@@ -98,12 +98,11 @@ if (!colorP) {
 	colorP = &COLOR;
 	nColors = 1;
 	}
-OglCanvasColor (colorP);
 glBegin (GL_POLYGON);
 for (int i = 0; i <= nVerts; i++) {
 	j = i % nVerts;
-	if (i < nColors)
-		OglCanvasColor (colorP + i);
+	if (j < nColors)
+		OglCanvasColor (colorP + j);
 	glVertex2f (GLfloat (x [j] + left) / GLfloat (gameStates.ogl.nLastW),
 					1.0f - GLfloat (y [j] + top) / GLfloat (gameStates.ogl.nLastH));
 	}
