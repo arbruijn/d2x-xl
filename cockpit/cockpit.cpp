@@ -234,6 +234,7 @@ CCanvas::Current ()->SetColorRGBi (RGBA_PAL (255, 255, 255));
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
 #endif
 if (m_info.nEnergy < 100) {	// erase part of gauge corresponding to energy loss
+#if 1
 	gameStates.render.grAlpha = FADE_LEVELS;
 	float fScale = float (100 - m_info.nEnergy) / 100.0f;
 
@@ -262,6 +263,7 @@ if (m_info.nEnergy < 100) {	// erase part of gauge corresponding to energy loss
 			}
 		OglDrawFilledPoly (x, y, 4);
 		}
+#endif
 	}
 }
 
@@ -381,10 +383,9 @@ ubyte afterburnerBarTableHires [AFTERBURNER_GAUGE_H_H*2] = {
 void CCockpit::DrawAfterburnerBar (void)
 {
 BitBlt (GAUGE_AFTERBURNER, AFTERBURNER_GAUGE_X, AFTERBURNER_GAUGE_Y);
-CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
+#if 1
 int yMax = FixMul (I2X (1) - gameData.physics.xAfterburnerCharge, AFTERBURNER_GAUGE_H);
 if (yMax) {
-#if 0
 	int		x [4], y [4];
 	ubyte*	tableP = gameStates.video.nDisplayMode ? afterburnerBarTableHires : afterburnerBarTable;
 
@@ -403,9 +404,10 @@ if (yMax) {
 	y [2] = ScaleY (AFTERBURNER_GAUGE_Y + y [2]);
 	x [3] = ScaleX (AFTERBURNER_GAUGE_X + tableP [2 * yMax - 1] + 1);
 	gameStates.render.grAlpha = FADE_LEVELS;
+	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 	OglDrawFilledPoly (x, y, 4);
-#endif
 	}
+#endif
 }
 
 //	-----------------------------------------------------------------------------
