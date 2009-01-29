@@ -75,18 +75,18 @@ typedef struct tGaugeBox {
 
 class CCockpitHistory {
 	public:
-		int	score;
-		int	energy;
-		int	shields;
-		int	flags;
-		int	bCloak;
-		int	lives;
-		fix	afterburner;
-		int	bombCount;
-		int	laserLevel;
-		int	weapon [2];
-		int	ammo [2];
-		fix	xOmegaCharge;
+		int		score;
+		int		energy;
+		int		shields;
+		uint	flags;
+		int		bCloak;
+		int		lives;
+		fix		afterburner;
+		int		bombCount;
+		int		laserLevel;
+		int		weapon [2];
+		int		ammo [2];
+		fix		xOmegaCharge;
 
 	public:
 		void Init (void);
@@ -229,12 +229,12 @@ class CGenericCockpit {
 		int WidthPad (char* pszText);
 		int WidthPad (int nValue);
 
-		inline bool Always (void) { 
+		inline bool ShowAlways (void) { 
 			return (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR); 
 			}
 
 		inline bool Show (void) { 
-			return !gameStates.app.bEndLevelSequence && (!gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || !Always ()); 
+			return !gameStates.app.bEndLevelSequence && (!gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || !ShowAlways ()); 
 			}
 		
 		inline bool Hide (void) {

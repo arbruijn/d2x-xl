@@ -830,17 +830,17 @@ if (!(gameStates.render.bTriangleMesh && gameStates.app.bCacheMeshes))
 if (!cf.Open (DataFilename (szFilename, nLevel), gameFolders.szCacheDir, "wb", 0))
 	return 0;
 bOk = (cf.Write (&mdh, sizeof (mdh), 1) == 1) &&
-		(gameData.segs.vertices.Write (cf, mdh.nVertices) == mdh.nVertices) &&
-		(gameData.segs.fVertices.Write (cf, mdh.nVertices) == mdh.nVertices) &&
-		(FACES.faces.Write (cf, mdh.nFaces) == mdh.nFaces) &&
-		(FACES.tris.Write (cf, mdh.nTris) == mdh.nTris) &&
-		(FACES.vertices.Write (cf, mdh.nTris * 3) == mdh.nTris * 3) &&
-		(FACES.normals.Write (cf, mdh.nTris * 3) == mdh.nTris * 3) &&
-		(FACES.texCoord.Write (cf, mdh.nTris * 3) == mdh.nTris * 3) &&
-		(FACES.ovlTexCoord.Write (cf, mdh.nTris * 3) == mdh.nTris * 3) &&
-		(FACES.color.Write (cf, mdh.nTris * 3) == mdh.nTris * 3) &&
-		(FACES.lMapTexCoord.Write (cf, mdh.nTris * 3) == mdh.nTris * 3) &&
-		(FACES.faceVerts.Write (cf, mdh.nFaceVerts) == mdh.nFaceVerts);
+		(gameData.segs.vertices.Write (cf, mdh.nVertices) == uint (mdh.nVertices)) &&
+		(gameData.segs.fVertices.Write (cf, mdh.nVertices) == uint (mdh.nVertices)) &&
+		(FACES.faces.Write (cf, mdh.nFaces) == uint (mdh.nFaces)) &&
+		(FACES.tris.Write (cf, mdh.nTris) == uint (mdh.nTris)) &&
+		(FACES.vertices.Write (cf, mdh.nTris * 3) == uint (mdh.nTris * 3)) &&
+		(FACES.normals.Write (cf, mdh.nTris * 3) == uint (mdh.nTris * 3)) &&
+		(FACES.texCoord.Write (cf, mdh.nTris * 3) == uint (mdh.nTris * 3)) &&
+		(FACES.ovlTexCoord.Write (cf, mdh.nTris * 3) == uint (mdh.nTris * 3) &&
+		(FACES.color.Write (cf, mdh.nTris * 3) == uint (mdh.nTris * 3)) &&
+		(FACES.lMapTexCoord.Write (cf, mdh.nTris * 3) == uint (mdh.nTris * 3)) &&
+		(FACES.faceVerts.Write (cf, mdh.nFaceVerts) == uint (mdh.nFaceVerts));
 cf.Close ();
 return bOk;
 }

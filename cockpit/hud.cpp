@@ -266,8 +266,6 @@ void CHUD::DrawEnergyBar (void)
 if (cockpit->Hide ())
 	return;
 
-	static int nIdEnergy = 0;
-
 if (!gameOpts->render.cockpit.bTextGauges) {
 	static int		bFlash = 0, bShow = 1;
 	static time_t	tToggle;
@@ -323,7 +321,6 @@ if (cockpit->Hide ())
 	return;
 	
 	int h, y;
-	static int nIdAfterBurner = 0;
 
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 	return;		//don't draw if don't have
@@ -549,7 +546,6 @@ void CHUD::DrawShieldBar (void)
 if (cockpit->Hide ())
 	return;
 
-	static int		nIdShield = 0;
 	static int		bShow = 1;
 	static time_t	tToggle = 0, nBeep = -1;
 
@@ -668,7 +664,6 @@ void CHUD::SetupWindow (int nWindow, CCanvas* canvP)
 
 int w = (int) (gameStates.render.vr.buffers.render [0].Width () / cockpitWindowScale [gameOpts->render.cockpit.nWindowSize] * HUD_ASPECT);	
 int h = I2X (w) / screen.Aspect ();
-int dx = (nWindow == 0) ? -w - w / 10 : w / 10;
 switch (gameOpts->render.cockpit.nWindowPos) {
 	case 0:
 		x = nWindow ?

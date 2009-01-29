@@ -1,4 +1,3 @@
-/* $Id: gauges.c, v 1.10 2003/10/11 09:28:38 btb Exp $& /
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -330,9 +329,6 @@ if (gameStates.app.bD1Mission)
 	return;
 
 	int nEraseHeight;
-	char szAB [3] = "AB";
-
-	static int nIdAfterBurner = 0;
 
 CCanvas::Push ();
 CCanvas::SetCurrent (CurrentGameScreen ());
