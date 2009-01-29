@@ -125,7 +125,7 @@ int NetworkJoinPoll (CMenu& menu, int& key, int nCurItem)
 	char	szTrackers [100];
 
 if (tracker.m_bUse) {
-	i = ActiveTrackerCount (0);
+	i = tracker.ActiveCount (0);
 	menu [1].m_color = ORANGE_RGBA;
 	sprintf (szTrackers, TXT_TRACKERS_FOUND, i, (i == 1) ? "" : "s");
 	if (strcmp (menu [1].m_text, szTrackers)) {
@@ -368,7 +368,7 @@ if (AGI.protocolVersion != MULTI_PROTO_VERSION) {
 
 if (tracker.m_bUse) {
 	//PrintLog ("   getting server lists from trackers\n");
-	GetServerFromList (choice);
+	tracker.GetServerFromList (choice);
 	}
 // Check for valid mission name
 console.printf (CON_DBG, TXT_LOADING_MSN, AGI.szMissionName);
