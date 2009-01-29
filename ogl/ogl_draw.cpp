@@ -87,19 +87,23 @@ if (colorP->rgb || (gameStates.render.grAlpha < FADE_LEVELS))
 
 //------------------------------------------------------------------------------
 
-void OglDrawFilledPoly (int* x, int* y, int nVerts, tCanvasColor *colorP)
+void OglDrawFilledPoly (int* x, int* y, int nVerts, tCanvasColor *colorP, int nColors)
 {
 	int left = CCanvas::Current ()->Left ();
 	int top = CCanvas::Current ()->Top ();
 	int j;
 
 glDisable (GL_TEXTURE_2D);
-if (!colorP)
+if (!colorP) {
 	colorP = &COLOR;
+	nColors = 1;
+	}
 OglCanvasColor (colorP);
 glBegin (GL_POLYGON);
 for (int i = 0; i <= nVerts; i++) {
 	j = i % nVerts;
+	if (i < nColors)
+		OglCanvasColor (colorP + i);
 	glVertex2f (GLfloat (x [j] + left) / GLfloat (gameStates.ogl.nLastW),
 					1.0f - GLfloat (y [j] + top) / GLfloat (gameStates.ogl.nLastH));
 	}

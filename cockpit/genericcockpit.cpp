@@ -142,6 +142,9 @@ if (nGauge >= 0) {
 	bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (nGauge);
 	}
 if (bmP) {
+	CBitmap* bmoP = bmP->HasOverride ();
+	if (bmoP)
+		bmP = bmoP;
 	if (bScalePos) {
 		x = ScaleX (x);
 		y = ScaleY (y);
@@ -1642,7 +1645,6 @@ fontManager.SetCurrent (GAME_FONT);
 
 RenderWindows ();
 DrawCockpit (false);
-
 if (bExtraInfo) {
 #if DBG
 	DrawWindowLabel ();
