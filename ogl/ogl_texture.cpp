@@ -383,6 +383,12 @@ for (y = 0; y < m_info.h; y++) {
 						r = colorP [c].red * 4;
 						g = colorP [c].green * 4;
 						b = colorP [c].blue * 4;
+						if ((r < gameStates.ogl.nTransparencyLimit) && 
+							 (g < gameStates.ogl.nTransparencyLimit) && 
+							 (b < gameStates.ogl.nTransparencyLimit)) {
+							m_info.format = gameStates.ogl.nRGBAFormat;
+							goto restart;
+							}
 						if (m_info.format == GL_RGB) {
 							(*(bufP++)) = (GLubyte) r;
 							(*(bufP++)) = (GLubyte) g;
@@ -420,7 +426,11 @@ for (y = 0; y < m_info.h; y++) {
 						r = colorP [c].red * 4;
 						g = colorP [c].green * 4;
 						b = colorP [c].blue * 4;
-						if (nTransp == 1) {
+						if ((r < gameStates.ogl.nTransparencyLimit) && 
+							 (g < gameStates.ogl.nTransparencyLimit) && 
+							 (b < gameStates.ogl.nTransparencyLimit))
+							a = 0;
+						else if (nTransp == 1) {
 #if 0 //non-linear formula
 							double da = (double) (r * 3 + g * 5 + b * 2) / (10.0 * 255.0);
 							da *= da;

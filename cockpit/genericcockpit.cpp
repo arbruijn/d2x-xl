@@ -1395,7 +1395,9 @@ if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nType != CM_FULL
 	LoadBitmap (gameData.pig.tex.cockpitBmIndex [nCockpit].index, 0);
 	if (bmP->HasOverride ())
 		bmP = bmP->Override (-1);
+	gameStates.ogl.nTransparencyLimit = 4;	//add transparency to black areas of palettized cockpits (namely the display windows)
 	bmP->SetupTexture (0, 3, 1);
+	gameStates.ogl.nTransparencyLimit = 0;
 
 	tCanvasColor color;
 

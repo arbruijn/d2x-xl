@@ -197,6 +197,7 @@ gameStates.ogl.texMinFilter = GL_NEAREST;
 gameStates.ogl.nTexMagFilterState = -1, 
 gameStates.ogl.nTexMinFilterState = -1;
 gameStates.ogl.nTexEnvModeState = -1, 
+gameStates.ogl.nTransparencyLimit = 0;
 gameStates.ogl.nLastX =
 gameStates.ogl.nLastY =
 gameStates.ogl.nLastW =

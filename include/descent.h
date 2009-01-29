@@ -720,6 +720,7 @@ typedef struct tOglStates {
 	int bGlTexMerge;
 	int bBrightness;
 	int nColorBits;
+	ubyte nTransparencyLimit;
 	GLint nDepthBits;
 	GLint nStencilBits;
 	int bEnableTexture2D;
