@@ -1592,8 +1592,6 @@ gameData.demo.nState = saveNewDemoState;
 //	-----------------------------------------------------------------------------
 //draw all the things on the HUD
 
-void FillBackground (void);
-
 void CGenericCockpit::Render (int bExtraInfo)
 {
 if (Hide ())
@@ -1635,8 +1633,6 @@ else
 
 if ((gameData.demo.nState == ND_STATE_PLAYBACK))
 	gameData.app.nGameMode = gameData.demo.nGameMode;
-
-//FillBackground ();
 
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
 CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);

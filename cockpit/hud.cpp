@@ -638,7 +638,6 @@ void CHUD::DrawCockpit (bool bAlphaTest)
 {
 gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w) / 2;
 gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h) / 2;
-//FillBackground ();
 }
 
 //	-----------------------------------------------------------------------------

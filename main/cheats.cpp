@@ -550,7 +550,6 @@ SetupSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocal
 
 //------------------------------------------------------------------------------
 
-void FillBackground ();
 void LoadGameBackground ();
 
 void JohnHeadCheat (int bVerbose)

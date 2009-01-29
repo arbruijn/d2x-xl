@@ -90,7 +90,6 @@ int	nClearWindow = 0; //2	// 1 = Clear whole background tPortal, 2 = clear view 
 #define CLEAR_WINDOW	0
 
 void RenderSkyBox (int nWindow);
-void FillBackground (void);
 
 //------------------------------------------------------------------------------
 
@@ -1225,8 +1224,6 @@ void RenderFrame (fix nEyeOffset, int nWindow)
 {
 	short nStartSeg;
 
-if (!nWindow)
-	FillBackground ();
 gameStates.render.nWindow = nWindow;
 gameStates.render.nEyeOffset = nEyeOffset;
 if (gameStates.app.bEndLevelSequence) {
@@ -2062,8 +2059,6 @@ if (nWindow)
 	nWindow = nWindow;
 else
 	nWindow = nWindow;
-if (!nWindow)
-	FillBackground ();
 if (gameStates.app.bNostalgia) {
 	gameOptions [1].render.debug.bWireFrame = 0;
 	gameOptions [1].render.debug.bTextures = 1;
