@@ -772,7 +772,7 @@ void CModelData::Prepare (void)
 
 if (!RENDERPATH)
 	return;
-if (!gameData.objs.nLastObject [0])
+if (!OBJECTS.Buffer ())
 	return;
 PrintLog ("   building optimized polygon model data\n");
 gameStates.render.nType = 1;
@@ -780,7 +780,7 @@ gameStates.render.nShadowPass = 1;
 gameStates.render.bBuildModels = 1;
 h = 0;
 #if !BUILD_ALL_MODELS
-for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
+for (i = 0, j = int (OBJECTS.Length ()); i < j; i++, objP++) {
 	if ((objP->info.nSegment >= 0) && (objP->info.nType != 255) && (objP->info.renderType == RT_POLYOBJ) &&
 		 !G3HaveModel (objP->rType.polyObjInfo.nModel)) {
 		PrintLog ("      building model %d\n", objP->rType.polyObjInfo.nModel);
