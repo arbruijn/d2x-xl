@@ -781,8 +781,6 @@ for (i = 0; i < m_info.props.h; i++, pSrc += nLineSize) {
 		memset (destP, 0, n);
 		destP += n;
 		}
-	if (j < nLineSize)
-		pSrc += nLineSize - j;
 	}
 l = (int) (destP - gameData.pig.tex.rleBuffer);
 if (l < 0)

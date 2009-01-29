@@ -480,11 +480,49 @@ return nShrinkFactor / 2;
 
 //------------------------------------------------------------------------------
 
+int ReadBitmap (CBitmap* bmP, int nSize, CFile* cfP, bool bDefault, bool bD1)
+{
+nDescentCriticalError = 0;
+if (bmP->Flags () & BM_FLAG_RLE) {
+	int zSize = cfP->ReadInt ();
+	if (nDescentCriticalError) {
+		PiggyCriticalError ();
+		return -1;
+		}
+	#if DBG
+	if (zSize > int (bmP->Size ()))
+		bmP->Resize (zSize);
+	#endif
+	#if 1
+	if (bmP->Read (*cfP, zSize - 4, 4) != zSize - 4)
+		return -2;
+	zSize = bmP->RLEExpand (NULL, 0);
+	#endif
+	}
+else if (bDefault) {
+#if TEXTURE_COMPRESSION
+	if (bmP->bmCompressed) 
+		return 0;
+#endif
+	bmP->Read (*cfP, nSize);
+	}
+else
+	return 0;
+if (bD1)
+	bmP->Remap (paletteManager.D1 (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
+else
+	bmP->Remap (paletteManager.Game (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
 int PageInBitmap (CBitmap *bmP, const char *bmName, int nIndex, int bD1)
 {
 	CBitmap			*altBmP = NULL;
 	int				nSize, nOffset, nFrames, nShrinkFactor, nBestShrinkFactor,
-						bRedone = 0, bTGA, bDefault = 0;
+						bRedone = 0, bTGA;
+	bool				bDefault = false;
 	time_t			tBase, tShrunk;
 	CFile				cf, *cfP = &cf;
 	char				fn [FILENAME_LEN], fnShrunk [FILENAME_LEN];
@@ -592,7 +630,7 @@ if (!altBmP) {
 		}
 	cfP = cfPiggy + bD1;
 	nOffset = bitmapOffsets [bD1][nIndex];
-	bDefault = 1;
+	bDefault = true;
 	}
 
 reloadTextures:
@@ -637,61 +675,30 @@ bmP->SetId (nIndex);
 if (nIndex == nDbgTexture)
 	nDbgTexture = nDbgTexture;
 #endif
-if (bmP->Flags () & BM_FLAG_RLE) {
-	nDescentCriticalError = 0;
-	int zSize = cfP->ReadInt ();
-	if (nDescentCriticalError) {
-		PiggyCriticalError ();
+int i = ReadBitmap (bmP, nSize, cfP, bDefault, bD1 != 0);
+if (i) {
+	if (i < 0) {
+		bRedone = -i;
 		goto reloadTextures;
 		}
-#if DBG
-	if (zSize > int (bmP->Size ()))
-		bmP->Resize (zSize);
-#endif
-#if 1
-	if (bmP->Read (*cfP, zSize - 4, 4) != zSize - 4) {
-		bRedone = 2;
-		goto reloadTextures;
-		}
-	zSize = bmP->RLEExpand (NULL, 0);
-	if (bD1)
-		bmP->Remap (paletteManager.D1 (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
-	else
-		bmP->Remap (paletteManager.Game (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
-#endif
 	}
 else 
 #if TEXTURE_COMPRESSION
-	if (!bmP->bmCompressed) 
+if (!bmP->bmCompressed) 
 #endif
- {
-	nDescentCriticalError = 0;
-	if (bDefault) {
-#if DBG
-		if (nSize > int (bmP->Size ()))
-			bmP->Resize (nSize);
-#endif
-#if 1
-		bmP->Read (*cfP, nSize);
-		if (bD1)
-			bmP->Remap (paletteManager.D1 (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
-		else
-			bmP->Remap (paletteManager.Game (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
-#endif
+	{
+	ReadTGAImage (*cfP, &h, bmP, -1, 1.0, 0, 0);
+	if (bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
+		bmP->AddFlags (BM_FLAG_SEE_THRU);
+	bmP->SetType (BM_TYPE_ALT);
+	if (IsOpaqueDoor (nIndex)) {
+		bmP->DelFlags (BM_FLAG_TRANSPARENT);
+		bmP->TransparentFrames () [0] &= ~1;
 		}
-	else {
-		ReadTGAImage (*cfP, &h, bmP, -1, 1.0, 0, 0);
-		if (bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
-			bmP->AddFlags (BM_FLAG_SEE_THRU);
-		bmP->SetType (BM_TYPE_ALT);
-		if (IsOpaqueDoor (nIndex)) {
-			bmP->DelFlags (BM_FLAG_TRANSPARENT);
-			bmP->TransparentFrames () [0] &= ~1;
-			}
 #if TEXTURE_COMPRESSION
-		if (CompressTGA (bmP))
-			SaveS3TC (bmP, gameFolders.szTextureCacheDir [bD1], bmName);
-		else {
+	if (CompressTGA (bmP))
+		SaveS3TC (bmP, gameFolders.szTextureCacheDir [bD1], bmName);
+	else {
 #endif
 		nBestShrinkFactor = BestShrinkFactor (bmP, nShrinkFactor);
 		if ((nBestShrinkFactor > 1) && ShrinkTGA (bmP, nBestShrinkFactor, nBestShrinkFactor, 1)) {
@@ -703,10 +710,10 @@ else
 #if TEXTURE_COMPRESSION
 	}
 #endif
-	if (nDescentCriticalError) {
-		PiggyCriticalError ();
-		goto reloadTextures;
-		}
+
+if (nDescentCriticalError) {
+	PiggyCriticalError ();
+	goto reloadTextures;
 	}
 #ifndef MACDATA
 if (!bTGA && IsMacDataFile (cfP, bD1))
@@ -874,9 +881,7 @@ if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 			bm.SetId (j);
 			}
 		else {
-			int nSize = (int) bm.Width () * (int) bm.Width ();
-			bm.Read (cf, nSize);
-			bm.SetPalette (paletteManager.Game ());
+			ReadBitmap (&bm, int (bm.Width ()) * int (bm.Height ()), &cf, true, false);
 			j = indices [i];
 			bm.SetId (j);
 			bm.RLEExpand (NULL, 0);
