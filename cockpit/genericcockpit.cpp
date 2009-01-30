@@ -1868,7 +1868,7 @@ if (!gameStates.app.bNostalgia && (gameStates.render.cockpit.nType >= CM_FULL_SC
 	int x0 = windowCanv.Left ();
 	int y0 = windowCanv.Top () - CCanvas::Current ()->Top ();
 	int x1 = windowCanv.Right () - 1;
-	int y1 = windowCanv.Bottom ();
+	int y1 = windowCanv.Bottom () - CCanvas::Current ()->Top ();
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (47, 31, 0));
 	//CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
 	//CCanvas::Current ()->SetColorRGBi (RGBA_PAL (60, 60, 60));
