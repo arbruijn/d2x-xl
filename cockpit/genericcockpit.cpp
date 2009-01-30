@@ -1834,7 +1834,7 @@ if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 	if (gameStates.app.bNostalgia)
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
 	else
-		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (63, 47, 0));
+		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (47, 31, 0));
 	OglDrawEmptyRect (0, 0, CCanvas::Current ()->Width () - 1, CCanvas::Current ()->Height ());
 
 	//if the window only partially overlaps the big 3d window, copy
@@ -1866,10 +1866,10 @@ CCanvas::Pop ();
 
 if (!gameStates.app.bNostalgia && (gameStates.render.cockpit.nType >= CM_FULL_SCREEN)) {
 	int x0 = windowCanv.Left ();
-	int y0 = windowCanv.Top ();
+	int y0 = windowCanv.Top () - CCanvas::Current ()->Top ();
 	int x1 = windowCanv.Right () - 1;
 	int y1 = windowCanv.Bottom ();
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (63, 47, 0));
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (47, 31, 0));
 	//CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
 	//CCanvas::Current ()->SetColorRGBi (RGBA_PAL (60, 60, 60));
 	//CCanvas::Current ()->SetColorRGBi (RGBA_PAL (31, 31, 31));
