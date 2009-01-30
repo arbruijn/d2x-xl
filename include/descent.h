@@ -207,6 +207,7 @@ typedef struct tCockpitOptions {
 	int bHUD;
 	int bHUDMsgs;
 	int bSplitHUDMsgs;	//split CPlayerData and other message displays
+	int bWideDisplays;
 	int bReticle;
 	int bMouseIndicator;
 	int bTextGauges;

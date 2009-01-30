@@ -340,7 +340,7 @@ void CockpitOptionsMenu (void)
 			nPosition = gameOpts->render.cockpit.nWindowPos / 3, 
 			nAlignment = gameOpts->render.cockpit.nWindowPos % 3, 
 			choice = 0;
-	int	optGauges, optHUD, optReticle, optGuided, optPosition, optAlignment,
+	int	optGauges, optHUD, optReticle, optGuided, optPosition, optAlignment, optWideDisplays,
 			optMissileView, optMouseInd, optSplitMsgs, optHUDMsgs, optTgtInd, optWeaponIcons;
 
 	char szCockpitWindowZoom [40];
@@ -370,6 +370,7 @@ do {
 		m.AddRadio (TXT_ALIGN_CENTER, nAlignment == 2, KEY_E, HTX_AUXWIN_ALIGNMENT);
 		m.AddText ("", 0);
 		optHUD = m.AddCheck (TXT_SHOW_HUD, gameOpts->render.cockpit.bHUD, KEY_U, HTX_CPIT_SHOWHUD);
+		optWideDisplays = m.AddCheck (TXT_CPIT_WIDE_DISPLAYS, gameOpts->render.cockpit.bWideDisplays, KEY_W, HTX_CPIT_WIDE_DISPLAYS);
 		optHUDMsgs = m.AddCheck (TXT_SHOW_HUDMSGS, gameOpts->render.cockpit.bHUDMsgs, KEY_M, HTX_CPIT_SHOWHUDMSGS);
 		optReticle = m.AddCheck (TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_R, HTX_CPIT_SHOWRETICLE);
 		if (gameOpts->input.mouse.bJoystick)
@@ -379,6 +380,7 @@ do {
 		}
 	else
 		optHUD =
+		optWideDisplays =
 		optHUDMsgs =
 		optMouseInd = 
 		optReticle = -1;
@@ -405,6 +407,7 @@ do {
 	GET_VAL (gameOpts->render.cockpit.bGuidedInMainView, optGuided);
 	GET_VAL (gameOpts->render.cockpit.bMouseIndicator, optMouseInd);
 	GET_VAL (gameOpts->render.cockpit.bHUD, optHUD);
+	GET_VAL (gameOpts->render.cockpit.bWideDisplays, optWideDisplays);
 	GET_VAL (gameOpts->render.cockpit.bHUDMsgs, optHUDMsgs);
 	GET_VAL (gameOpts->render.cockpit.bSplitHUDMsgs, optSplitMsgs);
 	if ((optAlignment >= 0) && (optPosition >= 0)) {

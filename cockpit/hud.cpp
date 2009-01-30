@@ -664,17 +664,18 @@ void CHUD::SetupWindow (int nWindow, CCanvas* canvP)
 
 int w = (int) (gameStates.render.vr.buffers.render [0].Width () / cockpitWindowScale [gameOpts->render.cockpit.nWindowSize] * HUD_ASPECT);	
 int h = I2X (w) / screen.Aspect ();
+w = int (w / HUD_ASPECT);
 switch (gameOpts->render.cockpit.nWindowPos) {
 	case 0:
-		x = nWindow ?
-			gameStates.render.vr.buffers.render [0].Width () - w - h / 10 :
-			h / 10;
+		x = nWindow
+			 ? gameStates.render.vr.buffers.render [0].Width () - w - h / 10
+			 : h / 10;
 		y = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
 		break;
 	case 1:
-		x = nWindow ?
-			gameStates.render.vr.buffers.render [0].Width () / 3 * 2 - w / 3 :
-			gameStates.render.vr.buffers.render [0].Width () / 3 - 2 * w / 3;
+		x = nWindow
+			 ? gameStates.render.vr.buffers.render [0].Width () / 3 * 2 - w / 3
+			 : gameStates.render.vr.buffers.render [0].Width () / 3 - 2 * w / 3;
 		y = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
 		break;
 	case 2:	// only makes sense if there's only one cockpit window
@@ -688,9 +689,9 @@ switch (gameOpts->render.cockpit.nWindowPos) {
 		y = h / 10;
 		break;
 	case 4:
-		x = nWindow ?
-			gameStates.render.vr.buffers.render [0].Width () / 3 * 2 - w / 3 :
-			gameStates.render.vr.buffers.render [0].Width () / 3 - 2 * w / 3;
+		x = nWindow
+			 ? gameStates.render.vr.buffers.render [0].Width () / 3 * 2 - w / 3
+			 : gameStates.render.vr.buffers.render [0].Width () / 3 - 2 * w / 3;
 		y = h / 10;
 		break;
 	case 5:	// only makes sense if there's only one cockpit window

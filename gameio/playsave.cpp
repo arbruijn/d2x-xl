@@ -661,6 +661,7 @@ for (i = 0; i < 2; i++) {
 	RP (gameOptions [i].render.cockpit.bMissileView, i, 0);
 	RP (gameOptions [i].render.cockpit.bHUD, i, 0);
 	RP (gameOptions [i].render.cockpit.bReticle, i, 0);
+	RP (gameOptions [i].render.cockpit.bWideDisplays, i, 0);
 	}
 RegisterConfig (kcKeyboard, KcKeyboardSize (), "keyboard.");
 RegisterConfig (kcMouse, KcMouseSize (), "mouse.");
@@ -1168,6 +1169,7 @@ tParamValue defaultParams [] = {
  {"gameOptions[0].render.nLightmapQuality", "1"},
  {"gameOptions[0].render.cockpit.bMissileView", "0"},
  {"gameOptions[0].render.cockpit.bHUD", "1"},
+ {"gameOptions[0].render.cockpit.bWideDisplays", "1"},
  {"gameOptions[0].render.cockpit.bReticle", "1"},
  {"nWeaponOrder[1][0]", "9"},
  {"nWeaponOrder[1][1]", "4"},

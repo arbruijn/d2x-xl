@@ -1839,6 +1839,7 @@ const char *defaultGameTexts [][2] = {
  {"Blitze auf ~Monitoren zeigen", "show lightnings on ~Monitors"},
  {"Existierende Datei ueberschreiben?", "Overwrite existing file?"},
  {"~Fetter Rahmen um aktive Waffe", "~Bold armed weapon highlight"},
+ {"~breite Cockpit-Anzeigefenster", "~Wide cockpit display windows"},
 #if 0
  {"", ""},
 #endif
@@ -2503,6 +2504,8 @@ const char *defaultHelpTexts [][2] = {
  {"Wenn angekreuzt, ist Rauch auch auf Monitoren sichtbar.", "If checked smoke is visible on monitors."},
  {"Wenn angekreuzt, sind Blitze auch auf Monitoren sichtbar.", "If checked lightnings are visible on monitors."},
  {"Wenn angekreuzt, erhalten die Icons aktiver Waffen und\nAusruestung besonders fette Rahmen.", "If checked, armed weapons and active equipment\nhave a bold frame."},
+ {"Wenn angekreuzt, werden bei Widescreen-Aufloesungen auch\ndie Anzeigefenster im HUD verbreitert.", 
+  "If checked, HUD display windows are wider too for\nwidescreen resolutions."},
 #if 0
  {"", ""},
 #endif
