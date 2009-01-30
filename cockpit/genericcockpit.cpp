@@ -1830,6 +1830,8 @@ if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
 	else
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (47, 31, 0));
+	glEnable (GL_LINE_SMOOTH);
+	glLineWidth ((CCanvas::Current ()->Width () < 1200 ? 1.0f : 2.0f));
 	OglDrawEmptyRect (0, 0, CCanvas::Current ()->Width () - 1, CCanvas::Current ()->Height ());
 
 	//if the window only partially overlaps the big 3d window, copy
@@ -1878,6 +1880,7 @@ if (!gameStates.app.bNostalgia && (gameStates.render.cockpit.nType >= CM_FULL_SC
 	OglDrawLine (x0 - 2, y0 + 3, x0 - 2, y1 - 3);
 	OglDrawLine (x1 + 2, y0 + 3, x1 + 2, y1 - 3);
 	}
+glDisable (GL_LINE_SMOOTH);
 #endif
 gameStates.render.bRearView = bRearViewSave;
 }

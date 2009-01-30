@@ -369,7 +369,7 @@ int CHUD::DrawBombCount (int& nIdBombCount, int x, int y, int nColor, char* pszB
 CCanvas::Push ();
 CCanvas::SetCurrent (CurrentGameScreen ());
 fontManager.SetColorRGBi (nColor, 1, 0, 1);
-x = CCanvas::Current ()->Width () - (3 * GAME_FONT->Width () + gameStates.render.fonts.bHires + 1);
+x = CCanvas::Current ()->Width () - 3 * GAME_FONT->Width () - gameStates.render.fonts.bHires - 1;
 y = CCanvas::Current ()->Height () - 3 * m_info.nLineSpacing;
 if ((extraGameInfo [0].nWeaponIcons >= 3) && (CCanvas::Current ()->Height () < 670))
 	x -= LHX (20);
@@ -669,7 +669,8 @@ void CHUD::SetupWindow (int nWindow, CCanvas* canvP)
 int w = (int) (gameStates.render.vr.buffers.render [0].Width () / cockpitWindowScale [gameOpts->render.cockpit.nWindowSize] * HUD_ASPECT);	
 int h = I2X (w) / screen.Aspect ();
 if (gameOpts->render.cockpit.bWideDisplays)
-	w = int (w / HUD_ASPECT);
+	w = w * screen.Width () / screen.Height ();
+	//w = int (w / HUD_ASPECT);
 switch (gameOpts->render.cockpit.nWindowPos) {
 	case 0:
 		x = nWindow
