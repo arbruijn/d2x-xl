@@ -589,22 +589,22 @@ return 1;
 
 int CParticle::Render (float brightness)
 {
-	CFixVector			hp;
-	GLfloat				d, u, v;
-	CBitmap			*bmP;
-	tRgbaColorf			pc;
-	tTexCoord2f			texCoord [4];
-	tParticleVertex	*pb;
-	CFloatVector				vOffset, vCenter;
-	int					i, nFrame, nType = m_nType, bEmissive = m_bEmissive,
-							bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.particles.bSort && (gameOpts->render.bDepthSort <= 0);
-	float					decay = (nType == BUBBLE_PARTICLES) ? 1.0f : (float) m_nLife / (float) m_nTTL;
+	CFixVector				hp;
+	GLfloat					d, u, v;
+	CBitmap*					bmP;
+	tRgbaColorf				pc;
+	tTexCoord2f				texCoord [4];
+	tParticleVertex*		pb;
+	CFloatVector			vOffset, vCenter;
+	int						i, nFrame, nType = m_nType, bEmissive = m_bEmissive,
+								bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.particles.bSort && (gameOpts->render.bDepthSort <= 0);
+	float						decay = (nType == BUBBLE_PARTICLES) ? 1.0f : (float) m_nLife / (float) m_nTTL;
 
-	static int			nFrames = 1;
-	static float		deltaUV = 1.0f;
-	static tSinCosf	sinCosPart [PARTICLE_POSITIONS];
-	static int			bInitSinCos = 1;
-	static CFloatMatrix		mRot;
+	static int				nFrames = 1;
+	static float			deltaUV = 1.0f;
+	static tSinCosf		sinCosPart [PARTICLE_POSITIONS];
+	static int				bInitSinCos = 1;
+	static CFloatMatrix	mRot;
 
 if (m_nDelay > 0)
 	return 0;
@@ -637,6 +637,10 @@ if (gameOpts->render.bDepthSort > 0) {
 else if (gameOpts->render.particles.bSort) {
 	hp = m_vTransPos;
 	if ((particleManager.LastType () != nType) || (brightness != bufferBrightness)) {
+#if DBG
+		if (particleManager.LastType () == 2)
+			nType = nType;
+#endif
 		if (gameStates.render.bVertexArrays)
 			particleManager.FlushBuffer (brightness);
 		else
