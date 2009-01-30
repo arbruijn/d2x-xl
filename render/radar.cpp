@@ -35,8 +35,9 @@ int radarRanges [] = {100, 150, 200};
 #define BLIP_SLICES	40
 
 static CAngleVector	aRadar = CAngleVector::Create(I2X (1) / 4, 0, 0);
-static CFixMatrix	mRadar;
-static float		yRadar = 20;
+static CFixMatrix		mRadar;
+static float			yOffs = 18.0f;
+static float			yRadar;
 
 void RenderRadarBlip (CObject *objP, float r, float g, float b, float a)
 {
@@ -156,7 +157,7 @@ if (!(i = EGI_FLAG (nRadar, 0, 1, 0)))
 	return;
 bStencil = StencilOff ();
 InitShipColors ();
-yRadar = ((i == 1) || (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR)) ? 20.0f : -20.0f;
+yRadar = ((i == 1) || (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR)) ? yOffs : -yOffs;
 mRadar = CFixMatrix::Create (aRadar);
 glDisable (GL_CULL_FACE);
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
