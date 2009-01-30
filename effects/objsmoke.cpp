@@ -856,9 +856,9 @@ SEM_ENTER (SEM_SMOKE)
 PlayerBulletFrame ();
 #if 0
 #	if DBG
-if (!gameStates.render.bExternalView)
+if (!gameStates.render.bChaseCam)
 #	else
-if (!gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
+if (!gameStates.render.bChaseCam && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
 #	endif
 	DoPlayerSmoke (gameData.objs.viewerP, gameData.multiplayer.nLocalPlayer);
 #endif

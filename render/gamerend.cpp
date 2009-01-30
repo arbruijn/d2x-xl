@@ -487,7 +487,7 @@ else {
 			cockpit->RenderWindow (1, NULL, 0, WBU_STATIC, NULL);
 		gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP = NULL;
 		}
-	if (gameData.objs.missileViewerP && !gameStates.render.bExternalView) {		//do missile view
+	if (gameData.objs.missileViewerP && !gameStates.render.bChaseCam) {		//do missile view
 		HUDMessage (0, "missile view");
 		static int mslViewerSig = -1;
 		if (mslViewerSig == -1)

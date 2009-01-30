@@ -760,6 +760,7 @@ gameData.render.faceIndex [0].nUsedKeys = 0;
 gameData.render.faceIndex [1].nUsedFaces = LEVEL_FACES;
 gameData.render.faceIndex [1].nUsedKeys = 0;
 omegaLightnings.Init ();
+CGenericCockpit::Rewind (false);
 cockpit->Init ();
 gameData.multiplayer.bMoving = -1;
 gameData.missions.nCurrentLevel = nLevel;

@@ -822,12 +822,12 @@ else if ((gameData.objs.viewerP == gameData.objs.consoleP) && !automap.m_bDispla
 		//HUDMessage (0, "%1.2f %1.2f %1.2f", X2F (objP->info.position.vPos.p.x), X2F (objP->info.position.vPos.p.y), X2F (objP->info.position.vPos.p.z));
 #if DBG
 	 else if ((gameStates.render.nShadowPass != 2) && !gameStates.app.bPlayerIsDead &&
-				 (nWindowNum || (!gameStates.render.bExternalView && (gameStates.app.bEndLevelSequence < EL_LOOKBACK)))) { //don't render ship model if neither external view nor main view
+				 (nWindowNum || (!gameStates.render.bChaseCam && (gameStates.app.bEndLevelSequence < EL_LOOKBACK)))) { //don't render ship model if neither external view nor main view
 #else
 	 else if ((gameStates.render.nShadowPass != 2) && !gameStates.app.bPlayerIsDead &&
 				 (nWindowNum ||
 				  ((IsMultiGame && !IsCoopGame && !EGI_FLAG (bEnableCheats, 0, 0, 0)) ||
-				  (!gameStates.render.bExternalView && (gameStates.app.bEndLevelSequence < EL_LOOKBACK))))) {
+				  (!gameStates.render.bChaseCam && (gameStates.app.bEndLevelSequence < EL_LOOKBACK))))) {
 #endif
 #if 0
 		if (gameOpts->render.particles.bPlayers) {

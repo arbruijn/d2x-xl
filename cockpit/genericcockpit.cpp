@@ -69,6 +69,8 @@ CCockpit		fullCockpit;
 CStatusBar	statusBarCockpit;
 CRearView	rearViewCockpit;
 
+CStack<int>	CGenericCockpit::m_save;
+
 CGenericCockpit* cockpit = &fullCockpit;
 
 //	-----------------------------------------------------------------------------
@@ -1022,9 +1024,9 @@ Assert (nPrimaryBm <= 2);
 Assert (nSecondaryBm <= 4);
 Assert (nCrossBm <= 1);
 #if DBG
-if (gameStates.render.bExternalView)
+if (gameStates.render.bChaseCam)
 #else
-if (gameStates.render.bExternalView && (!IsMultiGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
+if (gameStates.render.bChaseCam && (!IsMultiGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
 #endif
 	return;
 m_info.xScale *= float (HUD_ASPECT);
@@ -1931,6 +1933,48 @@ int CGenericCockpit::WidthPad (int nValue)
 
 sprintf (szValue, "%d", nValue);
 return WidthPad (szValue);
+}
+
+//	-----------------------------------------------------------------------------
+
+bool CGenericCockpit::Save (bool bInitial)
+{
+if (bInitial && IsSaved ())
+	return true;
+return m_save.Push (gameStates.render.cockpit.nTypeSave = gameStates.render.cockpit.nType);
+}
+
+//	-----------------------------------------------------------------------------
+
+bool CGenericCockpit::Restore (void)
+{
+if (!m_save.ToS ()) {
+	gameStates.render.cockpit.nTypeSave = -1;
+	return false;
+	}
+cockpit->Activate (m_save.Pop ());
+gameStates.render.cockpit.nTypeSave = m_save.ToS () ? *m_save.Top () : -1;
+return true;
+}
+
+//	-----------------------------------------------------------------------------
+
+void CGenericCockpit::Rewind (bool bActivate)
+{
+if (bActivate)
+	while (Restore ())
+		;
+else {
+	m_save.Reset ();
+	gameStates.render.cockpit.nTypeSave = -1;
+	}
+}
+
+//	-----------------------------------------------------------------------------
+
+bool CGenericCockpit::IsSaved (void)
+{
+return m_save.ToS () > 0;
 }
 
 //	-----------------------------------------------------------------------------

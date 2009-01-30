@@ -33,31 +33,31 @@ extern ubyte Reticle_on;
 #define gauge_message HUDInitMessage
 
 //valid modes for cockpit
-#define CM_FULL_COCKPIT    0   // normal screen with cockput
-#define CM_REAR_VIEW       1   // looking back with bitmap
-#define CM_STATUS_BAR      2   // small status bar, w/ reticle
-#define CM_FULL_SCREEN     3   // full screen, no cockpit (w/ reticle)
-#define CM_LETTERBOX       4   // half-height window (for cutscenes)
+#define CM_FULL_COCKPIT    0	// normal screen with cockput
+#define CM_REAR_VIEW       1	// looking back with bitmap
+#define CM_STATUS_BAR      2	// small status bar, w/ reticle
+#define CM_FULL_SCREEN     3	// full screen, no cockpit (w/ reticle)
+#define CM_LETTERBOX       4	// half-height window (for cutscenes)
 
-#define WBU_WEAPON			0       // the weapons display
-#define WBUMSL					1       // the missile view
-#define WBU_ESCORT			2       // the "buddy bot"
-#define WBU_REAR				3       // the rear view
-#define WBU_COOP				4       // coop or team member view
-#define WBU_GUIDED			5       // the guided missile
-#define WBU_MARKER			6       // a dropped marker
-#define WBU_STATIC			7       // playing static after missile hits
+#define WBU_WEAPON			0	// the weapons display
+#define WBUMSL					1	// the missile view
+#define WBU_ESCORT			2	// the "buddy bot"
+#define WBU_REAR				3	// the rear view
+#define WBU_COOP				4	// coop or team member view
+#define WBU_GUIDED			5	// the guided missile
+#define WBU_MARKER			6	// a dropped marker
+#define WBU_STATIC			7	// playing static after missile hits
 #define WBU_RADAR_TOPDOWN	8
 #define WBU_RADAR_HEADSUP	9
 
 //	-----------------------------------------------------------------------------
 
-#define HUD_SCALE(v, s)	(int (float (v) * (s) /*+ 0.5*/))
-#define HUD_SCALE_X(v)	HUD_SCALE (v, m_info.xScale)
-#define HUD_SCALE_Y(v)	HUD_SCALE (v, m_info.yScale)
-#define HUD_LHX(x)      (gameStates.menus.bHires ? 2 * (x) : x)
-#define HUD_LHY(y)      (gameStates.menus.bHires? (24 * (y)) / 10 : y)
-#define HUD_ASPECT		(float (screen.Height ()) / float (screen.Width ()) / 0.75f)
+#define HUD_SCALE(v, s)		(int (float (v) * (s) /*+ 0.5*/))
+#define HUD_SCALE_X(v)		HUD_SCALE (v, m_info.xScale)
+#define HUD_SCALE_Y(v)		HUD_SCALE (v, m_info.yScale)
+#define HUD_LHX(x)			(gameStates.menus.bHires ? 2 * (x) : x)
+#define HUD_LHY(y)			(gameStates.menus.bHires? (24 * (y)) / 10 : y)
+#define HUD_ASPECT			(float (screen.Height ()) / float (screen.Width ()) / 0.75f)
 
 //	-----------------------------------------------------------------------------
 
@@ -128,11 +128,17 @@ class CCockpitInfo {
 
 class CGenericCockpit {
 	protected:
-		CCockpitHistory	m_history [2];
-		CCockpitInfo		m_info;
+		CCockpitHistory		m_history [2];
+		CCockpitInfo			m_info;
+		static CStack<int>	m_save;
 
 	public:
 		void Init (void);
+
+		static bool Save (bool bInitial = false);
+		static bool Restore (void);
+		static bool IsSaved (void);
+		static void Rewind (bool bActivate = true);
 
 		inline float Aspect (void) { return float (screen.Height ()) / float (screen.Width ()) / 0.75f; }
 		inline int ScaleX (int v) { return int (float (v) * m_info.xScale + 0.5f); }

@@ -564,7 +564,7 @@ gameStates.render.vr.buffers.render->SetupPane (
 
 void CStatusBar::Toggle (void)
 {
-CGenericCockpit::Activate ((gameStates.render.cockpit.nNextType < 0) ? CM_FULL_SCREEN : CM_FULL_COCKPIT);
+CGenericCockpit::Activate ((gameStates.render.cockpit.nNextType < 0) ? CM_FULL_SCREEN : gameStates.render.cockpit.nNextType);
 }
 
 //	-----------------------------------------------------------------------------

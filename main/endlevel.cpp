@@ -305,7 +305,7 @@ while (i--) {
 	nSegment = SEGMENTS [nSegment].m_children [nExitSide];
 	}
 gameData.endLevel.exit.nTransitSegNum = nSegment;
-gameStates.render.cockpit.nTypeSave = gameStates.render.cockpit.nType;
+CGenericCockpit::Save ();
 if (IsMultiGame) {
 	MultiSendEndLevelStart (0);
 	NetworkDoFrame (1, 1);
@@ -404,7 +404,7 @@ void StopEndLevelSequence (void)
 	gameStates.render.nInterpolationMethod = 0;
 
 paletteManager.DisableEffect ();
-cockpit->Activate (gameStates.render.cockpit.nTypeSave);
+CGenericCockpit::Restore ();
 gameStates.app.bEndLevelSequence = EL_OFF;
 PlayerFinishedLevel (0);
 }

@@ -138,8 +138,7 @@ if (gameData.objs.deadPlayerCamera) {
 	ReleaseObject (OBJ_IDX (gameData.objs.deadPlayerCamera));
 	gameData.objs.deadPlayerCamera = NULL;
 	}
-cockpit->Activate (gameStates.render.cockpit.nTypeSave);
-gameStates.render.cockpit.nTypeSave = -1;
+CGenericCockpit::Rewind ();
 gameData.objs.viewerP = viewerSaveP;
 gameData.objs.consoleP->SetType (OBJ_PLAYER);
 gameData.objs.consoleP->info.nFlags = nPlayerFlagsSave;
@@ -288,8 +287,7 @@ else {
 	Int3 ();
 	gameData.objs.deadPlayerCamera = NULL;
 	}
-if (gameStates.render.cockpit.nTypeSave == -1)		//if not already saved
-	gameStates.render.cockpit.nTypeSave = gameStates.render.cockpit.nType;
+CGenericCockpit::Save (true);
 cockpit->Activate (CM_LETTERBOX);
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordLetterbox ();

@@ -398,15 +398,19 @@ switch (key) {
 		break;
 
 	case KEY_CTRLED + KEY_ALTED + KEY_S:
-		if ((IsMultiGame && !IsCoopGame) || !gameStates.app.bEnableFreeCam)
+		if (gameStates.render.bRearView || (IsMultiGame && !IsCoopGame) || !gameStates.app.bEnableFreeCam)
 			return 0;
 		if ((gameStates.app.bFreeCam = !gameStates.app.bFreeCam)) {
 			gameStates.app.playerPos = gameData.objs.viewerP->info.position;
 			gameStates.app.nPlayerSegment = gameData.objs.viewerP->info.nSegment;
+			CGenericCockpit::Save ();
+			if (gameStates.render.cockpit.nType < CM_FULL_SCREEN) 
+				cockpit->Activate (CM_FULL_SCREEN);
 			}
 		else {
 			gameData.objs.viewerP->info.position = gameStates.app.playerPos;
 			gameData.objs.viewerP->RelinkToSeg (gameStates.app.nPlayerSegment);
+			CGenericCockpit::Restore ();
 			}
 		break;
 
@@ -485,7 +489,7 @@ switch (key) {
 		gameData.multigame.bShowReticleName = (gameData.multigame.bShowReticleName + 1) % 2;
 
 	case KEY_F7:
-		gameData.multigame.kills.bShowList = (gameData.multigame.kills.bShowList+1) % (IsTeamGame ? 4 : 3);
+		gameData.multigame.kills.bShowList = (gameData.multigame.kills.bShowList + 1) % (IsTeamGame ? 4 : 3);
 		if (IsMultiGame)
 			MultiSortKillList();
 		bStopPlayerMovement = 0;
@@ -502,7 +506,7 @@ switch (key) {
 		break;
 
 	case KEY_F8:
-		MultiSendMsgStart(-1);
+		MultiSendMsgStart (-1);
 		bStopPlayerMovement = 0;
 		break;
 
@@ -521,9 +525,15 @@ switch (key) {
 
 	case KEY_ALTED + KEY_F12:
 #if !DBG	
-		if (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0))
+		if (!gameStates.render.bRearView && (!gameStates.render.bRearView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0))))
 #endif		
-			gameStates.render.bExternalView = !gameStates.render.bExternalView;
+			if (gameStates.render.bChaseCam = !gameStates.render.bChaseCam) {
+				CGenericCockpit::Save ();
+				if (gameStates.render.cockpit.nType < CM_FULL_SCREEN) 
+					cockpit->Activate (CM_FULL_SCREEN);
+				}
+			else
+				CGenericCockpit::Restore ();
 		externalView.Reset (-1, -1);
 		break;
 

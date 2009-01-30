@@ -780,31 +780,30 @@ void CheckRearView ()
 
 	#define LEAVE_TIME 0x1000		//how long until we decide key is down	 (Used to be 0x4000)
 
-	static int leave_mode;
+	static int nLeaveMode;
 	static fix entryTime;
 #if DBG
 	if (Controls [0].rearViewDownCount) {		//key/button has gone down
 #else
-	if (Controls [0].rearViewDownCount && !gameStates.render.bExternalView) {		//key/button has gone down
+	if (Controls [0].rearViewDownCount && !gameStates.render.bChaseCam) {		//key/button has gone down
 #endif
 		Controls [0].rearViewDownCount = 0;
 		if (gameStates.render.bRearView) {
 			gameStates.render.bRearView = 0;
 			if (gameStates.render.cockpit.nType == CM_REAR_VIEW) {
-				cockpit->Activate (gameStates.render.cockpit.nTypeSave);
-				gameStates.render.cockpit.nTypeSave = -1;
+				CGenericCockpit::Restore ();
 			}
 			if (gameData.demo.nState == ND_STATE_RECORDING)
 				NDRecordRestoreRearView ();
 		}
 		else {
 			gameStates.render.bRearView = 1;
-			leave_mode = 0;		//means wait for another key
+			nLeaveMode = 0;		//means wait for another key
 			entryTime = TimerGetFixedSeconds ();
 			if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) {
-				gameStates.render.cockpit.nTypeSave = gameStates.render.cockpit.nType;
+				CGenericCockpit::Save ();
 				cockpit->Activate (CM_REAR_VIEW);
-			}
+				}
 			if (gameData.demo.nState == ND_STATE_RECORDING)
 				NDRecordRearView ();
 		}
@@ -812,18 +811,17 @@ void CheckRearView ()
 	else
 		if (Controls [0].rearViewDownState) {
 
-			if (leave_mode==0 && (TimerGetFixedSeconds ()-entryTime)>LEAVE_TIME)
-				leave_mode = 1;
+			if ((nLeaveMode == 0) && (TimerGetFixedSeconds ()-entryTime)>LEAVE_TIME)
+				nLeaveMode = 1;
 		}
 		else {
 
-			//@@if (leave_mode==1 && gameStates.render.cockpit.nType==CM_REAR_VIEW) {
+			//@@if (nLeaveMode==1 && gameStates.render.cockpit.nType==CM_REAR_VIEW) {
 
-			if (leave_mode==1 && gameStates.render.bRearView) {
+			if ((nLeaveMode == 1) && gameStates.render.bRearView) {
 				gameStates.render.bRearView = 0;
-				if (gameStates.render.cockpit.nType==CM_REAR_VIEW) {
-					cockpit->Activate (gameStates.render.cockpit.nTypeSave);
-					gameStates.render.cockpit.nTypeSave = -1;
+				if (gameStates.render.cockpit.nType == CM_REAR_VIEW) {
+					CGenericCockpit::Restore ();
 				}
 				if (gameData.demo.nState == ND_STATE_RECORDING)
 					NDRecordRestoreRearView ();
@@ -841,10 +839,8 @@ if (gameStates.render.bRearView) {
 	}
 gameStates.render.bRearView = 0;
 if ((gameStates.render.cockpit.nType < 0) || (gameStates.render.cockpit.nType > 4)) {
-	if (!(gameStates.render.cockpit.nTypeSave == CM_FULL_COCKPIT || gameStates.render.cockpit.nTypeSave == CM_STATUS_BAR || gameStates.render.cockpit.nTypeSave == CM_FULL_SCREEN))
-		gameStates.render.cockpit.nTypeSave = CM_FULL_COCKPIT;
-	cockpit->Activate (gameStates.render.cockpit.nTypeSave);
-	gameStates.render.cockpit.nTypeSave	= -1;
+	if (!Cockpit::Restore ())
+		cockpit->Activate (CM_FULL_COCKPIT);
 	}
 }
 
@@ -1072,15 +1068,7 @@ MultiLeaveGame ();
 #endif
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	NDStopPlayback ();
-if (gameStates.render.cockpit.nTypeSave != -1) {
-	cockpit->Activate (gameStates.render.cockpit.nTypeSave);
-	gameStates.render.cockpit.nTypeSave = -1;
-	}
-if (gameStates.app.nFunctionMode != FMODE_EDITOR)
-	paletteManager.DisableEffect ();			// Fade out before going to menu
-//@@	if ((!demo_playing) && (!multi_game) && (gameStates.app.nFunctionMode != FMODE_EDITOR)) {
-//@@		MaybeAddPlayerScore (gameStates.app.bGameAborted);
-//@@	}
+CGenericCockpit::Rewind (false);
 ClearWarnFunc (ShowInGameWarning);     //don't use this func anymore
 StopPlayerMovement ();
 GameDisableCheats ();

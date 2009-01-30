@@ -1141,9 +1141,9 @@ else {
 			}
 		if ((gameData.objs.viewerP == gameData.objs.consoleP) &&
 #if DBG
-			 gameStates.render.bExternalView) {
+			 gameStates.render.bChaseCam) {
 #else
-			 gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0))) {
+			 gameStates.render.bChaseCam && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0))) {
 #endif
 			externalView.GetViewPoint ();
 			G3SetViewMatrix (gameData.render.mine.viewerEye,
