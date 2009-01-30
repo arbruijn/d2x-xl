@@ -360,7 +360,7 @@ void CHUD::ClearBombCount (int bgColor)
 void CHUD::DrawBombCount (void)
 {
 int x = CCanvas::Current ()->Width () - 3 * GAME_FONT->Width () + gameStates.render.fonts.bHires + 1;
-int y = CCanvas::Current ()->Height () - -3 * m_info.nLineSpacing;
+int y = CCanvas::Current ()->Height () - 3 * m_info.nLineSpacing;
 if ((extraGameInfo [0].nWeaponIcons >= 3) && (CCanvas::Current ()->Height () < 670))
 	x -= LHX (20);
 CGenericCockpit::DrawBombCount (x, y, BLACK_RGBA, 1);
