@@ -2582,7 +2582,7 @@ class CBossInfo {
 		void Init (void);
 		bool Setup (short nObject);
 		void Destroy (void);
-		bool SetupSegments (CShortArray segments, int bSizeCheck, int bOneWallHack);
+		bool SetupSegments (CShortArray& segments, int bSizeCheck, int bOneWallHack);
 		void InitGateInterval (void);
 		void SaveState (CFile& cf);
 		void SaveSizeStates (CFile& cf);

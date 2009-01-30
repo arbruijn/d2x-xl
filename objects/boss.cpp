@@ -73,12 +73,12 @@ m_nGateInterval = I2X (4) - gameStates.app.nDifficultyLevel * I2X (2) / 3;
 //	he can reach from his initial position (calls FindConnectedDistance).
 //	If bSizeCheck is set, then only add CSegment if boss can fit in it, else any segment is legal.
 //	bOneWallHack added by MK, 10/13/95: A mega-hack! Set to !0 to ignore the
-bool CBossInfo::SetupSegments (CShortArray segments, int bSizeCheck, int bOneWallHack)
+bool CBossInfo::SetupSegments (CShortArray& segments, int bSizeCheck, int bOneWallHack)
 {
 	CSegment		*segP;
 	CObject		*bossObjP = OBJECTS + m_nObject;
 	CFixVector	vBossHomePos;
-	int			nSegments = 0;
+	int			nMaxSegments, nSegments = 0;
 	int			nBossHomeSeg;
 	int			head, tail, w, childSeg;
 	int			nGroup, nSide;
@@ -100,7 +100,7 @@ if (!queue.Create (nQueueSize))
 	return false;
 queue [head++] = nBossHomeSeg;
 bossSegs [nSegments++] = nBossHomeSeg;
-
+nMaxSegments = min (MAX_BOSS_TELEPORT_SEGS, LEVEL_SEGMENTS);
 gameData.render.mine.bVisited.Clear ();
 
 while (tail != head) {
@@ -139,7 +139,7 @@ while (tail != head) {
 			}
 		if (bSizeCheck && !BossFitsInSeg (bossObjP, childSeg))
 			continue;
-		if (nSegments >= MAX_BOSS_TELEPORT_SEGS - 1)
+		if (nSegments >= nMaxSegments - 1)
 			goto done;
 		bossSegs [nSegments++] = childSeg;
 		}
