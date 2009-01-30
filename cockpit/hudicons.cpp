@@ -190,8 +190,6 @@ void CHUDIcons::DrawWeapons (void)
 	uint	nAmmoColor;
 	char	szAmmo [10];
 	int	nLvlMap [2][10] = {{9, 4, 8, 3, 7, 2, 6, 1, 5, 0}, {4, 3, 2, 1, 0, 4, 3, 2, 1, 0}};
-	float	xScale = cockpit->XScale ();
-	float	yScale = cockpit->YScale ();
 
 	static int	wIcon = 0, 
 					hIcon = 0;
@@ -482,8 +480,6 @@ void CHUDIcons::DrawInventory (void)
 			x, y, dy;
 	int	w = bmpInventory->Width (), 
 			h = bmpInventory->Width ();
-	float	xScale = cockpit->XScale ();
-	float	yScale = cockpit->YScale ();
 	int	wIcon = (int) ((w + nIconScale - 1) / nIconScale * xScale), 
 			hIcon = (int) ((h + nIconScale - 1) / nIconScale * yScale);
 	ubyte	alpha = gameOpts->render.weaponIcons.alpha;
