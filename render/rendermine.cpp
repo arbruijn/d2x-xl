@@ -1281,6 +1281,7 @@ extern int bLog;
 
 void RenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 {
+return;
 PROF_START
 #if DBG
 if (nWindow)

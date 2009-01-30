@@ -186,6 +186,7 @@ void CHUDIcons::DrawWeapons (void)
 			ox = 6, 
 			oy = 6, 
 			x, dx, y = 0, dy = 0;
+	float	fLineWidth = (nCanvasWidth >= 1200) ? 2.0f : 1.0f;
 	ubyte	alpha = gameOpts->render.weaponIcons.alpha;
 	uint	nAmmoColor;
 	char	szAmmo [10];
@@ -221,6 +222,7 @@ if (nWeaponIcons < 3) {
 	}
 if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) && (extraGameInfo [0].nWeaponIcons == 2))
 	y -= cockpit->LHX (10);
+glLineWidth (fLineWidth);
 for (i = 0; i < 2; i++) {
 	n = (gameStates.app.bD1Mission) ? 5 : 10;
 	nMaxAutoSelect = 255;
@@ -381,7 +383,7 @@ for (i = 0; i < 2; i++) {
 			glLineWidth (3);
 		OglDrawEmptyRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
 		if (bArmed && bAvailable && gameOpts->render.weaponIcons.bBoldHighlight)
-			glLineWidth (1);
+			glLineWidth (fLineWidth);
 		if (bArmed && bAvailable)
 		if (*szAmmo) {
 			fontManager.SetColorRGBi (nAmmoColor, 1, 0, 0);
@@ -482,6 +484,7 @@ void CHUDIcons::DrawInventory (void)
 			h = bmpInventory->Width ();
 	int	wIcon = (int) ((w + nIconScale - 1) / nIconScale * xScale), 
 			hIcon = (int) ((h + nIconScale - 1) / nIconScale * yScale);
+	float	fLineWidth = (nCanvasWidth >= 1200) ? 2.0f : 1.0f;
 	ubyte	alpha = gameOpts->render.weaponIcons.alpha;
 
 	static int nInvFlags [NUM_INV_ITEMS] = {
@@ -513,6 +516,7 @@ firstItem = gameStates.app.bD1Mission ? INV_ITEM_QUADLASERS : 0;
 x = (screen.Width () - (n - firstItem) * wIcon - (n - 1 - firstItem) * ox) / 2;
 if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) && (extraGameInfo [0].nWeaponIcons & 1))
 	y -= cockpit->LHX (10);
+glLineWidth (fLineWidth);
 for (j = firstItem; j < n; j++) {
 	int bHave, bAvailable, bArmed = EquipmentActive (nInvFlags [j]);
 	bmP = bmInvItems + j;
@@ -565,7 +569,7 @@ for (j = firstItem; j < n; j++) {
 		glLineWidth (3);
 	OglDrawEmptyRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
 	if (bArmed && gameOpts->render.weaponIcons.bBoldHighlight)
-		glLineWidth (1);
+		glLineWidth (fLineWidth);
 	if (*szCount) {
 		fontManager.Current ()->StringSize (szCount, fw, fh, faw);
 		nIdItems [j] = GrString (x + wIcon + 2 - fw, y - fh, szCount, nIdItems + j);

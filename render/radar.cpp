@@ -75,15 +75,23 @@ else {
  	OglDrawEllipse (RADAR_SLICES, GL_POLYGON, 10, 0, 7.5f, 0, sinCosRadar);
 #endif
 	glColor4f (r, g, b, a);
- 	OglDrawEllipse (RADAR_SLICES, GL_POLYGON, fRadius, 0, fRadius / 3.0f, 0, sinCosRadar);
+ 	OglDrawEllipse (RADAR_SLICES, GL_POLYGON, fRadius, 0, fRadius / 3.0f, 0, NULL /*sinCosRadar*/);
 	glColor4f (0.5f, 0.5f, 0.5f, 0.8f);
-	glEnable (GL_LINE_SMOOTH);
-	glLineWidth (3 * fLineWidth);
- 	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, fRadius, 0, fRadius / 3.0f, 0, sinCosRadar);
-	glLineWidth (2 * fLineWidth);
- 	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, 2 * fRadius / 3.0f, 0, 2 * fRadius / 9.0f, 0, sinCosRadar);
 	glLineWidth (fLineWidth);
- 	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, fRadius / 3.0f, 0, fRadius / 9.0f, 0, sinCosRadar);
+	//glEnable (GL_LINE_SMOOTH);
+ 	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, fRadius, 0, fRadius / 3.0f, 0, NULL /*sinCosRadar*/);
+	//glDisable (GL_LINE_SMOOTH);
+	glColor4f (0.6f, 0.6f, 0.6f, 0.75f);
+	glLineWidth (1.5f * fLineWidth);
+	//glEnable (GL_LINE_SMOOTH);
+ 	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, 2 * fRadius / 3.0f, 0, 2 * fRadius / 9.0f, 0, NULL /*sinCosRadar*/);
+	//glDisable (GL_LINE_SMOOTH);
+	glColor4f (0.7f, 0.7f, 0.7f, 0.7f);
+	glLineWidth (2 * fLineWidth);
+	//glEnable (GL_LINE_SMOOTH);
+ 	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, fRadius / 3.0f, 0, fRadius / 9.0f, 0, NULL /*sinCosRadar*/);
+	//glDisable (GL_LINE_SMOOTH);
+	glLineWidth (fLineWidth);
 	glBegin (GL_LINES);
 	float x = fRadius * 0.707f + 0.333f;
 	float y = fRadius / 3.0f;
@@ -174,6 +182,8 @@ glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 glDepthFunc (GL_ALWAYS);
 glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+glEnable (GL_LINE_SMOOTH);
+glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);
 glActiveTexture (GL_TEXTURE0);
 glDisable (GL_TEXTURE_2D);
 glLineWidth (fLineWidth);
@@ -200,6 +210,7 @@ FORALL_OBJS (objP, i) {
 			RenderRadarBlip (objP, powerupColor.red, powerupColor.green, powerupColor.blue, 0.9f / 4);
 		}
 	}
+glDisable (GL_LINE_SMOOTH);
 glLineWidth (1);
 glDepthFunc (depthFunc);
 glEnable (GL_CULL_FACE);

@@ -64,6 +64,10 @@ class CTexture {
 		void Release (void);
 		static void Wrap (int state);
 		inline void Bind (void) { 
+#if DBG
+			if (int (m_info.handle) <= 0)
+				return;
+#endif
 			if (m_info.bRenderBuffer)
 				BindRenderBuffer ();
 			else
