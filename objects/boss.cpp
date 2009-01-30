@@ -193,6 +193,8 @@ if (!(SetupSegments (m_gateSegs, 0, 0) && SetupSegments (m_teleportSegs, 1, 0)))
 	Destroy ();
 	return false;
 	}
+m_nGateSegs = m_gateSegs.Length ();
+m_nTeleportSegs = m_nTeleportSegs.Length ();
 m_bDyingSoundPlaying = 0;
 m_nDying = 0;
 if (gameStates.app.bD1Mission)
