@@ -135,10 +135,11 @@ CGenericCockpit::DrawBombCount (BOMB_COUNT_X, BOMB_COUNT_Y, BLACK_RGBA, 1);
 
 //	-----------------------------------------------------------------------------
 
-int CCockpit::DrawBombCount (int& nIdBombCount, int x, int y, char* pszBombCount)
+int CCockpit::DrawBombCount (int& nIdBombCount, int x, int y, int nColor, char* pszBombCount)
 {
 CCanvas::Push ();
 CCanvas::SetCurrent (CurrentGameScreen ());
+fontManager.SetColorRGBi (nColor, 1, 0, 1);
 int i = PrintF (&nIdBombCount, -(ScaleX (x) + WidthPad (pszBombCount)), -(ScaleY (y) + m_info.heightPad), pszBombCount, nIdBombCount);
 CCanvas::Pop ();
 return i;

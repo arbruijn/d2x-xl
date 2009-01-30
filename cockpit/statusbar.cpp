@@ -455,15 +455,16 @@ CCanvas::Pop ();
 
 void CStatusBar::DrawBombCount (void)
 {
-CGenericCockpit::DrawBombCount (SB_BOMB_COUNT_X, SB_BOMB_COUNT_Y, BLACK_RGBA, 0);
+CGenericCockpit::DrawBombCount (SB_BOMB_COUNT_X, SB_BOMB_COUNT_Y, BLACK_RGBA, 1);
 }
 
 //	-----------------------------------------------------------------------------
 
-int CStatusBar::DrawBombCount (int& nIdBombCount, int x, int y, char* pszBombCount)
+int CStatusBar::DrawBombCount (int& nIdBombCount, int x, int y, int nColor, char* pszBombCount)
 {
 CCanvas::Push ();
 CCanvas::SetCurrent (CurrentGameScreen ());
+fontManager.SetColorRGBi (nColor, 1, 0, 1);
 int i = PrintF (&nIdBombCount, x, y, pszBombCount, nIdBombCount);
 CCanvas::Pop ();
 return i;

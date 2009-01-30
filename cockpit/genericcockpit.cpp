@@ -570,7 +570,7 @@ if (LOCALPLAYER.homingObjectDist >= 0) {
 
 void CGenericCockpit::DrawBombCount (int x, int y, int bgColor, int bShowAlways)
 {
-	int bomb, count, countx;
+	int bomb, nBombs;
 	char szBombCount [5], *t;
 
 	static int nIdBombCount = 0;
@@ -582,28 +582,19 @@ if (!bomb)
 	return;
 if ((gameData.app.nGameMode & GM_HOARD) && (bomb == PROXMINE_INDEX))
 	return;
-count = LOCALPLAYER.secondaryAmmo [bomb];
+nBombs = LOCALPLAYER.secondaryAmmo [bomb];
+if (!(bShowAlways || nBombs))		//no bombs, draw nothing on HUD
+	return;
 #if DBG
-count = min (count, 99);	//only have room for 2 digits - cheating give 200
+nBombs = min (nBombs, 99);	//only have room for 2 digits - cheating give 200
 #endif
-countx = (bomb == PROXMINE_INDEX) ? count : -count;
-if (bShowAlways && count == 0)		//no bombs, draw nothing on HUD
-	return;
-if (!bShowAlways && countx == m_history [gameStates.render.vr.nCurrentPage].bombCount)
-	return;
-sprintf (szBombCount, "B:%02d", count);
-while ((t = strchr (szBombCount, '1')))
-	*t = '\x84';	//convert to wide '1'
-m_history [gameStates.render.vr.nCurrentPage].bombCount = countx;
-
-ClearBombCount (bgColor);
-if (count)
-	fontManager.SetColorRGBi (
-		(bomb == PROXMINE_INDEX) ? RGBA_PAL2 (55, 0, 0) : RGBA_PAL2 (59, 59, 21), 1,
-		bgColor, bgColor != -1);
-else if (bgColor != -1)
-	fontManager.SetColorRGBi (bgColor, 1, bgColor, 1);	//erase by drawing in background color
-nIdBombCount = DrawBombCount (nIdBombCount, x, y, szBombCount);
+sprintf (szBombCount, "B:%02d", nBombs);
+for (t = szBombCount; *t; t++)
+	if (*t == '1')
+		*t = '\x84';	//convert to wide '1'
+m_history [gameStates.render.vr.nCurrentPage].bombCount = (bomb == PROXMINE_INDEX) ? nBombs : -nBombs;
+//ClearBombCount (bgColor);
+nIdBombCount = DrawBombCount (nIdBombCount, x, y, nBombs ? (bomb == PROXMINE_INDEX) ? RED_RGBA : GOLD_RGBA : GREEN_RGBA, szBombCount);
 }
 
 //	-----------------------------------------------------------------------------

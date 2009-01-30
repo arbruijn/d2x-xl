@@ -209,7 +209,7 @@ class CGenericCockpit {
 		virtual void DrawAfterburnerBar (void) = 0;
 		virtual void ClearBombCount (int bgColor) = 0;
 		virtual void DrawBombCount (void) = 0;
-		virtual int DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount) = 0;
+		virtual int DrawBombCount (int& nIdBombCount, int y, int x, int nColor, char* pszBombCount) = 0;
 		virtual void DrawPrimaryAmmoInfo (int ammoCount) = 0;
 		virtual void DrawSecondaryAmmoInfo (int ammoCount) = 0;
 		virtual void DrawCloak (void) = 0;
@@ -272,7 +272,7 @@ class CHUD : public CGenericCockpit {
 		virtual void DrawAfterburnerBar (void);
 		virtual void ClearBombCount (int bgColor);
 		virtual void DrawBombCount (void);
-		virtual int DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount);
+		virtual int DrawBombCount (int& nIdBombCount, int y, int x, int nColor, char* pszBombCount);
 		virtual void DrawPrimaryAmmoInfo (int ammoCount);
 		virtual void DrawSecondaryAmmoInfo (int ammoCount);
 		virtual void DrawWeapons (void);
@@ -325,7 +325,7 @@ class CStatusBar : public CGenericCockpit {
 		virtual void DrawAfterburner (void);
 		virtual void DrawAfterburnerBar (void);
 		virtual void DrawBombCount (void);
-		virtual int DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount);
+		virtual int DrawBombCount (int& nIdBombCount, int y, int x, int nColor, char* pszBombCount);
 		virtual void DrawPrimaryAmmoInfo (int ammoCount);
 		virtual void DrawSecondaryAmmoInfo (int ammoCount);
 		virtual void DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel);
@@ -362,7 +362,7 @@ class CCockpit : public CGenericCockpit {
 		virtual void DrawAfterburner (void) {}
 		virtual void DrawAfterburnerBar (void);
 		virtual void DrawBombCount (void);
-		virtual int DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount);
+		virtual int DrawBombCount (int& nIdBombCount, int y, int x, int nColor, char* pszBombCount);
 		virtual void DrawPrimaryAmmoInfo (int ammoCount);
 		virtual void DrawSecondaryAmmoInfo (int ammoCount);
 		virtual void DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel);
@@ -401,7 +401,7 @@ class CRearView : public CGenericCockpit {
 		virtual void DrawAfterburner (void) {}
 		virtual void DrawAfterburnerBar (void) {}
 		virtual void DrawBombCount (void) {}
-		virtual int DrawBombCount (int& nIdBombCount, int y, int x, char* pszBombCount) { return -1; }
+		virtual int DrawBombCount (int& nIdBombCount, int y, int x, int nColor, char* pszBombCount) { return -1; }
 		virtual void DrawPrimaryAmmoInfo (int ammoCount) {}
 		virtual void DrawSecondaryAmmoInfo (int ammoCount) {}
 		virtual void DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel) {}

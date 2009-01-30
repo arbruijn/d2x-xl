@@ -363,15 +363,16 @@ int x = CCanvas::Current ()->Width () - 3 * GAME_FONT->Width () + gameStates.ren
 int y = CCanvas::Current ()->Height () - 3 * m_info.nLineSpacing;
 if ((extraGameInfo [0].nWeaponIcons >= 3) && (CCanvas::Current ()->Height () < 670))
 	x -= LHX (20);
-CGenericCockpit::DrawBombCount (x, y, BLACK_RGBA, 1);
+CGenericCockpit::DrawBombCount (x, y, BLACK_RGBA, 0);
 }
 
 //	-----------------------------------------------------------------------------
 
-int CHUD::DrawBombCount (int& nIdBombCount, int x, int y, char* pszBombCount)
+int CHUD::DrawBombCount (int& nIdBombCount, int x, int y, int nColor, char* pszBombCount)
 {
 CCanvas::Push ();
 CCanvas::SetCurrent (CurrentGameScreen ());
+fontManager.SetColorRGBi (nColor, 1, 0, 1);
 int i = GrString (x, y, pszBombCount, &nIdBombCount);
 CCanvas::Pop ();
 return i;
