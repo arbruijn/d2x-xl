@@ -160,7 +160,9 @@ if (bmP) {
 		w = ScaleX (w);
 		h = ScaleY (h);
 		}
+	CCanvas::Current ()->SetColorRGBi (WHITE_RGBA);
 	bmP->RenderScaled (x, y, w * (gameStates.app.bDemoData + 1), h * (gameStates.app.bDemoData + 1), scale, orient, NULL);
+	CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
 	}
 return bmP;
 }
@@ -1608,7 +1610,7 @@ if (!cockpit->Setup (true))
 glDepthFunc (GL_ALWAYS);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 CCanvas::SetCurrent (CurrentGameScreen ());
-CCanvas::Current ()->SetColorRGBi (WHITE_RGBA);
+CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
 fontManager.SetCurrent (GAME_FONT);
 m_info.fontWidth = CCanvas::Current ()->Font ()->Width ();
 m_info.fontHeight = CCanvas::Current ()->Font ()->Height ();
@@ -1641,7 +1643,7 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK))
 	gameData.app.nGameMode = gameData.demo.nGameMode;
 
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
-CCanvas::Current ()->SetColorRGBi (WHITE_RGBA);
+CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
 fontManager.SetCurrent (GAME_FONT);
 
 bool bLimited = (gameStates.render.bRearView || gameStates.render.bChaseCam || gameStates.render.bFreeCam);
@@ -1795,7 +1797,7 @@ if (!viewerP) {								//this nUser is done
 		}
 	return;
 	}
-UpdateRenderedData (nWindow+1, viewerP, bRearView, nUser);
+UpdateRenderedData (nWindow + 1, viewerP, bRearView, nUser);
 m_info.weaponBoxUser [nWindow] = nUser;						//say who's using window
 gameData.objs.viewerP = viewerP;
 gameStates.render.bRearView = bRearView;

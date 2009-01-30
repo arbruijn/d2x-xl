@@ -870,7 +870,7 @@ void TurnCheatsOff ()
 	}
 
 	gameStates.app.cheats.bMadBuddy = 0;
-	gameStates.app.cheats.bBouncingWeapons=0;
+	gameStates.app.cheats.bBouncingWeapons = 0;
    gameStates.app.cheats.bHomingWeapons=0;
 	DoLunacyOff ();
 	gameStates.app.cheats.bLaserRapidFire = 0;

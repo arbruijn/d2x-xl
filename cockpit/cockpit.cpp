@@ -435,7 +435,7 @@ if (yMax) {
 
 void CCockpit::DrawShieldBar (void)
 {
-if (m_info.tInvul <= 0)
+if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) || (m_info.tInvul <= 0))
 	BitBlt (GAUGE_SHIELDS + 9 - ((m_info.nShields >= 100) ? 9 : (m_info.nShields / 10)), SHIELD_GAUGE_X, SHIELD_GAUGE_Y);
 }
 

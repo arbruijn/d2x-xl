@@ -336,12 +336,10 @@ BitBlt (SB_GAUGE_AFTERBURNER, SB_AFTERBURNER_GAUGE_X, SB_AFTERBURNER_GAUGE_Y);
 nEraseHeight = FixMul ((I2X (1) - gameData.physics.xAfterburnerCharge), SB_AFTERBURNER_GAUGE_H);
 
 if (nEraseHeight > 0) {
-	CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
 	glDisable (GL_BLEND);
 	Rect (SB_AFTERBURNER_GAUGE_X, SB_AFTERBURNER_GAUGE_Y, 
 			SB_AFTERBURNER_GAUGE_X + SB_AFTERBURNER_GAUGE_W - 1, SB_AFTERBURNER_GAUGE_Y + nEraseHeight - 1);
 	glEnable (GL_BLEND);
-	CCanvas::Current ()->SetColorRGBi (WHITE_RGBA);
 	}
 CCanvas::Pop ();
 }
@@ -360,7 +358,6 @@ CCanvas::SetCurrent (CurrentGameScreen ());
 //LoadBitmap (gameData.pig.tex.cockpitBmIndex [gameStates.render.cockpit.nType + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0)].index, 0);
 fontManager.SetColorRGBi (BLACK_RGBA, 1, 0, 0);
 Rect (SB_SHIELD_NUM_X, SB_SHIELD_NUM_Y, SB_SHIELD_NUM_X + (gameStates.video.nDisplayMode ? 27 : 13), SB_SHIELD_NUM_Y + m_info.fontHeight);
-fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
 sprintf (szShield, "%d", m_info.nShields);
 fontManager.Current ()->StringSize (szShield, w, h, aw);
 fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
@@ -375,7 +372,7 @@ CCanvas::Pop ();
 
 void CStatusBar::DrawShieldBar (void)
 {
-if (m_info.tInvul <= 0) {
+if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) || (m_info.tInvul <= 0)) {
 	CCanvas::Push ();
 	CCanvas::SetCurrent (CurrentGameScreen ());
 	BitBlt (GAUGE_SHIELDS + 9 - ((m_info.nShields >= 100) ? 9 : (m_info.nShields / 10)), SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y);
