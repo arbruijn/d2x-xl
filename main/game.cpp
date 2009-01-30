@@ -785,7 +785,7 @@ void CheckRearView ()
 #if DBG
 	if (Controls [0].rearViewDownCount) {		//key/button has gone down
 #else
-	if (Controls [0].rearViewDownCount && !gameStates.render.bChaseCam) {		//key/button has gone down
+	if (Controls [0].rearViewDownCount && !(gameStates.render.bChaseCam || gameStates.render.bFreeCam)) {		//key/button has gone down
 #endif
 		Controls [0].rearViewDownCount = 0;
 		if (gameStates.render.bRearView) {
@@ -838,7 +838,7 @@ if (gameStates.render.bRearView) {
 		NDRecordRestoreRearView ();
 	}
 gameStates.render.bRearView = 0;
-if ((gameStates.render.cockpit.nType < 0) || (gameStates.render.cockpit.nType > 4)) {
+if ((gameStates.render.cockpit.nType < 0) || (gameStates.render.cockpit.nType > 4) || (gameStates.render.cockpit.nType == CM_REAR_VIEW)) {
 	if (!CGenericCockpit::Restore ())
 		cockpit->Activate (CM_FULL_COCKPIT);
 	}

@@ -561,8 +561,8 @@ if (gameData.render.window.h > gameData.render.window.hMax)
 	gameData.render.window.h = gameData.render.window.hMax;
 if (gameData.render.window.w > gameData.render.window.wMax)
 	gameData.render.window.w = gameData.render.window.wMax;
-gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
-gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h)/2;
+gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w) / 2;
+gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h) / 2;
 GameInitRenderSubBuffers (gameData.render.window.x, gameData.render.window.y, gameData.render.window.w, gameData.render.window.h);
 return true;
 }
@@ -589,8 +589,8 @@ if (gameData.render.window.h > gameData.render.window.hMax)
 	gameData.render.window.h = gameData.render.window.hMax;
 if (gameData.render.window.w > gameData.render.window.wMax)
 	gameData.render.window.w = gameData.render.window.wMax;
-gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
-gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h)/2;
+gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w) / 2;
+gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h) / 2;
 GameInitRenderSubBuffers (gameData.render.window.x, gameData.render.window.y, gameData.render.window.w, gameData.render.window.h);
 return true;
 }

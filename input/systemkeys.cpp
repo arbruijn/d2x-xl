@@ -207,13 +207,13 @@ if (gameOpts->demo.bRevertFormat && (gameData.demo.nVersion > DEMO_VERSION))
 	return;
 switch (key) {
 	case KEY_F3:
-		 if (!(GuidedInMainView () || gameStates.render.bRearView || gameStates.render.bChaseCam || gameStates.render.bFreeCam))
+		 if (!(GuidedInMainView () || gameStates.render.bChaseCam || gameStates.render.bFreeCam))
 			cockpit->Toggle ();
 		 break;
 
 	case KEY_SHIFTED+KEY_MINUS:
 	case KEY_MINUS:	
-		ShrinkWindow(); 
+		ShrinkWindow (); 
 		break;
 
 	case KEY_SHIFTED+KEY_EQUAL:
@@ -443,10 +443,10 @@ switch (key) {
 
 
 	case KEY_F3:
-		if (!GuidedInMainView ()) {
+		if (!(GuidedInMainView () || gameStates.render.bChaseCam || gameStates.render.bFreeCam)) {
 			cockpit->Toggle ();
 			bScreenChanged = 1;
-		}
+			}
 		break;
 
 	case KEY_F7+KEY_SHIFTED: 
@@ -463,8 +463,8 @@ switch (key) {
 
 	case KEY_SHIFTED+KEY_EQUAL:
 	case KEY_EQUAL:		
-		GrowWindow();  
-		bScreenChanged=1; 
+		GrowWindow ();  
+		bScreenChanged = 1; 
 		break;
 		
 	case KEY_CTRLED+KEY_F5:

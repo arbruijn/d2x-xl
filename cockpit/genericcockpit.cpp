@@ -1917,8 +1917,10 @@ else if (nType == CM_FULL_SCREEN)
 	cockpit = &hudCockpit;
 else if (nType == CM_LETTERBOX)
 	cockpit = &letterboxCockpit;
-else if (nType == CM_REAR_VIEW)
+else if (nType == CM_REAR_VIEW) {
 	cockpit = &rearViewCockpit;
+	gameStates.render.bRearView = 1;
+	}
 else
 	return;
 gameStates.render.cockpit.nType = nType;
