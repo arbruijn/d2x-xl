@@ -517,6 +517,13 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+bool IsCockpit (const char* bmName)
+{
+return (strstr (bmName, "cockpit") == bmName) || (strstr (bmName, "status") == bmName);
+}
+
+//------------------------------------------------------------------------------
+
 int PageInBitmap (CBitmap *bmP, const char *bmName, int nIndex, int bD1)
 {
 	CBitmap			*altBmP = NULL;
@@ -564,7 +571,8 @@ else {
 	}
 bTGA = 0;
 bmP->SetBPP (1);
-if (*bmName && ((nIndex < 0) || (gameOpts->render.textures.bUseHires && (!gameOpts->ogl.bGlTexMerge || gameStates.render.textures.bGlsTexMergeOk)))) {
+if (*bmName && ((nIndex < 0) || IsCockpit (bmName) || 
+	 (gameOpts->render.textures.bUseHires && (!gameOpts->ogl.bGlTexMerge || gameStates.render.textures.bGlsTexMergeOk)))) {
 #if 0
 	if ((nIndex >= 0) && ReadS3TC (gameData.pig.tex.altBitmaps [bD1] + nIndex, gameFolders.szTextureCacheDir [bD1], bmName)) {
 		altBmP = gameData.pig.tex.altBitmaps [bD1] + nIndex;

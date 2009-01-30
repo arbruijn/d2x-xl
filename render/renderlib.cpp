@@ -34,6 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "renderlib.h"
 #include "renderthreads.h"
 #include "cameras.h"
+#include "menubackground.h"
 
 //------------------------------------------------------------------------------
 
