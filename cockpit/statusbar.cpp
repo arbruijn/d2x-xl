@@ -464,8 +464,9 @@ int CStatusBar::DrawBombCount (int& nIdBombCount, int x, int y, char* pszBombCou
 {
 CCanvas::Push ();
 CCanvas::SetCurrent (CurrentGameScreen ());
-return PrintF (&nIdBombCount, x, y, pszBombCount, nIdBombCount);
+int i = PrintF (&nIdBombCount, x, y, pszBombCount, nIdBombCount);
 CCanvas::Pop ();
+return i;
 }
 
 //	-----------------------------------------------------------------------------

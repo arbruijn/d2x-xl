@@ -139,8 +139,9 @@ int CCockpit::DrawBombCount (int& nIdBombCount, int x, int y, char* pszBombCount
 {
 CCanvas::Push ();
 CCanvas::SetCurrent (CurrentGameScreen ());
-return PrintF (&nIdBombCount, -(ScaleX (x) + WidthPad (pszBombCount)), -(ScaleY (y) + m_info.heightPad), pszBombCount, nIdBombCount);
+int i = PrintF (&nIdBombCount, -(ScaleX (x) + WidthPad (pszBombCount)), -(ScaleY (y) + m_info.heightPad), pszBombCount, nIdBombCount);
 CCanvas::Pop ();
+return i;
 }
 
 //	-----------------------------------------------------------------------------
