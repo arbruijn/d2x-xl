@@ -1644,7 +1644,8 @@ CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
 CCanvas::Current ()->SetColorRGBi (WHITE_RGBA);
 fontManager.SetCurrent (GAME_FONT);
 
-RenderWindows ();
+if (!(gameStates.render.bRearView || gameStates.render.bChaseCam || gameStates.render.bFreeCam))
+	RenderWindows ();
 DrawCockpit (false);
 #if 1
 if (bExtraInfo) {
