@@ -1321,10 +1321,12 @@ if ((gameOpts->render.bDepthSort > 0) || RENDERPATH)
 	RenderSkyBox (nWindow);
 //PrintLog ("RenderEffects\n");
 RenderEffects (nWindow);
+#if 1
 if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ())) {
 	//PrintLog ("RenderRadar\n");
 	RenderRadar ();
 	}
+#endif
 #if 0
 if (transformation.m_info.bUsePlayerHeadAngles)
 	Draw3DReticle (nEyeOffset);

@@ -183,6 +183,7 @@ typedef struct tWeaponIconOptions {
 	int bSmall;
 	char bShowAmmo;
 	char bEquipment;
+	char bBoldHighlight;
 	char nSort;
 	ubyte alpha;
 } tWeaponIconOptions;

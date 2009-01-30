@@ -1838,6 +1838,7 @@ const char *defaultGameTexts [][2] = {
  {"Rauch auf ~onitoren zeigen", "show smoke on ~Monitors"},
  {"Blitze auf ~Monitoren zeigen", "show lightnings on ~Monitors"},
  {"Existierende Datei ueberschreiben?", "Overwrite existing file?"},
+ {"~Fetter Rahmen um aktive Waffe", "~Bold armed weapon highlight"},
 #if 0
  {"", ""},
 #endif
@@ -2501,6 +2502,7 @@ const char *defaultHelpTexts [][2] = {
  {"Wenn angekreuzt, aendern Luftblasen staendig ihre From", "If checked air bubbles slightly change their shape while\nrising."},
  {"Wenn angekreuzt, ist Rauch auch auf Monitoren sichtbar.", "If checked smoke is visible on monitors."},
  {"Wenn angekreuzt, sind Blitze auch auf Monitoren sichtbar.", "If checked lightnings are visible on monitors."},
+ {"Wenn angekreuzt, erhalten die Icons aktiver Waffen und\nAusruestung besonders fette Rahmen.", "If checked, armed weapons and active equipment\nhave a bold frame."},
 #if 0
  {"", ""},
 #endif

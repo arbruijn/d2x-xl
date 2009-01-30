@@ -156,7 +156,7 @@ if (!(i = EGI_FLAG (nRadar, 0, 1, 0)))
 	return;
 bStencil = StencilOff ();
 InitShipColors ();
-yRadar = (i == 1) ? 20.0f : -20.0f;
+yRadar = ((i == 1) || (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR)) ? 20.0f : -20.0f;
 mRadar = CFixMatrix::Create (aRadar);
 glDisable (GL_CULL_FACE);
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);

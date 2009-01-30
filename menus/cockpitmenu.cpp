@@ -179,7 +179,7 @@ void WeaponIconOptionsMenu (void)
 {
 	CMenu m (35);
 	int	i, j, choice = 0;
-	int	optSmallIcons, optIconSort, optIconAmmo, optIconPos, optEquipIcons;
+	int	optSmallIcons, optIconSort, optIconAmmo, optIconPos, optEquipIcons, optBoldHilite;
 
 bShowWeaponIcons = (extraGameInfo [0].nWeaponIcons != 0);
 do {
@@ -191,6 +191,7 @@ do {
 		optSmallIcons = m.AddCheck (TXT_SMALL_WPNICONS, gameOpts->render.weaponIcons.bSmall, KEY_I, HTX_CPIT_SMALLICONS);
 		optIconSort = m.AddCheck (TXT_SORT_WPNICONS, gameOpts->render.weaponIcons.nSort, KEY_T, HTX_CPIT_SORTICONS);
 		optIconAmmo = m.AddCheck (TXT_AMMO_WPNICONS, gameOpts->render.weaponIcons.bShowAmmo, KEY_A, HTX_CPIT_ICONAMMO);
+		optBoldHilite = m.AddCheck (TXT_BOLD_ICON_HIGHLIGHT, gameOpts->render.weaponIcons.bBoldHighlight, KEY_B, HTX_BOLD_ICON_HIGHLIGHT);
 		optIconPos = m.AddRadio (TXT_WPNICONS_TOP, 0, KEY_I, HTX_CPIT_ICONPOS);
 		m.AddRadio (TXT_WPNICONS_BTM, 0, KEY_I, HTX_CPIT_ICONPOS);
 		m.AddRadio (TXT_WPNICONS_LRB, 0, KEY_I, HTX_CPIT_ICONPOS);
@@ -205,6 +206,7 @@ do {
 		optIconSort =
 		optIconPos =
 		optIconAmmo = 
+		optBoldHilite =
 		optIconAlpha = -1;
 	do {
 		i = m.Menu (NULL, TXT_WPNICON_MENUTITLE, &WeaponIconOptionsCallback, &choice);
@@ -215,6 +217,7 @@ do {
 			GET_VAL (gameOpts->render.weaponIcons.bSmall, optSmallIcons);
 			GET_VAL (gameOpts->render.weaponIcons.nSort, optIconSort);
 			GET_VAL (gameOpts->render.weaponIcons.bShowAmmo, optIconAmmo);
+			GET_VAL (gameOpts->render.weaponIcons.bBoldHighlight, optBoldHilite);
 			if (optIconPos >= 0)
 				for (j = 0; j < 4; j++)
 					if (m [optIconPos + j].m_value) {

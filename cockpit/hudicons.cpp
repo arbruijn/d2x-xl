@@ -379,10 +379,10 @@ for (i = 0; i < 2; i++) {
 				CCanvas::Current ()->SetColorRGB (96, 0, 0, 255);
 		else
 			CCanvas::Current ()->SetColorRGB (64, 64, 64, 255);
-		if (bArmed && bAvailable)
+		if (bArmed && bAvailable && gameOpts->render.weaponIcons.bBoldHighlight)
 			glLineWidth (3);
 		OglDrawEmptyRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
-		if (bArmed && bAvailable)
+		if (bArmed && bAvailable && gameOpts->render.weaponIcons.bBoldHighlight)
 			glLineWidth (1);
 		if (bArmed && bAvailable)
 		if (*szAmmo) {
@@ -565,10 +565,10 @@ for (j = firstItem; j < n; j++) {
 			CCanvas::Current ()->SetColorRGB (96, 0, 0, 255);
 	else
 		CCanvas::Current ()->SetColorRGB (64, 64, 64, 255);
-	if (bArmed)
+	if (bArmed && gameOpts->render.weaponIcons.bBoldHighlight)
 		glLineWidth (3);
 	OglDrawEmptyRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
-	if (bArmed)
+	if (bArmed && gameOpts->render.weaponIcons.bBoldHighlight)
 		glLineWidth (1);
 	if (*szCount) {
 		fontManager.Current ()->StringSize (szCount, fw, fh, faw);

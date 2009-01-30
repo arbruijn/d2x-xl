@@ -1885,10 +1885,10 @@ void LoadGameTexts(void);
 #define TXT_SMOKE_MONITORS				GT(1093)
 #define TXT_LIGHTNING_MONITORS		GT(1094)
 #define TXT_CONFIRM_OVERWRITE			GT(1095)
+#define TXT_BOLD_ICON_HIGHLIGHT		GT(1096)
 
 #if 0
 
-#define TXT_					GT(1096)
 #define TXT_					GT(1097)
 #define TXT_					GT(1098)
 #define TXT_					GT(1099)
@@ -2396,10 +2396,10 @@ void LoadGameTexts(void);
 #define HTX_WOBBLE_BUBBLES				HT(382)			
 #define HTX_SMOKE_MONITORS				HT(383)			
 #define HTX_LIGHTNING_MONITORS		HT(384)			
+#define HTX_BOLD_ICON_HIGHLIGHT		HT(385)			
 
 #if 0
 
-#define HTX_						HT(385)			
 #define HTX_						HT(386)			
 #define HTX_						HT(387)			
 #define HTX_						HT(388)			

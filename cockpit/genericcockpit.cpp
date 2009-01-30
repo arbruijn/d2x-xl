@@ -44,6 +44,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "automap.h"
 #include "hudmsgs.h"
 #include "hudicons.h"
+#include "radar.h"
 #include "key.h"
 
 #define SHOW_PLAYER_IP		0
