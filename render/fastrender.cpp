@@ -598,7 +598,8 @@ void EndRenderFaces (int nType, int bVertexArrays, int bDepthOnly)
 #if 1
 G3FlushFaceBuffer (1);
 #endif
-if (bVertexArrays) {
+//if (bVertexArrays) 
+	{
 	if (!bDepthOnly) {
 		G3DisableClientStates (1, 1, 0, GL_TEXTURE3);
 		glEnable (GL_TEXTURE_2D);

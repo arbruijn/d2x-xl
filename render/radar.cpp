@@ -78,26 +78,20 @@ else {
  	OglDrawEllipse (RADAR_SLICES, GL_POLYGON, fRadius, 0, fRadius / 3.0f, 0, NULL /*sinCosRadar*/);
 	glColor4f (0.5f, 0.5f, 0.5f, 0.8f);
 	glLineWidth (fLineWidth);
-	//glEnable (GL_LINE_SMOOTH);
  	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, fRadius, 0, fRadius / 3.0f, 0, NULL /*sinCosRadar*/);
-	//glDisable (GL_LINE_SMOOTH);
 	glColor4f (0.6f, 0.6f, 0.6f, 0.75f);
 	glLineWidth (1.5f * fLineWidth);
-	//glEnable (GL_LINE_SMOOTH);
  	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, 2 * fRadius / 3.0f, 0, 2 * fRadius / 9.0f, 0, NULL /*sinCosRadar*/);
-	//glDisable (GL_LINE_SMOOTH);
 	glColor4f (0.7f, 0.7f, 0.7f, 0.7f);
 	glLineWidth (2 * fLineWidth);
-	//glEnable (GL_LINE_SMOOTH);
  	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, fRadius / 3.0f, 0, fRadius / 9.0f, 0, NULL /*sinCosRadar*/);
-	//glDisable (GL_LINE_SMOOTH);
 	glLineWidth (fLineWidth);
 	glBegin (GL_LINES);
 	float x = fRadius * 0.707f + 0.333f;
 	float y = fRadius / 3.0f;
 	glVertex2f (0, y + 1);
 	glVertex2f (0, -y - 1);
-	//y += 0.333f;
+	y -= 0.333f;
 	glVertex2f (-x, -y);
 	glVertex2f (x, y);
 	glVertex2f (-x, y);
@@ -108,8 +102,8 @@ else {
 	glPopMatrix ();
 	return;
 	}
-v[0] *= FixDiv(1, 3);
-h = X2F (n[Z]) / RADAR_RANGE;
+v [0] *= FixDiv (1, 3);
+h = X2F (n [Z]) / RADAR_RANGE;
 glPushMatrix ();
 glTranslatef (0, yRadar + h * fRadius / 3.0f, 50);
 glPushMatrix ();
