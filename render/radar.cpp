@@ -68,7 +68,7 @@ if (m) {
 else {
 	glPushMatrix ();
 	glColor4f (r, g, b, a);
-	glLineWidth (1);
+	glLineWidth ((nCanvasWidth >= 1200) ? 2.0f : 1.0f);
 	glTranslatef (0, yRadar, 50);
 #if 0
 	glColor4f (r, g, b, a / 2);
@@ -77,7 +77,7 @@ else {
 	glColor4f (r, g, b, a);
  	OglDrawEllipse (RADAR_SLICES, GL_POLYGON, fRadius, 0, fRadius / 3.0f, 0, sinCosRadar);
 	glColor4f (0.5f, 0.5f, 0.5f, 0.8f);
-	//glEnable (GL_LINE_SMOOTH);
+	glEnable (GL_LINE_SMOOTH);
  	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, fRadius, 0, fRadius / 3.0f, 0, sinCosRadar);
  	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, 2 * fRadius / 3.0f, 0, 2 * fRadius / 9.0f, 0, sinCosRadar);
  	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, fRadius / 3.0f, 0, fRadius / 9.0f, 0, sinCosRadar);
@@ -172,7 +172,7 @@ glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glActiveTexture (GL_TEXTURE0);
 glDisable (GL_TEXTURE_2D);
-glLineWidth (1);
+glLineWidth ((nCanvasWidth >= 1200) ? 2.0f : 1.0f);
 pc = radarColor + gameOpts->render.automap.nColor;
 RenderRadarBlip (gameData.objs.consoleP, pc->red, pc->green, pc->blue, 2.0f / 3.0f); //0.5, 0.75, 0.5, 2.0f / 3.0f);
 glLineWidth (3);
