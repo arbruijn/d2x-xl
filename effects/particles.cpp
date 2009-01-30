@@ -1414,7 +1414,7 @@ int CParticleSystem::Update (void)
 	CParticleEmitter	*emitterP;
 	int					i = 0;
 
-if ((m_nObject == 0x7fffffff) && (m_nType < 3) &&
+if ((m_nObject == 0x7fffffff) && (m_nType == SMOKE_PARTICLES) &&
 	 (gameStates.app.nSDLTicks - m_nBirth > (MAX_SHRAPNEL_LIFE / I2X (1)) * 1000))
 	SetLife (0);
 #if DBG

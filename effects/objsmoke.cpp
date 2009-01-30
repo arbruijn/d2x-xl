@@ -196,7 +196,7 @@ if (RENDERPATH && gameOpts->render.ship.bBullets) {
 				if (i < 0) {
 					gameData.multiplayer.bulletEmitters [nPlayer] =
 						particleManager.Create (&vEmitter, &vDir, &posP->mOrient, objP->info.nSegment, 1, BULLET_MAX_PARTS, 15.0f, 1,
-													 1, BULLET_PART_LIFE, BULLET_PART_SPEED, BULLET_PARTICLES, 0x7fffffff, NULL, 0, -1);
+													   1, BULLET_PART_LIFE, BULLET_PART_SPEED, BULLET_PARTICLES, 0x7fffffff, NULL, 0, -1);
 					}
 				else {
 					particleManager.SetPos (i, &vEmitter, &posP->mOrient, objP->info.nSegment);
@@ -256,7 +256,7 @@ if (bHires >= 0) {
 			if (i < 0) {
 				gameData.multiplayer.gatlingSmoke [nPlayer] =
 					particleManager.Create (&vEmitter, &vDir, &posP->mOrient, objP->info.nSegment, 1, GATLING_MAX_PARTS, I2X (1) / 2, 1,
-									 1, GATLING_PART_LIFE, GATLING_PART_SPEED, SMOKE_PARTICLES, 0x7ffffffe, smokeColors + 1, 0, -1);
+													1, GATLING_PART_LIFE, GATLING_PART_SPEED, SMOKE_PARTICLES, 0x7ffffffe, smokeColors + 1, 0, -1);
 				}
 			else {
 				particleManager.SetPos (i, &vEmitter, &posP->mOrient, objP->info.nSegment);
