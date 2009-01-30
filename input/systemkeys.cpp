@@ -207,7 +207,7 @@ if (gameOpts->demo.bRevertFormat && (gameData.demo.nVersion > DEMO_VERSION))
 	return;
 switch (key) {
 	case KEY_F3:
-		 if (!GuidedInMainView ())
+		 if (!(GuidedInMainView () || gameStates.render.bRearView || gameStates.render.bChaseCam || gameStates.render.bFreeCam))
 			cockpit->Toggle ();
 		 break;
 
@@ -400,7 +400,7 @@ switch (key) {
 	case KEY_CTRLED + KEY_ALTED + KEY_S:
 		if (gameStates.render.bRearView || (IsMultiGame && !IsCoopGame) || !gameStates.app.bEnableFreeCam)
 			return 0;
-		if ((gameStates.app.bFreeCam = !gameStates.app.bFreeCam)) {
+		if ((gameStates.render.bFreeCam = !gameStates.render.bFreeCam)) {
 			gameStates.app.playerPos = gameData.objs.viewerP->info.position;
 			gameStates.app.nPlayerSegment = gameData.objs.viewerP->info.nSegment;
 			CGenericCockpit::Save ();

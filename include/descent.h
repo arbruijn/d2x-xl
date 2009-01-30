@@ -888,6 +888,7 @@ typedef struct tRenderHistory {
 
 typedef struct tRenderStates {
 	int bChaseCam;
+	int bFreeCam;
 	int bQueryOcclusion;
 	int bPointSprites;
 	int bVertexArrays;
@@ -1072,7 +1073,6 @@ typedef struct tApplicationStates {
 	int bInitialized;
 	int bD2XLevel;
 	int bEnterGame;
-	int bFreeCam;
 	int bSaveScreenshot;
 	int bGameRunning;
 	int bGameSuspended;
@@ -3318,7 +3318,7 @@ extern fix nDebrisLife [];
                    (automap.m_bDisplay && !(automap.Radar () || (gameStates.render.bShowFrameRate == 1))) ? 40 : \
                    gameOpts->render.nMaxFPS)
 
-#define SPECTATOR(_objP)	(gameStates.app.bFreeCam && (OBJ_IDX (_objP) == LOCALPLAYER.nObject))
+#define SPECTATOR(_objP)	(gameStates.render.bFreeCam && (OBJ_IDX (_objP) == LOCALPLAYER.nObject))
 #define OBJPOS(_objP)		(SPECTATOR (_objP) ? &gameStates.app.playerPos : &(_objP)->info.position)
 #define OBJSEG(_objP)		(SPECTATOR (_objP) ? gameStates.app.nPlayerSegment : (_objP)->info.nSegment)
 

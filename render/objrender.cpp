@@ -817,7 +817,7 @@ if (nObject != LOCALPLAYER.nObject) {
 		return 0;
 	 }
 else if ((gameData.objs.viewerP == gameData.objs.consoleP) && !automap.m_bDisplay) {
-	if ((bSpectate = (gameStates.app.bFreeCam && !nWindowNum)))
+	if ((bSpectate = (gameStates.render.bFreeCam && !nWindowNum)))
 		;
 		//HUDMessage (0, "%1.2f %1.2f %1.2f", X2F (objP->info.position.vPos.p.x), X2F (objP->info.position.vPos.p.y), X2F (objP->info.position.vPos.p.z));
 #if DBG

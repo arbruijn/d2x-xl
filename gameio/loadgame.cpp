@@ -719,7 +719,7 @@ gameData.Destroy ();
 srand (SDL_GetTicks ());
 gameStates.render.nLightingMethod = gameStates.app.bNostalgia ? 0 : gameOpts->render.nLightingMethod;
 gameStates.app.bBetweenLevels = 1;
-gameStates.app.bFreeCam = 0;
+gameStates.render.bFreeCam = 0;
 gameStates.app.bGameRunning = 0;
 gameStates.app.bPlayerExploded = 0;
 gameData.physics.side.nSegment = -1;
