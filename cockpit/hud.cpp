@@ -498,6 +498,8 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 		y -= 10 * m_info.nLineSpacing;
 	else
 		y -= 5 * m_info.nLineSpacing;
+	if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && !gameOpts->render.cockpit.bTextGauges)
+		y--;
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	nIdInvul = GrPrintF (&nIdInvul, 2, y, "%s", TXT_INVULNERABLE);
 	}
@@ -521,6 +523,8 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) &&
 		y -= 7 * m_info.nLineSpacing;
 	else
 		y -= 4 * m_info.nLineSpacing;
+	if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && !gameOpts->render.cockpit.bTextGauges)
+		y--;
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	nIdCloak = GrPrintF (&nIdCloak, 2, y, "%s", TXT_CLOAKED);
 	}

@@ -186,7 +186,7 @@ void CHUDIcons::DrawWeapons (void)
 			ox = 6, 
 			oy = 6, 
 			x, dx, y = 0, dy = 0;
-	float	fLineWidth = (CCanvas::Current ()->Width () >= 1200) ? 2.0f : 1.0f;
+	float	fLineWidth = (gameStates.render.cockpit.nType < CM_FULL_SCREEN && CCanvas::Current ()->Width () >= 1200) ? 2.0f : 1.0f;
 	ubyte	alpha = gameOpts->render.weaponIcons.alpha;
 	uint	nAmmoColor;
 	char	szAmmo [10];
@@ -222,7 +222,6 @@ if (nWeaponIcons < 3) {
 	}
 if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) && (extraGameInfo [0].nWeaponIcons == 2))
 	y -= cockpit->LHX (10);
-glLineWidth (fLineWidth);
 for (i = 0; i < 2; i++) {
 	n = (gameStates.app.bD1Mission) ? 5 : 10;
 	nMaxAutoSelect = 255;
@@ -379,17 +378,14 @@ for (i = 0; i < 2; i++) {
 				CCanvas::Current ()->SetColorRGB (96, 0, 0, 255);
 		else
 			CCanvas::Current ()->SetColorRGB (64, 64, 64, 255);
-		if (bArmed && bAvailable && gameOpts->render.weaponIcons.bBoldHighlight)
-			glLineWidth (3);
+		glLineWidth ((bArmed && bAvailable && gameOpts->render.weaponIcons.bBoldHighlight) ? 3 : fLineWidth);
 		OglDrawEmptyRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
-		if (bArmed && bAvailable && gameOpts->render.weaponIcons.bBoldHighlight)
-			glLineWidth (fLineWidth);
-		if (bArmed && bAvailable)
-		if (*szAmmo) {
-			fontManager.SetColorRGBi (nAmmoColor, 1, 0, 0);
-			nIdIcons [i][j] = GrString (x + wIcon + 2 - fw, y - fh, szAmmo, nIdIcons [i] + j);
-			fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
-			}
+//		if (bArmed && bAvailable)
+			if (*szAmmo) {
+				fontManager.SetColorRGBi (nAmmoColor, 1, 0, 0);
+				nIdIcons [i][j] = GrString (x + wIcon + 2 - fw, y - fh, szAmmo, nIdIcons [i] + j);
+				fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
+				}
 		gameStates.render.grAlpha = FADE_LEVELS;
 		if (nWeaponIcons > 2)
 			y += hIcon + oy;
@@ -484,7 +480,7 @@ void CHUDIcons::DrawInventory (void)
 			h = bmpInventory->Width ();
 	int	wIcon = (int) ((w + nIconScale - 1) / nIconScale * xScale), 
 			hIcon = (int) ((h + nIconScale - 1) / nIconScale * yScale);
-	float	fLineWidth = (CCanvas::Current ()->Width () >= 1200) ? 2.0f : 1.0f;
+	float	fLineWidth = (gameStates.render.cockpit.nType < CM_FULL_SCREEN && CCanvas::Current ()->Width () >= 1200) ? 2.0f : 1.0f;
 	ubyte	alpha = gameOpts->render.weaponIcons.alpha;
 
 	static int nInvFlags [NUM_INV_ITEMS] = {
@@ -516,7 +512,6 @@ firstItem = gameStates.app.bD1Mission ? INV_ITEM_QUADLASERS : 0;
 x = (screen.Width () - (n - firstItem) * wIcon - (n - 1 - firstItem) * ox) / 2;
 if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) && (extraGameInfo [0].nWeaponIcons & 1))
 	y -= cockpit->LHX (10);
-glLineWidth (fLineWidth);
 for (j = firstItem; j < n; j++) {
 	int bHave, bAvailable, bArmed = EquipmentActive (nInvFlags [j]);
 	bmP = bmInvItems + j;
@@ -565,11 +560,8 @@ for (j = firstItem; j < n; j++) {
 			CCanvas::Current ()->SetColorRGB (96, 0, 0, 255);
 	else
 		CCanvas::Current ()->SetColorRGB (64, 64, 64, 255);
-	if (bArmed && gameOpts->render.weaponIcons.bBoldHighlight)
-		glLineWidth (3);
+	glLineWidth ((bArmed && gameOpts->render.weaponIcons.bBoldHighlight) ? 3 : fLineWidth);
 	OglDrawEmptyRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
-	if (bArmed && gameOpts->render.weaponIcons.bBoldHighlight)
-		glLineWidth (fLineWidth);
 	if (*szCount) {
 		fontManager.Current ()->StringSize (szCount, fw, fh, faw);
 		nIdItems [j] = GrString (x + wIcon + 2 - fw, y - fh, szCount, nIdItems + j);
