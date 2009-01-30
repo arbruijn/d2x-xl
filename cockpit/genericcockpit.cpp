@@ -1644,7 +1644,9 @@ CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
 CCanvas::Current ()->SetColorRGBi (WHITE_RGBA);
 fontManager.SetCurrent (GAME_FONT);
 
-if (!(gameStates.render.bRearView || gameStates.render.bChaseCam || gameStates.render.bFreeCam))
+bool bLimited = (gameStates.render.bRearView || gameStates.render.bChaseCam || gameStates.render.bFreeCam);
+
+if (!bLimited)
 	RenderWindows ();
 DrawCockpit (false);
 #if 1
@@ -1663,16 +1665,6 @@ DrawPlayerStats ();
 DrawScore ();
 if (m_info.scoreTime)
 	DrawScoreAdded ();
-DrawTimerCount ();
-DrawTime ();
-DrawKeys ();
-DrawFlag ();
-DrawOrbs ();
-DrawLives ();
-DrawCloak ();
-DrawInvul ();
-DrawBombCount ();
-DrawHomingWarning ();
 DrawEnergyBar ();
 DrawAfterburnerBar ();
 DrawShieldBar ();
@@ -1680,9 +1672,21 @@ DrawEnergy ();
 DrawShield ();
 DrawAfterburner ();
 DrawWeapons ();
-DrawPlayerNames ();
-DrawKillList ();
-DrawPlayerShip ();
+DrawTimerCount ();
+DrawCloak ();
+DrawInvul ();
+if (!bLimited) {
+	DrawTime ();
+	DrawKeys ();
+	DrawFlag ();
+	DrawOrbs ();
+	DrawLives ();
+	DrawBombCount ();
+	DrawHomingWarning ();
+	DrawPlayerNames ();
+	DrawKillList ();
+	DrawPlayerShip ();
+	}
 hudIcons.Render ();
 if (bExtraInfo) {
 	DrawCountdown ();
