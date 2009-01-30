@@ -31,7 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "lightning.h"
 #include "hostage.h"
 #include "interp.h"
-#include "render.h"
+#include "rendermine.h"
 #include "transprender.h"
 #include "glare.h"
 #include "sphere.h"

@@ -10,7 +10,7 @@
 #include "error.h"
 #include "network.h"
 #include "sphere.h"
-#include "render.h"
+#include "rendermine.h"
 #include "maths.h"
 #include "u_mem.h"
 #include "glare.h"

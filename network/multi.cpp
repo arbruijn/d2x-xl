@@ -45,7 +45,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "physics.h"
 #include "state.h"
 #include "byteswap.h"
-#include "render.h"
+#include "rendermine.h"
 #include "multimsg.h"
 #include "entropy.h"
 #include "monsterball.h"

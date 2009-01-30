@@ -39,7 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_defs.h"
 #include "oof.h"
 #include "lightmap.h"
-#include "render.h"
+#include "rendermine.h"
 #include "gameseg.h"
 
 #include "game.h"

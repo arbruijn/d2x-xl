@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_color.h"
 #include "ogl_fastrender.h"
 #include "glare.h"
-#include "render.h"
+#include "rendermine.h"
 #include "renderthreads.h"
 #include "fastrender.h"
 

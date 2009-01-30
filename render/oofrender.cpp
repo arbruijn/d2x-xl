@@ -16,7 +16,7 @@
 #include "ogl_lib.h"
 #include "ogl_color.h"
 #include "network.h"
-#include "render.h"
+#include "rendermine.h"
 #include "strutil.h"
 
 using namespace OOF;

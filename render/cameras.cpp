@@ -10,7 +10,7 @@
 #include "descent.h"
 #include "error.h"
 #include "ogl_lib.h"
-#include "render.h"
+#include "rendermine.h"
 #include "u_mem.h"
 #include "gameseg.h"
 #include "cockpit.h"

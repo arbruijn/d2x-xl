@@ -31,7 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #include "mouse.h"
 #include "kconfig.h"
 #include "cockpit.h"
-#include "render.h"
+#include "rendermine.h"
 #include "endlevel.h"
 #include "timer.h"
 #include "text.h"

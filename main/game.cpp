@@ -38,7 +38,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "iff.h"
 #include "pcx.h"
 #include "timer.h"
-#include "render.h"
+#include "rendermine.h"
 #include "screens.h"
 #include "textures.h"
 #include "slew.h"

@@ -49,7 +49,7 @@
 #include "ogl_shader.h"
 #include "ogl_render.h"
 #include "findfile.h"
-#include "render.h"
+#include "rendermine.h"
 #include "sphere.h"
 #include "glare.h"
 #include "menu.h"

@@ -33,7 +33,7 @@
 #include "light.h"
 #include "dynlight.h"
 #include "lightmap.h"
-#include "render.h"
+#include "rendermine.h"
 #include "transprender.h"
 #include "objsmoke.h"
 #include "glare.h"

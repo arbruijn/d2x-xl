@@ -25,7 +25,7 @@ COPYRIGHT 0993-0999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "objsmoke.h"
 #include "sparkeffect.h"
 #include "lightning.h"
-#include "render.h"
+#include "rendermine.h"
 #include "fastrender.h"
 #include "renderthreads.h"
 #include "interp.h"

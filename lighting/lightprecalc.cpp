@@ -28,7 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gamemine.h"
 #include "error.h"
 #include "lightmap.h"
-#include "render.h"
+#include "rendermine.h"
 #include "gameseg.h"
 #include "menu.h"
 #include "key.h"

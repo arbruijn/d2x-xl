@@ -28,7 +28,7 @@
 #include "args.h"
 #include "key.h"
 #include "cockpit.h"
-#include "render.h"
+#include "rendermine.h"
 #include "particles.h"
 #include "glare.h"
 #include "menu.h"

@@ -14,7 +14,7 @@
 #include "interp.h"
 #include "lightning.h"
 #include "network.h"
-#include "render.h"
+#include "rendermine.h"
 #include "objeffects.h"
 #include "objrender.h"
 #include "objsmoke.h"

@@ -30,7 +30,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "network.h"
-#include "render.h"
+#include "rendermine.h"
 #include "gameseg.h"
 #include "light.h"
 #include "lightning.h"

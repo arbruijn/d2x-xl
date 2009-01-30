@@ -35,7 +35,7 @@
 #include "key.h"
 #include "cockpit.h"
 #include "hudicons.h"
-#include "render.h"
+#include "rendermine.h"
 #include "particles.h"
 #include "glare.h"
 #include "lightmap.h"

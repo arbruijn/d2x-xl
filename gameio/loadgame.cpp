@@ -43,7 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pcx.h"
 #include "timer.h"
 #include "cameras.h"
-#include "render.h"
+#include "rendermine.h"
 #include "laser.h"
 #include "omega.h"
 #include "screens.h"

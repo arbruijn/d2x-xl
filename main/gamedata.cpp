@@ -70,7 +70,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "compbit.h"
 #include "playsave.h"
 #include "tracker.h"
-#include "render.h"
+#include "rendermine.h"
 #include "sphere.h"
 #include "endlevel.h"
 #include "interp.h"

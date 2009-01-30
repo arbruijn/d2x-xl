@@ -25,7 +25,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "iff.h"
 #include "u_mem.h"
 #include "endlevel.h"
-#include "render.h"
+#include "rendermine.h"
 #include "ogl_render.h"
 
 #define GRID_SIZE				(gameData.render.terrain.nGridW * gameData.render.terrain.nGridH)

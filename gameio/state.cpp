@@ -69,7 +69,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "reactor.h"
 #include "morph.h"
 #include "weapon.h"
-#include "render.h"
+#include "rendermine.h"
 #include "ogl_render.h"
 #include "loadgame.h"
 #include "cockpit.h"

@@ -28,7 +28,7 @@ COPYTIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL TIGHTS RESERVED.
 #include "error.h"
 #include "ogl_lib.h"
 #include "ogl_fastrender.h"
-#include "render.h"
+#include "rendermine.h"
 #include "gameseg.h"
 #include "objrender.h"
 #include "lightmap.h"

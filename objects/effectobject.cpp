@@ -30,7 +30,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "objsmoke.h"
 #include "physics.h"
 #include "slew.h"
-#include "render.h"
+#include "rendermine.h"
 #include "fireball.h"
 #include "error.h"
 #include "endlevel.h"

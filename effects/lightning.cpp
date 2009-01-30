@@ -18,7 +18,7 @@
 #include "objsmoke.h"
 #include "transprender.h"
 #include "renderthreads.h"
-#include "render.h"
+#include "rendermine.h"
 #include "error.h"
 #include "light.h"
 #include "dynlight.h"

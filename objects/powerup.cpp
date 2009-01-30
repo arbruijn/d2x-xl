@@ -29,7 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "scores.h"
 #include "light.h"
 #include "kconfig.h"
-#include "render.h"
+#include "rendermine.h"
 #include "newdemo.h"
 #include "sphere.h"
 

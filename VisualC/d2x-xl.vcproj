@@ -2306,10 +2306,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\render\gamerend.cpp"
-						>
-					</File>
-					<File
 						RelativePath="..\render\morph.cpp"
 						>
 					</File>
@@ -2334,11 +2330,15 @@
 						>
 					</File>
 					<File
-						RelativePath="..\render\render.cpp"
+						RelativePath="..\render\renderframe.cpp"
 						>
 					</File>
 					<File
 						RelativePath="..\render\renderlib.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\render\rendermine.cpp"
 						>
 					</File>
 					<File
@@ -2378,10 +2378,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\include\gamepal.h"
-						>
-					</File>
-					<File
 						RelativePath="..\include\morph.h"
 						>
 					</File>
@@ -2398,11 +2394,15 @@
 						>
 					</File>
 					<File
-						RelativePath="..\include\render.h"
+						RelativePath="..\include\renderframe.h"
 						>
 					</File>
 					<File
 						RelativePath="..\include\renderlib.h"
+						>
+					</File>
+					<File
+						RelativePath="..\include\rendermine.h"
 						>
 					</File>
 					<File

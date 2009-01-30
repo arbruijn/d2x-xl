@@ -24,7 +24,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "object.h"
 #include "robot.h"
-#include "render.h"
+#include "rendermine.h"
 #include "error.h"
 #include "d1_ai.h"
 #include "laser.h"

@@ -52,7 +52,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "strutil.h"
 #include "reorder.h"
 #include "ogl_render.h"
-#include "render.h"
+#include "rendermine.h"
 #include "light.h"
 #include "lightmap.h"
 #include "autodl.h"

@@ -24,7 +24,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "gamefont.h"
 #include "texmap.h"
-#include "render.h"
+#include "rendermine.h"
 #include "fastrender.h"
 #include "rendershadows.h"
 #include "transprender.h"

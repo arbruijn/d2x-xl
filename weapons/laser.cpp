@@ -31,7 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "key.h"
 #include "texmap.h"
 #include "textures.h"
-#include "render.h"
+#include "rendermine.h"
 #include "fireball.h"
 #include "newdemo.h"
 #include "timer.h"

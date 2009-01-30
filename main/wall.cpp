@@ -29,7 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "textures.h"
 #include "newdemo.h"
 #include "collide.h"
-#include "render.h"
+#include "rendermine.h"
 #include "light.h"
 #include "segment.h"
 #include "dynlight.h"

@@ -28,7 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "text.h"
 #include "network.h"
 #include "network_lib.h"
-#include "render.h"
+#include "rendermine.h"
 #include "transprender.h"
 #include "gamepal.h"
 #include "gr.h"

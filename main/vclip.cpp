@@ -20,7 +20,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "descent.h"
 #include "error.h"
-#include "render.h"
+#include "rendermine.h"
 #include "objrender.h"
 #include "fireball.h"
 #include "sphere.h"

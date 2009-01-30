@@ -26,7 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gameseg.h"
 #include "shadows.h"
 #include "objrender.h"
-#include "render.h"
+#include "rendermine.h"
 #include "rendershadows.h"
 
 //------------------------------------------------------------------------------

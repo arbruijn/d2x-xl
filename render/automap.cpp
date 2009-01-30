@@ -25,7 +25,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "u_mem.h"
 #include "ogl_lib.h"
 #include "ogl_color.h"
-#include "render.h"
+#include "rendermine.h"
 #include "transprender.h"
 #include "key.h"
 #include "screens.h"

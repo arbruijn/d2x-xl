@@ -37,7 +37,7 @@
 #include "ogl_shader.h"
 #include "ogl_fastrender.h"
 #include "glare.h"
-#include "render.h"
+#include "rendermine.h"
 
 #ifndef GL_VERSION_20
 PFNGLCREATESHADEROBJECTARBPROC	glCreateShaderObject = NULL; 
