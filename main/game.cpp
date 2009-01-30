@@ -839,7 +839,7 @@ if (gameStates.render.bRearView) {
 	}
 gameStates.render.bRearView = 0;
 if ((gameStates.render.cockpit.nType < 0) || (gameStates.render.cockpit.nType > 4)) {
-	if (!Cockpit::Restore ())
+	if (!CGenericCockpit::Restore ())
 		cockpit->Activate (CM_FULL_COCKPIT);
 	}
 }
