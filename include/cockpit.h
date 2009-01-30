@@ -57,7 +57,7 @@ extern ubyte Reticle_on;
 #define HUD_SCALE_Y(v)	HUD_SCALE (v, m_info.yScale)
 #define HUD_LHX(x)      (gameStates.menus.bHires ? 2 * (x) : x)
 #define HUD_LHY(y)      (gameStates.menus.bHires? (24 * (y)) / 10 : y)
-#define HUD_ASPECT		((double) screen.Height () / (double) screen.Width () / 0.75)
+#define HUD_ASPECT		(float (screen.Height ()) / float (screen.Width ()) / 0.75f)
 
 //	-----------------------------------------------------------------------------
 
