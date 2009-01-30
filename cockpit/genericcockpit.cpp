@@ -1406,14 +1406,9 @@ if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nType != CM_FULL
 	gameStates.ogl.nTransparencyLimit = 8;	//add transparency to black areas of palettized cockpits (namely the display windows)
 	bmP->SetupTexture (0, 3, 1);
 	gameStates.ogl.nTransparencyLimit = 0;
-
-	tCanvasColor color;
-
-	color.index = 255;
-	color.rgb = 0;
 	CCanvas::Push ();
    CCanvas::SetCurrent (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
-	bmP->RenderScaled (0, y, -1, CCanvas::Current ()->Height () - y, I2X (1), 0, &color);
+	bmP->RenderScaled (0, y, -1, CCanvas::Current ()->Height () - y, I2X (1), 0, &CCanvas::Current ()->Color ());
 	CCanvas::Pop ();
 	}
 }
@@ -1611,8 +1606,9 @@ if (!cockpit->Setup (true))
 	return;
 		 
 glDepthFunc (GL_ALWAYS);
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 CCanvas::SetCurrent (CurrentGameScreen ());
-CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
+CCanvas::Current ()->SetColorRGBi (WHITE_RGBA);
 fontManager.SetCurrent (GAME_FONT);
 m_info.fontWidth = CCanvas::Current ()->Font ()->Width ();
 m_info.fontHeight = CCanvas::Current ()->Font ()->Height ();
@@ -1645,11 +1641,12 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK))
 	gameData.app.nGameMode = gameData.demo.nGameMode;
 
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
-CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
+CCanvas::Current ()->SetColorRGBi (WHITE_RGBA);
 fontManager.SetCurrent (GAME_FONT);
 
 RenderWindows ();
 DrawCockpit (false);
+#if 1
 if (bExtraInfo) {
 #if DBG
 	DrawWindowLabel ();
@@ -1709,6 +1706,7 @@ else if (gameStates.render.cockpit.nType != CM_REAR_VIEW) {
 	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - ((gameData.demo.nState == ND_STATE_PLAYBACK) ? 14 : 10), TXT_REAR_VIEW);
 	}
 DemoRecording ();
+#endif
 m_history [gameStates.render.vr.nCurrentPage].bCloak = m_info.bCloak;
 }
 

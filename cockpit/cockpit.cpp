@@ -402,7 +402,7 @@ if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 if (!gameData.physics.xAfterburnerCharge)
 	return;
 #endif
-CCanvas::Current ()->SetColorRGB (255, 255, 255, 255);
+//CCanvas::Current ()->SetColorRGB (255, 255, 255, 255);
 BitBlt (GAUGE_AFTERBURNER, AFTERBURNER_GAUGE_X, AFTERBURNER_GAUGE_Y);
 int yMax = FixMul (I2X (1) - gameData.physics.xAfterburnerCharge, AFTERBURNER_GAUGE_H);
 if (yMax) {
@@ -426,7 +426,7 @@ if (yMax) {
 	gameStates.render.grAlpha = FADE_LEVELS;
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	OglDrawFilledPoly (x, y, 4, gaugeFadeColors [0], 4);
+	OglDrawFilledPoly (x, y, 4, gaugeFadeColors [0], 1);
 	glDisable (GL_BLEND);
 	}
 }

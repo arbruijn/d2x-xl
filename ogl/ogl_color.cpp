@@ -129,7 +129,7 @@ tRgbaColorf GetCanvasColor (tCanvasColor *colorP)
 {
 
 if (!colorP) {
-	tRgbaColorf	color = {1, 1, 1, gameStates.render.grAlpha};
+	tRgbaColorf	color = {1, 1, 1, GrAlpha ()};
 	return color;
 	}
 else if (colorP->rgb) {
