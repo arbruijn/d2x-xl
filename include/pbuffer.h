@@ -7,6 +7,8 @@
 #	include <stddef.h>
 #endif
 
+#if RENDER2TEXTURE == 1
+
 #ifdef _WIN32
 typedef	HDC			HGLDC;
 #else
@@ -73,5 +75,7 @@ extern HGLRC	hGlRC;
 #ifndef _WIN32
 extern GLXDrawable	hGlWindow;
 #endif
+
+#endif //RENDER2TEXTURE
 
 #endif //_PBUFFER_H_
