@@ -10,7 +10,7 @@
 #ifdef _WIN32
 typedef	HDC			HGLDC;
 #else
-typedef	Display	*	HGLDC;
+typedef	Display*		HGLDC;
 typedef	GLXContext	HGLRC;
 typedef	GLXPbuffer	HPBUFFERARB;
 #endif

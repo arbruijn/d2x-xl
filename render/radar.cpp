@@ -37,7 +37,8 @@ int radarRanges [] = {100, 150, 200};
 static CAngleVector	aRadar = CAngleVector::Create(I2X (1) / 4, 0, 0);
 static CFixMatrix		mRadar;
 static float			yOffs = 18.0f;
-static float			yRadar, fRadius = 10.0;
+static float			yRadar, fRadius = 10.0f;
+static float			fLineWidth = 1.0f;
 
 void RenderRadarBlip (CObject *objP, float r, float g, float b, float a)
 {
@@ -68,7 +69,6 @@ if (m) {
 else {
 	glPushMatrix ();
 	glColor4f (r, g, b, a);
-	glLineWidth ((nCanvasWidth >= 1200) ? 2.0f : 1.0f);
 	glTranslatef (0, yRadar, 50);
 #if 0
 	glColor4f (r, g, b, a / 2);
@@ -78,8 +78,11 @@ else {
  	OglDrawEllipse (RADAR_SLICES, GL_POLYGON, fRadius, 0, fRadius / 3.0f, 0, sinCosRadar);
 	glColor4f (0.5f, 0.5f, 0.5f, 0.8f);
 	glEnable (GL_LINE_SMOOTH);
+	glLineWidth (3 * fLineWidth);
  	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, fRadius, 0, fRadius / 3.0f, 0, sinCosRadar);
+	glLineWidth (2 * fLineWidth);
  	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, 2 * fRadius / 3.0f, 0, 2 * fRadius / 9.0f, 0, sinCosRadar);
+	glLineWidth (fLineWidth);
  	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, fRadius / 3.0f, 0, fRadius / 9.0f, 0, sinCosRadar);
 	glBegin (GL_LINES);
 	float x = fRadius * 0.707f + 0.333f;
@@ -164,6 +167,7 @@ bStencil = StencilOff ();
 InitShipColors ();
 yRadar = ((i == 1) || (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR)) ? yOffs : -yOffs;
 fRadius = 5.0f / transformation.m_info.scalef [X];
+fLineWidth = (nCanvasWidth >= 1200) ? 2.0f : 1.0f;
 mRadar = CFixMatrix::Create (aRadar);
 glDisable (GL_CULL_FACE);
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
@@ -172,7 +176,7 @@ glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glActiveTexture (GL_TEXTURE0);
 glDisable (GL_TEXTURE_2D);
-glLineWidth ((nCanvasWidth >= 1200) ? 2.0f : 1.0f);
+glLineWidth (fLineWidth);
 pc = radarColor + gameOpts->render.automap.nColor;
 RenderRadarBlip (gameData.objs.consoleP, pc->red, pc->green, pc->blue, 2.0f / 3.0f); //0.5, 0.75, 0.5, 2.0f / 3.0f);
 glLineWidth (3);
