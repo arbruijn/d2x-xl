@@ -54,6 +54,50 @@ extern int bSavingMovieFrames;
 
 //------------------------------------------------------------------------------
 
+static inline bool GuidedMissileActive (void)
+{
+CObject *gmObjP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
+return gmObjP &&
+		 (gmObjP->info.nType == OBJ_WEAPON) &&
+		 (gmObjP->info.nId == GUIDEDMSL_ID) &&
+		 (gmObjP->info.nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature);
+}
+
+//------------------------------------------------------------------------------
+
+//draw a crosshair for the guided missile
+void DrawGuidedCrosshair (void)
+{
+CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 31, 0));
+int w = CCanvas::Current ()->Width ()>>5;
+if (w < 5)
+	w = 5;
+int h = I2X (w) / screen.Aspect ();
+int x = CCanvas::Current ()->Width () / 2;
+int y = CCanvas::Current ()->Height () / 2;
+#if 1
+	x = I2X (x);
+	y = I2X (y);
+	w = I2X (w / 2);
+	h = I2X (h / 2);
+	OglDrawLine (x - w, y, x + w, y);
+	OglDrawLine (x, y - h, x, y + h);
+#else
+	OglDrawLine (I2X (x-w/2), I2X (y), I2X (x+w/2), I2X (y));
+	OglDrawLine (I2X (x), I2X (y-h/2), I2X (x), I2X (y+h/2));
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+#if 0
+extern int gr_bitblt_dest_step_shift;
+extern int gr_wait_for_retrace;
+extern int gr_bitblt_double;
+extern int SW_drawn [2], SW_x [2], SW_y [2], SW_w [2], SW_h [2];
+
+//------------------------------------------------------------------------------
+
 void ExpandRow (ubyte * dest, ubyte * src, int num_src_pixels)
 {
 	int i;
@@ -113,102 +157,8 @@ switch (flags & 3) {
 }
 
 //------------------------------------------------------------------------------
-
-static inline bool GuidedMissileActive (void)
-{
-CObject *gmObjP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
-return gmObjP &&
-		 (gmObjP->info.nType == OBJ_WEAPON) &&
-		 (gmObjP->info.nId == GUIDEDMSL_ID) &&
-		 (gmObjP->info.nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature);
-}
-
-//------------------------------------------------------------------------------
-
-//draw a crosshair for the guided missile
-void DrawGuidedCrosshair (void)
-{
-CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 31, 0));
-int w = CCanvas::Current ()->Width ()>>5;
-if (w < 5)
-	w = 5;
-int h = I2X (w) / screen.Aspect ();
-int x = CCanvas::Current ()->Width () / 2;
-int y = CCanvas::Current ()->Height () / 2;
-#if 1
-	x = I2X (x);
-	y = I2X (y);
-	w = I2X (w / 2);
-	h = I2X (h / 2);
-	OglDrawLine (x - w, y, x + w, y);
-	OglDrawLine (x, y - h, x, y + h);
-#else
-	OglDrawLine (I2X (x-w/2), I2X (y), I2X (x+w/2), I2X (y));
-	OglDrawLine (I2X (x), I2X (y-h/2), I2X (x), I2X (y+h/2));
-#endif
-}
-
-//------------------------------------------------------------------------------
-
-#define BOX_BORDER (gameStates.menus.bHires?60:30)
-
-//show a message in a nice little box
-void ShowBoxedMessage (const char *pszMsg)
-{
-	int w, h, aw;
-	int x, y;
-	int nDrawBuffer = gameStates.ogl.nDrawBuffer;
-
-ClearBoxedMessage ();
-CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
-fontManager.SetCurrent (MEDIUM1_FONT);
-fontManager.Current ()->StringSize (pszMsg, w, h, aw);
-x = (screen.Width () - w) / 2;
-y = (screen.Height () - h) / 2;
-if (!gameStates.app.bGameRunning)
-	OglSetDrawBuffer (GL_FRONT, 0);
-backgroundManager.Setup (NULL, x - BOX_BORDER / 2, y - BOX_BORDER / 2, w + BOX_BORDER, h + BOX_BORDER);
-CCanvas::SetCurrent (backgroundManager.Canvas (1));
-fontManager.SetColorRGBi (DKGRAY_RGBA, 1, 0, 0);
-fontManager.SetCurrent (MEDIUM1_FONT);
-GrPrintF (NULL, 0x8000, BOX_BORDER / 2, pszMsg); //(h / 2 + BOX_BORDER) / 2
-gameStates.app.bClearMessage = 1;
-GrUpdate (0);
-if (!gameStates.app.bGameRunning)
-	OglSetDrawBuffer (nDrawBuffer, 0);
-}
-
-//------------------------------------------------------------------------------
-
-void ClearBoxedMessage (void)
-{
-if (gameStates.app.bClearMessage) {
-	backgroundManager.Remove ();
-	gameStates.app.bClearMessage = 0;
-	}
-#if 0
-	CBitmap* bmP = backgroundManager.Current ();
-
-if (bmP) {
-	bg.bmP.BlitClipped (bg.x - BOX_BORDER / 2, bg.y - BOX_BORDER / 2);
-	if (bg.bmP) {
-		delete bg.bmP;
-		bg.bmP = NULL;
-		}
-	}
-#endif
-}
-
-//------------------------------------------------------------------------------
-
-#if 0
-extern int gr_bitblt_dest_step_shift;
-extern int gr_wait_for_retrace;
-extern int gr_bitblt_double;
-extern int SW_drawn [2], SW_x [2], SW_y [2], SW_w [2], SW_h [2];
-
 //render a frame for the game in stereo
-void game_render_frame_stereo ()
+void RenderStereoFrame (void)
 {
 	int dw, dh, sw, sh;
 	fix save_aspect;
@@ -512,7 +462,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void RenderFrameMono (void)
+void RenderMonoFrame (void)
 {
 	CCanvas		frameWindow;
 	int			bExtraInfo = 1;
@@ -764,7 +714,7 @@ cockpit->PlayHomingWarning ();
 paletteManager.ClearEffect (paletteManager.Game ());
 FillBackground ();
 if (gameStates.render.vr.nRenderMode == VR_NONE)
-	RenderFrameMono ();
+	RenderMonoFrame ();
 StopTime ();
 paletteManager.EnableEffect ();
 StartTime (0);

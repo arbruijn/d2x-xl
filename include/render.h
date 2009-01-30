@@ -88,6 +88,10 @@ void InitVertLightShader (void);
 void InitDynLighting (void);
 void CloseDynLighting (void);
 
+void BuildRenderObjLists (int nSegCount);
+void BuildRenderSegList (short nStartSeg, int nWindow);
+void BuildRenderSegListFast (short nStartSeg, int nWindow);
+
 //------------------------------------------------------------------------------
 
 static inline bool GuidedMslView (CObject ** objPP)

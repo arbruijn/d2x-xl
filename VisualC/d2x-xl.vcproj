@@ -2357,6 +2357,10 @@
 						RelativePath="..\render\transprender.cpp"
 						>
 					</File>
+					<File
+						RelativePath="..\render\visculling.cpp"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="Header Files"
@@ -4389,11 +4393,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

@@ -1554,6 +1554,7 @@ class CRenderData {
 		fix							zMax;
 		double						dAspect;
 		CFBO							glareBuffer;
+		int							nFirstTerminalSeg;
 		int							nTotalFaces;
 		int							nTotalObjects;
 		int							nTotalSprites;

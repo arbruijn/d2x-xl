@@ -274,7 +274,7 @@ switch (key) {
 	case KEY_PRINT_SCREEN: {
 		int oldState = gameData.demo.nVcrState;
 		gameData.demo.nVcrState = ND_STATE_PRINTSCREEN;
-		//RenderFrameMono();
+		//RenderMonoFrame();
 		gameStates.app.bSaveScreenshot = 1;
 		SaveScreenShot (NULL, 0);
 		gameData.demo.nVcrState = oldState;
