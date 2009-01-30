@@ -1830,7 +1830,7 @@ if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
 	else
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (47, 31, 0));
-	glLineWidth ((CCanvas::Current ()->Width () < 1200 ? 1.0f : 2.0f));
+	glLineWidth (((CCanvas::Current ()->Width () < 1200) ? 1.0f : 2.0f));
 	OglDrawEmptyRect (0, 0, CCanvas::Current ()->Width () - 1, CCanvas::Current ()->Height ());
 
 	//if the window only partially overlaps the big 3d window, copy
