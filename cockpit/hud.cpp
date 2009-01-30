@@ -479,8 +479,6 @@ if (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != m_history [gameSt
 		NDRecordSecondaryAmmo (m_history [gameStates.render.vr.nCurrentPage].ammo [1], LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
 	m_history [gameStates.render.vr.nCurrentPage].ammo [1] = LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary];
 	}
-CGenericCockpit::DrawBombCount (CCanvas::Current ()->Width ()- 3 * m_info.fontWidth + (gameStates.render.fonts.bHires ? 0 : 2), 
-										  y - 3 * m_info.nLineSpacing, -1, 1);
 }
 
 //	-----------------------------------------------------------------------------

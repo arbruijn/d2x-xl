@@ -1858,7 +1858,7 @@ m_history [gameStates.render.vr.nCurrentPage].weapon [nWindow] = m_history [game
 
 gameData.objs.viewerP = viewerSave;
 CCanvas::Pop ();
-
+#if 0
 if (!gameStates.app.bNostalgia && (gameStates.render.cockpit.nType >= CM_FULL_SCREEN)) {
 	int x0 = windowCanv.Left ();
 	int y0 = windowCanv.Top () - CCanvas::Current ()->Top ();
@@ -1878,6 +1878,7 @@ if (!gameStates.app.bNostalgia && (gameStates.render.cockpit.nType >= CM_FULL_SC
 	OglDrawLine (x0 - 2, y0 + 3, x0 - 2, y1 - 3);
 	OglDrawLine (x1 + 2, y0 + 3, x1 + 2, y1 - 3);
 	}
+#endif
 gameStates.render.bRearView = bRearViewSave;
 }
 
