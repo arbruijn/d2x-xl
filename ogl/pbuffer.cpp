@@ -34,6 +34,8 @@
 
 //------------------------------------------------------------------------------
 
+#if RENDER2TEXTURE == 1
+
 HGLDC		hGlDC = 0;
 HGLRC		hGlRC = 0;
 #ifndef _WIN32
@@ -323,6 +325,8 @@ PrintLog ((gameStates.ogl.bRender2TextureOk == 1)
 		  : "No rendering to pixel buffers available\n");
 
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 
