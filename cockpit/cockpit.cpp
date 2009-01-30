@@ -244,12 +244,14 @@ if (m_info.nEnergy) {
 				y [i] = ScaleY (LEFT_ENERGY_GAUGE_Y + y [i]);
 				}
 			OglDrawFilledPoly (x, y, 4, gaugeFadeColors [0], 1);
+#if 0
 			x [0] = x [1];
 			x [3] = x [2];
 			x [1] += (ScaleX (LEFT_ENERGY_GAUGE_X + LEFT_ENERGY_GAUGE_W) - x [1]) / 2;
 			x [2] += (ScaleX (LEFT_ENERGY_GAUGE_X + ENERGY_GAUGE_BOT_LEFT + ENERGY_GAUGE_BOT_WIDTH) - x [2]) / 2;
 			glEnable (GL_BLEND);
 			OglDrawFilledPoly (x, y, 4, gaugeFadeColors [0], 4);
+#endif
 			}
 
 			{
@@ -263,6 +265,7 @@ if (m_info.nEnergy) {
 				y [i] = ScaleY (RIGHT_ENERGY_GAUGE_Y + y [i]);
 				}
 			OglDrawFilledPoly (x, y, 4, gaugeFadeColors [0], 1);
+#if 0
 			x [1] = x [0];
 			x [2] = x [3];
 			x [0] = ScaleX (RIGHT_ENERGY_GAUGE_X);
@@ -271,6 +274,7 @@ if (m_info.nEnergy) {
 			x [3] += (x [2] - x [3]) / 2;
 			glEnable (GL_BLEND);
 			OglDrawFilledPoly (x, y, 4, gaugeFadeColors [1], 4);
+#endif
 			}
 		glDisable (GL_BLEND);
 		}

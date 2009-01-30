@@ -593,7 +593,7 @@ if (gameData.render.window.x || gameData.render.window.y)
 	return;	// render window has been shrunk
 ToggleWeaponIcons ();
 if (gameOpts->render.cockpit.bHUD || cockpit->ShowAlways ()) {
-	xScale = cockpit->XScale ();
+	xScale = cockpit->XScale () * HUD_ASPECT;
 	yScale = cockpit->YScale ();
 	nLineSpacing = cockpit->LineSpacing ();
 	DrawTally ();
