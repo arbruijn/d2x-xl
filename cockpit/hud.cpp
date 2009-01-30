@@ -759,7 +759,7 @@ void CWideHUD::SetupWindow (int nWindow, CCanvas* canvP)
 {
 CHUD::SetupWindow (nWindow, NULL);
 SW_y [nWindow] += gameStates.render.vr.buffers.subRender [0].Top ();
-if (SW_y [nWindow] > gameStates.render.vr.buffers.subRender [0].Bottom ())
+if (SW_y [nWindow] + SW_h [nWindow] > gameStates.render.vr.buffers.subRender [0].Bottom ())
 	SW_y [nWindow] -= (gameStates.render.vr.buffers.render [0].Height () - gameStates.render.vr.buffers.subRender [0].Height ());
 gameStates.render.vr.buffers.render [0].SetupPane (canvP, SW_x [nWindow], SW_y [nWindow], SW_w [nWindow], SW_h [nWindow]);
 }

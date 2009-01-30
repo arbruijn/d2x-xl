@@ -219,7 +219,7 @@ if (nWeaponIcons < 3) {
 		}
 #endif
 	}
-if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) && (extraGameInfo [0].nWeaponIcons < 3))
+if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) && (extraGameInfo [0].nWeaponIcons == 2))
 	y -= cockpit->LHX (10);
 for (i = 0; i < 2; i++) {
 	n = (gameStates.app.bD1Mission) ? 5 : 10;
@@ -589,12 +589,12 @@ if (gameData.render.window.x || gameData.render.window.y)
 	return;	// render window has been shrunk
 ToggleWeaponIcons ();
 if (gameOpts->render.cockpit.bHUD || cockpit->ShowAlways ()) {
-	xScale = cockpit->XScale () * HUD_ASPECT;
-	yScale = cockpit->YScale ();
 	nLineSpacing = cockpit->LineSpacing ();
 	DrawTally ();
 	if (!gameStates.app.bDemoData && EGI_FLAG (nWeaponIcons, 1, 1, 0)) {
-		xScale *= float (HUD_ASPECT);
+		xScale = cockpit->XScale () * HUD_ASPECT;
+		yScale = cockpit->YScale ();
+		cockpit->SetScales (xScale, yScale);
 		DrawWeapons ();
 		if (gameOpts->render.weaponIcons.bEquipment) {
 			if (bHaveInvBms < 0)
@@ -602,6 +602,8 @@ if (gameOpts->render.cockpit.bHUD || cockpit->ShowAlways ()) {
 			if (bHaveInvBms > 0)
 				DrawInventory ();
 			}
+		xScale /= HUD_ASPECT;
+		cockpit->SetScales (xScale, yScale);
 		}
 	}
 }
