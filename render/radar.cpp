@@ -37,7 +37,7 @@ int radarRanges [] = {100, 150, 200};
 static CAngleVector	aRadar = CAngleVector::Create(I2X (1) / 4, 0, 0);
 static CFixMatrix		mRadar;
 static float			yOffs = 18.0f;
-static float			yRadar;
+static float			yRadar, fRadius = 10.0;
 
 void RenderRadarBlip (CObject *objP, float r, float g, float b, float a)
 {
@@ -56,12 +56,12 @@ if (bInitSinCos) {
 	}
 n = objP->info.position.vPos;
 transformation.Transform (n, n, 0);
-if ((m = n.Mag()) > I2X (RADAR_RANGE))
+if ((m = n.Mag ()) > I2X (RADAR_RANGE))
 	return;
 if (m) {
 	//HUDMessage (0, "%1.2f", X2F (m));
-	v [0][X] = FixDiv (n[X], m) * 15; // /= RADAR_RANGE;
-	v [0][Y] = FixDiv (n[Y], m) * 20; // /= RADAR_RANGE;
+	v [0][X] = FixDiv (n [X], m) * 15; // /= RADAR_RANGE;
+	v [0][Y] = FixDiv (n [Y], m) * 20; // /= RADAR_RANGE;
 	v [0][Z] = n[X] / RADAR_RANGE;
 	//VmVecNormalize (&n);
 	}
@@ -75,17 +75,22 @@ else {
  	OglDrawEllipse (RADAR_SLICES, GL_POLYGON, 10, 0, 7.5f, 0, sinCosRadar);
 #endif
 	glColor4f (r, g, b, a);
- 	OglDrawEllipse (RADAR_SLICES, GL_POLYGON, 10, 0, 10.0f / 3.0f, 0, sinCosRadar);
+ 	OglDrawEllipse (RADAR_SLICES, GL_POLYGON, fRadius, 0, fRadius / 3.0f, 0, sinCosRadar);
 	glColor4f (0.5f, 0.5f, 0.5f, 0.8f);
 	//glEnable (GL_LINE_SMOOTH);
- 	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, 10, 0, 10.0f / 3.0f, 0, sinCosRadar);
- 	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, 20.0f / 3.0f, 0, 20.0f / 9.0f, 0, sinCosRadar);
- 	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, 10.0f / 3.0f, 0, 10.0f / 9.0f, 0, sinCosRadar);
+ 	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, fRadius, 0, fRadius / 3.0f, 0, sinCosRadar);
+ 	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, 2 * fRadius / 3.0f, 0, 2 * fRadius / 9.0f, 0, sinCosRadar);
+ 	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, fRadius / 3.0f, 0, fRadius / 9.0f, 0, sinCosRadar);
 	glBegin (GL_LINES);
-	glVertex2f (0, 10.0f / 3.0f);
-	glVertex2f (0, -10.0f / 3.0f);
-	glVertex2f (10, 0);
-	glVertex2f (-10, 0);
+	float x = fRadius * 0.707f + 0.333f;
+	float y = fRadius / 3.0f;
+	glVertex2f (0, y + 1);
+	glVertex2f (0, -y - 1);
+	y += 0.333f;
+	glVertex2f (-x, -y);
+	glVertex2f (x, y);
+	glVertex2f (-x, y);
+	glVertex2f (x, -y);
 	glEnd ();
 	//glDisable (GL_LINE_SMOOTH);
 	glLineWidth (2);
@@ -95,7 +100,7 @@ else {
 v[0] *= FixDiv(1, 3);
 h = X2F (n[Z]) / RADAR_RANGE;
 glPushMatrix ();
-glTranslatef (0, yRadar + h * 10.0f / 3.0f, 50);
+glTranslatef (0, yRadar + h * fRadius / 3.0f, 50);
 glPushMatrix ();
 s = 1.0f - (float) fabs (X2F (m) / RADAR_RANGE);
 h = 3 * s;
@@ -158,6 +163,7 @@ if (!(i = EGI_FLAG (nRadar, 0, 1, 0)))
 bStencil = StencilOff ();
 InitShipColors ();
 yRadar = ((i == 1) || (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR)) ? yOffs : -yOffs;
+fRadius = 5.0f / transformation.m_info.scalef [X];
 mRadar = CFixMatrix::Create (aRadar);
 glDisable (GL_CULL_FACE);
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
