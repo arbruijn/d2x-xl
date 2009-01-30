@@ -86,7 +86,7 @@ else {
 	float y = fRadius / 3.0f;
 	glVertex2f (0, y + 1);
 	glVertex2f (0, -y - 1);
-	y += 0.333f;
+	//y += 0.333f;
 	glVertex2f (-x, -y);
 	glVertex2f (x, y);
 	glVertex2f (-x, y);

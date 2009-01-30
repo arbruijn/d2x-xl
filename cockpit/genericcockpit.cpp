@@ -1410,7 +1410,9 @@ if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nType != CM_FULL
 	gameStates.ogl.nTransparencyLimit = 0;
 	CCanvas::Push ();
    CCanvas::SetCurrent (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
+	CCanvas::Current ()->SetColorRGBi (WHITE_RGBA);
 	bmP->RenderScaled (0, y, -1, CCanvas::Current ()->Height () - y, I2X (1), 0, &CCanvas::Current ()->Color ());
+	CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
 	CCanvas::Pop ();
 	}
 }
