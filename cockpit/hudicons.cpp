@@ -601,6 +601,7 @@ if (gameOpts->render.cockpit.bHUD || cockpit->ShowAlways ()) {
 			}
 		xScale /= HUD_ASPECT;
 		cockpit->SetScales (xScale, yScale);
+		glLineWidth (1);
 		}
 	}
 }
