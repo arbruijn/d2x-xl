@@ -4,6 +4,6 @@ INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/input/include -I $(top_srcd
 
 librender_a_SOURCES = \
 	automap.cpp cameras.cpp fastrender.cpp gamerend.cpp morph.cpp objeffects.cpp objrender.cpp \
-	oofrender.cpp polymodelrender.cpp radar.cpp render.cpp renderlib.cpp rendershadows.cpp \
-	renderthreads.cpp sphere.cpp transprender.cpp 
+	oofrender.cpp polymodelrender.cpp radar.cpp renderframe.cpp renderlib.cpp  rendermine.cpp \
+	rendershadows.cpp renderthreads.cpp sphere.cpp transprender.cpp visculling.cpp
 	
