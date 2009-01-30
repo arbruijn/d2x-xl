@@ -1823,7 +1823,7 @@ transformation.Pop ();
 //	HACK!If guided missile, wake up robots as necessary.
 if (viewerP->info.nType == OBJ_WEAPON) {
 	// -- Used to require to be GUIDED -- if (viewerP->id == GUIDEDMSL_ID)
-	WakeupRenderedObjects (viewerP, nWindow+1);
+	WakeupRenderedObjects (viewerP, nWindow + 1);
 	}
 if (pszLabel) {
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
