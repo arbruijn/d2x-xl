@@ -1831,8 +1831,11 @@ if (nUser == WBU_GUIDED) {
 if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 	int smallWindowBottom, bigWindowBottom, extraPartHeight;
 
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
-	OglDrawEmptyRect (0, 0, CCanvas::Current ()->Width ()-1, CCanvas::Current ()->Height ());
+	if (gameStates.app.bNostalgia)
+		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
+	else
+		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (63, 47, 0));
+	OglDrawEmptyRect (0, 0, CCanvas::Current ()->Width () - 1, CCanvas::Current ()->Height ());
 
 	//if the window only partially overlaps the big 3d window, copy
 	//the extra part to the visible screen
@@ -1840,12 +1843,6 @@ if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 	if (x > bigWindowBottom) {
 		//the small window is completely outside the big 3d window, so
 		//copy it to the visible screen
-#if 0
-		if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING)
-			CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [!gameStates.render.vr.nCurrentPage]);
-		else
-			CCanvas::SetCurrent (CurrentGameScreen ());
-#endif
 		windowCanv.BlitClipped (y, x);
 		bOverlapDirty [nWindow] = 1;
 		}
@@ -1853,13 +1850,7 @@ if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 		smallWindowBottom = x + windowCanv.Height () - 1;
 		if (0 < (extraPartHeight = smallWindowBottom - bigWindowBottom)) {
 			windowCanv.SetupPane (&overlapCanv, 0, windowCanv.Height ()-extraPartHeight, windowCanv.Width (), extraPartHeight);
-#if 0
-			if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING)
-				CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [!gameStates.render.vr.nCurrentPage]);
-			else
-				CCanvas::SetCurrent (CurrentGameScreen ());
-#endif
-			overlapCanv.BlitClipped (y, bigWindowBottom+1);
+			overlapCanv.BlitClipped (y, bigWindowBottom + 1);
 			bOverlapDirty [nWindow] = 1;
 			}
 		}
@@ -1872,6 +1863,26 @@ m_history [gameStates.render.vr.nCurrentPage].weapon [nWindow] = m_history [game
 
 gameData.objs.viewerP = viewerSave;
 CCanvas::Pop ();
+
+if (!gameStates.app.bNostalgia && (gameStates.render.cockpit.nType >= CM_FULL_SCREEN)) {
+	int x0 = windowCanv.Left ();
+	int y0 = windowCanv.Top ();
+	int x1 = windowCanv.Right () - 1;
+	int y1 = windowCanv.Bottom ();
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (63, 47, 0));
+	//CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
+	//CCanvas::Current ()->SetColorRGBi (RGBA_PAL (60, 60, 60));
+	//CCanvas::Current ()->SetColorRGBi (RGBA_PAL (31, 31, 31));
+	OglDrawLine (x0 + 1, y0 - 1, x1 - 1, y0 - 1);
+	OglDrawLine (x0 + 1, y1 + 1, x1 - 1, y1 + 1);
+	OglDrawLine (x0 - 1, y0 + 1, x0 - 1, y1 - 1);
+	OglDrawLine (x1 + 1, y0 + 1, x1 + 1, y1 - 1);
+	//CCanvas::Current ()->SetColorRGBi (RGBA_PAL (30, 30, 30));
+	OglDrawLine (x0 + 3, y0 - 2, x1 - 3, y0 - 2);
+	OglDrawLine (x0 + 3, y1 + 2, x1 - 3, y1 + 2);
+	OglDrawLine (x0 - 2, y0 + 3, x0 - 2, y1 - 3);
+	OglDrawLine (x1 + 2, y0 + 3, x1 + 2, y1 - 3);
+	}
 gameStates.render.bRearView = bRearViewSave;
 }
 

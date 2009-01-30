@@ -684,9 +684,9 @@ switch (gameOpts->render.cockpit.nWindowPos) {
 		y = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
 		break;
 	case 3:
-		x = nWindow ?
-			gameStates.render.vr.buffers.render [0].Width () - w - h / 10 :
-			h / 10;
+		x = nWindow 
+			 ? gameStates.render.vr.buffers.render [0].Width () - w - h / 10 
+			 : h / 10;
 		y = h / 10;
 		break;
 	case 4:
