@@ -506,6 +506,8 @@ int CTransparencyRenderer::AddParticle (CParticle *particle, float fBrightness, 
 	tTranspParticle	item;
 	fix					z;
 
+if ((particle->m_nType < 0) || (particle->m_nType >= PARTICLE_TYPES))
+	return 0;
 item.particle = particle;
 item.fBrightness = fBrightness;
 z = particle->Transform (gameStates.render.bPerPixelLighting == 2);

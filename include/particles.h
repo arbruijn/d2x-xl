@@ -9,6 +9,8 @@
 
 #define PARTICLE_RAD	(I2X (1))
 
+#define PARTICLE_TYPES	4
+
 #define SMOKE_PARTICLES		0
 #define BUBBLE_PARTICLES	1
 #define BULLET_PARTICLES	2
