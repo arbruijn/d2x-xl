@@ -3237,7 +3237,13 @@ extern tGameFileInfo gameFileInfo;
 
 static inline short ObjIdx (CObject *objP)
 {
-return gameData.objs.objects.Index (objP);
+#if DBG
+if (gameData.objs.objects.IsElement (objP))
+	return gameData.objs.objects.Index (objP);
+return -1;
+#else
+return gameData.objs.objects.IsElement (objP) ? gameData.objs.objects.Index (objP) : -1;
+#endif
 }
 
 //	-----------------------------------------------------------------------------------------------------------

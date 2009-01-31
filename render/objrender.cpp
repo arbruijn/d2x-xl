@@ -735,7 +735,7 @@ else {
 #endif
 					bOk = DrawPolyModel (
 						objP, &objP->info.position.vPos, &objP->info.position.mOrient,
-						reinterpret_cast<CAngleVector*> ( &objP->rType.polyObjInfo.animAngles),
+						reinterpret_cast<CAngleVector*> (&objP->rType.polyObjInfo.animAngles),
 						gameData.weapons.info [id].nInnerModel,
 						objP->rType.polyObjInfo.nSubObjFlags,
 						bBrightPolys ? I2X (1) : xLight,
