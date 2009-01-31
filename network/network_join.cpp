@@ -541,7 +541,7 @@ if (banList.Find (const_cast<char*>(their->player.callsign)))
 	return;
 if (!networkData.refuse.bWaitForAnswer) {
 	audio.PlaySound (SOUND_HUD_JOIN_REQUEST, SOUNDCLASS_GENERIC, I2X (2));           
-#if 0
+#if 1
 	if (IsTeamGame) {
 		if (gameOpts->multi.bNoRankings)
 			HUDInitMessage ("%s joining", their->player.callsign);
@@ -553,7 +553,8 @@ if (!networkData.refuse.bWaitForAnswer) {
 		}               
 	else    
 		HUDInitMessage (TXT_JOIN_ACCEPT, their->player.callsign);
-#else
+#endif
+#if 1
 	if (IsTeamGame) {
 		char szRank [20];
 

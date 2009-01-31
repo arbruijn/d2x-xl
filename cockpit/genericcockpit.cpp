@@ -1596,10 +1596,13 @@ void CGenericCockpit::Render (int bExtraInfo)
 {
 if (Hide ())
 	return;
-
+#if 1
+if (!cockpit->Setup (false))
+	return;
+#else
 if (!cockpit->Setup (true))
 	return;
-		 
+#endif	 
 glDepthFunc (GL_ALWAYS);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 CCanvas::SetCurrent (CurrentGameScreen ());
