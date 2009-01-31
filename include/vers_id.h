@@ -8,7 +8,7 @@
 
 //#ifndef HAVE_CONFIG_H
 #	ifndef VERSION
-#		define VERSION		"1.14.b7"
+#		define VERSION		"1.14.b8"
 #	endif
 //#endif
 
