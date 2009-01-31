@@ -608,6 +608,8 @@ int CParticle::Render (float brightness)
 
 if (m_nDelay > 0)
 	return 0;
+if ((nType < 0) || (nType >= PARTICLE_TYPES))
+	return 0;
 if (!(bmP = bmpParticle [0][nType]))
 	return 0;
 if (bmP->CurFrame ())
