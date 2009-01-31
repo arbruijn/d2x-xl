@@ -182,7 +182,6 @@ int GrToggleFullScreenGame(void);
 void ShowInGameWarning (const char *s);
 
 int MarkPathToExit ();
-void CheckRearView ();
 
 void DoEffectsFrame (void);
 

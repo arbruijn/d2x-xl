@@ -773,83 +773,10 @@ void ShowHelp (void)
 
 //------------------------------------------------------------------------------
 
-//temp function until Matt cleans up game sequencing
-//deal with rear view - switch it on, or off, or whatever
-void CheckRearView ()
-{
-
-	#define LEAVE_TIME 0x1000		//how long until we decide key is down	 (Used to be 0x4000)
-
-	static int nLeaveMode;
-	static fix entryTime;
-#if DBG
-	if (Controls [0].rearViewDownCount) {		//key/button has gone down
-#else
-	if (Controls [0].rearViewDownCount && !(gameStates.render.bChaseCam || gameStates.render.bFreeCam)) {		//key/button has gone down
-#endif
-		Controls [0].rearViewDownCount = 0;
-		if (gameStates.render.bRearView) {
-			gameStates.render.bRearView = 0;
-			if (gameStates.render.cockpit.nType == CM_REAR_VIEW) {
-				CGenericCockpit::Restore ();
-			}
-			if (gameData.demo.nState == ND_STATE_RECORDING)
-				NDRecordRestoreRearView ();
-		}
-		else {
-			gameStates.render.bRearView = 1;
-			nLeaveMode = 0;		//means wait for another key
-			entryTime = TimerGetFixedSeconds ();
-			if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) {
-				CGenericCockpit::Save ();
-				cockpit->Activate (CM_REAR_VIEW);
-				}
-			if (gameData.demo.nState == ND_STATE_RECORDING)
-				NDRecordRearView ();
-		}
-	}
-	else
-		if (Controls [0].rearViewDownState) {
-
-			if ((nLeaveMode == 0) && (TimerGetFixedSeconds ()-entryTime)>LEAVE_TIME)
-				nLeaveMode = 1;
-		}
-		else {
-
-			//@@if (nLeaveMode==1 && gameStates.render.cockpit.nType==CM_REAR_VIEW) {
-
-			if ((nLeaveMode == 1) && gameStates.render.bRearView) {
-				gameStates.render.bRearView = 0;
-				if (gameStates.render.cockpit.nType == CM_REAR_VIEW) {
-					CGenericCockpit::Restore ();
-				}
-				if (gameData.demo.nState == ND_STATE_RECORDING)
-					NDRecordRestoreRearView ();
-			}
-		}
-}
-
-//------------------------------------------------------------------------------
-
-void ResetRearView (void)
-{
-if (gameStates.render.bRearView) {
-	if (gameData.demo.nState == ND_STATE_RECORDING)
-		NDRecordRestoreRearView ();
-	}
-gameStates.render.bRearView = 0;
-if ((gameStates.render.cockpit.nType < 0) || (gameStates.render.cockpit.nType > 4) || (gameStates.render.cockpit.nType == CM_REAR_VIEW)) {
-	if (!CGenericCockpit::Restore ())
-		cockpit->Activate (CM_FULL_COCKPIT);
-	}
-}
-
-//------------------------------------------------------------------------------
-
 jmp_buf gameExitPoint;
 
-void DoLunacyOn ();
-void DoLunacyOff ();
+void DoLunacyOn (void);
+void DoLunacyOff (void);
 
 extern char OldHomingState [20];
 extern char old_IntMethod;

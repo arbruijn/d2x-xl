@@ -81,11 +81,6 @@ extern fix	showViewTextTimer;
 
 //	Function prototypes --------------------------------------------------------
 
-void HandleGameKey(int key);
-int HandleSystemKey(int key);
-void HandleTestKey(int key);
-void HandleVRKey(int key);
-
 #define key_isfunc(k) (((k&0xff)>=KEY_F1 && (k&0xff)<=KEY_F10) || (k&0xff)==KEY_F11 || (k&0xff)==KEY_F12)
 #define key_ismod(k)  ((k&0xff)==KEY_LALT || (k&0xff)==KEY_RALT || (k&0xff)==KEY_LSHIFT || (k&0xff)==KEY_RSHIFT || (k&0xff)==KEY_LCTRL || (k&0xff)==KEY_RCTRL)
 
@@ -102,9 +97,9 @@ if ((gameStates.input.keys.pressed[KEY_LSHIFT] || gameStates.input.keys.pressed[
 	gameData.demo.nVcrState = ND_STATE_FASTFORWARD;
 else if ((gameStates.input.keys.pressed[KEY_LSHIFT] || gameStates.input.keys.pressed[KEY_RSHIFT]) && gameStates.input.keys.pressed[KEY_LEFT])
 	gameData.demo.nVcrState = ND_STATE_REWINDING;
-else if (!(gameStates.input.keys.pressed[KEY_LCTRL] || gameStates.input.keys.pressed[KEY_RCTRL]) && gameStates.input.keys.pressed[KEY_RIGHT] && ((TimerGetFixedSeconds() - newdemo_single_frameTime) >= I2X (1)))
+else if (!(gameStates.input.keys.pressed[KEY_LCTRL] || gameStates.input.keys.pressed[KEY_RCTRL]) && gameStates.input.keys.pressed[KEY_RIGHT] && ((TimerGetFixedSeconds () - newdemo_single_frameTime) >= I2X (1)))
 	gameData.demo.nVcrState = ND_STATE_ONEFRAMEFORWARD;
-else if (!(gameStates.input.keys.pressed[KEY_LCTRL] || gameStates.input.keys.pressed[KEY_RCTRL]) && gameStates.input.keys.pressed[KEY_LEFT] && ((TimerGetFixedSeconds() - newdemo_single_frameTime) >= I2X (1)))
+else if (!(gameStates.input.keys.pressed[KEY_LCTRL] || gameStates.input.keys.pressed[KEY_RCTRL]) && gameStates.input.keys.pressed[KEY_LEFT] && ((TimerGetFixedSeconds () - newdemo_single_frameTime) >= I2X (1)))
 	gameData.demo.nVcrState = ND_STATE_ONEFRAMEBACKWARD;
 #if 0
 else if ((gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || (gameData.demo.nVcrState == ND_STATE_REWINDING))
@@ -118,30 +113,176 @@ char *Pause_msg;
 
 //------------------------------------------------------------------------------
 
-void HandleEndlevelKey(int key)
+int SetRearView (int bOn)
 {
+if (gameStates.render.bRearView == bOn)
+	return 0;
 
-	if ( key == (KEY_COMMAND + KEY_SHIFTED + KEY_P) )
-		SaveScreenShot (NULL, 0);
+if (gameStates.render.bRearView = bOn) {
+	SetFreeCam (0);
+	SetChaseCam (0);
+	if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) {
+		CGenericCockpit::Save ();
+		cockpit->Activate (CM_REAR_VIEW);
+		}
+	if (gameData.demo.nState == ND_STATE_RECORDING)
+		NDRecordRearView ();
 
-	if (key==KEY_PRINT_SCREEN)
-		SaveScreenShot (NULL, 0);
+	}
+else {
+	if (gameStates.render.cockpit.nType == CM_REAR_VIEW)
+		CGenericCockpit::Restore ();
+	if (gameData.demo.nState == ND_STATE_RECORDING)
+		NDRecordRestoreRearView ();
+	}
+return 1;
+}
 
-	if ( key == (KEY_COMMAND+KEY_P) )
-		key = DoGamePause();
+//------------------------------------------------------------------------------
 
-	if (key == KEY_PAUSE)
-		key = DoGamePause();		//so esc from pause will end level
+void CheckRearView (void)
+{
+	#define LEAVE_TIME 0x1000		//how long until we decide key is down	 (Used to be 0x4000)
 
-	if (key == KEY_ESC) {
-		StopEndLevelSequence();
-		gameStates.render.cockpit.nLastDrawn[0] =
-		gameStates.render.cockpit.nLastDrawn[1] = -1;
-		return;
+	static int nLeaveMode;
+	static fix entryTime;
+#if DBG
+if (Controls [0].rearViewDownCount) {		//key/button has gone down
+#else
+if (Controls [0].rearViewDownCount && !(gameStates.render.bChaseCam || gameStates.render.bFreeCam)) {		//key/button has gone down
+#endif
+	Controls [0].rearViewDownCount = 0;
+	if (ToggleRearView () && gameStates.render.bRearView) {
+		nLeaveMode = 0;		//means wait for another key
+		entryTime = TimerGetFixedSeconds ();
+		}
+	}
+else
+	if (Controls [0].rearViewDownState) {
+		if (!nLeaveMode && (TimerGetFixedSeconds () - entryTime) > LEAVE_TIME)
+			nLeaveMode = 1;
+		}
+	else {
+		if (nLeaveMode && gameStates.render.bRearView) {
+			gameStates.render.bRearView = 0;
+			if (gameStates.render.cockpit.nType == CM_REAR_VIEW) {
+				CGenericCockpit::Restore ();
+				}
+			if (gameData.demo.nState == ND_STATE_RECORDING)
+				NDRecordRestoreRearView ();
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+int ToggleRearView (void)
+{
+return SetRearView (!gameStates.render.bRearView);
+}
+
+//------------------------------------------------------------------------------
+
+void ResetRearView (void)
+{
+if (gameStates.render.bRearView) {
+	if (gameData.demo.nState == ND_STATE_RECORDING)
+		NDRecordRestoreRearView ();
+	}
+gameStates.render.bRearView = 0;
+if ((gameStates.render.cockpit.nType < 0) || (gameStates.render.cockpit.nType > 4) || (gameStates.render.cockpit.nType == CM_REAR_VIEW)) {
+	if (!CGenericCockpit::Restore ())
+		cockpit->Activate (CM_FULL_COCKPIT);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+int SetChaseCam (int bOn)
+{
+if (gameStates.render.bChaseCam == bOn)
+	return 0;
+if ((gameStates.render.bChaseCam = bOn)) {
+	SetFreeCam (0);
+	SetRearView (0);
+	CGenericCockpit::Save ();
+	if (gameStates.render.cockpit.nType < CM_FULL_SCREEN) 
+		cockpit->Activate (CM_FULL_SCREEN);
+	}
+else
+	CGenericCockpit::Restore ();
+externalView.Reset (-1, -1);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void ToggleChaseCam (void)
+{
+#if !DBG	
+if (IsMultiGame && !(IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
+	return 0;
+#endif		
+return SetChaseCam (!gameStates.render.bChaseCam);
+}
+
+//------------------------------------------------------------------------------
+
+int SetFreeCam (int bOn)
+{
+if (gameStates.render.bFreeCam == bOn)
+	return 0;
+if ((gameStates.render.bFreeCam = bOn)) {
+	SetChaseCam (0);
+	SetRearView (0);
+	gameStates.app.playerPos = gameData.objs.viewerP->info.position;
+	gameStates.app.nPlayerSegment = gameData.objs.viewerP->info.nSegment;
+	CGenericCockpit::Save ();
+	if (gameStates.render.cockpit.nType < CM_FULL_SCREEN) 
+		cockpit->Activate (CM_FULL_SCREEN);
+	}
+else {
+	gameData.objs.viewerP->info.position = gameStates.app.playerPos;
+	gameData.objs.viewerP->RelinkToSeg (gameStates.app.nPlayerSegment);
+	CGenericCockpit::Restore ();
+	}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int ToggleFreeCam (void)
+{
+if (gameStates.render.bRearView || (!gameStates.app.bEnableFreeCam || IsMultiGame && !(IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0))))
+	return 0;
+return SetFreeCam (!gameStates.render.bFreeCam);
+}
+
+//------------------------------------------------------------------------------
+
+void HandleEndlevelKey (int key)
+{
+if (key == (KEY_COMMAND + KEY_SHIFTED + KEY_P))
+	SaveScreenShot (NULL, 0);
+
+if (key==KEY_PRINT_SCREEN)
+	SaveScreenShot (NULL, 0);
+
+if (key == (KEY_COMMAND + KEY_P))
+	key = DoGamePause ();
+
+if (key == KEY_PAUSE)
+	key = DoGamePause ();		//so esc from pause will end level
+
+if (key == KEY_ESC) {
+	StopEndLevelSequence ();
+	gameStates.render.cockpit.nLastDrawn[0] =
+	gameStates.render.cockpit.nLastDrawn[1] = -1;
+	return;
 	}
 #if DBG
 	if (key == KEY_BACKSP)
-		Int3();
+		Int3 ();
 #endif
 }
 
@@ -156,47 +297,34 @@ void HandleDeathKey(int key)
 	doesn't work in the DOS version anyway.   -Samir 
 */
 
-	if (gameStates.app.bPlayerExploded && !key_isfunc(key) && !key_ismod(key))
-		gameStates.app.bDeathSequenceAborted  = 1;		//Any key but func or modifier aborts
+if (gameStates.app.bPlayerExploded && !key_isfunc(key) && !key_ismod(key))
+	gameStates.app.bDeathSequenceAborted  = 1;		//Any key but func or modifier aborts
 
-	if ( key == (KEY_COMMAND + KEY_SHIFTED + KEY_P) ) {
-//		SaveScreenShot (NULL, 0);
-		gameStates.app.bDeathSequenceAborted  = 0;		// Clear because code above sets this for any key.
+if (key == KEY_COMMAND + KEY_SHIFTED + KEY_P) {
+	gameStates.app.bDeathSequenceAborted  = 0;		// Clear because code above sets this for any key.
 	}
-
-	if (key==KEY_PRINT_SCREEN) {
-//		SaveScreenShot (NULL, 0);
-		gameStates.app.bDeathSequenceAborted  = 0;		// Clear because code above sets this for any key.
+else if (key == KEY_PRINT_SCREEN) {
+	gameStates.app.bDeathSequenceAborted  = 0;		// Clear because code above sets this for any key.
 	}
-
-	if ( key == (KEY_COMMAND+KEY_P) ) {
-//		key = DoGamePause();
-		gameStates.app.bDeathSequenceAborted  = 0;		// Clear because code above sets this for any key.
+else if (key == (KEY_COMMAND + KEY_P)) {
+	gameStates.app.bDeathSequenceAborted  = 0;		// Clear because code above sets this for any key.
 	}
-
-	if (key == KEY_PAUSE)   {
-//		key = DoGamePause();		//so esc from pause will end level
-		gameStates.app.bDeathSequenceAborted  = 0;		// Clear because code above sets this for any key.
+else if (key == KEY_PAUSE)   {
+	gameStates.app.bDeathSequenceAborted  = 0;		// Clear because code above sets this for any key.
 	}
-
-	if (key == KEY_ESC) {
-		if (gameData.objs.consoleP->info.nFlags & OF_EXPLODING)
-			gameStates.app.bDeathSequenceAborted = 1;
+else if (key == KEY_ESC) {
+	if (gameData.objs.consoleP->info.nFlags & OF_EXPLODING)
+		gameStates.app.bDeathSequenceAborted = 1;
 	}
-
-	if (key == KEY_BACKSP)  {
-		gameStates.app.bDeathSequenceAborted  = 0;		// Clear because code above sets this for any key.
-		Int3();
+else if (key == KEY_BACKSP)  {
+	gameStates.app.bDeathSequenceAborted  = 0;		// Clear because code above sets this for any key.
+	Int3 ();
 	}
-
-	//don't abort death sequence for netgame join/refuse keys
-	if (	(key == KEY_ALTED + KEY_1) ||
-			(key == KEY_ALTED + KEY_2))
-		gameStates.app.bDeathSequenceAborted  = 0;
-
-	if (gameStates.app.bDeathSequenceAborted)
-		GameFlushInputs();
-
+//don't abort death sequence for netgame join/refuse keys
+else if ((key == KEY_ALTED + KEY_1) || (key == KEY_ALTED + KEY_2))
+	gameStates.app.bDeathSequenceAborted  = 0;
+if (gameStates.app.bDeathSequenceAborted)
+	GameFlushInputs ();
 }
 
 //------------------------------------------------------------------------------
@@ -211,14 +339,14 @@ switch (key) {
 			cockpit->Toggle ();
 		 break;
 
-	case KEY_SHIFTED+KEY_MINUS:
+	case KEY_SHIFTED + KEY_MINUS:
 	case KEY_MINUS:	
 		ShrinkWindow (); 
 		break;
 
-	case KEY_SHIFTED+KEY_EQUAL:
+	case KEY_SHIFTED + KEY_EQUAL:
 	case KEY_EQUAL:	
-		GrowWindow(); 
+		GrowWindow (); 
 		break;
 
 	case KEY_F2:	
@@ -229,7 +357,7 @@ switch (key) {
 		gameData.multigame.kills.bShowList = (gameData.multigame.kills.bShowList+1) % ((gameData.demo.nGameMode & GM_TEAM) ? 4 : 3);
 		break;
 		
-	case KEY_CTRLED+KEY_F7:
+	case KEY_CTRLED + KEY_F7:
 		if ((gameStates.render.cockpit.bShowPingStats = !gameStates.render.cockpit.bShowPingStats))
 			ResetPingStats ();
 		break;
@@ -247,90 +375,46 @@ switch (key) {
 		break;
 
 	case KEY_LEFT:
-		newdemo_single_frameTime = TimerGetFixedSeconds();
+		newdemo_single_frameTime = TimerGetFixedSeconds ();
 		gameData.demo.nVcrState = ND_STATE_ONEFRAMEBACKWARD;
 		break;
 
 	case KEY_RIGHT:
-		newdemo_single_frameTime = TimerGetFixedSeconds();
+		newdemo_single_frameTime = TimerGetFixedSeconds ();
 		gameData.demo.nVcrState = ND_STATE_ONEFRAMEFORWARD;
 		break;
 
 	case KEY_CTRLED + KEY_RIGHT:
-		NDGotoEnd();
+		NDGotoEnd ();
 		break;
 
 	case KEY_CTRLED + KEY_LEFT:
-		NDGotoBeginning();
+		NDGotoBeginning ();
 		break;
 
-	case KEY_COMMAND+KEY_P:
-	case KEY_CTRLED+KEY_P:
+	case KEY_COMMAND + KEY_P:
+	case KEY_CTRLED + KEY_P:
 	case KEY_PAUSE:
-		DoGamePause();
+		DoGamePause ();
 		break;
 
 	case KEY_COMMAND + KEY_SHIFTED + KEY_P:
 	case KEY_PRINT_SCREEN: {
 		int oldState = gameData.demo.nVcrState;
 		gameData.demo.nVcrState = ND_STATE_PRINTSCREEN;
-		//RenderMonoFrame();
+		//RenderMonoFrame ();
 		gameStates.app.bSaveScreenshot = 1;
 		SaveScreenShot (NULL, 0);
 		gameData.demo.nVcrState = oldState;
 		break;
 		}
-
-	#if DBG
-	case KEY_BACKSP:
-		Int3();
-		break;
-	case KEYDBGGED + KEY_I:
-		gameData.demo.bInterpolate = !gameData.demo.bInterpolate;
-#if TRACE
-		if (gameData.demo.bInterpolate)
-			console.printf (CON_DBG, "demo playback interpolation now on\n");
-		else
-			console.printf (CON_DBG, "demo playback interpolation now off\n");
-#endif
-		break;
-	case KEYDBGGED + KEY_K: {
-		int how_many, c;
-		char filename [FILENAME_LEN], num [16];
-		CMenu m (2);
-
-		filename [0] = '\0';
-		m.AddText ("output file name");
-		m.AddInput (filename, 8);
-		c = m.Menu (NULL, NULL);
-		if (c == -2)
-			break;
-
-		m.Destroy ();
-		m.Create (2);
-		strcat(filename, ".dem");
-		num [0] = '\0';
-		m.AddText ("strip how many bytes");
-		m.AddInput (num, 16);
-		c = m.Menu (NULL, NULL);
-		if (c == -2)
-			break;
-		how_many = atoi(num);
-		if (how_many <= 0)
-			break;
-		NDStripFrames (filename, how_many);
-
-		break;
-		}
-#endif
-
 	}
 }
 
 //------------------------------------------------------------------------------
 //this is for system-level keys, such as help, etc.
 //returns 1 if screen changed
-int HandleSystemKey(int key)
+int HandleSystemKey (int key)
 {
 	int bScreenChanged = 0;
 	int bStopPlayerMovement = 1;
@@ -341,77 +425,49 @@ int HandleSystemKey(int key)
 if (!gameStates.app.bPlayerIsDead)
 	switch (key) {
 
-#ifdef DOORDBGGING
-		case KEY_LAPOSTRO+KEY_SHIFTED:
-			dumpf_door_debugging_info();
-			break;
-#endif
-
 		case KEY_ESC:
-			if (gameData.app.bGamePaused) {
+			if (gameData.app.bGamePaused)
 				gameData.app.bGamePaused = 0;
-				}
 			else {
 				gameStates.app.bGameAborted = 1;
 				SetFunctionMode (FMODE_MENU);
 			}
 			break;
 
-		case KEY_SHIFTED+KEY_F1:
-			bScreenChanged = SelectNextWindowFunction(0);
+		case KEY_SHIFTED + KEY_F1:
+			bScreenChanged = SelectNextWindowFunction (0);
 			break;
-		case KEY_SHIFTED+KEY_F2:
-			bScreenChanged = SelectNextWindowFunction(1);
+		case KEY_SHIFTED + KEY_F2:
+			bScreenChanged = SelectNextWindowFunction (1);
 			break;
-		case KEY_SHIFTED+KEY_F3:
+		case KEY_SHIFTED + KEY_F3:
 			gameOpts->render.cockpit.nWindowSize = (gameOpts->render.cockpit.nWindowSize + 1) % 4;
 			bScreenChanged = 1; //SelectNextWindowFunction(1);
 			break;
-		case KEY_CTRLED+KEY_F3:
+		case KEY_CTRLED + KEY_F3:
 			gameOpts->render.cockpit.nWindowPos = (gameOpts->render.cockpit.nWindowPos + 1) % 6;
 			bScreenChanged = 1; //SelectNextWindowFunction(1);
 			break;
-		case KEY_SHIFTED+KEY_CTRLED+KEY_F3:
+		case KEY_SHIFTED + KEY_CTRLED + KEY_F3:
 			gameOpts->render.cockpit.nWindowZoom = (gameOpts->render.cockpit.nWindowZoom + 1) % 4;
 			bScreenChanged = 1; //SelectNextWindowFunction(1);
 			break;
 		}
 
 switch (key) {
-
-#if 1
 	case KEY_SHIFTED + KEY_ESC:
 		console.Show ();
 		break;
 
-#else
-	case KEY_SHIFTED + KEY_ESC:     //quick exit
-		gameStates.app.bGameAborted = 1;
-		gameStates.app.nFunctionMode = FMODE_EXIT;
-		break;
-#endif
-
-	case KEY_COMMAND+KEY_P: 
-	case KEY_CTRLED+KEY_P: 
+	case KEY_COMMAND + KEY_P: 
+	case KEY_CTRLED + KEY_P: 
 	case KEY_PAUSE: 
-		DoGamePause();			
+		DoGamePause ();			
 		break;
 
 	case KEY_CTRLED + KEY_ALTED + KEY_S:
-		if (gameStates.render.bRearView || (IsMultiGame && !IsCoopGame) || !gameStates.app.bEnableFreeCam)
+		if (!ToggleFreeCam ())
 			return 0;
-		if ((gameStates.render.bFreeCam = !gameStates.render.bFreeCam)) {
-			gameStates.app.playerPos = gameData.objs.viewerP->info.position;
-			gameStates.app.nPlayerSegment = gameData.objs.viewerP->info.nSegment;
-			CGenericCockpit::Save ();
-			if (gameStates.render.cockpit.nType < CM_FULL_SCREEN) 
-				cockpit->Activate (CM_FULL_SCREEN);
-			}
-		else {
-			gameData.objs.viewerP->info.position = gameStates.app.playerPos;
-			gameData.objs.viewerP->RelinkToSeg (gameStates.app.nPlayerSegment);
-			CGenericCockpit::Restore ();
-			}
 		break;
 
 	case KEY_COMMAND + KEY_SHIFTED + KEY_P:
@@ -421,86 +477,80 @@ switch (key) {
 		break;
 
 	case KEY_F1:				
-		DoShowHelp();		
+		DoShowHelp ();		
 		break;
 
 	case KEY_F2:					//gameStates.app.bConfigMenu = 1; break;
-	 {
-			int bScanlineSave = bScanlineDouble;
-
-			if (!IsMultiGame) {
-				paletteManager.SaveEffect(); 
-				paletteManager.ResetEffect (); 
-				paletteManager.LoadEffect (); 
-				}
-			ConfigMenu();
-			if (!IsMultiGame) 
-				paletteManager.LoadEffect ();
-			if (bScanlineSave != bScanlineDouble)   
-				cockpit->Init ();	// reset the cockpit after changing...
-			break;
-		}
-
+		if (!IsMultiGame) {
+			paletteManager.SaveEffect (); 
+			paletteManager.ResetEffect (); 
+			paletteManager.LoadEffect (); 
+			}
+		ConfigMenu ();
+		if (!IsMultiGame) 
+			paletteManager.LoadEffect ();
+		break;
 
 	case KEY_F3:
-		if (!(GuidedInMainView () || gameStates.render.bChaseCam || gameStates.render.bFreeCam)) {
+		if (!GuidedInMainView ()) {
+			SetFreeCam (0);
+			SetChaseCam (0);
 			cockpit->Toggle ();
 			bScreenChanged = 1;
 			}
 		break;
 
-	case KEY_F7+KEY_SHIFTED: 
+	case KEY_F7 + KEY_SHIFTED: 
 		paletteManager.SaveEffect (); 
 		JoyDefsCalibrate (); 
 		paletteManager.LoadEffect (); 
 		break;
 
-	case KEY_SHIFTED+KEY_MINUS:
+	case KEY_SHIFTED + KEY_MINUS:
 	case KEY_MINUS:
-		ShrinkWindow(); 
-		bScreenChanged=1; 
+		ShrinkWindow (); 
+		bScreenChanged = 1; 
 		break;
 
-	case KEY_SHIFTED+KEY_EQUAL:
+	case KEY_SHIFTED + KEY_EQUAL:
 	case KEY_EQUAL:		
 		GrowWindow ();  
 		bScreenChanged = 1; 
 		break;
 		
-	case KEY_CTRLED+KEY_F5:
+	case KEY_CTRLED + KEY_F5:
 		saveGameManager.Save (0, 0, 1, 0);
 		break;
 
-	case KEY_CTRLED+KEY_F9:
+	case KEY_CTRLED + KEY_F9:
 		saveGameManager.Load (0, 0, 1, 0);
 		break;
 
-#if 1//ndef _DEBUG
 	case KEY_F5:
-		if ( gameData.demo.nState == ND_STATE_RECORDING ) {
-			NDStopRecording();
+		if (gameData.demo.nState == ND_STATE_RECORDING) {
+			NDStopRecording ();
 			}
-		else if ( gameData.demo.nState == ND_STATE_NORMAL )
+		else if (gameData.demo.nState == ND_STATE_NORMAL)
 			if (!gameData.app.bGamePaused)		//can't start demo while paused
-				NDStartRecording();
+				NDStartRecording ();
 		break;
-#endif
-	case KEY_ALTED+KEY_F4:
+
+	case KEY_ALTED + KEY_F4:
 		gameData.multigame.bShowReticleName = (gameData.multigame.bShowReticleName + 1) % 2;
 
 	case KEY_F7:
 		gameData.multigame.kills.bShowList = (gameData.multigame.kills.bShowList + 1) % (IsTeamGame ? 4 : 3);
 		if (IsMultiGame)
-			MultiSortKillList();
+			MultiSortKillList ();
 		bStopPlayerMovement = 0;
 		break;
 
-	case KEY_CTRLED+KEY_F7:
+	case KEY_CTRLED + KEY_F7:
 		if ((gameStates.render.cockpit.bShowPingStats = !gameStates.render.cockpit.bShowPingStats))
 			ResetPingStats ();
 		break;
 
-	case KEY_CTRLED+KEY_F8:
+	case KEY_CTRLED + KEY_F8:
 		gameData.stats.nDisplayMode = (gameData.stats.nDisplayMode + 1) % 5;
 		gameOpts->render.cockpit.bPlayerStats = gameData.stats.nDisplayMode != 0;
 		break;
@@ -514,7 +564,7 @@ switch (key) {
 	case KEY_F10:
 	case KEY_F11:
 	case KEY_F12:
-		MultiSendMacro(key);
+		MultiSendMacro (key);
 		bStopPlayerMovement = 0;
 		break;		// send taunt macros
 
@@ -524,17 +574,8 @@ switch (key) {
 		break;
 
 	case KEY_ALTED + KEY_F12:
-#if !DBG	
-		if (!gameStates.render.bRearView && (!gameStates.render.bRearView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0))))
-#endif		
-			if (gameStates.render.bChaseCam = !gameStates.render.bChaseCam) {
-				CGenericCockpit::Save ();
-				if (gameStates.render.cockpit.nType < CM_FULL_SCREEN) 
-					cockpit->Activate (CM_FULL_SCREEN);
-				}
-			else
-				CGenericCockpit::Restore ();
-		externalView.Reset (-1, -1);
+		if (!ToggleChaseCam ())
+			return 0;
 		break;
 
 	case KEY_SHIFTED + KEY_F9:
@@ -545,7 +586,7 @@ switch (key) {
 		bStopPlayerMovement = 0;
 		break;		// redefine taunt macros
 
-	case KEY_ALTED+KEY_F2:
+	case KEY_ALTED + KEY_F2:
 		if (!gameStates.app.bPlayerIsDead && !(IsMultiGame && !IsCoopGame)) {
 			paletteManager.SaveEffectAndReset ();
 			paletteManager.SetEffect (); // get only the effect color back
@@ -554,23 +595,23 @@ switch (key) {
 		}
 		break;  // 0 means not between levels.
 
-	case KEY_ALTED+KEY_F3:
+	case KEY_ALTED + KEY_F3:
 		if (!gameStates.app.bPlayerIsDead && (!IsMultiGame || IsCoopGame)) {
 			paletteManager.SaveEffectAndReset ();
 			saveGameManager.Load (1, 0, 0, NULL);
 			if (gameData.app.bGamePaused)
-				DoGamePause();
+				DoGamePause ();
 		}
 		break;
 
 
 	case KEY_F4 + KEY_SHIFTED:
-		DoEscortMenu();
+		DoEscortMenu ();
 		break;
 
 
 	case KEY_F4 + KEY_SHIFTED + KEY_ALTED:
-		ChangeGuidebotName();
+		ChangeGuidebotName ();
 		break;
 
 	case KEY_MINUS + KEY_ALTED:     
@@ -582,42 +623,28 @@ switch (key) {
 		break;
 
 //added 8/23/99 by Matt Mueller for hot key res/fullscreen changing, and menu access
-	case KEY_CTRLED+KEY_SHIFTED+KEY_PADDIVIDE:
-	case KEY_ALTED+KEY_CTRLED+KEY_PADDIVIDE:
-	case KEY_ALTED+KEY_SHIFTED+KEY_PADDIVIDE:
-		RenderOptionsMenu();
+	case KEY_CTRLED + KEY_SHIFTED + KEY_PADDIVIDE:
+	case KEY_ALTED + KEY_CTRLED + KEY_PADDIVIDE:
+	case KEY_ALTED + KEY_SHIFTED + KEY_PADDIVIDE:
+		RenderOptionsMenu ();
 		break;
-#if 0
-	case KEY_CTRLED+KEY_SHIFTED+KEY_PADMULTIPLY:
-	case KEY_ALTED+KEY_CTRLED+KEY_PADMULTIPLY:
-	case KEY_ALTED+KEY_SHIFTED+KEY_PADMULTIPLY:
-		change_res();
-		break;
-#endif
-	case KEY_CTRLED+KEY_F1:
+
+	case KEY_CTRLED + KEY_F1:
 		SwitchDisplayMode (-1);
 		break;
-	case KEY_CTRLED+KEY_F2:
+	case KEY_CTRLED + KEY_F2:
 		SwitchDisplayMode (1);
 		break;
 
-	case KEY_ALTED+KEY_ENTER:
-	case KEY_ALTED+KEY_PADENTER:
-		GrToggleFullScreenGame();
+	case KEY_ALTED + KEY_ENTER:
+	case KEY_ALTED + KEY_PADENTER:
+		GrToggleFullScreenGame ();
 		break;
-//end addition -MM
-	
-//added 11/01/98 Matt Mueller
-#if 0
-	case KEY_CTRLED+KEY_ALTED+KEY_LAPOSTRO:
-		toggle_hud_log();
-		break;
-#endif
-//end addition -MM
 
 	default:
 			return bScreenChanged;
 	}	 //switch (key)
+
 if (bStopPlayerMovement) {
 	StopPlayerMovement ();
 	gameStates.app.bEnterGame = 2;
@@ -629,81 +656,81 @@ return bScreenChanged;
 
 void HandleVRKey(int key)
 {
-	switch( key )   {
+	switch(key)   {
 
-		case KEY_ALTED+KEY_F5:
-			if ( gameStates.render.vr.nRenderMode != VR_NONE ) {
-				VRResetParams();
-				HUDInitMessage( TXT_VR_RESET );
-				HUDInitMessage( TXT_VR_SEPARATION, X2F(gameStates.render.vr.xEyeWidth) );
-				HUDInitMessage( TXT_VR_BALANCE, (double)gameStates.render.vr.nEyeOffset/30.0 );
+		case KEY_ALTED + KEY_F5:
+			if (gameStates.render.vr.nRenderMode != VR_NONE) {
+				VRResetParams ();
+				HUDInitMessage(TXT_VR_RESET);
+				HUDInitMessage(TXT_VR_SEPARATION, X2F(gameStates.render.vr.xEyeWidth));
+				HUDInitMessage(TXT_VR_BALANCE, (double)gameStates.render.vr.nEyeOffset/30.0);
 			}
 			break;
 
-		case KEY_ALTED+KEY_F6:
-			if ( gameStates.render.vr.nRenderMode != VR_NONE ) {
+		case KEY_ALTED + KEY_F6:
+			if (gameStates.render.vr.nRenderMode != VR_NONE) {
 				gameStates.render.vr.nLowRes++;
-				if ( gameStates.render.vr.nLowRes > 3 ) gameStates.render.vr.nLowRes = 0;
-				switch( gameStates.render.vr.nLowRes )    {
-					case 0: HUDInitMessage( TXT_VR_NORMRES ); break;
-					case 1: HUDInitMessage( TXT_VR_LOWVRES ); break;
-					case 2: HUDInitMessage( TXT_VR_LOWHRES ); break;
-					case 3: HUDInitMessage( TXT_VR_LOWRES ); break;
+				if (gameStates.render.vr.nLowRes > 3) gameStates.render.vr.nLowRes = 0;
+				switch(gameStates.render.vr.nLowRes)    {
+					case 0: HUDInitMessage(TXT_VR_NORMRES); break;
+					case 1: HUDInitMessage(TXT_VR_LOWVRES); break;
+					case 2: HUDInitMessage(TXT_VR_LOWHRES); break;
+					case 3: HUDInitMessage(TXT_VR_LOWRES); break;
 				}
 			}
 			break;
 
-		case KEY_ALTED+KEY_F7:
-			if ( gameStates.render.vr.nRenderMode != VR_NONE ) {
+		case KEY_ALTED + KEY_F7:
+			if (gameStates.render.vr.nRenderMode != VR_NONE) {
 				gameStates.render.vr.nEyeSwitch = !gameStates.render.vr.nEyeSwitch;
-				HUDInitMessage( TXT_VR_TOGGLE );
-				if ( gameStates.render.vr.nEyeSwitch )
-					HUDInitMessage( TXT_VR_RLEYE );
+				HUDInitMessage(TXT_VR_TOGGLE);
+				if (gameStates.render.vr.nEyeSwitch)
+					HUDInitMessage(TXT_VR_RLEYE);
 				else
-					HUDInitMessage( TXT_VR_LREYE );
+					HUDInitMessage(TXT_VR_LREYE);
 			}
 			break;
 
-		case KEY_ALTED+KEY_F8:
-			if ( gameStates.render.vr.nRenderMode != VR_NONE ) {
+		case KEY_ALTED + KEY_F8:
+			if (gameStates.render.vr.nRenderMode != VR_NONE) {
 			gameStates.render.vr.nSensitivity++;
-			if (gameStates.render.vr.nSensitivity > 2 )
+			if (gameStates.render.vr.nSensitivity > 2)
 				gameStates.render.vr.nSensitivity = 0;
-			HUDInitMessage( TXT_VR_SENSITIVITY, gameStates.render.vr.nSensitivity );
+			HUDInitMessage(TXT_VR_SENSITIVITY, gameStates.render.vr.nSensitivity);
 		 }
 			break;
-		case KEY_ALTED+KEY_F9:
-			if ( gameStates.render.vr.nRenderMode != VR_NONE ) {
+		case KEY_ALTED + KEY_F9:
+			if (gameStates.render.vr.nRenderMode != VR_NONE) {
 				gameStates.render.vr.xEyeWidth -= I2X (1)/10;
-				if ( gameStates.render.vr.xEyeWidth < 0 ) gameStates.render.vr.xEyeWidth = 0;
-				HUDInitMessage( TXT_VR_SEPARATION, X2F(gameStates.render.vr.xEyeWidth) );
-				HUDInitMessage( TXT_VR_DEFAULT, X2F(VR_SEPARATION) );
+				if (gameStates.render.vr.xEyeWidth < 0) gameStates.render.vr.xEyeWidth = 0;
+				HUDInitMessage(TXT_VR_SEPARATION, X2F(gameStates.render.vr.xEyeWidth));
+				HUDInitMessage(TXT_VR_DEFAULT, X2F(VR_SEPARATION));
 			}
 			break;
-		case KEY_ALTED+KEY_F10:
-			if ( gameStates.render.vr.nRenderMode != VR_NONE ) {
+		case KEY_ALTED + KEY_F10:
+			if (gameStates.render.vr.nRenderMode != VR_NONE) {
 				gameStates.render.vr.xEyeWidth += I2X (1)/10;
-				if ( gameStates.render.vr.xEyeWidth > I2X (4) )    gameStates.render.vr.xEyeWidth = I2X (4);
-				HUDInitMessage( TXT_VR_SEPARATION, X2F(gameStates.render.vr.xEyeWidth) );
-				HUDInitMessage( TXT_VR_DEFAULT, X2F(VR_SEPARATION) );
+				if (gameStates.render.vr.xEyeWidth > I2X (4))    gameStates.render.vr.xEyeWidth = I2X (4);
+				HUDInitMessage(TXT_VR_SEPARATION, X2F(gameStates.render.vr.xEyeWidth));
+				HUDInitMessage(TXT_VR_DEFAULT, X2F(VR_SEPARATION));
 			}
 			break;
 
-		case KEY_ALTED+KEY_F11:
-			if ( gameStates.render.vr.nRenderMode != VR_NONE ) {
+		case KEY_ALTED + KEY_F11:
+			if (gameStates.render.vr.nRenderMode != VR_NONE) {
 				gameStates.render.vr.nEyeOffset--;
-				if ( gameStates.render.vr.nEyeOffset < -30 )	gameStates.render.vr.nEyeOffset = -30;
-				HUDInitMessage( TXT_VR_BALANCE, (double)gameStates.render.vr.nEyeOffset/30.0 );
-				HUDInitMessage( TXT_VR_DEFAULT, (double)VR_PIXEL_SHIFT/30.0 );
+				if (gameStates.render.vr.nEyeOffset < -30)	gameStates.render.vr.nEyeOffset = -30;
+				HUDInitMessage(TXT_VR_BALANCE, (double)gameStates.render.vr.nEyeOffset/30.0);
+				HUDInitMessage(TXT_VR_DEFAULT, (double)VR_PIXEL_SHIFT/30.0);
 				gameStates.render.vr.bEyeOffsetChanged = 2;
 			}
 			break;
-		case KEY_ALTED+KEY_F12:
-			if ( gameStates.render.vr.nRenderMode != VR_NONE ) {
+		case KEY_ALTED + KEY_F12:
+			if (gameStates.render.vr.nRenderMode != VR_NONE) {
 				gameStates.render.vr.nEyeOffset++;
-				if ( gameStates.render.vr.nEyeOffset > 30 )	 gameStates.render.vr.nEyeOffset = 30;
-				HUDInitMessage( TXT_VR_BALANCE, (double)gameStates.render.vr.nEyeOffset/30.0 );
-				HUDInitMessage( TXT_VR_DEFAULT, (double)VR_PIXEL_SHIFT/30.0 );
+				if (gameStates.render.vr.nEyeOffset > 30)	 gameStates.render.vr.nEyeOffset = 30;
+				HUDInitMessage(TXT_VR_BALANCE, (double)gameStates.render.vr.nEyeOffset/30.0);
+				HUDInitMessage(TXT_VR_DEFAULT, (double)VR_PIXEL_SHIFT/30.0);
 				gameStates.render.vr.bEyeOffsetChanged = 2;
 			}
 			break;
@@ -712,7 +739,7 @@ void HandleVRKey(int key)
 
 //------------------------------------------------------------------------------
 
-extern void DropFlag();
+extern void DropFlag ();
 
 extern int gr_renderstats;
 
@@ -805,7 +832,7 @@ void HandleGameKey(int key)
 			break;
 
 		case KEY_F5 + KEY_SHIFTED:
-		   DropCurrentWeapon();
+		   DropCurrentWeapon ();
 			break;
 
 		case KEY_F6 + KEY_SHIFTED:
@@ -818,7 +845,7 @@ void HandleGameKey(int key)
 
 		case KEY_F4:
 			if (!gameData.marker.nDefiningMsg)
-				InitMarkerInput();
+				InitMarkerInput ();
 			break;
 
 		case KEY_F4 + KEY_CTRLED:
@@ -869,45 +896,45 @@ void HandleTestKey(int key)
 {
 	switch (key) {
 
-		case KEYDBGGED+KEY_0:
-			ShowWeaponStatus();   break;
+		case KEYDBGGED + KEY_0:
+			ShowWeaponStatus ();   break;
 
 #ifdef SHOW_EXIT_PATH
-		case KEYDBGGED+KEY_1:
-			MarkPathToExit();  
+		case KEYDBGGED + KEY_1:
+			MarkPathToExit ();  
 			break;
 #endif
 
-		case KEYDBGGED+KEY_Y:
+		case KEYDBGGED + KEY_Y:
 			DoReactorDestroyedStuff(NULL);
 			break;
 
-	case KEYDBGGED+KEY_ALTED+KEY_D:
+	case KEYDBGGED + KEY_ALTED + KEY_D:
 			networkData.nNetLifeKills=4000; 
 			networkData.nNetLifeKilled=5;
-			MultiAddLifetimeKills();
+			MultiAddLifetimeKills ();
 			break;
 
 		case KEY_BACKSP:
-		case KEY_CTRLED+KEY_BACKSP:
-		case KEY_ALTED+KEY_BACKSP:
-		case KEY_ALTED+KEY_CTRLED+KEY_BACKSP:
-		case KEY_SHIFTED+KEY_BACKSP:
-		case KEY_SHIFTED+KEY_ALTED+KEY_BACKSP:
-		case KEY_SHIFTED+KEY_CTRLED+KEY_BACKSP:
-		case KEY_SHIFTED+KEY_CTRLED+KEY_ALTED+KEY_BACKSP:
-			Int3(); 
+		case KEY_CTRLED + KEY_BACKSP:
+		case KEY_ALTED + KEY_BACKSP:
+		case KEY_ALTED + KEY_CTRLED + KEY_BACKSP:
+		case KEY_SHIFTED + KEY_BACKSP:
+		case KEY_SHIFTED + KEY_ALTED + KEY_BACKSP:
+		case KEY_SHIFTED + KEY_CTRLED + KEY_BACKSP:
+		case KEY_SHIFTED + KEY_CTRLED + KEY_ALTED + KEY_BACKSP:
+			Int3 (); 
 			break;
 
-		case KEY_CTRLED+KEY_ALTED+KEY_ENTER:
+		case KEY_CTRLED + KEY_ALTED + KEY_ENTER:
 			exit (0);
 			break;
 
-		case KEYDBGGED+KEY_S:			
-			audio.Reset(); 
+		case KEYDBGGED + KEY_S:			
+			audio.Reset (); 
 			break;
 
-		case KEYDBGGED+KEY_P:
+		case KEYDBGGED + KEY_P:
 			if (gameStates.app.bGameSuspended & SUSP_ROBOTS)
 				gameStates.app.bGameSuspended &= ~SUSP_ROBOTS;		//robots move
 			else
@@ -915,27 +942,27 @@ void HandleTestKey(int key)
 			break;
 
 
-		case KEYDBGGED+KEY_K:
+		case KEYDBGGED + KEY_K:
 			LOCALPLAYER.shields = 1;
 			MultiSendShields ();
 			break;			
 						//	a virtual kill
-		case KEYDBGGED+KEY_SHIFTED + KEY_K:  
+		case KEYDBGGED + KEY_SHIFTED + KEY_K:  
 			LOCALPLAYER.shields = -1;	 
 			MultiSendShields ();
 			break;  //	an actual kill
 		
-		case KEYDBGGED+KEY_X: 
+		case KEYDBGGED + KEY_X: 
 			LOCALPLAYER.lives++; 
 			break; // Extra life cheat key.
 		
-		case KEYDBGGED+KEY_H:
-//				if (!(gameData.app.nGameMode & GM_MULTI) )   {
+		case KEYDBGGED + KEY_H:
+//				if (!(gameData.app.nGameMode & GM_MULTI))   {
 				LOCALPLAYER.flags ^= PLAYER_FLAGS_CLOAKED;
 				if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 					if (gameData.app.nGameMode & GM_MULTI)
-						MultiSendCloak();
-					AIDoCloakStuff();
+						MultiSendCloak ();
+					AIDoCloakStuff ();
 					LOCALPLAYER.cloakTime = gameData.time.xGame;
 #if TRACE
 					console.printf (CON_DBG, "You are cloaked!\n");
@@ -948,36 +975,36 @@ void HandleTestKey(int key)
 			break;
 
 
-		case KEYDBGGED+KEY_R:
+		case KEYDBGGED + KEY_R:
 			gameStates.app.cheats.bRobotsFiring = !gameStates.app.cheats.bRobotsFiring;
 			break;
 
-		case KEYDBGGED+KEY_R+KEY_SHIFTED:
+		case KEYDBGGED + KEY_R + KEY_SHIFTED:
 			KillAllRobots (1);
 			break;
 
 		//flythrough keys
 
 #if DBG
-		case KEYDBGGED+KEY_LAPOSTRO: 
+		case KEYDBGGED + KEY_LAPOSTRO: 
 			showViewTextTimer = 0x30000; 
-			ObjectGotoNextViewer(); 
+			ObjectGotoNextViewer (); 
 			break;
-		case KEYDBGGED+KEY_CTRLED+KEY_LAPOSTRO: 
+		case KEYDBGGED + KEY_CTRLED + KEY_LAPOSTRO: 
 			showViewTextTimer = 0x30000; 
-			ObjectGotoPrevViewer(); 
+			ObjectGotoPrevViewer (); 
 			break;
 #endif
-		case KEYDBGGED+KEY_SHIFTED+KEY_LAPOSTRO: 
+		case KEYDBGGED + KEY_SHIFTED + KEY_LAPOSTRO: 
 			gameData.objs.viewerP=gameData.objs.consoleP; 
 			break;
 
 	#if DBG
-		case KEYDBGGED+KEY_O: 
-			ToggleOutlineMode(); 
+		case KEYDBGGED + KEY_O: 
+			ToggleOutlineMode (); 
 			break;
 	#endif
-		case KEYDBGGED+KEY_T:
+		case KEYDBGGED + KEY_T:
 			*Toggle_var = !*Toggle_var;
 #if TRACE
 			console.printf (CON_DBG, "Variable at %08x set to %i\n", Toggle_var, *Toggle_var);
@@ -991,10 +1018,10 @@ void HandleTestKey(int key)
 			xBeamBrightness = 0x38000 - xBeamBrightness; 
 			break;
 		case KEY_PAD5: 
-			slew_stop(); 
+			slew_stop (); 
 			break;
 
-		case KEYDBGGED +KEY_F4: {
+		case KEYDBGGED  + KEY_F4: {
 			//tFVIData hit_data;
 			//CFixVector p0 = {-0x1d99a7, -0x1b20000, 0x186ab7f};
 			//CFixVector p1 = {-0x217865, -0x1b20000, 0x187de3e};
@@ -1005,17 +1032,17 @@ void HandleTestKey(int key)
 		case KEYDBGGED + KEY_M:
 			gameStates.app.bDebugSpew = !gameStates.app.bDebugSpew;
 			if (gameStates.app.bDebugSpew) {
-				mopen( 0, 8, 1, 78, 16, "Debug Spew");
-				HUDInitMessage( "Debug Spew: ON" );
+				mopen(0, 8, 1, 78, 16, "Debug Spew");
+				HUDInitMessage("Debug Spew: ON");
 			} else {
-				mclose( 0 );
-				HUDInitMessage( "Debug Spew: OFF" );
+				mclose(0);
+				HUDInitMessage("Debug Spew: OFF");
 			}
 			break;
 
 		case KEYDBGGED + KEY_C:
-			paletteManager.SaveEffectAndReset();
-			DoCheatMenu();
+			paletteManager.SaveEffectAndReset ();
+			DoCheatMenu ();
 			paletteManager.LoadEffect ();
 			break;
 
@@ -1025,24 +1052,24 @@ void HandleTestKey(int key)
 
 		case KEYDBGGED + KEY_A: {
 			DoMegaWowPowerup(200);
-//								if ( gameData.app.nGameMode & GM_MULTI )     {
-//									MsgBox( NULL, 1, "Damn", "CHEATER!\nYou cannot use the\nmega-thing in network mode." );
+//								if (gameData.app.nGameMode & GM_MULTI)     {
+//									MsgBox(NULL, 1, "Damn", "CHEATER!\nYou cannot use the\nmega-thing in network mode.");
 //									gameData.multigame.msg.nReceiver = 100;		// Send to everyone...
-//									sprintf( gameData.multigame.msg.szMsg, "%s cheated!", LOCALPLAYER.callsign);
+//									sprintf(gameData.multigame.msg.szMsg, "%s cheated!", LOCALPLAYER.callsign);
 //								} else {
-//									DoMegaWowPowerup();
+//									DoMegaWowPowerup ();
 //								}
 						break;
 		}
 
-		case KEYDBGGED+KEY_F:
+		case KEYDBGGED + KEY_F:
 		gameStates.render.bShowFrameRate = !gameStates.render.bShowFrameRate; 
 		break;
 
-		case KEYDBGGED+KEY_SPACEBAR:		//KEY_F7:				// Toggle physics flying
-			slew_stop();
-			GameFlushInputs();
-			if ( gameData.objs.consoleP->info.controlType != CT_FLYING ) {
+		case KEYDBGGED + KEY_SPACEBAR:		//KEY_F7:				// Toggle physics flying
+			slew_stop ();
+			GameFlushInputs ();
+			if (gameData.objs.consoleP->info.controlType != CT_FLYING) {
 				FlyInit(gameData.objs.consoleP);
 				gameStates.app.bGameSuspended &= ~SUSP_ROBOTS;	//robots move
 			} else {
@@ -1051,18 +1078,18 @@ void HandleTestKey(int key)
 			}
 			break;
 
-		case KEYDBGGED+KEY_COMMA: 
+		case KEYDBGGED + KEY_COMMA: 
 			gameStates.render.xZoom = FixMul(gameStates.render.xZoom, 62259); 
 			break;
-		case KEYDBGGED+KEY_PERIOD: 
+		case KEYDBGGED + KEY_PERIOD: 
 			gameStates.render.xZoom = FixMul(gameStates.render.xZoom, 68985); 
 			break;
 
-		case KEYDBGGED+KEY_P+KEY_SHIFTED: 
+		case KEYDBGGED + KEY_P + KEY_SHIFTED: 
 			Debug_pause = 1; 
 			break;
 
-		case KEYDBGGED+KEY_B: {
+		case KEYDBGGED + KEY_B: {
 			CMenu	m (1);
 			char text [FILENAME_LEN] = "";
 			int item;
@@ -1074,24 +1101,24 @@ void HandleTestKey(int key)
 			break;
 		}
 
-		case KEYDBGGED+KEY_F5:
+		case KEYDBGGED + KEY_F5:
 			ToggleMovieSaving ();
 			break;
 
-		case KEYDBGGED+KEY_SHIFTED+KEY_F5: {
+		case KEYDBGGED + KEY_SHIFTED + KEY_F5: {
 			extern int Movie_fixed_frametime;
 			Movie_fixed_frametime = !Movie_fixed_frametime;
 			break;
 		}
 
-		case KEYDBGGED+KEY_ALTED+KEY_F5:
+		case KEYDBGGED + KEY_ALTED + KEY_F5:
 			gameData.time.xGame = I2X(0x7fff - 840);		//will overflow in 14 minutes
 #if TRACE
 			console.printf (CON_DBG, "gameData.time.xGame bashed to %d secs\n", X2I(gameData.time.xGame));
 #endif
 			break;
 
-		case KEYDBGGED+KEY_SHIFTED+KEY_B:
+		case KEYDBGGED + KEY_SHIFTED + KEY_B:
 			KillEverything (1);
 			break;
 	}
@@ -1105,7 +1132,7 @@ char OldHomingState [20];
 
 //------------------------------------------------------------------------------
 
-int ReadControls()
+int ReadControls ()
 {
 	int key, skipControls = 0;
 	fix keyTime;
@@ -1113,55 +1140,55 @@ int ReadControls()
 
 gameStates.app.bPlayerFiredLaserThisFrame=-1;
 if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
-		if ( (gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.marker.nDefiningMsg)
+		if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.marker.nDefiningMsg)
 			|| gameData.multigame.msg.bSending || gameData.multigame.msg.bDefining
 			)	 // WATCH OUT!!! WEIRD CODE ABOVE!!!
-			memset( &Controls, 0, sizeof(tControlInfo) );
+			memset(&Controls, 0, sizeof(tControlInfo));
 		else
-			skipControls = ControlsReadAll();		//NOTE LINK TO ABOVE!!!
-	CheckRearView();
+			skipControls = ControlsReadAll ();		//NOTE LINK TO ABOVE!!!
+	CheckRearView ();
 	//	If automap key pressed, enable automap unless you are in network mode, control center destroyed and < 10 seconds left
 	if (Controls [0].automapDownCount && 
 		 !gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted && 
 		 !(IsMultiGame && gameData.reactor.bDestroyed && (gameData.reactor.countdown.nSecsLeft < 10)))
 		automap.m_bDisplay = 1;
-	DoWeaponStuff();
+	DoWeaponStuff ();
 	}
-if (gameStates.app.bPlayerExploded) { //gameStates.app.bPlayerIsDead && (gameData.objs.consoleP->flags & OF_EXPLODING) ) {
+if (gameStates.app.bPlayerExploded) { //gameStates.app.bPlayerIsDead && (gameData.objs.consoleP->flags & OF_EXPLODING)) {
 	if (!explodingFlag)  {
 		explodingFlag = 1;			// When CPlayerData starts exploding, clear all input devices...
-		GameFlushInputs();
+		GameFlushInputs ();
 		}
 	else {
 		int i;
-		for (i = 0; i < 4; i++ )
+		for (i = 0; i < 4; i++)
 			if (JoyGetButtonDownCnt (i) > 0) 
 				gameStates.app.bDeathSequenceAborted = 1;
-		for (i = 0; i < 3; i++ )
+		for (i = 0; i < 3; i++)
 			if (MouseButtonDownCount (i) > 0) 
 				gameStates.app.bDeathSequenceAborted = 1;
 		if (gameStates.app.bDeathSequenceAborted)
-			GameFlushInputs();
+			GameFlushInputs ();
 		}
 	} 
 else {
 	explodingFlag = 0;
 	}
-if (gameData.demo.nState == ND_STATE_PLAYBACK )
-	UpdateVCRState();
+if (gameData.demo.nState == ND_STATE_PLAYBACK)
+	UpdateVCRState ();
 while ((key = KeyInKeyTime (&keyTime)) != 0) {
 	if (gameData.marker.nDefiningMsg) {
 		MarkerInputMessage (key);
 			continue;
 		}
-if ( IsMultiGame && (gameData.multigame.msg.bSending || gameData.multigame.msg.bDefining )) {
+if (IsMultiGame && (gameData.multigame.msg.bSending || gameData.multigame.msg.bDefining)) {
 	MultiMsgInputSub (key);
 	continue;		//get next key
 	}
 #if DBG
 if ((key&KEYDBGGED) && IsMultiGame) {
 	gameData.multigame.msg.nReceiver = 100;		// Send to everyone...
-	sprintf( gameData.multigame.msg.szMsg, "%s %s", TXT_I_AM_A, TXT_CHEATER);
+	sprintf(gameData.multigame.msg.szMsg, "%s %s", TXT_I_AM_A, TXT_CHEATER);
 	}
 #endif
 #ifdef CONSOLE
@@ -1172,7 +1199,7 @@ if (gameStates.app.bPlayerIsDead)
 	HandleDeathKey(key);
 	if (gameStates.app.bEndLevelSequence)
 		HandleEndlevelKey(key);
-	else if (gameData.demo.nState == ND_STATE_PLAYBACK ) {
+	else if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 		HandleDemoKey(key);
 #if DBG
 		HandleTestKey(key);
