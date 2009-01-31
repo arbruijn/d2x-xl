@@ -881,7 +881,7 @@ if (m_info.nMaxChannels < 1)
 	m_info.nMaxChannels = 1;
 if (m_info.nMaxChannels > MAX_SOUND_CHANNELS) 
 	m_info.nMaxChannels = MAX_SOUND_CHANNELS;
-gameStates.sound.audio.nMaxChannels = nMaxChannels;
+gameStates.sound.audio.nMaxChannels = m_info.nMaxChannels;
 if (!m_info.bAvailable) 
 	return;
 audio.StopAllSounds ();
