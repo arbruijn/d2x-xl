@@ -149,14 +149,20 @@ return i;
 
 void CCockpit::DrawPrimaryAmmoInfo (int ammoCount)
 {
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
 DrawAmmoInfo (PRIMARY_AMMO_X, PRIMARY_AMMO_Y, ammoCount, 1);
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
 
 void CCockpit::DrawSecondaryAmmoInfo (int ammoCount)
 {
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
 DrawAmmoInfo (SECONDARY_AMMO_X, SECONDARY_AMMO_Y, ammoCount, 0);
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------

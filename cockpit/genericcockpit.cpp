@@ -608,12 +608,12 @@ void CGenericCockpit::DrawAmmoInfo (int x, int y, int ammoCount, int bPrimary)
 
 w = (m_info.fontWidth * (bPrimary ? 7 : 5)) / 2;
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
-OglDrawFilledRect (ScaleX (x), ScaleY (y), ScaleX (x+w), ScaleY (y + m_info.fontHeight));
+//OglDrawFilledRect (ScaleX (x), ScaleY (y), ScaleX (x+w), ScaleY (y + m_info.fontHeight));
 fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 sprintf (szAmmo, "%03d", ammoCount);
 Convert1s (szAmmo);
 nIdAmmo [bPrimary][0] = PrintF (&nIdAmmo [bPrimary][0], x, y, szAmmo);
-OglDrawFilledRect (ScaleX (x), ScaleY (y), ScaleX (x+w), ScaleY (y + m_info.fontHeight));
+//OglDrawFilledRect (ScaleX (x), ScaleY (y), ScaleX (x+w), ScaleY (y + m_info.fontHeight));
 nIdAmmo [bPrimary][1] = PrintF (&nIdAmmo [bPrimary][1], x, y, szAmmo);
 }
 

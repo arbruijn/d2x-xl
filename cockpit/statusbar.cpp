@@ -189,14 +189,20 @@ hudCockpit.DrawHomingWarning ();
 
 void CStatusBar::DrawPrimaryAmmoInfo (int ammoCount)
 {
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
 DrawAmmoInfo (SB_PRIMARY_AMMO_X, SB_PRIMARY_AMMO_Y, ammoCount, 1);
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
 
 void CStatusBar::DrawSecondaryAmmoInfo (int ammoCount)
 {
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
 DrawAmmoInfo (SB_SECONDARY_AMMO_X, SB_SECONDARY_AMMO_Y, ammoCount, 0);
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
