@@ -1070,7 +1070,6 @@ else
 				h = 1;
 #endif
 				}
-			m_nParts += h;
 			for (; h; h--, j = (j + 1) % m_nPartLimit) {
 				vPosf += vDeltaf;
 				vPos.Assign (vPosf);
@@ -1078,11 +1077,12 @@ else
 				vPos[Y] = (fix) (vPosf [Y] * 65536.0f);
 				vPos[Z] = (fix) (vPosf [Z] * 65536.0f);
 */
-				m_particles [j].Create (&vPos, vDir, &mOrient, m_nSegment, m_nLife,
-												m_nSpeed, m_nType, m_nClass, m_fScale, m_bHaveColor ? &m_color : NULL,
-												nCurTime, m_bBlowUpParts, fBrightness, vEmittingFace);
-			if (/*(m_nType == LIGHT_PARTICLES) ||*/ (m_nType == BULLET_PARTICLES))
-				goto funcExit;
+				if (m_particles [j].Create (&vPos, vDir, &mOrient, m_nSegment, m_nLife,
+													 m_nSpeed, m_nType, m_nClass, m_fScale, m_bHaveColor ? &m_color : NULL,
+													 nCurTime, m_bBlowUpParts, fBrightness, vEmittingFace))
+					m_nParts++;
+				if (/*(m_nType == LIGHT_PARTICLES) ||*/ (m_nType == BULLET_PARTICLES))
+					goto funcExit;
 				}
 			}
 		}
@@ -1207,7 +1207,7 @@ if (nMaxParts > m_nPartLimit) {
 		m_nPartLimit = nMaxParts;
 		delete[] m_particles.Buffer ();
 		}
-	m_particles.SetBuffer (pp);
+	m_particles.SetBuffer (pp, 0, nMaxParts);
 	}
 m_nDensity = nDensity;
 m_nMaxParts = nMaxParts;
