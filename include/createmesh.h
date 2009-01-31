@@ -35,6 +35,7 @@ class CTriMeshBuilder {
 		int					m_nMaxEdges;
 		int					m_nVertices;
 		int					m_nTris;
+		int					m_nQuality;
 
 	private:
 		void FreeData (void);
@@ -64,7 +65,7 @@ class CTriMeshBuilder {
 	public:
 		CTriMeshBuilder (void) {};
 		~CTriMeshBuilder (void) {};
-		int Build (int nLevel);
+		int Build (int nLevel, int nQuality);
 	};
 
 class CQuadMeshBuilder {

@@ -69,7 +69,7 @@ using namespace Mesh;
 
 //------------------------------------------------------------------------------
 
-#define	MAX_EDGE_LEN	fMaxEdgeLen [gameOpts->render.nMeshQuality]
+#define	MAX_EDGE_LEN(nMeshQuality)	fMaxEdgeLen [nMeshQuality]
 
 #define MESH_DATA_VERSION 6
 
@@ -104,6 +104,7 @@ int CTriMeshBuilder::AllocData (void)
 {
 if (m_nMaxTriangles && m_nMaxEdges) {
 	if (!(m_edges.Resize (m_nMaxEdges * 2) && m_triangles.Resize (m_nMaxTriangles * 2))) {
+		PrintLog ("      Not enough memory for building the triangle mesh (%d edges, %d tris).\n", m_nMaxEdges * 2, m_nMaxTriangles * 2);
 		FreeData ();
 		return 0;
 		}
@@ -115,9 +116,12 @@ if (m_nMaxTriangles && m_nMaxEdges) {
 else {
 	m_nMaxTriangles = gameData.segs.nFaces * 4;
 	m_nMaxEdges = gameData.segs.nFaces * 4;
-	if (!m_edges.Create (m_nMaxEdges))
+	if (!m_edges.Create (m_nMaxEdges)) {
+		PrintLog ("      Not enough memory for building the triangle mesh (%d edges).\n", m_nMaxEdges);
 		return 0;
+		}
 	if (!m_triangles.Create (m_nMaxTriangles)) {
+		PrintLog ("      Not enough memory for building the triangle mesh (%d tris).\n", m_nMaxTriangles);
 		FreeData ();
 		return 0;
 		}
@@ -337,8 +341,10 @@ for (i = 0; i < 3; i++) {
 	if ((h == nVert1) || (h == nVert2))
 		break;
 	}
-if (i == 3)
+if (i == 3) {
+	PrintLog ("      Internal error during construction of the triangle mesh.\n");
 	return 0;
+	}
 
 h = indexP [(i + 1) % 3]; //check next vertex index
 if ((h == nVert1) || (h == nVert2))
@@ -420,7 +426,7 @@ gameData.segs.fVertices [gameData.segs.nVertices] = CFloatVector::Avg(
 gameData.segs.vertices [gameData.segs.nVertices].Assign (gameData.segs.fVertices [gameData.segs.nVertices]);
 #if 0
 if (tris [1] >= 0) {
-	if (NewEdgeLen (tris [0], verts [0], verts [1]) + NewEdgeLen (tris [1], verts [0], verts [1]) < MAX_EDGE_LEN)
+	if (NewEdgeLen (tris [0], verts [0], verts [1]) + NewEdgeLen (tris [1], verts [0], verts [1]) < MAX_EDGE_LEN (m_nQuality))
 		return -1;
 	}
 #endif
@@ -446,7 +452,7 @@ for (i = 0; i < 3; i++) {
 		h = i;
 		}
 	}
-if (lMax <= MAX_EDGE_LEN)
+if (lMax <= MAX_EDGE_LEN (m_nQuality))
 	return -1;
 return SplitEdge (&m_edges [triP->lines [h]], nPass);
 }
@@ -456,7 +462,7 @@ return SplitEdge (&m_edges [triP->lines [h]], nPass);
 int CTriMeshBuilder::SplitTriangles (void)
 {
 	int	bSplit = 0, h, i, j, nSplitRes;
-	short	nPass = 0, nMaxPasses = 10 * gameOpts->render.nMeshQuality;
+	short	nPass = 0, nMaxPasses = 10 * m_nQuality;
 
 h = 0;
 do {
@@ -472,8 +478,10 @@ do {
 			nDbgSeg = nDbgSeg;
 #endif
 		nSplitRes = SplitTriangle (&m_triangles [i], nPass);
-		if (gameData.segs.nVertices == 65536)
+		if (gameData.segs.nVertices == 65536) {
+			PrintLog ("      Level too big for requested triangle mesh quality.\n");
 			return 0;
+			}
 		if (!nSplitRes)
 			return 0;
 		if (nSplitRes < 0)
@@ -719,7 +727,7 @@ for (i = gameData.segs.nFaces, faceP = FACES.faces.Buffer (); i; i--, faceP++)
 char *CTriMeshBuilder::DataFilename (char *pszFilename, int nLevel)
 {
 return GameDataFilename (pszFilename, "mesh", nLevel,
-								 (gameStates.render.bTriangleMesh < 0) ? -1 : gameOpts->render.nMeshQuality);
+								 (gameStates.render.bTriangleMesh < 0) ? -1 : m_nQuality);
 }
 
 //------------------------------------------------------------------------------
@@ -847,9 +855,10 @@ return bOk;
 
 //------------------------------------------------------------------------------
 
-int CTriMeshBuilder::Build (int nLevel)
+int CTriMeshBuilder::Build (int nLevel, int nQuality)
 {
 PrintLog ("creating triangle mesh\n");
+m_nQuality = nQuality;
 if (Load (nLevel))
 	return 1;
 if (!CreateTriangles ()) {
@@ -873,7 +882,7 @@ return Load (nLevel); //Load will rebuild all face data buffers, reducing their 
 int CQuadMeshBuilder::IsBigFace (ushort *sideVerts)
 {
 for (int i = 0; i < 4; i++)
-	if (CFloatVector::Dist (gameData.segs.fVertices [sideVerts [i]], gameData.segs.fVertices [sideVerts [(i + 1) % 4]]) > MAX_EDGE_LEN)
+	if (CFloatVector::Dist (gameData.segs.fVertices [sideVerts [i]], gameData.segs.fVertices [sideVerts [(i + 1) % 4]]) > MAX_EDGE_LEN (gameStates.render.nMeshQuality))
 		return 1;
 return 0;
 }
@@ -1373,9 +1382,10 @@ for (m_colorP = gameData.render.color.ambient.Buffer (), i = gameData.segs.nVert
 		m_colorP->color.blue /= m_colorP->color.alpha;
 		m_colorP->color.alpha = 1;
 		}
-if (gameStates.render.bTriangleMesh && !m_triMeshBuilder.Build (nLevel)) {
-	gameStates.render.nMeshQuality = 0;
-	return 0;
+if (gameStates.render.bTriangleMesh) {
+	for (gameStates.render.nMeshQuality = gameOpts->render.nMeshQuality; gameStates.render.nMeshQuality; gameStates.render.nMeshQuality--)
+		if (m_triMeshBuilder.Build (nLevel, gameStates.render.nMeshQuality))
+			break;
 	}
 BuildSlidingFaceList ();
 if (gameStates.render.bTriangleMesh)

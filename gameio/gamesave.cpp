@@ -1251,8 +1251,9 @@ if (nError == -1) {   //error!!
 	}
 cf.Close ();
 
-if (!meshBuilder.Build (nLevel))
-	goto reloadLevel;
+if (!meshBuilder.Build (nLevel)) {
+	return 6;
+	
 if (!gameData.render.mine.Create ())
 	return 4;
 lightManager.Setup (nLevel); //moved to loadgame.cpp::LoadLevel()
