@@ -1382,15 +1382,11 @@ for (m_colorP = gameData.render.color.ambient.Buffer (), i = gameData.segs.nVert
 		m_colorP->color.blue /= m_colorP->color.alpha;
 		m_colorP->color.alpha = 1;
 		}
-if (gameStates.render.bTriangleMesh) {
-	for (gameStates.render.nMeshQuality = gameOpts->render.nMeshQuality; gameStates.render.nMeshQuality; gameStates.render.nMeshQuality--)
-		if (m_triMeshBuilder.Build (nLevel, gameStates.render.nMeshQuality))
-			break;
-	}
+if (gameStates.render.bTriangleMesh && !m_triMeshBuilder.Build (nLevel, gameStates.render.nMeshQuality))
+	return 0;
 BuildSlidingFaceList ();
 if (gameStates.render.bTriangleMesh)
 	cameraManager.Destroy ();
-gameStates.render.nMeshQuality = gameOpts->render.nMeshQuality;
 return 1;
 }
 

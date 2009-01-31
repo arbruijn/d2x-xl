@@ -1251,9 +1251,15 @@ if (nError == -1) {   //error!!
 	}
 cf.Close ();
 
-if (!meshBuilder.Build (nLevel))
-	return 6;
+if (!meshBuilder.Build (nLevel)) {
+	if (gameStates.render.nMeshQuality <= 0)
+		return 6;
+	gameStates.render.nMeshQuality--;
+	goto reloadLevel;
+	}
 	
+gameStates.render.nMeshQuality = gameOpts->render.nMeshQuality;
+
 if (!gameData.render.mine.Create ())
 	return 4;
 lightManager.Setup (nLevel); //moved to loadgame.cpp::LoadLevel()
