@@ -637,10 +637,6 @@ if (gameOpts->render.bDepthSort > 0) {
 else if (gameOpts->render.particles.bSort) {
 	hp = m_vTransPos;
 	if ((particleManager.LastType () != nType) || (brightness != bufferBrightness)) {
-#if DBG
-		if (particleManager.LastType () == 2)
-			nType = nType;
-#endif
 		if (gameStates.render.bVertexArrays)
 			particleManager.FlushBuffer (brightness);
 		else
