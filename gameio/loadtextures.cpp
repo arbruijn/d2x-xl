@@ -524,15 +524,42 @@ return (strstr (bmName, "cockpit") == bmName) || (strstr (bmName, "status") == b
 
 //------------------------------------------------------------------------------
 
+void MakeBitmapFilenames (const char* bmName, char* rootFolder, char* cacheFolder, char* fn, char* fnShrunk, int nShrinkFactor)
+{
+	time_t	tBase, tShrunk;
+
+sprintf (fn, "%s%s%s.tga", rootFolder, *rootFolder ? "/" : "", bmName);
+tBase = (gameStates.app.bCacheTextures && (nShrinkFactor > 1)) ? CFile::Date (fn, "", 0) : -1;
+if (tBase < 0) 
+	*fnShrunk = '\0';
+else {
+	sprintf (fnShrunk, "%s%s%d/%s.tga", cacheFolder, *cacheFolder ? "/" : "", 512 / nShrinkFactor, bmName);
+	tShrunk = CFile::Date (fnShrunk, "", 0);
+	if (tShrunk < tBase)
+		*fnShrunk = '\0';
+	}
+}
+
+//------------------------------------------------------------------------------
+
+int OpenBitmapFile (char fn [4][FILENAME_LEN], CFile* cfP)
+{
+for (int i = 0; i < 4; i++)
+	if (*fn [i] && cfP->Open (fn [i], "", "rb", 0))
+		return i;
+return -1;
+}
+
+//------------------------------------------------------------------------------
+
 int PageInBitmap (CBitmap *bmP, const char *bmName, int nIndex, int bD1)
 {
 	CBitmap			*altBmP = NULL;
-	int				nSize, nOffset, nFrames, nShrinkFactor, nBestShrinkFactor,
+	int				nFile, nSize, nOffset, nFrames, nShrinkFactor, nBestShrinkFactor,
 						bRedone = 0, bTGA;
 	bool				bDefault = false;
-	time_t			tBase, tShrunk;
 	CFile				cf, *cfP = &cf;
-	char				fn [FILENAME_LEN], fnShrunk [FILENAME_LEN];
+	char				fn [4][FILENAME_LEN];
 	tTgaHeader		h;
 
 #if DBG
@@ -551,23 +578,14 @@ if (nIndex >= 0)
 	GetFlagData (bmName, nIndex);
 #if DBG
 if (strstr (bmName, "rock313")) {
-	sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], *gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
+	sprintf (fn [3], "%s%s%s.tga", gameFolders.szTextureDir [bD1], *gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
 	}
 #endif
 if (gameStates.app.bNostalgia)
 	gameOpts->render.textures.bUseHires = 0;
 else {
-	sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], *gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
-	tBase = cfP->Date (fn, "", 0);
-	if (tBase < 0) 
-		*fnShrunk = '\0';
-	else {
-		sprintf (fnShrunk, "%s%s%d/%s.tga", gameFolders.szTextureCacheDir [bD1], 
-					*gameFolders.szTextureCacheDir [bD1] ? "/" : "", 512 / nShrinkFactor, bmName);
-		tShrunk = cfP->Date (fnShrunk, "", 0);
-		if (tShrunk < tBase)
-			*fnShrunk = '\0';
-		}
+	MakeBitmapFilenames (bmName, gameFolders.szTextureDir [2], gameFolders.szTextureCacheDir [2], fn [3], fn [2], nShrinkFactor);
+	MakeBitmapFilenames (bmName, gameFolders.szTextureDir [bD1], gameFolders.szTextureCacheDir [bD1], fn [1], fn [0], nShrinkFactor);
 	}
 bTGA = 0;
 bmP->SetBPP (1);
@@ -586,9 +604,8 @@ if (*bmName && ((nIndex < 0) || IsCockpit (bmName) ||
 		}
 	else 
 #endif
-	if ((gameStates.app.bCacheTextures && (nShrinkFactor > 1) && *fnShrunk && cfP->Open (fnShrunk, "", "rb", 0)) || 
-		 cfP->Open (fn, "", "rb", 0)) {
-		PrintLog ("loading hires texture '%s' (quality: %d)\n", fn, min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality));
+	if (0 <= (nFile = OpenBitmapFile (fn, cfP))) {
+		PrintLog ("loading hires texture '%s' (quality: %d)\n", fn [nFile], min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality));
 		bTGA = 1;
 		if (nIndex < 0)
 			altBmP = &gameData.pig.tex.addonBitmaps [-nIndex - 1];
