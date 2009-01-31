@@ -745,7 +745,7 @@ while (MsnGetS (buf, 80, cf)) {
 			;
 		while (*bufP == ' ')
 			bufP++;
-		hogFileManager.UseAlt (bufP);
+		hogFileManager.UseMission (bufP);
 		}
 	else if (MsnIsTok (buf, "briefing")) {
 		if ((v = MsnGetValue (buf))) {
@@ -929,13 +929,13 @@ if (!i) {
 	return 0;
 	}
 //for non-builtin missions, load HOG
-hogFileManager.UseAlt ("");
+hogFileManager.UseMission ("");
 if (!strcmp (gameData.missions.list [nMission].filename, gameData.missions.szBuiltinMissionFilename)) 
 	bFoundHogFile = 1;
 else {
 	sprintf (szFile, "%s%s.hog", szFolder, gameData.missions.list [nMission].filename);
 	strlwr (szFile);
-	bFoundHogFile = hogFileManager.UseAlt (szFile);
+	bFoundHogFile = hogFileManager.UseMission (szFile);
 	if (bFoundHogFile) {
 		// for Descent 1 missions, load descent.hog
 		if ((gameData.missions.list [nMission].nDescentVersion == 1) && 
@@ -949,7 +949,7 @@ else {
 					gameData.missions.list [nMission].filename,
 					(gameData.missions.list [nMission].nDescentVersion == 2) ? ".rl2" : ".rdl");
 		strlwr (szFile);
-		bFoundHogFile = hogFileManager.UseAlt (szFile);
+		bFoundHogFile = hogFileManager.UseMission (szFile);
 		if (bFoundHogFile) {
 			strcpy (gameData.missions.szLevelNames [0], hogFileManager.AltFiles ().files [0].name);
 			gameData.missions.nLastLevel = 1;
@@ -957,7 +957,7 @@ else {
 		else {
 			sprintf (szFile, "%s%s", szFolder, gameData.missions.szLevelNames [0]);
 			strlwr (szFile);
-			bFoundHogFile = hogFileManager.UseAlt (szFile);
+			bFoundHogFile = hogFileManager.UseMission (szFile);
 			}
 		}
 	}

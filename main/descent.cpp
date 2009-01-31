@@ -763,7 +763,7 @@ if (!(hogFileManager.Init ("descent2.hog", gameFolders.szDataDir) ||
 	}
 LoadGameTexts ();
 if (*szAutoHogFile && *szAutoMission) {
-	hogFileManager.UseAlt (szAutoHogFile);
+	hogFileManager.UseMission (szAutoHogFile);
 	gameStates.app.bAutoRunMission = hogFileManager.AltFiles ().bInitialized;
 	}
 /*---*/PrintLog ("Reading configuration file\n");

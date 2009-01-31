@@ -53,7 +53,7 @@ int GetAppFolder (const char *szRootDir, char *szFolder, const char *szName, con
 	char	szDir [FILENAME_LEN];
 	int	i, bAddSlash;
 
-if (! (szName && *szName))
+if (!(szName && *szName))
 	return 1;
 i = (int) strlen (szRootDir);
 bAddSlash = i && (szRootDir [i-1] != '\\') && (szRootDir [i-1] != '/');

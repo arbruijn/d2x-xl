@@ -859,7 +859,7 @@ for (;;) {
 	sprintf (szHogName, "%s%s%s%s",
 				gameFolders.szMissionDir, *gameFolders.szMissionDir ? "/" : "",
 				gameFolders.szMsnSubDir, pszLevelName);
-	if (!hogFileManager.UseAlt (szHogName))
+	if (!hogFileManager.UseMission (szHogName))
 		break;
 	bRetry = 1;
 	};

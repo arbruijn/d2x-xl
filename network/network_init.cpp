@@ -351,7 +351,7 @@ int InitAutoNetGame (void)
 if (!gameData.multiplayer.autoNG.bValid)
 	return 0;
 if (gameData.multiplayer.autoNG.bHost) {
-	hogFileManager.UseAlt (gameData.multiplayer.autoNG.szFile);
+	hogFileManager.UseMission (gameData.multiplayer.autoNG.szFile);
 	strcpy (szAutoMission, gameData.multiplayer.autoNG.szMission);
 	gameStates.app.bAutoRunMission = hogFileManager.AltFiles ().bInitialized;
 	strncpy (mpParams.szGameName, gameData.multiplayer.autoNG.szName, sizeof (mpParams.szGameName));

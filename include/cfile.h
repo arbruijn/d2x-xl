@@ -140,7 +140,7 @@ typedef struct tGameFolders {
 	char szDataDir [FILENAME_LEN];
 	char szShaderDir [FILENAME_LEN];
 	char szModelDir [2][FILENAME_LEN];
-	char szModelCacheDir [FILENAME_LEN];
+	char szModelCacheDir [2][FILENAME_LEN];
 	char szSoundDir [2][FILENAME_LEN];
 	char szTextureDir [2][FILENAME_LEN];
 	char szTextureCacheDir [2][FILENAME_LEN];
@@ -155,6 +155,7 @@ typedef struct tGameFolders {
 	char szMissionDirs [2][FILENAME_LEN];
 	char szMsnSubDir [FILENAME_LEN];
 	char szCacheDir [FILENAME_LEN];
+	char szModDir [FILENAME_LEN][2];
 	int bAltHogDirInited;
 } tGameFolders;
 

@@ -741,7 +741,7 @@ if (gameStates.app.bCacheTextures && !bCustom && (nShrinkFactor > 1) &&
 	if (!cf.Open (fn, gameFolders.szModelDir [nType], "rb", 0))
 		return 1;
 	if (ReadTGAHeader (cf, &h, NULL))
-		SaveTGA (fn, gameFolders.szModelCacheDir, &h, bmP);
+		SaveTGA (fn, gameFolders.szModelCacheDir [0], &h, bmP);
 	cf.Close ();
 	}
 return 1;

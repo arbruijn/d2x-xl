@@ -94,6 +94,20 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // ----------------------------------------------------------------------------
 
+void MakeTexSubFolders (char* pszParentFolder)
+{
+	static char *szTexSubFolders [] = {"256", "128", "64"};
+
+	char	szTemp [FILENAME_LEN];
+
+for (int i = 0; i < 3; i++) {
+	sprintf (szTemp, "%s/%s", pszParentFolder, szTexSubFolders [i]);
+	CFile::MkDir (szTemp);
+	}
+}
+
+// ----------------------------------------------------------------------------
+
 #ifdef WIN32
 #	define	STD_GAMEDIR		""
 #	define	D2X_APPNAME		"d2x-xl.exe"
@@ -121,6 +135,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define	TEXTUREDIR_D2	"Textures"
 #	define	TEXTUREDIR_D1	"Textures/D1"
 #	define	CACHEDIR			"Cache"
+#	define	CACHEDIR			"Mods"
 #else
 #	define	DATADIR			"data"
 #	define	SHADERDIR		"shaders"
@@ -137,12 +152,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define	TEXTUREDIR_D2	"textures"
 #	define	TEXTUREDIR_D1	"textures/d1"
 #	define	CACHEDIR			"cache"
+#	define	MODDIR			"mods"
 #endif
 
 void GetAppFolders (void)
 {
 	int	i, j;
-	char	szDataRootDir [FILENAME_LEN], szTemp [FILENAME_LEN];
+	char	szDataRootDir [FILENAME_LEN];
 	char	*psz;
 #ifdef _WIN32
 	char	c;
@@ -253,8 +269,8 @@ if (*gameFolders.szHomeDir) {
 	CFile::MkDir (gameFolders.szTextureCacheDir [0]);
 	sprintf (gameFolders.szTextureCacheDir [1], "%s/%s", pszOSXCacheDir, TEXTUREDIR_D1);
 	CFile::MkDir (gameFolders.szTextureCacheDir [1]);
-	sprintf (gameFolders.szModelCacheDir, "%s/%s", pszOSXCacheDir, MODELDIR);
-	CFile::MkDir (gameFolders.szModelCacheDir);
+	sprintf (gameFolders.szModelCacheDir [0], "%s/%s", pszOSXCacheDir, MODELDIR);
+	CFile::MkDir (gameFolders.szModelCacheDir [0]);
 	sprintf (gameFolders.szCacheDir, "%s/%s", pszOSXCacheDir, CACHEDIR);
 	CFile::MkDir (gameFolders.szCacheDir);
 	sprintf (gameFolders.szCacheDir, "%s/%s/256", pszOSXCacheDir, CACHEDIR);
@@ -277,8 +293,8 @@ if (*gameFolders.szHomeDir) {
 	CFile::MkDir (gameFolders.szTextureCacheDir [0]);
 	sprintf (gameFolders.szTextureCacheDir [1], "%s/%s", szDataRootDir, TEXTUREDIR_D1);
 	CFile::MkDir (gameFolders.szTextureCacheDir [1]);
-	sprintf (gameFolders.szModelCacheDir, "%s/%s", szDataRootDir, MODELDIR);
-	CFile::MkDir (gameFolders.szModelCacheDir);
+	sprintf (gameFolders.szModelCacheDir [0], "%s/%s", szDataRootDir, MODELDIR);
+	CFile::MkDir (gameFolders.szModelCacheDir [0]);
 	sprintf (gameFolders.szCacheDir, "%s/%s", szDataRootDir, CACHEDIR);
 	CFile::MkDir (gameFolders.szCacheDir);
 #endif // __macosx__
@@ -287,6 +303,7 @@ GetAppFolder (szDataRootDir, gameFolders.szProfDir, PROFDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szSaveDir, SAVEDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szScrShotDir, SCRSHOTDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szDemoDir, DEMODIR, "");
+GetAppFolder (szDataRootDir, gameFolders.szModDir [0], MODDIR, "");
 if (GetAppFolder (szDataRootDir, gameFolders.szConfigDir, CONFIGDIR, "d2x.ini"))
 	strcpy (gameFolders.szConfigDir, gameFolders.szGameDir);
 #ifdef WIN32
@@ -296,17 +313,23 @@ sprintf (gameFolders.szMissionDir, "%s/%s", gameFolders.szGameDir, BASE_MISSION_
 #endif
 //if (i = FindArg ("-hogdir"))
 //	CFUseAltHogDir (pszArgList [i + 1]);
-static char *szTexSubFolders [] = {"256", "128", "64"};
+for (i = 0; i < 2; i++)
+	MakeTexSubFolders (gameFolders.szTextureCacheDir [i]);
+MakeTexSubFolders (gameFolders.szModelCacheDir [0]);
+}
 
-for (i = 0; i < 2; i++) {
-	for (j = 0; j < 3; j++) {
-		sprintf (szTemp, "%s/%s", gameFolders.szTextureCacheDir [i], szTexSubFolders [j]);
-		CFile::MkDir (szTemp);
-		}
-	}
-for (j = 0; j < 3; j++) {
-	sprintf (szTemp, "%s/%s", gameFolders.szModelCacheDir, szTexSubFolders [j]);
-	CFile::MkDir (szTemp);
+// ----------------------------------------------------------------------------
+
+void MakeModFolders (char* pszMission)
+{
+	char fn [FILENAME_LEN];
+
+CFile::SplitPath (pszMission, NULL, fn, NULL);
+if (!GetAppFolder (gameFolders.szModDir [0], gameFolders.szModDir [1], fn, "")) {
+	sprintf (gameFolders.szTextureCacheDir [2], "%s/%s", gameFolders.szModDir [1], "textures");
+	sprintf (gameFolders.szModelCacheDir [1], "%s/%s", gameFolders.szModDir [1], "models");
+	MakeTexSubFolders (gameFolders.szTextureCacheDir [2]);
+	MakeTexSubFolders (gameFolders.szModelCacheDir [1]);
 	}
 }
 

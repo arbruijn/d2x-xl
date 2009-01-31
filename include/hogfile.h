@@ -44,7 +44,7 @@ typedef struct tGameHogFiles {
 	tHogFileList D2XHogFiles;
 	tHogFileList XLHogFiles;
 	tHogFileList ExtraHogFiles;
-	tHogFileList AltHogFiles;
+	tHogFileList MsnHogFiles;
 	char szAltHogFile [FILENAME_LEN];
 	int bAltHogFileInited;
 } tGameHogFiles;
@@ -60,7 +60,7 @@ class CHogFile {
 		int UseXL (const char *name);
 		int UseD2X (const char *name);
 		int UseExtra (const char *name);
-		int UseAlt (const char *name);
+		int UseMission (const char *name);
 		int UseD1 (const char *name);
 		void UseAltDir (const char *path);
 		FILE* Find (const char *name, int *length, int bUseD1Hog);
@@ -71,7 +71,7 @@ class CHogFile {
 		inline tHogFileList& D2XFiles (void) { return m_files.D2XHogFiles; }
 		inline tHogFileList& XLFiles (void) { return m_files.XLHogFiles; }
 		inline tHogFileList& ExtraFiles (void) { return m_files.ExtraHogFiles; }
-		inline tHogFileList& AltFiles (void) { return m_files.AltHogFiles; }
+		inline tHogFileList& AltFiles (void) { return m_files.MsnHogFiles; }
 		char *AltHogFile (void) { return m_files.szAltHogFile; }
 
 	private:

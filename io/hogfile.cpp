@@ -39,6 +39,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 CHogFile hogFileManager;
 
+void MakeModFolders (char* pszMission);
+
 // ----------------------------------------------------------------------------
 
 void CHogFile::QuickSort (tHogFile *hogFiles, int left, int right)
@@ -176,10 +178,13 @@ gameFolders.bAltHogDirInited =
 
 // ----------------------------------------------------------------------------
 
-int CHogFile::UseAlt (const char * name) 
+int CHogFile::UseMission (const char * name) 
 {
-m_files.AltHogFiles.bInitialized = 0;
-return Use (&m_files.AltHogFiles, name, "");
+m_files.MsnHogFiles.bInitialized = 0;
+if (!Use (&m_files.MsnHogFiles, name, ""))
+	return 0;
+MakeModFolders (name);
+return 1;
 }
 
 // ----------------------------------------------------------------------------
@@ -246,7 +251,7 @@ FILE* CHogFile::Find (const char *name, int *length, int bUseD1Hog)
 {
 	FILE* fp;
   
-if ((fp = Find (&m_files.AltHogFiles, "", name, length)))
+if ((fp = Find (&m_files.MsnHogFiles, "", name, length)))
 	return fp;
 if ((fp = Find (&m_files.XLHogFiles, gameFolders.szDataDir, name, length)))
 	return fp;

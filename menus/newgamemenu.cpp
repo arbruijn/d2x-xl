@@ -167,7 +167,7 @@ gameStates.app.bD1Data = 0;
 SetDataVersion (-1);
 if ((nMission < 0) || gameOpts->app.bSinglePlayer)
 	gameFolders.szMsnSubDir [0] = '\0';
-hogFileManager.UseAlt ("");
+hogFileManager.UseMission ("");
 do {
 	nMissions = BuildMissionList (0, nFolder);
 	if (nMissions < 1)
@@ -279,7 +279,7 @@ gameStates.app.bD1Data = 0;
 SetDataVersion (-1);
 if ((nMission < 0) || gameOpts->app.bSinglePlayer)
 	gameFolders.szMsnSubDir [0] = '\0';
-hogFileManager.UseAlt ("");
+hogFileManager.UseMission ("");
 for (;;) {
 	m.Destroy ();
 	m.Create (15);
