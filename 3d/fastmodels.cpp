@@ -227,12 +227,12 @@ pm->m_fScale *= fScale;
 void G3GetThrusterPos (CObject *objP, short nModel, RenderModel::CFace *pmf, CFixVector *vOffsetP,
 							  CFixVector *vNormal, int nRad, int bHires)
 {
-	RenderModel::CModel				*pm = gameData.models.renderModels [bHires] + nModel;
-	RenderModel::CVertex		*pmv = NULL;
+	RenderModel::CModel*		pm = gameData.models.renderModels [bHires] + nModel;
+	RenderModel::CVertex*	pmv = NULL;
 	CFloatVector3				v = CFloatVector3::ZERO, vn, vo, vForward = CFloatVector3::Create(0,0,1);
-	CModelThrusters	*mtP = gameData.models.thrusters + nModel;
-	int					i, j = 0;
-	float					h, nSize;
+	CModelThrusters*			mtP = gameData.models.thrusters + nModel;
+	int							i, j = 0;
+	float							h, nSize;
 
 if (!objP)
 	return;
@@ -379,9 +379,9 @@ return (objP->info.nType == OBJ_PLAYER) ||
 
 int G3AnimateSubModel (CObject *objP, RenderModel::CSubModel *psm, short nModel)
 {
-	tFiringData	*fP;
-	float			nTimeout, y;
-	int			nDelay;
+	tFiringData*	fP;
+	float				nTimeout, y;
+	int				nDelay;
 
 if (!psm->m_nFrames)
 	return 0;
@@ -420,15 +420,15 @@ void G3DrawSubModel (CObject *objP, short nModel, short nSubModel, short nExclus
 						   CAngleVector *pAnimAngles, CFixVector *vOffsetP, int bHires, int bUseVBO, int nPass, int bTransparency,
 							int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
-	RenderModel::CModel			*pm = gameData.models.renderModels [bHires] + nModel;
-	RenderModel::CSubModel		*psm = pm->m_subModels + nSubModel;
-	RenderModel::CFace	*pmf;
-	CBitmap		*bmP = NULL;
-	CAngleVector		va = pAnimAngles ? pAnimAngles [psm->m_nAngles] : CAngleVector::ZERO;
-	CFixVector		vo;
-	int				h, i, j, bTransparent, bAnimate, bTextured = !(gameStates.render.bCloaked /*|| nPass*/),
-						bGetThruster = !nPass && ObjectHasThruster (objP);
-	short				nId, nFaceVerts, nVerts, nIndex, nBitmap = -1, nTeamColor;
+	RenderModel::CModel*		pm = gameData.models.renderModels [bHires] + nModel;
+	RenderModel::CSubModel*	psm = pm->m_subModels + nSubModel;
+	RenderModel::CFace*		pmf;
+	CBitmap*						bmP = NULL;
+	CAngleVector				va = pAnimAngles ? pAnimAngles [psm->m_nAngles] : CAngleVector::ZERO;
+	CFixVector					vo;
+	int							h, i, j, bTransparent, bAnimate, bTextured = !(gameStates.render.bCloaked /*|| nPass*/),
+									bGetThruster = !nPass && ObjectHasThruster (objP);
+	short							nId, nFaceVerts, nVerts, nIndex, nBitmap = -1, nTeamColor;
 
 if (objP->info.nType == OBJ_PLAYER)
 	nTeamColor = IsMultiGame ? (IsTeamGame ? GetTeam (objP->info.nId) : objP->info.nId) + 1 : gameOpts->render.ship.nColor;
