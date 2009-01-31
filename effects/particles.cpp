@@ -70,23 +70,23 @@
 
 #define SORT_CLOUDS 1
 
-#define PARTICLE_TYPES	4
+#define PARTICLE_TYPES	5
 
 #define PARTICLE_FPS	30
 
 #define PART_DEPTHBUFFER_SIZE 100000
 #define PARTLIST_SIZE 1000000
 
-static int bHavePartImg [2][PARTICLE_TYPES] = {{0,0,0,0},{0,0,0,0}};
+static int bHavePartImg [2][PARTICLE_TYPES] = {{0,0,0,0,0},{0,0,0,0,0}};
 
-static CBitmap *bmpParticle [2][PARTICLE_TYPES] = {{NULL, NULL, NULL, NULL},{NULL, NULL, NULL, NULL}};
+static CBitmap *bmpParticle [2][PARTICLE_TYPES] = {{NULL, NULL, NULL, NULL, NULL},{NULL, NULL, NULL, NULL, NULL}};
 #if 0
 static CBitmap *bmpBumpMaps [2] = {NULL, NULL};
 #endif
 
 static const char *szParticleImg [2][PARTICLE_TYPES] = {
- {"smoke.tga", "bubble.tga", "bullcase.tga", "corona.tga"},
- {"smoke.tga", "bubble.tga", "bullcase.tga", "corona.tga"}
+ {"smoke.tga", "bubble.tga", "bullcase.tga", "corona.tga", "corona.tga"},
+ {"smoke.tga", "bubble.tga", "bullcase.tga", "corona.tga", "corona.tga"}
 	};
 
 static int nParticleFrames [2][PARTICLE_TYPES] = {{1,1,1,1},{1,1,1,1}};
@@ -591,7 +591,7 @@ int CParticle::Render (float brightness)
 {
 	CFixVector				hp;
 	GLfloat					d, u, v;
-	CBitmap*					bmP;
+	CBitmap*					bmP, *bmfP;
 	tRgbaColorf				pc;
 	tTexCoord2f				texCoord [4];
 	tParticleVertex*		pb;
@@ -608,12 +608,12 @@ int CParticle::Render (float brightness)
 
 if (m_nDelay > 0)
 	return 0;
-if ((nType < 0) || (nType >= PARTICLE_TYPES))
+if ((nType < 0) || (nType > PARTICLE_TYPES))
 	return 0;
 if (!(bmP = bmpParticle [0][nType]))
 	return 0;
-if (bmP->CurFrame ())
-	bmP = bmP->CurFrame ();
+if ((bmfP = bmP->CurFrame ()))
+	bmP = bmfP;
 if (gameOpts->render.bDepthSort > 0) {
 	hp = m_vTransPos;
 	if ((particleManager.LastType () != nType) || (brightness != bufferBrightness) || (bBufferEmissive != bEmissive)) {
@@ -657,7 +657,7 @@ else if (gameOpts->render.particles.bSort) {
 		}
 	}
 else
-	transformation.Transform(hp, m_vPos, 0);
+	transformation.Transform (hp, m_vPos, 0);
 if (m_bBright)
 	brightness = (float) sqrt (brightness);
 if (nType == SMOKE_PARTICLES) {
