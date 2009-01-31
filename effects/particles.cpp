@@ -1012,13 +1012,13 @@ if ((nThread < 0) && RunEmitterThread (emitterP, nCurTime, rtUpdateParticles)) {
 else
 #endif
  {
-		int			t, h, i, j;
-		float			fDist;
-		float			fBrightness = Brightness ();
-		CFixMatrix	mOrient = m_mOrient;
-		CFixVector	vDelta, vPos, *vDir = (m_bHaveDir ? &m_vDir : NULL),
-						*vEmittingFace = m_bEmittingFace ? m_vEmittingFace : NULL;
-		CFloatVector		vDeltaf, vPosf;
+		int				t, h, i, j;
+		float				fDist;
+		float				fBrightness = Brightness ();
+		CFixMatrix		mOrient = m_mOrient;
+		CFixVector		vDelta, vPos, *vDir = (m_bHaveDir ? &m_vDir : NULL),
+							* vEmittingFace = m_bEmittingFace ? m_vEmittingFace : NULL;
+		CFloatVector	vDeltaf, vPosf;
 
 #if SMOKE_SLOWMO
 	t = (int) ((nCurTime - m_nMoved) / gameStates.gameplay.slowmo [0].fSpeed);
@@ -1117,6 +1117,12 @@ else
 						nPartLimit = m_nPartLimit;
 		int			bVisible = MayBeVisible ();
 
+#if DBG
+	if (nFirstPart >= int (m_particles.Length ()))
+		return 0;
+	if (m_nPartLimit > int (m_particles.Length ()))
+		m_nPartLimit = int (m_particles.Length ());
+#endif
 	for (h = 0, i = nParts, j = nFirstPart; i; i--, j = (j + 1) % nPartLimit)
 		if ((bVisible || m_particles [j].IsVisible ()) && transparencyRenderer.AddParticle (m_particles + j, brightness, nThread))
 			h++;
