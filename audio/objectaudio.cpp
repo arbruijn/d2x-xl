@@ -700,6 +700,7 @@ for (uint i = 0; i < m_objects.ToS (); i++) {
 		m_objects [i].m_flags = 0;	// Mark as dead, so some other sound can use this sound
 		}
 	}
+m_objects.Reset ();
 }
 
 //------------------------------------------------------------------------------

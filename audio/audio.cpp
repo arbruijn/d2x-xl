@@ -874,11 +874,14 @@ void CAudio::SetMaxChannels (int nChannels)
 { 
 if (!gameStates.app.bUseSound)
 	return;
-m_info.nMaxChannels	= nChannels;
+if (m_info.nMaxChannels	== nChannels)
+	return;
+m_info.nMaxChannels = nChannels;
 if (m_info.nMaxChannels < 1) 
 	m_info.nMaxChannels = 1;
 if (m_info.nMaxChannels > MAX_SOUND_CHANNELS) 
 	m_info.nMaxChannels = MAX_SOUND_CHANNELS;
+gameStates.sound.audio.nMaxChannels = nMaxChannels;
 if (!m_info.bAvailable) 
 	return;
 audio.StopAllSounds ();
