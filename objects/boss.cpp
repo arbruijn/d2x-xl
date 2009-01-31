@@ -170,6 +170,8 @@ m_nCloakInterval = I2X (10);
 m_nCloakDuration = BOSS_CLOAK_DURATION;
 m_nLastGateTime = 0;
 m_nGateInterval = I2X (6);
+m_bDyingSoundPlaying = 0;
+m_nDying = 0;
 }
 
 // -----------------------------------------------------------------------------
@@ -195,8 +197,6 @@ if (!(SetupSegments (m_gateSegs, 0, 0) && SetupSegments (m_teleportSegs, 1, 0)))
 	}
 m_nGateSegs = m_gateSegs.Length ();
 m_nTeleportSegs = m_teleportSegs.Length ();
-m_bDyingSoundPlaying = 0;
-m_nDying = 0;
 if (gameStates.app.bD1Mission)
 	m_nGateInterval = I2X (5) - I2X (gameStates.app.nDifficultyLevel) / 2;
 else
@@ -272,6 +272,8 @@ cf.Read (&m_nLastGateTime, sizeof (fix), 1);
 cf.Read (&m_nGateInterval, sizeof (fix), 1);
 cf.Read (&m_nDyingStartTime, sizeof (fix), 1);
 cf.Read (&m_nDying, sizeof (int), 1);
+if (m_nDying && (m_nDyingStartTime > gameData.time.xGame))
+	m_nDyingStartTime = gameData.time.xGame;
 cf.Read (&m_bDyingSoundPlaying, sizeof (int), 1);
 cf.Read (&m_nHitTime, sizeof (fix), 1);
 }
@@ -292,6 +294,8 @@ m_nLastGateTime = cf.ReadFix ();
 m_nGateInterval = cf.ReadFix ();
 m_nDyingStartTime = cf.ReadFix ();
 m_nDying = cf.ReadInt ();
+if (m_nDying && (m_nDyingStartTime > gameData.time.xGame))
+	m_nDyingStartTime = gameData.time.xGame;
 m_bDyingSoundPlaying = cf.ReadInt ();
 m_nHitTime = cf.ReadFix ();
 }

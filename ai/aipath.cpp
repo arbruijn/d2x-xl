@@ -747,6 +747,10 @@ if (CreatePathPoints (objP, objP->info.nSegment, -2, gameData.ai.freePointSegs, 
 		}
 	}
 aiP->nHideIndex = (int) (gameData.ai.freePointSegs - gameData.ai.routeSegs);
+#if DBG
+if (aiP->nHideIndex < 0)
+	aiP->nHideIndex = aiP->nHideIndex;
+#endif
 aiP->nCurPathIndex = 0;
 #if PATH_VALIDATION
 ValidatePath (8, gameData.ai.freePointSegs, aiP->nPathLength);
@@ -872,16 +876,16 @@ else
 //	Optimization: If current velocity will take robot near goal, don't change velocity
 void AIFollowPath (CObject *objP, int nPlayerVisibility, int nPrevVisibility, CFixVector *vec_to_player)
 {
-	tAIStaticInfo		*aiP = &objP->cType.aiInfo;
+	tAIStaticInfo*	aiP = &objP->cType.aiInfo;
 
-	CFixVector	vGoalPoint, new_vGoalPoint;
-	fix			xDistToGoal;
-	tRobotInfo	*botInfoP = &ROBOTINFO (objP->info.nId);
-	int			forced_break, original_dir, original_index;
-	fix			xDistToPlayer;
-	short			nGoalSeg;
-	tAILocalInfo		*ailP = gameData.ai.localInfo + objP->Index ();
-	fix			thresholdDistance;
+	CFixVector		vGoalPoint, new_vGoalPoint;
+	fix				xDistToGoal;
+	tRobotInfo*		botInfoP = &ROBOTINFO (objP->info.nId);
+	int				forced_break, original_dir, original_index;
+	fix				xDistToPlayer;
+	short				nGoalSeg;
+	tAILocalInfo*	ailP = gameData.ai.localInfo + objP->Index ();
+	fix				thresholdDistance;
 
 
 if ((aiP->nHideIndex == -1) || (aiP->nPathLength == 0)) {
@@ -932,22 +936,27 @@ if (aiP->nPathLength < 2) {
 		}
 	}
 
-vGoalPoint = gameData.ai.routeSegs [aiP->nHideIndex + aiP->nCurPathIndex].point;
-nGoalSeg = gameData.ai.routeSegs [aiP->nHideIndex + aiP->nCurPathIndex].nSegment;
-xDistToGoal = CFixVector::Dist(vGoalPoint, objP->info.position.vPos);
+int i = aiP->nHideIndex + aiP->nCurPathIndex;
+if (i < 0)
+	xDistToGoal = 0;
+else {
+	vGoalPoint = gameData.ai.routeSegs [aiP->nHideIndex + aiP->nCurPathIndex].point;
+	nGoalSeg = gameData.ai.routeSegs [aiP->nHideIndex + aiP->nCurPathIndex].nSegment;
+	xDistToGoal = CFixVector::Dist (vGoalPoint, objP->info.position.vPos);
+	}
 if (gameStates.app.bPlayerIsDead)
-	xDistToPlayer = CFixVector::Dist(objP->info.position.vPos, gameData.objs.viewerP->info.position.vPos);
+	xDistToPlayer = CFixVector::Dist (objP->info.position.vPos, gameData.objs.viewerP->info.position.vPos);
 else
-	xDistToPlayer = CFixVector::Dist(objP->info.position.vPos, OBJPOS (gameData.objs.consoleP)->vPos);
+	xDistToPlayer = CFixVector::Dist (objP->info.position.vPos, OBJPOS (gameData.objs.consoleP)->vPos);
 	//	Efficiency hack: If far away from CPlayerData, move in big quantized jumps.
 if (!(nPlayerVisibility || nPrevVisibility) && (xDistToPlayer > I2X (200)) && !IsMultiGame) {
-	if (xDistToGoal < I2X (2)) {
+	if (xDistToGoal && (xDistToGoal < I2X (2))) {
 		MoveObjectToGoal (objP, &vGoalPoint, nGoalSeg);
 		return;
 		}
 	else {
 		tRobotInfo	*botInfoP = &ROBOTINFO (objP->info.nId);
-		fix	xCurSpeed = botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel]/2;
+		fix	xCurSpeed = botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel] / 2;
 		fix	xCoverableDist = FixMul (gameData.time.xFrame, xCurSpeed);
 		// int	nConnSide = ConnectedSide (objP->info.nSegment, nGoalSeg);
 		//	Only move to goal if allowed to fly through the CSide.p.
