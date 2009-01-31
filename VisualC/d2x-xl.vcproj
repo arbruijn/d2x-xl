@@ -3409,6 +3409,10 @@
 						RelativePath="..\input\include\mouse.h"
 						>
 					</File>
+					<File
+						RelativePath="..\include\systemkeys.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter
@@ -4393,11 +4397,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File

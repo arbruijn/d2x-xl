@@ -217,7 +217,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void ToggleChaseCam (void)
+int ToggleChaseCam (void)
 {
 #if !DBG	
 if (IsMultiGame && !(IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))

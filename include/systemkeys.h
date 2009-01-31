@@ -1,5 +1,5 @@
-#ifndef __GAMECNTL_H
-#define __GAMECNTL_H
+#ifndef __SYSTEMKEYS_H
+#define __SYSTEMKEYS_H
 
 void HandleEndlevelKey (int key);
 void HandleDeathKey (int key);
@@ -14,8 +14,8 @@ int ToggleRearView (void);
 void ResetRearView (void);
 void CheckRearView (void);
 int SetChaseCam (int bOn);
-void ToggleChaseCam (void);
+int ToggleChaseCam (void);
 int SetFreeCam (int bOn);
 int ToggleFreeCam (void);
 
-#endif //__GAMECNTL_H
+#endif //__SYSTEMKEYS_H
