@@ -1251,7 +1251,7 @@ if (nError == -1) {   //error!!
 	}
 cf.Close ();
 
-if (!meshBuilder.Build (nLevel)) {
+if (!meshBuilder.Build (nLevel))
 	return 6;
 	
 if (!gameData.render.mine.Create ())
