@@ -39,7 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 CHogFile hogFileManager;
 
-void MakeModFolders (char* pszMission);
+void MakeModFolders (const char* pszMission);
 
 // ----------------------------------------------------------------------------
 

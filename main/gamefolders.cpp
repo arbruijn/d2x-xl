@@ -320,7 +320,7 @@ MakeTexSubFolders (gameFolders.szModelCacheDir [0]);
 
 // ----------------------------------------------------------------------------
 
-void MakeModFolders (char* pszMission)
+void MakeModFolders (const char* pszMission)
 {
 	char fn [FILENAME_LEN];
 
