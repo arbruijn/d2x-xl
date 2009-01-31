@@ -743,9 +743,11 @@ if (vOffsetP)
 int G3RenderModel (CObject *objP, short nModel, short nSubModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps,
 						 CAngleVector *pAnimAngles, CFixVector *vOffsetP, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor)
 {
-	RenderModel::CModel	*pm = gameData.models.renderModels [1] + nModel;
-	int		i, bHires = 1, bUseVBO = gameStates.ogl.bHaveVBOs && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bObjLighting),
-				nGunId, nBombId, nMissileId, nMissiles;
+	RenderModel::CModel*	pm = gameData.models.renderModels [1] + nModel;
+	int						i, 
+								bHires = 1, 
+								bUseVBO = gameStates.ogl.bHaveVBOs && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bObjLighting),
+								nGunId, nBombId, nMissileId, nMissiles;
 
 if (!objP)
 	return 0;
@@ -811,10 +813,10 @@ if (bUseVBO) {
 		}
 	}
 else {
-	pm->m_vbVerts = reinterpret_cast<CFloatVector3*> (pm->m_vertBuf [0].Buffer ());
-	pm->m_vbNormals = pm->m_vbVerts.Buffer () + pm->m_nFaceVerts;
-	pm->m_vbColor = reinterpret_cast<tRgbaColorf*> (pm->m_vbNormals.Buffer () + pm->m_nFaceVerts);
-	pm->m_vbTexCoord = reinterpret_cast<tTexCoord2f*> (pm->m_vbColor.Buffer () + pm->m_nFaceVerts);
+	pm->m_vbVerts.SetBuffer (reinterpret_cast<CFloatVector3*> (pm->m_vertBuf [0].Buffer ()), 1, pm->m_nFaceVerts);
+	pm->m_vbNormals.SetBuffer (pm->m_vbVerts.Buffer () + pm->m_nFaceVerts, 1, pm->m_nFaceVerts);
+	pm->m_vbColor.SetBuffer (reinterpret_cast<tRgbaColorf*> (pm->m_vbNormals.Buffer () + pm->m_nFaceVerts), 1, pm->m_nFaceVerts);
+	pm->m_vbTexCoord.SetBuffer (reinterpret_cast<tTexCoord2f*> (pm->m_vbColor.Buffer () + pm->m_nFaceVerts), 1, pm->m_nFaceVerts);
 	}
 #if G3_SW_SCALING
 G3ScaleModel (nModel);
