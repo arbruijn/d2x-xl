@@ -89,8 +89,8 @@ static const char *szParticleImg [2][PARTICLE_TYPES] = {
  {"smoke.tga", "bubble.tga", "bullcase.tga", "corona.tga", "corona.tga"}
 	};
 
-static int nParticleFrames [2][PARTICLE_TYPES] = {{1,1,1,1},{1,1,1,1}};
-static int iParticleFrames [2][PARTICLE_TYPES] = {{0,0,0,0},{0,0,0,0}};
+static int nParticleFrames [2][PARTICLE_TYPES] = {{1,1,1,1,1},{1,1,1,1,1}};
+static int iParticleFrames [2][PARTICLE_TYPES] = {{0,0,0,0,0},{0,0,0,0,0}};
 #if 0
 static int iPartFrameIncr  [2][PARTICLE_TYPES] = {{1,1,1,1},{1,1,1,1}};
 #endif
