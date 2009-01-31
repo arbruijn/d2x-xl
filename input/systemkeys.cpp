@@ -146,32 +146,20 @@ void CheckRearView (void)
 
 	static int nLeaveMode;
 	static fix entryTime;
-#if DBG
+
 if (Controls [0].rearViewDownCount) {		//key/button has gone down
-#else
-if (Controls [0].rearViewDownCount && !(gameStates.render.bChaseCam || gameStates.render.bFreeCam)) {		//key/button has gone down
-#endif
 	Controls [0].rearViewDownCount = 0;
 	if (ToggleRearView () && gameStates.render.bRearView) {
 		nLeaveMode = 0;		//means wait for another key
 		entryTime = TimerGetFixedSeconds ();
 		}
 	}
-else
-	if (Controls [0].rearViewDownState) {
-		if (!nLeaveMode && (TimerGetFixedSeconds () - entryTime) > LEAVE_TIME)
-			nLeaveMode = 1;
-		}
-	else {
-		if (nLeaveMode && gameStates.render.bRearView) {
-			gameStates.render.bRearView = 0;
-			if (gameStates.render.cockpit.nType == CM_REAR_VIEW) {
-				CGenericCockpit::Restore ();
-				}
-			if (gameData.demo.nState == ND_STATE_RECORDING)
-				NDRecordRestoreRearView ();
-		}
+else if (Controls [0].rearViewDownState) {
+	if (!nLeaveMode && (TimerGetFixedSeconds () - entryTime) > LEAVE_TIME)
+		nLeaveMode = 1;
 	}
+else if (nLeaveMode)
+	SetRearView (0);
 }
 
 //------------------------------------------------------------------------------
@@ -220,8 +208,10 @@ return 1;
 int ToggleChaseCam (void)
 {
 #if !DBG	
-if (IsMultiGame && !(IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
+if (IsMultiGame && !(IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0))) {
+	HUDMessage (0, "Chase camera is not available");
 	return 0;
+	}
 #endif		
 return SetChaseCam (!gameStates.render.bChaseCam);
 }
@@ -253,8 +243,10 @@ return 1;
 
 int ToggleFreeCam (void)
 {
-if (gameStates.render.bRearView || (!gameStates.app.bEnableFreeCam || IsMultiGame && !(IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0))))
+if (!gameStates.app.bEnableFreeCam || (IsMultiGame && !(IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))) {
+	HUDMessage (0, "Free camera is not available");
 	return 0;
+	}
 return SetFreeCam (!gameStates.render.bFreeCam);
 }
 

@@ -124,6 +124,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "soundthreads.h"
 #include "menubackground.h"
 #include "monsterball.h"
+#include "systemkeys.h"
 
 #if defined (TACTILE)
  #include "tactile.h"
@@ -760,6 +761,8 @@ gameData.render.faceIndex [0].nUsedKeys = 0;
 gameData.render.faceIndex [1].nUsedFaces = LEVEL_FACES;
 gameData.render.faceIndex [1].nUsedKeys = 0;
 omegaLightnings.Init ();
+SetRearView (0);
+SetFreeCam (0);
 CGenericCockpit::Rewind (false);
 cockpit->Init ();
 gameData.multiplayer.bMoving = -1;
