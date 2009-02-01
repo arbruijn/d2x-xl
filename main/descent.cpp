@@ -728,7 +728,6 @@ InitGameStates ();
 gameData.Init ();
 InitExtraGameInfo ();
 InitNetworkData ();
-InitAutoDL ();
 InitGameOptions (0);
 InitArgs (argc, argv);
 GetAppFolders ();
