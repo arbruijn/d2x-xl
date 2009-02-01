@@ -24,6 +24,7 @@
 #include "text.h"
 #include "strutil.h"
 #include "error.h"
+#include "hogfile.h"
 #include "autodl.h"
 
 CDownloadManager downloadManager;
@@ -426,7 +427,10 @@ switch (pId) {
 		if (!pszFile)
 			return DownloadError (2);
 		strlwr (pszFile);
-		sprintf (szDest, "%s%s%s", gameFolders.szMissionDir, *gameFolders.szMissionDir ? "/" : "", pszFile);
+		if (strstr (hogFileManager.m_files.MsnHogFiles.szName, pszFile))
+			strcpy (szDest, hogFileManager.m_files.MsnHogFiles.szName);
+		else
+			sprintf (szDest, "%s%s%s", gameFolders.szMissionDir, *gameFolders.szMissionDir ? "/" : "", pszFile);
 		if (!m_cf.Open (szDest, "", "wb", 0))
 			return DownloadError (2);
 		m_nSrcLen = GET_INTEL_INT (data + 2);
