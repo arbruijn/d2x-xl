@@ -613,12 +613,8 @@ do {
 	// determine min and max size
 	for (i = 0, psm = m_subModels.Buffer (); i < m_nSubModels; i++, psm++) {
 		if (0 < (j = psm->m_nHitbox)) {
-			phb [j].vMin [X] = F2X (psm->m_vMin [X]);
-			phb [j].vMin [Y] = F2X (psm->m_vMin [Y]);
-			phb [j].vMin [Z] = F2X (psm->m_vMin [Z]);
-			phb [j].vMax [X] = F2X (psm->m_vMax [X]);
-			phb [j].vMax [Y] = F2X (psm->m_vMax [Y]);
-			phb [j].vMax [Z] = F2X (psm->m_vMax [Z]);
+			phb [j].vMin.Assign(psm->m_vMin);
+			phb [j].vMax.Assign (psm->m_vMax);
 			dx = (phb [j].vMax [X] - phb [j].vMin [X]) / 2;
 			dy = (phb [j].vMax [Y] - phb [j].vMin [Y]) / 2;
 			dz = (phb [j].vMax [Z] - phb [j].vMin [Z]) / 2;
