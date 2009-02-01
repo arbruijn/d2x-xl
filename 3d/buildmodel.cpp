@@ -735,9 +735,9 @@ for (uint i = 0; i < po->m_gunPoints.Length (); i++, pp++) {
 
 void CModel::SetRobotGunPoints (OOF::CModel *po)
 {
-	CSubModel*	psm;
+	CSubModel*		psm;
 	OOF::CPoint*	pp;
-	int			i, j = po->m_gunPoints.Length ();
+	int				i, j = po->m_gunPoints.Length ();
 
 for (i = 0, pp = po->m_gunPoints.Buffer (); i < j; i++, pp++) {
 	m_nGunSubModels [i] = pp->m_nParent;
