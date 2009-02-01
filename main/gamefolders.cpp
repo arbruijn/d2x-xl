@@ -263,7 +263,7 @@ if (*gameFolders.szHomeDir) {
 	}
 #endif
 if (*gameFolders.szHomeDir) {
-#ifdef __macosx__
+#if defined(__macosx__)
 	char *pszOSXCacheDir = GetMacOSXCacheFolder ();
 	sprintf (gameFolders.szTextureCacheDir [0], "%s/%s",pszOSXCacheDir, TEXTUREDIR_D2);
 	CFile::MkDir (gameFolders.szTextureCacheDir [0]);
@@ -280,8 +280,7 @@ if (*gameFolders.szHomeDir) {
 	sprintf (gameFolders.szCacheDir, "%s/%s/64", pszOSXCacheDir, CACHEDIR);
 	CFile::MkDir (gameFolders.szCacheDir);
 	sprintf (gameFolders.szCacheDir, "%s/%s", pszOSXCacheDir, CACHEDIR);
-#else
-#	if defined (__unix__)
+#elif defined (__unix__)
 	sprintf (szDataRootDir, "%s/.d2x-xl", gameFolders.szHomeDir);
 #	else
 	strcpy (szDataRootDir, gameFolders.szHomeDir);
