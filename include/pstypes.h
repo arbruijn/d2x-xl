@@ -28,7 +28,7 @@ typedef signed char sbyte;
 
 //define unsigned types;
 typedef unsigned char ubyte;
-#ifndef (__unix__)
+#ifndef __unix__
 typedef unsigned short ushort;
 typedef unsigned int uint;
 typedef unsigned long ulong;
