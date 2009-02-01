@@ -535,7 +535,7 @@ else {
 	sprintf (fn, "%s%s%s.tga", rootFolder, *rootFolder ? "/" : "", bmName);
 	tBase = (*cacheFolder && gameStates.app.bCacheTextures && (nShrinkFactor > 1)) ? cf.Date (fn, "", 0) : -1;
 	if (tBase < 0) 
-		*fnShrunk = '\0';
+		*fn = *fnShrunk = '\0';
 	else {
 		sprintf (fnShrunk, "%s%s%d/%s.tga", cacheFolder, *cacheFolder ? "/" : "", 512 / nShrinkFactor, bmName);
 		tShrunk = cf.Date (fnShrunk, "", 0);
