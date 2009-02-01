@@ -1678,7 +1678,7 @@ for (i = 0; i < 2; i++) {
 	if (gameStates.input.nPlrFileVersion >= 75)
 		gameOptions [i].menus.bSmartFileSearch = cf.ReadInt ();
 	if (gameStates.input.nPlrFileVersion >= 76)
-		SetDlTimeout (cf.ReadInt ());
+		downloadManager.SetTimeoutIndex (cf.ReadInt ());
 	if (!i && (gameStates.input.nPlrFileVersion >= 79)) {
 		extraGameInfo [0].entropy.nCaptureVirusLimit = cf.ReadByte ();
 		extraGameInfo [0].entropy.nCaptureTimeLimit = cf.ReadByte ();

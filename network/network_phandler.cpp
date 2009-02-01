@@ -256,7 +256,7 @@ return 1;
 int UploadHandler (ubyte *dataP, int nLength)
 {
 if (NetworkIAmMaster ())
-	NetworkUpload (dataP);
+	downloadManager.Upload (dataP);
 return 1;
 }
 
@@ -265,7 +265,7 @@ return 1;
 int DownloadHandler (ubyte *dataP, int nLength)
 {
 if (extraGameInfo [0].bAutoDownload) 
-	NetworkDownload (dataP);
+	downloadManager.Download (dataP);
 return 1;
 }
 

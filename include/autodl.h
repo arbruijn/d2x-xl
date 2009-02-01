@@ -1,12 +1,6 @@
 #ifndef __autodl_h
 #define autodl_h
 
-#if DBG
-int iDlTimeout = 5;
-#else
-int iDlTimeout = 4;
-#endif
-
 #define PID_DL_START		68
 #define PID_DL_OPEN		69
 #define PID_DL_DATA     70

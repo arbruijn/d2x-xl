@@ -299,7 +299,7 @@ int NetworkListen (void)
 	ubyte packet [MAX_PACKETSIZE];
 	int i, t, nPackets = 0, nMaxLoops = 999;
 
-CleanUploadDests ();
+downloadManager.CleanUp ();
 if (NetworkIAmMaster ())
 	tracker.AddServer ();
 if ((networkData.nStatus == NETSTAT_PLAYING) && netGame.bShortPackets && !networkData.nJoining)
@@ -468,7 +468,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if ((i != gameData.multiplayer.nLocalPlayer) && 
 				((gameData.multiplayer.players [i].connected == 1) || bDownloading [i])) {
-				if ((networkData.nLastPacketTime [i] == 0) || (networkData.nLastPacketTime [i] + GetDlTimeoutSecs () * 1000 > t)) {
+				if ((networkData.nLastPacketTime [i] == 0) || (networkData.nLastPacketTime [i] + downloadManager.GetTimeoutSecs () * 1000 > t)) {
 					ResetPlayerTimeout (i, t);
 					continue;
 					}
