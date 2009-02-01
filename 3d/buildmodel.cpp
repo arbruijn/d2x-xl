@@ -752,8 +752,6 @@ for (i = 0, pp = po->m_gunPoints.Buffer (); i < j; i++, pp++) {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-//------------------------------------------------------------------------------
-
 int NearestGunPoint (CFixVector *vGunPoints, CFixVector *vGunPoint, int nGuns, int *nUsedGuns)
 {
 	fix			xDist, xMinDist = 0x7fffffff;
