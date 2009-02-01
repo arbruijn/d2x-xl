@@ -1290,8 +1290,8 @@ FACES.slidingFaces = NULL;
 	ubyte			nSide;
 
 #if !DBG
-if (gameOpts->render.nMeshQuality > 2)
-	gameOpts->render.nMeshQuality = 2;
+if (gameStates.render.nMeshQuality > 3)
+	gameStates.render.nMeshQuality = 3;
 #endif
 if (RENDERPATH && gameStates.render.nLightingMethod)
 	gameStates.render.bTriangleMesh = gameStates.render.bPerPixelLighting ? -1 : gameStates.render.nMeshQuality;
@@ -1299,7 +1299,7 @@ else
 	gameStates.render.bTriangleMesh = 0;
 gameStates.render.nFacePrimitive = gameStates.render.bTriangleMesh ? GL_TRIANGLES : GL_TRIANGLE_FAN;
 if (gameStates.render.bSplitPolys)
-	gameStates.render.bSplitPolys = (gameStates.render.bPerPixelLighting || !gameOpts->render.nMeshQuality) ? 1 : -1;
+	gameStates.render.bSplitPolys = (gameStates.render.bPerPixelLighting || !gameStates.render.nMeshQuality) ? 1 : -1;
 if (gameStates.render.bTriangleMesh)
 	cameraManager.Create ();
 PrintLog ("   Creating face list\n");

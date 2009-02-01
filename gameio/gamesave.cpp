@@ -1163,101 +1163,98 @@ Level_being_loaded = pszFilename;
 
 gameStates.render.nMeshQuality = gameOpts->render.nMeshQuality;
 
-reloadLevel:
+for (;;) {
+	strcpy (filename, pszFilename);
+	if (!cf.Open (filename, "", "rb", gameStates.app.bD1Mission))
+		return 1;
 
-strcpy (filename, pszFilename);
-if (!cf.Open (filename, "", "rb", gameStates.app.bD1Mission))
-	return 1;
+	strcpy(gameData.segs.szLevelFilename, filename);
 
-strcpy(gameData.segs.szLevelFilename, filename);
+	//	#ifdef NEWDEMO
+	//	if (gameData.demo.nState == ND_STATE_RECORDING)
+	//		NDRecordStartDemo();
+	//	#endif
 
-//	#ifdef NEWDEMO
-//	if (gameData.demo.nState == ND_STATE_RECORDING)
-//		NDRecordStartDemo();
-//	#endif
+	sig = cf.ReadInt ();
+	gameData.segs.nLevelVersion = cf.ReadInt ();
+	gameStates.app.bD2XLevel = (gameData.segs.nLevelVersion >= 10);
+	#if TRACE
+	console.printf (CON_DBG, "gameData.segs.nLevelVersion = %d\n", gameData.segs.nLevelVersion);
+	#endif
+	nMineDataOffset = cf.ReadInt ();
+	nGameDataOffset = cf.ReadInt ();
 
-sig = cf.ReadInt ();
-gameData.segs.nLevelVersion = cf.ReadInt ();
-gameStates.app.bD2XLevel = (gameData.segs.nLevelVersion >= 10);
-#if TRACE
-console.printf (CON_DBG, "gameData.segs.nLevelVersion = %d\n", gameData.segs.nLevelVersion);
-#endif
-nMineDataOffset = cf.ReadInt ();
-nGameDataOffset = cf.ReadInt ();
+	Assert(sig == MAKE_SIG('P','L','V','L'));
+	if (gameData.segs.nLevelVersion >= 8) {    //read dummy data
+		cf.ReadInt ();
+		cf.ReadShort ();
+		cf.ReadByte ();
+	}
 
-Assert(sig == MAKE_SIG('P','L','V','L'));
-if (gameData.segs.nLevelVersion >= 8) {    //read dummy data
-	cf.ReadInt ();
-	cf.ReadShort ();
-	cf.ReadByte ();
-}
+	if (gameData.segs.nLevelVersion < 5)
+		cf.ReadInt ();       //was hostagetext_offset
 
-if (gameData.segs.nLevelVersion < 5)
-	cf.ReadInt ();       //was hostagetext_offset
+	if (gameData.segs.nLevelVersion > 1) {
+		cf.GetS (szCurrentLevelPalette, sizeof (szCurrentLevelPalette));
+		if (szCurrentLevelPalette [strlen(szCurrentLevelPalette) - 1] == '\n')
+			szCurrentLevelPalette [strlen(szCurrentLevelPalette) - 1] = 0;
+	}
+	if ((gameData.segs.nLevelVersion <= 1) || (szCurrentLevelPalette [0] == 0)) // descent 1 level
+		strcpy (szCurrentLevelPalette, DEFAULT_LEVEL_PALETTE); //D1_PALETTE
 
-if (gameData.segs.nLevelVersion > 1) {
-	cf.GetS (szCurrentLevelPalette, sizeof (szCurrentLevelPalette));
-	if (szCurrentLevelPalette [strlen(szCurrentLevelPalette) - 1] == '\n')
-		szCurrentLevelPalette [strlen(szCurrentLevelPalette) - 1] = 0;
-}
-if ((gameData.segs.nLevelVersion <= 1) || (szCurrentLevelPalette [0] == 0)) // descent 1 level
-	strcpy (szCurrentLevelPalette, DEFAULT_LEVEL_PALETTE); //D1_PALETTE
+	if (gameData.segs.nLevelVersion >= 3)
+		gameStates.app.nBaseCtrlCenExplTime = cf.ReadInt ();
+	else
+		gameStates.app.nBaseCtrlCenExplTime = DEFAULT_CONTROL_CENTER_EXPLOSION_TIME;
 
-if (gameData.segs.nLevelVersion >= 3)
-	gameStates.app.nBaseCtrlCenExplTime = cf.ReadInt ();
-else
-	gameStates.app.nBaseCtrlCenExplTime = DEFAULT_CONTROL_CENTER_EXPLOSION_TIME;
+	if (gameData.segs.nLevelVersion >= 4)
+		gameData.reactor.nStrength = cf.ReadInt ();
+	else
+		gameData.reactor.nStrength = -1;  //use old defaults
 
-if (gameData.segs.nLevelVersion >= 4)
-	gameData.reactor.nStrength = cf.ReadInt ();
-else
-	gameData.reactor.nStrength = -1;  //use old defaults
+	if (gameData.segs.nLevelVersion >= 7) {
+	#if TRACE
+		console.printf (CON_DBG, "   loading dynamic lights ...\n");
+	#endif
+		if (0 > ReadVariableLights (cf)) {
+			cf.Close ();
+			return 5;
+			}
+		}	
 
-if (gameData.segs.nLevelVersion >= 7) {
-#if TRACE
-	console.printf (CON_DBG, "   loading dynamic lights ...\n");
-#endif
-	if (0 > ReadVariableLights (cf)) {
-		cf.Close ();
-		return 5;
+	if (gameData.segs.nLevelVersion < 6) {
+		gameData.segs.secret.nReturnSegment = 0;
+		gameData.segs.secret.returnOrient = CFixMatrix::IDENTITY;
 		}
-	}	
+	else {
+		gameData.segs.secret.nReturnSegment = cf.ReadInt ();
+		for (int i = 0; i < 9; i++)
+			gameData.segs.secret.returnOrient [i] = cf.ReadInt ();
+		}
 
-if (gameData.segs.nLevelVersion < 6) {
-	gameData.segs.secret.nReturnSegment = 0;
-	gameData.segs.secret.returnOrient = CFixMatrix::IDENTITY;
-	}
-else {
-	gameData.segs.secret.nReturnSegment = cf.ReadInt ();
-	for (int i = 0; i < 9; i++)
-		gameData.segs.secret.returnOrient [i] = cf.ReadInt ();
-	}
-
-//NOTE LINK TO ABOVE!!
-cf.Seek (nGameDataOffset, SEEK_SET);
-nError = LoadMineDataCompiled (cf, 1);
-cf.Seek (nMineDataOffset, SEEK_SET);
-nError = LoadMineSegmentsCompiled (cf);
-if (nError == -1) {   //error!!
+	//NOTE LINK TO ABOVE!!
+	cf.Seek (nGameDataOffset, SEEK_SET);
+	nError = LoadMineDataCompiled (cf, 1);
+	cf.Seek (nMineDataOffset, SEEK_SET);
+	nError = LoadMineSegmentsCompiled (cf);
+	if (nError == -1) {   //error!!
+		cf.Close ();
+		return 2;
+		}
+	cf.Seek (nGameDataOffset, SEEK_SET);
+	gameData.objs.lists.Init ();
+	nError = LoadMineDataCompiled (cf, 0);
+	if (nError == -1) {   //error!!
+		cf.Close ();
+		return 3;
+		}
 	cf.Close ();
-	return 2;
-	}
-cf.Seek (nGameDataOffset, SEEK_SET);
-gameData.objs.lists.Init ();
-nError = LoadMineDataCompiled (cf, 0);
-if (nError == -1) {   //error!!
-	cf.Close ();
-	return 3;
-	}
-cf.Close ();
-
-if (!meshBuilder.Build (nLevel)) {
+	if (meshBuilder.Build (nLevel))
+		break;
 	if (gameStates.render.nMeshQuality <= 0)
 		return 6;
 	gameStates.render.nMeshQuality--;
-	goto reloadLevel;
 	}
-	
 gameStates.render.nMeshQuality = gameOpts->render.nMeshQuality;
 
 if (!gameData.render.mine.Create ())
