@@ -468,8 +468,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if ((i != gameData.multiplayer.nLocalPlayer) && 
 				((gameData.multiplayer.players [i].connected == 1) || bDownloading [i])) {
-				if ((networkData.nLastPacketTime [i] == 0) || 
-					(networkData.nLastPacketTime [i] > t)) {
+				if ((networkData.nLastPacketTime [i] == 0) || (networkData.nLastPacketTime [i] + GetDlTimeoutSecs () * 1000 > t)) {
 					ResetPlayerTimeout (i, t);
 					continue;
 					}
