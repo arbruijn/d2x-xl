@@ -438,7 +438,7 @@ do {
 if (networkData.nStatus == NETSTAT_PLAYING)  
 	return 0;
 else if (networkData.nStatus == NETSTAT_AUTODL)
-	if (DownloadMission (netGame.szMissionName))
+	if (downloadManager.DownloadMission (netGame.szMissionName))
 		return 1;
 #if 1			
 console.printf (CON_DBG, "Aborting join.\n");

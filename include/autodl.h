@@ -65,7 +65,7 @@ class CDownloadManager {
 	public:
 		CDownloadManager () { Init (); }
 		void Init (void);
-		int SetTimeout (int i);
+		int SetTimeoutIndex (int i);
 		int MaxTimeoutIndex (void);
 		int GetTimeoutIndex (void);
 		int GetTimeoutSecs (void);

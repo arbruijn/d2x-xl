@@ -372,9 +372,7 @@ if (tracker.m_bUse) {
 	}
 // Check for valid mission name
 console.printf (CON_DBG, TXT_LOADING_MSN, AGI.szMissionName);
-if (!(LoadMissionByName (AGI.szMissionName, -1) ||
-		(DownloadMission (AGI.szMissionName) &&
-		 LoadMissionByName (AGI.szMissionName, -1)))) {
+if (!(LoadMissionByName (AGI.szMissionName, -1) ||	(downloadManager.DownloadMission (AGI.szMissionName) && LoadMissionByName (AGI.szMissionName, -1)))) {
 	PrintLog ("Mission '%s' not found%s\n", AGI.szMissionName);
 	MsgBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_NOT_FOUND);
 	goto doMenu;

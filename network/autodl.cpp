@@ -95,7 +95,7 @@ return m_timeouts [m_iTimeout];
 
 //------------------------------------------------------------------------------
 
-int CDownloadManager::SetTimeout (int i)
+int CDownloadManager::SetTimeoutIndex (int i)
 {
 if ((i >= 0) && (i < MaxTimeoutIndex ()))
 	m_iTimeout = i;
@@ -177,7 +177,7 @@ void CDownloadManager::CleanUp (void)
 	static int m_nPollTime = 0;
 
 if (m_nPollTime < 0)
-	SetTimeout (-1);
+	SetTimeoutIndex (-1);
 if ((t = SDL_GetTicks ()) - m_nPollTime > m_nPollTime) {
 	m_nPollTime = t;
 	while (i < m_nUploadDests)
@@ -491,7 +491,7 @@ if (key == KEY_ESC) {
 ResendRequest ();
 NetworkListen ();
 if (m_nPollTime < 0)
-	SetTimeout (-1);
+	SetTimeoutIndex (-1);
 if (int (SDL_GetTicks ()) - m_nPollTime > m_nTimeout) {
 	menu [1].SetText ("download timed out");
 	menu [1].m_bRedraw = 1;
