@@ -190,12 +190,12 @@ if ((t = SDL_GetTicks ()) - m_nPollTime > m_nPollTime) {
 
 //------------------------------------------------------------------------------
 
-int CDownloadManager::SendRequest (ubyte pId, ubyte pIdFn, int nSize, int m_nPacketId)
+int CDownloadManager::SendRequest (ubyte pId, ubyte pIdFn, int nSize, int nPacketId)
 {
 m_uploadBuf [0] = pId;
 m_uploadBuf [1] = pIdFn;
 if (pIdFn == PID_DL_DATA) {
-	PUT_INTEL_INT (m_uploadBuf + 2, m_nPacketId);
+	PUT_INTEL_INT (m_uploadBuf + 2, nPacketId);
 	nSize += 4;
 	m_nPacketTimeout = SDL_GetTicks ();
 	}
@@ -219,9 +219,9 @@ return SendRequest (PID_UPLOAD, pIdFn, nSize, m_nPacketId);
 //------------------------------------------------------------------------------
 // tell the client the game host is ready to send more data
 
-int CDownloadManager::RequestDownload (ubyte pIdFn, int nSize, int m_nPacketId)
+int CDownloadManager::RequestDownload (ubyte pIdFn, int nSize, int nPacketId)
 {
-return SendRequest (PID_DOWNLOAD, pIdFn, nSize, m_nPacketId);
+return SendRequest (PID_DOWNLOAD, pIdFn, nSize, nPacketId);
 }
 
 //------------------------------------------------------------------------------
@@ -269,9 +269,9 @@ return 1;
 //------------------------------------------------------------------------------
 // send a file from the game host
 
-int CDownloadManager::UploadSendFile (int i, int m_nPacketId)
+int CDownloadManager::UploadSendFile (int i, int nPacketId)
 {
-	int	l, h = m_nPacketId - m_uploadDests [i].nPacketId;
+	int	l, h = nPacketId - m_uploadDests [i].nPacketId;
 
 if ((h < 0) || (h > 1))
 	return -1;
@@ -282,13 +282,13 @@ if (!h || (m_uploadDests [i].fLen > 0)) {
 			l = 512; //DL_BUFSIZE - 6;
 		if ((int) m_uploadDests [i].cf.Read (m_uploadBuf + 10, 1, l) != l)
 			return UploadError ();
-		PUT_INTEL_INT (m_uploadBuf + 2, m_nPacketId);
+		PUT_INTEL_INT (m_uploadBuf + 2, nPacketId);
 		PUT_INTEL_INT (m_uploadBuf + 6, l);
-		m_uploadDests [i].nPacketId = m_nPacketId;
+		m_uploadDests [i].nPacketId = nPacketId;
 		}
 	else
 		l = 0;	// resend last packet
-	RequestDownload (PID_DL_DATA, l + 8, m_nPacketId);
+	RequestDownload (PID_DL_DATA, l + 8, nPacketId);
 	m_uploadDests [i].fLen -= l;
 	}
 else {
