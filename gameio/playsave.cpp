@@ -309,8 +309,8 @@ for (i = 0; i < 2; i++) {
 	else {
 		RP (gameData.render.window.w, 0, 0);
 		RP (gameData.render.window.h, 0, 0);
-
-		RP (iDlTimeout, 0, 0);
+		
+		RP (gameStates.app.iDownloadTimeout, 0, 0);
 
 		RP (gameStates.render.bShowFrameRate, 0, 0);
 		RP (gameStates.render.bShowTime, 0, 1);
@@ -681,6 +681,7 @@ if (Busy ())
 	CParam		*pp;
 
 gameStates.sound.audio.nMaxChannels = audio.MaxChannels ();
+gameStates.app.iDownloadTimeout = downloadManager.GetTimeoutIndex ();
 sprintf (fn, "%s.plx", LOCALPLAYER.callsign);
 if (!m_cf.Open (fn, gameFolders.szProfDir, "wt", 0))
 	return 0;
@@ -750,6 +751,7 @@ while (!m_cf.EoF ())
 // call this before closing the file to prevent the profile being overwritten
 audio.SetMaxChannels (gameStates.sound.audio.nMaxChannels);
 cockpit->Activate (gameStates.render.cockpit.nType);	
+downloadManager.SetTimeoutIndex (gameStates.app.iDownloadTimeout);
 return m_cf.Close ();
 }
 
@@ -763,7 +765,7 @@ typedef struct tParamValue {
 tParamValue defaultParams [] = {
  {"gameData.render.window.w", "640"},
  {"gameData.render.window.h", "480"},
- {"iDlTimeout", "5"},
+ {"gameStates.app.iDownloadTimeout", "5"},
  {"gameStates.render.cockpit.nType", "3"},
  {"gameStates.render.bShowFrameRate", "0"},
  {"gameStates.render.bShowTime", "1"},
