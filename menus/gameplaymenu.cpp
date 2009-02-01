@@ -176,11 +176,13 @@ void LoadoutOptions (void)
 	int	i, nOptions = 0;
 
 m.AddText (TXT_GUN_LOADOUT, 0);
-for (i = 0, optGuns = nOptions; i < (int) sizeofa (pszGuns); i++, nOptions++)
+optGuns = m.ToS ();
+for (i = 0; i < (int) sizeofa (pszGuns); i++, nOptions++)
 	m.AddCheck (pszGuns [i], (extraGameInfo [0].loadout.nGuns & (1 << i)) != 0, 0, HTX_GUN_LOADOUT);
 m.AddText ("", 0);
 m.AddText (TXT_DEVICE_LOADOUT, 0);
-for (i = 0, optDevices = nOptions; i < (int) sizeofa (pszDevices); i++, nOptions++)
+optDevices = m.ToS ();
+for (i = 0; i < (int) sizeofa (pszDevices); i++, nOptions++)
 	m.AddCheck (pszDevices [i], (extraGameInfo [0].loadout.nDevices & (nDeviceFlags [i])) != 0, 0, HTX_DEVICE_LOADOUT);
 do {
 	i = m.Menu (NULL, TXT_LOADOUT_MENUTITLE, LoadoutCallback, 0);
