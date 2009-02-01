@@ -589,8 +589,8 @@ if (strstr (bmName, "rock313")) {
 if (gameStates.app.bNostalgia)
 	gameOpts->render.textures.bUseHires = 0;
 else {
-	MakeBitmapFilenames (bmName, gameFolders.szTextureDir [2], gameFolders.szTextureCacheDir [2], fn [3], fn [2], nShrinkFactor);
-	MakeBitmapFilenames (bmName, gameFolders.szTextureDir [bD1], gameFolders.szTextureCacheDir [bD1], fn [1], fn [0], nShrinkFactor);
+	MakeBitmapFilenames (bmName, gameFolders.szTextureDir [2], gameFolders.szTextureCacheDir [2], fn [1], fn [0], nShrinkFactor);
+	MakeBitmapFilenames (bmName, gameFolders.szTextureDir [bD1], gameFolders.szTextureCacheDir [bD1], fn [3], fn [2], nShrinkFactor);
 	}
 bTGA = 0;
 bmP->SetBPP (1);
