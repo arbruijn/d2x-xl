@@ -110,7 +110,7 @@ void CDownloadManager::SetDownloadFlag (int nPlayer, int nFlag)
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (!memcmp (&m_uploadDests [nPlayer].addr.server, &netPlayers.players [i].network.ipx.server, 4) &&
 		 !memcmp (&m_uploadDests [nPlayer].addr.node, &netPlayers.players [i].network.ipx.node, 6)) {
-		bDownloading [i] = nFlag;
+		m_bDownloading [i] = nFlag;
 		return;
 		}
 	}

@@ -32,10 +32,6 @@ typedef struct tUploadDest {
 
 #define DL_BUFSIZE (MAX_DATASIZE - 4 - 14)
 
-static ubyte uploadBuf [MAX_PACKETSIZE];
-
-int bDownloading [MAX_PLAYERS] = {0,0,0,0,0,0,0,0};
-
 class CDownloadManager {
 	private:
 		tUploadDest m_uploadDests [MAX_PLAYERS];

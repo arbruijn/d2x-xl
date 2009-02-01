@@ -467,7 +467,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 	// Check for CPlayerData timeouts
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if ((i != gameData.multiplayer.nLocalPlayer) && 
-				((gameData.multiplayer.players [i].connected == 1) || bDownloading [i])) {
+				((gameData.multiplayer.players [i].connected == 1) || downloadManager.Downloading (i))) {
 				if ((networkData.nLastPacketTime [i] == 0) || (networkData.nLastPacketTime [i] + downloadManager.GetTimeoutSecs () * 1000 > t)) {
 					ResetPlayerTimeout (i, t);
 					continue;
