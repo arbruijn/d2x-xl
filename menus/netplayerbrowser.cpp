@@ -175,8 +175,8 @@ if (gameOpts->multi.bNoRankings)
 else
 	sprintf (text [0], "%d. %s%-20s", 1, pszRankStrings [netPlayers.players [gameData.multiplayer.nLocalPlayer].rank], LOCALPLAYER.callsign);
 m.AddCheck (text [0], 0);
-for (i = 0; i < MAX_PLAYERS + 4; i++) {
-	sprintf (text [i], "%d.  %-20s", i+1, "");
+for (i = 1; i < MAX_PLAYERS + 4; i++) {
+	sprintf (text [i], "%d.  %-20s", i + 1, "");
 	m.AddCheck (text [i], 0);
 	}
 sprintf (title, "%s %d %s", TXT_TEAM_SELECT, gameData.multiplayer.nMaxPlayers, TXT_TEAM_PRESS_ENTER);
