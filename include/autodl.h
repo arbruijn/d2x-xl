@@ -25,15 +25,16 @@ typedef struct tUploadDest {
 
 // upload buffer
 // format:
-// uploadBuf [0] == {PID_UPLOAD | PID_DOWNLOAD}
-// uploadBuf [1] == {PID_DL_START | ... | PID_DL_ERROR}
-// uploadBuf [2..11] == <source address>
-// uploadBuf [12..1035] == <data (max. DL_BUFSIZE bytes)>
+// m_uploadBuf [0] == {PID_UPLOAD | PID_DOWNLOAD}
+// m_uploadBuf [1] == {PID_DL_START | ... | PID_DL_ERROR}
+// m_uploadBuf [2..11] == <source address>
+// m_uploadBuf [12..1035] == <data (max. DL_BUFSIZE bytes)>
 
 #define DL_BUFSIZE (MAX_DATASIZE - 4 - 14)
 
 class CDownloadManager {
 	private:
+		ubyte			m_uploadBuf [MAX_PACKETSIZE];
 		tUploadDest m_uploadDests [MAX_PLAYERS];
 		int			m_nUploadDests;
 		int			m_nPacketId;
@@ -69,7 +70,7 @@ class CDownloadManager {
 		inline int Timeout (void) { return m_nTimeout; }
 
 	private:
-		void SetDownloadFlag (int nPlayer, int nFlag);
+		void SetDownloadFlag (int nPlayer, bool bFlag);
 		int FindUploadDest (void);
 		int AddUploadDest (void);
 		int DelUploadDest (int i);

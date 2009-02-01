@@ -105,12 +105,12 @@ return m_iTimeout;
 
 //------------------------------------------------------------------------------
 
-void CDownloadManager::SetDownloadFlag (int nPlayer, int nFlag)
+void CDownloadManager::SetDownloadFlag (int nPlayer, bool bFlag)
 {
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (!memcmp (&m_uploadDests [nPlayer].addr.server, &netPlayers.players [i].network.ipx.server, 4) &&
 		 !memcmp (&m_uploadDests [nPlayer].addr.node, &netPlayers.players [i].network.ipx.node, 6)) {
-		m_bDownloading [i] = nFlag;
+		m_bDownloading [i] = bFlag;
 		return;
 		}
 	}
@@ -192,19 +192,19 @@ if ((t = SDL_GetTicks ()) - m_nPollTime > m_nPollTime) {
 
 int CDownloadManager::SendRequest (ubyte pId, ubyte pIdFn, int nSize, int m_nPacketId)
 {
-uploadBuf [0] = pId;
-uploadBuf [1] = pIdFn;
+m_uploadBuf [0] = pId;
+m_uploadBuf [1] = pIdFn;
 if (pIdFn == PID_DL_DATA) {
-	PUT_INTEL_INT (uploadBuf + 2, m_nPacketId);
+	PUT_INTEL_INT (m_uploadBuf + 2, m_nPacketId);
 	nSize += 4;
 	m_nPacketTimeout = SDL_GetTicks ();
 	}
 if ((pId == PID_UPLOAD) && (gameStates.multi.nGameType == IPX_GAME))
-	IPXSendBroadcastData (uploadBuf, nSize + 2);
+	IPXSendBroadcastData (m_uploadBuf, nSize + 2);
 else if (pId == PID_UPLOAD)
-	IPXSendInternetPacketData (uploadBuf, nSize + 2, ipx_ServerAddress, ipx_ServerAddress + 4);
+	IPXSendInternetPacketData (m_uploadBuf, nSize + 2, ipx_ServerAddress, ipx_ServerAddress + 4);
 else
-	IPXSendInternetPacketData (uploadBuf, nSize + 2, ipx_udpSrc.src_network, ipx_udpSrc.src_node);
+	IPXSendInternetPacketData (m_uploadBuf, nSize + 2, ipx_udpSrc.src_network, ipx_udpSrc.src_node);
 return 1;
 }
 
@@ -257,10 +257,10 @@ if (m_uploadDests [i].cf.File ())
 if (!m_uploadDests [i].cf.Open (szFile, "", "rb", 0))
 	return UploadError ();
 m_uploadDests [i].fLen = m_uploadDests [i].cf.Length ();
-PUT_INTEL_INT (uploadBuf + 2, m_uploadDests [i].fLen);
+PUT_INTEL_INT (m_uploadBuf + 2, m_uploadDests [i].fLen);
 sprintf (szFile, "%s%s", netGame.szMissionName, pszExt);
 l = (int) strlen (szFile) + 1;
-memcpy (uploadBuf + 6, szFile, l);
+memcpy (m_uploadBuf + 6, szFile, l);
 m_uploadDests [i].nPacketId = -1;
 RequestDownload (PID_DL_OPEN, l + 4, -1);
 return 1;
@@ -280,10 +280,10 @@ if (!h || (m_uploadDests [i].fLen > 0)) {
 		l = (int) m_uploadDests [i].fLen;
 		if (l > 512) //DL_BUFSIZE - 6)
 			l = 512; //DL_BUFSIZE - 6;
-		if ((int) m_uploadDests [i].cf.Read (uploadBuf + 10, 1, l) != l)
+		if ((int) m_uploadDests [i].cf.Read (m_uploadBuf + 10, 1, l) != l)
 			return UploadError ();
-		PUT_INTEL_INT (uploadBuf + 2, m_nPacketId);
-		PUT_INTEL_INT (uploadBuf + 6, l);
+		PUT_INTEL_INT (m_uploadBuf + 2, m_nPacketId);
+		PUT_INTEL_INT (m_uploadBuf + 6, l);
 		m_uploadDests [i].nPacketId = m_nPacketId;
 		}
 	else
