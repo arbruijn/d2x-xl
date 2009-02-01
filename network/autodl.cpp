@@ -76,7 +76,7 @@ m_nResult = 1;
 
 int CDownloadManager::MaxTimeoutIndex (void)
 {
-return sizeofa (m_timeouts);
+return sizeofa (m_timeouts) - 1;
 }
 
 //------------------------------------------------------------------------------
@@ -97,7 +97,7 @@ return m_timeouts [m_iTimeout];
 
 int CDownloadManager::SetTimeoutIndex (int i)
 {
-if ((i >= 0) && (i < MaxTimeoutIndex ()))
+if ((i >= 0) && (i <= MaxTimeoutIndex ()))
 	m_iTimeout = i;
 m_nPollTime = m_timeouts [m_iTimeout] * 1000;
 return m_iTimeout;

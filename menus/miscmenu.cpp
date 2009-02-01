@@ -117,7 +117,7 @@ if (!gameStates.app.bNostalgia) {
 			v = m->m_value;
 			if (downloadManager.GetTimeoutIndex () != v) {
 				v = downloadManager.SetTimeoutIndex (v);
-				sprintf (m->m_text, TXT_AUTODL_TO, downloadManager.GetTimeoutIndexSecs ());
+				sprintf (m->m_text, TXT_AUTODL_TO, downloadManager.GetTimeoutSecs ());
 				m->m_bRebuild = 1;
 				}
 			}
@@ -187,9 +187,9 @@ do {
 			m.AddText ("", 0);
 		miscOpts.nAutoDl = m.AddCheck (TXT_AUTODL_ENABLE, extraGameInfo [0].bAutoDownload, KEY_A, HTX_MISC_AUTODL);
 		if (extraGameInfo [0].bAutoDownload && gameOpts->app.bExpertMode) {
-			sprintf (szDlTimeout + 1, TXT_AUTODL_TO, downloadManager.GetTimeoutIndexSecs ());
+			sprintf (szDlTimeout + 1, TXT_AUTODL_TO, downloadManager.GetTimeoutSecs ());
 			*szDlTimeout = *(TXT_AUTODL_TO - 1);
-			miscOpts.nDlTimeout = m.AddSlider (szDlTimeout + 1, downloadManager.GetTimeoutIndex (), 0, MaxDlTimeout (), KEY_T, HTX_MISC_AUTODLTO);  
+			miscOpts.nDlTimeout = m.AddSlider (szDlTimeout + 1, downloadManager.GetTimeoutIndex (), 0, downloadManager.MaxTimeoutIndex (), KEY_T, HTX_MISC_AUTODLTO);  
 			}
 		m.AddText ("", 0);
 		if (gameOpts->app.nScreenShotInterval)
