@@ -433,7 +433,7 @@ if (m_bBullets) {
 	}
 m_nRad = CFixVector::Dist (vMin, vMax) / 2;
 for (i = 0, j = pm->m_nSubModels, psm = pm->m_subModels.Buffer (); i < j; i++, psm++)
-	if (m_nParent == m_nSubModel)
+	if (psm->m_nParent == m_nSubModel)
 		psm->Size (pm, objP, &vOffs);
 }
 
