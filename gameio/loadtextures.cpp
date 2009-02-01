@@ -526,17 +526,21 @@ return (strstr (bmName, "cockpit") == bmName) || (strstr (bmName, "status") == b
 
 void MakeBitmapFilenames (const char* bmName, char* rootFolder, char* cacheFolder, char* fn, char* fnShrunk, int nShrinkFactor)
 {
+if (!*rootFolder)
+	*fn = *fnShrunk = '\0';
+else {
 	time_t	tBase, tShrunk;
 
-sprintf (fn, "%s%s%s.tga", rootFolder, *rootFolder ? "/" : "", bmName);
-tBase = (gameStates.app.bCacheTextures && (nShrinkFactor > 1)) ? CFile::Date (fn, "", 0) : -1;
-if (tBase < 0) 
-	*fnShrunk = '\0';
-else {
-	sprintf (fnShrunk, "%s%s%d/%s.tga", cacheFolder, *cacheFolder ? "/" : "", 512 / nShrinkFactor, bmName);
-	tShrunk = CFile::Date (fnShrunk, "", 0);
-	if (tShrunk < tBase)
+	sprintf (fn, "%s%s%s.tga", rootFolder, *rootFolder ? "/" : "", bmName);
+	tBase = (*cacheFolder && gameStates.app.bCacheTextures && (nShrinkFactor > 1)) ? CFile::Date (fn, "", 0) : -1;
+	if (tBase < 0) 
 		*fnShrunk = '\0';
+	else {
+		sprintf (fnShrunk, "%s%s%d/%s.tga", cacheFolder, *cacheFolder ? "/" : "", 512 / nShrinkFactor, bmName);
+		tShrunk = CFile::Date (fnShrunk, "", 0);
+		if (tShrunk < tBase)
+			*fnShrunk = '\0';
+		}
 	}
 }
 
