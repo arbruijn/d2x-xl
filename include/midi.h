@@ -25,6 +25,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "carray.h"
 #include "cfile.h"
 #include "hmpfile.h"
+#include "audio.h"
 
 //------------------------------------------------------------------------------
 
