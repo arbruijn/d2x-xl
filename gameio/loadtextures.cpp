@@ -529,15 +529,16 @@ void MakeBitmapFilenames (const char* bmName, char* rootFolder, char* cacheFolde
 if (!*rootFolder)
 	*fn = *fnShrunk = '\0';
 else {
+	CFile		cf;
 	time_t	tBase, tShrunk;
 
 	sprintf (fn, "%s%s%s.tga", rootFolder, *rootFolder ? "/" : "", bmName);
-	tBase = (*cacheFolder && gameStates.app.bCacheTextures && (nShrinkFactor > 1)) ? CFile::Date (fn, "", 0) : -1;
+	tBase = (*cacheFolder && gameStates.app.bCacheTextures && (nShrinkFactor > 1)) ? cf.Date (fn, "", 0) : -1;
 	if (tBase < 0) 
 		*fnShrunk = '\0';
 	else {
 		sprintf (fnShrunk, "%s%s%d/%s.tga", cacheFolder, *cacheFolder ? "/" : "", 512 / nShrinkFactor, bmName);
-		tShrunk = CFile::Date (fnShrunk, "", 0);
+		tShrunk = cf.Date (fnShrunk, "", 0);
 		if (tShrunk < tBase)
 			*fnShrunk = '\0';
 		}

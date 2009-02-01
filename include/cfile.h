@@ -119,7 +119,7 @@ class CFile {
 
 		int Copy (const char *pszSrc, const char *pszDest);
 		int Extract (const char *filename, const char *folder, int bUseD1Hog, const char *szDest);
-		static time_t Date (const char *filename, const char *folder, int bUseD1Hog);
+		time_t Date (const char *filename, const char *folder, int bUseD1Hog);
 
 		static int Exist (const char *filename, const char *folder, int bUseD1Hog);	// Returns true if file exists on disk (1) or in hog (2).
 		static int Delete (const char *filename, const char* folder);
