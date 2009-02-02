@@ -327,6 +327,7 @@ void MakeModFolders (const char* pszMission)
 *gameFolders.szModelCacheDir [1] = '\0';
 CFile::SplitPath (pszMission, NULL, gameFolders.szModName, NULL);
 if (!GetAppFolder (gameFolders.szModDir [0], gameFolders.szModDir [1], gameFolders.szModName, "")) {
+	sprintf (gameFolders.szSoundDir [2], "%s/%s", gameFolders.szModDir [1], "sounds");
 	sprintf (gameFolders.szTextureDir [2], "%s/%s", gameFolders.szModDir [1], "textures");
 	sprintf (gameFolders.szTextureCacheDir [2], "%s/%s", gameFolders.szModDir [1], "textures");
 	sprintf (gameFolders.szModelCacheDir [1], "%s/%s", gameFolders.szModDir [1], "models");
