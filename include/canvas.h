@@ -93,7 +93,7 @@ class CCanvas : public CBitmap {
 		void SetColor (int color);
 		void SetColorRGB (ubyte red, ubyte green, ubyte blue, ubyte alpha);
 		void SetColorRGB15bpp (ushort c, ubyte alpha);
-		inline void SetColorRGBi (int i) { SetColorRGB (RGBA_RED (i), RGBA_GREEN (i), RGBA_BLUE (i), 255); }
+		inline void SetColorRGBi (int i) { SetColorRGB (RGBA_RED (i), RGBA_GREEN (i), RGBA_BLUE (i), RGBA_ALPHA (i)); }
 
 		inline bool Clip (int x, int y) { return this->CBitmap::Clip (x, y); }
 
