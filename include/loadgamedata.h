@@ -92,14 +92,15 @@ void BMReadAll (CFile&  cf);
 void BMReadWeaponInfoD1 (CFile&  cf);
 void BMReadGameDataD1 (CFile&  cf);
 void RestoreDefaultRobots (void);
-int ComputeAvgPixel (CBitmap *newBm);
+int ComputeAvgPixel (CBitmap *bmP);
 
 void LoadTextureBrightness (const char *pszLevel, int *brightnessP);
-int LoadExitModels ();
+int LoadExitModels (void);
 int LoadRobotExtensions (const char *fname, char *folder, int nType);
 void FreeModelExtensions (void);
 int LoadRobotReplacements (const char *pszLevelName, int bAddBots, int bOnlyModels);
-int ReadHamFile ();
+int ReadHamFile (const char* pszFile = NULL, const char* pszFolder = NULL);
+int ReadSoundFile (const char* pszFile = NULL, const char* pszFolder = NULL);
 void _CDECL_ FreeObjExtensionBitmaps (void);
 
 #endif //_LOADGAMEDATA_H

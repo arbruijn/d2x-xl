@@ -65,7 +65,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //#define NO_DUMP_SOUNDS        1   //if set, dump bitmaps but not sounds
 
 int RequestCD (void);
-int ReadSoundFile ();
 
 extern char CDROM_dir [];
 
@@ -275,7 +274,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int ReadSoundFile (void)
+int ReadSoundFile (const char* pszFile, const char* pszFolder)
 {
 	CFile		cf;
 	int		snd_id,sndVersion;
@@ -283,7 +282,11 @@ int ReadSoundFile (void)
 	int		nSoundStart;
 	int		size, length;
 
-if (!cf.Open (DefaultSndFile (), gameFolders.szDataDir, "rb", 0))
+if (!pszFile)
+	pszFile = DefaultSoundFile ();
+if (!pszFolder)
+	pszFolder = gameFolders.szDataDir;
+if (!cf.Open (pszFile, pszFolder, "rb", 0))
 	return 0;
 
 //make sure soundfile is valid nType file & is up-to-date
@@ -358,7 +361,7 @@ void PiggyReadSounds (void)
 
 ptr = gameData.pig.sound.data [gameStates.app.bD1Data].Buffer ();
 sbytes = 0;
-if (!cf.Open (gameStates.app.bD1Mission ? "descent.pig" : DefaultSndFile (), gameFolders.szDataDir, "rb", 0))
+if (!cf.Open (gameStates.app.bD1Mission ? "descent.pig" : DefaultSoundFile (), gameFolders.szDataDir, "rb", 0))
 	return;
 for (i = 0, j = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]; i < j; i++, soundP++) {
 	if (soundOffset [gameStates.app.bD1Data][i] > 0) {

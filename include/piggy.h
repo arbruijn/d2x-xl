@@ -267,7 +267,7 @@ void LoadBitmap (int bmi, int bD1);
 
 char* DefaultPigFile (int bDemoData = 0);
 char* DefaultHamFile (void);
-char* DefaultSndFile (void);
+char* DefaultSoundFile (void);
 
 //------------------------------------------------------------------------------
 

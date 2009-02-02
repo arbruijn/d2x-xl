@@ -106,8 +106,6 @@ ubyte d1ColorMap [256];
 
 #define PIGBITMAPHEADER_D1_SIZE 17 // no wh_extra
 
-int ReadHamFile ();
-int ReadSoundFile ();
 int RequestCD (void);
 
 CFile cfPiggy [2];
@@ -143,7 +141,7 @@ return szHamFiles [gameStates.app.bDemoData];
 
 static char szSndFiles [3][13] = {"descent2.s11", "descent2.s22", "d2demo.ham"};
 
-char* DefaultSndFile (void)
+char* DefaultSoundFile (void)
 {
 return (gameData.pig.tex.nHamFileVersion < 3) ? szSndFiles [2] : szSndFiles [gameOpts->sound.digiSampleRate == SAMPLE_RATE_22K];
 }
@@ -407,7 +405,7 @@ bPigFileInitialized = 1;
 
 //------------------------------------------------------------------------------
 
-int ReadHamFile (void)
+int ReadHamFile (const char* pszFile, const char* pszFolder)
 {
 	CFile cf;
 #if 1
@@ -416,7 +414,11 @@ int ReadHamFile (void)
 	int nHAMId;
 	int nSoundOffset = 0;
 
-if (!cf.Open (DefaultHamFile (), gameFolders.szDataDir, "rb", 0)) {
+if (!pszFile)
+	pszFile = DefaultHamFile ();
+if (!pszFolder)
+	pszFolder = gameFolders.szDataDir;
+if (!cf.Open (pszFile, pszFolder, "rb", 0)) {
 	bMustWriteHamFile = 1;
 	return 0;
 	}
