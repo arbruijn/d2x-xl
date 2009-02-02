@@ -1125,6 +1125,8 @@ typedef struct tApplicationStates {
 	int bShowError;
 	int bClearMessage;
 	int iDownloadTimeout;
+	bool bCustomData;
+	bool bCustomSounds;
 	fix xThisLevelTime;
 	fix nPlayerTimeOfDeath;
 	char *szCurrentMission;

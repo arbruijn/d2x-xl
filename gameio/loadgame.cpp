@@ -771,10 +771,18 @@ UnloadLevelData (bRestore);
 /*---*/PrintLog ("   restoring default robot settings\n");
 RestoreDefaultRobots ();
 // try to read mod files, and load default files if that fails
-if (!ReadHamFile (false))
+if (ReadHamFile (false))
+	gameStates.app.bCustomData = true;
+else if (gameStates.app.bCustomData) {
 	ReadHamFile ();
-if (!ReadSoundFile (false))
+	gameStates.app.bCustomData = false;
+	}
+if (ReadSoundFile (false))
+	gameStates.app.bCustomSounds = true;
+else if (gameStates.app.bCustomSounds) {
 	ReadSoundFile ();
+	gameStates.app.bCustomSounds = false;
+	}
 if (gameData.missions.nEnhancedMission) {
 	char szFile [FILENAME_LEN];
 
