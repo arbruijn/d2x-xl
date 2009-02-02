@@ -677,7 +677,6 @@ void CGenericCockpit::DrawPlayerShip (int nCloakState, int nOldCloakState, int x
 {
 	static fix xCloakFadeTimer = 0;
 	static int nCloakFadeValue = FADE_LEVELS - 1;
-	static int refade = 0;
 
 if (nCloakState) {
 	if (nOldCloakState == -1)
@@ -689,8 +688,6 @@ else {
 	nCloakFadeValue = FADE_LEVELS - 1;
 	m_info.nCloakFadeState = 0;
 	}
-if ((nCloakState == nOldCloakState) && !m_info.nCloakFadeState)		//doing "about-to-uncloak" effect
-	m_info.nCloakFadeState = 2;
 if (nCloakState && (gameData.time.xGame > LOCALPLAYER.cloakTime + CLOAK_TIME_MAX - I2X (3)))	{	//doing "about-to-uncloak" effect
 	nCloakState = 2;
 	if (!m_info.nCloakFadeState)
@@ -717,13 +714,6 @@ while (m_info.nCloakFadeState && (xCloakFadeTimer < 0)) {
 		}
 	}
 
-//	To fade out both pages in a paged mode.
-if (refade)
-	refade = 0;
-else if (nCloakState && nOldCloakState && !(m_info.nCloakFadeState || refade)) {
-	m_info.nCloakFadeState = -1;
-	refade = 1;
-	}
 #if 0
 if (gameStates.render.cockpit.nType != CM_FULL_COCKPIT)
 	CCanvas::SetCurrent (&gameStates.render.vr.buffers.render [0]);

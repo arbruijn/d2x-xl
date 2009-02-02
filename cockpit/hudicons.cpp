@@ -566,7 +566,9 @@ for (j = firstItem; j < n; j++) {
 	OglDrawEmptyRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
 	if (*szCount) {
 		fontManager.Current ()->StringSize (szCount, fw, fh, faw);
+		fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 		nIdItems [j] = GrString (x + wIcon + 2 - fw, y - fh, szCount, nIdItems + j);
+		fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 		}
 	gameStates.render.grAlpha = FADE_LEVELS;
 	x += wIcon + ox;
