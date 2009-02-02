@@ -1121,9 +1121,8 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 		g3sPoint		vPlayerPos;
 		CFixVector	vPos;
 
-		vPos = OBJECTS [nObject].info.position.vPos;
-		vPos[Y] += I2X (2);
-		G3TransformAndEncodePoint(&vPlayerPos, vPos);
+		vPos = OBJECTS [nObject].info.position.vPos + 2 * OBJECTS [LOCALPLAYER.nObject].info.position.mOrient.UVec ();
+		G3TransformAndEncodePoint (&vPlayerPos, vPos);
 		if (vPlayerPos.p3_codes == 0) {	//on screen
 			G3ProjectPoint (&vPlayerPos);
 			if (!(vPlayerPos.p3_flags & PF_OVERFLOW)) {
