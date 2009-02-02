@@ -693,7 +693,7 @@ else if (i < 0)
 			objP->Unlink (true);
 			while (ObjectIsLinked (objP, objP->info.nSegment))
 				objP->UnlinkFromSeg ();
-			NW_GET_BYTES (dataP, bufI, objP, sizeof (CObject));
+			NW_GET_BYTES (dataP, bufI, objP, sizeof (tBaseObject));
 			if (objP->info.nType != OBJ_NONE) {
 #if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
 				if (gameStates.multi.nGameType >= IPX_GAME)

@@ -119,8 +119,6 @@ void EvalArgs (void);
 void GetAppFolders (void);
 void InitGameStates (void);
 
-//--------------------------------------------------------------------------
-
 char szAutoMission [255];
 char szAutoHogFile [255];
 
