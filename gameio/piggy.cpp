@@ -414,6 +414,7 @@ int ReadHamFile (bool bDefault)
 #endif
 	int		nHAMId;
 	int		nSoundOffset = 0;
+	char		szFile [FILENAME_LEN];
 	char*		pszFile, * pszFolder;
 
 if (bDefault) {
@@ -423,8 +424,8 @@ if (bDefault) {
 else {
 	if (!*gameFolders.szModName)
 		return 0;
-	if (!*gameFolders.szModDir [1])
-		return 0;
+	sprintf (szFile, "%s.ham", gameFolders.szModName);
+	pszFile = szFile;
 	pszFolder = gameFolders.szModDir [1];
 	}
 	

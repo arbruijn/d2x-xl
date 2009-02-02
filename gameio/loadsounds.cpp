@@ -283,6 +283,7 @@ int ReadSoundFile (bool bDefault)
 	int		nSoundNum;
 	int		nSoundStart;
 	int		size, length;
+	char		szFile [FILENAME_LEN];
 	char*		pszFile, * pszFolder;
 
 if (bDefault) {
@@ -290,8 +291,10 @@ if (bDefault) {
 	pszFolder = gameFolders.szDataDir;
 	}
 else {
-	if (!*gameFolders.szModDir [1])
+	if (!*gameFolders.szModName)
 		return 0;
+	sprintf (szFile, "%s%s", gameFolders.szModName, (gameOpts->sound.digiSampleRate == SAMPLE_RATE_22K) ? ".s22" : ".s11");
+	pszFile = szFile;
 	pszFolder = gameFolders.szModDir [1];
 	}
 	
