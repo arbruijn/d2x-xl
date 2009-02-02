@@ -169,7 +169,7 @@ if (!nType)
 // type & 2: water
 if (nType) {
 	short nSound;
-	HUDMessage (0, "Thrust: %d %d %d", mType.physInfo.thrust [X], mType.physInfo.thrust [Y], mType.physInfo.thrust [Z]);
+
 	if (nType == 2)
 		nSound = mType.physInfo.thrust.IsZero () ? 0 : SOUND_SHIP_IN_WATER;
 	else

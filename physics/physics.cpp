@@ -261,12 +261,9 @@ info.position.mOrient.CheckAndFix();
 void DoBumpHack (CObject *objP)
 {
 	CFixVector vCenter, vBump;
-#if DBG
-HUDMessage (0, "BUMP HACK");
-#endif
+
 //bump CPlayerData a little towards vCenter of CSegment to unstick
 vCenter = SEGMENTS [objP->info.nSegment].Center ();
-//HUDMessage (0, "BUMP! %d %d", d1, d2);
 //don't bump CPlayerData towards center of reactor CSegment
 CFixVector::NormalizedDir (vBump, vCenter, objP->info.position.vPos);
 if (SEGMENTS [objP->info.nSegment].m_nType == SEGMENT_IS_CONTROLCEN)
