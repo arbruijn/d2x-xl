@@ -475,10 +475,10 @@ else
 // turn the ship so that it is facing the destination nSide of the destination CSegment
 // Invert the Normal as it points into the CSegment
 // compute angles from the Normal
-an = n.ToAnglesVec();
+an = n.ToAnglesVec ();
 // create new orientation matrix
 if (!nStep)
-	posP->mOrient = CFixMatrix::Create(an);
+	posP->mOrient = CFixMatrix::Create (an);
 if (bSetPos)
 	posP->vPos = SEGMENTS [nSegment].Center (); 
 // rotate the ships vel vector accordingly
@@ -518,16 +518,16 @@ if (nStep) {
 		av [PA] /= nStep;
 		av [BA] /= nStep;
 		av [HA] /= nStep;
-		ad = objP->info.position.mOrient.ExtractAnglesVec();
+		ad = objP->info.position.mOrient.ExtractAnglesVec ();
 		ad [PA] += (an [PA] - ad [PA]) / nStep;
 		ad [BA] += (an [BA] - ad [BA]) / nStep;
 		ad [HA] += (an [HA] - ad [HA]) / nStep;
-		objP->info.position.mOrient = CFixMatrix::Create(ad);
+		objP->info.position.mOrient = CFixMatrix::Create (ad);
 		}
 	else
-		objP->info.position.mOrient = CFixMatrix::Create(an);
+		objP->info.position.mOrient = CFixMatrix::Create (an);
 	}
-rm = CFixMatrix::Create(av);
+rm = CFixMatrix::Create (av);
 vel = rm * objP->mType.physInfo.velocity;
 objP->mType.physInfo.velocity = vel;
 //StopPlayerMovement ();
