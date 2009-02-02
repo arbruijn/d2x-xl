@@ -750,7 +750,7 @@ i = ((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode)
 LoadBitmap (i, 0);
 if (!(bmP = gameData.pig.tex.bitmaps [0] + i))
 	return;
-color = (m_info.weaponBoxStates [nIndex] == WS_SET) ? 1 : int (X2F (m_info.weaponBoxFadeValues [nIndex]) / float (FADE_LEVELS)) * 255;
+color = (m_info.weaponBoxStates [nIndex] == WS_SET) ? 255 : int (X2F (m_info.weaponBoxFadeValues [nIndex]) / float (FADE_LEVELS)) * 255;
 m_info.nColor = RGBA (color, color, color, 255);
 BitBlt (-1, xPic, yPic, true, true, (gameStates.render.cockpit.nType == CM_FULL_SCREEN) ? I2X (2) : I2X (1), orient, bmP);
 m_info.nColor = WHITE_RGBA;
