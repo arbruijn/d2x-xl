@@ -160,6 +160,9 @@ v [Z] = m_data.mat [FVEC][Z];
 m.m_data.mat [RVEC][Z] = CFloatVector::Dot (v, other.m_data.mat [RVEC]);
 m.m_data.mat [UVEC][Z] = CFloatVector::Dot (v, other.m_data.mat [UVEC]);
 m.m_data.mat [FVEC][Z] = CFloatVector::Dot (v, other.m_data.mat [FVEC]);
+CFloatVector::Normalize (m.m_data.mat [RVEC]);
+CFloatVector::Normalize (m.m_data.mat [UVEC]);
+CFloatVector::Normalize (m.m_data.mat [FVEC]);
 return m;
 }
 
@@ -206,6 +209,9 @@ v [Z] = m_data.mat [FVEC][Z];
 m.m_data.mat [RVEC][Z] = CFixVector::Dot (v, other.m_data.mat [RVEC]);
 m.m_data.mat [UVEC][Z] = CFixVector::Dot (v, other.m_data.mat [UVEC]);
 m.m_data.mat [FVEC][Z] = CFixVector::Dot (v, other.m_data.mat [FVEC]);
+CFixVector::Normalize (m.m_data.mat [RVEC]);
+CFixVector::Normalize (m.m_data.mat [UVEC]);
+CFixVector::Normalize (m.m_data.mat [FVEC]);
 return m;
 }
 

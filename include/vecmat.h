@@ -345,7 +345,7 @@ inline const float CFloatVector::Dist (const CFloatVector& v0, const CFloatVecto
 }
 
 inline const float CFloatVector::Dot (const CFloatVector& v0, const CFloatVector& v1) {
-	return v0 [X]*v1 [X] + v0 [Y]*v1 [Y] + v0 [Z]*v1 [Z];
+	return v0 [X] * v1 [X] + v0 [Y] * v1 [Y] + v0 [Z] * v1 [Z];
 }
 
 inline const float CFloatVector::Normalize (CFloatVector& vec) {

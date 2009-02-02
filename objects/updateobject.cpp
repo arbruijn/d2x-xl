@@ -137,10 +137,13 @@ if (EGI_FLAG (bRotateMarkers, 0, 1, 0) && gameStates.app.tick40fps.bTick) {
 	time_t t = (gameStates.app.nSDLTicks - t0) % 1000;
 	t0 = gameStates.app.nSDLTicks;
 	if (t) {
-		CAngleVector a = CAngleVector::Create(0, 0, (fixang) ((float) (I2X (1) / 512) * t / 25.0f));
-		CFixMatrix mRotate = CFixMatrix::Create(a);
-		CFixMatrix mOrient = mRotate * info.position.mOrient;
-		info.position.mOrient = mOrient;
+		CAngleVector a = CAngleVector::Create (0, 0, (fixang) ((float) (I2X (1) / 512) * t / 25.0f));
+		CFixMatrix mRotate = CFixMatrix::Create (a);
+		CFixMatrix mOrient;
+		for (int i = 1; i < 10000; i++) {
+			mOrient = mRotate * info.position.mOrient;
+			info.position.mOrient = mOrient;
+			}
 		}
 	}
 }
