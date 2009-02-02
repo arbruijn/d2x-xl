@@ -45,6 +45,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hudmsgs.h"
 #include "hudicons.h"
 #include "radar.h"
+#include "autodl.h"
 #include "key.h"
 
 #define SHOW_PLAYER_IP		0
@@ -295,7 +296,7 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_S
 		sprintf (message, TXT_DEMO_RECORDING);
 	fontManager.SetColorRGBi (RGBA_PAL2 (27, 0, 0), 1, 0, 0);
 	fontManager.Current ()->StringSize (message, w, h, aw);
-	GrPrintF (NULL, (CCanvas::Current ()->Width ()-w) / 2, CCanvas::Current ()->Height () - y - h - 2, message);
+	GrPrintF (NULL, (CCanvas::Current ()->Width () - w) / 2, CCanvas::Current ()->Height () - y - h - 2, message);
 	}
 }
 
@@ -1076,7 +1077,7 @@ return bCheckObjs ? (nHitType == HIT_OBJECT) && (hit_data.hit.nObject == nObject
 void CGenericCockpit::DrawPlayerNames (void)
 {
 	int			bHasFlag, bShowName, bShowTeamNames, bShowAllNames, bShowFlags, nObject, nTeam;
-	int			p;
+	int			nPlayer, nState;
 	tRgbColorb*	colorP;
 	
 	static int nCurColor = 1, tColorChange = 0;
@@ -1095,21 +1096,27 @@ bShowTeamNames = (gameData.multigame.bShowReticleName && (IsCoopGame || IsTeamGa
 bShowFlags = (gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD | GM_ENTROPY));
 
 nTeam = GetTeam (gameData.multiplayer.nLocalPlayer);
-for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
+for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check all players
+	if (gameStates.multi.bPlayerIsTyping [nPlayer])
+		nState = 1;
+	else if (downloadManager.Downloading (nPlayer))
+		nState = 2;
+	else
+		nState = 0;
 
-	bShowName = (gameStates.multi.bPlayerIsTyping [p] || 
-					 (bShowAllNames && !(gameData.multiplayer.players [p].flags & PLAYER_FLAGS_CLOAKED)) || 
-					 (bShowTeamNames && GetTeam (p) == nTeam));
-	bHasFlag = (gameData.multiplayer.players [p].connected && gameData.multiplayer.players [p].flags & PLAYER_FLAGS_FLAG);
+	bShowName = (nState ||
+					 (bShowAllNames && !(gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED)) || 
+					 (bShowTeamNames && GetTeam (nPlayer) == nTeam));
+	bHasFlag = (gameData.multiplayer.players [nPlayer].connected && gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_FLAG);
 
 	if (gameData.demo.nState != ND_STATE_PLAYBACK)
-		nObject = gameData.multiplayer.players [p].nObject;
+		nObject = gameData.multiplayer.players [nPlayer].nObject;
 	else {
 		//if this is a demo, the nObject in the CPlayerData struct is wrong,
 		//so we search the CObject list for the nObject
 		CObject *objP;
 		FORALL_PLAYER_OBJS (objP, nObject) 
-			if (objP->info.nId == p) {
+			if (objP->info.nId == nPlayer) {
 				nObject = objP->Index ();
 				break;
 				}
@@ -1127,7 +1134,7 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 				fix x = vPlayerPos.p3_screen.x;
 				fix y = vPlayerPos.p3_screen.y;
 				if (bShowName) {				// Draw callsign on HUD
-					if (gameStates.multi.bPlayerIsTyping [p]) {
+					if (nState) {
 						int t = gameStates.app.nSDLTicks;
 
 						if (t - tColorChange > 333) {
@@ -1137,17 +1144,17 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 						colorP = typingColors + nCurColor;
 						}
 					else {
-						nColor = IsTeamGame ? GetTeam (p) : p;
+						nColor = IsTeamGame ? GetTeam (nPlayer) : nPlayer;
 						colorP = playerColors + nColor;
 						}
 
-					sprintf (s, "%s", gameStates.multi.bPlayerIsTyping [p] ? TXT_TYPING : gameData.multiplayer.players [p].callsign);
+					sprintf (s, "%s", (nState == 1) ? TXT_TYPING : (nState == 2) ? "Downloading..." : gameData.multiplayer.players [nPlayer].callsign);
 					fontManager.Current ()->StringSize (s, w, h, aw);
 					fontManager.SetColorRGBi (RGBA_PAL2 (colorP->red, colorP->green, colorP->blue), 1, 0, 0);
 					x1 = x - w / 2;
 					y1 = y - h / 2;
 					//glBlendFunc (GL_ONE, GL_ONE);
-					nIdNames [nCurColor][p] = GrString (x1, y1, s, nIdNames [nCurColor] + p);
+					nIdNames [nCurColor][nPlayer] = GrString (x1, y1, s, nIdNames [nCurColor] + nPlayer);
 					CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (colorP->red, colorP->green, colorP->blue));
 					glLineWidth ((GLfloat) 2.0f);
 					OglDrawEmptyRect (x1 - 4, y1 - 3, x1 + w + 2, y1 + h + 3);
@@ -1162,10 +1169,10 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 					fix w = dx / 4;
 					fix h = dy / 4;
 					if (gameData.app.nGameMode & (GM_CAPTURE | GM_ENTROPY))
-						CCanvas::Current ()->SetColorRGBi ((GetTeam (p) == TEAM_BLUE) ? MEDRED_RGBA :  MEDBLUE_RGBA);
+						CCanvas::Current ()->SetColorRGBi ((GetTeam (nPlayer) == TEAM_BLUE) ? MEDRED_RGBA :  MEDBLUE_RGBA);
 					else if (gameData.app.nGameMode & GM_HOARD) {
 						if (gameData.app.nGameMode & GM_TEAM)
-							CCanvas::Current ()->SetColorRGBi ((GetTeam (p) == TEAM_RED) ? MEDRED_RGBA :  MEDBLUE_RGBA);
+							CCanvas::Current ()->SetColorRGBi ((GetTeam (nPlayer) == TEAM_RED) ? MEDRED_RGBA :  MEDBLUE_RGBA);
 						else
 							CCanvas::Current ()->SetColorRGBi (MEDGREEN_RGBA);
 						}

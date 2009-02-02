@@ -139,6 +139,9 @@ networkData.nStatus = sp->gameStatus;
 console.printf (1, "netGame.checksum = %d, calculated checksum = %d.\n",
 			   netGame.nSegmentCheckSum, networkData.nSegmentCheckSum);
 #endif
+#if DBG
+networkData.nStatus = NETSTAT_AUTODL;
+#endif
 if (netGame.nSegmentCheckSum != networkData.nSegmentCheckSum) {
 	if (extraGameInfo [0].bAutoDownload)
 		networkData.nStatus = NETSTAT_AUTODL;

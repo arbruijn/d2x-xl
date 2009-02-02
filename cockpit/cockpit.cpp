@@ -59,7 +59,7 @@ h = SECONDARY_W_BOX_BOT - SECONDARY_W_BOX_TOP + 1;
 
 void CCockpit::DrawRecording (void)
 {
-CGenericCockpit::DrawRecording ((CCanvas::Current ()->Height () > 240) ? 40 : 15);
+CGenericCockpit::DrawRecording ((CCanvas::Current ()->Height () > 240) ? 80 : 30);
 }
 
 //	-----------------------------------------------------------------------------

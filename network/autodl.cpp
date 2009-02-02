@@ -100,7 +100,7 @@ int CDownloadManager::SetTimeoutIndex (int i)
 {
 if ((i >= 0) && (i <= MaxTimeoutIndex ()))
 	m_iTimeout = i;
-m_nPollTime = m_timeouts [m_iTimeout] * 1000;
+m_nTimeout = m_timeouts [m_iTimeout] * 1000;
 return m_iTimeout;
 }
 
@@ -175,14 +175,14 @@ return 1;
 void CDownloadManager::CleanUp (void)
 {
 	int	t, i = 0;
-	static int m_nPollTime = 0;
+	static int nTimeout = 0;
 
-if (m_nPollTime < 0)
+if (m_nTimeout < 0)
 	SetTimeoutIndex (-1);
-if ((t = SDL_GetTicks ()) - m_nPollTime > m_nPollTime) {
-	m_nPollTime = t;
+if ((t = SDL_GetTicks ()) - nTimeout > m_nTimeout) {
+	nTimeout = t;
 	while (i < m_nUploadDests)
-		if ((int) SDL_GetTicks () - m_uploadDests [i].nTimeout > m_nPollTime)
+		if ((int) SDL_GetTicks () - m_uploadDests [i].nTimeout > m_nTimeout)
 			DelUploadDest (i);
 		else
 			i++;
@@ -427,10 +427,14 @@ switch (pId) {
 		if (!pszFile)
 			return DownloadError (2);
 		strlwr (pszFile);
+#if DBG
+			sprintf (szDest, "%s%stest/%s", gameFolders.szMissionDir, *gameFolders.szMissionDir ? "/" : "", pszFile);
+#else
 		if (strstr (hogFileManager.m_files.MsnHogFiles.szName, pszFile))
 			strcpy (szDest, hogFileManager.m_files.MsnHogFiles.szName);
 		else
 			sprintf (szDest, "%s%s%s", gameFolders.szMissionDir, *gameFolders.szMissionDir ? "/" : "", pszFile);
+#endif
 		if (!m_cf.Open (szDest, "", "wb", 0))
 			return DownloadError (2);
 		m_nSrcLen = GET_INTEL_INT (data + 2);
@@ -494,7 +498,7 @@ if (key == KEY_ESC) {
 	}
 ResendRequest ();
 NetworkListen ();
-if (m_nPollTime < 0)
+if (m_nTimeout < 0)
 	SetTimeoutIndex (-1);
 if (int (SDL_GetTicks ()) - m_nPollTime > m_nTimeout) {
 	menu [1].SetText ("download timed out");
