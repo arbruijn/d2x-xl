@@ -592,17 +592,17 @@ return false;
 
 void NetworkReadObjectPacket (ubyte *dataP)
 {
-	static int		nPlayer = 0;
-	static int		nMode = 0;
+	static int	nPlayer = 0;
+	static int	nMode = 0;
 
 	// Object from another net CPlayerData we need to sync with
-	CObject	*objP;
-	short		nObject, nRemoteObj;
-	sbyte		nObjOwner;
-	short		nSegment, i;
+	CObject		*objP;
+	short			nObject, nRemoteObj;
+	sbyte			nObjOwner;
+	short			nSegment, i;
 
-	int		nObjects = dataP [1];
-	int		bufI;
+	int			nObjects = dataP [1];
+	int			bufI;
 
 networkData.nPrevFrame = networkData.sync [0].objs.nFrame;
 if (gameStates.multi.nGameType == UDP_GAME) {
@@ -693,7 +693,7 @@ else if (i < 0)
 			objP->Unlink (true);
 			while (ObjectIsLinked (objP, objP->info.nSegment))
 				objP->UnlinkFromSeg ();
-			NW_GET_BYTES (dataP, bufI, objP, sizeof (tBaseObject));
+			NW_GET_BYTES (dataP, bufI, &objP->info, sizeof (tBaseObject));
 			if (objP->info.nType != OBJ_NONE) {
 #if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
 				if (gameStates.multi.nGameType >= IPX_GAME)
