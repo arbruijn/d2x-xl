@@ -428,7 +428,7 @@ cf.Read (&gameData.bots.nTypes [1], sizeof (int), 1);
 gameData.bots.info [1] = gameData.bots.info [0];
 if (!gameOpts->sound.bUseD1Sounds)
 	return;
-#if 1
+
 for (i = 0, pr = &gameData.bots.info [1][0]; i < D1_MAX_ROBOT_TYPES; i++, pr++) {
 	//cf.Read (&r, sizeof (r), 1);
 	cf.Seek (
@@ -448,59 +448,9 @@ for (i = 0, pr = &gameData.bots.info [1][0]; i < D1_MAX_ROBOT_TYPES; i++, pr++) 
 		JOINTLIST_SIZE * (MAX_GUNS + 1) * N_ANIM_STATES +
 		sizeof (int),
 		SEEK_CUR);
-#if 0
-	pr->tauntSound = 0;
-	pr->nModel = r.nModel;
-	memcpy (pr->gunPoints, r.gunPoints, sizeof (r.gunPoints));
-	memcpy (pr->gunSubModels, r.gunSubModels, sizeof (r.gunSubModels));
-	pr->nExp1VClip = r.nExp1VClip;
-	pr->nExp1Sound = r.nExp1Sound;
-	pr->nExp2VClip = r.nExp2VClip;
-	pr->nExp2Sound = r.nExp2Sound;
-	pr->nWeaponType = r.nWeaponType;
-	pr->nSecWeaponType = 0;
-	pr->nGuns = r.nGuns;
-	pr->containsId = r.containsId;
-	pr->containsCount = r.containsCount;
-	pr->containsProb = r.containsProb;
-	pr->containsType = r.containsType;
-	pr->kamikaze = 0;
-	pr->scoreValue = r.scoreValue;
-	pr->badass = 0;
-	pr->energyDrain = 0;
-	pr->lighting = r.lighting;
-	pr->strength = r.strength;
-	pr->mass = r.mass;
-	pr->drag = r.drag;
-	memcpy (pr->fieldOfView, r.fieldOfView, sizeof (r.fieldOfView));
-	memcpy (pr->primaryFiringWait, r.primaryFiringWait, sizeof (r.primaryFiringWait));
-	memset (pr->secondaryFiringWait, 0, sizeof (pr->secondaryFiringWait));
-	memcpy (pr->turnTime, r.turnTime, sizeof (r.turnTime));
-	memcpy (pr->xMaxSpeed, r.xMaxSpeed, sizeof (r.xMaxSpeed));
-	memcpy (pr->circleDistance, r.circleDistance, sizeof (r.circleDistance));
-	memcpy (pr->nRapidFireCount, r.nRapidFireCount, sizeof (r.nRapidFireCount));
-	memcpy (pr->evadeSpeed, r.evadeSpeed, sizeof (r.evadeSpeed));
-	pr->cloakType = r.cloakType;
-	pr->attackType = r.attackType;
-	pr->bossFlag = r.bossFlag;
-	pr->companion = 0;
-	pr->smartBlobs = 0;
-	pr->energyBlobs = 0;
-	pr->thief = 0;
-	pr->pursuit = 0;
-	pr->lightcast = 0;
-	pr->bDeathRoll = r.bDeathRoll;
-	pr->flags = r.flags;
-	pr->deathrollSound = r.deathrollSound;
-	pr->glow = r.glow;
-	pr->behavior = r.behavior;
-	pr->aim = r.aim;
-	memcpy (pr->animStates, r.animStates, sizeof (r.animStates));
-#endif
 	pr->always_0xabcd = 0xabcd;   
 	}         
-#endif
-#if 1
+
 cf.Seek (
 	sizeof (int) +
 	JOINTPOS_SIZE * D1_MAX_ROBOT_JOINTS +
@@ -569,18 +519,6 @@ for (i = 0; i < D1_MAX_SOUNDS; i++) {
 	if (AltSounds [1][i] == tmpSounds [pr->clawSound])
 		pr->clawSound = i;
 	}
-#else
-cf.Seek (
-	sizeof (int) +
-	D1_ROBOT_INFO_SIZE * D1_MAX_ROBOT_TYPES +
-	sizeof (int) +
-	JOINTPOS_SIZE * D1_MAX_ROBOT_JOINTS,
-	SEEK_CUR);
-gameData.weapons.nTypes [1] = cf.ReadInt ();
-/*---*/PrintLog ("         Loading %d weapon descriptions\n", gameData.weapons.nTypes [1]);
-for (i = 0; i < gameData.weapons.nTypes [1]; i++) 
-	BMReadWeaponInfoD1N (i);
-#endif
 }
 
 //------------------------------------------------------------------------------

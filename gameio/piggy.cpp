@@ -451,14 +451,14 @@ if (gameData.pig.tex.nHamFileVersion < 3) {
 	}
 cf.Close ();
 /*---*/PrintLog ("      Looking for Descent 1 data files\n");
-	strcpy (szD1PigFileName, "descent.pig");
-	if (!cfPiggy [1].File ())
-		cfPiggy [1].Open (szD1PigFileName, gameFolders.szDataDir, "rb", 0);
-	if (cfPiggy [1].File ()) {
-		gameStates.app.bHaveD1Data = 1;
+strcpy (szD1PigFileName, "descent.pig");
+if (!cfPiggy [1].File ())
+	cfPiggy [1].Open (szD1PigFileName, gameFolders.szDataDir, "rb", 0);
+if (cfPiggy [1].File ()) {
+	gameStates.app.bHaveD1Data = 1;
 /*---*/PrintLog ("      Loading Descent 1 data\n");
-		BMReadGameDataD1 (cfPiggy [1]);
-		}
+	BMReadGameDataD1 (cfPiggy [1]);
+	}
 return 1;
 }
 
