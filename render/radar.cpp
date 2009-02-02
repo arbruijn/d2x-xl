@@ -169,7 +169,7 @@ bStencil = StencilOff ();
 InitShipColors ();
 yRadar = ((i == 1) || (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR)) ? yOffs : -yOffs;
 fRadius = 5.0f / transformation.m_info.scalef [X];
-fLineWidth = (CCanvas::Current ()->Width () >= 1200) ? 2.0f : 1.0f;
+fLineWidth = float (CCanvas::Current ()->Width ()) / 640.0f;
 mRadar = CFixMatrix::Create (aRadar);
 glActiveTexture (GL_TEXTURE3);
 glDisable (GL_TEXTURE_2D);

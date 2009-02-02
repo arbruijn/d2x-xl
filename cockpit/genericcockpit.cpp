@@ -1870,6 +1870,7 @@ m_history [gameStates.render.vr.nCurrentPage].weapon [nWindow] = m_history [game
 gameData.objs.viewerP = viewerSave;
 CCanvas::Pop ();
 #if 0
+// draw a thicker frame with rounded edges around the cockpit displays
 if (!gameStates.app.bNostalgia && (gameStates.render.cockpit.nType >= CM_FULL_SCREEN)) {
 	int x0 = windowCanv.Left ();
 	int y0 = windowCanv.Top () - CCanvas::Current ()->Top ();
