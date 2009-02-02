@@ -778,26 +778,36 @@ if (!ReadSoundFile (false))
 if (gameData.missions.nEnhancedMission) {
 	char szFile [FILENAME_LEN];
 
-	sprintf (szFile, "%s.ham", gameStates.app.szCurrentMissionFile);
 	/*---*/PrintLog ("   reading additional robots\n");
-	switch (LoadRobotExtensions (szFile, gameFolders.szMissionDirs [0], gameData.missions.nEnhancedMission)) {
-		case -1:
-			gameStates.app.bBetweenLevels = 0;
-			gameData.missions.nCurrentLevel = nCurrentLevel;
-			return 0;
-		case 1:
-			break;
-		default:
-			if (0 > LoadRobotExtensions ("d2x.ham", gameFolders.szMissionDir, gameData.missions.nEnhancedMission)) {
-				gameStates.app.bBetweenLevels = 0;
-				gameData.missions.nCurrentLevel = nCurrentLevel;
-				return 0;
-				}
+	if ((gameData.missions.nEnhancedMission < 3) || !*gameFolders.szModName)
+		nLoadRes = 0;
+	else {
+		/*---*/PrintLog ("		trying custom robots (hxm) from mod '%s'\n", gameFolders.szModName);
+		sprintf (szFile, "%s/%s.hxm", gameFolders.szModDir, gameFolders.szModName);
+		LoadRobotReplacements (szFile, 0, 0);
+		sprintf (szFile, "%s.vham", gameFolders.szModDir);
+		/*---*/PrintLog ("		trying custom robots (vham) from mod '%s'\n", gameFolders.szModName);
+		nLoadRes = LoadRobotExtensions (szFile, gameFolders.szModName, gameData.missions.nEnhancedMission);
 		}
-	strncpy (t, gameStates.app.szCurrentMissionFile, 6);
-	strcat (t, "-l.mvl");
+	if (nLoadRes == 0) {
+		sprintf (szFile, "%s.ham", gameStates.app.szCurrentMissionFile);
+		/*---*/PrintLog ("		trying custom robots (ham) from level '%s'\n", gameStates.app.szCurrentMissionFile);
+		nLoadRes = LoadRobotExtensions (szFile, gameFolders.szMissionDirs [0], gameData.missions.nEnhancedMission);
+		}
+	if (nLoadRes == 0) {
+		sprintf (szFile, "%s.ham", gameStates.app.szCurrentMissionFile);
+		/*---*/PrintLog ("		trying vertigo custom robots (d2x.ham)\n");
+		nLoadRes = LoadRobotExtensions ("d2x.ham", gameFolders.szMissionDir, gameData.missions.nEnhancedMission);
+		}
+	if (nLoadRes < 0) {
+		gameStates.app.bBetweenLevels = 0;
+		gameData.missions.nCurrentLevel = nCurrentLevel;
+		return 0;
+		}
+	strncpy (szFile, gameStates.app.szCurrentMissionFile, 6);
+	strcat (szFile, "-l.mvl");
 	/*---*/PrintLog ("   initializing additional robot movies\n");
-	movieManager.InitExtraRobotLib (t);
+	movieManager.InitExtraRobotLib (szFile);
 	}
 
 /*---*/PrintLog ("   Initializing smoke manager\n");
