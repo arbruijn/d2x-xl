@@ -408,7 +408,6 @@ bPigFileInitialized = 1;
 int ReadHamFile (bool bDefault)
 {
 	CFile		cf;
-	char		szFile;
 #if 1
 	char		szD1PigFileName [FILENAME_LEN];
 #endif
