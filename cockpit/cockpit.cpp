@@ -478,7 +478,7 @@ if (nWeaponType == 0) {
 	nIndex = primaryWeaponToWeaponInfo [nWeaponId];
 	if (nIndex == LASER_ID && laserLevel > MAX_LASER_LEVEL)
 		nIndex = SUPERLASER_ID;
-	CGenericCockpit::DrawWeaponInfo (nIndex,
+	CGenericCockpit::DrawWeaponInfo (nWeaponType, nIndex,
 		hudWindowAreas + COCKPIT_PRIMARY_BOX,
 		PRIMARY_W_PIC_X, PRIMARY_W_PIC_Y,
 		PRIMARY_WEAPON_NAMES_SHORT (nWeaponId),
@@ -486,7 +486,7 @@ if (nWeaponType == 0) {
 		}
 else {
 	nIndex = secondaryWeaponToWeaponInfo [nWeaponId];
-	CGenericCockpit::DrawWeaponInfo (nIndex,
+	CGenericCockpit::DrawWeaponInfo (nWeaponType, nIndex,
 		hudWindowAreas + COCKPIT_SECONDARY_BOX,
 		SECONDARY_W_PIC_X, SECONDARY_W_PIC_Y,
 		SECONDARY_WEAPON_NAMES_SHORT (nWeaponId),

@@ -736,7 +736,7 @@ if (gameStates.render.cockpit.nType != CM_FULL_COCKPIT)
 
 //	-----------------------------------------------------------------------------
 
-void CGenericCockpit::DrawWeaponInfo (int nIndex, tGaugeBox* box, int xPic, int yPic, const char *pszName, int xText, int yText, int orient)
+void CGenericCockpit::DrawWeaponInfo (int nWeaponType, int nIndex, tGaugeBox* box, int xPic, int yPic, const char *pszName, int xText, int yText, int orient)
 {
 	CBitmap*	bmP;
 	char		szName [100], *p;
@@ -750,7 +750,7 @@ i = ((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode)
 LoadBitmap (i, 0);
 if (!(bmP = gameData.pig.tex.bitmaps [0] + i))
 	return;
-color = (m_info.weaponBoxStates [nIndex] == WS_SET) ? 255 : int (X2F (m_info.weaponBoxFadeValues [nIndex]) / float (FADE_LEVELS)) * 255;
+color = (m_info.weaponBoxStates [nWeaponType] == WS_SET) ? 255 : int (X2F (m_info.weaponBoxFadeValues [nWeaponType]) / float (FADE_LEVELS)) * 255;
 m_info.nColor = RGBA (color, color, color, 255);
 BitBlt (-1, xPic, yPic, true, true, (gameStates.render.cockpit.nType == CM_FULL_SCREEN) ? I2X (2) : I2X (1), orient, bmP);
 m_info.nColor = WHITE_RGBA;
@@ -791,13 +791,13 @@ if (nWeaponType == 0) {
 		nIndex = SUPERLASER_ID;
 
 	if (gameStates.render.cockpit.nType == CM_STATUS_BAR)
-		DrawWeaponInfo (nIndex,
+		DrawWeaponInfo (nWeaponType, nIndex,
 			hudWindowAreas + SB_PRIMARY_BOX,
 			SB_PRIMARY_W_PIC_X, SB_PRIMARY_W_PIC_Y,
 			PRIMARY_WEAPON_NAMES_SHORT (nWeaponId),
 			SB_PRIMARY_W_TEXT_X, SB_PRIMARY_W_TEXT_Y, 0);
 	else
-		DrawWeaponInfo (nIndex,
+		DrawWeaponInfo (nWeaponType, nIndex,
 			hudWindowAreas + COCKPIT_PRIMARY_BOX,
 			PRIMARY_W_PIC_X, PRIMARY_W_PIC_Y,
 			PRIMARY_WEAPON_NAMES_SHORT (nWeaponId),
@@ -807,13 +807,13 @@ else {
 	nIndex = secondaryWeaponToWeaponInfo [nWeaponId];
 
 	if (gameStates.render.cockpit.nType == CM_STATUS_BAR)
-		DrawWeaponInfo (nIndex,
+		DrawWeaponInfo (nWeaponType, nIndex,
 			hudWindowAreas + SB_SECONDARY_BOX,
 			SB_SECONDARY_W_PIC_X, SB_SECONDARY_W_PIC_Y,
 			SECONDARY_WEAPON_NAMES_SHORT (nWeaponId),
 			SB_SECONDARY_W_TEXT_X, SB_SECONDARY_W_TEXT_Y, 0);
 	else
-		DrawWeaponInfo (nIndex,
+		DrawWeaponInfo (nWeaponType, nIndex,
 			hudWindowAreas + COCKPIT_SECONDARY_BOX,
 			SECONDARY_W_PIC_X, SECONDARY_W_PIC_Y,
 			SECONDARY_WEAPON_NAMES_SHORT (nWeaponId),

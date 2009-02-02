@@ -176,7 +176,7 @@ class CGenericCockpit {
 		void AddPointsToScore (int points);
 		void AddBonusPointsToScore (int points);
 		void DrawPlayerShip (int nCloakState, int nOldCloakState, int x, int y);
-		void DrawWeaponInfo (int info_index, tGaugeBox *box, int xPic, int yPic, const char *pszName, int xText, int yText, int orient);
+		void DrawWeaponInfo (int nWeaponType, int nIndex, tGaugeBox *box, int xPic, int yPic, const char *pszName, int xText, int yText, int orient);
 		int DrawWeaponDisplay (int nWeaponType, int nWeaponId);
 		void DrawStatic (int nWindow, int nIndex);
 		void DrawOrbs (int x, int y);
