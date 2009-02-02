@@ -513,8 +513,7 @@ CGenericCockpit::DrawStatic (nWindow, COCKPIT_PRIMARY_BOX);
 
 void CCockpit::DrawPlayerShip (void)
 {
-if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
-	CGenericCockpit::DrawPlayerShip (m_info.bCloak, m_history [gameStates.render.vr.nCurrentPage].bCloak, SHIP_GAUGE_X, SHIP_GAUGE_Y);
+CGenericCockpit::DrawPlayerShip (m_info.bCloak, m_history [gameStates.render.vr.nCurrentPage].bCloak, SHIP_GAUGE_X, SHIP_GAUGE_Y);
 }
 
 //	-----------------------------------------------------------------------------

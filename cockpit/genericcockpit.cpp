@@ -725,8 +725,9 @@ else if (nCloakState && nOldCloakState && !m_info.nCloakFadeState && !refade) {
 if (gameStates.render.cockpit.nType != CM_FULL_COCKPIT)
 	CCanvas::SetCurrent (&gameStates.render.vr.buffers.render [0]);
 #endif
-gameStates.render.grAlpha = (float) nCloakFadeValue / (float) FADE_LEVELS;
+m_info.nColor = RGBA (255, 255, 255, int (float (nCloakFadeValue) / float (FADE_LEVELS) * 255));
 BitBlt (GAUGE_SHIPS + (IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer), x, y);
+m_info.nColor = WHITE_RGBA;
 gameStates.render.grAlpha = FADE_LEVELS;
 #if 0
 if (gameStates.render.cockpit.nType != CM_FULL_COCKPIT)

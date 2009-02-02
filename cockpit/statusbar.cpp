@@ -412,12 +412,10 @@ CCanvas::Pop ();
 
 void CStatusBar::DrawPlayerShip (void)
 {
-if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)) {
-	CCanvas::Push ();
-	CCanvas::SetCurrent (CurrentGameScreen ());
-	CGenericCockpit::DrawPlayerShip (m_info.bCloak, m_history [gameStates.render.vr.nCurrentPage].bCloak, SB_SHIP_GAUGE_X, SB_SHIP_GAUGE_Y);
-	CCanvas::Pop ();
-	}
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
+CGenericCockpit::DrawPlayerShip (m_info.bCloak, m_history [gameStates.render.vr.nCurrentPage].bCloak, SB_SHIP_GAUGE_X, SB_SHIP_GAUGE_Y);
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
