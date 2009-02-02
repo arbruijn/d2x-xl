@@ -106,6 +106,7 @@ class CCockpitInfo {
 		int	weaponBoxUser [2];
 		int	nLineSpacing;
 		int	nType;
+		int	nColor;
 		float	xScale;
 		float	yScale;
 		float	xGaugeScale;

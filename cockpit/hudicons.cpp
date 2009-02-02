@@ -186,7 +186,8 @@ void CHUDIcons::DrawWeapons (void)
 			ox = 6, 
 			oy = 6, 
 			x, dx, y = 0, dy = 0;
-	float	fLineWidth = (CCanvas::Current ()->Width () >= 1200) ? 2.0f : 1.0f;
+	//float	fLineWidth = (CCanvas::Current ()->Width () >= 1200) ? 2.0f : 1.0f;
+	float	fLineWidth = float (CCanvas::Current ()->Width ()) / 640.0f;
 	ubyte	alpha = gameOpts->render.weaponIcons.alpha;
 	uint	nAmmoColor;
 	char	szAmmo [10];
@@ -480,7 +481,8 @@ void CHUDIcons::DrawInventory (void)
 			h = bmpInventory->Width ();
 	int	wIcon = (int) ((w + nIconScale - 1) / nIconScale * xScale), 
 			hIcon = (int) ((h + nIconScale - 1) / nIconScale * yScale);
-	float	fLineWidth = (CCanvas::Current ()->Width () >= 1200) ? 2.0f : 1.0f;
+	//float	fLineWidth = (CCanvas::Current ()->Width () >= 1200) ? 2.0f : 1.0f;
+	float	fLineWidth = float (CCanvas::Current ()->Width ()) / 640.0f;
 	ubyte	alpha = gameOpts->render.weaponIcons.alpha;
 
 	static int nInvFlags [NUM_INV_ITEMS] = {

@@ -160,7 +160,7 @@ if (bmP) {
 		w = ScaleX (w);
 		h = ScaleY (h);
 		}
-	CCanvas::Current ()->SetColorRGBi (WHITE_RGBA);
+	CCanvas::Current ()->SetColorRGBi (m_info.nColor);
 	bmP->RenderScaled (x, y, w * (gameStates.app.bDemoData + 1), h * (gameStates.app.bDemoData + 1), scale, orient, NULL);
 	CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
 	}
@@ -740,7 +740,7 @@ void CGenericCockpit::DrawWeaponInfo (int nIndex, tGaugeBox* box, int xPic, int 
 {
 	CBitmap*	bmP;
 	char		szName [100], *p;
-	int		i;
+	int		i, color;
 
 	static int nIdWeapon [3] = {0, 0, 0}, nIdLaser [2] = {0, 0};
 
@@ -750,7 +750,11 @@ i = ((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode)
 LoadBitmap (i, 0);
 if (!(bmP = gameData.pig.tex.bitmaps [0] + i))
 	return;
+color = (m_info.weaponBoxStates [nIndex] == WS_SET) ? 1 : int (X2F (m_info.weaponBoxFadeValues [nIndex]) / float (FADE_LEVELS)) * 255;
+m_info.nColor = RGBA (color, color, color, 255);
 BitBlt (-1, xPic, yPic, true, true, (gameStates.render.cockpit.nType == CM_FULL_SCREEN) ? I2X (2) : I2X (1), orient, bmP);
+m_info.nColor = WHITE_RGBA;
+CCanvas::Current ()->SetColorRGB (255, 255, 255, 255);
 fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 if ((p = const_cast<char*> (strchr (pszName, '\n')))) {
 	memcpy (szName, pszName, i = p - pszName);
@@ -822,7 +826,6 @@ else {
 //returns true if drew picture
 int CGenericCockpit::DrawWeaponDisplay (int nWeaponType, int nWeaponId)
 {
-	int bDrew = 0;
 	int bLaserLevelChanged;
 
 //CCanvas::SetCurrent (&gameStates.render.vr.buffers.render [0]);
@@ -830,18 +833,11 @@ bLaserLevelChanged = ((nWeaponType == 0) &&
 								(nWeaponId == LASER_INDEX) &&
 								((LOCALPLAYER.laserLevel != m_history [gameStates.render.vr.nCurrentPage].laserLevel)));
 
-if ((nWeaponId != m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] || bLaserLevelChanged) && m_info.weaponBoxStates [nWeaponType] == WS_SET) {
+if ((m_info.weaponBoxStates [nWeaponType] == WS_SET) &&
+	 ((nWeaponId != m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType]) || bLaserLevelChanged)) {
 	m_info.weaponBoxStates [nWeaponType] = WS_FADING_OUT;
 	m_info.weaponBoxFadeValues [nWeaponType] = I2X (FADE_LEVELS - 1);
 	}
-
-DrawWeaponInfo (nWeaponType, nWeaponId, LOCALPLAYER.laserLevel);
-m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] = nWeaponId;
-m_history [gameStates.render.vr.nCurrentPage].ammo [nWeaponType] = -1;
-m_history [gameStates.render.vr.nCurrentPage].xOmegaCharge = -1;
-m_history [gameStates.render.vr.nCurrentPage].laserLevel = LOCALPLAYER.laserLevel;
-bDrew = 1;
-m_info.weaponBoxStates [nWeaponType] = WS_SET;
 
 if (m_info.weaponBoxStates [nWeaponType] == WS_FADING_OUT) {
 	DrawWeaponInfo (nWeaponType, 
@@ -849,26 +845,24 @@ if (m_info.weaponBoxStates [nWeaponType] == WS_FADING_OUT) {
 						 m_history [gameStates.render.vr.nCurrentPage].laserLevel);
 	m_history [gameStates.render.vr.nCurrentPage].ammo [nWeaponType] = -1;
 	m_history [gameStates.render.vr.nCurrentPage].xOmegaCharge = -1;
-	bDrew = 1;
 	m_info.weaponBoxFadeValues [nWeaponType] -= gameData.time.xFrame * FADE_SCALE;
 	if (m_info.weaponBoxFadeValues [nWeaponType] <= 0) {
 		m_info.weaponBoxStates [nWeaponType] = WS_FADING_IN;
-		m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] = nWeaponId;
+		m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] = 
 		m_history [!gameStates.render.vr.nCurrentPage].weapon [nWeaponType] = nWeaponId;
-		m_history [gameStates.render.vr.nCurrentPage].laserLevel = LOCALPLAYER.laserLevel;
+		m_history [gameStates.render.vr.nCurrentPage].laserLevel = 
 		m_history [!gameStates.render.vr.nCurrentPage].laserLevel = LOCALPLAYER.laserLevel;
 		m_info.weaponBoxFadeValues [nWeaponType] = 0;
 		}
 	}
 else if (m_info.weaponBoxStates [nWeaponType] == WS_FADING_IN) {
+	DrawWeaponInfo (nWeaponType, nWeaponId, LOCALPLAYER.laserLevel);
 	if (nWeaponId != m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType]) {
 		m_info.weaponBoxStates [nWeaponType] = WS_FADING_OUT;
 		}
 	else {
-		DrawWeaponInfo (nWeaponType, nWeaponId, LOCALPLAYER.laserLevel);
 		m_history [gameStates.render.vr.nCurrentPage].ammo [nWeaponType] = -1;
 		m_history [gameStates.render.vr.nCurrentPage].xOmegaCharge = -1;
-		bDrew=1;
 		m_info.weaponBoxFadeValues [nWeaponType] += gameData.time.xFrame * FADE_SCALE;
 		if (m_info.weaponBoxFadeValues [nWeaponType] >= I2X (FADE_LEVELS-1)) {
 			m_info.weaponBoxStates [nWeaponType] = WS_SET;
@@ -876,7 +870,16 @@ else if (m_info.weaponBoxStates [nWeaponType] == WS_FADING_IN) {
 			}
 		}
 	}
+else {
+	DrawWeaponInfo (nWeaponType, nWeaponId, LOCALPLAYER.laserLevel);
+	m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] = nWeaponId;
+	m_history [gameStates.render.vr.nCurrentPage].ammo [nWeaponType] = -1;
+	m_history [gameStates.render.vr.nCurrentPage].xOmegaCharge = -1;
+	m_history [gameStates.render.vr.nCurrentPage].laserLevel = LOCALPLAYER.laserLevel;
+	m_info.weaponBoxStates [nWeaponType] = WS_SET;
+	}
 
+#if 0 //obsolete code
 if (m_info.weaponBoxStates [nWeaponType] != WS_SET) {		//fade gauge
 	int fadeValue = X2I (m_info.weaponBoxFadeValues [nWeaponType]);
 	int boxofs = (gameStates.render.cockpit.nType == CM_STATUS_BAR) ? SB_PRIMARY_BOX : COCKPIT_PRIMARY_BOX;
@@ -887,8 +890,8 @@ if (m_info.weaponBoxStates [nWeaponType] != WS_SET) {		//fade gauge
 						    hudWindowAreas [boxofs + nWeaponType].bot);
 	gameStates.render.grAlpha = FADE_LEVELS;
 	}
-//CCanvas::SetCurrent (CurrentGameScreen ());
-return bDrew;
+#endif
+return 1;
 }
 
 //	-----------------------------------------------------------------------------
@@ -1625,6 +1628,7 @@ if (m_info.nShields < 0)
 	m_info.nShields  = 0;
 m_info.bCloak = ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0);
 m_info.tInvul = LOCALPLAYER.invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame;
+m_info.nColor = WHITE_RGBA;
 
 if (gameOpts->render.cockpit.bScaleGauges) {
 	m_info.xGaugeScale = float (CCanvas::Current ()->Height ()) / 480.0f;
@@ -1834,7 +1838,8 @@ if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
 	else
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (47, 31, 0));
-	glLineWidth (((cockpitCanv->Width () < 1200) ? 1.0f : 2.0f));
+	//glLineWidth (((cockpitCanv->Width () < 1200) ? 1.0f : 2.0f));
+	glLineWidth (float (cockpitCanv->Width ()) / 640.0f);
 	OglDrawEmptyRect (0, 0, CCanvas::Current ()->Width () - 1, CCanvas::Current ()->Height ());
 	glLineWidth (1);
 
