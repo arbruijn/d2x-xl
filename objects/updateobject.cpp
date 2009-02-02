@@ -143,6 +143,7 @@ if (EGI_FLAG (bRotateMarkers, 0, 1, 0) && gameStates.app.tick40fps.bTick) {
 		for (int i = 1; i < 10000; i++) {
 			mOrient = mRotate * info.position.mOrient;
 			info.position.mOrient = mOrient;
+			info.position.mOrient.CheckAndFix ();
 			}
 		}
 	}

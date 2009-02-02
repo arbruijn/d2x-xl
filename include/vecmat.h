@@ -1218,6 +1218,8 @@ class CFloatMatrix {
 		static const CFloatMatrix IDENTITY;
 		static const CFloatMatrix Create (const CFloatVector& r, const CFloatVector& u, const CFloatVector& f, const CFloatVector& w);
 		static const CFloatMatrix Create (float sinp, float cosp, float sinb, float cosb, float sinh, float cosh);
+		static const CFloatMatrix CreateFU (const CFloatVector& fVec, const CFloatVector& uVec);
+		static const CFloatMatrix CreateFR (const CFloatVector& fVec, const CFloatVector& rVec);
 
 		static CFloatMatrix& Invert (CFloatMatrix& m);
 		static CFloatMatrix& Transpose (CFloatMatrix& m);
@@ -1234,6 +1236,8 @@ class CFloatMatrix {
 		const float Det (void);
 		const CFloatMatrix Inverse (void);
 		const CFloatMatrix Transpose (void);
+
+		void CheckAndFix (void);
 
 		const CFloatMatrix& Assign (CFixMatrix& other);
 		const CFloatMatrix& Assign (CFloatMatrix& other);
@@ -1336,6 +1340,11 @@ inline const CFixMatrix& CFixMatrix::Assign (CFloatMatrix& other) {
 	m_data.mat [FVEC].Assign (other.m_data.mat [FVEC]); 
 	return *this;
 	}
+
+//make sure this m_data.matrix is orthogonal
+inline void CFloatMatrix::CheckAndFix (void) {
+	*this = CreateFU (m_data.mat [FVEC], m_data.mat [UVEC]);
+}
 
 //} // VecMat
 

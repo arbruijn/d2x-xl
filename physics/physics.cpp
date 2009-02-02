@@ -172,16 +172,11 @@ extern int bSimpleFVI;
 void CObject::DoPhysicsSimRot (void)
 {
 	CAngleVector	turnAngles;
-	CFixMatrix	mRotate, mNewOrient;
-	//fix			rotdrag_scale;
-	tPhysicsInfo *pi;
+	CFixMatrix		mRotate, mNewOrient;
+	tPhysicsInfo*	pi;
 
-#if 0
-Assert (gameData.physics.xTime > 0); 		//Get MATT if hit this!
-#else
 if (gameData.physics.xTime <= 0)
 	return;
-#endif
 pi = &mType.physInfo;
 if (!(pi->rotVel [X] || pi->rotVel [Y] || pi->rotVel [Z] ||
 		pi->rotThrust [X] || pi->rotThrust [Y] || pi->rotThrust [Z]))
@@ -238,7 +233,7 @@ if (!IsMultiGame) {
 		turnAngles [BA] = (fixang) (turnAngles [BA] / gameStates.gameplay.slowmo [i].fSpeed);
 		}
 	}
-mRotate = CFixMatrix::Create(turnAngles);
+mRotate = CFixMatrix::Create (turnAngles);
 mNewOrient = info.position.mOrient * mRotate;
 info.position.mOrient = mNewOrient;
 if (mType.physInfo.flags & PF_TURNROLL)
@@ -253,7 +248,7 @@ if (mType.physInfo.turnRoll) {
 	m = info.position.mOrient * mRotate;
 	info.position.mOrient = m;
 	}
-info.position.mOrient.CheckAndFix();
+info.position.mOrient.CheckAndFix ();
 }
 
 //	-----------------------------------------------------------------------------------------------------------

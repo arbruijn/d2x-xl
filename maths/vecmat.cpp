@@ -160,9 +160,11 @@ v [Z] = m_data.mat [FVEC][Z];
 m.m_data.mat [RVEC][Z] = CFloatVector::Dot (v, other.m_data.mat [RVEC]);
 m.m_data.mat [UVEC][Z] = CFloatVector::Dot (v, other.m_data.mat [UVEC]);
 m.m_data.mat [FVEC][Z] = CFloatVector::Dot (v, other.m_data.mat [FVEC]);
+#if 0
 CFloatVector::Normalize (m.m_data.mat [RVEC]);
 CFloatVector::Normalize (m.m_data.mat [UVEC]);
 CFloatVector::Normalize (m.m_data.mat [FVEC]);
+#endif
 return m;
 }
 
@@ -209,9 +211,11 @@ v [Z] = m_data.mat [FVEC][Z];
 m.m_data.mat [RVEC][Z] = CFixVector::Dot (v, other.m_data.mat [RVEC]);
 m.m_data.mat [UVEC][Z] = CFixVector::Dot (v, other.m_data.mat [UVEC]);
 m.m_data.mat [FVEC][Z] = CFixVector::Dot (v, other.m_data.mat [FVEC]);
+#if 0
 CFixVector::Normalize (m.m_data.mat [RVEC]);
 CFixVector::Normalize (m.m_data.mat [UVEC]);
 CFixVector::Normalize (m.m_data.mat [FVEC]);
+#endif
 return m;
 }
 
@@ -311,7 +315,7 @@ const CFixMatrix CFixMatrix::CreateF (const CFixVector& fVec) {
 	return m;
 }
 
-
+//	-----------------------------------------------------------------------------
 //computes a matrix from the forward and the up vector.
 //returns matrix.
 const CFixMatrix CFixMatrix::CreateFU (const CFixVector& fVec, const CFixVector& uVec) {
@@ -320,47 +324,46 @@ const CFixMatrix CFixMatrix::CreateFU (const CFixVector& fVec, const CFixVector&
 	CFixVector& yvec = m.m_data.mat [UVEC];
 	CFixVector& zvec = m.m_data.mat [FVEC];
 
-	zvec = fVec;
-	CFixVector::Normalize (zvec);
-	assert (zvec.Mag () != 0);
+zvec = fVec;
+CFixVector::Normalize (zvec);
+assert (zvec.Mag () != 0);
 
-	yvec = uVec;
-	if (CFixVector::Normalize (yvec) == 0) {
-		if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
-			m.m_data.mat [RVEC][X] = I2X (1);
-			m.m_data.mat [UVEC][Z] = (zvec [Y] < 0) ? I2X (1) : -I2X (1);
-			m.m_data.mat [RVEC][Y] = m.m_data.mat [RVEC][Z] = m.m_data.mat [UVEC][X] = m.m_data.mat [UVEC][Y] = 0;
+yvec = uVec;
+if (CFixVector::Normalize (yvec) == 0) {
+	if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
+		m.m_data.mat [RVEC][X] = I2X (1);
+		m.m_data.mat [UVEC][Z] = (zvec [Y] < 0) ? I2X (1) : -I2X (1);
+		m.m_data.mat [RVEC][Y] = m.m_data.mat [RVEC][Z] = m.m_data.mat [UVEC][X] = m.m_data.mat [UVEC][Y] = 0;
 		}
-		else { 		//not straight up or down
-			xvec [X] = zvec [Z];
-			xvec [Y] = 0;
-			xvec [Z] = -zvec [X];
-			CFixVector::Normalize (xvec);
-			yvec = CFixVector::Cross (zvec, xvec);
+	else { 		//not straight up or down
+		xvec [X] = zvec [Z];
+		xvec [Y] = 0;
+		xvec [Z] = -zvec [X];
+		CFixVector::Normalize (xvec);
+		yvec = CFixVector::Cross (zvec, xvec);
+		}
+	}
+xvec = CFixVector::Cross (yvec, zvec);
+//Normalize new perpendicular vector
+if (CFixVector::Normalize (xvec) == 0) {
+	if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
+		m.m_data.mat [RVEC][X] = I2X (1);
+		m.m_data.mat [UVEC][Z] = (zvec [Y] < 0) ? I2X (1) : -I2X (1);
+		m.m_data.mat [RVEC][Y] = m.m_data.mat [RVEC][Z] = m.m_data.mat [UVEC][X] = m.m_data.mat [UVEC][Y] = 0;
+	}
+	else { 		//not straight up or down
+		xvec [X] = zvec [Z];
+		xvec [Y] = 0;
+		xvec [Z] = -zvec [X];
+		CFixVector::Normalize (xvec);
+		yvec = CFixVector::Cross (zvec, xvec);
 		}
 	}
 
-	xvec = CFixVector::Cross (yvec, zvec);
-	//Normalize new perpendicular vector
-	if (CFixVector::Normalize (xvec) == 0) {
-		if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
-			m.m_data.mat [RVEC][X] = I2X (1);
-			m.m_data.mat [UVEC][Z] = (zvec [Y] < 0) ? I2X (1) : -I2X (1);
-			m.m_data.mat [RVEC][Y] = m.m_data.mat [RVEC][Z] = m.m_data.mat [UVEC][X] = m.m_data.mat [UVEC][Y] = 0;
-		}
-		else { 		//not straight up or down
-			xvec [X] = zvec [Z];
-			xvec [Y] = 0;
-			xvec [Z] = -zvec [X];
-			CFixVector::Normalize (xvec);
-			yvec = CFixVector::Cross (zvec, xvec);
-		}
-	}
-
-	//now recompute up vector, in case it wasn't entirely perpendiclar
-	yvec = CFixVector::Cross (zvec, xvec);
-
-	return m;
+//	-----------------------------------------------------------------------------
+//now recompute up vector, in case it wasn't entirely perpendiclar
+yvec = CFixVector::Cross (zvec, xvec);
+return m;
 }
 
 
@@ -414,7 +417,108 @@ xvec = CFixVector::Cross (yvec, zvec);
 return m;
 }
 
+//	-----------------------------------------------------------------------------
+//computes a matrix from the forward and the up vector.
+//returns matrix.
+const CFloatMatrix CFloatMatrix::CreateFU (const CFloatVector& fVec, const CFloatVector& uVec) {
+	CFloatMatrix m;
+	CFloatVector& xvec = m.m_data.mat [RVEC];
+	CFloatVector& yvec = m.m_data.mat [UVEC];
+	CFloatVector& zvec = m.m_data.mat [FVEC];
 
+zvec = fVec;
+CFloatVector::Normalize (zvec);
+assert (zvec.Mag () != 0);
+
+yvec = uVec;
+if (CFloatVector::Normalize (yvec) == 0) {
+	if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
+		m.m_data.mat [RVEC][X] = 1;
+		m.m_data.mat [UVEC][Z] = (zvec [Y] < 0) ? 1.0f : -1.0f;
+		m.m_data.mat [RVEC][Y] = m.m_data.mat [RVEC][Z] = m.m_data.mat [UVEC][X] = m.m_data.mat [UVEC][Y] = 0;
+		}
+	else { 		//not straight up or down
+		xvec [X] = zvec [Z];
+		xvec [Y] = 0;
+		xvec [Z] = -zvec [X];
+		CFloatVector::Normalize (xvec);
+		yvec = CFloatVector::Cross (zvec, xvec);
+		}
+	}
+xvec = CFloatVector::Cross (yvec, zvec);
+//Normalize new perpendicular vector
+if (CFloatVector::Normalize (xvec) == 0) {
+	if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
+		m.m_data.mat [RVEC][X] = 1;
+		m.m_data.mat [UVEC][Z] = (zvec [Y] < 0) ? 1.0f : -1.0f;
+		m.m_data.mat [RVEC][Y] = m.m_data.mat [RVEC][Z] = m.m_data.mat [UVEC][X] = m.m_data.mat [UVEC][Y] = 0;
+	}
+	else { 		//not straight up or down
+		xvec [X] = zvec [Z];
+		xvec [Y] = 0;
+		xvec [Z] = -zvec [X];
+		CFloatVector::Normalize (xvec);
+		yvec = CFloatVector::Cross (zvec, xvec);
+		}
+	}
+//now recompute up vector, in case it wasn't entirely perpendiclar
+yvec = CFloatVector::Cross (zvec, xvec);
+return m;
+}
+
+
+//	-----------------------------------------------------------------------------
+//computes a matrix from the forward and the right vector.
+//returns matrix.
+const CFloatMatrix CFloatMatrix::CreateFR (const CFloatVector& fVec, const CFloatVector& rVec) {
+	CFloatMatrix m;
+	CFloatVector& xvec = m.m_data.mat [RVEC];
+	CFloatVector& yvec = m.m_data.mat [UVEC];
+	CFloatVector& zvec = m.m_data.mat [FVEC];
+
+zvec = fVec;
+CFloatVector::Normalize (zvec);
+assert (zvec.Mag () != 0);
+
+//use right vec
+xvec = rVec;
+if (CFloatVector::Normalize (xvec) == 0) {
+	if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
+		m.m_data.mat [RVEC][X] = 1;
+		m.m_data.mat [UVEC][Z] = (zvec [Y] < 0) ? 1.0f : -1.0f;
+		m.m_data.mat [RVEC][Y] = m.m_data.mat [RVEC][Z] = m.m_data.mat [UVEC][X] = m.m_data.mat [UVEC][Y] = 0;
+		}
+	else { 		//not straight up or down
+		xvec [X] = zvec [Z];
+		xvec [Y] = 0;
+		xvec [Z] = -zvec [X];
+		CFloatVector::Normalize (xvec);
+		yvec = CFloatVector::Cross (zvec, xvec);
+		}
+	}
+
+yvec = CFloatVector::Cross (zvec, xvec);
+//Normalize new perpendicular vector
+if (CFloatVector::Normalize (yvec) == 0) {
+	if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
+		m.m_data.mat [RVEC][X] = 1;
+		m.m_data.mat [UVEC][Z] = (zvec [Y] < 0) ? 1.0f : -1.0f;
+		m.m_data.mat [RVEC][Y] = m.m_data.mat [RVEC][Z] = m.m_data.mat [UVEC][X] = m.m_data.mat [UVEC][Y] = 0;
+		}
+	else { 		//not straight up or down
+		xvec [X] = zvec [Z];
+		xvec [Y] = 0;
+		xvec [Z] = -zvec [X];
+		CFloatVector::Normalize (xvec);
+		yvec = CFloatVector::Cross (zvec, xvec);
+		}
+	}
+//now recompute right vector, in case it wasn't entirely perpendiclar
+xvec = CFloatVector::Cross (yvec, zvec);
+return m;
+}
+
+//	-----------------------------------------------------------------------------
 //extract angles from a m_data.matrix
 const CAngleVector CFixMatrix::ExtractAnglesVec (void) const 
 {
@@ -449,6 +553,7 @@ else {
 return a;
 }
 
+//	-----------------------------------------------------------------------------
 
 inline int VmBehindPlane (const CFixVector& n, const CFixVector& p1, const CFixVector& p2, const CFixVector& i) {
 	CFixVector	t;
