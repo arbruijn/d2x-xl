@@ -679,20 +679,23 @@ void CGenericCockpit::DrawPlayerShip (int nCloakState, int nOldCloakState, int x
 	static int nCloakFadeValue = FADE_LEVELS - 1;
 	static int refade = 0;
 
-if ((nOldCloakState == -1) && nCloakState)
-	nCloakFadeValue = 0;
-if (!nCloakState) {
+if (nCloakState) {
+	if (nOldCloakState == -1)
+		nCloakFadeValue = 0;
+	else if (!nOldCloakState)
+		m_info.nCloakFadeState = -1;
+	}
+else {
 	nCloakFadeValue = FADE_LEVELS - 1;
 	m_info.nCloakFadeState = 0;
 	}
-if ((nCloakState == 1) && !nOldCloakState)
-	m_info.nCloakFadeState = -1;
-if (nCloakState == nOldCloakState)		//doing "about-to-uncloak" effect
+if ((nCloakState == nOldCloakState) && !m_info.nCloakFadeState)		//doing "about-to-uncloak" effect
+	m_info.nCloakFadeState = 2;
+if (nCloakState && (gameData.time.xGame > LOCALPLAYER.cloakTime + CLOAK_TIME_MAX - I2X (3)))	{	//doing "about-to-uncloak" effect
+	nCloakState = 2;
 	if (!m_info.nCloakFadeState)
 		m_info.nCloakFadeState = 2;
-if (nCloakState && (gameData.time.xGame > LOCALPLAYER.cloakTime + CLOAK_TIME_MAX - I2X (3)))		//doing "about-to-uncloak" effect
-	if (!m_info.nCloakFadeState)
-		m_info.nCloakFadeState = 2;
+	}
 if (m_info.nCloakFadeState)
 	xCloakFadeTimer -= gameData.time.xFrame;
 while (m_info.nCloakFadeState && (xCloakFadeTimer < 0)) {
@@ -700,14 +703,14 @@ while (m_info.nCloakFadeState && (xCloakFadeTimer < 0)) {
 	nCloakFadeValue += m_info.nCloakFadeState;
 	if (nCloakFadeValue >= FADE_LEVELS - 1) {
 		nCloakFadeValue = FADE_LEVELS - 1;
-		if (m_info.nCloakFadeState == 2 && nCloakState)
+		if (nCloakState && (m_info.nCloakFadeState == 2))
 			m_info.nCloakFadeState = -2;
 		else
 			m_info.nCloakFadeState = 0;
 		}
 	else if (nCloakFadeValue <= 0) {
 		nCloakFadeValue = 0;
-		if (m_info.nCloakFadeState == -2)
+		if ((nCloakState == 2) && (m_info.nCloakFadeState == -2))
 			m_info.nCloakFadeState = 2;
 		else
 			m_info.nCloakFadeState = 0;
@@ -717,7 +720,7 @@ while (m_info.nCloakFadeState && (xCloakFadeTimer < 0)) {
 //	To fade out both pages in a paged mode.
 if (refade)
 	refade = 0;
-else if (nCloakState && nOldCloakState && !m_info.nCloakFadeState && !refade) {
+else if (nCloakState && nOldCloakState && !(m_info.nCloakFadeState || refade)) {
 	m_info.nCloakFadeState = -1;
 	refade = 1;
 	}
