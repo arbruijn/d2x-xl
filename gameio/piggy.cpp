@@ -405,19 +405,28 @@ bPigFileInitialized = 1;
 
 //------------------------------------------------------------------------------
 
-int ReadHamFile (const char* pszFile, const char* pszFolder)
+int ReadHamFile (bool bDefault)
 {
-	CFile cf;
+	CFile		cf;
+	char		szFile;
 #if 1
-	char szD1PigFileName [FILENAME_LEN];
+	char		szD1PigFileName [FILENAME_LEN];
 #endif
-	int nHAMId;
-	int nSoundOffset = 0;
+	int		nHAMId;
+	int		nSoundOffset = 0;
 
-if (!pszFile)
+if (bDefault) {
 	pszFile = DefaultHamFile ();
-if (!pszFolder)
 	pszFolder = gameFolders.szDataDir;
+	}
+else {
+	if (!*gameFolders.szModName)
+		return 0;
+	sprintf (szFile, "%s.ham", gameFolders.szModName);
+	pszFile = szFile;
+	pszFolder = gameFolders.szModDir;
+	}
+	
 if (!cf.Open (pszFile, pszFolder, "rb", 0)) {
 	bMustWriteHamFile = 1;
 	return 0;
@@ -460,10 +469,8 @@ int PiggyInit (void)
 	int i;
 
 /*---*/PrintLog ("   Initializing hash tables\n");
-for (i = 0; i < 2; i++) {
+for (i = 0; i < 2; i++)
 	bitmapNames [i].Create (MAX_BITMAP_FILES);
-	soundNames [i].Create (MAX_SOUND_FILES);
-	}
 
 /*---*/PrintLog ("   Initializing sound data (%d sounds)\n", MAX_SOUND_FILES);
 for (i=0; i < MAX_SOUND_FILES; i++) {
@@ -510,7 +517,6 @@ if (bLowMemory)
 PiggyInitPigFile (DefaultPigFile ());
 /*---*/PrintLog ("   Loading main ham file\n");
 bSoundOk = bHamOk = ReadHamFile ();
-
 if (gameData.pig.tex.nHamFileVersion >= 3) {
 /*---*/PrintLog ("   Loading sound file\n");
 	bSoundOk = ReadSoundFile ();

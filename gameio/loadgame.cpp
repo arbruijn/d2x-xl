@@ -770,17 +770,17 @@ gameData.missions.nCurrentLevel = nLevel;
 UnloadLevelData (bRestore);
 /*---*/PrintLog ("   restoring default robot settings\n");
 RestoreDefaultRobots ();
-if (gameData.bots.bReplacementsLoaded) {
-	/*---*/PrintLog ("   loading default robot settings\n");
-	ReadHamFile ();		//load original data
-	gameData.bots.bReplacementsLoaded = 0;
-	}
+// try to read mod files, and load default files if that fails
+if (!ReadHamFile (false))
+	ReadHamFile ();
+if (!ReadSoundFile (false))
+	ReadSoundFile ();
 if (gameData.missions.nEnhancedMission) {
-	char t [FILENAME_LEN];
+	char szFile [FILENAME_LEN];
 
-	sprintf (t,"%s.ham", gameStates.app.szCurrentMissionFile);
+	sprintf (szFile, "%s.ham", gameStates.app.szCurrentMissionFile);
 	/*---*/PrintLog ("   reading additional robots\n");
-	switch (LoadRobotExtensions (t, gameFolders.szMissionDirs [0], gameData.missions.nEnhancedMission)) {
+	switch (LoadRobotExtensions (szFile, gameFolders.szMissionDirs [0], gameData.missions.nEnhancedMission)) {
 		case -1:
 			gameStates.app.bBetweenLevels = 0;
 			gameData.missions.nCurrentLevel = nCurrentLevel;
@@ -848,6 +848,10 @@ InitTexColors ();
 if (gameStates.app.bD1Mission)
 	LoadD1BitmapReplacements ();
 
+/*---*/PrintLog ("   loading default robot settings\n");
+ReadHamFile ();		//load original data
+/*---*/PrintLog ("   loading default robot settings\n");
+ReadHamFile ();		//load original data
 for (;;) {
 	if (!(nLoadRes = LoadLevelData (pszLevelName, nLevel)))
 		break;	//actually load the data from disk!

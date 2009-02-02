@@ -99,8 +99,8 @@ int LoadExitModels (void);
 int LoadRobotExtensions (const char *fname, char *folder, int nType);
 void FreeModelExtensions (void);
 int LoadRobotReplacements (const char *pszLevelName, int bAddBots, int bOnlyModels);
-int ReadHamFile (const char* pszFile = NULL, const char* pszFolder = NULL);
-int ReadSoundFile (const char* pszFile = NULL, const char* pszFolder = NULL);
+int ReadHamFile (bool bDefault = true);
+int ReadSoundFile (bool bDefault = true);
 void _CDECL_ FreeObjExtensionBitmaps (void);
 
 #endif //_LOADGAMEDATA_H

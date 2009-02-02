@@ -245,6 +245,8 @@ memset (&sound, 0, sizeof (sound));
 #if USE_OPENAL
 memset (&sound.buffer, 0xFF, sizeof (sound.buffer));
 #endif
+soundNames [gameStates.app.bD1Data].Destroy ();
+soundNames [gameStates.app.bD1Data].Create (MAX_SOUND_FILES);
 for (i = 0; i < nSoundNum; i++) {
 	PIGSoundHeaderRead (&sndh, cf);
 	//size -= sizeof (tPIGSoundHeader);
@@ -274,7 +276,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int ReadSoundFile (const char* pszFile, const char* pszFolder)
+int ReadSoundFile (bool bDefault)
 {
 	CFile		cf;
 	int		snd_id,sndVersion;
@@ -282,10 +284,18 @@ int ReadSoundFile (const char* pszFile, const char* pszFolder)
 	int		nSoundStart;
 	int		size, length;
 
-if (!pszFile)
+if (bDefault) {
 	pszFile = DefaultSoundFile ();
-if (!pszFolder)
 	pszFolder = gameFolders.szDataDir;
+	}
+else {
+	if (!*gameFolders.szModName)
+		return 0;
+	sprintf (szFile, "%s%s", gameFolders.szModName, (gameOpts->sound.digiSampleRate == SAMPLE_RATE_22K) ? ".s22" : ".s11");
+	pszFile = szFile;
+	pszFolder = gameFolders.szModDir;
+	}
+	
 if (!cf.Open (pszFile, pszFolder, "rb", 0))
 	return 0;
 

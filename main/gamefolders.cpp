@@ -322,12 +322,10 @@ MakeTexSubFolders (gameFolders.szModelCacheDir [0]);
 
 void MakeModFolders (const char* pszMission)
 {
-	char fn [FILENAME_LEN];
-
 *gameFolders.szModDir [1] =
 *gameFolders.szTextureCacheDir [2] =
 *gameFolders.szModelCacheDir [1] = '\0';
-CFile::SplitPath (pszMission, NULL, fn, NULL);
+CFile::SplitPath (pszMission, NULL, gameFolders.szModName, NULL);
 if (!GetAppFolder (gameFolders.szModDir [0], gameFolders.szModDir [1], fn, "")) {
 	sprintf (gameFolders.szTextureDir [2], "%s/%s", gameFolders.szModDir [1], "textures");
 	sprintf (gameFolders.szTextureCacheDir [2], "%s/%s", gameFolders.szModDir [1], "textures");
@@ -335,6 +333,8 @@ if (!GetAppFolder (gameFolders.szModDir [0], gameFolders.szModDir [1], fn, "")) 
 	MakeTexSubFolders (gameFolders.szTextureCacheDir [2]);
 	MakeTexSubFolders (gameFolders.szModelCacheDir [1]);
 	}
+else
+	*gameFolders.szModName = '\0';
 }
 
 // ----------------------------------------------------------------------------

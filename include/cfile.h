@@ -156,6 +156,7 @@ typedef struct tGameFolders {
 	char szMsnSubDir [FILENAME_LEN];
 	char szCacheDir [FILENAME_LEN];
 	char szModDir [2][FILENAME_LEN];
+	char szModName [FILENAME_LEN];
 	int bAltHogDirInited;
 } tGameFolders;
 
