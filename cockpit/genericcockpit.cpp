@@ -1119,10 +1119,8 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 
 	if ((bShowName || bHasFlag) && CanSeeObject (nObject, 1)) {
 		g3sPoint		vPlayerPos;
-		CFixVector	vPos;
 
-		vPos = OBJECTS [nObject].info.position.vPos + 2 * OBJECTS [LOCALPLAYER.nObject].info.position.mOrient.UVec ();
-		G3TransformAndEncodePoint (&vPlayerPos, vPos);
+		G3TransformAndEncodePoint (&vPlayerPos, OBJECTS [nObject].info.position.vPos);
 		if (vPlayerPos.p3_codes == 0) {	//on screen
 			G3ProjectPoint (&vPlayerPos);
 			if (!(vPlayerPos.p3_flags & PF_OVERFLOW)) {
@@ -1641,8 +1639,10 @@ fontManager.SetCurrent (GAME_FONT);
 
 bool bLimited = (gameStates.render.bRearView || gameStates.render.bChaseCam || gameStates.render.bFreeCam);
 
-if (!bLimited)
+if (!bLimited) {
+	DrawPlayerNames ();
 	RenderWindows ();
+	}
 DrawCockpit (false);
 #if 1
 if (bExtraInfo) {
@@ -1678,7 +1678,6 @@ if (!bLimited) {
 	DrawLives ();
 	DrawBombCount ();
 	DrawHomingWarning ();
-	DrawPlayerNames ();
 	DrawKillList ();
 	DrawPlayerShip ();
 	}
