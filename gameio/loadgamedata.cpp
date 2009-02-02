@@ -336,7 +336,278 @@ wiP->light = cf.ReadFix ();
 wiP->lifetime = cf.ReadFix ();
 wiP->xDamageRadius = cf.ReadFix ();
 wiP->picture.index = cf.ReadShort ();
+}
 
+//------------------------------------------------------------------------------
+// the following values are needed for compiler settings causing struct members 
+// not to be byte aligned. If D2X-XL is compiled with such settings, the size of
+// the Descent data structures in memory is bigger than on disk. This needs to
+// be compensated when reading such data structures from disk, or needing to skip
+// them in the disk files.
+
+#define D1_ROBOT_INFO_SIZE			486
+#define D1_WEAPON_INFO_SIZE		115
+#define JOINTPOS_SIZE				8
+#define JOINTLIST_SIZE				4
+#define POWERUP_TYPE_INFO_SIZE	16
+#define POLYMODEL_SIZE				734
+#define PLAYER_SHIP_SIZE			132
+#define MODEL_DATA_SIZE_OFFS		4
+
+void BMReadGameDataD1 (CFile& cf)
+{
+	int				h, i, j;
+#if 1
+	tD1WallClip		w;
+	D1_tmap_info	t;
+	//D1Robot_info	r;
+#endif
+	tWallClip		*pw;
+	tTexMapInfo		*pt;
+	tRobotInfo		*pr;
+	CPolyModel		model;
+	ubyte				tmpSounds [D1_MAX_SOUNDS];
+
+cf.Seek (sizeof (int), SEEK_CUR);
+cf.Read (&gameData.pig.tex.nTextures [1], sizeof (int), 1);
+j = (gameData.pig.tex.nTextures [1] == 70) ? 70 : D1_MAX_TEXTURES;
+/*---*/PrintLog ("         Loading %d texture indices\n", j);
+//cf.Read (gameData.pig.tex.bmIndex [1], sizeof (tBitmapIndex), D1_MAX_TEXTURES);
+ReadBitmapIndices (gameData.pig.tex.bmIndex [1], D1_MAX_TEXTURES, cf);
+BuildTextureIndex (1, D1_MAX_TEXTURES);
+/*---*/PrintLog ("         Loading %d texture descriptions\n", j);
+for (i = 0, pt = &gameData.pig.tex.tMapInfo [1][0]; i < j; i++, pt++) {
+	cf.Seek (sizeof (t.filename), SEEK_CUR);
+	pt->flags = (ubyte) cf.ReadByte ();
+	pt->lighting = cf.ReadFix ();
+	pt->damage = cf.ReadFix ();
+	pt->nEffectClip = cf.ReadInt ();
+	pt->slide_u = 
+	pt->slide_v = 0;
+	pt->destroyed = -1;
+	}
+cf.Read (Sounds [1], sizeof (ubyte), D1_MAX_SOUNDS);
+cf.Read (AltSounds [1], sizeof (ubyte), D1_MAX_SOUNDS);
+/*---*/PrintLog ("         Initializing %d sounds\n", D1_MAX_SOUNDS);
+if (gameOpts->sound.bUseD1Sounds) {
+memcpy (Sounds [1] + D1_MAX_SOUNDS, Sounds [0] + D1_MAX_SOUNDS, MAX_SOUNDS - D1_MAX_SOUNDS);
+	memcpy (AltSounds [1] + D1_MAX_SOUNDS, AltSounds [0] + D1_MAX_SOUNDS, MAX_SOUNDS - D1_MAX_SOUNDS);
+	}
+else {
+	memcpy (Sounds [1], Sounds [0], MAX_SOUNDS);
+	memcpy (AltSounds [1], AltSounds [0], MAX_SOUNDS);
+	}
+for (i = 0; i < D1_MAX_SOUNDS; i++) {
+	if (Sounds [1][i] == 255)
+		Sounds [1][i] = Sounds [0][i];
+	if (AltSounds [1][i] == 255)
+		AltSounds [1][i] = AltSounds [0][i];
+	}
+gameData.eff.nClips [1] = cf.ReadInt ();
+/*---*/PrintLog ("         Loading %d animation clips\n", gameData.eff.nClips [1]);
+ReadVideoClips (gameData.eff.vClips [1], D1_VCLIP_MAXNUM, cf);
+gameData.eff.nEffects [1] = cf.ReadInt ();
+/*---*/PrintLog ("         Loading %d animation descriptions\n", gameData.eff.nClips [1]);
+ReadEffectClips (gameData.eff.effects [1], D1_MAX_EFFECTS, cf);
+gameData.walls.nAnims [1] = cf.ReadInt ();
+/*---*/PrintLog ("         Loading %d CWall animations\n", gameData.walls.nAnims [1]);
+for (i = 0, pw = &gameData.walls.anims [1][0]; i < D1_MAX_WALL_ANIMS; i++, pw++) {
+	//cf.Read (&w, sizeof (w), 1);
+	pw->xTotalTime = cf.ReadFix ();
+	pw->nFrameCount = cf.ReadShort ();
+	for (j = 0; j < D1_MAX_CLIP_FRAMES; j++)
+		pw->frames [j] = cf.ReadShort ();
+	pw->openSound = cf.ReadShort ();
+	pw->closeSound = cf.ReadShort ();
+	pw->flags = cf.ReadShort ();
+	cf.Read (pw->filename, sizeof (w.filename), 1);
+	pw->pad = (char) cf.ReadByte ();
+	}
+cf.Read (&gameData.bots.nTypes [1], sizeof (int), 1);
+/*---*/PrintLog ("         Loading %d robot descriptions\n", gameData.bots.nTypes [1]);
+gameData.bots.info [1] = gameData.bots.info [0];
+if (!gameOpts->sound.bUseD1Sounds)
+	return;
+#if 1
+for (i = 0, pr = &gameData.bots.info [1][0]; i < D1_MAX_ROBOT_TYPES; i++, pr++) {
+	//cf.Read (&r, sizeof (r), 1);
+	cf.Seek (
+		sizeof (int) * 3 + 
+		(sizeof (CFixVector) + sizeof (ubyte)) * MAX_GUNS + 
+		sizeof (short) * 5 +
+		sizeof (sbyte) * 7 +
+		sizeof (fix) * 4 +
+		sizeof (fix) * 7 * NDL +
+		sizeof (sbyte) * 2 * NDL,
+		SEEK_CUR);
+
+	pr->seeSound = (ubyte) cf.ReadByte ();
+	pr->attackSound = (ubyte) cf.ReadByte ();
+	pr->clawSound = (ubyte) cf.ReadByte ();
+	cf.Seek (
+		JOINTLIST_SIZE * (MAX_GUNS + 1) * N_ANIM_STATES +
+		sizeof (int),
+		SEEK_CUR);
+#if 0
+	pr->tauntSound = 0;
+	pr->nModel = r.nModel;
+	memcpy (pr->gunPoints, r.gunPoints, sizeof (r.gunPoints));
+	memcpy (pr->gunSubModels, r.gunSubModels, sizeof (r.gunSubModels));
+	pr->nExp1VClip = r.nExp1VClip;
+	pr->nExp1Sound = r.nExp1Sound;
+	pr->nExp2VClip = r.nExp2VClip;
+	pr->nExp2Sound = r.nExp2Sound;
+	pr->nWeaponType = r.nWeaponType;
+	pr->nSecWeaponType = 0;
+	pr->nGuns = r.nGuns;
+	pr->containsId = r.containsId;
+	pr->containsCount = r.containsCount;
+	pr->containsProb = r.containsProb;
+	pr->containsType = r.containsType;
+	pr->kamikaze = 0;
+	pr->scoreValue = r.scoreValue;
+	pr->badass = 0;
+	pr->energyDrain = 0;
+	pr->lighting = r.lighting;
+	pr->strength = r.strength;
+	pr->mass = r.mass;
+	pr->drag = r.drag;
+	memcpy (pr->fieldOfView, r.fieldOfView, sizeof (r.fieldOfView));
+	memcpy (pr->primaryFiringWait, r.primaryFiringWait, sizeof (r.primaryFiringWait));
+	memset (pr->secondaryFiringWait, 0, sizeof (pr->secondaryFiringWait));
+	memcpy (pr->turnTime, r.turnTime, sizeof (r.turnTime));
+	memcpy (pr->xMaxSpeed, r.xMaxSpeed, sizeof (r.xMaxSpeed));
+	memcpy (pr->circleDistance, r.circleDistance, sizeof (r.circleDistance));
+	memcpy (pr->nRapidFireCount, r.nRapidFireCount, sizeof (r.nRapidFireCount));
+	memcpy (pr->evadeSpeed, r.evadeSpeed, sizeof (r.evadeSpeed));
+	pr->cloakType = r.cloakType;
+	pr->attackType = r.attackType;
+	pr->bossFlag = r.bossFlag;
+	pr->companion = 0;
+	pr->smartBlobs = 0;
+	pr->energyBlobs = 0;
+	pr->thief = 0;
+	pr->pursuit = 0;
+	pr->lightcast = 0;
+	pr->bDeathRoll = r.bDeathRoll;
+	pr->flags = r.flags;
+	pr->deathrollSound = r.deathrollSound;
+	pr->glow = r.glow;
+	pr->behavior = r.behavior;
+	pr->aim = r.aim;
+	memcpy (pr->animStates, r.animStates, sizeof (r.animStates));
+#endif
+	pr->always_0xabcd = 0xabcd;   
+	}         
+#endif
+#if 1
+cf.Seek (
+	sizeof (int) +
+	JOINTPOS_SIZE * D1_MAX_ROBOT_JOINTS +
+	sizeof (int) +
+	D1_WEAPON_INFO_SIZE * D1_MAX_WEAPON_TYPES +
+	sizeof (int) +
+	POWERUP_TYPE_INFO_SIZE * MAX_POWERUP_TYPES_D1,
+	SEEK_CUR);
+i = cf.ReadInt ();
+/*---*/PrintLog ("         Acquiring model data size of %d polymodels\n", i);
+for (h = 0; i; i--) {
+	cf.Seek (MODEL_DATA_SIZE_OFFS, SEEK_CUR);
+	model.SetDataSize (cf.ReadInt ());
+	h += model.DataSize ();
+	cf.Seek (POLYMODEL_SIZE - MODEL_DATA_SIZE_OFFS - sizeof (int), SEEK_CUR);
+	}
+cf.Seek (
+	h +
+	sizeof (tBitmapIndex) * D1_MAX_GAUGE_BMS +
+	sizeof (int) * 2 * D1_MAX_POLYGON_MODELS +
+	sizeof (tBitmapIndex) * D1_MAX_OBJ_BITMAPS +
+	sizeof (ushort) * D1_MAX_OBJ_BITMAPS +
+	PLAYER_SHIP_SIZE +
+	sizeof (int) +
+	sizeof (tBitmapIndex) * D1_N_COCKPIT_BITMAPS,
+	SEEK_CUR);
+/*---*/PrintLog ("         Loading sound data\n", i);
+cf.Read (tmpSounds, sizeof (ubyte), D1_MAX_SOUNDS);
+//for (i = 0, pr = &gameData.bots.info [1][0]; i < gameData.bots.nTypes [1]; i++, pr++) 
+pr = gameData.bots.info [1] + 17;
+/*---*/PrintLog ("         Initializing sound data\n", i);
+for (i = 0; i < D1_MAX_SOUNDS; i++) {
+	if (Sounds [1][i] == tmpSounds [pr->seeSound])
+		pr->seeSound = i;
+	if (Sounds [1][i] == tmpSounds [pr->attackSound])
+		pr->attackSound = i;
+	if (Sounds [1][i] == tmpSounds [pr->clawSound])
+		pr->clawSound = i;
+	}
+pr = gameData.bots.info [1] + 23;
+for (i = 0; i < D1_MAX_SOUNDS; i++) {
+	if (Sounds [1][i] == tmpSounds [pr->seeSound])
+		pr->seeSound = i;
+	if (Sounds [1][i] == tmpSounds [pr->attackSound])
+		pr->attackSound = i;
+	if (Sounds [1][i] == tmpSounds [pr->clawSound])
+		pr->clawSound = i;
+	}
+cf.Read (tmpSounds, sizeof (ubyte), D1_MAX_SOUNDS);
+//	for (i = 0, pr = &gameData.bots.info [1][0]; i < gameData.bots.nTypes [1]; i++, pr++) {
+pr = gameData.bots.info [1] + 17;
+for (i = 0; i < D1_MAX_SOUNDS; i++) {
+	if (AltSounds [1][i] == tmpSounds [pr->seeSound])
+		pr->seeSound = i;
+	if (AltSounds [1][i] == tmpSounds [pr->attackSound])
+		pr->attackSound = i;
+	if (AltSounds [1][i] == tmpSounds [pr->clawSound])
+		pr->clawSound = i;
+	}
+pr = gameData.bots.info [1] + 23;
+for (i = 0; i < D1_MAX_SOUNDS; i++) {
+	if (AltSounds [1][i] == tmpSounds [pr->seeSound])
+		pr->seeSound = i;
+	if (AltSounds [1][i] == tmpSounds [pr->attackSound])
+		pr->attackSound = i;
+	if (AltSounds [1][i] == tmpSounds [pr->clawSound])
+		pr->clawSound = i;
+	}
+#else
+cf.Seek (
+	sizeof (int) +
+	D1_ROBOT_INFO_SIZE * D1_MAX_ROBOT_TYPES +
+	sizeof (int) +
+	JOINTPOS_SIZE * D1_MAX_ROBOT_JOINTS,
+	SEEK_CUR);
+gameData.weapons.nTypes [1] = cf.ReadInt ();
+/*---*/PrintLog ("         Loading %d weapon descriptions\n", gameData.weapons.nTypes [1]);
+for (i = 0; i < gameData.weapons.nTypes [1]; i++) 
+	BMReadWeaponInfoD1N (i);
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+void BMReadWeaponInfoD1 (CFile& cf)
+{
+cf.Seek (
+	sizeof (int) +
+	sizeof (int) +
+	sizeof (tBitmapIndex) * D1_MAX_TEXTURES +
+	sizeof (D1_tmap_info) * D1_MAX_TEXTURES +
+	sizeof (ubyte) * D1_MAX_SOUNDS +
+	sizeof (ubyte) * D1_MAX_SOUNDS +
+	sizeof (int) +
+	sizeof (tVideoClip) * D1_VCLIP_MAXNUM +
+	sizeof (int) +
+	sizeof (D1_eclip) * D1_MAX_EFFECTS +
+	sizeof (int) +
+	sizeof (tD1WallClip) * D1_MAX_WALL_ANIMS +
+	sizeof (int) +
+	sizeof (D1Robot_info) * D1_MAX_ROBOT_TYPES +
+	sizeof (int) +
+	sizeof (tJointPos) * D1_MAX_ROBOT_JOINTS,
+	SEEK_CUR);
+gameData.weapons.nTypes [1] = cf.ReadInt ();
+for (int i = 0; i < gameData.weapons.nTypes [1]; i++)
+	BMReadWeaponInfoD1N (cf, i);
 }
 
 //------------------------------------------------------------------------------
