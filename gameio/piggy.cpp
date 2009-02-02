@@ -414,6 +414,7 @@ int ReadHamFile (bool bDefault)
 #endif
 	int		nHAMId;
 	int		nSoundOffset = 0;
+	char*		pszFile, * pszFolder;
 
 if (bDefault) {
 	pszFile = DefaultHamFile ();
@@ -422,9 +423,9 @@ if (bDefault) {
 else {
 	if (!*gameFolders.szModName)
 		return 0;
-	sprintf (szFile, "%s.ham", gameFolders.szModName);
-	pszFile = szFile;
-	pszFolder = gameFolders.szModDir;
+	if (!*gameFolders.szModDir [1])
+		return 0;
+	pszFolder = gameFolders.szModDir [1];
 	}
 	
 if (!cf.Open (pszFile, pszFolder, "rb", 0)) {

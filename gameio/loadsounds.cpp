@@ -283,17 +283,16 @@ int ReadSoundFile (bool bDefault)
 	int		nSoundNum;
 	int		nSoundStart;
 	int		size, length;
+	char*		pszFile, * pszFolder;
 
 if (bDefault) {
 	pszFile = DefaultSoundFile ();
 	pszFolder = gameFolders.szDataDir;
 	}
 else {
-	if (!*gameFolders.szModName)
+	if (!*gameFolders.szModDir [1])
 		return 0;
-	sprintf (szFile, "%s%s", gameFolders.szModName, (gameOpts->sound.digiSampleRate == SAMPLE_RATE_22K) ? ".s22" : ".s11");
-	pszFile = szFile;
-	pszFolder = gameFolders.szModDir;
+	pszFolder = gameFolders.szModDir [1];
 	}
 	
 if (!cf.Open (pszFile, pszFolder, "rb", 0))

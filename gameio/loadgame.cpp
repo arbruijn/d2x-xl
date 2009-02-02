@@ -778,14 +778,15 @@ if (!ReadSoundFile (false))
 if (gameData.missions.nEnhancedMission) {
 	char szFile [FILENAME_LEN];
 
+	*szFile '\0';
 	/*---*/PrintLog ("   reading additional robots\n");
-	if ((gameData.missions.nEnhancedMission < 3) || !*gameFolders.szModName)
+	if ((gameData.missions.nEnhancedMission < 3) || !*gameFolders.szModDir [1])
 		nLoadRes = 0;
 	else {
 		/*---*/PrintLog ("		trying custom robots (hxm) from mod '%s'\n", gameFolders.szModName);
-		sprintf (szFile, "%s/%s.hxm", gameFolders.szModDir, gameFolders.szModName);
+		sprintf (szFile, "%s.hxm", gameFolders.szModDir [1], gameFolders.szModName);
 		LoadRobotReplacements (szFile, 0, 0);
-		sprintf (szFile, "%s.vham", gameFolders.szModDir);
+		sprintf (szFile, "%s.vham", gameFolders.szModDir [0]);
 		/*---*/PrintLog ("		trying custom robots (vham) from mod '%s'\n", gameFolders.szModName);
 		nLoadRes = LoadRobotExtensions (szFile, gameFolders.szModName, gameData.missions.nEnhancedMission);
 		}
@@ -804,10 +805,12 @@ if (gameData.missions.nEnhancedMission) {
 		gameData.missions.nCurrentLevel = nCurrentLevel;
 		return 0;
 		}
-	strncpy (szFile, gameStates.app.szCurrentMissionFile, 6);
-	strcat (szFile, "-l.mvl");
-	/*---*/PrintLog ("   initializing additional robot movies\n");
-	movieManager.InitExtraRobotLib (szFile);
+	if (*szFile) {
+		strncpy (szFile, gameStates.app.szCurrentMissionFile, 6);
+		strcat (szFile, "-l.mvl");
+		/*---*/PrintLog ("   initializing additional robot movies\n");
+		movieManager.InitExtraRobotLib (szFile);
+		}
 	}
 
 /*---*/PrintLog ("   Initializing smoke manager\n");
