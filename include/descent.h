@@ -82,7 +82,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "vers_id.h"
 #include "pstypes.h"
 #include "3d.h"
-#include "bm.h"
+#include "loadgamedata.h"
 #include "gr.h"
 #include "piggy.h"
 #include "ogl_defs.h"

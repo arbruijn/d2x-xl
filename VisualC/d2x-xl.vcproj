@@ -2566,26 +2566,6 @@
 					Name="Source Files"
 					>
 					<File
-						RelativePath="..\gameio\bm.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
 						RelativePath="..\main\config.cpp"
 						>
 						<FileConfiguration
@@ -2692,6 +2672,30 @@
 								ObjectFile="$(IntDir)/$(InputName)1.obj"
 							/>
 						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\gameio\loadgamedata.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\gameio\loadmodeldata.cpp"
+						>
 					</File>
 					<File
 						RelativePath="..\gameio\loadsounds.cpp"
@@ -2826,10 +2830,6 @@
 					Name="Header Files"
 					>
 					<File
-						RelativePath="..\include\bmread.h"
-						>
-					</File>
-					<File
 						RelativePath="..\include\createmesh.h"
 						>
 					</File>
@@ -2851,6 +2851,10 @@
 					</File>
 					<File
 						RelativePath="..\include\loadgame.h"
+						>
+					</File>
+					<File
+						RelativePath="..\include\loadgamedata.h"
 						>
 					</File>
 					<File
@@ -4397,11 +4401,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

@@ -30,7 +30,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "laser.h"
 #include "fvi.h"
 #include "polymodel.h"
-#include "bm.h"
+#include "loadgamedata.h"
 #include "weapon.h"
 #include "physics.h"
 #include "collide.h"

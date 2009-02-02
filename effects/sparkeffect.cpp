@@ -12,7 +12,7 @@
 #include "u_mem.h"
 #include "text.h"
 #include "cfile.h"
-#include "bm.h"
+#include "loadgamedata.h"
 #include "textures.h"
 #include "ogl_defs.h"
 #include "maths.h"

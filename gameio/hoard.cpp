@@ -16,7 +16,7 @@
 #include "object.h"
 #include "error.h"
 #include "powerup.h"
-#include "bm.h"
+#include "loadgamedata.h"
 #include "sounds.h"
 #include "kconfig.h"
 #include "config.h"

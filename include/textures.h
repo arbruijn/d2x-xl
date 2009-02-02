@@ -14,7 +14,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _TEXTURES_H
 #define _TEXTURES_H
 
-#include "bm.h"
+#include "loadgamedata.h"
 #include "piggy.h"
 
 // Texture stuff... in mglobal.c

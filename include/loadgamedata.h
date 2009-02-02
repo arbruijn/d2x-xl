@@ -12,8 +12,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
 
-#ifndef _BM_H
-#define _BM_H
+#ifndef _LOADGAMEDATA_H
+#define _LOADGAMEDATA_H
 
 #include "gr.h"
 #include "piggy.h"
@@ -96,10 +96,10 @@ int ComputeAvgPixel (CBitmap *newBm);
 
 void LoadTextureBrightness (const char *pszLevel, int *brightnessP);
 int LoadExitModels ();
-int BMReadExtraRobots (const char *fname, char *folder, int nType);
-void BMFreeExtraModels (void);
+int LoadRobotExtensions (const char *fname, char *folder, int nType);
+void FreeModelExtensions (void);
 int LoadRobotReplacements (const char *pszLevelName, int bAddBots, int bOnlyModels);
 int ReadHamFile ();
-void _CDECL_ BMFreeExtraObjBitmaps (void);
+void _CDECL_ FreeObjExtensionBitmaps (void);
 
-#endif /* _BM_H */
+#endif //_LOADGAMEDATA_H

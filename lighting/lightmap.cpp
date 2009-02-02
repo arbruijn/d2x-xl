@@ -34,7 +34,7 @@ there I just had it exit instead.
 #include "lightmap.h"
 #include "gameseg.h"
 #include "wall.h"
-#include "bm.h"
+#include "loadgamedata.h"
 #include "fbuffer.h"
 #include "error.h"
 #include "u_mem.h"

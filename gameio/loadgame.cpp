@@ -686,9 +686,9 @@ FreeHiresModels (1);
 /*---*/PrintLog ("   unloading cambot\n");
 UnloadCamBot ();
 /*---*/PrintLog ("   unloading additional models\n");
-BMFreeExtraModels ();
+FreeModelExtensions ();
 /*---*/PrintLog ("   unloading additional model textures\n");
-BMFreeExtraObjBitmaps ();
+FreeObjExtensionBitmaps ();
 /*---*/PrintLog ("   unloading additional model textures\n");
 PiggyFreeHiresAnimations ();
 /*---*/PrintLog ("   freeing spark effect buffers\n");
@@ -780,7 +780,7 @@ if (gameData.missions.nEnhancedMission) {
 
 	sprintf (t,"%s.ham", gameStates.app.szCurrentMissionFile);
 	/*---*/PrintLog ("   reading additional robots\n");
-	switch (BMReadExtraRobots (t, gameFolders.szMissionDirs [0], gameData.missions.nEnhancedMission)) {
+	switch (LoadRobotExtensions (t, gameFolders.szMissionDirs [0], gameData.missions.nEnhancedMission)) {
 		case -1:
 			gameStates.app.bBetweenLevels = 0;
 			gameData.missions.nCurrentLevel = nCurrentLevel;
@@ -788,7 +788,7 @@ if (gameData.missions.nEnhancedMission) {
 		case 1:
 			break;
 		default:
-			if (0 > BMReadExtraRobots ("d2x.ham", gameFolders.szMissionDir, gameData.missions.nEnhancedMission)) {
+			if (0 > LoadRobotExtensions ("d2x.ham", gameFolders.szMissionDir, gameData.missions.nEnhancedMission)) {
 				gameStates.app.bBetweenLevels = 0;
 				gameData.missions.nCurrentLevel = nCurrentLevel;
 				return 0;

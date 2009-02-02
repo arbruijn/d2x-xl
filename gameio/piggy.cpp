@@ -34,7 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "sounds.h"
 #include "songs.h"
-#include "bm.h"
+#include "loadgamedata.h"
 #include "bmread.h"
 #include "hash.h"
 #include "args.h"
@@ -800,7 +800,7 @@ TexMergeFlush ();       //for re-merging with new textures
 
 /*
  * Find and load the named bitmap from descent.pig
- * similar to ReadExtraBitmapIFF
+ * similar to LoadExitModelIFF
  */
 tBitmapIndex ReadExtraBitmapD1Pig (const char *name)
 {

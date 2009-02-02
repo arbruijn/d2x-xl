@@ -38,7 +38,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "fireball.h"
 
 #include "cfile.h"
-#include "bm.h"
+#include "loadgamedata.h"
 #include "menu.h"
 #include "switch.h"
 #include "fuelcen.h"
