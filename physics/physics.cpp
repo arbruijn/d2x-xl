@@ -223,7 +223,7 @@ if (mType.physInfo.turnRoll) {
 
 	turnAngles [PA] = turnAngles [HA] = 0;
 	turnAngles [BA] = -mType.physInfo.turnRoll;
-	mRotate = CFixMatrix::Create(turnAngles);
+	mRotate = CFixMatrix::Create (turnAngles);
 	mOrient = info.position.mOrient * mRotate;
 	info.position.mOrient = mOrient;
 }

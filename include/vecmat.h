@@ -104,6 +104,7 @@ class CFixVector {
 		const int Sign (void) const;
 
 		fix SqrMag (void) const;
+		float Sqr (float f) const;
 		fix Mag (void) const;
 		CFixVector& Scale (CFixVector& scale);
 		CFixVector& Neg (void);
@@ -876,11 +877,13 @@ inline const int CFixVector::Sign (void) const { return (v [X] * v [Y] * v [Z] <
 
 inline fix CFixVector::SqrMag (void) const {
 	return FixMul (v [X], v [X]) + FixMul (v [Y], v [Y]) + FixMul (v [Z], v [Z]);
-}
+	}
+
+inline float CFixVector::Sqr (float f) const { return f * f; }
 
 inline fix CFixVector::Mag (void) const {
-	return F2X (sqrt (X2F (v [X])*X2F (v [X]) + X2F (v [Y])*X2F (v [Y]) + X2F (v [Z])*X2F (v [Z])));
-}
+	return F2X (sqrt ((Sqr X2F (v [X])) + Sqr (X2F (v [Y])) + Sqr (X2F (v [Z]))));
+	}
 
 inline CFixVector& CFixVector::Scale (CFixVector& scale) { 
 	v [0] = FixMul (v [0], scale [0]), v [1] = FixMul (v [1], scale [1]), v [2] = FixMul (v [2], scale [2]);
