@@ -1225,6 +1225,10 @@ FORALL_ROBOT_OBJS (objP, nObject) {
 	if ((objP->info.controlType == CT_AI) || (objP->info.controlType == CT_MORPH)) {
 		aiP = &objP->cType.aiInfo;
 		if (aiP->nPathLength) {
+#if DBG
+			if (aiP->nHideIndex < 0)
+				aiP->nHideIndex = aiP->nHideIndex;
+#endif
 			objectList [nObjects].nStart = aiP->nHideIndex;
 			objectList [nObjects++].nObject = objP->Index ();
 			}
@@ -1237,11 +1241,13 @@ for (nObjIdx = 0; nObjIdx < nObjects; nObjIdx++) {
 	nObject = objectList [nObjIdx].nObject;
 	objP = OBJECTS + nObject;
 	aiP = &objP->cType.aiInfo;
-	nOldIndex = aiP->nHideIndex;
-	aiP->nHideIndex = nFreeIndex;
 #if DBG
 	if (aiP->nHideIndex < 0)
 		aiP->nHideIndex = aiP->nHideIndex;
+#endif
+	nOldIndex = aiP->nHideIndex;
+	aiP->nHideIndex = nFreeIndex;
+#if DBG
 	for (i = 0; i < aiP->nPathLength; i++)
 		gameData.ai.routeSegs [nFreeIndex + i] = gameData.ai.routeSegs [nOldIndex + i];
 #else
