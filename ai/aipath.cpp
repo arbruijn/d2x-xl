@@ -575,47 +575,6 @@ FORALL_ROBOT_OBJS (objP, i) {
 }
 #endif
 
-// -- //	-------------------------------------------------------------------------------------------------------
-// -- //	Creates a path from the OBJECTS current CSegment (objP->info.nSegment) to the specified CSegment for the CObject to
-// -- //	hide in gameData.ai.localInfo [nObject].nGoalSegment.
-// -- //	Sets	objP->cType.aiInfo.nHideIndex, 		a pointer into gameData.ai.routeSegs, the first tPointSeg of the path.
-// -- //			objP->cType.aiInfo.nPathLength, 		length of path
-// -- //			gameData.ai.freePointSegs				global pointer into gameData.ai.routeSegs array
-// -- void create_path (CObject *objP)
-// -- {
-// -- 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
-// -- 	tAILocalInfo		*ailP = &gameData.ai.localInfo [objP->Index ()];
-// -- 	int			nStartSeg, nEndSeg;
-// --
-// -- 	nStartSeg = objP->info.nSegment;
-// -- 	nEndSeg = ailP->nGoalSegment;
-// --
-// -- 	if (nEndSeg == -1)
-// -- 		CreateNSegmentPath (objP, 3, -1);
-// --
-// -- 	if (nEndSeg == -1) {
-// -- 		; //console.printf (CON_DBG, "Object %i, nHideSegment = -1, not creating path.\n", objP->Index ());
-// -- 	} else {
-// -- 		CreatePathPoints (objP, nStartSeg, nEndSeg, gameData.ai.freePointSegs, &aiP->nPathLength, -1, 0, 0, -1);
-// -- 		aiP->nHideIndex = gameData.ai.freePointSegs - gameData.ai.routeSegs;
-// -- 		aiP->nCurPathIndex = 0;
-// -- #if PATH_VALIDATION
-// -- 		ValidatePath (5, gameData.ai.freePointSegs, aiP->nPathLength);
-// -- #endif
-// -- 		gameData.ai.freePointSegs += aiP->nPathLength;
-// -- 		if (gameData.ai.freePointSegs - gameData.ai.routeSegs + MAX_PATH_LENGTH*2 > LEVEL_POINT_SEGS) {
-// -- 			//Int3 ();	//	Contact Mike: This is curious, though not deadly. /eip++;g
-// -- 			//force_dump_aiObjects_all ("Error in create_path");
-// -- 			AIResetAllPaths ();
-// -- 		}
-// -- 		aiP->PATH_DIR = 1;		//	Initialize to moving forward.
-// -- 		aiP->SUBMODE = AISM_HIDING;		//	Pretend we are hiding, so we sit here until bothered.
-// -- 	}
-// --
-// -- 	MaybeAIPathGarbageCollect ();
-// --
-// -- }
-
 //	-------------------------------------------------------------------------------------------------------
 //	Creates a path from the OBJECTS current CSegment (objP->info.nSegment) to the specified CSegment for the CObject to
 //	hide in gameData.ai.localInfo [nObject].nGoalSegment.
@@ -642,7 +601,11 @@ nEndSeg = ailP->nGoalSegment;
 if (nEndSeg != -1) {
 	CreatePathPoints (objP, nStartSeg, nEndSeg, gameData.ai.freePointSegs, &aiP->nPathLength, nMaxDepth, 1, bSafeMode, -1);
 	aiP->nPathLength = SmoothPath (objP, gameData.ai.freePointSegs, aiP->nPathLength);
-	aiP->nHideIndex = (int) (gameData.ai.freePointSegs - gameData.ai.routeSegs);
+	aiP->nHideIndex = int (gameData.ai.freePointSegs - gameData.ai.routeSegs);
+#if DBG
+	if (aiP->nHideIndex < 0)
+		aiP->nHideIndex = aiP->nHideIndex;
+#endif
 	aiP->nCurPathIndex = 0;
 	gameData.ai.freePointSegs += aiP->nPathLength;
 	if (gameData.ai.freePointSegs - gameData.ai.routeSegs + MAX_PATH_LENGTH*2 > LEVEL_POINT_SEGS) {
@@ -674,7 +637,11 @@ nStartSeg = objP->info.nSegment;
 nEndSeg = ailP->nGoalSegment;
 if (nEndSeg != -1) {
 	CreatePathPoints (objP, nStartSeg, nEndSeg, gameData.ai.freePointSegs, &aiP->nPathLength, nMaxDepth, 1, bSafeMode, -1);
-	aiP->nHideIndex = (int) (gameData.ai.freePointSegs - gameData.ai.routeSegs);
+	aiP->nHideIndex = int (gameData.ai.freePointSegs - gameData.ai.routeSegs);
+#if DBG
+	if (aiP->nHideIndex < 0)
+		aiP->nHideIndex = aiP->nHideIndex;
+#endif
 	aiP->nCurPathIndex = 0;
 	gameData.ai.freePointSegs += aiP->nPathLength;
 	if (gameData.ai.freePointSegs - gameData.ai.routeSegs + MAX_PATH_LENGTH*2 > LEVEL_POINT_SEGS) {
@@ -713,7 +680,11 @@ nEndSeg = aiP->nHideSegment;
 if (nEndSeg != -1) {
 	CreatePathPoints (objP, nStartSeg, nEndSeg, gameData.ai.freePointSegs, &aiP->nPathLength, nMaxDepth, 1, 1, -1);
 	aiP->nPathLength = SmoothPath (objP, gameData.ai.freePointSegs, aiP->nPathLength);
-	aiP->nHideIndex = (int) (gameData.ai.freePointSegs - gameData.ai.routeSegs);
+	aiP->nHideIndex = int (gameData.ai.freePointSegs - gameData.ai.routeSegs);
+#if DBG
+	if (aiP->nHideIndex < 0)
+		aiP->nHideIndex = aiP->nHideIndex;
+#endif
 	aiP->nCurPathIndex = 0;
 	gameData.ai.freePointSegs += aiP->nPathLength;
 	if (gameData.ai.freePointSegs - gameData.ai.routeSegs + MAX_PATH_LENGTH*2 > LEVEL_POINT_SEGS) {
@@ -746,7 +717,7 @@ if (CreatePathPoints (objP, objP->info.nSegment, -2, gameData.ai.freePointSegs, 
 		Assert (nPathLength);
 		}
 	}
-aiP->nHideIndex = (int) (gameData.ai.freePointSegs - gameData.ai.routeSegs);
+aiP->nHideIndex = int (gameData.ai.freePointSegs - gameData.ai.routeSegs);
 #if DBG
 if (aiP->nHideIndex < 0)
 	aiP->nHideIndex = aiP->nHideIndex;
@@ -1259,6 +1230,10 @@ for (nObjIdx = 0; nObjIdx < nPathObjects; nObjIdx++) {
 	aiP = &objP->cType.aiInfo;
 	nOldIndex = aiP->nHideIndex;
 	aiP->nHideIndex = nFreePathIdx;
+#if DBG
+	if (aiP->nHideIndex < 0)
+		aiP->nHideIndex = aiP->nHideIndex;
+#endif
 	for (i = 0; i < aiP->nPathLength; i++)
 		gameData.ai.routeSegs [nFreePathIdx + i] = gameData.ai.routeSegs [nOldIndex + i];
 	}
