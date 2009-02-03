@@ -40,7 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void AIPathSetOrientAndVel (CObject *objP, CFixVector* vGoalPoint, int nPlayerVisibility, CFixVector *vec_to_player);
 void MaybeAIPathGarbageCollect (void);
-void AIPathGarbageCollect (void);
+void AICollectPathGarbage (void);
 #if PATH_VALIDATION
 void ValidateAllPaths (void);
 int ValidatePath (int debugFlag, tPointSeg* pointSegP, int numPoints);
@@ -872,7 +872,7 @@ if (aiP->nHideIndex < 0)
 if ((aiP->nPathLength > 0) && (aiP->nHideIndex + aiP->nPathLength > gameData.ai.routeSegs.Index (gameData.ai.freePointSegs))) {
 	//	This is debugging code.p.  Figure out why garbage collection didn't compress this object's path information.
 	PrintLog ("Error in AI path info garbage collection\n");
-	AIPathGarbageCollect ();
+	AICollectPathGarbage ();
 	//force_dump_aiObjects_all ("Error in AIFollowPath");
 	AIResetAllPaths ();
 	return;
@@ -1206,7 +1206,7 @@ int	nLastFrameGarbageCollected = 0;
 
 //	----------------------------------------------------------------------------------------------------------
 //	Garbage colledion -- Free all unused records in gameData.ai.routeSegs and compress all paths.
-void AIPathGarbageCollect (void)
+void AICollectPathGarbage (void)
 {
 	int					nFreeIndex = 0;
 	int					nObjects = 0;
@@ -1224,13 +1224,18 @@ ValidateAllPaths ();
 FORALL_ROBOT_OBJS (objP, nObject) {
 	if ((objP->info.controlType == CT_AI) || (objP->info.controlType == CT_MORPH)) {
 		aiP = &objP->cType.aiInfo;
-		if (aiP->nPathLength) {
-#if DBG
+		if (aiP->nPathLength > 0) {
 			if (aiP->nHideIndex < 0)
+#if DBG
 				aiP->nHideIndex = aiP->nHideIndex;
+#else
+				aiP->nPathLength = 0;
+			else
 #endif
-			objectList [nObjects].nStart = aiP->nHideIndex;
-			objectList [nObjects++].nObject = objP->Index ();
+				{	
+				objectList [nObjects].nStart = aiP->nHideIndex;
+				objectList [nObjects++].nObject = objP->Index ();
+				}
 			}
 		}
 	}
@@ -1290,7 +1295,7 @@ if (i > LEVEL_POINT_SEGS - MAX_PATH_LENGTH) {
 #if TRACE
 		console.printf (1, "Warning: Almost full garbage collection being performed: ");
 #endif
-		AIPathGarbageCollect ();
+		AICollectPathGarbage ();
 #if TRACE
 		console.printf (1, "Free records = %i/%i\n", LEVEL_POINT_SEGS - gameData.ai.routeSegs.Index (gameData.ai.freePointSegs), LEVEL_POINT_SEGS);
 #endif
@@ -1298,12 +1303,12 @@ if (i > LEVEL_POINT_SEGS - MAX_PATH_LENGTH) {
 	}
 else if (i > 3 * LEVEL_POINT_SEGS / 4) {
 	if (nLastFrameGarbageCollected + 16 < gameData.app.nFrameCount) {
-		AIPathGarbageCollect ();
+		AICollectPathGarbage ();
 		}
 	}
 else if (i > LEVEL_POINT_SEGS / 2) {
 	if (nLastFrameGarbageCollected + 256 < gameData.app.nFrameCount) {
-		AIPathGarbageCollect ();
+		AICollectPathGarbage ();
 		}
 	}
 }
@@ -1321,7 +1326,7 @@ FORALL_OBJS (objP, i)
 		objP->cType.aiInfo.nHideIndex = -1;
 		objP->cType.aiInfo.nPathLength = 0;
 		}
-AIPathGarbageCollect ();
+AICollectPathGarbage ();
 }
 
 //	---------------------------------------------------------------------------------------------------------
