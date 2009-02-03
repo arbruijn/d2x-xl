@@ -390,7 +390,7 @@ cf.Read (Sounds [1], sizeof (ubyte), D1_MAX_SOUNDS);
 cf.Read (AltSounds [1], sizeof (ubyte), D1_MAX_SOUNDS);
 /*---*/PrintLog ("         Initializing %d sounds\n", D1_MAX_SOUNDS);
 if (gameOpts->sound.bUseD1Sounds) {
-memcpy (Sounds [1] + D1_MAX_SOUNDS, Sounds [0] + D1_MAX_SOUNDS, MAX_SOUNDS - D1_MAX_SOUNDS);
+	memcpy (Sounds [1] + D1_MAX_SOUNDS, Sounds [0] + D1_MAX_SOUNDS, MAX_SOUNDS - D1_MAX_SOUNDS);
 	memcpy (AltSounds [1] + D1_MAX_SOUNDS, AltSounds [0] + D1_MAX_SOUNDS, MAX_SOUNDS - D1_MAX_SOUNDS);
 	}
 else {
