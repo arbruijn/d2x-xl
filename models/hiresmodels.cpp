@@ -260,13 +260,13 @@ short LoadOOFModel (OOF::CModel *po, short i, int bCustom)
 	short	j = sizeofa (replacementModels);
 	char	szModel [2][FILENAME_LEN];
 
-sprintf (szModel [0], "\001model%d.oof", replacementModels [i].nModel);
+sprintf (szModel [0], "model%d.oof", replacementModels [i].nModel);
 if (replacementModels [i].pszHires)
-	sprintf (szModel [1], "\001%s.oof", replacementModels [i].pszHires);
+	sprintf (szModel [1], "%s.oof", replacementModels [i].pszHires);
 else
-	szModel [1][!bCustom] = '\0';
-if (!(po->Read (szModel [1] + !bCustom, replacementModels [i].nModel, replacementModels [i].nType, replacementModels [i].bFlipV, bCustom) || 
-	   po->Read (szModel [0] + !bCustom, replacementModels [i].nModel, replacementModels [i].nType, replacementModels [i].bFlipV, bCustom)))
+	szModel [1][0] = '\0';
+if (!(po->Read (szModel [1], replacementModels [i].nModel, replacementModels [i].bFlipV, bCustom) || 
+	   po->Read (szModel [0], replacementModels [i].nModel, replacementModels [i].bFlipV, bCustom)))
 	return 0;
 do {
 	CBP (!replacementModels [i].nModel);
@@ -283,17 +283,17 @@ short LoadASEModel (ASE::CModel *pa, short i, int bCustom)
 	short	j = sizeofa (replacementModels);
 	char	szModel [2][FILENAME_LEN];
 
-sprintf (szModel [0], "\001model%d.ase", replacementModels [i].nModel);
+sprintf (szModel [0], "model%d.ase", replacementModels [i].nModel);
 if (replacementModels [i].pszHires)
-	sprintf (szModel [1], "\001%s.ase", replacementModels [i].pszHires);
+	sprintf (szModel [1], "%s.ase", replacementModels [i].pszHires);
 else
-	szModel [1][!bCustom] = '\0';
+	szModel [1][0] = '\0';
 #if 0//def _DEBUG
 while (!ASE_ReadFile (szModel [1] + !bCustom, pa, replacementModels [i].nType, bCustom))
 	;
 #endif
-if (!(pa->Read (szModel [1] + !bCustom, replacementModels [i].nModel, replacementModels [i].nType, bCustom) || 
-	   pa->Read (szModel [0] + !bCustom, replacementModels [i].nModel, replacementModels [i].nType, bCustom)))
+if (!(pa->Read (szModel [1] + !bCustom, replacementModels [i].nModel, bCustom) || 
+	   pa->Read (szModel [0] + !bCustom, replacementModels [i].nModel, bCustom)))
 	return 0;
 do {
 	CBP (!replacementModels [i].nModel);

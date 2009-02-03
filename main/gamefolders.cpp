@@ -123,7 +123,6 @@ for (int i = 0; i < 3; i++) {
 #	define	DATADIR			"Data"
 #	define	SHADERDIR		"Shaders"
 #	define	MODELDIR			"Models"
-#	define	ROBOTDIR			"Models/Robots"
 #	define	SOUNDDIR1		"Sounds1"
 #	define	SOUNDDIR2		"Sounds2"
 #	define	CONFIGDIR		"Config"
@@ -140,7 +139,6 @@ for (int i = 0; i < 3; i++) {
 #	define	DATADIR			"data"
 #	define	SHADERDIR		"shaders"
 #	define	MODELDIR			"models"
-#	define	ROBOTDIR			"models/robots"
 #	define	SOUNDDIR1		"sounds1"
 #	define	SOUNDDIR2		"sounds2"
 #	define	CONFIGDIR		"config"
@@ -231,10 +229,8 @@ else
 	strcpy (szDataRootDir, gameFolders.szDataDir);
 /*---*/PrintLog ("expected game app folder = '%s'\n", gameFolders.szGameDir);
 /*---*/PrintLog ("expected game data folder = '%s'\n", gameFolders.szDataDir);
-if (GetAppFolder (szDataRootDir, gameFolders.szModelDir [0], MODELDIR, "*.oof"))
-	GetAppFolder (szDataRootDir, gameFolders.szModelDir [0], MODELDIR, "*.ase");
-if (GetAppFolder (szDataRootDir, gameFolders.szModelDir [1], ROBOTDIR, "*.oof"))
-	GetAppFolder (szDataRootDir, gameFolders.szModelDir [1], ROBOTDIR, "*.ase");
+if (GetAppFolder (szDataRootDir, gameFolders.szModelDir [0], MODELDIR, "*.ase"))
+	GetAppFolder (szDataRootDir, gameFolders.szModelDir [0], MODELDIR, "*.oof");
 GetAppFolder (szDataRootDir, gameFolders.szSoundDir [0], SOUNDDIR1, "*.wav");
 GetAppFolder (szDataRootDir, gameFolders.szSoundDir [1], SOUNDDIR2, "*.wav");
 GetAppFolder (szDataRootDir, gameFolders.szShaderDir, SHADERDIR, "");
@@ -330,6 +326,7 @@ if (!GetAppFolder (gameFolders.szModDir [0], gameFolders.szModDir [1], gameFolde
 	sprintf (gameFolders.szSoundDir [2], "%s/%s", gameFolders.szModDir [1], "sounds");
 	sprintf (gameFolders.szTextureDir [2], "%s/%s", gameFolders.szModDir [1], "textures");
 	sprintf (gameFolders.szTextureCacheDir [2], "%s/%s", gameFolders.szModDir [1], "textures");
+	sprintf (gameFolders.szModelDir [1], "%s/%s", gameFolders.szModDir [1], "models");
 	sprintf (gameFolders.szModelCacheDir [1], "%s/%s", gameFolders.szModDir [1], "models");
 	MakeTexSubFolders (gameFolders.szTextureCacheDir [2]);
 	MakeTexSubFolders (gameFolders.szModelCacheDir [1]);

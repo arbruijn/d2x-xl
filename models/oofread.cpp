@@ -1270,7 +1270,7 @@ return 0;
 
 int CModel::ReloadTextures (int bCustom)
 {
-return m_textures.Bind (m_nType, bCustom);
+return m_textures.Bind (bCustom);
 }
 
 //------------------------------------------------------------------------------
@@ -1283,7 +1283,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int CModel::ReadTextures (CFile& cf, short nType, int bCustom)
+int CModel::ReadTextures (CFile& cf, int bCustom)
 {
 	int			i;
 	char			szId [30];
@@ -1323,7 +1323,7 @@ if (!i) {
 m_textures.m_names [i] = new char [20];
 sprintf (m_textures.m_names [i], "%d.tga", i + 1);
 #endif
-	if (!ReadModelTGA (m_textures.m_names [i].Buffer (), m_textures.m_bitmaps + i, nType, bCustom)) {
+	if (!ReadModelTGA (m_textures.m_names [i].Buffer (), m_textures.m_bitmaps + i, bCustom)) {
 #if DBG
 		bOk = 0;
 #else
@@ -1348,7 +1348,6 @@ return 1;
 void CModel::Init (void)
 {
 m_nModel = 0;
-m_nType = 0;
 m_nVersion = 0;
 m_nFlags = 0;
 m_nDetailLevels = 0;
@@ -1572,7 +1571,7 @@ for (i = 0, pso = m_subModels.Buffer (); i < m_nSubModels; i++, pso++)
 
 //------------------------------------------------------------------------------
 
-int CModel::Read (char *filename, short nModel, short nType, int bFlipV, int bCustom)
+int CModel::Read (char *filename, short nModel, int bFlipV, int bCustom)
 {
 	CFile			cf;
 	char			fileId [4];
@@ -1581,8 +1580,8 @@ int CModel::Read (char *filename, short nModel, short nType, int bFlipV, int bCu
 
 bLogOOF = (fErr != NULL) && FindArg ("-printoof");
 nIndent = 0;
-OOF_PrintLog ("\nreading %s/%s\n", gameFolders.szModelDir [nType], filename);
-if (!cf.Open (filename, gameFolders.szModelDir [nType], "rb", 0)) {
+OOF_PrintLog ("\nreading %s/%s\n", gameFolders.szModelDir [bCustom], filename);
+if (!cf.Open (filename, gameFolders.szModelDir [bCustom], "rb", 0)) {
 	OOF_PrintLog ("  file not found");
 	return 0;
 	}
@@ -1608,7 +1607,6 @@ if (m_nVersion >= 22) {
 	m_frameInfo.m_nLastFrame = 0;
 	}
 m_nModel = nModel;
-m_nType = nType;
 
 while (!cf.EoF ()) {
 	char chunkId [4];
@@ -1621,7 +1619,7 @@ while (!cf.EoF ()) {
 	nLength = OOF_ReadInt (cf, "nLength");
 	switch (ListType (chunkId)) {
 		case 0:
-			if (!ReadTextures (cf, nType, bCustom)) {
+			if (!ReadTextures (cf, bCustom)) {
 				Destroy ();
 				return 0;
 				}

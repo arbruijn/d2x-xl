@@ -367,7 +367,6 @@ class CSubModel {
 class CModel {
 	public:
 		short					m_nModel;
-		short					m_nType;
 		int					m_nVersion;
 		int					m_nFlags;
 		float					m_fMaxRadius;
@@ -393,7 +392,7 @@ class CModel {
 		void Init (void);
 		bool Create (void);
 		void Destroy (void);
-		int Read (char *filename, short nModel, short nType, int bFlipV, int bCustom);
+		int Read (char *filename, short nModel, int bFlipV, int bCustom);
 		int ReleaseTextures (void);
 		int ReloadTextures (int bCustom);
 		int FreeTextures (void);
@@ -402,7 +401,7 @@ class CModel {
 
 	private:
 		int ReadInfo (CFile& cf);
-		int ReadTextures (CFile& cf, short nType, int bCustom);
+		int ReadTextures (CFile& cf, int bCustom);
 		void BuildAnimMatrices (void);
 		void AssignChildren (void);
 		inline void LinkSubModelBatteries (int iObject, int iBatt);

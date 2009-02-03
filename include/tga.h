@@ -32,9 +32,9 @@ class CModelTextures {
 	public:
 		CModelTextures () { Init (); } 
 		void Init (void) { m_nBitmaps = 0; }
-		int Bind (int nType, int bCustom);
+		int Bind (int bCustom);
 		void Release (void);
-		int Read (int nType, int bCustom);
+		int Read (int bCustom);
 		bool Create (int nBitmaps);
 		void Destroy (void);
 };
@@ -53,6 +53,6 @@ double TGABrightness (CBitmap *bmP);
 void TGAChangeBrightness (CBitmap *bmP, double dScale, int bInverse, int nOffset, int bSkipAlpha);
 int TGAInterpolate (CBitmap *bmP, int nScale);
 int TGAMakeSquare (CBitmap *bmP);
-int ReadModelTGA (const char *pszFile, CBitmap *bmP, short nType, int bCustom);
+int ReadModelTGA (const char *pszFile, CBitmap *bmP, int bCustom);
 
 #endif //_TGA_H

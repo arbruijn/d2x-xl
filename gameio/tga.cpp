@@ -706,7 +706,7 @@ return q;
 
 //------------------------------------------------------------------------------
 
-int ReadModelTGA (const char *pszFile, CBitmap *bmP, short nType, int bCustom)
+int ReadModelTGA (const char *pszFile, CBitmap *bmP, int bCustom)
 {
 	char			fn [FILENAME_LEN], fnBase [FILENAME_LEN], szShrunkFolder [FILENAME_LEN];
 	int			nShrinkFactor = 1 << (3 - gameStates.render.nModelQuality);
@@ -715,11 +715,11 @@ int ReadModelTGA (const char *pszFile, CBitmap *bmP, short nType, int bCustom)
 if (!pszFile)
 	return 1;
 CFile::SplitPath (pszFile + 1, NULL, fn, NULL);
-if (!bCustom && (nShrinkFactor > 1)) {
+if (nShrinkFactor > 1) {
 	CFile	cf;
 	sprintf (fnBase, "%s.tga", fn);
-	sprintf (szShrunkFolder, "%s/%d", gameFolders.szModelCacheDir, 512 / nShrinkFactor); 
-	tBase = cf.Date (fnBase, gameFolders.szModelDir [nType], 0);
+	sprintf (szShrunkFolder, "%s/%d", gameFolders.szModelCacheDir [bCustom], 512 / nShrinkFactor); 
+	tBase = cf.Date (fnBase, gameFolders.szModelDir [bCustom], 0);
 	tShrunk = cf.Date (fnBase, szShrunkFolder, 0);
 	if ((tShrunk > tBase) && ReadTGA (fnBase, szShrunkFolder, bmP, -1, 1.0, 0, 0)) {
 #if DBG
@@ -729,19 +729,19 @@ if (!bCustom && (nShrinkFactor > 1)) {
 		return 1;
 		}
 	}
-if (!ReadTGA (pszFile + !bCustom, gameFolders.szModelDir [nType], bmP, -1, 1.0, 0, 0))
+if (!ReadTGA (pszFile, gameFolders.szModelDir [bCustom], bmP, -1, 1.0, 0, 0))
 	return 0;
 UseBitmapCache (bmP, (int) bmP->Height () * (int) bmP->RowSize ());
-if (gameStates.app.bCacheTextures && !bCustom && (nShrinkFactor > 1) && 
+if (gameStates.app.bCacheTextures && (nShrinkFactor > 1) && 
 	 (bmP->Width () == 512) && ShrinkTGA (bmP, nShrinkFactor, nShrinkFactor, 1)) {
 	tTgaHeader	h;
 	CFile			cf;
 
 	strcat (fn, ".tga");
-	if (!cf.Open (fn, gameFolders.szModelDir [nType], "rb", 0))
+	if (!cf.Open (fn, gameFolders.szModelDir [bCustom], "rb", 0))
 		return 1;
 	if (ReadTGAHeader (cf, &h, NULL))
-		SaveTGA (fn, gameFolders.szModelCacheDir [0], &h, bmP);
+		SaveTGA (fn, gameFolders.szModelCacheDir [bCustom], &h, bmP);
 	cf.Close ();
 	}
 return 1;
@@ -749,13 +749,13 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CModelTextures::Read (int nType, int bCustom)
+int CModelTextures::Read (int bCustom)
 {
 	CBitmap	*bmP;
 	int		i;
 
 for (i = 0; i < m_nBitmaps; i++) {
-	if (!ReadModelTGA (m_names [i].Buffer (), bmP = m_bitmaps + i, nType, bCustom))
+	if (!ReadModelTGA (m_names [i].Buffer (), bmP = m_bitmaps + i, bCustom))
 		return 0;
 	if (bmP->Buffer ()) {
 		bmP = bmP->Override (-1);
@@ -781,13 +781,13 @@ if ((m_bitmaps.Buffer ()))
 
 //------------------------------------------------------------------------------
 
-int CModelTextures::Bind (int nType, int bCustom)
+int CModelTextures::Bind (int bCustom)
 {
 	int		i;
 
 if ((m_bitmaps.Buffer ()))
 	for (i = 0; i < m_nBitmaps; i++) {
-		if (!(m_bitmaps [i].Buffer () || Read (nType, bCustom)))
+		if (!(m_bitmaps [i].Buffer () || Read (bCustom)))
 			return 0;
 		m_bitmaps [i].Bind (1, 3);
 		}

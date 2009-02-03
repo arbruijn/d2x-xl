@@ -514,7 +514,6 @@ void CModel::Init (void)
 {
 m_subModels = NULL;
 m_nModel = 0;
-m_nType = 0;
 m_nSubModels = 0;
 m_nVerts = 0;
 m_nFaces = 0;
@@ -547,7 +546,7 @@ return 0;
 
 int CModel::ReloadTextures (int bCustom)
 {
-return m_textures.Bind (m_nType, bCustom); 
+return m_textures.Bind (bCustom); 
 }
 
 //------------------------------------------------------------------------------
@@ -559,7 +558,7 @@ return 0;
 }
 //------------------------------------------------------------------------------
 
-int CModel::ReadTexture (CFile& cf, int nBitmap, int nType, int bCustom)
+int CModel::ReadTexture (CFile& cf, int nBitmap, int bCustom)
 {
 	CBitmap	*bmP = m_textures.m_bitmaps + nBitmap;
 	char		fn [FILENAME_LEN], *ps;
@@ -576,7 +575,7 @@ while ((pszToken = ReadLine (cf))) {
 			return CModel::Error ("duplicate item");
 		*fn = '\001';
 		CFile::SplitPath (StrTok ("\""), NULL, fn + 1, NULL);
-		if (!ReadModelTGA (::strlwr (fn), bmP, nType, bCustom))
+		if (!ReadModelTGA (::strlwr (fn), bmP, bCustom))
 			return CModel::Error ("texture not found");
 		l = (int) strlen (fn) + 1;
 		if (!m_textures.m_names [nBitmap].Create (l))
@@ -594,7 +593,7 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int CModel::ReadMaterial (CFile& cf, int nType, int bCustom)
+int CModel::ReadMaterial (CFile& cf, int bCustom)
 {
 	int		i;
 	CBitmap	*bmP;
@@ -617,7 +616,7 @@ while ((pszToken = ReadLine (cf))) {
 		bmP->SetAvgColor (avgRGB);
 		}
 	else if (!strcmp (pszToken, "*MAP_DIFFUSE")) {
-		if (!ReadTexture (cf, i, nType, bCustom))
+		if (!ReadTexture (cf, i, bCustom))
 			return CModel::Error (NULL);
 		}
 	}
@@ -626,7 +625,7 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int CModel::ReadMaterialList (CFile& cf, int nType, int bCustom)
+int CModel::ReadMaterialList (CFile& cf, int bCustom)
 {
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
@@ -643,7 +642,7 @@ while ((pszToken = ReadLine (cf))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MATERIAL")) {
-		if (!ReadMaterial (cf, nType, bCustom))
+		if (!ReadMaterial (cf, bCustom))
 			return CModel::Error (NULL);
 		}
 	}
@@ -691,25 +690,24 @@ for (psm = m_subModels; psm; psm = psm->m_next)
 
 //------------------------------------------------------------------------------
 
-int CModel::Read (const char* filename, short nModel, short nType, int bCustom)
+int CModel::Read (const char* filename, short nModel, int bCustom)
 {
 	CFile			cf;
 	int			nResult = 1;
 
-if (!cf.Open (filename, gameFolders.szModelDir [nType], "rb", 0)) {
+if (!cf.Open (filename, gameFolders.szModelDir [bCustom], "rb", 0)) {
 	return 0;
 	}
 bErrMsg = 0;
 aseFile = &cf;
 Init ();
 m_nModel = nModel;
-m_nType = nType;
 #if DBG
 nLine = 0;
 #endif
 while ((pszToken = ReadLine (cf))) {
 	if (!strcmp (pszToken, "*MATERIAL_LIST")) {
-		if (!(nResult = ReadMaterialList (cf, nType, bCustom)))
+		if (!(nResult = ReadMaterialList (cf, bCustom)))
 			break;
 		}
 	else if (!strcmp (pszToken, "*GEOMOBJECT")) {
