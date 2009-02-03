@@ -1234,10 +1234,8 @@ void AIPathGarbageCollect (void)
 	int					nObjIdx, i, nOldIndex;
 	CObject*				objP;
 	tAIStaticInfo*		aiP;
-	CArray<CObjPath>	objectList;
+	CStaticArray<CObjPath, MAX_OBJECTS_D2X>	objectList;
 
-if (!objectList.Create (LEVEL_OBJECTS))
-	return;
 nLastFrameGarbageCollected = gameData.app.nFrameCount;
 #if PATH_VALIDATION
 ValidateAllPaths ();
