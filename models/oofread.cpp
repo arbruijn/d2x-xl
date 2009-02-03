@@ -94,18 +94,16 @@ OOF_PrintLog ("      %s = %1.4f,%1.4f,%1.4f\n", pszIdent, (*pv) [X], (*pv) [Y], 
 
 //------------------------------------------------------------------------------
 
-static char *OOF_ReadString (CFile& cf, const char *pszIdent, const char *pszPrefix)
+static char *OOF_ReadString (CFile& cf, const char *pszIdent)
 {
 	char	*psz;
-	int	l, lPrefix = pszPrefix ? (int) strlen (pszPrefix) : 0;
+	int	l;
 
 l = OOF_ReadInt (cf, "string length");
-if (!(psz = new char [l + lPrefix + 1]))
+if (!(psz = new char [l + 1]))
 	return NULL;
-if (lPrefix)
-	memcpy (psz, pszPrefix, lPrefix);
-if (cf.Read (psz + lPrefix, l, 1)) {
-	psz [l + lPrefix] = '\0';
+if (cf.Read (psz, l, 1)) {
+	psz [l] = '\0';
 	OOF_PrintLog ("      %s = '%s'\n", pszIdent, psz);
 	return psz;
 	}
@@ -1308,7 +1306,7 @@ for (i = 0; i < m_textures.m_nBitmaps; i++) {
 #if OOF_TEST_CUBE
 if (!i)	//cube.oof only contains one texture
 #endif
-	if (!OOF_ReadString (cf, szId, "\001")) {
+	if (!OOF_ReadString (cf, szId)) {
 		nIndent -= 2;
 		FreeTextures ();
 		return 0;

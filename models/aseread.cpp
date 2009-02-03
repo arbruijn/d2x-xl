@@ -573,8 +573,7 @@ while ((pszToken = ReadLine (cf))) {
 	if (!strcmp (pszToken, "*BITMAP")) {
 		if (bmP->Buffer ())	//duplicate
 			return CModel::Error ("duplicate item");
-		*fn = '\001';
-		CFile::SplitPath (StrTok ("\""), NULL, fn + 1, NULL);
+		CFile::SplitPath (StrTok ("\""), NULL, fn, NULL);
 		if (!ReadModelTGA (::strlwr (fn), bmP, bCustom))
 			return CModel::Error ("texture not found");
 		l = (int) strlen (fn) + 1;
