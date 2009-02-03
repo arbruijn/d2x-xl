@@ -563,7 +563,7 @@ inline const char *MouseButtonText (int i)
 if (i < 0)
 	return "";
 if (i < 3)
-	return baseGameTexts [mouseButtonTextIndex [i]];
+	return baseGameTexts [mouseButtonTextIndex [i]][0];
 if (i - 3 < (int) sizeofa (extraMouseButtonTextIndex))
 	return extraMouseButtonTextIndex [i - 3];
 return "";
@@ -576,7 +576,7 @@ inline const char *MouseAxisText (int i)
 if (i < 0)
 	return "";
 if (i < (int) sizeofa (mouseAxisTextIndex))
-	return baseGameTexts [mouseAxisTextIndex [i]];
+	return baseGameTexts [mouseAxisTextIndex [i]][0];
 return "";
 }
 
@@ -584,7 +584,7 @@ return "";
 
 inline const char *YesNoText (int i)
 {
-return baseGameTexts [yesNoTextIndex [i != 0]];
+return baseGameTexts [yesNoTextIndex [i != 0]][0];
 }
 
 //------------------------------------------------------------------------------
