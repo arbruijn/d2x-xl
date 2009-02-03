@@ -124,6 +124,7 @@ if ((behavior == AIB_SNIPE) || (behavior == AIB_STATION) || (behavior == AIB_RUN
 	aiP->nHideSegment = nHideSegment;
 	ailP->nGoalSegment = nHideSegment;
 	aiP->nHideIndex = -1;			// This means the path has not yet been created.
+	aiP->nPathLength = 0;
 	aiP->nCurPathIndex = 0;
 	}
 aiP->SKIP_AI_COUNT = 0;

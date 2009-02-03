@@ -601,14 +601,14 @@ nEndSeg = ailP->nGoalSegment;
 if (nEndSeg != -1) {
 	CreatePathPoints (objP, nStartSeg, nEndSeg, gameData.ai.freePointSegs, &aiP->nPathLength, nMaxDepth, 1, bSafeMode, -1);
 	aiP->nPathLength = SmoothPath (objP, gameData.ai.freePointSegs, aiP->nPathLength);
-	aiP->nHideIndex = int (gameData.ai.freePointSegs - gameData.ai.routeSegs);
+	aiP->nHideIndex = int (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs));
 #if DBG
 	if (aiP->nHideIndex < 0)
 		aiP->nHideIndex = aiP->nHideIndex;
 #endif
 	aiP->nCurPathIndex = 0;
 	gameData.ai.freePointSegs += aiP->nPathLength;
-	if (gameData.ai.freePointSegs - gameData.ai.routeSegs + MAX_PATH_LENGTH*2 > LEVEL_POINT_SEGS) {
+	if (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2 > LEVEL_POINT_SEGS) {
 		AIResetAllPaths ();
 		return;
 		}
@@ -637,14 +637,14 @@ nStartSeg = objP->info.nSegment;
 nEndSeg = ailP->nGoalSegment;
 if (nEndSeg != -1) {
 	CreatePathPoints (objP, nStartSeg, nEndSeg, gameData.ai.freePointSegs, &aiP->nPathLength, nMaxDepth, 1, bSafeMode, -1);
-	aiP->nHideIndex = int (gameData.ai.freePointSegs - gameData.ai.routeSegs);
+	aiP->nHideIndex = int (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs));
 #if DBG
 	if (aiP->nHideIndex < 0)
 		aiP->nHideIndex = aiP->nHideIndex;
 #endif
 	aiP->nCurPathIndex = 0;
 	gameData.ai.freePointSegs += aiP->nPathLength;
-	if (gameData.ai.freePointSegs - gameData.ai.routeSegs + MAX_PATH_LENGTH*2 > LEVEL_POINT_SEGS) {
+	if (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2 > LEVEL_POINT_SEGS) {
 		AIResetAllPaths ();
 		return;
 		}
@@ -680,14 +680,14 @@ nEndSeg = aiP->nHideSegment;
 if (nEndSeg != -1) {
 	CreatePathPoints (objP, nStartSeg, nEndSeg, gameData.ai.freePointSegs, &aiP->nPathLength, nMaxDepth, 1, 1, -1);
 	aiP->nPathLength = SmoothPath (objP, gameData.ai.freePointSegs, aiP->nPathLength);
-	aiP->nHideIndex = int (gameData.ai.freePointSegs - gameData.ai.routeSegs);
+	aiP->nHideIndex = int (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs));
 #if DBG
 	if (aiP->nHideIndex < 0)
 		aiP->nHideIndex = aiP->nHideIndex;
 #endif
 	aiP->nCurPathIndex = 0;
 	gameData.ai.freePointSegs += aiP->nPathLength;
-	if (gameData.ai.freePointSegs - gameData.ai.routeSegs + MAX_PATH_LENGTH*2 > LEVEL_POINT_SEGS) {
+	if (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2 > LEVEL_POINT_SEGS) {
 		AIResetAllPaths ();
 		return;
 		}
@@ -717,7 +717,7 @@ if (CreatePathPoints (objP, objP->info.nSegment, -2, gameData.ai.freePointSegs, 
 		Assert (nPathLength);
 		}
 	}
-aiP->nHideIndex = int (gameData.ai.freePointSegs - gameData.ai.routeSegs);
+aiP->nHideIndex = int (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs));
 #if DBG
 if (aiP->nHideIndex < 0)
 	aiP->nHideIndex = aiP->nHideIndex;
@@ -727,7 +727,7 @@ aiP->nCurPathIndex = 0;
 ValidatePath (8, gameData.ai.freePointSegs, aiP->nPathLength);
 #endif
 gameData.ai.freePointSegs += aiP->nPathLength;
-if (gameData.ai.freePointSegs - gameData.ai.routeSegs + MAX_PATH_LENGTH*2 > LEVEL_POINT_SEGS) {
+if (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2 > LEVEL_POINT_SEGS) {
 	AIResetAllPaths ();
 	}
 aiP->PATH_DIR = 1;		//	Initialize to moving forward.
@@ -871,7 +871,11 @@ if ((aiP->nHideIndex == -1) || (aiP->nPathLength == 0)) {
 		}
 	}
 
-if ((aiP->nHideIndex + aiP->nPathLength > gameData.ai.freePointSegs - gameData.ai.routeSegs) && (aiP->nPathLength>0)) {
+#if DBG
+if (aiP->nHideIndex < 0)
+	aiP->nHideIndex = aiP->nHideIndex;
+#endif
+if ((aiP->nHideIndex + aiP->nPathLength > gameData.ai.routeSegs.Index (gameData.ai.freePointSegs)) && (aiP->nPathLength > 0)) {
 	Int3 ();	//	Contact Mike: Bad.  Path goes into what is believed to be free space.
 	//	This is debugging code.p.  Figure out why garbage collection
 	//	didn't compress this CObject's path information.
@@ -905,6 +909,10 @@ if (aiP->nPathLength < 2) {
 		aiP->nPathLength = 0;
 		return;
 		}
+#if DBG
+	if (aiP->nHideIndex < 0)
+		aiP->nHideIndex = aiP->nHideIndex;
+#endif
 	}
 
 int i = aiP->nHideIndex + aiP->nCurPathIndex;
@@ -951,7 +959,7 @@ if (ailP->mode == AIM_RUN_FROM_OBJECT) {
 		}
 	else if (!(gameData.app.nFrameCount ^ ((objP->Index ()) & 0x07))) {		//	Done 1/8 frames.
 		//	If CPlayerData on path (beyond point robot is now at), then create a new path.
-		tPointSeg	*curPSP = &gameData.ai.routeSegs [aiP->nHideIndex];
+		tPointSeg*	curPSP = &gameData.ai.routeSegs [aiP->nHideIndex];
 		short			nPlayerSeg = gameData.objs.consoleP->info.nSegment;
 		int			i;
 		//	This is xProbably being done every frame, which is wasteful.
@@ -968,10 +976,13 @@ if (ailP->mode == AIM_RUN_FROM_OBJECT) {
 			ailP->playerAwarenessTime = I2X (1);
 			}
 		}
+#if DBG
+	if (aiP->nHideIndex < 0)
+		aiP->nHideIndex = aiP->nHideIndex;
+#endif
 	}
-if (aiP->nCurPathIndex < 0) {
+if (aiP->nCurPathIndex < 0)
 	aiP->nCurPathIndex = 0;
-	}
 else if (aiP->nCurPathIndex >= aiP->nPathLength) {
 	if (ailP->mode == AIM_RUN_FROM_OBJECT) {
 		CreateNSegmentPath (objP, AVOID_SEG_LENGTH, gameData.objs.consoleP->info.nSegment);
@@ -979,8 +990,12 @@ else if (aiP->nCurPathIndex >= aiP->nPathLength) {
 		Assert (aiP->nPathLength != 0);
 		}
 	else {
-		aiP->nCurPathIndex = aiP->nPathLength-1;
+		aiP->nCurPathIndex = aiP->nPathLength - 1;
 		}
+#if DBG
+	if (aiP->nHideIndex < 0)
+		aiP->nHideIndex = aiP->nHideIndex;
+#endif
 	}
 vGoalPoint = gameData.ai.routeSegs [aiP->nHideIndex + aiP->nCurPathIndex].point;
 //	If near goal, pick another goal point.
@@ -1244,7 +1259,7 @@ force_dump_aiObjects_all ("***** Finish AIPathGarbageCollect *****");
 FORALL_ROBOT_OBJS (objP, i)
 	if (objP->info.controlType == CT_AI) {
 		aiP = &objP->cType.aiInfo; 
-		if ((aiP->nHideIndex + aiP->nPathLength > gameData.ai.freePointSegs - gameData.ai.routeSegs) && (aiP->nPathLength > 0))
+		if ((aiP->nHideIndex + aiP->nPathLength > gameData.ai.routeSegs.Index (gameData.ai.freePointSegs)) && (aiP->nPathLength > 0))
 			Int3 ();		//	Contact Mike: Debug trap for nasty, elusive bug.
 		}
 #	if PATH_VALIDATION
@@ -1257,7 +1272,9 @@ ValidateAllPaths ();
 //	Do garbage collection if not been done for awhile, or things getting really critical.
 void MaybeAIPathGarbageCollect (void)
 {
-if (gameData.ai.freePointSegs - gameData.ai.routeSegs > LEVEL_POINT_SEGS - MAX_PATH_LENGTH) {
+	int i = gameData.ai.routeSegs.Index (gameData.ai.freePointSegs);
+
+if (i > LEVEL_POINT_SEGS - MAX_PATH_LENGTH) {
 	if (nLastFrameGarbageCollected + 1 >= gameData.app.nFrameCount) {
 		//	This is kind of bad.  Garbage collected last frame or this frame.p.
 		//	Just destroy all paths.  Too bad for the robots.  They are memory wasteful.
@@ -1273,16 +1290,16 @@ if (gameData.ai.freePointSegs - gameData.ai.routeSegs > LEVEL_POINT_SEGS - MAX_P
 #endif
 		AIPathGarbageCollect ();
 #if TRACE
-		console.printf (1, "Free records = %i/%i\n", LEVEL_POINT_SEGS - (gameData.ai.freePointSegs - gameData.ai.routeSegs), LEVEL_POINT_SEGS);
+		console.printf (1, "Free records = %i/%i\n", LEVEL_POINT_SEGS - gameData.ai.routeSegs.Index (gameData.ai.freePointSegs), LEVEL_POINT_SEGS);
 #endif
 		}
 	}
-else if (gameData.ai.freePointSegs - gameData.ai.routeSegs > 3*LEVEL_POINT_SEGS/4) {
+else if (i > 3 * LEVEL_POINT_SEGS / 4) {
 	if (nLastFrameGarbageCollected + 16 < gameData.app.nFrameCount) {
 		AIPathGarbageCollect ();
 		}
 	}
-else if (gameData.ai.freePointSegs - gameData.ai.routeSegs > LEVEL_POINT_SEGS/2) {
+else if (i > LEVEL_POINT_SEGS / 2) {
 	if (nLastFrameGarbageCollected + 256 < gameData.app.nFrameCount) {
 		AIPathGarbageCollect ();
 		}

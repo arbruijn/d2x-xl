@@ -1721,9 +1721,9 @@ if (CreatePathPoints (objP, objP->info.nSegment, nSegment, gameData.ai.freePoint
 #endif
 	return 0;
 	}
-player_hide_index = (int) (gameData.ai.freePointSegs - gameData.ai.routeSegs);
+player_hide_index = int (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs));
 gameData.ai.freePointSegs += player_path_length;
-if ((int) (gameData.ai.freePointSegs - gameData.ai.routeSegs) + MAX_PATH_LENGTH*2 > MAX_POINT_SEGS) {
+if (int (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs)) + MAX_PATH_LENGTH * 2 > MAX_POINT_SEGS) {
 #if TRACE
 	//console.printf (1, "Can't create path.  Not enough tPointSegs.\n");
 #endif

@@ -178,7 +178,7 @@ gameData.thief.stolenItems.Write (m_cf);
 #if DBG
 i = CFTell ();
 #endif
-m_cf.WriteInt ((int) (gameData.ai.freePointSegs - gameData.ai.routeSegs.Buffer ()));
+m_cf.WriteInt (int (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs)));
 if (h && (m_nVersion < 43)) {
 	gameData.bosses.SaveSizeStates (m_cf);
 	gameData.bosses.SaveBufferStates (m_cf);
