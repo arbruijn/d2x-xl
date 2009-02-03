@@ -246,6 +246,7 @@ memset (&sound, 0, sizeof (sound));
 #if USE_OPENAL
 memset (&sound.buffer, 0xFF, sizeof (sound.buffer));
 #endif
+gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data] = 0;
 soundNames [gameStates.app.bD1Data].Destroy ();
 soundNames [gameStates.app.bD1Data].Create (MAX_SOUND_FILES);
 for (i = 0; i < nSoundNum; i++) {
