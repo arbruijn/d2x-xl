@@ -860,22 +860,16 @@ void AIFollowPath (CObject *objP, int nPlayerVisibility, int nPrevVisibility, CF
 
 
 if ((aiP->nHideIndex == -1) || (aiP->nPathLength == 0)) {
-	if (ailP->mode == AIM_RUN_FROM_OBJECT) {
 		CreateNSegmentPath (objP, 5, -1);
-		//--Int3_if ((aiP->nPathLength != 0);
+	if (ailP->mode == AIM_RUN_FROM_OBJECT)
 		ailP->mode = AIM_RUN_FROM_OBJECT;
-		}
-	else {
-		CreateNSegmentPath (objP, 5, -1);
-		//--Int3_if ((aiP->nPathLength != 0);
-		}
 	}
 
 #if DBG
 if (aiP->nHideIndex < 0)
 	aiP->nHideIndex = aiP->nHideIndex;
 #endif
-if ((aiP->nHideIndex + aiP->nPathLength > gameData.ai.routeSegs.Index (gameData.ai.freePointSegs)) && (aiP->nPathLength > 0)) {
+if ((aiP->nPathLength > 0) && (aiP->nHideIndex + aiP->nPathLength > gameData.ai.routeSegs.Index (gameData.ai.freePointSegs))) {
 	Int3 ();	//	Contact Mike: Bad.  Path goes into what is believed to be free space.
 	//	This is debugging code.p.  Figure out why garbage collection
 	//	didn't compress this CObject's path information.
@@ -1214,8 +1208,8 @@ int	nLastFrameGarbageCollected = 0;
 //	Garbage colledion -- Free all unused records in gameData.ai.routeSegs and compress all paths.
 void AIPathGarbageCollect (void)
 {
-	int					nFreePathIdx = 0;
-	int					nPathObjects = 0;
+	int					nFreeIndex = 0;
+	int					nObjects = 0;
 	int					nObject;
 	int					nObjIdx, i, nOldIndex;
 	CObject*				objP;
@@ -1231,28 +1225,31 @@ FORALL_ROBOT_OBJS (objP, nObject) {
 	if ((objP->info.controlType == CT_AI) || (objP->info.controlType == CT_MORPH)) {
 		aiP = &objP->cType.aiInfo;
 		if (aiP->nPathLength) {
-			objectList [nPathObjects].nStart = aiP->nHideIndex;
-			objectList [nPathObjects++].nObject = objP->Index ();
+			objectList [nObjects].nStart = aiP->nHideIndex;
+			objectList [nObjects++].nObject = objP->Index ();
 			}
 		}
 	}
 
-objectList.SortAscending (0, nPathObjects - 1);
+objectList.SortAscending (0, nObjects - 1);
 
-for (nObjIdx = 0; nObjIdx < nPathObjects; nObjIdx++) {
+for (nObjIdx = 0; nObjIdx < nObjects; nObjIdx++) {
 	nObject = objectList [nObjIdx].nObject;
 	objP = OBJECTS + nObject;
 	aiP = &objP->cType.aiInfo;
 	nOldIndex = aiP->nHideIndex;
-	aiP->nHideIndex = nFreePathIdx;
+	aiP->nHideIndex = nFreeIndex;
 #if DBG
 	if (aiP->nHideIndex < 0)
 		aiP->nHideIndex = aiP->nHideIndex;
-#endif
 	for (i = 0; i < aiP->nPathLength; i++)
-		gameData.ai.routeSegs [nFreePathIdx + i] = gameData.ai.routeSegs [nOldIndex + i];
+		gameData.ai.routeSegs [nFreeIndex + i] = gameData.ai.routeSegs [nOldIndex + i];
+#else
+	memmove (&gameData.ai.routeSegs [nFreeIndex], &gameData.ai.routeSegs [nOldIndex], aiP->nPathLength * sizeof (tPointSeg));
+#endif
+	nFreeIndex += i;
 	}
-gameData.ai.freePointSegs = gameData.ai.routeSegs + nFreePathIdx;
+gameData.ai.freePointSegs = gameData.ai.routeSegs + nFreeIndex;
 
 #if DBG
 force_dump_aiObjects_all ("***** Finish AIPathGarbageCollect *****");
