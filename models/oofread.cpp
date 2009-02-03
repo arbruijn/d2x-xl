@@ -102,7 +102,7 @@ static char *OOF_ReadString (CFile& cf, const char *pszIdent)
 l = OOF_ReadInt (cf, "string length");
 if (!(psz = new char [l + 1]))
 	return NULL;
-if (cf.Read (psz, l, 1)) {
+if (!l || cf.Read (psz, l, 1)) {
 	psz [l] = '\0';
 	OOF_PrintLog ("      %s = '%s'\n", pszIdent, psz);
 	return psz;
