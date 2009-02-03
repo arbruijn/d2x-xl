@@ -859,7 +859,7 @@ UnloadLevelData (bRestore);
 /*---*/PrintLog ("   restoring default robot settings\n");
 RestoreDefaultRobots ();
 #if 1
-if (!LoadModData (NULL, 0, 0)) {
+if (LoadModData (NULL, 0, 0) < 0) {
 	gameStates.app.bBetweenLevels = 0;
 	gameData.missions.nCurrentLevel = nCurrentLevel;
 	return -1;
@@ -941,7 +941,7 @@ if (!gameStates.app.bProgressBars)
 paletteManager.SetGame (paletteManager.Load (szCurrentLevelPalette, pszLevelName, 1, 1, 1));		//don't change screen
 
 #if 1
-if (!LoadModData (pszLevelName, bLoadTextures, 1)) {
+if (LoadModData (pszLevelName, bLoadTextures, 1) < 0) {
 	gameStates.app.bBetweenLevels = 0;
 	gameData.missions.nCurrentLevel = nCurrentLevel;
 	return -1;
