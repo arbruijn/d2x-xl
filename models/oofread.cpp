@@ -452,11 +452,11 @@ int CSpecialPoint::Read (CFile& cf)
 Init ();
 nIndent += 2;
 OOF_PrintLog ("reading special point\n");
-if (!(m_pszName = OOF_ReadString (cf, "pszName", NULL))) {
+if (!(m_pszName = OOF_ReadString (cf, "pszName"))) {
 	nIndent -= 2;
 	return 0;
 	}
-if (!(m_pszProps = OOF_ReadString (cf, "pszProps", NULL))) {
+if (!(m_pszProps = OOF_ReadString (cf, "pszProps"))) {
 	nIndent -= 2;
 	return 0;
 	}
@@ -1154,11 +1154,11 @@ m_nTreeOffset = OOF_ReadInt (cf, "nTreeOffset");
 m_nDataOffset = OOF_ReadInt (cf, "nDataOffset");
 if (po->m_nVersion > 1805)
 	OOF_ReadVector (cf, &m_vCenter, "vCenter");
-if (!(m_pszName = OOF_ReadString (cf, "pszName", NULL))) {
+if (!(m_pszName = OOF_ReadString (cf, "pszName"))) {
 	Destroy ();
 	return 0;
 	}
-if (!(m_pszProps = OOF_ReadString (cf, "pszProps", NULL))) {
+if (!(m_pszProps = OOF_ReadString (cf, "pszProps"))) {
 	Destroy ();
 	return 0;
 	}

@@ -177,10 +177,20 @@ if (bMask) {
 	}
 else if (bpp == 3) {
 	m_info.format = GL_RGB;
+#if TEXTURE_COMPRESSION
+	if ((w > 64) && (w == h))
+		m_info.internalFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+	else
+#endif
 	m_info.internalFormat = 3;
 	}
 else {
 	m_info.format = GL_RGBA;
+#if TEXTURE_COMPRESSION
+	if ((w > 64) && (w == h))
+		m_info.internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+	else
+#endif
 	m_info.internalFormat = 4;
 	}
 m_info.bMipMaps = bMipMap && !bMask;
@@ -606,7 +616,7 @@ while (!FormatSupported ()) {
 			break;
 
 		case GL_RGB:
-			m_info.internalFormat = 4;
+			m_info.internalFormat = 3;
 			m_info.format = GL_RGBA;
 			break;
 
@@ -799,15 +809,15 @@ if (m_info.internalformat != GL_COMPRESSED_RGBA)
 glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED_ARB, &nParam);
 if (nParam) {
 	glGetTexLevelParameteriv (GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &nFormat);
-	if ((nFormat == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT) ||
+	if ((nFormat == GL_COMPRESSED_RGB_S3TC_DXT1_EXT) ||
+		 (nFormat == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT) ||
 		 (nFormat == GL_COMPRESSED_RGBA_S3TC_DXT3_EXT) ||
 		 (nFormat == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)) {
 		glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB, &nParam);
 		if (nParam && (data = new ubyte [nParam])) {
 			bmP->DestroyBuffer ();
 			glGetCompressedTexImage (GL_TEXTURE_2D, 0, reinterpret_cast<GLvoid*> (data));
-			bmP->SetBuffer (data);
-			bmP->SetBufSize (nParam);
+			bmP->SetBuffer (data, 0, nParam);
 			bmP->SetFormat (nFormat);
 			bmP->SetCompressed (1);
 			}
@@ -820,7 +830,7 @@ if (bmP->BPP () == 3) {
 	m_info.internalFormat = 3;
 	}
 else {
-	m_info.format = GL_RGB;
+	m_info.format = GL_RGBA;
 	m_info.internalFormat = 4;
 	}
 return 0;
