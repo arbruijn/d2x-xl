@@ -1154,18 +1154,12 @@ AIPathSetOrientAndVel (objP, &vGoalPoint, nPlayerVisibility, vec_to_player);
 
 //	----------------------------------------------------------------------------------------------------------
 
-typedef struct {
-	short	path_start, nObject;
-} obj_path;
-
-int _CDECL_ QSCmpPathIndex (obj_path *i1, obj_path *i2)
-{
-if (i1->path_start < i2->path_start)
-	return -1;
-if (i1->path_start > i2->path_start)
-	return 1;
-return 0;
-}
+class CObjPath {
+	public:
+		short	nStart, nObject;
+		bool operator< (CObjPath& other) { return nStart < other.nStart; }
+		bool operator> (CObjPath& other) { return nStart > other.nStart; }
+};
 
 //	----------------------------------------------------------------------------------------------------------
 //	Set orientation matrix and velocity for objP based on its desire to get to a point.
@@ -1234,17 +1228,16 @@ int	nLastFrameGarbageCollected = 0;
 //	Garbage colledion -- Free all unused records in gameData.ai.routeSegs and compress all paths.
 void AIPathGarbageCollect (void)
 {
-	int				nFreePathIdx = 0;
-	int				nPathObjects = 0;
-	int				nObject;
-	int				nObjIdx, i, nOldIndex;
-	CObject			*objP;
-	tAIStaticInfo	*aiP;
-	obj_path			objectList [MAX_OBJECTS_D2X];
+	int					nFreePathIdx = 0;
+	int					nPathObjects = 0;
+	int					nObject;
+	int					nObjIdx, i, nOldIndex;
+	CObject*				objP;
+	tAIStaticInfo*		aiP;
+	CArray<CObjPath>	objectList;
 
-#if DBG
-force_dump_aiObjects_all ("***** Start AIPathGarbageCollect *****");
-#endif
+if (!objectList.Create (LEVEL_OBJECTS))
+	return;
 nLastFrameGarbageCollected = gameData.app.nFrameCount;
 #if PATH_VALIDATION
 ValidateAllPaths ();
@@ -1254,23 +1247,22 @@ FORALL_ROBOT_OBJS (objP, nObject) {
 	if ((objP->info.controlType == CT_AI) || (objP->info.controlType == CT_MORPH)) {
 		aiP = &objP->cType.aiInfo;
 		if (aiP->nPathLength) {
-			objectList [nPathObjects].path_start = aiP->nHideIndex;
+			objectList [nPathObjects].nStart = aiP->nHideIndex;
 			objectList [nPathObjects++].nObject = objP->Index ();
 			}
 		}
 	}
 
-qsort (objectList, nPathObjects, sizeof (objectList [0]),
-		 (int (_CDECL_ *) (void const *, void const *))QSCmpPathIndex);
+objectList.SortAscending (0, nPathObjects - 1);
 
-for (nObjIdx=0; nObjIdx < nPathObjects; nObjIdx++) {
+for (nObjIdx = 0; nObjIdx < nPathObjects; nObjIdx++) {
 	nObject = objectList [nObjIdx].nObject;
 	objP = OBJECTS + nObject;
 	aiP = &objP->cType.aiInfo;
 	nOldIndex = aiP->nHideIndex;
 	aiP->nHideIndex = nFreePathIdx;
 	for (i = 0; i < aiP->nPathLength; i++)
-		gameData.ai.routeSegs [nFreePathIdx++] = gameData.ai.routeSegs [nOldIndex++];
+		gameData.ai.routeSegs [nFreePathIdx + i] = gameData.ai.routeSegs [nOldIndex + i];
 	}
 gameData.ai.freePointSegs = gameData.ai.routeSegs + nFreePathIdx;
 
