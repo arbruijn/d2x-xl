@@ -159,7 +159,7 @@ if (name) {
 	strcpy (hogP->szName, name);
 	hogP->bInitialized = *name && Setup (hogP->szName, folder, hogP->files, &hogP->nFiles);
 	if (*(hogP->szName))
-		PrintLog ("   found hogP file '%s'\n", hogP->szName);
+		PrintLog ("   found hog file '%s'\n", hogP->szName);
 	if (hogP->bInitialized && (hogP->nFiles > 0)) {
 		QuickSort (hogP->files, 0, hogP->nFiles - 1);
 		return 1;
