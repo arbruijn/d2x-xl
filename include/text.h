@@ -28,15 +28,15 @@ extern char **pszHelpTexts;
 
 //Symbolic constants for all the strings
 
+void LoadModTexts (void);
+void FreeModTexts (void);
+
 #if DBG
 
 const char *GAMETEXT (int _i);
 const char *HELPTEXT (int _i);
 
 #else
-
-void LoadModTexts (void);
-void FreeModTexts (void);
 
 static inline const char *GAMETEXT (int _i) 
 {
