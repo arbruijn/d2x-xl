@@ -17,10 +17,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "descent.h"
 
 //Array of pointers to text
-#define N_BASE_TEXTS					649
+#define BASE_TEXT_COUNT					649
 
-extern char *baseGameTexts [N_BASE_TEXTS];
-extern const char *d2GameTexts [];
+extern char *baseGameTexts [BASE_TEXT_COUNT][2];
+extern char *d2GameTexts [][2];
 extern const char *defaultGameTexts [][2];
 extern char **pszGameTexts;
 extern const char *defaultHelpTexts [][2];
@@ -35,14 +35,17 @@ const char *HELPTEXT (int _i);
 
 #else
 
+void LoadModTexts (void);
+void FreeModTexts (void);
+
 static inline const char *GAMETEXT (int _i) 
 {
 if (pszGameTexts)
 	return pszGameTexts [_i];
-else if (_i < N_BASE_TEXTS)
-	return d2GameTexts [_i];
+else if (_i < BASE_TEXT_COUNT)
+	return d2GameTexts [_i][1] ? d2GameTexts [_i][1] : d2GameTexts [_i][0];
 else
-	return defaultGameTexts [_i - N_BASE_TEXTS][gameStates.app.bEnglish];
+	return defaultGameTexts [_i - BASE_TEXT_COUNT][gameStates.app.bEnglish];
 }
 
 static inline const char *HELPTEXT (int _i) 
@@ -781,7 +784,7 @@ else
 
 void LoadGameTexts(void);
 
-#define 	GT(_i) GAMETEXT(_i + N_BASE_TEXTS)
+#define 	GT(_i) GAMETEXT(_i + BASE_TEXT_COUNT)
 
 #define 		HT(_i) HELPTEXT(_i)
 

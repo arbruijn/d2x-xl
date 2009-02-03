@@ -701,6 +701,8 @@ cameraManager.Destroy ();
 omegaLightnings.Destroy (-1);
 /*---*/PrintLog ("   Destroying monsterball\n");
 RemoveMonsterball ();
+/*---*/PrintLog ("   Unloading mod text messages\n");
+FreeModTexts ();
 }
 
 //------------------------------------------------------------------------------
