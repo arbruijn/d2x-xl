@@ -751,8 +751,8 @@ if (nStage == 0) {
 			nLoadRes = LoadRobotExtensions (szFile, gameFolders.szMissionDirs [0], gameData.missions.nEnhancedMission);
 			}
 		if (nLoadRes == 0) {
-			sprintf (szFile, "%s.ham", gameStates.app.szCurrentMissionFile);
-			/*---*/PrintLog ("		trying vertigo custom robots (d2x.ham)\n", gameStates.app.szCurrentMissionFile);
+			sprintf (szFile, "d2x.ham");
+			/*---*/PrintLog ("		trying vertigo custom robots (d2x.ham)\n");
 			nLoadRes = LoadRobotExtensions ("d2x.ham", gameFolders.szMissionDir, gameData.missions.nEnhancedMission);
 			}
 		if (nLoadRes > 0) {
