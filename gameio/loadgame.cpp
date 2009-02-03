@@ -704,6 +704,94 @@ RemoveMonsterball ();
 }
 
 //------------------------------------------------------------------------------
+
+int LoadModData (char* pszLevelName, int bLoadTextures, int nStage)
+{
+	char	szFile [FILENAME_LEN];
+	int	nLoadRes = 0;
+
+// try to read mod files, and load default files if that fails
+if (nStage == 0) {
+	if (ReadHamFile (false))
+		gameStates.app.bCustomData = true;
+	else if (gameStates.app.bCustomData) {
+		ReadHamFile ();
+		gameStates.app.bCustomData = false;
+		}
+	if (ReadSoundFile (false))
+		gameStates.app.bCustomSounds = true;
+	else if (gameStates.app.bCustomSounds) {
+		ReadSoundFile ();
+		gameStates.app.bCustomSounds = false;
+		}
+	if (*gameFolders.szModName) {
+		/*---*/PrintLog ("		trying custom robots (hxm) from mod '%s'\n", gameFolders.szModName);
+		sprintf (szFile, "%s/%s.hxm", gameFolders.szModDir [1], gameFolders.szModName);
+		LoadRobotReplacements (szFile, 0, 0);
+		}
+	if (gameData.missions.nEnhancedMission) {
+		char szFile [FILENAME_LEN];
+
+		/*---*/PrintLog ("   reading additional robots\n");
+		if ((gameData.missions.nEnhancedMission < 3) || !*gameFolders.szModName)
+			nLoadRes = 0;
+		else {
+			/*---*/PrintLog ("		trying custom robots (hxm) from mod '%s'\n", gameFolders.szModName);
+			sprintf (szFile, "%s/%s.hxm", gameFolders.szModDir [1], gameFolders.szModName);
+			LoadRobotReplacements (szFile, 0, 0);
+			sprintf (szFile, "%s.vham", gameFolders.szModName);
+			/*---*/PrintLog ("		trying custom robots (vham) from mod '%s'\n", gameFolders.szModName);
+			nLoadRes = LoadRobotExtensions (szFile, gameFolders.szModDir [1], gameData.missions.nEnhancedMission);
+			}
+		if (nLoadRes == 0) {
+			sprintf (szFile, "%s.ham", gameStates.app.szCurrentMissionFile);
+			/*---*/PrintLog ("		trying custom robots (ham) from level '%s'\n", gameStates.app.szCurrentMissionFile);
+			nLoadRes = LoadRobotExtensions (szFile, gameFolders.szMissionDirs [0], gameData.missions.nEnhancedMission);
+			}
+		if (nLoadRes == 0) {
+			sprintf (szFile, "%s.ham", gameStates.app.szCurrentMissionFile);
+			/*---*/PrintLog ("		trying vertigo custom robots (d2x.ham)\n", gameStates.app.szCurrentMissionFile);
+			nLoadRes = LoadRobotExtensions ("d2x.ham", gameFolders.szMissionDir, gameData.missions.nEnhancedMission);
+			}
+		if (nLoadRes > 0) {
+			strncpy (szFile, gameStates.app.szCurrentMissionFile, 6);
+			strcat (szFile, "-l.mvl");
+			/*---*/PrintLog ("   initializing additional robot movies\n");
+			movieManager.InitExtraRobotLib (szFile);
+			}
+		}
+	}
+else {
+	ResetPogEffects ();
+	if (gameStates.app.bD1Mission) {
+		/*---*/PrintLog ("   loading Descent 1 textures\n");
+		LoadD1BitmapReplacements ();
+		if (bLoadTextures)
+			PiggyLoadLevelData ();
+		}
+	else {
+		if (bLoadTextures)
+			PiggyLoadLevelData ();
+		LoadTextData (pszLevelName, ".msg", gameData.messages);
+		LoadTextData (pszLevelName, ".snd", &gameData.sounds);
+		LoadBitmapReplacements (pszLevelName);
+		LoadSoundReplacements (pszLevelName);
+		}
+
+	/*---*/PrintLog ("   loading cambot\n");
+	gameData.bots.nCamBotId = (LoadRobotReplacements ("cambot.hxm", 1, 0) > 0) ? gameData.bots.nTypes [0] - 1 : -1;
+	gameData.bots.nCamBotModel = gameData.models.nPolyModels - 1;
+	/*---*/PrintLog ("   loading replacement robots\n");
+	if (0 > LoadRobotReplacements (pszLevelName, 0, 0)) 
+		return -1;
+	LoadHiresModels (1);
+	/*---*/PrintLog ("   initializing cambot\n");
+	InitCamBots (0);
+	}
+return nLoadRes;
+}
+
+//------------------------------------------------------------------------------
 //load a level off disk. level numbers start at 1.  Secret levels are -1,-2,-3
 
 extern char szAutoMission [255];
@@ -770,54 +858,13 @@ gameData.missions.nCurrentLevel = nLevel;
 UnloadLevelData (bRestore);
 /*---*/PrintLog ("   restoring default robot settings\n");
 RestoreDefaultRobots ();
-// try to read mod files, and load default files if that fails
-if (ReadHamFile (false))
-	gameStates.app.bCustomData = true;
-else if (gameStates.app.bCustomData) {
-	ReadHamFile ();
-	gameStates.app.bCustomData = false;
+#if 1
+if (!LoadModData (NULL, 0, 0)) {
+	gameStates.app.bBetweenLevels = 0;
+	gameData.missions.nCurrentLevel = nCurrentLevel;
+	return -1;
 	}
-if (ReadSoundFile (false))
-	gameStates.app.bCustomSounds = true;
-else if (gameStates.app.bCustomSounds) {
-	ReadSoundFile ();
-	gameStates.app.bCustomSounds = false;
-	}
-if (gameData.missions.nEnhancedMission) {
-	char szFile [FILENAME_LEN];
-
-	/*---*/PrintLog ("   reading additional robots\n");
-	if ((gameData.missions.nEnhancedMission < 3) || !*gameFolders.szModName)
-		nLoadRes = 0;
-	else {
-		/*---*/PrintLog ("		trying custom robots (hxm) from mod '%s'\n", gameFolders.szModName);
-		sprintf (szFile, "%s/%s.hxm", gameFolders.szModDir [1], gameFolders.szModName);
-		LoadRobotReplacements (szFile, 0, 0);
-		sprintf (szFile, "%s.vham", gameFolders.szModName);
-		/*---*/PrintLog ("		trying custom robots (vham) from mod '%s'\n", gameFolders.szModName);
-		nLoadRes = LoadRobotExtensions (szFile, gameFolders.szModDir [1], gameData.missions.nEnhancedMission);
-		}
-	if (nLoadRes == 0) {
-		sprintf (szFile, "%s.ham", gameStates.app.szCurrentMissionFile);
-		/*---*/PrintLog ("		trying custom robots (ham) from level '%s'\n", gameStates.app.szCurrentMissionFile);
-		nLoadRes = LoadRobotExtensions (szFile, gameFolders.szMissionDirs [0], gameData.missions.nEnhancedMission);
-		}
-	if (nLoadRes == 0) {
-		sprintf (szFile, "%s.ham", gameStates.app.szCurrentMissionFile);
-		/*---*/PrintLog ("		trying vertigo custom robots (d2x.ham)\n", gameStates.app.szCurrentMissionFile);
-		nLoadRes = LoadRobotExtensions ("d2x.ham", gameFolders.szMissionDir, gameData.missions.nEnhancedMission);
-		}
-	if (nLoadRes < 0) {
-		gameStates.app.bBetweenLevels = 0;
-		gameData.missions.nCurrentLevel = nCurrentLevel;
-		return 0;
-		}
-	strncpy (szFile, gameStates.app.szCurrentMissionFile, 6);
-	strcat (szFile, "-l.mvl");
-	/*---*/PrintLog ("   initializing additional robot movies\n");
-	movieManager.InitExtraRobotLib (szFile);
-	}
-
+#endif
 /*---*/PrintLog ("   Initializing smoke manager\n");
 InitObjectSmoke ();
 gameData.pig.tex.bitmapColors.Clear ();
@@ -866,10 +913,6 @@ InitTexColors ();
 if (gameStates.app.bD1Mission)
 	LoadD1BitmapReplacements ();
 
-/*---*/PrintLog ("   loading default robot settings\n");
-ReadHamFile ();		//load original data
-/*---*/PrintLog ("   loading default robot settings\n");
-ReadHamFile ();		//load original data
 for (;;) {
 	if (!(nLoadRes = LoadLevelData (pszLevelName, nLevel)))
 		break;	//actually load the data from disk!
@@ -896,35 +939,17 @@ if (nLoadRes) {
 if (!gameStates.app.bProgressBars)
 	ShowBoxedMessage (TXT_LOADING);
 paletteManager.SetGame (paletteManager.Load (szCurrentLevelPalette, pszLevelName, 1, 1, 1));		//don't change screen
-ResetPogEffects ();
-if (gameStates.app.bD1Mission) {
-	/*---*/PrintLog ("   loading Descent 1 textures\n");
-	LoadD1BitmapReplacements ();
-	if (bLoadTextures)
-		PiggyLoadLevelData ();
-	}
-else {
-	if (bLoadTextures)
-		PiggyLoadLevelData ();
-	LoadTextData (pszLevelName, ".msg", gameData.messages);
-	LoadTextData (pszLevelName, ".snd", &gameData.sounds);
-	LoadBitmapReplacements (pszLevelName);
-	LoadSoundReplacements (pszLevelName);
-	}
-/*---*/PrintLog ("   loading endlevel data\n");
-LoadEndLevelData (nLevel);
-/*---*/PrintLog ("   loading cambot\n");
-gameData.bots.nCamBotId = (LoadRobotReplacements ("cambot.hxm", 1, 0) > 0) ? gameData.bots.nTypes [0] - 1 : -1;
-gameData.bots.nCamBotModel = gameData.models.nPolyModels - 1;
-/*---*/PrintLog ("   loading replacement robots\n");
-if (0 > LoadRobotReplacements (pszLevelName, 0, 0)) {
+
+#if 1
+if (!LoadModData (pszLevelName, bLoadTextures, 1)) {
 	gameStates.app.bBetweenLevels = 0;
 	gameData.missions.nCurrentLevel = nCurrentLevel;
-	return 0;
+	return -1;
 	}
-LoadHiresModels (1);
-/*---*/PrintLog ("   initializing cambot\n");
-InitCamBots (0);
+#endif
+/*---*/PrintLog ("   loading endlevel data\n");
+LoadEndLevelData (nLevel);
+
 networkData.nSegmentCheckSum = CalcSegmentCheckSum ();
 ResetNetworkObjects ();
 ResetChildObjects ();
