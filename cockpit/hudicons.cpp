@@ -379,7 +379,7 @@ for (i = 0; i < 2; i++) {
 				CCanvas::Current ()->SetColorRGB (96, 0, 0, 255);
 		else
 			CCanvas::Current ()->SetColorRGB (64, 64, 64, 255);
-		glLineWidth ((bArmed && bAvailable && gameOpts->render.weaponIcons.bBoldHighlight) ? 3 : fLineWidth);
+		glLineWidth ((bArmed && bAvailable && gameOpts->render.weaponIcons.bBoldHighlight) ? fLineWidth + 2 : fLineWidth);
 		OglDrawEmptyRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
 //		if (bArmed && bAvailable)
 			if (*szAmmo) {

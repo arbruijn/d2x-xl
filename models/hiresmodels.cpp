@@ -289,11 +289,11 @@ if (replacementModels [i].pszHires)
 else
 	szModel [1][0] = '\0';
 #if 0//def _DEBUG
-while (!ASE_ReadFile (szModel [1] + !bCustom, pa, replacementModels [i].nType, bCustom))
+while (!ASE_ReadFile (szModel [1], pa, replacementModels [i].nType, bCustom))
 	;
 #endif
-if (!(pa->Read (szModel [1] + !bCustom, replacementModels [i].nModel, bCustom) || 
-	   pa->Read (szModel [0] + !bCustom, replacementModels [i].nModel, bCustom)))
+if (!(pa->Read (szModel [1], replacementModels [i].nModel, bCustom) || 
+	   pa->Read (szModel [0], replacementModels [i].nModel, bCustom)))
 	return 0;
 do {
 	CBP (!replacementModels [i].nModel);

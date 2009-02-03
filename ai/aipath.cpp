@@ -870,12 +870,12 @@ if (aiP->nHideIndex < 0)
 	aiP->nHideIndex = aiP->nHideIndex;
 #endif
 if ((aiP->nPathLength > 0) && (aiP->nHideIndex + aiP->nPathLength > gameData.ai.routeSegs.Index (gameData.ai.freePointSegs))) {
-	Int3 ();	//	Contact Mike: Bad.  Path goes into what is believed to be free space.
-	//	This is debugging code.p.  Figure out why garbage collection
-	//	didn't compress this CObject's path information.
+	//	This is debugging code.p.  Figure out why garbage collection didn't compress this object's path information.
+	PrintLog ("Error in AI path info garbage collection\n");
 	AIPathGarbageCollect ();
 	//force_dump_aiObjects_all ("Error in AIFollowPath");
 	AIResetAllPaths ();
+	return;
 	}
 
 if (aiP->nPathLength < 2) {
@@ -1258,7 +1258,6 @@ for (nObjIdx = 0; nObjIdx < nObjects; nObjIdx++) {
 gameData.ai.freePointSegs = gameData.ai.routeSegs + nFreeIndex;
 
 #if DBG
-force_dump_aiObjects_all ("***** Finish AIPathGarbageCollect *****");
 FORALL_ROBOT_OBJS (objP, i)
 	if (objP->info.controlType == CT_AI) {
 		aiP = &objP->cType.aiInfo; 
