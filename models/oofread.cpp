@@ -1284,7 +1284,7 @@ return 0;
 int CModel::ReadTextures (CFile& cf, int bCustom)
 {
 	int			i;
-	char			szId [30];
+	char*			pszName;
 #if DBG
 	int			bOk = 1;
 #endif
@@ -1302,17 +1302,15 @@ if (!(m_textures.Create (nBitmaps))) {
 	}
 for (i = 0; i < m_textures.m_nBitmaps; i++) {
 	if (bLogOOF)
-		sprintf (szId, "textures.pszId [%d]", i);
 #if OOF_TEST_CUBE
 if (!i)	//cube.oof only contains one texture
 #endif
-	if (!OOF_ReadString (cf, szId)) {
+	if (!(pszName = OOF_ReadString (cf, "texture"))) {
 		nIndent -= 2;
 		FreeTextures ();
 		return 0;
 		}
-	m_textures.m_names [i].Create (strlen (szId) + 1);
-	m_textures.m_names [i] = szId;
+	m_textures.m_names [i].SetBuffer (pszName, 0, strlen (pszName) + 1);
 #if OOF_TEST_CUBE
 if (!i) {
 	delete[] m_textures.m_names [i];

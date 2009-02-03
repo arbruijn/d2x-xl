@@ -714,7 +714,7 @@ int ReadModelTGA (const char *pszFile, CBitmap *bmP, int bCustom)
 
 if (!pszFile)
 	return 1;
-CFile::SplitPath (pszFile + 1, NULL, fn, NULL);
+CFile::SplitPath (pszFile, NULL, fn, NULL);
 if (nShrinkFactor > 1) {
 	CFile	cf;
 	sprintf (fnBase, "%s.tga", fn);
