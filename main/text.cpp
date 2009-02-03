@@ -2874,7 +2874,7 @@ const char *GAMETEXT (int _i)
 if (pszGameTexts)
 	return pszGameTexts [_i];
 else if (_i < BASE_TEXT_COUNT)
-	return d2GameTexts [_i][1] ? d2GameTexts [_i][1] ? d2GameTexts [_i][0];
+	return d2GameTexts [_i][1] ? d2GameTexts [_i][1] : d2GameTexts [_i][0];
 else
 	return defaultGameTexts [_i - BASE_TEXT_COUNT][gameStates.app.bEnglish];
 }
