@@ -789,6 +789,8 @@ else {
 	LoadHiresModels (1);
 	/*---*/PrintLog ("   initializing cambot\n");
 	InitCamBots (0);
+	/*---*/PrintLog ("   loading mod texts\n");
+	LoadModTexts ();
 	}
 return nLoadRes;
 }
