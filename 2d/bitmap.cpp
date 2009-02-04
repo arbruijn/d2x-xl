@@ -329,18 +329,18 @@ else if (m_info.texture) {
 
 //------------------------------------------------------------------------------
 
-int CBitmap::AvgColor (tRgbColorf* colorP)
+int CBitmap::AvgColor (tRgbColorf* colorP, bool bForce)
 {
 	int			c, h, i, j = 0, r = 0, g = 0, b = 0;
 	tRgbColorf	*color;
 	tRgbColorb	*colorBuf;
 	CPalette		*palette;
 	ubyte			*bufP;
-	
-#if DBG
-if (m_info.nId == 1114)
-	m_info.nId = m_info.nId;
-#endif
+
+if (!bForce && (m_info.avgColor.red || m_info.avgColor.green || m_info.avgColor.blue))
+	return;
+if (m_info.nBPP > 1)
+	return;
 m_info.avgColor.red = 
 m_info.avgColor.green =
 m_info.avgColor.blue = 0;

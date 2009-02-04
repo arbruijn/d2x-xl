@@ -65,7 +65,7 @@ LoadBitmap (bmi.index, 0);
 bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
 if ((bmP->Type () == BM_TYPE_STD) && bmP->Override ())
 	bmP = bmP->Override ();
-bmP->AvgColor ();
+bmP->AvgColor (NULL, false);
 return bmP->GetAvgColor ();
 }
 

@@ -427,14 +427,10 @@ switch (pId) {
 		if (!pszFile)
 			return DownloadError (2);
 		strlwr (pszFile);
-#if DBG
-			sprintf (szDest, "%s%stest/%s", gameFolders.szMissionDir, *gameFolders.szMissionDir ? "/" : "", pszFile);
-#else
 		if (strstr (hogFileManager.m_files.MsnHogFiles.szName, pszFile))
 			strcpy (szDest, hogFileManager.m_files.MsnHogFiles.szName);
 		else
 			sprintf (szDest, "%s%s%s", gameFolders.szMissionDir, *gameFolders.szMissionDir ? "/" : "", pszFile);
-#endif
 		if (!m_cf.Open (szDest, "", "wb", 0))
 			return DownloadError (2);
 		m_nSrcLen = GET_INTEL_INT (data + 2);

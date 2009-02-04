@@ -521,14 +521,14 @@ switch (nObjType) {
 				maxColor = colorP->green;
 			if (maxColor < colorP->blue)
 				maxColor = colorP->blue;
-			if (maxColor > 1) {
+			//if (maxColor > 1) 
+				{
 				colorP->red /= maxColor;
 				colorP->green /= maxColor;
 				colorP->blue /= maxColor;
 				}
 			if (objP->info.xLifeLeft < I2X (4))
-				return FixMul (FixDiv (objP->info.xLifeLeft,
-								   gameData.eff.vClips [0][objP->info.nId].xTotalTime), xLight);
+				return FixMul (FixDiv (objP->info.xLifeLeft, gameData.eff.vClips [0][objP->info.nId].xTotalTime), xLight);
 			else
 				return xLight;
 			}
