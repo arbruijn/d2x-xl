@@ -2670,7 +2670,7 @@ for (nLine = 0; cf.GetS (szText, sizeof (szText)); nLine++) {
 	l = strlen (p);
 	if (!l)
 		continue;
-	if (!(d2GameTexts [i][1] = new char [l + 1]))
+	if (!(d2GameTexts [--i][1] = new char [l + 1]))
 		break;
 	memcpy (d2GameTexts [i][1], p, l + 1);
 	SetupText (d2GameTexts [i][1], szFile, nLine);
