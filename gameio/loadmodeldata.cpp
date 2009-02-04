@@ -224,7 +224,7 @@ int LoadRobotReplacements (const char* szLevel, const char* szFolder, int bAddBo
 	char			szFile [FILENAME_LEN];
 
 CFile::ChangeFilenameExtension (szFile, szLevel, ".hxm");
-if (!cf.Open (szFilename, pszFolder ? pszFolder : gameFolders.szDataDir, "rb", 0))		//no robot replacement file
+if (!cf.Open (szFile, szFolder ? szFolder : gameFolders.szDataDir, "rb", 0))		//no robot replacement file
 	return 0;
 t = cf.ReadInt ();			//read id "HXM!"
 if (t!= MAKE_SIG ('!','X','M','H'))
@@ -237,13 +237,13 @@ for (j = 0; j < t; j++) {
 	i = cf.ReadInt ();		//read robot number
 	if (bAddBots) {
 		if (gameData.bots.nTypes [0] >= MAX_ROBOT_TYPES) {
-			Warning (TXT_ROBOT_NO, szLevelName, i, MAX_ROBOT_TYPES);
+			Warning (TXT_ROBOT_NO, szLevel, i, MAX_ROBOT_TYPES);
 			return -1;
 			}
 		i = gameData.bots.nTypes [0]++;
 		}
 	else if (i < 0 || i >= gameData.bots.nTypes [0]) {
-		Warning (TXT_ROBOT_NO, szLevelName, i, gameData.bots.nTypes [0] - 1);
+		Warning (TXT_ROBOT_NO, szLevel, i, gameData.bots.nTypes [0] - 1);
 		gameData.bots.nTypes [0] = nBotTypeSave;
 		gameData.bots.nJoints = nBotJointSave;
 		gameData.models.nPolyModels = nPolyModelSave;
@@ -262,7 +262,7 @@ for (j = 0; j < t; j++) {
 	if (bAddBots) {
 		if (gameData.bots.nJoints >= MAX_ROBOT_JOINTS) {
 			Warning ("%s: Robots joint (%d) out of range (valid range = 0 - %d).",
-						szLevelName, i, MAX_ROBOT_JOINTS - 1);
+						szLevel, i, MAX_ROBOT_JOINTS - 1);
 			gameData.bots.nTypes [0] = nBotTypeSave;
 			gameData.bots.nJoints = nBotJointSave;
 			gameData.models.nPolyModels = nPolyModelSave;
@@ -273,7 +273,7 @@ for (j = 0; j < t; j++) {
 		}
 	else if ((i < 0) || (i >= gameData.bots.nJoints)) {
 		Warning ("%s: Robots joint (%d) out of range (valid range = 0 - %d).",
-					szLevelName, i, gameData.bots.nJoints - 1);
+					szLevel, i, gameData.bots.nJoints - 1);
 		gameData.bots.nTypes [0] = nBotTypeSave;
 		gameData.bots.nJoints = nBotJointSave;
 		gameData.models.nPolyModels = nPolyModelSave;
@@ -287,7 +287,7 @@ for (j = 0; j < t; j++) {
 	if (bAddBots) {
 		if (gameData.models.nPolyModels >= MAX_POLYGON_MODELS) {
 			Warning ("%s: Polygon model (%d) out of range (valid range = 0 - %d).",
-						szLevelName, i, gameData.models.nPolyModels - 1);
+						szLevel, i, gameData.models.nPolyModels - 1);
 			gameData.bots.nTypes [0] = nBotTypeSave;
 			gameData.bots.nJoints = nBotJointSave;
 			gameData.models.nPolyModels = nPolyModelSave;
@@ -302,7 +302,7 @@ for (j = 0; j < t; j++) {
 				gameData.models.nPolyModels = i + 1;
 			else {
 				Warning ("%s: Polygon model (%d) out of range (valid range = 0 - %d).",
-							szLevelName, i, gameData.models.nPolyModels - 1);
+							szLevel, i, gameData.models.nPolyModels - 1);
 				gameData.bots.nTypes [0] = nBotTypeSave;
 				gameData.bots.nJoints = nBotJointSave;
 				gameData.models.nPolyModels = nPolyModelSave;
@@ -311,7 +311,7 @@ for (j = 0; j < t; j++) {
 			}
 		else {
 			Warning ("%s: Polygon model (%d) out of range (valid range = 0 - %d).",
-						szLevelName, i, gameData.models.nPolyModels - 1);
+						szLevel, i, gameData.models.nPolyModels - 1);
 			gameData.bots.nTypes [0] = nBotTypeSave;
 			gameData.bots.nJoints = nBotJointSave;
 			gameData.models.nPolyModels = nPolyModelSave;
@@ -348,7 +348,7 @@ for (j = 0; j < t; j++) {
 		}
 	else if ((i < 0) || (i >= MAX_OBJ_BITMAPS)) {
 		Warning ("%s: Object bitmap number (%d) out of range (valid range = 0 - %d).",
-					szLevelName, i, MAX_OBJ_BITMAPS - 1);
+					szLevel, i, MAX_OBJ_BITMAPS - 1);
 		gameData.bots.nTypes [0] = nBotTypeSave;
 		gameData.bots.nJoints = nBotJointSave;
 		gameData.models.nPolyModels = nPolyModelSave;
@@ -361,7 +361,7 @@ for (j = 0; j < t; j++) {
 	i = cf.ReadInt ();		//read objbitmapptr number
 	if ((i < 0) || (i >= MAX_OBJ_BITMAPS)) {
 		Warning ("%s: Object bitmap pointer (%d) out of range (valid range = 0 - %d).",
-					szLevelName, i, MAX_OBJ_BITMAPS - 1);
+					szLevel, i, MAX_OBJ_BITMAPS - 1);
 		gameData.bots.nTypes [0] = nBotTypeSave;
 		gameData.bots.nJoints = nBotJointSave;
 		gameData.models.nPolyModels = nPolyModelSave;
