@@ -1255,10 +1255,11 @@ for (nObjIdx = 0; nObjIdx < nObjects; nObjIdx++) {
 #if DBG
 	for (i = 0; i < aiP->nPathLength; i++)
 		gameData.ai.routeSegs [nFreeIndex + i] = gameData.ai.routeSegs [nOldIndex + i];
+	nFreeIndex += i;
 #else
 	memmove (&gameData.ai.routeSegs [nFreeIndex], &gameData.ai.routeSegs [nOldIndex], aiP->nPathLength * sizeof (tPointSeg));
+	nFreeIndex += aiP->nPathLength;
 #endif
-	nFreeIndex += i;
 	}
 gameData.ai.freePointSegs = gameData.ai.routeSegs + nFreeIndex;
 
