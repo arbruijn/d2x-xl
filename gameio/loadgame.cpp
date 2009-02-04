@@ -709,7 +709,6 @@ FreeModTexts ();
 
 int LoadModData (char* pszLevelName, int bLoadTextures, int nStage)
 {
-	char	szFile [FILENAME_LEN];
 	int	nLoadRes = 0;
 
 // try to read mod files, and load default files if that fails
@@ -728,8 +727,7 @@ if (nStage == 0) {
 		}
 	if (*gameFolders.szModName) {
 		/*---*/PrintLog ("		trying custom robots (hxm) from mod '%s'\n", gameFolders.szModName);
-		sprintf (szFile, "%s/%s.hxm", gameFolders.szModDir [1], gameFolders.szModName);
-		LoadRobotReplacements (szFile, NULL, 0, 0);
+		LoadRobotReplacements (gameFolders.szModName, gameFolders.szModDir [1], 0, 0);
 		}
 	if (gameData.missions.nEnhancedMission) {
 		char szFile [FILENAME_LEN];
@@ -738,8 +736,6 @@ if (nStage == 0) {
 		if ((gameData.missions.nEnhancedMission < 3) || !*gameFolders.szModName)
 			nLoadRes = 0;
 		else {
-			/*---*/PrintLog ("		trying custom robots (hxm) from mod '%s'\n", gameFolders.szModName);
-			LoadRobotReplacements (gameFolders.szModName, gameFolders.szModDir [1], 0, 0);
 			sprintf (szFile, "%s.vham", gameFolders.szModName);
 			/*---*/PrintLog ("		trying custom robots (vham) from mod '%s'\n", gameFolders.szModName);
 			nLoadRes = LoadRobotExtensions (szFile, gameFolders.szModDir [1], gameData.missions.nEnhancedMission);
