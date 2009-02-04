@@ -500,9 +500,9 @@ switch (nObjType) {
 							continue;
 						bmP->GetAvgColor (&avgRGB);
 						}
-					colorP->red += (float) avgRGB.red / 255.0f;
-					colorP->green += (float) avgRGB.green / 255.0f;
-					colorP->blue += (float) avgRGB.blue / 255.0f;
+					colorP->red += (float) avgRGB.red;
+					colorP->green += (float) avgRGB.green;
+					colorP->blue += (float) avgRGB.blue;
 					j++;
 					}
 				if (j) {
