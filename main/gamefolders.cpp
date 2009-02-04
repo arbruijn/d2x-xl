@@ -158,7 +158,7 @@ for (int i = 0; i < 3; i++) {
 void GetAppFolders (void)
 {
 	int	i, j;
-	char	szDataRootDir [FILENAME_LEN], szFolder [FILENAME_LEN];
+	char	szDataRootDir [FILENAME_LEN];
 	char	*psz;
 #ifdef _WIN32
 	char	c;

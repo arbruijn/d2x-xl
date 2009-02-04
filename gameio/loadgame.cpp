@@ -719,7 +719,7 @@ if (nStage == 0) {
 		ReadHamFile ();
 		gameStates.app.bCustomData = false;
 		}
-	if (ReadSoundFile (false))
+	if (ReadSoundFile (true))
 		gameStates.app.bCustomSounds = true;
 	else if (gameStates.app.bCustomSounds) {
 		ReadSoundFile ();

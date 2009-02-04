@@ -175,7 +175,7 @@ int PageInBitmap (CBitmap *bmP, const char *bmName, int nIndex, int bD1);
 void PiggyBitmapPageOutAll(int bAll);
 #endif
 
-void LoadSounds (CFile& cf);
+void LoadSounds (CFile& cf, bool bCustom = false);
 
 //reads in a new pigfile (for new palette)
 //returns the size of all the bitmap data
@@ -215,7 +215,7 @@ CPalette* LoadD1Palette (void);
 void UseBitmapCache (CBitmap *bmP, int nSize);
 int IsAnimatedTexture (short nTexture);
 
-int SetupSounds (CFile& fpSound, int nSoundNum, int nSoundStart);
+int SetupSounds (CFile& fpSound, int nSoundNum, int nSoundStart, bool bCustom = false);
 
 int IsMacDataFile (CFile* cfP, int bD1);
 

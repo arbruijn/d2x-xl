@@ -229,7 +229,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int SetupSounds (CFile& cf, int nSoundNum, int nSoundStart)
+int SetupSounds (CFile& cf, int nSoundNum, int nSoundStart, bool bCustom)
 {
 	tPIGSoundHeader	sndh;
 	CDigiSound			sound;
@@ -245,9 +245,11 @@ memset (&sound, 0, sizeof (sound));
 #if USE_OPENAL
 memset (&sound.buffer, 0xFF, sizeof (sound.buffer));
 #endif
-gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data] = 0;
-soundNames [gameStates.app.bD1Data].Destroy ();
-soundNames [gameStates.app.bD1Data].Create (MAX_SOUND_FILES);
+if (!bCustom) {
+	gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data] = 0;
+	soundNames [gameStates.app.bD1Data].Destroy ();
+	soundNames [gameStates.app.bD1Data].Create (MAX_SOUND_FILES);
+	}
 for (i = 0; i < nSoundNum; i++) {
 	PIGSoundHeaderRead (&sndh, cf);
 	//size -= sizeof (tPIGSoundHeader);
@@ -255,8 +257,8 @@ for (i = 0; i < nSoundNum; i++) {
 	szSoundName [8] = 0;
 	if (!LoadHiresSound (&sound, szSoundName)) {
 		sound.bHires = 0;
-		sound.nLength [0] = sndh.length;
-		sound.data [0].Create (sndh.length);
+		sound.nLength [bCustom] = sndh.length;
+		sound.data [bCustom].Create (sndh.length);
 		soundOffset [gameStates.app.bD1Data][gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]] = sndh.offset + nHeaderSize + nSoundStart;
 		}
 	PiggyRegisterSound (&sound, szSoundName, 1);
@@ -266,7 +268,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int ReadSoundFile (bool bDefault)
+int ReadSoundFile (bool bCustom)
 {
 	CFile		cf;
 	int		snd_id,sndVersion;
@@ -276,16 +278,16 @@ int ReadSoundFile (bool bDefault)
 	char		szFile [FILENAME_LEN];
 	char*		pszFile, * pszFolder;
 
-if (bDefault) {
-	pszFile = DefaultSoundFile ();
-	pszFolder = gameFolders.szDataDir;
-	}
-else {
+if (bCustom) {
 	if (!*gameFolders.szModName)
 		return 0;
 	sprintf (szFile, "%s%s", gameFolders.szModName, (gameOpts->sound.digiSampleRate == SAMPLE_RATE_22K) ? ".s22" : ".s11");
 	pszFile = szFile;
 	pszFolder = gameFolders.szModDir [1];
+	}
+else {
+	pszFile = DefaultSoundFile ();
+	pszFolder = gameFolders.szDataDir;
 	}
 	
 if (!cf.Open (pszFile, pszFolder, "rb", 0))
@@ -303,8 +305,8 @@ nSoundNum = cf.ReadInt ();
 nSoundStart = cf.Tell ();
 size = cf.Length () - nSoundStart;
 length = size;
-SetupSounds (cf, nSoundNum, nSoundStart);
-LoadSounds (cf);
+SetupSounds (cf, nSoundNum, nSoundStart, bCustom);
+LoadSounds (cf, bCustom);
 cf.Close ();
 return 1;
 }
@@ -358,16 +360,15 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void LoadSounds (CFile& cf)
+void LoadSounds (CFile& cf, bool bCustom)
 {
-	int			i, j;
-	CDigiSound*	soundP = gameData.pig.sound.soundP.Buffer ();
+	int	i, j;
 
-for (i = 0, j = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]; i < j; i++, soundP++) {
+for (i = 0, j = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]; i < j; i++) {
 	if (soundOffset [gameStates.app.bD1Data][i] > 0) {
 		if (PiggySoundIsNeeded (i)) {
 			cf.Seek (soundOffset [gameStates.app.bD1Data][i], SEEK_SET);
-			soundP->data [0].Read (cf, soundP->nLength [0]);
+			gameData.pig.sound.soundP [i].data [bCustom].Read (cf, gameData.pig.sound.soundP [i].nLength [bCustom]);
 #if USE_OPENAL
 			PiggyBufferSound (soundP);
 #endif
