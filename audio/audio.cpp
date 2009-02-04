@@ -246,9 +246,9 @@ int CAudioChannel::Resample (CDigiSound *soundP, int bD1Sound, int bMP3)
 {
 	int		h = 0, i, k, l;
 	ushort	*ps, *ph;
-	ubyte		*dataP = soundP->data [soundP->bDTX].Buffer ();
+	ubyte		*dataP = soundP->data [soundP->bCustom].Buffer ();
 
-i = soundP->nLength [soundP->bDTX];
+i = soundP->nLength [soundP->bCustom];
 #if SDL_MIXER_CHANNELS == 2
 l = 2 * i;
 if (bD1Sound)
@@ -373,10 +373,10 @@ int CAudioChannel::Speedup (CDigiSound *soundP, int speed)
 	int	h, i, j, l;
 	ubyte	*pDest, *pSrc;
 
-l = FixMulDiv (m_info.bResampled ? m_info.nLength : soundP->nLength [soundP->bDTX], speed, I2X (1));
+l = FixMulDiv (m_info.bResampled ? m_info.nLength : soundP->nLength [soundP->bCustom], speed, I2X (1));
 if (!(pDest = new ubyte [l]))
 	return -1;
-pSrc = m_info.bResampled ? m_info.sample.Buffer () : soundP->data [soundP->bDTX].Buffer ();
+pSrc = m_info.bResampled ? m_info.sample.Buffer () : soundP->data [soundP->bCustom].Buffer ();
 for (h = i = j = 0; i < l; i++) {
 	pDest [j] = pSrc [i];
 	h += speed;
@@ -507,7 +507,7 @@ if (pszWAV && *pszWAV)
 		m_info.nLength = l;
 		}
 	else {
-		m_info.sample.SetBuffer (soundP->data [soundP->bDTX].Buffer (), 1, m_info.nLength = soundP->nLength [soundP->bDTX]);
+		m_info.sample.SetBuffer (soundP->data [soundP->bCustom].Buffer (), 1, m_info.nLength = soundP->nLength [soundP->bCustom]);
 		}
 	if (nSpeed < I2X (1))
 		Speedup (soundP, nSpeed);

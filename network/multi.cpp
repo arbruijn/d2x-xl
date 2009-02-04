@@ -4684,10 +4684,10 @@ void MultiQuickSoundHack (int nSound)
 	ubyte			*dataP;
 
 nSound = audio.XlatSound ((short) nSound);
-l = soundP->nLength [soundP->bDTX];
+l = soundP->nLength [soundP->bCustom];
 if (reversedSound.data [0].Create (l)) {
 	reversedSound.nLength [0] = l;
-	dataP = soundP->data [soundP->bDTX] + l;
+	dataP = soundP->data [soundP->bCustom] + l;
 	for (i = 0, j = l; i < l; i++)
 		reversedSound.data [0][i] = *(--dataP);
 	bSoundHacked = 1;

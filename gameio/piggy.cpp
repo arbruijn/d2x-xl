@@ -955,9 +955,9 @@ for (i = 0; i < 2; i++) {
 			dsP->data [0].Destroy ();
 			dsP->bHires = 0;
 			}
-		else if (dsP->bDTX) {
+		else if (dsP->bCustom) {
 			dsP->data [1].Destroy ();
-			dsP->bDTX = 0;
+			dsP->bCustom = 0;
 			}
 	gameData.pig.sound.data [i].Destroy ();
 	bitmapNames [i].Destroy ();

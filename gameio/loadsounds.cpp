@@ -132,9 +132,9 @@ void FreeSoundReplacements (void)
 PrintLog ("unloading custom sounds\n");
 for (i = 0; i < 2; i++)
 	for (j = 0, dsP = gameData.pig.sound.sounds [i].Buffer (); j < MAX_SOUND_FILES; j++, dsP++)
-		if (dsP->bDTX) {
+		if (dsP->bCustom) {
 			dsP->data [1].Destroy ();
-			dsP->bDTX = 0;
+			dsP->bCustom = 0;
 			}
 }
 
@@ -190,7 +190,7 @@ for (i = b11K ? 0 : nSounds / 2; i < nSounds; i++) {
 		dsP->data [1].Destroy ();
 		return -1;
 		}
-	dsP->bDTX = 1;
+	dsP->bCustom = 1;
 	dsP->nLength [1] = l;
 	}
 cf.Close ();
@@ -261,7 +261,9 @@ for (i = 0; i < nSoundNum; i++) {
 		sound.data [bCustom].Create (sndh.length);
 		soundOffset [gameStates.app.bD1Data][gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]] = sndh.offset + nHeaderSize + nSoundStart;
 		}
-	PiggyRegisterSound (&sound, szSoundName, 1);
+	sound.bCustom = bCustom;
+	if (!bCustom)
+		PiggyRegisterSound (&sound, szSoundName, 1);
 	}
 return 1;
 }

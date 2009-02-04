@@ -64,7 +64,7 @@ typedef SAMPLE
 class CDigiSound {
 	public:
 		ubyte			bHires;
-		ubyte			bDTX;
+		ubyte			bCustom;
 		int			nLength [2];
 		CByteArray	data [2];
 #if USE_OPENAL
@@ -73,7 +73,7 @@ class CDigiSound {
 
 	public:
 		CDigiSound () { 
-			bHires = bDTX = 0; 
+			bHires = bCustom = 0; 
 			nLength [0] = nLength [1] = 0; 
 		}
 	};
