@@ -851,7 +851,8 @@ if (m_info.weaponBoxStates [nWeaponType] == WS_FADING_OUT) {
 	}
 else if (m_info.weaponBoxStates [nWeaponType] == WS_FADING_IN) {
 	DrawWeaponInfo (nWeaponType, nWeaponId, LOCALPLAYER.laserLevel);
-	if (nWeaponId != m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType]) {
+	if ((m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] >= 0) &&
+		 (nWeaponId != m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType])) {
 		m_info.weaponBoxStates [nWeaponType] = WS_FADING_OUT;
 		}
 	else {
