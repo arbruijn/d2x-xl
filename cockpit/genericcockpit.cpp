@@ -944,7 +944,7 @@ if (m_info.weaponBoxUser [0] == WBU_WEAPON) {
 	}
 else if (m_info.weaponBoxUser [0] == WBU_STATIC)
 	DrawStatic (0);
-#if 0
+
 if (m_info.weaponBoxUser [1] == WBU_WEAPON) {
 	if (DrawWeaponDisplay (1, gameData.weapons.nSecondary) && (m_info.weaponBoxStates [1] == WS_SET) &&
 		 (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != m_history [gameStates.render.vr.nCurrentPage].ammo [1])) {
@@ -957,7 +957,6 @@ if (m_info.weaponBoxUser [1] == WBU_WEAPON) {
 	}
 else if (m_info.weaponBoxUser [1] == WBU_STATIC)
 	DrawStatic (1);
-#endif
 }
 
 //	-----------------------------------------------------------------------------
