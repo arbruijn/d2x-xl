@@ -337,6 +337,13 @@ int CBitmap::AvgColor (tRgbColorf* colorP)
 	CPalette		*palette;
 	ubyte			*bufP;
 	
+#if DBG
+if (m_info.nId == 1114)
+	m_info.nId = m_info.nId;
+#endif
+m_info.avgColor.red = 
+m_info.avgColor.green =
+m_info.avgColor.blue = 0;
 if (!(bufP = Buffer ()))
 	return -1;
 if (gameData.pig.tex.bitmapP.IsElement (this))

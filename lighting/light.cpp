@@ -477,17 +477,22 @@ switch (nObjType) {
 			tVideoClip *vcP = gameData.eff.vClips [0] + objP->info.nId;
 			fix		xLight = vcP->lightValue;
 			int		i, j;
-			CBitmap	*bmP = gameData.pig.tex.bitmapP [vcP->frames [0].index].Override (-1);
+			CBitmap	*bmoP, *bmP; // = gameData.pig.tex.bitmapP [vcP->frames [0].index].Override (-1);
+#if 0
 			if (bmP) {
 				bmP->GetAvgColor (colorP);
 				*pbGotColor = 1;
 				}
-			else {
+			else 
+#endif
+				{
 				colorP->red =
 				colorP->green =
 				colorP->blue = 0.0f;
 				for (i = j = 0; i < vcP->nFrameCount; i++) {
-					bmP = gameData.pig.tex.bitmaps [0] + vcP->frames [i].index;
+					bmP = gameData.pig.tex.bitmapP + vcP->frames [i].index;
+					if (bmoP = bmP->HasOverride ())
+						bmP = bmoP;
 					tRgbaColorf avgRGB;
 					bmP->GetAvgColor (&avgRGB);
 					if (avgRGB.red + avgRGB.green + avgRGB.blue == 0) {
