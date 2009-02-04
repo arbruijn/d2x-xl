@@ -463,15 +463,15 @@ return  t;
 
 // ----------------------------------------------------------------------------
 
-size_t CFile::Read (void *buf, size_t elsize, size_t nelem) 
+size_t CFile::Read (void *buf, size_t elSize, size_t nElems) 
 {
-uint i, size = (int) (elsize * nelem);
+uint i, size = (int) (elSize * nElems);
 
-if (!m_cf.file || (m_cf.size < 1)) 
+if (!m_cf.file || (m_cf.size < 1) || !size) 
 	return 0;
 i = (int) fread (buf, 1, size, m_cf.file);
 m_cf.rawPosition += i;
-return i / elsize;
+return i / elSize;
 }
 
 
