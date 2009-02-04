@@ -113,8 +113,6 @@ int BMInit (void)
 {
 if (!PiggyInit ())				// This calls BMReadAll
 	Error ("Cannot open pig and/or ham file");
-/*---*/PrintLog ("   Loading sound data\n");
-PiggyReadSounds ();
 /*---*/PrintLog ("   Initializing endlevel data\n");
 InitEndLevel ();		//this is in bm_init_use_tbl (), so I gues it goes here
 return 0;

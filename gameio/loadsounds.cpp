@@ -229,12 +229,11 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int LoadSounds (CFile& cf, int nSoundNum, int nSoundStart)
+int SetupSounds (CFile& cf, int nSoundNum, int nSoundStart)
 {
 	tPIGSoundHeader	sndh;
 	CDigiSound			sound;
 	int					i;
-	int					sbytes = 0;
 	int 					nHeaderSize = nSoundNum * sizeof (tPIGSoundHeader);
 	char					szSoundName [16];
 
@@ -254,25 +253,14 @@ for (i = 0; i < nSoundNum; i++) {
 	//size -= sizeof (tPIGSoundHeader);
 	memcpy (szSoundName, sndh.name, 8);
 	szSoundName [8] = 0;
-	if (LoadHiresSound (&sound, szSoundName)) 
-		sbytes += sound.nLength [0];
-	else {
+	if (!LoadHiresSound (&sound, szSoundName)) {
 		sound.bHires = 0;
 		sound.nLength [0] = sndh.length;
-		sound.data [0].Create (sndh.offset + nHeaderSize + nSoundStart);
+		sound.data [0].Create (sndh.length);
 		soundOffset [gameStates.app.bD1Data][gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]] = sndh.offset + nHeaderSize + nSoundStart;
-		sbytes += sndh.length;
 		}
 	PiggyRegisterSound (&sound, szSoundName, 1);
 	}
-if (!(gameData.pig.sound.data [gameStates.app.bD1Data].Create (sbytes + 16))) {
-	Error ("Not enough memory to load sounds\n");
-	return 0;
-	}
-#if TRACE			
-console.printf (CON_VERBOSE, "\nBitmapNum: %d KB   Sounds [gameStates.app.bD1Data]: %d KB\n", 
-				bitmapCacheSize / 1024, sbytes / 1024);
-#endif
 return 1;
 }
 
@@ -315,8 +303,8 @@ nSoundNum = cf.ReadInt ();
 nSoundStart = cf.Tell ();
 size = cf.Length () - nSoundStart;
 length = size;
-//	PiggyReadSounds ();
-LoadSounds (cf, nSoundNum, nSoundStart);
+SetupSounds (cf, nSoundNum, nSoundStart);
+LoadSounds (cf);
 cf.Close ();
 return 1;
 }
@@ -325,6 +313,9 @@ return 1;
 
 int PiggySoundIsNeeded (int nSound)
 {
+#if 1
+return 1;
+#else
 	int i;
 
 if (!gameStates.sound.audio.bLoMem)
@@ -334,6 +325,7 @@ for (i = 0; i < MAX_SOUNDS; i++) {
 		return 1;
 	}
 return 0;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -366,37 +358,22 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void PiggyReadSounds (void)
+void LoadSounds (CFile& cf)
 {
-	CFile			cf;
-	ubyte			*ptr;
-	int			i, j, sbytes;
+	int			i, j;
 	CDigiSound*	soundP = gameData.pig.sound.soundP.Buffer ();
 
-ptr = gameData.pig.sound.data [gameStates.app.bD1Data].Buffer ();
-sbytes = 0;
-if (!cf.Open (gameStates.app.bD1Mission ? "descent.pig" : DefaultSoundFile (), gameFolders.szDataDir, "rb", 0))
-	return;
 for (i = 0, j = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]; i < j; i++, soundP++) {
 	if (soundOffset [gameStates.app.bD1Data][i] > 0) {
 		if (PiggySoundIsNeeded (i)) {
 			cf.Seek (soundOffset [gameStates.app.bD1Data][i], SEEK_SET);
-			soundP->data [0].SetBuffer (ptr, true, soundP->nLength [0]);
-			ptr += soundP->nLength [0];
-			sbytes += soundP->nLength [0];
 			soundP->data [0].Read (cf, soundP->nLength [0]);
 #if USE_OPENAL
 			PiggyBufferSound (soundP);
 #endif
 			}
-		else
-			soundP->data [0].SetBuffer (reinterpret_cast<ubyte*> (-1), 1);
 		}
 	}
-cf.Close ();
-#if TRACE			
-	console.printf (CON_VERBOSE, "\nActual Sound usage: %d KB\n", sbytes/1024);
-#endif
 }
 
 //------------------------------------------------------------------------------

@@ -447,7 +447,7 @@ if (gameData.pig.tex.nHamFileVersion < 3) {
 	int nSoundNum = cf.ReadInt ();
 	int nSoundStart = cf.Tell ();
 /*---*/PrintLog ("      Loading %d sounds\n", nSoundNum);
-	LoadSounds (cf, nSoundNum, nSoundStart);
+	SetupSounds (cf, nSoundNum, nSoundStart);
 	}
 cf.Close ();
 /*---*/PrintLog ("      Looking for Descent 1 data files\n");
@@ -765,8 +765,8 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && !gameStates.app.b
 	gameStates.app.bD1Data = 1;
 	SetDataVersion (1);
 	if (!bHaveD1Sounds) {
-		LoadSounds (cfPiggy [1], nSoundNum, nBmHdrOffs + nBitmapNum * PIGBITMAPHEADER_D1_SIZE);
-		PiggyReadSounds ();
+		SetupSounds (cfPiggy [1], nSoundNum, nBmHdrOffs + nBitmapNum * PIGBITMAPHEADER_D1_SIZE);
+		LoadSounds (cfPiggy [1]);
 		bHaveD1Sounds = 1;
 		}
 	cfPiggy [1].Seek (nBmHdrOffs, SEEK_SET);
