@@ -605,7 +605,7 @@ void CGenericCockpit::DrawAmmoInfo (int x, int y, int ammoCount, int bPrimary)
 	int	w;
 	char	szAmmo [16];
 
-	static int nIdAmmo [2][2] = {{0, 0},{0, 0}};
+	static int nIdAmmo [2] = {0, 0};
 
 w = (m_info.fontWidth * (bPrimary ? 7 : 5)) / 2;
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
@@ -613,9 +613,7 @@ CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
 fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 sprintf (szAmmo, "%03d", ammoCount);
 Convert1s (szAmmo);
-nIdAmmo [bPrimary][0] = PrintF (&nIdAmmo [bPrimary][0], x, y, szAmmo);
-//OglDrawFilledRect (ScaleX (x), ScaleY (y), ScaleX (x+w), ScaleY (y + m_info.fontHeight));
-nIdAmmo [bPrimary][1] = PrintF (&nIdAmmo [bPrimary][1], x, y, szAmmo);
+nIdAmmo [bPrimary] = PrintF (&nIdAmmo [bPrimary], x, y, szAmmo);
 }
 
 //	-----------------------------------------------------------------------------
@@ -832,18 +830,22 @@ if ((m_info.weaponBoxStates [nWeaponType] == WS_SET) &&
 	}
 
 if (m_info.weaponBoxStates [nWeaponType] == WS_FADING_OUT) {
-	DrawWeaponInfo (nWeaponType, 
-						 m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType], 
-						 m_history [gameStates.render.vr.nCurrentPage].laserLevel);
-	m_history [gameStates.render.vr.nCurrentPage].ammo [nWeaponType] = -1;
-	m_history [gameStates.render.vr.nCurrentPage].xOmegaCharge = -1;
-	m_info.weaponBoxFadeValues [nWeaponType] -= gameData.time.xFrame * FADE_SCALE;
+	if (m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] < 0)
+		m_info.weaponBoxFadeValues [nWeaponType] = 0;
+	else {
+		DrawWeaponInfo (nWeaponType, 
+							 m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType], 
+							 m_history [gameStates.render.vr.nCurrentPage].laserLevel);
+		m_history [gameStates.render.vr.nCurrentPage].ammo [nWeaponType] = -1;
+		m_history [gameStates.render.vr.nCurrentPage].xOmegaCharge = -1;
+		m_info.weaponBoxFadeValues [nWeaponType] -= gameData.time.xFrame * FADE_SCALE;
+		}
 	if (m_info.weaponBoxFadeValues [nWeaponType] <= 0) {
 		m_info.weaponBoxStates [nWeaponType] = WS_FADING_IN;
-		m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] = 
-		m_history [!gameStates.render.vr.nCurrentPage].weapon [nWeaponType] = nWeaponId;
-		m_history [gameStates.render.vr.nCurrentPage].laserLevel = 
-		m_history [!gameStates.render.vr.nCurrentPage].laserLevel = LOCALPLAYER.laserLevel;
+		m_history [0].weapon [nWeaponType] = 
+		m_history [1].weapon [nWeaponType] = nWeaponId;
+		m_history [0].laserLevel = 
+		m_history [1].laserLevel = LOCALPLAYER.laserLevel;
 		m_info.weaponBoxFadeValues [nWeaponType] = 0;
 		}
 	}
@@ -940,7 +942,7 @@ if (m_info.weaponBoxUser [0] == WBU_WEAPON) {
 	}
 else if (m_info.weaponBoxUser [0] == WBU_STATIC)
 	DrawStatic (0);
-
+#if 0
 if (m_info.weaponBoxUser [1] == WBU_WEAPON) {
 	if (DrawWeaponDisplay (1, gameData.weapons.nSecondary) && (m_info.weaponBoxStates [1] == WS_SET) &&
 		 (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != m_history [gameStates.render.vr.nCurrentPage].ammo [1])) {
@@ -953,6 +955,7 @@ if (m_info.weaponBoxUser [1] == WBU_WEAPON) {
 	}
 else if (m_info.weaponBoxUser [1] == WBU_STATIC)
 	DrawStatic (1);
+#endif
 }
 
 //	-----------------------------------------------------------------------------
