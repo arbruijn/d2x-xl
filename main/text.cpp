@@ -2656,7 +2656,7 @@ void LoadModTexts (void)
 	int	i, l, nLine;
 
 FreeModTexts ();
-sprintf (szFile, "%s.txt", gameFolders.szModDir [1]);
+sprintf (szFile, "%s/%s.txt", gameFolders.szModDir [1], gameFolders.szModName);
 if (!cf.Open (szFile, "", "rt", 0))
 	return;
 for (nLine = 0; cf.GetS (szText, sizeof (szText)); nLine++) {

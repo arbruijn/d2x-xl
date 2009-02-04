@@ -737,7 +737,7 @@ void CGenericCockpit::DrawWeaponInfo (int nWeaponType, int nIndex, tGaugeBox* bo
 	char		szName [100], *p;
 	int		i, color;
 
-	static int nIdWeapon [3] = {0, 0, 0}, nIdLaser [2] = {0, 0};
+	static int nIdWeapon [2][3] = {{0, 0, 0},{0, 0, 0}}, nIdLaser [2] = {0, 0};
 
 i = ((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) 
 	 ? gameData.weapons.info [nIndex].hiresPicture.index 
@@ -754,11 +754,11 @@ fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 if ((p = const_cast<char*> (strchr (pszName, '\n')))) {
 	memcpy (szName, pszName, i = p - pszName);
 	szName [i] = '\0';
-	nIdWeapon [0] = PrintF (&nIdWeapon [0], xText, yText, szName);
-	nIdWeapon [1] = PrintF (&nIdWeapon [1], xText, yText + m_info.fontHeight + 1, p + 1);
+	nIdWeapon [nWeaponType][0] = PrintF (&nIdWeapon [nWeaponType][0], xText, yText, szName);
+	nIdWeapon [nWeaponType][1] = PrintF (&nIdWeapon [nWeaponType][1], xText, yText + m_info.fontHeight + 1, p + 1);
 	}
 else {
-	nIdWeapon [2] = PrintF (&nIdWeapon [2], xText, yText, pszName);
+	nIdWeapon [nWeaponType][2] = PrintF (&nIdWeapon [nWeaponType][2], xText, yText, pszName);
 	}
 
 //	For laser, show level and quadness
@@ -768,7 +768,7 @@ if (nIndex == LASER_ID || nIndex == SUPERLASER_ID) {
 	nIdLaser [0] = PrintF (&nIdLaser [0], xText, yText + m_info.nLineSpacing, szName);
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) {
 		strcpy (szName, TXT_QUAD);
-		nIdLaser [1] = PrintF (&nIdLaser [1], xText, yText + 2 * m_info.nLineSpacing, szName);
+		nIdLaser [nWeaponType] = PrintF (&nIdLaser [nWeaponType], xText, yText + 2 * m_info.nLineSpacing, szName);
 		}
 	}
 }
