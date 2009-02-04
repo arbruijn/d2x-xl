@@ -856,6 +856,7 @@ else if (m_info.weaponBoxStates [nWeaponType] == WS_FADING_IN) {
 		m_info.weaponBoxStates [nWeaponType] = WS_FADING_OUT;
 		}
 	else {
+		m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] = nWeaponId;
 		m_history [gameStates.render.vr.nCurrentPage].ammo [nWeaponType] = -1;
 		m_history [gameStates.render.vr.nCurrentPage].xOmegaCharge = -1;
 		m_info.weaponBoxFadeValues [nWeaponType] += gameData.time.xFrame * FADE_SCALE;
