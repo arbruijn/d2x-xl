@@ -338,9 +338,9 @@ int CBitmap::AvgColor (tRgbColorf* colorP, bool bForce)
 	ubyte			*bufP;
 
 if (!bForce && (m_info.avgColor.red || m_info.avgColor.green || m_info.avgColor.blue))
-	return;
+	return 0;
 if (m_info.nBPP > 1)
-	return;
+	return 0;
 m_info.avgColor.red = 
 m_info.avgColor.green =
 m_info.avgColor.blue = 0;

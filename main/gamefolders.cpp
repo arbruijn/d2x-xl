@@ -98,11 +98,11 @@ void MakeTexSubFolders (char* pszParentFolder)
 {
 	static char *szTexSubFolders [] = {"256", "128", "64"};
 
-	char	szTemp [FILENAME_LEN];
+	char	szFolder [FILENAME_LEN];
 
 for (int i = 0; i < 3; i++) {
-	sprintf (szTemp, "%s/%s", pszParentFolder, szTexSubFolders [i]);
-	CFile::MkDir (szTemp);
+	sprintf (szFolder, "%s/%s", pszParentFolder, szTexSubFolders [i]);
+	CFile::MkDir (szFolder);
 	}
 }
 
@@ -135,6 +135,7 @@ for (int i = 0; i < 3; i++) {
 #	define	TEXTUREDIR_D1	"Textures/D1"
 #	define	CACHEDIR			"Cache"
 #	define	CACHEDIR			"Mods"
+#	define	DOWNLOADDIR		"Downloads"
 #else
 #	define	DATADIR			"data"
 #	define	SHADERDIR		"shaders"
@@ -151,12 +152,13 @@ for (int i = 0; i < 3; i++) {
 #	define	TEXTUREDIR_D1	"textures/d1"
 #	define	CACHEDIR			"cache"
 #	define	MODDIR			"mods"
+#	define	DOWNLOADDIR		"downloads"
 #endif
 
 void GetAppFolders (void)
 {
 	int	i, j;
-	char	szDataRootDir [FILENAME_LEN];
+	char	szDataRootDir [FILENAME_LEN], szFolder [FILENAME_LEN];
 	char	*psz;
 #ifdef _WIN32
 	char	c;
@@ -312,6 +314,8 @@ sprintf (gameFolders.szMissionDir, "%s/%s", gameFolders.szGameDir, BASE_MISSION_
 for (i = 0; i < 2; i++)
 	MakeTexSubFolders (gameFolders.szTextureCacheDir [i]);
 MakeTexSubFolders (gameFolders.szModelCacheDir [0]);
+sprintf (gameFolders.szMissionDownloadDir, "%s/%s", gameFolders.szMissionDir, DOWNLOADDIR);
+CFile::MkDir (gameFolders.szMissionDownloadDir);
 }
 
 // ----------------------------------------------------------------------------
