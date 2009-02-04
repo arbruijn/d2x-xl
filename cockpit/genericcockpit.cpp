@@ -821,12 +821,9 @@ else {
 //returns true if drew picture
 int CGenericCockpit::DrawWeaponDisplay (int nWeaponType, int nWeaponId)
 {
-	int bLaserLevelChanged;
-
-//CCanvas::SetCurrent (&gameStates.render.vr.buffers.render [0]);
-bLaserLevelChanged = ((nWeaponType == 0) &&
-								(nWeaponId == LASER_INDEX) &&
-								((LOCALPLAYER.laserLevel != m_history [gameStates.render.vr.nCurrentPage].laserLevel)));
+int bLaserLevelChanged = ((nWeaponType == 0) &&
+								  (nWeaponId == LASER_INDEX) &&
+								  ((LOCALPLAYER.laserLevel != m_history [gameStates.render.vr.nCurrentPage].laserLevel)));
 
 if ((m_info.weaponBoxStates [nWeaponType] == WS_SET) &&
 	 ((nWeaponId != m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType]) || bLaserLevelChanged)) {

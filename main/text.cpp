@@ -2626,17 +2626,40 @@ return pszTexts;
 
 //------------------------------------------------------------------------------
 
+void SetupText (char* ph, const char* pszFile, int nLine)
+{
+char *pi, *pj;
+
+for (pi = pj = ph; *pi; pi++, pj++) {
+	if (*pi != '\\') 
+		*pj = *pi;
+	else {
+		if (*++pi == 'n') 
+			*pj = '\n';
+		else if (*pi == 't') 
+			*pj = '\t';
+		else if (*pi == '\\') 
+			*pj = '\\';
+		else
+			PrintLog ("Unsupported key sequence <\\%c> on line %d of file <%s>", *pi, nLine, pszFile);
+		}
+	}
+*pj = 0;
+}
+
+//------------------------------------------------------------------------------
+
 void LoadModTexts (void)
 {
 	CFile	cf;
 	char	szFile [FILENAME_LEN], szText [200], *p;
-	int	i, l;
+	int	i, l, nLine;
 
 FreeModTexts ();
 sprintf (szFile, "%s.txt", gameFolders.szModDir [1]);
 if (!cf.Open (szFile, "", "rt", 0))
 	return;
-while (cf.GetS (szText, sizeof (szText))) {
+for (nLine = 0; cf.GetS (szText, sizeof (szText)); nLine++) {
 	for (p = szText; *p && isspace (*p); p++)
 		;
 	i = atoi (p);
@@ -2650,6 +2673,7 @@ while (cf.GetS (szText, sizeof (szText))) {
 	if (!(d2GameTexts [i][1] = new char [l + 1]))
 		break;
 	memcpy (d2GameTexts [i][1], p, l + 1);
+	SetupText (d2GameTexts [i][1], szFile, nLine);
 	}
 }
 
@@ -2794,9 +2818,7 @@ else {
 
 j = BASE_TEXT_COUNT + GameTextCount ();
 for (h = i = 0, psz = text; (i < j) && (psz - text < len); i++) {
-	char *ph, *pi, *pj;
-
-	ph = psz;
+	char *ph = psz;
 	if (!(psz = strchr (psz, '\n'))) {
 		if (i == 644) 
 			break;    /* older datafiles */
@@ -2828,21 +2850,7 @@ for (h = i = 0, psz = text; (i < j) && (psz - text < len); i++) {
 #if DUMP_TEXTS == 2
 	fprintf (fTxt, "%s\n", ph);
 #endif
-	for (pi = pj = ph; *pi; pi++, pj++) {
-		if (*pi != '\\') 
-			*pj = *pi;
-		else {
-			if (*++pi == 'n') 
-				*pj = '\n';
-			else if (*pi == 't') 
-				*pj = '\t';
-			else if (*pi == '\\') 
-				*pj = '\\';
-			else
-				Error ("Unsupported key sequence <\\%c> on line %d of file <%s>", *pi, i + 1, filename);
-			}
-		}
-	*pj = 0;
+	SetupText (ph, filename, i);
 	}
 
 if (i == 644) {
@@ -2871,11 +2879,13 @@ InitGameTexts ();
 
 const char *GAMETEXT (int _i) 
 {
-if (pszGameTexts)
+if ((_i < BASE_TEXT_COUNT) && d2GameTexts [_i][1])
+	 return d2GameTexts [_i][1] ;
+else if (pszGameTexts)
 	return pszGameTexts [_i];
 else if (_i < BASE_TEXT_COUNT)
-	return d2GameTexts [_i][1] ? d2GameTexts [_i][1] : d2GameTexts [_i][0];
-else
+	return d2GameTexts [_i][0];
+else 
 	return defaultGameTexts [_i - BASE_TEXT_COUNT][gameStates.app.bEnglish];
 }
 

@@ -40,11 +40,13 @@ const char *HELPTEXT (int _i);
 
 static inline const char *GAMETEXT (int _i) 
 {
-if (pszGameTexts)
+if ((_i < BASE_TEXT_COUNT) && d2GameTexts [_i][1])
+	 return d2GameTexts [_i][1] ;
+else if (pszGameTexts)
 	return pszGameTexts [_i];
 else if (_i < BASE_TEXT_COUNT)
-	return d2GameTexts [_i][1] ? d2GameTexts [_i][1] : d2GameTexts [_i][0];
-else
+	return d2GameTexts [_i][0];
+else 
 	return defaultGameTexts [_i - BASE_TEXT_COUNT][gameStates.app.bEnglish];
 }
 

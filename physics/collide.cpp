@@ -694,7 +694,7 @@ if (mType.physInfo.velocity.IsZero ()) {
 	}
 #endif
 bBlewUp = segP->CheckEffectBlowup (nHitWall, vHitPt, this, 0);
-if ((cType.laserInfo.parent.nType == OBJ_ROBOT) && ROBOTINFO (wObjP->info.nId).companion) {
+if ((cType.laserInfo.parent.nType == OBJ_ROBOT) && (wObjP->info.nId < MAX_ROBOT_TYPES) && ROBOTINFO (wObjP->info.nId).companion) {
 	bEscort = 1;
 	if (IsMultiGame) {
 		Int3 ();  // Get Jason!
