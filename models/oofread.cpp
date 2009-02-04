@@ -1559,7 +1559,6 @@ int CModel::Read (char *filename, short nModel, int bFlipV, int bCustom)
 {
 	CFile			cf;
 	char			fileId [4];
-	CModel		o;
 	int			i, nLength, nFrames, bTimed = 0;
 
 bLogOOF = (fErr != NULL) && FindArg ("-printoof");
@@ -1617,7 +1616,7 @@ while (!cf.EoF ()) {
 			break;
 
 		case 2:
-			if (!m_subModels [m_nSubModels].Read (cf, &o, bFlipV)) {
+			if (!m_subModels [m_nSubModels].Read (cf, this, bFlipV)) {
 				Destroy ();
 				return 0;
 				}
