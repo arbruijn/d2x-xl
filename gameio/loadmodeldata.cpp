@@ -212,7 +212,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int LoadRobotReplacements (const char *szLevelName, int bAddBots, int bAltModels)
+int LoadRobotReplacements (const char* szLevel, const char* szFolder, int bAddBots, int bAltModels)
 {
 	CFile			cf;
 	CPolyModel*	modelP;
@@ -221,10 +221,10 @@ int LoadRobotReplacements (const char *szLevelName, int bAddBots, int bAltModels
 					nBotJointSave = gameData.bots.nJoints, 
 					nPolyModelSave = gameData.models.nPolyModels;
 	tRobotInfo	botInfoSave;
-	char			szFilename [FILENAME_LEN];
+	char			szFile [FILENAME_LEN];
 
-CFile::ChangeFilenameExtension (szFilename, szLevelName, ".hxm");
-if (!cf.Open (szFilename, gameFolders.szDataDir, "rb", 0))		//no robot replacement file
+CFile::ChangeFilenameExtension (szFile, szLevel, ".hxm");
+if (!cf.Open (szFilename, pszFolder ? pszFolder : gameFolders.szDataDir, "rb", 0))		//no robot replacement file
 	return 0;
 t = cf.ReadInt ();			//read id "HXM!"
 if (t!= MAKE_SIG ('!','X','M','H'))

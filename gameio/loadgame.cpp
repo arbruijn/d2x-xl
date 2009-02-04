@@ -729,7 +729,7 @@ if (nStage == 0) {
 	if (*gameFolders.szModName) {
 		/*---*/PrintLog ("		trying custom robots (hxm) from mod '%s'\n", gameFolders.szModName);
 		sprintf (szFile, "%s/%s.hxm", gameFolders.szModDir [1], gameFolders.szModName);
-		LoadRobotReplacements (szFile, 0, 0);
+		LoadRobotReplacements (szFile, NULL, 0, 0);
 		}
 	if (gameData.missions.nEnhancedMission) {
 		char szFile [FILENAME_LEN];
@@ -739,8 +739,7 @@ if (nStage == 0) {
 			nLoadRes = 0;
 		else {
 			/*---*/PrintLog ("		trying custom robots (hxm) from mod '%s'\n", gameFolders.szModName);
-			sprintf (szFile, "%s/%s.hxm", gameFolders.szModDir [1], gameFolders.szModName);
-			LoadRobotReplacements (szFile, 0, 0);
+			LoadRobotReplacements (gameFolders.szModName, gameFolders.szModDir [1], 0, 0);
 			sprintf (szFile, "%s.vham", gameFolders.szModName);
 			/*---*/PrintLog ("		trying custom robots (vham) from mod '%s'\n", gameFolders.szModName);
 			nLoadRes = LoadRobotExtensions (szFile, gameFolders.szModDir [1], gameData.missions.nEnhancedMission);
@@ -781,10 +780,10 @@ else {
 		}
 
 	/*---*/PrintLog ("   loading cambot\n");
-	gameData.bots.nCamBotId = (LoadRobotReplacements ("cambot.hxm", 1, 0) > 0) ? gameData.bots.nTypes [0] - 1 : -1;
+	gameData.bots.nCamBotId = (LoadRobotReplacements ("cambot.hxm", NULL, 1, 0) > 0) ? gameData.bots.nTypes [0] - 1 : -1;
 	gameData.bots.nCamBotModel = gameData.models.nPolyModels - 1;
 	/*---*/PrintLog ("   loading replacement robots\n");
-	if (0 > LoadRobotReplacements (pszLevelName, 0, 0)) 
+	if (0 > LoadRobotReplacements (pszLevelName, NULL, 0, 0)) 
 		return -1;
 	LoadHiresModels (1);
 	/*---*/PrintLog ("   initializing cambot\n");

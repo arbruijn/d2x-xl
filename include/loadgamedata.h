@@ -98,7 +98,7 @@ void LoadTextureBrightness (const char *pszLevel, int *brightnessP);
 int LoadExitModels (void);
 int LoadRobotExtensions (const char *fname, char *folder, int nType);
 void FreeModelExtensions (void);
-int LoadRobotReplacements (const char *pszLevelName, int bAddBots, int bOnlyModels);
+int LoadRobotReplacements (const char *pszLevel, const char* pszFolder, int bAddBots, int bOnlyModels);
 int ReadHamFile (bool bDefault = true);
 int ReadSoundFile (bool bDefault = true);
 void _CDECL_ FreeObjExtensionBitmaps (void);
