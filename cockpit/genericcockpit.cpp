@@ -1757,9 +1757,11 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 
 void CGenericCockpit::UpdateLaserWeaponInfo (void)
 {
+#if 0
 if (m_history [gameStates.render.vr.nCurrentPage].weapon [0] == 0)
 	if (!(LOCALPLAYER.laserLevel > MAX_LASER_LEVEL && m_history [gameStates.render.vr.nCurrentPage].laserLevel <= MAX_LASER_LEVEL))
 		m_history [gameStates.render.vr.nCurrentPage].weapon [0] = -1;
+#endif
 }
 
 //	---------------------------------------------------------------------------------------------------------
