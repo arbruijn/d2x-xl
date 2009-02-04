@@ -1559,7 +1559,7 @@ int CModel::Read (char *filename, short nModel, int bFlipV, int bCustom)
 {
 	CFile			cf;
 	char			fileId [4];
-	int			i, nLength, nFrames, bTimed = 0;
+	int			i, nLength, nFrames, nSubModels, bTimed = 0;
 
 bLogOOF = (fErr != NULL) && FindArg ("-printoof");
 nIndent = 0;
@@ -1590,6 +1590,7 @@ if (m_nVersion >= 22) {
 	m_frameInfo.m_nLastFrame = 0;
 	}
 m_nModel = nModel;
+nSubModels = 0;
 
 while (!cf.EoF ()) {
 	char chunkId [4];
@@ -1616,11 +1617,11 @@ while (!cf.EoF ()) {
 			break;
 
 		case 2:
-			if (!m_subModels [m_nSubModels].Read (cf, this, bFlipV)) {
+			if (!m_subModels [nSubModels].Read (cf, this, bFlipV)) {
 				Destroy ();
 				return 0;
 				}
-			m_nSubModels++;
+			nSubModels++;
 			break;
 
 		case 3:
