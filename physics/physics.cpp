@@ -932,8 +932,7 @@ if (info.controlType == CT_AI) {
 	// If the ship has thrust, but the velocity is zero or the current position equals the start position
 	// stored when entering this function, it has been stopped forcefully by something, so bounce it back to
 	// avoid that the ship gets driven into the obstacle (most likely a wall, as that doesn't give in ;)
-	if (((fviResult == HIT_WALL) || (fviResult == HIT_BAD_P0)) &&
-		 !(sbd.bBoosted || bObjStopped || bBounced)) {	//Set velocity from actual movement
+	if (((fviResult == HIT_WALL) || (fviResult == HIT_BAD_P0)) && !(sbd.bBoosted || bObjStopped || bBounced)) {	//Set velocity from actual movement
 		CFixVector vMoved;
 		fix s = FixMulDiv (FixDiv (I2X (1), gameData.physics.xTime), xTimeScale, 100);
 

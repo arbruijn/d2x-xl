@@ -1230,9 +1230,8 @@ FORALL_ROBOT_OBJS (objP, nObject) {
 				aiP->nHideIndex = aiP->nHideIndex;
 #else
 				aiP->nPathLength = 0;
-			else
 #endif
-				{	
+			else {	
 				objectList [nObjects].nStart = aiP->nHideIndex;
 				objectList [nObjects++].nObject = objP->Index ();
 				}

@@ -250,10 +250,12 @@ do {
 		if (i < 0)
 			break;
 		} 
-	for (j = 0; j < 4; j++)
-		if (m [optClipShadows + j].m_value) {
-			gameOpts->render.shadows.nClip = j;
-			break;
+	if (optClipShadows >= 0) {
+		for (j = 0; j < 4; j++)
+			if (m [optClipShadows + j].m_value) {
+				gameOpts->render.shadows.nClip = j;
+				break;
+				}
 			}
 	GET_VAL (gameOpts->render.shadows.bPlayers, optPlayerShadows);
 	GET_VAL (gameOpts->render.shadows.bRobots, optRobotShadows);
