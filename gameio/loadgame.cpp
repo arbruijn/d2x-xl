@@ -661,8 +661,6 @@ void UnloadLevelData (int bRestore)
 /*---*/PrintLog ("   unloading mine rendering data\n");
 gameData.render.mine.Destroy ();
 audio.DestroyObjectSound (LOCALPLAYER.nObject);
-/*---*/PrintLog ("   stopping music\n");
-songManager.StopAll ();
 /*---*/PrintLog ("   stopping sounds\n");
 audio.StopAllSounds ();
 /*---*/PrintLog ("   reconfiguring audio\n");
@@ -1033,7 +1031,8 @@ PrintLog ("   initializing debris collision handlers\n");
 SetDebrisCollisions ();
 PrintLog ("   building sky box segment list\n");
 BuildSkyBoxSegList ();
-/*---*/PrintLog ("   allocating mine rendering data\n");
+/*---*/PrintLog ("   stopping music\n");
+songManager.StopAll ();
 if (RENDERPATH)
 	gameOpts->render.bDepthSort = 1;
 gameStates.app.bBetweenLevels = 0;

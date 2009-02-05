@@ -685,7 +685,6 @@ return 1;
 
 int CModel::Create (void *modelDataP, int bShadowData)
 {
-	short	nFaceVerts = 0;
 	int	h;
 
 Init ();
@@ -723,7 +722,7 @@ if (bShadowData) {
 		Destroy ();
 		return 0;
 		}
-	if (!(m_faceVerts.Create (nFaceVerts))) {
+	if (!(m_faceVerts.Create (m_nFaceVerts))) {
 		Destroy ();
 		return 0;
 		}	
