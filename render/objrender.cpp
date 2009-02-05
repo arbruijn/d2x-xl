@@ -919,7 +919,7 @@ switch (objP->info.renderType) {
 				nDbgObj = nDbgObj;
 #endif
 			DrawPolygonObject (objP, bDepthSort, 0);
-			if (!gameStates.render.bQueryCoronas) {
+			if (!gameStates.render.bQueryCoronas && objP->info.controlType) {
 				RenderThrusterFlames (objP);
 				if (gameStates.render.nShadowPass != 2) {
 					RenderRobotShield (objP);
