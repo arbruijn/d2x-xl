@@ -142,8 +142,8 @@ typedef struct tGameFolders {
 	char szModelDir [2][FILENAME_LEN];
 	char szModelCacheDir [2][FILENAME_LEN];
 	char szSoundDir [3][FILENAME_LEN];
-	char szTextureDir [3][FILENAME_LEN];
-	char szTextureCacheDir [3][FILENAME_LEN];
+	char szTextureDir [4][FILENAME_LEN];
+	char szTextureCacheDir [4][FILENAME_LEN];
 	char szMissionDir [FILENAME_LEN];
 	char szMissionDownloadDir [FILENAME_LEN];
 	char szConfigDir [FILENAME_LEN];

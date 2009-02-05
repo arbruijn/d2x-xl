@@ -547,9 +547,9 @@ else {
 
 //------------------------------------------------------------------------------
 
-int OpenBitmapFile (char fn [4][FILENAME_LEN], CFile* cfP)
+int OpenBitmapFile (char fn [6][FILENAME_LEN], CFile* cfP)
 {
-for (int i = 0; i < 4; i++)
+for (int i = 0; i < 6; i++)
 	if (*fn [i] && cfP->Open (fn [i], "", "rb", 0))
 		return i;
 return -1;
@@ -564,7 +564,7 @@ int PageInBitmap (CBitmap *bmP, const char *bmName, int nIndex, int bD1)
 						bRedone = 0, bTGA;
 	bool				bDefault = false;
 	CFile				cf, *cfP = &cf;
-	char				fn [4][FILENAME_LEN];
+	char				fn [6][FILENAME_LEN];
 	tTgaHeader		h;
 
 #if DBG
@@ -589,8 +589,16 @@ if (strstr (bmName, "rock313")) {
 if (gameStates.app.bNostalgia)
 	gameOpts->render.textures.bUseHires = 0;
 else {
-	MakeBitmapFilenames (bmName, gameFolders.szTextureDir [2], gameFolders.szTextureCacheDir [2], fn [1], fn [0], nShrinkFactor);
-	MakeBitmapFilenames (bmName, gameFolders.szTextureDir [bD1], gameFolders.szTextureCacheDir [bD1], fn [3], fn [2], nShrinkFactor);
+	char szLevelFolder [FILENAME_LEN];
+	if (gameData.missions.nCurrentLevel < 0)
+		sprintf (szLevelFolder, "slevel%02d", -gameData.missions.nCurrentLevel);
+	else
+		sprintf (szLevelFolder, "level%02d", gameData.missions.nCurrentLevel);
+	sprintf (gameFolders.szTextureDir [3], "%s/%s", gameFolders.szTextureDir [2], szLevelFolder);
+	sprintf (gameFolders.szTextureCacheDir [3], "%s/%s", gameFolders.szTextureCacheDir [2], szLevelFolder);
+	MakeBitmapFilenames (bmName, gameFolders.szTextureDir [3], gameFolders.szTextureCacheDir [3], fn [1], fn [0], nShrinkFactor);
+	MakeBitmapFilenames (bmName, gameFolders.szTextureDir [2], gameFolders.szTextureCacheDir [2], fn [3], fn [2], nShrinkFactor);
+	MakeBitmapFilenames (bmName, gameFolders.szTextureDir [bD1], gameFolders.szTextureCacheDir [bD1], fn [5], fn [4], nShrinkFactor);
 	}
 bTGA = 0;
 bmP->SetBPP (1);
@@ -611,6 +619,8 @@ if (*bmName && ((nIndex < 0) || IsCockpit (bmName) ||
 #endif
 	if (0 <= (nFile = OpenBitmapFile (fn, cfP))) {
 		PrintLog ("loading hires texture '%s' (quality: %d)\n", fn [nFile], min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality));
+		if (nFile < 2)	//was level specific mod folder
+		MakeTexSubFolders (gameFolders.szTextureCacheDir [3]);
 		bTGA = 1;
 		if (nIndex < 0)
 			altBmP = &gameData.pig.tex.addonBitmaps [-nIndex - 1];
