@@ -638,14 +638,13 @@ if (gameOpts->sound.bUseSDLMixer) {
 	if (fSlowDown <= 0)
 		fSlowDown = 1.0f;
 	if (gameOpts->sound.bHires == 1)
-		h = Mix_OpenAudio ((int) (SAMPLE_RATE_22K / fSlowDown), AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE);
+		h = Mix_OpenAudio (int (SAMPLE_RATE_22K / fSlowDown), AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE);
 	else if (gameOpts->sound.bHires == 2)
-		h = Mix_OpenAudio ((int) (SAMPLE_RATE_44K / fSlowDown), AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE);
+		h = Mix_OpenAudio (int (SAMPLE_RATE_44K / fSlowDown), AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE);
 	else if (songManager.MP3 ())
 		h = Mix_OpenAudio (32000, AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE * 10);
 	else 
-		h = Mix_OpenAudio ((int) (gameOpts->sound.digiSampleRate / fSlowDown), D2_SOUND_FORMAT, SDL_MIXER_CHANNELS, 
-								SOUND_BUFFER_SIZE);
+		h = Mix_OpenAudio (int (gameOpts->sound.digiSampleRate / fSlowDown), D2_SOUND_FORMAT, SDL_MIXER_CHANNELS, SOUND_BUFFER_SIZE);
 	if (h < 0) {
 		PrintLog (TXT_SDL_OPEN_AUDIO, SDL_GetError ()); PrintLog ("\n");
 		Warning (TXT_SDL_OPEN_AUDIO, SDL_GetError ());
