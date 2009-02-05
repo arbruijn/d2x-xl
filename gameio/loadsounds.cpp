@@ -94,19 +94,21 @@ memset (gameData.pig.sound.sounds, 0, sizeof (gameData.pig.sound.sounds));
 
 //------------------------------------------------------------------------------
 
-int PiggyRegisterSound (CDigiSound *soundP, char *szFileName, int nInFile)
+int PiggyRegisterSound (CDigiSound *soundP, char *szFileName, int nInFile, bool bCustom)
 {
 	int i = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data];
 
-Assert (i < MAX_SOUND_FILES);
-strncpy (sounds [gameStates.app.bD1Data][i].name, szFileName, 12);
-soundNames [gameStates.app.bD1Data].Insert (sounds [gameStates.app.bD1Data][i].name, i);
 gameData.pig.sound.soundP [i] = *soundP;
-if (!nInFile)
-	soundOffset [gameStates.app.bD1Data][i] = 0;
-if (!nInFile)
-	nSoundFilesNew++;
-(gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data])++;
+if (!bCustom) {
+	Assert (i < MAX_SOUND_FILES);
+	strncpy (sounds [gameStates.app.bD1Data][i].name, szFileName, 12);
+	soundNames [gameStates.app.bD1Data].Insert (sounds [gameStates.app.bD1Data][i].name, i);
+	if (!nInFile) {
+		soundOffset [gameStates.app.bD1Data][i] = 0;
+		nSoundFilesNew++;
+		}
+	(gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data])++;
+	}
 return i;
 }
 
@@ -262,8 +264,7 @@ for (i = 0; i < nSoundNum; i++) {
 		soundOffset [gameStates.app.bD1Data][gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]] = sndh.offset + nHeaderSize + nSoundStart;
 		}
 	sound.bCustom = bCustom;
-	if (!bCustom)
-		PiggyRegisterSound (&sound, szSoundName, 1);
+	PiggyRegisterSound (&sound, szSoundName, 1, bCustom);
 	}
 return 1;
 }

@@ -155,7 +155,7 @@ void PiggyInitPigFile (char *filename);
 void _CDECL_ PiggyClose(void);
 void PiggyDumpAll (void);
 tBitmapIndex PiggyRegisterBitmap( CBitmap * bmp, const char * name, int in_file );
-int PiggyRegisterSound (CDigiSound * snd, char * name, int in_file );
+int PiggyRegisterSound (CDigiSound * snd, char * name, int in_file, bool bCustom = false);
 tBitmapIndex PiggyFindBitmap (const char * name, int bD1Data );
 int PiggyFindSound (const char * name);
 int LoadSoundReplacements (const char *pszFileName);
