@@ -558,6 +558,7 @@ m_litFaces = po->m_litFaces + po->m_litFaces.ToS ();
 for (i = m_nFaces, pf = m_faces; i; i--, pf++) {
 	if (pf->m_bFacingLight) {
 		po->m_litFaces.Push (pf);
+		m_nLitFaces++;
 		}
 	}
 return 1;
