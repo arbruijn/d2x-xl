@@ -311,24 +311,24 @@ class CArray : public CQuickSort < _T > {
 
 		inline void SetWrap (bool bWrap) { m_data.bWrap = bWrap; }
 
-		inline void SortAscending (int left = 0, int right = 0) { 
+		inline void SortAscending (int left = 0, int right = -1) { 
 			if (m_data.buffer) 
-				CQuickSort<_T>::SortAscending (m_data.buffer, left, right ? right : m_data.length - 1); 
+				CQuickSort<_T>::SortAscending (m_data.buffer, left, (right >= 0) ? right : m_data.length - 1); 
 				}
 
-		inline void SortDescending (int left = 0, int right = 0) {
+		inline void SortDescending (int left = 0, int right = -1) {
 			if (m_data.buffer) 
-				CQuickSort<_T>::SortDescending (m_data.buffer, left, right ? right : m_data.length - 1);
+				CQuickSort<_T>::SortDescending (m_data.buffer, left, (right >= 0) ? right : m_data.length - 1);
 			}
 #ifdef _WIN32
-		inline void SortAscending (comparator compare, int left = 0, int right = 0) {
+		inline void SortAscending (comparator compare, int left = 0, int right = -1) {
 			if (m_data.buffer) 
-				CQuickSort<_T>::SortAscending (m_data.buffer, left, right ? right : m_data.length - 1, compare);
+				CQuickSort<_T>::SortAscending (m_data.buffer, left, (right >= 0) ? right : m_data.length - 1, compare);
 			}
 
-		inline void SortDescending (comparator compare, int left = 0, int right = 0) {
+		inline void SortDescending (comparator compare, int left = 0, int right = -1) {
 			if (m_data.buffer) 
-				CQuickSort<_T>::SortDescending (m_data.buffer, left, right ? right : m_data.length - 1, compare);
+				CQuickSort<_T>::SortDescending (m_data.buffer, left, (right >= 0) ? right : m_data.length - 1, compare);
 			}
 #endif
 	};

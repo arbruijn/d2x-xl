@@ -1233,32 +1233,35 @@ FORALL_ROBOT_OBJS (objP, nObject) {
 #endif
 			else {	
 				objectList [nObjects].nStart = aiP->nHideIndex;
-				objectList [nObjects++].nObject = objP->Index ();
+				objectList [nObjects].nObject = objP->Index ();
+				nObjects++;
 				}
 			}
 		}
 	}
 
-objectList.SortAscending (0, nObjects - 1);
-
-for (nObjIdx = 0; nObjIdx < nObjects; nObjIdx++) {
-	nObject = objectList [nObjIdx].nObject;
-	objP = OBJECTS + nObject;
-	aiP = &objP->cType.aiInfo;
+if (nObjects > 0) {
+	if (nObjects > 1) 
+		objectList.SortAscending (0, nObjects - 1);
+	for (nObjIdx = 0; nObjIdx < nObjects; nObjIdx++) {
+		nObject = objectList [nObjIdx].nObject;
+		objP = OBJECTS + nObject;
+		aiP = &objP->cType.aiInfo;
 #if DBG
-	if (aiP->nHideIndex < 0)
-		aiP->nHideIndex = aiP->nHideIndex;
+		if (aiP->nHideIndex < 0)
+			aiP->nHideIndex = aiP->nHideIndex;
 #endif
-	nOldIndex = aiP->nHideIndex;
-	aiP->nHideIndex = nFreeIndex;
+		nOldIndex = aiP->nHideIndex;
+		aiP->nHideIndex = nFreeIndex;
 #if DBG
-	for (i = 0; i < aiP->nPathLength; i++)
-		gameData.ai.routeSegs [nFreeIndex + i] = gameData.ai.routeSegs [nOldIndex + i];
-	nFreeIndex += i;
+		for (i = 0; i < aiP->nPathLength; i++)
+			gameData.ai.routeSegs [nFreeIndex + i] = gameData.ai.routeSegs [nOldIndex + i];
+		nFreeIndex += i;
 #else
-	memmove (&gameData.ai.routeSegs [nFreeIndex], &gameData.ai.routeSegs [nOldIndex], aiP->nPathLength * sizeof (tPointSeg));
-	nFreeIndex += aiP->nPathLength;
+		memmove (&gameData.ai.routeSegs [nFreeIndex], &gameData.ai.routeSegs [nOldIndex], aiP->nPathLength * sizeof (tPointSeg));
+		nFreeIndex += aiP->nPathLength;
 #endif
+		}
 	}
 gameData.ai.freePointSegs = gameData.ai.routeSegs + nFreeIndex;
 
