@@ -165,6 +165,8 @@ int GetAppFolder (const char *szRootDir, char *szFolder, const char *szName, con
 
 char *GameDataFilename (char *pszFilename, const char *pszExt, int nLevel, int nType);
 
+void MakeTexSubFolders (char* pszParentFolder);
+
 #ifdef _WIN32
 char *UnicodeToAsc (char *str, const wchar_t *w_str);
 wchar_t *AscToUnicode (wchar_t *w_str, const char *str);
