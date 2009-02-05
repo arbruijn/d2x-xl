@@ -27,7 +27,8 @@
 //end changes by adb
 #define SOUND_BUFFER_SIZE 512
 
-#define D2_SOUND_FORMAT	AUDIO_U8	//AUDIO_S16LSB
+#define D2_SOUND_FORMAT	AUDIO_S16LSB
+//#define D2_SOUND_FORMAT	AUDIO_U8	
 
 /* This table is used to add two sound values together and pin
  * the value to avoid overflow.  (used with permission from ARDI)
@@ -305,7 +306,9 @@ for (;;) {
 		}
 	else {
 #if D2_SOUND_FORMAT == AUDIO_S16LSB
-		*(--ps) = ((nSound + 1) << 7) - 1;
+		nSound = ((nSound + 1) << 7) - 1;
+		*(--ps) = nSound;
+		*(--ps) = nSound;
 #else
 		*(--ps) = nSound | (nSound << 8);
 #endif
