@@ -812,6 +812,10 @@ if ((gameStates.render.nShadowPass != 2) &&
 	PROF_END(ptRenderObjects)
 	return 0;
 	}
+#if DBG
+if (nObject == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
 if (nObject != LOCALPLAYER.nObject) {
 	if (objP == gameData.objs.viewerP)
 		return 0;

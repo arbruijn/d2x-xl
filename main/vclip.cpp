@@ -260,12 +260,13 @@ objP->info.position.mOrient = CFixMatrix::Create(a);
 objP->mType.physInfo.mass = I2X (1);
 objP->mType.physInfo.drag = 512;
 #endif
-objP->mType.physInfo.rotVel[Z] =
-objP->mType.physInfo.rotVel[Y] = 0;
-objP->mType.physInfo.rotVel[X] = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
+objP->mType.physInfo.rotVel [Z] =
+objP->mType.physInfo.rotVel [Y] = 0;
+objP->mType.physInfo.rotVel [X] = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
 //objP->info.controlType = CT_WEAPON;
 objP->info.renderType = RT_POLYOBJ;
 objP->info.movementType = MT_PHYSICS;
+objP->info.controlType = CT_NONE;
 objP->mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
 if (0 > (objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->info.nId].nModel))
 	objP->rType.polyObjInfo.nModel = nModel;
