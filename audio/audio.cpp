@@ -244,8 +244,8 @@ if (m_info.bResampled) {
 
 int CAudioChannel::Resample (CDigiSound *soundP, int bD1Sound, int bMP3)
 {
-	int		h = 0, i, k, l;
-	ushort	*ps, *ph;
+	int		i, k, l;
+	ushort	*ps, *ph, nSound;
 	ubyte		*dataP = soundP->data [soundP->bCustom].Buffer ();
 
 i = soundP->nLength [soundP->bCustom];
@@ -283,57 +283,55 @@ ps = reinterpret_cast<ushort*> (reinterpret_cast<ubyte*> (ph) + l);
 k = 0;
 for (;;) {
 	if (i) 
-		h = dataP [--i];
+		nSound = ushort (dataP [--i]);
 	if (bMP3) { //get as close to 32.000 Hz as possible
 		if (k < 700)
-			h <<= k / 100;
+			nSound <<= k / 100;
 		else if (i < 700)
-			h <<= i / 100;
+			nSound <<= i / 100;
 		else
-			h = (h - 1) << 8;
-		*(--ps) = (ushort) h;
+			nSound = (nSound - 1) << 8;
+		*(--ps) = nSound;
 		if (ps <= ph)
 			break;
-		*(--ps) = (ushort) h;
+		*(--ps) = nSound;
 		if (ps <= ph)
 			break;
 		if (++k % 11) {
-			*(--ps) = (ushort) h;
+			*(--ps) = nSound;
 			if (ps <= ph)
 				break;
 			}
 		}
 	else {
 #if D2_SOUND_FORMAT == AUDIO_S16LSB
-		h = (((h + 1) << 7) - 1);
-		*(--ps) = (ushort) h;
+		*(--ps) = ((nSound + 1) << 7) - 1;
 #else
-		h |= h << 8;
+		*(--ps) = nSound | (nSound << 8);
 #endif
-		*(--ps) = (ushort) h;
 		if (ps <= ph)
 			break;
 		}
 	if (bD1Sound) {
 		if (bMP3) {
-			*(--ps) = (ushort) h;
+			*(--ps) = nSound;
 			if (ps <= ph)
 				break;
-			*(--ps) = (ushort) h;
+			*(--ps) = nSound;
 			if (ps <= ph)
 				break;
 			if (k % 11) {
-				*(--ps) = (ushort) h;
+				*(--ps) = nSound;
 				if (ps <= ph)
 					break;
 				}
 			}
 		else {
 #if D2_SOUND_FORMAT == AUDIO_S16LSB
-			*(--ps) = (ushort) h;
+			*(--ps) = nSound;
 #endif
 #if SDL_MIXER_CHANNELS == 2
-			*(--ps) = (ushort) h;
+			*(--ps) = nSound;
 			if (ps <= ph)
 				break;
 #endif
