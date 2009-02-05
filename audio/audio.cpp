@@ -279,7 +279,7 @@ if (!m_info.sample.Create (l))
 	return -1;
 m_info.bResampled = 1;
 ph = reinterpret_cast<ushort*> (m_info.sample.Buffer ());
-ps = reinterpret_cast<ushort*> (m_info.sample.Buffer () + l);
+ps = reinterpret_cast<ushort*> (reinterpret_cast<ubyte*> (ph) + l);
 k = 0;
 for (;;) {
 	if (i) 
