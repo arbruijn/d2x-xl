@@ -169,13 +169,13 @@ if (!gameStates.app.bDemoData) {
 //process this powerup for this frame
 void CObject::DoPowerupFrame (void)
 {
+	int	i = OBJ_IDX (this);
 //if (gameStates.app.tick40fps.bTick) 
+if (info.renderType != RT_POLYOBJ) {
 	tVClipInfo	*vciP = &rType.vClipInfo;
 	tVideoClip	*vcP = (vciP->nClipIndex < 0) ? NULL : gameData.eff.vClips [0] + vciP->nClipIndex;
-	int			i = OBJ_IDX (this);
-
-if (info.renderType != RT_POLYOBJ)
 	UpdatePowerupClip (vcP, vciP, i);
+	}
 if (info.xLifeLeft <= 0) {
 	/*Object*/CreateExplosion (info.nSegment, info.position.vPos, I2X (7) / 2, VCLIP_POWERUP_DISAPPEARANCE);
 	if (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].nSound > -1)

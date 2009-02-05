@@ -243,7 +243,7 @@ objP->info.movementType = MT_PHYSICS;
 int ConvertVClipToPolymodel (CObject *objP)
 {
 	CAngleVector	a;
-	short			nModel;
+	short				nModel;
 
 if (gameStates.app.bNostalgia || !gameOpts->render.powerups.b3D)
 	return 0;
@@ -266,7 +266,6 @@ objP->mType.physInfo.rotVel [X] = gameOpts->render.powerups.nSpin ? I2X (1) / (5
 //objP->info.controlType = CT_WEAPON;
 objP->info.renderType = RT_POLYOBJ;
 objP->info.movementType = MT_PHYSICS;
-objP->info.controlType = CT_NONE;
 objP->mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
 if (0 > (objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->info.nId].nModel))
 	objP->rType.polyObjInfo.nModel = nModel;

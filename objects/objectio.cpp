@@ -52,10 +52,202 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "marker.h"
 #include "hiresmodels.h"
 #include "loadgame.h"
+#include "gamesave.h"
 #include "multi.h"
 #ifdef TACTILE
 #	include "tactile.h"
 #endif
+
+//------------------------------------------------------------------------------
+
+void CObject::Read (CFile& cf)
+{
+#if DBG
+if (OBJ_IDX (this) == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
+info.nType = cf.ReadByte ();
+info.nId = cf.ReadByte ();
+info.controlType = cf.ReadByte ();
+info.movementType = cf.ReadByte ();
+info.renderType = cf.ReadByte ();
+info.nFlags = cf.ReadByte ();
+info.nSegment = cf.ReadShort ();
+info.nAttachedObj = -1;
+cf.ReadVector (info.position.vPos);
+cf.ReadMatrix (info.position.mOrient);
+info.xSize = cf.ReadFix ();
+info.xShields = cf.ReadFix ();
+cf.ReadVector (info.vLastPos);
+info.contains.nType = cf.ReadByte ();
+info.contains.nId = cf.ReadByte ();
+info.contains.nCount = cf.ReadByte ();
+switch (info.movementType) {
+	case MT_PHYSICS:
+		cf.ReadVector (mType.physInfo.velocity);
+		cf.ReadVector (mType.physInfo.thrust);
+		mType.physInfo.mass = cf.ReadFix ();
+		mType.physInfo.drag = cf.ReadFix ();
+		mType.physInfo.brakes = cf.ReadFix ();
+		cf.ReadVector (mType.physInfo.rotVel);
+		cf.ReadVector (mType.physInfo.rotThrust);
+		mType.physInfo.turnRoll	= cf.ReadFixAng ();
+		mType.physInfo.flags	= cf.ReadShort ();
+		break;
+
+	case MT_SPINNING:
+		cf.ReadVector (mType.spinRate);
+		break;
+
+	case MT_NONE:
+		break;
+
+	default:
+		Int3();
+	}
+
+int i;
+
+switch (info.controlType) {
+	case CT_AI: 
+		cType.aiInfo.behavior = cf.ReadByte ();
+		for (i = 0; i < MAX_AI_FLAGS; i++)
+			cType.aiInfo.flags [i] = cf.ReadByte ();
+		cType.aiInfo.nHideSegment = cf.ReadShort ();
+		cType.aiInfo.nHideIndex = cf.ReadShort ();
+		cType.aiInfo.nPathLength = cf.ReadShort ();
+		cType.aiInfo.nCurPathIndex = (char) cf.ReadShort ();
+		if (gameTopFileInfo.fileinfoVersion <= 25) {
+			cf.ReadShort ();	//				cType.aiInfo.follow_path_start_seg	= 
+			cf.ReadShort ();	//				cType.aiInfo.follow_path_end_seg		= 
+			}
+		break;
+
+	case CT_EXPLOSION:
+		cType.explInfo.nSpawnTime = cf.ReadFix ();
+		cType.explInfo.nDeleteTime	= cf.ReadFix ();
+		cType.explInfo.nDeleteObj = cf.ReadShort ();
+		cType.explInfo.attached.nNext = cType.explInfo.attached.nPrev = cType.explInfo.attached.nParent = -1;
+		break;
+
+	case CT_WEAPON: //do I really need to read these?  Are they even saved to disk?
+		cType.laserInfo.parent.nType = cf.ReadShort ();
+		cType.laserInfo.parent.nObject = cf.ReadShort ();
+		cType.laserInfo.parent.nSignature = cf.ReadInt ();
+		break;
+
+	case CT_LIGHT:
+		cType.lightInfo.intensity = cf.ReadFix ();
+		break;
+
+	case CT_POWERUP:
+		if (gameTopFileInfo.fileinfoVersion >= 25)
+			cType.powerupInfo.nCount = cf.ReadInt ();
+		else
+			cType.powerupInfo.nCount = 1;
+		if (info.nId == POW_VULCAN)
+			cType.powerupInfo.nCount = VULCAN_WEAPON_AMMO_AMOUNT;
+		else if (info.nId == POW_GAUSS)
+			cType.powerupInfo.nCount = VULCAN_WEAPON_AMMO_AMOUNT;
+		else if (info.nId == POW_OMEGA)
+			cType.powerupInfo.nCount = MAX_OMEGA_CHARGE;
+		break;
+
+	case CT_NONE:
+	case CT_FLYING:
+	case CT_DEBRIS:
+		break;
+
+	case CT_SLEW:		//the CPlayerData is generally saved as slew
+		break;
+
+	case CT_CNTRLCEN:
+		break;
+
+	case CT_MORPH:
+	case CT_FLYTHROUGH:
+	case CT_REPAIRCEN:
+		default:
+		Int3();
+	}
+
+switch (info.renderType) {
+	case RT_NONE:
+		break;
+
+	case RT_MORPH:
+	case RT_POLYOBJ: {
+		rType.polyObjInfo.nModel = cf.ReadInt ();
+		for (int i = 0; i <MAX_SUBMODELS; i++)
+			cf.ReadAngVec(rType.polyObjInfo.animAngles [i]);
+		rType.polyObjInfo.nSubObjFlags = cf.ReadInt ();
+		int tmo = cf.ReadInt ();
+		rType.polyObjInfo.nTexOverride = tmo;
+		rType.polyObjInfo.nAltTextures = 0;
+		break;
+		}
+
+	case RT_WEAPON_VCLIP:
+	case RT_HOSTAGE:
+	case RT_POWERUP:
+	case RT_FIREBALL:
+		rType.vClipInfo.nClipIndex	= cf.ReadInt ();
+		rType.vClipInfo.xFrameTime	= cf.ReadFix ();
+		rType.vClipInfo.nCurFrame	= cf.ReadByte ();
+		break;
+
+	case RT_THRUSTER:
+	case RT_LASER:
+		break;
+
+	case RT_SMOKE:
+		rType.particleInfo.nLife = cf.ReadInt ();
+		rType.particleInfo.nSize [0] = cf.ReadInt ();
+		rType.particleInfo.nParts = cf.ReadInt ();
+		rType.particleInfo.nSpeed = cf.ReadInt ();
+		rType.particleInfo.nDrift = cf.ReadInt ();
+		rType.particleInfo.nBrightness = cf.ReadInt ();
+		rType.particleInfo.color.red = cf.ReadByte ();
+		rType.particleInfo.color.green = cf.ReadByte ();
+		rType.particleInfo.color.blue = cf.ReadByte ();
+		rType.particleInfo.color.alpha = cf.ReadByte ();
+		rType.particleInfo.nSide = cf.ReadByte ();
+		if (gameData.segs.nLevelVersion < 18)
+			rType.particleInfo.nType = 0;
+		else
+			rType.particleInfo.nType = cf.ReadByte ();
+		break;
+
+	case RT_LIGHTNING:
+		rType.lightningInfo.nLife = cf.ReadInt ();
+		rType.lightningInfo.nDelay = cf.ReadInt ();
+		rType.lightningInfo.nLength = cf.ReadInt ();
+		rType.lightningInfo.nAmplitude = cf.ReadInt ();
+		rType.lightningInfo.nOffset = cf.ReadInt ();
+		rType.lightningInfo.nLightnings = cf.ReadShort ();
+		rType.lightningInfo.nId = cf.ReadShort ();
+		rType.lightningInfo.nTarget = cf.ReadShort ();
+		rType.lightningInfo.nNodes = cf.ReadShort ();
+		rType.lightningInfo.nChildren = cf.ReadShort ();
+		rType.lightningInfo.nSteps = cf.ReadShort ();
+		rType.lightningInfo.nAngle = cf.ReadByte ();
+		rType.lightningInfo.nStyle = cf.ReadByte ();
+		rType.lightningInfo.nSmoothe = cf.ReadByte ();
+		rType.lightningInfo.bClamp = cf.ReadByte ();
+		rType.lightningInfo.bPlasma = cf.ReadByte ();
+		rType.lightningInfo.bSound = cf.ReadByte ();
+		rType.lightningInfo.bRandom = cf.ReadByte ();
+		rType.lightningInfo.bInPlane = cf.ReadByte ();
+		rType.lightningInfo.color.red = cf.ReadByte ();
+		rType.lightningInfo.color.green = cf.ReadByte ();
+		rType.lightningInfo.color.blue = cf.ReadByte ();
+		rType.lightningInfo.color.alpha = cf.ReadByte ();
+		break;
+
+	default:
+		Int3();
+	}
+}
 
 //------------------------------------------------------------------------------
 
