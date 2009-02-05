@@ -574,7 +574,7 @@ void CModel::CalcCenters (void)
 
 for (i = m_nSubModels; i; i--, pso++)
 	for (j = pso->m_nFaces, pf = pso->m_faces; j; j--, pf++)
-		pf->m_vCenterf = pf->CalcCenterf (this);
+		pf->m_vCenter = pf->CalcCenter (this);
 }
 
 //------------------------------------------------------------------------------
@@ -852,7 +852,7 @@ else {
 #endif
 nClip = gameOpts->render.shadows.nClip ? po->m_fClipDist.Buffer () ? gameOpts->render.shadows.nClip : 1 : 0;
 fClipDist = (nClip >= 2) ? m_fClipDist : fInf;
-glVertexPointer (3, GL_FLOAT, 0, v);
+glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), v);
 for (i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
 	pf = *ppf;
 	paf = po->m_adjFaces + pf->m_nAdjFaces;

@@ -1032,7 +1032,7 @@ SetDebrisCollisions ();
 PrintLog ("   building sky box segment list\n");
 BuildSkyBoxSegList ();
 /*---*/PrintLog ("   stopping music\n");
-songManager.StopAll ();
+//songManager.StopAll ();
 if (RENDERPATH)
 	gameOpts->render.bDepthSort = 1;
 gameStates.app.bBetweenLevels = 0;
