@@ -558,6 +558,7 @@ m_litFaces = po->m_litFaces + po->m_litFaces.ToS ();
 for (i = m_nFaces, pf = m_faces; i; i--, pf++) {
 	if (pf->m_bFacingLight) {
 		po->m_litFaces.Push (pf);
+		m_nLitFaces++;
 		}
 	}
 return 1;
@@ -757,9 +758,9 @@ else {
 
 //------------------------------------------------------------------------------
 
-void G3RenderShadowVolumeFace (CFloatVector *pv)
+void G3RenderShadowVolumeFace (CFloatVector3* pv)
 {
-	CFloatVector	v [4];
+	CFloatVector3	v [4];
 
 memcpy (v, pv, 2 * sizeof (CFloatVector));
 v [3] = v [0] - gameData.render.shadows.vLightPos;
@@ -784,9 +785,9 @@ glDrawArrays (GL_QUADS, 0, 4);
 
 //------------------------------------------------------------------------------
 
-void G3RenderFarShadowCapFace (CFloatVector *pv, int nVerts)
+void G3RenderFarShadowCapFace (CFloatVector3* pv, int nVerts)
 {
-	CFloatVector	v0, v1;
+	CFloatVector3	v0, v1;
 
 #if DBG_SHADOWS
 if (bShadowTest == 1)
@@ -818,7 +819,7 @@ glEnd ();
 
 int CSubModel::RenderShadowVolume (CModel* po, int bCullFront)
 {
-	CFloatVector*	pvf, v [4];
+	CFloatVector3*	pvf, v [4];
 	CFace*			pf, ** ppf;
 	short*			pfv, * paf;
 	short				h, i, j, n;
@@ -1433,7 +1434,7 @@ if (!gameStates.render.bShadowMaps) {
 OglActiveTexture (GL_TEXTURE0, 0);
 glDisable (GL_TEXTURE_2D);
 glEnableClientState (GL_VERTEX_ARRAY);
-pnl = lightManager.NearestSegLights  () + objP->info.nSegment * MAX_NEAREST_LIGHTS;
+pnl = lightManager.NearestSegLights () + objP->info.nSegment * MAX_NEAREST_LIGHTS;
 gameData.render.shadows.nLight = 0;
 if (FAST_SHADOWS) {
 	for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {

@@ -52,6 +52,7 @@ m_litFaces.Destroy ();
 m_adjFaces.Destroy ();
 m_faceVerts.Destroy ();
 m_vertMap.Destroy ();
+Init ();
 }
 
 //------------------------------------------------------------------------------
