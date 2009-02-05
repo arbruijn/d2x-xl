@@ -259,8 +259,8 @@ for (i = 0, soundP = &gameData.pig.sound.soundP [0]; i < nSoundNum; i++, soundP+
 		soundP->data [bCustom].Create (sndh.length);
 		soundOffset [gameStates.app.bD1Data][gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]] = sndh.offset + nHeaderSize + nSoundStart;
 		}
-	soundP->bCustom = bCustom;
-	PiggyRegisterSound (szSoundName, 1, bCustom);
+	if (!(soundP->bCustom = bCustom))
+		PiggyRegisterSound (szSoundName, 1, bCustom);
 	}
 return 1;
 }
