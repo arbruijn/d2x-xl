@@ -314,6 +314,7 @@ for (i = 0; i < 2; i++) {
 
 		RP (gameStates.render.bShowFrameRate, 0, 0);
 		RP (gameStates.render.bShowTime, 0, 1);
+		RP (gameOpts->render.cockpit.bWideDisplays, 0, 1);
 		RP (gameStates.sound.audio.nMaxChannels, 0, 128);
 		RP (gameStates.render.cockpit.nType, 0, 0);
 		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
@@ -531,6 +532,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.cockpit.bScaleGauges, i, 0);
 		RP (gameOptions [i].render.cockpit.bSplitHUDMsgs, i, 0);
 		RP (gameOptions [i].render.cockpit.bTextGauges, i, 0);
+		RP (gameOptions [i].render.cockpit.bWideDisplays, i, !i);
 		RP (gameOptions [i].render.cockpit.nWindowPos, i, 0);
 		RP (gameOptions [i].render.cockpit.nWindowSize, i, 0);
 		RP (gameOptions [i].render.cockpit.nWindowZoom, i, 0);
