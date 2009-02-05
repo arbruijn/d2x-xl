@@ -82,31 +82,31 @@ inline int operator- (CSubModel* o, CArray<CSubModel>& a) { return a.Index (o); 
 
 class CModel {
 	public:
-		CArray<CSubModel>			m_subModels;
-		short							m_nSubModels;
-		short							m_nVerts;
-		short							m_nFaces;
-		short							m_nFaceVerts;
-		short							m_nLitFaces;
-		short							m_nAdjFaces;
-		CArray<CFixVector>		m_verts;
-		CArray<CFloatVector3>	m_vertsf;
-		CArray<float>				m_fClipDist;
-		CArray<ubyte>				m_vertFlags;
-		CArray<g3sNormal>			m_vertNorms;
-		CFixVector					m_vCenter;
-		CArray<CFixVector>		m_rotVerts;
-		CArray<CFace>				m_faces;
-		CStack<CFace*>				m_litFaces;
-		CArray<short>				m_adjFaces;
-		CArray<short>				m_faceVerts;
-		CArray<short>				m_vertMap;
-		short							m_iSubObj;
-		short							m_iVert;
-		short							m_iFace;
-		short							m_iFaceVert;
-		char							m_nState;
-		ubyte							m_nVertFlag;
+		CArray<CSubModel>		m_subModels;
+		short						m_nSubModels;
+		short						m_nVerts;
+		short						m_nFaces;
+		short						m_nFaceVerts;
+		short						m_nLitFaces;
+		short						m_nAdjFaces;
+		CArray<CFixVector>	m_verts;
+		CArray<CFloatVector>	m_vertsf;
+		CArray<float>			m_fClipDist;
+		CArray<ubyte>			m_vertFlags;
+		CArray<g3sNormal>		m_vertNorms;
+		CFixVector				m_vCenter;
+		CArray<CFixVector>	m_rotVerts;
+		CArray<CFace>			m_faces;
+		CStack<CFace*>			m_litFaces;
+		CArray<short>			m_adjFaces;
+		CArray<short>			m_faceVerts;
+		CArray<short>			m_vertMap;
+		short						m_iSubObj;
+		short						m_iVert;
+		short						m_iFace;
+		short						m_iFaceVert;
+		char						m_nState;
+		ubyte						m_nVertFlag;
 
 	public:
 		CModel () { Init (); }

@@ -1340,7 +1340,7 @@ class CShadowData {
 		short					nShadowMaps;
 		CCamera				shadowMaps [MAX_SHADOW_MAPS];
 		CObject				lightSource;
-		CFloatVector		vLightPos;
+		CFloatVector3		vLightPos;
 		CFixVector			vLightDir [MAX_SHADOW_LIGHTS];
 		CArray<short>		objLights;
 		ubyte					nFrame;	//flipflop for testing whether a light source's view has been rendered the current frame
