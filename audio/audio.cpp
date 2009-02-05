@@ -249,6 +249,8 @@ int CAudioChannel::Resample (CDigiSound *soundP, int bD1Sound, int bMP3)
 	ushort	*ps, *ph, nSound;
 	ubyte		*dataP = soundP->data [soundP->bCustom].Buffer ();
 
+if (soundP->bCustom)
+	soundP->bCustom = soundP->bCustom;
 i = soundP->nLength [soundP->bCustom];
 #if SDL_MIXER_CHANNELS == 2
 l = 2 * i;

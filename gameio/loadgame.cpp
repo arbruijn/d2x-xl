@@ -719,12 +719,16 @@ if (nStage == 0) {
 		ReadHamFile ();
 		gameStates.app.bCustomData = false;
 		}
+#if 1
+	ReadSoundFile (true);
+#else
 	if (ReadSoundFile (true))
 		gameStates.app.bCustomSounds = true;
 	else if (gameStates.app.bCustomSounds) {
 		ReadSoundFile ();
 		gameStates.app.bCustomSounds = false;
 		}
+#endif
 	if (*gameFolders.szModName) {
 		/*---*/PrintLog ("		trying custom robots (hxm) from mod '%s'\n", gameFolders.szModName);
 		LoadRobotReplacements (gameFolders.szModName, gameFolders.szModDir [1], 0, 0);
