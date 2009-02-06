@@ -227,7 +227,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int SetupSounds (CFile& cf, int nSoundNum, int nSoundStart, bool bCustom, bool bHaveLowRes)
+int SetupSounds (CFile& cf, int nSoundNum, int nSoundStart, bool bCustom, bool bUseLowRes)
 {
 	tPIGSoundHeader	sndh;
 	CDigiSound*			soundP;
@@ -252,15 +252,14 @@ if (!bCustom) {
 	}
 for (i = 0; i < nSoundNum; i++) {
 	PIGSoundHeaderRead (&sndh, cf);
-	//size -= sizeof (tPIGSoundHeader);
 	memcpy (szSoundName, sndh.name, 8);
 	szSoundName [8] = 0;
 	if (0 > (j = bCustom ? PiggyFindSound (szSoundName) : i))
 		continue;
 	soundP = &gameData.pig.sound.soundP [j];
-	if (!(bCustom && bHaveLowRes) && LoadHiresSound (soundP, szSoundName))
+	if (!bUseLowRes && LoadHiresSound (soundP, szSoundName))
 		nSounds [1]++;
-	else if (bHaveLowRes) {
+	else {
 		soundP->bHires = 0;
 		soundP->nLength [0] = sndh.length;
 		soundP->data [0].Create (sndh.length);
@@ -347,9 +346,8 @@ int ReadSoundFile (bool bCustom)
 	CFile		cf;
 	int		snd_id,sndVersion;
 	int		nSoundNum;
-	int		nSoundStart, nSounds;
-	int		size, length;
-	bool		bHaveLowRes;
+	int		nSounds;
+	bool		bUseLowRes;
 	char		szFile [FILENAME_LEN];
 	char*		pszFile, * pszFolder;
 
@@ -359,14 +357,19 @@ if (bCustom) {
 	sprintf (szFile, "%s%s", gameFolders.szModName, (gameOpts->sound.digiSampleRate == SAMPLE_RATE_22K) ? ".s22" : ".s11");
 	pszFile = szFile;
 	pszFolder = gameFolders.szModDir [1];
+	if (!(bUseLowRes = cf.Exist (pszFile, pszFolder, 0) != 0)) {
+		pszFile = DefaultSoundFile ();
+		pszFolder = gameFolders.szDataDir;
+		}
 	}
 else {
 	pszFile = DefaultSoundFile ();
 	pszFolder = gameFolders.szDataDir;
 	}
 	
+if (!cf.Open (pszFile, pszFolder, "rb", 0))
+	return 0;
 
-bHaveLowRes = !cf.Open (pszFile, pszFolder, "rb", 0);
 //make sure soundfile is valid nType file & is up-to-date
 snd_id = cf.ReadInt ();
 sndVersion = cf.ReadInt ();
@@ -374,18 +377,14 @@ if (snd_id != SNDFILE_ID || sndVersion != SNDFILE_VERSION) {
 	cf.Close ();						//out of date sound file
 	return 0;
 	}
-
 nSoundNum = cf.ReadInt ();
-nSoundStart = cf.Tell ();
-size = cf.Length () - nSoundStart;
-length = size;
-nSounds = SetupSounds (cf, nSoundNum, nSoundStart, bCustom, bHaveLowRes);
+
+nSounds = SetupSounds (cf, nSoundNum, cf.Tell (), bCustom, bUseLowRes);
 if (bCustom)
 	gameOpts->sound.bHires [0] = (nSounds & 0xffff) ? 0 : 2;
-if (bHaveLowRes) {
-	LoadSounds (cf, bCustom);
-	cf.Close ();
-	}
+
+LoadSounds (cf, bCustom);
+cf.Close ();
 return nSounds != 0;
 }
 

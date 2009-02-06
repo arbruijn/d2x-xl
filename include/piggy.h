@@ -215,7 +215,7 @@ CPalette* LoadD1Palette (void);
 void UseBitmapCache (CBitmap *bmP, int nSize);
 int IsAnimatedTexture (short nTexture);
 
-int SetupSounds (CFile& fpSound, int nSoundNum, int nSoundStart, bool bCustom = false, bool bHaveLowRes = true);
+int SetupSounds (CFile& fpSound, int nSoundNum, int nSoundStart, bool bCustom = false, bool bUseLowRes = true);
 
 int IsMacDataFile (CFile* cfP, int bD1);
 
