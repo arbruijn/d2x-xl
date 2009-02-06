@@ -571,7 +571,7 @@ void SetSoundSources (void)
 	int			nOvlTex, nEffect;
 	//int			i;
 
-gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires;
+gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires [0];
 audio.InitSounds ();		//clear old sounds
 gameStates.sound.bDontStartObjects = 1;
 for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSegment; segP++, nSegment++)
@@ -1229,7 +1229,7 @@ if (!gameStates.app.bD1Mission && CFile::Exist (SECRETB_FILENAME, gameFolders.sz
 
 	ReturningToLevelMessage ();
 	saveGameManager.Load (1, 1, 0, SECRETB_FILENAME);
-	gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires;
+	gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires [0];
 	SetDataVersion (-1);
 	gameData.weapons.nPrimary = pw_save;
 	gameData.weapons.nSecondary = sw_save;
@@ -1536,7 +1536,7 @@ gameData.fusion.xAutoFireTime = 0;
 gameData.fusion.xCharge = 0;
 gameStates.app.cheats.bRobotsFiring = 1;
 gameStates.app.cheats.bD1CheatsEnabled = 0;
-gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires;
+gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires [0];
 SetDataVersion (-1);
 }
 
@@ -1680,7 +1680,7 @@ ResetRearView ();
 gameData.fusion.xAutoFireTime = 0;
 gameData.fusion.xCharge = 0;
 gameStates.app.cheats.bRobotsFiring = 1;
-gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires;
+gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires [0];
 if (gameStates.app.bD1Mission) {
 	if (LOCALPLAYER.energy < INITIAL_ENERGY)
 		LOCALPLAYER.energy = INITIAL_ENERGY;

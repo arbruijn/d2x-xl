@@ -267,7 +267,8 @@ if ((t = FindArg ("-noredbook")))
 #if USE_SDL_MIXER
 if (gameOptions [0].sound.bUseSDLMixer) {
 	if ((t = FindArg ("-hires_sound")))
-		gameOptions [0].sound.bHires = NumArg (t, 1);
+		gameOptions [0].sound.bHires [0] =
+		gameOptions [0].sound.bHires [1] = NumArg (t, 1);
 	}
 #endif
 }
@@ -431,7 +432,7 @@ if ((t = FindArg ("-shadows")))
 if ((t = FindArg ("-hires_textures")))
 	gameOptions [0].render.textures.bUseHires = NumArg (t, 1);
 if ((t = FindArg ("-hires_models")))
-	gameOptions [0].render.bHiresModels = NumArg (t, 1);
+	gameOptions [0].render.bHiresModels [0] = NumArg (t, 1);
 if ((t = FindArg ("-render_all_segs")))
 	gameOptions [0].render.bAllSegs = NumArg (t, 1);
 if ((t = FindArg ("-enable_lightmaps")))

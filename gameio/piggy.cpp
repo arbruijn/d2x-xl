@@ -475,10 +475,12 @@ int PiggyInit (void)
 for (i = 0; i < 2; i++)
 	bitmapNames [i].Create (MAX_BITMAP_FILES);
 
+#if 0
 /*---*/PrintLog ("   Initializing sound data (%d sounds)\n", MAX_SOUND_FILES);
-for (i=0; i < MAX_SOUND_FILES; i++) {
+for (i = 0; i < MAX_SOUND_FILES; i++)
 	soundOffset [0][i] = 0;
-}
+#endif
+
 /*---*/PrintLog ("   Initializing bitmap index (%d indices)\n", MAX_BITMAP_FILES);
 for (i = 0; i < MAX_BITMAP_FILES; i++)     
 	gameData.pig.tex.bitmapXlat [i] = i;

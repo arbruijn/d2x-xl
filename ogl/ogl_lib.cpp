@@ -699,7 +699,7 @@ if (gameOpts->ogl.bObjLighting || (gameStates.render.bPerPixelLighting == 2)) {
 	glMaterialfv (GL_FRONT_AND_BACK, GL_DIFFUSE, fDiffuse);
 	if (bSpecular) {
 		glMaterialfv (GL_FRONT_AND_BACK, GL_SPECULAR, fSpecular);
-		glMateriali (GL_FRONT_AND_BACK, GL_SHININESS, (bSpecular < 0) ? 8 : gameOpts->render.bHiresModels ? 127 : 8);
+		glMateriali (GL_FRONT_AND_BACK, GL_SHININESS, (bSpecular < 0) ? 8 : gameOpts->render.bHiresModels [0] ? 127 : 8);
 		}
 	else
 		glMaterialfv (GL_FRONT_AND_BACK, GL_SPECULAR, fBlack);

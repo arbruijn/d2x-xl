@@ -856,7 +856,7 @@ void CalcShipThrusterPos (CObject *objP, CFixVector *vPos)
 {
 	tObjTransformation	*pPos = OBJPOS (objP);
 
-if (gameOpts->render.bHiresModels) {
+if (gameOpts->render.bHiresModels [0]) {
 	vPos [0] = pPos->vPos + pPos->mOrient.FVec() * (-objP->info.xSize);
 	vPos [0] += pPos->mOrient.RVec() * (-(8 * objP->info.xSize / 44));
 	vPos [1] = vPos [0] + pPos->mOrient.RVec() * (8 * objP->info.xSize / 22);
@@ -887,7 +887,7 @@ ti = *tiP;
 ti.pp = NULL;
 ti.mtP = gameData.models.thrusters + objP->rType.polyObjInfo.nModel;
 nThrusters = ti.mtP->nCount;
-if (gameOpts->render.bHiresModels && (objP->info.nType == OBJ_PLAYER) && !GetASEModel (objP->rType.polyObjInfo.nModel)) {
+if (gameOpts->render.bHiresModels [0] && (objP->info.nType == OBJ_PLAYER) && !GetASEModel (objP->rType.polyObjInfo.nModel)) {
 	if (!bSpectate) {
 		pt = gameData.render.thrusters + objP->info.nId;
 		ti.pp = pt->path.GetPoint ();

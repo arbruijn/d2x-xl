@@ -291,7 +291,7 @@ do {
 		}
 	optPowerupLights = m.AddCheck (TXT_POWERUPLIGHTS, !extraGameInfo [0].bPowerupLights, KEY_P, HTX_POWERUPLIGHTS);
 	optFlickerLights = m.AddCheck (TXT_FLICKERLIGHTS, extraGameInfo [0].bFlickerLights, KEY_F, HTX_FLICKERLIGHTS);
-	if (gameOpts->render.bHiresModels)
+	if (gameOpts->render.bHiresModels [0])
 		optBrightObjects = m.AddCheck (TXT_BRIGHT_OBJECTS, extraGameInfo [0].bBrightObjects, KEY_B, HTX_BRIGHT_OBJECTS);
 	else
 		optBrightObjects = -1;

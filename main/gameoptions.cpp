@@ -135,7 +135,8 @@ if (i) {
 	gameOptions [1].render.debug.bObjects = 1;
 	gameOptions [1].render.debug.bWalls = 1;
 	gameOptions [1].render.bUseShaders = 1;
-	gameOptions [1].render.bHiresModels = 0;
+	gameOptions [1].render.bHiresModels [0] 
+	gameOptions [1].render.bHiresModels [1] = 0;
 	gameOptions [1].render.bUseLightmaps = 0;
 	gameOptions [1].render.effects.bAutoTransparency = 0;
 	gameOptions [1].render.nMeshQuality = 0;
@@ -251,7 +252,8 @@ else {
 	gameOptions [0].render.debug.bObjects = 1;
 	gameOptions [0].render.debug.bWalls = 1;
 	gameOptions [0].render.bUseShaders = 1;
-	gameOptions [0].render.bHiresModels = 1;
+	gameOptions [0].render.bHiresModels [0] =
+	gameOptions [0].render.bHiresModels [1] = 1;
 	gameOptions [0].render.bUseLightmaps = 0;
 	gameOptions [0].render.effects.bAutoTransparency = 1;
 	gameOptions [0].render.nMathFormat = 0;
@@ -486,7 +488,8 @@ else {
 	gameOptions [0].sound.bUseSDLMixer = 0;
 #endif
 	}
-gameOptions [i].sound.bHires = 0;
+gameOptions [i].sound.bHires [0] =
+gameOptions [i].sound.bHires [1] = 0;
 gameOptions [i].sound.bShip = 0;
 gameOptions [i].sound.bMissiles = 0;
 gameOptions [i].sound.bFadeMusic = 1;

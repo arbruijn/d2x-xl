@@ -273,6 +273,8 @@ do {
 	gameData.models.modelToOOF [bCustom][replacementModels [i].nModel] = po;
 	} while ((++i < j) && !replacementModels [i].pszHires);
 gameData.models.nHiresModels++;
+if (bCustom)
+	gameOpts->render.bHiresModels [0] = 1;
 return i;
 }
 
@@ -300,6 +302,8 @@ do {
 	gameData.models.modelToASE [bCustom][replacementModels [i].nModel] = pa;
 	} while ((++i < j) && !replacementModels [i].pszHires);
 gameData.models.nHiresModels++;
+if (bCustom)
+	gameOpts->render.bHiresModels [0] = 1;
 return i;
 }
 
@@ -360,12 +364,12 @@ int ModelsGaugeSize (void)
 
 for (h = i = 0, j = sizeofa (replacementModels); i < j; i++)
 	if (replacementModels [i].pszHires) {
-		if (gameOpts->render.bHiresModels)
+		if (gameOpts->render.bHiresModels [0])
 			h++;
 		if (replacementModels [i].pszLores)
 			h++;
 		}
-return h = (gameOpts->render.bHiresModels + 1) * (sizeofa (replacementModels) - 1);
+return h = (gameOpts->render.bHiresModels [0] + 1) * (sizeofa (replacementModels) - 1);
 }
 
 //------------------------------------------------------------------------------
@@ -373,7 +377,7 @@ return h = (gameOpts->render.bHiresModels + 1) * (sizeofa (replacementModels) - 
 void LoadModelsGauge (void)
 {
 loadIdx = 0;
-loadOp = gameOpts->render.bHiresModels ? 0 : 1;
+loadOp = gameOpts->render.bHiresModels [0] ? 0 : 1;
 ProgressBar (TXT_LOADING_MODELS, 0, ModelsGaugeSize (), LoadModelsPoll); 
 }
 
@@ -386,15 +390,16 @@ if (!bCustom) {
 	gameData.models.nHiresModels = 0;
 	}
 if (gameStates.app.bNostalgia)
-	gameOpts->render.bHiresModels = 0;
-else /*if (gameOpts->render.bHiresModels)*/ {
+	gameOpts->render.bHiresModels [0] = 0;
+else /*if (gameOpts->render.bHiresModels [0])*/ {
+	gameOpts.render.bHiresModels [0] = gameOpts.render.bHiresModels [1];
 	if (!bCustom && gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 		LoadModelsGauge ();
 	else {
 		short	i = 0, j = sizeofa (replacementModels);
 		if (!bCustom)
 			ShowBoxedMessage (TXT_LOADING_MODELS);
-		if (gameOpts->render.bHiresModels) {
+		if (bCustom || gameOpts->render.bHiresModels [0]) {
 			while (i < j)
 				i = LoadHiresModel (gameData.models.nHiresModels, i, bCustom);
 			i = 0;

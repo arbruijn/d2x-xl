@@ -361,7 +361,7 @@ typedef struct tDebugRenderOptions {
 typedef struct tRenderOptions {
 	int bAllSegs;
 	int nLightingMethod;
-	int bHiresModels;
+	int bHiresModels [2];
 	int nMeshQuality;
 	int bUseLightmaps;
 	int nLightmapQuality;
@@ -498,7 +498,7 @@ typedef struct tInputOptions {
 typedef struct tSoundOptions {
 	int bUseD1Sounds;
 	int bUseRedbook;
-	int bHires;
+	int bHires [2];
 	int bUseSDLMixer;
 	int bUseOpenAL;
 	int bFadeMusic;

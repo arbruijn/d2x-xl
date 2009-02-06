@@ -66,6 +66,7 @@ class CDigiSound {
 		ubyte			bHires;
 		ubyte			bCustom;
 		int			nLength [2];
+		int			nOffset [2];
 		CByteArray	data [2];
 #if USE_OPENAL
 		ALuint		buffer;
