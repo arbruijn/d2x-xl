@@ -234,7 +234,7 @@ int SetupSounds (CFile& cf, int nSoundNum, int nSoundStart, bool bCustom)
 {
 	tPIGSoundHeader	sndh;
 	CDigiSound*			soundP;
-	int					i;
+	int					i, j;
 	int 					nHeaderSize = nSoundNum * sizeof (tPIGSoundHeader);
 	char					szSoundName [16];
 
@@ -250,11 +250,14 @@ if (!bCustom) {
 	soundNames [gameStates.app.bD1Data].Destroy ();
 	soundNames [gameStates.app.bD1Data].Create (MAX_SOUND_FILES);
 	}
-for (i = 0, soundP = &gameData.pig.sound.soundP [0]; i < nSoundNum; i++, soundP++) {
+for (i = 0; i < nSoundNum; i++) {
 	PIGSoundHeaderRead (&sndh, cf);
 	//size -= sizeof (tPIGSoundHeader);
 	memcpy (szSoundName, sndh.name, 8);
 	szSoundName [8] = 0;
+	if (0 > (j = bCustom ? PiggyFindSound (szSoundName) : i))
+		continue;
+	soundP = &gameData.pig.sound.soundP [j];
 	if (!LoadHiresSound (soundP, szSoundName, bCustom)) {
 		soundP->bHires = 0;
 		soundP->nLength [bCustom] = sndh.length;
