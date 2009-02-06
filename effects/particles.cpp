@@ -1845,6 +1845,7 @@ if (TGAMakeSquare (bmP)) {
 	}
 }
 #endif
+bmP = bmpParticle [bPointSprites][nType];
 bmP->SetFrameCount ();
 bmP->SetupTexture (0, 3, 1);
 if (nType == SMOKE_PARTICLES)
