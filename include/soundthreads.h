@@ -32,6 +32,7 @@ typedef struct tSoundThreadInfo {
 
 void StartSoundThread (void);
 void EndSoundThread (void);
+void WaitForSoundThread (void);
 int RunSoundThread (tSoundTask nTask);
 
 extern tSoundThreadInfo tiSound;
