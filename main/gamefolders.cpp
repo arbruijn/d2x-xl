@@ -326,10 +326,12 @@ CFile::MkDir (gameFolders.szMissionDownloadDir);
 
 void ResetModFolders (void)
 {
+*gameFolders.szMusicDir =
+*gameFolders.szSoundDir [2] =
 *gameFolders.szModDir [1] =
 *gameFolders.szTextureDir [2] =
 *gameFolders.szTextureCacheDir [2] =
-*gameFolders.szModelDir [1] = '\0';
+*gameFolders.szModelDir [1] = 
 *gameFolders.szModelCacheDir [1] = '\0';
 }
 

@@ -215,7 +215,11 @@ else {
 	audio.Shutdown ();
 	audio.Setup ((float) gameOpts->gameplay.nSlowMotionSpeedup / 2);
 	songManager.SetSlowDown (SDL_GetTicks ());
+#if DBG
+	songManager.SetPos (0);
+#else
 	songManager.SetPos (songManager.SlowDown () - songManager.Start ());
+#endif
 	songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1);
 	}
 }
