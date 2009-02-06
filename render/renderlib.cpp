@@ -106,10 +106,9 @@ if (!*bHaveP) {
 	char	szFilename [FILENAME_LEN];
 	CFile	cf;
 
-	if (cf.Exist (pszName, gameFolders.szTextureDir [2], 0))
-		sprintf (szFilename, "%s/%s", gameFolders.szTextureDir [2], pszName);
-	else
-		sprintf (szFilename, "%s/%s", gameFolders.szTextureDir [0], pszName);
+	sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.szTextureDir [2], pszName);
+	if (!cf.Exist (szFilename, "", 0))
+		sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.szTextureDir [0], pszName);
 	CBitmap *bmP = CreateAndReadTGA (szFilename);
 	if (!bmP)
 		*bHaveP = -1;

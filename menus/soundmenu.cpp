@@ -168,11 +168,13 @@ else {
 		if (gameConfig.nMidiVolume * menu [soundOpts.nMusicVol].m_value == 0) //=> midi gets either turned on or off
 			nKey = -2;
  		gameConfig.nMidiVolume = menu [soundOpts.nMusicVol].m_value;
-		midi.SetVolume (128 * gameConfig.nMidiVolume / 8);
-		if (gameConfig.nMidiVolume < 1)
-			midi.PlaySong (NULL, NULL, NULL, 1, 0);
+		if (gameConfig.nMidiVolume < 1) {
+			midi.PlaySong (NULL, NULL, NULL, 1, 0);	// fade out first
+			midi.SetVolume (128 * gameConfig.nMidiVolume / 8);
+			}	
 		else if (!bSongPlaying) {
 			//audio.StopAllSounds ();
+			midi.SetVolume (128 * gameConfig.nMidiVolume / 8);
 			if (gameStates.app.bGameRunning)
 				songManager.PlayLevelSong (gameData.missions.nCurrentLevel ? gameData.missions.nCurrentLevel : 1, 1);
 			else
