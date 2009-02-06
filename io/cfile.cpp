@@ -160,7 +160,7 @@ FILE *CFile::GetFileHandle (const char *filename, const char *folder, const char
 if (!*filename || (strlen (filename) + (folder ? strlen (folder) : 0) >= FILENAME_LEN)) {
 	return NULL;
 	}
-if ((*filename != '/') && (strstr (filename, "./") != filename) && *folder) {
+if ((*filename != '/') && (strstr (filename, "./") != filename) && folder && *folder) {
 	sprintf (fn, "%s/%s", folder, filename);
    pfn = fn;
 	}
