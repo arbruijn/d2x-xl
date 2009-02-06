@@ -35,12 +35,13 @@ do {
 		if (tiSound.fSlowDown == 1.0f) {
 			songManager.SetPos (songManager.SlowDown () - songManager.Start () + 
 									  2 * (SDL_GetTicks () - songManager.SlowDown ()) / gameOpts->gameplay.nSlowMotionSpeedup);
+			songManager.SetSlowDown (0);
 			}
 		else {
 			songManager.SetSlowDown (SDL_GetTicks ());
 			songManager.SetPos (songManager.SlowDown () - songManager.Start ());
 			}
-		songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1);
+		songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1, false);
 		}
 	tiSound.ti.bExec = 0;
 	} while (!tiSound.ti.bDone);

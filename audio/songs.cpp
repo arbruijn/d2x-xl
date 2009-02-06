@@ -352,7 +352,7 @@ return midi.PlaySong (szFilename, NULL, NULL, bLoop, 0);
 
 //------------------------------------------------------------------------------
 
-void CSongManager::Play (int nSong, int bLoop)
+void CSongManager::Play (int nSong, int bLoop, bool bWaitForThread)
 {
 //Assert(nSong != SONG_ENDLEVEL && nSong != SONG_ENDGAME);	//not in full version
 if (!m_info.bInitialized)
@@ -361,7 +361,8 @@ if (!m_info.bInitialized)
 if (!(redbook.Enabled () ? gameConfig.nRedbookVolume : gameConfig.nMidiVolume))
 	return;
 StopAll ();
-WaitForSoundThread ();
+if (bWaitForThread)
+	WaitForSoundThread ();
 //do we want any of these to be redbook songs?
 m_info.nCurrent = nSong;
 if (nSong == SONG_TITLE) {
@@ -395,14 +396,14 @@ if (!m_info.bPlaying) {		//not playing redbook, so play midi
 
 //------------------------------------------------------------------------------
 
-void CSongManager::PlayCurrent (int repeat)
+void CSongManager::PlayCurrent (int bLoop)
 {
-songManager.Play (m_info.nCurrent, repeat);
+songManager.Play (m_info.nCurrent, bLoop);
 }
 
 //------------------------------------------------------------------------------
 
-void CSongManager::PlayLevelSong (int nLevel, int bFromHog)
+void CSongManager::PlayLevelSong (int nLevel, int bFromHog, bool bMT)
 {
 	int	nSong;
 	int	nTracks;
@@ -414,7 +415,8 @@ if (!nLevel)
 if (!m_info.bInitialized)
 	Setup ();
 StopAll ();
-WaitForSoundThread ();
+if (!bMT)
+	WaitForSoundThread ();
 m_info.nLevel = nLevel;
 nSong = (nLevel > 0) ? nLevel - 1 : -nLevel;
 m_info.nCurrent = nSong;

@@ -114,7 +114,7 @@ class CSongManager {
 		void StopAll (void);
 		int PlayModSong (char* pszSong, int repeat);
 		void Play (int nSong, int repeat);
-		void PlayLevelSong (int nLevel, int bFromHog);
+		void PlayLevelSong (int nLevel, int bFromHog, bool bWaitForThread = true);
 		void PlayCurrent (int repeat = 0);
 		void Prev (void);
 		void Next (void);

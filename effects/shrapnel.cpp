@@ -64,9 +64,6 @@ m_info.xTTL = -1;
 
 void CShrapnel::Move (void)
 {
-if (m_info.nSmoke < 0)
-	return;
-
 	fix			xSpeed = FixDiv (m_info.xSpeed, I2X (25) / 1000);
 	CFixVector	vOffs;
 	time_t		nTicks;
@@ -89,7 +86,8 @@ for (; nTicks >= 25; nTicks -= 25) {
 	vOffs *= xSpeed;
 	m_info.vPos += vOffs;
 	}
-particleManager.SetPos (m_info.nSmoke, &m_info.vPos, NULL, -1);
+if (m_info.nSmoke >= 0)
+	particleManager.SetPos (m_info.nSmoke, &m_info.vPos, NULL, -1);
 m_info.tUpdate = gameStates.app.nSDLTicks - nTicks;
 }
 
@@ -107,8 +105,6 @@ if ((m_info.xTTL > 0) && LoadExplBlast ()) {
 
 int CShrapnel::Update (void)
 {
-if (m_info.nSmoke < 0)
-	return -1;	//dead
 if (m_info.xTTL <= 0)
 	return -1;	//dead
 Move ();
