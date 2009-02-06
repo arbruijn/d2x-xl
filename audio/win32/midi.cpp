@@ -14,7 +14,7 @@ CMidi midi;
 
 void CMidi::Init (void)
 {
-m_nVolume [0] = 255;
+m_nVolume = 255;
 m_nPaused = 0;
 m_music = NULL;
 m_hmp = NULL;
@@ -58,21 +58,21 @@ if (gameOpts->sound.bUseSDLMixer) {
 
 //------------------------------------------------------------------------------
 
-int CMidi::SetVolume (int nVolume [0])
+int CMidi::SetVolume (int nVolume)
 {
 #if (defined (_WIN32) || USE_SDL_MIXER)
-	int nLastVolume = m_nVolume [0];
+	int nLastVolume = m_nVolume;
 
-if (nVolume [0] < 0)
-	m_nVolume [0] = 0;
-else if (nVolume [0] > 127)
-	m_nVolume [0] = 127;
+if (nVolume < 0)
+	m_nVolume = 0;
+else if (nVolume > 127)
+	m_nVolume = 127;
 else
-	m_nVolume [0] = nVolume [0];
+	m_nVolume = nVolume;
 
 #	if USE_SDL_MIXER
 if (gameOpts->sound.bUseSDLMixer)
-	Mix_VolumeMusic (m_nVolume [0]);
+	Mix_VolumeMusic (m_nVolume);
 #	endif
 #	if defined (_WIN32)
 #	if USE_SDL_MIXER
@@ -82,9 +82,9 @@ if (m_hmp) {
 	int mmVolume;
 
 	// scale up from 0-127 to 0-0xffff
-	mmVolume = (m_nVolume [0] << 1) | (m_nVolume [0] & 1);
+	mmVolume = (m_nVolume << 1) | (m_nVolume & 1);
 	mmVolume |= (mmVolume << 8);
-	nVolume [0] = midiOutSetVolume ((HMIDIOUT)m_hmp->hmidi, mmVolume | (mmVolume << 16));
+	nVolume = midiOutSetVolume ((HMIDIOUT)m_hmp->hmidi, mmVolume | (mmVolume << 16));
 	}
 #	endif
 return nLastVolume;
@@ -104,7 +104,7 @@ PrintLog ("DigiPlayMidiSong (%s)\n", pszSong);
 audio.StopCurrentSong ();
 if (!(pszSong && *pszSong))
 	return 0;
-if (m_nVolume [0] < 1)
+if (m_nVolume < 1)
 	return 0;
 bCustom = ((strstr (pszSong, ".mp3") != NULL) || (strstr (pszSong, ".ogg") != NULL));
 if (!(bCustom || (m_hmp = hmp_open (pszSong, bD1Song))))
@@ -155,7 +155,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 		songManager.SetStart (SDL_GetTicks ());
 	
 	songManager.SetPlaying (1);
-	SetVolume (m_nVolume [0]);
+	SetVolume (m_nVolume);
 	return 1;
 	}
 #	endif
@@ -166,7 +166,7 @@ if (bCustom) {
 	}
 hmp_play (m_hmp, bLoop);
 songManager.SetPlaying (1);
-SetVolume (m_nVolume [0]);
+SetVolume (m_nVolume);
 #	endif
 #endif
 return 1;
