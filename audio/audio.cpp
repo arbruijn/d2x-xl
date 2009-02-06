@@ -664,8 +664,10 @@ if (gameOpts->sound.bUseSDLMixer) {
 		Warning (TXT_SDL_OPEN_AUDIO, SDL_GetError ());
 		return 1;
 		}
+#if 0
 	Mix_Resume (-1);
 	Mix_ResumeMusic ();
+#endif
 	Mix_AllocateChannels (MAX_SOUND_CHANNELS);
 	Mix_ChannelFinished (Mix_FinishChannel);
 	}

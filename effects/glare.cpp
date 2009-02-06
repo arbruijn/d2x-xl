@@ -495,7 +495,7 @@ void RenderHardGlare (CFloatVector *sprite, CFloatVector *vCenter, int nTexture,
 {
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 	tRgbaColorf	color;
-	CBitmap	*bmP;
+	CBitmap*		bmP;
 	int			i;
 
 fLight /= 4;
@@ -520,7 +520,8 @@ color.alpha *= fIntensity;
 if (color.alpha < 0.01f)
 	return;
 glEnable (GL_TEXTURE_2D);
-bmP = bAdditive ? bmpGlare : bmpCorona;
+if (!(bmP = bAdditive ? bmpGlare : bmpCorona))
+	return;
 if (bmP->Bind (1, -1))
 	return;
 bmP->Texture ()->Wrap (GL_CLAMP);
@@ -600,7 +601,8 @@ else {
 	glDepthFunc (GL_ALWAYS);
 	if (bAdditive)
 		glBlendFunc (GL_ONE, GL_ONE);
-	bmP = bAdditive ? bmpGlare : bmpCorona;
+	if (!(bmP = bAdditive ? bmpGlare : bmpCorona))
+		return;
 	}
 if (gameStates.render.bAmbientColor)
 	color = gameData.render.color.textures [nTexture].color;
