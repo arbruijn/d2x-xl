@@ -688,6 +688,7 @@ else
 		}
 	SDL_PauseAudio (0);
 	}
+SetFxVolume (m_info.nVolume);
 m_info.bInitialized =
 m_info.bAvailable = 1;
 return 0;
@@ -729,6 +730,9 @@ void CAudio::Shutdown (void)
 if (m_info.bAvailable) {
 	StopAll ();
 	songManager.StopAll ();
+	int nVolume = m_info.nVolume;
+	SetFxVolume (0);
+	m_info.nVolume = nVolume;
 	m_info.bAvailable = 0;
 	Close ();
 	}
