@@ -352,7 +352,7 @@ return midi.PlaySong (szFilename, NULL, NULL, bLoop, 0);
 
 //------------------------------------------------------------------------------
 
-void CSongManager::Play (int nSong, int bLoop, bool bWaitForThread)
+void CSongManager::Play (int nSong, int bLoop)
 {
 //Assert(nSong != SONG_ENDLEVEL && nSong != SONG_ENDGAME);	//not in full version
 if (!m_info.bInitialized)
@@ -403,7 +403,7 @@ songManager.Play (m_info.nCurrent, bLoop);
 
 //------------------------------------------------------------------------------
 
-void CSongManager::PlayLevelSong (int nLevel, int bFromHog, bool bMT)
+void CSongManager::PlayLevelSong (int nLevel, int bFromHog, bool bWaitForThread)
 {
 	int	nSong;
 	int	nTracks;
