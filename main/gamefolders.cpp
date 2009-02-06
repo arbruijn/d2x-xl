@@ -131,6 +131,7 @@ for (int i = 0; i < 3; i++) {
 #	define	MOVIEDIR			"Movies"
 #	define	SAVEDIR			"Savegames"
 #	define	DEMODIR			"Demos"
+#	define	TEXTUREDIR		"Textures"
 #	define	TEXTUREDIR_D2	"Textures"
 #	define	TEXTUREDIR_D1	"Textures/D1"
 #	define	CACHEDIR			"Cache"
@@ -149,6 +150,7 @@ for (int i = 0; i < 3; i++) {
 #	define	MOVIEDIR			"movies"
 #	define	SAVEDIR			"savegames"
 #	define	DEMODIR			"demos"
+#	define	TEXTUREDIR		"textures"
 #	define	TEXTUREDIR_D2	"textures"
 #	define	TEXTUREDIR_D1	"textures/d1"
 #	define	CACHEDIR			"cache"
@@ -338,7 +340,7 @@ void MakeModFolders (const char* pszMission)
 ResetModFolders ();
 CFile::SplitPath (pszMission, NULL, gameFolders.szModName, NULL);
 if (!GetAppFolder (gameFolders.szModDir [0], gameFolders.szModDir [1], gameFolders.szModName, "")) {
-	sprintf (gameFolders.szSoundDir [2], "%s/%s", gameFolders.szModDir [1], SOUNDDIR);
+	sprintf (gameFolders.szSoundDir [2], "%s/%s", gameFolders.szModDir [1], MUSICDIR);
 	if (!GetAppFolder (gameFolders.szModDir [1], gameFolders.szTextureDir [2], TEXTUREDIR, "*.tga")) {
 		sprintf (gameFolders.szTextureCacheDir [2], "%s/%s", gameFolders.szModDir [1], TEXTUREDIR);
 		gameOpts->render.textures.bUseHires [0] = 1;
