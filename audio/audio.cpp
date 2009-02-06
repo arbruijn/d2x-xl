@@ -249,8 +249,10 @@ int CAudioChannel::Resample (CDigiSound *soundP, int bD1Sound, int bMP3)
 	ushort	*ps, *ph, nSound;
 	ubyte		*dataP = soundP->data [soundP->bCustom].Buffer ();
 
+#if DBG
 if (soundP->bCustom)
 	soundP->bCustom = soundP->bCustom;
+#endif
 i = soundP->nLength [soundP->bCustom];
 #if SDL_MIXER_CHANNELS == 2
 l = 2 * i;
@@ -421,7 +423,7 @@ if (!(pszWAV && *pszWAV && gameOpts->sound.bUseSDLMixer)) {
 	if (nSound < 0)
 		return -1;
 	soundP = gameData.pig.sound.sounds [gameStates.sound.bD1Sound] + nSound % gameData.pig.sound.nSoundFiles [gameStates.sound.bD1Sound];
-	if (!(soundP->data && soundP->nLength))
+	if (!(soundP->data [soundP->bCustom].Buffer () && soundP->nLength [soundP->bCustom]))
 		return -1;
 	}
 if (m_info.bPlaying) {
@@ -480,8 +482,8 @@ if (gameOpts->sound.bUseSDLMixer) {
 	else {
 		int l;
 		if (soundP->bHires) {
-			l = soundP->nLength [0];
-			m_info.sample.SetBuffer (soundP->data [0].Buffer (), 1, l);
+			l = soundP->nLength [soundP->bCustom];
+			m_info.sample.SetBuffer (soundP->data [soundP->bCustom].Buffer (), 1, l);
 			}
 		else {
 			if (gameOpts->sound.bHires)
@@ -818,7 +820,8 @@ if (!m_info.bAvailable)
 	return -1;
 if (nSound < 0)
 	return -1;
-if (gameData.pig.sound.sounds [gameStates.sound.bD1Sound][nSound].data == NULL) {
+CDigiSound *soundP = &gameData.pig.sound.sounds [gameStates.sound.bD1Sound][nSound];
+if (!soundP->data [soundP->bCustom].Buffer ()) {
 	Int3 ();
 	return -1;
 	}

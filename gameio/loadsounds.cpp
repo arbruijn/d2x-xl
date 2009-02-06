@@ -198,7 +198,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int LoadHiresSound (CDigiSound *soundP, char *pszSoundName)
+int LoadHiresSound (CDigiSound *soundP, char *pszSoundName, bool bCustom)
 {
 	CFile			cf;
 	char			szSoundFile [FILENAME_LEN];
@@ -209,15 +209,17 @@ sprintf (szSoundFile, "%s.wav", pszSoundName);
 if (!(cf.Open (szSoundFile, gameFolders.szSoundDir [2], "rb", 0) ||
 	   cf.Open (szSoundFile, gameFolders.szSoundDir [gameOpts->sound.bHires - 1], "rb", 0)))
 	return 0;
-if (0 >= (soundP->nLength [0] = cf.Length ())) {
+if (0 >= (soundP->nLength [bCustom] = cf.Length ())) {
 	cf.Close ();
 	return 0;
 	}
-if (!soundP->data [0].Create (soundP->nLength [0])) {
+if (!soundP->data [bCustom].Create (soundP->nLength [bCustom])) {
 	cf.Close ();
 	return 0;
 	}
-if (soundP->data [0].Read (cf, soundP->nLength [0]) != soundP->nLength [0]) {
+if (soundP->data [bCustom].Read (cf, soundP->nLength [bCustom]) != soundP->nLength [bCustom]) {
+	soundP->data [bCustom].Destroy ();
+	soundP->nLength [bCustom] = 0;
 	cf.Close ();
 	return 0;
 	}
@@ -253,7 +255,7 @@ for (i = 0, soundP = &gameData.pig.sound.soundP [0]; i < nSoundNum; i++, soundP+
 	//size -= sizeof (tPIGSoundHeader);
 	memcpy (szSoundName, sndh.name, 8);
 	szSoundName [8] = 0;
-	if (!LoadHiresSound (soundP, szSoundName)) {
+	if (!LoadHiresSound (soundP, szSoundName, bCustom)) {
 		soundP->bHires = 0;
 		soundP->nLength [bCustom] = sndh.length;
 		soundP->data [bCustom].Create (sndh.length);
