@@ -444,7 +444,7 @@ volume = I2X (1);
 if (bMakeSound && (weaponInfoP->flashSound > -1)) {
 	int bGatling = (nWeaponType == VULCAN_ID) || (nWeaponType == GAUSS_ID);
 	if (nParent != nViewer) {
-		if (bGatling && (parentP->info.nType == OBJ_PLAYER) && (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling)
+		if (bGatling && (parentP->info.nType == OBJ_PLAYER) && (gameOpts->sound.bHires [0] == 2) && gameOpts->sound.bGatling)
 			audio.CreateSegmentSound (weaponInfoP->flashSound, objP->info.nSegment, 0, objP->info.position.vPos, 0, volume, I2X (256),
 											  AddonSoundName (nGatlingSounds [nWeaponType == GAUSS_ID]));
 		else
@@ -453,7 +453,7 @@ if (bMakeSound && (weaponInfoP->flashSound > -1)) {
 	else {
 		if (nWeaponType == VULCAN_ID)	// Make your own vulcan gun  1/2 as loud.
 			volume = I2X (1) / 2;
-		if (bGatling && (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling)
+		if (bGatling && (gameOpts->sound.bHires [0] == 2) && gameOpts->sound.bGatling)
 			audio.PlaySound (-1, (nParent == nViewer) ? SOUNDCLASS_PLAYER : SOUNDCLASS_LASER, volume, DEFAULT_PAN, 0, -1, 
 								  AddonSoundName (nGatlingSounds [nWeaponType == GAUSS_ID]));
 		else
@@ -1026,7 +1026,7 @@ if (addval > I2X (1))
 if ((gameData.weapons.nPrimary != VULCAN_INDEX) && (gameData.weapons.nPrimary != GAUSS_INDEX))
 	nPrimaryAmmo = playerP->primaryAmmo [gameData.weapons.nPrimary];
 else {
-	if ((gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling &&
+	if ((gameOpts->sound.bHires [0] == 2) && gameOpts->sound.bGatling &&
 		 gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bGatlingSpeedUp, 1, 0, 0) &&
 		 (gameData.weapons.firing [0].nDuration < GATLING_DELAY))
 		return 0;
@@ -1236,7 +1236,7 @@ int VulcanHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 #	define VULCAN_SPREAD	(d_rand ()/8 - 32767/16)
 
-	int bGatlingSound = gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling;
+	int bGatlingSound = gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (gameOpts->sound.bHires [0] == 2) && gameOpts->sound.bGatling;
 
 if (bGatlingSound && (gameData.weapons.firing [objP->info.nId].nDuration <= GATLING_DELAY))
 	return 0;
@@ -1338,7 +1338,7 @@ int GaussHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 #	define GAUSS_SPREAD		(VULCAN_SPREAD / 5)
 
 	int			bGatlingSound = gameStates.app.bHaveExtraGameInfo [IsMultiGame] &&
-										 (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling;
+										 (gameOpts->sound.bHires [0] == 2) && gameOpts->sound.bGatling;
 	tFiringData *fP = gameData.multiplayer.weaponStates [objP->info.nId].firing;
 
 if (bGatlingSound && (fP->nDuration <= GATLING_DELAY))
