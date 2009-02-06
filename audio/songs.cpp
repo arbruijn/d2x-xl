@@ -361,8 +361,7 @@ if (!m_info.bInitialized)
 if (!(redbook.Enabled () ? gameConfig.nRedbookVolume : gameConfig.nMidiVolume))
 	return;
 StopAll ();
-if (bWaitForThread)
-	WaitForSoundThread ();
+WaitForSoundThread ();
 //do we want any of these to be redbook songs?
 m_info.nCurrent = nSong;
 if (nSong == SONG_TITLE) {
@@ -415,7 +414,7 @@ if (!nLevel)
 if (!m_info.bInitialized)
 	Setup ();
 StopAll ();
-if (!bMT)
+if (bWaitForThread)
 	WaitForSoundThread ();
 m_info.nLevel = nLevel;
 nSong = (nLevel > 0) ? nLevel - 1 : -nLevel;
