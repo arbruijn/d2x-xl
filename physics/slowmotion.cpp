@@ -195,7 +195,7 @@ else {
 	audio.Setup (1);
 	songManager.SetPos (songManager.SlowDown () - songManager.Start () + 
 							  2 * (SDL_GetTicks () - songManager.SlowDown ()) / gameOpts->gameplay.nSlowMotionSpeedup);
-	songManager.PlayLevel (gameData.missions.nCurrentLevel, 1);
+	songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1);
 	}
 }
 
@@ -212,7 +212,7 @@ else {
 	audio.Setup ((float) gameOpts->gameplay.nSlowMotionSpeedup / 2);
 	songManager.SetSlowDown (SDL_GetTicks ());
 	songManager.SetPos (songManager.SlowDown () - songManager.Start ());
-	songManager.PlayLevel (gameData.missions.nCurrentLevel, 1);
+	songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1);
 	}
 }
 

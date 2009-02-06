@@ -166,7 +166,7 @@ if (currentTime < m_xLastCheck || (currentTime - m_xLastCheck) >= I2X (2)) {
 			//new code plays all tracks to end of disk, so if disk has
 			//stopped we must be at end.  So start again with level 1 song.
 
-			songManager.PlayLevel (1, 0);
+			songManager.PlayLevelSong (1, 0);
 			}
 		StartTime (0);
 		}
@@ -339,7 +339,19 @@ redbook.Stop ();			// Stop CD, if playing
 
 //------------------------------------------------------------------------------
 
-void CSongManager::Play (int nSong, int repeat)
+int CSongManager::PlayModSong (char* pszSong, int bLoop)
+{
+	char	szFilename [FILENAME_LEN];
+
+if (!*gameFolders.szMusicDir)
+	return false;
+sprintf (szFilename, "%s/%s.ogg", gameFolders.szMusicDir, pszSong);
+return midi.PlaySong (szFilename, NULL, NULL, bLoop, 0);
+}
+
+//------------------------------------------------------------------------------
+
+void CSongManager::Play (int nSong, int bLoop)
 {
 //Assert(nSong != SONG_ENDLEVEL && nSong != SONG_ENDGAME);	//not in full version
 if (!m_info.bInitialized)
@@ -351,17 +363,23 @@ StopAll ();
 //do we want any of these to be redbook songs?
 m_info.nCurrent = nSong;
 if (nSong == SONG_TITLE) {
-	if (*m_user.szIntroSong && midi.PlaySong (m_user.szIntroSong, NULL, NULL, repeat, 0))
+	if (PlayModSong ("title", bLoop))
+		return;
+	if (*m_user.szIntroSong && midi.PlaySong (m_user.szIntroSong, NULL, NULL, bLoop, 0))
 		return;
 	m_info.bPlaying = redbook.PlayTrack (REDBOOK_TITLE_TRACK, 0);
 	}
 else if (nSong == SONG_CREDITS) {
-	if (*m_user.szCreditsSong && midi.PlaySong (m_user.szCreditsSong, NULL, NULL, repeat, 0))
+	if (PlayModSong ("credits", bLoop))
+		return;
+	if (*m_user.szCreditsSong && midi.PlaySong (m_user.szCreditsSong, NULL, NULL, bLoop, 0))
 		return;
 	m_info.bPlaying = redbook.PlayTrack (REDBOOK_CREDITS_TRACK, 0);
 	}
 else if (nSong == SONG_BRIEFING) {
-	if (*m_user.szBriefingSong && midi.PlaySong (m_user.szBriefingSong, NULL, NULL, repeat, 0))
+	if (PlayModSong ("briefing", bLoop))
+		return;
+	if (*m_user.szBriefingSong && midi.PlaySong (m_user.szBriefingSong, NULL, NULL, bLoop, 0))
 		return;
 	}
 if (!m_info.bPlaying) {		//not playing redbook, so play midi
@@ -369,7 +387,7 @@ if (!m_info.bPlaying) {		//not playing redbook, so play midi
 		m_info.data [nSong].filename,
 		m_info.data [nSong].melodicBankFile,
 		m_info.data [nSong].drumBankFile,
-		repeat, m_info.nSongs [1] && (nSong >= m_info.nSongs [0]));
+		bLoop, m_info.nSongs [1] && (nSong >= m_info.nSongs [0]));
 	}
 }
 
@@ -382,7 +400,7 @@ songManager.Play (m_info.nCurrent, repeat);
 
 //------------------------------------------------------------------------------
 
-void CSongManager::PlayLevel (int nLevel, int bFromHog)
+void CSongManager::PlayLevelSong (int nLevel, int bFromHog)
 {
 	int	nSong;
 	int	nTracks;
@@ -400,6 +418,8 @@ m_info.nCurrent = nSong;
 if (!RBAEnabled () && redbook.Enabled () && gameOpts->sound.bUseRedbook)
 	redbook.ReInit ();
 redbook.Register ();
+
+// try the hog file first
 if (bFromHog) {
 	CFile	cf;
 	strcpy (szFilename, LevelSongName (nLevel));
@@ -411,6 +431,18 @@ if (bFromHog) {
 			return;
 		}
 	}
+
+// try the missions mod music folder next
+if (*gameFolders.szMusicDir) {
+	if (nLevel < 0)
+		sprintf (szFilename, "%s/slevel%02d.ogg", gameFolders.szMusicDir, -nLevel);
+	else
+		sprintf (szFilename, "%s/level%02d.ogg", gameFolders.szMusicDir, nLevel);
+	if (midi.PlaySong (szFilename, NULL, NULL, 1, 0))
+		return;
+	}
+
+// try the standard music
 if ((nLevel > 0) && m_user.nLevelSongs) {
 	if (midi.PlaySong (m_user.levelSongs [(nLevel - 1) % m_user.nLevelSongs], NULL, NULL, 1, 0))
 		return;
@@ -435,7 +467,7 @@ void CSongManager::Next (void)
 {
 if (m_info.bPlaying) 		//get correct track
 	m_info.nLevel = RBAGetTrackNum () - REDBOOK_FIRST_LEVEL_TRACK + 1;
-PlayLevel (m_info.nLevel + 1, 0);
+PlayLevelSong (m_info.nLevel + 1, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -445,7 +477,7 @@ void CSongManager::Prev (void)
 if (m_info.bPlaying) 		//get correct track
 	m_info.nLevel = RBAGetTrackNum () - REDBOOK_FIRST_LEVEL_TRACK + 1;
 if (m_info.nLevel > 1)
-	songManager.PlayLevel (m_info.nLevel - 1, 0);
+	songManager.PlayLevelSong (m_info.nLevel - 1, 0);
 }
 
 //------------------------------------------------------------------------------

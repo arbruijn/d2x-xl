@@ -137,7 +137,7 @@ if (menu [soundOpts.nRedbook].m_value != redbook.Enabled ()) {
 			if (gameStates.app.nFunctionMode == FMODE_MENU)
 				songManager.Play (SONG_TITLE, 1);
 			else if (gameStates.app.nFunctionMode == FMODE_GAME)
-				songManager.PlayLevel (gameData.missions.nCurrentLevel, gameStates.app.bGameRunning);
+				songManager.PlayLevelSong (gameData.missions.nCurrentLevel, gameStates.app.bGameRunning);
 			else
 				Int3 ();
 
@@ -174,7 +174,7 @@ else {
 		else if (!bSongPlaying) {
 			//audio.StopAllSounds ();
 			if (gameStates.app.bGameRunning)
-				songManager.PlayLevel (gameData.missions.nCurrentLevel ? gameData.missions.nCurrentLevel : 1, 1);
+				songManager.PlayLevelSong (gameData.missions.nCurrentLevel ? gameData.missions.nCurrentLevel : 1, 1);
 			else
 				songManager.Play (SONG_TITLE, 1);
 			}

@@ -984,7 +984,7 @@ gameData.hoard.nMonsterballSeg = -1;
 SetSoundSources ();
 if (!IsMultiGame)
 	InitEntropySettings (0);	//required for repair centers
-//songManager.PlayLevel (gameData.missions.nCurrentLevel, 1);
+//songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1);
 if (!gameStates.app.bProgressBars)
 	ClearBoxedMessage ();		//remove message before new palette loaded
 paletteManager.LoadEffect ();		//actually load the palette
@@ -1728,7 +1728,7 @@ if (gameStates.app.bFirstSecretVisit || (gameData.demo.nState == ND_STATE_PLAYBA
 	InitSecretLevel (nLevel);
 	if (!gameStates.app.bAutoRunMission && gameStates.app.bD1Mission)
 		ShowLevelIntro (nLevel);
-	//songManager.PlayLevel (gameData.missions.nCurrentLevel, 0);
+	//songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 0);
 	InitRobotsForLevel ();
 	InitAIObjects ();
 	InitShakerDetonates ();

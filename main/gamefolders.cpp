@@ -134,7 +134,8 @@ for (int i = 0; i < 3; i++) {
 #	define	TEXTUREDIR_D2	"Textures"
 #	define	TEXTUREDIR_D1	"Textures/D1"
 #	define	CACHEDIR			"Cache"
-#	define	CACHEDIR			"Mods"
+#	define	MODDIR			"Mods"
+#	define	MUSICDIR			"Music"
 #	define	DOWNLOADDIR		"Downloads"
 #else
 #	define	DATADIR			"data"
@@ -152,6 +153,7 @@ for (int i = 0; i < 3; i++) {
 #	define	TEXTUREDIR_D1	"textures/d1"
 #	define	CACHEDIR			"cache"
 #	define	MODDIR			"mods"
+#	define	MUSICDIR			"music"
 #	define	DOWNLOADDIR		"downloads"
 #endif
 
@@ -332,6 +334,8 @@ if (!GetAppFolder (gameFolders.szModDir [0], gameFolders.szModDir [1], gameFolde
 	sprintf (gameFolders.szTextureCacheDir [2], "%s/%s", gameFolders.szModDir [1], "textures");
 	sprintf (gameFolders.szModelDir [1], "%s/%s", gameFolders.szModDir [1], "models");
 	sprintf (gameFolders.szModelCacheDir [1], "%s/%s", gameFolders.szModDir [1], "models");
+	if (GetAppFolder (gameFolders.szModDir [1], gameFolders.szMusicDir, MUSICDIR, "*.ogg")) {
+		*gameFolders.szMusicDir = '\0';
 	MakeTexSubFolders (gameFolders.szTextureCacheDir [2]);
 	MakeTexSubFolders (gameFolders.szModelCacheDir [1]);
 	}
