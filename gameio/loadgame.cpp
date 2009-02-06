@@ -658,6 +658,8 @@ return gameStates.app.bAutoRunMission ? 0 :
 
 void UnloadLevelData (int bRestore)
 {
+gameOpts->sound.bHires [0] = gameOpts->sound.bHires [1];
+gameOpts->render.bHiresModels [0] = gameOpts->render.bHiresModels [1];
 /*---*/PrintLog ("   unloading mine rendering data\n");
 gameData.render.mine.Destroy ();
 audio.DestroyObjectSound (LOCALPLAYER.nObject);
