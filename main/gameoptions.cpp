@@ -135,7 +135,7 @@ if (i) {
 	gameOptions [1].render.debug.bObjects = 1;
 	gameOptions [1].render.debug.bWalls = 1;
 	gameOptions [1].render.bUseShaders = 1;
-	gameOptions [1].render.bHiresModels [0] 
+	gameOptions [1].render.bHiresModels [0] =
 	gameOptions [1].render.bHiresModels [1] = 0;
 	gameOptions [1].render.bUseLightmaps = 0;
 	gameOptions [1].render.effects.bAutoTransparency = 0;
