@@ -64,6 +64,9 @@ m_info.xTTL = -1;
 
 void CShrapnel::Move (void)
 {
+if (m_info.nSmoke < 0)
+	return;
+
 	fix			xSpeed = FixDiv (m_info.xSpeed, I2X (25) / 1000);
 	CFixVector	vOffs;
 	time_t		nTicks;
@@ -104,6 +107,8 @@ if ((m_info.xTTL > 0) && LoadExplBlast ()) {
 
 int CShrapnel::Update (void)
 {
+if (m_info.nSmoke < 0)
+	return -1;	//dead
 if (m_info.xTTL <= 0)
 	return -1;	//dead
 Move ();

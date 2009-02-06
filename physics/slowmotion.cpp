@@ -193,8 +193,12 @@ if (gameData.app.bUseMultiThreading [rtSound]) {
 else {
 	audio.Shutdown ();
 	audio.Setup (1);
-	songManager.SetPos (songManager.SlowDown () - songManager.Start () + 
-							  2 * (SDL_GetTicks () - songManager.SlowDown ()) / gameOpts->gameplay.nSlowMotionSpeedup);
+	time_t tSlowDown = songManager.SlowDown ();
+	if (tSlowDown)
+		songManager.SetPos (tSlowDown - songManager.Start () + 2 * (SDL_GetTicks () - tSlowDown) / gameOpts->gameplay.nSlowMotionSpeedup);
+	else
+		songManager.SetPos (SDL_GetTicks () - songManager.Start ());
+	songManager.SetSlowDown (0);
 	songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1);
 	}
 }

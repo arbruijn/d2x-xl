@@ -41,8 +41,8 @@ if (!audio.Available ())
 	return;
 if (gameOpts->sound.bUseSDLMixer) {
 	if (gameOpts->sound.bFadeMusic) {
-		while (!Mix_FadeOutMusic (250) && Mix_PlayingMusic ())
-			SDL_Delay (50);		
+		while (!Mix_FadeOutMusic (300) && Mix_PlayingMusic ())
+			SDL_Delay (30);		
 		while (Mix_PlayingMusic ())
 			SDL_Delay (1);		
 		}

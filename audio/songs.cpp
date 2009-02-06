@@ -33,6 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hogfile.h"
 #include "midi.h"
 #include "songs.h"
+#include "soundthreads.h"
 
 char CDROM_dir[40] = ".";
 
@@ -360,6 +361,7 @@ if (!m_info.bInitialized)
 if (!(redbook.Enabled () ? gameConfig.nRedbookVolume : gameConfig.nMidiVolume))
 	return;
 StopAll ();
+WaitForSoundThread ();
 //do we want any of these to be redbook songs?
 m_info.nCurrent = nSong;
 if (nSong == SONG_TITLE) {
@@ -412,6 +414,7 @@ if (!nLevel)
 if (!m_info.bInitialized)
 	Setup ();
 StopAll ();
+WaitForSoundThread ();
 m_info.nLevel = nLevel;
 nSong = (nLevel > 0) ? nLevel - 1 : -nLevel;
 m_info.nCurrent = nSong;
