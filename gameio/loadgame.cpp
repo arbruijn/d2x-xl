@@ -658,7 +658,10 @@ return gameStates.app.bAutoRunMission ? 0 :
 
 void UnloadLevelData (int bRestore)
 {
-gameOpts->sound.bHires [0] = gameOpts->sound.bHires [1];
+if (gameOpts->sound.bHires [0] != gameOpts->sound.bHires [1]) {
+	gameOpts->sound.bHires [0] = gameOpts->sound.bHires [1];
+	audio.Reset ();
+	}
 gameOpts->render.bHiresModels [0] = gameOpts->render.bHiresModels [1];
 /*---*/PrintLog ("   unloading mine rendering data\n");
 gameData.render.mine.Destroy ();
@@ -722,8 +725,13 @@ if (nStage == 0) {
 #if 0
 	ReadSoundFile (true);
 #else
-	if (ReadSoundFile (true))
+	if (ReadSoundFile (true)) {
 		gameStates.app.bCustomSounds = true;
+		if (gameOpts->sound.bHires [0] != gameOpts->sound.bHires [1]) {
+			audio.Reset ();
+			songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1);
+			}
+		}
 	else if (gameStates.app.bCustomSounds) {
 		ReadSoundFile ();
 		gameStates.app.bCustomSounds = false;

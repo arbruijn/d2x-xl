@@ -348,7 +348,7 @@ int ReadSoundFile (bool bCustom)
 	int		snd_id,sndVersion;
 	int		nSoundNum;
 	int		nSoundStart;
-	int		size, length;
+	int		size, length, bHaveHires;
 	char		szFile [FILENAME_LEN];
 	char*		pszFile, * pszFolder;
 
@@ -358,7 +358,7 @@ if (bCustom) {
 	sprintf (szFile, "%s%s", gameFolders.szModName, (gameOpts->sound.digiSampleRate == SAMPLE_RATE_22K) ? ".s22" : ".s11");
 	pszFile = szFile;
 	pszFolder = gameFolders.szModDir [1];
-#if 1
+#if 0
 	bCustom = false;	//replace the standard sounds
 #endif
 	}
@@ -382,11 +382,10 @@ nSoundNum = cf.ReadInt ();
 nSoundStart = cf.Tell ();
 size = cf.Length () - nSoundStart;
 length = size;
-if (SetupSounds (cf, nSoundNum, nSoundStart, bCustom) & 0xffff0000) {
-	if (bCustom)
-		gameOpts->sound.bHires [0] = 2;
-	}
-LoadSounds (cf, bCustom);
+bHaveHires = (SetupSounds (cf, nSoundNum, nSoundStart, false) & 0xffff0000) != 0;
+if (bCustom)
+	gameOpts->sound.bHires [0] = bHaveHires ? 2 : 0;
+LoadSounds (cf, false);
 cf.Close ();
 return 1;
 }
