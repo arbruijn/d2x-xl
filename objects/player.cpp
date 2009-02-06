@@ -100,7 +100,7 @@ void UpdateFiringSounds (void)
 	tFiringData		*fP;
 	int				bGatling, bGatlingSound, i;
 
-bGatlingSound = (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling;
+bGatlingSound = (gameOpts->sound.bHires [0] == 2) && gameOpts->sound.bGatling;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++, wsP++) {
 	if (!IsMultiGame || gameData.multiplayer.players [i].connected) {
 		bGatling = (wsP->nPrimary == VULCAN_INDEX) || (wsP->nPrimary == GAUSS_INDEX);

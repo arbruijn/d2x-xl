@@ -622,7 +622,7 @@ if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0) {
 	return 1;
 	}
 if (gameStates.app.bNostalgia)
-	gameOpts->sound.bHires = 0;
+	gameOpts->sound.bHires [0] = 0;
 audio.m_channels.Clear ();
 if (gameStates.app.bDemoData)
 	gameOpts->sound.digiSampleRate = SAMPLE_RATE_11K;
@@ -644,9 +644,9 @@ if (gameOpts->sound.bUseSDLMixer) {
 	int h;
 	if (fSlowDown <= 0)
 		fSlowDown = 1.0f;
-	if (gameOpts->sound.bHires == 1)
+	if (gameOpts->sound.bHires [0] == 1)
 		h = Mix_OpenAudio (int (SAMPLE_RATE_22K / fSlowDown), AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE);
-	else if (gameOpts->sound.bHires == 2)
+	else if (gameOpts->sound.bHires [0] == 2)
 		h = Mix_OpenAudio (int (SAMPLE_RATE_44K / fSlowDown), AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE);
 	else if (songManager.MP3 ())
 		h = Mix_OpenAudio (32000, AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE * 10);
