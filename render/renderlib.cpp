@@ -100,7 +100,7 @@ return bShowOnlyCurSide = !bShowOnlyCurSide;
 
 //------------------------------------------------------------------------------
 
-inline int LoadExtraBitmap (CBitmap **bmPP, const char *pszName, int *bHaveP)
+int LoadExtraBitmap (CBitmap **bmPP, const char *pszName, int *bHaveP)
 {
 if (!*bHaveP) {
 	char	szFilename [FILENAME_LEN];

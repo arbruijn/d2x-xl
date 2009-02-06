@@ -58,6 +58,7 @@ int LoadDeadzone (void);
 void FreeDeadzone (void);
 int LoadJoyMouse (void);
 void FreeJoyMouse (void);
+int LoadExtraBitmap (CBitmap **bmPP, const char *pszName, int *bHaveP);
 
 // Given a list of point numbers, rotate any that haven't been rotated
 // this frame

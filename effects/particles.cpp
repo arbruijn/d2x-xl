@@ -33,6 +33,7 @@
 #include "light.h"
 #include "dynlight.h"
 #include "lightmap.h"
+#include "renderlib.h"
 #include "rendermine.h"
 #include "transprender.h"
 #include "objsmoke.h"
@@ -1829,16 +1830,10 @@ int CParticleImageManager::Load (int nType)
 	CBitmap	*bmP = NULL;
 
 nType = particleImageManager.GetType (nType);
-flagP = bHavePartImg [bPointSprites] + nType;
-if (*flagP < 0)
-	return 0;
-if (*flagP > 0)
+if (bHavePartImg [bPointSprites][nType])
 	return 1;
-bmP = CreateAndReadTGA (szParticleImg [bPointSprites][nType]);
-*flagP = bmP ? 1 : -1;
-if (*flagP < 0)
+if (!LoadExtraBitmap (bmpParticle [bPointSprites] + nType, szParticleImg [bPointSprites][nType], bHavePartImg [bPointSprites] + nType))
 	return 0;
-bmpParticle [bPointSprites][nType] = bmP;
 #if MAKE_SMOKE_IMAGE
 {
 	tTgaHeader h;
