@@ -369,6 +369,8 @@ if (Hide ())
 	return;
 if (gameStates.render.bRearView)
 	return;
+if ((LOCALPLAYER.energy <= I2X (10)) || !(LOCALPLAYER.flags & PLAYER_FLAGS_SLOWMOTION))
+	return;
 
 	char	szScore [40];
 	int	w, h, aw;
