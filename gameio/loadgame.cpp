@@ -674,8 +674,11 @@ if (!bRestore) {
 	gameStates.gameplay.slowmo [1].fSpeed = 1;
 	gameStates.gameplay.slowmo [0].nState =
 	gameStates.gameplay.slowmo [1].nState = 0;
-	SpeedupSound ();
-	WaitForSoundThread ();
+	if (gameOpts->gameplay.nSlowMotionSpeedup != 1) {
+		gameOpts->gameplay.nSlowMotionSpeedup = 1;
+		audio.Shutdown ();
+		audio.Setup (1);
+		}
 	}
 /*---*/PrintLog ("   unloading lightmaps\n");
 lightmapManager.Destroy ();
@@ -871,6 +874,7 @@ gameData.missions.nCurrentLevel = nLevel;
 UnloadLevelData (bRestore);
 /*---*/PrintLog ("   restoring default robot settings\n");
 RestoreDefaultRobots ();
+songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1);
 #if 1
 if (LoadModData (NULL, 0, 0) < 0) {
 	gameStates.app.bBetweenLevels = 0;

@@ -41,10 +41,12 @@ if (!audio.Available ())
 	return;
 if (gameOpts->sound.bUseSDLMixer) {
 	if (gameOpts->sound.bFadeMusic) {
-		while (!Mix_FadeOutMusic (300) && Mix_PlayingMusic ())
-			SDL_Delay (30);		
+		Mix_FadeOutMusic (300);
+		SDL_Delay (330);
+#if 0
 		while (Mix_PlayingMusic ())
 			SDL_Delay (1);		
+#endif
 		}
 	int nVolume = m_nVolume;
 	SetVolume (0);
@@ -109,7 +111,6 @@ if (m_nVolume < 1)
 bCustom = ((strstr (pszSong, ".mp3") != NULL) || (strstr (pszSong, ".ogg") != NULL));
 if (!(bCustom || (m_hmp = hmp_open (pszSong, bD1Song))))
 	return 0;
-SetVolume (m_nVolume);
 #	if USE_SDL_MIXER
 if (gameOpts->sound.bUseSDLMixer) {
 	char	fnSong [FILENAME_LEN], *pfnSong;

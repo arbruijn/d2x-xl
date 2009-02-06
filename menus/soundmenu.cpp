@@ -172,13 +172,15 @@ else {
 			midi.PlaySong (NULL, NULL, NULL, 1, 0);	// fade out first
 			midi.SetVolume (128 * gameConfig.nMidiVolume / 8);
 			}	
-		else if (!bSongPlaying) {
-			//audio.StopAllSounds ();
+		else {
 			midi.SetVolume (128 * gameConfig.nMidiVolume / 8);
-			if (gameStates.app.bGameRunning)
-				songManager.PlayLevelSong (gameData.missions.nCurrentLevel ? gameData.missions.nCurrentLevel : 1, 1);
-			else
-				songManager.Play (SONG_TITLE, 1);
+			if (!bSongPlaying) {
+			//audio.StopAllSounds ();
+				if (gameStates.app.bGameRunning)
+					songManager.PlayLevelSong (gameData.missions.nCurrentLevel ? gameData.missions.nCurrentLevel : 1, 1);
+				else
+					songManager.Play (SONG_TITLE, 1);
+				}
 			}
 		}
 	}

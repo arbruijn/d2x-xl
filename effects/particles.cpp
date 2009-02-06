@@ -1825,8 +1825,7 @@ delete[] fFrameBright;
 int CParticleImageManager::Load (int nType)
 {
 	int		h,
-				bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.particles.bSort,
-				*flagP;
+				bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.particles.bSort;
 	CBitmap	*bmP = NULL;
 
 nType = particleImageManager.GetType (nType);
@@ -1855,7 +1854,7 @@ else if (nType == BUBBLE_PARTICLES)
 else
 	h = bmP->FrameCount ();
 nParticleFrames [bPointSprites][nType] = h;
-return *flagP > 0;
+return 1;
 }
 
 //	-----------------------------------------------------------------------------
