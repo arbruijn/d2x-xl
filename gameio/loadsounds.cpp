@@ -288,6 +288,9 @@ if (bCustom) {
 	sprintf (szFile, "%s%s", gameFolders.szModName, (gameOpts->sound.digiSampleRate == SAMPLE_RATE_22K) ? ".s22" : ".s11");
 	pszFile = szFile;
 	pszFolder = gameFolders.szModDir [1];
+#if 1
+	bCustom = false;	//replace the standard sounds
+#endif
 	}
 else {
 	pszFile = DefaultSoundFile ();

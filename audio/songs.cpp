@@ -445,7 +445,7 @@ void CSongManager::Prev (void)
 if (m_info.bPlaying) 		//get correct track
 	m_info.nLevel = RBAGetTrackNum () - REDBOOK_FIRST_LEVEL_TRACK + 1;
 if (m_info.nLevel > 1)
-	songManager.PlayLevel(m_info.nLevel - 1, 0);
+	songManager.PlayLevel (m_info.nLevel - 1, 0);
 }
 
 //------------------------------------------------------------------------------
