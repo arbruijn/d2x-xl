@@ -237,10 +237,6 @@ int SetupSounds (CFile& cf, int nSoundNum, int nSoundStart, bool bCustom, bool b
 	int					nSounds [2] = {0, 0};
 
 /*---*/PrintLog ("      Loading sound data (%d sounds)\n", nSoundNum);
-if (gameStates.app.bNostalgia)
-	gameOpts->sound.bHires [0] = 0;
-else
-	gameOpts->sound.bHires [0] = gameOpts->sound.bHires [1];
 cf.Seek (nSoundStart, SEEK_SET);
 #if USE_OPENAL
 memset (&sound.buffer, 0xFF, sizeof (sound.buffer));
@@ -352,6 +348,10 @@ int ReadSoundFile (bool bCustom)
 	char		szFile [FILENAME_LEN];
 	char*		pszFile, * pszFolder;
 
+if (gameStates.app.bNostalgia)
+	gameOpts->sound.bHires [0] = 0;
+else
+	gameOpts->sound.bHires [0] = gameOpts->sound.bHires [1];
 if (bCustom) {
 	if (!*gameFolders.szModName)
 		return 0;
@@ -384,7 +384,7 @@ nSounds = SetupSounds (cf, nSoundNum, cf.Tell (), bCustom, bUseLowRes);
 if (bCustom)
 	gameOpts->sound.bHires [0] = (nSounds & 0xffff) ? 0 : 2;
 
-LoadSounds (cf, bCustom);
+LoadSounds (cf, false);
 cf.Close ();
 return nSounds != 0;
 }
