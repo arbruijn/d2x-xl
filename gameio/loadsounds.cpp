@@ -156,7 +156,7 @@ if (gameOpts->sound.bHires)
 	return -1;
 //first, free up data allocated for old bitmaps
 PrintLog ("   loading replacement sounds\n");
-FreeSoundReplacements ();
+//FreeSoundReplacements ();
 CFile::ChangeFilenameExtension (szFilename, pszFilename, ".dtx");
 if (!cf.Open (szFilename, gameFolders.szDataDir, "rb", 0))
 	return -1;
