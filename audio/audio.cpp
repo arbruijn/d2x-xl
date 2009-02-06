@@ -486,7 +486,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 			m_info.sample.SetBuffer (soundP->data [soundP->bCustom].Buffer (), 1, l);
 			}
 		else {
-			if (gameOpts->sound.bHires)
+			if (gameOpts->sound.bHires [0])
 				return -1;	//cannot mix hires and standard sounds
 			l = Resample (soundP, gameStates.sound.bD1Sound && (gameOpts->sound.digiSampleRate != SAMPLE_RATE_11K), songManager.MP3 ());
 			if (l <= 0)
