@@ -721,7 +721,6 @@ int LoadModData (char* pszLevelName, int bLoadTextures, int nStage)
 	int	nLoadRes = 0;
 
 // try to read mod files, and load default files if that fails
-MakeModFolders (hogFileManager.m_files.MsnHogFiles.szName);
 if (nStage == 0) {
 	if (ReadHamFile (false))
 		gameStates.app.bCustomData = true;
@@ -877,6 +876,7 @@ gameData.missions.nCurrentLevel = nLevel;
 UnloadLevelData (bRestore);
 /*---*/PrintLog ("   restoring default robot settings\n");
 RestoreDefaultRobots ();
+MakeModFolders (hogFileManager.m_files.MsnHogFiles.szName);
 songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1);
 #if 1
 if (LoadModData (NULL, 0, 0) < 0) {
