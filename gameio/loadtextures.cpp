@@ -587,7 +587,7 @@ if (strstr (bmName, "rock313")) {
 	}
 #endif
 if (gameStates.app.bNostalgia)
-	gameOpts->render.textures.bUseHires = 0;
+	gameOpts->render.textures.bUseHires [0] = 0;
 else {
 	char szLevelFolder [FILENAME_LEN];
 	if (gameData.missions.nCurrentLevel < 0)
@@ -603,7 +603,7 @@ else {
 bTGA = 0;
 bmP->SetBPP (1);
 if (*bmName && ((nIndex < 0) || IsCockpit (bmName) || 
-	 (gameOpts->render.textures.bUseHires && (!gameOpts->ogl.bGlTexMerge || gameStates.render.textures.bGlsTexMergeOk)))) {
+	 (gameOpts->render.textures.bUseHires [0] && (!gameOpts->ogl.bGlTexMerge || gameStates.render.textures.bGlsTexMergeOk)))) {
 #if 0
 	if ((nIndex >= 0) && ReadS3TC (gameData.pig.tex.altBitmaps [bD1] + nIndex, gameFolders.szTextureCacheDir [bD1], bmName)) {
 		altBmP = gameData.pig.tex.altBitmaps [bD1] + nIndex;

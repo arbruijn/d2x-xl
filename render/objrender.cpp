@@ -305,7 +305,7 @@ if ((nType == OBJ_WEAPON) && (objP->info.nId == OMEGA_ID) && omegaLightnings.Exi
 if ((nType == nDbgObjType) && ((nDbgObjId < 0) || (objP->info.nId == nDbgObjId)))
 	nDbgObjType = nDbgObjType;
 #endif
-if (gameOpts->render.textures.bUseHires || gameOpts->render.effects.bTransparent) {
+if (gameOpts->render.textures.bUseHires [0] || gameOpts->render.effects.bTransparent) {
 	if (fAlpha) {
 		bAdditive = (nType == OBJ_FIREBALL) || (nType == OBJ_EXPLOSION);
 #if 0

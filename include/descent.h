@@ -226,7 +226,7 @@ typedef struct tCockpitOptions {
 //------------------------------------------------------------------------------
 
 typedef struct tTextureOptions {
-	int bUseHires;
+	int bUseHires [2];
 	int nQuality;
 } tTextureOptions;
 

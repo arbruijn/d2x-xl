@@ -183,7 +183,6 @@ int CHogFile::UseMission (const char * name)
 m_files.MsnHogFiles.bInitialized = 0;
 if (!Use (&m_files.MsnHogFiles, name, ""))
 	return 0;
-MakeModFolders (name);
 return 1;
 }
 

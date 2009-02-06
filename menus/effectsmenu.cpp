@@ -136,7 +136,7 @@ do {
 		optMovingSparks = m.AddCheck (TXT_MOVING_SPARKS, gameOpts->render.effects.bMovingSparks, KEY_V, HTX_MOVING_SPARKS);
 	else
 		optMovingSparks = -1;
-	if (gameOpts->render.textures.bUseHires)
+	if (gameOpts->render.textures.bUseHires [0])
 		optTranspExpl = -1;
 	else
 		optTranspExpl = m.AddCheck (TXT_TRANSP_EFFECTS, gameOpts->render.effects.bTransparent, KEY_E, HTX_ADVRND_TRANSPFX);

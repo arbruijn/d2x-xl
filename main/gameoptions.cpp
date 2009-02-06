@@ -111,7 +111,8 @@ if (i) {
 	gameOptions [1].render.effects.bTransparent = 0;
 	gameOptions [1].render.bAllSegs = 0;
 	gameOptions [1].render.debug.bDynamicLight = 1;
-	gameOptions [1].render.textures.bUseHires = 0;
+	gameOptions [1].render.textures.bUseHires [0] =
+	gameOptions [1].render.textures.bUseHires [1] = 0;
 	if (gameStates.app.bNostalgia > 2)
 		gameOptions [1].render.nQuality = 0;
 	gameOptions [1].render.coronas.bUse = 0;
@@ -172,7 +173,8 @@ if (i) {
 	gameOptions [1].render.weaponIcons.bShowAmmo = 0;
 	gameOptions [1].render.weaponIcons.bEquipment = 0;
 	gameOptions [1].render.weaponIcons.nSort = 0;
-	gameOptions [1].render.textures.bUseHires = 0;
+	gameOptions [1].render.textures.bUseHires [0] =
+	gameOptions [1].render.textures.bUseHires [1] = 0;
 	gameOptions [1].render.textures.nQuality = 0;
 	gameOptions [1].render.cockpit.bMissileView = 1;
 	gameOptions [1].render.cockpit.bGuidedInMainView = 1;
@@ -308,7 +310,8 @@ else {
 	gameOptions [0].render.weaponIcons.bEquipment = 1;
 	gameOptions [0].render.weaponIcons.nSort = 1;
 	gameOptions [0].render.weaponIcons.alpha = 4;
-	gameOptions [0].render.textures.bUseHires = 0;
+	gameOptions [0].render.textures.bUseHires [0] = 
+	gameOptions [1].render.textures.bUseHires [1] = 0;
 	gameOptions [0].render.textures.nQuality = 3;
 	gameOptions [0].render.nMeshQuality = 0;
 	gameOptions [0].render.cockpit.bMissileView = 1;

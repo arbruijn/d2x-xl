@@ -163,10 +163,10 @@ typedef struct tGameFolders {
 } tGameFolders;
 
 int GetAppFolder (const char *szRootDir, char *szFolder, const char *szName, const char *szFilter);
-
 char *GameDataFilename (char *pszFilename, const char *pszExt, int nLevel, int nType);
-
 void MakeTexSubFolders (char* pszParentFolder);
+void MakeModFolders (const char* pszMission);
+void ResetModFolders (void);
 
 #ifdef _WIN32
 char *UnicodeToAsc (char *str, const wchar_t *w_str);

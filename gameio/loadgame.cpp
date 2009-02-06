@@ -658,11 +658,13 @@ return gameStates.app.bAutoRunMission ? 0 :
 
 void UnloadLevelData (int bRestore)
 {
+ResetModFolders ();
+gameOpts->render.textures.bUseHires [0] = gameOpts->render.textures.bUseHires [1];
+gameOpts->render.bHiresModels [0] = gameOpts->render.bHiresModels [1];
 if (gameOpts->sound.bHires [0] != gameOpts->sound.bHires [1]) {
 	gameOpts->sound.bHires [0] = gameOpts->sound.bHires [1];
 	audio.Reset ();
 	}
-gameOpts->render.bHiresModels [0] = gameOpts->render.bHiresModels [1];
 /*---*/PrintLog ("   unloading mine rendering data\n");
 gameData.render.mine.Destroy ();
 audio.DestroyObjectSound (LOCALPLAYER.nObject);
@@ -719,6 +721,7 @@ int LoadModData (char* pszLevelName, int bLoadTextures, int nStage)
 	int	nLoadRes = 0;
 
 // try to read mod files, and load default files if that fails
+MakeModFolders (hogFileManager.m_files.MsnHogFiles.szName);
 if (nStage == 0) {
 	if (ReadHamFile (false))
 		gameStates.app.bCustomData = true;

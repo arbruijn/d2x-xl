@@ -322,20 +322,29 @@ CFile::MkDir (gameFolders.szMissionDownloadDir);
 
 // ----------------------------------------------------------------------------
 
-void MakeModFolders (const char* pszMission)
+void ResetModFolders (void)
 {
 *gameFolders.szModDir [1] =
 *gameFolders.szTextureDir [2] =
 *gameFolders.szTextureCacheDir [2] =
 *gameFolders.szModelDir [1] = '\0';
 *gameFolders.szModelCacheDir [1] = '\0';
+}
+
+// ----------------------------------------------------------------------------
+
+void MakeModFolders (const char* pszMission)
+{
+ResetModFolders ();
 CFile::SplitPath (pszMission, NULL, gameFolders.szModName, NULL);
 if (!GetAppFolder (gameFolders.szModDir [0], gameFolders.szModDir [1], gameFolders.szModName, "")) {
-	sprintf (gameFolders.szSoundDir [2], "%s/%s", gameFolders.szModDir [1], "sounds");
-	sprintf (gameFolders.szTextureDir [2], "%s/%s", gameFolders.szModDir [1], "textures");
-	sprintf (gameFolders.szTextureCacheDir [2], "%s/%s", gameFolders.szModDir [1], "textures");
-	sprintf (gameFolders.szModelDir [1], "%s/%s", gameFolders.szModDir [1], "models");
-	sprintf (gameFolders.szModelCacheDir [1], "%s/%s", gameFolders.szModDir [1], "models");
+	sprintf (gameFolders.szSoundDir [2], "%s/%s", gameFolders.szModDir [1], SOUNDDIR);
+	if (!GetAppFolder (gameFolders.szModDir [1], gameFolders.szTextureDir [2], TEXTUREDIR, "*.tga")) {
+		sprintf (gameFolders.szTextureCacheDir [2], "%s/%s", gameFolders.szModDir [1], TEXTUREDIR);
+		gameOpts->render.textures.bUseHires [0] = 1;
+		}
+	sprintf (gameFolders.szModelDir [1], "%s/%s", gameFolders.szModDir [1], MODELDIR);
+	sprintf (gameFolders.szModelCacheDir [1], "%s/%s", gameFolders.szModDir [1], MODELDIR);
 	if (GetAppFolder (gameFolders.szModDir [1], gameFolders.szMusicDir, MUSICDIR, "*.ogg")) 
 		*gameFolders.szMusicDir = '\0';
 	MakeTexSubFolders (gameFolders.szTextureCacheDir [2]);
