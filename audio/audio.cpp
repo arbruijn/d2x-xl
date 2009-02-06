@@ -615,12 +615,18 @@ m_objects.Destroy ();
 /* Initialise audio devices. */
 int CAudio::Setup (float fSlowDown)
 {
+	static bool bInitSDL = true;
+
 if (!gameStates.app.bUseSound)
 	return 1;
-if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0) {
-	PrintLog (TXT_SDL_INIT_AUDIO, SDL_GetError ()); PrintLog ("\n");
-	Error (TXT_SDL_INIT_AUDIO, SDL_GetError ());
-	return 1;
+
+if (bInitSDL) {
+	if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0) {
+		PrintLog (TXT_SDL_INIT_AUDIO, SDL_GetError ()); PrintLog ("\n");
+		Error (TXT_SDL_INIT_AUDIO, SDL_GetError ());
+		return 1;
+		}
+	bInitSDL = false;
 	}
 if (gameStates.app.bNostalgia)
 	gameOpts->sound.bHires [0] = 0;

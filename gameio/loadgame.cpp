@@ -675,6 +675,7 @@ if (!bRestore) {
 	gameStates.gameplay.slowmo [0].nState =
 	gameStates.gameplay.slowmo [1].nState = 0;
 	SpeedupSound ();
+	WaitForSoundThread ();
 	}
 /*---*/PrintLog ("   unloading lightmaps\n");
 lightmapManager.Destroy ();
