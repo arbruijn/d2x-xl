@@ -268,7 +268,7 @@ if ((t = FindArg ("-noredbook")))
 if (gameOptions [0].sound.bUseSDLMixer) {
 	if ((t = FindArg ("-hires_sound")))
 		gameOptions [0].sound.bHires [0] =
-		gameOptions [0].sound.bHires [1] = NumArg (t, 1);
+		gameOptions [0].sound.bHires [1] = NumArg (t, 2);
 	}
 #endif
 }

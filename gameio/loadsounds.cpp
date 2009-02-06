@@ -195,7 +195,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int LoadHiresSound (CDigiSound *soundP, char *pszSoundName, bool bCustom)
+int LoadHiresSound (CDigiSound *soundP, char *pszSoundName)
 {
 	CFile			cf;
 	char			szSoundFile [FILENAME_LEN];
@@ -206,17 +206,17 @@ sprintf (szSoundFile, "%s.wav", pszSoundName);
 if (!(cf.Open (szSoundFile, gameFolders.szSoundDir [2], "rb", 0) ||
 	   cf.Open (szSoundFile, gameFolders.szSoundDir [gameOpts->sound.bHires [0] - 1], "rb", 0)))
 	return 0;
-if (0 >= (soundP->nLength [bCustom] = cf.Length ())) {
+if (0 >= (soundP->nLength [0] = cf.Length ())) {
 	cf.Close ();
 	return 0;
 	}
-if (!soundP->data [bCustom].Create (soundP->nLength [bCustom])) {
+if (!soundP->data [0].Create (soundP->nLength [0])) {
 	cf.Close ();
 	return 0;
 	}
-if (soundP->data [bCustom].Read (cf, soundP->nLength [bCustom]) != soundP->nLength [bCustom]) {
-	soundP->data [bCustom].Destroy ();
-	soundP->nLength [bCustom] = 0;
+if (soundP->data [0].Read (cf, soundP->nLength [0]) != soundP->nLength [0]) {
+	soundP->data [0].Destroy ();
+	soundP->nLength [0] = 0;
 	cf.Close ();
 	return 0;
 	}
@@ -258,19 +258,19 @@ for (i = 0; i < nSoundNum; i++) {
 	if (0 > (j = bCustom ? PiggyFindSound (szSoundName) : i))
 		continue;
 	soundP = &gameData.pig.sound.soundP [j];
-	if (LoadHiresSound (soundP, szSoundName, bCustom))
+	if (LoadHiresSound (soundP, szSoundName))
 		nSounds [1]++;
 	else {
 		soundP->bHires = 0;
-		soundP->nLength [bCustom] = sndh.length;
-		soundP->data [bCustom].Create (sndh.length);
-		soundP->nOffset [bCustom] = sndh.offset + nHeaderSize + nSoundStart;
+		soundP->nLength [0] = sndh.length;
+		soundP->data [0].Create (sndh.length);
+		soundP->nOffset [0] = sndh.offset + nHeaderSize + nSoundStart;
 		nSounds [0]++;
 		}
 	if (!(soundP->bCustom = bCustom))
 		PiggyRegisterSound (szSoundName, 1, bCustom);
 	}
-return (nSounds [1] << 16) + nSounds [0];
+return (nSounds [1] << 16) | nSounds [0];
 }
 
 //------------------------------------------------------------------------------
@@ -347,8 +347,8 @@ int ReadSoundFile (bool bCustom)
 	CFile		cf;
 	int		snd_id,sndVersion;
 	int		nSoundNum;
-	int		nSoundStart;
-	int		size, length, bHaveHires;
+	int		nSoundStart, nSounds;
+	int		size, length;
 	char		szFile [FILENAME_LEN];
 	char*		pszFile, * pszFolder;
 
@@ -358,9 +358,6 @@ if (bCustom) {
 	sprintf (szFile, "%s%s", gameFolders.szModName, (gameOpts->sound.digiSampleRate == SAMPLE_RATE_22K) ? ".s22" : ".s11");
 	pszFile = szFile;
 	pszFolder = gameFolders.szModDir [1];
-#if 0
-	bCustom = false;	//replace the standard sounds
-#endif
 	}
 else {
 	pszFile = DefaultSoundFile ();
@@ -382,12 +379,12 @@ nSoundNum = cf.ReadInt ();
 nSoundStart = cf.Tell ();
 size = cf.Length () - nSoundStart;
 length = size;
-bHaveHires = (SetupSounds (cf, nSoundNum, nSoundStart, false) & 0xffff0000) != 0;
+nSounds = SetupSounds (cf, nSoundNum, nSoundStart, bCustom);
 if (bCustom)
-	gameOpts->sound.bHires [0] = bHaveHires ? 2 : 0;
-LoadSounds (cf, false);
+	gameOpts->sound.bHires [0] = (nSounds & 0xffff) ? 0 : 2;
+LoadSounds (cf, bCustom);
 cf.Close ();
-return 1;
+return nSounds != 0;
 }
 
 //------------------------------------------------------------------------------
