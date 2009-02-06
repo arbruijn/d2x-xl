@@ -334,7 +334,7 @@ if (!GetAppFolder (gameFolders.szModDir [0], gameFolders.szModDir [1], gameFolde
 	sprintf (gameFolders.szTextureCacheDir [2], "%s/%s", gameFolders.szModDir [1], "textures");
 	sprintf (gameFolders.szModelDir [1], "%s/%s", gameFolders.szModDir [1], "models");
 	sprintf (gameFolders.szModelCacheDir [1], "%s/%s", gameFolders.szModDir [1], "models");
-	if (GetAppFolder (gameFolders.szModDir [1], gameFolders.szMusicDir, MUSICDIR, "*.ogg")) {
+	if (GetAppFolder (gameFolders.szModDir [1], gameFolders.szMusicDir, MUSICDIR, "*.ogg")) 
 		*gameFolders.szMusicDir = '\0';
 	MakeTexSubFolders (gameFolders.szTextureCacheDir [2]);
 	MakeTexSubFolders (gameFolders.szModelCacheDir [1]);
