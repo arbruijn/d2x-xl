@@ -41,6 +41,7 @@
 #include "lightmap.h"
 #include "texmerge.h"
 #include "glare.h"
+#include "renderlib.h"
 #include "transprender.h"
 
 //------------------------------------------------------------------------------

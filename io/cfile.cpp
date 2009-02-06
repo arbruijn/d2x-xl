@@ -157,7 +157,7 @@ FILE *CFile::GetFileHandle (const char *filename, const char *folder, const char
 	char	fn [FILENAME_LEN];
 	const char *pfn;
 
-if (!*filename || (strlen (filename) + strlen (folder) >= FILENAME_LEN)) {
+if (!*filename || (strlen (filename) + (folder ? strlen (folder) : 0) >= FILENAME_LEN)) {
 	return NULL;
 	}
 if ((*filename != '/') && (strstr (filename, "./") != filename) && *folder) {

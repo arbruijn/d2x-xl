@@ -350,8 +350,11 @@ int ReadTGA (const char *pszFile, const char *pszFolder, CBitmap *bmP, int alpha
 	char	fn [FILENAME_LEN], *psz;
 	int	r;
 
-if (!pszFolder)
-	pszFolder = gameFolders.szDataDir;
+if (!pszFolder) {
+	cf.SplitPath (pszFile, fn, NULL, NULL);
+	if (!*fn)
+		pszFolder = gameFolders.szDataDir;
+	}
 #if TEXTURE_COMPRESSION
 if (ReadS3TC (bmP, pszFolder, pszFile))
 	return 1;

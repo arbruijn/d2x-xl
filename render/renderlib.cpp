@@ -103,7 +103,14 @@ return bShowOnlyCurSide = !bShowOnlyCurSide;
 inline int LoadExtraBitmap (CBitmap **bmPP, const char *pszName, int *bHaveP)
 {
 if (!*bHaveP) {
-	CBitmap *bmP = CreateAndReadTGA (pszName);
+	char	szFilename [FILENAME_LEN];
+	CFile	cf;
+
+	if (cf.Exist (pszName, gameFolders.szTextureDir [2], 0))
+		sprintf (szFilename, "%s/%s", gameFolders.szTextureDir [2], pszName);
+	else
+		sprintf (szFilename, "%s/%s", gameFolders.szTextureDir [0], pszName);
+	CBitmap *bmP = CreateAndReadTGA (szFilename);
 	if (!bmP)
 		*bHaveP = -1;
 	else {
@@ -114,6 +121,46 @@ if (!*bHaveP) {
 	*bmPP = bmP;
 	}
 return *bHaveP > 0;
+}
+
+//------------------------------------------------------------------------------
+
+CBitmap *bmpDeadzone = NULL;
+int bHaveDeadzone = 0;
+
+int LoadDeadzone (void)
+{
+return LoadExtraBitmap (&bmpDeadzone, "deadzone.tga", &bHaveDeadzone);
+}
+
+//------------------------------------------------------------------------------
+
+void FreeDeadzone (void)
+{
+if (bmpDeadzone) {
+	delete bmpDeadzone;
+	bHaveDeadzone = 0;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+CBitmap *bmpJoyMouse = NULL;
+int bHaveJoyMouse = 0;
+
+int LoadJoyMouse (void)
+{
+return LoadExtraBitmap (&bmpJoyMouse, "joymouse.tga", &bHaveJoyMouse);
+}
+
+//------------------------------------------------------------------------------
+
+void FreeJoyMouse (void)
+{
+if (bmpJoyMouse) {
+	delete bmpJoyMouse;
+	bHaveJoyMouse = 0;
+	}
 }
 
 //------------------------------------------------------------------------------

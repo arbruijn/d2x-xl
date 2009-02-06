@@ -57,7 +57,7 @@ CHUDIcons	hudIcons;
 
 //	-----------------------------------------------------------------------------
 
-const char *pszObjTallyIcons [] = {"louguard.tga", "shldorb.tga"};
+const char *pszObjTallyIcons [] = {"rboticon.tga", "pwupicon.tga"};
 
 int CHUDIcons::LoadTallyIcons (void)
 {

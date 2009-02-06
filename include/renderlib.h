@@ -54,6 +54,10 @@ int LoadShield (void);
 int LoadDeadzone (void);
 void LoadExtraImages (void);
 void FreeExtraImages (void);
+int LoadDeadzone (void);
+void FreeDeadzone (void);
+int LoadJoyMouse (void);
+void FreeJoyMouse (void);
 
 // Given a list of point numbers, rotate any that haven't been rotated
 // this frame
@@ -104,6 +108,11 @@ extern CBitmap *bmpThruster [2];
 extern CBitmap *bmpShield;
 extern CBitmap *bmpExplBlast;
 extern CBitmap *bmpSparks;
+extern CBitmap *bmpDeadzone;
+extern CBitmap *bmpJoyMouse;
+
+extern int bHaveDeadzone;
+extern int bHaveJoyMouse;
 
 extern tRgbaColorf segmentColors [4];
 

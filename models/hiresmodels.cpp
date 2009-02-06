@@ -392,7 +392,7 @@ if (!bCustom) {
 if (gameStates.app.bNostalgia)
 	gameOpts->render.bHiresModels [0] = 0;
 else /*if (gameOpts->render.bHiresModels [0])*/ {
-	gameOpts.render.bHiresModels [0] = gameOpts.render.bHiresModels [1];
+	gameOpts->render.bHiresModels [0] = gameOpts->render.bHiresModels [1];
 	if (!bCustom && gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 		LoadModelsGauge ();
 	else {

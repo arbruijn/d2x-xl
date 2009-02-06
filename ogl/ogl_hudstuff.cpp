@@ -31,55 +31,8 @@
 #include "ogl_bitmap.h"
 #include "ogl_render.h"
 #include "ogl_hudstuff.h"
+#include "renderlib.h"
 #include "cockpit.h"
-
-//------------------------------------------------------------------------------
-
-CBitmap *bmpDeadzone = NULL;
-int bHaveDeadzone = 0;
-
-int LoadDeadzone (void)
-{
-if (!bHaveDeadzone) {
-	bmpDeadzone = CreateAndReadTGA ("deadzone.tga");
-	bHaveDeadzone = bmpDeadzone ? 1 : -1;
-	}
-return bHaveDeadzone > 0;
-}
-
-//------------------------------------------------------------------------------
-
-void FreeDeadzone (void)
-{
-if (bmpDeadzone) {
-	delete bmpDeadzone;
-	bHaveDeadzone = 0;
-	}
-}
-
-//------------------------------------------------------------------------------
-
-CBitmap *bmpJoyMouse = NULL;
-int bHaveJoyMouse = 0;
-
-int LoadJoyMouse (void)
-{
-if (!bHaveJoyMouse) {
-	bmpJoyMouse = CreateAndReadTGA ("joymouse.tga");
-	bHaveJoyMouse = bmpJoyMouse ? 1 : -1;
-	}
-return bHaveJoyMouse > 0;
-}
-
-//------------------------------------------------------------------------------
-
-void FreeJoyMouse (void)
-{
-if (bmpJoyMouse) {
-	delete bmpJoyMouse;
-	bHaveJoyMouse = 0;
-	}
-}
 
 //------------------------------------------------------------------------------
 
