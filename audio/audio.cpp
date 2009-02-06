@@ -718,7 +718,6 @@ else
 
 void CAudio::Shutdown (void)
 {
-WaitForSoundThread ();
 if (m_info.bAvailable) {
 	StopAll ();
 	songManager.StopAll ();
@@ -741,7 +740,6 @@ audio.Setup (1);
 
 void CAudio::StopAllSounds (void)
 {
-WaitForSoundThread ();
 StopLoopingSound ();
 StopObjectSounds ();
 for (int i = 0; i < MAX_SOUND_CHANNELS; i++)
@@ -965,7 +963,6 @@ audio.StopSound (nChannel);
 
 void CAudio::StopCurrentSong ()
 {
-WaitForSoundThread ();
 if (songManager.Playing ()) {
 	midi.Fadeout ();
 #if USE_SDL_MIXER

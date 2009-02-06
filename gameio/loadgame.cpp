@@ -728,6 +728,7 @@ if (nStage == 0) {
 	if (ReadSoundFile (true)) {
 		gameStates.app.bCustomSounds = true;
 		if (gameOpts->sound.bHires [0] != gameOpts->sound.bHires [1]) {
+			WaitForSoundThread ();
 			audio.Reset ();
 			songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1);
 			}

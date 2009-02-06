@@ -266,7 +266,8 @@ for (i = 0; i < nSoundNum; i++) {
 		soundP->nOffset [0] = sndh.offset + nHeaderSize + nSoundStart;
 		nSounds [0]++;
 		}
-	if (!(soundP->bCustom = bCustom))
+	soundP->bCustom = 0;
+	if (!bCustom)
 		PiggyRegisterSound (szSoundName, 1, bCustom);
 	}
 return (nSounds [1] << 16) | nSounds [0];
