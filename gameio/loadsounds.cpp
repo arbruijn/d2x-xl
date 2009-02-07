@@ -227,6 +227,29 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+void InitWAVInfo (CDigiSound* soundP)
+{
+	tWAVInfo*	infoP = reinterpret_cast<tWAVInfo*> (soundP->data [soundP->bCustom].Buffer ());
+
+memcpy (infoP->header.chunkID, "RIFF", 4);
+infoP->header.chunkSize = soundP->nLength [soundP->bCustom] + sizeof (tWAVInfo) - 8;
+memcpy (infoP->header.riffType, "WAVE", 4);
+
+memcpy (infoP->format.chunkID, "fmt ", 4);
+infoP->format.chunkSize = sizeof (tWAVFormat) - sizeof (infoP->format.chunkID);
+infoP->format.format = 1; //PCM
+infoP->format.channels = 2;
+infoP->format.sampleRate = SAMPLE_RATE_22K;
+infoP->format.blockAlign = 2;
+infoP->format.avgBytesPerSec = infoP->format.sampleRate * infoP->format.blockAlign;
+infoP->format.bitsPerSample = 8;
+
+memcpy (infoP->data.chunkID, "data", 4);
+infoP->data.chunkSize = soundP->nLength [soundP->bCustom];
+}
+
+//------------------------------------------------------------------------------
+
 int SetupSounds (CFile& cf, int nSoundNum, int nSoundStart, bool bCustom, bool bUseLowRes)
 {
 	tPIGSoundHeader	sndh;
@@ -253,12 +276,19 @@ for (i = 0; i < nSoundNum; i++) {
 	if (0 > (j = bCustom ? PiggyFindSound (szSoundName) : i))
 		continue;
 	soundP = &gameData.pig.sound.soundP [j];
-	if (!bUseLowRes && LoadHiresSound (soundP, szSoundName))
+	if (!bUseLowRes && LoadHiresSound (soundP, szSoundName)) {
 		nSounds [1]++;
+		soundP->nOffset [0] = 0;
+		}
 	else {
 		soundP->bHires = 0;
 		soundP->nLength [0] = sndh.length;
+#if USE_SDL_MIXER
+		soundP->data [0].Create (sndh.length + sizeof (tWAVInfo));
+		InitWAVInfo (soundP);
+#else
 		soundP->data [0].Create (sndh.length);
+#endif
 		soundP->nOffset [0] = sndh.offset + nHeaderSize + nSoundStart;
 		nSounds [0]++;
 		}

@@ -1593,15 +1593,15 @@ m_nModel = nModel;
 nSubModels = 0;
 
 while (!cf.EoF ()) {
-	char chunkId [4];
+	char chunkID [4];
 
-	if (!cf.Read (chunkId, sizeof (chunkId), 1)) {
+	if (!cf.Read (chunkID, sizeof (chunkID), 1)) {
 		cf.Close ();
 		return 0;
 		}
-	OOF_PrintLog ("  chunkId = '%c%c%c%c'\n", chunkId [0], chunkId [1], chunkId [2], chunkId [3]);
+	OOF_PrintLog ("  chunkID = '%c%c%c%c'\n", chunkID [0], chunkID [1], chunkID [2], chunkID [3]);
 	nLength = OOF_ReadInt (cf, "nLength");
-	switch (ListType (chunkId)) {
+	switch (ListType (chunkID)) {
 		case 0:
 			if (!ReadTextures (cf, bCustom)) {
 				Destroy ();

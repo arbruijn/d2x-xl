@@ -246,12 +246,13 @@ int CAudioChannel::Resample (CDigiSound *soundP, int bD1Sound, int bMP3)
 	int		i, k, l, nFormat = audio.Format ();
 	ushort*	ps, * ph, nSound;
 	ubyte*	dataP = soundP->data [soundP->bCustom].Buffer ();
+	tWAVInfo	info = *(reinterpret_cast<tWAVInfo*> (dataP)); 
 
 #if DBG
 if (soundP->bCustom)
 	soundP->bCustom = soundP->bCustom;
 #endif
-i = soundP->nLength [soundP->bCustom];
+i = info.data.chunkSize;
 #if SDL_MIXER_CHANNELS == 2
 l = 2 * i;
 if (bD1Sound)
@@ -276,11 +277,11 @@ else {
 #endif
 else if (nFormat == AUDIO_S16LSB)
 	l *= 2;
-if (!m_info.sample.Create (l))
+if (!m_info.sample.Create (l + sizeof (tWAVInfo)))
 	return -1;
 m_info.bResampled = 1;
-ps = reinterpret_cast<ushort*> (m_info.sample.Buffer ());
-ph = reinterpret_cast<ushort*> (m_info.sample.Buffer () + l);
+ps = reinterpret_cast<ushort*> (m_info.sample.Buffer () + sizeof (tWAVInfo));
+ph = reinterpret_cast<ushort*> (m_info.sample.Buffer () + sizeof (tWAVInfo) + l);
 i = k = 0;
 for (;;) {
 	//if (i) 
@@ -345,6 +346,11 @@ for (;;) {
 		}
 	}
 Assert (ps == ph);
+if (nFormat == AUDIO_S16LSB) {
+	info.format.blockAlign = 4;
+	info.format.avgBytesPerSec = info.format.sampleRate * info.format.blockAlign;
+	}
+memcpy (m_info.sample.Buffer (), &info, sizeof (info));
 return m_info.nLength = l;
 }
 
@@ -483,6 +489,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 		if (soundP->bHires) {
 			l = soundP->nLength [soundP->bCustom];
 			m_info.sample.SetBuffer (soundP->data [soundP->bCustom].Buffer (), 1, l);
+			m_info.mixChunkP = Mix_QuickLoad_WAV (reinterpret_cast<Uint8*> (m_info.sample.Buffer ()));
 			}
 		else {
 			if (gameOpts->sound.bHires [0])
@@ -492,8 +499,8 @@ if (gameOpts->sound.bUseSDLMixer) {
 				return -1;
 			if (nSpeed < I2X (1))
 				l = Speedup (soundP, nSpeed);
+			m_info.mixChunkP = Mix_QuickLoad_RAW (reinterpret_cast<Uint8*> (m_info.sample.Buffer ()), l);
 			}
-		m_info.mixChunkP = Mix_QuickLoad_RAW (reinterpret_cast<Uint8*> (m_info.sample.Buffer ()) + 1000, l - 2000);
 		}
 	Mix_VolPan (audio.FreeChannel (), nVolume, nPan);
 	Mix_PlayChannel (audio.FreeChannel (), m_info.mixChunkP, bLooping ? -1 : nLoopEnd - nLoopStart);

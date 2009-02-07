@@ -380,5 +380,35 @@ void Mix_VolPan (int nChannel, int nVolume, int nPan);
 
 //------------------------------------------------------------------------------
 
+typedef struct tWAVHeader {
+	char	chunkID [4];
+	ulong	chunkSize;
+	char	riffType [4];
+} tRIFFChunk;
+
+typedef struct tWAVFormat {
+	char		chunkID [4];
+	ulong		chunkSize;
+	ushort	format;
+	ushort	channels;
+	ulong		sampleRate;
+	ulong		avgBytesPerSec;
+	ushort	blockAlign;
+	ushort	bitsPerSample;
+	} tPCMFormatChunk;
+
+typedef struct tWAVData {
+	char	chunkID [4];
+	ulong	chunkSize;
+} tWAVData;
+
+typedef struct tWAVInfo {
+	tWAVHeader	header;
+	tWAVFormat	format;
+	tWAVData		data;
+} tWAVInfo;
+
+//------------------------------------------------------------------------------
+
 #endif
 
