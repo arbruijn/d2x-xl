@@ -244,8 +244,8 @@ if (m_info.bResampled) {
 int CAudioChannel::Resample (CDigiSound *soundP, int bD1Sound, int bMP3)
 {
 	int		i, k, l, nFormat = audio.Format ();
-	ushort	*ps, *ph, nSound;
-	ubyte		*dataP = soundP->data [soundP->bCustom].Buffer ();
+	ushort*	ps, * ph, nSound;
+	ubyte*	dataP = soundP->data [soundP->bCustom].Buffer ();
 
 #if DBG
 if (soundP->bCustom)
@@ -279,12 +279,12 @@ else if (nFormat == AUDIO_S16LSB)
 if (!m_info.sample.Create (l))
 	return -1;
 m_info.bResampled = 1;
-ph = reinterpret_cast<ushort*> (m_info.sample.Buffer ());
-ps = reinterpret_cast<ushort*> (m_info.sample.Buffer () + l);
-k = 0;
+ps = reinterpret_cast<ushort*> (m_info.sample.Buffer ());
+ph = reinterpret_cast<ushort*> (m_info.sample.Buffer () + l);
+i = k = 0;
 for (;;) {
-	if (i) 
-		nSound = ushort (dataP [--i]);
+	//if (i) 
+		nSound = ushort (dataP [i++]);
 	if (bMP3) { //get as close to 32.000 Hz as possible
 		if (k < 700)
 			nSound <<= k / 100;
@@ -292,49 +292,60 @@ for (;;) {
 			nSound <<= i / 100;
 		else
 			nSound = (nSound - 1) << 8;
-		*(--ps) = nSound;
-		if (ps <= ph)
+		*ps++ = nSound;
+		if (ps >= ph)
 			break;
-		*(--ps) = nSound;
-		if (ps <= ph)
+		*ps++ = nSound;
+		if (ps >= ph)
 			break;
 		if (++k % 11) {
-			*(--ps) = nSound;
-			if (ps <= ph)
+			*ps++ = nSound;
+			if (ps >= ph)
 				break;
 			}
 		}
 	else {
 		if (nFormat == AUDIO_S16LSB) {
+#if 1
+			//nSound = ((nSound + 1) << 7) & 0xff00;
+			ushort s = 0, b = 2;
+			while (nSound) {
+				if (nSound & 1)
+					s |= b;
+				b <<= 2;
+				nSound >>= 1;
+				}
+#else
 			nSound = ushort (32767.0f / 255.0f * float (nSound));
-			*(--ps) = nSound;
-			*(--ps) = nSound;
+#endif
+			*ps++ = nSound;
+			*ps++ = nSound;
 			}
 		else
-			*(--ps) = nSound | (nSound << 8);
-		if (ps <= ph)
+			*ps++ = nSound | (nSound << 8);
+		if (ps >= ph)
 			break;
 		}
 	if (bD1Sound) {
 		if (bMP3) {
-			*(--ps) = nSound;
-			if (ps <= ph)
+			*ps++ = nSound;
+			if (ps >= ph)
 				break;
-			*(--ps) = nSound;
-			if (ps <= ph)
+			*ps++ = nSound;
+			if (ps >= ph)
 				break;
 			if (k % 11) {
-				*(--ps) = nSound;
-				if (ps <= ph)
+				*ps++ = nSound;
+				if (ps >= ph)
 					break;
 				}
 			}
 		else {
 			if (nFormat == AUDIO_S16LSB)
-				*(--ps) = nSound;
+				*ps++ = nSound;
 #if SDL_MIXER_CHANNELS == 2
-			*(--ps) = nSound;
-			if (ps <= ph)
+			*ps++ = nSound;
+			if (ps >= ph)
 				break;
 #endif
 			}
@@ -580,7 +591,6 @@ if (m_info.bPlaying && m_info.sample.Buffer () && m_info.nLength) {
 void CAudio::Init (void)
 {
 memset (&m_info, 0, sizeof (m_info));
-m_info.nFormat = AUDIO_U8;
 m_info.nMaxChannels = 64;
 m_info.nFreeChannel = 0;
 m_info.nVolume = SOUND_MAX_VOLUME;
@@ -615,17 +625,19 @@ int CAudio::Setup (float fSlowDown)
 if (!gameStates.app.bUseSound)
 	return 1;
 
-if (bSDLInitialized)
+if (bSDLInitialized) {
 	SDL_QuitSubSystem (SDL_INIT_AUDIO);
+	Destroy ();
+	}
 if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0) {
 	PrintLog (TXT_SDL_INIT_AUDIO, SDL_GetError ()); PrintLog ("\n");
 	Error (TXT_SDL_INIT_AUDIO, SDL_GetError ());
 	return 1;
 	}
 bSDLInitialized = true;
+Init ();
 if (gameStates.app.bNostalgia)
 	gameOpts->sound.bHires [0] = 0;
-audio.m_channels.Clear ();
 if (gameStates.app.bDemoData)
 	gameOpts->sound.digiSampleRate = SAMPLE_RATE_11K;
 #if USE_OPENAL

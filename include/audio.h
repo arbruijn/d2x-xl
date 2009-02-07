@@ -273,7 +273,10 @@ class CAudio {
 		CStack<CSoundObject>		m_objects;
 
 	public:
-		CAudio () { Init (); }
+		CAudio () { 
+			m_info.nFormat = AUDIO_U8;
+			Init (); 
+			}
 		~CAudio () { Destroy (); }
 		void Init (void);
 #ifndef _WIN32

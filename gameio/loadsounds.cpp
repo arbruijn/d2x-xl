@@ -203,8 +203,8 @@ int LoadHiresSound (CDigiSound *soundP, char *pszSoundName)
 if (!gameOpts->sound.bHires [0])
 	return 0;
 sprintf (szSoundFile, "%s.wav", pszSoundName);
-if (!(*gameFolders.szSoundDir [2] && cf.Open (szSoundFile, gameFolders.szSoundDir [2], "rb", 0)) ||
-	   cf.Open (szSoundFile, gameFolders.szSoundDir [gameOpts->sound.bHires [0] - 1], "rb", 0))
+if (!((*gameFolders.szSoundDir [2] && cf.Open (szSoundFile, gameFolders.szSoundDir [2], "rb", 0)) ||
+	   cf.Open (szSoundFile, gameFolders.szSoundDir [gameOpts->sound.bHires [0] - 1], "rb", 0)))
 	return 0;
 if (0 >= (soundP->nLength [0] = cf.Length ())) {
 	cf.Close ();
