@@ -236,7 +236,7 @@ infoP->header.chunkSize = soundP->nLength [soundP->bCustom] + sizeof (tWAVInfo) 
 memcpy (infoP->header.riffType, "WAVE", 4);
 
 memcpy (infoP->format.chunkID, "fmt ", 4);
-infoP->format.chunkSize = sizeof (tWAVFormat) - sizeof (infoP->format.chunkID);
+infoP->format.chunkSize = sizeof (tWAVFormat) - sizeof (infoP->format.chunkID) - sizeof (infoP->format.chunkSize);
 infoP->format.format = 1; //PCM
 infoP->format.channels = 2;
 infoP->format.sampleRate = SAMPLE_RATE_22K;

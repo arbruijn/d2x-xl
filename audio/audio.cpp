@@ -350,6 +350,7 @@ if (nFormat == AUDIO_S16LSB) {
 	info.format.blockAlign = 4;
 	info.format.avgBytesPerSec = info.format.sampleRate * info.format.blockAlign;
 	}
+info.data.chunkSize = l;
 memcpy (m_info.sample.Buffer (), &info, sizeof (info));
 return m_info.nLength = l;
 }
