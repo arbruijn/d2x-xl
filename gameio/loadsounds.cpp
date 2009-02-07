@@ -240,9 +240,9 @@ infoP->format.chunkSize = sizeof (tWAVFormat) - sizeof (infoP->format.chunkID) -
 infoP->format.format = 1; //PCM
 infoP->format.channels = 2;
 infoP->format.sampleRate = SAMPLE_RATE_22K;
-infoP->format.blockAlign = 2;
-infoP->format.avgBytesPerSec = infoP->format.sampleRate * infoP->format.blockAlign;
 infoP->format.bitsPerSample = 8;
+infoP->format.blockAlign = infoP->format.channels * (infoP->format.bitsPerSample / 8);
+infoP->format.avgBytesPerSec = infoP->format.sampleRate * infoP->format.blockAlign;
 
 memcpy (infoP->data.chunkID, "data", 4);
 infoP->data.chunkSize = soundP->nLength [soundP->bCustom];

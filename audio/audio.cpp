@@ -347,9 +347,11 @@ for (;;) {
 	}
 Assert (ps == ph);
 if (nFormat == AUDIO_S16LSB) {
-	info.format.blockAlign = 4;
+	info.format.bitsPerSample = 16;
+	info.format.blockAlign = info.format.channels * (info.format.bitsPerSample / 8);
 	info.format.avgBytesPerSec = info.format.sampleRate * info.format.blockAlign;
 	}
+info.header.chunkSize = l + sizeof (tWAVInfo) - 8;
 info.data.chunkSize = l;
 memcpy (m_info.sample.Buffer (), &info, sizeof (info));
 return m_info.nLength = l;
