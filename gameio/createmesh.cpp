@@ -805,6 +805,7 @@ if (bOk) {
 	bufP += sizeof (FACES.lMapTexCoord [0]) * mdh.nFaces * 2;
 	FACES.faceVerts.Create (mdh.nFaceVerts);
 	memcpy (FACES.faceVerts.Buffer (), bufP, sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts);
+	gameData.segs.points.Resize (mdh.nVertices);
 	}
 if (ioBuffer) {
 	delete[] ioBuffer;
