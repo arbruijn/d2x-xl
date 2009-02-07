@@ -63,6 +63,7 @@ typedef SAMPLE
 
 class CDigiSound {
 	public:
+		char			szName [9];
 		ubyte			bHires;
 		ubyte			bCustom;
 		int			nLength [2];

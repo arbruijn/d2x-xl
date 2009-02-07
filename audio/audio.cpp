@@ -26,7 +26,7 @@
 #define SDL_MIXER_CHANNELS	2
 
 //end changes by adb
-#define SOUND_BUFFER_SIZE 512
+#define SOUND_BUFFER_SIZE (512 * 4)
 
 #if 1
 #	define D2_SOUND_FORMAT	AUDIO_S16LSB
@@ -288,7 +288,7 @@ if (!m_info.sample.Create (l))
 	return -1;
 m_info.bResampled = 1;
 ph = reinterpret_cast<ushort*> (m_info.sample.Buffer ());
-ps = reinterpret_cast<ushort*> (reinterpret_cast<ubyte*> (ph) + l);
+ps = reinterpret_cast<ushort*> (m_info.sample.Buffer () + l);
 k = 0;
 for (;;) {
 	if (i) 
@@ -313,8 +313,12 @@ for (;;) {
 			}
 		}
 	else {
-#if D2_SOUND_FORMAT == AUDIO_S16LSB
-		nSound = ((nSound + 1) << 7) - 1;
+#if D2_SOUND_FORMAT == AUDIO_U16LSB
+		nSound <<= 7;
+		*(--ps) = nSound;
+		*(--ps) = nSound;
+#elif D2_SOUND_FORMAT == AUDIO_S16LSB
+		nSound = ushort (32767.0f / 255.0f * float (nSound));
 		*(--ps) = nSound;
 		*(--ps) = nSound;
 #else
@@ -498,7 +502,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 			if (nSpeed < I2X (1))
 				l = Speedup (soundP, nSpeed);
 			}
-		m_info.mixChunkP = Mix_QuickLoad_RAW (reinterpret_cast<Uint8*> (m_info.sample.Buffer ()), l);
+		m_info.mixChunkP = Mix_QuickLoad_RAW (reinterpret_cast<Uint8*> (m_info.sample.Buffer ()) + 1000, l - 2000);
 		}
 	Mix_VolPan (audio.FreeChannel (), nVolume, nPan);
 	Mix_PlayChannel (audio.FreeChannel (), m_info.mixChunkP, bLooping ? -1 : nLoopEnd - nLoopStart);

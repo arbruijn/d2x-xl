@@ -262,6 +262,7 @@ for (i = 0; i < nSoundNum; i++) {
 		soundP->nOffset [0] = sndh.offset + nHeaderSize + nSoundStart;
 		nSounds [0]++;
 		}
+	memcpy (soundP->szName, szSoundName, sizeof (soundP->szName));
 	soundP->bCustom = 0;
 	if (!bCustom)
 		PiggyRegisterSound (szSoundName, 1, bCustom);
