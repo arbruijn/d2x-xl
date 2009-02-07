@@ -279,8 +279,6 @@ m_nMaxTriangles = 0;
 m_nMaxTriangles = 0;
 m_nFreeEdges = -1;
 m_nVertices = gameData.segs.nVertices;
-if (!AllocData ())
-	return 0;
 
 tFace *faceP;
 tFaceTriangle *grsTriP;
@@ -289,7 +287,12 @@ int i, nFace = -1;
 short nId = 0;
 
 i = LEVEL_VERTICES + ((gameData.segs.nTris ? gameData.segs.nTris / 2 : gameData.segs.nFaces) << (gameStates.render.nMeshQuality - 1));
+if (i > 65535)
+	return 0;
 if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i)))
+	return 0;
+
+if (!AllocData ())
 	return 0;
 
 for (i = gameData.segs.nTris, grsTriP = TRIANGLES.Buffer (); i; i--, grsTriP++) {
