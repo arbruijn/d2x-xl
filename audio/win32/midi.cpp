@@ -108,9 +108,17 @@ if (!(pszSong && *pszSong))
 	return 0;
 if (m_nVolume < 1)
 	return 0;
+
 bCustom = ((strstr (pszSong, ".mp3") != NULL) || (strstr (pszSong, ".ogg") != NULL));
-if (!(bCustom || (m_hmp = hmp_open (pszSong, bD1Song))))
+if (bCustom) {
+	if (audio.Format () != AUDIO_S16LSB) {
+		audio.SetFormat (AUDIO_S16LSB);
+		audio.Reset ();
+		}
+	}
+else if (!(m_hmp = hmp_open (pszSong, bD1Song)))
 	return 0;
+
 #	if USE_SDL_MIXER
 if (gameOpts->sound.bUseSDLMixer) {
 	char	fnSong [FILENAME_LEN], *pfnSong;

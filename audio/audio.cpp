@@ -28,12 +28,6 @@
 //end changes by adb
 #define SOUND_BUFFER_SIZE (512 * 4)
 
-#if 1
-#	define D2_SOUND_FORMAT	AUDIO_S16LSB
-#else
-#	define D2_SOUND_FORMAT	AUDIO_U8	
-#endif
-
 /* This table is used to add two sound values together and pin
  * the value to avoid overflow.  (used with permission from ARDI)
  * DPH: Taken from SDL/src/SDL_mixer.c.
@@ -249,7 +243,7 @@ if (m_info.bResampled) {
 
 int CAudioChannel::Resample (CDigiSound *soundP, int bD1Sound, int bMP3)
 {
-	int		i, k, l;
+	int		i, k, l, nFormat = audio.Format ();
 	ushort	*ps, *ph, nSound;
 	ubyte		*dataP = soundP->data [soundP->bCustom].Buffer ();
 
@@ -280,10 +274,8 @@ else {
 	return i;
 	}
 #endif
-#if D2_SOUND_FORMAT == AUDIO_S16LSB
-else
+else if (nFormat == AUDIO_S16LSB)
 	l *= 2;
-#endif
 if (!m_info.sample.Create (l))
 	return -1;
 m_info.bResampled = 1;
@@ -313,17 +305,13 @@ for (;;) {
 			}
 		}
 	else {
-#if D2_SOUND_FORMAT == AUDIO_U16LSB
-		nSound <<= 7;
-		*(--ps) = nSound;
-		*(--ps) = nSound;
-#elif D2_SOUND_FORMAT == AUDIO_S16LSB
-		nSound = ushort (32767.0f / 255.0f * float (nSound));
-		*(--ps) = nSound;
-		*(--ps) = nSound;
-#else
-		*(--ps) = nSound | (nSound << 8);
-#endif
+		if (nFormat == AUDIO_S16LSB) {
+			nSound = ushort (32767.0f / 255.0f * float (nSound));
+			*(--ps) = nSound;
+			*(--ps) = nSound;
+			}
+		else
+			*(--ps) = nSound | (nSound << 8);
 		if (ps <= ph)
 			break;
 		}
@@ -342,9 +330,8 @@ for (;;) {
 				}
 			}
 		else {
-#if D2_SOUND_FORMAT == AUDIO_S16LSB
-			*(--ps) = nSound;
-#endif
+			if (nFormat == AUDIO_S16LSB)
+				*(--ps) = nSound;
 #if SDL_MIXER_CHANNELS == 2
 			*(--ps) = nSound;
 			if (ps <= ph)
@@ -593,7 +580,8 @@ if (m_info.bPlaying && m_info.sample.Buffer () && m_info.nLength) {
 void CAudio::Init (void)
 {
 memset (&m_info, 0, sizeof (m_info));
-m_info.nMaxChannels = 16;
+m_info.nFormat = AUDIO_U8;
+m_info.nMaxChannels = 64;
 m_info.nFreeChannel = 0;
 m_info.nVolume = SOUND_MAX_VOLUME;
 m_info.bInitialized = 0;
@@ -659,13 +647,13 @@ if (gameOpts->sound.bUseSDLMixer) {
 	if (fSlowDown <= 0)
 		fSlowDown = 1.0f;
 	if (gameOpts->sound.bHires [0] == 1)
-		h = Mix_OpenAudio (int (SAMPLE_RATE_22K / fSlowDown), AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE);
+		h = Mix_OpenAudio (int (SAMPLE_RATE_22K / fSlowDown), m_info.nFormat = AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE);
 	else if (gameOpts->sound.bHires [0] == 2)
-		h = Mix_OpenAudio (int (SAMPLE_RATE_44K / fSlowDown), AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE);
+		h = Mix_OpenAudio (int (SAMPLE_RATE_44K / fSlowDown), m_info.nFormat = AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE);
 	else if (songManager.MP3 ())
-		h = Mix_OpenAudio (32000, AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE * 10);
+		h = Mix_OpenAudio (32000, m_info.nFormat = AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE * 10);
 	else 
-		h = Mix_OpenAudio (int (gameOpts->sound.digiSampleRate / fSlowDown), D2_SOUND_FORMAT, SDL_MIXER_CHANNELS, SOUND_BUFFER_SIZE);
+		h = Mix_OpenAudio (int (gameOpts->sound.digiSampleRate / fSlowDown), m_info.nFormat, SDL_MIXER_CHANNELS, SOUND_BUFFER_SIZE);
 	if (h < 0) {
 		PrintLog (TXT_SDL_OPEN_AUDIO, SDL_GetError ()); PrintLog ("\n");
 		Warning (TXT_SDL_OPEN_AUDIO, SDL_GetError ());

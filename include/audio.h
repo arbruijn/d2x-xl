@@ -253,6 +253,7 @@ class CAudio {
 				int		bAvailable;
 				int		bNoObjects;
 				int		bLoMem;
+				int		nFormat;
 				int		nMaxChannels;
 				int		nFreeChannel;
 				int		nVolume;
@@ -354,6 +355,8 @@ class CAudio {
 		short XlatSound (short nSound);
 		int UnXlatSound (int nSound);
 
+		inline int Format (void) { return m_info.nFormat; }
+		inline void SetFormat (int nFormat) { m_info.nFormat = nFormat; }
 		inline int Available (void) { return m_info.bAvailable; }
 		inline int ActiveObjects (void) { return m_info.nActiveObjects; }
 		inline int& MaxChannels (void) { return m_info.nMaxChannels; }
