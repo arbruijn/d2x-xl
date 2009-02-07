@@ -990,6 +990,18 @@ return 1;		//blew up!
 
 //------------------------------------------------------------------------------
 
+int CSegment::TexturedSides (void)
+{
+	int nSides = 0;
+
+for (int i = 0; i < 6; i++)
+	if ((m_children [i] < 0) || m_sides [i].IsTextured ())
+		nSides++;
+return nSides;	
+}
+
+//------------------------------------------------------------------------------
+
 void CSegment::CreateSound (short nSound, int nSide)
 {
 audio.CreateSegmentSound (nSound, Index (), nSide, SideCenter (nSide));

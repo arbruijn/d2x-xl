@@ -420,9 +420,8 @@ int CTriMeshBuilder::SplitEdge (tEdge *edgeP, short nPass)
 
 memcpy (tris, edgeP->tris, sizeof (tris));
 memcpy (verts, edgeP->verts, sizeof (verts));
-gameData.segs.fVertices [gameData.segs.nVertices] = CFloatVector::Avg(
-			 gameData.segs.fVertices [verts [0]],
-			 gameData.segs.fVertices [verts [1]]);
+gameData.segs.fVertices [gameData.segs.nVertices] = 
+	CFloatVector::Avg (gameData.segs.fVertices [verts [0]], gameData.segs.fVertices [verts [1]]);
 gameData.segs.vertices [gameData.segs.nVertices].Assign (gameData.segs.fVertices [gameData.segs.nVertices]);
 #if 0
 if (tris [1] >= 0) {
@@ -1307,8 +1306,8 @@ gameData.segs.nFaces = 0;
 gameData.segs.nTris = 0;
 
 // the mesh builder can theoretically add one vertex per segment, so resize the vertex buffers
-gameData.segs.vertices.Resize (LEVEL_VERTICES + LEVEL_SEGMENTS);
-gameData.segs.fVertices.Resize (LEVEL_VERTICES + LEVEL_SEGMENTS);
+gameData.segs.vertices.Resize (LEVEL_VERTICES + LEVEL_SIDES);
+gameData.segs.fVertices.Resize (LEVEL_VERTICES + LEVEL_SIDES);
 
 for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_segFaceP++) {
 	m_bColoredSeg = ((SEGMENTS [nSegment].m_nType >= SEGMENT_IS_WATER) &&

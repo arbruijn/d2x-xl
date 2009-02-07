@@ -866,6 +866,13 @@ if (nOvlTex >= 0)
 
 //------------------------------------------------------------------------------
 
+bool CSide::IsTextured (void)
+{
+return IS_WALL (m_nWall);
+}
+
+//------------------------------------------------------------------------------
+
 short ConvertD1Texture (short nD1Texture, int bForce);
 
 void CSide::Read (CFile& cf, ushort* sideVerts, bool bSolid)

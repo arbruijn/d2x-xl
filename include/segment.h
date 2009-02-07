@@ -175,6 +175,7 @@ class CSide {
 		int Physics (fix& damage, bool bSolid);
 
 		bool IsOpenableDoor (void);
+		bool IsTextured (void);
 
 	private:
 		void SetupCorners (short* verts, int* index);
@@ -310,6 +311,8 @@ class CSegment {
 
 		int Physics (int nSide, fix& damage) { return m_sides [nSide].Physics (damage, m_children [nSide] == -1); }
 		int Physics (fix& xDamage);
+
+		int TexturedSides (void);
 
 		void OperateTrigger (int nSide, CObject *objP, int shot);
 
