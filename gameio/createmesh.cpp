@@ -288,6 +288,10 @@ tTriangle *triP;
 int i, nFace = -1;
 short nId = 0;
 
+i = LEVEL_VERTICES + ((gameData.segs.nTris ? gameData.segs.nTris : gameData.segs.nFaces * 2) << (gameStates.render.nMeshQuality - 1));
+if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i)))
+	return 0;
+
 for (i = gameData.segs.nTris, grsTriP = TRIANGLES.Buffer (); i; i--, grsTriP++) {
 	if (!(triP = AddTriangle (NULL, grsTriP->index, grsTriP))) {
 		FreeData ();
@@ -1380,10 +1384,6 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 		}
 	}
 
-// any additional vertices have been stored, so prune the buffers to the minimally required size
-gameData.segs.vertices.Resize (LEVEL_VERTICES);
-gameData.segs.fVertices.Resize (LEVEL_VERTICES);
-
 for (m_colorP = gameData.render.color.ambient.Buffer (), i = gameData.segs.nVertices; i; i--, m_colorP++)
 	if (m_colorP->color.alpha > 1) {
 		m_colorP->color.red /= m_colorP->color.alpha;
@@ -1391,8 +1391,15 @@ for (m_colorP = gameData.render.color.ambient.Buffer (), i = gameData.segs.nVert
 		m_colorP->color.blue /= m_colorP->color.alpha;
 		m_colorP->color.alpha = 1;
 		}
-if (gameStates.render.bTriangleMesh && !m_triMeshBuilder.Build (nLevel, gameStates.render.nMeshQuality))
+i = !gameStates.render.bTriangleMesh || m_triMeshBuilder.Build (nLevel, gameStates.render.nMeshQuality);
+
+// any additional vertices have been stored, so prune the buffers to the minimally required size
+gameData.segs.fVertices.Resize (LEVEL_VERTICES);
+gameData.segs.vertices.Resize (LEVEL_VERTICES);
+
+if (!i)
 	return 0;
+
 BuildSlidingFaceList ();
 if (gameStates.render.bTriangleMesh)
 	cameraManager.Destroy ();
