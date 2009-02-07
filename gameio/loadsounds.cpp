@@ -358,7 +358,11 @@ for (int i = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]; i; i--, so
 		//if (PiggySoundIsNeeded (i)) 
 			{
 			cf.Seek (soundP->nOffset [bCustom], SEEK_SET);
+#if USE_SDL_MIXER
+			soundP->data [bCustom].Read (cf, soundP->nLength [bCustom], sizeof (tWAVInfo));
+#else
 			soundP->data [bCustom].Read (cf, soundP->nLength [bCustom]);
+#endif
 #if USE_OPENAL
 			PiggyBufferSound (soundP);
 #endif

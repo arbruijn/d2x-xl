@@ -499,7 +499,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 				return -1;
 			if (nSpeed < I2X (1))
 				l = Speedup (soundP, nSpeed);
-			m_info.mixChunkP = Mix_QuickLoad_RAW (reinterpret_cast<Uint8*> (m_info.sample.Buffer ()), l);
+			m_info.mixChunkP = Mix_QuickLoad_WAV (reinterpret_cast<Uint8*> (m_info.sample.Buffer ()));
 			}
 		}
 	Mix_VolPan (audio.FreeChannel (), nVolume, nPan);
