@@ -1305,6 +1305,11 @@ if (gameStates.render.bTriangleMesh)
 PrintLog ("   Creating face list\n");
 gameData.segs.nFaces = 0;
 gameData.segs.nTris = 0;
+
+// the mesh builder can theoretically add one vertex per segment, so resize the vertex buffers
+gameData.segs.vertices.Resize (LEVEL_VERTICES + LEVEL_SEGMENTS);
+gameData.segs.fVertices.Resize (LEVEL_VERTICES + LEVEL_SEGMENTS);
+
 for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_segFaceP++) {
 	m_bColoredSeg = ((SEGMENTS [nSegment].m_nType >= SEGMENT_IS_WATER) &&
 					     (SEGMENTS [nSegment].m_nType <= SEGMENT_IS_TEAM_RED)) ||
@@ -1375,6 +1380,11 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 		m_faceColorP += m_nOvlTexCount * FACE_VERTS;
 		}
 	}
+
+// any additional vertices have been stored, so prune the buffers to the minimally required size
+gameData.segs.vertices.Resize (LEVEL_VERTICES);
+gameData.segs.fVertices.Resize (LEVEL_VERTICES);
+
 for (m_colorP = gameData.render.color.ambient.Buffer (), i = gameData.segs.nVertices; i; i--, m_colorP++)
 	if (m_colorP->color.alpha > 1) {
 		m_colorP->color.red /= m_colorP->color.alpha;
