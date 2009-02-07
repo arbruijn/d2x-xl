@@ -1007,6 +1007,7 @@ int NetworkGetGameParams (int bAutoRun)
 
 	int nNewMission = gameData.missions.nLastMission;
 
+gameOpts->app.bSinglePlayer = 0;
 SetAllAllowablesTo (mpParams.nWeaponFilter);
 networkData.nNamesInfoSecurity = -1;
 
