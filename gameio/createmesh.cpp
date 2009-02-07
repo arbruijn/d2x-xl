@@ -1387,7 +1387,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 	}
 
 // any additional vertices have been stored, so prune the buffers to the minimally required size
-if (!gameData.segs.Resize ())
+if (!(gameData.segs.Resize () && gameData.render.lights.Resize () && gameData.render.color.Resize ()))
 	return 0;
 
 for (m_colorP = gameData.render.color.ambient.Buffer (), i = gameData.segs.nVertices; i; i--, m_colorP++)
@@ -1398,8 +1398,6 @@ for (m_colorP = gameData.render.color.ambient.Buffer (), i = gameData.segs.nVert
 		m_colorP->color.alpha = 1;
 		}
 if (gameStates.render.bTriangleMesh && !m_triMeshBuilder.Build (nLevel, gameStates.render.nMeshQuality))
-
-if (!i)
 	return 0;
 
 if (!(gameData.render.lights.Resize () && gameData.render.color.Resize ()))

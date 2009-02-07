@@ -626,6 +626,8 @@ if (gameData.objs.nObjects >= LEVEL_OBJECTS)
 	return -1;
 nObject = gameData.objs.freeList [gameData.objs.nObjects++];
 #if DBG
+if ((nObject < 0) || (nObject >= LEVEL_OBJECTS))
+	return -1;
 if (nObject == nDbgObj) {
 	PrintLog ("allocating object #%d\n", nObject);
 	nDbgObj = nDbgObj;
@@ -840,6 +842,8 @@ void FreeObject (int nObject)
 	CObject	*objP = OBJECTS + nObject;
 
 #if DBG
+if ((nObject < 0) || (nObject >= LEVEL_OBJECTS))
+	return;
 if (nObject == nDbgObj) {
 	//PrintLog ("freeing object #%d\n", nObject);
 	nDbgObj = nDbgObj;
