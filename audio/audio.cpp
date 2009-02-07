@@ -306,15 +306,8 @@ for (;;) {
 		}
 	else {
 		if (nFormat == AUDIO_S16LSB) {
-#if 1
-			//nSound = ((nSound + 1) << 7) & 0xff00;
-			ushort s = 0, b = 2;
-			while (nSound) {
-				if (nSound & 1)
-					s |= b;
-				b <<= 2;
-				nSound >>= 1;
-				}
+#if 0
+			nSound = ((nSound + 1) << 7) & 0xff00;
 #else
 			nSound = ushort (32767.0f / 255.0f * float (nSound));
 #endif

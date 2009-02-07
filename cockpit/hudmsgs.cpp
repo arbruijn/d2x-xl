@@ -219,7 +219,11 @@ if ((pMsgs->nLast < 0) || (pMsgs->nLast >= HUD_MAX_MSGS))
 	return 0; // Get Rob!!
 pszMsg = pMsgs->szMsgs [pMsgs->nLast];
 vsprintf (pszMsg, format, args);
-/* Produce a colorised version and send it to the console */
+if (strlen (pszMsg) >= HUD_MESSAGE_LENGTH) {
+	PrintLog ("HUD message is too long. Limit is %i characters.\n", HUD_MESSAGE_LENGTH);
+	return 0;
+	}
+// Produce a colorised version and send it to the console
 con_message [0] = CC_COLOR;
 if (pMsgs->nColor != (uint) -1) {
 	con_message [1] = (char) RGBA_RED (pMsgs->nColor) / 2 + 128;
@@ -268,8 +272,6 @@ if (pszLastMsg && (!strcmp (pszLastMsg, pszMsg))) {
 	}
 pMsgs->nLast = temp;
 // Check if memory has been overwritten at this point.
-if (strlen (pszMsg) >= HUD_MESSAGE_LENGTH)
-	Error ("Your message to HUD is too long.  Limit is %i characters.\n", HUD_MESSAGE_LENGTH);
 #ifdef NEWDEMO
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordHUDMessage (pszMsg);
