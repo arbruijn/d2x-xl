@@ -288,7 +288,7 @@ tTriangle *triP;
 int i, nFace = -1;
 short nId = 0;
 
-i = LEVEL_VERTICES + ((gameData.segs.nTris ? gameData.segs.nTris : gameData.segs.nFaces * 2) << (gameStates.render.nMeshQuality - 1));
+i = LEVEL_VERTICES + ((gameData.segs.nTris ? gameData.segs.nTris / 2 : gameData.segs.nFaces) << (gameStates.render.nMeshQuality - 1));
 if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i)))
 	return 0;
 
