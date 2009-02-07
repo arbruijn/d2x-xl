@@ -1260,6 +1260,7 @@ class CColorData {
 	public:
 		CColorData ();
 		bool Create (void);
+		bool Resize (void);
 		void Destroy (void);
 };
 
@@ -1324,6 +1325,7 @@ class CLightData {
 		CLightData ();
 		void Init (void);
 		bool Create (void);
+		bool Resize (void);
 		void Destroy (void);
 };
 
@@ -1705,6 +1707,7 @@ class CSegmentData {
 		CSegmentData ();
 		void Init (void);
 		bool Create (int nSegments, int nVertices);
+		bool Resize (void);
 		void Destroy (void);
 };
 

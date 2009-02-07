@@ -1386,6 +1386,10 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 		}
 	}
 
+// any additional vertices have been stored, so prune the buffers to the minimally required size
+if (!gameData.segs.Resize ())
+	return 0;
+
 for (m_colorP = gameData.render.color.ambient.Buffer (), i = gameData.segs.nVertices; i; i--, m_colorP++)
 	if (m_colorP->color.alpha > 1) {
 		m_colorP->color.red /= m_colorP->color.alpha;
@@ -1393,14 +1397,12 @@ for (m_colorP = gameData.render.color.ambient.Buffer (), i = gameData.segs.nVert
 		m_colorP->color.blue /= m_colorP->color.alpha;
 		m_colorP->color.alpha = 1;
 		}
-i = !gameStates.render.bTriangleMesh || m_triMeshBuilder.Build (nLevel, gameStates.render.nMeshQuality);
-
-// any additional vertices have been stored, so prune the buffers to the minimally required size
-gameData.segs.points.Resize (LEVEL_VERTICES);
-gameData.segs.fVertices.Resize (LEVEL_VERTICES);
-gameData.segs.vertices.Resize (LEVEL_VERTICES);
+if (gameStates.render.bTriangleMesh && !m_triMeshBuilder.Build (nLevel, gameStates.render.nMeshQuality))
 
 if (!i)
+	return 0;
+
+if (!(gameData.render.lights.Resize () && gameData.render.color.Resize ()))
 	return 0;
 
 BuildSlidingFaceList ();

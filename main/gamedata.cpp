@@ -239,6 +239,19 @@ return true;
 
 // ----------------------------------------------------------------------------
 
+bool CLightData::Resize (void)
+{
+if (!(gameStates.app.bNostalgia || lightManager.Create ()))
+	return false;
+return dynamicLight.Resize (LEVEL_VERTICES) &&
+		 dynamicColor.Resize (LEVEL_VERTICES) &&
+		 bGotDynColor.Resize (LEVEL_VERTICES) &&
+		 vertices.Resize (LEVEL_VERTICES) &&
+		 vertexFlags.Resize (LEVEL_VERTICES);
+}
+
+// ----------------------------------------------------------------------------
+
 void CLightData::Destroy (void)
 {
 DESTROY (segDeltas);
@@ -542,10 +555,10 @@ gameData.segs.nSegments = nSegments;
 gameData.segs.nVertices = nVertices;
 CREATE (gameData.segs.vertices, LEVEL_VERTICES, 0);
 CREATE (gameData.segs.fVertices, LEVEL_VERTICES, 0);
-CREATE (SEGMENTS, LEVEL_SEGMENTS, 0);
-CREATE (SEGMENTS, LEVEL_SEGMENTS, 0);
-CREATE (SEGMENTS, LEVEL_SEGMENTS, 0);
 CREATE (gameData.segs.points, LEVEL_VERTICES, 0);
+CREATE (SEGMENTS, LEVEL_SEGMENTS, 0);
+CREATE (SEGMENTS, LEVEL_SEGMENTS, 0);
+CREATE (SEGMENTS, LEVEL_SEGMENTS, 0);
 #if CALC_SEGRADS
 CREATE (gameData.segs.segRads [0], LEVEL_SEGMENTS, 0);
 CREATE (gameData.segs.segRads [1], LEVEL_SEGMENTS, 0);
@@ -561,6 +574,15 @@ for (int i = 0; i < LEVEL_SEGMENTS; i++)
 	SEGMENTS [i].m_objects = -1;
 Init ();
 return faces.Create ();
+}
+
+// ----------------------------------------------------------------------------
+
+bool CSegmentData::Resize (void)
+{
+return gameData.segs.vertices.Resize (LEVEL_VERTICES) &&
+		 gameData.segs.fVertices.Resize (LEVEL_VERTICES) &&
+		 gameData.segs.points.Resize (LEVEL_VERTICES);
 }
 
 // ----------------------------------------------------------------------------
@@ -1150,6 +1172,15 @@ CREATE (vertBright, LEVEL_VERTICES, 0);
 CREATE (ambient, LEVEL_VERTICES, 0);	//static light values
 CREATE (visibleLights, LEVEL_SEGMENTS * 6, 0);
 return true;
+}
+
+// ----------------------------------------------------------------------------
+
+bool CColorData::Resize (void)
+{
+return vertices.Resize (LEVEL_VERTICES) && 
+		 vertBright.Resize (LEVEL_VERTICES) && 
+		 ambient.Resize (LEVEL_VERTICES);
 }
 
 // ----------------------------------------------------------------------------
