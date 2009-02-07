@@ -289,7 +289,7 @@ int i, nFace = -1;
 short nId = 0;
 
 i = LEVEL_VERTICES + ((gameData.segs.nTris ? gameData.segs.nTris / 2 : gameData.segs.nFaces) << (gameStates.render.nMeshQuality - 1));
-if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i)))
+if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i) && gameData.segs.points.Resize (i)))
 	return 0;
 
 for (i = gameData.segs.nTris, grsTriP = TRIANGLES.Buffer (); i; i--, grsTriP++) {
@@ -1312,6 +1312,7 @@ gameData.segs.nTris = 0;
 // the mesh builder can theoretically add one vertex per segment, so resize the vertex buffers
 gameData.segs.vertices.Resize (LEVEL_VERTICES + LEVEL_SIDES);
 gameData.segs.fVertices.Resize (LEVEL_VERTICES + LEVEL_SIDES);
+gameData.segs.points.Resize (LEVEL_VERTICES + LEVEL_SIDES);
 
 for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_segFaceP++) {
 	m_bColoredSeg = ((SEGMENTS [nSegment].m_nType >= SEGMENT_IS_WATER) &&
@@ -1394,6 +1395,7 @@ for (m_colorP = gameData.render.color.ambient.Buffer (), i = gameData.segs.nVert
 i = !gameStates.render.bTriangleMesh || m_triMeshBuilder.Build (nLevel, gameStates.render.nMeshQuality);
 
 // any additional vertices have been stored, so prune the buffers to the minimally required size
+gameData.segs.points.Resize (LEVEL_VERTICES);
 gameData.segs.fVertices.Resize (LEVEL_VERTICES);
 gameData.segs.vertices.Resize (LEVEL_VERTICES);
 
