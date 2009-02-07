@@ -23,8 +23,6 @@
 #include "audio.h"
 #include "soundthreads.h"
 
-#define SDL_MIXER_CHANNELS	2
-
 //end changes by adb
 #define SOUND_BUFFER_SIZE (512 * 4)
 
@@ -87,6 +85,13 @@ static const ubyte mix8[] =
 void*					sndDevHandle;
 pthread_t			threadId;
 pthread_mutex_t	mutex;
+#endif
+
+#define MAKE_WAV	0
+#if MAKE_WAV
+#	define	WAVINFO_SIZE	sizeof (tWAVInfo)
+#else
+#	define	WAVINFO_SIZE	0
 #endif
 
 //------------------------------------------------------------------------------
@@ -239,53 +244,63 @@ if (m_info.bResampled) {
 }
 
 //------------------------------------------------------------------------------
+
+#if MAKE_WAV
+
+void SetupWAVInfo (ubyte* buffer, int nLength)
+{
+	tWAVInfo*	infoP = reinterpret_cast<tWAVInfo*> (buffer);
+
+memcpy (infoP->header.chunkID, "RIFF", 4);
+infoP->header.chunkSize = nLength + sizeof (tWAVInfo) - 8;
+memcpy (infoP->header.riffType, "WAVE", 4);
+
+memcpy (infoP->format.chunkID, "fmt ", 4);
+infoP->format.chunkSize = sizeof (tWAVFormat) - sizeof (infoP->format.chunkID) - sizeof (infoP->format.chunkSize);
+infoP->format.format = 1; //PCM
+infoP->format.channels = 2;
+infoP->format.sampleRate = SAMPLE_RATE_22K;
+infoP->format.bitsPerSample = (audio.Format () == AUDIO_U8) ? 8 : 16;
+infoP->format.blockAlign = infoP->format.channels * (infoP->format.bitsPerSample / 8);
+infoP->format.avgBytesPerSec = infoP->format.sampleRate * infoP->format.blockAlign;
+
+memcpy (infoP->data.chunkID, "data", 4);
+infoP->data.chunkSize = nLength;
+}
+
+#endif
+
+//------------------------------------------------------------------------------
 // resample to 16 bit stereo
 
 int CAudioChannel::Resample (CDigiSound *soundP, int bD1Sound, int bMP3)
 {
-	int		i, k, l, nFormat = audio.Format ();
-	ushort*	ps, * ph, nSound;
+	int		h, i, k, l, nFormat = audio.Format ();
+	float		fade;
+	ushort*	ps, * ph, nSound, nPrevSound;
 	ubyte*	dataP = soundP->data [soundP->bCustom].Buffer ();
-	tWAVInfo	info = *(reinterpret_cast<tWAVInfo*> (dataP)); 
 
 #if DBG
 if (soundP->bCustom)
 	soundP->bCustom = soundP->bCustom;
 #endif
-i = info.data.chunkSize;
-#if SDL_MIXER_CHANNELS == 2
+h = i = soundP->nLength [soundP->bCustom];
 l = 2 * i;
 if (bD1Sound)
 	l *= 2;
 if (bMP3) 
 	l = (l * 32) / 11;	//sample up to approx. 32 kHz
-#else
-if (bMP3) 
- {
-	l = 2 * i;
-	if (bD1Sound)
-		l *= 2;
-	l = (l * 32) / 11;	//sample up to approx. 32 kHz
-	}
-else if (bD1Sound)
-	l = 2 * i;
-else {
-	m_info.sample.Destroy ();
-	m_info.sample.SetBuffer (dataP);
-	return i;
-	}
-#endif
 else if (nFormat == AUDIO_S16LSB)
 	l *= 2;
-if (!m_info.sample.Create (l + sizeof (tWAVInfo)))
+if (!m_info.sample.Create (l + WAVINFO_SIZE))
 	return -1;
 m_info.bResampled = 1;
-ps = reinterpret_cast<ushort*> (m_info.sample.Buffer () + sizeof (tWAVInfo));
-ph = reinterpret_cast<ushort*> (m_info.sample.Buffer () + sizeof (tWAVInfo) + l);
-i = k = 0;
-for (;;) {
+ps = reinterpret_cast<ushort*> (m_info.sample.Buffer () + WAVINFO_SIZE);
+ph = reinterpret_cast<ushort*> (m_info.sample.Buffer () + WAVINFO_SIZE + l);
+;
+for (i = k = 0; i < h; i++) {
 	//if (i) 
-		nSound = ushort (dataP [i++]);
+		nSound = ushort (dataP [i]);
 	if (bMP3) { //get as close to 32.000 Hz as possible
 		if (k < 700)
 			nSound <<= k / 100;
@@ -306,19 +321,34 @@ for (;;) {
 			}
 		}
 	else {
+		fade = float (i) / 500.0f;
+		if (fade > 1)
+			fade = float (h - i) / 500.0f;
+		if (fade > 1)
+			fade = 1.0f;
 		if (nFormat == AUDIO_S16LSB) {
-#if 0
+#if 1
 			nSound = ((nSound + 1) << 7) & 0xff00;
 #else
-			nSound = ushort (32767.0f / 255.0f * float (nSound));
+			nSound = ushort (32767.0f / 255.0f * float (nSound) * fade);
 #endif
+#if 1		// interpolate every 2nd sample
+#if DBG
+#endif
+			*ps = nSound;
+			if (i)
+				*(ps - 1) = ushort ((uint (nSound) + uint (nPrevSound)) / 2);
+			nPrevSound = nSound;
+			ps += 2;
+#else
 			*ps++ = nSound;
 			*ps++ = nSound;
+#endif
 			}
-		else
+		else {
+			nSound = ushort (float (nSound) * fade);
 			*ps++ = nSound | (nSound << 8);
-		if (ps >= ph)
-			break;
+			}
 		}
 	if (bD1Sound) {
 		if (bMP3) {
@@ -337,23 +367,14 @@ for (;;) {
 		else {
 			if (nFormat == AUDIO_S16LSB)
 				*ps++ = nSound;
-#if SDL_MIXER_CHANNELS == 2
 			*ps++ = nSound;
-			if (ps >= ph)
-				break;
-#endif
 			}
 		}
 	}
 Assert (ps == ph);
-if (nFormat == AUDIO_S16LSB) {
-	info.format.bitsPerSample = 16;
-	info.format.blockAlign = info.format.channels * (info.format.bitsPerSample / 8);
-	info.format.avgBytesPerSec = info.format.sampleRate * info.format.blockAlign;
-	}
-info.header.chunkSize = l + sizeof (tWAVInfo) - 8;
-info.data.chunkSize = l;
-memcpy (m_info.sample.Buffer (), &info, sizeof (info));
+#if MAKE_WAV
+SetupWAVInfo (m_info.sample.Buffer (), l);
+#endif
 return m_info.nLength = l;
 }
 
@@ -671,13 +692,13 @@ if (gameOpts->sound.bUseSDLMixer) {
 	else if (songManager.MP3 ())
 		h = Mix_OpenAudio (32000, m_info.nFormat = AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE * 10);
 	else 
-		h = Mix_OpenAudio (int (gameOpts->sound.digiSampleRate / fSlowDown), m_info.nFormat, SDL_MIXER_CHANNELS, SOUND_BUFFER_SIZE);
+		h = Mix_OpenAudio (int (gameOpts->sound.digiSampleRate / fSlowDown), m_info.nFormat, 2, SOUND_BUFFER_SIZE);
 	if (h < 0) {
 		PrintLog (TXT_SDL_OPEN_AUDIO, SDL_GetError ()); PrintLog ("\n");
 		Warning (TXT_SDL_OPEN_AUDIO, SDL_GetError ());
 		return 1;
 		}
-#if 0
+#if 1
 	Mix_Resume (-1);
 	Mix_ResumeMusic ();
 #endif
