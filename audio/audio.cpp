@@ -321,11 +321,15 @@ for (i = k = 0; i < h; i++) {
 			}
 		}
 	else {
+#if 1
+		fade = 1.0f;
+#else
 		fade = float (i) / 500.0f;
 		if (fade > 1)
 			fade = float (h - i) / 500.0f;
 		if (fade > 1)
 			fade = 1.0f;
+#endif
 		if (nFormat == AUDIO_S16LSB) {
 #if 1
 			nSound = ((nSound + 1) << 7) & 0xff00;
@@ -523,7 +527,11 @@ if (gameOpts->sound.bUseSDLMixer) {
 				return -1;
 			if (nSpeed < I2X (1))
 				l = Speedup (soundP, nSpeed);
+#if MAKE_WAV
 			m_info.mixChunkP = Mix_QuickLoad_WAV (reinterpret_cast<Uint8*> (m_info.sample.Buffer ()));
+#else
+			m_info.mixChunkP = Mix_QuickLoad_RAW (reinterpret_cast<Uint8*> (m_info.sample.Buffer ()), l);
+#endif
 			}
 		}
 	Mix_VolPan (audio.FreeChannel (), nVolume, nPan);
