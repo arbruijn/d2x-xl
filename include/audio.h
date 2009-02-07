@@ -273,17 +273,14 @@ class CAudio {
 		CStack<CSoundObject>		m_objects;
 
 	public:
-		CAudio () { 
-			m_info.nFormat = AUDIO_U8;
-			Init (); 
-			}
+		CAudio () { Init (); }
 		~CAudio () { Destroy (); }
 		void Init (void);
 #ifndef _WIN32
 		int InitThread (void);
 #endif
 		void Destroy (void);
-		int Setup (float fSlowDown);
+		int Setup (float fSlowDown, int nFormat = -1);
 		void Shutdown (void);
 		void Close (void);
 		void Reset (void);

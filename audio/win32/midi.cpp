@@ -112,8 +112,8 @@ if (m_nVolume < 1)
 bCustom = ((strstr (pszSong, ".mp3") != NULL) || (strstr (pszSong, ".ogg") != NULL));
 if (bCustom) {
 	if (audio.Format () != AUDIO_S16LSB) {
-		audio.SetFormat (AUDIO_S16LSB);
-		audio.Reset ();
+		audio.Shutdown ();
+		audio.Setup (1, AUDIO_S16LSB);
 		}
 	}
 else if (!(m_hmp = hmp_open (pszSong, bD1Song)))

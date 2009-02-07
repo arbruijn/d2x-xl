@@ -591,6 +591,7 @@ if (m_info.bPlaying && m_info.sample.Buffer () && m_info.nLength) {
 void CAudio::Init (void)
 {
 memset (&m_info, 0, sizeof (m_info));
+m_info.nFormat = AUDIO_U8;
 m_info.nMaxChannels = 64;
 m_info.nFreeChannel = 0;
 m_info.nVolume = SOUND_MAX_VOLUME;
@@ -618,7 +619,7 @@ m_objects.Destroy ();
 
 //------------------------------------------------------------------------------
 /* Initialise audio devices. */
-int CAudio::Setup (float fSlowDown)
+int CAudio::Setup (float fSlowDown, int nFormat)
 {
 	static bool bSDLInitialized = false;
 
@@ -636,6 +637,8 @@ if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0) {
 	}
 bSDLInitialized = true;
 Init ();
+if (nFormat >= 0)
+	m_info.nFormat = nFormat;
 if (gameStates.app.bNostalgia)
 	gameOpts->sound.bHires [0] = 0;
 if (gameStates.app.bDemoData)
