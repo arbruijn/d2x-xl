@@ -396,7 +396,11 @@ return nSounds != 0;
 
 #if USE_SDL_MIXER
 
-#include "SDL_mixer.h"
+#	ifdef __macosx__
+#		include <SDL/SDL_mixer.h>
+#	else
+#		include <SDL_mixer.h>
+#	endif
 
 typedef struct tAddonSound {
 	Mix_Chunk		*chunkP;

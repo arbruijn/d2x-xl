@@ -40,7 +40,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #ifdef __macosx__
 # include <SDL/SDL.h>
-# include <SDL_mixer/SDL_mixerrepo .h>
+# include <SDL_mixer/SDL_mixer.h>
 #else
 #	include <SDL.h>
 #  include <SDL_mixer.h>
