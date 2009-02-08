@@ -887,11 +887,13 @@ launchOption:
 		if (!done && nMouseState && !nOldMouseState && !bAllText) {
 			MouseGetPos (&mx, &my);
 			for (i = 0; i < int (ToS ()); i++) {
+				if (!*Item (i).m_text)
+					continue;
 				x1 = CCanvas::Current ()->Left () + Item (i).m_x - Item (i).m_rightOffset - 6;
 				x2 = x1 + Item (i).m_w;
 				y1 = CCanvas::Current ()->Top () + Item (i).m_y;
 				y2 = y1 + Item (i).m_h;
-				if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
+				if ((mx > x1) && (mx < x2) && (my > y1) && (my < y2)) {
 					if (i + m_props.nScrollOffset - m_props.nMaxNoScroll != choice) {
 						if (bHackDblClickMenuMode) 
 							bDblClick = 0; 
@@ -952,12 +954,14 @@ launchOption:
 						}
 					}
 				if ((i = m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll) < int (ToS ())) {
+					if (!*Item (i).m_text)
+						continue;
 					fontManager.Current ()->StringSize (DOWN_ARROW_MARKER, arrowWidth, arrowHeight, aw);
 					x2 = CCanvas::Current ()->Left () + Item (i - 1).m_x - (gameStates.menus.bHires?24:12);
 					y1 = CCanvas::Current ()->Top () + Item (i - 1).m_y - ((m_props.nStringHeight + 1)*(m_props.nScrollOffset - m_props.nMaxNoScroll));
 					x1 = x2 - arrowWidth;
 					y2 = y1 + arrowHeight;
-					if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
+					if ((mx > x1) && (mx < x2) && (my > y1) && (my < y2)) {
 						choice++;
 						nLastScrollCheck = - 1;
 						if (choice >= m_props.nMaxOnMenu + m_props.nScrollOffset) {
@@ -1234,7 +1238,7 @@ launchOption:
 	 	for (i = 0; i < m_props.nMaxDisplayable + m_props.nScrollOffset - m_props.nMaxNoScroll; i++) {
 			if ((i >= m_props.nMaxNoScroll) && (i < m_props.nScrollOffset))
 				continue;
-			if (!(/*MODERN_STYLE ||*/ (Item (i).m_text && *Item (i).m_text)))
+			if (!(/*MODERN_STYLE ||*/ *Item (i).m_text))
 				continue;
 			if (bStart || MODERN_STYLE || Item (i).m_bRedraw || Item (i).m_bRebuild) {// warning! ugly hack below 
 				bRedraw = 1;
