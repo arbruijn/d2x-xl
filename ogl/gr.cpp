@@ -229,7 +229,6 @@ if ((t = FindArg("-fullscreen"))) {
 	gameStates.ogl.bFullScreen = NumArg (t, 1);
 	//GrToggleFullScreen();
 	}
-SetRenderQuality ();
 if ((t=FindArg ("-gl_reticle")))
 	gameStates.ogl.nReticle = atoi (pszArgList [t + 1]);
 /***/PrintLog ("   initializing internal texture list\n");
@@ -253,6 +252,7 @@ gameStates.gfx.bInstalled = 1;
 InitGammaRamp ();
 //atexit(GrClose);
 /***/PrintLog ("   initializing OpenGL extensions\n");
+SetRenderQuality ();
 OglInitExtensions ();
 OglDestroyDrawBuffer ();
 OglCreateDrawBuffer ();
