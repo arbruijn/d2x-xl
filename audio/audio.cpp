@@ -613,7 +613,7 @@ if (m_info.bPlaying && m_info.sample.Buffer () && m_info.nLength) {
 void CAudio::Init (void)
 {
 memset (&m_info, 0, sizeof (m_info));
-#if 1
+#if 0
 m_info.nFormat = AUDIO_S16LSB; 
 #else
 m_info.nFormat = AUDIO_U8;

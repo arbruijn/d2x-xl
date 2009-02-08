@@ -81,7 +81,7 @@ class CStack : public CArray< _T > {
 
 		inline void Destroy (void) { 
 			CArray<_T>::Destroy ();
-			Init ();
+			m_tos = 0;
 			}
 
 		inline _T *Create (uint length) {

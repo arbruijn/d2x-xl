@@ -912,7 +912,9 @@ else {
 		m_uvls [i].u = fix (cf.ReadShort ()) << 5;
 		m_uvls [i].v = fix (cf.ReadShort ()) << 5;
 		m_uvls [i].l = fix (cf.ReadUShort ()) << 1;
-		gameData.render.color.vertBright [sideVerts [i]] = X2F (m_uvls [i].l);
+		float fBrightness = X2F (m_uvls [i].l);
+		if (gameData.render.color.vertBright [sideVerts [i]] < fBrightness)
+			gameData.render.color.vertBright [sideVerts [i]] = fBrightness;
 		}
 	}
 }

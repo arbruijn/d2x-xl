@@ -1066,12 +1066,12 @@ for (;;) {
 	gameStates.render.nMeshQuality--;
 	}
 gameStates.render.nMeshQuality = gameOpts->render.nMeshQuality;
-
+#if 0
 if (!(gameData.render.lights.Create () &&
 		gameData.render.color.Create () &&
 		gameData.render.shadows.Create ()))
 	return 7;
-		
+#endif	
 if (!gameData.render.mine.Create ())
 	return 4;
 lightManager.Setup (nLevel); //moved to loadgame.cpp::LoadLevel()
