@@ -116,8 +116,8 @@ void hmp_close(hmp_file *hmp)
 	hmp_stop(hmp);
 	for (i = 0; i < hmp->num_trks; i++)
 		if (hmp->trks [i].data)
-			D2_FREE(hmp->trks [i].data);
-	D2_FREE(hmp);
+			delete[] hmp->trks [i].data;
+	delete hmp;
 }
 
 //------------------------------------------------------------------------------
