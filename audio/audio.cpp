@@ -24,7 +24,7 @@
 #include "soundthreads.h"
 
 //end changes by adb
-#define SOUND_BUFFER_SIZE (512 * 4)
+#define SOUND_BUFFER_SIZE (512)
 
 /* This table is used to add two sound values together and pin
  * the value to avoid overflow.  (used with permission from ARDI)
@@ -613,7 +613,7 @@ if (m_info.bPlaying && m_info.sample.Buffer () && m_info.nLength) {
 void CAudio::Init (void)
 {
 memset (&m_info, 0, sizeof (m_info));
-#if 0
+#if 1
 m_info.nFormat = AUDIO_S16LSB; 
 #else
 m_info.nFormat = AUDIO_U8;
