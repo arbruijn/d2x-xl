@@ -126,10 +126,10 @@ if (!psm->m_faces)
 Assert (pmf - m_faces < m_nFaces);
 if (bTextured) {
 	pmf->m_nBitmap = WORDVAL (p+28);
-	CBitmap* bmP = modelBitmaps [pmf->m_nBitmap];
+	CBitmap* bmoP, *bmP = modelBitmaps [pmf->m_nBitmap];
 	if (objColorP) {
-		if (bmP->Override (-1))
-			bmP->Override (-1)->GetAvgColor (objColorP);
+		if ((bmoP = bmP->HasOverride ()))
+			bmoP->GetAvgColor (objColorP);
 		else if (bmP->Buffer ()) {	//don't set color if bitmap not loaded
 			if (bmP->Palette ())
 				bmP->Palette ()->ToRgbaf (bmP->AvgColorIndex (), *objColorP);

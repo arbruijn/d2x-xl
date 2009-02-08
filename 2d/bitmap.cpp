@@ -419,7 +419,7 @@ return j ? m_info.palette->ClosestColor (r / j, g / j, b / j) : 0;
 
 //------------------------------------------------------------------------------
 
-tRgbaColorf *CBitmap::GetAvgColor (tRgbaColorf *colorP);
+tRgbaColorf *CBitmap::GetAvgColor (tRgbaColorf *colorP)
 { 
 tRgbColorb* pc = (m_info.nBPP == 1) ? m_info.palette->Color () + m_info.avgColorIndex : &m_info.avgColor;
 colorP->red = float (pc->red) / 255.0f;
