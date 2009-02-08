@@ -419,6 +419,18 @@ return j ? m_info.palette->ClosestColor (r / j, g / j, b / j) : 0;
 
 //------------------------------------------------------------------------------
 
+tRgbaColorf *CBitmap::GetAvgColor (tRgbaColorf *colorP);
+{ 
+tRgbColorb* pc = (m_info.nBPP == 1) ? m_info.palette->Color () + m_info.avgColorIndex : &m_info.avgColor;
+colorP->red = float (pc->red) / 255.0f;
+colorP->green = float (pc->green) / 255.0f;
+colorP->blue = float (pc->blue) / 255.0f;
+colorP->alpha = 1.0f;
+return colorP;
+}
+
+//------------------------------------------------------------------------------
+
 void CBitmap::Swap_0_255 (void)
 {
 	int	i;

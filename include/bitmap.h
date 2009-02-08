@@ -166,14 +166,7 @@ class CBitmap : public CArray< ubyte > {
 		int HasTransparency (void);
 		int AvgColor (tRgbColorf *colorP = NULL, bool bForce = true);
 		inline tRgbColorb *GetAvgColor (void) { return &m_info.avgColor; }
-		inline tRgbaColorf *GetAvgColor (tRgbaColorf *colorP) { 
-			tRgbColorb* pc = (m_info.nBPP == 1) ? m_info.palette->Color () + m_info.avgColorIndex : &m_info.avgColor;
-			colorP->red = float (pc->red) / 255.0f;
-			colorP->green = float (pc->green) / 255.0f;
-			colorP->blue = float (pc->blue) / 255.0f;
-			colorP->alpha = 1.0f;
-			return colorP;
-			}
+		tRgbaColorf *GetAvgColor (tRgbaColorf *colorP);
 		int AvgColorIndex (void);
 
 		void Swap_0_255 (void);
