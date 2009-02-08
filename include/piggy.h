@@ -249,7 +249,11 @@ extern CHashTable soundNames [2];
 
 #if USE_SDL_MIXER
 
-#	include <SDL_mixer.h>
+#	ifdef __macosx__
+#		include <SDL/SDL_mixer.h>
+#	else
+#		include <SDL_mixer.h>
+#	endif
 
 const char *AddonSoundName (int nSound);
 Mix_Chunk *LoadAddonSound (const char *pszSoundFile, ubyte *bBuiltIn);
