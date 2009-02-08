@@ -494,7 +494,7 @@ if (bmP->Flags () & BM_FLAG_RLE) {
 		bmP->Resize (zSize);
 	#endif
 	#if 1
-	if (bmP->Read (*cfP, zSize - 4, 4) != zSize - 4)
+	if (bmP->Read (*cfP, zSize - 4, 4) != uint (zSize - 4))
 		return -2;
 	zSize = bmP->RLEExpand (NULL, 0);
 	#endif

@@ -1234,14 +1234,14 @@ launchOption:
 	 	for (i = 0; i < m_props.nMaxDisplayable + m_props.nScrollOffset - m_props.nMaxNoScroll; i++) {
 			if ((i >= m_props.nMaxNoScroll) && (i < m_props.nScrollOffset))
 				continue;
-			if (!(MODERN_STYLE || (Item (i).m_text && *Item (i).m_text)))
+			if (!(/*MODERN_STYLE ||*/ (Item (i).m_text && *Item (i).m_text)))
 				continue;
 			if (bStart || MODERN_STYLE || Item (i).m_bRedraw || Item (i).m_bRebuild) {// warning! ugly hack below 
 				bRedraw = 1;
 				if (Item (i).m_bRebuild && Item (i).m_bCentered)
 					Item (i).m_x = fontManager.Current ()->GetCenteredX (Item (i).m_text);
 				if (i >= m_props.nScrollOffset)
- 				Item (i).m_y -= ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
+	 				Item (i).m_y -= ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
 				if (!MODERN_STYLE) 
 					SDL_ShowCursor (0);
 				Item (i).Draw ((i == choice) && !bAllText, bTinyMode);

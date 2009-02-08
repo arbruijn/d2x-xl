@@ -483,7 +483,7 @@ if (info.nFlags & OF_EXPLODING)
 	return;
 if (delayTime) {		//wait a little while before creating explosion
 	//create a placeholder CObject to do the delay, with id==-1
-	int nObject = CreateFireball (-1, info.nSegment, info.position.vPos, 0, RT_NONE);
+	int nObject = CreateFireball (ubyte (-1), info.nSegment, info.position.vPos, 0, RT_NONE);
 	if (nObject < 0) {
 		MaybeDelete ();		//no explosion, die instantly
 #if TRACE

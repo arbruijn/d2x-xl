@@ -548,8 +548,7 @@ if (!networkData.refuse.bWaitForAnswer) {
 		else
 			HUDInitMessage ("%s %s wants to join", 
 								 pszRankStrings [their->player.rank], their->player.callsign);
-		HUDInitMessage ("Alt-1 assigns to team %s. Alt-2 to team %s", 
-							 their->player.callsign, netGame.szTeamName [0], netGame.szTeamName [1]);
+		HUDInitMessage ("Alt-1 assigns to team %s. Alt-2 to team %s", netGame.szTeamName [0], netGame.szTeamName [1]);
 		}               
 	else    
 		HUDInitMessage (TXT_JOIN_ACCEPT, their->player.callsign);

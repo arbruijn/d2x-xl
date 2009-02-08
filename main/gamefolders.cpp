@@ -161,7 +161,7 @@ for (int i = 0; i < 3; i++) {
 
 void GetAppFolders (void)
 {
-	int	i, j;
+	int	i;
 	char	szDataRootDir [FILENAME_LEN];
 	char	*psz;
 #ifdef _WIN32
@@ -179,7 +179,7 @@ if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, getenv (
 #ifdef _WIN32
 if (!*gameFolders.szGameDir) {
 	psz = pszArgList [0];
-	for (j = (int) strlen (psz); j; ) {
+	for (int j = (int) strlen (psz); j; ) {
 		c = psz [--j];
 		if ((c == '\\') || (c == '/')) {
 			memcpy (gameFolders.szGameDir, psz, ++j);
