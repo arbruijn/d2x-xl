@@ -144,6 +144,9 @@ class CMenuItem {
 		void SaveText (void);
 		void RestoreText (void);
 		char* GetInput (void);
+
+		inline bool Selectable (void) { return (m_nType != NM_TYPE_TEXT) && !m_bUnavailable && *m_text; }
+
 	};
 
 //------------------------------------------------------------------------------

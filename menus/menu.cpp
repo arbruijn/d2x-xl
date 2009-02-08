@@ -887,7 +887,7 @@ launchOption:
 		if (!done && nMouseState && !nOldMouseState && !bAllText) {
 			MouseGetPos (&mx, &my);
 			for (i = 0; i < int (ToS ()); i++) {
-				if (!*Item (i).m_text)
+				if (!Item (i).Selectable ())
 					continue;
 				x1 = CCanvas::Current ()->Left () + Item (i).m_x - Item (i).m_rightOffset - 6;
 				x2 = x1 + Item (i).m_w;
@@ -953,9 +953,7 @@ launchOption:
 							}
 						}
 					}
-				if ((i = m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll) < int (ToS ())) {
-					if (!*Item (i).m_text)
-						continue;
+				if ((i = m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll) < int (ToS ()) && Item (i).Selectable ()) {
 					fontManager.Current ()->StringSize (DOWN_ARROW_MARKER, arrowWidth, arrowHeight, aw);
 					x2 = CCanvas::Current ()->Left () + Item (i - 1).m_x - (gameStates.menus.bHires?24:12);
 					y1 = CCanvas::Current ()->Top () + Item (i - 1).m_y - ((m_props.nStringHeight + 1)*(m_props.nScrollOffset - m_props.nMaxNoScroll));
@@ -973,12 +971,14 @@ launchOption:
 				}
 		
 			for (i = m_props.nScrollOffset; i < int (ToS ()); i++) {
+				if (!Item (i).Selectable ())
+					continue;
 				x1 = CCanvas::Current ()->Left () + Item (i).m_x - Item (i).m_rightOffset - 6;
 				x2 = x1 + Item (i).m_w;
 				y1 = CCanvas::Current ()->Top () + Item (i).m_y;
 				y1 -= ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
 				y2 = y1 + Item (i).m_h;
-				if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2)) && (Item (i).m_nType != NM_TYPE_TEXT)) {
+				if ((mx > x1) && (mx < x2) && (my > y1) && (my < y2)) {
 					if (i /* + m_props.nScrollOffset - m_props.nMaxNoScroll*/ != choice) {
 						if (bHackDblClickMenuMode) 
 							bDblClick = 0; 
@@ -1049,7 +1049,7 @@ launchOption:
 			if (choice >= m_props.nScrollOffset)
 				y1 -= ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
 			y2 = y1 + Item (choice).m_h;
-			if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
+			if ((mx > x1) && (mx < x2) && (my > y1) && (my < y2)) {
 				if (bHackDblClickMenuMode) {
 					if (bDblClick) {
 						if (nCurItemP)
