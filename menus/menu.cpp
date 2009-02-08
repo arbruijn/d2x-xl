@@ -1257,26 +1257,26 @@ launchOption:
 				Item (i).UpdateCursor ();
 			}
 #endif
- if (m_props.bIsScrollBox) {
- 	//fontManager.SetCurrent (NORMAL_FONT);
-	if (bRedraw || (nLastScrollCheck != m_props.nScrollOffset)) {
- 	nLastScrollCheck = m_props.nScrollOffset;
- 	fontManager.SetCurrent (SELECTED_FONT);
- 	sy = Item (m_props.nScrollOffset).m_y - ((m_props.nStringHeight + 1)*(m_props.nScrollOffset - m_props.nMaxNoScroll));
- 	sx = Item (m_props.nScrollOffset).m_x - (gameStates.menus.bHires?24:12);
- 	if (m_props.nScrollOffset > m_props.nMaxNoScroll)
-		DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, UP_ARROW_MARKER);
- 	else
-		DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, " ");
-				i = m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll - 1;
- 	sy = Item (i).m_y - ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
- 	sx = Item (i).m_x - (gameStates.menus.bHires ? 24 : 12);
- 	if (m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll < int (ToS ()))
-		DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, DOWN_ARROW_MARKER);
- 	else
-		DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, " ");
-			}
- 		}
+	 if (m_props.bIsScrollBox) {
+ 		//fontManager.SetCurrent (NORMAL_FONT);
+		if (bRedraw || (nLastScrollCheck != m_props.nScrollOffset)) {
+ 			nLastScrollCheck = m_props.nScrollOffset;
+ 			fontManager.SetCurrent (SELECTED_FONT);
+ 			sy = Item (m_props.nScrollOffset).m_y - ((m_props.nStringHeight + 1)*(m_props.nScrollOffset - m_props.nMaxNoScroll));
+ 			sx = Item (m_props.nScrollOffset).m_x - (gameStates.menus.bHires?24:12);
+ 			if (m_props.nScrollOffset > m_props.nMaxNoScroll)
+				DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, UP_ARROW_MARKER);
+ 			else
+				DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, " ");
+			i = m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll - 1;
+ 			sy = Item (i).m_y - ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
+ 			sx = Item (i).m_x - (gameStates.menus.bHires ? 24 : 12);
+ 			if (m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll < int (ToS ()))
+				DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, DOWN_ARROW_MARKER);
+ 			else
+				DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, " ");
+				}
+ 			}
 		if (bCloseBox && (bStart || MODERN_STYLE)) {
 			if (MODERN_STYLE)
 				DrawCloseBox (m_props.x, m_props.y);
