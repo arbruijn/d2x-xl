@@ -92,7 +92,7 @@ extern int SDL_HandleSpecialKeys;
 #ifdef __macosx__
 #	include <SDL/SDL.h>
 #	if USE_SDL_MIXER
-#		include <SDL/SDL_mixer.h>
+#		include <SDL_mixer/SDL_mixer.h>
 #	endif
 #else
 #	include <SDL.h>

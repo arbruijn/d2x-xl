@@ -397,7 +397,7 @@ return nSounds != 0;
 #if USE_SDL_MIXER
 
 #	ifdef __macosx__
-#		include <SDL/SDL_mixer.h>
+#		include <SDL_mixer/SDL_mixer.h>
 #	else
 #		include <SDL_mixer.h>
 #	endif

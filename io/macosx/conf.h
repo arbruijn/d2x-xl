@@ -1,5 +1,8 @@
 #define __macosx__
 
+/* Define to use SDL Mixer */
+#define USE_SDL_MIXER 1
+
 /* Define to enable console */
 #define CONSOLE
 #define TRACE 1
