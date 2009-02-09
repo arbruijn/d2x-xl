@@ -573,8 +573,8 @@ if (m_info.bPlaying && m_info.sample.Buffer () && m_info.nLength) {
 	MixSoundchannelPot (channelP, m_info.sample + m_info.nPosition, stream, len);
 #else
 	ubyte* streamend = stream + len;
-	ubyte* channelData = reinterpret_cast<ubyte*> (m_info.sample + m_info.nPosition);
-	ubyte* channelEnd = reinterpret_cast<ubyte*> (m_info.sample + m_info.nLength);
+	ubyte* channelData = reinterpret_cast<ubyte*> (m_info.sample.Buffer () + m_info.nPosition);
+	ubyte* channelEnd = reinterpret_cast<ubyte*> (m_info.sample.Buffer () + m_info.nLength);
 	ubyte* sp = stream, s;
 	signed char v;
 	fix vl, vr;
@@ -604,7 +604,7 @@ if (m_info.bPlaying && m_info.sample.Buffer () && m_info.nLength) {
 		s = *sp;
 		*(sp++) = mix8 [s + FixMul (v, vr) + 0x80];
 		}
-	m_info.nPosition = int (m_info.sample.Index (channelData));
+	m_info.nPosition = int (channelData - m_info.sample.Buffer ());
 #endif
 	}
 }
