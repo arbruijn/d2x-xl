@@ -452,7 +452,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 				audio.StopAllSounds ();
 				songManager.Play (SONG_TITLE, 1);
 				}
-			RestoreDefaultRobots ();
+			RestoreDefaultModels ();
 			break;
 
 		default:

@@ -91,7 +91,7 @@ int bm_init_use_tbl(void);
 void BMReadAll (CFile&  cf);
 void BMReadWeaponInfoD1 (CFile&  cf);
 void BMReadGameDataD1 (CFile&  cf);
-void RestoreDefaultRobots (void);
+void RestoreDefaultModels (void);
 int ComputeAvgPixel (CBitmap *bmP);
 
 void LoadTextureBrightness (const char *pszLevel, int *brightnessP);

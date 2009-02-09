@@ -888,7 +888,7 @@ gameData.multiplayer.bMoving = -1;
 gameData.missions.nCurrentLevel = nLevel;
 UnloadLevelData (bRestore);
 /*---*/PrintLog ("   restoring default robot settings\n");
-RestoreDefaultRobots ();
+RestoreDefaultModels ();
 MakeModFolders (hogFileManager.m_files.MsnHogFiles.szName);
 songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1);
 #if 1

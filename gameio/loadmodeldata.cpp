@@ -1,4 +1,3 @@
-/* $Id: bm.c,v 1.41 2003/11/03 12:03:43 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -545,7 +544,7 @@ int LoadExitModels (void)
 
 //------------------------------------------------------------------------------
 
-void RestoreDefaultRobots (void)
+void RestoreDefaultModels (void)
 {
 	int	i;
 	ubyte	*p;
@@ -553,6 +552,10 @@ void RestoreDefaultRobots (void)
 gameData.bots.info [0] = gameData.bots.defaultInfo;
 gameData.bots.joints = gameData.bots.defaultJoints;
 for (i = 0; i < gameData.models.nDefPolyModels; i++) {
+#if DBG
+	if (i == nDbgModel)
+		nDbgModel = nDbgModel;
+#endif
 	p = gameData.models.polyModels [0][i].Buffer ();
 	if (gameData.models.polyModels [1][i].DataSize () != gameData.models.polyModels [0][i].DataSize ()) {
 		gameData.models.polyModels [0][i].Destroy ();
@@ -566,7 +569,7 @@ for (i = 0; i < gameData.models.nDefPolyModels; i++) {
 		gameData.models.polyModels [0][i].Destroy ();
 		}
 	}
-for (;i < gameData.models.nPolyModels; i++)
+for (; i < gameData.models.nPolyModels; i++)
 	gameData.models.polyModels [0][i].Destroy ();
 gameData.bots.nTypes [0] = gameData.bots.nDefaultTypes;
 gameData.bots.nJoints = gameData.bots.nDefaultJoints;
