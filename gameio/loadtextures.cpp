@@ -513,7 +513,7 @@ else if (bDefault) {
 	bmP->Read (*cfP, nSize);
 	}
 else
-	return 0;
+	return gameOpts->render.textures.bUseHires [0] ? 0 : -1;
 if (bD1)
 	bmP->Remap (paletteManager.D1 (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 else

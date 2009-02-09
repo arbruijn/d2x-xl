@@ -334,6 +334,8 @@ void ResetModFolders (void)
 *gameFolders.szModDir [1] =
 *gameFolders.szTextureDir [2] =
 *gameFolders.szTextureCacheDir [2] =
+*gameFolders.szTextureDir [3] =
+*gameFolders.szTextureCacheDir [3] =
 *gameFolders.szModelDir [1] = 
 *gameFolders.szModelCacheDir [1] =
 *gameFolders.szModelDir [2] = 

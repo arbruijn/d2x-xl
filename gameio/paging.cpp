@@ -365,8 +365,12 @@ for (int i = 0; i < MAX_GAUGE_BMS; i++)
 
 void PageInAddonBitmap (int bmi)
 {
-if ((bmi < 0) && (bmi >= -MAX_ADDON_BITMAP_FILES))
+if ((bmi < 0) && (bmi >= -MAX_ADDON_BITMAP_FILES)) {
+	int bHires = gameOpts->render.textures.bUseHires [0];
+	gameOpts->render.textures.bUseHires [0] = 1;
 	PageInBitmap (&gameData.pig.tex.addonBitmaps [-bmi - 1], szAddonTextures [-bmi - 1], bmi, 0);
+	gameOpts->render.textures.bUseHires [0] = bHires;
+	}
 }
 
 //------------------------------------------------------------------------------
