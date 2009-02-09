@@ -287,8 +287,12 @@ if (soundP->bCustom)
 #endif
 h = i = soundP->nLength [soundP->bCustom];
 l = 2 * i;
-if (bD1Sound)
-	l *= 2;
+if (bD1Sound) {
+	if (gameOpts->sound.bUseSDLMixer)
+		l *= 2;
+	else
+		bD1Sound = 0;
+	}
 if (bMP3) 
 	l = (l * 32) / 11;	//sample up to approx. 32 kHz
 else if (nFormat == AUDIO_S16LSB)
@@ -300,8 +304,7 @@ ps = reinterpret_cast<ushort*> (m_info.sample.Buffer () + WAVINFO_SIZE);
 ph = reinterpret_cast<ushort*> (m_info.sample.Buffer () + WAVINFO_SIZE + l);
 ;
 for (i = k = 0; i < h; i++) {
-	//if (i) 
-		nSound = ushort (dataP [i]);
+	nSound = ushort (dataP [i]);
 	if (bMP3) { //get as close to 32.000 Hz as possible
 		if (k < 700)
 			nSound <<= k / 100;
@@ -322,12 +325,12 @@ for (i = k = 0; i < h; i++) {
 			}
 		}
 	else {
-		fFade = float (i) / 500.0f;
-		if (fFade > 1)
-			fFade = float (h - i) / 500.0f;
-		if (fFade > 1)
-			fFade = 1.0f;
 		if (nFormat == AUDIO_S16LSB) {
+			fFade = float (i) / 500.0f;
+			if (fFade > 1)
+				fFade = float (h - i) / 500.0f;
+			if (fFade > 1)
+				fFade = 1.0f;
 			nSound = ushort (32767.0f / 255.0f * float (nSound) * fFade);
 #if 1		// interpolate every 2nd sample
 			*ps = nSound;
@@ -341,7 +344,6 @@ for (i = k = 0; i < h; i++) {
 #endif
 			}
 		else {
-			//nSound = ushort (float (nSound) * fFade);
 			*ps++ = nSound | (nSound << 8);
 			}
 		}
@@ -360,9 +362,9 @@ for (i = k = 0; i < h; i++) {
 				}
 			}
 		else {
+			*ps++ = nSound;
 			if (nFormat == AUDIO_S16LSB)
 				*ps++ = nSound;
-			*ps++ = nSound;
 			}
 		}
 	}
@@ -536,8 +538,7 @@ if (pszWAV && *pszWAV)
 	return -1;
 #endif
  {
-	if (1) //(gameStates.sound.bD1Sound && (gameOpts->sound.digiSampleRate != SAMPLE_RATE_11K)) 
-		{
+	if (gameStates.sound.bD1Sound && (gameOpts->sound.digiSampleRate != SAMPLE_RATE_11K)) {
 		int l = Resample (soundP, 0, 0);
 		if (l <= 0)
 			return -1;
@@ -549,7 +550,7 @@ if (pszWAV && *pszWAV)
 	if (nSpeed < I2X (1))
 		Speedup (soundP, nSpeed);
 	}
-m_info.nVolume = FixMul (m_info.nVolume, nVolume);
+m_info.nVolume = FixMul (audio.Volume (), nVolume);
 m_info.nPan = nPan;
 m_info.nPosition = 0;
 m_info.nSoundObj = nSoundObj;
@@ -600,7 +601,7 @@ if (m_info.bPlaying && m_info.sample.Buffer () && m_info.nLength) {
 				}
 			channelData = m_info.sample.Buffer ();
 			}
-		v = *channelData++ - 0x80;
+		v = *(channelData++) - 0x80;
 		s = *streamPos;
 		*streamPos++ = mix8 [s + FixMul (v, vl) + 0x80];
 		s = *streamPos;
