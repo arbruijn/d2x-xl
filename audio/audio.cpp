@@ -107,12 +107,13 @@ static SDL_AudioSpec waveSpec;
 //changed on 980905 by adb to cleanup, add nPan support and optimize mixer
 void _CDECL_ CAudio::MixCallback (void* userdata, Uint8* stream, int len)
 {
-	CAudioChannel*	channelP;
-
 if (!audio.Available ())
 	return;
 memset (stream, 0x80, len); // fix "static" sound bug on Mac OS X
-for (channelP = audio.m_channels.Buffer (); channelP < audio.m_channels + MAX_SOUND_CHANNELS; channelP++)
+
+CAudioChannel*	channelP = audio.m_channels.Buffer ();
+
+for (int i = audio.MaxChannels (); i; i--, channelP++)
 	channelP->Mix (reinterpret_cast<ubyte*> (stream), len);
 }
 
