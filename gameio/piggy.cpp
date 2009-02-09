@@ -579,15 +579,6 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void PiggyLoadLevelData (void)
-{
-PrintLog ("   loading level textures\n");
-PiggyBitmapPageOutAll (0);
-LoadLevelTextures ();
-}
-
-//------------------------------------------------------------------------------
-
 void PiggyBitmapReadD1 (
 	CFile					&cf,
 	CBitmap				*bmP, /* read into this bmP */

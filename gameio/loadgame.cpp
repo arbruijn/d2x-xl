@@ -685,7 +685,7 @@ if (!bRestore) {
 /*---*/PrintLog ("   unloading lightmaps\n");
 lightmapManager.Destroy ();
 /*---*/PrintLog ("   unloading textures\n");
-PiggyBitmapPageOutAll (0);
+UnloadTextures ();
 /*---*/PrintLog ("   unloading custom sounds\n");
 FreeSoundReplacements ();
 /*---*/PrintLog ("   unloading hardware lights\n");
@@ -783,11 +783,11 @@ else {
 		/*---*/PrintLog ("   loading Descent 1 textures\n");
 		LoadD1BitmapReplacements ();
 		if (bLoadTextures)
-			PiggyLoadLevelData ();
+			LoadLevelTextures ();
 		}
 	else {
 		if (bLoadTextures)
-			PiggyLoadLevelData ();
+			LoadLevelTextures ();
 		LoadTextData (pszLevelName, ".msg", gameData.messages);
 		LoadTextData (pszLevelName, ".snd", &gameData.sounds);
 		LoadBitmapReplacements (pszLevelName);

@@ -1042,7 +1042,7 @@ FreeTextData (gameData.messages);
 FreeTextData (&gameData.sounds);
 PrintLog ("unloading hires animations\n");
 PiggyFreeHiresAnimations ();
-PiggyBitmapPageOutAll (0);
+UnloadTextures ();
 PrintLog ("freeing sound buffers\n");
 FreeSoundReplacements ();
 PrintLog ("unloading hoard data\n");

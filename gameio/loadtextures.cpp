@@ -329,6 +329,8 @@ gameData.pig.tex.bitmaps [bD1][bmP->Id ()].SetOverride (NULL);
 bmP->ReleaseTexture ();
 PiggyFreeMask (bmP);
 bmP->SetType (0);
+if (bmP->BPP () == 1)
+	bmP->DelFlags (BM_FLAG_TGA);
 bmP->SetBuffer (NULL);
 return 1;
 }
@@ -343,6 +345,8 @@ int PiggyFreeHiresAnimation (CBitmap *bmP, int bD1)
 if (!(altBmP = bmP->Override ()))
 	return 0;
 bmP->SetOverride (NULL);
+if (bmP->BPP () == 1)
+	bmP->DelFlags (BM_FLAG_TGA);
 if (altBmP->Type () == BM_TYPE_FRAME)
 	if (!(altBmP = altBmP->Parent ()))
 		return 1;
@@ -386,6 +390,8 @@ if (!PiggyFreeHiresAnimation (bmP, 0))
 	bmP->ReleaseTexture ();
 if (bitmapOffsets [bD1][i] > 0)
 	bmP->AddFlags (BM_FLAG_PAGED_OUT);
+if (bmP->BPP () == 1)
+	bmP->DelFlags (BM_FLAG_TGA);
 bmP->SetFromPog (0);
 bmP->SetPalette (NULL);
 PiggyFreeBitmapData (bmP);
@@ -393,7 +399,7 @@ PiggyFreeBitmapData (bmP);
 
 //------------------------------------------------------------------------------
 
-void PiggyBitmapPageOutAll (int bAll)
+void UnloadTextures (void)
 {
 	int		i, bD1;
 	CBitmap	*bmP;
@@ -589,13 +595,18 @@ if (strstr (bmName, "rock204")) {
 if (gameStates.app.bNostalgia)
 	gameOpts->render.textures.bUseHires [0] = 0;
 else {
-	char szLevelFolder [FILENAME_LEN];
-	if (gameData.missions.nCurrentLevel < 0)
-		sprintf (szLevelFolder, "slevel%02d", -gameData.missions.nCurrentLevel);
+	if (*gameFolders.szTextureDir [2]) {
+		char szLevelFolder [FILENAME_LEN];
+		if (gameData.missions.nCurrentLevel < 0)
+			sprintf (szLevelFolder, "slevel%02d", -gameData.missions.nCurrentLevel);
+		else
+			sprintf (szLevelFolder, "level%02d", gameData.missions.nCurrentLevel);
+		sprintf (gameFolders.szTextureDir [3], "%s/%s", gameFolders.szTextureDir [2], szLevelFolder);
+		sprintf (gameFolders.szTextureCacheDir [3], "%s/%s", gameFolders.szTextureCacheDir [2], szLevelFolder);
+		}
 	else
-		sprintf (szLevelFolder, "level%02d", gameData.missions.nCurrentLevel);
-	sprintf (gameFolders.szTextureDir [3], "%s/%s", gameFolders.szTextureDir [2], szLevelFolder);
-	sprintf (gameFolders.szTextureCacheDir [3], "%s/%s", gameFolders.szTextureCacheDir [2], szLevelFolder);
+		*gameFolders.szTextureDir [3] =
+		*gameFolders.szTextureCacheDir [3] = '\0';
 	MakeBitmapFilenames (bmName, gameFolders.szTextureDir [3], gameFolders.szTextureCacheDir [3], fn [1], fn [0], nShrinkFactor);
 	MakeBitmapFilenames (bmName, gameFolders.szTextureDir [2], gameFolders.szTextureCacheDir [2], fn [3], fn [2], nShrinkFactor);
 	MakeBitmapFilenames (bmName, gameFolders.szTextureDir [bD1], gameFolders.szTextureCacheDir [bD1], fn [5], fn [4], nShrinkFactor);
@@ -705,7 +716,7 @@ else
 	}
 if (!bmP->Buffer () || (bitmapCacheUsed > bitmapCacheSize)) {
 	Int3 ();
-	PiggyBitmapPageOutAll (0);
+	UnloadTextures ();
 	goto reloadTextures;
 	}
 if (nIndex >= 0)
