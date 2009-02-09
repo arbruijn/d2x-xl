@@ -536,7 +536,8 @@ if (pszWAV && *pszWAV)
 	return -1;
 #endif
  {
-	if (gameStates.sound.bD1Sound && (gameOpts->sound.digiSampleRate != SAMPLE_RATE_11K)) {
+	if (1) //(gameStates.sound.bD1Sound && (gameOpts->sound.digiSampleRate != SAMPLE_RATE_11K)) 
+		{
 		int l = Resample (soundP, 0, 0);
 		if (l <= 0)
 			return -1;
@@ -572,10 +573,10 @@ if (m_info.bPlaying && m_info.sample.Buffer () && m_info.nLength) {
 #if 0
 	MixSoundchannelPot (channelP, m_info.sample + m_info.nPosition, stream, len);
 #else
-	ubyte* streamend = stream + len;
+	ubyte* streamEnd = stream + len;
 	ubyte* channelData = reinterpret_cast<ubyte*> (m_info.sample.Buffer () + m_info.nPosition);
 	ubyte* channelEnd = reinterpret_cast<ubyte*> (m_info.sample.Buffer () + m_info.nLength);
-	ubyte* sp = stream, s;
+	ubyte* streamPos = stream, s;
 	signed char v;
 	fix vl, vr;
 	int x;
@@ -588,9 +589,10 @@ if (m_info.bPlaying && m_info.sample.Buffer () && m_info.nLength) {
 		vl = 0x10000;
 		vr = x * 2;
 		}
-	vl = FixMul (vl, (x = m_info.nVolume));
+	x = m_info.nVolume;
+	vl = FixMul (vl, x);
 	vr = FixMul (vr, x);
-	while (sp < streamend) {
+	while (streamPos < streamEnd) {
 		if (channelData == channelEnd) {
 			if (!m_info.bLooped) {
 				m_info.bPlaying = 0;
@@ -598,11 +600,11 @@ if (m_info.bPlaying && m_info.sample.Buffer () && m_info.nLength) {
 				}
 			channelData = m_info.sample.Buffer ();
 			}
-		v = *(channelData++) - 0x80;
-		s = *sp;
-		*(sp++) = mix8 [s + FixMul (v, vl) + 0x80];
-		s = *sp;
-		*(sp++) = mix8 [s + FixMul (v, vr) + 0x80];
+		v = *channelData++ - 0x80;
+		s = *streamPos;
+		*streamPos++ = mix8 [s + FixMul (v, vl) + 0x80];
+		s = *streamPos;
+		*streamPos++ = mix8 [s + FixMul (v, vr) + 0x80];
 		}
 	m_info.nPosition = int (channelData - m_info.sample.Buffer ());
 #endif
