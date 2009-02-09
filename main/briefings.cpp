@@ -59,7 +59,7 @@ void SetColors ();
 int NMCheckButtonPress ();
 
 //Begin D1X modification
-#define MAX_BRIEFING_COLORS     8
+#define MAX_BRIEFING_COLORS     9
 //End D1X modification
 
 // Descent 1 briefings
@@ -74,7 +74,8 @@ CBriefing briefing;
 //-----------------------------------------------------------------------------
 
 tRgbaColorb briefFgColors [2][MAX_BRIEFING_COLORS] = {
-	{{0, 160, 0, 255}, 
+	{{255, 255, 255, 255}, 
+	 {0, 160, 0, 255}, 
 	 {160, 132, 140, 255}, 
 	 {32, 124, 216, 255}, 
 	 {0, 0, 216, 255}, 
@@ -82,7 +83,8 @@ tRgbaColorb briefFgColors [2][MAX_BRIEFING_COLORS] = {
 	 {216, 216, 0, 255}, 
 	 {0, 216, 216, 255}, 
 	 {255, 255, 255, 255}}, 
-	{{0, 216, 0, 255}, 
+	{{255, 255, 255, 255}, 
+	 {0, 216, 0, 255}, 
 	 {168, 152, 128, 255}, 
 	 {252, 0, 0, 255}, 
 	 {0, 0, 216, 255}, 
@@ -93,7 +95,8 @@ tRgbaColorb briefFgColors [2][MAX_BRIEFING_COLORS] = {
 	};
 
 tRgbaColorb briefBgColors [2][MAX_BRIEFING_COLORS] = {
-	{{0, 24, 255}, 
+	{{0, 0, 0, 255}, 
+	 {0, 24, 255}, 
 	 {20, 20, 20, 255}, 
 	 {4, 16, 28, 255}, 
 	 {0, 0, 76, 255}, 
@@ -101,7 +104,8 @@ tRgbaColorb briefBgColors [2][MAX_BRIEFING_COLORS] = {
 	 {76, 76, 0, 255}, 
 	 {0, 76, 76, 255}, 
 	 {255, 255, 255, 255}}, 
-	{{0, 76, 0, 255}, 
+	{{0, 0, 0, 255}, 
+	 {0, 76, 0, 255}, 
 	 {56, 56, 56, 255}, 
 	 {124, 0, 0, 255}, 
 	 {0, 0, 76, 255}, 
@@ -940,8 +944,20 @@ return 1;
 
 int CBriefing::HandleC (void)
 {
-m_info.nCurrentColor = ParseMessageInt (m_info.message) - 1;
-Assert ((m_info.nCurrentColor >= 0) && (m_info.nCurrentColor < MAX_BRIEFING_COLORS));
+	char c = *m_info.message;
+
+if ((c == 'F') || (c == 'B')) {
+	m_info.message++;
+	tRgbaColorb* colorP = (c == 'F') ? briefFgColors [gameStates.app.bD1Mission] : briefBgColors [gameStates.app.bD1Mission];
+	colorP->red = ParseMessageInt (m_info.message);
+	colorP->green = ParseMessageInt (m_info.message);
+	colorP->blue = ParseMessageInt (m_info.message);
+	m_info.nCurrentColor = 0;
+	}
+else {
+	m_info.nCurrentColor = ParseMessageInt (m_info.message);
+	Assert ((m_info.nCurrentColor >= 0) && (m_info.nCurrentColor < MAX_BRIEFING_COLORS));
+	}
 m_info.prevCh = 10;
 return 1;
 }

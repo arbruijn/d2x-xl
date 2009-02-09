@@ -810,7 +810,6 @@ else {
 			sprintf (gameFolders.szModelDir [2], "%s/level%02d", gameFolders.szModelDir [1], gameData.missions.nCurrentLevel);
 			sprintf (gameFolders.szModelCacheDir [2], "%s/level%02d", gameFolders.szModelCacheDir [1], gameData.missions.nCurrentLevel);
 			}
-		}
 		LoadHiresModels (2);
 		LoadHiresModels (1);
 		}
