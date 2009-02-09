@@ -171,6 +171,7 @@ void piggy_readSound_data (CDigiSound *snd);
 int PiggyBitmapPageIn (int bmi, int bD1);
 int PageInBitmap (CBitmap *bmP, const char *bmName, int nIndex, int bD1);
 void UnloadTextures (void);
+void ResetTextureFlags (void);
 #endif
 
 void LoadSounds (CFile& cf, bool bCustom = false);

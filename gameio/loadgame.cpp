@@ -779,6 +779,7 @@ if (nStage == 0) {
 	}
 else {
 	ResetPogEffects ();
+	ResetTextureFlags ();
 	if (gameStates.app.bD1Mission) {
 		/*---*/PrintLog ("   loading Descent 1 textures\n");
 		LoadD1BitmapReplacements ();
