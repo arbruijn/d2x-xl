@@ -24,11 +24,13 @@ m_hmp = NULL;
 
 void CMidi::Shutdown (void)
 {
+#if (defined (_WIN32) || USE_SDL_MIXER)
 if (m_hmp) {
 	hmp_close (m_hmp);
 	m_hmp = NULL;
 	songManager.SetPlaying (0);
 	}
+#endif
 Fadeout ();
 }
 
