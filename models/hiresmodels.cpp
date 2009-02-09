@@ -421,15 +421,17 @@ void FreeHiresModels (int bCustom)
 
 for (i = 0; i < gameData.models.nHiresModels; i++)
 	for (j = bCustom; j < 2; j++) {
-		h = gameData.models.oofModels [j][i].m_nModel;
-		if (gameData.models.modelToOOF [j][h]) {
-			gameData.models.modelToOOF [j][h] = NULL;
-			gameData.models.oofModels [j][i].Destroy ();
+		if (0 <= (h = gameData.models.oofModels [j][i].m_nModel)) {
+			if (gameData.models.modelToOOF [j][h]) {
+				gameData.models.modelToOOF [j][h] = NULL;
+				gameData.models.oofModels [j][i].Destroy ();
+				}
 			}
-		h = gameData.models.aseModels [j][i].m_nModel;
-		if (gameData.models.modelToASE [j][h]) {
-			gameData.models.modelToASE [j][h] = NULL;
-			gameData.models.aseModels [j][i].Destroy ();
+		if (0 <= (h = gameData.models.aseModels [j][i].m_nModel)) {
+			if (gameData.models.modelToASE [j][h]) {
+				gameData.models.modelToASE [j][h] = NULL;
+				gameData.models.aseModels [j][i].Destroy ();
+				}
 			}
 		}
 }
