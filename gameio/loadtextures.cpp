@@ -582,7 +582,7 @@ nSize = (int) bmP->FrameSize ();
 if (nIndex >= 0)
 	GetFlagData (bmName, nIndex);
 #if DBG
-if (strstr (bmName, "rock313")) {
+if (strstr (bmName, "rock204")) {
 	sprintf (fn [3], "%s%s%s.tga", gameFolders.szTextureDir [bD1], *gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
 	}
 #endif

@@ -421,11 +421,30 @@ return j ? m_info.palette->ClosestColor (r / j, g / j, b / j) : 0;
 
 tRgbaColorf *CBitmap::GetAvgColor (tRgbaColorf *colorP)
 { 
-tRgbColorb* pc = (m_info.nBPP == 1) ? m_info.palette->Color () + m_info.avgColorIndex : &m_info.avgColor;
+tRgbColorb* pc;
+
+colorP->alpha = 1.0f;
+if (!m_data.buffer) {
+	colorP->red = 
+	colorP->green =
+	colorP->blue = 0;
+	return colorP;
+	}
+
+if (m_info.nBPP == 1) {
+	if (!m_info.palette) {
+		colorP->red = 
+		colorP->green =
+		colorP->blue = 0;
+		return colorP;
+		}	
+	pc = m_info.palette->Color () + m_info.avgColorIndex;
+	}
+else
+	pc = &m_info.avgColor;
 colorP->red = float (pc->red) / 255.0f;
 colorP->green = float (pc->green) / 255.0f;
 colorP->blue = float (pc->blue) / 255.0f;
-colorP->alpha = 1.0f;
 return colorP;
 }
 

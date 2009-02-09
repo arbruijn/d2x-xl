@@ -2529,8 +2529,8 @@ int GameTextSize (void)
 for (h = i = 0; i < j; i++)
 	h += (int) strlen (defaultGameTexts [i][gameStates.app.bEnglish]) + 2;
 for (i = 0; i < BASE_TEXT_COUNT; i++)
-	if (baseGameTexts [0][i])
-		h += (int) strlen (baseGameTexts [0][i]) + 2;
+	if (baseGameTexts [i][0])
+		h += (int) strlen (baseGameTexts [i][0]) + 2;
 	else
 		h += 2;
 return h;
@@ -2556,7 +2556,7 @@ if (!(*pszTexts = new char [h])) {
 	return NULL;
 	}
 for (i = 0; i < j; i++) {
-	pSrc = (i < BASE_TEXT_COUNT) ? const_cast<char*> (baseGameTexts [0][i]) : const_cast<char*> (defaultGameTexts [i - BASE_TEXT_COUNT][gameStates.app.bEnglish]);
+	pSrc = (i < BASE_TEXT_COUNT) ? const_cast<char*> (baseGameTexts [i][0]) : const_cast<char*> (defaultGameTexts [i - BASE_TEXT_COUNT][gameStates.app.bEnglish]);
 #if DUMP_TEXTS == 1
  {
 		char *pi, *pj, s [200];
@@ -2833,7 +2833,7 @@ for (h = i = 0, psz = text; (i < j) && (psz - text < len); i++) {
 	if (!bBinary && ((*ph == ';') || ((*ph == '/') && ph [1] == '/')))
 		continue;
 	if (i < BASE_TEXT_COUNT) {
-		baseGameTexts [0][h] = ph;
+		baseGameTexts [h][0] = ph;
 #if DUMP_TEXTS == 3
 		DumpGameText (fTxt, d2GameTexts [h][0]);
 #endif
@@ -2855,17 +2855,17 @@ for (h = i = 0, psz = text; (i < j) && (psz - text < len); i++) {
 
 if (i == 644) {
 	if (len == SHAREWARE_TEXTSIZE) {
-		baseGameTexts [0][173] = baseGameTexts [0][172];
-		baseGameTexts [0][172] = baseGameTexts [0][171];
-		baseGameTexts [0][171] = baseGameTexts [0][170];
-		baseGameTexts [0][170] = baseGameTexts [0][169];
-		baseGameTexts [0][169] = "Windows Joystick";
+		baseGameTexts [173][0] = baseGameTexts [172][0];
+		baseGameTexts [172][0] = baseGameTexts [171][0];
+		baseGameTexts [171][0] = baseGameTexts [170][0];
+		baseGameTexts [170][0] = baseGameTexts [169][0];
+		baseGameTexts [169][0] = "Windows Joystick";
 		}
-	baseGameTexts [0][644] = "Z1";
-	baseGameTexts [0][645] = "UN";
-	baseGameTexts [0][646] = "P1";
-	baseGameTexts [0][647] = "R1";
-	baseGameTexts [0][648] = "Y1";
+	baseGameTexts [644][0] = "Z1";
+	baseGameTexts [645][0] = "UN";
+	baseGameTexts [646][0] = "P1";
+	baseGameTexts [647][0] = "R1";
+	baseGameTexts [648][0] = "Y1";
 	}
 #if DUMP_TEXTS 
 fclose (fTxt);

@@ -490,7 +490,7 @@ switch (nObjType) {
 				colorP->green =
 				colorP->blue = 0.0f;
 				for (i = j = 0; i < vcP->nFrameCount; i++) {
-					bmP = gameData.pig.tex.bitmapP + vcP->frames [i].index;
+					bmP = gameData.pig.tex.bitmaps [0] + vcP->frames [i].index;
 					if (bmoP = bmP->HasOverride ())
 						bmP = bmoP;
 					tRgbaColorf avgRGB;
