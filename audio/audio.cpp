@@ -482,13 +482,15 @@ if (m_info.source == 0xFFFFFFFF) {
 	}
 #endif
 #if USE_SDL_MIXER
-if (m_info.mixChunkP) {
-	Mix_HaltChannel (m_info.nChannel);
-	if (m_info.bBuiltIn)
-		m_info.bBuiltIn = 0;
-	else
-		Mix_FreeChunk (m_info.mixChunkP);
-	m_info.mixChunkP = NULL;
+if (gameOpts->sound.bUseSDLMixer) {
+	if (m_info.mixChunkP) {
+		Mix_HaltChannel (m_info.nChannel);
+		if (m_info.bBuiltIn)
+			m_info.bBuiltIn = 0;
+		else
+			Mix_FreeChunk (m_info.mixChunkP);
+		m_info.mixChunkP = NULL;
+		}
 	}
 #endif
 if (m_info.bResampled) {
@@ -571,8 +573,8 @@ if (m_info.bPlaying && m_info.sample.Buffer () && m_info.nLength) {
 	MixSoundchannelPot (channelP, m_info.sample + m_info.nPosition, stream, len);
 #else
 	ubyte* streamend = stream + len;
-	ubyte* channelPdata = reinterpret_cast<ubyte*> (m_info.sample + m_info.nPosition);
-	ubyte* channelPend = reinterpret_cast<ubyte*> (m_info.sample + m_info.nLength);
+	ubyte* channelData = reinterpret_cast<ubyte*> (m_info.sample + m_info.nPosition);
+	ubyte* channelEnd = reinterpret_cast<ubyte*> (m_info.sample + m_info.nLength);
 	ubyte* sp = stream, s;
 	signed char v;
 	fix vl, vr;
@@ -589,20 +591,20 @@ if (m_info.bPlaying && m_info.sample.Buffer () && m_info.nLength) {
 	vl = FixMul (vl, (x = m_info.nVolume));
 	vr = FixMul (vr, x);
 	while (sp < streamend) {
-		if (channelPdata == channelPend) {
+		if (channelData == channelEnd) {
 			if (!m_info.bLooped) {
 				m_info.bPlaying = 0;
 				break;
 				}
-			channelPdata = m_info.sample.Buffer ();
+			channelData = m_info.sample.Buffer ();
 			}
-		v = *(channelPdata++) - 0x80;
+		v = *(channelData++) - 0x80;
 		s = *sp;
 		*(sp++) = mix8 [s + FixMul (v, vl) + 0x80];
 		s = *sp;
 		*(sp++) = mix8 [s + FixMul (v, vr) + 0x80];
 		}
-	m_info.nPosition = (int) (channelPdata - m_info.sample);
+	m_info.nPosition = int (m_info.sample.Index (channelData));
 #endif
 	}
 }
