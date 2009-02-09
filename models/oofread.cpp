@@ -1567,12 +1567,13 @@ if (m_nModel >= 0)
 bLogOOF = (fErr != NULL) && FindArg ("-printoof");
 nIndent = 0;
 OOF_PrintLog ("\nreading %s/%s\n", gameFolders.szModelDir [bCustom], filename);
-m_nModel = nModel;
-m_bCustom = bCustom;
 if (!cf.Open (filename, gameFolders.szModelDir [bCustom], "rb", 0)) {
 	OOF_PrintLog ("  file not found");
 	return 0;
 	}
+
+m_nModel = nModel;
+m_bCustom = bCustom;
 
 if (!cf.Read (fileId, sizeof (fileId), 1)) {
 	OOF_PrintLog ("  invalid file id\n");
