@@ -415,6 +415,7 @@ for (bD1 = 0; bD1 < 2; bD1++) {
 	for (i = 0, bmP = gameData.pig.tex.bitmaps [bD1].Buffer (); 
 		  i < gameData.pig.tex.nBitmaps [bD1]; 
 		  i++, bmP++) {
+		gameData.pig.tex.bitmapFlags [bD1][i] &= ~BM_FLAG_TGA;
 		if (bmP->Buffer () && (bitmapOffsets [bD1][i] > 0)) { // only page out bitmaps read from disk
 			bmP->AddFlags (BM_FLAG_PAGED_OUT);
 			PiggyFreeBitmap (bmP, i, bD1);
