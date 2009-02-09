@@ -800,7 +800,20 @@ else {
 	/*---*/PrintLog ("   loading replacement robots\n");
 	if (0 > LoadRobotReplacements (pszLevelName, NULL, 0, 0)) 
 		return -1;
-	LoadHiresModels (1);
+
+	if (*gameFolders.szModelDir [1]) {
+		if (gameData.missions.nCurrentLevel < 0) {
+			sprintf (gameFolders.szModelDir [2], "%s/slevel%02d", gameFolders.szModelDir [1], -gameData.missions.nCurrentLevel);
+			sprintf (gameFolders.szModelCacheDir [2], "%s/slevel%02d", gameFolders.szModelCacheDir [1], -gameData.missions.nCurrentLevel);
+			}
+		else {
+			sprintf (gameFolders.szModelDir [2], "%s/level%02d", gameFolders.szModelDir [1], gameData.missions.nCurrentLevel);
+			sprintf (gameFolders.szModelCacheDir [2], "%s/level%02d", gameFolders.szModelCacheDir [1], gameData.missions.nCurrentLevel);
+			}
+		}
+		LoadHiresModels (2);
+		LoadHiresModels (1);
+		}
 	/*---*/PrintLog ("   initializing cambot\n");
 	InitCamBots (0);
 	/*---*/PrintLog ("   loading mod texts\n");

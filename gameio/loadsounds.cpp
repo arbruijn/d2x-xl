@@ -203,7 +203,8 @@ int LoadHiresSound (CDigiSound *soundP, char *pszSoundName)
 if (!gameOpts->sound.bHires [0])
 	return 0;
 sprintf (szSoundFile, "%s.wav", pszSoundName);
-if (!((*gameFolders.szSoundDir [2] && cf.Open (szSoundFile, gameFolders.szSoundDir [2], "rb", 0)) ||
+if (!((*gameFolders.szSoundDir [3] && cf.Open (szSoundFile, gameFolders.szSoundDir [3], "rb", 0)) ||
+	   (*gameFolders.szSoundDir [2] && cf.Open (szSoundFile, gameFolders.szSoundDir [2], "rb", 0)) ||
 	   cf.Open (szSoundFile, gameFolders.szSoundDir [gameOpts->sound.bHires [0] - 1], "rb", 0)))
 	return 0;
 if (0 >= (soundP->nLength [0] = cf.Length ())) {
@@ -364,6 +365,10 @@ if (bCustom) {
 	if (!(bUseLowRes = cf.Exist (pszFile, pszFolder, 0) != 0)) {
 		pszFile = DefaultSoundFile ();
 		pszFolder = gameFolders.szDataDir;
+		if (gameData.missions.nCurrentLevel < 0)
+			sprintf (gameFolders.szSoundDir [3], "%s/slevel%02d", gameFolders.szSoundDir [2], -gameData.missions.nCurrentLevel);
+		else
+			sprintf (gameFolders.szSoundDir [3], "%s/level%02d", gameFolders.szSoundDir [2], gameData.missions.nCurrentLevel);
 		}
 	}
 else {

@@ -123,6 +123,7 @@ for (int i = 0; i < 3; i++) {
 #	define	DATADIR			"Data"
 #	define	SHADERDIR		"Shaders"
 #	define	MODELDIR			"Models"
+#	define	SOUNDDIR			"Sounds"
 #	define	SOUNDDIR1		"Sounds1"
 #	define	SOUNDDIR2		"Sounds2"
 #	define	CONFIGDIR		"Config"
@@ -142,6 +143,7 @@ for (int i = 0; i < 3; i++) {
 #	define	DATADIR			"data"
 #	define	SHADERDIR		"shaders"
 #	define	MODELDIR			"models"
+#	define	SOUNDDIR			"sounds"
 #	define	SOUNDDIR1		"sounds1"
 #	define	SOUNDDIR2		"sounds2"
 #	define	CONFIGDIR		"config"
@@ -328,11 +330,14 @@ void ResetModFolders (void)
 {
 *gameFolders.szMusicDir =
 *gameFolders.szSoundDir [2] =
+*gameFolders.szSoundDir [3] =
 *gameFolders.szModDir [1] =
 *gameFolders.szTextureDir [2] =
 *gameFolders.szTextureCacheDir [2] =
 *gameFolders.szModelDir [1] = 
-*gameFolders.szModelCacheDir [1] = '\0';
+*gameFolders.szModelCacheDir [1] =
+*gameFolders.szModelDir [2] = 
+*gameFolders.szModelCacheDir [2] = '\0';
 }
 
 // ----------------------------------------------------------------------------
@@ -342,7 +347,7 @@ void MakeModFolders (const char* pszMission)
 ResetModFolders ();
 CFile::SplitPath (pszMission, NULL, gameFolders.szModName, NULL);
 if (!GetAppFolder (gameFolders.szModDir [0], gameFolders.szModDir [1], gameFolders.szModName, "")) {
-	sprintf (gameFolders.szSoundDir [2], "%s/%s", gameFolders.szModDir [1], MUSICDIR);
+	sprintf (gameFolders.szSoundDir [2], "%s/%s", gameFolders.szModDir [1], SOUNDDIR);
 	if (!GetAppFolder (gameFolders.szModDir [1], gameFolders.szTextureDir [2], TEXTUREDIR, "*.tga")) {
 		sprintf (gameFolders.szTextureCacheDir [2], "%s/%s", gameFolders.szModDir [1], TEXTUREDIR);
 		gameOpts->render.textures.bUseHires [0] = 1;

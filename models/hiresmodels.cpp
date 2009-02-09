@@ -270,7 +270,7 @@ if (!(po->Read (szModel [1], replacementModels [i].nModel, replacementModels [i]
 	return 0;
 do {
 	CBP (!replacementModels [i].nModel);
-	gameData.models.modelToOOF [bCustom][replacementModels [i].nModel] = po;
+	gameData.models.modelToOOF [bCustom != 0][replacementModels [i].nModel] = po;
 	} while ((++i < j) && !replacementModels [i].pszHires);
 gameData.models.nHiresModels++;
 if (bCustom)
@@ -299,7 +299,7 @@ if (!(pa->Read (szModel [1], replacementModels [i].nModel, bCustom) ||
 	return 0;
 do {
 	CBP (!replacementModels [i].nModel);
-	gameData.models.modelToASE [bCustom][replacementModels [i].nModel] = pa;
+	gameData.models.modelToASE [bCustom != 0][replacementModels [i].nModel] = pa;
 	} while ((++i < j) && !replacementModels [i].pszHires);
 gameData.models.nHiresModels++;
 if (bCustom)
@@ -317,10 +317,10 @@ short LoadHiresModel (int nModel, short i, int bCustom)
 if (replacementModels [i].pszHires)
 	PrintLog ("Loading model %d (%s)\n", replacementModels [i].nModel, replacementModels [i].pszHires);
 sprintf (szModel, "\001model%d.oof", replacementModels [i].nModel);
-if ((j = LoadASEModel (gameData.models.aseModels [bCustom] + gameData.models.nHiresModels, i, bCustom)))
+if ((j = LoadASEModel (gameData.models.aseModels [bCustom != 0] + gameData.models.nHiresModels, i, bCustom)))
 	return j;
 #if 1
-if ((j = LoadOOFModel (gameData.models.oofModels [bCustom] + gameData.models.nHiresModels, i, bCustom)))
+if ((j = LoadOOFModel (gameData.models.oofModels [bCustom != 0] + gameData.models.nHiresModels, i, bCustom)))
 	return j;
 #endif
 return bCustom ? ++i : LoadLoresModel (i);

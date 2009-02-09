@@ -717,10 +717,8 @@ else
 #endif
  {
 	waveSpec.freq = (int) (gameOpts->sound.digiSampleRate / fSlowDown);
-	//added/changed by Sam Lantinga on 12/01/98 for new SDL version
 	waveSpec.format = AUDIO_U8;
 	waveSpec.channels = 2;
-	//end this section addition/change - channelP
 	waveSpec.samples = SOUND_BUFFER_SIZE * (gameOpts->sound.digiSampleRate / SAMPLE_RATE_11K);
 	waveSpec.callback = CAudio::MixCallback;
 	if (SDL_OpenAudio (&waveSpec, NULL) < 0) {

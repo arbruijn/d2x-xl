@@ -71,6 +71,7 @@ class CModel {
 		int						m_nSubModels;
 		int						m_nVerts;
 		int						m_nFaces;
+		int						m_bCustom;
 
 	public:
 		CModel () { Init (); }
@@ -79,16 +80,16 @@ class CModel {
 		bool Create (void);
 		void Destroy (void);
 		int Read (const char* filename, short nModel, int bCustom);
-		int ReloadTextures (int bCustom);
+		int ReloadTextures (void);
 		int ReleaseTextures (void);
 		int FreeTextures (void);
 
 		static int Error (const char *pszMsg);
 
 	private:
-		int ReadTexture (CFile& cf, int nBitmap, int bCustom);
-		int ReadMaterial (CFile& cf, int bCustom);
-		int ReadMaterialList (CFile& cf, int bCustom);
+		int ReadTexture (CFile& cf, int nBitmap);
+		int ReadMaterial (CFile& cf);
+		int ReadMaterialList (CFile& cf);
 		int FindSubModel (const char *pszName);
 		void LinkSubModels (void);
 		int ReadSubModel (CFile& cf);

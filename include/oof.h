@@ -368,6 +368,7 @@ class CModel {
 	public:
 		short					m_nModel;
 		int					m_nVersion;
+		int					m_bCustom;
 		int					m_nFlags;
 		float					m_fMaxRadius;
 		CFloatVector		m_vMin;
@@ -394,14 +395,14 @@ class CModel {
 		void Destroy (void);
 		int Read (char *filename, short nModel, int bFlipV, int bCustom);
 		int ReleaseTextures (void);
-		int ReloadTextures (int bCustom);
+		int ReloadTextures (void);
 		int FreeTextures (void);
 		int Render (CObject *objP, float *fLight, int bCloaked);
 		int RenderShadow (CObject *objP, float *fLight);
 
 	private:
 		int ReadInfo (CFile& cf);
-		int ReadTextures (CFile& cf, int bCustom);
+		int ReadTextures (CFile& cf);
 		void BuildAnimMatrices (void);
 		void AssignChildren (void);
 		inline void LinkSubModelBatteries (int iObject, int iBatt);

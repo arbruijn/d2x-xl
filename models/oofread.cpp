@@ -1266,9 +1266,9 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int CModel::ReloadTextures (int bCustom)
+int CModel::ReloadTextures (void)
 {
-return m_textures.Bind (bCustom);
+return m_textures.Bind (m_bCustom);
 }
 
 //------------------------------------------------------------------------------
@@ -1281,7 +1281,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int CModel::ReadTextures (CFile& cf, int bCustom)
+int CModel::ReadTextures (CFile& cf)
 {
 	int			i;
 	char*			pszName;
@@ -1307,7 +1307,7 @@ for (i = 0; i < m_textures.m_nBitmaps; i++) {
 		return 0;
 		}
 	m_textures.m_names [i].SetBuffer (pszName, 0, strlen (pszName) + 1);
-	if (!ReadModelTGA (m_textures.m_names [i].Buffer (), m_textures.m_bitmaps + i, bCustom)) {
+	if (!ReadModelTGA (m_textures.m_names [i].Buffer (), m_textures.m_bitmaps + i, m_bCustom)) {
 #if DBG
 		bOk = 0;
 #else
@@ -1331,7 +1331,7 @@ return 1;
 
 void CModel::Init (void)
 {
-m_nModel = 0;
+m_nModel = -1;
 m_nVersion = 0;
 m_nFlags = 0;
 m_nDetailLevels = 0;
@@ -1557,6 +1557,9 @@ for (i = 0, pso = m_subModels.Buffer (); i < m_nSubModels; i++, pso++)
 
 int CModel::Read (char *filename, short nModel, int bFlipV, int bCustom)
 {
+if (m_nModel >= 0)
+	return 1;
+
 	CFile			cf;
 	char			fileId [4];
 	int			i, nLength, nFrames, nSubModels, bTimed = 0;
@@ -1564,6 +1567,8 @@ int CModel::Read (char *filename, short nModel, int bFlipV, int bCustom)
 bLogOOF = (fErr != NULL) && FindArg ("-printoof");
 nIndent = 0;
 OOF_PrintLog ("\nreading %s/%s\n", gameFolders.szModelDir [bCustom], filename);
+m_nModel = nModel;
+m_bCustom = bCustom;
 if (!cf.Open (filename, gameFolders.szModelDir [bCustom], "rb", 0)) {
 	OOF_PrintLog ("  file not found");
 	return 0;
@@ -1589,7 +1594,6 @@ if (m_nVersion >= 22) {
 	m_frameInfo.m_nFirstFrame = 0;
 	m_frameInfo.m_nLastFrame = 0;
 	}
-m_nModel = nModel;
 nSubModels = 0;
 
 while (!cf.EoF ()) {
@@ -1603,7 +1607,7 @@ while (!cf.EoF ()) {
 	nLength = OOF_ReadInt (cf, "nLength");
 	switch (ListType (chunkID)) {
 		case 0:
-			if (!ReadTextures (cf, bCustom)) {
+			if (!ReadTextures (cf)) {
 				Destroy ();
 				return 0;
 				}
@@ -1698,7 +1702,7 @@ AssignChildren ();
 LinkBatteries ();
 BuildPosTickRemapList ();
 BuildRotTickRemapList ();
-gameData.models.bHaveHiresModel [this - gameData.models.oofModels [bCustom].Buffer ()] = 1;
+gameData.models.bHaveHiresModel [this - gameData.models.oofModels [bCustom != 0].Buffer ()] = 1;
 return 1;
 }
 
@@ -1726,7 +1730,7 @@ int OOF_ReloadTextures (void)
 PrintLog ("reloading OOF model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
 	for (i = gameData.models.nHiresModels, modelP = gameData.models.oofModels [bCustom].Buffer (); i; i--, modelP++)
-		if (!modelP->ReloadTextures (bCustom))
+		if (!modelP->ReloadTextures ())
 			return 0;
 return 1;
 }
