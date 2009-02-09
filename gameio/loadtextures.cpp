@@ -435,7 +435,7 @@ void ResetTextureFlags (void)
 console.printf (CON_VERBOSE, "Resetting texture flags\n");
 #endif
 for (bD1 = 0; bD1 < 2; bD1++)
-	for (i = 0; i < gameData.pig.tex.nBitmaps [bD1]; i++, bmP++)
+	for (i = 0; i < gameData.pig.tex.nBitmaps [bD1]; i++)
 		gameData.pig.tex.bitmapFlags [bD1][i] &= ~BM_FLAG_TGA;
 }
 
