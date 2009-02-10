@@ -687,8 +687,8 @@ return !gameStates.app.bD1Mission &&
 
 //------------------------------------------------------------------------------
 
-float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int bIsMonitor,
-					  tRgbaColorf *colorP, int *nColor, ubyte *bTextured, ubyte* bCloaked)
+float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int bIsMonitor, 
+					  tRgbaColorf *colorP, int *nColor, ubyte *bTextured, ubyte *bCloaked)
 {
 	static tRgbaColorf cloakColor = {0, 0, 0, 0};
 
@@ -751,7 +751,7 @@ return (bForce || gameStates.render.bDoCameras) ? cameraManager.GetFaceCamera (n
 
 //------------------------------------------------------------------------------
 
-int SetupMonitorFace (short nSegment, short nSide, short nCamera, CFace *faceP)
+int SetupMonitorFace (short nSegment, short nSide, short nCamera, CSegFace *faceP)
 {
 	CCamera		*cameraP = cameraManager.Camera (nCamera);
 	int			bHaveMonitorBg, bIsTeleCam = cameraP->GetTeleport ();

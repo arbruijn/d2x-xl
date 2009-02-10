@@ -234,7 +234,7 @@ return sqrt (dx * dx + dy * dy + dz * dz) / (2 * (double) I2X (1));
 int CLightmapManager::Init (int bVariable)
 {
 	CDynLight		*pl;
-	CFace			*faceP = NULL;
+	CSegFace			*faceP = NULL;
 	int				bIsLight, nIndex, i; 
 	short				t; 
 	tLightmapInfo	*lmiP;  //temporary place to put light data.
@@ -569,7 +569,7 @@ int CLightmapManager::Save (int nLevel)
 										m_list.nBuffers};
 	int				i, bOk;
 	char				szFilename [FILENAME_LEN];
-	CFace			*faceP;
+	CSegFace			*faceP;
 
 if (!(RENDERPATH && gameStates.app.bCacheLightmaps && m_list.nLights && m_list.nBuffers))
 	return 0;
@@ -602,7 +602,7 @@ int CLightmapManager::Load (int nLevel)
 	tLightmapDataHeader ldh;
 	int				i, bOk;
 	char				szFilename [FILENAME_LEN];
-	CFace			*faceP;
+	CSegFace			*faceP;
 
 if (!(RENDERPATH && gameStates.app.bCacheLightmaps))
 	return 0;

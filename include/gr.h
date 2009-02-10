@@ -230,7 +230,7 @@ typedef struct tFaceTriangle {
 	int					nIndex;
 	} tFaceTriangle;
 
-class CFace {
+class CSegFace {
 	public:
 		ushort				index [4];
 		ushort				*triIndex;
@@ -277,10 +277,10 @@ class CFace {
 		char					nType;
 		char					nSegColor;
 		char					nShader;
-		CFace*				nextSlidingFace;
-	};
+		CSegFace*			nextSlidingFace;
+		};
 
-inline int operator- (CFace* f, CArray<CFace>& a) { return a.Index (f); }
+inline int operator- (CSegFace* f, CArray<CSegFace>& a) { return a.Index (f); }
 
 typedef struct tDisplayModeInfo {
 	int	VGA_mode;

@@ -54,7 +54,7 @@ class CLightRenderData {
 
 class CDynLightInfo {
 	public:
-		CFace*			faceP;
+		CSegFace*			faceP;
 		CFixVector		vPos;
 		CFloatVector	vDirf;
 		tRgbaColorf		color;
@@ -200,7 +200,7 @@ class CLightManager {
 		void Swap (CDynLight* pl1, CDynLight* pl2);
 		int Toggle (short nSegment, short nSide, short nObject, int bState);
 		void Register (tFaceColor *colorP, short nSegment, short nSide);
-		int Add (CFace* faceP, tRgbaColorf *colorP, fix xBrightness, short nSegment,
+		int Add (CSegFace* faceP, tRgbaColorf *colorP, fix xBrightness, short nSegment,
 				   short nSide, short nObject, short nTexture, CFixVector *vPos);
 		void Delete (short nLight);
 		void DeleteLightnings (void);
@@ -211,7 +211,7 @@ class CLightManager {
 		void Transform (int bStatic, int bVariable);
 		ubyte VariableVertexLights (int nVertex);
 		void SetNearestToVertex (int nFace, int nVertex, CFixVector *vNormalP, ubyte nType, int bStatic, int bVariable, int nThread);
-		int SetNearestToFace (CFace* faceP, int bTextured);
+		int SetNearestToFace (CSegFace* faceP, int bTextured);
 		short SetNearestToSegment (int nSegment, int nFace, int bVariable, int nType, int nThread);
 		void SetNearestStatic (int nSegment, int bStatic, ubyte nType, int nThread);
 		short SetNearestToPixel (short nSegment, short nSide, CFixVector *vNormal, CFixVector *vPixelPos, float fLightRad, int nThread);
@@ -261,7 +261,7 @@ extern CLightManager lightManager;
 #if 0
 
 void RegisterLight (tFaceColor *pc, short nSegment, short nSide);
-int lightManager.Add (CFace *faceP, tRgbaColorf *pc, fix xBrightness, 
+int lightManager.Add (CSegFace *faceP, tRgbaColorf *pc, fix xBrightness, 
 					  short nSegment, short nSide, short nOwner, short nTexture, CFixVector *vPos);
 int RemoveDynLight (short nSegment, short nSide, short nObject);
 void AddDynGeometryLights (void);
@@ -275,7 +275,7 @@ short FindDynLight (short nSegment, short nSide, short nObject);
 int ToggleDynLight (short nSegment, short nSide, short nObject, int bState);
 void SetDynLightMaterial (short nSegment, short nSide, short nObject);
 void SetNearestVertexLights (int nFace, int nVertex, CFixVector *vNormalP, ubyte nType, int bStatic, int bVariable, int nThread);
-int SetNearestFaceLights (CFace *faceP, int bTextured);
+int SetNearestFaceLights (CSegFace *faceP, int bTextured);
 short SetNearestPixelLights (short nSegment, short nSide, CFixVector *vNormal, CFixVector *vPixelPos, float fLightRad, int nThread);
 void SetNearestStaticLights (int nSegment, int bStatic, ubyte nType, int nThread);
 void ResetNearestStaticLights (int nSegment, int nThread);

@@ -90,7 +90,7 @@ PROF_END(ptFaceList)
 
 //------------------------------------------------------------------------------
 
-int AddFaceListItem (CFace *faceP, int nThread)
+int AddFaceListItem (CSegFace *faceP, int nThread)
 {
 if (!(faceP->widFlags & WID_RENDER_FLAG))
 	return 0;
@@ -145,7 +145,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void LoadFaceBitmaps (CSegment *segP, CFace *faceP)
+void LoadFaceBitmaps (CSegment *segP, CSegFace *faceP)
 {
 	CSide	*sideP = segP->m_sides + faceP->nSide;
 	short	nFrame = sideP->m_nFrame;
@@ -197,9 +197,9 @@ else {
 
 #if RENDER_DEPTHMASK_FIRST
 
-void SplitFace (tSegFaces *segFaceP, CFace *faceP)
+void SplitFace (tSegFaces *segFaceP, CSegFace *faceP)
 {
-	CFace *newFaceP;
+	CSegFace *newFaceP;
 
 if (gameStates.render.bPerPixelLighting)
 	return;
@@ -240,7 +240,7 @@ if ((newFaceP->bIsLight = IsLight (newFaceP->nBaseTex)))
 
 //------------------------------------------------------------------------------
 
-void FixTriangleFan (CSegment *segP, CFace *faceP)
+void FixTriangleFan (CSegment *segP, CSegFace *faceP)
 {
 if (((faceP->nType = segP->Type (faceP->nSide)) == SIDE_IS_TRI_13)) {	//rearrange vertex order for TRIANGLE_FAN rendering
  {
@@ -271,7 +271,7 @@ if (((faceP->nType = segP->Type (faceP->nSide)) == SIDE_IS_TRI_13)) {	//rearrang
 
 //------------------------------------------------------------------------------
 
-bool RenderSolidFace (CSegment *segP, CFace *faceP, int bDepthOnly)
+bool RenderSolidFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
 {
 if (!(faceP->widFlags & WID_RENDER_FLAG))
 	return false;
@@ -284,7 +284,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool RenderWallFace (CSegment *segP, CFace *faceP, int bDepthOnly)
+bool RenderWallFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
 {
 if (!(faceP->widFlags & WID_RENDER_FLAG))
 	return false;
@@ -297,7 +297,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool RenderColoredFace (CSegment *segP, CFace *faceP, int bDepthOnly)
+bool RenderColoredFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
 {
 if (!(faceP->widFlags & WID_RENDER_FLAG))
 	return false;
@@ -316,7 +316,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool RenderCoronaFace (CSegment *segP, CFace *faceP, int bDepthOnly)
+bool RenderCoronaFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
 {
 if (!(faceP->widFlags & WID_RENDER_FLAG))
 	return false;
@@ -332,7 +332,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool RenderSkyBoxFace (CSegment *segP, CFace *faceP, int bDepthOnly)
+bool RenderSkyBoxFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
 {
 LoadFaceBitmaps (segP, faceP);
 G3DrawFaceArrays (faceP, faceP->bmBot, faceP->bmTop, 1, 1, 0);
@@ -342,15 +342,15 @@ return true;
 //------------------------------------------------------------------------------
 
 #if defined(_WIN32) && !DBG
-typedef bool (__fastcall * pRenderHandler) (CSegment *segP, CFace *faceP, int bDepthOnly);
+typedef bool (__fastcall * pRenderHandler) (CSegment *segP, CSegFace *faceP, int bDepthOnly);
 #else
-typedef bool (* pRenderHandler) (CSegment *segP, CFace *faceP, int bDepthOnly);
+typedef bool (* pRenderHandler) (CSegment *segP, CSegFace *faceP, int bDepthOnly);
 #endif
 
 static pRenderHandler renderHandlers [] = {RenderSolidFace, RenderWallFace, RenderColoredFace, RenderCoronaFace, RenderSkyBoxFace};
 
 
-static inline bool RenderMineFace (CSegment *segP, CFace *faceP, int nType, int bDepthOnly)
+static inline bool RenderMineFace (CSegment *segP, CSegFace *faceP, int nType, int bDepthOnly)
 {
 if (!faceP->bVisible)
 	return false;
@@ -365,12 +365,12 @@ return renderHandlers [nType] (segP, faceP, bDepthOnly);
 
 typedef struct tFaceRef {
 	short		nSegment;
-	CFace	*faceP;
+	CSegFace	*faceP;
 	} tFaceRef;
 
 static tFaceRef faceRef [2][MAX_SEGMENTS_D2X * 6];
 
-int QCmpFaces (CFace *fp, CFace *mp)
+int QCmpFaces (CSegFace *fp, CSegFace *mp)
 {
 if (!fp->bOverlay && mp->bOverlay)
 	return -1;
@@ -402,7 +402,7 @@ void QSortFaces (int left, int right)
 	int		l = left,
 				r = right;
 	tFaceRef	*pf = faceRef [0];
-	CFace	m = *pf [(l + r) / 2].faceP;
+	CSegFace	m = *pf [(l + r) / 2].faceP;
 
 do {
 	while (QCmpFaces (pf [l].faceP, &m) < 0)
@@ -437,7 +437,7 @@ if (left < r)
 int SortFaces (void)
 {
 	tSegFaces	*segFaceP;
-	CFace		*faceP;
+	CSegFace		*faceP;
 	tFaceRef		*ph, *pi, *pj;
 	int			h, i, j;
 	short			nSegment;
@@ -646,7 +646,7 @@ OglClearError (0);
 void RenderSkyBoxFaces (void)
 {
 	tSegFaces*	segFaceP;
-	CFace*		faceP;
+	CSegFace*		faceP;
 	short*		segP;
 	int			i, j, nSegment, bVertexArrays, bFullBright = gameStates.render.bFullBright;
 
@@ -696,7 +696,7 @@ return 1;
 short RenderFaceList (CFaceListIndex& flx, int nType, int bDepthOnly, int bHeadlight)
 {
 	tFaceListItem*	fliP;
-	CFace*			faceP;
+	CSegFace*			faceP;
 	short				i, j, nFaces = 0, nSegment = -1;
 	int				bAutomap = (nType == 0);
 
@@ -730,7 +730,7 @@ return nFaces;
 void RenderCoronaFaceList (CFaceListIndex& flx, int nPass)
 {
 	tFaceListItem*	fliP;
-	CFace*			faceP;
+	CSegFace*			faceP;
 	short				i, j, nSegment;
 
 for (i = 0; i < flx.nUsedKeys; i++) {
@@ -831,7 +831,7 @@ gameStates.render.bQueryCoronas = 0;
 int SetupCoronaFaces (void)
 {
 	tSegFaces	*segFaceP;
-	CFace		*faceP;
+	CSegFace		*faceP;
 	int			i, j, nSegment;
 
 if (!gameOpts->render.coronas.bUse)
@@ -866,7 +866,7 @@ if (nSegment < 0)
 	return 0;
 
 	tSegFaces	*segFaceP = SEGFACES + nSegment;
-	CFace		*faceP;
+	CSegFace		*faceP;
 	short			nFaces = 0;
 	int			i;
 
@@ -901,7 +901,7 @@ short RenderSegments (int nType, int bVertexArrays, int bDepthOnly, int bHeadlig
 
 if (nType) {
 	if (gameData.render.mine.nRenderSegs == gameData.segs.nSegments) {
-		CFace *faceP = FACES.faces.Buffer ();
+		CSegFace *faceP = FACES.faces.Buffer ();
 		for (i = gameData.segs.nFaces; i; i--, faceP++)
 			if (RenderMineFace (SEGMENTS + faceP->nSegment, faceP, nType, bDepthOnly))
 				nFaces++;
@@ -1011,7 +1011,7 @@ return RotateVertexList (8, segP->m_verts).ccAnd == 0;
 
 //------------------------------------------------------------------------------
 
-int SetupFace (short nSegment, short nSide, CSegment *segP, CFace *faceP, tFaceColor *pFaceColor, float *pfAlpha)
+int SetupFace (short nSegment, short nSide, CSegment *segP, CSegFace *faceP, tFaceColor *pFaceColor, float *pfAlpha)
 {
 	ubyte	bTextured, bCloaked, bWall;
 	int	nColor = 0;
@@ -1057,7 +1057,7 @@ return nColor;
 
 void UpdateSlidingFaces (void)
 {
-	CFace		*faceP;
+	CSegFace		*faceP;
 	short			h, k, nOffset;
 	tTexCoord2f	*texCoordP, *ovlTexCoordP;
 	tUVL			*uvlP;
@@ -1456,7 +1456,7 @@ return 1;
 void ComputeDynamicFaceLight (int nStart, int nEnd, int nThread)
 {
 PROF_START
-	CFace		*faceP;
+	CSegFace		*faceP;
 	tRgbaColorf	*pc;
 	tFaceColor	c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
 #if 0
@@ -1566,7 +1566,7 @@ void ComputeDynamicQuadLight (int nStart, int nEnd, int nThread)
 PROF_START
 	CSegment		*segP;
 	tSegFaces	*segFaceP;
-	CFace		*faceP;
+	CSegFace		*faceP;
 	tRgbaColorf	*pc;
 	tFaceColor	c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
 #if 0
@@ -1705,7 +1705,7 @@ void ComputeDynamicTriangleLight (int nStart, int nEnd, int nThread)
 PROF_START
 	CSegment		*segP;
 	tSegFaces	*segFaceP;
-	CFace		*faceP;
+	CSegFace		*faceP;
 	tFaceTriangle	*triP;
 	tRgbaColorf	*pc;
 	tFaceColor	c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
@@ -1842,7 +1842,7 @@ void ComputeStaticFaceLight (int nStart, int nEnd, int nThread)
 {
 	CSegment		*segP;
 	tSegFaces	*segFaceP;
-	CFace		*faceP;
+	CSegFace		*faceP;
 	tRgbaColorf	*pc;
 	tFaceColor	c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
 #if 0
@@ -1892,23 +1892,21 @@ for (i = nStart; i != nEnd; i += nStep) {
 			continue;
 #endif
 		faceP->color = faceColor [nColor].color;
-		if (!faceP->bCloaked) {
-			pc = FACES.color + faceP->nIndex;
-			uvlP = segP->m_sides [nSide].m_uvls;
-			for (h = 0, uvi = (segP->m_sides [nSide].m_nType == SIDE_IS_TRI_13); h < 4; h++, pc++, uvi++) {
-				if (gameStates.render.bFullBright) 
-					*pc = nColor ? faceColor [nColor].color : brightColor.color;
-				else {
-					c = faceColor [nColor];
-					nVertex = faceP->index [h];
+		pc = FACES.color + faceP->nIndex;
+		uvlP = segP->m_sides [nSide].m_uvls;
+		for (h = 0, uvi = (segP->m_sides [nSide].m_nType == SIDE_IS_TRI_13); h < 4; h++, pc++, uvi++) {
+			if (gameStates.render.bFullBright) 
+				*pc = nColor ? faceColor [nColor].color : brightColor.color;
+			else {
+				c = faceColor [nColor];
+				nVertex = faceP->index [h];
 #if DBG
-					if (nVertex == nDbgVertex)
-						nDbgVertex = nDbgVertex;
+				if (nVertex == nDbgVertex)
+					nDbgVertex = nDbgVertex;
 #endif
-					SetVertexColor (nVertex, &c);
-					xLight = SetVertexLight (nSegment, nSide, nVertex, &c, uvlP [uvi % 4].l);
-					AdjustVertexColor (NULL, &c, xLight);
-					}
+				SetVertexColor (nVertex, &c);
+				xLight = SetVertexLight (nSegment, nSide, nVertex, &c, uvlP [uvi % 4].l);
+				AdjustVertexColor (NULL, &c, xLight);
 				}
 			*pc = c.color;
 			pc->alpha = fAlpha;
@@ -1959,7 +1957,7 @@ int	 nRenderVertices;
 void GetRenderVertices (void)
 {
 	tSegFaces	*segFaceP;
-	CFace		*faceP;
+	CSegFace		*faceP;
 	short			nSegment;
 	int			h, i, j, n;
 
@@ -1988,7 +1986,7 @@ for (h = i = 0; h < gameData.render.mine.nRenderSegs; h++) {
 void SetFaceColors (void)
 {
 	tSegFaces	*segFaceP;
-	CFace		*faceP;
+	CSegFace		*faceP;
 	short			nSegment;
 	int			h, i, j;
 

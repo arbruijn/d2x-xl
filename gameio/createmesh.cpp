@@ -281,7 +281,7 @@ m_nVertices = gameData.segs.nVertices;
 if (!AllocData ())
 	return 0;
 
-CFace *faceP;
+CSegFace *faceP;
 tFaceTriangle *grsTriP;
 tTriangle *triP;
 int i, nFace = -1;
@@ -328,7 +328,7 @@ tTriangle *triP = &m_triangles [nTri];
 if (triP->nPass < -1)
 	return 1;
 
-CFace *faceP = FACES.faces + triP->nFace;
+CSegFace *faceP = FACES.faces + triP->nFace;
 
 #if DBG
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -477,7 +477,7 @@ do {
 		if (m_triangles [i].nPass != nPass - 1)
 			continue;
 #if DBG
-		CFace *faceP = FACES.faces + m_triangles [i].nFace;
+		CSegFace *faceP = FACES.faces + m_triangles [i].nFace;
 		if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;
 #endif
@@ -569,7 +569,7 @@ int CTriMeshBuilder::InsertTriangles (void)
 {
 	tTriangle	*triP = &m_triangles [0];
 	tFaceTriangle	*grsTriP = TRIANGLES.Buffer ();
-	CFace			*m_faceP = NULL;
+	CSegFace			*m_faceP = NULL;
 	CFixVector	vNormal;
 	int			h, i, nFace = -1;
 	GLuint		nIndex = 0;
@@ -680,7 +680,7 @@ for (int i = gameData.segs.nSegments; i; i--, segFaceP++) {
 void CTriMeshBuilder::CreateFaceVertLists (void)
 {
 	int			*bTags = new int [gameData.segs.nVertices];
-	CFace		*faceP;
+	CSegFace		*faceP;
 	tFaceTriangle	*triP;
 	int			h, i, j, k, nFace;
 
@@ -1081,7 +1081,7 @@ for (i = 0; i < 2; i++, m_triP++) {
 
 void CQuadMeshBuilder::BuildSlidingFaceList (void)
 {
-	CFace	*faceP = FACES.faces.Buffer ();
+	CSegFace	*faceP = FACES.faces.Buffer ();
 
 FACES.slidingFaces = NULL;
 for (int i = gameData.segs.nFaces; i; i--, faceP++)

@@ -418,10 +418,10 @@ pc->color.alpha = 1;
 //------------------------------------------------------------------------------
 
 #if DBG
-CFace *FindDupFace (short nSegment, short nSide)
+CSegFace *FindDupFace (short nSegment, short nSide)
 {
 	tSegFaces	*segFaceP = SEGFACES + nSegment;
-	CFace		*faceP0, *faceP1;
+	CSegFace		*faceP0, *faceP1;
 	int			i, j;
 
 for (i = segFaceP->nFaces, faceP0 = segFaceP->faceP; i; faceP0++, i--)

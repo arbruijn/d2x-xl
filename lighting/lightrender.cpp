@@ -289,7 +289,7 @@ if (nVertex == nDbgVertex)
 
 //------------------------------------------------------------------------------
 
-int CLightManager::SetNearestToFace (CFace* faceP, int bTextured)
+int CLightManager::SetNearestToFace (CSegFace* faceP, int bTextured)
 {
 PROF_START
 #if 0

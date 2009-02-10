@@ -72,7 +72,7 @@ extern GLhandleARB gsShaderProg [2][3];
 // this is a work around for OpenGL's per vertex light interpolation
 // rendering a quad is always started with the brightest vertex
 
-void G3BuildQuadIndex (CFace *faceP, int *indexP)
+void G3BuildQuadIndex (CSegFace *faceP, int *indexP)
 {
 #if G3_BUFFER_FACES
 int nIndex = faceP->nIndex;
@@ -124,7 +124,7 @@ if (faceBuffer.nFaces && (bForce || (faceBuffer.nFaces >= FACE_BUFFER_SIZE))) {
 
 //------------------------------------------------------------------------------
 
-void G3FillFaceBuffer (CFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bTextured)
+void G3FillFaceBuffer (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bTextured)
 {
 #if DBG
 if (!gameOpts->render.debug.bTextures)
@@ -148,7 +148,7 @@ faceBuffer.nFaces++;
 
 //------------------------------------------------------------------------------
 
-int G3SetupShader (CFace *faceP, int bDepthOnly, int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP)
+int G3SetupShader (CSegFace *faceP, int bDepthOnly, int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP)
 {
 	int	nType, nShader = gameStates.render.history.nShader;
 
@@ -181,7 +181,7 @@ return gameStates.render.history.nShader = nShader;
 
 #if DBG
 
-void RenderWireFrame (CFace *faceP, int bTextured)
+void RenderWireFrame (CSegFace *faceP, int bTextured)
 {
 if (gameOpts->render.debug.bWireFrame) {
 	if ((nDbgFace < 0) || (faceP - FACES.faces == nDbgFace)) {
@@ -215,7 +215,7 @@ if (gameOpts->render.debug.bWireFrame) {
 
 //------------------------------------------------------------------------------
 
-static inline void G3SetBlendMode (CFace *faceP)
+static inline void G3SetBlendMode (CSegFace *faceP)
 {
 if (faceP->bAdditive)
 	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
@@ -227,7 +227,7 @@ else
 
 //------------------------------------------------------------------------------
 
-int G3SetRenderStates (CFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bDepthOnly, int bTextured, int bColorKey, int bColored)
+int G3SetRenderStates (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bDepthOnly, int bTextured, int bColorKey, int bColored)
 {
 PROF_START
 if (bTextured) {
@@ -289,7 +289,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int G3SetRenderStatesLM (CFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bDepthOnly, int bTextured, int bColorKey, int bColored)
+int G3SetRenderStatesLM (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bDepthOnly, int bTextured, int bColorKey, int bColored)
 {
 PROF_START
 if (bTextured) {
@@ -348,7 +348,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void G3SetupMonitor (CFace *faceP, CBitmap *bmTop, int bTextured, int bLightmaps)
+void G3SetupMonitor (CSegFace *faceP, CBitmap *bmTop, int bTextured, int bLightmaps)
 {
 if (bmTop) {
 	glActiveTexture (GL_TEXTURE1 + bLightmaps);
@@ -387,7 +387,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-static inline int G3FaceIsTransparent (CFace *faceP, CBitmap *bmBot, CBitmap *bmTop)
+static inline int G3FaceIsTransparent (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop)
 {
 if (!bmBot)
 	return 0;
@@ -404,14 +404,14 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-static inline int G3FaceIsColored (CFace *faceP)
+static inline int G3FaceIsColored (CSegFace *faceP)
 {
 return !automap.m_bDisplay || automap.m_visited [0][faceP->nSegment] || !gameOpts->render.automap.bGrayOut;
 }
 
 //------------------------------------------------------------------------------
 
-int G3DrawFaceArrays (CFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
+int G3DrawFaceArrays (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
 PROF_START
 	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0, nBlendMode;
@@ -531,7 +531,7 @@ return 0;
 
 #if GEOMETRY_VBOS
 
-inline void RenderFacePP (CFace *faceP)
+inline void RenderFacePP (CSegFace *faceP)
 {
 if (FACES.vboDataHandle) {
 	int i = faceP->nIndex;
@@ -549,7 +549,7 @@ else
 
 //------------------------------------------------------------------------------
 
-int G3DrawFaceArraysPPLM (CFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
+int G3DrawFaceArraysPPLM (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
 PROF_START
 	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0;
@@ -671,7 +671,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int G3DrawFaceArraysLM (CFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
+int G3DrawFaceArraysLM (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
 PROF_START
 	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0;
@@ -770,7 +770,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int G3DrawHeadlights (CFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
+int G3DrawHeadlights (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
 	int			bColorKey = 0, bMonitor = 0;
 
@@ -804,7 +804,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int G3DrawHeadlightsPPLM (CFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
+int G3DrawHeadlightsPPLM (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
 	int			bColorKey = 0, bMonitor = 0;
 
