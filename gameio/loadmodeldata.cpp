@@ -211,7 +211,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int LoadRobotReplacements (const char* szLevel, const char* szFolder, int bAddBots, int bAltModels)
+int LoadRobotReplacements (const char* szLevel, const char* szFolder, int bAddBots, int bAltModels, bool bCustom)
 {
 	CFile			cf;
 	CPolyModel*	modelP;
@@ -324,6 +324,7 @@ for (j = 0; j < t; j++) {
 	modelP->ReadData (NULL, cf);
 	modelP->SetType (bAltModels ? 1 : -1);
 	modelP->SetRad (modelP->Size ());
+	modelP->SetCustom (bCustom);
 	if (bAltModels) {
 #if 0
 		ubyte	*p = gameData.models.polyModels [1][i].modelData;
@@ -546,31 +547,23 @@ int LoadExitModels (void)
 
 void RestoreDefaultModels (void)
 {
-	int	i;
-	ubyte	*p;
+	CPolyModel*	modelP = &gameData.models.polyModels [0][0];
+	int			i;
 
 gameData.bots.info [0] = gameData.bots.defaultInfo;
 gameData.bots.joints = gameData.bots.defaultJoints;
-for (i = 0; i < gameData.models.nDefPolyModels; i++) {
+for (i = 0; i < gameData.models.nDefPolyModels; i++, modelP++) {
 #if DBG
 	if (i == nDbgModel)
 		nDbgModel = nDbgModel;
 #endif
-	p = gameData.models.polyModels [0][i].Buffer ();
-	if (gameData.models.polyModels [1][i].DataSize () != gameData.models.polyModels [0][i].DataSize ()) {
-		gameData.models.polyModels [0][i].Destroy ();
-		p = NULL;
-		}
-	if (gameData.models.polyModels [1][i].Buffer ()) {
-		gameData.models.polyModels [0][i].Destroy ();
-		gameData.models.polyModels [0][i] = gameData.models.polyModels [1][i];
-		}
-	else if (p) {
-		gameData.models.polyModels [0][i].Destroy ();
+	if (modelP->Custom ()) {
+		modelP->Destroy ();
+		*modelP = gameData.models.polyModels [1][i];
 		}
 	}
-for (; i < gameData.models.nPolyModels; i++)
-	gameData.models.polyModels [0][i].Destroy ();
+for (; i < gameData.models.nPolyModels; i++, modelP++)
+	modelP->Destroy ();
 gameData.bots.nTypes [0] = gameData.bots.nDefaultTypes;
 gameData.bots.nJoints = gameData.bots.nDefaultJoints;
 }

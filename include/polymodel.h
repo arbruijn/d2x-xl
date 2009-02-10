@@ -76,6 +76,7 @@ typedef struct tPolyModelInfo {
 		ubyte				nTextures;
 		ushort			nFirstTexture;
 		ubyte				nSimplerModel;                      // alternate model with less detail (0 if none, nModel+1 else)
+		bool				bCustom;
 } tPolyModelInfo;
 
 class CPolyModel : public CByteArray {
@@ -96,6 +97,8 @@ class CPolyModel : public CByteArray {
 		inline void SetId (ushort nId) { m_info.nId = nId; }
 		inline short Type (void) { return m_info.nType; }
 		inline void SetType (short nType) { m_info.nType = nType; }
+		inline bool Custom (void) { return m_info.bCustom; }
+		inline void SetCustom (bool bCustom) { m_info.bCustom = bCustom; }
 		inline int DataSize (void) { return m_info.nDataSize; }
 		inline void SetDataSize (int nDataSize) { m_info.nDataSize = nDataSize; }
 		inline ubyte SimplerModel (void) { return m_info.nSimplerModel; }
