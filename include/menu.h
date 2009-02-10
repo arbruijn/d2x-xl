@@ -304,7 +304,7 @@ class CListBox : public CMenu {
 		CStack<char*>*	m_items;
 
 	public:
-		int ListBox (const char* pszTitle, CStack<char*>& items, int nDefaultItem, int bAllowAbort, pListBoxCallback callback);
+		int ListBox (const char* pszTitle, CStack<char*>& items, int nDefaultItem = 0, int bAllowAbort = 1, pListBoxCallback callback = NULL);
 
 	protected:
 		virtual void Render (const char* pszTitle = NULL, const char* pszSubTitle = NULL, CCanvas* gameCanvasP = NULL);
