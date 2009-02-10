@@ -608,7 +608,7 @@ if (nEndSeg != -1) {
 #endif
 	aiP->nCurPathIndex = 0;
 	gameData.ai.freePointSegs += aiP->nPathLength;
-	if (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2 > LEVEL_POINT_SEGS) {
+	if (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2 > uint (LEVEL_POINT_SEGS)) {
 		AIResetAllPaths ();
 		return;
 		}
@@ -644,7 +644,7 @@ if (nEndSeg != -1) {
 #endif
 	aiP->nCurPathIndex = 0;
 	gameData.ai.freePointSegs += aiP->nPathLength;
-	if (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2 > LEVEL_POINT_SEGS) {
+	if (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2 > uint (LEVEL_POINT_SEGS)) {
 		AIResetAllPaths ();
 		return;
 		}
@@ -687,7 +687,7 @@ if (nEndSeg != -1) {
 #endif
 	aiP->nCurPathIndex = 0;
 	gameData.ai.freePointSegs += aiP->nPathLength;
-	if (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2 > LEVEL_POINT_SEGS) {
+	if (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2 > uint (LEVEL_POINT_SEGS)) {
 		AIResetAllPaths ();
 		return;
 		}
@@ -727,7 +727,7 @@ aiP->nCurPathIndex = 0;
 ValidatePath (8, gameData.ai.freePointSegs, aiP->nPathLength);
 #endif
 gameData.ai.freePointSegs += aiP->nPathLength;
-if (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2 > LEVEL_POINT_SEGS) {
+if (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2 > uint (LEVEL_POINT_SEGS)) {
 	AIResetAllPaths ();
 	}
 aiP->PATH_DIR = 1;		//	Initialize to moving forward.
@@ -869,7 +869,7 @@ if ((aiP->nHideIndex == -1) || (aiP->nPathLength == 0)) {
 if (aiP->nHideIndex < 0)
 	aiP->nHideIndex = aiP->nHideIndex;
 #endif
-if ((aiP->nPathLength > 0) && (aiP->nHideIndex + aiP->nPathLength > gameData.ai.routeSegs.Index (gameData.ai.freePointSegs))) {
+if ((aiP->nPathLength > 0) && (aiP->nHideIndex + aiP->nPathLength > int (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs)))) {
 	//	This is debugging code.p.  Figure out why garbage collection didn't compress this object's path information.
 	PrintLog ("Error in AI path info garbage collection\n");
 	AICollectPathGarbage ();
@@ -1211,7 +1211,7 @@ void AICollectPathGarbage (void)
 	int					nFreeIndex = 0;
 	int					nObjects = 0;
 	int					nObject;
-	int					nObjIdx, i, nOldIndex;
+	int					nObjIdx, nOldIndex;
 	CObject*				objP;
 	tAIStaticInfo*		aiP;
 	CStaticArray<CObjPath, MAX_OBJECTS_D2X>	objectList;
