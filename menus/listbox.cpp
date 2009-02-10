@@ -126,7 +126,7 @@ int CListBox::ListBox (const char* pszTitle, CStack<char*>& items, int nDefaultI
 
 m_tEnter = -1;
 m_items = &items;
-m_callback = callback;
+m_callback = NULL;
 
 gameStates.input.keys.bRepeat = 1;
 SetPopupScreenMode ();
@@ -199,6 +199,8 @@ while (!done) {
 	else
 		m_nKey = KeyInKey ();
 
+	m_bRedraw = callback ? (*callback) (&m_nChoice, items, &m_nKey) : 0;
+
 	if (m_nKey < -1) {
 		m_nChoice = m_nKey;
 		m_nKey = -1;
@@ -207,7 +209,7 @@ while (!done) {
 
 	switch (m_nKey) {
 		case KEY_CTRLED + KEY_F1:
-			SwitchDisplayMode ( - 1);
+			SwitchDisplayMode (-1);
 			break;
 		case KEY_CTRLED + KEY_F2:
 			SwitchDisplayMode (1);
