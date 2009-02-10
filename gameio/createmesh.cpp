@@ -287,9 +287,11 @@ tTriangle *triP;
 int i, nFace = -1;
 short nId = 0;
 
-i = LEVEL_VERTICES + ((gameData.segs.nTris ? gameData.segs.nTris / 2 : gameData.segs.nFaces) << (gameStates.render.nMeshQuality - 1));
-if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i) && gameData.segs.points.Resize (i)))
-	return 0;
+if (gameStates.render.nMeshQuality) {
+	i = LEVEL_VERTICES + ((gameData.segs.nTris ? gameData.segs.nTris / 2 : gameData.segs.nFaces) << (abs (gameStates.render.nMeshQuality) - 1));
+	if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i) && gameData.segs.points.Resize (i)))
+		return 0;
+	}
 
 for (i = gameData.segs.nTris, grsTriP = TRIANGLES.Buffer (); i; i--, grsTriP++) {
 	if (!(triP = AddTriangle (NULL, grsTriP->index, grsTriP))) {
@@ -1296,8 +1298,14 @@ FACES.slidingFaces = NULL;
 if (gameStates.render.nMeshQuality > 3)
 	gameStates.render.nMeshQuality = 3;
 #endif
-if (RENDERPATH && gameStates.render.nLightingMethod)
-	gameStates.render.bTriangleMesh = gameStates.render.bPerPixelLighting ? -1 : gameStates.render.nMeshQuality;
+if (RENDERPATH && gameStates.render.nLightingMethod) {
+	if (gameStates.render.bPerPixelLighting) {
+		gameStates.render.bTriangleMesh = -1;
+		gameStates.render.nMeshQuality = 0;
+		}
+	else 
+		gameStates.render.bTriangleMesh = (gameStates.render.nMeshQuality > 0);
+	}
 else
 	gameStates.render.bTriangleMesh = 0;
 gameStates.render.nFacePrimitive = gameStates.render.bTriangleMesh ? GL_TRIANGLES : GL_TRIANGLE_FAN;
