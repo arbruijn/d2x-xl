@@ -1017,7 +1017,7 @@ if (!IsMultiGame)
 	InitEntropySettings (0);	//required for repair centers
 //songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1);
 if (!gameStates.app.bProgressBars)
-	mb.Clear ();		//remove message before new palette loaded
+	messageBox.Clear ();		//remove message before new palette loaded
 paletteManager.LoadEffect ();		//actually load the palette
 /*---*/PrintLog ("   rebuilding OpenGL texture data\n");
 /*---*/PrintLog ("      rebuilding effects\n");
