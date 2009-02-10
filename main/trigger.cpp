@@ -821,7 +821,7 @@ else {
 			return 1;
 		}
 
-int nTrigger = Index ();
+int nTrigger = bObjTrigger ? OBJTRIGGERS.Index (this) : TRIGGERS.Index (this);
 
 if (!bObjTrigger && (nType != TT_TELEPORT) && (nType != TT_SPEEDBOOST)) {
 	int t = gameStates.app.nSDLTicks;

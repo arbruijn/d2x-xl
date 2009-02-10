@@ -529,7 +529,7 @@ if (gameOpts->menus.nFade) {
 	for (;;) {
 		t1 = SDL_GetTicks ();
 		dt = t1 - t0;
-		if (dt >= t)
+		if (dt > t)
 			break;
 		m_tEnter = t1 - gameOpts->menus.nFade + dt;
 		PrintLog ("fadeout %d\n", gameOpts->menus.nFade - dt);
