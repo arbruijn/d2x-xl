@@ -588,12 +588,11 @@ if (gameTopFileInfo.fileinfoVersion >= 33) {
 		}
 	else {
 		gameData.trigs.firstObjTrigger.Clear (0xff);
-		i = cf.ReadShort ();
-		if (!gameData.trigs.firstObjTrigger.Create (i)) {
+		if (!gameData.trigs.firstObjTrigger.Create (LEVEL_OBJECTS)) {
 			Error ("Not enough memory for object trigger data");
 			return -1;
 			}
-		for (; i; i--) {
+		for (i = cf.ReadShort (); i; i--) {
 			j = cf.ReadShort ();
 			gameData.trigs.firstObjTrigger [j] = cf.ReadShort ();
 			}
