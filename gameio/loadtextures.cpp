@@ -627,7 +627,7 @@ else {
 bTGA = 0;
 bmP->SetBPP (1);
 if (*bmName && ((nIndex < 0) || IsCockpit (bmName) || 
-	 (gameOpts->render.textures.bUseHires [0] && (!gameOpts->ogl.bGlTexMerge || gameStates.render.textures.bGlsTexMergeOk)))) {
+	 ((bHires || gameOpts->render.textures.bUseHires [0]) && (!gameOpts->ogl.bGlTexMerge || gameStates.render.textures.bGlsTexMergeOk)))) {
 #if 0
 	if ((nIndex >= 0) && ReadS3TC (gameData.pig.tex.altBitmaps [bD1] + nIndex, gameFolders.szTextureCacheDir [bD1], bmName)) {
 		altBmP = gameData.pig.tex.altBitmaps [bD1] + nIndex;
