@@ -579,12 +579,21 @@ if (gameTopFileInfo.fileinfoVersion >= 33) {
 			}
 		}
 	if (gameTopFileInfo.fileinfoVersion < 36) {
+		if (!gameData.trigs.firstObjTrigger.Create (700)) {
+			Error ("Not enough memory for object trigger data");
+			return -1;
+			}
 		for (i = 0; i < 700; i++)
 			gameData.trigs.firstObjTrigger [i] = cf.ReadShort ();
 		}
 	else {
 		gameData.trigs.firstObjTrigger.Clear (0xff);
-		for (i = cf.ReadShort (); i; i--) {
+		i = cf.ReadShort ();
+		if (!gameData.trigs.firstObjTrigger.Create (i)) {
+			Error ("Not enough memory for object trigger data");
+			return -1;
+			}
+		for (; i; i--) {
 			j = cf.ReadShort ();
 			gameData.trigs.firstObjTrigger [j] = cf.ReadShort ();
 			}

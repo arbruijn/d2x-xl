@@ -529,7 +529,7 @@ else {
 	}
 
 bTGA = 0;
-nFlags = gameData.pig.tex.bitmapFlags [bD1][nIndex];
+nFlags = (nIndex < 0) ? 0 : gameData.pig.tex.bitmapFlags [bD1][nIndex];
 bmP->SetBPP (1);
 
 if (*bmName && ((nIndex < 0) || IsCockpit (bmName) || 

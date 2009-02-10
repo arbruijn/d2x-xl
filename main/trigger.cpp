@@ -805,7 +805,10 @@ if (bIsPlayer) {
 else {
 	nPlayer = -1;
 	if ((nType != TT_TELEPORT) && (nType != TT_SPEEDBOOST)) {
-		if ((objP->info.nType != OBJ_ROBOT) && (objP->info.nType != OBJ_REACTOR))
+		if ((objP->info.nType != OBJ_ROBOT) && 
+			 (objP->info.nType != OBJ_REACTOR) && 
+			 (objP->info.nType != OBJ_HOSTAGE) && 
+			 (objP->info.nType != OBJ_POWERUP))
 			return 1;
 		if (!bObjTrigger)
 			return 1;
