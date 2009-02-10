@@ -39,8 +39,11 @@
 
 static int nBonusOpt, nSizeModOpt, nPyroForceOpt;
 
-int MonsterballMenuCallback (CMenu& menu, int& key, int nCurItem)
+int MonsterballMenuCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	CMenuItem	*m;
 	int			v;
 

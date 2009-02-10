@@ -75,8 +75,11 @@ static const char *szCWS [4];
 
 //------------------------------------------------------------------------------
 
-int TgtIndOptionsCallback (CMenu& menu, int& key, int nCurItem)
+int TgtIndOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	CMenuItem	*m;
 	int			v, j;
 
@@ -158,8 +161,11 @@ do {
 
 //------------------------------------------------------------------------------
 
-int WeaponIconOptionsCallback (CMenu& menu, int& key, int nCurItem)
+int WeaponIconOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	CMenuItem	*m;
 	int			v;
 
@@ -243,8 +249,11 @@ do {
 
 //------------------------------------------------------------------------------
 
-int GaugeOptionsCallback (CMenu& menu, int& key, int nCurItem)
+int GaugeOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	CMenuItem	*m;
 	int			v;
 
@@ -306,8 +315,11 @@ do {
 
 //------------------------------------------------------------------------------
 
-int CockpitOptionsCallback (CMenu& menu, int& key, int nCurItem)
+int CockpitOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	CMenuItem	*m;
 	int			v;
 

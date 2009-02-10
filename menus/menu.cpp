@@ -435,7 +435,7 @@ if (!m_bRedraw)
 	m_props.ty = i;
 
 if (m_callback && (gameStates.render.grAlpha == 1.0f))
-	m_nChoice = (*m_callback) (*this, m_nKey, m_nChoice);
+	m_nChoice = (*m_callback) (*this, m_nKey, m_nChoice, 1);
 
 fontManager.SetCurrent (m_props.bTinyMode ? SMALL_FONT : NORMAL_FONT);
 for (i = 0; i < m_props.nMaxDisplayable + m_props.nScrollOffset - m_props.nMaxNoScroll; i++) {
@@ -711,6 +711,9 @@ while (!done) {
 		if (m_nChoice > m_props.nScrollOffset + m_props.nMaxOnMenu - 1)
 			m_props.nScrollOffset = m_nChoice - m_props.nMaxOnMenu + 1;
 		}
+
+	if (callback && (SDL_GetTicks () - m_tEnter > gameOpts->menus.bFade))
+		m_nChoice = (*callback) (*this, m_nKey, m_nChoice, 0);
 
 	if (!bTimeStopped){
 		// Save current menu box

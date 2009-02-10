@@ -80,8 +80,11 @@ static struct {
 static const char* pszLightningQuality [2];
 static const char* pszLightningStyle [3];
 
-int LightningOptionsCallback (CMenu& menu, int& key, int nCurItem)
+int LightningOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	CMenuItem	*m;
 	int			v;
 

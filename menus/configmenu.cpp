@@ -95,8 +95,11 @@ if (bSound != gameData.app.bUseMultiThreading [rtSound]) {
 
 static int optBrightness = -1;
 
-int ConfigMenuCallback (CMenu& m, int& nLastKey, int nCurItem)
+int ConfigMenuCallback (CMenu& m, int& nLastKey, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 if (gameStates.app.bNostalgia) {
 	if (nCurItem == optBrightness)
 		paletteManager.SetGamma (m [optBrightness].m_value);

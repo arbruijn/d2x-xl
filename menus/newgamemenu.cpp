@@ -236,8 +236,11 @@ if (!StartNewGame (nNewLevel))
 static int nOptVerFilter = -1;
 static int nOptDifficulty = -1;
 
-int NewGameMenuCallback (CMenu& menu, int& key, int nCurItem)
+int NewGameMenuCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	CMenuItem	*m;
 	int			i, v;
 

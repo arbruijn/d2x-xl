@@ -78,8 +78,11 @@ static struct {
 
 static const char *pszRadarRange [3];
 
-int AutomapOptionsCallback (CMenu& menu, int& key, int nCurItem)
+int AutomapOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	CMenuItem * m;
 	int			v;
 

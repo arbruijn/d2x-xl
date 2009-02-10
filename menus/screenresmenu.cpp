@@ -113,8 +113,11 @@ return item;
 
 //------------------------------------------------------------------------------
 
-int ScreenResCallback (CMenu& menu, int& nKey, int nCurItem)
+int ScreenResCallback (CMenu& menu, int& nKey, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	int	i, j;
 
 if (menu [screenResOpts.nCustom].m_value != (nDisplayMode == NUM_DISPLAY_MODES)) 

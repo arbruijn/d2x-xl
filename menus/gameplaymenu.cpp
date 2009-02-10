@@ -124,8 +124,11 @@ return (extraGameInfo [0].loadout.nDevices & nDeviceFlags [i]) != 0;
 
 //------------------------------------------------------------------------------
 
-int LoadoutCallback (CMenu& menu, int& key, int nCurItem)
+int LoadoutCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	CMenuItem	*m = menu + nCurItem;
 	int			v = m->m_value;
 
@@ -202,8 +205,11 @@ AddPlayerLoadout ();
 
 //------------------------------------------------------------------------------
 
-int GameplayOptionsCallback (CMenu& menu, int& key, int nCurItem)
+int GameplayOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	CMenuItem	*m;
 	int			v;
 

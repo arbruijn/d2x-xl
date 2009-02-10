@@ -111,8 +111,11 @@ return j;
 
 //------------------------------------------------------------------------------
 
-int AdvancedRenderOptionsCallback (CMenu& menu, int& key, int nCurItem)
+int AdvancedRenderOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	CMenuItem	*m;
 	int			v;
 
@@ -164,8 +167,11 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int RenderOptionsCallback (CMenu& menu, int& key, int nCurItem)
+int RenderOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	CMenuItem*	m;
 	int			v;
 

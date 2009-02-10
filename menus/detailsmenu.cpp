@@ -132,8 +132,11 @@ gameOpts->movies.bHires = m [7].m_value;
 
 // -----------------------------------------------------------------------------
 
-int CustomDetailsCallback (CMenu& m, int& nLastKey, int nCurItem)
+int CustomDetailsCallback (CMenu& m, int& nLastKey, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	nCurItem = nCurItem;
 
 gameStates.render.detail.nObjectComplexity = m [0].m_value;

@@ -91,8 +91,11 @@ static const char* pszSmokeLife [3];
 static const char* pszSmokeQual [3];
 static const char* pszSmokeAlpha [5];
 
-int SmokeOptionsCallback (CMenu& menu, int& key, int nCurItem)
+int SmokeOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	CMenuItem	*m;
 	int			i, v;
 

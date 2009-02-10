@@ -99,8 +99,11 @@ return i - 1;
 
 //------------------------------------------------------------------------------
 
-int SoundMenuCallback (CMenu& menu, int& nKey, int nCurItem)
+int SoundMenuCallback (CMenu& menu, int& nKey, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 if (gameOpts->sound.bGatling != menu [soundOpts.nGatling].m_value) {
 	gameOpts->sound.bGatling = menu [soundOpts.nGatling].m_value;
 	nKey = -2;

@@ -413,8 +413,11 @@ int optMouseLook, optFastPitch, optSafeUDP, optTowFlags, optCompetition, optPena
 
 //------------------------------------------------------------------------------
 
-int NetworkMoreOptionsPoll (CMenu& menu, int& key, int nCurItem)
+int NetworkMoreOptionsPoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 if (nLastReactorLife != menu [optReactorLife].m_value)   {
 	sprintf (menu [optReactorLife].m_text, "%s: %d %s", TXT_REACTOR_LIFE, menu [optReactorLife].m_value*5, TXT_MINUTES_ABBREV);
 	nLastReactorLife = menu [optReactorLife].m_value;
@@ -1225,7 +1228,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int IpAddrMenuCallBack (CMenu& menu, int& key, int nCurItem)
+int IpAddrMenuCallBack (CMenu& menu, int& key, int nCurItem, int nState)
 {
 return nCurItem;
 }

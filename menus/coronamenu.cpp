@@ -88,8 +88,11 @@ static struct {
 static const char* pszCoronaInt [4];
 static const char* pszCoronaQual [3];
 
-int CoronaOptionsCallback (CMenu& menu, int& key, int nCurItem)
+int CoronaOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	CMenuItem	*m;
 	int			v;
 

@@ -79,8 +79,11 @@ static struct {
 
 extern int screenShotIntervals [];
 
-int MiscellaneousCallback (CMenu& menu, int& key, int nCurItem)
+int MiscellaneousCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	CMenuItem * m;
 	int			v;
 

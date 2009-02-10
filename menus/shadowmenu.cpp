@@ -100,8 +100,11 @@ static struct {
 static const char *pszReach [4];
 static const char *pszClip [4];
 
-int ShadowOptionsCallback (CMenu& menu, int& key, int nCurItem)
+int ShadowOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	CMenuItem	*m;
 	int			v;
 

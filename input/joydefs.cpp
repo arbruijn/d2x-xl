@@ -139,8 +139,11 @@ return h;
 
 //------------------------------------------------------------------------------
 
-int MouseConfigCallback (CMenu& menu, int& key, int nCurItem)
+int MouseConfigCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	int h, i, v;
 	int ocType = gameConfig.nControlType;
 	CMenuItem * m;
@@ -293,8 +296,10 @@ do {
 
 //------------------------------------------------------------------------------
 
-int JoystickConfigCallback (CMenu& menu, int& key, int nCurItem)
+int JoystickConfigCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
 	int h, i, v;
 	int ocType = gameConfig.nControlType;
 	CMenuItem * m;
@@ -443,8 +448,11 @@ do {
 
 //------------------------------------------------------------------------------
 
-int TrackIRConfigCallback (CMenu& menu, int& key, int nCurItem)
+int TrackIRConfigCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	int			h, i, v;
 	CMenuItem*	m;
 
@@ -570,8 +578,11 @@ do {
 
 //------------------------------------------------------------------------------
 
-int KeyboardConfigCallback (CMenu& menu, int& key, int nCurItem)
+int KeyboardConfigCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	int			i, v;
 	CMenuItem	*m;
 

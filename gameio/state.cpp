@@ -273,49 +273,59 @@ CSaveGameInfo saveGameInfo [NUM_SAVES + 1];
 
 #define NM_IMG_SPACE	6
 
-int SaveStateMenuCallback (CMenu& menu, int& key, int nCurItem)
+int SaveStateMenuCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	int		x, y, i = nCurItem - NM_IMG_SPACE;
 	char		c = KeyToASCII (key);
-	CBitmap*	image = saveGameInfo [i].Image ();
 
-if (nCurItem < 2)
-	return nCurItem;
-if ((c >= '1') && (c <= '9')) {
-	for (i = 0; i < NUM_SAVES; i++)
-		if (menu [i + NM_IMG_SPACE].m_text [0] == c) {
-			key = -2;
-			return -(i + NM_IMG_SPACE) - 1;
+if (nState) { // render
+	CBitmap*	image = saveGameInfo [i].Image ();
+	if (!image)
+		return nCurItem;
+	if (gameStates.menus.bHires) {
+		x = (CCanvas::Current ()->Width () - image->Width ()) / 2;
+		y = menu [0].m_y - 16;
+		if (gameStates.app.bGameRunning)
+			paletteManager.LoadEffect ();
+		//BlitClipped (x, y, image);
+		image->RenderFixed (NULL, x, y);
+		if (gameOpts->menus.nStyle) {
+			CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 32));
+			OglDrawEmptyRect (x - 1, y - 1, x + image->Width () + 1, y + image->Height () + 1);
 			}
-	}
-if (!menu [NM_IMG_SPACE - 1].m_text || strcmp (menu [NM_IMG_SPACE - 1].m_text, saveGameInfo [i].Time ())) {
-	menu [NM_IMG_SPACE - 1].SetText (saveGameInfo [i].Time ());
-	menu [NM_IMG_SPACE - 1].m_bRebuild = 1;
-	}
-if (!image)
-	return nCurItem;
-if (gameStates.menus.bHires) {
-	x = (CCanvas::Current ()->Width () - image->Width ()) / 2;
-	y = menu [0].m_y - 16;
-	if (gameStates.app.bGameRunning)
-		paletteManager.LoadEffect ();
-	//BlitClipped (x, y, image);
-	image->RenderFixed (NULL, x, y);
-	if (gameOpts->menus.nStyle) {
-		CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 32));
-		OglDrawEmptyRect (x - 1, y - 1, x + image->Width () + 1, y + image->Height () + 1);
+		}
+	else {
+		saveGameInfo [nCurItem - 1].Image ()->BlitClipped ((CCanvas::Current ()->Width ()-THUMBNAIL_W) / 2, menu [0].m_y - 5);
 		}
 	}
-else {
-	saveGameInfo [nCurItem - 1].Image ()->BlitClipped ((CCanvas::Current ()->Width ()-THUMBNAIL_W) / 2, menu [0].m_y - 5);
+else { // input
+	if (nCurItem < 2)
+		return nCurItem;
+	if ((c >= '1') && (c <= '9')) {
+		for (i = 0; i < NUM_SAVES; i++)
+			if (menu [i + NM_IMG_SPACE].m_text [0] == c) {
+				key = -2;
+				return -(i + NM_IMG_SPACE) - 1;
+				}
+		}
+	if (!menu [NM_IMG_SPACE - 1].m_text || strcmp (menu [NM_IMG_SPACE - 1].m_text, saveGameInfo [i].Time ())) {
+		menu [NM_IMG_SPACE - 1].SetText (saveGameInfo [i].Time ());
+		menu [NM_IMG_SPACE - 1].m_bRebuild = 1;
+		}
 	}
 return nCurItem;
 }
 
 //------------------------------------------------------------------------------
 
-int LoadStateMenuCallback (int nitems, CMenuItem *menu, int key, int nCurItem)
+int LoadStateMenuCallback (int nitems, CMenuItem *menu, int key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	int	i = nCurItem - NM_IMG_SPACE;
 	char	c = KeyToASCII (key);
 

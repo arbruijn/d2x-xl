@@ -87,8 +87,11 @@ static const char *pszLMapQual [5];
 
 //------------------------------------------------------------------------------
 
-int LightOptionsCallback (CMenu& menu, int& key, int nCurItem)
+int LightOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	CMenuItem	*m;
 	int			v;
 

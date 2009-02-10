@@ -187,7 +187,7 @@ typedef struct tMenuProps {
 
 class CMenu;
 
-typedef int (*pMenuCallback) (CMenu& m, int& lastKey, int nItem);
+typedef int (*pMenuCallback) (CMenu& m, int& lastKey, int nItem, int nState);
 
 class CMenu : public CStack<CMenuItem> {
 	private:
@@ -292,7 +292,7 @@ class CFileSelector : public CMenu {
 
 //------------------------------------------------------------------------------
 
-typedef int (*pListBoxCallback) (int* nItem, CArray<char*>& items, int* keypress);
+typedef int (*pListBoxCallback) (int* nItem, CArray<char*>& items, int* keypress, int nState);
 
 class CListBox : public CMenu {
 		int				m_nFirstItem;

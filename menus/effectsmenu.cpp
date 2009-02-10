@@ -77,8 +77,11 @@ static struct {
 
 static const char* pszExplShrapnels [5];
 
-int EffectOptionsCallback (CMenu& menu, int& key, int nCurItem)
+int EffectOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	CMenuItem	*m;
 	int			v;
 

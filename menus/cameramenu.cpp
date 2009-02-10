@@ -76,8 +76,11 @@ static struct {
 
 //------------------------------------------------------------------------------
 
-int CameraOptionsCallback (CMenu& menu, int& key, int nCurItem)
+int CameraOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	CMenuItem	*m;
 	int			v;
 
