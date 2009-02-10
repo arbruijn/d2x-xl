@@ -62,7 +62,7 @@ gameStates.app.bClearMessage = 1;
 if (bFade)
 	do {
 		Render ();
-	} while (SDL_GetTicks () - m_tEnter < gameOpts->menus.bFade);
+	} while (SDL_GetTicks () - m_tEnter < gameOpts->menus.nFade);
 }
 
 //------------------------------------------------------------------------------

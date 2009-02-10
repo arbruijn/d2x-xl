@@ -201,7 +201,7 @@ class CMenu : public CStack<CMenuItem> {
 		int				m_bCloseBox;
 		int				m_bDontRestore;
 		int				m_bAllText;
-		int				m_tEnter;
+		uint				m_tEnter;
 		int				m_nChoice;
 		int				m_nKey;
 		pMenuCallback	m_callback;

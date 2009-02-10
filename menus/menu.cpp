@@ -400,7 +400,7 @@ void CMenu::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* game
 
 	int	i, sx, sy;
 
-if (SDL_GetTicks () - m_tEnter > gameOpts->menus.bFade) {
+if (SDL_GetTicks () - m_tEnter > gameOpts->menus.nFade) {
 	i = SDL_GetTicks ();
 	if (i - t0 < 25)
 		return;
@@ -505,12 +505,12 @@ gameStates.render.grAlpha = 1.0f;
 
 void CMenu::FadeIn (void)
 {
-if (gameOpts->menus.bFade) {
+if (gameOpts->menus.nFade) {
 	if (m_tEnter < 0)
 		m_tEnter = SDL_GetTicks ();
-	int t = SDL_GetTicks () - m_tEnter;
+	uint t = SDL_GetTicks () - m_tEnter;
 	PrintLog ("fade %d\n", t);
-	gameStates.render.grAlpha = (t < gameOpts->menus.bFade) ? float (t) / float (gameOpts->menus.bFade) : 1.0f;
+	gameStates.render.grAlpha = (t < gameOpts->menus.nFade) ? float (t) / float (gameOpts->menus.nFade) : 1.0f;
 	}
 else {
 	m_tEnter = 0;
@@ -522,8 +522,8 @@ else {
 
 void CMenu::FadeOut (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP)
 {
-if (gameOpts->menus.bFade) {
-	int t = int (gameOpts->menus.bFade * gameStates.render.grAlpha);
+if (gameOpts->menus.nFade) {
+	int t = int (gameOpts->menus.nFade * gameStates.render.grAlpha);
 	int t0 = SDL_GetTicks ();
 	int t1, dt;
 	for (;;) {
@@ -531,8 +531,8 @@ if (gameOpts->menus.bFade) {
 		dt = t1 - t0;
 		if (dt >= t)
 			break;
-		m_tEnter = t1 - gameOpts->menus.bFade + dt;
-		PrintLog ("fadeout %d\n", gameOpts->menus.bFade - dt);
+		m_tEnter = t1 - gameOpts->menus.nFade + dt;
+		PrintLog ("fadeout %d\n", gameOpts->menus.nFade - dt);
 		Render (pszTitle, pszSubTitle, gameCanvasP);
 		}
 	}
@@ -712,7 +712,7 @@ while (!done) {
 			m_props.nScrollOffset = m_nChoice - m_props.nMaxOnMenu + 1;
 		}
 
-	if (callback && (SDL_GetTicks () - m_tEnter > gameOpts->menus.bFade))
+	if (callback && (SDL_GetTicks () - m_tEnter > gameOpts->menus.nFade))
 		m_nChoice = (*callback) (*this, m_nKey, m_nChoice, 0);
 
 	if (!bTimeStopped){
