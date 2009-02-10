@@ -117,7 +117,7 @@ void LoadWeaponTextures (int nWeaponType)
 if ((nWeaponType < 0) || (nWeaponType > gameData.weapons.nTypes [0])) 
 	return;
 if (gameData.weapons.info [nWeaponType].picture.index)
-	LoadBitmap (gameData.weapons.info [nWeaponType].picture.index, 0);
+	LoadBitmap (gameData.weapons.info [nWeaponType].hiresPicture.index, 0);
 if (gameData.weapons.info [nWeaponType].nFlashVClip >= 0)
 	LoadVClipTextures (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].nFlashVClip], 0);
 if (gameData.weapons.info [nWeaponType].nWallHitVClip >= 0)
