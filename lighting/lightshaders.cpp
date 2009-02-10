@@ -1238,7 +1238,7 @@ memset (lightmapShaderProgs, 0, sizeof (lightmapShaderProgs));
 int CheckUsedLights2 (void);
 #endif
 
-int SetupHardwareLighting (tFace *faceP, int nType)
+int SetupHardwareLighting (CFace *faceP, int nType)
 {
 PROF_START
 	int					nLightRange, nLights;
@@ -1373,7 +1373,7 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-int G3SetupPerPixelShader (tFace *faceP, int bDepthOnly, int nType, bool bHeadlight)
+int G3SetupPerPixelShader (CFace *faceP, int bDepthOnly, int nType, bool bHeadlight)
 {
 PROF_START
 	static CBitmap	*nullBmP = NULL;
@@ -1439,7 +1439,7 @@ return gameStates.render.history.nShader = nShader;
 
 //------------------------------------------------------------------------------
 
-int G3SetupLightmapShader (tFace *faceP, int bDepthOnly, int nType, bool bHeadlight)
+int G3SetupLightmapShader (CFace *faceP, int bDepthOnly, int nType, bool bHeadlight)
 {
 PROF_START
 	static CBitmap	*nullBmP = NULL;

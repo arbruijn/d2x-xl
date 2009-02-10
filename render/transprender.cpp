@@ -296,7 +296,7 @@ return Add (tiObject, &item, sizeof (item), vPos [Z], vPos [Z]);
 
 //------------------------------------------------------------------------------
 
-int CTransparencyRenderer::AddPoly (tFace *faceP, tFaceTriangle *triP, CBitmap *bmP,
+int CTransparencyRenderer::AddPoly (CFace *faceP, tFaceTriangle *triP, CBitmap *bmP,
 												CFloatVector *vertices, char nVertices, tTexCoord2f *texCoord, tRgbaColorf *color,
 												tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive,
 												short nSegment)
@@ -378,7 +378,7 @@ else
 
 //------------------------------------------------------------------------------
 
-int CTransparencyRenderer::AddFaceTris (tFace *faceP)
+int CTransparencyRenderer::AddFaceTris (CFace *faceP)
 {
 	tFaceTriangle	*triP;
 	CFloatVector		vertices [3];
@@ -414,7 +414,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CTransparencyRenderer::AddFace (tFace *faceP)
+int CTransparencyRenderer::AddFace (CFace *faceP)
 {
 if (gameStates.render.bTriangleMesh)
 	return AddFaceTris (faceP);
@@ -813,7 +813,7 @@ glVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
 void CTransparencyRenderer::RenderPoly (tTranspPoly *item)
 {
 PROF_START
-	tFace		*faceP;
+	CFace		*faceP;
 	tFaceTriangle	*triP;
 	CBitmap		*bmBot = item->bmP, *bmTop = NULL, *mask;
 	int			i, j, nIndex, bLightmaps, bDecal, bSoftBlend = 0;

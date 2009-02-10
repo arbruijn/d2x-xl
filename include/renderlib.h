@@ -82,8 +82,9 @@ void AdjustVertexColor (CBitmap *bmP, tFaceColor *pc, fix xLight);
 char IsColoredSegFace (short nSegment, short nSide);
 tRgbaColorf *ColoredSegmentColor (int nSegment, int nSide, char nColor);
 int IsMonitorFace (short nSegment, short nSide, int bForce);
-float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int bIsMonitor, tRgbaColorf *pc, int *bCloaking, ubyte *bTextured);
-int SetupMonitorFace (short nSegment, short nSide, short nCamera, tFace *faceP);
+float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int bIsMonitor, 
+					  tRgbaColorf *pc, int *nColor, ubyte *bTextured, int *bCloaked);
+int SetupMonitorFace (short nSegment, short nSide, short nCamera, CFace *faceP);
 CBitmap *LoadFaceBitmap (short tMapNum, short nFrameNum);
 void DrawOutline (int nVertices, g3sPoint **pointList);
 int ToggleOutlineMode (void);

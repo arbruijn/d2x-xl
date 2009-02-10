@@ -230,55 +230,57 @@ typedef struct tFaceTriangle {
 	int					nIndex;
 	} tFaceTriangle;
 
-typedef struct tFace {
-	ushort				index [4];
-	ushort				*triIndex;
-	int					nIndex;
-	int					nTriIndex;
+class CFace {
+	public:
+		ushort				index [4];
+		ushort				*triIndex;
+		int					nIndex;
+		int					nTriIndex;
 #if USE_RANGE_ELEMENTS
-	uint					*vertIndex;
+		uint					*vertIndex;
 #endif
-	int					nVerts;
-	int					nTris;
-	int					nFrame;
-	CBitmap				*bmBot;
-	CBitmap				*bmTop;
-	tTexCoord2f			*pTexCoord;	//needed to override default tex coords, e.g. for camera outputs
-	tRgbaColorf			color;
-	float					fRads [2];
-	short					nWall;
-	short					nBaseTex;
-	short					nOvlTex;
-	short					nCorona;
-	short					nSegment;
-	ushort				nLightmap;
-	ubyte					nSide;
-	ubyte					nOvlOrient :2;
-	ubyte					bVisible :1;
-	ubyte					bTextured :1;
-	ubyte					bOverlay :1;
-	ubyte					bSplit :1;
-	ubyte					bTransparent :1;
-	ubyte					bIsLight :1;
-	ubyte					bHaveCameraBg :1;
-	ubyte					bAnimation :1;
-	ubyte					bTeleport :1;
-	ubyte					bSlide :1;
-	ubyte					bSolid :1;
-	ubyte					bAdditive :2;
-	ubyte					bSparks :1;
-	ubyte					nRenderType : 2;
-	ubyte					bColored :1;
-	ubyte					bHasColor :1;
-	ubyte					widFlags;
-	char					nCamera;
-	char					nType;
-	char					nSegColor;
-	char					nShader;
-	struct tFace		*nextSlidingFace;
-	} tFace;
+		int					nVerts;
+		int					nTris;
+		int					nFrame;
+		CBitmap				*bmBot;
+		CBitmap				*bmTop;
+		tTexCoord2f			*pTexCoord;	//needed to override default tex coords, e.g. for camera outputs
+		tRgbaColorf			color;
+		float					fRads [2];
+		short					nWall;
+		short					nBaseTex;
+		short					nOvlTex;
+		short					nCorona;
+		short					nSegment;
+		ushort				nLightmap;
+		ubyte					nSide;
+		ubyte					nOvlOrient :2;
+		ubyte					bVisible :1;
+		ubyte					bTextured :1;
+		ubyte					bOverlay :1;
+		ubyte					bSplit :1;
+		ubyte					bTransparent :1;
+		ubyte					bIsLight :1;
+		ubyte					bHaveCameraBg :1;
+		ubyte					bAnimation :1;
+		ubyte					bTeleport :1;
+		ubyte					bSlide :1;
+		ubyte					bSolid :1;
+		ubyte					bAdditive :2;
+		ubyte					bSparks :1;
+		ubyte					nRenderType : 2;
+		ubyte					bColored :1;
+		ubyte					bCloaked :1;
+		ubyte					bHasColor :1;
+		ubyte					widFlags;
+		char					nCamera;
+		char					nType;
+		char					nSegColor;
+		char					nShader;
+		struct CFace		*nextSlidingFace;
+	};
 
-inline int operator- (tFace* f, CArray<tFace>& a) { return a.Index (f); }
+inline int operator- (CFace* f, CArray<CFace>& a) { return a.Index (f); }
 
 typedef struct tDisplayModeInfo {
 	int	VGA_mode;

@@ -54,7 +54,7 @@ typedef struct tLightmapData {
 	tRgbColorb			texColor [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH];
 	CFixVector			pixelPos [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH]; 
 	double				fOffset [MAX_LIGHTMAP_WIDTH];
-	tFace					*faceP;
+	CFace					*faceP;
 	} tLightmapData;
 
 class CLightmapManager {

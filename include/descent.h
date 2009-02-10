@@ -1453,7 +1453,7 @@ class CMineRenderData {
 	public:
 		CFixVector				viewerEye;
 		CShortArray				nSegRenderList; //[MAX_SEGMENTS_D2X];
-		CArray< tFace* >		pFaceRenderList; //[MAX_SEGMENTS_D2X * 6];
+		CArray< CFace* >		pFaceRenderList; //[MAX_SEGMENTS_D2X * 6];
 		CObjRenderList			renderObjs;
 		int						nRenderSegs;
 		CByteArray				bVisited; //[MAX_SEGMENTS_D2X];
@@ -1517,7 +1517,7 @@ class CVertColorData {
 	};
 
 typedef struct tFaceListItem {
-	tFace					*faceP;
+	CFace					*faceP;
 	short					nNextItem;
 } tFaceListItem;
 
@@ -1617,7 +1617,7 @@ typedef struct tFaceRenderVertex {
 
 class CFaceData {
 	public:
-		CArray<tFace>				faces;
+		CArray<CFace>				faces;
 		CArray<tFaceTriangle>	tris;
 		CArray<CFloatVector3>	vertices;
 		CArray<CFloatVector3>	normals;
@@ -1626,7 +1626,7 @@ class CFaceData {
 		CArray<tTexCoord2f>		lMapTexCoord;
 		CArray<tRgbaColorf>		color;
 		CArray<ushort>				faceVerts;
-		tFace*						slidingFaces;
+		CFace*						slidingFaces;
 #if USE_RANGE_ELEMENTS
 		CArray<GLuint>				vertIndex;
 #endif	

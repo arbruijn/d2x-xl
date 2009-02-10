@@ -279,7 +279,7 @@ return j ? i / j : 1;
 
 //------------------------------------------------------------------------------
 
-int CLightManager::Add (tFace* faceP, tRgbaColorf *colorP, fix xBrightness, short nSegment,
+int CLightManager::Add (CFace* faceP, tRgbaColorf *colorP, fix xBrightness, short nSegment,
 							   short nSide, short nObject, short nTexture, CFixVector *vPos)
 {
 	CDynLight*	pl;
@@ -553,7 +553,7 @@ qs.SortAscending (m_data.lights, 0, m_data.nLights [0] - 1);
 void CLightManager::AddGeometryLights (void)
 {
 	int			nFace, nSegment, nSide, nTexture, nLight;
-	tFace*		faceP;
+	CFace*		faceP;
 	tFaceColor*	colorP;
 
 #if 0

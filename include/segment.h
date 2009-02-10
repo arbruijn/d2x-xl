@@ -326,7 +326,7 @@ inline int operator- (CSegment* s, CArray<CSegment>& a) { return a.Index (s); }
 //------------------------------------------------------------------------------
 
 typedef struct tSegFaces {
-	tFace*	faceP;
+	CFace*	faceP;
 	ubyte		nFaces;
 	ubyte		bVisible;
 } tSegFaces;

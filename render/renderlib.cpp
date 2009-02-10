@@ -687,14 +687,14 @@ return !gameStates.app.bD1Mission &&
 
 //------------------------------------------------------------------------------
 
-float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int bIsMonitor, tRgbaColorf *colorP, int *nColor, ubyte *bTextured)
+float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int bIsMonitor,
+					  tRgbaColorf *colorP, int *nColor, ubyte *bTextured, ubyte* bCloaked)
 {
 	static tRgbaColorf cloakColor = {0, 0, 0, 0};
 
 	CWall	*wallP;
 	float fAlpha;
 	short	c;
-	int	bCloaked;
 
 if (!IS_WALL (nWall))
 	return 1;
@@ -703,12 +703,12 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
 wallP = WALLS + nWall;
-bCloaked = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING) || ((widFlags & WID_CLOAKED_FLAG) != 0);
-if (bCloaked || (widFlags & WID_TRANSPARENT_FLAG)) {
+*bCloaked = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING) || ((widFlags & WID_CLOAKED_FLAG) != 0);
+if (*bCloaked || (widFlags & WID_TRANSPARENT_FLAG)) {
 	if (bIsMonitor)
 		return 1;
 	c = wallP->cloakValue;
-	if (bCloaked) {
+	if (*bCloaked) {
 		*colorP = cloakColor;
 		*nColor = 1;
 		*bTextured = 0;
@@ -751,7 +751,7 @@ return (bForce || gameStates.render.bDoCameras) ? cameraManager.GetFaceCamera (n
 
 //------------------------------------------------------------------------------
 
-int SetupMonitorFace (short nSegment, short nSide, short nCamera, tFace *faceP)
+int SetupMonitorFace (short nSegment, short nSide, short nCamera, CFace *faceP)
 {
 	CCamera		*cameraP = cameraManager.Camera (nCamera);
 	int			bHaveMonitorBg, bIsTeleCam = cameraP->GetTeleport ();
