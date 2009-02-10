@@ -302,7 +302,7 @@ if (gameStates.menus.bHires) {
 	//BlitClipped (x, y, image);
 	image->RenderFixed (NULL, x, y);
 	if (gameOpts->menus.nStyle) {
-		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
+		CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 32));
 		OglDrawEmptyRect (x - 1, y - 1, x + image->Width () + 1, y + image->Height () + 1);
 		}
 	}

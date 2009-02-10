@@ -67,14 +67,15 @@ typedef struct tCanvasColor {
 #define TRANSPARENCY_COLOR  gameData.render.transpColor // palette entry of transparency color -- 255 on the PC
 #define SUPER_TRANSP_COLOR  254   // palette entry of super transparency color
 
-#define RGBA(_r,_g,_b,_a)			(((uint) (_r) << 24) | ((uint) (_g) << 16) | ((uint) (_b) << 8) | ((uint) (_a)))
-#define RGBA_RED(_i)					(((uint) (_i) >> 24) & 0xff)
-#define RGBA_GREEN(_i)				(((uint) (_i) >> 16) & 0xff)
-#define RGBA_BLUE(_i)				(((uint) (_i) >> 8) & 0xff)
-#define RGBA_ALPHA(_i)				(((uint) (_i)) & 0xff)
-#define PAL2RGBA(_c)					((ubyte) (((uint) (_c) * 255) / 63))
-#define RGBA_PAL(_r,_g,_b)			RGBA (PAL2RGBA (_r), PAL2RGBA (_g), PAL2RGBA (_b), 255)
-#define RGBA_PALX(_r,_g,_b,_x)	RGBA_PAL ((_r) * (_x), (_g) * (_x), (_b) * (_x))
+#define RGBA(_r,_g,_b,_a)			((uint (_r) << 24) | (uint (_g) << 16) | (uint (_b) << 8) | (uint (_a)))
+#define RGBA_RED(_i)					((uint (_i) >> 24) & 0xff)
+#define RGBA_GREEN(_i)				((uint (_i) >> 16) & 0xff)
+#define RGBA_BLUE(_i)				((uint (_i) >> 8) & 0xff)
+#define RGBA_ALPHA(_i)				((uint (_i)) & 0xff)
+#define PAL2RGBA(_c)					(ubyte ((uint (_c) * 255) / 63))
+#define RGBA_PAL(_r,_g,_b,_a)		RGBA (PAL2RGBA (_r), PAL2RGBA (_g), PAL2RGBA (_b), _a)
+#define RGB_PAL(_r,_g,_b)			RGBA_PAL (_r, _g, _b, 255)
+#define RGBA_PALX(_r,_g,_b,_x)	RGB_PAL ((_r) * (_x), (_g) * (_x), (_b) * (_x))
 #define RGBA_PAL3(_r,_g,_b)		RGBA_PALX (_r, _g, _b, 3)
 #define RGBA_PAL2(_r,_g,_b)		RGBA_PALX (_r, _g, _b, 2)
 #define RGBA_FADE(_c,_f)			RGBA (RGBA_RED (_c) / (_f), RGBA_GREEN (_c) / (_f), RGBA_BLUE (_c) / (_f), RGBA_ALPHA (_c))
@@ -95,7 +96,7 @@ typedef struct tCanvasColor {
 #define ORANGE_RGBA					RGBA (255,128,0,255)
 #define GOLD_RGBA						RGBA (255,224,0,255)
 
-#define D2BLUE_RGBA			RGBA_PAL (35,35,55)
+#define D2BLUE_RGBA			RGB_PAL (35,35,55)
 
 //-----------------------------------------------------------------------------
 

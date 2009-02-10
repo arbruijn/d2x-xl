@@ -268,7 +268,7 @@ else {
 	dsty += yOffs;
 	bmFrame.Blit (CCanvas::Current (), dstx, dsty, bufw, bufh, sx, sy, 1);
 	if ((CCanvas::Current ()->Width () > 640) || (CCanvas::Current ()->Height () > 480)) {
-		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
+		CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 32));
 		OglDrawEmptyRect (dstx - 1, dsty, dstx + w, dsty + h + 1);
 		}
 	}

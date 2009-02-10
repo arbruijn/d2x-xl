@@ -109,7 +109,7 @@ fontManager.Current ()->StringSize (szScore, w, h, aw);
 x = SB_SCORE_RIGHT - w - LHY (2);
 y = SB_SCORE_Y;
 //erase old score
-CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
+CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 0));
 Rect (lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCurrentPage], y, SB_SCORE_RIGHT, y + GAME_FONT->Height ());
 fontManager.SetColorRGBi ((IsMultiGame && !IsCoopGame) ? MEDGREEN_RGBA : GREEN_RGBA, 1, 0, 0);
 nIdScore = PrintF (&nIdScore, -(ScaleX (x) - w), y, szScore);
@@ -136,7 +136,7 @@ if (m_info.scoreDisplay [gameStates.render.vr.nCurrentPage] == 0)
 m_info.scoreTime -= gameData.time.xFrame;
 if (m_info.scoreTime > 0) {
 	if (m_info.scoreDisplay [gameStates.render.vr.nCurrentPage] != last_score_display [gameStates.render.vr.nCurrentPage] || frc) {
-		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
+		CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 0));
 		OglDrawFilledRect (lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage], SB_SCORE_ADDED_Y, SB_SCORE_ADDED_RIGHT, SB_SCORE_ADDED_Y+GAME_FONT->Height ());
 		last_score_display [gameStates.render.vr.nCurrentPage] = m_info.scoreDisplay [gameStates.render.vr.nCurrentPage];
 		}
@@ -157,7 +157,7 @@ if (m_info.scoreTime > 0) {
 	} 
 else {
 	//erase old score
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
+	CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 0));
 	OglDrawFilledRect (lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage], SB_SCORE_ADDED_Y, SB_SCORE_ADDED_RIGHT, SB_SCORE_ADDED_Y+GAME_FONT->Height ());
 	m_info.scoreTime = 0;
 	m_info.scoreDisplay [gameStates.render.vr.nCurrentPage] = 0;
@@ -231,7 +231,7 @@ if (IsMultiGame) {
 
 	sprintf (szKilled, "%5d", LOCALPLAYER.netKilledTotal);
 	fontManager.Current ()->StringSize (szKilled, w, h, aw);
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
+	CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 0));
 	Rect (lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCurrentPage], 
 			y + 1, SB_SCORE_RIGHT, y + GAME_FONT->Height ());
 	fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
@@ -243,7 +243,7 @@ else if (LOCALPLAYER.lives != m_history [gameStates.render.vr.nCurrentPage].live
 
 	int	y = -ScaleY (SB_LIVES_Y + m_info.heightPad);
 
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
+	CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 0));
 	Rect (SB_LIVES_X, y, SB_SCORE_RIGHT, y + bmP->Height ());
 	if (LOCALPLAYER.lives - 1 > 0) {
 		fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
@@ -446,12 +446,12 @@ CCanvas::SetCurrent (CurrentGameScreen ());
 CCanvas::Current ()->SetColorRGBi (bgColor);
 if (!gameStates.video.nDisplayMode) {
 	Rect (169, 189, 189, 196);
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (128, 128, 128));
+	CCanvas::Current ()->SetColorRGBi (RGB_PAL (128, 128, 128));
 	OglDrawLine (ScaleX (168), ScaleY (189), ScaleX (189), ScaleY (189));
 	}
 else {
 	OglDrawFilledRect (ScaleX (338), ScaleY (453), ScaleX (378), ScaleY (470));
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (128, 128, 128));
+	CCanvas::Current ()->SetColorRGBi (RGB_PAL (128, 128, 128));
 	OglDrawLine (ScaleX (336), ScaleY (453), ScaleX (378), ScaleY (453));
 	}
 CCanvas::Pop ();

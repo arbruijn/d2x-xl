@@ -225,9 +225,9 @@ CCanvas::Push ();
 CCanvas::SetCurrent (NULL);
 fontManager.SetCurrent (GAME_FONT);
 fontManager.Current ()->StringSize ("V2.2", w, h, aw);
-fontManager.SetColorRGBi (RGBA_PAL (63, 47, 0), 1, 0, 0);
+fontManager.SetColorRGBi (RGB_PAL (63, 47, 0), 1, 0, 0);
 GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - GAME_FONT->Height () - 2, "visit www.descent2.de");
-fontManager.SetColorRGBi (RGBA_PAL (23, 23, 23), 1, 0, 0);
+fontManager.SetColorRGBi (RGB_PAL (23, 23, 23), 1, 0, 0);
 GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - GAME_FONT->Height () - h - 6, TXT_COPYRIGHT);
 GrPrintF (NULL, CCanvas::Current ()->Width () - w - 2, 
 			 CCanvas::Current ()->Height () - GAME_FONT->Height () - h - 6, "V%d.%d", D2X_MAJOR, D2X_MINOR);
@@ -248,7 +248,7 @@ fontManager.Current ()->StringSize (VERSION, ws, hs, aw);
 fontManager.SetColorRGBi (D2BLUE_RGBA, 1, 0, 0);
 GrPrintF (NULL, CCanvas::Current ()->Width () - ws - 1, 
 			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0) + (h - hs) / 2, VERSION);
-fontManager.SetColorRGBi (RGBA_PAL (6, 6, 6), 1, 0, 0);
+fontManager.SetColorRGBi (RGB_PAL (6, 6, 6), 1, 0, 0);
 CCanvas::Pop ();
 }
 

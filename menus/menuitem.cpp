@@ -115,11 +115,11 @@ short CMenuItem::SetColor (int bIsCurrent, int bTiny)
 if (bTiny) {
 	if (!gameData.menu.bValid) {
 		gameData.menu.warnColor = RED_RGBA;
-		gameData.menu.keyColor = RGBA_PAL (57, 49, 20);
+		gameData.menu.keyColor = RGB_PAL (57, 49, 20);
 		gameData.menu.tabbedColor = WHITE_RGBA;
-		gameData.menu.tinyColors [0][0] = RGBA_PAL (29, 29, 47);
+		gameData.menu.tinyColors [0][0] = RGB_PAL (29, 29, 47);
 		gameData.menu.tinyColors [0][1] = RED_RGBA;
-		gameData.menu.tinyColors [1][0] = RGBA_PAL (57, 49, 20);
+		gameData.menu.tinyColors [1][0] = RGB_PAL (57, 49, 20);
 		gameData.menu.tinyColors [1][1] = ORANGE_RGBA;
 		gameData.menu.bValid = 1;
 		}
@@ -439,7 +439,7 @@ void CMenuItem::ShowHelp (void)
 if (m_szHelp && *m_szHelp) {
 	int nInMenu = gameStates.menus.nInMenu;
 	gameStates.menus.nInMenu = 0;
-	gameData.menu.helpColor = RGBA_PAL (47, 47, 47);
+	gameData.menu.helpColor = RGB_PAL (47, 47, 47);
 	gameData.menu.colorOverride = gameData.menu.helpColor;
 	MsgBox ("D2X - XL online help", NULL, - 3, m_szHelp, " ", TXT_CLOSE);
 	gameData.menu.colorOverride = 0;

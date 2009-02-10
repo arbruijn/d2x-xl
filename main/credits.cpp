@@ -160,7 +160,7 @@ if (gameOpts->menus.nStyle)
 else {
 	m_bmBackdrop.RenderFixed (CCanvas::Current (), m_xOffs, m_yOffs);
 	if ((CCanvas::Current ()->Width () > 640) || (CCanvas::Current ()->Height () > 480)) {
-		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0,0,32));
+		CCanvas::Current ()->SetColorRGBi (RGB_PAL (0,0,32));
 		OglDrawEmptyRect (m_xOffs, m_yOffs, m_xOffs + m_bmBackdrop.Width () + 1, m_yOffs + m_bmBackdrop.Height () + 1);
 		}
 	}

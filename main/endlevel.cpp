@@ -824,7 +824,7 @@ void DrawStars ()
 
 for (i = 0; i < MAX_STARS; i++) {
 	if ((i&63) == 0) {
-		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (intensity, intensity, intensity));
+		CCanvas::Current ()->SetColorRGBi (RGB_PAL (intensity, intensity, intensity));
 		intensity-=3;
 		}
 	transformation.RotateScaled (p.p3_vec, stars [i]);

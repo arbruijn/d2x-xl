@@ -425,8 +425,13 @@ if (gameStates.app.bGameRunning /*&& (gameData.demo.nState == ND_STATE_NORMAL)*/
 	}
 else
 	console.Draw ();
-i = DrawTitle (pszTitle, TITLE_FONT, RGBA_PAL (31, 31, 31), m_props.yOffs);
-DrawTitle (pszSubTitle, SUBTITLE_FONT, RGBA_PAL (21, 21, 21), i);
+
+
+i -= m_tEnter;
+gameStates.render.grAlpha = (i < 1000) ? float (i) / 1000.0f : 1.0f;
+
+i = DrawTitle (pszTitle, TITLE_FONT, RGBA_PAL (31, 31, 31, ubyte (255 * gameStates.render.grAlpha)), m_props.yOffs);
+DrawTitle (pszSubTitle, SUBTITLE_FONT, RGB_PAL (21, 21, 21, ubyte (255 * gameStates.render.grAlpha)), i);
 if (!m_bRedraw)
 	m_props.ty = i;
 
@@ -444,7 +449,7 @@ for (i = 0; i < m_props.nMaxDisplayable + m_props.nScrollOffset - m_props.nMaxNo
 			Item (i).m_y -= ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
 		if (!MODERN_STYLE) 
 			SDL_ShowCursor (0);
-		Item (i).Draw ((i == m_nChoice) && !m_bAllText, bTinyMode);
+		Item (i).Draw ((i == m_nChoice) && !m_bAllText, m_props.bTinyMode);
 		Item (i).m_bRedraw = 0;
 		if (!gameStates.menus.bReordering && !JOYDEFS_CALIBRATING)
 			SDL_ShowCursor (1);
@@ -462,8 +467,8 @@ if (m_props.bIsScrollBox) {
 if (m_bRedraw || (m_nLastScrollCheck != m_props.nScrollOffset)) {
 	m_nLastScrollCheck = m_props.nScrollOffset;
 	fontManager.SetCurrent (SELECTED_FONT);
-	sy = Item (m_props.nScrollOffset).m_y - ((m_props.nStringHeight + 1)*(m_props.nScrollOffset - m_props.nMaxNoScroll));
-	sx = Item (m_props.nScrollOffset).m_x - (gameStates.menus.bHires?24:12);
+	sy = Item (m_props.nScrollOffset).m_y - ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
+	sx = Item (m_props.nScrollOffset).m_x - (gameStates.menus.bHires ? 24 : 12);
 	if (m_props.nScrollOffset > m_props.nMaxNoScroll)
 		DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, UP_ARROW_MARKER);
 	else
@@ -490,6 +495,9 @@ m_bRedraw = 1;
 m_bStart = 0;
 if (!m_bDontRestore && paletteManager.EffectDisabled ()) {
 	paletteManager.EnableEffect ();
+gameStates.render.grAlpha = 1.0f;
+
+
 }
 }
 

@@ -68,7 +68,7 @@ return gmObjP &&
 //draw a crosshair for the guided missile
 void DrawGuidedCrosshair (void)
 {
-CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 31, 0));
+CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 31, 0));
 int w = CCanvas::Current ()->Width ()>>5;
 if (w < 5)
 	w = 5;

@@ -610,7 +610,7 @@ void CGenericCockpit::DrawAmmoInfo (int x, int y, int ammoCount, int bPrimary)
 	static int nIdAmmo [2] = {0, 0};
 
 w = (m_info.fontWidth * (bPrimary ? 7 : 5)) / 2;
-CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
+CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 0));
 //OglDrawFilledRect (ScaleX (x), ScaleY (y), ScaleX (x+w), ScaleY (y + m_info.fontHeight));
 fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 sprintf (szAmmo, "%03d", ammoCount);
@@ -1839,9 +1839,9 @@ if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 	int smallWindowBottom, bigWindowBottom, extraPartHeight;
 
 	if (gameStates.app.bNostalgia)
-		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
+		CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 32));
 	else
-		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (47, 31, 0));
+		CCanvas::Current ()->SetColorRGBi (RGB_PAL (47, 31, 0));
 	//glLineWidth (((cockpitCanv->Width () < 1200) ? 1.0f : 2.0f));
 	glLineWidth (float (cockpitCanv->Width ()) / 640.0f);
 	OglDrawEmptyRect (0, 0, CCanvas::Current ()->Width () - 1, CCanvas::Current ()->Height ());
@@ -1880,15 +1880,15 @@ if (!gameStates.app.bNostalgia && (gameStates.render.cockpit.nType >= CM_FULL_SC
 	int y0 = windowCanv.Top () - CCanvas::Current ()->Top ();
 	int x1 = windowCanv.Right () - 1;
 	int y1 = windowCanv.Bottom () - CCanvas::Current ()->Top ();
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (47, 31, 0));
-	//CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
-	//CCanvas::Current ()->SetColorRGBi (RGBA_PAL (60, 60, 60));
-	//CCanvas::Current ()->SetColorRGBi (RGBA_PAL (31, 31, 31));
+	CCanvas::Current ()->SetColorRGBi (RGB_PAL (47, 31, 0));
+	//CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 32));
+	//CCanvas::Current ()->SetColorRGBi (RGB_PAL (60, 60, 60));
+	//CCanvas::Current ()->SetColorRGBi (RGB_PAL (31, 31, 31));
 	OglDrawLine (x0 + 1, y0 - 1, x1 - 1, y0 - 1);
 	OglDrawLine (x0 + 1, y1 + 1, x1 - 1, y1 + 1);
 	OglDrawLine (x0 - 1, y0 + 1, x0 - 1, y1 - 1);
 	OglDrawLine (x1 + 1, y0 + 1, x1 + 1, y1 - 1);
-	//CCanvas::Current ()->SetColorRGBi (RGBA_PAL (30, 30, 30));
+	//CCanvas::Current ()->SetColorRGBi (RGB_PAL (30, 30, 30));
 	OglDrawLine (x0 + 3, y0 - 2, x1 - 3, y0 - 2);
 	OglDrawLine (x0 + 3, y1 + 2, x1 - 3, y1 + 2);
 	OglDrawLine (x0 - 2, y0 + 3, x0 - 2, y1 - 3);

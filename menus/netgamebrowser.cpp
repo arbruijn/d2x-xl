@@ -286,7 +286,7 @@ networkData.nLastActiveGames = 0;
 memset (activeNetGames, 0, sizeof (activeNetGames));
 memset (activeNetPlayers, 0, sizeof (activeNetPlayers));
 if (!bAutoRun) {
-	fontManager.SetColorRGBi (RGBA_PAL (15, 15, 23), 1, 0, 0);
+	fontManager.SetColorRGBi (RGB_PAL (15, 15, 23), 1, 0, 0);
 	menu.AddText (szGameList [0]);
 	menu.Top ()->m_bNoScroll = 1;
 	menu.Top ()->m_x = (short) 0x8000;	//centered

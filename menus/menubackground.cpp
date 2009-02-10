@@ -430,7 +430,6 @@ if (bForce || (MODERN_STYLE == 1)) {
 	gameStates.render.grAlpha = (float) gameData.menu.alpha * fAlpha / 255.0f;
 	glDisable (GL_TEXTURE_2D);
 	OglDrawFilledRect (left, top, right, bottom);
-	gameStates.render.grAlpha = FADE_LEVELS;
 	CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), (ubyte) (255 * fAlpha));
 	glLineWidth ((GLfloat) nLineWidth);
 	OglDrawEmptyRect (left, top, right, bottom);
