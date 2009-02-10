@@ -110,7 +110,7 @@ if (!bDamage)
 	return 1;
 if (v >= 10)
 	return 0;
-if ((fix) (OBJECTS [nObject].Damage () * 100) > v * 10)
+if (fix (OBJECTS [nObject].Damage () * 100) > v * 10)
 	return 0;
 if (!(flags & TF_PERMANENT))
 	value = 0;
@@ -811,7 +811,10 @@ else {
 			return 1;
 		}
 	else
-		if ((objP->info.nType != OBJ_ROBOT) && (objP->info.nType != OBJ_REACTOR))
+		if ((objP->info.nType != OBJ_ROBOT) && 
+			 (objP->info.nType != OBJ_REACTOR) && 
+			 (objP->info.nType != OBJ_HOSTAGE) && 
+			 (objP->info.nType != OBJ_POWERUP))
 			return 1;
 		}
 

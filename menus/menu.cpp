@@ -434,6 +434,9 @@ DrawTitle (pszSubTitle, SUBTITLE_FONT, RGB_PAL (21, 21, 21), i);
 if (!m_bRedraw)
 	m_props.ty = i;
 
+if (m_callback && (gameStates.render.grAlpha == 1.0f))
+	m_nChoice = (*m_callback) (*this, m_nKey, m_nChoice);
+
 fontManager.SetCurrent (m_props.bTinyMode ? SMALL_FONT : NORMAL_FONT);
 for (i = 0; i < m_props.nMaxDisplayable + m_props.nScrollOffset - m_props.nMaxNoScroll; i++) {
 	if ((i >= m_props.nMaxNoScroll) && (i < m_props.nScrollOffset))
@@ -544,7 +547,6 @@ int CMenu::Menu (const char* pszTitle, const char* pszSubTitle, pMenuCallback ca
 {
 	int			bKeyRepeat, done, nItem = nCurItemP ? *nCurItemP : 0;
 	int			oldChoice, i;
-	int			nKey;
 	int			bSoundStopped = 0, bTimeStopped = 0;
 	int			topChoice;// Is this a scrolling box? Set to 0 at init
 	int			bRedrawAll = 0;
@@ -564,6 +566,7 @@ m_bStart = 1;
 m_bCloseBox = 0;
 m_bDontRestore = 0;
 m_bAllText = 0;
+m_callback = callback;
 
 paletteManager.DisableEffect ();
 messageBox.Clear ();
@@ -675,13 +678,13 @@ while (!done) {
 	redbook.CheckRepeat ();
 	//NetworkListen ();
 	if (bWheelUp)
-		nKey = KEY_UP;
+		m_nKey = KEY_UP;
 	else if (bWheelDown)
-		nKey = KEY_DOWN;
+		m_nKey = KEY_DOWN;
 	else
-		nKey = KeyInKey ();
+		m_nKey = KeyInKey ();
 	if (mouseData.bDoubleClick)
-		nKey = KEY_ENTER;
+		m_nKey = KEY_ENTER;
 	if ((m_props.scWidth != screen.Width ()) || (m_props.scHeight != screen.Height ())) {
 		memset (&m_props, 0, sizeof (m_props));
 		m_props.width = width;
@@ -709,33 +712,30 @@ while (!done) {
 			m_props.nScrollOffset = m_nChoice - m_props.nMaxOnMenu + 1;
 		}
 
-	if (callback && (SDL_GetTicks () - m_tEnter > gameOpts->menus.bFade))
-		m_nChoice = (*callback) (*this, nKey, m_nChoice);
-
 	if (!bTimeStopped){
 		// Save current menu box
 		if (MultiMenuPoll () == -1)
-			nKey = -2;
+			m_nKey = -2;
 		}
 
-	if (nKey < - 1) {
-		m_bDontRestore = (nKey == -3);		// - 3 means don't restore
+	if (m_nKey < - 1) {
+		m_bDontRestore = (m_nKey == -3);		// - 3 means don't restore
 		if (m_nChoice >= 0)
-			m_nChoice = nKey;
+			m_nChoice = m_nKey;
 		else {
 			m_nChoice = -m_nChoice - 1;
 			*nCurItemP = m_nChoice;
 			}
-		nKey = -1;
+		m_nKey = -1;
 		done = 1;
 		}
 	oldChoice = m_nChoice;
-	if (nKey && (console.Events (nKey) || bWheelUp || bWheelDown))
-		switch (nKey) {
+	if (m_nKey && (console.Events (m_nKey) || bWheelUp || bWheelDown))
+		switch (m_nKey) {
 
 		case KEY_SHIFTED + KEY_ESC:
 			console.Show ();
-			nKey = -1;
+			m_nKey = -1;
 			break;
 
 		case KEY_I:
@@ -1216,7 +1216,7 @@ launchOption:
 
 			if (((Item (m_nChoice).m_nType == NM_TYPE_INPUT) || 
 				 ((Item (m_nChoice).m_nType == NM_TYPE_INPUT_MENU) && (Item (m_nChoice).m_group == 1))) && (oldChoice == m_nChoice)) {
-				if (nKey == KEY_LEFT || nKey == KEY_BACKSP || nKey == KEY_PAD4) {
+				if (m_nKey == KEY_LEFT || m_nKey == KEY_BACKSP || m_nKey == KEY_PAD4) {
 					if (Item (m_nChoice).m_value == -1) 
 						Item (m_nChoice).m_value = (int) strlen (Item (m_nChoice).m_text);
 					if (Item (m_nChoice).m_value > 0)
@@ -1225,7 +1225,7 @@ launchOption:
 					Item (m_nChoice).m_bRedraw = 1;
 					}
 				else {
-					ascii = KeyToASCII (nKey);
+					ascii = KeyToASCII (m_nKey);
 					if ((ascii < 255) && (Item (m_nChoice).m_value < Item (m_nChoice).m_nTextLen)) {
 						int bAllowed;
 
@@ -1245,7 +1245,7 @@ launchOption:
 					}
 				}
 			else if ((Item (m_nChoice).m_nType != NM_TYPE_INPUT) && (Item (m_nChoice).m_nType != NM_TYPE_INPUT_MENU)) {
-				ascii = KeyToASCII (nKey);
+				ascii = KeyToASCII (m_nKey);
 				if (ascii < 255) {
 					int choice1 = m_nChoice;
 					ascii = toupper (ascii);
@@ -1271,7 +1271,7 @@ launchOption:
 							  (t == NM_TYPE_NUMBER) ||
 							  (t == NM_TYPE_SLIDER))
 								&& (ascii == toupper (ch))) {
-							nKey = 0;
+							m_nKey = 0;
 							m_nChoice = choice1;
 							if (oldChoice> - 1)
 								Item (oldChoice).m_bRedraw = 1;
@@ -1303,7 +1303,7 @@ launchOption:
 
 			if ((Item (m_nChoice).m_nType == NM_TYPE_NUMBER) || (Item (m_nChoice).m_nType == NM_TYPE_SLIDER)) {
 				int ov = Item (m_nChoice).m_value;
-				switch (nKey) {
+				switch (m_nKey) {
 				case KEY_PAD4:
 			 	case KEY_LEFT:
 			 	case KEY_MINUS:
@@ -1369,14 +1369,14 @@ return m_nChoice;
 //------------------------------------------------------------------------------ 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddCheck (const char* szText, int nValue, int nKey, const char* szHelp)
+int CMenu::AddCheck (const char* szText, int nValue, int m_nKey, const char* szHelp)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_CHECK;
 item.m_pszText = NULL;
 item.SetText (szText);
 item.m_value = NMBOOL (nValue);
-item.m_nKey = nKey;
+item.m_nKey = m_nKey;
 item.m_szHelp = szHelp;
 Push (item);
 return ToS () - 1;
@@ -1384,7 +1384,7 @@ return ToS () - 1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddRadio (const char* szText, int nValue, int nKey, const char* szHelp)
+int CMenu::AddRadio (const char* szText, int nValue, int m_nKey, const char* szHelp)
 {
 CMenuItem item;
 if (!ToS () || (Top ()->m_nType != NM_TYPE_RADIO))
@@ -1393,7 +1393,7 @@ item.m_nType = NM_TYPE_RADIO;
 item.m_pszText = NULL;
 item.SetText (szText);
 item.m_value = nValue;
-item.m_nKey = nKey;
+item.m_nKey = m_nKey;
 item.m_group = m_nGroup;
 item.m_szHelp = szHelp;
 Push (item);
@@ -1402,13 +1402,13 @@ return ToS () - 1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddMenu (const char* szText, int nKey, const char* szHelp)
+int CMenu::AddMenu (const char* szText, int m_nKey, const char* szHelp)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_MENU;
 item.m_pszText = NULL;
 item.SetText (szText);
-item.m_nKey = nKey;
+item.m_nKey = m_nKey;
 item.m_szHelp = szHelp;
 Push (item);
 return ToS () - 1;
@@ -1416,20 +1416,20 @@ return ToS () - 1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddText (const char* szText, int nKey)
+int CMenu::AddText (const char* szText, int m_nKey)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_TEXT;
 item.m_pszText = NULL;
 item.SetText (szText);
-item.m_nKey = nKey;
+item.m_nKey = m_nKey;
 Push (item);
 return ToS () - 1;
 }
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddSlider (const char* szText, int nValue, int nMin, int nMax, int nKey, const char* szHelp)
+int CMenu::AddSlider (const char* szText, int nValue, int nMin, int nMax, int m_nKey, const char* szHelp)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_SLIDER;
@@ -1438,7 +1438,7 @@ item.SetText (szText);
 item.m_value = NMCLAMP (nValue, nMin, nMax);
 item.m_minValue = nMin;
 item.m_maxValue = nMax;
-item.m_nKey = nKey;
+item.m_nKey = m_nKey;
 item.m_szHelp = szHelp;
 Push (item);
 return ToS () - 1;
@@ -1476,14 +1476,14 @@ return AddInput (szText, szValue, nLen, szHelp);
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddInputBox (const char* szText, int nLen, int nKey, const char* szHelp)
+int CMenu::AddInputBox (const char* szText, int nLen, int m_nKey, const char* szHelp)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_INPUT_MENU;
 item.m_pszText = (char*) (szText);
 item.SetText (szText);
 item.m_nTextLen = nLen;
-item.m_nKey = nKey;
+item.m_nKey = m_nKey;
 item.m_szHelp = szHelp;
 Push (item);
 return ToS () - 1;

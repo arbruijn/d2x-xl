@@ -21,7 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menu.h"
 #include "descent.h"
 #include "ipx.h"
-#include "key.h"
+#include "m_nKey.h"
 #include "iff.h"
 #include "u_mem.h"
 #include "error.h"
@@ -135,7 +135,7 @@ int CFileSelector::FileSelector (const char* pszTitle, const char* filespec, cha
 {
 	int					i;
 	FFS					ffs;
-	int					m_nFileCount = 0, key, done, m_nOldChoice;
+	int					m_nFileCount = 0, done, m_nOldChoice;
 	int					nPrevItem;
 	int					bKeyRepeat = gameStates.input.keys.bRepeat;
 	int					m_bPlayerMode = 0;
@@ -155,6 +155,7 @@ m_tEnter = -1;
 m_nFirstItem = -1;
 m_nVisibleItems = 8;
 m_bPlayerMode = 0;
+m_callback = NULL;
 
 m_xOffset = m_yOffset = w_w = w_h = nTitleHeight = 0;
 m_nLeft = m_nTop = m_nWidth = m_nHeight = 0;
@@ -321,12 +322,12 @@ while (!done) {
 	//see if redbook song needs to be restarted
 	redbook.CheckRepeat ();
 	if (bWheelUp)
-		key = KEY_UP;
+		m_nKey = KEY_UP;
 	else if (bWheelDown)
-		key = KEY_DOWN;
+		m_nKey = KEY_DOWN;
 	else
-		key = KeyInKey ();
-	switch (key) {
+		m_nKey = KeyInKey ();
+	switch (m_nKey) {
 		case KEY_CTRLED + KEY_F1:
 			SwitchDisplayMode ( - 1);
 			break;
@@ -434,8 +435,8 @@ while (!done) {
 				
 		default:
 			if (!gameOpts->menus.bSmartFileSearch || (nPatternLen < (int) sizeof (szPattern) - 1)) {
-				int nStart, ascii = KeyToASCII (key);
-				if ((key == KEY_BACKSP) || (ascii < 255)) {
+				int nStart, ascii = KeyToASCII (m_nKey);
+				if ((m_nKey == KEY_BACKSP) || (ascii < 255)) {
 					int cc, bFound = 0;
 					if (!gameOpts->menus.bSmartFileSearch) {
 						cc = m_nChoice + 1;
@@ -448,7 +449,7 @@ while (!done) {
 					else {
 						cc = 0;
 						nStart = 0;
-						if (key != KEY_BACKSP) {
+						if (m_nKey != KEY_BACKSP) {
 							szPattern [nPatternLen++] = tolower (ascii);
 							szPattern [nPatternLen] = '\0';
 							}

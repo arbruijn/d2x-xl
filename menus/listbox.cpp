@@ -21,7 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menu.h"
 #include "descent.h"
 #include "ipx.h"
-#include "key.h"
+#include "m_nKey.h"
 #include "iff.h"
 #include "u_mem.h"
 #include "error.h"
@@ -113,7 +113,7 @@ GrUpdate (0);
 int CListBox::ListBox (const char* pszTitle, CStack<char*>& items, int nDefaultItem, int bAllowAbort, pListBoxCallback callback)
 {
 	int	i;
-	int	done, m_nOldChoice, nPrevItem, key, m_bRedraw;
+	int	done, m_nOldChoice, nPrevItem, m_bRedraw;
 	int	bKeyRepeat = gameStates.input.keys.bRepeat;
 	int	nOffsetSize;
 	int	total_width, total_height;
@@ -126,6 +126,7 @@ int CListBox::ListBox (const char* pszTitle, CStack<char*>& items, int nDefaultI
 
 m_tEnter = -1;
 m_items = &items;
+m_callback = callback;
 
 gameStates.input.keys.bRepeat = 1;
 SetPopupScreenMode ();
@@ -192,24 +193,19 @@ while (!done) {
 	redbook.CheckRepeat ();
 
 	if (bWheelUp)
-		key = KEY_UP;
+		m_nKey = KEY_UP;
 	else if (bWheelDown)
-		key = KEY_DOWN;
+		m_nKey = KEY_DOWN;
 	else
-		key = KeyInKey ();
+		m_nKey = KeyInKey ();
 
-	if (callback)
-		m_bRedraw = (*callback) (&m_nChoice, items, &key);
-	else
-		m_bRedraw = 0;
-
-	if (key< - 1) {
-		m_nChoice = key;
-		key = -1;
+	if (m_nKey < -1) {
+		m_nChoice = m_nKey;
+		m_nKey = -1;
 		done = 1;
 		}
 
-	switch (key) {
+	switch (m_nKey) {
 		case KEY_CTRLED + KEY_F1:
 			SwitchDisplayMode ( - 1);
 			break;
@@ -271,8 +267,8 @@ while (!done) {
 		default:
 			if (!gameOpts->menus.bSmartFileSearch || (nPatternLen < (int) sizeof (szPattern) - 1)) {
 				int nStart,
-					 ascii = KeyToASCII (key);
-				if ((key == KEY_BACKSP) || (ascii < 255)) {
+					 ascii = KeyToASCII (m_nKey);
+				if ((m_nKey == KEY_BACKSP) || (ascii < 255)) {
 					int cc, bFound = 0;
 					if (!gameOpts->menus.bSmartFileSearch) {
 						nStart = m_nChoice;
@@ -285,7 +281,7 @@ while (!done) {
 					else {
 						nStart = 0;
 						cc = 0;
-						if (key != KEY_BACKSP) {
+						if (m_nKey != KEY_BACKSP) {
 							szPattern [nPatternLen++] = tolower (ascii);
 							szPattern [nPatternLen] = '\0';
 							}
