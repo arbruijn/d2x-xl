@@ -508,9 +508,10 @@ void CMenu::FadeIn (void)
 if (gameOpts->menus.nFade) {
 	if (m_tEnter < 0)
 		m_tEnter = SDL_GetTicks ();
-	uint t = SDL_GetTicks () - m_tEnter;
-	PrintLog ("fade %d\n", t);
-	gameStates.render.grAlpha = (t < gameOpts->menus.nFade) ? float (t) / float (gameOpts->menus.nFade) : 1.0f;
+	int t = int (SDL_GetTicks () - m_tEnter);
+	if (t < 0)
+		t = 0;
+	gameStates.render.grAlpha = (t < int (gameOpts->menus.nFade)) ? float (t) / float (gameOpts->menus.nFade) : 1.0f;
 	}
 else {
 	m_tEnter = 0;
@@ -529,11 +530,10 @@ if (gameOpts->menus.nFade) {
 	for (;;) {
 		t1 = SDL_GetTicks ();
 		dt = t1 - t0;
+		m_tEnter = t1 - gameOpts->menus.nFade + dt;
+		Render (pszTitle, pszSubTitle, gameCanvasP);
 		if (dt > t)
 			break;
-		m_tEnter = t1 - gameOpts->menus.nFade + dt;
-		PrintLog ("fadeout %d\n", gameOpts->menus.nFade - dt);
-		Render (pszTitle, pszSubTitle, gameCanvasP);
 		}
 	}
 }
