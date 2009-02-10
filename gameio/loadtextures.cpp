@@ -757,13 +757,10 @@ return 1;
 
 int PiggyBitmapExistsSlow (char * name)
 {
-	int i, j;
-
-	for (i=0, j=gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]; i<j; i++) {
-		if (!strcmp (gameData.pig.tex.bitmapFileP[i].name, name))
-			return 1;
-	}
-	return 0;
+for (int i = 0, j = gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]; i < j; i++) 
+	if (!strcmp (gameData.pig.tex.bitmapFileP[i].name, name))
+		return 1;
+return 0;
 }
 
 //------------------------------------------------------------------------------
