@@ -502,28 +502,36 @@ gameStates.render.grAlpha = 1.0f;
 
 void CMenu::FadeIn (void)
 {
-if (m_tEnter < 0)
-	m_tEnter = SDL_GetTicks ();
-int t = SDL_GetTicks () - m_tEnter;
-PrintLog ("fade %d\n", t);
-gameStates.render.grAlpha = (t < MENU_FADE_TIME) ? float (t) / float (MENU_FADE_TIME) : 1.0f;
+if (gameOpts->menus.bFade) {
+	if (m_tEnter < 0)
+		m_tEnter = SDL_GetTicks ();
+	int t = SDL_GetTicks () - m_tEnter;
+	PrintLog ("fade %d\n", t);
+	gameStates.render.grAlpha = (t < MENU_FADE_TIME) ? float (t) / float (MENU_FADE_TIME) : 1.0f;
+	}
+else {
+	m_tEnter = 0;
+	gameStates.render.grAlpha = 1.0f;
+	}
 }
 
 //------------------------------------------------------------------------------ 
 
 void CMenu::FadeOut (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP)
 {
-int t = int (MENU_FADE_TIME * gameStates.render.grAlpha);
-int t0 = SDL_GetTicks ();
-int t1, dt;
-for (;;) {
-	t1 = SDL_GetTicks ();
-	dt = t1 - t0;
-	if (dt >= t)
-		break;
-	m_tEnter = t1 - MENU_FADE_TIME + dt;
-	PrintLog ("fadeout %d\n", MENU_FADE_TIME - dt);
-	Render (pszTitle, pszSubTitle, gameCanvasP);
+if (gameOpts->menus.bFade) {
+	int t = int (MENU_FADE_TIME * gameStates.render.grAlpha);
+	int t0 = SDL_GetTicks ();
+	int t1, dt;
+	for (;;) {
+		t1 = SDL_GetTicks ();
+		dt = t1 - t0;
+		if (dt >= t)
+			break;
+		m_tEnter = t1 - MENU_FADE_TIME + dt;
+		PrintLog ("fadeout %d\n", MENU_FADE_TIME - dt);
+		Render (pszTitle, pszSubTitle, gameCanvasP);
+		}
 	}
 }
 
