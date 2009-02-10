@@ -608,7 +608,7 @@ if (nEndSeg != -1) {
 #endif
 	aiP->nCurPathIndex = 0;
 	gameData.ai.freePointSegs += aiP->nPathLength;
-	if (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2 > uint (LEVEL_POINT_SEGS)) {
+	if (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2 > LEVEL_POINT_SEGS) {
 		AIResetAllPaths ();
 		return;
 		}
@@ -644,7 +644,7 @@ if (nEndSeg != -1) {
 #endif
 	aiP->nCurPathIndex = 0;
 	gameData.ai.freePointSegs += aiP->nPathLength;
-	if (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2 > uint (LEVEL_POINT_SEGS)) {
+	if (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2 > LEVEL_POINT_SEGS) {
 		AIResetAllPaths ();
 		return;
 		}
@@ -687,7 +687,7 @@ if (nEndSeg != -1) {
 #endif
 	aiP->nCurPathIndex = 0;
 	gameData.ai.freePointSegs += aiP->nPathLength;
-	if (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2 > uint (LEVEL_POINT_SEGS)) {
+	if (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2 > LEVEL_POINT_SEGS) {
 		AIResetAllPaths ();
 		return;
 		}
@@ -727,7 +727,7 @@ aiP->nCurPathIndex = 0;
 ValidatePath (8, gameData.ai.freePointSegs, aiP->nPathLength);
 #endif
 gameData.ai.freePointSegs += aiP->nPathLength;
-if (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2 > uint (LEVEL_POINT_SEGS)) {
+if (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2 > LEVEL_POINT_SEGS) {
 	AIResetAllPaths ();
 	}
 aiP->PATH_DIR = 1;		//	Initialize to moving forward.
@@ -1208,6 +1208,9 @@ int	nLastFrameGarbageCollected = 0;
 //	Garbage colledion -- Free all unused records in gameData.ai.routeSegs and compress all paths.
 void AICollectPathGarbage (void)
 {
+#if DBG
+	int					i;
+#endif
 	int					nFreeIndex = 0;
 	int					nObjects = 0;
 	int					nObject;
