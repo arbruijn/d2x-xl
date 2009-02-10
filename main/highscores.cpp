@@ -499,7 +499,7 @@ while (!done) {
 	if (bNetwork && (gameData.app.nGameMode & GM_NETWORK)) {
 		CMenu m (1);
 		m.AddGauge ("", -1, 1000); //dummy for NetworkEndLevelPoll2()
-		NetworkEndLevelPoll2 (m, key, 0);
+		NetworkEndLevelPoll2 (m, key, 0, 0);
 		for (nEscaped = 0, nReady = 0, i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if (gameData.multiplayer.players [i].connected && i!=gameData.multiplayer.nLocalPlayer) {
 			// Check timeout for idle players
