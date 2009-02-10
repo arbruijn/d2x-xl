@@ -74,7 +74,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define LHX(x) (gameStates.menus.bHires? 2 * (x) : x)
 #define LHY(y) (gameStates.menus.bHires? (24 * (y)) / 10 : y)
-#definef FADE_TIME	200
+#define FADE_TIME	200
 
 //------------------------------------------------------------------------------ 
 
@@ -503,7 +503,8 @@ void CMenu::FadeIn (void)
 {
 if (m_tEnter < 0)
 	m_tEnter = SDL_GetTicks ();
-int t = SDL_getTicks () - m_tEnter;
+int t = SDL_GetTicks () - m_tEnter;
+PrintLog ("fade %d\n", t);
 gameStates.render.grAlpha = (t < FADE_TIME) ? float (t) / float (FADE_TIME) : 1.0f;
 }
 
@@ -519,7 +520,8 @@ for (;;) {
 	dt = t1 - t0;
 	if (dt >= t)
 		break;
-	m_tEnter = t1 + dt;
+	m_tEnter = t1 - FADE_TIME + dt;
+	PrintLog ("fadeout %d\n", FADE_TIME - dt);
 	Render (pszTitle, pszSubTitle, gameCanvasP);
 	}
 }

@@ -191,7 +191,8 @@ class CMenu : public CStack<CMenuItem> {
 	private:
 		tMenuProps	m_props;
 		int			m_nGroup;
-		int			m_nChoice;
+
+	protected:
 		int			m_bStart;
 		int			m_nLastScrollCheck;
 		int			m_bRedraw;
@@ -199,6 +200,7 @@ class CMenu : public CStack<CMenuItem> {
 		int			m_bDontRestore;
 		int			m_bAllText;
 		int			m_tEnter;
+		int			m_nChoice;
 
 	public:
 		CMenu () { Init (); }
@@ -241,11 +243,13 @@ class CMenu : public CStack<CMenuItem> {
 								 pMenuCallback callback, int* nCurItemP, char* filename, int width, int height);
 
 		static void DrawCloseBox (int x, int y);
-
-	private:
-		void Render (const char* pszTitle = NULL, const char* pszSubTitle = NULL, CCanvas* gameCanvasP = NULL);
 		void FadeIn (void);
 		void FadeOut (const char* pszTitle = NULL, const char* pszSubTitle = NULL, CCanvas* gameCanvasP = NULL);
+
+	protected:
+		virtual void Render (const char* pszTitle = NULL, const char* pszSubTitle = NULL, CCanvas* gameCanvasP = NULL);
+
+	private:
 		int InitProps (const char* pszTitle, const char* pszSubTitle);
 		void GetTitleSize (const char* pszTitle, CFont *font, int& tw, int& th);
 		int GetSize (int& w, int& h, int& aw, int& nMenus, int& nOthers);
@@ -264,6 +268,37 @@ class CMenu : public CStack<CMenuItem> {
 
 //------------------------------------------------------------------------------
 
+class CFileSelector : public CMenu {
+	private:
+
+	public:
+		int FileSelector (const char *pszTitle, const char *filespec, char *filename, int bAllowAbort);
+		virtual void Render (const char* pszTitle = NULL, const char* pszSubTitle = NULL, CCanvas* gameCanvasP = NULL);
+	};
+
+//------------------------------------------------------------------------------
+
+typedef int (*pListBoxCallback) (int* nItem, CArray<char*>& items, int* keypress);
+
+class CListBox : public CMenu {
+		int				m_nFirstItem;
+		int				m_nVisibleItems;
+		int				m_nWidth;
+		int				m_nHeight;
+		int				m_xBorder;
+		int				m_yBorder;
+		int				m_nTitleHeight;
+		CStack<char*>*	m_items;
+
+	public:
+		int ListBox (const char* pszTitle, CStack<char*>& items, int nDefaultItem, int bAllowAbort, pListBoxCallback callback);
+
+	protected:
+		virtual void Render (const char* pszTitle = NULL, const char* pszSubTitle = NULL, CCanvas* gameCanvasP = NULL);
+	};
+
+//------------------------------------------------------------------------------
+
 // This function pops up a messagebox and returns which choice was selected...
 // Example:
 // MsgBox( "Title", "Subtitle", 2, "Ok", "Cancel", "There are %d objects", nobjects );
@@ -278,10 +313,6 @@ int FileSelector (const char *pszTitle, const char *filespec, char *filename, in
 void ProgressBar (const char *szCaption, int nCurProgress, int nMaxProgress, pMenuCallback doProgress);
 
 int FileList (const char *pszTitle, const char *filespec, char *filename);
-
-typedef int (*pListBoxCallback) (int* nItem, CArray<char*>& items, int* keypress);
-
-int ListBox (const char* pszTitle, CStack<char*>& items, int nDefaultItem = 0, int bAllowAbort = 1, pListBoxCallback callback = NULL);
 
 int stoip (char *szServerIpAddr, ubyte *pIpAddr);
 int stoport (char *szPort, int *pPort, int *pSign);
