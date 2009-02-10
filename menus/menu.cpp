@@ -503,7 +503,7 @@ gameStates.render.grAlpha = 1.0f;
 
 //------------------------------------------------------------------------------ 
 
-void CMenu::Fadout (void)
+void CMenu::Fadout (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP)
 {
 int t = int (250 * gameStates.render.grAlpha);
 int t0 = SDL_GetTicks ();
