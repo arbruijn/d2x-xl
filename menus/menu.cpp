@@ -527,14 +527,12 @@ if (gameOpts->menus.nFade) {
 	int t = int (gameOpts->menus.nFade * gameStates.render.grAlpha);
 	int t0 = SDL_GetTicks ();
 	int t1, dt;
-	for (;;) {
+	do {
 		t1 = SDL_GetTicks ();
 		dt = t1 - t0;
 		m_tEnter = t1 - gameOpts->menus.nFade + dt;
 		Render (pszTitle, pszSubTitle, gameCanvasP);
-		if (dt > t)
-			break;
-		}
+		} while (dt < t);
 	}
 }
 
