@@ -649,14 +649,14 @@ if (bSetFG) {
 	CCanvas::Current ()->FontColor (0).color.red = RGBA_RED (fg);
 	CCanvas::Current ()->FontColor (0).color.green = RGBA_GREEN (fg);
 	CCanvas::Current ()->FontColor (0).color.blue = RGBA_BLUE (fg);
-	CCanvas::Current ()->FontColor (0).color.alpha = RGBA_ALPHA (fg);
+	CCanvas::Current ()->FontColor (0).color.alpha = ubyte (RGBA_ALPHA (fg) * gameStates.render.grAlpha);
 	}
 if (bSetBG) {
 	CCanvas::Current ()->FontColor (1).rgb = 1;
 	CCanvas::Current ()->FontColor (1).color.red = RGBA_RED (bg);
 	CCanvas::Current ()->FontColor (1).color.green = RGBA_GREEN (bg);
 	CCanvas::Current ()->FontColor (1).color.blue = RGBA_BLUE (bg);
-	CCanvas::Current ()->FontColor (1).color.alpha = RGBA_ALPHA (bg);
+	CCanvas::Current ()->FontColor (1).color.alpha = ubyte (RGBA_ALPHA (bg) * gameStates.render.grAlpha);
 	}
 }
 

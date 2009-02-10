@@ -407,7 +407,6 @@ t0 = 0;
 
 m_bRedraw = 0;
 
-backgroundManager.Redraw ();
 if (gameStates.app.bGameRunning /*&& (gameData.demo.nState == ND_STATE_NORMAL)*/) {
 	CCanvas::Push ();
 	CCanvas::SetCurrent (gameCanvasP);
@@ -428,10 +427,11 @@ else
 
 
 i -= m_tEnter;
-gameStates.render.grAlpha = (i < 1000) ? float (i) / 1000.0f : 1.0f;
+gameStates.render.grAlpha = (i < 10000) ? float (i) / 10000.0f : 1.0f;
 
+backgroundManager.Redraw ();
 i = DrawTitle (pszTitle, TITLE_FONT, RGBA_PAL (31, 31, 31, ubyte (255 * gameStates.render.grAlpha)), m_props.yOffs);
-DrawTitle (pszSubTitle, SUBTITLE_FONT, RGB_PAL (21, 21, 21, ubyte (255 * gameStates.render.grAlpha)), i);
+DrawTitle (pszSubTitle, SUBTITLE_FONT, RGBA_PAL (21, 21, 21, ubyte (255 * gameStates.render.grAlpha)), i);
 if (!m_bRedraw)
 	m_props.ty = i;
 

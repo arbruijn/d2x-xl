@@ -137,7 +137,7 @@ else if (colorP->rgb) {
 		float (colorP->color.red) / 255.0f,
 		float (colorP->color.green) / 255.0f,
 		float (colorP->color.blue) / 255.0f,
-		float (colorP->color.alpha) / 255.0f
+		float (colorP->color.alpha) / 255.0f * gameStates.render.grAlpha
 		};
 	return color;
 	}
