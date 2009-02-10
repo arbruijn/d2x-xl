@@ -243,6 +243,7 @@ m_info.rad = 0;
 m_info.nTextures = 0;
 m_info.nFirstTexture = 0;
 m_info.nSimplerModel = 0;
+m_info.bCustom = false;
 m_fileEnd = -1;
 m_filePos = -1;
 m_info.mins.SetZero ();
