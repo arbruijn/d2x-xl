@@ -225,7 +225,7 @@ while (gameData.app.bGamePaused) {
 		while (!(key = KeyInKey ())) {
 			GameRenderFrame ();
 			paletteManager.LoadEffect (NULL);
-			mb.Render ();
+			messageBox.Render ();
 			G3_SLEEP (0);
 			}
 		gameStates.menus.nInMenu--;
@@ -237,7 +237,7 @@ while (gameData.app.bGamePaused) {
 		HandleVRKey(key);
 		if (bScreenChanged) {
 			GameRenderFrame ();
-			mb.Render ();
+			messageBox.Render ();
 #if 0		
 			show_extraViews ();
 			if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR))
