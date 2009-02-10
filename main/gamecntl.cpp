@@ -175,12 +175,10 @@ void DoShowNetgameHelp (void);
 //Process selected keys until game unpaused. returns key that left pause (p or esc)
 int DoGamePause (void)
 {
-	int key;
-	int bScreenChanged;
-	char msg[1000];
-	char totalTime [9], xLevelTime [9];
-
-	key=0;
+	int			key = 0;
+	int			bScreenChanged;
+	char			msg [1000];
+	char			totalTime [9], xLevelTime [9];
 
 if (gameData.app.bGamePaused) {		//unpause!
 	gameData.app.bGamePaused = 0;
@@ -216,7 +214,7 @@ if (!gameOpts->menus.nStyle) {
 	gameStates.menus.nInMenu++;
 	GameRenderFrame ();
 	gameStates.menus.nInMenu--;
-	ShowBoxedMessage(pszPauseMsg=msg);		  //TXT_PAUSE);
+	messageBox.Show (pszPauseMsg = msg);		  //TXT_PAUSE);
 	}
 GrabMouse (0, 0);
 while (gameData.app.bGamePaused) {
@@ -227,7 +225,7 @@ while (gameData.app.bGamePaused) {
 		while (!(key = KeyInKey ())) {
 			GameRenderFrame ();
 			paletteManager.LoadEffect (NULL);
-			ShowBoxedMessage(msg);
+			mb.Render ();
 			G3_SLEEP (0);
 			}
 		gameStates.menus.nInMenu--;
@@ -239,7 +237,7 @@ while (gameData.app.bGamePaused) {
 		HandleVRKey(key);
 		if (bScreenChanged) {
 			GameRenderFrame ();
-			ShowBoxedMessage (msg);
+			mb.Render ();
 #if 0		
 			show_extraViews ();
 			if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR))
@@ -248,7 +246,7 @@ while (gameData.app.bGamePaused) {
 			}
 	}
 GrabMouse (1, 0);
-ClearBoxedMessage ();
+messageBox.Clear ();
 ResumeGame ();
 return key;
 }

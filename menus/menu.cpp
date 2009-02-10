@@ -558,7 +558,7 @@ m_bDontRestore = 0;
 m_bAllText = 0;
 
 paletteManager.DisableEffect ();
-ClearBoxedMessage ();
+messageBox.Clear ();
 memset (&m_props, 0, sizeof (m_props));
 m_props.width = width;
 m_props.height = height;

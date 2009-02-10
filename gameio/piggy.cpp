@@ -260,7 +260,7 @@ return cf.Open (filename, gameFolders.szDataDir, "rb", 0);
 	FFS ffs;
 	int ret;
 
-ShowBoxedMessage ("Copying bitmap data from CD...");
+messageBox.Show ("Copying bitmap data from CD...");
 paletteManager.LoadEffect ();    //I don't think this line is really needed
 //First, delete all PIG files currently in the directory
 if (!FFF ("*.pig", &ffs, 0)) {
@@ -283,10 +283,10 @@ do {
 		cf.Delete (filename, "");
 		if (RequestCD () == -1)
 			//NOTE LINK TO ABOVE IF
-			Error ("Cannot load file <%s> from CD",filename);
+			Error ("Cannot load file <%s> from CD", filename);
 		}
 	} while (ret != EXIT_SUCCESS);
-ClearBoxedMessage ();
+mb.Clear ();
 return cfPiggy [gameStates.app.bD1Data].Open (filename, gameFolders.szDataDir, "rb", 0);
 #endif
 }

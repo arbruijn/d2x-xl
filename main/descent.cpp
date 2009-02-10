@@ -774,11 +774,11 @@ else {
 	CMenu m (1);
 	int key = 0;
 	m.AddGauge ("", -1, 1000); // dummy for InitializePoll()
-	ShowBoxedMessage (TXT_INITIALIZING);
+	messageBox.Show (TXT_INITIALIZING);
 	for (loadOp = 0; loadOp < InitGaugeSize (); )
 		InitializePoll (m, key, 0);
 	}
-ClearBoxedMessage ();
+messageBox.Clear ();
 PrintBanner ();
 if (!gameStates.app.bAutoRunMission) {
 	/*---*/PrintLog ("Showing title screens\n");

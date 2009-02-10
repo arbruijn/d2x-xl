@@ -248,7 +248,6 @@ class CMenu : public CStack<CMenuItem> {
 		void FadeIn (void);
 		void FadeOut (const char* pszTitle = NULL, const char* pszSubTitle = NULL, CCanvas* gameCanvasP = NULL);
 
-	protected:
 		virtual void Render (const char* pszTitle = NULL, const char* pszSubTitle = NULL, CCanvas* gameCanvasP = NULL);
 
 	private:
@@ -286,8 +285,6 @@ class CFileSelector : public CMenu {
 
 	public:
 		int FileSelector (const char *pszTitle, const char *filespec, char *filename, int bAllowAbort);
-
-	protected:
 		virtual void Render (const char* pszTitle = NULL, const char* pszSubTitle = NULL, CCanvas* gameCanvasP = NULL);
 	};
 
@@ -307,8 +304,6 @@ class CListBox : public CMenu {
 
 	public:
 		int ListBox (const char* pszTitle, CStack<char*>& items, int nDefaultItem = 0, int bAllowAbort = 1, pListBoxCallback callback = NULL);
-
-	protected:
 		virtual void Render (const char* pszTitle = NULL, const char* pszSubTitle = NULL, CCanvas* gameCanvasP = NULL);
 	};
 
@@ -319,12 +314,13 @@ class CMessageBox : public CMenu {
 		const char*	m_pszMsg;
 
 	public:
-		void Show (const char *pszMsg);
+		~CMessageBox () { Clear (); }
+		void Show (const char *pszMsg, bool bFade = true);
 		void Clear (void);
-
-	protected:
 		virtual void Render (const char* pszTitle = NULL, const char* pszSubTitle = NULL, CCanvas* gameCanvasP = NULL);
 	};
+
+extern CMessageBox messageBox;
 
 //------------------------------------------------------------------------------
 

@@ -525,6 +525,7 @@ typedef struct tAltBgOptions {
 typedef struct tMenuOptions {
 	int nStyle;
 	int bFastMenus;
+	int bFade;
 	int bSmartFileSearch;
 	int bShowLevelVersion;
 	char nHotKeys;

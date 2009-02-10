@@ -36,12 +36,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "cameras.h"
 #include "menubackground.h"
 
+CMessageBox messageBox;
+
 //------------------------------------------------------------------------------
 
 #define BOX_BORDER (gameStates.menus.bHires ? 60 : 30)
 
 //show a message in a nice little box
-void CMessageBox::Show (const char *pszMsg)
+void CMessageBox::Show (const char *pszMsg, bool bFade)
 {
 	int w, h, aw;
 	int x, y;
@@ -55,7 +57,10 @@ fontManager.SetCurrent (MEDIUM1_FONT);
 x = (screen.Width () - w) / 2;
 y = (screen.Height () - h) / 2;
 backgroundManager.Setup (NULL, x - BOX_BORDER / 2, y - BOX_BORDER / 2, w + BOX_BORDER, h + BOX_BORDER);
-Render ();
+if (bFade)
+	do {
+		Render ();
+	} while (SDL_GetTicks () - m_tEnter < MENU_FADE_TIME);
 }
 
 //------------------------------------------------------------------------------

@@ -389,7 +389,7 @@ if (paletteManager.EffectDisabled ()) {
 	CCanvas::Current ()->Clear (BLACK_RGBA);
 	paletteManager.LoadEffect ();
 	}
-//	ShowBoxedMessage (TXT_LOADING);
+//	messageBox.Show (TXT_LOADING);
 LoadSegmentTextures ();
 LoadWallTextures ();
 LoadPowerupTextures ();

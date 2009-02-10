@@ -162,11 +162,6 @@ void FlyInit(CObject *obj);
 void DoShowHelp();
 
 // show a message in a nice little box
-void ShowBoxedMessage(const char *pszMsg);
-
-// erases message drawn with ShowBoxedMessage()
-void ClearBoxedMessage();
-
 // turns off rear view & rear view cockpit
 void ResetRearView(void);
 

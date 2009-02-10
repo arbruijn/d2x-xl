@@ -798,7 +798,7 @@ void RebuildRenderContext (int bGame)
 gameStates.ogl.bRebuilding = 1;
 backgroundManager.Rebuild ();
 if (!gameStates.app.bGameRunning)
-	ShowBoxedMessage ("Setting up renderer...");
+	messageBox.Show ("Setting up renderer...");
 ResetTextures (1, bGame);
 gameData.models.Destroy ();
 gameData.models.Prepare ();
@@ -814,9 +814,9 @@ cameraManager.Create ();
 InitSpheres ();
 cockpit->Rebuild ();
 //gameData.models.Prepare ();
-OglSetDrawBuffer (gameStates.ogl.nDrawBuffer, 1);
 if (!gameStates.app.bGameRunning)
-	ClearBoxedMessage ();
+	messageBox.Clear ();
+OglSetDrawBuffer (gameStates.ogl.nDrawBuffer, 1);
 gameStates.ogl.bRebuilding = 0;
 }
 

@@ -398,7 +398,7 @@ else /*if (gameOpts->render.bHiresModels [0])*/ {
 	else {
 		short	i = 0, j = sizeofa (replacementModels);
 		if (!bCustom)
-			ShowBoxedMessage (TXT_LOADING_MODELS);
+			messageBox.Show (TXT_LOADING_MODELS);
 		if (bCustom || gameOpts->render.bHiresModels [0]) {
 			while (i < j)
 				i = LoadHiresModel (gameData.models.nHiresModels, i, bCustom);
@@ -409,7 +409,7 @@ else /*if (gameOpts->render.bHiresModels [0])*/ {
 				i = LoadLoresModel (i);
 			}
 		}
-	ClearBoxedMessage ();
+	messageBox.Clear ();
 	}
 }
 

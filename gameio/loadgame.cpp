@@ -928,7 +928,7 @@ paletteManager.LoadEffect ();
 //if (!gameOpts->menus.nStyle)
 //	NMLoadBackground (NULL, NULL, 0);
 if (!gameStates.app.bProgressBars)
-	ShowBoxedMessage (TXT_LOADING);
+	messageBox.Show (TXT_LOADING);
 /*---*/PrintLog ("   loading level data\n");
 gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
 									 (gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1);
@@ -969,7 +969,7 @@ if (nLoadRes) {
 	}
 
 if (!gameStates.app.bProgressBars)
-	ShowBoxedMessage (TXT_LOADING);
+	messageBox.Show (TXT_LOADING);
 paletteManager.SetGame (paletteManager.Load (szCurrentLevelPalette, pszLevelName, 1, 1, 1));		//don't change screen
 
 #if 1
@@ -1017,7 +1017,7 @@ if (!IsMultiGame)
 	InitEntropySettings (0);	//required for repair centers
 //songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1);
 if (!gameStates.app.bProgressBars)
-	ClearBoxedMessage ();		//remove message before new palette loaded
+	mb.Clear ();		//remove message before new palette loaded
 paletteManager.LoadEffect ();		//actually load the palette
 /*---*/PrintLog ("   rebuilding OpenGL texture data\n");
 /*---*/PrintLog ("      rebuilding effects\n");
