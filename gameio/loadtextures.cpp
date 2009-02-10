@@ -540,8 +540,8 @@ if (*bmName && ((nIndex < 0) || IsCockpit (bmName) ||
 		altBmP->nType = BM_TYPE_ALT;
 		bmP->Override ( = altBmP;
 		BM_FRAMECOUNT (altBmP) = 1;
-		gameData.pig.tex.bitmapFlags [bD1][nIndex] &= ~BM_FLAG_RLE;
-		gameData.pig.tex.bitmapFlags [bD1][nIndex] |= BM_FLAG_TGA;
+		nFlags &= ~BM_FLAG_RLE;
+		nFlags |= BM_FLAG_TGA;
 		bmP = altBmP;
 		altBmP = NULL;
 		}
