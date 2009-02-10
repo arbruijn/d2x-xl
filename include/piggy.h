@@ -204,10 +204,7 @@ void PIGBitmapHeaderRead (tPIGBitmapHeader *dbh, CFile& cf);
 void PIGBitmapHeaderD1Read (tPIGBitmapHeader *dbh, CFile& cf);
 
 CBitmap *PiggyLoadBitmap (const char *pszFile);
-void PiggyFreeBitmap (CBitmap *bmP, int i, int bD1);
 int CreateSuperTranspMasks (CBitmap *bmP);
-
-int PiggyFreeHiresAnimation (CBitmap *bmP, int bD1);
 void UnloadHiresAnimations (void);
 
 CPalette* LoadD1Palette (void);

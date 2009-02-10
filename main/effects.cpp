@@ -155,7 +155,7 @@ if (gameOpts->ogl.bGlTexMerge) {
 		j = Bm_INDEX (frameP, i, bIndirect, bObject);
 		hbmP = pBitmaps + j;
 		if (hbmP->Override () != bmP) {
-			PiggyFreeHiresAnimation (hbmP, gameStates.app.bD1Data && !bObject);
+			hbmP->FreeHiresAnimation (gameStates.app.bD1Data && !bObject);
 			hbmP->SetOverride (bmP);
 			}
 		}
@@ -177,7 +177,7 @@ else {
 			hbmP = gameData.pig.tex.bitmapP + j;
 			if (hbmP->Override () == bmP)
 				hbmP->SetOverride (NULL);	//prevent the root texture from being deleted
-			PiggyFreeBitmap (hbmP, j, gameStates.app.bD1Data);
+			hbmP->Unload (j, gameStates.app.bD1Data);
 			hbmP->SetOverride (bmfP);
 			bmfP->SetId (j);
 			bmfP += nFrameStep;
