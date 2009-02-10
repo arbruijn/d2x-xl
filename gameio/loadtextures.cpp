@@ -498,6 +498,7 @@ int PageInBitmap (CBitmap *bmP, const char *bmName, int nIndex, int bD1, bool bH
 	CBitmap			*altBmP = NULL;
 	int				nFile, nSize, nOffset, nFrames, nShrinkFactor, nBestShrinkFactor,
 						bRedone = 0, bTGA;
+	sbyte				nFlags;
 	bool				bDefault = false;
 	CFile				cf, *cfP = &cf;
 	char				fn [6][FILENAME_LEN];
@@ -525,24 +526,12 @@ if (strstr (bmName, "rock204")) {
 if (gameStates.app.bNostalgia)
 	gameOpts->render.textures.bUseHires [0] = 0;
 else {
-	if (*gameFolders.szTextureDir [2]) {
-		char szLevelFolder [FILENAME_LEN];
-		if (gameData.missions.nCurrentLevel < 0)
-			sprintf (szLevelFolder, "slevel%02d", -gameData.missions.nCurrentLevel);
-		else
-			sprintf (szLevelFolder, "level%02d", gameData.missions.nCurrentLevel);
-		sprintf (gameFolders.szTextureDir [3], "%s/%s", gameFolders.szTextureDir [2], szLevelFolder);
-		sprintf (gameFolders.szTextureCacheDir [3], "%s/%s", gameFolders.szTextureCacheDir [2], szLevelFolder);
-		}
-	else
-		*gameFolders.szTextureDir [3] =
-		*gameFolders.szTextureCacheDir [3] = '\0';
-	MakeBitmapFilenames (bmName, gameFolders.szTextureDir [3], gameFolders.szTextureCacheDir [3], fn [1], fn [0], nShrinkFactor);
-	MakeBitmapFilenames (bmName, gameFolders.szTextureDir [2], gameFolders.szTextureCacheDir [2], fn [3], fn [2], nShrinkFactor);
-	MakeBitmapFilenames (bmName, gameFolders.szTextureDir [bD1], gameFolders.szTextureCacheDir [bD1], fn [5], fn [4], nShrinkFactor);
 	}
+
 bTGA = 0;
+nFlags = gameData.pig.tex.bitmapFlags [bD1][nIndex];
 bmP->SetBPP (1);
+
 if (*bmName && ((nIndex < 0) || IsCockpit (bmName) || 
 	 ((bHires || gameOpts->render.textures.bUseHires [0]) && (!gameOpts->ogl.bGlTexMerge || gameStates.render.textures.bGlsTexMergeOk)))) {
 #if 0
@@ -558,6 +547,22 @@ if (*bmName && ((nIndex < 0) || IsCockpit (bmName) ||
 		}
 	else 
 #endif
+	if (*gameFolders.szTextureDir [2]) {
+		char szLevelFolder [FILENAME_LEN];
+		if (gameData.missions.nCurrentLevel < 0)
+			sprintf (szLevelFolder, "slevel%02d", -gameData.missions.nCurrentLevel);
+		else
+			sprintf (szLevelFolder, "level%02d", gameData.missions.nCurrentLevel);
+		sprintf (gameFolders.szTextureDir [3], "%s/%s", gameFolders.szTextureDir [2], szLevelFolder);
+		sprintf (gameFolders.szTextureCacheDir [3], "%s/%s", gameFolders.szTextureCacheDir [2], szLevelFolder);
+		}
+	else
+		*gameFolders.szTextureDir [3] =
+		*gameFolders.szTextureCacheDir [3] = '\0';
+	MakeBitmapFilenames (bmName, gameFolders.szTextureDir [3], gameFolders.szTextureCacheDir [3], fn [1], fn [0], nShrinkFactor);
+	MakeBitmapFilenames (bmName, gameFolders.szTextureDir [2], gameFolders.szTextureCacheDir [2], fn [3], fn [2], nShrinkFactor);
+	MakeBitmapFilenames (bmName, gameFolders.szTextureDir [bD1], gameFolders.szTextureCacheDir [bD1], fn [5], fn [4], nShrinkFactor);
+
 	if (0 <= (nFile = OpenBitmapFile (fn, cfP))) {
 		PrintLog ("loading hires texture '%s' (quality: %d)\n", fn [nFile], min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality));
 		if (nFile < 2)	//was level specific mod folder
@@ -576,8 +581,8 @@ if (*bmName && ((nIndex < 0) || IsCockpit (bmName) ||
 		bmP->SetFrameCount ((ubyte) nFrames);
 		nOffset = cfP->Tell ();
 		if (nIndex >= 0) {
-			gameData.pig.tex.bitmapFlags [bD1][nIndex] &= ~(BM_FLAG_RLE | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
-			gameData.pig.tex.bitmapFlags [bD1][nIndex] |= BM_FLAG_TGA;
+			nFlags &= ~(BM_FLAG_RLE | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
+			nFlags |= BM_FLAG_TGA;
 			if (bmP->Height () > bmP->Width ()) {
 				tEffectClip	*ecP = NULL;
 				tWallClip *wcP;
@@ -650,7 +655,7 @@ if (!bmP->Buffer () || (bitmapCacheUsed > bitmapCacheSize)) {
 	goto reloadTextures;
 	}
 if (nIndex >= 0)
-	bmP->SetFlags (gameData.pig.tex.bitmapFlags [bD1][nIndex]);
+	bmP->SetFlags (nFlags);
 bmP->SetId (nIndex);
 #if DBG
 if (nIndex == nDbgTexture)
