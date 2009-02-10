@@ -765,7 +765,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void LoadBitmapReplacements (const char *pszLevelName)
+void LoadReplacementBitmaps (const char *pszLevelName)
 {
 	char		szFilename [SHORT_FILENAME_LEN];
 	CFile		cf;

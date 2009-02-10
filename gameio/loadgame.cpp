@@ -791,7 +791,7 @@ else {
 			LoadLevelTextures ();
 		LoadTextData (pszLevelName, ".msg", gameData.messages);
 		LoadTextData (pszLevelName, ".snd", &gameData.sounds);
-		LoadBitmapReplacements (pszLevelName);
+		LoadReplacementBitmaps (pszLevelName);
 		LoadSoundReplacements (pszLevelName);
 		}
 

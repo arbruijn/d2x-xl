@@ -181,7 +181,7 @@ void LoadSounds (CFile& cf, bool bCustom = false);
 void piggy_new_pigfile (const char *pigname);
 
 //loads custom bitmaps for current level
-void LoadBitmapReplacements (const char *level_name);
+void LoadReplacementBitmaps (const char *level_name);
 //if descent.pig exists, loads descent 1 texture bitmaps
 void LoadD1BitmapReplacements();
 
