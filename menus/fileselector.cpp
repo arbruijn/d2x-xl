@@ -124,7 +124,9 @@ for (int i = m_nFirstItem; i < m_nFirstItem + m_nVisibleItems; i++) {
 		GrString (m_nLeft + 5, y, reinterpret_cast<char*> (&m_filenames [i]) + ((m_bPlayerMode && m_filenames [i][0] == '$') ? 1 : 0), NULL);
 		}
 	}	 
+gameStates.render.grAlpha = 1.0f;
 SDL_ShowCursor (1);
+GrUpdate (0);
 }
 
 //------------------------------------------------------------------------------ 
@@ -309,7 +311,6 @@ SDL_EnableKeyRepeat(60, 30);
 while (!done) {
 	m_nOldChoice = m_nChoice;
 	nPrevItem = m_nFirstItem;
-	GrUpdate (0);
 	nOldMouseState = nMouseState;
 	omouse2State = mouse2State;
 	nMouseState = MouseButtonState (0);

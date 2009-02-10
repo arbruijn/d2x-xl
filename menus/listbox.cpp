@@ -103,6 +103,7 @@ for (int i = m_nFirstItem; i < m_nFirstItem + m_nVisibleItems; i++) {
 		GrString (m_xOffset + 5, y, (*m_items) [i], NULL);
 		}
 	}	
+gameStates.render.grAlpha = 1.0f;
 SDL_ShowCursor (1);
 GrUpdate (0);
 }
@@ -162,7 +163,6 @@ total_height = m_nHeight + 2*nOffsetSize + m_nTitleHeight;
 CCanvas::Push ();
 backgroundManager.Setup (NULL, m_xOffset - nOffsetSize, m_yOffset - m_nTitleHeight - nOffsetSize, 
 								 m_nWidth + nOffsetSize * 2, m_nHeight + m_nTitleHeight + nOffsetSize * 2);
-//GrUpdate (0);
 CCanvas::Pop ();
 done = 0;
 m_nChoice = nDefaultItem;
