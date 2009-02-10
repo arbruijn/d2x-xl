@@ -12,7 +12,7 @@ libmain_a_SOURCES = ${EDITOR_SRCS} ${NETWORK_SRCS} \
 	briefings.cpp cheats.cpp cmd.cpp config.cpp controls.cpp credits.cpp crypt.cpp dropobject.cpp effects.cpp endlevel.cpp \
 	flightpath.cpp fuelcen.cpp game.cpp gameargs.cpp gamecntl.cpp gamedata.cpp gamefolders.cpp gameoptions.cpp gameseg.cpp \
 	gamestates.cpp highscores.cpp descent.cpp kconfig.cpp mglobal.cpp movie.cpp newdemo.cpp scores.cpp segment.cpp side.cpp \
-	skybox.cpp slew.cpp switch.cpp terrain.cpp texmerge.cpp text.cpp textdata.cpp trackobject.cpp vclip.cpp wall.cpp 
+	skybox.cpp slew.cpp trigger.cpp terrain.cpp texmerge.cpp text.cpp textdata.cpp trackobject.cpp vclip.cpp wall.cpp 
 	
 EXTRA_DIST = ${EXTRA_SUBDIRS} \
 	ai.h aistruct.h automap.h bm.h bmread.h collide.h reactor.h \
@@ -25,7 +25,7 @@ EXTRA_DIST = ${EXTRA_SUBDIRS} \
 	multibot.h netmisc.h network.h newdemo.h newmenu.h \
 	object.h paging.h physics.h piggy.h player.h playsave.h polyobj.h powerup.h \
 	render.h reorder.h robot.h scores.h screens.h segment.h segpoint.h slew.h \
-	songs.h sounds.h state.h switch.h terrain.h texmerge.h text.h textures.h \
+	songs.h sounds.h state.h trigger.h terrain.h texmerge.h text.h textures.h \
 	briefings.h vclip.h vers_id.h wall.h weapon.h objrender.h lightning.h perlin.h \
 	autodl.h cameras.h lightmap.h tracker.h findfile.h tga.h \
 	glare.h radar.h renderlib.h transprender.h fastrender.h renderthreads.h flightpath.h \
