@@ -401,10 +401,12 @@ void CMenu::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* game
 
 	int	i, sx, sy;
 
-i = SDL_GetTicks ();
-if (i - t0 < 25)
-	return;
-t0 = 0;
+if (SDL_GetTicks () - m_tEnter > FADE_TIME) {
+	i = SDL_GetTicks ();
+	if (i - t0 < 25)
+		return;
+	t0 = 0;
+	}
 
 m_bRedraw = 0;
 
