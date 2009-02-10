@@ -925,10 +925,10 @@ if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 
 bool BitmapLoaded (int bmi, int bD1)
 {
-CBitmap *bmP = gameData.pig.tex.bitmaps [bD1] + bmi;
+CBitmap* bmoP, * bmP = gameData.pig.tex.bitmaps [bD1] + bmi;
 #if 1
-if (bmP->Override (-1))
-	bmP = bmP->Override (-1);
+if (bmoP = bmP->Override ())
+	bmP = bmoP;
 #endif
 return bmP->Buffer () && !(bmP->Flags () & BM_FLAG_PAGED_OUT);
 }
