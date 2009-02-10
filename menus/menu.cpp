@@ -74,6 +74,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define LHX(x) (gameStates.menus.bHires? 2 * (x) : x)
 #define LHY(y) (gameStates.menus.bHires? (24 * (y)) / 10 : y)
+#definef FADE_TIME	200
 
 //------------------------------------------------------------------------------ 
 
@@ -430,7 +431,7 @@ backgroundManager.Redraw ();
 if (m_tEnter < 0)
 	m_tEnter = SDL_GetTicks ();
 i -= m_tEnter;
-gameStates.render.grAlpha = (i < 250) ? float (i) / 250.0f : 1.0f;
+gameStates.render.grAlpha = (i < FADE_TIME) ? float (i) / float (FADE_TIME) : 1.0f;
 
 i = DrawTitle (pszTitle, TITLE_FONT, RGB_PAL (31, 31, 31), m_props.yOffs);
 DrawTitle (pszSubTitle, SUBTITLE_FONT, RGB_PAL (21, 21, 21), i);
@@ -505,7 +506,7 @@ gameStates.render.grAlpha = 1.0f;
 
 void CMenu::Fadeout (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP)
 {
-int t = int (250 * gameStates.render.grAlpha);
+int t = int (FADE_TIME * gameStates.render.grAlpha);
 int t0 = SDL_GetTicks ();
 int t1, dt;
 for (;;) {
@@ -513,7 +514,7 @@ for (;;) {
 	dt = t1 - t0;
 	if (dt >= t)
 		break;
-	m_tEnter = t1 - dt;
+	m_tEnter = t1 + dt;
 	Render (pszTitle, pszSubTitle, gameCanvasP);
 	}
 }
@@ -692,7 +693,7 @@ while (!done) {
 			m_props.nScrollOffset = m_nChoice - m_props.nMaxOnMenu + 1;
 		}
 
-	if (callback && (SDL_GetTicks () - m_tEnter > 250))
+	if (callback && (SDL_GetTicks () - m_tEnter > FADE_TIME))
 		m_nChoice = (*callback) (*this, nKey, m_nChoice);
 
 	if (!bTimeStopped){
