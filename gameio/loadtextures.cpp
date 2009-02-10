@@ -873,7 +873,7 @@ if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 		if (j == nDbgTexture)
 			nDbgTexture = nDbgTexture;
 #endif
-		gameData.pig.tex.bitmaps [bD1][j].Unload (j, 0);
+		gameData.pig.tex.bitmapP [j].Unload (j, 0);
 		bm.SetFromPog (1);
 		char szName [20];
 		if (*gameData.pig.tex.bitmapP [j].Name ())
