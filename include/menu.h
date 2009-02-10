@@ -270,9 +270,22 @@ class CMenu : public CStack<CMenuItem> {
 
 class CFileSelector : public CMenu {
 	private:
+		int					m_nFirstItem;
+		int					m_nVisibleItems;
+		int					m_bPlayerMode;
+		int					m_nLeft;
+		int					m_nTop;
+		int					m_nWidth;
+		int					m_nHeight;
+		int					m_xOffset;
+		int					m_yOffset;
+		int					m_nFileCount;
+		CArray<CFilename>	m_filenames;
 
 	public:
 		int FileSelector (const char *pszTitle, const char *filespec, char *filename, int bAllowAbort);
+
+	protected:
 		virtual void Render (const char* pszTitle = NULL, const char* pszSubTitle = NULL, CCanvas* gameCanvasP = NULL);
 	};
 
@@ -285,8 +298,8 @@ class CListBox : public CMenu {
 		int				m_nVisibleItems;
 		int				m_nWidth;
 		int				m_nHeight;
-		int				m_xBorder;
-		int				m_yBorder;
+		int				m_xOffset;
+		int				m_yOffset;
 		int				m_nTitleHeight;
 		CStack<char*>*	m_items;
 
