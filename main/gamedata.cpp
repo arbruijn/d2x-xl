@@ -641,17 +641,21 @@ CTriggerData::CTriggerData ()
 
 // ----------------------------------------------------------------------------
 
-bool CTriggerData::Create (int nTriggers)
+bool CTriggerData::Create (int nTriggers, bool bObjTriggers)
 {
-CREATE (firstObjTrigger, LEVEL_OBJECTS, 0xff);
-triggers.Create (nTriggers);
-objTriggers.Create (nTriggers);
-objTriggerRefs.Create (MAX_OBJ_TRIGGERS);
-objTriggerRefs.Clear (0xff);
-delay.Create (nTriggers);
-delay.Clear (0xff);
-m_nTriggers = nTriggers;
-m_nObjTriggers = 0;
+if (bObjTriggers) {
+	objTriggers.Create (nTriggers);
+	objTriggerRefs.Create (MAX_OBJ_TRIGGERS);
+	objTriggerRefs.Clear (0xff);
+	m_nObjTriggers = nTriggers;
+	}
+else {
+	CREATE (firstObjTrigger, LEVEL_OBJECTS, 0xff);
+	triggers.Create (nTriggers);
+	delay.Create (nTriggers);
+	delay.Clear (0xff);
+	m_nTriggers = nTriggers;
+	}
 return true;
 }
 

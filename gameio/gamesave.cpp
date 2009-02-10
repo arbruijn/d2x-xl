@@ -476,7 +476,7 @@ if (gameFileInfo.triggers.count && (gameFileInfo.triggers.offset > -1)) {
 #if TRACE
 	console.printf(CON_DBG, "   loading CTrigger data ...\n");
 #endif
-	if (!gameData.trigs.Create (gameFileInfo.triggers.count)) {
+	if (!gameData.trigs.Create (gameFileInfo.triggers.count, false)) {
 		Error ("Not enough memory for trigger data");
 		return -1;
 		}
@@ -561,35 +561,40 @@ if (gameFileInfo.triggers.count && (gameFileInfo.triggers.offset > -1)) {
 			}
 		trigP->nLinks = h;
 		}
-	if (gameTopFileInfo.fileinfoVersion >= 33) {
-		gameData.trigs.m_nObjTriggers = cf.ReadInt ();
-		if (gameData.trigs.m_nObjTriggers) {
-			for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
-				OBJTRIGGERS [i].Read (cf, 1);
-			for (i = 0; i < gameData.trigs.m_nObjTriggers; i++) {
-				gameData.trigs.objTriggerRefs [i].prev = cf.ReadShort ();
-				gameData.trigs.objTriggerRefs [i].next = cf.ReadShort ();
-				gameData.trigs.objTriggerRefs [i].nObject = cf.ReadShort ();
-				}
+	}
+
+if (gameTopFileInfo.fileinfoVersion >= 33) {
+	gameData.trigs.m_nObjTriggers = cf.ReadInt ();
+	if (gameData.trigs.m_nObjTriggers) {
+		if (!gameData.trigs.Create (gameData.trigs.m_nObjTriggers, true)) {
+			Error ("Not enough memory for object trigger data");
+			return -1;
 			}
-		if (gameTopFileInfo.fileinfoVersion < 36) {
-			for (i = 0; i < 700; i++)
-				gameData.trigs.firstObjTrigger [i] = cf.ReadShort ();
+		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
+			OBJTRIGGERS [i].Read (cf, 1);
+		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++) {
+			gameData.trigs.objTriggerRefs [i].prev = cf.ReadShort ();
+			gameData.trigs.objTriggerRefs [i].next = cf.ReadShort ();
+			gameData.trigs.objTriggerRefs [i].nObject = cf.ReadShort ();
 			}
-		else {
-			gameData.trigs.firstObjTrigger.Clear (0xff);
-			for (i = cf.ReadShort (); i; i--) {
-				j = cf.ReadShort ();
-				gameData.trigs.firstObjTrigger [j] = cf.ReadShort ();
-				}
-			}
+		}
+	if (gameTopFileInfo.fileinfoVersion < 36) {
+		for (i = 0; i < 700; i++)
+			gameData.trigs.firstObjTrigger [i] = cf.ReadShort ();
 		}
 	else {
-		gameData.trigs.m_nObjTriggers = 0;
-		OBJTRIGGERS.Clear ();
-		gameData.trigs.objTriggerRefs.Clear (0xff);
 		gameData.trigs.firstObjTrigger.Clear (0xff);
+		for (i = cf.ReadShort (); i; i--) {
+			j = cf.ReadShort ();
+			gameData.trigs.firstObjTrigger [j] = cf.ReadShort ();
+			}
 		}
+	}
+else {
+	gameData.trigs.m_nObjTriggers = 0;
+	OBJTRIGGERS.Clear ();
+	gameData.trigs.objTriggerRefs.Clear (0xff);
+	gameData.trigs.firstObjTrigger.Clear (0xff);
 	}
 return 0;
 }

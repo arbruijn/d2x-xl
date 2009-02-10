@@ -275,9 +275,6 @@ CSaveGameInfo saveGameInfo [NUM_SAVES + 1];
 
 int SaveStateMenuCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
-if (nState)
-	return nCurItem;
-
 	int		x, y, i = nCurItem - NM_IMG_SPACE;
 	char		c = KeyToASCII (key);
 

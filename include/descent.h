@@ -1744,7 +1744,7 @@ class CTriggerData {
 		int							m_nObjTriggers;
 	public:
 		CTriggerData ();
-		bool Create (int nTriggers);
+		bool Create (int nTriggers, bool bObjTriggers);
 		void Destroy (void);
 };
 
