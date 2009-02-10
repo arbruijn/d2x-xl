@@ -344,7 +344,8 @@ for (i = k = 0; i < h; i++) {
 #endif
 			}
 		else {
-			*ps++ = nSound | (nSound << 8);
+			nSound |= (nSound << 8);
+			*ps++ = nSound;
 			}
 		}
 	if (bD1Sound) {
