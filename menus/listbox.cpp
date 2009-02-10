@@ -382,6 +382,7 @@ int FileList (char* pszTitle, char* filespec, char* filename)
 	int				i, nFiles;
 	CStack<char*>	filenames;// [MENU_MAX_FILES];
 	FFS				ffs;
+	CListBox			lb;
 
 if (!filenames.Create (MENU_MAX_FILES))
 	return - 1;
@@ -395,7 +396,7 @@ if (!FFF (filespec, &ffs, 0)) {
 		} while (!FFN (&ffs, 0));
 	FFC (&ffs);
 	}
-i = ListBox (pszTitle, filenames, 1, NULL);
+i = lb.ListBox (pszTitle, filenames, 1, NULL);
 if (i < 0) 
 	return 0;
 strcpy (filename, filenames [i]);

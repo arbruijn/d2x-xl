@@ -86,6 +86,7 @@ int SelectAndLoadMission (int bMulti, int *bAnarchyOnly)
 {
 	int				i, j, nMissions, nDefaultMission, nNewMission = -1;
 	CStack<char*>	msnNames (MAX_MISSIONS);
+	CListBox			lb;
 
 	static const char *menuTitles [4];
 
@@ -109,7 +110,7 @@ do {
 			nDefaultMission = i;
 		}
 	gameStates.app.nExtGameStatus = bMulti ? GAMESTAT_START_MULTIPLAYER_MISSION : GAMESTAT_SELECT_MISSION;
-	nNewMission = ListBox (bMulti ? TXT_MULTI_MISSION : menuTitles [gameOpts->app.nVersionFilter], msnNames, nDefaultMission);
+	nNewMission = lb.ListBox (bMulti ? TXT_MULTI_MISSION : menuTitles [gameOpts->app.nVersionFilter], msnNames, nDefaultMission);
 	GameFlushInputs ();
 	if (nNewMission == -1)
 		return -1;      //abort!
@@ -153,7 +154,9 @@ void LegacyNewGameMenu (void)
 	int				nMissions;
 	CStack<char*>	m (MAX_MISSIONS);
 	int				i, choice = 0, nFolder = -1, nDefaultMission = 0;
-	static int		nMission = -1;
+	CListBox			lb;
+
+	static int			nMission = -1;
 
 	static const char	*menuTitles [4];
 
@@ -177,7 +180,7 @@ do {
 		if (!stricmp (m [i], gameConfig.szLastMission))
 			nDefaultMission = i;
 		}
-	nMission = ListBox (menuTitles [gameOpts->app.nVersionFilter], m, nDefaultMission);
+	nMission = lb.ListBox (menuTitles [gameOpts->app.nVersionFilter], m, nDefaultMission);
 	GameFlushInputs ();
 	if (nMission == -1)
 		return;         //abort!

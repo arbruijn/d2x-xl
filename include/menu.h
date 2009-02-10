@@ -321,8 +321,6 @@ int _CDECL_ MsgBox (const char *pszTitle, char *filename, int nChoices, ...);
 // Same as above, but you can pass a function
 int _CDECL_ MsgBox (const char *pszTitle, pMenuCallback callBack, char *filename, int nChoices, ...);
 
-int FileSelector (const char *pszTitle, const char *filespec, char *filename, int bAllowAbort);
-
 void ProgressBar (const char *szCaption, int nCurProgress, int nMaxProgress, pMenuCallback doProgress);
 
 int FileList (const char *pszTitle, const char *filespec, char *filename);

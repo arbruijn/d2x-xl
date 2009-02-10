@@ -227,6 +227,7 @@ static void PlayMenuMovie (void)
 	int				h, i, j;
 	CStack<char*>	m;
 	char*				ps;
+	CListBox			lb;
 
 i = movieManager.m_nLibs;
 for (h = j = 0; j < i; j++)
@@ -242,7 +243,7 @@ for (i = j = 0; i < h; i++)
 			break;
 		m.Push (ps);
 		}
-i = ListBox (TXT_SELECT_MOVIE, m);
+i = lb.ListBox (TXT_SELECT_MOVIE, m);
 if (i > -1) {
 	SDL_ShowCursor (0);
 	if (strstr (m [i], "intro"))
@@ -263,6 +264,7 @@ static void PlayMenuSong (void)
 	CStack<char*>	m (MAX_NUM_SONGS + 2);
 	CFile				cf;
 	char				szSongTitles [2][14] = {"- Descent 2 -", "- Descent 1 -"};
+	CListBox			lb;
 
 m.Push (szSongTitles [0]);
 for (i = 0; i < songManager.TotalCount (); i++) {
@@ -274,7 +276,7 @@ for (i = 0; i < songManager.TotalCount (); i++) {
 		}
 	}
 for (;;) {
-	h = ListBox (TXT_SELECT_SONG, m);
+	h = lb.ListBox (TXT_SELECT_SONG, m);
 	if (h < 0)
 		return;
 	if (!strstr (m [h], ".hmp"))
@@ -294,6 +296,8 @@ void ShowOrderForm (void);      // John didn't want this in inferno[HA] so I jus
 //returns flag, true means quit menu
 int ExecMainMenuOption (int nChoice) 
 {
+	CFileSelector	fs;
+
 if (nChoice == mainOpts.nNew) {
 	gameOpts->app.bSinglePlayer = 0;
 	NewGameMenu ();
@@ -333,7 +337,7 @@ else if (nChoice == mainOpts.nDemo) {
 	char demoPath [FILENAME_LEN], demoFile [FILENAME_LEN];
 
 	sprintf (demoPath, "%s%s*.dem", gameFolders.szDemoDir, *gameFolders.szDemoDir ? "/" : ""); 
-	if (FileSelector (TXT_SELECT_DEMO, demoPath, demoFile, 1))
+	if (fs.FileSelector (TXT_SELECT_DEMO, demoPath, demoFile, 1))
 		NDStartPlayback (demoFile);
 	}
 else if (nChoice == mainOpts.nScores) {

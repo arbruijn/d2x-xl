@@ -2735,6 +2735,8 @@ int SelectPlayer (void)
 	char	filespec [FILENAME_LEN];
 	int 	bAllowAbort = !bStartup;
 
+	CFileSelector	fs;
+
 if (LOCALPLAYER.callsign [0] == 0) {
 	//---------------------------------------------------------------------
 	// Set default config options in case there is no config file
@@ -2777,7 +2779,7 @@ callMenu:
 
 bStartup = 0;
 sprintf (filespec, "%s%s*.plr", gameFolders.szProfDir, *gameFolders.szProfDir ? "/" : "");
-if (!FileSelector (TXT_SELECT_PILOT, filespec, filename, bAllowAbort)) {
+if (!fs.FileSelector (TXT_SELECT_PILOT, filespec, filename, bAllowAbort)) {
 	if (bAllowAbort) {
 		return 0;
 		}
