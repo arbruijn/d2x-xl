@@ -250,8 +250,11 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int NetworkEndLevelPoll3 (CMenu& menu, int& key, int nCurItem)
+int NetworkEndLevelPoll3 (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	// Polling loop for End-of-level menu
    int num_ready = 0, i;
  
