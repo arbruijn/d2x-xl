@@ -74,7 +74,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define LHX(x) (gameStates.menus.bHires? 2 * (x) : x)
 #define LHY(y) (gameStates.menus.bHires? (24 * (y)) / 10 : y)
-#define FADE_TIME	150
 
 //------------------------------------------------------------------------------ 
 
@@ -401,7 +400,7 @@ void CMenu::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* game
 
 	int	i, sx, sy;
 
-if (SDL_GetTicks () - m_tEnter > FADE_TIME) {
+if (SDL_GetTicks () - m_tEnter > MENU_FADE_TIME) {
 	i = SDL_GetTicks ();
 	if (i - t0 < 25)
 		return;
@@ -507,14 +506,14 @@ if (m_tEnter < 0)
 	m_tEnter = SDL_GetTicks ();
 int t = SDL_GetTicks () - m_tEnter;
 PrintLog ("fade %d\n", t);
-gameStates.render.grAlpha = (t < FADE_TIME) ? float (t) / float (FADE_TIME) : 1.0f;
+gameStates.render.grAlpha = (t < MENU_FADE_TIME) ? float (t) / float (MENU_FADE_TIME) : 1.0f;
 }
 
 //------------------------------------------------------------------------------ 
 
 void CMenu::FadeOut (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP)
 {
-int t = int (FADE_TIME * gameStates.render.grAlpha);
+int t = int (MENU_FADE_TIME * gameStates.render.grAlpha);
 int t0 = SDL_GetTicks ();
 int t1, dt;
 for (;;) {
@@ -522,8 +521,8 @@ for (;;) {
 	dt = t1 - t0;
 	if (dt >= t)
 		break;
-	m_tEnter = t1 - FADE_TIME + dt;
-	PrintLog ("fadeout %d\n", FADE_TIME - dt);
+	m_tEnter = t1 - MENU_FADE_TIME + dt;
+	PrintLog ("fadeout %d\n", MENU_FADE_TIME - dt);
 	Render (pszTitle, pszSubTitle, gameCanvasP);
 	}
 }
@@ -702,7 +701,7 @@ while (!done) {
 			m_props.nScrollOffset = m_nChoice - m_props.nMaxOnMenu + 1;
 		}
 
-	if (callback && (SDL_GetTicks () - m_tEnter > FADE_TIME))
+	if (callback && (SDL_GetTicks () - m_tEnter > MENU_FADE_TIME))
 		m_nChoice = (*callback) (*this, nKey, m_nChoice);
 
 	if (!bTimeStopped){

@@ -52,6 +52,8 @@ extern char DOWN_ARROW_MARKER [2];
 #define MENU_MAX_FILES		300
 #define MSGBOX_TEXT_SIZE	10000		// How many characters in messagebox
 
+#define MENU_FADE_TIME		150		// ms
+
 //------------------------------------------------------------------------------
 
 #define EXPMODE_DEFAULTS 0
@@ -305,6 +307,20 @@ class CListBox : public CMenu {
 
 	public:
 		int ListBox (const char* pszTitle, CStack<char*>& items, int nDefaultItem = 0, int bAllowAbort = 1, pListBoxCallback callback = NULL);
+
+	protected:
+		virtual void Render (const char* pszTitle = NULL, const char* pszSubTitle = NULL, CCanvas* gameCanvasP = NULL);
+	};
+
+//------------------------------------------------------------------------------
+
+class CMessageBox : public CMenu {
+		int			m_nDrawBuffer;
+		const char*	m_pszMsg;
+
+	public:
+		void Show (const char *pszMsg);
+		void Clear (void);
 
 	protected:
 		virtual void Render (const char* pszTitle = NULL, const char* pszSubTitle = NULL, CCanvas* gameCanvasP = NULL);

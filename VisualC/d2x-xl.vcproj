@@ -4270,6 +4270,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\menus\messagebox.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\menus\miscmenu.cpp"
 						>
 					</File>
@@ -4365,11 +4369,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

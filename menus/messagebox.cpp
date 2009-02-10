@@ -38,53 +38,54 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-#define BOX_BORDER (gameStates.menus.bHires?60:30)
+#define BOX_BORDER (gameStates.menus.bHires ? 60 : 30)
 
 //show a message in a nice little box
-void ShowBoxedMessage (const char *pszMsg)
+void CMessageBox::Show (const char *pszMsg)
 {
 	int w, h, aw;
 	int x, y;
-	int nDrawBuffer = gameStates.ogl.nDrawBuffer;
-
-ClearBoxedMessage ();
-CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
-fontManager.SetCurrent (MEDIUM1_FONT);
+	
+gameStates.app.bClearMessage = 1;
+m_nDrawBuffer = gameStates.ogl.nDrawBuffer;
+m_pszMsg = pszMsg;
 fontManager.Current ()->StringSize (pszMsg, w, h, aw);
+Clear ();
+fontManager.SetCurrent (MEDIUM1_FONT);
 x = (screen.Width () - w) / 2;
 y = (screen.Height () - h) / 2;
-if (!gameStates.app.bGameRunning)
-	OglSetDrawBuffer (GL_FRONT, 0);
 backgroundManager.Setup (NULL, x - BOX_BORDER / 2, y - BOX_BORDER / 2, w + BOX_BORDER, h + BOX_BORDER);
-CCanvas::SetCurrent (backgroundManager.Canvas (1));
-fontManager.SetColorRGBi (DKGRAY_RGBA, 1, 0, 0);
-fontManager.SetCurrent (MEDIUM1_FONT);
-GrPrintF (NULL, 0x8000, BOX_BORDER / 2, pszMsg); //(h / 2 + BOX_BORDER) / 2
-gameStates.app.bClearMessage = 1;
-GrUpdate (0);
-if (!gameStates.app.bGameRunning)
-	OglSetDrawBuffer (nDrawBuffer, 0);
+Render ();
 }
 
 //------------------------------------------------------------------------------
 
-void ClearBoxedMessage (void)
+void CMessageBox::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP)
+{
+CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
+if (!gameStates.app.bGameRunning)
+	OglSetDrawBuffer (GL_FRONT, 0);
+backgroundManager.Redraw ();
+FadeIn ();
+CCanvas::SetCurrent (backgroundManager.Canvas (1));
+fontManager.SetColorRGBi (DKGRAY_RGBA, 1, 0, 0);
+fontManager.SetCurrent (MEDIUM1_FONT);
+GrPrintF (NULL, 0x8000, BOX_BORDER / 2, m_pszMsg); //(h / 2 + BOX_BORDER) / 2
+GrUpdate (0);
+if (!gameStates.app.bGameRunning)
+	OglSetDrawBuffer (m_nDrawBuffer, 0);
+gameStates.render.grAlpha = 1.0f;
+}
+
+//------------------------------------------------------------------------------
+
+void CMessageBox::Clear (void)
 {
 if (gameStates.app.bClearMessage) {
+	FadeOut ();
 	backgroundManager.Remove ();
 	gameStates.app.bClearMessage = 0;
 	}
-#if 0
-	CBitmap* bmP = backgroundManager.Current ();
-
-if (bmP) {
-	bg.bmP.BlitClipped (bg.x - BOX_BORDER / 2, bg.y - BOX_BORDER / 2);
-	if (bg.bmP) {
-		delete bg.bmP;
-		bg.bmP = NULL;
-		}
-	}
-#endif
 }
 
 //------------------------------------------------------------------------------
