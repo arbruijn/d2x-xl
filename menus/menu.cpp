@@ -407,7 +407,7 @@ t0 = 0;
 
 m_bRedraw = 0;
 
-if (gameStates.app.bGameRunning /*&& (gameData.demo.nState == ND_STATE_NORMAL)*/) {
+if (gameStates.app.bGameRunning && gameCanvasP /*&& (gameData.demo.nState == ND_STATE_NORMAL)*/) {
 	CCanvas::Push ();
 	CCanvas::SetCurrent (gameCanvasP);
 	if (!gameStates.app.bShowError) {
@@ -430,7 +430,7 @@ backgroundManager.Redraw ();
 if (m_tEnter < 0)
 	m_tEnter = SDL_GetTicks ();
 i -= m_tEnter;
-gameStates.render.grAlpha = (i < 500) ? float (i) / 500.0f : 1.0f;
+gameStates.render.grAlpha = (i < 250) ? float (i) / 250.0f : 1.0f;
 
 i = DrawTitle (pszTitle, TITLE_FONT, RGB_PAL (31, 31, 31), m_props.yOffs);
 DrawTitle (pszSubTitle, SUBTITLE_FONT, RGB_PAL (21, 21, 21), i);
@@ -499,6 +499,23 @@ if (m_props.bIsScrollBox) {
 		paletteManager.EnableEffect ();
 	}
 gameStates.render.grAlpha = 1.0f;
+}
+
+//------------------------------------------------------------------------------ 
+
+void CMenu::Fadout (void)
+{
+int t = int (250 * gameStates.render.grAlpha);
+int t0 = SDL_GetTicks ();
+int t1, dt;
+for (;;) {
+	t1 = SDL_GetTicks ();
+	dt = t1 - t0;
+	if (dt >= t)
+		break;
+	m_tEnter = t1 - dt;
+	Render (pszTitle, pszSubTitle, gameCanvasP);
+	}
 }
 
 //------------------------------------------------------------------------------ 
@@ -1302,20 +1319,7 @@ launchOption:
 	// Redraw everything...
 	Render (pszTitle, pszSubTitle, gameCanvasP);
 	}
-
-int t = int (500 * gameStates.render.grAlpha);
-int t0 = SDL_GetTicks ();
-int t1, dt;
-for (;;) {
-	t1 = SDL_GetTicks ();
-	dt = t1 - t0;
-	if (dt >= t)
-		break;
-	m_tEnter = t1 - dt;
-	Render (pszTitle, pszSubTitle, gameCanvasP);
-	}
-gameStates.render.grAlpha = 1.0f;
-
+Fadeout (pszTitle, pszSubTitle, gameCanvasP);
 SDL_ShowCursor (0);
 // Restore everything...
 RestoreScreen (filename, m_bDontRestore);
