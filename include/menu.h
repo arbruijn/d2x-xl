@@ -244,7 +244,8 @@ class CMenu : public CStack<CMenuItem> {
 
 	private:
 		void Render (const char* pszTitle = NULL, const char* pszSubTitle = NULL, CCanvas* gameCanvasP = NULL);
-		void Fadeout (const char* pszTitle = NULL, const char* pszSubTitle = NULL, CCanvas* gameCanvasP = NULL);
+		void FadeIn (void);
+		void FadeOut (const char* pszTitle = NULL, const char* pszSubTitle = NULL, CCanvas* gameCanvasP = NULL);
 		int InitProps (const char* pszTitle, const char* pszSubTitle);
 		void GetTitleSize (const char* pszTitle, CFont *font, int& tw, int& th);
 		int GetSize (int& w, int& h, int& aw, int& nMenus, int& nOthers);

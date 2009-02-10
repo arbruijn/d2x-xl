@@ -427,12 +427,7 @@ else
 	console.Draw ();
 
 backgroundManager.Redraw ();
-
-if (m_tEnter < 0)
-	m_tEnter = SDL_GetTicks ();
-i -= m_tEnter;
-gameStates.render.grAlpha = (i < FADE_TIME) ? float (i) / float (FADE_TIME) : 1.0f;
-
+FadeIn ();
 i = DrawTitle (pszTitle, TITLE_FONT, RGB_PAL (31, 31, 31), m_props.yOffs);
 DrawTitle (pszSubTitle, SUBTITLE_FONT, RGB_PAL (21, 21, 21), i);
 if (!m_bRedraw)
@@ -504,7 +499,17 @@ gameStates.render.grAlpha = 1.0f;
 
 //------------------------------------------------------------------------------ 
 
-void CMenu::Fadeout (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP)
+void CMenu::FadeIn (void)
+{
+if (m_tEnter < 0)
+	m_tEnter = SDL_GetTicks ();
+int t = SDL_getTicks () - m_tEnter;
+gameStates.render.grAlpha = (t < FADE_TIME) ? float (t) / float (FADE_TIME) : 1.0f;
+}
+
+//------------------------------------------------------------------------------ 
+
+void CMenu::FadeOut (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP)
 {
 int t = int (FADE_TIME * gameStates.render.grAlpha);
 int t0 = SDL_GetTicks ();
@@ -1320,7 +1325,7 @@ launchOption:
 	// Redraw everything...
 	Render (pszTitle, pszSubTitle, gameCanvasP);
 	}
-Fadeout (pszTitle, pszSubTitle, gameCanvasP);
+FadeOut (pszTitle, pszSubTitle, gameCanvasP);
 SDL_ShowCursor (0);
 // Restore everything...
 RestoreScreen (filename, m_bDontRestore);
