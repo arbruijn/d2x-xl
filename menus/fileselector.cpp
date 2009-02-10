@@ -151,6 +151,7 @@ int CFileSelector::FileSelector (const char* pszTitle, const char* filespec, cha
 	int					nPatternLen = 0;
 	char*					pszFn;
 
+m_tEnter = -1;
 m_nFirstItem = -1;
 m_nVisibleItems = 8;
 m_bPlayerMode = 0;

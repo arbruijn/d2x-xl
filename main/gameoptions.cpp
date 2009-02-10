@@ -624,7 +624,7 @@ if (i) {
 	}
 else {
 	gameOptions [0].menus.nStyle = 0;
-	gameOptions [1].menus.bFade = 1;
+	gameOptions [1].menus.bFade = 150;
 	gameOptions [0].menus.bFastMenus = 1;
 	gameOptions [0].menus.bSmartFileSearch = 1;
 	gameOptions [0].menus.bShowLevelVersion = 0;

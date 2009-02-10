@@ -400,7 +400,7 @@ void CMenu::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* game
 
 	int	i, sx, sy;
 
-if (SDL_GetTicks () - m_tEnter > MENU_FADE_TIME) {
+if (SDL_GetTicks () - m_tEnter > gameOpts->menus.bFade) {
 	i = SDL_GetTicks ();
 	if (i - t0 < 25)
 		return;
@@ -427,8 +427,8 @@ if (gameStates.app.bGameRunning && gameCanvasP /*&& (gameData.demo.nState == ND_
 else
 	console.Draw ();
 
-backgroundManager.Redraw ();
 FadeIn ();
+backgroundManager.Redraw ();
 i = DrawTitle (pszTitle, TITLE_FONT, RGB_PAL (31, 31, 31), m_props.yOffs);
 DrawTitle (pszSubTitle, SUBTITLE_FONT, RGB_PAL (21, 21, 21), i);
 if (!m_bRedraw)
@@ -507,7 +507,7 @@ if (gameOpts->menus.bFade) {
 		m_tEnter = SDL_GetTicks ();
 	int t = SDL_GetTicks () - m_tEnter;
 	PrintLog ("fade %d\n", t);
-	gameStates.render.grAlpha = (t < MENU_FADE_TIME) ? float (t) / float (MENU_FADE_TIME) : 1.0f;
+	gameStates.render.grAlpha = (t < gameOpts->menus.bFade) ? float (t) / float (gameOpts->menus.bFade) : 1.0f;
 	}
 else {
 	m_tEnter = 0;
@@ -520,7 +520,7 @@ else {
 void CMenu::FadeOut (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP)
 {
 if (gameOpts->menus.bFade) {
-	int t = int (MENU_FADE_TIME * gameStates.render.grAlpha);
+	int t = int (gameOpts->menus.bFade * gameStates.render.grAlpha);
 	int t0 = SDL_GetTicks ();
 	int t1, dt;
 	for (;;) {
@@ -528,8 +528,8 @@ if (gameOpts->menus.bFade) {
 		dt = t1 - t0;
 		if (dt >= t)
 			break;
-		m_tEnter = t1 - MENU_FADE_TIME + dt;
-		PrintLog ("fadeout %d\n", MENU_FADE_TIME - dt);
+		m_tEnter = t1 - gameOpts->menus.bFade + dt;
+		PrintLog ("fadeout %d\n", gameOpts->menus.bFade - dt);
 		Render (pszTitle, pszSubTitle, gameCanvasP);
 		}
 	}
@@ -709,7 +709,7 @@ while (!done) {
 			m_props.nScrollOffset = m_nChoice - m_props.nMaxOnMenu + 1;
 		}
 
-	if (callback && (SDL_GetTicks () - m_tEnter > MENU_FADE_TIME))
+	if (callback && (SDL_GetTicks () - m_tEnter > gameOpts->menus.bFade))
 		m_nChoice = (*callback) (*this, nKey, m_nChoice);
 
 	if (!bTimeStopped){

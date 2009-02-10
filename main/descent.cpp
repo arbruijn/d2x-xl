@@ -202,12 +202,15 @@ SDL_WM_SetCaption (szCaption, "Descent II");
 
 void PrintVersionInfo (void)
 {
+if (gameStates.app.bGameRunning || gameStates.app.bBetweenLevels)
+	return;
+
 	static int bVertigo = -1;
 
 	int y, w, ws, h, hs, aw;
+	float grAlpha = gameStates.render.grAlpha;
 
-if (gameStates.app.bGameRunning || gameStates.app.bBetweenLevels)
-	return;
+gameStates.render.grAlpha = 1.0f;
 if (gameStates.menus.bHires) {
 	if (gameOpts->menus.altBg.bHave > 0)
 		y = 8; //102
@@ -250,6 +253,7 @@ GrPrintF (NULL, CCanvas::Current ()->Width () - ws - 1,
 			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0) + (h - hs) / 2, VERSION);
 fontManager.SetColorRGBi (RGB_PAL (6, 6, 6), 1, 0, 0);
 CCanvas::Pop ();
+gameStates.render.grAlpha = grAlpha;
 }
 
 // ----------------------------------------------------------------------------

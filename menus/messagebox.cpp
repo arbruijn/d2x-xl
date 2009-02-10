@@ -48,19 +48,20 @@ void CMessageBox::Show (const char *pszMsg, bool bFade)
 	int w, h, aw;
 	int x, y;
 	
-gameStates.app.bClearMessage = 1;
+m_tEnter = -1;
 m_nDrawBuffer = gameStates.ogl.nDrawBuffer;
 m_pszMsg = pszMsg;
-fontManager.Current ()->StringSize (pszMsg, w, h, aw);
 Clear ();
 fontManager.SetCurrent (MEDIUM1_FONT);
+fontManager.Current ()->StringSize (m_pszMsg, w, h, aw);
 x = (screen.Width () - w) / 2;
 y = (screen.Height () - h) / 2;
 backgroundManager.Setup (NULL, x - BOX_BORDER / 2, y - BOX_BORDER / 2, w + BOX_BORDER, h + BOX_BORDER);
+gameStates.app.bClearMessage = 1;
 if (bFade)
 	do {
 		Render ();
-	} while (SDL_GetTicks () - m_tEnter < MENU_FADE_TIME);
+	} while (SDL_GetTicks () - m_tEnter < gameOpts->menus.bFade);
 }
 
 //------------------------------------------------------------------------------
@@ -70,9 +71,9 @@ void CMessageBox::Render (const char* pszTitle, const char* pszSubTitle, CCanvas
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
 if (!gameStates.app.bGameRunning)
 	OglSetDrawBuffer (GL_FRONT, 0);
-backgroundManager.Redraw ();
-FadeIn ();
 CCanvas::SetCurrent (backgroundManager.Canvas (1));
+FadeIn ();
+backgroundManager.Redraw ();
 fontManager.SetColorRGBi (DKGRAY_RGBA, 1, 0, 0);
 fontManager.SetCurrent (MEDIUM1_FONT);
 GrPrintF (NULL, 0x8000, BOX_BORDER / 2, m_pszMsg); //(h / 2 + BOX_BORDER) / 2

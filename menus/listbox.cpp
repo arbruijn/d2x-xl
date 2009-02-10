@@ -124,6 +124,7 @@ int CListBox::ListBox (const char* pszTitle, CStack<char*>& items, int nDefaultI
 	int	w, h, aw;
 	char*	pszFn;
 
+m_tEnter = -1;
 m_items = &items;
 
 gameStates.input.keys.bRepeat = 1;
