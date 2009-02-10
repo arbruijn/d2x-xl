@@ -722,7 +722,7 @@ if (gameStates.render.cockpit.nType != CM_FULL_COCKPIT)
 m_info.nColor = RGBA (255, 255, 255, int (float (nCloakFadeValue) / float (FADE_LEVELS) * 255));
 BitBlt (GAUGE_SHIPS + (IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer), x, y);
 m_info.nColor = WHITE_RGBA;
-gameStates.render.grAlpha = FADE_LEVELS;
+gameStates.render.grAlpha = 1.0f;
 #if 0
 if (gameStates.render.cockpit.nType != CM_FULL_COCKPIT)
 	CCanvas::SetCurrent (CurrentGameScreen ());
@@ -877,18 +877,6 @@ else {
 	m_info.weaponBoxStates [nWeaponType] = WS_SET;
 	}
 
-#if 0 //obsolete code
-if (m_info.weaponBoxStates [nWeaponType] != WS_SET) {		//fade gauge
-	int fadeValue = X2I (m_info.weaponBoxFadeValues [nWeaponType]);
-	int boxofs = (gameStates.render.cockpit.nType == CM_STATUS_BAR) ? SB_PRIMARY_BOX : COCKPIT_PRIMARY_BOX;
-	gameStates.render.grAlpha = (float) fadeValue;
-	OglDrawFilledRect (hudWindowAreas [boxofs + nWeaponType].left,
-						    hudWindowAreas [boxofs + nWeaponType].top,
-						    hudWindowAreas [boxofs + nWeaponType].right,
-						    hudWindowAreas [boxofs + nWeaponType].bot);
-	gameStates.render.grAlpha = FADE_LEVELS;
-	}
-#endif
 return 1;
 }
 

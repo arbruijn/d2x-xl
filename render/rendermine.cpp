@@ -247,7 +247,7 @@ if (IS_WALL (nWallNum)) {
 				c = WALLS [nWallNum].cloakValue;
 				if (propsP->widFlags & WID_CLOAKED_FLAG) {
 					if (c < FADE_LEVELS) {
-						gameStates.render.grAlpha = (float) c;
+						gameStates.render.grAlpha = GrAlpha (ubyte (c));
 						G3DrawPolyAlpha (propsP->nVertices, pointList, &cloakColor, 1, propsP->segNum);		//draw as flat poly
 						}
 					}
@@ -255,12 +255,12 @@ if (IS_WALL (nWallNum)) {
 					if (!gameOpts->render.color.bWalls)
 						c = 0;
 					if (WALLS [nWallNum].hps)
-						gameStates.render.grAlpha = (float) fabs ((1.0f - (float) WALLS [nWallNum].hps / ((float) I2X (100))) * FADE_LEVELS);
+						gameStates.render.grAlpha = float (WALLS [nWallNum].hps) / float (I2X (100));
 					else if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1])
-						gameStates.render.grAlpha = COMPETITION ? FADE_LEVELS * 3.0f / 2.0f : (float) (FADE_LEVELS - extraGameInfo [1].grWallTransparency);
+						gameStates.render.grAlpha = COMPETITION ? 2.0f / 3.0f : GrAlpha (FADE_LEVELS - extraGameInfo [1].grWallTransparency);
 					else
-						gameStates.render.grAlpha = (float) (FADE_LEVELS - extraGameInfo [0].grWallTransparency);
-					if (gameStates.render.grAlpha < FADE_LEVELS) {
+						gameStates.render.grAlpha = GrAlpha (ubyte (FADE_LEVELS - extraGameInfo [0].grWallTransparency));
+					if (gameStates.render.grAlpha < 1.0f) {
 						tRgbaColorf wallColor;
 						
 						paletteManager.Game ()->ToRgbaf ((ubyte) c, wallColor); 
@@ -268,19 +268,19 @@ if (IS_WALL (nWallNum)) {
 						}
 					}
 				}
-			gameStates.render.grAlpha = FADE_LEVELS;
+			gameStates.render.grAlpha = 1.0f;
 			return 1;
 			}
 		}
 	else if (gameStates.app.bD2XLevel) {
 		c = WALLS [nWallNum].cloakValue;
 		if (c && (c < FADE_LEVELS))
-			gameStates.render.grAlpha = (float) (FADE_LEVELS - c);
+			gameStates.render.grAlpha = GrAlpha (FADE_LEVELS - c);
 		}
 	else if (gameOpts->render.effects.bAutoTransparency && IsTransparentFace (propsP))
-		gameStates.render.grAlpha = (float) FADE_LEVELS * 0.8f;
+		gameStates.render.grAlpha = 0.8f;
 	else
-		gameStates.render.grAlpha = FADE_LEVELS;
+		gameStates.render.grAlpha = 1.0f;
 	}
 return 0;
 }
@@ -412,10 +412,10 @@ if (bHaveMonitorBg) {
 	if (bIsTeleCam) {
 #if DBG
 		bmBot = &cameraP->Texture ();
-		gameStates.render.grAlpha = FADE_LEVELS;
+		gameStates.render.grAlpha = 1.0f;
 #else
 		bmTop = &cameraP->Texture ();
-		gameStates.render.grAlpha = (FADE_LEVELS * 7) / 10;
+		gameStates.render.grAlpha = 0.7f;
 #endif
 		}
 	else if (gameOpts->render.cameras.bFitToWall || (props.nOvlTex > 0))
@@ -428,8 +428,6 @@ SetFaceLight (&props);
 if (props.segNum == nDbgSeg && props.sideNum == nDbgSide)
 	props.segNum = props.segNum;
 #endif
-if ((gameOpts->render.bDepthSort > 0) && (gameStates.render.grAlpha < FADE_LEVELS))
-	gameStates.render.grAlpha = FADE_LEVELS - gameStates.render.grAlpha;
 #if DBG
 if (bmTop)
 	fpDrawTexPolyMulti (
@@ -465,7 +463,7 @@ fpDrawTexPolyMulti (
 	props.segNum);
 #endif
 	}
-gameStates.render.grAlpha = FADE_LEVELS;
+gameStates.render.grAlpha = 1.0f;
 gameStates.ogl.fAlpha = 1;
 	// render the CSegment the CPlayerData is in with a transparent color if it is a water or lava CSegment
 	//if (nSegment == OBJECTS->nSegment)

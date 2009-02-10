@@ -70,12 +70,7 @@ else {
 	if (!palette)
 		palette = paletteManager.Game ();
 	palette->ToRgbaf (c, color);
-	if (gameStates.render.grAlpha >= FADE_LEVELS)
-		color.alpha = 1.0f;
-	else {
-		color.alpha = (float) gameStates.render.grAlpha / (float) FADE_LEVELS; //1.0f - (float) gameStates.render.grAlpha / ((float) FADE_LEVELS - 1.0f);
-		glEnable (GL_BLEND);
-		}
+	color.alpha = gameStates.render.grAlpha;
 	glColor4fv (reinterpret_cast<GLfloat*> (&color));
 	}
 }
@@ -92,10 +87,7 @@ else {
 	if (!palette)
 		palette = paletteManager.Game ();
 	palette->ToRgbaf (c, color);
-	if (gameStates.render.grAlpha >= FADE_LEVELS)
- 		color.alpha = 1.0f;
-	else
-		color.alpha = (float) gameStates.render.grAlpha / (float) FADE_LEVELS; //1.0f - (float) gameStates.render.grAlpha / ((float) FADE_LEVELS - 1.0f);
+	color.alpha = gameStates.render.grAlpha;
 	}
 return color;
 }
@@ -129,7 +121,7 @@ tRgbaColorf GetCanvasColor (tCanvasColor *colorP)
 {
 
 if (!colorP) {
-	tRgbaColorf	color = {1, 1, 1, GrAlpha ()};
+	tRgbaColorf	color = {1, 1, 1, gameStates.render.grAlpha};
 	return color;
 	}
 else if (colorP->rgb) {

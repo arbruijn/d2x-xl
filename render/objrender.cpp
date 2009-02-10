@@ -567,7 +567,7 @@ if (ci.bFading < 0) {
 	}
 else {
 	gameStates.render.bCloaked = 1;
-	gameStates.render.grAlpha = (float) ci.nFadeValue;
+	gameStates.render.grAlpha = GrAlpha (ci.nFadeValue);
 	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);	//set to black (matters for s3)
 	G3SetSpecialRender (DrawTexPolyFlat, NULL, NULL);		//use special flat drawer
 	bOk = DrawPolyModel (objP, &posP->vPos, &posP->mOrient,
@@ -575,7 +575,7 @@ else {
 									objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags,
 									light, glow, NULL, NULL);
 	G3SetSpecialRender (NULL, NULL, NULL);
-	gameStates.render.grAlpha = FADE_LEVELS;
+	gameStates.render.grAlpha = 1.0f;
 	gameStates.render.bCloaked = 0;
 	}
 return bOk;
@@ -724,9 +724,10 @@ else {
 			bBlendPolys = bEnergyWeapon && (gameData.weapons.info [id].nInnerModel > -1);
 			bBrightPolys = bGatling || (bBlendPolys && WI_energy_usage (id));
 			if (bEnergyWeapon) {
-				gameStates.render.grAlpha = FADE_LEVELS - 2.0f;
-				if (!gameOpts->legacy.bRender)
+				if (gameOpts->legacy.bRender)
 					OglBlendFunc (GL_ONE, GL_ONE);
+				else
+					gameStates.render.grAlpha = GrAlpha (FADE_LEVELS - 2);
 				}
 			if (bBlendPolys) {
 #if 0
@@ -744,9 +745,9 @@ else {
 						NULL);
 				}
 			if (bEnergyWeapon)
-				gameStates.render.grAlpha = 4 * (float) FADE_LEVELS / 5;
+				gameStates.render.grAlpha = GrAlpha (4 * FADE_LEVELS / 5);
 			else if (!bBlendPolys)
-				gameStates.render.grAlpha = (float) FADE_LEVELS;
+				gameStates.render.grAlpha = 1.0f;
 			}
 		bOk = DrawPolyModel (
 			objP, &objP->info.position.vPos, &objP->info.position.mOrient,
@@ -758,11 +759,9 @@ else {
 			bmiAltTex,
 			(bGatling || bEnergyWeapon) ? gameData.weapons.color + id : NULL);
 		if (!gameStates.render.bBuildModels) {
-			if (!gameOpts->legacy.bRender) {
-				gameStates.render.grAlpha = (float) FADE_LEVELS;
+			if (!gameOpts->legacy.bRender)
 				OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-				}
-			gameStates.render.grAlpha = (float) FADE_LEVELS;
+			gameStates.render.grAlpha = 1.0f;
 			}
 		}
 	}

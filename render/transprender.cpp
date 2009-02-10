@@ -303,7 +303,7 @@ int CTransparencyRenderer::AddPoly (tFace *faceP, tFaceTriangle *triP, CBitmap *
 {
 	tTranspPoly	item;
 	int			i;
-	float			z, zMinf, zMaxf, s = GrAlpha ();
+	float			z, zMinf, zMaxf, s = gameStates.render.grAlpha;
 	fix			zCenter;
 
 item.faceP = faceP;

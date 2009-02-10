@@ -349,7 +349,7 @@ for (i = 0; i < nVertices; i++, pointList++) {
 	OglVertex3f (*pointList);
 	}
 #if 1
-if (CCanvas::Current ()->Color ().rgb || (gameStates.render.grAlpha < FADE_LEVELS))
+if (CCanvas::Current ()->Color ().rgb || (gameStates.render.grAlpha < 1.0f))
 	glDisable (GL_BLEND);
 #endif
 glEnd ();
@@ -368,7 +368,7 @@ if (gameStates.render.nShadowBlurPass == 1) {
 	return 0;
 	}
 if (color->alpha < 0)
-	color->alpha = (float) gameStates.render.grAlpha / (float) FADE_LEVELS;
+	color->alpha = gameStates.render.grAlpha;
 #if 1
 if (gameOpts->render.bDepthSort > 0) {
 	CFloatVector	vertices [8];
@@ -454,7 +454,7 @@ else {
 	}
 OglActiveTexture (GL_TEXTURE0, 0);
 glDisable (GL_TEXTURE_2D);
-glColor4d (0, 0, 0, GrAlpha ());
+glColor4d (0, 0, 0, gameStates.render.grAlpha);
 glBegin (GL_TRIANGLE_FAN);
 for (i = 0, ppl = pointList; i < nVertices; i++, ppl++)
 	OglVertex3f (*ppl);
@@ -537,7 +537,7 @@ else {
 glDepthFunc (GL_LEQUAL);
 bmBot = bmBot->Override (-1);
 bDepthSort = (!bmTop && (gameOpts->render.bDepthSort > 0) &&
-				  ((gameStates.render.grAlpha < FADE_LEVELS) ||
+				  ((gameStates.render.grAlpha < 1.0f) ||
 				   (bmBot->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU | BM_FLAG_TGA)) == (BM_FLAG_TRANSPARENT | BM_FLAG_TGA)));
 if (bmTop && (bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
 	nFrame = (int) (bmTop->CurFrame () - bmTop->Frames ());
@@ -576,8 +576,7 @@ if (bShaderMerge) {
 #endif
 		glUniform1i (glGetUniformLocation (activeShaderProg, "maskTex"), 2);
 		}
-	glUniform1f (glGetUniformLocation (activeShaderProg, "grAlpha"),
-					 gameStates.render.grAlpha / (float) FADE_LEVELS);
+	glUniform1f (glGetUniformLocation (activeShaderProg, "grAlpha"), gameStates.render.grAlpha);
 	}
 else if (!bDepthSort) {
 	if (bmBot == gameData.endLevel.satellite.bmP) {
@@ -618,13 +617,13 @@ if (!bDepthSort) {
 	gameStates.ogl.bDynObjLight = bDynLight;
 	}
 
-gameStates.ogl.fAlpha = gameStates.render.grAlpha / (float) FADE_LEVELS;
+gameStates.ogl.fAlpha = gameStates.render.grAlpha;
 if (bVertexArrays || bDepthSort) {
-		CFloatVector		vertices [8];
-		tFaceColor	vertColors [8];
-		tTexCoord2f	texCoord [2][8];
-		int			vertIndex [8];
-		//int			colorIndex [8];
+		CFloatVector	vertices [8];
+		tFaceColor		vertColors [8];
+		tTexCoord2f		texCoord [2][8];
+		int				vertIndex [8];
+		//int				colorIndex [8];
 
 	for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 		pl = *ppl;
@@ -978,7 +977,7 @@ else if (!bLight)
 if (!bLight)
 	bDynLight = 0;
 gameStates.ogl.bDynObjLight = bDynLight;
-gameStates.ogl.fAlpha = gameStates.render.grAlpha / (float) FADE_LEVELS;
+gameStates.ogl.fAlpha = gameStates.render.grAlpha;
 glBegin (GL_TRIANGLE_FAN);
 if (bDynLight) {
 	for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {

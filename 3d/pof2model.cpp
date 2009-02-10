@@ -148,7 +148,7 @@ else {
 	baseColor.red = (float) PAL2RGBA (((c >> 10) & 31) << 1) / 255.0f;
 	baseColor.green = (float) PAL2RGBA (((c >> 5) & 31) << 1) / 255.0f;
 	baseColor.blue = (float) PAL2RGBA ((c & 31) << 1) / 255.0f;
-	baseColor.alpha = GrAlpha ();
+	baseColor.alpha = gameStates.render.grAlpha;
 	if (objColorP)
 		*objColorP = baseColor;
 	}

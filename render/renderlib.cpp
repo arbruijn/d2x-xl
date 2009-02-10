@@ -774,7 +774,7 @@ if (bHaveMonitorBg) {
 	if (bIsTeleCam) {
 #if DBG
 		faceP->bmBot = &cameraP->Texture ();
-		gameStates.render.grAlpha = FADE_LEVELS;
+		gameStates.render.grAlpha = 1.0f;
 #else
 		faceP->bmTop = &cameraP->Texture ();
 		for (i = 0; i < 4; i++)

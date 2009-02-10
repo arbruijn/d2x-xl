@@ -311,11 +311,11 @@ if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
       h += 8;
       x = (CCanvas::Current ()->Width () - w) / 2;
       y = (CCanvas::Current ()->Height () - h) / 2;
-      gameStates.render.grAlpha = 2 * 7;
+      gameStates.render.grAlpha =	 (2 * 7);
       CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-      OglDrawFilledRect (x, y, x+w, y+h);
-      gameStates.render.grAlpha = FADE_LEVELS;
-      GrString (0x8000, (CCanvas::Current ()->Height () - CCanvas::Current ()->Font ()->Height ())/2 + h/8, TXT_GAME_OVER, NULL);
+      OglDrawFilledRect (x, y, x + w, y + h);
+      gameStates.render.grAlpha = 1.0f;
+      GrString (0x8000, (CCanvas::Current ()->Height () - CCanvas::Current ()->Font ()->Height ()) / 2 + h / 8, TXT_GAME_OVER, NULL);
 #if 0
       // Automatically exit death after 10 secs
       if (gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath + I2X (10)) {

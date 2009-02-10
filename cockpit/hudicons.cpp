@@ -341,14 +341,12 @@ for (i = 0; i < 2; i++) {
 		if (i && !bAvailable)
 			bHave = 0;
 		if (bHave) {
-			//gameStates.render.grAlpha = FADE_LEVELS * 2 / 3;
 			if (bAvailable)
 				CCanvas::Current ()->SetColorRGB (128, 128, 0, (ubyte) (alpha * 16));
 			else
 				CCanvas::Current ()->SetColorRGB (128, 0, 0, (ubyte) (alpha * 16));
 			}
 		else {
-			//gameStates.render.grAlpha = FADE_LEVELS * 2 / 7;
 			CCanvas::Current ()->SetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
 			}
 		OglDrawFilledRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
@@ -386,7 +384,7 @@ for (i = 0; i < 2; i++) {
 				nIdIcons [i][j] = GrString (x + wIcon + 2 - fw, y - fh, szAmmo, nIdIcons [i] + j);
 				fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 				}
-		gameStates.render.grAlpha = FADE_LEVELS;
+		gameStates.render.grAlpha = 1.0f;
 		if (nWeaponIcons > 2)
 			y += hIcon + oy;
 		else {
@@ -537,7 +535,6 @@ for (j = firstItem; j < n; j++) {
 		bHave = LOCALPLAYER.flags & nInvFlags [j];
 	bAvailable = (LOCALPLAYER.energy > nEnergyType [j]);
 	if (bHave) {
-		//gameStates.render.grAlpha = FADE_LEVELS * 2 / 3;
 		if (bAvailable)
 			if (bArmed)
 				CCanvas::Current ()->SetColorRGB (255, 208, 0, (ubyte) (alpha * 16));
@@ -547,7 +544,6 @@ for (j = firstItem; j < n; j++) {
 			CCanvas::Current ()->SetColorRGB (128, 0, 0, (ubyte) (alpha * 16));
 		}
 	else {
-		//gameStates.render.grAlpha = FADE_LEVELS * 2 / 7;
 		CCanvas::Current ()->SetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
 		}
 	OglDrawFilledRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
@@ -569,7 +565,7 @@ for (j = firstItem; j < n; j++) {
 		nIdItems [j] = GrString (x + wIcon + 2 - fw, y - fh, szCount, nIdItems + j);
 		fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 		}
-	gameStates.render.grAlpha = FADE_LEVELS;
+	gameStates.render.grAlpha = 1.0f;
 	x += wIcon + ox;
 	}
 }

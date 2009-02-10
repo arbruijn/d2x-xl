@@ -3287,11 +3287,11 @@ else
 
 //	-----------------------------------------------------------------------------------------------------------
 
-static inline float GrAlpha (void)
+static inline float GrAlpha (ubyte alpha)
 {
-if (gameStates.render.grAlpha >= (float) FADE_LEVELS)
+if (alpha >= FADE_LEVELS)
 	return 1.0f;
-return 1.0f - gameStates.render.grAlpha / (float) FADE_LEVELS;
+return 1.0f - float (alpha) / float (FADE_LEVELS);
 }
 
 //	-----------------------------------------------------------------------------------------------------------

@@ -74,7 +74,7 @@ void G3DynLightModel (CObject *objP, RenderModel::CModel *pm, short iVerts, shor
 	CFloatVector3*				pv, * pn;
 	RenderModel::CVertex*	pmv;
 	tFaceColor*					pc;
-	float							fAlpha = GrAlpha ();
+	float							fAlpha = gameStates.render.grAlpha;
 	int							h, i, 
 									bEmissive = (objP->info.nType == OBJ_WEAPON) && 
 													gameData.objs.bIsWeapon [objP->info.nId] && 
@@ -115,7 +115,7 @@ void G3LightModel (CObject *objP, int nModel, fix xModelLight, fix *xGlowValues,
 	RenderModel::CVertex*	pmv;
 	RenderModel::CFace*		pmf;
 	tRgbaColorf					baseColor, *colorP;
-	float							fLight, fAlpha = (float) gameStates.render.grAlpha / (float) FADE_LEVELS;
+	float							fLight, fAlpha = gameStates.render.grAlpha;
 	int							h, i, j, l;
 	int							bEmissive = (objP->info.nType == OBJ_MARKER) ||
 													((objP->info.nType == OBJ_WEAPON) && 
@@ -470,7 +470,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 #endif
 	glDisable (GL_TEXTURE_2D);
 	if (gameStates.render.bCloaked)
-		glColor4f (0, 0, 0, GrAlpha ());
+		glColor4f (0, 0, 0, gameStates.render.grAlpha);
 	for (psm = pm->m_subModels + nSubModel, i = psm->m_nFaces, pmf = psm->m_faces; i; ) {
 		if (bTextured && (nBitmap != pmf->m_nBitmap)) {
 			if (0 > (nBitmap = pmf->m_nBitmap))

@@ -291,7 +291,7 @@ else
 		}
 	else {
 		m_background->RenderFixed (NULL, left, top, width, height); //, 0, 0);
-		gameStates.render.grAlpha = 2 * 7;
+		gameStates.render.grAlpha = GrAlpha (2 * 7);
 		glEnable (GL_BLEND);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 200);
@@ -325,7 +325,7 @@ else
 		}
 	//GrUpdate (0);
 	}
-gameStates.render.grAlpha = FADE_LEVELS;
+gameStates.render.grAlpha = 1.0f;
 }
 
 //------------------------------------------------------------------------------
@@ -428,7 +428,7 @@ if (bForce || (MODERN_STYLE == 1)) {
 		bottom = screen.Height () - 1;
 	CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), (ubyte) (gameData.menu.alpha * fAlpha));
 	float grAlpha = gameStates.render.grAlpha;
-	gameStates.render.grAlpha = (float) gameData.menu.alpha * fAlpha / 255.0f;
+	gameStates.render.grAlpha = float (gameData.menu.alpha) / 255.0f * fAlpha;
 	glDisable (GL_TEXTURE_2D);
 	OglDrawFilledRect (left, top, right, bottom);
 	CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), (ubyte) (255 * fAlpha));

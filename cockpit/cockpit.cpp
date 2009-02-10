@@ -431,7 +431,7 @@ if (yMax) {
 	x [2] = ScaleX (AFTERBURNER_GAUGE_X + x [2] + 1);
 	y [2] = ScaleY (AFTERBURNER_GAUGE_Y + y [2]);
 	x [3] = ScaleX (AFTERBURNER_GAUGE_X + tableP [2 * yMax - 1] + 1);
-	gameStates.render.grAlpha = FADE_LEVELS;
+	gameStates.render.grAlpha = 1.0f;
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	OglDrawFilledPoly (x, y, 4, gaugeFadeColors [0], 1);

@@ -441,7 +441,7 @@ for (;;) {
 		 {
 			int i;
 			//fix l = X2I (32 * xModelLight);
-			CCanvas::Current ()->SetColorRGB15bpp (WORDVAL (p+28), (ubyte) (255 * GrAlpha ()));
+			CCanvas::Current ()->SetColorRGB15bpp (WORDVAL (p+28), (ubyte) (255 * gameStates.render.grAlpha));
 			CCanvas::Current ()->FadeColorRGB (1.0);
 			if (colorP) {
 				colorP->red = (float) CCanvas::Current ()->Color ().color.red / 255.0f;
