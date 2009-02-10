@@ -114,8 +114,11 @@ const char *szModeLetters []  =
 	 "ENTROPY",
 	 "MONSTER"};
 
-int NetworkJoinPoll (CMenu& menu, int& key, int nCurItem)
+int NetworkJoinPoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	// Polling loop for Join Game menu
 	static fix t1 = 0;
 	int	t = SDL_GetTicks ();

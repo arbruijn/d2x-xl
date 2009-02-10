@@ -251,8 +251,11 @@ return i;
 
 static time_t	nQueryTimeout;
 
-int TrackerPoll (CMenu& menu, int& key, int nCurItem)
+int TrackerPoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	time_t t;
 
 if (NetworkListen () && tracker.CountActive ())

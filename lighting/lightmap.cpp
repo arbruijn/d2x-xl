@@ -519,8 +519,11 @@ for (m_data.faceP = FACES.faces + nFace; nFace < nLastFace; nFace++, m_data.face
 
 static int nFace = 0;
 
-static int CreatePoll (CMenu& menu, int& key, int nCurItem)
+static int CreatePoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 paletteManager.LoadEffect ();
 if (nFace < gameData.segs.nFaces) {
 	lightmapManager.BuildAll (nFace);

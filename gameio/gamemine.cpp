@@ -623,8 +623,11 @@ static int loadIdx = 0;
 static int loadOp = 0;
 static CFile *mineDataFile;
 
-static int LoadSegmentsPoll (CMenu& menu, int& key, int nCurItem)
+static int LoadSegmentsPoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	int	bLightmaps = 0, bShadows = 0;
 
 #if LIGHTMAPS

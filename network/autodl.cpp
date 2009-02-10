@@ -533,8 +533,10 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int DownloadPoll (CMenu& menu, int& key, int nCurItem)
+int DownloadPoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
 return downloadManager.Poll (menu, key, nCurItem);
 }
 

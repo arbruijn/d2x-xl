@@ -100,8 +100,11 @@ int NDCountDemos (void);
 
 // ------------------------------------------------------------------------
 
-int AutoDemoMenuCheck (CMenu& m, int& nLastKey, int nCurItem)
+int AutoDemoMenuCheck (CMenu& m, int& nLastKey, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	int curtime;
 
 PrintVersionInfo ();

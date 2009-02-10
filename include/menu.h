@@ -292,7 +292,7 @@ class CFileSelector : public CMenu {
 
 //------------------------------------------------------------------------------
 
-typedef int (*pListBoxCallback) (int* nItem, CArray<char*>& items, int* keypress, int nState);
+typedef int (*pListBoxCallback) (int* nItem, CArray<char*>& items, int* keypress);
 
 class CListBox : public CMenu {
 		int				m_nFirstItem;

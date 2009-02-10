@@ -267,8 +267,11 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int NetworkStartPoll (CMenu& menu, int& key, int nCurItem)
+int NetworkStartPoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	int i, n, nm;
 
 	key = key;
@@ -349,8 +352,11 @@ return nCurItem;
 
 static int optGameTypes, nGameTypes, nGameItem;
 
-int NetworkGameParamPoll (CMenu& menu, int& key, int nCurItem)
+int NetworkGameParamPoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	static int oldmaxnet = 0;
 
 if ((nCurItem >= optGameTypes) && (nCurItem < optGameTypes + nGameTypes)) {
@@ -554,8 +560,11 @@ else
 
 //------------------------------------------------------------------------------
 
-int NetworkD2XOptionsPoll (CMenu& menu, int& key, int nCurItem)
+int NetworkD2XOptionsPoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	int	v, j;
 
 v = menu [optCompetition].m_value;
@@ -1083,8 +1092,11 @@ return key;
 
 static time_t	nQueryTimeout;
 
-static int QueryPoll (CMenu& menu, int& key, int nCurItem)
+static int QueryPoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	time_t t;
 
 if (NetworkListen () && (networkData.nActiveGames >= MAX_ACTIVE_NETGAMES))

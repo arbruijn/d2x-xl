@@ -388,8 +388,11 @@ for (i = startI; i < endI; i++)
 
 //------------------------------------------------------------------------------
 
-static int SortLightsPoll (CMenu& menu, int& key, int nCurItem)
+static int SortLightsPoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 paletteManager.LoadEffect ();
 if (loadOp == 0) {
 	ComputeSegmentVisibility (loadIdx);

@@ -607,8 +607,11 @@ return 19;
 
 static int loadOp = 0;
 
-static int InitializePoll (CMenu& menu, int& key, int nCurItem)
+static int InitializePoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 paletteManager.LoadEffect ();
 switch (loadOp) {
 	case 0:
@@ -780,7 +783,7 @@ else {
 	m.AddGauge ("", -1, 1000); // dummy for InitializePoll()
 	messageBox.Show (TXT_INITIALIZING);
 	for (loadOp = 0; loadOp < InitGaugeSize (); )
-		InitializePoll (m, key, 0);
+		InitializePoll (m, key, 0, 0);
 	}
 messageBox.Clear ();
 PrintBanner ();

@@ -11,8 +11,8 @@ int NetworkFindGame (void);
 int NetworkGetIpAddr (void);
 void ShowNetGameInfo (int choice);
 void ShowExtraNetGameInfo (int choice);
-int NetworkStartPoll (CMenu& menu, int& key, int nCurItem);
-int NetworkEndLevelPoll3 (CMenu& menu, int& key, int nCurItem);
+int NetworkStartPoll (CMenu& menu, int& key, int nCurItem, int nState);
+int NetworkEndLevelPoll3 (CMenu& menu, int& key, int nCurItem, int nState);
 
 #define AGI	activeNetGames [choice]
 #define AXI activeExtraGameInfo [choice]
