@@ -212,8 +212,11 @@ WF (netGame.invul, 27);
 #define ENDLEVEL_SEND_INTERVAL  2000
 #define ENDLEVEL_IDLE_TIME      20000
 
-int NetworkEndLevelPoll2 (CMenu& menu, int& key, int nCurItem)
+int NetworkEndLevelPoll2 (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 	// Polling loop for End-of-level menu
 
 	static fix t1 = 0;

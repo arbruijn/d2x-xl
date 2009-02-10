@@ -327,7 +327,7 @@ return bMultiFlag;
 #else
 
 #define	EGI_FLAG(_bFlag, _bAllocLocalOn, _bAllowLocalOff, _bDefault) \
-			(IsMultiGame ? \
+			 (IsMultiGame ? \
 				gameStates.app.bHaveExtraGameInfo [1] ? \
 					extraGameInfo [1]._bFlag ? \
 						_bLocal ? \
@@ -339,28 +339,28 @@ return bMultiFlag;
 
 #endif
 
-int NetworkStartGame();
-void NetworkRejoinGame();
-void NetworkLeaveGame();
-int NetworkEndLevel(int *secret);
-int NetworkEndLevelPoll2(CMenu& menu, int& key, int nCurItem);
+int NetworkStartGame (void);
+void NetworkRejoinGame (void);
+void NetworkLeaveGame (void);
+int NetworkEndLevel (int *secret);
+int NetworkEndLevelPoll2 (CMenu& menu, int& key, int nCurItem, int nState);
 
 extern tExtraGameInfo extraGameInfo [2];
 
-int NetworkListen();
-int NetworkLevelSync();
-void NetworkSendEndLevelPacket();
+int NetworkListen (void);
+int NetworkLevelSync (void);
+void NetworkSendEndLevelPacket (void);
 
-int network_delete_extraObjects();
-int network_find_max_net_players();
-char * NetworkGetPlayerName(int nObject);
-void NetworkSendEndLevelSub(int player_num);
-void NetworkDisconnectPlayer(int playernum);
+int network_delete_extraObjects (void);
+int network_find_max_net_players (void);
+char * NetworkGetPlayerName (int nObject);
+void NetworkSendEndLevelSub (int player_num);
+void NetworkDisconnectPlayer (int playernum);
 
-extern void NetworkDumpPlayer(ubyte * server, ubyte *node, int why);
-extern void NetworkSendNetgameUpdate();
+extern void NetworkDumpPlayer (ubyte * server, ubyte *node, int why);
+extern void NetworkSendNetgameUpdate (void);
 
-extern int GetMyNetRanking();
+extern int GetMyNetRanking (void);
 
 extern int NetGameType;
 extern int Network_sendObjects;
@@ -379,14 +379,14 @@ extern fix LastPacketTime [MAX_PLAYERS];
 // get your message.
 
 // Call once at the beginning of a frame
-void NetworkDoFrame(int force, int listen);
+void NetworkDoFrame (int force, int listen);
 
 // Tacks data of length 'len' onto the end of the next
 // packet that we're transmitting.
-void NetworkSendData(ubyte * ptr, int len, int urgent);
+void NetworkSendData (ubyte * ptr, int len, int urgent);
 
 // returns 1 if hoard.ham available
-extern int HoardEquipped();
+extern int HoardEquipped (void);
 
 typedef struct tPingStats {
 	fix	launchTime;
@@ -474,30 +474,30 @@ typedef struct tLiteInfo {
 	ubyte                           teamVector;
 } __pack__ tLiteInfo;
 
-#define NETGAME_INFO_SIZE       sizeof(tNetgameInfo)
-#define ALLNETPLAYERSINFO_SIZE  sizeof(tAllNetPlayersInfo)
-#define LITE_INFO_SIZE          sizeof(tLiteInfo)
-#define SEQUENCE_PACKET_SIZE    sizeof(tSequencePacket)
-#define FRAME_INFO_SIZE         sizeof(tFrameInfo)
-#define IPX_SHORT_INFO_SIZE     sizeof(tFrameInfoShort)
-#define ENTROPY_INFO_SIZE       sizeof(tExtraGameInfo)
+#define NETGAME_INFO_SIZE       sizeof (tNetgameInfo)
+#define ALLNETPLAYERSINFO_SIZE  sizeof (tAllNetPlayersInfo)
+#define LITE_INFO_SIZE          sizeof (tLiteInfo)
+#define SEQUENCE_PACKET_SIZE    sizeof (tSequencePacket)
+#define FRAME_INFO_SIZE         sizeof (tFrameInfo)
+#define IPX_SHORT_INFO_SIZE     sizeof (tFrameInfoShort)
+#define ENTROPY_INFO_SIZE       sizeof (tExtraGameInfo)
 
 #define MAX_ACTIVE_NETGAMES     80
 
-int  NetworkSendRequest(void);
-int  NetworkChooseConnect();
-int  NetworkSendGameListRequest();
+int  NetworkSendRequest (void);
+int  NetworkChooseConnect (void);
+int  NetworkSendGameListRequest (void);
 void NetworkAddPlayer (tSequencePacket *p);
-void NetworkSendGameInfo(tSequencePacket *their);
+void NetworkSendGameInfo (tSequencePacket *their);
 void ClipRank (char *rank);
-void NetworkCheckForOldVersion(char pnum);
-void NetworkInit(void);
-void NetworkFlush();
-int  NetworkWaitForAllInfo(int choice);
-void NetworkSetGameMode(int gameMode);
-void NetworkAdjustMaxDataSize();
-int CanJoinNetgame(tNetgameInfo *game,tAllNetPlayersInfo *people);
-void RestartNetSearching(CMenu& menu);
+void NetworkCheckForOldVersion (char pnum);
+void NetworkInit (void);
+void NetworkFlush (void);
+int  NetworkWaitForAllInfo (int choice);
+void NetworkSetGameMode (int gameMode);
+void NetworkAdjustMaxDataSize (void);
+int CanJoinNetgame (tNetgameInfo *game,tAllNetPlayersInfo *people);
+void RestartNetSearching (CMenu& menu);
 void DeleteTimedOutNetGames (void);
 void InitMonsterballSettings (tMonsterballInfo *monsterballP);
 void InitEntropySettings (int i);
@@ -521,16 +521,16 @@ extern tAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
 extern tAllNetPlayersInfo *tmpPlayersInfo, tmpPlayersBase;
 extern int nCoopPenalties [10];
 
-#define COMPETITION	(IsMultiGame && !IsCoopGame && extraGameInfo [1].bCompetition)
+#define COMPETITION	 (IsMultiGame && !IsCoopGame && extraGameInfo [1].bCompetition)
 
-#define MAX_DATASIZE ((gameStates.multi.nGameType == UDP_GAME) ? UDP_DATASIZE : IPX_DATASIZE)
-#define DATALIMIT ((gameStates.multi.nGameType == UDP_GAME) ? UDP_DATALIMIT : IPX_DATALIMIT)
+#define MAX_DATASIZE ( (gameStates.multi.nGameType == UDP_GAME) ? UDP_DATASIZE : IPX_DATASIZE)
+#define DATALIMIT ( (gameStates.multi.nGameType == UDP_GAME) ? UDP_DATALIMIT : IPX_DATALIMIT)
 
 //------------------------------------------------------------------------------
 
 static inline short PacketsPerSec (void)
 {
-if ((netGame.nPacketsPerSec < 1) || (netGame.nPacketsPerSec > 20))
+if ( (netGame.nPacketsPerSec < 1) || (netGame.nPacketsPerSec > 20))
 	netGame.nPacketsPerSec = 10;
 return netGame.nPacketsPerSec;
 }

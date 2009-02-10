@@ -331,8 +331,11 @@ return bCustom ? ++i : LoadLoresModel (i);
 static int loadIdx;
 static int loadOp = 0;
 
-static int LoadModelsPoll (CMenu& menu, int& key, int nCurItem)
+static int LoadModelsPoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (nState)
+	return nCurItem;
+
 paletteManager.LoadEffect ();
 if (loadOp == 0) {
 	loadIdx = LoadHiresModel (gameData.models.nHiresModels, loadIdx, 0);
