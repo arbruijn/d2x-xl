@@ -427,15 +427,12 @@ if (bForce || (MODERN_STYLE == 1)) {
 	if (bottom >= screen.Height ())
 		bottom = screen.Height () - 1;
 	CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), (ubyte) (gameData.menu.alpha * fAlpha));
-	float grAlpha = gameStates.render.grAlpha;
-	gameStates.render.grAlpha = float (gameData.menu.alpha) / 255.0f * fAlpha;
 	glDisable (GL_TEXTURE_2D);
 	OglDrawFilledRect (left, top, right, bottom);
-	CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), (ubyte) (255 * fAlpha));
+	CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), 255);
 	glLineWidth ((GLfloat) nLineWidth);
 	OglDrawEmptyRect (left, top, right, bottom);
 	glLineWidth (1);
-	gameStates.render.grAlpha = grAlpha;
 	}
 }
 

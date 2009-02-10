@@ -281,7 +281,7 @@ bool bBlend = bTransp && nTransp;
 
 if (!colorP) {
 	color.red = color.green = color.blue = 1.0f;
-	color.alpha = bBlend ? fAlpha : 1.0f;
+	color.alpha = bBlend ? fAlpha * gameStates.render.grAlpha : 1.0f;
 	colorP = &color;
 	nColors = 1;
 	}

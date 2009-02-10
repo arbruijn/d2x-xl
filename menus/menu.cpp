@@ -425,13 +425,15 @@ if (gameStates.app.bGameRunning /*&& (gameData.demo.nState == ND_STATE_NORMAL)*/
 else
 	console.Draw ();
 
-
-i -= m_tEnter;
-gameStates.render.grAlpha = (i < 10000) ? float (i) / 10000.0f : 1.0f;
-
 backgroundManager.Redraw ();
-i = DrawTitle (pszTitle, TITLE_FONT, RGBA_PAL (31, 31, 31, ubyte (255 * gameStates.render.grAlpha)), m_props.yOffs);
-DrawTitle (pszSubTitle, SUBTITLE_FONT, RGBA_PAL (21, 21, 21, ubyte (255 * gameStates.render.grAlpha)), i);
+
+if (m_tEnter < 0)
+	m_tEnter = SDL_GetTicks ();
+i -= m_tEnter;
+gameStates.render.grAlpha = (i < 500) ? float (i) / 500.0f : 1.0f;
+
+i = DrawTitle (pszTitle, TITLE_FONT, RGB_PAL (31, 31, 31), m_props.yOffs);
+DrawTitle (pszSubTitle, SUBTITLE_FONT, RGB_PAL (21, 21, 21), i);
 if (!m_bRedraw)
 	m_props.ty = i;
 
@@ -522,7 +524,7 @@ int CMenu::Menu (const char* pszTitle, const char* pszSubTitle, pMenuCallback ca
 if (gameStates.menus.nInMenu)
 	return - 1;
 
-m_tEnter = SDL_GetTicks ();
+m_tEnter = -1;
 m_bRedraw = 0;
 m_nChoice = 0;
 m_nLastScrollCheck = -1;
@@ -530,6 +532,7 @@ m_bStart = 1;
 m_bCloseBox = 0;
 m_bDontRestore = 0;
 m_bAllText = 0;
+gameStates.render.grAlpha = 0;
 
 paletteManager.DisableEffect ();
 ClearBoxedMessage ();
@@ -1302,6 +1305,20 @@ launchOption:
 	// Redraw everything...
 	Render (pszTitle, pszSubTitle, gameCanvasP);
 	}
+
+int t = int (500 * gameStates.render.grAlpha);
+int t0 = SDL_GetTicks ();
+int t1, dt;
+for (;;) {
+	t1 = SDL_GetTicks ();
+	dt = t1 - t0;
+	if (dt >= t)
+		break;
+	m_tEnter = t1 - dt;
+	Render (pszTitle, pszSubTitle, gameCanvasP);
+	}
+gameStates.render.grAlpha = 1.0f;
+
 SDL_ShowCursor (0);
 // Restore everything...
 RestoreScreen (filename, m_bDontRestore);

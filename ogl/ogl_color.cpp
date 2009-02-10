@@ -131,6 +131,10 @@ else if (colorP->rgb) {
 		float (colorP->color.blue) / 255.0f,
 		float (colorP->color.alpha) / 255.0f * gameStates.render.grAlpha
 		};
+	if (colorP->color.alpha < 1.0f) {
+		glEnable (GL_BLEND);
+		glBlendFunc (gameData.render.ogl.nSrcBlend, gameData.render.ogl.nDestBlend);
+		}
 	return color;
 	}
 else
