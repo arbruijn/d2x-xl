@@ -191,6 +191,14 @@ class CMenu : public CStack<CMenuItem> {
 	private:
 		tMenuProps	m_props;
 		int			m_nGroup;
+		int			m_nChoice;
+		int			m_bStart;
+		int			m_nLastScrollCheck;
+		int			m_bRedraw;
+		int			m_bCloseBox;
+		int			m_bDontRestore;
+		int			m_bAllText;
+		int			m_tEnter;
 
 	public:
 		CMenu () { Init (); }
@@ -235,6 +243,7 @@ class CMenu : public CStack<CMenuItem> {
 		static void DrawCloseBox (int x, int y);
 
 	private:
+		void Render (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP);
 		int InitProps (const char* pszTitle, const char* pszSubTitle);
 		void GetTitleSize (const char* pszTitle, CFont *font, int& tw, int& th);
 		int GetSize (int& w, int& h, int& aw, int& nMenus, int& nOthers);
