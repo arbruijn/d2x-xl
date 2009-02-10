@@ -39,7 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "cfile.h"
 #include "loadgamedata.h"
 #include "menu.h"
-#include "switch.h"
+#include "trigger.h"
 #include "fuelcen.h"
 #include "reactor.h"
 #include "powerup.h"

@@ -54,7 +54,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "gameseg.h"
 #include "menu.h"
-#include "switch.h"
+#include "trigger.h"
 #include "game.h"
 #include "screens.h"
 #include "menu.h"

@@ -34,7 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gamemine.h"
 #include "error.h"
 #include "gameseg.h"
-#include "switch.h"
+#include "trigger.h"
 #include "ogl_defs.h"
 #include "oof.h"
 #include "lightmap.h"

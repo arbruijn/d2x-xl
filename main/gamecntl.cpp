@@ -55,7 +55,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "piggy.h"
 #include "ai.h"
 #include "rbaudio.h"
-#include "switch.h"
+#include "trigger.h"
 #include "ogl_defs.h"
 #include "object.h"
 #include "rendermine.h"

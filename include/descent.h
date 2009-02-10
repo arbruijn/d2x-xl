@@ -89,7 +89,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "segment.h"
 #include "aistruct.h"
 #include "object.h"
-#include "switch.h"
+#include "trigger.h"
 #include "robot.h"
 #include "wall.h"
 #include "powerup.h"

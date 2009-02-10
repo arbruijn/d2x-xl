@@ -862,10 +862,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\include\switch.h"
-						>
-					</File>
-					<File
 						RelativePath="..\include\terrain.h"
 						>
 					</File>
@@ -883,6 +879,10 @@
 					</File>
 					<File
 						RelativePath="..\include\trackobject.h"
+						>
+					</File>
+					<File
+						RelativePath="..\include\trigger.h"
 						>
 					</File>
 					<File
@@ -1350,26 +1350,6 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\main\switch.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
 						RelativePath="..\main\terrain.cpp"
 						>
 						<FileConfiguration
@@ -1468,6 +1448,10 @@
 								ObjectFile="$(IntDir)/$(InputName)1.obj"
 							/>
 						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\main\trigger.cpp"
+						>
 					</File>
 					<File
 						RelativePath="..\main\vclip.cpp"
@@ -4381,11 +4365,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

@@ -38,7 +38,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hudmsgs.h"
 #include "sphere.h"
 #include "escort.h"
-#include "switch.h"
+#include "trigger.h"
 #include "key.h"
 #include "crypt.h"
 #include "slowmotion.h"

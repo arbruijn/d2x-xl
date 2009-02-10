@@ -58,7 +58,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "wall.h"
 #include "ai.h"
 #include "fuelcen.h"
-#include "switch.h"
+#include "trigger.h"
 #include "audio.h"
 #include "gamesave.h"
 #include "scores.h"
