@@ -21,7 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menu.h"
 #include "descent.h"
 #include "ipx.h"
-#include "m_nKey.h"
+#include "key.h"
 #include "iff.h"
 #include "u_mem.h"
 #include "error.h"

@@ -51,6 +51,7 @@ void CMessageBox::Show (const char *pszMsg, bool bFade)
 m_tEnter = -1;
 m_nDrawBuffer = gameStates.ogl.nDrawBuffer;
 m_pszMsg = pszMsg;
+m_callback = NULL;
 Clear ();
 fontManager.SetCurrent (MEDIUM1_FONT);
 fontManager.Current ()->StringSize (m_pszMsg, w, h, aw);
