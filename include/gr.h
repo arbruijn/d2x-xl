@@ -277,7 +277,7 @@ class CFace {
 		char					nType;
 		char					nSegColor;
 		char					nShader;
-		struct CFace		*nextSlidingFace;
+		CFace*				nextSlidingFace;
 	};
 
 inline int operator- (CFace* f, CArray<CFace>& a) { return a.Index (f); }
