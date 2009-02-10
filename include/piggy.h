@@ -208,7 +208,7 @@ void PiggyFreeBitmap (CBitmap *bmP, int i, int bD1);
 int CreateSuperTranspMasks (CBitmap *bmP);
 
 int PiggyFreeHiresAnimation (CBitmap *bmP, int bD1);
-void PiggyFreeHiresAnimations (void);
+void UnloadHiresAnimations (void);
 
 CPalette* LoadD1Palette (void);
 void UseBitmapCache (CBitmap *bmP, int nSize);

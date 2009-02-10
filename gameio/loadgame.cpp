@@ -699,7 +699,7 @@ FreeModelExtensions ();
 /*---*/PrintLog ("   unloading additional model textures\n");
 FreeObjExtensionBitmaps ();
 /*---*/PrintLog ("   unloading additional model textures\n");
-PiggyFreeHiresAnimations ();
+UnloadHiresAnimations ();
 /*---*/PrintLog ("   freeing spark effect buffers\n");
 sparkManager.Destroy ();
 /*---*/PrintLog ("   freeing auxiliary poly model data\n");

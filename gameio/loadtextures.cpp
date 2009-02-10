@@ -299,101 +299,14 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-inline void PiggyFreeBitmapData (CBitmap *bmP)
-{
-if (bmP->Buffer ()) {
-	bmP->DestroyBuffer ();
-	UseBitmapCache (bmP, (int) -bmP->Width () * (int) bmP->RowSize ());
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void PiggyFreeMask (CBitmap *bmP)
-{
-	CBitmap	*mask;
-
-if ((mask = bmP->Mask ())) {
-	PiggyFreeBitmapData (mask);
-	bmP->DestroyMask ();
-	}
-}
-
-//------------------------------------------------------------------------------
-
-int PiggyFreeHiresFrame (CBitmap *bmP, int bD1)
-{
-
-gameData.pig.tex.bitmaps [bD1][bmP->Id ()].SetOverride (NULL);
-bmP->ReleaseTexture ();
-PiggyFreeMask (bmP);
-bmP->SetType (0);
-if (bmP->BPP () == 1)
-	bmP->DelFlags (BM_FLAG_TGA);
-bmP->SetBuffer (NULL);
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int PiggyFreeHiresAnimation (CBitmap *bmP, int bD1)
-{
-	CBitmap	*altBmP, *bmfP;
-	int			i;
-
-if (!(altBmP = bmP->Override ()))
-	return 0;
-bmP->SetOverride (NULL);
-if (bmP->BPP () == 1)
-	bmP->DelFlags (BM_FLAG_TGA);
-if (altBmP->Type () == BM_TYPE_FRAME)
-	if (!(altBmP = altBmP->Parent ()))
-		return 1;
-if (altBmP->Type () != BM_TYPE_ALT)
-	return 0;	//actually this would be an error
-if ((bmfP = altBmP->Frames ()))
-	for (i = altBmP->FrameCount (); i; i--, bmfP++)
-		PiggyFreeHiresFrame (bmfP, bD1);
-else
-	PiggyFreeMask (altBmP);
-altBmP->ReleaseTexture ();
-altBmP->DestroyFrames ();
-PiggyFreeBitmapData (altBmP);
-altBmP->SetPalette (NULL);
-altBmP->SetType (0);
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-void PiggyFreeHiresAnimations (void)
+void UnloadHiresAnimations (void)
 {
 for (int bD1 = 0; bD1 < 2; bD1++) {
 	CBitmap*	bmP = gameData.pig.tex.bitmaps [bD1].Buffer ();
 	for (int i = gameData.pig.tex.nBitmaps [bD1]; i; i--, bmP++) {
-		PiggyFreeHiresAnimation (bmP, bD1);
+		bmP->FreeHiresAnimation (bD1);
 		}
 	}
-}
-
-//------------------------------------------------------------------------------
-
-void PiggyFreeBitmap (CBitmap *bmP, int i, int bD1)
-{
-if (!bmP)
-	bmP = gameData.pig.tex.bitmaps [bD1] + i;
-else if (i < 0)
-	i = (int) (bmP - gameData.pig.tex.bitmaps [bD1]);
-PiggyFreeMask (bmP);
-if (!PiggyFreeHiresAnimation (bmP, 0))
-	bmP->ReleaseTexture ();
-if (bitmapOffsets [bD1][i] > 0)
-	bmP->AddFlags (BM_FLAG_PAGED_OUT);
-if (bmP->BPP () == 1)
-	bmP->DelFlags (BM_FLAG_TGA);
-bmP->SetFromPog (0);
-bmP->SetPalette (NULL);
-PiggyFreeBitmapData (bmP);
 }
 
 //------------------------------------------------------------------------------
@@ -420,12 +333,12 @@ for (bD1 = 0; bD1 < 2; bD1++) {
 #endif
 		if (bitmapOffsets [bD1][i] > 0) { // only page out bitmaps read from disk
 			bmP->AddFlags (BM_FLAG_PAGED_OUT);
-			PiggyFreeBitmap (bmP, i, bD1);
+			gameData.pig.tex.bitmaps [bD1][i].Unload (i, bD1);
 			}
 		}
 	}
 for (i = 0; i < MAX_ADDON_BITMAP_FILES; i++)
-	PiggyFreeBitmap (gameData.pig.tex.addonBitmaps + i, i, 0);
+	gameData.pig.tex.addonBitmaps [i].Unload (i, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -960,7 +873,7 @@ if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 		if (j == nDbgTexture)
 			nDbgTexture = nDbgTexture;
 #endif
-		PiggyFreeBitmap (NULL, j, 0);
+		gameData.pig.tex.bitmaps [bD1][j].Unload (j, 0);
 		bm.SetFromPog (1);
 		char szName [20];
 		if (*gameData.pig.tex.bitmapP [j].Name ())

@@ -1041,7 +1041,7 @@ PrintLog ("unloading level messages\n");
 FreeTextData (gameData.messages);
 FreeTextData (&gameData.sounds);
 PrintLog ("unloading hires animations\n");
-PiggyFreeHiresAnimations ();
+UnloadHiresAnimations ();
 UnloadTextures ();
 PrintLog ("freeing sound buffers\n");
 FreeSoundReplacements ();

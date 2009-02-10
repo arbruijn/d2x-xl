@@ -485,4 +485,88 @@ Render (dest ? dest : CCanvas::Current (), x, y, w, h, 0, 0, w, h);
 }
 
 //------------------------------------------------------------------------------
+
+void CBitmap::FreeData (void)
+{
+if (Buffer ()) {
+	DestroyBuffer ();
+	UseBitmapCache (this, int (-Width ()) * int (RowSize ()));
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CBitmap::FreeMask (void)
+{
+	CBitmap	*mask;
+
+if ((mask = Mask ())) {
+	mask->FreeData ();
+	DestroyMask ();
+	}
+}
+
+//------------------------------------------------------------------------------
+
+int CBitmap::FreeHiresFrame (int bD1)
+{
+
+gameData.pig.tex.bitmaps [bD1][Id ()].SetOverride (NULL);
+ReleaseTexture ();
+FreeMask ();
+SetType (0);
+if (BPP () == 1)
+	DelFlags (BM_FLAG_TGA);
+SetBuffer (NULL);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CBitmap::FreeHiresAnimation (int bD1)
+{
+	CBitmap*	altBmP, * bmfP;
+	int		i;
+
+if (!(altBmP = Override ()))
+	return 0;
+SetOverride (NULL);
+if (BPP () == 1)
+	DelFlags (BM_FLAG_TGA);
+if ((altBmP->Type () == BM_TYPE_FRAME) && !(altBmP = altBmP->Parent ()))
+	return 1;
+if (altBmP->Type () != BM_TYPE_ALT)
+	return 0;	//actually this would be an error
+if ((bmfP = altBmP->Frames ()))
+	for (i = altBmP->FrameCount (); i; i--, bmfP++)
+		bmfP->FreeHiresFrame (bD1);
+else
+	altBmP->FreeMask ();
+altBmP->ReleaseTexture ();
+altBmP->DestroyFrames ();
+altBmP->FreeData ();
+altBmP->SetPalette (NULL);
+altBmP->SetType (0);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void CBitmap::Unload (int i, int bD1)
+{
+if (i < 0)
+	i = int (this - gameData.pig.tex.bitmaps [bD1]);
+FreeMask ();
+if (!FreeHiresAnimation (0))
+	ReleaseTexture ();
+if (bitmapOffsets [bD1][i] > 0)
+	AddFlags (BM_FLAG_PAGED_OUT);
+if (BPP () == 1)
+	DelFlags (BM_FLAG_TGA);
+SetFromPog (0);
+SetPalette (NULL);
+FreeData ();
+}
+
+//------------------------------------------------------------------------------
 //eof

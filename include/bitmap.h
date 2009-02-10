@@ -301,6 +301,13 @@ class CBitmap : public CArray< ubyte > {
 			source.ShareBuffer (*this);
 			return *this;
 			}
+
+		void FreeData (void);
+		void FreeMask (void);
+		int FreeHiresFrame (int bD1);
+		int FreeHiresAnimation (int bD1);
+		void Unload (int i, int bD1);
+
 	};
 
 inline int operator- (CBitmap* o, CArray<CBitmap>& a) { return a.Index (o); }
