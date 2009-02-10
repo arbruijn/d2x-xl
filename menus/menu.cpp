@@ -503,7 +503,7 @@ gameStates.render.grAlpha = 1.0f;
 
 //------------------------------------------------------------------------------ 
 
-void CMenu::Fadout (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP)
+void CMenu::Fadeout (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP)
 {
 int t = int (250 * gameStates.render.grAlpha);
 int t0 = SDL_GetTicks ();
@@ -692,7 +692,7 @@ while (!done) {
 			m_props.nScrollOffset = m_nChoice - m_props.nMaxOnMenu + 1;
 		}
 
-	if (callback)
+	if (callback && (SDL_GetTicks () - m_tEnter > 250))
 		m_nChoice = (*callback) (*this, nKey, m_nChoice);
 
 	if (!bTimeStopped){
