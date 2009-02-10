@@ -499,7 +499,7 @@ return nShrinkFactor / 2;
 
 //------------------------------------------------------------------------------
 
-int ReadBitmap (CBitmap* bmP, int nSize, CFile* cfP, bool bDefault, bool bD1)
+int ReadBitmap (CBitmap* bmP, int nSize, CFile* cfP, bool bDefault, bool bD1, bool bHires = false)
 {
 nDescentCriticalError = 0;
 if (bmP->Flags () & BM_FLAG_RLE) {
@@ -526,7 +526,7 @@ else if (bDefault) {
 	bmP->Read (*cfP, nSize);
 	}
 else
-	return gameOpts->render.textures.bUseHires [0] ? 0 : -1;
+	return (bHires || gameOpts->render.textures.bUseHires [0]) ? 0 : -1;
 if (bD1)
 	bmP->Remap (paletteManager.D1 (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 else
@@ -576,7 +576,7 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-int PageInBitmap (CBitmap *bmP, const char *bmName, int nIndex, int bD1)
+int PageInBitmap (CBitmap *bmP, const char *bmName, int nIndex, int bD1, bool bHires)
 {
 	CBitmap			*altBmP = NULL;
 	int				nFile, nSize, nOffset, nFrames, nShrinkFactor, nBestShrinkFactor,
@@ -739,7 +739,7 @@ bmP->SetId (nIndex);
 if (nIndex == nDbgTexture)
 	nDbgTexture = nDbgTexture;
 #endif
-int i = ReadBitmap (bmP, nSize, cfP, bDefault, bD1 != 0);
+int i = ReadBitmap (bmP, nSize, cfP, bDefault, bD1 != 0, bHires);
 if (i) {
 	if (i < 0) {
 		bRedone = -i;
@@ -791,7 +791,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int PiggyBitmapPageIn (int bmi, int bD1)
+int PiggyBitmapPageIn (int bmi, int bD1, bool bHires)
 {
 	CBitmap		*bmP;
 	int				i, bmiSave;
@@ -822,7 +822,7 @@ if (bmi == nDbgTexture)
 	nDbgTexture = nDbgTexture;
 #endif
 bmP = gameData.pig.tex.bitmaps [bD1][bmi].Override (-1);
-while (0 > (i = PageInBitmap (bmP, gameData.pig.tex.bitmapFiles [bD1][bmi].name, bmi, bD1)))
+while (0 > (i = PageInBitmap (bmP, gameData.pig.tex.bitmapFiles [bD1][bmi].name, bmi, bD1, bHires)))
 	G3_SLEEP (0);
 if (!i)
 	return 0;
@@ -1018,10 +1018,10 @@ return bmP->Buffer () && !(bmP->Flags () & BM_FLAG_PAGED_OUT);
 
 //------------------------------------------------------------------------------
 
-void LoadBitmap (int bmi, int bD1)
+void LoadBitmap (int bmi, int bD1, bool bHires)
 {
 if (!BitmapLoaded (bmi, bD1))
-	PiggyBitmapPageIn (bmi, bD1);
+	PiggyBitmapPageIn (bmi, bD1, bHires);
 }
 
 //------------------------------------------------------------------------------
