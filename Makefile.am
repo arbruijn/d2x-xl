@@ -40,7 +40,6 @@ d2x_LDADD = \
 	libmve/libmve.a \
 	lighting/liblighting.a \
 	maths/libmaths.a \
-	mem/libmem.a \
 	misc/libmisc.a \
 	models/libmodels.a \
 	network/libnetwork.a \

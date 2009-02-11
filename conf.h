@@ -75,7 +75,7 @@
 #define NATIVE_IPX 
 
 /* Define to disable asserts, int3, etc. */
-/* #undef NDEBUG */
+#define NDEBUG 
 
 /* Define if you want a network build */
 #define NETWORK 
@@ -108,7 +108,7 @@
 #define PACKAGE_VERSION "1.14.0"
 
 /* Define for a "release" build */
-/* #undef RELEASE */
+#define RELEASE 
 
 /* Define this to be the shared game directory root */
 #define SHAREPATH "${prefix}/share/d2x-xl"
@@ -136,7 +136,7 @@
 /* #undef WORDS_NEED_ALIGNMENT */
 
 /* Define to enable asserts, int3, etc. */
-#define _DEBUG 
+/* #undef _DEBUG */
 
 
         /* General defines */

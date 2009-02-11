@@ -8272,7 +8272,7 @@ fi
 
 
 
-ac_config_files="$ac_config_files Makefile 2d/Makefile 3d/Makefile ai/Makefile audio/Makefile cockpit/Makefile console/Makefile effects/Makefile gameio/Makefile gamemodes/Makefile input/Makefile io/Makefile lighting/Makefile libmve/Makefile main/Makefile maths/Makefile mem/Makefile menus/Makefile misc/Makefile models/Makefile network/Makefile objects/Makefile ogl/Makefile physics/Makefile render/Makefile texmap/Makefile weapons/Makefile"
+ac_config_files="$ac_config_files Makefile 2d/Makefile 3d/Makefile ai/Makefile audio/Makefile cockpit/Makefile console/Makefile effects/Makefile gameio/Makefile gamemodes/Makefile input/Makefile io/Makefile lighting/Makefile libmve/Makefile main/Makefile maths/Makefile menus/Makefile misc/Makefile models/Makefile network/Makefile objects/Makefile ogl/Makefile physics/Makefile render/Makefile texmap/Makefile weapons/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -8995,7 +8995,6 @@ do
     "libmve/Makefile") CONFIG_FILES="$CONFIG_FILES libmve/Makefile" ;;
     "main/Makefile") CONFIG_FILES="$CONFIG_FILES main/Makefile" ;;
     "maths/Makefile") CONFIG_FILES="$CONFIG_FILES maths/Makefile" ;;
-    "mem/Makefile") CONFIG_FILES="$CONFIG_FILES mem/Makefile" ;;
     "menus/Makefile") CONFIG_FILES="$CONFIG_FILES menus/Makefile" ;;
     "misc/Makefile") CONFIG_FILES="$CONFIG_FILES misc/Makefile" ;;
     "models/Makefile") CONFIG_FILES="$CONFIG_FILES models/Makefile" ;;

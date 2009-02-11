@@ -454,7 +454,6 @@ AC_OUTPUT(
     libmve/Makefile
     main/Makefile
     maths/Makefile
-    mem/Makefile
     menus/Makefile
     misc/Makefile
     models/Makefile
