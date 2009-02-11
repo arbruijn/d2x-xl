@@ -199,23 +199,23 @@ else if (gameData.app.nGameMode & GM_MULTI) {
 	return (KEY_PAUSE);
 	}
 PauseGame ();
-SetPopupScreenMode();
+SetPopupScreenMode ();
 paletteManager.LoadEffect ();
-formatTime(totalTime, X2I(LOCALPLAYER.timeTotal) + LOCALPLAYER.hoursTotal*3600);
-formatTime(xLevelTime, X2I(LOCALPLAYER.timeLevel) + LOCALPLAYER.hoursLevel*3600);
+formatTime (totalTime, X2I (LOCALPLAYER.timeTotal) + LOCALPLAYER.hoursTotal * 3600);
+formatTime (xLevelTime, X2I (LOCALPLAYER.timeLevel) + LOCALPLAYER.hoursLevel * 3600);
   if (gameData.demo.nState!=ND_STATE_PLAYBACK)
-	sprintf(msg, TXT_PAUSE_MSG1, GAMETEXT (332 + gameStates.app.nDifficultyLevel), 
-			  LOCALPLAYER.hostages.nOnBoard, xLevelTime, totalTime);
+	sprintf (msg, TXT_PAUSE_MSG1, GAMETEXT (332 + gameStates.app.nDifficultyLevel), 
+			   LOCALPLAYER.hostages.nOnBoard, xLevelTime, totalTime);
    else
-	  	sprintf(msg, TXT_PAUSE_MSG2, GAMETEXT (332 +  gameStates.app.nDifficultyLevel), 
-				  LOCALPLAYER.hostages.nOnBoard);
+	  	sprintf (msg, TXT_PAUSE_MSG2, GAMETEXT (332 +  gameStates.app.nDifficultyLevel), 
+				   LOCALPLAYER.hostages.nOnBoard);
 
 if (!gameOpts->menus.nStyle) {
 	gameStates.menus.nInMenu++;
 	GameRenderFrame ();
 	gameStates.menus.nInMenu--;
-	messageBox.Show (pszPauseMsg = msg);		  //TXT_PAUSE);
 	}
+messageBox.Show (pszPauseMsg = msg);		  //TXT_PAUSE);
 GrabMouse (0, 0);
 while (gameData.app.bGamePaused) {
 	if (!(gameOpts->menus.nStyle && gameStates.app.bGameRunning))
