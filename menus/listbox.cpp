@@ -113,12 +113,12 @@ GrUpdate (0);
 int CListBox::ListBox (const char* pszTitle, CStack<char*>& items, int nDefaultItem, int bAllowAbort, pListBoxCallback callback)
 {
 	int	i;
-	int	done, m_nOldChoice, nPrevItem, m_bRedraw;
+	int	done, nOldChoice, nPrevItem, m_bRedraw;
 	int	bKeyRepeat = gameStates.input.keys.bRepeat;
 	int	nOffsetSize;
-	int	total_width, total_height;
+	int	nTotalWidth, nTotalHeight;
 	int	mx, my, x1, x2, y1, y2, nMouseState, nOldMouseState;	//, bDblClick;
-	int	close_x, close_y, bWheelUp, bWheelDown;
+	int	xClose, yClose, bWheelUp, bWheelDown;
 	char	szPattern [40];
 	int	nPatternLen = 0;
 	int	w, h, aw;
@@ -155,12 +155,12 @@ if (m_nWidth > CCanvas::Current ()->Width () - (CCanvas::Current ()->Font ()->Wi
 	m_nWidth = CCanvas::Current ()->Width () - (CCanvas::Current ()->Font ()->Width () * 3);
 
 m_xOffset = (CCanvas::Current ()->Width () - m_nWidth) / 2;
-m_yOffset = (CCanvas::Current ()->Height () - (m_nHeight + m_nTitleHeight))/2 + m_nTitleHeight;
+m_yOffset = (CCanvas::Current ()->Height () - (m_nHeight + m_nTitleHeight)) / 2 + m_nTitleHeight;
 if (m_yOffset < m_nTitleHeight)
 	m_yOffset = m_nTitleHeight;
 
-total_width = m_nWidth + 2*nOffsetSize;
-total_height = m_nHeight + 2*nOffsetSize + m_nTitleHeight;
+nTotalWidth = m_nWidth + 2 * nOffsetSize;
+nTotalHeight = m_nHeight + 2 * nOffsetSize + m_nTitleHeight;
 
 CCanvas::Push ();
 backgroundManager.Setup (NULL, m_xOffset - nOffsetSize, m_yOffset - m_nTitleHeight - nOffsetSize, 
@@ -176,14 +176,14 @@ if (m_nChoice >= int (items.ToS ()))
 m_nFirstItem = -1;
 
 nMouseState = nOldMouseState = 0;	//bDblClick = 0;
-close_x = m_xOffset - nOffsetSize;
-close_y = m_yOffset - m_nTitleHeight - nOffsetSize;
-CMenu::DrawCloseBox (close_x, close_y);
+xClose = m_xOffset - nOffsetSize;
+yClose = m_yOffset - m_nTitleHeight - nOffsetSize;
+CMenu::DrawCloseBox (xClose, yClose);
 SDL_ShowCursor (1);
 
 SDL_EnableKeyRepeat(60, 30);
 while (!done) {
-	m_nOldChoice = m_nChoice;
+	nOldChoice = m_nChoice;
 	nPrevItem = m_nFirstItem;
 	nOldMouseState = nMouseState;
 	nMouseState = MouseButtonState (0);
@@ -354,9 +354,9 @@ while (!done) {
 		//check for close box clicked
 		if (!nMouseState && nOldMouseState) {
 			MouseGetPos (&mx, &my);
-			x1 = close_x + MENU_CLOSE_X + 2;
+			x1 = xClose + MENU_CLOSE_X + 2;
 			x2 = x1 + MENU_CLOSE_SIZE - 2;
-			y1 = close_y + MENU_CLOSE_Y + 2;
+			y1 = yClose + MENU_CLOSE_Y + 2;
 			y2 = y1 + MENU_CLOSE_SIZE - 2;
 			if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 				m_nChoice = -1;

@@ -135,7 +135,7 @@ int CFileSelector::FileSelector (const char* pszTitle, const char* filespec, cha
 {
 	int					i;
 	FFS					ffs;
-	int					m_nFileCount = 0, done, m_nOldChoice;
+	int					done, m_nOldChoice;
 	int					nPrevItem;
 	int					bKeyRepeat = gameStates.input.keys.bRepeat;
 	int					m_bPlayerMode = 0;
@@ -155,6 +155,7 @@ m_tEnter = -1;
 m_nFirstItem = -1;
 m_nVisibleItems = 8;
 m_bPlayerMode = 0;
+m_nFileCount = 0;
 m_callback = NULL;
 
 m_xOffset = m_yOffset = w_w = w_h = nTitleHeight = 0;
