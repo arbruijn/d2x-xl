@@ -154,12 +154,12 @@ if (gameOpts->sound.bUseSDLMixer && (nChannel >= 0)) {
 
 void CAudioChannel::Init (void)
 {
-m_info.nSound = 0;
+m_info.nSound = -1;
 m_info.nPan = 0;				
 m_info.nVolume = 0;			
 m_info.nLength = 0;			
 m_info.nPosition = 0;		
-m_info.nSoundObj = 0;		
+m_info.nSoundObj = -1;		
 m_info.nSoundClass = 0;
 m_info.bPlaying = 0;		
 m_info.bLooped = 0;			

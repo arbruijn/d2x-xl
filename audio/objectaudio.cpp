@@ -607,7 +607,7 @@ for (uint i = 0; i < m_objects.ToS (); i++, soundObjP++) {
 #endif
 				}
 			}
-		if (oldvolume != soundObjP->m_volume) {
+		if ((oldvolume != soundObjP->m_volume) || (soundObjP->m_channel < 0)) {
 			if (soundObjP->m_volume < 1) {
 			// Sound is too far away, so stop it from playing.
 				if (soundObjP->m_channel > -1) {
