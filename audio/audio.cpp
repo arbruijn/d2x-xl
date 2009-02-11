@@ -791,10 +791,12 @@ audio.Setup (1);
 
 //------------------------------------------------------------------------------
 
-void CAudio::StopAllSounds (void)
+void CAudio::StopAllChannels (void)
 {
+#if 0
 StopLoopingSound ();
 StopObjectSounds ();
+#endif
 for (int i = 0; i < MAX_SOUND_CHANNELS; i++)
 	audio.StopSound (i);
 gameData.multiplayer.bMoving = -1;
@@ -943,7 +945,7 @@ if (m_info.nMaxChannels > MAX_SOUND_CHANNELS)
 gameStates.sound.audio.nMaxChannels = m_info.nMaxChannels;
 if (!m_info.bAvailable) 
 	return;
-audio.StopAllSounds ();
+audio.StopAllChannels ();
 }
 
 //------------------------------------------------------------------------------

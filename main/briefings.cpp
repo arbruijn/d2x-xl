@@ -1628,7 +1628,7 @@ if (!LoadImageText (fnBriefing, m_info.briefingText)) {
 	gameStates.render.bBriefing = 0;
 	return;
 	}
-audio.StopAllSounds ();
+audio.StopAllChannels ();
 songManager.Play (SONG_BRIEFING, 1);
 SetScreenMode (SCREEN_MENU);
 CCanvas::SetCurrent (NULL);

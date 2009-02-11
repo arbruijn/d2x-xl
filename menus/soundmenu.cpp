@@ -178,7 +178,7 @@ else {
 		else {
 			midi.SetVolume (128 * gameConfig.nMidiVolume / 8);
 			if (!bSongPlaying) {
-			//audio.StopAllSounds ();
+			//audio.StopAllChannels ();
 				if (gameStates.app.bGameRunning)
 					songManager.PlayLevelSong (gameData.missions.nCurrentLevel ? gameData.missions.nCurrentLevel : 1, 1);
 				else

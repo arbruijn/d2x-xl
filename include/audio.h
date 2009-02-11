@@ -310,7 +310,7 @@ class CAudio {
 		void StopSound (int channel);
 		void StopActiveSound (int nChannel);
 		void StopObjectSounds (void);
-		void StopAllSounds (void);
+		void StopAllChannels (void);
 
 		int PlaySound (short nSound, int nSoundClass = SOUNDCLASS_GENERIC, fix nVolume = I2X (1), int nPan = I2X (1) / 2 - 1, 
 						   int bNoDups = 0, int nLoops = -1, const char* pszWAV = NULL, CFixVector* vPos = NULL);

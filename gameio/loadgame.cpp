@@ -669,7 +669,7 @@ if (gameOpts->sound.bHires [0] != gameOpts->sound.bHires [1]) {
 gameData.render.mine.Destroy ();
 audio.DestroyObjectSound (LOCALPLAYER.nObject);
 /*---*/PrintLog ("   stopping sounds\n");
-audio.StopAllSounds ();
+audio.StopAllChannels ();
 /*---*/PrintLog ("   reconfiguring audio\n");
 if (!bRestore) {
 	gameStates.gameplay.slowmo [0].fSpeed =
@@ -1112,7 +1112,7 @@ void DoEndLevelScoreGlitz (int network)
 	int			nMineLevel = 0;
 
 audio.DestroyObjectSound (LOCALPLAYER.nObject);
-audio.StopAllSounds ();
+audio.StopAllChannels ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
 if (gameStates.app.bHaveExtraData)
 
@@ -2181,7 +2181,7 @@ void DoPlayerDead (void)
 gameStates.app.bGameRunning = 0;
 paletteManager.ResetEffect ();
 paletteManager.LoadEffect ();
-audio.StopAllSounds ();		//kill any continuing sounds (eg. forcefield hum)
+audio.StopAllChannels ();		//kill any continuing sounds (eg. forcefield hum)
 DeadPlayerEnd ();		//terminate death sequence (if playing)
 if (IsCoopGame && gameStates.app.bHaveExtraGameInfo [1])
 	LOCALPLAYER.score =

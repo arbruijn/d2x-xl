@@ -191,7 +191,7 @@ return StartSound (nSound, nSoundClass, nVolume, nPan, 0, (nLoops > 0) ? nLoops 
 void CAudio::InitSounds (void)
 {
 soundQueue.Init ();
-StopAllSounds ();
+StopAllChannels ();
 for (uint i = 0; i < m_objects.ToS (); i++) {
 	m_objects [i].m_channel = -1;
 	m_objects [i].m_flags = 0;	// Mark as dead, so some other sound can use this sound
@@ -625,15 +625,11 @@ for (uint i = 0; i < m_objects.ToS (); i++, soundObjP++) {
 			}
 		if ((oldpan != soundObjP->m_pan) && (soundObjP->m_channel > -1))
 			SetPan (soundObjP->m_channel, soundObjP->m_pan);
+		}
 	}
 }
 
 //------------------------------------------------------------------------------
-
-#if DBG
-//	SoundDebug ();
-#endif
-}
 
 void CAudio::PauseSounds (void)
 {
@@ -648,7 +644,7 @@ for (uint i = 0; i < m_objects.ToS (); i++) {
 		m_info.nActiveObjects--;
 		}
 	}
-StopAllSounds ();
+StopAllChannels ();
 soundQueue.Pause ();
 }
 
@@ -673,7 +669,7 @@ ResumeLoopingSound ();
 void CAudio::ResumeAll (void)
 {
 midi.Resume ();
-ResumeLoopingSound ();
+ResumeSounds ();
 }
 
 //------------------------------------------------------------------------------
@@ -708,7 +704,7 @@ m_objects.Reset ();
 void CAudio::StopAll (void)
 {
 StopCurrentSong ();
-StopAllSounds ();
+StopAllChannels ();
 }
 
 //------------------------------------------------------------------------------

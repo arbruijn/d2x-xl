@@ -453,7 +453,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 			if (gameData.multiplayer.autoNG.bValid)
 				gameStates.app.nFunctionMode = FMODE_EXIT;
 			if (gameStates.app.nFunctionMode == FMODE_MENU) {
-				audio.StopAllSounds ();
+				audio.StopAllChannels ();
 				songManager.Play (SONG_TITLE, 1);
 				}
 			RestoreDefaultModels ();
