@@ -441,8 +441,8 @@ fontManager.SetCurrent (m_props.bTinyMode ? SMALL_FONT : NORMAL_FONT);
 for (i = 0; i < m_props.nMaxDisplayable + m_props.nScrollOffset - m_props.nMaxNoScroll; i++) {
 	if ((i >= m_props.nMaxNoScroll) && (i < m_props.nScrollOffset))
 		continue;
-	if (!(/*MODERN_STYLE ||*/ *Item (i).m_text))
-		continue;
+	if ((Item (i).m_nType == NM_TYPE_TEXT) && !*Item (i).m_text)
+		continue;	// skip empty lines
 	if (m_bStart || MODERN_STYLE || Item (i).m_bRedraw || Item (i).m_bRebuild) {// warning! ugly hack below 
 		m_bRedraw = 1;
 		if (Item (i).m_bRebuild && Item (i).m_bCentered)
