@@ -627,6 +627,15 @@ CLEAR (nAnims);
 
 //------------------------------------------------------------------------------
 
+void CWallData::Reset (void)
+{
+exploding.Reset ();
+cloaking.Reset ();
+activeDoors.Reset ();
+}
+
+//------------------------------------------------------------------------------
+
 void CWallData::Destroy (void)
 {
 walls.Destroy ();
@@ -1491,6 +1500,7 @@ lightningManager.Init ();
 gameData.marker.Init ();
 gameData.physics.Init ();
 gameData.bosses.Create ();
+gameData.walls.Reset ();
 return true;
 }
 

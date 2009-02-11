@@ -1728,6 +1728,7 @@ class CWallData {
 
 	public:
 		CWallData ();
+		void Reset (void);
 		void Destroy (void);
 };
 
