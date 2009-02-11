@@ -215,7 +215,7 @@ if (!gameOpts->menus.nStyle) {
 	GameRenderFrame ();
 	gameStates.menus.nInMenu--;
 	}
-messageBox.Show (pszPauseMsg = msg);		  //TXT_PAUSE);
+messageBox.Show (pszPauseMsg = msg, false);	
 GrabMouse (0, 0);
 while (gameData.app.bGamePaused) {
 	if (!(gameOpts->menus.nStyle && gameStates.app.bGameRunning))
@@ -226,15 +226,15 @@ while (gameData.app.bGamePaused) {
 			GameRenderFrame ();
 			paletteManager.LoadEffect (NULL);
 			messageBox.Render ();
-			G3_SLEEP (0);
+			G3_SLEEP (1);
 			}
 		gameStates.menus.nInMenu--;
 		}
 #if DBG
 		HandleTestKey(key);
 #endif
-		bScreenChanged = HandleSystemKey(key);
-		HandleVRKey(key);
+		bScreenChanged = HandleSystemKey (key);
+		HandleVRKey (key);
 		if (bScreenChanged) {
 			GameRenderFrame ();
 			messageBox.Render ();
