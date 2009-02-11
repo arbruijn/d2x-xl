@@ -211,10 +211,10 @@ class CAudioChannel {
 class CSoundObject {
 	public:
 		short			m_nSignature;		// A unique nSignature to this sound
-		ubyte			m_flags;			// Used to tell if this slot is used and/or currently playing, and how long.
+		ubyte			m_flags;				// Used to tell if this slot is used and/or currently playing, and how long.
 		ubyte			m_pad;				//	Keep alignment
 		fix			m_maxVolume;		// Max volume that this sound is playing at
-		fix			m_maxDistance;	// The max distance that this sound can be heard at...
+		fix			m_maxDistance;		// The max distance that this sound can be heard at...
 		int			m_soundClass;
 		short			m_nSound;			// The sound number that is playing
 		int			m_channel;			// What channel this is playing on, -1 if not playing
@@ -223,7 +223,7 @@ class CSoundObject {
 		int			m_nDecay;			// type of decay (0: linear, 1: quadratic, 2: cubic)
 		char			m_szSound [FILENAME_LEN];	// file name of custom sound to be played
 		int			m_nLoopStart;		// The start point of the loop. -1 means no loop
-		int			m_nLoopEnd;		// The end point of the loop
+		int			m_nLoopEnd;			// The end point of the loop
 		int			m_nMidiVolume;
 		union {
 			struct {
@@ -238,8 +238,9 @@ class CSoundObject {
 		} m_linkType;
 
 	public:
-		CSoundObject () {}
-		~CSoundObject () {}
+		CSoundObject () { Init (); }
+		~CSoundObject () {Init (); }
+		void Init (void);
 		bool Start (void);
 	};
 
