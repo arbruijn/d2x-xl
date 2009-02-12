@@ -55,6 +55,7 @@
 #include "menu.h"
 #include "menubackground.h"
 #include "cockpit.h"
+#include "gpgpu_lighting.h"
 
 #define _WIN32_WINNT		0x0600 
 
@@ -807,8 +808,8 @@ InitShaders ();
 if (lightmapManager.HaveLightmaps ())
 	lightmapManager.BindAll ();
 #endif
-CloseDynLighting ();
-InitDynLighting ();
+gpgpuLighting.End ();
+gpgpuLighting.Begin ();
 OglCreateDrawBuffer ();
 cameraManager.Create ();
 InitSpheres ();

@@ -2270,6 +2270,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\render\gpgpu_lighting.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\render\morph.cpp"
 						>
 					</File>
@@ -2339,6 +2343,10 @@
 					</File>
 					<File
 						RelativePath="..\include\fastrender.h"
+						>
+					</File>
+					<File
+						RelativePath="..\include\gpgpu_lighting.h"
 						>
 					</File>
 					<File
@@ -4369,11 +4377,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File

@@ -566,7 +566,7 @@ if (*bmName && ((nIndex < 0) || IsCockpit (bmName) ||
 	if (0 <= (nFile = OpenBitmapFile (fn, cfP))) {
 		PrintLog ("loading hires texture '%s' (quality: %d)\n", fn [nFile], min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality));
 		if (nFile < 2)	//was level specific mod folder
-		MakeTexSubFolders (gameFolders.szTextureCacheDir [3]);
+			MakeTexSubFolders (gameFolders.szTextureCacheDir [3]);
 		bTGA = 1;
 		if (nIndex < 0)
 			altBmP = &gameData.pig.tex.addonBitmaps [-nIndex - 1];
@@ -689,8 +689,12 @@ if (!bmP->bmCompressed)
 		nBestShrinkFactor = BestShrinkFactor (bmP, nShrinkFactor);
 		if ((nBestShrinkFactor > 1) && ShrinkTGA (bmP, nBestShrinkFactor, nBestShrinkFactor, 1)) {
 			nSize /= (nBestShrinkFactor * nBestShrinkFactor);
-			if (gameStates.app.bCacheTextures)
-				SaveTGA (bmName, gameFolders.szTextureCacheDir [bD1], &h, bmP);
+			if (gameStates.app.bCacheTextures) {
+				// nFile < 2: mod level texture folder
+				// nFile < 4: mod texture folder
+				// otherwise standard D1 or D2 texture folder
+				SaveTGA (bmName, gameFolders.szTextureCacheDir [(nFile < 2) ? 3 : (nFile < 4) ? 2 : bD1], &h, bmP);
+				}
 			}
 		}
 #if TEXTURE_COMPRESSION

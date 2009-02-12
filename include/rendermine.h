@@ -84,9 +84,6 @@ void InitSegZRef (int i, int j, int nThread);
 void QSortSegZRef (short left, short right);
 
 void BuildRenderSegList (short nStartSeg, int nWindow);
-void InitVertLightShader (void);
-void InitDynLighting (void);
-void CloseDynLighting (void);
 
 void BuildRenderObjLists (int nSegCount);
 void BuildRenderSegList (short nStartSeg, int nWindow);

@@ -1066,7 +1066,7 @@ PrintLog ("unloading extra texture data\n");
 FreeExtraImages ();
 PrintLog ("unloading palettes\n");
 gameData.segs.skybox.Destroy ();
-CloseDynLighting ();
+gpguLighting.End ();
 if (gameStates.render.vr.buffers.offscreen) {
 	gameStates.render.vr.buffers.offscreen->Destroy ();
 	gameStates.render.vr.buffers.offscreen = NULL;

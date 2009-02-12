@@ -38,6 +38,7 @@
 #include "ogl_fastrender.h"
 #include "glare.h"
 #include "rendermine.h"
+#include "gpgpu_lighting.h"
 
 #ifndef GL_VERSION_20
 PFNGLCREATESHADEROBJECTARBPROC	glCreateShaderObject = NULL; 
@@ -328,7 +329,7 @@ gameData.render.ogl.nHeadlights = 0;
 PrintLog ("   initializing lighting shader programs\n");
 InitHeadlightShaders (1);
 PrintLog ("   initializing vertex lighting shader programs\n");
-InitVertLightShader ();
+gpgpuLighting.InitShader ();
 PrintLog ("   initializing glare shader programs\n");
 InitGlareShader ();
 PrintLog ("   initializing gray scale shader programs\n");
