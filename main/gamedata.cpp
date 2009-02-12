@@ -282,7 +282,7 @@ void CShadowData::Init (void)
 {
 nLight = 0;
 nLights = 0;
-lights = NULL;
+lightP = NULL;
 nShadowMaps = 0;
 memset (&lightSource, 0, sizeof (lightSource));
 memset (&vLightPos, 0, sizeof (vLightPos));
