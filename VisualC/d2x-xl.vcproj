@@ -2298,6 +2298,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\render\render_lighting.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\render\renderframe.cpp"
 						>
 					</File>
