@@ -112,7 +112,7 @@ y = SB_SCORE_Y;
 CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 0));
 Rect (lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCurrentPage], y, SB_SCORE_RIGHT, y + GAME_FONT->Height ());
 fontManager.SetColorRGBi ((IsMultiGame && !IsCoopGame) ? MEDGREEN_RGBA : GREEN_RGBA, 1, 0, 0);
-nIdScore = PrintF (&nIdScore, -(ScaleX (x) - w), y, szScore);
+nIdScore = PrintF (&nIdScore, x, y, szScore);
 lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCurrentPage] = x;
 CCanvas::Pop ();
 }
@@ -135,11 +135,13 @@ if (m_info.scoreDisplay [gameStates.render.vr.nCurrentPage] == 0)
 
 m_info.scoreTime -= gameData.time.xFrame;
 if (m_info.scoreTime > 0) {
+#if 0
 	if (m_info.scoreDisplay [gameStates.render.vr.nCurrentPage] != last_score_display [gameStates.render.vr.nCurrentPage] || frc) {
 		CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 0));
 		OglDrawFilledRect (lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage], SB_SCORE_ADDED_Y, SB_SCORE_ADDED_RIGHT, SB_SCORE_ADDED_Y+GAME_FONT->Height ());
 		last_score_display [gameStates.render.vr.nCurrentPage] = m_info.scoreDisplay [gameStates.render.vr.nCurrentPage];
 		}
+#endif
 	color = X2I (m_info.scoreTime * 20) + 10;
 	if (color < 10) 
 		color = 10;
@@ -150,18 +152,23 @@ if (m_info.scoreTime > 0) {
 	else
 		sprintf (szScore, "%5d", m_info.scoreDisplay [gameStates.render.vr.nCurrentPage]);
 	fontManager.Current ()->StringSize (szScore, w, h, aw);
-	x = SB_SCORE_ADDED_RIGHT-w-LHY (2);
+	x = SB_SCORE_ADDED_RIGHT - w - LHY (2);
 	fontManager.SetColorRGBi (RGBA_PAL2 (0, color, 0), 1, 0, 0);
-	nIdTotalScore = GrPrintF (&nIdTotalScore, x, SB_SCORE_ADDED_Y, szScore);
-	lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage] = x;
+	CCanvas::Push ();
+	CCanvas::SetCurrent (CurrentGameScreen ());
+	nIdTotalScore = PrintF (&nIdTotalScore, x, SB_SCORE_ADDED_Y, szScore);
+	CCanvas::Pop ();
+	lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCurrentPage] = x;
 	} 
+#if 1
 else {
 	//erase old score
-	CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 0));
-	OglDrawFilledRect (lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage], SB_SCORE_ADDED_Y, SB_SCORE_ADDED_RIGHT, SB_SCORE_ADDED_Y+GAME_FONT->Height ());
+	//CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 0));
+	//OglDrawFilledRect (lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage], SB_SCORE_ADDED_Y, SB_SCORE_ADDED_RIGHT, SB_SCORE_ADDED_Y+GAME_FONT->Height ());
 	m_info.scoreTime = 0;
 	m_info.scoreDisplay [gameStates.render.vr.nCurrentPage] = 0;
 	}
+#endif
 }
 
 //	-----------------------------------------------------------------------------
