@@ -294,8 +294,9 @@ nFrame = 0;
 
 bool CShadowData::Create (void)
 {
-if (!gameStates.app.bNostalgia && gameStates.app.bEnableShadows)
+if (!gameStates.app.bNostalgia && gameStates.app.bEnableShadows) {
 	CREATE (objLights, LEVEL_OBJECTS * MAX_SHADOW_LIGHTS, 0);
+	}
 Init ();
 return true;
 }
@@ -317,7 +318,7 @@ nDestBlend = GL_ONE_MINUS_SRC_ALPHA;
 zNear = 1.0f;
 zFar = 5000.0f;
 depthScale.SetZero ();
-screenScale.x = 
+screenScale.x =
 screenScale.y = 0;
 CLEAR (nPerPixelLights);
 CLEAR (lightRads);
@@ -340,7 +341,7 @@ tPulse = 0;
 CMineRenderData::CMineRenderData ()
 {
 }
- 
+
 //------------------------------------------------------------------------------
 
 bool CMineRenderData::Create (void)
@@ -353,16 +354,16 @@ CREATE (pFaceRenderList, gameData.segs.nFaces, 0);
 CREATE (bVisited, gameData.segs.nSegments, 0);
 CREATE (bVisible, gameData.segs.nSegments, 0);
 CREATE (bProcessed, gameData.segs.nSegments, 0);
-CREATE (nSegDepth, gameData.segs.nSegments, 0); 
-CREATE (bObjectRendered, gameData.objs.nMaxObjects, 0); 
-CREATE (bRenderSegment, gameData.segs.nSegments, 0); 
+CREATE (nSegDepth, gameData.segs.nSegments, 0);
+CREATE (bObjectRendered, gameData.objs.nMaxObjects, 0);
+CREATE (bRenderSegment, gameData.segs.nSegments, 0);
 CREATE (nRenderObjList, gameData.objs.nMaxObjects, 0);
-CREATE (nRenderPos, gameData.segs.nSegments, 0); 
-CREATE (nRotatedLast, gameData.segs.nVertices, 0); 
-CREATE (bCalcVertexColor, gameData.segs.nVertices, 0); 
-CREATE (bAutomapVisited, gameData.segs.nSegments, 0); 
-CREATE (bAutomapVisible, gameData.segs.nSegments, 0); 
-CREATE (bRadarVisited, gameData.segs.nSegments, 0); 
+CREATE (nRenderPos, gameData.segs.nSegments, 0);
+CREATE (nRotatedLast, gameData.segs.nVertices, 0);
+CREATE (bCalcVertexColor, gameData.segs.nVertices, 0);
+CREATE (bAutomapVisited, gameData.segs.nSegments, 0);
+CREATE (bAutomapVisible, gameData.segs.nSegments, 0);
+CREATE (bRadarVisited, gameData.segs.nSegments, 0);
 return true;
 }
 
@@ -375,16 +376,16 @@ DESTROY (pFaceRenderList);
 DESTROY (bVisited);
 DESTROY (bVisible);
 DESTROY (bProcessed);
-DESTROY (nSegDepth); 
-DESTROY (bObjectRendered); 
-DESTROY (bRenderSegment); 
+DESTROY (nSegDepth);
+DESTROY (bObjectRendered);
+DESTROY (bRenderSegment);
 DESTROY (nRenderObjList);
-DESTROY (nRenderPos); 
-DESTROY (nRotatedLast); 
-DESTROY (bCalcVertexColor); 
-DESTROY (bAutomapVisited); 
-DESTROY (bAutomapVisible); 
-DESTROY (bRadarVisited); 
+DESTROY (nRenderPos);
+DESTROY (nRotatedLast);
+DESTROY (bCalcVertexColor);
+DESTROY (bAutomapVisited);
+DESTROY (bAutomapVisible);
+DESTROY (bRadarVisited);
 }
 
 //------------------------------------------------------------------------------
@@ -511,10 +512,10 @@ DESTROY (lMapTexCoord);
 
 //------------------------------------------------------------------------------
 
-CFaceListIndex::CFaceListIndex () 
-{ 
+CFaceListIndex::CFaceListIndex ()
+{
 nUsedFaces = 0;
-nUsedKeys = 0; 
+nUsedKeys = 0;
 roots.Create ((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
 tails.Create ((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
 usedKeys.Create ((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
@@ -766,7 +767,7 @@ nRepairCenters = 0;
 
 //------------------------------------------------------------------------------
 
-CRobotData::CRobotData () 
+CRobotData::CRobotData ()
 {
 for (int i = 0; i < 2; i++) {
 	info [i].Create (MAX_ROBOT_TYPES);
@@ -790,7 +791,7 @@ CLEAR (nTypes);
 
 //------------------------------------------------------------------------------
 
-CReactorData::CReactorData () 
+CReactorData::CReactorData ()
 {
 for (int i = 0; i < MAX_BOSS_COUNT; i++)
 	states [i].nDeadObj = -1;
@@ -864,7 +865,7 @@ nMarkerModel = -1;
 vScale.SetZero ();
 Create ();
 }
- 
+
 // ----------------------------------------------------------------------------
 
 bool CModelData::Create (void)
@@ -1145,8 +1146,8 @@ int CObjectData::RebuildEffects (void)
 if (nEffects && effects.Buffer ()) {
 	for (int i = 0; i < nEffects; i++) {
 		tBaseObject& bo = effects [i];
-		int nObject = CreateObject (bo.info.nType, bo.info.nId, -1, 
-											 -bo.info.nSegment - 2, bo.info.position.vPos, bo.info.position.mOrient, 
+		int nObject = CreateObject (bo.info.nType, bo.info.nId, -1,
+											 -bo.info.nSegment - 2, bo.info.position.vPos, bo.info.position.mOrient,
 											 bo.info.xSize, bo.info.controlType, bo.info.movementType, bo.info.renderType);
 		if (nObject >= 0) {
 			OBJECTS [nObject].info = bo.info;
@@ -1191,8 +1192,8 @@ return true;
 
 bool CColorData::Resize (void)
 {
-return vertices.Resize (LEVEL_VERTICES) && 
-		 vertBright.Resize (LEVEL_VERTICES) && 
+return vertices.Resize (LEVEL_VERTICES) &&
+		 vertBright.Resize (LEVEL_VERTICES) &&
 		 ambient.Resize (LEVEL_VERTICES);
 }
 
@@ -1212,11 +1213,11 @@ DESTROY (visibleLights);
  // ----------------------------------------------------------------------------
 
 CFVISideData::CFVISideData ()
-{ 
-memset (this, 0, sizeof (*this)); 
+{
+memset (this, 0, sizeof (*this));
 bCache = 1;
 }
- 
+
  // ----------------------------------------------------------------------------
 
 CPhysicsData::CPhysicsData ()
@@ -1271,7 +1272,7 @@ CREATE (color, LEVEL_OBJECTS, 0);
 for (int i = 0; i < LEVEL_OBJECTS; i++)
 	color [i].red =
 	color [i].green =
-	color [i].blue = 
+	color [i].blue =
 	color [i].alpha = 1.0;
 return true;
 }
@@ -1288,8 +1289,8 @@ color.Destroy ();
 COmegaData::COmegaData ()
 {
 memset (this, 0, sizeof (*this));
-xCharge [0] = 
-xCharge [1] = 
+xCharge [0] =
+xCharge [1] =
 xMaxCharge = DEFAULT_MAX_OMEGA_CHARGE;
 }
 
@@ -1297,9 +1298,9 @@ xMaxCharge = DEFAULT_MAX_OMEGA_CHARGE;
 
 CMultiplayerData::CMultiplayerData ()
 {
-nPlayers = 1;				
+nPlayers = 1;
 nMaxPlayers = -1;
-nLocalPlayer = 0;				
+nLocalPlayer = 0;
 nPlayerPositions = -1;
 bMoving = 0;
 xStartAbortMenuTime = 0;
@@ -1437,8 +1438,8 @@ nPhallicMan = -1;
 // ----------------------------------------------------------------------------
 
 CTimeData::CTimeData ()
-{ 
-memset (this, 0, sizeof (*this)); 
+{
+memset (this, 0, sizeof (*this));
 xFrame = 0x1000;
 }
 

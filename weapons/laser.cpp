@@ -239,7 +239,7 @@ if (gameData.weapons.info [nWeaponType].renderType == WEAPON_RENDER_POLYMODEL) {
 	objP->info.xSize = FixDiv (gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].Rad (),
 								gameData.weapons.info [objP->info.nId].poLenToWidthRatio);
 	}
-else if (EGI_FLAG (bTracers, 0, 1, 0) && (objP->info.nId == VULCAN_ID) || (objP->info.nId == GAUSS_ID)) {
+else if (EGI_FLAG (bTracers, 0, 1, 0) && ((objP->info.nId == VULCAN_ID) || (objP->info.nId == GAUSS_ID))) {
 	objP->rType.polyObjInfo.nModel = gameData.weapons.info [SUPERLASER_ID + 1].nModel;
 	objP->rType.polyObjInfo.nTexOverride = -1;
 	objP->rType.polyObjInfo.nAltTextures = 0;
@@ -454,7 +454,7 @@ if (bMakeSound && (weaponInfoP->flashSound > -1)) {
 		if (nWeaponType == VULCAN_ID)	// Make your own vulcan gun  1/2 as loud.
 			volume = I2X (1) / 2;
 		if (bGatling && (gameOpts->sound.bHires [0] == 2) && gameOpts->sound.bGatling)
-			audio.PlaySound (-1, (nParent == nViewer) ? SOUNDCLASS_PLAYER : SOUNDCLASS_LASER, volume, DEFAULT_PAN, 0, -1, 
+			audio.PlaySound (-1, (nParent == nViewer) ? SOUNDCLASS_PLAYER : SOUNDCLASS_LASER, volume, DEFAULT_PAN, 0, -1,
 								  AddonSoundName (nGatlingSounds [nWeaponType == GAUSS_ID]));
 		else
 			audio.PlaySound (weaponInfoP->flashSound, (nParent == nViewer) ? SOUNDCLASS_PLAYER : SOUNDCLASS_LASER, volume);
@@ -466,7 +466,7 @@ if (bMakeSound && (weaponInfoP->flashSound > -1)) {
 					 (nWeaponType == ROBOT_SMARTMSL_ID) ||
 					 (nWeaponType == ROBOT_MEGAMSL_ID) ||
 					 (nWeaponType == ROBOT_EARTHSHAKER_ID);
-		audio.CreateObjectSound (-1, SOUNDCLASS_MISSILE, nObject, 1, I2X (gameOpts->sound.xCustomSoundVolume) / 10, I2X (256), -1, -1, 
+		audio.CreateObjectSound (-1, SOUNDCLASS_MISSILE, nObject, 1, I2X (gameOpts->sound.xCustomSoundVolume) / 10, I2X (256), -1, -1,
 										 AddonSoundName (nMslSounds [bBigMsl]), 1);
 		}
 	else if (nWeaponType == FLARE_ID)

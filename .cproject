@@ -69,11 +69,6 @@
 </tool>
 </toolChain>
 </folderInfo>
-<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.2041369907.1646101282" name="midi.cpp" rcbsApplicability="disable" resourcePath="audio/win32/midi.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1788163605.1864065105">
-<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1788163605.1864065105" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1788163605">
-<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1759986181" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
-</tool>
-</fileInfo>
 <sourceEntries>
 <entry excluding="mem|3d/instance.cpp|audio/win32/hmpfile.cpp|audio/win32/digi.cpp|audio/linux/midi.cpp|audio/linux/alsadigi.cpp|render/gamepal.cpp|ai/d1_aipath.cpp|main/dumpmine.cpp|network/netmisc-old.cpp|network/netmisc-new.cpp|gameio/bmread.cpp|io/win32|libmve/mve_main.cpp|main/editor|main/udp_data.cpp|main/plrship.cpp|input/linux|misc/byteswap.cpp|network/linux/serial.cpp|ogl/fog.cpp|network/win32" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 </sourceEntries>
@@ -644,11 +639,6 @@
 </tool>
 </toolChain>
 </folderInfo>
-<fileInfo id="cdt.managedbuild.config.gnu.exe.release.1290390794.1003366986" name="midi.cpp" rcbsApplicability="disable" resourcePath="audio/win32/midi.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.1204676507.1339232759">
-<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.1204676507.1339232759" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.1204676507">
-<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1021522792" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
-</tool>
-</fileInfo>
 <sourceEntries>
 <entry excluding="mem|3d/instance.cpp|audio/win32/hmpfile.cpp|audio/win32/digi.cpp|audio/linux/midi.cpp|audio/linux/alsadigi.cpp|render/gamepal.cpp|ai/d1_aipath.cpp|main/dumpmine.cpp|network/netmisc-old.cpp|network/netmisc-new.cpp|gameio/bmread.cpp|io/win32|libmve/mve_main.cpp|main/editor|main/udp_data.cpp|main/plrship.cpp|input/linux|misc/byteswap.cpp|network/linux/serial.cpp|ogl/fog.cpp|network/win32" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 </sourceEntries>

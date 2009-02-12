@@ -22,7 +22,7 @@ int sideVertIndex [MAX_SIDES_PER_SEGMENT][4] = {
 		 {2,6,5,1},			// bottom
 		 {4,5,6,7},			// back
 		 {3,2,1,0}			// front
-	};	
+	};
 
 extern bool bNewFileFormat;
 
@@ -61,7 +61,7 @@ for (int i = 0; i < MAX_VERTICES_PER_SEGMENT; i++)
 
 void CSegment::ReadChildren (CFile& cf, ubyte flags)
 {
-for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) 
+for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
 	m_children [i] = (flags & (1 << i)) ? cf.ReadShort () : -1;
 }
 
@@ -130,7 +130,7 @@ for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 
 //------------------------------------------------------------------------------
 // reads a CSegment structure from a CFile
- 
+
 void CSegment::SaveState (CFile& cf)
 {
 for (int i = 0; i < 6; i++)
@@ -139,10 +139,10 @@ for (int i = 0; i < 6; i++)
 
 //------------------------------------------------------------------------------
 // reads a CSegment structure from a CFile
- 
+
 void CSegment::LoadState (CFile& cf)
 {
-for (int i = 0; i < 6; i++) 
+for (int i = 0; i < 6; i++)
 	m_sides [i].LoadState (cf);
 }
 
@@ -270,7 +270,7 @@ CFixVector CSegment::RandomPoint (void)
 {
 int nVertex = (d_rand () * MAX_VERTICES_PER_SEGMENT) >> 15;
 CFixVector v = gameData.segs.vertices [m_verts [nVertex]] - m_vCenter;
-v *= (d_rand ());        
+v *= (d_rand ());
 return v;
 }
 
@@ -309,8 +309,8 @@ if ((objP == gameData.objs.consoleP) &&
 	return objP ? WID_RENDER_FLAG : wallP ? wallP->IsDoorWay (objP) : WID_RENDPAST_FLAG;
 
 if ((childP->m_nType == SEGMENT_IS_BLOCKED) || (childP->m_nType == SEGMENT_IS_SKYBOX))
-	return (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT))) 
-			 ? WID_RENDER_FLAG 
+	return (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT)))
+			 ? WID_RENDER_FLAG
 			 : wallP ? wallP->IsDoorWay (objP) : WID_FLY_FLAG | WID_RENDPAST_FLAG;
 
 if (!wallP)
@@ -386,14 +386,14 @@ else if ((animP->flags & WCF_TMAP1) || !m_sides [nSide].m_nOvlTex) {
 	m_sides [nSide].m_nBaseTex = nTexture;
 	if (connSegP)
 		connSegP->m_sides [nConnSide].m_nBaseTex = nTexture;
-	if (gameData.demo.nState == ND_STATE_RECORDING) 
+	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordWallSetTMapNum1 (SEG_IDX (this), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) nConnSide, nTexture, nAnim, nFrame);
 	}
 else {
 	m_sides [nSide].m_nOvlTex = nTexture;
 	if (connSegP)
 		connSegP->m_sides [nConnSide].m_nOvlTex = nTexture;
-	if (gameData.demo.nState == ND_STATE_RECORDING) 
+	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordWallSetTMapNum2 (SEG_IDX (this), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) nConnSide, nTexture, nAnim, nFrame);
 	}
 m_sides [nSide].m_nFrame = -nFrame;
@@ -484,11 +484,12 @@ void CSegment::DestroyWall (int nSide)
 {
 	CWall* wallP = Wall (nSide);
 
-if (wallP)
+if (wallP) {
 	if (wallP->nType == WALL_BLASTABLE)
 		BlastWall (nSide);
 	else
 		Error (TXT_WALL_INDESTRUCTIBLE);
+	}
 }
 
 //-----------------------------------------------------------------
@@ -997,7 +998,7 @@ int CSegment::TexturedSides (void)
 for (int i = 0; i < 6; i++)
 	if ((m_children [i] < 0) || m_sides [i].IsTextured ())
 		nSides++;
-return nSides;	
+return nSides;
 }
 
 //------------------------------------------------------------------------------

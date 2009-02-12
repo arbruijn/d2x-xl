@@ -883,10 +883,7 @@ retryMove:
 			mType.physInfo.velocity = vOldVel;
 		// Let object continue its movement
 		if (!(info.nFlags & OF_SHOULD_BE_DEAD)) {
-			if ((mType.physInfo.flags & PF_PERSISTENT) ||
-				 (vOldVel [X] == mType.physInfo.velocity [X] &&
-				  vOldVel [Y] == mType.physInfo.velocity [Y]) &&
-				  vOldVel [Z] == mType.physInfo.velocity [Z]) {
+			if ((mType.physInfo.flags & PF_PERSISTENT) || (vOldVel == mType.physInfo.velocity)) {
 				if (OBJECTS [hi.hit.nObject].info.nType == OBJ_POWERUP)
 					nTries--;
 				gameData.physics.ignoreObjs [nIgnoreObjs++] = hi.hit.nObject;
@@ -979,7 +976,7 @@ if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {
 	if (FindSegment () == -1) {
 		int n;
 
-		if (((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) && 
+		if (((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) &&
 			 (n = FindSegByPos (info.vLastPos, info.nSegment, 1, 0)) != -1) {
 			info.position.vPos = info.vLastPos;
 			OBJECTS [nObject].RelinkToSeg (n);

@@ -814,7 +814,7 @@ void DoD1AIRobotHitAttack(CObject *robotP, CObject *playerP, CFixVector *vCollis
 	if (botInfoP->attackType == 1) {
 		if (ailP->nextPrimaryFire <= 0) {
 			if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
-				if (CFixVector::Dist (OBJPOS (gameData.objs.consoleP)->vPos, robotP->info.position.vPos) < 
+				if (CFixVector::Dist (OBJPOS (gameData.objs.consoleP)->vPos, robotP->info.position.vPos) <
 					 robotP->info.xSize + gameData.objs.consoleP->info.xSize + I2X (2))
 					playerP->CollidePlayerAndNastyRobot (robotP, *vCollision);
 
@@ -1864,12 +1864,12 @@ if (nObject == nDbgObj)
 	nPrevVisibility = ailP->nPrevVisibility;	//	Must get this before we toast the master copy!
 
 	//	Deal with cloaking for robots which are cloaked except just before firing.
-	if (botInfoP->cloakType == RI_CLOAKED_EXCEPT_FIRING)
+	if (botInfoP->cloakType == RI_CLOAKED_EXCEPT_FIRING) {
 		if (ailP->nextPrimaryFire < I2X (1)/2)
 			aiP->CLOAKED = 1;
 		else
 			aiP->CLOAKED = 0;
-
+		}
 	if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
 		gameData.ai.vBelievedPlayerPos = OBJPOS (gameData.objs.consoleP)->vPos;
 
@@ -1990,11 +1990,12 @@ if (nObject == nDbgObj)
 					return;
 				ai_multi_send_robot_position(nObject, -1);
 
-				if (!((ailP->mode == D1_AIM_FOLLOW_PATH) && (aiP->nCurPathIndex < aiP->nPathLength-1)))
+				if (!((ailP->mode == D1_AIM_FOLLOW_PATH) && (aiP->nCurPathIndex < aiP->nPathLength-1))) {
 					if (dist_to_player < I2X (30))
 						CreateNSegmentPath(objP, 5, 1);
 					else
 						CreatePathToPlayer(objP, 20, 1);
+					}
 			}
 		}
 

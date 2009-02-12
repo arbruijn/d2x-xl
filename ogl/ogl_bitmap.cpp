@@ -78,7 +78,7 @@ if (gameStates.render.nShadowBlurPass == 1) {
 	}
 else {
 	glEnable (GL_TEXTURE_2D);
-	if (bmP->Bind (1, transp)) 
+	if (bmP->Bind (1, transp))
 		return 1;
 	bmP = bmP->Override (-1);
 	bmP->Texture ()->Wrap (GL_CLAMP);
@@ -105,7 +105,7 @@ else {
 	glEnd ();
 	}
 return 0;
-} 
+}
 
 //------------------------------------------------------------------------------
 
@@ -233,7 +233,7 @@ int CBitmap::RenderScaled (int x, int y, int w, int h, int scale, int orient, tC
 	CBitmap*		bmoP;
 	tRgbaColorf	color;
 
-if (bmoP = HasOverride ())
+if ((bmoP = HasOverride ()))
 	return bmoP->RenderScaled (x, y, w, h, scale, orient, colorP);
 DelFlags (BM_FLAG_SUPER_TRANSPARENT);
 if (!OglBeginRender (true, 0, 3))
@@ -248,15 +248,15 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int CBitmap::Render (CBitmap *destP, 
-							int xDest, int yDest, int wDest, int hDest, 
-							int xSrc, int ySrc, int wSrc, int hSrc, 
+int CBitmap::Render (CBitmap *destP,
+							int xDest, int yDest, int wDest, int hDest,
+							int xSrc, int ySrc, int wSrc, int hSrc,
 							int bTransp, int bMipMaps, int bSmoothe,
 							float fAlpha, tRgbaColorf* colorP)
 {
 	CBitmap*		bmoP;
 
-if (bmoP = HasOverride ())
+if ((bmoP = HasOverride ()))
 	return bmoP->Render (destP, xDest, yDest, wDest, hDest, xSrc, ySrc, wSrc, hSrc, bTransp, bMipMaps, bSmoothe, fAlpha, colorP);
 
 	int			nTransp = (Flags () & BM_FLAG_TGA) ? -1 : HasTransparency () ? 2 : 0;
@@ -316,19 +316,19 @@ OglRender (colorP, nColors, 0);
 glBegin (GL_QUADS);
 if (colorP)
 	glColor4fv (reinterpret_cast<GLfloat*> (colorP));
-glTexCoord2f (u1, v1); 
+glTexCoord2f (u1, v1);
 glVertex2f (x0, y0);
 if (colorP)
 	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 1));
-glTexCoord2f (u2, v1); 
+glTexCoord2f (u2, v1);
 glVertex2f (x1, y0);
 if (colorP)
 	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 2));
-glTexCoord2f (u2, v2); 
+glTexCoord2f (u2, v2);
 glVertex2f (x1, y1);
 if (colorP)
 	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 3));
-glTexCoord2f (u1, v2); 
+glTexCoord2f (u1, v2);
 glVertex2f (x0, y1);
 glEnd ();
 #endif

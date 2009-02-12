@@ -60,7 +60,7 @@ if ((m_flags & SOF_PERMANENT) &&
 	return false;
 // start the sample playing
 m_channel =
-	audio.StartSound (m_nSound, m_soundClass, m_volume, m_pan, m_flags & SOF_PLAY_FOREVER, m_nLoopStart, m_nLoopEnd, 
+	audio.StartSound (m_nSound, m_soundClass, m_volume, m_pan, m_flags & SOF_PLAY_FOREVER, m_nLoopStart, m_nLoopEnd,
 							this - audio.Objects ().Buffer (), I2X (1), m_szSound,
 							(m_flags & SOF_LINK_TO_OBJ) ? &OBJECTS [m_linkType.obj.nObject].info.position.vPos : &m_linkType.pos.position);
 if (m_channel < 0)
@@ -119,8 +119,8 @@ return (nSound == 255) ? -1 : CAudio::UnXlatSound (nSound);
 // determine nVolume and panning of a sound created at location nSoundSeg,vSoundPos
 // as heard by nListenerSeg,vListenerPos
 
-void CAudio::GetVolPan (CFixMatrix& mListener, CFixVector& vListenerPos, short nListenerSeg, 
-								CFixVector& vSoundPos, short nSoundSeg, 
+void CAudio::GetVolPan (CFixMatrix& mListener, CFixVector& vListenerPos, short nListenerSeg,
+								CFixVector& vSoundPos, short nSoundSeg,
 								fix maxVolume, int *nVolume, int *pan, fix maxDistance, int nDecay)
 {
 	CFixVector	vecToSound;
@@ -177,11 +177,12 @@ if (!nVolume)
 	return -1;
 if (!pszWAV) {
 #ifdef NEWDEMO
-	if (gameData.demo.nState == ND_STATE_RECORDING)
+	if (gameData.demo.nState == ND_STATE_RECORDING) {
 		if (bNoDups)
 			NDRecordSound3DOnce (nSound, nPan, nVolume);
 		else
 			NDRecordSound3D (nSound, nPan, nVolume);
+		}
 #endif
 	nSound = (nSound < 0) ? -nSound : CAudio::XlatSound (nSound);
 	if (nSound < 0)

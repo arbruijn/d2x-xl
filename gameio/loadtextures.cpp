@@ -76,10 +76,10 @@ const char *szAddonTextures [MAX_ADDON_BITMAP_FILES] = {
 	};
 
 static short d2OpaqueDoors [] = {
-	440, 451, 463, 477, /*483,*/ 488, 
-	500, 508, 523, 550, 556, 564, 572, 579, 585, 593, 536, 
+	440, 451, 463, 477, /*483,*/ 488,
+	500, 508, 523, 550, 556, 564, 572, 579, 585, 593, 536,
 	600, 608, 615, 628, 635, 6
-, 649, 664, /*672,*/ 687, 
+, 649, 664, /*672,*/ 687,
 	702, 717, 725, 731, 738, 745, 754, 763, 772, 780, 790,
 	806, 817, 827, 838, 849, /*858,*/ 863, 871, 886,
 	901,
@@ -316,7 +316,7 @@ void UnloadTextures (void)
 	int		i, bD1;
 	CBitmap	*bmP;
 
-#if TRACE			
+#if TRACE
 console.printf (CON_VERBOSE, "Unloading textures\n");
 #endif
 gameData.pig.tex.bPageFlushed++;
@@ -324,8 +324,8 @@ TexMergeFlush ();
 RLECacheFlush ();
 for (bD1 = 0; bD1 < 2; bD1++) {
 	bitmapCacheNext [bD1] = 0;
-	for (i = 0, bmP = gameData.pig.tex.bitmaps [bD1].Buffer (); 
-		  i < gameData.pig.tex.nBitmaps [bD1]; 
+	for (i = 0, bmP = gameData.pig.tex.bitmaps [bD1].Buffer ();
+		  i < gameData.pig.tex.nBitmaps [bD1];
 		  i++, bmP++) {
 #ifdef _DEBUG
 		if (i == nDbgTexture)
@@ -347,7 +347,7 @@ void ResetTextureFlags (void)
 {
 	int		i, bD1;
 
-#if TRACE			
+#if TRACE
 console.printf (CON_VERBOSE, "Resetting texture flags\n");
 #endif
 for (bD1 = 0; bD1 < 2; bD1++)
@@ -437,7 +437,7 @@ if (bmP->Flags () & BM_FLAG_RLE) {
 	}
 else if (bDefault) {
 #if TEXTURE_COMPRESSION
-	if (bmP->bmCompressed) 
+	if (bmP->bmCompressed)
 		return 0;
 #endif
 	bmP->Read (*cfP, nSize);
@@ -470,7 +470,7 @@ else {
 
 	sprintf (fn, "%s%s%s.tga", rootFolder, *rootFolder ? "/" : "", bmName);
 	tBase = (*cacheFolder && gameStates.app.bCacheTextures && (nShrinkFactor > 1)) ? cf.Date (fn, "", 0) : -1;
-	if (tBase < 0) 
+	if (tBase < 0)
 		*fn = *fnShrunk = '\0';
 	else {
 		sprintf (fnShrunk, "%s%s%d/%s.tga", cacheFolder, *cacheFolder ? "/" : "", 512 / nShrinkFactor, bmName);
@@ -532,7 +532,7 @@ bTGA = 0;
 nFlags = (nIndex < 0) ? 0 : gameData.pig.tex.bitmapFlags [bD1][nIndex];
 bmP->SetBPP (1);
 
-if (*bmName && ((nIndex < 0) || IsCockpit (bmName) || 
+if (*bmName && ((nIndex < 0) || IsCockpit (bmName) ||
 	 ((bHires || gameOpts->render.textures.bUseHires [0]) && (!gameOpts->ogl.bGlTexMerge || gameStates.render.textures.bGlsTexMergeOk)))) {
 #if 0
 	if ((nIndex >= 0) && ReadS3TC (gameData.pig.tex.altBitmaps [bD1] + nIndex, gameFolders.szTextureCacheDir [bD1], bmName)) {
@@ -545,7 +545,7 @@ if (*bmName && ((nIndex < 0) || IsCockpit (bmName) ||
 		bmP = altBmP;
 		altBmP = NULL;
 		}
-	else 
+	else
 #endif
 	if (*gameFolders.szTextureDir [2]) {
 		char szLevelFolder [FILENAME_LEN];
@@ -643,10 +643,10 @@ bmP->SetName (bmName);
 #if TEXTURE_COMPRESSION
 if (bmP->bmCompressed)
 	UseBitmapCache (bmP, bmP->bmBufSize);
-else 
+else
 #endif
  {
-	if (bmP->CreateBuffer ()) 
+	if (bmP->CreateBuffer ())
 		UseBitmapCache (bmP, nSize);
 	}
 if (!bmP->Buffer () || (bitmapCacheUsed > bitmapCacheSize)) {
@@ -668,9 +668,9 @@ if (i) {
 		goto reloadTextures;
 		}
 	}
-else 
+else
 #if TEXTURE_COMPRESSION
-if (!bmP->bmCompressed) 
+if (!bmP->bmCompressed)
 #endif
 	{
 	ReadTGAImage (*cfP, &h, bmP, -1, 1.0, 0, 0);
@@ -730,20 +730,20 @@ Assert (bmi < MAX_BITMAP_FILES);
 Assert (bmi < gameData.pig.tex.nBitmaps [bD1]);
 Assert (bitmapCacheSize > 0);
 #endif
-if (bmi < 1) 
+if (bmi < 1)
 	return 0;
-if (bmi >= MAX_BITMAP_FILES) 
+if (bmi >= MAX_BITMAP_FILES)
 	return 0;
-if (bmi >= gameData.pig.tex.nBitmaps [bD1]) 
+if (bmi >= gameData.pig.tex.nBitmaps [bD1])
 	return 0;
-if (bitmapOffsets [bD1][bmi] == 0) 
+if (bitmapOffsets [bD1][bmi] == 0)
 	return 0;		// A read-from-disk bmi!!!
 
 if (bLowMemory) {
 	bmiSave = bmi;
 	bmi = gameData.pig.tex.bitmapXlat [bmi];          // Xlat for low-memory settings!
 	}
-#if DBG 
+#if DBG
 if (bmi == nDbgTexture)
 	nDbgTexture = nDbgTexture;
 #endif
@@ -766,7 +766,7 @@ return 1;
 
 int PiggyBitmapExistsSlow (char * name)
 {
-for (int i = 0, j = gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]; i < j; i++) 
+for (int i = 0, j = gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]; i < j; i++)
 	if (!strcmp (gameData.pig.tex.bitmapFileP[i].name, name))
 		return 1;
 return 0;
@@ -933,7 +933,7 @@ bool BitmapLoaded (int bmi, int bD1)
 {
 CBitmap* bmoP, * bmP = gameData.pig.tex.bitmaps [bD1] + bmi;
 #if 1
-if (bmoP = bmP->Override ())
+if ((bmoP = bmP->Override ()))
 	bmP = bmoP;
 #endif
 return bmP->Buffer () && !(bmP->Flags () & BM_FLAG_PAGED_OUT);

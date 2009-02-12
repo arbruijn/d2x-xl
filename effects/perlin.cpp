@@ -7,18 +7,18 @@ static long randSeed = 0;
 
 //------------------------------------------------------------------------------
 
-double Noise1D (long x)			 
+double Noise1D (long x)
 {
 #if 1
 //srand (randSeed * (x + 2));
 x = rand ();
-return (double) (x - (((long) RAND_MAX + 1) / 2)) / (double) (((long) RAND_MAX + 1) / 2);
+return double (x - (double (RAND_MAX) + 1) / 2) / ((double (RAND_MAX) + 1) / 2);
 #else
 double h;
 x = randSeed + x * x;
 h = (long) pow ((double) x * (double) (1 << 13), x);
 h = h * (h * (h * 15731 + 789221) + 1376312589);
-return 1.0 - ((long) h & 0x7fffffff) / 1073741824.0;    
+return 1.0 - ((long) h & 0x7fffffff) / 1073741824.0;
 #endif
 }
 
@@ -37,7 +37,7 @@ double ft = x * 3.1415927;	//Pi
 double f = (1 - cos (ft)) * 0.5;
 return  a * (1.0 - f) + b * f;
 }
- 
+
 //------------------------------------------------------------------------------
 
 double CubicInterpolate (double v0, double v1, double v2, double v3, double x)
@@ -134,7 +134,7 @@ for (i = 0; i < octaves; i++) {
 	}
 return total;
 }
-  
+
 //------------------------------------------------------------------------------
 
 
