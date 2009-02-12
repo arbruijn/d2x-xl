@@ -1462,7 +1462,7 @@ if ((gameOpts->render.bDepthSort < 1) && !RENDERPATH)
 	RenderSkyBox (nWindow);
 //PrintLog  ("RenderSegmentList (1,1)\n");
 RenderSegmentList (1, 1);		// render objects
-if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nShadowPass != 2)) {
+if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 	if (!gameData.app.nFrameCount || gameData.render.nColoredFaces) {
 		glDepthFunc (GL_LEQUAL);
 		//PrintLog  ("RenderSegmentList (2,1)\n");
@@ -1470,7 +1470,7 @@ if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nSha
 		glDepthFunc (GL_LESS);
 		}
 #if 1
-		RenderEffects (nWindow);
+	RenderEffects (nWindow);
 #endif
 	if (!gameStates.app.bNostalgia &&
 		 (!automap.m_bDisplay || gameOpts->render.automap.bCoronas) && gameOpts->render.coronas.bUse) {

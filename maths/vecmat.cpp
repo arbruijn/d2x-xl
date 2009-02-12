@@ -883,15 +883,16 @@ return CFloatVector::Dist (va, vb);
 float TriangleSize (const CFixVector& p0, const CFixVector& p1, const CFixVector& p2) 
 {
 #if 1
+	CFloatVector	pa, pb;
+	pa.Assign (p1 - p0);
+	pb.Assign (p2 - p0);
 #	if DBG
-	CFixVector	pa = p1 - p0;
-	CFixVector	pb = p2 - p0;
-	CFixVector	px = CFixVector::Cross (pa, pb);
-	fix m = px.Mag ();
-	float s = float (m) / 800.0f;
+	CFloatVector px = CFloatVector::Cross (pa, pb);
+	float m = px.Mag ();
+	float s = m / 800.0f;
 	return s;
 #	else
-	return X2F (CFixVector::Cross (p1 - p0, p2 - p0).Mag ()) / 800.0f;
+	return CFloatVector::Cross (pa, pb).Mag () / 800.0f;
 #	endif
 #else
 	fix			lMax, l, i = 0;
