@@ -302,12 +302,12 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 
 void ComputeSingleSegmentVisibility (short nStartSeg)
 {
-	CSegment		*segP, *childP;
-	CSide			*sideP;
-	short			nSegment, nSide, nChildSeg, nChildSide, i;
-	CFixVector	vNormal;
+	CSegment*		segP, *childP;
+	CSide*			sideP;
+	short				nSegment, nSide, nChildSeg, nChildSide, i;
+	CFixVector		vNormal;
 	CAngleVector	vAngles;
-	CObject		viewer;
+	CObject			viewer;
 
 //PrintLog ("computing visibility of segment %d\n", nStartSeg);
 gameStates.ogl.bUseTransform = 1;
@@ -334,15 +334,17 @@ for (sideP = segP->m_sides, nSide = 0; nSide < 6; nSide++, sideP++) {
 				}
 			}
 		}
-	vNormal = sideP->m_normals[0] + sideP->m_normals[1];
-	vNormal *= (-I2X (1) / 2);
-	vAngles = vNormal.ToAnglesVec();
-	viewer.info.position.mOrient = CFixMatrix::Create(vAngles);
-	G3StartFrame(0, 0);
-	RenderStartFrame();
+	vNormal = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
+	vNormal.Neg ();
+	vAngles = vNormal.ToAnglesVec ();
+	viewer.info.position.mOrient = CFixMatrix::Create (vAngles);
+	G3StartFrame (0, 0);
+	RenderStartFrame ();
 	G3SetViewMatrix (viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, 1);
 #endif
+	gameStates.render.nShadowPass = 1;
 	BuildRenderSegList (nStartSeg, 0);
+	gameStates.render.nShadowPass = 0;
 	G3EndFrame ();
 	//PrintLog ("   flagging visible segments\n");
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
