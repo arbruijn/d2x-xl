@@ -1243,6 +1243,62 @@ PROF_END(ptRenderPass)
 
 //------------------------------------------------------------------------------
 
+void RenderMineObjects (int nType)
+{
+	int	nListPos, nSegLights = 0;
+	short	nSegment;
+
+#if DBG
+if (!gameOpts->render.debug.bObjects)
+	return;
+#endif
+if ((nType < 1) || (nType > 2))
+	return;
+gameStates.render.nState = 1;
+for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
+	nSegment = gameData.render.mine.nSegRenderList [--nListPos];
+	if (nSegment < 0) {
+		if (nSegment == -0x7fff)
+			continue;
+		nSegment = -nSegment - 1;
+		}
+#if DBG
+	if (nSegment == nDbgSeg)
+		nSegment = nSegment;
+#endif
+	if (0 > gameData.render.mine.renderObjs.ref [nSegment]) 
+		continue;
+#if DBG
+	if (nSegment == nDbgSeg)
+		nSegment = nSegment;
+#endif
+	if (nType == 1) {	// render opaque objects
+#if DBG
+		if (nSegment == nDbgSeg)
+			nSegment = nSegment;
+#endif
+		if (gameStates.render.bUseDynLight && !gameStates.render.bQueryCoronas) {
+			nSegLights = lightManager.SetNearestToSegment (nSegment, -1, 0, 1, 0);
+			lightManager.SetNearestStatic (nSegment, 1, 1, 0);
+			gameStates.render.bApplyDynLight = gameOpts->ogl.bLightObjects;
+			}
+		else
+			gameStates.render.bApplyDynLight = 0;
+		RenderObjList (nListPos, gameStates.render.nWindow);
+		if (gameStates.render.bUseDynLight && !gameStates.render.bQueryCoronas) {
+			lightManager.ResetNearestStatic (nSegment, 0);
+			}
+		gameStates.render.bApplyDynLight = gameStates.render.nLightingMethod != 0;
+		//lightManager.Index (0)[0].nActive = gameData.render.lights.dynamic.shader.iStaticLights [0];
+		}
+	else if (nType == 2)	// render objects containing transparency, like explosions
+		RenderObjList (nListPos, gameStates.render.nWindow);
+	}	
+gameStates.render.nState = 0;
+}
+
+//------------------------------------------------------------------------------
+
 inline int RenderSegmentList (int nType, int bFrontToBack)
 {
 PROF_START

@@ -108,7 +108,7 @@ PROF_START
 					bLightmaps = lightmapManager.HaveLightmaps ();
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
-#if SORT_FACES > 1
+#if SORT_RENDER_FACES > 1
 ResetFaceList (nThread);
 #endif
 //memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
@@ -134,7 +134,7 @@ for (i = nStart, nStep = (nStart > nEnd) ? -1 : 1; i != nEnd; i += nStep) {
 		faceP->bVisible = 0;
 		continue;
 		}
-#if SORT_FACES > 1
+#if SORT_RENDER_FACES > 1
 	AddFaceListItem (faceP, nThread);
 #endif
 	faceP->color = faceColor [nColor].color;
@@ -219,7 +219,7 @@ PROF_START
 					bLightmaps = lightmapManager.HaveLightmaps ();
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
-#if SORT_FACES > 1
+#if SORT_RENDER_FACES > 1
 ResetFaceList (nThread);
 #endif
 //memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
@@ -263,7 +263,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 			faceP->bVisible = 0;
 			continue;
 			}
-#if SORT_FACES > 1
+#if SORT_RENDER_FACES > 1
 		if (!AddFaceListItem (faceP, nThread))
 			continue;
 #endif
@@ -359,7 +359,7 @@ PROF_START
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
-#if SORT_FACES > 1
+#if SORT_RENDER_FACES > 1
 ResetFaceList (nThread);
 #endif
 lightManager.ResetIndex ();
@@ -403,7 +403,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 			faceP->bVisible = 0;
 			continue;
 			}
-#if SORT_FACES > 1
+#if SORT_RENDER_FACES > 1
 		if (!AddFaceListItem (faceP, nThread))
 			continue;
 #endif
@@ -496,7 +496,7 @@ void ComputeStaticFaceLight (int nStart, int nEnd, int nThread)
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
-#if SORT_FACES > 1
+#if SORT_RENDER_FACES > 1
 ResetFaceList (nThread);
 #endif
 gameStates.ogl.bUseTransform = 1;
@@ -526,7 +526,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 			faceP->bVisible = 0;
 			continue;
 			}
-#if SORT_FACES > 1
+#if SORT_RENDER_FACES > 1
 		if (!AddFaceListItem (faceP, nThread))
 			continue;
 #endif
@@ -638,62 +638,6 @@ for (h = 0; h < gameData.render.mine.nRenderSegs; h++) {
 		for (j = 0; j < 4; j++)
 			FACES.color [j] = gameData.render.color.vertices [faceP->index [j]].color;
 	}
-}
-
-//------------------------------------------------------------------------------
-
-void RenderMineObjects (int nType)
-{
-	int	nListPos, nSegLights = 0;
-	short	nSegment;
-
-#if DBG
-if (!gameOpts->render.debug.bObjects)
-	return;
-#endif
-if ((nType < 1) || (nType > 2))
-	return;
-gameStates.render.nState = 1;
-for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
-	nSegment = gameData.render.mine.nSegRenderList [--nListPos];
-	if (nSegment < 0) {
-		if (nSegment == -0x7fff)
-			continue;
-		nSegment = -nSegment - 1;
-		}
-#if DBG
-	if (nSegment == nDbgSeg)
-		nSegment = nSegment;
-#endif
-	if (0 > gameData.render.mine.renderObjs.ref [nSegment]) 
-		continue;
-#if DBG
-	if (nSegment == nDbgSeg)
-		nSegment = nSegment;
-#endif
-	if (nType == 1) {	// render opaque objects
-#if DBG
-		if (nSegment == nDbgSeg)
-			nSegment = nSegment;
-#endif
-		if (gameStates.render.bUseDynLight && !gameStates.render.bQueryCoronas) {
-			nSegLights = lightManager.SetNearestToSegment (nSegment, -1, 0, 1, 0);
-			lightManager.SetNearestStatic (nSegment, 1, 1, 0);
-			gameStates.render.bApplyDynLight = gameOpts->ogl.bLightObjects;
-			}
-		else
-			gameStates.render.bApplyDynLight = 0;
-		RenderObjList (nListPos, gameStates.render.nWindow);
-		if (gameStates.render.bUseDynLight && !gameStates.render.bQueryCoronas) {
-			lightManager.ResetNearestStatic (nSegment, 0);
-			}
-		gameStates.render.bApplyDynLight = gameStates.render.nLightingMethod != 0;
-		//lightManager.Index (0)[0].nActive = gameData.render.lights.dynamic.shader.iStaticLights [0];
-		}
-	else if (nType == 2)	// render objects containing transparency, like explosions
-		RenderObjList (nListPos, gameStates.render.nWindow);
-	}	
-gameStates.render.nState = 0;
 }
 
 //------------------------------------------------------------------------------

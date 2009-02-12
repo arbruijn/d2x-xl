@@ -39,17 +39,15 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define RENDER_DEPTHMASK_FIRST 0
 
-#define SORT_FACES 3
-
 //------------------------------------------------------------------------------
 
-#if SORT_FACES > 1
+#if SORT_RENDER_FACES > 1
 
 void ResetFaceList (int nThread)
 {
 PROF_START
 	CFaceListIndex *flxP = gameData.render.faceIndex + nThread;
-#if SORT_FACES == 2
+#if SORT_RENDER_FACES == 2
 #	if 0//def _DEBUG
 memset (flxP->roots, 0xff, sizeof (flxP->roots));
 #	else
@@ -101,7 +99,7 @@ if (nThread)
 	i = --flxP->nUsedFaces;
 else
 	i = flxP->nUsedFaces++;
-#if SORT_FACES == 2
+#if SORT_RENDER_FACES == 2
 j = flxP->roots [nKey];
 if (j < 0)
 	flxP->usedKeys [flxP->nUsedKeys++] = nKey;
@@ -126,7 +124,7 @@ PROF_END(ptFaceList)
 return 1;
 }
 
-#endif //SORT_FACES > 1
+#endif //SORT_RENDER_FACES > 1
 
 //------------------------------------------------------------------------------
 
@@ -897,7 +895,7 @@ if (nType) {
 		}
 	}
 else {
-#if SORT_FACES > 1
+#if SORT_RENDER_FACES > 1
 	nFaces += RenderFaceList (gameData.render.faceIndex [0], nType, bDepthOnly, bHeadlight);
 	if (gameStates.app.bMultiThreaded)
 		nFaces += RenderFaceList (gameData.render.faceIndex [1], nType, bDepthOnly, bHeadlight);

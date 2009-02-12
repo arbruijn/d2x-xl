@@ -23,6 +23,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define	APPEND_LAYERED_TEXTURES 0
 
+#define SORT_RENDER_FACES 3
+
 extern int nClearWindow;    // 1 = Clear whole background window, 2 = clear view portals into rest of world, 0 = no clear
 
 void GameRenderFrame (void);
@@ -88,6 +90,11 @@ void BuildRenderSegList (short nStartSeg, int nWindow);
 void BuildRenderObjLists (int nSegCount);
 void BuildRenderSegList (short nStartSeg, int nWindow);
 void BuildRenderSegListFast (short nStartSeg, int nWindow);
+
+#if SORT_RENDER_FACES > 1
+void ResetFaceList (int nThread);
+int AddFaceListItem (CSegFace *faceP, int nThread);
+#endif
 
 //------------------------------------------------------------------------------
 
