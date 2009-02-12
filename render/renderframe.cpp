@@ -40,6 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "automap.h"
 #include "gamepal.h"
 #include "lightning.h"
+#include "transprender.h"
 #include "menubackground.h"
 
 #if DBG
@@ -713,6 +714,7 @@ SetScreenMode (SCREEN_GAME);
 cockpit->PlayHomingWarning ();
 paletteManager.ClearEffect (paletteManager.Game ());
 FillBackground ();
+transparencyRenderer.Reset ();
 if (gameStates.render.vr.nRenderMode == VR_NONE)
 	RenderMonoFrame ();
 StopTime ();

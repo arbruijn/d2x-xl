@@ -145,10 +145,13 @@ ph->parentP = NULL;
 ph->z = nDepth;
 ph->bValid = true;
 memcpy (&ph->item, itemData, itemSize);
-if (*pd)
-	pj = *pd;
-for (pi = NULL, pj = *pd; pj && ((pj->z < nDepth) || ((pj->z == nDepth) && (pj->nType < nType))); pj = pj->pNextItem)
+for (pi = NULL, pj = *pd; pj && ((pj->z < nDepth) || ((pj->z == nDepth) && (pj->nType < nType))); pj = pj->pNextItem) {
+#if DBG
+	if (pj == pi)
+		break; // loop
+#endif
 	pi = pj;
+	}
 if (pi) {
 	ph->pNextItem = pi->pNextItem;
 	pi->pNextItem = ph;
@@ -1465,7 +1468,7 @@ void CTransparencyRenderer::Render (void)
 {
 #if RENDER_TRANSPARENCY
 	struct tTranspItem	**pd, *pl, *pn;
-	int						nDepth, nItems, bStencil;
+	int						nDepth, bStencil;
 
 if (!(gameOpts->render.bDepthSort && m_data.depthBuffer.Buffer () && (m_data.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;
@@ -1503,26 +1506,30 @@ glDepthMask (0);
 glEnable (GL_CULL_FACE);
 particleManager.BeginRender (-1, 1);
 m_data.nCurType = -1;
-for (pd = m_data.depthBuffer + m_data.nMaxOffs /*ITEM_DEPTHBUFFER_SIZE - 1*/, nItems = m_data.nItems;
-	  (pd >= m_data.depthBuffer.Buffer ()) && nItems;
-	  pd--) {
+for (pd = m_data.depthBuffer + m_data.nMaxOffs; (pd >= m_data.depthBuffer.Buffer ()) && m_data.nItems; pd--) {
 	if ((pl = *pd)) {
+		*pd = NULL;
 		nDepth = 0;
 		do {
 #if DBG
 			if (pl->nItem == nDbgItem)
 				nDbgItem = nDbgItem;
 #endif
-			nItems--;
+			m_data.nItems--;
 			RenderItem (pl);
 			pn = pl->pNextItem;
 			pl->pNextItem = NULL;
 			pl = pn;
 			nDepth++;
 			} while (pl);
-		*pd = NULL;
 		}
 	}
+#if DBG
+pl = m_data.itemLists.Buffer ();
+for (int i = m_data.itemLists.Length (); i; i--, pl++)
+	if (pl->pNextItem)
+		pl->pNextItem = NULL;
+#endif
 FlushBuffers (-1);
 particleManager.EndRender ();
 ResetShader ();

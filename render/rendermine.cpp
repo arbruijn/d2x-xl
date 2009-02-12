@@ -993,7 +993,7 @@ else
 	}
 StencilOff ();
 RenderSkyBox (nWindow);
-#if 0
+#if 1
 RenderEffects (nWindow);
 #endif
 #if 1
@@ -1197,7 +1197,6 @@ gameStates.ogl.bScaleLight = EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.
 gameStates.ogl.bScaleLight = 0;
 #endif
 gameStates.render.bUseCameras = USE_CAMERAS;
-transparencyRenderer.Reset ();
 PROF_END(ptAux);
 return !gameStates.render.cameras.bActive && (gameData.objs.viewerP->info.nType != OBJ_ROBOT);
 }
@@ -1469,7 +1468,7 @@ if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 		RenderSegmentList (2, 1);	// render transparent geometry
 		glDepthFunc (GL_LESS);
 		}
-#if 1
+#if 0
 	RenderEffects (nWindow);
 #endif
 	if (!gameStates.app.bNostalgia &&
