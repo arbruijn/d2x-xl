@@ -341,11 +341,12 @@ if (!bForce && (m_info.avgColor.red || m_info.avgColor.green || m_info.avgColor.
 	return 0;
 if (m_info.nBPP > 1)
 	return 0;
-m_info.avgColor.red = 
-m_info.avgColor.green =
-m_info.avgColor.blue = 0;
-if (!(bufP = Buffer ()))
+if (!(bufP = Buffer ())) {
+	m_info.avgColor.red = 
+	m_info.avgColor.green =
+	m_info.avgColor.blue = 0;
 	return -1;
+	}
 if (gameData.pig.tex.bitmapP.IsElement (this))
 	h = int (this - gameData.pig.tex.bitmapP);
 else if (gameData.pig.tex.altBitmapP.IsElement (this))
@@ -356,6 +357,9 @@ else
 	return -1;
 color = gameData.pig.tex.bitmapColors + h;
 if (!(h = (int) ((color->red + color->green + color->blue) * 255.0f))) {
+	m_info.avgColor.red = 
+	m_info.avgColor.green =
+	m_info.avgColor.blue = 0;
 	if (!(palette = m_info.palette))
 		palette = paletteManager.Default ();
 	colorBuf = palette->Color ();

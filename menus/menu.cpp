@@ -402,8 +402,10 @@ void CMenu::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* game
 
 if (SDL_GetTicks () - m_tEnter > gameOpts->menus.nFade) {
 	i = SDL_GetTicks ();
-	if (i - t0 < 25)
+	if (i - t0 < 25) {
+		G3_SLEEP (0);
 		return;
+		}
 	t0 = 0;
 	}
 
@@ -424,8 +426,10 @@ if (gameStates.app.bGameRunning && gameCanvasP /*&& (gameData.demo.nState == ND_
 		}
 	CCanvas::Pop ();
 	}
-else
+else {
 	console.Draw ();
+	G3_SLEEP (0);
+	}
 
 FadeIn ();
 backgroundManager.Redraw ();
@@ -532,7 +536,7 @@ if (gameOpts->menus.nFade) {
 		dt = t1 - t0;
 		m_tEnter = t1 - gameOpts->menus.nFade + dt;
 		Render (pszTitle, pszSubTitle, gameCanvasP);
-		} while (dt < t);
+		} while (dt <= t);
 	}
 }
 
