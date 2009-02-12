@@ -1339,7 +1339,7 @@ class CShadowData {
 	public:
 		short					nLight;
 		short					nLights;
-		CDynLight*			lights;
+		CDynLight*			lightP;
 		short					nShadowMaps;
 		CCamera				shadowMaps [MAX_SHADOW_MAPS];
 		CObject				lightSource;
