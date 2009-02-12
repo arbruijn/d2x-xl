@@ -985,19 +985,17 @@ else
 	if (gameStates.render.nRenderPass < 0)
 		RenderMine (nStartSeg, nEyeOffset, nWindow);
 	else {
-		for (gameStates.render.nRenderPass = 0;
-			gameStates.render.nRenderPass < 2;
-			gameStates.render.nRenderPass++) {
+		for (gameStates.render.nRenderPass = 0; gameStates.render.nRenderPass < 2; gameStates.render.nRenderPass++) {
 			OglStartFrame (0, 1);
 			RenderMine (nStartSeg, nEyeOffset, nWindow);
 			}
 		}
 	}
 StencilOff ();
-if ((gameOpts->render.bDepthSort > 0) || RENDERPATH)
-	RenderSkyBox (nWindow);
-//PrintLog ("RenderEffects\n");
+RenderSkyBox (nWindow);
+#if 0
 RenderEffects (nWindow);
+#endif
 #if 1
 if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ())) {
 	//PrintLog ("RenderRadar\n");
@@ -1471,6 +1469,9 @@ if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nSha
 		RenderSegmentList (2, 1);	// render transparent geometry
 		glDepthFunc (GL_LESS);
 		}
+#if 1
+		RenderEffects (nWindow);
+#endif
 	if (!gameStates.app.bNostalgia &&
 		 (!automap.m_bDisplay || gameOpts->render.automap.bCoronas) && gameOpts->render.coronas.bUse) {
  		glEnable (GL_TEXTURE_2D);

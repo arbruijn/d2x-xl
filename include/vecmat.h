@@ -707,16 +707,16 @@ inline const CFixVector CFixVector::Avg (CFixVector& src0, CFixVector& src1,
 }
 
 inline CFixVector& CFixVector::Cross (CFixVector& dest, const CFixVector& v0, const CFixVector& v1) {
-	dest.Set ((fix) (((double) v0 [Y] * (double) v1 [Z] - (double) v0 [Z] * (double) v1 [Y]) / 65536.0),
-	          (fix) (((double) v0 [Z] * (double) v1 [X] - (double) v0 [X] * (double) v1 [Z]) / 65536.0),
-	          (fix) (((double) v0 [X] * (double) v1 [Y] - (double) v0 [Y] * (double) v1 [X]) / 65536.0));
+	dest.Set (F2X ((X2F (v0 [Y]) * X2F (v1 [Z]) - X2F (v0 [Z]) * X2F (v1 [Y]))),
+	          F2X ((X2F (v0 [Z]) * X2F (v1 [X]) - X2F (v0 [X]) * X2F (v1 [Z]))),
+	          F2X ((X2F (v0 [X]) * X2F (v1 [Y]) - X2F (v0 [Y]) * X2F (v1 [X]))));
 	return dest;
 }
 
 inline const CFixVector CFixVector::Cross (const CFixVector& v0, const CFixVector& v1) {
-	return Create ((fix) (((double) v0 [Y] * (double) v1 [Z] - (double) v0 [Z] * (double) v1 [Y]) / 65536.0),
-	               (fix) (((double) v0 [Z] * (double) v1 [X] - (double) v0 [X] * (double) v1 [Z]) / 65536.0),
-	               (fix) (((double) v0 [X] * (double) v1 [Y] - (double) v0 [Y] * (double) v1 [X]) / 65536.0));
+	return Create (F2X ((X2F (v0 [Y]) * X2F (v1 [Z]) - X2F (v0 [Z]) * X2F (v1 [Y]))),
+	               F2X ((X2F (v0 [Z]) * X2F (v1 [X]) - X2F (v0 [X]) * X2F (v1 [Z]))),
+	               F2X ((X2F (v0 [X]) * X2F (v1 [Y]) - X2F (v0 [Y]) * X2F (v1 [X]))));
 }
 
 //computes the delta angle between two vectors.

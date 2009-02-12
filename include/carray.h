@@ -94,6 +94,12 @@ class CArray : public CQuickSort < _T > {
 			}
 
 		void Clear (ubyte filler = 0, uint count = 0xffffffff) { 
+#if DBG
+			if ((count != 0xffffffff) && (count > 1000000))
+				count = count;
+			if ((count == 0xffffffff) && (m_data.length > 512 * 512 * 32))
+				count = count;
+#endif
 			if (m_data.buffer) 
 				memset (m_data.buffer, filler, sizeof (_T) * ((count < m_data.length) ? count : m_data.length)); 
 			}
