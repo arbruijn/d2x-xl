@@ -82,6 +82,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "banlist.h"
 #include "songs.h"
 #include "headlight.h"
+#include "gpgpu_lighting.h"
 
 u_int32_t nCurrentVGAMode;
 
@@ -1066,7 +1067,7 @@ PrintLog ("unloading extra texture data\n");
 FreeExtraImages ();
 PrintLog ("unloading palettes\n");
 gameData.segs.skybox.Destroy ();
-gpguLighting.End ();
+gpgpuLighting.End ();
 if (gameStates.render.vr.buffers.offscreen) {
 	gameStates.render.vr.buffers.offscreen->Destroy ();
 	gameStates.render.vr.buffers.offscreen = NULL;
