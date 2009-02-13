@@ -301,11 +301,14 @@ int CTrigger::DoPlaySound (short nObject)
 
 if (!indexP)
 	return 0;
-if (time < 0)
+if (time < 0) {
 	audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xffff / 2, -1, -1, -1, -1, I2X (1), indexP->pszText);
-else if (gameData.time.xGame - tOperated < time)
+	flags |= TF_PLAYING_SOUND;
+	}
+else if (gameData.time.xGame - tOperated < time) {
 	audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xffff / 2, 0, 0, time - 1, -1, I2X (1), indexP->pszText);
-triP->flags |= TF_PLAYING_SOUND;
+	flags |= TF_PLAYING_SOUND;
+	}
 return 1;
 }
 
@@ -1029,10 +1032,7 @@ for (int i = 0; i < MAX_TRIGGER_TARGETS; i++) {
 	sides [i] = cf.ReadShort ();
 	}
 nChannel = -1;
-if saveGameManager.Version () < 44)
-	tOperated = -1;
-else
-	tOperated = cf.ReadFix ();
+tOperated = (saveGameManager.Version () < 44) ? -1 : cf.ReadFix ();
 }
 
 //------------------------------------------------------------------------------
@@ -1117,7 +1117,7 @@ static void StartTriggeredSounds (CArray<CTrigger>& triggers)
 	CTrigger	*trigP = triggers.Buffer ();
 
 for (int i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++)
-	if ((trigP->nType == TT_SOUND) && (trigP->flags & TF_PLAYING_SOUND) && (trigP->channel < 0))
+	if ((trigP->nType == TT_SOUND) && (trigP->flags & TF_PLAYING_SOUND) && (trigP->nChannel < 0))
 		trigP->DoPlaySound (-1);
 }
 
