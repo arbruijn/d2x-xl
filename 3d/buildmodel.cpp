@@ -670,7 +670,7 @@ phb [0].vSize [Z] = (fix) dz;
 gameData.models.offsets [m_nModel][X] = (phb [0].vMax [X] + phb [0].vMin [X]) / 2;
 gameData.models.offsets [m_nModel][Y] = (phb [0].vMax [Y] + phb [0].vMin [Y]) / 2;
 gameData.models.offsets [m_nModel][Z] = (phb [0].vMax [Z] + phb [0].vMin [Z]) / 2;
-gameData.models.polyModels [0][m_nModel].SetRad (F2X (sqrt (dx * dx + dy * dy), 1));
+gameData.models.polyModels [0][m_nModel].SetRad (F2X (sqrt (dx * dx + dy * dy)), 1);
 //phb [0].vOffset = gameData.models.offsets [m_nModel];
 for (i = 0; i <= j; i++)
 	ComputeHitbox (m_nModel, i);
