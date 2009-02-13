@@ -823,16 +823,8 @@ restart:
 				continue;
 			//	If this is a robot:robot collision, only do it if both of them have attackType != 0 (eg, green guy)
 			if (nThisType == OBJ_ROBOT) {
-				if (flags & FQ_ANY_OBJECT) {
-					if (nOtherType != OBJ_ROBOT)
-						continue;
-					}
-				else {
-					if (nOtherType == OBJ_ROBOT)
-						continue;
-					}
-				if (nOtherType == OBJ_ROBOT)
-					nOtherType = OBJ_ROBOT;
+				if ((flags & FQ_ANY_OBJECT) ? (nOtherType != OBJ_ROBOT) : (nOtherType == OBJ_ROBOT))
+					continue;
 				if (ROBOTINFO (thisObjP->info.nId).attackType)
 					nFudgedRad = (radP1 * 3) / 4;
 				}
@@ -841,10 +833,7 @@ restart:
 				 ((nOtherType == OBJ_PLAYER) ||
 				 (IsCoopGame && (nOtherType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parent.nType == OBJ_PLAYER))))
 				nFudgedRad = radP1 / 2;
-			if (flags & FQ_ANY_OBJECT)
-				d = CheckVectorToObject (vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
-			else
-				d = CheckVectorToObject (vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
+			d = CheckVectorToObject (vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
 			if (d && (d < dMin)) {
 #if DBG
 				CheckVectorToObject (vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);

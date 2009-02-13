@@ -302,11 +302,11 @@ int CTrigger::DoPlaySound (short nObject)
 if (!indexP)
 	return 0;
 if (time < 0) {
-	audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xffff / 2, -1, -1, -1, -1, I2X (1), indexP->pszText);
+	nChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xffff / 2, -1, -1, -1, -1, I2X (1), indexP->pszText);
 	flags |= TF_PLAYING_SOUND;
 	}
 else if (gameData.time.xGame - tOperated < time) {
-	audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xffff / 2, 0, 0, time - 1, -1, I2X (1), indexP->pszText);
+	nChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xffff / 2, 0, 0, time - 1, -1, I2X (1), indexP->pszText);
 	flags |= TF_PLAYING_SOUND;
 	}
 return 1;
