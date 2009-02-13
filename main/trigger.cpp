@@ -1116,7 +1116,7 @@ static void StartTriggeredSounds (CArray<CTrigger>& triggers)
 {
 	CTrigger	*trigP = triggers.Buffer ();
 
-for (int i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++)
+for (int i = triggers.Length (); i > 0; i--, trigP++)
 	if ((trigP->nType == TT_SOUND) && (trigP->flags & TF_PLAYING_SOUND) && (trigP->nChannel < 0))
 		trigP->DoPlaySound (-1);
 }
@@ -1135,7 +1135,7 @@ static void StopTriggeredSounds (CArray<CTrigger>& triggers)
 {
 	CTrigger	*trigP = triggers.Buffer ();
 
-for (int i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++)
+for (int i = triggers.Length (); i > 0; i--, trigP++)
 	trigP->nChannel = -1;
 }
 
