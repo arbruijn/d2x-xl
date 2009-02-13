@@ -301,12 +301,11 @@ int CTrigger::DoPlaySound (short nObject)
 
 if (!indexP)
 	return 0;
-if (time < 0) {
+if (time < 0)
 	audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xffff / 2, -1, -1, -1, -1, I2X (1), indexP->pszText);
-	triP->flags |= TF_PLAYING_SOUND;
-	}
-else
+else if (gameData.time.xGame - tOperated < time)
 	audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xffff / 2, 0, 0, time - 1, -1, I2X (1), indexP->pszText);
+triP->flags |= TF_PLAYING_SOUND;
 return 1;
 }
 
@@ -837,6 +836,8 @@ if (flags & TF_ONE_SHOT)		//if this is a one-shot...
 
 PrintLog ("operating trigger %d (%d)\n", this - gameData.trigs.triggers.Buffer ());
 
+tOperated = gameData.time.xGame;
+
 switch (nType) {
 
 	case TT_EXIT:
@@ -1028,6 +1029,10 @@ for (int i = 0; i < MAX_TRIGGER_TARGETS; i++) {
 	sides [i] = cf.ReadShort ();
 	}
 nChannel = -1;
+if saveGameManager.Version () < 44)
+	tOperated = -1;
+else
+	tOperated = cf.ReadFix ();
 }
 
 //------------------------------------------------------------------------------
@@ -1046,6 +1051,7 @@ for (int i = 0; i < MAX_TRIGGER_TARGETS; i++) {
 	cf.WriteShort (segments [i]);
 	cf.WriteShort (sides [i]);
 	}
+cf.WriteFix (tOperated);
 }
 
 //------------------------------------------------------------------------------
@@ -1327,6 +1333,7 @@ for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
 	sides [i] = cf.ReadShort ();
 nChannel = -1;
+tOperated = -1;
 }
 
 //	-----------------------------------------------------------------------------

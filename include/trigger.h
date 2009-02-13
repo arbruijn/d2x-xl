@@ -123,6 +123,7 @@ class CTrigger {
 		short		segments [MAX_TRIGGER_TARGETS];
 		short		sides [MAX_TRIGGER_TARGETS];
 		int		nChannel;
+		fix		tOperated;
 
 	public:
 		void Read (CFile& cf, int bObjTrigger);
