@@ -2351,6 +2351,7 @@ else {
 	}
 gameData.objs.viewerP = 
 gameData.objs.consoleP = OBJECTS + LOCALPLAYER.nObject;
+StartTriggeredSounds ();
 StartTime (1);
 if (!extraGameInfo [0].nBossCount && (!IsMultiGame || IsCoopGame) && OpenExits ())
 	InitCountdown (NULL, 1, -1);

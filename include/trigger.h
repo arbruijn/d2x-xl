@@ -68,6 +68,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define TF_PERMANENT			 8
 #define TF_ALTERNATE			 16
 #define TF_SET_ORIENT		 32
+#define TF_PLAYING_SOUND	 64
 
 //old CTrigger structs
 
@@ -114,13 +115,14 @@ typedef struct tTriggerV30 {
 
 class CTrigger {
 	public:
-		ubyte   nType;       //what this CTrigger does
-		short   flags;      //currently unused
-		sbyte   nLinks;  //how many doors, etc. linked to this
-		fix     value;
-		fix     time;
-		short   segments [MAX_TRIGGER_TARGETS];
-		short   sides [MAX_TRIGGER_TARGETS];
+		ubyte		nType;   //what this CTrigger does
+		short		flags;   //currently unused
+		sbyte		nLinks;  //how many doors, etc. linked to this
+		fix		value;
+		fix		time;
+		short		segments [MAX_TRIGGER_TARGETS];
+		short		sides [MAX_TRIGGER_TARGETS];
+		int		nChannel;
 
 	public:
 		void Read (CFile& cf, int bObjTrigger);
@@ -200,6 +202,8 @@ void UpdatePlayerOrient (void);
 int FindTriggerTarget (short nSegment, short nSide);
 CTrigger *FindObjTrigger (short nObject, short nType, short nTrigger);
 int OpenExits (void);
+void StartTriggeredSounds (void);
+void StopTriggeredSounds (void);
 
 extern CFixVector	speedBoostSrc, speedBoostDest;
 

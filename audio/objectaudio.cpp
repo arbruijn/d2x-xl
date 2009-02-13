@@ -664,6 +664,7 @@ soundQueue.Pause ();
 void CAudio::PauseAll (void)
 {
 midi.Pause ();
+StopTriggeredSounds ();
 PauseSounds ();
 }
 
@@ -680,6 +681,7 @@ ResumeLoopingSound ();
 void CAudio::ResumeAll (void)
 {
 midi.Resume ();
+ResumeLoopingSound ();
 ResumeSounds ();
 }
 

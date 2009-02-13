@@ -725,9 +725,9 @@ else {
 			bBrightPolys = bGatling || (bBlendPolys && WI_energy_usage (id));
 			if (bEnergyWeapon) {
 				if (gameOpts->legacy.bRender)
-					OglBlendFunc (GL_ONE, GL_ONE);
-				else
 					gameStates.render.grAlpha = GrAlpha (FADE_LEVELS - 2);
+				else
+					OglBlendFunc (GL_ONE, GL_ONE);
 				}
 			if (bBlendPolys) {
 #if 0
@@ -736,7 +736,7 @@ else {
 #endif
 					bOk = DrawPolyModel (
 						objP, &objP->info.position.vPos, &objP->info.position.mOrient,
-						reinterpret_cast<CAngleVector*> (&objP->rType.polyObjInfo.animAngles),
+						objP->rType.polyObjInfo.animAngles,
 						gameData.weapons.info [id].nInnerModel,
 						objP->rType.polyObjInfo.nSubObjFlags,
 						bBrightPolys ? I2X (1) : xLight,
