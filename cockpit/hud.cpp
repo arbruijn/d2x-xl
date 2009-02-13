@@ -731,7 +731,7 @@ if (canvP)
 
 void CHUD::Toggle (void)
 {
-CGenericCockpit::Activate (CM_LETTERBOX);
+CGenericCockpit::Activate (CM_LETTERBOX, true);
 }
 
 //	-----------------------------------------------------------------------------
@@ -764,7 +764,7 @@ CGenericCockpit::DrawRecording (7);
 
 void CWideHUD::Toggle (void)
 {
-CGenericCockpit::Activate (CM_FULL_COCKPIT);
+CGenericCockpit::Activate (CM_FULL_COCKPIT, true);
 }
 
 //	-----------------------------------------------------------------------------

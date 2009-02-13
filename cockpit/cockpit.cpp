@@ -579,7 +579,7 @@ return true;
 
 void CCockpit::Toggle (void)
 {
-CGenericCockpit::Activate (CM_STATUS_BAR);
+CGenericCockpit::Activate (CM_STATUS_BAR, true);
 }
 
 //	-----------------------------------------------------------------------------

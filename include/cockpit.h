@@ -190,7 +190,7 @@ class CGenericCockpit {
 		void RenderWindows (void);
 		void Render (int bExtraInfo);
 		void RenderWindow (int nWindow, CObject *viewerP, int bRearView, int nUser, const char *pszLabel);
-		void Activate (int nType);
+		void Activate (int nType, bool bClearMessages = false);
 		bool Setup (void);
 
 		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h) = 0;

@@ -1907,7 +1907,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-void CGenericCockpit::Activate (int nType)
+void CGenericCockpit::Activate (int nType, bool bClearMessages)
 {
 if (nType == CM_FULL_COCKPIT)
 	cockpit = &fullCockpit;
@@ -1927,7 +1927,8 @@ gameStates.render.cockpit.nType = nType;
 m_info.nCockpit = (gameStates.video.nDisplayMode && !gameStates.app.bDemoData) ? gameData.models.nCockpits / 2 : 0;
 gameStates.render.cockpit.nNextType = -1;
 cockpit->Setup (false);
-HUDClearMessages ();
+if (bClearMessages)
+	HUDClearMessages ();
 SavePlayerProfile ();
 }
 
