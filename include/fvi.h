@@ -103,7 +103,7 @@ int PixelTranspType (short nTexture, short nOrient, short nFrame, fix u, fix v);
 int CheckLineToSegFace (CFixVector *newP, CFixVector *p0, CFixVector *p1, 
 							short nSegment, short nSide, short iFace, int nv, fix rad);
 
-int CanSeePoint (CObject *objP, CFixVector *vSource, CFixVector *vDest, short nSegment);
+int CanSeePoint (CObject *objP, CFixVector *vSource, CFixVector *vDest, short nSegment, fix xRad = 0);
 
 int ObjectToObjectVisibility (CObject *objP1, CObject *objP2, int transType);
 

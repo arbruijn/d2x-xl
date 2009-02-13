@@ -991,7 +991,7 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 				if (nFaceHitType)
 				 {
 					//is this the closest hit?
-					d = CFixVector::Dist(vHitPoint, *p0);
+					d = CFixVector::Dist (vHitPoint, *p0);
 					if (d < dMin) {
 						dMin = d;
 						vClosestHitPoint = vHitPoint;
@@ -1295,7 +1295,7 @@ return SphereIntersectsWall (&objP->info.position.vPos, objP->info.nSegment, obj
 
 //------------------------------------------------------------------------------
 
-int CanSeePoint (CObject *objP, CFixVector *vSource, CFixVector *vDest, short nSegment)
+int CanSeePoint (CObject *objP, CFixVector *vSource, CFixVector *vDest, short nSegment, fix xRad)
 {
 	tFVIQuery	fq;
 	int			nHitType;
@@ -1305,8 +1305,8 @@ int CanSeePoint (CObject *objP, CFixVector *vSource, CFixVector *vDest, short nS
 
 fq.p0 = vSource;
 fq.p1 = vDest;
-fq.radP0 =
-fq.radP1 = 0;
+fq.radP0 = 1;
+fq.radP1 = xRad;
 fq.thisObjNum = objP ? objP->Index () : -1;
 fq.flags = FQ_TRANSWALL;
 if (SPECTATOR (objP))

@@ -885,12 +885,13 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 	 !((objP->info.nId == GUIDEDMSL_ID) &&
 	   (objP == (gmObjP = gameData.objs.guidedMissile [OBJECTS [objP->cType.laserInfo.parent.nObject].info.nId].objP)) &&
 	   (objP->info.nSignature == gmObjP->info.nSignature))) {
-	CFixVector	vVecToObject, vTemp;
+	CFixVector	vVecToObject, vNewVel;
 	fix			dot = I2X (1);
-	fix			speed, xMaxSpeed;
+	fix			speed, xMaxSpeed, xDist;
 	int			nObjId = objP->info.nId;
 	//	For first 1/2 second of life, missile flies straight.
-	if (objP->cType.laserInfo.xCreationTime + HomingMslStraightTime (nObjId) < gameData.time.xGame) {
+	//if (objP->cType.laserInfo.xCreationTime + HomingMslStraightTime (nObjId) < gameData.time.xGame) 
+		{
 		int	nHomingTarget = objP->cType.laserInfo.nHomingTarget;
 
 		//	If it's time to do tracking, then it's time to grow up, stop bouncing and start exploding!.
@@ -905,14 +906,15 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 		nHomingTarget = TrackHomingTarget (nHomingTarget, objP, &dot);
 		if (nHomingTarget != -1) {
 			if (nHomingTarget == LOCALPLAYER.nObject) {
-				xDistToPlayer = CFixVector::Dist(objP->info.position.vPos, OBJECTS [nHomingTarget].info.position.vPos);
+				xDistToPlayer = CFixVector::Dist (objP->info.position.vPos, OBJECTS [nHomingTarget].info.position.vPos);
 				if ((xDistToPlayer < LOCALPLAYER.homingObjectDist) || (LOCALPLAYER.homingObjectDist < 0))
 					LOCALPLAYER.homingObjectDist = xDistToPlayer;
 				}
 			vVecToObject = OBJECTS [nHomingTarget].info.position.vPos - objP->info.position.vPos;
+			xDist = vVecToObject.Mag ();
 			CFixVector::Normalize (vVecToObject);
-			vTemp = objP->mType.physInfo.velocity;
-			speed = CFixVector::Normalize (vTemp);
+			vNewVel = objP->mType.physInfo.velocity;
+			speed = CFixVector::Normalize (vNewVel);
 			xMaxSpeed = WI_speed (objP->info.nId,gameStates.app.nDifficultyLevel);
 			if (speed + I2X (1) < xMaxSpeed) {
 				speed += FixMul (xMaxSpeed, gameData.time.xFrame / 2);
@@ -925,27 +927,28 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 				if (h > 7)
 					vVecToObject *= (I2X (1) / (h - 6));
 				}
-			// -- dot = CFixVector::Dot (vTemp, vVecToObject);
+			// -- dot = CFixVector::Dot (vNewVel, vVecToObject);
 			vVecToObject *= (I2X (1) / HomingMslScale ());
-			vTemp += vVecToObject;
+			vNewVel += vVecToObject;
 			//	The boss' smart children track better...
 			if (gameData.weapons.info [objP->info.nId].renderType != WEAPON_RENDER_POLYMODEL)
-				vTemp += vVecToObject;
-			CFixVector::Normalize(vTemp);
-			objP->mType.physInfo.velocity = vTemp;
+				vNewVel += vVecToObject;
+			CFixVector::Normalize (vNewVel);
+			CFixVector vOldVel = objP->mType.physInfo.velocity;
+			objP->mType.physInfo.velocity = vNewVel;
 			objP->mType.physInfo.velocity *= speed;
-
-			//	Subtract off life proportional to amount turned.
-			//	For hardest turn, it will lose 2 seconds per second.
-			 {
+			CFixVector vTest = objP->info.position.vPos + vNewVel * xDist;
+			if (!CanSeePoint (NULL, &objP->info.position.vPos, &vTest, objP->info.nSegment, 3 * objP->info.xSize / 2))
+				objP->mType.physInfo.velocity = vOldVel;
+			else {	//	Subtract off life proportional to amount turned. For hardest turn, it will lose 2 seconds per second.
 				fix	absdot = abs (I2X (1) - dot);
-            fix	lifelost = FixMul (absdot*32, gameData.time.xFrame);
+            fix	lifelost = FixMul (absdot * 32, gameData.time.xFrame);
 				objP->info.xLifeLeft -= lifelost;
 				}
 
 			//	Only polygon OBJECTS have visible orientation, so only they should turn.
 			if (gameData.weapons.info [objP->info.nId].renderType == WEAPON_RENDER_POLYMODEL)
-				HomingMissileTurnTowardsVelocity (objP, &vTemp);		//	vTemp is normalized velocity.
+				HomingMissileTurnTowardsVelocity (objP, &vNewVel);		//	vNewVel is normalized velocity.
 			}
 		}
 	}

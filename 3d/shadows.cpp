@@ -1444,10 +1444,10 @@ if (FAST_SHADOWS) {
 		if (!CanSeePoint (objP, &objP->info.position.vPos, &gameData.render.shadows.lightP->info.vPos, objP->info.nSegment))
 			continue;
 		vLightDir = objP->info.position.vPos - gameData.render.shadows.lightP->info.vPos;
-		CFixVector::Normalize(vLightDir);
+		CFixVector::Normalize (vLightDir);
 		if (gameData.render.shadows.nLight) {
 			for (j = 0; j < gameData.render.shadows.nLight; j++)
-				if (abs (CFixVector::Dot (vLightDir, gameData.render.shadows.vLightDir[j])) > I2X (2) / 3) // 60 deg
+				if (abs (CFixVector::Dot (vLightDir, gameData.render.shadows.vLightDir [j])) > I2X (2) / 3) // 60 deg
 					break;
 			if (j < gameData.render.shadows.nLight)
 				continue;

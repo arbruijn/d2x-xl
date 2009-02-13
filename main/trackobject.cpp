@@ -41,10 +41,10 @@ if (objP->info.nType == OBJ_ROBOT) {
 		return 0;
 	}
 vGoal = objP->info.position.vPos - trackerP->info.position.vPos;
-CFixVector::Normalize(vGoal);
+CFixVector::Normalize (vGoal);
 *xDot = CFixVector::Dot (vGoal, trackerP->info.position.mOrient.FVec ());
 if ((*xDot < xMinTrackableDot) && (*xDot > I2X (9) / 10)) {
-	CFixVector::Normalize(vGoal);
+	CFixVector::Normalize (vGoal);
 	*xDot = CFixVector::Dot (vGoal, trackerP->info.position.mOrient.FVec ());
 	}
 
