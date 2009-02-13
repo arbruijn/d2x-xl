@@ -237,14 +237,14 @@ objP = OBJECTS + nObject;
 if (gameData.weapons.info [nWeaponType].renderType == WEAPON_RENDER_POLYMODEL) {
 	objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->info.nId].nModel;
 	objP->info.xSize = FixDiv (gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].Rad (),
-								gameData.weapons.info [objP->info.nId].poLenToWidthRatio);
+										gameData.weapons.info [objP->info.nId].poLenToWidthRatio);
 	}
 else if (EGI_FLAG (bTracers, 0, 1, 0) && ((objP->info.nId == VULCAN_ID) || (objP->info.nId == GAUSS_ID))) {
 	objP->rType.polyObjInfo.nModel = gameData.weapons.info [SUPERLASER_ID + 1].nModel;
 	objP->rType.polyObjInfo.nTexOverride = -1;
 	objP->rType.polyObjInfo.nAltTextures = 0;
 	objP->info.xSize = FixDiv (gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].Rad (),
-								gameData.weapons.info [SUPERLASER_ID].poLenToWidthRatio);
+										gameData.weapons.info [SUPERLASER_ID].poLenToWidthRatio);
 	objP->info.renderType = RT_POLYOBJ;
 	}
 objP->mType.physInfo.mass = WI_mass (nWeaponType);

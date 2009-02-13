@@ -691,7 +691,7 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 		// intersects with the hitbox, check whether the radius line of *thisObjP intersects any of the hitboxes.
 			v0 = thisObjP->info.position.vPos;
 			vn = otherObjP->info.position.vPos - v0;
-			CFixVector::Normalize(vn);
+			CFixVector::Normalize (vn);
 			v1 = v0 + vn * thisObjP->info.xSize;
 			if (0x7fffffff == (dist = CheckVectorToHitbox (vHit, &v0, &v0, &vn, p1, otherObjP, thisObjP->info.xSize)))
 				return 0;
@@ -701,6 +701,8 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 		}
 	}
 else {
+	if ((otherObjP->info.nType == OBJ_WEAPON) && (gameData.objs.bIsMissile [otherObjP->info.nId]))
+		size = gameData.models.polyModels [0][otherObjP->rType.polyObjInfo.nModel].Rad (1);
 	if (!(dist = CheckVectorToSphere1 (vHit, p0, p1, &vPos, size + rad)))
 		return 0;
 	}
