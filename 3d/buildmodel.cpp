@@ -661,16 +661,10 @@ if (m_nModel == nDbgModel)
 #else
 G3ShiftModel (objP, m_nModel, bHires, &vOffset);
 #endif
-dx = (phb [0].vMax [X] - phb [0].vMin [X]);
-dy = (phb [0].vMax [Y] - phb [0].vMin [Y]);
-dz = (phb [0].vMax [Z] - phb [0].vMin [Z]);
-phb [0].vSize [X] = (fix) dx;
-phb [0].vSize [Y] = (fix) dy;
-phb [0].vSize [Z] = (fix) dz;
-gameData.models.offsets [m_nModel][X] = (phb [0].vMax [X] + phb [0].vMin [X]) / 2;
-gameData.models.offsets [m_nModel][Y] = (phb [0].vMax [Y] + phb [0].vMin [Y]) / 2;
-gameData.models.offsets [m_nModel][Z] = (phb [0].vMax [Z] + phb [0].vMin [Z]) / 2;
-gameData.models.polyModels [0][m_nModel].SetRad (F2X (sqrt (dx * dx + dy * dy)), 1);
+phb [0].vSize = phb [0].vMax - phb [0].vMin;
+gameData.models.offsets [m_nModel] = CFixVector::Avg (phb [0].vMax, phb [0].vMin);
+hv.Set (phb [0].vSize [X], phb [0].vSize [Y], 0);
+gameData.models.polyModels [0][m_nModel].SetRad (hv.Mag () / 2, 1);
 //phb [0].vOffset = gameData.models.offsets [m_nModel];
 for (i = 0; i <= j; i++)
 	ComputeHitbox (m_nModel, i);
