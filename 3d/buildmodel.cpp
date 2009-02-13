@@ -663,8 +663,6 @@ G3ShiftModel (objP, m_nModel, bHires, &vOffset);
 #endif
 phb [0].vSize = phb [0].vMax - phb [0].vMin;
 gameData.models.offsets [m_nModel] = CFixVector::Avg (phb [0].vMax, phb [0].vMin);
-hv.Set (phb [0].vSize [X], phb [0].vSize [Y], 0);
-gameData.models.polyModels [0][m_nModel].SetRad (hv.Mag () / 2, 1);
 //phb [0].vOffset = gameData.models.offsets [m_nModel];
 for (i = 0; i <= j; i++)
 	ComputeHitbox (m_nModel, i);

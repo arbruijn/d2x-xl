@@ -701,8 +701,10 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 		}
 	}
 else {
-	if ((otherObjP->info.nType == OBJ_WEAPON) && (gameData.objs.bIsMissile [otherObjP->info.nId]))
-		size = gameData.models.polyModels [0][otherObjP->rType.polyObjInfo.nModel].Rad (1);
+#if 0
+	if ((otherObjP->info.nType == OBJ_WEAPON) /*&& (gameData.objs.bIsMissile [otherObjP->info.nId])*/)
+		rad = gameData.models.polyModels [0][otherObjP->rType.polyObjInfo.nModel].Rad (1);
+#endif
 	if (!(dist = CheckVectorToSphere1 (vHit, p0, p1, &vPos, size + rad)))
 		return 0;
 	}
