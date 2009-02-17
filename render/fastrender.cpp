@@ -151,7 +151,7 @@ else {
 	if (!faceP->bSplit)
 		faceP->nOvlTex = sideP->m_nOvlTex;
 	}
-if (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk) {
+if (gameOpts->ogl.bGlTexMerge) {
 	faceP->bmBot = LoadFaceBitmap (faceP->nBaseTex, nFrame);
 	if (nFrame)
 		nFrame = nFrame;

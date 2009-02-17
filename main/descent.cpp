@@ -684,7 +684,7 @@ switch (loadOp) {
 		PiggyInitMemory ();
 		break;
 	case 17:
-		if (!FindArg("-nomouse"))
+		if (!FindArg ("-nomouse"))
 			MouseInit ();
 		break;
 	case 18:

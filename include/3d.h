@@ -217,8 +217,6 @@ int G3DrawSprite (const CFixVector& vPos, fix xWidth, fix xHeight, CBitmap *bmP,
 
 //specifies 2d drawing routines to use instead of defaults.  Passing
 //NULL for either or both restores defaults
-void G3SetSpecialRender (tmap_drawer_fp tmap_drawer, flat_drawer_fp flat_drawer, line_drawer_fp line_drawer);
-
 extern g3sPoint *Vbuf0 [];
 extern g3sPoint *Vbuf1 [];
 

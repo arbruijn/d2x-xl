@@ -890,7 +890,7 @@ void TactileSetButtonJolt ()
 
 if (TactileStick) {
 	if (stickmag==-1) {
-		if (t=FindArg("-stickmag"))
+		if (t=FindArg ("-stickmag"))
 			stickmag=atoi (pszArgList [t+1]);
 		else
 			stickmag=50;

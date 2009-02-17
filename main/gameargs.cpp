@@ -81,7 +81,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "lightcluster.h"
 
 void SetMaxPitch (int nMinTurnRate);
-void select_tmap(const char *nType);
 void PrintVersion (void);
 
 // ----------------------------------------------------------------------------
@@ -373,18 +372,18 @@ void EvalOglArgs (void)
 
 if ((t = FindArg ("-gl_alttexmerge")))
 	gameOpts->ogl.bGlTexMerge = NumArg (t, 1);
-if ((t = FindArg("-gl_16bittextures"))) {
+if ((t = FindArg ("-gl_16bittextures"))) {
 	gameStates.ogl.bpp = 16;
 	gameStates.ogl.nRGBAFormat = GL_RGBA4;
 	gameStates.ogl.nRGBFormat = GL_RGB5;
 	}
-if ((t=FindArg("-gl_intensity4_ok")))
+if ((t=FindArg ("-gl_intensity4_ok")))
 	gameStates.ogl.bIntensity4 = NumArg (t, 1);
-if ((t = FindArg("-gl_luminance4_alpha4_ok")))
+if ((t = FindArg ("-gl_luminance4_alpha4_ok")))
 	gameStates.ogl.bLuminance4Alpha4 = NumArg (t, 1);
-if ((t = FindArg("-gl_readpixels_ok")))
+if ((t = FindArg ("-gl_readpixels_ok")))
 	gameStates.ogl.bReadPixels = NumArg (t, 1);
-if ((t = FindArg("-gl_gettexlevelparam_ok")))
+if ((t = FindArg ("-gl_gettexlevelparam_ok")))
 	gameStates.ogl.bGetTexLevelParam = NumArg (t, 1);
 if ((t = FindArg ("-FSAA")))
 	gameStates.ogl.bFSAA = NumArg (t, 0);
@@ -443,10 +442,6 @@ if ((t = FindArg ("-enable_lightmaps")))
 	gameStates.render.color.bLightmapsOk = NumArg (t, 1);
 if ((t = FindArg ("-blend_background")))
 	gameStates.render.bBlendBackground = NumArg (t, 1);
-if ((t = FindArg ("-tmap")))
-	select_tmap (pszArgList [t+1]);
-else
-	select_tmap (NULL);
 if ((t = FindArg ("-maxfps"))) {
 	t = NumArg (t, 250);
 	if (t <= 0)

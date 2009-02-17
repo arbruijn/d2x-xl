@@ -387,7 +387,7 @@ if (!(bHaveMonitorBg && gameOpts->render.cameras.bFitToWall)) {
 		props.uvls [2].v =
 		props.uvls [3].v = I2X (3) / 4;
 		}
-	else if (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk) {
+	else if (gameOpts->ogl.bGlTexMerge) {
 		bmBot = LoadFaceBitmap (props.nBaseTex, sideP->m_nFrame);
 		if (props.nOvlTex)
 			bmTop = LoadFaceBitmap ((short) (props.nOvlTex), sideP->m_nFrame);

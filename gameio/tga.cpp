@@ -241,7 +241,7 @@ if (ph->bits == 24) {
 else {
 	tBGRA	c;
 	tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ()) + w * (bmP->Height () - 1);
-	int bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
+	int bShaderMerge = gameOpts->ogl.bGlTexMerge;
 	nFrames = h / w - 1;
 	for (i = 0; i < h; i++) {
 		n = nFrames - i / w;

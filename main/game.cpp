@@ -186,9 +186,7 @@ gameStates.render.color.bRenderLightmaps =
 	gameStates.render.color.bLightmapsOk &&
 	gameStates.render.bAmbientColor &&
 	gameOpts->render.color.bUseLightmaps;
-gameStates.ogl.bGlTexMerge =
-	gameOpts->ogl.bGlTexMerge &&
-	gameStates.render.textures.bGlsTexMergeOk;
+gameStates.ogl.bGlTexMerge = gameOpts->ogl.bGlTexMerge;
 fpDrawTexPolyMulti = gameStates.render.color.bRenderLightmaps ? G3DrawTexPolyLightmap : G3DrawTexPolyMulti;
 return true;
 }

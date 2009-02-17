@@ -569,12 +569,12 @@ else {
 	gameStates.render.bCloaked = 1;
 	gameStates.render.grAlpha = GrAlpha (ci.nFadeValue);
 	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);	//set to black (matters for s3)
-	G3SetSpecialRender (DrawTexPolyFlat, NULL, NULL);		//use special flat drawer
+	fpDrawTexPolyMulti = G3DrawTexPolyFlat;
 	bOk = DrawPolyModel (objP, &posP->vPos, &posP->mOrient,
-									reinterpret_cast<CAngleVector*> (&objP->rType.polyObjInfo.animAngles),
-									objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags,
-									light, glow, NULL, NULL);
-	G3SetSpecialRender (NULL, NULL, NULL);
+								reinterpret_cast<CAngleVector*> (&objP->rType.polyObjInfo.animAngles),
+								objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags,
+								light, glow, NULL, NULL);
+	fpDrawTexPolyMulti = gameStates.render.color.bRenderLightmaps ? G3DrawTexPolyLightmap : G3DrawTexPolyMulti;
 	gameStates.render.grAlpha = 1.0f;
 	gameStates.render.bCloaked = 0;
 	}

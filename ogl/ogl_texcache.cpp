@@ -122,8 +122,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	bmP = OglLoadFaceBitmap (tMap1, sideP->m_nFrame);
 	if ((tMap2 = sideP->m_nOvlTex)) {
 		bm2 = OglLoadFaceBitmap (tMap1, sideP->m_nFrame);
-		if (!(bm2->Flags () & BM_FLAG_SUPER_TRANSPARENT) ||
-			 (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk))
+		if (!(bm2->Flags () & BM_FLAG_SUPER_TRANSPARENT) || gameOpts->ogl.bGlTexMerge)
 			bm2->SetupTexture (1, 3, 1);
 		else if ((bmm = TexMergeGetCachedBitmap (tMap1, tMap2, sideP->m_nOvlOrient)))
 			bmP = bmm;
@@ -234,8 +233,7 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segs.nSegments
 		bmBot = OglLoadFaceBitmap (nBaseTex, sideP->m_nFrame);
 		if ((nOvlTex = sideP->m_nOvlTex)) {
 			bmTop = OglLoadFaceBitmap (nOvlTex, sideP->m_nFrame);
-			if (!(bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) ||
-				 (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk))
+			if (!(bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) || gameOpts->ogl.bGlTexMerge)
 				bmTop->SetupTexture (1, 3, 1);
 			else if ((bmm = TexMergeGetCachedBitmap (nBaseTex, nOvlTex, sideP->m_nOvlOrient)))
 				bmBot = bmm;

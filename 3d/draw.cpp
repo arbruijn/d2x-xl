@@ -30,27 +30,6 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_lib.h"
 #include "ogl_render.h"
 
-#if 1
-tmap_drawer_fp tmap_drawer_ptr = draw_tmap;
-flat_drawer_fp flat_drawer_ptr = gr_upoly_tmap;
-#else
-void (*tmap_drawer_ptr) (CBitmap *bm, int nv, g3sPoint **vertlist) = draw_tmap;
-void (*flat_drawer_ptr) (int nv, int *vertlist) = gr_upoly_tmap;
-#endif
-
-//------------------------------------------------------------------------------
-//specifies 2d drawing routines to use instead of defaults.  Passing
-//NULL for either or both restores defaults
-void G3SetSpecialRender (tmap_drawer_fp tmap_drawer, flat_drawer_fp flat_drawer, line_drawer_fp line_drawer)
-{
-tmap_drawer_ptr = (tmap_drawer)?tmap_drawer:draw_tmap;
-flat_drawer_ptr = (flat_drawer)?flat_drawer:gr_upoly_tmap;
-if (tmap_drawer == DrawTexPolyFlat)
-	fpDrawTexPolyMulti = G3DrawTexPolyFlat;
-else
-	fpDrawTexPolyMulti = gameStates.render.color.bRenderLightmaps ? G3DrawTexPolyLightmap : G3DrawTexPolyMulti;
-}
-
 //------------------------------------------------------------------------------
 //returns true if a plane is facing the viewer. takes the unrotated surface
 //Normal of the plane, and a point on it.  The Normal need not be normalized
@@ -99,51 +78,6 @@ if (DoFacingCheck (norm, pointlist, pnt))
 	return !G3DrawTexPoly (nv, pointlist, uvl_list, bm, norm, 1, -1);
 else
 	return 0;
-}
-
-//------------------------------------------------------------------------------
-//deal with face that must be clipped
-int MustClipFlatFace (int nv, g3sCodes cc)
-{
-	int i;
-        int ret=0;
-	g3sPoint **bufptr;
-
-	bufptr = clip_polygon (Vbuf0, Vbuf1, &nv, &cc);
-
-	if (nv>0 && ! (cc.ccOr&CC_BEHIND) && !cc.ccAnd) {
-
-		for (i=0;i<nv;i++) {
-			g3sPoint *p = bufptr[i];
-
-			if (! (p->p3_flags & PF_PROJECTED))
-				G3ProjectPoint (p);
-
-			if (p->p3_flags & PF_OVERFLOW) {
-				ret = 1;
-				goto free_points;
-			}
-
-			polyVertList[i*2]   = I2X (p->p3_screen.x);
-			polyVertList[i*2+1] = I2X (p->p3_screen.y);
-		}
-
-		 (*flat_drawer_ptr) (nv, reinterpret_cast<int*> (polyVertList));
-	}
-	else
-		ret=1;
-
-	//D2_FREE temp points
-free_points:
-	;
-
-	for (i=0;i<nv;i++)
-		if (Vbuf1[i]->p3_flags & PF_TEMP_POINT)
-			free_temp_point (Vbuf1[i]);
-
-//	Assert (nFreePoints==0);
-
-	return ret;
 }
 
 //------------------------------------------------------------------------------

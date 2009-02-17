@@ -88,7 +88,7 @@ int do_slew_movement(CObject *objP, int check_keys, int check_joy )
 
 	if (check_keys) {
 		if (gameStates.app.nFunctionMode == FMODE_EDITOR) {
-			if (FindArg("-jasen"))
+			if (FindArg ("-jasen"))
 				objP->mType.physInfo.velocity[X] += VEL_SPEED * (KeyDownTime(KEY_PAD3) - KeyDownTime(KEY_PAD1));
 			else
 				objP->mType.physInfo.velocity[X] += VEL_SPEED * (KeyDownTime(KEY_PAD9) - KeyDownTime(KEY_PAD7));
@@ -96,7 +96,7 @@ int do_slew_movement(CObject *objP, int check_keys, int check_joy )
 			objP->mType.physInfo.velocity[Z] += VEL_SPEED * (KeyDownTime(KEY_PAD8) - KeyDownTime(KEY_PAD2));
 
 			rotang[PA] = (KeyDownTime(KEY_LBRACKET) - KeyDownTime(KEY_RBRACKET))/ROT_SPEED ;
-			if (FindArg("-jasen"))
+			if (FindArg ("-jasen"))
 				rotang[BA]  = (KeyDownTime(KEY_PAD7) - KeyDownTime(KEY_PAD9))/ROT_SPEED;
 			else
 				rotang[BA]  = (KeyDownTime(KEY_PAD1) - KeyDownTime(KEY_PAD3))/ROT_SPEED;

@@ -169,7 +169,7 @@ else
 if (!bmP->Buffer ())
 	return NULL;
 bmP->SetPalette (paletteManager.Game ());
-if (!(gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk)) {
+if (!gameOpts->ogl.bGlTexMerge) {
 	if (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) {
 //			return bmTop;
 		MergeTextures (nOrient, bmBot, bmTop, bmP, 1);
@@ -198,7 +198,7 @@ void MergeTexturesNormal (int nType, CBitmap * bmBot, CBitmap * bmTop, ubyte * d
 	ubyte * top_data, *bottom_data;
 	int scale;
 
-if (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk)
+if (gameOpts->ogl.bGlTexMerge)
 	return;
 if (bmTop->Flags () & BM_FLAG_RLE)
 	bmTop = rle_expand_texture(bmTop);
@@ -308,7 +308,7 @@ void MergeTextures (
 
 bmBot = bmBot->Override (-1);
 bmTop = bmTop->Override (-1);
-if (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk)
+if (gameOpts->ogl.bGlTexMerge)
 	return;
 if (bmTop->Flags () & BM_FLAG_RLE)
 	bmTop = rle_expand_texture (bmTop);
@@ -512,8 +512,6 @@ void InitTexMergeShaders (void)
 
 if (!gameStates.ogl.bShadersOk)
 	gameOpts->ogl.bGlTexMerge = 0;
-if (!gameOpts->ogl.bGlTexMerge)
-	gameStates.render.textures.bGlsTexMergeOk = 0;
 else {
 	PrintLog ("building texturing shader programs\n");
 	for (i = 0; i < 6; i++) {
@@ -525,17 +523,16 @@ else {
 		if (i == 2)
 			gameStates.render.textures.bHaveMaskShader = b;
 		else
-			gameStates.render.textures.bGlsTexMergeOk = b;
-		if (!gameStates.render.textures.bGlsTexMergeOk) {
+			gameStates.render.textures.bGlTexMergeOk = b;
+		if (!gameStates.render.textures.bGlTexMergeOk) {
 			while (i)
 				DeleteShaderProg (tmShaderProgs + --i);
+			gameOpts->ogl.bGlTexMerge = 0;
 			break;
 			}
 		}
-	if (!gameStates.render.textures.bGlsTexMergeOk)
-		gameOpts->ogl.bGlTexMerge = 0;
 	}
-if (!(gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk))
+if (!gameOpts->ogl.bGlTexMerge)
 	gameStates.ogl.bHaveTexCompression = 0;
 }
 

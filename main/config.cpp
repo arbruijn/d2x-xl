@@ -459,7 +459,7 @@ sprintf (str, "%s=%d\n", pszDigiVolume, gameConfig.nDigiVolume);
 cf.PutS (str);
 sprintf (str, "%s=%d\n", pszMidiVolume, gameConfig.nMidiVolume);
 cf.PutS (str);
-sprintf (str, "%s=%d\n", pszRedbookEnabled, FindArg("-noredbook")?bRedbookEnabledSave:redbook.Enabled ());
+sprintf (str, "%s=%d\n", pszRedbookEnabled, FindArg ("-noredbook")?bRedbookEnabledSave:redbook.Enabled ());
 cf.PutS (str);
 sprintf (str, "%s=%d\n", pszRedbookVolume, gameConfig.nRedbookVolume);
 cf.PutS (str);
@@ -504,7 +504,7 @@ sprintf (str, "%s=%d\n", pszVrResolution, gameConfig.vrResolution);
 cf.PutS (str);
 sprintf (str, "%s=%d\n", pszVrTracking, gameConfig.vrTracking);
 cf.PutS (str);
-sprintf (str, "%s=%d\n", pszHiresMovies, (FindArg("-nohires") || FindArg("-nohighres") || FindArg("-lowresmovies"))
+sprintf (str, "%s=%d\n", pszHiresMovies, (FindArg ("-nohires") || FindArg ("-nohighres") || FindArg ("-lowresmovies"))
 			? bHiresMoviesSave
 			: gameOpts->movies.bHires);
 cf.PutS (str);

@@ -800,7 +800,7 @@ typedef struct tColorStates {
 //------------------------------------------------------------------------------
 
 typedef struct tTextureStates {
-	int bGlsTexMergeOk;
+	int bGlTexMergeOk;
 	int bHaveMaskShader;
 	int bHaveGrayScaleShader;
 } tTextureStates;

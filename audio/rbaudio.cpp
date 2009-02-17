@@ -49,7 +49,7 @@ void RBAInit()
 
 if (initialised) 
 	return;
-if (FindArg("-nocdrom")) 
+if (FindArg ("-nocdrom")) 
 	return; 
 
 if (SDL_Init(SDL_INIT_CDROM) < 0) {
