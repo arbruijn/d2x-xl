@@ -752,7 +752,9 @@ return 0;
 static int UDPOpenSocket (ipx_socket_t *sk, int port) 
 {
 	struct sockaddr_in sin;
+#ifdef _WIN32
 	u_long sockBlockMode = 1;	//non blocking
+#endif
 #if 0 //for testing only
 	static ubyte inAddrLoopBack [4] = {127,0,0,1};
 #endif

@@ -30,18 +30,18 @@
 #endif
 
 typedef struct IPXAddressStruct {
-	u_char Network[4] __pack__;
-	u_char Node[6] __pack__;
-	u_char Socket[2] __pack__;
+	u_char Network[4]; // __pack__;
+	u_char Node[6]; // __pack__;
+	u_char Socket[2]; // __pack__;
 } IPXAddress_t;
 
 typedef struct IPXPacketStructure {
-	u_short Checksum __pack__;
-	u_short Length __pack__;
-	u_char TransportControl __pack__;
-	u_char PacketType __pack__;
-	IPXAddress_t Destination __pack__;
-	IPXAddress_t Source __pack__;
+	u_short Checksum; // __pack__;
+	u_short Length; // __pack__;
+	u_char TransportControl; // __pack__;
+	u_char PacketType; // __pack__;
+	IPXAddress_t Destination; // __pack__;
+	IPXAddress_t Source; // __pack__;
 } IPXPacket_t;
 
 #ifdef _WIN32
