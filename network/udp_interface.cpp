@@ -179,8 +179,11 @@ static int _CDECL_ Fail (const char *fmt, ...)
 va_start (argP, fmt);
 vsprintf (szFailMsg, fmt, argP);
 va_end (argP);   
+#ifdef _WIN32
 MsgBox (NULL, NULL, 1, "OK", "UDP Error\n\n%s\nError code: %d", szFailMsg, WSAGetLastError ());
-//Warning ("%s\nError code: %d", szFailMsg, WSAGetLastError ());
+#else
+MsgBox (NULL, NULL, 1, "OK", "UDP Error\n\n%s", szFailMsg);
+#endif
 return 1;
 }
 
