@@ -283,6 +283,7 @@ nLineAdjustment = 1;
 nDelayCount = KEY_DELAY_DEFAULT;
 nRobot = -1;
 nDoorDir = 1;
+nCurrentColor = 1;
 nEraseColor = BLACK_RGBA;
 *szBitmapName = '\0';
 strcpy (szSpinningRobot, "rba.mve");
@@ -491,7 +492,7 @@ if (*m_info.szBitmapName) {
 		}
 	curCanvSave = CCanvas::Current (); 
 	CCanvas::SetCurrent (bitmapCanv);
-	CCanvas::Current ()->Clear (0);
+	CCanvas::Current ()->Clear (m_info.nEraseColor);
 	if (!bRedraw) {	//extract current bitmap nFrameber from bitmap name (<name>#<nFrameber>)
 		poundSignP = strchr (m_info.szBitmapName, '#');
 		Assert (poundSignP != NULL);
@@ -615,7 +616,7 @@ if (m_info.bInitAnimate) {
 	}
 gameStates.render.bFullBright	= 1;
 
-CCanvas::Current ()->Clear (0);
+CCanvas::Current ()->Clear (m_info.nEraseColor);
 gameStates.ogl.bEnableScissor = 1;
 DrawModelPicture (ROBOTINFO (m_info.nRobot).nModel, &m_info.vRobotAngles);
 gameStates.ogl.bEnableScissor = 0;
@@ -955,7 +956,7 @@ if ((c == 'F') || (c == 'B')) {
 	m_info.nCurrentColor = 0;
 	}
 else {
-	m_info.nCurrentColor = ParseMessageInt (m_info.message);
+	m_info.nCurrentColor = ParseMessageInt (m_info.message) + 1;
 	Assert ((m_info.nCurrentColor >= 0) && (m_info.nCurrentColor < MAX_BRIEFING_COLORS));
 	}
 m_info.prevCh = 10;

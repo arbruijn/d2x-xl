@@ -156,7 +156,7 @@ void LegacyNewGameMenu (void)
 	int				i, choice = 0, nFolder = -1, nDefaultMission = 0;
 	CListBox			lb;
 
-	static int			nMission = -1;
+	static int		nMission = -1;
 
 	static const char	*menuTitles [4];
 
@@ -210,8 +210,8 @@ if (nHighestPlayerLevel > 1) {
 try_again:
 	sprintf (szInfo, "%s %d", TXT_START_ANY_LEVEL, nHighestPlayerLevel);
 	m.AddText (szInfo, 0);
-	m.AddInput (szNumber, 10, "");
 	strcpy (szNumber, "1");
+	m.AddInput (szNumber, 10, "");
 	choice = m.Menu (NULL, TXT_SELECT_START_LEV);
 	if ((choice == -1) || !m [1].m_text [0])
 		return;
