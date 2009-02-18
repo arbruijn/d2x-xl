@@ -18,6 +18,7 @@
 
 #include "../win32/include/ipx_drv.h"
 #include "mono.h"
+#include "error.h"
 
 extern int _CDECL_ Fail (const char *fmt, ...);
 extern ubyte *QueryHost(char *buf);
@@ -146,7 +147,7 @@ if (bind (sock, reinterpret_cast<struct sockaddr*> (&ipxs), sizeof(ipxs)) == -1)
 
 len = sizeof (ipxs2);
 if (getsockname(sock, reinterpret_cast<struct sockaddr*> (&ipxs2), &len) < 0) {
-	PrintLog (1,"IPX: could not get socket name in IPXOpenSocket\n");
+	PrintLog ("IPX interface: could not get socket name in IPXOpenSocket\n");
 	closesocket( sock );
 	return -1;
 	} 
@@ -195,7 +196,6 @@ return sendto (mysock->fd, reinterpret_cast<const char*> (data), dataLen, 0,
 
 static int ipx_win_ReceivePacket(ipx_socket_t *s, ubyte *buffer, int bufsize, struct ipx_recv_data *rd) 
 {
-	int sz, size;
 	struct sockaddr_ipx ipxs;
  
 int sz = sizeof(ipxs);
