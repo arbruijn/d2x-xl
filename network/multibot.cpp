@@ -340,9 +340,9 @@ CreateShortPos (reinterpret_cast<tShortPos*> (gameData.multigame.msg.buf + bufP)
 bufP += sizeof (tShortPos);
 #else
 CreateShortPos (&sp, OBJECTS+nObject, 1);
-memcpy (gameData.multigame.msg.buf + bufP, reinterpret_cast<ubyte*> (sp.bytemat), 9);
+memcpy (gameData.multigame.msg.buf + bufP, reinterpret_cast<ubyte*> (sp.orient), 9);
 bufP += 9;
-memcpy (gameData.multigame.msg.buf + bufP, reinterpret_cast<ubyte*> (&sp.xo), 14);
+memcpy (gameData.multigame.msg.buf + bufP, reinterpret_cast<ubyte*> (&sp.pos), 14);
 bufP += 14;
 #endif
 MultiSendData (reinterpret_cast<char*> (gameData.multigame.msg.buf), bufP, 1);
@@ -618,9 +618,9 @@ OBJECTS [nRobot].SetThrustFromVelocity (); // Try to smooth out movement
 #if ! (defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 ExtractShortPos (&OBJECTS [nRobot], reinterpret_cast<tShortPos*> (buf+bufP), 0);
 #else
-memcpy (reinterpret_cast<ubyte*> ((sp.bytemat), reinterpret_cast<ubyte*> (buf + bufP), 9);	
+memcpy (reinterpret_cast<ubyte*> ((sp.orient), reinterpret_cast<ubyte*> (buf + bufP), 9);	
 bufP += 9;
-memcpy (reinterpret_cast<ubyte*> (& (sp.xo), reinterpret_cast<ubyte*> (buf + bufP), 14);
+memcpy (reinterpret_cast<ubyte*> (&(sp.pos), reinterpret_cast<ubyte*> (buf + bufP), 14);
 ExtractShortPos (&OBJECTS [nRobot], &sp, 1);
 #endif
 }
