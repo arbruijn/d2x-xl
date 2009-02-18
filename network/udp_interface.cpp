@@ -491,7 +491,7 @@ int CClientManager::BuildInterfaceList (void)
 	unsigned 				j;
 	struct sockaddr_in	*sinp, *sinmp;
 
-broads.Destroy ();
+m_broads.Destroy ();
 sock = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 if (sock < 0)
 	FAIL ("Creating IP socket failed:\n%m");
@@ -1133,8 +1133,8 @@ static int UDPReceivePacket
 	(ipx_socket_t *s, ubyte *outBuf, int outBufSize, struct ipx_recv_data *rd) 
 {
 	struct sockaddr_in	fromAddr;
-	int						i, dataLen, bTracker, 
-								fromAddrSize = sizeof (fromAddr);
+	int						i, dataLen, bTracker;
+	socklen_t				fromAddrSize = sizeof (fromAddr);
 	CClient*					clientP;
 	ushort					srcPort;
 #if UDP_SAFEMODE
@@ -1144,8 +1144,9 @@ static int UDPReceivePacket
 	//char						szIP [30];
 #endif
 
-if (0 > (dataLen = recvfrom (s->fd, reinterpret_cast<char*> (outBuf), outBufSize, 0, reinterpret_cast<struct sockaddr*> (&fromAddr), &fromAddrSize))) {
-#if DBG
+dataLen = recvfrom (s->fd, reinterpret_cast<char*> (outBuf), outBufSize, 0, reinterpret_cast<struct sockaddr*> (&fromAddr), &fromAddrSize);
+if (0 > dataLen) {
+#if DBG && defined (_WIN32)
 	int error = WSAGetLastError ();
 #endif
 	return -1;
