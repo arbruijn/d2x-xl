@@ -126,7 +126,11 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 /* We require the interface to be UP and RUNNING to accept it.
  */
 
+#ifdef __macosx__
+#define IF_REQFLAGS (IFF_UP | IFF_RUNNING | IFF_BROADCAST)
+#else
 #define IF_REQFLAGS (IFF_UP | IFF_RUNNING)
+#endif
 
 /* We reject any interfaces declared as LOOPBACK nType.
  */
@@ -140,6 +144,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 
 static int nOpenSockets = 0;
 static const int val_one=1;
+static ubyte qhbuf [6];
 
 ubyte ipx_LocalAddress [10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
 ubyte ipx_ServerAddress [10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
@@ -204,10 +209,12 @@ class CClient {
 
 class CClientManager {
 	private:
-		CArray<CClient>		m_clients;
-		uint						m_nClients;
-		uint						m_nMasks;
-		struct sockaddr_in	m_masks [MAX_BRDINTERFACES];
+		CArray<CClient>				m_clients;
+		uint								m_nClients;
+		struct sockaddr_in			m_masks [MAX_BRDINTERFACES];
+		uint								m_nMasks;
+		CArray<struct sockaddr_in>	m_broads;
+		uint								m_nBroads;
 
 	public:
 		CClientManager () { Init (); }
@@ -217,7 +224,8 @@ class CClientManager {
 		int Find (struct sockaddr_in *destAddr);
 		int Add (struct sockaddr_in *destAddr);
 		int BuildInterfaceList (void);
-		int CheckSize (void);
+		int CheckClientSize (void);
+		int CheckBroadSize (void);
 
 		inline int ClientCount (void) { return m_nClients; }
 		inline int MaskCount (void) { return m_nMasks; }
@@ -236,18 +244,28 @@ void CClientManager::Init (void)
 {
 m_nClients = 0;
 m_nMasks = 0;
-CheckSize ();
+CheckClientSize ();
 }
 
 //------------------------------------------------------------------------------
 // We'll check whether the "m_clients" array of destination addresses is now
 // full and so needs expanding.
 
-int CClientManager::CheckSize (void)
+int CClientManager::CheckClientSize (void)
 {
 if (m_nClients < m_clients.Length ())
 	return 1;
 m_clients.Resize (m_clients.Buffer () ? m_clients.Length () * 2 : 8);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CClientManager::CheckBroadSize (void)
+{
+if (m_nBroads < m_broads.Length ())
+	return 1;
+m_broads.Resize (m_broads.Buffer () ? m_broads.Length () * 2 : 8);
 return 1;
 }
 
@@ -305,7 +323,7 @@ if (i < m_nClients) {
 		m_clients [i].addr = *destAddr;
 	return i;
 	}
-if (!CheckSize ())
+if (!CheckClientSize ())
 	return -1;
 clientP = &m_clients [m_nClients++];
 clientP->addr = *destAddr;
@@ -325,6 +343,7 @@ return i;
 void CClientManager::Destroy (void)
 {
 m_clients.Destroy ();
+m_broads.Destroy ();
 m_nClients = 0;
 m_nMasks = 0;
 }
@@ -336,24 +355,28 @@ m_nMasks = 0;
 // the style "192.168.1.255" with netmask "255.255.255.0".
 // Broadcast addresses are filled into "m_clients", netmasks to "broadmasks".
 
+#ifdef _WIN32
+
 int CClientManager::BuildInterfaceList (void)
 {
 #if 0
-	unsigned					i, j, cnt = MAX_BRDINTERFACES;
+	unsigned					i, j;
 	WSADATA					info;
 	INTERFACE_INFO*		ifo;
 	SOCKET					sock;
 	struct sockaddr_in*	sinp, * sinmp;
 
-m_clients.Destroy ();
+m_broads.Destroy ();
 if ((sock = socket (AF_INET, SOCK_DGRAM,IPPROTO_UDP)) < 0)
 	FAIL ("Creating socket() failure during broadcast detection.");
 
 #ifdef SIOCGIFCOUNT
-if (ioctl (sock, SIOCGIFCOUNT, &cnt))
-	{ /* PrintLog ("UDP interface: Getting iterface count error."); */ }
+if (ioctl (sock, SIOCGIFCOUNT, &m_nBroads)) { 
+	PrintLog ("UDP interface: Getting iterface count error."); 
+	return 0;
+	}
 else
-	cnt = 2 * cnt + 2;
+	m_nBroads = 2 * m_nBroads + 2;
 #endif
 
 ifo = new INTERFACE_INFO [cnt];
@@ -362,7 +385,7 @@ if (wsaioctl (sock, SIO_GET_INTERFACE_LIST, NULL, 0, ifo, cnt * sizeof (INTERFAC
 	closesocket(sock);
 	FAIL ("ioctl (SIOCGIFCONF) failure during broadcast detection.");
 	}
-m_clients.Create (cnt);
+m_broads.Create (m_nBroads);
 
 for (i = j = 0; i < cnt; i++) {
 	if (ioctl (sock, SIOCGIFFLAGS, ifconf.ifc_req + i)) {
@@ -383,16 +406,143 @@ for (i = j = 0; i < cnt; i++) {
 	sinmp = reinterpret_cast<struct sockaddr_in*> (&ifconf.ifc_req [i].ifr_addr);
 	if ((sinp->sin_family != AF_INET) || (sinmp->sin_family!=AF_INET))	
 		continue;
-	m_clients [j] = *sinp;
-	m_clients [j].sin_port = UDP_BASEPORT; //FIXME: No possibility to override from cmdline
-	broadmasks [j] = *sinmp;
+	m_broads [j] = *sinp;
+	m_broads [j].sin_port = UDP_BASEPORT; //FIXME: No possibility to override from cmdline
+	m_masks [j] = *sinmp;
 	j++;
 	}
-m_nClients = j;
+m_nBroads =
 m_nMasks = j;
 #endif
-return 0;
+return m_nBroads;
 }
+
+#elif defined(__macosx__) //----------------------------------------------------
+
+int CClientManager::BuildInterfaceList (void)
+{
+	unsigned 				j;
+	struct sockaddr_in	*sinp, *sinmp;
+
+m_broads.Destroy ();
+/* This code is for Mac OS X, whose BSD layer does bizarre things with variable-length
+* structures when calling ioctl using SIOCGIFCOUNT. Or any other architecture that
+* has this call, for that matter, since it's much simpler than the other code below.
+*/
+	struct ifaddrs *ifap, *ifa;
+
+if (getifaddrs (&ifap) != 0)
+	FAIL ("Getting list of interface addresses.");
+
+// First loop to count the number of valid addresses and allocate enough memory
+j = 0;
+for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
+	// Only count the address if it meets our criteria.
+	if (ifa->ifa_flags & IF_NOTFLAGS || !((ifa->ifa_flags & IF_REQFLAGS) && (ifa->ifa_addr->sa_family == AF_INET)))
+		continue;
+	j++;
+	}
+m_nBroads = j;
+m_broads.Create (j);
+// Second loop to copy the addresses
+j = 0;
+for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
+	// Only copy the address if it meets our criteria.
+	if ((ifa->ifa_flags & IF_NOTFLAGS) || !((ifa->ifa_flags & IF_REQFLAGS) && (ifa->ifa_addr->sa_family == AF_INET)))
+		continue;
+	j++;
+	sinp = reinterpret_cast<struct sockaddr_in*> (ifa->ifa_broadaddr);
+	sinmp = reinterpret_cast<struct sockaddr_in*> (ifa->ifa_dstaddr);
+
+	// Code common to both getifaddrs () and ioctl () approach
+	m_broads [j] = *sinp;
+	m_broads [j].sin_port = UDP_BASEPORT; //FIXME: No possibility to override from cmdline
+	m_masks [j] = *sinmp;
+	j++;
+	}
+freeifaddrs (ifap);
+m_nBroads =
+m_nMasks = j;
+return m_nBroads;
+}
+
+#else // !__maxosx__ -----------------------------------------------------------
+
+static int _ioRes;
+
+#define	_IOCTL(_s,_f,_c)	((_ioRes = ioctl (_s, _f, _c)) != 0)
+
+int CClientManager::BuildInterfaceList (void)
+{
+	unsigned					i, cnt = MAX_BRDINTERFACES;
+	struct ifconf 			ifconf;
+	int 						sock;
+#if DBG
+	int						ioRes;
+#endif
+	unsigned 				j;
+	struct sockaddr_in	*sinp, *sinmp;
+
+broads.Destroy ();
+sock = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+if (sock < 0)
+	FAIL ("Creating IP socket failed:\n%m");
+#	ifdef SIOCGIFCOUNT
+if (!_IOCTL (sock, SIOCGIFCOUNT, &cnt))
+	{ /* //msg ("Getting iterface count error: %m"); */ }
+else
+	cnt = cnt * 2 + 2;
+#	endif
+ifconf.ifc_len = cnt * sizeof (struct ifreq);
+ifconf.ifc_req = new ifreq [ifconf.ifc_len];
+#	if DBG
+memset (ifconf.ifc_req, 0, ifconf.ifc_len);
+ioRes = ioctl (sock, SIOCGIFCONF, &ifconf);
+if (ioRes < 0) {
+#	else
+ if (!_IOCTL (sock, SIOCGIFCONF, &ifconf)) {
+#	endif
+	close (sock);
+	FAIL ("ioctl (SIOCGIFCONF)\nIP interface detection failed:\n%m");
+	}
+if (ifconf.ifc_len % sizeof (struct ifreq)) {
+	close (sock);
+	FAIL ("ioctl (SIOCGIFCONF)\nIP interface detection failed:\n%m");
+	}
+cnt = ifconf.ifc_len / sizeof (struct ifreq);
+m_broads.Create (cnt);
+m_nBroads = cnt;
+for (i = j = 0; i < cnt; i++) {
+	if (!_IOCTL (sock, SIOCGIFFLAGS, ifconf.ifc_req + i)) {
+		close (sock);
+		FAIL ("ioctl (UDP (%d),\"%s\",SIOCGIFFLAGS)\nerror: %m", i, ifconf.ifc_req [i].ifr_name);
+		}
+	if (((ifconf.ifc_req [i].ifr_flags & IF_REQFLAGS) != IF_REQFLAGS) || (ifconf.ifc_req [i].ifr_flags & IF_NOTFLAGS))
+		continue;
+	if (!_IOCTL (sock, (ifconf.ifc_req [i].ifr_flags & IFF_BROADCAST) ? SIOCGIFBRDADDR : SIOCGIFDSTADDR, ifconf.ifc_req + i)) {
+		close (sock);
+		FAIL ("ioctl (UDP (%d),\"%s\",SIOCGIF{DST/BRD}ADDR)\nerror: %m", i, ifconf.ifc_req [i].ifr_name);
+		}
+	sinp = reinterpret_cast<struct sockaddr_in*> (&ifconf.ifc_req [i].ifr_broadaddr);
+	if (!_IOCTL (sock, SIOCGIFNETMASK, ifconf.ifc_req + i)) {
+		close (sock);
+		FAIL ("ioctl (UDP (%d),\"%s\",SIOCGIFNETMASK)\nerror: %m", i, ifconf.ifc_req [i].ifr_name);
+		}
+	sinmp = reinterpret_cast<struct sockaddr_in*> (&ifconf.ifc_req [i].ifr_addr);
+	if ((sinp->sin_family != AF_INET) || (sinmp->sin_family != AF_INET)) 
+		continue;
+	// Code common to both getifaddrs () and ioctl () approach
+	m_broads [j] = *sinp;
+	m_broads [j].sin_port = UDP_BASEPORT; //FIXME: No possibility to override from cmdline
+	m_masks [j] = *sinmp;
+	j++;
+	}
+m_nBroads = 
+m_nMasks = j;
+return m_nBroads;
+}
+
+#endif
 
 //------------------------------------------------------------------------------
 // Previous function BuildInterfaceList() can (and probably will) report multiple
@@ -403,17 +553,15 @@ void CClientManager::Unify (void)
 {
 	uint i, s, d = 0;
 
-for (s = 0; s < m_nClients; s++) {
+for (s = 0; s < m_nBroads; s++) {
 	for (i = 0; i < s; i++)
-		if (CmpAddrs (&m_clients [s].addr, &m_clients [i].addr)) 
+		if (CmpAddrs (m_broads + s, m_broads + i)) 
 			break;
 	if (i >= s) 
-		m_clients [d++] = m_clients [s];
+		m_broads [d++] = m_broads [s];
 	}
-m_nClients = d;
+m_nBroads = d;
 }
-
-static ubyte qhbuf [6];
 
 //------------------------------------------------------------------------------
 // Parse PORTSHIFT numeric parameter
@@ -432,6 +580,57 @@ memcpy (qhbuf + 4, &srcPort, 2);
 //------------------------------------------------------------------------------
 // Do hostname resolve on name "buf" and return the address in buffer "qhbuf".
  
+#ifdef __macosx__ //------------------------------------------------------------
+
+static void SetupHints (struct addrinfo *hints) 
+{
+hints->ai_family = PF_INET;
+hints->ai_protocol = IPPROTO_UDP;
+hints->ai_socktype = 0;
+hints->ai_flags = 0;
+hints->ai_addrlen = 0;
+hints->ai_addr = NULL;
+hints->ai_canonname = NULL;
+hints->ai_next = NULL;
+}
+
+
+ubyte *QueryHost (char *buf)
+{
+    struct addrinfo*	info, * ip, hints;
+    int error;
+    
+SetupHints (&hints);
+error = 0;
+if (error = getaddrinfo (buf, NULL, &hints, &info) != 0) {
+	// Trying again, but appending ".local" to the hostname. Why does this work?
+	// AFAIK, this suffix has to do with zeroconf (aka Bonjour aka Rendezvous).
+	strcat (buf, ".local");
+	setupHints (&hints);
+	error = getaddrinfo (buf, NULL, &hints, &info);
+	}
+if (error)
+	return NULL;
+    
+// Here's another kludge: for some reason we have to filter out PF_INET6 protocol family
+// entries in the results list. Then we just grab the first regular IPv4 address we find
+// and cross our fingers.
+ip = info;
+found = 0;
+for (ip = info; ip; ip = ip->ai_next)
+	if (ip->ai_family == PF_INET)
+		break;
+if (!ip)
+	return NULL;
+    
+memcpy (qhbuf, & (reinterpret_cast<struct sockaddr_in*> (ip->ai_addr)->sin_addr), 4);
+memset (qhbuf + 4, 0, 2);
+freeaddrinfo (info);
+return qhbuf;
+}
+
+#else //------------------------------------------------------------------------
+
 ubyte *QueryHost (char *buf)
 {
 	struct hostent *he;
@@ -462,6 +661,8 @@ if (!*he->h_addr_list) {
 	}
 memcpy (qhbuf, *he->h_addr_list, 4);
 return qhbuf;
+
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -500,57 +701,17 @@ DumpRawAddr (qhbuf);
 int UDPGetMyAddress (void) 
 {
 	char			buf [256];
-	int			i, l;
-	char*			s, * s2;
-	CCharArray	ns;
 
 if (!HaveEmptyAddress ())
 	return 0;
-if (!((i = FindArg ("-udp")) && (s = pszArgList [i + 1]) && ((*s == '=') || (*s == '+') || (*s == '@')))) 
-	s = NULL;
 if (gethostname (buf, sizeof (buf))) 
 	FAIL ("Error getting my hostname");
-	if (!(QueryHost (buf))) 
-		FAIL ("Querying my own hostname \"%s\"",buf);
-if (s) 
-	while (*s=='@') {
-		PortShift (++s);
-		while (::isdigit (*s)) 
-			s++;
-		}
-memset(ipx_MyAddress, 0, 4);
-memcpy(ipx_MyAddress + 4, qhbuf, 6);
+if (!(QueryHost (buf))) 
+	FAIL ("Querying my own hostname \"%s\"",buf);
+memset (ipx_MyAddress, 0, 4);
+memcpy (ipx_MyAddress + 4, qhbuf, 6);
 //udpBasePorts [gameStates.multi.bServer] += (short)ntohs(*reinterpret_cast<ushort*> (qhbuf+4));
-if (!(s && *s)) 
-	clientManager.BuildInterfaceList ();
-else {
-	struct sockaddr_in *sin;
-	if (*s=='+') 
-		clientManager.BuildInterfaceList ();
-	s++;
-	for (;;) {
-		while (::isspace (*s)) 
-			s++;
-		if (!*s) 
-			break;
-		for (s2 = s; *s2 && *s2 != ','; s2++)
-			;
-		l = s2 - s;
-		ns.Create (l + 1);
-		memcpy (ns.Buffer (), s, l);
-		ns [l] = '\0';
-		if (!QueryHost (ns.Buffer ())) 
-			PrintLog ("UDP: Ignored broadcast-destination \"%s\" as being invalid", ns);
-		ns.Destroy ();
-		sin = &clientManager.Client (clientManager.ClientCount () - 1).addr;
-		sin->sin_family = AF_INET;
-		memcpy (&sin->sin_addr, qhbuf, 4);
-		sin->sin_port = htons ((u_short) (ntohs (*(reinterpret_cast<u_short*> (qhbuf + 4))) + UDP_BASEPORT));
-		if (clientManager.Add (sin) < 0)
-			FAIL ("Error allocating client table");
-		s = s2 + (*s2 == ',');
-		}
-	}
+clientManager.BuildInterfaceList ();
 clientManager.Unify ();
 return 0;
 }
@@ -578,7 +739,7 @@ if (!nOpenSockets && (UDPGetMyAddress () < 0)) {
 	}
 
 if (!gameStates.multi.bServer) {		//set up server address and add it to destination list
-	if (!clientManager.CheckSize ())
+	if (!clientManager.CheckClientSize ())
 		FAIL ("Error allocating client table");
 	nServerPort = udpBasePorts [0] + networkData.nSocket;
 	sin.sin_family = AF_INET;

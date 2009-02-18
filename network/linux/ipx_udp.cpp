@@ -229,7 +229,7 @@ int Fail (const char *fmt, ...);
 #ifdef __macosx__
 #define IF_REQFLAGS (IFF_UP | IFF_RUNNING | IFF_BROADCAST)
 #else
-#define IF_REQFLAGS (IFF_UP|IFF_RUNNING)
+#define IF_REQFLAGS (IFF_UP | IFF_RUNNING)
 #endif
 
 /* We reject any interfaces declared as LOOPBACK nType.
@@ -591,31 +591,17 @@ memcpy (qhbuf + 4, &port, 2);
 
 #ifdef __macosx__
 
-static void setupHints (struct addrinfo *hints) {
-    hints->ai_family = PF_INET;
-    hints->ai_protocol = IPPROTO_UDP;
-    hints->ai_socktype = 0;
-    hints->ai_flags = 0;
-    hints->ai_addrlen = 0;
-    hints->ai_addr = NULL;
-    hints->ai_canonname = NULL;
-    hints->ai_next = NULL;
+static void setupHints (struct addrinfo *hints) 
+{
+ hints->ai_family = PF_INET;
+ hints->ai_protocol = IPPROTO_UDP;
+ hints->ai_socktype = 0;
+ hints->ai_flags = 0;
+ hints->ai_addrlen = 0;
+ hints->ai_addr = NULL;
+ hints->ai_canonname = NULL;
+ hints->ai_next = NULL;
 }
-
-//------------------------------------------------------------------------------
-
-#	if 0
-
-static void printinaddr (struct sockaddr_in *addr) {
-
-    char theAddress [200];
-    const char *myResult;
-    myResult = inet_ntop (AF_INET, reinterpret_cast<const void*> (&addr->sin_addr), theAddress, 200);
-    //myResult = inet_net_ntop (family, addr, 32, theAddress, 200);
-    printf ("%s", theAddress);
-}
-
-#	endif
 
 #endif
 
