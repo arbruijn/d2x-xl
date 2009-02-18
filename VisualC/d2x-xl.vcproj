@@ -1826,26 +1826,6 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\network\win32\ipx_udp.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
 						RelativePath="..\network\win32\ipx_win.cpp"
 						>
 					</File>
@@ -2111,6 +2091,10 @@
 					</File>
 					<File
 						RelativePath="..\network\tracker.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\network\udp_interface.cpp"
 						>
 					</File>
 					<File
