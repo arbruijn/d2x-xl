@@ -1300,7 +1300,6 @@ inline int RenderSegmentList (int nType, int bFrontToBack)
 {
 PROF_START
 gameStates.render.nType = nType;
-RenderMineObjects (nType);
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.bSoft && (gameStates.render.nShadowPass >= 2))) {
 	BumpVisitedFlag ();
 	if (RENDERPATH == 1)
@@ -1317,6 +1316,7 @@ if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.
 		}
 	OglClearError (0);
 	}
+RenderMineObjects (nType);
 lightManager.ResetAllUsed (1, 0);
 if (gameStates.app.bMultiThreaded)
 	lightManager.ResetAllUsed (1, 1);
