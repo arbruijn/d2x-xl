@@ -183,7 +183,7 @@ CActiveDoor* CWall::OpenDoor (void)
 
 if ((state == WALL_DOOR_OPENING) ||	//already opening
 	 (state == WALL_DOOR_WAITING) ||	//open, waiting to close
-	 (state == WALL_DOOR_OPEN))			//open, & staying open
+	 (state == WALL_DOOR_OPEN))		//open, & staying open
 	return NULL;
 
 if (state == WALL_DOOR_CLOSING) {		//closing, so reuse door
