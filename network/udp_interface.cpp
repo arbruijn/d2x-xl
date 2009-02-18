@@ -75,7 +75,9 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #include <stdarg.h>
 #include <stdlib.h>
 #include <ctype.h>
+#ifndef __macosx__
 #include <malloc.h>
+#endif
 #include <carray.h>
 
 #ifdef _WIN32
@@ -83,6 +85,12 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #else
 #	include <sys/socket.h>
 #endif
+
+#ifdef __macosx__
+#include <ifaddrs.h>
+#include <netdb.h>
+#endif
+#include <netinet/in.h> /* for htons & co. */
 
 #include "win32/include/ipx_drv.h"
 #include "linux/include/ipx_udp.h"
@@ -577,6 +585,23 @@ else
 memcpy (qhbuf + 4, &srcPort, 2);
 }
 
+#ifdef __macosx__
+	
+	static void setupHints (struct addrinfo *hints) 
+	{
+		hints->ai_family = PF_INET;
+		hints->ai_protocol = IPPROTO_UDP;
+		hints->ai_socktype = 0;
+		hints->ai_flags = 0;
+		hints->ai_addrlen = 0;
+		hints->ai_addr = NULL;
+		hints->ai_canonname = NULL;
+		hints->ai_next = NULL;
+	}
+	
+#endif
+	
+	
 //------------------------------------------------------------------------------
 // Do hostname resolve on name "buf" and return the address in buffer "qhbuf".
  
@@ -616,7 +641,7 @@ if (error)
 // entries in the results list. Then we just grab the first regular IPv4 address we find
 // and cross our fingers.
 ip = info;
-found = 0;
+int found = 0;
 for (ip = info; ip; ip = ip->ai_next)
 	if (ip->ai_family == PF_INET)
 		break;

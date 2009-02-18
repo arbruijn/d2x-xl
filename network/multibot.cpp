@@ -618,9 +618,9 @@ OBJECTS [nRobot].SetThrustFromVelocity (); // Try to smooth out movement
 #if ! (defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 ExtractShortPos (&OBJECTS [nRobot], reinterpret_cast<tShortPos*> (buf+bufP), 0);
 #else
-memcpy (reinterpret_cast<ubyte*> ((sp.orient), reinterpret_cast<ubyte*> (buf + bufP), 9);	
+memcpy (reinterpret_cast<ubyte*>(sp.orient), reinterpret_cast<ubyte*>(buf + bufP), 9);	
 bufP += 9;
-memcpy (reinterpret_cast<ubyte*> (&(sp.pos), reinterpret_cast<ubyte*> (buf + bufP), 14);
+memcpy (reinterpret_cast<ubyte*> (&(sp.pos)), reinterpret_cast<ubyte*>(buf + bufP), 14);
 ExtractShortPos (&OBJECTS [nRobot], &sp, 1);
 #endif
 }

@@ -443,7 +443,7 @@ int NetworkProcessPacket (ubyte *dataP, int nLength)
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	ReceiveSequencePacket (dataP, &tmpPacket);
-	dataP = reinterpret_cast<ubyte*> &tmpPacket; // reassign THEIR to point to correctly alinged structure
+	dataP = reinterpret_cast<ubyte*>(&tmpPacket); // reassign THEIR to point to correctly alinged structure
 	}
 #endif
 

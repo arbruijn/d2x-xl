@@ -1196,7 +1196,7 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 ExtractShortPos (objP, reinterpret_cast<tShortPos*> (buf+1), 0);
 #else
-memcpy (reinterpret_cast<ubyte*> (sp.orient), reinterpret_cast<ubyte*> ((buf + 1), 9);
+memcpy (reinterpret_cast<ubyte*> (sp.orient), reinterpret_cast<ubyte*> (buf + 1), 9);
 memcpy (reinterpret_cast<ubyte*> (&sp.pos), reinterpret_cast<ubyte*> (buf + 10), 14);
 ExtractShortPos (&OBJECTS [gameData.multiplayer.players [nPlayer].nObject], &sp, 1);
 #endif
@@ -3369,8 +3369,8 @@ else if (++fun >= 50)
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 ExtractShortPos (gmObjP, reinterpret_cast<tShortPos*> (buf + count), 0);
 #else
-memcpy (reinterpret_cast<ubyte*> ((sp.orient), reinterpret_cast<ubyte*> (buf + count), 9);
-memcpy (reinterpret_cast<ubyte*> (&(sp.pos), reinterpret_cast<ubyte*> (buf + count + 9), 14);
+memcpy (reinterpret_cast<ubyte*>(sp.orient), reinterpret_cast<ubyte*>(buf + count), 9);
+memcpy (reinterpret_cast<ubyte*> (&(sp.pos)), reinterpret_cast<ubyte*> (buf + count + 9), 14);
 ExtractShortPos (gmObjP, &sp, 1);
 #endif
 count += sizeof (tShortPos);
