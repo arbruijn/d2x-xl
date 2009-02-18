@@ -860,9 +860,13 @@ void AIFollowPath (CObject *objP, int nPlayerVisibility, int nPrevVisibility, CF
 
 
 if ((aiP->nHideIndex == -1) || (aiP->nPathLength == 0)) {
+	if (ailP->mode == AIM_RUN_FROM_OBJECT) {
 		CreateNSegmentPath (objP, 5, -1);
-	if (ailP->mode == AIM_RUN_FROM_OBJECT)
-		ailP->mode = AIM_RUN_FROM_OBJECT;
+		ailP->mode = AIM_RUN_FROM_OBJECT;	// restore mode that has been changed in CreateNSegmentPath!
+		}
+	else {
+		CreateNSegmentPath (objP, 5, -1);
+		}
 	}
 
 #if DBG
