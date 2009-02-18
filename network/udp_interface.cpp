@@ -69,28 +69,27 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 
 #include <stdio.h>
 #include <string.h>
-#ifndef _WIN32
-#include <unistd.h>
-#endif
 #include <stdarg.h>
 #include <stdlib.h>
 #include <ctype.h>
-#ifndef __macosx__
-#include <malloc.h>
-#endif
 #include <carray.h>
 
 #ifdef _WIN32
 #	include <winsock2.h>
 #else
+#	include <netdb.h>
+#	include <unistd.h>
+#	include <arpa/inet.h>
+#	include <netinet/in.h> /* for htons & co. */
+#	include <sys/fcntl.h>
+#	include <sys/ioctl.h>
 #	include <sys/socket.h>
+#	include <net/if.h>
+#	ifdef __macosx__
+#		include <ifaddrs.h>
+#		include <netdb.h>
+#	endif
 #endif
-
-#ifdef __macosx__
-#include <ifaddrs.h>
-#include <netdb.h>
-#endif
-#include <netinet/in.h> /* for htons & co. */
 
 #include "win32/include/ipx_drv.h"
 #include "linux/include/ipx_udp.h"
@@ -1134,7 +1133,11 @@ static int UDPReceivePacket
 {
 	struct sockaddr_in	fromAddr;
 	int						i, dataLen, bTracker;
+#ifdef _WIN32
+	int						fromAddrSize = sizeof (fromAddr);
+#else
 	socklen_t				fromAddrSize = sizeof (fromAddr);
+#endif
 	CClient*					clientP;
 	ushort					srcPort;
 #if UDP_SAFEMODE
