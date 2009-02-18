@@ -1,4 +1,3 @@
-/* $Id: ipx_udp.c,v 1.10 2004/01/08 16:48:34 schaffner Exp $ */
 /*
  *
  * IPX driver for native Linux TCP/IP networking (UDP implementation)
@@ -201,7 +200,7 @@ static int nOpenSockets = 0;
 #if 0
 static int dynamic_socket = 0x401;
 #endif
-static const int val_one=1;
+static const int val_one = 1;
 
 /* OUR port. Can be changed by "@X [+=]..." argument (X is the shift value)
  */
@@ -219,44 +218,6 @@ static const int val_one=1;
  * But right now we have hosts A and C, both new code equipped but
  * communicating wastefully by the OLD protocol! Bummer.
  */
-#if 0
-static char compatibility=0;
-#endif
-
-static int have_empty_address () {
-	int i;
-	for (i = 0; i < 10 && !ipx_MyAddress [i]; i++) ;
-	return i == 10;
-}
-
-#define MSGHDR "IPX_udp: "
-
-//------------------------------------------------------------------------------
-
-#if 0
-
-static void msg (const char *fmt,...)
-{
-	va_list ap;
-
-	fputs (MSGHDR,stdout);
-	va_start (ap,fmt);
-	vprintf (fmt,ap);
-	va_end (ap);
-	putchar ('\n');
-}
-
-#endif
-
-//------------------------------------------------------------------------------
-
-static void chk (void *p)
-{
-	if (p) return;
-	//msg ("FATAL: Virtual memory exhausted!");
-	exit (EXIT_FAILURE);
-}
-
 //------------------------------------------------------------------------------
 
 int Fail (const char *fmt, ...);
@@ -264,16 +225,6 @@ int Fail (const char *fmt, ...);
 #define FAIL	return Fail
 
 //------------------------------------------------------------------------------
-
-/* Find as much as MAX_BRDINTERFACES during local iface autoconfiguration.
- * Note that more interfaces can be added during manual configuration
- * or host-received-packet autoconfiguration
- */
-
-#define MAX_BRDINTERFACES 16
-
-/* We require the interface to be UP and RUNNING to accept it.
- */
 
 #ifdef __macosx__
 #define IF_REQFLAGS (IFF_UP | IFF_RUNNING | IFF_BROADCAST)
@@ -284,22 +235,6 @@ int Fail (const char *fmt, ...);
 /* We reject any interfaces declared as LOOPBACK nType.
  */
 #define IF_NOTFLAGS (IFF_LOOPBACK)
-
-
-inline int addreq (struct sockaddr_in *a, struct sockaddr_in *b)
-{
-if (a->sin_addr.s_addr != b->sin_addr.s_addr)
-	return (a->sin_port != b->sin_port) ? 3 : 2;
-return (a->sin_port != b->sin_port) ? 1 : 0;
-}
-
-
-inline int addreqm (struct sockaddr_in *a, struct sockaddr_in *b, struct sockaddr_in *m)
-{
-if ((a->sin_addr.s_addr & m->sin_addr.s_addr) != (b->sin_addr.s_addr & m->sin_addr.s_addr))
-	return (a->sin_port != b->sin_port) ? 3 : 2;
-return (a->sin_port != b->sin_port) ? 1 : 0;
-}
 
 
 #define MAX_BUF_PACKETS		100
@@ -329,13 +264,16 @@ typedef struct tDestListEntry {
 #endif
 } tDestListEntry;
 
-static tDestListEntry *destList = NULL;
+static CArray<tDestListEntry> destList;
 
 static struct sockaddr_in broadmasks [MAX_BRDINTERFACES];
+
 static int	destAddrNum = 0,
 				masksNum = 0,
 				destListSize = 0;
-static int broadCount,masksnum,broadSize;
+
+static int broadCount, masksnum, broadSize;
+
 CArray<struct sockaddr_in> broads;
 
 int ReportSafeMode (tDestListEntry *pdl);
@@ -403,19 +341,9 @@ chk (broads.Buffer ());
 
 static int ChkDestListSize (void)
 {
-	struct tDestListEntry *b;
-
 if (destAddrNum < destListSize)
 	return 1;
-destListSize = destListSize ? destListSize * 2 : 8;
-if (!(b =new tDestListEntry [destListSize]))
-	 return -1;
-if (destList) {
-	memcpy (b, destList, sizeof (*destList) * destListSize / 2);
-	delete[] destList;
-	destList = NULL;
-	}
-destList = b;
+destList.Resize (destListSize = destListSize ? destListSize * 2 : 8);
 return 1;
 }
 
@@ -777,8 +705,8 @@ char c=0;
 /* Startup... Uninteresting parsing...
  */
 
-int UDPGetMyAddress (void) {
-
+int UDPGetMyAddress (void) 
+{
 char buf [256];
 int i = 0;
 char *s,*s2,*ns;
@@ -844,50 +772,59 @@ static int UDPOpenSocket (ipx_socket_t *sk, int port)
 {
 	struct sockaddr_in sin;
 	u_short nLocalPort, nServerPort;
-//	u_long sockBlockMode = 1;	//non blocking
 
 udpBasePorts [1] = UDP_BASEPORT + networkData.nSocket;
 nLocalPort = gameStates.multi.bServer ? udpBasePorts [1] : mpParams.udpClientPort;	//override with UDP nLocalPort settings
-if (!nOpenSockets)
-	if (UDPGetMyAddress () < 0) 
-		FAIL ("Error getting my address");
-
-//msg ("OpenSocket on D1X socket nLocalPort %d", nLocalPort);
+gameStates.multi.bHaveLocalAddress = 0;
+if (!nOpenSockets && (UDPGetMyAddress () < 0)) {
+	FAIL ("Couldn't get my address.");
+	}
 
 if (!gameStates.multi.bServer) {
 	if (!ChkDestListSize ())
 		FAIL ("Error allocating client table");
 	nServerPort = udpBasePorts [0] + networkData.nSocket;
 	sin.sin_family = AF_INET;
-	*reinterpret_cast<u_short*> (ipx_ServerAddress + 8) = htons (nServerPort);
+	*(reinterpret_cast<u_short*> (ipx_ServerAddress + 8)) = htons (nServerPort);
 	memcpy (&sin.sin_addr.s_addr, ipx_ServerAddress + 4, 4);
 	sin.sin_port = htons (nServerPort);
 	if (!tracker.m_bUse)	
 		AddDestToList (&sin);
 	}
 
-if ((sk->fd = socket (AF_INET,SOCK_DGRAM, IPPROTO_UDP)) < 0) {
+if (0 > (sk->fd = int (socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP)))) {
 	sk->fd = -1;
 	FAIL ("Couldn't create socket on nLocalPort %d.\nError code: %d.", nLocalPort);
 	}
-//ioctlsocket (sk->fd, FIONBIO, &sockBlockMode);
+#ifdef _WIN32
+ioctlsocket (sk->fd, FIONBIO, &sockBlockMode);
+#else
 fcntl (sk->fd, F_SETFL, O_NONBLOCK);
+#endif
 *(reinterpret_cast<u_short*> (ipx_MyAddress + 8)) = nLocalPort;
 #ifdef UDP_BROADCAST
-if (setsockopt (sk->fd, SOL_SOCKET, SO_BROADCAST, &val_one, sizeof (val_one))) {
+if (setsockopt (sk->fd, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char*> (&val_one), sizeof (val_one))) {
+#ifdef _WIN32
+	closesocket (sk->fd);
+#else
 	close (sk->fd);
+#endif
 	sk->fd = -1;
-	FAIL ("setsockopt (SO_BROADCAST) failed: %m");
+	FAIL ("Setting broadcast socket option failed.");
 	}
 #endif
 if (gameStates.multi.bServer || mpParams.udpClientPort) {
 	sin.sin_family = AF_INET;
 	sin.sin_addr.s_addr = htonl (INADDR_ANY);
-	sin.sin_port = htons ((ushort) nLocalPort);
+	sin.sin_port = htons (ushort (nLocalPort));
 	if (bind (sk->fd, reinterpret_cast<struct sockaddr*> (&sin), sizeof (sin))) {
+#ifdef _WIN32
+		closesocket (sk->fd);
+#else
 		close (sk->fd);
+#endif
 		sk->fd = -1;
-		FAIL ("bind () to UDP nLocalPort %d failed: %m", nLocalPort);
+		FAIL ("bind () to UDP nLocalPort %d failed.", nLocalPort);
 		}
 	memcpy (ipx_MyAddress + 8, &nLocalPort, 2);
 	}

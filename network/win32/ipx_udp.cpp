@@ -1,75 +1,7 @@
-/*
- *
- * IPX driver for native Linux TCP/IP networking (UDP implementation)
- *   Version 0.99.2
- * Contact Jan [Lace] Kratochvil <short@ucw.cz> for assistance
- * (no "It somehow doesn't work! What should I do?" complaints, please)
- * Special thanks to Vojtech Pavlik <vojtech@ucw.cz> for testing.
- *
- * Also you may see KIX - KIX kix out KaliNix (in Linux-Linux only):
- *   http://atrey.karlin.mff.cuni.cz/~short/sw/kix.c.gz
- *
- * Primarily based on ipx_kali.c - "IPX driver for KaliNix interface"
- *   which is probably mostly by Jay Cotton <jay@kali.net>.
- * Parts shamelessly stolen from my KIX v0.99.2 and GGN v0.100
- *
- * Changes:
- * --------
- * 0.99.1 - now the default broadcast list also contains all point-to-point
- *          links with their destination peer addresses
- * 0.99.2 - commented a bit :-) 
- *        - now adds to broadcast list each host it gets some packet from
- *          which is already not covered by local physical ethernet broadcast
- *        - implemented short-nSignature packet format
- *        - compatibility mode for old D1X releases due to the previous bullet
- *
- * Configuration:
- * --------------
- * No network server software is needed, neither KIX nor KaliNIX.
- *
- *    NOTE: with the change to allow the user to choose the network
- *    driver from the game menu, the following is not anymore precise:
- *    the command line argument "-udp" is only necessary to supply udp
- *    options!
- *
- * Add command line argument "-udp". In default operation D1X will send
- * broadcasts too all the local interfaces found. But you may also use
- * additional parameter specified after "-udp" to modify the default
- * broadcasting style and UDP port numbers binding:
- *
- * ./d1x -udp [@SHIFT]=HOST_LIST   Broadcast ONLY to HOST_LIST
- * ./d1x -udp [@SHIFT]+HOST_LIST   Broadcast both to local ifaces & to HOST_LIST
- *
- * HOST_LIST is a comma (',') separated list of HOSTs:
- * HOST is an IPv4 address (so-called quad like 192.168.1.2) or regular hostname
- * HOST can also be in form 'address:SHIFT'
- * SHIFT sets the UDP port base offset (e.g. +2), can be used to run multiple
- *       clients on one host simultaneously. This SHIFT has nothing to do
- *       with the dynamic-sockets (PgUP/PgDOWN) option in Descent, it's another
- *       higher-level differentiation option.
- *
- * Examples:
- * ---------
- * ./d1x -udp
- *  - Run D1X to participate in Normal local network (Linux only, of course)
- *
- * ./d1x -udp @1=localhost:2 & ./d1x -udp @2=localhost:1
- *  - Run two clients simultaneously fighting each other (only each other)
- *
- * ./d1x -udp =192.168.4.255
- *  - Run distant Descent which will participate with remote network
- *    192.168.4.0 with netmask 255.255.255.0 (broadcast has 192.168.4.255)
- *  - You'll have to also setup hosts in that network accordingly:
- * ./d1x -udp +UPPER_DISTANT_MACHINE_NAME
- *
- * Have fun!
- *
- */
-
 //------------------------------------------------------------------------------
 /*
 The general proceedings of D2X-XL when establishing a UDP/IP communication between two peers 
-is as follows:
+are as follows:
 
 The sender places the destination address (IP + port) right after the game data in the data 
 packet. This happens in UDPSendPacket in the following two lines:
@@ -164,9 +96,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #include "u_mem.h"
 #include "byteswap.h"
 
-ubyte ipx_LocalAddress[10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
-ubyte ipx_ServerAddress[10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
-
+//------------------------------------------------------------------------------
 // #define UDPDEBUG
 
 #define PORTSHIFT_TOLERANCE	0x100
@@ -180,46 +110,50 @@ ubyte ipx_ServerAddress[10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'
 
 #define D2XUDP "D2XUDP"
 
+#ifndef _WIN32
+#	define closesocket	close
+#endif
+
+#define FAIL	return Fail
+
+/* Find as much as MAX_BRDINTERFACES during local iface autoconfiguration.
+ * Note that more interfaces can be added during manual configuration
+ * or host-received-packet autoconfiguration
+ */
+
+#define MAX_BRDINTERFACES 16
+
+/* We require the interface to be UP and RUNNING to accept it.
+ */
+
+#define IF_REQFLAGS (IFF_UP | IFF_RUNNING)
+
+/* We reject any interfaces declared as LOOPBACK nType.
+ */
+#define IF_NOTFLAGS (IFF_LOOPBACK)
+
+#define MAX_BUF_PACKETS		100
+
+#define PACKET_BUF_SIZE		(MAX_BUF_PACKETS * MAX_PACKETSIZE)
+
+//------------------------------------------------------------------------------
+
 static int nOpenSockets = 0;
 static const int val_one=1;
+
+ubyte ipx_LocalAddress [10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
+ubyte ipx_ServerAddress [10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
+int udpBasePorts [2] = {UDP_BASEPORT, UDP_BASEPORT};
 
 //------------------------------------------------------------------------------
 // OUR port. Can be changed by "@X[+=]..." argument (X is the shift value)
 
-int udpBasePorts [2] = {UDP_BASEPORT, UDP_BASEPORT};
-
-static int have_empty_address() 
+static int HaveEmptyAddress (void) 
 {
-	int i;
-
-for (i = 0; (i < 10); i++)
+for (int i = 0; i < 10; i++)
 	if (ipx_MyAddress [i])
 		return 0;
 return 1;
-}
-
-#define MSGHDR "IPX_udp: "
-
-//------------------------------------------------------------------------------
-
-static void _CDECL_ msg(const char *fmt,...)
-{
-	va_list ap;
-
-	fputs(MSGHDR,stdout);
-	va_start(ap,fmt);
-	vprintf(fmt,ap);
-	va_end(ap);
-	//putchar('\n');
-}
-
-//------------------------------------------------------------------------------
-
-static void chk(void *p)
-{
-	if (p) return;
-	msg("FATAL: Virtual memory exhausted!");
-	exit(EXIT_FAILURE);
 }
 
 //------------------------------------------------------------------------------
@@ -238,45 +172,9 @@ MsgBox (NULL, NULL, 1, "OK", "UDP Error\n\n%s\nError code: %d", szFailMsg, WSAGe
 return 1;
 }
 
-#define FAIL	return Fail
-
 //------------------------------------------------------------------------------
 
-/* Find as much as MAX_BRDINTERFACES during local iface autoconfiguration.
- * Note that more interfaces can be added during manual configuration
- * or host-received-packet autoconfiguration
- */
-
-#define MAX_BRDINTERFACES 16
-
-/* We require the interface to be UP and RUNNING to accept it.
- */
-
-#define IF_REQFLAGS (IFF_UP|IFF_RUNNING)
-
-/* We reject any interfaces declared as LOOPBACK nType.
- */
-#define IF_NOTFLAGS (IFF_LOOPBACK)
-
-inline int addreq (struct sockaddr_in *a, struct sockaddr_in *b)
-{
-if (a->sin_addr.s_addr != b->sin_addr.s_addr)
-	return (a->sin_port != b->sin_port) ? 3 : 2;
-return (a->sin_port != b->sin_port) ? 1 : 0;
-}
-
-
-inline int addreqm (struct sockaddr_in *a, struct sockaddr_in *b, struct sockaddr_in *m)
-{
-if ((a->sin_addr.s_addr & m->sin_addr.s_addr) != (b->sin_addr.s_addr & m->sin_addr.s_addr))
-	return (a->sin_port != b->sin_port) ? 3 : 2;
-return (a->sin_port != b->sin_port) ? 1 : 0;
-}
-
-
-#define MAX_BUF_PACKETS		100
-
-#define PACKET_BUF_SIZE		(MAX_BUF_PACKETS * MAX_PACKETSIZE)
+#if UDP_SAFEMODE
 
 typedef struct tPacketProps {
 	long						id;
@@ -285,103 +183,150 @@ typedef struct tPacketProps {
 	time_t					timeStamp;
 } tPacketProps;
 
-typedef struct tDestListEntry {
-	struct sockaddr_in	addr;
-#if UDP_SAFEMODE
-	tPacketProps			packetProps [MAX_BUF_PACKETS];
-	ubyte						packetBuf [PACKET_BUF_SIZE];
-	long						nSent;
-	long						nReceived;
-	short						firstPacket;
-	short						numPackets;
-	int						fd;
-	char						bSafeMode;		//safe mode a peer of the local CPlayerData uses (unknown: -1)
-	char						bOurSafeMode;	//our safe mode as that peer knows it (unknown: -1)
-	char						modeCountdown;
 #endif
-} tDestListEntry;
 
-static CArray<tDestListEntry> destList;
+class CClient {
+	public:
+		struct sockaddr_in	addr;
+#if UDP_SAFEMODE
+		tPacketProps			packetProps [MAX_BUF_PACKETS];
+		ubyte						packetBuf [PACKET_BUF_SIZE];
+		long						nSent;
+		long						nReceived;
+		short						firstPacket;
+		short						numPackets;
+		int						fd;
+		char						bSafeMode;		//safe mode a peer of the local CPlayerData uses (unknown: -1)
+		char						bOurSafeMode;	//our safe mode as that peer knows it (unknown: -1)
+		char						modeCountdown;
+#endif
+};
 
-static struct sockaddr_in broadmasks [MAX_BRDINTERFACES];
+class CClientManager {
+	private:
+		CArray<CClient>		m_clients;
+		uint						m_nClients;
+		uint						m_nMasks;
+		struct sockaddr_in	m_masks [MAX_BRDINTERFACES];
 
-static int	destAddrNum = 0,
-				masksNum = 0,
-				destListSize = 0;
+	public:
+		CClientManager () { Init (); }
+		void Init (void);
+		void Destroy (void);
+		void Unify (void);
+		int Find (struct sockaddr_in *destAddr);
+		int Add (struct sockaddr_in *destAddr);
+		int BuildInterfaceList (void);
+		int CheckSize (void);
+
+		inline int ClientCount (void) { return m_nClients; }
+		inline int MaskCount (void) { return m_nMasks; }
+		inline CClient& Client (uint i) { return m_clients [i]; }
+
+	private:
+		int CmpAddrs (struct sockaddr_in *a, struct sockaddr_in *b);
+		int CmpAddrsMasked (struct sockaddr_in *a, struct sockaddr_in *b, struct sockaddr_in *m);
+};
+
+CClientManager clientManager;
 
 //------------------------------------------------------------------------------
-// We'll check whether the "destList" array of destination addresses is now
+
+void CClientManager::Init (void)
+{
+m_nClients = 0;
+m_nMasks = 0;
+CheckSize ();
+}
+
+//------------------------------------------------------------------------------
+// We'll check whether the "m_clients" array of destination addresses is now
 // full and so needs expanding.
 
-static int ChkDestListSize(void)
+int CClientManager::CheckSize (void)
 {
-if (destAddrNum < destListSize)
+if (m_nClients < m_clients.Length ())
 	return 1;
-destList.Resize (destListSize = destListSize ? destListSize * 2 : 8);
+m_clients.Resize (m_clients.Buffer () ? m_clients.Length () * 2 : 8);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-static int FindDestInList (struct sockaddr_in *destAddr)
+int CClientManager::CmpAddrs (struct sockaddr_in *a, struct sockaddr_in *b)
 {
-	int i;
-
-for (i = 0; i < destAddrNum; i++) 
-	if ((i < masksNum) ?
-		 !addreqm (destAddr, &destList [i].addr, broadmasks + i) :
-		 !addreq (destAddr, &destList [i].addr)) 
-	return i;
-return destAddrNum;
+if (a->sin_addr.s_addr != b->sin_addr.s_addr)
+	return (a->sin_port != b->sin_port) ? 3 : 2;
+return (a->sin_port != b->sin_port) ? 1 : 0;
 }
 
 //------------------------------------------------------------------------------
 
-static int AddDestToList (struct sockaddr_in *destAddr)
+int CClientManager::CmpAddrsMasked (struct sockaddr_in *a, struct sockaddr_in *b, struct sockaddr_in *m)
 {
-	int				h, i;
-	tDestListEntry	*pdl;
+if ((a->sin_addr.s_addr & m->sin_addr.s_addr) != (b->sin_addr.s_addr & m->sin_addr.s_addr))
+	return (a->sin_port != b->sin_port) ? 3 : 2;
+return (a->sin_port != b->sin_port) ? 1 : 0;
+}
+
+//------------------------------------------------------------------------------
+
+int CClientManager::Find (struct sockaddr_in *destAddr)
+{
+for (uint i = 0; i < m_nClients; i++) 
+	if ((i < m_nMasks) 
+		 ? !CmpAddrsMasked (destAddr, &m_clients [i].addr, m_masks + i) 
+		 : !CmpAddrs (destAddr, &m_clients [i].addr)) 
+	return i;
+return m_nClients;
+}
+
+//------------------------------------------------------------------------------
+
+int CClientManager::Add (struct sockaddr_in *destAddr)
+{
+	uint		h, i;
+	CClient*	clientP;
 
 if (!destAddr->sin_addr.s_addr) 
 	return -1;
 if (destAddr->sin_addr.s_addr == htonl (INADDR_BROADCAST))
-	return destAddrNum;
+	return m_nClients;
 
-for (i = 0; i < destAddrNum; i++) {
-	h = (i < masksNum) ?
-		 addreqm (destAddr, &destList [i].addr, broadmasks + i) :
-		 addreq (destAddr, &destList [i].addr);
+for (i = 0; i < m_nClients; i++) {
+	h = (i < m_nMasks) 
+		 ? CmpAddrsMasked (destAddr, &m_clients [i].addr, m_masks + i) 
+		 : CmpAddrs (destAddr, &m_clients [i].addr);
 	if (h < 2)
 		break;
 	}
-if (i < destAddrNum) {
+if (i < m_nClients) {
 	if (h)
-		destList [i].addr = *destAddr;
+		m_clients [i].addr = *destAddr;
 	return i;
 	}
-if (!ChkDestListSize ())
+if (!CheckSize ())
 	return -1;
-pdl = &destList [destAddrNum++];
-pdl->addr = *destAddr;
+clientP = &m_clients [m_nClients++];
+clientP->addr = *destAddr;
 #if UDP_SAFEMODE
-pdl->nSent = 0;
-pdl->nReceived = 0;
-pdl->firstPacket = 0;
-pdl->numPackets = 0;
-pdl->bSafeMode = -1;
-pdl->bOurSafeMode = -1;
-pdl->modeCountdown = 1;
+clientP->nSent = 0;
+clientP->nReceived = 0;
+clientP->firstPacket = 0;
+clientP->numPackets = 0;
+clientP->bSafeMode = -1;
+clientP->bOurSafeMode = -1;
+clientP->modeCountdown = 1;
 #endif
 return i;
 }
 //------------------------------------------------------------------------------
 
-void FreeDestList (void)
+void CClientManager::Destroy (void)
 {
-destList.Destroy ();
-destAddrNum =
-masksNum =
-destListSize = 0;
+m_clients.Destroy ();
+m_nClients = 0;
+m_nMasks = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -389,168 +334,155 @@ destListSize = 0;
 // and collect their broadcast-destination addresses (and their netmasks).
 // Typically it founds only one ethernet card and so returns address in
 // the style "192.168.1.255" with netmask "255.255.255.0".
-// Broadcast addresses are filled into "destList", netmasks to "broadmasks".
+// Broadcast addresses are filled into "m_clients", netmasks to "broadmasks".
 
-/* Stolen from my GGN */
-static int addiflist(void)
+int CClientManager::BuildInterfaceList (void)
 {
 #if 0
-	unsigned cnt=MAX_BRDINTERFACES,i,j;
-	WSADATA info;
-	INTERFACE_INFO *ifo;
-	SOCKET sock;
-	struct sockaddr_in *sinp,*sinmp;
+	unsigned					i, j, cnt = MAX_BRDINTERFACES;
+	WSADATA					info;
+	INTERFACE_INFO*		ifo;
+	SOCKET					sock;
+	struct sockaddr_in*	sinp, * sinmp;
 
-	destList.Destroy ();
-	if ((sock=socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP))<0)
-		FAIL("Creating socket() failure during broadcast detection.");
+m_clients.Destroy ();
+if ((sock = socket (AF_INET, SOCK_DGRAM,IPPROTO_UDP)) < 0)
+	FAIL ("Creating socket() failure during broadcast detection.");
 
 #ifdef SIOCGIFCOUNT
-	if (ioctl(sock,SIOCGIFCOUNT,&cnt))
-	 { /* msg("Getting iterface count error."); */ }
-	else
-		cnt=cnt*2+2;
+if (ioctl (sock, SIOCGIFCOUNT, &cnt))
+	{ /* PrintLog ("UDP interface: Getting iterface count error."); */ }
+else
+	cnt = 2 * cnt + 2;
 #endif
 
-	memset(&ifo[0], 0, sizeof(ifo);
-	chk (ifo = new INTERFACE_INFO [cnt]);
+ifo = new INTERFACE_INFO [cnt];
 
-	if (wsaioctl(sock, SIO_GET_INTERFACE_LIST, NULL, 0, &ifo[0], cnt * sizeof(INTERFACE_INFO), &br, NULL, NULL)) != 0) {
-		closesocket(sock);
-		FAIL("ioctl(SIOCGIFCONF) failure during broadcast detection.");
-		}
-#if 0
-	cnt=ifconf.ifc_len/sizeof(struct ifreq);
-#endif
-	destList.Create (cnt);
-	chk (destList.Buffer ());
-	destListSize=cnt;
-	for (i=j=0;i<cnt;i++) {
-		if (ioctl(sock,SIOCGIFFLAGS,ifconf.ifc_req+i)) {
-			closesocket(sock);
-			FAIL("ioctl(udp,\"%s\",SIOCGIFFLAGS) error.",ifconf.ifc_req[i].ifr_name);
-			}
-		if (((ifconf.ifc_req[i].ifrFlags&IF_REQFLAGS)!=IF_REQFLAGS)||
-				 (ifconf.ifc_req[i].ifrFlags&IF_NOTFLAGS))
-			continue;
-		if (ioctl(sock,(ifconf.ifc_req[i].ifrFlags&IFF_BROADCAST?SIOCGIFBRDADDR:SIOCGIFDSTADDR),ifconf.ifc_req+i)) {
-			closesocket(sock);
-			FAIL("ioctl(udp,\"%s\",SIOCGIF{DST/BRD}ADDR) error.",ifconf.ifc_req[i].ifr_name);
-			}
+if (wsaioctl (sock, SIO_GET_INTERFACE_LIST, NULL, 0, ifo, cnt * sizeof (INTERFACE_INFO), &br, NULL, NULL)) != 0) {
+	closesocket(sock);
+	FAIL ("ioctl (SIOCGIFCONF) failure during broadcast detection.");
+	}
+m_clients.Create (cnt);
 
-		sinp = reinterpret_cast<struct sockaddr_in*> (&ifconf.ifc_req[i].ifr_broadaddr);
-#if 0 // old, not portable code
-		sinmp = reinterpret_cast<struct sockaddr_in*> (&ifconf.ifc_req[i].ifr_netmask);
-#else // portable code
-		if (ioctl(sock, SIOCGIFNETMASK, ifconf.ifc_req+i)) {
-			closesocket(sock);
-			FAIL("ioctl(udp,\"%s\",SIOCGIFNETMASK) error.", ifconf.ifc_req[i].ifr_name);
+for (i = j = 0; i < cnt; i++) {
+	if (ioctl (sock, SIOCGIFFLAGS, ifconf.ifc_req + i)) {
+		closesocket (sock);
+		FAIL ("ioctl(udp, \"%s\", SIOCGIFFLAGS) error.", ifconf.ifc_req [i].ifr_name);
 		}
-		sinmp = reinterpret_cast<struct sockaddr_in*> (&ifconf.ifc_req[i].ifr_addr);
-#endif
-		if (sinp->sin_family!=AF_INET || sinmp->sin_family!=AF_INET) continue;
-		destList [j]=*sinp;
-		destList [j].sin_port=UDP_BASEPORT; //FIXME: No possibility to override from cmdline
-		broadmasks[j]=*sinmp;
-		j++;
+	if (((ifconf.ifc_req [i].ifrFlags & IF_REQFLAGS) != IF_REQFLAGS) || (ifconf.ifc_req [i].ifrFlags & IF_NOTFLAGS))
+		continue;
+	if (ioctl (sock, (ifconf.ifc_req [i].ifrFlags & IFF_BROADCAST) ? SIOCGIFBRDADDR : SIOCGIFDSTADDR, ifconf.ifc_req + i)) {
+	closesocket (sock);
+	FAIL ("ioctl (udp, \"%s\", SIOCGIF{DST/BRD}ADDR) error.", ifconf.ifc_req [i].ifr_name);
+	}
+	sinp = reinterpret_cast<struct sockaddr_in*> (&ifconf.ifc_req [i].ifr_broadaddr);
+	if (ioctl (sock, SIOCGIFNETMASK, ifconf.ifc_req + i)) {
+		closesocket (sock);
+		FAIL ("ioctl(udp, \"%s\", SIOCGIFNETMASK) error.", ifconf.ifc_req [i].ifr_name);
 		}
-	destAddrNum=j;
-	masksNum=j;
+	sinmp = reinterpret_cast<struct sockaddr_in*> (&ifconf.ifc_req [i].ifr_addr);
+	if ((sinp->sin_family != AF_INET) || (sinmp->sin_family!=AF_INET))	
+		continue;
+	m_clients [j] = *sinp;
+	m_clients [j].sin_port = UDP_BASEPORT; //FIXME: No possibility to override from cmdline
+	broadmasks [j] = *sinmp;
+	j++;
+	}
+m_nClients = j;
+m_nMasks = j;
 #endif
-	return(0);
+return 0;
 }
 
 //------------------------------------------------------------------------------
-// Previous function addiflist() can (and probably will) report multiple
+// Previous function BuildInterfaceList() can (and probably will) report multiple
 // same addresses. On some Linux boxes is present both device "eth0" and
 // "dummy0" with the same IP addreesses - we'll filter it here.
 
-static void unifyiflist(void)
+void CClientManager::Unify (void)
 {
-int d=0,s,i;
+	uint i, s, d = 0;
 
-for (s = 0; s < destAddrNum; s++) {
+for (s = 0; s < m_nClients; s++) {
 	for (i = 0; i < s; i++)
-		if (addreq (&destList [s].addr, &destList [i].addr)) 
+		if (CmpAddrs (&m_clients [s].addr, &m_clients [i].addr)) 
 			break;
-	if (i>=s) 
-		destList [d++] = destList [s];
+	if (i >= s) 
+		m_clients [d++] = m_clients [s];
 	}
-destAddrNum=d;
+m_nClients = d;
 }
 
-static ubyte qhbuf[6];
+static ubyte qhbuf [6];
 
 //------------------------------------------------------------------------------
 // Parse PORTSHIFT numeric parameter
 
-static void portshift(const char *cs)
+static void PortShift (const char *pszPort)
 {
-int port;
-ushort srcPort=0;
-
-	port=atoi(cs);
-	if (port<-PORTSHIFT_TOLERANCE || port>+PORTSHIFT_TOLERANCE)
-		msg("Invalid portshift in \"%s\", tolerance is +/-%d",cs,PORTSHIFT_TOLERANCE);
-	else 
-		srcPort=(ushort) htons((u_short) port);
-	memcpy(qhbuf+4,&srcPort,2);
+ushort srcPort = 0;
+int port = atoi (pszPort);
+if ((port < -PORTSHIFT_TOLERANCE) || (port > +PORTSHIFT_TOLERANCE))
+	PrintLog ("Invalid PortShift in \"%s\", tolerance is +/-%d\n", pszPort, PORTSHIFT_TOLERANCE);
+else 
+	srcPort = (ushort) htons (u_short (port));
+memcpy (qhbuf + 4, &srcPort, 2);
 }
 
 //------------------------------------------------------------------------------
 // Do hostname resolve on name "buf" and return the address in buffer "qhbuf".
  
-ubyte *queryhost(char *buf)
+ubyte *QueryHost (char *buf)
 {
-struct hostent *he;
-char *s;
-char c=0;
+	struct hostent *he;
+	char*	s;
+	char	c = 0;
 
-	if ((s=strrchr(buf,':'))) {
-		c=*s;
-		*s='\0';
-		portshift(s+1);
-		}
-	else 
-		memset(qhbuf+4,0,2);
-	he=gethostbyname(reinterpret_cast<char*> (buf));
-	if (s) 
-		*s=c;
-	if (!he) {
-		msg("Error resolving my hostname \"%s\"",buf);
-		return(NULL);
-		}
-	if (he->h_addrtype!=AF_INET || he->h_length!=4) {
-		msg("Error parsing resolved my hostname \"%s\"",buf);
-		return(NULL);
-		}
-	if (!*he->h_addr_list) {
-		msg("My resolved hostname \"%s\" address list empty",buf);
-		return(NULL);
-		}
-	memcpy(qhbuf,(*he->h_addr_list),4);
-	return(qhbuf);
+if ((s = strrchr (buf, ':'))) {
+	c = *s;
+	*s = '\0';
+	PortShift (s + 1);
+	}
+else 
+	memset (qhbuf + 4, 0, 2);
+he = gethostbyname (reinterpret_cast<char*> (buf));
+if (s) 
+	*s = c;
+if (!he) {
+	PrintLog ("Error resolving my hostname \"%s\"\n", buf);
+	return NULL;
+	}
+if ((he->h_addrtype != AF_INET) || (he->h_length != 4)) {
+	PrintLog ("Error parsing resolved my hostname \"%s\"\n", buf);
+	return NULL;
+	}
+if (!*he->h_addr_list) {
+	PrintLog ( "My resolved hostname \"%s\" address list empty\n", buf);
+	return NULL;
+	}
+memcpy (qhbuf, *he->h_addr_list, 4);
+return qhbuf;
 }
 
 //------------------------------------------------------------------------------
 // Dump raw form of IP address/port by fancy output to user
 
-static void dumpraddr(ubyte *a)
+static void DumpRawAddr (ubyte *a)
 {
 short port;
 
-PrintLog ("[%u.%u.%u.%u]", a[0],a[1],a[2],a[3]);
-console.printf (0, "[%u.%u.%u.%u]", a[0],a[1],a[2],a[3]);
+PrintLog ("[%u.%u.%u.%u]", a[0], a[1], a[2], a[3]);
+console.printf (0, "[%u.%u.%u.%u]", a[0], a[1], a[2], a[3]);
 port=(signed short)ntohs (*reinterpret_cast<ushort*> (a+4));
 if (port) {
-	PrintLog (":%+d",port);
-	console.printf (0, ":%+d",port);
+	PrintLog (":%+d", port);
+	console.printf (0, ":%+d", port);
 	}
 PrintLog ("\n");
 }
 
 //------------------------------------------------------------------------------
-// Like dumpraddr() but for structure "sockaddr_in"
+// Like DumpRawAddr() but for structure "sockaddr_in"
 #if 0
 static void dumpaddr(struct sockaddr_in *sin)
 {
@@ -559,30 +491,30 @@ ushort srcPort;
 memcpy(qhbuf, &sin->sin_addr, 4);
 srcPort = htons ((u_short) (ntohs (sin->sin_port) - UDP_BASEPORT));
 memcpy(qhbuf + 4, &srcPort, 2);
-dumpraddr (qhbuf);
+DumpRawAddr (qhbuf);
 }
 #endif
 //------------------------------------------------------------------------------
 // Startup... Uninteresting parsing...
 
-int UDPGetMyAddress(void) 
+int UDPGetMyAddress (void) 
 {
+	char			buf [256];
+	int			i, l;
+	char*			s, * s2;
+	CCharArray	ns;
 
-char buf[256];
-int i;
-char *s,*s2,*ns;
-
-if (!have_empty_address())
+if (!HaveEmptyAddress ())
 	return 0;
 if (!((i = FindArg ("-udp")) && (s = pszArgList [i + 1]) && ((*s == '=') || (*s == '+') || (*s == '@')))) 
 	s = NULL;
 if (gethostname (buf, sizeof (buf))) 
-	FAIL("Error getting my hostname");
-	if (!(queryhost (buf))) 
-		FAIL("Querying my own hostname \"%s\"",buf);
+	FAIL ("Error getting my hostname");
+	if (!(QueryHost (buf))) 
+		FAIL ("Querying my own hostname \"%s\"",buf);
 if (s) 
 	while (*s=='@') {
-		portshift (++s);
+		PortShift (++s);
 		while (::isdigit (*s)) 
 			s++;
 		}
@@ -590,11 +522,11 @@ memset(ipx_MyAddress, 0, 4);
 memcpy(ipx_MyAddress + 4, qhbuf, 6);
 //udpBasePorts [gameStates.multi.bServer] += (short)ntohs(*reinterpret_cast<ushort*> (qhbuf+4));
 if (!(s && *s)) 
-	addiflist();
+	clientManager.BuildInterfaceList ();
 else {
 	struct sockaddr_in *sin;
 	if (*s=='+') 
-		addiflist ();
+		clientManager.BuildInterfaceList ();
 	s++;
 	for (;;) {
 		while (::isspace (*s)) 
@@ -603,22 +535,23 @@ else {
 			break;
 		for (s2 = s; *s2 && *s2 != ','; s2++)
 			;
-		chk (ns = new char [s2 - s + 1]);
-		memcpy(ns, s, s2 - s);
-		ns[s2-s]='\0';
-		if (!queryhost(ns)) 
-			msg ("Ignored broadcast-destination \"%s\" as being invalid", ns);
-		delete[] ns;
-		sin = &destList [destAddrNum].addr;
+		l = s2 - s;
+		ns.Create (l + 1);
+		memcpy (ns.Buffer (), s, l);
+		ns [l] = '\0';
+		if (!QueryHost (ns.Buffer ())) 
+			PrintLog ("UDP: Ignored broadcast-destination \"%s\" as being invalid", ns);
+		ns.Destroy ();
+		sin = &clientManager.Client (clientManager.ClientCount () - 1).addr;
 		sin->sin_family = AF_INET;
-		memcpy(&sin->sin_addr, qhbuf, 4);
+		memcpy (&sin->sin_addr, qhbuf, 4);
 		sin->sin_port = htons ((u_short) (ntohs (*(reinterpret_cast<u_short*> (qhbuf + 4))) + UDP_BASEPORT));
-		if (AddDestToList (sin) < 0)
+		if (clientManager.Add (sin) < 0)
 			FAIL ("Error allocating client table");
-		s=s2+(*s2==',');
+		s = s2 + (*s2 == ',');
 		}
 	}
-unifyiflist();
+clientManager.Unify ();
 return 0;
 }
 
@@ -637,38 +570,42 @@ static int UDPOpenSocket (ipx_socket_t *sk, int port)
 #endif
 	u_short	nLocalPort, nServerPort;
 
-
 udpBasePorts [1] = UDP_BASEPORT + networkData.nSocket;	//server port as set by the server
 nLocalPort = gameStates.multi.bServer ? udpBasePorts [1] : mpParams.udpClientPort;
 gameStates.multi.bHaveLocalAddress = 0;
-if (!nOpenSockets)
-	if (UDPGetMyAddress() < 0) {
-		FAIL ("Couldn't get my address.");
-		}
-
-msg("OpenSocket on D1X socket nLocalPort %d", nLocalPort);
+if (!nOpenSockets && (UDPGetMyAddress () < 0)) {
+	FAIL ("Couldn't get my address.");
+	}
 
 if (!gameStates.multi.bServer) {		//set up server address and add it to destination list
-	if (!ChkDestListSize ())
+	if (!clientManager.CheckSize ())
 		FAIL ("Error allocating client table");
 	nServerPort = udpBasePorts [0] + networkData.nSocket;
-	*(reinterpret_cast<u_short*> (ipx_ServerAddress + 8)) = htons (nServerPort);
 	sin.sin_family = AF_INET;
+	*(reinterpret_cast<u_short*> (ipx_ServerAddress + 8)) = htons (nServerPort);
 	memcpy (&sin.sin_addr.s_addr, ipx_ServerAddress + 4, 4);
 	sin.sin_port = htons (nServerPort);
 	if (!tracker.m_bUse)
-		AddDestToList (&sin);
+		clientManager.Add (&sin);
 	}
 
-if (0 > (sk->fd = (int) socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP))) {
+if (0 > (sk->fd = int (socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP)))) {
 	sk->fd = -1;
 	FAIL ("Couldn't create socket on nLocalPort %d.\nError code: %d.", nLocalPort);
 	}
+#ifdef _WIN32
 ioctlsocket (sk->fd, FIONBIO, &sockBlockMode);
+#else
+fcntl (sk->fd, F_SETFL, O_NONBLOCK);
+#endif
 *(reinterpret_cast<u_short*> (ipx_MyAddress + 8)) = nLocalPort;
 #ifdef UDP_BROADCAST
 if (setsockopt (sk->fd, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char*> (&val_one), sizeof (val_one))) {
+#ifdef _WIN32
 	closesocket (sk->fd);
+#else
+	close (sk->fd);
+#endif
 	sk->fd = -1;
 	FAIL ("Setting broadcast socket option failed.");
 	}
@@ -676,11 +613,15 @@ if (setsockopt (sk->fd, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char*> (&val_
 if (gameStates.multi.bServer || mpParams.udpClientPort) {
 	sin.sin_family = AF_INET;
 	sin.sin_addr.s_addr = htonl (INADDR_ANY); //ipx_ServerAddress + 4);
-	sin.sin_port = htons (nLocalPort);
+	sin.sin_port = htons (ushort (nLocalPort));
 	if (bind (sk->fd, reinterpret_cast<struct sockaddr*> (&sin), sizeof (sin))) {
+#ifdef _WIN32
 		closesocket (sk->fd);
+#else
+		close (sk->fd);
+#endif
 		sk->fd = -1;
-		FAIL ("Couldn't bind to nLocalPort %d.", nLocalPort);
+		FAIL ("Couldn't bind to local UDP port %d.", nLocalPort);
 		}
 	memcpy (ipx_MyAddress + 8, &nLocalPort, 2);
 	}
@@ -695,20 +636,18 @@ return 0;
 
 static void UDPCloseSocket (ipx_socket_t *mysock) 
 {
-FreeDestList ();
+clientManager.Destroy ();
 gameStates.multi.bHaveLocalAddress = 0;
 if (!nOpenSockets) {
-	msg("close w/o open");
+	PrintLog ("UDP interface: close w/o open\n");
 	return;
 	}
-msg("CloseSocket on D1X socket port %d",mysock->socket);
+PrintLog ("UDP interface: CloseSocket on D1X socket port %d\n", mysock->socket);
 if (closesocket(mysock->fd))
-	msg("closesocket() failed on CloseSocket D1X socket port %d.",mysock->socket);
-mysock->fd=-1;
-if (--nOpenSockets) {
-	msg("(closesocket) %d sockets left", nOpenSockets);
-	return;
-	}
+	PrintLog ("UDP interface: closesocket() failed on CloseSocket D1X socket port %d.\n", mysock->socket);
+mysock->fd = -1;
+if (--nOpenSockets)
+	PrintLog ("UDP interface: (closesocket) %d sockets left\n", nOpenSockets);
 }
 
 //------------------------------------------------------------------------------
@@ -718,28 +657,28 @@ if (--nOpenSockets) {
 #define SAFEMODE_ID			"D2XUDP:SAFEMODE:??"
 #define SAFEMODE_ID_LEN		(sizeof (SAFEMODE_ID) - 1)
 
-int ReportSafeMode (tDestListEntry *pdl)
+int ReportSafeMode (CClient *clientP)
 {
 	ubyte buf [40];
 
 memcpy (buf, SAFEMODE_ID, SAFEMODE_ID_LEN);
 buf [SAFEMODE_ID_LEN - 2] = extraGameInfo [0].bSafeUDP;
-if (pdl->bSafeMode != -1)
-	buf [SAFEMODE_ID_LEN - 1] = pdl->bSafeMode;
-return sendto (pdl->fd, buf, SAFEMODE_ID_LEN, 0, reinterpret_cast<struct sockaddr*> (&pdl->addr), sizeof (pdl->addr));
+if (clientP->bSafeMode != -1)
+	buf [SAFEMODE_ID_LEN - 1] = clientP->bSafeMode;
+return sendto (clientP->fd, buf, SAFEMODE_ID_LEN, 0, reinterpret_cast<struct sockaddr*> (&clientP->addr), sizeof (clientP->addr));
 }
 
 //------------------------------------------------------------------------------
 
-static void QuerySafeMode (tDestListEntry *pdl)
+static void QuerySafeMode (CClient *clientP)
 {
-if ((pdl->bSafeMode < 0) && (!--(pdl->modeCountdown))) {
+if ((clientP->bSafeMode < 0) && (!--(clientP->modeCountdown))) {
 	ubyte buf [40];
 	int i;
 
 	memcpy (buf, SAFEMODE_ID, SAFEMODE_ID_LEN);
-	i = sendto (pdl->fd, buf, SAFEMODE_ID_LEN, 0, reinterpret_cast<struct sockaddr*> (&pdl->addr), sizeof (pdl->addr));
-	pdl->modeCountdown = 2;
+	i = sendto (clientP->fd, buf, SAFEMODE_ID_LEN, 0, reinterpret_cast<struct sockaddr*> (&clientP->addr), sizeof (clientP->addr));
+	clientP->modeCountdown = 2;
 	}
 }
 
@@ -748,28 +687,28 @@ if ((pdl->bSafeMode < 0) && (!--(pdl->modeCountdown))) {
 static int EvalSafeMode (ipx_socket_t *s, struct sockaddr_in *fromAddr, ubyte *buf)
 {
 	int				i, bReport = 0;
-	tDestListEntry	*pdl;
+	CClient	*clientP;
 
 if (strncmp (buf, SAFEMODE_ID, SAFEMODE_ID_LEN - 2))
 	return 0;
-if (destAddrNum <= (i = FindDestInList (fromAddr)))
+if (clientManager.ClientCount () <= (i = clientManager.Find (fromAddr)))
 	return 1;
-pdl = destList + i;
-pdl->fd = s->fd;
+clientP = m_clients + i;
+clientP->fd = s->fd;
 if (buf [SAFEMODE_ID_LEN - 2] == '?')
 	bReport = 1;
-else if (pdl->bSafeMode != buf [SAFEMODE_ID_LEN - 2]) {
+else if (clientP->bSafeMode != buf [SAFEMODE_ID_LEN - 2]) {
 	bReport = 1;
-	pdl->bSafeMode = buf [SAFEMODE_ID_LEN - 2];
+	clientP->bSafeMode = buf [SAFEMODE_ID_LEN - 2];
 	}
 if (buf [SAFEMODE_ID_LEN - 1] == '?')
 	bReport = 1;
-else if (pdl->bOurSafeMode != buf [SAFEMODE_ID_LEN - 1]) {
+else if (clientP->bOurSafeMode != buf [SAFEMODE_ID_LEN - 1]) {
 	bReport = 1;
-	pdl->bOurSafeMode = buf [SAFEMODE_ID_LEN - 1];
+	clientP->bOurSafeMode = buf [SAFEMODE_ID_LEN - 1];
 	}
 if (bReport)
-	ReportSafeMode (pdl);
+	ReportSafeMode (clientP);
 return 1;
 }
 
@@ -787,8 +726,8 @@ static int UDPSendPacket
 #if DBG
 	int h;
 #endif
-	int				iDest, nUdpRes, extraDataLen = 0, bBroadcast = 0;
-	tDestListEntry *pdl;
+	int				iDest, nClients, nUdpRes, extraDataLen = 0, bBroadcast = 0;
+	CClient *clientP;
 #if UDP_SAFEMODE
 	tPacketProps	*ppp;
 	int				j;
@@ -797,7 +736,7 @@ static int UDPSendPacket
 	ubyte				*bufP = buf;
 
 #ifdef UDPDEBUG
-msg("SendPacket enter, dataLen=%d",dataLen);
+PrintLog ("UDP interface: SendPacket enter, dataLen=%d",dataLen);
 #endif
 if ((dataLen < 0) || (dataLen > MAX_DATASIZE))
 	return -1;
@@ -813,27 +752,27 @@ memcpy (&destAddr.sin_addr, ipxHeader->Destination.Node, 4);
 destAddr.sin_port = *(reinterpret_cast<ushort*> (ipxHeader->Destination.Node + 4));
 memset (&(destAddr.sin_zero), '\0', 8);
 
-if (!(gameStates.multi.bTrackerCall || (AddDestToList (&destAddr) >= 0)))
+if (!(gameStates.multi.bTrackerCall || (clientManager.Add (&destAddr) >= 0)))
 	return -1;
 if (destAddr.sin_addr.s_addr == htonl (INADDR_BROADCAST)) {
 	bBroadcast = 1;
 	iDest = 0;
 	}
-else if (destAddrNum <= (iDest = FindDestInList (&destAddr)))
+else if (clientManager.ClientCount () <= (iDest = clientManager.Find (&destAddr)))
 	iDest = -1;
-for (; iDest < destAddrNum; iDest++) { 
+for (nClients = clientManager.ClientCount (); iDest < nClients; iDest++) { 
 	if (iDest < 0)
 		dest = &destAddr;
 	else {
-		pdl = &destList [iDest];
-		dest = &pdl->addr;
+		clientP = &clientManager.Client (iDest);
+		dest = &clientP->addr;
 		}
 	// copy destination IP and port to outBuf
 	if (!gameStates.multi.bTrackerCall) {
 #if UDP_SAFEMODE
-		if (pdl->bOurSafeMode < 0)
-			ReportSafeMode (pdl);
-		if (pdl->bSafeMode <= 0) {
+		if (clientP->bOurSafeMode < 0)
+			ReportSafeMode (clientP);
+		if (clientP->bSafeMode <= 0) {
 #endif
 			memcpy (buf + 8 + dataLen, &dest->sin_addr, 4);
 			memcpy (buf + 12 + dataLen, &dest->sin_port, 2);
@@ -845,9 +784,9 @@ for (; iDest < destAddrNum; iDest++) {
 			memcpy (buf + 16 + dataLen, &dest->sin_addr, 4);
 			memcpy (buf + 20 + dataLen, &dest->sin_port, 2);
 			extraDataLen = 22;
-			if (pdl->numPackets) {
-				j = (pdl->firstPacket + pdl->numPackets - 1) % MAX_BUF_PACKETS;
-				ppp = pdl->packetProps + j;
+			if (clientP->numPackets) {
+				j = (clientP->firstPacket + clientP->numPackets - 1) % MAX_BUF_PACKETS;
+				ppp = clientP->packetProps + j;
 				if ((ppp->len == dataLen + extraDataLen) && 
 					!memcmp (ppp->data + 12, buf + 12, ppp->len - 22)) { //+12: skip header data
 					bufP = ppp->data;
@@ -855,19 +794,19 @@ for (; iDest < destAddrNum; iDest++) {
 					}
 				}
 			if (!bResend) {
-				if (pdl->numPackets < MAX_BUF_PACKETS)
-					pdl->numPackets++;
+				if (clientP->numPackets < MAX_BUF_PACKETS)
+					clientP->numPackets++;
 				else
-					pdl->firstPacket = (pdl->firstPacket + 1) % MAX_BUF_PACKETS;
-				j = (pdl->firstPacket + pdl->numPackets - 1) % MAX_BUF_PACKETS;
-				ppp = pdl->packetProps + j;
+					clientP->firstPacket = (clientP->firstPacket + 1) % MAX_BUF_PACKETS;
+				j = (clientP->firstPacket + clientP->numPackets - 1) % MAX_BUF_PACKETS;
+				ppp = clientP->packetProps + j;
 				ppp->len = dataLen + extraDataLen;
-				ppp->data = pdl->packetBuf + j * MAX_PACKETSIZE;
-				*(reinterpret_cast<int*> (buf + dataLen + 8)) = INTEL_INT (pdl->nSent);
+				ppp->data = clientP->packetBuf + j * MAX_PACKETSIZE;
+				*(reinterpret_cast<int*> (buf + dataLen + 8)) = INTEL_INT (clientP->nSent);
 				memcpy (buf + dataLen + 12, "SAFE", 4);
 				memcpy (ppp->data, buf, ppp->len);
-				ppp->id = pdl->nSent++;
-				pdl->fd = mysock->fd;
+				ppp->id = clientP->nSent++;
+				clientP->fd = mysock->fd;
 				}
 			ppp->timeStamp = SDL_GetTicks ();
 			}
@@ -903,16 +842,16 @@ return dataLen;
 #define RESEND_ID			"D2XUDP:RESEND:"
 #define RESEND_ID_LEN	(sizeof (RESEND_ID) - 1)
 
-static void RequestResend (struct tDestListEntry *pdl, int nLastPacket)
+static void RequestResend (struct CClient *clientP, int nLastPacket)
 {
 	ubyte buf [40];
 	int i;
 	static int h = 0;
 
 memcpy (buf, RESEND_ID, RESEND_ID_LEN);
-*(reinterpret_cast<int*> (buf + RESEND_ID_LEN)) = INTEL_INT (pdl->nReceived);
+*(reinterpret_cast<int*> (buf + RESEND_ID_LEN)) = INTEL_INT (clientP->nReceived);
 *(reinterpret_cast<int*> (buf + RESEND_ID_LEN + 4)) = INTEL_INT (nLastPacket);
-i = sendto (pdl->fd, buf, RESEND_ID_LEN + 8, 0, reinterpret_cast<struct sockaddr*> (&pdl->addr), sizeof (pdl->addr));
+i = sendto (clientP->fd, buf, RESEND_ID_LEN + 8, 0, reinterpret_cast<struct sockaddr*> (&clientP->addr), sizeof (clientP->addr));
 }
 
 //------------------------------------------------------------------------------
@@ -920,13 +859,13 @@ i = sendto (pdl->fd, buf, RESEND_ID_LEN + 8, 0, reinterpret_cast<struct sockaddr
 #define FORGET_ID			"D2XUDP:FORGET:"
 #define FORGET_ID_LEN	(sizeof (FORGET_ID) - 1)
 
-int DropData (tDestListEntry *pdl, int nDrop)
+int DropData (CClient *clientP, int nDrop)
 {
 	ubyte	buf [40];
 
 memcpy (buf, FORGET_ID, FORGET_ID_LEN);
 *(reinterpret_cast<int*> (buf + FORGET_ID_LEN)) = INTEL_INT (nDrop);
-sendto (pdl->fd, buf, FORGET_ID_LEN + 4, 0, reinterpret_cast<struct sockaddr*> (&pdl->addr), sizeof (pdl->addr));
+sendto (clientP->fd, buf, FORGET_ID_LEN + 4, 0, reinterpret_cast<struct sockaddr*> (&clientP->addr), sizeof (clientP->addr));
 return 1;
 }
 
@@ -935,17 +874,17 @@ return 1;
 int ForgetData (struct sockaddr_in *fromAddr, ubyte *buf)
 {
 	int				i, nDrop;
-	tDestListEntry	*pdl;
+	CClient	*clientP;
 
 if (!extraGameInfo [0].bSafeUDP)
 	return 0;
 if (strncmp (buf, FORGET_ID, FORGET_ID_LEN))
 	return 0;
-if (destAddrNum <= (i = FindDestInList (fromAddr)))
+if (clientManager.ClientCount () <= (i = clientManager.Find (fromAddr)))
 	return 1;
-pdl = destList + i;
+clientP = m_clients + i;
 nDrop = *(reinterpret_cast<int*> (buf + FORGET_ID_LEN));
-pdl->nReceived = INTEL_INT (nDrop);
+clientP->nReceived = INTEL_INT (nDrop);
 return 1;
 }
 
@@ -954,7 +893,7 @@ return 1;
 int ResendData (struct sockaddr_in *fromAddr, ubyte *buf)
 {
 	int				i, j, nFirst, nLast, nDrop;
-	tDestListEntry	*pdl;
+	CClient	*clientP;
 	tPacketProps	*ppp;
 	time_t			t;
 
@@ -962,26 +901,26 @@ int ResendData (struct sockaddr_in *fromAddr, ubyte *buf)
 //	return 0;
 if (strncmp (buf, RESEND_ID, sizeof (RESEND_ID) - 1))
 	return 0;
-if (destAddrNum <= (i = FindDestInList (fromAddr)))
+if (clientManager.ClientCount () <= (i = clientManager.Find (fromAddr)))
 	return 1;
 nFirst = *(reinterpret_cast<int*> (buf + RESEND_ID_LEN));
 nFirst = INTEL_INT (nFirst);
 nLast = *(reinterpret_cast<int*> (buf + RESEND_ID_LEN + 4));
 nLast = INTEL_INT (nLast);
-pdl = destList + i;
-if (!pdl->numPackets)
+clientP = m_clients + i;
+if (!clientP->numPackets)
 	return 1;
-ppp = pdl->packetProps + pdl->firstPacket;
+ppp = clientP->packetProps + clientP->firstPacket;
 if (nFirst < (nDrop = ppp->id)) {
-	DropData (pdl, nDrop);
+	DropData (clientP, nDrop);
 	if (nDrop > nLast)
 		return 1;
 	nFirst = nDrop;
 	}
 t = SDL_GetTicks ();
-for (i = pdl->numPackets, j = pdl->firstPacket; i; i--, j++) {
+for (i = clientP->numPackets, j = clientP->firstPacket; i; i--, j++) {
 	j %= MAX_BUF_PACKETS;
-	ppp = pdl->packetProps + j;
+	ppp = clientP->packetProps + j;
 	if (ppp->id > nLast)
 		break;
 	if (ppp->id < nFirst)
@@ -991,10 +930,10 @@ for (i = pdl->numPackets, j = pdl->firstPacket; i; i--, j++) {
 		continue;
 		}
 	if (nDrop >= 0) {	//have the receiver 'forget' outdated data
-		DropData (pdl, nDrop);
+		DropData (clientP, nDrop);
 		nDrop = -1;
 		}
-	sendto (pdl->fd, ppp->data, ppp->len, 0, reinterpret_cast<struct sockaddr*> (&pdl->addr), sizeof (pdl->addr));
+	sendto (clientP->fd, ppp->data, ppp->len, 0, reinterpret_cast<struct sockaddr*> (&clientP->addr), sizeof (clientP->addr));
 	}
 return 1;
 }
@@ -1010,8 +949,8 @@ static int UDPReceivePacket
 	struct sockaddr_in	fromAddr;
 	int						i, dataLen, bTracker, 
 								fromAddrSize = sizeof (fromAddr);
-	tDestListEntry			*pdl;
-	ushort			srcPort;
+	CClient*					clientP;
+	ushort					srcPort;
 #if UDP_SAFEMODE
 	int						packetId = -1, bSafeMode = 0;
 #endif
@@ -1048,31 +987,31 @@ if (!(bTracker
 	if (!memcmp (&fromAddr.sin_addr, ipx_LocalAddress + 4, 4) &&
 		 !memcmp (&srcPort, ipx_LocalAddress + 8, 2))
 		return -1;
-	i = AddDestToList (&fromAddr);
+	i = clientManager.Add (&fromAddr);
 	if (i < 0)
 		return -1;
-	if (i < destAddrNum) {	//i.e. sender already in list or successfully added to list
-		pdl = destList + i;
+	if (i < clientManager.ClientCount () - 1) {	//i.e. sender already in list or successfully added to list
+		clientP = &clientManager.Client (i);
 #if UDP_SAFEMODE
 		bSafeMode = 0;
-		pdl->fd = s->fd;
-		pdl->bOurSafeMode = (memcmp (outBuf + dataLen - 10, "SAFE", 4) == 0);
-		if (pdl->bOurSafeMode != extraGameInfo [0].bSafeUDP)
-			ReportSafeMode (pdl);
-		if (pdl->bOurSafeMode == 1) {
+		clientP->fd = s->fd;
+		clientP->bOurSafeMode = (memcmp (outBuf + dataLen - 10, "SAFE", 4) == 0);
+		if (clientP->bOurSafeMode != extraGameInfo [0].bSafeUDP)
+			ReportSafeMode (clientP);
+		if (clientP->bOurSafeMode == 1) {
 			bSafeMode = 1;
 			packetId = *(reinterpret_cast<int*> (outBuf + dataLen - 14));
 			packetId = INTEL_INT (packetId);
-			if (packetId == pdl->nReceived) 
-				pdl->nReceived++;
-			else if (packetId > pdl->nReceived) {
-				RequestResend (pdl, packetId);
+			if (packetId == clientP->nReceived) 
+				clientP->nReceived++;
+			else if (packetId > clientP->nReceived) {
+				RequestResend (clientP, packetId);
 				return -1;
 				}
 			}
 #	if DBG
 		console.printf (0, "%s: %d bytes, packet id: %d, safe modes: %d,%d", 
-						iptos (szIP, reinterpret_cast<char*> (&fromAddr), dataLen, packetId, pdl->bSafeMode, pdl->bOurSafeMode);
+						iptos (szIP, reinterpret_cast<char*> (&fromAddr), dataLen, packetId, clientP->bSafeMode, clientP->bOurSafeMode);
 #	endif
 #endif //UDP_SAFEMODE
 		}
@@ -1098,7 +1037,7 @@ rd->pktType = 0;
 console.printf (0, "received %d bytes from %u.%u.%u.%u:%u\n", 
 				dataLen, rd->src_node [0], rd->src_node [1], rd->src_node [2], rd->src_node [3],
 				(signed short)ntohs (*reinterpret_cast<ushort*> (rd->src_node + 4)));
-//dumpraddr (rd->src_node);
+//DumpRawAddr (rd->src_node);
 //putchar('\n');
 #endif
 return dataLen;
@@ -1110,7 +1049,11 @@ int UDPPacketReady(ipx_socket_t *s)
 {
 	ulong nAvailBytes = 0;
 
-return !ioctlsocket(s->fd, FIONREAD, &nAvailBytes) && (nAvailBytes > 0);
+#ifdef _WIN32
+return !ioctlsocket (s->fd, FIONREAD, &nAvailBytes) && (nAvailBytes > 0);
+#else
+return !fcntl (s->fd, FIONREAD, &nAvailBytes) && (nAvailBytes > 0);
+#endif
 }
 
 //------------------------------------------------------------------------------
