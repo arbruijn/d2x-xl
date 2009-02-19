@@ -167,7 +167,7 @@ typedef struct tShortPos {
 	short   pos [3];
 	short   nSegment;
 	short   vel [3];
-} tShortPos;
+} __pack__ tShortPos;
 
 class CShortPos {
 	private:
@@ -220,7 +220,7 @@ typedef struct tPhysicsInfo {
 	CFixVector	rotThrust;  // rotational acceleration
 	fixang      turnRoll;   // rotation caused by turn banking
 	ushort      flags;      // misc physics flags
-} tPhysicsInfo;
+} __pack__ tPhysicsInfo;
 
 class CPhysicsInfo {
 	private:
@@ -254,7 +254,7 @@ typedef struct nParentInfo {
 	short		nType;
 	short		nObject;
 	int		nSignature;
-} tParentInfo;
+} __pack__ tParentInfo;
 
 typedef struct tLaserInfo  {
 	tParentInfo	parent;
@@ -262,7 +262,7 @@ typedef struct tLaserInfo  {
 	short			nLastHitObj;       // For persistent weapons (survive CObject collision), CObject it most recently hit.
 	short			nHomingTarget;				// Object this CObject is tracking.
 	fix			xScale;        // Power if this is a fusion bolt (or other super weapon to be added).
-} tLaserInfo;
+} __pack__ tLaserInfo;
 
 class CLaserInfo {
 	private:
@@ -291,7 +291,7 @@ typedef struct tAttachedObjInfo {
 	short	nParent;	// explosion is attached to this CObject
 	short	nPrev;	// previous explosion in attach list
 	short	nNext;	// next explosion in attach list
-} tAttachedObjInfo;
+} __pack__ tAttachedObjInfo;
 
 class CAttachedInfo {
 	private:
@@ -313,7 +313,7 @@ typedef struct tExplosionInfo {
     fix     nDeleteTime;      // when to delete CObject
     short   nDeleteObj;			// and what CObject to delete
 	 tAttachedObjInfo	attached;
-} tExplosionInfo;
+} __pack__ tExplosionInfo;
 
 class CExplosionInfo : public CAttachedInfo {
 	private:
@@ -335,7 +335,7 @@ typedef struct tObjLightInfo {
 	 short			nSegment;
 	 short			nObjects;
 	 tRgbaColorf	color;
-} tObjLightInfo;
+} __pack__ tObjLightInfo;
 
 class CObjLightInfo {
 	private:
@@ -358,7 +358,7 @@ typedef struct tPowerupInfo {
 	int     nCount;          // how many/much we pick up (vulcan cannon only?)
 	fix     xCreationTime;  // Absolute time of creation.
 	int     nFlags;          // spat by CPlayerData?
-}  tPowerupInfo;
+} __pack__ tPowerupInfo;
 
 class CPowerupInfo {
 	private:
@@ -381,7 +381,7 @@ public:
 	fix	  xTotalTime;
 	fix     xFrameTime;
 	sbyte   nCurFrame;
-} tVClipInfo;
+} __pack__ tVClipInfo;
 
 class CVClipInfo {
 	private:
@@ -411,7 +411,7 @@ public:
 	tRgbaColorb	color;
 	char			nSide;
 	char			nType;
-} tParticleInfo;
+} __pack__ tParticleInfo;
 
 class CSmokeInfo {
 	private:
@@ -452,7 +452,7 @@ public:
 	char			bRandom;
 	char			bInPlane;
 	tRgbaColorb color;
-} tLightningInfo;
+} __pack__ tLightningInfo;
 
 class CLightningInfo {
 	private:
@@ -490,7 +490,7 @@ public:
 	int     		nSubObjFlags;       // specify which subobjs to draw
 	int     		nTexOverride;      // if this is not -1, map all face to this
 	int     		nAltTextures;       // if not -1, use these textures instead
-} tPolyObjInfo;
+} __pack__ tPolyObjInfo;
 
 class CPolyObjInfo {
 	private:
@@ -514,7 +514,7 @@ class CPolyObjInfo {
 typedef struct tObjTransformation {
 	CFixVector	vPos;				// absolute x,y,z coordinate of center of object
 	CFixMatrix	mOrient;			// orientation of object in world
-	} tObjTransformation;
+	} __pack__ tObjTransformation;
 
 class CObjTransformation {
 	private:
@@ -533,7 +533,7 @@ typedef struct tObjContainerInfo {
 	sbyte			nType;
 	sbyte			nId;
 	sbyte			nCount;
-} tObjContainerInfo;
+} __pack__ tObjContainerInfo;
 
 class CObjContainerInfo {
 	private:
@@ -551,56 +551,56 @@ class CObjContainerInfo {
 //	-----------------------------------------------------------------------------
 
 typedef struct tObjectInfo {
-	int     				nSignature;    // Every CObject ever has a unique nSignature...
-	ubyte   				nType;         // what nType of CObject this is... robot, weapon, hostage, powerup, fireball
-	ubyte   				nId;           // which form of CObject...which powerup, robot, etc.
+	int     					nSignature;    // Every CObject ever has a unique nSignature...
+	ubyte   					nType;         // what nType of CObject this is... robot, weapon, hostage, powerup, fireball
+	ubyte   					nId;           // which form of CObject...which powerup, robot, etc.
 #ifdef WORDS_NEED_ALIGNMENT
-	short   				pad;
+	short   					pad;
 #endif
-	short   				nNextInSeg, 
-							nPrevInSeg;  // id of next and previous connected CObject in Objects, -1 = no connection
-	ubyte   				controlType;   // how this CObject is controlled
-	ubyte   				movementType;  // how this CObject moves
-	ubyte   				renderType;    // how this CObject renders
-	ubyte   				nFlags;        // misc flags
-	short					nSegment;
-	short   				nAttachedObj;  // number of attached fireball CObject
+	short   					nNextInSeg, 
+								nPrevInSeg;  // id of next and previous connected CObject in Objects, -1 = no connection
+	ubyte   					controlType;   // how this CObject is controlled
+	ubyte   					movementType;  // how this CObject moves
+	ubyte   					renderType;    // how this CObject renders
+	ubyte   					nFlags;        // misc flags
+	short						nSegment;
+	short   					nAttachedObj;  // number of attached fireball CObject
 	tObjTransformation	position;
-	fix     				xSize;         // 3d size of CObject - for collision detection
-	fix     				xShields;      // Starts at maximum, when <0, CObject dies..
-	CFixVector 			vLastPos;		// where CObject was last frame
-	tObjContainerInfo	contains;
-	sbyte   				nCreator; // Materialization center that created this CObject, high bit set if matcen-created
-	fix     				xLifeLeft;      // how long until goes away, or 7fff if immortal
-} tObjectInfo;
+	fix     					xSize;         // 3d size of CObject - for collision detection
+	fix     					xShields;      // Starts at maximum, when <0, CObject dies..
+	CFixVector 				vLastPos;		// where CObject was last frame
+	tObjContainerInfo		contains;
+	sbyte   					nCreator; // Materialization center that created this CObject, high bit set if matcen-created
+	fix     					xLifeLeft;      // how long until goes away, or 7fff if immortal
+} __pack__ tObjectInfo;
 
 // TODO get rid of the structs (former unions) and the union
 typedef struct tBaseObject {
-	tObjectInfo			info;
+	tObjectInfo				info;
 	// movement info, determined by MOVEMENT_TYPE
 	union {
-		tPhysicsInfo	physInfo; // a physics CObject
-		CFixVector   	spinRate; // for spinning objects
-		} mType;
+		tPhysicsInfo		physInfo; // a physics CObject
+		CFixVector   		spinRate; // for spinning objects
+		} mType __pack__ ;
 	// control info, determined by CONTROL_TYPE
 	union {
-		tLaserInfo		laserInfo;
-		tExplosionInfo explInfo;      // NOTE: debris uses this also
-		tAIStaticInfo  aiInfo;
-		tObjLightInfo  lightInfo;     // why put this here?  Didn't know what else to do with it.
-		tPowerupInfo   powerupInfo;
-		} cType;
+		tLaserInfo			laserInfo;
+		tExplosionInfo		explInfo;      // NOTE: debris uses this also
+		tAIStaticInfo		aiInfo;
+		tObjLightInfo		lightInfo;     // why put this here?  Didn't know what else to do with it.
+		tPowerupInfo		powerupInfo;
+		} cType __pack__ ;
 	// render info, determined by RENDER_TYPE
 	union {
-		tPolyObjInfo   polyObjInfo;      // polygon model
-		tVClipInfo     vClipInfo;     // tVideoClip
-		tParticleInfo	particleInfo;
-		tLightningInfo	lightningInfo;
-		} rType;
+		tPolyObjInfo		polyObjInfo;      // polygon model
+		tVClipInfo			vClipInfo;     // tVideoClip
+		tParticleInfo		particleInfo;
+		tLightningInfo		lightningInfo;
+		} rType __pack__ ;
 #ifdef WORDS_NEED_ALIGNMENT
 	short   nPad;
 #endif
-} tBaseObject;
+} __pack__ tBaseObject;
 
 //	-----------------------------------------------------------------------------
 
