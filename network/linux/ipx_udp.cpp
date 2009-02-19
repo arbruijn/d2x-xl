@@ -245,6 +245,17 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
+// OUR port. Can be changed by "@X[+=]..." argument (X is the shift value)
+
+static int HaveEmptyAddress (void) 
+{
+for (int i = 0; i < 10; i++)
+	if (ipx_MyAddress [i])
+		return 0;
+return 1;
+}
+
+//------------------------------------------------------------------------------
 
 #define MAX_BRDINTERFACES 16
 
@@ -288,7 +299,7 @@ typedef struct tDestListEntry {
 
 static CArray<tDestListEntry> destList;
 
-static struct sockaddr_in *broads, broadmasks [MAX_BRDINTERFACES];
+static struct sockaddr_in broadmasks [MAX_BRDINTERFACES];
 
 static int	destAddrNum = 0,
 				masksNum = 0,
@@ -737,7 +748,7 @@ char buf [256];
 int i = 0;
 char *s,*s2,*ns;
 
-if (!have_empty_address ())
+if (!HaveEmptyAddress ())
 	return 0;
 if (!((i=FindArg ("-udp")) && (s=pszArgList [i+1]) && (*s=='=' || *s=='+' || *s=='@'))) 
 	s = NULL;
