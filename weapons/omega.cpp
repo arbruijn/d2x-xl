@@ -61,19 +61,13 @@ if (gameData.omega.xCharge [IsMultiGame] > gameData.omega.xMaxCharge) {
 
 void DeleteOldOmegaBlobs (CObject *parentObjP)
 {
-	int		count = 0;
 	int		nParentObj = parentObjP->cType.laserInfo.parent.nObject;
 	CObject	*objP;
-	//short		i;
 
 FORALL_WEAPON_OBJS (objP, i)
-	if ((objP->info.nId == OMEGA_ID) &&
-		 (objP->cType.laserInfo.parent.nObject == nParentObj)) {
-				ReleaseObject (objP->Index ());
-				count++;
-				}
+	if ((objP->info.nId == OMEGA_ID) && (objP->cType.laserInfo.parent.nObject == nParentObj))
+		ReleaseObject (objP->Index ());
 }
-
 
 // ---------------------------------------------------------------------------------
 
@@ -93,7 +87,7 @@ if (IsMultiGame)
 	DeleteOldOmegaBlobs (parentObjP);
 omegaLightnings.Create (vTargetPos, parentObjP, targetObjP);
 vGoal = *vTargetPos - *vMuzzle;
-xGoalDist = CFixVector::Normalize(vGoal);
+xGoalDist = CFixVector::Normalize (vGoal);
 if (xGoalDist < MIN_OMEGA_BLOBS * MIN_OMEGA_DIST) {
 	xOmegaBlobDist = MIN_OMEGA_DIST;
 	nOmegaBlobs = xGoalDist / xOmegaBlobDist;
@@ -124,7 +118,7 @@ if (xGoalDist < MIN_OMEGA_DIST * 4) {
 		xPerturbArray [i] = 0;
 	}
 else {
-	vBlobPos += vOmegaDelta * (I2X (1)/2);	//	Put first blob half way out.
+	vBlobPos += vOmegaDelta * (I2X (1) / 2);	//	Put first blob half way out.
 	for (i = 0; i < nOmegaBlobs / 2; i++) {
 		xPerturbArray [i] = I2X (i) + I2X (1) / 4;
 		xPerturbArray [nOmegaBlobs - 1 - i] = I2X (i);
@@ -132,21 +126,21 @@ else {
 	}
 
 //	Create Random perturbation vector, but favor _not_ going up in CPlayerData's reference.
-vPerturb = CFixVector::Random();
-vPerturb += parentObjP->info.position.mOrient.UVec () * (-I2X (1)/2);
+vPerturb = CFixVector::Random ();
+vPerturb += parentObjP->info.position.mOrient.UVec () * (-I2X (1) / 2);
 for (i = 0; i < nOmegaBlobs; i++) {
 	CFixVector	vTempPos;
 	short			nBlobObj, nSegment;
 
 	//	This will put the last blob right at the destination CObject, causing damage.
-	if (i == nOmegaBlobs-1)
-		vBlobPos += vOmegaDelta * (I2X (15)/32);	//	Move last blob another (almost) half section
+	if (i == nOmegaBlobs - 1)
+		vBlobPos += vOmegaDelta * (I2X (15) / 32);	//	Move last blob another (almost) half section
 	//	Every so often, re-perturb blobs
-	if ((i % 4) == 3) {
+	if (i % 4 == 3) {
 		CFixVector	vTemp;
 
-		vTemp = CFixVector::Random();
-		vPerturb += vTemp * (I2X (1)/4);
+		vTemp = CFixVector::Random ();
+		vPerturb += vTemp * (I2X (1) / 4);
 		}
 	vTempPos = vBlobPos + vPerturb * xPerturbArray[i];
 	nSegment = FindSegByPos (vTempPos, nLastSeg, 1, 0);
@@ -297,7 +291,7 @@ else {	//	If couldn't lock on anything, fire straight ahead.
 
 	vPerturb = CFixVector::Random();
 	perturbed_fvec = bSpectate ? gameStates.app.playerPos.mOrient.FVec () : parentObjP->info.position.mOrient.FVec ()
-	               + vPerturb * (I2X (1)/16);
+	               + vPerturb * (I2X (1) / 16);
 	vTargetPos = *vMuzzle + perturbed_fvec * MAX_OMEGA_DIST;
 	fq.startSeg = nFiringSeg;
 	fq.p0 = vMuzzle;
