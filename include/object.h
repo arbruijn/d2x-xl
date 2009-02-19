@@ -574,32 +574,32 @@ typedef struct tObjectInfo {
 	fix     					xLifeLeft;      // how long until goes away, or 7fff if immortal
 } __pack__ tObjectInfo;
 
-typedef union tMovementInfo {
+typedef union tObjMovementInfo {
 	tPhysicsInfo		physInfo; // a physics CObject
 	CFixVector   		spinRate; // for spinning objects
-	} __pack__ tMovementInfo;
+	} __pack__ tObjMovementInfo;
 
-typedef union tControlInfo {
+typedef union tObjControlInfo {
 	tLaserInfo			laserInfo;
 	tExplosionInfo		explInfo;      // NOTE: debris uses this also
 	tAIStaticInfo		aiInfo;
 	tObjLightInfo		lightInfo;     // why put this here?  Didn't know what else to do with it.
 	tPowerupInfo		powerupInfo;
-	} __pack__ tControlInfo;
+	} __pack__ tObjControlInfo;
 	
-typedef union tRenderInfo {
+typedef union tObjRenderInfo {
 	tPolyObjInfo		polyObjInfo;      // polygon model
 	tVClipInfo			vClipInfo;     // tVideoClip
 	tParticleInfo		particleInfo;
 	tLightningInfo		lightningInfo;
-	} __pack__ tRenderInfo;
+	} __pack__ tObjRenderInfo;
 	
 // TODO get rid of the structs (former unions) and the union
 typedef struct tBaseObject {
 	tObjectInfo				info;
-	tMovementInfo			mType;	// movement info, determined by MOVEMENT_TYPE
-	tControlInfo			cType;	// control info, determined by CONTROL_TYPE
-	tRenderInfo				rType;	// render info, determined by RENDER_TYPE
+	tObjMovementInfo		mType;	// movement info, determined by MOVEMENT_TYPE
+	tObjControlInfo			cType;	// control info, determined by CONTROL_TYPE
+	tObjRenderInfo			rType;	// render info, determined by RENDER_TYPE
 #ifdef WORDS_NEED_ALIGNMENT
 	short   nPad;
 #endif
