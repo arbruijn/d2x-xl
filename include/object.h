@@ -574,29 +574,31 @@ typedef struct tObjectInfo {
 	fix     					xLifeLeft;      // how long until goes away, or 7fff if immortal
 } __pack__ tObjectInfo;
 
+typedef union tMovementInfo {
+	tPhysicsInfo		physInfo; // a physics CObject
+	CFixVector   		spinRate; // for spinning objects
+	} __pack__ tMovementInfo;
+
+typedef union tControlInfo {
+	tLaserInfo			laserInfo;
+	tExplosionInfo		explInfo;      // NOTE: debris uses this also
+	tAIStaticInfo		aiInfo;
+	tObjLightInfo		lightInfo;     // why put this here?  Didn't know what else to do with it.
+	tPowerupInfo		powerupInfo;
+	} __pack__ tControlInfo;
+	
+typedef union tRenderInfo {
+	tPolyObjInfo		polyObjInfo;      // polygon model
+	tVClipInfo			vClipInfo;     // tVideoClip
+	tParticleInfo		particleInfo;
+	tLightningInfo		lightningInfo;
+	} __pack__ tRenderInfo;
 // TODO get rid of the structs (former unions) and the union
 typedef struct tBaseObject {
 	tObjectInfo				info;
-	// movement info, determined by MOVEMENT_TYPE
-	union {
-		tPhysicsInfo		physInfo; // a physics CObject
-		CFixVector   		spinRate; // for spinning objects
-		} mType __pack__ ;
-	// control info, determined by CONTROL_TYPE
-	union {
-		tLaserInfo			laserInfo;
-		tExplosionInfo		explInfo;      // NOTE: debris uses this also
-		tAIStaticInfo		aiInfo;
-		tObjLightInfo		lightInfo;     // why put this here?  Didn't know what else to do with it.
-		tPowerupInfo		powerupInfo;
-		} cType __pack__ ;
-	// render info, determined by RENDER_TYPE
-	union {
-		tPolyObjInfo		polyObjInfo;      // polygon model
-		tVClipInfo			vClipInfo;     // tVideoClip
-		tParticleInfo		particleInfo;
-		tLightningInfo		lightningInfo;
-		} rType __pack__ ;
+	tMovementInfo			mType;	// movement info, determined by MOVEMENT_TYPE
+	tControlInfo			cType;	// control info, determined by CONTROL_TYPE
+	tRenderInfo				rType;	// render info, determined by RENDER_TYPE
 #ifdef WORDS_NEED_ALIGNMENT
 	short   nPad;
 #endif

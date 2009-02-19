@@ -39,13 +39,15 @@ const size_t UVEC = 1;
 const size_t FVEC = 2;
 const size_t HVEC = 3;
 
-class CFixVector;
+#if 1
+class __pack__ CFixVector;
 class CFloatVector;
 class CFloatVector3;
-class CAngleVector;
+class __pack__ CAngleVector;
 
-class CFixMatrix;
+class __pack__ CFixMatrix;
 class CFloatMatrix;
+#endif
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -54,7 +56,7 @@ class CFloatMatrix;
  * \class CFixVector
  * A 3 element fixed-point vector.
  */
-class CFixVector {
+class __pack__ CFixVector {
 	public:
 		static const CFixVector ZERO;
 		static const CFixVector XVEC;
@@ -290,7 +292,7 @@ const CFloatVector3 operator/ (const CFloatVector3& v, float s);
 
 //Angle vector.  Used to store orientations
 
-class CAngleVector {
+class __pack__ CAngleVector {
 public:
 	static const CAngleVector ZERO;
 	static const CAngleVector Create (const fixang p, const fixang b, const fixang h) {
@@ -1028,10 +1030,10 @@ inline const CFixVector operator/ (const CFixVector& v, const fix d) {
 typedef union tFixMatrixData {
 	CFixVector	mat [3];
 	fix			vec [9];
-} tFixMatrixData;
+} __pack__ tFixMatrixData;
 
 
-class CFixMatrix {
+class __pack__ CFixMatrix {
 	friend class CFloatMatrix;
 
 	private:
