@@ -284,11 +284,7 @@ typedef struct tNetPlayerInfo {
 	tNetworkInfo network;
 	ubyte   versionMajor;
 	ubyte   versionMinor;
-#ifdef _WIN32
 	ubyte   computerType;
-#else
-	enum compType computerType;
-#endif
 	sbyte    connected;
 	ushort  socket;
 	ubyte   rank;
