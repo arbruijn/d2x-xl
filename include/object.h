@@ -593,6 +593,7 @@ typedef union tRenderInfo {
 	tParticleInfo		particleInfo;
 	tLightningInfo		lightningInfo;
 	} __pack__ tRenderInfo;
+	
 // TODO get rid of the structs (former unions) and the union
 typedef struct tBaseObject {
 	tObjectInfo				info;
