@@ -180,9 +180,9 @@ va_start (argP, fmt);
 vsprintf (szFailMsg, fmt, argP);
 va_end (argP);   
 #ifdef _WIN32
-MsgBox (NULL, NULL, 1, "OK", "UDP Error\n\n%s\nError code: %d", szFailMsg, WSAGetLastError ());
+PrintLog ("UDP Error %d (\"%s\")\n", WSAGetLastError (), szFailMsg);
 #else
-MsgBox (NULL, NULL, 1, "OK", "UDP Error\n\n%s", szFailMsg);
+PrintLog ("UDP Error (\"%s\")\n", szFailMsg);
 #endif
 return 1;
 }
@@ -378,11 +378,11 @@ int CClientManager::BuildInterfaceList (void)
 
 m_broads.Destroy ();
 if ((sock = socket (AF_INET, SOCK_DGRAM,IPPROTO_UDP)) < 0)
-	FAIL ("Creating socket() failure during broadcast detection.");
+	FAIL ("creating socket during broadcast detection");
 
 #ifdef SIOCGIFCOUNT
 if (ioctl (sock, SIOCGIFCOUNT, &m_nBroads)) { 
-	PrintLog ("UDP interface: Getting iterface count error."); 
+	PrintLog ("getting interface count"); 
 	return 0;
 	}
 else
@@ -400,21 +400,21 @@ m_broads.Create (m_nBroads);
 for (i = j = 0; i < cnt; i++) {
 	if (ioctl (sock, SIOCGIFFLAGS, ifconf.ifc_req + i)) {
 		closesocket (sock);
-		FAIL ("ioctl(udp, \"%s\", SIOCGIFFLAGS) error.", ifconf.ifc_req [i].ifr_name);
+		FAIL ("ioctl (UDP (%d), \"%s\", SIOCGIFFLAGS) error.", i, ifconf.ifc_req [i].ifr_name);
 		}
 	if (((ifconf.ifc_req [i].ifrFlags & IF_REQFLAGS) != IF_REQFLAGS) || (ifconf.ifc_req [i].ifrFlags & IF_NOTFLAGS))
 		continue;
 	if (ioctl (sock, (ifconf.ifc_req [i].ifrFlags & IFF_BROADCAST) ? SIOCGIFBRDADDR : SIOCGIFDSTADDR, ifconf.ifc_req + i)) {
 	closesocket (sock);
-	FAIL ("ioctl (udp, \"%s\", SIOCGIF{DST/BRD}ADDR) error.", ifconf.ifc_req [i].ifr_name);
+	FAIL ("ioctl (UDP (%d), \"%s\", SIOCGIF{DST|BRD}ADDR) error", i, ifconf.ifc_req [i].ifr_name);
 	}
 	sinp = reinterpret_cast<struct sockaddr_in*> (&ifconf.ifc_req [i].ifr_broadaddr);
 	if (ioctl (sock, SIOCGIFNETMASK, ifconf.ifc_req + i)) {
 		closesocket (sock);
-		FAIL ("ioctl(udp, \"%s\", SIOCGIFNETMASK) error.", ifconf.ifc_req [i].ifr_name);
+		FAIL ("ioctl (UDP (%d), \"%s\", SIOCGIFNETMASK) error", i, ifconf.ifc_req [i].ifr_name);
 		}
 	sinmp = reinterpret_cast<struct sockaddr_in*> (&ifconf.ifc_req [i].ifr_addr);
-	if ((sinp->sin_family != AF_INET) || (sinmp->sin_family!=AF_INET))	
+	if ((sinp->sin_family != AF_INET) || (sinmp->sin_family != AF_INET))	
 		continue;
 	m_broads [j] = *sinp;
 	m_broads [j].sin_port = UDP_BASEPORT; //FIXME: No possibility to override from cmdline
@@ -442,7 +442,7 @@ m_broads.Destroy ();
 	struct ifaddrs *ifap, *ifa;
 
 if (getifaddrs (&ifap) != 0)
-	FAIL ("Getting list of interface addresses.");
+	FAIL ("getting list of interface addresses");
 
 // First loop to count the number of valid addresses and allocate enough memory
 j = 0;
@@ -487,37 +487,23 @@ int CClientManager::BuildInterfaceList (void)
 	unsigned					i, cnt = MAX_BRDINTERFACES;
 	struct ifconf 			ifconf;
 	int 						sock;
-#if DBG
-	int						ioRes;
-#endif
 	unsigned 				j;
 	struct sockaddr_in	*sinp, *sinmp;
 
 m_broads.Destroy ();
 sock = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 if (sock < 0)
-	FAIL ("Creating IP socket failed:\n%m");
+	FAIL ("creating IP socket failed");
 #	ifdef SIOCGIFCOUNT
-if (!_IOCTL (sock, SIOCGIFCOUNT, &cnt))
-	{ /* //msg ("Getting iterface count error: %m"); */ }
-else
-	cnt = cnt * 2 + 2;
+if (_IOCTL (sock, SIOCGIFCOUNT, &cnt))
+	cnt = 2 * cnt + 2;
 #	endif
 ifconf.ifc_len = cnt * sizeof (struct ifreq);
 ifconf.ifc_req = new ifreq [ifconf.ifc_len];
-#	if DBG
 memset (ifconf.ifc_req, 0, ifconf.ifc_len);
-ioRes = ioctl (sock, SIOCGIFCONF, &ifconf);
-if (ioRes < 0) {
-#	else
- if (!_IOCTL (sock, SIOCGIFCONF, &ifconf)) {
-#	endif
+if (!_IOCTL (sock, SIOCGIFCONF, &ifconf) || (ifconf.ifc_len % sizeof (struct ifreq)) {
 	close (sock);
-	FAIL ("ioctl (SIOCGIFCONF)\nIP interface detection failed:\n%m");
-	}
-if (ifconf.ifc_len % sizeof (struct ifreq)) {
-	close (sock);
-	FAIL ("ioctl (SIOCGIFCONF)\nIP interface detection failed:\n%m");
+	FAIL ("ioctl (SIOCGIFCONF) - IP interface detection failed");
 	}
 cnt = ifconf.ifc_len / sizeof (struct ifreq);
 m_broads.Create (cnt);
@@ -525,18 +511,18 @@ m_nBroads = cnt;
 for (i = j = 0; i < cnt; i++) {
 	if (!_IOCTL (sock, SIOCGIFFLAGS, ifconf.ifc_req + i)) {
 		close (sock);
-		FAIL ("ioctl (UDP (%d),\"%s\",SIOCGIFFLAGS)\nerror: %m", i, ifconf.ifc_req [i].ifr_name);
+		FAIL ("ioctl (UDP (%d), \"%s\", SIOCGIFFLAGS)", i, ifconf.ifc_req [i].ifr_name);
 		}
 	if (((ifconf.ifc_req [i].ifr_flags & IF_REQFLAGS) != IF_REQFLAGS) || (ifconf.ifc_req [i].ifr_flags & IF_NOTFLAGS))
 		continue;
 	if (!_IOCTL (sock, (ifconf.ifc_req [i].ifr_flags & IFF_BROADCAST) ? SIOCGIFBRDADDR : SIOCGIFDSTADDR, ifconf.ifc_req + i)) {
 		close (sock);
-		FAIL ("ioctl (UDP (%d),\"%s\",SIOCGIF{DST/BRD}ADDR)\nerror: %m", i, ifconf.ifc_req [i].ifr_name);
+		FAIL ("ioctl (UDP (%d), \"%s\", SIOCGIF{DST|BRD}ADDR)", i, ifconf.ifc_req [i].ifr_name);
 		}
 	sinp = reinterpret_cast<struct sockaddr_in*> (&ifconf.ifc_req [i].ifr_broadaddr);
 	if (!_IOCTL (sock, SIOCGIFNETMASK, ifconf.ifc_req + i)) {
 		close (sock);
-		FAIL ("ioctl (UDP (%d),\"%s\",SIOCGIFNETMASK)\nerror: %m", i, ifconf.ifc_req [i].ifr_name);
+		FAIL ("ioctl (UDP (%d), \"%s\", SIOCGIFNETMASK)", i, ifconf.ifc_req [i].ifr_name);
 		}
 	sinmp = reinterpret_cast<struct sockaddr_in*> (&ifconf.ifc_req [i].ifr_addr);
 	if ((sinp->sin_family != AF_INET) || (sinmp->sin_family != AF_INET)) 
@@ -723,9 +709,9 @@ int UDPGetMyAddress (void)
 if (!HaveEmptyAddress ())
 	return 0;
 if (gethostname (buf, sizeof (buf))) 
-	FAIL ("Error getting my hostname");
+	FAIL ("error getting my hostname");
 if (!(QueryHost (buf))) 
-	FAIL ("Querying my own hostname \"%s\"",buf);
+	FAIL ("querying my hostname \"%s\"", buf);
 memset (ipx_MyAddress, 0, 4);
 memcpy (ipx_MyAddress + 4, qhbuf, 6);
 //udpBasePorts [gameStates.multi.bServer] += (short)ntohs(*reinterpret_cast<ushort*> (qhbuf+4));
@@ -755,12 +741,12 @@ udpBasePorts [1] = UDP_BASEPORT + networkData.nSocket;	//server port as set by t
 nLocalPort = gameStates.multi.bServer ? udpBasePorts [1] : mpParams.udpClientPort;
 gameStates.multi.bHaveLocalAddress = 0;
 if (!nOpenSockets && (UDPGetMyAddress () < 0)) {
-	FAIL ("Couldn't get my address.");
+	FAIL ("couldn't get my address");
 	}
 
 if (!gameStates.multi.bServer) {		//set up server address and add it to destination list
 	if (!clientManager.CheckClientSize ())
-		FAIL ("Error allocating client table");
+		FAIL ("error allocating client table");
 	nServerPort = udpBasePorts [0] + networkData.nSocket;
 	sin.sin_family = AF_INET;
 	*(reinterpret_cast<u_short*> (ipx_ServerAddress + 8)) = htons (nServerPort);
@@ -772,7 +758,7 @@ if (!gameStates.multi.bServer) {		//set up server address and add it to destinat
 
 if (0 > (sk->fd = int (socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP)))) {
 	sk->fd = -1;
-	FAIL ("Couldn't create socket on nLocalPort %d.\nError code: %d.", nLocalPort);
+	FAIL ("couldn't create socket on local port %d", nLocalPort);
 	}
 #ifdef _WIN32
 ioctlsocket (sk->fd, FIONBIO, &sockBlockMode);
@@ -788,7 +774,7 @@ if (setsockopt (sk->fd, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char*> (&val_
 	close (sk->fd);
 #endif
 	sk->fd = -1;
-	FAIL ("Setting broadcast socket option failed.");
+	FAIL ("setting broadcast socket option failed");
 	}
 #endif
 if (gameStates.multi.bServer || mpParams.udpClientPort) {
@@ -802,7 +788,7 @@ if (gameStates.multi.bServer || mpParams.udpClientPort) {
 		close (sk->fd);
 #endif
 		sk->fd = -1;
-		FAIL ("Couldn't bind to local UDP port %d.", nLocalPort);
+		FAIL ("couldn't bind to local port %d", nLocalPort);
 		}
 	memcpy (ipx_MyAddress + 8, &nLocalPort, 2);
 	}
