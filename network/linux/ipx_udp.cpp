@@ -881,7 +881,7 @@ if (!nOpenSockets) {
 	}
 //msg ("CloseSocket on D1X socket port %d",mysock->socket);
 if (close (mysock->fd))
-	//msg ("close () failed on CloseSocket D1X socket port %d: %m",mysock->socket);
+	;//msg ("close () failed on CloseSocket D1X socket port %d: %m",mysock->socket);
 mysock->fd=-1;
 if (--nOpenSockets) {
 	//msg (" (closesocket) %d sockets left", nOpenSockets);

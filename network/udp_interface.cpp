@@ -790,7 +790,6 @@ if (gameStates.multi.bServer || mpParams.udpClientPort) {
 		sk->fd = -1;
 		FAIL ("couldn't bind to local port %d", nLocalPort);
 		}
-	memcpy (ipx_MyAddress + 8, &nLocalPort, 2);
 	}
 PrintLog ("Opened UDP connection (socket %d, port %d)\n", sk->fd, nLocalPort);
 nOpenSockets++;
@@ -1236,7 +1235,11 @@ struct ipx_driver ipx_udp = {
 	UDPCloseSocket,
 	UDPSendPacket,
 	UDPReceivePacket,
-	UDPPacketReady, //IxpGeneralPacketReady,
+#if 0
+	UDPPacketReady,
+#else
+	IxpGeneralPacketReady,
+#endif
 	NULL,	// InitNetgameAuxData
 	NULL,	// HandleNetgameAuxData
 	NULL,	// HandleLeaveGame
