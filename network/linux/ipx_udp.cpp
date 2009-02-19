@@ -456,10 +456,7 @@ return i;
 
 void FreeDestList (void)
 {
-if (destList) {
-	delete[] destList;
-	destList = NULL;
-	}
+destList.Destroy ();
 destAddrNum =
 masksNum =
 destListSize = 0;
