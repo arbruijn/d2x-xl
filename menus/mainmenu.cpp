@@ -254,6 +254,7 @@ if (i > -1) {
 	else if (strstr (m [i], ENDMOVIE))
 		subTitles.Init (ENDMOVIE ".tex");
 	movieManager.Play (m [i], 1, 1, gameOpts->movies.bResize);
+	subTitles.Close ();
 	SDL_ShowCursor (1);
 	}
 songManager.PlayCurrent (1);
