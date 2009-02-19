@@ -620,7 +620,7 @@ if (error = getaddrinfo (buf, NULL, &hints, &info) != 0) {
 	// Trying again, but appending ".local" to the hostname. Why does this work?
 	// AFAIK, this suffix has to do with zeroconf (aka Bonjour aka Rendezvous).
 	strcat (buf, ".local");
-	setupHints (&hints);
+	SetupHints (&hints);
 	error = getaddrinfo (buf, NULL, &hints, &info);
 	}
 if (error)
