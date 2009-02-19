@@ -220,11 +220,22 @@ static const int val_one = 1;
  */
 //------------------------------------------------------------------------------
 
+static void chk (void *p)
+{
+	if (p) return;
+	//msg ("FATAL: Virtual memory exhausted!");
+	exit (EXIT_FAILURE);
+}
+
+//------------------------------------------------------------------------------
+
 int Fail (const char *fmt, ...);
 
 #define FAIL	return Fail
 
 //------------------------------------------------------------------------------
+
+#define MAX_BRDINTERFACES 16
 
 #ifdef __macosx__
 #define IF_REQFLAGS (IFF_UP | IFF_RUNNING | IFF_BROADCAST)
@@ -266,7 +277,7 @@ typedef struct tDestListEntry {
 
 static CArray<tDestListEntry> destList;
 
-static struct sockaddr_in broadmasks [MAX_BRDINTERFACES];
+static struct sockaddr_in *broads, broadmasks [MAX_BRDINTERFACES];
 
 static int	destAddrNum = 0,
 				masksNum = 0,
