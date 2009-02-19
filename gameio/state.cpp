@@ -1513,17 +1513,15 @@ m_cf.Read (netGame.AuxData, NETGAME_AUX_SIZE, 1);  // Storage for protocol-speci
 
 void CSaveGameManager::LoadNetPlayers (void)
 {
-	int	i;
-
 netPlayers.nType = (ubyte) m_cf.ReadByte ();
 netPlayers.nSecurity = m_cf.ReadInt ();
-for (i = 0; i < MAX_PLAYERS + 4; i++) {
+for (int i = 0; i < MAX_PLAYERS + 4; i++) {
 	m_cf.Read (netPlayers.players [i].callsign, 1, CALLSIGN_LEN + 1);
 	m_cf.Read (netPlayers.players [i].network.ipx.server, 1, 4);
 	m_cf.Read (netPlayers.players [i].network.ipx.node, 1, 6);
 	netPlayers.players [i].versionMajor = (ubyte) m_cf.ReadByte ();
 	netPlayers.players [i].versionMinor = (ubyte) m_cf.ReadByte ();
-	netPlayers.players [i].computerType = (enum compType) m_cf.ReadByte ();
+	netPlayers.players [i].computerType = m_cf.ReadByte ();
 	netPlayers.players [i].connected = m_cf.ReadByte ();
 	netPlayers.players [i].socket = (ushort) m_cf.ReadShort ();
 	netPlayers.players [i].rank = (ubyte) m_cf.ReadByte ();
