@@ -501,7 +501,7 @@ if (_IOCTL (sock, SIOCGIFCOUNT, &cnt))
 ifconf.ifc_len = cnt * sizeof (struct ifreq);
 ifconf.ifc_req = new ifreq [ifconf.ifc_len];
 memset (ifconf.ifc_req, 0, ifconf.ifc_len);
-if (!_IOCTL (sock, SIOCGIFCONF, &ifconf) || (ifconf.ifc_len % sizeof (struct ifreq)) {
+if (!_IOCTL (sock, SIOCGIFCONF, &ifconf) || (ifconf.ifc_len % sizeof (struct ifreq))) {
 	close (sock);
 	FAIL ("ioctl (SIOCGIFCONF) - IP interface detection failed");
 	}
