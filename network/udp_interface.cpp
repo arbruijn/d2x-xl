@@ -576,6 +576,8 @@ m_nBroads = d;
 //------------------------------------------------------------------------------
 // Parse PORTSHIFT numeric parameter
 
+#ifndef __macosx__
+
 static void PortShift (const char *pszPort)
 {
 ushort srcPort = 0;
@@ -587,27 +589,12 @@ else
 memcpy (qhbuf + 4, &srcPort, 2);
 }
 
-#ifdef __macosx__
-	
-	static void setupHints (struct addrinfo *hints) 
-	{
-		hints->ai_family = PF_INET;
-		hints->ai_protocol = IPPROTO_UDP;
-		hints->ai_socktype = 0;
-		hints->ai_flags = 0;
-		hints->ai_addrlen = 0;
-		hints->ai_addr = NULL;
-		hints->ai_canonname = NULL;
-		hints->ai_next = NULL;
-	}
-	
 #endif
-	
-	
+
 //------------------------------------------------------------------------------
 // Do hostname resolve on name "buf" and return the address in buffer "qhbuf".
  
-#ifdef __macosx__ //------------------------------------------------------------
+#ifdef __macosx__ 
 
 static void SetupHints (struct addrinfo *hints) 
 {
@@ -688,12 +675,14 @@ if (!*he->h_addr_list) {
 	}
 memcpy (qhbuf, *he->h_addr_list, 4);
 return qhbuf;
+}
 
 #endif
-}
 
 //------------------------------------------------------------------------------
 // Dump raw form of IP address/port by fancy output to user
+
+#if 0
 
 static void DumpRawAddr (ubyte *a)
 {
@@ -708,6 +697,8 @@ if (port) {
 	}
 PrintLog ("\n");
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 // Like DumpRawAddr() but for structure "sockaddr_in"
