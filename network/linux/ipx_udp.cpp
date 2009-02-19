@@ -229,9 +229,20 @@ static void chk (void *p)
 
 //------------------------------------------------------------------------------
 
-int Fail (const char *fmt, ...);
-
 #define FAIL	return Fail
+
+static char szFailMsg [1024];
+
+static int _CDECL_ Fail (const char *fmt, ...)
+{
+   va_list  argP;
+
+va_start (argP, fmt);
+vsprintf (szFailMsg, fmt, argP);
+va_end (argP);   
+PrintLog ("UDP Error (\"%s\")\n", szFailMsg);
+return 1;
+}
 
 //------------------------------------------------------------------------------
 
