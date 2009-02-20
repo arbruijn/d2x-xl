@@ -14,6 +14,7 @@
 # include <SDL.h>
 #endif
 #include "descent.h"
+#include "cfile.h"
 #include "ipx.h"
 #include "key.h"
 #include "network.h"
@@ -422,15 +423,21 @@ switch (pId) {
 			return DownloadError (1);
 	 {
 			char	szDest [FILENAME_LEN];
+			char	szFile [2][FILENAME_LEN];
+			char	szExt [FILENAME_LEN];
 			char	*pszFile = reinterpret_cast<char*> (data + 6);
+			;
 
 		if (!pszFile)
 			return DownloadError (2);
 		strlwr (pszFile);
-		if (strstr (hogFileManager.m_files.MsnHogFiles.szName, pszFile))
-			strcpy (szDest, hogFileManager.m_files.MsnHogFiles.szName);
-		else
+		CFile::SplitPath (pszFile, NULL, szFile [0], szExt);
+		CFile::SplitPath (hogFileManager.m_files.MsnHogFiles.szName, NULL, szFile [1], NULL);
+		strlwr (szFile [1]);
+		if (strcmp (szFile [0], szFile [1]))
 			sprintf (szDest, "%s/%s%s", gameFolders.szMissionDownloadDir, *gameFolders.szMissionDir ? "/" : "", pszFile);
+		else
+			sprintf (szDest, "%s/%s%s", hogFileManager.m_files.MsnHogFiles.szName, szFile [0], szExt);
 		if (!m_cf.Open (szDest, "", "wb", 0))
 			return DownloadError (2);
 		m_nSrcLen = GET_INTEL_INT (data + 2);
