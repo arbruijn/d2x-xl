@@ -982,7 +982,6 @@ if (LoadModData (pszLevelName, bLoadTextures, 1) < 0) {
 /*---*/PrintLog ("   loading endlevel data\n");
 LoadEndLevelData (nLevel);
 
-networkData.nSegmentCheckSum = CalcSegmentCheckSum ();
 ResetNetworkObjects ();
 ResetChildObjects ();
 externalView.Reset (-1, -1);

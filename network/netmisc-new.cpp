@@ -530,19 +530,19 @@ CalcCheckSum (reinterpret_cast<ubyte*> (&s), 2, sum1, sum2);
 s = INTEL_SHORT ((m_nOvlOrient << 14) + m_nOvlTex);
 CalcCheckSum (reinterpret_cast<ubyte*> (&s), 2, sum1, sum2);
 for (k = 0, uvlP = m_uvls; k < 4; k++, uvlP++) {
-	t = INTEL_INT (((int) uvlP->u));
+	t = INTEL_INT (int (uvlP->u));
 	CalcCheckSum (reinterpret_cast<ubyte*> (&t), 4, sum1, sum2);
-	t = INTEL_INT (((int) uvlP->v));
+	t = INTEL_INT (int (uvlP->v));
 	CalcCheckSum (reinterpret_cast<ubyte*> (&t), 4, sum1, sum2);
-	t = INTEL_INT (((int) uvlP->l));
+	t = INTEL_INT (int (uvlP->l));
 	CalcCheckSum (reinterpret_cast<ubyte*> (&t), 4, sum1, sum2);
 	}
 for (k = 0, normP = m_normals; k < 2; k++, normP++) {
-	t = INTEL_INT ((int) (*normP) [X]);
+	t = INTEL_INT (int ((*normP) [X]));
 	CalcCheckSum (reinterpret_cast<ubyte*> (&t), 4, sum1, sum2);
-	t = INTEL_INT ((int) (*normP) [Y]);
+	t = INTEL_INT (int ((*normP) [Y]));
 	CalcCheckSum (reinterpret_cast<ubyte*> (&t), 4, sum1, sum2);
-	t = INTEL_INT ((int) (*normP) [Z]);
+	t = INTEL_INT (int ((*normP) [Z]));
 	CalcCheckSum (reinterpret_cast<ubyte*> (&t), 4, sum1, sum2);
 	}
 }

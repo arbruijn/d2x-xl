@@ -61,6 +61,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "objrender.h"
 #include "createmesh.h"
 #include "lightmap.h"
+#include "network.h"
+#include "netmisc.h"
+#include "network_lib.h"
 
 #define GAME_VERSION            32
 #define GAME_COMPATIBLE_VERSION 22
@@ -1071,6 +1074,7 @@ for (;;) {
 		return 3;
 		}
 	cf.Close ();
+	networkData.nSegmentCheckSum = CalcSegmentCheckSum ();
 	if (meshBuilder.Build (nLevel))
 		break;
 	if (gameStates.render.nMeshQuality <= 0)
