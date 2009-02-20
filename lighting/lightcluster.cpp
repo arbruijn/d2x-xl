@@ -68,6 +68,10 @@ if (!m_bUse)
 FORALL_LIGHT_OBJS (objP, i) {
 	if ((objP->info.nType == OBJ_LIGHT) && (objP->info.nId == CLUSTER_LIGHT_ID)) {
 		i = objP->Index ();
+#if DBG
+		if (i == nDbgObj)
+			nDbgObj = nDbgObj;
+#endif
 		if (!(h = objP->cType.lightInfo.nObjects)) {
 			lightManager.Delete (-1, -1, i);
 			objP->Die ();

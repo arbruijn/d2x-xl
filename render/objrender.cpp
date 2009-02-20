@@ -363,8 +363,9 @@ if (!bmP)
 fScale = ObjectBlobColor (objP, bmP, &color);
 if (!bmP->Buffer ())
 	return;
-if (colorP && (bmi >= 0))
-	memcpy (colorP, gameData.pig.tex.bitmapColors + bmi, sizeof (tRgbaColorf));
+if (colorP /*&& (bmi >= 0)*/)
+	*colorP = color;
+	//memcpy (colorP, gameData.pig.tex.bitmapColors + bmi, sizeof (tRgbaColorf));
 
 xSize = objP->info.xSize;
 
