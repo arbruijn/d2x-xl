@@ -1235,7 +1235,7 @@ struct ipx_driver ipx_udp = {
 	UDPCloseSocket,
 	UDPSendPacket,
 	UDPReceivePacket,
-#ifdef _WIN32
+#if 0//def _WIN32
 	UDPPacketReady,
 #else
 	IxpGeneralPacketReady,
