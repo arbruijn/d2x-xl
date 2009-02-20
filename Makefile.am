@@ -1,6 +1,6 @@
 DIST_SUBDIRS = \
 	2d 3d ai audio cockpit console effects gameio gamemodes input io libmve lighting \
-	main maths menus misc models network objects ogl physics render texmap weapons
+	main maths menus misc models network objects ogl physics render weapons
 
 SUBDIRS = ${DIST_SUBDIRS} @D2X_SUBDIRS@
 
