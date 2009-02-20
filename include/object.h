@@ -601,7 +601,7 @@ typedef struct tBaseObject {
 	tObjControlInfo			cType;	// control info, determined by CONTROL_TYPE
 	tObjRenderInfo			rType;	// render info, determined by RENDER_TYPE
 #ifdef WORDS_NEED_ALIGNMENT
-	short   nPad;
+	short   				nPad;
 #endif
 } __pack__ tBaseObject;
 
