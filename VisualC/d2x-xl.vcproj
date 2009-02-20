@@ -1496,10 +1496,6 @@
 				</Filter>
 			</Filter>
 			<Filter
-				Name="texmap"
-				>
-			</Filter>
-			<Filter
 				Name="ai"
 				>
 				<Filter
@@ -4305,11 +4301,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

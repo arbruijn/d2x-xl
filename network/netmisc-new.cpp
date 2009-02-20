@@ -518,34 +518,31 @@ void CSide::CheckSum (uint& sum1, uint& sum2)
 {
 	int				i, h;
 	short				s;
-	uint				s1 = sum1, s2 = sum2;
 
-CalcCheckSum (reinterpret_cast<ubyte*> (&m_nType), 1, s1, s2);
-CalcCheckSum (reinterpret_cast<ubyte*> (&m_nFrame), 1, s1, s2);
+CalcCheckSum (reinterpret_cast<ubyte*> (&m_nType), 1, sum1, sum2);
+CalcCheckSum (reinterpret_cast<ubyte*> (&m_nFrame), 1, sum1, sum2);
 s = INTEL_SHORT (WallNum ());
-CalcCheckSum (reinterpret_cast<ubyte*> (&s), 2, s1, s2);
+CalcCheckSum (reinterpret_cast<ubyte*> (&s), 2, sum1, sum2);
 s = INTEL_SHORT (m_nBaseTex);
-CalcCheckSum (reinterpret_cast<ubyte*> (&s), 2, s1, s2);
+CalcCheckSum (reinterpret_cast<ubyte*> (&s), 2, sum1, sum2);
 s = INTEL_SHORT ((m_nOvlOrient << 14) + m_nOvlTex);
-CalcCheckSum (reinterpret_cast<ubyte*> (&s), 2, s1, s2);
+CalcCheckSum (reinterpret_cast<ubyte*> (&s), 2, sum1, sum2);
 for (i = 0; i < 4; i++) {
 	h = INTEL_INT (int (m_uvls [i].u));
-	CalcCheckSum (reinterpret_cast<ubyte*> (&h), 4, s1, s2);
+	CalcCheckSum (reinterpret_cast<ubyte*> (&h), 4, sum1, sum2);
 	h = INTEL_INT (int (m_uvls [i].v));
-	CalcCheckSum (reinterpret_cast<ubyte*> (&h), 4, s1, s2);
+	CalcCheckSum (reinterpret_cast<ubyte*> (&h), 4, sum1, sum2);
 	h = INTEL_INT (int (m_uvls [i].l));
-	CalcCheckSum (reinterpret_cast<ubyte*> (&h), 4, s1, s2);
+	CalcCheckSum (reinterpret_cast<ubyte*> (&h), 4, sum1, sum2);
 	}
 for (i = 0; i < 2; i++) {
 	h = INTEL_INT (int (m_normals [i][X]));
-	CalcCheckSum (reinterpret_cast<ubyte*> (&h), 4, s1, s2);
+	CalcCheckSum (reinterpret_cast<ubyte*> (&h), 4, sum1, sum2);
 	h = INTEL_INT (int (m_normals [i][Y]));
-	CalcCheckSum (reinterpret_cast<ubyte*> (&h), 4, s1, s2);
+	CalcCheckSum (reinterpret_cast<ubyte*> (&h), 4, sum1, sum2);
 	h = INTEL_INT (int (m_normals [i][Z]));
-	CalcCheckSum (reinterpret_cast<ubyte*> (&h), 4, s1, s2);
+	CalcCheckSum (reinterpret_cast<ubyte*> (&h), 4, sum1, sum2);
 	}
-sum1 = s1;
-sum2 = s2;
 }
 
 //------------------------------------------------------------------------------
