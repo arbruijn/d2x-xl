@@ -68,6 +68,79 @@ const CFloatMatrix CFloatMatrix::IDENTITY = CFloatMatrix::Create (CFloatVector::
 
 // ------------------------------------------------------------------------
 
+CFixVector& CFixVector::Cross (CFixVector& dest, const CFixVector& v0, const CFixVector& v1)
+{
+#if 1
+	double x = (double (v0 [Y]) * double (v1 [Z]) - double (v0 [Z]) * double (v1 [Y])) / 65536.0;
+	double y = (double (v0 [Z]) * double (v1 [X]) - double (v0 [X]) * double (v1 [Z])) / 65536.0;
+	double z = (double (v0 [X]) * double (v1 [Y]) - double (v0 [Y]) * double (v1 [X])) / 65536.0;
+
+if (x > double (0x7fffffff))
+	x = double (0x7fffffff);
+else if (x < double (-0x7fffffff))
+	x = double (-0x7fffffff);
+if (y > double (0x7fffffff))
+	y = double (0x7fffffff);
+else if (y < double (-0x7fffffff))
+	y = double (-0x7fffffff);
+if (z > double (0x7fffffff))
+	z = double (0x7fffffff);
+else if (z < double (-0x7fffffff))
+	z = double (-0x7fffffff);
+
+dest.Set (fix (x), fix (y), fix (z));
+#else
+QLONG x, y, z;
+
+x = mul64 (v0 [Y], v1 [Z]);
+x += mul64 (-v0 [Z], v1 [Y]);
+y = mul64 (v0 [Z], v1 [X]);
+y += mul64 (-v0 [X], v1 [Z]);
+z = mul64 (v0 [X], v1 [Y]);
+z += mul64 (-v0 [Y], v1 [X]);
+dest.Set (fix (x >> 16), fix (y >> 16), fix (z >> 16));
+#endif
+return dest;
+}
+
+// ------------------------------------------------------------------------
+
+const CFixVector CFixVector::Cross (const CFixVector& v0, const CFixVector& v1) 
+{
+#if 1
+	double x = (double (v0 [Y]) * double (v1 [Z]) - double (v0 [Z]) * double (v1 [Y])) / 65536.0;
+	double y = (double (v0 [Z]) * double (v1 [X]) - double (v0 [X]) * double (v1 [Z])) / 65536.0;
+	double z = (double (v0 [X]) * double (v1 [Y]) - double (v0 [Y]) * double (v1 [X])) / 65536.0;
+
+if (x > double (0x7fffffff))
+	x = double (0x7fffffff);
+else if (x < double (-0x7fffffff))
+	x = double (-0x7fffffff);
+if (y > double (0x7fffffff))
+	y = double (0x7fffffff);
+else if (y < double (-0x7fffffff))
+	y = double (-0x7fffffff);
+if (z > double (0x7fffffff))
+	z = double (0x7fffffff);
+else if (z < double (-0x7fffffff))
+	z = double (-0x7fffffff);
+
+return Create (fix (x), fix (y), fix (z));
+#else
+QLONG x, y, z;
+
+x = mul64 (v0 [Y], v1 [Z]);
+x += mul64 (-v0 [Z], v1 [Y]);
+y = mul64 (v0 [Z], v1 [X]);
+y += mul64 (-v0 [X], v1 [Z]);
+z = mul64 (v0 [X], v1 [Y]);
+z += mul64 (-v0 [Y], v1 [X]);
+return Create (fix (x >> 16), fix (y >> 16), fix (z >> 16));
+#endif
+}
+
+// ------------------------------------------------------------------------
+
 #include <cmath>
 
 #endif

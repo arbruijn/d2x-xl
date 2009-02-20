@@ -706,19 +706,6 @@ inline const CFixVector CFixVector::Avg (CFixVector& src0, CFixVector& src1,
 
 }
 
-inline CFixVector& CFixVector::Cross (CFixVector& dest, const CFixVector& v0, const CFixVector& v1) {
-	dest.Set (F2X ((X2F (v0 [Y]) * X2F (v1 [Z]) - X2F (v0 [Z]) * X2F (v1 [Y]))),
-	          F2X ((X2F (v0 [Z]) * X2F (v1 [X]) - X2F (v0 [X]) * X2F (v1 [Z]))),
-	          F2X ((X2F (v0 [X]) * X2F (v1 [Y]) - X2F (v0 [Y]) * X2F (v1 [X]))));
-	return dest;
-}
-
-inline const CFixVector CFixVector::Cross (const CFixVector& v0, const CFixVector& v1) {
-	return Create (F2X ((X2F (v0 [Y]) * X2F (v1 [Z]) - X2F (v0 [Z]) * X2F (v1 [Y]))),
-	               F2X ((X2F (v0 [Z]) * X2F (v1 [X]) - X2F (v0 [X]) * X2F (v1 [Z]))),
-	               F2X ((X2F (v0 [X]) * X2F (v1 [Y]) - X2F (v0 [Y]) * X2F (v1 [X]))));
-}
-
 //computes the delta angle between two vectors.
 //vectors need not be normalized. if they are, call CFixVector::DeltaAngleNorm ()
 //the forward vector (third parameter) can be NULL, in which case the absolute
