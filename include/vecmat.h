@@ -868,10 +868,6 @@ inline fix CFixVector::SqrMag (void) const {
 
 inline float CFixVector::Sqr (float f) const { return f * f; }
 
-inline fix CFixVector::Mag (void) const {
-	return F2X (sqrt ((Sqr X2F (v [X])) + Sqr (X2F (v [Y])) + Sqr (X2F (v [Z]))));
-	}
-
 inline CFixVector& CFixVector::Scale (CFixVector& scale) { 
 	v [0] = FixMul (v [0], scale [0]), v [1] = FixMul (v [1], scale [1]), v [2] = FixMul (v [2], scale [2]);
 	return *this; 

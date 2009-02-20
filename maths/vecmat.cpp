@@ -68,9 +68,25 @@ const CFloatMatrix CFloatMatrix::IDENTITY = CFloatMatrix::Create (CFloatVector::
 
 // ------------------------------------------------------------------------
 
+fix CFixVector::Mag (void) const 
+{
+if (gameOpts->render.nMathFormat == 2)
+	return fix (sqrt (double (v [X]) * double (v [X]) + double (v [Y]) * double (v [Y]) + double (v [Z]) * double (v [Z])));
+// The following code is vital for backwards compatibility: Side normals get computed after loading a level using this fixed
+// math. D2X-XL temporarily switches to math format 0 to enforce that. Otherwise level checksums would differ from
+// those of other Descent 2 versions, breaking multiplayer compatibility.
+tQuadInt q = {0, 0};
+FixMulAccum (&q, v [X], v [X]);
+FixMulAccum (&q, v [Y], v [Y]);
+FixMulAccum (&q, v [Z], v [Z]);
+return QuadSqrt (q.low, q.high);
+}
+
+// ------------------------------------------------------------------------
+
 CFixVector& CFixVector::Cross (CFixVector& dest, const CFixVector& v0, const CFixVector& v1)
 {
-#if 1
+#if 0
 	double x = (double (v0 [Y]) * double (v1 [Z]) - double (v0 [Z]) * double (v1 [Y])) / 65536.0;
 	double y = (double (v0 [Z]) * double (v1 [X]) - double (v0 [X]) * double (v1 [Z])) / 65536.0;
 	double z = (double (v0 [X]) * double (v1 [Y]) - double (v0 [Y]) * double (v1 [X])) / 65536.0;
@@ -98,7 +114,7 @@ y = mul64 (v0 [Z], v1 [X]);
 y += mul64 (-v0 [X], v1 [Z]);
 z = mul64 (v0 [X], v1 [Y]);
 z += mul64 (-v0 [Y], v1 [X]);
-dest.Set (fix (x >> 16), fix (y >> 16), fix (z >> 16));
+dest.Set (fix (x / 65536), fix (y / 65536), fix (z / 65536));
 #endif
 return dest;
 }
@@ -107,7 +123,7 @@ return dest;
 
 const CFixVector CFixVector::Cross (const CFixVector& v0, const CFixVector& v1) 
 {
-#if 1
+#if 0
 	double x = (double (v0 [Y]) * double (v1 [Z]) - double (v0 [Z]) * double (v1 [Y])) / 65536.0;
 	double y = (double (v0 [Z]) * double (v1 [X]) - double (v0 [X]) * double (v1 [Z])) / 65536.0;
 	double z = (double (v0 [X]) * double (v1 [Y]) - double (v0 [Y]) * double (v1 [X])) / 65536.0;
@@ -135,7 +151,7 @@ y = mul64 (v0 [Z], v1 [X]);
 y += mul64 (-v0 [X], v1 [Z]);
 z = mul64 (v0 [X], v1 [Y]);
 z += mul64 (-v0 [Y], v1 [X]);
-return Create (fix (x >> 16), fix (y >> 16), fix (z >> 16));
+return Create (fix (x / 65536), fix (y / 65536), fix (z / 65536));
 #endif
 }
 

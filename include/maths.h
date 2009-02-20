@@ -37,9 +37,9 @@ typedef struct tQuadInt {// integer 64 bit, previously called "quad"
 #define X2IR(_f) (((_f) + (I2X (1) / 2)) / 65536)
 
 //Convert fix to double and double to fix
-#define X2F(_f) ((static_cast<float> (_f)) / 65536.0f)
-#define X2D(_f) ((static_cast<double> (_f)) / (double) 65536.0)
-#define F2X(_f) (static_cast<fix> ((_f) * 65536))
+#define X2F(_f) (float (_f) / 65536.0f)
+#define X2D(_f) (double (_f) / 65536.0)
+#define F2X(_f) (fix ((_f) * 65536))
 
 //Some handy constants
 //#define F0_1	0x199a
