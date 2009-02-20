@@ -151,16 +151,16 @@ class CAIStaticInfo {
 		tAIStaticInfo m_info;
 	public:
 		inline tAIStaticInfo* GetInfo (void) { return &m_info; }
-		inline ubyte& Behavior() { return m_info.behavior; }
-		inline sbyte& Flags(int i) { return m_info.flags [i]; }
-		inline short& HideSegment() { return m_info.nHideSegment; }
-		inline short& HideIndex() { return m_info.nHideIndex; }
-		inline short& PathLength() { return m_info.nPathLength; }
-		inline sbyte& CurPathIndex() { return m_info.nCurPathIndex; }
-		inline sbyte& DyingSoundPlaying() { return m_info.bDyingSoundPlaying; }
-		inline short& DangerLaser() { return m_info.nDangerLaser; }
-		inline int& DangerLaserSig() { return m_info.nDangerLaserSig; }
-		inline fix &DyingStartTime() { return m_info.xDyingStartTime; }
+		inline ubyte Behavior() { return m_info.behavior; }
+		inline sbyte Flags(int i) { return m_info.flags [i]; }
+		inline short HideSegment() { return m_info.nHideSegment; }
+		inline short HideIndex() { return m_info.nHideIndex; }
+		inline short PathLength() { return m_info.nPathLength; }
+		inline sbyte CurPathIndex() { return m_info.nCurPathIndex; }
+		inline sbyte DyingSoundPlaying() { return m_info.bDyingSoundPlaying; }
+		inline short DangerLaser() { return m_info.nDangerLaser; }
+		inline int DangerLaserSig() { return m_info.nDangerLaserSig; }
+		inline fix DyingStartTime() { return m_info.xDyingStartTime; }
 };
 
 // This is the stuff which doesn't need to be saved to disk.
