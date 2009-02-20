@@ -70,7 +70,7 @@
 </toolChain>
 </folderInfo>
 <sourceEntries>
-<entry excluding="network/linux/ipx_udp.cpp|mem|3d/instance.cpp|audio/win32/hmpfile.cpp|audio/win32/digi.cpp|audio/linux/midi.cpp|audio/linux/alsadigi.cpp|render/gamepal.cpp|ai/d1_aipath.cpp|main/dumpmine.cpp|network/netmisc-old.cpp|network/netmisc-new.cpp|gameio/bmread.cpp|io/win32|libmve/mve_main.cpp|main/editor|main/udp_data.cpp|main/plrship.cpp|input/linux|misc/byteswap.cpp|network/linux/serial.cpp|ogl/fog.cpp|network/win32" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+<entry excluding="texmap|network/linux/ipx_udp.cpp|mem|3d/instance.cpp|audio/win32/hmpfile.cpp|audio/win32/digi.cpp|audio/linux/midi.cpp|audio/linux/alsadigi.cpp|render/gamepal.cpp|ai/d1_aipath.cpp|main/dumpmine.cpp|network/netmisc-old.cpp|network/netmisc-new.cpp|gameio/bmread.cpp|io/win32|libmve/mve_main.cpp|main/editor|main/udp_data.cpp|main/plrship.cpp|input/linux|misc/byteswap.cpp|network/linux/serial.cpp|ogl/fog.cpp|network/win32" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 </sourceEntries>
 </configuration>
 </storageModule>
@@ -640,7 +640,7 @@
 </toolChain>
 </folderInfo>
 <sourceEntries>
-<entry excluding="network/linux/ipx_udp.cpp|mem|3d/instance.cpp|audio/win32/hmpfile.cpp|audio/win32/digi.cpp|audio/linux/midi.cpp|audio/linux/alsadigi.cpp|render/gamepal.cpp|ai/d1_aipath.cpp|main/dumpmine.cpp|network/netmisc-old.cpp|network/netmisc-new.cpp|gameio/bmread.cpp|io/win32|libmve/mve_main.cpp|main/editor|main/udp_data.cpp|main/plrship.cpp|input/linux|misc/byteswap.cpp|network/linux/serial.cpp|ogl/fog.cpp|network/win32" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+<entry excluding="texmap|network/linux/ipx_udp.cpp|mem|3d/instance.cpp|audio/win32/hmpfile.cpp|audio/win32/digi.cpp|audio/linux/midi.cpp|audio/linux/alsadigi.cpp|render/gamepal.cpp|ai/d1_aipath.cpp|main/dumpmine.cpp|network/netmisc-old.cpp|network/netmisc-new.cpp|gameio/bmread.cpp|io/win32|libmve/mve_main.cpp|main/editor|main/udp_data.cpp|main/plrship.cpp|input/linux|misc/byteswap.cpp|network/linux/serial.cpp|ogl/fog.cpp|network/win32" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 </sourceEntries>
 </configuration>
 </storageModule>

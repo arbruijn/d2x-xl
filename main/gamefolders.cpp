@@ -244,7 +244,7 @@ GetAppFolder (szDataRootDir, gameFolders.szSoundDir [1], SOUNDDIR2, "*.wav");
 GetAppFolder (szDataRootDir, gameFolders.szShaderDir, SHADERDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szTextureDir [0], TEXTUREDIR_D2, "*.tga");
 GetAppFolder (szDataRootDir, gameFolders.szTextureDir [1], TEXTUREDIR_D1, "*.tga");
-
+GetAppFolder (szDataRootDir, gameFolders.szModDir [0], MODDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szMovieDir, MOVIEDIR, "*.mvl");
 #ifdef __unix__
 if (*gameFolders.szHomeDir) {
@@ -284,6 +284,7 @@ if (*gameFolders.szHomeDir) {
 	sprintf (gameFolders.szCacheDir, "%s/%s/64", pszOSXCacheDir, CACHEDIR);
 	CFile::MkDir (gameFolders.szCacheDir);
 	sprintf (gameFolders.szCacheDir, "%s/%s", pszOSXCacheDir, CACHEDIR);
+	CFile::MkDir (gameFolders.szCacheDir);
 #else
 #	ifdef __unix__
 	sprintf (szDataRootDir, "%s/.d2x-xl", gameFolders.szHomeDir);
@@ -307,7 +308,6 @@ GetAppFolder (szDataRootDir, gameFolders.szProfDir, PROFDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szSaveDir, SAVEDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szScrShotDir, SCRSHOTDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szDemoDir, DEMODIR, "");
-GetAppFolder (szDataRootDir, gameFolders.szModDir [0], MODDIR, "");
 if (GetAppFolder (szDataRootDir, gameFolders.szConfigDir, CONFIGDIR, "d2x.ini"))
 	strcpy (gameFolders.szConfigDir, gameFolders.szGameDir);
 #ifdef WIN32

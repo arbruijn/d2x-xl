@@ -551,9 +551,13 @@ void CSegment::CheckSum (uint& sum1, uint& sum2)
 {
 	int	i;
 	short	j;
+	uint s1, s2;
 
-for (i = 0; i < 6; i++)
+for (i = 0; i < 6; i++) {
 	m_sides [i].CheckSum (sum1, sum2);
+	s1 = sum1;
+	s2 = sum2;
+	}
 for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 	j = INTEL_SHORT (m_children [i]);
 	CalcCheckSum (reinterpret_cast<ubyte*> (&j), 2, sum1, sum2);
