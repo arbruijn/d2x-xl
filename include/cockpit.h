@@ -191,7 +191,6 @@ class CGenericCockpit {
 		void Render (int bExtraInfo);
 		void RenderWindow (int nWindow, CObject *viewerP, int bRearView, int nUser, const char *pszLabel);
 		void Activate (int nType, bool bClearMessages = false);
-		bool Setup (void);
 
 		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h) = 0;
 		virtual void DrawRecording (void) = 0;
@@ -225,7 +224,7 @@ class CGenericCockpit {
 		virtual void DrawWeapons (void);
 		virtual void DrawCockpit (bool bAlphaTest = false) = 0;
 		virtual void SetupWindow (int nWindow, CCanvas* canvP) = 0;
-		virtual bool Setup (bool bRebuild) = 0;
+		virtual bool Setup (bool bRebuild = false);
 
 		inline CCockpitInfo& Info (void) { return m_info; }
 		inline int Type (void) { return m_info.nType; }

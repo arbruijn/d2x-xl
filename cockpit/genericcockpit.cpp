@@ -1889,7 +1889,7 @@ gameStates.render.bRearView = bRearViewSave;
 //------------------------------------------------------------------------------
 //initialize the various canvases on the game screen
 //called every time the screen mode or cockpit changes
-bool CGenericCockpit::Setup (void)
+bool CGenericCockpit::Setup (bool bRebuild)
 {
 if (gameStates.video.nScreenMode != SCREEN_GAME)
 	return false;
@@ -1901,7 +1901,8 @@ if (gameStates.video.nScreenMode == SCREEN_EDITOR)
 	gameStates.render.cockpit.nType = CM_FULL_SCREEN;
 CCanvas::SetCurrent (NULL);
 fontManager.SetCurrent (GAME_FONT);
-gameStates.render.cockpit.nShieldFlash = 0;
+if (bRebuild)
+	gameStates.render.cockpit.nShieldFlash = 0;
 return true;
 }
 

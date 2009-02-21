@@ -562,7 +562,7 @@ bool CCockpit::Setup (bool bRebuild)
 if (bRebuild && !m_info.bRebuild)
 	return true;
 m_info.bRebuild = false;
-if (!CGenericCockpit::Setup ())
+if (!CGenericCockpit::Setup (bRebuild))
 	return false;
 gameData.render.window.hMax = (screen.Height () * 2) / 3;
 if (gameData.render.window.h > gameData.render.window.hMax)

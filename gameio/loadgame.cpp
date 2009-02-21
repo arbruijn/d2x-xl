@@ -2179,6 +2179,7 @@ void DoPlayerDead (void)
 gameStates.app.bGameRunning = 0;
 paletteManager.ResetEffect ();
 paletteManager.LoadEffect ();
+StopTriggeredSounds ();
 audio.StopAllChannels ();		//kill any continuing sounds (eg. forcefield hum)
 DeadPlayerEnd ();		//terminate death sequence (if playing)
 if (IsCoopGame && gameStates.app.bHaveExtraGameInfo [1])
@@ -2224,6 +2225,7 @@ else {
 		}
 	}
 SetSoundSources ();
+StartTriggeredSounds ();
 audio.SyncSounds ();
 }
 
