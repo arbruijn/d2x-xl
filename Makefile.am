@@ -47,7 +47,6 @@ d2x_LDADD = \
 	objects/libobjects.a \
 	ogl/libogl.a \
 	physics/libphysics.a \
-	texmap/libtexmap.a \
 	render/librender.a \
 	weapons/libweapons.a \
 	2d/lib2d.a \
