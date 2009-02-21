@@ -1207,6 +1207,9 @@ return 0;
 
 int FindTriggerTarget (short nSegment, short nSide, int i)
 {
+if (i < 0)
+	i = gameData.trigs.m_nTriggers - i;
+
 	int	j = i, nSegSide, nOvlTex, ec;
 
 for (; i < gameData.trigs.m_nTriggers; i++) {
