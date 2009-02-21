@@ -49,6 +49,13 @@ char szWarnMsg[MAX_MSG_LEN];
 void ShowInGameWarning (const char *s);
 
 //------------------------------------------------------------------------------
+
+void ArrayError (char* pszMsg)
+{
+PrintLog (pszMsg);
+}
+
+//------------------------------------------------------------------------------
 //takes string in register, calls //printf with string on stack
 void warn_printf(const char *s)
 {

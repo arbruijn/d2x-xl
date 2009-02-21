@@ -19,6 +19,8 @@
 #include "cquicksort.h"
 #include "cfile.h"
 
+void ArrayError (char* pszMsg);
+
 //-----------------------------------------------------------------------------
 
 template < class _T > 
@@ -95,10 +97,14 @@ class CArray : public CQuickSort < _T > {
 
 		void Clear (ubyte filler = 0, uint count = 0xffffffff) { 
 #if DBG
-			if ((count != 0xffffffff) && (count > 1000000))
+			if ((count != 0xffffffff) && (count > 1000000)) {
 				count = count;
-			if ((count == 0xffffffff) && (m_data.length > 512 * 512 * 32))
+				ArrayError ("array overflow\n");
+				}
+			if ((count == 0xffffffff) && (m_data.length > 512 * 512 * 32)) {
 				count = count;
+				ArrayError ("array overflow\n");
+				}
 #endif
 			if (m_data.buffer) 
 				memset (m_data.buffer, filler, sizeof (_T) * ((count < m_data.length) ? count : m_data.length)); 
@@ -119,6 +125,7 @@ class CArray : public CQuickSort < _T > {
 		inline int Index (_T* elem) { 
 			if (IsElement (elem))
 				return static_cast<int> (elem - m_data.buffer); 
+			ArrayError ("invalid array index\n");
 			return -1;
 			}
 #else
@@ -127,8 +134,10 @@ class CArray : public CQuickSort < _T > {
 
 #if DBG
 		inline _T* Pointer (uint i) { 
-			if (!m_data.buffer || (i >= m_data.length))
+			if (!m_data.buffer || (i >= m_data.length)) {
+				ArrayError ("invalid array handle or index\n");
 				return NULL;
+				}
 			return m_data.buffer + i; 
 			}
 #else
@@ -192,8 +201,10 @@ class CArray : public CQuickSort < _T > {
 				return m_data.buffer [i];
 			if (i == m_data.length)
 				return m_data.null; 
-			else
+			else {
+				ArrayError ("invalid array handle or index\n");
 				return m_data.null; 
+				}
 			}
 #else
 		inline _T& operator[] (uint i) { return m_data.buffer [i]; }
@@ -266,8 +277,10 @@ class CArray : public CQuickSort < _T > {
 				return m_data.buffer + i;
 			if (i == m_data.length)
 				return NULL;
-			else
+			else {
+				ArrayError ("invalid array handle or index\n");
 				return  NULL; 
+				}
 			}
 
 #else
