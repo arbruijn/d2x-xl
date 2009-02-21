@@ -200,7 +200,7 @@ void TriggerSetOrient (tObjTransformation *posP, short nSegment, short nSide, in
 void TriggerSetObjOrient (short nObject, short nSegment, short nSide, int bSetPos, int nStep);
 void TriggerSetObjPos (short nObject, short nSegment);
 void UpdatePlayerOrient (void);
-int FindTriggerTarget (short nSegment, short nSide);
+int FindTriggerTarget (short nSegment, short nSide, int i = 0);
 CTrigger *FindObjTrigger (short nObject, short nType, short nTrigger);
 int OpenExits (void);
 void StartTriggeredSounds (void);

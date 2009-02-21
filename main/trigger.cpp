@@ -1205,11 +1205,11 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int FindTriggerTarget (short nSegment, short nSide)
+int FindTriggerTarget (short nSegment, short nSide, int i)
 {
-	int	i, nSegSide, nOvlTex, ec;
+	int	j = i, nSegSide, nOvlTex, ec;
 
-for (i = 0; i < gameData.trigs.m_nTriggers; i++) {
+for (; i < gameData.trigs.m_nTriggers; i++) {
 	nSegSide = FindTriggerSegSide (i);
 	if (nSegSide == -1)
 		continue;
@@ -1231,12 +1231,12 @@ for (i = 0; i < gameData.trigs.m_nTriggers; i++) {
 	if (TRIGGERS [i].HasTarget (nSegment, nSide))
 		return i + 1;
 	}
-for (i = 0; i < gameData.trigs.m_nObjTriggers; i++) {
-	if (!OBJTRIGGERS [i].HasTarget (nSegment, nSide))
+for (j = i - gameData.trigs.m_nTriggers; i < gameData.trigs.m_nTriggers + gameData.trigs.m_nObjTriggers; i++, j++) {
+	if (!OBJTRIGGERS [j].HasTarget (nSegment, nSide))
 		continue;
-	if (!ObjTriggerIsValid (i))
+	if (!ObjTriggerIsValid (j))
 		continue;
-	return -i - 1;
+	return -j - 1;
 	}
 return 0;
 }

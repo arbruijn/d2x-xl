@@ -227,6 +227,24 @@ if (!colorP || colorP->index) {
 
 //-----------------------------------------------------------------------------
 
+int CLightManager::IsTriggered (short nSegment, short nSide)
+{
+	int			i = 0;
+	CTrigger*	trigP;
+
+while ((i = FindTriggerTarget (nSegment, nSide, i))) {
+	if (i < 0)
+		trigP = &OBJTRIGGERS [-i - 1];
+	else
+		trigP = &TRIGGERS [i - 1];
+	if ((trigP->nType == TT_LIGHT_OFF) || (trigP->nType == TT_LIGHT_ON))
+		return 1;
+	}
+return 0;
+}
+
+//-----------------------------------------------------------------------------
+
 int CLightManager::IsFlickering (short nSegment, short nSide)
 {
 	CVariableLight* flP;
@@ -392,7 +410,8 @@ else if (nSegment >= 0) {
 		pl->info.nType = 0;
 		pl->info.fRad = faceP ? faceP->fRads [1] : 0;
 		//RegisterLight (NULL, nSegment, nSide);
-		pl->info.bVariable = IsDestructible (nTexture) || IsFlickering (nSegment, nSide) || SEGMENTS [nSegment].Side (nSide)->IsVolatile ();
+		pl->info.bVariable = IsDestructible (nTexture) || IsFlickering (nSegment, nSide) || IsFlickering (nSegment, nSide) || 
+									SEGMENTS [nSegment].Side (nSide)->IsVolatile ();
 		m_data.nVariable += pl->info.bVariable;
 		pl->info.vPos = SEGMENTS [nSegment].SideCenter (nSide);
 		CSide			*sideP = SEGMENTS [nSegment].m_sides + nSide;
