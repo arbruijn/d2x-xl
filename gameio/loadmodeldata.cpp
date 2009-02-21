@@ -216,7 +216,7 @@ int LoadRobotReplacements (const char* szLevel, const char* szFolder, int bAddBo
 	CFile			cf;
 	CPolyModel*	modelP;
 	int			t, i, j;
-	int			nBotTypeSave = gameData.bots.nTypes [0], 
+	int			nBotTypeSave = gameData.bots.nTypes [gameStates.app.bD1Mission], 
 					nBotJointSave = gameData.bots.nJoints, 
 					nPolyModelSave = gameData.models.nPolyModels;
 	tRobotInfo	botInfoSave;
@@ -235,15 +235,15 @@ t = cf.ReadInt ();			//read number of robots
 for (j = 0; j < t; j++) {
 	i = cf.ReadInt ();		//read robot number
 	if (bAddBots) {
-		if (gameData.bots.nTypes [0] >= MAX_ROBOT_TYPES) {
+		if (gameData.bots.nTypes [gameStates.app.bD1Mission] >= MAX_ROBOT_TYPES) {
 			Warning (TXT_ROBOT_NO, szLevel, i, MAX_ROBOT_TYPES);
 			return -1;
 			}
-		i = gameData.bots.nTypes [0]++;
+		i = gameData.bots.nTypes [gameStates.app.bD1Mission]++;
 		}
-	else if (i < 0 || i >= gameData.bots.nTypes [0]) {
-		Warning (TXT_ROBOT_NO, szLevel, i, gameData.bots.nTypes [0] - 1);
-		gameData.bots.nTypes [0] = nBotTypeSave;
+	else if (i < 0 || i >= gameData.bots.nTypes [gameStates.app.bD1Mission]) {
+		Warning (TXT_ROBOT_NO, szLevel, i, gameData.bots.nTypes [gameStates.app.bD1Mission] - 1);
+		gameData.bots.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
 		gameData.bots.nJoints = nBotJointSave;
 		gameData.models.nPolyModels = nPolyModelSave;
 		return -1;
@@ -251,8 +251,8 @@ for (j = 0; j < t; j++) {
 	if (bAltModels)
 		cf.Seek (sizeof (tRobotInfo), SEEK_CUR);
 	else {
-		botInfoSave = gameData.bots.info [0][i];
-		ReadRobotInfos (gameData.bots.info [0], 1, cf, i);
+		botInfoSave = gameData.bots.info [gameStates.app.bD1Mission][i];
+		ReadRobotInfos (gameData.bots.info [gameStates.app.bD1Mission], 1, cf, i);
 		}
 	}
 t = cf.ReadInt ();			//read number of joints
@@ -262,7 +262,7 @@ for (j = 0; j < t; j++) {
 		if (gameData.bots.nJoints >= MAX_ROBOT_JOINTS) {
 			Warning ("%s: Robots joint (%d) out of range (valid range = 0 - %d).",
 						szLevel, i, MAX_ROBOT_JOINTS - 1);
-			gameData.bots.nTypes [0] = nBotTypeSave;
+			gameData.bots.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
 			gameData.bots.nJoints = nBotJointSave;
 			gameData.models.nPolyModels = nPolyModelSave;
 			return -1;
@@ -273,7 +273,7 @@ for (j = 0; j < t; j++) {
 	else if ((i < 0) || (i >= gameData.bots.nJoints)) {
 		Warning ("%s: Robots joint (%d) out of range (valid range = 0 - %d).",
 					szLevel, i, gameData.bots.nJoints - 1);
-		gameData.bots.nTypes [0] = nBotTypeSave;
+		gameData.bots.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
 		gameData.bots.nJoints = nBotJointSave;
 		gameData.models.nPolyModels = nPolyModelSave;
 		return -1;
@@ -287,7 +287,7 @@ for (j = 0; j < t; j++) {
 		if (gameData.models.nPolyModels >= MAX_POLYGON_MODELS) {
 			Warning ("%s: Polygon model (%d) out of range (valid range = 0 - %d).",
 						szLevel, i, gameData.models.nPolyModels - 1);
-			gameData.bots.nTypes [0] = nBotTypeSave;
+			gameData.bots.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
 			gameData.bots.nJoints = nBotJointSave;
 			gameData.models.nPolyModels = nPolyModelSave;
 			return -1;
@@ -302,7 +302,7 @@ for (j = 0; j < t; j++) {
 			else {
 				Warning ("%s: Polygon model (%d) out of range (valid range = 0 - %d).",
 							szLevel, i, gameData.models.nPolyModels - 1);
-				gameData.bots.nTypes [0] = nBotTypeSave;
+				gameData.bots.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
 				gameData.bots.nJoints = nBotJointSave;
 				gameData.models.nPolyModels = nPolyModelSave;
 				return -1;
@@ -311,7 +311,7 @@ for (j = 0; j < t; j++) {
 		else {
 			Warning ("%s: Polygon model (%d) out of range (valid range = 0 - %d).",
 						szLevel, i, gameData.models.nPolyModels - 1);
-			gameData.bots.nTypes [0] = nBotTypeSave;
+			gameData.bots.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
 			gameData.bots.nJoints = nBotJointSave;
 			gameData.models.nPolyModels = nPolyModelSave;
 			return -1;
@@ -349,7 +349,7 @@ for (j = 0; j < t; j++) {
 	else if ((i < 0) || (i >= MAX_OBJ_BITMAPS)) {
 		Warning ("%s: Object bitmap number (%d) out of range (valid range = 0 - %d).",
 					szLevel, i, MAX_OBJ_BITMAPS - 1);
-		gameData.bots.nTypes [0] = nBotTypeSave;
+		gameData.bots.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
 		gameData.bots.nJoints = nBotJointSave;
 		gameData.models.nPolyModels = nPolyModelSave;
 		return -1;
@@ -362,7 +362,7 @@ for (j = 0; j < t; j++) {
 	if ((i < 0) || (i >= MAX_OBJ_BITMAPS)) {
 		Warning ("%s: Object bitmap pointer (%d) out of range (valid range = 0 - %d).",
 					szLevel, i, MAX_OBJ_BITMAPS - 1);
-		gameData.bots.nTypes [0] = nBotTypeSave;
+		gameData.bots.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
 		gameData.bots.nJoints = nBotJointSave;
 		gameData.models.nPolyModels = nPolyModelSave;
 		return -1;
