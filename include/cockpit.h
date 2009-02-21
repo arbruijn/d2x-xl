@@ -247,7 +247,7 @@ class CGenericCockpit {
 		
 		inline bool Hide (void) {
 			return gameStates.app.bEndLevelSequence || 
-					 (!(gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) && (m_info.nType >= CM_FULL_SCREEN));
+					 (!(gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) && (gameStates.render.cockpit.nType >= CM_FULL_SCREEN));
 			}
 	};
 

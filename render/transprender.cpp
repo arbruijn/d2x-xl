@@ -445,7 +445,7 @@ for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
 return AddPoly (faceP, NULL, bmP,
 						vertices, 4, FACES.texCoord + faceP->nIndex,
 						FACES.color + faceP->nIndex,
-						NULL, 4, 1, GL_TRIANGLE_FAN, GL_REPEAT,
+						NULL, 4, 0, GL_TRIANGLE_FAN, GL_REPEAT,
 						FaceIsAdditive (faceP), faceP->nSegment) > 0;
 }
 

@@ -973,6 +973,9 @@ xy secondary_offsets [4] = {{-24, 2},  {-12, 0}, {-12, 1}, {-6, -2}};
 //draw the reticle
 void CGenericCockpit::DrawReticle (int bForceBig)
 {
+if (cockpit->Hide ())
+	return;
+
 	int x, y;
 	int bLaserReady, bMissileReady, bLaserAmmo, bMissileAmmo;
 	int nCrossBm, nPrimaryBm, nSecondaryBm;
