@@ -96,13 +96,15 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void MakeTexSubFolders (char* pszParentFolder)
 {
-	static char *szTexSubFolders [] = {"256", "128", "64"};
+if (*pszParentFolder) {
+		static char *szTexSubFolders [] = {"256", "128", "64"};
 
-	char	szFolder [FILENAME_LEN];
+		char	szFolder [FILENAME_LEN];
 
-for (int i = 0; i < 3; i++) {
-	sprintf (szFolder, "%s/%s", pszParentFolder, szTexSubFolders [i]);
-	CFile::MkDir (szFolder);
+	for (int i = 0; i < 3; i++) {
+		sprintf (szFolder, "%s/%s", pszParentFolder, szTexSubFolders [i]);
+		CFile::MkDir (szFolder);
+		}
 	}
 }
 

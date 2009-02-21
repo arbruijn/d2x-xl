@@ -229,10 +229,9 @@ if (!colorP || colorP->index) {
 
 int CLightManager::IsTriggered (short nSegment, short nSide)
 {
-	int			i = 0;
 	CTrigger*	trigP;
 
-while ((i = FindTriggerTarget (nSegment, nSide, i))) {
+for (int i = 0; i = FindTriggerTarget (nSegment, nSide, i); i++) {
 	if (i < 0)
 		trigP = &OBJTRIGGERS [-i - 1];
 	else
