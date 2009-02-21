@@ -293,7 +293,7 @@ int CTransparencyRenderer::AddObject (CObject *objP)
 if (objP->info.nType == 255)
 	return 0;
 item.objP = objP;
-transformation.Transform(vPos, OBJPOS (objP)->vPos, 0);
+transformation.Transform (vPos, OBJPOS (objP)->vPos, 0);
 return Add (tiObject, &item, sizeof (item), vPos [Z], vPos [Z]);
 }
 
@@ -408,7 +408,7 @@ for (h = faceP->nTris; h; h--, triP++) {
 		}
 	if (!AddPoly (faceP, triP, bmP, vertices, 3, FACES.texCoord + triP->nIndex,
 					  FACES.color + triP->nIndex,
-					  NULL, 3, 1, GL_TRIANGLES, GL_REPEAT,
+					  NULL, 3, 0, GL_TRIANGLES, GL_REPEAT,
 					  bAdditive, faceP->nSegment))
 		return 0;
 	}
@@ -452,7 +452,7 @@ return AddPoly (faceP, NULL, bmP,
 //------------------------------------------------------------------------------
 
 int CTransparencyRenderer::AddSprite (CBitmap *bmP, const CFixVector& position, tRgbaColorf *color,
-					  int nWidth, int nHeight, char nFrame, char bAdditive, float fSoftRad)
+												  int nWidth, int nHeight, char nFrame, char bAdditive, float fSoftRad)
 {
 	tTranspSprite	item;
 	CFixVector		vPos;
