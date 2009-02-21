@@ -185,7 +185,7 @@ return 1;
 void SpeedupSound (void)
 {
 if (!gameOpts->gameplay.nSlowMotionSpeedup)
-	gameOpts->gameplay.nSlowMotionSpeedup = 1;
+	gameOpts->gameplay.nSlowMotionSpeedup = 6;
 if (gameData.app.bUseMultiThreading [rtSound]) {
 	tiSound.fSlowDown = 1.0f;
 	RunSoundThread (stReconfigureAudio);
@@ -208,12 +208,12 @@ else {
 void SlowdownSound (void)
 {
 if (gameData.app.bUseMultiThreading [rtSound]) {
-	tiSound.fSlowDown = (float) gameOpts->gameplay.nSlowMotionSpeedup / 2;
+	tiSound.fSlowDown = float (gameOpts->gameplay.nSlowMotionSpeedup) / 2;
 	RunSoundThread (stReconfigureAudio);
 	}
 else {
 	audio.Shutdown ();
-	audio.Setup ((float) gameOpts->gameplay.nSlowMotionSpeedup / 2);
+	audio.Setup (float (gameOpts->gameplay.nSlowMotionSpeedup) / 2);
 	songManager.SetSlowDown (SDL_GetTicks ());
 #if DBG
 	songManager.SetPos (0);
@@ -237,7 +237,7 @@ void DoSlowMotionFrame (void)
 if (gameStates.app.bNostalgia || IsMultiGame)
 	return;
 bMsg = ToggleSlowMotion ();
-f = (float) gameOpts->gameplay.nSlowMotionSpeedup / 2;
+f = float (gameOpts->gameplay.nSlowMotionSpeedup) / 2;
 h = (f - 1) / (SLOWDOWN_SECS * SLOWDOWN_FPS);
 for (i = 0; i < 2; i++) {
 	if (gameStates.gameplay.slowmo [i].nState && (gameStates.app.nSDLTicks - gameStates.gameplay.slowmo [i].tUpdate > 25)) {

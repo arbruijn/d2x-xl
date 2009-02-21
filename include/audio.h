@@ -267,6 +267,7 @@ class CAudio {
 				short		nLoopingStart;
 				short		nLoopingEnd;
 				short		nLoopingChannel;
+				float		fSlowDown;
 			};
 
 	private:
@@ -365,6 +366,7 @@ class CAudio {
 		inline int FreeChannel (void) { return m_info.nFreeChannel; }
 		inline CAudioChannel* Channel (uint i = 0) { return m_channels + i; }
 		inline CStack<CSoundObject>& Objects (void) { return m_objects; }
+		inline float SlowDown (void) { return m_info.fSlowDown; }
 
 		void RecordSoundObjects (void);
 #if DBG

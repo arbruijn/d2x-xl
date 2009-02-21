@@ -636,6 +636,7 @@ m_info.nLoopingVolume = 0;
 m_info.nLoopingStart = -1;
 m_info.nLoopingEnd = -1;
 m_info.nLoopingChannel = -1;
+m_info.fSlowDown = 1.0f;
 m_channels.Create (MAX_SOUND_CHANNELS);
 m_objects.Create (MAX_SOUND_OBJECTS);
 InitSounds ();
@@ -694,6 +695,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 	int h;
 	if (fSlowDown <= 0)
 		fSlowDown = 1.0f;
+	m_info.fSlowDown = fSlowDown;
 	if (gameOpts->sound.bHires [0] == 1)
 		h = Mix_OpenAudio (int (SAMPLE_RATE_22K / fSlowDown), m_info.nFormat = AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE);
 	else if (gameOpts->sound.bHires [0] == 2)
