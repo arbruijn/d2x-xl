@@ -264,7 +264,7 @@ FORALL_OBJS (objP, i)
 PrintLog ("   caching hostage sprites\n");
 OglCacheVClipTextures (33, 2);    
 // cache all clip frame textures incl. explosions and effects
-PrintLog ("   caching explision sprites\n");
+PrintLog ("   caching explosion sprites\n");
 for (i = 0; i < 2; i++)
 	for (j = 0; j < MAX_GAUGE_BMS; j++)
 		if (gameData.cockpit.gauges [i][j].index != 0xffff)

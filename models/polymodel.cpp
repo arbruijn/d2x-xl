@@ -668,6 +668,10 @@ else {
 			LoadBitmap (gameData.models.textureIndex [i].index, gameStates.app.bD1Model);
 		}
 	}
+#if DBG
+if (m_info.nId == nDbgModel)
+	nDbgModel = nDbgModel;
+#endif
 #ifdef PIGGY_USE_PAGING
 // Make sure the textures for this CObject are paged in...
 gameData.pig.tex.bPageFlushed = 0;

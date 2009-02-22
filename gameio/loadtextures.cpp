@@ -495,6 +495,11 @@ return -1;
 
 //------------------------------------------------------------------------------
 
+#if DBG
+int nPrevIndex = -1;
+char szPrevBm [FILENAME_LEN] = "";
+#endif
+
 int PageInBitmap (CBitmap *bmP, const char *bmName, int nIndex, int bD1, bool bHires)
 {
 	CBitmap			*altBmP = NULL;
@@ -521,9 +526,10 @@ nSize = (int) bmP->FrameSize ();
 if (nIndex >= 0)
 	GetFlagData (bmName, nIndex);
 #if DBG
-if (strstr (bmName, "metl139")) {
-	sprintf (fn [3], "%s%s%s.tga", gameFolders.szTextureDir [bD1], *gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
-	}
+if (strstr (bmName, "metl139"))
+	bmName = bmName;
+if (strstr (bmName, "rbot019"))
+	bmName = bmName;
 #endif
 if (gameStates.app.bNostalgia)
 	gameOpts->render.textures.bUseHires [0] = 0;
@@ -710,6 +716,10 @@ if (nDescentCriticalError) {
 #ifndef MACDATA
 if (!bTGA && IsMacDataFile (cfP, bD1))
 	bmP->Swap_0_255 ();
+#endif
+#if DBG
+nPrevIndex = nIndex;
+strcpy (szPrevBm, bmName);
 #endif
 StartTime (0);
 if (!bDefault)

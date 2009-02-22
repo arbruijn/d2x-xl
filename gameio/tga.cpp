@@ -40,11 +40,12 @@ if (!(bmP->Buffer () || bmP->CreateBuffer ()))
 memset (bmP->TransparentFrames (), 0, 4 * sizeof (int));
 memset (bmP->SuperTranspFrames (), 0, 4 * sizeof (int));
 avgColor.red = avgColor.green = avgColor.blue = 0;
+bReverse = (ph->descriptor & (1 << 5)) != 0;
 if (ph->bits == 24) {
 	tBGRA	c;
-	tRgbColorb *p = reinterpret_cast<tRgbColorb*> (bmP->Buffer ()) + w * (bmP->Height () - 1);
+	tRgbColorb *p = reinterpret_cast<tRgbColorb*> (bmP->Buffer ()) + w * (h - 1);
 
-	for (i = bmP->Height (); i; i--) {
+	for (i = h; i; i--) {
 		for (j = w; j; j--, p++) {
 			if (cf.Read (&c, 1, 3) != (size_t) 3)
 				return 0;
@@ -129,7 +130,7 @@ else {
 		}
 	else {
 		tBGRA	c;
-		tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ()) + w * (bmP->Height () - 1);
+		tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ()) + w * (h - 1);
 		int nSuperTransp;
 
 		nFrames = h / w - 1;
