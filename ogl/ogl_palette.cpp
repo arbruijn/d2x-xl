@@ -48,7 +48,7 @@ if (!m_data.bAllowEffect) {
 	else
 		glEnable (GL_BLEND);
 	glBlendFunc (GL_ONE,GL_ONE);
-	glColor3f (0,0,0);
+	glColor3f (0, 0, 0);
 	}
 else if (m_data.bDoEffect) {
 	if ((bBlend = glIsEnabled (GL_BLEND))) {

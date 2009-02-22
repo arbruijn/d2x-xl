@@ -463,6 +463,41 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+void FlashMine (void)
+{
+if (!gameStates.render.nFlashScale || (gameStates.render.nFlashScale == I2X (1)))
+	return;
+
+	int	bDepthTest, bBlend;
+	GLint	blendSrc, blendDest;
+
+if ((bBlend = glIsEnabled (GL_BLEND))) {
+	glGetIntegerv (GL_BLEND_SRC, &blendSrc);
+	glGetIntegerv (GL_BLEND_DST, &blendDest);
+	}
+else
+	glEnable (GL_BLEND);
+glBlendFunc (GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+glColor4f (0, 0, 0, 1.0f - X2F (gameStates.render.nFlashScale));
+if ((bDepthTest = glIsEnabled (GL_DEPTH_TEST)))
+	glDisable (GL_DEPTH_TEST);
+glDisable (GL_TEXTURE_2D);
+glBegin (GL_QUADS);
+glVertex2f (0,0);
+glVertex2f (0,1);
+glVertex2f (1,1);
+glVertex2f (1,0);
+glEnd ();
+if (bDepthTest)
+	glEnable (GL_DEPTH_TEST);
+if (bBlend)
+	glBlendFunc (blendSrc, blendDest);
+else
+	glDisable (GL_BLEND);
+}
+
+//------------------------------------------------------------------------------
+
 void RenderMonoFrame (void)
 {
 	CCanvas		frameWindow;
@@ -515,6 +550,7 @@ else {
 	RenderFrame (0, 0);
 	}
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
+FlashMine ();
 cockpit->Render (bExtraInfo);
 console.Draw ();
 OglSwapBuffers (0, 0);
@@ -524,8 +560,8 @@ if (gameStates.app.bSaveScreenshot)
 
 //------------------------------------------------------------------------------
 
-#define WINDOW_W_DELTA	 ((gameData.render.window.wMax / 16)&~1)	//24	//20
-#define WINDOW_H_DELTA	 ((gameData.render.window.hMax / 16)&~1)	//12	//10
+#define WINDOW_W_DELTA	 ((gameData.render.window.wMax / 16) & ~1)	//24	//20
+#define WINDOW_H_DELTA	 ((gameData.render.window.hMax / 16) & ~1)	//12	//10
 
 #define WINDOW_MIN_W		 ((gameData.render.window.wMax * 10) / 22)	//160
 #define WINDOW_MIN_H		 ((gameData.render.window.hMax * 10) / 22)

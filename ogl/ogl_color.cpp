@@ -833,8 +833,10 @@ InitVertColorData (vcd);
 if (!gameStates.render.nState && (nVertex == nDbgVertex))
 	nVertex = nVertex;
 #endif
+#if 0
 if (gameStates.render.nFlashScale)
 	fScale *= X2F (gameStates.render.nFlashScale);
+#endif
 if (!FAST_SHADOWS && (gameStates.render.nShadowPass == 3))
 	; //fScale = 1.0f;
 else if (FAST_SHADOWS || (gameStates.render.nShadowPass != 1))
@@ -921,9 +923,9 @@ else
 		}
 	if ((nVertex >= 0) && !(gameStates.render.nState || gameData.render.vertColor.bDarkness)) {
 		tFaceColor *pfc = gameData.render.color.ambient + nVertex;
-		colorSum [R] += pfc->color.red;
-		colorSum [G] += pfc->color.green;
-		colorSum [B] += pfc->color.blue;
+		colorSum [R] += pfc->color.red * fScale;
+		colorSum [G] += pfc->color.green * fScale;
+		colorSum [B] += pfc->color.blue * fScale;
 #if DBG
 		if (!gameStates.render.nState && (nVertex == nDbgVertex) && (colorSum [R] + colorSum [G] + colorSum [B] < 0.1f))
 			nVertex = nVertex;

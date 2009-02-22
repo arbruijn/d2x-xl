@@ -726,9 +726,12 @@ if (bClientState) {
 else {
 #if RENDER_TRANSP_DECALS
 	if (m_data.bDecal) {
-		if (m_data.bDecal == 2)
+		if (m_data.bDecal == 2) {
 			DisableClientState (GL_TEXTURE2 + bUseLightmaps, 1, 1);
+			OGL_BINDTEX (0);
+			}
 		DisableClientState (GL_TEXTURE1 + bUseLightmaps, 1, 1);
+		OGL_BINDTEX (0);
 		m_data.bDecal = 0;
 		}
 #endif
@@ -762,7 +765,7 @@ int CTransparencyRenderer::LoadImage (CBitmap *bmP, char nColors, char nFrame, i
 {
 if (bmP) {
 	glEnable (GL_TEXTURE_2D);
-	if (bDecal ||SetClientState (bClientState, 1, nColors > 1, bUseLightmaps, bHaveDecal) || (m_data.bTextured < 1)) {
+	if (bDecal || SetClientState (bClientState, 1, nColors > 1, bUseLightmaps, bHaveDecal) || (m_data.bTextured < 1)) {
 		glActiveTexture (GL_TEXTURE0 + bUseLightmaps + bDecal);
 		glClientActiveTexture (GL_TEXTURE0 + bUseLightmaps + bDecal);
 		//glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -1104,6 +1107,7 @@ m_data.bTextured = 0;
 m_data.bClientState = 0;
 m_data.bClientTexCoord = 0;
 m_data.bClientColor = 0;
+ResetBitmaps ();
 //SEM_ENTER (SEM_LIGHTNINGS)
 //SEM_ENTER (SEM_SPARKS)
 }
@@ -1114,8 +1118,7 @@ void CTransparencyRenderer::RenderSprite (tTranspSprite *item)
 {
 	int bSoftBlend = ((gameOpts->render.effects.bSoftParticles & 1) != 0) && (item->fSoftRad > 0);
 
-if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1,
-								 bSoftBlend, 0, 0, 0)) {
+if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, bSoftBlend, 0, 0, 0)) {
 	float		h, w, u, v;
 	CFloatVector	fPos = item->position;
 
@@ -1135,7 +1138,7 @@ if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1,
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	if (bSoftBlend)
 		LoadGlareShader (item->fSoftRad);
-	else if (m_data.bDepthMask)
+	else //if (m_data.bDepthMask)
 		glDepthMask (m_data.bDepthMask = 0); 
 	glBegin (GL_QUADS);
 	glTexCoord2f (0, 0);

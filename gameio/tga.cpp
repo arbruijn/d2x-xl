@@ -394,8 +394,10 @@ CBitmap *CreateAndReadTGA (const char *szFile)
 if (!(bmP = CBitmap::Create (0, 0, 0, 4)))
 	return NULL;
 if (ReadTGA (szFile, NULL, bmP, -1, 1.0, 0, 0)) {
+	char	szName [FILENAME_LEN];
+	CFile::SplitPath (szFile, NULL, szName, NULL);
 	bmP->SetType (BM_TYPE_ALT);
-	bmP->SetName (szFile);
+	bmP->SetName (szName);
 	return bmP;
 	}
 bmP->SetType (BM_TYPE_ALT);
