@@ -1567,13 +1567,10 @@ if (m_nModel >= 0)
 bLogOOF = (fErr != NULL) && FindArg ("-printoof");
 nIndent = 0;
 OOF_PrintLog ("\nreading %s/%s\n", gameFolders.szModelDir [bCustom], filename);
-if (!cf.Open (filename, gameFolders.szModelDir [bCustom], "rb", 0)) {
+if (!(*filename && cf.Open (filename, gameFolders.szModelDir [bCustom], "rb", 0))) {
 	OOF_PrintLog ("  file not found");
 	return 0;
 	}
-
-m_nModel = nModel;
-m_bCustom = bCustom;
 
 if (!cf.Read (fileId, sizeof (fileId), 1)) {
 	OOF_PrintLog ("  invalid file id\n");
@@ -1586,6 +1583,10 @@ if (strncmp (fileId, "PSPO", 4)) {
 	return 0;
 	}
 Init ();
+
+m_nModel = nModel;
+m_bCustom = bCustom;
+
 m_nVersion = OOF_ReadInt (cf, "nVersion");
 if (m_nVersion >= 2100)
 	m_nFlags |= OOF_PMF_LIGHTMAP_RES;

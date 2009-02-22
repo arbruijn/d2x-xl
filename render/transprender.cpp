@@ -1101,6 +1101,8 @@ void CTransparencyRenderer::RenderObject (tTranspObject *item)
 {
 //SEM_LEAVE (SEM_LIGHTNINGS)	//might lockup otherwise when creating damage lightnings on cloaked objects
 //SEM_LEAVE (SEM_SPARKS)
+SetClientState (0, 0, 0, 0, 0);
+ResetShader ();
 DrawPolygonObject (item->objP, 0, 1);
 glDisable (GL_TEXTURE_2D);
 m_data.bTextured = 0;
@@ -1216,7 +1218,7 @@ if (sparkBuffer.nSparks >= SPARK_BUF_SIZE)
 	FlushSparkBuffer ();
 
 	tSparkVertex	*infoP = sparkBuffer.info + 4 * sparkBuffer.nSparks;
-	CFloatVector			vPos = item->position;
+	CFloatVector	vPos = item->position;
 	float				nSize = X2F (item->nSize);
 	float				nCol = (float) (item->nFrame / 8);
 	float				nRow = (float) (item->nFrame % 8);

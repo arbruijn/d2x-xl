@@ -265,9 +265,11 @@ if (replacementModels [i].pszHires)
 	sprintf (szModel [1], "%s.oof", replacementModels [i].pszHires);
 else
 	szModel [1][0] = '\0';
-if (!(po->Read (szModel [1], replacementModels [i].nModel, replacementModels [i].bFlipV, bCustom) || 
-	   po->Read (szModel [0], replacementModels [i].nModel, replacementModels [i].bFlipV, bCustom)))
-	return 0;
+if (!bCustom || (po->m_nModel < 0)) {
+	if (!(po->Read (szModel [1], replacementModels [i].nModel, replacementModels [i].bFlipV, bCustom) || 
+		   po->Read (szModel [0], replacementModels [i].nModel, replacementModels [i].bFlipV, bCustom)))
+		return 0;
+	}
 do {
 	CBP (!replacementModels [i].nModel);
 	gameData.models.modelToOOF [bCustom != 0][replacementModels [i].nModel] = po;
@@ -294,9 +296,11 @@ else
 while (!ASE_ReadFile (szModel [1], pa, replacementModels [i].nType, bCustom))
 	;
 #endif
-if (!(pa->Read (szModel [1], replacementModels [i].nModel, bCustom) || 
-	   pa->Read (szModel [0], replacementModels [i].nModel, bCustom)))
-	return 0;
+if (!bCustom || (pa->m_nModel < 0)) {
+	if (!(pa->Read (szModel [1], replacementModels [i].nModel, bCustom) || 
+		   pa->Read (szModel [0], replacementModels [i].nModel, bCustom)))
+		return 0;
+	}
 do {
 	CBP (!replacementModels [i].nModel);
 	gameData.models.modelToASE [bCustom != 0][replacementModels [i].nModel] = pa;
@@ -420,20 +424,22 @@ else /*if (gameOpts->render.bHiresModels [0])*/ {
 
 void FreeHiresModels (int bCustom)
 {
-	int	h, i, j;
+	int	h, i, j, l;
 
-for (i = 0; i < gameData.models.nHiresModels; i++)
+for (i = 0, l = gameData.models.nHiresModels; i < l; i++)
 	for (j = bCustom; j < 2; j++) {
 		if (0 <= (h = gameData.models.oofModels [j][i].m_nModel)) {
 			if (gameData.models.modelToOOF [j][h]) {
 				gameData.models.modelToOOF [j][h] = NULL;
 				gameData.models.oofModels [j][i].Destroy ();
+				gameData.models.nHiresModels--;
 				}
 			}
 		if (0 <= (h = gameData.models.aseModels [j][i].m_nModel)) {
 			if (gameData.models.modelToASE [j][h]) {
 				gameData.models.modelToASE [j][h] = NULL;
 				gameData.models.aseModels [j][i].Destroy ();
+				gameData.models.nHiresModels--;
 				}
 			}
 		}

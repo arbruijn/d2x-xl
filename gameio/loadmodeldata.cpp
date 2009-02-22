@@ -317,6 +317,10 @@ for (j = 0; j < t; j++) {
 			return -1;
 			}
 		}
+#if DBG
+	if (i == nDbgModel)
+		nDbgModel = nDbgModel;
+#endif
 	modelP = bAltModels ? gameData.models.polyModels [2] + i : gameData.models.polyModels [0] + i;
 	modelP->Destroy ();
 	if (!modelP->Read (0, cf))
