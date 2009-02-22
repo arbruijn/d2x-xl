@@ -923,7 +923,7 @@ tCheat cheats [] = {
  {szBuddyDudeCheat, BuddyDudeCheat, 1, 1, 0}, 
  {szBuddyLifeCheat, BuddyLifeCheat, 1, 1, 0}, 
  {szCloakCheat, CloakCheat, 1, 0, 0}, 
- {szCubeWarpCheat, CubeWarpCheat, -1, 0, 0}, 
+ {szCubeWarpCheat, CubeWarpCheat, -1, 0, -1}, 
  {szElectroCheat, ElectroCheat, 1, 0, 0}, 
  {szExitPathCheat, ExitPathCheat, 1, 0, 0}, 
  {szFinishLevelCheat, FinishLevelCheat, 1, 1, 0}, 
