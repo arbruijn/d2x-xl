@@ -729,6 +729,7 @@ if (m_info.bmP && (m_info.bmP->Texture () == this))
 else
 	m_info.bmP = m_info.bmP;
 #endif
+m_info.bmP = NULL;
 }
 
 //------------------------------------------------------------------------------
