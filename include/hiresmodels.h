@@ -4,12 +4,12 @@
 #include "ase.h"
 
 typedef struct tReplacementModel {
-	const char	*pszHires;
-	const char	*pszLores;
-	short	nModel;
-	short	nType;
-	int	bFlipV;
-	short	nId;
+	const char*	pszHires;
+	const char*	pszLores;
+	short			nModel;
+	short			nType;
+	int			bFlipV;
+	short			nId;
 } tReplacementModel;
 
 extern tReplacementModel replacementModels [];

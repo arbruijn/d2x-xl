@@ -691,8 +691,13 @@ for (psm = m_subModels; psm; psm = psm->m_next)
 
 int CModel::Read (const char* filename, short nModel, int bCustom)
 {
+#if DBG
+if (nModel == nDbgModel)
+	nDbgModel = nDbgModel;
+#endif
+
 if (m_nModel >= 0)
-	return 1;
+	return 0;
 
 	CFile		cf;
 	int		nResult = 1;
@@ -706,6 +711,8 @@ Init ();
 m_nModel = nModel;
 m_bCustom = bCustom;
 #if DBG
+if (nModel == nDbgModel)
+	nDbgModel = nDbgModel;
 nLine = 0;
 #endif
 while ((pszToken = ReadLine (cf))) {

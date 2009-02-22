@@ -257,6 +257,9 @@ return i;
 
 short LoadOOFModel (OOF::CModel *po, short i, int bCustom)
 {
+if (gameData.models.modelToOOF [bCustom != 0][replacementModels [i].nModel])
+	return i;
+
 	short	j = sizeofa (replacementModels);
 	char	szModel [2][FILENAME_LEN];
 
@@ -282,6 +285,9 @@ return i;
 
 short LoadASEModel (ASE::CModel *pa, short i, int bCustom)
 {
+if (gameData.models.modelToASE [bCustom != 0][replacementModels [i].nModel])
+	return i;
+
 	short	j = sizeofa (replacementModels);
 	char	szModel [2][FILENAME_LEN];
 
@@ -425,6 +431,10 @@ void FreeHiresModels (int bCustom)
 for (i = 0, l = gameData.models.nHiresModels; i < l; i++)
 	for (j = bCustom; j < 2; j++) {
 		if (0 <= (h = gameData.models.oofModels [j][i].m_nModel)) {
+#if DBG
+			if (h == nDbgModel)
+				nDbgModel = nDbgModel;
+#endif
 			if (gameData.models.modelToOOF [j][h]) {
 				gameData.models.modelToOOF [j][h] = NULL;
 				gameData.models.oofModels [j][i].Destroy ();
@@ -432,6 +442,10 @@ for (i = 0, l = gameData.models.nHiresModels; i < l; i++)
 				}
 			}
 		if (0 <= (h = gameData.models.aseModels [j][i].m_nModel)) {
+#if DBG
+			if (h == nDbgModel)
+				nDbgModel = nDbgModel;
+#endif
 			if (gameData.models.modelToASE [j][h]) {
 				gameData.models.modelToASE [j][h] = NULL;
 				gameData.models.aseModels [j][i].Destroy ();

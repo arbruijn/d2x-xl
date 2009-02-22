@@ -1559,7 +1559,7 @@ for (i = 0, pso = m_subModels.Buffer (); i < m_nSubModels; i++, pso++)
 int CModel::Read (char *filename, short nModel, int bFlipV, int bCustom)
 {
 if (m_nModel >= 0)
-	return 1;
+	return 0;
 
 	CFile			cf;
 	char			fileId [4];
