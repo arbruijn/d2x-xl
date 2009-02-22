@@ -304,7 +304,6 @@ if (!(pa->Read (szModel [1], replacementModels [i].nModel, bCustom) ||
 	   pa->Read (szModel [0], replacementModels [i].nModel, bCustom)))
 	return 0;
 do {
-	CBP (!replacementModels [i].nModel);
 	gameData.models.modelToASE [bCustom != 0][replacementModels [i].nModel] = pa;
 	} while ((++i < j) && !replacementModels [i].pszHires);
 gameData.models.nHiresModels++;
@@ -453,6 +452,10 @@ for (i = 0, l = gameData.models.nHiresModels; i < l; i++)
 				}
 			}
 		}
+for (j = bCustom; j < 2; j++) {
+	gameData.models.modelToOOF [j].Clear ();
+	gameData.models.modelToASE [j].Clear ();
+	}
 }
 
 // ----------------------------------------------------------------------------
