@@ -99,8 +99,7 @@ ubyte d1ColorMap [256];
 #define DBM_FLAG_ABM    64 // animated bitmap
 #define DBM_NUM_FRAMES  63
 
-#define BM_FLAGS_TO_COPY (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT \
-                         | BM_FLAG_NO_LIGHTING | BM_FLAG_RLE | BM_FLAG_RLE_BIG)
+#define BM_FLAGS_TO_COPY (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_NO_LIGHTING | BM_FLAG_RLE | BM_FLAG_RLE_BIG)
 
 
 #define PIGBITMAPHEADER_D1_SIZE 17 // no wh_extra
@@ -319,6 +318,7 @@ if (gameStates.app.bUseSwapFile) {
 	else
 		gameStates.render.nMaxTextureQuality = 1;
 #	endif
+	PrintLog ("maximum permissible texture quality: %d\n", gameStates.render.nMaxTextureQuality);
 	}
 #else
 gameStates.render.nMaxTextureQuality = 3;
