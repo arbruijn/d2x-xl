@@ -469,15 +469,17 @@ else {
 	time_t	tBase, tShrunk;
 
 	sprintf (fn, "%s%s%s.tga", rootFolder, *rootFolder ? "/" : "", bmName);
-	tBase = (*cacheFolder && gameStates.app.bCacheTextures && (nShrinkFactor > 1)) ? cf.Date (fn, "", 0) : -1;
+	tBase = cf.Date (fn, "", 0);
 	if (tBase < 0)
 		*fn = *fnShrunk = '\0';
-	else {
+	else if (*cacheFolder && gameStates.app.bCacheTextures && (nShrinkFactor > 1)) {
 		sprintf (fnShrunk, "%s%s%d/%s.tga", cacheFolder, *cacheFolder ? "/" : "", 512 / nShrinkFactor, bmName);
 		tShrunk = cf.Date (fnShrunk, "", 0);
 		if (tShrunk < tBase)
 			*fnShrunk = '\0';
 		}
+	else
+		*fnShrunk = '\0';
 	}
 }
 
@@ -519,7 +521,7 @@ nSize = (int) bmP->FrameSize ();
 if (nIndex >= 0)
 	GetFlagData (bmName, nIndex);
 #if DBG
-if (strstr (bmName, "rock204")) {
+if (strstr (bmName, "metl139")) {
 	sprintf (fn [3], "%s%s%s.tga", gameFolders.szTextureDir [bD1], *gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
 	}
 #endif
