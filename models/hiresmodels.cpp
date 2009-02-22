@@ -258,7 +258,7 @@ return i;
 short LoadOOFModel (OOF::CModel *po, short i, int bCustom)
 {
 if (gameData.models.modelToOOF [bCustom != 0][replacementModels [i].nModel])
-	return i;
+	return i + 1;
 
 	short	j = sizeofa (replacementModels);
 	char	szModel [2][FILENAME_LEN];
@@ -286,7 +286,7 @@ return i;
 short LoadASEModel (ASE::CModel *pa, short i, int bCustom)
 {
 if (gameData.models.modelToASE [bCustom != 0][replacementModels [i].nModel])
-	return i;
+	return i + 1;
 
 	short	j = sizeofa (replacementModels);
 	char	szModel [2][FILENAME_LEN];
