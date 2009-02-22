@@ -349,7 +349,19 @@ void ResetModFolders (void)
 void MakeModFolders (const char* pszMission)
 {
 ResetModFolders ();
-CFile::SplitPath (pszMission, NULL, gameFolders.szModName, NULL);
+if (*pszMission)
+	CFile::SplitPath (pszMission, NULL, gameFolders.szModName, NULL);
+else {
+	pszMission = gameData.missions.list [gameData.missions.nCurrentMission].szMissionName;
+	if (strstr (pszMission, "Descent: First Strike"))
+		strcpy (gameFolders.szModName, "descent");
+	else if (strstr (pszMission, "Descent 2: Counterstrike!"))
+		strcpy (gameFolders.szModName, "descent2");
+	else if (strstr (pszMission, "Descent 2: Vertigo"))
+		strcpy (gameFolders.szModName, "d2x");
+	else
+		return;
+	}
 if (!GetAppFolder (gameFolders.szModDir [0], gameFolders.szModDir [1], gameFolders.szModName, "")) {
 	sprintf (gameFolders.szSoundDir [2], "%s/%s", gameFolders.szModDir [1], SOUNDDIR);
 	if (GetAppFolder (gameFolders.szModDir [1], gameFolders.szTextureDir [2], TEXTUREDIR, "*.tga")) 
