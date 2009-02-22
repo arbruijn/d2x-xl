@@ -1357,6 +1357,7 @@ m_gunPoints.Destroy ();
 m_attachPoints.Destroy ();
 m_specialPoints.Destroy ();
 m_armament.Destroy ();
+m_nModel = -1;
 }
 
 //------------------------------------------------------------------------------

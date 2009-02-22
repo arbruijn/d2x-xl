@@ -265,11 +265,9 @@ if (replacementModels [i].pszHires)
 	sprintf (szModel [1], "%s.oof", replacementModels [i].pszHires);
 else
 	szModel [1][0] = '\0';
-if (!bCustom || (po->m_nModel < 0)) {
-	if (!(po->Read (szModel [1], replacementModels [i].nModel, replacementModels [i].bFlipV, bCustom) || 
-		   po->Read (szModel [0], replacementModels [i].nModel, replacementModels [i].bFlipV, bCustom)))
-		return 0;
-	}
+if (!(po->Read (szModel [1], replacementModels [i].nModel, replacementModels [i].bFlipV, bCustom) || 
+	   po->Read (szModel [0], replacementModels [i].nModel, replacementModels [i].bFlipV, bCustom)))
+	return 0;
 do {
 	CBP (!replacementModels [i].nModel);
 	gameData.models.modelToOOF [bCustom != 0][replacementModels [i].nModel] = po;
@@ -296,11 +294,9 @@ else
 while (!ASE_ReadFile (szModel [1], pa, replacementModels [i].nType, bCustom))
 	;
 #endif
-if (!bCustom || (pa->m_nModel < 0)) {
-	if (!(pa->Read (szModel [1], replacementModels [i].nModel, bCustom) || 
-		   pa->Read (szModel [0], replacementModels [i].nModel, bCustom)))
-		return 0;
-	}
+if (!(pa->Read (szModel [1], replacementModels [i].nModel, bCustom) || 
+	   pa->Read (szModel [0], replacementModels [i].nModel, bCustom)))
+	return 0;
 do {
 	CBP (!replacementModels [i].nModel);
 	gameData.models.modelToASE [bCustom != 0][replacementModels [i].nModel] = pa;
