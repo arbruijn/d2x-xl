@@ -265,7 +265,7 @@ return nCurItem;
 
 void NewGameMenu (void)
 {
-	CMenu				m;
+	CMenu				menu;
 	int				optSelMsn, optMsnName, optLevelText, optLevel, optLaunch;
 	int				nMission = gameData.missions.nLastMission, bMsnLoaded = 0;
 	int				i, choice = 0;
@@ -287,39 +287,39 @@ if ((nMission < 0) || gameOpts->app.bSinglePlayer)
 	gameFolders.szMsnSubDir [0] = '\0';
 hogFileManager.UseMission ("");
 for (;;) {
-	m.Destroy ();
-	m.Create (15);
+	menu.Destroy ();
+	menu.Create (15);
 
-	optSelMsn = m.AddMenu (TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
-	optMsnName = m.AddText ((nMission < 0) ? TXT_NONE_SELECTED : gameData.missions.list [nMission].szMissionName, 0);
+	optSelMsn = menu.AddMenu (TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
+	optMsnName = menu.AddText ((nMission < 0) ? TXT_NONE_SELECTED : gameData.missions.list [nMission].szMissionName, 0);
 	if ((nMission >= 0) && (nPlayerMaxLevel > 1)) {
 		sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, nPlayerMaxLevel);
 		Assert (strlen (szLevelText) < 32);
-		optLevelText = m.AddText (szLevelText, 0); 
-		m [optLevelText].m_bRebuild = 1;
+		optLevelText = menu.AddText (szLevelText, 0); 
+		menu [optLevelText].m_bRebuild = 1;
 		sprintf (szLevel, "%d", nLevel);
-		optLevel = m.AddInput (szLevel, 4, HTX_MULTI_LEVEL);
+		optLevel = menu.AddInput (szLevel, 4, HTX_MULTI_LEVEL);
 		}
 	else
 		optLevel = -1;
-	m.AddText ("                              ", 0);
+	menu.AddText ("                              ", 0);
 	sprintf (szDifficulty + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
 	*szDifficulty = *(TXT_DIFFICULTY2 - 1);
-	nOptDifficulty = m.AddSlider (szDifficulty + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
-	m.AddText ("", 0);
-	nOptVerFilter = m.AddRadio (TXT_PLAY_D1MISSIONS, 0, KEY_1, HTX_LEVEL_VERSION_FILTER);
-	m.AddRadio (TXT_PLAY_D2MISSIONS, 0, KEY_2, HTX_LEVEL_VERSION_FILTER);
-	m.AddRadio (TXT_PLAY_ALL_MISSIONS, 0, KEY_A, HTX_LEVEL_VERSION_FILTER);
-	m [nOptVerFilter + gameOpts->app.nVersionFilter - 1].m_value = 1;
+	nOptDifficulty = menu.AddSlider (szDifficulty + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
+	menu.AddText ("", 0);
+	nOptVerFilter = menu.AddRadio (TXT_PLAY_D1MISSIONS, 0, KEY_1, HTX_LEVEL_VERSION_FILTER);
+	menu.AddRadio (TXT_PLAY_D2MISSIONS, 0, KEY_2, HTX_LEVEL_VERSION_FILTER);
+	menu.AddRadio (TXT_PLAY_ALL_MISSIONS, 0, KEY_A, HTX_LEVEL_VERSION_FILTER);
+	menu [nOptVerFilter + gameOpts->app.nVersionFilter - 1].m_value = 1;
 	if (nMission >= 0) {
-		m.AddText ("", 0);
-		optLaunch = m.AddMenu (TXT_LAUNCH_GAME, KEY_L, "");
-		m [optLaunch].m_bCentered = 1;
+		menu.AddText ("", 0);
+		optLaunch = menu.AddMenu (TXT_LAUNCH_GAME, KEY_L, "");
+		menu [optLaunch].m_bCentered = 1;
 		}
 	else
 		optLaunch = -1;
 
-	i = m.Menu (NULL, TXT_NEWGAME_MENUTITLE, NewGameMenuCallback, &choice);
+	i = menu.Menu (NULL, TXT_NEWGAME_MENUTITLE, NewGameMenuCallback, &choice);
 	if (i < 0) {
 		SetFunctionMode (FMODE_MENU);
 		return;
@@ -337,7 +337,7 @@ for (;;) {
 			}
 		}
 	else if (choice == optLevel) {
-		i = atoi (m [optLevel].m_text);
+		i = atoi (menu [optLevel].m_text);
 		if ((i <= 0) || (i > nPlayerMaxLevel))
 			MsgBox (NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
 		else if (nLevel == i)
@@ -349,14 +349,14 @@ for (;;) {
 		break;
 	}
 
-i = m [nOptDifficulty].m_value;
+i = menu [nOptDifficulty].m_value;
 if (gameStates.app.nDifficultyLevel != i) {
 	gameStates.app.nDifficultyLevel = i;
 	gameData.bosses.InitGateIntervals ();
 	}
 SavePlayerProfile ();
 if (optLevel > 0)
-	nLevel = atoi (m [optLevel].m_text);
+	nLevel = atoi (menu [optLevel].m_text);
 paletteManager.DisableEffect ();
 if (!bMsnLoaded)
 	LoadMission (nMission);

@@ -40,7 +40,7 @@ if (!(bmP->Buffer () || bmP->CreateBuffer ()))
 memset (bmP->TransparentFrames (), 0, 4 * sizeof (int));
 memset (bmP->SuperTranspFrames (), 0, 4 * sizeof (int));
 avgColor.red = avgColor.green = avgColor.blue = 0;
-bReverse = (ph->descriptor & (1 << 5)) != 0;
+//bReverse = (ph->descriptor & (1 << 5)) != 0;
 if (ph->bits == 24) {
 	tBGRA	c;
 	tRgbColorb *p = reinterpret_cast<tRgbColorb*> (bmP->Buffer ()) + w * (h - 1);

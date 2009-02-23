@@ -66,6 +66,8 @@ nArgCount = 0;
 char *GetIniFileName (char *fnIni, int bDebug)
 {
 	int	i;
+	char	*p;
+	CFile	cf;
 
 if ((i = FindArg ("-ini")))
 	strncpy (fnIni, pszArgList [i + 1], sizeof (fnIni) - 1);
@@ -73,19 +75,23 @@ else {
 #if defined(__unix__)
 	FFS		ffs;
 	strcpy (fnIni, gameFolders.szHomeDir);
-	if (bDebug)
-		strcat (fnIni, "/.d2x-xl-dbg");
-	else
-		strcat (fnIni, "/.d2x-xl");
+	strcat (fnIni, "/.d2x-xl");
 	if (FFF (fnIni, &ffs, 0) <= 0) {
 #endif
 	strcpy (fnIni, gameFolders.szConfigDir);
 	if (*fnIni)
 		strcat (fnIni, "/");
+	p = fnIni + strlen (fnIni);
 	if (bDebug)
 		strcat (fnIni, "d2xdebug.ini");
 	else
 		strcat (fnIni, "d2x.ini");
+	if (!cf.Exist (fnIni, "", false)) {
+		if (bDebug)
+			strcat (fnIni, "d2xdebug-default.ini");
+		else
+			strcat (fnIni, "d2x-default.ini");
+		}
 #if defined(__unix__)
    }
 #endif //!__unix__
