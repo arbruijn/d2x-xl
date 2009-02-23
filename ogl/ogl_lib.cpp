@@ -1259,6 +1259,7 @@ return hBuffer;
 
 void OglGenTextures (GLsizei n, GLuint *hTextures)
 {
+GLuint nError = glGetError ();
 glGenTextures (n, hTextures);
 if ((*hTextures == gameData.render.ogl.drawBuffer.RenderBuffer ()) &&
 	 (hTextures != &gameData.render.ogl.drawBuffer.RenderBuffer ()))

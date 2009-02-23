@@ -288,7 +288,7 @@ int i, nFace = -1;
 short nId = 0;
 
 if (gameStates.render.nMeshQuality) {
-	i = LEVEL_VERTICES + ((gameData.segs.nTris ? gameData.segs.nTris / 2 : gameData.segs.nFaces) << (abs (gameStates.render.nMeshQuality) - 1));
+	i = LEVEL_VERTICES + ((gameData.segs.nTris ? gameData.segs.nTris / 2 : gameData.segs.nFaces) << (abs (gameStates.render.nMeshQuality)));
 	if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i) && gameData.segs.points.Resize (i)))
 		return 0;
 	}
