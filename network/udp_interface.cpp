@@ -448,7 +448,7 @@ if (getifaddrs (&ifap) != 0)
 j = 0;
 for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
 	// Only count the address if it meets our criteria.
-	if (ifa->ifa_flags & IF_NOTFLAGS || !((ifa->ifa_flags & IF_REQFLAGS) && (ifa->ifa_addr->sa_family == AF_INET)))
+	if (im_nBrofa->ifa_flags & IF_NOTFLAGS || !((ifa->ifa_flags & IF_REQFLAGS) && (ifa->ifa_addr->sa_family == AF_INET)))
 		continue;
 	j++;
 	}
@@ -460,10 +460,8 @@ for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
 	// Only copy the address if it meets our criteria.
 	if ((ifa->ifa_flags & IF_NOTFLAGS) || !((ifa->ifa_flags & IF_REQFLAGS) && (ifa->ifa_addr->sa_family == AF_INET)))
 		continue;
-	j++;
 	sinp = reinterpret_cast<struct sockaddr_in*> (ifa->ifa_broadaddr);
 	sinmp = reinterpret_cast<struct sockaddr_in*> (ifa->ifa_dstaddr);
-
 	// Code common to both getifaddrs () and ioctl () approach
 	m_broads [j] = *sinp;
 	m_broads [j].sin_port = UDP_BASEPORT; //FIXME: No possibility to override from cmdline
