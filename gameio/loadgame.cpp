@@ -1974,6 +1974,7 @@ int StartNewLevel (int nLevel, bool bNewGame)
 {
 	gameStates.app.xThisLevelTime = 0;
 
+MakeModFolders (hogFileManager.m_files.MsnHogFiles.szName);
 if (nLevel < 0)
 	return PrepareSecretLevel (nLevel, false);
 MaybeSetFirstSecretVisit (nLevel);
