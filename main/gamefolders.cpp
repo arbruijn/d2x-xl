@@ -310,7 +310,7 @@ GetAppFolder (szDataRootDir, gameFolders.szProfDir, PROFDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szSaveDir, SAVEDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szScrShotDir, SCRSHOTDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szDemoDir, DEMODIR, "");
-if (GetAppFolder (szDataRootDir, gameFolders.szConfigDir, CONFIGDIR, "d2x.ini"))
+if (GetAppFolder (szDataRootDir, gameFolders.szConfigDir, CONFIGDIR, "*.ini"))
 	strcpy (gameFolders.szConfigDir, gameFolders.szGameDir);
 #ifdef WIN32
 sprintf (gameFolders.szMissionDir, "%s%s", gameFolders.szGameDir, BASE_MISSION_DIR);

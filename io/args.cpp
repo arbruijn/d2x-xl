@@ -79,19 +79,21 @@ else {
 	if (FFF (fnIni, &ffs, 0) <= 0) {
 #endif
 	strcpy (fnIni, gameFolders.szConfigDir);
-	if (*fnIni)
-		strcat (fnIni, "/");
-	p = fnIni + strlen (fnIni);
-	if (bDebug)
-		strcat (fnIni, "d2xdebug.ini");
-	else
-		strcat (fnIni, "d2x.ini");
-	if (!cf.Exist (fnIni, "", false)) {
-		if (bDebug)
-			strcat (fnIni, "d2xdebug-default.ini");
-		else
-			strcat (fnIni, "d2x-default.ini");
+	i = strlen (fnIni);
+	if (i) {
+		p = fnIni + i - 1;
+		if ((*p == '\\') || (*p == '/'))
+			p++;
+		else {
+			strcat (fnIni, "/");
+			p += 2;
+			}
 		}
+	else
+		p = fnIni;
+	strcpy (p, bDebug ? "d2xdebug.ini" : "d2x.ini");
+	if (!cf.Exist (fnIni, "", false)) 
+		strcpy (p, bDebug ? "d2xdebug-default.ini" : "d2x-default.ini");
 #if defined(__unix__)
    }
 #endif //!__unix__
