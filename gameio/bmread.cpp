@@ -310,8 +310,8 @@ int ds_load( char * filename )	{
 	_splitpath(  filename, NULL, NULL, fname, NULL );
 	_makepath( rawname, NULL, NULL,fname, (gameOpts->sound.digiSampleRate==SAMPLE_RATE_22K)?".R22":".RAW" );
 
-	i=PiggyFindSound( fname );
-	if (i!=255)	{
+	i = PiggyFindSound (fname);
+	if (i >= 0)	{
 		return i;
 	}
 

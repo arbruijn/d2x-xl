@@ -109,11 +109,9 @@ return i;
 
 int PiggyFindSound (const char * name)     
 {
-	int i;
-
-i = soundNames [gameStates.app.bD1Data].Search (name);
+	int i = soundNames [gameStates.app.bD1Data].Search (name);
 if (i < 0)
-	return 255;
+	return -1;
 return i;
 }
 
@@ -140,9 +138,8 @@ int LoadSoundReplacements (const char *pszFilename)
 	CFile					cf;
 	char					szId [4];
 	int					nSounds;
-	int					i, l;
+	int					i, j, l;
 	int					b11K = (gameOpts->sound.digiSampleRate == SAMPLE_RATE_11K);
-	ubyte					j;
 	tPIGSoundHeader	dsh;
 	CDigiSound			*dsP;
 	size_t				nHeaderOffs, nDataOffs;
@@ -173,7 +170,7 @@ for (i = b11K ? 0 : nSounds / 2; i < nSounds; i++) {
 	cf.Seek ((long) (nHeaderOffs + i * sizeof (tPIGSoundHeader)), SEEK_SET);
 	PIGSoundHeaderRead (&dsh, cf);
 	j = PiggyFindSound (dsh.name);
-	if (j == 255)
+	if (j < 0)
 		continue;
 	dsP = gameData.pig.sound.sounds [gameStates.app.bD1Mission] + j;
 	l = dsh.length;

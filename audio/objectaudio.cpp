@@ -112,7 +112,7 @@ int CAudio::GetSoundByName (const char* pszSound)
 
 strcpy (szSound, pszSound);
 nSound = PiggyFindSound (szSound);
-return (nSound == 255) ? -1 : CAudio::UnXlatSound (nSound);
+return (nSound < 0) ? -1 : CAudio::UnXlatSound (nSound);
 }
 
 //------------------------------------------------------------------------------
