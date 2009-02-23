@@ -956,7 +956,7 @@ if ((c == 'F') || (c == 'B')) {
 	m_info.nCurrentColor = 0;
 	}
 else {
-	m_info.nCurrentColor = ParseMessageInt (m_info.message) + 1;
+	m_info.nCurrentColor = ParseMessageInt (m_info.message);
 	Assert ((m_info.nCurrentColor >= 0) && (m_info.nCurrentColor < MAX_BRIEFING_COLORS));
 	}
 m_info.prevCh = 10;
