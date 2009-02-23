@@ -417,8 +417,8 @@ for (uint i = 0; i < m_objects.ToS (); i++, soundObjP++) {
 	soundObjP->m_linkType.obj.nObjSig = -1;
 	soundObjP->m_channel = -1;
 	soundObjP->m_flags = 0;	// Mark as dead, so some other sound can use this sound
-	m_objects.Delete (i);
 	nKilled++;
+	m_objects.Delete (i);
 	i--, soundObjP--; // stack top has been moved here, so compensate for loop increment
 	}
 return (nKilled > 0);
