@@ -19,7 +19,7 @@
 #include "cquicksort.h"
 #include "cfile.h"
 
-void ArrayError (char* pszMsg);
+void ArrayError (const char* pszMsg);
 
 //-----------------------------------------------------------------------------
 

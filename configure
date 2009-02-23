@@ -6746,8 +6746,8 @@ cat >>confdefs.h <<\_ACEOF
 #define NDEBUG
 _ACEOF
 
-    CFLAGS="-O2 -g $CFLAGS"
-    CXXFLAGS="-O2 -g $CXXFLAGS"
+    CFLAGS="-O3 $CFLAGS"
+    CXXFLAGS="-O3 $CXXFLAGS"
 else
     CFLAGS="-g $CFLAGS"
     CXXFLAGS="-g $CXXFLAGS"

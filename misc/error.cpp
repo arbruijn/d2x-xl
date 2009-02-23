@@ -50,7 +50,7 @@ void ShowInGameWarning (const char *s);
 
 //------------------------------------------------------------------------------
 
-void ArrayError (char* pszMsg)
+void ArrayError (const char* pszMsg)
 {
 PrintLog (pszMsg);
 }
