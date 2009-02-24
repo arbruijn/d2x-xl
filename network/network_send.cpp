@@ -482,26 +482,24 @@ return i;
 
 void NetworkSendSync (void)
 {
-	int i, j, np, pos [MAX_PLAYERS] = {0, 1, 2, 3, 4, 5, 6, 7};
+	int i;
 
 	// Randomize their starting locations...
-for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
+for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++)
 	if (gameData.multiplayer.players [i].connected)
 		gameData.multiplayer.players [i].connected = 1; // Get rid of endlevel connect statuses
-	if (IsCoopGame)
+if (IsCoopGame) {
+	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++)
 		netGame.locations [i] = i;
-	else {
-		for (j = gameData.multiplayer.nPlayerPositions; j; j--) {
-			np = d_rand () % j;
-			for (j = 0; j < i; j++) {
-				if (netGame.locations [j] == np) {
-					np = -1;
-					break;
-					}
-				}
-			} while (np < 0);
-		// np is a location that is not used anywhere else..
-		netGame.locations [i] = np;
+	}
+else {	// randomize player positions
+	int h, j = gameData.multiplayer.nPlayerPositions, posTable [MAX_PLAYERS] = {0, 1, 2, 3, 4, 5, 6, 7};
+
+	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
+		h = d_rand () % j;	// compute random table index
+		netGame.locations [i] = posTable [h];	// pick position using random index
+		if (h < --j)
+			posTable [h] = posTable [j];	// remove picked position from position table
 		}
 	}
 // Push current data into the sync packet
