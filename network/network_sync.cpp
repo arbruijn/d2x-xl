@@ -592,7 +592,7 @@ void NetworkDoBigWait (int choice)
 {
 	int						size;
 	ubyte						packet [MAX_PACKETSIZE], *data;
-	tAllNetPlayersInfo	*tempPlayerP;
+	tAllNetPlayersInfo*	tempPlayerP;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	tAllNetPlayersInfo	tempPlayer;
 #endif

@@ -1243,12 +1243,12 @@ else {
 	ChangePlayerNumTo (0);
 	strcpy (pszOrgCallSign, gameData.multiplayer.players [0].callsign);
 	gameData.multiplayer.nPlayers = 1;
-#if 0
 	if (!m_bSecret) {
-		InitMultiPlayerObject ();	//make sure CPlayerData's CObject set up
+		InitMultiPlayerObject (0);	//make sure CPlayerData's CObject set up
+#if 0
 		ResetPlayerData (true, false);		//clear all stats
-		}
 #endif
+		}
 	}
 }
 

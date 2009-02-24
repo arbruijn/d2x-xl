@@ -1210,6 +1210,8 @@ void AttachObject (CObject *parentObjP, CObject *childObjP);
 void DetachFromParent (CObject *objP);
 void DetachChildObjects (CObject *parentP);
 
+void InitMultiPlayerObject (int nStage);
+
 extern ubyte bIsMissile [];
 
 //	-----------------------------------------------------------------------------

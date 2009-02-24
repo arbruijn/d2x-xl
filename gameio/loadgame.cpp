@@ -1079,6 +1079,7 @@ gameData.missions.nNextLevel = 0;
 gameData.multiplayer.nPlayers = 1;
 gameData.objs.nLastObject [0] = 0;
 networkData.bNewGame = 0;
+InitMultiPlayerObject (0);
 if (!StartNewLevel (nLevel, true))
 	return 0;
 LOCALPLAYER.startingLevel = nLevel;		// Mark where they started

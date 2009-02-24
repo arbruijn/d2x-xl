@@ -246,22 +246,26 @@ gameData.objs.consoleP->info.nFlags = 0;
 //------------------------------------------------------------------------------
 
 //sets up gameData.multiplayer.nLocalPlayer & gameData.objs.consoleP
-void InitMultiPlayerObject (void)
+void InitMultiPlayerObject (int nStage)
 {
-Assert ((gameData.multiplayer.nLocalPlayer >= 0) && (gameData.multiplayer.nLocalPlayer < MAX_PLAYERS));
-if (gameData.multiplayer.nLocalPlayer != 0) {
-	gameData.multiplayer.players [0] = LOCALPLAYER;
-	gameData.multiplayer.nLocalPlayer = 0;
+if (nStage == 0) {
+	Assert ((gameData.multiplayer.nLocalPlayer >= 0) && (gameData.multiplayer.nLocalPlayer < MAX_PLAYERS));
+	if (gameData.multiplayer.nLocalPlayer != 0) {
+		gameData.multiplayer.players [0] = LOCALPLAYER;
+		gameData.multiplayer.nLocalPlayer = 0;
+		}
+	LOCALPLAYER.nObject = 0;
+	LOCALPLAYER.nInvuls =
+	LOCALPLAYER.nCloaks = 0;
 	}
-LOCALPLAYER.nObject = 0;
-LOCALPLAYER.nInvuls =
-LOCALPLAYER.nCloaks = 0;
-gameData.objs.consoleP = OBJECTS + LOCALPLAYER.nObject;
-gameData.objs.consoleP->SetType (OBJ_PLAYER);
-gameData.objs.consoleP->info.nId = gameData.multiplayer.nLocalPlayer;
-gameData.objs.consoleP->info.controlType = CT_FLYING;
-gameData.objs.consoleP->info.movementType = MT_PHYSICS;
-gameStates.entropy.nTimeLastMoved = -1;
+else {
+	gameData.objs.consoleP = OBJECTS + LOCALPLAYER.nObject;
+	gameData.objs.consoleP->SetType (OBJ_PLAYER);
+	gameData.objs.consoleP->info.nId = gameData.multiplayer.nLocalPlayer;
+	gameData.objs.consoleP->info.controlType = CT_FLYING;
+	gameData.objs.consoleP->info.movementType = MT_PHYSICS;
+	gameStates.entropy.nTimeLastMoved = -1;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -277,7 +281,7 @@ gameData.objs.consoleP->info.movementType = MT_PHYSICS;		//change this sometime
 gameData.objs.consoleP->info.xLifeLeft = IMMORTAL_TIME;
 gameData.objs.consoleP->info.nAttachedObj = -1;
 ResetPlayerObject ();
-InitMultiPlayerObject ();
+InitMultiPlayerObject (1);
 }
 
 //------------------------------------------------------------------------------
