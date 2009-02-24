@@ -612,19 +612,12 @@ while (0 < (size = IpxGetPacketData (packet))) {
 #endif
 			if (networkData.nSecurityFlag == NETSECURITY_WAIT_FOR_GAMEINFO) {
 #if SECURITY_CHECK
-				if (playerInfoP->nSecurity == tempNetInfo.nSecurity) {
-#else
-				 {
+				if ((playerInfoP->nSecurity == tempNetInfo.nSecurity) && (playerInfoP->nSecurity == networkData.nSecurityCheck)) 
 #endif
-#if SECURITY_CHECK
-					if (playerInfoP->nSecurity == networkData.nSecurityCheck) {
-#else
-					 {
-#endif
-						memcpy (&activeNetGames + choice, reinterpret_cast<ubyte*> (&tempNetInfo), sizeof (tNetgameInfo));
-						memcpy (activeNetPlayers + choice, playerInfoP, sizeof (tAllNetPlayersInfo));
-						networkData.nSecurityCheck = -1;
-						}
+					{
+					memcpy (&activeNetGames + choice, reinterpret_cast<ubyte*> (&tempNetInfo), sizeof (tNetgameInfo));
+					memcpy (activeNetPlayers + choice, playerInfoP, sizeof (tAllNetPlayersInfo));
+					networkData.nSecurityCheck = -1;
 					}
 				}
 			else {
@@ -632,8 +625,7 @@ while (0 < (size = IpxGetPacketData (packet))) {
 				networkData.nSecurityNum = tempNetInfo.nSecurity;
 				if (NetworkWaitForPlayerInfo ()) {
 #if 1			
-					console.printf (CON_DBG, "HUH? Game=%d Player=%d\n", 
-									networkData.nSecurityNum, playerInfoP->nSecurity);
+					console.printf (CON_DBG, "HUH? Game=%d Player=%d\n", networkData.nSecurityNum, playerInfoP->nSecurity);
 #endif
 					memcpy (activeNetGames + choice, reinterpret_cast<ubyte*> (&tempNetInfo), sizeof (tNetgameInfo));
 					memcpy (activeNetPlayers + choice, playerInfoP, sizeof (tAllNetPlayersInfo));
