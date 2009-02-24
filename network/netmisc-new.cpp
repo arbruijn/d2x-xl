@@ -155,7 +155,6 @@ memset (nmBufP, 0, IPX_DATALIMIT);	//this takes time and shouldn't be necessary
 #endif
 BE_SET_BYTE (seq.nType);                                       
 BE_SET_INT (seq.nSecurity);                           
-nmBufI += 3;
 BE_SET_BYTES (seq.player.callsign, CALLSIGN_LEN + 1);
 BE_SET_BYTES (seq.player.network.ipx.server, 4);   
 BE_SET_BYTES (seq.player.network.ipx.node, 6);     

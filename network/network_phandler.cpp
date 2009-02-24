@@ -41,7 +41,7 @@ typedef int (* pPacketHandler) (ubyte *dataP, int nLength);
 
 typedef struct tPacketHandlerInfo {
 	pPacketHandler	packetHandler;
-	const char				*pszInfo;
+	const char*		pszInfo;
 	int				nLength;
 	short				nStatusFilter;
 	} tPacketHandlerInfo;
@@ -70,6 +70,7 @@ if (gameStates.multi.nGameType == UDP_GAME)
 	 addressFilter [PID_NAMES_RETURN] =
 	 addressFilter [PID_OBJECT_DATA] =
 	 addressFilter [PID_PDATA] =
+	 addressFilter [PID_PLAYERSINFO] =
 	 addressFilter [PID_EXTRA_GAMEINFO] =
 	 addressFilter [PID_DOWNLOAD] =
 	 addressFilter [PID_UPLOAD] =
