@@ -215,9 +215,7 @@ void NetworkSendAllInfoRequest (char nType, int nSecurity)
 
 me.nSecurity = nSecurity;
 me.nType = nType;
-memcpy (me.player.callsign, 
-			LOCALPLAYER.callsign, 
-			CALLSIGN_LEN+1);
+memcpy (me.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN + 1);
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	memcpy (me.player.network.ipx.node, IpxGetMyLocalAddress (), 6);
 	memcpy (me.player.network.ipx.server, IpxGetMyServerAddress (), 4);
@@ -233,11 +231,11 @@ void NetworkSendEndLevelSub (int nPlayer)
 	int i, j = 0;
 
 	// Send an endlevel packet for a CPlayerData
-end.nType       = PID_ENDLEVEL;
+end.nType = PID_ENDLEVEL;
 end.nPlayer = nPlayer;
-end.connected  = gameData.multiplayer.players [nPlayer].connected;
-end.kills      = INTEL_SHORT (gameData.multiplayer.players [nPlayer].netKillsTotal);
-end.killed     = INTEL_SHORT (gameData.multiplayer.players [nPlayer].netKilledTotal);
+end.connected = gameData.multiplayer.players [nPlayer].connected;
+end.kills = INTEL_SHORT (gameData.multiplayer.players [nPlayer].netKillsTotal);
+end.killed = INTEL_SHORT (gameData.multiplayer.players [nPlayer].netKilledTotal);
 memcpy (end.killMatrix, gameData.multigame.kills.matrix [nPlayer], MAX_PLAYERS*sizeof (short));
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 for (i = 0; i < MAX_PLAYERS; i++)
@@ -325,19 +323,15 @@ if (netGame.xPlayTimeAllowed) {
 	if (i < 30)
 		netGame.gameStatus = NETSTAT_ENDLEVEL;
 	}       
-if (!their) {
-	if (gameStates.multi.nGameType >= IPX_GAME) {
+if (gameStates.multi.nGameType >= IPX_GAME) {
+	if (!their) {
 		SendBroadcastFullNetGamePacket ();
 		SendBroadcastNetPlayersPacket ();
 		}
-	}
-else if (gameStates.multi.nGameType >= IPX_GAME) {
-	SendInternetFullNetGamePacket (
-		their->player.network.ipx.server, 
-		their->player.network.ipx.node);
-	SendNetPlayersPacket (
-		their->player.network.ipx.server, 
-		their->player.network.ipx.node);
+	else {
+		SendInternetFullNetGamePacket (their->player.network.ipx.server, their->player.network.ipx.node);
+		SendNetPlayersPacket (their->player.network.ipx.server, their->player.network.ipx.node);
+		}
 	}
 netGame.nType = oldType;
 netGame.gameStatus = oldStatus;
@@ -380,20 +374,12 @@ extraGameInfo [1].nType = PID_EXTRA_GAMEINFO;
 memcpy (extraGameInfo [1].szGameName, mpParams.szGameName, sizeof (mpParams.szGameName));
 extraGameInfo [1].nSecurity = netGame.nSecurity;
 gameStates.app.bHaveExtraGameInfo [1] = 1;
-#if 1
-if (!their) {
-	if (gameStates.multi.nGameType >= IPX_GAME) {
+if (gameStates.multi.nGameType >= IPX_GAME) {
+	if (!their)
 		SendBroadcastExtraGameInfoPacket ();
-		} // nothing to do for appletalk games I think....
-	}
-else {
-	if (gameStates.multi.nGameType >= IPX_GAME) {
-		SendInternetExtraGameInfoPacket (
-			their->player.network.ipx.server, 
-			their->player.network.ipx.node);
-		}
+	else
+		SendInternetExtraGameInfoPacket (their->player.network.ipx.server, their->player.network.ipx.node);
 	} 
-#endif 
 SetMonsterballForces ();
 }
 
@@ -422,17 +408,11 @@ if (HoardEquipped ()) {
 			netGame.gameFlags|= NETGAME_FLAG_REALLY_FORMING;
 		}
 	}
-if (!their) {
-	if (gameStates.multi.nGameType >= IPX_GAME) {
+if (gameStates.multi.nGameType >= IPX_GAME) {
+	if (!their)
 		SendBroadcastLiteNetGamePacket ();
-		}               // nothing to do for appletalk I think....
-	}
-else {
-	if (gameStates.multi.nGameType >= IPX_GAME) {
-		SendInternetLiteNetGamePacket (
-			their->player.network.ipx.server, 
-			their->player.network.ipx.node);
-		}
+	else
+		SendInternetLiteNetGamePacket (their->player.network.ipx.server, their->player.network.ipx.node);
 	}  
 //  Restore the pre-hoard mode
 if (HoardEquipped ()) {
@@ -506,10 +486,7 @@ networkData.sync [0].objs.nFrame = 0;
 networkData.sync [0].objs.missingFrames.nFrame = 0;
 networkData.bTraceFrames = 1;
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	SendInternetSequencePacket (
-		networkData.thisPlayer, 
-		netPlayers.players [i].network.ipx.server, 
-		netPlayers.players [i].network.ipx.node);
+	SendInternetSequencePacket (networkData.thisPlayer, netPlayers.players [i].network.ipx.server, netPlayers.players [i].network.ipx.node);
 	}
 return i;
 }

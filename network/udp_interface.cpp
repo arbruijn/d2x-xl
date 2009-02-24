@@ -448,7 +448,7 @@ if (getifaddrs (&ifap) != 0)
 j = 0;
 for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
 	// Only count the address if it meets our criteria.
-	if (im_nBrofa->ifa_flags & IF_NOTFLAGS || !((ifa->ifa_flags & IF_REQFLAGS) && (ifa->ifa_addr->sa_family == AF_INET)))
+	if (ifa->ifa_flags & IF_NOTFLAGS || !((ifa->ifa_flags & IF_REQFLAGS) && (ifa->ifa_addr->sa_family == AF_INET)))
 		continue;
 	j++;
 	}
