@@ -110,7 +110,7 @@ if ((gameStates.multi.nGameType >= IPX_GAME) && (sp != &netGame)) { // for macin
 #endif
 
 if (rsinit)
-	tmpPlayersInfo = &netPlayers;
+	playerInfoP = &netPlayers;
 	// This function is now called by all people entering the netgame.
 if (sp != &netGame) {
 	char *p = reinterpret_cast<char*> (sp);
@@ -128,7 +128,7 @@ if (sp != &netGame) {
 			}
 		}
 	memcpy (&netGame, sp, sizeof (tNetgameInfo));
-	memcpy (&netPlayers, tmpPlayersInfo, sizeof (tAllNetPlayersInfo));
+	memcpy (&netPlayers, playerInfoP, sizeof (tAllNetPlayersInfo));
 	}
 gameData.multiplayer.nPlayers = sp->nNumPlayers;
 gameStates.app.nDifficultyLevel = sp->difficulty;
@@ -137,7 +137,7 @@ networkData.nStatus = sp->gameStatus;
 // New code, 11/27
 #if 1
 console.printf (1, "netGame.checksum = %d, calculated checksum = %d.\n",
-			   netGame.nSegmentCheckSum, networkData.nSegmentCheckSum);
+					 netGame.nSegmentCheckSum, networkData.nSegmentCheckSum);
 #endif
 if (netGame.nSegmentCheckSum != networkData.nSegmentCheckSum) {
 	if (extraGameInfo [0].bAutoDownload)
@@ -159,7 +159,7 @@ gameData.multiplayer.nLocalPlayer = -1;
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	gameData.multiplayer.players [i].netKillsTotal = 0;
 
-for (i = 0, playerP = tmpPlayersInfo->players; i < gameData.multiplayer.nPlayers; i++, playerP++) {
+for (i = 0, playerP = playerInfoP->players; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 	if (!CmpLocalPlayer (&playerP->network, playerP->callsign, szLocalCallSign)) {
 		if (gameData.multiplayer.nLocalPlayer != -1) {
 			Int3 (); // Hey, we've found ourselves twice
@@ -178,17 +178,17 @@ for (i = 0, playerP = tmpPlayersInfo->players; i < gameData.multiplayer.nPlayers
 		if (server != 0)
 			IpxGetLocalTarget (
 				reinterpret_cast<ubyte*> (&server),
-				tmpPlayersInfo->players [i].network.ipx.node,
+				playerInfoP->players [i].network.ipx.node,
 				gameData.multiplayer.players [i].netAddress);
 #else // WORDS_NEED_ALIGNMENT
-		if (*reinterpret_cast<uint*> (tmpPlayersInfo->players [i].network.ipx.server) != 0)
+		if (*reinterpret_cast<uint*> (playerInfoP->players [i].network.ipx.server) != 0)
 			IpxGetLocalTarget (
-				tmpPlayersInfo->players [i].network.ipx.server,
-				tmpPlayersInfo->players [i].network.ipx.node,
+				playerInfoP->players [i].network.ipx.server,
+				playerInfoP->players [i].network.ipx.node,
 				gameData.multiplayer.players [i].netAddress);
 #endif // WORDS_NEED_ALIGNMENT
 		else
-			memcpy (gameData.multiplayer.players [i].netAddress, tmpPlayersInfo->players [i].network.ipx.node, 6);
+			memcpy (gameData.multiplayer.players [i].netAddress, playerInfoP->players [i].network.ipx.node, 6);
 		}
 	gameData.multiplayer.players [i].nPacketsGot = 0;                             // How many packets we got from them
 	gameData.multiplayer.players [i].nPacketsSent = 0;                            // How many packets we sent to them

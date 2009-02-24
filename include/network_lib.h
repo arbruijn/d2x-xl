@@ -150,7 +150,7 @@ extern int nLastNetGameUpdate [MAX_ACTIVE_NETGAMES];
 extern tNetgameInfo activeNetGames [MAX_ACTIVE_NETGAMES];
 extern tExtraGameInfo activeExtraGameInfo [MAX_ACTIVE_NETGAMES];
 extern tAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
-extern tAllNetPlayersInfo *tmpPlayersInfo, tmpPlayersBase;
+extern tAllNetPlayersInfo *playerInfoP, tmpPlayersBase;
 
 //------------------------------------------------------------------------------
 

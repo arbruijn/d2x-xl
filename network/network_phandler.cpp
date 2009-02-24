@@ -126,9 +126,9 @@ else
 	memcpy (&tmpPlayersBase, dataP, sizeof (tAllNetPlayersInfo));
 if (NetworkBadSecurity (tmpPlayersBase.nSecurity, "PID_PLAYERSINFO"))
 	return 0;
-tmpPlayersInfo = &tmpPlayersBase;
+playerInfoP = &tmpPlayersBase;
 networkData.bWaitingForPlayerInfo = 0;
-networkData.nSecurityNum = tmpPlayersInfo->nSecurity;
+networkData.nSecurityNum = playerInfoP->nSecurity;
 networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_SYNC;
 return 1;
 }
@@ -223,7 +223,7 @@ if (NetworkBadSecurity (tempNetInfo.nSecurity, "PID_SYNC"))
 	return 0;
 if (networkData.nSecurityFlag == NETSECURITY_WAIT_FOR_SYNC) {
 #if SECURITY_CHECK
-	if (tempNetInfo.nSecurity == tmpPlayersInfo->nSecurity) {
+	if (tempNetInfo.nSecurity == playerInfoP->nSecurity) {
 #endif
 		NetworkReadSyncPacket (&tempNetInfo, 0);
 		networkData.nSecurityFlag = 0;

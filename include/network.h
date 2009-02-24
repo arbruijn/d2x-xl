@@ -518,7 +518,7 @@ char *iptos (char *pszIP, char *addr);
 
 extern tNetgameInfo activeNetGames [MAX_ACTIVE_NETGAMES];
 extern tAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
-extern tAllNetPlayersInfo *tmpPlayersInfo, tmpPlayersBase;
+extern tAllNetPlayersInfo *playerInfoP, tmpPlayersBase;
 extern int nCoopPenalties [10];
 
 #define COMPETITION	 (IsMultiGame && !IsCoopGame && extraGameInfo [1].bCompetition)

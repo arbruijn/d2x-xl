@@ -73,12 +73,12 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 #endif
 networkData.bWaitingForPlayerInfo = 0;
 #if SECURITY_CHECK
-if (newGame->nSecurity != tmpPlayersInfo->nSecurity) {
+if (newGame->nSecurity != playerInfoP->nSecurity) {
 	Int3 ();     // Get Jason
    return;     // If this first half doesn't go with the second half
    }
 #endif
-Assert (tmpPlayersInfo != NULL);
+Assert (playerInfoP != NULL);
 i = FindActiveNetGame (newGame->szGameName, newGame->nSecurity);
 if (i == MAX_ACTIVE_NETGAMES) {
 #if 1
@@ -95,7 +95,7 @@ networkData.bGamesChanged = 1;
 // MWA  memcpy (&activeNetGames [i], dataP, sizeof (tNetgameInfo);
 nLastNetGameUpdate [i] = SDL_GetTicks ();
 memcpy (activeNetGames + i, reinterpret_cast<ubyte*> (newGame), sizeof (tNetgameInfo));
-memcpy (activeNetPlayers + i, tmpPlayersInfo, sizeof (tAllNetPlayersInfo));
+memcpy (activeNetPlayers + i, playerInfoP, sizeof (tAllNetPlayersInfo));
 if (networkData.nSecurityCheck)
 #if SECURITY_CHECK
 	if (activeNetGames [i].nSecurity == networkData.nSecurityCheck)

@@ -95,7 +95,7 @@ int nLastNetGameUpdate [MAX_ACTIVE_NETGAMES];
 tNetgameInfo activeNetGames [MAX_ACTIVE_NETGAMES];
 tExtraGameInfo activeExtraGameInfo [MAX_ACTIVE_NETGAMES];
 tAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
-tAllNetPlayersInfo *tmpPlayersInfo, tmpPlayersBase;
+tAllNetPlayersInfo *playerInfoP, tmpPlayersBase;
 
 int nCoopPenalties [10] = {0, 1, 2, 3, 5, 10, 25, 50, 75, 90};
 
