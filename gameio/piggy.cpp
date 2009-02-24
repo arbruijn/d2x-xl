@@ -71,7 +71,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 short *d1_tmap_nums = NULL;
 
 CBitmap bogusBitmap;
-CDigiSound bogusSound;
+CSoundSample bogusSound;
 
 #define RLE_REMAP_MAX_INCREASE 132 /* is enough for d1 pc registered */
 
@@ -936,7 +936,7 @@ return bmP;
 void _CDECL_ PiggyClose (void)
 {
 	int			i, j;
-	CDigiSound	*dsP;
+	CSoundSample	*dsP;
 
 PrintLog ("unloading textures\n");
 PiggyCloseFile ();

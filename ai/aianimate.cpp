@@ -278,7 +278,7 @@ int DoRobotDyingFrame (CObject *objP, fix StartTime, fix xRollDuration, sbyte *b
 {
 	fix	xRollVal, temp;
 	fix	xSoundDuration;
-	CDigiSound *soundP;
+	CSoundSample *soundP;
 
 if (!xRollDuration)
 	xRollDuration = I2X (1)/4;

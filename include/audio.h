@@ -62,7 +62,7 @@ typedef SAMPLE
 
 #else //!defined ALLEGRO
 
-class CDigiSound {
+class CSoundSample {
 	public:
 		char			szName [9];
 		ubyte			bHires;
@@ -75,7 +75,7 @@ class CDigiSound {
 #endif
 
 	public:
-		CDigiSound () { 
+		CSoundSample () { 
 			bHires = bCustom = 0; 
 			nLength [0] = nLength [1] = 0; 
 		}
@@ -201,8 +201,8 @@ class CAudioChannel {
 		inline int Resampled (void) { return m_info.bResampled; }
 
 	private:
-		int Resample (CDigiSound *soundP, int bD1Sound, int bMP3);
-		int Speedup (CDigiSound *soundP, int speed);
+		int Resample (CSoundSample *soundP, int bD1Sound, int bMP3);
+		int Speedup (CSoundSample *soundP, int speed);
 		int ReadWAV (void);
 	};
 

@@ -1990,9 +1990,9 @@ typedef struct tOpenALData {
 class CSoundData {
 	public:
 		CArray<ubyte>			data [2];
-		CArray<CDigiSound>	sounds [2]; //[MAX_SOUND_FILES];
+		CArray<CSoundSample>	sounds [2]; //[MAX_SOUND_FILES];
 		int						nSoundFiles [2];
-		CArray<CDigiSound>	soundP;
+		CArray<CSoundSample>	soundP;
 #if USE_OPENAL
 		tOpenALData				openAL;
 #endif

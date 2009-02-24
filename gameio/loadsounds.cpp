@@ -119,7 +119,7 @@ return i;
 
 void FreeSoundReplacements (void)
 {
-	CDigiSound	*dsP;
+	CSoundSample	*dsP;
 	int			i, j;
 
 PrintLog ("unloading custom sounds\n");
@@ -141,7 +141,7 @@ int LoadSoundReplacements (const char *pszFilename)
 	int					i, j, l;
 	int					b11K = (gameOpts->sound.digiSampleRate == SAMPLE_RATE_11K);
 	tPIGSoundHeader	dsh;
-	CDigiSound			*dsP;
+	CSoundSample			*dsP;
 	size_t				nHeaderOffs, nDataOffs;
 	char					szFilename [SHORT_FILENAME_LEN];
 
@@ -191,15 +191,15 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int LoadHiresSound (CDigiSound *soundP, char *pszSoundName, bool bCustom)
+int LoadHiresSound (CSoundSample *soundP, char *pszSoundName, bool bCustom)
 {
 	CFile			cf;
 	char			szSoundFile [FILENAME_LEN];
 
 sprintf (szSoundFile, "%s.wav", pszSoundName);
-if (!((*gameFolders.szSoundDir [3] && cf.Open (szSoundFile, gameFolders.szSoundDir [3], "rb", 0)) ||
-	   (*gameFolders.szSoundDir [2] && cf.Open (szSoundFile, gameFolders.szSoundDir [2], "rb", 0)) ||
-	   ((bCustom || gameOpts->sound.bHires [0]) && cf.Open (szSoundFile, gameFolders.szSoundDir [gameOpts->sound.bHires [0] - 1], "rb", 0))))
+if (!((*gameFolders.szSoundDir [5] && cf.Open (szSoundFile, gameFolders.szSoundDir [3], "rb", 0)) ||
+	   (*gameFolders.szSoundDir [4] && cf.Open (szSoundFile, gameFolders.szSoundDir [2], "rb", 0)) ||
+	   ((bCustom || gameOpts->sound.bHires [0]) && cf.Open (szSoundFile, gameFolders.szSoundDir [HIRES_SOUND_FOLDER], "rb", 0))))
 	return 0;
 if (0 >= (soundP->nLength [0] = cf.Length ())) {
 	cf.Close ();
@@ -225,7 +225,7 @@ return 1;
 int SetupSounds (CFile& cf, int nSoundNum, int nSoundStart, bool bCustom, bool bUseLowRes)
 {
 	tPIGSoundHeader	sndh;
-	CDigiSound*			soundP;
+	CSoundSample*			soundP;
 	int					i, j;
 	int 					nHeaderSize = nSoundNum * sizeof (tPIGSoundHeader);
 	char					szSoundName [16];
@@ -290,7 +290,7 @@ return 0;
 
 #if USE_OPENAL
 
-int PiggyBufferSound (CDigiSound *soundP)
+int PiggyBufferSound (CSoundSample *soundP)
 {
 if (!gameOpts->sound.bUseOpenAL)
 	return 0;
@@ -318,7 +318,7 @@ return 1;
 
 void LoadSounds (CFile& cf, bool bCustom)
 {
-	CDigiSound*	soundP = &gameData.pig.sound.soundP [0];
+	CSoundSample*	soundP = &gameData.pig.sound.soundP [0];
 
 for (int i = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]; i; i--, soundP++) {
 	if (soundP->nOffset [bCustom] > 0) {
@@ -360,9 +360,9 @@ if (bCustom) {
 		pszFile = DefaultSoundFile ();
 		pszFolder = gameFolders.szDataDir;
 		if (gameData.missions.nCurrentLevel < 0)
-			sprintf (gameFolders.szSoundDir [3], "%s/slevel%02d", gameFolders.szSoundDir [2], -gameData.missions.nCurrentLevel);
+			sprintf (gameFolders.szSoundDir [5], "%s/slevel%02d", gameFolders.szSoundDir [4], -gameData.missions.nCurrentLevel);
 		else
-			sprintf (gameFolders.szSoundDir [3], "%s/level%02d", gameFolders.szSoundDir [2], gameData.missions.nCurrentLevel);
+			sprintf (gameFolders.szSoundDir [5], "%s/level%02d", gameFolders.szSoundDir [4], gameData.missions.nCurrentLevel);
 		}
 	}
 else {
@@ -451,7 +451,7 @@ else {
 	pszSoundFile += 3;
 	}
 if (!(cf.Extract (pszSoundFile, gameFolders.szDataDir, 0, "d2x-temp.wav") ||
-		cf.Extract (pszSoundFile, gameFolders.szSoundDir [gameOpts->sound.bHires [0] - 1], 0, "d2x-temp.wav")))
+		cf.Extract (pszSoundFile, gameFolders.szSoundDir [HIRES_SOUND_FOLDER], 0, "d2x-temp.wav")))
 	return NULL;
 sprintf (szWAV, "%s%sd2x-temp.wav", gameFolders.szCacheDir, *gameFolders.szCacheDir ? "/" : "");
 if (!(chunkP = Mix_LoadWAV (szWAV)))

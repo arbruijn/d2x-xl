@@ -165,7 +165,7 @@ int LoadModelData (void);
 int SaveModelData (void);
 
 void piggy_read_bitmap_data (CBitmap * bmp);
-void piggy_readSound_data (CDigiSound *snd);
+void piggy_readSound_data (CSoundSample *snd);
 
 #ifdef PIGGY_USE_PAGING
 int PiggyBitmapPageIn (int bmi, int bD1, bool bHires = false);
@@ -218,6 +218,8 @@ int IsMacDataFile (CFile* cfP, int bD1);
 void PiggyCriticalError (void);
 
 void swap_0_255 (CBitmap *bmP);
+
+#define HIRES_SOUND_FOLDER		(gameOpts->sound.bHires [0] - 1 + 2 * gameStates.sound.bD1Sound)
 
 //------------------------------------------------------------------------------
 

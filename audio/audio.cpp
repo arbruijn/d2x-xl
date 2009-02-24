@@ -274,7 +274,7 @@ infoP->data.chunkSize = nLength;
 //------------------------------------------------------------------------------
 // resample to 16 bit stereo
 
-int CAudioChannel::Resample (CDigiSound *soundP, int bD1Sound, int bMP3)
+int CAudioChannel::Resample (CSoundSample *soundP, int bD1Sound, int bMP3)
 {
 	int		h, i, k, l, nFormat = audio.Format ();
 	float		fFade;
@@ -400,7 +400,7 @@ return l > 0;
 
 //------------------------------------------------------------------------------
 
-int CAudioChannel::Speedup (CDigiSound *soundP, int speed)
+int CAudioChannel::Speedup (CSoundSample *soundP, int speed)
 {
 	int	h, i, j, l;
 	ubyte	*pDest, *pSrc;
@@ -443,7 +443,7 @@ int CAudioChannel::Start (short nSound, int nSoundClass, fix nVolume, int nPan, 
 								  int nLoopStart, int nLoopEnd, int nSoundObj, int nSpeed, 
 								  const char *pszWAV, CFixVector* vPos)
 {
-	CDigiSound*	soundP = NULL;
+	CSoundSample*	soundP = NULL;
 	int			bPersistent = (nSoundObj > -1) || bLooping || (nVolume > I2X (1));
 
 if (!(pszWAV && *pszWAV && gameOpts->sound.bUseSDLMixer)) {
@@ -878,7 +878,7 @@ if (!m_info.bAvailable)
 	return -1;
 if (nSound < 0)
 	return -1;
-CDigiSound *soundP = &gameData.pig.sound.sounds [gameStates.sound.bD1Sound][nSound];
+CSoundSample *soundP = &gameData.pig.sound.sounds [gameStates.sound.bD1Sound][nSound];
 if (!soundP->data [soundP->bCustom].Buffer ()) {
 	Int3 ();
 	return -1;

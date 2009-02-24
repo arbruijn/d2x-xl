@@ -128,6 +128,8 @@ if (*pszParentFolder) {
 #	define	SOUNDDIR			"Sounds"
 #	define	SOUNDDIR1		"Sounds1"
 #	define	SOUNDDIR2		"Sounds2"
+#	define	SOUNDDIR1_D1	"Sounds1/D1"
+#	define	SOUNDDIR2_D1	"Sounds2/D1"
 #	define	CONFIGDIR		"Config"
 #	define	PROFDIR			"Profiles"
 #	define	SCRSHOTDIR		"Screenshots"
@@ -148,6 +150,8 @@ if (*pszParentFolder) {
 #	define	SOUNDDIR			"sounds"
 #	define	SOUNDDIR1		"sounds1"
 #	define	SOUNDDIR2		"sounds2"
+#	define	SOUNDDIR1_D1	"sounds1/D1"
+#	define	SOUNDDIR2_D1	"sounds2/D1"
 #	define	CONFIGDIR		"config"
 #	define	PROFDIR			"profiles"
 #	define	SCRSHOTDIR		"screenshots"
@@ -243,6 +247,8 @@ if (GetAppFolder (szDataRootDir, gameFolders.szModelDir [0], MODELDIR, "*.ase"))
 	GetAppFolder (szDataRootDir, gameFolders.szModelDir [0], MODELDIR, "*.oof");
 GetAppFolder (szDataRootDir, gameFolders.szSoundDir [0], SOUNDDIR1, "*.wav");
 GetAppFolder (szDataRootDir, gameFolders.szSoundDir [1], SOUNDDIR2, "*.wav");
+GetAppFolder (szDataRootDir, gameFolders.szSoundDir [2], SOUNDDIR1_D1, "*.wav");
+GetAppFolder (szDataRootDir, gameFolders.szSoundDir [3], SOUNDDIR2_D1, "*.wav");
 GetAppFolder (szDataRootDir, gameFolders.szShaderDir, SHADERDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szTextureDir [0], TEXTUREDIR_D2, "*.tga");
 GetAppFolder (szDataRootDir, gameFolders.szTextureDir [1], TEXTUREDIR_D1, "*.tga");
@@ -331,8 +337,8 @@ CFile::MkDir (gameFolders.szMissionDownloadDir);
 void ResetModFolders (void)
 {
 *gameFolders.szMusicDir =
-*gameFolders.szSoundDir [2] =
-*gameFolders.szSoundDir [3] =
+*gameFolders.szSoundDir [4] =
+*gameFolders.szSoundDir [5] =
 *gameFolders.szModDir [1] =
 *gameFolders.szTextureDir [2] =
 *gameFolders.szTextureCacheDir [2] =
@@ -363,7 +369,7 @@ else {
 		return;
 	}
 if (!GetAppFolder (gameFolders.szModDir [0], gameFolders.szModDir [1], gameFolders.szModName, "")) {
-	sprintf (gameFolders.szSoundDir [2], "%s/%s", gameFolders.szModDir [1], SOUNDDIR);
+	sprintf (gameFolders.szSoundDir [4], "%s/%s", gameFolders.szModDir [1], SOUNDDIR);
 	if (GetAppFolder (gameFolders.szModDir [1], gameFolders.szTextureDir [2], TEXTUREDIR, "*.tga")) 
 		*gameFolders.szTextureDir [2] = '\0';
 	else {

@@ -4144,7 +4144,7 @@ MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);
 //-----------------------------------------------------------------------------
 
 int bSoundHacked = 0;
-CDigiSound reversedSound;
+CSoundSample reversedSound;
 
 void MultiSendGotOrb (char nPlayer)
 {
@@ -4676,7 +4676,7 @@ pingStats [0].launchTime = 0;
 void MultiQuickSoundHack (int nSound)
 {
 	int			l, i, j;
-	CDigiSound	*soundP = gameData.pig.sound.sounds [gameStates.sound.bD1Sound] + nSound;
+	CSoundSample	*soundP = gameData.pig.sound.sounds [gameStates.sound.bD1Sound] + nSound;
 	ubyte			*dataP;
 
 nSound = audio.XlatSound ((short) nSound);
