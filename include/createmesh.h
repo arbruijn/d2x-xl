@@ -59,7 +59,7 @@ class CTriMeshBuilder {
 		void CreateFaceVertLists (void);
 		void SortFaceVertList (ushort *vertList, int left, int right);
 		char *DataFilename (char *pszFilename, int nLevel);
-		bool Load (int nLevel);
+		bool Load (int nLevel, bool bForce = false);
 		bool Save (int nLevel);
 
 	public:

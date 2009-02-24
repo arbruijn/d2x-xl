@@ -736,7 +736,7 @@ return GameDataFilename (pszFilename, "mesh", nLevel,
 
 //------------------------------------------------------------------------------
 
-bool CTriMeshBuilder::Load (int nLevel)
+bool CTriMeshBuilder::Load (int nLevel, bool bForce)
 {
 	CFile					cf;
 	tMeshDataHeader	mdh;
@@ -745,7 +745,7 @@ bool CTriMeshBuilder::Load (int nLevel)
 	char					szFilename [FILENAME_LEN];
 	char					*ioBuffer = NULL, *bufP;
 
-if (!(gameStates.render.bTriangleMesh && gameStates.app.bCacheMeshes))
+if (!(gameStates.render.bTriangleMesh && (gameStates.app.bCacheMeshes || bForce)))
 	return false;
 if (!cf.Open (DataFilename (szFilename, nLevel), gameFolders.szCacheDir, "rb", 0))
 	return false;
@@ -838,7 +838,7 @@ bool CTriMeshBuilder::Save (int nLevel)
 								  gameData.segs.nFaces,
 								  gameData.segs.nTris};
 
-if (!(gameStates.render.bTriangleMesh && gameStates.app.bCacheMeshes))
+if (!(gameStates.render.bTriangleMesh /*&& gameStates.app.bCacheMeshes*/))
 	return 0;
 if (!cf.Open (DataFilename (szFilename, nLevel), gameFolders.szCacheDir, "wb", 0))
 	return 0;
@@ -879,7 +879,7 @@ if (!InsertTriangles ()) {
 	return 0;
 	}
 Save (nLevel);
-return Load (nLevel); //Load will rebuild all face data buffers, reducing their memory footprint
+return Load (nLevel, true); //Load will rebuild all face data buffers, reducing their memory footprint
 }
 
 //------------------------------------------------------------------------------
