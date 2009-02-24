@@ -191,7 +191,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int LoadHiresSound (CSoundSample *soundP, char *pszSoundName, bool bCustom)
+int LoadHiresSound (CSoundSample* soundP, char* pszSoundName, bool bCustom)
 {
 	CFile			cf;
 	char			szSoundFile [FILENAME_LEN];
