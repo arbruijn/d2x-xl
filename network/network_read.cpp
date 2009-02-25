@@ -631,7 +631,6 @@ else if (i < 0)
 	if ((nObject == -1) || (nObject == -3)) {
 		// Clear CObject array
 		nPlayer = nObjOwner;
-		ChangePlayerNumTo (nPlayer);
 		nMode = 1;
 		networkData.nPrevFrame = networkData.sync [0].objs.nFrame - 1;
 		if (nObject == -3) {
@@ -646,6 +645,8 @@ else if (i < 0)
 			if (networkData.nJoinState)
 				return;
 			InitObjects (false);
+			ChangePlayerNumTo (nPlayer);
+			InitMultiPlayerObject (1);
 			gameData.objs.nObjects = 0;
 			networkData.nJoinState = 1;
 			}
