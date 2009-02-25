@@ -1600,7 +1600,11 @@ if (SHOW_LIGHTNINGS) {
 			else if (objP->info.nType != 255)
 				PrintLog ("invalid effect requested\n");
 			}
-		gameData.objs.bWantEffect [i] &= ~(PLAYER_LIGHTNINGS | ROBOT_LIGHTNINGS | MISSILE_LIGHTNINGS | EXPL_LIGHTNINGS);
+		else if (h & MOVE_LIGHTNINGS) {
+			if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT))
+				MoveForObject (objP);
+			}
+		gameData.objs.bWantEffect [i] &= ~(PLAYER_LIGHTNINGS | ROBOT_LIGHTNINGS | MISSILE_LIGHTNINGS | EXPL_LIGHTNINGS | MOVE_LIGHTNINGS);
 		}
 	}
 }

@@ -355,7 +355,11 @@ switch (info.movementType) {
 	case MT_PHYSICS:
 		DoPhysicsSim ();
 		lightManager.SetPos (OBJ_IDX (this));
+#if 1
+		RequestEffects (MOVE_LIGHTNINGS);
+#else
 		lightningManager.MoveForObject (this);
+#endif
 		if (info.nType == OBJ_PLAYER)
 			UpdateShipSound ();
 		break;	//move by physics
@@ -573,7 +577,7 @@ else
 // Move all OBJECTS
 gameStates.entropy.bConquering = 0;
 UpdatePlayerOrient ();
-WaitForEffectsThread ();
+//WaitForEffectsThread ();
 i = 0;
 for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 	nextObjP = objP->Links (0).next;

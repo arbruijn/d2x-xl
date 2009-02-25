@@ -1907,9 +1907,10 @@ class CObjectData {
 #define ROBOT_LIGHTNINGS	2
 #define MISSILE_LIGHTNINGS	4
 #define EXPL_LIGHTNINGS		8
-#define DESTROY_LIGHTNINGS	16
-#define SHRAPNEL_SMOKE		32
-#define DESTROY_SMOKE		64
+#define MOFE_LIGHTNINGS		16
+#define DESTROY_LIGHTNINGS	32
+#define SHRAPNEL_SMOKE		64
+#define DESTROY_SMOKE		128
 
 //------------------------------------------------------------------------------
 
