@@ -1023,7 +1023,7 @@ extern CObject Follow;
  */
 
 // do whatever setup needs to be done
-void InitObjects();
+void InitObjects (bool bInitPlayer = true);
 
 int CreateObject (ubyte nType, ubyte nId, short nCreator, short nSegment, const CFixVector& vPos, const CFixMatrix& mOrient,
 					   fix xSize, ubyte cType, ubyte mType, ubyte rType);

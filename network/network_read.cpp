@@ -645,7 +645,7 @@ else if (i < 0)
 		else {
 			if (networkData.nJoinState)
 				return;
-			InitObjects ();
+			InitObjects (false);
 			gameData.objs.nObjects = 0;
 			networkData.nJoinState = 1;
 			}

@@ -305,7 +305,7 @@ m_vStartVel.SetZero ();
 
 //------------------------------------------------------------------------------
 //sets up the free list, init player data etc.
-void InitObjects (void)
+void InitObjects (bool bInitPlayer)
 {
 CollideInit ();
 ResetSegObjLists ();
@@ -315,8 +315,10 @@ for (int i = 0; i < LEVEL_OBJECTS; i++)
 	OBJECTS [i].Init ();
 gameData.objs.consoleP =
 gameData.objs.viewerP = OBJECTS.Buffer ();
-InitPlayerObject ();
-gameData.objs.consoleP->LinkToSeg (0);	//put in the world in segment 0
+if (bInitPlayer) {
+	InitPlayerObject ();
+	gameData.objs.consoleP->LinkToSeg (0);	//put in the world in segment 0
+	}
 //gameData.objs.consoleP->Link ();
 gameData.objs.nObjects = 1;				//just the player
 gameData.objs.nLastObject [0] = 0;
