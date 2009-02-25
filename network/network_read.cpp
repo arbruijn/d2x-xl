@@ -533,7 +533,7 @@ FORALL_OBJS (objP, i) {
 			}
 		}
 	else if (t == OBJ_PLAYER) {
-		if (!(i && bCoop))
+		//if (!(i && bCoop))
 			nPlayers++;
 		}
 	else if (t == OBJ_COOP) {

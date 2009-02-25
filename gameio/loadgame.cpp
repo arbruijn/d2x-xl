@@ -223,7 +223,7 @@ void GameStartInitNetworkPlayers (void)
 	int		i, j, t, bCoop = IsCoopGame,
 				segNum, segType,
 				playerObjs [MAX_PLAYERS], startSegs [MAX_PLAYERS],
-				nPlayers, nMaxPlayers = bCoop ? MAX_COOP_PLAYERS : MAX_PLAYERS;
+				nPlayers, nMaxPlayers = bCoop ? MAX_COOP_PLAYERS + 1 : MAX_PLAYERS;
 	CObject	*objP, *nextObjP;
 
 	// Initialize network CPlayerData start locations and CObject numbers
