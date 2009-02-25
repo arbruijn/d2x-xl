@@ -430,7 +430,7 @@ if (bForce || (MODERN_STYLE == 1)) {
 	glDisable (GL_TEXTURE_2D);
 	OglDrawFilledRect (left, top, right, bottom);
 	CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), 255);
-	glLineWidth ((GLfloat) nLineWidth);
+	glLineWidth (GLfloat (nLineWidth) * GLfloat (screen.Width ()) / 640.0f);
 	OglDrawEmptyRect (left, top, right, bottom);
 	glLineWidth (1);
 	}

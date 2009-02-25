@@ -134,7 +134,7 @@ float darker_g [4]={32.0f/256, 128.0f/256, 32.0f/256, 1.0f};
 
 void OglDrawReticle (int cross, int primary, int secondary)
 {
-	float scale = (float)nCanvasHeight / (float) screen.Height ();
+	float scale = float (CCanvas::Current ()->Height ()) / float (screen.Height ());
 
 	static tSinCosf sinCos8 [8];
 	static tSinCosf sinCos12 [12];
@@ -150,14 +150,13 @@ if (bInitSinCos) {
 glPushMatrix ();
 //	glTranslated (0.5, 0.5, 0);
 glTranslated (
-	(CCanvas::Current ()->Width ()/2+CCanvas::Current ()->Left ()) / (float) gameStates.ogl.nLastW, 
-	1.0f - (CCanvas::Current ()->Height () / ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) ? 2 : 2) +
-	CCanvas::Current ()->Top ()) / (float) gameStates.ogl.nLastH, 
+	(CCanvas::Current ()->Width () / 2 + CCanvas::Current ()->Left ()) / float (gameStates.ogl.nLastW), 
+	1.0f - (CCanvas::Current ()->Height () / 2 +	CCanvas::Current ()->Top ()) / float (gameStates.ogl.nLastH), 
 	0);
 glScaled (scale / 320.0f, scale / 200.0f, scale);	// the positions are based upon the standard reticle at 320x200 res.
 glDisable (GL_TEXTURE_2D);
 
-glLineWidth (5);
+glLineWidth (GLfloat (gameStates.ogl.nReticle));
 glEnable (GL_LINE_SMOOTH);
 if (cross_lh [cross])
 	glCallList (cross_lh [cross]);
