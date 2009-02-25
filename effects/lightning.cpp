@@ -809,6 +809,8 @@ void CLightning::Move (CFixVector *vNewPos, short nSegment, bool bStretch, bool 
 {
 if (nSegment < 0)
 	return;
+if (!m_nodes.Buffer ())
+	return;
 
 	CLightningNode	*nodeP;
 	CFixVector		vDelta, vOffs;
@@ -1009,8 +1011,8 @@ G3DisableClientStates (1, 0, 0, GL_TEXTURE0);
 
 void CLightning::RenderCore (tRgbaColorf *colorP, int nDepth, int nThread)
 {
-	CFloatVector3		*vPosf = coreBuffer [nThread];
-	int			i;
+	CFloatVector3*	vPosf = coreBuffer [nThread];
+	int				i;
 
 glBlendFunc (GL_ONE, GL_ONE);
 glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
@@ -1067,7 +1069,7 @@ void CLightning::RenderBuffered (int nDepth, int nThread)
 	int				i, bPlasma;
 	tRgbaColorf		color;
 
-if ((m_nNodes <= 0) || (m_nSteps < 0))
+if (!m_nodes.Buffer () || (m_nNodes <= 0) || (m_nSteps < 0))
 	return;
 if (gameStates.app.bMultiThreaded)
 	tiRender.ti [nThread].bBlock = 1;
@@ -1336,6 +1338,8 @@ m_bSound = -1;
 void CLightningSystem::Move (CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd)
 {
 if (nSegment < 0)
+	return;
+if (!m_lightnings.Buffer ())
 	return;
 if (SHOW_LIGHTNINGS) {
 	for (int i = 0; i < m_nLightnings; i++)

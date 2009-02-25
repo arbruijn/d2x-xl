@@ -54,6 +54,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "loadgame.h"
 #include "multi.h"
 #include "playerdeath.h"
+#include "renderthreads.h"
 #ifdef TACTILE
 #	include "tactile.h"
 #endif
@@ -572,6 +573,7 @@ else
 // Move all OBJECTS
 gameStates.entropy.bConquering = 0;
 UpdatePlayerOrient ();
+WaitForEffectsThread ();
 i = 0;
 for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 	nextObjP = objP->Links (0).next;

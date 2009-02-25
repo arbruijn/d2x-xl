@@ -1318,11 +1318,8 @@ SaveScreenShot (0, 0);
 void DoEffectsFrame (void)
 {
 //PrintLog ("DoEffectsFrame \n");
-if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects] && tiEffects.pThread) {
-	while (tiEffects.bExec)
-		G3_SLEEP (0);
+if (WaitForEffectsThread ())
 	tiEffects.bExec = 1;
-	}
 else {
 	lightningManager.DoFrame ();
 	sparkManager.DoFrame ();

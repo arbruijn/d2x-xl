@@ -846,12 +846,7 @@ void RenderEffects (int nWindow)
 	int bLightnings, bParticles, bSparks;
 
 OglSetLibFlags (1);
-#if 1
-if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects] && tiEffects.pThread) {
-	while (tiEffects.bExec)
-		G3_SLEEP (0);
-	}
-#endif
+WaitForEffectsThread ();
 if (automap.m_bDisplay) {
 	bLightnings = gameOpts->render.automap.bLightnings;
 	bParticles = gameOpts->render.automap.bParticles;

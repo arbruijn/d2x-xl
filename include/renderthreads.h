@@ -51,6 +51,7 @@ void EndTranspItemThread (void);
 void WaitForRenderThreads (void);
 void StartEffectsThread (void);
 void EndEffectsThread (void);
+bool WaitForEffectsThread (void);
 
 //------------------------------------------------------------------------------
 

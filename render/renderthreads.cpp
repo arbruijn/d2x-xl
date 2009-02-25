@@ -282,4 +282,18 @@ tiEffects.pThread = NULL;
 }
 
 //------------------------------------------------------------------------------
+
+bool WaitForEffectsThread (void)
+{
+#if 1
+if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects] && tiEffects.pThread) {
+	while (tiEffects.bExec)
+		G3_SLEEP (0);
+	return true;
+	}
+#endif
+return false;
+}
+
+//------------------------------------------------------------------------------
 // eof
