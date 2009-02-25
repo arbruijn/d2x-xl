@@ -1145,6 +1145,8 @@ int CLightning::SetLight (void)
 
 if (!m_bLight)
 	return 0;
+if (!m_nodes.Buffer ())
+	return 0;
 if (0 < (j = m_nNodes)) {
 	if (!(nStride = int ((double (m_nLength) / I2X (20) + 0.5))))
 		nStride = 1;
