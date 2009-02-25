@@ -197,8 +197,8 @@ int LoadHiresSound (CSoundSample* soundP, char* pszSoundName, bool bCustom)
 	char			szSoundFile [FILENAME_LEN];
 
 sprintf (szSoundFile, "%s.wav", pszSoundName);
-if (!((*gameFolders.szSoundDir [5] && cf.Open (szSoundFile, gameFolders.szSoundDir [3], "rb", 0)) ||
-	   (*gameFolders.szSoundDir [4] && cf.Open (szSoundFile, gameFolders.szSoundDir [2], "rb", 0)) ||
+if (!((*gameFolders.szSoundDir [5] && cf.Open (szSoundFile, gameFolders.szSoundDir [5], "rb", 0)) ||
+	   (*gameFolders.szSoundDir [4] && cf.Open (szSoundFile, gameFolders.szSoundDir [4], "rb", 0)) ||
 	   ((bCustom || gameOpts->sound.bHires [0]) && cf.Open (szSoundFile, gameFolders.szSoundDir [HIRES_SOUND_FOLDER], "rb", 0))))
 	return 0;
 if (0 >= (soundP->nLength [0] = cf.Length ())) {
