@@ -43,18 +43,18 @@ void _CDECL_ ThiefMessage (const char * format, ... )
 
 va_start (args, format);
 vsprintf (szMsg + 15, format, args);
-va_end(args);
+va_end (args);
 
-szMsg [0] = (char) 1;
-szMsg [1] = (char) (127 + 128);
-szMsg [2] = (char) (0 + 128);
-szMsg [3] = (char) (0 + 128);
+szMsg [0] = char (1);
+szMsg [1] = char (127 + 128);
+szMsg [2] = char (0 + 128);
+szMsg [3] = char (0 + 128);
 memcpy (szMsg + 4, "THIEF: ", 6);
-szMsg [11] = (char) 1;
-szMsg [12] = (char) (0 + 128);
-szMsg [13] = (char) (63 + 128);
-szMsg [14] = (char) (0 + 128);
-HUDInitMessage(szMsg);
+szMsg [11] = char (1);
+szMsg [12] = char (0 + 128);
+szMsg [13] = char (63 + 128);
+szMsg [14] = char (0 + 128);
+HUDInitMessage (szMsg);
 }
 
 //	------------------------------------------------------------------------------------------------------
@@ -298,7 +298,7 @@ if ((gameData.multiplayer.players[nPlayer].secondaryWeaponFlags & HAS_FLAG(nWeap
 		if ((nWeapon != PROXMINE_INDEX) && (nWeapon != SMARTMINE_INDEX)) {
 			gameData.thief.stolenItems[gameData.thief.nStolenItem] = secondaryWeaponToPowerup[nWeapon];
 			}
-		ThiefMessage (TXT_WPN_STOLEN, baseGameTexts [114+nWeapon]);		//	Danger! Danger! Use of literal!  Danger!
+		ThiefMessage (TXT_WPN_STOLEN, baseGameTexts [114+nWeapon][0]);		//	Danger! Danger! Use of literal!  Danger!
 		if (LOCALPLAYER.secondaryAmmo[nWeapon] == 0)
 			AutoSelectWeapon(1, 0);
 		// -- compress_stolen_items();
@@ -320,7 +320,7 @@ int MaybeStealPrimaryWeapon(int nPlayer, int nWeapon)
 					} else {
 						gameData.thief.stolenItems[gameData.thief.nStolenItem] = primaryWeaponToPowerup[nWeapon];
 					}
-					ThiefMessage(TXT_LVL_DECREASED, baseGameTexts [104+nWeapon]);		//	Danger! Danger! Use of literal!  Danger!
+					ThiefMessage(TXT_LVL_DECREASED, baseGameTexts [104+nWeapon][0]);		//	Danger! Danger! Use of literal!  Danger!
 					gameData.multiplayer.players[nPlayer].laserLevel--;
 					audio.PlaySound(SOUND_WEAPON_STOLEN);
 					return 1;
@@ -329,7 +329,7 @@ int MaybeStealPrimaryWeapon(int nPlayer, int nWeapon)
 				gameData.multiplayer.players[nPlayer].primaryWeaponFlags &= ~(1 << nWeapon);
 				gameData.thief.stolenItems[gameData.thief.nStolenItem] = primaryWeaponToPowerup[nWeapon];
 
-				ThiefMessage(TXT_WPN_STOLEN, baseGameTexts [104+nWeapon]);		//	Danger! Danger! Use of literal!  Danger!
+				ThiefMessage(TXT_WPN_STOLEN, baseGameTexts [104+nWeapon][0]);		//	Danger! Danger! Use of literal!  Danger!
 				AutoSelectWeapon(0, 0);
 				audio.PlaySound(SOUND_WEAPON_STOLEN);
 				return 1;
