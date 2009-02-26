@@ -205,9 +205,9 @@ do {
 		m.AddRadio (TXT_WPNICONS_LRT, 0, KEY_I, HTX_CPIT_ICONPOS);
 		m [optIconPos + NMCLAMP (extraGameInfo [0].nWeaponIcons - 1, 0, 3)].m_value = 1;
 		m.AddText ("", 0);
-		optHiliteColor = m.AddRadio (TXT_ICON_HILITE_YELLOW, 0, KEY_Y, HTX_HUD_HILITE_COLOR);
-		m.AddRadio (TXT_ICON_HILITE_BLUE, 0, KEY_B, HTX_HUD_HILITE_COLOR);
-		m [optHiliteColor + NMCLAMP (gameOpts->render.weaponIcons.nHilitecolor, 0, 1)].m_value = 1;
+		optHiliteColor = m.AddRadio (TXT_HUD_HILITE_YELLOW, 0, KEY_Y, HTX_HUD_HILITE_COLOR);
+		m.AddRadio (TXT_HUD_HILITE_BLUE, 0, KEY_B, HTX_HUD_HILITE_COLOR);
+		m [optHiliteColor + NMCLAMP (gameOpts->render.weaponIcons.nHiliteColor, 0, 1)].m_value = 1;
 		m.AddText ("", 0);
 		optIconAlpha = m.AddSlider (TXT_ICON_DIM, gameOpts->render.weaponIcons.alpha, 0, 8, KEY_D, HTX_CPIT_ICONDIM);
 		m.AddText ("", 0);
@@ -236,6 +236,8 @@ do {
 						extraGameInfo [0].nWeaponIcons = j + 1;
 						break;
 						}
+			if (optHiliteColor >= 0)
+				gameOpts->render.weaponIcons.nHiliteColor = m [optHiliteColor + 1].m_value != 0;
 			GET_VAL (gameOpts->render.weaponIcons.alpha, optIconAlpha);
 			}
 		else {
