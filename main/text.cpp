@@ -1841,6 +1841,8 @@ const char *defaultGameTexts [][2] = {
  {"Existierende Datei ueberschreiben?", "Overwrite existing file?"},
  {"~Fetter Rahmen um aktive Waffe", "~Bold armed weapon highlight"},
  {"~breite Cockpit-Anzeigefenster", "~Wide cockpit display windows"},
+ {"hervorhebung ~Gelb", "~Yellow highlights"},
+ {"hervorhebung ~Blau", "~Blue highlights"},
 #if 0
  {"", ""},
 #endif

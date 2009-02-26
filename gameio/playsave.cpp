@@ -585,6 +585,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.weaponIcons.bSmall, i, 0);
 		RP (gameOptions [i].render.weaponIcons.bBoldHighlight, i, 0);
 		RP (gameOptions [i].render.weaponIcons.nSort, i, 0);
+		RP (gameOptions [i].render.weaponIcons.nHiliteColor, i, 0);
 		RP (gameOptions [i].render.nMaxFPS, i, 0);
 		RP (gameOptions [i].render.nQuality, i, 0);
 		RP (gameOptions [i].render.cockpit.bFlashGauges, i, 0);
@@ -1100,6 +1101,7 @@ tParamValue defaultParams [] = {
  {"gameOptions[0].render.weaponIcons.bSmall", "1"},
  {"gameOptions[0].render.weaponIcons.bBoldHighlight", "0"},
  {"gameOptions[0].render.weaponIcons.nSort", "1"},
+ {"gameOptions[0].render.weaponIcons.nHiliteColor", "0"},
  {"gameOptions[0].render.nMaxFPS", "250"},
  {"gameOptions[0].render.nQuality", "3"},
  {"gameOptions[0].render.cockpit.bFlashGauges", "1"},

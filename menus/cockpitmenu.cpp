@@ -185,7 +185,7 @@ void WeaponIconOptionsMenu (void)
 {
 	CMenu m (35);
 	int	i, j, choice = 0;
-	int	optSmallIcons, optIconSort, optIconAmmo, optIconPos, optEquipIcons, optBoldHilite;
+	int	optSmallIcons, optIconSort, optIconAmmo, optIconPos, optEquipIcons, optBoldHilite, optHiliteColor;
 
 bShowWeaponIcons = (extraGameInfo [0].nWeaponIcons != 0);
 do {
@@ -198,11 +198,17 @@ do {
 		optIconSort = m.AddCheck (TXT_SORT_WPNICONS, gameOpts->render.weaponIcons.nSort, KEY_T, HTX_CPIT_SORTICONS);
 		optIconAmmo = m.AddCheck (TXT_AMMO_WPNICONS, gameOpts->render.weaponIcons.bShowAmmo, KEY_A, HTX_CPIT_ICONAMMO);
 		optBoldHilite = m.AddCheck (TXT_BOLD_ICON_HIGHLIGHT, gameOpts->render.weaponIcons.bBoldHighlight, KEY_B, HTX_BOLD_ICON_HIGHLIGHT);
+		m.AddText ("", 0);
 		optIconPos = m.AddRadio (TXT_WPNICONS_TOP, 0, KEY_I, HTX_CPIT_ICONPOS);
 		m.AddRadio (TXT_WPNICONS_BTM, 0, KEY_I, HTX_CPIT_ICONPOS);
 		m.AddRadio (TXT_WPNICONS_LRB, 0, KEY_I, HTX_CPIT_ICONPOS);
 		m.AddRadio (TXT_WPNICONS_LRT, 0, KEY_I, HTX_CPIT_ICONPOS);
 		m [optIconPos + NMCLAMP (extraGameInfo [0].nWeaponIcons - 1, 0, 3)].m_value = 1;
+		m.AddText ("", 0);
+		optHiliteColor = m.AddRadio (TXT_ICON_HILITE_YELLOW, 0, KEY_Y, HTX_HUD_HILITE_COLOR);
+		m.AddRadio (TXT_ICON_HILITE_BLUE, 0, KEY_B, HTX_HUD_HILITE_COLOR);
+		m [optHiliteColor + NMCLAMP (gameOpts->render.weaponIcons.nHilitecolor, 0, 1)].m_value = 1;
+		m.AddText ("", 0);
 		optIconAlpha = m.AddSlider (TXT_ICON_DIM, gameOpts->render.weaponIcons.alpha, 0, 8, KEY_D, HTX_CPIT_ICONDIM);
 		m.AddText ("", 0);
 		}

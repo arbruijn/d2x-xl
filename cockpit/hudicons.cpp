@@ -179,6 +179,7 @@ void CHUDIcons::DrawWeapons (void)
 	int	nWeaponIcons = /*(gameStates.render.cockpit.nType == CM_STATUS_BAR) ? 3 :*/ extraGameInfo [0].nWeaponIcons;
 	int	nIconScale = (gameOpts->render.weaponIcons.bSmall || (gameStates.render.cockpit.nType != CM_FULL_SCREEN)) ? 4 : 3;
 	int	nIconPos = nWeaponIcons - 1;
+	int	nHiliteColor = gameOpts->render.weaponIcons.nHiliteColor;
 	int	nMaxAutoSelect;
 	int	fw, fh, faw, 
 			i, j, ll, n, 
@@ -342,9 +343,9 @@ for (i = 0; i < 2; i++) {
 			bHave = 0;
 		if (bHave) {
 			if (bAvailable)
-				CCanvas::Current ()->SetColorRGB (128, 128, 0, (ubyte) (alpha * 16));
+				CCanvas::Current ()->SetColorRGB (128, 128, 0, ubyte (alpha * 16));
 			else
-				CCanvas::Current ()->SetColorRGB (128, 0, 0, (ubyte) (alpha * 16));
+				CCanvas::Current ()->SetColorRGB (128, 0, 0, ubyte (alpha * 16));
 			}
 		else {
 			CCanvas::Current ()->SetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
@@ -366,7 +367,10 @@ for (i = 0; i < 2; i++) {
 			}
 		if (bArmed)
 			if (bAvailable)
-				CCanvas::Current ()->SetColorRGB (255, 192, 0, 255);
+				if (nHiliteColor)
+					CCanvas::Current ()->SetColorRGB (0, 128, 255, 255);
+				else
+					CCanvas::Current ()->SetColorRGB (255, 192, 0, 255);
 			else
 				CCanvas::Current ()->SetColorRGB (160, 0, 0, 255);
 		else if (bHave)
@@ -466,9 +470,10 @@ return 0;
 void CHUDIcons::DrawInventory (void)
 {
 	CBitmap*	bmP;
-	char		szCount [4];
+	char		szCount [20];
 	int		nIconScale = (gameOpts->render.weaponIcons.bSmall || (gameStates.render.cockpit.nType != CM_FULL_SCREEN)) ? 3 : 2;
 	int		nIconPos = extraGameInfo [0].nWeaponIcons & 1;
+	int		nHiliteColor = gameOpts->render.weaponIcons.nHiliteColor;
 	int		fw, fh, faw;
 	int		j, n, firstItem, 
 				oy = 6, 
@@ -534,19 +539,23 @@ for (j = firstItem; j < n; j++) {
 	else
 		bHave = LOCALPLAYER.flags & nInvFlags [j];
 	bAvailable = (LOCALPLAYER.energy > nEnergyType [j]);
+#if 1
 	if (bHave) {
 		if (bAvailable)
 			if (bArmed)
-				CCanvas::Current ()->SetColorRGB (255, 208, 0, (ubyte) (alpha * 16));
+				if (nHiliteColor)
+					CCanvas::Current ()->SetColorRGB (0, 128, 255, ubyte (alpha * 16));
+				else
+					CCanvas::Current ()->SetColorRGB (255, 208, 0, ubyte (alpha * 16));
 			else
-				CCanvas::Current ()->SetColorRGB (128, 128, 0, (ubyte) (alpha * 16));
+				CCanvas::Current ()->SetColorRGB (128, 128, 0, ubyte (alpha * 16));
 		else
-			CCanvas::Current ()->SetColorRGB (128, 0, 0, (ubyte) (alpha * 16));
+			CCanvas::Current ()->SetColorRGB (128, 0, 0, ubyte (alpha * 16));
 		}
 	else {
 		CCanvas::Current ()->SetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
 		}
-	//OglDrawFilledRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
+	OglDrawFilledRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
 	if (bHave)
 		if (bAvailable)
 			if (bArmed)
@@ -558,13 +567,14 @@ for (j = firstItem; j < n; j++) {
 	else
 		CCanvas::Current ()->SetColorRGB (64, 64, 64, 255);
 	glLineWidth ((bArmed && gameOpts->render.weaponIcons.bBoldHighlight) ? 3 : fLineWidth);
-	//OglDrawEmptyRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
+	OglDrawEmptyRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
 	if (*szCount) {
 		fontManager.Current ()->StringSize (szCount, fw, fh, faw);
 		fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 		nIdItems [j] = GrString (x + wIcon + 2 - fw, y - fh, szCount, nIdItems + j);
 		fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 		}
+#endif
 	gameStates.render.grAlpha = 1.0f;
 	x += wIcon + ox;
 	}

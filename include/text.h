@@ -1892,11 +1892,11 @@ void LoadGameTexts(void);
 #define TXT_CONFIRM_OVERWRITE			GT(1095)
 #define TXT_BOLD_ICON_HIGHLIGHT		GT(1096)
 #define TXT_CPIT_WIDE_DISPLAYS		GT(1097)
+#define TXT_HUD_HILITE_YELLOW			GT(1098)
+#define TXT_HUD_HILITE_BLUE			GT(1099)
 
 #if 0
 
-#define TXT_					GT(1098)
-#define TXT_					GT(1099)
 
 #define TXT_					GT(1100)
 #define TXT_					GT(1101)
@@ -2403,10 +2403,10 @@ void LoadGameTexts(void);
 #define HTX_LIGHTNING_MONITORS		HT(384)			
 #define HTX_BOLD_ICON_HIGHLIGHT		HT(385)			
 #define HTX_CPIT_WIDE_DISPLAYS		HT(386)			
+#define HTX_HUD_HILITE_COLOR			HT(387)			
 
 #if 0
 
-#define HTX_						HT(387)			
 #define HTX_						HT(388)			
 #define HTX_						HT(389)			
 #define HTX_						HT(390)			

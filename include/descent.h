@@ -181,6 +181,7 @@ typedef struct tCameraOptions {
 
 typedef struct tWeaponIconOptions {
 	int bSmall;
+	int nHiliteColor;
 	char bShowAmmo;
 	char bEquipment;
 	char bBoldHighlight;

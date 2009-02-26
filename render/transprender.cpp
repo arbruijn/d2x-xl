@@ -1265,8 +1265,8 @@ if (item->nType == riSphereShield)
 if (item->nType == riMonsterball)
 	DrawMonsterball (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
 ResetBitmaps ();
-glActiveTexture (GL_TEXTURE0 + m_data.bLightmaps);
-glClientActiveTexture (GL_TEXTURE0 + m_data.bLightmaps);
+glActiveTexture (GL_TEXTURE0); // + m_data.bLightmaps);
+glClientActiveTexture (GL_TEXTURE0); // + m_data.bLightmaps);
 OGL_BINDTEX (0);
 glDisable (GL_TEXTURE_2D);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

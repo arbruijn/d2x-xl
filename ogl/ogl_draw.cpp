@@ -58,7 +58,7 @@ glVertex2f (float (x + CCanvas::Current ()->Left ()) / float (gameStates.ogl.nLa
 				1.0f - float (y + CCanvas::Current ()->Top ()) / float (gameStates.ogl.nLastW));
 //if (colorP->rgb)
 //	glDisable (GL_BLEND);
-glEnd();
+glEnd ();
 }
 
 //------------------------------------------------------------------------------
