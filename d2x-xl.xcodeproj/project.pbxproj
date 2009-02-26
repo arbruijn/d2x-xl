@@ -53,7 +53,6 @@
 		A45014FF0F3F93EC00D04D61 /* multi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45012720F3F93EA00D04D61 /* multi.cpp */; };
 		A45015000F3F93EC00D04D61 /* multibot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45012730F3F93EA00D04D61 /* multibot.cpp */; };
 		A45015010F3F93EC00D04D61 /* multimsg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45012740F3F93EA00D04D61 /* multimsg.cpp */; };
-		A45015040F3F93EC00D04D61 /* netmisc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45012770F3F93EA00D04D61 /* netmisc.cpp */; };
 		A45015050F3F93EC00D04D61 /* network.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45012780F3F93EA00D04D61 /* network.cpp */; };
 		A45015060F3F93EC00D04D61 /* network_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45012790F3F93EA00D04D61 /* network_init.cpp */; };
 		A45015070F3F93EC00D04D61 /* network_join.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A450127A0F3F93EA00D04D61 /* network_join.cpp */; };
@@ -553,6 +552,7 @@
 		A45018F90F3FA56F00D04D61 /* lightmaps.vert in Resources */ = {isa = PBXBuildFile; fileRef = A45013300F3F93EB00D04D61 /* lightmaps.vert */; };
 		A45019130F3FA7EB00D04D61 /* SDL_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A450175A0F3F94F600D04D61 /* SDL_mixer.framework */; };
 		A46A13FE0F4CA2A4009E4719 /* udp_interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A46A13FD0F4CA2A4009E4719 /* udp_interface.cpp */; };
+		A46A14920F4CABBC009E4719 /* netmisc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45012770F3F93EA00D04D61 /* netmisc.cpp */; };
 		A48165DA0E21F3C900F8360E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A48165D80E21F3C900F8360E /* InfoPlist.strings */; };
 /* End PBXBuildFile section */
 
@@ -2408,7 +2408,6 @@
 				A45014FF0F3F93EC00D04D61 /* multi.cpp in Sources */,
 				A45015000F3F93EC00D04D61 /* multibot.cpp in Sources */,
 				A45015010F3F93EC00D04D61 /* multimsg.cpp in Sources */,
-				A45015040F3F93EC00D04D61 /* netmisc.cpp in Sources */,
 				A45015050F3F93EC00D04D61 /* network.cpp in Sources */,
 				A45015060F3F93EC00D04D61 /* network_init.cpp in Sources */,
 				A45015070F3F93EC00D04D61 /* network_join.cpp in Sources */,
@@ -2670,6 +2669,7 @@
 				A40ADF150F48E0A40018DA6C /* messagebox.cpp in Sources */,
 				A40ADF170F48E0D00018DA6C /* trigger.cpp in Sources */,
 				A46A13FE0F4CA2A4009E4719 /* udp_interface.cpp in Sources */,
+				A46A14920F4CABBC009E4719 /* netmisc.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
