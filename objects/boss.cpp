@@ -312,7 +312,7 @@ m_nGateSegs = cf.ReadShort ();
 
 int CBossInfo::LoadBufferState (CFile& cf, CShortArray& buffer, int nBufSize)
 {
-if (!nBufSize)
+if (!nBufSize || (uint (nBufSize) > uint (LEVEL_SEGMENTS)))
 	return 1;
 if (!buffer.Create (nBufSize))
 	return 0;
