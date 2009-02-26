@@ -84,6 +84,7 @@ h = gameStates.app.bMultiThreaded ? rtTaskCount : rtSound + 1;
 for (i = rtSound; i < h; i++)
 	gameData.app.bUseMultiThreading [i] = (m [menuToTask [i]].m_value != 0);
 if (gameStates.app.bGameRunning) {
+	ControlRenderThreads ();
 	ControlSoundThread ();
 	ControlTranspRenderThread ();
 	ControlEffectsThread ();

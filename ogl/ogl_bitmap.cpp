@@ -172,8 +172,8 @@ v2 = float (Bottom ()) / h;
 
 CTexture* CBitmap::OglBeginRender (bool bBlend, int bMipMaps, int nTransp)
 {
-glActiveTexture (GL_TEXTURE0);
 glEnable (GL_TEXTURE_2D);
+glActiveTexture (GL_TEXTURE0);
 if (Bind (bMipMaps, nTransp))
 	return NULL;
 m_info.texture->Wrap (GL_REPEAT);

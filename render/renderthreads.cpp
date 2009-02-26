@@ -243,12 +243,27 @@ if (gameStates.app.bMultiThreaded) {
 
 void StartRenderThreads (void)
 {
-	int	i;
-
 memset (&tiRender, 0, sizeof (tiRender));
-for (i = 0; i < 2; i++) {
+for (int i = 0; i < 2; i++) {
 	tiRender.ti [i].nId = i;
 	tiRender.ti [i].pThread = SDL_CreateThread (RenderThread, &tiRender.ti [i].nId);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void ControlRenderThreads (void)
+{
+if (gameStates.app.bMultiThreaded) {
+	if (gameData.app.bUseMultiThreading [rtInitSegZRef] ||
+		 gameData.app.bUseMultiThreading [rtSortSegZRef] ||
+		 gameData.app.bUseMultiThreading [rtTransparency] ||
+		 gameData.app.bUseMultiThreading [rtEffects] ||
+		 gameData.app.bUseMultiThreading [rtPolyModel] ||
+		 gameData.app.bUseMultiThreading [rtLightmap])
+		StartRenderThreads ();
+	else
+		EndRenderThreads ();
 	}
 }
 

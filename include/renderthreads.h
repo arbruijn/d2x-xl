@@ -54,6 +54,7 @@ void StartEffectsThread (void);
 void EndEffectsThread (void);
 void ControlEffectsThread (void);
 bool WaitForEffectsThread (void);
+void ControlRenderThreads (void);
 
 //------------------------------------------------------------------------------
 
