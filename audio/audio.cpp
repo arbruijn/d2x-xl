@@ -189,7 +189,7 @@ m_info.bResampled = 0;
 void CAudioChannel::SetVolume (int nVolume)
 {
 if (m_info.bPlaying) {
-	m_info.nVolume = FixMulDiv (nVolume, m_info.nVolume, I2X (1));
+	m_info.nVolume = FixMulDiv (nVolume, audio.Volume (), I2X (1));
 #if USE_SDL_MIXER
 	if (gameOpts->sound.bUseSDLMixer)
 		Mix_VolPan (this - audio.Channel (), m_info.nVolume, -1);
