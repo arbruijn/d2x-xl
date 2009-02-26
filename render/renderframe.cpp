@@ -465,7 +465,7 @@ return 0;
 
 void FlashMine (void)
 {
-if (!gameStates.render.nFlashScale || (gameStates.render.nFlashScale == I2X (1)))
+if (!(extraGameInfo [0].bFlickerLights && gameStates.render.nFlashScale && (gameStates.render.nFlashScale != I2X (1))))
 	return;
 
 	int	bDepthTest, bBlend;
@@ -477,8 +477,8 @@ if ((bBlend = glIsEnabled (GL_BLEND))) {
 	}
 else
 	glEnable (GL_BLEND);
-glBlendFunc (GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-glColor4f (0, 0, 0, 1.0f - X2F (gameStates.render.nFlashScale));
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+glColor4f (0, 0, 0, /*1.0f -*/ X2F (gameStates.render.nFlashScale));
 if ((bDepthTest = glIsEnabled (GL_DEPTH_TEST)))
 	glDisable (GL_DEPTH_TEST);
 glDisable (GL_TEXTURE_2D);
