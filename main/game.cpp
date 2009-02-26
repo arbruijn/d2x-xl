@@ -1322,7 +1322,7 @@ void DoEffectsFrame (void)
 if (WaitForEffectsThread ())
 	tiEffects.bExec = 1;
 #else
-if (WaitForRenderThread ()) {
+if (WaitForRenderThreads ()) 
 	RunRenderThreads (rtEffects, 1);
 #endif
 else {
