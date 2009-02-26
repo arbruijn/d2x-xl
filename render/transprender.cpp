@@ -174,16 +174,16 @@ return 0;
 
 int CTransparencyRenderer::AddMT (tTranspItemType nType, void *itemData, int itemSize, int nDepth, int nIndex, int nThread)
 {
-if (!gameStates.app.bMultiThreaded || (nThread < 0) || !gameData.app.bUseMultiThreading [rtTransparency])
+if (!gameStates.app.bMultiThreaded || (nThread < 0) || !gameData.app.bUseMultiThreading [rtTranspRender])
 	return Add (nType, itemData, itemSize, nDepth, nIndex);
-while (tiTranspItems.ti [nThread].bExec)
+while (tiTranspRender.ti [nThread].bExec)
 	G3_SLEEP (0);
-tiTranspItems.itemData [nThread].nType = nType;
-tiTranspItems.itemData [nThread].nSize = itemSize;
-tiTranspItems.itemData [nThread].nDepth = nDepth;
-tiTranspItems.itemData [nThread].nIndex = nIndex;
-memcpy (&tiTranspItems.itemData [nThread].item, itemData, itemSize);
-tiTranspItems.ti [nThread].bExec = 1;
+tiTranspRender.itemData [nThread].nType = nType;
+tiTranspRender.itemData [nThread].nSize = itemSize;
+tiTranspRender.itemData [nThread].nDepth = nDepth;
+tiTranspRender.itemData [nThread].nIndex = nIndex;
+memcpy (&tiTranspRender.itemData [nThread].item, itemData, itemSize);
+tiTranspRender.ti [nThread].bExec = 1;
 return 1;
 }
 
@@ -514,7 +514,7 @@ if ((particle->m_nType < 0) || (particle->m_nType >= PARTICLE_TYPES))
 item.particle = particle;
 item.fBrightness = fBrightness;
 z = particle->Transform (gameStates.render.bPerPixelLighting == 2);
-if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtTransparency])
+if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtTranspRender])
 	return AddMT (tiParticle, &item, sizeof (item), z, z, nThread);
 else
 	return Add (tiParticle, &item, sizeof (item), z, z);

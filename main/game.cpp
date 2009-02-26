@@ -1318,8 +1318,13 @@ SaveScreenShot (0, 0);
 void DoEffectsFrame (void)
 {
 //PrintLog ("DoEffectsFrame \n");
+#if 0
 if (WaitForEffectsThread ())
 	tiEffects.bExec = 1;
+#else
+if (WaitForRenderThread ()) {
+	RunRenderThreads (rtEffects, 1);
+#endif
 else {
 	lightningManager.DoFrame ();
 	sparkManager.DoFrame ();

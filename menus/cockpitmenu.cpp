@@ -202,7 +202,7 @@ do {
 		optIconPos = m.AddRadio (TXT_WPNICONS_TOP, 0, KEY_I, HTX_CPIT_ICONPOS);
 		m.AddRadio (TXT_WPNICONS_BTM, 0, KEY_I, HTX_CPIT_ICONPOS);
 		m.AddRadio (TXT_WPNICONS_LRB, 0, KEY_I, HTX_CPIT_ICONPOS);
-		m.AddRadio (TXT_WPNICONS_LRT, 0, KEY_I, HTX_CPIT_ICONPOS);
+		m.AddRadio (TXT_WPnoNICONS_LRT, 0, KEY_I, HTX_CPIT_ICONPOS);
 		m [optIconPos + NMCLAMP (extraGameInfo [0].nWeaponIcons - 1, 0, 3)].m_value = 1;
 		m.AddText ("", 0);
 		optHiliteColor = m.AddRadio (TXT_HUD_HILITE_YELLOW, 0, KEY_Y, HTX_HUD_HILITE_COLOR);

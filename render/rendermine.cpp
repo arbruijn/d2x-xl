@@ -846,7 +846,11 @@ void RenderEffects (int nWindow)
 	int bLightnings, bParticles, bSparks;
 
 OglSetLibFlags (1);
+#if 0
 WaitForEffectsThread ();
+#else
+WaitForRenderThread ();
+#endif
 if (automap.m_bDisplay) {
 	bLightnings = gameOpts->render.automap.bLightnings;
 	bParticles = gameOpts->render.automap.bParticles;

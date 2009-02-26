@@ -40,16 +40,16 @@ typedef struct tTranspRenderThreadInfo {
 	tThreadInfo			ti [2];
 	} tTranspRenderThreadInfo;
 
-extern tTranspRenderThreadInfo tiTranspItems;
+extern tTranspRenderThreadInfo tiTranspRender;
 extern tThreadInfo tiEffects;
 
-int RunRenderThreads (int nTask);
+int RunRenderThreads (int nTask, int nThreads = 2);
 void StartRenderThreads (void);
 void EndRenderThreads (void);
 void StartTranspRenderThread (void);
 void EndTranspRenderThread (void);
 void ControlTranspRenderThread (void);
-void WaitForRenderThreads (void);
+bool WaitForRenderThreads (void);
 void StartEffectsThread (void);
 void EndEffectsThread (void);
 void ControlEffectsThread (void);

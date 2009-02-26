@@ -2492,7 +2492,7 @@ typedef enum {
 	rtComputeFaceLight,
 	rtInitSegZRef,
 	rtSortSegZRef,
-	rtTransparency,
+	rtTranspRender,
 	rtEffects,
 	rtPolyModel,
 	rtTaskCount,
