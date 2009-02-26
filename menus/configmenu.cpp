@@ -83,13 +83,8 @@ i = m.Menu (NULL, TXT_MT_MENU_TITLE, NULL, &choice);
 h = gameStates.app.bMultiThreaded ? rtTaskCount : rtSound + 1;
 for (i = rtSound; i < h; i++)
 	gameData.app.bUseMultiThreading [i] = (m [menuToTask [i]].m_value != 0);
-if (bSound != gameData.app.bUseMultiThreading [rtSound]) {
-	if (bSound)
-		EndSoundThread ();
-	else
-		StartSoundThread ();
-	}
 if (gameStates.app.bGameRunning) {
+	ControlSoundThread ();
 	ControlTranspRenderThread ();
 	ControlEffectsThread ();
 	}

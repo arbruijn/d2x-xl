@@ -488,7 +488,6 @@ if (gameStates.app.bMultiThreaded) {
 		}
 	StartRenderThreads ();
 	}
-StartSoundThread ();
 gameData.render.vertColor.matAmbient[R] = 
 gameData.render.vertColor.matAmbient[G] = 
 gameData.render.vertColor.matAmbient[B] = AMBIENT_LIGHT;
