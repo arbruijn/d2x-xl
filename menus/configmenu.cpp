@@ -89,6 +89,10 @@ if (bSound != gameData.app.bUseMultiThreading [rtSound]) {
 	else
 		StartSoundThread ();
 	}
+if (gameStates.app.bGameRunning) {
+	ControlTranspRenderThread ();
+	ControlEffectsThread ();
+	}
 }
 
 //------------------------------------------------------------------------------

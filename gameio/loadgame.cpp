@@ -125,6 +125,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menubackground.h"
 #include "monsterball.h"
 #include "systemkeys.h"
+#include "renderthreads.h"
 
 #if defined (TACTILE)
  #include "tactile.h"
@@ -1070,6 +1071,8 @@ PrintLog ("   building sky box segment list\n");
 BuildSkyBoxSegList ();
 /*---*/PrintLog ("   stopping music\n");
 //songManager.StopAll ();
+ControlTranspRenderThread ();
+ControlEffectsThread ();
 if (RENDERPATH)
 	gameOpts->render.bDepthSort = 1;
 gameStates.app.bBetweenLevels = 0;

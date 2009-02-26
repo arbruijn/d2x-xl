@@ -34,7 +34,7 @@ COPYRIGHT 0993-0999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define KILL_RENDER_THREADS 0
 
 tRenderThreadInfo tiRender;
-tTranspItemThreadInfo tiTranspItems;
+tTranspRenderThreadInfo tiTranspItems;
 tThreadInfo tiEffects;
 
 //------------------------------------------------------------------------------
@@ -136,6 +136,20 @@ do {
 				ComputeFaceLight (0, tiRender.nMiddle, nId);
 			}
 		}
+	else if (tiRender.nTask == rtEffects) {
+		if (!nId) {
+			DoParticleFrame ();
+			sparkManager.DoFrame ();
+			lightningManager.DoFrame ();
+			}
+		}
+	else if (tiRender.nTask == rtTransparency) {
+		transparencyRenderer.Add ((tTranspItemType) tiTranspItems.itemData [nId].nType, 
+										  &tiTranspItems.itemData [nId].item, 
+										  tiTranspItems.itemData [nId].nSize, 
+										  tiTranspItems.itemData [nId].nDepth, 
+										  tiTranspItems.itemData [nId].nIndex);
+		}
 	else if (tiRender.nTask == rtPolyModel) {
 		short	iVerts, nVerts, iFaceVerts, nFaceVerts;
 
@@ -166,7 +180,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int _CDECL_ TranspItemThread (void *pThreadId)
+int _CDECL_ TranspRenderThread (void *pThreadId)
 {
 #if 1
 	int	i;
@@ -191,17 +205,19 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void StartTranspItemThread (void)
+void StartTranspRenderThread (void)
 {
 #if 1
-memset (&tiTranspItems, 0, sizeof (tiTranspItems));
-tiTranspItems.ti [0].pThread = SDL_CreateThread (TranspItemThread, NULL);
+if (gameData.app.bUseMultiThreading [rtTransparency]) {
+	memset (&tiTranspItems, 0, sizeof (tiTranspItems));
+	tiTranspItems.ti [0].pThread = SDL_CreateThread (TranspRenderThread, NULL);
+	}
 #endif
 }
 
 //------------------------------------------------------------------------------
 
-void EndTranspItemThread (void)
+void EndTranspRenderThread (void)
 {
 if (!tiTranspItems.ti [0].pThread)
 	return;
@@ -209,6 +225,18 @@ tiTranspItems.ti [0].bDone = 0;
 G3_SLEEP (10);
 //SDL_KillThread (tiTranspItems.ti [0].pThread);
 tiTranspItems.ti [0].pThread = NULL;
+}
+
+//------------------------------------------------------------------------------
+
+void ControlTranspRenderThread (void)
+{
+if (gameStates.app.bMultiThreaded) {
+	if (gameData.app.bUseMultiThreading [rtTransparency])
+		StartTranspRenderThread ();
+	else
+		EndTranspRenderThread ();
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -222,8 +250,6 @@ for (i = 0; i < 2; i++) {
 	tiRender.ti [i].nId = i;
 	tiRender.ti [i].pThread = SDL_CreateThread (RenderThread, &tiRender.ti [i].nId);
 	}
-StartTranspItemThread ();
-StartEffectsThread ();
 }
 
 //------------------------------------------------------------------------------
@@ -241,7 +267,7 @@ for (i = 0; i < 2; i++) {
 		tiRender.ti [i].pThread = NULL;
 		}
 	}
-EndTranspItemThread ();
+EndTranspRenderThread ();
 EndEffectsThread ();
 }
 
@@ -264,9 +290,11 @@ return 0;
 
 void StartEffectsThread (void)
 {
-memset (&tiEffects, 0, sizeof (tiEffects));
-if (!(tiEffects.pThread = SDL_CreateThread (EffectsThread, NULL)))
-	gameData.app.bUseMultiThreading [rtEffects] = 0;
+if (gameData.app.bUseMultiThreading [rtEffects]) {
+	memset (&tiEffects, 0, sizeof (tiEffects));
+	if	(!(tiEffects.pThread = SDL_CreateThread (EffectsThread, NULL)))
+		gameData.app.bUseMultiThreading [rtEffects] = 0;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -279,6 +307,18 @@ tiEffects.bDone = 0;
 G3_SLEEP (100);
 //SDL_KillThread (tiEffects.pThread);
 tiEffects.pThread = NULL;
+}
+
+//------------------------------------------------------------------------------
+
+void ControlEffectsThread (void)
+{
+if (gameStates.app.bMultiThreaded) {
+	if (gameData.app.bUseMultiThreading [rtEffects])
+		StartEffectsThread ();
+	else
+		EndEffectsThread ();
+	}
 }
 
 //------------------------------------------------------------------------------
