@@ -56,8 +56,8 @@ if (!colorP)
 OglCanvasColor (colorP);
 glVertex2f (float (x + CCanvas::Current ()->Left ()) / float (gameStates.ogl.nLastW),
 				1.0f - float (y + CCanvas::Current ()->Top ()) / float (gameStates.ogl.nLastW));
-if (colorP->rgb)
-	glDisable (GL_BLEND);
+//if (colorP->rgb)
+//	glDisable (GL_BLEND);
 glEnd();
 }
 
@@ -75,13 +75,13 @@ if (!colorP)
 	colorP = &COLOR;
 OglCanvasColor (colorP);
 glBegin (GL_QUADS);
-glVertex2f (x0,y0);
-glVertex2f (x0,y1);
-glVertex2f (x1,y1);
-glVertex2f (x1,y0);
+glVertex2f (x0, y0);
+glVertex2f (x0, y1);
+glVertex2f (x1, y1);
+glVertex2f (x1, y0);
 glEnd ();
-if (colorP->rgb || (gameStates.render.grAlpha < 1.0f))
-	glDisable (GL_BLEND);
+//if (colorP->rgb || (gameStates.render.grAlpha < 1.0f))
+//	glDisable (GL_BLEND);
 }
 
 //------------------------------------------------------------------------------
@@ -106,8 +106,8 @@ for (int i = 0; i <= nVerts; i++) {
 					1.0f - GLfloat (y [j] + top) / GLfloat (gameStates.ogl.nLastH));
 	}
 glEnd ();
-if (colorP->rgb || (gameStates.render.grAlpha < 1.0f))
-	glDisable (GL_BLEND);
+//if (colorP->rgb || (gameStates.render.grAlpha < 1.0f))
+//	glDisable (GL_BLEND);
 }
 
 //------------------------------------------------------------------------------
@@ -123,10 +123,10 @@ if (!colorP)
 	colorP = &COLOR;
 OglCanvasColor (colorP);
 glBegin (GL_LINES);
-glVertex2f (x0,y0);
-glVertex2f (x1,y1);
-if (colorP->rgb)
-	glDisable (GL_BLEND);
+glVertex2f (x0, y0);
+glVertex2f (x1, y1);
+//if (colorP->rgb)
+//	glDisable (GL_BLEND);
 glEnd();
 }
 
@@ -147,10 +147,10 @@ glVertex2f (x0, y0);
 glVertex2f (x1, y0);
 glVertex2f (x1, y1);
 glVertex2f (x0, y1);
-glEnd();
+glEnd ();
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-if (colorP->rgb)
-	glDisable (GL_BLEND);
+//if (colorP->rgb)
+//	glDisable (GL_BLEND);
 }
 
 //------------------------------------------------------------------------------

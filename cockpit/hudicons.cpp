@@ -465,22 +465,22 @@ return 0;
 
 void CHUDIcons::DrawInventory (void)
 {
-	CBitmap	*bmP;
-	char	szCount [4];
-	int nIconScale = (gameOpts->render.weaponIcons.bSmall || (gameStates.render.cockpit.nType != CM_FULL_SCREEN)) ? 3 : 2;
-	int nIconPos = extraGameInfo [0].nWeaponIcons & 1;
-	int	fw, fh, faw;
-	int	j, n, firstItem, 
-			oy = 6, 
-			ox = 6, 
-			x, y, dy;
-	int	w = bmpInventory->Width (), 
-			h = bmpInventory->Width ();
-	int	wIcon = (int) ((w + nIconScale - 1) / nIconScale * xScale), 
-			hIcon = (int) ((h + nIconScale - 1) / nIconScale * yScale);
+	CBitmap*	bmP;
+	char		szCount [4];
+	int		nIconScale = (gameOpts->render.weaponIcons.bSmall || (gameStates.render.cockpit.nType != CM_FULL_SCREEN)) ? 3 : 2;
+	int		nIconPos = extraGameInfo [0].nWeaponIcons & 1;
+	int		fw, fh, faw;
+	int		j, n, firstItem, 
+				oy = 6, 
+				ox = 6, 
+				x, y, dy;
+	int		w = bmpInventory->Width (), 
+				h = bmpInventory->Width ();
+	int		wIcon = (int) ((w + nIconScale - 1) / nIconScale * xScale), 
+				hIcon = (int) ((h + nIconScale - 1) / nIconScale * yScale);
 	//float	fLineWidth = (CCanvas::Current ()->Width () >= 1200) ? 2.0f : 1.0f;
-	float	fLineWidth = float (CCanvas::Current ()->Width ()) / 640.0f;
-	ubyte	alpha = gameOpts->render.weaponIcons.alpha;
+	float		fLineWidth = float (CCanvas::Current ()->Width ()) / 640.0f;
+	ubyte		alpha = gameOpts->render.weaponIcons.alpha;
 
 	static int nInvFlags [NUM_INV_ITEMS] = {
 		PLAYER_FLAGS_AFTERBURNER, 
@@ -546,7 +546,7 @@ for (j = firstItem; j < n; j++) {
 	else {
 		CCanvas::Current ()->SetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
 		}
-	OglDrawFilledRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
+	//OglDrawFilledRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
 	if (bHave)
 		if (bAvailable)
 			if (bArmed)
@@ -558,7 +558,7 @@ for (j = firstItem; j < n; j++) {
 	else
 		CCanvas::Current ()->SetColorRGB (64, 64, 64, 255);
 	glLineWidth ((bArmed && gameOpts->render.weaponIcons.bBoldHighlight) ? 3 : fLineWidth);
-	OglDrawEmptyRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
+	//OglDrawEmptyRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
 	if (*szCount) {
 		fontManager.Current ()->StringSize (szCount, fw, fh, faw);
 		fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
