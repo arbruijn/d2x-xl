@@ -2352,7 +2352,7 @@ gameData.objs.consoleP = OBJECTS + LOCALPLAYER.nObject;
 StartTriggeredSounds ();
 StartTime (1);
 if (!extraGameInfo [0].nBossCount && (!IsMultiGame || IsCoopGame) && OpenExits ())
-	InitCountdown (NULL, 1, -1);
+	InitCountdown (NULL, gameData.reactor.bDestroyed, gameData.reactor.countdown.nTimer);
 return 1;
 }
 

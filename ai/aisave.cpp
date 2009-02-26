@@ -293,7 +293,9 @@ else {
 	gameData.thief.stolenItems.Clear (char (0xff));
 	}
 
-if (m_nVersion >= 15) {
+if (m_nVersion < 15) 
+	AIResetAllPaths ();
+else {
 	DBG (i = CFTell (fp));
 	i = m_cf.ReadInt ();
 	if ((i >= 0) && (i < nRouteSegs))
@@ -301,8 +303,6 @@ if (m_nVersion >= 15) {
 	else
 		AIResetAllPaths ();
 	}
-else
-	AIResetAllPaths ();
 
 if (m_nVersion < 21) {
 	#if TRACE

@@ -478,7 +478,7 @@ if ((bBlend = glIsEnabled (GL_BLEND))) {
 else
 	glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-glColor4f (0, 0, 0, /*1.0f -*/ X2F (gameStates.render.nFlashScale));
+glColor4f (0, 0, 0, /*1.0f -*/ 3 * X2F (gameStates.render.nFlashScale) / 4);
 if ((bDepthTest = glIsEnabled (GL_DEPTH_TEST)))
 	glDisable (GL_DEPTH_TEST);
 glDisable (GL_TEXTURE_2D);
