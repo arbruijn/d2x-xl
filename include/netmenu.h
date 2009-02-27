@@ -8,7 +8,7 @@ int NetworkGetGameParams (int bAutoRun);
 int NetworkSelectPlayers (int bAutoRun);
 void InitNetgameMenu (CMenu& menu, int i);
 int NetworkFindGame (void);
-int NetworkGetIpAddr (void);
+int NetworkGetIpAddr (bool bServer = false);
 void ShowNetGameInfo (int choice);
 void ShowExtraNetGameInfo (int choice);
 int NetworkStartPoll (CMenu& menu, int& key, int nCurItem, int nState);
