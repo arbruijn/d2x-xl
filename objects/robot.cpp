@@ -74,29 +74,20 @@ return ROBOTINFO (robotType).animStates [nGun][state].n_joints;
 
 //	-----------------------------------------------------------------------------------------------------------
 //for test, set a robot to a specific state
-void setRobotState (CObject *objP, int state)
+void SetRobotState (CObject *objP, int state)
 {
-	int g,j,jo;
-	tRobotInfo *ri;
-	jointlist *jl;
+	int			g, j, jo;
+	tRobotInfo*	ri;
+	jointlist*	jl;
 
-	Assert(objP->info.nType == OBJ_ROBOT);
-
-	ri = &ROBOTINFO (objP->info.nId);
-
-	for (g=0;g<ri->nGuns+1;g++) {
-
-		jl = &ri->animStates[g][state];
-
-		jo = jl->offset;
-
-		for (j=0;j<jl->n_joints;j++,jo++) {
-			int jn;
-
-			jn = gameData.bots.joints[jo].jointnum;
-
-			objP->rType.polyObjInfo.animAngles[jn] = gameData.bots.joints[jo].angles;
-
+Assert(objP->info.nType == OBJ_ROBOT);
+ri = &ROBOTINFO (objP->info.nId);
+for (g = 0; g < ri->nGuns + 1; g++) {
+	jl = &ri->animStates[g][state];
+	jo = jl->offset;
+	for (j = 0; j < jl->n_joints; j++, jo++) {
+		int jn = gameData.bots.joints [jo].jointnum;
+		objP->rType.polyObjInfo.animAngles [jn] = gameData.bots.joints [jo].angles;
 		}
 	}
 }
