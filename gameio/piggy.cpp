@@ -743,9 +743,7 @@ CBitmap bmTemp;
 
 bool LoadD1Sounds (bool bCustom)
 {
-	tPIGBitmapHeader	bmh;
-	char					szNameRead [16];
-	int					i, nBmHdrOffs, nBmDataOffs, nSounds, nBitmaps;
+	int	nBmHdrOffs, nBmDataOffs, nSounds, nBitmaps;
 
 if (cfPiggy [1].File ())
 	cfPiggy [1].Seek (0, SEEK_SET);
@@ -758,7 +756,7 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data) {
 	gameStates.app.bD1Data = 1;
 	SetDataVersion (1);
 	if (!bHaveD1Sounds || bCustom) {
-		SetupSounds (cfPiggy [1], nSounds, nBmHdrOffs + nBitmaps * PIGBITMAPHEADER_D1_SIZE, bCustom);
+		SetupSounds (cfPiggy [1], nSounds, nBmHdrOffs + nBitmaps * PIGBITMAPHEADER_D1_SIZE, bCustom, false);
 		LoadSounds (cfPiggy [1]);
 		bHaveD1Sounds = 1;
 		}
