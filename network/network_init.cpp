@@ -388,7 +388,7 @@ if (gameData.multiplayer.autoNG.bHost) {
 	}
 else {
 	memcpy (ipx_ServerAddress + 4, gameData.multiplayer.autoNG.ipAddr, sizeof (gameData.multiplayer.autoNG.ipAddr));
-	mpParams.udpClientPort = gameData.multiplayer.autoNG.nPort;
+	mpParams.udpPorts [1] = gameData.multiplayer.autoNG.nPort;
 	}
 return 1;
 }

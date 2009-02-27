@@ -735,8 +735,8 @@ static int UDPOpenSocket (ipx_socket_t *sk, int port)
 #endif
 	u_short	nLocalPort, nServerPort;
 
-udpBasePorts [1] = UDP_BASEPORT + networkData.nSocket;	//server port as set by the server
-nLocalPort = gameStates.multi.bServer ? udpBasePorts [1] : mpParams.udpClientPort;
+udpBasePorts [1] = mpParams.udpPorts [0] + networkData.nSocket;	//server port as set by the server
+nLocalPort = gameStates.multi.bServer ? udpBasePorts [1] : mpParams.udpPorts [1];
 gameStates.multi.bHaveLocalAddress = 0;
 if (!nOpenSockets && (UDPGetMyAddress () < 0)) {
 	FAIL ("couldn't get my address");
@@ -775,7 +775,7 @@ if (setsockopt (sk->fd, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char*> (&val_
 	FAIL ("setting broadcast socket option failed");
 	}
 #endif
-if (gameStates.multi.bServer || mpParams.udpClientPort) {
+if (gameStates.multi.bServer || mpParams.udpPorts [1]) {
 	sin.sin_family = AF_INET;
 	sin.sin_addr.s_addr = htonl (INADDR_ANY); //ipx_ServerAddress + 4);
 	sin.sin_port = htons (ushort (nLocalPort));

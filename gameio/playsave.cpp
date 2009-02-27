@@ -354,7 +354,8 @@ for (i = 0; i < 2; i++) {
 		RP (mpParams.bShowAllNames, 0, 0);
 		RP (mpParams.bShortPackets, 0, 0);
 		RP (mpParams.nPPS, 0, 0);
-		RP (mpParams.udpClientPort, 0, 0);
+		RP (mpParams.udpPorts [0], 0, 0);
+		RP (mpParams.udpPorts [1], 0, 0);
 		RP (mpParams.szServerIpAddr, 0, 0);
 
 		RP (extraGameInfo [i].bAutoBalanceTeams, 0, 0);
@@ -814,7 +815,8 @@ tParamValue defaultParams [] = {
  {"mpParams.bShowAllNames", "0"},
  {"mpParams.bShortPackets", "0"},
  {"mpParams.nPPS", "10"},
- {"mpParams.udpClientPort", "28342"},
+ {"mpParams.udpPorts[0]", "28342"},
+ {"mpParams.udpPorts[1]", "28342"},
  {"mpParams.szServerIpAddr", "127.0.0.1"},
  {"extraGameInfo[0].bAutoBalanceTeams", "0"},
  {"extraGameInfo[0].bAutoDownload", "1"},
@@ -1719,7 +1721,7 @@ for (i = 0; i < 2; i++) {
 		mpParams.bShowAllNames = cf.ReadByte ();
 		mpParams.bShortPackets = cf.ReadByte ();
 		mpParams.nPPS = cf.ReadByte ();
-		mpParams.udpClientPort = cf.ReadInt ();
+		mpParams.udpPorts [1] = cf.ReadInt ();
 		cf.Read(mpParams.szServerIpAddr, 16, 1);
 		}
 	if (gameStates.input.nPlrFileVersion >= 80)
@@ -2381,7 +2383,7 @@ for (i = 0; i < 2; i++) {
 		cf.WriteByte ((sbyte) mpParams.bShowAllNames);
 		cf.WriteByte ((sbyte) mpParams.bShortPackets);
 		cf.WriteByte ((sbyte) mpParams.nPPS);
-		cf.WriteInt (mpParams.udpClientPort);
+		cf.WriteInt (mpParams.udpPorts [1]);
 		cf.Write(mpParams.szServerIpAddr, 16, 1);
 		}
 	cf.WriteByte ((sbyte) gameOptions [i].render.nMeshQuality);

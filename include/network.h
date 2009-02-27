@@ -290,6 +290,7 @@ typedef struct tMpParams {
 	ubyte	bShortPackets;
 	ubyte	nPPS;
 	tMsnListEntry	mission;
+	int	udpPorts [2];
 } tMpParams;
 
 extern tMpParams mpParams;

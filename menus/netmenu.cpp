@@ -1253,14 +1253,15 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int NetworkGetIpAddr (void)
+int NetworkGetIpAddr (bool bServer)
 {
 	CMenu	m (9);
-	int	i, choice = 0;
-	int	optServer = -1, optPort = -1;
+	int	h, i, j, choice = 0;
+	int	optServer = -1, optCheckPorts, optPort [2] = {-1, -1};
+	bool	bError;
 
-	static char szClientPort [7] = {'\0'};
-	static int nClientPortSign = 0;
+	static char szPort [2][7] = {{'\0','\0','\0','\0','\0','\0','\0'}, {'\0','\0','\0','\0','\0','\0','\0'}};
+	static int nSign = 0;
 
 if (!tracker.m_bUse) {
 	if (!*mpParams.szServerIpAddr) {
@@ -1271,39 +1272,59 @@ if (!tracker.m_bUse) {
 		else {
 			sprintf (mpParams.szServerIpAddr, "%d.%d.%d.%d", 
 						ipx_ServerAddress [4], ipx_ServerAddress [5], ipx_ServerAddress [6], ipx_ServerAddress [7]);
-			sprintf (szClientPort, "%s%d", 
-						 (nClientPortSign < 0) ? "-" : (nClientPortSign > 0) ? "+" : "", mpParams.udpClientPort);
+			sprintf (szPort [1], "%s%d", 
+						 (nSign < 0) ? "-" : (nSign > 0) ? "+" : "", mpParams.udpPorts [1]);
 			IpxClose ();
 			}
 		}
-	}
-if (!tracker.m_bUse) {
 	m.AddText (TXT_HOST_IP, 0);
 	optServer = m.AddInput (mpParams.szServerIpAddr, sizeof (mpParams.szServerIpAddr) - 1, HTX_GETIP_SERVER);
 	m.AddText (TXT_CLIENT_PORT, 0);
+	j = 1;
+	h = 2;
 	}
-if ((mpParams.udpClientPort < 0) || (mpParams.udpClientPort > 65535))
-	mpParams.udpClientPort = 0;
-sprintf (szClientPort, "%u", mpParams.udpClientPort);
-optPort = m.AddInput (szClientPort, sizeof (szClientPort) - 1, HTX_GETIP_CLIENT);
+else if (bServer) {
+	j = 0;
+	h = 1;
+	}
+else {
+	j = 0;
+	h = 2;
+	}
+for (i = j; i < h; i++) {
+	if ((mpParams.udpPorts [i] < 0) || (mpParams.udpPorts [i] > 65535))
+		mpParams.udpPorts [i] = UDP_BASEPORT;
+	sprintf (szPort [i], "%u", mpParams.udpPorts [i]);
+	m.AddText (GT (1100 + i));
+	optPort [i] = m.AddInput (szPort [i], sizeof (szPort [i]) - 1, HTX_GETIP_CLIENT);
+	}
+
 m.AddText (TXT_PORT_HELP1, 0);
 m.AddText (TXT_PORT_HELP2, 0);
+m.AddText ("");
+optCheckPorts = m.AddCheck (TXT_CHECK_PORTS, gameStates.multi.bCheckPorts, KEY_C, HTX_CHECK_PORTS);
 for (;;) {
-	i = m.Menu (NULL, tracker.m_bUse ? TXT_CLIENT_PORT + 1 : TXT_IP_HEADER, &IpAddrMenuCallBack, &choice);
+	i = m.Menu (NULL, tracker.m_bUse ? TXT_NETWORK_ADDRESSES : TXT_IP_HEADER, &IpAddrMenuCallBack, &choice);
 	if (i < 0)
 		break;
-	if (i < int (m.ToS ())) {
-		if ((i == optServer) || (i == optPort)) {
-			if (tracker.m_bUse || stoip (mpParams.szServerIpAddr, ipx_ServerAddress + 4)) {
-				stoport (szClientPort, &mpParams.udpClientPort, &nClientPortSign);
-				if (gameStates.multi.bCheckPorts && !mpParams.udpClientPort)
-					MsgBox (NULL, NULL, 1, TXT_OK, TXT_IP_INVALID);
-				else
-					return 1;
-				}
-			MsgBox (NULL, NULL, 1, TXT_OK, TXT_IP_INVALID);
+	if (i >= int (m.ToS ()))
+		continue;
+	bError = false;
+	gameStates.multi.bCheckPorts = m [optCheckPorts].m_value != 0;
+	if (tracker.m_bUse) {
+		for (i = j; i < h; i++) { 
+			stoport (szPort [i], &mpParams.udpPorts [i], &nSign);
+			if (gameStates.multi.bCheckPorts && !mpParams.udpPorts [i])
+				bError = true;
 			}
 		}
+	else {
+		if (stoip (mpParams.szServerIpAddr, ipx_ServerAddress + 4))
+			bError =  true;
+		}
+	if (!bError)
+		return 1;
+	MsgBox (NULL, NULL, 1, TXT_OK, TXT_IP_INVALID);
 	}
 return 0;
 } 

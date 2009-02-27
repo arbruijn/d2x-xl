@@ -399,7 +399,7 @@ if (gameData.app.bGamePaused) {
 fix 	timerValue,
 		xLastFrameTime = gameData.time.xFrame;
 GetSlowTicks ();
-#if 1
+#if 0
 	fix xMinFrameTime = (MAXFPS ? I2X (1) / MAXFPS : 1);
 do {
 	timerValue = TimerGetFixedSeconds ();
@@ -413,14 +413,14 @@ int	tFrameTime, txMinFrameTime;
 
 if (MAXFPS) {
 	txMinFrameTime = 1000 / MAXFPS;
-#if 0
+#	if 1
 	static float tSlack = 0;
 	tSlack += 1000.0f / MAXFPS - txMinFrameTime;
 	if (tSlack >= 1) {
 		txMinFrameTime += (int) tSlack;
 		tSlack -= (int) tSlack;
 		}
-#endif
+#	endif
 	}
 
 if (MAXFPS > 1) {
@@ -430,6 +430,7 @@ if (MAXFPS > 1) {
 	}
 timerValue = SECS2X (gameStates.app.nSDLTicks);
 #endif
+
 gameData.time.xFrame = timerValue - gameData.time.xLast;
 gameData.time.xRealFrame = gameData.time.xFrame;
 if (gameStates.app.cheats.bTurboMode)

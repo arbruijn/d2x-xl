@@ -728,9 +728,9 @@ const char *defaultGameTexts [][2] = {
  {"D~2 Missionen spielen", "Play D2 Missions"},
  {"D~1 Missionen spielen", "Play D1 Missions"},
  {"IP-Addresse des Spielleiters", "Enter game host's IP address:"},
- {"Teilnehmer-Portnummer", "\nEnter client port:"},
+ {"Netzwerk-Adressen", "\nnetwork addresses"},
  {"\n (0 fuer bel. verfuegbaren Port)", "\n (0 for arbitrary, available port, "},
- {"+/- Wert fuer Serverport + Wert)", "+/- offset for server port + offset)"},
+ {"+/- Wert fuer Standardport + Wert)", "+/- offset for default port + offset)"},
  {"Waehle Film", "Select Movie"},
  {"Waehle Lied", "Select Song"},
  {"Keine oder ungueltige IP-Adresse.\nBeitritt abgebrochen", "No or invalid IP address specified.\nJoin request cancelled."},
@@ -1843,6 +1843,9 @@ const char *defaultGameTexts [][2] = {
  {"~breite Cockpit-Anzeigefenster", "~Wide cockpit display windows"},
  {"hervorhebung ~Gelb", "~Yellow highlights"},
  {"hervorhebung ~Blau", "~Blue highlights"},
+ {"Server-Portnummer", "\nEnter server port:"},
+ {"Teilnehmer-Portnummer", "\nEnter client port:"},
+ {"~Portnummern neuer Verbindungen pruefen", "~Check port numbers of new connections"}
 #if 0
  {"", ""},
 #endif
@@ -2509,6 +2512,8 @@ const char *defaultHelpTexts [][2] = {
  {"Wenn angekreuzt, erhalten die Icons aktiver Waffen und\nAusruestung besonders fette Rahmen.", "If checked, armed weapons and active equipment\nhave a bold frame."},
  {"Wenn angekreuzt, werden bei Widescreen-Aufloesungen auch\ndie Anzeigefenster im HUD verbreitert.", 
   "If checked, HUD display windows are wider too for\nwidescreen resolutions."},
+ {"Wenn angekreuzt, wird bei neuen Verbindungen auch die Portnummer\nverwendet um festzustellen, ob der Absender schon bekannt ist.\nDas ist sinnvoll, wenn mehrere Teilnehmer aus dem selben Teilnetz-\nwerk (z.B. hinter einem Router) mitspielen.", 
+  "If checked, port numbers are used to for new connections to\ndetect whether the sender is already known. That is useful to\ndistinguish players from the same subnetwork, like from behind a\nrouter."},
 #if 0
  {"", ""},
 #endif
