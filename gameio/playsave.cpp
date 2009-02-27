@@ -389,6 +389,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].bWiggle, 0, 0);
 		RP (extraGameInfo [i].bGatlingSpeedUp, i, 0);
 		RP (extraGameInfo [i].bRotateMarkers, i, 0);
+		RP (extraGameInfo [i].bBrightObjects, i, 0);
 
 		RP (extraGameInfo [i].grWallTransparency, 0, 0);
 
@@ -489,7 +490,6 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.coronas.bAdditive, i, 0);
 		RP (gameOptions [i].render.coronas.bAdditiveObjs, i, 0);
 		RP (gameOptions [i].render.effects.bEnergySparks, i, 0);
-		RP (gameOptions [i].render.bBrightObjects, i, 0);
 		RP (gameOptions [i].render.effects.bRobotShields, i, 0);
 		RP (gameOptions [i].render.effects.bOnlyShieldHits, 0, 0);
 		RP (gameOptions [i].render.effects.bTransparent, i, 0);
@@ -939,6 +939,7 @@ tParamValue defaultParams [] = {
  {"extraGameInfo[0].loadout.nGuns", "0"},
  {"extraGameInfo[0].loadout.nDevices", "0"},
  {"extraGameInfo [0].bShowWeapons", "1"},
+ {"extraGameInfo [0].bBrightObjects", "0"},
  {"gameOptions[0].input.keyboard.bRamp[0]", "0"},
  {"gameOptions[0].input.mouse.sensitivity[0]", "8"},
  {"gameOptions[0].input.trackIR.sensitivity[0]", "8"},
@@ -1016,7 +1017,6 @@ tParamValue defaultParams [] = {
  {"gameOptions[0].render.coronas.nObjIntensity", "1"},
  {"gameOptions[0].render.coronas.bAdditive", "0"},
  {"gameOptions[0].render.effects.bEnergySparks", "0"},
- {"gameOptions[0].render.bBrightObjects", "0"},
  {"gameOptions[0].render.effects.bRobotShields", "0"},
  {"gameOptions[0].render.effects.bOnlyShieldHits", "0"},
  {"gameOptions[0].render.effects.bTransparent", "1"},

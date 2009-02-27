@@ -3066,7 +3066,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\audio\win32\include\hmpfile.h"
+						RelativePath="..\include\hmpfile.h"
 						>
 					</File>
 					<File
@@ -4301,11 +4301,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File

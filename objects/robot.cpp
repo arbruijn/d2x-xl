@@ -67,8 +67,8 @@ return 1;
 int RobotGetAnimState (tJointPos **jointPosP, int robotType, int nGun, int state)
 {
 Assert(nGun <= ROBOTINFO (robotType).nGuns);
-*jointPosP = &gameData.bots.joints [ROBOTINFO (robotType).animStates[nGun][state].offset];
-return ROBOTINFO (robotType).animStates[nGun][state].n_joints;
+*jointPosP = &gameData.bots.joints [ROBOTINFO (robotType).animStates [nGun][state].offset];
+return ROBOTINFO (robotType).animStates [nGun][state].n_joints;
 }
 
 
@@ -294,13 +294,13 @@ return i;
  */
 int ReadJointPositions (CArray<tJointPos>& jp, int n, CFile& cf, int o)
 {
-	int i;
+	int	i;
 
-	for (i = 0; i < n; i++) {
-		jp [i + o].jointnum = cf.ReadShort ();
-		cf.ReadAngVec (jp [i].angles);
+for (i = 0; i < n; i++) {
+	jp [i + o].jointnum = cf.ReadShort ();
+	cf.ReadAngVec (jp [i].angles);
 	}
-	return i;
+return i;
 }
 #endif
 

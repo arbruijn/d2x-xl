@@ -367,7 +367,6 @@ typedef struct tRenderOptions {
 	int bUseLightmaps;
 	int nLightmapQuality;
 	int bUseShaders;
-	int bBrightObjects;
 	int nMathFormat;
 	int nDefMathFormat;
 	short nMaxFPS;
