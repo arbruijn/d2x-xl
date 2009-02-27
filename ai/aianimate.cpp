@@ -161,55 +161,29 @@ void AIFrameAnimation (CObject *objP)
 	int	nJoint;
 	int	nJoints = gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].ModelCount ();
 
-	for (nJoint=1; nJoint<nJoints; nJoint++) {
-		fix			delta_to_goal;
-		fix			scaled_delta_angle;
-		CAngleVector	*curangp = &objP->rType.polyObjInfo.animAngles [nJoint];
-		CAngleVector	*goalangp = &gameData.ai.localInfo [nObject].goalAngles [nJoint];
-		CAngleVector	*deltaangp = &gameData.ai.localInfo [nObject].deltaAngles [nJoint];
+for (nJoint = 1; nJoint < nJoints; nJoint++) {
+	fix			delta_to_goal;
+	fix			scaled_delta_angle;
+	CAngleVector	*curangp = &objP->rType.polyObjInfo.animAngles [nJoint];
+	CAngleVector	*goalangp = &gameData.ai.localInfo [nObject].goalAngles [nJoint];
+	CAngleVector	*deltaangp = &gameData.ai.localInfo [nObject].deltaAngles [nJoint];
 
-		Assert (nObject >= 0);
-		delta_to_goal = (*goalangp)[PA] - (*curangp)[PA];
+	Assert (nObject >= 0);
+	for (int nAngle = 0; nAngle < 3; nAngle++) {
+		delta_to_goal = (*goalangp)[nAngle] - (*curangp)[nAngle];
 		if (delta_to_goal > 32767)
-			delta_to_goal = delta_to_goal - 65536;
+			delta_to_goal -= 65536;
 		else if (delta_to_goal < -32767)
-			delta_to_goal = 65536 + delta_to_goal;
+			delta_to_goal += delta_to_goal;
 
 		if (delta_to_goal) {
-			scaled_delta_angle = FixMul ((*deltaangp)[PA], gameData.time.xFrame) * DELTA_ANG_SCALE;
-			(*curangp)[PA] += (fixang) scaled_delta_angle;
+			scaled_delta_angle = FixMul ((*deltaangp)[nAngle], gameData.time.xFrame) * DELTA_ANG_SCALE;
+			(*curangp)[nAngle] += (fixang) scaled_delta_angle;
 			if (abs (delta_to_goal) < abs (scaled_delta_angle))
-				(*curangp)[PA] = (*goalangp)[PA];
+				(*curangp)[nAngle] = (*goalangp)[nAngle];
+			}
 		}
-
-		delta_to_goal = (*goalangp)[BA] - (*curangp)[BA];
-		if (delta_to_goal > 32767)
-			delta_to_goal = delta_to_goal - 65536;
-		else if (delta_to_goal < -32767)
-			delta_to_goal = 65536 + delta_to_goal;
-
-		if (delta_to_goal) {
-			scaled_delta_angle = FixMul ((*deltaangp)[BA], gameData.time.xFrame) * DELTA_ANG_SCALE;
-			(*curangp)[BA] += (fixang) scaled_delta_angle;
-			if (abs (delta_to_goal) < abs (scaled_delta_angle))
-				(*curangp)[BA] = (*goalangp)[BA];
-		}
-
-		delta_to_goal = (*goalangp)[HA] - (*curangp)[HA];
-		if (delta_to_goal > 32767)
-			delta_to_goal = delta_to_goal - 65536;
-		else if (delta_to_goal < -32767)
-			delta_to_goal = 65536 + delta_to_goal;
-
-		if (delta_to_goal) {
-			scaled_delta_angle = FixMul ((*deltaangp)[HA], gameData.time.xFrame) * DELTA_ANG_SCALE;
-			(*curangp)[HA] += (fixang) scaled_delta_angle;
-			if (abs (delta_to_goal) < abs (scaled_delta_angle))
-				(*curangp)[HA] = (*goalangp)[HA];
-		}
-
 	}
-
 }
 
 //	----------------------------------------------------------------------

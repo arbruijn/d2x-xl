@@ -676,43 +676,19 @@ for (int joint = 1; joint < nJointCount; joint++) {
 	CAngleVector	*goalangp = &gameData.ai.localInfo [nObject].goalAngles [joint];
 	CAngleVector	*deltaangp = &gameData.ai.localInfo [nObject].deltaAngles [joint];
 
-	delta_to_goal = (*goalangp) [PA] - (*curangp) [PA];
-	if (delta_to_goal > 32767)
-		delta_to_goal = delta_to_goal - 65536;
-	else if (delta_to_goal < -32767)
-		delta_to_goal = 65536 + delta_to_goal;
+	for (int nAngle = 0; nAngle < 3; nAngle++) {
+		delta_to_goal = (*goalangp) [nAngle] - (*curangp) [nAngle];
+		if (delta_to_goal > 32767)
+			delta_to_goal -= 65536;
+		else if (delta_to_goal < -32767)
+			delta_to_goal += 65536;
 
-	if (delta_to_goal) {
-		scaled_delta_angle = FixMul((*deltaangp) [PA], gameData.time.xFrame) * DELTA_ANG_SCALE;
-		(*curangp) [PA] += (fixang) scaled_delta_angle;
-		if (abs(delta_to_goal) < abs(scaled_delta_angle))
-			(*curangp) [PA] = (*goalangp) [PA];
-		}
-
-	delta_to_goal = (*goalangp) [BA] - (*curangp) [BA];
-	if (delta_to_goal > 32767)
-		delta_to_goal = delta_to_goal - 65536;
-	else if (delta_to_goal < -32767)
-		delta_to_goal = 65536 + delta_to_goal;
-
-	if (delta_to_goal) {
-		scaled_delta_angle = FixMul((*deltaangp) [BA], gameData.time.xFrame) * DELTA_ANG_SCALE;
-		(*curangp) [BA] += (fixang) scaled_delta_angle;
-		if (abs(delta_to_goal) < abs(scaled_delta_angle))
-			(*curangp) [BA] = (*goalangp) [BA];
-		}
-
-	delta_to_goal = (*goalangp) [HA] - (*curangp) [HA];
-	if (delta_to_goal > 32767)
-		delta_to_goal = delta_to_goal - 65536;
-	else if (delta_to_goal < -32767)
-		delta_to_goal = 65536 + delta_to_goal;
-
-	if (delta_to_goal) {
-		scaled_delta_angle = FixMul((*deltaangp) [HA], gameData.time.xFrame) * DELTA_ANG_SCALE;
-		(*curangp) [HA] += (fixang) scaled_delta_angle;
-		if (abs(delta_to_goal) < abs(scaled_delta_angle))
-			(*curangp) [HA] = (*goalangp) [HA];
+		if (delta_to_goal) {
+			scaled_delta_angle = FixMul((*deltaangp) [nAngle], gameData.time.xFrame) * DELTA_ANG_SCALE;
+			(*curangp) [nAngle] += (fixang) scaled_delta_angle;
+			if (abs(delta_to_goal) < abs(scaled_delta_angle))
+				(*curangp) [nAngle] = (*goalangp) [nAngle];
+			}
 		}
 	}
 }
@@ -722,11 +698,11 @@ void SetNextPrimaryFireTime(tAILocalInfo *ailP, tRobotInfo *botInfoP)
 {
 	ailP->nRapidFireCount++;
 
-	if (ailP->nRapidFireCount < botInfoP->nRapidFireCount [gameStates.app.nDifficultyLevel]) {
-		ailP->nextPrimaryFire = min(I2X (1)/8, botInfoP->primaryFiringWait [gameStates.app.nDifficultyLevel]/2);
-	} else {
-		ailP->nRapidFireCount = 0;
-		ailP->nextPrimaryFire = botInfoP->primaryFiringWait [gameStates.app.nDifficultyLevel];
+if (ailP->nRapidFireCount < botInfoP->nRapidFireCount [gameStates.app.nDifficultyLevel]) 
+	ailP->nextPrimaryFire = min(I2X (1)/8, botInfoP->primaryFiringWait [gameStates.app.nDifficultyLevel]/2);
+else {
+	ailP->nRapidFireCount = 0;
+	ailP->nextPrimaryFire = botInfoP->primaryFiringWait [gameStates.app.nDifficultyLevel];
 	}
 }
 
