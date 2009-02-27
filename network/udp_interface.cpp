@@ -285,7 +285,7 @@ int CClientManager::CmpAddrs (struct sockaddr_in *a, struct sockaddr_in *b)
 {
 if (a->sin_addr.s_addr != b->sin_addr.s_addr)
 	return (a->sin_port != b->sin_port) ? 3 : 2;
-return (a->sin_port != b->sin_port) ? 1 : 0;
+return (gameStates.multi.bCheckPorts  && (a->sin_port != b->sin_port)) ? 1 : 0;
 }
 
 //------------------------------------------------------------------------------
@@ -325,7 +325,7 @@ for (i = 0; i < m_nClients; i++) {
 	h = (i < m_nMasks) 
 		 ? CmpAddrsMasked (destAddr, &m_clients [i].addr, m_masks + i) 
 		 : CmpAddrs (destAddr, &m_clients [i].addr);
-	if (!h || (!gameStates.multi.bCheckPorts && (h < 2)))
+	if (!h)
 		break;
 	}
 if (i < m_nClients) {
