@@ -104,9 +104,8 @@ tExtraGameInfo extraGameInfo [2];
 tMpParams mpParams = {
  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
  {'1', '2', '7', '.', '0', '.', '0', '.', '1', '\0', '\0', '\0', '\0', '\0', '\0', '\0'}, 
-	UDP_BASEPORT, 
-	1, 0, 0, 0, 0, 2, 0xFFFFFFFF, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 10,
 	{UDP_BASEPORT, UDP_BASEPORT}, 
+	1, 0, 0, 0, 0, 2, 0xFFFFFFFF, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 10
 	};
 
 tPingStats pingStats [MAX_PLAYERS];

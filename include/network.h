@@ -268,7 +268,7 @@ typedef struct tExtraGameInfo {
 typedef struct tMpParams {
 	char	szGameName [NETGAME_NAME_LEN + 1];
 	char	szServerIpAddr [22];
-	int	udpClientPort;
+	int	udpPorts [2];
 	ubyte	nLevel;
 	ubyte	nGameType;
 	ubyte	nGameMode;
@@ -290,7 +290,6 @@ typedef struct tMpParams {
 	ubyte	bShortPackets;
 	ubyte	nPPS;
 	tMsnListEntry	mission;
-	int	udpPorts [2];
 } tMpParams;
 
 extern tMpParams mpParams;

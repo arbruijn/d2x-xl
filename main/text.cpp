@@ -1845,7 +1845,7 @@ const char *defaultGameTexts [][2] = {
  {"hervorhebung ~Blau", "~Blue highlights"},
  {"Server-Portnummer", "\nEnter server port:"},
  {"Teilnehmer-Portnummer", "\nEnter client port:"},
- {"~Portnummern neuer Verbindungen pruefen", "~Check port numbers of new connections"}
+ {"~Portnummern neuer Verbindungen pruefen", "~Check port numbers of new connections"},
 #if 0
  {"", ""},
 #endif
