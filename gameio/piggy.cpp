@@ -741,7 +741,7 @@ CBitmap bmTemp;
 
 //------------------------------------------------------------------------------
 
-void LoadD1Sounds (bool bCustom)
+bool LoadD1Sounds (bool bCustom)
 {
 	tPIGBitmapHeader	bmh;
 	char					szNameRead [16];
@@ -751,7 +751,7 @@ if (cfPiggy [1].File ())
 	cfPiggy [1].Seek (0, SEEK_SET);
 else if (!cfPiggy [1].Open (D1_PIGFILE, gameFolders.szDataDir, "rb", 0)) {
 	Warning (D1_PIG_LOAD_FAILED);
-	return;
+	return false;
 	}
 LoadD1PigHeader (cfPiggy [1], &nSounds, &nBmHdrOffs, &nBmDataOffs, &nBitmaps, 1);
 if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data) {
@@ -763,6 +763,7 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data) {
 		bHaveD1Sounds = 1;
 		}
 	}
+return nSounds > 0;
 }
 
 //------------------------------------------------------------------------------

@@ -741,7 +741,7 @@ if (nStage == 0) {
 #else
 	if (gameStates.app.bD1Mission)
 		LoadD1Sounds (false);
-	if (gameStates.app.bD1Mission ? LoadD1Sounds (true) ? ReadSoundFile (true)) {
+	if (gameStates.app.bD1Mission ? LoadD1Sounds (true) : ReadSoundFile (true)) {
 		gameStates.app.bCustomSounds = true;
 		if (gameOpts->sound.bHires [0] != gameOpts->sound.bHires [1]) {
 			WaitForSoundThread ();
