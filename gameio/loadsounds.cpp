@@ -92,16 +92,16 @@ memset (gameData.pig.sound.sounds, 0, sizeof (gameData.pig.sound.sounds));
 
 //------------------------------------------------------------------------------
 
-int PiggyRegisterSound (char *szFileName, int nInFile, bool bCustom)
+int PiggyRegisterSound (char *szFileName, int bFromFile, bool bCustom)
 {
-	int i = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data];
+	int i = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Mission];
 
 Assert (i < MAX_SOUND_FILES);
-strncpy (sounds [gameStates.app.bD1Data][i].name, szFileName, 12);
-soundNames [gameStates.app.bD1Data].Insert (sounds [gameStates.app.bD1Data][i].name, i);
-if (!nInFile)
+strncpy (sounds [gameStates.app.bD1Mission][i].name, szFileName, 12);
+soundNames [gameStates.app.bD1Mission].Insert (sounds [gameStates.app.bD1Mission][i].name, i);
+if (!bFromFile)
 	nSoundFilesNew++;
-(gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data])++;
+(gameData.pig.sound.nSoundFiles [gameStates.app.bD1Mission])++;
 return i;
 }
 
@@ -109,7 +109,7 @@ return i;
 
 int PiggyFindSound (const char * name)     
 {
-	int i = soundNames [gameStates.app.bD1Data].Search (name);
+	int i = soundNames [gameStates.app.bD1Mission].Search (name);
 if (i < 0)
 	return -1;
 return i;
@@ -237,9 +237,9 @@ cf.Seek (nSoundStart, SEEK_SET);
 memset (&sound.buffer, 0xFF, sizeof (sound.buffer));
 #endif
 if (!bCustom) {
-	gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data] = 0;
-	soundNames [gameStates.app.bD1Data].Destroy ();
-	soundNames [gameStates.app.bD1Data].Create (MAX_SOUND_FILES);
+	gameData.pig.sound.nSoundFiles [gameStates.app.bD1Mission] = 0;
+	soundNames [gameStates.app.bD1Mission].Destroy ();
+	soundNames [gameStates.app.bD1Mission].Create (MAX_SOUND_FILES);
 	}
 for (i = 0; i < nSoundNum; i++) {
 	PIGSoundHeaderRead (&sndh, cf);
@@ -279,7 +279,7 @@ return 1;
 if (!gameStates.sound.audio.bLoMem)
 	return 1;
 for (i = 0; i < MAX_SOUNDS; i++) {
-	if ((AltSounds [gameStates.app.bD1Data][i] < 255) && (Sounds [gameStates.app.bD1Data][AltSounds [gameStates.app.bD1Data][i]] == nSound))
+	if ((AltSounds [gameStates.app.bD1Mission][i] < 255) && (Sounds [gameStates.app.bD1Mission][AltSounds [gameStates.app.bD1Mission][i]] == nSound))
 		return 1;
 	}
 return 0;
@@ -320,7 +320,7 @@ void LoadSounds (CFile& cf, bool bCustom)
 {
 	CSoundSample*	soundP = &gameData.pig.sound.soundP [0];
 
-for (int i = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]; i; i--, soundP++) {
+for (int i = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Mission]; i; i--, soundP++) {
 	if (soundP->nOffset [bCustom] > 0) {
 		//if (PiggySoundIsNeeded (i)) 
 			{

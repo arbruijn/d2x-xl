@@ -471,8 +471,10 @@ int PiggyInit (void)
 	int i;
 
 /*---*/PrintLog ("   Initializing hash tables\n");
-for (i = 0; i < 2; i++)
-	bitmapNames [i].Create (MAX_BITMAP_FILES);
+bitmapNames [0].Create (MAX_BITMAP_FILES);
+bitmapNames [1].Create (D1_MAX_BITMAP_FILES);
+soundNames [0].Create (MAX_SOUND_FILES);
+soundNames [1].Create (MAX_SOUND_FILES);
 
 #if 0
 /*---*/PrintLog ("   Initializing sound data (%d sounds)\n", MAX_SOUND_FILES);
@@ -737,11 +739,39 @@ CBitmap bmTemp;
 
 #define D1_BITMAPS_SIZE (128 * 1024 * 1024)
 
-void LoadD1BitmapReplacements (void)
+//------------------------------------------------------------------------------
+
+void LoadD1Sounds (bool bCustom)
 {
 	tPIGBitmapHeader	bmh;
 	char					szNameRead [16];
-	int					i, nBmHdrOffs, nBmDataOffs, nSoundNum, nBitmapNum;
+	int					i, nBmHdrOffs, nBmDataOffs, nSounds, nBitmaps;
+
+if (cfPiggy [1].File ())
+	cfPiggy [1].Seek (0, SEEK_SET);
+else if (!cfPiggy [1].Open (D1_PIGFILE, gameFolders.szDataDir, "rb", 0)) {
+	Warning (D1_PIG_LOAD_FAILED);
+	return;
+	}
+LoadD1PigHeader (cfPiggy [1], &nSounds, &nBmHdrOffs, &nBmDataOffs, &nBitmaps, 1);
+if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data) {
+	gameStates.app.bD1Data = 1;
+	SetDataVersion (1);
+	if (!bHaveD1Sounds || bCustom) {
+		SetupSounds (cfPiggy [1], nSounds, nBmHdrOffs + nBitmaps * PIGBITMAPHEADER_D1_SIZE, bCustom);
+		LoadSounds (cfPiggy [1]);
+		bHaveD1Sounds = 1;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void LoadD1Textures (void)
+{
+	tPIGBitmapHeader	bmh;
+	char					szNameRead [16];
+	int					i, nBmHdrOffs, nBmDataOffs, nSounds, nBitmaps;
 
 if (cfPiggy [1].File ())
 	cfPiggy [1].Seek (0, SEEK_SET);
@@ -752,19 +782,14 @@ else if (!cfPiggy [1].Open (D1_PIGFILE, gameFolders.szDataDir, "rb", 0)) {
 //first, free up data allocated for old bitmaps
 paletteManager.LoadD1 ();
 
-LoadD1PigHeader (cfPiggy [1], &nSoundNum, &nBmHdrOffs, &nBmDataOffs, &nBitmapNum, 1);
+LoadD1PigHeader (cfPiggy [1], &nSounds, &nBmHdrOffs, &nBmDataOffs, &nBitmaps, 1);
 if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && !gameStates.app.bHaveD1Textures) {
 	gameStates.app.bD1Data = 1;
 	SetDataVersion (1);
-	if (!bHaveD1Sounds) {
-		SetupSounds (cfPiggy [1], nSoundNum, nBmHdrOffs + nBitmapNum * PIGBITMAPHEADER_D1_SIZE);
-		LoadSounds (cfPiggy [1]);
-		bHaveD1Sounds = 1;
-		}
 	cfPiggy [1].Seek (nBmHdrOffs, SEEK_SET);
 	gameData.pig.tex.nBitmaps [1] = 0;
 	PiggyRegisterBitmap (&bogusBitmap, "bogus", 1);
-	for (i = 0; i < nBitmapNum; i++) {
+	for (i = 0; i < nBitmaps; i++) {
 		PIGBitmapHeaderD1Read (&bmh, cfPiggy [1]);
 		memcpy (szNameRead, bmh.name, 8);
 		szNameRead [8] = 0;

@@ -1639,7 +1639,7 @@ m_info.Init ();
 KeyFlush ();
 if (gameStates.app.bD1Mission) {
 	paletteManager.SetGame (paletteManager.Load (NULL, NULL, 1, 1, 1));
-	LoadD1BitmapReplacements ();
+	LoadD1Textures ();
 	if (nLevel == 1) {
 		while (!bAbortBriefing && 
 				 (nCurBriefingScreen < int (MAX_BRIEFING_SCREENS)) && 

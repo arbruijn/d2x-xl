@@ -351,9 +351,28 @@ wiP->picture.index = cf.ReadShort ();
 #define PLAYER_SHIP_SIZE			132
 #define MODEL_DATA_SIZE_OFFS		4
 
+
+typedef struct tD1TextureHeader {
+	char	name [8];
+	ubyte frame; //bits 0-5 anim frame num, bit 6 abm flag
+	ubyte xsize; //low 8 bits here, 4 more bits in size2
+	ubyte ysize; //low 8 bits here, 4 more bits in size2
+	ubyte flag; //see BM_FLAG_XXX
+	ubyte ave_color; //palette index of average color
+	uint	offset; //relative to end of directory
+} __pack__ tD1TextureHeader;
+
+typedef struct tD1SoundHeader {
+	char name [8];
+	int length; //size in bytes
+	int data_length; //actually the same as above
+	int offset; //relative to end of directory
+} __pack__ tD1SoundHeader;
+
+
 void BMReadGameDataD1 (CFile& cf)
 {
-	int				h, i, j;
+	int				h, i, j, v10DataOffset;
 #if 1
 	tD1WallClip		w;
 	D1_tmap_info	t;
@@ -365,7 +384,7 @@ void BMReadGameDataD1 (CFile& cf)
 	CPolyModel		model;
 	ubyte				tmpSounds [D1_MAX_SOUNDS];
 
-cf.Seek (sizeof (int), SEEK_CUR);
+v10DataOffset = cf.ReadInt ();
 cf.Read (&gameData.pig.tex.nTextures [1], sizeof (int), 1);
 j = (gameData.pig.tex.nTextures [1] == 70) ? 70 : D1_MAX_TEXTURES;
 /*---*/PrintLog ("         Loading %d texture indices\n", j);
@@ -374,7 +393,11 @@ ReadBitmapIndices (gameData.pig.tex.bmIndex [1], D1_MAX_TEXTURES, cf);
 BuildTextureIndex (1, D1_MAX_TEXTURES);
 /*---*/PrintLog ("         Loading %d texture descriptions\n", j);
 for (i = 0, pt = &gameData.pig.tex.tMapInfo [1][0]; i < j; i++, pt++) {
+#if DBG
+	cf.Read (t.filename, sizeof (t.filename), 1);
+#else
 	cf.Seek (sizeof (t.filename), SEEK_CUR);
+#endif
 	pt->flags = (ubyte) cf.ReadByte ();
 	pt->lighting = cf.ReadFix ();
 	pt->damage = cf.ReadFix ();
@@ -516,6 +539,17 @@ for (i = 0; i < D1_MAX_SOUNDS; i++) {
 	if (AltSounds [1][i] == tmpSounds [pr->clawSound])
 		pr->clawSound = i;
 	}
+#if 0
+cf.Seek (v10DataOffset, SEEK_SET);
+i = cf.ReadInt ();
+j = cf.ReadInt ();
+cf.Seek (i * sizeof (tD1TextureHeader), SEEK_CUR);
+gameStates.app.bD1Mission = 1;
+for (i = 0; i < j; i++) {
+	cf.Read (&gameData.pig.sound.sounds [1][i].szName, sizeof (gameData.pig.sound.sounds [1][i].szName), 1);
+	cf.Seek (sizeof (tD1SoundHeader) - sizeof (gameData.pig.sound.sounds [1][i].szName), SEEK_CUR);
+	}
+#endif
 }
 
 //------------------------------------------------------------------------------

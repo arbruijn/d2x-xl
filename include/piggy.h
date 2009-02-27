@@ -183,7 +183,8 @@ void piggy_new_pigfile (const char *pigname);
 //loads custom bitmaps for current level
 void LoadReplacementBitmaps (const char *level_name);
 //if descent.pig exists, loads descent 1 texture bitmaps
-void LoadD1BitmapReplacements();
+void LoadD1Textures (void);
+void LoadD1Sounds (bool bCustom);
 
 /*
  * reads a tBitmapIndex structure from a CFILE
