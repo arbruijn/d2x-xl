@@ -137,7 +137,7 @@ else
 t = cf.ReadInt ();
 gameData.weapons.nTypes [0] = N_D2_WEAPON_TYPES+t;
 if (gameData.weapons.nTypes [0] >= MAX_WEAPON_TYPES) {
-	Warning ("Too many weapons (%d) in <%s>.  Max is %d.",t,fname,MAX_WEAPON_TYPES-N_D2_WEAPON_TYPES);
+	Warning ("Too many weapons (%d) in <%s>.  Max is %d.", t, fname, MAX_WEAPON_TYPES - N_D2_WEAPON_TYPES);
 	return -1;
 	}
 ReadWeaponInfos (N_D2_WEAPON_TYPES, t, cf, 3);
@@ -147,7 +147,7 @@ ReadWeaponInfos (N_D2_WEAPON_TYPES, t, cf, 3);
 t = cf.ReadInt ();
 gameData.bots.nTypes [0] = N_D2_ROBOT_TYPES + t;
 if (gameData.bots.nTypes [0] >= MAX_ROBOT_TYPES) {
-	Warning ("Too many robots (%d) in <%s>.  Max is %d.",t,fname,MAX_ROBOT_TYPES-N_D2_ROBOT_TYPES);
+	Warning ("Too many robots (%d) in <%s>.  Max is %d.", t, fname, MAX_ROBOT_TYPES - N_D2_ROBOT_TYPES);
 	return -1;
 	}
 ReadRobotInfos (gameData.bots.info [0], t, cf, N_D2_ROBOT_TYPES);
@@ -159,7 +159,7 @@ if (bVertigoData) {
 t = cf.ReadInt ();
 gameData.bots.nJoints = N_D2_ROBOT_JOINTS + t;
 if (gameData.bots.nJoints >= MAX_ROBOT_JOINTS) {
-	Warning ("Too many robot joints (%d) in <%s>.  Max is %d.",t,fname,MAX_ROBOT_JOINTS-N_D2_ROBOT_JOINTS);
+	Warning ("Too many robot joints (%d) in <%s>.  Max is %d.", t, fname, MAX_ROBOT_JOINTS - N_D2_ROBOT_JOINTS);
 	return -1;
 	}
 ReadJointPositions (gameData.bots.joints, t, cf, N_D2_ROBOT_JOINTS);
@@ -193,14 +193,17 @@ for (i = j; i < gameData.models.nPolyModels; i++)
 
 t = cf.ReadInt ();
 if (N_D2_OBJBITMAPS + t >= MAX_OBJ_BITMAPS) {
-	Warning ("Too many CObject bitmaps (%d) in <%s>.  Max is %d.", t, fname, MAX_OBJ_BITMAPS - N_D2_OBJBITMAPS);
+	Warning ("Too many object bitmaps (%d) in <%s>.  Max is %d.", t, fname, MAX_OBJ_BITMAPS - N_D2_OBJBITMAPS);
 	return -1;
 	}
 ReadBitmapIndices (gameData.pig.tex.objBmIndex, t, cf, N_D2_OBJBITMAPS);
+if (bVertigoData) {
+	memcpy (&gameData.pig.tex.defaultObjBmIndex [N_D2_OBJBITMAPS], &gameData.pig.tex.objBmIndex [N_D2_OBJBITMAPS], sizeof (gameData.pig.tex.objBmIndex [0]) * t);
+	}
 
 t = cf.ReadInt ();
 if (N_D2_OBJBITMAPPTRS + t >= MAX_OBJ_BITMAPS) {
-	Warning ("Too many CObject bitmap pointers (%d) in <%s>.  Max is %d.",t,fname,MAX_OBJ_BITMAPS-N_D2_OBJBITMAPPTRS);
+	Warning ("Too many object bitmap pointers (%d) in <%s>.  Max is %d.", t, fname, MAX_OBJ_BITMAPS - N_D2_OBJBITMAPPTRS);
 	return -1;
 	}
 for (i = N_D2_OBJBITMAPPTRS; i < (N_D2_OBJBITMAPPTRS + t); i++)
@@ -417,8 +420,8 @@ return bmi;
 
 static CBitmap *LoadExitModelBitmap (const char *name)
 {
-	int i;
-	tBitmapIndex	*bip = gameData.pig.tex.objBmIndex + gameData.pig.tex.nObjBitmaps;
+	int				i;
+	tBitmapIndex*	bip = gameData.pig.tex.objBmIndex + gameData.pig.tex.nObjBitmaps;
 	Assert (gameData.pig.tex.nObjBitmaps < MAX_OBJ_BITMAPS);
 
 *bip = LoadExitModelIFF (name);
@@ -556,6 +559,7 @@ void RestoreDefaultModels (void)
 
 gameData.bots.info [0] = gameData.bots.defaultInfo;
 gameData.bots.joints = gameData.bots.defaultJoints;
+gameData.pig.tex.objBmIndex = gameData.pig.tex.defaultObjBmIndex;
 for (i = 0; i < gameData.models.nDefPolyModels; i++, modelP++) {
 #if DBG
 	if (i == nDbgModel)

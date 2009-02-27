@@ -264,6 +264,7 @@ ReadBitmapIndices (gameData.cockpit.gauges [0], t, cf);
 gameData.pig.tex.nObjBitmaps = cf.ReadInt ();
 /*---*/PrintLog ("      Loading %d CObject bitmap indices\n", gameData.pig.tex.nObjBitmaps);
 ReadBitmapIndices (gameData.pig.tex.objBmIndex, gameData.pig.tex.nObjBitmaps, cf);
+gameData.pig.tex.defaultObjBmIndex = gameData.pig.tex.objBmIndex;
 for (i = 0; i < gameData.pig.tex.nObjBitmaps; i++)
 	gameData.pig.tex.objBmIndexP [i] = cf.ReadShort ();
 

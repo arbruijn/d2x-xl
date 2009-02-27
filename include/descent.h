@@ -2019,6 +2019,7 @@ class CTextureData {
 		CArray<alias>				aliases ; //[MAX_ALIASES];
 		CArray<tBitmapIndex>		bmIndex [2]; //[MAX_TEXTURES];
 		CArray<tBitmapIndex>		objBmIndex ; //[MAX_OBJ_BITMAPS];
+		CArray<tBitmapIndex>		defaultObjBmIndex ; //[MAX_OBJ_BITMAPS];
 		CArray<short>				textureIndex [2]; //[MAX_BITMAP_FILES];
 		CArray<ushort>				objBmIndexP ; //[MAX_OBJ_BITMAPS];
 		CArray<tBitmapIndex>		cockpitBmIndex; //[N_COCKPIT_BITMAPS];

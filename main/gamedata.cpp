@@ -719,6 +719,7 @@ for (int i = 0; i < 2; i++) {
 	defaultBrightness [i].Clear ();
 	}
 objBmIndex.Create (MAX_OBJ_BITMAPS);
+defaultObjBmIndex.Create (MAX_OBJ_BITMAPS);
 addonBitmaps.Create (MAX_ADDON_BITMAP_FILES);
 bitmapXlat.Create (MAX_BITMAP_FILES);
 aliases.Create (MAX_ALIASES);
