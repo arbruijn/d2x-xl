@@ -78,7 +78,7 @@ if (gameOpts->gameplay.bIdleAnims) {
 //	Return 1 if animates, else return 0
 int     nFlinchScale = 4;
 int     nAttackScale = 24;
-sbyte   xlatAnimation [] = {AS_REST, AS_REST, AS_ALERT, AS_ALERT, AS_FLINCH, AS_FIRE, AS_RECOIL, AS_REST};
+static sbyte   xlatAnimation [] = {AS_REST, AS_REST, AS_ALERT, AS_ALERT, AS_FLINCH, AS_FIRE, AS_RECOIL, AS_REST};
 
 int DoSillyAnimation (CObject *objP)
 {

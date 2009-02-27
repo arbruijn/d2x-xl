@@ -86,7 +86,7 @@ int	Attack_scale = 24;
 
 #define	DELTA_ANG_SCALE	16
 
-ubyte D1_Mike_to_matt_xlate [] = {AS_REST, AS_REST, AS_ALERT, AS_ALERT, AS_FLINCH, AS_FIRE, AS_RECOIL, AS_REST};
+static ubyte xlatD1Animation [] = {AS_REST, AS_REST, AS_ALERT, AS_ALERT, AS_FLINCH, AS_FIRE, AS_RECOIL, AS_REST};
 
 int	john_cheats_index_1;		//	POBOYS		detonate reactor
 int	john_cheats_index_2;		//	PORGYS		high speed weapon firing
@@ -593,129 +593,76 @@ int player_is_visible_from_object(CObject *objP, CFixVector *pos, fix fieldOfVie
 int do_silly_animation(CObject *objP)
 {
 	int				nObject = objP->Index ();
-	tJointPos 		*jp_list;
+	tJointPos*		jp_list;
 	int				robot_type, nGun, robotState, nJointPositions;
-	tPolyObjInfo	*polyObjInfo = &objP->rType.polyObjInfo;
-	tAIStaticInfo		*aiP = &objP->cType.aiInfo;
+	tPolyObjInfo*	polyObjInfo = &objP->rType.polyObjInfo;
+	tAIStaticInfo*	aiP = &objP->cType.aiInfo;
 	// tAILocalInfo			*ailP = &gameData.ai.localInfo [nObject];
-	int				num_guns, at_goal;
+	int				nGunCount, at_goal;
 	int				attackType;
 	int				flinch_attack_scale = 1;
 
-	robot_type = objP->info.nId;
-	num_guns = gameData.bots.info [1][robot_type].nGuns;
-	attackType = gameData.bots.info [1][robot_type].attackType;
+robot_type = objP->info.nId;
+if (!(nGunCount = gameData.bots.info [1][robot_type].nGuns))
+	return 0;
+attackType = gameData.bots.info [1][robot_type].attackType;
 
-	if (num_guns == 0) {
-		return 0;
-	}
+//	This is a hack.  All positions should be based on goalState, not GOAL_STATE.
+robotState = xlatD1Animation [aiP->GOAL_STATE];
+// previous_robotState = D1_Mike_to_matt_xlate [aiP->CURRENT_STATE];
 
-	//	This is a hack.  All positions should be based on goalState, not GOAL_STATE.
-	robotState = D1_Mike_to_matt_xlate [aiP->GOAL_STATE];
-	// previous_robotState = D1_Mike_to_matt_xlate [aiP->CURRENT_STATE];
+if (attackType) // && ((robotState == AS_FIRE) || (robotState == AS_RECOIL)))
+	flinch_attack_scale = Attack_scale;
+else if ((robotState == AS_FLINCH) || (robotState == AS_RECOIL))
+	flinch_attack_scale = Flinch_scale;
 
-	if (attackType) // && ((robotState == AS_FIRE) || (robotState == AS_RECOIL)))
-		flinch_attack_scale = Attack_scale;
-	else if ((robotState == AS_FLINCH) || (robotState == AS_RECOIL))
-		flinch_attack_scale = Flinch_scale;
+at_goal = 1;
+for (nGun = 0; nGun <= nGunCount; nGun++) {
+	nJointPositions = RobotGetAnimState (&jp_list, robot_type, nGun, robotState);
+	for (int joint = 0; joint < nJointPositions; joint++) {
+		int				nJoint = jp_list [joint].jointnum;
+		CAngleVector*	jointAngles = &jp_list [joint].angles;
+		CAngleVector*	objAngles = &polyObjInfo->animAngles [nJoint];
 
-	at_goal = 1;
-	for (nGun=0; nGun <= num_guns; nGun++) {
-		int	joint;
-
-		nJointPositions = RobotGetAnimState (&jp_list, robot_type, nGun, robotState);
-
-		for (joint=0; joint<nJointPositions; joint++) {
-			fix			delta_angle, delta_2;
-			int			nJoint = jp_list [joint].jointnum;
-			CAngleVector	*jp = &jp_list [joint].angles;
-			CAngleVector	*pobjp = &polyObjInfo->animAngles [nJoint];
-
-			if (nJoint >= gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].ModelCount ()) {
-				Int3();		// Contact Mike: incompatible data, illegal nJoint, problem in pof file?
-				continue;
-			}
-			if ((*jp) [PA] != (*pobjp) [PA]) {
-				if (nGun == 0)
-					at_goal = 0;
-				gameData.ai.localInfo [nObject].goalAngles [nJoint][PA] = (*jp) [PA];
-
-				delta_angle = (*jp) [PA] - (*pobjp) [PA];
-				if (delta_angle >= I2X (1)/2)
-					delta_2 = -ANIM_RATE;
-				else if (delta_angle >= 0)
-					delta_2 = ANIM_RATE;
-				else if (delta_angle >= -I2X (1)/2)
-					delta_2 = -ANIM_RATE;
-				else
-					delta_2 = ANIM_RATE;
-
-				if (flinch_attack_scale != 1)
-					delta_2 *= flinch_attack_scale;
-
-				gameData.ai.localInfo [nObject].deltaAngles [nJoint][PA] = delta_2/DELTA_ANG_SCALE;		// complete revolutions per second
+		if (nJoint >= gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].ModelCount ()) {
+			Int3();		// Contact Mike: incompatible data, illegal nJoint, problem in pof file?
+			continue;
 			}
 
-			if ((*jp) [BA] != (*pobjp) [BA]) {
+		for (int nAngle = 0; nAngle < 3; nAngle++) {
+			if ((*jointAngles) [nAngle] != (*objAngles) [nAngle]) {
 				if (nGun == 0)
 					at_goal = 0;
-				gameData.ai.localInfo [nObject].goalAngles [nJoint][BA] = (*jp) [BA];
-
-				delta_angle = (*jp) [BA] - (*pobjp) [BA];
-				if (delta_angle >= I2X (1)/2)
-					delta_2 = -ANIM_RATE;
-				else if (delta_angle >= 0)
-					delta_2 = ANIM_RATE;
-				else if (delta_angle >= -I2X (1)/2)
-					delta_2 = -ANIM_RATE;
+				gameData.ai.localInfo [nObject].goalAngles [nJoint][nAngle] = (*jointAngles) [nAngle];
+				fix delta2, deltaAngle = (*jointAngles) [nAngle] - (*objAngles) [nAngle];
+				if (deltaAngle >= I2X (1)/2)
+					delta2 = -ANIM_RATE;
+				else if (deltaAngle >= 0)
+					delta2 = ANIM_RATE;
+				else if (deltaAngle >= -I2X (1)/2)
+					delta2 = -ANIM_RATE;
 				else
-					delta_2 = ANIM_RATE;
-
+					delta2 = ANIM_RATE;
 				if (flinch_attack_scale != 1)
-					delta_2 *= flinch_attack_scale;
-
-				gameData.ai.localInfo [nObject].deltaAngles [nJoint][BA] = delta_2/DELTA_ANG_SCALE;		// complete revolutions per second
-			}
-
-			if ((*jp) [HA] != (*pobjp) [HA]) {
-				if (nGun == 0)
-					at_goal = 0;
-				gameData.ai.localInfo [nObject].goalAngles [nJoint][HA] = (*jp) [HA];
-
-				delta_angle = (*jp) [HA] - (*pobjp) [HA];
-				if (delta_angle >= I2X (1)/2)
-					delta_2 = -ANIM_RATE;
-				else if (delta_angle >= 0)
-					delta_2 = ANIM_RATE;
-				else if (delta_angle >= -I2X (1)/2)
-					delta_2 = -ANIM_RATE;
-				else
-					delta_2 = ANIM_RATE;
-
-				if (flinch_attack_scale != 1)
-					delta_2 *= flinch_attack_scale;
-
-				gameData.ai.localInfo [nObject].deltaAngles [nJoint][HA] = delta_2/DELTA_ANG_SCALE;		// complete revolutions per second
+					delta2 *= flinch_attack_scale;
+				gameData.ai.localInfo [nObject].deltaAngles [nJoint][nAngle] = delta2/DELTA_ANG_SCALE;		// complete revolutions per second
+				}
 			}
 		}
 
-		if (at_goal) {
-			//tAIStaticInfo	*aiP = &objP->cType.aiInfo;
-			tAILocalInfo		*ailP = &gameData.ai.localInfo [objP->Index ()];
-			ailP->achievedState [nGun] = ailP->goalState [nGun];
-			if (ailP->achievedState [nGun] == D1_AIS_RECO)
-				ailP->goalState [nGun] = D1_AIS_FIRE;
-
-			if (ailP->achievedState [nGun] == D1_AIS_FLIN)
-				ailP->goalState [nGun] = D1_AIS_LOCK;
-
+	if (at_goal) {
+		//tAIStaticInfo	*aiP = &objP->cType.aiInfo;
+		tAILocalInfo		*ailP = &gameData.ai.localInfo [objP->Index ()];
+		ailP->achievedState [nGun] = ailP->goalState [nGun];
+		if (ailP->achievedState [nGun] == D1_AIS_RECO)
+			ailP->goalState [nGun] = D1_AIS_FIRE;
+		if (ailP->achievedState [nGun] == D1_AIS_FLIN)
+			ailP->goalState [nGun] = D1_AIS_LOCK;
 		}
 	}
-
-	if (at_goal == 1) //num_guns)
-		aiP->CURRENT_STATE = aiP->GOAL_STATE;
-
-	return 1;
+if (at_goal == 1) //nGunCount)
+	aiP->CURRENT_STATE = aiP->GOAL_STATE;
+return 1;
 }
 
 //	------------------------------------------------------------------------------------------
@@ -2454,9 +2401,9 @@ if (nObject == nDbgObj)
 	//	- -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -
 	//	If new state = fire, then set all gun states to fire.
 	if ((aiP->GOAL_STATE == D1_AIS_FIRE) ) {
-		int	i,num_guns;
-		num_guns = gameData.bots.info [1][objP->info.nId].nGuns;
-		for (i=0; i<num_guns; i++)
+		int	i,nGunCount;
+		nGunCount = gameData.bots.info [1][objP->info.nId].nGuns;
+		for (i=0; i<nGunCount; i++)
 			ailP->goalState [i] = D1_AIS_FIRE;
 	}
 
