@@ -162,25 +162,25 @@ void AIFrameAnimation (CObject *objP)
 	int	nJoints = gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].ModelCount ();
 
 for (nJoint = 1; nJoint < nJoints; nJoint++) {
-	fix			delta_to_goal;
-	fix			scaled_delta_angle;
-	CAngleVector	*curangp = &objP->rType.polyObjInfo.animAngles [nJoint];
-	CAngleVector	*goalangp = &gameData.ai.localInfo [nObject].goalAngles [nJoint];
-	CAngleVector	*deltaangp = &gameData.ai.localInfo [nObject].deltaAngles [nJoint];
+	fix				deltaToGoal;
+	fix				scaledDeltaAngle;
+	CAngleVector*	curAngP = &objP->rType.polyObjInfo.animAngles [nJoint];
+	CAngleVector*	goalAngP = &gameData.ai.localInfo [nObject].goalAngles [nJoint];
+	CAngleVector*	deltaAngP = &gameData.ai.localInfo [nObject].deltaAngles [nJoint];
 
 	Assert (nObject >= 0);
 	for (int nAngle = 0; nAngle < 3; nAngle++) {
-		delta_to_goal = (*goalangp)[nAngle] - (*curangp)[nAngle];
-		if (delta_to_goal > 32767)
-			delta_to_goal -= 65536;
-		else if (delta_to_goal < -32767)
-			delta_to_goal += delta_to_goal;
+		deltaToGoal = (*goalAngP)[nAngle] - (*curAngP)[nAngle];
+		if (deltaToGoal > 32767)
+			deltaToGoal -= 65536;
+		else if (deltaToGoal < -32767)
+			deltaToGoal += deltaToGoal;
 
-		if (delta_to_goal) {
-			scaled_delta_angle = FixMul ((*deltaangp)[nAngle], gameData.time.xFrame) * DELTA_ANG_SCALE;
-			(*curangp)[nAngle] += (fixang) scaled_delta_angle;
-			if (abs (delta_to_goal) < abs (scaled_delta_angle))
-				(*curangp)[nAngle] = (*goalangp)[nAngle];
+		if (deltaToGoal) {
+			scaledDeltaAngle = FixMul ((*deltaAngP)[nAngle], gameData.time.xFrame) * DELTA_ANG_SCALE;
+			(*curAngP)[nAngle] += (fixang) scaledDeltaAngle;
+			if (abs (deltaToGoal) < abs (scaledDeltaAngle))
+				(*curAngP)[nAngle] = (*goalAngP)[nAngle];
 			}
 		}
 	}
