@@ -1896,10 +1896,10 @@ void LoadGameTexts(void);
 #define TXT_HUD_HILITE_BLUE			GT(1099)
 #define TXT_SERVER_PORT					GT(1100)
 #define TXT_CLIENT_PORT					GT(1101)
-#define TXT_CHECK_PORTS					GT(1102)
 
 #if 0
 
+#define TXT_					GT(1102)
 #define TXT_					GT(1103)
 #define TXT_					GT(1104)
 #define TXT_					GT(1105)

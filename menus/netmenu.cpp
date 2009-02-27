@@ -1257,7 +1257,7 @@ int NetworkGetIpAddr (bool bServer)
 {
 	CMenu	m (9);
 	int	h, i, j, choice = 0;
-	int	optServer = -1, optCheckPorts, optPort [2] = {-1, -1};
+	int	optServer = -1, optCheckPort, optPort [2] = {-1, -1};
 	bool	bError;
 
 	static char szPort [2][7] = {{'\0','\0','\0','\0','\0','\0','\0'}, {'\0','\0','\0','\0','\0','\0','\0'}};
@@ -1302,7 +1302,7 @@ for (i = j; i < h; i++) {
 m.AddText (TXT_PORT_HELP1, 0);
 m.AddText (TXT_PORT_HELP2, 0);
 m.AddText ("");
-optCheckPorts = m.AddCheck (TXT_CHECK_PORTS, gameStates.multi.bCheckPorts, KEY_C, HTX_CHECK_PORTS);
+optCheckPort = m.AddCheck (TXT_CHECK_PORT, extraGameInfo [0].bCheckUDPPort, KEY_P, HTX_MULTI2_CHECKPORT);
 for (;;) {
 	i = m.Menu (NULL, tracker.m_bUse ? TXT_NETWORK_ADDRESSES : TXT_IP_HEADER, &IpAddrMenuCallBack, &choice);
 	if (i < 0)
@@ -1310,7 +1310,7 @@ for (;;) {
 	if (i >= int (m.ToS ()))
 		continue;
 	bError = false;
-	gameStates.multi.bCheckPorts = m [optCheckPorts].m_value != 0;
+	extraGameInfo [0].bCheckUDPPort = m [optCheckPort].m_value != 0;
 	if (tracker.m_bUse) {
 		for (i = j; i < h; i++) { 
 			stoport (szPort [i], &mpParams.udpPorts [i], &nSign);
