@@ -83,7 +83,7 @@ sbyte   xlatAnimation [] = {AS_REST, AS_REST, AS_ALERT, AS_ALERT, AS_FLINCH, AS_
 int DoSillyAnimation (CObject *objP)
 {
 	int				nObject = objP->Index ();
-	tJointPos 		*jp_list;
+	tJointPos 		*jointPositions;
 	int				robotType, nGun, robotState, nJointPositions;
 	tPolyObjInfo	*polyObjInfo = &objP->rType.polyObjInfo;
 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
@@ -107,69 +107,34 @@ else if ((robotState == AS_FLINCH) || (robotState == AS_RECOIL))
 
 at_goal = 1;
 for (nGun = 0; nGun <= nGunCount; nGun++) {
-	nJointPositions = RobotGetAnimState (&jp_list, robotType, nGun, robotState);
+	nJointPositions = RobotGetAnimState (&jointPositions, robotType, nGun, robotState);
 	for (int nJoint = 0; nJoint < nJointPositions; nJoint++) {
-		fix				delta_angle, delta_2;
-		int				jointnum = jp_list [nJoint].jointnum;
-		CAngleVector*	jointAngles = &jp_list [nJoint].angles;
+		int				jointnum = jointPositions [nJoint].jointnum;
+		CAngleVector*	jointAngles = &jointPositions [nJoint].angles;
 		CAngleVector*	objAngles = &polyObjInfo->animAngles [jointnum];
 
 		if (jointnum >= gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].ModelCount ()) {
 			Int3 ();		// Contact Mike: incompatible data, illegal jointnum, problem in pof file?
 			continue;
 			}
-		if ((*jointAngles)[PA] != (*objAngles)[PA]) {
-			if (nGun == 0)
-				at_goal = 0;
-			gameData.ai.localInfo [nObject].goalAngles [jointnum][PA] = (*jointAngles)[PA];
-			delta_angle = (*jointAngles)[PA] - (*objAngles)[PA];
-			if (delta_angle >= I2X (1)/2)
-				delta_2 = -ANIM_RATE;
-			else if (delta_angle >= 0)
-				delta_2 = ANIM_RATE;
-			else if (delta_angle >= -I2X (1)/2)
-				delta_2 = -ANIM_RATE;
-			else
-				delta_2 = ANIM_RATE;
-			if (nFlinchAttackScale != 1)
-				delta_2 *= nFlinchAttackScale;
-			gameData.ai.localInfo [nObject].deltaAngles [jointnum][PA] = delta_2/DELTA_ANG_SCALE;		// complete revolutions per second
-			}
-
-		if ((*jointAngles)[BA] != (*objAngles)[BA]) {
-			if (nGun == 0)
-				at_goal = 0;
-			gameData.ai.localInfo [nObject].goalAngles [jointnum][BA] = (*jointAngles)[BA];
-			delta_angle = (*jointAngles)[BA] - (*objAngles)[BA];
-			if (delta_angle >= I2X (1)/2)
-				delta_2 = -ANIM_RATE;
-			else if (delta_angle >= 0)
-				delta_2 = ANIM_RATE;
-			else if (delta_angle >= -I2X (1)/2)
-				delta_2 = -ANIM_RATE;
-			else
-				delta_2 = ANIM_RATE;
-			if (nFlinchAttackScale != 1)
-				delta_2 *= nFlinchAttackScale;
-			gameData.ai.localInfo [nObject].deltaAngles [jointnum][BA] = delta_2/DELTA_ANG_SCALE;		// complete revolutions per second
-			}
-
-		if ((*jointAngles)[HA] != (*objAngles)[HA]) {
-			if (nGun == 0)
-				at_goal = 0;
-			gameData.ai.localInfo [nObject].goalAngles [jointnum][HA] = (*jointAngles)[HA];
-			delta_angle = (*jointAngles)[HA] - (*objAngles)[HA];
-			if (delta_angle >= I2X (1)/2)
-				delta_2 = -ANIM_RATE;
-			else if (delta_angle >= 0)
-				delta_2 = ANIM_RATE;
-			else if (delta_angle >= -I2X (1)/2)
-				delta_2 = -ANIM_RATE;
-			else
-				delta_2 = ANIM_RATE;
-			if (nFlinchAttackScale != 1)
-				delta_2 *= nFlinchAttackScale;
-			gameData.ai.localInfo [nObject].deltaAngles [jointnum][HA] = delta_2/DELTA_ANG_SCALE;		// complete revolutions per second
+		for (int nAngle = 0; nAngle < 3; nAngle++) {
+			if ((*jointAngles)[nAngle] != (*objAngles)[nAngle]) {
+				if (nGun == 0)
+					at_goal = 0;
+				gameData.ai.localInfo [nObject].goalAngles [jointnum][nAngle] = (*jointAngles)[nAngle];
+				fix delta2, deltaAngle = (*jointAngles)[nAngle] - (*objAngles)[nAngle];
+				if (deltaAngle >= I2X (1) / 2)
+					delta2 = -ANIM_RATE;
+				else if (deltaAngle >= 0)
+					delta2 = ANIM_RATE;
+				else if (deltaAngle >= -I2X (1) / 2)
+					delta2 = -ANIM_RATE;
+				else
+					delta2 = ANIM_RATE;
+				if (nFlinchAttackScale != 1)
+					delta2 *= nFlinchAttackScale;
+				gameData.ai.localInfo [nObject].deltaAngles [jointnum][nAngle] = delta2 / DELTA_ANG_SCALE;		// complete revolutions per second
+				}
 			}
 		}
 
