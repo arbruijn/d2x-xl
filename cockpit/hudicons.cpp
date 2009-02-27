@@ -368,7 +368,7 @@ for (i = 0; i < 2; i++) {
 		if (bArmed)
 			if (bAvailable)
 				if (nHiliteColor)
-					CCanvas::Current ()->SetColorRGB (0, 128, 255, 255);
+					CCanvas::Current ()->SetColorRGB (0, 192, 255, 255);
 				else
 					CCanvas::Current ()->SetColorRGB (255, 192, 0, 255);
 			else
@@ -544,9 +544,9 @@ for (j = firstItem; j < n; j++) {
 		if (bAvailable)
 			if (bArmed)
 				if (nHiliteColor)
-					CCanvas::Current ()->SetColorRGB (0, 128, 255, ubyte (alpha * 16));
+					CCanvas::Current ()->SetColorRGB (0, 192, 255, ubyte (alpha * 16));
 				else
-					CCanvas::Current ()->SetColorRGB (255, 208, 0, ubyte (alpha * 16));
+					CCanvas::Current ()->SetColorRGB (255, 192, 0, ubyte (alpha * 16));
 			else
 				CCanvas::Current ()->SetColorRGB (128, 128, 0, ubyte (alpha * 16));
 		else

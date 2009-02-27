@@ -325,7 +325,7 @@ for (i = 0; i < m_nClients; i++) {
 	h = (i < m_nMasks) 
 		 ? CmpAddrsMasked (destAddr, &m_clients [i].addr, m_masks + i) 
 		 : CmpAddrs (destAddr, &m_clients [i].addr);
-	if (h < 2)
+	if (!h || (!gameStates.multi.bCheckPorts && (h < 2)))
 		break;
 	}
 if (i < m_nClients) {

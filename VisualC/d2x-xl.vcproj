@@ -2454,6 +2454,54 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="io"
+					>
+					<Filter
+						Name="Source Files"
+						>
+						<File
+							RelativePath="..\io\args.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\io\cfile.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\io\d_io.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\io\win32\findfile.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\io\hogfile.cpp"
+							>
+						</File>
+					</Filter>
+					<Filter
+						Name="Header Files"
+						>
+						<File
+							RelativePath="..\include\args.h"
+							>
+						</File>
+						<File
+							RelativePath="..\include\cfile.h"
+							>
+						</File>
+						<File
+							RelativePath="..\include\d_io.h"
+							>
+						</File>
+						<File
+							RelativePath="..\include\hogfile.h"
+							>
+						</File>
+					</Filter>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="gameio"
@@ -3767,54 +3815,6 @@
 					</File>
 					<File
 						RelativePath="..\physics\slowmotion.cpp"
-						>
-					</File>
-				</Filter>
-			</Filter>
-			<Filter
-				Name="io"
-				>
-				<Filter
-					Name="Source Files"
-					>
-					<File
-						RelativePath="..\io\args.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\io\cfile.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\io\d_io.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\io\win32\findfile.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\io\hogfile.cpp"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="Header Files"
-					>
-					<File
-						RelativePath="..\include\args.h"
-						>
-					</File>
-					<File
-						RelativePath="..\include\cfile.h"
-						>
-					</File>
-					<File
-						RelativePath="..\include\d_io.h"
-						>
-					</File>
-					<File
-						RelativePath="..\include\hogfile.h"
 						>
 					</File>
 				</Filter>
