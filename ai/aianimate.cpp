@@ -76,30 +76,28 @@ if (gameOpts->gameplay.bIdleAnims) {
 
 // ------------------------------------------------------------------------------------------------------------------
 //	Return 1 if animates, else return 0
+
 int     nFlinchScale = 4;
 int     nAttackScale = 24;
+
 static sbyte   xlatAnimation [] = {AS_REST, AS_REST, AS_ALERT, AS_ALERT, AS_FLINCH, AS_FIRE, AS_RECOIL, AS_REST};
 
 int DoSillyAnimation (CObject *objP)
 {
 	int				nObject = objP->Index ();
-	tJointPos 		*jointPositions;
+	tJointPos*		jointPositions;
 	int				robotType, nGun, robotState, nJointPositions;
-	tPolyObjInfo	*polyObjInfo = &objP->rType.polyObjInfo;
-	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
+	tPolyObjInfo*	polyObjInfo = &objP->rType.polyObjInfo;
+	tAIStaticInfo*	aiP = &objP->cType.aiInfo;
 	int				nGunCount, at_goal;
 	int				attackType;
 	int				nFlinchAttackScale = 1;
 
-Assert (nObject >= 0);
 robotType = objP->info.nId;
-if (!(nGunCount = ROBOTINFO (robotType).nGuns))
+if (0 > (nGunCount = ROBOTINFO (robotType).nGuns))
 	return 0;
 attackType = ROBOTINFO (robotType).attackType;
-//	This is a hack.  All positions should be based on goalState, not GOAL_STATE.
 robotState = xlatAnimation [aiP->GOAL_STATE];
-// previousRobotState = xlatAnimation [aiP->CURRENT_STATE];
-
 if (attackType) // && ((robotState == AS_FIRE) || (robotState == AS_RECOIL)))
 	nFlinchAttackScale = nAttackScale;
 else if ((robotState == AS_FLINCH) || (robotState == AS_RECOIL))
@@ -113,10 +111,9 @@ for (nGun = 0; nGun <= nGunCount; nGun++) {
 		CAngleVector*	jointAngles = &jointPositions [nJoint].angles;
 		CAngleVector*	objAngles = &polyObjInfo->animAngles [jointnum];
 
-		if (jointnum >= gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].ModelCount ()) {
-			Int3 ();		// Contact Mike: incompatible data, illegal jointnum, problem in pof file?
+		if (jointnum >= gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].ModelCount ())
 			continue;
-			}
+
 		for (int nAngle = 0; nAngle < 3; nAngle++) {
 			if ((*jointAngles)[nAngle] != (*objAngles)[nAngle]) {
 				if (nGun == 0)
@@ -139,8 +136,7 @@ for (nGun = 0; nGun <= nGunCount; nGun++) {
 		}
 
 	if (at_goal) {
-		//tAIStaticInfo	*aiP = &objP->cType.aiInfo;
-		tAILocalInfo		*ailP = gameData.ai.localInfo + objP->Index ();
+		tAILocalInfo* ailP = &gameData.ai.localInfo [objP->Index ()];
 		ailP->achievedState [nGun] = ailP->goalState [nGun];
 		if (ailP->achievedState [nGun] == AIS_RECOVER)
 			ailP->goalState [nGun] = AIS_FIRE;

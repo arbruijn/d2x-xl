@@ -77,8 +77,8 @@ ubyte	john_cheats_1 [JOHN_CHEATS_SIZE_1] = { 	KEY_P ^ 0x00 ^ 0x34,
 
 #define MIN_D 0x100
 
-int	Flinch_scale = 4;
-int	Attack_scale = 24;
+int	nFlinchScaleD1 = 4;
+int	nAttackScaleD1 = 24;
 
 #ifndef ANIM_RATE
 #	define	ANIM_RATE		(I2X (1)/16)
@@ -590,69 +590,61 @@ int player_is_visible_from_object(CObject *objP, CFixVector *pos, fix fieldOfVie
 
 // ------------------------------------------------------------------------------------------------------------------
 //	Return 1 if animates, else return 0
-int do_silly_animation(CObject *objP)
+int do_silly_animation (CObject *objP)
 {
 	int				nObject = objP->Index ();
-	tJointPos*		jp_list;
-	int				robot_type, nGun, robotState, nJointPositions;
+	tJointPos*		jointPositions;
+	int				robotType, nGun, robotState, nJointPositions;
 	tPolyObjInfo*	polyObjInfo = &objP->rType.polyObjInfo;
 	tAIStaticInfo*	aiP = &objP->cType.aiInfo;
-	// tAILocalInfo			*ailP = &gameData.ai.localInfo [nObject];
 	int				nGunCount, at_goal;
 	int				attackType;
-	int				flinch_attack_scale = 1;
+	int				nFlinchAttackScale = 1;
 
-robot_type = objP->info.nId;
-if (!(nGunCount = gameData.bots.info [1][robot_type].nGuns))
+robotType = objP->info.nId;
+if (0 > (nGunCount = gameData.bots.info [1][robotType].nGuns))
 	return 0;
-attackType = gameData.bots.info [1][robot_type].attackType;
-
-//	This is a hack.  All positions should be based on goalState, not GOAL_STATE.
+attackType = gameData.bots.info [1][robotType].attackType;
 robotState = xlatD1Animation [aiP->GOAL_STATE];
-// previous_robotState = D1_Mike_to_matt_xlate [aiP->CURRENT_STATE];
-
 if (attackType) // && ((robotState == AS_FIRE) || (robotState == AS_RECOIL)))
-	flinch_attack_scale = Attack_scale;
+	nFlinchAttackScale = nAttackScaleD1;
 else if ((robotState == AS_FLINCH) || (robotState == AS_RECOIL))
-	flinch_attack_scale = Flinch_scale;
+	nFlinchAttackScale = nFlinchScaleD1;
 
 at_goal = 1;
 for (nGun = 0; nGun <= nGunCount; nGun++) {
-	nJointPositions = RobotGetAnimState (&jp_list, robot_type, nGun, robotState);
-	for (int joint = 0; joint < nJointPositions; joint++) {
-		int				nJoint = jp_list [joint].jointnum;
-		CAngleVector*	jointAngles = &jp_list [joint].angles;
-		CAngleVector*	objAngles = &polyObjInfo->animAngles [nJoint];
+	nJointPositions = RobotGetAnimState (&jointPositions, robotType, nGun, robotState);
+	for (int nJoint = 0; nJoint < nJointPositions; nJoint++) {
+		int				jointnum = jointPositions [nJoint].jointnum;
+		CAngleVector*	jointAngles = &jointPositions [nJoint].angles;
+		CAngleVector*	objAngles = &polyObjInfo->animAngles [jointnum];
 
-		if (nJoint >= gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].ModelCount ()) {
-			Int3();		// Contact Mike: incompatible data, illegal nJoint, problem in pof file?
+		if (jointnum >= gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].ModelCount ())
 			continue;
-			}
 
 		for (int nAngle = 0; nAngle < 3; nAngle++) {
-			if ((*jointAngles) [nAngle] != (*objAngles) [nAngle]) {
+			if ((*jointAngles)[nAngle] != (*objAngles)[nAngle]) {
 				if (nGun == 0)
 					at_goal = 0;
-				gameData.ai.localInfo [nObject].goalAngles [nJoint][nAngle] = (*jointAngles) [nAngle];
-				fix delta2, deltaAngle = (*jointAngles) [nAngle] - (*objAngles) [nAngle];
-				if (deltaAngle >= I2X (1)/2)
+				gameData.ai.localInfo [nObject].goalAngles [jointnum][nAngle] = (*jointAngles)[nAngle];
+				fix delta2, deltaAngle = (*jointAngles)[nAngle] - (*objAngles)[nAngle];
+				if (deltaAngle >= I2X (1) / 2)
 					delta2 = -ANIM_RATE;
 				else if (deltaAngle >= 0)
 					delta2 = ANIM_RATE;
-				else if (deltaAngle >= -I2X (1)/2)
+				else if (deltaAngle >= -I2X (1) / 2)
 					delta2 = -ANIM_RATE;
 				else
 					delta2 = ANIM_RATE;
-				if (flinch_attack_scale != 1)
-					delta2 *= flinch_attack_scale;
-				gameData.ai.localInfo [nObject].deltaAngles [nJoint][nAngle] = delta2/DELTA_ANG_SCALE;		// complete revolutions per second
+				if (nFlinchAttackScale != 1)
+					delta2 *= nFlinchAttackScale;
+				gameData.ai.localInfo [nObject].deltaAngles [jointnum][nAngle] = delta2 / DELTA_ANG_SCALE;		// complete revolutions per second
 				}
 			}
-		}
+		}	
 
 	if (at_goal) {
-		//tAIStaticInfo	*aiP = &objP->cType.aiInfo;
-		tAILocalInfo		*ailP = &gameData.ai.localInfo [objP->Index ()];
+		tAILocalInfo* ailP = &gameData.ai.localInfo [objP->Index ()];
 		ailP->achievedState [nGun] = ailP->goalState [nGun];
 		if (ailP->achievedState [nGun] == D1_AIS_RECO)
 			ailP->goalState [nGun] = D1_AIS_FIRE;
@@ -673,59 +665,56 @@ return 1;
 void ai_frame_animation (CObject *objP)
 {
 	int	nObject = objP->Index ();
-	int	joint;
-	int	num_joints;
+	int	nJointCount;
 
-	num_joints = gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].ModelCount ();
+nJointCount = gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].ModelCount ();
 
-	for (joint=1; joint<num_joints; joint++) {
-		fix			delta_to_goal;
-		fix			scaled_delta_angle;
-		CAngleVector	*curangp = &objP->rType.polyObjInfo.animAngles [joint];
-		CAngleVector	*goalangp = &gameData.ai.localInfo [nObject].goalAngles [joint];
-		CAngleVector	*deltaangp = &gameData.ai.localInfo [nObject].deltaAngles [joint];
+for (int joint = 1; joint < nJointCount; joint++) {
+	fix			delta_to_goal;
+	fix			scaled_delta_angle;
+	CAngleVector	*curangp = &objP->rType.polyObjInfo.animAngles [joint];
+	CAngleVector	*goalangp = &gameData.ai.localInfo [nObject].goalAngles [joint];
+	CAngleVector	*deltaangp = &gameData.ai.localInfo [nObject].deltaAngles [joint];
 
-		delta_to_goal = (*goalangp) [PA] - (*curangp) [PA];
-		if (delta_to_goal > 32767)
-			delta_to_goal = delta_to_goal - 65536;
-		else if (delta_to_goal < -32767)
-			delta_to_goal = 65536 + delta_to_goal;
+	delta_to_goal = (*goalangp) [PA] - (*curangp) [PA];
+	if (delta_to_goal > 32767)
+		delta_to_goal = delta_to_goal - 65536;
+	else if (delta_to_goal < -32767)
+		delta_to_goal = 65536 + delta_to_goal;
 
-		if (delta_to_goal) {
-			scaled_delta_angle = FixMul((*deltaangp) [PA], gameData.time.xFrame) * DELTA_ANG_SCALE;
-			(*curangp) [PA] += (fixang) scaled_delta_angle;
-			if (abs(delta_to_goal) < abs(scaled_delta_angle))
-				(*curangp) [PA] = (*goalangp) [PA];
+	if (delta_to_goal) {
+		scaled_delta_angle = FixMul((*deltaangp) [PA], gameData.time.xFrame) * DELTA_ANG_SCALE;
+		(*curangp) [PA] += (fixang) scaled_delta_angle;
+		if (abs(delta_to_goal) < abs(scaled_delta_angle))
+			(*curangp) [PA] = (*goalangp) [PA];
 		}
 
-		delta_to_goal = (*goalangp) [BA] - (*curangp) [BA];
-		if (delta_to_goal > 32767)
-			delta_to_goal = delta_to_goal - 65536;
-		else if (delta_to_goal < -32767)
-			delta_to_goal = 65536 + delta_to_goal;
+	delta_to_goal = (*goalangp) [BA] - (*curangp) [BA];
+	if (delta_to_goal > 32767)
+		delta_to_goal = delta_to_goal - 65536;
+	else if (delta_to_goal < -32767)
+		delta_to_goal = 65536 + delta_to_goal;
 
-		if (delta_to_goal) {
-			scaled_delta_angle = FixMul((*deltaangp) [BA], gameData.time.xFrame) * DELTA_ANG_SCALE;
-			(*curangp) [BA] += (fixang) scaled_delta_angle;
-			if (abs(delta_to_goal) < abs(scaled_delta_angle))
-				(*curangp) [BA] = (*goalangp) [BA];
+	if (delta_to_goal) {
+		scaled_delta_angle = FixMul((*deltaangp) [BA], gameData.time.xFrame) * DELTA_ANG_SCALE;
+		(*curangp) [BA] += (fixang) scaled_delta_angle;
+		if (abs(delta_to_goal) < abs(scaled_delta_angle))
+			(*curangp) [BA] = (*goalangp) [BA];
 		}
 
-		delta_to_goal = (*goalangp) [HA] - (*curangp) [HA];
-		if (delta_to_goal > 32767)
-			delta_to_goal = delta_to_goal - 65536;
-		else if (delta_to_goal < -32767)
-			delta_to_goal = 65536 + delta_to_goal;
+	delta_to_goal = (*goalangp) [HA] - (*curangp) [HA];
+	if (delta_to_goal > 32767)
+		delta_to_goal = delta_to_goal - 65536;
+	else if (delta_to_goal < -32767)
+		delta_to_goal = 65536 + delta_to_goal;
 
-		if (delta_to_goal) {
-			scaled_delta_angle = FixMul((*deltaangp) [HA], gameData.time.xFrame) * DELTA_ANG_SCALE;
-			(*curangp) [HA] += (fixang) scaled_delta_angle;
-			if (abs(delta_to_goal) < abs(scaled_delta_angle))
-				(*curangp) [HA] = (*goalangp) [HA];
+	if (delta_to_goal) {
+		scaled_delta_angle = FixMul((*deltaangp) [HA], gameData.time.xFrame) * DELTA_ANG_SCALE;
+		(*curangp) [HA] += (fixang) scaled_delta_angle;
+		if (abs(delta_to_goal) < abs(scaled_delta_angle))
+			(*curangp) [HA] = (*goalangp) [HA];
 		}
-
 	}
-
 }
 
 // ----------------------------------------------------------------------------------
