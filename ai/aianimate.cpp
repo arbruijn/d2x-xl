@@ -108,11 +108,12 @@ for (nGun = 0; nGun <= nGunCount; nGun++) {
 	nJointPositions = RobotGetAnimState (&jointPositions, robotType, nGun, robotState);
 	for (int nJoint = 0; nJoint < nJointPositions; nJoint++) {
 		int				jointnum = jointPositions [nJoint].jointnum;
-		CAngleVector*	jointAngles = &jointPositions [nJoint].angles;
-		CAngleVector*	objAngles = &polyObjInfo->animAngles [jointnum];
 
 		if (jointnum >= gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].ModelCount ())
 			continue;
+
+		CAngleVector*	jointAngles = &jointPositions [nJoint].angles;
+		CAngleVector*	objAngles = &polyObjInfo->animAngles [jointnum];
 
 		for (int nAngle = 0; nAngle < 3; nAngle++) {
 			if ((*jointAngles)[nAngle] != (*objAngles)[nAngle]) {

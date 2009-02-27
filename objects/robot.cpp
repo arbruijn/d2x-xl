@@ -289,7 +289,7 @@ int ReadJointPositions (CArray<tJointPos>& jp, int n, CFile& cf, int o)
 
 for (i = 0; i < n; i++) {
 	jp [i + o].jointnum = cf.ReadShort ();
-	cf.ReadAngVec (jp [i].angles);
+	cf.ReadAngVec (jp [i + o].angles);
 	}
 return i;
 }
