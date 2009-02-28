@@ -1274,11 +1274,12 @@ if (!gameStates.app.bD1Mission && CFile::Exist (SECRETB_FILENAME, gameFolders.sz
 	saveGameManager.Load (1, 1, 0, SECRETB_FILENAME);
 	SetD1Sound ();
 	SetDataVersion (-1);
+	SetPosFromReturnSegment (1);
+	LOCALPLAYER.lives--;	//	re-lose the life, LOCALPLAYER.lives got written over in restore.
 	gameData.weapons.nPrimary = pw_save;
 	gameData.weapons.nSecondary = sw_save;
 	}
-else {
-	// File doesn't exist, so can't return to base level.  Advance to next one.
+else { // File doesn't exist, so can't return to base level.  Advance to next one.
 	if (gameData.missions.nEntryLevel == gameData.missions.nLastLevel)
 		DoEndGame ();
 	else {
@@ -2220,24 +2221,11 @@ if (gameData.reactor.bDestroyed) {
 	LOCALPLAYER.connected = 3;
 	DiedInMineMessage (); // Give them some indication of what happened
 	}
-if (bSecret && !gameStates.app.bD1Mission) {
+if (bSecret) {
 	ExitSecretLevel ();
-	SetPosFromReturnSegment (1);
-	LOCALPLAYER.lives--;	//	re-lose the life, LOCALPLAYER.lives got written over in restore.
 	ResetShipData ();
 	gameStates.render.cockpit.nLastDrawn [0] =
 	gameStates.render.cockpit.nLastDrawn [1] = -1;
-	}
-else {
-	if (gameData.reactor.bDestroyed) {
-		//AdvancingToLevelMessage ();
-		AdvanceLevel (0, bSecret);
-		ResetShipData ();
-		}
-	else if (!gameStates.entropy.bExitSequence) {
-		ResetShipData ();
-		StartLevel (1);
-		}
 	}
 SetSoundSources ();
 StartTriggeredSounds ();

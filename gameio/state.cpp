@@ -1692,6 +1692,7 @@ if (!LoadMission ())
 	return 0;
 //Read level info
 nCurrentLevel = m_cf.ReadInt ();
+m_bSecret = (nCurrentLevel < 0);
 nNextLevel = m_cf.ReadInt ();
 //Restore gameData.time.xGame
 gameData.time.xGame = m_cf.ReadFix ();
