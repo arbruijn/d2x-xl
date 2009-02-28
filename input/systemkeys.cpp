@@ -582,7 +582,7 @@ switch (key) {
 		if (!gameStates.app.bPlayerIsDead && !(IsMultiGame && !IsCoopGame)) {
 			paletteManager.SaveEffectAndReset ();
 			paletteManager.SetEffect (); // get only the effect color back
-			saveGameManager.Save (0, gameData.missions.nCurrentLevel < 0, 0, NULL);
+			saveGameManager.Save (0, 0, 0, NULL);
 			paletteManager.LoadEffect ();
 		}
 		break;  // 0 means not between levels.

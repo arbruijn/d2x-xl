@@ -516,8 +516,7 @@ if (IsMultiGame) {
 	MultiInitiateSaveGame ();
 	return 0;
 	}
-if (!(m_bSecret || gameOpts->gameplay.bSecretSave || gameStates.app.bD1Mission) && 
-	  (gameData.missions.nCurrentLevel < 0)) {
+if ((gameData.missions.nCurrentLevel < 0) && !(m_bSecret || gameOpts->gameplay.bSecretSave || gameStates.app.bD1Mission)) {
 	HUDInitMessage (TXT_SECRET_SAVE_ERROR);
 	return 0;
 	}

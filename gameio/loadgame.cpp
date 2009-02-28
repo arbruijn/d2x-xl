@@ -1156,11 +1156,15 @@ if (!gameStates.app.cheats.bEnabled) {
 		}
 	else
 		nSkillPoints = 0;
-	nShieldPoints = X2I (LOCALPLAYER.shields) * 5 * nMineLevel;
-	nEnergyPoints = X2I (LOCALPLAYER.energy) * 2 * nMineLevel;
+	if (0 > (nShieldPoints = X2I (LOCALPLAYER.shields) * 5 * nMineLevel))
+		nShieldPoints = 0;
+	else
+		nShieldPoints -= nShieldPoints % 50;
+	if (0 > (nEnergyPoints = X2I (LOCALPLAYER.energy) * 2 * nMineLevel))
+		nEnergyPoints = 0;
+	else
+		nEnergyPoints -= nEnergyPoints % 50;
 	nHostagePoints = LOCALPLAYER.hostages.nOnBoard * 500 * (gameStates.app.nDifficultyLevel+1);
-	nShieldPoints -= nShieldPoints % 50;
-	nEnergyPoints -= nEnergyPoints % 50;
 	if ((LOCALPLAYER.hostages.nOnBoard > 0) && (LOCALPLAYER.hostages.nOnBoard == LOCALPLAYER.hostages.nLevel)) {
 		nAllHostagePoints = LOCALPLAYER.hostages.nOnBoard * 1000 * (gameStates.app.nDifficultyLevel+1);
 		sprintf (szAllHostages, "%s%i", TXT_FULL_RESCUE_BONUS, nAllHostagePoints);
