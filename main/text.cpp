@@ -1616,7 +1616,7 @@ const char *defaultGameTexts [][2] = {
  {"Alt+F9\t  Bildschirmabzug speichern", "Alt+F9\t  save screenshot"},
  {"s~Tatischer Rauch", "s~Tatic smoke"},
  {"~Aufmerksamkeit der Roboter erhoehen", "increase robot ~Awareness"},
- {"~Portnummern eingehender Verbindungen pruefen", "check ~Port numbers of incoming connections"},
+ {"~Ports eingehender Verbindungen pruefen", "check ~Ports of incoming connections"},
  {"Ausruestungsgenerator%n aktiviert", "equipment generator%s activated"},
  {"Ausruestungsgenerator%n deaktiviert", "equipment generator%s deactivated"},
  {"~Koop-Todesmalus: %d%c", "coop death ~Penalty: %d%c"},

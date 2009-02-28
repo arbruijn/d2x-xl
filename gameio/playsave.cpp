@@ -355,7 +355,7 @@ for (i = 0; i < 2; i++) {
 		RP (mpParams.bShortPackets, 0, 0);
 		RP (mpParams.nPPS, 0, 0);
 		RP (mpParams.udpPorts [0], 0, 0);
-		RP (mpParams.udpPorts [1], 0, 0);
+		RP (mpParams.udpPorts [1], 1, 0);
 		RP (mpParams.szServerIpAddr, 0, 0);
 
 		RP (extraGameInfo [i].bAutoBalanceTeams, 0, 0);
