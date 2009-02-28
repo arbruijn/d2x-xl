@@ -300,6 +300,8 @@ CSegment* childP = SEGMENTS + nChild;
 #if DBG
 if (objP && (objP->Index () == nDbgObj))
 	nDbgObj = nDbgObj;
+if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
 #endif
 
 if ((objP == gameData.objs.consoleP) &&

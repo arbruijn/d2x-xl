@@ -456,10 +456,9 @@ return colorP;
 
 void CBitmap::Swap_0_255 (void)
 {
-	int	i;
-	ubyte	*p;
+	ubyte*	p = Buffer ();
 
-for (i = m_info.props.h * m_info.props.w, p = Buffer (); i; i--, p++) {
+for (int i = m_info.props.h * m_info.props.w; i; i--, p++) {
 	if (!*p)
 		*p = 255;
 	else if (*p == 255)

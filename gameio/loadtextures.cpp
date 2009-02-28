@@ -498,6 +498,8 @@ return -1;
 #if DBG
 int nPrevIndex = -1;
 char szPrevBm [FILENAME_LEN] = "";
+
+static bool bCheck = false;
 #endif
 
 int PageInBitmap (CBitmap *bmP, const char *bmName, int nIndex, int bD1, bool bHires)
@@ -526,8 +528,12 @@ nSize = (int) bmP->FrameSize ();
 if (nIndex >= 0)
 	GetFlagData (bmName, nIndex);
 #if DBG
-if (strstr (bmName, "metl139"))
+if (nIndex == 1498)
+	nIndex = nIndex;
+if (strstr (bmName, "metl154")) {
 	bmName = bmName;
+	bCheck = true;
+	}
 if (strstr (bmName, "rbot019"))
 	bmName = bmName;
 #endif
@@ -724,6 +730,10 @@ strcpy (szPrevBm, bmName);
 StartTime (0);
 if (!bDefault)
 	cfP->Close ();
+#if DBG
+if (bCheck && !gameData.pig.tex.bitmaps [0][1498].Flags ())
+	bCheck = bCheck;
+#endif
 return 1;
 }
 
