@@ -736,7 +736,7 @@ if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 		}
 	nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts << bGatling, -PARTICLE_SIZE (1, nScale),
 											   gameOpts->render.particles.nSize [3],
-											   1, ((gameOpts->render.particles.nLife [3] + 1) * (LASER_PART_LIFE >> bOmega)) << bGatling, LASER_PART_SPEED, 
+											   1, ((gameOpts->render.particles.nLife [3] + 1) * (LASER_PART_LIFE >> bOmega)) /*<< bGatling*/, LASER_PART_SPEED, 
 											   bGatling ? GATLING_PARTICLES : LIGHT_PARTICLES, nObject, &c, 0, -1);
 	if (nSmoke < 0)
 		return;

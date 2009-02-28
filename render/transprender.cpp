@@ -293,6 +293,7 @@ int CTransparencyRenderer::AddObject (CObject *objP)
 if (objP->info.nType == 255)
 	return 0;
 item.objP = objP;
+item.vScale = gameData.models.vScale;
 transformation.Transform (vPos, OBJPOS (objP)->vPos, 0);
 return Add (tiObject, &item, sizeof (item), vPos [Z], vPos [Z]);
 }
@@ -1103,7 +1104,9 @@ void CTransparencyRenderer::RenderObject (tTranspObject *item)
 //SEM_LEAVE (SEM_SPARKS)
 SetClientState (0, 0, 0, 0, 0);
 ResetShader ();
+gameData.models.vScale = item->vScale;
 DrawPolygonObject (item->objP, 0, 1);
+gameData.models.vScale.SetZero ();
 glDisable (GL_TEXTURE_2D);
 m_data.bTextured = 0;
 m_data.bClientState = 0;

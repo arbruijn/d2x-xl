@@ -41,6 +41,7 @@ typedef struct tTranspPoly {
 
 typedef struct tTranspObject {
 	CObject				*objP;
+	CFixVector			vScale;
 } tTranspObject;
 
 typedef struct tTranspSprite {

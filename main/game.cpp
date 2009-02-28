@@ -1322,11 +1322,11 @@ void DoEffectsFrame (void)
 #if 0
 if (WaitForEffectsThread ())
 	tiEffects.bExec = 1;
+else
 #else
-if (WaitForRenderThreads ()) 
-	RunRenderThreads (rtEffects, 1);
+if (!(WaitForRenderThreads () && RunRenderThreads (rtEffects, 1)))
 #endif
-else {
+	{
 	lightningManager.DoFrame ();
 	sparkManager.DoFrame ();
 	DoParticleFrame ();
