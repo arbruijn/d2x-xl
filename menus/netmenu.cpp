@@ -1312,7 +1312,7 @@ for (;;) {
 	if (tracker.m_bUse) {
 		for (i = j; i < h; i++) { 
 			stoport (szPort [i], &mpParams.udpPorts [i], &nSign);
-			if (gameStates.multi.bCheckPorts && !mpParams.udpPorts [i])
+			if (extraGameInfo [0].bCheckUDPPort && !mpParams.udpPorts [i])
 				bError = true;
 			}
 		}

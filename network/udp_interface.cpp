@@ -284,7 +284,7 @@ int CClientManager::CmpAddrs (struct sockaddr_in *a, struct sockaddr_in *b)
 {
 if (a->sin_addr.s_addr != b->sin_addr.s_addr)
 	return (a->sin_port != b->sin_port) ? 3 : 2;
-return (gameStates.multi.bCheckPorts  && (a->sin_port != b->sin_port)) ? 1 : 0;
+return (extraGameInfo [0].bCheckUDPPort && (a->sin_port != b->sin_port)) ? 1 : 0;
 }
 
 //------------------------------------------------------------------------------

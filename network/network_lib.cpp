@@ -88,7 +88,7 @@ return num;
 int CmpNetPlayers (char *callsign1, char *callsign2, tNetworkInfo *network1, tNetworkInfo *network2)
 {
 if ((gameStates.multi.nGameType == IPX_GAME) ||
-	 ((gameStates.multi.nGameType == UDP_GAME) && gameStates.multi.bCheckPorts)) {
+	 ((gameStates.multi.nGameType == UDP_GAME) && extraGameInfo [0].bCheckUDPPort)) {
 	if (memcmp (network1, network2, sizeof (tNetworkInfo)))
 		return 1;
 	}

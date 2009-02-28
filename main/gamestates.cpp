@@ -160,7 +160,6 @@ gameStates.multi.bServer = 1;
 gameStates.multi.bTryAutoDL = 0;
 gameStates.multi.bHaveLocalAddress = 0;
 gameStates.multi.bSurfingNet = 0;
-gameStates.multi.bCheckPorts = 0;
 }
 
 // ----------------------------------------------------------------------------
