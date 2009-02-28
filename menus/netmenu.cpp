@@ -457,7 +457,7 @@ void NetworkMoreGameOptions (void)
  {
   int		i, choice = 0;
   char	szPlayTime [80], szKillGoal [80], szInvul [50],
-			socket_string [6], packstring [6];
+			szSocket [6], szPPS [6];
   CMenu	m;
 
 do {
@@ -492,16 +492,15 @@ do {
 	m.AddText ("", 0);
 	optSetPower = m.AddMenu (TXT_WAOBJECTS_MENU, KEY_O, HTX_MULTI2_OBJECTS);
 	m.AddText ("", 0);
-	sprintf (socket_string, "%d", (gameStates.multi.nGameType == UDP_GAME) ? 
-				udpBasePorts [1] + networkData.nSocket : networkData.nSocket);
+	sprintf (szSocket, "%d", (gameStates.multi.nGameType == UDP_GAME) ? mpParams.udpPorts [0] + networkData.nSocket : networkData.nSocket);
 	if (gameStates.multi.nGameType >= IPX_GAME) {
 		m.AddText (TXT_SOCKET2, KEY_N);
-		optSocket = m.AddInput (socket_string, 5, HTX_MULTI2_SOCKET);
+		optSocket = m.AddInput (szSocket, 5, HTX_MULTI2_SOCKET);
 		}
 
-	sprintf (packstring, "%d", mpParams.nPPS);
+	sprintf (szPPS, "%d", mpParams.nPPS);
 	m.AddText (TXT_PPS, KEY_P);
-	optPPS = m.AddInput (packstring, 2, HTX_MULTI2_PPS);
+	optPPS = m.AddInput (szPPS, 2, HTX_MULTI2_PPS);
 
 	LastKillGoal = netGame.KillGoal;
 	LastPTA = mpParams.nMaxTime;
@@ -521,22 +520,21 @@ if (i == optSetPower) {
 	GetAllAllowables ();
 	goto doMenu;
 	}
-mpParams.nPPS = atoi (packstring);
+mpParams.nPPS = atoi (szPPS);
 if (mpParams.nPPS > 20) {
 	mpParams.nPPS = 20;
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_PPS_HIGH_ERROR);
 }
-else if (mpParams.nPPS<2) {
+else if (mpParams.nPPS < 2) {
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_PPS_HIGH_ERROR);
 	mpParams.nPPS = 2;      
 }
 netGame.nPacketsPerSec = mpParams.nPPS;
 if (gameStates.multi.nGameType >= IPX_GAME) { 
-	int newSocket = atoi (socket_string);
+	int newSocket = atoi (szSocket);
 	if ((newSocket < -0xFFFF) || (newSocket > 0xFFFF))
-		MsgBox (TXT_ERROR, NULL, 1, TXT_OK, 
-							 TXT_INV_SOCKET, 
-							 (gameStates.multi.nGameType == UDP_GAME) ? udpBasePorts [1] : networkData.nSocket);
+		MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_INV_SOCKET, 
+				  (gameStates.multi.nGameType == UDP_GAME) ? mpParams.udpPorts [0] + networkData.nSocket : networkData.nSocket);
 	else if (newSocket != networkData.nSocket) {
 		networkData.nSocket = (gameStates.multi.nGameType == UDP_GAME) ? newSocket - UDP_BASEPORT : newSocket;
 		IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nSocket));
@@ -843,7 +841,7 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 					ipx_MyAddress [5], 
 					ipx_MyAddress [6], 
 					ipx_MyAddress [7], 
-					udpBasePorts [1]);
+					mpParams.udpPorts [0]);
 		}
 	}
 m.AddText (TXT_DESCRIPTION, 0); 
@@ -938,7 +936,7 @@ else if (choice == optMoreOpts) {
 	gameData.app.nGameMode = 0;
 	if (gameStates.multi.nGameType == UDP_GAME) {
 		sprintf (szIpAddr, "Game Host: %d.%d.%d.%d:%d", 
-					ipx_MyAddress [4], ipx_MyAddress [5], ipx_MyAddress [6], ipx_MyAddress [7], udpBasePorts [1]);
+					ipx_MyAddress [4], ipx_MyAddress [5], ipx_MyAddress [6], ipx_MyAddress [7], mpParams.udpPorts [0]);
 		}
 	return 1;
 	}
@@ -1233,7 +1231,7 @@ for (j = 0; j < i; j++) {
 	if (!pFields [j])
 		return 0;
 	if (j == 4)
-		return stoport (pFields [j], udpBasePorts, NULL); 
+		return stoport (pFields [j], mpParams.udpPorts, NULL); 
 	else {
 		h = atol (pFields [j]);
 		if ((h < 0) || (h > 255))
