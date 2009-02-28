@@ -444,10 +444,6 @@ else if (bDefault) {
 	}
 else
 	return (bHires || gameOpts->render.textures.bUseHires [0]) ? 0 : -1;
-if (bD1)
-	bmP->Remap (paletteManager.D1 (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
-else
-	bmP->Remap (paletteManager.Game (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 return 1;
 }
 
@@ -720,9 +716,15 @@ if (nDescentCriticalError) {
 	goto reloadTextures;
 	}
 #ifndef MACDATA
-if (!bTGA && IsMacDataFile (cfP, bD1))
-	bmP->Swap_0_255 ();
+if (!bTGA) {
+	if (IsMacDataFile (cfP, bD1))
+		bmP->Swap_0_255 ();
 #endif
+	if (bD1)
+		bmP->Remap (paletteManager.D1 (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
+	else
+		bmP->Remap (paletteManager.Game (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
+	}
 #if DBG
 nPrevIndex = nIndex;
 strcpy (szPrevBm, bmName);

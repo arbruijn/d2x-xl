@@ -91,7 +91,7 @@
 				OutputFile="\programs\d2\d2x-xl-dbg.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;\projects\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\projects\d2x-xl-svn\trunk\d2x-trackir\Debug&quot;;&quot;\projects\sdl-1.2.13\debug&quot;;&quot;\projects\SDL_mixer-1.2.8\VisualC\Debug&quot;;&quot;\projects\irrlicht-1.4\lib\win32-visualstudio&quot;;2;c:\programme\visual leak detector\lib&quot;"
+				AdditionalLibraryDirectories="&quot;\projects\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\projects\d2x-xl-svn\trunk\d2x-trackir\Debug&quot;;&quot;\projects\sdl-1.2.13\debug&quot;;&quot;\projects\SDL_mixer-1.2.8\VisualC\Debug&quot;;&quot;\projects\irrlicht-1.4\lib\win32-visualstudio&quot;;&quot;c:\programme\visual leak detector\lib&quot;"
 				IgnoreDefaultLibraryNames="msvcrt.lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="/programs/d2/d2x-xl-dbg.pdb"
