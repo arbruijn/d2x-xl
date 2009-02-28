@@ -533,7 +533,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 		faceP->color = faceColor [nColor].color;
 		pc = FACES.color + faceP->nIndex;
 		uvlP = segP->m_sides [nSide].m_uvls;
-		for (h = 0, uvi = (segP->m_sides [nSide].m_nType == SIDE_IS_TRI_13); h < 4; h++, pc++, uvi++) {
+		for (h = 0, uvi = 0 /*(segP->m_sides [nSide].m_nType == SIDE_IS_TRI_13)*/; h < 4; h++, pc++, uvi++) {
 			if (gameStates.render.bFullBright) 
 				*pc = nColor ? faceColor [nColor].color : brightColor.color;
 			else {
