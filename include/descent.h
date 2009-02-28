@@ -25,13 +25,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "carray.h"
 
 #include "irrstuff.h"
-
 #ifndef DBG
 #	ifdef _DEBUG
 #		define DBG 1
 #	else
 #		define DBG 0
 #	endif
+#endif
+
+#if DBG
+#	include "vld.h"
 #endif
 
 #define SHOW_EXIT_PATH  1

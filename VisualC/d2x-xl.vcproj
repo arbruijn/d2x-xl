@@ -51,7 +51,7 @@
 				Optimization="0"
 				FavorSizeOrSpeed="0"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="&quot;..\..\..\SDL-1.2.13\include&quot;;&quot;..\..\..\SDL_mixer-1.2.8&quot;;&quot;\projects\OpenAL 1.1 SDK\include&quot;;&quot;..\d2x-trackir&quot;;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include"
+				AdditionalIncludeDirectories="&quot;..\..\..\SDL-1.2.13\include&quot;;&quot;..\..\..\SDL_mixer-1.2.8&quot;;&quot;\projects\OpenAL 1.1 SDK\include&quot;;&quot;..\d2x-trackir&quot;;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;c:\programme\visual leak detector\include"
 				PreprocessorDefinitions="DBG=1;_DEBUG;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				MinimalRebuild="true"
@@ -87,11 +87,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib opengl32.lib glu32.lib winmm.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib opengl32.lib glu32.lib winmm.lib vld.lib"
 				OutputFile="\programs\d2\d2x-xl-dbg.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;\projects\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\projects\d2x-xl-svn\trunk\d2x-trackir\Debug&quot;;&quot;\projects\sdl-1.2.13\debug&quot;;&quot;\projects\SDL_mixer-1.2.8\VisualC\Debug&quot;;&quot;\projects\irrlicht-1.4\lib\win32-visualstudio&quot;"
+				AdditionalLibraryDirectories="&quot;\projects\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\projects\d2x-xl-svn\trunk\d2x-trackir\Debug&quot;;&quot;\projects\sdl-1.2.13\debug&quot;;&quot;\projects\SDL_mixer-1.2.8\VisualC\Debug&quot;;&quot;\projects\irrlicht-1.4\lib\win32-visualstudio&quot;;2;c:\programme\visual leak detector\lib&quot;"
 				IgnoreDefaultLibraryNames="msvcrt.lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="/programs/d2/d2x-xl-dbg.pdb"
