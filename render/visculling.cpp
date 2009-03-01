@@ -600,10 +600,14 @@ BumpProcessedFlag ();
 BumpVisibleFlag ();
 
 if (automap.m_bDisplay && gameOpts->render.automap.bTextured && !automap.Radar ()) {
+	int nSegmentLimit = automap.SegmentLimit ();
+	int bUnlimited = nSegmentLimit == automap.MaxSegsAway ();
+	int bSkyBox = gameOpts->render.automap.bSkybox;
+
 	for (i = gameData.render.mine.nRenderSegs = 0; i < gameData.segs.nSegments; i++)
 		if ((automap.m_bFull || automap.m_visited [0][i]) &&
-			 ((automap.SegmentLimit () == automap.MaxSegsAway ()) ||
-			  (automap.m_visible [i] <= automap.SegmentLimit ()))) {
+			 (bSkyBox || (SEGMENTS [i].m_nType != SEGMENT_IS_SKYBOX)) &&
+			 (bUnlimited || (automap.m_visible [i] <= nSegmentLimit))) {
 			gameData.render.mine.nSegRenderList [gameData.render.mine.nRenderSegs++] = i;
 			gameData.render.mine.bVisible [i] = gameData.render.mine.nVisible;
 			VISIT (i);
