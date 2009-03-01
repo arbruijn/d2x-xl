@@ -924,11 +924,14 @@ gameStates.ogl.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
 if (!nWindow)
 	gameData.render.dAspect = (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Height ();
 //PrintLog ("G3StartFrame\n");
+{
+PROF_START
 G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive));
 //PrintLog ("SetRenderView\n");
 SetRenderView (nEyeOffset, &nStartSeg, 1);
 gameStates.render.nStartSeg = nStartSeg;
-
+PROF_END(ptAux)
+}
 #if CLEAR_WINDOW == 1
 if (!nClearWindowColor)
 	nClearWindowColor = BLACK_RGBA;	//BM_XRGB(31, 15, 7);
@@ -957,16 +960,23 @@ if (SHOW_SHADOWS &&
 #endif
 		RenderMine (nStartSeg, nEyeOffset, nWindow);
 #if 1//!DBG
+		PROF_START
 		RenderFastShadows (nEyeOffset, nWindow, nStartSeg);
+		PROF_END(ptEffects)
 #else
 		if (FAST_SHADOWS)
 			;//RenderFastShadows (nEyeOffset, nWindow, nStartSeg);
-		else
+		else {
+			PROF_START
 			RenderNeatShadows (nEyeOffset, nWindow, nStartSeg);
+			PROF_END(ptEffects)
+			}
 #endif
 #if SOFT_SHADOWS
 		if (gameOpts->render.shadows.bSoft) {
+			PROF_START
 			CreateShadowTexture ();
+			PROF_END(ptEffects)
 			gameStates.render.nShadowBlurPass = 2;
 			gameStates.render.nShadowPass = 0;
 #if 1
