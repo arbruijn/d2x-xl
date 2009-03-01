@@ -762,6 +762,7 @@ FillBackground ();
 PROF_START
 transparencyRenderer.Reset ();
 PROF_END(ptTranspPolys)
+}
 if (gameStates.render.vr.nRenderMode == VR_NONE)
 	RenderMonoFrame ();
 StopTime ();
