@@ -2232,6 +2232,16 @@ if (bSecret) {
 	gameStates.render.cockpit.nLastDrawn [0] =
 	gameStates.render.cockpit.nLastDrawn [1] = -1;
 	}
+else {
+	if (gameData.reactor.bDestroyed) {
+		AdvanceLevel (0, bSecret);
+		ResetShipData ();
+		}
+	else if (!gameStates.entropy.bExitSequence) {
+		ResetShipData ();
+		StartLevel (1);
+		}
+	}
 SetSoundSources ();
 StartTriggeredSounds ();
 audio.SyncSounds ();
