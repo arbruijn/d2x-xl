@@ -2538,6 +2538,7 @@ typedef enum tProfilerTags {
 	ptRenderStates,
 	ptShaderStates,
 	ptTranspPolys,
+	ptCockpit,
 	ptTransform,
 	ptVertexColor,
 	ptFaceList,

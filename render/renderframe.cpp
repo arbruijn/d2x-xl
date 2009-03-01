@@ -510,7 +510,11 @@ gameStates.render.vr.buffers.screenPages [0].SetupPane (
 	gameStates.render.vr.buffers.subRender [0].Width (),
 	gameStates.render.vr.buffers.subRender [0].Height ());
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
+{
+PROF_START
 lightningManager.SetLights ();
+PROF_END(ptLighting)
+}
 if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 	int w, h, aw;
 	const char *msg = "Guided Missile View";
@@ -551,7 +555,11 @@ else {
 	}
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
 FlashMine ();
+{
+PROF_START
 cockpit->Render (bExtraInfo);
+PROF_END(ptCockpit)
+}
 console.Draw ();
 OglSwapBuffers (0, 0);
 if (gameStates.app.bSaveScreenshot)
