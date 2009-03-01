@@ -92,7 +92,7 @@ extern char DOWN_ARROW_MARKER [2];
 #define NM_TYPE_SLIDER      7   // A slider from minValue to maxValue. Draws with nTextLen chars.
 #define NM_TYPE_GAUGE       8   // A slider from minValue to maxValue. Draws with nTextLen chars.
 
-#define MENU_MAX_TEXTLEN    100
+#define MENU_MAX_TEXTLEN    1000
 
 //------------------------------------------------------------------------------
 
