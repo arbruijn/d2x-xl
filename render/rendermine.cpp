@@ -845,6 +845,7 @@ void RenderEffects (int nWindow)
 {
 	int bLightnings, bParticles, bSparks;
 
+PROF_START
 OglSetLibFlags (1);
 #if 0
 WaitForEffectsThread ();
@@ -890,6 +891,7 @@ if (bParticles)
 if (bSparks)
 	SEM_LEAVE (SEM_SPARKS)
 #endif
+PROF_END(ptEffects)
 }
 
 //------------------------------------------------------------------------------
