@@ -1691,7 +1691,6 @@ if (!LoadMission ())
 	return 0;
 //Read level info
 nCurrentLevel = m_cf.ReadInt ();
-m_bSecret = (nCurrentLevel < 0);
 nNextLevel = m_cf.ReadInt ();
 //Restore gameData.time.xGame
 gameData.time.xGame = m_cf.ReadFix ();
@@ -1991,7 +1990,7 @@ if (h > j)
 	m_cf.Seek ((h - j) * sizeof (gameData.render.lights.subtracted [0]), SEEK_CUR);
 ApplyAllChangedLight ();
 gameStates.app.bFirstSecretVisit = m_cf.ReadInt ();
-if (m_bSecret) 
+if (m_bSecret || (nCurrentLevel < 0))
 	gameStates.app.bFirstSecretVisit = 0;
 
 if (m_bSecret != 1)

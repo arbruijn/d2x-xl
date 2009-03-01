@@ -391,7 +391,8 @@ if (bNewGame) {
 	playerP->nCloaks =
 	playerP->nInvuls = 0;
 	ResetShipData ();
-	gameStates.app.bFirstSecretVisit = 1;
+	if (nPlayer = gameData.multiplayer.nLocalPlayer)
+		gameStates.app.bFirstSecretVisit = 1;
 	}
 else {
 	playerP->lastScore = playerP->score;

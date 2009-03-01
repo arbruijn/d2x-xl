@@ -309,7 +309,7 @@ if (m_nVersion < 21) {
 	console.printf (1, "Warning: If you fight the boss, he might teleport to CSegment #0!\n");
 	#endif
 	}
-else if (h && (m_nVersion < 43)) {
+else if (h) {
 	gameData.bosses.LoadSizeStates (m_cf);
 	if (!gameData.bosses.LoadBufferStates (m_cf))
 		return 0;
