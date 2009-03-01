@@ -1277,7 +1277,6 @@ if (!tracker.m_bUse) {
 		}
 	m.AddText (TXT_HOST_IP, 0);
 	optServer = m.AddInput (mpParams.szServerIpAddr, sizeof (mpParams.szServerIpAddr) - 1, HTX_GETIP_SERVER);
-	m.AddText (TXT_CLIENT_PORT, 0);
 	j = 1;
 	h = 2;
 	}
@@ -1317,7 +1316,7 @@ for (;;) {
 			}
 		}
 	else {
-		if (stoip (mpParams.szServerIpAddr, ipx_ServerAddress + 4))
+		if (!stoip (mpParams.szServerIpAddr, ipx_ServerAddress + 4))
 			bError =  true;
 		}
 	if (!bError)
