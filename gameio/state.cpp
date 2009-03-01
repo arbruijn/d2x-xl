@@ -1142,6 +1142,7 @@ int CSaveGameManager::Load (int bInGame, int bSecret, int bQuick, const char *ps
 	int	i, nSaveSlot = -1;
 
 m_bInGame = bInGame;
+m_bSecret = bSecret;
 m_bQuick = bQuick;
 m_override = pszFilenameOverride;
 m_bBetweenLevels = 0;
