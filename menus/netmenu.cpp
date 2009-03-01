@@ -1277,8 +1277,8 @@ if (!tracker.m_bUse) {
 		}
 	m.AddText (TXT_HOST_IP, 0);
 	optServer = m.AddInput (mpParams.szServerIpAddr, sizeof (mpParams.szServerIpAddr) - 1, HTX_GETIP_SERVER);
-	j = 1;
-	h = 2;
+	j = 0;
+	h = bServer ? 1 : 2;
 	}
 else if (bServer) {
 	j = 0;
@@ -1308,17 +1308,13 @@ for (;;) {
 		continue;
 	bError = false;
 	extraGameInfo [0].bCheckUDPPort = m [optCheckPort].m_value != 0;
-	if (tracker.m_bUse) {
-		for (i = j; i < h; i++) { 
-			stoport (szPort [i], &mpParams.udpPorts [i], &nSign);
-			if (extraGameInfo [0].bCheckUDPPort && !mpParams.udpPorts [i])
-				bError = true;
-			}
+	for (i = j; i < h; i++) { 
+		stoport (szPort [i], &mpParams.udpPorts [i], &nSign);
+		if (extraGameInfo [0].bCheckUDPPort && !mpParams.udpPorts [i])
+			bError = true;
 		}
-	else {
-		if (!stoip (mpParams.szServerIpAddr, ipx_ServerAddress + 4))
-			bError =  true;
-		}
+	if (!(tracker.m_bUse || stoip (mpParams.szServerIpAddr, ipx_ServerAddress + 4)))
+		bError =  true;
 	if (!bError)
 		return 1;
 	MsgBox (NULL, NULL, 1, TXT_OK, TXT_IP_INVALID);

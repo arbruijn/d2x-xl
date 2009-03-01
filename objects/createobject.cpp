@@ -486,7 +486,7 @@ return nObject;
 //remove CObject from the world
 void ReleaseObject (short nObject)
 {
-if (!nObject)
+if (nObject <= 0)
 	return;
 
 	int nParent;
