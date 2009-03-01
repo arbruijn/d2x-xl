@@ -1488,6 +1488,7 @@ if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 	glDepthFunc (GL_LESS);
 	}
 gameData.app.nMineRenderCount++;
+PROF_END(ptRenderMine);
 }
 
 //------------------------------------------------------------------------------

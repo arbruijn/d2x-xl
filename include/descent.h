@@ -2523,6 +2523,7 @@ class CApplicationData {
 
 typedef enum tProfilerTags {
 	ptFrame,
+	ptRenderFrame,
 	ptRenderMine,
 	ptBuildSegList,
 	ptBuildObjList,

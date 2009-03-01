@@ -757,7 +757,7 @@ StopTime ();
 paletteManager.EnableEffect ();
 StartTime (0);
 gameData.app.nFrameCount++;
-PROF_END (ptRenderMine)
+PROF_END (ptRenderFrame)
 }
 
 //------------------------------------------------------------------------------
