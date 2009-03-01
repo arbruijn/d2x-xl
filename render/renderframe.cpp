@@ -758,7 +758,10 @@ SetScreenMode (SCREEN_GAME);
 cockpit->PlayHomingWarning ();
 paletteManager.ClearEffect (paletteManager.Game ());
 FillBackground ();
+{
+PROF_START
 transparencyRenderer.Reset ();
+PROF_END(ptTranspPolys)
 if (gameStates.render.vr.nRenderMode == VR_NONE)
 	RenderMonoFrame ();
 StopTime ();
