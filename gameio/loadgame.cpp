@@ -868,7 +868,7 @@ gameData.objs.lists.Init ();
 memset (gameData.app.semaphores, 0, sizeof (gameData.app.semaphores));
 transparencyRenderer.Init ();
 #if PROFILING
-memset (&gameData.profiler, 0, sizeof (gameData.profiler));
+PROF_INIT
 #endif
 memset (gameData.stats.player, 0, sizeof (tPlayerStats));
 gameData.render.mine.bObjectRendered.Clear (char (0xff));

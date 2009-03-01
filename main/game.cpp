@@ -399,8 +399,8 @@ if (gameData.app.bGamePaused) {
 fix 	timerValue,
 		xLastFrameTime = gameData.time.xFrame;
 GetSlowTicks ();
-#if 0
-	fix xMinFrameTime = (MAXFPS ? I2X (1) / MAXFPS : 1);
+#if 1
+fix xMinFrameTime = (MAXFPS ? I2X (1) / MAXFPS : 1);
 do {
 	timerValue = TimerGetFixedSeconds ();
    gameData.time.xFrame = timerValue - gameData.time.xLast;
@@ -411,7 +411,7 @@ do {
 #else
 int	tFrameTime, txMinFrameTime;
 
-if (MAXFPS) {
+if (MAXFPS > 1) {
 	txMinFrameTime = 1000 / MAXFPS;
 #	if 1
 	static float tSlack = 0;
@@ -421,9 +421,6 @@ if (MAXFPS) {
 		tSlack -= (int) tSlack;
 		}
 #	endif
-	}
-
-if (MAXFPS > 1) {
 	tFrameTime = gameStates.app.nSDLTicks - gameData.time.tLast;
 	if (tFrameTime < txMinFrameTime)
 		G3_SLEEP (txMinFrameTime - tFrameTime);
