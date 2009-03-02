@@ -561,7 +561,9 @@ cockpit->Render (bExtraInfo);
 PROF_END(ptCockpit)
 }
 console.Draw ();
+
 OglSwapBuffers (0, 0);
+
 if (gameStates.app.bSaveScreenshot)
 	SaveScreenShot (NULL, 0);
 }
@@ -758,16 +760,12 @@ SetScreenMode (SCREEN_GAME);
 cockpit->PlayHomingWarning ();
 paletteManager.ClearEffect (paletteManager.Game ());
 FillBackground ();
-{
-PROF_START
 transparencyRenderer.Reset ();
-PROF_END(ptTranspPolys)
-}
-if (gameStates.render.vr.nRenderMode == VR_NONE)
+//if (gameStates.render.vr.nRenderMode == VR_NONE)
 	RenderMonoFrame ();
-StopTime ();
+//StopTime ();
 paletteManager.EnableEffect ();
-StartTime (0);
+//StartTime (0);
 gameData.app.nFrameCount++;
 PROF_END (ptRenderFrame)
 }

@@ -383,8 +383,8 @@ else {
 #endif
 	}
 PrintLog (gameStates.ogl.bShadersOk 
-		  ? "Shaders are available\n" 
-		  : "No shaders available\n");
+			 ? "Shaders are available\n" 
+			 : "No shaders available\n");
 }
 
 //------------------------------------------------------------------------------

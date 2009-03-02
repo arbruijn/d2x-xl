@@ -485,8 +485,6 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
 //called to change the screen mode. Parameter sm is the new mode, one of
 //SMODE_GAME or SMODE_EDITOR. returns mode acutally set (could be other
 //mode if cannot init requested mode)

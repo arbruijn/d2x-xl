@@ -156,10 +156,9 @@ glBlendFunc (nSrcBlend, nDestBlend);
 
 void OglComputeSinCos (int nSides, tSinCosf *sinCosP)
 {
-	int 		i;
 	double	ang;
 
-for (i = 0; i < nSides; i++, sinCosP++) {
+for (int i = 0; i < nSides; i++, sinCosP++) {
 	ang = 2.0 * Pi * i / nSides;
 	sinCosP->fSin = (float) sin (ang);
 	sinCosP->fCos = (float) cos (ang);
@@ -681,7 +680,7 @@ if (gameStates.ogl.bAntiAliasingOk && gameStates.ogl.bAntiAliasing)
 
 //------------------------------------------------------------------------------
 
-void OglEnableLighting(int bSpecular)
+void OglEnableLighting (int bSpecular)
 {
 if (gameOpts->ogl.bObjLighting || (gameStates.render.bPerPixelLighting == 2)) {
 		static GLfloat fBlack [] = {0.0f, 0.0f, 0.0f, 1.0f};
@@ -738,36 +737,46 @@ if (!gameStates.menus.nInMenu || bForce) {
 		int h = SMALL_FONT->Height () + 3, i = 3;
 		fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
 		float t, s = 0;
+#if 0
 		GrPrintF (NULL, 5, h * i++, "frame: %1.2f", float (p.t [ptFrame]) / nFrameCount);
 		GrPrintF (NULL, 5, h * i++, "  scene: %1.2f %c (%1.2f)", 100.0f * float (p.t [ptRenderFrame]) / float (p.t [ptFrame]), '%', float (p.t [ptRenderFrame]) / nFrameCount);
-		GrPrintF (NULL, 5, h * i++, "    mine\t: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptRenderMine]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptRenderMine]) / nFrameCount);
-		GrPrintF (NULL, 5, h * i++, "    light\t: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptLighting]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptLighting]) / nFrameCount);
+		GrPrintF (NULL, 5, h * i++, "    mine: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptRenderMine]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptRenderMine]) / nFrameCount);
+#endif
+		GrPrintF (NULL, 5, h * i++, "    mine: %d", p.t [ptRenderMine]);
+#if 0
+		GrPrintF (NULL, 5, h * i++, "    light: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptLighting]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptLighting]) / nFrameCount);
 		s += t;
 		GrPrintF (NULL, 5, h * i++, "    render: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptRenderPass]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptRenderPass]) / nFrameCount);
 		s += t;
 		GrPrintF (NULL, 5, h * i++, "      face list: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptFaceList]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptFaceList]) / nFrameCount);
-		GrPrintF (NULL, 5, h * i++, "      faces\t: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptRenderFaces]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptRenderFaces]) / nFrameCount);
-		GrPrintF (NULL, 5, h * i++, "      objects\t: %1.2f %c (%1.2f) ", t = 100.0f * float (p.t [ptRenderObjects]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptRenderObjects]) / nFrameCount);
+		GrPrintF (NULL, 5, h * i++, "      faces: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptRenderFaces]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptRenderFaces]) / nFrameCount);
+		GrPrintF (NULL, 5, h * i++, "      objects: %1.2f %c (%1.2f) ", t = 100.0f * float (p.t [ptRenderObjects]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptRenderObjects]) / nFrameCount);
 		GrPrintF (NULL, 5, h * i++, "      transparency: %1.2f %c (%1.2f) ", t = 100.0f * float (p.t [ptTranspPolys]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptTranspPolys]) / nFrameCount);
-		GrPrintF (NULL, 5, h * i++, "      effects\t: %1.2f %c (%1.2f) ", t = 100.0f * float (p.t [ptEffects]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptEffects]) / nFrameCount);
-		GrPrintF (NULL, 5, h * i++, "      cockpit\t: %1.2f %c (%1.2f) ", t = 100.0f * float (p.t [ptCockpit]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptCockpit]) / nFrameCount);
-		GrPrintF (NULL, 5, h * i++, "      states\t: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptRenderStates]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptRenderStates]) / nFrameCount);
-		GrPrintF (NULL, 5, h * i++, "      shaders\t: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptShaderStates]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptShaderStates]) / nFrameCount);
-		GrPrintF (NULL, 5, h * i++, "    other\t: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptAux]) / float (p.t [ptRenderFrame]), '%');
+		GrPrintF (NULL, 5, h * i++, "      effects: %1.2f %c (%1.2f) ", t = 100.0f * float (p.t [ptEffects]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptEffects]) / nFrameCount);
+		GrPrintF (NULL, 5, h * i++, "      cockpit: %1.2f %c (%1.2f) ", t = 100.0f * float (p.t [ptCockpit]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptCockpit]) / nFrameCount);
+		GrPrintF (NULL, 5, h * i++, "      states: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptRenderStates]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptRenderStates]) / nFrameCount);
+		GrPrintF (NULL, 5, h * i++, "      shaders: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptShaderStates]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptShaderStates]) / nFrameCount);
+		GrPrintF (NULL, 5, h * i++, "    other: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptAux]) / float (p.t [ptRenderFrame]), '%');
 		s += t;
 		GrPrintF (NULL, 5, h * i++, "      transform: %1.2f %c (%1.2f) ", t = 100.0f * float (p.t [ptTransform]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptTransform]) / nFrameCount);
-		GrPrintF (NULL, 5, h * i++, "      seg list\t: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptBuildSegList]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptBuildSegList]) / nFrameCount);
-		GrPrintF (NULL, 5, h * i++, "      obj list\t: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptBuildObjList]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptBuildObjList]) / nFrameCount);
+		GrPrintF (NULL, 5, h * i++, "      seg list: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptBuildSegList]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptBuildSegList]) / nFrameCount);
+		GrPrintF (NULL, 5, h * i++, "      obj list: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptBuildObjList]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptBuildObjList]) / nFrameCount);
 		GrPrintF (NULL, 5, h * i++, "  total: %1.2f %c", s, '%');
+#endif
 		}
 #endif
 	//if (gameStates.app.bGameRunning && !gameStates.menus.nInMenu)
 	paletteManager.ApplyEffect ();
 	OglFlushDrawBuffer ();
+	PROF_INIT
+	PROF_START
 	SDL_GL_SwapBuffers ();
+	PROF_END(ptRenderMine)
 	OglSetDrawBuffer (GL_BACK, 1);
-//	if (gameStates.menus.nInMenu || bClear)
+#if 1
+	//if (gameStates.menus.nInMenu || bClear)
 		glClear (GL_COLOR_BUFFER_BIT);
+#endif
 	}
 }
 
@@ -985,7 +994,7 @@ return (RegSetValueEx (hRegKey, "Flags", 0, REG_DWORD, reinterpret_cast<const BY
 
 bool OglLibsInitialized (void)
 {
-#ifdef _WIN32
+#if 0 //def _WIN32
 
 	HKEY	hRegKey = NULL;
 
@@ -1006,7 +1015,7 @@ return true;
 
 bool OglInitLibs (void)
 {
-#ifdef _WIN32
+#if 0//def _WIN32
 	HKEY	hRegKey = NULL;
 
 DWORD nDisposition = 0;
@@ -1036,7 +1045,7 @@ return false;
 
 void OglSetLibFlags (int bGame)
 {
-#ifdef _WIN32
+#if 0//def _WIN32
 	static	time_t	t0 = 0;
 
 if (OglCheckLibFlags ()) {
@@ -1058,8 +1067,8 @@ oglVendor = reinterpret_cast<const char*> (glGetString (GL_VENDOR));
 oglRenderer = reinterpret_cast<const char*> (glGetString (GL_RENDERER));
 oglVersion = reinterpret_cast<const char*> (glGetString (GL_VERSION));
 oglExtensions = reinterpret_cast<const char*> (glGetString (GL_EXTENSIONS));
-OglInitLibs ();
 #if 0
+OglInitLibs ();
 if (OglCheckLibFlags ())
 	SetNostalgia (3);
 #endif

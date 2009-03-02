@@ -33,7 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	endif
 #endif
 
-#if DBG
+#if 0 //DBG
 #	include "vld.h"
 #endif
 

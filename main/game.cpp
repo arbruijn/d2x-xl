@@ -1426,7 +1426,7 @@ else
 //PrintLog ("DropPowerups\n");
 DropPowerups ();
 gameData.time.xGame += gameData.time.xFrame;
-if (gameData.time.xGame < 0 || gameData.time.xGame > I2X (0x7fff - 600)) {
+if ((gameData.time.xGame < 0) || (gameData.time.xGame > I2X (0x7fff - 600))) {
 	gameData.time.xGame = gameData.time.xFrame;	//wrap when goes negative, or gets within 10 minutes
 	}
 if (IsMultiGame && netGame.xPlayTimeAllowed)
@@ -1457,8 +1457,6 @@ if (gameData.reactor.bDestroyed && (gameData.demo.nState == ND_STATE_RECORDING))
 UpdateFlagClips ();
 MultiSetFlagPos ();
 SetPlayerPaths ();
-//PrintLog ("FlashFrame\n");
-FlashFrame ();
 if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 	NDPlayBackOneFrame ();
 	if (gameData.demo.nState != ND_STATE_PLAYBACK)
