@@ -41,6 +41,9 @@ void CPaletteManager::ApplyEffect (void)
 	GLint	blendSrc, blendDest;
 
 if (!m_data.bAllowEffect) {
+#if 1
+	return;
+#else
 	if ((bBlend = glIsEnabled (GL_BLEND))) {
 		glGetIntegerv (GL_BLEND_SRC, &blendSrc);
 		glGetIntegerv (GL_BLEND_DST, &blendDest);
@@ -49,6 +52,7 @@ if (!m_data.bAllowEffect) {
 		glEnable (GL_BLEND);
 	glBlendFunc (GL_ONE,GL_ONE);
 	glColor3f (0, 0, 0);
+#endif
 	}
 else if (m_data.bDoEffect) {
 	if ((bBlend = glIsEnabled (GL_BLEND))) {
