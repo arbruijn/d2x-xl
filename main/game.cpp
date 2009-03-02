@@ -1316,12 +1316,12 @@ SaveScreenShot (0, 0);
 void DoEffectsFrame (void)
 {
 //PrintLog ("DoEffectsFrame \n");
-#if 0
+#if UNIFY_THREADS
+if (!(WaitForRenderThreads () && RunRenderThreads (rtEffects, 1)))
+#else
 if (WaitForEffectsThread ())
 	tiEffects.bExec = 1;
 else
-#else
-if (!(WaitForRenderThreads () && RunRenderThreads (rtEffects, 1)))
 #endif
 	{
 	lightningManager.DoFrame ();

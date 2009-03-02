@@ -186,7 +186,7 @@ return 0;
 
 int _CDECL_ TranspRenderThread (void *pThreadId)
 {
-#if 1
+#if !UNIFY_THREADS
 	int	i;
 
 do {
@@ -211,7 +211,7 @@ return 0;
 
 void StartTranspRenderThread (void)
 {
-#if 0
+#if !UNIFY_THREADS
 if (gameData.app.bUseMultiThreading [rtTranspRender]) {
 	memset (&tiTranspRender, 0, sizeof (tiTranspRender));
 	tiTranspRender.ti [0].pThread = SDL_CreateThread (TranspRenderThread, NULL);
@@ -309,7 +309,7 @@ return 0;
 
 void StartEffectsThread (void)
 {
-#if 0
+#if !UNIFY_THREADS
 if (gameData.app.bUseMultiThreading [rtEffects]) {
 	memset (&tiEffects, 0, sizeof (tiEffects));
 	if	(!(tiEffects.pThread = SDL_CreateThread (EffectsThread, NULL)))
@@ -346,7 +346,7 @@ if (gameStates.app.bMultiThreaded) {
 
 bool WaitForEffectsThread (void)
 {
-#if 1
+#if !UNIFY_THREADS
 if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects] && tiEffects.pThread) {
 	while (tiEffects.bExec)
 		G3_SLEEP (0);

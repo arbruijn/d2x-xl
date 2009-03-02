@@ -19,6 +19,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "transprender.h"
 #include "particles.h"
 
+#define UNIFY_THREADS	0
+
 typedef struct tRenderThreadInfo {
 	tRenderTask	nTask;
 	int						nMiddle;

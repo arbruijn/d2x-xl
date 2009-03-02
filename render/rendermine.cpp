@@ -847,10 +847,10 @@ void RenderEffects (int nWindow)
 
 PROF_START
 OglSetLibFlags (1);
-#if 0
-WaitForEffectsThread ();
-#else
+#if UNIFY_THREADS
 WaitForRenderThreads ();
+#else
+WaitForEffectsThread ();
 #endif
 if (automap.m_bDisplay) {
 	bLightnings = gameOpts->render.automap.bLightnings;

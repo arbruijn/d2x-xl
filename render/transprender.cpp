@@ -176,14 +176,22 @@ int CTransparencyRenderer::AddMT (tTranspItemType nType, void *itemData, int ite
 {
 if (!gameStates.app.bMultiThreaded || (nThread < 0) || !gameData.app.bUseMultiThreading [rtTranspRender])
 	return Add (nType, itemData, itemSize, nDepth, nIndex);
+#if UNIFY_THREADS
+WaitForRenderThreads ();
+#else
 while (tiTranspRender.ti [nThread].bExec)
 	G3_SLEEP (0);
+#endif
 tiTranspRender.itemData [nThread].nType = nType;
 tiTranspRender.itemData [nThread].nSize = itemSize;
 tiTranspRender.itemData [nThread].nDepth = nDepth;
 tiTranspRender.itemData [nThread].nIndex = nIndex;
 memcpy (&tiTranspRender.itemData [nThread].item, itemData, itemSize);
+#if UNIFY_THREADS
+RunRenderThreads (rtTranspRender, 2);
+#else
 tiTranspRender.ti [nThread].bExec = 1;
+#endif
 return 1;
 }
 
