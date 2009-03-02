@@ -425,7 +425,7 @@ if (!w)
 if (val > maxVal)
 	val = maxVal;
 #endif
-w1 = (val > maxVal) ? 1 : w * val / maxVal;
+w1 = (val > maxVal) ? w : w * val / maxVal;
 if (w1 < w) {
 	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 	OglDrawFilledRect (x + w1 + 1, y, x + w, y + h - 2);
