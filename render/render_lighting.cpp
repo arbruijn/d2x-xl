@@ -121,6 +121,10 @@ if (gameStates.ogl.bVertexLighting)
 for (i = nStart, nStep = (nStart > nEnd) ? -1 : 1; i != nEnd; i += nStep) {
 	faceP = FACES.faces + i;
 	nSegment = faceP->nSegment;
+#if DBG
+	if (nSegment == nDbgSeg)
+		nDbgSeg = nDbgSeg;
+#endif
 	nSide = faceP->nSide;
 	if (bVertexLight && !gameStates.render.bFullBright)
 		nLights = lightManager.SetNearestToSegment (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())

@@ -468,7 +468,7 @@ FORALL_ACTOR_OBJS (objP, i) {
 		}
 
 	if (IS_BOSS (objP)) {
-		if ((extraGameInfo [0].nBossCount < int (gameData.bosses.ToS ())) || gameData.bosses.Grow ()) {
+		if ((BOSS_COUNT < int (gameData.bosses.ToS ())) || gameData.bosses.Grow ()) {
 			gameData.bosses [extraGameInfo [0].nBossCount++].m_nObject = objP->Index ();
 			if (BOSS_COUNT < 2)
 				nBossObj = objP->Index ();
