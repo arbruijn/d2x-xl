@@ -1457,6 +1457,7 @@ if (gameData.reactor.bDestroyed && (gameData.demo.nState == ND_STATE_RECORDING))
 UpdateFlagClips ();
 MultiSetFlagPos ();
 SetPlayerPaths ();
+FlashFrame ();
 if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 	NDPlayBackOneFrame ();
 	if (gameData.demo.nState != ND_STATE_PLAYBACK)
