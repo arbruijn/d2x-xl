@@ -421,7 +421,11 @@ void CMenuItem::DrawGauge (int w, int x, int y, int val, int maxVal, int current
 fontManager.Current ()->StringSize (" ", w1, h, aw);
 if (!w) 
 	w = w1 * 30;
-w1 = w * val / maxVal;
+#if DBG
+if (val > maxVal)
+	val = maxVal;
+#endif
+w1 = (val > maxVal) ? 1 : w * val / maxVal;
 if (w1 < w) {
 	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 	OglDrawFilledRect (x + w1 + 1, y, x + w, y + h - 2);

@@ -262,7 +262,7 @@ if (NetworkListen () && tracker.CountActive ())
 	key = -2;
 else if (key == KEY_ESC)
 	key = -3;
-else if (((t = SDL_GetTicks ()) - nQueryTimeout) > 60000)
+else if ((t = (SDL_GetTicks () - nQueryTimeout)) > 60000)
 	key = -4;
 else {
 	int v = (int) (t / 60);
