@@ -691,7 +691,7 @@ else {
 	nCloakFadeValue = FADE_LEVELS - 1;
 	m_info.nCloakFadeState = 0;
 	}
-if (nCloakState && (gameData.time.xGame > LOCALPLAYER.cloakTime + CLOAK_TIME_MAX - I2X (3)))	{	//doing "about-to-uncloak" effect
+if (nCloakState && (LOCALPLAYER.cloakTime != 0x7fffffff) && (gameData.time.xGame > LOCALPLAYER.cloakTime + CLOAK_TIME_MAX - I2X (3)))	{	//doing "about-to-uncloak" effect
 	nCloakState = 2;
 	if (!m_info.nCloakFadeState)
 		m_info.nCloakFadeState = 2;
@@ -1621,7 +1621,7 @@ m_info.nShields = X2IR (LOCALPLAYER.shields);
 if (m_info.nShields < 0)
 	m_info.nShields  = 0;
 m_info.bCloak = ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0);
-m_info.tInvul = LOCALPLAYER.invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame;
+m_info.tInvul = (LOCALPLAYER.invulnerableTime == 0x7fffffff) ? LOCALPLAYER.invulnerableTime : LOCALPLAYER.invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame;
 m_info.nColor = WHITE_RGBA;
 
 if (gameOpts->render.cockpit.bScaleGauges) {

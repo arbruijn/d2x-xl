@@ -103,6 +103,9 @@ void G3DynLightModel (CObject *objP, RenderModel::CModel* modelP, short iVerts, 
 
 int G3ModelMinMax (int nModel, tHitbox *phb);
 
+void G3GetSubModelOffsets (ubyte *dataP, CFixVector* offsetP, int &nOffset);
+void G3SetSubModelOffsets (ubyte *dataP, CFixVector* offsetP, int &nOffset);
+
 //------------------------------------------------------------------------------
 
 extern g3sPoint *pointList [MAX_POINTS_PER_POLY];

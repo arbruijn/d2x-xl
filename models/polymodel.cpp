@@ -739,12 +739,12 @@ maxs.Destroy ();
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-int ReadPolyModels (CPolyModel* modelP, int n, CFile& cf)
+int ReadPolyModels (CArray<CPolyModel>& models, int nModels, CFile& cf, int nOffset)
 {
 	int i;
 
-for (i = 0; i < n; i++)
-	if (!modelP [i].Read (0, cf))
+for (i = nOffset, nModels += nOffset; i < nModels; i++)
+	if (!models [i].Read (0, cf))
 		break;
 return i;
 }

@@ -591,7 +591,7 @@ if (ISLOCALPLAYER (nPlayer)) {
 	AIDoCloakStuff ();
 	if IsMultiGame
 		MultiSendCloak ();
-	PowerupBasic (-10,-10,-10, CLOAK_SCORE, "%s!", TXT_CLOAKING_DEVICE);
+	PowerupBasic (-10, -10, -10, CLOAK_SCORE, "%s!", TXT_CLOAKING_DEVICE);
 	UsePowerup (-POW_CLOAK);
 	}
 return 1;

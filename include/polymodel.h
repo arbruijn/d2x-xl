@@ -72,6 +72,7 @@ typedef struct tPolyModelInfo {
 		int				nDataSize;
 		CSubModelData	subModels;
 		CFixVector		mins, maxs;                       // min,max for whole model
+		CFixVector		offsets [MAX_SUBMODELS];
 		fix				rad;
 		ubyte				nTextures;
 		ushort			nFirstTexture;
@@ -108,6 +109,7 @@ class CPolyModel : public CByteArray {
 		inline int ModelCount (void) { return m_info.nModels; }
 		inline CSubModelData& SubModels (void) { return m_info.subModels; }
 		inline ushort FirstTexture (void) { return m_info.nFirstTexture; }
+		inline CFixVector* Offsets (void) { return m_info.offsets; }
 		inline void SetFirstTexture (ushort nFirstTexture) { m_info.nFirstTexture = nFirstTexture; }
 		inline ubyte TextureCount (void) { return m_info.nTextures; }
 		inline tPolyModelInfo& Info (void) { return m_info; }
@@ -160,7 +162,7 @@ void DrawModelPicture (int mn,CAngleVector* orient_angles);
 // free up a model, getting rid of all its memory
 #define MAX_POLYOBJ_TEXTURES 100
 
-int ReadPolyModels (CPolyModel* pm, int n, CFile& cf);
+int ReadPolyModels (CArray<CPolyModel>& models, int nModels, CFile& cf, int nOffset = 0);
 
 CPolyModel* GetPolyModel (CObject* objP, CFixVector* pos, int nModel, int flags);
 

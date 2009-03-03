@@ -190,7 +190,7 @@ for (i = 0; i < n; i++)
 
 void BMReadAll (CFile& cf)
 {
-	int i, t;
+	int i, j, t;
 
 gameData.pig.tex.nTextures [0] = cf.ReadInt ();
 /*---*/PrintLog ("      Loading %d texture indices\n", gameData.pig.tex.nTextures [0]);
@@ -240,7 +240,7 @@ ReadPowerupTypeInfos (gameData.objs.pwrUp.info.Buffer (), gameData.objs.pwrUp.nT
 
 gameData.models.nPolyModels = cf.ReadInt ();
 /*---*/PrintLog ("      Loading %d CPolyModel descriptions\n", gameData.models.nPolyModels);
-ReadPolyModels (gameData.models.polyModels [0].Buffer (), gameData.models.nPolyModels, cf);
+ReadPolyModels (gameData.models.polyModels [0], gameData.models.nPolyModels, cf);
 gameData.models.nDefPolyModels = gameData.models.nPolyModels;
 memcpy (gameData.models.polyModels [1].Buffer (), gameData.models.polyModels [0].Buffer (), gameData.models.nPolyModels * sizeof (CPolyModel));
 
@@ -249,6 +249,8 @@ for (i = 0; i < gameData.models.nPolyModels; i++) {
 	gameData.models.polyModels [0][i].SetBuffer (NULL);
 	gameData.models.polyModels [1][i].SetBuffer (NULL);
 	gameData.models.polyModels [0][i].ReadData (gameData.models.polyModels [1] + i, cf);
+	j = 0;
+	G3GetSubModelOffsets (gameData.models.polyModels [0][i].Data (), gameData.models.polyModels [0][i].Offsets (), j);
 	}
 
 for (i = 0; i < gameData.models.nPolyModels; i++)

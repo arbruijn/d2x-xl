@@ -176,7 +176,7 @@ if (gameData.models.nPolyModels >= MAX_POLYGON_MODELS) {
 				t,fname, MAX_POLYGON_MODELS - N_D2_POLYGON_MODELS);
 	return -1;
 	}
-ReadPolyModels (gameData.models.polyModels [0] + j, t, cf);
+ReadPolyModels (gameData.models.polyModels [0], t, cf, j);
 if (bVertigoData) {
 	gameData.models.nDefPolyModels = gameData.models.nPolyModels;
 	memcpy (gameData.models.polyModels [1] + j, gameData.models.polyModels [0] + j, sizeof (CPolyModel) * t);
@@ -262,7 +262,9 @@ t = cf.ReadInt ();			//read number of joints
 for (j = 0; j < t; j++) {
 	i = cf.ReadInt ();		//read joint number
 	if (bAddBots) {
-		if (gameData.bots.nJoints >= MAX_ROBOT_JOINTS) {
+		if (gameData.bots.nJoints < MAX_ROBOT_JOINTS) 
+			i = gameData.bots.nJoints++;
+		else {
 			Warning ("%s: Robots joint (%d) out of range (valid range = 0 - %d).",
 						szLevel, i, MAX_ROBOT_JOINTS - 1);
 			gameData.bots.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
@@ -270,8 +272,6 @@ for (j = 0; j < t; j++) {
 			gameData.models.nPolyModels = nPolyModelSave;
 			return -1;
 			}
-		else
-			i = gameData.bots.nJoints++;
 		}
 	else if ((i < 0) || (i >= gameData.bots.nJoints)) {
 		Warning ("%s: Robots joint (%d) out of range (valid range = 0 - %d).",
@@ -281,13 +281,18 @@ for (j = 0; j < t; j++) {
 		gameData.models.nPolyModels = nPolyModelSave;
 		return -1;
 		}
-	ReadJointPositions (gameData.bots.joints, 1, cf, i);
+	if (bAltModels)
+		cf.Seek (4 * sizeof (short), SEEK_CUR);
+	else
+		ReadJointPositions (gameData.bots.joints, 1, cf, i);
 	}
 t = cf.ReadInt ();			//read number of polygon models
 for (j = 0; j < t; j++) {
 	i = cf.ReadInt ();		//read model number
 	if (bAddBots) {
-		if (gameData.models.nPolyModels >= MAX_POLYGON_MODELS) {
+		if (gameData.models.nPolyModels < MAX_POLYGON_MODELS) 
+			i = gameData.models.nPolyModels++;
+		else {
 			Warning ("%s: Polygon model (%d) out of range (valid range = 0 - %d).",
 						szLevel, i, gameData.models.nPolyModels - 1);
 			gameData.bots.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
@@ -295,8 +300,6 @@ for (j = 0; j < t; j++) {
 			gameData.models.nPolyModels = nPolyModelSave;
 			return -1;
 			}
-		else
-			i = gameData.models.nPolyModels++;
 		}
 	else if ((i < 0) || (i >= gameData.models.nPolyModels)) {
 		if (bAltModels) {
@@ -324,7 +327,7 @@ for (j = 0; j < t; j++) {
 	if (i == nDbgModel)
 		nDbgModel = nDbgModel;
 #endif
-	modelP = bAltModels ? gameData.models.polyModels [2] + i : gameData.models.polyModels [0] + i;
+	modelP = &gameData.models.polyModels [bAltModels ? 2 : 0][i];
 	modelP->Destroy ();
 	if (!modelP->Read (0, cf))
 		return -1;
@@ -338,6 +341,8 @@ for (j = 0; j < t; j++) {
 		gameData.models.polyModels [1][i] = gameData.models.polyModels [0][i];
 		gameData.models.polyModels [1][i].modelData = p;
 #else
+		int nOffset = 0;
+		G3SetSubModelOffsets (modelP->Data (), gameData.models.polyModels [0][i].Offsets (), nOffset);
 		cf.ReadInt ();
 		cf.ReadInt ();
 #endif

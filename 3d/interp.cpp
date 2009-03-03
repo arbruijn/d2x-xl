@@ -175,7 +175,7 @@ for (;;) {
 			n = WORDVAL (dataP + 2);
 			for (i = 0; i < n; i++)
 				VmsVectorSwap (*VECPTR ((dataP + 4) + (i * sizeof (CFixVector))));
-			dataP += n*sizeof (CFixVector) + 4;
+			dataP += n * sizeof (CFixVector) + 4;
 			break;
 
 		case OP_DEFP_START:
@@ -184,7 +184,7 @@ for (;;) {
 			n = WORDVAL (dataP + 2);
 			for (i = 0; i < n; i++)
 				VmsVectorSwap (*VECPTR ((dataP + 8) + (i * sizeof (CFixVector))));
-			dataP += n*sizeof (CFixVector) + 8;
+			dataP += n * sizeof (CFixVector) + 8;
 			break;
 
 		case OP_FLATPOLY:
@@ -211,7 +211,7 @@ for (;;) {
 			ShortSwap (WORDPTR (dataP + 28));
 			for (i=0;i<n;i++)
 				ShortSwap (WORDPTR (dataP + 30 + (i * 2)));
-			dataP += 30 + ((n & ~1) + 1) * 2 + n*12;
+			dataP += 30 + ((n & ~1) + 1) * 2 + n * 12;
 			break;
 
 		case OP_SORTNORM:
@@ -278,11 +278,11 @@ for (;;) {
 			return;
 		case OP_DEFPOINTS:
 			n = (WORDVAL (dataP + 2));
-			dataP += n*sizeof (CFixVector) + 4;
+			dataP += n * sizeof (CFixVector) + 4;
 			break;
 		case OP_DEFP_START:
 			n = (WORDVAL (dataP + 2));
-			dataP += n*sizeof (CFixVector) + 8;
+			dataP += n * sizeof (CFixVector) + 8;
 			break;
 		case OP_FLATPOLY:
 			n = (WORDVAL (dataP + 2));
@@ -290,7 +290,7 @@ for (;;) {
 			break;
 		case OP_TMAPPOLY:
 			n = (WORDVAL (dataP + 2));
-			dataP += 30 + ((n & ~1) + 1) * 2 + n*12;
+			dataP += 30 + ((n & ~1) + 1) * 2 + n * 12;
 			break;
 		case OP_SORTNORM:
 			G3PolyModelVerify (dataP + WORDVAL (dataP + 28));
@@ -302,6 +302,102 @@ for (;;) {
 			break;
 		case OP_SUBCALL:
 			G3PolyModelVerify (dataP + WORDVAL (dataP + 16));
+			dataP += 20;
+			break;
+		case OP_GLOW:
+			dataP += 4;
+			break;
+		default:
+			Error ("invalid polygon model\n");
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void G3GetSubModelOffsets (ubyte *dataP, CFixVector* offsetP, int& nOffset)
+{
+	short n;
+
+for (;;) {
+	switch (WORDVAL (dataP)) {
+		case OP_EOF:
+			return;
+		case OP_DEFPOINTS:
+			n = (WORDVAL (dataP + 2));
+			dataP += n * sizeof (CFixVector) + 4;
+			break;
+		case OP_DEFP_START:
+			n = (WORDVAL (dataP + 2));
+			dataP += n * sizeof (CFixVector) + 8;
+			break;
+		case OP_FLATPOLY:
+			n = (WORDVAL (dataP + 2));
+			dataP += 30 + ((n & ~1) + 1) * 2;
+			break;
+		case OP_TMAPPOLY:
+			n = (WORDVAL (dataP + 2));
+			dataP += 30 + ((n & ~1) + 1) * 2 + n * 12;
+			break;
+		case OP_SORTNORM:
+			G3GetSubModelOffsets (dataP + WORDVAL (dataP + 28), offsetP, nOffset);
+			G3GetSubModelOffsets (dataP + WORDVAL (dataP + 30), offsetP, nOffset);
+			dataP += 32;
+			break;
+		case OP_RODBM:
+			dataP += 36;
+			break;
+		case OP_SUBCALL:
+			offsetP [nOffset++] = *VECPTR (dataP + 4);
+			G3GetSubModelOffsets (dataP + WORDVAL (dataP + 16), offsetP, nOffset);
+			dataP += 20;
+			break;
+		case OP_GLOW:
+			dataP += 4;
+			break;
+		default:
+			Error ("invalid polygon model\n");
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void G3SetSubModelOffsets (ubyte *dataP, CFixVector* offsetP, int &nOffset)
+{
+	short n;
+
+for (;;) {
+	switch (WORDVAL (dataP)) {
+		case OP_EOF:
+			return;
+		case OP_DEFPOINTS:
+			n = (WORDVAL (dataP + 2));
+			dataP += n * sizeof (CFixVector) + 4;
+			break;
+		case OP_DEFP_START:
+			n = (WORDVAL (dataP + 2));
+			dataP += n * sizeof (CFixVector) + 8;
+			break;
+		case OP_FLATPOLY:
+			n = (WORDVAL (dataP + 2));
+			dataP += 30 + ((n & ~1) + 1) * 2;
+			break;
+		case OP_TMAPPOLY:
+			n = (WORDVAL (dataP + 2));
+			dataP += 30 + ((n & ~1) + 1) * 2 + n * 12;
+			break;
+		case OP_SORTNORM:
+			G3SetSubModelOffsets (dataP + WORDVAL (dataP + 28), offsetP, nOffset);
+			G3SetSubModelOffsets (dataP + WORDVAL (dataP + 30), offsetP, nOffset);
+			dataP += 32;
+			break;
+		case OP_RODBM:
+			dataP += 36;
+			break;
+		case OP_SUBCALL:
+			*VECPTR (dataP + 4) = offsetP [nOffset++];
+			G3SetSubModelOffsets (dataP + WORDVAL (dataP + 16), offsetP, nOffset);
 			dataP += 20;
 			break;
 		case OP_GLOW:
@@ -587,7 +683,7 @@ for (;;) {
 		case OP_DEFPOINTS: {
 			int n = WORDVAL (p+2);
 			RotatePointList (modelPointList, new_points, NULL, n, 0);
-			p += n*sizeof (CFixVector) + 4;
+			p += n * sizeof (CFixVector) + 4;
 			break;
 			}
 
@@ -595,7 +691,7 @@ for (;;) {
 			int n = WORDVAL (p+2);
 			int s = WORDVAL (p+4);
 			RotatePointList (modelPointList, new_points, NULL, n, s);
-			p += n*sizeof (CFixVector) + 8;
+			p += n * sizeof (CFixVector) + 8;
 			break;
 			}
 
