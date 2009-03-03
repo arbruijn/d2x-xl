@@ -1239,9 +1239,11 @@ int VulcanHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 #	define VULCAN_SPREAD	(d_rand ()/8 - 32767/16)
 
-	int bGatlingSound = gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (gameOpts->sound.bHires [0] == 2) && gameOpts->sound.bGatling;
+	int			bGatlingSound = gameStates.app.bHaveExtraGameInfo [IsMultiGame] &&
+										 (gameOpts->sound.bHires [0] == 2) && gameOpts->sound.bGatling;
+	tFiringData *fP = gameData.multiplayer.weaponStates [objP->info.nId].firing;
 
-if (bGatlingSound && (gameData.weapons.firing [objP->info.nId].nDuration <= GATLING_DELAY))
+if (bGatlingSound && (fP->nDuration <= GATLING_DELAY))
 	return 0;
 //	Only make sound for 1/4 of vulcan bullets.
 LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 1, 0, -1);

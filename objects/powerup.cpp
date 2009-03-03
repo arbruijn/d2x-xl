@@ -632,11 +632,11 @@ typedef int (* pPickupFlag) (CObject *, int, int, const char *, int);
 //	returns true if powerup consumed
 int DoPowerup (CObject *objP, int nPlayer)
 {
-	CPlayerData	*playerP;
-	int		bUsed = 0;
-	int		bSpecialUsed = 0;		//for when hitting vulcan cannon gets vulcan ammo
-	int		bLocalPlayer;
-	int		nId, nType;
+	CPlayerData*	playerP;
+	int				bUsed = 0;
+	int				bSpecialUsed = 0;		//for when hitting vulcan cannon gets vulcan ammo
+	int				bLocalPlayer;
+	int				nId, nType;
 
 if (nPlayer < 0)
 	nPlayer = gameData.multiplayer.nLocalPlayer;
@@ -657,7 +657,6 @@ if ((objP->cType.powerupInfo.nFlags & PF_SPAT_BY_PLAYER) &&
 	return 0;		//not enough time elapsed
 gameData.hud.bPlayerMessage = 0;	//	Prevent messages from going to HUD if -PlayerMessages switch is set
 nId = objP->info.nId;
-#if 1
 
 nType = powerupType [nId];
 if (nType == POWERUP_IS_GUN) {
@@ -685,209 +684,6 @@ else if (nType == POWERUP_IS_FLAG) {
 else
 	return 0;
 
-#else
-
-switch (objP->nId) {
-	case POW_EXTRA_LIFE:
-		bUsed = PickupExtraLife (objP, nPlayer);
-		break;
-
-	case POW_ENERGY:
-		bUsed = PickupEnergyBoost (objP, nPlayer);
-		break;
-
-	case POW_SHIELD_BOOST:
-		bUsed = PickupShieldBoost (objP, nPlayer);
-		break;
-
-	case POW_LASER:
-		bUsed = PickupLaser (objP, 0, 1, NULL, nPlayer);
-		break;
-
-	case POW_QUADLASER:
-		bUsed = PickupQuadLaser (objP, 0, 1, NULL, nPlayer);
-		break;
-
-	case POW_SUPERLASER:
-		bUsed = PickupSuperLaser (objP, 0, 1, NULL, nPlayer);
-		break;
-
-	case POW_VULCAN:
-		if (0 > (bUsed = PickupGatlingGun (objP, VULCAN_INDEX, 1, NULL, nPlayer))) {
-			bUsed = -bUsed - 1;
-			bSpecialUsed = 1;
-			nId = POW_VULCAN_AMMO;
-			}
-		break;
-
-	case POW_GAUSS: 
-		if (0 > (bUsed = PickupGatlingGun (objP, GAUSS_INDEX, 1, NULL, nPlayer))) {
-			bUsed = -bUsed - 1;
-			bSpecialUsed = 1;
-			nId = POW_VULCAN_AMMO;
-			}
-		break;
-
-	case POW_SPREADFIRE:
-		bUsed = PickupGun (SPREADFIRE_INDEX, nPlayer);
-		break;
-
-	case POW_PLASMA:
-		bUsed = PickupGun (PLASMA_INDEX, nPlayer);
-		break;
-
-	case POW_FUSION:
-		bUsed = PickupGun (FUSION_INDEX, nPlayer);
-		break;
-
-	case POW_HELIX:
-		bUsed = PickupGun (HELIX_INDEX, nPlayer);
-		break;
-
-	case POW_PHOENIX:
-		bUsed = PickupGun (PHOENIX_INDEX, nPlayer);
-		break;
-
-	case POW_OMEGA:
-		bUsed = PickupGun (OMEGA_INDEX, nPlayer);
-		break;
-
-	case POW_CONCUSSION_1:
-		bUsed = PickupSecondary (objP, CONCUSSION_INDEX, 1, NULL, nPlayer);
-		break;
-
-	case POW_CONCUSSION_4:
-		bUsed = PickupSecondary (objP, CONCUSSION_INDEX, 4, NULL, nPlayer);
-		break;
-
-	case POW_HOMINGMSL_1:
-		bUsed = PickupSecondary (objP, HOMING_INDEX, 1, nPlayer);
-		break;
-
-	case POW_HOMINGMSL_4:
-		bUsed = PickupSecondary (objP, HOMING_INDEX, 4, nPlayer);
-		break;
-
-	case POW_PROXMINE:
-		bUsed = PickupSecondary (objP, PROXMINE_INDEX, 4, nPlayer);
-		break;
-
-	case POW_SMARTMSL:
-		bUsed = PickupSecondary (objP, SMART_INDEX, 1, nPlayer);
-		break;
-
-	case POW_MEGAMSL:
-		bUsed = PickupSecondary (objP, MEGA_INDEX, 1, nPlayer);
-		break;
-
-	case POW_FLASHMSL_1:
-		bUsed = PickupSecondary (objP, FLASHMSL_INDEX, 1, nPlayer);
-		break;
-
-	case POW_FLASHMSL_4:
-		bUsed = PickupSecondary (objP, FLASHMSL_INDEX, 4, nPlayer);
-		break;
-
-	case POW_GUIDEDMSL_1:
-		bUsed = PickupSecondary (objP, GUIDED_INDEX, 1, nPlayer);
-		break;
-
-	case POW_GUIDEDMSL_4:
-		bUsed = PickupSecondary (objP, GUIDED_INDEX, 4, nPlayer);
-		break;
-
-	case POW_SMARTMINE:
-		bUsed = PickupSecondary (objP, SMARTMINE_INDEX, 4, nPlayer);
-		break;
-
-	case POW_MERCURYMSL_1:
-		bUsed = PickupSecondary (objP, MERCURY_INDEX, 1, nPlayer);
-		break;
-
-	case POW_MERCURYMSL_4:
-		bUsed = PickupSecondary (objP, MERCURY_INDEX, 4, nPlayer);
-		break;
-
-	case POW_EARTHSHAKER:
-		bUsed = PickupSecondary (objP, EARTHSHAKER_INDEX, 1, nPlayer);
-		break;
-
-	case POW_KEY_BLUE:
-		bUsed = PickupKey (objP, PLAYER_FLAGS_BLUE_KEY, 1, TXT_BLUE, nPlayer);
-		break;
-
-	case POW_KEY_RED:
-		bUsed = PickupKey (objP, PLAYER_FLAGS_RED_KEY, 1, TXT_RED, nPlayer);
-		break;
-
-	case POW_KEY_GOLD:
-		bUsed = PickupKey (objP, PLAYER_FLAGS_GOLD_KEY, 1, TXT_YELLOW, nPlayer);
-		break;
-
-	case POW_VULCAN_AMMO:
-		bUsed = PickUpVulcanAmmo (objP, nPlayer);
-		break;
-
-	case POW_CLOAK:
-		bUsed = PickupCloakingDevice (objP, 0, 1, NULL, nPlayer);
-		break;
-
-	case POW_INVUL:
-		bUsed = PickupInvulnerability (objP, 0, 1, NULL, nPlayer);
-		break;
-
-#if DBG
-	case POW_MEGAWOW:
-		DoMegaWowPowerup (50);
-		bUsed = 1;
-		break;
-#endif
-
-	case POW_FULL_MAP:
-		bUsed = PickupFullMap (nPlayer);
-		break;
-
-	case POW_CONVERTER:
-		bUsed = PickupConverter (nPlayer);
-		break;
-
-	case POW_AMMORACK:
-		bUsed = PickupAmmoRack (nPlayer);
-		break;
-
-	case POW_AFTERBURNER:
-		bUsed = PickupAfterburner (nPlayer);
-		break;
-
-	case POW_SLOWMOTION:
-		bUsed = PickupSlowMotion (nPlayer);
-		break;
-
-	case POW_BULLETTIME:
-		bUsed = PickupBulletTime (nPlayer);
-		break;
-
-	case POW_HEADLIGHT:
-		bUsed = PickupHeadlight (nPlayer);
-		break;
-
-	case POW_BLUEFLAG:
-		bUsed = PickupFlag (objP, TEAM_BLUE, TEAM_RED, "BLUE FLAG!", nPlayer);
-		break;
-
-	case POW_REDFLAG:
-		bUsed = PickupFlag (objP, TEAM_RED, TEAM_BLUE, "RED FLAG!", nPlayer);
-		break;
-
-	case POW_HOARD_ORB:
-		bUsed = PickupHoardOrb (objP, 0, 1, nPlayer);
-		break;
-
-	default:
-		break;
-	}
-
-#endif
 //always say bUsed, until physics problem (getting stuck on unused powerup)
 //is solved.  Note also the break statements above that are commented out
 //!!	bUsed = 1;
