@@ -183,7 +183,7 @@ tReplacementModel replacementModels [] = {
  {"gauss", NULL, MAX_POLYGON_MODELS - 16, 0, 1, -1},
  {"helix", NULL, MAX_POLYGON_MODELS - 17, 0, 1, -1},
  {"phoenix", NULL, MAX_POLYGON_MODELS - 18, 0, 1, -1},
- {"omegacannon", NULL, MAX_POLYGON_MODELS - 19, 0, 1, -1},
+ {"omega", NULL, MAX_POLYGON_MODELS - 19, 0, 1, -1},
  {"quadlaser", NULL, MAX_POLYGON_MODELS - 20, 0, 1, -1},
  {"afterburner", NULL, MAX_POLYGON_MODELS - 21, 0, 1, -1},
  {"headlight", NULL, MAX_POLYGON_MODELS - 22, 0, 1, -1},
