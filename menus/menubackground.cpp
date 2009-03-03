@@ -231,7 +231,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-void CBackground::Draw (bool bUpdate)
+void CBackground::Draw (bool bDrawBox, bool bUpdate)
 {
 paletteManager.SetEffect (0, 0, 0);
 if (!(gameStates.menus.bNoBackground || (gameStates.app.bGameRunning && !gameStates.app.bNostalgia))) {
@@ -243,7 +243,7 @@ if (!(gameStates.menus.bNoBackground || (gameStates.app.bGameRunning && !gameSta
 		CCanvas::Pop ();
 		}
 	}
-if (!((gameStates.app.bNostalgia && m_bTopMenu) || backgroundManager.IsDefault (m_filename))) {
+if (bDrawBox && !((gameStates.app.bNostalgia && m_bTopMenu) || backgroundManager.IsDefault (m_filename))) {
 	CCanvas::Push ();
 	CCanvas::SetCurrent (m_canvas [1]);
 	if (m_bMenuBox)
@@ -447,7 +447,7 @@ if (gameStates.app.bGameRunning) {
 		Draw ();
 	else { // skip the first background image when the game is running and use the stars background image instead (has been loaded by the menu code)
 		for (int i = 1; i <= m_nDepth; i++)
-			m_bg [i].Draw ();
+			m_bg [i].Draw (i == m_nDepth);
 		}
 	}
 else {

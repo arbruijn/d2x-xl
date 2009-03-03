@@ -50,7 +50,7 @@ class CBackground {
 		bool Create (char* filename, int x, int y, int width, int height, bool bTop = false);
 		void Restore (void);
 		void Restore (int dx, int dy, int w, int h, int sx, int sy);
-		void Draw (bool bUpdate = false);
+		void Draw (bool bDrawBox, bool bUpdate = false);
 		void DrawArea (int left, int top, int right, int bottom);
 		void DrawBox (void);
 
