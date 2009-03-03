@@ -1017,7 +1017,7 @@ if (gameStates.render.bChaseCam && (!IsMultiGame || EGI_FLAG (bEnableCheats, 0, 
 #endif
 	return;
 m_info.xScale *= float (HUD_ASPECT);
-if (gameStates.ogl.nReticle)
+if ((gameStates.ogl.nReticle == 2) || (gameStates.ogl.nReticle && CCanvas::Current ()->Width () > 320))
    OglDrawReticle (nCrossBm, nPrimaryBm, nSecondaryBm);
 else {
 	bHiresReticle = (gameStates.render.fonts.bHires != 0);

@@ -154,8 +154,7 @@ tReplacementModel replacementModels [] = {
  {"smartmsl", NULL, 134, 0, 1, -1}, 
  {NULL, NULL, 162, 0, 1, -1}, 
  {"mega", NULL, 135, 0, 1, -1}, 
- {NULL, NULL, 1
-, 0, 1, -1}, 
+ {NULL, NULL, 142, 0, 1, -1}, 
  {"flashmsl", NULL, 151, 0, 1, -1}, 
  {NULL, NULL, 158, 0, 1, -1}, 
  {NULL, NULL, 165, 0, 1, -1}, 
@@ -319,6 +318,10 @@ short LoadHiresModel (int nModel, short i, int bCustom)
 	short	j = sizeofa (replacementModels);
 	char	szModel [FILENAME_LEN];
 
+#if DBG
+if ((nDbgModel >= 0) && (replacementModels [i].nModel == nDbgModel))
+	nDbgModel = nDbgModel;
+#endif
 if (replacementModels [i].pszHires)
 	PrintLog ("Loading model %d (%s)\n", replacementModels [i].nModel, replacementModels [i].pszHires);
 sprintf (szModel, "\001model%d.oof", replacementModels [i].nModel);
