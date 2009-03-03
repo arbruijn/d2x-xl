@@ -106,10 +106,15 @@ for (i = po->m_nSubModels, pso = po->m_subModels.Buffer (), psm = m_subModels.Bu
 		for (; n; n--, pfv++, pmv++, pvn++) {
 			h = pfv->m_nIndex;
 			pmv->m_nIndex = h;
+#if DBG
+			if (h >= m_verts.Length ())
+				continue;
+#endif
 			pmv->m_texCoord.v.u = pfv->m_fu;
 			pmv->m_texCoord.v.v = pfv->m_fv;
 			pmv->m_normal = vNormal;
-			*reinterpret_cast<CFloatVector*> (m_verts + h) = *reinterpret_cast<CFloatVector*> (pso->m_verts + h) * fScale;
+			m_verts [h].Assign (pso->m_verts [h]);
+			m_verts [h] *= fScale;
 			pmv->m_vertex = m_verts [h];
 			psm->SetMinMax (&pmv->m_vertex);
 			*pvn = vNormal;

@@ -912,6 +912,10 @@ void CModelData::Destroy (void)
 PrintLog ("unloading polygon model data\n");
 for (h = 0; h < 2; h++) {
 	for (i = 0; i < MAX_POLYGON_MODELS; i++) {
+#if DBG
+		if ((nDbgModel >= 0) && (i == nDbgModel))
+			nDbgModel = nDbgModel;
+#endif
 		renderModels [h][i].Destroy ();
 		gameData.models.pofData [h][0][i].Destroy ();
 		gameData.models.pofData [h][1][i].Destroy ();

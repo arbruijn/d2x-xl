@@ -140,7 +140,7 @@ void CModel::Destroy (void)
 #if DBG
 if (m_nModel > -1)
 	m_nModel = m_nModel;
-if (m_nModel == nDbgModel)
+if ((nDbgModel >= 0) && (m_nModel == nDbgModel))
 	nDbgModel = nDbgModel;
 #endif
 if (gameStates.ogl.bHaveVBOs && m_vboDataHandle)
