@@ -256,7 +256,9 @@ return i;
 
 short LoadOOFModel (OOF::CModel *po, short i, int bCustom)
 {
-if (gameData.models.modelToOOF [bCustom != 0][replacementModels [i].nModel])
+	short nModel = replacementModels [i].nModel;
+
+if (gameData.models.modelToOOF [bCustom != 0][nModel])
 	return i + 1;
 
 	short	j = sizeofa (replacementModels);
@@ -267,12 +269,11 @@ if (replacementModels [i].pszHires)
 	sprintf (szModel [1], "%s.oof", replacementModels [i].pszHires);
 else
 	szModel [1][0] = '\0';
-if (!(po->Read (szModel [1], replacementModels [i].nModel, replacementModels [i].bFlipV, bCustom) || 
-	   po->Read (szModel [0], replacementModels [i].nModel, replacementModels [i].bFlipV, bCustom)))
+if (!(po->Read (szModel [1], nModel, replacementModels [i].bFlipV, bCustom) || 
+	   po->Read (szModel [0], nModel, replacementModels [i].bFlipV, bCustom)))
 	return 0;
 do {
-	CBP (!replacementModels [i].nModel);
-	gameData.models.modelToOOF [bCustom != 0][replacementModels [i].nModel] = po;
+	gameData.models.modelToOOF [bCustom != 0][nModel] = po;
 	} while ((++i < j) && !replacementModels [i].pszHires);
 gameData.models.nHiresModels++;
 if (bCustom)
@@ -284,13 +285,15 @@ return i;
 
 short LoadASEModel (ASE::CModel *pa, short i, int bCustom)
 {
-if (gameData.models.modelToASE [bCustom != 0][replacementModels [i].nModel])
+	short nModel = replacementModels [i].nModel;
+
+if (gameData.models.modelToASE [bCustom != 0][nModel])
 	return i + 1;
 
 	short	j = sizeofa (replacementModels);
 	char	szModel [2][FILENAME_LEN];
 
-sprintf (szModel [0], "model%d.ase", replacementModels [i].nModel);
+sprintf (szModel [0], "model%d.ase", nModel);
 if (replacementModels [i].pszHires)
 	sprintf (szModel [1], "%s.ase", replacementModels [i].pszHires);
 else
@@ -299,11 +302,11 @@ else
 while (!ASE_ReadFile (szModel [1], pa, replacementModels [i].nType, bCustom))
 	;
 #endif
-if (!(pa->Read (szModel [1], replacementModels [i].nModel, bCustom) || 
-	   pa->Read (szModel [0], replacementModels [i].nModel, bCustom)))
+if (!(pa->Read (szModel [1], nModel, bCustom) || 
+	   pa->Read (szModel [0], nModel, bCustom)))
 	return 0;
 do {
-	gameData.models.modelToASE [bCustom != 0][replacementModels [i].nModel] = pa;
+	gameData.models.modelToASE [bCustom != 0][nModel] = pa;
 	} while ((++i < j) && !replacementModels [i].pszHires);
 gameData.models.nHiresModels++;
 if (bCustom)
