@@ -452,7 +452,7 @@ if (gameStates.app.bGameRunning) {
 	}
 else {
 	for (int i = 0; i <= m_nDepth; i++)
-		m_bg [i].Draw ();
+		m_bg [i].Draw (i == m_nDepth);
 	if (bUpdate)
 		GrUpdate (1);
 	}
