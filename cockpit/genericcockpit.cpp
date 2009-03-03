@@ -1797,7 +1797,7 @@ if (!viewerP) {								//this nUser is done
 UpdateRenderedData (nWindow + 1, viewerP, bRearView, nUser);
 m_info.weaponBoxUser [nWindow] = nUser;						//say who's using window
 gameData.objs.viewerP = viewerP;
-gameStates.render.bRearView = bRearView;
+gameStates.render.bRearView = -bRearView;
 SetupWindow (nWindow, &windowCanv);
 cockpitCanv = CCanvas::Current ();
 CCanvas::Push ();

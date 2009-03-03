@@ -430,7 +430,7 @@ if (bForce || (MODERN_STYLE == 1)) {
 	glDisable (GL_TEXTURE_2D);
 	OglDrawFilledRect (left, top, right, bottom);
 	CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), 255);
-	glLineWidth ((GLfloat) nLineWidth);
+	glLineWidth (GLfloat (nLineWidth) * GLfloat (screen.Width ()) / 640.0f);
 	OglDrawEmptyRect (left, top, right, bottom);
 	glLineWidth (1);
 	}
@@ -442,14 +442,8 @@ void CBackgroundManager::Redraw (bool bUpdate)
 {
 if (m_nDepth < 0)
 	return;
-if (gameStates.app.bGameRunning) {
-	if (1) //gameOpts->menus.nStyle)
-		Draw ();
-	else { // skip the first background image when the game is running and use the stars background image instead (has been loaded by the menu code)
-		for (int i = 1; i <= m_nDepth; i++)
-			m_bg [i].Draw (i == m_nDepth);
-		}
-	}
+if (gameStates.app.bGameRunning)
+	Draw (true);
 else {
 	for (int i = 0; i <= m_nDepth; i++)
 		m_bg [i].Draw (i == m_nDepth);

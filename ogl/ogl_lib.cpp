@@ -373,7 +373,7 @@ else
 #endif
 glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix
-if (gameStates.render.bRearView)
+if (gameStates.render.bRearView < 0)
 	glScalef (-1.0f, 1.0f, 1.0f);
 gluPerspective (gameStates.render.glFOV * ((double) transformation.m_info.zoom / 65536.0),
 					 (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Height (), ZNEAR, ZFAR);
@@ -613,7 +613,7 @@ else
 	else {
 		glEnable (GL_CULL_FACE);
 		glFrontFace (GL_CW);	//Weird, huh? Well, D2 renders everything reverse ...
-		glCullFace (gameStates.render.bRearView ? GL_FRONT : GL_BACK);
+		glCullFace ((gameStates.render.bRearView < 0) ? GL_FRONT : GL_BACK);
 		glEnable (GL_DEPTH_TEST);
 		glDepthFunc (GL_LESS);
 		glEnable (GL_ALPHA_TEST);
@@ -737,13 +737,9 @@ if (!gameStates.menus.nInMenu || bForce) {
 		int h = SMALL_FONT->Height () + 3, i = 3;
 		fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
 		float t, s = 0;
-#if 0
 		GrPrintF (NULL, 5, h * i++, "frame: %1.2f", float (p.t [ptFrame]) / nFrameCount);
 		GrPrintF (NULL, 5, h * i++, "  scene: %1.2f %c (%1.2f)", 100.0f * float (p.t [ptRenderFrame]) / float (p.t [ptFrame]), '%', float (p.t [ptRenderFrame]) / nFrameCount);
 		GrPrintF (NULL, 5, h * i++, "    mine: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptRenderMine]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptRenderMine]) / nFrameCount);
-#endif
-		GrPrintF (NULL, 5, h * i++, "    mine: %d", p.t [ptRenderMine]);
-#if 0
 		GrPrintF (NULL, 5, h * i++, "    light: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptLighting]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptLighting]) / nFrameCount);
 		s += t;
 		GrPrintF (NULL, 5, h * i++, "    render: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptRenderPass]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptRenderPass]) / nFrameCount);
@@ -762,7 +758,6 @@ if (!gameStates.menus.nInMenu || bForce) {
 		GrPrintF (NULL, 5, h * i++, "      seg list: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptBuildSegList]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptBuildSegList]) / nFrameCount);
 		GrPrintF (NULL, 5, h * i++, "      obj list: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptBuildObjList]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptBuildObjList]) / nFrameCount);
 		GrPrintF (NULL, 5, h * i++, "  total: %1.2f %c", s, '%');
-#endif
 		}
 #endif
 	//if (gameStates.app.bGameRunning && !gameStates.menus.nInMenu)
