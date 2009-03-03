@@ -331,7 +331,7 @@ sprintf (szModel, "\001model%d.oof", replacementModels [i].nModel);
 if ((j = LoadASEModel (gameData.models.aseModels [bCustom != 0] + gameData.models.nHiresModels, i, bCustom)))
 	return j;
 #if 1
-if ((j = LoadOOFModel (gameData.models.oofModels [bCustom != 0] + gameData.models.nHiresModels, i, bCustom)))
+if (bCustom && (j = LoadOOFModel (gameData.models.oofModels [bCustom != 0] + gameData.models.nHiresModels, i, bCustom)))
 	return j;
 #endif
 return bCustom ? ++i : LoadLoresModel (i);
