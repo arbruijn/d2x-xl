@@ -126,22 +126,14 @@ if (IsMultiGame && !IsCoopGame)
 if (m_info.scoreDisplay [gameStates.render.vr.nCurrentPage] == 0)
 	return;
 
-	int	x, w, h, aw, color, frc = 0;
+	int	x, w, h, aw, color;
 	char	szScore [32];
 
 	static int lastX [4]={SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_H, SB_SCORE_RIGHT_H};
-	static int last_score_display [2] = {-1, -1};
 	static int nIdTotalScore = 0;
 
 m_info.scoreTime -= gameData.time.xFrame;
 if (m_info.scoreTime > 0) {
-#if 0
-	if (m_info.scoreDisplay [gameStates.render.vr.nCurrentPage] != last_score_display [gameStates.render.vr.nCurrentPage] || frc) {
-		CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 0));
-		OglDrawFilledRect (lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage], SB_SCORE_ADDED_Y, SB_SCORE_ADDED_RIGHT, SB_SCORE_ADDED_Y+GAME_FONT->Height ());
-		last_score_display [gameStates.render.vr.nCurrentPage] = m_info.scoreDisplay [gameStates.render.vr.nCurrentPage];
-		}
-#endif
 	color = X2I (m_info.scoreTime * 20) + 10;
 	if (color < 10) 
 		color = 10;
