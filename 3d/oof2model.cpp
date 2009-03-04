@@ -107,7 +107,7 @@ for (i = po->m_nSubModels, pso = po->m_subModels.Buffer (), psm = m_subModels.Bu
 			h = pfv->m_nIndex;
 			pmv->m_nIndex = h;
 #if DBG
-			if (h >= m_verts.Length ())
+			if (h >= int (m_verts.Length ()))
 				continue;
 #endif
 			pmv->m_texCoord.v.u = pfv->m_fu;
