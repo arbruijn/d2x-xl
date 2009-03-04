@@ -108,7 +108,6 @@ class CPolyModel : public CByteArray {
 		inline int ModelCount (void) { return m_info.nModels; }
 		inline CSubModelData& SubModels (void) { return m_info.subModels; }
 		inline ushort FirstTexture (void) { return m_info.nFirstTexture; }
-		inline CFixVector* Offsets (void) { return m_info.offsets; }
 		inline void SetFirstTexture (ushort nFirstTexture) { m_info.nFirstTexture = nFirstTexture; }
 		inline ubyte TextureCount (void) { return m_info.nTextures; }
 		inline tPolyModelInfo& Info (void) { return m_info; }
