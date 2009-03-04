@@ -112,7 +112,7 @@ if (cockpit->Hide ())
 
 if (IsMultiGame && !IsCoopGame)
 	return;
-if (!cockpit->AddedScore ())
+if (!(nScore = cockpit->AddedScore ()))
 	return;
 cockpit->SetScoreTime (nTime = cockpit->ScoreTime () - gameData.time.xFrame);
 if (nTime > 0) {
@@ -132,7 +132,7 @@ if (nTime > 0) {
 	}
 else {
 	cockpit->SetScoreTime (0);
-	cockpit->SetAddedScore (0);
+	cockpit->SetAddedScore (0, 0);
 	}
 }
 

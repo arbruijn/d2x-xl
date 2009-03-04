@@ -161,7 +161,7 @@ else {
 	//CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 0));
 	//OglDrawFilledRect (lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage], SB_SCORE_ADDED_Y, SB_SCORE_ADDED_RIGHT, SB_SCORE_ADDED_Y+GAME_FONT->Height ());
 	cockpit->SetScoreTime (0);
-	cockpit->SetAddedScore (gameStates.render.vr.nCurrentPage);
+	cockpit->SetAddedScore (gameStates.render.vr.nCurrentPage, 0);
 	}
 #endif
 }
