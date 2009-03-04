@@ -255,6 +255,8 @@ class CGenericCockpit {
 		inline int AddedScore (int i = 0) { return m_info.addedScore [i]; }
 		inline void AddScore (int i, int nScore) { m_info.addedScore [i] += nScore; }
 		inline void SetAddedScore (int i, int nScore) { m_info.addedScore [i] = nScore; }
+		inline void SetLineSpacing (int nLineSpacing) { m_info.nLineSpacing = nLineSpacing; }
+		inline void SetColor (int nColor) { m_info.nColor = nColor; }
 	};
 
 //	-----------------------------------------------------------------------------

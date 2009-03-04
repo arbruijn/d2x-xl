@@ -345,10 +345,6 @@ for (j = 0; j < t; j++) {
 		if (i == nDbgModel)
 			nDbgModel = nDbgModel;
 #endif
-#	if 0
-		int nOffset = 0;
-		G3GetSubModelOffsets (modelP->Data (), gameData.models.polyModels [0][i].Offsets (), nOffset);
-#	endif
 		cf.ReadInt ();
 		cf.ReadInt ();
 #endif

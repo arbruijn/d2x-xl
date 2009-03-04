@@ -72,7 +72,6 @@ typedef struct tPolyModelInfo {
 		int				nDataSize;
 		CSubModelData	subModels;
 		CFixVector		mins, maxs;                       // min,max for whole model
-		CFixVector		offsets [MAX_SUBMODELS];
 		fix				rad;
 		ubyte				nTextures;
 		ushort			nFirstTexture;
