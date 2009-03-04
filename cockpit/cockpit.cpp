@@ -82,6 +82,7 @@ void CCockpit::DrawLives (void)
 {
 CCanvas::Push ();
 CCanvas::SetCurrent (CurrentGameScreen ());
+hudCockpit.SetColor (WHITE_RGBA);
 hudCockpit.DrawLives ();
 CCanvas::Pop ();
 }
@@ -102,6 +103,7 @@ void CCockpit::DrawAddedScore (void)
 {
 CCanvas::Push ();
 CCanvas::SetCurrent (CurrentGameScreen ());
+hudCockpit.SetLineSpacing (m_info.nLineSpacing);
 hudCockpit.DrawAddedScore ();
 CCanvas::Pop ();
 }
