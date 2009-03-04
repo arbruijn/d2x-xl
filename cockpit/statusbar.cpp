@@ -123,18 +123,21 @@ void CStatusBar::DrawScoreAdded (void)
 {
 if (IsMultiGame && !IsCoopGame) 
 	return;
-if (m_info.addedScore [gameStates.render.vr.nCurrentPage] == 0)
+
+	int	nScore, nTime;
+
+if (!(nScore = cockpit->AddedScore (gameStates.render.vr.nCurrentPage)))
 	return;
 
 	int	x, w, h, aw, color;
 	char	szScore [32];
 
-	static int lastX [4]={SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_H, SB_SCORE_RIGHT_H};
+	static int lastX [4] = {SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_H, SB_SCORE_RIGHT_H};
 	static int nIdTotalScore = 0;
 
-m_info.scoreTime -= gameData.time.xFrame;
-if (m_info.scoreTime > 0) {
-	color = X2I (m_info.scoreTime * 20) + 10;
+cockpit->SetScoreTime (nTime = cockpit->ScoreTime () - gameData.time.xFrame);
+if (nTime > 0) {
+	color = X2I (nTime * 20) + 10;
 	if (color < 10) 
 		color = 10;
 	else if (color > 31) 
@@ -157,8 +160,8 @@ else {
 	//erase old score
 	//CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 0));
 	//OglDrawFilledRect (lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage], SB_SCORE_ADDED_Y, SB_SCORE_ADDED_RIGHT, SB_SCORE_ADDED_Y+GAME_FONT->Height ());
-	m_info.scoreTime = 0;
-	m_info.addedScore [gameStates.render.vr.nCurrentPage] = 0;
+	cockpit->SetScoreTime (0);
+	cockpit->SetAddedScore (gameStates.render.vr.nCurrentPage);
 	}
 #endif
 }

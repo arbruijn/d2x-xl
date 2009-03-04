@@ -250,8 +250,11 @@ class CGenericCockpit {
 					 (!(gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) && (gameStates.render.cockpit.nType >= CM_FULL_SCREEN));
 			}
 
+		inline int ScoreTime (void) { return m_info.scoreTime; }
+		inline int SetScoreTime (int nTime) { return m_info.scoreTime = nTime; }
 		inline int AddedScore (int i = 0) { return m_info.addedScore [i]; }
 		inline void AddScore (int i, int nScore) { m_info.addedScore [i] += nScore; }
+		inline void SetAddedScore (int i, int nScore) { m_info.addedScore [i] = nScore; }
 	};
 
 //	-----------------------------------------------------------------------------

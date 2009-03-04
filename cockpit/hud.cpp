@@ -105,7 +105,7 @@ if (cockpit->Hide ())
 	return;
 
 	int	color;
-	int	w, h, aw, nScore;
+	int	w, h, aw, nScore, nTime;
 	char	szScore [20];
 
 	static int nIdTotalScore = 0;
@@ -114,9 +114,9 @@ if (IsMultiGame && !IsCoopGame)
 	return;
 if (!cockpit->AddedScore ())
 	return;
-m_info.scoreTime -= gameData.time.xFrame;
-if (m_info.scoreTime > 0) {
-	color = X2I (m_info.scoreTime * 20) + 12;
+cockpit->SetScoreTime (nTime = cockpit->ScoreTime () - gameData.time.xFrame);
+if (nTime > 0) {
+	color = X2I (nTime * 20) + 12;
 	if (color < 10)
 		color = 12;
 	else if (color > 31)
@@ -131,8 +131,8 @@ if (m_info.scoreTime > 0) {
 	nIdTotalScore = GrPrintF (&nIdTotalScore, CCanvas::Current ()->Width () - w - LHX (12), m_info.nLineSpacing + 4, szScore);
 	}
 else {
-	m_info.scoreTime = 0;
-	m_info.addedScore [0] = 0;
+	cockpit->SetScoreTime (0);
+	cockpit->SetAddedScore (0);
 	}
 }
 
