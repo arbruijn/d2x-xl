@@ -147,6 +147,7 @@ static const char *xlCredits [] = {
 	"",
 	"*Testing",
 	"Beltran",
+	"Pokeman",
 	"Pumo",
 	"Pyro_2009",
 	"Sykes",
