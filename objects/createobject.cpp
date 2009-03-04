@@ -246,6 +246,7 @@ objP->info.nType = nType;
 objP->info.nId = nId;
 objP->info.vLastPos = 
 objP->info.position.vPos = vPos;
+objP->SetOrigin (vPos);
 objP->info.xSize = xSize;
 objP->info.nCreator = (sbyte) nCreator;
 objP->info.position.mOrient = mOrient;

@@ -704,6 +704,7 @@ class CObject : public CObjectInfo {
 		fix				m_xTimeLastHit;
 		tShotInfo		m_shots;
 		CFixVector		m_vStartVel;
+		CFixVector		m_vOrigin;
 
 	public:
 		CObject ();
@@ -756,6 +757,8 @@ class CObject : public CObjectInfo {
 		inline void SetCreationTime (fix xCreationTime) { m_xCreationTime = xCreationTime; }
 		inline void SetTimeLastHit (fix xTimeLastHit) { m_xTimeLastHit = xTimeLastHit; }
 		inline void SetStartVel (CFixVector* vStartVel) { m_vStartVel = *vStartVel; }
+		inline CFixVector Origin (void) { return m_vOrigin; }
+		inline void SetOrigin (CFixVector vOrigin) { m_vOrigin = vOrigin; }
 
 		inline void InitLinks (void) { memset (m_links, 0, sizeof (m_links)); }
 
