@@ -298,7 +298,7 @@ if (m_nVersion < 15)
 else {
 	DBG (i = CFTell (fp));
 	i = m_cf.ReadInt ();
-	if ((i >= 0) && (i < gameData.ai.routeSegs.Length ()))
+	if ((i >= 0) && (i < int (gameData.ai.routeSegs.Length ())))
 		gameData.ai.freePointSegs = gameData.ai.routeSegs + i;
 	else
 		AIResetAllPaths ();
