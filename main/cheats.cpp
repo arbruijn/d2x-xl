@@ -54,7 +54,7 @@ char szCheatBuf[] = "AAAAAAAAAAAAAAA";
 
 void DoCheatPenalty ()
 {
-#if !DBG
+#if 1 //!DBG
 audio.PlaySound (SOUND_CHEATER, SOUNDCLASS_PLAYER, I2X (1));
 gameStates.app.cheats.bEnabled = 1;
 LOCALPLAYER.score = 0;
@@ -426,6 +426,7 @@ bCloaked = (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0;
 if (bVerbose)
 	HUDInitMessage ("%s %s!", TXT_CLOAKED, bCloaked ? TXT_ON : TXT_OFF);
 LOCALPLAYER.cloakTime = bCloaked ? 0x7fffffff : 0; //gameData.time.xGame + I2X (1000);
+audio.PlaySound (short (gameData.objs.pwrUp.info [POW_CLOAK].hitSound));
 }
 
 //------------------------------------------------------------------------------
@@ -545,6 +546,7 @@ bInvul = (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) != 0;
 if (bVerbose)
 	HUDInitMessage ("%s %s!", TXT_INVULNERABILITY, bInvul ? TXT_ON : TXT_OFF);
 LOCALPLAYER.invulnerableTime = bInvul ? 0x7fffffff : 0; //gameData.time.xGame + I2X (1000);
+audio.PlaySound (short (gameData.objs.pwrUp.info [POW_INVUL].hitSound));
 SetupSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
 }
 

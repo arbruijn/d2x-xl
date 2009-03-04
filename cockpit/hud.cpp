@@ -112,7 +112,7 @@ if (cockpit->Hide ())
 
 if (IsMultiGame && !IsCoopGame)
 	return;
-if (m_info.scoreDisplay [0] == 0)
+if (!cockpit->ScoreDisplay ())
 	return;
 m_info.scoreTime -= gameData.time.xFrame;
 if (m_info.scoreTime > 0) {

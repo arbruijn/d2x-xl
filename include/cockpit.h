@@ -249,6 +249,8 @@ class CGenericCockpit {
 			return gameStates.app.bEndLevelSequence || 
 					 (!(gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) && (gameStates.render.cockpit.nType >= CM_FULL_SCREEN));
 			}
+
+		inline int ScoreDisplay (int i = 0) { return m_info.scoreDisplay [i]; }
 	};
 
 //	-----------------------------------------------------------------------------

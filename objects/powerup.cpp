@@ -538,7 +538,7 @@ if (gameData.objs.pwrUp.info [id].hitSound > -1) {
 		id = POW_SHIELD_BOOST;
 	if (IsMultiGame) // Added by Rob, take this out if it turns out to be not good for net games!
 		MultiSendPlaySound (gameData.objs.pwrUp.info [id].hitSound, I2X (1));
-	audio.PlaySound ((short) gameData.objs.pwrUp.info [id].hitSound);
+	audio.PlaySound (short (gameData.objs.pwrUp.info [id].hitSound));
 	}
 MultiSendWeapons (1);
 }

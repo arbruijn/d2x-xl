@@ -341,8 +341,14 @@ for (j = 0; j < t; j++) {
 		gameData.models.polyModels [1][i] = gameData.models.polyModels [0][i];
 		gameData.models.polyModels [1][i].modelData = p;
 #else
+#	if DBG
+		if (i == nDbgModel)
+			nDbgModel = nDbgModel;
+#endif
+#	if 0
 		int nOffset = 0;
-		G3SetSubModelOffsets (modelP->Data (), gameData.models.polyModels [0][i].Offsets (), nOffset);
+		G3GetSubModelOffsets (modelP->Data (), gameData.models.polyModels [0][i].Offsets (), nOffset);
+#	endif
 		cf.ReadInt ();
 		cf.ReadInt ();
 #endif

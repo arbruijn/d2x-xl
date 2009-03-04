@@ -249,8 +249,10 @@ for (i = 0; i < gameData.models.nPolyModels; i++) {
 	gameData.models.polyModels [0][i].SetBuffer (NULL);
 	gameData.models.polyModels [1][i].SetBuffer (NULL);
 	gameData.models.polyModels [0][i].ReadData (gameData.models.polyModels [1] + i, cf);
+#if 0
 	j = 0;
 	G3GetSubModelOffsets (gameData.models.polyModels [0][i].Data (), gameData.models.polyModels [0][i].Offsets (), j);
+#endif
 	}
 
 for (i = 0; i < gameData.models.nPolyModels; i++)
