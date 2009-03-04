@@ -297,7 +297,7 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 
 //------------------------------------------------------------------------------
 // Check segment to segment visibility by calling the renderer's visibility culling routine
-// Do this for each side of the current segment, using the side Normal(s) as forward vector
+// Do this for each side of the current segment, using the side Normal (s) as forward vector
 // of the viewer
 
 void ComputeSingleSegmentVisibility (short nStartSeg)

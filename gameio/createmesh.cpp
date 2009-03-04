@@ -603,7 +603,7 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 	memcpy (grsTriP->index, triP->index, sizeof (triP->index));
 	for (i = 0; i < 3; i++)
 		FACES.vertices [nIndex + i] = *gameData.segs.fVertices [triP->index [i]].V3();
-	FACES.normals [nIndex] = CFloatVector3::Normal(
+	FACES.normals [nIndex] = CFloatVector3::Normal (
 					 FACES.vertices [nIndex],
 					 FACES.vertices [nIndex + 1],
 					 FACES.vertices [nIndex + 2]);
@@ -898,7 +898,7 @@ CFloatVector3 *CQuadMeshBuilder::SetTriNormals (tFaceTriangle *triP, CFloatVecto
 {
 	CFloatVector	vNormalf;
 
-vNormalf = CFloatVector::Normal(gameData.segs.fVertices [triP->index [0]],
+vNormalf = CFloatVector::Normal (gameData.segs.fVertices [triP->index [0]],
 				 gameData.segs.fVertices [triP->index [1]], gameData.segs.fVertices [triP->index [2]]);
 *m_normalP++ = *vNormalf.V3();
 *m_normalP++ = *vNormalf.V3();

@@ -197,7 +197,7 @@ for (i = 0; i < 8; i++) {
 	pv [i][Z] = (hitBoxOffsets [i][Z] ? vMin[Z] : vMax[Z]) + vOffset[Z];
 	}
 for (i = 0, pf = phb->box.faces; i < 6; i++, pf++) {
-	*pf->n = CFixVector::Normal(pv[hitboxFaceVerts [i][0]], pv[hitboxFaceVerts [i][1]], pv[hitboxFaceVerts [i][2]]);
+	*pf->n = CFixVector::Normal (pv[hitboxFaceVerts [i][0]], pv[hitboxFaceVerts [i][1]], pv[hitboxFaceVerts [i][2]]);
 	}
 }
 
@@ -291,7 +291,7 @@ for (phb += iBox, pmhb += iBox; iBox <= nBoxes; iBox++, phb++, pmhb++) {
 	for (i = 0, pf = phb->faces; i < 6; i++, pf++) {
 		for (j = 0; j < 4; j++)
 			pf->v [j] = rotVerts [hitboxFaceVerts [i][j]];
-		pf->n[1] = CFixVector::Normal(pf->v[0], pf->v[1], pf->v[2]);
+		pf->n[1] = CFixVector::Normal (pf->v[0], pf->v[1], pf->v[2]);
 		}
 	}
 }

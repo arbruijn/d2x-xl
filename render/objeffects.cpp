@@ -1236,13 +1236,13 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 	transformation.Transform (vPos, vPos, 0);
 	transformation.Transform (vCorona [0], vCorona [0], 0);
 	transformation.Transform (vCorona [3], vCorona [3], 0);
-	vNorm = CFloatVector::Normal(vPos, vCorona [0], vEye);
+	vNorm = CFloatVector::Normal (vPos, vCorona [0], vEye);
 	fScale *= fRad;
 	vCorona [0] += vNorm * fScale;
 	vCorona [1] = vCorona [0] + vNorm * (-2 * fScale);
 	vCorona [3] += vNorm * fScale;
 	vCorona [2] = vCorona [3] + vNorm * (-2 * fScale);
-	vNorm = CFloatVector::Normal(vCorona [0], vCorona [1], vCorona [2]);
+	vNorm = CFloatVector::Normal (vCorona [0], vCorona [1], vCorona [2]);
 	vh [0] = vCorona [0] + vCorona [1] * 0.5f;
 	vh [2] = vCorona [3] + vCorona [2] * 0.5f;
 	vh [1] = vPos + vNorm * fScale;
@@ -1685,10 +1685,10 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 				!gameData.objs.bIsSlowWeapon [objP->info.nId] &&
 				(objP->mType.physInfo.velocity [X] || objP->mType.physInfo.velocity [Y] || objP->mType.physInfo.velocity [Z]) &&
 				(bAdditive ? LoadGlare () : LoadCorona ())) {
-			CFloatVector			vNormf, vOffsf, vTrailVerts [4];
+			CFloatVector	vNormf, vOffsf, vTrailVerts [4];
 			int				i, bStencil, bDrawArrays, bDepthSort = (gameOpts->render.bDepthSort > 0);
-			float				l, r, dx, dy;
-			CBitmap		*bmP;
+			float				lMax, l, r, dx, dy;
+			CBitmap*			bmP;
 
 			static CFloatVector vEye = CFloatVector::ZERO;
 
@@ -1710,6 +1710,9 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 			r = WeaponBlobSize (objP->info.nId) / 1.5f;
 			l = 4 * r;
 			}
+		lMax = X2F (CFixVector::Dist (objP->info.position.vPos, objP->Origin ()));
+		if (l > lMax)
+			l = lMax;
 		bmP = bAdditive ? bmpGlare : bmpCorona;
 		memcpy (&trailColor, colorP, 3 * sizeof (float));
 		if (bAdditive) {

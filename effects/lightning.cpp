@@ -893,7 +893,7 @@ void CLightning::ComputePlasmaSegment (CFloatVector *vPosf, int bScale, short nS
 
 memcpy (vNormal, vNormal + 1, 2 * sizeof (CFloatVector));
 if (bStart) {
-	vNormal [1] = CFloatVector::Normal(vPosf [0], vPosf [1], vEye);
+	vNormal [1] = CFloatVector::Normal (vPosf [0], vPosf [1], vEye);
 	vn [0] = vNormal [1];
 	}
 else {
@@ -2056,7 +2056,7 @@ if (i < 0) {
 	if (pointList) {
 		vPos = pointList [0]->p3_src;
 		vEnd = pointList [1 + d_rand () % (nVertices - 1)]->p3_vec;
-		vNorm = CFixVector::Normal(vPos, pointList [1]->p3_vec, vEnd);
+		vNorm = CFixVector::Normal (vPos, pointList [1]->p3_vec, vEnd);
 		vPos += vNorm * (I2X (1) / 64);
 		vEnd += vNorm * (I2X (1) / 64);
 		vDelta = CFixVector::Normal (vNorm, vPos, vEnd);

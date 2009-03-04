@@ -209,7 +209,7 @@ else
 	v [1] = pointList [1]->p3_index;
 	v [2] = pointList [2]->p3_index;
 	if ((v [0] < 0) || (v [1] < 0) || (v [2] < 0)) {
-		vNormal = CFixVector::Normal(pointList [0]->p3_vec,
+		vNormal = CFixVector::Normal (pointList [0]->p3_vec,
 						 pointList [1]->p3_vec,
 						 pointList [2]->p3_vec);
 		glNormal3f ((GLfloat) X2F (vNormal[X]), (GLfloat) X2F (vNormal[Y]), (GLfloat) X2F (vNormal[Z]));
