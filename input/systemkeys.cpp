@@ -416,7 +416,6 @@ int HandleSystemKey (int key)
 
 if (!gameStates.app.bPlayerIsDead)
 	switch (key) {
-
 		case KEY_ESC:
 			if (gameData.app.bGamePaused)
 				gameData.app.bGamePaused = 0;
@@ -446,196 +445,198 @@ if (!gameStates.app.bPlayerIsDead)
 			break;
 		}
 
-switch (key) {
-	case KEY_SHIFTED + KEY_ESC:
-		console.Show ();
-		break;
+if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
+	switch (key) {
+		case KEY_SHIFTED + KEY_ESC:
+			console.Show ();
+			break;
 
-	case KEY_COMMAND + KEY_P:
-	case KEY_CTRLED + KEY_P:
-	case KEY_PAUSE:
-		DoGamePause ();
-		break;
+		case KEY_COMMAND + KEY_P:
+		case KEY_CTRLED + KEY_P:
+		case KEY_PAUSE:
+			DoGamePause ();
+			break;
 
-	case KEY_CTRLED + KEY_ALTED + KEY_S:
-		if (!ToggleFreeCam ())
-			return 0;
-		break;
+		case KEY_CTRLED + KEY_ALTED + KEY_S:
+			if (!ToggleFreeCam ())
+				return 0;
+			break;
 
-	case KEY_COMMAND + KEY_SHIFTED + KEY_P:
-	case KEY_PRINT_SCREEN:
-		gameStates.app.bSaveScreenshot = 1;
-		SaveScreenShot (NULL, 0);
-		break;
+		case KEY_COMMAND + KEY_SHIFTED + KEY_P:
+		case KEY_PRINT_SCREEN:
+			gameStates.app.bSaveScreenshot = 1;
+			SaveScreenShot (NULL, 0);
+			break;
 
-	case KEY_F1:
-		DoShowHelp ();
-		break;
+		case KEY_F1:
+			DoShowHelp ();
+			break;
 
-	case KEY_F2:					//gameStates.app.bConfigMenu = 1; break;
-		if (!IsMultiGame) {
+		case KEY_F2:					//gameStates.app.bConfigMenu = 1; break;
+			if (!IsMultiGame) {
+				paletteManager.SaveEffect ();
+				paletteManager.ResetEffect ();
+				paletteManager.LoadEffect ();
+				}
+			ConfigMenu ();
+			if (!IsMultiGame)
+				paletteManager.LoadEffect ();
+			break;
+
+		case KEY_F3:
+			if (!GuidedInMainView ()) {
+				SetFreeCam (0);
+				SetChaseCam (0);
+				cockpit->Toggle ();
+				bScreenChanged = 1;
+				}
+			break;
+
+		case KEY_F7 + KEY_SHIFTED:
 			paletteManager.SaveEffect ();
-			paletteManager.ResetEffect ();
+			JoyDefsCalibrate ();
 			paletteManager.LoadEffect ();
-			}
-		ConfigMenu ();
-		if (!IsMultiGame)
-			paletteManager.LoadEffect ();
-		break;
+			break;
 
-	case KEY_F3:
-		if (!GuidedInMainView ()) {
-			SetFreeCam (0);
-			SetChaseCam (0);
-			cockpit->Toggle ();
+		case KEY_SHIFTED + KEY_MINUS:
+		case KEY_MINUS:
+			ShrinkWindow ();
 			bScreenChanged = 1;
+			break;
+
+		case KEY_SHIFTED + KEY_EQUAL:
+		case KEY_EQUAL:
+			GrowWindow ();
+			bScreenChanged = 1;
+			break;
+
+		case KEY_CTRLED + KEY_F5:
+			saveGameManager.Save (0, 0, 1, 0);
+			break;
+
+		case KEY_CTRLED + KEY_F9:
+			saveGameManager.Load (0, 0, 1, 0);
+			break;
+
+		case KEY_F5:
+			if (gameData.demo.nState == ND_STATE_RECORDING) {
+				NDStopRecording ();
+				}
+			else if (gameData.demo.nState == ND_STATE_NORMAL)
+				if (!gameData.app.bGamePaused)		//can't start demo while paused
+					NDStartRecording ();
+			break;
+
+		case KEY_ALTED + KEY_F4:
+			gameData.multigame.bShowReticleName = (gameData.multigame.bShowReticleName + 1) % 2;
+
+		case KEY_F7:
+			gameData.multigame.kills.bShowList = (gameData.multigame.kills.bShowList + 1) % (IsTeamGame ? 4 : 3);
+			if (IsMultiGame)
+				MultiSortKillList ();
+			bStopPlayerMovement = 0;
+			break;
+
+		case KEY_CTRLED + KEY_F7:
+			if ((gameStates.render.cockpit.bShowPingStats = !gameStates.render.cockpit.bShowPingStats))
+				ResetPingStats ();
+			break;
+
+		case KEY_CTRLED + KEY_F8:
+			gameData.stats.nDisplayMode = (gameData.stats.nDisplayMode + 1) % 5;
+			gameOpts->render.cockpit.bPlayerStats = gameData.stats.nDisplayMode != 0;
+			break;
+
+		case KEY_F8:
+			MultiSendMsgStart (-1);
+			bStopPlayerMovement = 0;
+			break;
+
+		case KEY_F9:
+		case KEY_F10:
+		case KEY_F11:
+		case KEY_F12:
+			MultiSendMacro (key);
+			bStopPlayerMovement = 0;
+			break;		// send taunt macros
+
+		case KEY_CTRLED + KEY_F12:
+			gameData.trackIR.x =
+			gameData.trackIR.y = 0;
+			break;
+
+		case KEY_ALTED + KEY_F12:
+			if (!ToggleChaseCam ())
+				return 0;
+			break;
+
+		case KEY_SHIFTED + KEY_F9:
+		case KEY_SHIFTED + KEY_F10:
+		case KEY_SHIFTED + KEY_F11:
+		case KEY_SHIFTED + KEY_F12:
+			MultiDefineMacro(key);
+			bStopPlayerMovement = 0;
+			break;		// redefine taunt macros
+
+		case KEY_ALTED + KEY_F2:
+			if (!gameStates.app.bPlayerIsDead && !(IsMultiGame && !IsCoopGame)) {
+				paletteManager.SaveEffectAndReset ();
+				paletteManager.SetEffect (); // get only the effect color back
+				saveGameManager.Save (0, 0, 0, NULL);
+				paletteManager.LoadEffect ();
 			}
-		break;
+			break;  // 0 means not between levels.
 
-	case KEY_F7 + KEY_SHIFTED:
-		paletteManager.SaveEffect ();
-		JoyDefsCalibrate ();
-		paletteManager.LoadEffect ();
-		break;
-
-	case KEY_SHIFTED + KEY_MINUS:
-	case KEY_MINUS:
-		ShrinkWindow ();
-		bScreenChanged = 1;
-		break;
-
-	case KEY_SHIFTED + KEY_EQUAL:
-	case KEY_EQUAL:
-		GrowWindow ();
-		bScreenChanged = 1;
-		break;
-
-	case KEY_CTRLED + KEY_F5:
-		saveGameManager.Save (0, 0, 1, 0);
-		break;
-
-	case KEY_CTRLED + KEY_F9:
-		saveGameManager.Load (0, 0, 1, 0);
-		break;
-
-	case KEY_F5:
-		if (gameData.demo.nState == ND_STATE_RECORDING) {
-			NDStopRecording ();
+		case KEY_ALTED + KEY_F3:
+			if (!gameStates.app.bPlayerIsDead && (!IsMultiGame || IsCoopGame)) {
+				paletteManager.SaveEffectAndReset ();
+				saveGameManager.Load (1, 0, 0, NULL);
+				if (gameData.app.bGamePaused)
+					DoGamePause ();
 			}
-		else if (gameData.demo.nState == ND_STATE_NORMAL)
-			if (!gameData.app.bGamePaused)		//can't start demo while paused
-				NDStartRecording ();
-		break;
-
-	case KEY_ALTED + KEY_F4:
-		gameData.multigame.bShowReticleName = (gameData.multigame.bShowReticleName + 1) % 2;
-
-	case KEY_F7:
-		gameData.multigame.kills.bShowList = (gameData.multigame.kills.bShowList + 1) % (IsTeamGame ? 4 : 3);
-		if (IsMultiGame)
-			MultiSortKillList ();
-		bStopPlayerMovement = 0;
-		break;
-
-	case KEY_CTRLED + KEY_F7:
-		if ((gameStates.render.cockpit.bShowPingStats = !gameStates.render.cockpit.bShowPingStats))
-			ResetPingStats ();
-		break;
-
-	case KEY_CTRLED + KEY_F8:
-		gameData.stats.nDisplayMode = (gameData.stats.nDisplayMode + 1) % 5;
-		gameOpts->render.cockpit.bPlayerStats = gameData.stats.nDisplayMode != 0;
-		break;
-
-	case KEY_F8:
-		MultiSendMsgStart (-1);
-		bStopPlayerMovement = 0;
-		break;
-
-	case KEY_F9:
-	case KEY_F10:
-	case KEY_F11:
-	case KEY_F12:
-		MultiSendMacro (key);
-		bStopPlayerMovement = 0;
-		break;		// send taunt macros
-
-	case KEY_CTRLED + KEY_F12:
-		gameData.trackIR.x =
-		gameData.trackIR.y = 0;
-		break;
-
-	case KEY_ALTED + KEY_F12:
-		if (!ToggleChaseCam ())
-			return 0;
-		break;
-
-	case KEY_SHIFTED + KEY_F9:
-	case KEY_SHIFTED + KEY_F10:
-	case KEY_SHIFTED + KEY_F11:
-	case KEY_SHIFTED + KEY_F12:
-		MultiDefineMacro(key);
-		bStopPlayerMovement = 0;
-		break;		// redefine taunt macros
-
-	case KEY_ALTED + KEY_F2:
-		if (!gameStates.app.bPlayerIsDead && !(IsMultiGame && !IsCoopGame)) {
-			paletteManager.SaveEffectAndReset ();
-			paletteManager.SetEffect (); // get only the effect color back
-			saveGameManager.Save (0, 0, 0, NULL);
-			paletteManager.LoadEffect ();
-		}
-		break;  // 0 means not between levels.
-
-	case KEY_ALTED + KEY_F3:
-		if (!gameStates.app.bPlayerIsDead && (!IsMultiGame || IsCoopGame)) {
-			paletteManager.SaveEffectAndReset ();
-			saveGameManager.Load (1, 0, 0, NULL);
-			if (gameData.app.bGamePaused)
-				DoGamePause ();
-		}
-		break;
+			break;
 
 
-	case KEY_F4 + KEY_SHIFTED:
-		DoEscortMenu ();
-		break;
+		case KEY_F4 + KEY_SHIFTED:
+			DoEscortMenu ();
+			break;
 
 
-	case KEY_F4 + KEY_SHIFTED + KEY_ALTED:
-		ChangeGuidebotName ();
-		break;
+		case KEY_F4 + KEY_SHIFTED + KEY_ALTED:
+			ChangeGuidebotName ();
+			break;
 
-	case KEY_MINUS + KEY_ALTED:
-		songManager.Prev ();
-		break;
+		case KEY_MINUS + KEY_ALTED:
+			songManager.Prev ();
+			break;
 
-	case KEY_EQUAL + KEY_ALTED:
-		songManager.Next ();
-		break;
+		case KEY_EQUAL + KEY_ALTED:
+			songManager.Next ();
+			break;
 
-//added 8/23/99 by Matt Mueller for hot key res/fullscreen changing, and menu access
-	case KEY_CTRLED + KEY_SHIFTED + KEY_PADDIVIDE:
-	case KEY_ALTED + KEY_CTRLED + KEY_PADDIVIDE:
-	case KEY_ALTED + KEY_SHIFTED + KEY_PADDIVIDE:
-		RenderOptionsMenu ();
-		break;
+	//added 8/23/99 by Matt Mueller for hot key res/fullscreen changing, and menu access
+		case KEY_CTRLED + KEY_SHIFTED + KEY_PADDIVIDE:
+		case KEY_ALTED + KEY_CTRLED + KEY_PADDIVIDE:
+		case KEY_ALTED + KEY_SHIFTED + KEY_PADDIVIDE:
+			RenderOptionsMenu ();
+			break;
 
-	case KEY_CTRLED + KEY_F1:
-		SwitchDisplayMode (-1);
-		break;
-	case KEY_CTRLED + KEY_F2:
-		SwitchDisplayMode (1);
-		break;
+		case KEY_CTRLED + KEY_F1:
+			SwitchDisplayMode (-1);
+			break;
+		case KEY_CTRLED + KEY_F2:
+			SwitchDisplayMode (1);
+			break;
 
-	case KEY_ALTED + KEY_ENTER:
-	case KEY_ALTED + KEY_PADENTER:
-		GrToggleFullScreenGame ();
-		break;
+		case KEY_ALTED + KEY_ENTER:
+		case KEY_ALTED + KEY_PADENTER:
+			GrToggleFullScreenGame ();
+			break;
 
-	default:
-			return bScreenChanged;
-	}	 //switch (key)
+		default:
+				return bScreenChanged;
+		}	 //switch (key)
+	}
 
 if (bStopPlayerMovement) {
 	StopPlayerMovement ();
