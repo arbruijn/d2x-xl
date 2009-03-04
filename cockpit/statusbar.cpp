@@ -123,7 +123,7 @@ void CStatusBar::DrawScoreAdded (void)
 {
 if (IsMultiGame && !IsCoopGame) 
 	return;
-if (m_info.scoreDisplay [gameStates.render.vr.nCurrentPage] == 0)
+if (m_info.addedScore [gameStates.render.vr.nCurrentPage] == 0)
 	return;
 
 	int	x, w, h, aw, color;
@@ -142,7 +142,7 @@ if (m_info.scoreTime > 0) {
 	if (gameStates.app.cheats.bEnabled)
 		sprintf (szScore, "%s", TXT_CHEATER);
 	else
-		sprintf (szScore, "%5d", m_info.scoreDisplay [gameStates.render.vr.nCurrentPage]);
+		sprintf (szScore, "%5d", m_info.addedScore [gameStates.render.vr.nCurrentPage]);
 	fontManager.Current ()->StringSize (szScore, w, h, aw);
 	x = SB_SCORE_ADDED_RIGHT - w - LHY (2);
 	fontManager.SetColorRGBi (RGBA_PAL2 (0, color, 0), 1, 0, 0);
@@ -158,7 +158,7 @@ else {
 	//CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 0));
 	//OglDrawFilledRect (lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage], SB_SCORE_ADDED_Y, SB_SCORE_ADDED_RIGHT, SB_SCORE_ADDED_Y+GAME_FONT->Height ());
 	m_info.scoreTime = 0;
-	m_info.scoreDisplay [gameStates.render.vr.nCurrentPage] = 0;
+	m_info.addedScore [gameStates.render.vr.nCurrentPage] = 0;
 	}
 #endif
 }

@@ -96,7 +96,7 @@ class CCockpitInfo {
 	public:
 		int	nCloakFadeState;
 		int	bLastHomingWarningDrawn [2];
-		int	scoreDisplay [2];
+		int	addedScore [2];
 		fix	scoreTime;
 		fix	lastWarningBeepTime [2];
 		int	bHaveGaugeCanvases;
@@ -250,7 +250,8 @@ class CGenericCockpit {
 					 (!(gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) && (gameStates.render.cockpit.nType >= CM_FULL_SCREEN));
 			}
 
-		inline int ScoreDisplay (int i = 0) { return m_info.scoreDisplay [i]; }
+		inline int AddedScore (int i = 0) { return m_info.addedScore [i]; }
+		inline void AddScore (int i, int nScore) { m_info.addedScore [i] += nScore; }
 	};
 
 //	-----------------------------------------------------------------------------

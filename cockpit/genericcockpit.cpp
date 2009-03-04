@@ -105,8 +105,8 @@ void CCockpitInfo::Init (void)
 nCloakFadeState = 0;
 bLastHomingWarningDrawn [0] =
 bLastHomingWarningDrawn [1] = -1;
-scoreDisplay [0] =
-scoreDisplay [1] = 0;
+addedScore [0] =
+addedScore [1] = 0;
 scoreTime = 0;
 lastWarningBeepTime [0] = 
 lastWarningBeepTime [1] = 0;
@@ -640,8 +640,8 @@ void CGenericCockpit::AddPointsToScore (int points)
 	int nPrevScore;
 
 m_info.scoreTime += I2X (1) * 2;
-m_info.scoreDisplay [0] += points;
-m_info.scoreDisplay [1] += points;
+cockpit->AddScore (0, points);
+cockpit->AddScore (1, points);
 if (m_info.scoreTime > I2X (1) * 4) 
 	m_info.scoreTime = I2X (1) * 4;
 if (!points || gameStates.app.cheats.bEnabled)
