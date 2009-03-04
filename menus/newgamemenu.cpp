@@ -338,7 +338,11 @@ for (;;) {
 		}
 	else if (choice == optLevel) {
 		i = atoi (menu [optLevel].m_text);
+#if DBG
 		if (!i || (i < -gameData.missions.nSecretLevels) || (i > nPlayerMaxLevel))
+#else
+		if ((i <= 0) || (i > nPlayerMaxLevel))
+#endif
 			MsgBox (NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
 		else if (nLevel == i)
 			break;

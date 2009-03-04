@@ -367,7 +367,7 @@ void OglSetFOV (void)
 gameStates.render.glAspect = 90.0 / gameStates.render.glFOV;
 #else
 if (gameStates.ogl.bUseTransform)
-	gameStates.render.glAspect = (double) screen.Width () / (double) screen.Height ();
+	gameStates.render.glAspect = double (screen.Width ()) / double (screen.Height ());
 else
 	gameStates.render.glAspect = 90.0 / gameStates.render.glFOV;
 #endif
@@ -375,13 +375,13 @@ glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix
 if (gameStates.render.bRearView < 0)
 	glScalef (-1.0f, 1.0f, 1.0f);
-gluPerspective (gameStates.render.glFOV * ((double) transformation.m_info.zoom / 65536.0),
-					 (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Height (), ZNEAR, ZFAR);
-gameData.render.ogl.depthScale [X] = (float) (ZFAR / (ZFAR - ZNEAR));
-gameData.render.ogl.depthScale [Y] = (float) (ZNEAR * ZFAR / (ZNEAR - ZFAR));
-gameData.render.ogl.depthScale [Z] = (float) (ZFAR - ZNEAR);
-gameData.render.ogl.screenScale.x = 1.0f / (float) screen.Width ();
-gameData.render.ogl.screenScale.y = 1.0f / (float) screen.Height ();
+gluPerspective (gameStates.render.glFOV * (double (transformation.m_info.zoom) / 65536.0),
+      			 double (CCanvas::Current ()->Width ()) / double (CCanvas::Current ()->Height ()), ZNEAR, ZFAR);
+gameData.render.ogl.depthScale [X] = float (ZFAR / (ZFAR - ZNEAR));
+gameData.render.ogl.depthScale [Y] = float (ZNEAR * ZFAR / (ZNEAR - ZFAR));
+gameData.render.ogl.depthScale [Z] = float (ZFAR - ZNEAR);
+gameData.render.ogl.screenScale.x = 1.0f / float (screen.Width ());
+gameData.render.ogl.screenScale.y = 1.0f / float (screen.Height ());
 glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 glMatrixMode (GL_MODELVIEW);
 }
