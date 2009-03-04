@@ -105,14 +105,14 @@ if (cockpit->Hide ())
 	return;
 
 	int	color;
-	int	w, h, aw;
+	int	w, h, aw, nScore;
 	char	szScore [20];
 
 	static int nIdTotalScore = 0;
 
 if (IsMultiGame && !IsCoopGame)
 	return;
-if (!cockpit->ScoreDisplay ())
+if (!(nScore = cockpit->ScoreDisplay ()))
 	return;
 m_info.scoreTime -= gameData.time.xFrame;
 if (m_info.scoreTime > 0) {
@@ -125,7 +125,7 @@ if (m_info.scoreTime > 0) {
 	if (gameStates.app.cheats.bEnabled)
 		sprintf (szScore, "%s", TXT_CHEATER);
 	else
-		sprintf (szScore, "%5d", m_info.scoreDisplay [0]);
+		sprintf (szScore, "%5d", nScore);
 	fontManager.Current ()->StringSize (szScore, w, h, aw);
 	fontManager.SetColorRGBi (RGBA_PAL2 (0, color, 0), 1, 0, 0);
 	nIdTotalScore = GrPrintF (&nIdTotalScore, CCanvas::Current ()->Width () - w - LHX (12), m_info.nLineSpacing + 4, szScore);
