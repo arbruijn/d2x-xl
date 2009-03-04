@@ -119,7 +119,7 @@ CCanvas::Pop ();
 
 //	-----------------------------------------------------------------------------
 
-void CStatusBar::DrawScoreAdded (void)
+void CStatusBar::DrawAddedScore (void)
 {
 if (IsMultiGame && !IsCoopGame) 
 	return;
@@ -145,7 +145,7 @@ if (nTime > 0) {
 	if (gameStates.app.cheats.bEnabled)
 		sprintf (szScore, "%s", TXT_CHEATER);
 	else
-		sprintf (szScore, "%5d", m_info.addedScore [gameStates.render.vr.nCurrentPage]);
+		sprintf (szScore, "%5d", nScore);
 	fontManager.Current ()->StringSize (szScore, w, h, aw);
 	x = SB_SCORE_ADDED_RIGHT - w - LHY (2);
 	fontManager.SetColorRGBi (RGBA_PAL2 (0, color, 0), 1, 0, 0);

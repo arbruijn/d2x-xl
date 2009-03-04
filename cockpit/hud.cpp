@@ -99,7 +99,7 @@ GrPrintF (NULL, CCanvas::Current ()->Width () - w - LHX (2), 3, szScore);
 
 //	-----------------------------------------------------------------------------
 
- void CHUD::DrawScoreAdded (void)
+ void CHUD::DrawAddedScore (void)
 {
 if (cockpit->Hide ())
 	return;
@@ -125,7 +125,7 @@ if (nTime > 0) {
 	if (gameStates.app.cheats.bEnabled)
 		sprintf (szScore, "%s", TXT_CHEATER);
 	else
-		sprintf (szScore, "%5d", m_info.addedScore [0]);
+		sprintf (szScore, "%5d", nScore);
 	fontManager.Current ()->StringSize (szScore, w, h, aw);
 	fontManager.SetColorRGBi (RGBA_PAL2 (0, color, 0), 1, 0, 0);
 	nIdTotalScore = GrPrintF (&nIdTotalScore, CCanvas::Current ()->Width () - w - LHX (12), m_info.nLineSpacing + 4, szScore);

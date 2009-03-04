@@ -1662,7 +1662,7 @@ DrawSlowMotion ();
 DrawPlayerStats ();
 DrawScore ();
 if (m_info.scoreTime)
-	DrawScoreAdded ();
+	DrawAddedScore ();
 DrawEnergyBar ();
 DrawAfterburnerBar ();
 DrawShieldBar ();

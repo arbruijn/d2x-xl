@@ -197,7 +197,7 @@ class CGenericCockpit {
 		virtual void DrawCountdown (void) = 0;
 		virtual void DrawCruise (void) = 0;
 		virtual void DrawScore (void) = 0;
-		virtual void DrawScoreAdded (void) = 0;
+		virtual void DrawAddedScore (void) = 0;
 		virtual void DrawHomingWarning (void) = 0;
 		virtual void DrawKeys (void) = 0;
 		virtual void DrawOrbs (void) = 0;
@@ -266,7 +266,7 @@ class CHUD : public CGenericCockpit {
 		virtual void DrawCountdown (void);
 		virtual void DrawCruise (void);
 		virtual void DrawScore (void);
-		virtual void DrawScoreAdded (void);
+		virtual void DrawAddedScore (void);
 		virtual void DrawHomingWarning (void);
 		virtual void DrawKeys (void);
 		virtual void DrawOrbs (void);
@@ -320,7 +320,7 @@ class CStatusBar : public CGenericCockpit {
 		virtual void DrawCountdown (void);
 		virtual void DrawCruise (void);
 		virtual void DrawScore (void);
-		virtual void DrawScoreAdded (void);
+		virtual void DrawAddedScore (void);
 		virtual void DrawHomingWarning (void);
 		virtual void DrawKeys (void);
 		virtual void DrawOrbs (void);
@@ -359,7 +359,7 @@ class CCockpit : public CGenericCockpit {
 		virtual void DrawCountdown (void);
 		virtual void DrawCruise (void);
 		virtual void DrawScore (void);
-		virtual void DrawScoreAdded (void);
+		virtual void DrawAddedScore (void);
 		virtual void DrawHomingWarning (void);
 		virtual void DrawKeys (void);
 		virtual void DrawOrbs (void);
@@ -398,7 +398,7 @@ class CRearView : public CGenericCockpit {
 		virtual void DrawCountdown (void) {}
 		virtual void DrawCruise (void) {}
 		virtual void DrawScore (void) {}
-		virtual void DrawScoreAdded (void) {}
+		virtual void DrawAddedScore (void) {}
 		virtual void DrawHomingWarning (void) {}
 		virtual void DrawKeys (void) {}
 		virtual void DrawOrbs (void) {}

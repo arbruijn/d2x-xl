@@ -92,9 +92,9 @@ hudCockpit.DrawScore ();
 
 //	-----------------------------------------------------------------------------
 
-void CCockpit::DrawScoreAdded (void)
+void CCockpit::DrawAddedScore (void)
 {
-hudCockpit.DrawScoreAdded ();
+hudCockpit.DrawAddedScore ();
 }
 
 //	-----------------------------------------------------------------------------
