@@ -213,7 +213,6 @@ void CStatusBar::DrawLives (void)
 {
 	static int nIdLives [2] = {0, 0}, nIdKilled = 0;
   
-	CBitmap* bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (GAUGE_LIVES);
 	char		szLives [20];
 	int		w, h, aw;
 
@@ -241,17 +240,11 @@ if (IsMultiGame) {
 	nIdKilled = PrintF (&nIdKilled, x, y + 1, szKilled);
 	lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCurrentPage] = x;
 	}
-else if (LOCALPLAYER.lives != m_history [gameStates.render.vr.nCurrentPage].lives) {
-
-	int	y = -ScaleY (SB_LIVES_Y + m_info.heightPad);
-
-	CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 0));
-	Rect (SB_LIVES_X, y, SB_SCORE_RIGHT, y + bmP->Height ());
-	if (LOCALPLAYER.lives - 1 > 0) {
-		fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
-		BitBlt (GAUGE_LIVES, SB_LIVES_X, SB_LIVES_Y);
-		nIdLives [1] = PrintF (&nIdLives [1], SB_LIVES_X + bmP->Width () + m_info.fontWidth, y, "x %d", LOCALPLAYER.lives - 1);
-		}
+else if (LOCALPLAYER.lives > 1) {
+	int y = -ScaleY (SB_LIVES_Y + m_info.heightPad);
+	fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
+	CBitmap* bmP = BitBlt (GAUGE_LIVES, SB_LIVES_X, SB_LIVES_Y);
+	nIdLives [1] = PrintF (&nIdLives [1], SB_LIVES_X + bmP->Width () + m_info.fontWidth, y, "x %d", LOCALPLAYER.lives - 1);
 	}
 CCanvas::Pop ();
 }

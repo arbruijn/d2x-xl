@@ -1280,7 +1280,7 @@ if (!gameStates.app.bD1Mission && CFile::Exist (SECRETB_FILENAME, gameFolders.sz
 	SetD1Sound ();
 	SetDataVersion (-1);
 	SetPosFromReturnSegment (1);
-	LOCALPLAYER.lives--;	//	re-lose the life, LOCALPLAYER.lives got written over in restore.
+	//LOCALPLAYER.lives--;	//	re-lose the life, LOCALPLAYER.lives got written over in restore.
 	gameData.weapons.nPrimary = pw_save;
 	gameData.weapons.nSecondary = sw_save;
 	}
