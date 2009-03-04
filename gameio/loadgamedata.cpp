@@ -190,7 +190,7 @@ for (i = 0; i < n; i++)
 
 void BMReadAll (CFile& cf)
 {
-	int i, j, t;
+	int i, t;
 
 gameData.pig.tex.nTextures [0] = cf.ReadInt ();
 /*---*/PrintLog ("      Loading %d texture indices\n", gameData.pig.tex.nTextures [0]);

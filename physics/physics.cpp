@@ -840,9 +840,10 @@ retryMove:
 					if (vel > MAX_OBJECT_VEL)
 						mType.physInfo.velocity *= (FixDiv (MAX_OBJECT_VEL, vel));
 					}
-				if (bBounced && (info.nType == OBJ_WEAPON))
-					info.position.mOrient = CFixMatrix::CreateFU(mType.physInfo.velocity, info.position.mOrient.UVec ());
-					//info.position.mOrient = CFixMatrix::CreateFU(mType.physInfo.velocity, &info.position.mOrient.UVec (), NULL);
+				if (bBounced && (info.nType == OBJ_WEAPON)) {
+					info.position.mOrient = CFixMatrix::CreateFU (mType.physInfo.velocity, info.position.mOrient.UVec ());
+					SetOrigin (hi.hit.vPoint);
+					}
 				bRetry = 1;
 				}
 			}
