@@ -43,8 +43,8 @@ void _CDECL_ g3_close(void) {}
 void G3StartFrame (int bFlat, int bResetColorBuf)
 {
 //set int w,h & fixed-point w,h/2
-xCanvW2 = (nCanvasWidth = CCanvas::Current ()->Width ()) << 15;
-xCanvH2 = (nCanvasHeight = CCanvas::Current ()->Height ()) << 15;
+xCanvW2 = (CCanvas::Current ()->Width () = CCanvas::Current ()->Width ()) << 15;
+xCanvH2 = (CCanvas::Current ()->Height () = CCanvas::Current ()->Height ()) << 15;
 fxCanvW2 = X2F (xCanvW2);
 fxCanvH2 = X2F (xCanvH2);
 transformation.ComputeAspect ();

@@ -20,9 +20,6 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 CTransformation	transformation;
 
-int			nCanvasWidth;		//the actual width
-int			nCanvasHeight;		//the actual height
-
 fix			xCanvW2;				//fixed-point width/2
 fix			xCanvH2;				//fixed-point height/2
 

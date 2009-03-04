@@ -1605,6 +1605,7 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 CCanvas::SetCurrent (CurrentGameScreen ());
 CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
 fontManager.SetCurrent (GAME_FONT);
+m_info.nColor = WHITE_RGBA;
 m_info.fontWidth = CCanvas::Current ()->Font ()->Width ();
 m_info.fontHeight = CCanvas::Current ()->Font ()->Height ();
 m_info.xScale = screen.Scale (0);

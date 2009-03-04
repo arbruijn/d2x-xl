@@ -619,9 +619,8 @@ if (IsMultiGame) {
 	nIdLives = GrPrintF (&nIdLives, 10, 3, "%s: %d", TXT_DEATHS, LOCALPLAYER.netKilledTotal);
 	}
 else if (LOCALPLAYER.lives > 1)  {
-	CBitmap *bmP;
+	CBitmap* bmP = BitBlt (GAUGE_LIVES, 10, 3, false, false);
 	fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
-	bmP = BitBlt (GAUGE_LIVES, 10, 3, false, false);
 	nIdLives = GrPrintF (&nIdLives, 10 + bmP->Width () + bmP->Width () / 2, 4, "x %d", LOCALPLAYER.lives - 1);
 	}
 }

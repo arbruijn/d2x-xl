@@ -80,21 +80,30 @@ CGenericCockpit::DrawCruise (3, CCanvas::Current ()->Height () - m_info.nLineSpa
 
 void CCockpit::DrawLives (void)
 {
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
 hudCockpit.DrawLives ();
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
 
 void CCockpit::DrawScore (void)
 {
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
 hudCockpit.DrawScore ();
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
 
 void CCockpit::DrawAddedScore (void)
 {
+CCanvas::Push ();
+CCanvas::SetCurrent (CurrentGameScreen ());
 hudCockpit.DrawAddedScore ();
+CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------

@@ -609,11 +609,18 @@ int nNewLevel;
 
 if (!MenuGetValues (TXT_WARP_TO_LEVEL, &nNewLevel, 1))
 	return;
-if (((nNewLevel > 0) && (nNewLevel <= gameData.missions.nLastLevel)) ||
-	 ((nNewLevel < 0) && (nNewLevel >= gameData.missions.nLastSecretLevel))) {
-	DoCheatPenalty ();
-	StartNewLevel (nNewLevel, 0);
-	}
+if (nNewLevel > gameData.missions.nLastLevel)
+	return;
+else if (nNewLevel < gameData.missions.nLastSecretLevel)
+	return;
+#if DBG
+else if (!nNewLevel)
+#else
+else if (nNewLevel <= 0)
+	return;
+#endif
+DoCheatPenalty ();
+StartNewLevel (nNewLevel, 0);
 }
 
 //------------------------------------------------------------------------------

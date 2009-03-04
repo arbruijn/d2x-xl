@@ -569,13 +569,13 @@ else
 
 	glMatrixMode (GL_MODELVIEW);
 	glLoadIdentity ();
-	OglViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), nCanvasWidth, nCanvasHeight);
+	OglViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 	if (gameStates.ogl.bEnableScissor) {
 		glScissor (
 			CCanvas::Current ()->Left (),
-			screen.Canvas ()->Height () - CCanvas::Current ()->Top () - nCanvasHeight,
-			nCanvasWidth,
-			nCanvasHeight);
+			screen.Canvas ()->Height () - CCanvas::Current ()->Top () - CCanvas::Current ()->Height (),
+			CCanvas::Current ()->Width (),
+			CCanvas::Current ()->Height ());
 		glEnable (GL_SCISSOR_TEST);
 		}
 	else
