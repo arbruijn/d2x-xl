@@ -154,7 +154,7 @@ static const char *xlCredits [] = {
 	"Weyrman",
 	"",
 	"*Visit the D2X-XL project at",
-	"www.descent2.de"
+	"http://www.descent2.de"
 	};
 
 #define NUM_XL_LINES	sizeofa(xlCredits)
