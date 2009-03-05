@@ -1845,7 +1845,7 @@ const char *defaultGameTexts [][2] = {
  {"hervorhebung ~Blau", "~Blue highlights"},
  {"Server-Portnummer", "\nEnter server port:"},
  {"Teilnehmer-Portnummer", "\nEnter client port:"},
- {"~Mods aktivieren", "enable ~Mods"},
+ {"M~Ods aktivieren", "enable m~Ods"},
 #if 0
  {"", ""},
 #endif
@@ -1860,7 +1860,7 @@ const char *defaultHelpTexts [][2] = {
 	//main menu
  {"Neues Spiel starten.", "Start a new game."},
  {"Neues Einzelspieler-Spiel mit einer Mission aus dem\nMissions-Unterordner 'single' starten.", 
-	 "Start a new single player game using a mission from the\nmissions subfolder 'single'."},
+  "Start a new single player game using a mission from the\nmissions subfolder 'single'."},
  {"Gespeicherten Spielstand laden.", "Load a saved game."},
  {"Mehrspieler-Netzwerkspiel starten.", "Start a multiplayer network game."},
  {"Programmeinstellungen aendern.", "Change program settings."},
@@ -1879,7 +1879,7 @@ const char *defaultHelpTexts [][2] = {
 	 "Check to enable control of the ship using a mouse."},
  {"Mausbewegungen und -knoepfen Schiffsaktionen zuordnen.", 
 	 "Assign ship actions to mouse movements and buttons."},
- {"Ankreuzen, um Reaktion des Schiffs auf Mausbewegungen zu verst�rken.", 
+ {"Ankreuzen, um Reaktion des Schiffs auf Mausbewegungen zu verstaerken.", 
 	 "Check to increase ship reaction on mouse movements."},
  {"Ankreuzen, damit das Schiff mit der Maus wie mit einem\nJoystick gesteuert werden kann: Das Schiff bewegt sich\nin die Richtung, in die der (unsichtbare) Mauszeiger von der Bildschirmmitte\nwegbewegt wird. Je groesser der Abstand von der Bildschirmmitte,\ndesto schneller die Bewegung.",
 	 "Check to control the ship movement with the mouse like when\nusing a joystick: The ship moves to the direction\nthe (invisible) mousepointer has been moved away from the\nscreen center. The greater the distance from the screen center,\nthe faster the movement."},
@@ -1895,7 +1895,7 @@ const char *defaultHelpTexts [][2] = {
 	 "Assign ship actions to joystick movements and buttons."},
  {"Wenn angekreuzt reagiert das Schiff gleichmaessig zunehmend\nauf Joystickbewegungen. Wenn nicht, ist die Reaktion anfangs\ngering und steigert sich mit zunehmenden Joystick-Ausschlag ueberproportional.", 
 	 "If checked, ship reaction to joystick movements increases evenly,\nIf not, the ship reacts slowly to small joystick movements,\nand reaction increases disproportionately to stronger movements."},
- {"Wenn angekreuzt erhalten alle Joystickachsen dieselbe Empfindlichkeit und Totzone.\nWenn nicht, k�nnen Empfindlichkeit und Totzone individuell fuer jede Joystickachse eingestellt werden.", 
+ {"Wenn angekreuzt erhalten alle Joystickachsen dieselbe Empfindlichkeit und Totzone.\nWenn nicht, koennen Empfindlichkeit und Totzone individuell fuer jede Joystickachse eingestellt werden.", 
 	 "If checked, all joystick axes have the same sensitivity and deadzone.\nIf not, you can adjust sensitivity and deadzone individually for each joystick axis."},
  {"Staerke der Richtungsaenderungen\ndes Schiffes bei Joystick-\nbewegungen einstellen.", 
 	 "Adjust strength of changes of movement direction during joystick\nmovements."},

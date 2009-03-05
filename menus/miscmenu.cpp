@@ -178,7 +178,7 @@ do {
 		if (gameOpts->app.bExpertMode) {
 			optSmartSearch = m.AddCheck (TXT_SMART_SEARCH, gameOpts->menus.bSmartFileSearch, KEY_S, HTX_MISC_SMARTSEARCH);
 			optLevelVer = m.AddCheck (TXT_SHOW_LVL_VERSION, gameOpts->menus.bShowLevelVersion, KEY_V, HTX_MISC_SHOWLVLVER);
-			optEnableMods = m.AddCheck (TXT_ENABLE_MODS, gameOpts->app.bEnableMods, KEY_M, HTX_ENABLE_MODS);
+			optEnableMods = m.AddCheck (TXT_ENABLE_MODS, gameOpts->app.bEnableMods, KEY_O, HTX_ENABLE_MODS);
 			}
 		else
 			optEnableMods = 
