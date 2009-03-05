@@ -38,8 +38,8 @@
 
 #define GEO_LIN_ATT	(/*0.0f*/ gameData.render.fAttScale [0])
 #define GEO_QUAD_ATT	(/*0.003333f*/ gameData.render.fAttScale [1])
-#define OBJ_LIN_ATT	(/*0.0f*/ gameData.render.fAttScale)
-#define OBJ_QUAD_ATT	(/*0.003333f*/ gameData.render.fAttScale)
+#define OBJ_LIN_ATT	(/*0.0f*/ gameData.render.fAttScale [0])
+#define OBJ_QUAD_ATT	(/*0.003333f*/ gameData.render.fAttScale [1])
 
 //------------------------------------------------------------------------------
 
