@@ -390,7 +390,7 @@ do {
 		m.AddRadio (TXT_ALIGN_CENTER, nAlignment == 2, KEY_E, HTX_AUXWIN_ALIGNMENT);
 		m.AddText ("", 0);
 		optHUD = m.AddCheck (TXT_SHOW_HUD, gameOpts->render.cockpit.bHUD, KEY_U, HTX_CPIT_SHOWHUD);
-		optWideDisplays = m.AddCheck (TXT_CPIT_WIDE_DISPLAYS, gameOpts->render.cockpit.bWideDisplays, KEY_W, HTX_CPIT_WIDE_DISPLAYS);
+		optWideDisplays = m.AddCheck (TXT_CPIT_WIDE_DISPLAYS, gameOpts->render.cockpit.bWideDisplays, KEY_D, HTX_CPIT_WIDE_DISPLAYS);
 		optHUDMsgs = m.AddCheck (TXT_SHOW_HUDMSGS, gameOpts->render.cockpit.bHUDMsgs, KEY_M, HTX_CPIT_SHOWHUDMSGS);
 		optReticle = m.AddCheck (TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_R, HTX_CPIT_SHOWRETICLE);
 		if (gameOpts->input.mouse.bJoystick)
