@@ -140,7 +140,7 @@ void MiscellaneousMenu (void)
 #if 0
 			optFastResp, 
 #endif
-			optHeadlight, optEscort, optUseMacros,	optAutoLevel,
+			optHeadlight, optEscort, optUseMacros,	optAutoLevel, optEnableMods,
 			optReticle, optMissileView, optGuided, optSmartSearch, optLevelVer, optDemoFmt;
 #if UDP_SAFEMODE
 	int	optSafeUDP;
@@ -178,8 +178,10 @@ do {
 		if (gameOpts->app.bExpertMode) {
 			optSmartSearch = m.AddCheck (TXT_SMART_SEARCH, gameOpts->menus.bSmartFileSearch, KEY_S, HTX_MISC_SMARTSEARCH);
 			optLevelVer = m.AddCheck (TXT_SHOW_LVL_VERSION, gameOpts->menus.bShowLevelVersion, KEY_V, HTX_MISC_SHOWLVLVER);
+			optEnableMods = m.AddCheck (TXT_ENABLE_MODS, gameOpts->app.bEnableMods, KEY_M, HTX_ENABLE_MODS);
 			}
 		else
+			optEnableMods = 
 			optSmartSearch =
 			optLevelVer = -1;
 		miscOpts.nExpertMode = m.AddCheck (TXT_EXPERT_MODE, gameOpts->app.bExpertMode, KEY_X, HTX_MISC_EXPMODE);
@@ -225,6 +227,7 @@ do {
 #if 0
 			GET_VAL (gameOpts->gameplay.bFastRespawn, optFastResp);
 #endif
+			GET_VAL (gameOpts->app.bEnableMods, optEnableMods);
 			GET_VAL (gameOpts->menus.bSmartFileSearch, optSmartSearch);
 			GET_VAL (gameOpts->menus.bShowLevelVersion, optLevelVer);
 			}

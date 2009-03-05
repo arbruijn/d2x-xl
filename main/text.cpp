@@ -1845,6 +1845,7 @@ const char *defaultGameTexts [][2] = {
  {"hervorhebung ~Blau", "~Blue highlights"},
  {"Server-Portnummer", "\nEnter server port:"},
  {"Teilnehmer-Portnummer", "\nEnter client port:"},
+ {"~Mods aktivieren", "enable ~Mods"},
 #if 0
  {"", ""},
 #endif
@@ -2511,6 +2512,7 @@ const char *defaultHelpTexts [][2] = {
  {"Wenn angekreuzt, erhalten die Icons aktiver Waffen und\nAusruestung besonders fette Rahmen.", "If checked, armed weapons and active equipment\nhave a bold frame."},
  {"Wenn angekreuzt, werden bei Widescreen-Aufloesungen auch\ndie Anzeigefenster im HUD verbreitert.", 
   "If checked, HUD display windows are wider too for\nwidescreen resolutions."},
+ {"Wenn angekreuzt, werden Mod-Daten verwendet;\nandernfalls werden sie ignoriert.", "If checked mod data will be used;\notherwise it will be ignored."},
 #if 0
  {"", ""},
 #endif

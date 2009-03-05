@@ -557,6 +557,7 @@ typedef struct tApplicationOptions {
 	int bAutoRunMission;
 	int nVersionFilter;
 	int bSinglePlayer;
+	int bEnableMods;
 	int bExpertMode;
 	int nScreenShotInterval;
 } tApplicationOptions;
