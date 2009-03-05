@@ -828,10 +828,10 @@ glVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
 void CTransparencyRenderer::RenderPoly (tTranspPoly *item)
 {
 PROF_START
-	CSegFace		*faceP;
-	tFaceTriangle	*triP;
-	CBitmap		*bmBot = item->bmP, *bmTop = NULL, *mask;
-	int			i, j, nIndex, bLightmaps, bDecal, bSoftBlend = 0;
+	CSegFace*		faceP;
+	tFaceTriangle*	triP;
+	CBitmap*			bmBot = item->bmP, *bmTop = NULL, *mask;
+	int				i, j, nIndex, bLightmaps, bDecal, bSoftBlend = 0, bAdditive = 0;
 
 #if TI_POLY_OFFSET
 if (!bmBot) {
@@ -934,13 +934,13 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 1, 3,
 		glColor4fv (reinterpret_cast<GLfloat*> (item->color));
 	else
 		glColor3d (1, 1, 1);
-	i = item->bAdditive;
+	bAdditive = item->bAdditive;
 	glEnable (GL_BLEND);
-	if (i == 1)
+	if (bAdditive == 1)
 		glBlendFunc (GL_ONE, GL_ONE);
-	else if (i == 2)
+	else if (bAdditive == 2)
 		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-	else if (i == 3)
+	else if (bAdditive == 3)
 		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	else
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -954,7 +954,6 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 1, 3,
 			glDrawArrays (item->nPrimitive, 0, item->nVertices);
 			}
 		else {
-			bool bAdditive = false;
 #if 0
 			if (gameData.render.lights.dynamic.headlights.nLights && !automap.m_bDisplay) {
 				lightManager.Headlights ().SetupShader (m_data.bTextured, 1, m_data.bTextured ? NULL : &faceP->color);
@@ -986,32 +985,29 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 1, 3,
 					if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) ||
 						 (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
 						break;
-					if (!bAdditive) {
-						bAdditive = true;
-						if (i)
-							glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-						glDepthFunc (GL_LEQUAL);
+					if (bAdditive && (bAdditive != 2)) {
+						bAdditive = 2;
+						glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 						}
 					}
 				}
 #endif
 #if 1
 			if (gameStates.render.bHeadlights) {
+#	if DBG
 				if (faceP) {
 					if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 						nDbgSeg = nDbgSeg;
 					}
+#	endif
 				lightManager.Headlights ().SetupShader (m_data.bTextured, 1, m_data.bTextured ? NULL : &faceP->color);
-				if (!bAdditive) {
-					bAdditive = true;
+				if (bAdditive != 2) {
+					bAdditive = 2;
 					glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-					glDepthFunc (GL_LEQUAL);
 					}
 				glDrawArrays (item->nPrimitive, 0, item->nVertices);
 				}
 #endif
-			if (bAdditive)
-				glDepthFunc (GL_LESS);
 			}
 		}
 	else {
@@ -1096,7 +1092,7 @@ if (!bmBot) {
 	glDisable (GL_POLYGON_OFFSET_FILL);
 	}
 #endif
-if (item->bAdditive)
+if (bAdditive)
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 if (bSoftBlend)
 	glEnable (GL_DEPTH_TEST);
