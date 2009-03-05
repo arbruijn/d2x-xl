@@ -421,7 +421,7 @@ for (h = faceP->nTris; h; h--, triP++) {
 		}
 	if (!AddPoly (faceP, triP, bmP, vertices, 3, FACES.texCoord + triP->nIndex,
 					  FACES.color + triP->nIndex,
-					  NULL, 3, !bAdditive, GL_TRIANGLES, GL_REPEAT,
+					  NULL, 3, bmP && !bAdditive, GL_TRIANGLES, GL_REPEAT,
 					  bAdditive, faceP->nSegment))
 		return 0;
 	}
@@ -458,7 +458,7 @@ for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
 return AddPoly (faceP, NULL, bmP,
 						vertices, 4, FACES.texCoord + faceP->nIndex,
 						FACES.color + faceP->nIndex,
-						NULL, 4, !bAdditive, GL_TRIANGLE_FAN, GL_REPEAT,
+						NULL, 4, bmP && !bAdditive, GL_TRIANGLE_FAN, GL_REPEAT,
 						bAdditive, faceP->nSegment) > 0;
 }
 
