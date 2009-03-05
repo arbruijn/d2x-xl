@@ -44,7 +44,7 @@ COPYTIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL TIGHTS RESERVED.
 
 #define TI_SPLIT_POLYS 0
 #define TI_POLY_OFFSET 0
-#define TI_POLY_CENTER 0
+#define TI_POLY_CENTER 1
 
 #if DBG
 static int nDbgPoly = -1, nDbgItem = -1;
@@ -315,7 +315,7 @@ int CTransparencyRenderer::AddPoly (CSegFace *faceP, tFaceTriangle *triP, CBitma
 {
 	tTranspPoly	item;
 	int			i;
-	float			z, zMinf, zMaxf, s = gameStates.render.grAlpha;
+	float			s = gameStates.render.grAlpha;
 	fix			zCenter;
 
 item.faceP = faceP;
@@ -363,11 +363,16 @@ else
  {
 #if TI_POLY_CENTER
 	zCenter = 0;
-#endif
-	zMinf = 1e30f;
-	zMaxf = -1e30f;
+	for (i = 0; i < item.nVertices; i++)
+		zCenter += F2X (item.vertices [i][Z]);
+	zCenter /= item.nVertices;
+#else
+	float zMinf = 1e30f;
+	float zMaxf = -1e30f;
+	float z;
 	for (i = 0; i < item.nVertices; i++) {
 		z = item.vertices [i][Z];
+		zCenter += F2X (z);
 		if (zMinf > z)
 			zMinf = z;
 		if (zMaxf < z)
@@ -375,10 +380,7 @@ else
 		}
 	if ((F2X (zMaxf) < m_data.zMin) || (F2X (zMinf) > m_data.zMax))
 		return -1;
-#if TI_POLY_CENTER
-	zCenter = F2X ((zMinf + zMaxf) / 2);
-#else
-	zCenter = F2X (zMaxf);
+	zCenter = F2X (zMinf);
 #endif
 	if (zCenter < m_data.zMin)
 		return Add (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), m_data.zMin, m_data.zMin);
