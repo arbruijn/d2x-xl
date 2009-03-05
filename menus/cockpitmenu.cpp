@@ -300,13 +300,13 @@ do {
 	do {
 		i = m.Menu (NULL, TXT_GAUGES_MENUTITLE, &GaugeOptionsCallback, &choice);
 	} while (i >= 0);
+	GET_VAL (gameOpts->gameplay.bShieldWarning, optShieldWarn);
+	GET_VAL (gameOpts->render.cockpit.bObjectTally, optObjectTally);
+	GET_VAL (gameOpts->render.cockpit.bPlayerStats, optPlayerStats);
 	if (!(gameOpts->render.cockpit.bTextGauges = !m [optTextGauges].m_value)) {
 		if (gameOpts->app.bExpertMode) {
 			GET_VAL (gameOpts->render.cockpit.bScaleGauges, optScaleGauges);
 			GET_VAL (gameOpts->render.cockpit.bFlashGauges, optFlashGauges);
-			GET_VAL (gameOpts->gameplay.bShieldWarning, optShieldWarn);
-			GET_VAL (gameOpts->render.cockpit.bObjectTally, optObjectTally);
-			GET_VAL (gameOpts->render.cockpit.bPlayerStats, optPlayerStats);
 			}
 		else {
 #if EXPMODE_DEFAULTS
