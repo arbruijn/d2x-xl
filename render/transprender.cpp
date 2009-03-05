@@ -1011,7 +1011,7 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 1, 3,
 			}
 		}
 	else {
-		if (i && !automap.m_bDisplay) {
+		if (bAdditive && !automap.m_bDisplay) {
 			if (bSoftBlend)
 				LoadGlareShader (5);
 			else
