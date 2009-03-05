@@ -23,9 +23,9 @@ typedef enum tTranspItemType {
 } tTranspItemType;
 
 typedef struct tTranspPoly {
-	CSegFace					*faceP;
-	tFaceTriangle		*triP;
-	CBitmap				*bmP;
+	CSegFace*			faceP;
+	tFaceTriangle*		triP;
+	CBitmap*				bmP;
 	CFloatVector		vertices [4];
 	tTexCoord2f			texCoord [4];
 	tRgbaColorf			color [4];

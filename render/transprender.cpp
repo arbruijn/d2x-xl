@@ -363,16 +363,15 @@ else
  {
 #if TI_POLY_CENTER
 	zCenter = 0;
-	for (i = 0; i < item.nVertices; i++)
-		zCenter += F2X (item.vertices [i][Z]);
-	zCenter /= item.nVertices;
-#else
+#endif
 	float zMinf = 1e30f;
 	float zMaxf = -1e30f;
 	float z;
 	for (i = 0; i < item.nVertices; i++) {
 		z = item.vertices [i][Z];
+#if TI_POLY_CENTER
 		zCenter += F2X (z);
+#endif
 		if (zMinf > z)
 			zMinf = z;
 		if (zMaxf < z)
@@ -380,6 +379,9 @@ else
 		}
 	if ((F2X (zMaxf) < m_data.zMin) || (F2X (zMinf) > m_data.zMax))
 		return -1;
+#if TI_POLY_CENTER
+	zCenter /= item.nVertices;
+#else
 	zCenter = F2X (zMinf);
 #endif
 	if (zCenter < m_data.zMin)
@@ -394,10 +396,10 @@ else
 
 int CTransparencyRenderer::AddFaceTris (CSegFace *faceP)
 {
-	tFaceTriangle	*triP;
-	CFloatVector		vertices [3];
-	int			h, i, j, bAdditive = FaceIsAdditive (faceP);
-	CBitmap	*bmP = faceP->bTextured ? /*faceP->bmTop ? faceP->bmTop :*/ faceP->bmBot : NULL;
+	tFaceTriangle*	triP;
+	CFloatVector	vertices [3];
+	int				h, i, j, bAdditive = FaceIsAdditive (faceP);
+	CBitmap*			bmP = faceP->bTextured ? /*faceP->bmTop ? faceP->bmTop :*/ faceP->bmBot : NULL;
 
 if (bmP)
 	bmP = bmP->Override (-1);
@@ -419,7 +421,7 @@ for (h = faceP->nTris; h; h--, triP++) {
 		}
 	if (!AddPoly (faceP, triP, bmP, vertices, 3, FACES.texCoord + triP->nIndex,
 					  FACES.color + triP->nIndex,
-					  NULL, 3, 0, GL_TRIANGLES, GL_REPEAT,
+					  NULL, 3, !bAdditive, GL_TRIANGLES, GL_REPEAT,
 					  bAdditive, faceP->nSegment))
 		return 0;
 	}
@@ -433,9 +435,9 @@ int CTransparencyRenderer::AddFace (CSegFace *faceP)
 if (gameStates.render.bTriangleMesh)
 	return AddFaceTris (faceP);
 
-	CFloatVector		vertices [4];
-	int			i, j;
-	CBitmap	*bmP = faceP->bTextured ? /*faceP->bmTop ? faceP->bmTop :*/ faceP->bmBot : NULL;
+	CFloatVector	vertices [4];
+	int				i, j, bAdditive = FaceIsAdditive (faceP);
+	CBitmap*			bmP = faceP->bTextured ? /*faceP->bmTop ? faceP->bmTop :*/ faceP->bmBot : NULL;
 
 if (bmP)
 	bmP = bmP->Override (-1);
@@ -456,8 +458,8 @@ for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
 return AddPoly (faceP, NULL, bmP,
 						vertices, 4, FACES.texCoord + faceP->nIndex,
 						FACES.color + faceP->nIndex,
-						NULL, 4, 0, GL_TRIANGLE_FAN, GL_REPEAT,
-						FaceIsAdditive (faceP), faceP->nSegment) > 0;
+						NULL, 4, !bAdditive, GL_TRIANGLE_FAN, GL_REPEAT,
+						bAdditive, faceP->nSegment) > 0;
 }
 
 //------------------------------------------------------------------------------
