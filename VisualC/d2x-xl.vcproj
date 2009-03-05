@@ -175,7 +175,7 @@
 				StructMemberAlignment="1"
 				BufferSecurityCheck="false"
 				EnableFunctionLevelLinking="true"
-				EnableEnhancedInstructionSet="0"
+				EnableEnhancedInstructionSet="2"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile=".\Release/d2x-xl.pch"
 				AssemblerListingLocation=".\Release/"
