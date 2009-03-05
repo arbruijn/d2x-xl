@@ -165,7 +165,7 @@ char *d2GameTexts [][2] = {
 	{"F5\t  Toggle recording", NULL},
 	{"Pause\t  Pause", NULL},
 	{"-/+\t  Change screen size", NULL},
-	{"Alt+F9\t  Save screen shot", NULL},
+	{"PrtScrn\t  Save screen shot", NULL},
 	{"1-5\t  Select primary weapon", NULL},
 	{"6-0\t  Select secondary weapon", NULL},
 	{" To view control keys, select\nconfiguration in options menu", NULL},
