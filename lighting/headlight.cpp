@@ -199,6 +199,7 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 const char *headlightFS [2][8] = {
  {
 	//----------------------------------------
+   //no lightmaps
 	//single player version - one player
 	//untextured
 	"uniform vec4 matColor;\r\n" \
@@ -402,6 +403,7 @@ const char *headlightFS [2][8] = {
 	},
  {
 	//----------------------------------------
+   //lightmaps
 	//single player version - one player
 	//untextured
 	"uniform vec4 matColor;\r\n" \

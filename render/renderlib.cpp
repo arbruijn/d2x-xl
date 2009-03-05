@@ -687,13 +687,13 @@ return !gameStates.app.bD1Mission &&
 
 //------------------------------------------------------------------------------
 
-float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int bIsMonitor, 
+float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int bIsMonitor, ubyte bAdditive,
 					  tRgbaColorf *colorP, int *nColor, ubyte *bTextured, ubyte *bCloaked)
 {
 	static tRgbaColorf cloakColor = {0, 0, 0, 0};
 
 	CWall	*wallP;
-	float fAlpha;
+	float fAlpha, fMaxColor;
 	short	c;
 
 if (!IS_WALL (nWall))
@@ -725,9 +725,21 @@ if (*bCloaked || (widFlags & WID_TRANSPARENT_FLAG)) {
 	if (fAlpha < 1) {
 		//fAlpha = (float) sqrt (fAlpha);
 		paletteManager.Game ()->ToRgbaf ((ubyte) c, *colorP);
-		colorP->red /= fAlpha;
-		colorP->green /= fAlpha;
-		colorP->blue /= fAlpha;
+		if (bAdditive) {
+			colorP->red /= fAlpha;
+			colorP->green /= fAlpha;
+			colorP->blue /= fAlpha;
+			}
+		fMaxColor = colorP->red;
+		if (fMaxColor < colorP->green)
+			fMaxColor = colorP->green;
+		if (fMaxColor < colorP->blue)
+			fMaxColor = colorP->blue;
+		if (fMaxColor > 1) {
+			colorP->red /= fMaxColor;
+			colorP->green /= fMaxColor;
+			colorP->blue /= fMaxColor;
+			}
 		*bTextured = 0;
 		*nColor = 1;
 		}

@@ -1004,8 +1004,7 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 1, 3,
 				lightManager.Headlights ().SetupShader (m_data.bTextured, 1, m_data.bTextured ? NULL : &faceP->color);
 				if (!bAdditive) {
 					bAdditive = true;
-					//if (i)
-						glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+					glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 					glDepthFunc (GL_LEQUAL);
 					}
 				glDrawArrays (item->nPrimitive, 0, item->nVertices);

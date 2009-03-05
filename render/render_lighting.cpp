@@ -71,7 +71,7 @@ faceP->nCamera = IsMonitorFace (nSegment, nSide, 0);
 bTextured = 1;
 bCloaked = 0;
 if (bWall)
-	*pfAlpha = WallAlpha (nSegment, nSide, faceP->nWall, faceP->widFlags, faceP->nCamera >= 0, 
+	*pfAlpha = WallAlpha (nSegment, nSide, faceP->nWall, faceP->widFlags, faceP->nCamera >= 0, faceP->bAdditive,
 								 &pFaceColor [1].color, &nColor, &bTextured, &bCloaked);
 else
 	*pfAlpha = 1;
