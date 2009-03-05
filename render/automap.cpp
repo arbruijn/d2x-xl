@@ -496,7 +496,7 @@ if (!m_bRadar) {
 	CreateNameCanvas ();
 	paletteManager.ResetEffect ();
 	}
-if (m_bRadar || !gameOpts->render.automap.bTextured)
+//if (m_bRadar || !gameOpts->render.automap.bTextured)
 	BuildEdgeList ();
 if (m_bRadar)
 	m_data.nViewDist = ZOOM_DEFAULT;
@@ -681,6 +681,10 @@ while ((c = KeyInKey ())) {
 
 		case KEY_ALTED + KEY_R:
 			gameStates.render.bShowFrameRate = ++gameStates.render.bShowFrameRate % (6 + (gameStates.render.bPerPixelLighting == 2));
+			break;
+
+		case KEY_ALTED + KEY_T:
+			gameOpts->render.automap.bTextured = !gameOpts->render.automap.bTextured;
 			break;
 
 #if DBG
