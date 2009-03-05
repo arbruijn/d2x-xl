@@ -93,11 +93,14 @@ if (gameStates.ogl.bUseTransform) {
 		Move (vPos);
 		glScalef (-1.0f, -1.0f, -1.0f);
 		Rotate (mOrient);
-	}
+		}
 	else {
 		glLoadIdentity ();
-		//glScalef (X2F (m_info.scale.p.x), X2F (m_info.scale.p.y), -X2F (m_info.scale.p.z));
+#if 0
+		glScalef (transformation.m_info.scalef [X], transformation.m_info.scalef [Y], -transformation.m_info.scalef [Z]);
+#else
 		glScalef (1, 1, -1);
+#endif
 		Rotate (m_info.viewf [2]);
 		h = m_info.pos - vPos;
 		Move (h);

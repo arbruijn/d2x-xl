@@ -47,8 +47,8 @@ transformation.m_info.posf [0].Assign (transformation.m_info.pos);
 transformation.m_info.posf [1].Assign (transformation.m_info.pos);
 transformation.m_info.view [0] = mOrient;
 transformation.m_info.viewf [0].Assign (transformation.m_info.view [0]);
-CFixMatrix::Transpose (transformation.m_info.viewf [2], transformation.m_info.view [0]);
 ScaleMatrix (bOglScale);
+CFixMatrix::Transpose (transformation.m_info.viewf [2], transformation.m_info.view [0]);
 OglSetFOV ();
 }
 
@@ -72,16 +72,18 @@ transformation.m_info.scalef.Assign (transformation.m_info.scale);
 //transformation.m_info.scale [X] = transformation.m_info.scale [Y] = transformation.m_info.scale [Z] = I2X (1);
 //now scale matrix elements
 if (bOglScale) {
-	//glScalef (X2F (transformation.m_info.scale [X]), X2F (transformation.m_info.scale [Y]), -X2F (transformation.m_info.scale [Z]));
+#if 1
+	glScalef (transformation.m_info.scalef [X], transformation.m_info.scalef [Y], -transformation.m_info.scalef [Z]);
+#else
 	glScalef (1, 1, -1);
+#endif
 	}
 else {
-	//VmVecScale (&transformation.m_info.view [0].rVec, transformation.m_info.scale [X]);
-	//VmVecScale (&transformation.m_info.view [0].uVec, transformation.m_info.scale [Y]);
-	//transformation.m_info.scale [X] = transformation.m_info.scale [Y] = transformation.m_info.scale [Z] = I2X (1);
-	transformation.m_info.view [0].FVec () *= (-transformation.m_info.scale [Z]);
+	transformation.m_info.view [0].RVec () *= (transformation.m_info.scale [X]);
+	transformation.m_info.view [0].UVec () *= (transformation.m_info.scale [Y]);
+	transformation.m_info.view [0].FVec () *= (transformation.m_info.scale [Z]);
 	transformation.m_info.viewf [0].Assign (transformation.m_info.view [0]);
-	glScalef (1, 1, 1);
+	glScalef (1, 1, -1);
 	}
 }
 

@@ -61,7 +61,7 @@
 #define RENDER2TEXTURE			2	//0: glCopyTexSubImage, 1: pixel buffers, 2: frame buffers
 #define OGL_POINT_SPRITES		1
 
-#define DEFAULT_FOV				90.0
+#define DEFAULT_FOV				104.5
 #define FISHEYE_FOV				135.0
 
 extern double glFOV, glAspect;

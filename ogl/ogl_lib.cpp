@@ -369,7 +369,7 @@ gameStates.render.glAspect = 90.0 / gameStates.render.glFOV;
 if (gameStates.ogl.bUseTransform)
 	gameStates.render.glAspect = double (screen.Width ()) / double (screen.Height ());
 else
-	gameStates.render.glAspect = 90.0 / gameStates.render.glFOV;
+	gameStates.render.glAspect = 1.0;
 #endif
 glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix
