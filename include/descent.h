@@ -1573,7 +1573,7 @@ class CRenderData {
 		int							nColoredFaces;
 		int							nStateChanges;
 		int							nShaderChanges;
-		float							fAttScale;
+		float							fAttScale [2];
 		ubyte							nPowerupFilter;
 
 	public:

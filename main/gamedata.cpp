@@ -413,8 +413,9 @@ nMaxLights = 0;
 nColoredFaces = 0;
 nStateChanges = 0;
 nShaderChanges = 0;
-fAttScale = 0;
 nPowerupFilter = 0;
+fAttScale [0] = 0.0f;
+fAttScale [1] = 0.003333f;
 }
 
 // ----------------------------------------------------------------------------

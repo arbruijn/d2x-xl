@@ -582,7 +582,7 @@ for (nTexture = 0; nTexture < 910; nTexture++)
 gameStates.render.bHaveDynLights = 1;
 #if 0
 if (gameStates.app.bD1Mission)
-	gameData.render.fAttScale *= 2;
+	gameData.render.fAttScale [0] *= 2;
 #endif
 gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 m_headlights.Init ();

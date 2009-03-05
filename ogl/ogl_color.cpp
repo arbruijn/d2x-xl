@@ -36,10 +36,10 @@
 #	define ONLY_HEADLIGHT 0
 #endif
 
-#define GEO_LIN_ATT	(0.1f /** gameData.render.fAttScale*/)
-#define GEO_QUAD_ATT	(0.01f /** gameData.render.fAttScale*/)
-#define OBJ_LIN_ATT	(0.1f /** gameData.render.fAttScale*/)
-#define OBJ_QUAD_ATT	(0.01f /** gameData.render.fAttScale*/)
+#define GEO_LIN_ATT	(/*0.0f*/ gameData.render.fAttScale [0])
+#define GEO_QUAD_ATT	(/*0.003333f*/ gameData.render.fAttScale [1])
+#define OBJ_LIN_ATT	(/*0.0f*/ gameData.render.fAttScale)
+#define OBJ_QUAD_ATT	(/*0.003333f*/ gameData.render.fAttScale)
 
 //------------------------------------------------------------------------------
 
@@ -405,8 +405,8 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	lightPos = *prl->render.vPosf [bTransform].V3();
 	lightDir = lightPos - *vcd.vertPosP;
 	bInRad = 0;
-	fLightDist = lightDir.Mag() * gameStates.ogl.fLightRange;
-	CFloatVector3::Normalize(lightDir);
+	fLightDist = lightDir.Mag () * gameStates.ogl.fLightRange;
+	CFloatVector3::Normalize (lightDir);
 	if (vcd.vertNorm.IsZero())
 		NdotL = 1.0f;
 	else
