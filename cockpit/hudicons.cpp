@@ -343,7 +343,10 @@ for (i = 0; i < 2; i++) {
 			bHave = 0;
 		if (bHave) {
 			if (bAvailable)
-				CCanvas::Current ()->SetColorRGB (128, 128, 0, ubyte (alpha * 16));
+				if (nHiliteColor)
+					CCanvas::Current ()->SetColorRGB (0, 192, 255, ubyte (alpha * 16));
+				else
+					CCanvas::Current ()->SetColorRGB (255, 192, 0, ubyte (alpha * 16));
 			else
 				CCanvas::Current ()->SetColorRGB (128, 0, 0, ubyte (alpha * 16));
 			}
