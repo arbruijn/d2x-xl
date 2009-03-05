@@ -732,8 +732,6 @@ InitNetworkData ();
 InitGameOptions (0);
 InitArgs (argc, argv);
 GetAppFolders ();
-InitArgs (argc, argv);
-GetAppFolders ();
 if (FindArg ("-debug-printlog") || FindArg ("-printlog")) {
 	   char fnErr [FILENAME_LEN];
 #ifdef __unix__
@@ -745,6 +743,8 @@ if (FindArg ("-debug-printlog") || FindArg ("-printlog")) {
 #endif
 	}
 PrintLog ("%s\n", DESCENT_VERSION);
+InitArgs (argc, argv);
+GetAppFolders ();
 #ifdef D2X_MEM_HANDLER
 MemInit ();
 #endif
@@ -794,6 +794,8 @@ if (FindArg ("-norun"))
 LoadHiresModels (0);
 LoadModelData ();
 InitShaders ();
+if (gameOpts->render.textures.bUseHires [0] && !gameOpts->ogl.bGlTexMerge)
+	PrintLog ("Hires textures are disabled. Set '-gl_alttexmerge 1' in d2x.ini to enable them.\n");
 return 0;
 }
 
