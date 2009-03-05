@@ -439,13 +439,13 @@ else {
 		gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP = NULL;
 		}
 	if (gameData.objs.missileViewerP && !gameStates.render.bChaseCam) {		//do missile view
-		HUDMessage (0, "missile view");
 		static int mslViewerSig = -1;
 		if (mslViewerSig == -1)
 			mslViewerSig = gameData.objs.missileViewerP->info.nSignature;
 		if (gameOpts->render.cockpit.bMissileView &&
 			 (gameData.objs.missileViewerP->info.nType != OBJ_NONE) &&
 			 (gameData.objs.missileViewerP->info.nSignature == mslViewerSig)) {
+			HUDMessage (0, "missile view");
   			gameStates.render.nRenderingType = 2 + (1 << 4);
 			cockpit->RenderWindow (1, gameData.objs.missileViewerP, 0, WBUMSL, "MISSILE");
 			return 1;
