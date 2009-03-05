@@ -72,7 +72,7 @@ transformation.m_info.scalef.Assign (transformation.m_info.scale);
 //transformation.m_info.scale [X] = transformation.m_info.scale [Y] = transformation.m_info.scale [Z] = I2X (1);
 //now scale matrix elements
 if (bOglScale) {
-#if 1
+#if 0
 	glScalef (transformation.m_info.scalef [X], transformation.m_info.scalef [Y], -transformation.m_info.scalef [Z]);
 #else
 	glScalef (1, 1, -1);
