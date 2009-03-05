@@ -390,7 +390,7 @@ else {
 static inline int G3FaceIsTransparent (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop)
 {
 if (!bmBot)
-	return 0;
+	return faceP->color.alpha < 1.0f;
 if (faceP->bTransparent || faceP->bAdditive)
 	return 1;
 if (!(bmBot->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_SEE_THRU)))
