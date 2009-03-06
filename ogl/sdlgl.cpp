@@ -81,7 +81,7 @@ return 1;
 int OglSetAttribute (const char *szSwitch, const char *szAttr, SDL_GLattr attr, int value)
 {
 	int	i;
-	
+
 if (szSwitch && (i = FindArg (szSwitch)) && pszArgList [i + 1])
 	attr = (SDL_GLattr) atoi (pszArgList [i + 1]);
 i = SDL_GL_SetAttribute (attr, value);
@@ -126,7 +126,7 @@ if (gameStates.ogl.bFSAA) {
 
 void OglInitState (void)
 {
-// select clearing (background) color 
+// select clearing (background) color
 glClearColor (0, 0, 0, 0);
 glShadeModel (GL_SMOOTH);
 // initialize viewing values
@@ -164,7 +164,7 @@ if (gameStates.ogl.bInitialized) {
 		return -1;
 	GrUpdate (1); // blank screen/window
 	GrUpdate (1);
-	if ((w != gameStates.ogl.nCurWidth) || (h != gameStates.ogl.nCurHeight) || 
+	if ((w != gameStates.ogl.nCurWidth) || (h != gameStates.ogl.nCurHeight) ||
 		 (gameStates.ogl.bCurFullScreen != gameStates.ogl.bFullScreen)) {
 		textureManager.Destroy ();//if we are or were fullscreen, changing vid mode will invalidate current textures
 		bRebuild = 1;

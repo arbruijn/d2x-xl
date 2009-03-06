@@ -1,6 +1,9 @@
 /* conf.h.  Generated from conf.h.in by configure.  */
 /* conf.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Define if building universal (internal helper macro) */
+/* #undef AC_APPLE_UNIVERSAL_BUILD */
+
 /* Define to enable console */
 /* #undef CONSOLE */
 
@@ -17,7 +20,7 @@
 /* #undef EDITOR */
 
 /* Define for faster input device polling when using SDL */
-#define FAST_EVENTPOLL 
+#define FAST_EVENTPOLL /**/
 
 /* Define for faster i/o on little-endian cpus */
 /* #undef FAST_FILE_IO */
@@ -66,25 +69,25 @@
 #define HAVE_UNISTD_H 1
 
 /* Define to enable use of the KaliNix driver */
-#define KALINIX 
+#define KALINIX /**/
 
 /* Define if you want to build for mac datafiles */
 /* #undef MACDATA */
 
 /* Define to use the IPX support of the OS */
-#define NATIVE_IPX 
+#define NATIVE_IPX /**/
 
 /* Define to disable asserts, int3, etc. */
-#define NDEBUG 
+#define NDEBUG /**/
 
 /* Define if you want a network build */
-#define NETWORK 
+#define NETWORK /**/
 
 /* Define if you want an assembler free build */
-#define NO_ASM 
+#define NO_ASM /**/
 
 /* Define if you want an OpenGL build */
-#define OGL 
+#define OGL /**/
 
 /* Define if you want D2X to use Z-buffering */
 #define OGL_ZBUF 1
@@ -108,7 +111,7 @@
 #define PACKAGE_VERSION "1.14.0"
 
 /* Define for a "release" build */
-#define RELEASE 
+/* #undef RELEASE */
 
 /* Define this to be the shared game directory root */
 #define SHAREPATH "${prefix}/share/d2x-xl"
@@ -128,9 +131,17 @@
 /* Version number of package */
 #define VERSION "1.14.0"
 
-/* Define to 1 if your processor stores words with the most significant byte
-   first (like Motorola and SPARC, unlike Intel and VAX). */
-/* #undef WORDS_BIGENDIAN */
+/* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
+   significant byte first (like Motorola and SPARC, unlike Intel). */
+#if defined AC_APPLE_UNIVERSAL_BUILD
+# if defined __BIG_ENDIAN__
+#  define WORDS_BIGENDIAN 1
+# endif
+#else
+# ifndef WORDS_BIGENDIAN
+/* #  undef WORDS_BIGENDIAN */
+# endif
+#endif
 
 /* Define if your processor needs data to be word-aligned */
 /* #undef WORDS_NEED_ALIGNMENT */

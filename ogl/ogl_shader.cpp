@@ -41,37 +41,37 @@
 #include "gpgpu_lighting.h"
 
 #ifndef GL_VERSION_20
-PFNGLCREATESHADEROBJECTARBPROC	glCreateShaderObject = NULL; 
-PFNGLSHADERSOURCEARBPROC			glShaderSource = NULL; 
-PFNGLCOMPILESHADERARBPROC			glCompileShader = NULL; 
-PFNGLCREATEPROGRAMOBJECTARBPROC	glCreateProgramObject = NULL; 
-PFNGLATTACHOBJECTARBPROC			glAttachObject = NULL; 
-PFNGLLINKPROGRAMARBPROC				glLinkProgram = NULL; 
-PFNGLUSEPROGRAMOBJECTARBPROC		glUseProgramObject = NULL; 
-PFNGLDELETEOBJECTARBPROC			glDeleteObject = NULL; 
-PFNGLGETOBJECTPARAMETERIVARBPROC	glGetObjectParameteriv = NULL; 
-PFNGLGETINFOLOGARBPROC				glGetInfoLog = NULL; 
-PFNGLGETUNIFORMLOCATIONARBPROC	glGetUniformLocation = NULL; 
-PFNGLUNIFORM4FARBPROC				glUniform4f = NULL; 
-PFNGLUNIFORM3FARBPROC				glUniform3f = NULL; 
-PFNGLUNIFORM1FARBPROC				glUniform1f = NULL; 
-PFNGLUNIFORM4FVARBPROC				glUniform4fv = NULL; 
-PFNGLUNIFORM3FVARBPROC				glUniform3fv = NULL; 
-PFNGLUNIFORM2FVARBPROC				glUniform2fv = NULL; 
-PFNGLUNIFORM1FVARBPROC				glUniform1fv = NULL; 
-PFNGLUNIFORM1IARBPROC				glUniform1i = NULL; 
+PFNGLCREATESHADEROBJECTARBPROC	glCreateShaderObject = NULL;
+PFNGLSHADERSOURCEARBPROC			glShaderSource = NULL;
+PFNGLCOMPILESHADERARBPROC			glCompileShader = NULL;
+PFNGLCREATEPROGRAMOBJECTARBPROC	glCreateProgramObject = NULL;
+PFNGLATTACHOBJECTARBPROC			glAttachObject = NULL;
+PFNGLLINKPROGRAMARBPROC				glLinkProgram = NULL;
+PFNGLUSEPROGRAMOBJECTARBPROC		glUseProgramObject = NULL;
+PFNGLDELETEOBJECTARBPROC			glDeleteObject = NULL;
+PFNGLGETOBJECTPARAMETERIVARBPROC	glGetObjectParameteriv = NULL;
+PFNGLGETINFOLOGARBPROC				glGetInfoLog = NULL;
+PFNGLGETUNIFORMLOCATIONARBPROC	glGetUniformLocation = NULL;
+PFNGLUNIFORM4FARBPROC				glUniform4f = NULL;
+PFNGLUNIFORM3FARBPROC				glUniform3f = NULL;
+PFNGLUNIFORM1FARBPROC				glUniform1f = NULL;
+PFNGLUNIFORM4FVARBPROC				glUniform4fv = NULL;
+PFNGLUNIFORM3FVARBPROC				glUniform3fv = NULL;
+PFNGLUNIFORM2FVARBPROC				glUniform2fv = NULL;
+PFNGLUNIFORM1FVARBPROC				glUniform1fv = NULL;
+PFNGLUNIFORM1IARBPROC				glUniform1i = NULL;
 #endif
 
 //------------------------------------------------------------------------------
 
 char *LoadShader (char* fileName) //, char* Shadersource)
 {
-	FILE	*fp; 
-	char	*bufP = NULL; 
+	FILE	*fp;
+	char	*bufP = NULL;
 	int 	fSize;
 #ifdef _WIN32
 	int	f;
-#endif 
+#endif
 	char 	fn [FILENAME_LEN];
 
 if (!(fileName && *fileName))
@@ -82,7 +82,7 @@ sprintf (fn, "%s%s%s", gameFolders.szShaderDir, *gameFolders.szShaderDir ? "/" :
 if (0 > (f = _open (fn, _O_RDONLY)))
 	return NULL;	// couldn't open file
 fSize = _lseek (f, 0, SEEK_END);
-_close (f); 
+_close (f);
 if (fSize <= 0)
 	return NULL;	// empty file or seek error
 #endif
@@ -103,10 +103,10 @@ if (!(bufP = new char [fSize + 1])) {
 	fclose (fp);
 	return NULL;	// out of memory
 	}
-fSize = (int) fread (bufP, sizeof (char), fSize, fp); 
-bufP [fSize] = '\0'; 
-fclose (fp); 
-return bufP; 
+fSize = (int) fread (bufP, sizeof (char), fSize, fp);
+bufP [fSize] = '\0';
+fclose (fp);
+return bufP;
 }
 
 //------------------------------------------------------------------------------
@@ -178,7 +178,7 @@ const char *progFS [] = {
 ,
 	"void LightingFS ();" \
 	"void TexMergeFS ();" \
-	"void main (void) {TexMergeFS (); LightingFS ();}" 
+	"void main (void) {TexMergeFS (); LightingFS ();}"
 	};
 
 GLhandleARB mainVS = 0;
@@ -194,11 +194,11 @@ if (!progP)
 	progP = &genShaderProg;
 if (*progP)
 	return 1;
-*progP = glCreateProgramObject (); 
+*progP = glCreateProgramObject ();
 if (*progP)
 	return 1;
 PrintLog ("   Couldn't create shader program CObject\n");
-return 0; 
+return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -217,18 +217,18 @@ if (progP && *progP) {
 
 //------------------------------------------------------------------------------
 
-int CreateShaderFunc (GLhandleARB *progP, GLhandleARB *fsP, GLhandleARB *vsP, 
+int CreateShaderFunc (GLhandleARB *progP, GLhandleARB *fsP, GLhandleARB *vsP,
 		const char *fsName, const char *vsName, int bFromFile)
 {
 	GLhandleARB	fs, vs;
-	GLint bFragCompiled, bVertCompiled; 
+	GLint bFragCompiled, bVertCompiled;
 
 if (!gameStates.ogl.bShadersOk)
 	return 0;
 if (!CreateShaderProg (progP))
 	return 0;
 if (*fsP) {
-	glDeleteObject (*fsP); 
+	glDeleteObject (*fsP);
 	*fsP = 0;
 	}
 if (*vsP) {
@@ -243,24 +243,24 @@ if (!(fs = glCreateShaderObject (GL_FRAGMENT_SHADER))) {
 	}
 #if DBG_SHADERS
 if (bFromFile) {
-	vsName = LoadShader (vsName); 
-	fsName = LoadShader (fsName); 
-	if (!vsName || !fsName) 
-		return 0; 
+	vsName = LoadShader (vsName);
+	fsName = LoadShader (fsName);
+	if (!vsName || !fsName)
+		return 0;
 	}
 #endif
-glShaderSource (vs, 1, reinterpret_cast<const GLcharARB **> (&vsName), NULL); 
-glShaderSource (fs, 1, reinterpret_cast<const GLcharARB **> (&fsName), NULL); 
+glShaderSource (vs, 1, reinterpret_cast<const GLcharARB **> (&vsName), NULL);
+glShaderSource (fs, 1, reinterpret_cast<const GLcharARB **> (&fsName), NULL);
 #if DBG_SHADERS
 if (bFromFile) {
-	delete[] vsName; 
-	delete[] fsName; 
+	delete[] vsName;
+	delete[] fsName;
 	}
 #endif
-glCompileShader (vs); 
-glCompileShader (fs); 
-glGetObjectParameteriv (vs, GL_OBJECT_COMPILE_STATUS_ARB, &bVertCompiled); 
-glGetObjectParameteriv (fs, GL_OBJECT_COMPILE_STATUS_ARB, &bFragCompiled); 
+glCompileShader (vs);
+glCompileShader (fs);
+glGetObjectParameteriv (vs, GL_OBJECT_COMPILE_STATUS_ARB, &bVertCompiled);
+glGetObjectParameteriv (fs, GL_OBJECT_COMPILE_STATUS_ARB, &bFragCompiled);
 if (!bVertCompiled || !bFragCompiled) {
 	if (!bVertCompiled) {
 		PrintLog ("   Couldn't compile vertex shader\n   \"%s\"\n", vsName);
@@ -270,10 +270,10 @@ if (!bVertCompiled || !bFragCompiled) {
 		PrintLog ("   Couldn't compile fragment shader\n   \"%s\"\n", fsName);
 		PrintShaderInfoLog (fs, 0);
 		}
-	return 0; 
+	return 0;
 	}
-glAttachObject (*progP, vs); 
-glAttachObject (*progP, fs); 
+glAttachObject (*progP, vs);
+glAttachObject (*progP, fs);
 *fsP = fs;
 *vsP = vs;
 return 1;
@@ -301,14 +301,14 @@ if (!progP) {
 		return 0;
 		}
 	}
-glLinkProgram (*progP); 
-glGetObjectParameteriv (*progP, GL_OBJECT_LINK_STATUS_ARB, &bLinked); 
+glLinkProgram (*progP);
+glGetObjectParameteriv (*progP, GL_OBJECT_LINK_STATUS_ARB, &bLinked);
 if (bLinked)
 	return 1;
 PrintLog ("   Couldn't link shader programs\n");
 PrintShaderInfoLog (*progP, 1);
 DeleteShaderProg (progP);
-return 0; 
+return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -319,8 +319,11 @@ void InitShaders (void)
 
 PrintLog ("initializing shader programs\n");
 glGetIntegerv (GL_MAX_TEXTURE_UNITS, &nTMUs);
-if (gameStates.ogl.bShadersOk)
+if (gameStates.ogl.bShadersOk) {
 	gameStates.ogl.bShadersOk = (nTMUs > 1);
+	if (!gameStates.ogl.bShadersOk)
+		PrintLog ("GPU has too few texture units (%d)\n", nTMUs);
+	}
 if (gameStates.render.color.bLightmapsOk)
 	gameStates.render.color.bLightmapsOk = (nTMUs > 2);
 PrintLog ("   initializing texture merging shader programs\n");
@@ -345,45 +348,68 @@ LinkShaderProg (NULL);
 
 void OglInitShaders (void)
 {
-if (!gameOpts->render.bUseShaders ||
-	 !gameStates.ogl.bMultiTexturingOk || 
-	 !pszOglExtensions ||
-	 !strstr (pszOglExtensions, "GL_ARB_shading_language_100") || 
-	 !strstr (pszOglExtensions, "GL_ARB_shader_objects")) 
-	gameStates.ogl.bShadersOk = 0;
+gameStates.ogl.bShadersOk = 0;
+PrintLog ("Checking shaders ...\n");
+if (!gameOpts->render.bUseShaders)
+	PrintLog ("   Shaders have been disabled in d2x.ini\n");
+else if (!gameStates.ogl.bMultiTexturingOk)
+	PrintLog ("   Multi-texturing is not available\n");
+else if (!pszOglExtensions)
+	PrintLog ("   No OpenGL extensions are available\n");
+else if (!strstr (pszOglExtensions, "GL_ARB_shading_language_100"))
+	PrintLog ("   Shading language is unavailable\n");
+else if (!strstr (pszOglExtensions, "GL_ARB_shader_objects"))
+	PrintLog ("   Shader objects are unavailable\n");
 else {
 #ifndef GL_VERSION_20
-	glCreateProgramObject		= (PFNGLCREATEPROGRAMOBJECTARBPROC) wglGetProcAddress ("glCreateProgramObjectARB");
-	glDeleteObject					= (PFNGLDELETEOBJECTARBPROC) wglGetProcAddress ("glDeleteObjectARB");
-	glUseProgramObject			= (PFNGLUSEPROGRAMOBJECTARBPROC) wglGetProcAddress ("glUseProgramObjectARB");
-	glCreateShaderObject			= (PFNGLCREATESHADEROBJECTARBPROC) wglGetProcAddress ("glCreateShaderObjectARB");
-	glShaderSource					= (PFNGLSHADERSOURCEARBPROC) wglGetProcAddress ("glShaderSourceARB");
-	glCompileShader				= (PFNGLCOMPILESHADERARBPROC) wglGetProcAddress ("glCompileShaderARB");
-	glGetObjectParameteriv		= (PFNGLGETOBJECTPARAMETERIVARBPROC) wglGetProcAddress ("glGetObjectParameterivARB");
-	glAttachObject					= (PFNGLATTACHOBJECTARBPROC) wglGetProcAddress ("glAttachObjectARB");
-	glGetInfoLog					= (PFNGLGETINFOLOGARBPROC) wglGetProcAddress ("glGetInfoLogARB");
-	glLinkProgram					= (PFNGLLINKPROGRAMARBPROC) wglGetProcAddress ("glLinkProgramARB");
-	glGetUniformLocation			= (PFNGLGETUNIFORMLOCATIONARBPROC) wglGetProcAddress ("glGetUniformLocationARB");
-	glUniform4f						= (PFNGLUNIFORM4FARBPROC) wglGetProcAddress ("glUniform4fARB");
-	glUniform3f						= (PFNGLUNIFORM3FARBPROC) wglGetProcAddress ("glUniform3fARB");
-	glUniform1f						= (PFNGLUNIFORM1FARBPROC) wglGetProcAddress ("glUniform1fARB");
-	glUniform4fv					= (PFNGLUNIFORM4FVARBPROC) wglGetProcAddress ("glUniform4fvARB");
-	glUniform3fv					= (PFNGLUNIFORM3FVARBPROC) wglGetProcAddress ("glUniform3fvARB");
-	glUniform2fv					= (PFNGLUNIFORM3FVARBPROC) wglGetProcAddress ("glUniform2fvARB");
-	glUniform1fv					= (PFNGLUNIFORM1FVARBPROC) wglGetProcAddress ("glUniform1fvARB");
-	glUniform1i						= (PFNGLUNIFORM1IARBPROC) wglGetProcAddress ("glUniform1iARB");
-	gameStates.ogl.bShadersOk =
-		glCreateProgramObject && glDeleteObject && glUseProgramObject &&
-		glCreateShaderObject && glCreateShaderObject && glCompileShader && 
-		glGetObjectParameteriv && glAttachObject && glGetInfoLog && 
-		glLinkProgram && glGetUniformLocation && 
-		glUniform4f && glUniform3f &&glUniform1f && glUniform4fv && glUniform3fv &&glUniform1fv && glUniform1i;
+	if (!(glCreateProgramObject	= (PFNGLCREATEPROGRAMOBJECTARBPROC) wglGetProcAddress ("glCreateProgramObjectARB")))
+		PrintLog ("   glCreateProgramObject not found\n");
+	else if (!(	glDeleteObject = (PFNGLDELETEOBJECTARBPROC) wglGetProcAddress ("glDeleteObjectARB")))
+		PrintLog ("   glDeleteObject not found\n");
+	else if (!(glUseProgramObject = (PFNGLUSEPROGRAMOBJECTARBPROC) wglGetProcAddress ("glUseProgramObjectARB")))
+		PrintLog ("   glUseProgramObject not found\n");
+	else if (!(glCreateShaderObject = (PFNGLCREATESHADEROBJECTARBPROC) wglGetProcAddress ("glCreateShaderObjectARB")))
+		PrintLog ("   glCreateShaderObject not found\n");
+	else if (!(glShaderSource = (PFNGLSHADERSOURCEARBPROC) wglGetProcAddress ("glShaderSourceARB")))
+		PrintLog ("   glShaderSourcenot found\n");
+	else if (!(glCompileShader = (PFNGLCOMPILESHADERARBPROC) wglGetProcAddress ("glCompileShaderARB")))
+		PrintLog ("   glCompileShader not found\n");
+	else if (!(glGetObjectParameteriv = (PFNGLGETOBJECTPARAMETERIVARBPROC) wglGetProcAddress ("glGetObjectParameterivARB")))
+		PrintLog ("   glGetObjectParameteriv not found\n");
+	else if (!(glAttachObject = (PFNGLATTACHOBJECTARBPROC) wglGetProcAddress ("glAttachObjectARB")))
+		PrintLog ("   glAttachObject not found\n");
+	else if (!(glGetInfoLog = (PFNGLGETINFOLOGARBPROC) wglGetProcAddress ("glGetInfoLogARB")))
+		PrintLog ("   glGetInfoLog not found\n");
+	else if (!(glLinkProgram = (PFNGLLINKPROGRAMARBPROC) wglGetProcAddress ("glLinkProgramARB")))
+		PrintLog ("   glLinkProgram not found\n");
+	else if (!(glGetUniformLocation = (PFNGLGETUNIFORMLOCATIONARBPROC) wglGetProcAddress ("glGetUniformLocationARB")))
+		PrintLog ("   glGetUniformLocation not found\n");
+	else if (!(glUniform4f = (PFNGLUNIFORM4FARBPROC) wglGetProcAddress ("glUniform4fARB")))
+		PrintLog ("   glUniform4f not found\n");
+	else if (!(glUniform3f = (PFNGLUNIFORM3FARBPROC) wglGetProcAddress ("glUniform3fARB")))
+		PrintLog ("   glUniform3f not found\n");
+	else if (!(glUniform1f = (PFNGLUNIFORM1FARBPROC) wglGetProcAddress ("glUniform1fARB")))
+		PrintLog ("   glUniform1f not found\n");
+	else if (!(glUniform4fv = (PFNGLUNIFORM4FVARBPROC) wglGetProcAddress ("glUniform4fvARB")))
+		PrintLog ("   glUniform4fv not found\n");
+	else if (!(glUniform3fv = (PFNGLUNIFORM3FVARBPROC) wglGetProcAddress ("glUniform3fvARB")))
+		PrintLog ("   glUniform3fv not found\n");
+	else if (!(glUniform2fv = (PFNGLUNIFORM3FVARBPROC) wglGetProcAddress ("glUniform2fvARB")))
+		PrintLog ("   glUniform2fv not found\n");
+	else if (!(glUniform1fv = (PFNGLUNIFORM1FVARBPROC) wglGetProcAddress ("glUniform1fvARB")))
+		PrintLog ("   glUniform1fv not found\n");
+	else if (!(glUniform1i = (PFNGLUNIFORM1IARBPROC) wglGetProcAddress ("glUniform1iARB")))
+		PrintLog ("   glUniform1i not found\n");
+	else
+		gameStates.ogl.bShadersOk = 1;
+	if (!gameStates.ogl.bShadersOk)
+		PrintLog ("   Shader functions are missing in the driver.\n");
 #else
 	gameStates.ogl.bShadersOk = 1;
 #endif
 	}
-PrintLog (gameStates.ogl.bShadersOk 
-			 ? "Shaders are available\n" 
+PrintLog (gameStates.ogl.bShadersOk
+			 ? "Shaders are available\n"
 			 : "No shaders available\n");
 }
 

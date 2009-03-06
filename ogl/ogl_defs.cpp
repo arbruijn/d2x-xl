@@ -107,8 +107,8 @@ else {
 	glGetQueryiv        = (PFNGLGETQUERYIVPROC) wglGetProcAddress ("glGetQueryiv");
 	glGetQueryObjectiv  = (PFNGLGETQUERYOBJECTIVPROC) wglGetProcAddress ("glGetQueryObjectiv");
 	glGetQueryObjectuiv = (PFNGLGETQUERYOBJECTUIVPROC) wglGetProcAddress ("glGetQueryObjectuiv");
-	if (glGenQueries && glDeleteQueries && glIsQuery && 
-		 glBeginQuery && glEndQuery && glGetQueryiv && 
+	if (glGenQueries && glDeleteQueries && glIsQuery &&
+		 glBeginQuery && glEndQuery && glGetQueryiv &&
 		 glGetQueryObjectiv && glGetQueryObjectuiv) {
 			GLint nBits;
 
@@ -199,17 +199,19 @@ glMultiTexCoord2d			= (PFNGLMULTITEXCOORD2DARBPROC) wglGetProcAddress ("glMultiT
 glMultiTexCoord2f			= (PFNGLMULTITEXCOORD2FARBPROC) wglGetProcAddress ("glMultiTexCoord2fARB");
 glMultiTexCoord2fv		= (PFNGLMULTITEXCOORD2FVARBPROC) wglGetProcAddress ("glMultiTexCoord2fvARB");
 #		endif
-glActiveTexture			= (PFNGLACTIVETEXTUREARBPROC) wglGetProcAddress ("glActiveTextureARB");	
+glActiveTexture			= (PFNGLACTIVETEXTUREARBPROC) wglGetProcAddress ("glActiveTextureARB");
 glClientActiveTexture	= (PFNGLCLIENTACTIVETEXTUREARBPROC) wglGetProcAddress ("glClientActiveTextureARB");
 gameStates.ogl.bMultiTexturingOk =
 #ifdef _WIN32
 	glMultiTexCoord2d && glMultiTexCoord2f	&& glMultiTexCoord2fv &&
-#endif 
+#endif
 	glActiveTexture && glClientActiveTexture;
 #	else
 gameStates.ogl.bMultiTexturingOk = 1;
 #	endif
 #endif
+if (!gameStates.ogl.bMultiTexturingOk)
+	PrintLog ("No multi texturing available\n");
 }
 
 //------------------------------------------------------------------------------

@@ -89,9 +89,9 @@ lives = -1;
 afterburner = -1;
 bombCount = 0;
 laserLevel = 0;
-weapon [0] = 
+weapon [0] =
 weapon [1] = -1;
-ammo [0] = 
+ammo [0] =
 ammo [1] = -1;
 xOmegaCharge  = -1;
 }
@@ -108,15 +108,15 @@ bLastHomingWarningDrawn [1] = -1;
 addedScore [0] =
 addedScore [1] = 0;
 scoreTime = 0;
-lastWarningBeepTime [0] = 
+lastWarningBeepTime [0] =
 lastWarningBeepTime [1] = 0;
 bHaveGaugeCanvases = 0;
 nInvulnerableFrame = 0;
-weaponBoxStates [0] = 
+weaponBoxStates [0] =
 weaponBoxStates [1] = 0;
-weaponBoxFadeValues [0] = 
+weaponBoxFadeValues [0] =
 weaponBoxFadeValues [1] = 0;
-weaponBoxUser [0] = 
+weaponBoxUser [0] =
 weaponBoxUser [1] = WBU_WEAPON;
 nLineSpacing = GAME_FONT->Height () + GAME_FONT->Height () / 4;
 bRebuild = false;
@@ -200,10 +200,10 @@ return pszVal;
 
 //------------------------------------------------------------------------------
 
-char* CGenericCockpit::Convert1s (char* s) 
+char* CGenericCockpit::Convert1s (char* s)
 {
-char* p = s; 
-while ((p = strchr (p, '1'))) 
+char* p = s;
+while ((p = strchr (p, '1')))
 	*p = char (132);
 return s;
 }
@@ -423,8 +423,8 @@ fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
 y = 6 + 2 * m_info.nLineSpacing;
 h = (gameData.stats.nDisplayMode - 1) / 2;
 if ((gameData.stats.nDisplayMode - 1) % 2 == 0) {
-	sprintf (szStats, "%s%d-%d %d-%d %d-%d", 
-				h ? "T:" : "", 
+	sprintf (szStats, "%s%d-%d %d-%d %d-%d",
+				h ? "T:" : "",
 				gameData.stats.player [h].nHits [0],
 				gameData.stats.player [h].nMisses [0],
 				gameData.stats.player [h].nHits [1],
@@ -642,7 +642,7 @@ void CGenericCockpit::AddPointsToScore (int points)
 m_info.scoreTime += I2X (1) * 2;
 cockpit->AddScore (0, points);
 cockpit->AddScore (1, points);
-if (m_info.scoreTime > I2X (1) * 4) 
+if (m_info.scoreTime > I2X (1) * 4)
 	m_info.scoreTime = I2X (1) * 4;
 if (!points || gameStates.app.cheats.bEnabled)
 	return;
@@ -741,8 +741,8 @@ void CGenericCockpit::DrawWeaponInfo (int nWeaponType, int nIndex, tGaugeBox* bo
 
 	static int nIdWeapon [2][3] = {{0, 0, 0},{0, 0, 0}}, nIdLaser [2] = {0, 0};
 
-i = ((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) 
-	 ? gameData.weapons.info [nIndex].hiresPicture.index 
+i = ((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode)
+	 ? gameData.weapons.info [nIndex].hiresPicture.index
 	 : gameData.weapons.info [nIndex].picture.index;
 LoadBitmap (i, 0);
 if (!(bmP = gameData.pig.tex.bitmaps [0] + i))
@@ -837,8 +837,8 @@ if (m_info.weaponBoxStates [nWeaponType] == WS_FADING_OUT) {
 	if (m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] < 0)
 		m_info.weaponBoxFadeValues [nWeaponType] = 0;
 	else {
-		DrawWeaponInfo (nWeaponType, 
-							 m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType], 
+		DrawWeaponInfo (nWeaponType,
+							 m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType],
 							 m_history [gameStates.render.vr.nCurrentPage].laserLevel);
 		m_history [gameStates.render.vr.nCurrentPage].ammo [nWeaponType] = -1;
 		m_history [gameStates.render.vr.nCurrentPage].xOmegaCharge = -1;
@@ -846,9 +846,9 @@ if (m_info.weaponBoxStates [nWeaponType] == WS_FADING_OUT) {
 		}
 	if (m_info.weaponBoxFadeValues [nWeaponType] <= 0) {
 		m_info.weaponBoxStates [nWeaponType] = WS_FADING_IN;
-		m_history [0].weapon [nWeaponType] = 
+		m_history [0].weapon [nWeaponType] =
 		m_history [1].weapon [nWeaponType] = nWeaponId;
-		m_history [0].laserLevel = 
+		m_history [0].laserLevel =
 		m_history [1].laserLevel = LOCALPLAYER.laserLevel;
 		m_info.weaponBoxFadeValues [nWeaponType] = 0;
 		}
@@ -1075,7 +1075,7 @@ void CGenericCockpit::DrawPlayerNames (void)
 	int			bHasFlag, bShowName, bShowTeamNames, bShowAllNames, bShowFlags, nObject, nTeam;
 	int			nPlayer, nState;
 	tRgbColorb*	colorP;
-	
+
 	static int nCurColor = 1, tColorChange = 0;
 	static tRgbColorb typingColors [2] = {
 		{63, 0, 0},
@@ -1101,7 +1101,7 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 		nState = 0;
 
 	bShowName = (nState ||
-					 (bShowAllNames && !(gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED)) || 
+					 (bShowAllNames && !(gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED)) ||
 					 (bShowTeamNames && GetTeam (nPlayer) == nTeam));
 	bHasFlag = (gameData.multiplayer.players [nPlayer].connected && gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_FLAG);
 
@@ -1111,7 +1111,7 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 		//if this is a demo, the nObject in the CPlayerData struct is wrong,
 		//so we search the CObject list for the nObject
 		CObject *objP;
-		FORALL_PLAYER_OBJS (objP, nObject) 
+		FORALL_PLAYER_OBJS (objP, nObject)
 			if (objP->info.nId == nPlayer) {
 				nObject = objP->Index ();
 				break;
@@ -1593,13 +1593,15 @@ void CGenericCockpit::Render (int bExtraInfo)
 {
 if (Hide ())
 	return;
+if (gameStates.render.bChaseCam || gameStates.render.bFreeCam)
+	return;
 #if 1
 if (!cockpit->Setup (false))
 	return;
 #else
 if (!cockpit->Setup (true))
 	return;
-#endif	 
+#endif
 glDepthFunc (GL_ALWAYS);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 CCanvas::SetCurrent (CurrentGameScreen ());
@@ -1631,7 +1633,7 @@ if (gameOpts->render.cockpit.bScaleGauges) {
 	m_info.yGaugeScale = float (CCanvas::Current ()->Height ()) / 640.0f;
 	}
 else
-	m_info.xGaugeScale = 
+	m_info.xGaugeScale =
 	m_info.yGaugeScale = 1;
 
 
