@@ -217,8 +217,8 @@ int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 	22	 // MULTI_PLAYER_WEAPONS
 };
 
-void extract_netplayer_stats (tNetPlayerStats *ps, CPlayerData * pd);
-void use_netplayer_stats (CPlayerData * ps, tNetPlayerStats *pd);
+void ExtractNetPlayerStats (tNetPlayerStats *ps, CPlayerData * pd);
+void UseNetPlayerStats (CPlayerData * ps, tNetPlayerStats *pd);
 
 CPlayerShip defaultPlayerShip;
 #if 0
@@ -1782,7 +1782,7 @@ ubyte player_n;
 // Send my tNetPlayerStats to everyone!
 player_n = *reinterpret_cast<ubyte*> (buf+1);
 if ((player_n == gameData.multiplayer.nLocalPlayer) || (player_n == 255)) {
-	extract_netplayer_stats (&ps, gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer);
+	ExtractNetPlayerStats (&ps, gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer);
 	ps.nLocalPlayer = gameData.multiplayer.nLocalPlayer;
 	ps.messageType = MULTI_SEND_PLAYER;            // SET
 	MultiSendData (reinterpret_cast<char*> (&ps), sizeof (tNetPlayerStats), 0);
@@ -1796,7 +1796,7 @@ void MultiDoSendPlayer (char *buf)
 {
 tNetPlayerStats *p = reinterpret_cast<tNetPlayerStats*> (buf);
 Assert (p->nLocalPlayer <= gameData.multiplayer.nPlayers);
-use_netplayer_stats (gameData.multiplayer.players  + p->nLocalPlayer, p);
+UseNetPlayerStats (gameData.multiplayer.players  + p->nLocalPlayer, p);
 }
 
 //-----------------------------------------------------------------------------
@@ -3187,7 +3187,7 @@ gameData.app.bGamePaused = 0;
 
 //-----------------------------------------------------------------------------
 
-void extract_netplayer_stats (tNetPlayerStats *ps, CPlayerData * pd)
+void ExtractNetPlayerStats (tNetPlayerStats *ps, CPlayerData * pd)
 {
 	int i;
 
@@ -3223,7 +3223,7 @@ ps->nHostagesOnBoard = pd->hostages.nOnBoard;                        // Number o
 
 //-----------------------------------------------------------------------------
 
-void use_netplayer_stats (CPlayerData * ps, tNetPlayerStats *pd)
+void UseNetPlayerStats (CPlayerData * ps, tNetPlayerStats *pd)
 {
 	int i;
 

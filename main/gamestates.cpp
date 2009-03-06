@@ -89,6 +89,7 @@ gameStates.gameplay.bHaveSmartMines = 1;
 gameStates.gameplay.bMineDestroyed = 0;
 gameStates.gameplay.bNoBotAI = 0;
 gameStates.gameplay.nPlayerSpeed = 0;
+gameStates.gameplay.nInitialLives = INITIAL_LIVES;
 gameStates.gameplay.seismic.nMagnitude = 0;
 gameStates.gameplay.seismic.nStartTime = 0;
 gameStates.gameplay.seismic.nEndTime = 0;

@@ -273,6 +273,10 @@ void NewGameMenu (void)
 	char				szDifficulty [50];
 	char				szLevelText [32];
 	char				szLevel [5];
+#if DBG
+	int				optLives;
+	char				szLives [10];
+#endif
 
 	static int		nPlayerMaxLevel = 1;
 	static int		nLevel = 1;
@@ -303,6 +307,12 @@ for (;;) {
 		}
 	else
 		optLevel = -1;
+#if DBG
+	menu.AddText ("");
+	menu.AddText ("Extra Lives:");
+	sprintf (szLives, "%d", gamestates.gameplay.nInitialLives);
+	optLives = menu.AddInput (szLives, 5);
+#endif
 	menu.AddText ("                              ", 0);
 	sprintf (szDifficulty + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
 	*szDifficulty = *(TXT_DIFFICULTY2 - 1);
@@ -338,6 +348,11 @@ for (;;) {
 			}
 		}
 	else if (choice == optLevel) {
+#if DBG
+		i = atoi (menu [optLives].m_text);
+		if (i > 0)
+			gameStates.gameplay.nInitialLives = i;
+#endif
 		i = atoi (menu [optLevel].m_text);
 #if DBG
 		if (!i || (i < -gameData.missions.nSecretLevels) || (i > nPlayerMaxLevel))

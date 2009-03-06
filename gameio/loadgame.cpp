@@ -367,7 +367,7 @@ CPlayerData* playerP = gameData.multiplayer.players + ((nPlayer < 0) ? gameData.
 if (bNewGame) {
 	playerP->score = 0;
 	playerP->lastScore = 0;
-	playerP->lives = INITIAL_LIVES;
+	playerP->lives = gameStates.gameplay.nInitialLives;
 	playerP->level = 1;
 	playerP->timeLevel = 0;
 	playerP->timeTotal = 0;

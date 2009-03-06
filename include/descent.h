@@ -625,6 +625,7 @@ typedef struct tGameplayStates {
 	fix xStartingShields;
 	CFixVector vTgtDir;
 	int nDirSteps;
+	int nInitialLives;
 	tSeismicStates seismic;
 	tSlowMotionStates slowmo [2];
 } tGameplayStates;
