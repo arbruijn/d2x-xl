@@ -351,7 +351,7 @@ for (;;) {
 #if DBG
 		i = atoi (menu [optLives].m_text);
 		if (i > 0)
-			gameStates.gameplay.nInitialLives = i;
+			gameStates.gameplay.nInitialLives = i + 1;
 #endif
 		i = atoi (menu [optLevel].m_text);
 #if DBG
