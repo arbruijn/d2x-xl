@@ -310,7 +310,7 @@ for (;;) {
 #if DBG
 	menu.AddText ("");
 	menu.AddText ("Extra Lives:");
-	sprintf (szLives, "%d", gamestates.gameplay.nInitialLives);
+	sprintf (szLives, "%d", gameStates.gameplay.nInitialLives);
 	optLives = menu.AddInput (szLives, 5);
 #endif
 	menu.AddText ("                              ", 0);
