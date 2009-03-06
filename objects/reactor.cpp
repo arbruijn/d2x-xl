@@ -89,10 +89,10 @@ int nAlanPavlishReactorTimes [2][NDL] = {{90,60,45,35,30},{50,45,40,35,30}};
 //	Called every frame.  If control center been destroyed, then actually do something.
 void DoReactorDeadFrame (void)
 {
-if (gameStates.gameplay.nReactorCount) {
+if (gameStates.gameplay.nReactorCount [0] < gameStates.gameplay.nReactorCount [1]) {
 	tReactorStates*	rStatP = &gameData.reactor.states [0];
 
-	for (int i = 0; i < gameStates.gameplay.nReactorCount; i++, rStatP++) {
+	for (int i = 0; i < gameStates.gameplay.nReactorCount [1]; i++, rStatP++) {
 		if ((rStatP->nDeadObj != -1) && 
 			 (OBJECTS [rStatP->nDeadObj].info.nType == OBJ_REACTOR) &&
 			 (gameData.reactor.countdown.nSecsLeft > 0))
@@ -142,8 +142,8 @@ xScale = 1;
 if (gameStates.app.nDifficultyLevel == 0)
 	xScale = 4;
 h = I2X (3) / 16 + (I2X (16 - fc)) / 32;
-gameData.objs.consoleP->mType.physInfo.rotVel[X] += (FixMul (d_rand () - 16384, h)) / xScale;
-gameData.objs.consoleP->mType.physInfo.rotVel[Z] += (FixMul (d_rand () - 16384, h)) / xScale;
+gameData.objs.consoleP->mType.physInfo.rotVel [X] += (FixMul (d_rand () - 16384, h)) / xScale;
+gameData.objs.consoleP->mType.physInfo.rotVel [Z] += (FixMul (d_rand () - 16384, h)) / xScale;
 //	Hook in the rumble sound effect here.
 oldTime = gameData.reactor.countdown.nTimer;
 if (!TimeStopped ())
@@ -230,7 +230,7 @@ if (bReactor) {
 	ExecObjTriggers (objP->Index (), 0);
 	if (0 <= (i = FindReactor (objP))) {
 		gameData.reactor.states [i].nDeadObj = objP->Index ();
-		gameStates.gameplay.nReactorCount--;
+		gameStates.gameplay.nReactorCount [0]--;
 		}
 	}
 }
@@ -255,10 +255,10 @@ void RemoveReactor (CObject *objP)
 
 if (i < 0)
 	return;
-if (i < --gameStates.gameplay.nReactorCount) 
-	gameData.reactor.states [i] = gameData.reactor.states [gameStates.gameplay.nReactorCount];
-memset (gameData.reactor.states + gameStates.gameplay.nReactorCount, 0, 
-		  sizeof (gameData.reactor.states [gameStates.gameplay.nReactorCount]));
+if (i < --gameStates.gameplay.nReactorCount [0]) 
+	gameData.reactor.states [i] = gameData.reactor.states [gameStates.gameplay.nReactorCount [0]];
+memset (gameData.reactor.states + gameStates.gameplay.nReactorCount [0], 0, 
+		  sizeof (gameData.reactor.states [gameStates.gameplay.nReactorCount [0]]));
 }
 
 //	-----------------------------------------------------------------------------
@@ -415,7 +415,8 @@ void InitReactorForLevel (int bRestore)
 
 gameStates.gameplay.bMultiBosses = gameStates.app.bD2XLevel && EGI_FLAG (bMultiBosses, 0, 0, 0);
 extraGameInfo [0].nBossCount = 0;
-gameStates.gameplay.nReactorCount = 0;
+gameStates.gameplay.nReactorCount [0] =
+gameStates.gameplay.nReactorCount [1] = 0;
 gameData.reactor.bPresent = 0;
 if (bRestore) {
 	for (i = 0; i < MAX_BOSS_COUNT; i++)
@@ -430,7 +431,7 @@ else {
 	}
 FORALL_ACTOR_OBJS (objP, i) {
 	if (objP->info.nType == OBJ_REACTOR) {
-		if (gameStates.gameplay.nReactorCount && !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)) {
+		if (gameStates.gameplay.nReactorCount [0] && !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)) {
 #if TRACE
 			console.printf (1, "Warning: Two or more control centers including %i and %i\n", 
 							gameData.reactor.states [0].nObject, objP->Index ());
@@ -440,7 +441,7 @@ FORALL_ACTOR_OBJS (objP, i) {
 		 {
 			//	Compute all gun positions.
 			if ((bNew = (!bRestore || (0 > (j = FindReactor (objP))))))
-				j = gameStates.gameplay.nReactorCount;
+				j = gameStates.gameplay.nReactorCount [0];
 			rStatP = gameData.reactor.states + j;
 			if (gameStates.gameplay.nLastReactor < j)
 				gameStates.gameplay.nLastReactor = j;
@@ -461,8 +462,8 @@ FORALL_ACTOR_OBJS (objP, i) {
 					rStatP->nNextFireTime = 0;
 					}
 				extraGameInfo [0].nBossCount++;
-				gameStates.gameplay.nLastReactor = gameStates.gameplay.nReactorCount;
-				gameStates.gameplay.nReactorCount++;
+				gameStates.gameplay.nLastReactor = gameStates.gameplay.nReactorCount [0];
+				gameStates.gameplay.nReactorCount [0]++;
 				}
 			}
 		}
@@ -481,7 +482,7 @@ FORALL_ACTOR_OBJS (objP, i) {
 	}
 
 #if DBG
-if ((BOSS_COUNT <= 0) && !gameStates.gameplay.nReactorCount) {
+if ((BOSS_COUNT <= 0) && !gameStates.gameplay.nReactorCount [0]) {
 #if TRACE
 	console.printf (1, "Warning: No control center.\n");
 #endif
@@ -492,16 +493,17 @@ if ((BOSS_COUNT <= 0) && !gameStates.gameplay.nReactorCount) {
 if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)
 	gameData.reactor.bDisabled = 0;
 else if (BOSS_COUNT > 0) {
-	for (j = 0; j < gameStates.gameplay.nReactorCount; j++) {
+	for (j = 0; j < gameStates.gameplay.nReactorCount [0]; j++) {
 		OBJECTS [gameData.reactor.states [j].nObject].BashToShield (true);
 		extraGameInfo [0].nBossCount--;
-		if (j < --gameStates.gameplay.nReactorCount)
-			gameData.reactor.states [j] = gameData.reactor.states [gameStates.gameplay.nReactorCount];
+		if (j < --gameStates.gameplay.nReactorCount [0])
+			gameData.reactor.states [j] = gameData.reactor.states [gameStates.gameplay.nReactorCount [0]];
 		}
 	gameData.reactor.bPresent = 0;
 	gameData.reactor.bDisabled = 1;
 	//extraGameInfo [0].nBossCount = 1;
 	}
+gameStates.gameplay.nReactorCount [1] = gameStates.gameplay.nReactorCount [0];
 }
 
 //------------------------------------------------------------------------------

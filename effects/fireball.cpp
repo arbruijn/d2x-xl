@@ -208,7 +208,7 @@ FORALL_OBJS (objP, i) {
 		objP->ApplyRotForce (vNegForce);
 		if (objP->info.xShields >= 0) {
 			if (ROBOTINFO (objP->info.nId).bossFlag &&
-				 bossProps [gameStates.app.bD1Mission][ROBOTINFO (objP->info.nId).bossFlag-BOSS_D2].bInvulKinetic)
+				 bossProps [gameStates.app.bD1Mission][ROBOTINFO (objP->info.nId).bossFlag - BOSS_D2].bInvulKinetic)
 				damage /= 4;
 			if (objP->ApplyDamageToRobot (damage, nParent)) {
 				if (!gameStates.gameplay.bNoBotAI && parentP && (nParent == LOCALPLAYER.nObject))
