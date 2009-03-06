@@ -795,7 +795,7 @@ audio.Setup (1);
 
 void CAudio::StopAllChannels (void)
 {
-#if 0
+#if 1
 StopLoopingSound ();
 StopObjectSounds ();
 #endif

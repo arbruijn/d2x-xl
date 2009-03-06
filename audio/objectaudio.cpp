@@ -646,9 +646,12 @@ PauseLoopingSound ();
 for (uint i = 0; i < m_objects.ToS (); i++) {
 	if ((m_objects [i].m_flags & SOF_USED) && (m_objects [i].m_channel > -1)) {
 		StopSound (m_objects [i].m_channel);
+#if 0
 		if ((m_objects [i].m_flags & SOF_PLAY_FOREVER))
 			m_objects [i].m_channel = -1;	// channel will be closed by StopAllChannels() call below
-		else {
+		else 
+#endif
+			{
 			m_objects.Delete (i);
 			i--;
 			}
