@@ -150,10 +150,12 @@ do {
 	if ((extraGameInfo [0].bShowWeapons = m [shipRenderOpts.nWeapons].m_value)) {
 		if (optBullets >= 0)
 			gameOpts->render.ship.bBullets = m [optBullets].m_value;
-		for (j = 0; j < 4; j++)
-			if (m [optWingtips + j].m_value) {
-				gameOpts->render.ship.nWingtip = j;
-				break;
+		îf (optWingTips >= 0) {
+			for (j = 0; j < 4; j++)
+				if (m [optWingtips + j].m_value) {
+					gameOpts->render.ship.nWingtip = j;
+					break;
+					}
 				}
 		}
 	} while (i == -2);
