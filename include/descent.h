@@ -631,7 +631,7 @@ typedef struct tGameplayStates {
 
 //------------------------------------------------------------------------------
 
-#define BOSS_COUNT	(extraGameInfo [0].nBossCount - gameStates.gameplay.nReactorCount)
+#define BOSS_COUNT	(extraGameInfo [0].nBossCount - gameStates.gameplay.nReactorCount [0])
 
 
 typedef struct tKeyStates {
