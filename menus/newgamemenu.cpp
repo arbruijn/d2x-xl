@@ -110,6 +110,7 @@ do {
 			nDefaultMission = i;
 		}
 	gameStates.app.nExtGameStatus = bMulti ? GAMESTAT_START_MULTIPLAYER_MISSION : GAMESTAT_SELECT_MISSION;
+	gameOpts->app.nVersionFilter = NMCLAMP (gameOpts->app.nVersionFilter, 1, 3);
 	nNewMission = lb.ListBox (bMulti ? TXT_MULTI_MISSION : menuTitles [gameOpts->app.nVersionFilter], msnNames, nDefaultMission);
 	GameFlushInputs ();
 	if (nNewMission == -1)

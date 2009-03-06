@@ -104,9 +104,11 @@ int SoundMenuCallback (CMenu& menu, int& nKey, int nCurItem, int nState)
 if (nState)
 	return nCurItem;
 
-if (gameOpts->sound.bGatling != menu [soundOpts.nGatling].m_value) {
-	gameOpts->sound.bGatling = menu [soundOpts.nGatling].m_value;
-	nKey = -2;
+if (soundOpts.nGatling >= 0) {
+	if (gameOpts->sound.bGatling != menu [soundOpts.nGatling].m_value) {
+		gameOpts->sound.bGatling = menu [soundOpts.nGatling].m_value;
+		nKey = -2;
+		}
 	}
 if (gameConfig.nDigiVolume != menu [soundOpts.nDigiVol].m_value) {
 	gameConfig.nDigiVolume = menu [soundOpts.nDigiVol].m_value;

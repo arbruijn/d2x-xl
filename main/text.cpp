@@ -1840,7 +1840,7 @@ const char *defaultGameTexts [][2] = {
  {"Blitze auf ~Monitoren zeigen", "show lightnings on ~Monitors"},
  {"Existierende Datei ueberschreiben?", "Overwrite existing file?"},
  {"~Fetter Rahmen um aktive Waffe", "~Bold armed weapon highlight"},
- {"~Breite Cockpit-Anzeigefenster", "wi~De cockpit display windows"},
+ {"b~Reite Cockpit-Anzeigefenster", "wi~De cockpit display windows"},
  {"hervorhebung ~Gelb", "~Yellow highlights"},
  {"hervorhebung ~Blau", "~Blue highlights"},
  {"Server-Portnummer", "\nEnter server port:"},
