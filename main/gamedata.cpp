@@ -414,8 +414,13 @@ nColoredFaces = 0;
 nStateChanges = 0;
 nShaderChanges = 0;
 nPowerupFilter = 0;
+#if 1
+fAttScale [0] = 0.05f;
+fAttScale [1] = 0.005f;
+#else
 fAttScale [0] = 0.0f;
 fAttScale [1] = 0.003333f;
+#endif
 }
 
 // ----------------------------------------------------------------------------
