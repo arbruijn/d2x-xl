@@ -309,7 +309,7 @@ for (;;) {
 		optLevel = -1;
 #if DBG
 	menu.AddText ("");
-	menu.AddText ("Extra Lives:");
+	menu.AddText ("Initial Lives:");
 	sprintf (szLives, "%d", gameStates.gameplay.nInitialLives);
 	optLives = menu.AddInput (szLives, 5);
 #endif
@@ -351,7 +351,7 @@ for (;;) {
 #if DBG
 		i = atoi (menu [optLives].m_text);
 		if (i > 0)
-			gameStates.gameplay.nInitialLives = i + 1;
+			gameStates.gameplay.nInitialLives = i;
 #endif
 		i = atoi (menu [optLevel].m_text);
 #if DBG
