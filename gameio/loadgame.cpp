@@ -2244,8 +2244,7 @@ else {
 	}
 SetSoundSources ();
 StartTriggeredSounds ();
-audio.SyncSounds ();
-StartLoopingSound ();
+audio.ResumeAll ();
 }
 
 //------------------------------------------------------------------------------
