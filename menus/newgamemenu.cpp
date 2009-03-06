@@ -348,11 +348,6 @@ for (;;) {
 			}
 		}
 	else if (choice == optLevel) {
-#if DBG
-		i = atoi (menu [optLives].m_text);
-		if (i > 0)
-			gameStates.gameplay.nInitialLives = i;
-#endif
 		i = atoi (menu [optLevel].m_text);
 #if DBG
 		if (!i || (i < -gameData.missions.nSecretLevels) || (i > nPlayerMaxLevel))
@@ -367,6 +362,13 @@ for (;;) {
 		}
 	else if (nMission >= 0)
 		break;
+#if DBG
+	else {
+		i = atoi (menu [optLives].m_text);
+		if (i > 0)
+			gameStates.gameplay.nInitialLives = i;
+		}
+#endif
 	}
 
 i = menu [nOptDifficulty].m_value;
