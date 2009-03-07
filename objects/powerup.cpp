@@ -193,8 +193,14 @@ void DrawPowerup (CObject *objP)
 if (objP->info.nType == OBJ_MONSTERBALL)
 	DrawMonsterball (objP, 1.0f, 0.5f, 0.0f, 0.9f);
 else if ((objP->info.nType == OBJ_POWERUP) && (objP->info.nId == POW_SHIELD_BOOST) && 
-			!gameStates.app.bNostalgia && gameOpts->render.powerups.b3D && gameOpts->render.powerups.b3DShields)
-	DrawShieldSphere (objP, 0.0f, 0.15f, 0.75f, 0.5f, 3 * objP->info.xSize / 4);	//the actual shield in the sprite texture has 3/4 of the textures size
+			!gameStates.app.bNostalgia && gameOpts->render.powerups.b3D && gameOpts->render.powerups.b3DShields) {
+	DrawShieldSphere (objP, 0.0f, 0.0f, 0.5f, 1.0f, 3 * objP->info.xSize / 4);	//the actual shield in the sprite texture has 3/4 of the textures size
+	if (gameOpts->render.powerups.nSpin != ((objP->mType.physInfo.rotVel [Y] | objP->mType.physInfo.rotVel [Z]) != 0)) {
+		objP->mType.physInfo.rotVel [Y] = 
+		objP->mType.physInfo.rotVel [Z] = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
+		objP->info.movementType = MT_SPINNING;
+		}
+	}
 else if ((objP->info.nId < MAX_POWERUP_TYPES_D2) || ((objP->info.nType == OBJ_EXPLOSION) && (objP->info.nId < VCLIP_MAXNUM))) {
 		tBitmapIndex	*frameP = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].frames;
 		int				iFrame = objP->rType.vClipInfo.nCurFrame;
