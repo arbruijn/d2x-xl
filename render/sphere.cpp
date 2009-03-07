@@ -694,7 +694,7 @@ if (gameData.render.shield.nFaces > 0)
 #endif
  {
 	if ((gameOpts->render.bDepthSort > 0) || (RENDERPATH && !gameOpts->render.bDepthSort))
-		transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, objP);
+		transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, objP, nSize);
 	else {
 		if (!nSize)
 			nSize = gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].Rad ();
