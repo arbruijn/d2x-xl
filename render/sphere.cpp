@@ -696,9 +696,13 @@ if (gameData.render.shield.nFaces > 0)
 	if ((gameOpts->render.bDepthSort > 0) || (RENDERPATH && !gameOpts->render.bDepthSort))
 		transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, objP, nSize);
 	else {
-		if (!nSize)
-			nSize = gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].Rad ();
 		float	fScale, r = X2F (nSize) /** 1.05f*/;
+		if (nSize)
+			fScale = 1;
+		else {
+			nSize = gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].Rad ();
+			fScale = gameData.render.shield.Pulse ()->fScale;
+			}
 		tObjTransformation *posP = OBJPOS (objP);
 		CFixVector vPos;
 		//gameStates.ogl.bUseTransform = 1;
@@ -709,7 +713,6 @@ if (gameData.render.shield.nFaces > 0)
 		gameData.render.shield.Render (&p, r, r, r, red, green, blue, alpha, bmpShield, 1, 1);
 		transformation.End ();
 		gameStates.ogl.bUseTransform = 0;
-		fScale = gameData.render.shield.Pulse ()->fScale;
 		transformation.Begin (vPos, posP->mOrient);
 		vPos.SetZero ();
 		RenderObjectHalo (&vPos, 3 * nSize / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
