@@ -93,7 +93,7 @@ class CAutomap {
 		CArray<ushort>			m_visible;
 		int						m_bRadar;
 		bool						m_bFull;
-		bool						m_bDisplay;
+		int						m_bDisplay;
 		int						m_nSegmentLimit;
 		int						m_nMaxSegsAway;
 

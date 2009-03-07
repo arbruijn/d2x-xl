@@ -69,6 +69,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "soundthreads.h"
 #include "menubackground.h"
 #include "songs.h"
+#include "automap.h"
 
 //------------------------------------------------------------------------------ 
 
@@ -415,7 +416,9 @@ if (gameStates.app.bGameRunning && gameCanvasP /*&& (gameData.demo.nState == ND_
 	CCanvas::Push ();
 	CCanvas::SetCurrent (gameCanvasP);
 	if (!gameStates.app.bShowError) {
-		if (gameData.app.bGamePaused /*|| timer_paused*/) {
+		if (automap.m_bDisplay)
+			automap.DoFrame (0, 0);
+		else if (gameData.app.bGamePaused /*|| timer_paused*/) {
 			GameRenderFrame ();
 			gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 			G3_SLEEP (0);

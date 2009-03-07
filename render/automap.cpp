@@ -134,7 +134,7 @@ void CAutomap::Init (void)
 m_nWidth = 640;
 m_nHeight = 480;
 m_bFull = false;
-m_bDisplay = false;
+m_bDisplay = 0;
 m_data.bCheat = 0;
 m_data.bHires = 1;
 m_data.nViewDist = 0;
@@ -463,7 +463,7 @@ int CAutomap::Setup (int bPauseGame, fix& xEntryTime, CAngleVector& vTAngles)
 		fix		t1, t2;
 		CObject	*playerP;
 
-m_bDisplay = 1;
+m_bDisplay++;
 gameStates.ogl.nContrast = 8;
 InitColors ();
 if (!m_bRadar)
@@ -702,9 +702,14 @@ while ((c = KeyInKey ())) {
 		case KEY_ALTED+KEY_PADENTER:
 			GrToggleFullScreenGame ();
 			break;
+
+		case KEY_F2:
+			if (!gameStates.menus.nInMenu)
+				ConfigMenu ();
+			break;
 		}
 	}
-return bDone;
+return bDone || gameStates.menus.nInMenu;
 }
 
 //------------------------------------------------------------------------------
@@ -752,12 +757,12 @@ bRedrawScreen = 0;
 if (bRadar) {
 	Draw ();
 	gameStates.ogl.nContrast = nContrast;
-	automap.m_bDisplay = false;
+	m_bDisplay--;
 	return;
 	}
 Controls [0].automapState = 0;
 GetSlowTicks ();
-while (!bDone) {
+do {
 	if (!nLeaveMode && Controls [0].automapState && ((TimerGetFixedSeconds ()- xEntryTime) > LEAVE_TIME))
 		nLeaveMode = 1;
 	if (!Controls [0].automapState && (nLeaveMode == 1))
@@ -766,7 +771,11 @@ while (!bDone) {
 	redbook.CheckRepeat ();
 	bDone = ReadControls (nLeaveMode, bDone, bPauseGame);
 	Update (vTAngles);
+	{
+	PROF_START
 	Draw ();
+	PROF_END (ptRenderFrame)
+	}
 	if (bFirstTime) {
 		bFirstTime = 0;
 		paletteManager.LoadEffect ();
@@ -775,7 +784,7 @@ while (!bDone) {
 	if (bPauseGame)
 		gameData.time.xFrame = t2 - t1;
 	t1 = t2;
-	}
+	} while (!bDone);
 #if 0
 GrFreeCanvas (levelNumCanv);  
 levelNumCanv = NULL;
@@ -786,7 +795,7 @@ GameFlushInputs ();
 if (gameData.app.bGamePaused)
 	ResumeGame ();
 gameStates.ogl.nContrast = nContrast;
-automap.m_bDisplay = false;
+m_bDisplay--;
 }
 
 //------------------------------------------------------------------------------
