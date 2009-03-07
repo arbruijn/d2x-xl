@@ -101,21 +101,21 @@ if (!(pszOglExtensions && strstr (pszOglExtensions, "GL_ARB_occlusion_query")))
 	PrintLog ("   Occlusion query not supported by the OpenGL driver\n");
 else {
 #	ifndef GL_VERSION_20
-	if (!(glGenQueries = (PFNGLGENQUERIESPROC) wglGetProcAddress ("   glGenQueries")))
+	if (!(glGenQueries = (PFNGLGENQUERIESPROC) wglGetProcAddress ("glGenQueries")))
 		PrintLog ("   glGenQueries not supported by the OpenGL driver\n");
-	if (!(glDeleteQueries = (PFNGLDELETEQUERIESPROC) wglGetProcAddress ("   glDeleteQueries")))
+	if (!(glDeleteQueries = (PFNGLDELETEQUERIESPROC) wglGetProcAddress ("glDeleteQueries")))
 		PrintLog ("   glDeleteQueries not supported by the OpenGL driver\n");
-	if (!(glIsQuery = (PFNGLISQUERYPROC) wglGetProcAddress ("   glIsQuery")))
+	if (!(glIsQuery = (PFNGLISQUERYPROC) wglGetProcAddress ("glIsQuery")))
 		PrintLog ("   glIsQuery not supported by the OpenGL driver\n");
-	if (!(glBeginQuery = (PFNGLBEGINQUERYPROC) wglGetProcAddress ("   glBeginQuery")))
+	if (!(glBeginQuery = (PFNGLBEGINQUERYPROC) wglGetProcAddress ("glBeginQuery")))
 		PrintLog ("   glBeginQuery not supported by the OpenGL driver\n");
-	if (!(glEndQuery = (PFNGLENDQUERYPROC) wglGetProcAddress ("   glEndQuery")))
+	if (!(glEndQuery = (PFNGLENDQUERYPROC) wglGetProcAddress ("glEndQuery")))
 		PrintLog ("   glEndQuery not supported by the OpenGL driver\n");
-	if (!(glGetQueryiv = (PFNGLGETQUERYIVPROC) wglGetProcAddress ("   glGetQueryiv")))
+	if (!(glGetQueryiv = (PFNGLGETQUERYIVPROC) wglGetProcAddress ("glGetQueryiv")))
 		PrintLog ("   glGetQueryiv not supported by the OpenGL driver\n");
-	if (!(glGetQueryObjectiv = (PFNGLGETQUERYOBJECTIVPROC) wglGetProcAddress ("   glGetQueryObjectiv")))
+	if (!(glGetQueryObjectiv = (PFNGLGETQUERYOBJECTIVPROC) wglGetProcAddress ("glGetQueryObjectiv")))
 		PrintLog ("   glGetQueryObjectiv not supported by the OpenGL driver\n");
-	if (!(glGetQueryObjectuiv = (PFNGLGETQUERYOBJECTUIVPROC) wglGetProcAddress ("   glGetQueryObjectuiv")))
+	if (!(glGetQueryObjectuiv = (PFNGLGETQUERYOBJECTUIVPROC) wglGetProcAddress ("glGetQueryObjectuiv")))
 		PrintLog ("   glGetQueryObjectuiv not supported by the OpenGL driver\n");
 	else {
 		GLint nBits;
@@ -164,19 +164,19 @@ void OglInitVBOs (void)
 #	ifdef _WIN32
 PrintLog ("Checking VBOs ...\n");
 gameStates.ogl.bHaveVBOs = 0;
-if (!(glGenBuffersARB = (PFNGLGENBUFFERSPROC) wglGetProcAddress ("   glGenBuffersARB")))
+if (!(glGenBuffersARB = (PFNGLGENBUFFERSPROC) wglGetProcAddress ("glGenBuffersARB")))
 	PrintLog ("   glGenBuffersARB not supported by the OpenGL driver\n");
-else if (!(glBindBufferARB = (PFNGLBINDBUFFERPROC) wglGetProcAddress ("   glBindBufferARB")))
+else if (!(glBindBufferARB = (PFNGLBINDBUFFERPROC) wglGetProcAddress ("glBindBufferARB")))
 	PrintLog ("   glBindBufferARB not supported by the OpenGL driver\n");
-else if (!(glBufferDataARB = (PFNGLBUFFERDATAPROC) wglGetProcAddress ("   glBufferDataARB")))
+else if (!(glBufferDataARB = (PFNGLBUFFERDATAPROC) wglGetProcAddress ("glBufferDataARB")))
 	PrintLog ("   glBufferDataARB not supported by the OpenGL driver\n");
-else if (!(glMapBufferARB = (PFNGLMAPBUFFERPROC) wglGetProcAddress ("   glMapBufferARB")))
+else if (!(glMapBufferARB = (PFNGLMAPBUFFERPROC) wglGetProcAddress ("glMapBufferARB")))
 	PrintLog ("   glMapBufferARB not supported by the OpenGL driver\n");
-else if (!(glUnmapBufferARB = (PFNGLUNMAPBUFFERPROC) wglGetProcAddress ("   glUnmapBufferARB")))
+else if (!(glUnmapBufferARB = (PFNGLUNMAPBUFFERPROC) wglGetProcAddress ("glUnmapBufferARB")))
 	PrintLog ("   glUnmapBufferARB not supported by the OpenGL driver\n");
-else if (!(glDeleteBuffersARB = (PFNGLDELETEBUFFERSPROC) wglGetProcAddress ("   glDeleteBuffersARB")))
+else if (!(glDeleteBuffersARB = (PFNGLDELETEBUFFERSPROC) wglGetProcAddress ("glDeleteBuffersARB")))
 	PrintLog ("   glDeleteBuffersARB not supported by the OpenGL driver\n");
-else if (!(glDrawRangeElements = (PFNGLDRAWRANGEELEMENTSPROC) wglGetProcAddress ("   glDrawRangeElements")))
+else if (!(glDrawRangeElements = (PFNGLDRAWRANGEELEMENTSPROC) wglGetProcAddress ("glDrawRangeElements")))
 	PrintLog ("   glDrawRangeElements not supported by the OpenGL driver\n");
 else
 #	endif
@@ -211,17 +211,17 @@ void OglInitMultiTexturing (void)
 gameStates.ogl.bMultiTexturingOk = 0;
 PrintLog ("Checking multi-texturing ...\n");
 #	ifdef _WIN32
-if (!(glMultiTexCoord2d	= (PFNGLMULTITEXCOORD2DARBPROC) wglGetProcAddress ("   glMultiTexCoord2dARB")))
+if (!(glMultiTexCoord2d	= (PFNGLMULTITEXCOORD2DARBPROC) wglGetProcAddress ("glMultiTexCoord2dARB")))
 	PrintLog ("   glMultiTexCoord2d not supported by the OpenGL driver\n");
-else if (!(glMultiTexCoord2f = (PFNGLMULTITEXCOORD2FARBPROC) wglGetProcAddress ("   glMultiTexCoord2fARB")))
+else if (!(glMultiTexCoord2f = (PFNGLMULTITEXCOORD2FARBPROC) wglGetProcAddress ("glMultiTexCoord2fARB")))
 	PrintLog ("   glMultiTexCoord2f not supported by the OpenGL driver\n");
-else if (!(glMultiTexCoord2fv = (PFNGLMULTITEXCOORD2FVARBPROC) wglGetProcAddress ("   glMultiTexCoord2fvARB")))
+else if (!(glMultiTexCoord2fv = (PFNGLMULTITEXCOORD2FVARBPROC) wglGetProcAddress ("glMultiTexCoord2fvARB")))
 	PrintLog ("   glMultiTexCoord2fv not supported by the OpenGL driver\n");
 else
 #	endif
-if (!(glActiveTexture = (PFNGLACTIVETEXTUREARBPROC) wglGetProcAddress ("   glActiveTextureARB")))
+if (!(glActiveTexture = (PFNGLACTIVETEXTUREARBPROC) wglGetProcAddress ("glActiveTextureARB")))
 	PrintLog ("   glActiveTexture not supported by the OpenGL driver\n");
-else if (!(glClientActiveTexture = (PFNGLCLIENTACTIVETEXTUREARBPROC) wglGetProcAddress ("   glClientActiveTextureARB")))
+else if (!(glClientActiveTexture = (PFNGLCLIENTACTIVETEXTUREARBPROC) wglGetProcAddress ("glClientActiveTextureARB")))
 	PrintLog ("   glClientActiveTexture not supported by the OpenGL driver\n");
 else
 #endif

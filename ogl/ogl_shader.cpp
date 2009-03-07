@@ -361,43 +361,43 @@ else if (!strstr (pszOglExtensions, "GL_ARB_shader_objects"))
 	PrintLog ("   Shader objects not supported by the OpenGL driver\n");
 else {
 #ifndef GL_VERSION_20
-	if (!(glCreateProgramObject = (PFNGLCREATEPROGRAMOBJECTARBPROC) wglGetProcAddress ("   glCreateProgramObjectARB")))
+	if (!(glCreateProgramObject = (PFNGLCREATEPROGRAMOBJECTARBPROC) wglGetProcAddress ("glCreateProgramObjectARB")))
 		PrintLog ("   glCreateProgramObject not supported by the OpenGL driver\n");
-	if (!(glDeleteObject = (PFNGLDELETEOBJECTARBPROC) wglGetProcAddress ("   glDeleteObjectARB")))
+	if (!(glDeleteObject = (PFNGLDELETEOBJECTARBPROC) wglGetProcAddress ("glDeleteObjectARB")))
 		PrintLog ("   glDeleteObject not supported by the OpenGL driver\n");
-	if (!(glUseProgramObject = (PFNGLUSEPROGRAMOBJECTARBPROC) wglGetProcAddress ("   glUseProgramObjectARB")))
+	if (!(glUseProgramObject = (PFNGLUSEPROGRAMOBJECTARBPROC) wglGetProcAddress ("glUseProgramObjectARB")))
 		PrintLog ("   glUseProgramObject not supported by the OpenGL driver\n");
-	if (!(glCreateShaderObject = (PFNGLCREATESHADEROBJECTARBPROC) wglGetProcAddress ("   glCreateShaderObjectARB")))
+	if (!(glCreateShaderObject = (PFNGLCREATESHADEROBJECTARBPROC) wglGetProcAddress ("glCreateShaderObjectARB")))
 		PrintLog ("   glCreateShaderObject not supported by the OpenGL driver\n");
-	if (!(glShaderSource = (PFNGLSHADERSOURCEARBPROC) wglGetProcAddress ("   glShaderSourceARB")))
+	if (!(glShaderSource = (PFNGLSHADERSOURCEARBPROC) wglGetProcAddress ("glShaderSourceARB")))
 		PrintLog ("   glShaderSource not supported by the OpenGL driver\n");
-	if (!(glCompileShader = (PFNGLCOMPILESHADERARBPROC) wglGetProcAddress ("   glCompileShaderARB")))
+	if (!(glCompileShader = (PFNGLCOMPILESHADERARBPROC) wglGetProcAddress ("glCompileShaderARB")))
 		PrintLog ("   glCompileShader not supported by the OpenGL driver\n");
-	if (!(glGetObjectParameteriv = (PFNGLGETOBJECTPARAMETERIVARBPROC) wglGetProcAddress ("   glGetObjectParameterivARB")))
+	if (!(glGetObjectParameteriv = (PFNGLGETOBJECTPARAMETERIVARBPROC) wglGetProcAddress ("glGetObjectParameterivARB")))
 		PrintLog ("   glGetObjectParameteriv not supported by the OpenGL driver\n");
-	if (!(glAttachObject = (PFNGLATTACHOBJECTARBPROC) wglGetProcAddress ("   glAttachObjectARB")))
+	if (!(glAttachObject = (PFNGLATTACHOBJECTARBPROC) wglGetProcAddress ("glAttachObjectARB")))
 		PrintLog ("   glAttachObject not supported by the OpenGL driver\n");
-	if (!(glGetInfoLog = (PFNGLGETINFOLOGARBPROC) wglGetProcAddress ("   glGetInfoLogARB")))
+	if (!(glGetInfoLog = (PFNGLGETINFOLOGARBPROC) wglGetProcAddress ("glGetInfoLogARB")))
 		PrintLog ("   glGetInfoLog not supported by the OpenGL driver\n");
-	if (!(glLinkProgram = (PFNGLLINKPROGRAMARBPROC) wglGetProcAddress ("   glLinkProgramARB")))
+	if (!(glLinkProgram = (PFNGLLINKPROGRAMARBPROC) wglGetProcAddress ("glLinkProgramARB")))
 		PrintLog ("   glLinkProgram not supported by the OpenGL driver\n");
-	if (!(glGetUniformLocation = (PFNGLGETUNIFORMLOCATIONARBPROC) wglGetProcAddress ("   glGetUniformLocationARB")))
+	if (!(glGetUniformLocation = (PFNGLGETUNIFORMLOCATIONARBPROC) wglGetProcAddress ("glGetUniformLocationARB")))
 		PrintLog ("   glGetUniformLocation not supported by the OpenGL driver\n");
-	if (!(glUniform4f = (PFNGLUNIFORM4FARBPROC) wglGetProcAddress ("   glUniform4fARB")))
+	if (!(glUniform4f = (PFNGLUNIFORM4FARBPROC) wglGetProcAddress ("glUniform4fARB")))
 		PrintLog ("   glUniform4f not supported by the OpenGL driver\n");
-	if (!(glUniform3f = (PFNGLUNIFORM3FARBPROC) wglGetProcAddress ("   glUniform3fARB")))
+	if (!(glUniform3f = (PFNGLUNIFORM3FARBPROC) wglGetProcAddress ("glUniform3fARB")))
 		PrintLog ("   glUniform3f not supported by the OpenGL driver\n");
-	if (!(glUniform1f = (PFNGLUNIFORM1FARBPROC) wglGetProcAddress ("   glUniform1fARB")))
+	if (!(glUniform1f = (PFNGLUNIFORM1FARBPROC) wglGetProcAddress ("glUniform1fARB")))
 		PrintLog ("   glUniform1f not supported by the OpenGL driver\n");
-	if (!(glUniform4fv = (PFNGLUNIFORM4FVARBPROC) wglGetProcAddress ("   glUniform4fvARB")))
+	if (!(glUniform4fv = (PFNGLUNIFORM4FVARBPROC) wglGetProcAddress ("glUniform4fvARB")))
 		PrintLog ("   glUniform4fv not supported by the OpenGL driver\n");
-	if (!(glUniform3fv = (PFNGLUNIFORM3FVARBPROC) wglGetProcAddress ("   glUniform3fvARB")))
+	if (!(glUniform3fv = (PFNGLUNIFORM3FVARBPROC) wglGetProcAddress ("glUniform3fvARB")))
 		PrintLog ("   glUniform3fv not supported by the OpenGL driver\n");
-	if (!(glUniform2fv = (PFNGLUNIFORM3FVARBPROC) wglGetProcAddress ("   glUniform2fvARB")))
+	if (!(glUniform2fv = (PFNGLUNIFORM3FVARBPROC) wglGetProcAddress ("glUniform2fvARB")))
 		PrintLog ("   glUniform2fv not supported by the OpenGL driver\n");
-	if (!(glUniform1fv = (PFNGLUNIFORM1FVARBPROC) wglGetProcAddress ("   glUniform1fvARB")))
+	if (!(glUniform1fv = (PFNGLUNIFORM1FVARBPROC) wglGetProcAddress ("glUniform1fvARB")))
 		PrintLog ("   glUniform1fv not supported by the OpenGL driver\n");
-	if (!(glUniform1i = (PFNGLUNIFORM1IARBPROC) wglGetProcAddress ("   glUniform1iARB")))
+	if (!(glUniform1i = (PFNGLUNIFORM1IARBPROC) wglGetProcAddress ("glUniform1iARB")))
 		PrintLog ("   glUniform1i not supported by the OpenGL driver\n");
 	else
 		gameStates.ogl.bShadersOk = 1;
