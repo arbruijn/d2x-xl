@@ -44,8 +44,8 @@ static int nCacheEntries = 0;
 static int nCacheHits = 0;
 static int nCacheMisses = 0;
 
-void MergeTextures (int nType, CBitmap *bmBot, CBitmap *bmTop, CBitmap *dest_bmp, int bSuperTransp);
-void MergeTexturesNormal (int nType, CBitmap *bmBot, CBitmap *bmTop, ubyte *dest_data);
+void MergeTextures (int nType, CBitmap *bmBot, CBitmap *bmTop, CBitmap *bmDest, int bSuperTransp);
+void MergeTexturesNormal (int nType, CBitmap *bmBot, CBitmap *bmTop, ubyte *destDataP);
 void _CDECL_ TexMergeClose (void);
 
 //----------------------------------------------------------------------
@@ -193,9 +193,9 @@ return bmP;
 
 //-------------------------------------------------------------------------
 
-void MergeTexturesNormal (int nType, CBitmap * bmBot, CBitmap * bmTop, ubyte * dest_data)
+void MergeTexturesNormal (int nType, CBitmap * bmBot, CBitmap * bmTop, ubyte * destDataP)
 {
-	ubyte * top_data, *bottom_data;
+	ubyte * topDataP, *btmDataP;
 	int scale;
 
 if (gameOpts->ogl.bGlTexMerge)
@@ -205,27 +205,27 @@ if (bmTop->Flags () & BM_FLAG_RLE)
 if (bmBot->Flags () & BM_FLAG_RLE)
 	bmBot = rle_expand_texture(bmBot);
 //	Assert(bmBot != bmTop);
-top_data = bmTop->Buffer ();
-bottom_data = bmBot->Buffer ();
+topDataP = bmTop->Buffer ();
+btmDataP = bmBot->Buffer ();
 scale = bmBot->Width () / bmTop->Width ();
 if (!scale)
 	scale = 1;
 if (scale > 1)
 	scale = scale;
-//	Assert(bottom_data != top_data);
+//	Assert(btmDataP != topDataP);
 switch(nType) {
 	case 0:
 		// Normal
-		GrMergeTextures(bottom_data, top_data, dest_data, bmBot->Width (), bmBot->Height (), scale);
+		GrMergeTextures(btmDataP, topDataP, destDataP, bmBot->Width (), bmBot->Height (), scale);
 		break;
 	case 1:
-		GrMergeTextures1(bottom_data, top_data, dest_data, bmBot->Width (), bmBot->Height (), scale);
+		GrMergeTextures1(btmDataP, topDataP, destDataP, bmBot->Width (), bmBot->Height (), scale);
 		break;
 	case 2:
-		GrMergeTextures2(bottom_data, top_data, dest_data, bmBot->Width (), bmBot->Height (), scale);
+		GrMergeTextures2(btmDataP, topDataP, destDataP, bmBot->Width (), bmBot->Height (), scale);
 		break;
 	case 3:
-		GrMergeTextures3(bottom_data, top_data, dest_data, bmBot->Width (), bmBot->Height (), scale);
+		GrMergeTextures3(btmDataP, topDataP, destDataP, bmBot->Width (), bmBot->Height (), scale);
 		break;
 	}
 }
@@ -295,16 +295,15 @@ return TexScale (y * w + x, s);
 #define BTMIDX	TexIdx (x, y, bw, btmScale)
 
 
-void MergeTextures (
-	int nType, CBitmap * bmBot, CBitmap * bmTop, CBitmap *dest_bmp, int bSuperTransp)
+void MergeTextures (int nType, CBitmap* bmBot, CBitmap* bmTop, CBitmap *bmDest, int bSuperTransp)
 {
-	tRGBA		*c;
+	tRGBA*	colorP;
 	int		i, x, y, bw, bh, tw, th, dw, dh;
 	int		bTopBPP, bBtmBPP, bST = 0;
 	frac		topScale, btmScale;
-	tRGBA		*dest_data = reinterpret_cast<tRGBA*> (dest_bmp->Buffer ());
+	tRGBA		*destDataP = reinterpret_cast<tRGBA*> (bmDest->Buffer ());
 
-	ubyte		*top_data, *bottom_data, *top_pal, *btmPalette;
+	ubyte		*topDataP, *btmDataP, *topPalette, *btmPalette;
 
 bmBot = bmBot->Override (-1);
 bmTop = bmTop->Override (-1);
@@ -318,21 +317,18 @@ if (bmBot->Flags () & BM_FLAG_RLE)
 
 //	Assert(bmBot != bmTop);
 
-top_data = bmTop->Buffer ();
-bottom_data = bmBot->Buffer ();
-top_pal = bmTop->Palette ()->Raw ();
+topDataP = bmTop->Buffer ();
+btmDataP = bmBot->Buffer ();
+topPalette = bmTop->Palette ()->Raw ();
 btmPalette = bmBot->Palette ()->Raw ();
 
-//	Assert(bottom_data != top_data);
-
-//Int3();
 bh =
 bw = bmBot->Width ();
 //h = bmBot->Height ();
 th =
 tw = bmTop->Width ();
 dw =
-dh = dest_bmp->Width ();
+dh = bmDest->Width ();
 //th = bmTop->Height ();
 #if 1
 // square textures assumed here, so no test for h!
@@ -355,52 +351,52 @@ else {
 #else
 if (w > bmTop->Width ())
 	w = h = bmBot->Width ();
-scale.c = scale.d = 1;
+scale.colorP = scale.d = 1;
 #endif
 bTopBPP = bmTop->BPP ();
 bBtmBPP = bmBot->BPP ();
 #if DBG
-memset (dest_data, 253, dest_bmp->Width () * dest_bmp->Height () * 4);
+memset (destDataP, 253, bmDest->Width () * bmDest->Height () * 4);
 #endif
-switch(nType) {
+switch (nType) {
 	case 0:
 		// Normal
 		for (i = y = 0; y < dh; y++)
 			for (x = 0; x < dw; x++, i++) {
-				c = C (top_pal, top_data, tw * TOPSCALE (y) + TOPSCALE (x), bTopBPP, &bST);
-				if (!(bST || c->a))
-					c = C (btmPalette, bottom_data, BTMIDX, bBtmBPP, &bST);
-				dest_data [i] = *c;
+				colorP = C (topPalette, topDataP, tw * TOPSCALE (y) + TOPSCALE (x), bTopBPP, &bST);
+				if (!(bST || colorP->a))
+					colorP = C (btmPalette, btmDataP, BTMIDX, bBtmBPP, &bST);
+				destDataP [i] = *colorP;
 			}
 		break;
 	case 1:
 		// 
 		for (i = y = 0; y < dh; y++)
 			for (x = 0; x < dw; x++, i++) {
-				c = C (top_pal, top_data, tw * TOPSCALE (x) + th - 1 - TOPSCALE (y), bTopBPP, &bST);
-				if (!(bST || c->a))
-					c = C (btmPalette, bottom_data, BTMIDX, bBtmBPP, &bST);
-				dest_data [i] = *c;
+				colorP = C (topPalette, topDataP, tw * TOPSCALE (x) + th - 1 - TOPSCALE (y), bTopBPP, &bST);
+				if (!(bST || colorP->a))
+					colorP = C (btmPalette, btmDataP, BTMIDX, bBtmBPP, &bST);
+				destDataP [i] = *colorP;
 			}
 		break;
 	case 2:
 		// Normal
 		for (i = y = 0; y < dh; y++)
 			for (x = 0; x < dw; x++, i++) {
-				c = C (top_pal, top_data, tw * (th - 1 - TOPSCALE (y)) + tw - 1 - TOPSCALE (x), bTopBPP, &bST);
-				if (!(bST || c->a))
-					c = C (btmPalette, bottom_data, BTMIDX, bBtmBPP, &bST);
-				dest_data [i] = *c;
+				colorP = C (topPalette, topDataP, tw * (th - 1 - TOPSCALE (y)) + tw - 1 - TOPSCALE (x), bTopBPP, &bST);
+				if (!(bST || colorP->a))
+					colorP = C (btmPalette, btmDataP, BTMIDX, bBtmBPP, &bST);
+				destDataP [i] = *colorP;
 			}
 		break;
 	case 3:
 		// Normal
 		for (i = y = 0; y < dh; y++)
 			for (x = 0; x < dw; x++, i++) {
-				c = C (top_pal, top_data, tw * (th - 1 - TOPSCALE (x)) + TOPSCALE (y), bTopBPP, &bST);
-				if (!(bST || c->a))
-					c = C (btmPalette, bottom_data, BTMIDX, bBtmBPP, &bST);
-				dest_data [i] = *c;
+				colorP = C (topPalette, topDataP, tw * (th - 1 - TOPSCALE (x)) + TOPSCALE (y), bTopBPP, &bST);
+				if (!(bST || colorP->a))
+					colorP = C (btmPalette, btmDataP, BTMIDX, bBtmBPP, &bST);
+				destDataP [i] = *colorP;
 			}
 		break;
 	}

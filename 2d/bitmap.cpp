@@ -402,7 +402,7 @@ int CBitmap::AvgColorIndex (void)
 {
 	ubyte *p = Buffer ();
 
-if (!p)
+if (!(p && m_info.palette))
 	return 0;
 if (m_info.avgColorIndex) 
 	return m_info.avgColorIndex;
