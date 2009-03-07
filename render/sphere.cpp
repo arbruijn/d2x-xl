@@ -608,8 +608,10 @@ else
 	bTextured = InitSurface (red, green, blue, alpha, bmP, &fScale);
 glDepthFunc (GL_LEQUAL);
 #if ADDITIVE_SPHERE_BLENDING
-if (bAdditive)
+if (bAdditive == 2)
 	glBlendFunc (GL_ONE, GL_ONE); //_MINUS_SRC_COLOR);
+else if (bAdditive == 1)
+	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 else
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #else
@@ -697,24 +699,27 @@ if (gameData.render.shield.nFaces > 0)
 		transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, objP, nSize);
 	else {
 		float	fScale, r = X2F (nSize) /** 1.05f*/;
-		if (nSize)
+		int	bAdditive;
+		if (nSize) {
 			fScale = 1;
+			bAdditive = 0;
+			}
 		else {
 			nSize = gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].Rad ();
 			fScale = gameData.render.shield.Pulse ()->fScale;
+			bAdditive = 2;
 			}
 		tObjTransformation *posP = OBJPOS (objP);
 		CFixVector vPos;
-		//gameStates.ogl.bUseTransform = 1;
-		glBlendFunc (GL_ONE, GL_ONE);
 		transformation.Begin (*PolyObjPos (objP, &vPos), posP->mOrient);
 		CFloatVector p;
 		p.SetZero ();
-		gameData.render.shield.Render (&p, r, r, r, red, green, blue, alpha, bmpShield, 1, 1);
+		gameData.render.shield.Render (&p, r, r, r, red, green, blue, alpha, bmpShield, 1, bAdditive);
 		transformation.End ();
 		gameStates.ogl.bUseTransform = 0;
 		transformation.Begin (vPos, posP->mOrient);
 		vPos.SetZero ();
+		glBlendFunc (GL_ONE, GL_ONE);
 		RenderObjectHalo (&vPos, 3 * nSize / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
 		transformation.End ();
 		}

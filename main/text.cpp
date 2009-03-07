@@ -1846,7 +1846,7 @@ const char *defaultGameTexts [][2] = {
  {"Server-Portnummer", "\nEnter server port:"},
  {"Teilnehmer-Portnummer", "\nEnter client port:"},
  {"M~Ods aktivieren", "enable m~Ods"},
- {"3D-~Schild-Powerups", "3D ~Shield Powerups"},
+ {"3D-Sch~Ild-Powerups", "3D Sh~Ield Powerups"},
 #if 0
  {"", ""},
 #endif

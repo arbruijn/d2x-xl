@@ -105,7 +105,7 @@ do {
 		optSpin = 
 		optShieldSpheres = -1;
 	else {
-		optShieldSpheres = m.AddCheck (TXT_3D_SHIELDS, gameOpts->render.powerups.b3DShields, KEY_S, HTX_3D_SHIELDS);
+		optShieldSpheres = m.AddCheck (TXT_3D_SHIELDS, gameOpts->render.powerups.b3DShields, KEY_I, HTX_3D_SHIELDS);
 		m.AddText ("", 0);
 		optSpin = m.AddRadio (TXT_SPIN_OFF, 0, KEY_O);
 		m.AddRadio (TXT_SPIN_SLOW, 0, KEY_S);

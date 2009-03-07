@@ -374,7 +374,15 @@ if (nType == OBJ_POWERUP) {
 		RenderPowerupCorona (objP, color.red, color.green, color.blue,
 									coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
 	}
-if ((gameOpts->render.bDepthSort > 0) && (fAlpha < 1)) {
+if ((objP->info.nType == OBJ_POWERUP) && (objP->info.nId == POW_SHIELD_BOOST) && 
+	 !gameStates.app.bNostalgia && gameOpts->render.powerups.b3D && gameOpts->render.powerups.b3DShields) {
+	if (objP->info.movementType != MT_SPINNING) {
+		objP->info.movementType = MT_SPINNING;
+		objP->mType.spinRate = objP->info.position.mOrient.UVec () * (I2X (1) / 8);
+		}
+	DrawShieldSphere (objP, 3 * color.red / 2, 3 * color.green / 2, 3 * color.blue / 2, 1.0f, 3 * objP->info.xSize / 4);	//the actual shield in the sprite texture has 3/4 of the textures size
+	}
+else if ((gameOpts->render.bDepthSort > 0) && (fAlpha < 1)) {
 	if (bAdditive) {
 #if 1
 		color.red =
