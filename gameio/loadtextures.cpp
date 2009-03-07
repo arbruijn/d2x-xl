@@ -550,8 +550,7 @@ bTGA = 0;
 nFlags = (nIndex < 0) ? 0 : gameData.pig.tex.bitmapFlags [bD1][nIndex];
 bmP->SetBPP (1);
 
-if (*bmName && ((nIndex < 0) || IsCockpit (bmName) ||
-	 ((bHires || gameOpts->render.textures.bUseHires [0]) && gameOpts->ogl.bGlTexMerge))) {
+if (*bmName && ((nIndex < 0) || IsCockpit (bmName) || bHires || gameOpts->render.textures.bUseHires [0])) {
 #if 0
 	if ((nIndex >= 0) && ReadS3TC (gameData.pig.tex.altBitmaps [bD1] + nIndex, gameFolders.szTextureCacheDir [bD1], bmName)) {
 		altBmP = gameData.pig.tex.altBitmaps [bD1] + nIndex;

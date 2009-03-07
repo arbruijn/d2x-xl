@@ -794,8 +794,6 @@ if (FindArg ("-norun"))
 LoadHiresModels (0);
 LoadModelData ();
 InitShaders ();
-if (gameOpts->render.textures.bUseHires [0] && !gameOpts->ogl.bGlTexMerge)
-	PrintLog ("Hires textures are disabled. Set '-gl_alttexmerge 1' in d2x.ini to enable them.\n");
 return 0;
 }
 
