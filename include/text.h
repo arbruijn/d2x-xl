@@ -1897,10 +1897,10 @@ void LoadGameTexts(void);
 #define TXT_SERVER_PORT					GT(1100)
 #define TXT_CLIENT_PORT					GT(1101)
 #define TXT_ENABLE_MODS					GT(1102)
+#define TXT_3D_SHIELDS					GT(1103)
 
 #if 0
 
-#define TXT_					GT(1103)
 #define TXT_					GT(1104)
 #define TXT_					GT(1105)
 #define TXT_					GT(1106)
@@ -2506,11 +2506,10 @@ void LoadGameTexts(void);
 #define HTX_HUD_HILITE_COLOR			HT(387)			
 #define HTX_CHECK_PORTS					HT(388)			
 #define HTX_ENABLE_MODS					HT(389)			
+#define HTX_3D_SHIELDS					HT(390)			
 
 #if 0
 
-#define HTX_						HT(389)			
-#define HTX_						HT(390)			
 #define HTX_						HT(391)			
 #define HTX_						HT(392)			
 #define HTX_						HT(393)			
