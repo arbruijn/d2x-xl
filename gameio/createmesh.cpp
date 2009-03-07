@@ -1391,7 +1391,6 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 		m_ovlTexCoordP += m_nOvlTexCount * FACE_VERTS;
 		m_faceColorP += m_nOvlTexCount * FACE_VERTS;
 		}
-	PrintLog ("      %d: %d\n", nSegment, gameData.segs.nFaces);
 	}
 
 // any additional vertices have been stored, so prune the buffers to the minimally required size

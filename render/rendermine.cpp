@@ -646,10 +646,9 @@ return 1;
 
 void DoRenderObject (int nObject, int nWindow)
 {
-	CObject *objP = OBJECTS + nObject, *hObj;
-	tWindowRenderedData *wrd = windowRenderedData + nWindow;
-	int nType, count = 0;
-	int n;
+	CObject*					objP = OBJECTS + nObject;
+	tWindowRenderedData*	wrd = windowRenderedData + nWindow;
+	int						nType, count = 0;
 
 if (!(IsMultiGame || gameOpts->render.debug.bObjects))
 	return;
@@ -661,20 +660,12 @@ if (!(nWindow || gameStates.render.cameras.bActive) && (gameStates.render.nShado
 #endif
 if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 	if ((nDemoDoingLeft == 6 || nDemoDoingRight == 6) && objP->info.nType == OBJ_PLAYER) {
-		// A nice fat hack: keeps the CPlayerData ship from showing up in the
-		// small extra view when guiding a missile in the big tPortal
   		return;
 		}
 	}
-//	Added by MK on 09/07/94 (at about 5:28 pm, CDT, on a beautiful, sunny late summer day!) so
-//	that the guided missile system will know what OBJECTS to look at.
-//	I didn't know we had guided missiles before the release of D1. --MK
 nType = objP->info.nType;
 if ((nType == OBJ_ROBOT) || (nType == OBJ_PLAYER) ||
 	 ((nType == OBJ_WEAPON) && (WeaponIsPlayerMine (objP->info.nId) || (gameData.objs.bIsMissile [objP->info.nId] && EGI_FLAG (bKillMissiles, 0, 0, 0))))) {
-	//Assert(windowRenderedData [nWindow].renderedObjects < MAX_RENDERED_OBJECTS);
-	//	This peculiar piece of code makes us keep track of the most recently rendered objects, which
-	//	are probably the higher priority objects, without overflowing the buffer
 	if (wrd->nObjects >= MAX_RENDERED_OBJECTS) {
 		Int3();
 		wrd->nObjects /= 2;
@@ -686,17 +677,14 @@ if ((count++ > LEVEL_OBJECTS) || (objP->info.nNextInSeg == nObject)) {
 	objP->info.nNextInSeg = -1;		// won't this clean things up?
 	return;					// get out of this infinite loop!
 	}
-	//g3_drawObject(objP->class_id, &objP->info.position.vPos, &objP->info.position.mOrient, objP->info.xSize);
-	//check for editor CObject
-	//NOTE LINK TO ABOVE
 if (RenderObject (objP, nWindow, 0))
 	gameData.render.mine.bObjectRendered [nObject] = gameStates.render.nFrameFlipFlop;
-for (n = objP->info.nAttachedObj; n != -1; n = hObj->cType.explInfo.attached.nNext) {
-	hObj = OBJECTS + n;
-	Assert (hObj->info.nType == OBJ_FIREBALL);
-	Assert (hObj->info.controlType == CT_EXPLOSION);
-	Assert (hObj->info.nFlags & OF_ATTACHED);
-	RenderObject (hObj, nWindow, 1);
+for (int i = objP->info.nAttachedObj; i != -1; i = objP->cType.explInfo.attached.nNext) {
+	objP = OBJECTS + i;
+	Assert (objP->info.nType == OBJ_FIREBALL);
+	Assert (objP->info.controlType == CT_EXPLOSION);
+	Assert (objP->info.nFlags & OF_ATTACHED);
+	RenderObject (objP, nWindow, 1);
 	}
 }
 
@@ -1059,7 +1047,7 @@ if (left < r)
 
 int SortObjList (int nSegment)
 {
-	tObjRenderListItem	*pi;
+	tObjRenderListItem*	pi;
 	int						i, j;
 
 if (nSegment < 0)
@@ -1476,6 +1464,7 @@ if ((gameOpts->render.bDepthSort < 1) && !RENDERPATH)
 	RenderSkyBox (nWindow);
 //PrintLog  ("RenderSegmentList (1,1)\n");
 RenderSegmentList (1, 1);		// render objects
+#if 0
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 	if (!gameData.app.nFrameCount || gameData.render.nColoredFaces) {
 		glDepthFunc (GL_LEQUAL);
@@ -1503,8 +1492,9 @@ if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 		}
 	glDepthFunc (GL_LESS);
 	}
+#endif
 gameData.app.nMineRenderCount++;
-//PROF_END(ptRenderMine);
+PROF_END(ptRenderMine);
 }
 
 //------------------------------------------------------------------------------

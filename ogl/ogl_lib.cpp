@@ -763,10 +763,7 @@ if (!gameStates.menus.nInMenu || bForce) {
 	//if (gameStates.app.bGameRunning && !gameStates.menus.nInMenu)
 	paletteManager.ApplyEffect ();
 	OglFlushDrawBuffer ();
-	PROF_INIT
-	PROF_START
 	SDL_GL_SwapBuffers ();
-	PROF_END(ptRenderMine)
 	OglSetDrawBuffer (GL_BACK, 1);
 #if 1
 	//if (gameStates.menus.nInMenu || bClear)

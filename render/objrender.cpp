@@ -784,33 +784,201 @@ return bOk;
 
 // -----------------------------------------------------------------------------
 
-int RenderObject (CObject *objP, int nWindowNum, int bForce)
+static int RenderPlayer (CObject* objP, int bDepthSort, int bSpectate)
+{
+int bDynObjLight = (RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects;
+if (automap.m_bDisplay && !(AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId)))
+	return 0;
+tObjTransformation savePos;
+if (bSpectate) {
+	savePos = objP->info.position;
+	objP->info.position = gameStates.app.playerPos;
+	}
+//DoObjectSmoke (objP);
+DrawPolygonObject (objP, bDepthSort, 0);
+gameOpts->ogl.bLightObjects = bDynObjLight;
+if (!gameStates.render.bQueryCoronas) {
+	RenderThrusterFlames (objP);
+	RenderPlayerShield (objP);
+	RenderTargetIndicator (objP, NULL);
+	}
+RenderTowedFlag (objP);
+if (bSpectate)
+	objP->info.position = savePos;
+return 1;
+}
+
+// -----------------------------------------------------------------------------
+
+static int RenderRobot (CObject* objP, int bDepthSort, int bSpectate)
+{
+if (gameStates.render.nType != 1)
+	return 0;
+if (automap.m_bDisplay && !AM_SHOW_ROBOTS)
+	return 0;
+gameData.models.vScale.SetZero ();
+#if DBG
+if (objP->Index () == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
+DrawPolygonObject (objP, bDepthSort, 0);
+if (!gameStates.render.bQueryCoronas && objP->info.controlType) {
+	RenderThrusterFlames (objP);
+	if (gameStates.render.nShadowPass != 2) {
+		RenderRobotShield (objP);
+		RenderTargetIndicator (objP, NULL);
+		SetRobotLocationInfo (objP);
+		}
+	}
+return 1;
+}
+
+// -----------------------------------------------------------------------------
+
+static int RenderReactor (CObject* objP, int bDepthSort, int bSpectate)
+{
+if (gameStates.render.nType != 1)
+	return 0;
+DrawPolygonObject (objP, bDepthSort, 0);
+if (!gameStates.render.bQueryCoronas)
+	RenderTargetIndicator (objP, NULL);
+return 1;
+}
+
+// -----------------------------------------------------------------------------
+
+static int RenderWeapon (CObject* objP, int bDepthSort, int bSpectate)
+{
+if (automap.m_bDisplay && !AM_SHOW_POWERUPS (1))
+	return 0;
+if (!(gameStates.app.bNostalgia || gameOpts->render.powerups.b3D) && WeaponIsMine (objP->info.nId) && (objP->info.nId != SMALLMINE_ID))
+	ConvertWeaponToVClip (objP);
+else {
+	if (gameStates.render.nType != 1)
+		return 0;
+	if (gameData.objs.bIsMissile [objP->info.nId]) {	//make missiles smaller during launch
+		if ((objP->cType.laserInfo.parent.nType == OBJ_PLAYER) &&
+			 (gameData.models.renderModels [1][108].m_bValid > 0)) {	//hires player ship
+			float dt = X2F (gameData.time.xGame - objP->CreationTime ());
+
+			if (dt < 1) {
+				fix xScale = (fix) (I2X (1) + I2X (1) * dt * dt) / 2;
+				gameData.models.vScale.Set (xScale, xScale, xScale);
+				}
+			}
+		//DoObjectSmoke (objP);
+		DrawPolygonObject (objP, bDepthSort, 0);
+#if RENDER_HITBOX
+#	if 0
+		DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
+#	else
+		RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
+#	endif
+#endif
+		RenderThrusterFlames (objP);
+		gameData.models.vScale.SetZero ();
+		}
+	else {
+#if RENDER_HITBOX
+#	if 0
+		DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
+#	else
+		RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
+#	endif
+#endif
+		if (objP->info.nType != OBJ_WEAPON) {
+			DrawPolygonObject (objP, bDepthSort, 0);
+			if ((objP->info.nId != SMALLMINE_ID) && !gameStates.render.bQueryCoronas)
+				RenderLightTrail (objP);
+			}
+		else {
+			if ((objP->info.nId == VULCAN_ID) || (objP->info.nId == GAUSS_ID)) {
+				if (SHOW_OBJ_FX && extraGameInfo [0].bTracers) {
+					if (!gameStates.render.bQueryCoronas)
+						RenderLightTrail (objP);
+					gameData.models.vScale.Set (I2X (1) / 4, I2X (1) / 4, I2X (2));
+					CFixVector vSavedPos = objP->info.position.vPos;
+					objP->info.position.vPos += objP->info.position.mOrient.FVec ();
+					DrawPolygonObject (objP, bDepthSort, 0);
+					objP->info.position.vPos = vSavedPos;
+					}
+				}
+			else {
+				if ((objP->info.nId != SMALLMINE_ID) && !gameStates.render.bQueryCoronas)
+					RenderLightTrail (objP);
+				DrawPolygonObject (objP, bDepthSort, 0);
+				}
+			gameData.models.vScale.SetZero ();
+			}
+		}
+	}
+return 1;
+}
+
+// -----------------------------------------------------------------------------
+
+static int RenderPowerup (CObject* objP, int bDepthSort, int bSpectate)
+{
+if (automap.m_bDisplay && !AM_SHOW_POWERUPS (1))
+	return 0;
+if (!gameStates.app.bNostalgia && gameOpts->render.powerups.b3D) {
+	RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
+	if (!DrawPolygonObject (objP, bDepthSort, 0))
+		ConvertWeaponToPowerup (objP);
+	else {
+		objP->mType.physInfo.mass = I2X (1);
+		objP->mType.physInfo.drag = 512;
+		if (gameOpts->render.powerups.nSpin !=
+			((objP->mType.physInfo.rotVel [Y] | objP->mType.physInfo.rotVel [Z]) != 0))
+			objP->mType.physInfo.rotVel [Y] =
+			objP->mType.physInfo.rotVel [Z] = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
+		}
+#if DBG
+	RenderRobotShield (objP);
+#endif
+	gameData.models.vScale.SetZero ();
+	}
+else
+	ConvertWeaponToPowerup (objP);
+return 1;
+}
+
+// -----------------------------------------------------------------------------
+
+static int RenderHostage (CObject* objP, int bDepthSort, int bSpectate)
+{
+if (gameStates.app.bNostalgia || !(gameOpts->render.powerups.b3D && DrawPolygonObject (objP, bDepthSort, 0)))
+	ConvertModelToHostage (objP);
+#if DBG
+RenderRobotShield (objP);
+#endif
+return 1;
+}
+
+// -----------------------------------------------------------------------------
+
+static int RenderPolyModel (CObject* objP, int bDepthSort, int bSpectate)
+{
+DrawPolygonObject (objP, bDepthSort, 0);
+DrawDebrisCorona (objP);
+if (IsSpawnMarkerObject (objP))
+	RenderMslLockIndicator (objP);
+return 1;
+}
+
+// -----------------------------------------------------------------------------
+
+int RenderObject (CObject *objP, int nWindow, int bForce)
 {
 	short			nObject = objP->Index ();
 	int			mldSave, bSpectate = 0, bDepthSort = RENDERPATH || (gameOpts->render.bDepthSort > 0);
-	int			bEmissive = (objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId];
-	tObjTransformation	savePos;
-#if 0
-	float			fLight [3];
-	fix			nGlow [2];
-	int			oofIdx;
-#endif
 
-#if 0//def _DEBUG
-if (objP == dbgObjP) {
-	objP = objP;
-#if 1
-	HUDMessage (0, "%1.2f %1.2f %1.2f",
-					X2F (objP->mType.physInfo.velocity.p.x),
-					X2F (objP->mType.physInfo.velocity.p.y),
-					X2F (objP->mType.physInfo.velocity.p.z));
-#endif
-	}
-#endif
-if (objP->info.nType == 255) {
+int nType = objP->info.nType;
+if (nType == 255) {
 	objP->Die ();
 	return 0;
 	}
+int bEmissive = (objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId];
 if (bEmissive && gameStates.render.bQueryCoronas)
 	return 0;
 if ((gameStates.render.nShadowPass != 2) &&
@@ -827,15 +995,14 @@ if (nObject != LOCALPLAYER.nObject) {
 		return 0;
 	 }
 else if ((gameData.objs.viewerP == gameData.objs.consoleP) && !automap.m_bDisplay) {
-	if ((bSpectate = (gameStates.render.bFreeCam && !nWindowNum)))
+	if ((bSpectate = (gameStates.render.bFreeCam && !nWindow)))
 		;
-		//HUDMessage (0, "%1.2f %1.2f %1.2f", X2F (objP->info.position.vPos.p.x), X2F (objP->info.position.vPos.p.y), X2F (objP->info.position.vPos.p.z));
 #if DBG
 	 else if ((gameStates.render.nShadowPass != 2) && !gameStates.app.bPlayerIsDead &&
-				 (nWindowNum || (!gameStates.render.bChaseCam && (gameStates.app.bEndLevelSequence < EL_LOOKBACK)))) { //don't render ship model if neither external view nor main view
+				 (nWindow || (!gameStates.render.bChaseCam && (gameStates.app.bEndLevelSequence < EL_LOOKBACK)))) { //don't render ship model if neither external view nor main view
 #else
 	 else if ((gameStates.render.nShadowPass != 2) && !gameStates.app.bPlayerIsDead &&
-				 (nWindowNum ||
+				 (nWindow ||
 				  ((IsMultiGame && !IsCoopGame && !EGI_FLAG (bEnableCheats, 0, 0, 0)) ||
 				  (!gameStates.render.bChaseCam && (gameStates.app.bEndLevelSequence < EL_LOOKBACK))))) {
 #endif
@@ -849,7 +1016,7 @@ else if ((gameData.objs.viewerP == gameData.objs.consoleP) && !automap.m_bDispla
 		return 0;
 		}
 	}
-if ((objP->info.nType == OBJ_NONE)/* || (objP->info.nType==OBJ_CAMBOT)*/){
+if ((nType == OBJ_NONE)/* || (nType==OBJ_CAMBOT)*/){
 #if TRACE
 	console.printf (1, "ERROR!!!Bogus obj %d in seg %d is rendering!\n", nObject, objP->info.nSegment);
 #endif
@@ -860,7 +1027,7 @@ gameStates.render.nState = 1;
 gameData.objs.color.index = 0;
 gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;
 #if 0//def _DEBUG
-if (objP->info.nType == OBJ_EXPLOSION) {
+if (nType == OBJ_EXPLOSION) {
 	static time_t	t0 = 0;
 	static int i = 0,
 					nClips [] = {0, 2, 5, 7, 57, 58, 59, 60, 106};
@@ -885,166 +1052,39 @@ switch (objP->info.renderType) {
 		break;		//doesn't render, like the CPlayerData
 
 	case RT_POLYOBJ:
-		if (objP->info.nType == OBJ_EFFECT) {
+		if (nType == OBJ_EFFECT) {
 			objP->info.renderType = (objP->info.nId == SMOKE_ID) ? RT_SMOKE : RT_LIGHTNING;
 			return 0;
 			}
 		if (gameStates.render.nType != 1)
 			return 0;
-		if (objP->info.nType == OBJ_PLAYER) {
-			int bDynObjLight = (RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects;
-			if (automap.m_bDisplay && !(AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId)))
+		if (nType == OBJ_PLAYER) {
+			if (!RenderPlayer (objP, bDepthSort, bSpectate))
 				return 0;
-			if (bSpectate) {
-				savePos = objP->info.position;
-				objP->info.position = gameStates.app.playerPos;
-				}
-			//DoObjectSmoke (objP);
-			DrawPolygonObject (objP, bDepthSort, 0);
-			gameOpts->ogl.bLightObjects = bDynObjLight;
-			if (!gameStates.render.bQueryCoronas) {
-				RenderThrusterFlames (objP);
-				RenderPlayerShield (objP);
-				RenderTargetIndicator (objP, NULL);
-				}
-			RenderTowedFlag (objP);
-			if (bSpectate)
-				objP->info.position = savePos;
 			}
-		else if (objP->info.nType == OBJ_ROBOT) {
-			if (gameStates.render.nType != 1)
+		else if (nType == OBJ_ROBOT) {
+			if (!RenderRobot (objP, bDepthSort, bSpectate))
 				return 0;
-			if (automap.m_bDisplay && !AM_SHOW_ROBOTS)
-				return 0;
-			gameData.models.vScale.SetZero ();
-			//DoObjectSmoke (objP);
-#if DBG
-			if (objP->Index () == nDbgObj)
-				nDbgObj = nDbgObj;
-#endif
-			DrawPolygonObject (objP, bDepthSort, 0);
-			if (!gameStates.render.bQueryCoronas && objP->info.controlType) {
-				RenderThrusterFlames (objP);
-				if (gameStates.render.nShadowPass != 2) {
-					RenderRobotShield (objP);
-					RenderTargetIndicator (objP, NULL);
-					SetRobotLocationInfo (objP);
-					}
-				}
 			}
-		else if (objP->info.nType == OBJ_WEAPON) {
-			if (automap.m_bDisplay && !AM_SHOW_POWERUPS (1))
+		else if (nType == OBJ_WEAPON) {
+			if (!RenderWeapon (objP, bDepthSort, bSpectate))
 				return 0;
-			if (!(gameStates.app.bNostalgia || gameOpts->render.powerups.b3D) && WeaponIsMine (objP->info.nId) && (objP->info.nId != SMALLMINE_ID))
-				ConvertWeaponToVClip (objP);
-			else {
-				if (gameStates.render.nType != 1)
-					return 0;
-				if (gameData.objs.bIsMissile [objP->info.nId]) {	//make missiles smaller during launch
-					if ((objP->cType.laserInfo.parent.nType == OBJ_PLAYER) &&
-						 (gameData.models.renderModels [1][108].m_bValid > 0)) {	//hires player ship
-						float dt = X2F (gameData.time.xGame - objP->CreationTime ());
-
-						if (dt < 1) {
-							fix xScale = (fix) (I2X (1) + I2X (1) * dt * dt) / 2;
-							gameData.models.vScale.Set (xScale, xScale, xScale);
-							}
-						}
-					//DoObjectSmoke (objP);
-					DrawPolygonObject (objP, bDepthSort, 0);
-#if RENDER_HITBOX
-#	if 0
-					DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
-#	else
-					RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
-#	endif
-#endif
-					RenderThrusterFlames (objP);
-					gameData.models.vScale.SetZero ();
-					}
-				else {
-#if RENDER_HITBOX
-#	if 0
-					DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
-#	else
-					RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
-#	endif
-#endif
-					if (objP->info.nType != OBJ_WEAPON) {
-						DrawPolygonObject (objP, bDepthSort, 0);
-						if ((objP->info.nId != SMALLMINE_ID) && !gameStates.render.bQueryCoronas)
-							RenderLightTrail (objP);
-						}
-					else {
-						//DoObjectSmoke (objP);
-						if ((objP->info.nId == VULCAN_ID) || (objP->info.nId == GAUSS_ID)) {
-							if (SHOW_OBJ_FX && extraGameInfo [0].bTracers) {
-								if (!gameStates.render.bQueryCoronas)
-									RenderLightTrail (objP);
-								gameData.models.vScale.Set (I2X (1) / 4, I2X (1) / 4, I2X (2));
-								CFixVector vSavedPos = objP->info.position.vPos;
-								objP->info.position.vPos += objP->info.position.mOrient.FVec ();
-								DrawPolygonObject (objP, bDepthSort, 0);
-								objP->info.position.vPos = vSavedPos;
-								}
-							}
-						else {
-							if ((objP->info.nId != SMALLMINE_ID) && !gameStates.render.bQueryCoronas)
-								RenderLightTrail (objP);
-							DrawPolygonObject (objP, bDepthSort, 0);
-							}
-						gameData.models.vScale.SetZero ();
-						}
-					}
-				}
 			}
-		else if (objP->info.nType == OBJ_REACTOR) {
-			if (gameStates.render.nType != 1)
+		else if (nType == OBJ_REACTOR) {
+			if (!RenderReactor (objP, bDepthSort, bSpectate))
 				return 0;
-			//DoObjectSmoke (objP);
-			DrawPolygonObject (objP, bDepthSort, 0);
-			if (!gameStates.render.bQueryCoronas)
-				RenderTargetIndicator (objP, NULL);
 			}
-		else if (objP->info.nType == OBJ_POWERUP) {
-			if (automap.m_bDisplay && !AM_SHOW_POWERUPS (1))
+		else if (nType == OBJ_POWERUP) {
+			if (!RenderPowerup (objP, bDepthSort, bSpectate))
 				return 0;
-			if (!gameStates.app.bNostalgia && gameOpts->render.powerups.b3D) {
-				RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
-				if (!DrawPolygonObject (objP, bDepthSort, 0))
-					ConvertWeaponToPowerup (objP);
-				else {
-					objP->mType.physInfo.mass = I2X (1);
-					objP->mType.physInfo.drag = 512;
-					if (gameOpts->render.powerups.nSpin !=
-						((objP->mType.physInfo.rotVel [Y] | objP->mType.physInfo.rotVel [Z]) != 0))
-						objP->mType.physInfo.rotVel [Y] =
-						objP->mType.physInfo.rotVel [Z] = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
-					}
-#if DBG
-				RenderRobotShield (objP);
-#endif
-				gameData.models.vScale.SetZero ();
-				}
-			else
-				ConvertWeaponToPowerup (objP);
 			}
-		else if (objP->info.nType == OBJ_HOSTAGE) {
-			if (gameStates.app.bNostalgia || !(gameOpts->render.powerups.b3D && DrawPolygonObject (objP, bDepthSort, 0)))
-				ConvertModelToHostage (objP);
-#if DBG
-			RenderRobotShield (objP);
-#endif
+		else if (nType == OBJ_HOSTAGE) {
+			if (!RenderHostage (objP, bDepthSort, bSpectate))
+				return 0;
 			}
 		else {
-#if 1//ndef _DEBUG
-			DrawPolygonObject (objP, bDepthSort, 0);
-#endif
-			DrawDebrisCorona (objP);
-			if (IsSpawnMarkerObject (objP))
-				RenderMslLockIndicator (objP);
-			else
-				;//DoObjectSmoke (objP);
+			if (!RenderPolyModel (objP, bDepthSort, bSpectate))
+				return 0;
 			}
 		break;
 
@@ -1058,7 +1098,7 @@ switch (objP->info.renderType) {
 	case RT_THRUSTER:
 		if (gameStates.render.bQueryCoronas || (gameStates.render.nType != 1))
 			return 0;
-		if (nWindowNum && (objP->mType.physInfo.flags & PF_WIGGLE))
+		if (nWindow && (objP->mType.physInfo.flags & PF_WIGGLE))
 			break;
 
 	case RT_FIREBALL:
@@ -1066,7 +1106,7 @@ switch (objP->info.renderType) {
 			return 0;
 		if (gameStates.render.nShadowPass != 2) {
 			DrawFireball (objP);
-			if (objP->info.nType == OBJ_WEAPON) {
+			if (nType == OBJ_WEAPON) {
 				RenderLightTrail (objP);
 				}
 			}
@@ -1092,7 +1132,7 @@ switch (objP->info.renderType) {
 		if (gameStates.render.nShadowPass != 2) {
 			if (automap.m_bDisplay && !AM_SHOW_POWERUPS (1))
 				return 0;
-			if (objP->info.nType != OBJ_WEAPON)
+			if (nType != OBJ_WEAPON)
 				DrawWeaponVClip (objP);
 			else {
 				if (WeaponIsMine (objP->info.nId)) {
@@ -1141,7 +1181,7 @@ switch (objP->info.renderType) {
 			return 0;
 		if (gameStates.render.nShadowPass != 2) {
 			RenderLaser (objP);
-			if (objP->info.nType == OBJ_WEAPON)
+			if (nType == OBJ_WEAPON)
 				RenderLightTrail (objP);
 			}
 		break;
