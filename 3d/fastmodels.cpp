@@ -859,11 +859,11 @@ if (!bHires && (objP->info.nType == OBJ_POWERUP)) {
 		gameData.models.vScale.Set (I2X (3) / 2, I2X (3) / 2, I2X (3) / 2);
 	}
 OglSetLibFlags (1);
-G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffsetP, bHires, bUseVBO, 0,
-				 nGunId, nBombId, nMissileId, nMissiles);
+G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffsetP, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles);
+#if 0
 if ((objP->info.nType != OBJ_DEBRIS) && bHires && pm->m_bHasTransparency)
-	G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffsetP, bHires, bUseVBO, 1,
-					 nGunId, nBombId, nMissileId, nMissiles);
+	G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffsetP, bHires, bUseVBO, 1, nGunId, nBombId, nMissileId, nMissiles);
+#endif
 glDisable (GL_TEXTURE_2D);
 glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
 glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
