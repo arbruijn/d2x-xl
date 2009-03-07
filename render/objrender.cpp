@@ -786,7 +786,6 @@ return bOk;
 
 int RenderObject (CObject *objP, int nWindowNum, int bForce)
 {
-PROF_START
 	short			nObject = objP->Index ();
 	int			mldSave, bSpectate = 0, bDepthSort = RENDERPATH || (gameOpts->render.bDepthSort > 0);
 	int			bEmissive = (objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId];
@@ -817,7 +816,6 @@ if (bEmissive && gameStates.render.bQueryCoronas)
 if ((gameStates.render.nShadowPass != 2) &&
 	 (objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP) &&
 	 (objP->info.nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature)) {
-	PROF_END(ptRenderObjects)
 	return 0;
 	}
 #if DBG
@@ -848,7 +846,6 @@ else if ((gameData.objs.viewerP == gameData.objs.consoleP) && !automap.m_bDispla
 			SEM_LEAVE (SEM_SMOKE)
 			}
 #endif
-		PROF_END(ptRenderObjects)
 		return 0;
 		}
 	}
@@ -856,7 +853,6 @@ if ((objP->info.nType == OBJ_NONE)/* || (objP->info.nType==OBJ_CAMBOT)*/){
 #if TRACE
 	console.printf (1, "ERROR!!!Bogus obj %d in seg %d is rendering!\n", nObject, objP->info.nSegment);
 #endif
-	PROF_END(ptRenderObjects)
 	return 0;
 	}
 mldSave = gameStates.render.detail.nMaxLinearDepth;
@@ -1171,7 +1167,6 @@ if (objP->info.renderType != RT_NONE)
 gameStates.render.detail.nMaxLinearDepth = mldSave;
 gameData.render.nTotalObjects++;
 OglClearError (0);
-PROF_END(ptRenderObjects)
 return 1;
 }
 

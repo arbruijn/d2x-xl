@@ -127,17 +127,17 @@ do {
 			lightManager.GatherStaticVertexLights (0, gameData.segs.nVertices / 2, nId);
 		}
 	else if (tiRender.nTask == rtComputeFaceLight) {
-		if (gameData.render.mine.nRenderSegs < 0) {
-			if (nId)
-				ComputeFaceLight (gameData.segs.nFaces / 2, gameData.segs.nFaces, nId);
-			else
-				ComputeFaceLight (0, gameData.segs.nFaces / 2, nId);
-			}
-		else {
+		if (gameStates.render.bTriangleMesh || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments)) {
 			if (nId)
 				ComputeFaceLight (gameData.render.mine.nRenderSegs - 1, tiRender.nMiddle - 1, nId);
 			else
 				ComputeFaceLight (0, tiRender.nMiddle, nId);
+			}
+		else {
+			if (nId)
+				ComputeFaceLight (gameData.segs.nFaces / 2, gameData.segs.nFaces, nId);
+			else
+				ComputeFaceLight (0, gameData.segs.nFaces / 2, nId);
 			}
 		}
 	else if (tiRender.nTask == rtEffects) {

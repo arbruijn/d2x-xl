@@ -95,8 +95,6 @@ return nColor;
 void ComputeDynamicFaceLight (int nStart, int nEnd, int nThread)
 {
 PROF_START
-	CSegment		*segP;
-	tSegFaces	*segFaceP;
 	CSegFace		*faceP;
 	tRgbaColorf	*pc;
 	tFaceColor	c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
@@ -105,7 +103,7 @@ PROF_START
 #endif
 	short			nVertex, nSegment, nSide;
 	float			fAlpha;
-	int			h, i, j, nColor, nLights = 0, nStep = nStart ? -1 : 1,
+	int			h, i, nColor, nLights = 0, nStep = nStart ? -1 : 1,
 					bVertexLight = gameStates.render.bPerPixelLighting != 2,
 					bLightmaps = lightmapManager.HaveLightmaps ();
 	bool			bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
@@ -122,100 +120,94 @@ if (gameStates.ogl.bVertexLighting)
 	gameStates.ogl.bVertexLighting = gpgpuLighting.Compute (-1, 0, NULL);
 #endif
 
-for (i = nStart; i != nEnd; i += nStep) {
-	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
-		continue;
-	segP = SEGMENTS + nSegment;
-	segFaceP = SEGFACES + nSegment;
-	if (!(/*gameStates.app.bMultiThreaded ||*/ SegmentIsVisible (segP))) {
-		gameData.render.mine.nSegRenderList [i] = -gameData.render.mine.nSegRenderList [i] - 1;
-		continue;
-		}
+for (i = nStart, nStep = (nStart > nEnd) ? -1 : 1; i != nEnd; i += nStep) {
+	faceP = FACES.faces + i;
+	nSegment = faceP->nSegment;
+	nSide = faceP->nSide;
+
 #if DBG
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
+	if (faceP->bSparks && gameOpts->render.effects.bEnergySparks) {
+		faceP->bVisible = 0;
+		continue;
+		}
+	if (!(faceP->bVisible = FaceIsVisible (nSegment, nSide)))
+		continue;
+
 	if (bNeedLight)
 		nLights = lightManager.SetNearestToSegment (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
-	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++) {
-		nSide = faceP->nSide;
 #if DBG
-		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
+	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
+		nSegment = nSegment;
+		if (lightManager.Index (0)[nThread].nActive)
 			nSegment = nSegment;
-			if (lightManager.Index (0)[nThread].nActive)
-				nSegment = nSegment;
-			}
-#endif
-		if (faceP->bSparks && gameOpts->render.effects.bEnergySparks) {
-			faceP->bVisible = 0;
-			continue;
-			}
-		if (!(faceP->bVisible = FaceIsVisible (nSegment, nSide)))
-			continue;
-		if (0 > (nColor = SetupFace (nSegment, nSide, SEGMENTS + nSegment, faceP, faceColor, &fAlpha))) {
-			faceP->bVisible = 0;
-			continue;
-			}
-	#if SORT_RENDER_FACES > 1
-		AddFaceListItem (faceP, nThread);
-	#endif
-		faceP->color = faceColor [nColor].color;
-		pc = FACES.color + faceP->nIndex;
-		for (h = 0; h < 4; h++, pc++) {
-			if (gameStates.render.bFullBright) 
-				*pc = nColor ? faceColor [nColor].color : brightColor.color;
-			else {
-				if (bLightmaps) {
-					c = faceColor [nColor];
-					if (nColor)
-						*pc = c.color;
-					}
-				else {
-					nVertex = faceP->index [h];
-	#if DBG
-					if (nVertex == nDbgVertex)
-						nDbgVertex = nDbgVertex;
-	#endif
-					if (gameStates.render.bPerPixelLighting == 2) 
-						*pc = gameData.render.color.ambient [nVertex].color;
-					else {
-						c.color = gameData.render.color.ambient [nVertex].color;
-						tFaceColor *pvc = gameData.render.color.vertices + nVertex;
-						if (pvc->index != gameStates.render.nFrameFlipFlop + 1) {
-							if (nLights + lightManager.VariableVertLights () [nVertex] == 0) {
-								pvc->color = c.color;
-								pvc->index = gameStates.render.nFrameFlipFlop + 1;
-								}
-							else {
-	#if DBG
-								if (nVertex == nDbgVertex)
-									nDbgVertex = nDbgVertex;
-	#endif
-								G3VertexColor(gameData.segs.points[nVertex].p3_normal.vNormal.V3(), 
-												  gameData.segs.fVertices[nVertex].V3(), nVertex, 
-												  NULL, &c, 1, 0, nThread);
-								lightManager.Index (0)[nThread] = lightManager.Index (1)[nThread];
-								lightManager.ResetNearestToVertex (nVertex, nThread);
-								}
-	#if DBG
-							if (nVertex == nDbgVertex)
-								nVertex = nVertex;
-	#endif
-							}
-						*pc = pvc->color;
-						}
-					}
-				if (nColor == 1) {
-					c = faceColor [nColor];
-					pc->red *= c.color.red;
-					pc->blue *= c.color.green;
-					pc->green *= c.color.blue;
-					}
-				pc->alpha = fAlpha;
-				}
-			}
-		lightManager.Material ().bValid = 0;
 		}
+#endif
+	if (0 > (nColor = SetupFace (nSegment, nSide, SEGMENTS + nSegment, faceP, faceColor, &fAlpha))) {
+		faceP->bVisible = 0;
+		continue;
+		}
+#if SORT_RENDER_FACES > 1
+	AddFaceListItem (faceP, nThread);
+#endif
+	faceP->color = faceColor [nColor].color;
+	pc = FACES.color + faceP->nIndex;
+	for (h = 0; h < 4; h++, pc++) {
+		if (gameStates.render.bFullBright) 
+			*pc = nColor ? faceColor [nColor].color : brightColor.color;
+		else {
+			if (bLightmaps) {
+				c = faceColor [nColor];
+				if (nColor)
+					*pc = c.color;
+				}
+			else {
+				nVertex = faceP->index [h];
+#if DBG
+				if (nVertex == nDbgVertex)
+					nDbgVertex = nDbgVertex;
+#endif
+				if (gameStates.render.bPerPixelLighting == 2) 
+					*pc = gameData.render.color.ambient [nVertex].color;
+				else {
+					c.color = gameData.render.color.ambient [nVertex].color;
+					tFaceColor *pvc = gameData.render.color.vertices + nVertex;
+					if (pvc->index != gameStates.render.nFrameFlipFlop + 1) {
+						if (nLights + lightManager.VariableVertLights () [nVertex] == 0) {
+							pvc->color = c.color;
+							pvc->index = gameStates.render.nFrameFlipFlop + 1;
+							}
+						else {
+#if DBG
+							if (nVertex == nDbgVertex)
+								nDbgVertex = nDbgVertex;
+#endif
+							G3VertexColor(gameData.segs.points[nVertex].p3_normal.vNormal.V3(), 
+											  gameData.segs.fVertices[nVertex].V3(), nVertex, 
+											  NULL, &c, 1, 0, nThread);
+							lightManager.Index (0)[nThread] = lightManager.Index (1)[nThread];
+							lightManager.ResetNearestToVertex (nVertex, nThread);
+							}
+#if DBG
+						if (nVertex == nDbgVertex)
+							nVertex = nVertex;
+#endif
+						}
+					*pc = pvc->color;
+					}
+				}
+			if (nColor == 1) {
+				c = faceColor [nColor];
+				pc->red *= c.color.red;
+				pc->blue *= c.color.green;
+				pc->green *= c.color.blue;
+				}
+			pc->alpha = fAlpha;
+			}
+		}
+	lightManager.Material ().bValid = 0;
 	}
 PROF_END(ptLighting)
 gameStates.ogl.bUseTransform = 0;

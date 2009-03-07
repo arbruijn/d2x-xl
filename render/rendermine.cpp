@@ -1079,6 +1079,7 @@ return j;
 
 void RenderObjList (int nListPos, int nWindow)
 {
+PROF_START
 	int i, j;
 	int saveLinDepth = gameStates.render.detail.nMaxLinearDepth;
 
@@ -1086,6 +1087,7 @@ gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDe
 for (i = 0, j = SortObjList (gameData.render.mine.nSegRenderList [nListPos]); i < j; i++)
 	DoRenderObject (objRenderList [i].nObject, nWindow);	// note link to above else
 gameStates.render.detail.nMaxLinearDepth = saveLinDepth;
+PROF_END(ptRenderObjects)
 }
 
 //------------------------------------------------------------------------------
@@ -1216,6 +1218,7 @@ return !gameStates.render.cameras.bActive && (gameData.objs.viewerP->info.nType 
 
 void RenderSkyBoxObjects (void)
 {
+PROF_START
 	short		i, nObject;
 	short		*segNumP;
 
@@ -1223,6 +1226,7 @@ gameStates.render.nType = 1;
 for (i = gameData.segs.skybox.ToS (), segNumP = gameData.segs.skybox.Buffer (); i; i--, segNumP++)
 	for (nObject = SEGMENTS [*segNumP].m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg)
 		DoRenderObject (nObject, gameStates.render.nWindow);
+PROF_END(ptRenderObjects)
 }
 
 //------------------------------------------------------------------------------
@@ -1451,7 +1455,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 			if (gameStates.render.bTriangleMesh || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
 				ComputeFaceLight (0, gameData.render.mine.nRenderSegs, 0);
 			else
-				ComputeFaceLight (0, gameData.segs.nSegments, 0);
+				ComputeFaceLight (0, gameData.segs.nFaces, 0);
 			}
 		PROF_START
 		//PrintLog  ("UpdateSlidingFaces\n");

@@ -774,7 +774,7 @@ do {
 	{
 	PROF_START
 	Draw ();
-	PROF_END (ptRenderFrame)
+	PROF_END (ptFrame)
 	}
 	if (bFirstTime) {
 		bFirstTime = 0;
