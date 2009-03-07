@@ -1135,30 +1135,12 @@ int mldSave = gameStates.render.detail.nMaxLinearDepth;
 gameStates.render.nState = 1;
 gameData.objs.color.index = 0;
 gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;
-#if 0//def _DEBUG
-if (nType == OBJ_EXPLOSION) {
-	static time_t	t0 = 0;
-	static int i = 0,
-					nClips [] = {0, 2, 5, 7, 57, 58, 59, 60, 106};
 
-	if (gameStates.app.nSDLTicks - t0 > 4000) {
-		if (t0)
-			do {
-				i = (i + 1) % sizeofa (nClips);
-				} while (gameData.eff.vClips [0][nClips [i]].xFrameTime <= 0);
-
-		t0 = gameStates.app.nSDLTicks;
-		objP->rType.vClipInfo.nClipIndex = nClips [i];
-		}
-	HUDMessage (0, "%d", nClips [i]);
-	}
-#endif
 switch (objP->info.renderType) {
 	case RT_NONE:
 		if (gameStates.render.nType != 1)
 			return 0;
-		//RenderTracers (objP);
-		break;		//doesn't render, like the CPlayerData
+		break;	
 
 	case RT_POLYOBJ:
 		if (nType == OBJ_EFFECT) {
@@ -1252,7 +1234,6 @@ switch (objP->info.renderType) {
 	default:
 		PrintLog ("Unknown renderType <%d>\n", objP->info.renderType);
 	}
-//SetNearestStaticLights (objP->info.nSegment, 0);
 
 #ifdef NEWDEMO
 if (objP->info.renderType != RT_NONE)

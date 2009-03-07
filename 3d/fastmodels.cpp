@@ -698,12 +698,15 @@ OglResetTransform (1);
 void G3RenderDamageLightnings (CObject *objP, short nModel, short nSubModel,
 										 CAngleVector *pAnimAngles, CFixVector *vOffsetP, int bHires)
 {
-	RenderModel::CModel			*pm;
-	RenderModel::CSubModel		*psm;
-	RenderModel::CFace	*pmf;
-	const CAngleVector	*va;
-	CFixVector		vo;
-	int				i, j;
+if (!(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage))
+	return;
+
+	RenderModel::CModel*		pm;
+	RenderModel::CSubModel*	psm;
+	RenderModel::CFace*		pmf;
+	const CAngleVector*		va;
+	CFixVector					vo;
+	int							i, j;
 
 pm = gameData.models.renderModels [bHires] + nModel;
 if (pm->m_bValid < 1) {
@@ -715,8 +718,6 @@ if (pm->m_bValid < 1) {
 	}
 psm = pm->m_subModels + nSubModel;
 va = pAnimAngles ? pAnimAngles + psm->m_nAngles : &CAngleVector::ZERO;
-if (!(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage))
-	return;
 if (!objP || (objP->Damage () > 0.5f))
 	return;
 // set the translation
